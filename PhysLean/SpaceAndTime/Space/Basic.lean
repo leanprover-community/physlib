@@ -47,9 +47,14 @@ there is are two benefits of this:
 2. It allows us to give the necessary physics context to results about `Space d`, which
   would not otherwise be possible if we reuse results from Mathlib.
 
-Currently `Space d` has the structure of a `Module` (which requires the choice
-of a zero), a future refactor should give `Space d` the structure of an `AddTorsor`
-(an affine space) which does not require the choice of a zero.
+Currently `Space d` has the instance of a `Module` (which requires the choice
+of a zero), a future refactor should give `Space d` the instance of an `AddTorsor`
+(an affine space) which does not require the choice of a zero. This has not been done
+yet since `fderiv` requires a `Module` instance.
+
+Because of this, one should be careful to avoid using the explicit zero in `Space d`,
+or adding two `Space d` values together. Where possible one should use
+the `VAdd (EuclideanSpace ℝ (Fin d)) (Space d)` instance instead.
 
 -/
 
