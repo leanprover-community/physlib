@@ -56,6 +56,10 @@ open MeasureTheory
 def radialAngularMeasure {d : ℕ} : Measure (Space d) :=
   volume.withDensity (fun x : Space d => ENNReal.ofReal (1 / ‖x‖ ^ (d - 1)))
 
+instance (d : ℕ) : SFinite (radialAngularMeasure (d := d)):= by
+  dsimp [radialAngularMeasure]
+  infer_instance
+
 /-!
 
 ### A.1. Basic equalities
@@ -83,6 +87,7 @@ lemma integrable_radialAngularMeasure_iff {d : ℕ} {f : Space d → F} :
   simp only [inv_nonneg, norm_nonneg, pow_nonneg, coe_mk]
   positivity
 
+
 /-!
 
 ## B. Integrals with respect to radialAngularMeasure
@@ -98,6 +103,90 @@ lemma integral_radialAngularMeasure {d : ℕ} (f : Space d → F) :
   simp only [one_div]
   refine Eq.symm (Mathlib.Tactic.LinearCombination.smul_eq_const ?_ (f x))
   simp
+
+lemma lintegral_radialMeasure {d : ℕ} (f : Space d → ENNReal) (hf : Measurable f) :
+    ∫⁻ x, f x ∂radialAngularMeasure = ∫⁻ x, ENNReal.ofReal (1 / ‖x‖ ^ (d - 1)) * f x := by
+  dsimp [radialAngularMeasure]
+  rw [lintegral_withDensity_eq_lintegral_mul]
+  simp
+  · fun_prop
+  · fun_prop
+
+lemma lintegral_radialMeasure_eq_spherical_mul (d : ℕ) (f : Space d.succ → ENNReal) (hf : Measurable f) :
+    ∫⁻ x, f x ∂radialAngularMeasure = ∫⁻ x, f (x.2.1 • x.1.1)
+      ∂(volume (α := Space d.succ).toSphere.prod (Measure.volumeIoiPow 0)) := by
+  rw [lintegral_radialMeasure, lintegral_volume_eq_spherical_mul]
+  apply lintegral_congr_ae
+  filter_upwards with x
+  have hx := x.2.2
+  simp  [Nat.succ_eq_add_one, -Subtype.coe_prop] at hx
+  simp [norm_smul]
+  rw [abs_of_nonneg (le_of_lt x.2.2)]
+  trans  ENNReal.ofReal (↑x.2 ^ d * (x.2.1 ^ d)⁻¹) * f (x.2.1 • ↑x.1.1)
+  · rw [ENNReal.ofReal_mul]
+    ring
+    have h2 := x.2.2
+    simp at h2
+    positivity
+  trans ENNReal.ofReal 1 * f (x.2.1 • ↑x.1.1)
+  · congr
+    field_simp
+  simp
+  fun_prop
+  fun_prop
+
+open Real
+@[simp]
+lemma radialAngularMeasure_closedBall (r : ℝ) :
+    radialAngularMeasure (Metric.closedBall (0 : Space 3) r) = ENNReal.ofReal (4 * π * r) := by
+  rw [← setLIntegral_one, ← MeasureTheory.lintegral_indicator,
+    lintegral_radialMeasure_eq_spherical_mul]
+  rotate_left
+  · refine (measurable_indicator_const_iff 1).mpr ?_
+    exact measurableSet_closedBall
+  · exact measurableSet_closedBall
+  have h1 (x : (Metric.sphere (0 : Space) 1) × ↑(Set.Ioi (0 : ℝ))) :
+       (Metric.closedBall (0 : Space) r).indicator (fun x => (1 : ENNReal)) (x.2.1 • x.1.1) =
+       (Set.univ ×ˢ {a | a.1 ≤ r}).indicator (fun x => 1) x := by
+    refine Set.indicator_const_eq_indicator_const ?_
+    simp [norm_smul]
+    rw [abs_of_nonneg (le_of_lt x.2.2)]
+  simp [h1]
+  rw [MeasureTheory.lintegral_indicator, setLIntegral_one]
+  rotate_left
+  · refine MeasurableSet.prod ?_ ?_
+    · exact MeasurableSet.univ
+    · simp
+      fun_prop
+  rw [MeasureTheory.Measure.prod_prod]
+  simp [Measure.volumeIoiPow]
+  rw [MeasureTheory.Measure.comap_apply]
+  rotate_left
+  · exact Subtype.val_injective
+  · intro s hs
+    refine MeasurableSet.subtype_image ?_ hs
+    exact measurableSet_Ioi
+  · simp
+    fun_prop
+  trans  3 * ENNReal.ofReal (4 / 3 * π) * volume (α := ℝ) (Set.Ioc 0 r)
+  · congr
+    ext x
+    simp
+    grind
+  simp
+  trans ENNReal.ofReal (3 *  ((4 / 3 * π) )) * ENNReal.ofReal r
+  · simp [ENNReal.ofReal_mul]
+  field_simp
+  rw [← ENNReal.ofReal_mul]
+  simp
+  positivity
+
+lemma radialAngularMeasure_real_closedBall (r : ℝ) (hr : 0 < r) :
+    radialAngularMeasure.real (Metric.closedBall (0 : Space 3) r) = 4 * π * r := by
+  trans (radialAngularMeasure (Metric.closedBall (0 : Space 3) r)).toReal
+  · rfl
+  simp
+  positivity
 
 /-!
 

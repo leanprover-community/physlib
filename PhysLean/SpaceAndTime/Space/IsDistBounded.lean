@@ -808,6 +808,38 @@ lemma mono {d : ℕ} {f : Space d → F}
   intro x
   exact (hfg x).trans (bound1 x)
 
+
+/-!
+
+### D.8. Constant smul with a predicate
+
+-/
+
+lemma if_norm_gt_one_const_smul {d : ℕ} [NormedSpace ℝ F] {f : Space d → F}
+    (hf : IsDistBounded f) (c1 : ℝ):
+    IsDistBounded (fun x => (if 1 < ‖x‖ then c1 else 0) • f x) := by
+  apply IsDistBounded.mono (f := fun x => (max (abs c1) (abs 0)) • f x)
+  · apply IsDistBounded.const_smul
+    exact hf
+  · apply MeasureTheory.AEStronglyMeasurable.smul
+    · have h1 := MeasureTheory.AEStronglyMeasurable.indicator (s := Set.Ioi (1 : ℝ))
+        (f := fun x => c1) (μ := (Measure.map (fun x => ‖x‖) (volume (α := Space d)))) (by fun_prop) (by exact measurableSet_Ioi)
+      change AEStronglyMeasurable ((fun r => if 1 < r then c1 else 0) ∘ (fun x => ‖x‖)) volume
+      apply MeasureTheory.AEStronglyMeasurable.comp_aemeasurable
+      · exact h1
+      · fun_prop
+    · fun_prop
+  · intro x
+    rw [norm_smul, norm_smul]
+    refine mul_le_mul_of_nonneg ?_ ?_ ?_ ?_
+    · simp
+      split_ifs
+      · simp
+      · simp
+    · simp
+    · positivity
+    · positivity
+
 /-!
 
 ### D.8. Inner products
@@ -942,6 +974,7 @@ lemma norm_add_pos_nat_zpow {d : ℕ} (n : ℤ) (a : ℝ) (ha : 0 < a) :
       refine (pow_le_pow_iff_left₀ (by positivity) (by positivity) (by simp)).mpr ?_
       rw [abs_of_nonneg (by positivity), abs_of_nonneg (by positivity)]
       simp
+
 
 @[fun_prop]
 lemma nat_pow_shift {d : ℕ} (n : ℕ)

@@ -498,4 +498,43 @@ lemma distGrad_apply {d} (f : (Space d) →d[ℝ] ℝ) (ε : 𝓢(Space d, ℝ))
   change (distGrad f).toFun ε = fun i => distDeriv i f ε
   rw [distGrad_toFun_eq_distDeriv]
 
+/-!
+
+### The gradident of a Schwartz map
+
+-/
+
+noncomputable def gradSchwartz {d} (η : 𝓢(Space d, ℝ)) : 𝓢(Space d, EuclideanSpace ℝ (Fin d)) :=
+  let f := SchwartzMap.fderivCLM ℝ (E := _) (F := ℝ) η
+  let g (i : Fin d) := SchwartzMap.evalCLM ℝ (Space d) ℝ (basis i) f
+  let B : ℝ →L[ℝ] EuclideanSpace ℝ (Fin d) →L[ℝ] EuclideanSpace ℝ (Fin d) := {
+    toFun a := {
+      toFun v := a • v
+      map_add' v1 v2 := by
+        simp
+      map_smul' a v := by rw [smul_comm]; simp
+      cont := by fun_prop }
+    map_add' v1 v2 := by
+      ext1 v
+      simp [add_smul]
+    map_smul' a v := by
+      ext1 v
+      simp [smul_smul]
+    cont := by
+      refine continuous_clm_apply.mpr ?_
+      intro y
+      simp
+      fun_prop
+  }
+  let b (i : Fin d) : Space d → EuclideanSpace ℝ (Fin d) := fun x =>  EuclideanSpace.single i 1
+  have hb_temperate (i : Fin d) : Function.HasTemperateGrowth (b i) := by
+    exact Function.HasTemperateGrowth.const (EuclideanSpace.single i 1)
+  let x (i : Fin d):= SchwartzMap.bilinLeftCLM B (hb_temperate i) (g i)
+  ∑ i, x i
+
+lemma gradSchwartz_apply_eq_grad {d} (η : 𝓢(Space d, ℝ)) (x : Space d):
+    gradSchwartz η x = grad η x:= by
+  simp [gradSchwartz, grad_eq_sum]
+  rfl
+
 end Space

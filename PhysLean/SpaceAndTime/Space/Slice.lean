@@ -222,11 +222,72 @@ lemma basis_self_eq_slice {d : ℕ} (i : Fin d.succ) :
   · simp [slice_symm_apply_self]
   · simp [basis_apply]
 
+@[simp]
+lemma slice_basis_self {d : ℕ} (i : Fin d.succ) :
+    slice i (basis i) = (1, 0) := by
+  rw [basis_self_eq_slice]
+  simp
+
 lemma basis_succAbove_eq_slice {d : ℕ} (i : Fin d.succ) (j : Fin d) :
     basis (Fin.succAbove i j) = (slice i).symm (0, basis j) := by
   ext k
   rcases Fin.eq_self_or_eq_succAbove i k with rfl | ⟨l, rfl⟩
   · simp [basis_apply, slice_symm_apply_self]
   · simp [basis_apply, slice_symm_apply_succAbove]
+
+@[simp]
+lemma slice_basis_succAbove {d : ℕ} (i : Fin d.succ) (j : Fin d) :
+    slice i (basis (Fin.succAbove i j)) = (0, basis j) := by
+  rw [basis_succAbove_eq_slice]
+  simp
+
+/-!
+
+### A.6. Measures
+
+-/
+
+lemma volume_map_slice_eq_prod {d : ℕ} (i : Fin d.succ) :
+    MeasureTheory.Measure.map (slice i) volume = volume.prod volume := by
+  have h1 : volume (α := ℝ) = (OrthonormalBasis.singleton (Fin 1) ℝ).toBasis.addHaar :=
+     (OrthonormalBasis.addHaar_eq_volume _).symm
+  rw [volume_eq_addHaar, Module.Basis.map_addHaar, volume_eq_addHaar, h1,
+    ← Module.Basis.prod_addHaar]
+  let e : Fin 1 ⊕ Fin d →  Fin d.succ := fun x => match x with
+      | Sum.inl 0 => i
+      | Sum.inr j => Fin.succAbove i j
+  have e_injective : Function.Injective e := by
+    intro x y h
+    match x, y with
+    | Sum.inl 0, Sum.inl 0 => rfl
+    | Sum.inl 0, Sum.inr j => simp [e] at h
+    | Sum.inr j, Sum.inl 0 =>simp [e] at h
+    | Sum.inr j1, Sum.inr j2 => simp [e] at h; simp [h]
+  have e_surjective : Function.Surjective e := by
+    intro j
+    rcases Fin.eq_self_or_eq_succAbove i j with h | ⟨k, h⟩
+    · use Sum.inl 0
+      simp [e, h]
+    · use Sum.inr k
+      simp [e, h]
+  have e_bijective : Function.Bijective e := ⟨e_injective, e_surjective⟩
+  let eEquiv : Fin 1 ⊕ Fin d ≃ Fin d.succ := Equiv.ofBijective e e_bijective
+  let b' : Module.Basis (Fin (d.succ)) ℝ (ℝ × Space d) :=
+    Module.Basis.reindex
+    ((OrthonormalBasis.singleton (Fin 1) ℝ).toBasis.prod basis.toBasis) eEquiv
+  trans b'.addHaar
+  · congr
+    ext1 j
+    simp [b']
+    obtain ⟨k, rfl⟩ := eEquiv.surjective j
+    simp [eEquiv]
+    match k with
+    | Sum.inl 0 =>
+      simp [e]
+    | Sum.inr j =>
+      simp [e]
+  simp [b']
+
+
 
 end Space
