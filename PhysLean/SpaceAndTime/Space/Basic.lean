@@ -15,7 +15,7 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 # Space
 
 In this module, we define the the type `Space d` which corresponds
-to a `d`-dimensional Euclidean space and prove some properties about it.
+to `d`-dimensional flat Euclidean space and prove some properties about it.
 
 PhysLean sits downstream of Mathlib, and above we import the necessary Mathlib modules
 which contain (perhaps transitively through imports) the definitions and theorems we need.
@@ -47,17 +47,18 @@ there is are two benefits of this:
 2. It allows us to give the necessary physics context to results about `Space d`, which
   would not otherwise be possible if we reuse results from Mathlib.
 
-Currently `Space d` has the instance of a `Module` (which requires the choice
-of a zero), a future refactor should give `Space d` only the instance of an `AddTorsor`
-(an affine space) which does not require the choice of a zero, in such a way that `Space d` should be a special case of Riemannian manifolds. This has not been done
-yet since `fderiv` requires a `Module` instance.
-Similarly, `Norm` `InnerProductSpace` instances should be replaced by the `MetricSpace` instance giving directly the Euclidean distance.
+Currently `Space d` has the instances of `Module` (which requires the choice
+of a zero), `Norm` and `InnerProductSpace`.
+A future refactor should instead give `Space d` the instance of a `NormedAddTorsor` and a
+`MetricSpace` giving it directly the Euclidean distance.
+
+This has not been done yet since `fderiv` requires a `Module` instance.
+
 Because of this, one should be careful to avoid using the explicit zero in `Space d`,
 or adding two `Space d` values together. Where possible one should use
 the `VAdd (EuclideanSpace ℝ (Fin d)) (Space d)` instance instead.
 
 -/
-
 
 /-!
 
