@@ -19,8 +19,8 @@ We focus here on the volume measure, which is the usual measure on `Space d`, i.
 - `volume_eq_addHaar` : The volume measure on `Space d` is the same as the Haar measure
   associated with the basis of `Space d`.
 - `integral_volume_eq_spherical` : The integral of a function over `Space d.succ` with
-  respect to the volume measure can be expressed as an integral over the unit sphere and t
-  he positive reals.
+  respect to the volume measure can be expressed as an integral over the unit sphere and
+  the positive reals.
 - `lintegral_volume_eq_spherical` : The lower Lebesgue integral of a function over `Space d.succ`
   with respect to the volume measure can be expressed as a lower Lebesgue integral over the unit
   sphere and the positive reals.
@@ -40,7 +40,7 @@ open InnerProductSpace MeasureTheory
 lemma volume_eq_addHaar {d} : (volume (α := Space d)) = Space.basis.toBasis.addHaar := by
   exact (OrthonormalBasis.addHaar_eq_volume _).symm
 
-lemma volume_closedBall_ne_zero {d : ℕ} (x : Space d.succ) (r : ℝ) (hr : 0 < r) :
+lemma volume_closedBall_ne_zero {d : ℕ} (x : Space d.succ) {r : ℝ} (hr : 0 < r) :
     volume (Metric.closedBall x r) ≠ 0 := by
   obtain ⟨k,hk⟩ := Nat.even_or_odd' d.succ
   rcases hk with hk | hk
@@ -65,16 +65,14 @@ lemma volume_closedBall_ne_top {d : ℕ} (x : Space d.succ) (r : ℝ) :
     volume (Metric.closedBall x r) ≠ ⊤ := by
   obtain ⟨k,hk⟩ := Nat.even_or_odd' d.succ
   rcases hk with hk | hk
-  · rw [InnerProductSpace.volume_closedBall_of_dim_even (k := k)]
+  · rw [InnerProductSpace.volume_closedBall_of_dim_even (by simpa using hk)]
     simp only [Nat.succ_eq_add_one, finrank_eq_dim, ne_eq]
     apply not_eq_of_beq_eq_false
     rfl
-    simpa using hk
-  · rw [InnerProductSpace.volume_closedBall_of_dim_odd (k := k)]
+  · rw [InnerProductSpace.volume_closedBall_of_dim_odd (by simpa using hk)]
     simp only [Nat.succ_eq_add_one, finrank_eq_dim, ne_eq]
     apply not_eq_of_beq_eq_false
     rfl
-    simpa using hk
 
 @[simp]
 lemma volume_metricBall_three :
@@ -164,11 +162,10 @@ instance : SFinite (@Measure.comap ↑(Set.Ioi 0) ℝ Subtype.instMeasurableSpac
       apply And.intro
       · intro n
         refine (isFiniteMeasure_iff (Measure.comap Subtype.val (m n))).mpr ?_
-        rw [MeasurableEmbedding.comap_apply]
+        rw [MeasurableEmbedding.comap_apply (MeasurableEmbedding.subtype_coe measurableSet_Ioi)]
         simp only [Set.image_univ, Subtype.range_coe_subtype, Set.mem_Ioi]
         have hm := h.1 n
         exact measure_lt_top (m n) {x | 0 < x}
-        exact MeasurableEmbedding.subtype_coe measurableSet_Ioi
       · ext s hs
         rw [MeasurableEmbedding.comap_apply, Measure.sum_apply]
         conv_rhs =>
@@ -204,7 +201,7 @@ lemma lintegral_volume_eq_spherical (d : ℕ) (f : Space d.succ → ENNReal) (hf
   conv_rhs =>
     enter [2, x]
     change f' x.1
-  rw [MeasureTheory.lintegral_subtype_comap]
+  rw [MeasureTheory.lintegral_subtype_comap (by simp)]
   simp [f']
   refine lintegral_congr_ae ?_
   filter_upwards [Measure.ae_ne volume 0] with x hx
@@ -213,16 +210,15 @@ lemma lintegral_volume_eq_spherical (d : ℕ) (f : Space d.succ → ENNReal) (hf
   have hx : ‖x‖ ≠ 0 := by
     simpa using hx
   field_simp
-  simp only [one_smul]
-  simp
+  rw [one_smul]
 
 lemma lintegral_volume_eq_spherical_mul (d : ℕ) (f : Space d.succ → ENNReal) (hf : Measurable f) :
     ∫⁻ x, f x ∂volume = ∫⁻ x, f (x.2.1 • x.1.1) * .ofReal (x.2.1 ^ d)
       ∂(volume (α := Space d.succ).toSphere.prod (Measure.volumeIoiPow 0)) := by
-  rw [lintegral_volume_eq_spherical]
-  rw [Measure.volumeIoiPow, MeasureTheory.prod_withDensity_right,
-    MeasureTheory.lintegral_withDensity_eq_lintegral_mul]
-  rw [Measure.volumeIoiPow, MeasureTheory.prod_withDensity_right,
+  rw [lintegral_volume_eq_spherical, Measure.volumeIoiPow,
+    MeasureTheory.prod_withDensity_right,
+    MeasureTheory.lintegral_withDensity_eq_lintegral_mul,
+    Measure.volumeIoiPow, MeasureTheory.prod_withDensity_right,
     MeasureTheory.lintegral_withDensity_eq_lintegral_mul]
   · refine lintegral_congr_ae ?_
     simp only [Nat.succ_eq_add_one, finrank_eq_dim, add_tsub_cancel_right, pow_zero,
@@ -230,7 +226,6 @@ lemma lintegral_volume_eq_spherical_mul (d : ℕ) (f : Space d.succ → ENNReal)
     filter_upwards with x
     simp only [Pi.mul_apply, one_mul]
     ring
-  all_goals
-  · fun_prop
+  all_goals fun_prop
 
 end Space

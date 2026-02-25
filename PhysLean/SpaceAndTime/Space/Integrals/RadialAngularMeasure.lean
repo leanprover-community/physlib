@@ -140,35 +140,22 @@ lemma lintegral_radialMeasure_eq_spherical_mul (d : ℕ) (f : Space d.succ → E
 @[simp]
 lemma radialAngularMeasure_closedBall (r : ℝ) :
     radialAngularMeasure (Metric.closedBall (0 : Space 3) r) = ENNReal.ofReal (4 * π * r) := by
-  rw [← setLIntegral_one, ← MeasureTheory.lintegral_indicator,
-    lintegral_radialMeasure_eq_spherical_mul]
-  rotate_left
-  · refine (measurable_indicator_const_iff 1).mpr ?_
-    exact measurableSet_closedBall
-  · exact measurableSet_closedBall
+  rw [← setLIntegral_one, ← MeasureTheory.lintegral_indicator measurableSet_closedBall,
+    lintegral_radialMeasure_eq_spherical_mul _ _
+    ((measurable_indicator_const_iff 1).mpr measurableSet_closedBall)]
   have h1 (x : (Metric.sphere (0 : Space) 1) × ↑(Set.Ioi (0 : ℝ))) :
       (Metric.closedBall (0 : Space) r).indicator (fun x => (1 : ENNReal)) (x.2.1 • x.1.1) =
-      (Set.univ ×ˢ {a | a.1 ≤ r}).indicator (fun x => 1) x := by
-    refine Set.indicator_const_eq_indicator_const ?_
+      (Set.univ ×ˢ {a | a.1 ≤ r}).indicator (fun x => 1) x :=
+      Set.indicator_const_eq_indicator_const <| by
     simp [norm_smul]
     rw [abs_of_nonneg (le_of_lt x.2.2)]
   simp [h1]
-  rw [MeasureTheory.lintegral_indicator, setLIntegral_one]
-  rotate_left
-  · refine MeasurableSet.prod ?_ ?_
-    · exact MeasurableSet.univ
-    · simp
-      fun_prop
-  rw [MeasureTheory.Measure.prod_prod]
-  simp [Measure.volumeIoiPow]
-  rw [MeasureTheory.Measure.comap_apply]
-  rotate_left
-  · exact Subtype.val_injective
-  · intro s hs
-    refine MeasurableSet.subtype_image ?_ hs
-    exact measurableSet_Ioi
-  · simp
-    fun_prop
+  rw [MeasureTheory.lintegral_indicator <|
+    MeasurableSet.prod MeasurableSet.univ (measurableSet_setOf.mpr (by fun_prop))]
+  simp [MeasureTheory.Measure.prod_prod, Measure.volumeIoiPow]
+  rw [MeasureTheory.Measure.comap_apply _ Subtype.val_injective
+    (fun s hs => MeasurableSet.subtype_image measurableSet_Ioi hs)
+    _ (measurableSet_setOf.mpr (by fun_prop))]
   trans 3 * ENNReal.ofReal (4 / 3 * π) * volume (α := ℝ) (Set.Ioc 0 r)
   · congr
     ext x
@@ -179,9 +166,7 @@ lemma radialAngularMeasure_closedBall (r : ℝ) :
   trans ENNReal.ofReal (3 * ((4 / 3 * π))) * ENNReal.ofReal r
   · simp [ENNReal.ofReal_mul]
   field_simp
-  rw [← ENNReal.ofReal_mul]
-  simp only [Nat.ofNat_pos, mul_nonneg_iff_of_pos_left]
-  positivity
+  rw [← ENNReal.ofReal_mul (by positivity)]
 
 lemma radialAngularMeasure_real_closedBall (r : ℝ) (hr : 0 < r) :
     radialAngularMeasure.real (Metric.closedBall (0 : Space 3) r) = 4 * π * r := by
@@ -203,9 +188,7 @@ lemma integrable_radialAngularMeasure_iff {d : ℕ} {f : Space d → F} :
   simp only [one_div]
   refine integrable_congr ?_
   filter_upwards with x
-  rw [Real.toNNReal_of_nonneg, NNReal.smul_def]
-  simp only [inv_nonneg, norm_nonneg, pow_nonneg, coe_mk]
-  positivity
+  rw [Real.toNNReal_of_nonneg (by positivity), NNReal.smul_def, coe_mk]
 
 omit [NormedSpace ℝ F] in
 lemma integrable_radialAngularMeasure_of_spherical {d : ℕ} (f : Space d.succ → F)
@@ -213,14 +196,10 @@ lemma integrable_radialAngularMeasure_of_spherical {d : ℕ} (f : Space d.succ �
     (hf : Integrable (fun x => f (x.2.1 • x.1.1))
     (volume (α := Space d.succ).toSphere.prod (Measure.volumeIoiPow 0))) :
     Integrable f radialAngularMeasure := by
-  have h1 := hf.1
-  have h2 := hf.2
   refine ⟨StronglyMeasurable.aestronglyMeasurable hae, ?_⟩
-  rw [hasFiniteIntegral_iff_norm]
-  rw [lintegral_radialMeasure_eq_spherical_mul]
-  rw [← hasFiniteIntegral_iff_norm]
-  exact h2
-  · simpa using StronglyMeasurable.enorm hae
+  rw [hasFiniteIntegral_iff_norm, lintegral_radialMeasure_eq_spherical_mul _ _
+    (by simpa using StronglyMeasurable.enorm hae), ← hasFiniteIntegral_iff_norm]
+  exact hf.2
 
 /-!
 
@@ -248,14 +227,11 @@ private lemma integrable_neg_pow_on_ioi (n : ℕ) :
     grind
   have h0 (x : ℝ) (hx : x ∈ Set.Ioi 0) : ((1 : ℝ) + ↑x) ^ (- (n + 2) : ℝ) =
       ((1 + x) ^ ((n + 2)))⁻¹ := by
-    rw [← Real.rpow_natCast]
-    rw [← Real.inv_rpow]
-    rw [← Real.rpow_neg_one, ← Real.rpow_mul]
-    simp only [neg_mul, one_mul]
-    simp only [neg_add_rev, Nat.cast_add, Nat.cast_ofNat]
-    have hx : 0 < x := hx
-    positivity
-    grind
+    rw [← Real.rpow_natCast, ← Real.inv_rpow, ← Real.rpow_neg_one, ← Real.rpow_mul]
+    · simp [neg_add_rev, Nat.cast_add, Nat.cast_ofNat]
+    · rw [Set.mem_Ioi] at hx
+      positivity
+    · grind
   trans (n + 1) * ∫ (x : ℝ) in Set.Ioi 0, ((1 + x) ^ (n + 2))⁻¹ ∂volume
   · congr 1
     refine setIntegral_congr_ae₀ ?_ ?_
@@ -269,25 +245,20 @@ private lemma integrable_neg_pow_on_ioi (n : ℕ) :
     let fa := fun x : ℝ => 1 + x
     change ∫ (x : ℝ) in Set.Ioi 0, f (fa x) ∂volume = _
     rw [← MeasureTheory.MeasurePreserving.setIntegral_image_emb (ν := volume)]
-    simp [fa]
-    simp [fa]
-    exact measurePreserving_add_left volume 1
-    simp [fa]
-    exact measurableEmbedding_addLeft 1
+    · simp [fa]
+    · simpa [fa] using measurePreserving_add_left volume 1
+    · simpa [fa] using measurableEmbedding_addLeft 1
   · trans (n + 1) * ∫ (x : ℝ) in Set.Ioi 1, (x ^ (- (n + 2) : ℝ)) ∂volume
     · congr 1
       refine setIntegral_congr_ae₀ ?_ ?_
       · simp
       filter_upwards with x hx
       have hx : 1 < x := hx
-      rw [← Real.rpow_natCast]
-      rw [← Real.inv_rpow]
-      rw [← Real.rpow_neg_one, ← Real.rpow_mul]
-      simp only [neg_mul, one_mul]
-      simp only [Nat.cast_add, Nat.cast_ofNat, neg_add_rev]
-      positivity
-      positivity
-    rw [integral_Ioi_rpow_of_lt]
+      rw [← Real.rpow_natCast, ← Real.inv_rpow, ← Real.rpow_neg_one, ← Real.rpow_mul]
+      · simp
+      · positivity
+      · positivity
+    rw [integral_Ioi_rpow_of_lt (by linarith) (by linarith)]
     field_simp
     have h0 : (-2 + -(n : ℝ) + 1) ≠ 0 := by
       by_contra h
@@ -296,8 +267,6 @@ private lemma integrable_neg_pow_on_ioi (n : ℕ) :
       linarith
     simp only [neg_add_rev, Real.one_rpow, mul_one]
     grind
-    linarith
-    linarith
   · simp
   · simp
   · simp
@@ -308,8 +277,7 @@ lemma radialAngularMeasure_integrable_pow_neg_two {d : ℕ} :
   match d with
   | 0 => simp
   | dm1 + 1 =>
-  apply integrable_radialAngularMeasure_of_spherical
-  · fun_prop
+  apply integrable_radialAngularMeasure_of_spherical _ (by fun_prop)
   simp [norm_smul]
   rw [MeasureTheory.integrable_prod_iff]
   rotate_left

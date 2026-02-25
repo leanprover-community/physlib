@@ -287,8 +287,7 @@ lemma threeDimPointParticle_div_electricField {𝓕} (q : ℝ) (r₀ : Space 3) 
     simp [distTranslate_ofFunction]
   simp only [Int.reduceNeg, zpow_neg, one_div]
   rw [constantTime_distSpaceDiv, distDiv_distTranslate, h1]
-  simp only [map_smul]
-  simp [smul_smul]
+  simp only [map_smul, smul_smul]
   ext η
   simp [constantTime_apply, diracDelta_apply, distTranslate_apply]
   left
