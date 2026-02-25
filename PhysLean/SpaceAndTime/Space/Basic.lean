@@ -71,7 +71,7 @@ TODO "HB6RR" "In the above documentation describe the notion of a type, and
 TODO "HB6VC" "Convert `Space` from an `abbrev` to a `def`."
 
 /-- The type `Space d` is the world-volume which corresponds to
- `d` dimensional Euclidean space with a given (but arbitrary)
+ `d` dimensional (flat) Euclidean space with a given (but arbitrary)
 choice of length unit, and a given (but arbitrary) choice of zero.
 
 The default value of `d` is `3`. Thus `Space = Space 3`-/
