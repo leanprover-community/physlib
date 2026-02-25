@@ -322,6 +322,10 @@ lemma gramMatrix_surjective_det_tr (K : Matrix (Fin 2) (Fin 2) ℂ)
 noncomputable def gramVector (H : TwoHiggsDoublet) : Fin 1 ⊕ Fin 3 → ℝ := fun μ =>
   2 * PauliMatrix.pauliBasis.repr ⟨gramMatrix H, gramMatrix_selfAdjoint H⟩ μ
 
+/-- The lemma manifesting the definitional equality for the gramVector. -/
+lemma gramVector_eq (H : TwoHiggsDoublet) : H.gramVector = fun μ =>
+    2 * PauliMatrix.pauliBasis.repr ⟨gramMatrix H, gramMatrix_selfAdjoint H⟩ μ := rfl
+
 @[simp]
 lemma gaugeGroupI_smul_fst_gramVector (g : StandardModel.GaugeGroupI)
     (H : TwoHiggsDoublet) (μ : Fin 1 ⊕ Fin 3) :
@@ -509,5 +513,17 @@ lemma gramVector_surjective (v : Fin 1 ⊕ Fin 3 → ℝ)
   · simp [gramVector_inr_one_eq_gramMatrix, hH, K]
   · simp [gramVector_inr_two_eq_gramMatrix, hH, K]
     ring
+
+lemma mem_orbit_gaugeGroupI_iff_gramVector (H1 H2 : TwoHiggsDoublet) :
+    H1 ∈ MulAction.orbit GaugeGroupI H2 ↔ H1.gramVector = H2.gramVector := by
+  rw [mem_orbit_gaugeGroupI_iff_gramMatrix]
+  constructor
+  · intro h
+    rw [gramVector_eq, gramVector_eq]
+    funext μ
+    congr
+  · intro h
+    rw [gramMatrix_eq_gramVector_sum_pauliMatrix,
+      gramMatrix_eq_gramVector_sum_pauliMatrix, h]
 
 end TwoHiggsDoublet

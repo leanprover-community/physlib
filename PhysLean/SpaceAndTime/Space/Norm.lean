@@ -1057,7 +1057,8 @@ lemma distDiv_inv_pow_eq_dim {d : ℕ} :
             | 1 =>
               use 0, 1
               intro x
-              simp [fderiv_smul_const, iteratedFDeriv_succ_eq_comp_right]
+              simp [fderiv_smul_const, iteratedFDeriv_succ_eq_comp_right,
+                ContinuousLinearMap.norm_id]
             | n' + 1 + 1 =>
               use 0, 0
               intro x

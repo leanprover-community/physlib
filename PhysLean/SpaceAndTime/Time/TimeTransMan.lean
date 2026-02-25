@@ -336,7 +336,6 @@ lemma neg_eq_negMetric (zero : TimeTransMan) (x : TimeUnit) (t : TimeTransMan) :
 ### The map from TimeTransMan to Time
 
 -/
-
 /-- With a choice of zero `zero : TimeTransMan` and a choice of units `x : TimeUnit`,
   `toTime` is the homeomorphism between the type `TimeTransMan` and `Time`. -/
 noncomputable def toTime (zero : TimeTransMan) (x : TimeUnit) : TimeTransMan ≃ₜ Time where
@@ -355,7 +354,13 @@ noncomputable def toTime (zero : TimeTransMan) (x : TimeUnit) : TimeTransMan ≃
       ext
       simp [valHomeomorphism, addTime_val]
     rw [h1]
-    fun_prop
+    · apply Continuous.add
+      · apply Continuous.fun_mul
+        · fun_prop
+        · apply Differentiable.continuous (𝕜 := ℝ)
+          fun_prop
+      · fun_prop
+
   continuous_toFun := by
     rw [← Homeomorph.comp_continuous_iff Time.toRealCLE.toHomeomorph]
     have h1 : (⇑Time.toRealCLE.toHomeomorph ∘ (fun t => ⟨diff x t zero⟩)) = fun t =>

@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Meta.Linters.Sorry
 import PhysLean.Relativity.Tensors.ComplexTensor.Basic
-import PhysLean.Relativity.Tensors.Evaluation
 /-!
 
 # Complex Lorentz tensors from real Lorentz tensors
