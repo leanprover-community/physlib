@@ -49,7 +49,7 @@ there is are two benefits of this:
 
 Currently `Space d` has the instance of a `Module` (which requires the choice
 of a zero), a future refactor should give `Space d` only the instance of an `AddTorsor`
-(an affine space) which does not require the choice of a zero. This has not been done
+(an affine space) which does not require the choice of a zero, in such a way that `Space d` should be a special case of Riemannian manifolds. This has not been done
 yet since `fderiv` requires a `Module` instance.
 
 Because of this, one should be careful to avoid using the explicit zero in `Space d`,
