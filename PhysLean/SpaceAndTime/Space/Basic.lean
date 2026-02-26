@@ -36,7 +36,7 @@ with a field `val : Fin d → ℝ`.
 +---------------------------------------------------+---------+-------+-----------+
 | allows casting from `EuclideanSpace`              |   yes   |  yes  |    no     |
 | carries instances from `EuclideanSpace`           |   yes   |  no   |    no     |
-| requires reproving of lemmas from `EuclideanSpace`|   no    |  no   |    yes    |
+| requires reproving of lemmas from `EuclideanSpace`|   no    |  yes  |    yes    |
 +---------------------------------------------------+---------+-------+-----------+
 
 The `structure` is the most conservative choice, as everything needs redefining, however,
