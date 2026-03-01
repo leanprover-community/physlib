@@ -3,8 +3,7 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.KineticTerm
-import PhysLean.ClassicalMechanics.VectorFields
+import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
 /-!
 
 # The Lorentz Current Density
@@ -25,14 +24,23 @@ The current density is given in terms of the charge density `ρ` and the current
   Lorentz current density.
 - `LorentzCurrentDensity.currentDensity` : The current density associated with a
   Lorentz current density.
+- `DistLorentzCurrentDensity` : The type of Lorentz current densities
+  as distributions.
 
 ## iii. Table of contents
 
 - A. The Lorentz Current Density
 - B. The underlying charge
-  - B.1. Differentiability of the charge density
+  - B.1. Charge density of zero Lorentz current density
+  - B.2. Differentiability of the charge density
+  - B.3. Smoothness of the charge density
 - C. The underlying current density
-  - C.1. Differentiability of the current density
+  - C.1. current density of zero Lorentz current density
+  - C.2. Differentiability of the current density
+  - C.3. Smoothness of the current density
+- D. The Lorentz current density as a distribution
+  - D.1. The underlying charge density
+  - D.2. The underlying current density
 
 ## iv. References
 
@@ -68,32 +76,62 @@ namespace LorentzCurrentDensity
 -/
 
 /-- The underlying charge density associated with a Lorentz current density. -/
-noncomputable def chargeDensity (J : LorentzCurrentDensity d) : Time → Space d → ℝ :=
-  fun t x => J (toTimeAndSpace.symm (t, x)) (Sum.inl 0)
+noncomputable def chargeDensity (c : SpeedOfLight := 1)
+    (J : LorentzCurrentDensity d) : Time → Space d → ℝ :=
+  fun t x => (1 / (c : ℝ)) * J ((toTimeAndSpace c).symm (t, x)) (Sum.inl 0)
 
-lemma chargeDensity_eq_timeSlice {d : ℕ} {J : LorentzCurrentDensity d} :
-    J.chargeDensity = timeSlice (fun x => J x (Sum.inl 0)) := by rfl
+lemma chargeDensity_eq_timeSlice {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d} :
+    J.chargeDensity c = timeSlice c (fun x => (1 / (c : ℝ)) • J x (Sum.inl 0)) := by rfl
+
 /-!
 
-### B.1. Differentiability of the charge density
+### B.1. Charge density of zero Lorentz current density
+
 -/
 
-lemma chargeDensity_differentiable {d : ℕ} {J : LorentzCurrentDensity d}
-    (hJ : Differentiable ℝ J) : Differentiable ℝ ↿(J.chargeDensity) := by
+@[simp]
+lemma chargeDensity_zero {d : ℕ} {c : SpeedOfLight}:
+    chargeDensity c (0 : LorentzCurrentDensity d) = 0 := by
+  simp [chargeDensity_eq_timeSlice, timeSlice]
+  rfl
+
+/-!
+
+### B.2. Differentiability of the charge density
+-/
+
+lemma chargeDensity_differentiable {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
+    (hJ : Differentiable ℝ J) : Differentiable ℝ ↿(J.chargeDensity c) := by
   rw [chargeDensity_eq_timeSlice]
   apply timeSlice_differentiable
   have h1 : ∀ i, Differentiable ℝ (fun x => J x i) := by
-    rw [← differentiable_euclidean]
+    rw [SpaceTime.differentiable_vector]
     exact hJ
+  apply Differentiable.fun_const_smul
   exact h1 (Sum.inl 0)
 
-lemma chargeDensity_contDiff {d : ℕ} {J : LorentzCurrentDensity d}
-    (hJ : ContDiff ℝ n J) : ContDiff ℝ n ↿(J.chargeDensity) := by
+lemma chargeDensity_differentiable_space {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
+    (hJ : Differentiable ℝ J) (t : Time) :
+    Differentiable ℝ (fun x => J.chargeDensity c t x) := by
+  change Differentiable ℝ (↿(J.chargeDensity c) ∘ fun x => (t, x))
+  refine Differentiable.comp ?_ ?_
+  · exact chargeDensity_differentiable hJ
+  · fun_prop
+
+/-!
+
+### B.3. Smoothness of the charge density
+
+-/
+
+lemma chargeDensity_contDiff {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
+    (hJ : ContDiff ℝ n J) : ContDiff ℝ n ↿(J.chargeDensity c) := by
   rw [chargeDensity_eq_timeSlice]
   apply timeSlice_contDiff
   have h1 : ∀ i, ContDiff ℝ n (fun x => J x i) := by
-    rw [← contDiff_euclidean]
+    rw [SpaceTime.contDiff_vector]
     exact hJ
+  apply ContDiff.const_smul
   exact h1 (Sum.inl 0)
 
 /-!
@@ -103,80 +141,143 @@ lemma chargeDensity_contDiff {d : ℕ} {J : LorentzCurrentDensity d}
 -/
 
 /-- The underlying (non-Lorentz) current density associated with a Lorentz current density. -/
-noncomputable def currentDensity (J : LorentzCurrentDensity d) :
+noncomputable def currentDensity (c : SpeedOfLight := 1) (J : LorentzCurrentDensity d) :
     Time → Space d → EuclideanSpace ℝ (Fin d) :=
-  fun t x i => J (toTimeAndSpace.symm (t, x)) (Sum.inr i)
+  fun t x => WithLp.toLp 2 fun i => J ((toTimeAndSpace c).symm (t, x)) (Sum.inr i)
 
 lemma currentDensity_eq_timeSlice {d : ℕ} {J : LorentzCurrentDensity d} :
-    J.currentDensity = timeSlice (fun x i => J x (Sum.inr i)) := by rfl
+    J.currentDensity c = timeSlice c (fun x => WithLp.toLp 2
+      fun i => J x (Sum.inr i)) := by rfl
+
 /-!
 
-### C.1. Differentiability of the current density
+### C.1. current density of zero Lorentz current density
 
 -/
 
-lemma currentDensity_differentiable {d : ℕ} {J : LorentzCurrentDensity d}
-    (hJ : Differentiable ℝ J) : Differentiable ℝ ↿(J.currentDensity) := by
+@[simp]
+lemma currentDensity_zero {d : ℕ} {c : SpeedOfLight}:
+    currentDensity c (0 : LorentzCurrentDensity d) = 0 := by
+  simp [currentDensity_eq_timeSlice, timeSlice]
+  rfl
+/-!
+
+### C.2. Differentiability of the current density
+
+-/
+
+lemma currentDensity_differentiable {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
+    (hJ : Differentiable ℝ J) : Differentiable ℝ ↿(J.currentDensity c) := by
   rw [currentDensity_eq_timeSlice]
   apply timeSlice_differentiable
   have h1 : ∀ i, Differentiable ℝ (fun x => J x i) := by
-    rw [← differentiable_euclidean]
+    rw [SpaceTime.differentiable_vector]
     exact hJ
   exact differentiable_euclidean.mpr fun i => h1 (Sum.inr i)
 
-lemma currentDensity_apply_differentiable {d : ℕ} {J : LorentzCurrentDensity d}
+lemma currentDensity_apply_differentiable {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
     (hJ : Differentiable ℝ J) (i : Fin d) :
-    Differentiable ℝ ↿(fun t x => J.currentDensity t x i) := by
-  change Differentiable ℝ (EuclideanSpace.proj i ∘ ↿(J.currentDensity))
+    Differentiable ℝ ↿(fun t x => J.currentDensity c t x i) := by
+  change Differentiable ℝ (EuclideanSpace.proj i ∘ ↿(J.currentDensity c))
   refine Differentiable.comp ?_ ?_
   · exact ContinuousLinearMap.differentiable (𝕜 := ℝ) (EuclideanSpace.proj i)
   · exact currentDensity_differentiable hJ
 
-lemma currentDensity_differentiable_space {d : ℕ} {J : LorentzCurrentDensity d}
+lemma currentDensity_differentiable_space {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
     (hJ : Differentiable ℝ J) (t : Time) :
-    Differentiable ℝ (fun x => J.currentDensity t x) := by
-  change Differentiable ℝ (↿(J.currentDensity) ∘ fun x => (t, x))
+    Differentiable ℝ (fun x => J.currentDensity c t x) := by
+  change Differentiable ℝ (↿(J.currentDensity c) ∘ fun x => (t, x))
   refine Differentiable.comp ?_ ?_
   · exact currentDensity_differentiable hJ
   · fun_prop
 
-lemma currentDensity_apply_differentiable_space {d : ℕ} {J : LorentzCurrentDensity d}
+lemma currentDensity_apply_differentiable_space {d : ℕ} {c : SpeedOfLight}
+    {J : LorentzCurrentDensity d}
     (hJ : Differentiable ℝ J) (t : Time) (i : Fin d) :
-    Differentiable ℝ (fun x => J.currentDensity t x i) := by
-  change Differentiable ℝ (EuclideanSpace.proj i ∘ (↿(J.currentDensity) ∘ fun x => (t, x)))
+    Differentiable ℝ (fun x => J.currentDensity c t x i) := by
+  change Differentiable ℝ (EuclideanSpace.proj i ∘ (↿(J.currentDensity c) ∘ fun x => (t, x)))
   refine Differentiable.comp ?_ ?_
   · exact ContinuousLinearMap.differentiable (𝕜 := ℝ) _
   · apply Differentiable.comp ?_ ?_
     · exact currentDensity_differentiable hJ
     · fun_prop
 
-lemma currentDensity_differentiable_time {d : ℕ} {J : LorentzCurrentDensity d}
+lemma currentDensity_differentiable_time {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
     (hJ : Differentiable ℝ J) (x : Space d) :
-    Differentiable ℝ (fun t => J.currentDensity t x) := by
-  change Differentiable ℝ (↿(J.currentDensity) ∘ fun t => (t, x))
+    Differentiable ℝ (fun t => J.currentDensity c t x) := by
+  change Differentiable ℝ (↿(J.currentDensity c) ∘ fun t => (t, x))
   refine Differentiable.comp ?_ ?_
   · exact currentDensity_differentiable hJ
   · fun_prop
 
-lemma currentDensity_apply_differentiable_time {d : ℕ} {J : LorentzCurrentDensity d}
+lemma currentDensity_apply_differentiable_time {d : ℕ} {c : SpeedOfLight}
+    {J : LorentzCurrentDensity d}
     (hJ : Differentiable ℝ J) (x : Space d) (i : Fin d) :
-    Differentiable ℝ (fun t => J.currentDensity t x i) := by
-  change Differentiable ℝ (EuclideanSpace.proj i ∘ (↿(J.currentDensity) ∘ fun t => (t, x)))
+    Differentiable ℝ (fun t => J.currentDensity c t x i) := by
+  change Differentiable ℝ (EuclideanSpace.proj i ∘ (↿(J.currentDensity c) ∘ fun t => (t, x)))
   refine Differentiable.comp ?_ ?_
   · exact ContinuousLinearMap.differentiable (𝕜 := ℝ) _
   · apply Differentiable.comp ?_ ?_
     · exact currentDensity_differentiable hJ
     · fun_prop
 
-lemma currentDensity_ContDiff {d : ℕ} {J : LorentzCurrentDensity d}
-    (hJ : ContDiff ℝ n J) : ContDiff ℝ n ↿(J.currentDensity) := by
+/-!
+
+### C.3. Smoothness of the current density
+
+-/
+
+lemma currentDensity_ContDiff {d : ℕ} {c : SpeedOfLight} {J : LorentzCurrentDensity d}
+    (hJ : ContDiff ℝ n J) : ContDiff ℝ n ↿(J.currentDensity c) := by
   rw [currentDensity_eq_timeSlice]
   apply timeSlice_contDiff
   have h1 : ∀ i, ContDiff ℝ n (fun x => J x i) := by
-    rw [← contDiff_euclidean]
+    rw [SpaceTime.contDiff_vector]
     exact hJ
   exact contDiff_euclidean.mpr fun i => h1 (Sum.inr i)
 
 end LorentzCurrentDensity
+/-!
 
+## D. The Lorentz current density as a distribution
+
+-/
+/-- The Lorentz current density, also called four-current as a distribution. -/
+abbrev DistLorentzCurrentDensity (d : ℕ := 3) := (SpaceTime d) →d[ℝ] Lorentz.Vector d
+
+namespace DistLorentzCurrentDensity
+
+/-!
+
+### D.1. The underlying charge density
+
+-/
+
+/-- The charge density underlying a Lorentz current density which is a distribution. -/
+noncomputable def chargeDensity {d : ℕ} (c : SpeedOfLight) :
+    (DistLorentzCurrentDensity d) →ₗ[ℝ] (Time × Space d) →d[ℝ] ℝ where
+  toFun J := (1 / (c : ℝ)) • (Lorentz.Vector.temporalCLM d ∘L distTimeSlice c J)
+  map_add' J1 J2 := by
+    simp
+  map_smul' r J := by
+    simp only [one_div, map_smul, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply]
+    rw [smul_comm]
+
+/-!
+
+### D.2. The underlying current density
+
+-/
+
+/-- The underlying (non-Lorentz) current density associated with a distributive
+  Lorentz current density. -/
+noncomputable def currentDensity (c : SpeedOfLight) :
+    DistLorentzCurrentDensity d →ₗ[ℝ] (Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d) where
+  toFun J := Lorentz.Vector.spatialCLM d ∘L distTimeSlice c J
+  map_add' J1 J2 := by
+    simp
+  map_smul' r J := by
+    simp
+
+end DistLorentzCurrentDensity
 end Electromagnetism

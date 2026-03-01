@@ -89,3 +89,13 @@ jobs:
         run: |
           chmod u+x scripts/lint-style.sh
           ./scripts/lint-style.sh
+
+  codespell:
+    name: Check for spelling errors
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: codespell-project/actions-codespell@v2
+        with:
+          exclude_file: scripts/MetaPrograms/spellingWords.txt,scripts/physleanNoShake.json
+          ignore_words_file: .codespellignore

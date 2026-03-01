@@ -192,8 +192,8 @@ lemma wicks_theorem_normal_order_empty : 𝓣(𝓝(ofFieldOpList [])) =
       left_inv := by
         intro a
         simp only [List.length_nil]
-        apply Subtype.eq
-        apply Subtype.eq
+        apply Subtype.ext
+        apply Subtype.ext
         simp only [empty]
         ext i
         simp only [Finset.notMem_empty, false_iff]
@@ -245,7 +245,7 @@ theorem wicks_theorem_normal_order : (φs : List 𝓕.FieldOp) →
     simp [wickTerm]
 termination_by φs => φs.length
 decreasing_by
-  simp only [uncontractedListGet, List.length_cons, List.length_map, gt_iff_lt]
+  simp only [uncontractedListGet, List.length_cons, List.length_map]
   rw [uncontractedList_length_eq_card]
   have hc := uncontracted_card_eq_iff φsΛ.1
   simp only [List.length_cons, φsΛ.2.2, iff_false] at hc

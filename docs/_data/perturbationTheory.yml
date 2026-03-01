@@ -3102,7 +3102,7 @@ parts:
         simp only [MulMemClass.coe_mul]
         rw [singleton_staticContract]
         rw [timeOrder_timeOrder_left]
-        rw [timeOrder_superCommute_anPart_ofFieldOp_neq_time]
+        rw [timeOrder_superCommute_anPart_ofFieldOp_ne_time]
         simp only [zero_mul, map_zero]
         intro h
         simp_all

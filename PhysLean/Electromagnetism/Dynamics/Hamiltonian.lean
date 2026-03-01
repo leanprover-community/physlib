@@ -29,13 +29,15 @@ in the case of three spatial dimensions.
 - A. The canonical momentum
   - A.1. The canonical momentum in terms of the kinetic term
   - A.2. The canonical momentum in terms of the field strength tensor
+  - A.3. The canonical momentum in terms of the electric field
 - B. The Hamiltonian
-  - B.1. The hamiltonian in terms of the electric and magnetic fields
+  - B.1. The hamiltonian in terms of the vector potential
+  - B.2. The hamiltonian in terms of the electric and magnetic fields
 
 ## iv. References
 
 - https://quantummechanics.ucsd.edu/ph130a/130_notes/node452.html
-
+- https://ph.qmul.ac.uk/sites/default/files/EMT10new.pdf
 -/
 
 namespace Electromagnetism
@@ -68,24 +70,25 @@ This is equivalent to `∂ L/∂ (∂_0 A)`.
 
 /-- The canonical momentum associated with the lagrangian of an electromagnetic potential
   and a Lorentz current density. -/
-noncomputable def canonicalMomentum (A : ElectromagneticPotential d)
+noncomputable def canonicalMomentum (𝓕 : FreeSpace) (A : ElectromagneticPotential d)
     (J : LorentzCurrentDensity d) :
     SpaceTime d → Lorentz.Vector d := fun x =>
   gradient (fun (v : Lorentz.Vector d) =>
-    lagrangian (fun x => A x + x (Sum.inl 0) • v) J x) 0
+    lagrangian 𝓕 (fun x => A x + x (Sum.inl 0) • v) J x) 0
   - x (Sum.inl 0) • gradient (fun (v : Lorentz.Vector d) =>
-    lagrangian (fun x => A x + v) J x) 0
+    lagrangian 𝓕 (fun x => A x + v) J x) 0
 
 /-!
 
 ### A.1. The canonical momentum in terms of the kinetic term
 
 -/
-lemma canonicalMomentum_eq_gradient_kineticTerm {d} (A : ElectromagneticPotential d)
+lemma canonicalMomentum_eq_gradient_kineticTerm {d}
+    {𝓕 : FreeSpace} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ 2 A) (J : LorentzCurrentDensity d) :
-    A.canonicalMomentum J = fun x =>
+    A.canonicalMomentum 𝓕 J = fun x =>
     gradient (fun (v : Lorentz.Vector d) =>
-    kineticTerm (fun x => A x + x (Sum.inl 0) • v) x) 0:= by
+    kineticTerm 𝓕 (fun x => A x + x (Sum.inl 0) • v) x) 0:= by
   funext x
   apply ext_inner_right (𝕜 := ℝ)
   intro v
@@ -96,7 +99,7 @@ lemma canonicalMomentum_eq_gradient_kineticTerm {d} (A : ElectromagneticPotentia
   conv_lhs =>
     enter [2]
     simp [lagrangian_add_const]
-  have hx : DifferentiableAt ℝ (fun v => kineticTerm (fun x => A x + x (Sum.inl 0) • v) x) 0 := by
+  have hx : DifferentiableAt ℝ (fun v => kineticTerm 𝓕 (fun x => A x + x (Sum.inl 0) • v) x) 0 := by
     apply Differentiable.differentiableAt _
     conv =>
       enter [2, v]
@@ -107,9 +110,10 @@ lemma canonicalMomentum_eq_gradient_kineticTerm {d} (A : ElectromagneticPotentia
     enter [1]
     simp only [lagrangian, Fin.isValue, map_add, map_smul,
       LinearMap.smul_apply, smul_eq_mul]
-    rw [fderiv_fun_sub hx (by fun_prop)]
-    simp only [Fin.isValue, ContinuousLinearMap.add_apply, ContinuousLinearMap.coe_smul',
-      Pi.smul_apply, smul_eq_mul, fderiv_const_add, ContinuousLinearMap.coe_sub', Pi.sub_apply]
+    rw [fderiv_fun_sub hx (by simp [freeCurrentPotential]; fun_prop)]
+    simp only [Fin.isValue, freeCurrentPotential, map_add, map_smul, ContinuousLinearMap.add_apply,
+      ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul, fderiv_const_add,
+      ContinuousLinearMap.coe_sub', Pi.sub_apply]
     rw [fderiv_const_mul (by fun_prop)]
   simp only [Fin.isValue, ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul]
   rw [fderiv_fun_sub (by fun_prop) (by fun_prop)]
@@ -121,9 +125,10 @@ lemma canonicalMomentum_eq_gradient_kineticTerm {d} (A : ElectromagneticPotentia
 
 -/
 
-lemma canonicalMomentum_eq {d} (A : ElectromagneticPotential d)
+lemma canonicalMomentum_eq {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ 2 A) (J : LorentzCurrentDensity d) :
-    A.canonicalMomentum J = fun x => fun μ => η μ μ • A.fieldStrengthMatrix x (μ, Sum.inl 0) := by
+    A.canonicalMomentum 𝓕 J = fun x => fun μ =>
+      (1/𝓕.μ₀) * η μ μ • A.fieldStrengthMatrix x (μ, Sum.inl 0) := by
   rw [canonicalMomentum_eq_gradient_kineticTerm A hA J]
   funext x
   apply ext_inner_right (𝕜 := ℝ)
@@ -158,13 +163,38 @@ lemma canonicalMomentum_eq {d} (A : ElectromagneticPotential d)
   rw [← Finset.sum_sub_distrib]
   rw [Finset.mul_sum]
   congr
-  funext μ
+  ext μ
   simp only [Fin.isValue, RCLike.inner_apply, conj_trivial]
+  simp only [Fin.isValue, equivEuclid_apply]
   rw [fieldStrengthMatrix, toFieldStrength_basis_repr_apply_eq_single]
   simp only [Fin.isValue, inl_0_inl_0, one_mul]
   ring_nf
   simp
 
+/-!
+
+### A.3. The canonical momentum in terms of the electric field
+
+-/
+
+lemma canonicalMomentum_eq_electricField {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential d)
+    (hA : ContDiff ℝ 2 A) (J : LorentzCurrentDensity d) :
+    A.canonicalMomentum 𝓕 J = fun x => fun μ =>
+      match μ with
+      | Sum.inl 0 => 0
+      | Sum.inr i => - (1/(𝓕.μ₀ * 𝓕.c)) * A.electricField 𝓕.c (x.time 𝓕.c) x.space i := by
+  rw [canonicalMomentum_eq A hA J]
+  funext x μ
+  match μ with
+  | Sum.inl 0 => simp
+  | Sum.inr i =>
+  simp only [one_div, inr_i_inr_i, Fin.isValue, smul_eq_mul, neg_mul, one_mul, mul_neg, mul_inv_rev,
+    neg_inj]
+  rw [electricField_eq_fieldStrengthMatrix]
+  simp only [Fin.isValue, toTimeAndSpace_symm_apply_time_space, neg_mul, mul_neg]
+  field_simp
+  exact fieldStrengthMatrix_antisymm A x (Sum.inr i) (Sum.inl 0)
+  exact hA.differentiable (by simp)
 /-!
 
 ## B. The Hamiltonian
@@ -173,67 +203,88 @@ lemma canonicalMomentum_eq {d} (A : ElectromagneticPotential d)
 
 /-- The Hamiltonian associated with an electromagnetic potential
   and a Lorentz current density. -/
-noncomputable def hamiltonian (A : ElectromagneticPotential d)
+noncomputable def hamiltonian (𝓕 : FreeSpace) (A : ElectromagneticPotential d)
     (J : LorentzCurrentDensity d) (x : SpaceTime d) : ℝ :=
-    ∑ μ, A.canonicalMomentum J x μ * ∂_ (Sum.inl 0) A x μ - lagrangian A J x
+    ∑ μ, A.canonicalMomentum 𝓕 J x μ * ∂_ (Sum.inl 0) A x μ - lagrangian 𝓕 A J x
 
 /-!
 
-### B.1. The hamiltonian in terms of the electric and magnetic fields
+### B.1. The hamiltonian in terms of the vector potential
+-/
 
-This only holds in three spatial dimensions.
+open Time
+
+lemma hamiltonian_eq_electricField_vectorPotential {d} {𝓕 : FreeSpace}
+    (A : ElectromagneticPotential d) (hA : ContDiff ℝ 2 A)
+    (J : LorentzCurrentDensity d) (x : SpaceTime d) :
+    A.hamiltonian 𝓕 J x =
+      - (1/ 𝓕.c.val^2 * 𝓕.μ₀⁻¹) * ∑ i, A.electricField 𝓕.c (x.time 𝓕.c) x.space i *
+      (∂ₜ (A.vectorPotential 𝓕.c · x.space) (x.time 𝓕.c) i) - lagrangian 𝓕 A J x := by
+  rw [hamiltonian]
+  congr 1
+  simp [Fintype.sum_sum_type, canonicalMomentum_eq_electricField A hA J]
+  rw [Finset.mul_sum]
+  congr
+  funext i
+  rw [SpaceTime.deriv_sum_inl 𝓕.c]
+  rw [← Time.deriv_euclid]
+  simp [vectorPotential, timeSlice]
+  ring_nf
+  congr
+  rw [← Time.deriv_lorentzVector]
+  rfl
+  · change Differentiable ℝ (A ∘ fun t =>((toTimeAndSpace 𝓕.c).symm
+      (t, ((toTimeAndSpace 𝓕.c) x).2)))
+    apply Differentiable.comp
+    · exact hA.differentiable (by simp)
+    · fun_prop
+  · apply vectorPotential_differentiable_time
+    exact hA.differentiable (by simp)
+  · exact hA.differentiable (by simp)
+
+lemma hamiltonian_eq_electricField_scalarPotential {d} {𝓕 : FreeSpace}
+    (A : ElectromagneticPotential d) (hA : ContDiff ℝ 2 A)
+    (J : LorentzCurrentDensity d) (x : SpaceTime d) :
+    A.hamiltonian 𝓕 J x =
+      (1/ 𝓕.c.val^2 * 𝓕.μ₀⁻¹) * (‖A.electricField 𝓕.c (x.time 𝓕.c) x.space‖ ^ 2
+      + ⟪A.electricField 𝓕.c (x.time 𝓕.c) x.space,
+        Space.grad (A.scalarPotential 𝓕.c (x.time 𝓕.c) ·) x.space⟫_ℝ)
+        - lagrangian 𝓕 A J x := by
+  rw [hamiltonian_eq_electricField_vectorPotential A hA J x]
+  congr 1
+  conv_lhs =>
+    enter [2, 2, i]
+    rw [time_deriv_vectorPotential_eq_electricField]
+  simp [mul_sub, Finset.sum_sub_distrib]
+  rw [EuclideanSpace.norm_sq_eq]
+  ring_nf
+  congr 1
+  · simp
+  congr
+  funext i
+  simp only [RCLike.inner_apply, conj_trivial]
+  ring
+
+/-!
+
+### B.2. The hamiltonian in terms of the electric and magnetic fields
 
 -/
 
-lemma hamiltonian_eq_electricField_magneticField (A : ElectromagneticPotential 3)
-    (hA : ContDiff ℝ 2 A) (J : LorentzCurrentDensity 3) (x : SpaceTime) :
-    A.hamiltonian J x = 1/2 * (‖A.electricField x.time x.space‖ ^ 2
-      + ‖A.magneticField x.time x.space‖ ^ 2)
-      + ∑ i, (A.electricField x.time x.space i * ∂_ (Sum.inr i) A x (Sum.inl 0)) +
-      ⟪A x, J x⟫ₘ := by
-  conv_lhs =>
-    rw [hamiltonian, lagrangian, canonicalMomentum_eq A hA J]
-
-    rw [kineticTerm_eq_electric_magnetic' (hA.differentiable (by simp))]
-    simp [Fintype.sum_sum_type, Fin.sum_univ_three]
-  repeat rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime]
-  simp only [Fin.isValue, one_div, space_toCoord_symm]
-  have h1 (i : Fin 3) : ∂_ (Sum.inl 0) A x (Sum.inr i) = -
-    (A.fieldStrengthMatrix x (Sum.inr i, Sum.inl 0) + ∂_ (Sum.inr i) A x (Sum.inl 0)) := by
-    rw [fieldStrengthMatrix, toFieldStrength_basis_repr_apply_eq_single]
-    simp
-  rw [h1, h1, h1]
-  repeat rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime]
-  simp only [Fin.isValue, neg_add_rev]
-  calc _
-    _ = ∑ i, (A.electricField (toTimeAndSpace x).1 (toTimeAndSpace x).2 i)^2
-      + ∑ i, (A.electricField (toTimeAndSpace x).1 (toTimeAndSpace x).2 i *
-          (∂_ (Sum.inr i) A x (Sum.inl 0))) -
-        2⁻¹ * (‖A.electricField (time x) fun i => x (Sum.inr i)‖ ^ 2 -
-          ‖A.magneticField (time x) fun i => x (Sum.inr i)‖ ^ 2) +
-      (minkowskiProduct (A x)) (J x) := by
-      rw [Fin.sum_univ_three, Fin.sum_univ_three]
-      ring
-    _ = ‖A.electricField (toTimeAndSpace x).1 (toTimeAndSpace x).2‖ ^ 2
-      + ∑ i, (A.electricField (toTimeAndSpace x).1 (toTimeAndSpace x).2 i *
-          (∂_ (Sum.inr i) A x (Sum.inl 0))) -
-        2⁻¹ * (‖A.electricField (time x) fun i => x (Sum.inr i)‖ ^ 2 -
-          ‖A.magneticField (time x) fun i => x (Sum.inr i)‖ ^ 2) +
-      (minkowskiProduct (A x)) (J x) := by
-      congr
-      rw [PiLp.norm_sq_eq_of_L2]
-      simp
-    _ = ‖A.electricField x.time x.space‖ ^ 2
-      + ∑ i, (A.electricField x.time x.space i *
-          (∂_ (Sum.inr i) A x (Sum.inl 0))) -
-        2⁻¹ * (‖A.electricField (time x) fun i => x (Sum.inr i)‖ ^ 2 -
-          ‖A.magneticField (time x) fun i => x (Sum.inr i)‖ ^ 2) +
-      (minkowskiProduct (A x)) (J x) := by rfl
-    _ = 1/2 * (‖A.electricField x.time x.space‖ ^ 2 + ‖A.magneticField x.time x.space‖ ^ 2)
-      + ∑ i, (A.electricField x.time x.space i * ∂_ (Sum.inr i) A x (Sum.inl 0)) +
-      ⟪A x, J x⟫ₘ := by simp [space]; ring
-  simp only [one_div, space_toCoord_symm, Fin.isValue]
-  repeat exact hA.differentiable (by simp)
+lemma hamiltonian_eq_electricField_magneticField (A : ElectromagneticPotential d)
+    (hA : ContDiff ℝ 2 A) (J : LorentzCurrentDensity d) (x : SpaceTime d) :
+    A.hamiltonian 𝓕 J x = 1/2 * 𝓕.ε₀ * (‖A.electricField 𝓕.c (x.time 𝓕.c) x.space‖ ^ 2
+      + 𝓕.c ^ 2 / 2 * ∑ i, ∑ j, ‖A.magneticFieldMatrix 𝓕.c (x.time 𝓕.c) x.space (i, j)‖ ^ 2)
+      + 𝓕.ε₀ * ⟪A.electricField 𝓕.c (x.time 𝓕.c) x.space,
+        Space.grad (A.scalarPotential 𝓕.c (x.time 𝓕.c) ·) x.space⟫_ℝ
+      + A.scalarPotential 𝓕.c (x.time 𝓕.c) x.space * J.chargeDensity 𝓕.c (x.time 𝓕.c) x.space
+      - ∑ i, A.vectorPotential 𝓕.c (x.time 𝓕.c) x.space i *
+        J.currentDensity 𝓕.c (x.time 𝓕.c) x.space i := by
+  rw [hamiltonian_eq_electricField_scalarPotential A hA J x]
+  rw [lagrangian_eq_electric_magnetic A hA J x]
+  simp [FreeSpace.c_sq 𝓕]
+  field_simp
+  ring
 
 end ElectromagneticPotential
 

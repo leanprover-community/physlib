@@ -252,71 +252,71 @@ def minimallyAllowsTermsOfFinset (S5 S10 : Finset 𝓩) :
   | μ =>
     let SqHd := S5.val
     let SqHu := S5.val
-    let prod := SqHd.product (SqHu)
+    let prod := SqHd ×ˢ (SqHu)
     let Filt := prod.filter (fun x => - x.1 + x.2 = 0)
     (Filt.map (fun x => ⟨x.1, x.2, ∅, ∅⟩))
   | K2 =>
     let SqHd := S5.val
     let SqHu := S5.val
     let Q10 := toMultisetsOne S10
-    let prod := SqHd.product (SqHu.product Q10)
+    let prod := SqHd ×ˢ (SqHu ×ˢ Q10)
     let Filt := prod.filter (fun x => x.1 + x.2.1 + x.2.2.sum = 0)
     (Filt.map (fun x => ⟨x.1, x.2.1, ∅, x.2.2.toFinset⟩))
   | K1 =>
     let Q5 := toMultisetsOne S5
     let Q10 := toMultisetsTwo S10
-    let Prod := Q5.product Q10
+    let Prod := Q5 ×ˢ Q10
     let Filt := Prod.filter (fun x => - x.1.sum + x.2.sum = 0)
     (Filt.map (fun x => ⟨none, none, x.1.toFinset, x.2.toFinset⟩))
   | W4 =>
     let SqHd := S5.val
     let SqHu := S5.val
     let Q5 := toMultisetsOne S5
-    let prod := SqHd.product (SqHu.product Q5)
+    let prod := SqHd ×ˢ (SqHu ×ˢ Q5)
     let Filt := prod.filter (fun x => x.1 - 2 • x.2.1 + x.2.2.sum = 0)
     (Filt.map (fun x => ⟨x.1, x.2.1, x.2.2.toFinset, ∅⟩))
   | W3 =>
     let SqHu := S5.val
     let Q5 := toMultisetsTwo S5
-    let prod := SqHu.product Q5
+    let prod := SqHu ×ˢ Q5
     let Filt := prod.filter (fun x => - 2 • x.1 + x.2.sum = 0)
     (Filt.map (fun x => ⟨none, x.1, x.2.toFinset, ∅⟩))
   | W2 =>
     let SqHd := S5.val
     let Q10 := toMultisetsThree S10
-    let prod := SqHd.product Q10
+    let prod := SqHd ×ˢ Q10
     let Filt := prod.filter (fun x => x.1 + x.2.sum = 0)
     (Filt.map (fun x => ⟨x.1, none, ∅, x.2.toFinset⟩)).filter fun x => MinimallyAllowsTerm x W2
   | W1 =>
     let Q5 := toMultisetsOne S5
     let Q10 := toMultisetsThree S10
-    let Prod := Q5.product Q10
+    let Prod := Q5 ×ˢ Q10
     let Filt := Prod.filter (fun x => x.1.sum + x.2.sum = 0)
     (Filt.map (fun x =>
       ⟨none, none, x.1.toFinset, x.2.toFinset⟩)).filter fun x => MinimallyAllowsTerm x W1
   | Λ =>
     let Q5 := toMultisetsTwo S5
     let Q10 := toMultisetsOne S10
-    let Prod := Q5.product Q10
+    let Prod := Q5 ×ˢ Q10
     let Filt := Prod.filter (fun x => x.1.sum + x.2.sum = 0)
     (Filt.map (fun x => ⟨none, none, x.1.toFinset, x.2.toFinset⟩))
   | β =>
     let SqHu := S5.val
     let Q5 := toMultisetsOne S5
-    let prod := SqHu.product Q5
+    let prod := SqHu ×ˢ Q5
     let Filt := prod.filter (fun x => - x.1 + x.2.sum = 0)
     (Filt.map (fun x => ⟨none, x.1, x.2.toFinset, ∅⟩))
   | topYukawa =>
     let SqHu := S5.val
     let Q10 := toMultisetsTwo S10
-    let prod := SqHu.product Q10
+    let prod := SqHu ×ˢ Q10
     let Filt := prod.filter (fun x => - x.1 + x.2.sum = 0)
     (Filt.map (fun x => ⟨none, x.1, ∅, x.2.toFinset⟩))
   | bottomYukawa =>
     let SqHd := S5.val
     let Q5 := toMultisetsOne S5
     let Q10 := toMultisetsOne S10
-    let prod := SqHd.product (Q5.product Q10)
+    let prod := SqHd ×ˢ (Q5 ×ˢ Q10)
     let Filt := prod.filter (fun x => x.1 + x.2.1.sum + x.2.2.sum = 0)
     (Filt.map (fun x => ⟨x.1, none,x.2.1.toFinset, x.2.2.toFinset⟩))
 
@@ -545,7 +545,7 @@ lemma mem_minimallyAllowsTermOfFinset_of_minimallyAllowsTerm {S5 S10 : Finset �
   case μ =>
     simp_all [allowsTermForm]
   case β =>
-    use a, {a}
+    use {a}
     simp_all [allowsTermForm]
   case Λ =>
     use {a, b}, {- a - b}
@@ -558,28 +558,28 @@ lemma mem_minimallyAllowsTermOfFinset_of_minimallyAllowsTerm {S5 S10 : Finset �
     · exact h
   case W2 =>
     apply And.intro
-    · use (- a - b - c), {a, b, c}
+    · use {a, b, c}
       simp_all [allowsTermForm]
       abel
     · exact h
   case W3 =>
-    use (-a), {b, - b - 2 • a}
+    use {b, - b - 2 • a}
     simp_all [allowsTermForm]
     abel
   case W4 =>
-    use (- c - 2 • b), (-b), {c}
+    use {c}
     simp_all [allowsTermForm]
   case K1 =>
     use {-a}, {b, - a - b}
     simp_all [allowsTermForm]
   case K2 =>
-    use a, b, {- a - b}
+    use {- a - b}
     simp_all [allowsTermForm]
   case topYukawa =>
-    use (-a), {b, - a - b}
+    use {b, - a - b}
     simp_all [allowsTermForm]
   case bottomYukawa =>
-    use a, {b}, {- a - b}
+    use {b}, {- a - b}
     simp_all [allowsTermForm]
 
 /-!

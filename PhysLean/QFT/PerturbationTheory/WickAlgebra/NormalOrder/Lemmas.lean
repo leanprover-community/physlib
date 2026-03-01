@@ -273,7 +273,7 @@ lemma ofCrAnOp_superCommute_normalOrder_ofFieldOpList_sum (φ : 𝓕.CrAnFieldOp
     rw [CrAnSection.take_statistics_eq_take_state_statistics, smul_mul_assoc]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl (fun n _ => ?_)
-  simp only [instCommGroup.eq_1, Fin.coe_cast, Fin.getElem_fin,
+  simp only [instCommGroup.eq_1, Fin.val_cast, Fin.getElem_fin,
     CrAnSection.sum_eraseIdxEquiv n _ n.prop,
     CrAnSection.eraseIdxEquiv_symm_getElem,
     CrAnSection.eraseIdxEquiv_symm_eraseIdx, ← Finset.smul_sum, Algebra.smul_mul_assoc]

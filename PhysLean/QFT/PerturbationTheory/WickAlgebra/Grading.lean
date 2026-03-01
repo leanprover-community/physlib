@@ -104,7 +104,7 @@ lemma bosonicProjFree_eq_ι_bosonicProjF (a : 𝓕.FieldOpFreeAlgebra) :
 lemma bosonicProjFree_zero_of_ι_zero (a : 𝓕.FieldOpFreeAlgebra) (h : ι a = 0) :
     bosonicProjFree a = 0 := by
   rw [ι_eq_zero_iff_ι_bosonicProjF_fermonicProj_zero] at h
-  apply Subtype.eq
+  apply Subtype.ext
   rw [bosonicProjFree_eq_ι_bosonicProjF]
   exact h.1
 
@@ -150,7 +150,7 @@ lemma fermionicProjFree_eq_ι_fermionicProjF (a : 𝓕.FieldOpFreeAlgebra) :
 lemma fermionicProjFree_zero_of_ι_zero (a : 𝓕.FieldOpFreeAlgebra) (h : ι a = 0) :
     fermionicProjFree a = 0 := by
   rw [ι_eq_zero_iff_ι_bosonicProjF_fermonicProj_zero] at h
-  apply Subtype.eq
+  apply Subtype.ext
   rw [fermionicProjFree_eq_ι_fermionicProjF]
   exact h.2
 
@@ -202,7 +202,7 @@ lemma bosonicProj_mem_bosonic (a : 𝓕.WickAlgebra) (ha : a ∈ statSubmodule .
   · intro x hx
     obtain ⟨φs, rfl, h⟩ := hx
     simp only [p]
-    apply Subtype.eq
+    apply Subtype.ext
     simp only
     rw [ofCrAnList]
     rw [bosonicProj_eq_bosonicProjFree]
@@ -225,7 +225,7 @@ lemma fermionicProj_mem_fermionic (a : 𝓕.WickAlgebra) (ha : a ∈ statSubmodu
   · intro x hx
     obtain ⟨φs, rfl, h⟩ := hx
     simp only [p]
-    apply Subtype.eq
+    apply Subtype.ext
     simp only
     rw [ofCrAnList]
     rw [fermionicProj_eq_fermionicProjFree]

@@ -69,12 +69,14 @@ lemma contrMetric_eq_fromConstPair {d : ℕ} :
 lemma coMetric_eq_fromPairT {d : ℕ} :
     η' d = fromPairT (Lorentz.preCoMetricVal d) := by
   rw [coMetric_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.preCoMetric_apply_one]
+  congr 1
+  exact Lorentz.preCoMetric_apply_one
 
 lemma contrMetric_eq_fromPairT {d : ℕ} :
     η d = fromPairT (Lorentz.preContrMetricVal d) := by
   rw [contrMetric_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.preContrMetric_apply_one]
+  congr 1
+  exact Lorentz.preContrMetric_apply_one
 
 /-
 

@@ -38,12 +38,10 @@ noncomputable def ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
     apply (Tensor.basis _).repr.injective
     ext b
     simp
-    rfl
   map_smul' r f := by
     apply (Tensor.basis _).repr.injective
     ext b
     simp
-    rfl
 
 @[simp]
 lemma ofRat_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
@@ -51,7 +49,6 @@ lemma ofRat_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTensor.Color
     (b :(ComponentIdx c)) :
   (Tensor.basis c).repr (ofRat f) b = toComplexNum (f b) := by
   simp [ofRat]
-  rfl
 
 lemma basis_eq_ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
     (b : (ComponentIdx c)) :
@@ -130,7 +127,7 @@ lemma contrT_ofRat_eq_sum_dropPairSection {n : ℕ} {c : Fin (n + 1 + 1) → com
     enter [2, x]
     rw [contr_basis_ratComplexNum]
     simp only [Nat.succ_eq_add_one, Finset.univ_eq_attach,
-    ofRat_basis_repr_apply, Fin.coe_cast, mul_one,
+    ofRat_basis_repr_apply, Fin.val_cast, mul_one,
     mul_zero, Function.comp_apply]
     rw [← PhysLean.RatComplexNum.toComplexNum.map_mul]
   rw [← map_sum PhysLean.RatComplexNum.toComplexNum]
@@ -157,7 +154,7 @@ lemma contrT_ofRat {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color
     · simp
     · simp only [DropPairSection.ofFinEquiv_apply_fst, DropPairSection.ofFinEquiv_apply_snd]
       rw [@Fin.ne_iff_vne] at hy
-      simp only [Fin.coe_cast, ne_eq] at hy
+      simp only [Fin.val_cast, ne_eq] at hy
       exact fun a => hy ((Eq.symm a))
   · simp
 

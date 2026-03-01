@@ -716,13 +716,13 @@ open lift
   `BraidedFunctor (OverColor C) (Rep k G)`, built on the PiTensorProduct. -/
 noncomputable def lift : (Discrete C ⥤ Rep k G) ⥤ LaxBraidedFunctor (OverColor C) (Rep k G) where
   obj F := LaxBraidedFunctor.of (lift.toRepFunc F)
-  map η := LaxMonoidalFunctor.homMk (repNatTransOfColor η)
+  map η := LaxBraidedFunctor.homMk (repNatTransOfColor η)
   map_id F := by
     simp only [repNatTransOfColor]
-    refine LaxMonoidalFunctor.hom_ext ?_
+    refine LaxBraidedFunctor.hom_ext ?_
     ext X : 2
     simp only [LaxBraidedFunctor.toLaxMonoidalFunctor_toFunctor, LaxBraidedFunctor.of_toFunctor,
-      LaxMonoidalFunctor.homMk_hom, LaxBraidedFunctor.id_hom, NatTrans.id_app]
+      LaxBraidedFunctor.homMk_hom_hom, LaxBraidedFunctor.id_hom, NatTrans.id_app]
     ext x
     refine PiTensorProduct.induction_on' x ?_ (by
         intro x y hx hy
@@ -734,10 +734,11 @@ noncomputable def lift : (Discrete C ⥤ Rep k G) ⥤ LaxBraidedFunctor (OverCol
     rw [repNatTransOfColorApp_tprod]
     rfl
   map_comp {F G H} η θ := by
-    refine LaxMonoidalFunctor.hom_ext ?_
+    refine LaxBraidedFunctor.hom_ext ?_
     ext X : 2
     simp only [LaxBraidedFunctor.toLaxMonoidalFunctor_toFunctor, LaxBraidedFunctor.of_toFunctor,
-      LaxMonoidalFunctor.homMk_hom, LaxBraidedFunctor.comp_hom, NatTrans.comp_app]
+      LaxBraidedFunctor.homMk_hom_hom, LaxBraidedFunctor.comp_hom, LaxMonoidalFunctor.comp_hom,
+      NatTrans.comp_app]
     ext x
     refine PiTensorProduct.induction_on' x ?_ (by
         intro x y hx hy
@@ -828,7 +829,7 @@ noncomputable section
   built on the inclusion `incl` and forgetting the monoidal structure. -/
 def forget : LaxBraidedFunctor (OverColor C) (Rep k G) ⥤ (Discrete C ⥤ Rep k G) where
   obj F := Discrete.functor fun c => F.obj (incl.obj (Discrete.mk c))
-  map η := Discrete.natTrans fun c => η.hom.app (incl.obj c)
+  map η := Discrete.natTrans fun c => η.hom.hom.app (incl.obj c)
 
 variable (F F' : Discrete C ⥤ Rep k G) (η : F ⟶ F')
 
@@ -847,6 +848,11 @@ def forgetLiftAppV (c : C) : ((lift.obj F).obj (OverColor.mk (fun (_ : Fin 1) =>
 @[simp]
 lemma forgetLiftAppV_symm_apply (c : C) (x : (F.obj (Discrete.mk c)).V) :
     (forgetLiftAppV F c).symm x = PiTensorProduct.tprod k (fun _ => x) := by
+  simp [forgetLiftAppV]
+  erw [PiTensorProduct.subsingletonEquiv_symm_apply]
+  congr
+  funext i
+  fin_cases i
   rfl
 
 /-- The `forgetLiftAppV` function takes an object `c` of type `C` and returns a isomorphism

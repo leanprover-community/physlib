@@ -229,7 +229,7 @@ lemma dropPairEmb_image_compl {i j : Fin (n + 1 + 1)} (hij : i ≠ j)
   exact Set.union_comm ((dropPairEmb i j) '' X) {i, j}
 
 @[simp]
-lemma fst_neq_dropPairEmb_pre (i j : Fin (n + 1 + 1)) (m : Fin n) :
+lemma fst_ne_dropPairEmb_pre (i j : Fin (n + 1 + 1)) (m : Fin n) :
     ¬ i = dropPairEmb i j m := by
   by_cases hij : i = j
   · subst hij
@@ -246,19 +246,19 @@ lemma fst_neq_dropPairEmb_pre (i j : Fin (n + 1 + 1)) (m : Fin n) :
     simp [- dropPairEmb_range] at hi
 
 @[simp]
-lemma dropPairEmb_neq_fst (i j : Fin (n + 1 + 1)) (m : Fin n) :
+lemma dropPairEmb_ne_fst (i j : Fin (n + 1 + 1)) (m : Fin n) :
     ¬ dropPairEmb i j m = i := by
   apply Ne.symm
   simp
 
 @[simp]
-lemma snd_neq_dropPairEmb_pre (i j : Fin (n + 1 + 1)) (m : Fin n) :
+lemma snd_ne_dropPairEmb_pre (i j : Fin (n + 1 + 1)) (m : Fin n) :
     ¬ j = (dropPairEmb i j) m := by
   rw [dropPairEmb_symm]
-  exact fst_neq_dropPairEmb_pre j i m
+  exact fst_ne_dropPairEmb_pre j i m
 
 @[simp]
-lemma dropPairEmb_neq_snd (i j : Fin (n + 1 + 1)) (m : Fin n) :
+lemma dropPairEmb_ne_snd (i j : Fin (n + 1 + 1)) (m : Fin n) :
     ¬ dropPairEmb i j m = j := by
   apply Ne.symm
   simp
@@ -548,7 +548,7 @@ lemma dropPair_update_fst {n : ℕ} [inst : DecidableEq (Fin (n + 1 +1))] {c : F
   ext m
   simp only [Function.comp_apply, dropPair, update]
   rw [Function.update_of_ne]
-  exact Ne.symm (fst_neq_dropPairEmb_pre i j m)
+  exact Ne.symm (fst_ne_dropPairEmb_pre i j m)
 
 @[simp]
 lemma dropPair_update_snd {n : ℕ} [inst : DecidableEq (Fin (n + 1 +1))] {c : Fin (n + 1 + 1) → C}

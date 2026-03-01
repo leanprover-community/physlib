@@ -39,7 +39,7 @@ lemma Pure.dropPairEmb_apply_lt_lt {n : ℕ}
   rw [dropPairEmb_succAbove]
   simp only [Function.comp_apply]
   have hj'' : m.val < j.val := by
-    simp_all only [Fin.succAbove, Fin.lt_def, Fin.coe_castSucc, ne_eq]
+    simp_all only [Fin.succAbove, Fin.lt_def, Fin.val_castSucc, ne_eq]
     by_cases hj : j.val < i.val
     · simp_all
     · simp_all only [ite_false, Fin.val_succ, not_lt]
@@ -47,7 +47,7 @@ lemma Pure.dropPairEmb_apply_lt_lt {n : ℕ}
   rw [Fin.succAbove_of_succ_le, Fin.succAbove_of_succ_le]
   · simp only [Fin.le_def, Fin.val_succ]
     omega
-  · simp_all only [Fin.succAbove, Fin.lt_def, Fin.coe_castSucc, ne_eq, ite_true, Fin.le_def,
+  · simp_all only [Fin.succAbove, Fin.lt_def, Fin.val_castSucc, ne_eq, ite_true, Fin.le_def,
     Fin.val_succ]
     omega
 
@@ -60,9 +60,9 @@ lemma Pure.dropPairEmb_natAdd_apply_castAdd {n n1 : ℕ}
   rw [dropPairEmb_apply_lt_lt]
   · simp [Fin.ext_iff]
   · simp_all [Fin.ne_iff_vne]
-  · simp only [Fin.coe_castAdd, Fin.coe_natAdd]
+  · simp only [Fin.val_castAdd, Fin.val_natAdd]
     omega
-  · simp only [Fin.coe_castAdd, Fin.coe_natAdd]
+  · simp only [Fin.val_castAdd, Fin.val_natAdd]
     omega
 
 lemma Pure.dropPairEmb_natAdd_image_range_castAdd {n n1 : ℕ}
@@ -101,7 +101,7 @@ lemma Pure.dropPairEmb_comm_natAdd {n n1 : ℕ}
   let g : Fin n ↪o Fin (n1 + n + 1 + 1) :=
       ⟨⟨(Fin.natAdd (n1) ∘ dropPairEmb i j), by
       intro a b
-      simp only [Function.comp_apply, Fin.ext_iff, Fin.coe_natAdd, add_right_inj]
+      simp only [Function.comp_apply, Fin.ext_iff, Fin.val_natAdd, add_right_inj]
       simp [← Fin.ext_iff]⟩, by
       intro a b
       simp only [Function.Embedding.coeFn_mk, Function.comp_apply]
@@ -143,7 +143,7 @@ lemma Pure.dropPairEmb_comm_natAdd {n n1 : ℕ}
     apply Iff.intro
     · intro h
       use ⟨a - n1, by omega⟩
-      simp only [Fin.ext_iff, Fin.coe_natAdd, Fin.natAdd_mk] at h ⊢
+      simp only [Fin.ext_iff, Fin.val_natAdd, Fin.natAdd_mk] at h ⊢
       omega
     · intro h
       obtain ⟨x, h1, rfl⟩ := h

@@ -72,6 +72,38 @@ instance : InvolutiveStar GaugeGroupI where
   star_involutive g := by
     ext1 <;> simp
 
+/-- The inclusion of a U(1) subgroup. -/
+def ofU1Subgroup (u1 : unitary ℂ) : GaugeGroupI :=
+  (1,
+  ⟨!![star (u1 ^ 3 : unitary ℂ), 0;0, (u1 ^ 3 : unitary ℂ)], by
+    simp only [SetLike.mem_coe]
+    rw [mem_unitaryGroup_iff']
+    funext i j
+    rw [Matrix.mul_apply]
+    fin_cases i <;> fin_cases j <;> simp [conj_mul'], by
+    simp only [RCLike.star_def, SetLike.mem_coe, MonoidHom.mem_mker, coe_detMonoidHom,
+      det_fin_two_of, conj_mul', mul_zero, sub_zero]
+    simp⟩, u1)
+
+@[simp]
+lemma ofU1Subgroup_toSU3 (u1 : unitary ℂ) :
+    toSU3 (ofU1Subgroup u1) = 1 := rfl
+
+@[simp]
+lemma ofU1Subgroup_toSU2 (u1 : unitary ℂ) :
+    toSU2 (ofU1Subgroup u1) = ⟨!![star (u1 ^ 3 : unitary ℂ), 0;0, (u1 ^ 3 : unitary ℂ)], by
+    simp only [SetLike.mem_coe]
+    rw [mem_unitaryGroup_iff']
+    funext i j
+    rw [Matrix.mul_apply]
+    fin_cases i <;> fin_cases j <;> simp [conj_mul'], by
+    simp only [RCLike.star_def, SetLike.mem_coe, MonoidHom.mem_mker, coe_detMonoidHom,
+      det_fin_two_of, conj_mul', mul_zero, sub_zero]
+    simp⟩ := rfl
+
+@[simp]
+lemma ofU1Subgroup_toU1 (u1 : unitary ℂ) :
+    toU1 (ofU1Subgroup u1) = u1 := rfl
 end GaugeGroupI
 
 /-- The subgroup of the un-quotiented gauge group which acts trivially on all particles in the

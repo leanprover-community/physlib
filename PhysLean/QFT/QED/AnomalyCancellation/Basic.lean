@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.QFT.AnomalyCancellation.Basic
+import Mathlib.Tactic.LinearCombination
 /-!
 
 # Anomaly cancellation of a theory with a pure U(1)-gauge group

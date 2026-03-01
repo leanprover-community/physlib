@@ -97,14 +97,14 @@ lemma lineInCubicPerm_swap {S : (PureU1 (2 * n.succ)).LinSols}
       * accCubeTriLinSymm (P g) (P g) (basis!AsCharges j) = 0 := by
   intro j g f h
   let S' := (FamilyPermutations (2 * n.succ)).linSolRep
-    (pairSwap (evenShiftFst j) (evenShiftSnd j)) S
+    (Equiv.swap (evenShiftFst j) (evenShiftSnd j)) S
   have hSS' : ((FamilyPermutations (2 * n.succ)).linSolRep
-    (pairSwap (evenShiftFst j) (evenShiftSnd j))) S = S' := rfl
+    (Equiv.swap (evenShiftFst j) (evenShiftSnd j))) S = S' := rfl
   obtain ⟨g', f', hall⟩ := span_basis_swap! j hSS' g f h
   have h1 := line_in_cubic_P_P_P! (lineInCubicPerm_self LIC) g f h
   have h2 := line_in_cubic_P_P_P!
     (lineInCubicPerm_self (lineInCubicPerm_permute LIC
-    (pairSwap (evenShiftFst j) (evenShiftSnd j)))) g' f' hall.1
+    (Equiv.swap (evenShiftFst j) (evenShiftSnd j)))) g' f' hall.1
   rw [hall.2.1, hall.2.2] at h2
   rw [accCubeTriLinSymm.map_add₃, h1, accCubeTriLinSymm.map_smul₃] at h2
   simpa using h2
@@ -158,7 +158,7 @@ lemma lineInCubicPerm_last_perm {S : (PureU1 (2 * n.succ.succ)).LinSols}
   · simp [Fin.ext_iff, evenShiftSnd, evenShiftFst]
   · simp [Fin.ext_iff, evenShiftSnd, evenShiftLast]
   · simp only [Nat.succ_eq_add_one, evenShiftFst, evenShiftLast, Fin.isValue, ne_eq, Fin.ext_iff,
-    Fin.coe_cast, Fin.coe_natAdd, Fin.coe_castAdd, Fin.val_last, Fin.val_eq_zero, add_zero,
+    Fin.val_cast, Fin.val_natAdd, Fin.val_castAdd, Fin.val_last, Fin.val_eq_zero, add_zero,
     add_right_inj]
     omega
   · exact fun M => lineInCubicPerm_last_cond (lineInCubicPerm_permute LIC M)

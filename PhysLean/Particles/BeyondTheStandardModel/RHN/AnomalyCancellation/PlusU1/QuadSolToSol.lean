@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.BMinusL
-import Mathlib.Tactic.FieldSimp
 /-!
 # Solutions from quad solutions
 
@@ -110,7 +109,7 @@ lemma quadSolToSolInv_α₁_α₂_zero (S : (PlusU1 n).Sols) (h : α₁ S.1 = 0)
   rw [quadSolToSolInv_1, α₂_AF S, h]
   exact Prod.mk_eq_zero.mp rfl
 
-lemma quadSolToSolInv_α₁_α₂_neq_zero (S : (PlusU1 n).Sols) (h : α₁ S.1 ≠ 0) :
+lemma quadSolToSolInv_α₁_α₂_ne_zero (S : (PlusU1 n).Sols) (h : α₁ S.1 ≠ 0) :
     ¬ (α₁ (quadSolToSolInv S).1 = 0 ∧ α₂ (quadSolToSolInv S).1 = 0) := by
   rw [not_and, quadSolToSolInv_1, α₂_AF S]
   intro hn
@@ -135,7 +134,7 @@ lemma quadSolToSolInv_rightInverse : Function.RightInverse (@quadSolToSolInv n) 
   by_cases h : α₁ S.1 = 0
   · rw [quadSolToSol, dif_pos (quadSolToSolInv_α₁_α₂_zero S h)]
     exact quadSolToSolInv_special S h
-  · rw [quadSolToSol, dif_neg (quadSolToSolInv_α₁_α₂_neq_zero S h)]
+  · rw [quadSolToSol, dif_neg (quadSolToSolInv_α₁_α₂_ne_zero S h)]
     exact quadSolToSolInv_generic S h
 
 theorem quadSolToSol_surjective : Function.Surjective (@quadSolToSol n) :=

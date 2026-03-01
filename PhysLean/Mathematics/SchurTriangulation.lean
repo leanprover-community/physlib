@@ -131,6 +131,7 @@ equivalence is propositionally established by `Equiv.sumEquivSigmalCond`.
 variable [IsAlgClosed 𝕜]
 
 set_option maxHeartbeats 800000 in
+set_option maxRecDepth 2000 in
 /-- **Don't use this definition directly.** This is the key algorithm behind
 `Matrix.schur_triangulation`. -/
 protected noncomputable def SchurTriangulationAux.of

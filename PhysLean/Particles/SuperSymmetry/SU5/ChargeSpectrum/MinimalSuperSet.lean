@@ -125,7 +125,7 @@ lemma self_not_mem_minimalSuperSet (S5 S10 : Finset 𝓩) (x : ChargeSpectrum �
     x ∉ minimalSuperSet S5 S10 x := by
   simp [minimalSuperSet]
 
-lemma self_neq_mem_minimalSuperSet (S5 S10 : Finset 𝓩) (x y : ChargeSpectrum 𝓩)
+lemma self_ne_mem_minimalSuperSet (S5 S10 : Finset 𝓩) (x y : ChargeSpectrum 𝓩)
     (hy : y ∈ minimalSuperSet S5 S10 x) : x ≠ y := by
   by_contra h
   subst h

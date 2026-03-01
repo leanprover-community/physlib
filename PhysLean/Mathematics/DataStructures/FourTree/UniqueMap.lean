@@ -96,7 +96,7 @@ lemma map_mem_uniqueMap4 {T : FourTree α1 α2 α3 α4}
     use twig
   use (leaf.uniqueMap4 f)
   constructor
-  · simp [Twig.uniqueMap4]
+  · simp [Twig.uniqueMap4, -existsAndEq]
     use f leaf.1
     constructor
     · use leaf

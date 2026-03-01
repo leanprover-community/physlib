@@ -42,7 +42,7 @@ variable {n : ℕ}(A : FiniteTarget H n)
 /-- Given a finite target QM system `A`, the time evolution operator for a `t : ℝ`,
   `A.timeEvolution t` is defined as `exp(- I t /ℏ * A.Ham)`. Still a map. -/
 noncomputable def timeEvolution (t : ℝ) : H →L[ℂ] H :=
-  NormedSpace.exp ℂ (-(Complex.I * t / ℏ) • A.Ham)
+  NormedSpace.exp (-(Complex.I * t / ℏ) • A.Ham)
   -- Note that the `H →L[ℂ] H`s make an algebra over 𝕂 := ℂ, so [Algebra 𝕂 𝔸] is satisfied.
 
 /-- The matrix representation of the time evolution operator in a given basis. Given a

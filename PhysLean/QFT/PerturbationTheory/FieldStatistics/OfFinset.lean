@@ -41,11 +41,11 @@ lemma ofFinset_finset_map {n m : ℕ}
   refine List.Perm.map f ?_
   apply List.perm_of_nodup_nodup_toFinset_eq
   · refine (List.nodup_map_iff_inj_on ?_).mpr ?_
-    exact Finset.sort_nodup (fun x1 x2 => x1 ≤ x2) a
+    exact a.sort_nodup (fun x1 x2 => x1 ≤ x2)
     simp only [Finset.mem_sort]
     intro x hx y hy
     exact fun a => hi a
-  · exact Finset.sort_nodup (fun x1 x2 => x1 ≤ x2) (Finset.map { toFun := i, inj' := hi } a)
+  · exact (Finset.map { toFun := i, inj' := hi } a).sort_nodup (fun x1 x2 => x1 ≤ x2)
   · ext a
     simp
 
@@ -54,14 +54,14 @@ lemma ofFinset_insert (q : 𝓕 → FieldStatistic) (φs : List 𝓕) (a : Finse
     ofFinset q φs.get (Insert.insert i a) = (q φs[i]) * ofFinset q φs.get a := by
   simp only [ofFinset, instCommGroup, Fin.getElem_fin]
   rw [← ofList_cons_eq_mul]
-  have h1 : (φs[↑i] :: List.map φs.get (Finset.sort (fun x1 x2 => x1 ≤ x2) a))
-      = List.map φs.get (i :: Finset.sort (fun x1 x2 => x1 ≤ x2) a) := by
+  have h1 : (φs[↑i] :: List.map φs.get (a.sort (fun x1 x2 => x1 ≤ x2)))
+      = List.map φs.get (i :: a.sort (fun x1 x2 => x1 ≤ x2)) := by
       simp
   erw [h1]
   apply ofList_perm
   refine List.Perm.map φs.get ?_
   refine (List.perm_ext_iff_of_nodup ?_ ?_).mpr ?_
-  · exact Finset.sort_nodup (fun x1 x2 => x1 ≤ x2) (Insert.insert i a)
+  · exact (Insert.insert i a).sort_nodup (fun x1 x2 => x1 ≤ x2)
   · simp only [List.nodup_cons, Finset.mem_sort, Finset.sort_nodup, and_true]
     exact h
   intro a
@@ -85,7 +85,7 @@ lemma ofFinset_eq_prod (q : 𝓕 → FieldStatistic) (φs : List 𝓕) (a : Fins
   congr
   funext i
   simp only [Finset.mem_sort, Fin.getElem_fin]
-  exact Finset.sort_nodup (fun x1 x2 => x1 ≤ x2) a
+  exact a.sort_nodup (fun x1 x2 => x1 ≤ x2)
 
 lemma ofFinset_union (q : 𝓕 → FieldStatistic) (φs : List 𝓕) (a b : Finset (Fin φs.length)) :
     ofFinset q φs.get a * ofFinset q φs.get b = ofFinset q φs.get ((a ∪ b) \ (a ∩ b)) := by
@@ -113,8 +113,8 @@ lemma ofFinset_filter_mul_neg (q : 𝓕 → FieldStatistic) (φs : List 𝓕) (a
     ofFinset q φs.get (Finset.filter (fun i => ¬ p i) a) = ofFinset q φs.get a := by
   rw [ofFinset_union_disjoint]
   congr
-  exact Finset.filter_union_filter_neg_eq p a
-  exact Finset.disjoint_filter_filter_neg a a p
+  exact Finset.filter_union_filter_not_eq p a
+  exact Finset.disjoint_filter_filter_not a a p
 
 lemma ofFinset_filter (q : 𝓕 → FieldStatistic) (φs : List 𝓕) (a : Finset (Fin φs.length))
     (p : Fin φs.length → Prop) [DecidablePred p] :

@@ -4,6 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
+import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
+import PhysLean.QuantumMechanics.OneDimension.Operators.Position
+
 /-!
 
 # 1d Harmonic Oscillator
@@ -16,7 +19,6 @@ This file contains
 - proof that eigenfunctions and eigenvalues are indeed eigenfunctions and eigenvalues.
 
 ## TODO
-- Show that Schrodinger operator is linear.
 
 -/
 
@@ -133,24 +135,8 @@ lemma one_over_ξ_sq : (1/Q.ξ)^2 = Q.m * Q.ω / ℏ := by
   rw [one_over_ξ]
   refine Real.sq_sqrt (le_of_lt Q.m_mul_ω_div_ℏ_pos)
 
-TODO "6VZH3" "The momentum operator should be moved to a more general file."
-
-/-- The momentum operator is defined as the map from `ℝ → ℂ` to `ℝ → ℂ` taking
-  `ψ` to `- i ℏ ψ'`.
-
-  The notation `Pᵒᵖ` can be used for the momentum operator. -/
-noncomputable def momentumOperator (ψ : ℝ → ℂ) : ℝ → ℂ :=
-  fun x => - Complex.I * ℏ * deriv ψ x
-
 @[inherit_doc momentumOperator]
 scoped[QuantumMechanics.OneDimension.HarmonicOscillator] notation "Pᵒᵖ" => momentumOperator
-
-/-- The position operator is defined as the map from `ℝ → ℂ` to `ℝ → ℂ` taking
-  `ψ` to `x ψ'`.
-
-  The notation `Xᵒᵖ` can be used for the momentum operator. -/
-noncomputable def positionOperator (ψ : ℝ → ℂ) : ℝ → ℂ :=
-  fun x => x * ψ x
 
 @[inherit_doc positionOperator]
 scoped[QuantumMechanics.OneDimension.HarmonicOscillator] notation "Xᵒᵖ" => positionOperator
@@ -190,6 +176,35 @@ lemma schrodingerOperator_parity (ψ : ℝ → ℂ) :
     funext x
     rw [← deriv_comp_neg]
   simp [schrodingerOperator, parityOperator, this]
+
+/-- The Schrodinger operator is additive. -/
+lemma schrodingerOperator_add (ψ φ : ℝ → ℂ)
+    (hψ : Differentiable ℝ ψ) (hψ' : Differentiable ℝ (deriv ψ))
+    (hφ : Differentiable ℝ φ) (hφ' : Differentiable ℝ (deriv φ)) :
+    Q.schrodingerOperator (ψ + φ) = Q.schrodingerOperator ψ + Q.schrodingerOperator φ := by
+  unfold schrodingerOperator
+  funext x
+  have h_deriv_add : deriv (ψ + φ) = deriv ψ + deriv φ := by
+    funext y
+    exact deriv_add (hψ y) (hφ y)
+  rw [h_deriv_add]
+  rw [deriv_add (hψ' x) (hφ' x)]
+  simp only [Pi.add_apply]
+  ring
+
+/-- The Schrodinger operator is homogeneous. -/
+lemma schrodingerOperator_smul (c : ℂ) (ψ : ℝ → ℂ)
+    (hψ : Differentiable ℝ ψ) (hψ' : Differentiable ℝ (deriv ψ)) :
+    Q.schrodingerOperator (c • ψ) = c • Q.schrodingerOperator ψ := by
+  unfold schrodingerOperator
+  funext x
+  have h_deriv_smul : deriv (c • ψ) = c • deriv ψ := by
+    funext y
+    exact deriv_const_smul c (hψ y)
+  rw [h_deriv_smul]
+  rw [deriv_const_smul c (hψ' x)]
+  simp only [Pi.smul_apply, smul_eq_mul]
+  ring
 
 end HarmonicOscillator
 end OneDimension

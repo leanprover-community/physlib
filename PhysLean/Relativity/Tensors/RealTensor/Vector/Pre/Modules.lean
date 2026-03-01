@@ -188,7 +188,7 @@ def norm : NormedAddCommGroup (ContrMod d) where
 
 /-- The underlying space part of a `ContrMod` formed by removing the first element.
   A better name for this might be `tail`. -/
-def toSpace (v : ContrMod d) : EuclideanSpace ℝ (Fin d) := v.val ∘ Sum.inr
+def toSpace (v : ContrMod d) : EuclideanSpace ℝ (Fin d) := WithLp.toLp 2 (v.val ∘ Sum.inr)
 
 /-!
 

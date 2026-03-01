@@ -42,7 +42,7 @@ lemma asCharges_ne_castSucc {k j : Fin n} (h : k ≠ j) :
   · split
     · rename_i h1 h2
       rw [Fin.ext_iff] at h1 h2
-      simp only [Fin.coe_castSucc, Fin.val_last] at h1 h2
+      simp only [Fin.val_castSucc, Fin.val_last] at h1 h2
       have hj : j.val < n := by
         exact j.prop
       simp_all
@@ -85,8 +85,8 @@ def coordinateMap : (PureU1 n.succ).LinSols ≃ₗ[ℚ] Fin n →₀ ℚ where
   map_smul' a S := Finsupp.ext (congrFun rfl)
   invFun f := ∑ i : Fin n, f i • asLinSols i
   left_inv S := by
-    simp only [PureU1_numberCharges, Equiv.invFun_as_coe, Finsupp.equivFunOnFinite_symm_apply_toFun,
-      Function.comp_apply]
+    simp only [Nat.succ_eq_add_one, PureU1_numberCharges, Equiv.invFun_as_coe,
+      Finsupp.equivFunOnFinite_symm_apply_apply, Function.comp_apply]
     apply pureU1_anomalyFree_ext
     intro j
     rw [sum_of_vectors]
@@ -102,7 +102,7 @@ def coordinateMap : (PureU1 n.succ).LinSols ≃ₗ[ℚ] Fin n →₀ ℚ where
     simp only [PureU1_numberCharges, Equiv.invFun_as_coe]
     ext
     rename_i j
-    simp only [Finsupp.equivFunOnFinite_symm_apply_toFun, Function.comp_apply]
+    simp only [Nat.succ_eq_add_one, Finsupp.equivFunOnFinite_symm_apply_apply, Function.comp_apply]
     rw [sum_of_vectors]
     simp only [HSMul.hSMul, SMul.smul, PureU1_numberCharges,
       asLinSols_val]

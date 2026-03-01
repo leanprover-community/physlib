@@ -4,7 +4,7 @@ Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
 import Mathlib.Lean.Expr.Basic
-import Lean.Elab.PreDefinition.Structural.BRecOn
+import ImportGraph.Imports.RequiredModules
 /-!
 
 ## Basic Lean meta programming commands
@@ -137,7 +137,8 @@ def getDeclString (name : Name) : CoreM String := do
     | some fileName =>
       let fileContent ← IO.FS.readFile fileName.toRelativeFilePath
       let fileMap := fileContent.toFileMap
-      return fileMap.source.extract (fileMap.ofPosition pos) (fileMap.ofPosition endPos)
+      return (String.Pos.Raw.extract fileMap.source)
+        (fileMap.ofPosition pos) (fileMap.ofPosition endPos)
     | none => return ""
   | none => return ""
 

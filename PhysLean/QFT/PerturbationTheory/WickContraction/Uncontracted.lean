@@ -52,19 +52,21 @@ lemma mem_uncontracted_iff_not_contracted (i : Fin n) :
     have hp := c.2.1 p hp
     rw [Finset.card_eq_two] at hp
     obtain ⟨a, b, ha, hb, hab⟩ := hp
-    rw [Fin.find_eq_none_iff] at h
+    rw [Fin.find?_eq_none_iff] at h
     by_contra hn
     simp only [Finset.mem_insert, Finset.mem_singleton] at hn
     rcases hn with hn | hn
     · subst hn
+      simp at h
       exact h b hp
     · subst hn
       rw [Finset.pair_comm] at hp
+      simp at h
       exact h a hp
   · intro h
-    rw [Fin.find_eq_none_iff]
+    rw [Fin.find?_eq_none_iff]
     by_contra hn
-    simp only [not_forall, Decidable.not_not] at hn
+    simp only [decide_eq_false_iff_not, not_forall, Decidable.not_not] at hn
     obtain ⟨j, hj⟩ := hn
     apply h {i, j} hj
     simp

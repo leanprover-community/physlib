@@ -5,7 +5,7 @@ Authors: Tomas Skrivan
 -/
 import Mathlib.Analysis.InnerProductSpace.Trace
 import PhysLean.Mathematics.Calculus.AdjFDeriv
-import PhysLean.SpaceAndTime.Space.Basic
+import PhysLean.SpaceAndTime.TimeAndSpace.Basic
 /-!
 
 # Divergence
@@ -37,7 +37,8 @@ lemma divergence_eq_sum_fderiv {s : Finset E} (b : Basis s 𝕜 E) {f : E → E}
   funext x
   unfold divergence
   rw[LinearMap.trace_eq_matrix_trace_of_finset (s:=s) _ b]
-  simp[Matrix.trace,Matrix.diag,LinearMap.toMatrix]
+  simp only [Matrix.trace, Matrix.diag, LinearMap.toMatrix_apply]
+  rfl
 
 lemma divergence_eq_sum_fderiv' {ι} [Fintype ι] (b : Basis ι 𝕜 E) {f : E → E} :
     divergence 𝕜 f = fun x => ∑ i, b.repr (fderiv 𝕜 f x (b i)) i := by
@@ -60,14 +61,12 @@ lemma divergence_eq_sum_fderiv' {ι} [Fintype ι] (b : Basis ι 𝕜 E) {f : E �
   simp [b']
 
 lemma divergence_eq_space_div {d} (f : Space d → Space d)
-    (h : Differentiable ℝ f) : divergence ℝ f = Space.div f := by
+    (h : Differentiable ℝ f) : divergence ℝ f = Space.div (Space.basis.repr ∘ f) := by
   let b := (Space.basis (d:=d)).toBasis
   rw[divergence_eq_sum_fderiv' b]
   funext x
-  simp +zetaDelta only [Space.basis, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
-    OrthonormalBasis.coe_toBasis_repr_apply, EuclideanSpace.basisFun_repr, Space.div, Space.deriv,
-    Space.coord, PiLp.inner_apply, EuclideanSpace.single_apply, RCLike.inner_apply, conj_trivial,
-    ite_mul, one_mul, zero_mul, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
+  simp +zetaDelta only [OrthonormalBasis.coe_toBasis, OrthonormalBasis.coe_toBasis_repr_apply,
+    Space.basis_repr_apply, Space.div, Space.deriv, Function.comp_apply]
   congr
   funext i
   have h1 : (fderiv ℝ (fun x => f x i) x)
@@ -128,15 +127,6 @@ lemma divergence_const_smul {f : E → E} {x : E} {c : 𝕜}
     c * divergence 𝕜 f x := by
   unfold divergence
   simp [fderiv_fun_const_smul hf]
-
-@[simp]
-lemma ContinuousLinearMap.smulRight_toLinearMap {M₁ : Type*} [TopologicalSpace M₁]
-    [AddCommMonoid M₁] {M₂ : Type*} [TopologicalSpace M₂] [AddCommMonoid M₂] {R : Type*} {S : Type*}
-    [Semiring R] [Semiring S] [Module R M₁] [Module R M₂] [Module R S] [Module S M₂]
-    [IsScalarTower R S M₂] [TopologicalSpace S] [ContinuousSMul S M₂] (c : M₁ →L[R] S) (f : M₂) :
-    (↑(ContinuousLinearMap.smulRight c f) : M₁ →ₗ[R] M₂) =
-      LinearMap.smulRight (↑c : M₁ →ₗ[R] S) f :=
-  rfl
 
 open InnerProductSpace' in
 lemma divergence_smul [InnerProductSpace' 𝕜 E] {f : E → 𝕜} {g : E → E} {x : E}

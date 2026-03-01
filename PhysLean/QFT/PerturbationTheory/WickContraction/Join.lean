@@ -81,7 +81,7 @@ lemma jointLiftLeft_injective {φs : List 𝓕.FieldOp} {φsΛ : WickContraction
   intro a b h
   simp only [joinLiftLeft] at h
   rw [Subtype.mk_eq_mk] at h
-  refine Subtype.eq h
+  refine Subtype.ext h
 
 /-- Given a contracting pair within `φsucΛ` the corresponding contracting pair within
   `(join φsΛ φsucΛ)`. -/
@@ -102,7 +102,7 @@ lemma joinLiftRight_injective {φs : List 𝓕.FieldOp} {φsΛ : WickContraction
   simp only [joinLiftRight] at h
   rw [Subtype.mk_eq_mk] at h
   simp only [Finset.map_inj] at h
-  refine Subtype.eq h
+  refine Subtype.ext h
 
 lemma jointLiftLeft_disjoint_joinLiftRight {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs.length}
     {φsucΛ : WickContraction [φsΛ]ᵘᶜ.length} (a : φsΛ.1) (b : φsucΛ.1) :
@@ -112,7 +112,7 @@ lemma jointLiftLeft_disjoint_joinLiftRight {φs : List 𝓕.FieldOp} {φsΛ : Wi
   apply uncontractedListEmd_finset_disjoint_left
   exact a.2
 
-lemma jointLiftLeft_neq_joinLiftRight {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs.length}
+lemma jointLiftLeft_ne_joinLiftRight {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs.length}
     {φsucΛ : WickContraction [φsΛ]ᵘᶜ.length} (a : φsΛ.1) (b : φsucΛ.1) :
     joinLiftLeft a ≠ joinLiftRight b := by
   by_contra hn
@@ -143,11 +143,11 @@ lemma joinLift_injective {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs.
     exact joinLiftRight_injective h
   | Sum.inl a, Sum.inr b =>
     simp only [joinLift] at h
-    have h1 := jointLiftLeft_neq_joinLiftRight a b
+    have h1 := jointLiftLeft_ne_joinLiftRight a b
     simp_all
   | Sum.inr a, Sum.inl b =>
     simp only [joinLift] at h
-    have h1 := jointLiftLeft_neq_joinLiftRight b a
+    have h1 := jointLiftLeft_ne_joinLiftRight b a
     simp_all
 
 lemma joinLift_surjective {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs.length}
@@ -162,7 +162,7 @@ lemma joinLift_surjective {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs
   · rw [Finset.mapEmbedding_apply] at ha3
     use Sum.inr ⟨a2, ha3.1⟩
     simp only [joinLift, joinLiftRight]
-    refine Subtype.eq ?_
+    refine Subtype.ext ?_
     exact ha3.2
 
 lemma joinLift_bijective {φs : List 𝓕.FieldOp} {φsΛ : WickContraction φs.length}
@@ -614,6 +614,7 @@ lemma exists_contraction_pair_of_card_ge_zero {φs : List 𝓕.FieldOp}
     ∃ a, a ∈ φsΛ.1 := by
   simpa using h
 
+set_option maxHeartbeats 400000 in
 lemma exists_join_singleton_of_card_ge_zero {φs : List 𝓕.FieldOp} (φsΛ : WickContraction φs.length)
     (h : 0 < φsΛ.1.card) (hc : φsΛ.GradingCompliant) :
     ∃ (i j : Fin φs.length) (h : i < j) (φsucΛ : WickContraction [singleton h]ᵘᶜ.length),

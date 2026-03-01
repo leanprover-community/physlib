@@ -36,21 +36,67 @@ namespace CoVector
 open TensorSpecies
 open Tensor
 
-instance {d} : AddCommMonoid (CoVector d) := inferInstanceAs (AddCommMonoid (Fin 1 ⊕ Fin d → ℝ))
+instance {d} : AddCommMonoid (CoVector d) :=
+  inferInstanceAs (AddCommMonoid (Fin 1 ⊕ Fin d → ℝ))
 
-instance {d} : Module ℝ (CoVector d) := inferInstanceAs (Module ℝ (Fin 1 ⊕ Fin d → ℝ))
+instance {d} : Module ℝ (CoVector d) :=
+  inferInstanceAs (Module ℝ (Fin 1 ⊕ Fin d → ℝ))
 
-instance {d} : AddCommGroup (CoVector d) := inferInstanceAs (AddCommGroup (Fin 1 ⊕ Fin d → ℝ))
+instance {d} : AddCommGroup (CoVector d) :=
+  inferInstanceAs (AddCommGroup (Fin 1 ⊕ Fin d → ℝ))
 
 instance {d} : FiniteDimensional ℝ (CoVector d) :=
   inferInstanceAs (FiniteDimensional ℝ (Fin 1 ⊕ Fin d → ℝ))
 
-instance isNormedAddCommGroup (d : ℕ) : NormedAddCommGroup (CoVector d) :=
-    inferInstanceAs (NormedAddCommGroup (Fin 1 ⊕ Fin d → ℝ))
+/-- The equivalence between `CoVector d` and `EuclideanSpace ℝ (Fin 1 ⊕ Fin d)`. -/
+def equivEuclid (d : ℕ) :
+    CoVector d ≃ₗ[ℝ] EuclideanSpace ℝ (Fin 1 ⊕ Fin d) :=
+  (WithLp.linearEquiv _ _ _).symm
 
-instance isNormedSpace (d : ℕ) :
-    NormedSpace ℝ (CoVector d) :=
-  inferInstanceAs (NormedSpace ℝ (Fin 1 ⊕ Fin d → ℝ))
+instance (d : ℕ) : Norm (CoVector d) where
+  norm := fun v => ‖equivEuclid d v‖
+
+lemma norm_eq_equivEuclid (d : ℕ) (v : CoVector d) :
+    ‖v‖ = ‖equivEuclid d v‖ := rfl
+
+instance isNormedAddCommGroup (d : ℕ) : NormedAddCommGroup (CoVector d) where
+  dist_self x := by simp [norm_eq_equivEuclid]
+  dist_comm x y := by
+    simpa [norm_eq_equivEuclid] using dist_comm ((equivEuclid d) x) _
+  dist_triangle x y z := by
+    simpa [norm_eq_equivEuclid] using dist_triangle
+      ((equivEuclid d) x) ((equivEuclid d) y) ((equivEuclid d) z)
+  eq_of_dist_eq_zero {x y} := by
+    simp only [norm_eq_equivEuclid, map_sub]
+    intro h
+    apply (equivEuclid d).injective
+    exact (eq_of_dist_eq_zero h)
+
+instance isNormedSpace (d : ℕ) : NormedSpace ℝ (CoVector d) where
+  norm_smul_le c v := by
+    simp only [norm_eq_equivEuclid, map_smul]
+    exact norm_smul_le c (equivEuclid d v)
+open InnerProductSpace
+
+instance (d : ℕ) : Inner ℝ (CoVector d) where
+  inner := fun v w => ⟪equivEuclid d v, equivEuclid d w⟫_ℝ
+
+lemma inner_eq_equivEuclid (d : ℕ) (v w : CoVector d) :
+    ⟪v, w⟫_ℝ = ⟪equivEuclid d v, equivEuclid d w⟫_ℝ := rfl
+/-- The Euclidean inner product structure on `CoVector`. -/
+instance innerProductSpace (d : ℕ) : InnerProductSpace ℝ (CoVector d) where
+  norm_sq_eq_re_inner v := by
+    simp only [inner_eq_equivEuclid, norm_eq_equivEuclid]
+    exact InnerProductSpace.norm_sq_eq_re_inner (equivEuclid d v)
+  conj_inner_symm x y := by
+    simp only [inner_eq_equivEuclid]
+    exact InnerProductSpace.conj_inner_symm (equivEuclid d x) (equivEuclid d y)
+  add_left x y z := by
+    simp only [inner_eq_equivEuclid, map_add]
+    exact InnerProductSpace.add_left (equivEuclid d x) (equivEuclid d y) (equivEuclid d z)
+  smul_left x y r := by
+    simp only [inner_eq_equivEuclid, map_smul]
+    exact InnerProductSpace.smul_left (equivEuclid d x) (equivEuclid d y) r
 
 /-- The instance of a `ChartedSpace` on `Vector d`. -/
 instance : ChartedSpace (CoVector d) (CoVector d) := chartedSpaceSelf (CoVector d)

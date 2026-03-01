@@ -120,7 +120,7 @@ lemma ι_superCommuteF_zero_of_fermionic (φ ψ : 𝓕.CrAnFieldOp)
     (h : [ofCrAnOpF φ, ofCrAnOpF ψ]ₛF ∈ statisticSubmodule fermionic) :
     ι [ofCrAnOpF φ, ofCrAnOpF ψ]ₛF = 0 := by
   rw [← ofCrAnListF_singleton, ← ofCrAnListF_singleton] at h ⊢
-  rcases statistic_neq_of_superCommuteF_fermionic h with h | h
+  rcases statistic_ne_of_superCommuteF_fermionic h with h | h
   · simp only [ofCrAnListF_singleton]
     apply ι_superCommuteF_of_diff_statistic
     simpa using h
@@ -208,7 +208,7 @@ lemma ι_eq_zero_iff_mem_ideal (x : FieldOpFreeAlgebra 𝓕) :
     ι x = 0 ↔ x ∈ TwoSidedIdeal.span 𝓕.fieldOpIdealSet := by
   rw [ι_apply]
   change ⟦x⟧ = ⟦0⟧ ↔ _
-  aesop
+  simp_all only [Quotient.eq, Con.rel_eq_coe, RingCon.toCon_coe_eq_coe, TwoSidedIdeal.mem_mk]
 
 lemma bosonicProjF_mem_fieldOpIdealSet_or_zero (x : FieldOpFreeAlgebra 𝓕)
     (hx : x ∈ 𝓕.fieldOpIdealSet) :

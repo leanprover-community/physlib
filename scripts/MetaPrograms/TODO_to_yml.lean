@@ -156,7 +156,7 @@ structure FullTODOInfo where
   category : PhysLeanCategory
   tag : String
 
-/-- Coverts a `FullTODOInfo` to an entry in a YAML code. -/
+/-- Converts a `FullTODOInfo` to an entry in a YAML code. -/
 def FullTODOInfo.toYAML (todo : FullTODOInfo) : MetaM String := do
   let content := todo.content
   let contentIndent := content.replace "\n" "\n      "
@@ -292,7 +292,7 @@ unsafe def categoriesToYML : MetaM String := do
 
 unsafe def todosToYAML : MetaM String := do
   let todos ← allTODOs
-  /- Check no dulicate tags-/
+  /- Check no duplicate tags-/
   let tags := todos.map (fun x => x.tag)
   if !tags.Nodup then
     let duplicates := tags.filter (fun tag => tags.count tag > 1) |>.eraseDups

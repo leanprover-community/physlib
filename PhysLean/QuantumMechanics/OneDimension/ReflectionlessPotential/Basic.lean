@@ -6,7 +6,6 @@ Authors: Afiq Hatta
 import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
 import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
 import PhysLean.QuantumMechanics.OneDimension.Operators.Position
-import PhysLean.SpaceAndTime.Space.VectorIdentities
 import PhysLean.SpaceAndTime.Time.Basic
 import PhysLean.Mathematics.Trigonometry.Tanh
 /-!
@@ -80,7 +79,7 @@ lemma scaled_tanh_hasTemperateGrowth (κ : ℝ) :
     Function.HasTemperateGrowth (fun x => (Real.tanh (κ * x))) := by
   exact tanh_const_mul_hasTemperateGrowth κ
 
-/-- This is a helper lemma to show that the embedding of a real functio with temperate growth in ℂ
+/-- This is a helper lemma to show that the embedding of a real function with temperate growth in ℂ
   also has temperate growth -/
 private lemma complex_embedding_of_temperate_growth (f : ℝ → ℝ)
     (h : Function.HasTemperateGrowth f) : Function.HasTemperateGrowth (fun x => (f x : ℂ)) := by
@@ -136,7 +135,7 @@ noncomputable def creationOperatorSchwartz (Q : ReflectionlessPotential) : 𝓢(
 noncomputable def annihilationOperatorSchwartz (Q : ReflectionlessPotential) :
   𝓢(ℝ, ℂ) →L[ℂ] 𝓢(ℝ, ℂ) :=
 (1 / Real.sqrt (2 * Q.m)) • momentumOperatorSchwartz +
-    ((Complex.I * Q.ℏ * Q.κ) / Real.sqrt (2 * Q.m)) • Q.tanhOperatorSchwartz
+    ((-Complex.I * Q.ℏ * Q.κ) / Real.sqrt (2 * Q.m)) • Q.tanhOperatorSchwartz
 
 end ReflectionlessPotential
 end OneDimension

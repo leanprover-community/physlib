@@ -226,8 +226,8 @@ lemma contrT_basis_repr_apply_eq_fin {n d: ℕ} {c : Fin (n + 1 + 1) → realLor
     · dsimp only [ne_eq, OrderIso.toEquiv_symm, RelIso.coe_fn_toEquiv, e]
       simp
     · dsimp only [OrderIso.toEquiv_symm, RelIso.coe_fn_toEquiv, ne_eq, id_eq,
-      eq_mpr_eq_cast, Fin.coe_cast, e]
-      simp_all only [ne_eq, Fin.ext_iff, Finset.mem_univ, Fin.coe_cast,
+      eq_mpr_eq_cast, Fin.val_cast, e]
+      simp_all only [ne_eq, Fin.ext_iff, Finset.mem_univ, Fin.val_cast,
         OrderIso.coe_symm_toEquiv, Fin.symm_castOrderIso, Fin.castOrderIso_apply]
       omega
   · simp

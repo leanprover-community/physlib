@@ -68,7 +68,9 @@ noncomputable def fromSingleT {c : C} : S.FD.obj {as := c} ≃ₗ[k] S.Tensor ![
 lemma fromSingleT_symm_pure {c : C} (p : Pure S ![c]) :
     fromSingleT.symm p.toTensor = Pure.fromSingleP.symm p := by
   simp [fromSingleT]
-  change (forgetLiftApp S.FD c).hom.hom _ = _
+  trans (forgetLiftApp S.FD c).hom.hom
+    (((lift.obj S.FD).mapIso (mkIso (by aesop))).hom.hom.hom' p.toTensor)
+  · rfl
   rw [forgetLiftApp_hom_hom_apply_eq]
   simp [Pure.toTensor]
   conv_lhs =>
@@ -403,8 +405,9 @@ lemma fromPairTContr_tmul_tmul {c c1 c2 : C}
     change x1 ⊗ₜ[k] ((S.contr.app (Discrete.mk (c))) (x2 ⊗ₜ[k] y1) ⊗ₜ[k] y2)
   conv_lhs =>
     enter [2]
-    change x1 ⊗ₜ[k] ((S.contr.app (Discrete.mk (c))) (x2 ⊗ₜ[k] y1) • y2)
-  simp [tmul_smul]
+    change x1 ⊗ₜ[k] (((S.contr.app (Discrete.mk (c))) (x2 ⊗ₜ[k] y1) :k) • y2)
+    rw [tmul_smul (R := k) (R' := k)]
+  simp
 
 set_option maxHeartbeats 400000 in
 lemma fromPairT_contr_fromPairT_eq_fromPairTContr_tmul (c c1 c2 : C)

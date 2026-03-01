@@ -20,8 +20,8 @@ ratio of the two scales of time unit.
 We define `HasTimeDimension` to be a property of a function from `TimeUnit` to a type `M`
 which is a function that scales with the time unit with respect to the rational power `d`.
 
-To define specific time units, we first axiomise the existence of a
-a given time unit, and then construct all other time units from it. We choose to axiomise the
+To define specific time units, we first state the existence of a
+a given time unit, and then construct all other time units from it. We choose to state the
 existence of the time unit of seconds, and construct all other time units from that.
 
 -/
@@ -38,7 +38,7 @@ structure TimeUnit : Type where
 namespace TimeUnit
 
 @[simp]
-lemma val_neq_zero (x : TimeUnit) : x.val ≠ 0 := by
+lemma val_ne_zero (x : TimeUnit) : x.val ≠ 0 := by
   exact Ne.symm (ne_of_lt x.property)
 
 lemma val_pos (x : TimeUnit) : 0 < x.val := x.property
@@ -59,7 +59,7 @@ lemma div_eq_val (x y : TimeUnit) :
     x / y = (⟨x.val / y.val, div_nonneg (le_of_lt x.val_pos) (le_of_lt y.val_pos)⟩ : ℝ≥0) := rfl
 
 @[simp]
-lemma div_neq_zero (x y : TimeUnit) : ¬ x / y = (0 : ℝ≥0) := by
+lemma div_ne_zero (x y : TimeUnit) : ¬ x / y = (0 : ℝ≥0) := by
   rw [div_eq_val]
   refine coe_ne_zero.mp ?_
   simp
@@ -68,12 +68,12 @@ lemma div_neq_zero (x y : TimeUnit) : ¬ x / y = (0 : ℝ≥0) := by
 lemma div_pos (x y : TimeUnit) : (0 : ℝ≥0) < x/ y := by
   apply lt_of_le_of_ne
   · exact zero_le (x / y)
-  · exact Ne.symm (div_neq_zero x y)
+  · exact Ne.symm (div_ne_zero x y)
 
 @[simp]
 lemma div_self (x : TimeUnit) :
     x / x = (1 : ℝ≥0) := by
-  simp [div_eq_val, x.val_neq_zero]
+  simp [div_eq_val, x.val_ne_zero]
 
 lemma div_symm (x y : TimeUnit) :
     x / y = (y / x)⁻¹ := NNReal.eq <| by
@@ -129,16 +129,16 @@ lemma scale_scale (x : TimeUnit) (r1 r2 : ℝ) (hr1 : 0 < r1) (hr2 : 0 < r2) :
 
 ## Specific choices of time units
 
-To define a specific time units, we must first axiomise the existence of a
-a given time unit, and then construct all other time units from it.
-We choose to axiomise the existence of the time unit of seconds.
-
-We need an axiom since this relates something to something in the physical world.
+To define a specific time units.
+We first define the notion of a second to correspond to the length unit with underlying value
+equal to `1`. This is really down to a choice in the isomorphism between the set of metrics
+on the time manifold and the positive reals.
+From this choice of second, we can define other length units by scaling second.
 
 -/
 
-/-- The axiom corresponding to the definition of a time unit of seconds. -/
-axiom seconds : TimeUnit
+/-- The definition of a time unit of seconds. -/
+def seconds : TimeUnit := ⟨1, by norm_num⟩
 
 /-- The time unit of femtoseconds (10⁻¹⁵ of a second). -/
 noncomputable def femtoseconds : TimeUnit := scale ((1/10) ^ (15)) seconds

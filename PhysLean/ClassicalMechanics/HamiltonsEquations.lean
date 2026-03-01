@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
 import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
-import PhysLean.SpaceAndTime.Time.Basic
 /-!
 
 # Hamilton's equations
@@ -16,6 +15,11 @@ which when equals zero implies hamilton's equations.
 We show that the variational derivative of the action functional
 `∫ ⟪p, dq/dt⟫ - H(t, p, q) dt` is equal to the `hamiltonEqOp`
 applied to `(p, q)`.
+
+## References
+
+- G. J. Sussman and J. Wisdom, "Structure and Interpretation of Classical Mechanics", Section 3.1.2.
+<https://groups.csail.mit.edu/mac/users/gjs/6946/sicm-html/book-Z-H-36.html#%_sec_3.1.2>
 
 -/
 

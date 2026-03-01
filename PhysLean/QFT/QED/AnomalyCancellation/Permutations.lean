@@ -86,67 +86,6 @@ lemma FamilyPermutations_anomalyFreeLinear_apply (S : (PureU1 n).LinSols)
     ((FamilyPermutations n).linSolRep f S).val i = S.val (f.invFun i) := by
   rfl
 
-TODO "6VZPL" "Remove `pairSwap`, and use the Mathlib defined function `Equiv.swap` instead."
-/-- The permutation which swaps i and j. -/
-def pairSwap {n : ℕ} (i j : Fin n) : (FamilyPermutations n).group where
-  toFun s :=
-    if s = i then
-        j
-    else
-      if s = j then
-        i
-      else
-        s
-  invFun s :=
-    if s = i then
-        j
-    else
-      if s = j then
-        i
-      else
-        s
-  left_inv s := by
-    aesop
-  right_inv s := by
-    aesop
-
-lemma pairSwap_self_inv {n : ℕ} (i j : Fin n) : (pairSwap i j)⁻¹ = (pairSwap i j) := by
-  rfl
-
-lemma pairSwap_fst {n : ℕ} (i j : Fin n) : (pairSwap i j).toFun i = j := by
-  simp [pairSwap]
-
-lemma pairSwap_snd {n : ℕ} (i j : Fin n) : (pairSwap i j).toFun j = i := by
-  simp [pairSwap]
-
-lemma pairSwap_inv_fst {n : ℕ} (i j : Fin n) : (pairSwap i j).invFun i = j := by
-  simp [pairSwap]
-
-lemma pairSwap_inv_snd {n : ℕ} (i j : Fin n) : (pairSwap i j).invFun j = i := by
-  simp [pairSwap]
-
-lemma pairSwap_other {n : ℕ} (i j k : Fin n) (hik : i ≠ k) (hjk : j ≠ k) :
-    (pairSwap i j).toFun k = k := by
-  simp only [pairSwap, Equiv.toFun_as_coe, Equiv.coe_fn_mk]
-  split
-  · rename_i h
-    exact False.elim (hik (id (Eq.symm h)))
-  · split
-    · rename_i h
-      exact False.elim (hjk (id (Eq.symm h)))
-    · rfl
-
-lemma pairSwap_inv_other {n : ℕ} {i j k : Fin n} (hik : i ≠ k) (hjk : j ≠ k) :
-    (pairSwap i j).invFun k = k := by
-  simp only [pairSwap, Equiv.invFun_as_coe, Equiv.coe_fn_symm_mk]
-  split
-  · rename_i h
-    exact False.elim (hik (id (Eq.symm h)))
-  · split
-    · rename_i h
-      exact False.elim (hjk (id (Eq.symm h)))
-    · rfl
-
 /-- A permutation of fermions which takes one ordered subset into another. -/
 noncomputable def permOfInjection (f g : Fin m ↪ Fin n) : (FamilyPermutations n).group :=
   Equiv.extendSubtype (g.toEquivRange.symm.trans f.toEquivRange)

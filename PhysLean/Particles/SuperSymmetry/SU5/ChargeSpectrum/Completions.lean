@@ -141,7 +141,7 @@ def completions (S5 S10 : Finset 𝓩) (x : ChargeSpectrum 𝓩) : Multiset (Cha
   let SqHu := if x.qHu.isSome then {x.qHu} else S5.val.map fun y => some y
   let SQ5 := if x.Q5 ≠ ∅ then {x.Q5} else S5.val.map fun y => {y}
   let SQ10 := if x.Q10 ≠ ∅ then {x.Q10} else S10.val.map fun y => {y}
-  (SqHd.product (SqHu.product (SQ5.product SQ10))).map (toProd).symm
+  (SqHd ×ˢ SqHu ×ˢ SQ5 ×ˢ SQ10).map (toProd).symm
 
 /-!
 
@@ -305,6 +305,8 @@ lemma self_subset_mem_completions (S5 S10 : Finset 𝓩) (x y : ChargeSpectrum �
     · simp_all
     · simp_all
 
+/-- If `x` is a subset of `y` and `y` is complete, then there is a completion of `x` which is also
+  a subset of `y`. -/
 lemma exist_completions_subset_of_complete (S5 S10 : Finset 𝓩) (x y : ChargeSpectrum 𝓩)
     (hsubset : x ⊆ y) (hy : y ∈ ofFinset S5 S10) (hycomplete : IsComplete y) :
     ∃ z ∈ completions S5 S10 x, z ⊆ y := by
@@ -400,7 +402,7 @@ look at.
   `minimallyAllowsTermsOfFinset S5 S10 .topYukawa`. -/
 def completionsTopYukawa (S5 : Finset 𝓩) (x : ChargeSpectrum 𝓩) :
     Multiset (ChargeSpectrum 𝓩) :=
-  (S5.val.product S5.val).map fun (qHd, q5) => ⟨qHd, x.qHu, {q5}, x.Q10⟩
+  (S5.val ×ˢ S5.val).map fun (qHd, q5) => ⟨qHd, x.qHu, {q5}, x.Q10⟩
 
 /-!
 
@@ -444,11 +446,11 @@ lemma completions_eq_completionsTopYukawa_of_mem_minimallyAllowsTermsOfFinset [A
   simp [minimallyAllowsTermsOfFinset] at hx
   obtain ⟨qHu, Q10, ⟨⟨h1, ⟨h2, hcard⟩⟩, h3⟩, rfl⟩ := hx
   simp [completions, completionsTopYukawa]
-  have Q10_neq_zero : Q10 ≠ 0 := by
+  have Q10_ne_zero : Q10 ≠ 0 := by
     by_contra hn
     subst hn
     simp at hcard
-  simp [Q10_neq_zero]
+  simp [Q10_ne_zero]
   match a with
   | ⟨xqHd, xqHu, xQ5, xQ10⟩ =>
   simp [eq_iff]

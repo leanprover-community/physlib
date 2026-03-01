@@ -40,7 +40,7 @@ import PhysLean.Relativity.Tensors.Tensorial
 
 ## Comments
 
-- In all of theses expressions `μ`, `ν` etc are free. It does not matter what they are called,
+- In all of these expressions `μ`, `ν` etc are free. It does not matter what they are called,
   Lean will elaborate them in the same way. In other words, `{T | μ ν ⊗ T3 | μ ν }ᵀ` is exactly
   the same to Lean as `{T | α β ⊗ T3 | α β }ᵀ`.
 - Note that compared to ordinary index notation, we do not rise or lower the indices.

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
 import Mathlib.Analysis.Normed.Field.Instances
-import Mathlib.Topology.Metrizable.CompletelyMetrizable
 import PhysLean.Mathematics.DataStructures.Matrix.LieTrace
 import PhysLean.Relativity.LorentzAlgebra.Basic
 import PhysLean.Relativity.LorentzGroup.Restricted.Basic
@@ -51,7 +50,7 @@ The exponential of the transpose of a Lorentz algebra element.
 This connects `exp(Aᵀ)` to a conjugation of `exp(-A)`.
 -/
 lemma exp_transpose_of_mem_algebra (A : lorentzAlgebra) :
-    (NormedSpace.exp ℝ) (A.1ᵀ) = η * ((NormedSpace.exp ℝ) (-A.1)) * η := by
+    NormedSpace.exp (A.1ᵀ) = η * (NormedSpace.exp (-A.1)) * η := by
   rw [transpose_eq_neg_eta_conj A]
   let P_gl : GL (Fin 1 ⊕ Fin 3) ℝ :=
     { val := η,
@@ -59,24 +58,24 @@ lemma exp_transpose_of_mem_algebra (A : lorentzAlgebra) :
       val_inv := minkowskiMatrix.sq,
       inv_val := minkowskiMatrix.sq }
   rw [show -(η * A.1 * η) = η * (-A.1) * η by noncomm_ring]
-  erw [NormedSpace.exp_units_conj ℝ P_gl (-A.1)]
+  erw [NormedSpace.exp_units_conj P_gl (-A.1)]
   rfl
 
 /--
 The exponential of an element of the Lorentz algebra is a member of the Lorentz group.
 -/
-theorem exp_mem_lorentzGroup (A : lorentzAlgebra) : (NormedSpace.exp ℝ) A.1 ∈ LorentzGroup 3 := by
+theorem exp_mem_lorentzGroup (A : lorentzAlgebra) : NormedSpace.exp A.1 ∈ LorentzGroup 3 := by
   rw [LorentzGroup.mem_iff_transpose_mul_minkowskiMatrix_mul_self]
   rw [← Matrix.exp_transpose]
   rw [exp_transpose_of_mem_algebra A]
   calc
-    (η * (NormedSpace.exp ℝ) (-A.1) * η) * η * (NormedSpace.exp ℝ) A.1
-    _ = η * (NormedSpace.exp ℝ) (-A.1) * (η * η) * (NormedSpace.exp ℝ) A.1 := by noncomm_ring
-    _ = η * (NormedSpace.exp ℝ) (-A.1) * 1 * (NormedSpace.exp ℝ) A.1 := by rw [minkowskiMatrix.sq]
-    _ = η * (NormedSpace.exp ℝ) (-A.1 + A.1) := by
+    (η * NormedSpace.exp (-A.1) * η) * η * NormedSpace.exp A.1
+    _ = η * NormedSpace.exp (-A.1) * (η * η) * NormedSpace.exp A.1 := by noncomm_ring
+    _ = η * NormedSpace.exp (-A.1) * 1 * NormedSpace.exp A.1 := by rw [minkowskiMatrix.sq]
+    _ = η * NormedSpace.exp (-A.1 + A.1) := by
                                             rw [mul_one, mul_assoc, NormedSpace.exp_add_of_commute]
                                             exact Commute.neg_left rfl
-    _ = η * (NormedSpace.exp ℝ) 0 := by rw [neg_add_cancel]
+    _ = η * NormedSpace.exp 0 := by rw [neg_add_cancel]
     _ = η * 1 := by rw [NormedSpace.exp_zero]
     _ = η := by rw [mul_one]
 
@@ -113,10 +112,10 @@ variable {n R ι : Type*} [Fintype n] [DecidableEq n]
 @[simp]
 lemma exp_reindex {k : Type*}
     [RCLike k] [Fintype ι] [DecidableEq ι] (e : n ≃ ι) (A : Matrix n n k) :
-    NormedSpace.exp k (A.submatrix e.symm e.symm) = reindex e e (NormedSpace.exp k A) := by
+    NormedSpace.exp (A.submatrix e.symm e.symm) = reindex e e (NormedSpace.exp A) := by
   let f := reindexAlgEquiv k k e
   have h_cont : Continuous f := f.toLinearEquiv.continuous_of_finiteDimensional
-  exact (NormedSpace.map_exp k f.toAlgHom h_cont A).symm
+  exact (NormedSpace.map_exp f.toAlgHom h_cont A).symm
 
 end Matrix
 
@@ -127,7 +126,7 @@ attribute [local instance] Matrix.linftyOpNormedAlgebra
 
 /-- The exponential of an element of the Lorentz algebra is proper (has determinant 1). -/
 theorem exp_isProper (A : lorentzAlgebra) :
-    LorentzGroup.IsProper ⟨(NormedSpace.exp ℝ) A.1, exp_mem_lorentzGroup A⟩ := by
+    LorentzGroup.IsProper ⟨NormedSpace.exp A.1, exp_mem_lorentzGroup A⟩ := by
   simp only [LorentzGroup.IsProper]
   let e : (Fin 1 ⊕ Fin 3) ≃ Fin 4 := finSumFinEquiv
   -- we reindex to Fin 4 to use the faster LinearOrder
@@ -137,7 +136,7 @@ theorem exp_isProper (A : lorentzAlgebra) :
 
 /-- The exponential of an element of the Lorentz algebra is orthochronous. -/
 theorem exp_isOrthochronous (A : lorentzAlgebra) :
-    LorentzGroup.IsOrthochronous ⟨(NormedSpace.exp ℝ) A.1, exp_mem_lorentzGroup A⟩ := by
+    LorentzGroup.IsOrthochronous ⟨NormedSpace.exp A.1, exp_mem_lorentzGroup A⟩ := by
   -- The Lie algebra is a vector space, so there is a path from 0 to A.
   let γ : Path (0 : lorentzAlgebra) A :=
   { toFun := fun t => t.val • A,
@@ -147,8 +146,8 @@ theorem exp_isOrthochronous (A : lorentzAlgebra) :
       · exact continuous_const,
     source' := by simp [zero_smul],
     target' := by simp [one_smul] }
-  let exp_γ : Path (1 : LorentzGroup 3) ⟨(NormedSpace.exp ℝ) A.1, exp_mem_lorentzGroup A⟩ :=
-  { toFun := fun t => ⟨(NormedSpace.exp ℝ) (γ t).val, exp_mem_lorentzGroup (γ t)⟩,
+  let exp_γ : Path (1 : LorentzGroup 3) ⟨NormedSpace.exp A.1, exp_mem_lorentzGroup A⟩ :=
+  { toFun := fun t => ⟨NormedSpace.exp (γ t).val, exp_mem_lorentzGroup (γ t)⟩,
     continuous_toFun := by
       apply Continuous.subtype_mk
       apply Continuous.comp
@@ -162,9 +161,9 @@ theorem exp_isOrthochronous (A : lorentzAlgebra) :
       ext i j
       simp only [γ]
       simp}
-  have h_joined : Joined (1 : LorentzGroup 3) ⟨(NormedSpace.exp ℝ) A.1, exp_mem_lorentzGroup A⟩ :=
+  have h_joined : Joined (1 : LorentzGroup 3) ⟨NormedSpace.exp A.1, exp_mem_lorentzGroup A⟩ :=
     ⟨exp_γ⟩
-  have h_connected : ⟨(NormedSpace.exp ℝ) A.1, exp_mem_lorentzGroup A⟩ ∈ connectedComponent
+  have h_connected : ⟨NormedSpace.exp A.1, exp_mem_lorentzGroup A⟩ ∈ connectedComponent
       (1 : LorentzGroup 3) :=
     pathComponent_subset_component _ h_joined
   rw [← LorentzGroup.isOrthochronous_on_connected_component h_connected]
@@ -173,6 +172,6 @@ theorem exp_isOrthochronous (A : lorentzAlgebra) :
 /-- The exponential of an element of the Lorentz algebra is a member of the
 restricted Lorentz group. -/
 theorem exp_mem_restricted_lorentzGroup (A : lorentzAlgebra) :
-    (⟨(NormedSpace.exp ℝ) A.1, exp_mem_lorentzGroup A⟩ : LorentzGroup 3) ∈
+    (⟨NormedSpace.exp A.1, exp_mem_lorentzGroup A⟩ : LorentzGroup 3) ∈
     LorentzGroup.restricted 3 := by
   exact ⟨exp_isProper A, exp_isOrthochronous A⟩

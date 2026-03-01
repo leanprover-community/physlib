@@ -58,11 +58,11 @@ def parityOperatorSchwartz : 𝓢(ℝ, ℂ) →L[ℂ] 𝓢(ℝ, ℂ) := by
     | 0 => simp
     | 1 =>
       rw [iteratedFDeriv_succ_eq_comp_right]
-      simp
+      simp [ContinuousLinearMap.norm_id]
     | .succ (.succ n) =>
       rw [iteratedFDeriv_succ_eq_comp_right]
-      simp only [Nat.succ_eq_add_one, fderiv_id', Function.comp_apply, LinearIsometryEquiv.norm_map,
-        ge_iff_le]
+      simp only [Nat.succ_eq_add_one, fderiv_id', Function.comp_apply,
+        LinearIsometryEquiv.norm_map, ge_iff_le]
       rw [iteratedFDeriv_const_of_ne]
       simp only [Pi.zero_apply, norm_zero]
       apply add_nonneg

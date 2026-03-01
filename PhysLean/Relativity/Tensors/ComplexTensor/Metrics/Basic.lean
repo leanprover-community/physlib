@@ -109,27 +109,33 @@ lemma altRightMetric_eq_fromConstPair : εR' = fromConstPair Fermion.altRightMet
 
 lemma coMetric_eq_fromPairT : η' = fromPairT (Lorentz.coMetricVal) := by
   rw [coMetric_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.coMetric_apply_one]
+  congr 1
+  exact Lorentz.coMetric_apply_one
 
 lemma contrMetric_eq_fromPairT : η = fromPairT (Lorentz.contrMetricVal) := by
   rw [contrMetric_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.contrMetric_apply_one]
+  congr 1
+  exact Lorentz.contrMetric_apply_one
 
 lemma leftMetric_eq_fromPairT : εL = fromPairT (Fermion.leftMetricVal) := by
   rw [leftMetric_eq_fromConstPair, fromConstPair]
-  erw [Fermion.leftMetric_apply_one]
+  congr 1
+  exact Fermion.leftMetric_apply_one
 
 lemma rightMetric_eq_fromPairT : εR = fromPairT (Fermion.rightMetricVal) := by
   rw [rightMetric_eq_fromConstPair, fromConstPair]
-  erw [Fermion.rightMetric_apply_one]
+  congr 1
+  exact Fermion.rightMetric_apply_one
 
 lemma altLeftMetric_eq_fromPairT : εL' = fromPairT (Fermion.altLeftMetricVal) := by
   rw [altLeftMetric_eq_fromConstPair, fromConstPair]
-  erw [Fermion.altLeftMetric_apply_one]
+  congr 1
+  exact Fermion.altLeftMetric_apply_one
 
 lemma altRightMetric_eq_fromPairT : εR' = fromPairT (Fermion.altRightMetricVal) := by
   rw [altRightMetric_eq_fromConstPair, fromConstPair]
-  erw [Fermion.altRightMetric_apply_one]
+  congr 1
+  exact Fermion.altRightMetric_apply_one
 
 /-!
 

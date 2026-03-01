@@ -43,7 +43,7 @@ def main (args : List String) : IO UInt32 := do
     println! "\x1b[36m(7/7) Transitive imports \x1b[0m"
     println! "\x1b[2mExpect this linter to take a while to run, it can be skipped with
         lake exe lint_all --fast\x1b[0m"
-    let redundentImports ← IO.Process.output {cmd := "lake", args := #["exe", "redundent_imports"]}
+    let redundentImports ← IO.Process.output {cmd := "lake", args := #["exe", "redundant_imports"]}
     println! redundentImports.stdout
 
 

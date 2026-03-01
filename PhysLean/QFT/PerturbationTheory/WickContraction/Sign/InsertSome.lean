@@ -106,7 +106,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
       insertAndContract_some_getDual?_self_eq, reduceCtorEq, Option.isSome_some, Option.get_some,
       forall_const, false_or, true_and]
     rw [Fin.lt_def, Fin.lt_def, Fin.lt_def, Fin.lt_def]
-    simp only [Fin.coe_cast, Fin.val_fin_lt, and_congr_right_iff]
+    simp only [Fin.val_cast, Fin.val_fin_lt, and_congr_right_iff]
     intro h1 h2
     exact Fin.succAbove_lt_succAbove_iff
   · obtain ⟨k, hk⟩ := hk
@@ -117,16 +117,16 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
         Finset.mem_univ, insertAndContract_some_getDual?_some_eq, reduceCtorEq, Option.isSome_some,
         Option.get_some, forall_const, false_or, true_and, not_lt]
       rw [Fin.lt_def, Fin.lt_def]
-      simp only [Fin.coe_cast, Fin.val_fin_lt, Nat.succ_eq_add_one, finCongr_apply, not_lt]
+      simp only [Fin.val_cast, Fin.val_fin_lt, Nat.succ_eq_add_one, finCongr_apply, not_lt]
       conv_lhs =>
         enter [2, 2]
         rw [Fin.lt_def]
-      simp only [Fin.coe_cast, Fin.val_fin_lt]
+      simp only [Fin.val_cast, Fin.val_fin_lt]
       split
       · rename_i h
         simp_all only [and_true, Finset.mem_insert]
         rw [succAbove_mem_insertAndContractLiftFinset]
-        simp only [Fin.ext_iff, Fin.coe_cast]
+        simp only [Fin.ext_iff, Fin.val_cast]
         have h1 : ¬ (i.succAbove ↑j) = i := Fin.succAbove_ne i ↑j
         simp only [Fin.val_eq_val, h1, signFinset, Finset.mem_filter, Finset.mem_univ, true_and,
           false_or]
@@ -135,7 +135,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
         intro h1 h2
         apply Or.inl
         have hj:= j.2
-        simpa [uncontracted, -Finset.coe_mem] using hj
+        simpa [uncontracted, -SetLike.coe_mem] using hj
       · rename_i h
         simp only [not_and, not_lt] at h
         rw [Fin.succAbove_lt_succAbove_iff, Fin.succAbove_lt_succAbove_iff]
@@ -169,7 +169,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
         split
         · simp only [Nat.succ_eq_add_one, finCongr_apply, Finset.mem_insert, or_iff_right_iff_imp]
           intro h
-          simp only [Fin.ext_iff, Fin.coe_cast] at h
+          simp only [Fin.ext_iff, Fin.val_cast] at h
           simp only [Fin.val_eq_val] at h
           have hn : ¬ i.succAbove k = i := Fin.succAbove_ne i k
           exact False.elim (hn h)
@@ -177,7 +177,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
           simp only [Nat.succ_eq_add_one, finCongr_apply, Finset.mem_erase, ne_eq,
             and_iff_right_iff_imp]
           intro h
-          simp only [Fin.ext_iff, Fin.coe_cast]
+          simp only [Fin.ext_iff, Fin.val_cast]
           simp only [Fin.val_eq_val]
           rw [Function.Injective.eq_iff]
           exact hkj
@@ -188,7 +188,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
       simp only [Nat.succ_eq_add_one, signFinset, finCongr_apply, Finset.mem_filter,
         Finset.mem_univ, true_and]
       rw [Fin.lt_def, Fin.lt_def, Fin.lt_def, Fin.lt_def]
-      simp only [Fin.coe_cast, Fin.val_fin_lt]
+      simp only [Fin.val_cast, Fin.val_fin_lt]
       rw [Fin.succAbove_lt_succAbove_iff, Fin.succAbove_lt_succAbove_iff]
       simp only [and_congr_right_iff]
       intro h1 h2
@@ -198,7 +198,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
         rhs
         enter [h]
         rw [Fin.lt_def]
-        simp only [Fin.coe_cast, Option.get_map, Function.comp_apply, Fin.val_fin_lt]
+        simp only [Fin.val_cast, Option.get_map, Function.comp_apply, Fin.val_fin_lt]
         rw [Fin.succAbove_lt_succAbove_iff]
 
 /--
@@ -251,14 +251,14 @@ lemma sign_insert_some (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp) (φsΛ : Wi
   congr
   funext a
   simp only [instCommGroup, Nat.succ_eq_add_one, insertAndContract_sndFieldOfContract,
-    finCongr_apply, Fin.getElem_fin, Fin.coe_cast, insertIdx_getElem_fin,
+    finCongr_apply, Fin.getElem_fin, Fin.val_cast, insertIdx_getElem_fin,
     insertAndContract_fstFieldOfContract, not_lt, ite_mul, one_mul]
   erw [signFinset_insertAndContract_some]
   split
   · rename_i h
     simp only [Nat.succ_eq_add_one, finCongr_apply]
     rw [ofFinset_insert]
-    simp only [instCommGroup, Fin.getElem_fin, Fin.coe_cast, List.getElem_insertIdx_self, map_mul]
+    simp only [instCommGroup, Fin.getElem_fin, Fin.val_cast, List.getElem_insertIdx_self, map_mul]
     rw [stat_ofFinset_of_insertAndContractLiftFinset]
     simp only [exchangeSign_symm, instCommGroup.eq_1]
     simp
@@ -268,7 +268,7 @@ lemma sign_insert_some (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp) (φsΛ : Wi
       simp only [Nat.succ_eq_add_one, finCongr_apply, h1, true_and]
       rw [if_pos]
       rw [ofFinset_erase]
-      simp only [instCommGroup, Fin.getElem_fin, Fin.coe_cast, insertIdx_getElem_fin, map_mul]
+      simp only [instCommGroup, Fin.getElem_fin, Fin.val_cast, insertIdx_getElem_fin, map_mul]
       rw [stat_ofFinset_of_insertAndContractLiftFinset]
       simp only [exchangeSign_symm, instCommGroup.eq_1]
       · rw [succAbove_mem_insertAndContractLiftFinset]
@@ -276,7 +276,7 @@ lemma sign_insert_some (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp) (φsΛ : Wi
         simp_all only [Nat.succ_eq_add_one, and_true, false_and, not_false_eq_true, not_lt,
           true_and]
         apply Or.inl
-        simpa [uncontracted, -Finset.coe_mem] using j.2
+        simpa [uncontracted, -SetLike.coe_mem] using j.2
       · simp_all
     · rename_i h1
       rw [if_neg]
@@ -454,7 +454,7 @@ lemma stat_signFinset_insert_some_self_fst
       reduceCtorEq, Option.isSome_some, Option.get_some, forall_const, false_or, and_self,
       false_and, false_iff, not_exists, not_and, and_imp]
     intro x hi hx h
-    simp only [Fin.ext_iff, Fin.coe_cast]
+    simp only [Fin.ext_iff, Fin.val_cast]
     simp only [Fin.val_eq_val]
     exact Fin.succAbove_ne i x
   · obtain ⟨x, hx⟩ := hx
@@ -465,7 +465,7 @@ lemma stat_signFinset_insert_some_self_fst
         reduceCtorEq, Option.isSome_some, Option.get_some, imp_false, not_true_eq_false, or_self,
         and_self, and_false, false_iff, not_exists, not_and, and_imp]
       intro x hi hx h0
-      simp only [Fin.ext_iff, Fin.coe_cast]
+      simp only [Fin.ext_iff, Fin.val_cast]
       simp only [Fin.val_eq_val]
       rw [Function.Injective.eq_iff]
       omega
@@ -474,7 +474,7 @@ lemma stat_signFinset_insert_some_self_fst
         insertAndContract_some_succAbove_getDual?_eq_option, Option.map_eq_none_iff,
         Option.isSome_map]
       rw [Fin.lt_def, Fin.lt_def]
-      simp only [Fin.coe_cast, Fin.val_fin_lt]
+      simp only [Fin.val_cast, Fin.val_fin_lt]
       apply Iff.intro
       · intro h
         use x
@@ -490,7 +490,7 @@ lemma stat_signFinset_insert_some_self_fst
           simpa using h2
       · intro h
         obtain ⟨y, hy1, hy2⟩ := h
-        simp only [Fin.ext_iff, Fin.coe_cast] at hy2
+        simp only [Fin.ext_iff, Fin.val_cast] at hy2
         simp only [Fin.val_eq_val] at hy2
         rw [Function.Injective.eq_iff (Fin.succAbove_right_injective)] at hy2
         subst hy2
@@ -530,7 +530,7 @@ lemma stat_signFinset_insert_some_self_snd (φ : 𝓕.FieldOp) (φs : List 𝓕.
       reduceCtorEq, Option.isSome_some, Option.get_some, imp_false, not_true_eq_false, or_self,
       and_self, and_false, false_iff, not_exists, not_and, and_imp]
     intro x hi hx h
-    simp only [Fin.ext_iff, Fin.coe_cast]
+    simp only [Fin.ext_iff, Fin.val_cast]
     simp only [Fin.val_eq_val]
     exact Fin.succAbove_ne i x
   · obtain ⟨x, hx⟩ := hx
@@ -541,7 +541,7 @@ lemma stat_signFinset_insert_some_self_snd (φ : 𝓕.FieldOp) (φs : List 𝓕.
         reduceCtorEq, Option.isSome_some, Option.get_some, forall_const, false_or, and_self,
         false_and, false_iff, not_exists, not_and, and_imp]
       intro x hi hx h0
-      simp only [Fin.ext_iff, Fin.coe_cast]
+      simp only [Fin.ext_iff, Fin.val_cast]
       simp only [Fin.val_eq_val]
       rw [Function.Injective.eq_iff]
       omega
@@ -550,7 +550,7 @@ lemma stat_signFinset_insert_some_self_snd (φ : 𝓕.FieldOp) (φs : List 𝓕.
         insertAndContract_some_succAbove_getDual?_eq_option, Option.map_eq_none_iff,
         Option.isSome_map]
       rw [Fin.lt_def, Fin.lt_def]
-      simp only [Fin.coe_cast, Fin.val_fin_lt]
+      simp only [Fin.val_cast, Fin.val_fin_lt]
       apply Iff.intro
       · intro h
         use x
@@ -564,11 +564,11 @@ lemma stat_signFinset_insert_some_self_snd (φ : 𝓕.FieldOp) (φs : List 𝓕.
           intro h
           have h2 := h2 h
           rw [Fin.lt_def] at h2
-          simp only [Fin.coe_cast, Fin.val_fin_lt] at h2
+          simp only [Fin.val_cast, Fin.val_fin_lt] at h2
           exact Fin.succAbove_lt_succAbove_iff.mp h2
       · intro h
         obtain ⟨y, hy1, hy2⟩ := h
-        simp only [Fin.ext_iff, Fin.coe_cast] at hy2
+        simp only [Fin.ext_iff, Fin.val_cast] at hy2
         simp only [Fin.val_eq_val] at hy2
         rw [Function.Injective.eq_iff (Fin.succAbove_right_injective)] at hy2
         subst hy2
@@ -582,8 +582,8 @@ lemma stat_signFinset_insert_some_self_snd (φ : 𝓕.FieldOp) (φs : List 𝓕.
           · apply Or.inr
             intro h
             have hy2 := hy2 h
-            simp only [Fin.lt_def, Fin.coe_cast, gt_iff_lt]
-            simp only [Option.get_map, Function.comp_apply, Fin.coe_cast, Fin.val_fin_lt]
+            simp only [Fin.lt_def, Fin.val_cast, gt_iff_lt]
+            simp only [Option.get_map, Function.comp_apply, Fin.val_cast, Fin.val_fin_lt]
             exact Fin.succAbove_lt_succAbove_iff.mpr hy2
 
 lemma signInsertSomeCoef_eq_finset (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp)

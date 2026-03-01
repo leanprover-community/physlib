@@ -52,7 +52,7 @@ lemma signFinset_insertAndContract_none (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
         insertAndContractLiftFinset φ i (φsΛ.signFinset i1 i2) := by
       split
       · simp only [Nat.succ_eq_add_one, finCongr_apply, Finset.mem_insert, Fin.ext_iff,
-        Fin.coe_cast, or_iff_right_iff_imp]
+        Fin.val_cast, or_iff_right_iff_imp]
         intro h
         have h1 : i.succAbove k ≠ i := by
           exact Fin.succAbove_ne i k
@@ -64,7 +64,7 @@ lemma signFinset_insertAndContract_none (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
       insertAndContract_none_succAbove_getDual?_eq_none_iff, true_and,
       insertAndContract_none_succAbove_getDual?_isSome_iff, insertAndContract_none_getDual?_get_eq]
     rw [Fin.lt_def, Fin.lt_def, Fin.lt_def, Fin.lt_def]
-    simp only [Fin.coe_cast, Fin.val_fin_lt]
+    simp only [Fin.val_cast, Fin.val_fin_lt]
     rw [Fin.succAbove_lt_succAbove_iff, Fin.succAbove_lt_succAbove_iff]
     simp only [and_congr_right_iff]
     intro h1 h2
@@ -72,7 +72,7 @@ lemma signFinset_insertAndContract_none (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
       rhs
       enter [h]
       rw [Fin.lt_def]
-      simp only [Fin.coe_cast, Fin.val_fin_lt]
+      simp only [Fin.val_cast, Fin.val_fin_lt]
       rw [Fin.succAbove_lt_succAbove_iff]
 
 /-- Given a Wick contraction `φsΛ` associated with a list of states `φs`
@@ -97,12 +97,12 @@ lemma sign_insert_none_eq_signInsertNone_mul_sign (φ : 𝓕.FieldOp) (φs : Lis
   congr
   funext a
   simp only [instCommGroup, Nat.succ_eq_add_one, insertAndContract_sndFieldOfContract,
-    finCongr_apply, Fin.getElem_fin, Fin.coe_cast, insertIdx_getElem_fin,
+    finCongr_apply, Fin.getElem_fin, Fin.val_cast, insertIdx_getElem_fin,
     insertAndContract_fstFieldOfContract, ite_mul, one_mul]
   rw [signFinset_insertAndContract_none]
   split
   · rw [ofFinset_insert]
-    simp only [instCommGroup, Nat.succ_eq_add_one, finCongr_apply, Fin.getElem_fin, Fin.coe_cast,
+    simp only [instCommGroup, Nat.succ_eq_add_one, finCongr_apply, Fin.getElem_fin, Fin.val_cast,
       List.getElem_insertIdx_self, map_mul]
     rw [stat_ofFinset_of_insertAndContractLiftFinset]
     simp only [exchangeSign_symm, instCommGroup.eq_1]

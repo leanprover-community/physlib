@@ -19,7 +19,7 @@ open Lean System Meta
 
 
 /-- A rough definition of Upper Camal, checking that if a string starts with a
-latin letter then that letter is captial.  -/
+latin letter then that letter is capital.  -/
 def IsUpperCamal (s : String) : Bool :=
   let parts := s.splitOn "."
   let lastPart := parts.get! (parts.length - 1)

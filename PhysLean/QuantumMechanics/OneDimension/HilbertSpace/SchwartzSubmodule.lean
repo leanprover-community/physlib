@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Basic
-import Mathlib.Analysis.Distribution.FourierSchwartz
-import PhysLean.Meta.TODO.Basic
+import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 /-!
 
 # Schwartz submodule of the Hilbert space

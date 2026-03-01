@@ -273,10 +273,8 @@ def linSolsIncl (χ : ACCSystemLinear) : χ.LinSols →ₗ[ℚ] χ.Charges where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[sorryful]
 lemma linSolsIncl_injective (χ : ACCSystemLinear) :
-    Function.Injective χ.linSolsIncl := by
-  sorry
+    Function.Injective χ.linSolsIncl := fun _ _ h => LinSols.ext h
 
 end ACCSystemLinear
 
@@ -360,10 +358,12 @@ def quadSolsInclLinSols (χ : ACCSystemQuad) : χ.QuadSols →[ℚ] χ.LinSols w
   toFun := QuadSols.toLinSols
   map_smul' _ _ := rfl
 
-@[sorryful]
 lemma quadSolsInclLinSols_injective (χ : ACCSystemQuad) :
     Function.Injective χ.quadSolsInclLinSols := by
-  sorry
+  intro S T h
+  ext
+  simpa [ACCSystemQuad.quadSolsInclLinSols] using
+    congrArg (fun X => X.val) h
 
 /-!
 
@@ -394,10 +394,13 @@ the module of all charges `Charges`.
 def quadSolsIncl (χ : ACCSystemQuad) : χ.QuadSols →[ℚ] χ.Charges :=
   MulActionHom.comp χ.linSolsIncl.toMulActionHom χ.quadSolsInclLinSols
 
-@[sorryful]
 lemma quadSolsIncl_injective (χ : ACCSystemQuad) :
     Function.Injective χ.quadSolsIncl := by
-  sorry
+  intro S T h
+  have h' : χ.quadSolsInclLinSols S = χ.quadSolsInclLinSols T := by
+    apply ACCSystemLinear.linSolsIncl_injective (χ := χ.toACCSystemLinear)
+    simpa [ACCSystemQuad.quadSolsIncl, MulActionHom.comp_apply] using h
+  exact quadSolsInclLinSols_injective χ h'
 
 end ACCSystemQuad
 
@@ -410,7 +413,16 @@ in the rational charges. This corresponds to the `u(1)^3` anomaly.
 
 -/
 
-/-- The type of charges plus the anomaly cancellation conditions. -/
+/--
+The type of charges plus the anomaly cancellation conditions.
+
+In many physical settings these conditions are derived formally from the gauge group and the
+fermionic representations. They arise from triangle Feynman diagrams, and can also be obtained
+using index-theoretic or characteristic-class constructions.
+
+In this file, we take the resulting conditions as input data: linear, quadratic and cubic
+homogeneous forms on the space of rational charges.
+-/
 structure ACCSystem extends ACCSystemQuad where
   /-- The cubic ACC. -/
   cubicACC : HomogeneousCubic toACCSystemCharges.Charges
@@ -486,10 +498,13 @@ def solsInclQuadSols (χ : ACCSystem) : χ.Sols →[ℚ] χ.QuadSols where
   toFun := Sols.toQuadSols
   map_smul' _ _ := rfl
 
-@[sorryful]
 lemma solsInclQuadSols_injective (χ : ACCSystem) :
     Function.Injective χ.solsInclQuadSols := by
-  sorry
+  intro S T h
+  apply Sols.ext
+  have hv : (χ.solsInclQuadSols S).val = (χ.solsInclQuadSols T).val :=
+    congrArg (fun X => X.val) h
+  simpa [ACCSystem.solsInclQuadSols] using hv
 
 /-!
 
@@ -500,10 +515,13 @@ lemma solsInclQuadSols_injective (χ : ACCSystem) :
 def solsInclLinSols (χ : ACCSystem) : χ.Sols →[ℚ] χ.LinSols :=
   MulActionHom.comp χ.quadSolsInclLinSols χ.solsInclQuadSols
 
-@[sorryful]
 lemma solsInclLinSols_injective (χ : ACCSystem) :
     Function.Injective χ.solsInclLinSols := by
-  sorry
+  intro S T h
+  have h' : χ.solsInclQuadSols S = χ.solsInclQuadSols T := by
+    apply ACCSystemQuad.quadSolsInclLinSols_injective (χ := χ.toACCSystemQuad)
+    simpa [ACCSystem.solsInclLinSols, MulActionHom.comp_apply] using h
+  exact solsInclQuadSols_injective χ h'
 
 /-!
 
@@ -515,10 +533,13 @@ lemma solsInclLinSols_injective (χ : ACCSystem) :
 def solsIncl (χ : ACCSystem) : χ.Sols →[ℚ] χ.Charges :=
   MulActionHom.comp χ.quadSolsIncl χ.solsInclQuadSols
 
-@[sorryful]
 lemma solsIncl_injective (χ : ACCSystem) :
     Function.Injective χ.solsIncl := by
-  sorry
+  intro S T h
+  have h' : χ.solsInclQuadSols S = χ.solsInclQuadSols T := by
+    apply ACCSystemQuad.quadSolsIncl_injective (χ := χ.toACCSystemQuad)
+    simpa [ACCSystem.solsIncl, MulActionHom.comp_apply] using h
+  exact (solsInclQuadSols_injective χ) h'
 
 /-!
 
@@ -560,6 +581,12 @@ end ACCSystem
 ## J. Open TODO items
 
 We give some open TODO items for future work.
+
+One natural direction is to formalize how the anomaly cancellation conditions defining an
+`ACCSystem` arise from gauge-theoretic data (a gauge group together with fermionic representations).
+Physically these arise from triangle Feynman diagrams, and can also be described via index-theoretic
+or characteristic-class constructions (e.g. through an anomaly polynomial). At present we do not
+formalize this derivation in Lean, and instead take the resulting homogeneous forms as data.
 
 (To view these you may need to go to the GitHub source code for the file.)
 

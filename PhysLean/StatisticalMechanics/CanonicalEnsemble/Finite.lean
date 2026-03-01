@@ -294,7 +294,7 @@ lemma sum_probability_eq_one
   have hZpos := mathematicalPartitionFunction_pos_finite (𝓒:=𝓒) (T:=T)
   have hZne : 𝓒.mathematicalPartitionFunction T ≠ 0 := hZpos.ne'
   simp [hZdef]
-  simp_all only [neg_mul, ne_eq, not_false_eq_true, div_self]
+  simp_all only [neg_mul, ne_eq, not_false_eq_true]
 
 /-- The entropy of a finite canonical ensemble (Shannon entropy) is non-negative. -/
 lemma entropy_nonneg [MeasurableSingletonClass ι] [IsFinite 𝓒] [Nonempty ι] (T : Temperature) :

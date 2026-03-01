@@ -156,7 +156,7 @@ lemma dimScale_coe_mul_symm (u1 u2 : UnitChoices) (d : Dimension) :
   simp
 
 @[simp]
-lemma dimScale_neq_zero (u1 u2 : UnitChoices) (d : Dimension) :
+lemma dimScale_ne_zero (u1 u2 : UnitChoices) (d : Dimension) :
     dimScale u1 u2 d ≠ 0 := by
   simp [dimScale]
 
@@ -189,7 +189,7 @@ lemma dimScale_pos (u1 u2 : UnitChoices) (d : Dimension) :
     0 < (dimScale u1 u2 d) := by
   apply lt_of_le_of_ne
   · simp
-  · exact Ne.symm (dimScale_neq_zero u1 u2 d)
+  · exact Ne.symm (dimScale_ne_zero u1 u2 d)
 
 TODO "LCSAY" "Make SI : UnitChoices computable, probably by
   replacing the axioms defining the units. See here:

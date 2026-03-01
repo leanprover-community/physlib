@@ -502,8 +502,8 @@ parts:
           haveI hi : CauSeq.IsComplete ℂ norm :=
             inferInstanceAs (CauSeq.IsComplete ℂ Complex.abs)
           exact CauSeq.tendsto_limit (Complex.exp' (Complex.I * c * y))
-        /- End of rewritting the intergrand as a limit. -/
-        /- Rewritting the integral as a limit using dominated_convergence -/
+        /- End of rewriting the intergrand as a limit. -/
+        /- Rewriting the integral as a limit using dominated_convergence -/
         have h1' : Filter.Tendsto (fun n => ∫ y : ℝ, ∑ r ∈ range n,
             (Complex.I * ↑c * ↑y) ^ r / r ! * (f y * Real.exp (- m * ω * y^2 / (2 * ℏ))))
             Filter.atTop (nhds (∫ y : ℝ, Complex.exp (Complex.I * c * y) *

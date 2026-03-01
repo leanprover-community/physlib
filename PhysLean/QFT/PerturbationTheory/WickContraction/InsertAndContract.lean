@@ -93,7 +93,7 @@ lemma insertAndContract_fstFieldOfContract_some_incl (φ : 𝓕.FieldOp) (φs : 
     · simp [congrLift]
     · simp [congrLift]
     · rw [Fin.lt_def] at h ⊢
-      simp_all only [Nat.succ_eq_add_one, Fin.val_fin_lt, not_lt, finCongr_apply, Fin.coe_cast]
+      simp_all only [Nat.succ_eq_add_one, Fin.val_fin_lt, not_lt, finCongr_apply, Fin.val_cast]
       have hi : i.succAbove j ≠ i := Fin.succAbove_ne i j
       omega
 
@@ -208,7 +208,7 @@ lemma insertAndContract_sndFieldOfContract_some_incl (φ : 𝓕.FieldOp) (φs : 
     · simp [congrLift]
     · simp [congrLift]
     · rw [Fin.lt_def] at h ⊢
-      simp_all only [Nat.succ_eq_add_one, Fin.val_fin_lt, not_lt, finCongr_apply, Fin.coe_cast]
+      simp_all only [Nat.succ_eq_add_one, Fin.val_fin_lt, not_lt, finCongr_apply, Fin.val_cast]
       have hi : i.succAbove j ≠ i := Fin.succAbove_ne i j
       omega
 
@@ -342,23 +342,23 @@ lemma stat_ofFinset_of_insertAndContractLiftFinset (φ : 𝓕.FieldOp) (φs : Li
   rw [get_eq_insertIdx_succAbove φ _ i, ← List.map_map, ← List.map_map]
   congr
   have h1 : (List.map (⇑(finCongr (insertIdx_length_fin φ φs i).symm))
-      (List.map i.succAbove (Finset.sort (fun x1 x2 => x1 ≤ x2) a))).Sorted (· ≤ ·) := by
+      (List.map i.succAbove (a.sort (fun x1 x2 => x1 ≤ x2)))).Pairwise (· ≤ ·) := by
     simp only [Nat.succ_eq_add_one, List.map_map]
     refine
-      fin_list_sorted_monotone_sorted (Finset.sort (fun x1 x2 => x1 ≤ x2) a) ?hl
+      fin_list_sorted_monotone_sorted (a.sort (fun x1 x2 => x1 ≤ x2)) ?hl
         (⇑(finCongr (Eq.symm (insertIdx_length_fin φ φs i))) ∘ i.succAbove) ?hf
-    exact Finset.sort_sorted (fun x1 x2 => x1 ≤ x2) a
+    exact a.pairwise_sort (fun x1 x2 => x1 ≤ x2)
     refine StrictMono.comp (fun ⦃a b⦄ a => a) ?hf.hf
     exact Fin.strictMono_succAbove i
   have h2 : (List.map (⇑(finCongr (insertIdx_length_fin φ φs i).symm))
-      (List.map i.succAbove (Finset.sort (fun x1 x2 => x1 ≤ x2) a))).Nodup := by
+      (List.map i.succAbove (a.sort (fun x1 x2 => x1 ≤ x2)))).Nodup := by
     simp only [Nat.succ_eq_add_one, List.map_map]
     refine List.Nodup.map ?_ ?_
     apply (Equiv.comp_injective _ (finCongr _)).mpr
     exact Fin.succAbove_right_injective
-    exact Finset.sort_nodup (fun x1 x2 => x1 ≤ x2) a
+    exact a.sort_nodup (fun x1 x2 => x1 ≤ x2)
   have h3 : (List.map (⇑(finCongr (insertIdx_length_fin φ φs i).symm))
-      (List.map i.succAbove (Finset.sort (fun x1 x2 => x1 ≤ x2) a))).toFinset
+      (List.map i.succAbove (a.sort (fun x1 x2 => x1 ≤ x2)))).toFinset
       = (insertAndContractLiftFinset φ i a) := by
     ext b
     simp only [Nat.succ_eq_add_one, List.map_map, List.mem_toFinset, List.mem_map, Finset.mem_sort,
@@ -369,7 +369,7 @@ lemma stat_ofFinset_of_insertAndContractLiftFinset (φ : 𝓕.FieldOp) (φs : Li
         not_exists, not_and]
       intro x hx
       refine Fin.ne_of_val_ne ?h.inl.h
-      simp only [Fin.coe_cast, ne_eq]
+      simp only [Fin.val_cast, ne_eq]
       rw [Fin.val_eq_val]
       exact Fin.succAbove_ne i x
     · obtain ⟨k, hk⟩ := hk
@@ -379,7 +379,7 @@ lemma stat_ofFinset_of_insertAndContractLiftFinset (φ : 𝓕.FieldOp) (φs : Li
       apply Iff.intro
       · intro h
         obtain ⟨x, hx⟩ := h
-        simp only [Fin.ext_iff, Fin.coe_cast] at hx
+        simp only [Fin.ext_iff, Fin.val_cast] at hx
         rw [Fin.val_eq_val] at hx
         rw [Function.Injective.eq_iff] at hx
         rw [← hx.2]

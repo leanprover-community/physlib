@@ -20,7 +20,7 @@ of correctly spelled words. It then outputs all words which are not in the dicti
 so that the user can either correct them or add them to the dictionary file.
 
 This code makes no attempt to guess the correct spelling of words, it simply lists
-all unkown words found.
+all unknown words found.
 
 -/
 

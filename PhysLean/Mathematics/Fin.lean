@@ -42,7 +42,7 @@ lemma predAboveI_succAbove (i : Fin n.succ.succ) (x : Fin n.succ) :
   split_ifs
   · rfl
   · rename_i h1 h2
-    simp only [Fin.lt_def, Fin.coe_castSucc, not_lt, Fin.val_succ] at h1 h2
+    simp only [Fin.lt_def, Fin.val_castSucc, not_lt, Fin.val_succ] at h1 h2
     omega
   · rfl
 lemma succsAbove_predAboveI {i x : Fin n.succ.succ} (h : i ≠ x) :
@@ -95,7 +95,7 @@ lemma succAbove_succAbove_predAboveI (i : Fin n.succ.succ) (j : Fin n.succ) (x :
         · rw [Fin.succAbove_of_castSucc_lt]
           exact hx1
         · rw [Fin.lt_def] at h1 hx1 ⊢
-          simp_all only [Nat.succ_eq_add_one, Fin.coe_castSucc]
+          simp_all only [Nat.succ_eq_add_one, Fin.val_castSucc]
           omega
       · exact Nat.lt_trans hx1 h1
     · simp only [not_lt] at hx1
@@ -109,7 +109,7 @@ lemma succAbove_succAbove_predAboveI (i : Fin n.succ.succ) (j : Fin n.succ) (x :
           · rfl
           · assumption
         · rw [Fin.lt_def] at hx2 ⊢
-          simp_all only [Nat.succ_eq_add_one, Fin.coe_castSucc, Fin.val_succ]
+          simp_all only [Nat.succ_eq_add_one, Fin.val_castSucc, Fin.val_succ]
           omega
       · simp only [not_lt] at hx2
         rw [Fin.succAbove_of_le_castSucc _ _ hx2]
@@ -127,12 +127,12 @@ lemma succAbove_succAbove_predAboveI (i : Fin n.succ.succ) (j : Fin n.succ) (x :
       · nth_rewrite 2 [Fin.succAbove_of_le_castSucc _ _]
         · rw [Fin.succAbove_of_le_castSucc]
           rw [Fin.le_def] at hx1 ⊢
-          simp_all only [Nat.succ_eq_add_one, Fin.coe_castSucc, Fin.val_succ, add_le_add_iff_right]
+          simp_all only [Nat.succ_eq_add_one, Fin.val_castSucc, Fin.val_succ, add_le_add_iff_right]
         · rw [Fin.le_def] at h1 hx1 ⊢
-          simp_all only [Nat.succ_eq_add_one, Fin.coe_castSucc]
+          simp_all only [Nat.succ_eq_add_one, Fin.val_castSucc]
           omega
       · rw [Fin.le_def] at hx1 h1 ⊢
-        simp_all only [Nat.succ_eq_add_one, Fin.coe_castSucc, Fin.val_succ]
+        simp_all only [Nat.succ_eq_add_one, Fin.val_castSucc, Fin.val_succ]
         omega
     · simp only [Nat.succ_eq_add_one, not_le] at hx1
       rw [Fin.lt_def] at hx1
@@ -143,7 +143,7 @@ lemma succAbove_succAbove_predAboveI (i : Fin n.succ.succ) (j : Fin n.succ) (x :
         nth_rewrite 2 [Fin.succAbove_of_castSucc_lt]
         · rw [Fin.succAbove_of_castSucc_lt]
           rw [Fin.lt_def] at hx2 ⊢
-          simp_all only [Nat.succ_eq_add_one, Fin.coe_castSucc, Fin.val_succ]
+          simp_all only [Nat.succ_eq_add_one, Fin.val_castSucc, Fin.val_succ]
           omega
         · rw [Fin.lt_def] at hx2 ⊢
           simp_all
@@ -183,7 +183,7 @@ lemma finExtractOne_symm_inr {n : ℕ} (i : Fin n.succ) :
   ext x
   simp only [Nat.succ_eq_add_one, finExtractOne, Function.comp_apply, Equiv.symm_trans_apply,
     finCongr_symm, Equiv.symm_symm, Equiv.sumCongr_symm, Equiv.refl_symm, Equiv.sumCongr_apply,
-    Equiv.coe_refl, Sum.map_inr, finCongr_apply, Fin.coe_cast]
+    Equiv.coe_refl, Sum.map_inr, finCongr_apply, Fin.val_cast]
   change (finSumFinEquiv
     (Sum.map (⇑(finSumFinEquiv.symm.trans (Equiv.sumComm (Fin ↑i) (Fin 1))).symm) id
     ((Equiv.sumAssoc (Fin 1) (Fin ↑i) (Fin (n - i))).symm
@@ -202,7 +202,7 @@ lemma finExtractOne_symm_inr {n : ℕ} (i : Fin n.succ) :
     split
     · rfl
     rename_i hn
-    simp_all only [Nat.succ_eq_add_one, not_lt, Fin.le_def, Fin.coe_castSucc, Fin.val_succ,
+    simp_all only [Nat.succ_eq_add_one, not_lt, Fin.le_def, Fin.val_castSucc, Fin.val_succ,
       left_eq_add, one_ne_zero]
     omega
   · generalize_proofs hp
@@ -211,7 +211,7 @@ lemma finExtractOne_symm_inr {n : ℕ} (i : Fin n.succ) :
       rw [← finSumFinEquiv_symm_apply_natAdd]
       apply congrArg
       ext
-      simp only [Nat.succ_eq_add_one, Fin.coe_cast, Fin.natAdd_mk]
+      simp only [Nat.succ_eq_add_one, Fin.val_cast, Fin.natAdd_mk]
       omega
     rw [h1, Fin.succAbove]
     split

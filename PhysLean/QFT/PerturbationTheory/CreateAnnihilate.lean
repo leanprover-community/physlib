@@ -48,7 +48,7 @@ instance : (φ φ' : CreateAnnihilate) → Decidable (normalOrder φ φ')
   | annihilate, create => isFalse False.elim
 
 /-- Normal ordering is total. -/
-instance : IsTotal CreateAnnihilate normalOrder where
+instance : Std.Total normalOrder where
   total a b := by
     cases a <;> cases b <;> simp [normalOrder]
 

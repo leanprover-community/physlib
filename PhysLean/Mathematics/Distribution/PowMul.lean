@@ -50,8 +50,8 @@ private lemma norm_iteratedFDeriv_ofRealCLM {x} (i : ℕ) :
     | succ i ih =>
       rw [iteratedFDeriv_succ_eq_comp_right]
       simp only [Nat.succ_eq_add_one, ContinuousLinearMap.fderiv, Function.comp_apply,
-        LinearIsometryEquiv.norm_map, Nat.add_eq_zero, one_ne_zero, and_false, and_self, ↓reduceIte,
-        Nat.add_eq_right]
+        LinearIsometryEquiv.norm_map, Nat.add_eq_zero_iff, one_ne_zero, and_false, and_self,
+        ↓reduceIte, Nat.add_eq_right]
       rw [iteratedFDeriv_succ_eq_comp_right]
       conv_lhs =>
         enter [1, 2, 3, y]
@@ -120,7 +120,7 @@ def powOneMul : 𝓢(ℝ, 𝕜) →L[𝕜] 𝓢(ℝ, 𝕜) := by
         ((SchwartzMap.seminorm 𝕜 (k + 1) 0) ψ)
     | .succ n =>
       rw [Finset.sum_range_succ', Finset.sum_range_succ']
-      simp only [Real.norm_eq_abs, Nat.succ_eq_add_one, Nat.add_eq_zero, one_ne_zero, and_false,
+      simp only [Real.norm_eq_abs, Nat.succ_eq_add_one, Nat.add_eq_zero_iff, one_ne_zero, and_false,
         and_self, ↓reduceIte, Nat.add_eq_right, mul_zero, zero_mul, Finset.sum_const_zero,
         zero_add, Nat.choose_one_right, Nat.cast_add, Nat.cast_one, mul_one, Nat.reduceAdd,
         Nat.add_one_sub_one, Nat.choose_zero_right, one_mul, Nat.sub_zero, ge_iff_le]

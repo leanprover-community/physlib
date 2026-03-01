@@ -78,16 +78,14 @@ We show some basic equalities for the Minkowski matrix.
 In particular, we show it can be expressed as a block matrix.
 
 -/
+/-- The Minkowski matrix as a diagonal matrix. -/
+lemma as_diagonal : @minkowskiMatrix d = diagonal (Sum.elim 1 (-1)) := by
+  simp [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal]
 
 /-- The Minkowski matrix as a block matrix. -/
-lemma as_block : @minkowskiMatrix d =
+lemma as_block : minkowskiMatrix =
     Matrix.fromBlocks (1 : Matrix (Fin 1) (Fin 1) ℝ) 0 0 (-1 : Matrix (Fin d) (Fin d) ℝ) := by
-  rw [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal, ← fromBlocks_diagonal]
-  refine fromBlocks_inj.mpr ?_
-  simp only [diagonal_one, true_and]
-  funext i j
-  rw [← diagonal_neg]
-  rfl
+  simp [as_diagonal, ← fromBlocks_diagonal, ← diagonal_one]
 
 /-!
 
@@ -117,20 +115,15 @@ lemma inl_0_inl_0 : @minkowskiMatrix d (Sum.inl 0) (Sum.inl 0) = 1 := by
 /-- The space diagonal components of the Minkowski matrix are `-1`. -/
 @[simp]
 lemma inr_i_inr_i (i : Fin d) : @minkowskiMatrix d (Sum.inr i) (Sum.inr i) = -1 := by
-  simp only [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal]
-  simp_all only [diagonal_apply_eq, Sum.elim_inr]
+  simp [as_diagonal]
 
 /-- The off diagonal elements of the Minkowski matrix are zero. -/
 @[simp]
 lemma off_diag_zero {μ ν : Fin 1 ⊕ Fin d} (h : μ ≠ ν) : η μ ν = 0 := by
-  simp only [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal]
-  exact diagonal_apply_ne _ h
+  aesop (add safe forward as_diagonal)
 
-lemma η_diag_ne_zero {μ : Fin 1 ⊕ Fin d} :
-    η μ μ ≠ 0 := by
-  match μ with
-  | Sum.inl 0 => simp
-  | Sum.inr _ => simp
+lemma η_diag_ne_zero {μ : Fin 1 ⊕ Fin d} : η μ μ ≠ 0 := by
+  aesop (add safe forward as_diagonal)
 
 /-!
 
@@ -144,37 +137,16 @@ as well as other properties related to squaring the Minkowski matrix.
 /-- The Minkowski matrix is self-inverting. -/
 @[simp]
 lemma sq : @minkowskiMatrix d * minkowskiMatrix = 1 := by
-  simp only [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal, diagonal_mul_diagonal]
-  ext1 i j
-  rcases i with i | i <;> rcases j with j | j
-  · simp only [diagonal, of_apply, Sum.inl.injEq, Sum.elim_inl, mul_one]
-    split
-    · rename_i h
-      subst h
-      simp_all only [one_apply_eq]
-    · simp_all only [ne_eq, Sum.inl.injEq, not_false_eq_true, one_apply_ne]
-  · rfl
-  · rfl
-  · simp only [diagonal, of_apply, Sum.inr.injEq, Sum.elim_inr, mul_neg, mul_one, neg_neg]
-    split
-    · rename_i h
-      subst h
-      simp_all only [one_apply_eq]
-    · simp_all only [ne_eq, Sum.inr.injEq, not_false_eq_true, one_apply_ne]
+  simp [as_block, fromBlocks_multiply]
 
 /-- Multiplying any element on the diagonal of the Minkowski matrix by itself gives `1`. -/
 @[simp]
 lemma η_apply_mul_η_apply_diag (μ : Fin 1 ⊕ Fin d) : η μ μ * η μ μ = 1 := by
-  match μ with
-  | Sum.inl 0 => simp
-  | Sum.inr _ => simp
+  aesop (add safe forward as_diagonal)
 
 @[simp]
-lemma η_apply_sq_eq_one (μ : Fin 1 ⊕ Fin d) :
-    η μ μ ^ 2 = 1 := by
-  trans η μ μ * η μ μ
-  · exact pow_two (η μ μ)
-  simp
+lemma η_apply_sq_eq_one (μ : Fin 1 ⊕ Fin d) : η μ μ ^ 2 = 1 := by
+  cases μ <;> simp [as_diagonal]
 
 /-!
 
@@ -187,7 +159,7 @@ The Minkowski matrix is symmetric, due to it being diagonal.
 /-- The Minkowski matrix is symmetric. -/
 @[simp]
 lemma eq_transpose : minkowskiMatrixᵀ = @minkowskiMatrix d := by
-  simp only [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal, diagonal_transpose]
+  simp [as_diagonal]
 
 /-!
 
@@ -202,7 +174,7 @@ We show the determinant of the Minkowski matrix is equal to `(-1)^d` where
   of the number of spatial dimensions. -/
 @[simp]
 lemma det_eq_neg_one_pow_d : (@minkowskiMatrix d).det = (- 1) ^ d := by
-  simp [minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal]
+  simp [as_diagonal]
 
 /-!
 
@@ -215,9 +187,8 @@ This is a useful part of the API but is not used often.
 -/
 
 lemma mul_η_diag_eq_iff {μ : Fin 1 ⊕ Fin d} {x y : ℝ} :
-    η μ μ * x = η μ μ * y ↔ x = y := by
-  refine mul_right_inj' ?_
-  exact η_diag_ne_zero
+    η μ μ * x = η μ μ * y ↔ x = y :=
+  mul_right_inj' η_diag_ne_zero
 
 /-!
 
@@ -231,15 +202,13 @@ We show properties of the action of the Minkowski matrix on vectors.
 @[simp]
 lemma mulVec_inl_0 (v : (Fin 1 ⊕ Fin d) → ℝ) :
     (η *ᵥ v) (Sum.inl 0) = v (Sum.inl 0) := by
-  simp only [mulVec, minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal]
-  simp only [Fin.isValue, diagonal_dotProduct, Sum.elim_inl, one_mul]
+  simp [as_diagonal, mulVec_diagonal]
 
 /-- The space components of a vector acted on by the Minkowski matrix swaps sign. -/
 @[simp]
 lemma mulVec_inr_i (v : (Fin 1 ⊕ Fin d) → ℝ) (i : Fin d) :
     (η *ᵥ v) (Sum.inr i) = - v (Sum.inr i) := by
-  simp only [mulVec, minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal]
-  simp only [diagonal_dotProduct, Sum.elim_inr, neg_mul, one_mul]
+  simp [as_diagonal, mulVec_diagonal]
 
 /-!
 
@@ -287,10 +256,8 @@ We show that the dual swaps multiplication, i.e. `dual (Λ * Λ') = dual Λ' * d
 /-- The Minkowski dual swaps multiplications (acts contravariantly). -/
 @[simp]
 lemma dual_mul : dual (Λ * Λ') = dual Λ' * dual Λ := by
-  simp only [dual, transpose_mul]
-  trans η * Λ'ᵀ * (η * η) * Λᵀ * η
-  · noncomm_ring [minkowskiMatrix.sq]
-  · noncomm_ring
+  simp only [dual, transpose_mul, ← mul_assoc]
+  noncomm_ring [minkowskiMatrix.sq]
 
 /-!
 
@@ -303,10 +270,8 @@ We show that the dual is an involution, i.e. `dual (dual Λ) = Λ`.
 @[simp]
 lemma dual_dual : Function.Involutive (@dual d) := by
   intro Λ
-  simp only [dual, transpose_mul, transpose_transpose, eq_transpose]
-  trans (η * η) * Λ * (η * η)
-  · noncomm_ring
-  · noncomm_ring [minkowskiMatrix.sq]
+  simp only [dual, transpose_mul, eq_transpose, transpose_transpose, ← mul_assoc]
+  noncomm_ring [minkowskiMatrix.sq]
 
 /-!
 
@@ -317,8 +282,7 @@ lemma dual_dual : Function.Involutive (@dual d) := by
 /-- The Minkowski dual commutes with the transpose. -/
 @[simp]
 lemma dual_transpose : dual Λᵀ = (dual Λ)ᵀ := by
-  simp only [dual, transpose_transpose, transpose_mul, eq_transpose]
-  noncomm_ring
+  simp [dual, mul_assoc]
 
 /-!
 
@@ -329,8 +293,7 @@ lemma dual_transpose : dual Λᵀ = (dual Λ)ᵀ := by
 /-- The Minkowski dual preserves the Minkowski matrix. -/
 @[simp]
 lemma dual_eta : @dual d η = η := by
-  simp only [dual, eq_transpose]
-  noncomm_ring [minkowskiMatrix.sq]
+  simp [dual]
 
 /-!
 
@@ -358,14 +321,12 @@ We show a number of properties related to the components of the duals.
   of the original matrix. -/
 lemma dual_apply (μ ν : Fin 1 ⊕ Fin d) :
     dual Λ μ ν = η μ μ * Λ ν μ * η ν ν := by
-  simp only [dual, minkowskiMatrix, LieAlgebra.Orthogonal.indefiniteDiagonal, mul_diagonal,
-    diagonal_mul, transpose_apply, diagonal_apply_eq]
+  simp [dual, as_diagonal]
 
 /-- The components of the Minkowski dual of a matrix multiplied by the Minkowski matrix
   in terms of the original matrix. -/
 lemma dual_apply_minkowskiMatrix (μ ν : Fin 1 ⊕ Fin d) :
     dual Λ μ ν * η ν ν = η μ μ * Λ ν μ := by
-  rw [dual_apply, mul_assoc]
-  simp
+  simp [dual_apply, mul_assoc]
 
 end minkowskiMatrix

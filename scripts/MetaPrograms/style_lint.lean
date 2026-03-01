@@ -130,7 +130,7 @@ def main (_ : List String) : IO UInt32 := do
     if imp.module == `Init then
       none
     else
-      some ((mkFilePath (imp.module.toString.split (· == '.'))).addExtension "lean"))
+      some ((mkFilePath (imp.module.toString.splitToList (· == '.'))).addExtension "lean"))
   let errors := (← filePaths.mapM hepLeanLintFile).flatten
   let errorMessagesPresent := (errors.map (fun e => e.error)).sortDedup
   for eM in errorMessagesPresent do

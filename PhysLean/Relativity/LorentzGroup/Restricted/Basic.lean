@@ -13,7 +13,7 @@ This file is currently a stub.
 -/
 
 TODO "6VZNP" "Prove that every member of the restricted Lorentz group is
-  combiniation of a boost and a rotation."
+  combination of a boost and a rotation."
 
 namespace LorentzGroup
 

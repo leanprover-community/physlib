@@ -35,7 +35,7 @@ instance : DecidableEq (WickContraction n) := Subtype.instDecidableEq
 def empty : WickContraction n := ⟨∅, by simp, by simp⟩
 
 lemma card_zero_iff_empty (c : WickContraction n) : c.1.card = 0 ↔ c = empty := by
-  rw [Subtype.eq_iff, Finset.card_eq_zero, empty]
+  rw [Subtype.ext_iff, Finset.card_eq_zero, empty]
 
 lemma exists_pair_of_not_eq_empty (c : WickContraction n) (h : c ≠ empty) :
     ∃ i j, {i, j} ∈ c.1 := by
@@ -50,7 +50,7 @@ lemma exists_pair_of_not_eq_empty (c : WickContraction n) (h : c ≠ empty) :
     obtain ⟨x, y, hx, rfl⟩ := hc
     exact hn x y hn'
   apply h
-  apply Subtype.eq
+  apply Subtype.ext_iff.mpr
   simp [empty, hc]
 
 /-- The equivalence between `WickContraction n` and `WickContraction m`
@@ -141,7 +141,7 @@ lemma eq_filter_mem_self : c.1 = Finset.filter (fun x => x ∈ c.1) Finset.univ 
 
 /-- For a contraction `c : WickContraction n` and `i : Fin n` the `j` such that
   `{i, j}` is a contracted pair in `c`. If such an `j` does not exist, this returns `none`. -/
-def getDual? (i : Fin n) : Option (Fin n) := Fin.find (fun j => {i, j} ∈ c.1)
+def getDual? (i : Fin n) : Option (Fin n) := Fin.find? (fun j => {i, j} ∈ c.1)
 
 lemma getDual?_congr {n m : ℕ} (h : n = m) (c : WickContraction n) (i : Fin m) :
     (congr h c).getDual? i = Option.map (finCongr h) (c.getDual? (finCongr h.symm i)) := by
@@ -158,11 +158,11 @@ lemma getDual?_congr_get {n m : ℕ} (h : n = m) (c : WickContraction n) (i : Fi
 lemma getDual?_eq_some_iff_mem (i j : Fin n) :
     c.getDual? i = some j ↔ {i, j} ∈ c.1 := by
   simp only [getDual?]
-  rw [Fin.find_eq_some_iff]
+  rw [Fin.find?_eq_some_iff]
   apply Iff.intro <;> intro h
-  · exact h.1
-  · simp only [h, true_and]
-    intro k hk
+  · simpa using h.1
+  · simp [h, true_and]
+    intro k hkj hk
     have hc := c.2.2 _ h _ hk
     simp only [Finset.disjoint_insert_right, Finset.mem_insert, Finset.mem_singleton, true_or,
       not_true_eq_false, Finset.disjoint_singleton_right, not_or, false_and, or_false] at hc
@@ -174,7 +174,7 @@ lemma getDual?_eq_some_iff_mem (i j : Fin n) :
       have hc := c.2.1 _ hk
       simp at hc
     · subst hj
-      simp
+      simp at hkj
 
 @[simp]
 lemma getDual?_one_eq_none (c : WickContraction 1) (i : Fin 1) : c.getDual? i = none := by
@@ -209,7 +209,7 @@ lemma getDual?_eq_some_neq (i j : Fin n) (h : c.getDual? i = some j) :
   simp at hc
 
 @[simp]
-lemma self_neq_getDual?_get (i : Fin n) (h : (c.getDual? i).isSome) :
+lemma self_ne_getDual?_get (i : Fin n) (h : (c.getDual? i).isSome) :
     ¬ i = (c.getDual? i).get h := by
   by_contra hn
   have hx : {i, (c.getDual? i).get h} ∈ c.1 := by simp
@@ -228,9 +228,10 @@ lemma getDual?_get_self_neq (i : Fin n) (h : (c.getDual? i).isSome) :
 
 lemma getDual?_isSome_iff (i : Fin n) : (c.getDual? i).isSome ↔ ∃ (a : c.1), i ∈ a.1 := by
   apply Iff.intro <;> intro h
-  · rw [getDual?, Fin.isSome_find_iff] at h
+  · rw [getDual?, Fin.isSome_find?_iff] at h
     obtain ⟨a, ha⟩ := h
-    exact ⟨⟨{i, a}, ha⟩, Finset.mem_insert_self ..⟩
+    use ⟨{i, a}, by simpa using ha⟩
+    simp
   · obtain ⟨a, ha⟩ := h
     have ha := c.2.1 a a.2
     rw [@Finset.card_eq_two] at ha
@@ -240,14 +241,14 @@ lemma getDual?_isSome_iff (i : Fin n) : (c.getDual? i).isSome ↔ ∃ (a : c.1),
     match ha with
     | Or.inl ha =>
       subst ha
-      rw [getDual?, Fin.isSome_find_iff]
-      exact ⟨y, hy ▸ a.2⟩
+      rw [getDual?, Fin.isSome_find?_iff]
+      exact ⟨y, by simpa using hy ▸ a.2⟩
     | Or.inr ha =>
       subst ha
-      rw [getDual?, Fin.isSome_find_iff]
+      rw [getDual?, Fin.isSome_find?_iff]
       use x
       rw [Finset.pair_comm]
-      exact hy ▸ a.2
+      simpa using hy ▸ a.2
 
 lemma getDual?_isSome_of_mem (a : c.1) (i : a.1) : (c.getDual? i).isSome := by
   rw [getDual?_isSome_iff]
@@ -275,7 +276,7 @@ lemma getDual?_getDual?_get_not_none (i : Fin n) (h : (c.getDual? i).isSome) :
 /-- The smallest of the two positions in a contracted pair given a Wick contraction. -/
 def fstFieldOfContract (c : WickContraction n) (a : c.1) : Fin n :=
   (a.1.sort (· ≤ ·)).head (by
-    have hx : (Finset.sort (fun x1 x2 => x1 ≤ x2) a.1).length = a.1.card := Finset.length_sort ..
+    have hx : (a.1.sort (fun x1 x2 => x1 ≤ x2)).length = a.1.card := Finset.length_sort ..
     by_contra hn
     simp only [hn, List.length_nil, c.2.1 a.1 a.2, OfNat.zero_ne_ofNat] at hx)
 
@@ -288,7 +289,7 @@ lemma fstFieldOfContract_congr {n m : ℕ} (h : n = m) (c : WickContraction n) (
 /-- The largest of the two positions in a contracted pair given a Wick contraction. -/
 def sndFieldOfContract (c : WickContraction n) (a : c.1) : Fin n :=
   (a.1.sort (· ≤ ·)).tail.head (by
-    have hx : (Finset.sort (fun x1 x2 => x1 ≤ x2) a.1).length = a.1.card := Finset.length_sort ..
+    have hx : (a.1.sort (fun x1 x2 => x1 ≤ x2)).length = a.1.card := Finset.length_sort ..
     by_contra hn
     have hn := congrArg List.length hn
     simp [c.2.1] at hn)
@@ -308,7 +309,7 @@ lemma finset_eq_fstFieldOfContract_sndFieldOfContract (c : WickContraction n) (a
   by_cases hxyle : x ≤ y
   · have ha : a.1.sort (· ≤ ·) = [x, y] := by
       rw [ha]
-      trans Finset.sort (· ≤ ·) (Finset.cons x {y} (by simp [hxy]))
+      trans Finset.sort (Finset.cons x {y} (by simp [hxy])) (· ≤ ·)
       · congr
         simp
       rw [Finset.sort_cons]
@@ -320,7 +321,7 @@ lemma finset_eq_fstFieldOfContract_sndFieldOfContract (c : WickContraction n) (a
     simp [fstFieldOfContract, ha, sndFieldOfContract]
   · have ha : a.1.sort (· ≤ ·) = [y, x] := by
       rw [ha]
-      trans Finset.sort (· ≤ ·) (Finset.cons y {x} (by simp only [Finset.mem_singleton]; omega))
+      trans Finset.sort (Finset.cons y {x} (by simp only [Finset.mem_singleton]; omega)) (· ≤ ·)
       · congr
         simp only [Finset.cons_eq_insert]
         rw [@Finset.pair_comm]
@@ -333,7 +334,7 @@ lemma finset_eq_fstFieldOfContract_sndFieldOfContract (c : WickContraction n) (a
     simp only [fstFieldOfContract, ha, List.head_cons, sndFieldOfContract, List.tail_cons]
     rw [Finset.pair_comm]
 
-lemma fstFieldOfContract_neq_sndFieldOfContract (c : WickContraction n) (a : c.1) :
+lemma fstFieldOfContract_ne_sndFieldOfContract (c : WickContraction n) (a : c.1) :
     c.fstFieldOfContract a ≠ c.sndFieldOfContract a := by
   have h1 := c.2.1 a.1 a.2
   have h2 := c.finset_eq_fstFieldOfContract_sndFieldOfContract a
@@ -343,21 +344,21 @@ lemma fstFieldOfContract_neq_sndFieldOfContract (c : WickContraction n) (a : c.1
 lemma fstFieldOfContract_le_sndFieldOfContract (c : WickContraction n) (a : c.1) :
     c.fstFieldOfContract a ≤ c.sndFieldOfContract a := by
   simp only [fstFieldOfContract, sndFieldOfContract, List.head_tail]
-  have h1 (n : ℕ) (l : List (Fin n)) (h : l ≠ []) (hl : l.Sorted (· ≤ ·)) :
+  have h1 (n : ℕ) (l : List (Fin n)) (h : l ≠ []) (hl : l.Pairwise (· ≤ ·)) :
       ∀ a ∈ l, l.head h ≤ a := by
     induction l with
     | nil => simp at h
     | cons i l ih =>
-      simp only [List.sorted_cons] at hl
+      simp only [List.pairwise_cons] at hl
       simpa using hl.1
   apply h1
-  · exact Finset.sort_sorted ..
+  · exact Finset.pairwise_sort ..
   · exact List.getElem_mem ..
 
 lemma fstFieldOfContract_lt_sndFieldOfContract (c : WickContraction n) (a : c.1) :
     c.fstFieldOfContract a < c.sndFieldOfContract a :=
   lt_of_le_of_ne (c.fstFieldOfContract_le_sndFieldOfContract a)
-    (c.fstFieldOfContract_neq_sndFieldOfContract a)
+    (c.fstFieldOfContract_ne_sndFieldOfContract a)
 
 @[simp]
 lemma fstFieldOfContract_mem (c : WickContraction n) (a : c.1) :
@@ -448,15 +449,15 @@ def contractEquivFinTwo (c : WickContraction n) (a : c.1) :
     rcases hi with hi | hi
     · rw [hi]
       simp only [↓reduceIte, Fin.isValue]
-      exact Subtype.eq hi.symm
+      exact Subtype.ext hi.symm
     · rw [hi, if_neg]
-      · exact Subtype.eq hi.symm
-      · exact Ne.symm <| fstFieldOfContract_neq_sndFieldOfContract c a
+      · exact Subtype.ext hi.symm
+      · exact Ne.symm <| fstFieldOfContract_ne_sndFieldOfContract c a
   right_inv i := by
     fin_cases i
     · simp
     · simp only [Fin.isValue, Fin.mk_one, ite_eq_right_iff, zero_ne_one, imp_false]
-      exact Ne.symm <| fstFieldOfContract_neq_sndFieldOfContract c a
+      exact Ne.symm <| fstFieldOfContract_ne_sndFieldOfContract c a
 
 lemma prod_finset_eq_mul_fst_snd (c : WickContraction n) (a : c.1)
     (f : a.1 → M) [CommMonoid M] :
@@ -511,7 +512,7 @@ def sigmaContractedEquiv : (a : c.1) × a ≃ {x : Fin n // (c.getDual? x).isSom
         exact ⟨i, fun x ↦ (x rfl).elim⟩
       simp_all only [or_false, disjoint_self, Finset.bot_eq_empty, Finset.insert_ne_empty,
         not_false_eq_true]
-      exact Subtype.eq (id (Eq.symm hc))
+      exact Subtype.ext (id (Eq.symm hc))
     · simp
   right_inv := by
     intro x

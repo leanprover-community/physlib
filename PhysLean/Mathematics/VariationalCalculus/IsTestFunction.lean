@@ -3,8 +3,6 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Calculus.Deriv.Support
-import Mathlib.MeasureTheory.Function.LocallyIntegrable
 import PhysLean.Mathematics.Calculus.Divergence
 /-!
 
@@ -48,7 +46,7 @@ lemma IsTestFunction.integrable [MeasurableSpace X] [OpensMeasurableSpace X]
 
 @[fun_prop]
 lemma IsTestFunction.differentiable {f : X → U} (hf : IsTestFunction f) :
-    Differentiable ℝ f := hf.1.differentiable ENat.LEInfty.out
+    Differentiable ℝ f := hf.1.differentiable (by simp)
 
 @[fun_prop]
 lemma IsTestFunction.contDiff {f : X → U} (hf : IsTestFunction f) :
@@ -312,7 +310,7 @@ lemma IsTestFunction.gradient {d : ℕ} (φ : Space d → ℝ)
   fun_prop
 
 @[fun_prop]
-lemma IsTestFunction.of_div {d : ℕ} (φ : Space d → Space d)
+lemma IsTestFunction.of_div {d : ℕ} (φ : Space d → EuclideanSpace ℝ (Fin d))
     (hφ : IsTestFunction φ) :
     IsTestFunction (Space.div φ) := by
   unfold Space.div Space.deriv; dsimp; fun_prop (disch:=simp)

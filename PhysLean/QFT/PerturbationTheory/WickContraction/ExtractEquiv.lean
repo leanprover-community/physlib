@@ -70,7 +70,7 @@ instance fintype_zero : Fintype (WickContraction 0) where
   complete := by
     intro c
     simp only [Finset.mem_singleton]
-    apply Subtype.eq
+    apply Subtype.ext
     simp only [empty]
     ext a
     apply Iff.intro
@@ -118,13 +118,8 @@ The proof of this result uses the fact that Lean is an executable programming la
 and can calculate all Wick contractions for a given `n`. -/
 lemma mem_three (c : WickContraction 3) : c.1 ∈ ({∅, {{0, 1}}, {{0, 2}}, {{1, 2}}} :
     Finset (Finset (Finset (Fin 3)))) := by
-  fin_cases c <;>
-    simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Function.Embedding.coeFn_mk,
-      Finset.mem_insert, Finset.mem_singleton]
-  · exact Or.inl rfl
-  · exact Or.inr (Or.inl rfl)
-  · exact Or.inr (Or.inr (Or.inl rfl))
-  · exact Or.inr (Or.inr (Or.inr rfl))
+  revert c
+  decide +kernel
 
 /-- For `n = 4` there are `10` possible Wick contractions including e.g.
 
@@ -141,18 +136,7 @@ lemma mem_four (c : WickContraction 4) : c.1 ∈ ({∅,
     {{0, 1}}, {{0, 2}}, {{0, 3}}, {{1, 2}}, {{1, 3}}, {{2,3}},
     {{0, 1}, {2, 3}}, {{0, 2}, {1, 3}}, {{0, 3}, {1, 2}}} :
     Finset (Finset (Finset (Fin 4)))) := by
-  fin_cases c <;>
-    simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, Function.Embedding.coeFn_mk,
-      Finset.mem_insert, Finset.mem_singleton]
-  · exact Or.inl rfl -- ∅
-  · exact Or.inr (Or.inl rfl) -- {{0, 1}}
-  · exact Or.inr (Or.inr (Or.inl rfl)) -- {{0, 2}}
-  · exact Or.inr (Or.inr (Or.inr (Or.inl rfl))) -- {{0, 3}}
-  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl)))) -- {{1, 2}}
-  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr rfl))))))))
-  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))) -- {{1, 3}}
-  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl))))))))
-  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))) -- {{2, 3 }}
-  · exact Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inr (Or.inl rfl)))))))
+  revert c
+  decide +kernel
 
 end WickContraction

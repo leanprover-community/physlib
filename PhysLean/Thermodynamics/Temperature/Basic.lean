@@ -80,7 +80,7 @@ lemma ofβ_eq : ofβ = fun β => ⟨⟨1 / (kB * β), by
 lemma β_ofβ (β' : ℝ≥0) : β (ofβ β') = β' := by
   ext
   simp [β, ofβ, toReal]
-  field_simp [kB_neq_zero]
+  field_simp [kB_ne_zero]
 
 @[simp]
 lemma ofβ_β (T : Temperature) : ofβ (β T) = T := by
@@ -89,7 +89,7 @@ lemma ofβ_β (T : Temperature) : ofβ (β T) = T := by
   have : (β T : ℝ) = (1 : ℝ) / (kB * (T : ℝ)) := rfl
   simpa [this] using
     show (1 / (kB * (1 / (kB * (T : ℝ))))) = (T : ℝ) from by
-      field_simp [kB_neq_zero]
+      field_simp [kB_ne_zero]
 
 /-- Positivity of `β` from positivity of temperature. -/
 lemma beta_pos (T : Temperature) (hT_pos : 0 < T.val) : 0 < (T.β : ℝ) := by
@@ -111,7 +111,7 @@ lemma ofβ_continuousOn : ContinuousOn (ofβ : ℝ≥0 → Temperature) (Set.Ioi
     · fun_prop
     · simp
       constructor
-      · exact kB_neq_zero
+      · exact kB_ne_zero
       · exact ne_of_gt hx
   have hℝ : ContinuousAt (fun b : ℝ≥0 => (1 : ℝ) / (kB * (b : ℝ))) x :=
     h1.comp (continuous_subtype_val.continuousAt)
@@ -141,7 +141,7 @@ lemma ofβ_differentiableOn :
     · fun_prop
     · intro x hx
       have hx0 : x ≠ 0 := ne_of_gt (by simpa using hx)
-      simp [mul_eq_zero, kB_neq_zero, hx0]
+      simp [mul_eq_zero, kB_ne_zero, hx0]
   · intro x hx
     simp at hx
     have hx' : 0 < x := by simpa using hx
@@ -321,7 +321,7 @@ lemma deriv_beta_wrt_T (T : Temperature) (hT_pos : 0 < T.val) :
             simp [one_div]
       _ = -1 / (kB * (T.val : ℝ) ^ 2) := by
         rw [one_div]
-        field_simp [pow_two, mul_comm, mul_left_comm, mul_assoc, kB_neq_zero, hTne]
+        field_simp [pow_two, mul_comm, mul_left_comm, mul_assoc, kB_ne_zero, hTne]
   have h_deriv_f :
       HasDerivAt f (-1 / (kB * (T.val : ℝ)^2)) (T.val : ℝ) := by
     simpa [hf_def, h_pow_simp] using h_deriv_aux

@@ -130,7 +130,7 @@ Here we define `minTopBottom` in a way which is computationally efficient.
 /-- The set of charges of the form `(qHd, qHu, {q5}, {-qHd-q5, q10, qHu - q10})`
   This includes every charge which minimally allows for the top and bottom Yukawas. -/
 def minTopBottom (S5 S10 : Finset 𝓩) : Multiset (ChargeSpectrum 𝓩) := Multiset.dedup <|
-  (S5.val.product <| S5.val.product <| S5.val.product <| S10.val).map
+  (S5.val ×ˢ S5.val ×ˢ S5.val ×ˢ S10.val).map
     (fun x => ⟨x.1, x.2.1, {x.2.2.1}, {- x.1 - x.2.2.1, x.2.2.2, x.2.1 - x.2.2.2}⟩)
 
 /-!
@@ -142,7 +142,8 @@ def minTopBottom (S5 S10 : Finset 𝓩) : Multiset (ChargeSpectrum 𝓩) := Mult
 lemma allowsTerm_topYukawa_of_mem_minTopBottom {S5 S10 : Finset 𝓩}
     {x : ChargeSpectrum 𝓩} (h : x ∈ minTopBottom S5 S10) :
     x.AllowsTerm topYukawa := by
-  simp [minTopBottom] at h
+  simp only [minTopBottom, Multiset.mem_dedup, Multiset.mem_map, Multiset.mem_product,
+    Finset.mem_val, Prod.exists] at h
   obtain ⟨qHd, qHu, q5, q10, ⟨hHd, hHu, h5, h10⟩, rfl⟩ := h
   rw [allowsTerm_iff_subset_allowsTermForm]
   simp [allowsTermForm]

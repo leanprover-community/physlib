@@ -9,15 +9,14 @@ import Mathlib.Data.NNReal.Defs
 # Planck's constant
 
 In this module we define the Planck's constant `ℏ` as a positive real number.
-This is introduced as an axiom.
 
 -/
 open NNReal
 
 namespace Constants
 
-/-- Planck's constant. -/
-axiom ℏ : Subtype fun x : ℝ => 0 < x
+/-- The value of the reduced Planck's constant in units of J.s. -/
+def ℏ : Subtype fun x : ℝ => 0 < x := ⟨1.054571817e-34, by norm_num⟩
 
 /-- Planck's constant is positive. -/
 lemma ℏ_pos : 0 < (ℏ : ℝ) := ℏ.2

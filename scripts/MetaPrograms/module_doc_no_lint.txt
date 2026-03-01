@@ -15,7 +15,6 @@ PhysLean/Electromagnetism/Basic.lean
 PhysLean/Electromagnetism/Charge/ChargeUnit.lean
 PhysLean/Electromagnetism/Electrostatics/Basic.lean
 PhysLean/Electromagnetism/Electrostatics/OneDimension/Vacuum.lean
-PhysLean/Electromagnetism/Electrostatics/ThreeDimension/FiniteCollection.lean
 PhysLean/Electromagnetism/Electrostatics/ThreeDimension/InfinitePlane.lean
 PhysLean/Electromagnetism/Electrostatics/ThreeDimension/PointParticle.lean
 PhysLean/Electromagnetism/FieldStrength/Basic.lean
@@ -175,14 +174,12 @@ PhysLean/QFT/PerturbationTheory/WickContraction/UncontractedList.lean
 PhysLean/QFT/QED/AnomalyCancellation/Basic.lean
 PhysLean/QFT/QED/AnomalyCancellation/BasisLinear.lean
 PhysLean/QFT/QED/AnomalyCancellation/ConstAbs.lean
-PhysLean/QFT/QED/AnomalyCancellation/Even/BasisLinear.lean
 PhysLean/QFT/QED/AnomalyCancellation/Even/LineInCubic.lean
 PhysLean/QFT/QED/AnomalyCancellation/Even/Parameterization.lean
 PhysLean/QFT/QED/AnomalyCancellation/LineInPlaneCond.lean
 PhysLean/QFT/QED/AnomalyCancellation/LowDim/One.lean
 PhysLean/QFT/QED/AnomalyCancellation/LowDim/Three.lean
 PhysLean/QFT/QED/AnomalyCancellation/LowDim/Two.lean
-PhysLean/QFT/QED/AnomalyCancellation/Odd/BasisLinear.lean
 PhysLean/QFT/QED/AnomalyCancellation/Odd/LineInCubic.lean
 PhysLean/QFT/QED/AnomalyCancellation/Odd/Parameterization.lean
 PhysLean/QFT/QED/AnomalyCancellation/Permutations.lean
@@ -287,10 +284,8 @@ PhysLean/Relativity/Tensors/UnitTensor.lean
 PhysLean/SpaceAndTime/Space/Basic.lean
 PhysLean/SpaceAndTime/Space/Distributions/Basic.lean
 PhysLean/SpaceAndTime/Space/LengthUnit.lean
-PhysLean/SpaceAndTime/Space/SpaceStruct.lean
 PhysLean/SpaceAndTime/Space/Translations.lean
 PhysLean/SpaceAndTime/SpaceTime/TimeSlice.lean
-PhysLean/SpaceAndTime/Time/Basic.lean
 PhysLean/SpaceAndTime/Time/TimeMan.lean
 PhysLean/SpaceAndTime/Time/TimeTransMan.lean
 PhysLean/SpaceAndTime/Time/TimeUnit.lean
@@ -318,3 +313,7 @@ PhysLean/Units/WithDim/Momentum.lean
 PhysLean/Units/WithDim/Pressure.lean
 PhysLean/Units/WithDim/Speed.lean
 PhysLean/Units/WithDim/Velocity.lean
+PhysLean/Electromagnetism/Vacuum/Homogeneous.lean
+PhysLean/Electromagnetism/Vacuum/OneDimension.lean
+PhysLean/Particles/NeutrinoPhysics/Basic.lean
+PhysLean/QuantumMechanics/OneDimension/HarmonicOscillator/Examples.lean

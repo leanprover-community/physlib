@@ -48,7 +48,7 @@ lemma timelike_time_dominates_space {d : ℕ} {v : Vector d}
   simp only [PiLp.inner_apply, RCLike.inner_apply, conj_trivial]
   have h_spatial_sum : ∑ x, spatialPart v x * spatialPart v x =
                     ∑ i, v (Sum.inr i) * v (Sum.inr i) := by
-      simp only [spatialPart]
+      simp only
   have h_time : timeComponent v = v (Sum.inl 0) := rfl
   rw [h_spatial_sum, h_time]
   have h_norm_pos : 0 < v (Sum.inl 0) * v (Sum.inl 0) -

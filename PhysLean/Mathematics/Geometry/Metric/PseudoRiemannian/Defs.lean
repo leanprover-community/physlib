@@ -309,7 +309,14 @@ lemma toBilinForm_isSymm (g : PseudoRiemannianMetric E H M n I) (x : M) :
 @[simp]
 lemma toBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (toBilinForm g x).Nondegenerate := by
-  intro v hv; simp_rw [toBilinForm_apply] at hv; exact g.nondegenerate x v hv
+  unfold LinearMap.BilinForm.Nondegenerate LinearMap.Nondegenerate
+    LinearMap.SeparatingLeft LinearMap.SeparatingRight
+  constructor
+  · intro v hv; simp_rw [toBilinForm_apply] at hv; exact g.nondegenerate x v hv
+  · intro v hv; simp_rw [toBilinForm_apply] at hv;
+    have hw : ∀ (w : TangentSpace I x), ((g.val x) v) w = 0 := by
+      intro w; rw [symm]; simp [hv]
+    exact g.nondegenerate x v hw
 
 /-- The inner product (or scalar product) on the tangent space at point `x`
   induced by the pseudo-Riemannian metric `g`. This is `gₓ(v, w)`. -/
@@ -608,10 +615,19 @@ lemma cotangentMetricVal_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x
 @[simp]
 lemma cotangentToBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (cotangentToBilinForm g x).Nondegenerate := by
-  intro ω hω
-  apply cotangentMetricVal_nondegenerate g x ω
-  intro v
-  exact hω v
+  unfold LinearMap.BilinForm.Nondegenerate LinearMap.Nondegenerate
+    LinearMap.SeparatingLeft LinearMap.SeparatingRight
+  constructor
+  · intro ω hω
+    apply cotangentMetricVal_nondegenerate g x ω
+    intro v
+    exact hω v
+  · intro ω hω
+    apply cotangentMetricVal_nondegenerate g x ω
+    intro v
+    have hv : ∀ (y : TangentSpace I x →L[ℝ] ℝ), ((g.cotangentToBilinForm x) ω) y = 0 := by
+      intro y; rw [LinearMap.BilinForm.isSymm_def.mp (cotangentToBilinForm_isSymm g x)]; simp [hω]
+    exact hv v
 
 end Cotangent
 

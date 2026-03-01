@@ -14,9 +14,9 @@ folder_map = {folder: idx + 1 for idx, folder in enumerate(folders)}
 #debugging
 #print(folder_map)
 
-##################################################### names that end with a "." are actually ending with .lean but lean is removed for visiblity
+##################################################### names that end with a "." are actually ending with .lean but lean is removed for visibility
 
-#generating the tree for treemap, id has to be unique and is assigned the aboslute path, label is what is displayed, this is immediate file or folder name for visiblity
+#generating the tree for treemap, id has to be unique and is assigned the absolute path, label is what is displayed, this is immediate file or folder name for visibility
 # size decides the area occupied by each label, here it is just the file size, value is what decides the color, here it is the number assigned to the parent folder, so each file inside stats mech is assigned same number
 blobs = [{
     'parent': os.path.dirname(blob.path) or "/",

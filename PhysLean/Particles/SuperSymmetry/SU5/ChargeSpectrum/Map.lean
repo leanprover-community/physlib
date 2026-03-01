@@ -207,7 +207,6 @@ lemma map_ofPotentialTerm_toFinset [DecidableEq 𝓩]
       ofPotentialTerm'_W4_finset, ofPotentialTerm'_K2_finset,
       ofPotentialTerm'_topYukawa_finset, ofPotentialTerm'_bottomYukawa_finset] at h
       try simp [ofPotentialTerm'] at h
-      simp only [SProd.sprod, Multiset.mem_product] at h
     case' μ | β =>
       obtain ⟨q1, q2, ⟨q1_mem, q2_mem⟩, q_sum⟩ := h
       simp [map] at q1_mem q2_mem
@@ -240,11 +239,10 @@ lemma map_ofPotentialTerm_toFinset [DecidableEq 𝓩]
       ofPotentialTerm'_W4_finset, ofPotentialTerm'_K2_finset,
       ofPotentialTerm'_topYukawa_finset, ofPotentialTerm'_bottomYukawa_finset]
       try simp [ofPotentialTerm']
-      simp only [SProd.sprod, Multiset.mem_product]
       use q1, q2
-      simp_all
     · use q3, q4
     · use q3, q4
+    all_goals use q3
   · intro h
     obtain ⟨a, h, rfl⟩ := h
     cases T
@@ -254,7 +252,6 @@ lemma map_ofPotentialTerm_toFinset [DecidableEq 𝓩]
       ofPotentialTerm'_W4_finset, ofPotentialTerm'_K2_finset,
       ofPotentialTerm'_topYukawa_finset, ofPotentialTerm'_bottomYukawa_finset] at h
       try simp [ofPotentialTerm'] at h
-      simp only [SProd.sprod, Multiset.mem_product] at h
       try simp [ofPotentialTerm'_W2_finset, ofPotentialTerm'_W3_finset,
       ofPotentialTerm'_β_finset, ofPotentialTerm'_μ_finset,
       ofPotentialTerm'_W4_finset, ofPotentialTerm'_K2_finset,
@@ -270,7 +267,7 @@ lemma map_ofPotentialTerm_toFinset [DecidableEq 𝓩]
       obtain ⟨q1, q2, q3, q4, ⟨q1_mem, q2_mem, q3_mem, q4_mem⟩, q_sum⟩ := h
       use f q1, f q2, f q3, f q4
     all_goals
-      simp only [SProd.sprod, Multiset.mem_product, map]
+      simp only [map]
       subst a
       simp_all
     case W1 => refine ⟨⟨q1, q1_mem, rfl⟩, ⟨q2, q2_mem, rfl⟩, ⟨q3, q3_mem, rfl⟩, ⟨q4, q4_mem, rfl⟩⟩

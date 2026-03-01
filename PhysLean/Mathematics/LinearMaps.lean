@@ -26,7 +26,7 @@ namespace HomogeneousQuadratic
 
 variable {V : Type} [AddCommMonoid V] [Module ℚ V]
 
-/-- A homogenous quadratic equation can be treated as a function from `V` to `ℚ`. -/
+/-- A homogeneous quadratic equation can be treated as a function from `V` to `ℚ`. -/
 instance instFun : FunLike (HomogeneousQuadratic V) V ℚ where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -117,7 +117,7 @@ lemma map_sum₁ {n : ℕ} (f : BiLinearSymm V) (S : Fin n → V) (T : V) :
 lemma map_sum₂ {n : ℕ} (f : BiLinearSymm V) (S : Fin n → V) (T : V) :
     f T (∑ i, S i) = ∑ i, f T (S i) := map_sum (f T) S Finset.univ
 
-/-- The homogenous quadratic equation obtainable from a bilinear function. -/
+/-- The homogeneous quadratic equation obtainable from a bilinear function. -/
 @[simps!]
 def toHomogeneousQuad {V : Type} [AddCommMonoid V] [Module ℚ V]
     (τ : BiLinearSymm V) : HomogeneousQuadratic V where
@@ -144,7 +144,7 @@ namespace HomogeneousCubic
 
 variable {V : Type} [AddCommMonoid V] [Module ℚ V]
 
-/-- A homogenous cubic equation can be treated as a function from `V` to `ℚ`. -/
+/-- A homogeneous cubic equation can be treated as a function from `V` to `ℚ`. -/
 instance instFun : FunLike (HomogeneousCubic V) V ℚ where
   coe f := f.toFun
   coe_injective' f g h := by
@@ -266,7 +266,7 @@ lemma map_sum₁₂₃ {n1 n2 n3 : ℕ} (f : TriLinearSymm V) (S : Fin n1 → V)
   rw [map_sum₂]
   exact Fintype.sum_congr _ _ fun _ ↦ map_sum₃ f L (S _) (T _)
 
-/-- The homogenous cubic equation obtainable from a symmetric trilinear function. -/
+/-- The homogeneous cubic equation obtainable from a symmetric trilinear function. -/
 @[simps!]
 def toCubic {charges : Type} [AddCommMonoid charges] [Module ℚ charges]
     (τ : TriLinearSymm charges) : HomogeneousCubic charges where

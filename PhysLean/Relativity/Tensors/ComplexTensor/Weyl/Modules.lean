@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Algebra.Module.TransferInstance
 /-!
 
 ## Modules associated with Fermions

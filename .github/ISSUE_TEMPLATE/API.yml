@@ -1,0 +1,33 @@
+name: API
+description: Auto-filled issue for API building
+title: "API: "
+labels:
+  - API
+  - help wanted
+  - Requirements needed
+body:
+  - type: textarea
+    id: content
+    attributes:
+      label: Details
+      value: |
+        The details of this issue are not yet completed. The issue is here to track the progress of the API specified by the title. Parts of this API may already be included within the project. There are a number of things we need to specify, help in specifying these points is appreciated.
+
+        ## Key data structure
+
+        What is the key data structure the API is built around.
+
+        ## Need
+
+        Why is this API needed, after it is completed, what will it make easier or allow us to do.
+
+        ## Requirements
+
+        A tickbox list of the requirements of the API. This should include things which have already been done as well as things still to be worked on. Details on writing good system requirements can be found [here](https://www.ibm.com/docs/en/SSYQBZ_9.6.1/com.ibm.doors.requirements.doc/topics/get_it_right_the_first_time.pdf).
+
+        ## Corresponding file system
+
+        If it exists, the part of the PhysLean which corresponds to this API.
+
+    validations:
+      required: false

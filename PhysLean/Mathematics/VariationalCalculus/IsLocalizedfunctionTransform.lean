@@ -3,9 +3,7 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 import PhysLean.Mathematics.VariationalCalculus.Basic
-import PhysLean.SpaceAndTime.Space.VectorIdentities
 /-!
 
 # Localized function transforms
@@ -139,14 +137,43 @@ lemma smul_left [NormedAddCommGroup V] [NormedSpace ℝ V] {F : (X → U) → (X
   · simp_all
   · simp_all
 
-lemma div {d} : IsLocalizedFunctionTransform fun (φ : Space d → Space d) x => Space.div φ x := by
+lemma div {d} : IsLocalizedFunctionTransform fun (φ : Space d → EuclideanSpace ℝ (Fin d)) x =>
+    Space.div φ x := by
   intro K cK
   use (Metric.cthickening 1 K)
   constructor
   · exact IsCompact.cthickening cK
   · intro φ φ' hφ
     have h : ∀ (i : Fin d), ∀ x ∈ K,
-        (fun x => Space.coord i (φ x)) =ᶠ[nhds x] fun x => Space.coord i (φ' x) := by
+        (fun x => (φ x) i) =ᶠ[nhds x] fun x => (φ' x) i := by
+      intro i x hx
+      apply Filter.eventuallyEq_of_mem (s := Metric.thickening 1 K)
+      refine mem_interior_iff_mem_nhds.mp ?_
+      rw [@mem_interior]
+      use Metric.thickening 1 K
+      simp only [subset_refl, true_and]
+      apply And.intro
+      · exact Metric.isOpen_thickening
+      · rw [@Metric.mem_thickening_iff_exists_edist_lt]
+        use x
+        simpa using hx
+      · intro x hx
+        have hx' : x ∈ Metric.cthickening 1 K := Metric.thickening_subset_cthickening 1 K hx
+        simp_all
+    intro x hx; dsimp;
+    simp [Space.div,Space.deriv]
+    congr; funext i; congr 1
+    exact Filter.EventuallyEq.fderiv_eq (h _ _ hx)
+
+lemma div_comp_repr {d} : IsLocalizedFunctionTransform fun (φ : Space d → Space d) x =>
+    Space.div (Space.basis.repr ∘ φ) x := by
+  intro K cK
+  use (Metric.cthickening 1 K)
+  constructor
+  · exact IsCompact.cthickening cK
+  · intro φ φ' hφ
+    have h : ∀ (i : Fin d), ∀ x ∈ K,
+        (fun x => (φ x) i) =ᶠ[nhds x] fun x => (φ' x) i := by
       intro i x hx
       apply Filter.eventuallyEq_of_mem (s := Metric.thickening 1 K)
       refine mem_interior_iff_mem_nhds.mp ?_
@@ -173,7 +200,7 @@ lemma grad : IsLocalizedFunctionTransform fun (ψ : Space d → ℝ) x => Space.
   · exact IsCompact.cthickening cK
   · intro φ φ' hφ x hx
     dsimp
-    simp [Space.grad_eq_sum,Space.deriv]
+    simp [Space.grad_eq_sum, Space.deriv]
     congr
     funext i
     congr 2
@@ -193,10 +220,30 @@ lemma grad : IsLocalizedFunctionTransform fun (ψ : Space d → ℝ) x => Space.
       simp_all
 
 lemma gradient : IsLocalizedFunctionTransform fun (ψ : Space d → ℝ) x => gradient ψ x := by
-  conv =>
-    enter [1, ψ, x]
-    rw [← Space.grad_eq_gradiant]
-  exact grad
+  intro K cK
+  use (Metric.cthickening 1 K)
+  constructor
+  · exact IsCompact.cthickening cK
+  · intro φ φ' hφ x hx
+    dsimp
+    simp [Space.gradient_eq_sum,Space.deriv]
+    congr
+    funext i
+    congr 2
+    refine Filter.EventuallyEq.fderiv_eq ?_
+    apply Filter.eventuallyEq_of_mem (s := Metric.thickening 1 K)
+    refine mem_interior_iff_mem_nhds.mp ?_
+    rw [@mem_interior]
+    use Metric.thickening 1 K
+    simp only [subset_refl, true_and]
+    apply And.intro
+    · exact Metric.isOpen_thickening
+    · rw [@Metric.mem_thickening_iff_exists_edist_lt]
+      use x
+      simpa using hx
+    · intro x hx
+      have hx' : x ∈ Metric.cthickening 1 K := Metric.thickening_subset_cthickening 1 K hx
+      simp_all
 
 lemma clm_apply [NormedAddCommGroup V] [NormedSpace ℝ V] [NormedAddCommGroup U] [NormedSpace ℝ U]
     (f : X → (U →L[ℝ] V)) : IsLocalizedFunctionTransform fun φ x => (f x) (φ x) := by

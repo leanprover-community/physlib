@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Relativity.Tensors.Product
+import Mathlib.Topology.Algebra.Module.FiniteDimension
 /-!
 
 # Tensorial class
@@ -34,11 +35,16 @@ We define the class `Tensorial` here, and provide an API around its use.
   - B.1. Relation between the action and the equivalence to tensors
   - B.2. Linear properties of the action
   - B.3. The action as a linear map
+  - B.4. The SMulCommClass property
 - C. Properties of the basis
 - D. Products of tensorial instances
   - D.1. The equivalence to tensors on products
   - D.2. The group action on products
   - D.3. The basis on products
+- E. Continuous properties
+  - E.1. Finite dimensionality
+  - E.2. The map to tensors as a continuous linear equivalence
+  - E.3. The Lorentz action as a continuous linear equivalence
 
 ## iv. References
 
@@ -112,8 +118,10 @@ We now define the action of the group `G` on a type `M` carrying a tensorial ins
 
 -/
 
-noncomputable instance mulAction [Tensorial S c M] : MulAction G M where
+noncomputable instance (priority := high) smulAction [Tensorial S c M] : SMul G M where
   smul g m := toTensor.symm (g • toTensor m)
+
+noncomputable instance mulAction [Tensorial S c M] : MulAction G M where
   one_smul m := by
     change toTensor.symm (1 • toTensor m) = _
     simp
@@ -150,22 +158,14 @@ lemma smul_toTensor_symm {g : G} {t : Tensor S c} [self : Tensorial S c M] :
 
 -/
 
-@[simp]
-lemma smul_add {g : G} [Tensorial S c M] (m m' : M) :
-    g • (m + m') = g • m + g • m' := by
-  apply toTensor.injective
-  simp [toTensor_smul, map_add, Tensor.actionT_add]
-
-@[simp]
-lemma smul_neg {n : ℕ} {c : Fin n → C} {M : Type} [AddCommGroup M] [Module k M]
-    [Tensorial S c M] (g : G) (m : M) :
-    g • (-m) = - (g • m) := toTensor.injective <| by
-  simp [toTensor_smul, map_neg, Tensor.actionT_neg]
-
-@[simp]
-lemma smul_zero [Tensorial S c M] {g : G} :
-    g • (0 : M) = 0 := toTensor.injective <| by
-  simp [toTensor_smul, map_zero, Tensor.actionT_zero]
+noncomputable instance (priority := high) distribMulAction [Tensorial S c M] :
+    DistribMulAction G M where
+  smul_add g m m' := by
+    apply toTensor.injective
+    simp [toTensor_smul, map_add, Tensor.actionT_add]
+  smul_zero g := by
+    apply toTensor.injective
+    simp only [toTensor_smul, map_zero, Tensor.actionT_zero]
 
 /-!
 
@@ -188,6 +188,17 @@ lemma smulLinearMap_apply {g : G} [Tensorial S c M] (m : M) :
 
 /-!
 
+### B.4. The SMulCommClass property
+
+-/
+
+instance [Tensorial S c M] : SMulCommClass k G M where
+  smul_comm c g m := by
+    apply toTensor.injective
+    simp [toTensor_smul]
+
+/-!
+
 ## C. Properties of the basis
 
 We now prove some properties of the basis induced on a `Tensorial` instance.
@@ -205,7 +216,7 @@ lemma basis_toTensor_apply [Tensorial S c M] (m : M) :
 
 open TensorProduct
 
-noncomputable instance prod [Tensorial S c M] {n2 : ℕ} {c2 : Fin n2 → C}
+noncomputable instance (priority := high) prod [Tensorial S c M] {n2 : ℕ} {c2 : Fin n2 → C}
     {M₂ : Type} [AddCommMonoid M₂] [Module k M₂] [Tensorial S c2 M₂] :
     Tensorial S (Fin.append c c2) (M ⊗[k] M₂) where
   toTensor := (TensorProduct.congr toTensor toTensor).trans
@@ -227,6 +238,7 @@ lemma toTensor_tprod {n2 : ℕ} {c2 : Fin n2 → C} {M₂ : Type}
 ### D.2. The group action on products
 
 -/
+
 lemma smul_prod {n2 : ℕ} {c2 : Fin n2 → C} {M₂ : Type}
     [Tensorial S c M] [AddCommMonoid M₂] [Module k M₂]
     [Tensorial S c2 M₂] (g : G) (m : M) (m2 : M₂) :
@@ -260,4 +272,62 @@ lemma basis_map_prod {n2 : ℕ} {c2 : Fin n2 → C} {M₂ : Type}
   simp only [LinearEquiv.apply_symm_apply]
   rfl
 
+/-!
+
+## E. Continuous properties
+
+-/
+
+section Continuous
+
+variable {k : Type} [RCLike k] {C G : Type} [Group G] (S : TensorSpecies k C G)
+    {c : Fin n → C} {M : Type} [AddCommGroup M] [Module k M]
+    [TopologicalSpace M]
+
+/-!
+
+### E.1. Finite dimensionality
+
+-/
+instance [Tensorial S c M] : FiniteDimensional k M := LinearEquiv.finiteDimensional
+  (Tensorial.toTensor (M := M)).symm
+
+/-!
+
+### E.2. The map to tensors as a continuous linear equivalence
+
+-/
+
+/-- The map from a type carrying an Tensorial instance to tensors, as a
+  continuous linear map. -/
+def toTensorCLM [IsTopologicalAddGroup M]
+    [ContinuousSMul k M] [Tensorial S c M] [T2Space M] : M ≃L[k] (S.Tensor c) where
+  toLinearMap := (Tensorial.toTensor (M := M))
+  invFun := (Tensorial.toTensor (M := M)).symm
+  left_inv x := by simp
+  right_inv x := by simp
+  continuous_toFun := by
+    let e : M →L[k] (S.Tensor c) := LinearMap.toContinuousLinearMap
+      (Tensorial.toTensor (M := M))
+    change Continuous e
+    exact ContinuousLinearMap.continuous e
+  continuous_invFun := by apply IsModuleTopology.continuous_of_linearMap
+
+/-!
+
+### E.3. The Lorentz action as a continuous linear equivalence
+
+-/
+
+/-- The Lorentz action on types carrying a tensorial instance as a continuous linear
+  map. -/
+noncomputable def actionCLM (g : G) [IsTopologicalAddGroup M]
+    [ContinuousSMul k M] [Tensorial S c M] [T2Space M] : M →L[k] M :=
+  LinearMap.toContinuousLinearMap (smulLinearMap g)
+
+lemma actionCLM_apply {g : G} [IsTopologicalAddGroup M]
+    [ContinuousSMul k M] [Tensorial S c M] [T2Space M] (m : M) :
+    actionCLM S g m = g • m := rfl
+
+end Continuous
 end Tensorial

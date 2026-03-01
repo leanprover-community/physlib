@@ -95,9 +95,9 @@ lemma diag_pow_of_blockTriangular_id {A : Matrix m m 𝕂}
 /-- The exponential of an upper-triangular matrix is upper-triangular. -/
 lemma blockTriangular_exp_of_blockTriangular_id
     {A : Matrix m m 𝕂} (hA : BlockTriangular A id) :
-    (NormedSpace.exp 𝕂 A).BlockTriangular id := by
+    (NormedSpace.exp A).BlockTriangular id := by
   intro i j hij
-  rw [NormedSpace.exp_eq_tsum]
+  rw [NormedSpace.exp_eq_tsum 𝕂]
   let exp_series := fun n => ((n.factorial : 𝕂)⁻¹) • (A ^ n)
   change (∑' n, exp_series n) i j = 0
   rw [matrix_tsum_apply (NormedSpace.expSeries_summable' A) i j]
@@ -137,20 +137,20 @@ lemma matrix_exp_series_diag_eq_scalar_series {A : Matrix m m 𝕂} (hA : BlockT
 exponentials of the diagonal entries of `A`. -/
 theorem diag_exp_of_blockTriangular_id
     {A : Matrix m m 𝕂} (hA : BlockTriangular A id) :
-    (NormedSpace.exp 𝕂 A).diag = fun i => NormedSpace.exp 𝕂 (A i i) := by
+    (NormedSpace.exp A).diag = fun i => NormedSpace.exp (A i i) := by
   funext i
-  rw [NormedSpace.exp_eq_tsum (𝕂 := 𝕂), diag_apply]
+  rw [NormedSpace.exp_eq_tsum 𝕂, diag_apply]
   simp_rw [matrix_tsum_apply (NormedSpace.expSeries_summable' A) i i]
   rw [matrix_exp_series_diag_eq_scalar_series hA i]
-  rw [NormedSpace.exp_eq_tsum (𝕂 := 𝕂)]
+  rw [NormedSpace.exp_eq_tsum 𝕂]
 
 /-- Lie's trace formula for upper triangular matrices. -/
 lemma det_exp_of_blockTriangular_id {A : Matrix m m 𝕂} (hA : BlockTriangular A id) :
-    (NormedSpace.exp 𝕂 A).det = NormedSpace.exp 𝕂 A.trace := by
-  have h_exp_upper : BlockTriangular (NormedSpace.exp 𝕂 A) id :=
+    (NormedSpace.exp A).det = NormedSpace.exp A.trace := by
+  have h_exp_upper : BlockTriangular (NormedSpace.exp A) id :=
     blockTriangular_exp_of_blockTriangular_id hA
   rw [det_of_upperTriangular h_exp_upper]
-  have h_diag_exp : (NormedSpace.exp 𝕂 A).diag = fun i => NormedSpace.exp 𝕂 (A i i) :=
+  have h_diag_exp : (NormedSpace.exp A).diag = fun i => NormedSpace.exp (A i i) :=
     diag_exp_of_blockTriangular_id hA
   simp_rw [← diag_apply]
   simp_rw [h_diag_exp]
@@ -169,39 +169,39 @@ lemma trace_unitary_conj (A : Matrix m m 𝕂) (U : unitaryGroup m 𝕂) :
 lemma det_unitary_conj (A : Matrix m m 𝕂) (U : unitaryGroup m 𝕂) :
     det ((U : Matrix m m 𝕂) * A * star (U : Matrix m m 𝕂)) = det A := by
   rw [det_mul_right_comm]
-  simp_all only [SetLike.coe_mem, unitary.mul_star_self_of_mem, one_mul]
+  simp_all only [SetLike.coe_mem, Unitary.mul_star_self_of_mem, one_mul]
 
 /-- The exponential of a matrix commutes with unitary conjugation. -/
 lemma exp_unitary_conj (A : Matrix m m 𝕂) (U : unitaryGroup m 𝕂) :
-    NormedSpace.exp 𝕂 ((U : Matrix m m 𝕂) * A * star (U : Matrix m m 𝕂)) =
-      (U : Matrix m m 𝕂) * NormedSpace.exp 𝕂 A * star (U : Matrix m m 𝕂) := by
+    NormedSpace.exp ((U : Matrix m m 𝕂) * A * star (U : Matrix m m 𝕂)) =
+      (U : Matrix m m 𝕂) * NormedSpace.exp A * star (U : Matrix m m 𝕂) := by
   let Uu : (Matrix m m 𝕂)ˣ :=
     { val := (U : Matrix m m 𝕂)
       inv := star (U : Matrix m m 𝕂)
       val_inv := by simp
       inv_val := by simp}
-  have h_units := Matrix.exp_units_conj (𝕂 := 𝕂) Uu A
+  have h_units := Matrix.exp_units_conj Uu A
   simpa [Uu] using h_units
 
 lemma det_exp_unitary_conj (A : Matrix m m 𝕂) (U : unitaryGroup m 𝕂) :
-    (NormedSpace.exp 𝕂 ((U : Matrix m m 𝕂) * A * star (U : Matrix m m 𝕂))).det =
-    (NormedSpace.exp 𝕂 A).det := by
+    (NormedSpace.exp ((U : Matrix m m 𝕂) * A * star (U : Matrix m m 𝕂))).det =
+    (NormedSpace.exp A).det := by
   rw [exp_unitary_conj, det_unitary_conj]
 
 /-- The determinant of the exponential of a matrix is the exponential of its trace.
 This is also known as **Lie's trace formula**. -/
 theorem det_exp {𝕂 m : Type*} [RCLike 𝕂] [IsAlgClosed 𝕂] [Fintype m] [LinearOrder m]
     (A : Matrix m m 𝕂) :
-    (NormedSpace.exp 𝕂 A).det = NormedSpace.exp 𝕂 A.trace := by
+    (NormedSpace.exp A).det = NormedSpace.exp A.trace := by
   let U := A.schurTriangulationUnitary
   let T := A.schurTriangulation
   have h_prop : T.val.IsUpperTriangular := T.property
   have h_conj : A = U * T * star U := schur_triangulation A
   have h_trace_invariant : A.trace = T.val.trace := by
     erw [h_conj, trace_unitary_conj]
-  have h_det_invariant : (NormedSpace.exp 𝕂 A).det = (NormedSpace.exp 𝕂 T.val).det := by
+  have h_det_invariant : (NormedSpace.exp A).det = (NormedSpace.exp T.val).det := by
     erw [h_conj, det_exp_unitary_conj]
-  have h_triangular_case : (NormedSpace.exp 𝕂 T.val).det = NormedSpace.exp 𝕂 T.val.trace :=
+  have h_triangular_case : (NormedSpace.exp T.val).det = NormedSpace.exp T.val.trace :=
     det_exp_of_blockTriangular_id h_prop
   rw [h_det_invariant, h_triangular_case, h_trace_invariant]
 
@@ -221,23 +221,13 @@ attribute [local instance] Matrix.linftyOpNormedAlgebra
 attribute [local instance] Matrix.linftyOpNormedRing
 attribute [local instance] Matrix.instCompleteSpace
 
-lemma map_pow {α β m : Type*}
-    [Fintype m] [DecidableEq m] [Semiring α] [Semiring β]
-    (f : α →+* β) (A : Matrix m m α) (k : ℕ) :
-    (A ^ k).map f = (A.map f) ^ k := by
-  induction k with
-  | zero =>
-    rw [pow_zero, pow_zero, Matrix.map_one]; all_goals aesop
-  | succ k ih =>
-    rw [pow_succ, pow_succ, Matrix.map_mul, ih]
-
 end Matrix
 
 namespace NormedSpace
 
 lemma exp_map_algebraMap {n : Type*} [Fintype n] [DecidableEq n]
     (A : Matrix n n ℝ) :
-    (exp ℝ A).map (algebraMap ℝ ℂ) = exp ℂ (A.map (algebraMap ℝ ℂ)) := by
+    (exp A).map (algebraMap ℝ ℂ) = exp (A.map (algebraMap ℝ ℂ)) := by
   letI : SeminormedRing (Matrix n n ℝ) := Matrix.linftyOpSemiNormedRing
   letI : NormedRing (Matrix n n ℝ) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra ℝ (Matrix n n ℝ) := Matrix.linftyOpNormedAlgebra
@@ -246,21 +236,14 @@ lemma exp_map_algebraMap {n : Type*} [Fintype n] [DecidableEq n]
   letI : NormedRing (Matrix n n ℂ) := Matrix.linftyOpNormedRing
   letI : NormedAlgebra ℂ (Matrix n n ℂ) := Matrix.linftyOpNormedAlgebra
   letI : CompleteSpace (Matrix n n ℂ) := inferInstance
-  simp only [exp_eq_tsum]
+  simp only [exp_eq_tsum ℝ]
   have hs : Summable (fun k => (k.factorial : ℝ)⁻¹ • A ^ k) := by
     exact NormedSpace.expSeries_summable' A
   erw [Matrix.map_tsum (algebraMap ℝ ℂ).toAddMonoidHom RCLike.continuous_ofReal hs]
   apply tsum_congr
   intro k
   erw [Matrix.map_smul, Matrix.map_pow]
-  simp_all only [Complex.coe_algebraMap]
-  ext i j : 1
-  simp_all only [Matrix.smul_apply, Complex.real_smul, Complex.ofReal_inv, Complex.ofReal_natCast,
-    smul_eq_mul]
-  intro a
-  simp_all only [RingHom.toAddMonoidHom_eq_coe, smul_eq_mul, AddMonoidHom.coe_coe,
-    Complex.coe_algebraMap, Complex.ofReal_mul, Complex.ofReal_inv, Complex.ofReal_natCast,
-    Complex.real_smul]
+  simp
 
 end NormedSpace
 
@@ -271,14 +254,14 @@ Lie's trace formula over ℝ: det(exp(A)) = exp(tr(A)) for any real matrix A.
 This is proved by transferring the result from ℂ using the naturality of polynomial identities.
 -/
 theorem det_exp_real {n : Type*} [Fintype n] [LinearOrder n]
-    (A : Matrix n n ℝ) : (NormedSpace.exp ℝ A).det = Real.exp A.trace := by
+    (A : Matrix n n ℝ) : (NormedSpace.exp A).det = Real.exp A.trace := by
   let A_ℂ := A.map (algebraMap ℝ ℂ)
-  have h_complex : (NormedSpace.exp ℂ A_ℂ).det = Complex.exp A_ℂ.trace := by
+  have h_complex : (NormedSpace.exp A_ℂ).det = Complex.exp A_ℂ.trace := by
     haveI : IsAlgClosed ℂ := Complex.isAlgClosed
     rw [Complex.exp_eq_exp_ℂ, ← Matrix.det_exp]
   have h_trace_comm : A_ℂ.trace = (algebraMap ℝ ℂ) A.trace := by
     simp only [A_ℂ, trace, diag_map, map_sum];rfl
-  have h_det_comm : (algebraMap ℝ ℂ) ((NormedSpace.exp ℝ A).det) = (NormedSpace.exp ℂ A_ℂ).det := by
+  have h_det_comm : (algebraMap ℝ ℂ) ((NormedSpace.exp A).det) = (NormedSpace.exp A_ℂ).det := by
     rw [@RingHom.map_det]
     rw [← NormedSpace.exp_map_algebraMap]; rfl
   rw [← h_det_comm] at h_complex

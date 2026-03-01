@@ -3,7 +3,6 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.Basic
 import PhysLean.Relativity.LorentzGroup.Boosts.Basic
 import PhysLean.Meta.Informal.SemiFormal
 import PhysLean.Mathematics.FDerivCurry
@@ -81,6 +80,43 @@ lemma boost_x_smul (β : ℝ) (hβ : |β| < 1) (x : SpaceTime) :
       LorentzGroup.boost_inr_other_inr _ (by decide),
       LorentzGroup.boost_inr_other_inr _ (by decide),
       LorentzGroup.boost_inr_other_inr _ (by decide)]
+    simp
+
+lemma boost_zero_apply_time_space {d : ℕ} {β : ℝ} (hβ : |β| < 1) (c : SpeedOfLight)
+    (t : Time) (x : Space d.succ) :
+    ((boost (0 : Fin d.succ) β hβ)⁻¹ • (SpaceTime.toTimeAndSpace c).symm (t, x)) =
+    (SpaceTime.toTimeAndSpace c).symm
+    (γ β * (t.val + β /c * x 0),
+    ⟨fun
+      | (0 : Fin d.succ) => γ β * (x 0 + c * β * t.val)
+      | ⟨Nat.succ n, ih⟩ => x ⟨Nat.succ n, ih⟩⟩) := by
+  funext μ
+  rw [boost_inverse, Lorentz.Vector.smul_eq_sum]
+  simp only [Nat.succ_eq_add_one, Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero,
+    Fin.isValue, Finset.sum_singleton, toTimeAndSpace_symm_apply_inl, toTimeAndSpace_symm_apply_inr]
+  rw [Fin.sum_univ_succ]
+  match μ with
+  | Sum.inl 0 =>
+    simp only [Nat.succ_eq_add_one, Fin.isValue, boost_inl_0_inl_0, γ_neg, boost_inl_0_inr_self,
+      mul_neg, neg_mul, neg_neg, boost_zero_inl_0_inr_succ, zero_mul, Finset.sum_const_zero,
+      add_zero, toTimeAndSpace_symm_apply_inl]
+    field_simp
+  | Sum.inr ⟨0, h⟩ =>
+    simp only [Nat.succ_eq_add_one, Fin.isValue, toTimeAndSpace_symm_apply_inr]
+    simp only [Fin.zero_eta, Fin.isValue, boost_inr_self_inl_0, γ_neg, mul_neg, neg_mul, neg_neg,
+      boost_inr_self_inr_self, boost_zero_inr_0_inr_succ, zero_mul, Finset.sum_const_zero, add_zero]
+    field_simp
+    ring
+  | Sum.inr ⟨Nat.succ n, h⟩ =>
+    simp only [Nat.succ_eq_add_one, Fin.isValue, boost_zero_inr_nat_succ_inl_0, zero_mul,
+      boost_zero_inr_nat_succ_inr_0, zero_add, toTimeAndSpace_symm_apply_inr]
+    rw [Finset.sum_eq_single ⟨n, by omega⟩]
+    simp [boost_inr_inr_other]
+    simp only [Finset.mem_univ, ne_eq, mul_eq_zero, forall_const]
+    simp [boost_inr_inr_other]
+    intro b hb
+    left
+    simpa [Fin.ext_iff] using hb
     simp
 
 end SpaceTime

@@ -3,9 +3,9 @@ Copyright (c) 2025 Afiq Hatta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Afiq Hatta
 -/
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.Distribution.SchwartzSpace
 import Mathlib.Topology.Algebra.Polynomial
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 /-!
 # Properties of Tanh
 We want to prove that the reflectionless potential is a Schwartz map.
@@ -22,23 +22,6 @@ open Real
 open NNReal
 open Field
 open scoped ContDiff
-
-/-- tanh(x) is less than 1 for all x -/
-lemma tanh_lt_one (x : ℝ) : tanh x < 1 := by
-  rw [tanh_eq_sinh_div_cosh, div_lt_one (cosh_pos x)]
-  exact sinh_lt_cosh x
-
-/-- tanh(x) is greater than -1 for all x -/
-lemma minus_one_lt_tanh (x : ℝ) : -1 < tanh x := by
-  rw [tanh_eq_sinh_div_cosh, lt_div_iff₀ (cosh_pos x), ← sub_pos, neg_one_mul]
-  simp [exp_pos x]
-
-/-- The absolute value of tanh is bounded by 1 -/
-lemma abs_tanh_lt_one (x : ℝ) : |tanh x| < 1 := by
-  rw [abs_lt]
-  constructor
-  · exact minus_one_lt_tanh x
-  · exact tanh_lt_one x
 
 /-- The derivative of tanh(x) is 1 - tanh(x)^2 -/
 lemma deriv_tanh : deriv Real.tanh = fun x => 1 - Real.tanh x ^ 2 := by
@@ -125,7 +108,7 @@ lemma polynomial_tanh_bounded (P : Polynomial ℝ) :
   have h_range : ∀ x : ℝ, Real.tanh x ∈ Set.Icc (-1) 1 := by
     intro x
     constructor
-    · exact le_of_lt (minus_one_lt_tanh x)
+    · exact le_of_lt (neg_one_lt_tanh x)
     · exact le_of_lt (tanh_lt_one x)
   -- Apply polynomial boundedness on [-1, 1]
   obtain ⟨M, hM⟩ := polynomial_bounded_on_interval P (-1) 1

@@ -27,13 +27,13 @@ instance SO3Group : Group SO3 where
       trans A.1 * ((B.1 * (B.1)ᵀ) * (A.1)ᵀ)
       · noncomm_ring
       · simp [B.2.2, A.2.2]⟩
-  mul_assoc A B C := Subtype.eq (Matrix.mul_assoc A.1 B.1 C.1)
+  mul_assoc A B C := Subtype.ext (Matrix.mul_assoc A.1 B.1 C.1)
   one := ⟨1, det_one, by rw [transpose_one, mul_one]⟩
-  one_mul A := Subtype.eq (Matrix.one_mul A.1)
-  mul_one A := Subtype.eq (Matrix.mul_one A.1)
+  one_mul A := Subtype.ext (Matrix.one_mul A.1)
+  mul_one A := Subtype.ext (Matrix.mul_one A.1)
   inv A := ⟨A.1ᵀ, by simp only [det_transpose, A.2],
     by simp only [transpose_transpose, mul_eq_one_comm.mpr A.2.2]⟩
-  inv_mul_cancel A := Subtype.eq (mul_eq_one_comm.mpr A.2.2)
+  inv_mul_cancel A := Subtype.ext (mul_eq_one_comm.mpr A.2.2)
 
 /-- Notation for the group `SO3`. -/
 scoped[GroupTheory] notation (name := SO3_notation) "SO(3)" => SO3
@@ -58,7 +58,7 @@ lemma subtype_val_eq_toGL : (Subtype.val : SO3 → Matrix (Fin 3) (Fin 3) ℝ) =
 
 /-- The inclusion of `SO(3)` into `GL(3,ℝ)` is an injection. -/
 lemma toGL_injective : Function.Injective toGL := by
-  refine fun A B h ↦ Subtype.eq ?_
+  refine fun A B h ↦ Subtype.ext ?_
   rwa [@Units.ext_iff] at h
 
 /-- The inclusion of `SO(3)` into the monoid of matrices times the opposite of
@@ -72,7 +72,7 @@ lemma toProd_eq_transpose : toProd A = (A.1, ⟨A.1ᵀ⟩) := rfl
 lemma toProd_injective : Function.Injective toProd := by
   intro A B h
   rw [toProd_eq_transpose, toProd_eq_transpose, Prod.mk_inj] at h
-  exact Subtype.eq h.1
+  exact Subtype.ext h.1
 
 lemma toProd_continuous : Continuous toProd :=
   continuous_prodMk.mpr ⟨continuous_iff_le_induced.mpr fun _ a ↦ a,

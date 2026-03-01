@@ -698,7 +698,7 @@ lemma decompose_toCharges_dedup [DecidableEq 𝓩] (x : FiveQuanta 𝓩)
     x.decompose.toCharges.dedup = x.toCharges.dedup := by
   refine Multiset.dedup_ext.mpr ?_
   intro q
-  simp [decompose, toCharges]
+  simp [decompose, toCharges, -existsAndEq]
   constructor
   · rintro ⟨a, b, c, h1, h2, rfl⟩
     exact ⟨c, h1⟩
@@ -780,7 +780,7 @@ def liftCharge (c : Finset 𝓩) : Multiset (FiveQuanta 𝓩) :=
   /- Pairs of multisets (s1, s2) such that s1 and s2 are cardinality of `3` containing
     elements of `c` and that all elements of `c` are in `s1 + s2`. -/
   let S5p : Multiset (Multiset 𝓩 × Multiset 𝓩) :=
-    (S53.product S53).filter fun (s1, s2) => c.val ≤ s1 + s2
+    (S53 ×ˢ S53).filter fun (s1, s2) => c.val ≤ s1 + s2
   let Fp : Multiset (FiveQuanta 𝓩) :=
     S5p.map (fun y => y.1.map (fun z => (z, ⟨1, -1⟩)) + y.2.map (fun z => (z, ⟨0, 1⟩)))
   Fp.map reduce

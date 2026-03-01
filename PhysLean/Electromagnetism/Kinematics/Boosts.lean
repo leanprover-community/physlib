@@ -11,20 +11,28 @@ import PhysLean.SpaceAndTime.SpaceTime.Boosts
 
 ## i. Overview
 
-We find the transformations of the electric and magnetic fields under a Lorentz boost
-in the `x` direction.
+We find the transformations of the electric and magnetic field matrix under
+boosts in the 'x' direction. We do this in full-generality for `d+1` space dimensions.
 
 ## ii. Key results
 
-- `electricField_apply_x_boost` : The transformation of the electric field under a
-  boost in the `x` direction.
-- `magneticField_apply_x_boost` : The transformation of the magnetic field under a
-  boost in the `x` direction.
+- `electricField_apply_x_boost_zero` : The transformation of the x-component of the electric
+  field under a boost in the 'x' direction.
+- `electricField_apply_x_boost_succ` : The transformation of the other components of the electric
+  field under a boost in the 'x' direction.
+- `magneticFieldMatrix_apply_x_boost_zero_succ` : The transformation of the 'x-components' of the
+  magnetic field matrix under a boost in the 'x' direction
+- `magneticFieldMatrix_apply_x_boost_succ_succ` : The transformation of the other components of the
+  magnetic field matrix under a boost in the 'x' direction.
 
 ## iii. Table of contents
 
 - A. Boost of the electric field
+  - A.1. Boost of the x-component of the electric field
+  - A.2. Boost of other components of the electric field
 - B. Boost of the magnetic field
+  - B.1. Boost of the 'x-components' of the magnetic field matrix
+  - B.2. Boost of the other components of the magnetic field matrix
 
 ## iv. References
 
@@ -42,109 +50,85 @@ open LorentzGroup
 
 ## A. Boost of the electric field
 
-The electric field `E` in a frame `F` following a boost in the `x` direction with speed `β`
-with `|β| < 1` compared to a frame `F'` at a point `x := (t, x, y, z)` is related to the
-electric `E'` and magnetic fields `B'` in `F'` at the point
-`x' := (γ (t + β x), γ (x + β t), y, z)`
-(corresponding to the same space-time point) by:
+-/
 
-- `E_x x = E'_x x'`,
-- `E_y x = γ (E'_y x' - β B_z x')`,
-- `E_z x = γ (E'_z x' + β B_y x')`.
+/-!
+
+### A.1. Boost of the x-component of the electric field
+
+-/
+lemma electricField_apply_x_boost_zero {d : ℕ} {c : SpeedOfLight} (β : ℝ) (hβ : |β| < 1)
+    (A : ElectromagneticPotential d.succ) (hA : Differentiable ℝ A) (t : Time) (x : Space d.succ) :
+    let Λ := LorentzGroup.boost (d := d.succ) 0 β hβ
+    let t' : Time := γ β * (t.val + β /c * x 0)
+    let x' : Space d.succ := ⟨fun
+      | 0 => γ β * (x 0 + c * β * t.val)
+      | ⟨Nat.succ n, ih⟩ => x ⟨Nat.succ n, ih⟩⟩
+    electricField c (fun x => Λ • A (Λ⁻¹ • x)) t x 0 =
+    A.electricField c t' x' 0 := by
+  dsimp
+  rw [electricField_eq_fieldStrengthMatrix, fieldStrengthMatrix_equivariant]
+  simp [Fintype.sum_sum_type]
+  rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fin.sum_univ_succ]
+  simp only [boost_inr_self_inr_self, Fin.isValue, boost_zero_inr_0_inr_succ, mul_zero, zero_mul,
+    Finset.sum_const_zero, add_zero, boost_inl_0_inr_self, neg_mul, neg_neg,
+    fieldStrengthMatrix_diag_eq_zero, boost_zero_inl_0_inr_succ, neg_zero]
+  rw [electricField_eq_fieldStrengthMatrix]
+  simp only [Fin.isValue, neg_mul, neg_inj, mul_eq_mul_left_iff, SpeedOfLight.val_ne_zero, or_false]
+  conv_lhs =>
+    enter [2]
+    rw [fieldStrengthMatrix_antisymm]
+  trans γ β ^ 2 * (1 - β ^ 2) *
+      (A.fieldStrengthMatrix
+      ((boost (d := d.succ) 0 β hβ)⁻¹ • (SpaceTime.toTimeAndSpace c).symm (t, x)))
+      (Sum.inl 0, Sum.inr 0)
+  · ring
+  rw [γ_sq β hβ]
+  field_simp
+  rw [SpaceTime.boost_zero_apply_time_space]
+  field_simp
+  rfl
+  exact hA
+  exact hA
+  · apply Differentiable.comp
+    · change Differentiable ℝ (Lorentz.Vector.actionCLM (boost 0 β hβ))
+      exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM (boost 0 β hβ))
+    · apply Differentiable.comp
+      · exact hA
+      · exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM (boost 0 β hβ)⁻¹)
+
+/-!
+
+### A.2. Boost of other components of the electric field
 
 -/
 
-lemma electricField_apply_x_boost (β : ℝ) (hβ : |β| < 1)
-    (A : ElectromagneticPotential) (hA : Differentiable ℝ A) (t : Time) (x : Space) :
-    let Λ := LorentzGroup.boost (d := 3) 0 β hβ
-    let t' : Time := γ β * (t.val + β * x 0)
-    let x' : Space := fun | 0 => γ β * (x 0 + β * t.val) | 1 => x 1 | 2 => x 2
-    electricField (fun x => Λ • A (Λ⁻¹ • x)) t x =
-    fun | 0 => A.electricField t' x' 0
-        | 1 => γ β * (A.electricField t' x' 1 - β * A.magneticField t' x' 2)
-        | 2 => γ β * (A.electricField t' x' 2 + β * A.magneticField t' x' 1) := by
+lemma electricField_apply_x_boost_succ {d : ℕ} {c : SpeedOfLight} (β : ℝ) (hβ : |β| < 1)
+    (A : ElectromagneticPotential d.succ) (hA : Differentiable ℝ A) (t : Time) (x : Space d.succ)
+    (i : Fin d) :
+    let Λ := LorentzGroup.boost (d := d.succ) 0 β hβ
+    let t' : Time := γ β * (t.val + β /c * x 0)
+    let x' : Space d.succ := ⟨fun
+      | 0 => γ β * (x 0 + c * β * t.val)
+      | ⟨Nat.succ n, ih⟩ => x ⟨Nat.succ n, ih⟩⟩
+    electricField c (fun x => Λ • A (Λ⁻¹ • x)) t x i.succ =
+    γ β * (A.electricField c t' x' i.succ + c * β * A.magneticFieldMatrix c t' x' (0, i.succ)) := by
   dsimp
-  let t' : Time := γ β * (t.val + β * x 0)
-  let x' : Space := fun | 0 => γ β * (x 0 + β * t.val) | 1 => x 1 | 2 => x 2
-  have t_trans : (SpaceTime.toTimeAndSpace ((boost (d := 3) 0 β hβ)⁻¹ •
-      SpaceTime.toTimeAndSpace.symm (t, x))).1 = t' := by
-    rw [boost_inverse, SpaceTime.boost_x_smul]
-    simp [SpaceTime.toTimeAndSpace, SpaceTime.time, Lorentz.Vector.timeComponent]
-    rfl
-  have x_trans : (SpaceTime.toTimeAndSpace ((boost (d := 3) 0 β hβ)⁻¹ •
-      SpaceTime.toTimeAndSpace.symm (t, x))).2 = x' := by
-    rw [boost_inverse, SpaceTime.boost_x_smul]
-    simp [SpaceTime.toTimeAndSpace, SpaceTime.time, Lorentz.Vector.timeComponent]
-    funext j
-    fin_cases j <;> simp <;> rfl
-  let x' : Space := fun | 0 => γ β * (x 0 + β * t.val) | 1 => x 1 | 2 => x 2
-  funext i
-  rw [electricField_eq_fieldStrengthMatrix, fieldStrengthMatrix_equivariant]
-  fin_cases i
-  · simp [Fin.sum_univ_three]
-    rw [LorentzGroup.boost_inl_0_inr_other _ (by decide)]
-    simp only [Fin.isValue, zero_mul, neg_zero, add_zero, zero_add]
-    rw [LorentzGroup.boost_inl_0_inr_other _ (by decide)]
-    simp only [Fin.isValue, zero_mul, neg_zero, add_zero, zero_add]
-    rw [LorentzGroup.boost_inr_inr_other _ (by decide)]
-    simp only [Fin.isValue, Fin.reduceEq, ↓reduceIte, mul_zero, zero_mul, zero_add, neg_zero]
-    rw [LorentzGroup.boost_inr_inr_other _ (by decide)]
-    simp only [Fin.isValue, one_ne_zero, ↓reduceIte, mul_zero, zero_mul, zero_add, neg_zero]
-    rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime,
-      fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime]
-    simp only [Fin.isValue, mul_neg, neg_neg]
-    trans ((LorentzGroup.γ β) ^ 2 * (1- β^2)) * A.electricField
-          (SpaceTime.toTimeAndSpace ((LorentzGroup.boost (d := 3) 0 β hβ)⁻¹ •
-            SpaceTime.toTimeAndSpace.symm (t, x))).1
-          (SpaceTime.toTimeAndSpace ((LorentzGroup.boost (d := 3) 0 β hβ)⁻¹ •
-            SpaceTime.toTimeAndSpace.symm (t, x))).2 0
-    · ring
-    have h1 : ((LorentzGroup.γ β) ^ 2 * (1- β^2)) = 1 := by
-      rw [LorentzGroup.γ_sq β hβ]
-      field_simp
-    rw [h1]
-    simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, one_mul]
-    rw [x_trans, t_trans]
-    · exact hA
-    · exact hA
-  · simp [Fin.sum_univ_three]
-    rw [LorentzGroup.boost_inr_other_inl_0 _ (by decide),
-      LorentzGroup.boost_inr_other_inr _ (by decide),
-      LorentzGroup.boost_inr_other_inr _ (by decide),
-      LorentzGroup.boost_inr_other_inr _ (by decide),
-      LorentzGroup.boost_inl_0_inr_other _ (by decide),]
-    simp only [Fin.isValue, ↓reduceIte, mul_one, zero_mul, neg_zero, one_ne_zero, mul_zero,
-      add_zero, Fin.reduceEq, zero_add]
-    rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime,
-      fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime]
-    simp only [Fin.isValue, mul_neg, neg_neg]
-    trans -(γ β * β *A.magneticField t' x' 2) +
-      γ β * A.electricField t' x' 1
-    · rw [x_trans, t_trans]
-    · ring
-    · exact hA
-    · exact hA
-  · simp [Fin.sum_univ_three]
-    rw [LorentzGroup.boost_inr_other_inl_0 _ (by decide),
-      LorentzGroup.boost_inr_other_inr _ (by decide),
-      LorentzGroup.boost_inr_other_inr _ (by decide),
-      LorentzGroup.boost_inr_other_inr _ (by decide)]
-    simp only [Fin.isValue, Fin.reduceEq, ↓reduceIte, mul_zero, zero_mul, neg_zero, add_zero,
-      mul_one, zero_add]
-    rw [LorentzGroup.boost_inl_0_inr_other _ (by decide)]
-    simp only [Fin.isValue, zero_mul, neg_zero, zero_add]
-    rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime,
-      fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime]
-    simp only [Fin.isValue, mul_neg, neg_neg]
-    trans γ β * β *
-      A.magneticField t' x' 1 +
-      γ β *
-      A.electricField t' x' 2
-    · rw [x_trans, t_trans]
-    · ring
-    · exact hA
-    · exact hA
-  · exact hA
+  rw [electricField_eq_fieldStrengthMatrix,
+    fieldStrengthMatrix_equivariant _ _ hA]
+  simp [Fintype.sum_sum_type]
+  rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fin.sum_univ_succ]
+  simp [boost_zero_inr_succ_inr_succ]
+  rw [fieldStrengthMatrix_inl_inr_eq_electricField (c := c)]
+  rw [fieldStrengthMatrix_inr_inr_eq_magneticFieldMatrix (c := c)]
+  rw [SpaceTime.boost_zero_apply_time_space]
+  simp only [one_div, Nat.succ_eq_add_one, SpaceTime.time_toTimeAndSpace_symm,
+    SpaceTime.space_toTimeAndSpace_symm, neg_mul, mul_neg]
+  field_simp
+  ring_nf
+  field_simp
+  rfl
+  exact hA
   · apply Differentiable.comp
     · change Differentiable ℝ (Lorentz.Vector.actionCLM (boost 0 β hβ))
       exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM (boost 0 β hβ))
@@ -156,102 +140,65 @@ lemma electricField_apply_x_boost (β : ℝ) (hβ : |β| < 1)
 
 ## B. Boost of the magnetic field
 
-The magnetic field `B` in a frame `F` following a boost in the `x` direction with speed `β`
-with `|β| < 1` compared to a frame `F'` at a point `x := (t, x, y, z)` is related to the
-electric `E'` and magnetic fields `B'` in `F'` at the point
-`x' := (γ (t + β x), γ (x + β t), y, z)`
-(corresponding to the same space-time point) by:
+-/
 
-- `B_x x = B'_x x'`,
-- `B_y x = γ (B'_y x' + β E_z x')`,
-- `B_z x = γ (B'_z x' - β E_y x')`.
+/-!
+
+### B.1. Boost of the 'x-components' of the magnetic field matrix
 
 -/
 
-lemma magneticField_apply_x_boost (β : ℝ) (hβ : |β| < 1)
-    (A : ElectromagneticPotential) (hA : Differentiable ℝ A) (t : Time) (x : Space) :
-    let Λ := LorentzGroup.boost (d := 3) 0 β hβ
-    let t' : Time := γ β * (t.val + β * x 0)
-    let x' : Space := fun | 0 => γ β * (x 0 + β * t.val) | 1 => x 1 | 2 => x 2
-    magneticField (fun x => Λ • A (Λ⁻¹ • x)) t x =
-    fun | 0 => A.magneticField t' x' 0
-        | 1 => γ β * (A.magneticField t' x' 1 + β * A.electricField t' x' 2)
-        | 2 => γ β * (A.magneticField t' x' 2 - β * A.electricField t' x' 1) := by
+lemma magneticFieldMatrix_apply_x_boost_zero_succ {d : ℕ} {c : SpeedOfLight} (β : ℝ) (hβ : |β| < 1)
+    (A : ElectromagneticPotential d.succ) (hA : Differentiable ℝ A) (t : Time) (x : Space d.succ)
+    (i : Fin d) :
+    let Λ := LorentzGroup.boost (d := d.succ) 0 β hβ
+    let t' : Time := γ β * (t.val + β /c * x 0)
+    let x' : Space d.succ := ⟨fun
+      | 0 => γ β * (x 0 + c * β * t.val)
+      | ⟨Nat.succ n, ih⟩ => x ⟨Nat.succ n, ih⟩⟩
+    magneticFieldMatrix c (fun x => Λ • A (Λ⁻¹ • x)) t x (0, i.succ) =
+    γ β * (A.magneticFieldMatrix c t' x' (0, i.succ) + β / c * A.electricField c t' x' i.succ) := by
   dsimp
-  let t' : Time := γ β * (t.val + β * x 0)
-  let x' : Space := fun | 0 => γ β * (x 0 + β * t.val) | 1 => x 1 | 2 => x 2
-  have t_trans : (SpaceTime.toTimeAndSpace
-      ((boost (d := 3) 0 β hβ)⁻¹ • SpaceTime.toTimeAndSpace.symm (t, x))).1 = t' := by
-    rw [boost_inverse, SpaceTime.boost_x_smul]
-    simp [SpaceTime.toTimeAndSpace, SpaceTime.time, Lorentz.Vector.timeComponent]
-    rfl
-  have x_trans : (SpaceTime.toTimeAndSpace ((boost (d := 3) 0 β hβ)⁻¹ •
-      SpaceTime.toTimeAndSpace.symm (t, x))).2 = x' := by
-    rw [boost_inverse, SpaceTime.boost_x_smul]
-    simp [SpaceTime.toTimeAndSpace, SpaceTime.time, Lorentz.Vector.timeComponent]
-    funext j
-    fin_cases j <;> simp <;> rfl
-  have h_diff : Differentiable ℝ fun x =>
-      boost (d := 3) 0 β hβ • A ((boost (d := 3) 0 β hβ)⁻¹ • x) := by
-    apply Differentiable.comp
-    · change Differentiable ℝ (Lorentz.Vector.actionCLM (boost 0 β hβ))
-      exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM (boost 0 β hβ))
-    · apply Differentiable.comp
-      · exact hA
-      · exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM (boost 0 β hβ)⁻¹)
-  let x' : Space := fun | 0 => γ β * (x 0 + β * t.val) | 1 => x 1 | 2 => x 2
-  funext i
-  fin_cases i
-  · dsimp
-    conv_lhs => rw [magneticField_fst_eq_fieldStrengthMatrix _ _ _ h_diff,
-      fieldStrengthMatrix_equivariant _ _ hA]
-    simp [Fin.sum_univ_three]
-    rw [LorentzGroup.boost_inr_inr_other _ (by decide)]
-    simp only [Fin.isValue, Fin.reduceEq, ↓reduceIte, zero_mul, neg_zero, add_zero, zero_add]
-    rw [LorentzGroup.boost_inr_inr_other _ (by decide)]
-    simp only [Fin.isValue, ↓reduceIte, one_mul]
-    rw [LorentzGroup.boost_inr_inr_other _ (by decide)]
-    simp only [Fin.isValue, ↓reduceIte, one_mul, mul_one]
-    repeat rw [LorentzGroup.boost_inr_other_inr_self _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_other_inl_0 _ (by decide)]
-    simp only [Fin.isValue, zero_mul, neg_zero, add_zero, mul_zero]
-    rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime]
-    simp only [Fin.isValue, neg_neg]
-    rw [t_trans, x_trans]
-    · exact hA
-  · dsimp
-    conv_lhs => rw [magneticField_snd_eq_fieldStrengthMatrix _ _ _ h_diff,
-      fieldStrengthMatrix_equivariant _ _ hA]
-    simp [Fin.sum_univ_three]
-    repeat rw [LorentzGroup.boost_inr_other_inl_0 _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_other_inr_self _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_other_inr _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_self_inr_other _ (by decide)]
-    simp only [mul_zero, Fin.isValue, zero_mul, neg_zero, Fin.reduceEq, ↓reduceIte, add_zero,
-      mul_one, zero_add]
-    rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime _ _ hA,
-      fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime _ _ hA]
-    simp only [Fin.isValue, mul_neg, neg_neg]
-    trans (γ β * β * A.electricField t' x' 2) + γ β * A.magneticField t' x' 1
-    · rw [x_trans, t_trans]
-    · ring
-  · dsimp
-    conv_lhs => rw [magneticField_thd_eq_fieldStrengthMatrix _ _ _ h_diff,
-      fieldStrengthMatrix_equivariant _ _ hA]
-    simp [Fin.sum_univ_three]
-    repeat rw [LorentzGroup.boost_inr_other_inl_0 _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_other_inr_self _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_self_inr_other _ (by decide)]
-    repeat rw [LorentzGroup.boost_inr_inr_other _ (by decide)]
-    simp only [Fin.isValue, ↓reduceIte, mul_one, zero_mul, neg_zero, mul_zero, add_zero,
-      Fin.reduceEq, zero_add]
-    rw [fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime _ _ hA,
-      fieldStrengthMatrix_eq_electric_magnetic_of_spaceTime _ _ hA]
-    simp only [Fin.isValue, mul_neg, neg_neg]
-    trans γ β * A.magneticField t' x' 2 - γ β * β * A.electricField t' x' 1
-    · rw [x_trans, t_trans]
-      ring
-    · ring
+  rw [magneticFieldMatrix_eq]
+  simp only
+  rw [fieldStrengthMatrix_equivariant _ _ hA]
+  simp [Fintype.sum_sum_type]
+  rw [Fin.sum_univ_succ, Fin.sum_univ_succ, Fin.sum_univ_succ]
+  simp [boost_zero_inr_succ_inr_succ]
+  rw [fieldStrengthMatrix_inl_inr_eq_electricField (c := c)]
+  rw [fieldStrengthMatrix_inr_inr_eq_magneticFieldMatrix (c := c)]
+  simp only [one_div, neg_mul, mul_neg, neg_neg]
+  rw [SpaceTime.boost_zero_apply_time_space]
+  simp only [Nat.succ_eq_add_one, SpaceTime.time_toTimeAndSpace_symm,
+    SpaceTime.space_toTimeAndSpace_symm]
+  field_simp
+  ring_nf
+  rfl
+  exact hA
+
+/-!
+
+### B.2. Boost of the other components of the magnetic field matrix
+
+-/
+
+lemma magneticFieldMatrix_apply_x_boost_succ_succ {d : ℕ} {c : SpeedOfLight} (β : ℝ) (hβ : |β| < 1)
+    (A : ElectromagneticPotential d.succ) (hA : Differentiable ℝ A) (t : Time) (x : Space d.succ)
+    (i j : Fin d) :
+    let Λ := LorentzGroup.boost (d := d.succ) 0 β hβ
+    let t' : Time := γ β * (t.val + β /c * x 0)
+    let x' : Space d.succ := ⟨fun
+      | 0 => γ β * (x 0 + c * β * t.val)
+      | ⟨Nat.succ n, ih⟩ => x ⟨Nat.succ n, ih⟩⟩
+    magneticFieldMatrix c (fun x => Λ • A (Λ⁻¹ • x)) t x (i.succ, j.succ) =
+    A.magneticFieldMatrix c t' x' (i.succ, j.succ) := by
+  dsimp
+  rw [magneticFieldMatrix_eq]
+  simp only
+  rw [fieldStrengthMatrix_equivariant _ _ hA]
+  simp [Fintype.sum_sum_type, boost_zero_inr_succ_inr_succ, Fin.sum_univ_succ]
+  rw [SpaceTime.boost_zero_apply_time_space]
+  rfl
 
 end ElectromagneticPotential
 end Electromagnetism

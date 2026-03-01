@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 import Mathlib.Geometry.Manifold.Diffeomorph
 import PhysLean.SpaceAndTime.Time.Basic
-import PhysLean.Meta.TODO.Basic
 /-!
 
 # Units on Mass
@@ -19,8 +18,8 @@ positive reals.
 On `MassUnit` there is an instance of division giving a real number, corresponding to the
 ratio of the two scales of mass unit.
 
-To define specific mass units, we first axiomise the existence of a
-a given mass unit, and then construct all other mass units from it. We choose to axiomise the
+To define specific mass units, we first state the existence of a
+a given mass unit, and then construct all other mass units from it. We choose to state the
 existence of the mass unit of kilograms, and construct all other mass units from that.
 
 -/
@@ -37,7 +36,7 @@ structure MassUnit where
 namespace MassUnit
 
 @[simp]
-lemma val_neq_zero (x : MassUnit) : x.val ≠ 0 := by
+lemma val_ne_zero (x : MassUnit) : x.val ≠ 0 := by
   exact Ne.symm (ne_of_lt x.property)
 
 lemma val_pos (x : MassUnit) : 0 < x.val := x.property
@@ -58,7 +57,7 @@ lemma div_eq_val (x y : MassUnit) :
     x / y = (⟨x.val / y.val, div_nonneg (le_of_lt x.val_pos) (le_of_lt y.val_pos)⟩ : ℝ≥0) := rfl
 
 @[simp]
-lemma div_neq_zero (x y : MassUnit) : ¬ x / y = (0 : ℝ≥0) := by
+lemma div_ne_zero (x y : MassUnit) : ¬ x / y = (0 : ℝ≥0) := by
   rw [div_eq_val]
   refine coe_ne_zero.mp ?_
   simp
@@ -67,12 +66,12 @@ lemma div_neq_zero (x y : MassUnit) : ¬ x / y = (0 : ℝ≥0) := by
 lemma div_pos (x y : MassUnit) : (0 : ℝ≥0) < x/ y := by
   apply lt_of_le_of_ne
   · exact zero_le (x / y)
-  · exact Ne.symm (div_neq_zero x y)
+  · exact Ne.symm (div_ne_zero x y)
 
 @[simp]
 lemma div_self (x : MassUnit) :
     x / x = (1 : ℝ≥0) := by
-  simp [div_eq_val, x.val_neq_zero]
+  simp [div_eq_val, x.val_ne_zero]
 
 lemma div_symm (x y : MassUnit) :
     x / y = (y / x)⁻¹ := NNReal.eq <| by
@@ -129,16 +128,16 @@ lemma scale_scale (x : MassUnit) (r1 r2 : ℝ) (hr1 : 0 < r1) (hr2 : 0 < r2) :
 
 ## Specific choices of mass units
 
-To define a specific mass units, we must first axiomise the existence of a
-a given mass unit, and then construct all other mass units from it.
-We choose to axiomise the existence of the mass unit of kilograms.
-
-We need an axiom since this relates something to something in the physical world.
+To define a specific mass units.
+We first define the notion of a kilogram to correspond to the mass unit with underlying value
+equal to `1`. This is really down to a choice in the isomorphism between the set of metrics
+on the mass manifold and the positive reals.
+From this choice of kilograms, we can define other length units by scaling kilograms.
 
 -/
 
-/-- The axiom corresponding to the definition of a mass unit of kilograms. -/
-axiom kilograms : MassUnit
+/-- The definition of a mass unit of kilograms. -/
+def kilograms : MassUnit := ⟨1, by norm_num⟩
 
 /-- The mass unit of a microgram (10^(-9) of a kilogram). -/
 noncomputable def micrograms : MassUnit := scale ((1/10) ^ 9) kilograms

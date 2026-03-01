@@ -117,27 +117,33 @@ lemma rightAltRightUnit_eq_fromConstPair : δR = fromConstPair Fermion.rightAltR
 
 lemma coContrUnit_eq_fromPairT : δ' = fromPairT (Lorentz.coContrUnitVal) := by
   rw [coContrUnit_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.coContrUnit_apply_one]
+  congr 1
+  exact Lorentz.coContrUnit_apply_one
 
 lemma contrCoUnit_eq_fromPairT : δ = fromPairT (Lorentz.contrCoUnitVal) := by
   rw [contrCoUnit_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.contrCoUnit_apply_one]
+  congr 1
+  exact Lorentz.contrCoUnit_apply_one
 
 lemma altLeftLeftUnit_eq_fromPairT : δL' = fromPairT (Fermion.altLeftLeftUnitVal) := by
   rw [altLeftLeftUnit_eq_fromConstPair, fromConstPair]
-  erw [Fermion.altLeftLeftUnit_apply_one]
+  congr 1
+  exact Fermion.altLeftLeftUnit_apply_one
 
 lemma leftAltLeftUnit_eq_fromPairT : δL = fromPairT (Fermion.leftAltLeftUnitVal) := by
   rw [leftAltLeftUnit_eq_fromConstPair, fromConstPair]
-  erw [Fermion.leftAltLeftUnit_apply_one]
+  congr 1
+  exact Fermion.leftAltLeftUnit_apply_one
 
 lemma altRightRightUnit_eq_fromPairT : δR' = fromPairT (Fermion.altRightRightUnitVal) := by
   rw [altRightRightUnit_eq_fromConstPair, fromConstPair]
-  erw [Fermion.altRightRightUnit_apply_one]
+  congr 1
+  exact Fermion.altRightRightUnit_apply_one
 
 lemma rightAltRightUnit_eq_fromPairT : δR = fromPairT (Fermion.rightAltRightUnitVal) := by
   rw [rightAltRightUnit_eq_fromConstPair, fromConstPair]
-  erw [Fermion.rightAltRightUnit_apply_one]
+  congr 1
+  exact Fermion.rightAltRightUnit_apply_one
 
 /-!
 

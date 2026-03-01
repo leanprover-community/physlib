@@ -90,6 +90,6 @@ unsafe def main (_ : List String) : IO Unit := do
     | some n => n
     | none => panic! "Failed to convert timeString to Nat"
   let digits := toDigits 32 timeNat
-  let tag := String.mk (digits.drop 2)
+  let tag := String.ofList (digits.drop 2)
   println! tag
   pure ()

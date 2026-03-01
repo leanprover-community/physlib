@@ -301,7 +301,7 @@ lemma ubOnePhaseCond_hold_up_to_equiv_of_ub_one {V : CKMMatrix} (hb : ¬ ([V]ud 
         apply shift_ub_phase_zero _ _ _ _ _ _ _
         ring
       rw [hU1]
-      have h1:= (ud_us_neq_zero_iff_ub_neq_one V).mpr.mt hb
+      have h1:= (ud_us_ne_zero_iff_ub_ne_one V).mpr.mt hb
       simpa using h1
     apply And.intro
     · have hτ : [V]t = cexp ((0 : ℝ) * I) • (conj ([V]u) ⨯₃ conj ([V]c)) := by
@@ -331,7 +331,7 @@ lemma cd_of_fstRowThdColRealCond {V : CKMMatrix} (hb : [V]ud ≠ 0 ∨ [V]us ≠
   rw [hV.1, hV.2.1, hV.2.2.1, hV.2.2.2.1]
   simp only [Fin.isValue, VudAbs, VcbAbs, ofReal_zero, zero_mul, exp_zero, VtbAbs, conj_ofReal,
     one_mul, VusAbs, neg_add_rev, normSq_ofReal, ofReal_mul, neg_mul, sq, VubAbs]
-  have hx := Vabs_sq_add_neq_zero hb
+  have hx := Vabs_sq_add_ne_zero hb
   field_simp
   have h1 : conj [V]ub = VubAbs ⟦V⟧ * cexp (- arg [V]ub * I) := by
     nth_rewrite 1 [← norm_mul_exp_arg_mul_I [V]ub]
@@ -351,7 +351,7 @@ lemma cs_of_fstRowThdColRealCond {V : CKMMatrix} (hb : [V]ud ≠ 0 ∨ [V]us ≠
   rw [cs_of_ud_us_ub_cb_tb hb hτ, hV.1, hV.2.1, hV.2.2.1, hV.2.2.2.1]
   simp only [Fin.isValue, VusAbs, neg_mul, VcbAbs, ofReal_zero, zero_mul, exp_zero, VtbAbs,
     conj_ofReal, one_mul, VudAbs, normSq_ofReal, ofReal_mul, sq, VubAbs]
-  have hx := Vabs_sq_add_neq_zero hb
+  have hx := Vabs_sq_add_ne_zero hb
   field_simp
   have h1 : conj [V]ub = VubAbs ⟦V⟧ * cexp (- arg [V]ub * I) := by
     nth_rewrite 1 [← norm_mul_exp_arg_mul_I [V]ub]

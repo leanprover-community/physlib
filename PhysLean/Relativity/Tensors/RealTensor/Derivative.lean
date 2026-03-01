@@ -32,7 +32,7 @@ noncomputable def derivative {d n m : ℕ} {cm : Fin m → realLorentzTensor.Col
     ℝT(d, cm) → ℝT(d, (Fin.append (fun i => (realLorentzTensor d).τ (cm i)) cn)) := fun y =>
       (Tensor.basis _).repr.toEquiv.symm <|
       Finsupp.equivFunOnFinite.symm <| fun b =>
-  /- The `b` componenet of the derivative of `f` evaluated at `y` is: -/
+  /- The `b` component of the derivative of `f` evaluated at `y` is: -/
   /- The derivative of `mapToBasis f` -/
   fderiv ℝ (mapToBasis f)
   /- evaluated at the point `y` in `ℝT(d, cm)` -/

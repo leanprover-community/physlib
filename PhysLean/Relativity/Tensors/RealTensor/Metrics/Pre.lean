@@ -28,8 +28,7 @@ lemma preContrMetricVal_expand_tmul {d : ℕ} : preContrMetricVal d =
     Fin.isValue, Finset.sum_singleton, ne_eq, reduceCtorEq, not_false_eq_true,
     minkowskiMatrix.off_diag_zero, zero_smul, Finset.sum_const_zero, add_zero,
     minkowskiMatrix.inl_0_inl_0, one_smul, zero_add]
-  congr
-  rw [← Finset.sum_neg_distrib]
+  rw [sub_eq_add_neg, ← Finset.sum_neg_distrib]
   congr
   funext x
   rw [Finset.sum_eq_single x]
@@ -93,8 +92,7 @@ lemma preCoMetricVal_expand_tmul {d : ℕ} : preCoMetricVal d =
   simp only [preCoMetricVal, Fin.isValue]
   rw [coCoToMatrixRe_symm_expand_tmul]
   simp [minkowskiMatrix.inl_0_inl_0]
-  congr
-  rw [← Finset.sum_neg_distrib]
+  rw [sub_eq_add_neg, ← Finset.sum_neg_distrib]
   congr
   funext x
   rw [Finset.sum_eq_single x]

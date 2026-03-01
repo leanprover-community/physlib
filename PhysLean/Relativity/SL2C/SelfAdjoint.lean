@@ -3,7 +3,6 @@ Copyright (c) 2025 Gordon Hsu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gordon Hsu
 -/
-import Mathlib.LinearAlgebra.Matrix.SchurComplement
 import PhysLean.Mathematics.SchurTriangulation
 import Mathlib.LinearAlgebra.Matrix.Hermitian
 /-! # Extra lemmas regarding `Lorentz.SL2C.toSelfAdjointMap`

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.QFT.QED.AnomalyCancellation.ConstAbs
-import Mathlib.Tactic.FieldSimp
 /-!
 # Line in plane condition
 
@@ -61,9 +60,9 @@ lemma lineInPlaneCond_eq_last' {S : (PureU1 (n.succ.succ)).LinSols} (hS : LineIn
       (by simp only [Fin.ext_iff, Nat.succ_eq_add_one, Fin.succ_last, ne_eq]
           exact Nat.ne_add_one ↑(Fin.last n).castSucc)
       (by simp only [Nat.succ_eq_add_one, Fin.succ_last, ne_eq, Fin.ext_iff, Fin.val_last,
-        Fin.coe_castSucc]
+        Fin.val_castSucc]
           omega)
-      (by simp only [Nat.succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.coe_castSucc, Fin.val_last]
+      (by simp only [Nat.succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.val_castSucc, Fin.val_last]
           omega)
     simp_all only [Nat.succ_eq_add_one, ne_eq, Fin.succ_last, false_or, neg_add_rev]
     field_simp

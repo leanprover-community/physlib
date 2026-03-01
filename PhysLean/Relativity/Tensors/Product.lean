@@ -158,14 +158,14 @@ def ComponentIdx.prodEquiv {n1 n2 : ℕ} {c : Fin n1 → C} {c1 : Fin n2 → C} 
     simp only
     · rw [ComponentIdx.prodIndexEquiv]
       rw [Equiv.piCongr_symm_apply]
-      simp only [Sum.elim_inl, finCongr_symm, finCongr_apply, Fin.coe_cast]
+      simp only [Sum.elim_inl, finCongr_symm, finCongr_apply, Fin.val_cast]
       rw [prod_apply_finSumFinEquiv]
       rfl
     · rw [ComponentIdx.prodIndexEquiv]
       simp only
       erw [Equiv.piCongr_symm_apply]
       simp only [Sum.elim_inr, finCongr_symm,
-        finCongr_apply, Fin.coe_cast]
+        finCongr_apply, Fin.val_cast]
       rw [prod_apply_finSumFinEquiv]
       rfl
 
@@ -528,7 +528,7 @@ lemma prodAssocMap_castAdd_natAdd {n1 n2 n3 : ℕ} (i : Fin n2) :
 lemma prodAssocMap_natAdd {n1 n2 n3 : ℕ} (i : Fin (n3)) :
     prodAssocMap n1 n2 n3 (Fin.natAdd (n1 + n2) i) =
     finSumFinEquiv (Sum.inr (finSumFinEquiv (Sum.inr i))) := by
-  simp only [prodAssocMap, finSumFinEquiv_apply_right, Fin.ext_iff, Fin.coe_cast, Fin.coe_natAdd]
+  simp only [prodAssocMap, finSumFinEquiv_apply_right, Fin.ext_iff, Fin.val_cast, Fin.val_natAdd]
   omega
 
 @[simp]
@@ -592,7 +592,7 @@ lemma prodAssocMap'_natAdd_castAdd {n1 n2 n3 : ℕ} (i : Fin n2) :
 lemma prodAssocMap'_natAdd_natAdd {n1 n2 n3 : ℕ} (i : Fin n3) :
     prodAssocMap' n1 n2 n3 (Fin.natAdd n1 (Fin.natAdd n2 i)) =
     finSumFinEquiv (Sum.inr i) := by
-  simp only [prodAssocMap', finSumFinEquiv_apply_right, Fin.ext_iff, Fin.coe_cast, Fin.coe_natAdd]
+  simp only [prodAssocMap', finSumFinEquiv_apply_right, Fin.ext_iff, Fin.val_cast, Fin.val_natAdd]
   omega
 
 @[simp]

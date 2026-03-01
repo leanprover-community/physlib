@@ -679,7 +679,8 @@ lemma adjFDeriv_apply
   -- ext := IsLocalizedFunctionTransform.adjFDeriv
 
 protected lemma gradient {d} :
-    HasVarAdjoint (fun φ : Space d → ℝ => gradient φ) (fun φ x => - Space.div φ x) := by
+    HasVarAdjoint (fun φ : Space d → ℝ => gradient φ)
+    (fun φ x => - Space.div (Space.basis.repr ∘ φ) x) := by
   apply HasVarAdjoint.congr_fun (G := (fun φ => (adjFDeriv ℝ φ · 1)))
   · apply of_eq adjFDeriv_apply
     · intro φ hφ
@@ -688,20 +689,39 @@ protected lemma gradient {d} :
       simp only [smul_eq_mul, mul_one]
       exact hφ.differentiable
     · apply IsLocalizedFunctionTransform.neg
-      apply IsLocalizedFunctionTransform.div
+
+      apply IsLocalizedFunctionTransform.div_comp_repr
   · intro φ hφ
     funext x
     rw [gradient_eq_adjFDeriv]
     apply hφ.differentiable x
 
-lemma div {d} : HasVarAdjoint (fun (φ : Space d → Space d) x => Space.div φ x)
-    (fun ψ x => - gradient ψ x) := by
+lemma grad {d} : HasVarAdjoint (fun (φ : Space d → ℝ) x => Space.grad φ x)
+    (fun ψ x => - Space.div ψ x) := by
+  let f : Space d → Space d →L[ℝ] EuclideanSpace ℝ (Fin d) := fun x =>
+    Space.basis.repr.toContinuousLinearMap
+  have h1 := clm_apply f (by fun_prop)
+  simp [f] at h1
+  have hx : (_root_.adjoint ℝ (⇑Space.basis.repr)) = (Space.basis (d := d)).repr.symm := by
+    refine HasAdjoint.adjoint ?_
+    refine { adjoint_inner_left := ?_ }
+    intro x y
+    rw [real_inner_comm, ← Space.basis_repr_inner_eq, real_inner_comm]
+  simp [hx] at h1
+  have h2 := HasVarAdjoint.comp h1 (HasVarAdjoint.gradient (d := d))
+  convert h2 using 1
+  · funext x t
+    rw [Space.grad_eq_gradiant]
+    simp
+
+lemma div {d} : HasVarAdjoint (fun (φ : Space d → EuclideanSpace ℝ (Fin d)) x => Space.div φ x)
+    (fun ψ x => - Space.grad ψ x) := by
   apply HasVarAdjoint.of_neg
   apply HasVarAdjoint.symm
   simp only [neg_neg]
-  exact HasVarAdjoint.gradient
+  exact HasVarAdjoint.grad
   simp only [neg_neg]
-  exact IsLocalizedFunctionTransform.gradient
+  exact IsLocalizedFunctionTransform.grad
 
 lemma prod
     [IsFiniteMeasureOnCompacts (@volume X _)] [OpensMeasurableSpace X]

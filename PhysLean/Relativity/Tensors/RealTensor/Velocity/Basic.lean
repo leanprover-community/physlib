@@ -82,7 +82,7 @@ lemma zero_le_minkowskiProduct (u v : Velocity d) :
   · simp
   · exact real_inner_le_norm u.1.spatialPart v.1.spatialPart
 
-lemma one_add_minkowskiProduct_neq_zero (u v : Velocity d) :
+lemma one_add_minkowskiProduct_ne_zero (u v : Velocity d) :
     1 + ⟪u.1, v.1⟫ₘ ≠ 0 := by
   linarith [zero_le_minkowskiProduct u v]
 
@@ -106,7 +106,7 @@ lemma minkowskiProduct_continuous_fst (u : Vector d) :
 
 -/
 
-/-- The `Velcoity d` which has all space components zero. -/
+/-- The `Velocity d` which has all space components zero. -/
 noncomputable def zero : Velocity d := ⟨Vector.basis (Sum.inl 0),
   by simp [mem_iff, minkowskiMatrix.inl_0_inl_0]⟩
 

@@ -142,7 +142,7 @@ noncomputable def TangentSpace.metricNormedAddCommGroup (g : RiemannianMetric I 
 noncomputable def TangentSpace.metricInnerProductSpace' (g : RiemannianMetric I n M) (x : M) :
     letI := TangentSpace.metricNormedAddCommGroup g x
     InnerProductSpace ℝ (TangentSpace I x) :=
-  InnerProductSpace.ofCore (tangentInnerCore g x)
+  InnerProductSpace.ofCore (tangentInnerCore g x).toCore
 
 /-- Creates an `InnerProductSpace` structure on `TₓM` from a Riemannian metric `g`. -/
 noncomputable def TangentSpace.metricInnerProductSpace (g : RiemannianMetric I n M) (x : M) :
@@ -150,7 +150,7 @@ noncomputable def TangentSpace.metricInnerProductSpace (g : RiemannianMetric I n
     InnerProductSpace ℝ (TangentSpace I x) :=
   let inner_core := tangentInnerCore g x
   let _ := TangentSpace.metricNormedAddCommGroup g x
-  InnerProductSpace.ofCore inner_core
+  InnerProductSpace.ofCore inner_core.toCore
 
 /-- The norm on a tangent space induced by a Riemannian metric, defined as the square root
     of the inner product of a vector with itself. -/

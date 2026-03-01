@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Electromagnetism.Basic
 import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
-import PhysLean.Relativity.Tensors.RealTensor.CoVector.Basic
 import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
 /-!
 
@@ -22,8 +21,9 @@ spacetime to contravariant Lorentz vectors.
 
 ## ii. Key results
 
-- `ElectromagneticPotential`: is the type of electromagnetic potentials.
-- `ElectromagneticPotential.deriv`: the derivative tensor `∂_μ A^ν`.
+- `ElectromagneticPotential` : is the type of electromagnetic potentials.
+- `ElectromagneticPotential.deriv` : the derivative tensor `∂_μ A^ν`.
+- `DistElectromagneticPotential` : the type of electromagnetic potentials as distributions.
 
 ## iii. Table of contents
 
@@ -35,6 +35,10 @@ spacetime to contravariant Lorentz vectors.
 - B. The derivative tensor of the electromagnetic potential
   - B.1. Equivariance of the derivative tensor
   - B.2. The elements of the derivative tensor in terms of the basis
+- C. The electromagnetic potential as a distribution
+  - C.1. The derivative of the electromagnetic potential as a distribution
+  - C.2. The derivative in terms of the basis
+  - C.3. Equivariance of the derivative distribution
 
 ## iv. References
 
@@ -88,20 +92,19 @@ lemma spaceTime_deriv_action_eq_sum {d} {μ ν : Fin 1 ⊕ Fin d} {x : SpaceTime
   calc _
     _ = ((Λ • (∂_ μ (fun x => A (Λ⁻¹ • x)) x)) ν) := by
       have hdif : ∀ i, DifferentiableAt ℝ (fun x => A (Λ⁻¹ • x) i) x := by
-          rw [← differentiableAt_pi]
+          intro i
+          apply Differentiable.differentiableAt
+          revert i
+          rw [SpaceTime.differentiable_vector]
           conv =>
             enter [2, x]; rw [← Lorentz.Vector.actionCLM_apply]
-          apply Differentiable.differentiableAt
-          apply Differentiable.comp hA
+          apply Differentiable.fun_comp hA
           exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM Λ⁻¹)
       trans ∂_ μ (fun x => (Λ • A (Λ⁻¹ • x)) ν) x
-      · rw [SpaceTime.deriv_eq, SpaceTime.deriv_eq]
-        rw [fderiv_pi]
-        rfl
-        rw [← differentiableAt_pi]
+      · rw [SpaceTime.deriv_eq, SpaceTime.deriv_eq, SpaceTime.fderiv_vector]
+        intro ν
         conv =>
           enter [2, x]; rw [← Lorentz.Vector.actionCLM_apply, ← Lorentz.Vector.actionCLM_apply]
-        apply Differentiable.differentiableAt
         apply Differentiable.comp
         · exact ContinuousLinearMap.differentiable (Lorentz.Vector.actionCLM Λ)
         · apply Differentiable.comp
@@ -121,9 +124,8 @@ lemma spaceTime_deriv_action_eq_sum {d} {μ ν : Fin 1 ⊕ Fin d} {x : SpaceTime
       congr
       funext κ
       congr
-      rw [SpaceTime.deriv_eq, fderiv_pi]
-      rfl
-      · exact fun i => hdif i
+      rw [SpaceTime.deriv_eq, SpaceTime.fderiv_vector]
+      · exact hA.comp (Lorentz.Vector.actionCLM Λ⁻¹).differentiable
       · intro i _
         apply DifferentiableAt.const_mul
         exact hdif i
@@ -154,7 +156,7 @@ lemma differentiable_component {d : ℕ}
     (A : ElectromagneticPotential d) (hA : Differentiable ℝ A) (μ : Fin 1 ⊕ Fin d) :
     Differentiable ℝ (fun x => A x μ) := by
   revert μ
-  rw [← differentiable_pi]
+  rw [SpaceTime.differentiable_vector]
   exact hA
 
 /-!
@@ -166,10 +168,6 @@ This will be used to find e.g. the variational derivative of the kinetic term,
 and derive the equations of motion.
 
 -/
-
-/-- A local instance of the inner product structure on `SpaceTime`. -/
-noncomputable local instance {d : ℕ}: InnerProductSpace ℝ (SpaceTime d) :=
-  SpaceTime.innerProductSpace d
 
 open ContDiff
 lemma hasVarAdjDerivAt_component {d : ℕ} (μ : Fin 1 ⊕ Fin d) (A : SpaceTime d → Lorentz.Vector d)
@@ -189,11 +187,8 @@ lemma hasVarAdjDerivAt_component {d : ℕ} (μ : Fin 1 ⊕ Fin d) (A : SpaceTime
   refine { adjoint_inner_left := ?_ }
   intro u v
   simp [f,f']
-  rw [PiLp.inner_apply]
-  simp only [Lorentz.Vector.apply_smul, Lorentz.Vector.basis_apply, mul_ite, mul_one, mul_zero,
-    RCLike.inner_apply, conj_trivial, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
-    mul_eq_mul_right_iff]
-  left
+  simp [inner_smul_left, Lorentz.Vector.basis_inner]
+  ring_nf
   rfl
 
 /-!
@@ -357,5 +352,109 @@ lemma toTensor_deriv_basis_repr_apply {d} (A : ElectromagneticPotential d)
   rfl
 
 end ElectromagneticPotential
+
+/-!
+
+## C. The electromagnetic potential as a distribution
+
+-/
+
+/-- The electromagnetic potential as a distribution and as a tensor `A^μ`. -/
+noncomputable abbrev DistElectromagneticPotential (d : ℕ := 3) :=
+  (SpaceTime d) →d[ℝ] Lorentz.Vector d
+
+namespace DistElectromagneticPotential
+open TensorSpecies
+open Tensor
+open SpaceTime
+open TensorProduct
+open minkowskiMatrix SchwartzMap
+attribute [-simp] Fintype.sum_sum_type
+attribute [-simp] Nat.succ_eq_add_one
+
+/-!
+
+### C.1. The derivative of the electromagnetic potential as a distribution
+
+-/
+
+/-- The derivative of a electromagnetic potential, which is a distribution. -/
+noncomputable def deriv {d} : DistElectromagneticPotential d →ₗ[ℝ]
+    (SpaceTime d) →d[ℝ] Lorentz.CoVector d ⊗[ℝ] Lorentz.Vector d := distTensorDeriv
+
+lemma deriv_eq_sum_sum {d} (A : DistElectromagneticPotential d)
+    (ε : 𝓢(SpaceTime d, ℝ)) :
+    deriv A ε =∑ μ, ∑ ν, (SpaceTime.distDeriv μ A ε ν) •
+      Lorentz.CoVector.basis μ ⊗ₜ[ℝ] Lorentz.Vector.basis ν := by
+  simp [deriv, distTensorDeriv_apply]
+  congr
+  funext μ
+  conv_lhs => rw [← Lorentz.Vector.basis.sum_repr (SpaceTime.distDeriv μ A ε)]
+  rw [tmul_sum]
+  congr
+  funext ν
+  simp
+  rfl
+/-!
+
+### C.2. The derivative in terms of the basis
+
+-/
+
+@[simp]
+lemma deriv_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
+    (A : DistElectromagneticPotential d)
+    (ε : 𝓢(SpaceTime d, ℝ)) :
+    (Lorentz.CoVector.basis.tensorProduct Lorentz.Vector.basis).repr (deriv A ε) μν =
+    distDeriv μν.1 A ε μν.2 := by
+  match μν with
+  | (μ, ν) =>
+  rw [deriv_eq_sum_sum]
+  simp only [map_sum, map_smul, Finsupp.coe_finset_sum, Finsupp.coe_smul, Finset.sum_apply,
+    Pi.smul_apply, Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, smul_eq_mul]
+  rw [Finset.sum_eq_single μ, Finset.sum_eq_single ν]
+  · simp
+  · intro μ' _ h
+    simp [h]
+  · simp
+  · intro ν' _ h
+    simp [h]
+  · simp
+
+lemma toTensor_deriv_basis_repr_apply {d} (A : DistElectromagneticPotential d)
+    (ε : 𝓢(SpaceTime d, ℝ)) (b : ComponentIdx (S := realLorentzTensor d)
+      (Fin.append ![Color.down] ![Color.up])) :
+    (Tensor.basis _).repr (Tensorial.toTensor (deriv A ε)) b =
+    distDeriv (finSumFinEquiv.symm (b 0)) A ε (finSumFinEquiv.symm (b 1)) := by
+  rw [Tensorial.basis_toTensor_apply]
+  rw [Tensorial.basis_map_prod]
+  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
+    Equiv.symm_symm, Fin.isValue]
+  rw [Lorentz.Vector.tensor_basis_map_eq_basis_reindex,
+    Lorentz.CoVector.tensor_basis_map_eq_basis_reindex]
+  have hb : (((Lorentz.CoVector.basis (d := d)).reindex
+      Lorentz.CoVector.indexEquiv.symm).tensorProduct
+      (Lorentz.Vector.basis.reindex Lorentz.Vector.indexEquiv.symm)) =
+      ((Lorentz.CoVector.basis (d := d)).tensorProduct (Lorentz.Vector.basis (d := d))).reindex
+      (Lorentz.CoVector.indexEquiv.symm.prodCongr Lorentz.Vector.indexEquiv.symm) := by
+    ext b
+    match b with
+    | ⟨i, j⟩ =>
+    simp
+  rw [hb]
+  rw [Module.Basis.repr_reindex_apply, deriv_basis_repr_apply]
+  rfl
+
+/-!
+
+### C.3. Equivariance of the derivative distribution
+
+-/
+
+lemma deriv_equivariant {d} {A : DistElectromagneticPotential d}
+    (Λ : LorentzGroup d) : deriv (Λ • A) = Λ • deriv A := by
+  rw [deriv, distTensorDeriv_equivariant]
+
+end DistElectromagneticPotential
 
 end Electromagnetism

@@ -9,11 +9,11 @@ import PhysLean.Meta.Linters.Sorry
 import PhysLean.Meta.Sorry
 /-!
 
-# Script to check sorryful/psuedo attribution
+# Script to check sorryful/pseudo attribution
 
 This script checks that all declarations which depend on `sorryAx` are marked with the
 `sorryful` attribute, and vice versa. It also checks that all declarations which depend on
-`Lean.ofReduceBool` are marked with the `psuedo` attribute, and vice versa.
+`Lean.ofReduceBool` are marked with the `pseudo` attribute, and vice versa.
 
 -/
 open Lean

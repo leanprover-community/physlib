@@ -59,7 +59,7 @@ lemma mem_iff_self_mul_dual : Λ ∈ LorentzGroup d ↔ Λ * dual Λ = 1 := by
 
 lemma mem_iff_dual_mul_self : Λ ∈ LorentzGroup d ↔ dual Λ * Λ = 1 := by
   rw [mem_iff_self_mul_dual]
-  exact mul_eq_one_comm
+  exact _root_.mul_eq_one_comm
 
 lemma mem_iff_transpose : Λ ∈ LorentzGroup d ↔ Λᵀ ∈ LorentzGroup d := by
   refine Iff.intro (fun h ↦ ?_) (fun h ↦ ?_)
@@ -125,12 +125,12 @@ end LorentzGroup
 @[simps! mul_coe one_coe div]
 instance lorentzGroupIsGroup : Group (LorentzGroup d) where
   mul A B := ⟨A.1 * B.1, LorentzGroup.mem_mul A.2 B.2⟩
-  mul_assoc A B C := Subtype.eq (Matrix.mul_assoc A.1 B.1 C.1)
+  mul_assoc A B C := Subtype.ext (Matrix.mul_assoc A.1 B.1 C.1)
   one := ⟨1, LorentzGroup.one_mem⟩
-  one_mul A := Subtype.eq (Matrix.one_mul A.1)
-  mul_one A := Subtype.eq (Matrix.mul_one A.1)
+  one_mul A := Subtype.ext (Matrix.one_mul A.1)
+  mul_one A := Subtype.ext (Matrix.mul_one A.1)
   inv A := ⟨minkowskiMatrix.dual A.1, LorentzGroup.dual_mem A.2⟩
-  inv_mul_cancel A := Subtype.eq (LorentzGroup.mem_iff_dual_mul_self.mp A.2)
+  inv_mul_cancel A := Subtype.ext (LorentzGroup.mem_iff_dual_mul_self.mp A.2)
 
 /-- `LorentzGroup` has the subtype topology. -/
 instance : TopologicalSpace (LorentzGroup d) := instTopologicalSpaceSubtype
@@ -192,16 +192,16 @@ def transpose (Λ : LorentzGroup d) : LorentzGroup d :=
   ⟨Λ.1ᵀ, mem_iff_transpose.mp Λ.2⟩
 
 @[simp]
-lemma transpose_one : @transpose d 1 = 1 := Subtype.eq Matrix.transpose_one
+lemma transpose_one : @transpose d 1 = 1 := Subtype.ext Matrix.transpose_one
 
 @[simp]
 lemma transpose_mul : transpose (Λ * Λ') = transpose Λ' * transpose Λ :=
-  Subtype.eq (Matrix.transpose_mul Λ.1 Λ'.1)
+  Subtype.ext (Matrix.transpose_mul Λ.1 Λ'.1)
 
 lemma transpose_val : (transpose Λ).1 = Λ.1ᵀ := rfl
 
 lemma transpose_inv : (transpose Λ)⁻¹ = transpose Λ⁻¹ := by
-  refine Subtype.eq ?_
+  refine Subtype.ext ?_
   rw [transpose_val, coe_inv, transpose_val, coe_inv, Matrix.transpose_nonsing_inv]
 
 lemma comm_minkowskiMatrix : Λ.1 * minkowskiMatrix = minkowskiMatrix * (transpose Λ⁻¹).1 := by
@@ -233,7 +233,7 @@ instance : Neg (LorentzGroup d) where
 lemma coe_neg : (-Λ).1 = -Λ.1 := rfl
 
 lemma inv_neg : (-Λ)⁻¹ = -Λ⁻¹ := by
-  refine Subtype.eq ?_
+  refine Subtype.ext ?_
   simp [inv_eq_dual, dual]
 
 /-!
@@ -248,7 +248,7 @@ embedding.
 
 /-- The homomorphism of the Lorentz group into `GL (Fin 4) ℝ`. -/
 def toGL : LorentzGroup d →* GL (Fin 1 ⊕ Fin d) ℝ where
-  toFun A := ⟨A.1, (A⁻¹).1, mul_eq_one_comm.mpr $ mem_iff_dual_mul_self.mp A.2,
+  toFun A := ⟨A.1, (A⁻¹).1, _root_.mul_eq_one_comm.mpr $ mem_iff_dual_mul_self.mp A.2,
     mem_iff_dual_mul_self.mp A.2⟩
   map_one' :=
     (GeneralLinearGroup.ext_iff _ 1).mpr fun _ => congrFun rfl
@@ -256,7 +256,7 @@ def toGL : LorentzGroup d →* GL (Fin 1 ⊕ Fin d) ℝ where
     (GeneralLinearGroup.ext_iff _ _).mpr fun _ => congrFun rfl
 
 lemma toGL_injective : Function.Injective (@toGL d) := by
-  refine fun A B h => Subtype.eq ?_
+  refine fun A B h => Subtype.ext ?_
   rw [@Units.ext_iff] at h
   exact h
 
@@ -273,7 +273,7 @@ lemma toProd_injective : Function.Injective (@toProd d) := by
   intro A B h
   rw [toProd_eq_transpose_η, toProd_eq_transpose_η] at h
   rw [Prod.mk_inj] at h
-  exact Subtype.eq h.1
+  exact Subtype.ext h.1
 
 lemma toProd_continuous : Continuous (@toProd d) := by
   refine continuous_prodMk.mpr ⟨continuous_iff_le_induced.mpr fun U a ↦ a,
@@ -384,7 +384,7 @@ def parity : LorentzGroup d := ⟨minkowskiMatrix, by
 
 lemma eq_of_mulVec_eq {Λ Λ' : LorentzGroup d}
     (h : ∀ (x : Fin 1 ⊕ Fin d → ℝ), Λ.1 *ᵥ x = Λ'.1 *ᵥ x) : Λ = Λ' := by
-  apply Subtype.eq
+  apply Subtype.ext
   exact ext_of_mulVec_single fun i => h (Pi.single i 1)
 
 end LorentzGroup

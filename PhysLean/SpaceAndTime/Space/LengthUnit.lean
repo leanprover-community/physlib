@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 import Mathlib.Geometry.Manifold.Diffeomorph
 import PhysLean.SpaceAndTime.Time.Basic
-import PhysLean.Meta.TODO.Basic
 /-!
 
 # Units on Length
@@ -18,8 +17,8 @@ positive reals.
 On `LengthUnit` there is an instance of division giving a real number, corresponding to the
 ratio of the two scales of length unit.
 
-To define specific length units, we first axiomise the existence of a
-a given length unit, and then construct all other length units from it. We choose to axiomise the
+To define specific length units, we first state the existence of a
+a given length unit, and then construct all other length units from it. We choose to state the
 existence of the length unit of meters, and construct all other length units from that.
 
 -/
@@ -34,7 +33,7 @@ structure LengthUnit where
 namespace LengthUnit
 
 @[simp]
-lemma val_neq_zero (x : LengthUnit) : x.val ≠ 0 := by
+lemma val_ne_zero (x : LengthUnit) : x.val ≠ 0 := by
   exact Ne.symm (ne_of_lt x.property)
 
 lemma val_pos (x : LengthUnit) : 0 < x.val := x.property
@@ -57,7 +56,7 @@ lemma div_eq_val (x y : LengthUnit) :
     (x / y) = (⟨x.val / y.val, div_nonneg (le_of_lt x.val_pos) (le_of_lt y.val_pos)⟩ : ℝ≥0) := rfl
 
 @[simp]
-lemma div_neq_zero (x y : LengthUnit) : ¬ x / y = (0 : ℝ≥0) := by
+lemma div_ne_zero (x y : LengthUnit) : ¬ x / y = (0 : ℝ≥0) := by
   rw [div_eq_val]
   refine coe_ne_zero.mp ?_
   simp
@@ -66,12 +65,12 @@ lemma div_neq_zero (x y : LengthUnit) : ¬ x / y = (0 : ℝ≥0) := by
 lemma div_pos (x y : LengthUnit) : (0 : ℝ≥0) < x/ y := by
   apply lt_of_le_of_ne
   · exact zero_le (x / y)
-  · exact Ne.symm (div_neq_zero x y)
+  · exact Ne.symm (div_ne_zero x y)
 
 @[simp]
 lemma div_self (x : LengthUnit) :
     x / x = (1 : ℝ≥0) := by
-  simp [div_eq_val, x.val_neq_zero]
+  simp [div_eq_val, x.val_ne_zero]
 
 lemma div_symm (x y : LengthUnit) :
     x / y = (y / x)⁻¹ := NNReal.eq <| by
@@ -127,16 +126,16 @@ lemma scale_scale (x : LengthUnit) (r1 r2 : ℝ) (hr1 : 0 < r1) (hr2 : 0 < r2) :
 
 ## Specific choices of Length units
 
-To define a specific length units, we must first axiomise the existence of a
-a given length unit, and then construct all other length units from it.
-We choose to axiomise the existence of the length unit of meters.
-
-We need an axiom since this relates something to something in the physical world.
+To define a specific length units.
+We first define the notion of a meter to correspond to the length unit with underlying value
+equal to `1`. This is really down to a choice in the isomorphism between the set of metrics
+on the space manifold and the positive reals.
+From this choice of meters, we can define other length units by scaling meters.
 
 -/
 
-/-- The axiom corresponding to the definition of a length unit of meters. -/
-axiom meters : LengthUnit
+/-- The definition of a length unit of meters. -/
+def meters : LengthUnit := ⟨1, by norm_num⟩
 
 /-- The length unit of femtometers (10⁻¹⁵ of a meter). -/
 noncomputable def femtometers : LengthUnit := scale ((1/10) ^ (15)) meters

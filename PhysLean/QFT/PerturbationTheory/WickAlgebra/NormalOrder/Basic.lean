@@ -215,8 +215,7 @@ lemma ι_normalOrderF_zero_of_mem_ideal (a : 𝓕.FieldOpFreeAlgebra)
 lemma ι_normalOrderF_eq_of_equiv (a b : 𝓕.FieldOpFreeAlgebra) (h : a ≈ b) :
     ι 𝓝ᶠ(a) = ι 𝓝ᶠ(b) := by
   rw [equiv_iff_sub_mem_ideal] at h
-  rw [LinearMap.sub_mem_ker_iff.mp]
-  simp only [LinearMap.mem_ker, ← map_sub]
+  rw [← sub_eq_zero, ← map_sub, ← LinearMap.map_sub]
   exact ι_normalOrderF_zero_of_mem_ideal (a - b) h
 
 /-- For a field specification `𝓕`, `normalOrder` is the linear map

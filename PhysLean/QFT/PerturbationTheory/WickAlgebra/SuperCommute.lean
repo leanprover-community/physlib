@@ -44,8 +44,7 @@ lemma ι_superCommuteF_right_zero_of_mem_ideal (a b : 𝓕.FieldOpFreeAlgebra)
 lemma ι_superCommuteF_eq_of_equiv_right (a b1 b2 : 𝓕.FieldOpFreeAlgebra) (h : b1 ≈ b2) :
     ι [a, b1]ₛF = ι [a, b2]ₛF := by
   rw [equiv_iff_sub_mem_ideal] at h
-  rw [LinearMap.sub_mem_ker_iff.mp]
-  simp only [LinearMap.mem_ker, ← map_sub]
+  rw [← sub_eq_zero, ← map_sub, ← LinearMap.map_sub]
   exact ι_superCommuteF_right_zero_of_mem_ideal a (b1 - b2) h
 
 /-- The super commutator on the `WickAlgebra` defined as a linear map `[a,_]ₛ`. -/

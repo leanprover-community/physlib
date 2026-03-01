@@ -3,7 +3,7 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Distributions.Basic
+import PhysLean.SpaceAndTime.Space.Derivatives.Curl
 import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 /-!
 
@@ -38,8 +38,8 @@ namespace RigidBody
 def mass {d : ℕ} (R : RigidBody d) : ℝ := R.ρ ⟨fun _ => 1, contMDiff_const⟩
 
 /-- The center of mass of the rigid body. -/
-noncomputable def centerOfMass {d : ℕ} (R : RigidBody d) : Space d := fun i =>
-  (1 / R.mass) • R.ρ ⟨fun x => x i, ContDiff.contMDiff <| by fun_prop⟩
+noncomputable def centerOfMass {d : ℕ} (R : RigidBody d) : Space d := ⟨fun i =>
+  (1 / R.mass) • R.ρ ⟨fun x => x i, ContDiff.contMDiff <| by fun_prop⟩⟩
 
 /-- The inertia tensor of the rigid body. -/
 noncomputable def inertiaTensor {d : ℕ} (R : RigidBody d) :

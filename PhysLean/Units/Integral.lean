@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Units.UnitDependent
-import Mathlib.MeasureTheory.Integral.Bochner.Basic
 /-!
 
 # Dimensional invariance of the integral

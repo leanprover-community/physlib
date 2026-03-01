@@ -3,7 +3,7 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Distribution.FourierSchwartz
+import Mathlib.Analysis.Distribution.TemperedDistribution
 import PhysLean.Meta.TODO.Basic
 /-!
 
@@ -180,12 +180,12 @@ def fderivD [FiniteDimensional ℝ E] : (E →d[𝕜] F) →ₗ[𝕜] (E →d[�
   toFun u := {
     toFun η := LinearMap.toContinuousLinearMap {
       toFun v := ContinuousLinearEquiv.neg 𝕜 <| u <|
-        SchwartzMap.evalCLM (𝕜 := 𝕜) v <|
+        SchwartzMap.evalCLM (𝕜 := 𝕜) E 𝕜 v <|
         SchwartzMap.fderivCLM 𝕜 (E := E) (F := 𝕜) η
       map_add' v1 v2 := by
         simp only [ContinuousLinearEquiv.neg_apply]
-        trans -u ((SchwartzMap.evalCLM (𝕜 := 𝕜) v1) ((fderivCLM 𝕜) η) +
-          (SchwartzMap.evalCLM (𝕜 := 𝕜) v2) ((fderivCLM 𝕜) η))
+        trans -u ((SchwartzMap.evalCLM (𝕜 := 𝕜) E 𝕜 v1) ((fderivCLM 𝕜) E 𝕜 η) +
+          (SchwartzMap.evalCLM (𝕜 := 𝕜) E 𝕜 v2) ((fderivCLM 𝕜) E 𝕜 η))
         swap
         · simp only [map_add, neg_add_rev]
           abel
@@ -196,7 +196,7 @@ def fderivD [FiniteDimensional ℝ E] : (E →d[𝕜] F) →ₗ[𝕜] (E →d[�
         rfl
       map_smul' a v1 := by
         simp only [ContinuousLinearEquiv.neg_apply, RingHom.id_apply, smul_neg, neg_inj]
-        trans u (a • (SchwartzMap.evalCLM (𝕜 := 𝕜) v1) ((fderivCLM 𝕜) η))
+        trans u (a • (SchwartzMap.evalCLM (𝕜 := 𝕜) E 𝕜 v1) ((fderivCLM 𝕜) E 𝕜 η))
         swap
         · simp
         congr
@@ -230,7 +230,7 @@ def fderivD [FiniteDimensional ℝ E] : (E →d[𝕜] F) →ₗ[𝕜] (E →d[�
     simp
 
 lemma fderivD_apply [FiniteDimensional ℝ E] (u : E →d[𝕜] F) (η : 𝓢(E, 𝕜)) (v : E) :
-    fderivD 𝕜 u η v = - u (SchwartzMap.evalCLM (𝕜 := 𝕜) v (SchwartzMap.fderivCLM 𝕜 η)) := by
+    fderivD 𝕜 u η v = - u (SchwartzMap.evalCLM (𝕜 := 𝕜) E 𝕜 v (SchwartzMap.fderivCLM 𝕜 E 𝕜 η)) := by
   rfl
 
 TODO "01-09-25-JTS" "For distributions, prove that the derivative fderivD commutes with
@@ -361,11 +361,10 @@ lemma fderivD_const [hμ : Measure.IsAddHaarMeasure (volume (α := E))]
   swap
   · simp
   rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable]
-  simp
-  rfl
+  simp only [evalCLM_apply_apply, fderivCLM_apply, neg_neg]
   · apply MeasureTheory.Integrable.smul_const
-    change Integrable (SchwartzMap.evalCLM (𝕜 := ℝ) v (SchwartzMap.fderivCLM ℝ η)) volume
-    exact integrable ((SchwartzMap.evalCLM v) ((fderivCLM ℝ) η))
+    change Integrable (SchwartzMap.evalCLM (𝕜 := ℝ) E ℝ v (SchwartzMap.fderivCLM ℝ E ℝ η)) volume
+    exact integrable ((SchwartzMap.evalCLM ℝ E ℝ v) ((fderivCLM ℝ) E ℝ η))
   · simp
   · apply MeasureTheory.Integrable.smul_const
     exact integrable η
@@ -387,12 +386,15 @@ outputs `η a • v`.
 
 section DiracDelta
 
+open TemperedDistribution ContinuousLinearMap
+
 variable [NormedSpace ℝ E] [NormedSpace 𝕜 F]
 
 /-- Dirac delta distribution `diracDelta 𝕜 a : E →d[𝕜] 𝕜` takes in a test function `η : 𝓢(E, 𝕜)`
 and outputs `η a`. Intuitively this is an infinite density at a single point `a`. -/
 def diracDelta (a : E) : E →d[𝕜] 𝕜 :=
-  delta 𝕜 𝕜 a
+  toPointwiseConvergenceCLM _ _ _ _ <|
+    (BoundedContinuousFunction.evalCLM 𝕜 a).comp (toBoundedContinuousFunctionCLM 𝕜 E 𝕜)
 
 @[simp] lemma diracDelta_apply (a : E) (η : 𝓢(E, 𝕜)) :
     diracDelta 𝕜 a η = η a :=

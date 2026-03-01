@@ -77,7 +77,7 @@ lemma superCommuteF_ofFieldOpListF_ofFieldOpFsList (φ : List 𝓕.FieldOp) (φs
     [ofFieldOpListF φ, ofFieldOpListF φs]ₛF = ofFieldOpListF φ * ofFieldOpListF φs -
     𝓢(𝓕 |>ₛ φ, 𝓕 |>ₛ φs) • ofFieldOpListF φs * ofFieldOpListF φ := by
   conv_lhs => rw [ofFieldOpListF_sum]
-  simp only [map_sum, LinearMap.coeFn_sum, Finset.sum_apply, instCommGroup.eq_1,
+  simp only [map_sum, LinearMap.coe_sum, Finset.sum_apply, instCommGroup.eq_1,
     Algebra.smul_mul_assoc]
   conv_lhs =>
     enter [2, x]
@@ -861,7 +861,7 @@ lemma superCommuteF_fermionic_ofCrAnListF_eq_sum (a : 𝓕.FieldOpFreeAlgebra)
     simp [smul_smul, mul_comm]
   · exact ha
 
-lemma statistic_neq_of_superCommuteF_fermionic {φs φs' : List 𝓕.CrAnFieldOp}
+lemma statistic_ne_of_superCommuteF_fermionic {φs φs' : List 𝓕.CrAnFieldOp}
     (h : [ofCrAnListF φs, ofCrAnListF φs']ₛF ∈ statisticSubmodule fermionic) :
     (𝓕 |>ₛ φs) ≠ (𝓕 |>ₛ φs') ∨ [ofCrAnListF φs, ofCrAnListF φs']ₛF = 0 := by
   by_cases h0 : [ofCrAnListF φs, ofCrAnListF φs']ₛF = 0

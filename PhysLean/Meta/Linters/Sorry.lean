@@ -59,7 +59,7 @@ def addSorryfulEntry {m : Type → Type} [MonadEnv m]
 
 /-!
 
-## The `psudo` environment extension
+## The `pseudo` environment extension
 
 -/
 

@@ -93,9 +93,9 @@ lemma ofFin_mem_dropPairEmbSection {n : ℕ} {c : Fin (n + 1 + 1) → C}
     ofFin hij b x ∈ DropPairSection b := by
   simp only [DropPairSection, Finset.mem_filter, Finset.mem_univ, true_and]
   ext m
-  simp only [ofFin, dropPair, Pure.dropPairEmb_neq_fst, ↓reduceDIte, Pure.dropPairEmb_neq_snd,
+  simp only [ofFin, dropPair, Pure.dropPairEmb_ne_fst, ↓reduceDIte, Pure.dropPairEmb_ne_snd,
     Function.comp_apply]
-  simp only [Fin.coe_cast]
+  simp only [Fin.val_cast]
   rw [Pure.dropPairEmbPre_dropPairEmb]
 
 /-- The equivalence between `ContrSection b` and

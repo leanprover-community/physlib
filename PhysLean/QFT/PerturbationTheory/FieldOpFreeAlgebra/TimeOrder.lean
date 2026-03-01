@@ -155,7 +155,7 @@ lemma timeOrderF_ofFieldOpF_ofFieldOpF_not_ordered_eq_timeOrderF {φ ψ : 𝓕.F
   rw [timeOrderF_ofFieldOpF_ofFieldOpF_not_ordered h]
   rw [timeOrderF_ofFieldOpF_ofFieldOpF_ordered]
   simp only [instCommGroup.eq_1, Algebra.smul_mul_assoc]
-  have hx := IsTotal.total (r := timeOrderRel) ψ φ
+  have hx := Std.Total.total (r := timeOrderRel) ψ φ
   simp_all
 
 lemma timeOrderF_superCommuteF_ofCrAnOpF_ofCrAnOpF_not_crAnTimeOrderRel
@@ -168,7 +168,7 @@ lemma timeOrderF_superCommuteF_ofCrAnOpF_ofCrAnOpF_not_crAnTimeOrderRel
   simp only [List.singleton_append]
   rw [crAnTimeOrderSign_pair_not_ordered h, crAnTimeOrderList_pair_not_ordered h]
   rw [sub_eq_zero, smul_smul]
-  have h1 := IsTotal.total (r := crAnTimeOrderRel) φ ψ
+  have h1 := Std.Total.total (r := crAnTimeOrderRel) φ ψ
   congr
   · rw [crAnTimeOrderSign_pair_ordered, exchangeSign_symm]
     simp only [instCommGroup.eq_1, mul_one]
@@ -334,7 +334,7 @@ lemma timeOrderF_eq_maxTimeField_mul_finset (φ : 𝓕.FieldOp) (φs : List 𝓕
   rw [timeOrderF_eq_maxTimeField_mul]
   congr 3
   apply FieldStatistic.ofList_perm
-  nth_rewrite 1 [← List.finRange_map_get (φ :: φs)]
+  nth_rewrite 1 [← List.map_get_finRange (φ :: φs)]
   simp only [List.length_cons, eraseMaxTimeField, insertionSortDropMinPos]
   rw [eraseIdx_get, ← List.map_take, ← List.map_map]
   refine List.Perm.map (φ :: φs).get ?_
@@ -356,22 +356,22 @@ lemma timeOrderF_eq_maxTimeField_mul_finset (φ : 𝓕.FieldOp) (φs : List 𝓕
           omega
         · omega
       · simp only [Fin.succAbove, List.length_cons, Fin.castSucc_mk, Fin.succ_mk, Fin.ext_iff,
-        Fin.coe_cast]
+        Fin.val_cast]
         split
         · simp
         · simp_all [Fin.lt_def]
     · obtain ⟨j, h1, h2⟩ := h
       subst h2
-      simp only [Fin.lt_def, Fin.coe_cast]
+      simp only [Fin.lt_def, Fin.val_cast]
       exact h1
   · exact List.Sublist.nodup (List.take_sublist _ _) <|
       List.nodup_finRange (φs.length + 1)
   · refine List.Nodup.map ?_ ?_
     · refine Function.Injective.comp ?hf.hg Fin.succAbove_right_injective
       exact Fin.cast_injective (eraseIdx_length (φ :: φs) (insertionSortMinPos timeOrderRel φ φs))
-    · exact Finset.sort_nodup (fun x1 x2 => x1 ≤ x2)
+    · exact Finset.sort_nodup
         (Finset.filter (fun x => (maxTimeFieldPosFin φ φs).succAbove x < maxTimeFieldPosFin φ φs)
-          Finset.univ)
+          Finset.univ) (fun x1 x2 => x1 ≤ x2)
 
 end
 

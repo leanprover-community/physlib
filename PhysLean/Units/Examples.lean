@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Units.WithDim.Speed
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 /-!
 
 # Examples of units in PhysLean
@@ -143,7 +142,7 @@ lemma energyMass_isDimensionallyCorrect :
     IsDimensionallyCorrect EnergyMass := by
   /- Scale such that the unit u1 is taken to u2. -/
   intro u1 u2
-  /- Let `m` be the mass, `E` be the energy and `u` be the acutal units we start with. -/
+  /- Let `m` be the mass, `E` be the energy and `u` be the actual units we start with. -/
   funext m E u
   calc _
     _ = ((scaleUnit u2 u1 E).1 =
@@ -173,7 +172,7 @@ lemma energyMass_isDimensionallyCorrect :
           (m.1 * ((speedOfLight.1 u).1) ^ 2)) := by
       rfl
   simp only [map_mul, NNReal.val_eq_coe, NNReal.coe_mul, smul_eq_mul, mul_eq_mul_left_iff,
-    mul_eq_zero, NNReal.coe_eq_zero, dimScale_neq_zero, or_self, or_false, eq_iff_iff]
+    mul_eq_zero, NNReal.coe_eq_zero, dimScale_ne_zero, or_self, or_false, eq_iff_iff]
   rfl
 
 /-!

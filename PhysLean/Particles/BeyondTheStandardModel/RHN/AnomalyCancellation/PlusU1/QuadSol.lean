@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
-import Mathlib.Tactic.FieldSimp
 /-!
 # Properties of Quad Sols for SM with RHN
 
@@ -71,7 +70,7 @@ lemma genericToQuad_on_quad (S : (PlusU1 n).QuadSols) :
   rw [α₂_AFQ]
   simp
 
-lemma genericToQuad_neq_zero (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
+lemma genericToQuad_ne_zero (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
     (α₁ C S.1)⁻¹ • genericToQuad C S.1 = S := by
   rw [genericToQuad_on_quad, smul_smul, Rat.inv_mul_cancel _ h, one_smul]
 
@@ -125,7 +124,7 @@ lemma toQuadInv_generic (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
     (toQuadInv C S).2.1 • genericToQuad C (toQuadInv C S).1 = S := by
   simp only [toQuadInv_fst]
   rw [show (toQuadInv C S).2.1 = (α₁ C S.1)⁻¹ by rw [toQuadInv, if_neg h]]
-  rw [genericToQuad_neq_zero C S h]
+  rw [genericToQuad_ne_zero C S h]
 
 lemma toQuad_rightInverse : Function.RightInverse (@toQuadInv n C) (toQuad C) := by
   intro S

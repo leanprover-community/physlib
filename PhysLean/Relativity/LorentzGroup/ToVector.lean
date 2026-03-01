@@ -44,7 +44,7 @@ lemma toVector_continuous {d : ℕ} : Continuous (toVector (d := d)) := by
   conv =>
     enter [1, Λ]
     rw [toVector_eq_fun]
-  refine continuous_pi ?_
+  refine Vector.continuous_of_apply _ ?_
   intro i
   refine Continuous.matrix_elem ?_ i (Sum.inl 0)
   fun_prop
@@ -81,6 +81,8 @@ lemma toVector_eq_basis_iff_timeComponent_eq_one {d : ℕ} (Λ : LorentzGroup d)
       simp only [Fin.isValue, reduceCtorEq, ↓reduceIte]
       trans (toVector Λ).spatialPart j
       · simp
+      simp only [toVector_apply, Fin.isValue]
+      change (fun i => Λ.1 (Sum.inr i) (Sum.inl 0)) j = _
       rw [h1]
       simp
 

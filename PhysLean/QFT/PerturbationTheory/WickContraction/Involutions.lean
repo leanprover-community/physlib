@@ -114,7 +114,7 @@ lemma fromInvolution_getDual?_get (f : {f : Fin n → Fin n // Function.Involuti
   exact Option.get_of_mem h h1
 
 lemma toInvolution_fromInvolution : fromInvolution c.toInvolution = c := by
-  apply Subtype.eq
+  apply Subtype.ext
   simp only [fromInvolution, toInvolution]
   ext a
   simp only [Finset.mem_filter, Finset.mem_univ, true_and]
@@ -136,7 +136,7 @@ lemma toInvolution_fromInvolution : fromInvolution c.toInvolution = c := by
 
 lemma fromInvolution_toInvolution (f : {f : Fin n → Fin n // Function.Involutive f}) :
     (fromInvolution f).toInvolution = f := by
-  apply Subtype.eq
+  apply Subtype.ext
   funext i
   simp only [toInvolution]
   split

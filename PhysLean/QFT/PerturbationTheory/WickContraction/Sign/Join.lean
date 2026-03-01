@@ -231,10 +231,10 @@ lemma joinSignRightExtra_eq_i_j_finset_eq_if {φs : List 𝓕.FieldOp}
   rw [h11]
   ext x
   simp only [Finset.mem_filter, Finset.mem_insert, Finset.mem_singleton, Finset.mem_union]
-  have hjneqfst := singleton_uncontractedEmd_neq_right h (φsucΛ.fstFieldOfContract a)
-  have hjneqsnd := singleton_uncontractedEmd_neq_right h (φsucΛ.sndFieldOfContract a)
-  have hineqfst := singleton_uncontractedEmd_neq_left h (φsucΛ.fstFieldOfContract a)
-  have hineqsnd := singleton_uncontractedEmd_neq_left h (φsucΛ.sndFieldOfContract a)
+  have hjneqfst := singleton_uncontractedEmd_ne_right h (φsucΛ.fstFieldOfContract a)
+  have hjneqsnd := singleton_uncontractedEmd_ne_right h (φsucΛ.sndFieldOfContract a)
+  have hineqfst := singleton_uncontractedEmd_ne_left h (φsucΛ.fstFieldOfContract a)
+  have hineqsnd := singleton_uncontractedEmd_ne_left h (φsucΛ.sndFieldOfContract a)
   by_cases hj1 : ¬ uncontractedListEmd (φsucΛ.fstFieldOfContract a) < j
   · simp only [hj1, false_and, ↓reduceIte, Finset.notMem_empty, false_or]
     have hi1 : ¬ uncontractedListEmd (φsucΛ.fstFieldOfContract a) < i := by omega
@@ -332,7 +332,7 @@ lemma joinSignLeftExtra_eq_joinSignRightExtra {φs : List 𝓕.FieldOp}
   rw [joinSignRightExtra_eq_i_j_finset_eq_if]
   congr
   funext a
-  have hjneqsnd := singleton_uncontractedEmd_neq_right h (φsucΛ.sndFieldOfContract a)
+  have hjneqsnd := singleton_uncontractedEmd_ne_right h (φsucΛ.sndFieldOfContract a)
   have hl : uncontractedListEmd (φsucΛ.fstFieldOfContract a) <
       uncontractedListEmd (φsucΛ.sndFieldOfContract a) := by
     apply uncontractedListEmd_strictMono

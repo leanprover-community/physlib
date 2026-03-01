@@ -63,16 +63,7 @@ lemma Y₃_plus_B₃_plus_proj (T : MSSMACC.LinSols) (a b c : ℚ) :
     + (dot Y₃.val B₃.val * c) • T.val:= by
   rw [proj_val]
   rw [DistribMulAction.smul_add, DistribMulAction.smul_add]
-  rw [add_assoc (_ • _ • Y₃.val), ← add_assoc (_ • Y₃.val + _ • B₃.val), add_assoc (_ • Y₃.val)]
-  rw [add_comm (_ • B₃.val) (_ • _ • Y₃.val), ← add_assoc (_ • Y₃.val)]
-  rw [← MulAction.mul_smul, ← Module.add_smul]
-  repeat rw [add_assoc]
-  apply congrArg
-  rw [← add_assoc, ← MulAction.mul_smul, ← Module.add_smul]
-  apply congrArg
-  simp only [HSMul.hSMul, SMul.smul, MSSMACC_numberCharges]
-  funext i
-  linarith
+  module
 
 lemma quad_Y₃_proj (T : MSSMACC.LinSols) :
     quadBiLin Y₃.val (proj T).val = dot Y₃.val B₃.val * quadBiLin Y₃.val T.val := by

@@ -69,7 +69,7 @@ def toBoostRotation {d} : LorentzGroup.restricted d ≃ₜ Lorentz.Velocity d ×
     · exact rotations_subset_restricted d (ofSpecialOrthogonal p.2).2
     · refine ⟨generalizedBoost_isProper 0 p.1, generalizedBoost_isOrthochronous 0 p.1⟩⟩
   left_inv Λ := by
-    apply Subtype.eq
+    apply Subtype.ext
     simp only [toRotation, MulEquiv.apply_symm_apply]
     rw [mul_inv_cancel_left]
   right_inv p := by
@@ -86,12 +86,12 @@ def toBoostRotation {d} : LorentzGroup.restricted d ≃ₜ Lorentz.Velocity d ×
     rw [toRotation]
     apply ofSpecialOrthogonal.injective
     rw [MulEquiv.apply_symm_apply]
-    apply Subtype.eq
+    apply Subtype.ext
     simp only
     trans (generalizedBoost 0 ⟨v, hv⟩)⁻¹
       * ((generalizedBoost 0 ⟨v, hv⟩) * (ofSpecialOrthogonal R).1)
     · congr
-      apply Subtype.eq
+      apply Subtype.ext
       simp [toVelocity, h0]
     group
   continuous_toFun := by fun_prop

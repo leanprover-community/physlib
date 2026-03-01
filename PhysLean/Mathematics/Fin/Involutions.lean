@@ -103,7 +103,7 @@ def involutionCons (n : ℕ) : {f : Fin n.succ → Fin n.succ // Function.Involu
         · rw [← h0] at hj
           have hn := Function.Involutive.injective hf hj
           exact False.elim (Fin.succ_ne_zero j hn)
-        · simp only [hj, ↓reduceDIte, Fin.coe_pred]
+        · simp only [hj, ↓reduceDIte, Fin.val_pred]
           rw [Fin.ext_iff] at hj
           simp only [succ_eq_add_one, Fin.val_zero] at hj
           omega
@@ -123,7 +123,7 @@ def involutionCons (n : ℕ) : {f : Fin n.succ → Fin n.succ // Function.Involu
           · rw [← hj] at hf'
             rw [hf] at hf'
             simp only [not_true_eq_false] at hf'
-          · simp only [hj, ↓reduceDIte, Fin.coe_pred]
+          · simp only [hj, ↓reduceDIte, Fin.val_pred]
             rw [Fin.ext_iff] at hj
             simp only [succ_eq_add_one, Fin.val_zero] at hj
             omega
@@ -448,7 +448,7 @@ def involutionNoFixedSetOne {n : ℕ} :
   right_inv f := by
     simp only [ne_eq, succ_eq_add_one, Function.comp_apply]
     ext i
-    simp only [Fin.coe_pred]
+    simp only [Fin.val_pred]
     split
     · rename_i h
       simp [Fin.ext_iff] at h

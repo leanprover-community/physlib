@@ -1,4 +1,3 @@
-import Lean.Util.SearchPath
 import Batteries.Tactic.Lint
 import Batteries.Data.Array.Basic
 import Lake.CLI.Main
@@ -39,7 +38,7 @@ unsafe def runLinterOnModule  (module : Name): IO Unit := do
     let linters ← getChecks (slow := true) (runAlways := none) (runOnly := none)
     println! "Results been linted with the following linters:"
     println! linters.map (·.name)
-    println! "Starting parallel running on linters on all declerations. Results if any are
+    println! "Starting parallel running on linters on all declarations. Results if any are
       shown below."
     let results ← lintCore decls linters
     let results := results.map fun (linter, decls) =>
@@ -54,6 +53,7 @@ unsafe def runLinterOnModule  (module : Name): IO Unit := do
       IO.Process.exit 1
     else
       IO.println s!"-- Linting passed for {module}."
+      IO.Process.exit 0
 
 unsafe def main (_ : List String) : IO Unit := do
   let modulesToLint := #[`PhysLean]

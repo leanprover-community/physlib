@@ -117,9 +117,9 @@ def ofSpecialOrthogonal {d} :
           simp
         · exact h.2⟩
   map_mul' A B := by
-    apply Subtype.eq
+    apply Subtype.ext
     simp only [Submonoid.coe_mul, MulMemClass.mk_mul_mk]
-    apply Subtype.eq
+    apply Subtype.ext
     simp [Matrix.fromBlocks_multiply]
   left_inv Λ := by
     simp
@@ -151,7 +151,7 @@ def ofSpecialOrthogonal {d} :
         rw [← h1]
         simp
       | .inr i, .inr j => rfl
-    apply Subtype.eq
+    apply Subtype.ext
     simp only
     exact eq_of_mulVec_eq (congrFun (congrArg Matrix.mulVec h1))
 

@@ -87,7 +87,7 @@ lemma staticContract_insert_some_of_lt
   rw [staticContract_insert_some]
   simp only [Nat.succ_eq_add_one, Fin.getElem_fin, ite_mul, instCommGroup.eq_1,
     contractStateAtIndex, uncontractedFieldOpEquiv, Equiv.optionCongr_apply,
-    Equiv.coe_trans, Option.map_some, Function.comp_apply, finCongr_apply, Fin.coe_cast,
+    Equiv.coe_trans, Option.map_some, Function.comp_apply, finCongr_apply, Fin.val_cast,
     List.getElem_map, uncontractedList_getElem_uncontractedIndexEquiv_symm, List.get_eq_getElem,
     Algebra.smul_mul_assoc, uncontractedListGet]
   · simp only [hik, ↓reduceIte, MulMemClass.coe_mul]
@@ -116,7 +116,7 @@ lemma staticContract_of_not_gradingCompliant (φs : List 𝓕.FieldOp)
   obtain ⟨ha, ha2⟩ := ha
   apply Finset.prod_eq_zero (i := ⟨a, ha⟩)
   simp only [Finset.univ_eq_attach, Finset.mem_attach]
-  apply Subtype.eq
+  apply Subtype.ext
   simp only [List.get_eq_getElem, ZeroMemClass.coe_zero]
   rw [superCommute_anPart_ofFieldOpF_diff_grade_zero]
   simp [ha2]

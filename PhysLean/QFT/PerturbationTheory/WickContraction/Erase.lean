@@ -37,7 +37,7 @@ lemma mem_erase_uncontracted_iff (c : WickContraction n.succ) (i : Fin n.succ) (
   rw [getDual?_eq_some_iff_mem]
   simp only [uncontracted, getDual?, erase, Nat.succ_eq_add_one, Finset.mem_filter, Finset.mem_univ,
     Finset.map_insert, Fin.succAboveEmb_apply, Finset.map_singleton, true_and]
-  rw [Fin.find_eq_none_iff, Fin.find_eq_none_iff]
+  rw [Fin.find?_eq_none_iff, Fin.find?_eq_none_iff]
   apply Iff.intro
   · intro h
     by_cases hi : {i.succAbove j, i} ∈ c.1
@@ -46,7 +46,7 @@ lemma mem_erase_uncontracted_iff (c : WickContraction n.succ) (i : Fin n.succ) (
       intro k
       by_cases hi' : k = i
       · subst hi'
-        exact hi
+        simpa using hi
       · simp only [← Fin.exists_succAbove_eq_iff] at hi'
         obtain ⟨z, hz⟩ := hi'
         subst hz
@@ -55,7 +55,7 @@ lemma mem_erase_uncontracted_iff (c : WickContraction n.succ) (i : Fin n.succ) (
     rcases h with h | h
     · exact h (i.succAbove k)
     · by_contra hn
-      have hc := c.2.2 _ h _ hn
+      have hc := c.2.2 _ h _ (by simpa using hn)
       simp only [Nat.succ_eq_add_one, Finset.disjoint_insert_right, Finset.mem_insert,
         Finset.mem_singleton, true_or, not_true_eq_false, Finset.disjoint_singleton_right, not_or,
         false_and, or_false] at hc

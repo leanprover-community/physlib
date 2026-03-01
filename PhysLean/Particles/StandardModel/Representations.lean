@@ -26,7 +26,7 @@ noncomputable def repU1Map (g : unitary ℂ) : unitaryGroup (Fin 2) ℂ :=
     simp only [SubmonoidClass.mk_pow, Submonoid.mk_smul, star_smul, star_pow, RCLike.star_def,
       star_one]
     rw [smul_smul, ← mul_pow]
-    erw [(unitary.mem_iff.mp g.prop).2]
+    erw [(Unitary.mem_iff.mp g.prop).2]
     simp only [one_pow, one_smul]⟩
 
 /-- The 2d representation of U(1) with charge 3 as a homomorphism

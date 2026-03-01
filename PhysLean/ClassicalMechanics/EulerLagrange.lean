@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
 import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
-import PhysLean.SpaceAndTime.Time.Basic
 /-!
 
 # Euler-Lagrange equations
@@ -67,11 +66,11 @@ theorem euler_lagrange_varGradient
     simp[sub_eq_add_neg]
     congr
     rw [gradient_eq_adjFDeriv, adjFDeriv_uncurry]
-    apply ContDiff.differentiable (n := ∞) (by fun_prop) ENat.LEInfty.out
-    apply ContDiff.differentiable (n := ∞) (by fun_prop) ENat.LEInfty.out
+    apply ContDiff.differentiable (n := ∞) (by fun_prop) (by simp)
+    apply ContDiff.differentiable (n := ∞) (by fun_prop) (by simp)
     funext t
     rw [gradient_eq_adjFDeriv, adjFDeriv_uncurry]
-    apply ContDiff.differentiable (n := ∞) (by fun_prop) ENat.LEInfty.out
-    apply ContDiff.differentiable (n := ∞) (by fun_prop) ENat.LEInfty.out
+    apply ContDiff.differentiable (n := ∞) (by fun_prop) (by simp)
+    apply ContDiff.differentiable (n := ∞) (by fun_prop) (by simp)
 
 end ClassicalMechanics

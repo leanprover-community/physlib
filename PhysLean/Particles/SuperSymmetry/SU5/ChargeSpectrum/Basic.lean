@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Finset.Option
 import PhysLean.Particles.SuperSymmetry.SU5.Potential
 /-!
 

@@ -26,15 +26,15 @@ lemma insertIdx_map {I J : Type} (f : I → J) : (i : ℕ) → (r : List I) → 
 
 lemma eraseIdx_sorted {I : Type} (le : I → I → Prop) :
     (r : List I) → (n : ℕ) →
-    List.Sorted le r → List.Sorted le (r.eraseIdx n)
+    List.Pairwise le r → List.Pairwise le (r.eraseIdx n)
   | [], _, _ => by simp
   | a::as, 0, h => by
     simp only [List.eraseIdx]
-    simp only [List.sorted_cons] at h
+    simp only [List.pairwise_cons] at h
     exact h.2
   | a::as, n+1, h => by
-    simp only [List.eraseIdx_cons_succ, List.sorted_cons]
-    simp only [List.sorted_cons] at h
+    simp only [List.eraseIdx_cons_succ, List.pairwise_cons]
+    simp only [List.pairwise_cons] at h
     refine And.intro ?_ (eraseIdx_sorted le as n h.2)
     intro b hb
     refine h.1 _ ?_

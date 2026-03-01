@@ -19,23 +19,37 @@
 [![](https://img.shields.io/badge/PhysLean-Search-purple)](https://loogle.physlean.com)
 [![](https://img.shields.io/badge/PhysLean-Online-purple)](https://live.physlean.com)
 
- [![](https://img.shields.io/badge/View_The-Stats-blue)](https://physlean.com/Stats)
-[![](https://img.shields.io/badge/Lean-v4.24.0-blue)](https://github.com/leanprover/lean4/releases/tag/v4.24.0)
+[![](https://img.shields.io/badge/View_The-Stats-blue)](https://physlean.com/Stats)
+[![](https://img.shields.io/badge/Lean-v4.28.0-blue)](https://github.com/leanprover/lean4/releases/tag/v4.28.0)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/HEPLean/HepLean)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/HEPLean/PhysLean)
+[![api_docs](https://img.shields.io/badge/doc-API_docs-blue)](https://physlean.com/docs/)
 
 </div>
 
 
-## Aims of this project
+## Requirements of the project
 
-🎯 __Digitalize__ results (meaning calculations, definitions, and theorems) from physics
-into Lean 4.
+🎯 The project shall contain results (definitions, theorems, lemmas and calculations) from **physics** formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
 
-🎯 Develop structures to aid the __creation__ of new results in physics using Lean,
-  with the potential future use of AI.
+🎯 The project shall be **organized** by **physics**.
 
-🎯 Create good documentation so that the project can be used for __pedagogical__ purposes.
+🎯 Each definition in the project shall carry a physics-based **documentation**.
+
+🎯 Each module (file) in the project shall carry a physics-based **documentation**.
+
+🎯 The project shall contain Physics Lean **tactics**, **notation** and **syntax** for physicists.
+
+🎯 The project shall *not* be tied to physics axiomizations (e.g. axiomatic QFT), but rather lexiable enough to accommodate different approaches and starting points.
+
+🎯 The content of the project shall be carefully **reviewed** and curated, to ensure reusability, readability and fit.
+
+🎯 The project shall be completely open-source, community run and independent from any company or organization.
+
+🎯 The project shall not be tied to any specific AI model or tool.
+
+🎯 The project shall be for **main-stream** physics only.
+
 
 ## How to get involved
 
@@ -45,7 +59,7 @@ See the [Get Involved](https://physlean.com/GetInvolved.html) for more details. 
 
 📣 tackle a [TODO item](https://physlean.com/TODOList),
 
-📣 or, start formalizing an area that you find intresting.
+📣 or, start formalizing an area that you find interesting.
 
 Feel free to come to the [PhysLean zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLean/) to ask questions and advice.
 

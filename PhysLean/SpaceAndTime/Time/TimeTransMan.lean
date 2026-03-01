@@ -3,6 +3,7 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
+import PhysLean.SpaceAndTime.Time.Derivatives
 import PhysLean.SpaceAndTime.Time.TimeUnit
 /-!
 
@@ -225,7 +226,7 @@ lemma diff_eq_val (x : TimeUnit) (t1 t2 : TimeTransMan) :
   · simp [diff, dist, h]
     simp [le_def] at h
     rw [abs_of_neg]
-    have hx : x.val ≠ 0 := x.val_neq_zero
+    have hx : x.val ≠ 0 := x.val_ne_zero
     field_simp
     linarith
 
@@ -267,7 +268,7 @@ lemma diff_fst_surjective (x : TimeUnit) (t : TimeTransMan) :
   use x.1 * r +ᵥ t
   simp [abs_mul]
   rw [abs_of_nonneg (le_of_lt x.val_pos)]
-  simp only [ne_eq, TimeUnit.val_neq_zero, not_false_eq_true, inv_mul_cancel_left₀]
+  simp only [ne_eq, TimeUnit.val_ne_zero, not_false_eq_true, inv_mul_cancel_left₀]
   by_cases h : 0 ≤ r
   · rw [if_pos]
     exact abs_of_nonneg h
@@ -335,7 +336,6 @@ lemma neg_eq_negMetric (zero : TimeTransMan) (x : TimeUnit) (t : TimeTransMan) :
 ### The map from TimeTransMan to Time
 
 -/
-
 /-- With a choice of zero `zero : TimeTransMan` and a choice of units `x : TimeUnit`,
   `toTime` is the homeomorphism between the type `TimeTransMan` and `Time`. -/
 noncomputable def toTime (zero : TimeTransMan) (x : TimeUnit) : TimeTransMan ≃ₜ Time where
@@ -354,7 +354,13 @@ noncomputable def toTime (zero : TimeTransMan) (x : TimeUnit) : TimeTransMan ≃
       ext
       simp [valHomeomorphism, addTime_val]
     rw [h1]
-    fun_prop
+    · apply Continuous.add
+      · apply Continuous.fun_mul
+        · fun_prop
+        · apply Differentiable.continuous (𝕜 := ℝ)
+          fun_prop
+      · fun_prop
+
   continuous_toFun := by
     rw [← Homeomorph.comp_continuous_iff Time.toRealCLE.toHomeomorph]
     have h1 : (⇑Time.toRealCLE.toHomeomorph ∘ (fun t => ⟨diff x t zero⟩)) = fun t =>

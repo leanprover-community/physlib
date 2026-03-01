@@ -3,8 +3,8 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import PhysLean.ClassicalMechanics.VectorFields
+import PhysLean.SpaceAndTime.Space.CrossProduct
+import PhysLean.SpaceAndTime.TimeAndSpace.Basic
 /-!
 
 # Wave equation
@@ -147,18 +147,18 @@ lemma planeWave_time_deriv_time_deriv {d f₀ c x} {s : Direction d}
     enter [1, i]
     rw [planeWave_time_deriv (h'.differentiable (by simp))]
   ext t i
-  rw [Time.deriv_eq, fderiv_const_smul]
+  rw [Time.deriv_eq, fderiv_const_smul (by fun_prop)]
   simp only [fderiv_eq_smul_deriv, one_smul, neg_smul, ContinuousLinearMap.neg_apply,
     ContinuousLinearMap.coe_smul', Pi.smul_apply, PiLp.neg_apply, PiLp.smul_apply, smul_eq_mul]
-  rw [← Time.deriv_eq, planeWave_time_deriv]
+  rw [← Time.deriv_eq, planeWave_time_deriv (by fun_prop)]
   simp only [fderiv_eq_smul_deriv, one_smul, Pi.smul_apply, PiLp.smul_apply, smul_eq_mul, neg_mul,
     mul_neg, neg_neg]
   ring_nf
-  congr
+  suffices h : (fun x => _root_.deriv (fun x => _root_.deriv f₀ x) x) =
+      fun x => iteratedDeriv 2 f₀ x by rw [h]
   funext x
   erw [iteratedDeriv_succ]
   simp only [iteratedDeriv_one]
-  repeat fun_prop
 
 /-!
 
@@ -175,19 +175,17 @@ lemma planeWave_space_deriv {d f₀ c} {s : Direction d}
   ext x j
   rw [Space.deriv_eq]
   change fderiv ℝ
-    (f₀ ∘ fun x : Space d => (inner ℝ x s.unit - c * t)) x (EuclideanSpace.single i 1) j = _
+    (f₀ ∘ fun x : Space d => (inner ℝ x s.unit - c * t)) x (Space.basis i) j = _
   rw [fderiv_comp]
   simp only [ContinuousLinearMap.coe_comp', Function.comp_apply, fderiv_eq_smul_deriv,
     PiLp.smul_apply, smul_eq_mul, one_smul, Pi.smul_apply]
   rw [fderiv_sub_const]
   rw [fderiv_inner_apply]
-  simp [EuclideanSpace.inner_single_left]
+  simp only [fderiv_fun_const, Pi.zero_apply, ContinuousLinearMap.zero_apply, inner_zero_right,
+    fderiv_id', ContinuousLinearMap.coe_id', id_eq, basis_inner, zero_add, mul_eq_mul_left_iff]
   left
   simp [planeWave_eq]
   repeat fun_prop
-  · apply DifferentiableAt.sub
-    apply DifferentiableAt.inner
-    repeat fun_prop
 
 lemma planeWave_apply_space_deriv {d f₀ c} {s : Direction d}
     (h' : Differentiable ℝ f₀) (i j : Fin d) :
@@ -241,8 +239,9 @@ lemma planeWave_apply_space_deriv_space_deriv {d f₀ c} {s : Direction d}
   rw [← Space.deriv_eq_fderiv_basis, planeWave_apply_space_deriv]
   simp only [fderiv_eq_smul_deriv, one_smul, Pi.smul_apply, smul_eq_mul]
   ring_nf
-  congr
-  funext x i
+  suffices h : (fun x => _root_.deriv (fun x => _root_.deriv f₀ x) x) =
+      fun x => iteratedDeriv 2 f₀ x by rw [h]
+  ext x i
   erw [iteratedDeriv_succ']
   simp only [iteratedDeriv_one]
   repeat fun_prop
@@ -256,7 +255,7 @@ lemma planeWave_apply_space_deriv_space_deriv {d f₀ c} {s : Direction d}
 lemma planeWave_laplacian {d f₀ c} {s : Direction d} (h' : ContDiff ℝ 2 f₀) :
     Δ (planeWave f₀ c s t) = fun x => planeWave (iteratedDeriv 2 f₀ ·) c s t x := by
   ext x j
-  simp [laplacianVec, coord, laplacian]
+  simp [laplacianVec, laplacian]
   conv_lhs =>
     enter [2, i]
     rw [planeWave_apply_space_deriv_space_deriv h']
@@ -286,7 +285,7 @@ These lemmas will eventually be moved, renamed and/or replaced.
 
 -/
 
-lemma wave_differentiable {s : Direction d} {c : ℝ} {x : EuclideanSpace ℝ (Fin d)} :
+lemma wave_differentiable {s : Direction d} {c : ℝ} {x : Space d} :
     DifferentiableAt ℝ (fun x => inner ℝ x s.unit - c * t) x := by
   apply DifferentiableAt.sub
   apply DifferentiableAt.inner
@@ -296,26 +295,24 @@ lemma wave_dx2 {u v : Fin d} {s : Direction d}
     {f₀' : ℝ → ℝ →L[ℝ] EuclideanSpace ℝ (Fin d)} {f₀'' : ℝ → ℝ →L[ℝ] EuclideanSpace ℝ (Fin d)}
     (h'' : ∀ x, HasFDerivAt (fun x' => f₀' x' 1) (f₀'' x) x) :
     (fderiv ℝ (fun x' => (inner ℝ ((f₀' (inner ℝ x' s.unit - c * t)) (s.unit u))
-    (EuclideanSpace.single v 1))) x) (EuclideanSpace.single u 1)
+    (EuclideanSpace.single v 1))) x) (Space.basis u)
     =
     inner ℝ ((s.unit u) ^ 2 • f₀'' (inner ℝ x s.unit - c * t) 1) (EuclideanSpace.single v 1) := by
   rw [fderiv_inner_apply]
   have hdi' : (fderiv ℝ (fun x' => (f₀' (inner ℝ x' s.unit - c * t))
-      (s.unit u)) x) (EuclideanSpace.single u 1)
+      (s.unit u)) x) (Space.basis u)
       =
       (s.unit u) ^ 2 • (f₀'' (inner ℝ x s.unit - c * t) 1) := by
     change (fderiv ℝ ((fun x' => f₀' x' (s.unit u)) ∘
-        fun x' => (inner ℝ x' s.unit - c * t)) x) (EuclideanSpace.single u 1) = _
+        fun x' => (inner ℝ x' s.unit - c * t)) x) (Space.basis u) = _
     rw [fderiv_comp, fderiv_fun_sub]
     simp only [fderiv_fun_const, Pi.ofNat_apply, sub_zero, ContinuousLinearMap.coe_comp',
       Function.comp_apply]
     rw [fderiv_inner_apply]
     simp only [fderiv_id', ContinuousLinearMap.coe_id', id_eq]
     trans (fderiv ℝ (fun x' => (f₀' x') (s.unit u • 1)) (inner ℝ x s.unit - c * t)) (s.unit u • 1)
-    simp only [PiLp.inner_apply, RCLike.inner_apply, conj_trivial, fderiv_fun_const, Pi.zero_apply,
-      ContinuousLinearMap.zero_apply, inner_zero_right, EuclideanSpace.single_apply,
-      MonoidWithZeroHom.map_ite_one_zero, mul_ite, mul_one, mul_zero, Finset.sum_ite_eq',
-      Finset.mem_univ, ↓reduceIte, zero_add, fderiv_eq_smul_deriv, smul_eq_mul]
+    simp only [fderiv_fun_const, Pi.ofNat_apply, ContinuousLinearMap.zero_apply, inner_zero_right,
+      basis_inner, zero_add, fderiv_eq_smul_deriv, smul_eq_mul, mul_one]
     conv_lhs =>
       enter [1, 2, x']
       rw [ContinuousLinearMap.map_smul]
@@ -323,8 +320,6 @@ lemma wave_dx2 {u v : Fin d} {s : Direction d}
     rw [HasFDerivAt.fderiv (h'' (inner ℝ x s.unit - c * t))]
     change s.unit u • s.unit u • (f₀'' (inner ℝ x s.unit - c * t) 1) = _
     rw [← smul_assoc, smul_eq_mul]
-    repeat fun_prop
-    apply DifferentiableAt.inner
     repeat fun_prop
     · conv_lhs =>
         enter [x]
@@ -353,16 +348,12 @@ lemma space_fderiv_of_inner_product_wave_eq_space_fderiv
     {t : Time} {f₀ : ℝ → EuclideanSpace ℝ (Fin d)}
     {s : Direction d} {u v : Fin d} (h' : Differentiable ℝ f₀) :
     c * ((fun x' => (fderiv ℝ (fun x => inner ℝ (f₀ (inner ℝ x s.unit - c * t))
-    (EuclideanSpace.single v 1)) x') (EuclideanSpace.single u 1)) x)
+    (EuclideanSpace.single v 1)) x') ((Space.basis u))) x)
     =
     - s.unit u * ∂ₜ (fun t => f₀ (inner ℝ x s.unit - c * t)) t v := by
   simp [EuclideanSpace.inner_single_right]
   trans c * (fderiv ℝ (fun x => f₀ (⟪x, s.unit⟫_ℝ - c * t.val) v) x) (Space.basis u)
-  · congr 2
-    funext x
-    simp [basis_apply]
-    congr 1
-    exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
+  · rfl
   erw [← Space.deriv_eq_fderiv_basis, planeWave_apply_space_deriv h' u v,
     planeWave_time_deriv h']
   simp only [fderiv_eq_smul_deriv, one_smul, Pi.smul_apply, smul_eq_mul, PiLp.smul_apply, neg_mul,
@@ -382,27 +373,32 @@ open Matrix
 lemma crossProduct_time_differentiable_of_right_eq_planewave {s : Direction}
     {f₀ : ℝ → EuclideanSpace ℝ (Fin 3)} {f : Time → Space → EuclideanSpace ℝ (Fin 3)}
     (h' : Differentiable ℝ f₀) (hf : f = planeWave f₀ c s) :
-    DifferentiableAt ℝ (fun t => s.unit ⨯ₑ₃ (f t x)) t := by
+    DifferentiableAt ℝ (fun t => Space.basis.repr s.unit ⨯ₑ₃ (f t x)) t := by
   rw [hf, crossProduct]
   unfold planeWave
-  apply differentiable_pi''
+  apply differentiable_euclid
   intro i
   fin_cases i <;>
-  · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, WithLp.equiv_apply,
-    PiLp.inner_apply, RCLike.inner_apply, conj_trivial, LinearMap.mk₂_apply, PiLp.ofLp_apply,
-    Fin.reduceFinMk, WithLp.equiv_symm_apply, PiLp.toLp_apply, Matrix.cons_val]
+  · simp only [Fin.reduceFinMk, Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd,
+    WithLp.equiv_apply, LinearMap.mk₂_apply, WithLp.equiv_symm_apply, PiLp.toLp_apply, cons_val]
     fun_prop
 
 lemma crossProduct_differentiable_of_right_eq_planewave {s : Direction}
     {f₀ : ℝ → EuclideanSpace ℝ (Fin 3)} (h' : Differentiable ℝ f₀) :
-    DifferentiableAt ℝ (fun u => s.unit ⨯ₑ₃ (f₀ u)) u := by
+    DifferentiableAt ℝ (fun u => Space.basis.repr s.unit ⨯ₑ₃ (f₀ u)) u := by
   rw [crossProduct]
+  apply Differentiable.differentiableAt
+  apply Differentiable.comp
+  · simp only [WithLp.equiv_symm_apply]
+    rw [@differentiable_euclidean]
+    intro i
+    simp only
+    fun_prop
   apply differentiable_pi''
   intro i
   fin_cases i <;>
   · simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, WithLp.equiv_apply,
-    LinearMap.mk₂_apply, PiLp.ofLp_apply, Fin.reduceFinMk, WithLp.equiv_symm_apply, PiLp.toLp_apply,
-    Matrix.cons_val]
+    Fin.reduceFinMk, LinearMap.mk₂_apply, cons_val]
     fun_prop
 
 lemma wave_fderiv_inner_eq_inner_fderiv_proj {f₀ : ℝ → EuclideanSpace ℝ (Fin d)}
@@ -410,39 +406,26 @@ lemma wave_fderiv_inner_eq_inner_fderiv_proj {f₀ : ℝ → EuclideanSpace ℝ 
     ∀ x y, s.unit i * (fderiv ℝ (fun x => f₀ (inner ℝ x s.unit - c * t)) x) y i
     =
     inner ℝ y s.unit * (fderiv ℝ (fun x => f₀ (inner ℝ x s.unit - c * t) i) x)
-    (EuclideanSpace.single i 1) := by
+    (Space.basis i) := by
   intro x y
-  rw [fderiv_pi]
-  change s.unit i * fderiv ℝ ((EuclideanSpace.proj i) ∘
-      fun x => f₀ (inner ℝ x s.unit - c * t)) x y =
+  change _ =
       inner ℝ y s.unit * (fderiv ℝ ((EuclideanSpace.proj i) ∘
-      fun x => f₀ (inner ℝ x s.unit - c * t)) x) (EuclideanSpace.single i 1)
+      fun x => f₀ (inner ℝ x s.unit - c * t)) x) (Space.basis i)
   rw [fderiv_comp]
   simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_comp', Function.comp_apply,
     PiLp.proj_apply]
   change s.unit i * (fderiv ℝ (f₀ ∘ fun x => (inner ℝ x s.unit - c * t)) x) y i =
       inner ℝ y s.unit * (fderiv ℝ (f₀ ∘ fun x => (inner ℝ x s.unit - c * t)) x)
-      (EuclideanSpace.single i 1) i
+      (Space.basis i) i
   rw [fderiv_comp, fderiv_fun_sub]
   simp only [fderiv_fun_const, Pi.zero_apply, sub_zero, ContinuousLinearMap.coe_comp',
     Function.comp_apply, differentiableAt_fun_id, differentiableAt_const, fderiv_inner_apply,
     ContinuousLinearMap.zero_apply, inner_zero_right, fderiv_id', ContinuousLinearMap.coe_id',
     id_eq, zero_add]
-  nth_rw 5 [PiLp.inner_apply]
-  simp only [EuclideanSpace.single_apply, RCLike.inner_apply, MonoidWithZeroHom.map_ite_one_zero,
-    mul_ite, mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
-  rw [← mul_one (s.unit i), ← smul_eq_mul (s.unit i), ContinuousLinearMap.map_smul]
-  rw [← mul_one (inner ℝ y s.unit), ← smul_eq_mul (inner ℝ y s.unit), ContinuousLinearMap.map_smul]
-  simp only [smul_eq_mul, PiLp.smul_apply, ← mul_assoc, mul_comm, one_mul]
-  apply DifferentiableAt.inner
+  simp only [fderiv_eq_smul_deriv, PiLp.smul_apply, smul_eq_mul, basis_inner]
+  rw [← mul_one (s.unit i), ← smul_eq_mul (s.unit i)]
+  rw [← mul_one (inner ℝ y s.unit), ← smul_eq_mul (inner ℝ y s.unit)]
+  simp only [smul_eq_mul, mul_comm, one_mul, ← mul_assoc]
   repeat fun_prop
-  · exact wave_differentiable
-  · fun_prop
-  · apply DifferentiableAt.comp
-    · fun_prop
-    · exact wave_differentiable
-  · intro i
-    simp only [PiLp.inner_apply, RCLike.inner_apply, conj_trivial]
-    fun_prop
 
 end ClassicalMechanics

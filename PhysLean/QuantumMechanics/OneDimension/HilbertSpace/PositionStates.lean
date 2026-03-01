@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.SchwartzSubmodule
+import Mathlib.Analysis.Distribution.TemperedDistribution
 /-!
 
 # Position states
@@ -23,7 +24,7 @@ open MeasureTheory SchwartzMap
 
 /-- Position state as a member of the dual of the
   Schwartz submodule of the Hilbert space. -/
-def positionState (x : ℝ) : 𝓢(ℝ, ℂ) →L[ℂ] ℂ := delta ℂ ℂ x
+def positionState (x : ℝ) : 𝓢(ℝ, ℂ) →L[ℂ] ℂ := TemperedDistribution.delta x
 
 lemma positionState_apply (x : ℝ) (ψ : 𝓢(ℝ, ℂ)) :
     positionState x ψ = ψ x := rfl
