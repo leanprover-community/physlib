@@ -53,7 +53,7 @@ leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.28Pseudo.29.20Rie
 
 section PseudoRiemannianMetric
 
-noncomputable section
+--noncomputable section
 
 open Bundle Set Finset Function Filter Module Topology ContinuousLinearMap
 open scoped Manifold Bundle LinearMap Dual
@@ -417,20 +417,21 @@ lemma flatL_surj (g : MetricTensor E H M n I) (x : M) : Function.Surjective (g.f
     (LinearMap.injective_iff_surjective_of_finrank_eq_finrank h_finrank_eq).mp (flatL_inj g x)
 
 /-- `flatEquiv` as a continuous linear equivalence. -/
-def flatEquiv (g : MetricTensor E H M n I) (x : M) :
+noncomputable def flatEquiv (g : MetricTensor E H M n I) (x : M) :
     TangentSpace I x ≃L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
   LinearEquiv.toContinuousLinearEquiv <|
     LinearEquiv.ofBijective (g.flatL x).toLinearMap ⟨g.flatL_inj x, g.flatL_surj x⟩
 
-@[simp] lemma flatEquiv_apply (g : MetricTensor E H M n I) (x : M) (v w : TangentSpace I x) :
+@[simp]
+lemma flatEquiv_apply (g : MetricTensor E H M n I) (x : M) (v w : TangentSpace I x) :
     (g.flatEquiv x v) w = g.val x v w := rfl
 
 /-- Index raising equivalence as the inverse of `flatEquiv`. -/
-def sharpEquiv (g : MetricTensor E H M n I) (x : M) :
+noncomputable def sharpEquiv (g : MetricTensor E H M n I) (x : M) :
     (TangentSpace I x →L[ℝ] ℝ) ≃L[ℝ] TangentSpace I x :=
   (g.flatEquiv x).symm
 
-def sharpL (g : MetricTensor E H M n I) (x : M) :
+noncomputable def sharpL (g : MetricTensor E H M n I) (x : M) :
     (TangentSpace I x →L[ℝ] ℝ) →L[ℝ] TangentSpace I x :=
   (g.sharpEquiv x).toContinuousLinearMap
 
@@ -483,7 +484,7 @@ lemma apply_vec_sharp (g : MetricTensor E H M n I) (x : M) (v : TangentSpace I x
 /-! ## Cotangent metric induced by `g` -/
 
 /-- The induced metric value on the cotangent space at `x`. -/
-def cotangentMetricVal (g : MetricTensor E H M n I) (x : M)
+noncomputable def cotangentMetricVal (g : MetricTensor E H M n I) (x : M)
     (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) : ℝ :=
   g.val x (g.sharpL x ω₁) (g.sharpL x ω₂)
 
@@ -499,7 +500,7 @@ lemma cotangentMetricVal_symm (g : MetricTensor E H M n I) (x : M)
   rw [g.symm x (g.sharpL x ω₁) (g.sharpL x ω₂)]
 
 /-- The induced cotangent metric as a bilinear form. -/
-def cotangentToBilinForm (g : MetricTensor E H M n I) (x : M) :
+noncomputable def cotangentToBilinForm (g : MetricTensor E H M n I) (x : M) :
     LinearMap.BilinForm ℝ (TangentSpace I x →L[ℝ] ℝ) where
   toFun ω₁ :=
     { toFun := fun ω₂ => cotangentMetricVal g x ω₁ ω₂
@@ -515,7 +516,7 @@ def cotangentToBilinForm (g : MetricTensor E H M n I) (x : M) :
       LinearMap.coe_mk, AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply]
 
 /-- The induced cotangent metric as a quadratic form. -/
-def cotangentToQuadraticForm (g : MetricTensor E H M n I) (x : M) :
+noncomputable def cotangentToQuadraticForm (g : MetricTensor E H M n I) (x : M) :
     QuadraticForm ℝ (TangentSpace I x →L[ℝ] ℝ) where
   toFun ω := cotangentMetricVal g x ω ω
   toFun_smul a ω := by
@@ -572,7 +573,8 @@ lemma cotangentMetricVal_nondegenerate (g : MetricTensor E H M n I) (x : M)
     simpa [this] using h_apply
   exact h_forall v
 
-@[simp] lemma cotangentToBilinForm_nondegenerate (g : MetricTensor E H M n I) (x : M) :
+@[simp]
+lemma cotangentToBilinForm_nondegenerate (g : MetricTensor E H M n I) (x : M) :
     (cotangentToBilinForm g x).Nondegenerate := by
   unfold LinearMap.BilinForm.Nondegenerate LinearMap.Nondegenerate
     LinearMap.SeparatingLeft LinearMap.SeparatingRight
@@ -713,7 +715,7 @@ lemma toQuadraticForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
 
 /-- The (negative) index of a pseudo-Riemannian metric at a point, defined as the negative index of
 the associated quadratic form `v ↦ gₓ(v,v)`. -/
-def index (g : PseudoRiemannianMetric E H M n I) (x : M) : ℕ :=
+noncomputable def index (g : PseudoRiemannianMetric E H M n I) (x : M) : ℕ :=
   (g.toQuadraticForm x).negDim
 
 @[simp]
@@ -815,7 +817,7 @@ lemma flatL_surj
 /-- The "musical" isomorphism (index lowering) from `TₓM` to its dual,
 as a continuous linear equivalence. This equivalence is a direct result of `gₓ` being
 a non-degenerate bilinear form (O'Neill, Def 17(3), p. 46; Lemma 19, p. 47). -/
-def flatEquiv
+noncomputable def flatEquiv
     (g : PseudoRiemannianMetric E H M n I)
     (x : M) :
     TangentSpace I x ≃L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
@@ -839,13 +841,13 @@ section Sharp
 /-- The "musical" isomorphism (index raising) from the dual of `TₓM` to `TₓM`.
 This is the inverse of `flatEquiv g x`, and its existence as an isomorphism is
 guaranteed by the non-degeneracy of `gₓ` (O'Neill, Lemma 19, p. 47). -/
-def sharpEquiv
+noncomputable def sharpEquiv
     (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (TangentSpace I x →L[ℝ] ℝ) ≃L[ℝ] TangentSpace I x :=
   MetricTensor.sharpEquiv (g := g.toMetricTensor) x
 
 /-- The index raising map `sharp` as a continuous linear map. -/
-def sharpL
+noncomputable def sharpL
     (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (TangentSpace I x →L[ℝ] ℝ) →L[ℝ] TangentSpace I x :=
   MetricTensor.sharpL (g := g.toMetricTensor) x
@@ -923,7 +925,7 @@ variable [IsManifold I (n + 1) M] [IsManifold I 1 M]
 variable [inst_tangent_findim : ∀ (x : M), FiniteDimensional ℝ (TangentSpace I x)]
 
 /-- The value of the induced metric on the cotangent space at point `x`. -/
-def cotangentMetricVal (g : PseudoRiemannianMetric E H M n I) (x : M)
+noncomputable def cotangentMetricVal (g : PseudoRiemannianMetric E H M n I) (x : M)
     (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) : ℝ :=
   g.val x (g.sharpL x ω₁) (g.sharpL x ω₂)
 
@@ -942,7 +944,7 @@ lemma cotangentMetricVal_symm (g : PseudoRiemannianMetric E H M n I) (x : M)
 /-- The induced metric on the cotangent space at point `x` as a bilinear form.
 For covectors `ω₁` and `ω₂`, this gives `g(ω₁^#, ω₂^#)`, where `ω^#` is
 the "sharp" musical isomorphism raising indices. -/
-def cotangentToBilinForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
+noncomputable def cotangentToBilinForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
     LinearMap.BilinForm ℝ (TangentSpace I x →L[ℝ] ℝ) where
   toFun ω₁ := { toFun := λ ω₂ => cotangentMetricVal g x ω₁ ω₂,
                 map_add' := λ ω₂ ω₃ => by
@@ -967,7 +969,7 @@ def cotangentToBilinForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
 
 /-- The cometric on the cotangent space T_x*M at `x`, expressed as a quadratic form.
 It is induced by the pseudo-Riemannian metric on the tangent space T_xM. -/
-def cotangentToQuadraticForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
+noncomputable def cotangentToQuadraticForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
     QuadraticForm ℝ (TangentSpace I x →L[ℝ] ℝ) where
   toFun ω := cotangentMetricVal g x ω ω
   toFun_smul a ω := by
@@ -1071,5 +1073,4 @@ theorem cotangent_negDim_eq (g : PseudoRiemannianMetric E H M n I) (x : M) :
 end Cotangent
 
 end PseudoRiemannianMetric
-end
 end PseudoRiemannianMetric
