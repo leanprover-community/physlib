@@ -83,6 +83,15 @@ def toPseudoRiemannianMetric (g : RiemannianMetric (I := I) (n := n) M)  :
       simpa [QuadraticForm.negDim] using hy
     simp [hx', hy']
 
+@[simp] lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
+    (toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).index x = 0 := by
+  have hx : (PseudoRiemannianMetric.valToQuadraticForm g.inner g.symm x).negDim = 0 := by
+    apply QuadraticForm.negDim_posDef
+    intro v hv
+    simpa [PseudoRiemannianMetric.valToQuadraticForm] using g.pos x v hv
+  simpa [PseudoRiemannianMetric.index, PseudoRiemannianMetric.toQuadraticForm,
+    toPseudoRiemannianMetric] using hx
+
 instance :
     Coe (RiemannianMetric (I := I) (n := n) M)
       (PseudoRiemannianMetric E H M n I) :=
