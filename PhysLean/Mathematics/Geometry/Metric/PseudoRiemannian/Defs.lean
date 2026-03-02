@@ -652,6 +652,35 @@ instance (g : PseudoRiemannianMetric E H M n I) :
     HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) :=
   ⟨⟨g⟩⟩
 
+theorem hasPseudoRiemannianMetric_iff :
+    HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) ↔
+      Nonempty (PseudoRiemannianMetric E H M n I) :=
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
+
+theorem hasPseudoRiemannianMetric_iff_exists :
+    HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) ↔
+      ∃ _ : PseudoRiemannianMetric E H M n I, True :=
+  ⟨fun h => by
+      rcases h.out with ⟨g⟩
+      exact ⟨g, trivial⟩,
+    fun h => by
+      rcases h with ⟨g, -⟩
+      exact ⟨⟨g⟩⟩⟩
+
+/-- Typeclass carrying a *chosen* pseudo-Riemannian metric (as opposed to the mere existence
+predicate `HasPseudoRiemannianMetric`). This is the convenient form for downstream constructions. -/
+class PseudoRiemannianManifold : Type _ where
+  metric : PseudoRiemannianMetric E H M n I
+
+/-- The chosen pseudo-Riemannian metric on a manifold typeclass. -/
+abbrev pseudoRiemannianMetric [PseudoRiemannianManifold (E := E) (H := H) (M := M) (n := n) (I := I)] :
+    PseudoRiemannianMetric E H M n I :=
+  (PseudoRiemannianManifold.metric (E := E) (H := H) (M := M) (n := n) (I := I))
+
+instance [PseudoRiemannianManifold (E := E) (H := H) (M := M) (n := n) (I := I)] :
+    HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) :=
+  ⟨⟨pseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I)⟩⟩
+
 /-- Given a pseudo-Riemannian metric `g` on manifold `M` and a point `x : M`,
 this function constructs a bilinear form on the tangent space at `x`.
 For tangent vectors `u v : T_x M`, the bilinear form is given by:
