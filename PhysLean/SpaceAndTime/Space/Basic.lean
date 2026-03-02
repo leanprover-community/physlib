@@ -29,7 +29,7 @@ on the Lean Zulip, including:
 
 There is a choice between defining `Space d` as an `abbrev` of `EuclideanSpace ℝ (Fin d)`,
 as a `def` of a type with value `EuclideanSpace ℝ (Fin d)` or as a structure
-with a field `val : Fin d → ℝ`.
+with a field `val : Fin d → ℝ` :
 
 +---------------------------------------------------+---------+-------+-----------+
 |                                                   | abbrev  |  def  | structure |
@@ -39,8 +39,8 @@ with a field `val : Fin d → ℝ`.
 | requires reproving of lemmas from `EuclideanSpace`|   no    |  yes  |    yes    |
 +---------------------------------------------------+---------+-------+-----------+
 
-The `structure` is the most conservative choice, as everything needs redefining, however,
-there is are two benefits of this:
+The `structure` is the most conservative choice, as everything needs redefining. However,
+there is are two benefits of using it:
 
 1. It allows us to be precise about the instances we define on `Space d`, and makes
   future refactoring of those instances easier.
@@ -49,7 +49,7 @@ there is are two benefits of this:
 
 Currently `Space d` has the instances of `Module` (which requires the choice
 of a zero), `Norm` and `InnerProductSpace`.
-A future refactor should instead give `Space d` the instance of a `NormedAddTorsor` and a
+A future refactor should instead give `Space d` the instance of `NormedAddTorsor` and
 `MetricSpace` giving it directly the Euclidean distance.
 
 This has not been done yet since `fderiv` requires a `Module` instance.
