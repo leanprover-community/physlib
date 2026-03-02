@@ -64,7 +64,6 @@ def toPseudoRiemannianMetric (g : RiemannianMetric (I := I) (n := n) M)  :
   negDim_isLocallyConstant := by
     -- On a Riemannian metric, the associated quadratic form is positive definite, hence `negDim = 0`.
     refine IsLocallyConstant.of_constant _ (fun x y => ?_)
-    -- Both sides are `0`.
     have hx :
         (PseudoRiemannianMetric.valToQuadraticForm g.inner g.symm x).negDim = 0 := by
       apply QuadraticForm.negDim_posDef
@@ -83,7 +82,8 @@ def toPseudoRiemannianMetric (g : RiemannianMetric (I := I) (n := n) M)  :
       simpa [QuadraticForm.negDim] using hy
     simp [hx', hy']
 
-@[simp] lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
+@[simp]
+lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
     (toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).index x = 0 := by
   have hx : (PseudoRiemannianMetric.valToQuadraticForm g.inner g.symm x).negDim = 0 := by
     apply QuadraticForm.negDim_posDef
@@ -98,6 +98,31 @@ instance :
   ⟨fun g => toPseudoRiemannianMetric (I := I) (n := n) (M := M) g⟩
 
 end RiemannianMetric
+
+/-! ## Existence predicates (non-choosing) -/
+
+/-- Prop-valued predicate recording existence of a `C^n` Riemannian metric (bundle-first), without
+making any noncanonical choice. -/
+class HasRiemannianMetric : Prop where
+  out : Nonempty (RiemannianMetric (I := I) (n := n) M)
+
+instance (g : RiemannianMetric (I := I) (n := n) M) :
+    HasRiemannianMetric (I := I) (n := n) (M := M) :=
+  ⟨⟨g⟩⟩
+
+theorem hasRiemannianMetric_iff :
+    HasRiemannianMetric (I := I) (n := n) (M := M) ↔
+      Nonempty (RiemannianMetric (I := I) (n := n) M) :=
+  ⟨fun h => h.out, fun h => ⟨h⟩⟩
+
+/-- Any Riemannian metric gives a pseudo-Riemannian metric (of index `0`), hence existence of a
+Riemannian metric implies existence of a pseudo-Riemannian metric. -/
+instance [h : HasRiemannianMetric (I := I) (n := n) (M := M)]
+    [∀ x : M, FiniteDimensional ℝ (TangentSpace I x)] :
+    PseudoRiemannianMetric.HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) :=
+  ⟨by
+    rcases h.out with ⟨g⟩
+    exact ⟨RiemannianMetric.toPseudoRiemannianMetric (I := I) (n := n) (M := M) g⟩⟩
 
 end
 
