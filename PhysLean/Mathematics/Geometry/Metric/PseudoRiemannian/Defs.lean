@@ -40,7 +40,7 @@ of a maximal negative definite subspace.
 * `PseudoRiemannianMetric.toQuadraticForm g x`: The quadratic form `v ↦ gₓ(v, v)` associated
   with the metric at point `x`.
 
-This formalization packages smoothness in the same style as the modern Mathlib Riemannian API:
+We show smoothness with same pattern as mathlib Riemannian API:
 the metric is a section of the (vector-bundle) bundle of bilinear forms, and the smoothness
 assumption is a `ContMDiff` statement for this section (instead of being phrased chartwise).
 
@@ -52,8 +52,6 @@ leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.28Pseudo.29.20Rie
 -/
 
 section PseudoRiemannianMetric
-
---noncomputable section
 
 open Bundle Set Finset Function Filter Module Topology ContinuousLinearMap
 open scoped Manifold Bundle LinearMap Dual
@@ -769,7 +767,7 @@ def inner (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x
 
 @[simp]
 lemma inner_apply (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    inner g x v w = g.val x v w := rfl
+  inner g x v w = g.val x v w := rfl
 
 /-! ## Flat -/
 
@@ -785,7 +783,7 @@ def flat (g : PseudoRiemannianMetric E H M n I) (x : M) :
 
 @[simp]
 lemma flat_apply (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    (flat g x v) w = g.val x v w := by rfl
+  (flat g x v) w = g.val x v w := by rfl
 
 /-- The musical isomorphism as a continuous linear map. -/
 abbrev flatL (g : PseudoRiemannianMetric E H M n I) (x : M) :
@@ -824,13 +822,13 @@ noncomputable def flatEquiv
   MetricTensor.flatEquiv (g := g.toMetricTensor) x
 
 lemma coe_flatEquiv
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (g.flatEquiv x : TangentSpace I x →ₗ[ℝ] (TangentSpace I x →L[ℝ] ℝ)) = g.flatL x := rfl
+  (g : PseudoRiemannianMetric E H M n I) (x : M) :
+  (g.flatEquiv x : TangentSpace I x →ₗ[ℝ] (TangentSpace I x →L[ℝ] ℝ)) = g.flatL x := rfl
 
 @[simp]
 lemma flatEquiv_apply
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    (g.flatEquiv x v) w = g.val x v w := rfl
+  (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
+  (g.flatEquiv x v) w = g.val x v w := rfl
 
 end Flat
 
@@ -869,10 +867,9 @@ noncomputable def sharp
 @[simp]
 lemma sharpL_apply_flatL
     (g : PseudoRiemannianMetric E H M n I) (x : M) (v : TangentSpace I x) :
-    g.sharpL x (g.flatL x v) = v :=
-  by
-    simp [PseudoRiemannianMetric.sharpL, PseudoRiemannianMetric.flatL,
-      MetricTensor.sharpL_apply_flatL (g := g.toMetricTensor) x v]
+    g.sharpL x (g.flatL x v) = v := by
+  simp [PseudoRiemannianMetric.sharpL, PseudoRiemannianMetric.flatL,
+    MetricTensor.sharpL_apply_flatL (g := g.toMetricTensor) x v]
 
 @[simp]
 lemma flatL_apply_sharpL
@@ -1053,7 +1050,6 @@ lemma cotangentToBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) 
 theorem cotangentToQuadraticForm_equivalent_toQuadraticForm
     (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (g.cotangentToQuadraticForm x).Equivalent (g.toQuadraticForm x) := by
-  classical
   refine ⟨?_⟩
   refine
     { toLinearEquiv := (g.sharpEquiv x).toLinearEquiv
