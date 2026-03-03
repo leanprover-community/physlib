@@ -57,6 +57,7 @@ import PhysLean.Mathematics.Geometry.Metric.Riemannian.Defs
 import PhysLean.Mathematics.InnerProductSpace.Adjoint
 import PhysLean.Mathematics.InnerProductSpace.Basic
 import PhysLean.Mathematics.InnerProductSpace.Calculus
+import PhysLean.Mathematics.InnerProductSpace.Submodule
 import PhysLean.Mathematics.KroneckerDelta
 import PhysLean.Mathematics.LinearMaps
 import PhysLean.Mathematics.List
@@ -233,6 +234,9 @@ import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
 import PhysLean.QuantumMechanics.DDimensions.Operators.Commutation
 import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
 import PhysLean.QuantumMechanics.DDimensions.Operators.Position
+import PhysLean.QuantumMechanics.DDimensions.Operators.Unbounded
+import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.Basic
+import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
 import PhysLean.QuantumMechanics.FiniteTarget.Basic
 import PhysLean.QuantumMechanics.FiniteTarget.HilbertSpace
 import PhysLean.QuantumMechanics.OneDimension.GeneralPotential.Basic
@@ -344,10 +348,11 @@ import PhysLean.SpaceAndTime.Space.Derivatives.Grad
 import PhysLean.SpaceAndTime.Space.Derivatives.Laplacian
 import PhysLean.SpaceAndTime.Space.DistConst
 import PhysLean.SpaceAndTime.Space.DistOfFunction
+import PhysLean.SpaceAndTime.Space.Integrals.Basic
+import PhysLean.SpaceAndTime.Space.Integrals.RadialAngularMeasure
 import PhysLean.SpaceAndTime.Space.IsDistBounded
 import PhysLean.SpaceAndTime.Space.LengthUnit
 import PhysLean.SpaceAndTime.Space.Norm
-import PhysLean.SpaceAndTime.Space.RadialAngularMeasure
 import PhysLean.SpaceAndTime.Space.Slice
 import PhysLean.SpaceAndTime.Space.Translations
 import PhysLean.SpaceAndTime.SpaceTime.Basic

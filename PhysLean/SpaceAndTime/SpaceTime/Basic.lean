@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 import PhysLean.Relativity.SpeedOfLight
 import PhysLean.SpaceAndTime.Time.Basic
+import PhysLean.SpaceAndTime.Space.Integrals.Basic
 /-!
 # Spacetime
 

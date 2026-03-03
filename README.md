@@ -1,3 +1,8 @@
+> [!NOTE]
+> Things look different? We've recently undergone a name change and move from /lean-phys-community/PhysLean
+> to /leanprover-community/physlib. Same repo, different location and name. This shouldn't affect
+> the average user, but please be patient as we update things.
+
 
 <div align="center">
 <img src="./docs/PhysLeanLogo.jpeg" alt="PhysLean logo" width="500">

@@ -451,25 +451,27 @@ lemma generalizedBoost_inv (u v : Velocity d) :
   · simp
   simp [minkowskiProduct_symm]
 
-/--
-The time component of a generalised boost is equal to
-```
-1 +
-    ‖u.1.timeComponent • v.1.spatialPart - v.1.timeComponent • u.1.spatialPart‖ / (1 + ⟪u.1, v.1⟫ₘ)
-```
+/-- The time component of a generalised boost.
 
 A proof of this result can be found at the below link:
 https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLean/topic/Lorentz.20group/near/523249684
-
-Note that the declaration of this semiformal result will be similar once
-the TODO item `FXQ45` is completed.
 -/
-@[sorryful]
 lemma generalizedBoost_timeComponent_eq (u v : Velocity d) :
     (generalizedBoost u v).1 (Sum.inl 0) (Sum.inl 0) = 1 +
     ‖u.1.timeComponent • v.1.spatialPart -
-      v.1.timeComponent • u.1.spatialPart‖ / (1 + ⟪u.1, v.1⟫ₘ) := by
-  sorry
+      v.1.timeComponent • u.1.spatialPart‖ ^ 2 / (1 + ⟪u.1, v.1⟫ₘ) := by
+  rw [generalizedBoost_apply_eq_toCoord]
+  simp only [Matrix.one_apply_eq, inl_0_inl_0, one_mul]
+  have h := Velocity.one_add_minkowskiProduct_ne_zero u v
+  rw [norm_sub_sq_real, norm_smul, norm_smul, Real.norm_eq_abs, Real.norm_eq_abs,
+    Velocity.timeComponent_abs u, Velocity.timeComponent_abs v,
+    real_inner_smul_left, real_inner_smul_right]
+  simp only [timeComponent, minkowskiProduct_eq_timeComponent_spatialPart] at *
+  field_simp [h]
+  nlinarith [mul_pow (u.1 (Sum.inl 0)) (‖v.1.spatialPart‖) 2,
+             mul_pow (v.1 (Sum.inl 0)) (‖u.1.spatialPart‖) 2,
+             Velocity.norm_spatialPart_sq_eq u, Velocity.norm_spatialPart_sq_eq v,
+             real_inner_comm (u.1.spatialPart) (v.1.spatialPart)]
 
 end LorentzGroup
 

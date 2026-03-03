@@ -15,10 +15,48 @@ import Mathlib.Analysis.InnerProductSpace.Calculus
 # Space
 
 In this module, we define the the type `Space d` which corresponds
-to a `d`-dimensional Euclidean space and prove some properties about it.
+to `d`-dimensional flat Euclidean space and prove some properties about it.
 
 PhysLean sits downstream of Mathlib, and above we import the necessary Mathlib modules
 which contain (perhaps transitively through imports) the definitions and theorems we need.
+
+## Implementation details
+
+The exact implementation of `Space d` into PhysLean is discussed in numerous places
+on the Lean Zulip, including:
+
+- https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLean/topic/Space.20vs.20EuclideanSpace/with/575332888
+
+There is a choice between defining `Space d` as an `abbrev` of `EuclideanSpace ℝ (Fin d)`,
+as a `def` of a type with value `EuclideanSpace ℝ (Fin d)` or as a structure
+with a field `val : Fin d → ℝ` :
+
++---------------------------------------------------+---------+-------+-----------+
+|                                                   | abbrev  |  def  | structure |
++---------------------------------------------------+---------+-------+-----------+
+| allows casting from `EuclideanSpace`              |   yes   |  yes  |    no     |
+| carries instances from `EuclideanSpace`           |   yes   |  no   |    no     |
+| requires reproving of lemmas from `EuclideanSpace`|   no    |  yes  |    yes    |
++---------------------------------------------------+---------+-------+-----------+
+
+The `structure` is the most conservative choice, as everything needs redefining. However,
+there is are two benefits of using it:
+
+1. It allows us to be precise about the instances we define on `Space d`, and makes
+  future refactoring of those instances easier.
+2. It allows us to give the necessary physics context to results about `Space d`, which
+  would not otherwise be possible if we reuse results from Mathlib.
+
+Currently `Space d` has the instances of `Module` (which requires the choice
+of a zero), `Norm` and `InnerProductSpace`.
+A future refactor should instead give `Space d` the instance of `NormedAddTorsor` and
+`MetricSpace` giving it directly the Euclidean distance.
+
+This has not been done yet since `fderiv` requires a `Module` instance.
+
+Because of this, one should be careful to avoid using the explicit zero in `Space d`,
+or adding two `Space d` values together. Where possible one should use
+the `VAdd (EuclideanSpace ℝ (Fin d)) (Space d)` instance instead.
 
 -/
 
@@ -33,8 +71,11 @@ TODO "HB6RR" "In the above documentation describe the notion of a type, and
 
 TODO "HB6VC" "Convert `Space` from an `abbrev` to a `def`."
 
-/-- The type `Space d` represents `d` dimensional Euclidean space.
-  The default value of `d` is `3`. Thus `Space = Space 3`. -/
+/-- The type `Space d` is the world-volume which corresponds to
+ `d` dimensional (flat) Euclidean space with a given (but arbitrary)
+choice of length unit, and a given (but arbitrary) choice of zero.
+
+The default value of `d` is `3`. Thus `Space = Space 3`-/
 structure Space (d : ℕ := 3) where
   /-- The underlying map `Fin d → ℝ` associated with a point in `Space`. -/
   val : Fin d → ℝ
@@ -712,9 +753,6 @@ lemma oneEquiv_measurePreserving : MeasurePreserving oneEquiv volume volume :=
 lemma oneEquiv_symm_measurePreserving : MeasurePreserving oneEquiv.symm volume volume := by
   exact LinearIsometryEquiv.measurePreserving oneEquiv.symm
 
-lemma volume_eq_addHaar {d} : (volume (α := Space d)) = Space.basis.toBasis.addHaar := by
-  exact (OrthonormalBasis.addHaar_eq_volume _).symm
-
 instance {d : ℕ} : Nontrivial (Space d.succ) := by
   refine { exists_pair_ne := ?_ }
   use 0, basis 0
@@ -729,66 +767,4 @@ instance : Subsingleton (Space 0) := by
   intro x y
   ext i
   fin_cases i
-
-lemma volume_closedBall_ne_zero {d : ℕ} (x : Space d.succ) (r : ℝ) (hr : 0 < r) :
-    volume (Metric.closedBall x r) ≠ 0 := by
-  obtain ⟨k,hk⟩ := Nat.even_or_odd' d.succ
-  rcases hk with hk | hk
-  · rw [InnerProductSpace.volume_closedBall_of_dim_even (k := k)]
-    simp only [Nat.succ_eq_add_one, finrank_eq_dim, ne_eq, mul_eq_zero, Nat.add_eq_zero_iff,
-      one_ne_zero, and_false, not_false_eq_true, pow_eq_zero_iff, ENNReal.ofReal_eq_zero, not_or,
-      not_le]
-    apply And.intro
-    · simp_all
-    · positivity
-    · simpa using hk
-  · rw [InnerProductSpace.volume_closedBall_of_dim_odd (k := k)]
-    simp only [Nat.succ_eq_add_one, finrank_eq_dim, ne_eq, mul_eq_zero, Nat.add_eq_zero_iff,
-      one_ne_zero, and_false, not_false_eq_true, pow_eq_zero_iff, ENNReal.ofReal_eq_zero, not_or,
-      not_le]
-    apply And.intro
-    · simp_all
-    · positivity
-    · simpa using hk
-
-lemma volume_closedBall_ne_top {d : ℕ} (x : Space d.succ) (r : ℝ) :
-    volume (Metric.closedBall x r) ≠ ⊤ := by
-  obtain ⟨k,hk⟩ := Nat.even_or_odd' d.succ
-  rcases hk with hk | hk
-  · rw [InnerProductSpace.volume_closedBall_of_dim_even (k := k)]
-    simp only [Nat.succ_eq_add_one, finrank_eq_dim, ne_eq]
-    apply not_eq_of_beq_eq_false
-    rfl
-    simpa using hk
-  · rw [InnerProductSpace.volume_closedBall_of_dim_odd (k := k)]
-    simp only [Nat.succ_eq_add_one, finrank_eq_dim, ne_eq]
-    apply not_eq_of_beq_eq_false
-    rfl
-    simpa using hk
-
-@[simp]
-lemma volume_metricBall_three :
-    volume (Metric.ball (0 : Space 3) 1) = ENNReal.ofReal (4 / 3 * Real.pi) := by
-  rw [InnerProductSpace.volume_ball_of_dim_odd (k := 1)]
-  simp only [ENNReal.ofReal_one, finrank_eq_dim, one_pow, pow_one, Nat.reduceAdd,
-    Nat.doubleFactorial.eq_3, Nat.doubleFactorial, mul_one, Nat.cast_ofNat, one_mul]
-  ring_nf
-  simp
-
-@[simp]
-lemma volume_metricBall_two :
-    volume (Metric.ball (0 : Space 2) 1) = ENNReal.ofReal Real.pi := by
-  rw [InnerProductSpace.volume_ball_of_dim_even (k := 1)]
-  simp [finrank_eq_dim]
-  simp [finrank_eq_dim]
-
-@[simp]
-lemma volume_metricBall_two_real :
-    (volume.real (Metric.ball (0 : Space 2) 1)) = Real.pi := by
-  trans (volume (Metric.ball (0 : Space 2) 1)).toReal
-  · rfl
-  rw [volume_metricBall_two]
-  simp only [ENNReal.toReal_ofReal_eq_iff]
-  exact Real.pi_nonneg
-
 end Space
