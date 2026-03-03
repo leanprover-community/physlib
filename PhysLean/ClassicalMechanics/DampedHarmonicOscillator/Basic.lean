@@ -190,6 +190,13 @@ noncomputable def potentialEnergy (x : Time → ℝ) : Time → ℝ :=
 noncomputable def energy (x : Time → ℝ) : Time → ℝ :=
   S.kineticEnergy x + S.potentialEnergy x
 
+/-- Equalties for energy eqns -/
+lemma kineticEnergy_eq (x: Time → ℝ) :
+  kineticEnergy S x = fun t => (1 / 2 : ℝ) * S.m * (Time.deriv x t)^2 := by rfl
+
+lemma potentialEnergy_eq (x: Time → ℝ) :
+  potentialEnergy S x = fun t => (1 / 2 : ℝ) * S.k * (x t)^2 := by rfl
+
 /-- Energy dissipation rate along a trajectory `x : Time → ℝ`.
 
   if `x` satisfies `S.equationOfMotion x`, then
@@ -199,6 +206,7 @@ noncomputable def energy (x : Time → ℝ) : Time → ℝ :=
 so the energy is non-increasing and not conserved when `S.γ > 0`. -/
 noncomputable def energyDissipationRate (x : Time → ℝ) : Time → ℝ :=
   fun t => - S.γ * (Time.deriv x t)^2
+
 
 /-- Derives the energy dissipation rate from the equation of motion -/
 lemma energy_dissipation_rate (x: Time → ℝ) (h1 : S.EquationOfMotion x)
@@ -210,18 +218,15 @@ lemma energy_dissipation_rate (x: Time → ℝ) (h1 : S.EquationOfMotion x)
               - S.γ * Time.deriv x t := by linarith [h1 t]
 
   -- Break equation apart
-  rw [energy]
-  unfold kineticEnergy potentialEnergy
-
+  rw [energy, kineticEnergy_eq, potentialEnergy_eq]
   rw [Time.deriv_eq]
 
+  -- Perform derivative
   have hdx : Differentiable ℝ x := hx.differentiable (by norm_num)
   have hddx : Differentiable ℝ (∂ₜ x) := deriv_differentiable_of_contDiff x hx
   have hKE := ((hddx t).hasFDerivAt.pow 2).const_mul (1/2 * S.m)
   have hPE := ((hdx t).hasFDerivAt.pow 2).const_mul (1/2 * S.k)
-
   rw [(hKE.add hPE).fderiv]
-
   norm_num
   rw [← Time.deriv, ← Time.deriv]
   linear_combination (Time.deriv x t) * heom'
