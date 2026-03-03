@@ -7,17 +7,21 @@ import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
 import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 /-!
-# Riemannian Metric Definitions
+# Riemannian metrics (tangent bundle)
 
-This file builds around the modern Mathlib Riemannian metric API.
+This file defines `RiemannianMetric` as the specialization of Mathlib's bundle-level
+`Bundle.ContMDiffRiemannianMetric` to the tangent bundle, and provides a coercion to
+`PseudoRiemannianMetric` by forgetting positivity.
 
-Concretely, a `C^n` Riemannian metric on a manifold is a smooth section of the bundle of bilinear
-forms on the tangent bundle, packaged as `Bundle.ContMDiffRiemannianMetric`.
+## Main definitions
 
-We provide:
-- an abbreviation `RiemannianMetric` for the tangent-bundle specialization, and
-- a coercion to the PhysLean `PseudoRiemannianMetric` (by forgetting positivity and remembering
-  nondegeneracy + constant index `0`).
+* `PseudoRiemannianMetric.RiemannianMetric`: a `C^n` Riemannian metric on `M`, packaged bundle-first.
+* `PseudoRiemannianMetric.RiemannianMetric.toPseudoRiemannianMetric`: forget positivity to obtain a
+  pseudo-Riemannian metric (index `0`).
+
+## Tags
+
+Riemannian, pseudo-Riemannian
 -/
 
 namespace PseudoRiemannianMetric
@@ -90,7 +94,6 @@ lemma toPseudoRiemannianMetric_posIndex_neg_toQuadraticForm (g : RiemannianMetri
     apply QuadraticForm.negDim_posDef
     intro v hv
     simpa [PseudoRiemannianMetric.valToQuadraticForm] using g.pos x v hv
-  -- `negDim Q = (-Q).posIndex`.
   simpa [PseudoRiemannianMetric.toQuadraticForm, toPseudoRiemannianMetric, QuadraticForm.negDim] using hx
 
 lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
@@ -104,7 +107,7 @@ instance :
 
 end RiemannianMetric
 
-/-! ## Existence helpers -/
+/-! ## Existence helper -/
 
 /-- Existence of a Riemannian metric implies existence of a pseudo-Riemannian metric (of index `0`),
 by forgetting positivity. -/

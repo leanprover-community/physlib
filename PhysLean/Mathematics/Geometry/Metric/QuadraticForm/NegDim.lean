@@ -68,7 +68,7 @@ abbrev nullity (s : Signature) : ℕ := s.zero
 
 end Signature
 
-/-- For a standard basis vector in a weighted sum of squares, only one term in the sum is nonzero. -/
+/-- For a basis vector in a weighted sum of squares, only one term in the sum is nonzero. -/
 lemma QuadraticMap.weightedSumSquares_basis_vector {E : Type*} [AddCommGroup E] [Module ℝ E]
     {weights : Fin (finrank ℝ E) → ℝ} {i : Fin (finrank ℝ E)} (v : Fin (finrank ℝ E) → ℝ)
     (hv : ∀ j, v j = if j = i then 1 else 0) :
@@ -236,7 +236,8 @@ lemma posIndex_le_of_equivalent [FiniteDimensional ℝ V] {V₂ : Type*} [AddCom
   exact le_posIndex_of_exists (V := V₂) hk
 
 /-- `posIndex` is invariant under equivalence of quadratic forms. -/
-theorem posIndex_eq_of_equivalent [FiniteDimensional ℝ V] {V₂ : Type*} [AddCommGroup V₂] [Module ℝ V₂]
+theorem posIndex_eq_of_equivalent [FiniteDimensional ℝ V] {V₂ : Type*} [AddCommGroup V₂]
+    [Module ℝ V₂]
     [FiniteDimensional ℝ V₂] {Q : QuadraticForm ℝ V} {Q₂ : QuadraticForm ℝ V₂}
     (h : Q.Equivalent Q₂) :
     posIndex (V := V) Q = posIndex (V := V₂) Q₂ := by
@@ -327,13 +328,16 @@ noncomputable def signature [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) 
   ⟨Q.posDim, Q.negDim, Q.zeroDim⟩
 
 @[simp]
-lemma signature_pos [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.pos = Q.posDim := rfl
+lemma signature_pos [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.pos = Q.posDim :=
+  rfl
 
 @[simp]
-lemma signature_neg [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.neg = Q.negDim := rfl
+lemma signature_neg [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.neg = Q.negDim :=
+  rfl
 
 @[simp]
-lemma signature_zero [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.zero = Q.zeroDim := rfl
+lemma signature_zero [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.zero =
+  Q.zeroDim := rfl
 
 @[simp]
 lemma signature_def [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
@@ -438,7 +442,8 @@ theorem negDim_eq_of_equivalent [FiniteDimensional ℝ E] {E₂ : Type*} [AddCom
   have h' : (-Q).Equivalent (-Q₂) := Equivalent.neg (E := E) (E₂ := E₂) h
   simp [negDim, posIndex_eq_of_equivalent (Q := -Q) (Q₂ := -Q₂) h']
 
-theorem zeroDim_eq_of_equivalent [FiniteDimensional ℝ E] {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂]
+theorem zeroDim_eq_of_equivalent [FiniteDimensional ℝ E] {E₂ : Type*} [AddCommGroup E₂]
+    [Module ℝ E₂]
     [FiniteDimensional ℝ E₂]
     {Q : QuadraticForm ℝ E} {Q₂ : QuadraticForm ℝ E₂} (h : Q.Equivalent Q₂) :
     Q.zeroDim = Q₂.zeroDim := by
@@ -450,7 +455,8 @@ theorem zeroDim_eq_of_equivalent [FiniteDimensional ℝ E] {E₂ : Type*} [AddCo
     posIndex_eq_of_equivalent (Q := -Q) (Q₂ := -Q₂) (Equivalent.neg (E := E) (E₂ := E₂) ⟨e⟩)
   simp [zeroDim, posDim, negDim, hfin, hposI, hnegI]
 
-theorem signature_eq_of_equivalent [FiniteDimensional ℝ E] {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂]
+theorem signature_eq_of_equivalent [FiniteDimensional ℝ E] {E₂ : Type*} [AddCommGroup E₂]
+    [Module ℝ E₂]
     [FiniteDimensional ℝ E₂]
     {Q : QuadraticForm ℝ E} {Q₂ : QuadraticForm ℝ E₂} (h : Q.Equivalent Q₂) :
     Q.signature = Q₂.signature := by
@@ -545,7 +551,8 @@ def restrictPos (w : Fin n → SignType) :
     (i : {i // i ∈ posSet (n := n) w}) :
     restrictPos (n := n) w v i = v i.1 := rfl
 
-/-- If a vector has no positive-weight coordinates, then its value under `diagForm w` is nonpositive. -/
+/-- If a vector has no positive-weight coordinates, then its value under `diagForm w` is
+nonpositive. -/
 lemma diagForm_nonpos_of_no_pos {w : Fin n → SignType} {v : Fin n → ℝ}
     (hv : ∀ i, w i = SignType.pos → v i = 0) :
     diagForm (n := n) w v ≤ 0 := by
@@ -592,7 +599,8 @@ lemma isPosDefOn_diagForm_supportedOnPos (w : Fin n → SignType) :
     simpa [hwpos, pow_two] using this
   exact lt_of_lt_of_le hterm_pos hle
 
-/-- The submodule `supportedOnPos w` is linearly equivalent to functions on the positive index set. -/
+/-- The submodule `supportedOnPos w` is linearly equivalent to functions on the positive index
+set. -/
 noncomputable def supportedOnPosEquiv (w : Fin n → SignType) :
     supportedOnPos (n := n) w ≃ₗ[ℝ] ({i // i ∈ posSet (n := n) w} → ℝ) := by
   refine

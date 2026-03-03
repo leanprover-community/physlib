@@ -16,8 +16,7 @@ This file provides auxiliary, **noncanonical** data extracted from the existence
 The idea is that `equivalent_signType_weighted_sum_squared` produces an existential witness
 of diagonalization; here we choose such a witness noncomputably.
 
-These definitions are intended for *bridging* with diagonal computations. They are not meant to be
-the primary API: the canonical inertia indices are defined in
+The canonical inertia indices are defined in
 `PhysLean.Mathematics.Geometry.Metric.QuadraticForm.NegDim` (via `QuadraticForm.posIndex`) and are
 invariant under `QuadraticForm.Equivalent` without any diagonalization choice.
 
@@ -26,7 +25,7 @@ invariant under `QuadraticForm.Equivalent` without any diagonalization choice.
 - `QuadraticForm.signTypeWeights`: a chosen Sylvester diagonalization weight function
 - `QuadraticForm.signatureChoice`: the resulting chosen signature `(pos, neg, zero)`
 
-## Main results
+## Main statements
 
 - `QuadraticForm.signature_eq_signatureChoice`: the canonical signature equals the chosen one
 

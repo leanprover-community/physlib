@@ -53,7 +53,6 @@ import PhysLean.Mathematics.FDerivCurry
 import PhysLean.Mathematics.Fin
 import PhysLean.Mathematics.Fin.Involutions
 import PhysLean.Mathematics.Geometry.Metric.Lorentzian.Defs
-import PhysLean.Mathematics.Geometry.Metric.QuadraticForm.Index
 import PhysLean.Mathematics.Geometry.MetricQuadraticForm.NegDim
 import PhysLean.Mathematics.Geometry.MetricQuadraticForm.Sylvester
 import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs

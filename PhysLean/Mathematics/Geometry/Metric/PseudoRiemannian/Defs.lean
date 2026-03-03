@@ -10,42 +10,30 @@ import Mathlib.Topology.LocallyConstant.Basic
 import PhysLean.Mathematics.Geometry.Metric.QuadraticForm.NegDim
 
 /-!
-# Pseudo-Riemannian Metrics on Smooth Manifolds
+# Pseudo-Riemannian metrics
 
-This file formalizes pseudo-Riemannian metrics on smooth manifolds and establishes their basic
-properties.
+This file defines pseudo-Riemannian metrics on smooth manifolds, in a way that mirrors Mathlib's
+bundle-first Riemannian metric API.
 
-A pseudo-Riemannian metric equips a manifold with a smoothly varying, non-degenerate, symmetric
-bilinear form of *constant index* on each tangent space, generalizing the concept of an inner
-product space to curved spaces. The index here refers to `QuadraticForm.negDim`, the dimension
-of a maximal negative definite subspace.
+## Main definitions
 
-## Main Definitions
+* `Bundle.PseudoRiemannianBundle`: fiberwise data of a symmetric nondegenerate bilinear form.
+* `Bundle.ContMDiffPseudoRiemannianMetric`: a `C^n` pseudo-Riemannian metric along a vector bundle,
+  expressed as a smooth section into the bundle of bilinear forms.
+* `Bundle.IsContMDiffPseudoRiemannianBundle`: the corresponding Prop-valued existence predicate.
+* `MetricTensor E H M n I`: the common core data of a smooth symmetric nondegenerate bilinear form on
+  each tangent space.
+* `PseudoRiemannianMetric E H M n I`: a `MetricTensor` whose pointwise index is locally constant.
 
-* `PseudoRiemannianMetric E H M n I`: A structure representing a `C^n` pseudo-Riemannian metric
-  on a manifold `M` modelled on `(E, H)` with model with corners `I`. It consists of a family
-  of non-degenerate, symmetric, continuous bilinear forms `gₓ` on each tangent space `TₓM`,
-  varying `C^n`-smoothly with `x` and having a locally constant negative dimension (`negDim`).
-  The model space `E` must be finite-dimensional, and the manifold `M` must be `C^{n+1}` smooth.
+## Implementation notes
 
-* `PseudoRiemannianMetric.flatEquiv g x`: The "musical isomorphism" from the tangent space at `x`
-  to its dual space, representing the canonical isomorphism induced by the metric.
+Smoothness is stated as a `ContMDiff` assumption for a bundled map `x ↦ TotalSpace.mk' … x (gₓ)` as
+in Mathlib. Index-type constructions use `QuadraticForm.negDim` and therefore require
+finite-dimensional tangent spaces.
 
-* `PseudoRiemannianMetric.sharpEquiv g x`: The inverse of the flat isomorphism, mapping from
-  the dual space back to the tangent space.
+## Tags
 
-* `PseudoRiemannianMetric.toQuadraticForm g x`: The quadratic form `v ↦ gₓ(v, v)` associated
-  with the metric at point `x`.
-
-We show smoothness with same pattern as mathlib Riemannian API:
-the metric is a section of the (vector-bundle) bundle of bilinear forms, and the smoothness
-assumption is a `ContMDiff` statement for this section (instead of being phrased chartwise).
-
-## Reference
-
-* Barrett O'Neill, "Semi-Riemannian Geometry With Applications to Relativity" (Academic Press, 1983)
-* [Discussion on Zulip about (Pseudo) Riemannian metrics] https.
-leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.28Pseudo.29.20Riemannian.20metric
+pseudo-Riemannian, metric tensor, musical isomorphisms, index
 -/
 
 section PseudoRiemannianMetric
@@ -202,7 +190,8 @@ lemma ContMDiffWithinAt.metric_bundle
   simp only [contMDiffWithinAt_totalSpace] at this
   exact this.2
 
-/-- Given two smooth maps into the same fibers of a pseudo-Riemannian bundle, their pairing is smooth. -/
+/-- Given two smooth maps into the same fibers of a pseudo-Riemannian bundle, their pairing is
+smooth. -/
 lemma ContMDiffWithinAt.pseudoInner_bundle
     (hv : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (v m : TotalSpace F E)) s x)
     (hw : ContMDiffWithinAt IM (IB.prod 𝓘(ℝ, F)) n (fun m ↦ (w m : TotalSpace F E)) s x) :
@@ -241,29 +230,13 @@ end ContMDiff
 
 end Bundle
 
-/-! ## Pseudo-Riemannian Metric -/
-
-/-!
-Constructs a `QuadraticForm` on the tangent space `TₓM` at a point `x` from the
-value of a pseudo-Riemannian metric at that point.
-(O'Neill, p. 47, "The function q: V → R given by q(v) = b(v,v) is the associated quadratic
-form of b.")
-The pseudo-Riemannian metric is given by `val`, a family of continuous bilinear forms
-`gₓ: TₓM × TₓM → ℝ` for each `x : M`.
-The quadratic form `Qₓ` at `x` is defined as `Qₓ(v) = gₓ(v,v)`.
-The associated symmetric bilinear form required by `QuadraticForm.exists_companion'`
-is `Bₓ(v,w) = gₓ(v,w) + gₓ(w,v)`. Given the symmetry `symm`, this is `2 * gₓ(v,w)`.
--/
+/-! ## Quadratic-form helper -/
 
 namespace PseudoRiemannianMetric
 
-/--
-Turn a (curried) bilinear form `val` on each tangent space into the associated quadratic form
-`v ↦ val x v v`.
-
-This helper is intentionally public: it is the bridge between a bundled description of a metric
-(`val` + symmetry) and quadratic-form invariants such as `QuadraticForm.negDim`.
--/
+/-- Turn a (curried) symmetric bilinear map on each tangent space into the associated quadratic form
+`v ↦ val x v v`. This is the entry point to quadratic-form invariants (e.g. `QuadraticForm.negDim`)
+from bundled metric data. -/
 def valToQuadraticForm
     {E : Type v} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type w} [TopologicalSpace H]
@@ -577,7 +550,8 @@ noncomputable def cotangentToBilinForm (g : MetricTensor E H M n I) (x : M) :
   toFun ω₁ :=
     { toFun := fun ω₂ => cotangentMetricVal g x ω₁ ω₂
       map_add' := fun ω₂ ω₃ => by simp [cotangentMetricVal, ContinuousLinearMap.map_add]
-      map_smul' := fun c ω₂ => by simp [cotangentMetricVal, map_smul, smul_eq_mul, RingHom.id_apply] }
+      map_smul' := fun c ω₂ => by simp [cotangentMetricVal, map_smul, smul_eq_mul, RingHom.id_apply]
+    }
   map_add' := fun ω₁ ω₂ => by
     ext ω₃
     simp [cotangentMetricVal, ContinuousLinearMap.map_add, ContinuousLinearMap.add_apply,
@@ -914,7 +888,8 @@ noncomputable abbrev cotangentToQuadraticForm (g : PseudoRiemannianMetric E H M 
     QuadraticForm ℝ (TangentSpace I x →L[ℝ] ℝ) :=
   MetricTensor.cotangentToQuadraticForm (g := (g.toMetricTensor : MetricTensor E H M n I)) x
 
-theorem cotangentToQuadraticForm_equivalent_toQuadraticForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
+theorem cotangentToQuadraticForm_equivalent_toQuadraticForm (g : PseudoRiemannianMetric E H M n I)
+    (x : M) :
     (g.cotangentToQuadraticForm x).Equivalent (g.toQuadraticForm x) := by
   simpa [cotangentToQuadraticForm, toQuadraticForm] using
     (MetricTensor.cotangentToQuadraticForm_equivalent_toQuadraticForm

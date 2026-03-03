@@ -9,11 +9,16 @@ import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
 /-!
 # Lorentzian metrics
 
-This file defines Lorentzian metrics as pseudo-Riemannian metrics of index `1` (negative dimension
-`1`), in the sense of Sylvester's law of inertia (`QuadraticForm.negDim`).
+This file records the Lorentzian condition (index `1`) for a pseudo-Riemannian metric.
 
-It provides a reusable definition that composes with the
-existing pseudo-Riemannian API (musical isomorphisms, induced bilinear forms, etc.).
+## Main definitions
+
+* `PseudoRiemannianMetric.IsLorentzianMetric`: the Prop-valued predicate asserting
+  `(g.toQuadraticForm x).negDim = 1` for all `x`.
+
+## Tags
+
+Lorentzian, pseudo-Riemannian, index
 -/
 
 namespace PseudoRiemannianMetric
@@ -31,7 +36,7 @@ variable {I : ModelWithCorners ℝ E H} {n : WithTop ℕ∞}
 variable [IsManifold I (n + 1) M]
 variable [∀ x : M, FiniteDimensional ℝ (TangentSpace I x)]
 
-/-- Typeclass asserting that a pseudo-Riemannian metric is Lorentzian (index `1`). -/
+/-- Predicate asserting that a pseudo-Riemannian metric has index `1` at every point. -/
 class IsLorentzianMetric (g : PseudoRiemannianMetric E H M n I) : Prop where
   negDim_eq_one : ∀ x : M, (g.toQuadraticForm x).negDim = 1
 
