@@ -220,12 +220,10 @@ lemma energy_dissipation_rate (x: Time → ℝ) (h1 : S.EquationOfMotion x)
   rw [energy]
   unfold kineticEnergy potentialEnergy
 
-  have hke : DifferentiableAt ℝ (fun i => (1/2 : ℝ) * S.m * ∂ₜ x i ^ 2) t :=
-    ((hddx t).pow 2).const_mul _
-  have hpe : DifferentiableAt ℝ (fun i => 1 / 2 * S.k * x i ^ 2) t :=
-    ((hdx t).pow 2).const_mul _
   -- Separate energy derivative into potential and kinetic
-  rw [fderiv_add hke hpe]
+  rw [fderiv_add (f := fun i => (1/2 : ℝ) * S.m * ∂ₜ x i ^ 2)
+      (g := fun i => (1/2 : ℝ) * S.k * x i ^ 2)
+      (((hddx t).pow 2).const_mul _) (((hdx t).pow 2).const_mul _)]
   -- Perform chain derivatives and move constants
   rw [fderiv_const_mul (a := fun i => ∂ₜ x i ^ 2) ((hddx t).pow 2)]
   rw [fderiv_const_mul (a := fun i => x i ^ 2) ((hdx t).pow 2)]
