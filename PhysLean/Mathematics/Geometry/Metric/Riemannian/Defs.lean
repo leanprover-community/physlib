@@ -15,7 +15,7 @@ This file defines `RiemannianMetric` as the specialization of Mathlib's bundle-l
 
 ## Main definitions
 
-* `PseudoRiemannianMetric.RiemannianMetric`: a `C^n` Riemannian metric on `M`, packaged bundle-first.
+* `PseudoRiemannianMetric.RiemannianMetric`: a `C^n` Riemannian metric on `M`.
 * `PseudoRiemannianMetric.RiemannianMetric.toPseudoRiemannianMetric`: forget positivity to obtain a
   pseudo-Riemannian metric (index `0`).
 
@@ -66,7 +66,7 @@ def toPseudoRiemannianMetric (g : RiemannianMetric (I := I) (n := n) M)  :
       exact (ne_of_gt hp h0).elim
   contMDiff := g.contMDiff
   negDim_isLocallyConstant := by
-    -- On a Riemannian metric, the associated quadratic form is positive definite, hence `negDim = 0`.
+    -- On a Riemannian metric, the associated quadratic form is positive definite, so `negDim = 0`.
     refine IsLocallyConstant.of_constant _ (fun x y => ?_)
     have hx :
         (PseudoRiemannianMetric.valToQuadraticForm g.inner g.symm x).negDim = 0 := by
@@ -87,14 +87,16 @@ def toPseudoRiemannianMetric (g : RiemannianMetric (I := I) (n := n) M)  :
     simp [hx', hy']
 
 @[simp]
-lemma toPseudoRiemannianMetric_posIndex_neg_toQuadraticForm (g : RiemannianMetric (I := I) (n := n) M)
+lemma toPseudoRiemannianMetric_posIndex_neg_toQuadraticForm (g : RiemannianMetric (I := I)
+    [FiniteDimensional ℝ (TangentSpace I x)] (n := n) M)
     (x : M) :
     (-(toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).toQuadraticForm x).posIndex = 0 := by
   have hx : (PseudoRiemannianMetric.valToQuadraticForm g.inner g.symm x).negDim = 0 := by
     apply QuadraticForm.negDim_posDef
     intro v hv
     simpa [PseudoRiemannianMetric.valToQuadraticForm] using g.pos x v hv
-  simpa [PseudoRiemannianMetric.toQuadraticForm, toPseudoRiemannianMetric, QuadraticForm.negDim] using hx
+  simpa [PseudoRiemannianMetric.toQuadraticForm, toPseudoRiemannianMetric, QuadraticForm.negDim]
+    using hx
 
 lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
     (toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).index x = 0 := by

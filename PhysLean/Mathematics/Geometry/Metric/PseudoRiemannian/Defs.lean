@@ -31,6 +31,10 @@ Smoothness is stated as a `ContMDiff` assumption for a bundled map `x ↦ TotalS
 in Mathlib. Index-type constructions use `QuadraticForm.negDim` and therefore require
 finite-dimensional tangent spaces.
 
+If the fibers already carry a topology (e.g. the tangent bundle), we register the fiberwise metric
+through `Bundle.PseudoRiemannianBundle` to avoid introducing diamonds in typeclass inference, in the
+same spirit as Mathlib's `Bundle.RiemannianBundle`.
+
 ## Tags
 
 pseudo-Riemannian, metric tensor, musical isomorphisms, index
@@ -664,13 +668,10 @@ noncomputable def index (g : MetricTensor E H M n I) (x : M)
 
 end MetricTensor
 
-/-- A pseudo-Riemannian metric of smoothness class `C^n` on a manifold `M` modelled on `(E, H)`
-with model `I`. This structure defines a smoothly varying, non-degenerate, symmetric,
-continuous bilinear form `gₓ` of constant negative dimension on the tangent space `TₓM`
-at each point `x`. Requires `M` to be `C^{n+1}` smooth.
-This structure formalizes O'Neill's Definition 3.1 (p. 54) of a metric tensor `g` on `M`
-as a "symmetric non-degenerate (0,2) tensor field on M of constant index."
-Each `gₓ` is a scalar product (O'Neill, Definition 20, p. 47) on `TₓM`. -/
+/-- A `C^n` pseudo-Riemannian metric on a manifold.
+
+This is a `MetricTensor` whose pointwise index (defined using `QuadraticForm.negDim`) is locally
+constant. -/
 @[ext]
 structure PseudoRiemannianMetric
     (E : Type v) (H : Type w) (M : Type*) (n : WithTop ℕ∞)
