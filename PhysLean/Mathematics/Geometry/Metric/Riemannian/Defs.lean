@@ -38,7 +38,7 @@ variable [IsManifold I (n + 1) M] [IsManifold I 1 M]
 /-- A `C^n` Riemannian metric on `M`, packaged using Mathlib's modern bundle API. -/
 abbrev RiemannianMetric
     (I : ModelWithCorners ℝ E H) (n : WithTop ℕ∞) (M : Type*)
-    [TopologicalSpace M] [ChartedSpace H M] [IsManifold I (n + 1) M] [IsManifold I 1 M] :=
+    [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] :=
   Bundle.ContMDiffRiemannianMetric (IB := I) (n := n) (F := E) (E := fun x : M ↦ TangentSpace I x)
 
 namespace RiemannianMetric
@@ -83,14 +83,19 @@ def toPseudoRiemannianMetric (g : RiemannianMetric (I := I) (n := n) M)  :
     simp [hx', hy']
 
 @[simp]
-lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
-    (toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).index x = 0 := by
+lemma toPseudoRiemannianMetric_posIndex_neg_toQuadraticForm (g : RiemannianMetric (I := I) (n := n) M)
+    (x : M) :
+    (-(toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).toQuadraticForm x).posIndex = 0 := by
   have hx : (PseudoRiemannianMetric.valToQuadraticForm g.inner g.symm x).negDim = 0 := by
     apply QuadraticForm.negDim_posDef
     intro v hv
     simpa [PseudoRiemannianMetric.valToQuadraticForm] using g.pos x v hv
-  simpa [PseudoRiemannianMetric.index, PseudoRiemannianMetric.toQuadraticForm,
-    toPseudoRiemannianMetric] using hx
+  -- `negDim Q = (-Q).posIndex`.
+  simpa [PseudoRiemannianMetric.toQuadraticForm, toPseudoRiemannianMetric, QuadraticForm.negDim] using hx
+
+lemma toPseudoRiemannianMetric_index (g : RiemannianMetric (I := I) (n := n) M) (x : M) :
+    (toPseudoRiemannianMetric (I := I) (n := n) (M := M) g).index x = 0 := by
+  simp [PseudoRiemannianMetric.index, QuadraticForm.negDim]
 
 instance :
     Coe (RiemannianMetric (I := I) (n := n) M)
@@ -99,30 +104,16 @@ instance :
 
 end RiemannianMetric
 
-/-! ## Existence predicates (non-choosing) -/
+/-! ## Existence helpers -/
 
-/-- Prop-valued predicate recording existence of a `C^n` Riemannian metric (bundle-first), without
-making any noncanonical choice. -/
-class HasRiemannianMetric : Prop where
-  out : Nonempty (RiemannianMetric (I := I) (n := n) M)
-
-instance (g : RiemannianMetric (I := I) (n := n) M) :
-    HasRiemannianMetric (I := I) (n := n) (M := M) :=
-  ⟨⟨g⟩⟩
-
-theorem hasRiemannianMetric_iff :
-    HasRiemannianMetric (I := I) (n := n) (M := M) ↔
-      Nonempty (RiemannianMetric (I := I) (n := n) M) :=
-  ⟨fun h => h.out, fun h => ⟨h⟩⟩
-
-/-- Any Riemannian metric gives a pseudo-Riemannian metric (of index `0`), hence existence of a
-Riemannian metric implies existence of a pseudo-Riemannian metric. -/
-instance [h : HasRiemannianMetric (I := I) (n := n) (M := M)]
-    [∀ x : M, FiniteDimensional ℝ (TangentSpace I x)] :
-    PseudoRiemannianMetric.HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) :=
-  ⟨by
-    rcases h.out with ⟨g⟩
-    exact ⟨RiemannianMetric.toPseudoRiemannianMetric (I := I) (n := n) (M := M) g⟩⟩
+/-- Existence of a Riemannian metric implies existence of a pseudo-Riemannian metric (of index `0`),
+by forgetting positivity. -/
+theorem nonempty_pseudoRiemannianMetric_of_nonempty_riemannianMetric
+    [∀ x : M, FiniteDimensional ℝ (TangentSpace I x)]
+    (h : Nonempty (RiemannianMetric (I := I) (n := n) M)) :
+    Nonempty (PseudoRiemannianMetric E H M n I) := by
+  rcases h with ⟨g⟩
+  exact ⟨RiemannianMetric.toPseudoRiemannianMetric (I := I) (n := n) (M := M) g⟩
 
 end
 
