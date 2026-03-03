@@ -10,32 +10,37 @@ import Mathlib.LinearAlgebra.Dimension.Constructions
 import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
 
 /-!
-## Negative index for real quadratic forms
+# Inertia indices for real quadratic forms
 
-This file provides a lightweight notion of the **negative index** (`negDim`) of a real quadratic
-form on a finite-dimensional real vector space, defined canonically via maximal positive definite
-subspaces (the standard “inertia index” definition).
+This file defines canonical inertia data for a real quadratic form on a finite-dimensional real
+vector space.
 
-It is intended as a small reusable API for (pseudo-)Riemannian geometry developments.
+The main construction is `QuadraticForm.posIndex`, the maximal dimension of a submodule on which a
+quadratic form is positive definite. From this we define the canonical indices
+`QuadraticForm.posDim`, `QuadraticForm.negDim`, `QuadraticForm.zeroDim`, and the canonical
+`QuadraticForm.signature`.
 
-### Rigor note
+These constructions are invariant under `QuadraticForm.Equivalent` and do not depend on a choice of
+diagonalization.
 
-The *canonical* invariants in this file are:
+## Main definitions
 
-- `posIndex`: the maximum dimension of a subspace on which `Q` is positive definite
-- `posDim := posIndex Q`
-- `negDim := posIndex (-Q)`
-- `zeroDim := finrank - posDim - negDim`
-- `signature := ⟨posDim, negDim, zeroDim⟩`
+- `QuadraticForm.posIndex`: maximal dimension of a submodule where `Q` is positive definite
+- `QuadraticForm.posDim`: positive index of inertia (defined as `posIndex Q`)
+- `QuadraticForm.negDim`: negative index of inertia (defined as `posIndex (-Q)`)
+- `QuadraticForm.zeroDim`: nullity, defined so `posDim + negDim + zeroDim = finrank`
+- `QuadraticForm.signature`: the triple `(posDim, negDim, zeroDim)`
 
-These are invariant under `QuadraticForm.Equivalent` (isometry equivalence), and require no
-diagonalization choices.
+## Implementation notes
 
-Separately, we also record a **noncomputable choice** of Sylvester diagonalization weights
-(`signTypeWeights`) and its induced *chosen* signature (`signatureChoice`) as auxiliary data.  This
-is useful for bridging to Mathlib's existence theorem
-`QuadraticForm.equivalent_signType_weighted_sum_squared` (in
-`Mathlib/LinearAlgebra/QuadraticForm/Real.lean`).
+We also define noncanonical auxiliary data (`QuadraticForm.signTypeWeights`,
+`QuadraticForm.signatureChoice`) by choosing Sylvester diagonalization weights, for bridging to
+`QuadraticForm.equivalent_signType_weighted_sum_squared` in
+`Mathlib.LinearAlgebra.QuadraticForm.Real`. These choices are not claimed to be canonical.
+
+## Tags
+
+quadratic form, inertia, signature, Sylvester law, index
 -/
 
 namespace QuadraticForm
@@ -48,33 +53,15 @@ open scoped BigOperators
 /-- A (finite-dimensional) real quadratic form has a signature `(pos, neg, zero)` given by
 Sylvester's law of inertia: the numbers of positive, negative, and zero squares in a diagonal
 representation. -/
-structure Signature where
+@[ext] structure Signature where
   pos : ℕ
   neg : ℕ
   zero : ℕ
 
 namespace Signature
 
-@[simp]
-lemma mk_pos (p n z : ℕ) : (Signature.mk p n z).pos = p := rfl
-
-@[simp]
-lemma mk_neg (p n z : ℕ) : (Signature.mk p n z).neg = n := rfl
-
-@[simp]
-lemma mk_zero (p n z : ℕ) : (Signature.mk p n z).zero = z := rfl
-
 /-- Alias for the `zero` component (common terminology: nullity). -/
 abbrev nullity (s : Signature) : ℕ := s.zero
-
-@[simp] lemma nullity_eq_zero (s : Signature) : s.nullity = s.zero := rfl
-
-@[ext]
-lemma ext {s t : Signature} (hpos : s.pos = t.pos) (hneg : s.neg = t.neg)
-    (hzero : s.zero = t.zero) : s = t := by
-  cases s
-  cases t
-  simp_all
 
 end Signature
 
@@ -198,45 +185,42 @@ section InertiaUniqueness
 
 variable {V : Type*} [AddCommGroup V] [Module ℝ V] [FiniteDimensional ℝ V]
 
+/-- `IsPosDefOn Q W` means that the restriction of `Q` to the submodule `W` is positive definite. -/
 def IsPosDefOn (Q : QuadraticForm ℝ V) (W : Submodule ℝ V) : Prop :=
   (Q.comp W.subtype).PosDef
+
+/-- The finset of candidate dimensions of positive-definite submodules of a quadratic form. -/
+private noncomputable def posIndexCandidates (Q : QuadraticForm ℝ V) : Finset ℕ := by
+  classical
+  exact (Finset.range (finrank ℝ V + 1)).filter fun k =>
+    ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W
+
+omit [FiniteDimensional ℝ V] in
+private lemma posIndexCandidates_nonempty (Q : QuadraticForm ℝ V) :
+    (posIndexCandidates (V := V) Q).Nonempty := by
+  classical
+  refine ⟨0, ?_⟩
+  refine Finset.mem_filter.2 ?_
+  refine ⟨by simp, ?_⟩
+  refine ⟨(⊥ : Submodule ℝ V), by simp, ?_⟩
+  intro x hx
+  exfalso
+  exact hx (Subsingleton.elim x 0)
 
 /-- The positive index of a real quadratic form: the maximal dimension of a subspace on which the
 form is positive definite. -/
 noncomputable def posIndex (Q : QuadraticForm ℝ V) : ℕ := by
   classical
-  let n := finrank ℝ V
-  let S : Finset ℕ :=
-    (Finset.range (n + 1)).filter (fun k =>
-      ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W)
-  have hS : S.Nonempty := by
-    refine ⟨0, ?_⟩
-    refine Finset.mem_filter.2 ?_
-    refine ⟨by simp, ?_⟩
-    refine ⟨(⊥ : Submodule ℝ V), by simp, ?_⟩
-    intro x hx
-    exfalso
-    exact hx (Subsingleton.elim x 0)
-  exact S.max' hS
+  exact (posIndexCandidates (V := V) Q).max' (posIndexCandidates_nonempty (V := V) Q)
 
 omit [FiniteDimensional ℝ V] in
 lemma posIndex_spec (Q : QuadraticForm ℝ V) :
     ∃ W : Submodule ℝ V, finrank ℝ W = posIndex (V := V) Q ∧ IsPosDefOn (V := V) Q W := by
   classical
-  let n := finrank ℝ V
-  let S : Finset ℕ :=
-    (Finset.range (n + 1)).filter (fun k =>
-      ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W)
-  have hS : S.Nonempty := by
-    refine ⟨0, ?_⟩
-    refine Finset.mem_filter.2 ?_
-    refine ⟨by simp, ?_⟩
-    refine ⟨(⊥ : Submodule ℝ V), by simp, ?_⟩
-    intro x hx
-    exfalso
-    exact hx (Subsingleton.elim x 0)
-  have hmem : posIndex (V := V) Q ∈ S := by
-    simpa [posIndex, S] using (Finset.max'_mem S hS)
+  have hmem :
+      posIndex (V := V) Q ∈ posIndexCandidates (V := V) Q := by
+    simpa [posIndex] using
+      (Finset.max'_mem _ (posIndexCandidates_nonempty (V := V) Q))
   rcases (Finset.mem_filter.1 hmem).2 with ⟨W, hW, hWpos⟩
   exact ⟨W, hW, hWpos⟩
 
@@ -244,98 +228,65 @@ lemma le_posIndex_of_exists {Q : QuadraticForm ℝ V} {k : ℕ}
     (hk : ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W) :
     k ≤ posIndex (V := V) Q := by
   classical
-  let n := finrank ℝ V
-  let S : Finset ℕ :=
-    (Finset.range (n + 1)).filter (fun k =>
-      ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W)
-  have hS : S.Nonempty := by
-    refine ⟨0, ?_⟩
-    refine Finset.mem_filter.2 ?_
-    refine ⟨by simp, ?_⟩
-    refine ⟨(⊥ : Submodule ℝ V), by simp, ?_⟩
-    intro x hx
-    exfalso
-    exact hx (Subsingleton.elim x 0)
-  have hk_mem : k ∈ S := by
+  have hk_mem : k ∈ posIndexCandidates (V := V) Q := by
     refine Finset.mem_filter.2 ?_
     refine ⟨?_, hk⟩
     rcases hk with ⟨W, hW, -⟩
-    have hk_le : k ≤ n := by
-      simpa [hW, n] using (Submodule.finrank_le (R := ℝ) (M := V) W)
-    exact Finset.mem_range.2 (Nat.lt_succ_of_le hk_le)
-  simpa [posIndex, S] using (Finset.le_max' S k hk_mem)
+    have hk_le : k ≤ finrank ℝ V := by
+      simpa [hW] using (Submodule.finrank_le (R := ℝ) (M := V) W)
+    simpa [posIndexCandidates] using (Finset.mem_range.2 (Nat.lt_succ_of_le hk_le))
+  simpa [posIndex] using Finset.le_max' (posIndexCandidates (V := V) Q) k hk_mem
+
+/- If `Q` and `Q₂` are equivalent, then `posIndex Q ≤ posIndex Q₂`. -/
+omit [FiniteDimensional ℝ V] in
+lemma posIndex_le_of_equivalent {V₂ : Type*} [AddCommGroup V₂] [Module ℝ V₂]
+    [FiniteDimensional ℝ V₂] {Q : QuadraticForm ℝ V} {Q₂ : QuadraticForm ℝ V₂}
+    (h : Q.Equivalent Q₂) :
+    posIndex (V := V) Q ≤ posIndex (V := V₂) Q₂ := by
+  classical
+  rcases h with ⟨e⟩
+  rcases posIndex_spec (Q := Q) with ⟨W, hWfin, hWpos⟩
+  let f : V →ₗ[ℝ] V₂ := (e.toLinearEquiv : V ≃ₗ[ℝ] V₂).toLinearMap
+  have hf_inj : Function.Injective f := e.toLinearEquiv.injective
+  let W₂ : Submodule ℝ V₂ := W.map f
+  have hfinrank : finrank ℝ W₂ = finrank ℝ W := by
+    simpa [W₂] using (LinearEquiv.finrank_eq (Submodule.equivMapOfInjective f hf_inj W)).symm
+  have hW₂pos : IsPosDefOn (V := V₂) Q₂ W₂ := by
+    intro x hx
+    rcases x with ⟨xv, hxv⟩
+    have hx0 : (⟨xv, by simpa [W₂] using hxv⟩ : W.map f) ≠ 0 := by
+      intro h0
+      apply hx
+      ext
+      simpa using congrArg Subtype.val h0
+    let eqv := Submodule.equivMapOfInjective f hf_inj W
+    set x' : W.map f := ⟨xv, by simpa [W₂] using hxv⟩
+    have hx' : (eqv.symm x') ≠ 0 := by
+      intro h0
+      apply hx0
+      have := congrArg eqv h0
+      simpa using this
+    have hpos' : 0 < (Q.comp W.subtype) (eqv.symm x') := hWpos _ hx'
+    have hxmap : f ((eqv.symm x' : W) : V) = (x' : V₂) :=
+      Submodule.map_equivMapOfInjective_symm_apply f hf_inj W x'
+    have heq : Q₂ (x' : V₂) = Q ((eqv.symm x' : W) : V) := by
+      have : Q₂ (f ((eqv.symm x' : W) : V)) = Q ((eqv.symm x' : W) : V) := by
+        simp [f]
+      simpa [hxmap] using this
+    simpa [IsPosDefOn, QuadraticMap.comp_apply, heq, x'] using hpos'
+  have hk :
+      ∃ U : Submodule ℝ V₂, finrank ℝ U = posIndex (V := V) Q ∧ IsPosDefOn (V := V₂) Q₂ U :=
+    ⟨W₂, by simp [hWfin, hfinrank], hW₂pos⟩
+  exact le_posIndex_of_exists (V := V₂) hk
 
 /-- `posIndex` is invariant under equivalence of quadratic forms. -/
 theorem posIndex_eq_of_equivalent {V₂ : Type*} [AddCommGroup V₂] [Module ℝ V₂]
     [FiniteDimensional ℝ V₂] {Q : QuadraticForm ℝ V} {Q₂ : QuadraticForm ℝ V₂}
     (h : Q.Equivalent Q₂) :
     posIndex (V := V) Q = posIndex (V := V₂) Q₂ := by
-  classical
+  refine le_antisymm (posIndex_le_of_equivalent (V := V) (V₂ := V₂) (Q := Q) (Q₂ := Q₂) h) ?_
   rcases h with ⟨e⟩
-  have hle : posIndex (V := V) Q ≤ posIndex (V := V₂) Q₂ := by
-    rcases posIndex_spec (V := V) Q with ⟨W, hWfin, hWpos⟩
-    let f : V →ₗ[ℝ] V₂ := (e.toLinearEquiv : V ≃ₗ[ℝ] V₂).toLinearMap
-    have hf_inj : Function.Injective f := e.toLinearEquiv.injective
-    let W₂ : Submodule ℝ V₂ := W.map f
-    have hfinrank : finrank ℝ W₂ = finrank ℝ W := by
-      simpa [W₂] using (LinearEquiv.finrank_eq (Submodule.equivMapOfInjective f hf_inj W)).symm
-    have hW₂pos : IsPosDefOn (V := V₂) Q₂ W₂ := by
-      intro x hx
-      rcases x with ⟨xv, hxv⟩
-      have hx0 : (⟨xv, by simpa [W₂] using hxv⟩ : W.map f) ≠ 0 := by
-        intro h0; apply hx; ext; simpa using congrArg Subtype.val h0
-      let eqv := Submodule.equivMapOfInjective f hf_inj W
-      set x' : W.map f := ⟨xv, by simpa [W₂] using hxv⟩
-      have hx' : (eqv.symm x') ≠ 0 := by
-        intro h0
-        apply hx0
-        have := congrArg eqv h0
-        simpa using this
-      have hpos' : 0 < (Q.comp W.subtype) (eqv.symm x') := hWpos _ hx'
-      have hxmap : f ((eqv.symm x' : W) : V) = (x' : V₂) :=
-        Submodule.map_equivMapOfInjective_symm_apply f hf_inj W x'
-      have heq : Q₂ (x' : V₂) = Q ((eqv.symm x' : W) : V) := by
-        have : Q₂ (f ((eqv.symm x' : W) : V)) = Q ((eqv.symm x' : W) : V) := by
-          simp [f]
-        simpa [hxmap] using this
-      simpa [IsPosDefOn, QuadraticMap.comp_apply, heq, x'] using hpos'
-    have hk :
-        ∃ U : Submodule ℝ V₂, finrank ℝ U = posIndex (V := V) Q ∧ IsPosDefOn (V := V₂) Q₂ U :=
-      ⟨W₂, by simp [hWfin, hfinrank], hW₂pos⟩
-    exact le_posIndex_of_exists (V := V₂) hk
-  have hge : posIndex (V := V₂) Q₂ ≤ posIndex (V := V) Q := by
-    have h' : Q₂.Equivalent Q := ⟨e.symm⟩
-    rcases posIndex_spec (V := V₂) Q₂ with ⟨W, hWfin, hWpos⟩
-    let f : V₂ →ₗ[ℝ] V := (e.symm.toLinearEquiv : V₂ ≃ₗ[ℝ] V).toLinearMap
-    have hf_inj : Function.Injective f := e.symm.toLinearEquiv.injective
-    let W₂ : Submodule ℝ V := W.map f
-    have hfinrank : finrank ℝ W₂ = finrank ℝ W := by
-      simpa [W₂] using (LinearEquiv.finrank_eq (Submodule.equivMapOfInjective f hf_inj W)).symm
-    have hW₂pos : IsPosDefOn (V := V) Q W₂ := by
-      intro x hx
-      rcases x with ⟨xv, hxv⟩
-      have hx0 : (⟨xv, by simpa [W₂] using hxv⟩ : W.map f) ≠ 0 := by
-        intro h0; apply hx; ext; simpa using congrArg Subtype.val h0
-      let eqv := Submodule.equivMapOfInjective f hf_inj W
-      set x' : W.map f := ⟨xv, by simpa [W₂] using hxv⟩
-      have hx' : (eqv.symm x') ≠ 0 := by
-        intro h0
-        apply hx0
-        have := congrArg eqv h0
-        simpa using this
-      have hpos' : 0 < (Q₂.comp W.subtype) (eqv.symm x') := hWpos _ hx'
-      have hxmap : f ((eqv.symm x' : W) : V₂) = (x' : V) :=
-        Submodule.map_equivMapOfInjective_symm_apply f hf_inj W x'
-      have heq : Q (x' : V) = Q₂ ((eqv.symm x' : W) : V₂) := by
-        have : Q (f ((eqv.symm x' : W) : V₂)) = Q₂ ((eqv.symm x' : W) : V₂) := by
-          simp [f]
-        simpa [hxmap] using this
-      simpa [IsPosDefOn, QuadraticMap.comp_apply, heq, x'] using hpos'
-    have hk :
-        ∃ U : Submodule ℝ V, finrank ℝ U = posIndex (V := V₂) Q₂ ∧ IsPosDefOn (V := V) Q U :=
-      ⟨W₂, by simp [hWfin, hfinrank], hW₂pos⟩
-    exact le_posIndex_of_exists (V := V) hk
-  exact le_antisymm hle hge
+  exact posIndex_le_of_equivalent (V := V₂) (V₂ := V) (Q := Q₂) (Q₂ := Q) ⟨e.symm⟩
 
 end InertiaUniqueness
 
@@ -347,7 +298,7 @@ variable {E : Type*} [AddCommGroup E] [Module ℝ E] [FiniteDimensional ℝ E]
 
 lemma posIndex_le_finrank (Q : QuadraticForm ℝ E) :
     posIndex (V := E) Q ≤ finrank ℝ E := by
-  rcases posIndex_spec (V := E) Q with ⟨W, hW, -⟩
+  rcases posIndex_spec (Q := Q) with ⟨W, hW, -⟩
   have : finrank ℝ W ≤ finrank ℝ E := Submodule.finrank_le (R := ℝ) (M := E) W
   simpa [hW] using this
 
@@ -373,10 +324,17 @@ lemma posDim_le_finrank (Q : QuadraticForm ℝ E) : Q.posDim ≤ finrank ℝ E :
 lemma negDim_le_finrank (Q : QuadraticForm ℝ E) : Q.negDim ≤ finrank ℝ E :=
   posIndex_le_finrank (E := E) (-Q)
 
+omit [FiniteDimensional ℝ E] in
+@[simp] lemma posDim_neg (Q : QuadraticForm ℝ E) : (-Q).posDim = Q.negDim := rfl
+
+omit [FiniteDimensional ℝ E] in
+lemma negDim_neg (Q : QuadraticForm ℝ E) : (-Q).negDim = Q.posDim := by
+  simp [negDim, posDim]
+
 lemma posDim_add_negDim_le_finrank (Q : QuadraticForm ℝ E) :
     Q.posDim + Q.negDim ≤ finrank ℝ E := by
-  rcases posIndex_spec (V := E) Q with ⟨Wpos, hWpos, hpos⟩
-  rcases posIndex_spec (V := E) (-Q) with ⟨Wneg, hWneg, hneg⟩
+  rcases posIndex_spec (Q := Q) with ⟨Wpos, hWpos, hpos⟩
+  rcases posIndex_spec (Q := -Q) with ⟨Wneg, hWneg, hneg⟩
   have hdisj : Disjoint Wpos Wneg := by
     rw [Submodule.disjoint_def]
     intro x hxpos hxneg
@@ -401,6 +359,11 @@ omit [FiniteDimensional ℝ E] in
 @[simp]
 lemma zeroDim_def (Q : QuadraticForm ℝ E) :
     Q.zeroDim = finrank ℝ E - Q.posDim - Q.negDim := rfl
+
+omit [FiniteDimensional ℝ E] in
+lemma zeroDim_neg (Q : QuadraticForm ℝ E) : (-Q).zeroDim = Q.zeroDim := by
+  -- Both sides reduce to `finrank - (posIndex Q + posIndex (-Q))`.
+  simp [zeroDim, posDim, negDim, Nat.sub_sub, Nat.add_comm]
 
 /-- The signature `(pos, neg, zero)` of a real quadratic form (canonical). -/
 noncomputable def signature (Q : QuadraticForm ℝ E) : Signature :=
@@ -468,7 +431,7 @@ theorem posDim_posDef {Q : QuadraticForm ℝ E} (hQ : Q.PosDef) :
 
 /-- For a positive definite quadratic form, `negDim = 0`. -/
 theorem negDim_posDef {Q : QuadraticForm ℝ E} (hQ : Q.PosDef) : Q.negDim = 0 := by
-  rcases posIndex_spec (V := E) (-Q) with ⟨W, hW, hWpos⟩
+  rcases posIndex_spec (Q := -Q) with ⟨W, hW, hWpos⟩
   have hWbot : W = ⊥ := by
     ext x
     constructor
@@ -512,13 +475,13 @@ lemma Equivalent.neg {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂] [Finit
 theorem posDim_eq_of_equivalent {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂] [FiniteDimensional ℝ E₂]
     {Q : QuadraticForm ℝ E} {Q₂ : QuadraticForm ℝ E₂} (h : Q.Equivalent Q₂) :
     Q.posDim = Q₂.posDim := by
-  simp [posDim, posIndex_eq_of_equivalent (V := E) (V₂ := E₂) h]
+  simp [posDim, posIndex_eq_of_equivalent (Q := Q) (Q₂ := Q₂) h]
 
 theorem negDim_eq_of_equivalent {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂] [FiniteDimensional ℝ E₂]
     {Q : QuadraticForm ℝ E} {Q₂ : QuadraticForm ℝ E₂} (h : Q.Equivalent Q₂) :
     Q.negDim = Q₂.negDim := by
   have h' : (-Q).Equivalent (-Q₂) := Equivalent.neg (E := E) (E₂ := E₂) h
-  simp [negDim, posIndex_eq_of_equivalent (V := E) (V₂ := E₂) h']
+  simp [negDim, posIndex_eq_of_equivalent (Q := -Q) (Q₂ := -Q₂) h']
 
 theorem zeroDim_eq_of_equivalent {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂] [FiniteDimensional ℝ E₂]
     {Q : QuadraticForm ℝ E} {Q₂ : QuadraticForm ℝ E₂} (h : Q.Equivalent Q₂) :
@@ -526,9 +489,9 @@ theorem zeroDim_eq_of_equivalent {E₂ : Type*} [AddCommGroup E₂] [Module ℝ 
   rcases h with ⟨e⟩
   have hfin : finrank ℝ E = finrank ℝ E₂ := LinearEquiv.finrank_eq e.toLinearEquiv
   have hposI : posIndex (V := E) Q = posIndex (V := E₂) Q₂ :=
-    posIndex_eq_of_equivalent (V := E) (V₂ := E₂) ⟨e⟩
+    posIndex_eq_of_equivalent (Q := Q) (Q₂ := Q₂) ⟨e⟩
   have hnegI : posIndex (V := E) (-Q) = posIndex (V := E₂) (-Q₂) :=
-    posIndex_eq_of_equivalent (V := E) (V₂ := E₂) (Equivalent.neg (E := E) (E₂ := E₂) ⟨e⟩)
+    posIndex_eq_of_equivalent (Q := -Q) (Q₂ := -Q₂) (Equivalent.neg (E := E) (E₂ := E₂) ⟨e⟩)
   simp [zeroDim, posDim, negDim, hfin, hposI, hnegI]
 
 theorem signature_eq_of_equivalent {E₂ : Type*} [AddCommGroup E₂] [Module ℝ E₂] [FiniteDimensional ℝ E₂]
@@ -537,9 +500,9 @@ theorem signature_eq_of_equivalent {E₂ : Type*} [AddCommGroup E₂] [Module �
   rcases h with ⟨e⟩
   have hfin : finrank ℝ E = finrank ℝ E₂ := LinearEquiv.finrank_eq e.toLinearEquiv
   have hposI : posIndex (V := E) Q = posIndex (V := E₂) Q₂ :=
-    posIndex_eq_of_equivalent (V := E) (V₂ := E₂) ⟨e⟩
+    posIndex_eq_of_equivalent (Q := Q) (Q₂ := Q₂) ⟨e⟩
   have hnegI : posIndex (V := E) (-Q) = posIndex (V := E₂) (-Q₂) :=
-    posIndex_eq_of_equivalent (V := E) (V₂ := E₂) (Equivalent.neg (E := E) (E₂ := E₂) ⟨e⟩)
+    posIndex_eq_of_equivalent (Q := -Q) (Q₂ := -Q₂) (Equivalent.neg (E := E) (E₂ := E₂) ⟨e⟩)
   ext <;> simp [signature, posDim, negDim, zeroDim, hfin, hposI, hnegI]
 
 end Canonical
@@ -560,17 +523,46 @@ noncomputable section
 
 variable {n : ℕ}
 
-private abbrev DiagForm (w : Fin n → SignType) : QuadraticForm ℝ (Fin n → ℝ) :=
+/-- The diagonal quadratic form with `SignType` weights `w`, i.e. the weighted sum of squares
+with weights in `{ -1, 0, 1 }`. -/
+abbrev diagForm (w : Fin n → SignType) : QuadraticForm ℝ (Fin n → ℝ) :=
   QuadraticMap.weightedSumSquares ℝ fun i => (w i : ℝ)
 
-private def posSet (w : Fin n → SignType) : Finset (Fin n) :=
-  (Finset.univ.filter fun i => w i = SignType.pos)
+/-- The set of indices where `w` takes the value `s`. -/
+def signSet (s : SignType) (w : Fin n → SignType) : Finset (Fin n) :=
+  Finset.univ.filter fun i => w i = s
 
-private lemma mem_posSet_iff {w : Fin n → SignType} {i : Fin n} :
+/-- The set of indices where `w` is positive. -/
+abbrev posSet (w : Fin n → SignType) : Finset (Fin n) :=
+  signSet (n := n) SignType.pos w
+
+/-- The set of indices where `w` is negative. -/
+abbrev negSet (w : Fin n → SignType) : Finset (Fin n) :=
+  signSet (n := n) SignType.neg w
+
+/-- The set of indices where `w` is zero. -/
+abbrev zeroSet (w : Fin n → SignType) : Finset (Fin n) :=
+  signSet (n := n) 0 w
+
+lemma mem_posSet {w : Fin n → SignType} {i : Fin n} :
     i ∈ posSet (n := n) w ↔ w i = SignType.pos := by
-  simp [posSet]
+  simp [posSet, signSet]
 
-private def supportedOnPos (w : Fin n → SignType) : Submodule ℝ (Fin n → ℝ) where
+lemma mem_negSet {w : Fin n → SignType} {i : Fin n} :
+    i ∈ negSet (n := n) w ↔ w i = SignType.neg := by
+  simp [negSet, signSet]
+
+lemma mem_zeroSet {w : Fin n → SignType} {i : Fin n} :
+    i ∈ zeroSet (n := n) w ↔ w i = 0 := by
+  simp [zeroSet, signSet]
+
+lemma posSet_neg (w : Fin n → SignType) :
+    posSet (n := n) (fun i => -w i) = negSet (n := n) w := by
+  ext i
+  cases hi : w i <;> simp [posSet, negSet, signSet, hi]
+
+/-- The submodule of vectors supported on the positive-weight coordinates. -/
+def supportedOnPos (w : Fin n → SignType) : Submodule ℝ (Fin n → ℝ) where
   carrier := {v | ∀ i, w i ≠ SignType.pos → v i = 0}
   zero_mem' := by intro i hi; simp
   add_mem' := by
@@ -580,29 +572,33 @@ private def supportedOnPos (w : Fin n → SignType) : Submodule ℝ (Fin n → �
     intro a v hv i hi
     simp [Pi.smul_apply, hv i hi]
 
-private lemma supportedOnPos_mem {w : Fin n → SignType} {v : Fin n → ℝ} :
-    v ∈ supportedOnPos (n := n) w ↔ ∀ i, w i ≠ SignType.pos → v i = 0 := Iff.rfl
+@[simp] lemma mem_supportedOnPos {w : Fin n → SignType} {v : Fin n → ℝ} :
+    v ∈ supportedOnPos (n := n) w ↔ ∀ i, w i ≠ SignType.pos → v i = 0 :=
+  Iff.rfl
 
-private def restrictPos (w : Fin n → SignType) :
+/-- Restriction of a vector to the positive-weight coordinates. -/
+def restrictPos (w : Fin n → SignType) :
     (Fin n → ℝ) →ₗ[ℝ] ({i // i ∈ posSet (n := n) w} → ℝ) where
   toFun v i := v i.1
   map_add' := by intro v₁ v₂; ext i; rfl
   map_smul' := by intro a v; ext i; rfl
 
-private lemma restrictPos_apply {w : Fin n → SignType} (v : Fin n → ℝ)
+@[simp] lemma restrictPos_apply {w : Fin n → SignType} (v : Fin n → ℝ)
     (i : {i // i ∈ posSet (n := n) w}) :
     restrictPos (n := n) w v i = v i.1 := rfl
 
-private lemma diag_nonpos_of_no_pos {w : Fin n → SignType} {v : Fin n → ℝ}
+/-- If a vector has no positive-weight coordinates, then its value under `diagForm w` is nonpositive. -/
+lemma diagForm_nonpos_of_no_pos {w : Fin n → SignType} {v : Fin n → ℝ}
     (hv : ∀ i, w i = SignType.pos → v i = 0) :
-    DiagForm (n := n) w v ≤ 0 := by
-  simp only [DiagForm, QuadraticMap.weightedSumSquares_apply]
+    diagForm (n := n) w v ≤ 0 := by
+  simp only [diagForm, QuadraticMap.weightedSumSquares_apply]
   refine Finset.sum_nonpos ?_
   intro i _
   cases hwi : w i <;> simp [hwi, hv i, mul_self_nonneg]
 
-private lemma supportedOnPos_posDef (w : Fin n → SignType) :
-    IsPosDefOn (V := Fin n → ℝ) (DiagForm (n := n) w) (supportedOnPos (n := n) w) := by
+/-- On `supportedOnPos w`, the diagonal form `diagForm w` is positive definite. -/
+lemma isPosDefOn_diagForm_supportedOnPos (w : Fin n → SignType) :
+    IsPosDefOn (V := Fin n → ℝ) (diagForm (n := n) w) (supportedOnPos (n := n) w) := by
   classical
   intro v hv0
   -- pick a coordinate where `v` is nonzero
@@ -618,19 +614,19 @@ private lemma supportedOnPos_posDef (w : Fin n → SignType) :
   have hwpos : w i = SignType.pos := by
     by_contra hne
     have : (v : Fin n → ℝ) i = 0 := by
-      exact (supportedOnPos_mem (n := n) (w := w) |>.1 v.property) i hne
+      exact (mem_supportedOnPos (n := n) (w := w) |>.1 v.property) i hne
     exact hi this
   have hterm_pos : 0 < (v : Fin n → ℝ) i ^ 2 := by
     simpa [pow_two] using sq_pos_of_ne_zero hi
   have hle :
-      (v : Fin n → ℝ) i ^ 2 ≤ DiagForm (n := n) w (v : Fin n → ℝ) := by
-    simp only [DiagForm, QuadraticMap.weightedSumSquares_apply]
+      (v : Fin n → ℝ) i ^ 2 ≤ diagForm (n := n) w (v : Fin n → ℝ) := by
+    simp only [diagForm, QuadraticMap.weightedSumSquares_apply]
     have hnonneg :
         ∀ j : Fin n, 0 ≤ ((w j : ℝ) • ((v : Fin n → ℝ) j * (v : Fin n → ℝ) j)) := by
       intro j
       by_cases hj : w j = SignType.pos
       · simp [hj, mul_self_nonneg]
-      · have : (v : Fin n → ℝ) j = 0 := (supportedOnPos_mem (n := n) (w := w)).1 v.property j hj
+      · have : (v : Fin n → ℝ) j = 0 := (mem_supportedOnPos (n := n) (w := w)).1 v.property j hj
         simp [this]
     have : ((w i : ℝ) • ((v : Fin n → ℝ) i * (v : Fin n → ℝ) i))
         ≤ ∑ j : Fin n, (w j : ℝ) • ((v : Fin n → ℝ) j * (v : Fin n → ℝ) j) := by
@@ -639,54 +635,70 @@ private lemma supportedOnPos_posDef (w : Fin n → SignType) :
     simpa [hwpos, pow_two] using this
   exact lt_of_lt_of_le hterm_pos hle
 
+/-- The submodule `supportedOnPos w` is linearly equivalent to functions on the positive index set. -/
+noncomputable def supportedOnPosEquiv (w : Fin n → SignType) :
+    supportedOnPos (n := n) w ≃ₗ[ℝ] ({i // i ∈ posSet (n := n) w} → ℝ) := by
+  classical
+  refine
+    { toLinearMap :=
+        { toFun := fun v i => (v : Fin n → ℝ) i.1
+          map_add' := by intro v₁ v₂; ext i; rfl
+          map_smul' := by intro a v; ext i; rfl }
+      invFun := fun u =>
+        ⟨fun i => if h : i ∈ posSet (n := n) w then u ⟨i, h⟩ else 0, by
+          intro i hi
+          by_cases h : i ∈ posSet (n := n) w
+          · exfalso
+            exact hi ((mem_posSet (n := n) (w := w)).1 h)
+          · simp [h]⟩
+      left_inv := by
+        intro v
+        ext i
+        by_cases h : i ∈ posSet (n := n) w
+        · have : w i = SignType.pos := (mem_posSet (n := n) (w := w)).1 h
+          simp [h]
+        · have : w i ≠ SignType.pos := by
+            intro hpos
+            exact h ((mem_posSet (n := n) (w := w)).2 hpos)
+          have : (v : Fin n → ℝ) i = 0 :=
+            (mem_supportedOnPos (n := n) (w := w)).1 v.property i this
+          simp [h, this]
+      right_inv := by
+        intro u
+        ext i
+        simp }
+
+lemma finrank_supportedOnPos (w : Fin n → SignType) :
+    finrank ℝ (supportedOnPos (n := n) w) = (posSet (n := n) w).card := by
+  classical
+  have h :
+      finrank ℝ ({i // i ∈ posSet (n := n) w} → ℝ) = (posSet (n := n) w).card := by
+    -- Write the index type as the finset `posSet w` itself to avoid rewriting the predicate.
+    change finrank ℝ ((posSet (n := n) w) → ℝ) = (posSet (n := n) w).card
+    calc
+      finrank ℝ ((posSet (n := n) w) → ℝ) = Fintype.card (posSet (n := n) w) := by
+        simp [Module.finrank_fintype_fun_eq_card]
+      _ = (posSet (n := n) w).card := by
+        simp
+  -- Convert the `LinearEquiv` finrank equality using the computation of the codomain finrank.
+  simpa [h] using (LinearEquiv.finrank_eq (supportedOnPosEquiv (n := n) w))
+
 theorem posIndex_diag_signType (w : Fin n → SignType) :
-    posIndex (V := Fin n → ℝ) (DiagForm (n := n) w) = (posSet (n := n) w).card := by
+    posIndex (V := Fin n → ℝ) (diagForm (n := n) w) = (posSet (n := n) w).card := by
   -- lower bound: exhibit the supported-on-positive submodule
   have h_lower :
-      (posSet (n := n) w).card ≤ posIndex (V := Fin n → ℝ) (DiagForm (n := n) w) := by
-    -- `supportedOnPos` is isomorphic to functions on the positive index set
-    let W := supportedOnPos (n := n) w
-    have hfin :
-        finrank ℝ W = (posSet (n := n) w).card := by
-      -- linear equivalence with functions on the subtype `{i // i ∈ posSet}`
-      let e :
-          W ≃ₗ[ℝ] ({i // i ∈ posSet (n := n) w} → ℝ) :=
-        { toLinearMap :=
-            { toFun := fun v i => (v : Fin n → ℝ) i.1
-              map_add' := by intro v₁ v₂; ext i; rfl
-              map_smul' := by intro a v; ext i; rfl }
-          invFun := fun u =>
-            ⟨fun i => if h : i ∈ posSet (n := n) w then u ⟨i, h⟩ else 0, by
-              intro i hi
-              by_cases h : i ∈ posSet (n := n) w
-              · exfalso
-                exact hi (mem_posSet_iff (n := n) (w := w) |>.1 h)
-              · simp [h]⟩
-          left_inv := by
-            intro v
-            ext i
-            by_cases h : i ∈ posSet (n := n) w
-            · have : w i = SignType.pos := (mem_posSet_iff (n := n) (w := w)).1 h
-              simp [h]
-            · have : w i ≠ SignType.pos := by
-                intro hpos; exact h ((mem_posSet_iff (n := n) (w := w)).2 hpos)
-              have : (v : Fin n → ℝ) i = 0 := (supportedOnPos_mem (n := n) (w := w)).1 v.property i this
-              simp [h, this]
-          right_inv := by
-            intro u
-            ext i
-            simp }
-      simpa using (LinearEquiv.finrank_eq e)
+      (posSet (n := n) w).card ≤ posIndex (V := Fin n → ℝ) (diagForm (n := n) w) := by
     have hk :
         ∃ W' : Submodule ℝ (Fin n → ℝ),
           finrank ℝ W' = (posSet (n := n) w).card ∧
-            IsPosDefOn (V := Fin n → ℝ) (DiagForm (n := n) w) W' := by
-      refine ⟨W, hfin, supportedOnPos_posDef (n := n) w⟩
-    exact le_posIndex_of_exists (V := Fin n → ℝ) (Q := DiagForm (n := n) w) hk
+            IsPosDefOn (V := Fin n → ℝ) (diagForm (n := n) w) W' := by
+      refine ⟨supportedOnPos (n := n) w, finrank_supportedOnPos (n := n) w,
+        isPosDefOn_diagForm_supportedOnPos (n := n) w⟩
+    exact le_posIndex_of_exists (V := Fin n → ℝ) (Q := diagForm (n := n) w) hk
   -- upper bound: any positive definite subspace injects into the positive coordinates
   have h_upper :
-      posIndex (V := Fin n → ℝ) (DiagForm (n := n) w) ≤ (posSet (n := n) w).card := by
-    rcases posIndex_spec (V := Fin n → ℝ) (DiagForm (n := n) w) with ⟨W, hW, hWpos⟩
+      posIndex (V := Fin n → ℝ) (diagForm (n := n) w) ≤ (posSet (n := n) w).card := by
+    rcases posIndex_spec (Q := diagForm (n := n) w) with ⟨W, hW, hWpos⟩
     let f := restrictPos (n := n) w
     let g : W →ₗ[ℝ] ({i // i ∈ posSet (n := n) w} → ℝ) := f.comp W.subtype
     have hg_inj : Function.Injective g := by
@@ -695,17 +707,17 @@ theorem posIndex_diag_signType (w : Fin n → SignType) :
         simpa [g, map_sub] using congrArg (fun z => z - g y) hxy
       have hvanish : ∀ i, w i = SignType.pos → ((x - y : W) : (Fin n → ℝ)) i = 0 := by
         intro i hi
-        have : (g (x - y)) ⟨i, (mem_posSet_iff (n := n) (w := w)).2 hi⟩ = 0 := by
+        have : (g (x - y)) ⟨i, (mem_posSet (n := n) (w := w)).2 hi⟩ = 0 := by
           simp [this]
         simpa [g, f, restrictPos_apply] using this
       have hnonpos :
-          DiagForm (n := n) w ((x - y : W) : (Fin n → ℝ)) ≤ 0 :=
-        diag_nonpos_of_no_pos (n := n) (w := w) hvanish
+          diagForm (n := n) w ((x - y : W) : (Fin n → ℝ)) ≤ 0 :=
+        diagForm_nonpos_of_no_pos (n := n) (w := w) hvanish
       by_cases hxy0 : x - y = 0
       · have : x = y := sub_eq_zero.mp hxy0
         exact this
-      · have hpos : 0 < (DiagForm (n := n) w).comp W.subtype (x - y) := hWpos _ hxy0
-        have : ¬ (0 < (DiagForm (n := n) w).comp W.subtype (x - y)) :=
+      · have hpos : 0 < (diagForm (n := n) w).comp W.subtype (x - y) := hWpos _ hxy0
+        have : ¬ (0 < (diagForm (n := n) w).comp W.subtype (x - y)) :=
           not_lt_of_ge (by simpa [QuadraticMap.comp_apply] using hnonpos)
         exact (this hpos).elim
     have hfin_le :
@@ -717,7 +729,12 @@ theorem posIndex_diag_signType (w : Fin n → SignType) :
         Submodule.finrank_le (R := ℝ) (M := ({i // i ∈ posSet (n := n) w} → ℝ)) (LinearMap.range g)
       have htarget :
           finrank ℝ ({i // i ∈ posSet (n := n) w} → ℝ) = (posSet (n := n) w).card := by
-        simp
+        change finrank ℝ ((posSet (n := n) w) → ℝ) = (posSet (n := n) w).card
+        calc
+          finrank ℝ ((posSet (n := n) w) → ℝ) = Fintype.card (posSet (n := n) w) := by
+            simp [Module.finrank_fintype_fun_eq_card]
+          _ = (posSet (n := n) w).card := by
+            simp
       simpa [hWrange, htarget] using hrange_le
     simpa [hW] using hfin_le
   exact le_antisymm h_upper h_lower
@@ -726,7 +743,11 @@ theorem posIndex_weightedSumSquares_signType (w : Fin n → SignType) :
     posIndex (V := Fin n → ℝ)
         (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => (w i : ℝ)) =
       (Finset.univ.filter fun i : Fin n => w i = SignType.pos).card := by
-  simpa [DiagForm, posSet] using (posIndex_diag_signType (n := n) w)
+  simpa [diagForm, posSet] using (posIndex_diag_signType (n := n) w)
+
+theorem posIndex_diagForm (w : Fin n → SignType) :
+    posIndex (V := Fin n → ℝ) (diagForm (n := n) w) = (posSet (n := n) w).card := by
+  simpa [diagForm, posSet, signSet] using (posIndex_weightedSumSquares_signType (n := n) w)
 
 theorem posDim_weightedSumSquares_signType (w : Fin n → SignType) :
     QuadraticForm.posDim (E := Fin n → ℝ)
@@ -735,73 +756,59 @@ theorem posDim_weightedSumSquares_signType (w : Fin n → SignType) :
       (Finset.univ.filter fun i : Fin n => w i = SignType.pos).card := by
   simp [QuadraticForm.posDim, posIndex_weightedSumSquares_signType (n := n) w]
 
+theorem posDim_diagForm (w : Fin n → SignType) :
+    QuadraticForm.posDim (E := Fin n → ℝ) (diagForm (n := n) w) = (posSet (n := n) w).card := by
+  simp [QuadraticForm.posDim, posIndex_diagForm (n := n) w]
+
 theorem negDim_weightedSumSquares_signType (w : Fin n → SignType) :
     QuadraticForm.negDim (E := Fin n → ℝ)
         ((QuadraticMap.weightedSumSquares ℝ fun i : Fin n => (w i : ℝ)) :
           QuadraticForm ℝ (Fin n → ℝ)) =
       (Finset.univ.filter fun i : Fin n => w i = SignType.neg).card := by
+  classical
   set Q : QuadraticForm ℝ (Fin n → ℝ) :=
     (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => (w i : ℝ))
-  have hneg :
-      (-Q) =
-        (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => ((-w i : SignType) : ℝ)) := by
+  have hneg : -Q = diagForm (n := n) (fun i => -w i) := by
     ext v
-    simp [Q, QuadraticMap.weightedSumSquares_apply]
-  have hposIndex :
-      posIndex (V := Fin n → ℝ)
-          (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => ((-w i : SignType) : ℝ)) =
-        (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos).card := by
-    simpa using (posIndex_weightedSumSquares_signType (n := n) fun i => -w i)
-  have hcard :
-      (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos).card =
-        (Finset.univ.filter fun i : Fin n => w i = SignType.neg).card := by
-    have hset :
-        (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos) =
-          (Finset.univ.filter fun i : Fin n => w i = SignType.neg) := by
-      ext i
-      cases hi : w i <;> simp [hi]
-    simpa using congrArg Finset.card hset
-  have hmain :
-      posIndex (V := Fin n → ℝ) (-Q) =
-        (Finset.univ.filter fun i : Fin n => w i = SignType.neg).card := by
-    calc
-      posIndex (V := Fin n → ℝ) (-Q)
-          = posIndex (V := Fin n → ℝ)
-              (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => ((-w i : SignType) : ℝ)) := by
-                simp [hneg]
-      _ = (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos).card := hposIndex
-      _ = (Finset.univ.filter fun i : Fin n => w i = SignType.neg).card := hcard
-  simpa [QuadraticForm.negDim, Q] using hmain
+    simp [Q, diagForm, QuadraticMap.weightedSumSquares_apply]
+  have hpos : posIndex (V := Fin n → ℝ) (-Q) = (posSet (n := n) (fun i => -w i)).card := by
+    simpa [hneg] using (posIndex_diag_signType (n := n) (w := fun i => -w i))
+  -- `negDim Q = posIndex (-Q)` and `posSet (-w) = negSet w`.
+  simp [QuadraticForm.negDim, Q, hpos, posSet_neg (n := n) w, negSet, signSet]
 
-private lemma card_filters_pos_neg_zero (w : Fin n → SignType) :
-    (Finset.univ.filter fun i : Fin n => w i = SignType.pos).card +
-        (Finset.univ.filter fun i : Fin n => w i = SignType.neg).card +
-          (Finset.univ.filter fun i : Fin n => w i = 0).card =
+theorem negDim_diagForm (w : Fin n → SignType) :
+    QuadraticForm.negDim (E := Fin n → ℝ) (diagForm (n := n) w) = (negSet (n := n) w).card := by
+  -- This is exactly the filter-card theorem, restated via `negSet`.
+  simpa [diagForm, negSet, signSet] using (negDim_weightedSumSquares_signType (n := n) w)
+
+lemma card_posSet_add_card_negSet_add_card_zeroSet (w : Fin n → SignType) :
+    (posSet (n := n) w).card + (negSet (n := n) w).card + (zeroSet (n := n) w).card =
       Fintype.card (Fin n) := by
-  let A : Finset (Fin n) := Finset.univ.filter fun i => w i = SignType.pos
-  let B : Finset (Fin n) := Finset.univ.filter fun i => w i = SignType.neg
-  let C : Finset (Fin n) := Finset.univ.filter fun i => w i = 0
+  classical
+  let A : Finset (Fin n) := posSet (n := n) w
+  let B : Finset (Fin n) := negSet (n := n) w
+  let C : Finset (Fin n) := zeroSet (n := n) w
   have hAB : Disjoint A B := by
     refine Finset.disjoint_left.2 ?_
     intro i hiA hiB
-    have hiPos : w i = SignType.pos := (Finset.mem_filter.1 hiA).2
-    have hiNeg : w i = SignType.neg := (Finset.mem_filter.1 hiB).2
-    have : (SignType.pos : SignType) = SignType.neg := by simp [hiPos] at hiNeg
+    have hiPos : w i = SignType.pos := (mem_posSet (n := n) (w := w)).1 hiA
+    have hiNeg : w i = SignType.neg := (mem_negSet (n := n) (w := w)).1 hiB
+    have : (SignType.pos : SignType) = SignType.neg := hiPos.symm.trans hiNeg
     cases this
   have hABC : Disjoint (A ∪ B) C := by
     refine Finset.disjoint_left.2 ?_
     intro i hiAB hiC
-    have hiC' : w i = 0 := (Finset.mem_filter.1 hiC).2
+    have hiC' : w i = 0 := (mem_zeroSet (n := n) (w := w)).1 hiC
     rcases Finset.mem_union.1 hiAB with hiA | hiB
-    · have : w i = SignType.pos := (Finset.mem_filter.1 hiA).2
-      have : (SignType.pos : SignType) = 0 := by simp [this] at hiC'
+    · have hiPos : w i = SignType.pos := (mem_posSet (n := n) (w := w)).1 hiA
+      have : (SignType.pos : SignType) = 0 := hiPos.symm.trans hiC'
       cases this
-    · have : w i = SignType.neg := (Finset.mem_filter.1 hiB).2
-      have : (SignType.neg : SignType) = 0 := by simp [this] at hiC'
+    · have hiNeg : w i = SignType.neg := (mem_negSet (n := n) (w := w)).1 hiB
+      have : (SignType.neg : SignType) = 0 := hiNeg.symm.trans hiC'
       cases this
   have hunion : (A ∪ B) ∪ C = Finset.univ := by
     ext i
-    cases hi : w i <;> simp [A, B, C, hi]
+    cases hi : w i <;> simp [A, B, C, signSet, hi]
   have hcardAB : (A ∪ B).card = A.card + B.card :=
     Finset.card_union_of_disjoint hAB
   have hcardABC : ((A ∪ B) ∪ C).card = (A ∪ B).card + C.card :=
@@ -829,10 +836,10 @@ theorem zeroDim_weightedSumSquares_signType (w : Fin n → SignType) :
   have hfin : finrank ℝ (Fin n → ℝ) = Fintype.card (Fin n) := by simp
   have hpos := posDim_weightedSumSquares_signType (n := n) w
   have hneg := negDim_weightedSumSquares_signType (n := n) w
-  have hsum := card_filters_pos_neg_zero (n := n) w
-  let A : ℕ := (Finset.univ.filter fun i : Fin n => w i = SignType.pos).card
-  let B : ℕ := (Finset.univ.filter fun i : Fin n => w i = SignType.neg).card
-  let C : ℕ := (Finset.univ.filter fun i : Fin n => w i = 0).card
+  have hsum := card_posSet_add_card_negSet_add_card_zeroSet (n := n) w
+  let A : ℕ := (posSet (n := n) w).card
+  let B : ℕ := (negSet (n := n) w).card
+  let C : ℕ := (zeroSet (n := n) w).card
   have hsum' : A + B + C = Fintype.card (Fin n) := by simpa [A, B, C] using hsum
   have hz0 : Fintype.card (Fin n) - A - B = C := by
     have hn : Fintype.card (Fin n) = A + (B + C) := by
@@ -847,37 +854,19 @@ theorem zeroDim_weightedSumSquares_signType (w : Fin n → SignType) :
   set Q : QuadraticForm ℝ (Fin n → ℝ) :=
     (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => (w i : ℝ))
   have hposI : posIndex (V := Fin n → ℝ) Q = A := by
-    simpa [Q, A] using (posIndex_weightedSumSquares_signType (n := n) w)
+    simpa [Q, A, posSet, signSet] using (posIndex_weightedSumSquares_signType (n := n) w)
   have hnegI : posIndex (V := Fin n → ℝ) (-Q) = B := by
-    have h0 :
-        posIndex (V := Fin n → ℝ)
-            (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => ((-w i : SignType) : ℝ)) =
-          (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos).card := by
-      simpa using (posIndex_weightedSumSquares_signType (n := n) fun i => -w i)
-    have hneg' : (-Q) =
-        (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => ((-w i : SignType) : ℝ)) := by
-      ext v
-      simp [Q, QuadraticMap.weightedSumSquares_apply]
-    have hcard :
-        (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos).card = B := by
-      have hset :
-          (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos) =
-            (Finset.univ.filter fun i : Fin n => w i = SignType.neg) := by
-        ext i
-        cases hi : w i <;> simp [hi]
-      simpa [B] using congrArg Finset.card hset
-    calc
-      posIndex (V := Fin n → ℝ) (-Q)
-          = posIndex (V := Fin n → ℝ)
-              (QuadraticMap.weightedSumSquares ℝ fun i : Fin n => ((-w i : SignType) : ℝ)) := by
-                simp [hneg']
-      _ = (Finset.univ.filter fun i : Fin n => (-w i) = SignType.pos).card := h0
-      _ = B := hcard
+    -- `negDim Q = posIndex (-Q)` and `negDim Q = card (negSet w)`.
+    simpa [QuadraticForm.negDim, Q, B, negSet, signSet] using hneg
   have : QuadraticForm.zeroDim (E := Fin n → ℝ) Q = C := by
     dsimp [QuadraticForm.zeroDim, QuadraticForm.posDim, QuadraticForm.negDim]
     rw [hfin, hposI, hnegI]
     simpa using hz0
-  simpa [C] using this
+  simpa [C, zeroSet, signSet, Q] using this
+
+theorem zeroDim_diagForm (w : Fin n → SignType) :
+    QuadraticForm.zeroDim (E := Fin n → ℝ) (diagForm (n := n) w) = (zeroSet (n := n) w).card := by
+  simpa [diagForm, zeroSet, signSet] using (zeroDim_weightedSumSquares_signType (n := n) w)
 
 end
 

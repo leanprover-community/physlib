@@ -9,7 +9,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 /-!
 # Riemannian Metric Definitions
 
-This file is a PhysLean-facing wrapper around the modern Mathlib Riemannian metric API.
+This file builds around the modern Mathlib Riemannian metric API.
 
 Concretely, a `C^n` Riemannian metric on a manifold is a smooth section of the bundle of bilinear
 forms on the tangent bundle, packaged as `Bundle.ContMDiffRiemannianMetric`.

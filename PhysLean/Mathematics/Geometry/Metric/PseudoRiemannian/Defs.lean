@@ -10,7 +10,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Hom
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.Topology.LocallyConstant.Basic
-import PhysLean.Mathematics.Geometry.Metric.QuadraticForm.Index
+import PhysLean.Mathematics.Geometry.Metric.QuadraticForm.NegDim
 
 /-!
 # Pseudo-Riemannian Metrics on Smooth Manifolds
