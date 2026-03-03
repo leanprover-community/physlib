@@ -89,7 +89,8 @@ abbrev pseudoInner (x : B) (v w : E x) : ℝ :=
 omit [TopologicalSpace B] in
 @[simp]
 lemma pseudoInner_def (x : B) (v w : E x) :
-  pseudoInner (B := B) (E := E) x v w = metric (B := B) (E := E) x v w := rfl
+    pseudoInner (B := B) (E := E) x v w = metric (B := B) (E := E) x v w :=
+  rfl
 
 omit [TopologicalSpace B] in
 lemma pseudoInner_symm (x : B) (v w : E x) :
@@ -750,11 +751,13 @@ instance coeFunInst : CoeFun (PseudoRiemannianMetric E H M n I)
 
 @[simp]
 lemma toBilinForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
-  (v w : TangentSpace I x) : toBilinForm g x v w = g.val x v w := rfl
+    (v w : TangentSpace I x) : toBilinForm g x v w = g.val x v w :=
+  rfl
 
 @[simp]
 lemma toQuadraticForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
-  (v : TangentSpace I x) : toQuadraticForm g x v = g.val x v v := rfl
+    (v : TangentSpace I x) : toQuadraticForm g x v = g.val x v v :=
+  rfl
 
 /-! ## Index (negative inertia) -/
 
@@ -765,7 +768,8 @@ noncomputable def index (g : PseudoRiemannianMetric E H M n I) (x : M) : ℕ :=
 
 @[simp]
 lemma index_def (g : PseudoRiemannianMetric E H M n I) (x : M) :
-  g.index x = (g.toQuadraticForm x).negDim := rfl
+    g.index x = (g.toQuadraticForm x).negDim :=
+  rfl
 
 lemma index_isLocallyConstant (g : PseudoRiemannianMetric E H M n I) :
     IsLocallyConstant (fun x : M => g.index x) := by
