@@ -160,7 +160,6 @@ private lemma posIndexPred_zero (Q : QuadraticForm ℝ V) :
 private lemma posIndexPred_le_finrank [FiniteDimensional ℝ V] {Q : QuadraticForm ℝ V} {k : ℕ}
     (hk : PosIndexPred (V := V) Q k) : k ≤ finrank ℝ V := by
   rcases hk with ⟨W, hWfd, hW, -⟩
-  classical
   haveI : FiniteDimensional ℝ W := hWfd
   have hk_le : finrank ℝ W ≤ finrank ℝ V :=
     Submodule.finrank_le (R := ℝ) (M := V) W
@@ -189,7 +188,6 @@ lemma posIndex_spec [FiniteDimensional ℝ V] (Q : QuadraticForm ℝ V) :
       (Nat.sSup_mem (s := ({k : ℕ | PosIndexPred (V := V) Q k} : Set ℕ))
         (posIndex_nonempty (V := V) Q) (posIndex_bddAbove (V := V) Q))
   rcases hmem with ⟨W, hWfd, hW, hWpos⟩
-  classical
   haveI : FiniteDimensional ℝ W := hWfd
   exact ⟨W, hW, hWpos⟩
 
