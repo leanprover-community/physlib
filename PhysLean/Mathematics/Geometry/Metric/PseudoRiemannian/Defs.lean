@@ -3,10 +3,8 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.Geometry.Manifold.VectorBundle.Hom
+import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
+import Mathlib.Geometry.Manifold.VectorBundle.Riemannian
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.LinearAlgebra.BilinearForm.Properties
 import Mathlib.Topology.LocallyConstant.Basic
@@ -86,7 +84,7 @@ abbrev pseudoInner (x : B) (v w : E x) : ℝ :=
   (PseudoRiemannianBundle.metric (B := B) (E := E) x) v w
 
 omit [TopologicalSpace B] in
-@[simp] 
+@[simp]
 lemma pseudoInner_def (x : B) (v w : E x) :
   pseudoInner (B := B) (E := E) x v w = metric (B := B) (E := E) x v w := rfl
 
@@ -254,6 +252,7 @@ The quadratic form `Qₓ` at `x` is defined as `Qₓ(v) = gₓ(v,v)`.
 The associated symmetric bilinear form required by `QuadraticForm.exists_companion'`
 is `Bₓ(v,w) = gₓ(v,w) + gₓ(w,v)`. Given the symmetry `symm`, this is `2 * gₓ(v,w)`.
 -/
+
 namespace PseudoRiemannianMetric
 
 /--
@@ -731,21 +730,18 @@ variable [inst_tangent_findim : ∀ (x : M), FiniteDimensional ℝ (TangentSpace
 
 /-! ## Predicate typeclass: pseudo-Riemannian manifolds -/
 
-/-- Prop-valued predicate recording existence of a `C^n` pseudo-Riemannian metric.
+/-- Prop-valued predicate recording existence of a `C^n` Riemannian metric (bundle-first), without
+making any noncanonical choice. -/
+class HasRiemannianMetric : Prop where
+  out : Nonempty (RiemannianMetric (I := I) (n := n) M)
 
-This is the “there exists a metric” statement, *without* making any noncanonical choice.  For
-bundle-first development, the primary data is still an explicit `PseudoRiemannianMetric` (or a
-`Bundle.PseudoRiemannianBundle` + smoothness instance). -/
-class HasPseudoRiemannianMetric : Prop where
-  out : Nonempty (PseudoRiemannianMetric E H M n I)
-
-instance (g : PseudoRiemannianMetric E H M n I) :
-    HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) :=
+instance (g : RiemannianMetric (I := I) (n := n) M) :
+    HasRiemannianMetric (I := I) (n := n) (M := M) :=
   ⟨⟨g⟩⟩
 
-theorem hasPseudoRiemannianMetric_iff :
-    HasPseudoRiemannianMetric (E := E) (H := H) (M := M) (n := n) (I := I) ↔
-      Nonempty (PseudoRiemannianMetric E H M n I) :=
+theorem hasRiemannianMetric_iff :
+    HasRiemannianMetric (I := I) (n := n) (M := M) ↔
+      Nonempty (RiemannianMetric (I := I) (n := n) M) :=
   ⟨fun h => h.out, fun h => ⟨h⟩⟩
 
 theorem hasPseudoRiemannianMetric_iff_exists :
