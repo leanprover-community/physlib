@@ -146,29 +146,32 @@ def IsPosDefOn (Q : QuadraticForm ℝ V) (W : Submodule ℝ V) : Prop :=
 
 /-- Predicate asserting that a real quadratic form admits a positive definite submodule of
 dimension `k`. -/
-def PosIndexPred [FiniteDimensional ℝ V] (Q : QuadraticForm ℝ V) (k : ℕ) : Prop :=
-  ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W
+def PosIndexPred (Q : QuadraticForm ℝ V) (k : ℕ) : Prop :=
+  ∃ W : Submodule ℝ V, FiniteDimensional ℝ W ∧ finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W
 
-private lemma posIndexPred_zero [FiniteDimensional ℝ V] (Q : QuadraticForm ℝ V) :
+private lemma posIndexPred_zero (Q : QuadraticForm ℝ V) :
     PosIndexPred (V := V) Q 0 := by
-  refine ⟨(⊥ : Submodule ℝ V), by simp, ?_⟩
+  refine ⟨(⊥ : Submodule ℝ V), ?_, by simp, ?_⟩
+  · infer_instance
   intro x hx
   exfalso
   exact hx (Subsingleton.elim x 0)
 
 private lemma posIndexPred_le_finrank [FiniteDimensional ℝ V] {Q : QuadraticForm ℝ V} {k : ℕ}
     (hk : PosIndexPred (V := V) Q k) : k ≤ finrank ℝ V := by
-  rcases hk with ⟨W, hW, -⟩
+  rcases hk with ⟨W, hWfd, hW, -⟩
+  classical
+  haveI : FiniteDimensional ℝ W := hWfd
   have hk_le : finrank ℝ W ≤ finrank ℝ V :=
     Submodule.finrank_le (R := ℝ) (M := V) W
   simpa [hW] using hk_le
 
 /-- The positive index of a real quadratic form: the maximal dimension of a subspace on which the
 form is positive definite. -/
-noncomputable def posIndex [FiniteDimensional ℝ V] (Q : QuadraticForm ℝ V) : ℕ :=
+noncomputable def posIndex (Q : QuadraticForm ℝ V) : ℕ :=
   sSup {k : ℕ | PosIndexPred (V := V) Q k}
 
-private lemma posIndex_nonempty [FiniteDimensional ℝ V] (Q : QuadraticForm ℝ V) :
+private lemma posIndex_nonempty (Q : QuadraticForm ℝ V) :
     ({k : ℕ | PosIndexPred (V := V) Q k} : Set ℕ).Nonempty :=
   ⟨0, posIndexPred_zero (V := V) Q⟩
 
@@ -185,15 +188,17 @@ lemma posIndex_spec [FiniteDimensional ℝ V] (Q : QuadraticForm ℝ V) :
     simpa [posIndex] using
       (Nat.sSup_mem (s := ({k : ℕ | PosIndexPred (V := V) Q k} : Set ℕ))
         (posIndex_nonempty (V := V) Q) (posIndex_bddAbove (V := V) Q))
-  rcases hmem with ⟨W, hW, hWpos⟩
+  rcases hmem with ⟨W, hWfd, hW, hWpos⟩
+  classical
+  haveI : FiniteDimensional ℝ W := hWfd
   exact ⟨W, hW, hWpos⟩
 
 lemma le_posIndex_of_exists [FiniteDimensional ℝ V] {Q : QuadraticForm ℝ V} {k : ℕ}
-    (hk : ∃ W : Submodule ℝ V, finrank ℝ W = k ∧ IsPosDefOn (V := V) Q W) :
+    (hk : PosIndexPred (V := V) Q k) :
     k ≤ posIndex (V := V) Q := by
   have hb : BddAbove ({k : ℕ | PosIndexPred (V := V) Q k} : Set ℕ) :=
     posIndex_bddAbove (V := V) Q
-  simpa [posIndex, PosIndexPred] using (le_csSup hb hk)
+  simpa [posIndex] using (le_csSup hb hk)
 
 /- If `Q` and `Q₂` are equivalent, then `posIndex Q ≤ posIndex Q₂`. -/
 lemma posIndex_le_of_equivalent [FiniteDimensional ℝ V] {V₂ : Type*} [AddCommGroup V₂] [Module ℝ V₂]
@@ -231,8 +236,10 @@ lemma posIndex_le_of_equivalent [FiniteDimensional ℝ V] {V₂ : Type*} [AddCom
       simpa [hxmap] using this
     simpa [IsPosDefOn, QuadraticMap.comp_apply, heq, x'] using hpos'
   have hk :
-      ∃ U : Submodule ℝ V₂, finrank ℝ U = posIndex (V := V) Q ∧ IsPosDefOn (V := V₂) Q₂ U :=
-    ⟨W₂, by simp [hWfin, hfinrank], hW₂pos⟩
+      PosIndexPred (V := V₂) Q₂ (posIndex (V := V) Q) := by
+    refine ⟨W₂, ?_, ?_, hW₂pos⟩
+    · infer_instance
+    · simp [hWfin, hfinrank]
   exact le_posIndex_of_exists (V := V₂) hk
 
 /-- `posIndex` is invariant under equivalence of quadratic forms. -/
@@ -259,25 +266,22 @@ lemma posIndex_le_finrank [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
   have hsne : s.Nonempty := ⟨0, posIndexPred_zero (V := E) Q⟩
   refine (csSup_le hsne) ?_
   intro k hk
-  rcases hk with ⟨W, hW, -⟩
-  have hk_le : finrank ℝ W ≤ finrank ℝ E :=
-    Submodule.finrank_le (R := ℝ) (M := E) W
-  simpa [s, hW] using hk_le
+  exact posIndexPred_le_finrank (V := E) (Q := Q) hk
 
 /-- The positive index of inertia of a real quadratic form (canonical). -/
-noncomputable def posDim [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : ℕ :=
+noncomputable def posDim (Q : QuadraticForm ℝ E) : ℕ :=
   posIndex (V := E) Q
 
 /-- The negative index of inertia of a real quadratic form (canonical). -/
-noncomputable def negDim [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : ℕ :=
+noncomputable def negDim (Q : QuadraticForm ℝ E) : ℕ :=
   posIndex (V := E) (-Q)
 
 @[simp]
-lemma posDim_def [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
+lemma posDim_def (Q : QuadraticForm ℝ E) :
     Q.posDim = posIndex (V := E) Q := rfl
 
 @[simp]
-lemma negDim_def [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
+lemma negDim_def (Q : QuadraticForm ℝ E) :
     Q.negDim = posIndex (V := E) (-Q) := rfl
 
 lemma posDim_le_finrank [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.posDim ≤ finrank ℝ E :=
@@ -287,9 +291,9 @@ lemma negDim_le_finrank [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.
   posIndex_le_finrank (E := E) (-Q)
 
 @[simp]
-lemma posDim_neg [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : (-Q).posDim = Q.negDim := rfl
+lemma posDim_neg (Q : QuadraticForm ℝ E) : (-Q).posDim = Q.negDim := rfl
 
-lemma negDim_neg [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : (-Q).negDim = Q.posDim := by
+lemma negDim_neg (Q : QuadraticForm ℝ E) : (-Q).negDim = Q.posDim := by
   simp [negDim, posDim]
 
 lemma posDim_add_negDim_le_finrank [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
@@ -313,35 +317,34 @@ lemma posDim_add_negDim_le_finrank [FiniteDimensional ℝ E] (Q : QuadraticForm 
   simpa [posDim, negDim, hWpos, hWneg] using hdim
 
 /-- The nullity of a real quadratic form, defined so that `pos + neg + zero = finrank`. -/
-noncomputable def zeroDim [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : ℕ :=
+noncomputable def zeroDim (Q : QuadraticForm ℝ E) : ℕ :=
   finrank ℝ E - Q.posDim - Q.negDim
 
 @[simp]
-lemma zeroDim_def [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
+lemma zeroDim_def (Q : QuadraticForm ℝ E) :
     Q.zeroDim = finrank ℝ E - Q.posDim - Q.negDim := rfl
 
-lemma zeroDim_neg [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : (-Q).zeroDim = Q.zeroDim := by
+lemma zeroDim_neg (Q : QuadraticForm ℝ E) : (-Q).zeroDim = Q.zeroDim := by
   simp [zeroDim, posDim, negDim, Nat.sub_sub, Nat.add_comm]
 
 /-- The signature `(pos, neg, zero)` of a real quadratic form (canonical). -/
-noncomputable def signature [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Signature :=
+noncomputable def signature (Q : QuadraticForm ℝ E) : Signature :=
   ⟨Q.posDim, Q.negDim, Q.zeroDim⟩
 
 @[simp]
-lemma signature_pos [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.pos = Q.posDim :=
+lemma signature_pos (Q : QuadraticForm ℝ E) : Q.signature.pos = Q.posDim :=
   rfl
 
 @[simp]
-lemma signature_neg [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.neg = Q.negDim :=
+lemma signature_neg (Q : QuadraticForm ℝ E) : Q.signature.neg = Q.negDim :=
   rfl
 
 @[simp]
-lemma signature_zero [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) : Q.signature.zero =
-    Q.zeroDim :=
+lemma signature_zero (Q : QuadraticForm ℝ E) : Q.signature.zero = Q.zeroDim :=
   rfl
 
 @[simp]
-lemma signature_def [FiniteDimensional ℝ E] (Q : QuadraticForm ℝ E) :
+lemma signature_def (Q : QuadraticForm ℝ E) :
     Q.signature = ⟨Q.posDim, Q.negDim, Q.zeroDim⟩ :=
   rfl
 
@@ -375,8 +378,9 @@ theorem posDim_posDef [FiniteDimensional ℝ E] {Q : QuadraticForm ℝ E} (hQ : 
     Q.posDim = finrank ℝ E := by
   apply le_antisymm (posDim_le_finrank (E := E) Q)
   have hk :
-      ∃ W : Submodule ℝ E, finrank ℝ W = finrank ℝ E ∧ IsPosDefOn (V := E) Q W := by
-    refine ⟨(⊤ : Submodule ℝ E), by simp, ?_⟩
+      PosIndexPred (V := E) Q (finrank ℝ E) := by
+    refine ⟨(⊤ : Submodule ℝ E), ?_, by simp, ?_⟩
+    · infer_instance
     intro x hx
     have hx' : (x : E) ≠ 0 := by
       intro h0
@@ -549,9 +553,10 @@ def restrictPos (w : Fin n → SignType) :
   map_add' := by intro v₁ v₂; ext i; rfl
   map_smul' := by intro a v; ext i; rfl
 
-@[simp] lemma restrictPos_apply {w : Fin n → SignType} (v : Fin n → ℝ)
-    (i : {i // i ∈ posSet (n := n) w}) :
-    restrictPos (n := n) w v i = v i.1 := rfl
+@[simp]
+lemma restrictPos_apply {w : Fin n → SignType} (v : Fin n → ℝ)
+    (i : {i // i ∈ posSet (n := n) w}) : restrictPos (n := n) w v i = v i.1 :=
+  rfl
 
 /-- If a vector has no positive-weight coordinates, then its value under `diagForm w` is
 nonpositive. -/
@@ -651,11 +656,10 @@ private theorem posIndex_diag_signType (w : Fin n → SignType) :
   have h_lower :
       (posSet (n := n) w).card ≤ posIndex (V := Fin n → ℝ) (diagForm (n := n) w) := by
     have hk :
-        ∃ W' : Submodule ℝ (Fin n → ℝ),
-          finrank ℝ W' = (posSet (n := n) w).card ∧
-            IsPosDefOn (V := Fin n → ℝ) (diagForm (n := n) w) W' := by
-      refine ⟨supportedOnPos (n := n) w, finrank_supportedOnPos (n := n) w,
-        isPosDefOn_diagForm_supportedOnPos (n := n) w⟩
+        PosIndexPred (V := Fin n → ℝ) (diagForm (n := n) w) (posSet (n := n) w).card := by
+      refine ⟨supportedOnPos (n := n) w, ?_, finrank_supportedOnPos (n := n) w, ?_⟩
+      · infer_instance
+      · exact isPosDefOn_diagForm_supportedOnPos (n := n) w
     exact le_posIndex_of_exists (V := Fin n → ℝ) (Q := diagForm (n := n) w) hk
   -- upper bound: any positive definite subspace injects into the positive coordinates
   have h_upper :
@@ -726,7 +730,6 @@ private theorem negDim_diagForm (w : Fin n → SignType) :
     simp [Q, diagForm, QuadraticMap.weightedSumSquares_apply]
   have hpos : posIndex (V := Fin n → ℝ) (-Q) = (posSet (n := n) (fun i => -w i)).card := by
     simpa [hneg] using (posIndex_diag_signType (n := n) (w := fun i => -w i))
-  -- `negDim Q = posIndex (-Q)` and `posSet (-w) = negSet w`.
   simp [Q, QuadraticForm.negDim, hpos, posSet_neg (n := n) w, negSet, signSet]
 
 theorem negDim_weightedSumSquares_signType (w : Fin n → SignType) :
@@ -825,3 +828,5 @@ end
 end Diagonal
 
 end QuadraticForm
+
+#lint
