@@ -41,4 +41,8 @@ lemma sum_kroneckerDelta [AddCommGroup M] [Module ℂ M]
     · simp [if_neg hne]
   simp [this]
 
+lemma sum_kroneckerDelta' [AddCommGroup M] [Module ℂ M]
+    (c : ℂ) (i : Fin d) (f : Fin d → M) : ∑ j, (c * δ[j,i]) • f j = c • f i := by
+  simp [kroneckerDelta_symm, sum_kroneckerDelta]
+
 end KroneckerDelta

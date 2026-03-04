@@ -282,47 +282,39 @@ lemma angularMomentumSqr_commutation_momentumSqr :
 ## Angular momentum / angular momentum commutators
 -/
 
-lemma angularMomentum_commutation_angularMomentum {d : ℕ} (i j k l : Fin d) : ⁅𝐋[i,j], 𝐋[k,l]⁆ =
-    (Complex.I * ℏ * δ[i,k]) • 𝐋[j,l] - (Complex.I * ℏ * δ[i,l]) • 𝐋[j,k]
-    - (Complex.I * ℏ * δ[j,k]) • 𝐋[i,l] + (Complex.I * ℏ * δ[j,l]) • 𝐋[i,k] := by
+lemma angularMomentum_commutation_angularMomentum : ⁅𝐋[i,j], 𝐋[k,l]⁆ =
+    (I * ℏ * δ[i,k]) • 𝐋[j,l] - (I * ℏ * δ[i,l]) • 𝐋[j,k]
+    - (I * ℏ * δ[j,k]) • 𝐋[i,l] + (I * ℏ * δ[j,l]) • 𝐋[i,k] := by
   nth_rw 2 [angularMomentumOperator]
-  rw [lie_sub]
-  rw [lie_leibniz, lie_leibniz]
-  rw [angularMomentum_commutation_momentum, angularMomentum_commutation_position]
-  rw [angularMomentum_commutation_momentum, angularMomentum_commutation_position]
-  dsimp only [angularMomentumOperator, kroneckerDelta]
-  simp only [ContinuousLinearMap.comp_sub, ContinuousLinearMap.sub_comp,
-    ContinuousLinearMap.comp_smul, ContinuousLinearMap.smul_comp]
-  ext ψ x
-  simp only [mul_ite, mul_one, mul_zero, ite_smul, zero_smul, coe_sub', Pi.sub_apply,
-    ContinuousLinearMap.add_apply, SchwartzMap.sub_apply, SchwartzMap.add_apply, smul_sub]
+  simp only [lie_sub, lie_leibniz, angularMomentum_commutation_position,
+    angularMomentum_commutation_momentum]
+  dsimp [angularMomentumOperator]
+  ext
+  simp only [comp_sub, comp_smulₛₗ, RingHom.id_apply, coe_sub', Pi.sub_apply,
+    ContinuousLinearMap.add_apply, coe_smul', coe_comp', Pi.smul_apply, Function.comp_apply,
+    SchwartzMap.sub_apply, SchwartzMap.add_apply, SchwartzMap.smul_apply, smul_eq_mul]
   ring
 
-lemma angularMomentumSqr_commutation_angularMomentum {d : ℕ} (i j : Fin d) :
+@[simp]
+lemma angularMomentumSqr_commutation_angularMomentum :
     ⁅angularMomentumOperatorSqr (d := d), 𝐋[i,j]⁆ = 0 := by
-  unfold angularMomentumOperatorSqr
-  conv_lhs =>
-    simp only [smul_lie, sum_lie, leibniz_lie, angularMomentum_commutation_angularMomentum]
-  dsimp only [kroneckerDelta]
-  simp only [comp_add, comp_sub, add_comp, sub_comp, comp_smul, smul_comp, mul_ite, mul_zero,
-    mul_one]
-  simp only [ite_smul, zero_smul]
-
-  -- Split into individual terms to do one of the sums, then recombine
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_irrel,
-    Finset.sum_const_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
-  simp only [← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
-
-  ext ψ x
-  simp only [angularMomentumOperator_antisymm _ i, angularMomentumOperator_antisymm j _,
-    neg_comp, comp_neg, neg_neg, smul_neg, sub_neg_eq_add]
-  simp only [ContinuousLinearMap.sum_apply, ContinuousLinearMap.add_apply,
-    ContinuousLinearMap.sub_apply, ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply,
-    ContinuousLinearMap.neg_apply, ContinuousLinearMap.zero_apply, SchwartzMap.add_apply,
-    SchwartzMap.sum_apply, SchwartzMap.sub_apply, SchwartzMap.smul_apply, SchwartzMap.neg_apply,
-    SchwartzMap.zero_apply]
-  ring_nf
-  rw [Finset.sum_const_zero, smul_zero]
+  dsimp [angularMomentumOperatorSqr]
+  simp only [smul_lie, sum_lie, leibniz_lie, angularMomentum_commutation_angularMomentum,
+    comp_add, comp_sub, add_comp, sub_comp, comp_smul, smul_comp, Finset.sum_add_distrib,
+    Finset.sum_sub_distrib]
+  -- Swap order of sums so that inner sum always involves δ
+  nth_rw 1 [Finset.sum_comm]
+  nth_rw 2 [Finset.sum_comm]
+  nth_rw 5 [Finset.sum_comm]
+  nth_rw 6 [Finset.sum_comm]
+  simp only [sum_kroneckerDelta', angularMomentumOperator_antisymm _ i,
+    angularMomentumOperator_antisymm j _, comp_neg, neg_comp, smul_neg, neg_neg,
+    Finset.sum_neg_distrib, ← sub_eq_add_neg, sub_neg_eq_add]
+  ext
+  simp only [ContinuousLinearMap.smul_apply, ContinuousLinearMap.add_apply,
+    ContinuousLinearMap.sub_apply, ContinuousLinearMap.zero_apply, SchwartzMap.smul_apply,
+    SchwartzMap.add_apply, SchwartzMap.sub_apply, SchwartzMap.zero_apply, smul_eq_mul]
+  ring
 
 end
 end QuantumMechanics
