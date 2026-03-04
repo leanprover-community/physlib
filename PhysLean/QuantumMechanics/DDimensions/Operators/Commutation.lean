@@ -254,46 +254,29 @@ lemma angularMomentumSqr_commutation_radiusRegPow (hε : 0 < ε) :
 ## Angular momentum / momentum commutators
 -/
 
-lemma angularMomentum_commutation_momentum {d : ℕ} (i j k : Fin d) : ⁅𝐋[i,j], 𝐩[k]⁆ =
-    (Complex.I * ℏ * δ[i,k]) • 𝐩[j] - (Complex.I * ℏ * δ[j,k]) • 𝐩[i] := by
-  unfold angularMomentumOperator
-  rw [sub_lie]
-  rw [leibniz_lie, leibniz_lie]
-  rw [momentum_commutation_momentum, momentum_commutation_momentum]
-  rw [position_commutation_momentum, position_commutation_momentum]
-  simp only [ContinuousLinearMap.smul_comp, id_comp, comp_zero, zero_add]
+lemma angularMomentum_commutation_momentum : ⁅𝐋[i,j], 𝐩[k]⁆ =
+    (I * ℏ * δ[i,k]) • 𝐩[j] - (I * ℏ * δ[j,k]) • 𝐩[i] := by
+  dsimp [angularMomentumOperator]
+  simp [sub_lie, leibniz_lie, position_commutation_momentum]
 
-lemma momentum_comp_angularMomentum_eq {d : ℕ} (i j k : Fin d) : 𝐩[k] ∘L 𝐋[i,j] =
-    𝐋[i,j] ∘L 𝐩[k] - (Complex.I * ℏ * δ[i,k]) • 𝐩[j] + (Complex.I * ℏ * δ[j,k]) • 𝐩[i] := by
-  rw [← sub_eq_zero, sub_add]
-  rw [← angularMomentum_commutation_momentum]
-  dsimp only [Bracket.bracket]
-  simp only [ContinuousLinearMap.mul_def, sub_sub_cancel, sub_eq_zero]
+lemma momentum_comp_angularMomentum_eq : 𝐩[k] ∘L 𝐋[i,j] =
+    𝐋[i,j] ∘L 𝐩[k] - (I * ℏ * δ[i,k]) • 𝐩[j] + (I * ℏ * δ[j,k]) • 𝐩[i] := by
+  rw [comp_eq_comp_sub_commute, angularMomentum_commutation_momentum, sub_add]
 
-lemma angularMomentum_commutation_momentumSqr {d : ℕ} (i j : Fin d) :
-    ⁅𝐋[i,j], momentumOperatorSqr (d := d)⁆ = 0 := by
-  unfold momentumOperatorSqr
-  conv_lhs =>
-    rw [lie_sum]
-    enter [2, k]
-    rw [lie_leibniz, angularMomentum_commutation_momentum]
-    simp only [comp_sub, comp_smulₛₗ, RingHom.id_apply, sub_comp, smul_comp]
-    rw [momentum_comp_commute _ i, momentum_comp_commute j _]
-  dsimp only [kroneckerDelta]
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, mul_ite, mul_zero, ite_smul,
-    zero_smul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, sub_self, add_zero]
+@[simp]
+lemma angularMomentum_commutation_momentumSqr : ⁅𝐋[i,j], momentumOperatorSqr (d := d)⁆ = 0 := by
+  dsimp [momentumOperatorSqr]
+  simp [lie_sum, lie_leibniz, angularMomentum_commutation_momentum, Finset.sum_add_distrib,
+    Finset.sum_sub_distrib, sum_kroneckerDelta]
 
-lemma momentumSqr_comp_angularMomentum_commute {d : ℕ} (i j : Fin d) :
-    𝐩² ∘L 𝐋[i,j] = 𝐋[i,j] ∘L 𝐩² := by
-  apply Eq.symm
-  rw [← sub_eq_zero]
-  exact angularMomentum_commutation_momentumSqr i j
+lemma momentumSqr_comp_angularMomentum_commute : 𝐩² ∘L 𝐋[i,j] = 𝐋[i,j] ∘L 𝐩² := by
+  rw [comp_eq_comp_sub_commute, angularMomentum_commutation_momentumSqr, sub_zero]
 
-lemma angularMomentumSqr_commutation_momentumSqr {d : ℕ} :
+@[simp]
+lemma angularMomentumSqr_commutation_momentumSqr :
     ⁅angularMomentumOperatorSqr (d := d), momentumOperatorSqr (d := d)⁆ = 0 := by
-  unfold angularMomentumOperatorSqr
-  simp only [smul_lie, sum_lie, leibniz_lie]
-  simp [angularMomentum_commutation_momentumSqr]
+  dsimp [angularMomentumOperatorSqr]
+  simp [sum_lie, leibniz_lie]
 
 /-
 ## Angular momentum / angular momentum commutators
