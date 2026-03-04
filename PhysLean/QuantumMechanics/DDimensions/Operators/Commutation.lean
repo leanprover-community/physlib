@@ -98,60 +98,46 @@ lemma momentumSqr_comp_momentum_commute : 𝐩² ∘L 𝐩[i] = 𝐩[i] ∘L �
 -/
 
 /-- The canonical commutation relations: `[xᵢ, pⱼ] = iℏ δᵢⱼ𝟙`. -/
-lemma position_commutation_momentum {d : ℕ} (i j : Fin d) : ⁅𝐱[i], 𝐩[j]⁆ =
-    (Complex.I * ℏ * δ[i,j]) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
-  dsimp only [Bracket.bracket, kroneckerDelta]
+lemma position_commutation_momentum : ⁅𝐱[i], 𝐩[j]⁆ =
+    (I * ℏ * δ[i,j]) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
   ext ψ x
-  simp only [ContinuousLinearMap.smul_apply, SchwartzMap.smul_apply, coe_id', id_eq, smul_eq_mul,
-    coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply]
-  rw [positionOperator_apply, momentumOperator_apply_fun]
-  rw [momentumOperator_apply, positionOperator_apply_fun]
-  simp only [neg_mul, Pi.smul_apply, smul_eq_mul, mul_neg, sub_neg_eq_add]
+  have hdiff : DifferentiableAt ℝ (fun x => x i) x := by
+    have : (fun x ↦ x i) = ⇑(Space.coordCLM i) := by
+      ext; rw [Space.coordCLM_apply, Space.coord_apply]
+    rw [this]
+    fun_prop
+  calc
+    _ = 𝐱[i] (𝐩[j] ψ) x - 𝐩[j] (𝐱[i] ψ) x := by
+      simp [bracket]
+    _ = (I * ℏ) * (-x i * ∂[j] ψ x + ∂[j] (fun x ↦ x i * ψ x) x) := by
+      simp only [positionOperator_apply_fun, momentumOperator_apply]
+      ring
+    _ = (I * ℏ) * (-x i * ∂[j] ψ x + ∂[j] ((fun x : Space d ↦ x i) • ⇑ψ) x) := rfl
+    _ = (I * ℏ) * (∂[j] (fun x : Space d ↦ x i) x * ψ x) := by
+      simp [Space.deriv_smul hdiff ψ.differentiableAt]
+    _ = (I * ℏ) * δ[i,j] * ψ x := by
+      rw [Space.deriv_component, ← kroneckerDelta, kroneckerDelta_symm]
+      ring
 
-  have h : (fun x ↦ ↑(x i) * ψ x) = (fun (x : Space d) ↦ x i) • ψ := rfl
-  rw [h]
-  rw [Space.deriv_smul (by fun_prop) (SchwartzMap.differentiableAt ψ)]
-  rw [Space.deriv_component, ite_cond_symm j i]
-  simp only [mul_add, Complex.real_smul, ite_smul, one_smul, zero_smul, mul_ite, mul_one, mul_zero,
-    ite_mul, zero_mul]
-  ring
+lemma momentum_comp_position_eq : 𝐩[j] ∘L 𝐱[i] =
+    𝐱[i] ∘L 𝐩[j] - (I * ℏ * δ[i,j]) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
+  rw [comp_eq_comp_sub_commute, position_commutation_momentum]
 
-lemma momentum_comp_position_eq (i j : Fin d) : 𝐩[j] ∘L 𝐱[i] =
-    𝐱[i] ∘L 𝐩[j] - (Complex.I * ℏ * δ[i,j]) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
-  rw [← position_commutation_momentum]
-  dsimp only [Bracket.bracket]
-  simp only [ContinuousLinearMap.mul_def, sub_sub_cancel]
+lemma position_position_commutation_momentum : ⁅𝐱[i] ∘L 𝐱[j], 𝐩[k]⁆ =
+    (I * ℏ * δ[i,k]) • 𝐱[j] + (I * ℏ * δ[j,k]) • 𝐱[i] := by
+  simp [leibniz_lie, position_commutation_momentum, add_comm]
 
-lemma position_position_commutation_momentum {d : ℕ} (i j k : Fin d) : ⁅𝐱[i] ∘L 𝐱[j], 𝐩[k]⁆ =
-    (Complex.I * ℏ * δ[i,k]) • 𝐱[j] + (Complex.I * ℏ * δ[j,k]) • 𝐱[i] := by
-  rw [leibniz_lie]
-  rw [position_commutation_momentum, position_commutation_momentum]
-  rw [ContinuousLinearMap.comp_smul, ContinuousLinearMap.smul_comp]
-  rw [id_comp, comp_id]
-  rw [add_comm]
+lemma position_commutation_momentum_momentum : ⁅𝐱[i], 𝐩[j] ∘L 𝐩[k]⁆ =
+    (I * ℏ * δ[i,k]) • 𝐩[j] + (I * ℏ * δ[i,j]) • 𝐩[k] := by
+  simp [lie_leibniz, position_commutation_momentum]
 
-lemma position_commutation_momentum_momentum {d : ℕ} (i j k : Fin d) : ⁅𝐱[i], 𝐩[j] ∘L 𝐩[k]⁆ =
-    (Complex.I * ℏ * δ[i,k]) • 𝐩[j] + (Complex.I * ℏ * δ[i,j]) • 𝐩[k] := by
-  rw [lie_leibniz]
-  rw [position_commutation_momentum, position_commutation_momentum]
-  rw [ContinuousLinearMap.comp_smul, ContinuousLinearMap.smul_comp]
-  rw [id_comp, comp_id]
-
-lemma position_commutation_momentumSqr {d : ℕ} (i : Fin d) : ⁅𝐱[i], 𝐩²⁆ =
-    (2 * Complex.I * ℏ) • 𝐩[i] := by
-  unfold momentumOperatorSqr
-  rw [lie_sum]
-  simp only [position_commutation_momentum_momentum]
-  dsimp only [kroneckerDelta]
-  simp only [mul_ite_zero, ite_zero_smul, Finset.sum_add_distrib, Finset.sum_ite_eq,
-    Finset.mem_univ, ↓reduceIte]
-  ext ψ x
-  simp only [ContinuousLinearMap.add_apply, coe_smul', Pi.smul_apply, SchwartzMap.add_apply,
-    SchwartzMap.smul_apply, smul_eq_mul]
-  ring
+lemma position_commutation_momentumSqr : ⁅𝐱[i], 𝐩²⁆ = (2 * I * ℏ) • 𝐩[i] := by
+  dsimp [momentumOperatorSqr]
+  simp [lie_sum, lie_leibniz, position_commutation_momentum, ← two_smul ℂ, smul_smul, ← mul_assoc,
+    sum_kroneckerDelta]
 
 lemma radiusRegPow_commutation_momentum (hε : 0 < ε) (i : Fin d) :
-    ⁅radiusRegPowOperator (d := d) ε s, 𝐩[i]⁆ = (s * Complex.I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
+    ⁅radiusRegPowOperator (d := d) ε s, 𝐩[i]⁆ = (s * I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
   dsimp only [Bracket.bracket]
   ext ψ x
   simp only [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply, coe_smul',
@@ -192,36 +178,54 @@ lemma radiusRegPow_commutation_momentum (hε : 0 < ε) (i : Fin d) :
   · fun_prop
 
 lemma momentum_comp_radiusRegPow_eq (hε : 0 < ε) (i : Fin d) :
-    𝐩[i] ∘L 𝐫[ε,s] = 𝐫[ε,s] ∘L 𝐩[i] - (s * Complex.I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
-  rw [← radiusRegPow_commutation_momentum hε]
-  dsimp only [Bracket.bracket]
-  simp only [ContinuousLinearMap.mul_def, sub_sub_cancel]
+    𝐩[i] ∘L 𝐫[ε,s] = 𝐫[ε,s] ∘L 𝐩[i] - (s * I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
+  rw [comp_eq_comp_sub_commute, radiusRegPow_commutation_momentum hε]
 
 lemma radiusRegPow_commutation_momentumSqr (hε : 0 < ε) :
     ⁅radiusRegPowOperator (d := d) ε s, momentumOperatorSqr (d := d)⁆ =
-    (2 * s * Complex.I * ℏ) • 𝐫[ε,s-2] ∘L ∑ i, 𝐱[i] ∘L 𝐩[i]
-    + (s * ℏ ^ 2) • ((d + s - 2) • 𝐫[ε,s-2] - (ε ^ 2 * (s - 2)) • 𝐫[ε,s-4]) := by
-  unfold momentumOperatorSqr
-  rw [lie_sum]
+    (2 * s * I * ℏ) • 𝐫[ε,s-2] ∘L ∑ i, 𝐱[i] ∘L 𝐩[i] + (s * (d + s - 2) * ℏ ^ 2) • 𝐫[ε,s-2]
+    - (ε ^ 2 * s * (s - 2) * ℏ ^ 2) • 𝐫[ε,s-4] := by
+  dsimp [momentumOperatorSqr]
+  simp only [lie_sum, lie_leibniz, radiusRegPow_commutation_momentum hε, comp_smul, smul_comp,
+    ← smul_add]
   conv_lhs =>
     enter [2, i]
-    rw [lie_leibniz, radiusRegPow_commutation_momentum hε]
-    rw [comp_smul, ← comp_assoc, momentum_comp_radiusRegPow_eq hε]
-    rw [sub_comp, comp_assoc, momentum_comp_position_eq]
-    simp only [kroneckerDelta, ↓reduceIte, mul_one]
-  simp only [smul_comp, comp_sub, comp_smul, comp_id, smul_sub, comp_assoc,
-    Finset.sum_add_distrib, Finset.sum_sub_distrib, ← Finset.smul_sum, Finset.sum_const,
-    Finset.card_univ, Fintype.card_fin, ← ContinuousLinearMap.comp_finset_sum]
-  rw [positionOperatorSqr_eq hε, comp_sub, radiusRegPowOperator_comp_eq hε, comp_smul, comp_id]
-  rw [← Nat.cast_smul_eq_nsmul ℂ]
+    calc
+      _ = (s * I * ℏ) • (𝐫[ε,s-2] ∘L 𝐱[i] ∘L 𝐩[i] + 𝐫[ε,s-2] ∘L 𝐩[i] ∘L 𝐱[i]
+          - (↑(s - 2) * I * ℏ) • 𝐫[ε,s-4] ∘L 𝐱[i] ∘L 𝐱[i]) := by
+        rw [add_comm, ← comp_assoc, momentum_comp_radiusRegPow_eq hε, comp_assoc, sub_comp, add_sub,
+          smul_comp, comp_assoc, comp_assoc]
+        ring_nf
+      _ = (s * I * ℏ) • ((2 : ℂ) • 𝐫[ε,s-2] ∘L 𝐱[i] ∘L 𝐩[i] - (I * ℏ) • 𝐫[ε,s-2]
+          - (↑(s - 2) * I * ℏ) • 𝐫[ε,s-4] ∘L 𝐱[i] ∘L 𝐱[i]) := by
+        rw [momentum_comp_position_eq, comp_sub, comp_smul, add_sub, ← two_smul ℂ]
+        simp [kroneckerDelta_self]
+      _ = (2 * s * I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] ∘L 𝐩[i] + (s * ℏ ^ 2) • 𝐫[ε,s-2]
+          + (s * (s - 2) * ℏ ^ 2) • 𝐫[ε,s-4] ∘L 𝐱[i] ∘L 𝐱[i] := by
+        simp only [sub_eq_add_neg, ← neg_smul, smul_add, smul_smul]
+        congr 3 -- match coefficients
+        · ring
+        · ring_nf
+          simp
+        · ring_nf
+          simp only [I_sq, ofReal_add, ofReal_neg, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
+            MonoidHom.toOneHom_coe, MonoidHom.coe_coe, coe_algebraMap, ZeroHom.coe_mk, ofReal_mul,
+            ofReal_pow]
+          ring
+  simp only [Finset.sum_add_distrib, ← Finset.smul_sum, ← comp_finset_sum]
+  have h1 : (∑ i : Fin d, radiusRegPowOperator (d := d) ε (s - 2)) = (d : ℂ) • 𝐫[ε,s-2] := by
+    ext
+    rw [ContinuousLinearMap.sum_apply, SchwartzMap.sum_apply]
+    simp
+  have h2 : 𝐫[ε,s-4] ∘L ∑ i : Fin d, 𝐱[i] ∘L 𝐱[i] = 𝐫[ε,s-2] - (ε ^ 2) • 𝐫[ε,s-4] := by
+    simp only [positionOperatorSqr_eq hε, comp_sub, comp_smul, comp_id,
+      radiusRegPowOperator_comp_eq hε]
+    ring_nf
+  rw [h1, h2]
   ext ψ x
-  simp only [Complex.ofReal_sub, Complex.ofReal_ofNat, sub_add_cancel, coe_sub', Pi.sub_apply,
-    ContinuousLinearMap.add_apply, coe_smul', coe_comp', coe_sum', Pi.smul_apply,
-    Function.comp_apply, Finset.sum_apply, map_sum, SchwartzMap.sub_apply, SchwartzMap.add_apply,
-    SchwartzMap.smul_apply, SchwartzMap.sum_apply, smul_eq_mul, Complex.real_smul,
-    Complex.ofReal_pow, Complex.ofReal_add, Complex.ofReal_natCast, Complex.ofReal_mul]
-  ring_nf
-  rw [Complex.I_sq]
+  simp only [ContinuousLinearMap.add_apply, coe_smul', Pi.smul_apply, coe_sub', Pi.sub_apply,
+    SchwartzMap.add_apply, SchwartzMap.smul_apply, smul_eq_mul, real_smul, ofReal_mul,
+    SchwartzMap.sub_apply, ofReal_sub, ofReal_add, ofReal_natCast]
   ring
 
 /-

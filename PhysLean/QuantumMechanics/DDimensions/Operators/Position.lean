@@ -83,7 +83,7 @@ def radiusRegPowOperator (ε s : ℝ) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space 
   SchwartzMap.smulLeftCLM ℂ (Complex.ofReal ∘ normRegularizedPow ε s)
 
 @[inherit_doc radiusRegPowOperator]
-macro "𝐫[" ε:term "," s:term "]" : term => `(radiusRegPowOperator $ε $s)
+notation "𝐫[" ε "," s "]" => radiusRegPowOperator ε s
 
 lemma radiusRegPowOperator_apply_fun (hε : 0 < ε) :
     𝐫[ε,s] ψ = fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2) • ψ x := by
