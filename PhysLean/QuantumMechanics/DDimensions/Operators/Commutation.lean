@@ -75,12 +75,9 @@ lemma radiusRegPow_commutation_radiusRegPow (hε : 0 < ε) :
 lemma momentum_commutation_momentum : ⁅𝐩[i], 𝐩[j]⁆ = 0 := by
   ext ψ x
   have hdiff := Space.deriv_differentiable (ψ.smooth _)
-  calc
-    _ = 𝐩[i] (𝐩[j] ψ) x - 𝐩[j] (𝐩[i] ψ) x := by
-      simp [bracket]
-    _ = (-I * ℏ) ^ 2 • (∂[i] (∂[j] ψ) x - ∂[j] (∂[i] ψ) x) := by
-      simp only [momentumOperator_apply_fun, Space.deriv_const_smul _ (hdiff _), Pi.smul_apply,
-        ← smul_sub, smul_smul, pow_two]
+  change 𝐩[i] (𝐩[j] ψ) x - 𝐩[j] (𝐩[i] ψ) x = 0
+  simp only [momentumOperator_apply_fun, Space.deriv_const_smul _ (hdiff _), Pi.smul_apply,
+    ← smul_sub, smul_smul]
   simp [Space.deriv_commute _ (ψ.smooth 2)]
 
 lemma momentum_comp_commute : 𝐩[i] ∘L 𝐩[j] = 𝐩[j] ∘L 𝐩[i] := by
@@ -138,44 +135,32 @@ lemma position_commutation_momentumSqr : ⁅𝐱[i], 𝐩²⁆ = (2 * I * ℏ) �
 
 lemma radiusRegPow_commutation_momentum (hε : 0 < ε) (i : Fin d) :
     ⁅radiusRegPowOperator (d := d) ε s, 𝐩[i]⁆ = (s * I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
-  dsimp only [Bracket.bracket]
   ext ψ x
-  simp only [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply, coe_smul',
-    coe_comp', Pi.smul_apply, SchwartzMap.smul_apply, smul_eq_mul]
-  simp only [momentumOperator_apply, positionOperator_apply, radiusRegPowOperator_apply_fun hε]
+  let g := fun r : ℝ ↦ Real.rpow r (s / 2)
+  let normSqr_ε := fun x : Space d ↦ ‖x‖ ^ 2 + ε ^ 2
+  have r_apply (φ : 𝓢(Space d, ℂ)) : 𝐫[ε,s] φ = (g ∘ normSqr_ε) • ⇑φ := by
+    simp only [radiusRegPowOperator_apply_fun hε, g, normSqr_ε]
+    rfl
+  have hne : normSqr_ε x ≠ 0 := ne_of_gt (add_pos_of_nonneg_of_pos (sq_nonneg _) (sq_pos_of_pos hε))
+  have hg : DifferentiableAt ℝ g (normSqr_ε x) := Real.differentiableAt_rpow_const_of_ne (s / 2) hne
+  have hderiv : ∂[i] (g ∘ normSqr_ε) x = s * (normSqr_ε x).rpow (s / 2 - 1) * x i := by
+    rw [Space.deriv_eq, fderiv_comp x hg (by fun_prop)]
+    dsimp [g, normSqr_ε]
+    simp only [fderiv_add_const, fderiv_norm_sq_apply, fderiv_eq_smul_deriv, smul_eq_mul]
+    rw [deriv_rpow_const (by fun_prop) (by left; exact hne)]
+    simp only [coe_smul', coe_innerSL_apply, Pi.smul_apply, Space.inner_basis, deriv_id'']
+    ring
+  have hdiffAt : DifferentiableAt ℝ (g ∘ normSqr_ε) x := by
+    refine DifferentiableAt.comp x hg ?_
+    refine DifferentiableAt.add_const (ε ^ 2) ?_
+    exact Differentiable.differentiableAt Space.norm_sq_differentiable
 
-  have hne : ∀ x : Space d, ‖x‖ ^ 2 + ε ^ 2 ≠ 0 := by
-    intro x
-    apply ne_of_gt
-    exact add_pos_of_nonneg_of_pos (sq_nonneg _) (sq_pos_of_pos hε)
-
-  have h : (fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2) • ψ x) =
-    (fun (x : Space d) ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2)) • ψ := rfl
-  have h' : ∂[i] (fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2)) =
-      fun x ↦ s * (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2 - 1) * x i := by
-    trans ∂[i] ((fun x ↦ x ^ (s / 2)) ∘ (fun x ↦ ‖x‖ ^ 2 + ε ^ 2))
-    · congr
-    ext x
-    rw [Space.deriv_eq, fderiv_comp]
-    · simp only [fderiv_add_const, fderiv_norm_sq_apply, comp_smul, coe_smul', coe_comp',
-        coe_innerSL_apply, Pi.smul_apply, Function.comp_apply, Space.inner_basis,
-        fderiv_eq_smul_deriv, smul_eq_mul, nsmul_eq_mul, Nat.cast_ofNat]
-      rw [deriv_rpow_const]
-      · simp only [deriv_id'', one_mul]
-        ring
-      · fun_prop
-      · left
-        exact hne _
-    · exact Real.differentiableAt_rpow_const_of_ne (s / 2) (hne x)
-    · exact Differentiable.differentiableAt (by fun_prop)
-
-  rw [h, Space.deriv_smul]
-  · rw [h']
-    simp only [neg_mul, smul_neg, Complex.real_smul, Complex.ofReal_mul, sub_neg_eq_add]
-    ring_nf
-  · refine DifferentiableAt.rpow ?_ (by fun_prop) (hne _)
-    exact Differentiable.differentiableAt (by fun_prop)
-  · fun_prop
+  change 𝐫[ε,s] (𝐩[i] ψ) x - 𝐩[i] (𝐫[ε,s] ψ) x = _
+  simp only [momentumOperator_apply_fun, r_apply, Pi.smul_apply,
+    Space.deriv_smul hdiffAt ψ.differentiableAt, hderiv]
+  dsimp [g, normSqr_ε]
+  simp only [positionOperator_apply_fun, radiusRegPowOperator_apply_fun hε, ofReal_mul, real_smul]
+  ring_nf
 
 lemma momentum_comp_radiusRegPow_eq (hε : 0 < ε) (i : Fin d) :
     𝐩[i] ∘L 𝐫[ε,s] = 𝐫[ε,s] ∘L 𝐩[i] - (s * I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
