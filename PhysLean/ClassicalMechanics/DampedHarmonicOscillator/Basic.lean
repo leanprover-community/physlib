@@ -192,7 +192,7 @@ noncomputable def energy (x : Time → ℝ) : Time → ℝ :=
 
 /-- Equalties for energy eqns -/
 lemma kineticEnergy_eq (x: Time → ℝ) :
-  kineticEnergy S x = fun t => (1 / 2 : ℝ) * S.m * (Time.deriv x t)^2 := by rfl
+    kineticEnergy S x = fun t => (1 / 2 : ℝ) * S.m * (Time.deriv x t)^2 := by rfl
 
 lemma potentialEnergy_eq (x: Time → ℝ) :
     potentialEnergy S x = fun t => (1 / 2 : ℝ) * S.k * (x t)^2 := by rfl
