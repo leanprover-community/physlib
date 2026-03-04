@@ -103,18 +103,15 @@ lemma position_commutation_momentum : ⁅𝐱[i], 𝐩[j]⁆ =
       ext; rw [Space.coordCLM_apply, Space.coord_apply]
     rw [this]
     fun_prop
-  calc
-    _ = 𝐱[i] (𝐩[j] ψ) x - 𝐩[j] (𝐱[i] ψ) x := by
-      simp [bracket]
-    _ = (I * ℏ) * (-x i * ∂[j] ψ x + ∂[j] (fun x ↦ x i * ψ x) x) := by
-      simp only [positionOperator_apply_fun, momentumOperator_apply]
-      ring
-    _ = (I * ℏ) * (-x i * ∂[j] ψ x + ∂[j] ((fun x : Space d ↦ x i) • ⇑ψ) x) := rfl
-    _ = (I * ℏ) * (∂[j] (fun x : Space d ↦ x i) x * ψ x) := by
-      simp [Space.deriv_smul hdiff ψ.differentiableAt]
-    _ = (I * ℏ) * δ[i,j] * ψ x := by
-      rw [Space.deriv_component, ← kroneckerDelta, kroneckerDelta_symm]
-      ring
+  change 𝐱[i] (𝐩[j] ψ) x - 𝐩[j] (𝐱[i] ψ) x = _
+  trans (I * ℏ) * (-x i * ∂[j] ψ x + ∂[j] ((fun x : Space d ↦ x i) • ⇑ψ) x)
+  · simp only [positionOperator_apply_fun, momentumOperator_apply_fun, Pi.smul_apply, smul_eq_mul]
+    ring_nf
+    rfl
+  simp only [Space.deriv_smul hdiff ψ.differentiableAt, Space.deriv_component, ← kroneckerDelta_eq,
+    kroneckerDelta_symm, real_smul, coe_smul', coe_id', Pi.smul_apply, id_eq,
+    SchwartzMap.smul_apply, smul_eq_mul]
+  ring
 
 lemma momentum_comp_position_eq : 𝐩[j] ∘L 𝐱[i] =
     𝐱[i] ∘L 𝐩[j] - (I * ℏ * δ[i,j]) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by

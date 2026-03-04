@@ -25,6 +25,8 @@ def kroneckerDelta (i j : Fin d) : ℝ := if (i = j) then 1 else 0
 @[inherit_doc kroneckerDelta]
 notation "δ[" i "," j "]" => kroneckerDelta i j
 
+lemma kroneckerDelta_eq (i j : Fin d) : δ[i,j] = if (i = j) then 1 else 0 := rfl
+
 lemma kroneckerDelta_symm (i j : Fin d) : δ[i,j] = δ[j,i] :=
   ite_cond_congr (Eq.propIntro Eq.symm Eq.symm)
 
