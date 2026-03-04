@@ -68,7 +68,7 @@ open SpaceDHilbertSpace
 
 /-- The momentum operators defined on the Schwartz submodule. -/
 def momentumOperatorSchwartz : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule d :=
-  (schwartzEquiv (d := d)) ∘ₗ 𝐩[i].toLinearMap ∘ₗ (schwartzEquiv (d := d)).symm
+  schwartzEquiv.toLinearMap ∘ₗ 𝐩[i].toLinearMap ∘ₗ schwartzEquiv.symm.toLinearMap
 
 @[sorryful]
 lemma momentumOperatorSchwartz_isSymmetric : (momentumOperatorSchwartz i).IsSymmetric := by
@@ -88,7 +88,7 @@ lemma momentumOperatorSchwartz_isSymmetric : (momentumOperatorSchwartz i).IsSymm
   of the Hilbert space. -/
 @[sorryful]
 def momentumUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense) (momentumOperatorSchwartz i)
+  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense d) (momentumOperatorSchwartz i)
     (momentumOperatorSchwartz_isSymmetric i)
 
 end

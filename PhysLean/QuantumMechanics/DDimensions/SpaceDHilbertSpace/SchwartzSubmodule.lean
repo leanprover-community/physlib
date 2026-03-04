@@ -33,7 +33,7 @@ instance : CoeFun (schwartzSubmodule d) fun _ ↦ Space d → ℂ := ⟨fun ψ �
 @[simp]
 lemma val_eq_coe (ψ : schwartzSubmodule d) (x : Space d) : ψ.val x = ψ x := rfl
 
-lemma schwartzSubmodule_dense :
+lemma schwartzSubmodule_dense (d : ℕ) :
     Dense (schwartzSubmodule d : Set (SpaceDHilbertSpace d)) :=
   denseRange_toLpCLM ENNReal.top_ne_ofNat.symm
 

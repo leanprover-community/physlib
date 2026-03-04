@@ -149,7 +149,7 @@ open SpaceDHilbertSpace
 
 /-- The position operators defined on the Schwartz submodule. -/
 def positionOperatorSchwartz : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule d :=
-  (schwartzEquiv (d := d)) ∘ₗ 𝐱[i].toLinearMap ∘ₗ (schwartzEquiv (d := d)).symm
+  schwartzEquiv.toLinearMap ∘ₗ 𝐱[i].toLinearMap ∘ₗ schwartzEquiv.symm.toLinearMap
 
 lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymmetric := by
   intro ψ ψ'
@@ -165,13 +165,12 @@ lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymm
 /-- The symmetric position unbounded operators with domain the Schwartz submodule
   of the Hilbert space. -/
 def positionUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense) (positionOperatorSchwartz i)
+  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense d) (positionOperatorSchwartz i)
     (positionOperatorSchwartz_isSymmetric i)
 
 /-- The (regularized) radius operators defined on the Schwartz submodule. -/
 def radiusRegPowOperatorSchwartz (ε s : ℝ) : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule d :=
-  (schwartzEquiv (d := d)) ∘ₗ (radiusRegPowOperator (d := d) ε s).toLinearMap ∘ₗ
-  (schwartzEquiv (d := d)).symm
+  schwartzEquiv.toLinearMap ∘ₗ 𝐫[ε,s].toLinearMap ∘ₗ schwartzEquiv.symm.toLinearMap
 
 lemma radiusRegPowOperatorSchwartz_isSymmetric (ε s : ℝ) (hε : 0 < ε) :
     (radiusRegPowOperatorSchwartz (d := d) ε s).IsSymmetric := by
@@ -189,7 +188,7 @@ lemma radiusRegPowOperatorSchwartz_isSymmetric (ε s : ℝ) (hε : 0 < ε) :
   of the Hilbert space. -/
 def radiusRegPowUnboundedOperator (ε s : ℝ) (hε : 0 < ε) :
     UnboundedOperator (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense) (radiusRegPowOperatorSchwartz ε s)
+  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense d) (radiusRegPowOperatorSchwartz ε s)
     (radiusRegPowOperatorSchwartz_isSymmetric ε s hε)
 
 end
