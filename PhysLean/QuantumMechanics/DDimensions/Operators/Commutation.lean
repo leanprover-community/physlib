@@ -13,7 +13,7 @@ import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
 
 namespace QuantumMechanics
 noncomputable section
-open Constants
+open Complex Constants
 open KroneckerDelta
 open Bracket
 open ContinuousLinearMap SchwartzMap
@@ -45,6 +45,7 @@ lemma comp_eq_comp_sub_commute (A B : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d,
 -/
 
 /-- Position operators commute: `[xᵢ, xⱼ] = 0`. -/
+@[simp]
 lemma position_commutation_position : ⁅𝐱[i], 𝐱[j]⁆ = 0 := by
   ext
   simp [bracket, positionOperator_apply, ← mul_assoc, mul_comm]
@@ -70,36 +71,27 @@ lemma radiusRegPow_commutation_radiusRegPow (hε : 0 < ε) :
 -/
 
 /-- Momentum operators commute: `[pᵢ, pⱼ] = 0`. -/
-lemma momentum_commutation_momentum {d : ℕ} (i j : Fin d) : ⁅𝐩[i], 𝐩[j]⁆ = 0 := by
-  dsimp only [Bracket.bracket]
+@[simp]
+lemma momentum_commutation_momentum : ⁅𝐩[i], 𝐩[j]⁆ = 0 := by
   ext ψ x
-  simp only [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply,
-    ContinuousLinearMap.zero_apply, SchwartzMap.zero_apply, momentumOperator_apply_fun]
-  rw [Space.deriv_const_smul _ ?_, Space.deriv_const_smul _ ?_]
-  · rw [Space.deriv_commute _ (ψ.smooth _), sub_self]
-  · exact Space.deriv_differentiable (ψ.smooth _) i
-  · exact Space.deriv_differentiable (ψ.smooth _) j
+  have hdiff := Space.deriv_differentiable (ψ.smooth _)
+  calc
+    _ = 𝐩[i] (𝐩[j] ψ) x - 𝐩[j] (𝐩[i] ψ) x := by
+      simp [bracket]
+    _ = (-I * ℏ) ^ 2 • (∂[i] (∂[j] ψ) x - ∂[j] (∂[i] ψ) x) := by
+      simp only [momentumOperator_apply_fun, Space.deriv_const_smul _ (hdiff _), Pi.smul_apply,
+        ← smul_sub, smul_smul, pow_two]
+  simp [Space.deriv_commute _ (ψ.smooth 2)]
 
-lemma momentum_comp_commute {d : ℕ} (i j : Fin d) : 𝐩[i] ∘L 𝐩[j] = 𝐩[j] ∘L 𝐩[i] := by
-  rw [← sub_eq_zero]
-  exact momentum_commutation_momentum i j
+lemma momentum_comp_commute : 𝐩[i] ∘L 𝐩[j] = 𝐩[j] ∘L 𝐩[i] := by
+  rw [comp_eq_comp_add_commute, momentum_commutation_momentum, add_zero]
 
-lemma momentumSqr_commutation_momentum {d : ℕ} (i : Fin d) :
-    ⁅momentumOperatorSqr (d := d), 𝐩[i]⁆ = 0 := by
-  dsimp only [Bracket.bracket, momentumOperatorSqr]
-  rw [Finset.mul_sum, Finset.sum_mul, ← Finset.sum_sub_distrib]
-  conv_lhs =>
-    enter [2, j]
-    simp only [ContinuousLinearMap.mul_def]
-    rw [comp_assoc]
-    rw [momentum_comp_commute j i, ← comp_assoc]
-    rw [momentum_comp_commute j i, comp_assoc]
-    rw [sub_self]
-  rw [Finset.sum_const_zero]
+@[simp]
+lemma momentumSqr_commutation_momentum : ⁅momentumOperatorSqr (d := d), 𝐩[i]⁆ = 0 := by
+  simp [momentumOperatorSqr, sum_lie, leibniz_lie]
 
-lemma momentumSqr_comp_momentum_commute {d : ℕ} (i : Fin d) : 𝐩² ∘L 𝐩[i] = 𝐩[i] ∘L 𝐩² := by
-  rw [← sub_eq_zero]
-  exact momentumSqr_commutation_momentum i
+lemma momentumSqr_comp_momentum_commute : 𝐩² ∘L 𝐩[i] = 𝐩[i] ∘L 𝐩² := by
+  rw [comp_eq_comp_add_commute, momentumSqr_commutation_momentum, add_zero]
 
 /-
 ## Position / momentum commutators
