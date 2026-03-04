@@ -195,7 +195,7 @@ lemma kineticEnergy_eq (x: Time → ℝ) :
   kineticEnergy S x = fun t => (1 / 2 : ℝ) * S.m * (Time.deriv x t)^2 := by rfl
 
 lemma potentialEnergy_eq (x: Time → ℝ) :
-  potentialEnergy S x = fun t => (1 / 2 : ℝ) * S.k * (x t)^2 := by rfl
+    potentialEnergy S x = fun t => (1 / 2 : ℝ) * S.k * (x t)^2 := by rfl
 
 /-- Energy dissipation rate along a trajectory `x : Time → ℝ`.
 
