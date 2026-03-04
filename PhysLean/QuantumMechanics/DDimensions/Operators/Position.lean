@@ -29,7 +29,7 @@ def positionOperator (i : Fin d) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, �
   SchwartzMap.smulLeftCLM ℂ (Complex.ofReal ∘ coordCLM i)
 
 @[inherit_doc positionOperator]
-macro "𝐱[" i:term "]" : term => `(positionOperator $i)
+notation "𝐱[" i "]" => positionOperator i
 
 lemma positionOperator_apply_fun (i : Fin d) (ψ : 𝓢(Space d, ℂ)) :
     𝐱[i] ψ = (fun x ↦ x i * ψ x) := by
