@@ -55,10 +55,6 @@ lemma schwartzEquiv_inner :
 lemma schwartzEquiv_ae_eq (h : schwartzEquiv f =ᵐ[volume] schwartzEquiv g) : f = g :=
   (EmbeddingLike.apply_eq_iff_eq _).mp (SetLike.coe_eq_coe.mp (ext_iff.mpr h))
 
-lemma schwartzEquiv_exists (ψ : schwartzSubmodule d) : ∃ f, ψ = schwartzEquiv f := by
-  use schwartzEquiv.symm ψ
-  exact (LinearEquiv.apply_symm_apply _ _).symm
-
 end
 end SpaceDHilbertSpace
 end QuantumMechanics

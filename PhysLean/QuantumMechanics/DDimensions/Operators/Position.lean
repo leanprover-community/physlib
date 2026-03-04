@@ -153,8 +153,8 @@ def positionOperatorSchwartz : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule
 
 lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymmetric := by
   intro ψ ψ'
-  obtain ⟨_, rfl⟩ := schwartzEquiv_exists ψ
-  obtain ⟨_, rfl⟩ := schwartzEquiv_exists ψ'
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ'
   unfold positionOperatorSchwartz
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply, schwartzEquiv_inner]
   congr with x
@@ -176,8 +176,8 @@ def radiusRegPowOperatorSchwartz (ε s : ℝ) : schwartzSubmodule d →ₗ[ℂ] 
 lemma radiusRegPowOperatorSchwartz_isSymmetric (ε s : ℝ) (hε : 0 < ε) :
     (radiusRegPowOperatorSchwartz (d := d) ε s).IsSymmetric := by
   intro ψ ψ'
-  obtain ⟨_, rfl⟩ := schwartzEquiv_exists ψ
-  obtain ⟨_, rfl⟩ := schwartzEquiv_exists ψ'
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ'
   unfold radiusRegPowOperatorSchwartz
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply, schwartzEquiv_inner]
   congr with x

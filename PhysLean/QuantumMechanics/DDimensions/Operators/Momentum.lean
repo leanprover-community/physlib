@@ -73,8 +73,8 @@ def momentumOperatorSchwartz : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule
 @[sorryful]
 lemma momentumOperatorSchwartz_isSymmetric : (momentumOperatorSchwartz i).IsSymmetric := by
   intro ψ ψ'
-  obtain ⟨f, rfl⟩ := schwartzEquiv_exists ψ
-  obtain ⟨f', rfl⟩ := schwartzEquiv_exists ψ'
+  obtain ⟨f, rfl⟩ := schwartzEquiv.surjective ψ
+  obtain ⟨f', rfl⟩ := schwartzEquiv.surjective ψ'
   unfold momentumOperatorSchwartz
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, ContinuousLinearMap.coe_coe,
     Function.comp_apply, LinearEquiv.symm_apply_apply, schwartzEquiv_inner, momentumOperator_apply,
