@@ -28,7 +28,7 @@ lemma leibniz_lie (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
     ⁅A ∘L B, C⁆ = A ∘L ⁅B, C⁆ + ⁅A, C⁆ ∘L B := by
   simp [bracket, mul_def, comp_assoc]
 
-lemma lie_leibniz {d : ℕ} (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
+lemma lie_leibniz (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
     ⁅A, B ∘L C⁆ = B ∘L ⁅A, C⁆ + ⁅A, B⁆ ∘L C := by
   simp [bracket, mul_def, comp_assoc]
 
@@ -232,35 +232,23 @@ lemma radiusRegPow_commutation_momentumSqr (hε : 0 < ε) :
 ## Angular momentum / position commutators
 -/
 
-lemma angularMomentum_commutation_position {d : ℕ} (i j k : Fin d) : ⁅𝐋[i,j], 𝐱[k]⁆ =
-    (Complex.I * ℏ * δ[i,k]) • 𝐱[j] - (Complex.I * ℏ * δ[j,k]) • 𝐱[i] := by
-  unfold angularMomentumOperator
-  rw [sub_lie]
-  rw [leibniz_lie, leibniz_lie]
-  rw [position_commutation_position, position_commutation_position]
-  rw [← lie_skew, position_commutation_momentum]
-  rw [← lie_skew, position_commutation_momentum]
-  rw [kroneckerDelta_symm k i, kroneckerDelta_symm k j]
-  simp only [ContinuousLinearMap.comp_neg, ContinuousLinearMap.comp_smul, comp_id, zero_comp,
-    add_zero, add_comm, sub_neg_eq_add, ← sub_eq_add_neg]
+lemma angularMomentum_commutation_position : ⁅𝐋[i,j], 𝐱[k]⁆ =
+    (I * ℏ * δ[i,k]) • 𝐱[j] - (I * ℏ * δ[j,k]) • 𝐱[i] := by
+  dsimp [angularMomentumOperator]
+  simp only [sub_lie, leibniz_lie, ← lie_skew 𝐩[_] 𝐱[_], position_commutation_momentum]
+  simp [kroneckerDelta_symm, add_comm, sub_eq_add_neg]
 
 lemma angularMomentum_commutation_radiusRegPow (hε : 0 < ε) (i j : Fin d) :
     ⁅𝐋[i,j], radiusRegPowOperator (d := d) ε s⁆ = 0 := by
-  dsimp only [Bracket.bracket]
-  unfold angularMomentumOperator
-  simp only [sub_mul, ContinuousLinearMap.mul_def, ContinuousLinearMap.comp_assoc]
-  repeat rw [momentum_comp_radiusRegPow_eq hε]
-  simp only [comp_sub, comp_smulₛₗ, RingHom.id_apply, ← ContinuousLinearMap.comp_assoc]
-  repeat rw [position_comp_radiusRegPow_commute hε]
-  simp only [ContinuousLinearMap.comp_assoc]
-  rw [position_comp_commute]
-  simp only [sub_sub_sub_cancel_right, sub_self]
+  dsimp [angularMomentumOperator]
+  simp only [sub_lie, leibniz_lie, ← lie_skew 𝐩[_] _, radiusRegPow_commutation_momentum hε,
+    position_commutation_radiusRegPow hε]
+  simp [comp_neg, ← position_comp_radiusRegPow_commute hε, ← comp_assoc, position_comp_commute i j]
 
 lemma angularMomentumSqr_commutation_radiusRegPow (hε : 0 < ε) :
     ⁅angularMomentumOperatorSqr (d := d), radiusRegPowOperator (d := d) ε s⁆ = 0 := by
-  unfold angularMomentumOperatorSqr
-  simp only [sum_lie, smul_lie, leibniz_lie, angularMomentum_commutation_radiusRegPow hε,
-    comp_zero, zero_comp, add_zero, smul_zero, Finset.sum_const_zero]
+  dsimp [angularMomentumOperatorSqr]
+  simp [sum_lie, leibniz_lie, angularMomentum_commutation_radiusRegPow hε]
 
 /-
 ## Angular momentum / momentum commutators
