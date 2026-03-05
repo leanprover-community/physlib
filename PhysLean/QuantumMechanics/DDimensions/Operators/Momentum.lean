@@ -38,7 +38,7 @@ def momentumOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
     (SchwartzMap.fderivCLM ℂ (Space d) ℂ)
 
 @[inherit_doc momentumOperator]
-macro "𝐩[" i:term "]" : term => `(momentumOperator $i)
+notation "𝐩[" i "]" => momentumOperator i
 
 lemma momentumOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
     𝐩[i] ψ = (- Complex.I * ℏ) • ∂[i] ψ := rfl

@@ -44,7 +44,7 @@ def positionOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
   SchwartzMap.smulLeftCLM ℂ (Complex.ofRealCLM ∘L coordCLM i)
 
 @[inherit_doc positionOperator]
-macro "𝐱[" i:term "]" : term => `(positionOperator $i)
+notation "𝐱[" i "]" => positionOperator i
 
 lemma positionOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
     𝐱[i] ψ = smulLeftCLM ℂ (coordCLM i) • ψ := by
@@ -98,7 +98,7 @@ def radiusRegPowOperator (ε s : ℝ) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space 
   SchwartzMap.smulLeftCLM ℂ (Complex.ofReal ∘ normRegularizedPow ε s)
 
 @[inherit_doc radiusRegPowOperator]
-macro "𝐫[" ε:term "," s:term "]" : term => `(radiusRegPowOperator $ε $s)
+notation "𝐫[" ε "," s "]" => radiusRegPowOperator ε s
 
 lemma radiusRegPowOperator_apply_fun {ε s : ℝ} (hε : 0 < ε) {ψ : 𝓢(Space d, ℂ)} :
     𝐫[ε,s] ψ = fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2) • ψ x := by

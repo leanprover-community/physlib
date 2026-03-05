@@ -33,7 +33,7 @@ def angularMomentumOperator {d : ℕ} (i j : Fin d) : 𝓢(Space d, ℂ) →L[�
   𝐱[i] ∘L 𝐩[j] - 𝐱[j] ∘L 𝐩[i]
 
 @[inherit_doc angularMomentumOperator]
-macro "𝐋[" i:term "," j:term "]" : term => `(angularMomentumOperator $i $j)
+notation "𝐋[" i "," j "]" => angularMomentumOperator i j
 
 lemma angularMomentumOperator_apply_fun {d : ℕ} (i j : Fin d) (ψ : 𝓢(Space d, ℂ)) :
     𝐋[i,j] ψ = 𝐱[i] (𝐩[j] ψ) - 𝐱[j] (𝐩[i] ψ) := rfl
