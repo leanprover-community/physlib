@@ -26,9 +26,11 @@ These points are about readability of the project as a whole and how easy it is 
 
 ## Style conventions
 
-- Use less-then rather than greater-then.
-- No new lines in proofs.
-- Good use of `variables`.
+In addition to those here:
+
+https://leanprover-community.github.io/contribute/style.html
+
+- Use of `lemma` instead of `theorem` except for the most important results.
 
 These points are related to how individual lemmas and theorems look, and how easy they are
 to read.
