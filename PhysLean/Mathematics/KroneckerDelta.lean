@@ -14,8 +14,14 @@ import PhysLean.Meta.TODO.Basic
 
 This file defines the Kronecker delta, `δ[i,j] ≔ if (i = j) then 1 else 0`.
 
+TODO ideas:
+- Generalize `sum_kroneckerDelta` (e.g. currently assuming `c : ℂ`)
+- Double sums
+- Symmetrization (i.e. `∑ᵢ∑ⱼ δᵢⱼfᵢⱼ = ½ ∑ᵢ∑ⱼ δᵢⱼ(fᵢⱼ + fⱼᵢ)`) and special case
+  `∑ᵢ∑ⱼ δᵢⱼfᵢⱼ = 0` for when f is antisymmetric
+
 -/
-TODO "YVABB" "Build functionality for working with sums involving Kronecker deltas."
+TODO "YVABB" "Build full API for working with sums involving Kronecker deltas."
 
 namespace KroneckerDelta
 
