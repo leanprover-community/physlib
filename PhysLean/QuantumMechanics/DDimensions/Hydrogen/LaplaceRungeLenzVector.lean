@@ -57,14 +57,20 @@ lemma lrlOperator_eq (i : Fin H.d) :
   rw [← ContinuousLinearMap.comp_finset_sum]
   simp only [← comp_assoc, ← ContinuousLinearMap.finset_sum_comp]
   rw [← momentumOperatorSqr]
-  unfold kroneckerDelta
-  simp only [mul_ite_zero, ite_zero_smul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
-    Finset.sum_const, Finset.card_univ, Fintype.card_fin, ← smul_assoc]
-  ext ψ x
-  simp only [mul_one, nsmul_eq_mul, smul_add, ContinuousLinearMap.add_apply, coe_smul', coe_sub',
-    coe_comp', Pi.smul_apply, Pi.sub_apply, Function.comp_apply, SchwartzMap.add_apply,
-    SchwartzMap.smul_apply, SchwartzMap.sub_apply, smul_eq_mul, Complex.real_smul,
-    Complex.ofReal_inv, Complex.ofReal_ofNat]
+  simp only [sum_kroneckerDelta]
+  have : (∑ j : Fin H.d, (Complex.I * ℏ * δ[j,j]) • 𝐩[i]) = (H.d * Complex.I * ℏ) • 𝐩[i] := by
+    ext ψ x
+    simp only [kroneckerDelta_self, ContinuousLinearMap.sum_apply, SchwartzMap.sum_apply,
+      ContinuousLinearMap.smul_apply, SchwartzMap.smul_apply, smul_eq_mul]
+    simp only [Complex.ofReal_one, mul_one, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+      nsmul_eq_mul]
+    ring
+  rw [this]
+  ext
+  simp only [smul_add, ContinuousLinearMap.add_apply, coe_smul', coe_sub', coe_comp', coe_sum',
+    Pi.smul_apply, Pi.sub_apply, Function.comp_apply, Finset.sum_apply, SchwartzMap.add_apply,
+    SchwartzMap.smul_apply, SchwartzMap.sub_apply, smul_eq_mul, SchwartzMap.sum_apply,
+    Complex.real_smul, Complex.ofReal_inv, Complex.ofReal_ofNat]
   ring
 
 /-- `𝐀(ε)ᵢ = 𝐋ᵢⱼ𝐩ⱼ + ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
@@ -76,14 +82,20 @@ lemma lrlOperator_eq' (i : Fin H.d) : H.lrlOperator ε i = ∑ j, 𝐋[i,j] ∘L
     enter [2, 2, j]
     rw [comp_eq_comp_sub_commute 𝐩[j] 𝐋[i,j], angularMomentum_commutation_momentum]
   repeat rw [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_sub_distrib]
-  unfold kroneckerDelta
-  ext ψ x
-  simp only [ContinuousLinearMap.add_apply, coe_smul', coe_sum', coe_comp', Pi.smul_apply,
-    Finset.sum_apply, Function.comp_apply, coe_sub', Pi.sub_apply, SchwartzMap.add_apply,
-    SchwartzMap.smul_apply, SchwartzMap.sum_apply, SchwartzMap.sub_apply]
-  simp only [mul_ite, mul_one, mul_zero, smul_eq_mul, ite_mul, zero_mul, Finset.sum_ite_eq,
-    Finset.mem_univ, ↓reduceIte, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-    nsmul_eq_mul, smul_add, Complex.real_smul, Complex.ofReal_inv, Complex.ofReal_ofNat]
+  simp only [sum_kroneckerDelta]
+  have : (∑ j : Fin H.d, (Complex.I * ℏ * δ[j,j]) • 𝐩[i]) = (H.d * Complex.I * ℏ) • 𝐩[i] := by
+    ext ψ x
+    simp only [kroneckerDelta_self, ContinuousLinearMap.sum_apply, SchwartzMap.sum_apply,
+      ContinuousLinearMap.smul_apply, SchwartzMap.smul_apply, smul_eq_mul]
+    simp only [Complex.ofReal_one, mul_one, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+      nsmul_eq_mul]
+    ring
+  rw [this]
+  ext
+  simp only [smul_add, ContinuousLinearMap.add_apply, coe_smul', coe_sub', coe_sum', coe_comp',
+    Pi.smul_apply, Pi.sub_apply, Finset.sum_apply, Function.comp_apply, SchwartzMap.add_apply,
+    SchwartzMap.smul_apply, SchwartzMap.sub_apply, SchwartzMap.sum_apply, smul_eq_mul,
+    Complex.real_smul, Complex.ofReal_inv, Complex.ofReal_ofNat]
   ring
 
 /-- `𝐀(ε)ᵢ = 𝐩ⱼ𝐋ᵢⱼ - ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
@@ -95,15 +107,20 @@ lemma lrlOperator_eq'' (i : Fin H.d) : H.lrlOperator ε i = ∑ j, 𝐩[j] ∘L 
     enter [2, 2, j]
     rw [comp_eq_comp_add_commute 𝐋[i,j] 𝐩[j], angularMomentum_commutation_momentum]
   rw [Finset.sum_add_distrib, Finset.sum_add_distrib, Finset.sum_sub_distrib]
+  simp only [sum_kroneckerDelta]
+  have : (∑ j : Fin H.d, (Complex.I * ℏ * δ[j,j]) • 𝐩[i]) = (H.d * Complex.I * ℏ) • 𝐩[i] := by
+    ext ψ x
+    simp only [kroneckerDelta_self, ContinuousLinearMap.sum_apply, SchwartzMap.sum_apply,
+      ContinuousLinearMap.smul_apply, SchwartzMap.smul_apply, smul_eq_mul]
+    simp only [Complex.ofReal_one, mul_one, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+      nsmul_eq_mul]
+    ring
+  rw [this]
   ext ψ x
-  unfold kroneckerDelta
-  simp only [ContinuousLinearMap.add_apply, coe_smul', coe_sum', coe_comp',
-    Pi.smul_apply, Finset.sum_apply, Function.comp_apply, coe_sub', Pi.sub_apply,
-    SchwartzMap.add_apply, SchwartzMap.smul_apply, SchwartzMap.sum_apply, Complex.real_smul,
-    Complex.ofReal_inv, Complex.ofReal_ofNat, SchwartzMap.sub_apply]
-  simp only [mul_ite, mul_one, mul_zero, smul_eq_mul, ite_mul, zero_mul, Finset.sum_ite_eq,
-    Finset.mem_univ, ↓reduceIte, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
-    nsmul_eq_mul]
+  simp only [smul_add, ContinuousLinearMap.add_apply, coe_smul', coe_sum', coe_comp', Pi.smul_apply,
+    Finset.sum_apply, Function.comp_apply, coe_sub', Pi.sub_apply, SchwartzMap.add_apply,
+    SchwartzMap.smul_apply, SchwartzMap.sum_apply, Complex.real_smul, Complex.ofReal_inv,
+    Complex.ofReal_ofNat, SchwartzMap.sub_apply, smul_eq_mul]
   ring
 
 /-- The operator `𝐱ᵢ𝐩ᵢ` on Schwartz maps. -/
@@ -137,31 +154,17 @@ lemma angularMomentum_commutation_lrl (hε : 0 < ε) (i j k : Fin H.d) :
   simp only [angularMomentum_commutation_angularMomentum, angularMomentum_commutation_momentum,
     angularMomentum_commutation_position, angularMomentum_commutation_radiusRegPow hε]
   simp only [comp_add, comp_sub, add_comp, sub_comp, comp_smul, smul_comp, zero_comp, add_zero]
-  ext ψ x
-  simp only [ContinuousLinearMap.sub_apply, ContinuousLinearMap.smul_apply,
-    ContinuousLinearMap.sum_apply, ContinuousLinearMap.add_apply, ContinuousLinearMap.comp_apply]
-  simp only [SchwartzMap.sub_apply, SchwartzMap.smul_apply, SchwartzMap.sum_apply,
-    SchwartzMap.add_apply, SchwartzMap.smul_apply, smul_eq_mul]
   simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib]
-  dsimp only [kroneckerDelta]
-  simp only [mul_ite_zero, mul_one, ite_mul, zero_mul, Finset.sum_ite_irrel, Complex.real_smul,
-    Finset.sum_const_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, smul_add]
-  simp only [angularMomentumOperator_antisymm k _]
-  simp only [mul_sub, mul_add, mul_ite_zero, Finset.mul_sum]
-  simp only [ContinuousLinearMap.neg_apply, map_neg, SchwartzMap.neg_apply]
-
-  rcases eq_or_ne i k with (⟨_, rfl⟩ | hik)
-  · simp only [↓reduceIte, angularMomentumOperator_eq_zero]
-    repeat rw [ite_cond_eq_false _ _ (eq_false hij.symm)]
-    simp only [ContinuousLinearMap.zero_apply, SchwartzMap.zero_apply]
-    ring_nf
-  · rcases eq_or_ne j k with (⟨_, rfl⟩ | hjk)
-    · simp only [↓reduceIte]
-      repeat rw [ite_cond_eq_false _ _ (eq_false hij)]
-      ring_nf
-    · repeat rw [ite_cond_eq_false _ _ (eq_false hik)]
-      repeat rw [ite_cond_eq_false _ _ (eq_false hjk)]
-      ring
+  simp only [sum_kroneckerDelta, ← Finset.smul_sum]
+  simp only [angularMomentumOperator_antisymm _ i, angularMomentumOperator_antisymm _ j]
+  ext ψ x
+  simp only [comp_neg, smul_neg, sub_neg_eq_add, neg_comp, smul_add, coe_sub', coe_smul', coe_comp',
+    Pi.sub_apply, ContinuousLinearMap.add_apply, coe_sum', Pi.smul_apply, Finset.sum_apply,
+    Function.comp_apply, ContinuousLinearMap.neg_apply, SchwartzMap.sub_apply,
+    SchwartzMap.add_apply, SchwartzMap.smul_apply, SchwartzMap.sum_apply, smul_eq_mul,
+    Complex.real_smul, Complex.ofReal_inv, Complex.ofReal_ofNat, SchwartzMap.neg_apply,
+    Complex.ofReal_mul]
+  ring
 
 /-- `⁅𝐋ᵢⱼ, 𝐀(ε)²⁆ = 0` -/
 lemma angularMomentum_commutation_lrlSqr (hε : 0 < ε) (i j : Fin H.d) :
@@ -169,8 +172,8 @@ lemma angularMomentum_commutation_lrlSqr (hε : 0 < ε) (i j : Fin H.d) :
   unfold lrlOperatorSqr
   simp only [lie_sum, lie_leibniz, H.angularMomentum_commutation_lrl hε]
   simp only [comp_sub, comp_smul, sub_comp, smul_comp]
-  dsimp only [kroneckerDelta]
-  simp [Finset.sum_add_distrib, Finset.sum_sub_distrib]
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib]
+  simp [sum_kroneckerDelta]
 
 /-- `⁅𝐋², 𝐀(ε)²⁆ = 0` -/
 lemma angularMomentumSqr_commutation_lrlSqr (hε : 0 < ε) :
@@ -195,17 +198,13 @@ To compute the commutator `⁅𝐀ᵢ(ε), 𝐀ⱼ(ε)⁆` we take the following
 
 private lemma positionDotMomentum_commutation_position {d} (i : Fin d) :
     ⁅positionDotMomentum (d := d), 𝐱[i]⁆ = (-Complex.I * ℏ) • 𝐱[i] := by
-  unfold positionDotMomentum
-  simp only [← lie_skew 𝐩[_] _, position_commutation_position, position_commutation_momentum,
-    leibniz_lie, kroneckerDelta, sum_lie, comp_neg, comp_smul]
-  simp
+  dsimp [positionDotMomentum]
+  simp [sum_lie, leibniz_lie, ← lie_skew 𝐩[_] _, position_commutation_momentum, sum_kroneckerDelta]
 
 private lemma positionDotMomentum_commutation_momentum {d} (i : Fin d) :
     ⁅positionDotMomentum (d := d), 𝐩[i]⁆ = (Complex.I * ℏ) • 𝐩[i] := by
-  unfold positionDotMomentum
-  simp only [momentum_commutation_momentum, position_commutation_momentum, kroneckerDelta,
-    sum_lie, leibniz_lie, smul_comp]
-  simp
+  dsimp [positionDotMomentum]
+  simp [sum_lie, leibniz_lie, position_commutation_momentum, sum_kroneckerDelta']
 
 private lemma positionDotMomentum_commutation_momentumSqr {d} :
     ⁅positionDotMomentum (d := d), momentumOperatorSqr (d := d)⁆ = (2 * Complex.I * ℏ) • 𝐩² := by
@@ -485,13 +484,12 @@ private lemma pSqr_comm_rx (hε : 0 < ε) (i : Fin H.d) :
   rw [← lie_skew, radiusRegPow_commutation_momentumSqr hε]
   ext ψ x
   simp only [comp_neg, comp_smulₛₗ, RingHom.id_apply, Complex.ofReal_neg, Complex.ofReal_one,
-    mul_neg, mul_one, neg_mul, neg_smul, one_mul, neg_add_rev, neg_neg, add_comp, smul_comp,
-    sub_comp, ContinuousLinearMap.add_apply, ContinuousLinearMap.neg_apply, coe_smul', coe_comp',
-    Pi.smul_apply, Function.comp_apply, coe_sub', Pi.sub_apply, coe_sum', Finset.sum_apply, map_sum,
+    mul_neg, mul_one, neg_mul, neg_smul, one_mul, neg_sub, sub_neg_eq_add, neg_add_rev, neg_neg,
+    add_comp, neg_comp, smul_comp, ContinuousLinearMap.add_apply, ContinuousLinearMap.neg_apply,
+    coe_smul', coe_comp', Pi.smul_apply, Function.comp_apply, coe_sum', Finset.sum_apply, map_sum,
     SchwartzMap.add_apply, SchwartzMap.neg_apply, SchwartzMap.smul_apply, smul_eq_mul,
-    SchwartzMap.sub_apply, Complex.real_smul, Complex.ofReal_sub, Complex.ofReal_add,
-    Complex.ofReal_natCast, Complex.ofReal_ofNat, Complex.ofReal_mul, Complex.ofReal_pow,
-    SchwartzMap.sum_apply]
+    Complex.real_smul, Complex.ofReal_mul, Complex.ofReal_pow, Complex.ofReal_sub,
+    Complex.ofReal_ofNat, Complex.ofReal_add, Complex.ofReal_natCast, SchwartzMap.sum_apply]
   ring_nf
 
 private lemma rr_comm_pL_Lp (hε : 0 < ε) (i : Fin H.d) :
@@ -546,7 +544,7 @@ private lemma xL_Lx_eq (hε : 0 < ε) (i : Fin H.d) : ∑ j, (𝐱[j] ∘L 𝐋[
         simp only [comp_add, comp_smulₛₗ, RingHom.id_apply, comp_id, comp_sub, coe_sub', coe_comp',
           coe_smul', Pi.sub_apply, ContinuousLinearMap.add_apply, Function.comp_apply,
           Pi.smul_apply, SchwartzMap.sub_apply, SchwartzMap.add_apply, SchwartzMap.smul_apply,
-          smul_eq_mul, mul_one, Complex.real_smul, Complex.ofReal_ofNat]
+          smul_eq_mul, Complex.ofReal_one, mul_one, Complex.real_smul, Complex.ofReal_ofNat]
         ring
       _ = 𝐱[j] ∘L 𝐩[j] ∘L 𝐱[i] + 𝐱[j] ∘L 𝐱[i] ∘L 𝐩[j] - (2 : ℝ) • 𝐱[j] ∘L 𝐱[j] ∘L 𝐩[i]
           + (2 * Complex.I * ℏ * δ[i,j]) • 𝐱[j] - (Complex.I * ℏ) • 𝐱[i] := by
@@ -563,16 +561,15 @@ private lemma xL_Lx_eq (hε : 0 < ε) (i : Fin H.d) : ∑ j, (𝐱[j] ∘L 𝐋[
         ring
   simp only [Finset.sum_sub_distrib, Finset.sum_add_distrib, ← Finset.smul_sum, ← finset_sum_comp]
   rw [positionOperatorSqr_eq hε, sub_comp, smul_comp, id_comp]
+  simp only [sum_kroneckerDelta]
 
-  unfold kroneckerDelta
   ext ψ x
   simp only [ContinuousLinearMap.sub_apply, ContinuousLinearMap.add_apply,
     ContinuousLinearMap.smul_apply, ContinuousLinearMap.sum_apply, SchwartzMap.sub_apply,
     SchwartzMap.add_apply, SchwartzMap.smul_apply, SchwartzMap.sum_apply]
   simp only [coe_comp', coe_sum', Function.comp_apply, Finset.sum_apply, SchwartzMap.sum_apply,
-    Complex.real_smul, Complex.ofReal_ofNat, Complex.ofReal_pow, mul_ite, mul_one, mul_zero,
-    smul_eq_mul, ite_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
-    Finset.sum_const, Finset.card_univ, Fintype.card_fin, nsmul_eq_mul, Complex.ofReal_mul]
+    Complex.real_smul, Complex.ofReal_ofNat, Complex.ofReal_pow, smul_eq_mul, Finset.sum_const,
+    Finset.card_univ, Fintype.card_fin, nsmul_eq_mul, Complex.ofReal_mul]
   ring
 
 /-- `⁅𝐇(ε), 𝐀(ε)ᵢ⁆ = iℏkε²(¾𝐫(ε)⁻⁵(𝐱ⱼ𝐋ᵢⱼ + 𝐋ᵢⱼ𝐱ⱼ) + 3iℏ/2 𝐫(ε)⁻⁵𝐱ᵢ + 𝐫(ε)⁻³𝐩ᵢ)` -/
