@@ -488,7 +488,6 @@ private lemma rr_comm_pL_Lp (hε : 0 < ε) (i : Fin H.d) :
     smul_add]
   ring_nf
 
-@[sorryful]
 private lemma xL_Lx_eq (hε : 0 < ε) (i : Fin H.d) : ∑ j, (𝐱[j] ∘L 𝐋[i,j] + 𝐋[i,j] ∘L 𝐱[j]) =
     (2 : ℝ) • (∑ j, 𝐱[j] ∘L 𝐩[j]) ∘L 𝐱[i] - (2 : ℝ) • 𝐫[ε,2] ∘L 𝐩[i] + (2 * ε ^ 2) • 𝐩[i]
     - (Complex.I * ℏ * (H.d - 3)) • 𝐱[i] := by
