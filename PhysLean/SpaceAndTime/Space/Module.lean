@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 import PhysLean.SpaceAndTime.Space.Basic
 /-!
 
-# The strucutre of a module on Space
+# The structure of a module on Space
 
 The scope of this module is to define on `Space d` the structure of a `Module`
 (aka vector space), a `Norm` and an `InnerProductSpace`, and give properties of these structures.
