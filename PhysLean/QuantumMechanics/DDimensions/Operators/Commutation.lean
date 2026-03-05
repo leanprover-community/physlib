@@ -126,8 +126,10 @@ lemma position_commutation_momentum {d : ℕ} (i j : Fin d) : ⁅𝐱[i], 𝐩[j
   rw [positionOperator_apply, momentumOperator_apply_fun]
   rw [momentumOperator_apply, positionOperator_apply_fun]
   simp only [neg_mul, Pi.smul_apply, smul_eq_mul, mul_neg, sub_neg_eq_add]
-
-  have h : (fun x ↦ ↑(x i) * ψ x) = (fun (x : Space d) ↦ x i) • ψ := rfl
+  have h : ⇑(smulLeftCLM ℂ ⇑(Space.coordCLM i) • ψ) = (fun (x : Space d) ↦ x i) • ψ := by
+    ext x
+    rw [ContinuousLinearMap.smul_def, smulLeftCLM_apply_apply (by fun_prop), Space.coordCLM_apply]
+    simp only [Space.coord_apply, Complex.real_smul, Pi.smul_apply']
   rw [h]
   rw [Space.deriv_smul (by fun_prop) (SchwartzMap.differentiableAt ψ)]
   rw [Space.deriv_component, ite_cond_symm j i]
