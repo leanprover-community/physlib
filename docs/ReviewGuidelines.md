@@ -20,7 +20,7 @@ as efficient as possible, uses the best algorithm available etc.
 - Modules are easy to read and have a well-defined scope
 - Any new correct files are suitably named.
 - Any new correct files are suitably located.
-- Modules have sufficent documentation to understand there flow.
+- Modules have sufficient documentation to understand there flow.
 
 These points are about readability of the project as a whole and how easy it is to find results within the project.
 
