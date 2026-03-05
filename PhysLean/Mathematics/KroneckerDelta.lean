@@ -3,7 +3,10 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import Mathlib.Algebra.Ring.Basic
+import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+import Mathlib.Algebra.Module.Basic
+import Mathlib.Data.Complex.Basic
+import Mathlib.Data.Fintype.Card
 import PhysLean.Meta.TODO.Basic
 /-!
 
@@ -16,18 +19,49 @@ TODO "YVABB" "Build functionality for working with sums involving Kronecker delt
 
 namespace KroneckerDelta
 
+variable {d : ℕ}
+
+/-!
+
+## A. Definition and basic properties
+
+-/
+
 /-- The Kronecker delta function, `ite (i = j) 1 0`. -/
-def kroneckerDelta [Ring R] (i j : Fin d) : R := if (i = j) then 1 else 0
+def kroneckerDelta (i j : Fin d) : ℝ := if (i = j) then 1 else 0
 
 @[inherit_doc kroneckerDelta]
-macro "δ[" i:term "," j:term "]" : term => `(kroneckerDelta $i $j)
+notation "δ[" i "," j "]" => kroneckerDelta i j
 
-lemma kroneckerDelta_symm [Ring R] (i j : Fin d) :
-    kroneckerDelta (R := R) i j = kroneckerDelta j i :=
+lemma kroneckerDelta_eq (i j : Fin d) : δ[i,j] = ite (i = j) 1 0 := rfl
+
+lemma kroneckerDelta_symm (i j : Fin d) : δ[i,j] = δ[j,i] :=
   ite_cond_congr (Eq.propIntro Eq.symm Eq.symm)
 
-lemma kroneckerDelta_self [Ring R] : ∀ i : Fin d, kroneckerDelta (R := R) i i = 1 := by
-  intro i
-  exact if_pos rfl
+lemma kroneckerDelta_self (i : Fin d) : δ[i,i] = 1 := if_pos rfl
+
+lemma kroneckerDelta_diff {i j : Fin d} (h : i ≠ j) : δ[i,j] = 0 := if_neg h
+
+/-!
+
+## B. Sums
+
+-/
+
+lemma sum_kroneckerDelta [AddCommGroup M] [Module ℂ M]
+    (c : ℂ) (i : Fin d) (f : Fin d → M) : ∑ j, (c * δ[i,j]) • f j = c • f i := by
+  have (j : Fin d) : c * Complex.ofReal (ite (i = j) 1 0) = ite (i = j) c 0 := by
+    rcases eq_or_ne i j with (rfl | hne)
+    · simp
+    · simp [if_neg hne]
+  simp [kroneckerDelta_eq, this]
+
+lemma sum_kroneckerDelta' [AddCommGroup M] [Module ℂ M]
+    (c : ℂ) (i : Fin d) (f : Fin d → M) : ∑ j, (c * δ[j,i]) • f j = c • f i := by
+  simp [kroneckerDelta_symm, sum_kroneckerDelta]
+
+lemma sum_kroneckerDelta_self [AddCommGroup M] [Module ℂ M] (c : ℂ) (f : M) :
+    ∑ (i : Fin d), (c * δ[i,i]) • f = (d * c) • f := by
+  simp [kroneckerDelta_self, ← Nat.cast_smul_eq_nsmul ℂ, smul_smul]
 
 end KroneckerDelta
