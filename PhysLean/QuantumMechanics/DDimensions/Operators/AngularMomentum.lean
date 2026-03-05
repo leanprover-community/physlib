@@ -9,10 +9,32 @@ import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
 
 # Angular momentum operator
 
-In this module we define:
-- The angular momentum operator on Schwartz maps, component-wise.
-- The angular momentum squared operator.
-- The angular momentum scalar operator in 2d and angular momentum vector operator in 3d.
+## i. Overview
+
+In this module we introduce several angular momentum operators for quantum mechanics on `Space d`.
+
+## ii. Key results
+
+Definitions:
+- `angularMomentumOperator` : (components of) the angular momentum operator acting on Schwartz maps
+    `𝓢(Space d, ℂ)` as `𝐱ᵢ∘𝐩ⱼ - 𝐱ⱼ∘𝐩ᵢ`.
+- `angularMomentumOperatorSqr` : the operator acting on Schwartz maps `𝓢(Space d, ℂ)`
+    as `½ ∑ᵢⱼ 𝐋ᵢⱼ∘𝐋ᵢⱼ`.
+- `angularMomentumOperator2D` : the (pseudo)scalar angular momentum operator for `d = 2`.
+- `angularMomentumOperator3D` : the (pseudo)vector angular momentum operator for `d = 3`.
+
+Notation:
+- `𝐋[i,j]` for `angularMomentumOperator i j`
+- `𝐋²` for `angularMomentumOperatorSqr`
+
+## iii. Table of contents
+
+- A. Angular momentum operator
+  - A.1 Antisymmetry
+- B. Angular momentum squared operator
+- C. Special cases in low dimensions
+
+## iv. References
 
 -/
 
@@ -21,9 +43,9 @@ noncomputable section
 open Constants
 open ContDiff SchwartzMap
 
-/-
+/-!
 
-# Definition
+## A. Angular momentum operator
 
 -/
 
@@ -40,6 +62,25 @@ lemma angularMomentumOperator_apply_fun {d : ℕ} (i j : Fin d) (ψ : 𝓢(Space
 
 lemma angularMomentumOperator_apply {d : ℕ} (i j : Fin d) (ψ : 𝓢(Space d, ℂ)) (x : Space d) :
     𝐋[i,j] ψ x = 𝐱[i] (𝐩[j] ψ) x - 𝐱[j] (𝐩[i] ψ) x := rfl
+
+/-!
+
+### A.1 Antisymmetry
+
+-/
+
+/-- The angular momentum operator is antisymmetric, `𝐋ᵢⱼ = -𝐋ⱼᵢ` -/
+lemma angularMomentumOperator_antisymm {d : ℕ} (i j : Fin d) : 𝐋[i,j] = - 𝐋[j,i] :=
+  Eq.symm (neg_sub _ _)
+
+/-- Angular momentum operator components with repeated index vanish, `𝐋ᵢᵢ = 0`. -/
+lemma angularMomentumOperator_eq_zero {d : ℕ} (i : Fin d) : 𝐋[i,i] = 0 := sub_self _
+
+/-!
+
+## B. Angular momentum squared operator
+
+-/
 
 /-- The square of the angular momentum operator, `𝐋² ≔ ½ ∑ᵢⱼ 𝐋ᵢⱼ∘𝐋ᵢⱼ`. -/
 def angularMomentumOperatorSqr {d : ℕ} : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
@@ -59,22 +100,9 @@ lemma angularMomentumOperatorSqr_apply {d : ℕ} (ψ : 𝓢(Space d, ℂ)) (x : 
   rw [angularMomentumOperatorSqr_apply_fun]
   simp only [smul_apply, sum_apply, smul_eq_mul]
 
-/-
+/-!
 
-## Basic properties
-
--/
-
-/-- The angular momentum operator is antisymmetric, `𝐋ᵢⱼ = -𝐋ⱼᵢ` -/
-lemma angularMomentumOperator_antisymm {d : ℕ} (i j : Fin d) : 𝐋[i,j] = - 𝐋[j,i] :=
-  Eq.symm (neg_sub _ _)
-
-/-- Angular momentum operator components with repeated index vanish, `𝐋ᵢᵢ = 0`. -/
-lemma angularMomentumOperator_eq_zero {d : ℕ} (i : Fin d) : 𝐋[i,i] = 0 := sub_self _
-
-/-
-
-## Special cases in low dimensions
+## C. Special cases in low dimensions
 
   • d = 1 : The angular momentum operator is trivial.
 
@@ -83,13 +111,12 @@ lemma angularMomentumOperator_eq_zero {d : ℕ} (i : Fin d) : 𝐋[i,i] = 0 := s
 
   • d = 3 : The angular momentum operator has three independent components, 𝐋₀₁, 𝐋₁₂ and 𝐋₂₀.
             Dualizing using the Levi-Civita symbol produces the familiar (pseudo)vector angular
-            momentum operator with components 𝐋₀ = 𝐋₂₀, 𝐋₁ = 𝐋₂₀ and 𝐋₂ = 𝐋₀₁.
+            momentum operator with components 𝐋₀ = 𝐋₁₂, 𝐋₁ = 𝐋₂₀ and 𝐋₂ = 𝐋₀₁.
 
 -/
 
 /-- In one dimension the angular momentum operator is trivial. -/
-lemma angularMomentumOperator1D_trivial : ∀ (i j : Fin 1), 𝐋[i,j] = 0 := by
-  intro i j
+lemma angularMomentumOperator1D_trivial (i j : Fin 1) : 𝐋[i,j] = 0 := by
   fin_cases i, j
   exact angularMomentumOperator_eq_zero 0
 

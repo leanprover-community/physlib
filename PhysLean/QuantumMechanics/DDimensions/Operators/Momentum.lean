@@ -18,7 +18,7 @@ In this module we introduce several momentum operators for quantum mechanics on 
 ## ii. Key results
 
 Definitions:
-- `momentumOperator` : (components of) the momentum vector operator acting Schwartz maps
+- `momentumOperator` : (components of) the momentum vector operator acting on Schwartz maps
     `𝓢(Space d, ℂ)` as `-iℏ∂ᵢ`.
 - `momentumOperatorSqr` : operator acting on Schwartz maps `𝓢(Space d, ℂ)` as `∑ᵢ 𝐩[i]∘𝐩[i]`.
 - `momentumUnboundedOperator` : a symmetric unbounded operator acting on the Schwartz submodule
