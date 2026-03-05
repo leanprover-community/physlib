@@ -14,7 +14,7 @@ In another programming language these points analogous to not just making sure y
 have a function that does the right thing, but making sure that that function is
 as efficient as possible, uses the best algorithm available etc.
 
-## Organization
+## Organization
 
 - Lemmas and definitions appear in the correct place
 - Modules are easy to read and have a well-defined scope
@@ -22,7 +22,7 @@ as efficient as possible, uses the best algorithm available etc.
 - Any new correct files are suitably located.
 - Modules have sufficient documentation to understand there flow.
 
-These points are about readability of the project as a whole and how easy it is to find results within the project.
+These points are about navigability of the project as a whole and how easy it is to find results within the project.
 
 ## Style conventions
 
@@ -32,9 +32,7 @@ https://leanprover-community.github.io/contribute/style.html
 
 - Use of `lemma` instead of `theorem` except for the most important results.
 
-These points are related to how individual lemmas and theorems look, and how easy they are
-to read.
-
+These points are related to the readability of the project and results therein.
 ## PR and authorship
 
 - The author of the PR understands the material in the PR.
