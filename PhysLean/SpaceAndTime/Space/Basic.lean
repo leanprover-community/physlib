@@ -216,12 +216,38 @@ instance {d} : Module ℝ (Space d) where
 
 /-!
 
-## B.3. Addition of Euclidean spaces
+## B.3. Relation to `EuclideanSpace`
+
+-/
+
+/-- The map from `Space d` to `EuclideanSpace ℝ (Fin d)`. -/
+def toEuclid {d} (s : Space d) : EuclideanSpace ℝ (Fin d) where
+  ofLp := s.val
+
+@[simp]
+lemma toEuclid_apply {d} (s : Space d) (i : Fin d) : toEuclid s i = s i := rfl
+
+lemma toEuclid_injective {d} : Function.Injective (@toEuclid d) := fun s1 s2 h => by
+  ext i
+  rw [← toEuclid_apply s1 i, ← toEuclid_apply s2 i, h]
+
+lemma toEuclid_surjective {d} : Function.Surjective (@toEuclid d) := fun v => by
+  use ⟨v.ofLp⟩
+  ext i
+  simp [toEuclid_apply]
+
+/-!
+
+## B.3.1. The additive action
 
 -/
 
 noncomputable instance : VAdd (EuclideanSpace ℝ (Fin d)) (Space d) where
   vadd v s := ⟨fun i => v i + s.val i⟩
+
+@[simp]
+lemma vadd_toEuclid {d} (v : EuclideanSpace ℝ (Fin d)) (s : Space d) :
+    toEuclid (v +ᵥ s) = v + toEuclid s := rfl
 
 @[simp]
 lemma vadd_val {d} (v : EuclideanSpace ℝ (Fin d)) (s : Space d) :
@@ -264,6 +290,32 @@ lemma add_vadd_zero {d} (v1 v2 : EuclideanSpace ℝ (Fin d)) :
     (v1 +ᵥ (0 : Space d)) + (v2 +ᵥ (0 : Space d)) = (v1 + v2) +ᵥ (0 : Space d) := by
   ext i
   simp
+
+/-!
+
+## B.3.2. Subtraction
+
+-/
+
+noncomputable instance {d} : VSub (EuclideanSpace ℝ (Fin d)) (Space d) where
+  vsub s1 s2 := toEuclid s1 - toEuclid s2
+
+lemma vsub_eq_toEuclid_sub {d} (s1 s2 : Space d) :
+    s1 -ᵥ s2 = toEuclid s1 - toEuclid s2 := rfl
+
+@[simp]
+lemma vsub_apply {d} (s1 s2 : Space d) (i : Fin d) :
+    (s1 -ᵥ s2) i = s1 i - s2 i := rfl
+
+/-!
+
+## B.3.3. AddTorsor instance
+
+-/
+
+noncomputable instance {d} : AddTorsor (EuclideanSpace ℝ (Fin d)) (Space d) where
+  vsub_vadd' s1 s2 := toEuclid_injective <| by simp [vsub_eq_toEuclid_sub]
+  vadd_vsub' s1 s2 := by simp [vsub_eq_toEuclid_sub, vadd_toEuclid]
 
 /-!
 
