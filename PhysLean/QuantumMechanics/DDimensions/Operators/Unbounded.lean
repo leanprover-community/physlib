@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
 import PhysLean.Mathematics.InnerProductSpace.Submodule
-import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
 /-!
 
 # Unbounded operators
