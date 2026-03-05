@@ -32,3 +32,11 @@ These points are about readability of the project as a whole and how easy it is 
 
 These points are related to how individual lemmas and theorems look, and how easy they are
 to read.
+
+## PR and authorship
+
+- The author of the PR understands the material in the PR.
+- The PR is concise and adds a single new concept (which may be multiple lemmas or definitions)
+
+These points are not to the code-base itself but the history of the project and how
+easy it is for someone to find information on a given area from the git history.
