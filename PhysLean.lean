@@ -352,6 +352,7 @@ import PhysLean.SpaceAndTime.Space.Integrals.Basic
 import PhysLean.SpaceAndTime.Space.Integrals.RadialAngularMeasure
 import PhysLean.SpaceAndTime.Space.IsDistBounded
 import PhysLean.SpaceAndTime.Space.LengthUnit
+import PhysLean.SpaceAndTime.Space.Module
 import PhysLean.SpaceAndTime.Space.Norm
 import PhysLean.SpaceAndTime.Space.Slice
 import PhysLean.SpaceAndTime.Space.Translations

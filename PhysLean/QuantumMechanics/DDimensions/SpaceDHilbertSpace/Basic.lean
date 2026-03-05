@@ -5,7 +5,7 @@ Authors: Gregory J. Loges
 -/
 import Mathlib.Analysis.InnerProductSpace.Dual
 import Mathlib.MeasureTheory.Function.L2Space
-import PhysLean.SpaceAndTime.Space.Basic
+import PhysLean.SpaceAndTime.Space.Module
 /-!
 
 # Hilbert space for quantum mechanics on Space d
