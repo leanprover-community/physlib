@@ -298,7 +298,7 @@ lemma add_vadd_zero {d} (v1 v2 : EuclideanSpace ℝ (Fin d)) :
 -/
 
 noncomputable instance {d} : VSub (EuclideanSpace ℝ (Fin d)) (Space d) where
-  vsub s1 s2 := toEuclid s1 - toEuclid s2
+  vsub s1 s2 := WithLp.toLp 2 <| fun i => s1 i - s2 i
 
 lemma vsub_eq_toEuclid_sub {d} (s1 s2 : Space d) :
     s1 -ᵥ s2 = toEuclid s1 - toEuclid s2 := rfl
