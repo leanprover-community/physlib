@@ -216,45 +216,16 @@ lemma radiusRegPow_commutation_momentumSqr (hε : 0 < ε) :
     - (ε ^ 2 * s * (s - 2) * ℏ ^ 2) • 𝐫[ε,s-4] := by
   dsimp [momentumOperatorSqr]
   simp only [lie_sum, lie_leibniz, radiusRegPow_commutation_momentum hε, comp_smul, smul_comp,
-    ← smul_add]
-  conv_lhs =>
-    enter [2, i]
-    calc
-      _ = (s * I * ℏ) • (𝐫[ε,s-2] ∘L 𝐱[i] ∘L 𝐩[i] + 𝐫[ε,s-2] ∘L 𝐩[i] ∘L 𝐱[i]
-          - (↑(s - 2) * I * ℏ) • 𝐫[ε,s-4] ∘L 𝐱[i] ∘L 𝐱[i]) := by
-        rw [add_comm, ← comp_assoc, momentum_comp_radiusRegPow_eq hε, comp_assoc, sub_comp, add_sub,
-          smul_comp, comp_assoc, comp_assoc]
-        ring_nf
-      _ = (s * I * ℏ) • ((2 : ℂ) • 𝐫[ε,s-2] ∘L 𝐱[i] ∘L 𝐩[i] - (I * ℏ) • 𝐫[ε,s-2]
-          - (↑(s - 2) * I * ℏ) • 𝐫[ε,s-4] ∘L 𝐱[i] ∘L 𝐱[i]) := by
-        rw [momentum_comp_position_eq, comp_sub, comp_smul, add_sub, ← two_smul ℂ]
-        simp [kroneckerDelta_self]
-      _ = (2 * s * I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] ∘L 𝐩[i] + (s * ℏ ^ 2) • 𝐫[ε,s-2]
-          + (s * (s - 2) * ℏ ^ 2) • 𝐫[ε,s-4] ∘L 𝐱[i] ∘L 𝐱[i] := by
-        simp only [sub_eq_add_neg, ← neg_smul, smul_add, smul_smul]
-        congr 3 -- match coefficients
-        · ring
-        · ring_nf
-          simp
-        · ring_nf
-          simp only [I_sq, ofReal_add, ofReal_neg, RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe,
-            MonoidHom.toOneHom_coe, MonoidHom.coe_coe, coe_algebraMap, ZeroHom.coe_mk, ofReal_mul,
-            ofReal_pow]
-          ring
-  simp only [Finset.sum_add_distrib, ← Finset.smul_sum, ← comp_finset_sum]
-  have h1 : (∑ i : Fin d, radiusRegPowOperator (d := d) ε (s - 2)) = (d : ℂ) • 𝐫[ε,s-2] := by
-    ext
-    rw [ContinuousLinearMap.sum_apply, SchwartzMap.sum_apply]
-    simp
-  have h2 : 𝐫[ε,s-4] ∘L ∑ i : Fin d, 𝐱[i] ∘L 𝐱[i] = 𝐫[ε,s-2] - (ε ^ 2) • 𝐫[ε,s-4] := by
-    simp only [positionOperatorSqr_eq hε, comp_sub, comp_smul, comp_id,
-      radiusRegPowOperator_comp_eq hε]
-    ring_nf
-  rw [h1, h2]
-  ext ψ x
-  simp only [ContinuousLinearMap.add_apply, coe_smul', Pi.smul_apply, coe_sub', Pi.sub_apply,
-    SchwartzMap.add_apply, SchwartzMap.smul_apply, smul_eq_mul, real_smul, ofReal_mul,
-    SchwartzMap.sub_apply, ofReal_sub, ofReal_add, ofReal_natCast]
+    ← smul_add, ← comp_assoc, momentum_comp_radiusRegPow_eq hε, sub_comp, smul_comp]
+  simp only [comp_assoc, momentum_comp_position_eq, comp_sub, comp_smul, comp_id,
+    ← Finset.smul_sum, Finset.sum_add_distrib, Finset.sum_sub_distrib, ← comp_finset_sum,
+    positionOperatorSqr_eq hε, comp_sub, radiusRegPowOperator_comp_eq hε, sum_kroneckerDelta_self]
+  ext
+  simp only [ofReal_sub, coe_smul', Pi.smul_apply, ContinuousLinearMap.add_apply, coe_sub',
+    Pi.sub_apply, SchwartzMap.smul_apply, SchwartzMap.add_apply, SchwartzMap.sub_apply, smul_eq_mul,
+    real_smul, ofReal_pow, ofReal_mul, ofReal_add, ofReal_natCast]
+  ring_nf
+  simp only [I_sq]
   ring
 
 /-!

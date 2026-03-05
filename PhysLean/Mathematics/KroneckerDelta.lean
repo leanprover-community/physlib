@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Data.Complex.Basic
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Card
 import PhysLean.Meta.TODO.Basic
 /-!
 
@@ -46,5 +46,14 @@ lemma sum_kroneckerDelta [AddCommGroup M] [Module ℂ M]
 lemma sum_kroneckerDelta' [AddCommGroup M] [Module ℂ M]
     (c : ℂ) (i : Fin d) (f : Fin d → M) : ∑ j, (c * δ[j,i]) • f j = c • f i := by
   simp [kroneckerDelta_symm, sum_kroneckerDelta]
+
+lemma sum_kroneckerDelta_self [AddCommGroup M] [Module ℂ M] (c : ℂ) (f : M) :
+    ∑ (i : Fin d), (c * δ[i,i]) • f = (d * c) • f := by
+  simp only [kroneckerDelta_self, Complex.ofReal_one, mul_one, Finset.sum_const, Finset.card_univ,
+    Fintype.card_fin]
+  induction d with
+  | zero => simp
+  | succ n hn =>
+    rw [succ_nsmul, hn, ← add_smul, Nat.cast_add_one, add_mul, one_mul]
 
 end KroneckerDelta
