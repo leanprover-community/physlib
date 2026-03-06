@@ -253,4 +253,35 @@ instance {d : ℕ} : Nontrivial (Space d.succ) where
     use k, v1 +ᵥ k
     simpa only [ne_eq, eq_vadd_iff_vsub_eq, vsub_self] using hv.symm
 
+/-!
+
+## C. Model structure (i.e. structure of a manifold)
+
+-/
+
+/-- The manifold structure on `Space d`. -/
+noncomputable def manifoldStructure (d : ℕ) :
+    ModelWithCorners ℝ (EuclideanSpace ℝ (Fin d)) (Space d) where
+  toFun := (Equiv.vaddConst (Classical.choice Space.instNonempty)).symm
+  invFun := Equiv.vaddConst (Classical.choice Space.instNonempty)
+  source := Set.univ
+  target := Set.univ
+  map_source' := by simp
+  map_target' := by simp
+  left_inv' := by simp
+  right_inv' := by simp
+  source_eq := by simp
+  convex_range' := by
+    rw [dif_pos (instIsRCLikeNormedField ℝ), Equiv.range_eq_univ]
+    exact fun _ _ _ ↦ by simp
+  nonempty_interior' := by
+    rw [Equiv.range_eq_univ]
+    simp
+  continuous_toFun := by
+    simp only [Equiv.coe_vaddConst_symm]
+    fun_prop
+  continuous_invFun := by
+    simp only [Equiv.coe_vaddConst]
+    fun_prop
+
 end Space
