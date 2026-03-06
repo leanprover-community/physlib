@@ -184,7 +184,7 @@ lemma position_commutation_momentum {d : ℕ} (i j : Fin d) : ⁅𝐱[i], 𝐩[j
   rw [h]
   rw [Space.deriv_smul (by fun_prop) (SchwartzMap.differentiableAt ψ)]
   rw [Space.deriv_component, ← kroneckerDelta_eq, kroneckerDelta_symm]
-  simp only [Complex.real_smul]
+  simp only [Complex.real_smul, kroneckerDelta_ofReal]
   ring
 
 lemma momentum_comp_position_eq (i j : Fin d) : 𝐩[j] ∘L 𝐱[i] =
