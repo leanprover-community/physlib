@@ -9,17 +9,32 @@ import PhysLean.QuantumMechanics.PlanckConstant
 import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
-# Momentum vector operator
+# Momentum operators
 
-In this module we define:
-- `momentumOperator i` acting on Schwartz maps `𝓢(Space d, ℂ)` as `-Iℏ∂ᵢ`.
-- `momentumOperatorSqr` acting on Schwartz maps `𝓢(Space d, ℂ)` as `∑ᵢ 𝐩[i]∘𝐩[i]`.
-- `momentumUnboundedOperator i`, a symmetric unbounded operator acting on the Schwartz submodule
-  of the Hilbert space `SpaceDHilbertSpace d`.
+## i. Overview
 
-We also introduce the following notation:
+In this module we introduce several momentum operators for quantum mechanics on `Space d`.
+
+## ii. Key results
+
+Definitions:
+- `momentumOperator` : (components of) the momentum vector operator acting on Schwartz maps
+    `𝓢(Space d, ℂ)` as `-iℏ∂ᵢ`.
+- `momentumOperatorSqr` : operator acting on Schwartz maps `𝓢(Space d, ℂ)` as `∑ᵢ 𝐩[i]∘𝐩[i]`.
+- `momentumUnboundedOperator` : a symmetric unbounded operator acting on the Schwartz submodule
+    of the Hilbert space `SpaceDHilbertSpace d`.
+
+Notation:
 - `𝐩[i]` for `momentumOperator i`
 - `𝐩²` for `momentumOperatorSqr`
+
+## iii. Table of contents
+
+- A. Momentum vector operator
+- B. Momentum-squared operator
+- C. Unbounded momentum vector operator
+
+## iv. References
 
 -/
 
@@ -31,6 +46,12 @@ open ContDiff SchwartzMap
 
 variable {d : ℕ} (i : Fin d)
 
+/-!
+
+## A. Momentum vector operator
+
+-/
+
 /-- Component `i` of the momentum operator is the continuous linear map
 from `𝓢(Space d, ℂ)` to itself which maps `ψ` to `-iℏ ∂ᵢψ`. -/
 def momentumOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
@@ -38,7 +59,7 @@ def momentumOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
     (SchwartzMap.fderivCLM ℂ (Space d) ℂ)
 
 @[inherit_doc momentumOperator]
-macro "𝐩[" i:term "]" : term => `(momentumOperator $i)
+notation "𝐩[" i "]" => momentumOperator i
 
 lemma momentumOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
     𝐩[i] ψ = (- Complex.I * ℏ) • ∂[i] ψ := rfl
@@ -46,6 +67,12 @@ lemma momentumOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
 @[simp]
 lemma momentumOperator_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) :
     𝐩[i] ψ x = - Complex.I * ℏ * ∂[i] ψ x := rfl
+
+/-!
+
+## B. Momentum-squared operator
+
+-/
 
 /-- The square of the momentum operator, `𝐩² ≔ ∑ᵢ 𝐩ᵢ∘𝐩ᵢ`. -/
 def momentumOperatorSqr : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) := ∑ i, 𝐩[i] ∘L 𝐩[i]
@@ -61,7 +88,9 @@ lemma momentumOperatorSqr_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) :
     Function.comp_apply, map_sum]
 
 /-!
-## Unbounded momentum operators
+
+## C. Unbounded momentum vector operator
+
 -/
 
 open SpaceDHilbertSpace

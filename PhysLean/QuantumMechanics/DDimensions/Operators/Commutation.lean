@@ -9,6 +9,39 @@ import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
 
 # Commutation relations
 
+## i. Overview
+
+In this module we compute the commutators for common operators acting on Schwartz maps on `Space d`.
+
+Commutator lemmas come in three flavors:
+  - 1. `a_commutation_b` lemmas are of the form `⁅a, b⁆ = (⋯)`.
+  - 2. `a_comp_b_commute` and `a_comp_commute` lemmas are of the form `a ∘ b = b ∘ a`.
+  - 3. `a_comp_b_eq` lemmas are of the form `a ∘ b = b ∘ a + (⋯)`.
+
+## ii. Key results
+
+- `position_commutation_momentum` : The canonical commutation relations.
+- `angularMomentum_commutation_position` : The position operator transforms as a vector under
+    infinitessimal rotations.
+- `angularMomentum_commutation_radiusRegPow` : Functions of `‖x‖²` commute with the angular momenta.
+- `angularMomentum_commutation_momentum` : The momentum operator transforms as a vector under
+    infinitessimal rotations.
+- `angularMomentum_commutation_angularMomentum` : Angular momenta generate an `𝔰𝔬(d)` algebra.
+- `angularMomentumSqr_commutation_angularMomentum` : `𝐋²` is a quadratic Casimir of `𝔰𝔬(d)`.
+
+## iii. Table of contents
+
+- A. General
+- B. Commutators
+  - B.1. Position / position
+  - B.2. Momentum / momentum
+  - B.3. Position / momentum
+  - B.4. Angular momentum / position
+  - B.5. Angular momentum / momentum
+  - B.6. Angular momentum / angular momentum
+
+## iv. References
+
 -/
 
 namespace QuantumMechanics
@@ -16,6 +49,12 @@ noncomputable section
 open Constants
 open KroneckerDelta
 open SchwartzMap ContinuousLinearMap
+
+/-!
+
+## A. General
+
+-/
 
 private lemma ite_cond_symm (i j : Fin d) :
     (if i = j then A else B) = (if j = i then A else B) :=
@@ -41,8 +80,16 @@ lemma comp_eq_comp_sub_commute (A B : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d,
   dsimp only [Bracket.bracket]
   simp only [ContinuousLinearMap.mul_def, sub_sub_cancel]
 
-/-
-## Position / position commutators
+/-!
+
+## B. Commutators
+
+-/
+
+/-!
+
+### B.1. Position / position
+
 -/
 
 /-- Position operators commute: `[xᵢ, xⱼ] = 0`. -/
@@ -76,8 +123,10 @@ lemma radiusRegPow_commutation_radiusRegPow (hε : 0 < ε) :
   dsimp only [Bracket.bracket]
   simp only [ContinuousLinearMap.mul_def, radiusRegPowOperator_comp_eq hε, add_comm, sub_self]
 
-/-
-## Momentum / momentum commutators
+/-!
+
+### B.2. Momentum / momentum
+
 -/
 
 /-- Momentum operators commute: `[pᵢ, pⱼ] = 0`. -/
@@ -112,8 +161,10 @@ lemma momentumSqr_comp_momentum_commute {d : ℕ} (i : Fin d) : 𝐩² ∘L 𝐩
   rw [← sub_eq_zero]
   exact momentumSqr_commutation_momentum i
 
-/-
-## Position / momentum commutators
+/-!
+
+### B.3. Position / momentum
+
 -/
 
 /-- The canonical commutation relations: `[xᵢ, pⱼ] = iℏ δᵢⱼ𝟙`. -/
@@ -245,8 +296,10 @@ lemma radiusRegPow_commutation_momentumSqr (hε : 0 < ε) :
   rw [Complex.I_sq]
   ring
 
-/-
-## Angular momentum / position commutators
+/-!
+
+### B.4. Angular momentum / position
+
 -/
 
 lemma angularMomentum_commutation_position {d : ℕ} (i j k : Fin d) : ⁅𝐋[i,j], 𝐱[k]⁆ =
@@ -279,8 +332,10 @@ lemma angularMomentumSqr_commutation_radiusRegPow (hε : 0 < ε) :
   simp only [sum_lie, smul_lie, leibniz_lie, angularMomentum_commutation_radiusRegPow hε,
     comp_zero, zero_comp, add_zero, smul_zero, Finset.sum_const_zero]
 
-/-
-## Angular momentum / momentum commutators
+/-!
+
+### B.5. Angular momentum / momentum
+
 -/
 
 lemma angularMomentum_commutation_momentum {d : ℕ} (i j k : Fin d) : ⁅𝐋[i,j], 𝐩[k]⁆ =
@@ -324,8 +379,10 @@ lemma angularMomentumSqr_commutation_momentumSqr {d : ℕ} :
   simp only [smul_lie, sum_lie, leibniz_lie]
   simp [angularMomentum_commutation_momentumSqr]
 
-/-
-## Angular momentum / angular momentum commutators
+/-!
+
+### B.6. Angular momentum / angular momentum
+
 -/
 
 lemma angularMomentum_commutation_angularMomentum {d : ℕ} (i j k l : Fin d) : ⁅𝐋[i,j], 𝐋[k,l]⁆ =

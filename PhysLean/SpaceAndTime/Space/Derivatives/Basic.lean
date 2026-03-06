@@ -6,6 +6,7 @@ Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 import Mathlib.Analysis.Calculus.Gradient.Basic
 import PhysLean.SpaceAndTime.Space.DistOfFunction
+import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 /-!
 
 # Derivatives on Space
@@ -85,6 +86,15 @@ lemma fderiv_eq_sum_deriv {M d} [AddCommGroup M] [Module ℝ M] [TopologicalSpac
     exact Eq.symm (OrthonormalBasis.sum_repr basis y)
   conv_lhs => rw [h1]
   simp [deriv_eq_fderiv_basis]
+
+open Manifold in
+/-- The spatial-derivative in terms of the derivative of functions between
+  manifolds. -/
+lemma deriv_eq_mfderiv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+    (μ : Fin d) (f : Space d → M) (x : Space d) :
+    deriv μ f x = mfderiv 𝓘(ℝ, Space d) 𝓘(ℝ, M) f x (basis μ) := by
+  rw [deriv_eq_fderiv_basis, ← mfderiv_eq_fderiv]
+  rfl
 
 /-!
 

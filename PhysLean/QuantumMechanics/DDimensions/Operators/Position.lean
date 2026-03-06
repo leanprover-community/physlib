@@ -10,20 +10,36 @@ import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 
 # Position operators
 
-In this module we define:
-- `positionOperator i` acting on Schwartz maps `𝓢(Space d, ℂ)` by multiplication by `xᵢ`.
-- `radiusRegPowOperator ε s` acting on Schwartz maps `𝓢(Space d, ℂ)` by multiplication
-  by `(‖x‖² + ε²)^(s/2)`, a smooth regularization of `‖x‖ˢ`.
-- `positionUnboundedOperator i`, a symmetric unbounded operator acting on the Schwartz submodule
-  of the Hilbert space `SpaceDHilbertSpace d`.
-- `radiusRegPowUnboundedOperator ε s`, a symmetric unbounded operator acting on the Schwartz
-  submodule of the Hilbert space `SpaceDHilbertSpace d`. For `s ≤ 0` this operator is bounded
-  (by `ε⁻ˢ`) and has natural domain the entire Hilbert space, but for uniformity we use the same
-  domain for all `s`.
+## i. Overview
 
-We also introduce the following notation:
+In this module we introduce several position operators for quantum mechanics on `Space d`.
+
+## ii. Key results
+
+Definitions:
+- `positionOperator` : (components of) the position vector operator acting on Schwartz maps
+    `𝓢(Space d, ℂ)` by multiplication by `xᵢ`.
+- `radiusRegPowOperator` : operator acting on Schwartz maps by multiplication by
+    `(‖x‖² + ε²)^(s/2)`, a smooth regularization of `‖x‖ˢ`.
+- `positionUnboundedOperator` : a symmetric unbounded operator acting on the Schwartz submodule
+    of the Hilbert space `SpaceDHilbertSpace d`.
+- `readiusRegPowUnboundedOperator` : a symmetric unbounded operator acting on the Schwartz
+    submodule of the Hilbert space `SpaceDHilbertSpace d`. For `s ≤ 0` this operator is in fact
+    bounded (by `|ε|ˢ`) and has natural domain the entire Hilbert space, but for uniformity we
+    use the same domain for all `s`.
+
+Notation:
 - `𝐱[i]` for `positionOperator i`
 - `𝐫[ε,s]` for `radiusRegPowOperator ε s`
+
+## iii. Table of contents
+
+- A. Position vector operator
+- B. Regularized radius operator
+- C. Unbounded position vector operator
+- D. Unbounded regularized radius operator
+
+## iv. References
 
 -/
 
@@ -35,7 +51,9 @@ open Function SchwartzMap ContDiff
 variable {d : ℕ} (i : Fin d)
 
 /-!
-## Position vector operator
+
+## A. Position vector operator
+
 -/
 
 /-- Component `i` of the position operator is the continuous linear map
@@ -44,7 +62,7 @@ def positionOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
   SchwartzMap.smulLeftCLM ℂ (Complex.ofRealCLM ∘L coordCLM i)
 
 @[inherit_doc positionOperator]
-macro "𝐱[" i:term "]" : term => `(positionOperator $i)
+notation "𝐱[" i "]" => positionOperator i
 
 lemma positionOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
     𝐱[i] ψ = smulLeftCLM ℂ (coordCLM i) • ψ := by
@@ -60,7 +78,7 @@ lemma positionOperator_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) : 𝐱[i] �
 
 /-!
 
-## Radius operator
+## B. Regularized radius operator
 
 -/
 TODO "ZGCNP" "Incorporate normRegularizedPow into Space.Norm"
@@ -98,7 +116,7 @@ def radiusRegPowOperator (ε s : ℝ) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space 
   SchwartzMap.smulLeftCLM ℂ (Complex.ofReal ∘ normRegularizedPow ε s)
 
 @[inherit_doc radiusRegPowOperator]
-macro "𝐫[" ε:term "," s:term "]" : term => `(radiusRegPowOperator $ε $s)
+notation "𝐫[" ε "," s "]" => radiusRegPowOperator ε s
 
 lemma radiusRegPowOperator_apply_fun {ε s : ℝ} (hε : 0 < ε) {ψ : 𝓢(Space d, ℂ)} :
     𝐫[ε,s] ψ = fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2) • ψ x := by
@@ -142,7 +160,9 @@ lemma positionOperatorSqr_eq {ε : ℝ} (hε : 0 < ε) : ∑ i, 𝐱[i] ∘L �
     add_smul, ← pow_two]
 
 /-!
-## Unbounded position operators
+
+## C. Unbounded position vector operator
+
 -/
 
 open SpaceDHilbertSpace
@@ -167,6 +187,12 @@ lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymm
 def positionUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) :=
   UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense d) (positionOperatorSchwartz i)
     (positionOperatorSchwartz_isSymmetric i)
+
+/-!
+
+## D. Unbounded regularized radius operator
+
+-/
 
 /-- The (regularized) radius operators defined on the Schwartz submodule. -/
 def radiusRegPowOperatorSchwartz (ε s : ℝ) : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule d :=
