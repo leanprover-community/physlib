@@ -134,18 +134,11 @@ lemma eq_of_apply {d} {p q : Space d}
 
 -/
 
-instance {d} : Nonempty (Space d) := Nonempty.intro ⟨fun _ => 0⟩
+instance {d} : Nonempty (Space d) := Nonempty.intro
+  ⟨fun _ => Classical.choice instNonemptyOfInhabited⟩
 
-instance {d : ℕ} : Nontrivial (Space d.succ) := by
-  refine { exists_pair_ne := ?_ }
-  use ⟨fun _ => 0⟩, ⟨fun _ => 1⟩
-  simp only [Nat.succ_eq_add_one, ne_eq, mk.injEq]
-  refine Function.ne_iff.mpr ⟨0, ?_⟩
-  simp
-
-instance : Subsingleton (Space 0) := Subsingleton.intro <| fun x y => by
-  ext i
-  fin_cases i
+instance : Subsingleton (Space 0) := Subsingleton.intro <| fun _ _ =>
+   eq_of_apply <| fun i => Fin.elim0 i
 
 /-!
 
@@ -217,8 +210,7 @@ noncomputable instance {d} : AddTorsor (EuclideanSpace ℝ (Fin d)) (Space d) wh
 noncomputable instance {d} : Dist (Space d) where
   dist p q := √ (∑ i, (p i - q i) ^ 2)
 
-lemma dist_eq {d} (p q : Space d) :
-    dist p q = √ (∑ i, (p i - q i) ^ 2) := rfl
+lemma dist_eq {d} (p q : Space d) : dist p q = √ (∑ i, (p i - q i) ^ 2) := rfl
 
 noncomputable instance {d} : PseudoMetricSpace (Space d) where
   dist_self x := by simp [dist_eq]
@@ -227,7 +219,7 @@ noncomputable instance {d} : PseudoMetricSpace (Space d) where
     convert dist_triangle (WithLp.toLp 2 fun i => x i) (WithLp.toLp 2 fun i => y i)
       (WithLp.toLp 2 fun i => z i)
     all_goals
-    · rw [EuclideanSpace.dist_eq]
+      rw [EuclideanSpace.dist_eq]
       simp only [dist, sq_abs]
 
 /-!
@@ -236,7 +228,7 @@ noncomputable instance {d} : PseudoMetricSpace (Space d) where
 
 -/
 
-noncomputable instance : NormedAddTorsor (EuclideanSpace ℝ (Fin d)) (Space d) where
+noncomputable instance {d} : NormedAddTorsor (EuclideanSpace ℝ (Fin d)) (Space d) where
   dist_eq_norm' p q := by simp [dist, EuclideanSpace.norm_eq]
 
 /-!
@@ -247,5 +239,18 @@ noncomputable instance : NormedAddTorsor (EuclideanSpace ℝ (Fin d)) (Space d) 
 
 noncomputable instance {d} : MetricSpace (Space d) where
   eq_of_dist_eq_zero {p q} := by simp [NormedAddTorsor.dist_eq_norm']
+
+/-!
+
+## B.7. Non-trivality
+
+-/
+
+instance {d : ℕ} : Nontrivial (Space d.succ) where
+  exists_pair_ne := by
+    obtain k := Classical.choice Space.instNonempty
+    obtain ⟨v1, hv⟩ := exists_ne (0 : EuclideanSpace ℝ (Fin d.succ))
+    use k, v1 +ᵥ k
+    simpa only [ne_eq, eq_vadd_iff_vsub_eq, vsub_self] using hv.symm
 
 end Space
