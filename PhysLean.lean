@@ -7,6 +7,7 @@ import PhysLean.ClassicalMechanics.HarmonicOscillator.ConfigurationSpace
 import PhysLean.ClassicalMechanics.HarmonicOscillator.Solution
 import PhysLean.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 import PhysLean.ClassicalMechanics.Mass.MassUnit
+import PhysLean.ClassicalMechanics.OrbitalMechanics.VisViva
 import PhysLean.ClassicalMechanics.Pendulum.CoplanarDoublePendulum
 import PhysLean.ClassicalMechanics.Pendulum.MiscellaneousPendulumPivotMotions
 import PhysLean.ClassicalMechanics.Pendulum.SlidingPendulum
