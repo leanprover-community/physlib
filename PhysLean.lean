@@ -52,7 +52,9 @@ import PhysLean.Mathematics.Distribution.PowMul
 import PhysLean.Mathematics.FDerivCurry
 import PhysLean.Mathematics.Fin
 import PhysLean.Mathematics.Fin.Involutions
+import PhysLean.Mathematics.Geometry.Metric.Lorentzian.Defs
 import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
+import PhysLean.Mathematics.Geometry.Metric.QuadraticForm.NegDim
 import PhysLean.Mathematics.Geometry.Metric.Riemannian.Defs
 import PhysLean.Mathematics.InnerProductSpace.Adjoint
 import PhysLean.Mathematics.InnerProductSpace.Basic
