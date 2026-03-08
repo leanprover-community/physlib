@@ -114,10 +114,6 @@ lemma sum_nsmul (i : α) (f : α → M) : ∑ j : α, δ[i,j] • f j = f i := b
   dsimp [kroneckerDelta]
   simp [one_nsmul]
 
-@[simp]
-lemma sum_sum_nsmul_eq_sum (f : α → α → M) : ∑ i : α, ∑ j : α, δ[i,j] • f i j = ∑ i : α, f i i := by
-  simp only [sum_nsmul]
-
 lemma sum_sum_nsmul_eq_zero {f : α → α → M} (hf : ∀ i : α, f i i = 0) :
     ∑ i : α, ∑ j : α, δ[i,j] • f i j = 0 := by
   simp only [sum_nsmul, hf, sum_const_zero]
