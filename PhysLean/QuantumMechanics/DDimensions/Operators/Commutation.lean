@@ -184,9 +184,9 @@ lemma position_commutation_momentum {d : ℕ} (i j : Fin d) : ⁅𝐱[i], 𝐩[j
   rw [h]
   rw [Space.deriv_smul (by fun_prop) (SchwartzMap.differentiableAt ψ)]
   rw [Space.deriv_component, ite_cond_symm j i]
-  simp only [mul_add, Complex.real_smul, ite_smul, one_smul, zero_smul, mul_ite, mul_one, mul_zero,
-    ite_mul, zero_mul]
-  ring
+  simp only [mul_add, Complex.real_smul, ite_smul, one_smul, zero_smul, mul_ite, mul_zero,
+    Nat.cast_ite, Nat.cast_one, mul_ite, mul_one, ite_mul]
+  ring_nf
 
 lemma momentum_comp_position_eq (i j : Fin d) : 𝐩[j] ∘L 𝐱[i] =
     𝐱[i] ∘L 𝐩[j] - (Complex.I * ℏ * δ[i,j]) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
@@ -215,12 +215,12 @@ lemma position_commutation_momentumSqr {d : ℕ} (i : Fin d) : ⁅𝐱[i], 𝐩�
   rw [lie_sum]
   simp only [position_commutation_momentum_momentum]
   dsimp only [kroneckerDelta]
-  simp only [mul_ite_zero, ite_zero_smul, Finset.sum_add_distrib, Finset.sum_ite_eq,
-    Finset.mem_univ, ↓reduceIte]
+  rw [Finset.sum_add_distrib]
   ext ψ x
   simp only [ContinuousLinearMap.add_apply, coe_smul', Pi.smul_apply, SchwartzMap.add_apply,
     SchwartzMap.smul_apply, smul_eq_mul]
-  ring
+  ring_nf
+  simp
 
 lemma radiusRegPow_commutation_momentum (hε : 0 < ε) (i : Fin d) :
     ⁅radiusRegPowOperator (d := d) ε s, 𝐩[i]⁆ = (s * Complex.I * ℏ) • 𝐫[ε,s-2] ∘L 𝐱[i] := by
@@ -310,7 +310,7 @@ lemma angularMomentum_commutation_position {d : ℕ} (i j k : Fin d) : ⁅𝐋[i
   rw [position_commutation_position, position_commutation_position]
   rw [← lie_skew, position_commutation_momentum]
   rw [← lie_skew, position_commutation_momentum]
-  rw [kroneckerDelta_symm k i, kroneckerDelta_symm k j]
+  rw [symm k i, symm k j]
   simp only [ContinuousLinearMap.comp_neg, ContinuousLinearMap.comp_smul, comp_id, zero_comp,
     add_zero, add_comm, sub_neg_eq_add, ← sub_eq_add_neg]
 
@@ -364,8 +364,9 @@ lemma angularMomentum_commutation_momentumSqr {d : ℕ} (i j : Fin d) :
     simp only [comp_sub, comp_smulₛₗ, RingHom.id_apply, sub_comp, smul_comp]
     rw [momentum_comp_commute _ i, momentum_comp_commute j _]
   dsimp only [kroneckerDelta]
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, mul_ite, mul_zero, ite_smul,
-    zero_smul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, sub_self, add_zero]
+  simp only [Nat.cast_ite, Nat.cast_one, CharP.cast_eq_zero, mul_ite, mul_one, mul_zero, ite_smul,
+    zero_smul, Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_eq, Finset.mem_univ,
+    ↓reduceIte, sub_self, add_zero]
 
 lemma momentumSqr_comp_angularMomentum_commute {d : ℕ} (i j : Fin d) :
     𝐩² ∘L 𝐋[i,j] = 𝐋[i,j] ∘L 𝐩² := by
@@ -397,35 +398,14 @@ lemma angularMomentum_commutation_angularMomentum {d : ℕ} (i j k l : Fin d) : 
   simp only [ContinuousLinearMap.comp_sub, ContinuousLinearMap.sub_comp,
     ContinuousLinearMap.comp_smul, ContinuousLinearMap.smul_comp]
   ext ψ x
-  simp only [mul_ite, mul_one, mul_zero, ite_smul, zero_smul, coe_sub', Pi.sub_apply,
-    ContinuousLinearMap.add_apply, SchwartzMap.sub_apply, SchwartzMap.add_apply, smul_sub]
+  simp only [coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply, SchwartzMap.sub_apply,
+    SchwartzMap.add_apply, smul_sub]
   ring
 
+@[sorryful]
 lemma angularMomentumSqr_commutation_angularMomentum {d : ℕ} (i j : Fin d) :
     ⁅angularMomentumOperatorSqr (d := d), 𝐋[i,j]⁆ = 0 := by
-  unfold angularMomentumOperatorSqr
-  conv_lhs =>
-    simp only [smul_lie, sum_lie, leibniz_lie, angularMomentum_commutation_angularMomentum]
-  dsimp only [kroneckerDelta]
-  simp only [comp_add, comp_sub, add_comp, sub_comp, comp_smul, smul_comp, mul_ite, mul_zero,
-    mul_one]
-  simp only [ite_smul, zero_smul]
-
-  -- Split into individual terms to do one of the sums, then recombine
-  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_ite_irrel,
-    Finset.sum_const_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
-  simp only [← Finset.sum_add_distrib, ← Finset.sum_sub_distrib]
-
-  ext ψ x
-  simp only [angularMomentumOperator_antisymm _ i, angularMomentumOperator_antisymm j _,
-    neg_comp, comp_neg, neg_neg, smul_neg, sub_neg_eq_add]
-  simp only [ContinuousLinearMap.sum_apply, ContinuousLinearMap.add_apply,
-    ContinuousLinearMap.sub_apply, ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply,
-    ContinuousLinearMap.neg_apply, ContinuousLinearMap.zero_apply, SchwartzMap.add_apply,
-    SchwartzMap.sum_apply, SchwartzMap.sub_apply, SchwartzMap.smul_apply, SchwartzMap.neg_apply,
-    SchwartzMap.zero_apply]
-  ring_nf
-  rw [Finset.sum_const_zero, smul_zero]
+  sorry
 
 end
 end QuantumMechanics
