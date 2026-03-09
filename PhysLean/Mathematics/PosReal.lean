@@ -5,6 +5,10 @@ Authors: Trong-Nghia Be
 -/
 import Mathlib.Data.Real.Basic
 
+/-!
+# Positive real numbers (`ℝ>0`) and extended positive real numbers (`ℝ>0∞`)
+-/
+
 /-- The type of strictly positive real numbers. -/
 abbrev PosReal := { x : ℝ // 0 < x }
 
