@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.UnitTensor
+module
+
+public import PhysLean.Relativity.Tensors.UnitTensor
 /-!
 
 # The metric tensors
 
 -/
+
+@[expose] public section
 
 open IndexNotation
 open CategoryTheory
@@ -62,7 +66,7 @@ lemma fromPairTContr_metric_metric_eq_permT_unit {c : C} :
 lemma contrT_metricTensor_metricTensor {c : C} :
     contrT 2 1 2 (by simp; rfl) (prodT (metricTensor c) (metricTensor (S.τ c))) =
       permT ![1, 0] (And.intro (by decide) (fun i => by fin_cases i <;> rfl))
-      (unitTensor c) := by
+      (unitTensor (S := S) c) := by
   rw [metricTensor, metricTensor, fromConstPair, fromConstPair]
   rw [fromPairT_contr_fromPairT_eq_fromPairTContr]
   erw [fromPairTContr_metric_metric_eq_permT_unit]
@@ -76,7 +80,7 @@ lemma contrT_metricTensor_metricTensor_eq_dual_unit {c : C} :
         · change S.τ (S.τ c) = c
           simp
         · rfl))
-      (unitTensor (S.τ c)) := by
+      (unitTensor (S := S) (S.τ c)) := by
   rw [contrT_metricTensor_metricTensor]
   rw [unitTensor_eq_permT_dual]
   rw [permT_permT]
@@ -88,7 +92,7 @@ lemma contrT_metricTensor_metricTensor_eq_dual_unit {c : C} :
 lemma contrT_dual_metricTensor_metricTensor {c : C} :
     contrT 2 1 2 (by change _ ∧ S.τ (S.τ c) = c; simp)
       (prodT (metricTensor (S.τ c)) (metricTensor c)) =
-      permT id (by simp; exact ⟨rfl,rfl⟩) (unitTensor c) := by
+      permT id (by simp; exact ⟨rfl,rfl⟩) (unitTensor (S := S) c) := by
   have hm := S.metricTensor_congr (by simp : c = S.τ (S.τ c))
   rw [hm]
   rw [prodT_permT_right, contrT_permT]

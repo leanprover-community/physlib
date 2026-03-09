@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Basic
+module
+
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Basic
 /-!
 # Hypercharge in MSSM.
 
 Relevant definitions for the MSSM hypercharge.
 
 -/
+
+@[expose] public section
 
 namespace MSSMACC
 open MSSMCharges

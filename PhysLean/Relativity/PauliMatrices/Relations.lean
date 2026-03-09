@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.PauliMatrices.ToTensor
-import PhysLean.Relativity.Tensors.ComplexTensor.Units.Basic
+module
+
+public import PhysLean.Relativity.PauliMatrices.ToTensor
+public import PhysLean.Relativity.Tensors.ComplexTensor.Units.Basic
 /-!
 
 ## Contraction of indices of Pauli matrix.
@@ -16,6 +18,8 @@ The current way this result is proved is by using tensor tree manipulations.
 There is likely a more direct path to this result.
 
 -/
+
+@[expose] public section
 open IndexNotation
 open CategoryTheory
 open MonoidalCategory

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
-import PhysLean.SpaceAndTime.Time.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import PhysLean.SpaceAndTime.Time.Basic
 /-!
 
 # Units on Mass
@@ -24,6 +26,8 @@ existence of the mass unit of kilograms, and construct all other mass units from
 
 -/
 
+@[expose] public section
+
 open NNReal
 
 /-- The choices of translationally-invariant metrics on the mass-manifold.
@@ -36,7 +40,7 @@ structure MassUnit where
 namespace MassUnit
 
 @[simp]
-lemma val_neq_zero (x : MassUnit) : x.val ≠ 0 := by
+lemma val_ne_zero (x : MassUnit) : x.val ≠ 0 := by
   exact Ne.symm (ne_of_lt x.property)
 
 lemma val_pos (x : MassUnit) : 0 < x.val := x.property
@@ -57,7 +61,7 @@ lemma div_eq_val (x y : MassUnit) :
     x / y = (⟨x.val / y.val, div_nonneg (le_of_lt x.val_pos) (le_of_lt y.val_pos)⟩ : ℝ≥0) := rfl
 
 @[simp]
-lemma div_neq_zero (x y : MassUnit) : ¬ x / y = (0 : ℝ≥0) := by
+lemma div_ne_zero (x y : MassUnit) : ¬ x / y = (0 : ℝ≥0) := by
   rw [div_eq_val]
   refine coe_ne_zero.mp ?_
   simp
@@ -66,12 +70,12 @@ lemma div_neq_zero (x y : MassUnit) : ¬ x / y = (0 : ℝ≥0) := by
 lemma div_pos (x y : MassUnit) : (0 : ℝ≥0) < x/ y := by
   apply lt_of_le_of_ne
   · exact zero_le (x / y)
-  · exact Ne.symm (div_neq_zero x y)
+  · exact Ne.symm (div_ne_zero x y)
 
 @[simp]
 lemma div_self (x : MassUnit) :
     x / x = (1 : ℝ≥0) := by
-  simp [div_eq_val, x.val_neq_zero]
+  simp [div_eq_val, x.val_ne_zero]
 
 lemma div_symm (x y : MassUnit) :
     x / y = (y / x)⁻¹ := NNReal.eq <| by

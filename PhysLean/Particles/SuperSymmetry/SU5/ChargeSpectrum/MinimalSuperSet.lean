@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
 /-!
 # Minimal super set
 
@@ -43,6 +45,8 @@ In this file we define the minimal super set and prove some basic properties of 
 There are no known references for the material in this file.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 
@@ -125,7 +129,7 @@ lemma self_not_mem_minimalSuperSet (S5 S10 : Finset 𝓩) (x : ChargeSpectrum �
     x ∉ minimalSuperSet S5 S10 x := by
   simp [minimalSuperSet]
 
-lemma self_neq_mem_minimalSuperSet (S5 S10 : Finset 𝓩) (x y : ChargeSpectrum 𝓩)
+lemma self_ne_mem_minimalSuperSet (S5 S10 : Finset 𝓩) (x y : ChargeSpectrum 𝓩)
     (hy : y ∈ minimalSuperSet S5 S10 x) : x ≠ y := by
   by_contra h
   subst h

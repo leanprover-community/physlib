@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Data.Multiset.Bind
-import Mathlib.Data.Multiset.Sort
+module
+
+public import Mathlib.Data.Multiset.Bind
+public import Mathlib.Data.Multiset.Sort
 /-!
 
 ## The data type FourTree
@@ -20,6 +22,8 @@ It is defined recursively, with the following structure:
 - A `FourTree` contains a multiset of `trunk`s.
 
 -/
+
+@[expose] public section
 
 namespace PhysLean
 

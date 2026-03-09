@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldStatistics.Basic
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldStatistics.Basic
+public import Mathlib.Analysis.Complex.Basic
 /-!
 
 # Exchange sign for field statistics
@@ -20,6 +22,8 @@ and prove some properties of it. Importantly:
 - It is a cocycle `exchangeSign_cocycle`.
 
 -/
+
+@[expose] public section
 
 namespace FieldStatistic
 

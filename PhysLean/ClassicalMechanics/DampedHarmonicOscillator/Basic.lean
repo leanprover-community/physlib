@@ -3,9 +3,11 @@ Copyright (c) 2025 Nicola Bernini. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicola Bernini
 -/
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.ClassicalMechanics.EulerLagrange
-import PhysLean.ClassicalMechanics.HamiltonsEquations
+module
+
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.ClassicalMechanics.EulerLagrange
+public import PhysLean.ClassicalMechanics.HamiltonsEquations
 /-!
 
 # The Damped Harmonic Oscillator
@@ -59,15 +61,12 @@ References for the damped harmonic oscillator include:
 
 -/
 
+@[expose] public section
+
 namespace ClassicalMechanics
 open Real
-open Space
-open InnerProductSpace
-
-TODO "DHO01" "Define the DampedHarmonicOscillator structure with mass m, spring constant k,
-  and damping coefficient γ."
-
-TODO "DHO04" "Prove that energy is not conserved and derive the energy dissipation rate."
+open ContDiff
+open Time
 
 TODO "DHO05" "Derive solutions for the underdamped case (oscillatory with exponential decay)."
 
@@ -112,10 +111,10 @@ namespace DampedHarmonicOscillator
 variable (S : DampedHarmonicOscillator)
 
 @[simp]
-lemma k_neq_zero : S.k ≠ 0 := Ne.symm (ne_of_lt S.k_pos)
+lemma k_ne_zero : S.k ≠ 0 := Ne.symm (ne_of_lt S.k_pos)
 
 @[simp]
-lemma m_neq_zero : S.m ≠ 0 := Ne.symm (ne_of_lt S.m_pos)
+lemma m_ne_zero : S.m ≠ 0 := Ne.symm (ne_of_lt S.m_pos)
 
 /-!
 
@@ -195,6 +194,13 @@ noncomputable def potentialEnergy (x : Time → ℝ) : Time → ℝ :=
 noncomputable def energy (x : Time → ℝ) : Time → ℝ :=
   S.kineticEnergy x + S.potentialEnergy x
 
+/-- Equalties for energy eqns -/
+lemma kineticEnergy_eq (x: Time → ℝ) :
+    kineticEnergy S x = fun t => (1 / 2 : ℝ) * S.m * (Time.deriv x t)^2 := by rfl
+
+lemma potentialEnergy_eq (x: Time → ℝ) :
+    potentialEnergy S x = fun t => (1 / 2 : ℝ) * S.k * (x t)^2 := by rfl
+
 /-- Energy dissipation rate along a trajectory `x : Time → ℝ`.
 
   if `x` satisfies `S.equationOfMotion x`, then
@@ -204,6 +210,38 @@ noncomputable def energy (x : Time → ℝ) : Time → ℝ :=
 so the energy is non-increasing and not conserved when `S.γ > 0`. -/
 noncomputable def energyDissipationRate (x : Time → ℝ) : Time → ℝ :=
   fun t => - S.γ * (Time.deriv x t)^2
+
+/-- Derives the energy dissipation rate from the equation of motion -/
+lemma energy_dissipation_rate (x: Time → ℝ) (h1 : S.EquationOfMotion x)
+    (hx : ContDiff ℝ ∞ x) :
+    Time.deriv (energy S x) t = - S.γ * (Time.deriv x t)^2 := by
+
+  -- Rearrange Equation of Motion
+  have heom' : S.m * Time.deriv (Time.deriv x) t + S.k * x t =
+              - S.γ * Time.deriv x t := by linarith [h1 t]
+
+  -- Break equation apart
+  rw [energy, kineticEnergy_eq, potentialEnergy_eq]
+  rw [Time.deriv_eq]
+
+  -- Perform derivative
+  have hdx : Differentiable ℝ x := hx.differentiable (by norm_num)
+  have hddx : Differentiable ℝ (∂ₜ x) := deriv_differentiable_of_contDiff x hx
+  have hKE := ((hddx t).hasFDerivAt.pow 2).const_mul (1/2 * S.m)
+  have hPE := ((hdx t).hasFDerivAt.pow 2).const_mul (1/2 * S.k)
+  rw [(hKE.add hPE).fderiv]
+  norm_num
+  rw [← Time.deriv, ← Time.deriv]
+  linear_combination (Time.deriv x t) * heom'
+
+lemma energy_not_conserved (x: Time → ℝ) (h1 : S.EquationOfMotion x)
+    (hx : ContDiff ℝ ∞ x)
+    (hdx : Time.deriv x t ≠ 0)
+    (hγ : 0 < S.γ) :
+    Time.deriv (energy S x) t < 0 := by
+  rw [energy_dissipation_rate S x h1 hx]
+  rw [neg_mul S.γ (∂ₜ x t ^ 2)]
+  refine neg_neg_of_pos (mul_pos hγ (sq_pos_iff.mpr hdx))
 
 /-!
 

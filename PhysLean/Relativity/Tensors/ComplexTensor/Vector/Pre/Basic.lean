@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
 /-!
 
 # Complex Lorentz vectors
@@ -11,6 +13,8 @@ import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
 We define complex Lorentz vectors in 4d space-time as representations of SL(2, C).
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Basic
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Basic
 /-!
 
 # Tensor product of two Weyl fermion
 
 -/
+
+@[expose] public section
 
 namespace Fermion
 noncomputable section
@@ -39,10 +43,7 @@ lemma leftLeftToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    conv_lhs =>
-      enter [2]
-      erw [Basis.tensorProduct_apply leftBasis leftBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply leftBasis leftBasis i j)
   · simp
 
 /-- Equivalence of `altLeftHanded ⊗ altLeftHanded` to `2 x 2` complex matrices. -/
@@ -59,8 +60,7 @@ lemma altLeftaltLeftToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply altLeftBasis altLeftBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply altLeftBasis altLeftBasis i j)
   · simp
 
 /-- Equivalence of `leftHanded ⊗ altLeftHanded` to `2 x 2` complex matrices. -/
@@ -77,8 +77,7 @@ lemma leftAltLeftToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply leftBasis altLeftBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply leftBasis altLeftBasis i j)
   · simp
 
 /-- Equivalence of `altLeftHanded ⊗ leftHanded` to `2 x 2` complex matrices. -/
@@ -95,8 +94,7 @@ lemma altLeftLeftToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply altLeftBasis leftBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply altLeftBasis leftBasis i j)
   · simp
 
 /-- Equivalence of `rightHanded ⊗ rightHanded` to `2 x 2` complex matrices. -/
@@ -113,8 +111,7 @@ lemma rightRightToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply rightBasis rightBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply rightBasis rightBasis i j)
   · simp
 
 /-- Equivalence of `altRightHanded ⊗ altRightHanded` to `2 x 2` complex matrices. -/
@@ -132,8 +129,7 @@ lemma altRightAltRightToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ)
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply altRightBasis altRightBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply altRightBasis altRightBasis i j)
   · simp
 
 /-- Equivalence of `rightHanded ⊗ altRightHanded` to `2 x 2` complex matrices. -/
@@ -150,8 +146,7 @@ lemma rightAltRightToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply rightBasis altRightBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply rightBasis altRightBasis i j)
   · simp
 
 /-- Equivalence of `altRightHanded ⊗ rightHanded` to `2 x 2` complex matrices. -/
@@ -168,8 +163,7 @@ lemma altRightRightToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply altRightBasis rightBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply altRightBasis rightBasis i j)
   · simp
 
 /-- Equivalence of `altLeftHanded ⊗ altRightHanded` to `2 x 2` complex matrices. -/
@@ -186,8 +180,7 @@ lemma altLeftAltRightToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) 
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply altLeftBasis altRightBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply altLeftBasis altRightBasis i j)
   · simp
 
 /-- Equivalence of `leftHanded ⊗ rightHanded` to `2 x 2` complex matrices. -/
@@ -204,8 +197,7 @@ lemma leftRightToMatrix_symm_expand_tmul (M : Matrix (Fin 2) (Fin 2) ℂ) :
   rw [Finsupp.linearCombination_apply_of_mem_supported ℂ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply leftBasis rightBasis i j]
-    rfl
+    exact congrArg _ (Basis.tensorProduct_apply leftBasis rightBasis i j)
   · simp
 
 /-!

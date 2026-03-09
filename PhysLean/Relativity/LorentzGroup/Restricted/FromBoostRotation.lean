@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzGroup.Rotations
+module
+
+public import PhysLean.Relativity.LorentzGroup.Rotations
 /-!
 # The construction of an element of the Lorentz group from a boost and a rotation
 
@@ -14,6 +16,8 @@ The inverse of this homeomorphism writes elements of the restricted Lorentz grou
 as a product of a generalized boost and a rotation.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

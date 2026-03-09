@@ -3,7 +3,9 @@ Copyright (c) 2025 Nicola Bernini. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicola Bernini
 -/
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.TISE
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.TISE
 /-!
 # Examples: 1d Quantum Harmonic Oscillator
 
@@ -18,6 +20,8 @@ To run it from the command line:
 lake env lean PhysLean/QuantumMechanics/OneDimension/HarmonicOscillator/Examples.lean
 ```
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 namespace OneDimension

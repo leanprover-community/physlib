@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.Sorts
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.Sorts
 /-!
 # Vector like charges
 
 For the `n`-even case we define the property of a charge assignment being vector like.
 
 -/
+
+@[expose] public section
 
 open Nat
 open Finset

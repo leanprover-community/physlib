@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.AnomalyCancellation.Basic
+module
+
+public import PhysLean.QFT.AnomalyCancellation.Basic
 /-!
 
 # Anomaly cancellation conditions for the Standard Model with right-handed neutrinos
@@ -12,6 +14,8 @@ This directory is related to the anomaly cancellation conditions (ACCs) for the 
 right-handed neutrinos (SMν).
 
 -/
+
+@[expose] public section
 
 open Nat
 open BigOperators

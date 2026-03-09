@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.PauliMatrices.SelfAdjoint
-import Mathlib.RepresentationTheory.Basic
-import PhysLean.Relativity.LorentzGroup.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import PhysLean.Relativity.PauliMatrices.SelfAdjoint
+public import Mathlib.RepresentationTheory.Basic
+public import PhysLean.Relativity.LorentzGroup.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 
 ## Modules associated with Real Lorentz vectors
@@ -17,6 +19,8 @@ These definitions are preludes to the definitions of
 `Lorentz.contr` and `Lorentz.co`.
 
 -/
+
+@[expose] public section
 
 namespace Lorentz
 

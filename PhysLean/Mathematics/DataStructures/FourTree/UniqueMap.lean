@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.DataStructures.FourTree.Basic
+module
+
+public import PhysLean.Mathematics.DataStructures.FourTree.Basic
 /-!
 
 ## Unique maps for `FourTree`
@@ -14,6 +16,8 @@ and leave only new elements which are not already present in the tree (if
 the tree has no duplicates).
 
 -/
+
+@[expose] public section
 
 namespace PhysLean
 

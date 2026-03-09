@@ -3,15 +3,19 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickContraction.SubContraction
-import PhysLean.QFT.PerturbationTheory.WickContraction.StaticContract
-import PhysLean.QFT.PerturbationTheory.WickContraction.TimeContract
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Basic
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickContraction.SubContraction
+public import PhysLean.QFT.PerturbationTheory.WickContraction.StaticContract
+public import PhysLean.QFT.PerturbationTheory.WickContraction.TimeContract
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Basic
 /-!
 
 # Singleton of contractions
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}
@@ -82,7 +86,7 @@ lemma singleton_getDual?_eq_none_iff_neq {i j : Fin n} (hij : i < j) (a : Fin n)
   simp only [singleton, Finset.mem_singleton, forall_eq, Finset.mem_insert, not_or, ne_eq]
   omega
 
-lemma singleton_uncontractedEmd_neq_left {φs : List 𝓕.FieldOp} {i j : Fin φs.length} (hij : i < j)
+lemma singleton_uncontractedEmd_ne_left {φs : List 𝓕.FieldOp} {i j : Fin φs.length} (hij : i < j)
     (a : Fin [singleton hij]ᵘᶜ.length) :
     (singleton hij).uncontractedListEmd a ≠ i := by
   by_contra hn
@@ -93,7 +97,7 @@ lemma singleton_uncontractedEmd_neq_left {φs : List 𝓕.FieldOp} {i j : Fin φ
     simp [singleton]
   simp_all
 
-lemma singleton_uncontractedEmd_neq_right {φs : List 𝓕.FieldOp} {i j : Fin φs.length} (hij : i < j)
+lemma singleton_uncontractedEmd_ne_right {φs : List 𝓕.FieldOp} {i j : Fin φs.length} (hij : i < j)
     (a : Fin [singleton hij]ᵘᶜ.length) :
     (singleton hij).uncontractedListEmd a ≠ j := by
   by_contra hn

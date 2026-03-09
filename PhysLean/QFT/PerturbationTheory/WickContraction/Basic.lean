@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.Basic
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.Basic
 /-!
 
 # Wick contractions
 
 -/
+
+@[expose] public section
 open FieldSpecification
 
 variable {𝓕 : FieldSpecification}
@@ -209,7 +213,7 @@ lemma getDual?_eq_some_neq (i j : Fin n) (h : c.getDual? i = some j) :
   simp at hc
 
 @[simp]
-lemma self_neq_getDual?_get (i : Fin n) (h : (c.getDual? i).isSome) :
+lemma self_ne_getDual?_get (i : Fin n) (h : (c.getDual? i).isSome) :
     ¬ i = (c.getDual? i).get h := by
   by_contra hn
   have hx : {i, (c.getDual? i).get h} ∈ c.1 := by simp
@@ -334,7 +338,7 @@ lemma finset_eq_fstFieldOfContract_sndFieldOfContract (c : WickContraction n) (a
     simp only [fstFieldOfContract, ha, List.head_cons, sndFieldOfContract, List.tail_cons]
     rw [Finset.pair_comm]
 
-lemma fstFieldOfContract_neq_sndFieldOfContract (c : WickContraction n) (a : c.1) :
+lemma fstFieldOfContract_ne_sndFieldOfContract (c : WickContraction n) (a : c.1) :
     c.fstFieldOfContract a ≠ c.sndFieldOfContract a := by
   have h1 := c.2.1 a.1 a.2
   have h2 := c.finset_eq_fstFieldOfContract_sndFieldOfContract a
@@ -358,7 +362,7 @@ lemma fstFieldOfContract_le_sndFieldOfContract (c : WickContraction n) (a : c.1)
 lemma fstFieldOfContract_lt_sndFieldOfContract (c : WickContraction n) (a : c.1) :
     c.fstFieldOfContract a < c.sndFieldOfContract a :=
   lt_of_le_of_ne (c.fstFieldOfContract_le_sndFieldOfContract a)
-    (c.fstFieldOfContract_neq_sndFieldOfContract a)
+    (c.fstFieldOfContract_ne_sndFieldOfContract a)
 
 @[simp]
 lemma fstFieldOfContract_mem (c : WickContraction n) (a : c.1) :
@@ -452,12 +456,12 @@ def contractEquivFinTwo (c : WickContraction n) (a : c.1) :
       exact Subtype.ext hi.symm
     · rw [hi, if_neg]
       · exact Subtype.ext hi.symm
-      · exact Ne.symm <| fstFieldOfContract_neq_sndFieldOfContract c a
+      · exact Ne.symm <| fstFieldOfContract_ne_sndFieldOfContract c a
   right_inv i := by
     fin_cases i
     · simp
     · simp only [Fin.isValue, Fin.mk_one, ite_eq_right_iff, zero_ne_one, imp_false]
-      exact Ne.symm <| fstFieldOfContract_neq_sndFieldOfContract c a
+      exact Ne.symm <| fstFieldOfContract_ne_sndFieldOfContract c a
 
 lemma prod_finset_eq_mul_fst_snd (c : WickContraction n) (a : c.1)
     (f : a.1 → M) [CommMonoid M] :

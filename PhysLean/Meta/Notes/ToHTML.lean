@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Notes.HTMLNote
-import PhysLean.Meta.Notes.NoteFile
+module
+
+public meta import PhysLean.Meta.Notes.HTMLNote
+public import PhysLean.Meta.Notes.NoteFile
 /-!
 
 ## Turns a declaration into a html note structure.
 
 -/
+
+@[expose] public section
 
 namespace PhysLean
 open Lean System Meta
@@ -18,14 +22,14 @@ namespace NoteFile
 variable (N : NoteFile)
 
 /-- Sorts `NoteInfo`'s by file name then by line number. -/
-def sortLE (ni1 ni2 : HTMLNote) : Bool :=
+meta def sortLE (ni1 ni2 : HTMLNote) : Bool :=
   if N.files.idxOf ni1.fileName ≠ N.files.idxOf ni2.fileName
   then N.files.idxOf ni1.fileName ≤ N.files.idxOf ni2.fileName
   else
   ni1.line ≤ ni2.line
 
 /-- Returns a sorted list of NodeInfos for a file system. -/
-unsafe def getNodeInfo : CoreM (List HTMLNote) := do
+meta unsafe def getNodeInfo : CoreM (List HTMLNote) := do
   let env ← getEnv
   let allNotes := (noteExtension.getState env)
   let allDecl := (noteDeclExtension.getState env)
@@ -37,7 +41,7 @@ unsafe def getNodeInfo : CoreM (List HTMLNote) := do
   pure noteInfoSort
 
 /-- The HTML code needed to have syntax highlighting. -/
-def codeBlockHTML : String := "
+meta def codeBlockHTML : String := "
 <meta charset=\"UTF-8\">
     <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
     <!-- Include Highlight.js CSS -->
@@ -65,7 +69,7 @@ def codeBlockHTML : String := "
 "
 
 /-- The html styles for informal definitions. -/
-def informalDefStyle : String :=
+meta def informalDefStyle : String :=
 "
 <style>
         .informal-def {
@@ -100,7 +104,7 @@ def informalDefStyle : String :=
 "
 
 /-- The html styles for code button. -/
-def codeButton : String := "
+meta def codeButton : String := "
 <style>
   .code-block-container {
     position: relative;
@@ -127,7 +131,7 @@ def codeButton : String := "
 "
 
 /-- HTML allowing the use of mathjax. -/
-def mathJaxScript : String := "
+meta def mathJaxScript : String := "
 <!-- MathJax code -->
 <script type=\"text/javascript\">
         window.MathJax = {
@@ -143,7 +147,7 @@ def mathJaxScript : String := "
 "
 
 /-- The header to the html code. -/
-def headerHTML : String :=
+meta def headerHTML : String :=
 "---
 layout: default
 ---
@@ -154,13 +158,13 @@ layout: default
 <body>"
 
 /-- The html code corresponding to the title, abstract and authors. -/
-def titleHTML : String :=
+meta def titleHTML : String :=
 "<center><h1 style=\"font-size: 50px;\">" ++ N.title ++ "</h1></center>
 <center><b>Authors:</b> " ++ String.intercalate ", " N.authors ++ "</center>
 <center><b>Abstract:</b> " ++ N.abstract ++ "</center>"
 
 /-- The html code corresponding to a note about Lean and its use. -/
-def leanNote : String := "
+meta def leanNote : String := "
 <br>
 <div style=\"border: 1px solid black; padding: 10px;\">
   <p>Note: These are not ordinary notes. They are created using an interactive theorem
@@ -176,12 +180,12 @@ def leanNote : String := "
 </div>
 "
 /-- The footer of the html file. -/
-def footerHTML : String :=
+meta def footerHTML : String :=
 "</body>
 </html>"
 
 /-- The html file associated to a NoteFile string. -/
-unsafe def toHTMLString : MetaM String := do
+meta unsafe def toHTMLString : MetaM String := do
   let string := String.intercalate "\n" ((← N.getNodeInfo).map (fun x => x.content))
   pure (headerHTML ++ N.titleHTML ++ leanNote ++ string ++ footerHTML)
 

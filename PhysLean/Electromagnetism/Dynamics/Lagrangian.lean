@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.CurrentDensity
-import PhysLean.Electromagnetism.Dynamics.KineticTerm
+module
+
+public import PhysLean.Electromagnetism.Dynamics.CurrentDensity
+public import PhysLean.Electromagnetism.Dynamics.KineticTerm
 /-!
 
 # The Lagrangian in electromagnetism
@@ -61,6 +63,8 @@ In this implementation we set `μ₀ = 1`. It is a TODO to introduce this consta
 - https://ph.qmul.ac.uk/sites/default/files/EMT10new.pdf
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 open Module realLorentzTensor

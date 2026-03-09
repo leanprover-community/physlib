@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 /-!
 
 # Lorentz Velocities
@@ -12,6 +14,8 @@ In this module we define Lorentz velocities to be
 Lorentz vectors which have norm equal to one and which are future-directed.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 
@@ -82,7 +86,7 @@ lemma zero_le_minkowskiProduct (u v : Velocity d) :
   · simp
   · exact real_inner_le_norm u.1.spatialPart v.1.spatialPart
 
-lemma one_add_minkowskiProduct_neq_zero (u v : Velocity d) :
+lemma one_add_minkowskiProduct_ne_zero (u v : Velocity d) :
     1 + ⟪u.1, v.1⟫ₘ ≠ 0 := by
   linarith [zero_le_minkowskiProduct u v]
 

@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Permutations
-import PhysLean.QFT.AnomalyCancellation.GroupActions
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Permutations
+public import PhysLean.QFT.AnomalyCancellation.GroupActions
 /-!
 # ACC system for SM with RHN
 
 We define the ACC system for the Standard Model with right-handed neutrinos.
 -/
+
+@[expose] public section
 
 namespace SMRHN
 open SMνCharges

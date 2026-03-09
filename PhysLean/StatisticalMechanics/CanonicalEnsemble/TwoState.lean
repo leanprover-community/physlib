@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Finite
-import PhysLean.Meta.Informal.Basic
+module
+
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Finite
+public import PhysLean.Meta.Informal.Basic
 /-!
 
 # Two-state canonical ensemble
@@ -13,6 +15,8 @@ This module contains the definitions and properties related to the two-state
 canonical ensemble.
 
 -/
+
+@[expose] public section
 
 namespace CanonicalEnsemble
 

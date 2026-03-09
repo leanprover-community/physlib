@@ -3,7 +3,9 @@ Copyright (c) 2025 Rein Zustand. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rein Zustand
 -/
-import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
 /-!
 
 # Equivalent Lagrangians under Total Derivatives
@@ -50,6 +52,8 @@ This is because:
 - Landau & Lifshitz, "Mechanics", §4 (The Lagrangian for a free particle)
 
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 

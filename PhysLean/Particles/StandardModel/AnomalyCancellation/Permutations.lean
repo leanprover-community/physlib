@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.AnomalyCancellation.Basic
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.Basic
+public import Mathlib.RepresentationTheory.Basic
 /-!
 
 # Permutations of SM with no RHN.
@@ -12,6 +14,8 @@ import Mathlib.RepresentationTheory.Basic
 We define the group of permutations for the SM charges with no RHN.
 
 -/
+
+@[expose] public section
 
 open Nat
 open Finset

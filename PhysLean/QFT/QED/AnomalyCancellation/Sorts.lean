@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.Permutations
-import Mathlib.Data.Fin.Tuple.Sort
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.Permutations
+public import Mathlib.Data.Fin.Tuple.Sort
 /-!
 # Sort for Pure U(1) charges
 
 We define the sort function for Pure U(1) charges, and prove some basic properties.
 
 -/
+
+@[expose] public section
 
 open Nat
 open Finset

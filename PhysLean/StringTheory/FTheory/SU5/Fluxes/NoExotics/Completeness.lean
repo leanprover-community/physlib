@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.ChiralIndices
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Elems
+module
+
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.ChiralIndices
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Elems
 /-!
 
 # Completeness of `Elems` with regard to the `NoExotics` condition
@@ -60,6 +62,8 @@ are only constrained by `2` SM representations `D` and `L`.
 There are no known references for the material in this module.
 
 -/
+
+@[expose] public section
 namespace FTheory
 
 namespace SU5

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Curl
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Curl
 /-!
 
 # Functions and distributions on Time and Space d
@@ -48,6 +50,8 @@ We put these results in the namespace `Space` by convention.
 ## iv. References
 
 -/
+
+@[expose] public section
 namespace Space
 
 /-!

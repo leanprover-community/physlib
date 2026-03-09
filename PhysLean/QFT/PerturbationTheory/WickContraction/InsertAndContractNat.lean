@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickContraction.Erase
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Erase
 /-!
 
 # Inserting an element into a contraction
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}
@@ -389,7 +393,7 @@ lemma insertAndContractNat_some_getDual?_eq (c : WickContraction n) (i : Fin n.s
   rw [getDual?_eq_some_iff_mem]
   simp [insertAndContractNat]
 
-lemma insertAndContractNat_some_getDual?_neq_none (c : WickContraction n) (i : Fin n.succ)
+lemma insertAndContractNat_some_getDual?_ne_none (c : WickContraction n) (i : Fin n.succ)
     (j : c.uncontracted) (k : Fin n) (hkj : k ≠ j.1) :
     (insertAndContractNat c i (some j)).getDual? (i.succAbove k) = none ↔ c.getDual? k = none := by
   apply Iff.intro
@@ -410,28 +414,28 @@ lemma insertAndContractNat_some_getDual?_neq_none (c : WickContraction n) (i : F
       simpa [uncontracted] using h
     simpa [uncontracted, -mem_uncontracted_insertAndContractNat_some_iff, ne_eq] using hk
 
-lemma insertAndContractNat_some_getDual?_neq_isSome (c : WickContraction n) (i : Fin n.succ)
+lemma insertAndContractNat_some_getDual?_ne_isSome (c : WickContraction n) (i : Fin n.succ)
     (j : c.uncontracted) (k : Fin n) (hkj : k ≠ j.1) :
     ((insertAndContractNat c i (some j)).getDual? (i.succAbove k)).isSome ↔
     (c.getDual? k).isSome := by
   rw [← not_iff_not]
-  simp [hkj, insertAndContractNat_some_getDual?_neq_none]
+  simp [hkj, insertAndContractNat_some_getDual?_ne_none]
 
-lemma insertAndContractNat_some_getDual?_neq_isSome_get (c : WickContraction n) (i : Fin n.succ)
+lemma insertAndContractNat_some_getDual?_ne_isSome_get (c : WickContraction n) (i : Fin n.succ)
     (j : c.uncontracted) (k : Fin n) (hkj : k ≠ j.1)
     (h : ((insertAndContractNat c i (some j)).getDual? (i.succAbove k)).isSome) :
     ((insertAndContractNat c i (some j)).getDual? (i.succAbove k)).get h =
     i.succAbove ((c.getDual? k).get
-      (by simpa [hkj, insertAndContractNat_some_getDual?_neq_isSome] using h)) := by
+      (by simpa [hkj, insertAndContractNat_some_getDual?_ne_isSome] using h)) := by
   have h1 : ((insertAndContractNat c i (some j)).getDual? (i.succAbove k))
     = some (i.succAbove ((c.getDual? k).get
-      (by simpa [hkj, insertAndContractNat_some_getDual?_neq_isSome] using h))) := by
+      (by simpa [hkj, insertAndContractNat_some_getDual?_ne_isSome] using h))) := by
     rw [getDual?_eq_some_iff_mem]
     simp only [Nat.succ_eq_add_one, insertAndContractNat, Finset.le_eq_subset, Finset.mem_insert,
       Finset.mem_map, RelEmbedding.coe_toEmbedding]
     apply Or.inr
     use { k, ((c.getDual? k).get
-      (by simpa [hkj, insertAndContractNat_some_getDual?_neq_isSome] using h))}
+      (by simpa [hkj, insertAndContractNat_some_getDual?_ne_isSome] using h))}
     simp only [self_getDual?_get_mem, true_and]
     rw [Finset.mapEmbedding_apply]
     simp
@@ -445,17 +449,17 @@ lemma insertAndContractNat_some_getDual?_of_neq (c : WickContraction n) (i : Fin
   by_cases h : (c.getDual? k).isSome
   · have h1 : (c.insertAndContractNat i (some j)).getDual? (i.succAbove k) =
         some (i.succAbove ((c.getDual? k).get h)) := by
-      rw [← insertAndContractNat_some_getDual?_neq_isSome_get c i j k hkj]
+      rw [← insertAndContractNat_some_getDual?_ne_isSome_get c i j k hkj]
       refine Eq.symm (Option.some_get ?_)
       all_goals
-        simpa [hkj, insertAndContractNat_some_getDual?_neq_isSome] using h
+        simpa [hkj, insertAndContractNat_some_getDual?_ne_isSome] using h
     rw [h1]
     have h2 :(c.getDual? k) = some ((c.getDual? k).get h) := by simp
     conv_rhs => rw [h2]
     rw [@Option.map_coe']
   · simp only [Bool.not_eq_true, Option.isSome_eq_false_iff, Option.isNone_iff_eq_none] at h
     simp only [Nat.succ_eq_add_one, h, Option.map_none]
-    simp only [ne_eq, hkj, not_false_eq_true, insertAndContractNat_some_getDual?_neq_none]
+    simp only [ne_eq, hkj, not_false_eq_true, insertAndContractNat_some_getDual?_ne_none]
     exact h
 
 /-!
@@ -585,7 +589,7 @@ lemma erase_insert (c : WickContraction n.succ) (i : Fin n.succ) :
         obtain ⟨left, right⟩ := ha'
         subst right
         rfl
-    simp only [Nat.succ_eq_add_one, ne_eq, self_neq_getDual?_get, not_false_eq_true]
+    simp only [Nat.succ_eq_add_one, ne_eq, self_ne_getDual?_get, not_false_eq_true]
     exact (getDualErase_isSome_iff_getDual?_isSome c i).mpr hi
   · simp only [Nat.succ_eq_add_one, insertAndContractNat, getDualErase, hi, Bool.false_eq_true,
     ↓reduceDIte, Finset.le_eq_subset]

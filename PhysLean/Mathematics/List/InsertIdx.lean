@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Data.List.Sort
-import Mathlib.Algebra.Order.Ring.Nat
+module
+
+public import Mathlib.Data.List.Sort
+public import Mathlib.Algebra.Order.Ring.Nat
 /-!
 # List lemmas
 
 -/
+
+@[expose] public section
 namespace PhysLean.List
 
 open Fin

@@ -3,11 +3,13 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.Prod
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Finset.Option
-import PhysLean.Particles.SuperSymmetry.SU5.Potential
+module
+
+public import Mathlib.Data.Finset.Powerset
+public import Mathlib.Data.Finset.Prod
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Finset.Option
+public import PhysLean.Particles.SuperSymmetry.SU5.Potential
 /-!
 
 # Charge Spectrum
@@ -55,6 +57,8 @@ There are no known references for charge spectra in the literature.
 They were created specifically for the purpose of PhysLean.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 

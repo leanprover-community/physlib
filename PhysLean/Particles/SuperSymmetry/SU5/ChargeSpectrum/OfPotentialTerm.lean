@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfFieldLabel
-import Mathlib.Tactic.Abel
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfFieldLabel
+public import Mathlib.Tactic.Abel
 /-!
 
 # Charges associated with a potential term
@@ -47,6 +49,8 @@ We will show that these two multisets have the same elements.
 There are no known references for this material.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 namespace SU5

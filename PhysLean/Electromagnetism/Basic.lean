@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.Basic
+module
+
+public import PhysLean.SpaceAndTime.SpaceTime.Basic
 /-!
 
 # Electromagnetism
@@ -13,6 +15,8 @@ In this file we define the electric field, the magnetic field, and the field str
 This module is old and parts of it will soon be replaced.
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 

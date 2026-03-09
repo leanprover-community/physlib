@@ -3,7 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
+
 /-!
 
 # Semiformal results
@@ -18,6 +21,8 @@ Released under the Apache 2.0 license, copyright 2023 Lean FRO, authored by
 David Thrane Christiansen.
 
 -/
+
+@[expose] public section
 
 open Lean Parser Elab Command
 
@@ -35,7 +40,7 @@ structure WantedInfo where
   tag : String
 
 /-- The environment extension for semiformal results. -/
-initialize wantedExtension : SimplePersistentEnvExtension WantedInfo (Array WantedInfo) ←
+meta initialize wantedExtension : SimplePersistentEnvExtension WantedInfo (Array WantedInfo) ←
   registerSimplePersistentEnvExtension {
     name := `wantedExtension
     addEntryFn := fun arr todoInfor => arr.push todoInfor
@@ -52,12 +57,12 @@ With minor modification they act in a similar way to `proof_wanted`, however
 they appear in PhysLean's TODO list and must be tagged accordingly.
 They must also always have a doc-string. -/
 @[command_parser]
-def «semiformal_result» := leading_parser
+meta def «semiformal_result» := leading_parser
     docComment >> "semiformal_result" >> strLit >> declId >> ppIndent declSig
 
 /-- The elaborator for semiformal results. -/
 @[command_elab «semiformal_result»]
-def elabLemmaWanted : CommandElab := fun stx =>
+meta def elabLemmaWanted : CommandElab := fun stx =>
   match stx with
   | `($doc:docComment semiformal_result $s $name $args* : $res) =>
     let tag : String := s.getString

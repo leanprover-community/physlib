@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickContraction.ExtractEquiv
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickContraction.ExtractEquiv
 /-!
 
 # List of uncontracted elements of a Wick contraction
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}
@@ -141,8 +145,8 @@ lemma orderedInsert_of_fin_list_sorted :
   | a :: l, hl, i => by
     simp only [List.pairwise_cons] at hl
     by_cases ha : i ≤ a
-    · simp only [List.orderedInsert, ha, ↓reduceIte, Fin.val_fin_lt, decide_eq_true_eq, not_lt,
-      List.filter_cons_of_neg, Fin.val_fin_le, decide_true, List.filter_cons_of_pos]
+    · simp only [List.orderedInsert_cons, ha, ↓reduceIte, Fin.val_fin_lt, decide_eq_true_eq,
+      not_lt, List.filter_cons_of_neg, Fin.val_fin_le, decide_true, List.filter_cons_of_pos]
       have h1 : List.filter (fun x => decide (↑x < ↑i)) l = [] := by
         simp only [List.filter_eq_nil_iff, decide_eq_true_eq, not_lt]
         intro a ha
@@ -152,8 +156,8 @@ lemma orderedInsert_of_fin_list_sorted :
         conv_lhs => rw [fin_list_sorted_split l hl.2 i]
         simp [h1]
       simp [← hl, h1]
-    · simp only [List.orderedInsert, ha, ↓reduceIte, Fin.val_fin_lt, Fin.val_fin_le, decide_false,
-      Bool.false_eq_true, not_false_eq_true, List.filter_cons_of_neg]
+    · simp only [List.orderedInsert_cons, ha, ↓reduceIte, Fin.val_fin_lt, Fin.val_fin_le,
+      decide_false, Bool.false_eq_true, not_false_eq_true, List.filter_cons_of_neg]
       rw [List.filter_cons_of_pos]
       rw [orderedInsert_of_fin_list_sorted l hl.2 i]
       simp only [Fin.val_fin_lt, Fin.val_fin_le, List.cons_append]

@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.Basic
-import PhysLean.Units.WithDim.Momentum
-import PhysLean.QFT.PerturbationTheory.FieldStatistics.OfFinset
+module
+
+public import PhysLean.SpaceAndTime.SpaceTime.Basic
+public import PhysLean.Units.WithDim.Momentum
+public import PhysLean.QFT.PerturbationTheory.FieldStatistics.OfFinset
 /-!
 
 # Field specification
@@ -26,6 +28,8 @@ These states carry the same field statistic as the field they are derived from.
 - https://particle.physics.ucdavis.edu/modernsusy/slides/slideimages/spinorfeynrules.pdf
 
 -/
+
+@[expose] public section
 
 /--
 The structure `FieldSpecification` is defined to have the following content:

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.Basic
+module
+
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.Basic
 /-!
 # Plane Y₃ B₃ and an orthogonal third point
 
@@ -14,6 +16,8 @@ The plane spanned by Y₃, B₃ and third orthogonal point.
 - https://arxiv.org/pdf/2107.07926.pdf
 
 -/
+
+@[expose] public section
 
 namespace MSSMACC
 open MSSMCharges

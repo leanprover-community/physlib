@@ -3,13 +3,14 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.QuadraticForm.Real
-import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.QuadraticForm.Real
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Pseudo-Riemannian Metrics on Smooth Manifolds
@@ -50,6 +51,8 @@ sections of a tensor bundle (e.g., `Hom(TM ⊗ TM, ℝ)` or `TM →L[ℝ] TM →
 * [Discussion on Zulip about (Pseudo) Riemannian metrics] https.
 leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.28Pseudo.29.20Riemannian.20metric
 -/
+
+@[expose] public section
 
 section PseudoRiemannianMetric
 
@@ -184,7 +187,7 @@ The quadratic form `Qₓ` at `x` is defined as `Qₓ(v) = gₓ(v,v)`.
 The associated symmetric bilinear form required by `QuadraticForm.exists_companion'`
 is `Bₓ(v,w) = gₓ(v,w) + gₓ(w,v)`. Given the symmetry `symm`, this is `2 * gₓ(v,w)`.
 -/
-private def pseudoRiemannianMetricValToQuadraticForm
+def pseudoRiemannianMetricValToQuadraticForm
     {E : Type v} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type w} [TopologicalSpace H]
     {M : Type w} [TopologicalSpace M] [ChartedSpace H M]
@@ -309,7 +312,14 @@ lemma toBilinForm_isSymm (g : PseudoRiemannianMetric E H M n I) (x : M) :
 @[simp]
 lemma toBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (toBilinForm g x).Nondegenerate := by
-  intro v hv; simp_rw [toBilinForm_apply] at hv; exact g.nondegenerate x v hv
+  unfold LinearMap.BilinForm.Nondegenerate LinearMap.Nondegenerate
+    LinearMap.SeparatingLeft LinearMap.SeparatingRight
+  constructor
+  · intro v hv; simp_rw [toBilinForm_apply] at hv; exact g.nondegenerate x v hv
+  · intro v hv; simp_rw [toBilinForm_apply] at hv;
+    have hw : ∀ (w : TangentSpace I x), ((g.val x) v) w = 0 := by
+      intro w; rw [symm]; simp [hv]
+    exact g.nondegenerate x v hw
 
 /-- The inner product (or scalar product) on the tangent space at point `x`
   induced by the pseudo-Riemannian metric `g`. This is `gₓ(v, w)`. -/
@@ -608,10 +618,19 @@ lemma cotangentMetricVal_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x
 @[simp]
 lemma cotangentToBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M) :
     (cotangentToBilinForm g x).Nondegenerate := by
-  intro ω hω
-  apply cotangentMetricVal_nondegenerate g x ω
-  intro v
-  exact hω v
+  unfold LinearMap.BilinForm.Nondegenerate LinearMap.Nondegenerate
+    LinearMap.SeparatingLeft LinearMap.SeparatingRight
+  constructor
+  · intro ω hω
+    apply cotangentMetricVal_nondegenerate g x ω
+    intro v
+    exact hω v
+  · intro ω hω
+    apply cotangentMetricVal_nondegenerate g x ω
+    intro v
+    have hv : ∀ (y : TangentSpace I x →L[ℝ] ℝ), ((g.cotangentToBilinForm x) ω) y = 0 := by
+      intro y; rw [LinearMap.BilinForm.isSymm_def.mp (cotangentToBilinForm_isSymm g x)]; simp [hω]
+    exact hv v
 
 end Cotangent
 

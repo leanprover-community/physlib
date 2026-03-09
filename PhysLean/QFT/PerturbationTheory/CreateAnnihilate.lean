@@ -3,13 +3,17 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Data.Fintype.Card
+module
+
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Data.Fintype.Card
 /-!
 
 # Creation and annihilation parts of fields
 
 -/
+
+@[expose] public section
 
 /-- The type `CreateAnnihilate` is the type containing two elements `create` and `annihilate`.
   This type is used to specify if an operator is a creation, or annihilation, operator

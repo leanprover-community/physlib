@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.ClassicalMechanics.RigidBody.Basic
+module
+
+public import PhysLean.ClassicalMechanics.RigidBody.Basic
 /-!
 
 # The solid sphere as a rigid body
@@ -12,6 +14,8 @@ In this module we consider the solid sphere as a rigid body, and compute its mas
 center of mass and inertia tensor.
 
 -/
+
+@[expose] public section
 
 open Manifold
 open MeasureTheory
@@ -44,8 +48,8 @@ lemma solidSphere_mass {d : ℕ} (m R : ℝ≥0) (hr : R ≠ 0) : (solidSphere d
   have h1 : (@volume (Space d.succ) measureSpaceOfInnerProductSpace).real
       (Metric.closedBall 0 R) ≠ 0 := by
     refine (measureReal_ne_zero_iff ?_).mpr ?_
-    · apply Space.volume_closedBall_neq_top
-    · apply Space.volume_closedBall_neq_zero
+    · apply Space.volume_closedBall_ne_top
+    · apply Space.volume_closedBall_ne_zero
       have hr' := R.2
       have hx : R.1 ≠ 0 := by simpa using hr
       apply lt_of_le_of_ne hr' (Ne.symm hx)

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.Basic
+module
+
+public import PhysLean.Particles.StandardModel.Basic
 /-!
 
 # The Georgi-Glashow Model
@@ -14,6 +16,8 @@ The Georgi-Glashow model is a grand unified theory that unifies the Standard Mod
 This file currently contains informal-results about the Georgi-Glashow group.
 
 -/
+
+@[expose] public section
 
 namespace GeorgiGlashow
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong
 -/
-import PhysLean.SpaceAndTime.Space.CrossProduct
-import PhysLean.SpaceAndTime.TimeAndSpace.Basic
+module
+
+public import PhysLean.SpaceAndTime.Space.CrossProduct
+public import PhysLean.SpaceAndTime.TimeAndSpace.Basic
 /-!
 
 # Wave equation
@@ -38,6 +40,8 @@ By a plne wave we mean a function of the form `f(t, x) = f₀(⟪x, s⟫_ℝ - c
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 

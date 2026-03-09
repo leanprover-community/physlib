@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Units.Pre
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Units.Pre
 /-!
 
 # Metric for real Lorentz vectors
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Module Matrix MatrixGroups Complex TensorProduct CategoryTheory.MonoidalCategory

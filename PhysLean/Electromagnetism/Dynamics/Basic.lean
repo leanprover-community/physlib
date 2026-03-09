@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Basic
+module
+
+public import PhysLean.Electromagnetism.Basic
 /-!
 
 # Free space
@@ -32,6 +34,8 @@ in free space in terms of these constants.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 

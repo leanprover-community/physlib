@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Basic
-import PhysLean.Meta.Informal.Basic
-import PhysLean.Meta.TODO.Basic
+module
+
+public import PhysLean.Meta.Basic
+public import PhysLean.Meta.Informal.Basic
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 ## Informal definitions and lemmas
 
 -/
+
+@[expose] public section
 open Lean
 
 namespace Informal

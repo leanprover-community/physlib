@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.IsDistBounded
-import Mathlib.MeasureTheory.SpecificCodomains.WithLp
+module
+
+public import PhysLean.SpaceAndTime.Space.IsDistBounded
+public import Mathlib.MeasureTheory.SpecificCodomains.WithLp
 /-!
 
 # Distributions from functions on space
@@ -32,6 +34,8 @@ to reference the underlying Schwartz maps.
 ## iv. References
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal
 noncomputable section
 

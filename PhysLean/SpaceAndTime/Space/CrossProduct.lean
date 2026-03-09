@@ -3,8 +3,10 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith
 -/
-import Mathlib.LinearAlgebra.CrossProduct
-import PhysLean.SpaceAndTime.Time.Derivatives
+module
+
+public import Mathlib.LinearAlgebra.CrossProduct
+public import PhysLean.SpaceAndTime.Time.Derivatives
 /-!
 
 # The cross product on Euclidean vectors in three dimensions
@@ -32,6 +34,8 @@ and prove various properties about it related to time derivatives and inner prod
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Space
 open Time Matrix

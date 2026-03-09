@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Basic
-import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
-import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
+module
+
+public import PhysLean.Electromagnetism.Basic
+public import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
+public import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
 /-!
 
 # The Electromagnetic Potential
@@ -46,6 +48,8 @@ spacetime to contravariant Lorentz vectors.
 - https://ph.qmul.ac.uk/sites/default/files/EMT10new.pdf
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 open Module realLorentzTensor

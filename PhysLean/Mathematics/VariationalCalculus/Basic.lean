@@ -3,7 +3,9 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.VariationalCalculus.IsTestFunction
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.IsTestFunction
 /-!
 
 # Fundamental lemma of the calculus of variations
@@ -15,6 +17,8 @@ The key took in variational calculus is:
 which allows use to go from reasoning about integrals to reasoning about functions.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory InnerProductSpace InnerProductSpace'
 

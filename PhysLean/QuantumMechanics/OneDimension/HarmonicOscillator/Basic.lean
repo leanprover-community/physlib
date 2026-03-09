@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
-import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
-import PhysLean.QuantumMechanics.OneDimension.Operators.Position
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Position
 
 /-!
 
@@ -21,6 +23,8 @@ This file contains
 ## TODO
 
 -/
+
+@[expose] public section
 
 /-!
 

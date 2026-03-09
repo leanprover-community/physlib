@@ -3,12 +3,14 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Tactic.Polyrith
-import Mathlib.Tactic.Linarith
-import Mathlib.Data.Nat.Factorial.DoubleFactorial
-import Mathlib.Data.Finset.Sort
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Prod
+module
+
+public import Mathlib.Tactic.Polyrith
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Data.Nat.Factorial.DoubleFactorial
+public import Mathlib.Data.Finset.Sort
+public import Mathlib.Data.Fintype.Pi
+public import Mathlib.Data.Fintype.Prod
 /-!
 # Fin involutions
 
@@ -17,6 +19,8 @@ Some properties of involutions of `Fin n`.
 These involutions are used in e.g. proving results about Wick contractions.
 
 -/
+
+@[expose] public section
 namespace PhysLean.Fin
 
 open Nat

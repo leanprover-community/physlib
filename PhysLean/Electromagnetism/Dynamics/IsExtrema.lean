@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.Lagrangian
+module
+
+public import PhysLean.Electromagnetism.Dynamics.Lagrangian
 /-!
 
 # Extrema of the Lagrangian density
@@ -47,6 +49,8 @@ Maxwell's equations with sources, i.e. Gauss's law and Ampère's law.
 ## iv. References
 
 -/
+
+@[expose] public section
 namespace Electromagnetism
 open Module realLorentzTensor
 open IndexNotation

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.StringTheory.FTheory.SU5.Quanta.Basic
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Map
+module
+
+public import PhysLean.StringTheory.FTheory.SU5.Quanta.Basic
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Map
 /-!
 
 # Anomaly cancellation
@@ -39,6 +41,8 @@ which do not have exotics.
 There are no known references for the material in this section.
 
 -/
+
+@[expose] public section
 namespace FTheory
 
 namespace SU5

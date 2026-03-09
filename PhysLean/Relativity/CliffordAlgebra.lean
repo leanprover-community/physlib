@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Data.Matrix.Reflection
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-import PhysLean.Meta.TODO.Basic
+module
+
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Data.Matrix.Reflection
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+public import PhysLean.Meta.TODO.Basic
 /-!
 # The Clifford Algebra
 
@@ -31,6 +33,8 @@ This file defines the Gamma matrices and their relationship to the Clifford alge
 - Construct the `AlgEquiv` between `CliffordAlgebra diracForm` and `diracAlgebra`
 
 -/
+
+@[expose] public section
 TODO "6VZF2" "Prove injectivity of ofCliffordAlgebra and construct the full isomorphism."
 namespace spaceTime
 open Complex

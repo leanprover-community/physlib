@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.CrAnSection
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.CrAnSection
 /-!
 
 # Creation and annihilation free-algebra
@@ -29,6 +31,8 @@ The key lemmas show how these operators interact, particularly focusing on the
 super commutation relations between creation and annihilation operators.
 
 -/
+
+@[expose] public section
 open Module
 namespace FieldSpecification
 variable {𝓕 : FieldSpecification}

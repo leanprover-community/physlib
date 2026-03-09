@@ -3,13 +3,15 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.Thermodynamics.Temperature.Basic
-import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-import Mathlib.Analysis.Calculus.ParametricIntegral
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.Meta.Linters.Sorry
-import Mathlib.Analysis.SpecialFunctions.Log.Summable
-import Mathlib.MeasureTheory.Integral.Prod
+module
+
+public import PhysLean.Thermodynamics.Temperature.Basic
+public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+public import Mathlib.Analysis.Calculus.ParametricIntegral
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.Meta.Linters.Sorry
+public import Mathlib.Analysis.SpecialFunctions.Log.Summable
+public import Mathlib.MeasureTheory.Integral.Prod
 /-!
 # Canonical Ensemble: Core Definitions
 
@@ -102,6 +104,8 @@ Subsequent files (`Lemmas.lean`) prove:
 * Fundamental identity `F = U - T S`.
 * Derivative (response) formulas: `U = -∂_β log Z`.
 -/
+
+@[expose] public section
 
 open MeasureTheory Real Temperature
 open scoped Temperature

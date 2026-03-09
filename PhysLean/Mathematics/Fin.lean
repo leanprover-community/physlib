@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Tactic.Polyrith
-import Mathlib.Tactic.Linarith
-import Mathlib.Logic.Equiv.Fin.Basic
+module
+
+public import Mathlib.Tactic.Polyrith
+public import Mathlib.Tactic.Linarith
+public import Mathlib.Logic.Equiv.Fin.Basic
 /-!
 # Fin lemmas
 
@@ -16,6 +18,8 @@ At some point these should either be up-streamed to Mathlib or replaced with def
 in Mathlib.
 
 -/
+
+@[expose] public section
 namespace PhysLean.Fin
 
 open Fin

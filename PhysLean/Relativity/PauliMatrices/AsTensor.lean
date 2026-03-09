@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Two
-import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Two
+public import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
 /-!
 
 ## Pauli matrices as a tensor
@@ -13,6 +15,8 @@ The results in this file are primarily used to show that
 the pauli matrices in invariant under the `SL(2,ℂ)` action.
 
 -/
+
+@[expose] public section
 
 namespace PauliMatrix
 

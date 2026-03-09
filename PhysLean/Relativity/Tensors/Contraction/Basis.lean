@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Contraction.Basic
+module
+
+public import PhysLean.Relativity.Tensors.Contraction.Basic
 /-!
 
 # Contractions on basis tensors
 
 -/
+
+@[expose] public section
 
 open IndexNotation CategoryTheory MonoidalCategory Module
 
@@ -68,7 +72,7 @@ def ofFin {n : ℕ} {c : Fin (n + 1 + 1) → C}
   if hi : m = i then Fin.cast (by subst hi; rfl) x.1
   else if hj : m = j then Fin.cast (by subst hj; rfl) x.2
   else
-    Fin.cast (by simp; rw [Pure.dropPairEmb_dropPairEmbPre])
+    Fin.cast (by simp)
     (b (Pure.dropPairEmbPre i j hij m (by omega)))
 
 @[simp]
@@ -93,7 +97,7 @@ lemma ofFin_mem_dropPairEmbSection {n : ℕ} {c : Fin (n + 1 + 1) → C}
     ofFin hij b x ∈ DropPairSection b := by
   simp only [DropPairSection, Finset.mem_filter, Finset.mem_univ, true_and]
   ext m
-  simp only [ofFin, dropPair, Pure.dropPairEmb_neq_fst, ↓reduceDIte, Pure.dropPairEmb_neq_snd,
+  simp only [ofFin, dropPair, Pure.dropPairEmb_ne_fst, ↓reduceDIte, Pure.dropPairEmb_ne_snd,
     Function.comp_apply]
   simp only [Fin.val_cast]
   rw [Pure.dropPairEmbPre_dropPairEmb]

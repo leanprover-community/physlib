@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.TODO.Basic
+module
+
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 ## Getting an array of all file paths in PhysLean.
 
 -/
+
+@[expose] public section
 
 open System
 

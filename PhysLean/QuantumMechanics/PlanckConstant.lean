@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Data.NNReal.Defs
+module
+
+public import Mathlib.Data.NNReal.Defs
 /-!
 
 # Planck's constant
@@ -11,6 +13,8 @@ import Mathlib.Data.NNReal.Defs
 In this module we define the Planck's constant `ℏ` as a positive real number.
 
 -/
+
+@[expose] public section
 open NNReal
 
 namespace Constants

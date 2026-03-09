@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Kinematics.VectorPotential
-import PhysLean.Electromagnetism.Kinematics.ScalarPotential
-import PhysLean.Electromagnetism.Kinematics.FieldStrength
+module
+
+public import PhysLean.Electromagnetism.Kinematics.VectorPotential
+public import PhysLean.Electromagnetism.Kinematics.ScalarPotential
+public import PhysLean.Electromagnetism.Kinematics.FieldStrength
 /-!
 
 # The Electric Field
@@ -38,6 +40,8 @@ In this module we define the electric field, and prove lemmas about it.
 ## iv. References
 
 -/
+
+@[expose] public section
 namespace Electromagnetism
 open Module realLorentzTensor
 open IndexNotation

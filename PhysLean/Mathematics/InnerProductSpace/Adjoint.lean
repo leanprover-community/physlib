@@ -3,8 +3,10 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import PhysLean.Mathematics.InnerProductSpace.Basic
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import PhysLean.Mathematics.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 /-!
 
 # Adjoint of a linear map
@@ -16,6 +18,8 @@ This is a generalization of the usual adjoint defined on `InnerProductSpace` for
 continuous linear maps.
 
 -/
+
+@[expose] public section
 variable {𝕜 : Type*} {E F G : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [InnerProductSpace' 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [InnerProductSpace' 𝕜 F]

@@ -3,11 +3,13 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.IsExtrema
-import PhysLean.SpaceAndTime.Space.Norm
-import PhysLean.SpaceAndTime.Space.Translations
-import PhysLean.SpaceAndTime.Space.ConstantSliceDist
-import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
+module
+
+public import PhysLean.Electromagnetism.Dynamics.IsExtrema
+public import PhysLean.SpaceAndTime.Space.Norm
+public import PhysLean.SpaceAndTime.Space.Translations
+public import PhysLean.SpaceAndTime.Space.ConstantSliceDist
+public import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 /-!
 
 # The magnetic field around a infinite wire
@@ -38,6 +40,8 @@ carrying a steady current along the x-axis.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 open Distribution SchwartzMap

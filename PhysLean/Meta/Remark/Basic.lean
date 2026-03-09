@@ -3,11 +3,15 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 /-!
 
 ## Underlying structure for remarks
 -/
+
+@[expose] public section
 
 namespace PhysLean
 open Lean
@@ -26,7 +30,7 @@ structure RemarkInfo where
   nameSpace : Name
 
 /-- Environment extension to store `remark ...`. -/
-initialize remarkExtension : SimplePersistentEnvExtension RemarkInfo (Array RemarkInfo) ←
+meta initialize remarkExtension : SimplePersistentEnvExtension RemarkInfo (Array RemarkInfo) ←
   registerSimplePersistentEnvExtension {
     name := `remarkExtension
     addEntryFn := fun arr remarkInfoT => arr.push remarkInfoT
@@ -38,7 +42,7 @@ syntax (name := remark_syntax) "remark " ident ":=" str : command
 
 /-- Elaborator for the `note ...` command -/
 @[command_elab remark_syntax]
-def elabRemark : Elab.Command.CommandElab := fun stx =>
+meta def elabRemark : Elab.Command.CommandElab := fun stx =>
   match stx with
   | `(remark $n := $s) => do
     let str : String := s.getString

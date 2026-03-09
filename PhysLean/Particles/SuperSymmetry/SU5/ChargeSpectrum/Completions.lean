@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
 /-!
 
 # Completions of charges
@@ -50,6 +52,8 @@ are complete, and have their charges in the given subsets.
 There are no known references for the material in this module.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 
@@ -446,11 +450,11 @@ lemma completions_eq_completionsTopYukawa_of_mem_minimallyAllowsTermsOfFinset [A
   simp [minimallyAllowsTermsOfFinset] at hx
   obtain ⟨qHu, Q10, ⟨⟨h1, ⟨h2, hcard⟩⟩, h3⟩, rfl⟩ := hx
   simp [completions, completionsTopYukawa]
-  have Q10_neq_zero : Q10 ≠ 0 := by
+  have Q10_ne_zero : Q10 ≠ 0 := by
     by_contra hn
     subst hn
     simp at hcard
-  simp [Q10_neq_zero]
+  simp [Q10_ne_zero]
   match a with
   | ⟨xqHd, xqHu, xQ5, xQ10⟩ =>
   simp [eq_iff]

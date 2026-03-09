@@ -3,10 +3,12 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import Mathlib.Analysis.Normed.Field.Instances
-import PhysLean.Mathematics.DataStructures.Matrix.LieTrace
-import PhysLean.Relativity.LorentzAlgebra.Basic
-import PhysLean.Relativity.LorentzGroup.Restricted.Basic
+module
+
+public import Mathlib.Analysis.Normed.Field.Instances
+public import PhysLean.Mathematics.DataStructures.Matrix.LieTrace
+public import PhysLean.Relativity.LorentzAlgebra.Basic
+public import PhysLean.Relativity.LorentzGroup.Restricted.Basic
 
 /-!
 # Exponential map from the Lorentz algebra to the restricted Lorentz group
@@ -19,6 +21,8 @@ onto the proper orthochronous Lorentz group (`LorentzGroup.restricted 3`). We pr
 * exp_isOrthochronous : `(exp A)₀₀ ≥ 1`.
 Hence `exp A ∈ LorentzGroup.restricted 3`.
 -/
+
+@[expose] public section
 
 open Matrix
 open minkowskiMatrix

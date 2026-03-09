@@ -3,7 +3,9 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong
 -/
-import PhysLean.Electromagnetism.Vacuum.HarmonicWave
+module
+
+public import PhysLean.Electromagnetism.Vacuum.HarmonicWave
 /-!
 
 # Polarization
@@ -20,3 +22,5 @@ The material that was in this file has been moved to
 This file is kept because there is still some material to be added here in the future.
 
 -/
+
+@[expose] public section

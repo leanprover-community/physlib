@@ -3,15 +3,19 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.MeasureTheory.Function.L2Space
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import PhysLean.Meta.Linters.Sorry
-import Mathlib.Analysis.InnerProductSpace.Dual
+module
+
+public import Mathlib.MeasureTheory.Function.L2Space
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+public import PhysLean.Meta.Linters.Sorry
+public import Mathlib.Analysis.InnerProductSpace.Dual
 /-!
 
 # Hilbert space for one dimension quantum mechanics
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

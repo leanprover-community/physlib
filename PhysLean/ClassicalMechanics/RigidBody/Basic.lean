@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Curl
-import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Curl
+public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
 /-!
 
 # Rigid bodies
@@ -20,6 +22,8 @@ In this module we will define the basic properties of a rigid body, including
 ## References
 - Landau and Lifshitz, Mechanics, page 100, Section 32
 -/
+
+@[expose] public section
 
 open Manifold
 

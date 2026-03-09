@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Informal.Basic
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.Meta.Linters.Sorry
-import PhysLean.QuantumMechanics.FiniteTarget.HilbertSpace
+module
+
+public import PhysLean.Meta.Informal.Basic
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.Meta.Linters.Sorry
+public import PhysLean.QuantumMechanics.FiniteTarget.HilbertSpace
 /-!
 
 # The tight binding chain
@@ -67,6 +69,8 @@ with periodic boundary conditions.
 - https://www.damtp.cam.ac.uk/user/tong/aqm/aqmtwo.pdf
 
 -/
+
+@[expose] public section
 
 namespace CondensedMatter
 

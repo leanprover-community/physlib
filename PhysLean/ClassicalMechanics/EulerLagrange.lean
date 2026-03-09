@@ -3,7 +3,9 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
 /-!
 
 # Euler-Lagrange equations
@@ -13,6 +15,8 @@ and prove the that the variational derivative of the action functional
 `∫ L(t, q(t), dₜ q(t)) dt` is equal to the Euler-Lagrange operator applied to the trajectory `q`.
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ContDiff InnerProductSpace Time
 

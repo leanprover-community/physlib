@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 /-!
 
 # Basic underlying structure for TODOs.
 
 -/
+
+@[expose] public section
 
 namespace PhysLean
 open Lean
@@ -25,7 +29,7 @@ structure todoInfo where
   tag : String
 
 /-- Environment extension to store `todo ...`. -/
-initialize todoExtension : SimplePersistentEnvExtension todoInfo (Array todoInfo) ←
+meta initialize todoExtension : SimplePersistentEnvExtension todoInfo (Array todoInfo) ←
   registerSimplePersistentEnvExtension {
     name := `todoExtension
     addEntryFn := fun arr todoInfor => arr.push todoInfor
@@ -37,7 +41,7 @@ syntax (name := todo_comment) "TODO " str str : command
 
 /-- Elaborator for the `TODO ...` command -/
 @[command_elab todo_comment]
-def elabTODO : Elab.Command.CommandElab := fun stx =>
+meta def elabTODO : Elab.Command.CommandElab := fun stx =>
   match stx with
   | `(TODO $t $s) => do
     let str : String := s.getString

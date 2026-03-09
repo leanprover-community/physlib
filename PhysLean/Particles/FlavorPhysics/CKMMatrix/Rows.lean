@@ -3,11 +3,13 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Basic
-import Mathlib.Analysis.SpecialFunctions.Complex.Arg
-import Mathlib.LinearAlgebra.CrossProduct
-import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
-import Mathlib.Tactic.Cases
+module
+
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Basic
+public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+public import Mathlib.LinearAlgebra.CrossProduct
+public import Mathlib.LinearAlgebra.FiniteDimensional.Lemmas
+public import Mathlib.Tactic.Cases
 /-!
 # Rows for the CKM Matrix
 
@@ -17,6 +19,8 @@ proves some properties between them.
 The first row can be extracted as `[V]u` for a CKM matrix `V`.
 
 -/
+
+@[expose] public section
 
 open Matrix Complex ComplexConjugate Module
 

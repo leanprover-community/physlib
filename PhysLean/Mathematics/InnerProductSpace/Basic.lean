@@ -3,11 +3,13 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Mathlib.Analysis.InnerProductSpace.Calculus
-import Mathlib.Analysis.InnerProductSpace.Completion
-import Mathlib.Analysis.InnerProductSpace.ProdL2
-import Mathlib.Data.Real.CompleteField
-import Mathlib.Data.Real.StarOrdered
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Analysis.InnerProductSpace.Completion
+public import Mathlib.Analysis.InnerProductSpace.ProdL2
+public import Mathlib.Data.Real.CompleteField
+public import Mathlib.Data.Real.StarOrdered
 /-!
 
 # Inner product space
@@ -27,6 +29,8 @@ We define the following maps:
   defined on `WithLp 2 E` is L₂ norm.
 
 -/
+
+@[expose] public section
 
 /-- L₂ norm on `E`.
 

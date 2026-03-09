@@ -3,7 +3,9 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.VariationalCalculus.Basic
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.Basic
 /-!
 
 # Localized function transforms
@@ -14,6 +16,8 @@ set `K` in `Y` there exists a compact set `L` of `X`, such that if `φ` and `φ'
 then `F φ` and `F φ'` are equal on `K`.
 
 -/
+
+@[expose] public section
 open InnerProductSpace MeasureTheory ContDiff
 
 section

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.AnomalyCancellation.Basic
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import PhysLean.QFT.AnomalyCancellation.Basic
+public import Mathlib.RepresentationTheory.Basic
 /-!
 # Group actions on ACC systems.
 
@@ -17,6 +19,8 @@ From this we define
 - The group action acting on solutions to the anomaly cancellation conditions.
 
 -/
+
+@[expose] public section
 
 /-- The type of a group action on a system of charges is defined as a representation on
 the vector spaces of charges under which the anomaly equations are invariant.

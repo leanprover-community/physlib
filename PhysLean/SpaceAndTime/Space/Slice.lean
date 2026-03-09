@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
-import PhysLean.SpaceAndTime.Space.Derivatives.Basic
+module
+
+public import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
+public import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
 # Slices of space
@@ -33,6 +35,8 @@ extracts the `i`th coordinate on `Space d.succ`.
 - https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLean/topic/API.20around.20.60Space.20.28d1.20.2B.20d2.29.60.20to.20.60Space.20d1.20x.20Space.20d2.60/with/556754634
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal
 noncomputable section
 

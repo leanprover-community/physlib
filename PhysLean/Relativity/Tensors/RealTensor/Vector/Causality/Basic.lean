@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 /-!
 
 ## Causality of Lorentz vectors
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

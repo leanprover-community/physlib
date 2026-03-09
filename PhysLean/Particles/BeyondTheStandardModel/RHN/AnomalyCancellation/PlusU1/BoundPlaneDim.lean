@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.PlaneNonSols
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.PlaneNonSols
 /-!
 # Bound on plane dimension
 
@@ -11,6 +13,8 @@ We place an upper bound on the dimension of a plane of charges on which every po
 The upper bound is 7, proven in the theorem `plane_exists_dim_le_7`.
 
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace PlusU1

@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Div
-import Mathlib.Analysis.InnerProductSpace.NormPow
-import Mathlib.Analysis.Calculus.FDeriv.Norm
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Div
+public import Mathlib.Analysis.InnerProductSpace.NormPow
+public import Mathlib.Analysis.Calculus.FDeriv.Norm
 /-!
 
 # The norm on space
@@ -54,6 +56,8 @@ We use properties of this power series to prove various results about distributi
 ## iv. References
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal
 noncomputable section
 
@@ -1057,7 +1061,8 @@ lemma distDiv_inv_pow_eq_dim {d : ℕ} :
             | 1 =>
               use 0, 1
               intro x
-              simp [fderiv_smul_const, iteratedFDeriv_succ_eq_comp_right]
+              simp [fderiv_smul_const, iteratedFDeriv_succ_eq_comp_right,
+                ContinuousLinearMap.norm_id]
             | n' + 1 + 1 =>
               use 0, 0
               intro x

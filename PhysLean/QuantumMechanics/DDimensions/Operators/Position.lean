@@ -3,207 +3,223 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Basic
+module
+
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Unbounded
+public import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
+public import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
-# Position vector operator
+# Position operators
 
-In this module we define:
-- The position operator on Schwartz maps, component-wise.
+## i. Overview
+
+In this module we introduce several position operators for quantum mechanics on `Space d`.
+
+## ii. Key results
+
+Definitions:
+- `positionOperator` : (components of) the position vector operator acting on Schwartz maps
+    `𝓢(Space d, ℂ)` by multiplication by `xᵢ`.
+- `radiusRegPowOperator` : operator acting on Schwartz maps by multiplication by
+    `(‖x‖² + ε²)^(s/2)`, a smooth regularization of `‖x‖ˢ`.
+- `positionUnboundedOperator` : a symmetric unbounded operator acting on the Schwartz submodule
+    of the Hilbert space `SpaceDHilbertSpace d`.
+- `readiusRegPowUnboundedOperator` : a symmetric unbounded operator acting on the Schwartz
+    submodule of the Hilbert space `SpaceDHilbertSpace d`. For `s ≤ 0` this operator is in fact
+    bounded (by `|ε|ˢ`) and has natural domain the entire Hilbert space, but for uniformity we
+    use the same domain for all `s`.
+
+Notation:
+- `𝐱[i]` for `positionOperator i`
+- `𝐫[ε,s]` for `radiusRegPowOperator ε s`
+
+## iii. Table of contents
+
+- A. Position vector operator
+- B. Regularized radius operator
+- C. Unbounded position vector operator
+- D. Unbounded regularized radius operator
+
+## iv. References
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 noncomputable section
 open Space
-open ContDiff SchwartzMap
+open Function SchwartzMap ContDiff
 
-/-
-Some helper lemmas for computing the iterated derivatives of `fun (x : Space d) ↦ (x i : ℂ)`,
-generalized from `ℂ` to any `RCLike`.
+variable {d : ℕ} (i : Fin d)
+
+/-!
+
+## A. Position vector operator
+
 -/
 
-private lemma norm_fderiv_ofReal_coord {M} [RCLike M] {d : ℕ} {i : Fin d} {x : Space d}:
-    ‖fderiv ℝ (RCLike.ofRealCLM (K := M) ∘L coordCLM i) x‖ = 1 := by
-  rw [ContinuousLinearMap.fderiv]
-  rw [ContinuousLinearMap.norm_def]
-  simp only [ContinuousLinearMap.coe_comp', RCLike.ofRealCLM_apply, Function.comp_apply,
-    norm_algebraMap', Real.norm_eq_abs]
-  conv_lhs =>
-    enter [1, 1, c, 2, 2]
-    rw [Space.coordCLM_apply, Space.coord_apply]
-
-  refine csInf_eq_of_forall_ge_of_forall_gt_exists_lt ?_ ?_ ?_
-  · use 1
-    simp only [Set.mem_setOf_eq, zero_le_one, one_mul, true_and]
-    exact fun x => abs_eval_le_norm x i
-  · intro c
-    rw [Set.mem_setOf_eq, and_imp]
-    intro hc h
-    have h' : ∃ (x : Space d), |x i| = ‖x‖ ∧ 0 < |x i| := by
-      use (basis i)
-      rw [basis_self, abs_one, OrthonormalBasis.norm_eq_one]
-      simp only [zero_lt_one, and_self]
-    rcases h' with ⟨x2, hx2, hx2'⟩
-    apply one_le_of_le_mul_right₀ hx2'
-    apply le_of_le_of_eq (h x2) (congrArg (HMul.hMul c) (Eq.symm hx2))
-  · intro w hw
-    use 1
-    simp only [Set.mem_setOf_eq, zero_le_one, one_mul, true_and]
-    exact ⟨fun x => abs_eval_le_norm x i, hw⟩
-
-private lemma iteratedFDeriv_succ_succ_ofReal_coord_eq_zero {M} [RCLike M] {d : ℕ} {i : Fin d} :
-    ∀ n : ℕ, iteratedFDeriv ℝ n.succ.succ (RCLike.ofRealCLM (K := M) ∘L coordCLM i) = 0 := by
-  intro n
-  induction n with
-  | zero =>
-    ext x _
-    rw [iteratedFDeriv_succ_apply_right]
-    conv_lhs =>
-      enter [1, 1, 3, y]
-      change fderiv ℝ (RCLike.ofRealCLM ∘L coordCLM i) y
-      rw [ContinuousLinearMap.fderiv]
-    simp only [Nat.reduceAdd, iteratedFDeriv_one_apply, fderiv_fun_const, Pi.zero_apply,
-      Fin.isValue, ContinuousLinearMap.zero_apply, Fin.reduceLast, Nat.succ_eq_add_one,
-      ContinuousMultilinearMap.zero_apply]
-  | succ n hn =>
-    ext x _
-    rw [iteratedFDeriv_succ_apply_left]
-    rw [hn]
-    simp only [fderiv_zero, Pi.zero_apply, ContinuousLinearMap.zero_apply,
-      ContinuousMultilinearMap.zero_apply, Nat.succ_eq_add_one]
-
-private lemma norm_iteratedFDeriv_ofRealCLM_coord {M} [RCLike M] (n : ℕ) {d : ℕ} (i : Fin d)
-    (x : Space d) : ‖iteratedFDeriv ℝ n (RCLike.ofRealCLM (K := M) ∘L coordCLM i) x‖ =
-    if n = 0 then |x i| else if n = 1 then 1 else 0 := by
-  match n with
-  | 0 =>
-    simp only [ContinuousLinearMap.coe_comp', RCLike.ofRealCLM_apply, norm_iteratedFDeriv_zero,
-      Function.comp_apply, norm_algebraMap', Real.norm_eq_abs, ↓reduceIte]
-    rw [coordCLM_apply, coord_apply]
-  | 1 =>
-    simp only [ContinuousLinearMap.coe_comp', one_ne_zero, ↓reduceIte]
-    rw [← norm_iteratedFDeriv_fderiv, norm_iteratedFDeriv_zero]
-    exact norm_fderiv_ofReal_coord
-  | .succ (.succ n) =>
-    rw [iteratedFDeriv_succ_succ_ofReal_coord_eq_zero]
-    simp only [Nat.succ_eq_add_one, Pi.zero_apply, norm_zero, Nat.add_eq_zero_iff, one_ne_zero,
-      and_false, and_self, ↓reduceIte, Nat.add_eq_right]
-
 /-- Component `i` of the position operator is the continuous linear map
-from `𝓢(Space d, ℂ)` to itself which maps `ψ` to `xᵢψ`. -/
-def positionOperator {d : ℕ} (i : Fin d) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) := by
-  refine SchwartzMap.mkCLM (fun ψ x ↦ x i * ψ x) ?hadd ?hsmul ?hsmooth ?hbound
-  -- hadd
-  · intro ψ1 ψ2 x
-    simp only [SchwartzMap.add_apply]
-    ring
-
-  -- hsmul
-  · intro c ψ x
-    simp only [SchwartzMap.smul_apply, smul_eq_mul, RingHom.id_apply]
-    ring
-
-  -- hsmooth
-  · intro ψ
-    exact ContDiff.smul (eval_contDiff i) (smooth ψ ⊤)
-
-  -- hbound
-  · intro (k, n)
-    use {(k, n - 1), (k + 1, n)}
-    use n + 1
-    refine ⟨by linarith, ?_⟩
-    intro ψ x
-    simp only [Finset.sup_insert, schwartzSeminormFamily_apply, Finset.sup_singleton,
-      Seminorm.coe_sup, Pi.sup_apply]
-
-    trans ‖x‖ ^ k * ∑ j ∈ Finset.range (n + 1), (n.choose j)
-      * ‖iteratedFDeriv ℝ j (fun x ↦ (x i : ℂ)) x‖
-      * ‖iteratedFDeriv ℝ (n - j) ψ x‖
-    · apply (mul_le_mul_of_nonneg_left ?_ (pow_nonneg (norm_nonneg x) k))
-      have hcd : ContDiff ℝ ∞ (fun (x : Space d) ↦ (x i : ℂ)) := by
-        apply ContDiff.fun_comp
-        · change ContDiff ℝ ∞ RCLike.ofRealCLM
-          fun_prop
-        · fun_prop
-      apply norm_iteratedFDeriv_mul_le (N := ∞) hcd (SchwartzMap.smooth ψ ⊤) x ENat.LEInfty.out
-
-    have h' : (fun x ↦ ↑(x i)) = RCLike.ofRealCLM (K := ℂ) ∘L coordCLM i := by
-      ext x
-      simp only [ContinuousLinearMap.coe_comp', RCLike.ofRealCLM_apply, Complex.coe_algebraMap,
-        Function.comp_apply, Complex.ofReal_inj]
-      rw [Space.coordCLM_apply, Space.coord_apply]
-    rw [h']
-    conv_lhs =>
-      enter [2, 2, j]
-      rw [norm_iteratedFDeriv_ofRealCLM_coord]
-
-    match n with
-      | 0 =>
-        simp only [zero_add, Finset.range_one, mul_ite, mul_one, mul_zero,
-          ite_mul, zero_mul, Finset.sum_singleton, ↓reduceIte, Nat.choose_self, Nat.cast_one,
-          one_mul, Nat.sub_zero, norm_iteratedFDeriv_zero, CharP.cast_eq_zero]
-        trans (SchwartzMap.seminorm ℝ (k + 1) 0) ψ
-        · apply le_trans ?_ (ψ.le_seminorm _ _ _ x)
-          rw [norm_iteratedFDeriv_zero, ← mul_assoc, pow_add]
-          apply (mul_le_mul_of_nonneg_right ?_ (norm_nonneg (ψ x)))
-          apply (mul_le_mul_of_nonneg_left ?_ ?_)
-          · simp only [pow_one, abs_eval_le_norm]
-          · apply pow_nonneg (norm_nonneg _)
-        · exact le_max_right _ _
-      | .succ n =>
-        rw [Finset.sum_range_succ', Finset.sum_range_succ']
-        simp only [Nat.succ_eq_add_one, Nat.add_eq_zero_iff, one_ne_zero, and_false, and_self,
-          ↓reduceIte, Nat.add_eq_right, mul_zero, zero_mul, Finset.sum_const_zero, zero_add,
-          Nat.choose_one_right, Nat.cast_add, Nat.cast_one, mul_one, Nat.reduceAdd,
-          Nat.add_one_sub_one, Nat.choose_zero_right, one_mul, Nat.sub_zero,
-          add_tsub_cancel_right, ge_iff_le]
-
-        trans (↑n + 1) * (‖x‖ ^ k * ‖iteratedFDeriv ℝ n ψ x‖)
-          + (‖x‖ ^ k * |x i| * ‖iteratedFDeriv ℝ (n + 1) ψ x‖)
-        · apply le_of_eq
-          ring
-
-        trans (↑n + 1) * (‖x‖ ^ k * ‖iteratedFDeriv ℝ n ψ x‖)
-          + (‖x‖ ^ (k + 1) * ‖iteratedFDeriv ℝ (n + 1) ψ x‖)
-        · apply add_le_add_right
-          apply mul_le_mul_of_nonneg_right
-          · rw [pow_add, pow_one]
-            apply mul_le_mul_of_nonneg_left
-            · exact abs_eval_le_norm x i
-            · exact pow_nonneg (norm_nonneg x) k
-          · exact ContinuousMultilinearMap.opNorm_nonneg _
-
-        trans (↑n + 1) * (SchwartzMap.seminorm ℂ k (n) ψ)
-          + (SchwartzMap.seminorm ℂ (k + 1) (n + 1) ψ)
-        · apply add_le_add _ (ψ.le_seminorm _ _ _ _)
-          apply mul_le_mul_of_nonneg_left (ψ.le_seminorm _ _ _ _)
-          exact Left.add_nonneg (Nat.cast_nonneg' n) (zero_le_one' ℝ)
-
-        by_cases h : (SchwartzMap.seminorm ℂ (k + 1) (n + 1)) ψ < (SchwartzMap.seminorm ℂ k n) ψ
-        · rw [max_eq_left_of_lt h]
-          trans (↑n + 1) * (SchwartzMap.seminorm ℂ k n) ψ + (SchwartzMap.seminorm ℂ k n) ψ
-          · apply (add_le_add (by linarith) (le_of_lt h))
-          apply le_of_eq
-          ring
-        · rw [not_lt] at h
-          rw [max_eq_right h]
-          trans (↑n + 1) * (SchwartzMap.seminorm ℂ (k + 1) (n + 1)) ψ
-            + (SchwartzMap.seminorm ℂ (k + 1) (n + 1)) ψ
-          · apply (add_le_add ?_ (Std.IsPreorder.le_refl _))
-            apply mul_le_mul_of_nonneg_left h
-            linarith
-          apply le_of_eq
-          ring
+  from `𝓢(Space d, ℂ)` to itself which maps `ψ` to `xᵢψ`. -/
+def positionOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
+  SchwartzMap.smulLeftCLM ℂ (Complex.ofRealCLM ∘L coordCLM i)
 
 @[inherit_doc positionOperator]
-macro "𝐱[" i:term "]" : term => `(positionOperator $i)
+notation "𝐱[" i "]" => positionOperator i
 
-lemma positionOperator_apply_fun {d : ℕ} (i : Fin d) (ψ : 𝓢(Space d, ℂ)) :
-    𝐱[i] ψ = (fun x ↦ x i * ψ x) := rfl
+lemma positionOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
+    𝐱[i] ψ = smulLeftCLM ℂ (coordCLM i) • ψ := by
+  unfold positionOperator
+  ext x
+  simp [smulLeftCLM_apply_apply (g := Complex.ofRealCLM ∘ (coordCLM i)) (by fun_prop) _ _,
+    smulLeftCLM_apply (g := coordCLM i) (by fun_prop) _]
 
-lemma positionOperator_apply {d : ℕ} (i : Fin d) (ψ : 𝓢(Space d, ℂ)) (x : Space d) :
-    𝐱[i] ψ x = x i * ψ x := rfl
+@[simp]
+lemma positionOperator_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) : 𝐱[i] ψ x = x i * ψ x := by
+  simp [positionOperator_apply_fun, smulLeftCLM_apply (g := coordCLM i) (by fun_prop) _,
+    coordCLM_apply, coord_apply]
+
+/-!
+
+## B. Regularized radius operator
+
+-/
+TODO "ZGCNP" "Incorporate normRegularizedPow into Space.Norm"
+
+/-- Power of regularized norm, `(‖x‖² + ε²)^(s/2)`. -/
+def normRegularizedPow (ε s : ℝ) : Space d → ℝ :=
+  fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2)
+
+private lemma normRegularizedPow_hasTemperateGrowth {ε s : ℝ} (hε : 0 < ε) :
+    HasTemperateGrowth (normRegularizedPow (d := d) ε s) := by
+  -- Write `normRegularizedPow` as the composition of three simple functions
+  -- to take advantage of `hasTemperateGrowth_one_add_norm_sq_rpow`.
+  let f1 := fun (x : ℝ) ↦ (ε ^ 2) ^ (s / 2) * x
+  let f2 := fun (x : Space d) ↦ (1 + ‖x‖ ^ 2) ^ (s / 2)
+  let f3 := fun (x : Space d) ↦ ε⁻¹ • x
+
+  have h123 : normRegularizedPow (d := d) ε s = f1 ∘ f2 ∘ f3 := by
+    unfold normRegularizedPow f1 f2 f3
+    ext x
+    simp only [Function.comp_apply, norm_smul, norm_inv, Real.norm_eq_abs]
+    rw [← Real.mul_rpow (sq_nonneg _) ?_]
+    · rw [mul_pow, mul_add, mul_one, ← mul_assoc, inv_pow, sq_abs]
+      rw [IsUnit.mul_inv_cancel ?_]
+      · rw [one_mul, add_comm]
+      · rw [pow_two, isUnit_mul_self_iff, isUnit_iff_ne_zero]
+        exact ne_of_gt hε
+    · exact add_nonneg (zero_le_one' _) (sq_nonneg _)
+
+  rw [h123]
+  fun_prop
+
+/-- The radius operator to power `s`, regularized by `ε ≠ 0`, is the continuous linear map
+  from `𝓢(Space d, ℂ)` to itself which maps `ψ` to `(‖x‖² + ε²)^(s/2) • ψ`. -/
+def radiusRegPowOperator (ε s : ℝ) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
+  SchwartzMap.smulLeftCLM ℂ (Complex.ofReal ∘ normRegularizedPow ε s)
+
+@[inherit_doc radiusRegPowOperator]
+notation "𝐫[" ε "," s "]" => radiusRegPowOperator ε s
+
+lemma radiusRegPowOperator_apply_fun {ε s : ℝ} (hε : 0 < ε) {ψ : 𝓢(Space d, ℂ)} :
+    𝐫[ε,s] ψ = fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2) • ψ x := by
+  unfold radiusRegPowOperator
+  ext x
+  rw [smulLeftCLM_apply_apply]
+  · unfold normRegularizedPow
+    rw [comp_apply, smul_eq_mul, Complex.real_smul]
+  · exact HasTemperateGrowth.comp (by fun_prop) (normRegularizedPow_hasTemperateGrowth hε)
+
+lemma radiusRegPowOperator_apply {ε s : ℝ} (hε : 0 < ε) {ψ : 𝓢(Space d, ℂ)}
+    {x : Space d} : 𝐫[ε,s] ψ x = (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2) • ψ x := by
+  rw [radiusRegPowOperator_apply_fun hε]
+
+@[simp]
+lemma radiusRegPowOperator_comp_eq {ε s t : ℝ} (hε : 0 < ε) :
+    (radiusRegPowOperator (d := d) ε s) ∘L 𝐫[ε,t] = 𝐫[ε,s+t] := by
+  unfold radiusRegPowOperator
+  ext ψ x
+  simp only [ContinuousLinearMap.coe_comp', comp_apply]
+  repeat rw [smulLeftCLM_apply_apply ?_]
+  · unfold normRegularizedPow
+    simp only [comp_apply, smul_eq_mul]
+    rw [← mul_assoc, ← Complex.ofReal_mul]
+    rw [← Real.rpow_add]
+    · congr
+      ring
+    · exact add_pos_of_nonneg_of_pos (sq_nonneg _) (sq_pos_of_pos hε)
+  repeat exact HasTemperateGrowth.comp (by fun_prop) (normRegularizedPow_hasTemperateGrowth hε)
+
+@[simp]
+lemma radiusRegPowOperator_zero {ε : ℝ} (hε : 0 < ε) :
+    𝐫[ε,0] = ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
+  ext ψ x
+  simp [radiusRegPowOperator_apply hε]
+
+lemma positionOperatorSqr_eq {ε : ℝ} (hε : 0 < ε) : ∑ i, 𝐱[i] ∘L 𝐱[i] =
+    𝐫[ε,2] - ε ^ 2 • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
+  ext ψ x
+  simp [radiusRegPowOperator_apply hε, Space.norm_sq_eq, ← mul_assoc, ← Finset.sum_mul,
+    add_smul, ← pow_two]
+
+/-!
+
+## C. Unbounded position vector operator
+
+-/
+
+open SpaceDHilbertSpace
+
+/-- The position operators defined on the Schwartz submodule. -/
+def positionOperatorSchwartz : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule d :=
+  schwartzEquiv.toLinearMap ∘ₗ 𝐱[i].toLinearMap ∘ₗ schwartzEquiv.symm.toLinearMap
+
+lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymmetric := by
+  intro ψ ψ'
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ'
+  unfold positionOperatorSchwartz
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply, schwartzEquiv_inner]
+  congr with x
+  simp only [LinearEquiv.symm_apply_apply, ContinuousLinearMap.coe_coe,
+    positionOperator_apply, map_mul, Complex.conj_ofReal]
+  ring
+
+/-- The symmetric position unbounded operators with domain the Schwartz submodule
+  of the Hilbert space. -/
+def positionUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (positionOperatorSchwartz i)
+    (positionOperatorSchwartz_isSymmetric i)
+
+/-!
+
+## D. Unbounded regularized radius operator
+
+-/
+
+/-- The (regularized) radius operators defined on the Schwartz submodule. -/
+def radiusRegPowOperatorSchwartz (ε s : ℝ) : schwartzSubmodule d →ₗ[ℂ] schwartzSubmodule d :=
+  schwartzEquiv.toLinearMap ∘ₗ 𝐫[ε,s].toLinearMap ∘ₗ schwartzEquiv.symm.toLinearMap
+
+lemma radiusRegPowOperatorSchwartz_isSymmetric (ε s : ℝ) (hε : 0 < ε) :
+    (radiusRegPowOperatorSchwartz (d := d) ε s).IsSymmetric := by
+  intro ψ ψ'
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ
+  obtain ⟨_, rfl⟩ := schwartzEquiv.surjective ψ'
+  unfold radiusRegPowOperatorSchwartz
+  simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply, schwartzEquiv_inner]
+  congr with x
+  simp only [LinearEquiv.symm_apply_apply, ContinuousLinearMap.coe_coe,
+    radiusRegPowOperator_apply hε, Complex.real_smul, map_mul, Complex.conj_ofReal]
+  ring
+
+/-- The symmetric (regularized) radius unbounded operators with domain the Schwartz submodule
+  of the Hilbert space. -/
+def radiusRegPowUnboundedOperator (ε s : ℝ) (hε : 0 < ε) :
+    UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (radiusRegPowOperatorSchwartz ε s)
+    (radiusRegPowOperatorSchwartz_isSymmetric ε s hε)
 
 end
 end QuantumMechanics

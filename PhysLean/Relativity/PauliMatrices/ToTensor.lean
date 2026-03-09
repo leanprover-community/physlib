@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
-import PhysLean.Relativity.PauliMatrices.AsTensor
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
+public import PhysLean.Relativity.PauliMatrices.AsTensor
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
 /-!
 
 # Pauli matrices as a tensor
 
 -/
+
+@[expose] public section
 open Module IndexNotation
 open Matrix
 open MatrixGroups

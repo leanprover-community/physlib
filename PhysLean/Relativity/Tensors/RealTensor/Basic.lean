@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Metrics.Pre
-import PhysLean.Relativity.Tensors.Contraction.Basis
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Metrics.Pre
+public import PhysLean.Relativity.Tensors.Contraction.Basis
 /-!
 
 ## Real Lorentz tensors
@@ -13,6 +15,8 @@ Within this directory `Pre` is used to denote that the definitions are prelimina
 which are used to define `realLorentzTensor`.
 
 -/
+
+@[expose] public section
 open Matrix
 open MatrixGroups
 open Complex

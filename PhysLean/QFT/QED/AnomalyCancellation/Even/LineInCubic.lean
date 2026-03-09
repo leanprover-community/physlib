@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.Even.BasisLinear
-import PhysLean.QFT.QED.AnomalyCancellation.LineInPlaneCond
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.Even.BasisLinear
+public import PhysLean.QFT.QED.AnomalyCancellation.LineInPlaneCond
 /-!
 
 # Line In Cubic Even case
@@ -20,6 +22,8 @@ The main reference for this file is:
 
 - https://arxiv.org/pdf/1912.04804.pdf
 -/
+
+@[expose] public section
 
 namespace PureU1
 namespace Even

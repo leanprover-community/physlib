@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Curl
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Curl
 /-!
 
 # Translations on space
@@ -12,6 +14,8 @@ We define translations on space, and how translations act on distributions.
 Translations for part of the Poincaré group.
 
 -/
+
+@[expose] public section
 
 section
 

@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import Mathlib.RepresentationTheory.Rep
 /-!
 
 # Discrete color category
 
 -/
+
+@[expose] public section
 
 namespace IndexNotation
 namespace OverColor

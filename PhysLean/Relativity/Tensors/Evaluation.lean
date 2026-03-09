@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Basic
+module
+
+public import PhysLean.Relativity.Tensors.Basic
 /-!
 
 # Evaluation of tensor indices
 
 -/
+
+@[expose] public section
 
 open IndexNotation
 open CategoryTheory
@@ -116,6 +120,15 @@ noncomputable def evalT {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
       (b : Fin (S.repDim (c i))) :
     Tensor S c →ₗ[k] Tensor S (c ∘ i.succAbove) :=
   PiTensorProduct.lift (Pure.evalPMultilinear i b)
+
+@[simp]
+lemma evalT_pure {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
+    (b : Fin (S.repDim (c i))) (p : Pure S c) :
+    evalT i b p.toTensor = Pure.evalP i b p := by
+  simp only [evalT, Pure.toTensor]
+  change _ = Pure.evalPMultilinear i b p
+  conv_rhs => rw [← PiTensorProduct.lift.tprod]
+  rfl
 
 TODO "6VZ6G" "Add lemmas related to the interaction of evalT and permT, prodT and contrT."
 

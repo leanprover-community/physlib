@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Calculus.Deriv.Polynomial
-import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
-import Mathlib.Tactic.Cases
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
+public import Mathlib.Tactic.Cases
 /-!
 
 # Physicists Hermite Polynomial
@@ -14,6 +16,8 @@ import Mathlib.Tactic.Cases
 This file may eventually be upstreamed to Mathlib.
 
 -/
+
+@[expose] public section
 
 open Polynomial
 namespace PhysLean

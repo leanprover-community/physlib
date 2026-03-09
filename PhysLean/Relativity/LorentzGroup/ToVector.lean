@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 /-!
 
 # Vectors from Lorentz group elements
@@ -11,6 +13,8 @@ import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 Every element of the Lorentz group defines a Lorentz vector, but it's first column.
 
 -/
+
+@[expose] public section
 noncomputable section
 
 namespace LorentzGroup

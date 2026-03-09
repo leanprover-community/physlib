@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean.Elab.Command
+module
+
+public meta import Lean.Elab.Command
 /-!
 
 ## Underlying structure for notes
@@ -20,6 +22,8 @@ Other results relating to notes are in other files.
 
 -/
 
+@[expose] public section
+
 namespace PhysLean
 open Lean
 
@@ -33,7 +37,7 @@ structure NoteInfo where
   line : Nat
 
 /-- Environment extension to store `note ...`. -/
-initialize noteExtension : SimplePersistentEnvExtension NoteInfo (Array NoteInfo) ←
+meta initialize noteExtension : SimplePersistentEnvExtension NoteInfo (Array NoteInfo) ←
   registerSimplePersistentEnvExtension {
     name := `noteExtension
     addEntryFn := fun arr nodeInfor => arr.push nodeInfor
@@ -45,7 +49,7 @@ syntax (name := note_comment) "note " str : command
 
 /-- Elaborator for the `note ...` command -/
 @[command_elab note_comment]
-def elabNote : Lean.Elab.Command.CommandElab := fun stx =>
+meta def elabNote : Lean.Elab.Command.CommandElab := fun stx =>
   match stx with
   | `(note $s) => do
     let str : String := s.getString
@@ -70,7 +74,7 @@ def elabNote : Lean.Elab.Command.CommandElab := fun stx =>
 -/
 
 /-- Environment extension to store `note_attr`. -/
-initialize noteDeclExtension : SimplePersistentEnvExtension Name (Array Name) ←
+meta initialize noteDeclExtension : SimplePersistentEnvExtension Name (Array Name) ←
   registerSimplePersistentEnvExtension {
     name := `noteDeclExtension
     addEntryFn := fun arr nodeInfor => arr.push nodeInfor
@@ -78,7 +82,7 @@ initialize noteDeclExtension : SimplePersistentEnvExtension Name (Array Name) �
   }
 
 /-- The `note_attr` attribute is used to display formally verified commands within a note. -/
-initialize noteAttribute : Unit ←
+meta initialize noteAttribute : Unit ←
   registerBuiltinAttribute {
     name := `note_attr
     descr := "Note attribute"
@@ -88,7 +92,7 @@ initialize noteAttribute : Unit ←
   }
 
 /-- Environment extension to store `note_attr_informal`. -/
-initialize noteInformalDeclExtension : SimplePersistentEnvExtension Name (Array Name) ←
+meta initialize noteInformalDeclExtension : SimplePersistentEnvExtension Name (Array Name) ←
   registerSimplePersistentEnvExtension {
     name := `noteInformalDeclExtension
     addEntryFn := fun arr nodeInfor => arr.push nodeInfor
@@ -96,7 +100,7 @@ initialize noteInformalDeclExtension : SimplePersistentEnvExtension Name (Array 
   }
 
 /-- The `note_attr_informal` attribute is used to display informal commands within a note. -/
-initialize noteInformalAttribute : Unit ←
+meta initialize noteInformalAttribute : Unit ←
   registerBuiltinAttribute {
     name := `note_attr_informal
     descr := "Informal note attribute"

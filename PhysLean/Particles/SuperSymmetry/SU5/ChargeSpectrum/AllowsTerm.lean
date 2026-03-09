@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfPotentialTerm
-import Mathlib.Tactic.FinCases
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfPotentialTerm
+public import Mathlib.Tactic.FinCases
 /-!
 
 # Charges allowing terms
@@ -72,6 +74,8 @@ charge spectrum `x`, leads to a zero charge in the charges of potential term `T`
 There are no known references for the results in this file.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 namespace SU5

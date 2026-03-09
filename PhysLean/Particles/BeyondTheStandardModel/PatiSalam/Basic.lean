@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.Basic
+module
+
+public import PhysLean.Particles.StandardModel.Basic
 /-!
 
 # The Pati-Salam Model
@@ -14,6 +16,8 @@ The Pati-Salam model is a petite unified theory that unifies the Standard Model 
 This file currently contains informal-results about the Pati-Salam group.
 
 -/
+
+@[expose] public section
 
 namespace PatiSalam
 /-!

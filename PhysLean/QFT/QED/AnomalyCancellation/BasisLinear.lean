@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.Basic
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.Basic
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 /-!
 # Basis of `LinSols`
 
 We give a basis of vector space `LinSols`, and find the rank thereof.
 
 -/
+
+@[expose] public section
 
 namespace PureU1
 

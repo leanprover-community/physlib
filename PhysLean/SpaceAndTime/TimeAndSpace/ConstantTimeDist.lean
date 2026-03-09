@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.TimeAndSpace.Basic
-import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
+module
+
+public import PhysLean.SpaceAndTime.TimeAndSpace.Basic
+public import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 /-!
 
 # Distributions which are constant in time
@@ -53,6 +55,8 @@ to get a Schwartz Map on `Space d`.
 ## iv. References
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal
 noncomputable section
 

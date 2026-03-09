@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
 /-!
 # Properties of Quad Sols for SM with RHN
 
@@ -15,6 +17,8 @@ and show that it is a surjection. The main reference for this is:
 - https://arxiv.org/abs/2006.03588
 
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace PlusU1
@@ -70,7 +74,7 @@ lemma genericToQuad_on_quad (S : (PlusU1 n).QuadSols) :
   rw [α₂_AFQ]
   simp
 
-lemma genericToQuad_neq_zero (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
+lemma genericToQuad_ne_zero (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
     (α₁ C S.1)⁻¹ • genericToQuad C S.1 = S := by
   rw [genericToQuad_on_quad, smul_smul, Rat.inv_mul_cancel _ h, one_smul]
 
@@ -124,7 +128,7 @@ lemma toQuadInv_generic (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
     (toQuadInv C S).2.1 • genericToQuad C (toQuadInv C S).1 = S := by
   simp only [toQuadInv_fst]
   rw [show (toQuadInv C S).2.1 = (α₁ C S.1)⁻¹ by rw [toQuadInv, if_neg h]]
-  rw [genericToQuad_neq_zero C S h]
+  rw [genericToQuad_ne_zero C S h]
 
 lemma toQuad_rightInverse : Function.RightInverse (@toQuadInv n C) (toQuad C) := by
   intro S

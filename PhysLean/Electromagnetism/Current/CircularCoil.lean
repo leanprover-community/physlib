@@ -3,11 +3,13 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.IsExtrema
-import PhysLean.SpaceAndTime.Space.Norm
-import PhysLean.SpaceAndTime.Space.Translations
-import PhysLean.SpaceAndTime.Space.ConstantSliceDist
-import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
+module
+
+public import PhysLean.Electromagnetism.Dynamics.IsExtrema
+public import PhysLean.SpaceAndTime.Space.Norm
+public import PhysLean.SpaceAndTime.Space.Translations
+public import PhysLean.SpaceAndTime.Space.ConstantSliceDist
+public import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 /-!
 # The electrostatics of a circular coil
 
@@ -28,6 +30,8 @@ electromagnetic potentials and fields around a circular coil.
 - https://ntrs.nasa.gov/api/citations/20140002333/downloads/20140002333.pdf
 
 -/
+
+@[expose] public section
 
 TODO "TCGIW" "Copying the structure of the electrostatics of an infinite wire,
   complete the definitions and proofs for a circular coil carrying a steady current."

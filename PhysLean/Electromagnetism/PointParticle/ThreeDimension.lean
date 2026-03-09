@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.IsExtrema
-import PhysLean.SpaceAndTime.Space.Norm
-import PhysLean.SpaceAndTime.Space.Translations
-import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
+module
+
+public import PhysLean.Electromagnetism.Dynamics.IsExtrema
+public import PhysLean.SpaceAndTime.Space.Norm
+public import PhysLean.SpaceAndTime.Space.Translations
+public import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 /-!
 
 # Electrostatics of a stationary point particle in 3d
@@ -40,6 +42,8 @@ sitting at the origin in 3d space.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 open Distribution SchwartzMap
@@ -287,17 +291,12 @@ lemma threeDimPointParticle_div_electricField {𝓕} (q : ℝ) (r₀ : Space 3) 
     simp [distTranslate_ofFunction]
   simp only [Int.reduceNeg, zpow_neg, one_div]
   rw [constantTime_distSpaceDiv, distDiv_distTranslate, h1]
-  simp only [map_smul]
-  suffices h : volume.real (Metric.ball (0 : Space 3) 1) = (4/3 * Real.pi) by
-    rw [h]
-    simp [smul_smul]
-    ext η
-    simp [constantTime_apply, diracDelta_apply, distTranslate_apply]
-    left
-    ring_nf
-    field_simp
-  simp [MeasureTheory.Measure.real]
-  exact pi_nonneg
+  simp only [map_smul, smul_smul]
+  ext η
+  simp [constantTime_apply, diracDelta_apply, distTranslate_apply]
+  left
+  ring_nf
+  field_simp
 
 lemma threeDimPointParticle_isExterma (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
     (threeDimPointParticle 𝓕 q r₀).IsExtrema 𝓕 (threeDimPointParticleCurrentDensity 𝓕.c q r₀) := by

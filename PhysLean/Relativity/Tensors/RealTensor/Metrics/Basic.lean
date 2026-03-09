@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Basic
-import PhysLean.Relativity.Tensors.MetricTensor
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Basic
+public import PhysLean.Relativity.Tensors.MetricTensor
 /-!
 
 ## Metrics as real Lorentz tensors
 
 -/
+
+@[expose] public section
 open Module IndexNotation
 open CategoryTheory
 open MonoidalCategory
@@ -69,12 +73,14 @@ lemma contrMetric_eq_fromConstPair {d : ℕ} :
 lemma coMetric_eq_fromPairT {d : ℕ} :
     η' d = fromPairT (Lorentz.preCoMetricVal d) := by
   rw [coMetric_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.preCoMetric_apply_one]
+  congr 1
+  exact Lorentz.preCoMetric_apply_one
 
 lemma contrMetric_eq_fromPairT {d : ℕ} :
     η d = fromPairT (Lorentz.preContrMetricVal d) := by
   rw [contrMetric_eq_fromConstPair, fromConstPair]
-  erw [Lorentz.preContrMetric_apply_one]
+  congr 1
+  exact Lorentz.preContrMetric_apply_one
 
 /-
 

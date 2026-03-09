@@ -3,7 +3,9 @@ Copyright (c) 2025 Fabio Anza. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitch Scheffer, Fabio Anza
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Real -- for Real.rpow_def_of_pos
+module
+
+public import Mathlib.Analysis.SpecialFunctions.Pow.Real -- for Real.rpow_def_of_pos
 
 /-!
 # Ideal gas: basic entropy and adiabatic relations
@@ -20,6 +22,8 @@ ideal gas. We:
   2. (U_a/U_b)^c (V_a/V_b) = 1,
   3. U_a^c V_a = U_b^c V_b (the latter follows from (2)).
 -/
+
+@[expose] public section
 
 open Real
 

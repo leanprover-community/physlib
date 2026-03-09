@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzGroup.Boosts.Generalized
+module
+
+public import PhysLean.Relativity.LorentzGroup.Boosts.Generalized
 /-!
 # Rotations
 
 In this module we define rotations of in the Lorentz group.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

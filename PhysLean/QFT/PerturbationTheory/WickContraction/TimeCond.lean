@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickContraction.Join
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Join
 /-!
 
 # Time contractions
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}
@@ -239,7 +243,7 @@ lemma timeOrder_timeContract_of_not_eqTimeOnly {φs : List 𝓕.FieldOp}
   rw [singleton_timeContract]
   simp only [Fin.getElem_fin, MulMemClass.coe_mul]
   rw [timeOrder_timeOrder_left]
-  rw [timeOrder_timeContract_neq_time]
+  rw [timeOrder_timeContract_ne_time]
   simp only [zero_mul, map_zero]
   simp_all only [Fin.getElem_fin, not_and]
   intro h
@@ -255,7 +259,7 @@ lemma timeOrder_staticContract_of_not_mem {φs : List 𝓕.FieldOp} (φsΛ : Wic
   simp only [MulMemClass.coe_mul]
   rw [singleton_staticContract]
   rw [timeOrder_timeOrder_left]
-  rw [timeOrder_superCommute_anPart_ofFieldOp_neq_time]
+  rw [timeOrder_superCommute_anPart_ofFieldOp_ne_time]
   simp only [zero_mul, map_zero]
   intro h
   simp_all

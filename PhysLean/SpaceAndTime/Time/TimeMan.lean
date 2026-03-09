@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Geometry.Manifold.Diffeomorph
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Geometry.Manifold.Diffeomorph
 /-!
 # The time manifold
 
@@ -25,6 +27,8 @@ diffeomorphism. When using `TimeMan.val`, one should be aware that using it does
 constitute a choice being made.
 
 -/
+
+@[expose] public section
 
 /-- The type `TimeMan` represents the time manifold.
   Mathematically `TimeMan` is a manifold diffeomorphic to `ℝ` with an orientation but no additional

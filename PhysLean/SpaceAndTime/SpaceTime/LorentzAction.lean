@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Basic
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
 # Lorentz group actions related to SpaceTime
@@ -34,6 +36,8 @@ we define the induced action on Schwartz functions and distributions.
 ## iv. References
 
 -/
+
+@[expose] public section
 noncomputable section
 
 namespace SpaceTime

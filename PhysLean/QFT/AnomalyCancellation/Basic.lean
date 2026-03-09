@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.LinearMaps
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import PhysLean.Meta.Linters.Sorry
-import Mathlib.Tactic.Cases
+module
+
+public import PhysLean.Mathematics.LinearMaps
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import PhysLean.Meta.Linters.Sorry
+public import Mathlib.Tactic.Cases
 /-!
 # Anomaly cancellation conditions
 
@@ -77,6 +79,8 @@ Gravitational Anomalies.
 - Nash, C. (1991). Differential topology and quantum field theory. Elsevier.
 
 -/
+
+@[expose] public section
 
 /-!
 
@@ -273,10 +277,8 @@ def linSolsIncl (χ : ACCSystemLinear) : χ.LinSols →ₗ[ℚ] χ.Charges where
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-@[sorryful]
 lemma linSolsIncl_injective (χ : ACCSystemLinear) :
-    Function.Injective χ.linSolsIncl := by
-  sorry
+    Function.Injective χ.linSolsIncl := fun _ _ h => LinSols.ext h
 
 end ACCSystemLinear
 
@@ -396,7 +398,6 @@ the module of all charges `Charges`.
 def quadSolsIncl (χ : ACCSystemQuad) : χ.QuadSols →[ℚ] χ.Charges :=
   MulActionHom.comp χ.linSolsIncl.toMulActionHom χ.quadSolsInclLinSols
 
-@[sorryful]
 lemma quadSolsIncl_injective (χ : ACCSystemQuad) :
     Function.Injective χ.quadSolsIncl := by
   intro S T h
@@ -536,7 +537,6 @@ lemma solsInclLinSols_injective (χ : ACCSystem) :
 def solsIncl (χ : ACCSystem) : χ.Sols →[ℚ] χ.Charges :=
   MulActionHom.comp χ.quadSolsIncl χ.solsInclQuadSols
 
-@[sorryful]
 lemma solsIncl_injective (χ : ACCSystem) :
     Function.Injective χ.solsIncl := by
   intro S T h

@@ -3,14 +3,18 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Basic
-import PhysLean.Mathematics.RatComplexNum
-import PhysLean.Relativity.Tensors.Dual
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Basic
+public import PhysLean.Mathematics.RatComplexNum
+public import PhysLean.Relativity.Tensors.Dual
 /-!
 
 # Basis for tensors in a tensor species
 
 -/
+
+@[expose] public section
 
 open Module IndexNotation
 open CategoryTheory
@@ -38,12 +42,10 @@ noncomputable def ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
     apply (Tensor.basis _).repr.injective
     ext b
     simp
-    rfl
   map_smul' r f := by
     apply (Tensor.basis _).repr.injective
     ext b
     simp
-    rfl
 
 @[simp]
 lemma ofRat_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
@@ -51,7 +53,6 @@ lemma ofRat_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTensor.Color
     (b :(ComponentIdx c)) :
   (Tensor.basis c).repr (ofRat f) b = toComplexNum (f b) := by
   simp [ofRat]
-  rfl
 
 lemma basis_eq_ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
     (b : (ComponentIdx c)) :

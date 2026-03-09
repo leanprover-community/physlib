@@ -3,9 +3,11 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import Mathlib.Analysis.Normed.Algebra.MatrixExponential
-import PhysLean.Mathematics.SchurTriangulation
+module
+
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
+public import PhysLean.Mathematics.SchurTriangulation
 
 /-!
 # Lie's Trace Formula
@@ -21,6 +23,8 @@ is defined in `mathlib` as `Matrix.BlockTriangular A id`.
 
 - `Matrix.det_exp`: The determinant of the exponential of a matrix is the exponential of its trace.
 -/
+
+@[expose] public section
 
 namespace Matrix
 

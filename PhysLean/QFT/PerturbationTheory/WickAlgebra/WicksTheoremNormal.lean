@@ -3,15 +3,19 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.StaticWickTheorem
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.WicksTheorem
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Join
-import PhysLean.QFT.PerturbationTheory.WickContraction.TimeCond
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.StaticWickTheorem
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.WicksTheorem
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Join
+public import PhysLean.QFT.PerturbationTheory.WickContraction.TimeCond
 /-!
 
 # Wick's theorem for normal ordered lists
 
 -/
+
+@[expose] public section
 
 namespace FieldSpecification
 variable {𝓕 : FieldSpecification}

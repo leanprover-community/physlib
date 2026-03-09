@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.WithDim.Basic
+module
+
+public import PhysLean.Units.WithDim.Basic
 /-!
 
 # Area
@@ -12,6 +14,8 @@ In this module we define the dimensionful type corresponding to an area.
 We define specific instances of areas, such as square meters, square feet, etc.
 
 -/
+
+@[expose] public section
 open Dimension
 open NNReal
 

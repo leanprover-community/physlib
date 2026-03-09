@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Color.Discrete
-import PhysLean.Relativity.Tensors.Color.Lift
+module
+
+public import PhysLean.Relativity.Tensors.Color.Discrete
+public import PhysLean.Relativity.Tensors.Color.Lift
 /-!
 
 # Tensor species
@@ -16,6 +18,8 @@ import PhysLean.Relativity.Tensors.Color.Lift
 - Tensor species are built upon symmetric monoidal categories.
 
 -/
+
+@[expose] public section
 
 open IndexNotation CategoryTheory Module MonoidalCategory
 
@@ -132,6 +136,10 @@ set_option linter.unusedVariables false in
 @[nolint unusedArguments]
 def castToField {S : TensorSpecies k C G}
     (v : (↑((𝟙_ (Discrete C ⥤ Rep k G)).obj { as := c }).V)) : k := v
+
+lemma castToField_eq_self {S : TensorSpecies k C G} {c}
+    (v : (↑((𝟙_ (Discrete C ⥤ Rep k G)).obj { as := c }).V)) :
+    S.castToField v = v := rfl
 
 /-- Casts an element of `(S.F.obj (OverColor.mk c)).V` for `c` a map from `Fin 0` to an
   element of the field. -/

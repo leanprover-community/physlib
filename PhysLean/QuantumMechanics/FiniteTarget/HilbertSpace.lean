@@ -3,14 +3,18 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import PhysLean.Meta.TODO.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import PhysLean.Meta.TODO.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 
 # The Hilbert space of a finite target quantum mechanical system
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

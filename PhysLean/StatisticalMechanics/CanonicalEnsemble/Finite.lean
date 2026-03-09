@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Lemmas
 /-!
 # Finite Canonical Ensemble
 
@@ -44,6 +46,8 @@ systems (addition, `nsmul`, and `congr`).
 - D. Tong, *Lectures on Statistical Physics*, §1.3.
 
 -/
+
+@[expose] public section
 
 namespace CanonicalEnsemble
 

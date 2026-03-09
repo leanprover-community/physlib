@@ -3,9 +3,11 @@ Copyright (c) 2025 Prabhoda Chandra Sarjapur. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Prabhoda Chandra Sarjapur
 -/
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Tactic.Polyrith
+module
+
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Tactic.Polyrith
 /-!
 
 # The PMNS matrix
@@ -13,6 +15,8 @@ import Mathlib.Tactic.Polyrith
 The definition the PMNS matrix, which describes neutrino oscillations as part of U(3).
 
 -/
+
+@[expose] public section
 open Matrix Complex
 
 noncomputable section

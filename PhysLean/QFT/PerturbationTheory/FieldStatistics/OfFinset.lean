@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldStatistics.Basic
-import Mathlib.Data.Finset.Sort
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldStatistics.Basic
+public import Mathlib.Data.Finset.Sort
 /-!
 
 # Field statistics of a finite set.
 
 -/
+
+@[expose] public section
 
 namespace FieldStatistic
 

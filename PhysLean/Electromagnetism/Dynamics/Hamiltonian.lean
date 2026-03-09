@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Dynamics.Lagrangian
+module
+
+public import PhysLean.Electromagnetism.Dynamics.Lagrangian
 /-!
 
 # The Hamiltonian in electromagnetism
@@ -39,6 +41,8 @@ in the case of three spatial dimensions.
 - https://quantummechanics.ucsd.edu/ph130a/130_notes/node452.html
 - https://ph.qmul.ac.uk/sites/default/files/EMT10new.pdf
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 open Module realLorentzTensor

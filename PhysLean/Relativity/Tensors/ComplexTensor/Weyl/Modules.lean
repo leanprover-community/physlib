@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Analysis.Complex.Basic
 /-!
 
 ## Modules associated with Fermions
@@ -17,6 +19,8 @@ and these structures we define the instance of a module. This prevents casting b
 types of fermions.
 
 -/
+
+@[expose] public section
 
 namespace Fermion
 noncomputable section

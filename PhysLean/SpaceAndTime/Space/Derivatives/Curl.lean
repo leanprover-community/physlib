@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Laplacian
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Laplacian
 /-!
 
 # Curl on Space
@@ -41,6 +43,8 @@ We also prove some basic vector-identities involving of the curl operator.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Space
 

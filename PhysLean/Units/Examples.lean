@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.WithDim.Speed
+module
+
+public import PhysLean.Units.WithDim.Speed
 /-!
 
 # Examples of units in PhysLean
@@ -13,6 +15,8 @@ This module should not be imported into any other module, and the results here
 should not be used in the proofs of any other results other then those in this file.
 
 -/
+
+@[expose] public section
 
 namespace UnitExamples
 open Dimension CarriesDimension UnitChoices UnitDependent HasDim
@@ -172,7 +176,7 @@ lemma energyMass_isDimensionallyCorrect :
           (m.1 * ((speedOfLight.1 u).1) ^ 2)) := by
       rfl
   simp only [map_mul, NNReal.val_eq_coe, NNReal.coe_mul, smul_eq_mul, mul_eq_mul_left_iff,
-    mul_eq_zero, NNReal.coe_eq_zero, dimScale_neq_zero, or_self, or_false, eq_iff_iff]
+    mul_eq_zero, NNReal.coe_eq_zero, dimScale_ne_zero, or_self, or_false, eq_iff_iff]
   rfl
 
 /-!

@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
-import PhysLean.Relativity.Tensors.ComplexTensor.Units.Basic
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
+public import PhysLean.Relativity.Tensors.ComplexTensor.Units.Basic
 /-!
 
 ## Basic lemmas regarding metrics
 
 -/
+
+@[expose] public section
 open IndexNotation
 open CategoryTheory
 open MonoidalCategory
@@ -107,43 +111,37 @@ lemma altRightMetric_antisymm : {εR' | α α' = - (εR' | α' α)}ᵀ := by
 `{η' | μ ρ ⊗ η | ρ ν = δ' | μ ν}ᵀ`.
 -/
 lemma coMetric_contr_contrMetric : {η' | μ ρ ⊗ η | ρ ν = δ' | μ ν}ᵀ := by
-  erw [contrT_metricTensor_metricTensor_eq_dual_unit]
-  rfl
+  exact contrT_metricTensor_metricTensor_eq_dual_unit
 
 /-- The contraction of the contravariant metric with the covariant metric is the unit
 `{η | μ ρ ⊗ η' | ρ ν = δ | μ ν}ᵀ`.
 -/
 lemma contrMetric_contr_coMetric : {η | μ ρ ⊗ η' | ρ ν = δ | μ ν}ᵀ := by
-  erw [contrT_metricTensor_metricTensor_eq_dual_unit]
-  rfl
+  exact contrT_metricTensor_metricTensor_eq_dual_unit
 
 /-- The contraction of the left metric with the alt-left metric is the unit
 `{εL | α β ⊗ εL' | β γ = δL | α γ}ᵀ`.
 -/
 lemma leftMetric_contr_altLeftMetric : {εL | α β ⊗ εL' | β γ = δL | α γ}ᵀ := by
-  erw [contrT_metricTensor_metricTensor_eq_dual_unit]
-  rfl
+  exact contrT_metricTensor_metricTensor_eq_dual_unit
 
 /-- The contraction of the right metric with the alt-right metric is the unit
 `{εR | α β ⊗ εR' | β γ = δR | α γ}ᵀ`.
 -/
 lemma rightMetric_contr_altRightMetric : {εR | α β ⊗ εR' | β γ = δR | α γ}ᵀ := by
-  erw [contrT_metricTensor_metricTensor_eq_dual_unit]
-  rfl
+  exact contrT_metricTensor_metricTensor_eq_dual_unit
 
 /-- The contraction of the alt-left metric with the left metric is the unit
 `{εL' | α β ⊗ εL | β γ = δL' | α γ}ᵀ`.
 -/
 lemma altLeftMetric_contr_leftMetric : {εL' | α β ⊗ εL | β γ = δL' | α γ}ᵀ := by
-  erw [contrT_metricTensor_metricTensor_eq_dual_unit]
-  rfl
+  exact contrT_metricTensor_metricTensor_eq_dual_unit
 
 /-- The contraction of the alt-right metric with the right metric is the unit
 `{εR' | α β ⊗ εR | β γ = δR' | α γ}ᵀ`.
 -/
 lemma altRightMetric_contr_rightMetric : {εR' | α β ⊗ εR | β γ = δR' | α γ}ᵀ := by
-  erw [contrT_metricTensor_metricTensor_eq_dual_unit]
-  rfl
+  exact contrT_metricTensor_metricTensor_eq_dual_unit
 
 /-!
 

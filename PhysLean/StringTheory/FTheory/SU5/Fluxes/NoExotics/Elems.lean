@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.Basic
-import Mathlib.Tactic.FinCases
+module
+
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.Basic
+public import Mathlib.Tactic.FinCases
 /-!
 
 # Terms of `FluxesFive` and `FluxesTen` with no chiral exotics
@@ -54,6 +56,8 @@ elements of those elements.
 There are no known references for the material in this module.
 
 -/
+
+@[expose] public section
 namespace FTheory
 
 namespace SU5

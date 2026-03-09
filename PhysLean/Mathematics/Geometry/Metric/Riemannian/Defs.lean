@@ -3,14 +3,18 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
-import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
+module
+
+public import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 /-!
 # Riemannian Metric Definitions
 
 This module defines the Riemannian metric, building on pseudo-Riemannian metrics.
 -/
+
+@[expose] public section
 
 namespace PseudoRiemannianMetric
 section RiemannianMetric

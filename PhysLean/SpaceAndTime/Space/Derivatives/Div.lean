@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Grad
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Grad
 /-!
 
 # Divergence on Space
@@ -35,6 +37,8 @@ properties about it.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Space
 

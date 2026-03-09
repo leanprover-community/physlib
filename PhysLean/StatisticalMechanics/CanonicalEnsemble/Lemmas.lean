@@ -3,7 +3,9 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Basic
+module
+
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Basic
 /-!
 # Canonical Ensemble: Thermodynamic Identities and Relations
 
@@ -49,6 +51,8 @@ Same references as `Basic.lean` (Landau–Lifshitz; Tong), especially the identi
 `F = U - T S` and `U = -∂_β log Z`.
 
 -/
+
+@[expose] public section
 set_option linter.unusedVariables.funArgs false
 
 namespace CanonicalEnsemble
@@ -125,7 +129,7 @@ lemma log_probability
 @[simp]
 lemma kB_mul_beta (T : Temperature) (hT : 0 < T.val) :
     (kB : ℝ) * (T.β : ℝ) = 1 / T.val := by
-  have hkB : (kB : ℝ) ≠ 0 := kB_neq_zero
+  have hkB : (kB : ℝ) ≠ 0 := kB_ne_zero
   have hT0 : (T.val : ℝ) ≠ 0 := by
     exact_mod_cast (ne_of_gt hT)
   simp [Temperature.β]
@@ -339,7 +343,7 @@ theorem differentialEntropy_eq_meanEnergy_sub_helmholtz_div_temp_add_correction
   have hkβ : kB * (T.β : ℝ) = 1 / (T.val : ℝ) := by
     unfold Temperature.β
     change kB * (1 / (kB * (T.val : ℝ))) = 1 / (T.val : ℝ)
-    field_simp [Constants.kB_neq_zero, Tne]
+    field_simp [Constants.kB_ne_zero, Tne]
   have hS' :
       𝓒.differentialEntropy T = E / T.val + kB * Real.log Zmath := by
     rw [hS, hkβ]
@@ -796,7 +800,7 @@ theorem fluctuation_dissipation_energy_parametric
       𝓒.heatCapacity T = dUdβ * (-1 / (kB * (T.val : ℝ)^2)) :=
     heatCapacity_eq_deriv_meanEnergyBeta 𝓒 T hT_pos hU_deriv.hasDerivWithinAt
   rw [hCV_eq_dUdβ_mul, h_Var_eq_neg_dUdβ]
-  have hkB_ne_zero := kB_neq_zero
+  have hkB_ne_zero := kB_ne_zero
   field_simp [hkB_ne_zero, pow_ne_zero 2]
   ring
 

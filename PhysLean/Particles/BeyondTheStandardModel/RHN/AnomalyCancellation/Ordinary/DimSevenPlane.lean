@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.Basic
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.Basic
 /-!
 # Dimension 7 plane
 
@@ -13,6 +15,8 @@ We give an example of a 7 dimensional plane on which every point satisfies the A
 The main result of this file is `seven_dim_plane_exists` which states that there exists a
 7 dimensional plane of charges on which every point satisfies the ACCs.
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace SM

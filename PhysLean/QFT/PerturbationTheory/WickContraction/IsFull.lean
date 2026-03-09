@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.Fin.Involutions
-import PhysLean.QFT.PerturbationTheory.WickContraction.ExtractEquiv
-import PhysLean.QFT.PerturbationTheory.WickContraction.Involutions
+module
+
+public import PhysLean.Mathematics.Fin.Involutions
+public import PhysLean.QFT.PerturbationTheory.WickContraction.ExtractEquiv
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Involutions
 /-!
 
 # Full contraction
@@ -13,6 +15,8 @@ import PhysLean.QFT.PerturbationTheory.WickContraction.Involutions
 We say that a contraction is full if it has no uncontracted fields.
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}

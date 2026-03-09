@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzAlgebra.Basic
-import PhysLean.Meta.TODO.Basic
+module
+
+public import PhysLean.Relativity.LorentzAlgebra.Basic
+public import PhysLean.Meta.TODO.Basic
 /-!
 # Generators of the Lorentz Algebra
 
@@ -41,6 +43,8 @@ TODO "6VZKA" can be completed by proving linear independence and spanning of the
 6 generators, then constructing a formal `Basis (Fin 2 × Fin 3) ℝ lorentzAlgebra`.
 
 -/
+
+@[expose] public section
 
 open Matrix
 

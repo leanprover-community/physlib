@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Slice
+module
+
+public import PhysLean.SpaceAndTime.Space.Slice
 /-!
 
 # Constant slice distributions
@@ -43,6 +45,8 @@ lines and planes, rather then points.
 ## iv. References
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal
 noncomputable section
 

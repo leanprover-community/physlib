@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Matrix.Pre
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Contraction
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Matrix.Pre
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Contraction
 /-!
 
 # Unit for complex Lorentz vectors
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Module Matrix MatrixGroups Complex TensorProduct CategoryTheory.MonoidalCategory

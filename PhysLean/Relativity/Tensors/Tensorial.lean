@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Product
-import Mathlib.Topology.Algebra.Module.FiniteDimension
+module
+
+public import PhysLean.Relativity.Tensors.Product
+public import Mathlib.Topology.Algebra.Module.FiniteDimension
 /-!
 
 # Tensorial class
@@ -51,6 +53,8 @@ We define the class `Tensorial` here, and provide an API around its use.
 There are no known references for this material.
 
 -/
+
+@[expose] public section
 
 open IndexNotation
 open CategoryTheory

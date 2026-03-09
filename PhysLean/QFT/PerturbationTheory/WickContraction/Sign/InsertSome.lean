@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Basic
-import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContract
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Basic
+public import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContract
 
 /-!
 
@@ -13,6 +15,8 @@ import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContract
 The main results of this file are `sign_insert_some_of_lt` and `sign_insert_some_of_not_lt` which
 write the sign of `(φsΛ ↩Λ φ i (some k)).sign` in terms of the sign of `φsΛ`.
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}

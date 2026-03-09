@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Basic
-import Mathlib.Analysis.InnerProductSpace.PiL2
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 # The group SO(3)
 
 -/
+
+@[expose] public section
 
 namespace GroupTheory
 open Matrix

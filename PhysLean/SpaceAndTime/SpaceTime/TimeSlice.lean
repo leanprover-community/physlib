@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.Derivatives
-import PhysLean.SpaceAndTime.TimeAndSpace.Basic
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.Mathematics.FDerivCurry
+module
+
+public import PhysLean.SpaceAndTime.SpaceTime.Derivatives
+public import PhysLean.SpaceAndTime.TimeAndSpace.Basic
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.Mathematics.FDerivCurry
 /-!
 # Time slice
 
@@ -17,6 +19,8 @@ This is useful when going from relativistic physics (defined using `SpaceTime`)
 to non-relativistic physics (defined using `Space` and `Time`).
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

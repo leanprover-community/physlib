@@ -3,13 +3,18 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.Filters
-import PhysLean.QFT.PerturbationTheory.Koszul.KoszulSign
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.Filters
+public import PhysLean.QFT.PerturbationTheory.Koszul.KoszulSign
+import all Mathlib.Data.List.Sort
 /-!
 
 # Normal Ordering of states
 
 -/
+
+@[expose] public section
 
 namespace FieldSpecification
 variable {𝓕 : FieldSpecification}

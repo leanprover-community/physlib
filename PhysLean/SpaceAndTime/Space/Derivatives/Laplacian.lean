@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Div
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Div
 /-!
 
 # The Laplacian operator on `Space d`
@@ -27,6 +29,8 @@ functions defined on `Space d`.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Space
 

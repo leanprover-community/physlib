@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.LinearAlgebra.UnitaryGroup
-import Mathlib.Analysis.Complex.Trigonometric
-import Mathlib.Tactic.Polyrith
+module
+
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.Analysis.Complex.Trigonometric
+public import Mathlib.Tactic.Polyrith
 /-!
 # The CKM Matrix
 
@@ -18,6 +20,8 @@ The notation `[V]ud` etc can be used for the elements of a CKM matrix, and
 `[V]ud|us` etc for the ratios of elements.
 
 -/
+
+@[expose] public section
 
 open Matrix Complex
 
