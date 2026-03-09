@@ -76,9 +76,9 @@ Small PRs are generally good because:
 
 We operator a tag system with our PRs. This makes it easier for reviewers and authors to
 understand where in the process PRs are.
-- Please tag your PR with the appropraite `t-subject` tag.
+- Please tag your PR with the appropriate `t-subject` tag.
 - PRs marked as `draft` will not be reviewed.
-- PRs marked with a `awaiting-author` tag will also not be reviwed until the author
+- PRs marked with a `awaiting-author` tag will also not be reviewed until the author
   as addressed any reviewer comments and has removed this tag.
 - If your PR is not getting reviewed and you would like to draw attention to it, please
   post [here](https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLib/topic/PR.20reviews/with/577663418).
