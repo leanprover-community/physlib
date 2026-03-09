@@ -49,7 +49,9 @@ open MeasureTheory
 -/
 
 /-- A distribution `Space d →d[ℝ] F` from a function
-  `f : Space d → F` which satisfies the `IsDistBounded f` condition. -/
+  `f : Space d → F` which satisfies the `IsDistBounded f` condition.
+  The notation `⸨x => f x⸩ᵈ` or `⸨f⸩ᵈ` can be used if the proof that
+  `f` satisfies `IsDistBounded f` follows via `by fun_prop`.  -/
 def distOfFunction {d : ℕ} (f : Space d → F) (hf : IsDistBounded f) :
     (Space d) →d[ℝ] F := by
   refine mkCLMtoNormedSpace (fun η => ∫ x, η x • f x) ?_ ?_ hf.integral_mul_schwartzMap_bounded
@@ -72,6 +74,13 @@ lemma distOfFunction_apply {d : ℕ} (f : Space d → F)
     (hf : IsDistBounded f) (η : 𝓢(Space d, ℝ)) :
     distOfFunction f hf η = ∫ x, η x • f x := rfl
 
+@[inherit_doc distOfFunction]
+macro "⸨" u:term " => " x:term "⸩ᵈ" : term =>
+  `(distOfFunction (fun $u => $x) (by fun_prop))
+
+@[inherit_doc distOfFunction]
+macro "⸨"f:term "⸩ᵈ" : term =>
+  `(distOfFunction ($f) (by fun_prop))
 /-!
 
 ## B. Linarity properties of getting distributions from functions
@@ -79,13 +88,12 @@ lemma distOfFunction_apply {d : ℕ} (f : Space d → F)
 -/
 @[simp]
 lemma distOfFunction_zero_eq_zero {d : ℕ} :
-    distOfFunction (fun _ : Space d => (0 : F)) (by fun_prop) = 0 := by
+    ⸨(_ : Space d) => (0 : F)⸩ᵈ = 0 := by
   ext η
   simp [distOfFunction_apply]
 
 lemma distOfFunction_smul {d : ℕ} (f : Space d → F)
-    (hf : IsDistBounded f) (c : ℝ) :
-    distOfFunction (c • f) (by fun_prop) = c • distOfFunction f hf := by
+    (hf : IsDistBounded f) (c : ℝ) : ⸨c • f⸩ᵈ = c • ⸨f⸩ᵈ := by
   ext η
   change _ = c • ∫ x, η x • f x
   rw [distOfFunction_apply]

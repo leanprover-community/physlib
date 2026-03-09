@@ -53,38 +53,26 @@ namespace DistElectromagneticPotential
 /-- The current density of a point particle stationary at the origin
   of 1d space. -/
 noncomputable def oneDimPointParticleCurrentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 1) :
-    DistLorentzCurrentDensity 1 := (SpaceTime.distTimeSlice c).symm <|
-  constantTime ((c * q) • diracDelta' ℝ r₀ (Lorentz.Vector.basis (Sum.inl 0)))
+    DistLorentzCurrentDensity 1 := .ofStaticChargeDensity c (q • diracDelta ℝ r₀)
 
 lemma oneDimPointParticleCurrentDensity_eq_distTranslate (c : SpeedOfLight) (q : ℝ) (r₀ : Space 1) :
-    oneDimPointParticleCurrentDensity c q r₀ = ((SpaceTime.distTimeSlice c).symm <|
-    constantTime <|
-    distTranslate (basis.repr r₀) <|
-    ((c * q) • diracDelta' ℝ 0 (Lorentz.Vector.basis (Sum.inl 0)))) := by
+    oneDimPointParticleCurrentDensity c q r₀ =
+    .ofStaticChargeDensity c (q • distTranslate (basis.repr r₀) (diracDelta ℝ 0)) := by
   rw [oneDimPointParticleCurrentDensity]
   congr
   ext η
-  simp [distTranslate_apply]
+  simp
 
 @[simp]
 lemma oneDimPointParticleCurrentDensity_currentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 1) :
     (oneDimPointParticleCurrentDensity c q r₀).currentDensity c = 0 := by
-  ext ε i
-  simp [oneDimPointParticleCurrentDensity, DistLorentzCurrentDensity.currentDensity,
-    Lorentz.Vector.spatialCLM, constantTime_apply]
+  simp [oneDimPointParticleCurrentDensity]
 
 @[simp]
 lemma oneDimPointParticleCurrentDensity_chargeDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 1) :
     (oneDimPointParticleCurrentDensity c q r₀).chargeDensity c =
     constantTime (q • diracDelta ℝ r₀) := by
-  ext ε
-  simp only [DistLorentzCurrentDensity.chargeDensity, one_div, Lorentz.Vector.temporalCLM,
-    Fin.isValue, oneDimPointParticleCurrentDensity, map_smul, LinearMap.coe_mk, AddHom.coe_mk,
-    ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_comp', LinearMap.coe_toContinuousLinearMap', Pi.smul_apply,
-    Function.comp_apply, constantTime_apply, diracDelta'_apply, Lorentz.Vector.apply_smul,
-    Lorentz.Vector.basis_apply, ↓reduceIte, mul_one, smul_eq_mul, diracDelta_apply]
-  field_simp
+  simp [oneDimPointParticleCurrentDensity]
 
 /-!
 
@@ -101,16 +89,14 @@ lemma oneDimPointParticleCurrentDensity_chargeDensity (c : SpeedOfLight) (q : �
 /-- The electromagnetic potential of a point particle stationary at `r₀`
   of 1d space. -/
 noncomputable def oneDimPointParticle (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 1) :
-    DistElectromagneticPotential 1 := (SpaceTime.distTimeSlice 𝓕.c).symm <| Space.constantTime <|
-  distOfFunction (fun x => ((- (q * 𝓕.μ₀ * 𝓕.c)/ 2) * ‖x - r₀‖) • Lorentz.Vector.basis (Sum.inl 0))
-    (by fun_prop)
+    DistElectromagneticPotential 1 := .ofScalarPotential 𝓕.c <| constantTime <|
+  ⸨x => ((- (q * 𝓕.μ₀ * 𝓕.c ^ 2)/ 2) * ‖x - r₀‖)⸩ᵈ
 
 lemma oneDimPointParticle_eq_distTranslate (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 1) :
-    oneDimPointParticle 𝓕 q r₀ = ((SpaceTime.distTimeSlice 𝓕.c).symm <|
+    oneDimPointParticle 𝓕 q r₀ = (.ofScalarPotential 𝓕.c <|
     constantTime <|
     distTranslate (basis.repr r₀) <|
-    distOfFunction (fun x => ((- (q * 𝓕.μ₀ * 𝓕.c)/ 2) * ‖x‖) • Lorentz.Vector.basis (Sum.inl 0))
-      (by fun_prop)) := by
+    ⸨x => ((- (q * 𝓕.μ₀ * 𝓕.c ^ 2)/ 2) * ‖x‖)⸩ᵈ) := by
   rw [oneDimPointParticle]
   congr
   ext η
@@ -125,9 +111,7 @@ lemma oneDimPointParticle_eq_distTranslate (𝓕 : FreeSpace) (q : ℝ) (r₀ : 
 @[simp]
 lemma oneDimPointParticle_vectorPotential (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 1) :
     (oneDimPointParticle 𝓕 q r₀).vectorPotential 𝓕.c = 0 := by
-  ext ε i
-  simp [vectorPotential, Lorentz.Vector.spatialCLM,
-    oneDimPointParticle, constantTime_apply, distOfFunction_vector_eval]
+  simp [oneDimPointParticle]
 
 /-!
 
@@ -137,20 +121,9 @@ lemma oneDimPointParticle_vectorPotential (𝓕 : FreeSpace) (q : ℝ) (r₀ : S
 
 lemma oneDimPointParticle_scalarPotential (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 1) :
     (oneDimPointParticle 𝓕 q r₀).scalarPotential 𝓕.c =
-    Space.constantTime (distOfFunction (fun x =>
-      - ((q * 𝓕.μ₀ * 𝓕.c ^ 2)/(2)) • ‖x-r₀‖) (by fun_prop)) := by
-  ext ε
-  simp only [scalarPotential, Lorentz.Vector.temporalCLM, Fin.isValue, map_smul,
-    ContinuousLinearMap.comp_smulₛₗ, Real.ringHom_apply, oneDimPointParticle, LinearMap.coe_mk,
-    AddHom.coe_mk, ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_comp', LinearMap.coe_toContinuousLinearMap', Pi.smul_apply,
-    Function.comp_apply, constantTime_apply, distOfFunction_vector_eval, Lorentz.Vector.apply_smul,
-    Lorentz.Vector.basis_apply, ↓reduceIte, mul_one, smul_eq_mul, neg_mul]
-  rw [distOfFunction_mul_fun _ (by fun_prop), distOfFunction_neg,
-    distOfFunction_mul_fun _ (by fun_prop)]
-  simp only [ContinuousLinearMap.coe_smul', Pi.smul_apply, smul_eq_mul,
-    ContinuousLinearMap.neg_apply]
-  ring
+    Space.constantTime ⸨x => - ((q * 𝓕.μ₀ * 𝓕.c ^ 2)/2) • ‖x-r₀‖⸩ᵈ := by
+  simp [oneDimPointParticle]
+  ring_nf
 
 /-!
 

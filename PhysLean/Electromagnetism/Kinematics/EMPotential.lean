@@ -455,6 +455,34 @@ lemma deriv_equivariant {d} {A : DistElectromagneticPotential d}
     (Λ : LorentzGroup d) : deriv (Λ • A) = Λ • deriv A := by
   rw [deriv, distTensorDeriv_equivariant]
 
+/-!
+
+## D. Construction of the electromagnetic potential from a scalar and vector potential
+
+-/
+
+/-!
+
+## D.1. The electromagnetic potential of a scalar potential
+
+-/
+
+/-- The electromagnetic potential of a scalar potential. -/
+noncomputable def ofScalarPotential {d} (c : SpeedOfLight) :
+    ((Time × Space d) →d[ℝ] ℝ) →ₗ[ℝ] DistElectromagneticPotential d where
+  toFun ρ :=
+    let smul : ℝ →L[ℝ] Lorentz.Vector d := {
+      toFun := fun r => r • Lorentz.Vector.basis (Sum.inl 0),
+      map_add' x y := by simp [add_smul],
+      map_smul' r x := by simp [smul_smul]
+    }
+    smul ∘L ((SpaceTime.distTimeSlice c).symm (c.1⁻¹ • ρ))
+  map_add' ρ1 ρ2 := by
+    simp [map_add, ContinuousLinearMap.comp_add]
+  map_smul' r ρ := by
+    simp [map_smul, ContinuousLinearMap.comp_smulₛₗ]
+    rw [smul_comm]
+
 end DistElectromagneticPotential
 
 end Electromagnetism

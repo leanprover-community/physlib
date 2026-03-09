@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
+import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 /-!
 
 # The Lorentz Current Density
@@ -41,6 +42,7 @@ The current density is given in terms of the charge density `ρ` and the current
 - D. The Lorentz current density as a distribution
   - D.1. The underlying charge density
   - D.2. The underlying current density
+- E. Of Static Charge density
 
 ## iv. References
 
@@ -278,6 +280,44 @@ noncomputable def currentDensity (c : SpeedOfLight) :
     simp
   map_smul' r J := by
     simp
+
+/-!
+
+## E. Of Static Charge density
+
+-/
+
+/-- The Lorentz current density associated with a static charge density. -/
+noncomputable def ofStaticChargeDensity {d : ℕ} (c : SpeedOfLight) :
+    ((Space d) →d[ℝ] ℝ) →ₗ[ℝ] DistLorentzCurrentDensity d where
+  toFun ρ :=
+    let smul : ℝ →L[ℝ] Lorentz.Vector d := {
+      toFun := fun r => r • Lorentz.Vector.basis (Sum.inl 0),
+      map_add' x y := by simp [add_smul],
+      map_smul' r x := by simp [smul_smul]
+    }
+    smul ∘L ((SpaceTime.distTimeSlice c).symm (c.1 • Space.constantTime  ρ))
+  map_add' ρ1 ρ2 := by
+    simp [map_add, ContinuousLinearMap.comp_add]
+  map_smul' r ρ := by
+    simp [map_smul, ContinuousLinearMap.comp_smulₛₗ, RingHom.id_apply,]
+    rw [smul_comm]
+
+@[simp]
+lemma ofStaticChargeDensity_currentDensity_eq_zero {d : ℕ} (c : SpeedOfLight)
+    (ρ : (Space d) →d[ℝ] ℝ) :
+    (ofStaticChargeDensity c ρ).currentDensity c = 0 := by
+  ext t i
+  simp [ofStaticChargeDensity, currentDensity, distTimeSlice, Space.constantTime]
+
+@[simp]
+lemma ofStaticChargeDensity_chargeDensity_eq {d : ℕ} (c : SpeedOfLight)
+    (ρ : (Space d) →d[ℝ] ℝ) :
+    (ofStaticChargeDensity c ρ).chargeDensity c = Space.constantTime ρ := by
+  ext f
+  simp [ofStaticChargeDensity, chargeDensity, Lorentz.Vector.temporalCLM, distTimeSlice_apply]
+  rw [← distTimeSlice_apply]
+  simp
 
 end DistLorentzCurrentDensity
 end Electromagnetism

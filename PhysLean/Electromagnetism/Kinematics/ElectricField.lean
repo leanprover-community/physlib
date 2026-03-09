@@ -401,6 +401,11 @@ lemma electricField_eq_fieldStrength {d} {c : SpeedOfLight}
   field_simp
   ring
 
+lemma ofScalarPotential_electricField {d} (c : SpeedOfLight)
+    (V : (Time × Space d) →d[ℝ] ℝ) :
+    (ofScalarPotential c V).electricField c = - Space.distSpaceGrad V := by
+  simp [electricField]
+
 end DistElectromagneticPotential
 
 end Electromagnetism

@@ -695,5 +695,19 @@ lemma magneticFieldMatrix_one_dim_eq_zero {c : SpeedOfLight}
   rw [magneticFieldMatrix_eq_vectorPotential]
   simp
 
+/-!
+
+### D.4. Magnetic field matrix of scalar potentials
+
+-/
+
+@[simp]
+lemma ofScalarPotential_magneticFieldMatrix {c : SpeedOfLight}
+    (V : (Time × Space d) →d[ℝ] ℝ)  :
+    (ofScalarPotential c V).magneticFieldMatrix c = 0 := by
+  ext ε
+  rw [magneticFieldMatrix_eq_vectorPotential]
+  simp
+
 end DistElectromagneticPotential
 end Electromagnetism

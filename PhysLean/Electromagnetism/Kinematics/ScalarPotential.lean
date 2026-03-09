@@ -162,5 +162,14 @@ noncomputable def scalarPotential {d} (c : SpeedOfLight) :
       Function.comp_apply, Pi.smul_apply, smul_eq_mul, Real.ringHom_apply]
     ring
 
+@[simp]
+lemma ofScalarPotential_scalarPotential {d} (c : SpeedOfLight)
+    (V : (Time × Space d) →d[ℝ] ℝ) :
+    (ofScalarPotential c V).scalarPotential c = V := by
+  ext ε
+  simp [ofScalarPotential, scalarPotential, Lorentz.Vector.temporalCLM, distTimeSlice_apply]
+  rw [← distTimeSlice_apply]
+  simp
+
 end DistElectromagneticPotential
 end Electromagnetism

@@ -178,6 +178,13 @@ noncomputable def vectorPotential {d} (c : SpeedOfLight) :
       Pi.smul_apply, Function.comp_apply,
       Real.ringHom_apply, PiLp.smul_apply, smul_eq_mul]
 
+@[simp]
+lemma ofScalarPotential_vectorPotential {d} (c : SpeedOfLight)
+    (V : (Time × Space d) →d[ℝ] ℝ) :
+    (ofScalarPotential c V).vectorPotential c = 0 := by
+  ext ε
+  simp [ofScalarPotential, vectorPotential, Lorentz.Vector.spatialCLM, distTimeSlice_apply]
+
 end DistElectromagneticPotential
 
 end Electromagnetism

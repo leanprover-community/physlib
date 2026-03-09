@@ -62,19 +62,16 @@ particle in 3d space.
 /-- The current density of a point particle stationary at a point `r₀`
   of 3d space. -/
 noncomputable def threeDimPointParticleCurrentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 3) :
-    DistLorentzCurrentDensity 3 := (SpaceTime.distTimeSlice c).symm <|
-  constantTime ((c * q) • diracDelta' ℝ r₀ (Lorentz.Vector.basis (Sum.inl 0)))
+    DistLorentzCurrentDensity 3 := .ofStaticChargeDensity c (q • diracDelta ℝ r₀)
 
 lemma threeDimPointParticleCurrentDensity_eq_distTranslate (c : SpeedOfLight) (q : ℝ)
     (r₀ : Space 3) :
-    threeDimPointParticleCurrentDensity c q r₀ = ((SpaceTime.distTimeSlice c).symm <|
-    constantTime <|
-    distTranslate (basis.repr r₀) <|
-    ((c * q) • diracDelta' ℝ 0 (Lorentz.Vector.basis (Sum.inl 0)))) := by
+    threeDimPointParticleCurrentDensity c q r₀ =
+    .ofStaticChargeDensity c (q • distTranslate (basis.repr r₀) (diracDelta ℝ 0)) := by
   rw [threeDimPointParticleCurrentDensity]
   congr
   ext η
-  simp [distTranslate_apply]
+  simp
 
 /-!
 
@@ -91,14 +88,7 @@ where $q$ is the charge of the particle and $r₀$ is the position of the partic
 lemma threeDimPointParticleCurrentDensity_chargeDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 3) :
     (threeDimPointParticleCurrentDensity c q r₀).chargeDensity c =
     constantTime (q • diracDelta ℝ r₀) := by
-  ext ε
-  simp only [DistLorentzCurrentDensity.chargeDensity, one_div, Lorentz.Vector.temporalCLM,
-    Fin.isValue, threeDimPointParticleCurrentDensity, map_smul, LinearMap.coe_mk, AddHom.coe_mk,
-    ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_comp', LinearMap.coe_toContinuousLinearMap', Pi.smul_apply,
-    Function.comp_apply, constantTime_apply, diracDelta'_apply, Lorentz.Vector.apply_smul,
-    Lorentz.Vector.basis_apply, ↓reduceIte, mul_one, smul_eq_mul, diracDelta_apply]
-  field_simp
+  simp [threeDimPointParticleCurrentDensity]
 
 /-!
 
@@ -114,9 +104,7 @@ In other words, there is no current flow for a point particle at rest.
 @[simp]
 lemma threeDimPointParticleCurrentDensity_currentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 3) :
     (threeDimPointParticleCurrentDensity c q r₀).currentDensity c = 0 := by
-  ext ε i
-  simp [threeDimPointParticleCurrentDensity, DistLorentzCurrentDensity.currentDensity,
-    Lorentz.Vector.spatialCLM, constantTime_apply]
+  simp [threeDimPointParticleCurrentDensity]
 
 /-!
 
@@ -141,18 +129,15 @@ open Real
 /-- The electromagnetic potential of a point particle stationary at `r₀`
   of 3d space. -/
 noncomputable def threeDimPointParticle (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
-    DistElectromagneticPotential 3 := (SpaceTime.distTimeSlice 𝓕.c).symm <| Space.constantTime <|
-  distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c)/ (4 * π)) * ‖x - r₀‖⁻¹) •
-    Lorentz.Vector.basis (Sum.inl 0))
-    (((IsDistBounded.inv_shift _).const_mul_fun _).smul_const _)
+    DistElectromagneticPotential 3 := .ofScalarPotential 𝓕.c <| Space.constantTime <|
+  ⸨x => ((q * 𝓕.μ₀ * 𝓕.c ^ 2)/ (4 * π)) * ‖x - r₀‖⁻¹⸩ᵈ
 
 lemma threeDimPointParticle_eq_distTranslate (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
-    threeDimPointParticle 𝓕 q r₀ = ((SpaceTime.distTimeSlice 𝓕.c).symm <|
+    threeDimPointParticle 𝓕 q r₀ = (.ofScalarPotential 𝓕.c <|
     constantTime <|
     distTranslate (basis.repr r₀) <|
-    distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c)/ (4 * π))* ‖x‖⁻¹) •
-      Lorentz.Vector.basis (Sum.inl 0))
-      ((IsDistBounded.inv.const_mul_fun _).smul_const _)) := by
+    distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c ^ 2)/ (4 * π))* ‖x‖⁻¹))
+      (IsDistBounded.inv.const_mul_fun _)) := by
   rw [threeDimPointParticle]
   congr
   ext η
@@ -171,22 +156,10 @@ $$V(r) = \frac{q}{4 π \epsilon_0 |r - r_0|}.$$
 
 lemma threeDimPointParticle_scalarPotential (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
     (threeDimPointParticle 𝓕 q r₀).scalarPotential 𝓕.c =
-    Space.constantTime (distOfFunction (fun x => (q/ (4 * π * 𝓕.ε₀))• ‖x - r₀‖⁻¹)
-      (((IsDistBounded.inv_shift _).const_mul_fun _))) := by
-  ext ε
-  simp only [scalarPotential, Lorentz.Vector.temporalCLM, Fin.isValue, map_smul,
-    ContinuousLinearMap.comp_smulₛₗ, ringHom_apply, threeDimPointParticle, LinearMap.coe_mk,
-    AddHom.coe_mk, ContinuousLinearEquiv.apply_symm_apply, ContinuousLinearMap.coe_smul',
-    ContinuousLinearMap.coe_comp', LinearMap.coe_toContinuousLinearMap', Pi.smul_apply,
-    Function.comp_apply, constantTime_apply, distOfFunction_vector_eval, Lorentz.Vector.apply_smul,
-    Lorentz.Vector.basis_apply, ↓reduceIte, mul_one, smul_eq_mul]
-  rw [distOfFunction_mul_fun _ (IsDistBounded.inv_shift _),
-    distOfFunction_mul_fun _ (IsDistBounded.inv_shift _)]
-  simp only [Nat.succ_eq_add_one, Nat.reduceAdd, ContinuousLinearMap.coe_smul', Pi.smul_apply,
-    smul_eq_mul]
-  ring_nf
-  simp only [𝓕.c_sq, one_div, mul_inv_rev, mul_eq_mul_right_iff, inv_eq_zero, OfNat.ofNat_ne_zero,
-    or_false]
+    Space.constantTime ⸨x => (q/ (4 * π * 𝓕.ε₀))• ‖x - r₀‖⁻¹⸩ᵈ := by
+  simp [threeDimPointParticle, 𝓕.c_sq]
+  congr
+  funext x
   field_simp
 
 /-!
@@ -203,9 +176,7 @@ $$\vec A(r) = 0.$$
 @[simp]
 lemma threeDimPointParticle_vectorPotential (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
     (threeDimPointParticle 𝓕 q r₀).vectorPotential 𝓕.c = 0 := by
-  ext ε i
-  simp [vectorPotential, Lorentz.Vector.spatialCLM,
-    threeDimPointParticle, constantTime_apply, distOfFunction_vector_eval]
+  simp [threeDimPointParticle]
 
 /-!
 
@@ -255,9 +226,7 @@ Given that the vector potential is zero, the magnetic field is also zero.
 
 @[simp]
 lemma threeDimPointParticle_magneticFieldMatrix (q : ℝ) (r₀ : Space 3) :
-    (threeDimPointParticle 𝓕 q r₀).magneticFieldMatrix 𝓕.c = 0 := by
-  ext η
-  simp [magneticFieldMatrix_eq_vectorPotential]
+    (threeDimPointParticle 𝓕 q r₀).magneticFieldMatrix 𝓕.c = 0 := by simp [threeDimPointParticle]
 
 /-!
 
