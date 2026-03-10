@@ -517,7 +517,7 @@ private lemma xL_Lx_eq (hε : 0 < ε) (i : Fin H.d) : ∑ j, (𝐱[j] ∘L 𝐋[
         rw [comp_eq_comp_add_commute 𝐱[i] 𝐩[j], position_commutation_momentum]
         rw [comp_eq_comp_sub_commute 𝐩[i] 𝐱[j], position_commutation_momentum]
         rw [comp_eq_comp_add_commute 𝐱[j] 𝐩[j], position_commutation_momentum]
-        rw [symm j i, kroneckerDelta_self]
+        rw [symm j i, eq_one_of_same]
         ext ψ x
         simp only [comp_add, comp_smulₛₗ, RingHom.id_apply, comp_id, comp_sub, coe_sub', coe_comp',
           coe_smul', Pi.sub_apply, ContinuousLinearMap.add_apply, Function.comp_apply,
@@ -716,7 +716,7 @@ private lemma sum_prx (hε : 0 < ε) : ∑ i : Fin H.d, 𝐩[i] ∘L 𝐫[ε,-1]
     rw [← comp_assoc, comp_eq_comp_sub_commute 𝐩[_] 𝐫[ε,-1], radiusRegPow_commutation_momentum hε]
     rw [sub_comp, smul_comp, comp_assoc, comp_assoc]
     rw [comp_eq_comp_sub_commute 𝐩[_] 𝐱[_], position_commutation_momentum]
-    rw [kroneckerDelta_self]
+    rw [eq_one_of_same]
     rw [comp_sub, comp_smul, comp_id]
   repeat rw [Finset.sum_sub_distrib, ← Finset.smul_sum, ← comp_finset_sum]
   rw [positionOperatorSqr_eq hε, comp_sub, radiusRegPowOperator_comp_eq hε, comp_smul, comp_id]
