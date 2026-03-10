@@ -46,7 +46,7 @@ open LinearPMap Submodule
 open InnerProductSpaceSubmodule
 
 /-!
-### A. Definition
+## A. Definition
 -/
 
 /-- An `UnboundedOperator` is a linear map from a submodule of `H` to `H'`,
@@ -76,7 +76,7 @@ instance : CoeFun (UnboundedOperator H H') (fun U ↦ U.domain → H') :=
   ⟨fun U ↦ U.toLinearPMap.toFun'⟩
 
 /-!
-### B. Partial order
+## B. Partial order
 
 Unbounded operators inheret the structure of a poset from `LinearPMap`,
 but *not* that of a `SemilatticeInf` because `U₁.domain ⊓ U₂.domain` may not be dense.
@@ -89,7 +89,7 @@ instance partialOrder : PartialOrder (UnboundedOperator H H') where
   le_antisymm := fun U₁ U₂ h h' ↦ ext <| Std.IsPartialOrder.le_antisymm U₁.1 U₂.1 h h'
 
 /-!
-### C. Closure
+## C. Closure
 -/
 
 section
@@ -115,7 +115,7 @@ lemma closure_isClosed : U.closure.IsClosed := IsClosable.closure_isClosed U.is_
 end
 
 /-!
-### D. Adjoint
+## D. Adjoint
 -/
 
 section
@@ -193,7 +193,7 @@ lemma le_adjoint_adjoint : U ≤ U†† := by
 end
 
 /-!
-### E. Symmetric operators
+## E. Symmetric operators
 -/
 
 section
@@ -218,7 +218,7 @@ lemma ofSymmetric_apply (ψ : E) :
 end
 
 /-!
-### F. Self-adjoint operators
+## F. Self-adjoint operators
 -/
 
 section
@@ -236,7 +236,7 @@ lemma isSelfAdjoint_iff : IsSelfAdjoint T ↔ IsSelfAdjoint T.toLinearPMap := by
 end
 
 /-!
-### G. Generalized eigenvectors
+## G. Generalized eigenvectors
 -/
 
 section
