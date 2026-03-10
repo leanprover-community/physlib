@@ -78,7 +78,7 @@ instance : CoeFun (UnboundedOperator H H') (fun U ↦ U.domain → H') :=
 /-!
 ## B. Partial order
 
-Unbounded operators inheret the structure of a poset from `LinearPMap`,
+Unbounded operators inherit the structure of a poset from `LinearPMap`,
 but *not* that of a `SemilatticeInf` because `U₁.domain ⊓ U₂.domain` may not be dense.
 -/
 
