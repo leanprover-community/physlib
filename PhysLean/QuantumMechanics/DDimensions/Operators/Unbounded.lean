@@ -39,7 +39,6 @@ open InnerProductSpaceSubmodule
 
 /-- An `UnboundedOperator` is a linear map from a submodule of `H` to `H'`,
   assumed to be both densely defined and closable. -/
-@[ext]
 structure UnboundedOperator
     (H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
     (H' : Type*) [NormedAddCommGroup H'] [InnerProductSpace ℂ H'] [CompleteSpace H']
@@ -55,15 +54,11 @@ variable
   {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
   {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace ℂ H'] [CompleteSpace H']
 
-lemma ext' (U T : UnboundedOperator H H') (h : U.toLinearPMap = T.toLinearPMap) : U = T := by
-  apply UnboundedOperator.ext
-  · exact toSubMulAction_inj.mp (congrArg toSubMulAction (congrArg domain h))
-  · exact congr_arg_heq toFun h
-
-lemma ext_iff' (U T : UnboundedOperator H H') : U = T ↔ U.toLinearPMap = T.toLinearPMap := by
-  refine ⟨?_, UnboundedOperator.ext' U T⟩
-  intro h
-  rw [h]
+@[ext]
+lemma ext {U₁ U₂ : UnboundedOperator H H'} (h : U₁.toLinearPMap = U₂.toLinearPMap) :
+    U₁ = U₂ := by
+  cases U₁
+  simp_all
 
 /-!
 ### Construction of unbounded operators
@@ -164,7 +159,7 @@ lemma adjoint_isClosed : (U†).IsClosed := LinearPMap.adjoint_isClosed U.dense_
 
 lemma closure_adjoint_eq_adjoint : U.closure† = U† := by
   -- Reduce to statement about graphs using density and closability assumptions
-  apply UnboundedOperator.ext'
+  apply UnboundedOperator.ext
   apply LinearPMap.eq_of_eq_graph
   rw [adjoint_toLinearPMap, adjoint_graph_eq_graph_adjoint U.closure.dense_domain]
   rw [adjoint_toLinearPMap, adjoint_graph_eq_graph_adjoint U.dense_domain]
@@ -175,7 +170,7 @@ lemma closure_adjoint_eq_adjoint : U.closure† = U† := by
 
 lemma adjoint_adjoint_eq_closure : U†† = U.closure := by
   -- Reduce to statement about graphs using density and closability assumptions
-  apply UnboundedOperator.ext'
+  apply UnboundedOperator.ext
   apply LinearPMap.eq_of_eq_graph
   rw [adjoint_toLinearPMap, adjoint_graph_eq_graph_adjoint U†.dense_domain]
   rw [adjoint_toLinearPMap, adjoint_graph_eq_graph_adjoint U.dense_domain]
@@ -201,7 +196,7 @@ lemma isSelfAdjoint_def : IsSelfAdjoint U ↔ U† = U := Iff.rfl
 
 lemma isSelfAdjoint_iff : IsSelfAdjoint U ↔ IsSelfAdjoint U.toLinearPMap := by
   rw [isSelfAdjoint_def, LinearPMap.isSelfAdjoint_def, ← adjoint_toLinearPMap,
-    UnboundedOperator.ext_iff']
+    UnboundedOperator.ext_iff]
 
 end
 
