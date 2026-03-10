@@ -61,6 +61,19 @@ lemma ext {U₁ U₂ : UnboundedOperator H H'} (h : U₁.toLinearPMap = U₂.toL
   simp_all
 
 /-!
+### Partial order
+
+Unbounded operators inheret the structure of a poset from `LinearPMap`,
+but *not* that of a `SemilatticeInf` because `U₁.domain ⊓ U₂.domain` may not be dense.
+-/
+
+instance partialOrder : PartialOrder (UnboundedOperator H H') where
+  le := fun U₁ U₂ ↦ U₁.toLinearPMap ≤ U₂.toLinearPMap
+  le_refl := fun U ↦ Std.IsPreorder.le_refl U.1
+  le_trans := fun U₁ U₂ U₃ h₁₂ h₂₃ ↦ Std.IsPreorder.le_trans U₁.1 U₂.1 U₃.1 h₁₂ h₂₃
+  le_antisymm := fun U₁ U₂ h h' ↦ ext <| Std.IsPartialOrder.le_antisymm U₁.1 U₂.1 h h'
+
+/-!
 ### Construction of unbounded operators
 -/
 
