@@ -9,7 +9,6 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Algebra.CharZero.Defs
 public import Mathlib.Algebra.Field.Defs
 public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Data.Finset.Disjoint
 /-!
 
 # Kronecker delta
@@ -17,6 +16,8 @@ public import Mathlib.Data.Finset.Disjoint
 This module defines the Kronecker delta.
 
 -/
+
+@[expose] public section
 
 namespace KroneckerDelta
 
