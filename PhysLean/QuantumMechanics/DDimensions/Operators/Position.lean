@@ -189,8 +189,7 @@ lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymm
 /-- The symmetric position unbounded operators with domain the Schwartz submodule
   of the Hilbert space. -/
 def positionUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (positionOperatorSchwartz i)
-    (positionOperatorSchwartz_isSymmetric i)
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (positionOperatorSchwartz_isSymmetric i)
 
 /-!
 
@@ -218,7 +217,7 @@ lemma radiusRegPowOperatorSchwartz_isSymmetric (ε s : ℝ) (hε : 0 < ε) :
   of the Hilbert space. -/
 def radiusRegPowUnboundedOperator (ε s : ℝ) (hε : 0 < ε) :
     UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (radiusRegPowOperatorSchwartz ε s)
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d)
     (radiusRegPowOperatorSchwartz_isSymmetric ε s hε)
 
 end

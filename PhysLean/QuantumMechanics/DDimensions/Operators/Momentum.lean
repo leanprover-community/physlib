@@ -121,8 +121,7 @@ lemma momentumOperatorSchwartz_isSymmetric : (momentumOperatorSchwartz i).IsSymm
   of the Hilbert space. -/
 @[sorryful]
 def momentumUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (momentumOperatorSchwartz i)
-    (momentumOperatorSchwartz_isSymmetric i)
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (momentumOperatorSchwartz_isSymmetric i)
 
 end
 end QuantumMechanics
