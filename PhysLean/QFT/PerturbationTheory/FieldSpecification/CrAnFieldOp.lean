@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.Basic
-import PhysLean.QFT.PerturbationTheory.CreateAnnihilate
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.Basic
+public import PhysLean.QFT.PerturbationTheory.CreateAnnihilate
 /-!
 
 # Creation and annihilation states
@@ -31,6 +33,8 @@ In this module in addition to defining `CrAnFieldOp` we also define some maps:
 (bosonic or fermionic).
 
 -/
+
+@[expose] public section
 namespace FieldSpecification
 variable (𝓕 : FieldSpecification)
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Normed.Field.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Field.Lemmas
 /-!
 
 # Dimension
@@ -12,6 +14,8 @@ In this module we define the type `Dimension` which carries the dimension
 of a physical quantity.
 
 -/
+
+@[expose] public section
 
 open NNReal
 

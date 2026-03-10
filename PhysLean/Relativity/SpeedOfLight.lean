@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.Lie.Classical
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Classical
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 /-!
 
 # The Speed of Light
@@ -29,6 +31,8 @@ and should be thought of as the speed of light in some chosen but arbitrary syst
 ## iv. References
 
 -/
+
+@[expose] public section
 open Matrix
 
 /-!

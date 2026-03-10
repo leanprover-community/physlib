@@ -3,15 +3,19 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.Basic
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.LightLike
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.TimeLike
+module
+
+public import PhysLean.SpaceAndTime.SpaceTime.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.LightLike
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.TimeLike
 /-!
 # Proper Time
 
 This file introduces 4d Minkowski spacetime.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

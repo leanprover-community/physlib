@@ -3,9 +3,11 @@ Copyright (c) 2025 Afiq Hatta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Afiq Hatta
 -/
-import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
-import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
+module
+
+public import Mathlib.Topology.Algebra.Polynomial
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Deriv
 /-!
 # Properties of Tanh
 We want to prove that the reflectionless potential is a Schwartz map.
@@ -17,6 +19,8 @@ the nth derivative of a function multiplied by tanh decays faster than any polyn
 - Add these to mathlib eventually
 - Fill in the proofs for the properties of tanh
 -/
+
+@[expose] public section
 
 open Real
 open NNReal

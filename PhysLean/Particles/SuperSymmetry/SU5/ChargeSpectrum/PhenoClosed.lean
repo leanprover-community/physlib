@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimalSuperSet
-import PhysLean.Meta.TODO.Basic
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimalSuperSet
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 # Phenomenologically closed sets of charge spectra
@@ -62,6 +64,8 @@ which include three which are defined in this file: `IsPhenoClosedQ5`, `IsPhenoC
 There are no known references for the material in this module.
 
 -/
+
+@[expose] public section
 namespace SuperSymmetry
 
 namespace SU5

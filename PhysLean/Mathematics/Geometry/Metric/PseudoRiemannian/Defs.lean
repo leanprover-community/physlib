@@ -3,13 +3,14 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina
 -/
+module
 
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Analysis.RCLike.Lemmas
-import Mathlib.Geometry.Manifold.MFDeriv.Defs
-import Mathlib.LinearAlgebra.BilinearForm.Properties
-import Mathlib.LinearAlgebra.QuadraticForm.Real
-import Mathlib.Topology.LocallyConstant.Basic
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.RCLike.Lemmas
+public import Mathlib.Geometry.Manifold.MFDeriv.Defs
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.LinearAlgebra.QuadraticForm.Real
+public import Mathlib.Topology.LocallyConstant.Basic
 
 /-!
 # Pseudo-Riemannian Metrics on Smooth Manifolds
@@ -50,6 +51,8 @@ sections of a tensor bundle (e.g., `Hom(TM ⊗ TM, ℝ)` or `TM →L[ℝ] TM →
 * [Discussion on Zulip about (Pseudo) Riemannian metrics] https.
 leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.28Pseudo.29.20Riemannian.20metric
 -/
+
+@[expose] public section
 
 section PseudoRiemannianMetric
 
@@ -184,7 +187,7 @@ The quadratic form `Qₓ` at `x` is defined as `Qₓ(v) = gₓ(v,v)`.
 The associated symmetric bilinear form required by `QuadraticForm.exists_companion'`
 is `Bₓ(v,w) = gₓ(v,w) + gₓ(w,v)`. Given the symmetry `symm`, this is `2 * gₓ(v,w)`.
 -/
-private def pseudoRiemannianMetricValToQuadraticForm
+def pseudoRiemannianMetricValToQuadraticForm
     {E : Type v} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {H : Type w} [TopologicalSpace H]
     {M : Type w} [TopologicalSpace M] [ChartedSpace H M]

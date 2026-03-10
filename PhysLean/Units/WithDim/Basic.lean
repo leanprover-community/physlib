@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.UnitDependent
+module
+
+public import PhysLean.Units.UnitDependent
 /-!
 
 ## WithDim
@@ -11,6 +13,8 @@ import PhysLean.Units.UnitDependent
 WithDim is the type `M` which carrying the dimension `d`.
 
 -/
+
+@[expose] public section
 
 open NNReal
 

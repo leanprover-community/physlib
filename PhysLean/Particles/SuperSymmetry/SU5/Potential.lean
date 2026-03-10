@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.FieldLabels
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.FieldLabels
 /-!
 
 # Potential of the SU(5) + U(1) GUT
@@ -47,6 +49,8 @@ The terms of the Kahler potential are:
 A previous version of this code was replaced in PR#569.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 

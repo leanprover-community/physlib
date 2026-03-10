@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Basic
+module
+
+public meta import PhysLean.Meta.Basic
 /-!
 
 # The linter for `sorry` declarations and the sorryful attribute
@@ -23,6 +25,8 @@ This is part of the `.vscode/settings.json` file, but requires the `TODO Highlig
 to be downloaded.
 
 -/
+
+@[expose] public meta section
 
 /-!
 

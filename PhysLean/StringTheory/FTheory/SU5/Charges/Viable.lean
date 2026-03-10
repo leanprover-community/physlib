@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoClosed
-import PhysLean.StringTheory.FTheory.SU5.Charges.OfRationalSection
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoClosed
+public import PhysLean.StringTheory.FTheory.SU5.Charges.OfRationalSection
 /-!
 
 # Charges which are not pheno-constrained and do not regenerate dangerous couplings with Yukawas
@@ -91,6 +93,8 @@ will be very welcome. In particular working out a way to restrict by anomaly can
 There are no known references for the material in this section.
 
 -/
+
+@[expose] public section
 namespace FTheory
 
 namespace SU5
@@ -122,7 +126,7 @@ This can be constructed via
 
 `#eval completeMinSubset same.allowedBarFiveCharges same.allowedTenCharges`
 -/
-private def viableCompletions (I : CodimensionOneConfig) : Multiset (ChargeSpectrum ℤ) :=
+def viableCompletions (I : CodimensionOneConfig) : Multiset (ChargeSpectrum ℤ) :=
   match I with
   | same => {
     /- qHu = -3, and Q10 = {-3, 0} -/

@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.Even.LineInCubic
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.Even.LineInCubic
 /-!
 # Parameterization in even case
 
@@ -16,6 +18,8 @@ The main reference is:
 - https://arxiv.org/pdf/1912.04804.pdf
 
 -/
+
+@[expose] public section
 
 namespace PureU1
 namespace Even

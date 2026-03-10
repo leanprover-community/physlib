@@ -3,7 +3,9 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
 /-!
 
 # Hamilton's equations
@@ -22,6 +24,8 @@ applied to `(p, q)`.
 <https://groups.csail.mit.edu/mac/users/gjs/6946/sicm-html/book-Z-H-36.html#%_sec_3.1.2>
 
 -/
+
+@[expose] public section
 
 open MeasureTheory ContDiff InnerProductSpace Time
 

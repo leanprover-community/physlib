@@ -3,13 +3,17 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.SuperCommute
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.TimeOrder
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.SuperCommute
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.TimeOrder
 /-!
 
 # Time Ordering on Field operator algebra
 
 -/
+
+@[expose] public section
 
 namespace FieldSpecification
 open Module FieldOpFreeAlgebra

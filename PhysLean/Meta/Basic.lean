@@ -3,13 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Lean.Expr.Basic
-import ImportGraph.Imports.RequiredModules
+module
+
+public import Mathlib.Lean.Expr.Basic
+public import ImportGraph.Imports.RequiredModules
+public import Lean.Elab.DocString
 /-!
 
 ## Basic Lean meta programming commands
 
 -/
+
+@[expose] public section
 
 /-- The size of a flattened array of arrays. -/
 def Array.flatSize {α} : Array (Array α) → Nat :=
@@ -100,15 +105,18 @@ def lineNumber (c : Name) : m Nat := do
 /-- Given a name, returns the file name corresponding to that declaration. -/
 def fileName (c : Name) : m Name := do
   let env ← getEnv
-  match env.getModuleFor? c with
-  | some decl => return decl
+  match env.getModuleIdxFor? c with
+  | some idx =>
+      pure <| env.header.moduleNames[idx]!
   | none => panic! s!"{c} is a declaration without position"
 
 /-- Returns the location of a name. -/
 def location (c : Name) : m String := do
   let env ← getEnv
-  match env.getModuleFor? c with
-  | some decl => return s!"{decl.toRelativeFilePath}:{← c.lineNumber} {c}"
+  match env.getModuleIdxFor? c with
+  | some idx =>
+      let modName := env.header.moduleNames[idx]!
+      pure s!"{modName.toRelativeFilePath}:{← c.lineNumber} {c}"
   | none => panic! s!"{c} is a declaration without position"
 
 /-- Determines if a name has a location. -/
@@ -119,23 +127,25 @@ def hasPos (c : Name) : m Bool := do
 /-- Determines if a name has a doc string. -/
 def hasDocString (c : Name) : CoreM Bool := do
   let env ← getEnv
-  let doc? ← findDocString? env c
-  return doc?.isSome
+  return (← findInternalDocString? env c).isSome
 
 /-- The doc string from a name. -/
 def getDocString (c : Name) : CoreM String := do
   let env ← getEnv
-  let doc? ← findDocString? env c
-  return doc?.getD ""
+  match ← findInternalDocString? env c with
+  | some (.inl s) => return s
+  | some (.inr _) => return ""   -- Verso docstring, ignore for now
+  | none => return ""
 
 /-- Given a name, returns the source code defining that name, including doc strings. -/
 def getDeclString (name : Name) : CoreM String := do
   let env ← getEnv
   match ← findDeclarationRanges? name with
   | some { range := { pos, endPos, .. }, .. } =>
-    match env.getModuleFor? name with
-    | some fileName =>
-      let fileContent ← IO.FS.readFile fileName.toRelativeFilePath
+    match env.getModuleIdxFor? name with
+    | some idx =>
+      let modName := env.header.moduleNames[idx]!
+      let fileContent ← IO.FS.readFile modName.toRelativeFilePath
       let fileMap := fileContent.toFileMap
       return (String.Pos.Raw.extract fileMap.source)
         (fileMap.ofPosition pos) (fileMap.ofPosition endPos)

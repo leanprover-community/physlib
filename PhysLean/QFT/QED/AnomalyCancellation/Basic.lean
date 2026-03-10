@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.AnomalyCancellation.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import PhysLean.QFT.AnomalyCancellation.Basic
+public import Mathlib.Tactic.LinearCombination
 /-!
 
 # Anomaly cancellation of a theory with a pure U(1)-gauge group
@@ -19,6 +21,8 @@ The charges `xᵢ` have rational fractions with one another, here they are speci
 rational numbers.
 
 -/
+
+@[expose] public section
 
 open Nat
 

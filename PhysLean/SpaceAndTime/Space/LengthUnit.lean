@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
-import PhysLean.SpaceAndTime.Time.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import PhysLean.SpaceAndTime.Time.Basic
 /-!
 
 # Units on Length
@@ -22,6 +24,8 @@ a given length unit, and then construct all other length units from it. We choos
 existence of the length unit of meters, and construct all other length units from that.
 
 -/
+
+@[expose] public section
 
 /-- The choices of translationally-invariant metrics on the space-manifold.
   Such a choice corresponds to a choice of units for length. -/

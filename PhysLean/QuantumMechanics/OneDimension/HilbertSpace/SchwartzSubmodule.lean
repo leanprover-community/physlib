@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Basic
-import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Basic
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 /-!
 
 # Schwartz submodule of the Hilbert space
@@ -13,6 +15,8 @@ This can be used to define e.g.
 the rigged Hilbert space.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

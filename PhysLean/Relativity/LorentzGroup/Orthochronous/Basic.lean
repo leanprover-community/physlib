@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzGroup.Proper
-import PhysLean.Relativity.LorentzGroup.ToVector
-import PhysLean.Relativity.Tensors.RealTensor.Velocity.Basic
+module
+
+public import PhysLean.Relativity.LorentzGroup.Proper
+public import PhysLean.Relativity.LorentzGroup.ToVector
+public import PhysLean.Relativity.Tensors.RealTensor.Velocity.Basic
 /-!
 # The Orthochronous Lorentz Group
 
@@ -13,6 +15,8 @@ We define the give a series of lemmas related to the orthochronous property of l
 matrices.
 
 -/
+
+@[expose] public section
 TODO "6VZLO" "Prove topological properties of the Orthochronous Lorentz Group."
 
 noncomputable section

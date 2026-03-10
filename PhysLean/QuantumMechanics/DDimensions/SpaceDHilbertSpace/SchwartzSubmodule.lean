@@ -3,13 +3,17 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.Basic
+module
+
+public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.Basic
 /-!
 
 # Schwartz submodule of the Hilbert space
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 namespace SpaceDHilbertSpace

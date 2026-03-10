@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzGroup.Boosts.Basic
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.Mathematics.FDerivCurry
+module
+
+public import PhysLean.Relativity.LorentzGroup.Boosts.Basic
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.Mathematics.FDerivCurry
 /-!
 
 # Boosts of space time
@@ -31,6 +33,8 @@ See e.g.
 - https://en.wikipedia.org/wiki/Lorentz_transformation
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

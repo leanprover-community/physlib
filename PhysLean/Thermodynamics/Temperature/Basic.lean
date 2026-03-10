@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Calculus.Deriv.Inv
-import Mathlib.Analysis.InnerProductSpace.Basic
-import PhysLean.StatisticalMechanics.BoltzmannConstant
-import PhysLean.Meta.TODO.Basic
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import PhysLean.StatisticalMechanics.BoltzmannConstant
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 # Temperature
@@ -20,6 +22,8 @@ non-mathematical physics.
 The choice of units can be made on a case-by-case basis, as long as they are done consistently.
 
 -/
+
+@[expose] public section
 open NNReal
 
 /-- The type `Temperature` represents the temperature in a given (but arbitrary) set of units

@@ -3,13 +3,17 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Contraction.Products
+module
+
+public import PhysLean.Relativity.Tensors.Contraction.Products
 /-!
 
 # Constructors of tensors.
 
 There are a number of ways to construct explicit tensors.
 -/
+
+@[expose] public section
 
 open Module IndexNotation
 open CategoryTheory
@@ -192,7 +196,8 @@ lemma actionT_fromPairT {c1 c2 : C}
 
 lemma fromPairT_map_right {c1 c2 c2' : C} (h :c2 = c2')
     (x : (S.FD.obj (Discrete.mk c1)).V ⊗[k] (S.FD.obj (Discrete.mk c2)).V) :
-    fromPairT (TensorProduct.map LinearMap.id (S.FD.map (eqToHom (by rw [h]))).hom.hom' x) =
+    fromPairT (TensorProduct.map LinearMap.id
+    (S.FD.map (eqToHom (congrArg Discrete.mk h))).hom.hom' x) =
     permT id (by simp [h])
     (fromPairT x) := by
   let P (x : (S.FD.obj (Discrete.mk c1)).V ⊗[k] (S.FD.obj (Discrete.mk c2)).V) : Prop :=

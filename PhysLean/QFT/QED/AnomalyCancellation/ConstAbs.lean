@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.VectorLike
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.VectorLike
 /-!
 # Charges assignments with constant abs
 
 We look at charge assignments in which all charges have the same absolute value.
 
 -/
+
+@[expose] public section
 
 open Nat
 open Finset

@@ -3,8 +3,10 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import PhysLean.QuantumMechanics.DDimensions.Hydrogen.Basic
-import PhysLean.QuantumMechanics.DDimensions.Operators.Commutation
+module
+
+public import PhysLean.QuantumMechanics.DDimensions.Hydrogen.Basic
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Commutation
 /-!
 
 # Laplace-Runge-Lenz vector
@@ -21,6 +23,8 @@ The main results are
 - The relation `𝐀(ε)² = 2m 𝐇(ε)(𝐋² + ¼ℏ²(d-1)²) + m²k² + ε²(⋯)` in `lrlOperatorSqr_eq`
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 namespace HydrogenAtom

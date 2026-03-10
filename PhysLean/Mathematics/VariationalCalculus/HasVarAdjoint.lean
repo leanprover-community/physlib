@@ -3,7 +3,9 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.VariationalCalculus.IsLocalizedfunctionTransform
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.IsLocalizedfunctionTransform
 /-!
 # Variational adjoint
 
@@ -22,6 +24,8 @@ The key results are:
     `HasVarAdjoint.neg`, `HasVarAdjoint.add`, `HasVarAdjoint.sub`, `HasVarAdjoint.mul_left`,
     `HasVarAdjoint.mul_right`, `HasVarAdjoint.smul_left`, `HasVarAdjoint.smul_right`
 -/
+
+@[expose] public section
 
 open Module InnerProductSpace MeasureTheory ContDiff
 

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.WickTerm
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.WickTerm
 /-!
 
 # Wick's theorem
@@ -14,6 +16,8 @@ for lists of fields containing both fermions and bosons.
 Wick's theorem is related to Isserlis' theorem in mathematics.
 
 -/
+
+@[expose] public section
 
 namespace FieldSpecification
 variable {𝓕 : FieldSpecification}

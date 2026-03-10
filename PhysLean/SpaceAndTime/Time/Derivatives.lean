@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.Basic
+module
+
+public import PhysLean.SpaceAndTime.SpaceTime.Basic
 /-!
 
 # Time Derivatives
@@ -27,6 +29,8 @@ In this module we define and prove basic lemmas about derivatives of functions o
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Time
 

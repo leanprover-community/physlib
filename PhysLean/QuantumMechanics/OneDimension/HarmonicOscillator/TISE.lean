@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Eigenfunction
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Eigenfunction
 /-!
 
 # The time-independent Schrodinger equation
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

@@ -3,12 +3,16 @@ Copyright (c) 2025 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import PhysLean.Relativity.PauliMatrices.Basic
-import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
+module
+
+public import PhysLean.Relativity.PauliMatrices.Basic
+public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
 
 /-!
 # The Pauli matrices, interpreted as a Clifford algebra
 -/
+
+@[expose] public section
 noncomputable section
 
 namespace PauliMatrix

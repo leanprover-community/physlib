@@ -3,12 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Contraction.Basic
+module
+
+public import PhysLean.Relativity.Tensors.Contraction.Basic
 /-!
 
 # Contractions on basis tensors
 
 -/
+
+@[expose] public section
 
 open IndexNotation CategoryTheory MonoidalCategory Module
 
@@ -68,7 +72,7 @@ def ofFin {n : ℕ} {c : Fin (n + 1 + 1) → C}
   if hi : m = i then Fin.cast (by subst hi; rfl) x.1
   else if hj : m = j then Fin.cast (by subst hj; rfl) x.2
   else
-    Fin.cast (by simp; rw [Pure.dropPairEmb_dropPairEmbPre])
+    Fin.cast (by simp)
     (b (Pure.dropPairEmbPre i j hij m (by omega)))
 
 @[simp]

@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Modules
-import PhysLean.Relativity.SL2C.Basic
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Modules
+public import PhysLean.Relativity.SL2C.Basic
 /-!
 
 # Weyl fermions
@@ -13,6 +15,8 @@ A good reference for the material in this file is:
 https://particle.physics.ucdavis.edu/modernsusy/slides/slideimages/spinorfeynrules.pdf
 
 -/
+
+@[expose] public section
 
 namespace Fermion
 noncomputable section

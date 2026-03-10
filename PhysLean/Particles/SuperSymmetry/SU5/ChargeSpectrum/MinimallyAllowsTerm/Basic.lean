@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.AllowsTerm
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.AllowsTerm
 /-!
 
 # Charge spectrum which minimally allows terms
@@ -49,6 +51,8 @@ We show that every charge spectrum which minimally allows `T` is of the form
 
 There are no known references for this material.
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 namespace SU5

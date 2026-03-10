@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
 /-!
 # Properties of Quad Sols for SM with RHN
 
@@ -15,6 +17,8 @@ and show that it is a surjection. The main reference for this is:
 - https://arxiv.org/abs/2006.03588
 
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace PlusU1

@@ -3,8 +3,10 @@ Copyright (c) 2025 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Distribution.TemperedDistribution
-import PhysLean.Meta.TODO.Basic
+module
+
+public import Mathlib.Analysis.Distribution.TemperedDistribution
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 # Distributions
@@ -38,6 +40,8 @@ functions from `E` to `F`. We give a more precise definition of distributions be
   we define properties of distributions directly related to `Space`.
 
 -/
+
+@[expose] public section
 
 open SchwartzMap NNReal
 noncomputable section

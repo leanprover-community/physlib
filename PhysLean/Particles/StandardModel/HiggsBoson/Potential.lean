@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.HiggsBoson.Basic
-import Mathlib.Tactic.Cases
+module
+
+public import PhysLean.Particles.StandardModel.HiggsBoson.Basic
+public import Mathlib.Tactic.Cases
 /-!
 # The potential of the Higgs field
 
@@ -13,6 +15,8 @@ We define the potential of the Higgs field.
 We show that the potential is a smooth function on spacetime.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

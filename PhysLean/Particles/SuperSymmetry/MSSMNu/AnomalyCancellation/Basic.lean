@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.AnomalyCancellation.Basic
+module
+
+public import PhysLean.QFT.AnomalyCancellation.Basic
 /-!
 # The MSSM with 3 families and RHNs
 
@@ -11,6 +13,8 @@ We define the system of ACCs for the MSSM with 3 families and RHNs.
 We define the system of charges for 1-species. We prove some basic lemmas about them.
 
 -/
+
+@[expose] public section
 
 open Nat
 open BigOperators

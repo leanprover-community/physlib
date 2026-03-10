@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.Basic
+module
+
+public import PhysLean.Units.Basic
 /-!
 
 ## Types which depend on dimensions
@@ -22,6 +24,8 @@ We define three versions
   continuity condition on `scaleUnit`.
 
 -/
+
+@[expose] public section
 
 open CarriesDimension
 open NNReal

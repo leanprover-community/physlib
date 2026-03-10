@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.PatiSalam.Basic
-import PhysLean.Particles.BeyondTheStandardModel.GeorgiGlashow.Basic
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.PatiSalam.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.GeorgiGlashow.Basic
 /-!
 
 # The Spin(10) Model
@@ -13,6 +15,8 @@ Note: By physicists this is usually called SO(10). However, the true gauge group
 is Spin(10).
 
 -/
+
+@[expose] public section
 
 namespace Spin10Model
 

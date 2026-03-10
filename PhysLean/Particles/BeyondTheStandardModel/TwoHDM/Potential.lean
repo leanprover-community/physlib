@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.GramMatrix
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.GramMatrix
 /-!
 
 # The potential of the Two Higgs doublet model
@@ -49,6 +51,8 @@ Stability arguments of the potential follow, in part, those from
 Although we note that we explicitly prove that one of the steps in this paper is not valid.
 
 -/
+
+@[expose] public section
 namespace TwoHiggsDoublet
 open InnerProductSpace
 open StandardModel

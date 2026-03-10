@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Completeness
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Completeness
 /-!
 
 # Quanta of 10d representations
@@ -81,6 +83,8 @@ properties thereof.
 A reference for the anomaly cancellation conditions is arXiv:1401.5084.
 
 -/
+
+@[expose] public section
 namespace FTheory
 
 namespace SU5

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.NormalOrder
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.NormalOrder
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
 /-!
 
 # Normal Ordering in the FieldOpFreeAlgebra
@@ -17,6 +19,8 @@ In this module we extend the normal ordering to a linear map on `FieldOpFreeAlge
 We derive properties of this normal ordering.
 
 -/
+
+@[expose] public section
 
 namespace FieldSpecification
 variable {𝓕 : FieldSpecification}

@@ -3,8 +3,10 @@ Copyright (c) 2025 Shlok Vaibhav Singh. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shlok Vaibhav Singh
 -/
-import PhysLean.Meta.Informal.Basic
-import PhysLean.Meta.Sorry
+module
+
+public import PhysLean.Meta.Informal.Basic
+public import PhysLean.Meta.Sorry
 /-!
 # Coplanar Double Pendulum
 ### Tag: LnL_1.5.1
@@ -61,6 +63,8 @@ so that the Lagrangian becomes:
   (m_1 + m_2)g l_1\cos\phi_1 + m_2 g l_2\cos\phi_2
 $$
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 

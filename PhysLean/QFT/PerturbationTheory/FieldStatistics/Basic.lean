@@ -3,11 +3,13 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.List.InsertIdx
-import Mathlib.Tactic.FinCases
-import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
-import Mathlib.Data.Fintype.Card
-import Mathlib.Algebra.FreeMonoid.Basic
+module
+
+public import PhysLean.Mathematics.List.InsertIdx
+public import Mathlib.Tactic.FinCases
+public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
+public import Mathlib.Data.Fintype.Card
+public import Mathlib.Algebra.FreeMonoid.Basic
 /-!
 
 # Field statistics
@@ -15,6 +17,8 @@ import Mathlib.Algebra.FreeMonoid.Basic
 Basic properties related to whether a field, or list of fields, is bosonic or fermionic.
 
 -/
+
+@[expose] public section
 
 /-- The type `FieldStatistic` is the type containing two elements `bosonic` and `fermionic`.
   This type is used to specify if a field or operator obeys bosonic or fermionic statistics. -/

@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.Basic
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.FamilyMaps
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.FamilyMaps
 /-!
 # Family Maps for SM with RHN (no hypercharge)
 
 We give some properties of the family maps for the SM with RHN, in particular, we
 define family universal maps in the case of `LinSols`, `QuadSols`, and `Sols`.
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace SM

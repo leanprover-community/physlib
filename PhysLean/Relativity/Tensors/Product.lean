@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Basic
+module
+
+public import PhysLean.Relativity.Tensors.Basic
 /-!
 
 # The product of tensors
@@ -69,6 +71,8 @@ The following results exist for both `prodP` and `prodT` :
 - arXiv:2411.07667
 
 -/
+
+@[expose] public section
 
 open IndexNotation
 open CategoryTheory

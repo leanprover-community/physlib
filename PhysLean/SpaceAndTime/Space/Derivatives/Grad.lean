@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 -/
-import PhysLean.SpaceAndTime.Space.Derivatives.Basic
+module
+
+public import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
 # Gradient of functions and distributions on `Space d`
@@ -47,6 +49,8 @@ of the input function with respect to each spatial coordinate.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Space
 

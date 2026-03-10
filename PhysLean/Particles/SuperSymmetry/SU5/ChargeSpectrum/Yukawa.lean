@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoConstrained
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoConstrained
 /-!
 
 # Yukawa charges
@@ -45,6 +47,8 @@ this module.
 There are no known references for this module.
 
 -/
+
+@[expose] public section
 namespace SuperSymmetry
 namespace SU5
 

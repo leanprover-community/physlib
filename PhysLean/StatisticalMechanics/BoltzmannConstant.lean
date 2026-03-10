@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Data.NNReal.Defs
+module
+
+public import Mathlib.Data.NNReal.Defs
 /-!
 
 # Boltzmann constant
@@ -14,6 +16,8 @@ The Boltzmann constant is a constant `kB` of dimension `m² kg s⁻² K⁻¹`, t
 In this module give the value of the Boltzmann constant.
 
 -/
+
+@[expose] public section
 open NNReal
 
 namespace Constants

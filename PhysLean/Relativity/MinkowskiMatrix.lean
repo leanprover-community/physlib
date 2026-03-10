@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.Lie.Classical
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Algebra.Lie.Classical
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 /-!
 
 # The Minkowski matrix
@@ -52,6 +54,8 @@ This will be used to help define the Lorentz group in later files.
 No references are given here.
 
 -/
+
+@[expose] public section
 
 open Matrix
 /-!

@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.MinkowskiMatrix
-import PhysLean.Meta.TODO.Basic
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Topology.Instances.Matrix
+module
+
+public import PhysLean.Relativity.MinkowskiMatrix
+public import PhysLean.Meta.TODO.Basic
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Topology.Instances.Matrix
 /-!
 # The Lorentz Group
 
@@ -18,6 +20,8 @@ We define the Lorentz group.
 <https://cdn.ku.edu.tr/cdn/files/amostafazadeh/phys517_518/phys517_2016f/Handouts/A_Jaffi_Lorentz_Group.pdf>
 
 -/
+
+@[expose] public section
 TODO "6VZHM" "Define the Lie group structure on the Lorentz group."
 
 noncomputable section

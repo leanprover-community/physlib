@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Pre
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Metric
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Pre
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Metric
 /-!
 
 ## Complex Lorentz tensors
 
 -/
+
+@[expose] public section
 open Matrix
 open MatrixGroups
 open Complex

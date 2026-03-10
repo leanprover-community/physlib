@@ -3,14 +3,18 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.Relativity.LorentzGroup.Orthochronous.Basic
+module
+
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.Relativity.LorentzGroup.Orthochronous.Basic
 /-!
 # The Restricted Lorentz Group
 
 This file is currently a stub.
 
 -/
+
+@[expose] public section
 
 TODO "6VZNP" "Prove that every member of the restricted Lorentz group is
   combination of a boost and a rotation."

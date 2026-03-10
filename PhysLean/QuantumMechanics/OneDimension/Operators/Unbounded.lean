@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PlaneWaves
-import PhysLean.QuantumMechanics.PlanckConstant
-import Mathlib.Analysis.Calculus.FDeriv.Star
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PlaneWaves
+public import PhysLean.QuantumMechanics.PlanckConstant
+public import Mathlib.Analysis.Calculus.FDeriv.Star
 /-!
 
 # Unbounded operators
@@ -16,6 +18,8 @@ It is likely one day the material in this file will be moved to or appear
 in another form within Mathlib.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

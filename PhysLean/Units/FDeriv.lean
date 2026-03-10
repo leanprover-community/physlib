@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.WithDim.Basic
+module
+
+public import PhysLean.Units.WithDim.Basic
 /-!
 
 # Dimensional invariance of fderiv
@@ -20,6 +22,8 @@ The `fderiv` of this `fderiv ℝ f : M1 → M1 →L[ℝ] M2` takes
 in which the derivative is taken.
 
 -/
+
+@[expose] public section
 
 open UnitDependent CarriesDimension NNReal
 

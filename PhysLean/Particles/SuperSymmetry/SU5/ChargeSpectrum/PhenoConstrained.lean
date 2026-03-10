@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.AllowsTerm
-import Mathlib.Tactic.Polyrith
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.AllowsTerm
+public import Mathlib.Tactic.Polyrith
 /-!
 
 # Pheno constrained charge spectra
@@ -53,6 +55,8 @@ We define some variations of this result.
 There are no known references for the material in this file.
 
 -/
+
+@[expose] public section
 namespace SuperSymmetry
 
 namespace SU5

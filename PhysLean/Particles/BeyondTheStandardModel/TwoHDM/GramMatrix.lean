@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.Basic
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.Basic
 /-!
 
 # The gram matrix for the two Higgs doublet model
@@ -14,6 +16,8 @@ We will show that the gram matrix of the two Higgs doublet model
 describes the gauge orbits of the configuration space.
 
 -/
+
+@[expose] public section
 namespace TwoHiggsDoublet
 
 open InnerProductSpace

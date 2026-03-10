@@ -3,9 +3,11 @@ Copyright (c) 2025 Nicola Bernini. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicola Bernini
 -/
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.ClassicalMechanics.EulerLagrange
-import PhysLean.ClassicalMechanics.HamiltonsEquations
+module
+
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.ClassicalMechanics.EulerLagrange
+public import PhysLean.ClassicalMechanics.HamiltonsEquations
 /-!
 
 # The Damped Harmonic Oscillator
@@ -58,6 +60,8 @@ References for the damped harmonic oscillator include:
 - Goldstein, Classical Mechanics, Chapter 2.
 
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 open Real

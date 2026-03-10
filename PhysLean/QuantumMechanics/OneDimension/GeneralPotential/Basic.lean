@@ -3,14 +3,18 @@ Copyright (c) 2025 Ammar Husain. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ammar Husain
 -/
-import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
-import PhysLean.QuantumMechanics.OneDimension.Operators.Position
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Position
 
 /-!
 
 # The 1d QM system with general potential
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

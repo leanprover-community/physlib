@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 /-!
 
 # Lorentz Velocities
@@ -12,6 +14,8 @@ In this module we define Lorentz velocities to be
 Lorentz vectors which have norm equal to one and which are future-directed.
 
 -/
+
+@[expose] public section
 
 open TensorProduct
 

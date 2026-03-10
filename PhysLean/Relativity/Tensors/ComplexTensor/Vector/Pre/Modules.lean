@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.SL2C.Basic
+module
+
+public import PhysLean.Relativity.SL2C.Basic
 /-!
 
 ## Modules associated with complex Lorentz vectors
@@ -13,6 +15,8 @@ These definitions are preludes to the definitions of
 `Lorentz.complexContr` and `Lorentz.complexCo`.
 
 -/
+
+@[expose] public section
 
 namespace Lorentz
 

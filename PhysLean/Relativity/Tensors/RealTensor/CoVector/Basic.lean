@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Metrics.Basic
-import Mathlib.Geometry.Manifold.IsManifold.Basic
-import PhysLean.Relativity.Tensors.Elab
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Metrics.Basic
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
+public import PhysLean.Relativity.Tensors.Elab
 /-!
 
 # Lorentz co vectors
@@ -14,6 +16,8 @@ In this module we define Lorentz vectors as real Lorentz tensors with a single u
 We create an API around Lorentz vectors to make working with them as easy as possible.
 
 -/
+
+@[expose] public section
 open Module IndexNotation
 open CategoryTheory
 open MonoidalCategory

@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.ClassicalMechanics.RigidBody.Basic
+module
+
+public import PhysLean.ClassicalMechanics.RigidBody.Basic
 /-!
 
 # The solid sphere as a rigid body
@@ -12,6 +14,8 @@ In this module we consider the solid sphere as a rigid body, and compute its mas
 center of mass and inertia tensor.
 
 -/
+
+@[expose] public section
 
 open Manifold
 open MeasureTheory

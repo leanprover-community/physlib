@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
-import Mathlib.Tactic.LinearCombination
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
+public import Mathlib.Tactic.LinearCombination
 /-!
 # Plane of non-solutions
 
@@ -14,6 +16,8 @@ vector space of charges on which there are no solutions.
 The main result of this file is `eleven_dim_plane_of_no_sols_exists`, which states that
 an 11 dimensional plane of charges exists on which there are no solutions except the origin.
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace PlusU1

@@ -3,12 +3,18 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
+module
+meta import Mathlib.Data.Fintype.Sigma
+meta import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
+import all Init.Data.Fin.Fold
+public import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
 /-!
 
 # Equivalence extracting element from contraction
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}

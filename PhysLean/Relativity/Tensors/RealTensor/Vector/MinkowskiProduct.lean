@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Basic
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Basic
 /-!
 
 # Minkowski product on Lorentz vectors
@@ -11,6 +13,8 @@ import PhysLean.Relativity.Tensors.RealTensor.Vector.Basic
 In this module we define and create an API around the Minkowski product on Lorentz vectors.
 
 -/
+
+@[expose] public section
 open Module IndexNotation
 open Matrix
 open MatrixGroups

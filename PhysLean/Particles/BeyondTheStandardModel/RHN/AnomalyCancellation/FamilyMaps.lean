@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Basic
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Basic
 /-!
 # Family maps for the Standard Model for RHN ACCs
 
 We define the a series of maps between the charges for different numbers of families.
 -/
+
+@[expose] public section
 
 namespace SMRHN
 open SMνCharges

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
-import PhysLean.SpaceAndTime.Time.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import PhysLean.SpaceAndTime.Time.Basic
 /-!
 
 # Units on time
@@ -25,6 +27,8 @@ a given time unit, and then construct all other time units from it. We choose to
 existence of the time unit of seconds, and construct all other time units from that.
 
 -/
+
+@[expose] public section
 
 open NNReal
 

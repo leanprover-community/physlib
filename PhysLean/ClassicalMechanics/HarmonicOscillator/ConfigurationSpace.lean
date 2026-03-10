@@ -3,14 +3,18 @@ Copyright (c) 2026 Nicola Bernini. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicola Bernini
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
-import PhysLean.SpaceAndTime.Time.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import PhysLean.SpaceAndTime.Time.Basic
 /-!
 # Configuration space of the harmonic oscillator
 
 The configuration space is defined as a one-dimensional smooth manifold,
 modeled on `ℝ`, with a chosen coordinate.
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 

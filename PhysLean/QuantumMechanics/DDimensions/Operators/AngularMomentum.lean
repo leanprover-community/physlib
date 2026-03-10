@@ -3,8 +3,10 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import PhysLean.QuantumMechanics.DDimensions.Operators.Position
-import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
+module
+
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Position
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
 /-!
 
 # Angular momentum operator
@@ -37,6 +39,8 @@ Notation:
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 noncomputable section

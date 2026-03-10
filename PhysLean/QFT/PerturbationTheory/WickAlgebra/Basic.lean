@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
-import Mathlib.Algebra.RingQuot
-import Mathlib.RingTheory.TwoSidedIdeal.Operations
+module
+
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
+public import Mathlib.Algebra.RingQuot
+public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 /-!
 
 # The Wick Algebra
@@ -14,6 +16,8 @@ This is the algebra with the minimal assumptions necessary to prove Wick's theor
 It satisfies the appropriate universality conditions with respect to the operator algebra.
 
 -/
+
+@[expose] public section
 
 namespace FieldSpecification
 open FieldOpFreeAlgebra

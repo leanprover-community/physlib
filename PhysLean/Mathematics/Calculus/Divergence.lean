@@ -3,9 +3,11 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Mathlib.Analysis.InnerProductSpace.Trace
-import PhysLean.Mathematics.Calculus.AdjFDeriv
-import PhysLean.SpaceAndTime.TimeAndSpace.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Trace
+public import PhysLean.Mathematics.Calculus.AdjFDeriv
+public import PhysLean.SpaceAndTime.TimeAndSpace.Basic
 /-!
 
 # Divergence
@@ -14,6 +16,8 @@ In this module we define and create an API around the divergence of a map `f : E
 where `E` is a normed space over a field `𝕜`.
 
 -/
+
+@[expose] public section
 noncomputable section
 open Module
 open scoped InnerProductSpace

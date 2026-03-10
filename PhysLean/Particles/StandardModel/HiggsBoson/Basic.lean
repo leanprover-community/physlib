@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.Basic
-import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
+module
+
+public import PhysLean.Particles.StandardModel.Basic
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
+public import Mathlib.Geometry.Manifold.VectorBundle.SmoothSection
 /-!
 
 # The Higgs field
@@ -64,6 +66,8 @@ In this module we define the Higgs field and prove some basic properties.
   [Review of Particle Physics, PDG][ParticleDataGroup:2018ovx]
 
 -/
+
+@[expose] public section
 
 namespace StandardModel
 noncomputable section

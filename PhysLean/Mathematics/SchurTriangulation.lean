@@ -3,8 +3,10 @@ Copyright (c) 2025 Gordon Hsu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gordon Hsu
 -/
-import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import Mathlib.LinearAlgebra.Eigenspace.Triangularizable
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 /-! # Schur triangulation
 
 Schur triangulation is more commonly known as Schur decomposition or Schur triangularization, but
@@ -21,6 +23,8 @@ be decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper tria
 `LinearMap.SchurTriangulationAux.of` contains the main algorithm for the triangulation procedure.
 
 -/
+
+@[expose] public section
 
 open scoped InnerProductSpace
 open Module
@@ -235,7 +239,7 @@ variable [RCLike 𝕜] [IsAlgClosed 𝕜] [Fintype n] [DecidableEq n] [LinearOrd
 
 /-- This is `LinearMap.SchurTriangulationAux` adapted for matrices in the
 Euclidean space. -/
-private noncomputable def schurTriangulationAux :
+noncomputable def schurTriangulationAux :
     OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) × UpperTriangular n 𝕜 :=
   let f := toEuclideanLin A
   let ⟨d, hd, b, hut⟩ := LinearMap.SchurTriangulationAux.of f

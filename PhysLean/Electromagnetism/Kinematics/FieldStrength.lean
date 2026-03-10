@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Kinematics.EMPotential
+module
+
+public import PhysLean.Electromagnetism.Kinematics.EMPotential
 /-!
 
 # The Field Strength Tensor
@@ -41,6 +43,8 @@ We define a tensor version and a matrix version and prover various properties of
 ## iv. References
 
 -/
+
+@[expose] public section
 namespace Electromagnetism
 open Module realLorentzTensor
 open IndexNotation

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Kinematics.MagneticField
-import PhysLean.SpaceAndTime.SpaceTime.Boosts
+module
+
+public import PhysLean.Electromagnetism.Kinematics.MagneticField
+public import PhysLean.SpaceAndTime.SpaceTime.Boosts
 /-!
 
 # Boosts on the electric and magnetic fields
@@ -40,6 +42,8 @@ See e.g.
 - https://en.wikipedia.org/wiki/Classical_electromagnetism_and_special_relativity
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 

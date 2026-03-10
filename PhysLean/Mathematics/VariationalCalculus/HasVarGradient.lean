@@ -3,7 +3,9 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan, Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.VariationalCalculus.HasVarAdjDeriv
+module
+
+public import PhysLean.Mathematics.VariationalCalculus.HasVarAdjDeriv
 /-!
 
 # Variational gradient
@@ -11,6 +13,8 @@ import PhysLean.Mathematics.VariationalCalculus.HasVarAdjDeriv
 Definition of variational gradient that allows for formal treatment of variational calculus
 as used in physics textbooks.
 -/
+
+@[expose] public section
 
 open MeasureTheory ContDiff InnerProductSpace
 

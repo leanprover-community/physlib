@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.Basic
-import Mathlib.NumberTheory.FLT.Three
+module
+
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.Basic
+public import Mathlib.NumberTheory.FLT.Three
 /-!
 # Parameterizations for solutions to the linear ACCs for 1 family
 
@@ -15,6 +17,8 @@ In this file we give two parameterizations
 These parameterizations are based on:
 https://arxiv.org/abs/1907.00514
 -/
+
+@[expose] public section
 
 namespace SM
 namespace SMNoGrav

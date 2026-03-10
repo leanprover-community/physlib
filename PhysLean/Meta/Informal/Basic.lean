@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean.Parser.Term
+module
+
+public meta import Lean.Parser.Term
 /-!
 
 ## Informal definitions and lemmas
@@ -14,6 +16,8 @@ informal definitions and lemmas.
 Everything else about informal definitions and lemmas are in the `Informal.Post` module.
 
 -/
+
+@[expose] public section
 
 /-- The structure representing an informal definition. -/
 structure InformalDefinition where

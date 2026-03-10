@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Basic
-import Mathlib.LinearAlgebra.TensorProduct.Matrix
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Basic
+public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 /-!
 
 # Tensor products of two real Lorentz vectors
 
 -/
+
+@[expose] public section
 noncomputable section
 
 open Matrix Module MatrixGroups Complex TensorProduct CategoryTheory.MonoidalCategory

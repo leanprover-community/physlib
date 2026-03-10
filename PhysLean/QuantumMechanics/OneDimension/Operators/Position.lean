@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PositionStates
-import PhysLean.QuantumMechanics.OneDimension.Operators.Unbounded
-import PhysLean.Mathematics.Distribution.PowMul
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PositionStates
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Unbounded
+public import PhysLean.Mathematics.Distribution.PowMul
 /-!
 
 # Position operator
@@ -17,6 +19,8 @@ In this module we define:
 We show that position wavefunctions are generalized eigenvectors of the position operator.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

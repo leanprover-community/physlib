@@ -3,8 +3,10 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith
 -/
-import PhysLean.ClassicalMechanics.WaveEquation.Basic
-import PhysLean.Electromagnetism.Dynamics.IsExtrema
+module
+
+public import PhysLean.ClassicalMechanics.WaveEquation.Basic
+public import PhysLean.Electromagnetism.Dynamics.IsExtrema
 /-!
 
 # Electromagnetic wave equation
@@ -50,6 +52,8 @@ in general dimensions.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 

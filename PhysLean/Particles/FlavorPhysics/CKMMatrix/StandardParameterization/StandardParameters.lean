@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.PhaseFreedom
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.StandardParameterization.Basic
+module
+
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.PhaseFreedom
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.StandardParameterization.Basic
 /-!
 # Standard parameters for the CKM Matrix
 
@@ -15,6 +17,8 @@ This leads to the theorem `standParam.exists_for_CKMatrix` which says that up to
 CKM matrix can be written using the standard parameterization.
 
 -/
+
+@[expose] public section
 open Matrix Complex
 open ComplexConjugate
 open CKMMatrix

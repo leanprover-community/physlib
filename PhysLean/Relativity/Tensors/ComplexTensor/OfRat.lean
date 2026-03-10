@@ -3,14 +3,18 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Basic
-import PhysLean.Mathematics.RatComplexNum
-import PhysLean.Relativity.Tensors.Dual
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Basic
+public import PhysLean.Mathematics.RatComplexNum
+public import PhysLean.Relativity.Tensors.Dual
 /-!
 
 # Basis for tensors in a tensor species
 
 -/
+
+@[expose] public section
 
 open Module IndexNotation
 open CategoryTheory

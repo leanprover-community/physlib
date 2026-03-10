@@ -3,14 +3,18 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.TensorSpecies.Basic
-import Mathlib.Topology.Algebra.Module.ModuleTopology
-import Mathlib.Analysis.RCLike.Basic
+module
+
+public import PhysLean.Relativity.Tensors.TensorSpecies.Basic
+public import Mathlib.Topology.Algebra.Module.ModuleTopology
+public import Mathlib.Analysis.RCLike.Basic
 /-!
 
 # Tensors
 
 -/
+
+@[expose] public section
 
 open Module IndexNotation CategoryTheory MonoidalCategory
 

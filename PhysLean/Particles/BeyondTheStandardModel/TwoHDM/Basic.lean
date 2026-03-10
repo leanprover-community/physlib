@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.HiggsBoson.Potential
-import Mathlib.Analysis.Matrix.Normed
-import Mathlib.Analysis.Matrix.Order
+module
+
+public import PhysLean.Particles.StandardModel.HiggsBoson.Potential
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.Matrix.Order
 /-!
 
 # The Two Higgs Doublet Model
@@ -23,6 +25,8 @@ doublet.
 - https://arxiv.org/abs/1605.03237
 
 -/
+
+@[expose] public section
 
 open StandardModel
 

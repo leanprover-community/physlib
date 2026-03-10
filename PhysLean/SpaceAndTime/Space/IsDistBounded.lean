@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Integrals.RadialAngularMeasure
-import PhysLean.SpaceAndTime.Time.Derivatives
-import Mathlib.Tactic.Cases
+module
+
+public import PhysLean.SpaceAndTime.Space.Integrals.RadialAngularMeasure
+public import PhysLean.SpaceAndTime.Time.Derivatives
+public import Mathlib.Tactic.Cases
 /-!
 
 # Functions on `Space d` which can be made into distributions
@@ -59,6 +61,8 @@ of the space.
 ## iv. References
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal
 noncomputable section
 

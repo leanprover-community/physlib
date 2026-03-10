@@ -3,7 +3,9 @@ Copyright (c) 2025 Matteo Cipollina. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Basic
+module
+
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Basic
 /-!
 # Canonical Ensemble: Thermodynamic Identities and Relations
 
@@ -49,6 +51,8 @@ Same references as `Basic.lean` (Landau–Lifshitz; Tong), especially the identi
 `F = U - T S` and `U = -∂_β log Z`.
 
 -/
+
+@[expose] public section
 set_option linter.unusedVariables.funArgs false
 
 namespace CanonicalEnsemble

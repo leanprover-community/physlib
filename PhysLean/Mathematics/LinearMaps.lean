@@ -3,11 +3,13 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Tactic.Polyrith
-import Mathlib.Algebra.Module.LinearMap.Defs
-import Mathlib.Data.Fintype.BigOperators
-import PhysLean.Meta.TODO.Basic
-import Mathlib.Algebra.Ring.Rat
+module
+
+public import Mathlib.Tactic.Polyrith
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Data.Fintype.BigOperators
+public import PhysLean.Meta.TODO.Basic
+public import Mathlib.Algebra.Ring.Rat
 /-!
 # Linear maps
 
@@ -15,6 +17,8 @@ Some definitions and properties of linear, bilinear, and trilinear maps, along w
 quadratic and cubic equations.
 
 -/
+
+@[expose] public section
 TODO "6VZLZ" "Replace the definitions in this file with Mathlib definitions."
 
 /-- The structure defining a homogeneous quadratic equation. -/

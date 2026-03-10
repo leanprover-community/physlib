@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Lode Vermeulen
 -/
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.ClassicalMechanics.EulerLagrange
-import PhysLean.ClassicalMechanics.HamiltonsEquations
-import PhysLean.ClassicalMechanics.HarmonicOscillator.ConfigurationSpace
+module
+
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.ClassicalMechanics.EulerLagrange
+public import PhysLean.ClassicalMechanics.HamiltonsEquations
+public import PhysLean.ClassicalMechanics.HarmonicOscillator.ConfigurationSpace
 /-!
 
 # The Classical Harmonic Oscillator
@@ -80,6 +82,8 @@ References for the classical harmonic oscillator include:
 - Landau & Lifshitz, Mechanics, page 58, section 21.
 
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 open Real

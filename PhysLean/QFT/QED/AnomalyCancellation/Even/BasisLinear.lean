@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.BasisLinear
-import PhysLean.QFT.QED.AnomalyCancellation.VectorLike
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.BasisLinear
+public import PhysLean.QFT.QED.AnomalyCancellation.VectorLike
 /-!
 
 # Splitting the linear solutions in the even case into two ACC-satisfying planes
@@ -75,6 +77,8 @@ conditions.
 - https://arxiv.org/pdf/1912.04804.pdf
 
 -/
+
+@[expose] public section
 
 open Nat Module Finset BigOperators
 

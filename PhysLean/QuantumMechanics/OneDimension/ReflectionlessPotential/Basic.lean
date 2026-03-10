@@ -3,11 +3,13 @@ Copyright (c) 2025 Afiq Hatta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Afiq Hatta
 -/
-import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
-import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
-import PhysLean.QuantumMechanics.OneDimension.Operators.Position
-import PhysLean.SpaceAndTime.Time.Basic
-import PhysLean.Mathematics.Trigonometry.Tanh
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Position
+public import PhysLean.SpaceAndTime.Time.Basic
+public import PhysLean.Mathematics.Trigonometry.Tanh
 /-!
 
 # 1d Reflectionless Potential
@@ -23,6 +25,8 @@ This file contains
 annihilation operators
 - Show reflectionless properties
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 open Real

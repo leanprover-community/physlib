@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Unit
+module
+
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Unit
 /-!
 
 # Metrics of Weyl fermions
@@ -13,6 +15,8 @@ These allow us to go from left-handed to alt-left-handed Weyl fermions and back,
 and from right-handed to alt-right-handed Weyl fermions and back.
 
 -/
+
+@[expose] public section
 
 namespace Fermion
 noncomputable section

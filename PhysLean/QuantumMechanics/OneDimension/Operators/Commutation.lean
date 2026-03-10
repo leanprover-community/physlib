@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.Operators.Position
-import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Position
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
 /-!
 
 # Commutation relations
@@ -12,6 +14,8 @@ import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
 The commutation relations between different operators.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

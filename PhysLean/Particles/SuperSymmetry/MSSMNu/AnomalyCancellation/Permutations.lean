@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Basic
-import Mathlib.RepresentationTheory.Basic
+module
+
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Basic
+public import Mathlib.RepresentationTheory.Basic
 /-!
 # Permutations of MSSM charges and solutions
 
@@ -12,6 +14,8 @@ The three family MSSM charges has a family permutation of S₃⁶. This file def
 and its action on the MSSM.
 
 -/
+
+@[expose] public section
 
 open Nat
 open Finset

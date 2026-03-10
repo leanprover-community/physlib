@@ -3,15 +3,19 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.SL2C.SelfAdjoint
-import Mathlib.Analysis.Complex.Polynomial.Basic
-import PhysLean.Relativity.LorentzGroup.Restricted.Basic
+module
+
+public import PhysLean.Relativity.SL2C.SelfAdjoint
+public import Mathlib.Analysis.Complex.Polynomial.Basic
+public import PhysLean.Relativity.LorentzGroup.Restricted.Basic
 /-!
 # The group SL(2, ℂ) and it's relation to the Lorentz group
 
 The aim of this file is to give the relationship between `SL(2, ℂ)` and the Lorentz group.
 
 -/
+
+@[expose] public section
 namespace Lorentz
 
 open Module Matrix

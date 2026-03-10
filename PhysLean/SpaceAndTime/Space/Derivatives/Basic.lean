@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 -/
-import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-import Mathlib.Analysis.Calculus.Gradient.Basic
-import PhysLean.SpaceAndTime.Space.DistOfFunction
-import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
+module
+
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Calculus.Gradient.Basic
+public import PhysLean.SpaceAndTime.Space.DistOfFunction
+public import Mathlib.Geometry.Manifold.MFDeriv.FDeriv
 /-!
 
 # Derivatives on Space
@@ -48,6 +50,8 @@ in the standard directions.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace Space
 

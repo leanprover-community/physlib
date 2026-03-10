@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.WithDim.Basic
+module
+
+public import PhysLean.Units.WithDim.Basic
 /-!
 
 # Energy
@@ -12,6 +14,8 @@ In this module we define the dimensionful type corresponding to an energy.
 We define specific instances of energy.
 
 -/
+
+@[expose] public section
 open Dimension
 open NNReal
 

@@ -3,10 +3,12 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import Mathlib.Analysis.Calculus.Gradient.Basic
-import PhysLean.Mathematics.FDerivCurry
-import PhysLean.Mathematics.InnerProductSpace.Adjoint
-import PhysLean.Mathematics.InnerProductSpace.Calculus
+module
+
+public import Mathlib.Analysis.Calculus.Gradient.Basic
+public import PhysLean.Mathematics.FDerivCurry
+public import PhysLean.Mathematics.InnerProductSpace.Adjoint
+public import PhysLean.Mathematics.InnerProductSpace.Calculus
 /-!
 
 # Adjoint Fréchet derivative
@@ -23,6 +25,8 @@ that when working with `fderiv` the natural product type is `X × Y` but when wo
 the natural product is `WithLp 2 (X × Y)`.
 For example:
 -/
+
+@[expose] public section
 
 noncomputable section
 

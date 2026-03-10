@@ -3,7 +3,9 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong, Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Vacuum.IsPlaneWave
+module
+
+public import PhysLean.Electromagnetism.Vacuum.IsPlaneWave
 /-!
 
 # Harmonic Wave in Vacuum
@@ -49,6 +51,8 @@ form of a matrix rather than a vector.
 ## iv. References
 
 -/
+
+@[expose] public section
 namespace Electromagnetism
 
 open Space Module

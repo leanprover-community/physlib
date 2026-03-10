@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.CategoryTheory.Core
-import Mathlib.CategoryTheory.Comma.Over.Basic
-import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import PhysLean.Meta.TODO.Basic
+module
+
+public import Mathlib.CategoryTheory.Core
+public import Mathlib.CategoryTheory.Comma.Over.Basic
+public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 # Color
@@ -45,6 +47,8 @@ a symmetric monoidal functor `OverColor C ⥤ Rep k G`, given by taking tensor p
 <https://doi.org/10.48550/arXiv.2411.07667>.
 
 -/
+
+@[expose] public section
 
 namespace IndexNotation
 open CategoryTheory

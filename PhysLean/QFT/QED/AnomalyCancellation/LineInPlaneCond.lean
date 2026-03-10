@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.ConstAbs
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.ConstAbs
 /-!
 # Line in plane condition
 
@@ -20,6 +22,8 @@ We will show that `n ≥ 4` the `line in plane` condition on solutions implies t
 `constAbs` condition.
 
 -/
+
+@[expose] public section
 
 namespace PureU1
 

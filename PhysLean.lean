@@ -1,405 +1,408 @@
-import PhysLean.ClassicalMechanics.Basic
-import PhysLean.ClassicalMechanics.DampedHarmonicOscillator.Basic
-import PhysLean.ClassicalMechanics.EulerLagrange
-import PhysLean.ClassicalMechanics.HamiltonsEquations
-import PhysLean.ClassicalMechanics.HarmonicOscillator.Basic
-import PhysLean.ClassicalMechanics.HarmonicOscillator.ConfigurationSpace
-import PhysLean.ClassicalMechanics.HarmonicOscillator.Solution
-import PhysLean.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
-import PhysLean.ClassicalMechanics.Mass.MassUnit
-import PhysLean.ClassicalMechanics.Pendulum.CoplanarDoublePendulum
-import PhysLean.ClassicalMechanics.Pendulum.MiscellaneousPendulumPivotMotions
-import PhysLean.ClassicalMechanics.Pendulum.SlidingPendulum
-import PhysLean.ClassicalMechanics.RigidBody.Basic
-import PhysLean.ClassicalMechanics.RigidBody.SolidSphere
-import PhysLean.ClassicalMechanics.Scattering.RigidSphere
-import PhysLean.ClassicalMechanics.Vibrations.LinearTriatomic
-import PhysLean.ClassicalMechanics.WaveEquation.Basic
-import PhysLean.ClassicalMechanics.WaveEquation.HarmonicWave
-import PhysLean.CondensedMatter.Basic
-import PhysLean.CondensedMatter.TightBindingChain.Basic
-import PhysLean.Cosmology.Basic
-import PhysLean.Cosmology.FLRW.Basic
-import PhysLean.Electromagnetism.Basic
-import PhysLean.Electromagnetism.Charge.ChargeUnit
-import PhysLean.Electromagnetism.Current.CircularCoil
-import PhysLean.Electromagnetism.Current.InfiniteWire
-import PhysLean.Electromagnetism.Dynamics.Basic
-import PhysLean.Electromagnetism.Dynamics.CurrentDensity
-import PhysLean.Electromagnetism.Dynamics.Hamiltonian
-import PhysLean.Electromagnetism.Dynamics.IsExtrema
-import PhysLean.Electromagnetism.Dynamics.KineticTerm
-import PhysLean.Electromagnetism.Dynamics.Lagrangian
-import PhysLean.Electromagnetism.Kinematics.Boosts
-import PhysLean.Electromagnetism.Kinematics.EMPotential
-import PhysLean.Electromagnetism.Kinematics.ElectricField
-import PhysLean.Electromagnetism.Kinematics.FieldStrength
-import PhysLean.Electromagnetism.Kinematics.MagneticField
-import PhysLean.Electromagnetism.Kinematics.ScalarPotential
-import PhysLean.Electromagnetism.Kinematics.VectorPotential
-import PhysLean.Electromagnetism.PointParticle.OneDimension
-import PhysLean.Electromagnetism.PointParticle.ThreeDimension
-import PhysLean.Electromagnetism.Vacuum.Constant
-import PhysLean.Electromagnetism.Vacuum.HarmonicWave
-import PhysLean.Electromagnetism.Vacuum.IsPlaneWave
-import PhysLean.Mathematics.Calculus.AdjFDeriv
-import PhysLean.Mathematics.Calculus.Divergence
-import PhysLean.Mathematics.DataStructures.FourTree.Basic
-import PhysLean.Mathematics.DataStructures.FourTree.UniqueMap
-import PhysLean.Mathematics.DataStructures.Matrix.LieTrace
-import PhysLean.Mathematics.Distribution.Basic
-import PhysLean.Mathematics.Distribution.PowMul
-import PhysLean.Mathematics.FDerivCurry
-import PhysLean.Mathematics.Fin
-import PhysLean.Mathematics.Fin.Involutions
-import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
-import PhysLean.Mathematics.Geometry.Metric.Riemannian.Defs
-import PhysLean.Mathematics.InnerProductSpace.Adjoint
-import PhysLean.Mathematics.InnerProductSpace.Basic
-import PhysLean.Mathematics.InnerProductSpace.Calculus
-import PhysLean.Mathematics.InnerProductSpace.Submodule
-import PhysLean.Mathematics.KroneckerDelta
-import PhysLean.Mathematics.LinearMaps
-import PhysLean.Mathematics.List
-import PhysLean.Mathematics.List.InsertIdx
-import PhysLean.Mathematics.List.InsertionSort
-import PhysLean.Mathematics.PiTensorProduct
-import PhysLean.Mathematics.RatComplexNum
-import PhysLean.Mathematics.SO3.Basic
-import PhysLean.Mathematics.SchurTriangulation
-import PhysLean.Mathematics.SpecialFunctions.PhysHermite
-import PhysLean.Mathematics.Trigonometry.Tanh
-import PhysLean.Mathematics.VariationalCalculus.Basic
-import PhysLean.Mathematics.VariationalCalculus.HasVarAdjDeriv
-import PhysLean.Mathematics.VariationalCalculus.HasVarAdjoint
-import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
-import PhysLean.Mathematics.VariationalCalculus.IsLocalizedfunctionTransform
-import PhysLean.Mathematics.VariationalCalculus.IsTestFunction
-import PhysLean.Meta.AllFilePaths
-import PhysLean.Meta.Basic
-import PhysLean.Meta.Informal.Basic
-import PhysLean.Meta.Informal.Post
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.Meta.Linters.Sorry
-import PhysLean.Meta.Notes.Basic
-import PhysLean.Meta.Notes.HTMLNote
-import PhysLean.Meta.Notes.NoteFile
-import PhysLean.Meta.Notes.ToHTML
-import PhysLean.Meta.Remark.Basic
-import PhysLean.Meta.Remark.Properties
-import PhysLean.Meta.Sorry
-import PhysLean.Meta.TODO.Basic
-import PhysLean.Meta.TransverseTactics
-import PhysLean.Optics.Basic
-import PhysLean.Optics.Polarization.Basic
-import PhysLean.Particles.BeyondTheStandardModel.GeorgiGlashow.Basic
-import PhysLean.Particles.BeyondTheStandardModel.PatiSalam.Basic
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Basic
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.FamilyMaps
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.NoGrav.Basic
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.Basic
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.DimSevenPlane
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.FamilyMaps
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Permutations
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.BMinusL
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.BoundPlaneDim
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.FamilyMaps
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.HyperCharge
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.PlaneNonSols
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.QuadSol
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.QuadSolToSol
-import PhysLean.Particles.BeyondTheStandardModel.Spin10.Basic
-import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.Basic
-import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.GramMatrix
-import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.Potential
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Basic
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Invariants
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.PhaseFreedom
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Relations
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Rows
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.StandardParameterization.Basic
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.StandardParameterization.StandardParameters
-import PhysLean.Particles.NeutrinoPhysics.Basic
-import PhysLean.Particles.StandardModel.AnomalyCancellation.Basic
-import PhysLean.Particles.StandardModel.AnomalyCancellation.FamilyMaps
-import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.Basic
-import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.One.Lemmas
-import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.One.LinearParameterization
-import PhysLean.Particles.StandardModel.AnomalyCancellation.Permutations
-import PhysLean.Particles.StandardModel.Basic
-import PhysLean.Particles.StandardModel.HiggsBoson.Basic
-import PhysLean.Particles.StandardModel.HiggsBoson.Potential
-import PhysLean.Particles.StandardModel.Representations
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.B3
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Basic
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.HyperCharge
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.LineY3B3
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.Basic
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.PlaneWithY3B3
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.ToSols
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Permutations
-import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Y3
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.AllowsTerm
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Basic
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Map
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimalSuperSet
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.Basic
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.FinsetTerms
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfFieldLabel
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfPotentialTerm
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoClosed
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoConstrained
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
-import PhysLean.Particles.SuperSymmetry.SU5.FieldLabels
-import PhysLean.Particles.SuperSymmetry.SU5.Potential
-import PhysLean.QFT.AnomalyCancellation.Basic
-import PhysLean.QFT.AnomalyCancellation.GroupActions
-import PhysLean.QFT.PerturbationTheory.CreateAnnihilate
-import PhysLean.QFT.PerturbationTheory.FeynmanDiagrams.Basic
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.Basic
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.Grading
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.NormTimeOrder
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.NormalOrder
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
-import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.TimeOrder
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.Basic
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.CrAnFieldOp
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.CrAnSection
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.Filters
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.NormalOrder
-import PhysLean.QFT.PerturbationTheory.FieldSpecification.TimeOrder
-import PhysLean.QFT.PerturbationTheory.FieldStatistics.Basic
-import PhysLean.QFT.PerturbationTheory.FieldStatistics.ExchangeSign
-import PhysLean.QFT.PerturbationTheory.FieldStatistics.OfFinset
-import PhysLean.QFT.PerturbationTheory.Koszul.KoszulSign
-import PhysLean.QFT.PerturbationTheory.Koszul.KoszulSignInsert
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.Basic
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.Grading
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.NormalOrder.Basic
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.NormalOrder.Lemmas
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.NormalOrder.WickContractions
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.StaticWickTerm
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.StaticWickTheorem
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.SuperCommute
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.TimeContraction
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.TimeOrder
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.Universality
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.WickTerm
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.WicksTheorem
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.WicksTheoremNormal
-import PhysLean.QFT.PerturbationTheory.WickContraction.Basic
-import PhysLean.QFT.PerturbationTheory.WickContraction.Card
-import PhysLean.QFT.PerturbationTheory.WickContraction.Erase
-import PhysLean.QFT.PerturbationTheory.WickContraction.ExtractEquiv
-import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContract
-import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
-import PhysLean.QFT.PerturbationTheory.WickContraction.Involutions
-import PhysLean.QFT.PerturbationTheory.WickContraction.IsFull
-import PhysLean.QFT.PerturbationTheory.WickContraction.Join
-import PhysLean.QFT.PerturbationTheory.WickContraction.Perm
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Basic
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.InsertNone
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.InsertSome
-import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Join
-import PhysLean.QFT.PerturbationTheory.WickContraction.Singleton
-import PhysLean.QFT.PerturbationTheory.WickContraction.StaticContract
-import PhysLean.QFT.PerturbationTheory.WickContraction.SubContraction
-import PhysLean.QFT.PerturbationTheory.WickContraction.TimeCond
-import PhysLean.QFT.PerturbationTheory.WickContraction.TimeContract
-import PhysLean.QFT.PerturbationTheory.WickContraction.Uncontracted
-import PhysLean.QFT.PerturbationTheory.WickContraction.UncontractedList
-import PhysLean.QFT.QED.AnomalyCancellation.Basic
-import PhysLean.QFT.QED.AnomalyCancellation.BasisLinear
-import PhysLean.QFT.QED.AnomalyCancellation.ConstAbs
-import PhysLean.QFT.QED.AnomalyCancellation.Even.BasisLinear
-import PhysLean.QFT.QED.AnomalyCancellation.Even.LineInCubic
-import PhysLean.QFT.QED.AnomalyCancellation.Even.Parameterization
-import PhysLean.QFT.QED.AnomalyCancellation.LineInPlaneCond
-import PhysLean.QFT.QED.AnomalyCancellation.LowDim.One
-import PhysLean.QFT.QED.AnomalyCancellation.LowDim.Three
-import PhysLean.QFT.QED.AnomalyCancellation.LowDim.Two
-import PhysLean.QFT.QED.AnomalyCancellation.Odd.BasisLinear
-import PhysLean.QFT.QED.AnomalyCancellation.Odd.LineInCubic
-import PhysLean.QFT.QED.AnomalyCancellation.Odd.Parameterization
-import PhysLean.QFT.QED.AnomalyCancellation.Permutations
-import PhysLean.QFT.QED.AnomalyCancellation.Sorts
-import PhysLean.QFT.QED.AnomalyCancellation.VectorLike
-import PhysLean.QuantumMechanics.DDimensions.Hydrogen.Basic
-import PhysLean.QuantumMechanics.DDimensions.Hydrogen.LaplaceRungeLenzVector
-import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
-import PhysLean.QuantumMechanics.DDimensions.Operators.Commutation
-import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
-import PhysLean.QuantumMechanics.DDimensions.Operators.Position
-import PhysLean.QuantumMechanics.DDimensions.Operators.Unbounded
-import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.Basic
-import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
-import PhysLean.QuantumMechanics.FiniteTarget.Basic
-import PhysLean.QuantumMechanics.FiniteTarget.HilbertSpace
-import PhysLean.QuantumMechanics.OneDimension.GeneralPotential.Basic
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Basic
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Completeness
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Eigenfunction
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Examples
-import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.TISE
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Basic
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Gaussians
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PlaneWaves
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PositionStates
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.SchwartzSubmodule
-import PhysLean.QuantumMechanics.OneDimension.Operators.Commutation
-import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
-import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
-import PhysLean.QuantumMechanics.OneDimension.Operators.Position
-import PhysLean.QuantumMechanics.OneDimension.Operators.Unbounded
-import PhysLean.QuantumMechanics.OneDimension.ReflectionlessPotential.Basic
-import PhysLean.QuantumMechanics.PlanckConstant
-import PhysLean.Relativity.Bispinors.Basic
-import PhysLean.Relativity.CliffordAlgebra
-import PhysLean.Relativity.LorentzAlgebra.Basic
-import PhysLean.Relativity.LorentzAlgebra.Basis
-import PhysLean.Relativity.LorentzAlgebra.ExponentialMap
-import PhysLean.Relativity.LorentzGroup.Basic
-import PhysLean.Relativity.LorentzGroup.Boosts.Apply
-import PhysLean.Relativity.LorentzGroup.Boosts.Basic
-import PhysLean.Relativity.LorentzGroup.Boosts.Generalized
-import PhysLean.Relativity.LorentzGroup.Orthochronous.Basic
-import PhysLean.Relativity.LorentzGroup.Proper
-import PhysLean.Relativity.LorentzGroup.Restricted.Basic
-import PhysLean.Relativity.LorentzGroup.Restricted.FromBoostRotation
-import PhysLean.Relativity.LorentzGroup.Rotations
-import PhysLean.Relativity.LorentzGroup.ToVector
-import PhysLean.Relativity.MinkowskiMatrix
-import PhysLean.Relativity.PauliMatrices.AsTensor
-import PhysLean.Relativity.PauliMatrices.Basic
-import PhysLean.Relativity.PauliMatrices.CliffordAlgebra
-import PhysLean.Relativity.PauliMatrices.Relations
-import PhysLean.Relativity.PauliMatrices.SelfAdjoint
-import PhysLean.Relativity.PauliMatrices.ToTensor
-import PhysLean.Relativity.SL2C.Basic
-import PhysLean.Relativity.SL2C.SelfAdjoint
-import PhysLean.Relativity.Special.ProperTime
-import PhysLean.Relativity.Special.TwinParadox.Basic
-import PhysLean.Relativity.SpeedOfLight
-import PhysLean.Relativity.Tensors.Basic
-import PhysLean.Relativity.Tensors.Color.Basic
-import PhysLean.Relativity.Tensors.Color.Discrete
-import PhysLean.Relativity.Tensors.Color.Lift
-import PhysLean.Relativity.Tensors.ComplexTensor.Basic
-import PhysLean.Relativity.Tensors.ComplexTensor.Lemmas
-import PhysLean.Relativity.Tensors.ComplexTensor.Matrix.Pre
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Lemmas
-import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Pre
-import PhysLean.Relativity.Tensors.ComplexTensor.OfRat
-import PhysLean.Relativity.Tensors.ComplexTensor.Units.Basic
-import PhysLean.Relativity.Tensors.ComplexTensor.Units.Pre
-import PhysLean.Relativity.Tensors.ComplexTensor.Units.Symm
-import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
-import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Contraction
-import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Basic
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Contraction
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Metric
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Modules
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Two
-import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Unit
-import PhysLean.Relativity.Tensors.Constructors
-import PhysLean.Relativity.Tensors.Contraction.Basic
-import PhysLean.Relativity.Tensors.Contraction.Basis
-import PhysLean.Relativity.Tensors.Contraction.Products
-import PhysLean.Relativity.Tensors.Contraction.Pure
-import PhysLean.Relativity.Tensors.Dual
-import PhysLean.Relativity.Tensors.Elab
-import PhysLean.Relativity.Tensors.Evaluation
-import PhysLean.Relativity.Tensors.MetricTensor
-import PhysLean.Relativity.Tensors.OfInt
-import PhysLean.Relativity.Tensors.Product
-import PhysLean.Relativity.Tensors.RealTensor.Basic
-import PhysLean.Relativity.Tensors.RealTensor.CoVector.Basic
-import PhysLean.Relativity.Tensors.RealTensor.Derivative
-import PhysLean.Relativity.Tensors.RealTensor.Matrix.Pre
-import PhysLean.Relativity.Tensors.RealTensor.Metrics.Basic
-import PhysLean.Relativity.Tensors.RealTensor.Metrics.Pre
-import PhysLean.Relativity.Tensors.RealTensor.ToComplex
-import PhysLean.Relativity.Tensors.RealTensor.Units.Pre
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Basic
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.Basic
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.LightLike
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.TimeLike
-import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Basic
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Contraction
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Modules
-import PhysLean.Relativity.Tensors.RealTensor.Velocity.Basic
-import PhysLean.Relativity.Tensors.TensorSpecies.Basic
-import PhysLean.Relativity.Tensors.Tensorial
-import PhysLean.Relativity.Tensors.UnitTensor
-import PhysLean.SpaceAndTime.Space.Basic
-import PhysLean.SpaceAndTime.Space.ConstantSliceDist
-import PhysLean.SpaceAndTime.Space.CrossProduct
-import PhysLean.SpaceAndTime.Space.Derivatives.Basic
-import PhysLean.SpaceAndTime.Space.Derivatives.Curl
-import PhysLean.SpaceAndTime.Space.Derivatives.Div
-import PhysLean.SpaceAndTime.Space.Derivatives.Grad
-import PhysLean.SpaceAndTime.Space.Derivatives.Laplacian
-import PhysLean.SpaceAndTime.Space.DistConst
-import PhysLean.SpaceAndTime.Space.DistOfFunction
-import PhysLean.SpaceAndTime.Space.Integrals.Basic
-import PhysLean.SpaceAndTime.Space.Integrals.RadialAngularMeasure
-import PhysLean.SpaceAndTime.Space.IsDistBounded
-import PhysLean.SpaceAndTime.Space.LengthUnit
-import PhysLean.SpaceAndTime.Space.Norm
-import PhysLean.SpaceAndTime.Space.Slice
-import PhysLean.SpaceAndTime.Space.Translations
-import PhysLean.SpaceAndTime.SpaceTime.Basic
-import PhysLean.SpaceAndTime.SpaceTime.Boosts
-import PhysLean.SpaceAndTime.SpaceTime.Derivatives
-import PhysLean.SpaceAndTime.SpaceTime.LorentzAction
-import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
-import PhysLean.SpaceAndTime.Time.Basic
-import PhysLean.SpaceAndTime.Time.Derivatives
-import PhysLean.SpaceAndTime.Time.TimeMan
-import PhysLean.SpaceAndTime.Time.TimeTransMan
-import PhysLean.SpaceAndTime.Time.TimeUnit
-import PhysLean.SpaceAndTime.TimeAndSpace.Basic
-import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
-import PhysLean.StatisticalMechanics.BoltzmannConstant
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Basic
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Finite
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.Lemmas
-import PhysLean.StatisticalMechanics.CanonicalEnsemble.TwoState
-import PhysLean.StringTheory.Basic
-import PhysLean.StringTheory.FTheory.SU5.Basic
-import PhysLean.StringTheory.FTheory.SU5.Charges.AnomalyFree
-import PhysLean.StringTheory.FTheory.SU5.Charges.OfRationalSection
-import PhysLean.StringTheory.FTheory.SU5.Charges.Viable
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.Basic
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.ChiralIndices
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Completeness
-import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Elems
-import PhysLean.StringTheory.FTheory.SU5.Quanta.Basic
-import PhysLean.StringTheory.FTheory.SU5.Quanta.FiveQuanta
-import PhysLean.StringTheory.FTheory.SU5.Quanta.IsViable
-import PhysLean.StringTheory.FTheory.SU5.Quanta.TenQuanta
-import PhysLean.Thermodynamics.Basic
-import PhysLean.Thermodynamics.IdealGas.Basic
-import PhysLean.Thermodynamics.Temperature.Basic
-import PhysLean.Thermodynamics.Temperature.TemperatureUnits
-import PhysLean.Units.Basic
-import PhysLean.Units.Dimension
-import PhysLean.Units.Examples
-import PhysLean.Units.FDeriv
-import PhysLean.Units.Integral
-import PhysLean.Units.UnitDependent
-import PhysLean.Units.WithDim.Area
-import PhysLean.Units.WithDim.Basic
-import PhysLean.Units.WithDim.Energy
-import PhysLean.Units.WithDim.Mass
-import PhysLean.Units.WithDim.Momentum
-import PhysLean.Units.WithDim.Pressure
-import PhysLean.Units.WithDim.Speed
-import PhysLean.Units.WithDim.Velocity
+module
+
+public import PhysLean.ClassicalMechanics.Basic
+public import PhysLean.ClassicalMechanics.DampedHarmonicOscillator.Basic
+public import PhysLean.ClassicalMechanics.EulerLagrange
+public import PhysLean.ClassicalMechanics.HamiltonsEquations
+public import PhysLean.ClassicalMechanics.HarmonicOscillator.Basic
+public import PhysLean.ClassicalMechanics.HarmonicOscillator.ConfigurationSpace
+public import PhysLean.ClassicalMechanics.HarmonicOscillator.Solution
+public import PhysLean.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
+public import PhysLean.ClassicalMechanics.Mass.MassUnit
+public import PhysLean.ClassicalMechanics.Pendulum.CoplanarDoublePendulum
+public import PhysLean.ClassicalMechanics.Pendulum.MiscellaneousPendulumPivotMotions
+public import PhysLean.ClassicalMechanics.Pendulum.SlidingPendulum
+public import PhysLean.ClassicalMechanics.RigidBody.Basic
+public import PhysLean.ClassicalMechanics.RigidBody.SolidSphere
+public import PhysLean.ClassicalMechanics.Scattering.RigidSphere
+public import PhysLean.ClassicalMechanics.Vibrations.LinearTriatomic
+public import PhysLean.ClassicalMechanics.WaveEquation.Basic
+public import PhysLean.ClassicalMechanics.WaveEquation.HarmonicWave
+public import PhysLean.CondensedMatter.Basic
+public import PhysLean.CondensedMatter.TightBindingChain.Basic
+public import PhysLean.Cosmology.Basic
+public import PhysLean.Cosmology.FLRW.Basic
+public import PhysLean.Electromagnetism.Basic
+public import PhysLean.Electromagnetism.Charge.ChargeUnit
+public import PhysLean.Electromagnetism.Current.CircularCoil
+public import PhysLean.Electromagnetism.Current.InfiniteWire
+public import PhysLean.Electromagnetism.Dynamics.Basic
+public import PhysLean.Electromagnetism.Dynamics.CurrentDensity
+public import PhysLean.Electromagnetism.Dynamics.Hamiltonian
+public import PhysLean.Electromagnetism.Dynamics.IsExtrema
+public import PhysLean.Electromagnetism.Dynamics.KineticTerm
+public import PhysLean.Electromagnetism.Dynamics.Lagrangian
+public import PhysLean.Electromagnetism.Kinematics.Boosts
+public import PhysLean.Electromagnetism.Kinematics.EMPotential
+public import PhysLean.Electromagnetism.Kinematics.ElectricField
+public import PhysLean.Electromagnetism.Kinematics.FieldStrength
+public import PhysLean.Electromagnetism.Kinematics.MagneticField
+public import PhysLean.Electromagnetism.Kinematics.ScalarPotential
+public import PhysLean.Electromagnetism.Kinematics.VectorPotential
+public import PhysLean.Electromagnetism.PointParticle.OneDimension
+public import PhysLean.Electromagnetism.PointParticle.ThreeDimension
+public import PhysLean.Electromagnetism.Vacuum.Constant
+public import PhysLean.Electromagnetism.Vacuum.HarmonicWave
+public import PhysLean.Electromagnetism.Vacuum.IsPlaneWave
+public import PhysLean.Mathematics.Calculus.AdjFDeriv
+public import PhysLean.Mathematics.Calculus.Divergence
+public import PhysLean.Mathematics.DataStructures.FourTree.Basic
+public import PhysLean.Mathematics.DataStructures.FourTree.UniqueMap
+public import PhysLean.Mathematics.DataStructures.Matrix.LieTrace
+public import PhysLean.Mathematics.Distribution.Basic
+public import PhysLean.Mathematics.Distribution.PowMul
+public import PhysLean.Mathematics.FDerivCurry
+public import PhysLean.Mathematics.Fin
+public import PhysLean.Mathematics.Fin.Involutions
+public import PhysLean.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
+public import PhysLean.Mathematics.Geometry.Metric.Riemannian.Defs
+public import PhysLean.Mathematics.InnerProductSpace.Adjoint
+public import PhysLean.Mathematics.InnerProductSpace.Basic
+public import PhysLean.Mathematics.InnerProductSpace.Calculus
+public import PhysLean.Mathematics.InnerProductSpace.Submodule
+public import PhysLean.Mathematics.KroneckerDelta
+public import PhysLean.Mathematics.LinearMaps
+public import PhysLean.Mathematics.List
+public import PhysLean.Mathematics.List.InsertIdx
+public import PhysLean.Mathematics.List.InsertionSort
+public import PhysLean.Mathematics.PiTensorProduct
+public import PhysLean.Mathematics.RatComplexNum
+public import PhysLean.Mathematics.SO3.Basic
+public import PhysLean.Mathematics.SchurTriangulation
+public import PhysLean.Mathematics.SpecialFunctions.PhysHermite
+public import PhysLean.Mathematics.Trigonometry.Tanh
+public import PhysLean.Mathematics.VariationalCalculus.Basic
+public import PhysLean.Mathematics.VariationalCalculus.HasVarAdjDeriv
+public import PhysLean.Mathematics.VariationalCalculus.HasVarAdjoint
+public import PhysLean.Mathematics.VariationalCalculus.HasVarGradient
+public import PhysLean.Mathematics.VariationalCalculus.IsLocalizedfunctionTransform
+public import PhysLean.Mathematics.VariationalCalculus.IsTestFunction
+public import PhysLean.Meta.AllFilePaths
+public import PhysLean.Meta.Basic
+public import PhysLean.Meta.Informal.Basic
+public import PhysLean.Meta.Informal.Post
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.Meta.Linters.Sorry
+public import PhysLean.Meta.Notes.Basic
+public import PhysLean.Meta.Notes.HTMLNote
+public import PhysLean.Meta.Notes.NoteFile
+public import PhysLean.Meta.Notes.ToHTML
+public import PhysLean.Meta.Remark.Basic
+public import PhysLean.Meta.Remark.Properties
+public import PhysLean.Meta.Sorry
+public import PhysLean.Meta.TODO.Basic
+public import PhysLean.Meta.TransverseTactics
+public import PhysLean.Optics.Basic
+public import PhysLean.Optics.Polarization.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.GeorgiGlashow.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.PatiSalam.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.FamilyMaps
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.NoGrav.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.DimSevenPlane
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Ordinary.FamilyMaps
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.Permutations
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.BMinusL
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.BoundPlaneDim
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.FamilyMaps
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.HyperCharge
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.PlaneNonSols
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.QuadSol
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.QuadSolToSol
+public import PhysLean.Particles.BeyondTheStandardModel.Spin10.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.Basic
+public import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.GramMatrix
+public import PhysLean.Particles.BeyondTheStandardModel.TwoHDM.Potential
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Basic
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Invariants
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.PhaseFreedom
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Relations
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Rows
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.StandardParameterization.Basic
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.StandardParameterization.StandardParameters
+public import PhysLean.Particles.NeutrinoPhysics.Basic
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.Basic
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.FamilyMaps
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.Basic
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.One.Lemmas
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.One.LinearParameterization
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.Permutations
+public import PhysLean.Particles.StandardModel.Basic
+public import PhysLean.Particles.StandardModel.HiggsBoson.Basic
+public import PhysLean.Particles.StandardModel.HiggsBoson.Potential
+public import PhysLean.Particles.StandardModel.Representations
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.B3
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Basic
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.HyperCharge
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.LineY3B3
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.Basic
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.PlaneWithY3B3
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.OrthogY3B3.ToSols
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Permutations
+public import PhysLean.Particles.SuperSymmetry.MSSMNu.AnomalyCancellation.Y3
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.AllowsTerm
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Basic
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Map
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimalSuperSet
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.Basic
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.FinsetTerms
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfFieldLabel
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.OfPotentialTerm
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoClosed
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoConstrained
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
+public import PhysLean.Particles.SuperSymmetry.SU5.FieldLabels
+public import PhysLean.Particles.SuperSymmetry.SU5.Potential
+public import PhysLean.QFT.AnomalyCancellation.Basic
+public import PhysLean.QFT.AnomalyCancellation.GroupActions
+public import PhysLean.QFT.PerturbationTheory.CreateAnnihilate
+public import PhysLean.QFT.PerturbationTheory.FeynmanDiagrams.Basic
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.Basic
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.Grading
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.NormTimeOrder
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.NormalOrder
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
+public import PhysLean.QFT.PerturbationTheory.FieldOpFreeAlgebra.TimeOrder
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.Basic
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.CrAnFieldOp
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.CrAnSection
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.Filters
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.NormalOrder
+public import PhysLean.QFT.PerturbationTheory.FieldSpecification.TimeOrder
+public import PhysLean.QFT.PerturbationTheory.FieldStatistics.Basic
+public import PhysLean.QFT.PerturbationTheory.FieldStatistics.ExchangeSign
+public import PhysLean.QFT.PerturbationTheory.FieldStatistics.OfFinset
+public import PhysLean.QFT.PerturbationTheory.Koszul.KoszulSign
+public import PhysLean.QFT.PerturbationTheory.Koszul.KoszulSignInsert
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.Basic
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.Grading
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.NormalOrder.Basic
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.NormalOrder.Lemmas
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.NormalOrder.WickContractions
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.StaticWickTerm
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.StaticWickTheorem
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.SuperCommute
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.TimeContraction
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.TimeOrder
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.Universality
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.WickTerm
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.WicksTheorem
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.WicksTheoremNormal
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Basic
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Card
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Erase
+public import PhysLean.QFT.PerturbationTheory.WickContraction.ExtractEquiv
+public import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContract
+public import PhysLean.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Involutions
+public import PhysLean.QFT.PerturbationTheory.WickContraction.IsFull
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Join
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Perm
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Basic
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.InsertNone
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.InsertSome
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Sign.Join
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Singleton
+public import PhysLean.QFT.PerturbationTheory.WickContraction.StaticContract
+public import PhysLean.QFT.PerturbationTheory.WickContraction.SubContraction
+public import PhysLean.QFT.PerturbationTheory.WickContraction.TimeCond
+public import PhysLean.QFT.PerturbationTheory.WickContraction.TimeContract
+public import PhysLean.QFT.PerturbationTheory.WickContraction.Uncontracted
+public import PhysLean.QFT.PerturbationTheory.WickContraction.UncontractedList
+public import PhysLean.QFT.QED.AnomalyCancellation.Basic
+public import PhysLean.QFT.QED.AnomalyCancellation.BasisLinear
+public import PhysLean.QFT.QED.AnomalyCancellation.ConstAbs
+public import PhysLean.QFT.QED.AnomalyCancellation.Even.BasisLinear
+public import PhysLean.QFT.QED.AnomalyCancellation.Even.LineInCubic
+public import PhysLean.QFT.QED.AnomalyCancellation.Even.Parameterization
+public import PhysLean.QFT.QED.AnomalyCancellation.LineInPlaneCond
+public import PhysLean.QFT.QED.AnomalyCancellation.LowDim.One
+public import PhysLean.QFT.QED.AnomalyCancellation.LowDim.Three
+public import PhysLean.QFT.QED.AnomalyCancellation.LowDim.Two
+public import PhysLean.QFT.QED.AnomalyCancellation.Odd.BasisLinear
+public import PhysLean.QFT.QED.AnomalyCancellation.Odd.LineInCubic
+public import PhysLean.QFT.QED.AnomalyCancellation.Odd.Parameterization
+public import PhysLean.QFT.QED.AnomalyCancellation.Permutations
+public import PhysLean.QFT.QED.AnomalyCancellation.Sorts
+public import PhysLean.QFT.QED.AnomalyCancellation.VectorLike
+public import PhysLean.QuantumMechanics.DDimensions.Hydrogen.Basic
+public import PhysLean.QuantumMechanics.DDimensions.Hydrogen.LaplaceRungeLenzVector
+public import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Commutation
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Position
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Unbounded
+public import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.Basic
+public import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
+public import PhysLean.QuantumMechanics.FiniteTarget.Basic
+public import PhysLean.QuantumMechanics.FiniteTarget.HilbertSpace
+public import PhysLean.QuantumMechanics.OneDimension.GeneralPotential.Basic
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Basic
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Completeness
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Eigenfunction
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.Examples
+public import PhysLean.QuantumMechanics.OneDimension.HarmonicOscillator.TISE
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Basic
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.Gaussians
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PlaneWaves
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.PositionStates
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.SchwartzSubmodule
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Commutation
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Momentum
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Parity
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Position
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Unbounded
+public import PhysLean.QuantumMechanics.OneDimension.ReflectionlessPotential.Basic
+public import PhysLean.QuantumMechanics.PlanckConstant
+public import PhysLean.Relativity.Bispinors.Basic
+public import PhysLean.Relativity.CliffordAlgebra
+public import PhysLean.Relativity.LorentzAlgebra.Basic
+public import PhysLean.Relativity.LorentzAlgebra.Basis
+public import PhysLean.Relativity.LorentzAlgebra.ExponentialMap
+public import PhysLean.Relativity.LorentzGroup.Basic
+public import PhysLean.Relativity.LorentzGroup.Boosts.Apply
+public import PhysLean.Relativity.LorentzGroup.Boosts.Basic
+public import PhysLean.Relativity.LorentzGroup.Boosts.Generalized
+public import PhysLean.Relativity.LorentzGroup.Orthochronous.Basic
+public import PhysLean.Relativity.LorentzGroup.Proper
+public import PhysLean.Relativity.LorentzGroup.Restricted.Basic
+public import PhysLean.Relativity.LorentzGroup.Restricted.FromBoostRotation
+public import PhysLean.Relativity.LorentzGroup.Rotations
+public import PhysLean.Relativity.LorentzGroup.ToVector
+public import PhysLean.Relativity.MinkowskiMatrix
+public import PhysLean.Relativity.PauliMatrices.AsTensor
+public import PhysLean.Relativity.PauliMatrices.Basic
+public import PhysLean.Relativity.PauliMatrices.CliffordAlgebra
+public import PhysLean.Relativity.PauliMatrices.Relations
+public import PhysLean.Relativity.PauliMatrices.SelfAdjoint
+public import PhysLean.Relativity.PauliMatrices.ToTensor
+public import PhysLean.Relativity.SL2C.Basic
+public import PhysLean.Relativity.SL2C.SelfAdjoint
+public import PhysLean.Relativity.Special.ProperTime
+public import PhysLean.Relativity.Special.TwinParadox.Basic
+public import PhysLean.Relativity.SpeedOfLight
+public import PhysLean.Relativity.Tensors.Basic
+public import PhysLean.Relativity.Tensors.Color.Basic
+public import PhysLean.Relativity.Tensors.Color.Discrete
+public import PhysLean.Relativity.Tensors.Color.Lift
+public import PhysLean.Relativity.Tensors.ComplexTensor.Basic
+public import PhysLean.Relativity.Tensors.ComplexTensor.Lemmas
+public import PhysLean.Relativity.Tensors.ComplexTensor.Matrix.Pre
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Basic
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Lemmas
+public import PhysLean.Relativity.Tensors.ComplexTensor.Metrics.Pre
+public import PhysLean.Relativity.Tensors.ComplexTensor.OfRat
+public import PhysLean.Relativity.Tensors.ComplexTensor.Units.Basic
+public import PhysLean.Relativity.Tensors.ComplexTensor.Units.Pre
+public import PhysLean.Relativity.Tensors.ComplexTensor.Units.Symm
+public import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
+public import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Contraction
+public import PhysLean.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Basic
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Contraction
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Metric
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Modules
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Two
+public import PhysLean.Relativity.Tensors.ComplexTensor.Weyl.Unit
+public import PhysLean.Relativity.Tensors.Constructors
+public import PhysLean.Relativity.Tensors.Contraction.Basic
+public import PhysLean.Relativity.Tensors.Contraction.Basis
+public import PhysLean.Relativity.Tensors.Contraction.Products
+public import PhysLean.Relativity.Tensors.Contraction.Pure
+public import PhysLean.Relativity.Tensors.Dual
+public import PhysLean.Relativity.Tensors.Elab
+public import PhysLean.Relativity.Tensors.Evaluation
+public import PhysLean.Relativity.Tensors.MetricTensor
+public import PhysLean.Relativity.Tensors.OfInt
+public import PhysLean.Relativity.Tensors.Product
+public import PhysLean.Relativity.Tensors.RealTensor.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.CoVector.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.Derivative
+public import PhysLean.Relativity.Tensors.RealTensor.Matrix.Pre
+public import PhysLean.Relativity.Tensors.RealTensor.Metrics.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.Metrics.Pre
+public import PhysLean.Relativity.Tensors.RealTensor.ToComplex
+public import PhysLean.Relativity.Tensors.RealTensor.Units.Pre
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.LightLike
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Causality.TimeLike
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Basic
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Contraction
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Modules
+public import PhysLean.Relativity.Tensors.RealTensor.Velocity.Basic
+public import PhysLean.Relativity.Tensors.TensorSpecies.Basic
+public import PhysLean.Relativity.Tensors.Tensorial
+public import PhysLean.Relativity.Tensors.UnitTensor
+public import PhysLean.SpaceAndTime.Space.Basic
+public import PhysLean.SpaceAndTime.Space.ConstantSliceDist
+public import PhysLean.SpaceAndTime.Space.CrossProduct
+public import PhysLean.SpaceAndTime.Space.Derivatives.Basic
+public import PhysLean.SpaceAndTime.Space.Derivatives.Curl
+public import PhysLean.SpaceAndTime.Space.Derivatives.Div
+public import PhysLean.SpaceAndTime.Space.Derivatives.Grad
+public import PhysLean.SpaceAndTime.Space.Derivatives.Laplacian
+public import PhysLean.SpaceAndTime.Space.DistConst
+public import PhysLean.SpaceAndTime.Space.DistOfFunction
+public import PhysLean.SpaceAndTime.Space.Integrals.Basic
+public import PhysLean.SpaceAndTime.Space.Integrals.RadialAngularMeasure
+public import PhysLean.SpaceAndTime.Space.IsDistBounded
+public import PhysLean.SpaceAndTime.Space.LengthUnit
+public import PhysLean.SpaceAndTime.Space.Module
+public import PhysLean.SpaceAndTime.Space.Norm
+public import PhysLean.SpaceAndTime.Space.Slice
+public import PhysLean.SpaceAndTime.Space.Translations
+public import PhysLean.SpaceAndTime.SpaceTime.Basic
+public import PhysLean.SpaceAndTime.SpaceTime.Boosts
+public import PhysLean.SpaceAndTime.SpaceTime.Derivatives
+public import PhysLean.SpaceAndTime.SpaceTime.LorentzAction
+public import PhysLean.SpaceAndTime.SpaceTime.TimeSlice
+public import PhysLean.SpaceAndTime.Time.Basic
+public import PhysLean.SpaceAndTime.Time.Derivatives
+public import PhysLean.SpaceAndTime.Time.TimeMan
+public import PhysLean.SpaceAndTime.Time.TimeTransMan
+public import PhysLean.SpaceAndTime.Time.TimeUnit
+public import PhysLean.SpaceAndTime.TimeAndSpace.Basic
+public import PhysLean.SpaceAndTime.TimeAndSpace.ConstantTimeDist
+public import PhysLean.StatisticalMechanics.BoltzmannConstant
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Basic
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Finite
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.Lemmas
+public import PhysLean.StatisticalMechanics.CanonicalEnsemble.TwoState
+public import PhysLean.StringTheory.Basic
+public import PhysLean.StringTheory.FTheory.SU5.Basic
+public import PhysLean.StringTheory.FTheory.SU5.Charges.AnomalyFree
+public import PhysLean.StringTheory.FTheory.SU5.Charges.OfRationalSection
+public import PhysLean.StringTheory.FTheory.SU5.Charges.Viable
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.Basic
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.ChiralIndices
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Completeness
+public import PhysLean.StringTheory.FTheory.SU5.Fluxes.NoExotics.Elems
+public import PhysLean.StringTheory.FTheory.SU5.Quanta.Basic
+public import PhysLean.StringTheory.FTheory.SU5.Quanta.FiveQuanta
+public import PhysLean.StringTheory.FTheory.SU5.Quanta.IsViable
+public import PhysLean.StringTheory.FTheory.SU5.Quanta.TenQuanta
+public import PhysLean.Thermodynamics.Basic
+public import PhysLean.Thermodynamics.IdealGas.Basic
+public import PhysLean.Thermodynamics.Temperature.Basic
+public import PhysLean.Thermodynamics.Temperature.TemperatureUnits
+public import PhysLean.Units.Basic
+public import PhysLean.Units.Dimension
+public import PhysLean.Units.Examples
+public import PhysLean.Units.FDeriv
+public import PhysLean.Units.Integral
+public import PhysLean.Units.UnitDependent
+public import PhysLean.Units.WithDim.Area
+public import PhysLean.Units.WithDim.Basic
+public import PhysLean.Units.WithDim.Energy
+public import PhysLean.Units.WithDim.Mass
+public import PhysLean.Units.WithDim.Momentum
+public import PhysLean.Units.WithDim.Pressure
+public import PhysLean.Units.WithDim.Speed
+public import PhysLean.Units.WithDim.Velocity

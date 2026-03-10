@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.TODO.Basic
-import Mathlib.Data.Fintype.Sets
-import Mathlib.Algebra.BigOperators.Group.List.Basic
+module
+
+public import PhysLean.Meta.TODO.Basic
+public import Mathlib.Data.Fintype.Sets
+public import Mathlib.Algebra.BigOperators.Group.List.Basic
 /-!
 
 # Allowed charges
@@ -53,6 +55,8 @@ F-theory and All Things Rational: Surveying U(1) Symmetries with Rational Sectio
 - See also footnote 4 of 1507.05961
 
 -/
+
+@[expose] public section
 
 TODO "AETF6" "The results in this file are currently stated, but not proved.
   They should should be proved following e.g. https://arxiv.org/pdf/1504.05593.

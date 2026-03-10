@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.LinearAlgebra.PiTensorProduct
+module
+
+public import Mathlib.LinearAlgebra.PiTensorProduct
 /-!
 # Pi Tensor Products
 
@@ -14,6 +16,8 @@ At some point these should either be up-streamed to Mathlib or replaced with def
 in Mathlib.
 
 -/
+
+@[expose] public section
 namespace PhysLean.PiTensorProduct
 
 noncomputable section tmulEquiv

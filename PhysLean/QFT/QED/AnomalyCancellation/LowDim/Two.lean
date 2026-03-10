@@ -3,12 +3,16 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.QED.AnomalyCancellation.Basic
+module
+
+public import PhysLean.QFT.QED.AnomalyCancellation.Basic
 /-!
 # The Pure U(1) case with 2 fermions
 
 We define an equivalence between `LinSols` and `Sols`.
 -/
+
+@[expose] public section
 
 open Nat
 open Finset

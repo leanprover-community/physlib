@@ -3,10 +3,12 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Field
-import Mathlib.Analysis.RCLike.Basic
-import PhysLean.Meta.TODO.Basic
+module
+
+public import Mathlib.Algebra.EuclideanDomain.Basic
+public import Mathlib.Algebra.EuclideanDomain.Field
+public import Mathlib.Analysis.RCLike.Basic
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 # The units of charge
@@ -29,6 +31,8 @@ We choose to state the
 existence of the charge unit of the coulomb, and construct all other charge units from that.
 
 -/
+
+@[expose] public section
 
 open NNReal
 

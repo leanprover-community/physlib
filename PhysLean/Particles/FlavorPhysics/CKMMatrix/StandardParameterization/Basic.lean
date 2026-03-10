@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Rows
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Invariants
+module
+
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Rows
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Invariants
 /-!
 # Standard parameterization for the CKM Matrix
 
@@ -15,6 +17,8 @@ We will show that every CKM matrix can be written within this standard parameter
 in the file `FlavorPhysics.CKMMatrix.StandardParameters`.
 
 -/
+
+@[expose] public section
 open Matrix Complex
 open ComplexConjugate
 open CKMMatrix

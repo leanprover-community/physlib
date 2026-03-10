@@ -3,12 +3,14 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Time.TimeUnit
-import PhysLean.SpaceAndTime.Space.LengthUnit
-import PhysLean.ClassicalMechanics.Mass.MassUnit
-import PhysLean.Electromagnetism.Charge.ChargeUnit
-import PhysLean.Thermodynamics.Temperature.TemperatureUnits
-import PhysLean.Units.Dimension
+module
+
+public import PhysLean.SpaceAndTime.Time.TimeUnit
+public import PhysLean.SpaceAndTime.Space.LengthUnit
+public import PhysLean.ClassicalMechanics.Mass.MassUnit
+public import PhysLean.Electromagnetism.Charge.ChargeUnit
+public import PhysLean.Thermodynamics.Temperature.TemperatureUnits
+public import PhysLean.Units.Dimension
 /-!
 
 # Dimensions and unit
@@ -65,6 +67,8 @@ of `#eval`. This is currently not possible with the more theoretical implementat
 in PhysLean which is based exclusively on Reals.
 
 -/
+
+@[expose] public section
 
 /-!
 

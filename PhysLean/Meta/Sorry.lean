@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Linters.Sorry
+module
+
+public import PhysLean.Meta.Linters.Sorry
 /-!
 
 # Meta results regarding `sorry` and `pseudo` attributions
@@ -38,6 +40,8 @@ Some of the code here is adapted from from the file: `Lean.Util.CollectAxioms`
 copyright (c) 2020 Microsoft Corporation. Authored by Leonardo de Moura.
 
 -/
+
+@[expose] public meta section
 open Lean
 namespace PhysLean
 

@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Time.Derivatives
-import PhysLean.SpaceAndTime.Time.TimeUnit
+module
+
+public import PhysLean.SpaceAndTime.Time.Derivatives
+public import PhysLean.SpaceAndTime.Time.TimeUnit
 /-!
 
 # The time manifold with a transitive action of `ℝ`
@@ -41,6 +43,8 @@ of a module over `ℝ`). Here we define the homeomorphism:
 This map is a diffeomorphism (to be shown).
 
 -/
+
+@[expose] public section
 
 /-- The type `TimeTransMan` represents the time manifold with an orientation and
   a transitive action of the reals. -/

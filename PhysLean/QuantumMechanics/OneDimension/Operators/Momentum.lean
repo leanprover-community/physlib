@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.Operators.Unbounded
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.Operators.Unbounded
 /-!
 
 # Momentum operator
@@ -15,6 +17,8 @@ In this module we define:
 We show that plane waves are generalized eigenvectors of the momentum operator.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

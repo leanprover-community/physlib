@@ -3,15 +3,19 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Geometry.Manifold.Instances.Real
-import PhysLean.Meta.Informal.SemiFormal
-import PhysLean.SpaceAndTime.SpaceTime.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Real
+public import PhysLean.Meta.Informal.SemiFormal
+public import PhysLean.SpaceAndTime.SpaceTime.Basic
 /-!
 # The Standard Model
 
 This file defines the basic properties of the standard model in particle physics.
 
 -/
+
+@[expose] public section
 TODO "6V2FP" "Redefine the gauge group as a quotient of SU(3) x SU(2) x U(1) by a subgroup of ℤ₆."
 
 namespace StandardModel

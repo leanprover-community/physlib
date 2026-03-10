@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Electromagnetism.Kinematics.MagneticField
-import PhysLean.Electromagnetism.Dynamics.Basic
+module
+
+public import PhysLean.Electromagnetism.Kinematics.MagneticField
+public import PhysLean.Electromagnetism.Dynamics.Basic
 /-!
 
 # The kinetic term
@@ -57,6 +59,8 @@ In this implementation we have set `μ₀ = 1`. It is a TODO to introduce this c
 - https://quantummechanics.ucsd.edu/ph130a/130_notes/node452.html
 
 -/
+
+@[expose] public section
 
 namespace Electromagnetism
 open Module realLorentzTensor

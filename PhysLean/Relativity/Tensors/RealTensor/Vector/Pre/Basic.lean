@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Modules
-import Mathlib.RepresentationTheory.Rep
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.Pre.Modules
+public import Mathlib.RepresentationTheory.Rep
 /-!
 
 # Real Lorentz vectors
@@ -12,6 +14,8 @@ import Mathlib.RepresentationTheory.Rep
 We define real Lorentz vectors in as representations of the Lorentz group.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

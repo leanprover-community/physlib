@@ -3,11 +3,13 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Color.Basic
-import Mathlib.RepresentationTheory.Rep
-import PhysLean.Mathematics.PiTensorProduct
-import Mathlib.Algebra.Lie.OfAssociative
-import PhysLean.Meta.Informal.Basic
+module
+
+public import PhysLean.Relativity.Tensors.Color.Basic
+public import Mathlib.RepresentationTheory.Rep
+public import PhysLean.Mathematics.PiTensorProduct
+public import Mathlib.Algebra.Lie.OfAssociative
+public import PhysLean.Meta.Informal.Basic
 /-!
 
 ## Lifting functors.
@@ -23,6 +25,8 @@ The fact that they extend to monoidal functors `OverColor C ⥤ Rep k G` allows 
 interact more generally with tensors.
 
 -/
+
+@[expose] public section
 
 namespace IndexNotation
 namespace OverColor

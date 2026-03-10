@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Geometry.Manifold.Instances.Real
+module
+
+public import Mathlib.Geometry.Manifold.Instances.Real
 /-!
 # Representations appearing in the Standard Model
 
 This file defines the basic representations which appear in the Standard Model.
 
 -/
+
+@[expose] public section
 
 namespace StandardModel
 

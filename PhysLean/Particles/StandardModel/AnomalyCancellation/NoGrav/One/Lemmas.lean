@@ -3,7 +3,9 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.One.LinearParameterization
+module
+
+public import PhysLean.Particles.StandardModel.AnomalyCancellation.NoGrav.One.LinearParameterization
 /-!
 # Lemmas for 1 family SM Accs
 
@@ -12,6 +14,8 @@ The main result of this file is the conclusion of this paper:
 
 That every solution to the ACCs without gravity satisfies for free the gravitational anomaly.
 -/
+
+@[expose] public section
 
 namespace SM
 namespace SMNoGrav

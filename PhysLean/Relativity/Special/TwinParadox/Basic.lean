@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Special.ProperTime
+module
+
+public import PhysLean.Relativity.Special.ProperTime
 /-!
 # Twin Paradox
 
@@ -22,6 +24,8 @@ The conclusion of this scenario is that Twin A will be older than Twin B when th
 The origin of the twin paradox dates back to Paul Langevin in 1911.
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

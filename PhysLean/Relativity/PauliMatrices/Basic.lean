@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.LinearAlgebra.Matrix.Trace
+module
+
+public import Mathlib.Algebra.Lie.OfAssociative
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.LinearAlgebra.Matrix.Trace
 /-!
 
 ## Pauli matrices
@@ -26,6 +28,8 @@ and the following abbreviations:
 - `σ^__` is the Pauli matrices as a complex Lorentz tensor of type `ℂT[.up, .downR, .downL]`.
 
 -/
+
+@[expose] public section
 open Matrix
 open Complex
 open TensorProduct

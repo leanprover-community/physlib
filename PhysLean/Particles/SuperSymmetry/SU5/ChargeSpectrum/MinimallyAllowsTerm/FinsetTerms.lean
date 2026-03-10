@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoConstrained
-import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.Basic
+module
+
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.PhenoConstrained
+public import PhysLean.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.Basic
 /-!
 
 # Minimally allows a set of terms
@@ -44,6 +46,8 @@ We have special focus on those charge spectra which minimally allow a top and bo
 There are no references for this module.
 
 -/
+
+@[expose] public section
 
 namespace SuperSymmetry
 namespace SU5

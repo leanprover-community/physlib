@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.SchwartzSubmodule
-import Mathlib.Analysis.Distribution.TemperedDistribution
+module
+
+public import PhysLean.QuantumMechanics.OneDimension.HilbertSpace.SchwartzSubmodule
+public import Mathlib.Analysis.Distribution.TemperedDistribution
 /-!
 
 # Plane waves
@@ -13,6 +15,8 @@ We define plane waves as a member of the dual of the
 Schwartz submodule of the Hilbert space.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

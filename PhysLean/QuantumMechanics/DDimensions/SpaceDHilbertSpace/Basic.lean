@@ -3,14 +3,18 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import Mathlib.Analysis.InnerProductSpace.Dual
-import Mathlib.MeasureTheory.Function.L2Space
-import PhysLean.SpaceAndTime.Space.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.MeasureTheory.Function.L2Space
+public import PhysLean.SpaceAndTime.Space.Module
 /-!
 
 # Hilbert space for quantum mechanics on Space d
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 

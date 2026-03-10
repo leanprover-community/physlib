@@ -3,6 +3,8 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
+module
+
 /-!
 
 # F-theory with a SU(5) gauge group
@@ -55,4 +57,4 @@ This is detailed in the paper `arxiv:1504.05593`. In implemented here using
 This theory is looked at in the following paper:
 - arXiv:1507.05961.
 
--/
+-/@[expose] public section

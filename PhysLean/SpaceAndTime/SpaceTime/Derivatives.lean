@@ -3,9 +3,11 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.SpaceTime.LorentzAction
-import PhysLean.Relativity.Tensors.RealTensor.CoVector.Basic
-import Mathlib.Analysis.InnerProductSpace.TensorProduct
+module
+
+public import PhysLean.SpaceAndTime.SpaceTime.LorentzAction
+public import PhysLean.Relativity.Tensors.RealTensor.CoVector.Basic
+public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 /-!
 
 # Derivatives on SpaceTime
@@ -42,6 +44,8 @@ distributions on `SpaceTime d`.
 ## iv. References
 
 -/
+
+@[expose] public section
 noncomputable section
 
 namespace SpaceTime

@@ -3,7 +3,9 @@ Copyright (c) 2026 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Basic
+module
+
+public import PhysLean.SpaceAndTime.Space.Module
 /-!
 
 # Integrals in Space
@@ -26,6 +28,8 @@ We focus here on the volume measure, which is the usual measure on `Space d`, i.
   sphere and the positive reals.
 
 -/
+
+@[expose] public section
 
 namespace Space
 

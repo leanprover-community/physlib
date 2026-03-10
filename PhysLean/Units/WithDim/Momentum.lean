@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.WithDim.Velocity
-import PhysLean.Units.WithDim.Mass
-import PhysLean.Units.WithDim.Basic
+module
+
+public import PhysLean.Units.WithDim.Velocity
+public import PhysLean.Units.WithDim.Mass
+public import PhysLean.Units.WithDim.Basic
 /-!
 # Momentum
 
@@ -13,6 +15,8 @@ In this module we define the type `Momentum`, which represents the momentum of a
 in `d`-dimensional space, in an arbitrary (but given) set of units.
 
 -/
+
+@[expose] public section
 open Dimension
 
 /-- Momentum in `d`-dimensional space in an arbitrary, but given, set of units.

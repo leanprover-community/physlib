@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.QFT.PerturbationTheory.WickAlgebra.WickTerm
-import PhysLean.QFT.PerturbationTheory.WickContraction.IsFull
-import PhysLean.Meta.Informal.SemiFormal
+module
+
+public import PhysLean.QFT.PerturbationTheory.WickAlgebra.WickTerm
+public import PhysLean.QFT.PerturbationTheory.WickContraction.IsFull
+public import PhysLean.Meta.Informal.SemiFormal
 /-!
 
 # Permutations of Wick contractions
@@ -23,6 +25,8 @@ if they correspond to the same Feynman diagram.
 Please speak to JTS before working in this direction.
 
 -/
+
+@[expose] public section
 
 open FieldSpecification
 variable {𝓕 : FieldSpecification}

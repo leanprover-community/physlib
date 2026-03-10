@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzGroup.Restricted.Basic
-import PhysLean.Meta.Linters.Sorry
+module
+
+public import PhysLean.Relativity.LorentzGroup.Restricted.Basic
+public import PhysLean.Meta.Linters.Sorry
 /-!
 
 # Generalized Boosts
@@ -24,6 +26,8 @@ A boost is the special case of a generalised boost when `u = basis 0`.
   https://diposit.ub.edu/dspace/bitstream/2445/68763/2/memoria.pdf
 
 -/
+
+@[expose] public section
 noncomputable section
 
 namespace LorentzGroup

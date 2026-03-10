@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luis Gabriel C. Bariuan, Joseph Tooby-Smith
 -/
-import PhysLean.SpaceAndTime.Space.Basic
-import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+module
+
+public import PhysLean.SpaceAndTime.Space.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 /-!
 
 # The Friedmann-Lemaître-Robertson-Walker metric
@@ -12,6 +14,8 @@ import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 Parts of this file is currently informal or semiformal.
 
 -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology

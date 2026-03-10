@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.LorentzGroup.Boosts.Basic
+module
+
+public import PhysLean.Relativity.LorentzGroup.Boosts.Basic
 /-!
 
 ## Boosts applied to Lorentz vectors
@@ -12,6 +14,8 @@ These recover what one would describe as the ordinary Lorentz transformations
 of Lorentz vectors.
 
 -/
+
+@[expose] public section
 
 namespace Lorentz
 open realLorentzTensor

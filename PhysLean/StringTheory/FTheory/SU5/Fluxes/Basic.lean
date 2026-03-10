@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Analysis.Normed.Ring.Lemmas
+module
+
+public import Mathlib.Analysis.Normed.Ring.Lemmas
 /-!
 
 # Fluxes of representations
@@ -120,6 +122,8 @@ they can be derived from other data structures.
 - For an old version of the material in this module see PR #569.
 
 -/
+
+@[expose] public section
 namespace FTheory
 
 namespace SU5

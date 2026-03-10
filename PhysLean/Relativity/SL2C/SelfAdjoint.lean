@@ -3,8 +3,10 @@ Copyright (c) 2025 Gordon Hsu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gordon Hsu
 -/
-import PhysLean.Mathematics.SchurTriangulation
-import Mathlib.LinearAlgebra.Matrix.Hermitian
+module
+
+public import PhysLean.Mathematics.SchurTriangulation
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 /-! # Extra lemmas regarding `Lorentz.SL2C.toSelfAdjointMap`
 
 This file redefines `Lorentz.SL2C.toSelfAdjointMap` by dropping the special linear condition for its
@@ -20,6 +22,8 @@ additional requirement that `M` be upper triangular. The general case is reduced
 case via `Matrix.schur_triangulation` in `Lorentz.SL2C.toSelfAdjointMap_det_one`.
 
 -/
+
+@[expose] public section
 
 namespace Lorentz
 

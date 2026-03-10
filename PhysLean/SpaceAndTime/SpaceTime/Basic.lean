@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
-import PhysLean.Relativity.SpeedOfLight
-import PhysLean.SpaceAndTime.Time.Basic
-import PhysLean.SpaceAndTime.Space.Integrals.Basic
+module
+
+public import PhysLean.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
+public import PhysLean.Relativity.SpeedOfLight
+public import PhysLean.SpaceAndTime.Time.Basic
+public import PhysLean.SpaceAndTime.Space.Integrals.Basic
 /-!
 # Spacetime
 
@@ -60,6 +62,8 @@ allowing it to be used in tensorial expressions.
 ## iv. References
 
 -/
+
+@[expose] public section
 
 noncomputable section
 

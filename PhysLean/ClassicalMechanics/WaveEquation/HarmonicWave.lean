@@ -3,7 +3,9 @@ Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhi Kai Pong
 -/
-import PhysLean.ClassicalMechanics.WaveEquation.Basic
+module
+
+public import PhysLean.ClassicalMechanics.WaveEquation.Basic
 /-!
 
 # Harmonic Wave
@@ -14,6 +16,8 @@ Note TODO `EGU3E` may require considerable effort to be made rigorous and may he
 the status of Fourier theory in Mathlib.
 
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 open Space

@@ -3,6 +3,8 @@ Copyright (c) 2025 Shlok Vaibhav Singh. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shlok Vaibhav Singh
 -/
+module
+
 /-!
 # Miscellaneous Pendulum Pivot Motions
 ### Tag: LnL_1.5.3
@@ -139,7 +141,7 @@ Ignoring the total time derivate term, the final lagrangian becomes:
 $$
 L = \tfrac{1}{2} m l^2\dot{\phi}^2 + m g l \cos\phi - m a l \gamma^2 \cos\phi\cos(\gamma t)
 $$
--/
+-/@[expose] public section
 
 namespace ClassicalMechanics
 

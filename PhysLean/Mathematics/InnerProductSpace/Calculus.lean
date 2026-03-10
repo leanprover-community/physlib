@@ -3,12 +3,16 @@ Copyright (c) 2025 Tomas Skrivan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
-import PhysLean.Mathematics.InnerProductSpace.Basic
-import Mathlib.Analysis.InnerProductSpace.Adjoint
+module
+
+public import PhysLean.Mathematics.InnerProductSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 /-!
 
 # Generalization of calculus results to `InnerProductSpace'`
 -/
+
+@[expose] public section
 variable {𝕜 : Type*} {E F G : Type*} [RCLike 𝕜]
   [NormedAddCommGroup E] [NormedSpace ℝ E]
   [NormedAddCommGroup F] [NormedSpace ℝ F] [InnerProductSpace' ℝ F]

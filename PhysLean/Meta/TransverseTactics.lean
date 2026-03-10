@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean
-import PhysLean.Meta.TODO.Basic
+module
+
+public import Lean
+public import PhysLean.Meta.TODO.Basic
 /-!
 
 This file enables us to transverse tactics and test for conditions.
@@ -20,6 +22,8 @@ Modifications have been made to the original content of these files here.
 See also:
 - https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/Memory.20increase.20in.20loops.2E
 -/
+
+@[expose] public section
 
 open Lean Elab System
 

@@ -3,9 +3,11 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import PhysLean.QuantumMechanics.DDimensions.Operators.Unbounded
-import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
-import PhysLean.SpaceAndTime.Space.Derivatives.Basic
+module
+
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Unbounded
+public import PhysLean.QuantumMechanics.DDimensions.SpaceDHilbertSpace.SchwartzSubmodule
+public import PhysLean.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
 # Position operators
@@ -42,6 +44,8 @@ Notation:
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 noncomputable section
@@ -84,7 +88,7 @@ lemma positionOperator_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) : 𝐱[i] �
 TODO "ZGCNP" "Incorporate normRegularizedPow into Space.Norm"
 
 /-- Power of regularized norm, `(‖x‖² + ε²)^(s/2)`. -/
-private def normRegularizedPow (ε s : ℝ) : Space d → ℝ :=
+def normRegularizedPow (ε s : ℝ) : Space d → ℝ :=
   fun x ↦ (‖x‖ ^ 2 + ε ^ 2) ^ (s / 2)
 
 private lemma normRegularizedPow_hasTemperateGrowth {ε s : ℝ} (hε : 0 < ε) :
@@ -184,8 +188,8 @@ lemma positionOperatorSchwartz_isSymmetric : (positionOperatorSchwartz i).IsSymm
 
 /-- The symmetric position unbounded operators with domain the Schwartz submodule
   of the Hilbert space. -/
-def positionUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense d) (positionOperatorSchwartz i)
+def positionUnboundedOperator : UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (positionOperatorSchwartz i)
     (positionOperatorSchwartz_isSymmetric i)
 
 /-!
@@ -213,8 +217,8 @@ lemma radiusRegPowOperatorSchwartz_isSymmetric (ε s : ℝ) (hε : 0 < ε) :
 /-- The symmetric (regularized) radius unbounded operators with domain the Schwartz submodule
   of the Hilbert space. -/
 def radiusRegPowUnboundedOperator (ε s : ℝ) (hε : 0 < ε) :
-    UnboundedOperator (SpaceDHilbertSpace d) :=
-  UnboundedOperator.ofSymmetric (hE := schwartzSubmodule_dense d) (radiusRegPowOperatorSchwartz ε s)
+    UnboundedOperator (SpaceDHilbertSpace d) (SpaceDHilbertSpace d) :=
+  UnboundedOperator.ofSymmetric (schwartzSubmodule_dense d) (radiusRegPowOperatorSchwartz ε s)
     (radiusRegPowOperatorSchwartz_isSymmetric ε s hε)
 
 end

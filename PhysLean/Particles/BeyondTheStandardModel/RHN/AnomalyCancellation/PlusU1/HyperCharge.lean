@@ -3,13 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.FamilyMaps
+module
+
+public import PhysLean.Particles.BeyondTheStandardModel.RHN.AnomalyCancellation.PlusU1.FamilyMaps
 /-!
 # Hypercharge in SM with RHN.
 
 Relevant definitions for the SM hypercharge.
 
 -/
+
+@[expose] public section
 
 namespace SMRHN
 namespace PlusU1

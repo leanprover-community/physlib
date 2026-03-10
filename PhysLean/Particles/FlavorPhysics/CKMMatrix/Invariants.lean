@@ -3,8 +3,10 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Particles.FlavorPhysics.CKMMatrix.Basic
-import Mathlib.Analysis.Complex.Basic
+module
+
+public import PhysLean.Particles.FlavorPhysics.CKMMatrix.Basic
+public import Mathlib.Analysis.Complex.Basic
 /-!
 # Invariants of the CKM Matrix
 
@@ -16,6 +18,8 @@ this equivalence.
 Of note, this file defines the complex jarlskog invariant.
 
 -/
+
+@[expose] public section
 open Matrix Complex
 open ComplexConjugate
 open CKMMatrix

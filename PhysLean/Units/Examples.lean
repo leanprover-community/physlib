@@ -3,7 +3,9 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Units.WithDim.Speed
+module
+
+public import PhysLean.Units.WithDim.Speed
 /-!
 
 # Examples of units in PhysLean
@@ -13,6 +15,8 @@ This module should not be imported into any other module, and the results here
 should not be used in the proofs of any other results other then those in this file.
 
 -/
+
+@[expose] public section
 
 namespace UnitExamples
 open Dimension CarriesDimension UnitChoices UnitDependent HasDim

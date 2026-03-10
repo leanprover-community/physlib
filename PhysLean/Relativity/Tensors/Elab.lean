@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Relativity.Tensors.Contraction.Basic
-import PhysLean.Relativity.Tensors.Evaluation
-import PhysLean.Relativity.Tensors.Tensorial
+module
+
+public import PhysLean.Relativity.Tensors.Contraction.Basic
+public import PhysLean.Relativity.Tensors.Evaluation
+public import PhysLean.Relativity.Tensors.Tensorial
 /-!
 
 # Elaboration of tensor expressions
@@ -49,6 +51,8 @@ import PhysLean.Relativity.Tensors.Tensorial
   this information.
 
 -/
+
+@[expose] public meta section
 open Lean Meta Elab Tactic Term
 namespace TensorSpecies
 namespace Tensor

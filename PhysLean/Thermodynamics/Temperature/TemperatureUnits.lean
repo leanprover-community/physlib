@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import Mathlib.Geometry.Manifold.Diffeomorph
-import PhysLean.SpaceAndTime.Time.Basic
+module
+
+public import Mathlib.Geometry.Manifold.Diffeomorph
+public import PhysLean.SpaceAndTime.Time.Basic
 /-!
 
 # Units on Temperature
@@ -24,6 +26,8 @@ We choose to state the
 existence of the temperature unit of kelvin, and construct all other temperature units from that.
 
 -/
+
+@[expose] public section
 
 open NNReal
 

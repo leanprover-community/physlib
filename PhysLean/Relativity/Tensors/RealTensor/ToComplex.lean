@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Meta.Linters.Sorry
-import PhysLean.Relativity.Tensors.ComplexTensor.Basic
+module
+
+public import PhysLean.Meta.Linters.Sorry
+public import PhysLean.Relativity.Tensors.ComplexTensor.Basic
 /-!
 
 # Complex Lorentz tensors from real Lorentz tensors
@@ -57,6 +59,8 @@ other parts of the library; here we only specialise to the passage from real to
 complex Lorentz tensors.
 
 -/
+
+@[expose] public section
 
 namespace realLorentzTensor
 

@@ -3,8 +3,10 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
-import PhysLean.QuantumMechanics.DDimensions.Operators.Position
+module
+
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Momentum
+public import PhysLean.QuantumMechanics.DDimensions.Operators.Position
 /-!
 
 # Hydrogen atom
@@ -23,6 +25,8 @@ but is convenient to include for two reasons:
 - It is what appears in the commutators of the (regularized) LRL vector components.
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 open SchwartzMap

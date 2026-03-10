@@ -3,9 +3,11 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith, Lode Vermeulen
 -/
-import Mathlib.Analysis.CStarAlgebra.Classes
-import PhysLean.ClassicalMechanics.HarmonicOscillator.Basic
-import PhysLean.Units.Basic
+module
+
+public import Mathlib.Analysis.CStarAlgebra.Classes
+public import PhysLean.ClassicalMechanics.HarmonicOscillator.Basic
+public import PhysLean.Units.Basic
 /-!
 
 # Solutions to the classical harmonic oscillator
@@ -52,6 +54,8 @@ References for the classical harmonic oscillator include:
 - Landau & Lifshitz, Mechanics, page 58, section 21.
 
 -/
+
+@[expose] public section
 
 namespace ClassicalMechanics
 open Real Time ContDiff

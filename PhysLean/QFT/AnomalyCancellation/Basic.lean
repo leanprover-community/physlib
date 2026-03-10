@@ -3,10 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.LinearMaps
-import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-import PhysLean.Meta.Linters.Sorry
-import Mathlib.Tactic.Cases
+module
+
+public import PhysLean.Mathematics.LinearMaps
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import PhysLean.Meta.Linters.Sorry
+public import Mathlib.Tactic.Cases
 /-!
 # Anomaly cancellation conditions
 
@@ -77,6 +79,8 @@ Gravitational Anomalies.
 - Nash, C. (1991). Differential topology and quantum field theory. Elsevier.
 
 -/
+
+@[expose] public section
 
 /-!
 

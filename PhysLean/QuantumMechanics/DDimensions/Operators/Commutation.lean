@@ -3,8 +3,10 @@ Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gregory J. Loges
 -/
-import PhysLean.Mathematics.KroneckerDelta
-import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
+module
+
+public import PhysLean.Mathematics.KroneckerDelta
+public import PhysLean.QuantumMechanics.DDimensions.Operators.AngularMomentum
 /-!
 
 # Commutation relations
@@ -43,6 +45,8 @@ Commutator lemmas come in three flavors:
 ## iv. References
 
 -/
+
+@[expose] public section
 
 namespace QuantumMechanics
 noncomputable section

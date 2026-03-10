@@ -3,8 +3,10 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
-import PhysLean.Mathematics.Distribution.Basic
-import PhysLean.SpaceAndTime.Space.Integrals.Basic
+module
+
+public import PhysLean.Mathematics.Distribution.Basic
+public import PhysLean.SpaceAndTime.Space.Integrals.Basic
 /-!
 
 # The radial angular measure on Space
@@ -36,6 +38,8 @@ This file is equivalent to `invPowMeasure`, which will slowly be deprecated.
 ## iv. References
 
 -/
+
+@[expose] public section
 open SchwartzMap NNReal Real
 noncomputable section
 
