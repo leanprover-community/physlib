@@ -105,6 +105,8 @@ noncomputable def closure : UnboundedOperator H H' where
 @[simp]
 lemma closure_toLinearPMap : U.closure.toLinearPMap = U.toLinearPMap.closure := rfl
 
+lemma le_closure : U ≤ U.closure := LinearPMap.le_closure U.toLinearPMap
+
 /-- An unbounded operator is closed iff the graph of its defining LinearPMap is closed. -/
 def IsClosed : Prop := U.toLinearPMap.IsClosed
 
@@ -183,6 +185,10 @@ lemma adjoint_adjoint_eq_closure : U†† = U.closure := by
   ext
   rw [mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
     orthogonal_orthogonal_eq_closure, mem_submodule_closure_iff_mem_submoduleToLp_closure]
+
+lemma le_adjoint_adjoint : U ≤ U†† := by
+  rw [adjoint_adjoint_eq_closure]
+  exact le_closure U
 
 end
 
