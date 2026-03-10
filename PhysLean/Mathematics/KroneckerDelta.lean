@@ -97,14 +97,6 @@ open Finset Fintype
 variable [Fintype α] [AddCommMonoid M]
 
 @[simp]
-lemma sum_self : ∑ i : α, δ[i,i] = card α := by
-  simp [kroneckerDelta_self]
-
-@[simp]
-lemma sum_self_nsmul (f : M) : ∑ i : α, δ[i,i] • f = card α • f := by
-  simp [kroneckerDelta_self, one_nsmul]
-
-@[simp]
 lemma sum_mul (i j : α) : ∑ k : α, δ[i,k] * δ[k,j] = δ[i,j] := by
   dsimp [kroneckerDelta]
   simp
