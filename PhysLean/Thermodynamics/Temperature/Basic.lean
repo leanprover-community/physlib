@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.InnerProductSpace.Basic
 import PhysLean.StatisticalMechanics.BoltzmannConstant
 open NNReal
+open Constants
 
 /-!
 # Temperature
@@ -19,13 +20,13 @@ This is the version of temperature most often used in undergraduate and non-math
 It wraps a nonnegative real number, which is the `val` field of the structure.
 -/
 structure Temperature where
+  /-- The underlying nonnegative real number representing the temperature. -/
   val : ℝ≥0
 
 /-!
 ## Type conversions from/to `Temperature`
 -/
 namespace Temperature
-open Constants
 
 /-- Type coercion (implicit casting) from `Temperature` to `ℝ≥0`. -/
 instance : Coe Temperature ℝ≥0 := ⟨fun (T : Temperature) => T.val⟩
@@ -65,12 +66,9 @@ is equal to `⟨t, h_zero_le_t⟩`. -/
 lemma ofRealNonneg_val {t : ℝ} (h_zero_le_t : 0 ≤ t) :
     (ofRealNonneg t h_zero_le_t).val = ⟨t, h_zero_le_t⟩ := rfl
 
-end Temperature
-
 /-!
 ## Extensionality for `Temperature`
 -/
-namespace Temperature
 
 /-- Two `Temperature` instances are equal if their underlying `val` fields are equal. -/
 @[ext]
@@ -82,23 +80,17 @@ lemma ext {T₁ T₂ : Temperature} (h_eq : T₁.val = T₂.val) : T₁ = T₂ :
   cases h_eq
   rfl
 
-end Temperature
-
 /-!
 ## Topology on `Temperature`
 -/
-namespace Temperature
 
 /-- Topology on `Temperature` induced from `ℝ≥0`. -/
 instance : TopologicalSpace Temperature := TopologicalSpace.induced
   (fun (T : Temperature) => (T : ℝ≥0)) inferInstance
 
-end Temperature
-
 /-!
 ## Order structure on `Temperature` and related lemmas
 -/
-namespace Temperature
 
 /-- The zero temperature (absolute zero) in kelvin. -/
 instance : Zero Temperature := ⟨⟨0⟩⟩
