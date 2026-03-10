@@ -10,18 +10,26 @@ public import PhysLean.Mathematics.InnerProductSpace.Submodule
 
 # Unbounded operators
 
-In this file we define
-- `UnboundedOperator`: an unbounded operator with domain a submodule of a generic Hilbert space.
-  All unbounded operators are assumed to be both densely defined and closable.
-- The closure, `UnboundedOperator.closure`, and adjoint, `UnboundedOperator.adjoint`, with notation
-  `U† = U.adjoint`. That `U†` is densely defined is guaranteed by the closability of `U`.
-- The concept of a generalized eigenvector in `IsGeneralizedEigenvector`.
+## i. Overview
 
-We prove some basic relations, making use of the density and closability assumptions:
-- `U.closure† = U†` in `closure_adjoint_eq_adjoint`
-- `U†† = U.closure` in `adjoint_adjoint_eq_closure`
+In this module we define unbounded operators on a Hilbert space.
 
-## References
+## ii. Key results
+
+- `UnboundedOperator` : Densely defined, closable unbounded operators on a Hilbert space.
+- `IsGeneralizedEigenvector` : The notion of eigenvector/value for linear functionals.
+
+## iii. Table of contents
+
+- A. Definition
+- B. Partial order
+- C. Closure
+- D. Adjoint
+- E. Symmetric operators
+- F. Self-adjoint operators
+- G. Generalized eigenvectors
+
+## iv. References
 
 - M. Reed & B. Simon, (1972). "Methods of modern mathematical physics: Vol. 1. Functional analysis".
   Academic Press. https://doi.org/10.1016/B978-0-12-585001-8.X5001-6
@@ -36,6 +44,10 @@ namespace QuantumMechanics
 
 open LinearPMap Submodule
 open InnerProductSpaceSubmodule
+
+/-!
+### A. Definition
+-/
 
 /-- An `UnboundedOperator` is a linear map from a submodule of `H` to `H'`,
   assumed to be both densely defined and closable. -/
@@ -64,7 +76,7 @@ instance : CoeFun (UnboundedOperator H H') (fun U ↦ U.domain → H') :=
   ⟨fun U ↦ U.toLinearPMap.toFun'⟩
 
 /-!
-### Partial order
+### B. Partial order
 
 Unbounded operators inheret the structure of a poset from `LinearPMap`,
 but *not* that of a `SemilatticeInf` because `U₁.domain ⊓ U₂.domain` may not be dense.
@@ -77,7 +89,7 @@ instance partialOrder : PartialOrder (UnboundedOperator H H') where
   le_antisymm := fun U₁ U₂ h h' ↦ ext <| Std.IsPartialOrder.le_antisymm U₁.1 U₂.1 h h'
 
 /-!
-### Closure
+### C. Closure
 -/
 
 section
@@ -101,7 +113,7 @@ lemma closure_isClosed : U.closure.IsClosed := IsClosable.closure_isClosed U.is_
 end
 
 /-!
-### Adjoints
+### D. Adjoint
 -/
 
 section
@@ -175,7 +187,7 @@ lemma adjoint_adjoint_eq_closure : U†† = U.closure := by
 end
 
 /-!
-### Symmetric unbounded operators
+### E. Symmetric operators
 -/
 
 section
@@ -200,7 +212,7 @@ lemma ofSymmetric_apply (ψ : E) :
 end
 
 /-!
-### Self-adjoint
+### F. Self-adjoint operators
 -/
 
 section
@@ -218,7 +230,7 @@ lemma isSelfAdjoint_iff : IsSelfAdjoint T ↔ IsSelfAdjoint T.toLinearPMap := by
 end
 
 /-!
-### Generalized eigenvectors
+### G. Generalized eigenvectors
 -/
 
 section
