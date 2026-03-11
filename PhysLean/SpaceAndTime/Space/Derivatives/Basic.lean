@@ -110,30 +110,12 @@ lemma deriv_eq_mfderiv_manifoldStructure {M d} [NormedAddCommGroup M] [NormedSpa
   rw [deriv_eq_mfderiv]
   change _ = mfderiv (Space.manifoldStructure d) 𝓘(ℝ, M)
     (f ∘ modelDiffeo) x (EuclideanSpace.single μ 1)
-  rw [mfderiv_comp (I' := 𝓘(ℝ, Space d))]
-  rotate_left
-  · exact hf.mdifferentiable.mdifferentiableAt
-  · exact MDifferentiable.mdifferentiableAt <|
-      Diffeomorph.mdifferentiable modelDiffeo WithTop.top_ne_zero
+  rw [mfderiv_comp (I' := 𝓘(ℝ, Space d)) _ hf.mdifferentiable.mdifferentiableAt
+    (modelDiffeo.mdifferentiable WithTop.top_ne_zero).mdifferentiableAt]
   simp only [Function.comp_apply, modelDiffeo_apply, mfderiv_eq_fderiv,
     ContinuousLinearMap.coe_comp']
-  congr 1
-  simp [mfderiv]
-  rw [if_pos]
-  rotate_left
-  · exact MDifferentiable.mdifferentiableAt <|
-      Diffeomorph.mdifferentiable modelDiffeo WithTop.top_ne_zero
-  change _ = (fderiv ℝ (↑(manifoldStructure d).symm) ((manifoldStructure d) x))
-    (EuclideanSpace.single μ 1)
-  simp [manifoldStructure]
-  ext i
-  rw [fderiv_space_components _ _ (by fun_prop)]
-  simp only [vadd_apply, fderiv_add_const]
-  change _ = (fderiv ℝ (EuclideanSpace.proj i) (x -ᵥ Classical.choice _))
-    (EuclideanSpace.single μ 1)
-  simp [basis_apply]
-  congr 1
-  exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
+  rw [basis_eq_mfderiv_modelDiffeo_single]
+  rfl
 
 /-!
 
