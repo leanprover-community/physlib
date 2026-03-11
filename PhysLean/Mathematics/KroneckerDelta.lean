@@ -61,7 +61,7 @@ lemma smul_eq_zero_iff [AddMonoid M] (i j : α) (f : α → α → M) :
 
 lemma smul_eq_zero_iff' [AddMonoid M] (i : α) (f : α → α → M) :
     (∀ j : α, δ[i,j] • f i j = 0) ↔ f i i = 0 := by
-  refine ⟨fun h ↦?_, fun hf j ↦ smul_of_eq_zero i j hf⟩
+  refine ⟨fun h ↦ ?_, fun hf j ↦ smul_of_eq_zero i j hf⟩
   simpa [one_nsmul] using h i
 
 lemma smul_eq_zero_iff'' [AddMonoid M] (f : α → α → M) :
