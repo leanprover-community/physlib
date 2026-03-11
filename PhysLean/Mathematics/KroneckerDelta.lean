@@ -40,13 +40,8 @@ lemma eq_of_coe {p : α → Prop} (i j : Subtype p) : δ[(i : α),j] = δ[i,j] :
   · repeat rw [eq_one_of_same]
   · rw [eq_zero_of_ne hne, eq_zero_of_ne <| Subtype.coe_ne_coe.mpr hne]
 
-lemma eq_zero_of_not {p : α → Prop} {i j : α} (hi : ¬p i) (hj : p j) : δ[i,j] = 0 := by
-  dsimp [kroneckerDelta]
-  rw [ite_cond_eq_false]
-  apply eq_false'
-  intro h
-  rw [h] at hi
-  exact hi hj
+lemma eq_zero_of_not {p : α → Prop} {i j : α} (hi : ¬p i) (hj : p j) : δ[i,j] = 0 :=
+  eq_zero_of_ne (fun h ↦ hi (h ▸ hj))
 
 /-!
 ### Conditions for smul to vanish
