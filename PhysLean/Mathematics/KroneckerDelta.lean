@@ -61,10 +61,8 @@ lemma smul_eq_zero_iff [AddMonoid M] (i j : α) (f : α → α → M) :
 
 lemma smul_eq_zero_iff' [AddMonoid M] (i : α) (f : α → α → M) :
     (∀ j : α, δ[i,j] • f i j = 0) ↔ f i i = 0 := by
-  refine ⟨?_, fun hf j ↦ smul_of_eq_zero i j hf⟩
-  intro h
-  have hδf : δ[i,i] • f i i = 0 := h i
-  rwa [eq_one_of_same, one_nsmul] at hδf
+  refine ⟨fun h ↦?_, fun hf j ↦ smul_of_eq_zero i j hf⟩
+  simpa [one_nsmul] using h i
 
 lemma smul_eq_zero_iff'' [AddMonoid M] (f : α → α → M) :
     (∀ i j : α, δ[i,j] • f i j = 0) ↔ ∀ i : α, f i i = 0 :=
@@ -111,45 +109,23 @@ variable [AddCommMonoid M]
 
 @[simp]
 lemma sum_mul [Fintype α] (i j : α) : ∑ k : α, δ[i,k] * δ[k,j] = δ[i,j] := by
-  dsimp [kroneckerDelta]
-  simp
+  simp [kroneckerDelta]
 
 @[simp]
 lemma sum_smul [Fintype α] (i : α) (f : α → M) : ∑ j : α, δ[i,j] • f j = f i := by
-  dsimp [kroneckerDelta]
-  simp [one_nsmul]
+  simp [kroneckerDelta, one_nsmul]
 
 lemma sum_sum_smul_eq_zero [Fintype α] {f : α → α → M} (hf : ∀ i : α, f i i = 0) :
     ∑ i : α, ∑ j : α, δ[i,j] • f i j = 0 := by
-  simp only [sum_smul, hf, sum_const_zero]
+  simp [sum_smul, hf, sum_const_zero]
 
 lemma finset_sum_smul (s : Finset α) (i : α) (f : α → M) :
     ∑ j ∈ s, δ[i,j] • f j = if i ∈ s then f i else 0 := by
-  by_cases h : i ∈ s
-  · simp only [h, ite_cond_eq_true]
-    rw [← sum_coe_sort]
-    trans ∑ j : s, δ[⟨i, h⟩,j] • f j
-    · simp only [← eq_of_coe]
-    exact sum_smul _ _
-  · simp only [h, ↓reduceIte]
-    rw [← sum_coe_sort]
-    conv_lhs =>
-      enter [2, j]
-      rw [eq_zero_of_not h j.2, zero_smul]
-    exact sum_const_zero
-
-lemma finset_sum_sum_smul (s s' : Finset α) (f : α → α → M) :
-    ∑ i ∈ s, ∑ j ∈ s', δ[(i : α),j] • f i j = ∑ i ∈ s ∩ s', f i i := by
-  simp only [finset_sum_smul, Finset.sum_ite_mem]
-
-lemma finset_sum_sum_smul_of_disjoint {s s' : Finset α} (h : Disjoint s s') (f : α → α → M) :
-    ∑ i ∈ s, ∑ j ∈ s', δ[i,j] • f i j = 0 := by
-  simp only [finset_sum_sum_smul]
-  rw [disjoint_iff_inter_eq_empty.mp h, sum_empty]
+  simp [kroneckerDelta, one_nsmul]
 
 lemma finset_sum_sum_smul_eq_zero {s s' : Finset α} {f : α → α → M}
     (hf : ∀ i ∈ s ∩ s', f i i = 0) : ∑ i ∈ s, ∑ j ∈ s', δ[i,j] • f i j = 0 := by
-  simp only [finset_sum_sum_smul]
+  simp only [finset_sum_smul, Finset.sum_ite_mem]
   rw [← sum_coe_sort]
   simp [hf]
 
