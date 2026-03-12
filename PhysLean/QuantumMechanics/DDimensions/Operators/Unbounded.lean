@@ -278,6 +278,15 @@ lemma isSymmetric_iff_inner_map_self_real :
   rw [inner_map_polarization, inner_map_polarization']
   rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
 
+lemma isSymmetric_iff_le_adjoint : IsSymmetric T ↔ T ≤ T† := by
+  refine ⟨fun hT ↦ IsFormalAdjoint.le_adjoint T.dense_domain <| IsFormalAdjoint.symm hT, ?_⟩
+  intro h x y
+  obtain ⟨h_domain, h_agree⟩ := h
+  simp only [Subtype.forall] at h_agree
+  have hy : ↑y ∈ T†.domain := h_domain <| coe_mem y
+  have heq := (IsFormalAdjoint.symm <| adjoint_isFormalAdjoint T.dense_domain) x ⟨y, hy⟩
+  exact (h_agree y y.2 y hy rfl) ▸ heq
+
 end
 
 /-!
