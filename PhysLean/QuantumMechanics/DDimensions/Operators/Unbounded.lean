@@ -43,7 +43,7 @@ In this module we define unbounded operators on a Hilbert space.
 namespace QuantumMechanics
 
 open LinearPMap Submodule
-open InnerProductSpaceSubmodule
+open InnerProductSpace InnerProductSpaceSubmodule
 
 /-!
 ## A. Definition
@@ -112,6 +112,14 @@ def IsClosed : Prop := U.toLinearPMap.IsClosed
 
 lemma closure_isClosed : U.closure.IsClosed := IsClosable.closure_isClosed U.is_closable
 
+lemma isClosed_def : IsClosed U ↔ U.closure = U := by
+  refine ⟨?_, fun h ↦ h ▸ closure_isClosed U⟩
+  intro h
+  rw [UnboundedOperator.ext_iff, closure_toLinearPMap]
+  apply eq_of_eq_graph
+  rw [← IsClosable.graph_closure_eq_closure_graph U.is_closable]
+  exact IsClosed.submodule_topologicalClosure_eq h
+
 end
 
 /-!
@@ -164,6 +172,8 @@ lemma adjoint_toLinearPMap : U†.toLinearPMap = U.toLinearPMap† := rfl
 
 lemma adjoint_isClosed : (U†).IsClosed := LinearPMap.adjoint_isClosed U.dense_domain
 
+lemma adjoint_closure_eq_adjoint : U†.closure = U† := (isClosed_def U†).mp <| adjoint_isClosed U
+
 lemma closure_adjoint_eq_adjoint : U.closure† = U† := by
   -- Reduce to statement about graphs using density and closability assumptions
   apply UnboundedOperator.ext
@@ -189,6 +199,25 @@ lemma adjoint_adjoint_eq_closure : U†† = U.closure := by
 lemma le_adjoint_adjoint : U ≤ U†† := by
   rw [adjoint_adjoint_eq_closure]
   exact le_closure U
+
+lemma isClosed_iff : IsClosed U ↔ U†† = U := by
+  rw [isClosed_def, adjoint_adjoint_eq_closure]
+
+lemma adjoint_ge_adjoint_of_le {U₁ U₂ : UnboundedOperator H H'} (h : U₁ ≤ U₂) : U₂† ≤ U₁† := by
+  obtain ⟨h_domain, h_agree⟩ := h
+  simp only [Subtype.forall] at h_agree
+  have heq (x : U₁.domain) (v : U₂†.domain) : ⟪U₂† v, x⟫_ℂ = ⟪(v : H'), U₁ x⟫_ℂ := by
+    have hx₂ : ↑x ∈ U₂.domain := h_domain <| coe_mem x
+    have h : U₁ x = U₂ ⟨x, hx₂⟩ := h_agree x x.2 x hx₂ rfl
+    exact h ▸ adjoint_isFormalAdjoint U₂.dense_domain v ⟨x, hx₂⟩
+  constructor
+  · intro v hv
+    apply mem_adjoint_domain_of_exists v
+    use U₂† ⟨v, hv⟩
+    exact fun x ↦ heq x ⟨v, hv⟩
+  · intro u v huv
+    refine (adjoint_apply_eq U₁.dense_domain v ?_).symm
+    exact fun x ↦ huv ▸ heq x u
 
 end
 
