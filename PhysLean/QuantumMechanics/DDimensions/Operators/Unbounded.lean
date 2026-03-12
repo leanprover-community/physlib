@@ -230,6 +230,7 @@ section
 variable
   {E : Submodule ℂ H} (hE : Dense (E : Set H))
   {f : E →ₗ[ℂ] E} (hf : f.IsSymmetric)
+  (T : UnboundedOperator H H)
 
 /-- An `UnboundedOperator` constructed from a symmetric linear map on a dense submodule `E`. -/
 def ofSymmetric : UnboundedOperator H H where
@@ -242,6 +243,40 @@ def ofSymmetric : UnboundedOperator H H where
 
 @[simp]
 lemma ofSymmetric_apply (ψ : E) : (ofSymmetric hE hf) ψ = E.subtype (f ψ) := rfl
+
+-- Note that cannot simply co-opt `LinearMap.IsSymmetric` because
+-- the domain and codomain of `T` need not be the same.
+def IsSymmetric : Prop := ∀ x y : T.domain, ⟪T x, y⟫_ℂ = ⟪(x : H), T y⟫_ℂ
+
+lemma inner_map_polarization (x y : T.domain) :
+    ⟪T x, ↑y⟫_ℂ = (⟪T (x + y), ↑(x + y)⟫_ℂ - ⟪T (x - y), ↑(x - y)⟫_ℂ
+    - Complex.I * ⟪T (x + Complex.I • y), ↑(x + Complex.I • y)⟫_ℂ
+    + Complex.I * ⟪T (x - Complex.I • y), ↑(x - Complex.I • y)⟫_ℂ) / 4 := by
+  simp only [LinearPMap.map_add, coe_add, inner_add_right, inner_add_left, LinearPMap.map_sub,
+    AddSubgroupClass.coe_sub, inner_sub_right, inner_sub_left, LinearPMap.map_smul,
+    SetLike.val_smul, inner_smul_left, Complex.conj_I, inner_smul_right]
+  ring_nf
+  rw [Complex.I_sq]
+  ring
+
+lemma inner_map_polarization' (x y : T.domain) :
+    ⟪↑x, T y⟫_ℂ = (⟪↑(x + y), T (x + y)⟫_ℂ - ⟪↑(x - y), T (x - y)⟫_ℂ
+    - Complex.I * ⟪↑(x + Complex.I • y), T (x + Complex.I • y)⟫_ℂ
+    + Complex.I * ⟪↑(x - Complex.I • y), T (x - Complex.I • y)⟫_ℂ) / 4 := by
+  simp only [coe_add, LinearPMap.map_add, inner_add_right, inner_add_left, AddSubgroupClass.coe_sub,
+    LinearPMap.map_sub, inner_sub_right, inner_sub_left, SetLike.val_smul, LinearPMap.map_smul,
+    inner_smul_left, Complex.conj_I, inner_smul_right]
+  ring_nf
+  rw [Complex.I_sq]
+  ring
+
+lemma isSymmetric_iff_inner_map_self_real :
+    IsSymmetric T ↔ ∀ x : T.domain, (starRingEnd ℂ) ⟪T x, x⟫_ℂ = ⟪T x, x⟫_ℂ := by
+  simp only [inner_conj_symm]
+  refine ⟨fun hT x ↦ (hT x x).symm, ?_⟩
+  intro h x y
+  rw [inner_map_polarization, inner_map_polarization']
+  rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
 
 end
 
