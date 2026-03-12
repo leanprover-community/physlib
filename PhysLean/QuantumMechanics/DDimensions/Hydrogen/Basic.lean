@@ -52,10 +52,10 @@ variable (H : HydrogenAtom)
 @[simp]
 lemma m_ne_zero : H.m ≠ 0 := by linarith [H.hm]
 
-/-- The hydrogen atom Hamiltonian regularized by `ε > 0` is defined to be
+/-- The hydrogen atom Hamiltonian regularized by `ε ≠ 0` is defined to be
   `𝐇(ε) ≔ (2m)⁻¹𝐩² - k(𝐫(ε)⁻¹ + ½ε²𝐫(ε)⁻³)`. -/
-def hamiltonianReg (ε : ℝ) : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ) :=
-  (2 * H.m)⁻¹ • 𝐩² - H.k • (𝐫[ε,-1] + (2⁻¹ * ε ^ 2) • 𝐫[ε,-3])
+def hamiltonianReg (ε : ℝˣ) : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ) :=
+  (2 * H.m)⁻¹ • 𝐩² - H.k • (𝐫[ε,-1] + (2⁻¹ * ε.1 ^ 2) • 𝐫[ε,-3])
 
 end
 end HydrogenAtom
