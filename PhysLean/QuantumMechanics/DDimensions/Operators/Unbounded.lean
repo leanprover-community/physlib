@@ -305,6 +305,25 @@ lemma isSelfAdjoint_iff : IsSelfAdjoint T ↔ IsSelfAdjoint T.toLinearPMap := by
   rw [isSelfAdjoint_def, LinearPMap.isSelfAdjoint_def, ← adjoint_toLinearPMap,
     UnboundedOperator.ext_iff]
 
+lemma isSelfAdjoint_isClosed {T : UnboundedOperator H H} (hT : IsSelfAdjoint T) : IsClosed T :=
+  hT ▸ adjoint_isClosed T
+
+lemma isSelfAdjoint_isSymmetric {T : UnboundedOperator H H} (hT : IsSelfAdjoint T) :
+    IsSymmetric T := by
+  rw [isSymmetric_iff_le_adjoint]
+  exact ge_of_eq hT
+
+def IsEssentiallySelfAdjoint : Prop := IsSelfAdjoint T.closure
+
+lemma isEssentiallySelfAdjoint_def : IsEssentiallySelfAdjoint T ↔ T† = T.closure := by
+  rw [IsEssentiallySelfAdjoint, isSelfAdjoint_def, closure_adjoint_eq_adjoint]
+
+lemma isSelfAdjoint_isEssentiallySelfAdjoint {T : UnboundedOperator H H} (hT : IsSelfAdjoint T) :
+    IsEssentiallySelfAdjoint T := by
+  rw [isEssentiallySelfAdjoint_def]
+  nth_rw 2 [← hT]
+  exact Eq.symm <| adjoint_closure_eq_adjoint T
+
 end
 
 /-!
@@ -315,21 +334,19 @@ section
 
 variable
   {E : Submodule ℂ H} (hE : Dense (E : Set H))
+  {f : E →ₗ[ℂ] E} (hf : f.IsSymmetric)
   (T : UnboundedOperator H H)
 
-/-- A map `F : D(U) →L[ℂ] ℂ` is a generalized eigenvector of an unbounded operator `U`
-  if there is an eigenvalue `c` such that for all `ψ ∈ D(U)`, `F (U ψ) = c ⬝ F ψ`. -/
+/-- A map `F : D(T) →L[ℂ] ℂ` is a generalized eigenvector of an unbounded operator `T`
+  if there is an eigenvalue `c` such that for all `ψ ∈ D(T)`, `F (T ψ) = c ⬝ F ψ`. -/
 def IsGeneralizedEigenvector (F : T.domain →L[ℂ] ℂ) (c : ℂ) : Prop :=
   ∀ ψ : T.domain, ∃ ψ' : T.domain, ψ' = T ψ ∧ F ψ' = c • F ψ
 
-lemma isGeneralizedEigenvector_ofSymmetric_iff
-    {f : E →ₗ[ℂ] E} (hf : f.IsSymmetric) (F : E →L[ℂ] ℂ) (c : ℂ) :
+lemma isGeneralizedEigenvector_ofSymmetric_iff (F : E →L[ℂ] ℂ) (c : ℂ) :
     IsGeneralizedEigenvector (ofSymmetric hE hf) F c ↔ ∀ ψ : E, F (f ψ) = c • F ψ := by
   constructor <;> intro h ψ
   · obtain ⟨ψ', hψ', hψ''⟩ := h ψ
-    apply SetLike.coe_eq_coe.mp at hψ'
-    subst hψ'
-    exact hψ''
+    exact (SetLike.coe_eq_coe.mp hψ') ▸ hψ''
   · use f ψ
     exact ⟨by simp, h ψ⟩
 
