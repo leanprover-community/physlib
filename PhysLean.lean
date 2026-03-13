@@ -44,6 +44,10 @@ public import PhysLean.Electromagnetism.PointParticle.ThreeDimension
 public import PhysLean.Electromagnetism.Vacuum.Constant
 public import PhysLean.Electromagnetism.Vacuum.HarmonicWave
 public import PhysLean.Electromagnetism.Vacuum.IsPlaneWave
+public import PhysLean.FluidMechanics.IdealFluid.Basic
+public import PhysLean.FluidMechanics.IdealFluid.Bernoulli
+public import PhysLean.FluidMechanics.IdealFluid.Continuity
+public import PhysLean.FluidMechanics.IdealFluid.Euler
 public import PhysLean.Mathematics.Calculus.AdjFDeriv
 public import PhysLean.Mathematics.Calculus.Divergence
 public import PhysLean.Mathematics.DataStructures.FourTree.Basic
