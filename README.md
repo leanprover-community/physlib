@@ -5,7 +5,7 @@
 
 
 <div align="center">
-<img src="./docs/PhysLeanLogo.jpeg" alt="PhysLean logo" width="500">
+<img src="./docs/PhysLib-logo.jpeg" alt="PhysLean logo" width="500">
 </div>
 
 
@@ -35,7 +35,8 @@
 
 ## Requirements of the project
 
-🎯 The project shall contain results (definitions, theorems, lemmas and calculations) from **physics** formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
+🎯 The project shall contain results (definitions, theorems, lemmas and calculations) from **physics**,
+  including quantum information, formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
 
 🎯 The project shall be **organized** by **physics**.
 
@@ -45,7 +46,7 @@
 
 🎯 The project shall contain Physics Lean **tactics**, **notation** and **syntax** for physicists.
 
-🎯 The project shall *not* be tied to physics axiomizations (e.g. axiomatic QFT), but rather lexiable enough to accommodate different approaches and starting points.
+🎯 The project shall *not* be tied to physics axiomizations (e.g. axiomatic QFT), but rather flexiable enough to accommodate different approaches and starting points.
 
 🎯 The content of the project shall be carefully **reviewed** and curated, to ensure reusability, readability and fit.
 
@@ -56,71 +57,19 @@
 🎯 The project shall be for **main-stream** physics only.
 
 
-## How to get involved
+## Contributing to PhysLib
 
-See the [Get Involved](https://physlean.com/GetInvolved.html) for more details. Some suggestions:
+PhysLib is open-source and community run, and we welcome contributions from anyone.
+All you need to do is open a pull-request with your changes
+and our team of maintainers will review it and iterate with you on feedback until it
+can be merged.
 
-📣 write **informal** results - no need to learn Lean for this - see the [Getting Started](https://physlean.com/GettingStarted) page for more details,
-
-📣 tackle a [TODO item](https://physlean.com/TODOList),
-
-📣 or, start formalizing an area that you find interesting.
-
-Feel free to come to the [PhysLean zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLean/) to ask questions and advice.
-
+If you unsure where you would like to contribute, you may find ideas on:
+- our [open issues](https://github.com/leanprover-community/physlib/issues).
+- our [todo list](https://physlean.com/TODOList)
+- our [Get Involved page](https://physlean.com/GetInvolved.html)
 > [!NOTE]
-> When making contributing to PhysLean it is much better to do it with small steps. This makes it easier for us to review, and allows you to get feedback sooner.
-
-
-## Places in the project to start
-
-Good places to start an exploration of the project.
-
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/Electromagnetism/MaxwellEquations.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FElectromagnetism%2FMaxwellEquations.lean)
-**Maxwell's equations** in electromagnetism.
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/QuantumMechanics/OneDimension/HarmonicOscillator/Basic.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FQuantumMechanics%2FOneDimension%2FHarmonicOscillator%2FBasic.lean)
-**Quantum Harmonic Oscillator** in quantum mechanics.
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/StatisticalMechanics/CanonicalEnsemble/TwoState.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FStatisticalMechanics%2FCanonicalEnsemble%2FTwoState.lean)
-The two state **canonical ensemble** in statistical mechanics.
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/CondensedMatter/TightBindingChain/Basic.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FCondensedMatter%2FTightBindingChain%2FBasic.lean)
-The **tight-binding model** in condensed matter physics
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/Relativity/Special/TwinParadox/Basic.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FRelativity%2FSpecial%2FTwinParadox%2FBasic.lean)
-The **twin paradox** in special relativity.
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/Particles/BeyondTheStandardModel/TwoHDM/Basic.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FParticles%2FBeyondTheStandardModel%2FTwoHDM%2FBasic.lean) The **two-Higgs doublet model** in particle physics
-- [🗂️](https://github.com/HEPLean/PhysLean/blob/master/PhysLean/QFT/PerturbationTheory/WickAlgebra/WicksTheorem.lean)
-[💻](https://live.physlean.com/#url=https%3A%2F%2Fraw.githubusercontent.com%2FHEPLean%2FPhysLean%2Frefs%2Fheads%2Fmaster%2FPhysLean%2FQFT%2FPerturbationTheory%2FWickAlgebra%2FWicksTheorem.lean)
-**Wick's theorem** in quantum field theory.
-
-
-## Associated media and publications
-- [📄](https://arxiv.org/abs/2405.08863) Joseph Tooby-Smith,
-__HepLean: Digitalising high energy physics__, Computer Physics Communications, Volume 308,
-2025, 109457, ISSN 0010-4655, https://doi.org/10.1016/j.cpc.2024.109457. \[arXiv:2405.08863\]
-- [📄](https://arxiv.org/abs/2411.07667) Joseph Tooby-Smith, __Formalization of physics index notation in Lean 4__, arXiv:2411.07667
-- [📄](https://arxiv.org/abs/2505.07939) Joseph Tooby-Smith, __Digitalizing Wick's Theorem__, arXiv:2505.07939
-- [🎥](https://www.youtube.com/watch?v=U7Xf5p6jAUU&t=62s) Lean Together 2025: Joseph Tooby-Smith, Physics and Lean
-- [🎥](https://www.youtube.com/watch?v=W2cObnopqas) Seminar recording of "HepLean: Lean and high energy physics" by J. Tooby-Smith
-
-### Papers referencing PhysLean
-- Hu, Jiewen, Thomas Zhu, and Sean Welleck. "miniCTX: Neural Theorem Proving with (Long-) Contexts." arXiv preprint [arXiv:2408.03350](https://www.arxiv.org/abs/2408.03350) (2024). [Project page]( https://cmu-l3.github.io/minictx/)
-
-How PhysLean (then called HepLean) was used: *Theorems from the space-time files of HepLean were included in a data set used to evaluate the ability of models to prove theorems from real-world repositories, which requires working with definitions, theorems, and other context not seen in training.*
-
-## Contributing
-
-We would love to have you involved! See the [Get Involved](https://physlean.com/GetInvolved.html) page to see how you can get involved.
-Any contributions are welcome! If you have any questions or want permission  permission to create a pull-request for this
-repository contact Joseph Tooby-Smith on the [Lean Zulip](https://leanprover.zulipchat.com), or email.
-
-## Installation
-
-If you want to play around with PhysLean, but do not want to download Lean, then you can use [GitPod](https://gitpod.io/#https://github.com/HEPLean/HepLean).
+> If stuck at any point there are lots of people happly to help on the [PhysLib zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLib)
 
 ### Installing Lean 4
 
@@ -132,10 +81,82 @@ or
 
 - https://leanprover-community.github.io/get_started.html
 
-### Installing PhysLean
+### Installing PhysLib
 
 - Clone this repository (or download the repository as a Zip file)
 - Open a terminal at the top-level in the corresponding directory.
 - Run `lake exe cache get`. The command `lake` should have been installed when you installed Lean.
 - Run `lake build`.
 - Open the directory (not a single file) in Visual Studio Code (or another Lean compatible code editor).
+
+### Making a pull-request
+
+There are lots of guides on how to make a pull-request on GitHub. The first thing you
+need to do is fork the repository. Once you've made your pull request we will review it:
+- Guide to [PhysLib reviews](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md).
+It will also undergo a number of automated checks called linters. Sometimes these are easier
+to run locally:
+- Guide to [linters and running them locally](https://github.com/leanprover-community/physlib/blob/master/scripts/README.md).
+
+Most importantly:
+> [!NOTE]
+> When making contributing to PhysLib it is much better to do it with small steps. This makes it easier for us to review, and allows you to get feedback sooner.
+
+## Maintainers
+
+Below are the maintainers of the project, however the best way to reach them is by posting
+on the [Lean Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-PhysLib)
+
+- Léo Lessa (@Megaleo)
+- Alex Meiburg (@Timeroot)
+- Daniel Morrison (@morrison-daniel)
+- Zhi-Kai Pong (@zhikaip)
+- Rodolfo Soldati (@rodolfor-s)
+- Joseph Tooby-Smith (@jstoobysmith)
+- Winston Yin (@winstonyin)
+
+## Citing the project
+
+If you want to cite the project as a whole please cite:
+
+```
+@misc{physlib,
+  author = {The PhysLib community},
+  title = {PhysLib: The Lean Physics Library},
+  year = {2024},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/leanprover-community/physlib}},
+}
+```
+
+PhysLib was formed by merging the general physics Lean library PhysLean (formerly called HepLean)
+with the quantum-information library Lean-QuantumInfo. Where appropriate please also consider
+citing the papers associated with the origin of these projects. For the former please use:
+```
+@article{Tooby-Smith:2024vqu,
+    author = "Tooby-Smith, Joseph",
+    title = "{HepLean: Digitalising high energy physics}",
+    eprint = "2405.08863",
+    archivePrefix = "arXiv",
+    primaryClass = "hep-ph",
+    doi = "10.1016/j.cpc.2024.109457",
+    journal = "Comput. Phys. Commun.",
+    volume = "308",
+    pages = "109457",
+    year = "2025"
+}
+```
+and for the latter please use:
+
+```
+@article{Meiburg:2025mwn,
+    author = "Meiburg, Alex and Lessa, Leonardo A. and Soldati, Rodolfo R.",
+    title = "{A Formalization of the Generalized Quantum Stein's Lemma in Lean}",
+    eprint = "2510.08672",
+    archivePrefix = "arXiv",
+    primaryClass = "quant-ph",
+    month = "10",
+    year = "2025"
+}
+```
