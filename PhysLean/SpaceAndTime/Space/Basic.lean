@@ -12,6 +12,7 @@ public import Mathlib.Topology.ContinuousMap.CompactlySupported
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Manifold.Diffeomorph
 /-!
 
 # Space
@@ -287,5 +288,35 @@ noncomputable def manifoldStructure (d : ℕ) :
   continuous_invFun := by
     simp only [Equiv.coe_vaddConst]
     fun_prop
+
+@[simp]
+lemma manifoldStructure_comp_manifoldStructure_symm {d : ℕ} :
+    (↑(manifoldStructure d) ∘ ↑(manifoldStructure d).symm) = id := by
+  ext1 x
+  simpa using (manifoldStructure d).right_inv' (x := x) (by simp [manifoldStructure])
+
+lemma manifoldStructure_comp_manifoldStructure_symm_apply {d : ℕ}
+    (x : EuclideanSpace ℝ (Fin d)) :
+    (manifoldStructure d) ((manifoldStructure d).symm x) = x := by
+  simpa using (manifoldStructure d).right_inv' (x := x) (by simp [manifoldStructure])
+
+@[simp]
+lemma range_manifoldStructure {d : ℕ} :
+    (Set.range ↑(manifoldStructure d)) = Set.univ := by
+  ext x
+  simpa using ⟨(manifoldStructure d).symm x, manifoldStructure_comp_manifoldStructure_symm_apply x⟩
+
+open Manifold in
+lemma contMDiff_vaddConst (d : ℕ) : ContMDiff
+    (manifoldStructure d) (𝓘(ℝ, EuclideanSpace ℝ (Fin d)))  ⊤ (manifoldStructure d).toFun := by
+  rw [contMDiff_iff]
+  refine ⟨(manifoldStructure d).continuous_toFun, fun x y ↦ ?_⟩
+  simp only [extChartAt, OpenPartialHomeomorph.extend, OpenPartialHomeomorph.refl_partialEquiv,
+    PartialEquiv.refl_source, OpenPartialHomeomorph.singletonChartedSpace_chartAt_eq,
+    modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialEquiv.refl_coe,
+    ModelWithCorners.toPartialEquiv_coe, PartialEquiv.refl_trans,
+    ModelWithCorners.toPartialEquiv_coe_symm, manifoldStructure_comp_manifoldStructure_symm,
+    CompTriple.comp_eq, ModelWithCorners.target_eq, Set.preimage_univ, Set.inter_univ]
+  exact contDiffOn_id
 
 end Space

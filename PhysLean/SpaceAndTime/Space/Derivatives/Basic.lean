@@ -100,6 +100,41 @@ lemma deriv_eq_mfderiv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
   rw [deriv_eq_fderiv_basis, ← mfderiv_eq_fderiv]
   rfl
 
+open Manifold in
+lemma mdifferentiable_manifoldStructure_iff_differentiable {M d} [NormedAddCommGroup M]
+    [NormedSpace ℝ M] {f : Space d → M} {x : Space d} :
+    MDifferentiableAt (Space.manifoldStructure d) 𝓘(ℝ, M) f x ↔ DifferentiableAt ℝ f x := by
+  constructor
+  · intro h
+    rw [← mdifferentiableAt_iff_differentiableAt]
+    apply h.comp (I' := Space.manifoldStructure d)
+    exact (modelDiffeo.symm.mdifferentiable  (WithTop.top_ne_zero)).mdifferentiableAt
+  · intro h
+    apply (mdifferentiableAt_iff_differentiableAt.mpr h).comp (I' := 𝓘(ℝ, Space d))
+    exact (modelDiffeo.mdifferentiable  (WithTop.top_ne_zero)).mdifferentiableAt
+
+open Manifold in
+/-- The spatial-derivative in terms of the derivative of functions between
+  manifolds with the manifold structure `Space.manifoldStructure d`.
+  This should eventually be used as the definition of `deriv`. -/
+lemma deriv_eq_mfderiv_manifoldStructure {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+    (μ : Fin d) (f : Space d → M) (x : Space d) :
+    deriv μ f x = mfderiv (Space.manifoldStructure d) 𝓘(ℝ, M) f x (EuclideanSpace.single μ 1) := by
+  by_cases hf : DifferentiableAt ℝ f x
+  · rw [deriv_eq_mfderiv]
+    change _ = mfderiv (Space.manifoldStructure d) 𝓘(ℝ, M)
+      (f ∘ modelDiffeo) x (EuclideanSpace.single μ 1)
+    rw [mfderiv_comp (I' := 𝓘(ℝ, Space d)) _ hf.mdifferentiableAt
+      (modelDiffeo.mdifferentiable WithTop.top_ne_zero).mdifferentiableAt]
+    simp only [Function.comp_apply, modelDiffeo_apply, mfderiv_eq_fderiv,
+      ContinuousLinearMap.coe_comp']
+    rw [basis_eq_mfderiv_modelDiffeo_single]
+    rfl
+  · rw [deriv_eq, fderiv_zero_of_not_differentiableAt hf,
+      mfderiv_zero_of_not_mdifferentiableAt <|
+      mdifferentiable_manifoldStructure_iff_differentiable.mp.mt hf]
+    simp
+
 /-!
 
 ### A.2. Derivative of the constant function
