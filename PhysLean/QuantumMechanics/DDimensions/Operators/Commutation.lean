@@ -406,10 +406,26 @@ lemma angularMomentum_commutation_angularMomentum {d : ℕ} (i j k l : Fin d) : 
     SchwartzMap.add_apply, smul_sub]
   ring
 
-@[sorryful]
+private lemma angularMomentum_comp_antisymm_sum {d : ℕ} (a b : Fin d) :
+    ∑ x : Fin d, 𝐋[x,a] ∘L 𝐋[b,x] = ∑ x : Fin d, 𝐋[a,x] ∘L 𝐋[x,b] := by
+  congr 1; ext x
+  rw [angularMomentumOperator_antisymm x a, angularMomentumOperator_antisymm x b]
+  simp only [neg_comp, comp_neg]
+
 lemma angularMomentumSqr_commutation_angularMomentum {d : ℕ} (i j : Fin d) :
     ⁅angularMomentumOperatorSqr (d := d), 𝐋[i,j]⁆ = 0 := by
-  sorry
+  unfold angularMomentumOperatorSqr
+  simp only [smul_lie, sum_lie, leibniz_lie]
+  simp only [angularMomentum_commutation_angularMomentum]
+  simp only [comp_sub, comp_add, sub_comp, add_comp, comp_smul, smul_comp]
+  simp only [smul_add, smul_sub, Finset.sum_add_distrib, Finset.sum_sub_distrib,
+    ← Finset.smul_sum]
+  dsimp only [kroneckerDelta]
+  simp only [Nat.cast_ite, Nat.cast_one, CharP.cast_eq_zero, mul_ite, mul_one, mul_zero,
+    ite_smul, zero_smul]
+  simp_rw [Finset.sum_ite_eq' Finset.univ, Finset.mem_univ, if_true]
+  rw [angularMomentum_comp_antisymm_sum i j, angularMomentum_comp_antisymm_sum j i]
+  abel
 
 end
 end QuantumMechanics
