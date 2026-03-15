@@ -180,7 +180,7 @@ scoped postfix:1024 "†" => UnboundedOperator.adjoint
 @[simp]
 lemma adjoint_toLinearPMap : U†.toLinearPMap = U.toLinearPMap† := rfl
 
-lemma adjoint_isClosed : (U†).IsClosed := LinearPMap.adjoint_isClosed U.dense_domain
+lemma adjoint_isClosed : U†.IsClosed := LinearPMap.adjoint_isClosed U.dense_domain
 
 lemma adjoint_closure_eq_adjoint : U†.closure = U† := (isClosed_def U†).mp <| adjoint_isClosed U
 
@@ -206,12 +206,9 @@ lemma adjoint_adjoint_eq_closure : U†† = U.closure := by
   rw [mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
     orthogonal_orthogonal_eq_closure, mem_submodule_closure_iff_mem_submoduleToLp_closure]
 
-lemma le_adjoint_adjoint : U ≤ U†† := by
-  rw [adjoint_adjoint_eq_closure]
-  exact le_closure U
+lemma le_adjoint_adjoint : U ≤ U†† := adjoint_adjoint_eq_closure U ▸ le_closure U
 
-lemma isClosed_iff : IsClosed U ↔ U†† = U := by
-  rw [isClosed_def, adjoint_adjoint_eq_closure]
+lemma isClosed_iff : IsClosed U ↔ U†† = U := adjoint_adjoint_eq_closure U ▸ isClosed_def U
 
 lemma adjoint_ge_adjoint_of_le {U₁ U₂ : UnboundedOperator H H'} (h : U₁ ≤ U₂) : U₂† ≤ U₁† := by
   obtain ⟨h_domain, h_agree⟩ := h
@@ -228,6 +225,10 @@ lemma adjoint_ge_adjoint_of_le {U₁ U₂ : UnboundedOperator H H'} (h : U₁ �
   · intro u v huv
     refine (adjoint_apply_eq U₁.dense_domain v ?_).symm
     exact fun x ↦ huv ▸ heq x u
+
+lemma closure_mono {U₁ U₂ : UnboundedOperator H H'} (h : U₁ ≤ U₂) : U₁.closure ≤ U₂.closure := by
+  repeat rw [← adjoint_adjoint_eq_closure]
+  exact adjoint_ge_adjoint_of_le <| adjoint_ge_adjoint_of_le h
 
 end
 
