@@ -12,12 +12,22 @@ public import PhysLean.Mathematics.InnerProductSpace.Submodule
 
 ## i. Overview
 
-In this module we define unbounded operators on a Hilbert space.
+In this module we define unbounded operators between Hilbert spaces.
 
 ## ii. Key results
 
-- `UnboundedOperator` : Densely defined, closable unbounded operators on a Hilbert space.
-- `IsGeneralizedEigenvector` : The notion of eigenvector/value for linear functionals.
+Definitions:
+- `UnboundedOperator`: Densely defined, closable unbounded operator between Hilbert spaces.
+- `partialOrder`: Poset structure for unbounded operators.
+- `ofSymmetric`: Construction of an unbounded operator from a symmetric `LinearPMap`.
+- `IsGeneralizedEigenvector`: The notion of eigenvectors/values for linear functionals.
+
+(In)equalities:
+- `le_closure`: `U ≤ U.closure`
+- `adjoint_adjoint_eq_closure`: `U†† = U.closure`
+- `adjoint_ge_adjoint_of_le`: `U₁ ≤ U₂ → U₂† ≤ U₁†`
+- `closure_mono`: `U₁ ≤ U₂ → U₁.closure ≤ U₂.closure`
+- `isSymmetric_iff_le_adjoint`: `IsSymmetric T ↔ T ≤ T†`
 
 ## iii. Table of contents
 
@@ -43,7 +53,7 @@ In this module we define unbounded operators on a Hilbert space.
 namespace QuantumMechanics
 
 open LinearPMap Submodule
-open InnerProductSpaceSubmodule
+open InnerProductSpace InnerProductSpaceSubmodule
 
 /-!
 ## A. Definition
@@ -112,6 +122,14 @@ def IsClosed : Prop := U.toLinearPMap.IsClosed
 
 lemma closure_isClosed : U.closure.IsClosed := IsClosable.closure_isClosed U.is_closable
 
+lemma isClosed_def : IsClosed U ↔ U.closure = U := by
+  refine ⟨?_, fun h ↦ h ▸ closure_isClosed U⟩
+  intro h
+  rw [UnboundedOperator.ext_iff, closure_toLinearPMap]
+  apply eq_of_eq_graph
+  rw [← IsClosable.graph_closure_eq_closure_graph U.is_closable]
+  exact IsClosed.submodule_topologicalClosure_eq h
+
 end
 
 /-!
@@ -162,7 +180,9 @@ scoped postfix:1024 "†" => UnboundedOperator.adjoint
 @[simp]
 lemma adjoint_toLinearPMap : U†.toLinearPMap = U.toLinearPMap† := rfl
 
-lemma adjoint_isClosed : (U†).IsClosed := LinearPMap.adjoint_isClosed U.dense_domain
+lemma adjoint_isClosed : U†.IsClosed := LinearPMap.adjoint_isClosed U.dense_domain
+
+lemma adjoint_closure_eq_adjoint : U†.closure = U† := (isClosed_def U†).mp <| adjoint_isClosed U
 
 lemma closure_adjoint_eq_adjoint : U.closure† = U† := by
   -- Reduce to statement about graphs using density and closability assumptions
@@ -186,9 +206,29 @@ lemma adjoint_adjoint_eq_closure : U†† = U.closure := by
   rw [mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
     orthogonal_orthogonal_eq_closure, mem_submodule_closure_iff_mem_submoduleToLp_closure]
 
-lemma le_adjoint_adjoint : U ≤ U†† := by
-  rw [adjoint_adjoint_eq_closure]
-  exact le_closure U
+lemma le_adjoint_adjoint : U ≤ U†† := adjoint_adjoint_eq_closure U ▸ le_closure U
+
+lemma isClosed_iff : IsClosed U ↔ U†† = U := adjoint_adjoint_eq_closure U ▸ isClosed_def U
+
+lemma adjoint_ge_adjoint_of_le {U₁ U₂ : UnboundedOperator H H'} (h : U₁ ≤ U₂) : U₂† ≤ U₁† := by
+  obtain ⟨h_domain, h_agree⟩ := h
+  simp only [Subtype.forall] at h_agree
+  have heq (x : U₁.domain) (v : U₂†.domain) : ⟪U₂† v, x⟫_ℂ = ⟪(v : H'), U₁ x⟫_ℂ := by
+    have hx₂ : ↑x ∈ U₂.domain := h_domain <| coe_mem x
+    have h : U₁ x = U₂ ⟨x, hx₂⟩ := h_agree x x.2 x hx₂ rfl
+    exact h ▸ adjoint_isFormalAdjoint U₂.dense_domain v ⟨x, hx₂⟩
+  constructor
+  · intro v hv
+    apply mem_adjoint_domain_of_exists v
+    use U₂† ⟨v, hv⟩
+    exact fun x ↦ heq x ⟨v, hv⟩
+  · intro u v huv
+    refine (adjoint_apply_eq U₁.dense_domain v ?_).symm
+    exact fun x ↦ huv ▸ heq x u
+
+lemma closure_mono {U₁ U₂ : UnboundedOperator H H'} (h : U₁ ≤ U₂) : U₁.closure ≤ U₂.closure := by
+  repeat rw [← adjoint_adjoint_eq_closure]
+  exact adjoint_ge_adjoint_of_le <| adjoint_ge_adjoint_of_le h
 
 end
 
@@ -201,6 +241,7 @@ section
 variable
   {E : Submodule ℂ H} (hE : Dense (E : Set H))
   {f : E →ₗ[ℂ] E} (hf : f.IsSymmetric)
+  (T : UnboundedOperator H H)
 
 /-- An `UnboundedOperator` constructed from a symmetric linear map on a dense submodule `E`. -/
 def ofSymmetric : UnboundedOperator H H where
@@ -213,6 +254,50 @@ def ofSymmetric : UnboundedOperator H H where
 
 @[simp]
 lemma ofSymmetric_apply (ψ : E) : (ofSymmetric hE hf) ψ = E.subtype (f ψ) := rfl
+
+-- Note that cannot simply co-opt `LinearMap.IsSymmetric` because
+-- the domain and codomain of `T` need not be the same.
+/-- `T` is symmetric if `⟪T x, y⟫ = ⟪x, T y⟫` for all `x,y ∈ T.domain`. -/
+def IsSymmetric : Prop := ∀ x y : T.domain, ⟪T x, y⟫_ℂ = ⟪(x : H), T y⟫_ℂ
+
+lemma inner_map_polarization (x y : T.domain) :
+    ⟪T x, ↑y⟫_ℂ = (⟪T (x + y), ↑(x + y)⟫_ℂ - ⟪T (x - y), ↑(x - y)⟫_ℂ
+    - Complex.I * ⟪T (x + Complex.I • y), ↑(x + Complex.I • y)⟫_ℂ
+    + Complex.I * ⟪T (x - Complex.I • y), ↑(x - Complex.I • y)⟫_ℂ) / 4 := by
+  simp only [LinearPMap.map_add, coe_add, inner_add_right, inner_add_left, LinearPMap.map_sub,
+    AddSubgroupClass.coe_sub, inner_sub_right, inner_sub_left, LinearPMap.map_smul,
+    SetLike.val_smul, inner_smul_left, Complex.conj_I, inner_smul_right]
+  ring_nf
+  rw [Complex.I_sq]
+  ring
+
+lemma inner_map_polarization' (x y : T.domain) :
+    ⟪↑x, T y⟫_ℂ = (⟪↑(x + y), T (x + y)⟫_ℂ - ⟪↑(x - y), T (x - y)⟫_ℂ
+    - Complex.I * ⟪↑(x + Complex.I • y), T (x + Complex.I • y)⟫_ℂ
+    + Complex.I * ⟪↑(x - Complex.I • y), T (x - Complex.I • y)⟫_ℂ) / 4 := by
+  simp only [coe_add, LinearPMap.map_add, inner_add_right, inner_add_left, AddSubgroupClass.coe_sub,
+    LinearPMap.map_sub, inner_sub_right, inner_sub_left, SetLike.val_smul, LinearPMap.map_smul,
+    inner_smul_left, Complex.conj_I, inner_smul_right]
+  ring_nf
+  rw [Complex.I_sq]
+  ring
+
+lemma isSymmetric_iff_inner_map_self_real :
+    IsSymmetric T ↔ ∀ x : T.domain, (starRingEnd ℂ) ⟪T x, x⟫_ℂ = ⟪T x, x⟫_ℂ := by
+  simp only [inner_conj_symm]
+  refine ⟨fun hT x ↦ (hT x x).symm, ?_⟩
+  intro h x y
+  rw [inner_map_polarization, inner_map_polarization']
+  rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
+
+lemma isSymmetric_iff_le_adjoint : IsSymmetric T ↔ T ≤ T† := by
+  refine ⟨fun hT ↦ IsFormalAdjoint.le_adjoint T.dense_domain <| IsFormalAdjoint.symm hT, ?_⟩
+  intro h x y
+  obtain ⟨h_domain, h_agree⟩ := h
+  simp only [Subtype.forall] at h_agree
+  have hy : ↑y ∈ T†.domain := h_domain <| coe_mem y
+  have heq := (IsFormalAdjoint.symm <| adjoint_isFormalAdjoint T.dense_domain) x ⟨y, hy⟩
+  exact (h_agree y y.2 y hy rfl) ▸ heq
 
 end
 
@@ -232,6 +317,26 @@ lemma isSelfAdjoint_iff : IsSelfAdjoint T ↔ IsSelfAdjoint T.toLinearPMap := by
   rw [isSelfAdjoint_def, LinearPMap.isSelfAdjoint_def, ← adjoint_toLinearPMap,
     UnboundedOperator.ext_iff]
 
+lemma isSelfAdjoint_isClosed {T : UnboundedOperator H H} (hT : IsSelfAdjoint T) : IsClosed T :=
+  hT ▸ adjoint_isClosed T
+
+lemma isSelfAdjoint_isSymmetric {T : UnboundedOperator H H} (hT : IsSelfAdjoint T) :
+    IsSymmetric T := by
+  rw [isSymmetric_iff_le_adjoint]
+  exact ge_of_eq hT
+
+/-- `T` is essentially self-adjoint if its closure is self-adjoint. -/
+def IsEssentiallySelfAdjoint : Prop := IsSelfAdjoint T.closure
+
+lemma isEssentiallySelfAdjoint_def : IsEssentiallySelfAdjoint T ↔ T† = T.closure := by
+  rw [IsEssentiallySelfAdjoint, isSelfAdjoint_def, closure_adjoint_eq_adjoint]
+
+lemma isSelfAdjoint_isEssentiallySelfAdjoint {T : UnboundedOperator H H} (hT : IsSelfAdjoint T) :
+    IsEssentiallySelfAdjoint T := by
+  rw [isEssentiallySelfAdjoint_def]
+  nth_rw 2 [← hT]
+  exact Eq.symm <| adjoint_closure_eq_adjoint T
+
 end
 
 /-!
@@ -242,21 +347,19 @@ section
 
 variable
   {E : Submodule ℂ H} (hE : Dense (E : Set H))
+  {f : E →ₗ[ℂ] E} (hf : f.IsSymmetric)
   (T : UnboundedOperator H H)
 
-/-- A map `F : D(U) →L[ℂ] ℂ` is a generalized eigenvector of an unbounded operator `U`
-  if there is an eigenvalue `c` such that for all `ψ ∈ D(U)`, `F (U ψ) = c ⬝ F ψ`. -/
+/-- A map `F : D(T) →L[ℂ] ℂ` is a generalized eigenvector of an unbounded operator `T`
+  if there is an eigenvalue `c` such that for all `ψ ∈ D(T)`, `F (T ψ) = c ⬝ F ψ`. -/
 def IsGeneralizedEigenvector (F : T.domain →L[ℂ] ℂ) (c : ℂ) : Prop :=
   ∀ ψ : T.domain, ∃ ψ' : T.domain, ψ' = T ψ ∧ F ψ' = c • F ψ
 
-lemma isGeneralizedEigenvector_ofSymmetric_iff
-    {f : E →ₗ[ℂ] E} (hf : f.IsSymmetric) (F : E →L[ℂ] ℂ) (c : ℂ) :
+lemma isGeneralizedEigenvector_ofSymmetric_iff (F : E →L[ℂ] ℂ) (c : ℂ) :
     IsGeneralizedEigenvector (ofSymmetric hE hf) F c ↔ ∀ ψ : E, F (f ψ) = c • F ψ := by
   constructor <;> intro h ψ
   · obtain ⟨ψ', hψ', hψ''⟩ := h ψ
-    apply SetLike.coe_eq_coe.mp at hψ'
-    subst hψ'
-    exact hψ''
+    exact (SetLike.coe_eq_coe.mp hψ') ▸ hψ''
   · use f ψ
     exact ⟨by simp, h ψ⟩
 
