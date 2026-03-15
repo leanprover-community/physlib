@@ -270,35 +270,24 @@ lemma radiusRegPow_commutation_momentumSqr :
 
 -/
 
-lemma angularMomentum_commutation_position {d : ℕ} (i j k : Fin d) : ⁅𝐋[i,j], 𝐱[k]⁆ =
-    (Complex.I * ℏ * δ[i,k]) • 𝐱[j] - (Complex.I * ℏ * δ[j,k]) • 𝐱[i] := by
-  unfold angularMomentumOperator
-  rw [sub_lie]
-  rw [leibniz_lie, leibniz_lie]
-  rw [position_commutation_position, position_commutation_position]
-  rw [← lie_skew, position_commutation_momentum]
-  rw [← lie_skew, position_commutation_momentum]
-  rw [symm k i, symm k j]
-  simp only [ContinuousLinearMap.comp_neg, ContinuousLinearMap.comp_smul, comp_id, zero_comp,
-    add_zero, add_comm, sub_neg_eq_add, ← sub_eq_add_neg]
+lemma angularMomentum_commutation_position :
+    ⁅𝐋[i,j], 𝐱[k]⁆ = (I * ℏ) • (δ[i,k] • 𝐱[j] - δ[j,k] • 𝐱[i]) := by
+  trans 𝐱[i] ∘L ⁅𝐩[j], 𝐱[k]⁆ - 𝐱[j] ∘L ⁅𝐩[i], 𝐱[k]⁆
+  · simp [angularMomentumOperator, leibniz_lie]
+  simp only [← lie_skew 𝐩[_] 𝐱[_], comp_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg,
+    position_commutation_momentum, comp_smul, comp_id, smul_sub, symm k _]
 
-lemma angularMomentum_commutation_radiusRegPow (i j : Fin d) (ε : ℝˣ) (s : ℝ) :
-    ⁅𝐋[i,j], 𝐫[d,ε,s]⁆ = 0 := by
-  dsimp only [Bracket.bracket]
-  unfold angularMomentumOperator
-  simp only [sub_mul, ContinuousLinearMap.mul_def, ContinuousLinearMap.comp_assoc]
-  repeat rw [momentum_comp_radiusRegPow_eq]
-  simp only [comp_sub, comp_smulₛₗ, RingHom.id_apply, ← ContinuousLinearMap.comp_assoc]
-  repeat rw [position_comp_radiusRegPow_commute]
-  simp only [ContinuousLinearMap.comp_assoc]
-  rw [position_comp_commute]
-  simp only [sub_sub_sub_cancel_right, sub_self]
+@[simp]
+lemma angularMomentum_commutation_radiusRegPow : ⁅𝐋[i,j], 𝐫[d,ε,s]⁆ = 0 := by
+  trans 𝐱[i] ∘L ⁅𝐩[j], 𝐫[ε,s]⁆ - 𝐱[j] ∘L ⁅𝐩[i], 𝐫[ε,s]⁆
+  · simp [angularMomentumOperator, leibniz_lie]
+  simp [← lie_skew 𝐩[_] 𝐫[_,_], radiusRegPow_commutation_momentum, comp_neg,
+    ← position_comp_radiusRegPow_commute, ← comp_assoc, position_comp_commute]
 
-lemma angularMomentumSqr_commutation_radiusRegPow (ε : ℝˣ) :
+@[simp]
+lemma angularMomentumSqr_commutation_radiusRegPow :
     ⁅angularMomentumOperatorSqr (d := d), 𝐫[d,ε,s]⁆ = 0 := by
-  unfold angularMomentumOperatorSqr
-  simp only [sum_lie, smul_lie, leibniz_lie, angularMomentum_commutation_radiusRegPow,
-    comp_zero, zero_comp, add_zero, smul_zero, Finset.sum_const_zero]
+  simp [angularMomentumOperatorSqr, sum_lie, leibniz_lie]
 
 /-!
 
