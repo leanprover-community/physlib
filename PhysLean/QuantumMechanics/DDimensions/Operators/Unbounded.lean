@@ -12,12 +12,22 @@ public import PhysLean.Mathematics.InnerProductSpace.Submodule
 
 ## i. Overview
 
-In this module we define unbounded operators on a Hilbert space.
+In this module we define unbounded operators between Hilbert spaces.
 
 ## ii. Key results
 
-- `UnboundedOperator` : Densely defined, closable unbounded operators on a Hilbert space.
-- `IsGeneralizedEigenvector` : The notion of eigenvector/value for linear functionals.
+Definitions:
+- `UnboundedOperator`: Densely defined, closable unbounded operator between Hilbert spaces.
+- `partialOrder`: Poset structure for unbounded operators.
+- `ofSymmetric`: Construction of an unbounded operator from a symmetric `LinearPMap`.
+- `IsGeneralizedEigenvector`: The notion of eigenvectors/values for linear functionals.
+
+(In)equalities:
+- `le_closure`: `U ≤ U.closure`
+- `adjoint_adjoint_eq_closure`: `U†† = U.closure`
+- `adjoint_ge_adjoint_of_le`: `U₁ ≤ U₂ → U₂† ≤ U₁†`
+- `closure_mono`: `U₁ ≤ U₂ → U₁.closure ≤ U₂.closure`
+- `isSymmetric_iff_le_adjoint`: `IsSymmetric T ↔ T ≤ T†`
 
 ## iii. Table of contents
 
@@ -246,6 +256,7 @@ lemma ofSymmetric_apply (ψ : E) : (ofSymmetric hE hf) ψ = E.subtype (f ψ) := 
 
 -- Note that cannot simply co-opt `LinearMap.IsSymmetric` because
 -- the domain and codomain of `T` need not be the same.
+/-- `T` is symmetric if `⟪T x, y⟫ = ⟪x, T y⟫` for all `x,y ∈ T.domain`. -/
 def IsSymmetric : Prop := ∀ x y : T.domain, ⟪T x, y⟫_ℂ = ⟪(x : H), T y⟫_ℂ
 
 lemma inner_map_polarization (x y : T.domain) :
@@ -313,6 +324,7 @@ lemma isSelfAdjoint_isSymmetric {T : UnboundedOperator H H} (hT : IsSelfAdjoint 
   rw [isSymmetric_iff_le_adjoint]
   exact ge_of_eq hT
 
+/-- `T` is essentially self-adjoint if its closure is self-adjoint. -/
 def IsEssentiallySelfAdjoint : Prop := IsSelfAdjoint T.closure
 
 lemma isEssentiallySelfAdjoint_def : IsEssentiallySelfAdjoint T ↔ T† = T.closure := by
