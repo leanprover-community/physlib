@@ -50,9 +50,12 @@ Commutator lemmas come in three flavors:
 
 namespace QuantumMechanics
 noncomputable section
-open Constants
+open Complex Constants
 open KroneckerDelta
+open Bracket
 open SchwartzMap ContinuousLinearMap
+
+variable {d : ℕ} (i j k l : Fin d) (ε : ℝˣ) (s t : ℝ)
 
 /-!
 
@@ -64,12 +67,12 @@ private lemma ite_cond_symm (i j : Fin d) :
     (if i = j then A else B) = (if j = i then A else B) :=
   ite_cond_congr (Eq.propIntro Eq.symm Eq.symm)
 
-lemma leibniz_lie {d : ℕ} (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
+lemma leibniz_lie (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
     ⁅A ∘L B, C⁆ = A ∘L ⁅B, C⁆ + ⁅A, C⁆ ∘L B := by
   dsimp only [Bracket.bracket]
   simp only [ContinuousLinearMap.mul_def, comp_assoc, comp_sub, sub_comp, sub_add_sub_cancel]
 
-lemma lie_leibniz {d : ℕ} (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
+lemma lie_leibniz (A B C : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
     ⁅A, B ∘L C⁆ = B ∘L ⁅A, C⁆ + ⁅A, B⁆ ∘L C := by
   dsimp only [Bracket.bracket]
   simp only [ContinuousLinearMap.mul_def, comp_assoc, comp_sub, sub_comp, sub_add_sub_cancel']
@@ -97,35 +100,25 @@ lemma comp_eq_comp_sub_commute (A B : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d,
 -/
 
 /-- Position operators commute: `[xᵢ, xⱼ] = 0`. -/
-lemma position_commutation_position {d : ℕ} (i j : Fin d) : ⁅𝐱[i], 𝐱[j]⁆ = 0 := by
-  dsimp only [Bracket.bracket]
-  ext ψ x
-  simp only [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply,
-    ContinuousLinearMap.zero_apply, SchwartzMap.zero_apply, positionOperator_apply]
-  ring
+@[simp]
+lemma position_commutation_position : ⁅𝐱[i], 𝐱[j]⁆ = 0 := by
+  ext
+  simp [bracket, ← mul_assoc, mul_comm]
 
-lemma position_comp_commute {d : ℕ} (i j : Fin d) : 𝐱[i] ∘L 𝐱[j] = 𝐱[j] ∘L 𝐱[i] := by
-  rw [← sub_eq_zero]
-  exact position_commutation_position i j
+lemma position_comp_commute : 𝐱[i] ∘L 𝐱[j] = 𝐱[j] ∘L 𝐱[i] := by
+  rw [comp_eq_comp_add_commute, position_commutation_position, add_zero]
 
-lemma position_commutation_radiusRegPow {d : ℕ} (i : Fin d) (ε : ℝˣ) (s : ℝ) :
-    ⁅𝐱[i], 𝐫[d,ε,s]⁆ = 0 := by
-  dsimp only [Bracket.bracket]
-  ext ψ x
-  simp only [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply]
-  simp only [positionOperator_apply, radiusRegPowOperator_apply]
-  simp only [Complex.real_smul, ContinuousLinearMap.zero_apply, SchwartzMap.zero_apply]
-  ring
+@[simp]
+lemma position_commutation_radiusRegPow : ⁅𝐱[i], 𝐫[d,ε,s]⁆ = 0 := by
+  ext
+  simp [bracket, ← mul_assoc, mul_comm]
 
-lemma position_comp_radiusRegPow_commute {d : ℕ} (i : Fin d) (ε : ℝˣ) (s : ℝ) :
-    𝐱[i] ∘L 𝐫[ε,s] = 𝐫[ε,s] ∘L 𝐱[i] := by
-  rw [← sub_eq_zero]
-  exact position_commutation_radiusRegPow _ _ _
+lemma position_comp_radiusRegPow_commute : 𝐱[i] ∘L 𝐫[ε,s] = 𝐫[ε,s] ∘L 𝐱[i] := by
+  rw [comp_eq_comp_add_commute, position_commutation_radiusRegPow, add_zero]
 
-lemma radiusRegPow_commutation_radiusRegPow {d : ℕ} (ε : ℝˣ) (s t : ℝ) :
-    ⁅𝐫[d,ε,s], 𝐫[d,ε,t]⁆ = 0 := by
-  dsimp only [Bracket.bracket]
-  simp only [ContinuousLinearMap.mul_def, radiusRegPowOperator_comp_eq, add_comm, sub_self]
+@[simp]
+lemma radiusRegPow_commutation_radiusRegPow : ⁅𝐫[d,ε,s], 𝐫[d,ε,t]⁆ = 0 := by
+  simp [bracket, mul_def, radiusRegPowOperator_comp_eq, add_comm]
 
 /-!
 
