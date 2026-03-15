@@ -68,17 +68,14 @@ def positionOperator : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
 @[inherit_doc positionOperator]
 notation "𝐱[" i "]" => positionOperator i
 
-lemma positionOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) :
-    𝐱[i] ψ = smulLeftCLM ℂ (coordCLM i) • ψ := by
-  unfold positionOperator
-  ext x
-  simp [smulLeftCLM_apply_apply (g := Complex.ofRealCLM ∘ (coordCLM i)) (by fun_prop) _ _,
-    smulLeftCLM_apply (g := coordCLM i) (by fun_prop) _]
+lemma positionOperator_apply_fun (ψ : 𝓢(Space d, ℂ)) : 𝐱[i] ψ = (fun x : Space d ↦ x i) • ⇑ψ := by
+  ext
+  simp [positionOperator, coordCLM_apply, coord_apply,
+    smulLeftCLM_apply_apply (g := Complex.ofRealCLM ∘ (coordCLM i)) (by fun_prop)]
 
 @[simp]
 lemma positionOperator_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) : 𝐱[i] ψ x = x i * ψ x := by
-  simp [positionOperator_apply_fun, smulLeftCLM_apply (g := coordCLM i) (by fun_prop) _,
-    coordCLM_apply, coord_apply]
+  simp [positionOperator_apply_fun]
 
 /-!
 
@@ -143,11 +140,13 @@ lemma radiusRegPowOperator_comp_eq {d : ℕ} (ε : ℝˣ) (s t : ℝ) :
   simp [add_div, Real.rpow_add (norm_sq_add_unit_sq_pos ε x), mul_assoc]
 
 @[simp]
-lemma radiusRegPowOperator_zero {d : ℕ} (ε : ℝˣ) : 𝐫[d,ε,0] = 1 := by
+lemma radiusRegPowOperator_zero {d : ℕ} (ε : ℝˣ) :
+    𝐫[d,ε,0] = ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
   ext
   simp
 
-lemma positionOperatorSqr_eq (d : ℕ) (ε : ℝˣ) : ∑ i, 𝐱[i] ∘L 𝐱[i] = 𝐫[d,ε,2] - ε.1 ^ 2 • 1 := by
+lemma positionOperatorSqr_eq {d : ℕ} (ε : ℝˣ) :
+    ∑ i, 𝐱[i] ∘L 𝐱[i] = 𝐫[d,ε,2] - ε.1 ^ 2 • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by
   ext
   simp [Space.norm_sq_eq, add_mul, ← mul_assoc, ← pow_two, Finset.sum_mul]
 
