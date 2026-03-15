@@ -139,14 +139,17 @@ private def constRadiusRegInvCompPosition (ε : ℝˣ) (i : Fin H.d) :=
 lemma angularMomentum_commutation_lrl (ε : ℝˣ) (i j k : Fin H.d) :
     ⁅𝐋[i,j], H.lrlOperator ε k⁆ = (Complex.I * ℏ * δ[i,k]) • H.lrlOperator ε j
     - (Complex.I * ℏ * δ[j,k]) • H.lrlOperator ε i := by
-  simp only [lrlOperator_eq' H ε, lie_sub, lie_add, lie_sum, lie_smul, lie_leibniz,
-    angularMomentum_commutation_angularMomentum, angularMomentum_commutation_momentum,
-    angularMomentum_commutation_radiusRegPow, angularMomentum_commutation_position]
+  simp only [lrlOperator_eq' H ε]
+  simp only [lie_sub, lie_add, lie_sum, lie_smul, lie_leibniz]
+  simp only [angularMomentum_commutation_angularMomentum,
+    angularMomentum_commutation_momentum,
+    angularMomentum_commutation_radiusRegPow,
+    angularMomentum_commutation_position]
   dsimp only [kroneckerDelta]
   simp only [comp_sub, comp_smul, sub_comp, smul_comp, comp_zero, zero_comp, add_zero,
-    smul_sub, smul_add, smul_smul, comp_add, neg_comp, comp_neg, smul_neg,
-    Finset.sum_add_distrib, Finset.sum_sub_distrib,
-    Nat.cast_ite, Nat.cast_one, CharP.cast_eq_zero, mul_ite, mul_one, mul_zero,
+    smul_sub, smul_add, smul_smul, comp_add, neg_comp, comp_neg, smul_neg]
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib]
+  simp only [Nat.cast_ite, Nat.cast_one, CharP.cast_eq_zero, mul_ite, mul_one, mul_zero,
     ite_smul, zero_smul, smul_ite, smul_zero,
     Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte]
   rw [angularMomentumOperator_antisymm k i, angularMomentumOperator_antisymm k j]
