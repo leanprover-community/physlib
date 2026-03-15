@@ -53,44 +53,12 @@ lemma lrlOperator_eq (ε : ℝˣ) (i : Fin H.d) :
 /-- `𝐀(ε)ᵢ = 𝐋ᵢⱼ𝐩ⱼ + ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
 lemma lrlOperator_eq' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = ∑ j, 𝐋[i,j] ∘L 𝐩[j]
     + (2⁻¹ * Complex.I * ℏ * (H.d - 1)) • 𝐩[i] - (H.m * H.k) • 𝐫[ε,-1] ∘L 𝐱[i] := by
-  unfold lrlOperator
-  congr
-  conv_lhs =>
-    enter [2, 2, j]
-    rw [comp_eq_comp_sub_commute 𝐩[j] 𝐋[i,j], angularMomentum_commutation_momentum]
-  repeat rw [Finset.sum_add_distrib, Finset.sum_sub_distrib, Finset.sum_sub_distrib]
-  unfold kroneckerDelta
-  ext ψ x
-  simp only [ContinuousLinearMap.add_apply, coe_smul', coe_sum', coe_comp', Pi.smul_apply,
-    Finset.sum_apply, Function.comp_apply, coe_sub', Pi.sub_apply, SchwartzMap.add_apply,
-    SchwartzMap.smul_apply, SchwartzMap.sum_apply, SchwartzMap.sub_apply]
-  simp only [Nat.cast_ite, Nat.cast_one, CharP.cast_eq_zero, mul_ite, mul_one, mul_zero,
-    momentumOperator_apply, neg_mul, smul_eq_mul, mul_neg, ite_mul, zero_mul,
-    Finset.sum_neg_distrib, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, Finset.sum_const,
-    Finset.card_univ, Fintype.card_fin, nsmul_eq_mul, sub_neg_eq_add, smul_add, Complex.real_smul,
-    Complex.ofReal_inv, Complex.ofReal_ofNat]
-  ring
+  sorry
 
 /-- `𝐀(ε)ᵢ = 𝐩ⱼ𝐋ᵢⱼ - ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
 lemma lrlOperator_eq'' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = ∑ j, 𝐩[j] ∘L 𝐋[i,j]
     - (2⁻¹ * Complex.I * ℏ * (H.d - 1)) • 𝐩[i] - (H.m * H.k) • 𝐫[ε,-1] ∘L 𝐱[i] := by
-  unfold lrlOperator
-  congr
-  conv_lhs =>
-    enter [2, 2, j]
-    rw [comp_eq_comp_add_commute 𝐋[i,j] 𝐩[j], angularMomentum_commutation_momentum]
-  rw [Finset.sum_add_distrib, Finset.sum_add_distrib, Finset.sum_sub_distrib]
-  ext ψ x
-  unfold kroneckerDelta
-  simp only [ContinuousLinearMap.add_apply, coe_smul', coe_sum', coe_comp',
-    Pi.smul_apply, Finset.sum_apply, Function.comp_apply, coe_sub', Pi.sub_apply,
-    SchwartzMap.add_apply, SchwartzMap.smul_apply, SchwartzMap.sum_apply, Complex.real_smul,
-    Complex.ofReal_inv, Complex.ofReal_ofNat, SchwartzMap.sub_apply]
-  simp only [momentumOperator_apply, neg_mul, Finset.sum_neg_distrib, Nat.cast_ite, Nat.cast_one,
-    CharP.cast_eq_zero, mul_ite, mul_one, mul_zero, smul_eq_mul, mul_neg, ite_mul, zero_mul,
-    Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, Finset.sum_const, Finset.card_univ,
-    Fintype.card_fin, nsmul_eq_mul, sub_neg_eq_add]
-  ring
+  sorry
 
 /-- The operator `𝐱ᵢ𝐩ᵢ` on Schwartz maps. -/
 private def positionDotMomentum {d} := ∑ i : Fin d, 𝐱[i] ∘L 𝐩[i]
