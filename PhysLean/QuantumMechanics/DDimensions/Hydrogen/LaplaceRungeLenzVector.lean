@@ -45,17 +45,20 @@ def lrlOperatorSqr (ε : ℝˣ) : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d,
   ∑ i, (H.lrlOperator ε i) ∘L (H.lrlOperator ε i)
 
 /-- `𝐀(ε)ᵢ = 𝐱ᵢ𝐩² - (𝐱ⱼ𝐩ⱼ)𝐩ᵢ + ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
+@[sorryful]
 lemma lrlOperator_eq (ε : ℝˣ) (i : Fin H.d) :
     H.lrlOperator ε i = 𝐱[i] ∘L 𝐩² - (∑ j, 𝐱[j] ∘L 𝐩[j]) ∘L 𝐩[i]
     + (2⁻¹ * Complex.I * ℏ * (H.d - 1)) • 𝐩[i] - (H.m * H.k) • 𝐫[ε,-1] ∘L 𝐱[i] := by
   sorry
 
 /-- `𝐀(ε)ᵢ = 𝐋ᵢⱼ𝐩ⱼ + ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
+@[sorryful]
 lemma lrlOperator_eq' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = ∑ j, 𝐋[i,j] ∘L 𝐩[j]
     + (2⁻¹ * Complex.I * ℏ * (H.d - 1)) • 𝐩[i] - (H.m * H.k) • 𝐫[ε,-1] ∘L 𝐱[i] := by
   sorry
 
 /-- `𝐀(ε)ᵢ = 𝐩ⱼ𝐋ᵢⱼ - ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
+@[sorryful]
 lemma lrlOperator_eq'' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = ∑ j, 𝐩[j] ∘L 𝐋[i,j]
     - (2⁻¹ * Complex.I * ℏ * (H.d - 1)) • 𝐩[i] - (H.m * H.k) • 𝐫[ε,-1] ∘L 𝐱[i] := by
   sorry
@@ -335,6 +338,7 @@ private lemma constRadiusRegInvCompPosition_comm_constRadiusRegInvCompPosition
   simp only [comp_zero, zero_comp, add_zero, neg_zero, smul_zero]
 
 /-- `⁅𝐀(ε)ᵢ, 𝐀(ε)ⱼ⁆ = -iℏ 2m 𝐇(ε)𝐋ᵢⱼ` -/
+@[sorryful]
 lemma lrl_commutation_lrl (ε : ℝˣ) (i j : Fin H.d) : ⁅H.lrlOperator ε i, H.lrlOperator ε j⁆
     = (-2 * Complex.I * ℏ * H.m) • (H.hamiltonianReg ε) ∘L 𝐋[i,j] := by
   repeat rw [lrlOperator_eq]
@@ -498,6 +502,7 @@ private lemma xL_Lx_eq {d : ℕ} (ε : ℝˣ) (i : Fin d) : ∑ j, (𝐱[j] ∘L
   ring
 
 /-- `⁅𝐇(ε), 𝐀(ε)ᵢ⁆ = iℏkε²(¾𝐫(ε)⁻⁵(𝐱ⱼ𝐋ᵢⱼ + 𝐋ᵢⱼ𝐱ⱼ) + 3iℏ/2 𝐫(ε)⁻⁵𝐱ᵢ + 𝐫(ε)⁻³𝐩ᵢ)` -/
+@[sorryful]
 lemma hamiltonianReg_commutation_lrl (ε : ℝˣ) (i : Fin H.d) :
     ⁅H.hamiltonianReg ε, H.lrlOperator ε i⁆ = (Complex.I * ℏ * H.k * ε.1 ^ 2) •
     ((3 * 4⁻¹ : ℝ) • 𝐫[ε,-5] ∘L ∑ j, (𝐱[j] ∘L 𝐋[i,j] + 𝐋[i,j] ∘L 𝐱[j])
@@ -698,6 +703,7 @@ private lemma sum_rxrx (d : ℕ) (ε : ℝˣ) : ∑ i, 𝐫[d,ε,-1] ∘L 𝐱[i
 /-- The square of the (regularized) LRL vector operator is related to the (regularized) Hamiltonian
   `𝐇(ε)` of the hydrogen atom, square of the angular momentum `𝐋²` and powers of `𝐫(ε)` as
   `𝐀(ε)² = 2m 𝐇(ε)(𝐋² + ¼ℏ²(d-1)²) + m²k² - m²k²ε²𝐫(ε)⁻² + mkε²𝐫(ε)⁻³(𝐋² + ¼ℏ²(d-1)(d-3))`. -/
+@[sorryful]
 lemma lrlOperatorSqr_eq (ε : ℝˣ) : H.lrlOperatorSqr ε =
     (2 * H.m) • (H.hamiltonianReg ε) ∘L
       (𝐋² + (4⁻¹ * ℏ ^ 2 * (H.d - 1) ^ 2 : ℝ) • ContinuousLinearMap.id ℂ 𝓢(Space H.d, ℂ))
