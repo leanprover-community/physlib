@@ -127,36 +127,23 @@ lemma radiusRegPow_commutation_radiusRegPow : ⁅𝐫[d,ε,s], 𝐫[d,ε,t]⁆ =
 -/
 
 /-- Momentum operators commute: `[pᵢ, pⱼ] = 0`. -/
-lemma momentum_commutation_momentum {d : ℕ} (i j : Fin d) : ⁅𝐩[i], 𝐩[j]⁆ = 0 := by
-  dsimp only [Bracket.bracket]
+@[simp]
+lemma momentum_commutation_momentum : ⁅𝐩[i], 𝐩[j]⁆ = 0 := by
   ext ψ x
-  simp only [coe_sub', coe_mul, Pi.sub_apply, Function.comp_apply, SchwartzMap.sub_apply,
-    ContinuousLinearMap.zero_apply, SchwartzMap.zero_apply, momentumOperator_apply_fun]
-  rw [Space.deriv_const_smul _ ?_, Space.deriv_const_smul _ ?_]
-  · rw [Space.deriv_commute _ (ψ.smooth _), sub_self]
-  · exact Space.deriv_differentiable (ψ.smooth _) i
-  · exact Space.deriv_differentiable (ψ.smooth _) j
+  have hdiff (k : Fin d) : Differentiable ℝ (∂[k] ψ) := Space.deriv_differentiable (ψ.smooth 2) k
+  show 𝐩[i] (𝐩[j] ψ) x - 𝐩[j] (𝐩[i] ψ) x = 0
+  simp only [momentumOperator_apply_fun, Space.deriv_const_smul _ (hdiff _),
+    Space.deriv_commute _ (ψ.smooth 2), sub_self]
 
-lemma momentum_comp_commute {d : ℕ} (i j : Fin d) : 𝐩[i] ∘L 𝐩[j] = 𝐩[j] ∘L 𝐩[i] := by
-  rw [← sub_eq_zero]
-  exact momentum_commutation_momentum i j
+lemma momentum_comp_commute : 𝐩[i] ∘L 𝐩[j] = 𝐩[j] ∘L 𝐩[i] := by
+  rw [comp_eq_comp_add_commute, momentum_commutation_momentum, add_zero]
 
-lemma momentumSqr_commutation_momentum {d : ℕ} (i : Fin d) :
-    ⁅momentumOperatorSqr (d := d), 𝐩[i]⁆ = 0 := by
-  dsimp only [Bracket.bracket, momentumOperatorSqr]
-  rw [Finset.mul_sum, Finset.sum_mul, ← Finset.sum_sub_distrib]
-  conv_lhs =>
-    enter [2, j]
-    simp only [ContinuousLinearMap.mul_def]
-    rw [comp_assoc]
-    rw [momentum_comp_commute j i, ← comp_assoc]
-    rw [momentum_comp_commute j i, comp_assoc]
-    rw [sub_self]
-  rw [Finset.sum_const_zero]
+@[simp]
+lemma momentumSqr_commutation_momentum : ⁅momentumOperatorSqr (d := d), 𝐩[i]⁆ = 0 := by
+  simp [momentumOperatorSqr, sum_lie, leibniz_lie]
 
-lemma momentumSqr_comp_momentum_commute {d : ℕ} (i : Fin d) : 𝐩² ∘L 𝐩[i] = 𝐩[i] ∘L 𝐩² := by
-  rw [← sub_eq_zero]
-  exact momentumSqr_commutation_momentum i
+lemma momentumSqr_comp_momentum_commute : 𝐩² ∘L 𝐩[i] = 𝐩[i] ∘L 𝐩² := by
+  rw [comp_eq_comp_add_commute, momentumSqr_commutation_momentum, add_zero]
 
 /-!
 
