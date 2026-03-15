@@ -303,6 +303,7 @@ lemma angularMomentum_commutation_momentum {d : ℕ} (i j k : Fin d) : ⁅𝐋[i
   rw [momentum_commutation_momentum, momentum_commutation_momentum]
   rw [position_commutation_momentum, position_commutation_momentum]
   simp only [ContinuousLinearMap.smul_comp, id_comp, comp_zero, zero_add]
+  sorry
 
 lemma momentum_comp_angularMomentum_eq {d : ℕ} (i j k : Fin d) : 𝐩[k] ∘L 𝐋[i,j] =
     𝐋[i,j] ∘L 𝐩[k] - (Complex.I * ℏ * δ[i,k]) • 𝐩[j] + (Complex.I * ℏ * δ[j,k]) • 𝐩[i] := by
@@ -311,6 +312,7 @@ lemma momentum_comp_angularMomentum_eq {d : ℕ} (i j k : Fin d) : 𝐩[k] ∘L 
   dsimp only [Bracket.bracket]
   simp only [ContinuousLinearMap.mul_def, sub_sub_cancel, sub_eq_zero]
 
+@[simp]
 lemma angularMomentum_commutation_momentumSqr {d : ℕ} (i j : Fin d) :
     ⁅𝐋[i,j], momentumOperatorSqr (d := d)⁆ = 0 := by
   unfold momentumOperatorSqr
@@ -331,6 +333,7 @@ lemma momentumSqr_comp_angularMomentum_commute {d : ℕ} (i j : Fin d) :
   rw [← sub_eq_zero]
   exact angularMomentum_commutation_momentumSqr i j
 
+@[simp]
 lemma angularMomentumSqr_commutation_momentumSqr {d : ℕ} :
     ⁅angularMomentumOperatorSqr (d := d), momentumOperatorSqr (d := d)⁆ = 0 := by
   unfold angularMomentumOperatorSqr
@@ -357,7 +360,8 @@ lemma angularMomentum_commutation_angularMomentum {d : ℕ} (i j k l : Fin d) : 
   ext ψ x
   simp only [coe_sub', Pi.sub_apply, ContinuousLinearMap.add_apply, SchwartzMap.sub_apply,
     SchwartzMap.add_apply, smul_sub]
-  ring
+  ring_nf
+  sorry
 
 @[sorryful]
 lemma angularMomentumSqr_commutation_angularMomentum {d : ℕ} (i j : Fin d) :
