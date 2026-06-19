@@ -239,6 +239,7 @@ namespace Slash
 /-- The Dirac slash of a Lorentz vector. -/
 def slash (k : Lorentz.Vector) : Matrix (Fin 4) (Fin 4) ℂ :=
   ∑ μ : Fin 1 ⊕ Fin 3, (k μ : ℂ) • γ μ
+/-- The notation for the Dirac slash operator, `k̸`. -/
 notation k "̸" => slash k
 
 /-- The componentwise complexification of a Lorentz vector in 1+3 dimensions. -/
