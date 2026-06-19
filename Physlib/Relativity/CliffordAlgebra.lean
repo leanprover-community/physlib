@@ -218,40 +218,44 @@ theorem ofCliffordAlgebra_surjective : Function.Surjective ofCliffordAlgebra := 
 
 namespace Slash
 
-/-- Components of a Lorentz vector in the `γ0,γ1,γ2,γ3` ordering.
-
-Required cast since Lorentz.Vector is Fin 1 ⊕ Fin d → ℝ, not Fin 4 → ℂ. -/
-def coord (k : Lorentz.Vector 3) : Fin 4 → ℂ :=
-  ![(k (Sum.inl 0) : ℂ), (k (Sum.inr 0) : ℂ), (k (Sum.inr 1) : ℂ), (k (Sum.inr 2) : ℂ)]
-
 /-- The Dirac slash of a Lorentz vector. -/
-def slash (k : Lorentz.Vector 3) : Matrix (Fin 4) (Fin 4) ℂ :=
-  ∑ μ : Fin 1 ⊕ Fin 3, coord k μ • γ μ
+def slash (k : Lorentz.Vector) : Matrix (Fin 4) (Fin 4) ℂ :=
+  ∑ μ : Fin 1 ⊕ Fin 3, (k μ : ℂ) • γ μ
+
+/-- The componentwise complexification of a Lorentz vector in 1+3 dimensions. -/
+private def complex_vector (k : Lorentz.Vector) : Fin 1 ⊕ Fin 3 → ℂ :=
+  fun μ => (k μ : ℂ)
 
 @[simp]
-lemma slash_zero : slash (0 : Lorentz.Vector 3) = 0 := by
-  simp [slash, coord]
+lemma slash_zero : slash (0 : Lorentz.Vector) = 0 := by
+  change (∑ μ : Fin 1 ⊕ Fin 3, complex_vector (0 : Lorentz.Vector) μ • γ μ) = 0
+  simp [complex_vector]
 
 @[simp]
-lemma slash_add (k l : Lorentz.Vector 3) : slash (k + l) = slash k + slash l := by
-  simp [slash, coord, add_smul, Finset.sum_add_distrib]
+lemma slash_add (k l : Lorentz.Vector) : slash (k + l) = slash k + slash l := by
+  change (∑ μ : Fin 1 ⊕ Fin 3, complex_vector (k + l) μ • γ μ) =
+    (∑ μ : Fin 1 ⊕ Fin 3, complex_vector k μ • γ μ) +
+      (∑ μ : Fin 1 ⊕ Fin 3, complex_vector l μ • γ μ)
+  simp [complex_vector, add_smul, Finset.sum_add_distrib]
 
 @[simp]
-lemma slash_smul (c : ℝ) (k : Lorentz.Vector 3) : slash (c • k) = c • slash k := by
+lemma slash_smul (c : ℝ) (k : Lorentz.Vector) : slash (c • k) = c • slash k := by
+  change (∑ μ : Fin 1 ⊕ Fin 3, complex_vector (c • k) μ • γ μ) =
+    c • (∑ μ : Fin 1 ⊕ Fin 3, complex_vector k μ • γ μ)
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [slash, coord, Fintype.sum_sum_type, Fin.sum_univ_three] <;>
+    simp [complex_vector, Fintype.sum_sum_type, Fin.sum_univ_three] <;>
     ring_nf
 
 /-- Product of list of slash factors, in left-to-right order. -/
-def slashProd (ks : List (Lorentz.Vector 3)) : Matrix (Fin 4) (Fin 4) ℂ :=
+def slashProd (ks : List (Lorentz.Vector)) : Matrix (Fin 4) (Fin 4) ℂ :=
   (ks.map slash).prod
 
 @[simp]
 lemma slashProd_nil : slashProd [] = 1 := rfl
 
 @[simp]
-lemma slashProd_cons (k : Lorentz.Vector 3) (ks : List (Lorentz.Vector 3)) :
+lemma slashProd_cons (k : Lorentz.Vector) (ks : List (Lorentz.Vector)) :
     slashProd (k :: ks) = slash k * slashProd ks := rfl
 
 end Slash
