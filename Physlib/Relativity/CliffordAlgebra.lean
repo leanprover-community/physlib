@@ -116,10 +116,28 @@ lemma γ_in_diracAlgebra (μ : Fin 1 ⊕ Fin 3) : γ μ ∈ diracAlgebra :=
 /-- The Clifford anticommutator identity for gamma matrices. -/
 theorem gamma_anticomm (μ ν : Fin 1 ⊕ Fin 3) :
     γ μ * γ ν + γ ν * γ μ =
-      (2 * ((minkowskiMatrix (finSumFinEquiv.symm μ) (finSumFinEquiv.symm ν) : ℝ) : ℂ)) •
-        (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
-  fin_cases μ <;> fin_cases ν <;>
-    simp [γ, γ0, γ1, γ2, γ3, Matrix.one_fin_four]
+      (2 * ((minkowskiMatrix μ ν : ℝ) : ℂ)) • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
+  cases μ with
+  | inl μ =>
+    fin_cases μ
+    cases ν with
+    | inl ν =>
+      fin_cases ν
+      simp [γ0_mul_γ0, minkowskiMatrix.inl_0_inl_0, two_smul]
+    | inr ν =>
+      fin_cases ν <;>
+        simp [γ1_mul_γ0, γ2_mul_γ0, γ3_mul_γ0, minkowskiMatrix.off_diag_zero]
+  | inr μ =>
+    cases ν with
+    | inl ν =>
+      fin_cases μ <;> fin_cases ν <;>
+        simp [γ1_mul_γ0, γ2_mul_γ0, γ3_mul_γ0, minkowskiMatrix.off_diag_zero]
+    | inr ν =>
+      fin_cases μ <;> fin_cases ν <;>
+        simp [γ1_mul_γ1, γ2_mul_γ2, γ3_mul_γ3,
+              γ2_mul_γ1, γ3_mul_γ1, γ3_mul_γ2,
+              minkowskiMatrix.inr_i_inr_i, minkowskiMatrix.off_diag_zero,
+              two_smul, neg_smul, neg_add_rev]
 
 /-- The quadratic form of the clifford algebra corresponding to the `γ` matrices. -/
 @[simps!]
