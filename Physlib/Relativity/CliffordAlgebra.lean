@@ -265,16 +265,30 @@ lemma slash_smul (c : ℝ) (k : Lorentz.Vector) : slash (c • k) = c • slash 
     simp [complex_vector, Fintype.sum_sum_type, Fin.sum_univ_three] <;>
     ring_nf
 
+/-- The Dirac slash as an `ℝ`-linear map. -/
+def slashLinear :
+    LinearMap (RingHom.id ℝ) Lorentz.Vector (Matrix (Fin 4) (Fin 4) ℂ) where
+  toFun := slash
+  map_add' := slash_add
+  map_smul' := slash_smul
+
+/-- Left multiplication by a slash matrix as a linear endomorphism. -/
+def slashMulLeft (k : Lorentz.Vector) :
+    LinearMap (RingHom.id ℂ) (Matrix (Fin 4) (Fin 4) ℂ) (Matrix (Fin 4) (Fin 4) ℂ) :=
+  LinearMap.mulLeft ℂ (slash k)
+
 /-- Product of list of slash factors, in left-to-right order. -/
 def slashProd (ks : List (Lorentz.Vector)) : Matrix (Fin 4) (Fin 4) ℂ :=
-  (ks.map slash).prod
+  ((ks.map slashMulLeft).prod) 1
 
 @[simp]
-lemma slashProd_nil : slashProd [] = 1 := rfl
+lemma slashProd_nil : slashProd [] = 1 := by
+  simp [slashProd]
 
 @[simp]
 lemma slashProd_cons (k : Lorentz.Vector) (ks : List (Lorentz.Vector)) :
-    slashProd (k :: ks) = slash k * slashProd ks := rfl
+    slashProd (k :: ks) = slash k * slashProd ks := by
+  simp [slashProd, slashMulLeft]
 
 end Slash
 
