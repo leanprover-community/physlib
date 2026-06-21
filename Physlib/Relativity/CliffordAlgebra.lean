@@ -268,15 +268,14 @@ lemma slash_smul (c : ℝ) (k : Lorentz.Vector) : slash (c • k) = c • slash 
     ring_nf
 
 /-- The Dirac slash as an `ℝ`-linear map. -/
-def slashLinear :
-    LinearMap (RingHom.id ℝ) Lorentz.Vector (Matrix (Fin 4) (Fin 4) ℂ) where
+def slashLinear : Lorentz.Vector →ₗ[ℝ] Matrix (Fin 4) (Fin 4) ℂ where
   toFun := slash
   map_add' := slash_add
   map_smul' := slash_smul
 
 /-- Left multiplication by a slash matrix as a linear endomorphism. -/
 def slashMulLeft (k : Lorentz.Vector) :
-    LinearMap (RingHom.id ℂ) (Matrix (Fin 4) (Fin 4) ℂ) (Matrix (Fin 4) (Fin 4) ℂ) :=
+    Matrix (Fin 4) (Fin 4) ℂ →ₗ[ℂ] Matrix (Fin 4) (Fin 4) ℂ :=
   LinearMap.mulLeft ℂ (slash k)
 
 /-- Product of list of slash factors, in left-to-right order. -/
