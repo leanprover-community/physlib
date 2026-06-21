@@ -242,29 +242,25 @@ def slash (k : Lorentz.Vector) : Matrix (Fin 4) (Fin 4) ℂ :=
 /-- The notation for the Dirac slash operator, `k̸`. -/
 notation k "̸" => slash k
 
-/-- The componentwise complexification of a Lorentz vector in 1+3 dimensions. -/
-private def complex_vector (k : Lorentz.Vector) : Fin 1 ⊕ Fin 3 → ℂ :=
-  fun μ => (k μ : ℂ)
-
 @[simp]
 lemma slash_zero : slash (0 : Lorentz.Vector) = 0 := by
-  change (∑ μ : Fin 1 ⊕ Fin 3, complex_vector (0 : Lorentz.Vector) μ • γ μ) = 0
-  simp [complex_vector]
+  change (∑ μ : Fin 1 ⊕ Fin 3, Lorentz.Vector.toComplexVector (0 : Lorentz.Vector) μ • γ μ) = 0
+  simp [Lorentz.Vector.toComplexVector]
 
 @[simp]
 lemma slash_add (k l : Lorentz.Vector) : slash (k + l) = slash k + slash l := by
-  change (∑ μ : Fin 1 ⊕ Fin 3, complex_vector (k + l) μ • γ μ) =
-    (∑ μ : Fin 1 ⊕ Fin 3, complex_vector k μ • γ μ) +
-      (∑ μ : Fin 1 ⊕ Fin 3, complex_vector l μ • γ μ)
-  simp [complex_vector, add_smul, Finset.sum_add_distrib]
+  change (∑ μ : Fin 1 ⊕ Fin 3, Lorentz.Vector.toComplexVector (k + l) μ • γ μ) =
+    (∑ μ : Fin 1 ⊕ Fin 3, Lorentz.Vector.toComplexVector k μ • γ μ) +
+      (∑ μ : Fin 1 ⊕ Fin 3, Lorentz.Vector.toComplexVector l μ • γ μ)
+  simp [Lorentz.Vector.toComplexVector, add_smul, Finset.sum_add_distrib]
 
 @[simp]
 lemma slash_smul (c : ℝ) (k : Lorentz.Vector) : slash (c • k) = c • slash k := by
-  change (∑ μ : Fin 1 ⊕ Fin 3, complex_vector (c • k) μ • γ μ) =
-    c • (∑ μ : Fin 1 ⊕ Fin 3, complex_vector k μ • γ μ)
+  change (∑ μ : Fin 1 ⊕ Fin 3, Lorentz.Vector.toComplexVector (c • k) μ • γ μ) =
+    c • (∑ μ : Fin 1 ⊕ Fin 3, Lorentz.Vector.toComplexVector k μ • γ μ)
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [complex_vector, Fintype.sum_sum_type, Fin.sum_univ_three] <;>
+    simp [Lorentz.Vector.toComplexVector, Fintype.sum_sum_type, Fin.sum_univ_three] <;>
     ring_nf
 
 /-- The Dirac slash as an `ℝ`-linear map. -/
