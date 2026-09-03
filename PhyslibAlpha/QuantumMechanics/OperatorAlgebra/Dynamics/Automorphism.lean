@@ -46,14 +46,14 @@ open OperatorAlgebra
 variable {A : Type*} [OperatorAlgebra A]
 
 /-- A ⋆-automorphism `β` acts on observables by `a ↦ β a`. -/
-def StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) : Observable A :=
+def StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) : OperatorAlgebra.Observable A :=
   ⟨β (a : A), by
     show star (β (a : A)) = β (a : A)
     rw [← map_star, a.2]⟩
 
 /-- Unfolds `StarAlgEquiv.observable` to its underlying algebra element. -/
 @[simp]
-lemma StarAlgEquiv.observable_coe (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma StarAlgEquiv.observable_coe (β : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) :
     (β.observable a : A) = β (a : A) := rfl
 
 /-- The identity automorphism acts trivially on observables. -/
@@ -65,24 +65,24 @@ lemma StarAlgEquiv.refl_observable :
 
 /-- Composing `β` then `γ` acts on observables as `γ ∘ β`. -/
 @[simp]
-lemma StarAlgEquiv.trans_observable (β γ : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma StarAlgEquiv.trans_observable (β γ : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) :
     (β.trans γ).observable a = γ.observable (β.observable a) :=
   Subtype.ext (StarAlgEquiv.trans_apply β γ (a : A))
 
 /-- Undoing `β.observable` by `β.symm.observable` recovers the original observable. -/
 @[simp]
-lemma StarAlgEquiv.symm_observable_observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma StarAlgEquiv.symm_observable_observable (β : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) :
     β.symm.observable (β.observable a) = a :=
   Subtype.ext (β.symm_apply_apply (a : A))
 
 /-- Applying `β.observable` after `β.symm.observable` recovers the original observable. -/
 @[simp]
-lemma StarAlgEquiv.observable_symm_observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma StarAlgEquiv.observable_symm_observable (β : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) :
     β.observable (β.symm.observable a) = a :=
   Subtype.ext (β.apply_symm_apply (a : A))
 
 /-- Star automorphisms preserve the observable Lie bracket. -/
-lemma StarAlgEquiv.observable_bracket (β : A ≃⋆ₐ[ℂ] A) (a b : Observable A) :
+lemma StarAlgEquiv.observable_bracket (β : A ≃⋆ₐ[ℂ] A) (a b : OperatorAlgebra.Observable A) :
     β.observable ⁅a, b⁆ = ⁅β.observable a, β.observable b⁆ := by
   apply Subtype.ext
   simp only [observable_coe, Observable.coe_bracket, map_smul, map_sub, map_mul]

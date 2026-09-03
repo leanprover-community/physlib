@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.States.Convex
+public import PhyslibAlpha.QuantumMechanics.Basic.States.Pure
 
 /-!
 # Pure states
@@ -25,41 +26,45 @@ namespace State
 
 variable {A : Type*} [OperatorAlgebra A]
 
-/-- A pure state has no residual classical uncertainty: it cannot be produced by randomizing over
-other, genuinely different preparations. Formally, an extreme point of the convex state space —
-one lying on no open segment between two other points of the space. -/
-def IsPure (ω : State A) : Prop :=
-  ω.toContinuousLinearMap ∈ (stateSpace (A := A)).extremePoints ℝ
+/-- Operator-algebra purity is the general notion of purity for unital positive functionals. -/
+abbrev IsPure (ω : State A) : Prop :=
+  UnitalPositiveLinearMap.IsPure ω
 
 /-- The abstract "extreme point" definition of purity matches the physically direct one: `ω` is
 pure iff every nontrivial (`0 < t < 1`) mixture `mix φ ψ t` equal to `ω` forces `φ = ψ = ω`. -/
 lemma pure_iff_binary_decompositions_trivial (ω : State A) :
     IsPure ω ↔
       ∀ (φ ψ : State A) (t : unitInterval), t ≠ 0 → t ≠ 1 →
-        mix φ ψ t = ω → φ = ω ∧ ψ = ω := by
-  simp only [IsPure, mem_extremePoints]
+        mix φ ψ t = ω → φ = ω ∧ ψ = ω :=
+  UnitalPositiveLinearMap.isPure_iff_binary_decompositions_trivial ω
+
+/-- General purity agrees with being an extreme point after embedding states in the continuous
+dual of an operator algebra. -/
+lemma isPure_iff_extremePoint (ω : State A) :
+    IsPure ω ↔
+      ω.toContinuousLinearMap ∈ (stateSpace (A := A)).extremePoints ℝ := by
+  rw [pure_iff_binary_decompositions_trivial]
+  simp only [mem_extremePoints]
   constructor
-  · rintro ⟨-, hext⟩ φ ψ t ht₀ ht₁ hmix
-    have hseg := (mem_openSegment_iff_exists_mix ω φ ψ).2 ⟨t, ht₀, ht₁, hmix⟩
-    obtain ⟨hφ, hψ⟩ :=
-      hext φ.toContinuousLinearMap ⟨φ, rfl⟩ ψ.toContinuousLinearMap ⟨ψ, rfl⟩ hseg
-    exact ⟨toContinuousLinearMap_injective hφ, toContinuousLinearMap_injective hψ⟩
   · intro h
     refine ⟨⟨ω, rfl⟩, ?_⟩
     rintro _ ⟨φ, rfl⟩ _ ⟨ψ, rfl⟩ hseg
     obtain ⟨t, ht₀, ht₁, hmix⟩ := (mem_openSegment_iff_exists_mix ω φ ψ).1 hseg
     obtain ⟨rfl, rfl⟩ := h φ ψ t ht₀ ht₁ hmix
     exact ⟨rfl, rfl⟩
+  · rintro ⟨-, hext⟩ φ ψ t ht₀ ht₁ hmix
+    have hseg := (mem_openSegment_iff_exists_mix ω φ ψ).2 ⟨t, ht₀, ht₁, hmix⟩
+    obtain ⟨hφ, hψ⟩ :=
+      hext φ.toContinuousLinearMap ⟨φ, rfl⟩ ψ.toContinuousLinearMap ⟨ψ, rfl⟩ hseg
+    exact ⟨toContinuousLinearMap_injective hφ, toContinuousLinearMap_injective hψ⟩
 
 /-- A state is mixed (not pure) exactly when some genuine coin-flip between two states reproduces
 it, with at least one of the two differing from `ω`. -/
 lemma not_pure_iff_nontrivial_binary_decomposition (ω : State A) :
     ¬ IsPure ω ↔
       ∃ (φ ψ : State A) (t : unitInterval), t ≠ 0 ∧ t ≠ 1 ∧
-        mix φ ψ t = ω ∧ (φ ≠ ω ∨ ψ ≠ ω) := by
-  rw [pure_iff_binary_decompositions_trivial]
-  push Not
-  simp only [imp_iff_not_or]
+        mix φ ψ t = ω ∧ (φ ≠ ω ∨ ψ ≠ ω) :=
+  UnitalPositiveLinearMap.not_isPure_iff_nontrivial_binary_decomposition ω
 
 /-- Every preparation is either pure or a genuine mixture of two other states: purity and
 mixedness exhaust all states. Note `φ, ψ` are not asserted to be *pure* — this is just

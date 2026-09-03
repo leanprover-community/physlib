@@ -7,6 +7,7 @@ module
 
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.States.Basic
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.Observables.Jordan
+public import PhyslibAlpha.QuantumMechanics.Basic.Observables.State
 
 /-!
 
@@ -29,15 +30,11 @@ namespace State
 
 /-! ## Expectation -/
 
-/-- The mean value a physicist would call `⟨a⟩`: the real number obtained by averaging repeated
-measurements of `a` on systems prepared in state `ω`. Real (unlike the general complex-valued
-`ω.toPositiveLinearMap`) since `a` is self-adjoint, see `state_is_real_on_selfAdjoint`. -/
-noncomputable def expectation (ω : State A) : Observable A →ₗ[ℝ] ℝ where
-  toFun a := (ω.toPositiveLinearMap (a : A)).re
-  map_add' a b := by simp
-  map_smul' r a := by
-    rw [selfAdjoint.val_smul, PositiveLinearMap.map_smul_of_tower]
-    simp
+/-- The real state on observables induced by `ω`. Its value at `a` is the mean value a physicist
+would call `⟨a⟩`, obtained by averaging repeated measurements of `a` on systems prepared in
+state `ω`. -/
+noncomputable def expectation (ω : State A) : 𝓢[ℝ, Observable A] :=
+  ω.onObservables
 
 @[inherit_doc State.expectation]
 scoped[OperatorAlgebra] notation:max ω "⟨" a "⟩" => State.expectation ω a
@@ -48,22 +45,19 @@ attribute [nolint docBlame] OperatorAlgebra.«term_⟨_⟩»
 observables: no information is lost, since self-adjoint elements have vanishing imaginary part. -/
 lemma apply_observable_eq_expectation (ω : State A) (a : Observable A) :
     ω (a : A) = (ω⟨a⟩ : ℂ) := by
-  apply Complex.ext
-  · rfl
-  · rw [Complex.ofReal_im]
-    exact state_is_real_on_selfAdjoint ω a.property
+  exact (UnitalPositiveLinearMap.coe_onObservables_apply ω a).symm
 
 /-- The trivial "do-nothing" observable `1` is measured with certainty: probabilities sum to one. -/
 @[simp]
 lemma expectation_one (ω : State A) :
     ω⟨(1 : Observable A)⟩ = 1 := by
-  simp [expectation, ω.map_one]
+  simp [expectation]
 
 /-- Positive observables have nonnegative expectation. -/
 lemma expectation_nonneg (ω : State A) {a : Observable A}
     (ha : 0 ≤ (a : A)) :
     0 ≤ ω⟨a⟩ :=
-  (Complex.le_def.mp (ω.toPositiveLinearMap.map_nonneg ha)).1
+  (expectation ω).map_nonneg ha
 
 /-! ## Centering -/
 

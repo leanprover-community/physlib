@@ -5,6 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
+public import PhyslibAlpha.QuantumMechanics.Basic.Observables.Basic
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.Basic
 public import Mathlib.Analysis.CStarAlgebra.Spectrum
 
@@ -19,8 +20,8 @@ ambient algebra supplies its additive, real-linear, norm, and order structure.
 
 namespace OperatorAlgebra
 
-/-- A physical observable: a self-adjoint element of `A`. -/
-abbrev Observable (A : Type*) [OperatorAlgebra A] := selfAdjoint A
+/-- A physical observable in an operator algebra. -/
+abbrev Observable (A : Type*) [OperatorAlgebra A] := _root_.Observable A
 
 namespace Observable
 

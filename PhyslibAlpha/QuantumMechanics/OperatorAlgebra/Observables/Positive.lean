@@ -22,7 +22,7 @@ variable {A : Type*} [OperatorAlgebra A]
 
 /-- A positive observable. -/
 abbrev PositiveObservable (A : Type*) [OperatorAlgebra A] :=
-  {a : Observable A // 0 ≤ (a : A)}
+  _root_.PositiveObservable A
 
 namespace Observable
 

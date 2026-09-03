@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
 public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 public import Physlib.Meta.Linters.Sorry
 
@@ -27,11 +28,7 @@ namespace OperatorAlgebra
 variable {A : Type*} [OperatorAlgebra A]
 
 /-- A state on `A`: a positive complex-linear functional normalized at `1`. -/
-structure State (A : Type*) [OperatorAlgebra A] where
-  /-- The positive linear functional underlying the state. -/
-  toPositiveLinearMap : A →ₚ[ℂ] ℂ
-  /-- A state assigns expectation one to the identity observable. -/
-  map_one : toPositiveLinearMap 1 = 1
+abbrev State (A : Type*) [OperatorAlgebra A] := 𝓢[A]
 
 namespace State
 
@@ -39,7 +36,7 @@ variable {A : Type*} [OperatorAlgebra A]
 
 /-- Positive functionals on a C⋆-algebra are automatically bounded, hence continuous. -/
 noncomputable def toContinuousLinearMap (ω : State A) : A →L[ℂ] ℂ :=
-  LinearMap.mkContinuousOfExistsBound ω.toPositiveLinearMap.toLinearMap (by
+  LinearMap.mkContinuousOfExistsBound ω.toLinearMap (by
     obtain ⟨C, hC⟩ := PositiveLinearMap.exists_norm_apply_le ω.toPositiveLinearMap
     exact ⟨C, hC⟩)
 
@@ -78,6 +75,7 @@ Proved via GNS Cauchy–Schwarz against the identity: `|ω(a)|² ≤ ω(1) · ω
 lemma norm_apply_le (ω : State A) (a : A) :
     ‖ω.toPositiveLinearMap a‖ ≤ ‖a‖ := by
   let φ := ω.toPositiveLinearMap
+  change ‖φ a‖ ≤ ‖a‖
   have hcs := inner_mul_inner_self_le (𝕜 := ℂ) (φ.toPreGNS 1) (φ.toPreGNS a)
   simp only [PositiveLinearMap.preGNS_inner_def, PositiveLinearMap.ofPreGNS_toPreGNS, star_one,
     one_mul, mul_one] at hcs
@@ -101,9 +99,10 @@ lemma norm_toContinuousLinearMap (ω : State A) :
   -- A state exists on `A`, so `1 ≠ 0` in `A`: without this, `A` would be the zero algebra and
   -- `‖(1 : A)‖ = 1` (needed for the lower bound below) would not hold.
   have : Nontrivial A := ⟨1, 0, fun h => by
-    have := ω.map_one
-    rw [h, map_zero] at this
-    exact zero_ne_one this⟩
+    have hmapOne : ω.toPositiveLinearMap (1 : A) = 1 := ω.map_one'
+    have hmapZero : ω.toPositiveLinearMap (0 : A) = 0 := map_zero _
+    rw [h, hmapZero] at hmapOne
+    exact zero_ne_one hmapOne⟩
   refine le_antisymm
     (ω.toContinuousLinearMap.opNorm_le_bound zero_le_one fun a => by
       simpa using norm_apply_le ω a) ?_
@@ -122,17 +121,10 @@ end State
 
 namespace State
 
-/-- Shorthand: `ω a` for `ω.toPositiveLinearMap a`, the expectation value of `a` in state `ω`. -/
-noncomputable instance : CoeFun (State A) (fun _ => A → ℂ) where
-  coe ω := ω.toPositiveLinearMap
-
 /-- Two states are the same preparation iff they agree on every observable's expectation value. -/
 @[ext]
 lemma ext {ω φ : State A} (h : ∀ a, ω a = φ a) : ω = φ := by
-  cases ω
-  cases φ
-  congr
-  exact PositiveLinearMap.ext h
+  exact UnitalPositiveLinearMap.ext h
 
 /-- States embed injectively into the continuous dual of `A`, letting `State A` borrow its
 topology and convex structure (as `stateSpace` does in `States.Convex`). -/

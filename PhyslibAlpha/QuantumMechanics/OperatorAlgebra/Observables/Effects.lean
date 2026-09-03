@@ -70,6 +70,42 @@ lemma complement_complement (E : Effect A) : complement (complement E) = E := by
   apply Subtype.ext
   simp [complement]
 
+/-! ## C. Relation to positive observables -/
+
+/-- An effect is, in particular, a positive observable: `PositiveObservable` only asks `0 ≤ a`,
+which an effect already gives, and simply forgets the extra upper bound `a ≤ 1`. -/
+def toPositiveObservable (E : Effect A) : PositiveObservable A := ⟨E.1, E.2.1⟩
+
+@[simp]
+lemma coe_toPositiveObservable (E : Effect A) :
+    (toPositiveObservable E : Observable A) = E.1 := rfl
+
 end Effect
+
+namespace PositiveObservable
+
+/-- Every positive observable rescales into an effect: `a` is bounded by `‖a‖ • 1`
+(`IsSelfAdjoint.le_algebraMap_norm_self`), so dividing by its norm brings it into `[0, 1]`.
+`Effect A` is exactly the positive observables already bounded by `1`; this is the general
+positive observable's way back in, and `Effect.toPositiveObservable` composed with this need not
+recover `a` itself — only a rescaled copy of it. -/
+noncomputable def toEffect (a : PositiveObservable A) : Effect A := by
+  refine ⟨‖(a.1 : A)‖⁻¹ • a.1, ?_, ?_⟩
+  · show (0 : A) ≤ ((‖(a.1 : A)‖⁻¹ • a.1 : Observable A) : A)
+    rw [selfAdjoint.val_smul]
+    exact smul_nonneg (inv_nonneg.mpr (norm_nonneg _)) a.2
+  · show ((‖(a.1 : A)‖⁻¹ • a.1 : Observable A) : A) ≤ (1 : A)
+    rw [selfAdjoint.val_smul]
+    rcases eq_or_ne (a.1 : A) 0 with h0 | h0
+    · simp [h0]
+    · have hnorm : (0 : ℝ) < ‖(a.1 : A)‖ := norm_pos_iff.mpr h0
+      have hbound : (a.1 : A) ≤ ‖(a.1 : A)‖ • (1 : A) := by
+        have := IsSelfAdjoint.le_algebraMap_norm_self (a := (a.1 : A)) a.1.property
+        rwa [Algebra.algebraMap_eq_smul_one] at this
+      have hscaled : ‖(a.1 : A)‖⁻¹ • (a.1 : A) ≤ ‖(a.1 : A)‖⁻¹ • (‖(a.1 : A)‖ • (1 : A)) :=
+        smul_le_smul_of_nonneg_left hbound (inv_nonneg.mpr hnorm.le)
+      rwa [smul_smul, inv_mul_cancel₀ hnorm.ne', one_smul] at hscaled
+
+end PositiveObservable
 
 end OperatorAlgebra

@@ -75,7 +75,7 @@ instance spectralMeasure_isFiniteMeasure (ω : State A) (a : Observable A) :
 lemma spectralFunctional_one (ω : State A) (a : Observable A) :
     spectralFunctional ω a 1 = 1 := by
   show (ω (cfcHom a.property (1 : C(spectrum ℝ (a : A), ℝ))) : ℂ).re = 1
-  rw [map_one, ω.map_one]
+  rw [map_one, show ω (1 : A) = 1 from ω.map_one']
   rfl
 
 /-- Total mass one, matching `ω(1) = 1`. -/
