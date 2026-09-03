@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Jordan.Basic
 public import Mathlib.Tactic.NoncommRing
-public import PhyslibAlpha.QuantumMechanics.Basic.Observables.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.Observable
 
 /-!
 

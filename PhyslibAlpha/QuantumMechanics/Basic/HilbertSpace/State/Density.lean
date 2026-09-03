@@ -5,8 +5,8 @@ Authors: David Gross
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.PositiveLinearMap.Trace
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Trace
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 
 /-!
 

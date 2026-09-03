@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.Basic.Measurement.ClassicalSystem
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Channel.Basic
 
 /-!
 

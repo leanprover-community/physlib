@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Convex
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Convex
 
 /-!
 

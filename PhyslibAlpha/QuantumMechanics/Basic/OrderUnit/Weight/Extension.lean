@@ -6,7 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Weight.Basic
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Channel.Basic
+public import Mathlib.Tactic.Module
 
 /-!
 

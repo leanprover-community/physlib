@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2026 Tom Ole Diem. All rights reserved.
+Copyright (c) 2026 David Gross. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tom Ole Diem
+Authors: David Gross
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Weight.Basic
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
+public import Mathlib.Analysis.Complex.Basic
 
 /-!
 
@@ -14,109 +14,156 @@ public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
 
 A channel from system `A` to system `B` is, in the Schrödinger picture, an affine map on states.
 Dualizing gives a unital positive linear map on effects in the other direction (the Heisenberg
-picture): that map is already `UnitalPositiveLinearMap`, so a channel's adjoint needs no new
-structure. What *is* new is pushing a weight forward along that adjoint, and the fact that a
-state pushes forward to a state.
-
-Read `φ : E₂ →ₚ₁[ℝ] E₁` here as the adjoint of a channel `A → B` with effect algebras
-`E₁ = E_A`, `E₂ = E_B`: it pulls an effect of `B` back to an effect of `A`. Precomposing a weight
-on `A` with `φ` gives a weight on `B` — the Schrödinger-picture pushforward — and `Weight.comp_id`,
-`Weight.comp_comp` show this assignment respects identities and composition, so pushforward is a
-functor from unital positive linear maps to weights, contravariant in `φ`.
+picture): `UnitalPositiveLinearMap` is exactly that dual, and `E₁ →ₚ₁[R] E₂` reads as "the
+adjoint of a channel `A → B`" whenever `E₁`, `E₂` are the effect algebras of `A`, `B`.
 
 ## Main definitions
 
-- `Weight.comp`, `Weight.IsFinite.comp`, `Weight.IsState.comp`
+- `UnitalPositiveLinearMap` is the type of positive linear maps that preserve `1`.
+- `E₁ →ₚ₁[R] E₂` is notation for it.
 
-## Future work
+## Implementation details
 
-- **Measurement as a channel.** A finite-outcome measurement is a channel into a classical
-  (simplex) state space, equivalently a finite family of effects summing to `1`. Formalizing this
-  needs the classical `n`-outcome system as an order-unit space (`ι → ℝ`, pointwise order, unit
-  the constant function `1`) and a proof that unital positive linear maps out of it correspond to
-  such effect families — genuinely new content, not yet built here. The `EffectValuedMeasure`
-  already built in this layer is the σ-algebra generalization of the same idea.
-- **Instruments.** An instrument (a channel into `Σ × K`, giving both the outcome and the
-  post-measurement state) is strictly more informative than an `EffectValuedMeasure` alone,
-  which only gives outcome probabilities. Not yet built.
-- **Complete positivity.** A channel is positive automatically here (`Weight.comp` never leaves
-  the cone); *completely* positive is a strictly stronger condition once a bystander system is
-  tensored in, and whether it holds depends on which tensor product of order-unit spaces is
-  chosen (trivial for the minimal and maximal tensor products, nontrivial in between — the regime
-  ordinary quantum mechanics sits in). None of this can be stated without a tensor product of
-  order-unit spaces, which this layer does not have.
+We follow the implementation of `PositiveLinearMap` closely.
 
 -/
 
 @[expose] public section
 
-open scoped ENNReal
+section UnitalPositiveLinearMap
 
-variable {E₁ E₂ E₃ : Type*}
-  [AddCommGroup E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁] [Module ℝ E₁] [PosSMulMono ℝ E₁]
-  [One E₁]
-  [AddCommGroup E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂] [Module ℝ E₂] [PosSMulMono ℝ E₂]
-  [One E₂]
-  [AddCommGroup E₃] [PartialOrder E₃] [IsOrderedAddMonoid E₃] [Module ℝ E₃] [PosSMulMono ℝ E₃]
-  [One E₃]
+/-- A positive linear map that preserves `1`. -/
+structure UnitalPositiveLinearMap (R E₁ E₂ : Type*) [Semiring R]
+    [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
+    [Module R E₁] [Module R E₂] [One E₁] [One E₂] extends E₁ →ₚ[R] E₂, OneHom E₁ E₂
 
-namespace Weight
+-- The inherited `OneHom` projection has no separately attachable docstring.
+attribute [nolint docBlame] UnitalPositiveLinearMap.toOneHom
 
-/-- Precompose a weight on `E₁` with the adjoint `φ : E₂ →ₚ₁[ℝ] E₁` of a channel `E₁ → E₂`,
-giving a weight on `E₂`: the Schrödinger-picture pushforward of `w` along the channel. -/
-noncomputable def comp (w : Weight E₁) (φ : E₂ →ₚ₁[ℝ] E₁) : Weight E₂ where
-  toFun y := w ⟨φ (y : E₂), φ.map_nonneg y.2⟩
-  map_add' x y := by
-    have hxy : (⟨φ ((x + y : PosCone E₂) : E₂), φ.map_nonneg (x + y).2⟩ : PosCone E₁) =
-        ⟨φ (x : E₂), φ.map_nonneg x.2⟩ + ⟨φ (y : E₂), φ.map_nonneg y.2⟩ := by
-      apply Subtype.ext
-      show φ ((x : E₂) + (y : E₂)) = φ (x : E₂) + φ (y : E₂)
-      exact _root_.map_add φ _ _
-    show w ⟨φ ((x + y : PosCone E₂) : E₂), _⟩ = _
-    rw [hxy, w.map_add]
-  map_smul' c y := by
-    have hy : (⟨φ ((c • y : PosCone E₂) : E₂), φ.map_nonneg (c • y).2⟩ : PosCone E₁) =
-        c • (⟨φ (y : E₂), φ.map_nonneg y.2⟩ : PosCone E₁) := by
-      apply Subtype.ext
-      show φ ((c : ℝ) • (y : E₂)) = (c : ℝ) • φ (y : E₂)
-      exact _root_.map_smul φ (c : ℝ) (y : E₂)
-    show w ⟨φ ((c • y : PosCone E₂) : E₂), _⟩ = _
-    rw [hy, w.map_smul]
-    rfl
+/-- Notation for unital positive linear maps. -/
+notation:25 E " →ₚ₁[" R:25 "] " F:0 => UnitalPositiveLinearMap R E F
+
+section UnitalPositiveLinearMapClass
+
+variable {F R E₁ E₂ : Type*} [Semiring R]
+  [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
+  [Module R E₁] [Module R E₂] [FunLike F E₁ E₂] [LinearMapClass F R E₁ E₂]
+  [OrderHomClass F E₁ E₂] [One E₁] [One E₂] [OneHomClass F E₁ E₂]
+
+/-- Bundle a positive, unital linear map satisfying the relevant typeclass assumptions. -/
+def UnitalPositiveLinearMap.ofClass (f : F) : E₁ →ₚ₁[R] E₂ :=
+  { (f : E₁ →ₗ[R] E₂), (f : E₁ →o E₂), (f : OneHom E₁ E₂) with }
+
+end UnitalPositiveLinearMapClass
+
+namespace UnitalPositiveLinearMap
+
+variable {R E₁ E₂ : Type*} [Semiring R]
+  [AddCommGroup E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁]
+  [AddCommGroup E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂]
+  [Module R E₁] [Module R E₂] [One E₁] [One E₂]
+
+/-- Bundle a linear map after proving only positivity and preservation of `1`. -/
+def ofLinearMap (f : E₁ →ₗ[R] E₂) (hpos : ∀ x, 0 ≤ x → 0 ≤ f x)
+    (hone : f 1 = 1) : E₁ →ₚ₁[R] E₂ where
+  toPositiveLinearMap := PositiveLinearMap.mk₀ f hpos
+  map_one' := hone
+
+end UnitalPositiveLinearMap
+
+namespace UnitalPositiveLinearMap
+
+variable {R E₁ E₂ E₃ : Type*} [Semiring R]
+    [AddCommMonoid E₁] [PartialOrder E₁]
+    [AddCommMonoid E₂] [PartialOrder E₂]
+    [AddCommMonoid E₃] [PartialOrder E₃]
+    [Module R E₁] [Module R E₂] [Module R E₃]
+    [One E₁] [One E₂] [One E₃]
+
+instance : FunLike (E₁ →ₚ₁[R] E₂) E₁ E₂ where
+  coe f := f.toFun
+  coe_injective f g h := by
+    cases f
+    cases g
+    congr
+    apply DFunLike.coe_injective
+    exact h
+
+instance : LinearMapClass (E₁ →ₚ₁[R] E₂) R E₁ E₂ where
+  map_add f := map_add f.toLinearMap
+  map_smulₛₗ f := f.toLinearMap.map_smul'
+
+instance : OrderHomClass (E₁ →ₚ₁[R] E₂) E₁ E₂ where
+  map_rel f {_ _} hab := f.monotone' hab
+
+instance : OneHomClass (E₁ →ₚ₁[R] E₂) E₁ E₂ where
+  map_one f := f.map_one'
+
+example (f : E₁ →ₚ₁[R] E₂) : f 1 = 1 := by simp
 
 @[simp]
-lemma comp_apply (w : Weight E₁) (φ : E₂ →ₚ₁[ℝ] E₁) (y : PosCone E₂) :
-    w.comp φ y = w ⟨φ (y : E₂), φ.map_nonneg y.2⟩ := rfl
+lemma coe_toPositiveLinearMap (f : E₁ →ₚ₁[R] E₂) : (f.toPositiveLinearMap : E₁ → E₂) = f :=
+  rfl
+
+example (f : E₁ →ₚ₁[R] E₂) : f.toLinearMap 1 = 1 := by
+  simp
+
+initialize_simps_projections UnitalPositiveLinearMap (toFun → apply, as_prefix toLinearMap)
+
+@[ext]
+lemma ext {f g : E₁ →ₚ₁[R] E₂} (h : ∀ x, f x = g x) : f = g :=
+  DFunLike.ext f g h
+
+variable (R E₁) in
+/-- The identity as a positive linear one-preserving map. -/
+@[simps! apply toLinearMap] protected def id : E₁ →ₚ₁[R] E₁ where
+  __ := LinearMap.id
+  __ := OrderHom.id
+  __ := OneHom.id E₁
+
+@[simp] lemma toOrderHom_id : (UnitalPositiveLinearMap.id R E₁).toOrderHom = .id := rfl
+@[simp] lemma toOneHom_id : (UnitalPositiveLinearMap.id R E₁).toOneHom = .id E₁ := rfl
+
+/-- Composition of positive linear one-preserving maps. -/
+@[simps! apply]
+def comp (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) : E₁ →ₚ₁[R] E₃ where
+  toLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
+  monotone' := g.monotone'.comp f.monotone'
+  map_one' := by simp
+
+@[simp] lemma toPositiveLinearMap_comp (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) :
+    (g.comp f).toPositiveLinearMap = g.toPositiveLinearMap.comp f.toPositiveLinearMap :=
+  rfl
+
+@[simp] lemma toOrderHom_comp (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) :
+    (g.comp f).toOrderHom = g.toOrderHom.comp f.toOrderHom :=
+  rfl
+
+@[simp] lemma comp_id (f : E₁ →ₚ₁[R] E₂) : f.comp (.id R E₁) = f := rfl
+@[simp] lemma id_comp (f : E₁ →ₚ₁[R] E₂) : (UnitalPositiveLinearMap.id R E₂).comp f = f := rfl
 
 @[simp]
-lemma comp_id (w : Weight E₁) : w.comp (.id ℝ E₁) = w := by
-  ext y
-  simp
+lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]
+    [LinearMap.CompatibleSMul E₁ E₂ S R] (f : E₁ →ₚ₁[R] E₂) (c : S) (x : E₁) :
+    f (c • x) = c • f x := LinearMapClass.map_smul_of_tower f _ _
 
-lemma comp_comp (w : Weight E₁) (φ : E₂ →ₚ₁[ℝ] E₁) (ψ : E₃ →ₚ₁[ℝ] E₂) :
-    w.comp (φ.comp ψ) = (w.comp φ).comp ψ := by
-  ext y
-  simp
+@[aesop safe apply (rule_sets := [CStarAlgebra])]
+protected lemma map_nonneg (f : E₁ →ₚ₁[R] E₂) {x : E₁} (hx : 0 ≤ x) : 0 ≤ f x :=
+  map_nonneg f hx
 
-/-- Pushing a finite weight forward along a channel's adjoint stays finite: `φ` never sends the
-cone anywhere `w` is infinite. -/
-lemma IsFinite.comp {w : Weight E₁} (hw : w.IsFinite) (φ : E₂ →ₚ₁[ℝ] E₁) :
-    (w.comp φ).IsFinite :=
-  fun _ => hw _
+lemma toPositiveLinearMap_injective :
+    Function.Injective (toPositiveLinearMap : (E₁ →ₚ₁[R] E₂) → (E₁ →ₚ[R] E₂)) :=
+  fun _ _ h ↦ by ext x; congrm($h x)
 
-variable [IsOrderUnit E₁] [IsOrderUnit E₂]
+/-- Unital positive linear maps are determined by their underlying linear maps. -/
+lemma toLinearMap_injective :
+    Function.Injective
+      (fun f : E₁ →ₚ₁[R] E₂ => f.toLinearMap) := by
+  intro f g h
+  ext x
+  exact congrArg (fun k : E₁ →ₗ[R] E₂ => k x) h
 
-/-- Pushing a state forward along a channel's adjoint gives a state: finiteness survives
-(`IsFinite.comp`) and normalization survives because the adjoint is unital. -/
-lemma IsState.comp {w : Weight E₁} (hw : w.IsState) (φ : E₂ →ₚ₁[ℝ] E₁) :
-    (w.comp φ).IsState where
-  finite := hw.finite.comp φ
-  normalized := by
-    show w ⟨φ (1 : E₂), φ.map_nonneg IsOrderUnit.one_nonneg⟩ = 1
-    have h1 : (⟨φ (1 : E₂), φ.map_nonneg IsOrderUnit.one_nonneg⟩ : PosCone E₁) = Weight.unit := by
-      apply Subtype.ext
-      show φ (1 : E₂) = 1
-      exact map_one φ
-    rw [h1, hw.normalized]
-
-end Weight
+@[simp]
+lemma toPositiveLinearMap_inj {f g : E₁ →ₚ₁[R] E₂} :
+    f.toPositiveLinearMap = g.toPositiveLinearMap ↔ f = g :=
+  toPositiveLinearMap_injective.eq_iff

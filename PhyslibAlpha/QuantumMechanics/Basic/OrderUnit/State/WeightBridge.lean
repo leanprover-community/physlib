@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Weight.Extension
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 
 /-!
 

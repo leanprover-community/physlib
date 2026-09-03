@@ -5,13 +5,19 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.Observables.Basic
-public import PhyslibAlpha.QuantumMechanics.Basic.PositiveLinearMap.Restrict
+public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.SelfAdjoint
+public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.Restrict
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 
 /-!
 
-# States on observables
+# Observables
+
+An observable is a self-adjoint element of a space with an additive involution.
+This definition needs neither multiplication nor a norm. In particular, the
+self-adjoint part of a complex operator algebra is already an observable space
+before any C⋆-algebraic structure is used.
 
 A complex state on a starred space restricts to a real state on its observables.
 Thus the expectation-value functional is itself an instance of the general
@@ -28,9 +34,23 @@ observable's expectation (`map_nonneg`), and the expectation of the unit observa
 are consequently not new facts about states meeting observables — they are the same generic
 `UnitalPositiveLinearMap` lemmas already used everywhere else, applied at `a : E`. The examples
 below witness this; no bespoke `expectation` definition is needed.
+
+## Main definitions
+
+- `Observable A`, `PositiveObservable A`
+- `UnitalPositiveLinearMap.onObservables` : the real state on observables induced by a complex
+  state on the ambient starred space.
+
 -/
 
 @[expose] public section
+
+/-- An observable in a space with an additive involution. -/
+abbrev Observable (A : Type*) [AddGroup A] [StarAddMonoid A] := selfAdjoint A
+
+/-- A positive observable in an ordered space with an additive involution. -/
+abbrev PositiveObservable (A : Type*) [AddGroup A] [StarAddMonoid A] [PartialOrder A] :=
+  {a : Observable A // 0 ≤ (a : A)}
 
 open scoped ComplexOrder
 

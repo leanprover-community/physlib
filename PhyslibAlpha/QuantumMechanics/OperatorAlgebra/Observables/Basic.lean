@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.Observables.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.Observable
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.Basic
 public import Mathlib.Analysis.CStarAlgebra.Spectrum
 

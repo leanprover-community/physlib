@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Analysis.Convex.StdSimplex
 public import Mathlib.Topology.UnitInterval

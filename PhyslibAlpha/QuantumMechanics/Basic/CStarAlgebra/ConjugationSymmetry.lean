@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Symmetry
-public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.OrderUnit
+public import PhyslibAlpha.QuantumMechanics.Basic.CStarAlgebra.OrderUnit
 public import Mathlib.Algebra.Star.Unitary
 
 /-!

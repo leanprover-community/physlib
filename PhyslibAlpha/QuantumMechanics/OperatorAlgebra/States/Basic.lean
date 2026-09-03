@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.Basic
-public import PhyslibAlpha.QuantumMechanics.Basic.States.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 public import Physlib.Meta.Linters.Sorry
 

@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.QuantumMechanics.Basic.Representation.POVM
-public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.SharpEffect
+public import PhyslibAlpha.QuantumMechanics.Basic.CStarAlgebra.SharpEffect
 
 /-!
 

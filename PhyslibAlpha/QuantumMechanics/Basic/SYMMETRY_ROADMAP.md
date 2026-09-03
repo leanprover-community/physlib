@@ -184,7 +184,7 @@ around it:
   specialized to `Prod.fst` under the diagonal product action on `ι × κ`). Sorry-free, wired into
   `PhyslibAlpha.lean`, full library rebuilds clean.
 - **§2's concretization** ($\alpha_g(a) = U_g a U_g^*$ for a unitary representation) — built in
-  full in `StarAlgebra/ConjugationSymmetry.lean`: conjugation by a unitary is a genuine
+  full in `CStarAlgebra/ConjugationSymmetry.lean`: conjugation by a unitary is a genuine
   `Symmetry (selfAdjoint A)`, the assignment is a group homomorphism `unitary A →* Symmetry
   (selfAdjoint A)` (algebraically confirmed, not just asserted, to be a homomorphism and not an
   anti-homomorphism), and composing with a representation `G →* unitary A` gives exactly

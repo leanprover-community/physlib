@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.OrderUnit
+public import PhyslibAlpha.QuantumMechanics.Basic.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Effect.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic

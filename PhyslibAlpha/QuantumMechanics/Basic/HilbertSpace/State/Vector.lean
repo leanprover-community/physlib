@@ -5,7 +5,8 @@ Authors: David Gross
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.PositiveLinearMap.Restrict
+public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.Restrict
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 public import Mathlib
 
 /-!

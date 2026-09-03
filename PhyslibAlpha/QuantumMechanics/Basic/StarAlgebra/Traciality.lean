@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Star.Basic
 public import Mathlib.LinearAlgebra.Complex.Module
-public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Weight.State
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.WeightBridge
 
 /-!
 
