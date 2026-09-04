@@ -70,6 +70,7 @@ public import PhyslibAlpha.QuantumMechanics.Basic.WStarAlgebra.Basic
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Dynamics.Automorphism
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Dynamics.Hamiltonian
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Trace
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.TraceClass.Basic
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Basic
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.ScalarMeasure
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Conjugation
