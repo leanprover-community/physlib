@@ -66,6 +66,13 @@ fixed state doesn't stop `A`'s statistics from being genuine statistics."
   look is a Cauchy–Schwarz-type argument once `E₁`, `E₂` carry more structure than a bare order
   unit (e.g. once each `Eᵢ` is realized as self-adjoint elements of a C*-algebra, where the minimal
   tensor product's operator norm gives exactly this bound). Left open.
+
+  For the specific case `E₁ = Observable A`, `E₂ = Observable B` with `A`, `B` C⋆-algebras, the
+  "no Jordan-type decomposition" half of this obstruction is now settled —
+  `CStarAlgebra/JordanDecomposition.lean`'s `exists_sub_mem_maxConeSet` shows every element of
+  `Observable A ⊗[ℝ] Observable B` *is* such a difference of two elements of `MaxCone`. The
+  boundedness-by-`1 ⊗ₜ 1` half described above is not — that file is explicit it left exactly that
+  Cauchy–Schwarz-type argument unattempted, matching this note.
 - **The minimal (spatial) cone and the gap between the two.** This file only builds the maximal
   cone. The minimal cone (functionals on both factors that are jointly positive) is the other
   extreme, and ordinary quantum mechanics needs the one strictly in between the two (matching
