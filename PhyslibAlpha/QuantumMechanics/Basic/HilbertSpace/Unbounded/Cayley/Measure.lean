@@ -12,8 +12,6 @@ public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.
 
 # Transporting a spectral measure through the Cayley transform
 
-## i. Overview
-
 `Cayley/Basic.lean` gives the scalar Cayley transform `cayley : ℝ → ℂ` and its (one-sided)
 inverse `cayleyInverse`. This file pushes a `WOTSpectralMeasure` forward and backward along those
 maps (`cayleyMap`, `cayleyInverseMap`), proves the round trip on the real side is exact
@@ -23,27 +21,12 @@ measures are genuine Cayley images: those supported on the unit circle away from
 Cayley-supported complex ones. This is the reusable measure-level core of the self-adjoint/unitary
 correspondence; no unbounded operator is mentioned in this file at all.
 
-## ii. Key results
-
 - `cayleyMap`, `cayleyInverseMap` : pushing a `WOTSpectralMeasure` forward/backward along the
   Cayley transform.
 - `cayleyInverseMap_cayleyMap`, `cayleyMap_injective` : the round trip on the real side, and the
   resulting injectivity of `cayleyMap`.
 - `cayleyMeasureEquiv` : the equivalence between real spectral measures and complex spectral
   measures supported on the unit circle away from `1`.
-- `BoundedNormalSpectralData`, `BoundedUnitarySpectralData` : the exact output a bounded
-  spectral-theorem construction must supply for a normal/unitary operator, phrased purely in terms
-  of `WOTSpectralMeasure` reconstruction.
-
-## iii. Table of contents
-
-- A. Pushforward and pullback along the Cayley transform
-- B. The Cayley equivalence of spectral-measure data
-
-## iv. References
-
-- Ported and adapted from `OperatorAlgebra/Spec/Cayley.lean` in the `unbounded-alpha-public`
-  staging tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

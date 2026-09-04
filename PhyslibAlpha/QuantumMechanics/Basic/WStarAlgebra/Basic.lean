@@ -58,9 +58,7 @@ only the identification and its transport back along it.
 
 The genuinely concrete instance — `A := B(H)` with predual the trace-class operators `𝒮₁(H)` and
 `toDual` the trace pairing `a ↦ (ρ ↦ Tr(aρ))` — needs a `TraceClass H` Banach space this repo does
-not yet have; it belongs in a later `HilbertSpace/TraceClass/` phase (see
-`Basic/UNBOUNDED_ROADMAP.md`, Part 2, steps 2–3). This file stays at the abstract weak-⋆ and
-normal-state layer.
+not yet have. This file stays at the abstract weak-⋆ and normal-state layer.
 
 -/
 

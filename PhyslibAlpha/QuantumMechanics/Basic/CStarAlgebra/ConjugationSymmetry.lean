@@ -13,15 +13,14 @@ public import Mathlib.Algebra.Star.Unitary
 
 # Conjugation by a unitary is a symmetry of the self-adjoint part
 
-`SYMMETRY_ROADMAP.md` §2 concretizes a symmetry of a quantum system as
-`α_g(a) = U_g a U_g*` for `U` a unitary representation of a group `G`. This file builds the
-purely algebraic core of that statement: for a fixed unitary `u` of a unital C⋆-algebra `A`,
-conjugation `a ↦ u a u*` restricts to a genuine order-automorphism of `selfAdjoint A`
-(`OrderUnit/Symmetry.lean`'s `Symmetry`), and this assignment is a group homomorphism
-`unitary A →* Symmetry (selfAdjoint A)`. Composing with a homomorphism `U : G →* unitary A` — the
-algebraic shadow of a (strongly continuous, projective) unitary representation, minus any topology
-this layer does not carry — produces exactly the homomorphism `G →* Symmetry (selfAdjoint A)` the
-roadmap names.
+A symmetry of a quantum system is standardly modeled as `α_g(a) = U_g a U_g*` for `U` a unitary
+representation of a group `G`. This file builds the purely algebraic core of that statement: for a
+fixed unitary `u` of a unital C⋆-algebra `A`, conjugation `a ↦ u a u*` restricts to a genuine
+order-automorphism of `selfAdjoint A` (`OrderUnit/Symmetry.lean`'s `Symmetry`), and this assignment
+is a group homomorphism `unitary A →* Symmetry (selfAdjoint A)`. Composing with a homomorphism
+`U : G →* unitary A` — the algebraic shadow of a (strongly continuous, projective) unitary
+representation, minus any topology this layer does not carry — produces exactly such a homomorphism
+`G →* Symmetry (selfAdjoint A)`.
 
 Conjugation lands back in `selfAdjoint A` because `IsSelfAdjoint.conjugate` already gives
 `IsSelfAdjoint (z * x * star z)` for self-adjoint `x`; it is positive because `A` is a
@@ -30,8 +29,8 @@ Conjugation lands back in `selfAdjoint A` because `IsSelfAdjoint.conjugate` alre
 `u⁻¹`, since `unitary A` is a group with `Inv := star`), because `u * star u = star u * u = 1`
 collapses `conjugationLinearMap u` composed with `conjugationLinearMap (star u)` (in either order)
 to the identity by pure associativity. None of this needs any topology or continuity hypothesis —
-it is the algebraic content of the roadmap's concretization, independent of the "strongly
-continuous" qualifier.
+this is purely algebraic content, independent of the "strongly continuous" qualifier that a genuine
+unitary representation would carry.
 
 ## Main definitions
 
@@ -47,8 +46,8 @@ continuous" qualifier.
   order works out because `Symmetry`'s multiplication is itself `.comp`, "apply the right factor
   first").
 - `Unitary.Representation.toSymmetryHom (U : G →* unitary A) : G →* Symmetry (selfAdjoint A)` :
-  composing with a homomorphism into the unitary group gives the roadmap's `α_g(a) = U_g a U_g*`
-  directly, as a homomorphism into the automorphism group.
+  composing with a homomorphism into the unitary group gives `α_g(a) = U_g a U_g*` directly, as a
+  homomorphism into the automorphism group.
 
 -/
 
@@ -142,10 +141,9 @@ lemma conjugationUPLM_one : conjugationUPLM (1 : unitary A) = .id ℝ (selfAdjoi
 
 /-! ## Conjugation as a symmetry -/
 
-/-- Conjugation by a unitary `u` is a genuine order-automorphism of `selfAdjoint A`: this is the
-"MINIMUM" scope of `ConjugationSymmetry.lean` — conjugation by a fixed unitary realizes the
-roadmap's `α_g(a) = U_g a U_g*` for a single group element. Its two-sided inverse is conjugation
-by `star u`. -/
+/-- Conjugation by a unitary `u` is a genuine order-automorphism of `selfAdjoint A`: conjugation by
+a fixed unitary realizes `α_g(a) = U_g a U_g*` for a single group element. Its two-sided inverse is
+conjugation by `star u`. -/
 noncomputable def conjugationSymmetry (u : unitary A) : Symmetry (selfAdjoint A) :=
   ⟨conjugationUPLM u, conjugationUPLM (star u),
     UnitalPositiveLinearMap.ext fun a =>
@@ -157,7 +155,7 @@ noncomputable def conjugationSymmetry (u : unitary A) : Symmetry (selfAdjoint A)
 lemma val_conjugationSymmetry (u : unitary A) :
     (conjugationSymmetry u : selfAdjoint A →ₚ₁[ℝ] selfAdjoint A) = conjugationUPLM u := rfl
 
-/-- The "NEXT" scope: `u ↦ conjugationSymmetry u` is a genuine group homomorphism
+/-- `u ↦ conjugationSymmetry u` is a genuine group homomorphism
 `unitary A →* Symmetry (selfAdjoint A)`, not an anti-homomorphism — `Symmetry`'s multiplication is
 `φ * ψ = φ.comp ψ` (apply `ψ` first), and `conjugationLinearMap_conjugationLinearMap` shows
 conjugation composes the same way: conjugating by `v` then `u` is conjugation by `u * v`. -/
@@ -179,13 +177,13 @@ end unitary
 
 namespace Unitary
 
-/-- The "STRETCH" scope: a group homomorphism `U : G →* unitary A` — the algebraic shadow of a
-unitary representation (`SYMMETRY_ROADMAP.md` §2's `U`, minus any strong-continuity hypothesis,
-which needs a topology this layer does not carry) — composes with `conjugationSymmetryHom` to give
-exactly `α_g(a) = U_g a U_g*` as a homomorphism `G →* Symmetry (selfAdjoint A)`. A measurement
-covariant under such an action (`UnitalPositiveLinearMap.IsCovariant` /
-`EffectValuedMeasure.IsCovariant`, `Measurement/Covariance.lean`) is exactly one satisfying
-`M ∘ β_g = α_g ∘ M` for this `α`; connecting the two is future work, not attempted here. -/
+/-- A group homomorphism `U : G →* unitary A` — the algebraic shadow of a unitary representation,
+minus any strong-continuity hypothesis, which needs a topology this layer does not carry —
+composes with `conjugationSymmetryHom` to give exactly `α_g(a) = U_g a U_g*` as a homomorphism
+`G →* Symmetry (selfAdjoint A)`. A measurement covariant under such an action
+(`UnitalPositiveLinearMap.IsCovariant` / `EffectValuedMeasure.IsCovariant`,
+`Measurement/Covariance.lean`) is exactly one satisfying `M ∘ β_g = α_g ∘ M` for this `α`;
+connecting the two is future work, not attempted here. -/
 noncomputable def Representation.toSymmetryHom {G : Type*} [Group G] (U : G →* unitary A) :
     G →* Symmetry (selfAdjoint A) :=
   unitary.conjugationSymmetryHom.comp U
@@ -195,7 +193,7 @@ lemma Representation.toSymmetryHom_apply {G : Type*} [Group G] (U : G →* unita
     Representation.toSymmetryHom U g = unitary.conjugationSymmetry (U g) := rfl
 
 /-- Unwinding `Representation.toSymmetryHom` on an element `a` recovers `α_g(a) = U_g a U_g*`
-literally, matching `SYMMETRY_ROADMAP.md` §2's concretization. -/
+literally. -/
 lemma Representation.toSymmetryHom_apply_coe {G : Type*} [Group G] (U : G →* unitary A) (g : G)
     (a : selfAdjoint A) :
     ((Representation.toSymmetryHom U g).1 a : A) = (U g : A) * (a : A) * star (U g : A) := rfl

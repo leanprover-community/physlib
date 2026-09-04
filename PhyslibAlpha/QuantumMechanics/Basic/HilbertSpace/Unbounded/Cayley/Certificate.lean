@@ -12,8 +12,6 @@ public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.
 
 # The bounded-unitary spectral interface
 
-## i. Overview
-
 The bounded spectral theorem itself does not need the Cayley support condition from
 `Cayley/Measure.lean`: that condition is only needed once a bounded unitary's spectral measure is
 going to be pulled back to the real line. This file records the general output any construction
@@ -25,22 +23,10 @@ so an arbitrary bounded normal operator can consume the same interface, not only
 its (Cayley-supported) complex measure back through `cayleyInverseMap`, together with the exact
 uniqueness statement: a real spectral measure is determined by its Cayley pushforward.
 
-## ii. Key results
-
 - `BoundedNormalSpectralData` : a spectral measure reconstructing a bounded normal operator `U`
   in the weak identity-integral sense, with an integral-determined extensionality principle.
 - `BoundedUnitarySpectralData` : the same, plus the support condition needed to invert the Cayley
   map, and the resulting `realSpectralMeasure`.
-
-## iii. Table of contents
-
-- A. Bounded normal spectral data
-- B. Bounded unitary spectral data
-
-## iv. References
-
-- Ported and adapted from `OperatorAlgebra/Spec/Cayley.lean` in the `unbounded-alpha-public`
-  staging tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

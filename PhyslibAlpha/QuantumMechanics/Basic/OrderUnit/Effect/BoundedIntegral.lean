@@ -67,9 +67,11 @@ order bound `y ≤ r • 1`, not just a metric one).
 
 ## What this file does not attempt
 
-Scope 3 of `Integral.lean`'s own plan — recovering a self-adjoint operator from its spectral
-measure by integrating the identity function — is out of scope here too, exactly as that file
-says. Nothing here tries to drop the `[CompleteSpace E]` hypothesis or to give `integral` a
+Recovering a self-adjoint operator from its own spectral measure, by integrating the identity
+function against it, is out of scope here: that statement belongs to spectral theory proper
+(`OrderUnit/Effect/EffectValuedMeasure.lean` only packages what a POVM *is*, not the spectral
+theorem producing one from an operator) and isn't attempted in this file. Nothing here tries to
+drop the `[CompleteSpace E]` hypothesis or to give `integral` a
 `Measure`-theoretic domain of definition beyond "bounded and measurable" (e.g. extending to
 almost-everywhere-defined or unbounded functions); both are genuine further extensions, not loose
 ends of what's proved.

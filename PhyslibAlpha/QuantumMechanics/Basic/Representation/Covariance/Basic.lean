@@ -16,10 +16,10 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 A measurement is *covariant* under a symmetry when transforming the outcome and transforming the
 assigned effect agree — a rotated detector, pointed at a rotated direction, reads out the same
-statistics a rotation of the original detector would have. This file lays the foundation
-(`SYMMETRY_ROADMAP.md`, §2, §12): a measurable action of a group on the outcome space, a symmetry's
-action on effects (extending `Symmetry`'s existing action on states, `OrderUnit/Symmetry.lean`, to
-the dual side), and the covariance predicate on a POVM itself.
+statistics a rotation of the original detector would have. This file lays the foundation: a
+measurable action of a group on the outcome space, a symmetry's action on effects (extending
+`Symmetry`'s existing action on states, `OrderUnit/Symmetry.lean`, to the dual side), and the
+covariance predicate on a POVM itself.
 
 ## Main definitions
 
@@ -101,8 +101,8 @@ variable {G Ω E : Type*} [Group G] [MeasurableSpace Ω] [MulAction G Ω] [Measu
 /-- A measurement (POVM) `μ` is **covariant** under an action of `G` on the outcome space,
 transported to the physical system via `ρ : G →* Symmetry E`, when transforming the outcome set
 and transforming the assigned effect agree: `μ(g • S) = ρ(g) • μ(S)`. This is the abstract form of
-`E(gS) = α_g(E(S))` (`SYMMETRY_ROADMAP.md` §2) — a rotated detector pointed at a rotated direction
-reads out what a rotation of the original detector would have. -/
+`E(gS) = α_g(E(S))` — a rotated detector pointed at a rotated direction reads out what a rotation
+of the original detector would have. -/
 def EffectValuedMeasure.IsCovariant (ρ : G →* Symmetry E) (μ : EffectValuedMeasure Ω E) : Prop :=
   ∀ (g : G) (S : Set Ω) (hS : MeasurableSet S), μ (g • S) (measurableSet_smul hS g) = ρ g • μ S hS
 
@@ -112,10 +112,10 @@ end Covariant
 
 Not every physical transformation has a measurable outcome space to be covariant "under" the way
 a measurement is — a channel `φ : E₁ →ₚ₁[ℝ] E₂` between two systems is covariant simply when
-transporting the input and transporting the output agree, with no measurable space in sight
-(`SYMMETRY_ROADMAP.md` §7, "channels are also intertwiners"). This is the general form; a
-covariant measurement (above) is the special case where `E₂ = B_b(Ω,Σ)`'s dual role is replaced by
-`E₁` itself carrying the classical outcome action. -/
+transporting the input and transporting the output agree, with no measurable space in sight:
+channels are also intertwiners. This is the general form; a covariant measurement (above) is the
+special case where `E₂ = B_b(Ω,Σ)`'s dual role is replaced by `E₁` itself carrying the classical
+outcome action. -/
 
 section CovariantChannel
 
@@ -138,8 +138,7 @@ lemma UnitalPositiveLinearMap.isCovariant_id (ρ : G →* Symmetry E₁) :
   rw [UnitalPositiveLinearMap.id_comp, UnitalPositiveLinearMap.comp_id]
 
 /-- Covariance is preserved by composition: a covariant channel followed by a covariant channel is
-covariant for the actions at the two ends, with the middle system's action cancelling out — the
-algebraic core of `SYMMETRY_ROADMAP.md` §9's compatible-covariant-object closure results. -/
+covariant for the actions at the two ends, with the middle system's action cancelling out. -/
 lemma UnitalPositiveLinearMap.IsCovariant.comp {ρ₁ : G →* Symmetry E₁} {ρ₂ : G →* Symmetry E₂}
     {ρ₃ : G →* Symmetry E₃} {ψ : E₂ →ₚ₁[ℝ] E₃} {φ : E₁ →ₚ₁[ℝ] E₂}
     (hψ : ψ.IsCovariant ρ₂ ρ₃) (hφ : φ.IsCovariant ρ₁ ρ₂) :

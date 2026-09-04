@@ -12,8 +12,6 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 
 # Algebra of the bounded weak-operator spectral integral
 
-## i. Overview
-
 `boundedIntegral` (`BoundedIntegral.lean`) is well-defined independently of the choice of uniform
 approximating sequence (`boundedIntegral_eq_of_uniform_approx`), which is what makes it possible
 to prove it is a `*`-homomorphism from bounded measurable functions to `H →WOT[ℂ] H`: additive
@@ -29,23 +27,12 @@ extensionality by the integral itself: two spectral measures agreeing on every b
 integral must already agree pointwise on measurable sets (specializing to the indicator function
 recovers `ext_of_scalarMeasure_eq`).
 
-## ii. Key results
+## Main definitions
 
 - `boundedIntegral_add`, `boundedIntegral_mul`, `boundedIntegral_star`, `boundedIntegral_const` :
   the `boundedIntegral` functional calculus is a unital `*`-homomorphism.
 - `boundedIntegral_norm_sq_eq_integral` : `‖(boundedIntegral f) x‖² = ∫ |f|² dμₓ`.
 - `ext_of_boundedIntegral_eq` : a spectral measure is determined by its bounded integrals.
-
-## iii. Table of contents
-
-- A. Independence from the approximating sequence
-- B. The algebra of the integral
-- C. Extensionality by the integral
-
-## iv. References
-
-- Ported and adapted from `WeakSpectralMeasure/B.lean` in the `unbounded-alpha-public` staging
-  tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

@@ -12,12 +12,12 @@ public import Mathlib.Algebra.DirectSum.Module
 
 # Schur's lemma and multiplicity-free covariant channels
 
-`SYMMETRY_ROADMAP.md` §3, §7, §8, and §12 item 8 describe a recurring pattern: once a `G`-invariant
-object (a representation space, an operator space, a channel's domain) is decomposed into blocks
+There is a recurring pattern in representation theory: once a `G`-invariant object (a
+representation space, an operator space, a channel's domain) is decomposed into blocks
 $E = \bigoplus_i W_i$ that are individually `G`-invariant and "Schur" (no non-scalar `G`-equivariant
 self-map), *every* `G`-equivariant endomorphism of the whole space is pinned down block-by-block to
 a single real scalar per block — instead of classifying arbitrary linear maps on a
-high-dimensional space, one classifies a handful of numbers. For the qubit (§3), this is exactly why
+high-dimensional space, one classifies a handful of numbers. For the qubit, this is exactly why
 a rotationally covariant channel on the Hermitian $2\times2$ matrices reduces from "an arbitrary
 linear self-map of a four-real-dimensional space" to "one real number $\lambda$": the space splits
 as the scalar sector (spin $0$) plus the Pauli-vector sector (spin $1$), each Schur.
@@ -38,14 +38,14 @@ Both require the base field to be algebraically closed (`IsAlgClosed k`) — tru
 have endomorphism ring `ℝ`, `ℂ`, or the quaternions `ℍ`, e.g. the standard real representation of
 the circle group on `ℝ²` is irreducible with endomorphism ring `ℂ`, not `ℝ` — rotation-by-90° is a
 non-scalar equivariant endomorphism). The qubit's Pauli-vector sector genuinely is a "real type"
-representation (endomorphism ring `ℝ`, the fact being cited in `SYMMETRY_ROADMAP.md` §3), but this
-is *extra* representation-theoretic input beyond generic Schur, not something `IsAlgClosed`-Schur
-gives for free over `ℝ`. Moreover this codebase's `E`/`Symmetry E` (`OrderUnit/Symmetry.lean`) is a
-bare order-unit module with a group of order-automorphisms, not mathlib's `Representation k G V`
-structure (a genuine `k[G]`-module) — bridging the two would cost more than it buys. So the Schur
-hypothesis below is taken as an explicit, minimal `Prop` on a `Submodule`, to be discharged
-per-block by whatever means are available (cited, as the roadmap's §3 does, or proved directly),
-rather than derived from a general representation-theoretic classification result.
+representation (endomorphism ring `ℝ`), but this is *extra* representation-theoretic input beyond
+generic Schur, not something `IsAlgClosed`-Schur gives for free over `ℝ`. Moreover this codebase's
+`E`/`Symmetry E` (`OrderUnit/Symmetry.lean`) is a bare order-unit module with a group of
+order-automorphisms, not mathlib's `Representation k G V` structure (a genuine `k[G]`-module) —
+bridging the two would cost more than it buys. So the Schur hypothesis below is taken as an
+explicit, minimal `Prop` on a `Submodule`, to be discharged per-block by whatever means are
+available (cited from elsewhere or proved directly), rather than derived from a general
+representation-theoretic classification result.
 
 ## Main definitions
 

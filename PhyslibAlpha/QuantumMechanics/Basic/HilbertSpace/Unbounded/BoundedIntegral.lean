@@ -14,8 +14,6 @@ public import Mathlib.MeasureTheory.Integral.SetToL1
 
 # The bounded weak-operator spectral integral
 
-## i. Overview
-
 Builds `boundedIntegral μS f hf hbdd : H →WOT[ℂ] H`, the operator `∫ f dμS` for a bounded
 measurable `f : α → ℂ`, in three stages:
 
@@ -35,22 +33,11 @@ directly) is what makes this integral tractable at all. The characteristic-funct
 `simpleIntegral_piecewise_indicator`, is the bridge back from this integral to `μS` itself:
 `∫ 𝟙_S dμS = μS S`.
 
-## ii. Key results
+## Main definitions
 
 - `simpleIntegral`, `simpleIntegral_norm_sq_eq_lintegral` : the finite-sum integral, and its
   norm-square identity against `diagonalMeasure`.
 - `boundedIntegral` : the canonical bounded operator integral of a bounded measurable `f`.
-
-## iii. Table of contents
-
-- A. The simple-function integral
-- B. Uniform approximation and the limiting integral
-- C. The canonical integral
-
-## iv. References
-
-- Ported and adapted from `WeakSpectralMeasure/A.lean` in the `unbounded-alpha-public` staging
-  tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

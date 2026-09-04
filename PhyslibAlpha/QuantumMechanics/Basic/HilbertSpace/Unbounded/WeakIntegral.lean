@@ -13,8 +13,6 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 # The vector-measure integral against a scalar matrix coefficient
 
-## i. Overview
-
 `boundedIntegral` computes the operator `∫ f dμS` and then pairs it against test vectors; this
 file records that, for a *bounded* multiplier, testing first and integrating second gives the
 same answer: `⟪y, (∫ f dμS) x⟫ = ∫ f d(μS.scalarMeasure x y)`, where the right-hand side is
@@ -25,21 +23,11 @@ possibly-*unbounded* multipliers `f` — the weak statement of the eventual unbo
 law `T = ∫ λ dE(λ)`, testable on a single pair of vectors without needing `f(T)` itself to be a
 bounded (or even densely-defined) operator on all of `H`.
 
-## ii. Key results
+## Main definitions
 
 - `weakIntegral`, `complexWeakIntegral` : `∫ f d⟪y, μS(·)x⟫`, for real- and complex-valued `f`.
 - `unitaryConjSpectralMeasure_weakIntegral` : compatibility with unitary transport
   (`Conjugation.lean`).
-
-## iii. Table of contents
-
-- A. Bounded integrals agree with the vector-measure integral
-- B. The weak integral of a possibly-unbounded multiplier
-
-## iv. References
-
-- Ported and adapted from `WeakSpectralMeasure/B.lean` in the `unbounded-alpha-public` staging
-  tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

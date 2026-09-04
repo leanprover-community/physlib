@@ -11,8 +11,6 @@ public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.ScalarM
 
 # Transporting a weak spectral measure through a Hilbert-space unitary
 
-## i. Overview
-
 A Hilbert-space isometric isomorphism `u : H ≃ₗᵢ[ℂ] H'` conjugates bounded operators on `H` to
 bounded operators on `H'` (`A ↦ u A u⁻¹`), and this conjugation is a `*`-algebra isomorphism
 between the two weak-operator-topology spaces. Composing a `WOTSpectralMeasure α H` with it
@@ -22,23 +20,12 @@ transported to any unitarily equivalent one, and it also transports the associat
 diagonal measures from `ScalarMeasure.lean` (`unitaryConjSpectralMeasure_scalarMeasure`,
 `unitaryConjSpectralMeasure_diagonalMeasure`).
 
-## ii. Key results
+## Main definitions
 
 - `unitaryConj` : conjugation of a single bounded WOT operator by `u`.
 - `unitaryConjSpectralMeasure` : conjugation of a whole `WOTSpectralMeasure` by `u`.
 - `unitaryConjSpectralMeasure_scalarMeasure`, `_diagonalMeasure` : the transported measure's
   scalar/diagonal measures, in terms of the original.
-
-## iii. Table of contents
-
-- A. Conjugation of a single operator
-- B. Conjugation of a spectral measure
-- C. Interaction with the scalar and diagonal measures
-
-## iv. References
-
-- Ported and adapted from `WeakSpectralMeasure/{A,B}.lean` in the `unbounded-alpha-public` staging
-  tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

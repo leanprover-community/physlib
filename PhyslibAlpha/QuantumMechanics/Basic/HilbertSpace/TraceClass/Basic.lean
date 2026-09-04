@@ -63,9 +63,9 @@ trace-class hypothesis) double sum `∑ᵢ∑ⱼ = ∑ⱼ∑ᵢ`. `|T| = CFC.abs
 this handles `summable_inner_abs_of_hilbertBasis` in full generality. For `trace_eq_of_hilbertBasis`
 the positive case is now proved by the same square-root/Parseval argument
 (`trace_eq_of_hilbertBasis_of_nonneg`), and the self-adjoint case is obtained by decomposing into
-positive and negative parts (`trace_eq_of_hilbertBasis_of_isSelfAdjoint`). The general
-non-self-adjoint polar/Schmidt argument, and the trace-class Banach space `TraceClass H` itself,
-are genuinely separate, later phases (see `Basic/UNBOUNDED_ROADMAP.md`), not attempted here.
+positive and negative parts (`trace_eq_of_hilbertBasis_of_isSelfAdjoint`). The general non-self-adjoint case would go through
+the polar decomposition `T = U|T|` instead, and packaging the trace-class operators themselves as
+a Banach space `TraceClass H` is separate, genuinely harder work; neither is attempted here.
 
 ## Definitions
 
@@ -74,15 +74,6 @@ are genuinely separate, later phases (see `Basic/UNBOUNDED_ROADMAP.md`), not att
 - `HasFiniteMultiplicity` : a projection is trace class — the honest Murray–von Neumann finiteness
   condition for "isolated eigenvalue of finite multiplicity", which a purely topological account of
   discrete spectrum cannot express.
-
-## References
-
-Ported and adapted from `OperatorAlgebra/TraceClass.lean` in the `unbounded-alpha-public` staging
-tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan. The source file's own
-`OperatorAlgebra` class and `B(H)` notation are dropped: everything here only needs Mathlib's
-native order/CFC structure on `H →L[ℂ] H` directly (in particular `ContinuousLinearMap.
-nonneg_iff_isPositive`, already Mathlib's own lemma, in place of the source's local restatement of
-it).
 
 -/
 

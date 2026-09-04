@@ -11,11 +11,9 @@ public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.
 
 # The inverse Cayley operator
 
-## i. Overview
-
-This file contains the reusable operator-side converse to the Cayley transform. A unitary
-operator `u` has a possible missing point at `1`; its inverse Cayley transform is therefore the
-partial operator
+This file contains the reusable operator-side converse to `Cayley/Basic.lean`'s Cayley transform.
+A unitary operator `u` has a possible missing point at `1`; its inverse Cayley transform is
+therefore the partial operator
 
 `i (1 + u) (1 - u)⁻¹`.
 
@@ -25,10 +23,8 @@ the range of `1 - u` to be dense; that fact is proved here using orthogonal comp
 Hilbert-space adjoint theorem. The range calculations at `± i` then prove self-adjointness
 directly from the symmetric-operator criterion already available for `LinearPMap`.
 
-No model-specific completeness theorem is used here. In particular, this is the general layer
-that a concrete Hamiltonian can use after producing its Cayley unitary.
-
-## ii. Key results
+No model-specific completeness theorem is used here: this is the general layer that a concrete
+Hamiltonian can use after producing its Cayley unitary.
 
 - `inverseCayleyPMap` : the partial inverse Cayley transform of a unitary operator.
 - `inverseCayleyPMap_isSelfAdjoint` : the inverse Cayley transform of a unitary with `1` not a
@@ -36,18 +32,6 @@ that a concrete Hamiltonian can use after producing its Cayley unitary.
 - `CayleyUnitaryData` : the standard hypotheses for taking an inverse Cayley transform.
 - `cayleyContinuousLinearMap_inverseCayleyPMap_eq` : the inverse Cayley transform of `u`'s Cayley
   transform recovers `u` itself.
-
-## iii. Table of contents
-
-- A. The partial inverse Cayley transform
-- B. Density of the range of `1 - u`
-- C. Self-adjointness of the inverse Cayley transform
-- D. Round trip with the forward Cayley transform
-
-## iv. References
-
-- Ported and adapted from `OperatorAlgebra/Spec/CayleyInverse.lean` in the `unbounded-alpha-public`
-  staging tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

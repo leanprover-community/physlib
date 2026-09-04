@@ -12,39 +12,27 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
 
 # The Cayley transform for a self-adjoint operator
 
-## i. Overview
+The Cayley transform `c(x) = (x - i) / (x + i)` maps the real line onto the unit circle minus the
+point `1` (which corresponds to `x = ∞`). Applied to a self-adjoint operator in place of a real
+number, it turns an (unbounded, densely-defined) self-adjoint operator into a bounded unitary
+operator — the standard device, due to von Neumann, for reducing unbounded self-adjoint spectral
+theory to the bounded/unitary case, where tools such as the continuous functional calculus already
+apply.
 
-The Cayley transform turns a real spectral variable into a bounded unitary spectral variable:
-
-`c(x) = (x - i) / (x + i)`.
-
-Its inverse is only needed away from `1`, the point corresponding to infinity. The inverse is
-defined arbitrarily at `1`; on the actual Cayley image it is a genuine inverse. This file develops
-that elementary scalar transform, then transports it to an unbounded self-adjoint operator
-`T : H →ₗ.[ℂ] H`: `cayleyPMap T` is the resulting Cayley-transformed partial operator, which turns
-out to be everywhere-defined and bounded (`cayleyContinuousLinearMap`), and in fact a genuine
-unitary (`cayleyUnitary`) once `T` is self-adjoint. No unbounded theorem is hidden in a
-definition: everything here is elementary Hilbert-space algebra once self-adjointness supplies the
-resolvent set membership at `± i`.
-
-## ii. Key results
+This file develops the elementary scalar transform `cayley`/`cayleyInverse` first — the inverse is
+only needed away from `1`, the point corresponding to infinity, and is defined arbitrarily there;
+on the actual Cayley image it is a genuine inverse — and then transports it to an unbounded
+self-adjoint operator `T : H →ₗ.[ℂ] H`: `cayleyPMap T` is the resulting Cayley-transformed partial
+operator, which turns out to be everywhere-defined and bounded (`cayleyContinuousLinearMap`), and
+in fact a genuine unitary (`cayleyUnitary`) once `T` is self-adjoint. No unbounded theorem is
+hidden in a definition: everything here is elementary Hilbert-space algebra once self-adjointness
+supplies the resolvent set membership at `± i`.
 
 - `cayley`, `cayleyInverse` : the scalar Möbius maps `(x - i) / (x + i)` and its (one-sided)
   inverse, together with their real/imaginary-part formulas and round-trip identities.
 - `cayleyPMap` : the Cayley transform of a partial operator, before forgetting boundedness.
 - `cayleyContinuousLinearMap`, `cayleyUnitary` : the resulting bounded operator, proved to be a
   genuine unitary once `T` is self-adjoint.
-
-## iii. Table of contents
-
-- A. The scalar Cayley transform
-- B. The Cayley transform of a partial operator
-- C. The bounded, unitary Cayley transform
-
-## iv. References
-
-- Ported and adapted from `OperatorAlgebra/Spec/Cayley.lean` in the `unbounded-alpha-public`
-  staging tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

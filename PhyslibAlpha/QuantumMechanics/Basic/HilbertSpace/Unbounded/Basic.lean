@@ -12,8 +12,6 @@ public import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
 
 # Weak-operator-topology spectral measures
 
-## i. Overview
-
 `Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure` already gives a
 star-projection-valued measure `Set α → H →L[ℂ] H`, σ-additive in the *norm* topology on bounded
 operators. That norm additivity is too strong a requirement for the spectral measures produced by
@@ -34,26 +32,15 @@ built on `SpectralMeasure` elsewhere in this codebase needs re-deriving to be us
 
 This file also records the covariance of the type under a measurable pushforward of the
 underlying measurable space (`map`) — needed to move a spectral measure along a change of
-spectral variable, e.g. through the Cayley transform in later stages of this port.
+spectral variable, e.g. through the Cayley transform.
 
-## ii. Key results
+## Main definitions
 
 - `WOTSpectralMeasure` : a star-projection-valued measure, σ-additive in the weak-operator
   topology.
 - `comp_eq_of_inter` : `μS A * μS B = μS (A ∩ B)` for measurable `A`, `B`.
 - `map` : pushing a weak spectral measure forward along a measurable function.
 - `SpectralMeasure.toWOT` : a norm-continuous spectral measure, viewed weakly.
-
-## iii. Table of contents
-
-- A. The structure and its basic algebra
-- B. Pushforward along a measurable map
-- C. Coming from a norm-continuous `SpectralMeasure`
-
-## iv. References
-
-- Ported and adapted from `WeakSpectralMeasure/{A,B}.lean` in the `unbounded-alpha-public` staging
-  tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

@@ -12,8 +12,6 @@ public import Mathlib.MeasureTheory.Measure.Complex
 
 # Scalar and diagonal measures of a weak spectral measure
 
-## i. Overview
-
 Testing `μS : WOTSpectralMeasure α H` against a pair of vectors `x, y : H` gives a complex
 *scalar* measure `S ↦ ⟪y, μS S x⟫`, and testing against a single vector `x` on the diagonal
 gives a positive, finite `Measure α`, `x`'s *diagonal* measure `S ↦ ‖μS S x‖² = re ⟪x, μS S x⟫`.
@@ -21,26 +19,15 @@ These are the measure-theoretic inputs to the bounded spectral integral built in
 `BoundedIntegral.lean`; they are recorded here first, on their own, because the extensionality
 principle `ext_of_scalarMeasure_eq` below — a weak spectral measure is determined by all of its
 scalar matrix-coefficient measures — is the basic uniqueness tool used throughout the rest of
-this port.
+this development.
 
-## ii. Key results
+## Main definitions
 
 - `scalarMeasure`, `scalarMeasure_apply` : `μS.scalarMeasure x y S = ⟪y, μS S x⟫`.
 - `ext_of_scalarMeasure_eq` : a weak spectral measure is determined by its scalar measures.
 - `diagonalMeasure`, `diagonalMeasure_apply_eq_norm_sq` : the vector-state spectral measure
   `μₓ S = ‖μS S x‖²`, and its basic identities (`univ`, `map`, finiteness, homogeneity, the
   parallelogram law).
-
-## iii. Table of contents
-
-- A. The scalar (matrix-coefficient) measure and extensionality
-- B. Positivity on the diagonal
-- C. The diagonal (vector-state) measure
-
-## iv. References
-
-- Ported and adapted from `WeakSpectralMeasure/{A,B}.lean` in the `unbounded-alpha-public` staging
-  tree (same author); see `UNBOUNDED_ROADMAP.md` for the port plan.
 
 -/
 

@@ -15,20 +15,20 @@ public import Mathlib.Algebra.Group.Action.Prod
 
 `Covariance.lean` sets up covariance in full measure-theoretic generality: a measurable action of
 `G` on an outcome space `Ω`, transported to a physical system via a homomorphism into `Symmetry E`.
-For a *finite* outcome type `ι`, this specializes drastically (`SYMMETRY_ROADMAP.md`, §2, §12 item
-1): a group acting on a finite label set needs no measurability machinery at all, since every
-subset of a finite type is automatically "measurable" in the relevant sense — a permutation of a
-finite set permutes it, full stop. This file builds the induced symmetry action `G →* Symmetry
-(ι → ℝ)` on the classical `ι`-outcome system (`ClassicalSystem.lean`, `FiniteOutcome.lean`), and
-uses it to specialize two of the roadmap's structural theorems (§12 items 3–4) to finite-outcome
-measurements presented as channels (`Measurement.channelEquiv`).
+For a *finite* outcome type `ι`, this specializes drastically: a group acting on a finite label set
+needs no measurability machinery at all, since every subset of a finite type is automatically
+"measurable" in the relevant sense — a permutation of a finite set permutes it, full stop. This
+file builds the induced symmetry action `G →* Symmetry (ι → ℝ)` on the classical `ι`-outcome system
+(`ClassicalSystem.lean`, `FiniteOutcome.lean`), and uses it to specialize two of `Covariance.lean`'s
+general structural theorems — covariance preserved under composition, and under postprocessing —
+to finite-outcome measurements presented as channels (`Measurement.channelEquiv`).
 
 The induced action is the standard "functions on a `G`-set" representation: `(σ • f) i = f (σ⁻¹ •
 i)`. This is a genuine *left* action — `σ • (τ • f) = (σ * τ) • f` — precisely because of the
 inverse: composing `f ↦ f ∘ (σ⁻¹ • ·)` then `f ↦ f ∘ (τ⁻¹ • ·)` composes the permutations as
 `(στ)⁻¹ = τ⁻¹σ⁻¹` in the matching order (`inducedAction`'s `map_mul'` spells this out) — using `σ`
-without inversion would instead give an *anti*-homomorphism. This matches exactly the convention
-`SYMMETRY_ROADMAP.md` §2 names for the classical system, `(β_g f)(x) = f(g⁻¹x)`.
+without inversion would instead give an *anti*-homomorphism. This matches the standard convention
+for the classical system, `(β_g f)(x) = f(g⁻¹x)`.
 
 Since a finite-outcome measurement `M : (ι → ℝ) →ₚ₁[ℝ] E` is already a channel
 (`FiniteOutcome.lean`), its covariance under this induced action, matched to a target symmetry
@@ -43,10 +43,10 @@ literal channel composition (`Postprocessing.lean`).
 - `inducedLinearMap`, `inducedChannel`, `inducedSymmetry`, `inducedAction` : the homomorphism
   `G →* Symmetry (ι → ℝ)` induced by a `MulAction G ι` on a finite outcome-label type.
 - `Measurement.postprocess_isCovariant` : post-processing by an equivariant classical channel
-  preserves covariance (`SYMMETRY_ROADMAP.md` §12 item 3).
+  preserves covariance.
 - `Measurement.classicalPullback_isCovariant`, `Measurement.marginal_isCovariant` : marginals of a
   covariant joint measurement, for a diagonal product action on the joint outcome type, are
-  covariant (`SYMMETRY_ROADMAP.md` §12 item 4).
+  covariant.
 
 -/
 
@@ -58,9 +58,9 @@ variable {G ι : Type*} [Group G] [MulAction G ι]
 
 /-- The linear map on the classical system `ι → ℝ` induced by `σ : G` permuting the outcome label
 type `ι`: pulling a function of the outcome back along `σ⁻¹`'s action on `ι`,
-`(inducedLinearMap σ f) i = f (σ⁻¹ • i)`. The standard "functions on a `G`-set" representation
-(`SYMMETRY_ROADMAP.md` §2's `(β_g f)(x) = f(g⁻¹x)`), built as `LinearMap.funLeft` along the point
-map `i ↦ σ⁻¹ • i` — the same building block `Postprocessing.lean`'s `classicalPullback` uses. -/
+`(inducedLinearMap σ f) i = f (σ⁻¹ • i)`. The standard "functions on a `G`-set" representation,
+`(β_g f)(x) = f(g⁻¹x)`, built as `LinearMap.funLeft` along the point map `i ↦ σ⁻¹ • i` — the same
+building block `Postprocessing.lean`'s `classicalPullback` uses. -/
 def inducedLinearMap (σ : G) : (ι → ℝ) →ₗ[ℝ] (ι → ℝ) :=
   LinearMap.funLeft ℝ ℝ (fun i => σ⁻¹ • i)
 
@@ -96,9 +96,8 @@ lemma inducedSymmetry_val (σ : G) : (inducedSymmetry σ : Symmetry (ι → ℝ)
 
 /-- The homomorphism `G →* Symmetry (ι → ℝ)` induced by a `G`-action on an outcome-label type `ι`:
 `σ` acts on the classical system by pulling functions back along `σ⁻¹`'s action on the labels.
-Group-homomorphism-hood is exactly the check `SYMMETRY_ROADMAP.md`'s report flags as needed — that
-this is the direction composing as a genuine *left* action, not its inverse-twisted
-(anti-homomorphism) variant. -/
+Group-homomorphism-hood is exactly the check that this is the direction composing as a genuine
+*left* action, not its inverse-twisted (anti-homomorphism) variant. -/
 def inducedAction : G →* Symmetry (ι → ℝ) where
   toFun := inducedSymmetry
   map_one' := Symmetry.ext fun x => funext fun i => by
@@ -122,11 +121,11 @@ labels `ι`, matched to a target symmetry `ρ : G →* Symmetry E`, precisely wh
 `M.IsCovariant inducedAction ρ` — `Covariance.lean`'s general notion, instantiated with the
 induced action from `inducedAction` above. No new predicate is needed: this *is* that notion. -/
 
-/-- Post-processing by an equivariant classical channel preserves covariance
-(`SYMMETRY_ROADMAP.md` §12 item 3): if `M` is covariant and the relabeling channel `K` itself
-intertwines the induced actions on `κ → ℝ` and `ι → ℝ`, then postprocessing `M` through `K` is
-covariant for the `κ`-side action. Postprocessing being literal channel composition
-(`Postprocessing.lean`), this falls out of `Covariance.lean`'s `IsCovariant.comp`. -/
+/-- Post-processing by an equivariant classical channel preserves covariance: if `M` is covariant
+and the relabeling channel `K` itself intertwines the induced actions on `κ → ℝ` and `ι → ℝ`, then
+postprocessing `M` through `K` is covariant for the `κ`-side action. Postprocessing being literal
+channel composition (`Postprocessing.lean`), this falls out of `Covariance.lean`'s
+`IsCovariant.comp`. -/
 theorem postprocess_isCovariant
     {G ι κ E : Type*} [Group G]
     [MulAction G ι] [Fintype ι] [DecidableEq ι]
@@ -160,9 +159,9 @@ lemma classicalPullback_isCovariant
     classicalPullback_apply]
   rw [hf g⁻¹ k]
 
-/-- Marginals of a covariant joint measurement are covariant (`SYMMETRY_ROADMAP.md` §12 item 4):
-if `J : (ι × κ → ℝ) →ₚ₁[ℝ] E` is covariant for the diagonal product action of `G` on `ι × κ`
-(acting on both factors simultaneously), then its marginal onto `ι`,
+/-- Marginals of a covariant joint measurement are covariant: if `J : (ι × κ → ℝ) →ₚ₁[ℝ] E` is
+covariant for the diagonal product action of `G` on `ι × κ` (acting on both factors
+simultaneously), then its marginal onto `ι`,
 `postprocess J (classicalPullback Prod.fst)` (`Compatibility.lean`'s marginalization), is
 covariant for the induced action on `ι` alone. This specializes `postprocess_isCovariant` to the
 classical channel `classicalPullback Prod.fst`, using that `Prod.fst` intertwines the diagonal
