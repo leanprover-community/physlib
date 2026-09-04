@@ -71,6 +71,10 @@ public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Dynamics.Automorp
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Dynamics.Hamiltonian
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Trace
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.TraceClass.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.Basic
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.Measure
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.Certificate
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Cayley.Inverse
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Basic
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.ScalarMeasure
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Unbounded.Conjugation
