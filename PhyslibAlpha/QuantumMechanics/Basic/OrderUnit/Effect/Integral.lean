@@ -373,22 +373,12 @@ lemma simpleIntegral_nonneg (μ : EffectValuedMeasure Ω E) {c : ι → ℝ} (hc
 /-!
 ## Beyond simple functions
 
-Extending `simpleIntegral` to all bounded measurable functions is the standard uniform-limit
-construction: approximate a bounded measurable `f : Ω → ℝ` by simple functions `f_n` converging to
-it uniformly (partition the range of `f` into intervals of width `1/n` and pull back along `f`),
-and show `n ↦ simpleIntegral μ (weights of f_n) (pieces of f_n) _` is Cauchy, since refining the
-approximation moves every weight by at most the mesh width while `μ`'s values stay inside the
-effect interval `[0, 1]` — a genuine `‖·‖`-Cauchy sequence needs a norm on `E`, though, and this
-layer only ever fixes the *order* on `E`. The norm *is* available (`IsArchimedeanOrderUnit.
-orderUnitNorm`, `OrderUnit/Norm.lean`) once `E` is Archimedean, but the accompanying
-`orderUnitNormedAddCommGroup` is deliberately a `def`, not a registered `instance`, since no
-canonical topology is fixed at this level of generality — so stating completeness needs choosing
-that particular norm explicitly (e.g. `letI := IsArchimedeanOrderUnit.orderUnitNormedAddCommGroup
-(E := E)` before assuming `[CompleteSpace E]`), and no such completeness typeclass for order-unit
-spaces exists anywhere else in this codebase to reuse (checked: no `CompleteSpace` appears
-alongside any `OrderUnit`/`Effect` file). Carrying that construction through — Cauchy sequence,
-completeness hypothesis, and the resulting integral's linearity and positivity — is substantial
-work in its own right and is left as future work beyond this file.
+Extending `simpleIntegral` to all bounded measurable functions — the standard uniform-limit
+construction, approximating `f` by simple functions on a mesh of the right width and passing to the
+limit under an explicit `[CompleteSpace E]` hypothesis against the order-unit norm
+(`IsArchimedeanOrderUnit.orderUnitNorm`, `OrderUnit/Norm.lean`) — is built in
+`OrderUnit/Effect/BoundedIntegral.lean`: `EffectValuedMeasure.integral`, independence of the
+approximating sequence, linearity, and positivity, all proved in full.
 -/
 
 end EffectValuedMeasure

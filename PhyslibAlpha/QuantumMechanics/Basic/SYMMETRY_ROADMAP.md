@@ -201,9 +201,14 @@ around it:
   obstructions, not missing effort.
 - **Items 5–6** (compact-group Haar averaging produces a covariant measurement/channel; invariant
   optimization admits covariant optimizers) — **not attempted**. Averaging needs a Bochner integral
-  of an $E$-valued function of the group element, which needs completeness of $E$ — the same gap
-  `OrderUnit/Effect/Integral.lean` already hit and left open (no `CompleteSpace` structure exists
-  for a general order-unit space in this codebase yet).
+  of an $E$-valued function of the group element, which needs completeness of $E$. The "no
+  `CompleteSpace` structure exists for an order-unit space" half of this gap is now less absolute:
+  `OrderUnit/Effect/BoundedIntegral.lean` (built this session) establishes the pattern —
+  assume `[CompleteSpace E]` explicitly against `IsArchimedeanOrderUnit.orderUnitNorm` via a local
+  instance — and proves a genuine Cauchy-sequence limit construction under it. But that file
+  integrates a *real-valued* function against an *effect-valued measure*; items 5-6 need a Bochner
+  integral of an *$E$-valued* function of a *group element* against Haar measure, a different (if
+  now less unprecedented-looking) construction, not yet attempted.
 - **Spotted, not yet done**: `exists_scalar_of_isSchurBlock`'s direct-sum/block-invariance
   hypotheses are currently unused (honestly documented as such in the file) — the theorem only
   pins `f` down block-by-block, when the direct-sum hypothesis could extend that to `f`'s value on

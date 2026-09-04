@@ -39,6 +39,7 @@ public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Channel.Normal
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Channel.Weight
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Effect.Basic
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Effect.EffectValuedMeasure
+public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Effect.BoundedIntegral
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Effect.Integral
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Convex
