@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.Basic.Measurement.Covariance
+public import PhyslibAlpha.QuantumMechanics.Basic.Representation.Covariance.Basic
 public import Mathlib.Algebra.DirectSum.Module
 
 /-!

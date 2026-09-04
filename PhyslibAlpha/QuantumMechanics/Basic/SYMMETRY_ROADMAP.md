@@ -170,7 +170,7 @@ independently-verified record. Summary of item 12's theorem sequence, and the co
 around it:
 
 - **Item 1** (group action induces actions on states and effects) — built. `Symmetry E` already
-  acted on states (`OrderUnit/Symmetry.lean`); `Measurement/Covariance.lean` adds the effect action
+  acted on states (`OrderUnit/Symmetry.lean`); `Representation/Covariance/Basic.lean` adds the effect action
   (`Symmetry.instSMulEffect`, via `UnitalPositiveLinearMap.mapEffect` — the general "a channel
   sends effects to effects" fact, previously only prose in `OVERVIEW.md`).
 - **Item 2 / §7's algebraic core** ("channels are also intertwiners", covariance preserved under
@@ -178,7 +178,7 @@ around it:
   intertwining two symmetry actions) and `.IsCovariant.comp`.
 - **Items 3–4** (post-processing by an equivariant classical channel preserves covariance;
   marginals of a covariant joint measurement are covariant), specialized to finite-outcome
-  measurements — **built**, in `Measurement/FiniteCovariance.lean`: the induced action
+  measurements — **built**, in `Representation/Covariance/Finite.lean`: the induced action
   `G →* Symmetry (ι → ℝ)` of a `G`-action on a finite outcome-label type `ι` (`inducedAction`),
   `postprocess_isCovariant`, and `marginal_isCovariant` (via `classicalPullback_isCovariant`
   specialized to `Prod.fst` under the diagonal product action on `ι × κ`). Sorry-free, wired into
@@ -190,7 +190,7 @@ around it:
   anti-homomorphism), and composing with a representation `G →* unitary A` gives exactly
   `G →* Symmetry (selfAdjoint A)`.
 - **Item 8 / §3's "Schur's lemma classifies covariant channels"** — the *abstract* version is
-  built (`Measurement/Schur.lean`): a finite direct-sum decomposition with an explicit per-block
+  built (`Representation/Schur.lean`): a finite direct-sum decomposition with an explicit per-block
   Schur hypothesis (plus an explicit block-preservation hypothesis on the map, since killing
   cross-terms between distinct blocks is a separate fact not derived here) gives one scalar per
   block, specialized to `IsCovariant` channels. The *concrete* qubit/$SU(2)$ computation from §3 is
