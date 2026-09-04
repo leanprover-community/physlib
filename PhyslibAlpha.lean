@@ -67,6 +67,7 @@ public import PhyslibAlpha.QuantumMechanics.Basic.CStarAlgebra.SharpEffect
 public import PhyslibAlpha.QuantumMechanics.Basic.CStarAlgebra.SpectralMeasure
 public import PhyslibAlpha.QuantumMechanics.Basic.CStarAlgebra.Uncertainty
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Dynamics.Automorphism
+public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Dynamics.Hamiltonian
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.Trace
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.State.Density
 public import PhyslibAlpha.QuantumMechanics.Basic.HilbertSpace.State.Vector
