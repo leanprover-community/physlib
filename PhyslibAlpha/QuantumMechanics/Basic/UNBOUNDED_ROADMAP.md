@@ -60,9 +60,18 @@ spine:
 
 ## Part 1: the spectral theorem
 
-Source content, in dependency order (`Unbounded/`'s own graph — confirmed independent of
-`WStarAlgebra`, so this part needs no W⋆-algebra work first):
+Source content, in *real* dependency order (corrected after checking actual imports — the first
+pass at this list had Cayley before its own prerequisite; confirmed independent of `WStarAlgebra`,
+so this part needs no W⋆-algebra work first):
 
+0. **The spectral-measure type itself** (`Operators/SpectralTheory/WeakSpectralMeasure/{A,B}.lean`,
+   ~2233 lines): `WOTSpectralMeasure` — a projection-valued measure valued in the weak-operator
+   topology on `H`. Built on `Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure`
+   (already vendored, see above) plus Mathlib's own `WeakOperatorTopology`/vector-measure
+   machinery — no `OperatorAlgebra`-class adaptation needed, this is genuinely Hilbert-space-level
+   already. Everything below depends on this type existing first (`Spec/Cayley.lean` uses it via
+   `Affil/Concrete.lean`), which is why it's step 0, not folded into "Stone's theorem" as first
+   drafted.
 1. **Cayley-transform construction** (`OperatorAlgebra/Spec/{Cayley,CayleyInverse,
    CayleyCertificate,CayleySpectralData/{P1,P2},BoundedSelfAdjointData}.lean`, ~3350 lines): turn a
    self-adjoint unbounded operator into a bounded unitary via the Cayley transform, whose spectral
@@ -72,11 +81,11 @@ Source content, in dependency order (`Unbounded/`'s own graph — confirmed inde
    (`EigenvectorSpectralAtom.lean`, `SpectralDecomposition.lean`, ~585 lines) to the original
    unbounded operator.
 3. **Stone's theorem and the spectral integral** (`Operators/SpectralTheory/{Stone,
-   SpectralIntegral/{P1,P2},WeakSpectralMeasure/{A,B},TypeDecomposition}.lean`, ~5100 lines):
-   generator ↔ one-parameter unitary group (already partly present via `Physlib`'s
-   `UnitaryOneParameterGroup`, used by `HilbertSpace/Dynamics/*` — check for overlap before
-   porting), reconstructing $T = \int \lambda \, dE(\lambda)$, and pure-point/absolutely-continuous/
-   singular-continuous type decomposition.
+   SpectralIntegral/{P1,P2},TypeDecomposition}.lean`, ~2870 lines): generator ↔ one-parameter
+   unitary group (already partly present via `Physlib`'s `UnitaryOneParameterGroup`, used by
+   `HilbertSpace/Dynamics/*` — check for overlap before porting), reconstructing
+   $T = \int \lambda \, dE(\lambda)$, and pure-point/absolutely-continuous/singular-continuous type
+   decomposition.
 4. **The payoff — closing `OrderUnit/Effect/Integral.lean`'s Scope 3**: that file's own docstring
    names "recovering a self-adjoint operator from its own spectral measure" as future work. Once
    the spectral theorem exists concretely, the honest question is whether the *weak-operator*
