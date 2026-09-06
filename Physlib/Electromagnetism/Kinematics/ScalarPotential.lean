@@ -141,6 +141,7 @@ We prove various lemmas about the smoothness of the scalar potential.
 
 -/
 
+@[fun_prop]
 lemma scalarPotential_contDiff {n} {d} (c : SpeedOfLight) (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) : ContDiff ℝ n ↿(A.scalarPotential c) := by
   simp [scalarPotential]
@@ -156,10 +157,7 @@ lemma scalarPotential_contDiff {n} {d} (c : SpeedOfLight) (A : ElectromagneticPo
 lemma scalarPotential_contDiff_space {n} {d} (c : SpeedOfLight)
     (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (t : Time) : ContDiff ℝ n (A.scalarPotential c t) := by
-  change ContDiff ℝ n (↿(A.scalarPotential c) ∘ fun x => (t, x))
-  refine ContDiff.comp ?_ ?_
-  · exact scalarPotential_contDiff c A hA
-  · fun_prop
+  fun_prop
 
 open ContDiff
 
@@ -170,12 +168,10 @@ lemma scalarPotential_contDiff_space_of_smooth {n : ℕ} {d} (c : SpeedOfLight)
   apply scalarPotential_contDiff_space
   exact hA.of_le (ENat.LEInfty.out)
 
+@[fun_prop]
 lemma scalarPotential_contDiff_time {n} {d} (c : SpeedOfLight) (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (x : Space d) : ContDiff ℝ n (A.scalarPotential c · x) := by
-  change ContDiff ℝ n (↿(A.scalarPotential c) ∘ fun t => (t, x))
-  refine ContDiff.comp ?_ ?_
-  · exact scalarPotential_contDiff c A hA
-  · fun_prop
+  fun_prop
 
 /-!
 
@@ -185,6 +181,7 @@ We prove various lemmas about the differentiability of the scalar potential.
 
 -/
 
+@[fun_prop]
 lemma scalarPotential_differentiable {d} (c : SpeedOfLight) (A : ElectromagneticPotential d)
     (hA : Differentiable ℝ A) : Differentiable ℝ ↿(A.scalarPotential c) := by
   simp [scalarPotential]
@@ -196,19 +193,15 @@ lemma scalarPotential_differentiable {d} (c : SpeedOfLight) (A : Electromagnetic
   · fun_prop
   exact h1 (Sum.inl 0)
 
+@[fun_prop]
 lemma scalarPotential_differentiable_space {d} (c : SpeedOfLight) (A : ElectromagneticPotential d)
     (hA : Differentiable ℝ A) (t : Time) : Differentiable ℝ (A.scalarPotential c t) := by
-  change Differentiable ℝ (↿(A.scalarPotential c) ∘ fun x => (t, x))
-  refine Differentiable.comp ?_ ?_
-  · exact scalarPotential_differentiable c A hA
-  · fun_prop
+  fun_prop
 
+@[fun_prop]
 lemma scalarPotential_differentiable_time {d} (c : SpeedOfLight) (A : ElectromagneticPotential d)
     (hA : Differentiable ℝ A) (x : Space d) : Differentiable ℝ (A.scalarPotential c · x) := by
-  change Differentiable ℝ (↿(A.scalarPotential c) ∘ fun t => (t, x))
-  refine Differentiable.comp ?_ ?_
-  · exact scalarPotential_differentiable c A hA
-  · fun_prop
+  fun_prop
 
 end ElectromagneticPotential
 

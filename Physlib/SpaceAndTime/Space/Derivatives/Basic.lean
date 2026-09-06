@@ -421,6 +421,7 @@ lemma deriv_inner_right {d} (x1 x2 : Space d) (i : Fin d) :
 
 -/
 
+@[fun_prop]
 lemma deriv_differentiable {M} [NormedAddCommGroup M]
     [NormedSpace ℝ M] {d : ℕ} {f : Space d → M}
     (hf : ContDiff ℝ 2 f) (i : Fin d) :

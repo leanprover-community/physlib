@@ -254,6 +254,7 @@ lemma vectorPotential_contDiff_of_smooth {n : ℕ} {d} {c : SpeedOfLight}
   apply vectorPotential_contDiff
   exact hA.of_le (ENat.LEInfty.out)
 
+@[fun_prop]
 lemma vectorPotential_apply_contDiff {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (i : Fin d) : ContDiff ℝ n ↿(fun t x => A.vectorPotential c t x i) := by
   change ContDiff ℝ n (EuclideanSpace.proj i ∘ ↿(A.vectorPotential c))
@@ -261,28 +262,22 @@ lemma vectorPotential_apply_contDiff {n} {d} {c : SpeedOfLight} (A : Electromagn
   · exact ContinuousLinearMap.contDiff (𝕜 := ℝ) (n := n) (EuclideanSpace.proj i)
   · exact vectorPotential_contDiff A hA
 
+@[fun_prop]
 lemma vectorPotential_contDiff_space {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (t : Time) : ContDiff ℝ n (A.vectorPotential c t) := by
-  change ContDiff ℝ n (↿(A.vectorPotential c) ∘ fun x => (t, x))
-  refine ContDiff.comp ?_ ?_
-  · exact vectorPotential_contDiff A hA
-  · fun_prop
+  fun_prop
 
+@[fun_prop]
 lemma vectorPotential_apply_contDiff_space {n} {d} {c : SpeedOfLight}
     (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (t : Time) (i : Fin d) :
     ContDiff ℝ n (fun x => A.vectorPotential c t x i) := by
-  change ContDiff ℝ n (EuclideanSpace.proj i ∘ (↿(A.vectorPotential c) ∘ fun x => (t, x)))
-  refine ContDiff.comp ?_ ?_
-  · exact ContinuousLinearMap.contDiff (𝕜 := ℝ) (n := n) (EuclideanSpace.proj i)
-  · exact vectorPotential_contDiff_space A hA t
+  fun_prop
 
+@[fun_prop]
 lemma vectorPotential_contDiff_time {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (x : Space d) : ContDiff ℝ n (A.vectorPotential c · x) := by
-  change ContDiff ℝ n (↿(A.vectorPotential c) ∘ fun t => (t, x))
-  refine ContDiff.comp ?_ ?_
-  · exact vectorPotential_contDiff A hA
-  · fun_prop
+  fun_prop
 
 /-!
 
@@ -293,6 +288,7 @@ the differentiablity of the electromagnetic potential.
 
 -/
 
+@[fun_prop]
 lemma vectorPotential_differentiable {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : Differentiable ℝ A) : Differentiable ℝ ↿(A.vectorPotential c) := by
   simp [vectorPotential]
@@ -303,12 +299,10 @@ lemma vectorPotential_differentiable {d} {c : SpeedOfLight} (A : Electromagnetic
     exact hA
   exact fun i => h1 (Sum.inr i)
 
+@[fun_prop]
 lemma vectorPotential_differentiable_time {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : Differentiable ℝ A) (x : Space d) : Differentiable ℝ (A.vectorPotential c · x) := by
-  change Differentiable ℝ (↿(A.vectorPotential c) ∘ fun t => (t, x))
-  refine Differentiable.comp ?_ ?_
-  · exact vectorPotential_differentiable A hA
-  · fun_prop
+  fun_prop
 
 end ElectromagneticPotential
 
