@@ -193,6 +193,23 @@ lemma contDiff_vectorPotential_ofElectromagneticField {n : ℕ} (c : SpeedOfLigh
     simp [ofElectromagneticField_vectorPotential, A]
   fun_prop
 
+/-- At a fixed time, the vector potential of `ofElectromagneticField` is `C^n` in space if the
+  magnetic field is `C^n` in space at that time. -/
+@[fun_prop]
+lemma contDiff_vectorPotential_ofElectromagneticField_space {n : ℕ} (c : SpeedOfLight)
+    (E : Time → Space 3 → EuclideanSpace ℝ (Fin 3))
+    (B : Time → Space 3 → EuclideanSpace ℝ (Fin 3)) (t : Time) (hB : ContDiff ℝ n (B t)) :
+    ContDiff ℝ n ((ofElectromagneticField c E B).vectorPotential c t) := by
+  rw [ofElectromagneticField_vectorPotential]
+  apply ContDiff.neg
+  apply contDiff_parametric_intervalIntegral_of_contDiff
+  refine contDiff_euclidean.mpr ?_
+  intro i
+  fin_cases i
+  all_goals
+  · simp [Function.HasUncurry.uncurry, crossProduct]
+    fun_prop
+
 open InnerProductSpace
 lemma vectorPotential_inner_radial_eq_zero_ofElectromagneticField
     {c : SpeedOfLight} {E B : Time → Space 3 → EuclideanSpace ℝ (Fin 3)}

@@ -134,31 +134,13 @@ lemma ofElectromagneticField_magneticField {c : SpeedOfLight}
     (ofElectromagneticField c E B).magneticField c = B := by
   ext1 t
   ext1 x
-  have h1 := eq_neg_curl_of_div_zero (B t) (B_contDiff t) (B_grad t)
-  conv_rhs => rw [h1]
-  simp only [magneticField, ofElectromagneticField_vectorPotential, WithLp.equiv_apply,
-    WithLp.ofLp_smul, map_smul, LinearMap.smul_apply]
-  rw [fun_curl_neg]
-  simp only [WithLp.equiv_symm_apply, WithLp.toLp_smul, Pi.neg_apply]
-  change Differentiable ℝ fun x =>
-    ∫ (u : ℝ) in 0..1, u • WithLp.toLp 2 ((crossProduct (Space.basis.repr x).ofLp)
-    (B t (u • x)).ofLp)
-  apply ContDiff.differentiable (n := 1) _ (by simp)
-  apply contDiff_parametric_intervalIntegral_of_contDiff
-  refine contDiff_euclidean.mpr ?_
-  intro i
-  let C : (Space) × ℝ → EuclideanSpace ℝ (Fin 3) := fun p =>
-      let x := p.1
-      let u := p.2
-      (u • basis.repr x) ⨯ₑ₃ B t (u • x)
-  suffices h : ContDiff ℝ 1 (fun x => C x i) by
-    convert! h using 1
-    simp [C]
-    rfl
-  fin_cases i
-  all_goals
-  · simp [C, crossProduct]
-    fun_prop
+  have h2 : (fun x => ∫ u in 0..1, (u • Space.basis.repr x) ⨯ₑ₃ B t (u • x)) =
+      - (ofElectromagneticField c E B).vectorPotential c t := by
+    funext x
+    simp [ofElectromagneticField_vectorPotential]
+  simp only [magneticField]
+  conv_rhs => rw [eq_neg_curl_of_div_zero (B t) (B_contDiff t) (B_grad t), h2]
+  rw [curl_neg _ (by fun_prop), neg_neg]
 
 /-!
 
