@@ -11,51 +11,37 @@ public import Physlib.Relativity.PauliMatrices.AsTensor
 /-!
 # Lorentz invariants of a four-vector index and a left-right Weyl pair
 
-`IsVectorLeftRightWeyl repLorentz T` says that a family `T`, indexed by one four-vector
-index and by one left-handed and one right-handed Weyl index, and valued in a module `B`
-carrying a representation of `SL(2,ℂ)`, transforms as a tensor `T^{μ α α'}`.
+A family `T^{μ α α'}` carrying one four-vector index and one opposite-chirality Weyl pair
+has exactly one Lorentz-invariant contraction, the one against the Pauli matrices
 
-This is the shape of the fermion kinetic term, and it is the reason the classifier
-exists: the kinetic term is the one Standard Model invariant that ties a vector index to
-a pair of opposite-chirality spinor indices, `ψ̄_{α'} σ̄^{μ α' α} ∂_μ ψ_α`. No other
-classifier covers that combination, and it is what the fermion sector needs at mass
-weight eight, where the invariants of `derivSubmodule 0 * derivSubmodule 1` are
-classified.
+`pauliContraction = σ_μ^{α α'} T^{μ}{}_{α α'}`.
 
-There is exactly one invariant here, the contraction against the Pauli matrices: a pair
-of opposite-chirality Weyl indices carries the `(1/2, 1/2)` representation, which is the
-four-vector representation, so the three indices together are two four-vector indices,
-and two four-vector indices admit only the metric trace. The main theorem
-`exists_smul_pauliContraction_of_invariant` says accordingly that every Lorentz invariant
-in the span of the components is a scalar multiple of `pauliContraction`, and
-`repLorentz_pauliContraction` checks that this contraction really is invariant.
+This is the shape of the fermion kinetic term `ψ̄_{α'} σ̄^{μ α' α} ∂_μ ψ_α`, and why this
+file exists: no other classifier covers a vector index tied to opposite-chirality spinor
+indices, which the fermion sector needs at mass weight eight. The theorem is
+`exists_smul_pauliContraction_of_invariant`, and `repLorentz_pauliContraction` checks the
+contraction is invariant.
 
-The proof makes that argument literal rather than redoing the boost-weight analysis. The
-covariant Pauli matrices `σ_μ` intertwine the two index laws — this is
-`SL2C.toSelfAdjointMap_basis`, read entrywise — so contracting the Weyl pair against them
-turns `T` into a genuine bi-Lorentz tensor, and the Fierz completeness relation makes that
-contraction invertible, so the span is unchanged. `IsBiLorentz` then supplies the whole
-classification, and its metric trace is on the nose the Pauli contraction of `T`.
+The count is easy to see: an opposite-chirality Weyl pair carries the `(1/2, 1/2)`
+representation, which is the four-vector representation, so the three indices are two
+four-vector indices, and two of those admit only the metric trace. The proof makes that
+literal. The covariant Pauli matrices intertwine the two index laws (A), so contracting
+the Weyl pair against them turns `T` into a bi-Lorentz tensor, invertibly by Fierz
+completeness, leaving the span unchanged (C); `IsBiLorentz` then supplies the
+classification (D), its metric trace being the Pauli contraction of `T`. Section E gives
+the model family, whose Pauli contraction is `PauliMatrix.asTensor`.
 
 The Standard Model's fermion symbols are `Module.Dual`-valued, so their spinor indices
-carry the contragredient of the laws above. Following `IsBiLeftWeyl`, the symplectic form
-`ε` bridges the gap: it is inner for `SL(2,ℂ)`, so re-indexing the two spinor slots by `ε`
-converts the contragredient law into the fundamental one without touching the
-representation. Here no conjugation twist is needed either, because the mixed law already
-carries one conjugate factor and `ε` has real entries. The derivative slot keeps the plain
-Lorentz law, since in the Standard Model only the value index of a symbol is dualised. The
-re-index does move the contraction: it sends the Pauli matrices to their transposes, so
-the invariant named in the dual conclusions is the conjugate Pauli contraction
-`pauliBarContraction`, with the scalar `+1`.
-
-The section headings tell the story: the covariant and conjugate Pauli matrices and the
-two identities they satisfy (A), the families and the span of their components (B), the
-reduction which turns the Weyl pair into a second four-vector index (C), the
-classification it buys (D), the model family whose Pauli contraction is
-`PauliMatrix.asTensor` (E), the dual index laws and the `ε` re-index which straightens
-them out (F, G), and the classification of the invariants of the dual families (H). The
-mass-weight-six statement lives in F and H too: a dual left-right Weyl pair with no vector
-index has no invariant at all, so there is no Dirac mass term.
+carry the contragredient law. As in `IsBiLeftWeyl`, the symplectic form `ε` bridges the
+gap: it is inner for `SL(2,ℂ)`, so re-indexing the two spinor slots by `ε` converts the
+contragredient law into the fundamental one without touching the representation (F, G).
+No conjugation twist is needed, the mixed law already carrying one conjugate factor and
+`ε` having real entries, and the derivative slot keeps the plain Lorentz law, only the
+value index of a symbol being dualised. The re-index does move the contraction, sending
+the Pauli matrices to their transposes, so the invariant in the dual conclusions is the
+conjugate Pauli contraction `pauliBarContraction`, with scalar `+1` (H). F and H also give
+the mass-weight-six statement: a dual Weyl pair with no vector index has no invariant, so
+there is no Dirac mass term.
 -/
 
 @[expose] public section
@@ -69,6 +55,11 @@ open IsQuadLorentz (etaZ etaZ_cast minkowskiSignZ sum_etaZ_mul
 /-!
 
 ## A. The covariant Pauli matrices
+
+`pauliLower μ` is the Pauli matrix with its vector index lowered and `pauliBar` its
+conjugate. Two identities are needed: they are orthonormal for the trace pairing, which is
+the Fierz completeness relation, and they intertwine the vector and Weyl index laws, which
+is `SL2C.toSelfAdjointMap_basis` read entrywise.
 
 -/
 
@@ -101,9 +92,8 @@ lemma sum_pauliLower_mul_pauliLower (α α' β β' : Fin 2) :
       Fintype.sum_sum_type, Fin.sum_univ_three] <;>
     norm_num [Complex.ext_iff]
 
-/-- The intertwining property of the covariant Pauli matrices, in components: sandwiching
-  `σ_μ` between `g` and `gᴴ` mixes the covariant Pauli matrices by the column of the
-  Lorentz matrix of `g`. This is `SL2C.toSelfAdjointMap_basis` read entrywise. -/
+/-- Sandwiching `σ_μ` between `g` and `gᴴ` mixes the Pauli matrices by a column of the Lorentz
+  matrix of `g`: the intertwining property, `SL2C.toSelfAdjointMap_basis` read entrywise. -/
 lemma sum_pauliLower_mul_sl2c (g : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (β β' : Fin 2) :
     ∑ p : Fin 2 × Fin 2, pauliLower μ p.1 p.2 * (g.1 β p.1 * star (g.1 β' p.2))
       = ∑ ν : Fin 1 ⊕ Fin 3, (((SL2C.toLorentzGroup g).1 ν μ : ℝ) : ℂ)
@@ -124,6 +114,11 @@ lemma sum_pauliLower_mul_sl2c (g : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (β β' : F
 
 ## B. Vector-Weyl families and the span of their components
 
+`IsVectorLeftRightWeyl B repLorentz T` says the group moves the vector index of
+`T^{μ α α'}` by the Lorentz matrix, the left Weyl index by the matrix of `g` and the right
+one by its complex conjugate. `hT.span` is the set of combinations of the `16` components,
+and `pauliContraction` is the contraction `σ_μ^{α α'} T^{μ}{}_{α α'}`.
+
 -/
 
 /-- A sum over families of two four-vector indices is a double sum. -/
@@ -138,11 +133,9 @@ lemma sum_pi_fin_two {M : Type*} [AddCommMonoid M] (f : (Fin 2 → Fin 1 ⊕ Fin
         fin_cases i <;> simp,
     Fintype.sum_prod_type]
 
-/-- A family `T` of elements of `B`, indexed by one four-vector index, one left-handed
-  and one right-handed Weyl index, transforms as a tensor `T^{μ α α'}` under the
-  representation `repLorentz` of `SL(2,ℂ)`: the vector index moves by the Lorentz matrix
-  of the `SL(2,ℂ)` element, the left index by the matrix itself and the right index by
-  its complex conjugate. -/
+/-- A family `T` indexed by a four-vector index and a left- and a right-handed Weyl index,
+  moved by `repLorentz` as `T^{μ α α'}`: the vector index by the Lorentz matrix, the left
+  index by the matrix of `g` and the right index by its complex conjugate. -/
 structure IsVectorLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B)
     (T : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → B) : Prop where
@@ -152,35 +145,22 @@ structure IsVectorLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
         * (g.1 a.1 l.1 * star (g.1 a.2 l.2))) • T (ν, a)
 
 namespace IsVectorLeftRightWeyl
-set_option linter.unusedVariables false
 
 variable {B : Type*} [AddCommGroup B] [Module ℂ B]
   {repLorentz : Representation ℂ SL(2,ℂ) B}
   {T : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → B}
   (hT : IsVectorLeftRightWeyl B repLorentz T)
 
-/-- The span of all the components. -/
+set_option linter.unusedVariables false in
+/-- The span of the components; `hT` is unused, and is present only so it reads `hT.span`. -/
 def span (hT : IsVectorLeftRightWeyl B repLorentz T) : Submodule ℂ B := ⨆ d, ℂ ∙ T d
 
-/-- The span of the components is exactly the set of linear combinations of them. -/
+/-- A vector lies in the span exactly when it is a combination `∑ d, c d • T d`. -/
 lemma mem_span_iff (x : B) :
-    x ∈ hT.span ↔ ∃ (c : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → ℂ), x = ∑ d, c d • T d := by
-  constructor
-  · intro hx
-    rw [span] at hx
-    refine Submodule.iSup_induction
-      (motive := fun y => ∃ c : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → ℂ, y = ∑ d, c d • T d)
-      (fun d => ℂ ∙ T d) hx ?_ ?_ ?_
-    · intro d y hy
-      obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hy
-      refine ⟨fun e => if e = d then a else 0, ?_⟩
-      simp [ite_smul, Finset.sum_ite_eq']
-    · exact ⟨0, by simp⟩
-    · rintro y z ⟨c₁, rfl⟩ ⟨c₂, rfl⟩
-      exact ⟨c₁ + c₂, by simp [add_smul, Finset.sum_add_distrib]⟩
-  · rintro ⟨c, rfl⟩
-    exact sum_mem fun d _ => Submodule.smul_mem _ _
-      (Submodule.mem_iSup_of_mem d (Submodule.mem_span_singleton_self _))
+    x ∈ hT.span ↔ ∃ c : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → ℂ, x = ∑ d, c d • T d := by
+  rw [span, ← Submodule.span_range_eq_iSup, ← Fintype.range_linearCombination,
+    LinearMap.mem_range]
+  simp only [Fintype.linearCombination_apply, eq_comm]
 
 /-- The Pauli contraction `σ_μ^{α α'} T^μ_{α α'}`, the kinetic-term contraction of a
   four-vector index against a pair of opposite-chirality Weyl indices. -/
@@ -193,6 +173,10 @@ end IsVectorLeftRightWeyl
 /-!
 
 ## C. The reduction to a pair of four-vector indices
+
+Contracting the Weyl pair against the Pauli matrices turns `T` into a family
+`vectorPair` of two four-vector indices, which is a bi-Lorentz tensor. By Fierz
+completeness the contraction is invertible, so the two families have the same span.
 
 -/
 
@@ -338,6 +322,9 @@ lemma metricContraction_vectorPair :
 
 ## D. The classification of the Lorentz invariants
 
+`IsBiLorentz` classifies the invariants of `vectorPair`, and its metric trace is the Pauli
+contraction of `T`, so every invariant of the span is a multiple of `pauliContraction`.
+
 -/
 
 include hT in
@@ -375,10 +362,7 @@ lemma repLorentz_pauliContraction (g : SL(2,ℂ)) :
         simp only [Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one]
 
 include hT in
-/-- The classification of the Lorentz invariants: a four-vector index together with a
-  left-handed and a right-handed Weyl index admit the single invariant contraction
-  against the Pauli matrices, so every element of the span of the components fixed by the
-  Lorentz group is a scalar multiple of `pauliContraction`. -/
+/-- Every Lorentz invariant in the span of the components is a multiple of `pauliContraction`. -/
 theorem exists_smul_pauliContraction_of_invariant {x : B} (hx : x ∈ hT.span)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
     ∃ a : ℂ, x = a • pauliContraction (T := T) := by
@@ -390,9 +374,8 @@ theorem exists_smul_pauliContraction_of_invariant {x : B} (hx : x ∈ hT.span)
   exact ⟨a, by rwa [metricContraction_vectorPair] at ha⟩
 
 include hT in
-/-- The classification of the Lorentz invariants modulo a stable submodule: an element of
-  the span of the components together with a Lorentz-stable submodule `S`, fixed by the
-  Lorentz group, is a multiple of the Pauli contraction up to an error in `S`. -/
+/-- The same modulo a Lorentz-stable subspace `S`: a multiple of `pauliContraction` plus an
+  error in `S`. -/
 lemma exists_smul_pauliContraction_of_invariant_subset {x : B} (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S)
     (hx : x ∈ hT.span ⊔ S) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
@@ -412,18 +395,15 @@ end IsVectorLeftRightWeyl
 ## E. The Pauli tensor as the model example
 
 The tensor product of the complex four-vector representation with the two Weyl
-representations carries exactly this index law on the products of basis vectors, and the
-Pauli contraction of that family is the repo's `PauliMatrix.asTensor`. So the classifier
-is not vacuous, and on the model family the invariant line is spanned by a tensor already
-known to be nonzero.
-
+representations carries exactly this law on products of basis vectors, and the Pauli
+contraction of that family is `PauliMatrix.asTensor`. So the classifier is not vacuous:
+on the model family the invariant line is spanned by a tensor already known to be nonzero.
 
 -/
 
 open Fermion in
-/-- The tensor product of the complex four-vector representation with the left-handed and
-  the right-handed Weyl representations, on the products of basis vectors, is the basic
-  example of a family with this index law. -/
+/-- The tensor product of the four-vector and the two Weyl representations carries this index
+  law on products of basis vectors: the basic example. -/
 lemma isVectorLeftRightWeyl_pauli :
     IsVectorLeftRightWeyl (ContrℂModule ⊗[ℂ] (LeftHandedWeyl ⊗[ℂ] RightHandedWeyl))
       (ContrℂModule.SL2CRep.tprod (LeftHandedWeyl.rep.tprod RightHandedWeyl.rep))
@@ -457,9 +437,8 @@ lemma isVectorLeftRightWeyl_pauli :
       module
 
 open PauliMatrix Fermion in
-/-- The Pauli contraction of the model family is the Pauli tensor `σ^μ{}^α{}^{α'}` of
-  `PauliMatrix.asTensor`: the classification of section D says that this tensor spans
-  the invariants, so the invariant space really is one dimensional here. -/
+/-- Its Pauli contraction is `PauliMatrix.asTensor`, which by section D spans the invariants,
+  so the invariant space here really is one dimensional. -/
 lemma pauliContraction_pauli :
     IsVectorLeftRightWeyl.pauliContraction
         (T := fun d : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 => complexContrBasis d.1 ⊗ₜ[ℂ]
@@ -476,12 +455,16 @@ lemma pauliContraction_pauli :
 
 ## F. Dual Weyl indices and the `ε` re-index
 
+A `Module.Dual`-valued symbol carries the contragredient law on its spinor indices:
+`IsDualLeftRightWeyl` for a Weyl pair alone, `IsVectorDualLeftRightWeyl` with a vector
+index alongside. The symplectic form `ε` is what converts those laws into the fundamental
+ones.
+
 -/
 
-/-- A family `T` of elements of `B`, indexed by one dual left-handed and one dual
-  right-handed Weyl index, transforms as a tensor `T_{α α'}` under `repLorentz`: the
-  undotted index carries the contragredient matrix and the dotted one its complex
-  conjugate. -/
+/-- A family `T` indexed by a dual left- and a dual right-handed Weyl index, moved as
+  `T_{α α'}`: the undotted index by the contragredient matrix, the dotted one by its
+  complex conjugate. -/
 structure IsDualLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B)
     (T : Fin 2 × Fin 2 → B) : Prop where
@@ -489,11 +472,9 @@ structure IsDualLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     repLorentz g (T l) = ∑ (a : Fin 2 × Fin 2),
       ((g.1⁻¹)ᵀ a.1 l.1 * (g.1⁻¹)ᴴ a.2 l.2) • T a
 
-/-- A family `T` of elements of `B`, indexed by one four-vector index, one dual
-  left-handed and one dual right-handed Weyl index, transforms as a tensor
-  `T^μ{}_{α α'}` under `repLorentz`. The vector index still carries the plain Lorentz
-  matrix: in the Standard Model it is a derivative slot, and only the value index of a
-  symbol is dualised. -/
+/-- The same with a four-vector index alongside, moved as `T^μ{}_{α α'}`. The vector index
+  keeps the plain Lorentz matrix: in the Standard Model it is a derivative slot, and only
+  the value index of a symbol is dualised. -/
 structure IsVectorDualLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B)
     (T : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → B) : Prop where
@@ -503,9 +484,8 @@ structure IsVectorDualLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
         * ((g.1⁻¹)ᵀ a.1 l.1 * (g.1⁻¹)ᴴ a.2 l.2)) • T (ν, a)
 
 open Fermion in
-/-- The tensor product of the dual left-handed and the dual right-handed Weyl
-  representations, on the products of basis vectors, is the basic example of a family
-  with the mixed contragredient index law. -/
+/-- The tensor product of the two dual Weyl representations carries the mixed contragredient
+  law: the basic example. -/
 lemma isDualLeftRightWeyl_dualWeyl :
     IsDualLeftRightWeyl (DualLeftHandedWeyl ⊗[ℂ] DualRightHandedWeyl)
       (DualLeftHandedWeyl.rep.tprod DualRightHandedWeyl.rep)
@@ -592,6 +572,10 @@ lemma IsDualLeftRightWeyl.isLeftRightWeyl_epsReindex {B : Type*} [AddCommGroup B
 
 ## G. The `ε` re-index of a vector-Weyl family
 
+Re-indexing both spinor slots by `ε` sends a family with the dual law to one with the
+fundamental law, without touching the representation, and does not change the span. It
+does move the contraction: the Pauli matrices go to their transposes.
+
 -/
 
 /-- Conjugating a Pauli matrix by the symplectic form on both spinor slots produces the
@@ -603,9 +587,8 @@ lemma sum_pauliMatrix_mul_epsilon (μ : Fin 1 ⊕ Fin 3) (k₁ k₂ : Fin 2) :
     simp [Fintype.sum_prod_type, Fin.sum_univ_two, PauliMatrix.pauliMatrix,
       pauliBar, pauliLower, PauliMatrix.pauliSelfAdjoint', SL2C.epsilon_coe]
 
-/-- The `ε` re-index of a family carrying a four-vector index and a Weyl pair: the
-  vector index is left alone and both spinor slots are transported through the
-  symplectic form. -/
+/-- The `ε` re-index of such a family: the vector index is left alone and both spinor slots
+  are sent through the symplectic form. -/
 noncomputable def vectorEpsReindex {B : Type*} [AddCommMonoid B] [Module ℂ B]
     (T : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → B) : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → B :=
   fun d => ∑ k : Fin 2 × Fin 2, (epsilon.1 d.2.1 k.1 * epsilon.1 d.2.2 k.2) • T (d.1, k)
@@ -653,9 +636,7 @@ variable {B : Type*} [AddCommGroup B] [Module ℂ B]
   {repLorentz : Representation ℂ SL(2,ℂ) B}
   {T : (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → B}
 
-/-- The conjugate Pauli contraction `σ̄_μ^{α' α} T^μ{}_{α α'}`, the kinetic-term
-  contraction of a four-vector index against a pair of dual opposite-chirality Weyl
-  indices. -/
+/-- The conjugate Pauli contraction `σ̄_μ^{α' α} T^μ{}_{α α'}`, against a dual Weyl pair. -/
 noncomputable def pauliBarContraction : B :=
   ∑ μ : Fin 1 ⊕ Fin 3, ∑ a : Fin 2 × Fin 2, pauliBar μ a.1 a.2 • T (μ, a)
 
@@ -711,9 +692,8 @@ lemma isVectorLeftRightWeyl_vectorEpsReindex
           rw [← Finset.sum_smul, Finset.mul_sum]
           exact congrArg (· • T (ν, b)) (Finset.sum_congr rfl fun a _ => by ring)
 
-/-- The `ε` re-index carries the Pauli contraction of the re-indexed family to the
-  conjugate Pauli contraction of the original one, with neither a sign nor a scalar
-  appearing. -/
+/-- The re-index carries the Pauli contraction of the re-indexed family to the conjugate Pauli
+  contraction of the original, with no sign or scalar. -/
 lemma pauliContraction_vectorEpsReindex :
     IsVectorLeftRightWeyl.pauliContraction (T := vectorEpsReindex T)
       = pauliBarContraction (T := T) := by
@@ -730,6 +710,10 @@ end IsVectorDualLeftRightWeyl
 
 ## H. The classification of the invariants of the dual families
 
+Transporting sections D and G along the re-index: a dual Weyl pair with no vector index
+has no invariant at all, so there is no Dirac mass term, and with a vector index every
+invariant is a multiple of the conjugate Pauli contraction.
+
 -/
 
 section DualClassification
@@ -737,10 +721,8 @@ section DualClassification
 variable {B : Type*} [AddCommGroup B] [Module ℂ B]
   {repLorentz : Representation ℂ SL(2,ℂ) B}
 
-/-- The classification of the Lorentz invariants of a family with the mixed
-  contragredient index law: there is no invariant contraction of a dual left-handed
-  against a dual right-handed Weyl index, so every element of the span of the components
-  fixed by the Lorentz group is zero. This is the absence of a Dirac mass term. -/
+/-- A dual left-handed and a dual right-handed Weyl index have no invariant contraction, so
+  every Lorentz invariant of the span is zero. This is the absence of a Dirac mass term. -/
 theorem IsDualLeftRightWeyl.eq_zero_of_invariant {T : Fin 2 × Fin 2 → B}
     (hT : IsDualLeftRightWeyl B repLorentz T) {x : B} (hx : x ∈ ⨆ d, ℂ ∙ T d)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x = 0 := by
@@ -750,9 +732,7 @@ theorem IsDualLeftRightWeyl.eq_zero_of_invariant {T : Fin 2 × Fin 2 → B}
     exact hx
   exact hT'.eq_zero_of_invariant hx' hinv
 
-/-- The classification of the Lorentz invariants of a family with the mixed
-  contragredient index law, modulo a Lorentz-stable submodule `S`: such an invariant
-  already lies in `S`. -/
+/-- The same modulo a Lorentz-stable subspace `S`: such an invariant already lies in `S`. -/
 theorem IsDualLeftRightWeyl.mem_of_invariant_of_mem_sup {T : Fin 2 × Fin 2 → B}
     (hT : IsDualLeftRightWeyl B repLorentz T) {x : B} (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S)
@@ -775,10 +755,8 @@ lemma repLorentz_pauliBarContraction (hT : IsVectorDualLeftRightWeyl B repLorent
   have h := hT.isVectorLeftRightWeyl_vectorEpsReindex.repLorentz_pauliContraction g
   rwa [pauliContraction_vectorEpsReindex] at h
 
-/-- The classification of the Lorentz invariants of a family with the mixed
-  contragredient index law: every element of the span of the components fixed by the
-  Lorentz group is a scalar multiple of the conjugate Pauli contraction of that family.
-  This is the kinetic term of a Weyl fermion. -/
+/-- For the mixed contragredient law, every Lorentz invariant of the span is a multiple of the
+  conjugate Pauli contraction. This is the kinetic term of a Weyl fermion. -/
 theorem exists_smul_pauliBarContraction_of_invariant
     (hT : IsVectorDualLeftRightWeyl B repLorentz T) {x : B} (hx : x ∈ ⨆ d, ℂ ∙ T d)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :

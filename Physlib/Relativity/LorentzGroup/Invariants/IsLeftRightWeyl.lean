@@ -10,36 +10,31 @@ public import Physlib.Relativity.Fermions.Weyl.BoostWeight
 /-!
 # Lorentz invariants of a left-handed and a right-handed Weyl index
 
-`IsLeftRightWeyl repLorentz T` says that a family `T`, indexed by one left-handed and
-one right-handed Weyl index and valued in a module `B` carrying a representation of
-`SL(2,ℂ)`, transforms as a bispinor `T^{α α'}`: the left index by the matrix of
-`SL(2,ℂ)` itself and the right index by its complex conjugate.
+A bispinor `T^{α α'}`, carrying one left-handed and one right-handed Weyl index, has no
+Lorentz invariant built from its four components but `0`. The pair of indices carries the
+`(1/2, 1/2)` representation, which is the four-vector representation, and a single
+four-vector index has nothing to contract with; this file proves that from scratch on the
+spinor side. That is `eq_zero_of_invariant`, and `mem_of_invariant_of_mem_sup` is the same
+statement modulo a Lorentz-stable subspace `S`, the form the Standard Model files use.
 
-The pair of a left-handed and a right-handed index carries the `(1/2, 1/2)`
-representation, which is the four-vector representation. A single four-vector index has
-no invariant contraction, and the main theorem `eq_zero_of_invariant` confirms this from
-scratch on the spinor side: every Lorentz invariant in the span of the components is
-zero.
+The components are vectors `T a` of a complex vector space `B` carrying a representation
+`repLorentz` of `SL(2,ℂ)`, indexed by a pair of Weyl indices, and `IsLeftRightWeyl` says
+the group moves the left index by the matrix of `g` and the right index by its complex
+conjugate (C). `hT.span` is the set of their combinations.
 
-The proof follows `IsBiLorentz`, with the light-cone basis replaced by the Weyl weight
-bases of section A. Along a spatial axis `i` the `SL(2,ℂ)` boost is the conjugate of
-the diagonal `z`-boost by `rotationZToAxis i`, so the columns of that rotation are boost
-eigenvectors of weight `±1`; the four products of a left and a right eigenvector then
-carry the weights `2`, `0`, `0` and `-2`. Averaging the weight-zero projection over the
-three axes gives a matrix `M` with `M ^ 2 = 2 M` and no eigenvalue `3`, so the quadratic
-certificate `3 λ ^ 2 - 2 λ` in `M / 3` annihilates every invariant.
+The proof follows the four-vector one with the light-cone basis replaced by Weyl weight
+bases. Along a spatial axis the `SL(2,ℂ)` boost is the diagonal `z`-boost conjugated by
+`rotationZToAxis i`, so the columns of that rotation are boost eigenvectors of weight
+`±1` (A), and the four products of a left and a right eigenvector carry weights `2`, `0`,
+`0`, `-2` (B). An invariant has weight `0` along every axis, so it is fixed by the
+weight-zero projection along each (D); averaging the three gives a matrix `M` with
+`M ^ 2 = 2 M` and no eigenvalue `3` (E), so `3 λ ^ 2 - 2 λ` at `λ = M / 3` annihilates
+every invariant (F). Section G divides out `S`.
 
 A family carrying dual Weyl indices transforms by the contragredient `(Λ⁻¹)ᵀ` on the
-undotted slot and by its complex conjugate `(Λ⁻¹)ᴴ` on the dotted one. That law is
-`IsDualLeftRightWeyl`, and its classification — still that there is no invariant at all,
-so there is no Dirac mass term — lives in `IsVectorLeftRightWeyl`, downstream of the `ε`
-re-index of `IsBiLeftWeyl` which bridges the two laws.
-
-The section headings tell the story: the Weyl weight bases along one axis (A), the
-tensor of two of them and the span of the components (B, C), the weight grading of the
-span (D), the weight-zero round and its average over the three axes (E), and the
-quadratic certificate which kills every invariant (F), also modulo a Lorentz-stable
-submodule (G).
+undotted slot and by `(Λ⁻¹)ᴴ` on the dotted one. That law is `IsDualLeftRightWeyl` here;
+its classification, still that there is no invariant, hence no Dirac mass term, is in
+`IsVectorLeftRightWeyl`.
 -/
 
 @[expose] public section
@@ -54,12 +49,11 @@ open IsQuadLorentz (eq_component_zero_of_mem_boostWeightSubmodule
 
 ## A. The Weyl weight bases along a spatial axis
 
-Along the `z`-axis the `SL(2,ℂ)` boost is `diag (t, t⁻¹)`, so the standard Weyl basis
-already diagonalises it, with the weights `weylWeight`. Along a general axis the boost
-is the conjugate of the `z`-boost by `rotationZToAxis`, so the columns of that rotation
-are the boost eigenvectors; they are recorded here cleared of their `√2` normalisation,
-which makes no difference to an eigenvector. A right-handed index sees the complex
-conjugate of the boost, so its weight basis is the entrywise conjugate.
+Along the `z`-axis the `SL(2,ℂ)` boost is `diag (t, t⁻¹)`, which the standard Weyl basis
+already diagonalises, with weights `weylWeight`. Along a general axis the boost is that
+one conjugated by `rotationZToAxis`, so the columns of the rotation are the eigenvectors,
+recorded here without their `√2` normalisation. A right-handed index sees the conjugate
+boost, so its weight basis is the entrywise conjugate.
 
 -/
 
@@ -213,11 +207,14 @@ lemma sum_boostAxis_pairCoeff (i : Fin 3) (κ a : Fin 2 × Fin 2) {t : ℝ} (ht 
 
 ## C. Left-right bispinors and the span of their components
 
+`IsLeftRightWeyl B repLorentz T` says the group moves the left index of `T^{α α'}` by the
+matrix of `g` and the right index by its complex conjugate, and `hT.span` is the set of
+combinations `∑ a, c a • T a` of the four components.
+
 -/
 
-/-- A family `T` of elements of `B`, indexed by one left-handed and one right-handed
-  Weyl index, transforms as a bispinor `T^{α α'}` under the representation `repLorentz`
-  of `SL(2,ℂ)`. -/
+/-- A family `T` indexed by one left-handed and one right-handed Weyl index, moved by
+  `repLorentz` as a bispinor `T^{α α'}`. -/
 structure IsLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B)
     (T : Fin 2 × Fin 2 → B) : Prop where
@@ -226,43 +223,36 @@ structure IsLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
       (g.1 a.1 l.1 * star (g.1 a.2 l.2)) • T a
 
 namespace IsLeftRightWeyl
-set_option linter.unusedVariables false
 
 variable {B : Type*} [AddCommGroup B] [Module ℂ B]
   {repLorentz : Representation ℂ SL(2,ℂ) B}
   {T : Fin 2 × Fin 2 → B}
   (hT : IsLeftRightWeyl B repLorentz T)
 
-/-- The span of all the components. -/
+set_option linter.unusedVariables false in
+/-- The span of the components; `hT` is unused, and is present only so it reads `hT.span`. -/
 def span (hT : IsLeftRightWeyl B repLorentz T) : Submodule ℂ B := ⨆ d, ℂ ∙ T d
 
-/-- The span of the components is exactly the set of linear combinations of them. -/
+/-- A vector lies in the span exactly when it is a combination `∑ d, c d • T d`. -/
 lemma mem_span_iff (x : B) :
-    x ∈ hT.span ↔ ∃ (c : Fin 2 × Fin 2 → ℂ), x = ∑ d, c d • T d := by
-  constructor
-  · intro hx
-    rw [span] at hx
-    refine Submodule.iSup_induction
-      (motive := fun y => ∃ c : Fin 2 × Fin 2 → ℂ, y = ∑ d, c d • T d)
-      (fun d => ℂ ∙ T d) hx ?_ ?_ ?_
-    · intro d y hy
-      obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hy
-      refine ⟨fun e => if e = d then a else 0, ?_⟩
-      simp [ite_smul, Finset.sum_ite_eq']
-    · exact ⟨0, by simp⟩
-    · rintro y z ⟨c₁, rfl⟩ ⟨c₂, rfl⟩
-      exact ⟨c₁ + c₂, by simp [add_smul, Finset.sum_add_distrib]⟩
-  · rintro ⟨c, rfl⟩
-    exact sum_mem fun d _ => Submodule.smul_mem _ _
-      (Submodule.mem_iSup_of_mem d (Submodule.mem_span_singleton_self _))
+    x ∈ hT.span ↔ ∃ c : Fin 2 × Fin 2 → ℂ, x = ∑ d, c d • T d := by
+  rw [span, ← Submodule.span_range_eq_iSup, ← Fintype.range_linearCombination,
+    LinearMap.mem_range]
+  simp only [Fintype.linearCombination_apply, eq_comm]
 
 /-!
 
 ## D. The weight grading of the span
 
+The four products `weightVec i κ` of a left and a right weight vector span the same space
+as the components and are boost eigenvectors along the axis `i`, of weights `2`, `0`, `0`
+and `-2`.
+
 -/
 
-/-- The axis-`i` weight component of `T` at the pair `κ` of Weyl weight indices. -/
+set_option linter.unusedVariables false in
+/-- The weight component of `T` along axis `i` at the pair `κ` of Weyl weight indices;
+  `hT` is present only so it reads `hT.weightVec`. -/
 noncomputable def weightVec (hT : IsLeftRightWeyl B repLorentz T) (i : Fin 3)
     (κ : Fin 2 × Fin 2) : B :=
   ∑ a : Fin 2 × Fin 2, pairCoeff i κ a • T a
@@ -348,6 +338,10 @@ lemma eq_sum_monoComponent_univ (i : Fin 3) (α : Fin 2 × Fin 2) :
 
 ## E. The weight-zero round and its average over the axes
 
+An invariant has boost weight zero along every axis, so along each axis it equals its own
+weight-zero part, which written back on the components is the matrix
+`weightZeroTransition i`.
+
 -/
 
 /-- The matrix of the axis-`i` weight-zero projection in the `T`-basis: the coefficient
@@ -368,9 +362,8 @@ lemma monoComponent_zero_eq (i : Fin 3) (α : Fin 2 × Fin 2) :
   rw [← Finset.sum_smul, weightZeroTransition]
 
 include hT in
-/-- One round of the recursion along one axis: an element of weight zero along axis `i`
-  expanded in the generators re-expands with the weight-zero transition matrix applied
-  to its coefficients. -/
+/-- A vector of boost weight zero along axis `i` is written with the weight-zero transition
+  applied to its coefficients. -/
 lemma eq_sum_weightZeroTransition_smul (i : Fin 3) {x : B}
     (c : Fin 2 × Fin 2 → ℂ) (hx : x = ∑ α, c α • T α)
     (hw : x ∈ boostWeightSubmodule repLorentz i 0) :
@@ -419,9 +412,8 @@ lemma sum_weightZeroTransition_eq (β α : Fin 2 × Fin 2) :
     norm_num [Complex.ext_iff]
 
 include hT in
-/-- One averaged round of the recursion: an element of weight zero along all three axes
-  re-expands with a third of the summed transition matrix applied to its
-  coefficients. -/
+/-- A vector of boost weight zero along all three axes is written with a third of the summed
+  transition applied to its coefficients. -/
 lemma eq_sum_transitionEntry_smul {x : B} (c : Fin 2 × Fin 2 → ℂ)
     (hx : x = ∑ α, c α • T α)
     (hw : ∀ i : Fin 3, x ∈ boostWeightSubmodule repLorentz i 0) :
@@ -452,9 +444,8 @@ lemma eq_sum_transitionEntry_smul {x : B} (c : Fin 2 × Fin 2 → ℂ)
 
 ## F. The quadratic certificate and the classification
 
-The summed transition `M` satisfies `M ^ 2 = 2 M`, so a third of it has eigenvalues
-`2/3` and `0` and never the eigenvalue `1` that an invariant would need. The
-certificate `3 λ ^ 2 - 2 λ` therefore annihilates every invariant.
+The summed transition `M` satisfies `M ^ 2 = 2 M`, so `M / 3` has eigenvalues `2/3` and
+`0`, never the `1` an invariant would need: `3 λ ^ 2 - 2 λ` annihilates every invariant.
 
 -/
 
@@ -493,9 +484,8 @@ lemma applyTransition_applyTransition (c : Fin 2 × Fin 2 → ℂ) (β : Fin 2 �
         exact Finset.sum_congr rfl fun α _ => by ring
 
 include hT in
-/-- The classification of the Lorentz invariants: a left-handed and a right-handed Weyl
-  index carry the four-vector representation, which has no invariant contraction, so
-  every element of the span of the components fixed by the Lorentz group is zero. -/
+/-- Every Lorentz invariant in the span of the components is zero: the pair of indices carries
+  the four-vector representation, which has no invariant contraction. -/
 theorem eq_zero_of_invariant {x : B} (hx : x ∈ hT.span)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x = 0 := by
   obtain ⟨c, hc⟩ := (hT.mem_span_iff x).1 hx
@@ -527,10 +517,9 @@ theorem eq_zero_of_invariant {x : B} (hx : x ∈ hT.span)
 
 ## G. The classification modulo a Lorentz-stable submodule
 
-A Lorentz-stable submodule can be divided out: the quotient representation carries the
-images of the components as a bispinor again, so the classification applies verbatim in
-the quotient and lifts to a classification modulo the submodule. The quotient
-representation itself is the one built in `IsQuadLorentz`.
+A stable subspace `S` is divided out by passing to the quotient `B ⧸ S`, that is `B` with
+`S` declared zero: the classes of the components again form a bispinor, so the
+classification applies there and lifts back with an error term in `S`.
 
 -/
 
@@ -546,9 +535,8 @@ lemma isLeftRightWeyl_quotRep (S : Submodule ℂ B)
     exact Finset.sum_congr rfl fun a _ => map_smul _ _ _
 
 include hT in
-/-- The classification of the Lorentz invariants modulo a stable submodule: an element
-  of the span of the components together with a Lorentz-stable submodule `S`, fixed by
-  the Lorentz group, already lies in `S`. -/
+/-- A Lorentz invariant of `hT.span ⊔ S`, for a Lorentz-stable subspace `S`, already lies
+  in `S`. -/
 lemma mem_of_invariant_of_mem_sup {x : B} (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S)
     (hx : x ∈ hT.span ⊔ S) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by

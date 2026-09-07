@@ -11,28 +11,32 @@ public meta import Mathlib.Data.Fintype.Pi
 /-!
 # Lorentz invariants among two four-vector indices
 
-`IsBiLorentz repLorentz T` says that a family `T`, indexed by two four-vector indices
-and valued in a module `B` carrying a representation of `SL(2,ℂ)`, transforms as a
-tensor `T^{μ₁ μ₂}`.
+A rank-two tensor `T^{μν}` has `16` components, and exactly one combination of them is
+fixed by every rotation and boost, the metric trace
 
-With only two indices there is a single invariant contraction, the metric trace
-`g^{μν} T_{μν}`: the Levi-Civita symbol needs four indices, and the two double metric
-contractions of the four-index case collapse to one. The main theorem
-`exists_smul_metricContraction_of_invariant` says accordingly that every Lorentz
-invariant in the span of the components is a scalar multiple of `metricContraction`.
+`metricContraction = η_{μν} T^{μν}`.
 
-The proof is the two-index shadow of `IsQuadLorentz`, and reuses its light-cone
-coefficient mirrors, sector data and integer slot matrices throughout. The section
-headings tell the story: the light-cone basis along one axis (B) grades the span by
-boost weight, the weight-zero projection of a generator gives one round of the
-recursion and averaging the three axes gives the round matrix `M` (C), whose integer
-mirror on the sixteen components has the closed form of section D, and the cubic
-certificate `λ(λ - 4)(λ - 10)` of section E collapses the iterated rounds onto the
-rank-one projector to the metric trace (F).
+Every other invariant is a multiple of it: nothing else ties two indices, the Levi-Civita
+symbol needing four. That is `exists_smul_metricContraction_of_invariant`, and
+`exists_smul_metricContraction_of_invariant_subset` is the same statement modulo a
+Lorentz-stable subspace `S`, the form the Standard Model files use.
+
+The components are vectors `T d` of a complex vector space `B` carrying a representation
+`repLorentz` of `SL(2,ℂ)`, indexed by two directions, and `IsBiLorentz` says the group
+moves them with one factor of the Lorentz matrix per slot (A). `hT.span` is the set of
+their combinations.
+
+The proof is the two-index case of the argument in `IsQuadLorentz`, and reuses its
+light-cone coefficients and sector matrices. Along a spatial axis the four light-cone
+directions carry boost weights `2`, `-2`, `0`, `0` (B), and an invariant, having weight
+`0` along every axis, is fixed by the weight-zero projection along each; averaging the
+three gives one linear map on the `16` components, `12` times an integer matrix with a
+short closed form (C, D). Its eigenvalues are `12`, `10`, `4`, `0`, with `12` simple, so
+the cubic `λ (λ - 4) (λ - 10)` sends everything onto that one eigenvector, which is the
+metric (E). Section F draws the conclusion and G divides out `S`.
 
 No rotation averaging is needed here, unlike the four-index case: for two indices the
-three weight-zero conditions already cut the sixteen components down to a single line,
-and the round matrix is small enough to be handled directly.
+three weight-zero conditions already cut the `16` components down to a single line.
 -/
 
 @[expose] public section
@@ -50,6 +54,11 @@ open IsQuadLorentz (lightConeCoeffZ coe_lightConeCoeffZ lightConeCoeffInvQ
 
 ## A. Bi-Lorentz tensors and the span of their components
 
+A direction is an element of `Fin 1 ⊕ Fin 3`, time or one of the three axes, and an index
+vector puts one in each of the two slots, so `T d` is `T^{μν}` at `(μ, ν) = d`.
+`IsBiLorentz B repLorentz T` says the group moves the components with one factor of the
+Lorentz matrix per slot, and `hT.span` is the set of combinations `∑ d, c d • T d`.
+
 -/
 
 /-- A family `T` of elements of `B`, indexed by two four-vector indices, transforms as
@@ -62,46 +71,37 @@ structure IsBiLorentz (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (∏ (i : Fin 2), (((SL2C.toLorentzGroup g).1 (a i) (l i) : ℝ) : ℂ)) • T a
 
 namespace IsBiLorentz
-set_option linter.unusedVariables false
 
 variable {B : Type*} [AddCommGroup B] [Module ℂ B]
   {repLorentz : Representation ℂ SL(2,ℂ) B}
   {T : (Fin 2 → (Fin 1 ⊕ Fin 3)) → B}
   (hT : IsBiLorentz B repLorentz T)
 
-/-- The span of all the components. -/
+set_option linter.unusedVariables false in
+/-- The span of the components; `hT` is unused, and is present only so it reads `hT.span`. -/
 def span (hT : IsBiLorentz B repLorentz T) : Submodule ℂ B := ⨆ d, ℂ ∙ T d
 
+/-- A vector lies in the span exactly when it is a combination `∑ d, c d • T d`. -/
 lemma mem_span_iff (x : B) :
-    x ∈ hT.span ↔ ∃ (c : (Fin 2 → (Fin 1 ⊕ Fin 3)) → ℂ), x = ∑ d, c d • T d := by
-  constructor
-  · intro hx
-    rw [span] at hx
-    refine Submodule.iSup_induction
-      (motive := fun y => ∃ c : (Fin 2 → (Fin 1 ⊕ Fin 3)) → ℂ, y = ∑ d, c d • T d)
-      (fun d => ℂ ∙ T d) hx ?_ ?_ ?_
-    · intro d y hy
-      obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hy
-      refine ⟨fun e => if e = d then a else 0, ?_⟩
-      simp [ite_smul, Finset.sum_ite_eq']
-    · exact ⟨0, by simp⟩
-    · rintro y z ⟨c₁, rfl⟩ ⟨c₂, rfl⟩
-      exact ⟨c₁ + c₂, by simp [add_smul, Finset.sum_add_distrib]⟩
-  · rintro ⟨c, rfl⟩
-    exact sum_mem fun d _ => Submodule.smul_mem _ _
-      (Submodule.mem_iSup_of_mem d (Submodule.mem_span_singleton_self _))
+    x ∈ hT.span ↔ ∃ c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ, x = ∑ d, c d • T d := by
+  rw [span, ← Submodule.span_range_eq_iSup, ← Fintype.range_linearCombination,
+    LinearMap.mem_range]
+  simp only [Fintype.linearCombination_apply, eq_comm]
 
 /-!
 
 ## B. The light-cone basis along one axis
 
-Along a spatial axis `i` the coordinate components recombine into the light-cone
-components `lightCone i c`, which span the same space and are homogeneous of boost
-weight `∑ j, lightConeWeight (c j)`.
+The boost along the axis `i` scales the light-cone directions `D₀ - Dᵢ`, `D₀ + Dᵢ` and the
+two transverse ones by `t²`, `t⁻²`, `1`, `1`, so their weights are `2`, `-2`, `0`, `0`.
+Recombining the components along those directions gives `hT.lightCone i c`, which spans
+the same space and is a boost eigenvector of weight the total weight of `c`.
 
 -/
 
-/-- The axis-`i` light-cone component of `T` at the light-cone multi-index `c`. -/
+set_option linter.unusedVariables false in
+/-- The light-cone component of `T` along axis `i` at the light-cone index `c`; `hT` is
+  present only so it reads `hT.lightCone`. -/
 noncomputable def lightCone (hT : IsBiLorentz B repLorentz T) (i : Fin 3)
     (c : Fin 2 → Fin 4) : B :=
   ∑ d : Fin 2 → Fin 1 ⊕ Fin 3, (∏ j, lightConeCoeff i (c j) (d j)) • T d
@@ -140,44 +140,27 @@ lemma span_eq_lightCone (hT : IsBiLorentz B repLorentz T) (i : Fin 3) :
 lemma lightCone_mem_boostWeightSubmodule (i : Fin 3) (c : Fin 2 → Fin 4) :
     hT.lightCone i c ∈ boostWeightSubmodule repLorentz i (∑ j, lightConeWeight (c j)) := by
   refine mem_boostWeightSubmodule.2 fun t ht => ?_
-  have hstep : ∀ x : Fin 2 → Fin 1 ⊕ Fin 3,
-      (∏ j, lightConeCoeff i (c j) (x j)) •
-          repLorentz (SL2C.boostAxis i t ht) (T x)
-        = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3,
-            ((∏ j, lightConeCoeff i (c j) (x j)) *
-              (∏ j, (((SL2C.toLorentzGroup (SL2C.boostAxis i t ht)).1 (a j)
-                (x j) : ℝ) : ℂ))) • T a := by
-    intro x
-    rw [hT.repLorentz_T, Finset.smul_sum]
-    exact Finset.sum_congr rfl fun a _ => smul_smul _ _ _
   calc repLorentz (SL2C.boostAxis i t ht) (hT.lightCone i c)
-      = ∑ x : Fin 2 → Fin 1 ⊕ Fin 3, (∏ j, lightConeCoeff i (c j) (x j)) •
-          repLorentz (SL2C.boostAxis i t ht) (T x) := by
-        simp only [lightCone, map_sum, map_smul]
-    _ = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3,
+      = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3,
           (∑ x : Fin 2 → Fin 1 ⊕ Fin 3, (∏ j, lightConeCoeff i (c j) (x j)) *
             (∏ j, (((SL2C.toLorentzGroup (SL2C.boostAxis i t ht)).1 (a j)
               (x j) : ℝ) : ℂ))) • T a := by
-        simp only [hstep]
+        simp only [lightCone, map_sum, map_smul, hT.repLorentz_T, Finset.smul_sum,
+          smul_smul]
         rw [Finset.sum_comm]
-        exact Finset.sum_congr rfl fun a _ => (Finset.sum_smul).symm
-    _ = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3, (((t : ℝ) : ℂ) ^ (∑ j, lightConeWeight (c j)) *
-          (∏ j, lightConeCoeff i (c j) (a j))) • T a := by
-        refine Finset.sum_congr rfl fun a _ => ?_
-        congr 1
-        exact sum_prod_lightConeCoeff i c a ht
+        exact Finset.sum_congr rfl fun a _ => Finset.sum_smul.symm
     _ = (algebraMap ℝ ℂ) t ^ (∑ j, lightConeWeight (c j)) • hT.lightCone i c := by
-        rw [show (algebraMap ℝ ℂ) t = ((t : ℝ) : ℂ) from rfl, lightCone, Finset.smul_sum]
-        exact Finset.sum_congr rfl fun a _ => (smul_smul _ _ _).symm
+        simp only [sum_prod_lightConeCoeff i c _ ht, lightCone, Finset.smul_sum, smul_smul]
+        rfl
 
 /-!
 
-## C. The weight-zero round and its average over the axes
+## C. The weight-zero projection and its average over the axes
 
-## C.1. The boost-weight components of a generator
+## C.1. The boost-weight parts of a component
 
-Each generator `T e` is the sum of its boost-weight components `monoComponent i e m`,
-and the possible weights are the five even numbers between `-4` and `4`.
+Each component `T e` is the sum of its boost-weight parts `hT.monoComponent i e m`; with
+two indices the weights are the five even numbers from `-4` to `4`.
 
 -/
 
@@ -220,22 +203,20 @@ lemma eq_sum_monoComponent_univ (i : Fin 3) (e : Fin 2 → Fin 1 ⊕ Fin 3) :
 
 ## C.2. The weight-zero transition matrix
 
-The matrix of the axis-`i` weight-zero projection in the `T`-basis: a sum over balanced
-sector patterns of the per-slot sector matrices of `IsQuadLorentz`.
+Written back on the components, the weight-zero part of `T e` is a matrix applied to the
+components: a sum over the sector patterns of total weight zero of the per-slot sector
+matrices of `IsQuadLorentz`.
 
 -/
 
-/-- The matrix of the axis-`i` weight-zero projection in the `T`-basis: the
-  coefficient of `T d` in the re-expansion of `monoComponent i e 0` through the
-  light-cone basis, as the sum over the three balanced sector patterns of the product
-  of the two per-slot sector matrices. -/
+/-- The weight-zero projection along axis `i`, as a matrix on the components: the sum over the
+  three sector patterns of weight zero of the products of the two per-slot sector matrices. -/
 def weightZeroTransition (i : Fin 3) (d e : Fin 2 → Fin 1 ⊕ Fin 3) : ℚ :=
   ∑ w ∈ Finset.univ.filter (fun w : Fin 2 → Fin 3 => (∑ s, sectorWeight (w s)) = 0),
     ∏ s, slotTransition i (w s) (e s) (d s)
 
-/-- Weight-zero light-cone sums over two slots are balanced-sector convolutions: a sum
-  over the weight-zero light-cone monomials of a product of slot factors regroups as
-  the sum over balanced sector patterns of the product of the slotwise sector sums. -/
+/-- A weight-zero light-cone sum over two slots regroups as a sum over sector patterns of
+  weight zero of the products of the slotwise sector sums. -/
 lemma sum_weightZero_eq_sum_sector {R : Type*} [CommSemiring R] (f : Fin 2 → Fin 4 → R) :
     ∑ c ∈ Finset.univ.filter (fun c : Fin 2 → Fin 4 => (∑ s, lightConeWeight (c s)) = 0),
         ∏ s, f s (c s)
@@ -302,23 +283,21 @@ lemma monoComponent_zero_eq (i : Fin 3) (e : Fin 2 → Fin 1 ⊕ Fin 3) :
 
 /-!
 
-## C.3. The boost average and iterated rounds
+## C.3. The average over the axes, and its powers
 
-An element of weight zero along all three axes re-expands through the average of the
-three weight-zero transitions, and hence through any power of it.
+An invariant has weight zero along all three axes, so it is fixed by each of the three
+weight-zero transitions, hence by their average and by every power of that average.
 
 -/
 
-/-- The boost-average matrix `M`: the matrix of `3⁻¹(π₀⁰ + π₁⁰ + π₂⁰)` in the
-  `T`-basis — the average over the three axes of the weight-zero transition matrices.
-  Its powers drive the endgame recursion. -/
+/-- The average `M` of the three weight-zero transitions, as a matrix on the components. Its
+  powers drive the endgame. -/
 def boostAverageTransition :
     Matrix (Fin 2 → Fin 1 ⊕ Fin 3) (Fin 2 → Fin 1 ⊕ Fin 3) ℚ :=
   Matrix.of fun d e => (3⁻¹ : ℚ) * ∑ i : Fin 3, weightZeroTransition i d e
 
 include hT in
-/-- One round of the recursion along one axis: an element of weight zero along axis
-  `i` expanded in the generators re-expands with the weight-zero transition matrix
+/-- A vector of boost weight zero along axis `i` is written with the weight-zero transition
   applied to its coefficients. -/
 lemma eq_sum_weightZeroTransition_smul (i : Fin 3) {x : B}
     (c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ) (hx : x = ∑ e, c e • T e)
@@ -381,10 +360,10 @@ lemma eq_sum_boostAverageTransition_smul {x : B}
 
 /-!
 
-## D. The averaged round as an integer matrix
+## D. The average as an integer matrix
 
-Twelve times the boost average is an integer matrix on the sixteen components, and it
-has a short closed form which the kernel can evaluate cheaply.
+Twelve times the average is an integer matrix on the `16` components, with a short closed
+form that the kernel can evaluate cheaply.
 
 -/
 
@@ -437,11 +416,10 @@ lemma coe_boostAverageZ (d e : Fin 2 → Fin 1 ⊕ Fin 3) :
   rw [← Finset.mul_sum]
   ring
 
-/-- The closed form of the integer averaged round. A pair of equal indices talks only
-  to pairs of equal indices, with the time-time entry `6`, the mixed time-space entries
-  `-2` and the space-space diagonal entry `10`; a pair with exactly one time index
-  carries `2` on itself and `-2` on its transpose; and a pair of distinct space indices
-  carries `4` on itself. -/
+/-- The closed form of the integer average. A pair of equal indices talks only to such pairs,
+  with time-time `6`, mixed time-space `-2` and space-space diagonal `10`; a pair with one
+  time index carries `2` on itself and `-2` on its transpose; a pair of distinct space
+  indices carries `4` on itself. -/
 def boostAverageEntry (d e : Fin 2 → Fin 1 ⊕ Fin 3) : ℤ :=
   if d 0 = d 1 then
     (if e 0 = e 1 then
@@ -452,9 +430,8 @@ def boostAverageEntry (d e : Fin 2 → Fin 1 ⊕ Fin 3) : ℤ :=
     (if e 0 = d 0 ∧ e 1 = d 1 then 2 else if e 0 = d 1 ∧ e 1 = d 0 then -2 else 0)
   else (if e 0 = d 0 ∧ e 1 = d 1 then 4 else 0)
 
-/-- Entrywise decidability for integer matrices over a finite index type. The pointwise
-  `Decidable` instances are supplied explicitly: instance search cannot see through the
-  `Matrix` type synonym when the two indices are bound. -/
+/-- Entrywise decidability for integer matrices; instance search does not see through the
+  `Matrix` synonym when both indices are bound. -/
 private instance decidableForallEntriesZ {ι : Type*} [Fintype ι] (f g : Matrix ι ι ℤ) :
     Decidable (∀ k l, f k l = g k l) :=
   @Fintype.decidableForallFintype ι _
@@ -470,9 +447,10 @@ lemma boostAverageZ_eq : boostAverageZ = Matrix.of boostAverageEntry := by
 
 ## E. The certificate polynomial and the trace projector
 
-The averaged round has eigenvalues `12`, `10`, `4` and `0` on the sixteen components,
-with the eigenvalue `12` — the invariant one — simple. The cubic `λ(λ - 4)(λ - 10)`
-therefore collapses it to a rank-one matrix, the outer square of the metric.
+The average has eigenvalues `12`, `10`, `4` and `0` on the `16` components, with the
+invariant eigenvalue `12` simple, so the cubic `λ (λ - 4) (λ - 10)` sends the matrix to a
+rank-one one, the outer square of the metric. That identity is the certificate, checked
+entry by entry.
 
 -/
 
@@ -480,9 +458,8 @@ therefore collapses it to a rank-one matrix, the outer square of the metric.
 def Q : Matrix (Fin 2 → Fin 1 ⊕ Fin 3) (Fin 2 → Fin 1 ⊕ Fin 3) ℤ :=
   boostAverageZ * (boostAverageZ - 4) * (boostAverageZ - 10)
 
-/-- The closed form of the first factor pair `M(M - 4)`: it is supported on the pairs
-  of equal indices, where it is the difference of a multiple of the metric outer square
-  and a multiple of the identity on the space-space block. -/
+/-- The closed form of `M (M - 4)`: supported on the pairs of equal indices, where it is a
+  multiple of the metric outer square minus a multiple of the identity on the space block. -/
 def boostAverageSqEntry (d e : Fin 2 → Fin 1 ⊕ Fin 3) : ℤ :=
   if d 0 = d 1 ∧ e 0 = e 1 then
     (if d 0 = Sum.inl 0 then (if e 0 = Sum.inl 0 then 24 else -24)
@@ -490,9 +467,8 @@ def boostAverageSqEntry (d e : Fin 2 → Fin 1 ⊕ Fin 3) : ℤ :=
   else 0
 
 set_option maxRecDepth 20000 in
-/-- The certificate collapses to the projector: applying the cubic certificate to the
-  integer averaged round yields `48` times the outer square of the metric. Verified
-  through a materialised intermediate product, so each kernel step is a single
+/-- The certificate: the cubic at the integer average is `48` times the outer square of the
+  metric. Checked through a materialised intermediate product, so each kernel step is one
   multiplication of matrices with cheap entries. -/
 lemma Q_explicit :
     Q = Matrix.of fun d e : Fin 2 → Fin 1 ⊕ Fin 3 =>
@@ -609,9 +585,8 @@ lemma eq_sum_pow_boostAverageZ_smul {x : B} (c : (Fin 2 → Fin 1 ⊕ Fin 3) →
 -/
 
 include hT in
-/-- The certificate round: applying the certificate polynomial of the averaged round
-  to the coefficients reproduces `x` — the combination of three iterated rounds
-  weighted by the certificate coefficients. -/
+/-- Applying the certificate polynomial to the coefficients reproduces `x`, as the combination
+  of three iterated averages weighted by the certificate coefficients. -/
 lemma eq_sum_Q_smul {x : B} (c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ)
     (hx : x = ∑ e, c e • T e)
     (hw : ∀ i : Fin 3, x ∈ boostWeightSubmodule repLorentz i 0) :
@@ -650,9 +625,8 @@ lemma eq_sum_Q_smul {x : B} (c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ)
     _ = _ := key
 
 include hT in
-/-- The projector round: an element of the span of the components which has boost
-  weight zero along all three axes is the corresponding multiple of the metric
-  contraction. -/
+/-- A vector of the span of boost weight zero along all three axes is the corresponding
+  multiple of the metric contraction. -/
 lemma eq_smul_metricContraction {x : B} (c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ)
     (hx : x = ∑ e, c e • T e)
     (hw : ∀ i : Fin 3, x ∈ boostWeightSubmodule repLorentz i 0) :
@@ -682,8 +656,7 @@ lemma eq_smul_metricContraction {x : B} (c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ
 -/
 
 include hT in
-/-- The classification of the Lorentz invariants: every element of the span of the
-  components fixed by the Lorentz group is a scalar multiple of the metric
+/-- Every Lorentz invariant in the span of the components is a multiple of the metric
   contraction. -/
 theorem exists_smul_metricContraction_of_invariant {x : B} (hx : x ∈ hT.span)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
@@ -696,10 +669,9 @@ theorem exists_smul_metricContraction_of_invariant {x : B} (hx : x ∈ hT.span)
 
 ## G. The classification modulo a Lorentz-stable submodule
 
-A Lorentz-stable submodule can be divided out: the quotient representation carries the
-images of the components as a bi-Lorentz tensor again, so the classification applies
-verbatim in the quotient and lifts to a classification modulo the submodule. The
-quotient representation itself is the one built in `IsQuadLorentz`.
+A stable subspace `S` is divided out by passing to the quotient `B ⧸ S`, that is `B` with
+`S` declared zero: the classes of the components again form a bi-Lorentz tensor, so
+section F applies there and lifts back with an error term in `S`.
 
 -/
 
@@ -723,9 +695,8 @@ lemma mkQ_metricContraction (S : Submodule ℂ B) :
   exact Finset.sum_congr rfl fun d _ => map_smul _ _ _
 
 include hT in
-/-- The classification of the Lorentz invariants modulo a stable submodule: an element
-  of the span of the components together with a Lorentz-stable submodule `S`, fixed by
-  the Lorentz group, is a multiple of the metric contraction up to an error in `S`. -/
+/-- The same modulo a Lorentz-stable subspace `S`: a multiple of the metric contraction plus an
+  error in `S`. -/
 lemma exists_smul_metricContraction_of_invariant_subset {x : B} (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S)
     (hx : x ∈ hT.span ⊔ S) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :

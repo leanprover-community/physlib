@@ -10,43 +10,38 @@ public import Physlib.Relativity.Fermions.Weyl.Metric
 /-!
 # Lorentz invariants of two left-handed Weyl indices
 
-`IsBiLeftWeyl repLorentz T` says that a family `T`, indexed by two left-handed Weyl
-indices and valued in a module `B` carrying a representation of `SL(2,ℂ)`, transforms as
-a tensor `T^{α₁ α₂}`. This is the shape of a fermion mass term: a Dirac or Majorana mass
-contracts two Weyl spinors of the same handedness with the antisymmetric symbol `ε`,
-`ψ^α χ_α = ε_{α β} ψ^α χ^β`.
+Two Weyl spinors of the same handedness have exactly one Lorentz-invariant contraction,
+the antisymmetric one
 
-Two spinor indices of the same handedness admit exactly one invariant contraction, the
-`ε` contraction, because `SL(2,ℂ)` preserves the determinant and nothing else on a pair
-of fundamental indices. The main theorem `exists_smul_epsilonContraction_of_invariant`
-says accordingly that every Lorentz invariant in the span of the components is a scalar
-multiple of `epsilonContraction`, and `repLorentz_epsilonContraction` checks that this
-contraction really is invariant.
+`epsilonContraction = ε_{α β} ψ^α χ^β`,
 
-The proof is the same-handedness twin of `IsLeftRightWeyl`, and reuses its Weyl weight
-bases. The only change is in the endgame: averaging the weight-zero projection over the
-three axes now gives `M = 2 - swap`, whose eigenvalue `3` is simple and carried by the
-antisymmetric line, so the linear certificate `(3 λ - 1) / 2` in `M / 3` collapses an
-invariant onto the antisymmetrisation of its coefficients, which is the `ε` contraction.
+which is the shape of a Dirac or Majorana mass term. There is nothing else: `SL(2,ℂ)`
+preserves the determinant on a pair of fundamental indices and no more. That is
+`exists_smul_epsilonContraction_of_invariant`, with
+`exists_smul_epsilonContraction_of_invariant_subset` the same statement modulo a
+Lorentz-stable subspace `S`; `repLorentz_epsilonContraction` checks that the contraction
+is invariant.
 
-A family carrying dual Weyl indices transforms by the contragredient `(Λ⁻¹)ᵀ`, or, for
-a barred species, by its complex conjugate `(Λ⁻¹)ᴴ`; neither is the fundamental law, so
-neither is an `IsBiLeftWeyl` family on the nose. Two independent mechanisms bridge the
-gap. The contragredient is inner, `(Λ⁻¹)ᵀ = ε Λ ε⁻¹`, so re-indexing the two index slots
-by `ε` turns a contragredient family into a fundamental one without touching the
-representation. Entrywise conjugation is instead a genuine automorphism of `SL(2,ℂ)`, so
-a conjugated family is a fundamental family for the twisted representation
-`repLorentz.comp conjHom`; since the twist is by a surjection, invariance is the same
-condition for both, and the whole classification carries over.
+The components are vectors `T a` of a complex vector space `B` carrying a representation
+`repLorentz` of `SL(2,ℂ)`, indexed by two left-handed Weyl indices, and `IsBiLeftWeyl`
+says the group moves each index by the matrix of `g` (B). `hT.span` is the set of their
+combinations.
 
-The section headings tell the story: the weight basis of a pair of left-handed indices
-(A), the tensors and the span of their components (B), the weight grading of the span
-(C), the weight-zero round and its average over the three axes (D), the `ε` contraction
-and the linear certificate which produces it (E), the classification modulo a
-Lorentz-stable submodule (F), the symplectic form and the contragredient as an inner
-twist (G), the conjugation automorphism of `SL(2,ℂ)` (H), transfer of invariance along a
-surjective endomorphism (I), dual-index families and the `ε` re-index (J), and the
-classification of the invariants of a dual-index family (K).
+The proof is the same-handedness twin of `IsLeftRightWeyl` and reuses its Weyl weight
+bases (A, C). An invariant has boost weight `0` along every axis, so it is fixed by the
+weight-zero projection along each; averaging the three gives `M = 2 - swap` (D), whose
+eigenvalue `3` is simple and carried by the antisymmetric line, so `(3 λ - 1) / 2` at
+`λ = M / 3` collapses an invariant onto the antisymmetric part of its coefficients, which
+is the `ε` contraction (E). Section F divides out `S`.
+
+Sections G to K handle dual Weyl indices, which transform by the contragredient
+`(Λ⁻¹)ᵀ`, or for a barred species by `(Λ⁻¹)ᴴ`. Neither is the fundamental law, and two
+separate mechanisms bridge the gap. The contragredient is inner, `(Λ⁻¹)ᵀ = ε Λ ε⁻¹`, so
+re-indexing both slots by `ε` turns a contragredient family into a fundamental one
+without touching the representation (G, J). Entrywise conjugation is instead an
+automorphism of `SL(2,ℂ)` (H), so a conjugated family is a fundamental family for the
+twisted representation `repLorentz.comp conjHom`; the twist is by a surjection, so
+invariance is the same condition for both and the classification carries over (I, K).
 -/
 
 @[expose] public section
@@ -114,6 +109,9 @@ lemma sum_boostAxis_biLeftCoeff (i : Fin 3) (κ a : Fin 2 × Fin 2) {t : ℝ} (h
 
 ## B. Bi-left-handed Weyl tensors and the span of their components
 
+`IsBiLeftWeyl B repLorentz T` says the group moves each index of `T^{α₁ α₂}` by the matrix
+of `g`, and `hT.span` is the set of combinations `∑ a, c a • T a` of the four components.
+
 -/
 
 /-- A family `T` of elements of `B`, indexed by two left-handed Weyl indices, transforms
@@ -125,43 +123,36 @@ structure IsBiLeftWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     repLorentz g (T l) = ∑ (a : Fin 2 × Fin 2), (g.1 a.1 l.1 * g.1 a.2 l.2) • T a
 
 namespace IsBiLeftWeyl
-set_option linter.unusedVariables false
 
 variable {B : Type*} [AddCommGroup B] [Module ℂ B]
   {repLorentz : Representation ℂ SL(2,ℂ) B}
   {T : Fin 2 × Fin 2 → B}
   (hT : IsBiLeftWeyl B repLorentz T)
 
-/-- The span of all the components. -/
+set_option linter.unusedVariables false in
+/-- The span of the components; `hT` is unused, and is present only so it reads `hT.span`. -/
 def span (hT : IsBiLeftWeyl B repLorentz T) : Submodule ℂ B := ⨆ d, ℂ ∙ T d
 
-/-- The span of the components is exactly the set of linear combinations of them. -/
+/-- A vector lies in the span exactly when it is a combination `∑ d, c d • T d`. -/
 lemma mem_span_iff (x : B) :
-    x ∈ hT.span ↔ ∃ (c : Fin 2 × Fin 2 → ℂ), x = ∑ d, c d • T d := by
-  constructor
-  · intro hx
-    rw [span] at hx
-    refine Submodule.iSup_induction
-      (motive := fun y => ∃ c : Fin 2 × Fin 2 → ℂ, y = ∑ d, c d • T d)
-      (fun d => ℂ ∙ T d) hx ?_ ?_ ?_
-    · intro d y hy
-      obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hy
-      refine ⟨fun e => if e = d then a else 0, ?_⟩
-      simp [ite_smul, Finset.sum_ite_eq']
-    · exact ⟨0, by simp⟩
-    · rintro y z ⟨c₁, rfl⟩ ⟨c₂, rfl⟩
-      exact ⟨c₁ + c₂, by simp [add_smul, Finset.sum_add_distrib]⟩
-  · rintro ⟨c, rfl⟩
-    exact sum_mem fun d _ => Submodule.smul_mem _ _
-      (Submodule.mem_iSup_of_mem d (Submodule.mem_span_singleton_self _))
+    x ∈ hT.span ↔ ∃ c : Fin 2 × Fin 2 → ℂ, x = ∑ d, c d • T d := by
+  rw [span, ← Submodule.span_range_eq_iSup, ← Fintype.range_linearCombination,
+    LinearMap.mem_range]
+  simp only [Fintype.linearCombination_apply, eq_comm]
 
 /-!
 
 ## C. The weight grading of the span
 
+The four products `weightVec i κ` of two left weight vectors span the same space as the
+components and are boost eigenvectors along the axis `i`, of weights `2`, `0`, `0` and
+`-2`.
+
 -/
 
-/-- The axis-`i` weight component of `T` at the pair `κ` of Weyl weight indices. -/
+set_option linter.unusedVariables false in
+/-- The weight component of `T` along axis `i` at the pair `κ` of Weyl weight indices;
+  `hT` is present only so it reads `hT.weightVec`. -/
 noncomputable def weightVec (hT : IsBiLeftWeyl B repLorentz T) (i : Fin 3)
     (κ : Fin 2 × Fin 2) : B :=
   ∑ a : Fin 2 × Fin 2, biLeftCoeff i κ a • T a
@@ -247,6 +238,10 @@ lemma eq_sum_monoComponent_univ (i : Fin 3) (α : Fin 2 × Fin 2) :
 
 ## D. The weight-zero round and its average over the axes
 
+An invariant has boost weight zero along every axis, so along each axis it equals its own
+weight-zero part, which written back on the components is the matrix
+`weightZeroTransition i`.
+
 -/
 
 /-- The matrix of the axis-`i` weight-zero projection in the `T`-basis: the coefficient
@@ -267,9 +262,8 @@ lemma monoComponent_zero_eq (i : Fin 3) (α : Fin 2 × Fin 2) :
   rw [← Finset.sum_smul, weightZeroTransition]
 
 include hT in
-/-- One round of the recursion along one axis: an element of weight zero along axis `i`
-  expanded in the generators re-expands with the weight-zero transition matrix applied
-  to its coefficients. -/
+/-- A vector of boost weight zero along axis `i` is written with the weight-zero transition
+  applied to its coefficients. -/
 lemma eq_sum_weightZeroTransition_smul (i : Fin 3) {x : B}
     (c : Fin 2 × Fin 2 → ℂ) (hx : x = ∑ α, c α • T α)
     (hw : x ∈ boostWeightSubmodule repLorentz i 0) :
@@ -317,9 +311,8 @@ lemma sum_weightZeroTransition_eq (β α : Fin 2 × Fin 2) :
     norm_num [Complex.ext_iff]
 
 include hT in
-/-- One averaged round of the recursion: an element of weight zero along all three axes
-  re-expands with a third of the summed transition matrix applied to its
-  coefficients. -/
+/-- A vector of boost weight zero along all three axes is written with a third of the summed
+  transition applied to its coefficients. -/
 lemma eq_sum_transitionEntry_smul {x : B} (c : Fin 2 × Fin 2 → ℂ)
     (hx : x = ∑ α, c α • T α)
     (hw : ∀ i : Fin 3, x ∈ boostWeightSubmodule repLorentz i 0) :
@@ -433,10 +426,9 @@ theorem exists_smul_epsilonContraction_of_invariant {x : B} (hx : x ∈ hT.span)
 
 ## F. The classification modulo a Lorentz-stable submodule
 
-A Lorentz-stable submodule can be divided out: the quotient representation carries the
-images of the components as a bi-left-handed tensor again, so the classification applies
-verbatim in the quotient and lifts to a classification modulo the submodule. The
-quotient representation itself is the one built in `IsQuadLorentz`.
+A stable subspace `S` is divided out by passing to the quotient `B ⧸ S`, that is `B` with
+`S` declared zero: the classes of the components again form a bi-left-handed tensor, so
+the classification applies there and lifts back with an error term in `S`.
 
 -/
 
@@ -460,9 +452,8 @@ lemma mkQ_epsilonContraction (S : Submodule ℂ B) :
   exact Finset.sum_congr rfl fun α _ => map_smul _ _ _
 
 include hT in
-/-- The classification of the Lorentz invariants modulo a stable submodule: an element
-  of the span of the components together with a Lorentz-stable submodule `S`, fixed by
-  the Lorentz group, is a multiple of the `ε` contraction up to an error in `S`. -/
+/-- The same modulo a Lorentz-stable subspace `S`: a multiple of the `ε` contraction plus an
+  error in `S`. -/
 lemma exists_smul_epsilonContraction_of_invariant_subset {x : B} (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S)
     (hx : x ∈ hT.span ⊔ S) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
@@ -493,12 +484,10 @@ end IsBiLeftWeyl
 
 ## G. The symplectic form and the contragredient as an inner twist
 
-The antisymmetric form `ε = !![0, 1; -1, 0]` has determinant one, so it is itself an
-element of `SL(2,ℂ)`, and `Λᵀ ε Λ = ε` holds for every `Λ ∈ SL(2,ℂ)`: this is the
-statement that `ε` is the invariant symplectic form, and it is nothing but the condition
-`det Λ = 1` written out. Rearranged it reads `(Λ⁻¹)ᵀ = ε Λ ε⁻¹`, so the contragredient
-matrix is the fundamental one conjugated by a fixed group element. That is a change of
-basis on the index type, not a change of representation.
+`ε = !![0, 1; -1, 0]` has determinant one, so it lies in `SL(2,ℂ)`, and `Λᵀ ε Λ = ε` for
+every `Λ` there: that is `det Λ = 1` written out. Rearranged it reads
+`(Λ⁻¹)ᵀ = ε Λ ε⁻¹`, so the contragredient is the fundamental matrix conjugated by a fixed
+group element, a change of basis on the index type rather than of representation.
 
 -/
 
@@ -560,12 +549,10 @@ lemma epsilon_mul_inv_eq_transpose_mul_epsilon (g : SL(2,ℂ)) :
 
 ## H. The conjugation automorphism of `SL(2,ℂ)`
 
-Entrywise complex conjugation is a monoid homomorphism `SL(2,ℂ) → SL(2,ℂ)`: it is
-multiplicative because conjugation is a ring homomorphism of `ℂ`, and it lands back in
-`SL(2,ℂ)` because `det (conj Λ) = conj (det Λ) = 1`. It is its own inverse, hence
-bijective. Unlike the `ε` twist of section G this is a genuine automorphism of the
-group, so twisting a representation along it gives a genuinely different representation
-rather than a re-indexing.
+Entrywise conjugation is a monoid homomorphism `SL(2,ℂ) → SL(2,ℂ)`, multiplicative
+because conjugation is a ring homomorphism and landing in `SL(2,ℂ)` because
+`det (conj Λ) = 1`; it is its own inverse. Unlike the `ε` twist of G this is a genuine
+automorphism, so twisting a representation along it gives a different representation.
 
 -/
 
@@ -613,10 +600,9 @@ end SL2C
 
 ## I. Transfer of invariance along a surjective endomorphism
 
-Twisting a representation by a monoid endomorphism `σ` of the group does not change what
-it means for a vector to be invariant, provided `σ` is surjective: the two families of
-conditions `rep g x = x` and `rep (σ g) x = x` range over the very same set of group
-elements. This is what makes the conjugation twist of section H free of charge.
+Twisting by a surjective monoid endomorphism `σ` does not change what invariance means:
+`rep g x = x` and `rep (σ g) x = x` range over the same group elements. That is what
+makes the conjugation twist of H free.
 
 -/
 
@@ -637,25 +623,21 @@ lemma forall_comp_apply_eq_self_iff {k G V : Type*} [CommSemiring k] [Monoid G]
 
 ## J. Dual-index families and the `ε` re-index
 
-`IsBiDualLeftWeyl` and `IsBiDualRightWeyl` are the two index laws actually carried by
-the Standard Model's fermion symbols: one factor of the contragredient `(Λ⁻¹)ᵀ` per
-index for an undotted pair, and one factor of its complex conjugate `(Λ⁻¹)ᴴ` per index
-for a dotted pair. The re-index `epsReindex` transports both index slots through the
-symplectic form. By section G it converts the contragredient law into the fundamental
-one and leaves the representation alone; it is an involution, so it does not change the
-span of the components; and it leaves the `ε` contraction strictly unchanged, with
-neither a sign nor a scalar appearing. For a dotted family the same re-index works once
-the representation has been twisted by `conjHom`, because conjugating the group argument
-undoes the conjugation of the matrix entries. The two laws are not vacuous:
+`IsBiDualLeftWeyl` and `IsBiDualRightWeyl` are the laws the Standard Model's fermion
+symbols carry: one factor of `(Λ⁻¹)ᵀ` per index for an undotted pair, one of `(Λ⁻¹)ᴴ` for
+a dotted pair. The re-index `epsReindex` sends both slots through `ε`. By G it converts
+the contragredient law into the fundamental one and leaves the representation alone; it is
+an involution, so the span is unchanged; and it leaves the `ε` contraction exactly as it
+was, with no sign or scalar. For a dotted family the same re-index works once the
+representation is twisted by `conjHom`, conjugating the group argument undoing the
+conjugation of the entries. Neither law is vacuous:
 `isBiDualLeftWeyl_dualLeftHandedWeyl` and `isBiDualRightWeyl_dualRightHandedWeyl` check
-that they are exactly the laws carried by the tensor squares of the repo's dual Weyl
-representations.
+they are what the tensor squares of the repo's dual Weyl representations carry.
 
 -/
 
-/-- A family `T` of elements of `B`, indexed by two dual left-handed Weyl indices,
-  transforms as a tensor `T_{α₁ α₂}` under `repLorentz`: each index carries a factor of
-  the contragredient matrix `(Λ⁻¹)ᵀ`. -/
+/-- A family `T` indexed by two dual left-handed Weyl indices, moved as `T_{α₁ α₂}`: one factor
+  of the contragredient matrix `(Λ⁻¹)ᵀ` per index. -/
 structure IsBiDualLeftWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B)
     (T : Fin 2 × Fin 2 → B) : Prop where
@@ -663,9 +645,7 @@ structure IsBiDualLeftWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     repLorentz g (T l) = ∑ (a : Fin 2 × Fin 2),
       ((g.1⁻¹)ᵀ a.1 l.1 * (g.1⁻¹)ᵀ a.2 l.2) • T a
 
-/-- A family `T` of elements of `B`, indexed by two dual right-handed Weyl indices,
-  transforms as a tensor `T_{α̇₁ α̇₂}` under `repLorentz`: each index carries a factor of
-  the conjugate contragredient matrix `(Λ⁻¹)ᴴ`. -/
+/-- The same for two dual right-handed indices, `T_{α̇₁ α̇₂}`: one factor of `(Λ⁻¹)ᴴ` per index. -/
 structure IsBiDualRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B)
     (T : Fin 2 × Fin 2 → B) : Prop where
@@ -690,9 +670,8 @@ lemma isBiDualLeftWeyl_dualLeftHandedWeyl :
       rw [mul_comm]
 
 open Fermion in
-/-- The tensor square of the dual right-handed Weyl representation, on the products of
-  basis vectors, is the basic example of a family with the conjugate contragredient
-  index law. -/
+/-- The tensor square of the dual right-handed Weyl representation carries the conjugate
+  contragredient law: the basic example. -/
 lemma isBiDualRightWeyl_dualRightHandedWeyl :
     IsBiDualRightWeyl (DualRightHandedWeyl ⊗[ℂ] DualRightHandedWeyl)
       (DualRightHandedWeyl.rep.tprod DualRightHandedWeyl.rep)
@@ -740,9 +719,8 @@ lemma epsReindex_epsReindex : epsReindex (epsReindex T) = T := by
     simp [epsReindex_zero_zero, epsReindex_zero_one, epsReindex_one_zero,
       epsReindex_one_one]
 
-/-- The `ε` re-index leaves the `ε` contraction unchanged: no sign and no scalar are
-  introduced, so a conclusion about the re-indexed family is literally a conclusion
-  about the original one. -/
+/-- The `ε` re-index leaves the `ε` contraction unchanged, with no sign or scalar, so a
+  conclusion about the re-indexed family is one about the original. -/
 lemma epsilonContraction_epsReindex :
     IsBiLeftWeyl.epsilonContraction (T := epsReindex T)
       = IsBiLeftWeyl.epsilonContraction (T := T) := by
@@ -797,9 +775,8 @@ lemma sum_biEpsilon_mul_inv_transpose (g : SL(2,ℂ)) (l a : Fin 2 × Fin 2) :
     exact Finset.sum_congr rfl fun b₁ _ => Finset.sum_congr rfl fun b₂ _ => by ring
   rw [← hL, ← hR, sum_epsilon_mul_inv_transpose, sum_epsilon_mul_inv_transpose]
 
-/-- The `ε` re-index turns a family with the contragredient index law into a family with
-  the fundamental index law, for the very same representation: the twist is a change of
-  basis on the index type, not a change of representation. -/
+/-- The `ε` re-index turns the contragredient law into the fundamental one for the same
+  representation: a change of basis on the index type, not of representation. -/
 lemma IsBiDualLeftWeyl.isBiLeftWeyl_epsReindex {B : Type*} [AddCommGroup B] [Module ℂ B]
     {repLorentz : Representation ℂ SL(2,ℂ) B} {T : Fin 2 × Fin 2 → B}
     (hT : IsBiDualLeftWeyl B repLorentz T) :
@@ -864,14 +841,12 @@ lemma IsBiDualRightWeyl.isBiLeftWeyl_epsReindex {B : Type*} [AddCommGroup B]
 
 ## K. The classification of the invariants of a dual-index family
 
-Sections G to J assemble into contragredient and conjugate contragredient analogues of
-`IsBiLeftWeyl.exists_smul_epsilonContraction_of_invariant` and of its version modulo a
-Lorentz-stable submodule. Nothing in the classification had to be redone: the whole
-argument, and in particular `mem_boostWeightSubmodule_zero_of_invariant`, is generic in
-the representation, so it applies verbatim to the conjugation-twisted one. Because the
-re-index leaves the `ε` contraction alone, the contraction named in the conclusions is
-the contraction of the original family, `T (0, 1) - T (1, 0)`, with no sign and no
-scalar attached.
+Sections G to J assemble into contragredient and conjugate contragredient versions of
+`exists_smul_epsilonContraction_of_invariant`, and of its form modulo a stable subspace.
+Nothing had to be redone: the argument is generic in the representation, so it applies to
+the twisted one as it stands. The re-index leaves the `ε` contraction alone, so the
+contraction in the conclusions is that of the original family, `T (0, 1) - T (1, 0)`,
+with no sign or scalar attached.
 
 -/
 
@@ -899,9 +874,8 @@ lemma IsBiDualRightWeyl.repLorentz_epsilonContraction
   rw [epsilonContraction_epsReindex] at h
   exact (forall_comp_apply_eq_self_iff repLorentz SL2C.conjHom_surjective _).1 h g
 
-/-- The classification of the Lorentz invariants of a family with the contragredient
-  index law: every element of the span of the components fixed by the Lorentz group is a
-  scalar multiple of the `ε` contraction of that family. -/
+/-- For the contragredient law, every Lorentz invariant of the span is a multiple of the `ε`
+  contraction of that family. -/
 theorem IsBiDualLeftWeyl.exists_smul_epsilonContraction_of_invariant
     (hT : IsBiDualLeftWeyl B repLorentz T) {x : B} (hx : x ∈ ⨆ d, ℂ ∙ T d)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
@@ -928,9 +902,7 @@ theorem IsBiDualLeftWeyl.exists_smul_epsilonContraction_of_invariant_subset
     hT'.exists_smul_epsilonContraction_of_invariant_subset S hS hx' hinv
   exact ⟨a, y, hy, by rwa [epsilonContraction_epsReindex] at ha⟩
 
-/-- The classification of the Lorentz invariants of a family with the conjugate
-  contragredient index law: every element of the span of the components fixed by the
-  Lorentz group is a scalar multiple of the `ε` contraction of that family. -/
+/-- The same for the conjugate contragredient law. -/
 theorem IsBiDualRightWeyl.exists_smul_epsilonContraction_of_invariant
     (hT : IsBiDualRightWeyl B repLorentz T) {x : B} (hx : x ∈ ⨆ d, ℂ ∙ T d)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
