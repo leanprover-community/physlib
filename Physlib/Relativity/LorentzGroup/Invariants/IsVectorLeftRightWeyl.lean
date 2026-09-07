@@ -49,8 +49,7 @@ there is no Dirac mass term.
 namespace Lorentz
 
 open TensorProduct Matrix MatrixGroups SL2C BoostWeight
-open IsQuadLorentz (etaZ etaZ_cast minkowskiSignZ sum_etaZ_mul
-  mem_boostWeightSubmodule_zero_of_invariant quotRep quotRep_mkQ)
+open IsQuadLorentz (sum_minkowskiMatrixZ_mul quotRep quotRep_mkQ)
 
 /-!
 
@@ -72,11 +71,11 @@ lemma pauliBasis'_coe (μ : Fin 1 ⊕ Fin 3) :
     (PauliMatrix.pauliBasis' μ).1 = pauliLower μ := by
   rw [PauliMatrix.pauliBasis', Module.Basis.coe_mk, pauliLower]
 
-/-- Lowering the vector index multiplies by the Minkowski sign. -/
+/-- Lowering the vector index multiplies by the diagonal entry of the metric. -/
 lemma pauliLower_eq_smul (μ : Fin 1 ⊕ Fin 3) :
-    pauliLower μ = ((minkowskiSignZ μ : ℤ) : ℂ) • PauliMatrix.pauliMatrix μ := by
+    pauliLower μ = ((minkowskiMatrixZ μ μ : ℤ) : ℂ) • PauliMatrix.pauliMatrix μ := by
   rcases μ with μ | μ <;> fin_cases μ <;>
-    simp [pauliLower, PauliMatrix.pauliSelfAdjoint', minkowskiSignZ]
+    simp [pauliLower, PauliMatrix.pauliSelfAdjoint', minkowskiMatrixZ]
 
 /-- The conjugate Pauli matrices, the transposes of the covariant ones. These are the
   matrices `σ̄_μ` carrying two dual spinor indices. -/
@@ -312,10 +311,10 @@ lemma metricContraction_vectorPair :
     refine Finset.sum_congr rfl fun a _ => ?_
     congr 1
     rw [pauliLower_eq_smul, Matrix.smul_apply, smul_eq_mul, ← mul_assoc]
-    rcases ν with ν | ν <;> fin_cases ν <;> norm_num [etaZ, minkowskiSignZ]
-  · rw [show etaZ (![ν, ρ] 0) (![ν, ρ] 1) = 0 from by
+    rcases ν with ν | ν <;> fin_cases ν <;> norm_num [minkowskiMatrixZ]
+  · rw [show minkowskiMatrixZ (![ν, ρ] 0) (![ν, ρ] 1) = 0 from by
       simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
-      simp [etaZ, Ne.symm hρ]]
+      simp [minkowskiMatrixZ, Ne.symm hρ]]
     simp
 
 /-!
@@ -334,9 +333,9 @@ lemma repLorentz_pauliContraction (g : SL(2,ℂ)) :
     repLorentz g (pauliContraction (T := T)) = pauliContraction (T := T) := by
   have hV := hT.isBiLorentz_vectorPair
   have hstep : ∀ d : Fin 2 → Fin 1 ⊕ Fin 3,
-      repLorentz g (((etaZ (d 0) (d 1) : ℤ) : ℂ) • vectorPair (T := T) d)
+      repLorentz g (((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ) • vectorPair (T := T) d)
         = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3,
-            (((etaZ (d 0) (d 1) : ℤ) : ℂ)
+            (((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ)
               * ∏ i : Fin 2, (((SL2C.toLorentzGroup g).1 (a i) (d i) : ℝ) : ℂ))
               • vectorPair (T := T) a := by
     intro d
@@ -344,20 +343,20 @@ lemma repLorentz_pauliContraction (g : SL(2,ℂ)) :
     exact Finset.sum_congr rfl fun a _ => smul_smul _ _ _
   rw [← metricContraction_vectorPair (T := T), IsBiLorentz.metricContraction, map_sum]
   calc ∑ d : Fin 2 → Fin 1 ⊕ Fin 3,
-        repLorentz g (((etaZ (d 0) (d 1) : ℤ) : ℂ) • vectorPair (T := T) d)
+        repLorentz g (((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ) • vectorPair (T := T) d)
       = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3, (∑ d : Fin 2 → Fin 1 ⊕ Fin 3,
-          ((etaZ (d 0) (d 1) : ℤ) : ℂ)
+          ((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ)
             * ∏ i : Fin 2, (((SL2C.toLorentzGroup g).1 (a i) (d i) : ℝ) : ℂ))
           • vectorPair (T := T) a := by
         simp only [hstep]
         rw [Finset.sum_comm]
         exact Finset.sum_congr rfl fun a _ => (Finset.sum_smul).symm
     _ = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3,
-          ((etaZ (a 0) (a 1) : ℤ) : ℂ) • vectorPair (T := T) a := by
+          ((minkowskiMatrixZ (a 0) (a 1) : ℤ) : ℂ) • vectorPair (T := T) a := by
         refine Finset.sum_congr rfl fun a _ => ?_
         congr 1
         rw [sum_pi_fin_two]
-        rw [← sum_etaZ_mul (SL2C.toLorentzGroup g) (a 0) (a 1)]
+        rw [← sum_minkowskiMatrixZ_mul (SL2C.toLorentzGroup g) (a 0) (a 1)]
         refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
         simp only [Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one]
 

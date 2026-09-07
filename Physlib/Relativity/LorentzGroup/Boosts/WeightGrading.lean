@@ -436,6 +436,82 @@ lemma boostWeightSubmodule_iSupIndep (rep : Representation K SL(2,ℂ) M) :
       (rep (Lorentz.SL2C.boostAxis i 2 two_ne_zero) : Module.End K M)).comp
     zpow_algebraMap_two_injective).mono fun k => boostWeightSubmodule_le_eigenspace rep k
 
+
+/-!
+
+### Weight-zero vectors
+
+An invariant of the group has weight zero along every axis, and the weight spaces are
+independent, so a weight-zero vector written as a sum of vectors of definite weights is equal
+to the weight-zero term of that sum. The `Invariants` files use these to read an invariant off
+its weight decomposition.
+
+-/
+
+/-- A vector fixed by the whole group has boost weight zero along every axis. -/
+lemma mem_boostWeightSubmodule_zero_of_invariant {rep : Representation K SL(2,ℂ) M} {x : M}
+    (hinv : ∀ g : SL(2,ℂ), rep g x = x) (i : Fin 3) :
+    x ∈ boostWeightSubmodule rep i 0 := by
+  rw [mem_boostWeightSubmodule]
+  intro t ht
+  rw [hinv, zpow_zero, one_smul]
+
+/-- Vectors of distinct boost weights adding to zero are each zero. -/
+lemma eq_zero_of_sum_mem_boostWeightSubmodule
+    {K : Type*} [Field K] [Algebra ℝ K] {A : Type*} [AddCommGroup A] [Module K A]
+    {rep : Representation K SL(2,ℂ) A} {i : Fin 3} {s : Finset ℤ} {w : ℤ → A}
+    (hw : ∀ m ∈ s, w m ∈ boostWeightSubmodule rep i m)
+    (hsum : ∑ m ∈ s, w m = 0) :
+    ∀ m ∈ s, w m = 0 := by
+  intro m₀ hm₀
+  refine Submodule.disjoint_def.1
+    (iSupIndep_def.1 (boostWeightSubmodule_iSupIndep rep) m₀) (w m₀) (hw m₀ hm₀) ?_
+  have h : w m₀ = -∑ m ∈ s.erase m₀, w m :=
+    eq_neg_of_add_eq_zero_left (by rw [Finset.add_sum_erase s w hm₀]; exact hsum)
+  rw [h]
+  exact neg_mem (sum_mem fun m hm => Submodule.mem_iSup_of_mem m
+    (Submodule.mem_iSup_of_mem (Finset.ne_of_mem_erase hm)
+      (hw m (Finset.mem_of_mem_erase hm))))
+
+/-- A weight-zero vector written as a sum of definite weights equals the weight-zero term. -/
+lemma eq_component_zero_of_mem_boostWeightSubmodule
+    {K : Type*} [Field K] [Algebra ℝ K] {A : Type*} [AddCommGroup A] [Module K A]
+    {rep : Representation K SL(2,ℂ) A} {i : Fin 3} {s : Finset ℤ} {w : ℤ → A} {x : A}
+    (hx : x ∈ boostWeightSubmodule rep i 0)
+    (hw : ∀ m ∈ s, w m ∈ boostWeightSubmodule rep i m)
+    (h0 : (0 : ℤ) ∈ s) (hsum : x = ∑ m ∈ s, w m) :
+    x = w 0 := by
+  have hv : ∀ m ∈ s, Function.update w 0 (w 0 - x) m ∈ boostWeightSubmodule rep i m := by
+    intro m hm
+    by_cases h : m = 0
+    · subst h
+      rw [Function.update_self]
+      exact sub_mem (hw 0 h0) hx
+    · rw [Function.update_of_ne h]
+      exact hw m hm
+  have hsum0 : ∑ m ∈ s, Function.update w 0 (w 0 - x) m = 0 := by
+    rw [Finset.sum_update_of_mem h0, hsum, ← Finset.add_sum_erase s w h0, Finset.erase_eq]
+    abel
+  have h := eq_zero_of_sum_mem_boostWeightSubmodule hv hsum0 0 h0
+  rw [Function.update_self] at h
+  exact (sub_eq_zero.1 h).symm
+
+/-- If each `S m` lies in the weight-`m` space, a weight-zero vector of their join lies in
+  `S 0`. -/
+lemma mem_of_mem_iSup_of_boostWeight_zero {rep : Representation K SL(2,ℂ) M} {i : Fin 3}
+    {S : ℤ → Submodule K M} (hS : ∀ m : ℤ, S m ≤ boostWeightSubmodule rep i m) {x : M}
+    (hx : x ∈ ⨆ m, S m) (h0 : x ∈ boostWeightSubmodule rep i 0) : x ∈ S 0 := by
+  obtain ⟨f, hf, rfl⟩ := (Submodule.mem_iSup_iff_exists_finsupp _ _).mp hx
+  have hkey := eq_component_zero_of_mem_boostWeightSubmodule (i := i)
+    (s := insert 0 f.support) (w := fun m => f m) h0
+    (fun m _ => hS m (hf m)) (Finset.mem_insert_self 0 _) ?_
+  · rw [hkey]
+    exact hf 0
+  · rw [Finsupp.sum]
+    by_cases h : (0 : ℤ) ∈ f.support
+    · rw [Finset.insert_eq_self.2 h]
+    · rw [Finset.sum_insert h, Finsupp.notMem_support_iff.1 h, zero_add]
+
 variable (rep : Representation K SL(2,ℂ) A)
 
 /-- The unit has boost weight zero. -/

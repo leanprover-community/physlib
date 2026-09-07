@@ -2277,12 +2277,6 @@ theorem exists_mem_of_gauge_and_lorentz_invariant (S : Submodule ℂ B)
         (Submodule.mem_sup_right (Submodule.mem_sup_right
           (Submodule.mem_sup_right hxy₄)))))
 
-/-- The Minkowski symbol is symmetric, being diagonal. -/
-lemma etaZ_comm (μ ν : Fin 1 ⊕ Fin 3) :
-    IsQuadLorentz.etaZ μ ν = IsQuadLorentz.etaZ ν μ := by
-  revert μ ν
-  decide
-
 /-- A family of four four-vector indices written as a fourfold sum, with the four indices
   read off the tuple. -/
 lemma sum_quad {M : Type*} [AddCommMonoid M]
@@ -2302,20 +2296,20 @@ lemma outerContraction_eq_zero_of_swap {T : (Fin 4 → Fin 1 ⊕ Fin 3) → B}
   have h1 : IsQuadLorentz.outerContraction (T := T)
       = ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3, ∑ z : Fin 1 ⊕ Fin 3,
         ∑ w : Fin 1 ⊕ Fin 3,
-          ((IsQuadLorentz.etaZ x y * IsQuadLorentz.etaZ z w : ℤ) : ℂ) • T ![x, y, z, w] := by
+          ((minkowskiMatrixZ x y * minkowskiMatrixZ z w : ℤ) : ℂ) • T ![x, y, z, w] := by
     rw [IsQuadLorentz.outerContraction, IsQuadLorentz.sum_pi_four]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.cons_val_three]
   have h3 : ∀ x y z w : Fin 1 ⊕ Fin 3,
-      ((IsQuadLorentz.etaZ y x * IsQuadLorentz.etaZ z w : ℤ) : ℂ) • T ![y, x, z, w]
-        = -(((IsQuadLorentz.etaZ x y * IsQuadLorentz.etaZ z w : ℤ) : ℂ) •
+      ((minkowskiMatrixZ y x * minkowskiMatrixZ z w : ℤ) : ℂ) • T ![y, x, z, w]
+        = -(((minkowskiMatrixZ x y * minkowskiMatrixZ z w : ℤ) : ℂ) •
           T ![x, y, z, w]) := by
     intro x y z w
-    rw [hswap x y z w, smul_neg, etaZ_comm y x]
+    rw [hswap x y z w, smul_neg, minkowskiMatrixZ.comm y x]
   have h4 : IsQuadLorentz.outerContraction (T := T)
       = - IsQuadLorentz.outerContraction (T := T) := by
     conv_lhs => rw [h1, sum_quad fun x y z w =>
-      ((IsQuadLorentz.etaZ x y * IsQuadLorentz.etaZ z w : ℤ) : ℂ) • T ![x, y, z, w]]
+      ((minkowskiMatrixZ x y * minkowskiMatrixZ z w : ℤ) : ℂ) • T ![x, y, z, w]]
     rw [h1, ← Finset.sum_neg_distrib]
     refine Finset.sum_congr rfl fun x _ => ?_
     rw [← Finset.sum_neg_distrib]
@@ -2345,25 +2339,25 @@ lemma splitContraction_eq_neg_innerContraction_of_swap
   have h1 : IsQuadLorentz.splitContraction (T := T)
       = ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3, ∑ z : Fin 1 ⊕ Fin 3,
         ∑ w : Fin 1 ⊕ Fin 3,
-          ((IsQuadLorentz.etaZ x w * IsQuadLorentz.etaZ y z : ℤ) : ℂ) • T ![x, y, z, w] := by
+          ((minkowskiMatrixZ x w * minkowskiMatrixZ y z : ℤ) : ℂ) • T ![x, y, z, w] := by
     rw [IsQuadLorentz.splitContraction, IsQuadLorentz.sum_pi_four]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.cons_val_three]
   have h2 : IsQuadLorentz.innerContraction (T := T)
       = ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3, ∑ z : Fin 1 ⊕ Fin 3,
         ∑ w : Fin 1 ⊕ Fin 3,
-          ((IsQuadLorentz.etaZ x z * IsQuadLorentz.etaZ y w : ℤ) : ℂ) • T ![x, y, z, w] := by
+          ((minkowskiMatrixZ x z * minkowskiMatrixZ y w : ℤ) : ℂ) • T ![x, y, z, w] := by
     rw [IsQuadLorentz.innerContraction, IsQuadLorentz.sum_pi_four]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons,
       Matrix.cons_val_two, Matrix.tail_cons, Matrix.cons_val_three]
   have h3 : ∀ x y z w : Fin 1 ⊕ Fin 3,
-      ((IsQuadLorentz.etaZ y w * IsQuadLorentz.etaZ x z : ℤ) : ℂ) • T ![y, x, z, w]
-        = -(((IsQuadLorentz.etaZ x z * IsQuadLorentz.etaZ y w : ℤ) : ℂ) •
+      ((minkowskiMatrixZ y w * minkowskiMatrixZ x z : ℤ) : ℂ) • T ![y, x, z, w]
+        = -(((minkowskiMatrixZ x z * minkowskiMatrixZ y w : ℤ) : ℂ) •
           T ![x, y, z, w]) := by
     intro x y z w
-    rw [hswap x y z w, smul_neg, mul_comm (IsQuadLorentz.etaZ y w)]
+    rw [hswap x y z w, smul_neg, mul_comm (minkowskiMatrixZ y w)]
   conv_lhs => rw [h1, sum_quad fun x y z w =>
-    ((IsQuadLorentz.etaZ x w * IsQuadLorentz.etaZ y z : ℤ) : ℂ) • T ![x, y, z, w]]
+    ((minkowskiMatrixZ x w * minkowskiMatrixZ y z : ℤ) : ℂ) • T ![x, y, z, w]]
   rw [h2, ← Finset.sum_neg_distrib]
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [← Finset.sum_neg_distrib]
@@ -2389,7 +2383,7 @@ twice-derived hypercharge span by `repGauge_hyperchargeField`, which fixes the h
 field strength at every derivative order; their mass weights are those of section E and of
 `derivSubmodule`. The Lorentz contraction span is smaller still, each of its four blocks
 being spanned by the four contractions of a quadruple Lorentz family, and a contraction is
-a combination of the components of its family with the constant coefficients `etaZ` and
+a combination of the components of its family with the constant coefficients `minkowskiMatrixZ` and
 `epsilonSignZ`, so it lies in the span of those components. Gauge invariance and mass
 weight therefore pass to it from the gauge spans, and Lorentz invariance comes from
 `IsQuadLorentz` directly.

@@ -220,7 +220,7 @@ lemma metricContraction_eq_zero_of_antisymm {T : (Fin 2 → Fin 1 ⊕ Fin 3) →
       rw [two_smul]
       exact add_eq_zero_iff_eq_neg.2 hs
     rw [show T d = 0 from by simpa using htwo, smul_zero]
-  · rw [show IsQuadLorentz.etaZ (d 0) (d 1) = 0 from by simp [IsQuadLorentz.etaZ, hne]]
+  · rw [show minkowskiMatrixZ (d 0) (d 1) = 0 from by simp [minkowskiMatrixZ, hne]]
     simp
 
 /-!

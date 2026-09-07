@@ -42,8 +42,7 @@ its classification, still that there is no invariant, hence no Dirac mass term, 
 namespace Lorentz
 
 open TensorProduct Matrix MatrixGroups SL2C BoostWeight
-open IsQuadLorentz (eq_component_zero_of_mem_boostWeightSubmodule
-  mem_boostWeightSubmodule_zero_of_invariant quotRep quotRep_mkQ)
+open IsQuadLorentz (quotRep quotRep_mkQ)
 
 /-!
 
@@ -489,7 +488,7 @@ include hT in
 theorem eq_zero_of_invariant {x : B} (hx : x ∈ hT.span)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x = 0 := by
   obtain ⟨c, hc⟩ := (hT.mem_span_iff x).1 hx
-  have hw := mem_boostWeightSubmodule_zero_of_invariant (repLorentz := repLorentz) hinv
+  have hw := mem_boostWeightSubmodule_zero_of_invariant (rep := repLorentz) hinv
   have h1 := hT.eq_sum_transitionEntry_smul c hc hw
   have h2 := hT.eq_sum_transitionEntry_smul
     (fun β => (3 : ℂ)⁻¹ * applyTransition c β) h1 hw

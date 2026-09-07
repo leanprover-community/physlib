@@ -200,8 +200,8 @@ lemma mem_of_invariant_of_mem_sup_of_odd_supp {M : Type*} [AddCommGroup M] [Modu
   have hinv' : ∀ g : SL(2,ℂ),
       IsQuadLorentz.quotRep (repLorentz := repLorentz) S hS g (S.mkQ x) = S.mkQ x :=
     fun g => by rw [IsQuadLorentz.quotRep_mkQ, hinv g]
-  have hx0 := IsQuadLorentz.mem_of_mem_iSup_of_boostWeight_zero hle hmem
-    (IsQuadLorentz.mem_boostWeightSubmodule_zero_of_invariant hinv' j)
+  have hx0 := mem_of_mem_iSup_of_boostWeight_zero hle hmem
+    (mem_boostWeightSubmodule_zero_of_invariant hinv' j)
   rw [hzero, Submodule.map_bot, Submodule.mem_bot] at hx0
   rwa [← Submodule.ker_mkQ S, LinearMap.mem_ker]
 

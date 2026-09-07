@@ -28,6 +28,9 @@ This will be used to help define the Lorentz group in later files.
 - `minkowskiMatrix` : The Minkowski matrix in `d+1` dimensions.
 - `minkowskiMatrix.dual` : The dual of a matrix with respect to the Minkowski metric,
   defined to be `η * Λᵀ * η`.
+- `minkowskiMatrixZ` : The Minkowski matrix over the integers, whose cast to `ℝ` is
+  `minkowskiMatrix`. Statements which a decision procedure has to evaluate are stated with
+  it, the kernel being able to compute in `ℤ` but not in `ℝ`.
 
 ## iii. Table of contents
 
@@ -48,6 +51,7 @@ This will be used to help define the Lorentz group in later files.
   - B.5. The dual preserves the Minkowski matrix
   - B.6. The dual preserves the determinants
   - B.7. Components of the dual
+- C. The Minkowski matrix over the integers
 
 ## iv. References
 
@@ -360,3 +364,58 @@ lemma dual_apply_minkowskiMatrix (μ ν : Fin 1 ⊕ Fin d) :
   simp [dual_apply, mul_assoc]
 
 end minkowskiMatrix
+
+/-!
+
+## C. The Minkowski matrix over the integers
+
+The entries of the Minkowski matrix are integers, and some arguments have to compute with
+them: the kernel evaluates `ℤ` but not `ℝ`. `minkowskiMatrixZ` is the same diagonal matrix
+over `ℤ`, and `minkowskiMatrixZ.cast_apply` identifies it with `minkowskiMatrix`.
+
+-/
+
+/-- The Minkowski matrix over the integers, `diag(1, -1, -1, ...)` in `ℤ`. Its cast to `ℝ` is
+  `minkowskiMatrix`, by `minkowskiMatrixZ.cast_apply`. -/
+def minkowskiMatrixZ {d : ℕ} : Matrix (Fin 1 ⊕ Fin d) (Fin 1 ⊕ Fin d) ℤ :=
+  diagonal (Sum.elim 1 (-1))
+
+namespace minkowskiMatrixZ
+
+variable {d : ℕ}
+
+/-- The integer Minkowski matrix as a diagonal matrix. -/
+lemma as_diagonal : @minkowskiMatrixZ d = diagonal (Sum.elim 1 (-1)) := rfl
+
+/-- The time-time component of the integer Minkowski matrix is `1`. -/
+@[simp]
+lemma inl_0_inl_0 : @minkowskiMatrixZ d (Sum.inl 0) (Sum.inl 0) = 1 := by
+  simp [minkowskiMatrixZ]
+
+/-- The space diagonal components of the integer Minkowski matrix are `-1`. -/
+@[simp]
+lemma inr_i_inr_i (i : Fin d) : @minkowskiMatrixZ d (Sum.inr i) (Sum.inr i) = -1 := by
+  simp [minkowskiMatrixZ]
+
+/-- The off-diagonal components of the integer Minkowski matrix vanish. -/
+@[simp]
+lemma off_diag_zero {μ ν : Fin 1 ⊕ Fin d} (h : μ ≠ ν) : @minkowskiMatrixZ d μ ν = 0 :=
+  diagonal_apply_ne _ h
+
+/-- The integer Minkowski matrix is symmetric, being diagonal. -/
+lemma comm (μ ν : Fin 1 ⊕ Fin d) : @minkowskiMatrixZ d μ ν = minkowskiMatrixZ ν μ := by
+  rcases eq_or_ne μ ν with rfl | h
+  · rfl
+  · rw [off_diag_zero h, off_diag_zero h.symm]
+
+/-- The integer Minkowski matrix casts to the Minkowski matrix, entry by entry. -/
+lemma cast_apply (μ ν : Fin 1 ⊕ Fin d) :
+    ((minkowskiMatrixZ μ ν : ℤ) : ℝ) = minkowskiMatrix μ ν := by
+  rcases eq_or_ne μ ν with rfl | h
+  · match μ with
+    | Sum.inl i => rw [Subsingleton.elim i 0]; simp
+    | Sum.inr i => simp
+  · rw [off_diag_zero h, minkowskiMatrix.off_diag_zero h]
+    simp
+
+end minkowskiMatrixZ

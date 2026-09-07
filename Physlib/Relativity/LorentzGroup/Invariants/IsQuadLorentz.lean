@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.LightConeDeriv
+public import Physlib.Mathematics.LeviCivita.Basic
 public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 -- Not used here; `Peeling` reaches it through this file.
@@ -127,47 +128,42 @@ lemma repLorentz_sum_smul_of_isInvariantCoeff {c : (Fin 4 → Fin 1 ⊕ Fin 3) �
 
 ## B.1. The metric, the Levi-Civita symbol and the contractions
 
-`etaZ` is `η = diag(1, -1, -1, -1)`, checked against `minkowskiMatrix` by `etaZ_cast`, and
-`epsilonSignZ d` is the determinant of the matrix whose rows are the unit vectors of
-`d 0, d 1, d 2, d 3`: `1` on `(t, x, y, z)`, minus itself under a swap of two slots, `0` on a
-repeated direction. Both are integer valued, as is everything F and G compute with. The metric
-pairings use the slots `(0,1)(2,3)`, `(0,2)(1,3)` and `(0,3)(1,2)` for `outerContraction`,
-`innerContraction` and `splitContraction`; `contractionCoeff` holds the four coefficient
-tensors and `contraction T` the four contractions in that order.
+Neither the metric nor the Levi-Civita symbol is defined here. The metric is
+`minkowskiMatrixZ`, the integer form of `minkowskiMatrix`, and the symbol is
+`leviCivitaSymbol`, read on an index vector through `finSumFinEquiv`. Both are integer
+valued because sections F and G evaluate them in the kernel, which cannot compute with real
+numbers. The metric pairings use the slots `(0,1)(2,3)`,
+`(0,2)(1,3)` and `(0,3)(1,2)` for `outerContraction`, `innerContraction` and
+`splitContraction`; `contractionCoeff` holds the four coefficient tensors and `contraction T`
+the four contractions in that order.
 -/
-
-/-- The Minkowski sign of a direction: `+1` on time, `-1` on each spatial axis. -/
-def minkowskiSignZ : Fin 1 ⊕ Fin 3 → ℤ := Sum.elim (fun _ => 1) (fun _ => -1)
-
-/-- The Minkowski metric `η = diag(1, -1, -1, -1)`, integer valued so the later checks compute. -/
-def etaZ (μ ν : Fin 1 ⊕ Fin 3) : ℤ := if μ = ν then minkowskiSignZ μ else 0
-
-/-- The Levi-Civita symbol; the row index is a slot, carried across by `finSumFinEquiv`. -/
-def epsilonSignZ (d : Fin 4 → Fin 1 ⊕ Fin 3) : ℤ :=
-  (Matrix.of fun μ ν : Fin 1 ⊕ Fin 3 => if d (finSumFinEquiv μ) = ν then (1 : ℤ) else 0).det
 
 /-- The four coefficient tensors: the three metric pairings, then the Levi-Civita symbol. -/
 def contractionCoeff : Fin 4 → (Fin 4 → Fin 1 ⊕ Fin 3) → ℤ :=
-  ![fun d => etaZ (d 0) (d 1) * etaZ (d 2) (d 3),
-    fun d => etaZ (d 0) (d 2) * etaZ (d 1) (d 3),
-    fun d => etaZ (d 0) (d 3) * etaZ (d 1) (d 2),
-    epsilonSignZ]
+  ![fun d => minkowskiMatrixZ (d 0) (d 1) * minkowskiMatrixZ (d 2) (d 3),
+    fun d => minkowskiMatrixZ (d 0) (d 2) * minkowskiMatrixZ (d 1) (d 3),
+    fun d => minkowskiMatrixZ (d 0) (d 3) * minkowskiMatrixZ (d 1) (d 2),
+    fun d => leviCivitaSymbol fun μ => d (finSumFinEquiv μ)]
 
 /-- The contraction `η_{μν} η_{ρσ} T^{μνρσ}`, pairing slots `(0,1)` and `(2,3)`. -/
 noncomputable def outerContraction (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) : B :=
-  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3, ((etaZ (d 0) (d 1) * etaZ (d 2) (d 3) : ℤ) : ℂ) • T d
+  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3,
+    ((minkowskiMatrixZ (d 0) (d 1) * minkowskiMatrixZ (d 2) (d 3) : ℤ) : ℂ) • T d
 
 /-- The contraction `η_{μρ} η_{νσ} T^{μνρσ}`, pairing slots `(0,2)` and `(1,3)`. -/
 noncomputable def innerContraction (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) : B :=
-  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3, ((etaZ (d 0) (d 2) * etaZ (d 1) (d 3) : ℤ) : ℂ) • T d
+  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3,
+    ((minkowskiMatrixZ (d 0) (d 2) * minkowskiMatrixZ (d 1) (d 3) : ℤ) : ℂ) • T d
 
 /-- The contraction `η_{μσ} η_{νρ} T^{μνρσ}`, pairing slots `(0,3)` and `(1,2)`. -/
 noncomputable def splitContraction (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) : B :=
-  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3, ((etaZ (d 0) (d 3) * etaZ (d 1) (d 2) : ℤ) : ℂ) • T d
+  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3,
+    ((minkowskiMatrixZ (d 0) (d 3) * minkowskiMatrixZ (d 1) (d 2) : ℤ) : ℂ) • T d
 
 /-- The contraction `ε_{μνρσ} T^{μνρσ}` with the Levi-Civita symbol. -/
 noncomputable def epsilonContraction (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) : B :=
-  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3, ((epsilonSignZ d : ℤ) : ℂ) • T d
+  ∑ d : Fin 4 → Fin 1 ⊕ Fin 3,
+    ((leviCivitaSymbol fun μ => d (finSumFinEquiv μ) : ℤ) : ℂ) • T d
 
 /-- The four contractions in order, from the outer one to the Levi-Civita one. -/
 noncomputable def contraction (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) : Fin 4 → B :=
@@ -211,13 +207,13 @@ lemma smul_contraction_mem_span (a₁ a₂ a₃ a₄ : ℂ) :
 
 ## B.2. The four coefficient tensors are invariant
 
-`Λ η Λᵀ = η` defines the Lorentz group; entry by entry it is `sum_etaZ_mul`, and a pair of
-metrics is two copies of it, one per pair of slots (`act_outerPair`). The inner and split
+`Λ η Λᵀ = η` defines the Lorentz group; entry by entry it is `sum_minkowskiMatrixZ_mul`, and
+a pair of metrics is two copies of it, one per pair of slots (`act_outerPair`). The inner and
+split
 pairings are the outer one with the slots permuted (`act_outerPair_comp`). The symbol against
-four rows of `M` gives `det M` times the symbol of those rows (`sum_epsilonSignZ_mul_prod`),
+four rows of `M` gives `det M` times the symbol of those rows (`sum_leviCivitaSymbol_mul_prod`),
 and `det Λ = 1` here: the only use of the determinant, and the reason there are four invariants
-and not three, a reflection having `det = -1`. `sum_pi_four`, `coe_epsilonSignZ` and
-`det_eq_sum_perm_prod` are bookkeeping.
+and not three, a reflection having `det = -1`. `sum_pi_four` is bookkeeping.
 -/
 
 /-- Bookkeeping: a sum over index vectors is a fourfold sum over directions. -/
@@ -238,57 +234,54 @@ lemma sum_pi_four {M : Type*} [AddCommMonoid M] (F : (Fin 4 → Fin 1 ⊕ Fin 3)
         fin_cases i <;> simp]
   simp only [Fintype.sum_prod_type]
 
-/-- The integer metric agrees with `minkowskiMatrix`, which is therefore `diag(1, -1, -1, -1)`. -/
-lemma etaZ_cast (μ ν : Fin 1 ⊕ Fin 3) : ((etaZ μ ν : ℤ) : ℝ) = minkowskiMatrix μ ν := by
-  rcases eq_or_ne μ ν with rfl | h
-  · match μ with
-    | Sum.inl i => fin_cases i; simp [etaZ, minkowskiSignZ]
-    | Sum.inr i => simp [etaZ, minkowskiSignZ]
-  · simp [etaZ, h]
-
 /-- The defining relation `Λ η Λᵀ = η`, read on the entry `(a, b)`. -/
-lemma sum_etaZ_mul (Λ : LorentzGroup 3) (a b : Fin 1 ⊕ Fin 3) :
-    ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3, ((etaZ x y : ℤ) : ℂ)
+lemma sum_minkowskiMatrixZ_mul (Λ : LorentzGroup 3) (a b : Fin 1 ⊕ Fin 3) :
+    ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3, ((minkowskiMatrixZ x y : ℤ) : ℂ)
         * (((Λ.1 a x : ℝ) : ℂ) * ((Λ.1 b y : ℝ) : ℂ))
-      = ((etaZ a b : ℤ) : ℂ) := by
+      = ((minkowskiMatrixZ a b : ℤ) : ℂ) := by
   have hR : ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3,
-      ((etaZ x y : ℤ) : ℝ) * (Λ.1 a x * Λ.1 b y) = ((etaZ a b : ℤ) : ℝ) := by
+      ((minkowskiMatrixZ x y : ℤ) : ℝ) * (Λ.1 a x * Λ.1 b y)
+        = ((minkowskiMatrixZ a b : ℤ) : ℝ) := by
     have h := congrFun (congrFun
       (LorentzGroup.mul_minkowskiMatrix_mul_transpose (Λ := Λ)) a) b
     simp only [Matrix.mul_apply, Matrix.transpose_apply] at h
-    rw [etaZ_cast, ← h, Finset.sum_comm]
+    rw [minkowskiMatrixZ.cast_apply, ← h, Finset.sum_comm]
     refine Finset.sum_congr rfl fun y _ => ?_
     rw [Finset.sum_mul]
-    exact Finset.sum_congr rfl fun x _ => by rw [etaZ_cast]; ring
+    exact Finset.sum_congr rfl fun x _ => by rw [minkowskiMatrixZ.cast_apply]; ring
   have hC := congrArg (fun r : ℝ => (r : ℂ)) hR
   push_cast at hC ⊢
   exact hC
 
-/-- The pairing of slots `(0,1)` and `(2,3)` is fixed: two copies of `sum_etaZ_mul`. -/
+/-- The pairing of slots `(0,1)` and `(2,3)` is fixed: two copies of `sum_minkowskiMatrixZ_mul`. -/
 lemma act_outerPair (Λ : LorentzGroup 3) (a : Fin 4 → Fin 1 ⊕ Fin 3) :
-    act Λ.1 (fun d => ((etaZ (d 0) (d 1) * etaZ (d 2) (d 3) : ℤ) : ℂ)) a
-      = ((etaZ (a 0) (a 1) * etaZ (a 2) (a 3) : ℤ) : ℂ) := by
+    act Λ.1 (fun d => ((minkowskiMatrixZ (d 0) (d 1) * minkowskiMatrixZ (d 2) (d 3) : ℤ) : ℂ)) a
+      = ((minkowskiMatrixZ (a 0) (a 1) * minkowskiMatrixZ (a 2) (a 3) : ℤ) : ℂ) := by
   have h : ∀ x y z w : Fin 1 ⊕ Fin 3,
-      ((etaZ (![x, y, z, w] 0) (![x, y, z, w] 1)
-          * etaZ (![x, y, z, w] 2) (![x, y, z, w] 3) : ℤ) : ℂ)
+      ((minkowskiMatrixZ (![x, y, z, w] 0) (![x, y, z, w] 1)
+          * minkowskiMatrixZ (![x, y, z, w] 2) (![x, y, z, w] 3) : ℤ) : ℂ)
         * ∏ s, ((Λ.1 (a s) (![x, y, z, w] s) : ℝ) : ℂ)
-      = (((etaZ x y : ℤ) : ℂ) * (((Λ.1 (a 0) x : ℝ) : ℂ) * ((Λ.1 (a 1) y : ℝ) : ℂ)))
-        * (((etaZ z w : ℤ) : ℂ) * (((Λ.1 (a 2) z : ℝ) : ℂ) * ((Λ.1 (a 3) w : ℝ) : ℂ))) := by
+      = (((minkowskiMatrixZ x y : ℤ) : ℂ)
+          * (((Λ.1 (a 0) x : ℝ) : ℂ) * ((Λ.1 (a 1) y : ℝ) : ℂ)))
+        * (((minkowskiMatrixZ z w : ℤ) : ℂ)
+          * (((Λ.1 (a 2) z : ℝ) : ℂ) * ((Λ.1 (a 3) w : ℝ) : ℂ))) := by
     intro x y z w
     simp only [Fin.prod_univ_four, Matrix.cons_val_zero, Matrix.cons_val_one,
       Matrix.head_cons, Matrix.cons_val_two, Matrix.cons_val_three, Matrix.tail_cons]
     push_cast
     ring
   rw [act, sum_pi_four]
-  simp only [h, ← Finset.mul_sum, ← Finset.sum_mul, sum_etaZ_mul]
+  simp only [h, ← Finset.mul_sum, ← Finset.sum_mul, sum_minkowskiMatrixZ_mul]
   push_cast
   ring
 
 /-- The same for the slots permuted by `σ`, by renaming the summation variable. -/
 lemma act_outerPair_comp (σ : Equiv.Perm (Fin 4)) (Λ : LorentzGroup 3)
     (a : Fin 4 → Fin 1 ⊕ Fin 3) :
-    act Λ.1 (fun d => ((etaZ (d (σ 0)) (d (σ 1)) * etaZ (d (σ 2)) (d (σ 3)) : ℤ) : ℂ)) a
-      = ((etaZ (a (σ 0)) (a (σ 1)) * etaZ (a (σ 2)) (a (σ 3)) : ℤ) : ℂ) := by
+    act Λ.1 (fun d => ((minkowskiMatrixZ (d (σ 0)) (d (σ 1))
+        * minkowskiMatrixZ (d (σ 2)) (d (σ 3)) : ℤ) : ℂ)) a
+      = ((minkowskiMatrixZ (a (σ 0)) (a (σ 1))
+        * minkowskiMatrixZ (a (σ 2)) (a (σ 3)) : ℤ) : ℂ) := by
   have h := act_outerPair Λ (a ∘ σ)
   rw [act, ← Equiv.sum_comp (Equiv.arrowCongr σ.symm (Equiv.refl (Fin 1 ⊕ Fin 3)))] at h
   simp only [Equiv.arrowCongr_apply, Equiv.symm_symm, Equiv.coe_refl, Function.comp_def,
@@ -297,61 +290,22 @@ lemma act_outerPair_comp (σ : Equiv.Perm (Fin 4)) (Λ : LorentzGroup 3)
   refine Finset.sum_congr rfl fun d _ => ?_
   rw [← Equiv.prod_comp σ fun i => ((Λ.1 (a i) (d i) : ℝ) : ℂ)]
 
-/-- Bookkeeping: the symbol reads the same in every commutative ring. -/
-lemma coe_epsilonSignZ {R : Type*} [CommRing R] (d : Fin 4 → Fin 1 ⊕ Fin 3) :
-    ((epsilonSignZ d : ℤ) : R)
-      = (Matrix.of fun μ ν : Fin 1 ⊕ Fin 3 =>
-          if d (finSumFinEquiv μ) = ν then (1 : R) else 0).det := by
-  have h := RingHom.map_det (Int.castRingHom R)
-    (Matrix.of fun μ ν : Fin 1 ⊕ Fin 3 => if d (finSumFinEquiv μ) = ν then (1 : ℤ) else 0)
-  simp only [Int.coe_castRingHom, RingHom.mapMatrix_apply] at h
-  rw [epsilonSignZ, h]
-  congr 1
-  ext μ ν
-  by_cases hdν : d (finSumFinEquiv μ) = ν <;> simp [Matrix.map_apply, hdν]
-
-/-- Bookkeeping: the Leibniz formula, with the permutation moving the column index. -/
-lemma det_eq_sum_perm_prod {R : Type*} [CommRing R]
-    (X : Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) R) :
-    X.det = ∑ σ : Equiv.Perm (Fin 1 ⊕ Fin 3),
-      ((Equiv.Perm.sign σ : ℤ) : R) * ∏ μ, X μ (σ μ) := by
-  rw [← Matrix.det_transpose X, Matrix.det_apply']
-  rfl
-
-/-- Against four rows of `M` the symbol gives `det M` times the symbol of those rows. -/
-lemma sum_epsilonSignZ_mul_prod {R : Type*} [CommRing R]
-    (M : Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) R) (a : Fin 4 → Fin 1 ⊕ Fin 3) :
-    ∑ d : Fin 4 → Fin 1 ⊕ Fin 3, ((epsilonSignZ d : ℤ) : R) * ∏ i, M (a i) (d i)
-      = M.det * ((epsilonSignZ a : ℤ) : R) := by
-  classical
-  have hrows : (Matrix.of fun μ ν => M (a (finSumFinEquiv μ)) ν).det
-      = ((epsilonSignZ a : ℤ) : R) * M.det := by
-    rw [coe_epsilonSignZ, ← Matrix.det_mul]
-    congr 1
-    ext μ ν
-    simp [Matrix.mul_apply]
-  have hfun : ∀ (σ : Equiv.Perm (Fin 1 ⊕ Fin 3)) (d : Fin 4 → Fin 1 ⊕ Fin 3),
-      (∀ μ, d (finSumFinEquiv μ) = σ μ) ↔ d = fun s => σ (finSumFinEquiv.symm s) := by
-    refine fun σ d => ⟨fun h => funext fun s => ?_, fun h μ => by subst h; simp⟩
-    rw [← h, Equiv.apply_symm_apply]
-  rw [mul_comm, ← hrows, det_eq_sum_perm_prod]
-  simp only [coe_epsilonSignZ, det_eq_sum_perm_prod, Matrix.of_apply, Finset.sum_mul,
-    Fintype.prod_boole, hfun, mul_ite, mul_one, mul_zero, ite_mul, zero_mul]
-  rw [Finset.sum_comm]
-  refine Finset.sum_congr rfl fun σ _ => ?_
-  rw [Finset.sum_ite_eq' Finset.univ, if_pos (Finset.mem_univ _)]
-  congr 1
-
-/-- The symbol is fixed by a Lorentz matrix of determinant `1`; in general it picks up `det Λ`. -/
-lemma act_epsilonSignZ (Λ : LorentzGroup 3) (hΛ : Λ.1.det = 1) (a : Fin 4 → Fin 1 ⊕ Fin 3) :
-    act Λ.1 (fun d => ((epsilonSignZ d : ℤ) : ℂ)) a = ((epsilonSignZ a : ℤ) : ℂ) := by
+/-- The symbol is fixed by a Lorentz matrix of determinant `1`; in general it picks up `det Λ`,
+  by `sum_leviCivitaSymbol_mul_prod`. -/
+lemma act_leviCivitaSymbol (Λ : LorentzGroup 3) (hΛ : Λ.1.det = 1) (a : Fin 4 → Fin 1 ⊕ Fin 3) :
+    act Λ.1 (fun d => ((leviCivitaSymbol fun μ => d (finSumFinEquiv μ) : ℤ) : ℂ)) a
+      = ((leviCivitaSymbol fun μ => a (finSumFinEquiv μ) : ℤ) : ℂ) := by
   have hdet : (Complex.ofRealHom.mapMatrix Λ.1).det = 1 := by
     rw [← RingHom.map_det, hΛ]
     simp
-  have h := sum_epsilonSignZ_mul_prod (Complex.ofRealHom.mapMatrix Λ.1) a
+  have h := sum_leviCivitaSymbol_mul_prod (Complex.ofRealHom.mapMatrix Λ.1)
+    (fun μ => a (finSumFinEquiv μ))
   rw [hdet, one_mul] at h
-  rw [← h]
-  rfl
+  rw [act, ← h, ← Equiv.sum_comp
+    (Equiv.arrowCongr finSumFinEquiv.symm (Equiv.refl (Fin 1 ⊕ Fin 3)))]
+  refine Finset.sum_congr rfl fun d _ => ?_
+  simp only [Equiv.arrowCongr_apply, Equiv.symm_symm, Equiv.coe_refl, Function.comp_def, id]
+  congr 1
 
 /-- The four coefficient tensors are invariant. -/
 lemma isInvariantCoeff_contractionCoeff (i : Fin 4) :
@@ -364,7 +318,7 @@ lemma isInvariantCoeff_contractionCoeff (i : Fin 4) :
       act_outerPair_comp (Equiv.swap 1 2) (SL2C.toLorentzGroup g) a
   · simpa [contractionCoeff, Equiv.swap_apply_def, Equiv.trans_apply] using
       act_outerPair_comp ((Equiv.swap 1 3).trans (Equiv.swap 1 2)) (SL2C.toLorentzGroup g) a
-  · exact act_epsilonSignZ _ (SL2C.toLorentzGroup_det_one g) a
+  · exact act_leviCivitaSymbol _ (SL2C.toLorentzGroup_det_one g) a
 
 /-!
 
@@ -1205,69 +1159,6 @@ parameter `t` scales it by `t ^ m`, `boostWeightSubmodule` is the space of such 
 invariant has weight `0` along every axis, and weights are independent. The rest repeats E over
 `ℚ`, sorting the light-cone directions into sectors: raising `2`, lowering `-2`, transverse `0`.
 -/
-
-/-- A Lorentz invariant has boost weight zero along every axis, being fixed by every boost. -/
-lemma mem_boostWeightSubmodule_zero_of_invariant {x : B}
-    (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) (i : Fin 3) :
-    x ∈ boostWeightSubmodule repLorentz i 0 := by
-  rw [mem_boostWeightSubmodule]
-  intro t ht
-  rw [hinv, zpow_zero, one_smul]
-
-/-- Vectors of distinct boost weights adding to zero are each zero. -/
-lemma eq_zero_of_sum_mem_boostWeightSubmodule
-    {K : Type*} [Field K] [Algebra ℝ K] {A : Type*} [AddCommGroup A] [Module K A]
-    {rep : Representation K SL(2,ℂ) A} {i : Fin 3} {s : Finset ℤ} {w : ℤ → A}
-    (hw : ∀ m ∈ s, w m ∈ boostWeightSubmodule rep i m)
-    (hsum : ∑ m ∈ s, w m = 0) :
-    ∀ m ∈ s, w m = 0 := by
-  intro m₀ hm₀
-  refine Submodule.disjoint_def.1
-    (iSupIndep_def.1 (boostWeightSubmodule_iSupIndep rep) m₀) (w m₀) (hw m₀ hm₀) ?_
-  have h : w m₀ = -∑ m ∈ s.erase m₀, w m :=
-    eq_neg_of_add_eq_zero_left (by rw [Finset.add_sum_erase s w hm₀]; exact hsum)
-  rw [h]
-  exact neg_mem (sum_mem fun m hm => Submodule.mem_iSup_of_mem m
-    (Submodule.mem_iSup_of_mem (Finset.ne_of_mem_erase hm)
-      (hw m (Finset.mem_of_mem_erase hm))))
-
-/-- A weight-zero vector written as a sum of definite weights equals the weight-zero term. -/
-lemma eq_component_zero_of_mem_boostWeightSubmodule
-    {K : Type*} [Field K] [Algebra ℝ K] {A : Type*} [AddCommGroup A] [Module K A]
-    {rep : Representation K SL(2,ℂ) A} {i : Fin 3} {s : Finset ℤ} {w : ℤ → A} {x : A}
-    (hx : x ∈ boostWeightSubmodule rep i 0)
-    (hw : ∀ m ∈ s, w m ∈ boostWeightSubmodule rep i m)
-    (h0 : (0 : ℤ) ∈ s) (hsum : x = ∑ m ∈ s, w m) :
-    x = w 0 := by
-  have hv : ∀ m ∈ s, Function.update w 0 (w 0 - x) m ∈ boostWeightSubmodule rep i m := by
-    intro m hm
-    by_cases h : m = 0
-    · subst h
-      rw [Function.update_self]
-      exact sub_mem (hw 0 h0) hx
-    · rw [Function.update_of_ne h]
-      exact hw m hm
-  have hsum0 : ∑ m ∈ s, Function.update w 0 (w 0 - x) m = 0 := by
-    rw [Finset.sum_update_of_mem h0, hsum, ← Finset.add_sum_erase s w h0, Finset.erase_eq]
-    abel
-  have h := eq_zero_of_sum_mem_boostWeightSubmodule hv hsum0 0 h0
-  rw [Function.update_self] at h
-  exact (sub_eq_zero.1 h).symm
-
-/-- If each `S m` lies in the weight-`m` space, a weight-zero vector of their join lies in `S 0`. -/
-lemma mem_of_mem_iSup_of_boostWeight_zero {i : Fin 3} {S : ℤ → Submodule ℂ B}
-    (hS : ∀ m : ℤ, S m ≤ boostWeightSubmodule repLorentz i m) {x : B}
-    (hx : x ∈ ⨆ m, S m) (h0 : x ∈ boostWeightSubmodule repLorentz i 0) : x ∈ S 0 := by
-  obtain ⟨f, hf, rfl⟩ := (Submodule.mem_iSup_iff_exists_finsupp _ _).mp hx
-  have hkey := eq_component_zero_of_mem_boostWeightSubmodule (i := i)
-    (s := insert 0 f.support) (w := fun m => f m) h0
-    (fun m _ => hS m (hf m)) (Finset.mem_insert_self 0 _) ?_
-  · rw [hkey]
-    exact hf 0
-  · rw [Finsupp.sum]
-    by_cases h : (0 : ℤ) ∈ f.support
-    · rw [Finset.insert_eq_self.2 h]
-    · rw [Finset.sum_insert h, Finsupp.notMem_support_iff.1 h, zero_add]
 
 /-- The inverse light-cone coefficients of section E over `ℚ`, with the halves kept as halves. -/
 def lightConeCoeffInvQ (i : Fin 3) (μ : Fin 1 ⊕ Fin 3) (κ : Fin 4) : ℚ :=

@@ -35,9 +35,7 @@ namespace Lorentz
 
 open TensorProduct Matrix MatrixGroups SL2C BoostWeight
 open IsQuadLorentz (lightConeCoeffZ coe_lightConeCoeffZ lightConeCoeffInvQ
-  coe_lightConeCoeffInvQ lightConeCoeffInvZ coe_lightConeCoeffInvZ
-  eq_component_zero_of_mem_boostWeightSubmodule
-  mem_boostWeightSubmodule_zero_of_invariant quotRep quotRep_mkQ)
+  coe_lightConeCoeffInvQ lightConeCoeffInvZ coe_lightConeCoeffInvZ quotRep quotRep_mkQ)
 
 /-!
 
@@ -354,7 +352,7 @@ include hT in
 theorem eq_zero_of_invariant {x : B} (hx : x ∈ hT.span)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x = 0 := by
   obtain ⟨c, hc⟩ := (hT.mem_span_iff x).1 hx
-  have hw := mem_boostWeightSubmodule_zero_of_invariant (repLorentz := repLorentz) hinv
+  have hw := mem_boostWeightSubmodule_zero_of_invariant (rep := repLorentz) hinv
   have h0 := hT.eq_sum_transverse_smul 0 c hc (hw 0)
   have h1 := hT.eq_sum_transverse_smul 1
     (fun d => if Transverse 0 (d 0) then c d else 0) h0 (hw 1)

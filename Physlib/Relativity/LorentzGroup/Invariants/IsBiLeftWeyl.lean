@@ -49,8 +49,7 @@ invariance is the same condition for both and the classification carries over (I
 namespace Lorentz
 
 open TensorProduct Matrix MatrixGroups SL2C BoostWeight
-open IsQuadLorentz (eq_component_zero_of_mem_boostWeightSubmodule
-  mem_boostWeightSubmodule_zero_of_invariant quotRep quotRep_mkQ)
+open IsQuadLorentz (quotRep quotRep_mkQ)
 
 /-!
 
@@ -407,7 +406,7 @@ theorem exists_smul_epsilonContraction_of_invariant {x : B} (hx : x ∈ hT.span)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
     ∃ a : ℂ, x = a • epsilonContraction (T := T) := by
   obtain ⟨c, hc⟩ := (hT.mem_span_iff x).1 hx
-  have hw := mem_boostWeightSubmodule_zero_of_invariant (repLorentz := repLorentz) hinv
+  have hw := mem_boostWeightSubmodule_zero_of_invariant (rep := repLorentz) hinv
   have h1 : x = ∑ β, ((3 : ℂ)⁻¹ * (2 * c β - c β.swap)) • T β := by
     rw [hT.eq_sum_transitionEntry_smul c hc hw]
     exact Finset.sum_congr rfl fun β _ => by rw [sum_transitionEntry_mul]

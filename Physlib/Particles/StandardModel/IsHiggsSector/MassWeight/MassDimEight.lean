@@ -176,7 +176,7 @@ lemma dotSpan_one_one_eq :
 
 Two covector indices admit one invariant contraction, the metric trace, and the metric is
 carried to itself by a Lorentz matrix — that is the defining property of the Lorentz group,
-recorded as `IsQuadLorentz.sum_etaZ_mul` — so the trace of a bi-Lorentz family is a Lorentz
+recorded as `sum_minkowskiMatrixZ_mul` — so the trace of a bi-Lorentz family is a Lorentz
 invariant.  It is a gauge invariant too whenever the components are, and the components
 here are isospin contractions, which the gauge group fixes.
 
@@ -189,9 +189,9 @@ lemma repLorentz_metricContraction {T : (Fin 2 → Fin 1 ⊕ Fin 3) → B}
       = IsBiLorentz.metricContraction (T := T) := by
   rw [IsBiLorentz.metricContraction, map_sum]
   have step : ∀ d : Fin 2 → Fin 1 ⊕ Fin 3,
-      repLorentz g (((IsQuadLorentz.etaZ (d 0) (d 1) : ℤ) : ℂ) • T d)
+      repLorentz g (((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ) • T d)
         = ∑ a : Fin 2 → Fin 1 ⊕ Fin 3,
-          (((IsQuadLorentz.etaZ (d 0) (d 1) : ℤ) : ℂ)
+          (((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ)
             * ∏ i : Fin 2, (((SL2C.toLorentzGroup g).1 (a i) (d i) : ℝ) : ℂ)) • T a := by
     intro d
     rw [map_smul, hT.repLorentz_T g d, Finset.smul_sum]
@@ -202,7 +202,7 @@ lemma repLorentz_metricContraction {T : (Fin 2 → Fin 1 ⊕ Fin 3) → B}
   congr 1
   rw [sum_cov_two]
   simp only [Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one]
-  exact IsQuadLorentz.sum_etaZ_mul (SL2C.toLorentzGroup g) (a 0) (a 1)
+  exact IsQuadLorentz.sum_minkowskiMatrixZ_mul (SL2C.toLorentzGroup g) (a 0) (a 1)
 
 /-- The metric trace of a family of gauge invariants is a gauge invariant. -/
 lemma rep_metricContraction {T : (Fin 2 → Fin 1 ⊕ Fin 3) → B}

@@ -45,10 +45,9 @@ namespace Lorentz
 
 open TensorProduct Matrix MatrixGroups SL2C BoostWeight
 open IsQuadLorentz (lightConeCoeffZ coe_lightConeCoeffZ lightConeCoeffInvQ
-  coe_lightConeCoeffInvQ lightConeCoeffInvZ coe_lightConeCoeffInvZ sectorIndex
-  sectorWeight lightConeWeight_eq_sectorWeight slotTransition slotTransitionZ
-  slotTransitionZ_eq_sum eq_component_zero_of_mem_boostWeightSubmodule
-  mem_boostWeightSubmodule_zero_of_invariant etaZ quotRep quotRep_mkQ)
+  coe_lightConeCoeffInvQ lightConeCoeffInvZ coe_lightConeCoeffInvZ sectorIndex sectorWeight
+  lightConeWeight_eq_sectorWeight slotTransition slotTransitionZ slotTransitionZ_eq_sum quotRep
+  quotRep_mkQ)
 
 /-!
 
@@ -472,7 +471,7 @@ set_option maxRecDepth 20000 in
   multiplication of matrices with cheap entries. -/
 lemma Q_explicit :
     Q = Matrix.of fun d e : Fin 2 → Fin 1 ⊕ Fin 3 =>
-      48 * (etaZ (d 0) (d 1) * etaZ (e 0) (e 1)) := by
+      48 * (minkowskiMatrixZ (d 0) (d 1) * minkowskiMatrixZ (e 0) (e 1)) := by
   have h1 : boostAverageZ * (boostAverageZ - 4) = Matrix.of boostAverageSqEntry := by
     rw [boostAverageZ_eq]
     ext a b
@@ -500,7 +499,7 @@ lemma Q_eq_poly : Q = boostAverageZ ^ 3 - (14 : ℤ) • boostAverageZ ^ 2
 /-- The metric contraction `g^{μν} T_{μν}`, the only invariant contraction of two
   four-vector indices. -/
 noncomputable def metricContraction : B :=
-  ∑ d : Fin 2 → Fin 1 ⊕ Fin 3, ((etaZ (d 0) (d 1) : ℤ) : ℂ) • T d
+  ∑ d : Fin 2 → Fin 1 ⊕ Fin 3, ((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ) • T d
 
 /-!
 
@@ -630,20 +629,20 @@ include hT in
 lemma eq_smul_metricContraction {x : B} (c : (Fin 2 → Fin 1 ⊕ Fin 3) → ℂ)
     (hx : x = ∑ e, c e • T e)
     (hw : ∀ i : Fin 3, x ∈ boostWeightSubmodule repLorentz i 0) :
-    x = ((4 : ℂ)⁻¹ * ∑ e, ((etaZ (e 0) (e 1) : ℤ) : ℂ) * c e)
+    x = ((4 : ℂ)⁻¹ * ∑ e, ((minkowskiMatrixZ (e 0) (e 1) : ℤ) : ℂ) * c e)
       • metricContraction (T := T) := by
   rw [hT.eq_sum_Q_smul c hx hw, metricContraction, Finset.smul_sum]
   refine Finset.sum_congr rfl fun d _ => ?_
   rw [smul_smul]
   congr 1
-  have hP : ∀ e, ((Q d e : ℤ) : ℂ)
-      = 48 * ((etaZ (d 0) (d 1) : ℤ) : ℂ) * ((etaZ (e 0) (e 1) : ℤ) : ℂ) := fun e => by
+  have hP : ∀ e, ((Q d e : ℤ) : ℂ) = 48 * ((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ)
+      * ((minkowskiMatrixZ (e 0) (e 1) : ℤ) : ℂ) := fun e => by
     rw [Q_explicit, Matrix.of_apply]
     push_cast
     ring
   rw [show (∑ e, ((Q d e : ℤ) : ℂ) * c e)
-      = 48 * ((etaZ (d 0) (d 1) : ℤ) : ℂ)
-        * ∑ e, ((etaZ (e 0) (e 1) : ℤ) : ℂ) * c e from by
+      = 48 * ((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ)
+        * ∑ e, ((minkowskiMatrixZ (e 0) (e 1) : ℤ) : ℂ) * c e from by
     rw [Finset.mul_sum]
     exact Finset.sum_congr rfl fun e _ => by rw [hP e]; ring]
   field_simp
@@ -663,7 +662,7 @@ theorem exists_smul_metricContraction_of_invariant {x : B} (hx : x ∈ hT.span)
     ∃ a : ℂ, x = a • metricContraction (T := T) := by
   obtain ⟨c, hc⟩ := (hT.mem_span_iff x).1 hx
   exact ⟨_, hT.eq_smul_metricContraction c hc
-    (mem_boostWeightSubmodule_zero_of_invariant (repLorentz := repLorentz) hinv)⟩
+    (mem_boostWeightSubmodule_zero_of_invariant (rep := repLorentz) hinv)⟩
 
 /-!
 
