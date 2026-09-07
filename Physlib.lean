@@ -23,9 +23,12 @@ public import Physlib.ClassicalFieldTheory.JetAlgebra.FieldAlgebra.LorentzAction
 public import Physlib.ClassicalFieldTheory.JetAlgebra.FieldAlgebra.MassDim
 public import Physlib.ClassicalFieldTheory.JetAlgebra.FieldAlgebra.Prod
 public import Physlib.ClassicalFieldTheory.JetAlgebra.FieldAlgebra.Statistics
+public import Physlib.ClassicalFieldTheory.JetAlgebra.GaugeFieldData
 public import Physlib.ClassicalFieldTheory.JetAlgebra.Jet
 public import Physlib.ClassicalFieldTheory.JetAlgebra.JetComponentSpace.Basic
 public import Physlib.ClassicalFieldTheory.JetAlgebra.JetComponentSpace.GaugeAction
+public import Physlib.ClassicalFieldTheory.JetAlgebra.LocalFieldAlgebra
+public import Physlib.ClassicalFieldTheory.JetAlgebra.SpeciesGenerators
 public import Physlib.ClassicalFieldTheory.Local.Variation
 public import Physlib.ClassicalMechanics.Basic
 public import Physlib.ClassicalMechanics.DampedHarmonicOscillator.Basic
