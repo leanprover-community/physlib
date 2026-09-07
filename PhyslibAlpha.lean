@@ -27,6 +27,14 @@ public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SphericalCylinder
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SolidCylinder
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SolidSphere
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SphericalShell
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.Basic
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.Determinism
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.NewtonianSystem
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.PeanoExistence
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.PhysicalSpace
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.PosPartPow
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
+public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Basic
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.LadderOperators
