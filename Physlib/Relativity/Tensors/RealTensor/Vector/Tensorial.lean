@@ -148,11 +148,11 @@ lemma tensor_basis_repr_toTensor_prod_apply {d} (F : Vector d ⊗[ℝ] Vector d)
     Equiv.symm_symm, Fin.isValue]
   rw [tensor_basis_map_eq_basis_reindex]
   have hb : (((basis (d := d)).reindex indexEquiv.symm).tensorProduct
-          (basis.reindex indexEquiv.symm)) =
-          ((basis (d := d)).tensorProduct (basis (d := d))).reindex
-          (indexEquiv.symm.prodCongr indexEquiv.symm) := by
-        ext ⟨i, j⟩
-        simp
+      (basis.reindex indexEquiv.symm)) =
+      ((basis (d := d)).tensorProduct (basis (d := d))).reindex
+      (indexEquiv.symm.prodCongr indexEquiv.symm) := by
+    ext ⟨i, j⟩
+    simp
   rw [hb, Module.Basis.repr_reindex_apply]
   congr 1
 
