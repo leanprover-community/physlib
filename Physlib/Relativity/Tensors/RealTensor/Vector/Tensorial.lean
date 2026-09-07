@@ -151,9 +151,7 @@ lemma tensor_basis_repr_toTensor_prod_apply {d} (F : Vector d ⊗[ℝ] Vector d)
           (basis.reindex indexEquiv.symm)) =
           ((basis (d := d)).tensorProduct (basis (d := d))).reindex
           (indexEquiv.symm.prodCongr indexEquiv.symm) := by
-        ext b
-        match b with
-        | ⟨i, j⟩ =>
+        ext ⟨i, j⟩
         simp
   rw [hb, Module.Basis.repr_reindex_apply]
   congr 1
