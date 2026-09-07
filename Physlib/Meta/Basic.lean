@@ -98,9 +98,17 @@ variable {m} [Monad m] [MonadEnv m] [MonadLiftT BaseIO m]
 def toRelativeFilePath (c : Name) : System.FilePath :=
   System.FilePath.join "." c.toFilePath
 
-/-- Turns a name, which represents a module, into a link to github. -/
-def toGitHubLink (c : Name) (line : Nat) : String :=
-  s!"https://github.com/leanprover-community/physlib/blob/master/{c.toFilePath}#L{line}"
+/-- The fragment of a github link naming a line, or a range of lines, of a file.
+This is `#L82` for a single line, and `#L201-L223` for a range of lines. A value of
+`endLine` which is not after `line` is taken to mean that only `line` is named. -/
+def gitHubLineFragment (line : Nat) (endLine : Nat := 0) : String :=
+  if line < endLine then s!"#L{line}-L{endLine}" else s!"#L{line}"
+
+/-- Turns a name, which represents a module, into a link to github. The optional
+`endLine` makes the link name the range of lines `line` to `endLine`. -/
+def toGitHubLink (c : Name) (line : Nat) (endLine : Nat := 0) : String :=
+  s!"https://github.com/leanprover-community/physlib/blob/master/{c.toFilePath}" ++
+    gitHubLineFragment line endLine
 
 /-- Given a name, returns the line number. -/
 def lineNumber (c : Name) : m Nat := do

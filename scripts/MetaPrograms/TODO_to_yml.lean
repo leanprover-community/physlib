@@ -162,6 +162,9 @@ structure FullTODOInfo where
   fileName : Name
   name : Name
   line : Nat
+  /- The last line of the range of lines the item is about. `0`, and any value which is
+  not after `line`, means that the item is about the single line `line`. -/
+  endLine : Nat := 0
   isInformalDef : Bool
   isInformalLemma : Bool
   isSemiFormalResult : Bool
@@ -169,14 +172,18 @@ structure FullTODOInfo where
   category : PhyslibCategory
   tag : String
 
-/-- Converts a `FullTODOInfo` to an entry in a YAML code. -/
+/-- Converts a `FullTODOInfo` to an entry in a YAML code.
+
+The `endLine` key is written only for an item which is about a range of lines, so that
+items about a single line keep exactly the entry they had before ranges existed. -/
 def FullTODOInfo.toYAML (todo : FullTODOInfo) : MetaM String := do
   let content := todo.content
   let contentIndent := content.replace "\n" "\n      "
+  let endLine := if todo.line < todo.endLine then s!"\n    endLine: {todo.endLine}" else ""
   return s!"
   - file: {todo.fileName}
-    githubLink: {Name.toGitHubLink todo.fileName todo.line}
-    line: {todo.line}
+    githubLink: {Name.toGitHubLink todo.fileName todo.line todo.endLine}
+    line: {todo.line}{endLine}
     isInformalDef: {todo.isInformalDef}
     isInformalLemma: {todo.isInformalLemma}
     isSemiFormalResult: {todo.isSemiFormalResult}
@@ -194,7 +201,8 @@ def FullTODOInfo.toYAML (todo : FullTODOInfo) : MetaM String := do
 -/
 
 def FullTODOInfo.ofTODO (t : todoInfo) : FullTODOInfo :=
-  {content := t.content, fileName := t.fileName, line := t.line, name := t.fileName,
+  {content := t.content, fileName := t.fileName, line := t.line, endLine := t.endLine,
+   name := t.fileName,
    isInformalDef := false, isInformalLemma := false,
    isSemiFormalResult := false, category := PhyslibCategory.ofFileName t.fileName,
    tag := t.tag}
