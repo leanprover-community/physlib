@@ -299,6 +299,23 @@ lemma deriv_contDiff_of_contDiff {M : Type}
   change ContDiff ℝ ∞ ((fun x => x 1) ∘ (fun t => fderiv ℝ f t))
   apply ContDiff.comp <;> fun_prop
 
+/-- The time derivative of a `C^(n+1)` curve is `C^n`. -/
+@[fun_prop]
+lemma deriv_contDiff_of_contDiff_succ {M : Type} {n : WithTop ℕ∞}
+    [NormedAddCommGroup M] [NormedSpace ℝ M] (f : Time → M) (hf : ContDiff ℝ (n + 1) f) :
+    ContDiff ℝ n (∂ₜ f) := by
+  unfold deriv
+  change ContDiff ℝ n ((fun x => x 1) ∘ (fun t => fderiv ℝ f t))
+  exact ContDiff.comp (by fun_prop) (contDiff_succ_iff_fderiv.mp hf).2.2
+
+/-- The time derivative of a `C²` curve is differentiable. -/
+@[fun_prop]
+lemma deriv_differentiable_of_contDiff_two {M : Type}
+    [NormedAddCommGroup M] [NormedSpace ℝ M] (f : Time → M) (hf : ContDiff ℝ 2 f) :
+    Differentiable ℝ (∂ₜ f) :=
+  (deriv_contDiff_of_contDiff_succ (n := 1) f (by rw [one_add_one_eq_two]; exact hf)).differentiable
+    (by simp)
+
 @[fun_prop]
 lemma deriv_contDiff_of_space {n} {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (f : Time → Space d → M) (hf : ContDiff ℝ (n + 1) ↿f) :
@@ -314,13 +331,14 @@ lemma deriv_comp_neg {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
   rw [Time.deriv_eq, Time.deriv_eq, fderiv_fun_comp _ hf (by fun_prop), fderiv_fun_neg]
   simp
 
-/-- The second derivative is unchanged by the reversal of time: for a smooth curve `f`, the second
+/-- The second derivative is unchanged by the reversal of time: for a `C²` curve `f`, the second
 derivative of `t ↦ f (-t)` at `t` is the second derivative of `f` at `-t`, the two changes of sign
 cancelling. -/
 lemma deriv_deriv_comp_neg {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
-    (f : Time → M) (hf : ContDiff ℝ ∞ f) (t : Time) :
+    (f : Time → M) (hf : ContDiff ℝ 2 f) (t : Time) :
     ∂ₜ (∂ₜ (fun s => f (-s))) t = ∂ₜ (∂ₜ f) (-t) := by
-  rw [← neg_neg (∂ₜ (∂ₜ f) (-t)), ← deriv_comp_neg _ _ (by fun_prop), ← Time.deriv_neg]
+  rw [← neg_neg (∂ₜ (∂ₜ f) (-t)),
+    ← deriv_comp_neg _ _ ((deriv_differentiable_of_contDiff_two f hf) _), ← Time.deriv_neg]
   congr
   ext
   exact deriv_comp_neg f _ (hf.differentiable (by simp) _)
@@ -336,6 +354,20 @@ lemma differentiable_euclid {f : Time → EuclideanSpace ℝ (Fin n)}
     Differentiable ℝ f := by
   rw [differentiable_euclidean]
   fun_prop
+
+/-- Chain rule for a real function of one coordinate of a curve in Euclidean space: the time
+derivative of `t ↦ f (r t i)` is `f'` times the `i`-th component of the velocity, where `f'` is
+the derivative of `f` at `r t i`. -/
+lemma deriv_comp_coord {ι : Type} [Fintype ι] {f : ℝ → ℝ} {f' : ℝ}
+    {r : Time → EuclideanSpace ℝ ι} {t : Time}
+    (i : ι) (hr : DifferentiableAt ℝ r t) (hf : HasDerivAt f f' (r t i)) :
+    ∂ₜ (fun s => f (r s i)) t = f' * ∂ₜ r t i := by
+  have h1 : HasFDerivAt (fun s : Time => r s i)
+      ((EuclideanSpace.proj (𝕜 := ℝ) i).comp (fderiv ℝ r t)) t :=
+    (EuclideanSpace.proj (𝕜 := ℝ) i).hasFDerivAt.comp t hr.hasFDerivAt
+  have h2 : HasFDerivAt (fun s : Time => f (r s i)) _ t := hf.comp_hasFDerivAt t h1
+  rw [Time.deriv_eq, h2.fderiv, Time.deriv_eq]
+  simp
 
 lemma deriv_euclid { μ} {f : Time→ EuclideanSpace ℝ (Fin n)}
     (hf : Differentiable ℝ f) (t : Time) :

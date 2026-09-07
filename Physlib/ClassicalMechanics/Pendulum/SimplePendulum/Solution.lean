@@ -268,7 +268,7 @@ rule `Time.deriv_comp_neg` and its second-order form `Time.deriv_deriv_comp_neg`
 lemma isSolution_comp_neg {S : SimplePendulum} {θ : Time → EuclideanSpace ℝ (Fin 1)}
     (h : S.IsSolution θ) : S.IsSolution (fun t => θ (-t)) := by
   refine ⟨h.contDiff.comp contDiff_neg, fun t => ?_⟩
-  rw [Time.deriv_deriv_comp_neg θ h.contDiff t]
+  rw [Time.deriv_deriv_comp_neg θ (h.contDiff.of_le (by norm_cast)) t]
   exact h.equationOfMotion (-t)
 
 /-!
