@@ -64,6 +64,7 @@ The operator integral of a measurable simple multiplier. This is the finite-sum 
 bounded spectral calculus. It is defined in the weak-operator representation because a weak PVM
 need not have finite variation in operator norm. -/
 
+/-- The weak-operator integral of a complex-valued simple function. -/
 noncomputable def simpleIntegral (f : SimpleFunc α ℂ) : H →WOT[ℂ] H :=
   ∑ z ∈ f.range, z • μS (f ⁻¹' {z})
 
