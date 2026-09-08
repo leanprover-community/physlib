@@ -11,23 +11,41 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Data.Bracket
 
 /-!
-# Robertson's uncertainty relation for mixed quantum states
+# Robertson's uncertainty relation for mixed states
+
+## i. Overview
 
 In 1929, H. P. Robertson showed that two Hermitian observables on a quantum state satisfy a
-fundamental trade-off: the sharper you know one, the less you can know of the other. Formally,
-for observables `G` and `O` and a state `ρ`:
+fundamental trade-off: the sharper one observable is known, the less the other can be known.
+Formally, for observables `G` and `O` on a state `ρ`:
 
     ⟨i[G,O]⟩² / 4 ≤ Var(G) · Var(O).
 
-We prove this for arbitrary finite-dimensional mixed states (`MState`) via Cauchy-Schwarz on the
-Hilbert-Schmidt space. The main result is `robertson_uncertainty`.
+This module proves the relation for arbitrary finite-dimensional mixed states (`MState`),
+via Cauchy–Schwarz on the Hilbert–Schmidt space. The pure-state version of this bound, for
+partially defined operators on an inner product space, is in
+`Physlib.QuantumMechanics.Operators.Uncertainty`; the mixed-state formulation here requires
+the density-matrix framework of `MState`, which lives in `QuantumInfo`.
 
-The corollary `robertson_normalized` gives the multiplicative form `1 ≤ 4 · Var(O) · Var(G)`
-under `⟨i[G,O]⟩ = 1`, free of positivity hypotheses.
+## ii. Key results
 
-## References
+- `HermitianMat.bracket_mat` : the commutator bracket `⁅G, O⁆ = i(GO − OG)` on Hermitian
+  matrices.
+- `MState.robertson_uncertainty` : Robertson's relation for mixed states.
+- `MState.robertson_normalized` : the multiplicative form `1 ≤ 4 · Var(O) · Var(G)` under
+  the normalization `⟨i[G,O]⟩ = 1`, free of positivity hypotheses.
 
-* H. P. Robertson, *The Uncertainty Principle*, Phys. Rev. **34**, 163-164 (1929)
+## iii. Table of contents
+
+- A. Commutator bracket on Hermitian matrices
+- B. Hilbert–Schmidt embedding
+- C. Centered vectors and the commutator pairing
+- D. Robertson's uncertainty relation
+- E. Normalized form
+
+## iv. References
+
+- [H. P. Robertson, *The Uncertainty Principle* (1929)][robertson1929uncertainty].
 -/
 
 @[expose] public section
@@ -36,12 +54,14 @@ noncomputable section
 
 open scoped ComplexConjugate Matrix
 
-/-! ## Commutator bracket on Hermitian matrices -/
-
 namespace HermitianMat
 
 variable {d : Type*} [Fintype d] [DecidableEq d]
 
+/-! ## A. Commutator bracket on Hermitian matrices -/
+
+/-- The commutator bracket `⁅G, O⁆ = i(GO − OG)` of two Hermitian matrices, as a
+`HermitianMat`. -/
 instance : Bracket (HermitianMat d ℂ) (HermitianMat d ℂ) where
   bracket G O := ⟨Complex.I • (G.mat * O.mat - O.mat * G.mat), by
     show (Complex.I • (G.mat * O.mat - O.mat * G.mat))ᴴ = _
@@ -61,12 +81,16 @@ namespace MState
 
 variable {d : Type*} [Fintype d] [DecidableEq d]
 
-/-! ## Hilbert-Schmidt embedding
+noncomputable section
 
-Cauchy-Schwarz is applied to `Tr(G O ρ)`, which requires embedding matrices into an inner
-product space via `hsVec`. The HermitianMat inner product (`Tr(AB)`) gives a different bilinear
-form and does not suffice for this argument. -/
+/-! ## B. Hilbert–Schmidt embedding
 
+Cauchy–Schwarz is applied to `Tr(G O ρ)`, which requires embedding matrices into an inner
+product space via `hsVec`. The HermitianMat inner product (`Tr(AB)`) gives a different
+bilinear form and does not suffice for this argument. -/
+
+/-- The entries of a matrix, placed into `EuclideanSpace ℂ (d × d)` where Mathlib's inner
+product space API (in particular Cauchy–Schwarz) is available. -/
 private def hsVec (M : Matrix d d ℂ) : EuclideanSpace ℂ (d × d) :=
   (WithLp.equiv 2 (d × d → ℂ)).symm (fun p => M p.1 p.2)
 
@@ -75,6 +99,8 @@ omit [Fintype d] [DecidableEq d] in
 private lemma hsVec_apply (M : Matrix d d ℂ) (p : d × d) : hsVec M p = M p.1 p.2 := rfl
 
 omit [DecidableEq d] in
+/-- The EuclideanSpace inner product of two embedded matrices is the Hilbert–Schmidt
+pairing `Tr(Aᴴ B)`. -/
 private lemma hsVec_inner (A B : Matrix d d ℂ) :
     inner ℂ (hsVec A) (hsVec B) = (Aᴴ * B).trace := by
   rw [PiLp.inner_apply, Fintype.sum_prod_type, Matrix.trace]
@@ -84,17 +110,20 @@ private lemma hsVec_inner (A B : Matrix d d ℂ) :
   refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => ?_
   exact mul_comm _ _
 
-/-! ## Centered vectors and the commutator pairing -/
+/-! ## C. Centered vectors and the commutator pairing -/
 
 section observables
 
 variable (ρ : MState d)
 
+/-- The cyclic trace identity `Tr(√ρ X √ρ) = Tr(X ρ)`, the Hilbert–Schmidt engine of the
+mixed-state calculation. -/
 private lemma trace_sqrt_sandwich (X : Matrix d d ℂ) :
     (ρ.M.sqrt.mat * X * ρ.M.sqrt.mat).trace = (X * ρ.m).trace := by
   rw [Matrix.trace_mul_cycle, HermitianMat.sqrt_sq ρ.nonneg, MState.mat_M,
     Matrix.trace_mul_comm]
 
+/-- The embedding of `A √ρ` against `√ρ` is the expectation value of `A`. -/
 private lemma inner_sqrt_left (A : HermitianMat d ℂ) :
     inner ℂ (hsVec ρ.M.sqrt.mat) (hsVec (A.mat * ρ.M.sqrt.mat)) = (ρ.exp_val A : ℂ) := by
   rw [hsVec_inner, ρ.M.sqrt.H.eq,
@@ -102,10 +131,12 @@ private lemma inner_sqrt_left (A : HermitianMat d ℂ) :
       simp [Matrix.mul_assoc],
     ρ.trace_sqrt_sandwich, ← exp_val_ℂ, exp_val_ℂ_hermitian]
 
+/-- The embedded `√ρ` is a unit vector in Hilbert–Schmidt space. -/
 private lemma inner_sqrt_self :
     inner ℂ (hsVec ρ.M.sqrt.mat) (hsVec ρ.M.sqrt.mat) = (1 : ℂ) := by
   rw [hsVec_inner, ρ.M.sqrt.H.eq, HermitianMat.sqrt_sq ρ.nonneg, MState.mat_M, ρ.tr']
 
+/-- The embedding of `G √ρ` against `O √ρ` is the expectation value of the product `G O`. -/
 private lemma inner_hsVec_hsVec (G O : HermitianMat d ℂ) :
     inner ℂ (hsVec (G.mat * ρ.M.sqrt.mat)) (hsVec (O.mat * ρ.M.sqrt.mat)) =
       ρ.exp_val_ℂ (G.mat * O.mat) := by
@@ -115,9 +146,11 @@ private lemma inner_hsVec_hsVec (G O : HermitianMat d ℂ) :
       simp [Matrix.mul_assoc],
     ρ.trace_sqrt_sandwich, ← exp_val_ℂ]
 
+/-- The centered vector `A √ρ − ⟨A⟩ √ρ` in Hilbert–Schmidt space. -/
 private def centeredVec (A : HermitianMat d ℂ) : EuclideanSpace ℂ (d × d) :=
   hsVec (A.mat * ρ.M.sqrt.mat) - (ρ.exp_val A : ℂ) • hsVec ρ.M.sqrt.mat
 
+/-- The squared Hilbert–Schmidt norm of the centered vector is the variance of `A`. -/
 private lemma norm_centered_sq (A : HermitianMat d ℂ) :
     ‖ρ.centeredVec A‖ ^ 2 = ρ.variance A := by
   have hself := ρ.inner_sqrt_self
@@ -139,8 +172,8 @@ private lemma norm_centered_sq (A : HermitianMat d ℂ) :
   rw [hre, hexpand, variance, hAsq, ← Complex.ofReal_mul, ← Complex.ofReal_sub, Complex.ofReal_re]
   ring
 
-/-! ## Robertson's uncertainty relation -/
-
+/-- The expectation of a product of Hermitian matrices is conjugate-symmetric in the
+factors. -/
 private lemma exp_val_ℂ_swap (G O : HermitianMat d ℂ) :
     (starRingEnd ℂ) (ρ.exp_val_ℂ (G.mat * O.mat)) = ρ.exp_val_ℂ (O.mat * G.mat) := by
   simp only [MState.exp_val_ℂ, starRingEnd_apply, ← Matrix.trace_conjTranspose]
@@ -149,6 +182,8 @@ private lemma exp_val_ℂ_swap (G O : HermitianMat d ℂ) :
           (O.H).eq, ← Matrix.mul_assoc],
       Matrix.mul_assoc, Matrix.trace_mul_comm]
 
+/-- The inner product of the centered vectors of `G` and `O` is the covariance pairing
+`⟨GO⟩ − ⟨G⟩⟨O⟩`. -/
 private lemma inner_centered_centered (G O : HermitianMat d ℂ) :
     (inner ℂ (ρ.centeredVec G) (ρ.centeredVec O) : ℂ) =
       ρ.exp_val_ℂ (G.mat * O.mat) - (ρ.exp_val G : ℂ) * (ρ.exp_val O : ℂ) := by
@@ -164,9 +199,11 @@ private lemma inner_centered_centered (G O : HermitianMat d ℂ) :
     Complex.conj_ofReal, hself, hOl, hGr, hGO]
   ring
 
-/-- **Robertson's uncertainty relation** (H. P. Robertson, Phys. Rev. **34**, 163-164 (1929)),
-for two Hermitian observables on an arbitrary finite-dimensional state: the product of variances
-dominates a quarter of the squared commutator pairing. -/
+/-! ## D. Robertson's uncertainty relation -/
+
+/-- **Robertson's uncertainty relation** (H. P. Robertson, Phys. Rev. **34**, 163–164 (1929)),
+for two Hermitian observables on an arbitrary finite-dimensional mixed state: the product of
+variances dominates a quarter of the squared commutator pairing. -/
 theorem robertson_uncertainty (G O : HermitianMat d ℂ) :
     (ρ.exp_val ⁅G, O⁆) ^ 2 / 4 ≤ ρ.variance G * ρ.variance O := by
   set z : ℂ := inner ℂ (ρ.centeredVec G) (ρ.centeredVec O) with hz
@@ -210,7 +247,7 @@ theorem robertson_uncertainty (G O : HermitianMat d ℂ) :
     _ ≤ (‖ρ.centeredVec G‖ * ‖ρ.centeredVec O‖) ^ 2 := by gcongr
     _ = ρ.variance G * ρ.variance O := hprodsq
 
-/-! ## Normalized form (uncertainty principle) -/
+/-! ## E. Normalized form -/
 
 /-- Robertson's uncertainty relation in **multiplicative form**: under the normalization
 `⟨i[G,O]⟩_ρ = 1`, the product of variances is at least `1/4`. -/
@@ -222,6 +259,8 @@ theorem robertson_normalized (G O : HermitianMat d ℂ)
   nlinarith [ρ.variance_nonneg G, ρ.variance_nonneg O]
 
 end observables
+
+end
 
 end MState
 
