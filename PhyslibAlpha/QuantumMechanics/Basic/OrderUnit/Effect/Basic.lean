@@ -123,7 +123,8 @@ lemma isSharp_complement {e : Effect E} (h : IsSharp e) : IsSharp (complement e)
   refine ⟨(complement e).2, fun x₁ hx₁ x₂ hx₂ ⟨a, b, ha, hb, hab, hz⟩ => ?_⟩
   have hone : a • (1 : E) + b • (1 : E) = 1 := by rw [← add_smul, hab, one_smul]
   have key : a • (1 - x₁) + b • (1 - x₂) = (e : E) := by
-    have hsplit : a • (1 - x₁) + b • (1 - x₂) = (a • (1 : E) + b • (1 : E)) - (a • x₁ + b • x₂) := by
+    have hsplit : a • (1 - x₁) + b • (1 - x₂) =
+        (a • (1 : E) + b • (1 : E)) - (a • x₁ + b • x₂) := by
       simp only [smul_sub]; abel
     rw [hsplit, hone, hz]
     show (1 : E) - (1 - (e : E)) = (e : E)

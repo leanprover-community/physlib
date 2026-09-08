@@ -37,7 +37,8 @@ namespace Measurement
 their outcome types marginalizing, via the coordinate projections, to both. -/
 def IsCompatible (M₁ : (ι → ℝ) →ₚ₁[ℝ] E) (M₂ : (κ → ℝ) →ₚ₁[ℝ] E) : Prop :=
   ∃ J : (ι × κ → ℝ) →ₚ₁[ℝ] E,
-    postprocess J (classicalPullback Prod.fst) = M₁ ∧ postprocess J (classicalPullback Prod.snd) = M₂
+    postprocess J (classicalPullback Prod.fst) = M₁ ∧
+      postprocess J (classicalPullback Prod.snd) = M₂
 
 omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
 /-- Every measurement is compatible with itself: the joint measurement pulled back along the

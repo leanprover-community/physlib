@@ -63,7 +63,8 @@ trace-class hypothesis) double sum `∑ᵢ∑ⱼ = ∑ⱼ∑ᵢ`. `|T| = CFC.abs
 this handles `summable_inner_abs_of_hilbertBasis` in full generality. For `trace_eq_of_hilbertBasis`
 the positive case is now proved by the same square-root/Parseval argument
 (`trace_eq_of_hilbertBasis_of_nonneg`), and the self-adjoint case is obtained by decomposing into
-positive and negative parts (`trace_eq_of_hilbertBasis_of_isSelfAdjoint`). The general non-self-adjoint case would go through
+positive and negative parts (`trace_eq_of_hilbertBasis_of_isSelfAdjoint`). The general
+non-self-adjoint case would go through
 the polar decomposition `T = U|T|` instead, and packaging the trace-class operators themselves as
 a Banach space `TraceClass H` is separate, genuinely harder work; neither is attempted here.
 

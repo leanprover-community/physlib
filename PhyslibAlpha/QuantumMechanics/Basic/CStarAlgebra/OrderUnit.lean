@@ -64,7 +64,8 @@ instance instIsOrderUnit : IsOrderUnit (selfAdjoint A) where
 instance instIsArchimedeanOrderUnit : IsArchimedeanOrderUnit (selfAdjoint A) where
   le_zero_of_forall_pos_smul_one_le x h := by
     show (x : A) ≤ (0 : A)
-    have hg : Filter.Tendsto (fun n : ℕ => (1 / ((n : ℝ) + 1)) • (1 : A)) Filter.atTop (nhds 0) := by
+    have hg : Filter.Tendsto (fun n : ℕ => (1 / ((n : ℝ) + 1)) • (1 : A)) Filter.atTop
+        (nhds 0) := by
       have h0 : Filter.Tendsto (fun n : ℕ => 1 / ((n : ℝ) + 1)) Filter.atTop (nhds 0) :=
         tendsto_one_div_add_atTop_nhds_zero_nat
       simpa using h0.smul_const (1 : A)

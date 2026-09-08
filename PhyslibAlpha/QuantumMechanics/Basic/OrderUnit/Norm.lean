@@ -131,7 +131,8 @@ lemma exists_orderUnitBound_lt_orderUnitNorm_add (x : E) {ε : ℝ} (hε : 0 < �
   exact lt_add_of_pos_right _ hε
 
 /-- The order-unit norm satisfies the triangle inequality. -/
-lemma orderUnitNorm_add_le (x y : E) : orderUnitNorm (x + y) ≤ orderUnitNorm x + orderUnitNorm y := by
+lemma orderUnitNorm_add_le (x y : E) :
+    orderUnitNorm (x + y) ≤ orderUnitNorm x + orderUnitNorm y := by
   apply le_of_forall_pos_le_add
   intro ε hε
   obtain ⟨r, hr, hr_lt⟩ := exists_orderUnitBound_lt_orderUnitNorm_add x (half_pos hε)

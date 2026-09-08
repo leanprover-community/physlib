@@ -46,7 +46,8 @@ open OperatorAlgebra
 variable {A : Type*} [OperatorAlgebra A]
 
 /-- A ⋆-automorphism `β` acts on observables by `a ↦ β a`. -/
-def StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) : OperatorAlgebra.Observable A :=
+def StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : OperatorAlgebra.Observable A) :
+    OperatorAlgebra.Observable A :=
   ⟨β (a : A), by
     show star (β (a : A)) = β (a : A)
     rw [← map_star, a.2]⟩

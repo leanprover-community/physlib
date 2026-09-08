@@ -25,9 +25,10 @@ that reproduces `ω` as a vector state of the representation,
 states `ω_ψ(x) = ⟪ψ, xψ⟫`: every state, not only the ones already handed a Hilbert space to live on,
 *is* a vector state — of the Hilbert space this construction builds for it out of `ω` alone.
 
-`Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal` already builds `H_ω` (as `PositiveLinearMap.GNS`)
-and `π_ω` (as `PositiveLinearMap.gnsStarAlgHom`) from an arbitrary positive linear functional; its
-own docstring lists the missing cyclic vector as a `TODO`. This file supplies exactly that: `Ω_ω`
+`Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal` already builds `H_ω`
+(`PositiveLinearMap.GNS`) and `π_ω` (`PositiveLinearMap.gnsStarAlgHom`) from an arbitrary positive
+linear functional. Its docstring lists the missing cyclic vector as a `TODO`. This file supplies
+exactly that: `Ω_ω`
 is the image of `1 : A` inside `H_ω`, the defining identity above, cyclicity of `Ω_ω`, and
 faithfulness of `π_ω` when `ω` itself is a faithful state.
 

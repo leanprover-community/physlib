@@ -17,8 +17,10 @@ public import Mathlib.MeasureTheory.Integral.SetToL1
 Builds `boundedIntegral μS f hf hbdd : H →WOT[ℂ] H`, the operator `∫ f dμS` for a bounded
 measurable `f : α → ℂ`, in three stages:
 
-1. `simpleIntegral` : the finite-sum integral of a `SimpleFunc α ℂ`, `∑ z ∈ f.range, z • μS (f⁻¹{z})`.
-2. `boundedIntegralOfUniformApprox` : given an explicit sequence of simple functions converging
+1. `simpleIntegral` : the finite-sum integral of a `SimpleFunc α ℂ`,
+   `∑ z ∈ f.range, z • μS (f⁻¹{z})`.
+2. `boundedIntegralOfUniformApprox` : given an explicit sequence of simple functions
+   converging
    *uniformly* to `f`, the norm-limit (in the underlying `H →L[ℂ] H`, then viewed weakly) of their
    simple integrals. `simpleIntegral_norm_le` gives the uniform Cauchy estimate that makes this
    limit exist.

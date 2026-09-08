@@ -48,8 +48,8 @@ class IsOrderUnit (E : Type*) [AddCommMonoid E] [PartialOrder E] [One E] : Prop 
 
 /-- Same as `IsOrderUnit`, plus: nothing is infinitesimally smaller than `1` without actually
 being `≤ 0`. -/
-class IsArchimedeanOrderUnit (E : Type*) [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E]
-    : Prop extends IsOrderUnit E where
+class IsArchimedeanOrderUnit (E : Type*) [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E] :
+    Prop extends IsOrderUnit E where
   /-- If `x` is smaller than every positive multiple of `1`, however small, `x` is already
   `≤ 0`. -/
   le_zero_of_forall_pos_smul_one_le : ∀ x : E,

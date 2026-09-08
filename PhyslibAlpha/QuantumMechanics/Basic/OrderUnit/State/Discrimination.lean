@@ -16,7 +16,8 @@ A system is prepared in state `ω₀` with prior probability `p₀`, or `ω₁` 
 which from a single yes/no test (an effect `e`): guess `0` if `e` clicks, `1` otherwise. The
 optimal guess succeeds with probability
 
-  `optimalSuccessProb ω₀ ω₁ p₀ p₁ = p₁ + sup_e (p₀ * ω₀ e - p₁ * ω₁ e)`     (`optimalSuccessProb_eq`)
+  `optimalSuccessProb ω₀ ω₁ p₀ p₁ = p₁ + sup_e (p₀ * ω₀ e - p₁ * ω₁ e)`
+  (`optimalSuccessProb_eq`)
 
 — the Helstrom bound, in the same spirit as the familiar `(1 + ‖p₀ρ₀ - p₁ρ₁‖₁) / 2` trace-distance
 formula, here with the effect supremum playing the trace norm's role directly.

@@ -254,7 +254,8 @@ theorem hamiltonianFlow_eq_iff (ℏ : ℝ) (hℏ : ℏ ≠ 0) [Nontrivial (H →
     have ha : (Complex.I / (ℏ : ℂ)) ≠ 0 := div_ne_zero Complex.I_ne_zero (by exact_mod_cast hℏ)
     have hHK : (Hm : H →L[ℂ] H) - (K : H →L[ℂ] H) =
         ((Complex.I / (ℏ : ℂ))⁻¹ * z) • (1 : H →L[ℂ] H) := by
-      have hGdiff : G ℏ Hm - G ℏ K = (Complex.I / (ℏ : ℂ)) • ((Hm : H →L[ℂ] H) - (K : H →L[ℂ] H)) := by
+      have hGdiff : G ℏ Hm - G ℏ K =
+          (Complex.I / (ℏ : ℂ)) • ((Hm : H →L[ℂ] H) - (K : H →L[ℂ] H)) := by
         simp only [G, smul_sub]
       rw [← smul_smul]
       exact (eq_inv_smul_iff₀ ha).mpr (hGdiff.symm.trans hz)

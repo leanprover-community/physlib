@@ -111,7 +111,8 @@ def classicalPullback (f : κ → ι) : (ι → ℝ) →ₚ₁[ℝ] (κ → ℝ)
 omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] [Fintype ι] [DecidableEq ι]
   [Fintype κ] [DecidableEq κ] in
 @[simp]
-lemma classicalPullback_id : classicalPullback (id : ι → ι) = UnitalPositiveLinearMap.id ℝ (ι → ℝ) :=
+lemma classicalPullback_id :
+    classicalPullback (id : ι → ι) = UnitalPositiveLinearMap.id ℝ (ι → ℝ) :=
   UnitalPositiveLinearMap.ext fun _ => rfl
 
 omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] [Fintype ι] [DecidableEq ι]
