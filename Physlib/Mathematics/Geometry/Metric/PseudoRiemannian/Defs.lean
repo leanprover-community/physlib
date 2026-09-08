@@ -5,562 +5,167 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.Geometry.Manifold.MFDeriv.Defs
-public import Mathlib.LinearAlgebra.BilinearForm.Properties
-public import Mathlib.LinearAlgebra.QuadraticForm.Real
-public import Mathlib.Topology.LocallyConstant.Basic
+public import Physlib.Mathematics.Geometry.Metric.PseudoRiemannian.Basic
 
 /-!
-# Pseudo-Riemannian Metrics on Smooth Manifolds
+# Pseudo-Riemannian manifolds
 
-This file formalizes pseudo-Riemannian metrics on smooth manifolds and establishes their basic
-properties.
+A pseudo-Riemannian metric on `M` is a pseudo-Riemannian structure on its tangent bundle, so this
+file only specializes `Physlib.Mathematics.Geometry.Metric.PseudoRiemannian.Basic`. To say "let
+`M` be a pseudo-Riemannian manifold", write
+```
+variable [∀ x : M, PseudoInnerProductSpace (TangentSpace I x)]
+  [IsContMDiffPseudoRiemannianBundle I n E (TangentSpace I : M → Type _)]
+```
+which Mathlib's `RiemannianBundle` together with `IsContMDiffRiemannianBundle` implies. No
+`ofCoreOfTopology` detour is needed, since an indefinite form determines no norm.
 
-A pseudo-Riemannian metric equips a manifold with a smoothly varying, non-degenerate, symmetric
-bilinear form of *constant index* on each tangent space, generalizing the concept of an inner
-product space to curved spaces. The index here refers to `QuadraticForm.negDim`, the dimension
-of a maximal negative definite subspace.
+## Main definitions
 
-## Main Definitions
+* `PseudoRiemannianMetric I n M`: metric data on `M`; theorems are stated with the typeclasses.
+* `PseudoRiemannian.index I x` and `coindex I x`: the numbers of negative and positive
+  directions of the metric at `x`.
 
-* `PseudoRiemannianMetric E H M n I`: A structure representing a `C^n` pseudo-Riemannian metric
-  on a manifold `M` modelled on `(E, H)` with model with corners `I`. It consists of a family
-  of non-degenerate, symmetric, continuous bilinear forms `gₓ` on each tangent space `TₓM`,
-  varying `C^n`-smoothly with `x` and having a locally constant negative dimension (`negDim`).
-  The model space `E` must be finite-dimensional, and the manifold `M` must be `C^{n+1}` smooth.
+## Main results
 
-* `PseudoRiemannianMetric.flatEquiv g x`: The "musical isomorphism" from the tangent space at `x`
-  to its dual space, representing the canonical isomorphism induced by the metric.
+* `PseudoRiemannian.isLocallyConstant_index` and `index_eq_of_preconnectedSpace`: signature
+  constancy is a theorem, so no metric carries it as data.
+* `instIsContMDiffPseudoRiemannianBundleSelf`: a vector space with a pseudo-inner product is a
+  pseudo-Riemannian manifold.
 
-* `PseudoRiemannianMetric.sharpEquiv g x`: The inverse of the flat isomorphism, mapping from
-  the dual space back to the tangent space.
+## Implementation notes
 
-* `PseudoRiemannianMetric.toQuadraticForm g x`: The quadratic form `v ↦ gₓ(v, v)` associated
-  with the metric at point `x`.
+The musical isomorphisms are inherited: at `x` they are
+`PseudoInnerProductSpace.flatEquiv (TangentSpace I x)` and `sharpEquiv (TangentSpace I x)`. The
+`TangentSpace` instances below are what make them apply.
 
-This formalization adopts a direct approach, defining the metric as a family of bilinear forms
-on tangent spaces, varying smoothly over the manifold. This pragmatic choice allows for foundational
-development while acknowledging that a more abstract ideal would involve defining metrics as
-sections of a tensor bundle (e.g., `Hom(TM ⊗ TM, ℝ)` or `TM →L[ℝ] TM →L[ℝ] ℝ`.
+## Acknowledgements
 
-## Reference
+The design follows Sébastien Gouëzel's proposal on [Zulip](https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/The.20future.20of.20pseudo-Riemannian.20manifolds/with/619509253).
 
-* Barrett O'Neill, "Semi-Riemannian Geometry With Applications to Relativity" (Academic Press, 1983)
-* [Discussion on Zulip about (Pseudo) Riemannian metrics] https.
-leanprover.zulipchat.com/#narrow/channel/113488-general/topic/.28Pseudo.29.20Riemannian.20metric
+## References
+
+* Barrett O'Neill, *Semi-Riemannian Geometry with Applications to Relativity*, Academic
+  Press (1983).
+
+## Tags
+
+pseudo-Riemannian, Lorentzian, metric tensor, index, musical isomorphisms
 -/
 
 @[expose] public section
 
-section PseudoRiemannianMetric
-
-noncomputable section
-
-open Bundle Set Finset Function Filter Module Topology ContinuousLinearMap
-open scoped Manifold Bundle LinearMap Dual
-
-namespace QuadraticForm
-
-variable {K : Type*} [Field K]
-
-/-! ## Negative Index -/
-
-/-- The negative dimension (often called the index or negative index of inertia) of a
-quadratic form `q` on a finite-dimensional real vector space.
-
-This value is defined by diagonalizing the quadratic form into an equivalent
-`QuadraticMap.weightedSumSquares ℝ s`, where `s : Fin (finrank ℝ E) → SignType`
-assigns `1`, `0`, or `-1` to each component. The `negDim` is the count of
-components `i` for which `s i = SignType.neg`.
-
-By Sylvester's Law of Inertia, this count is an invariant of the quadratic form.
-Geometrically, `negDim q` represents the dimension of any maximal vector subspace
-on which `q` is negative definite. This corresponds to O'Neill's Definition 18 (p. 47)
-of the index `ν` of a symmetric bilinear form `b` on `V`, which is "the largest integer
-that is the dimension of a subspace `W ⊂ V` on which `b|W` is negative
-definite." -/
-noncomputable def negDim {E : Type*} [AddCommGroup E]
-    [Module ℝ E] [FiniteDimensional ℝ E]
-    (q : QuadraticForm ℝ E) : ℕ := by classical
-  let P : (Fin (finrank ℝ E) → SignType) → Prop := fun w =>
-      QuadraticMap.Equivalent q (QuadraticMap.weightedSumSquares ℝ fun i => (w i : ℝ))
-  let h_exists : ∃ w, P w := QuadraticForm.equivalent_signType_weighted_sum_squared q
-  let w := Classical.choose h_exists
-  exact Finset.card (Finset.filter (fun i => w i = SignType.neg) Finset.univ)
-
-/-- For a standard basis vector in a weighted sum of squares, only one term in the sum
-    is nonzero. -/
-lemma QuadraticMap.weightedSumSquares_basis_vector {E : Type*} [AddCommGroup E]
-    [Module ℝ E] {weights : Fin (finrank ℝ E) → ℝ}
-    {i : Fin (finrank ℝ E)} (v : Fin (finrank ℝ E) → ℝ)
-    (hv : ∀ j, v j = if j = i then 1 else 0) :
-    QuadraticMap.weightedSumSquares ℝ weights v = weights i := by
-  rw [QuadraticMap.weightedSumSquares_apply, Finset.sum_eq_single_of_mem i (mem_univ i)]
-  · simp [hv i]
-  · intro j _ hj
-    simp [hv j, hj]
-
-/-- When a quadratic form is equivalent to a weighted sum of squares,
-    negative weights correspond to vectors where the form takes negative values.
-    This is a concrete realization of a 1-dimensional negative definite subspace,
-    contributing to O'Neill's index `ν` (Definition 18, p. 47). -/
-lemma neg_weight_implies_neg_value {E : Type*} [AddCommGroup E] [Module ℝ E]
-    {q : QuadraticForm ℝ E} {w : Fin (finrank ℝ E) → SignType}
-    (h_equiv : QuadraticMap.Equivalent q (QuadraticMap.weightedSumSquares ℝ fun i => (w i : ℝ)))
-    {i : Fin (finrank ℝ E)} (hi : w i = SignType.neg) :
-    ∃ v : E, v ≠ 0 ∧ q v < 0 := by
-  let f := Classical.choice h_equiv
-  let v_std : Fin (finrank ℝ E) → ℝ := fun j => if j = i then 1 else 0
-  refine ⟨f.symm v_std, ?_, ?_⟩
-  · intro h
-    have hz : v_std = 0 := by
-      have hf := congrArg f h
-      rwa [f.apply_symm_apply, map_zero] at hf
-    simpa [v_std] using congrFun hz i
-  · have hw : QuadraticMap.weightedSumSquares ℝ (fun j => (w j : ℝ)) v_std = (w i : ℝ) :=
-      QuadraticMap.weightedSumSquares_basis_vector v_std fun _ => rfl
-    rw [QuadraticMap.IsometryEquiv.map_app f.symm v_std, hw, hi, SignType.neg_eq_neg_one,
-      SignType.coe_neg, SignType.coe_one]
-    norm_num
-
-/-- A positive definite quadratic form cannot have any negative weights
-    in its diagonal representation. A quadratic form `q` derived from a bilinear form `b`
-    is positive definite if `b(v,v) > 0` for `v ≠ 0` (O'Neill, Definition 17 (1), p. 46).
-    The existence of a negative weight would imply `q(v) < 0` for some `v ≠ 0`, a contradiction. -/
-lemma posDef_no_neg_weights {E : Type*} [AddCommGroup E] [Module ℝ E]
-    {q : QuadraticForm ℝ E} (hq : q.PosDef)
-    {w : Fin (finrank ℝ E) → SignType}
-    (h_equiv : QuadraticMap.Equivalent q (QuadraticMap.weightedSumSquares ℝ fun i => (w i : ℝ))) :
-    ∀ i, w i ≠ SignType.neg := by
-  intro i hi
-  obtain ⟨v, hv, hq_neg⟩ := QuadraticForm.neg_weight_implies_neg_value h_equiv hi
-  exact lt_asymm hq_neg (hq v hv)
-
-/-- For a positive definite quadratic form, the negative dimension (index) is zero.
-    O'Neill states (p. 47) that "ν = 0 if and only if b is positive semidefinite."
-    Since positive definite implies positive semidefinite (Definitions 17 (1) and (2), p. 46),
-    a positive definite form must have index `ν = 0`. -/
-theorem rankNeg_eq_zero {E : Type*} [AddCommGroup E]
-    [Module ℝ E] [FiniteDimensional ℝ E] {q : QuadraticForm ℝ E} (hq : q.PosDef) :
-    q.negDim = 0 := by
-  have : Invertible (2 : ℝ) := inferInstance
-  unfold QuadraticForm.negDim
-  have h_exists := equivalent_signType_weighted_sum_squared q
-  let w := Classical.choose h_exists
-  have h_no_neg : ∀ i, w i ≠ SignType.neg :=
-    QuadraticForm.posDef_no_neg_weights hq (Classical.choose_spec h_exists)
-  simpa [Finset.card_eq_zero, Finset.filter_eq_empty_iff] using h_no_neg
-
-end QuadraticForm
-
-/-! ## Pseudo-Riemannian Metric -/
-
-/--
-Constructs a `QuadraticForm` on the tangent space `TₓM` at a point `x` from the
-value of a pseudo-Riemannian metric at that point.
-(O'Neill, p. 47, "The function q: V → R given by q(v) = b(v,v) is the associated quadratic
-form of b.")
-The pseudo-Riemannian metric is given by `val`, a family of continuous bilinear forms
-`gₓ: TₓM × TₓM → ℝ` for each `x : M`.
-The quadratic form `Qₓ` at `x` is defined as `Qₓ(v) = gₓ(v,v)`.
-The associated symmetric bilinear form required by `QuadraticForm.exists_companion'`
-is `Bₓ(v,w) = gₓ(v,w) + gₓ(w,v)`. Given the symmetry `symm`, this is `2 * gₓ(v,w)`.
--/
-def pseudoRiemannianMetricValToQuadraticForm
-    {E : Type v} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {H : Type w} [TopologicalSpace H]
-    {M : Type w} [TopologicalSpace M] [ChartedSpace H M]
-    {I : ModelWithCorners ℝ E H}
-    (val : ∀ (x : M), TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ))
-    (symm : ∀ (x : M) (v w : TangentSpace I x), (val x v) w = (val x w) v)
-    (x : M) : QuadraticForm ℝ (TangentSpace I x) where
-  toFun v := val x v v
-  toFun_smul a v := by
-    simp only [ContinuousLinearMap.map_smul, _root_.smul_apply, smul_smul]
-  exists_companion' :=
-      ⟨LinearMap.mk₂ ℝ (fun v y => val x v y + val x y v)
-        (fun v₁ v₂ y => by simp only [map_add, add_apply]; ring)
-        (fun a v y => by simp only [map_smul, smul_apply]; ring)
-        (fun v y₁ y₂ => by simp only [map_add, add_apply]; ring)
-        (fun a v y => by simp only [map_smul, smul_apply]; ring),
-            by
-              intro v y
-              simp only [LinearMap.mk₂_apply, ContinuousLinearMap.map_add,
-                add_apply, symm x]
-              ring⟩
-
-/-- A pseudo-Riemannian metric of smoothness class `C^n` on a manifold `M` modelled on `(E, H)`
-with model `I`. This structure defines a smoothly varying, non-degenerate, symmetric,
-continuous bilinear form `gₓ` of constant negative dimension on the tangent space `TₓM`
-at each point `x`. Requires `M` to be `C^{n+1}` smooth.
-This structure formalizes O'Neill's Definition 3.1 (p. 54) of a metric tensor `g` on `M`
-as a "symmetric non-degenerate (0,2) tensor field on M of constant index."
-Each `gₓ` is a scalar product (O'Neill, Definition 20, p. 47) on `TₓM`. -/
-@[ext]
-structure PseudoRiemannianMetric
-    (E : Type v) (H : Type w) (M : Type w) (n : WithTop ℕ∞)
-    [inst_norm_grp_E : NormedAddCommGroup E]
-    [inst_norm_sp_E : NormedSpace ℝ E]
-    [inst_top_H : TopologicalSpace H]
-    [inst_top_M : TopologicalSpace M]
-    [inst_chart_M : ChartedSpace H M]
-    [inst_chart_E : ChartedSpace H E]
-    (I : ModelWithCorners ℝ E H)
-    [inst_mani : IsManifold I (n + 1) M]
-    [inst_tangent_findim : ∀ (x : M), FiniteDimensional ℝ (TangentSpace I x)] :
-      Type (max u v w) where
-  /-- The metric tensor at each point `x : M`, represented as a continuous linear map
-      `TₓM →L[ℝ] (TₓM →L[ℝ] ℝ)`. Applying it twice, `(val x v) w`, yields `gₓ(v, w)`. -/
-  val : ∀ (x : M), TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ)
-  /-- The metric is symmetric: `gₓ(v, w) = gₓ(w, v)`. -/
-  symm : ∀ (x : M) (v w : TangentSpace I x), (val x v) w = (val x w) v
-  /-- The metric is non-degenerate: if `gₓ(v, w) = 0` for all `w`, then `v = 0`. -/
-  nondegenerate : ∀ (x : M) (v : TangentSpace I x), (∀ w : TangentSpace I x,
-    (val x v) w = 0) → v = 0
-  /-- The metric varies smoothly: Expressed in local coordinates via the chart
-      `e := extChartAt I x₀`, the function
-      `y ↦ g_{e.symm y}(mfderiv I I e.symm y v, mfderiv I I e.symm y w)` is `C^n` smooth on the
-      chart's target `e.target` for any constant vectors `v, w` in the model space `E`. -/
-  smooth_in_charts' : ∀ (x₀ : M) (v w : E),
-    let e := extChartAt I x₀
-    ContDiffWithinAt ℝ n
-      (fun y => val (e.symm y) (mfderiv I I e.symm y v) (mfderiv I I e.symm y w))
-      (e.target) (e x₀)
-  /-- The negative dimension (`QuadraticForm.negDim`) of the metric's quadratic form is
-      locally constant. On a connected manifold, this implies it is constant globally. -/
-  negDim_isLocallyConstant :
-    IsLocallyConstant (fun x : M =>
-      have : FiniteDimensional ℝ (TangentSpace I x) := inferInstance
-      (pseudoRiemannianMetricValToQuadraticForm val symm x).negDim)
-
-namespace PseudoRiemannianMetric
-
-variable {E : Type v} {H : Type w} {M : Type w} {n : WithTop ℕ∞}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [ChartedSpace H E]
-variable {I : ModelWithCorners ℝ E H}
-variable [IsManifold I (n + 1) M]
-variable [inst_tangent_findim : ∀ (x : M), FiniteDimensional ℝ (TangentSpace I x)]
-variable {g : PseudoRiemannianMetric E H M n I}
-
-/-- Given a pseudo-Riemannian metric `g` on manifold `M` and a point `x : M`,
-this function constructs a bilinear form on the tangent space at `x`.
-For tangent vectors `u v : T_x M`, the bilinear form is given by:
-`g_x(u, v) = g(x)(u, v)` -/
-def toBilinForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    LinearMap.BilinForm ℝ (TangentSpace I x) where
-  toFun := λ v => { toFun := λ w => g.val x v w,
-                    map_add' := λ w₁ w₂ => by
-                      simp only [ContinuousLinearMap.map_add],
-                    map_smul' := λ c w => by
-                      simp only [map_smul, smul_eq_mul, RingHom.id_apply] }
-  map_add' := λ v₁ v₂ => by
-    ext w
-    simp only [map_add, add_apply, LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply]
-  map_smul' := λ c v => by
-    ext w
-    simp only [map_smul, FunLike.coe_smul, Pi.smul_apply, smul_eq_mul, LinearMap.coe_mk,
-      AddHom.coe_mk, RingHom.id_apply, LinearMap.smul_apply]
-
-/-- Convert a pseudo-Riemannian metric at a point `x` to a quadratic form `v ↦ gₓ(v, v)`. -/
-abbrev toQuadraticForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    QuadraticForm ℝ (TangentSpace I x) :=
-  pseudoRiemannianMetricValToQuadraticForm g.val g.symm x
-
-/-- Coercion from PseudoRiemannianMetric to its function representation. -/
-instance coeFunInst : CoeFun (PseudoRiemannianMetric E H M n I)
-        (fun _ => ∀ x : M, TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ)) where
-  coe g := g.val
-
-@[simp]
-lemma toBilinForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (v w : TangentSpace I x) :
-  toBilinForm g x v w = g.val x v w := rfl
-
-@[simp]
-lemma toQuadraticForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (v : TangentSpace I x) :
-  toQuadraticForm g x v = g.val x v v := rfl
-
-@[simp]
-lemma toBilinForm_isSymm (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (toBilinForm g x).IsSymm := ⟨g.symm x⟩
-
-@[simp]
-lemma toBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (toBilinForm g x).Nondegenerate := by
-  refine ⟨fun v hv => g.nondegenerate x v hv, fun v hv => ?_⟩
-  exact g.nondegenerate x v fun w => (g.symm x v w).trans (hv w)
-
-/-- The inner product (or scalar product) on the tangent space at point `x`
-  induced by the pseudo-Riemannian metric `g`. This is `gₓ(v, w)`. -/
-def inner (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) : ℝ :=
-  g.val x v w
-
-@[simp]
-lemma inner_apply (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    inner g x v w = g.val x v w := rfl
-
-/-! ## Flat -/
-
-section Flat
-
-/-- The "musical" isomorphism (index lowering) `v ↦ gₓ(v, -)`.
-The non-degeneracy of `gₓ` (O'Neill, Def 17 (3), p. 46) means its matrix representation
-is invertible (O'Neill, Lemma 19, p. 47), and that this map is an isomorphism from `TₓM`
-to its dual. -/
-def flat (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    TangentSpace I x →ₗ[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  { toFun := λ v => g.val x v,
-    map_add' := λ v w => by simp only [ContinuousLinearMap.map_add],
-    map_smul' := λ a v => by simp only [ContinuousLinearMap.map_smul]; rfl }
-
-@[simp]
-lemma flat_apply (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    (flat g x v) w = g.val x v w := by rfl
-
-/-- The musical isomorphism as a continuous linear map. -/
-def flatL (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    TangentSpace I x →L[ℝ] (TangentSpace I x →L[ℝ] ℝ) where
-  toFun := λ v => g.val x v
-  map_add' := λ v w => by simp only [ContinuousLinearMap.map_add]
-  map_smul' := λ a v => by simp only [ContinuousLinearMap.map_smul]; rfl
-  cont := ContinuousLinearMap.continuous (g.val x)
-
-@[simp]
-lemma flatL_apply (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    (flatL g x v) w = g.val x v w := rfl
-
-@[simp]
-lemma flat_inj (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    Function.Injective (flat g x) := by
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  exact fun v hv => g.nondegenerate x v fun w => DFunLike.congr_fun hv w
-
-@[simp]
-lemma flatL_inj (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    Function.Injective (flatL g x) :=
-  flat_inj g x
-
-@[simp]
-lemma flatL_surj
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    Function.Surjective (g.flatL x) := by
-  have : FiniteDimensional ℝ (TangentSpace I x) := inst_tangent_findim x
-  have : T2Space (TangentSpace I x) := inferInstanceAs (T2Space E)
-  have h_finrank_eq : finrank ℝ (TangentSpace I x) = finrank ℝ (TangentSpace I x →L[ℝ] ℝ) :=
-    Subspace.dual_finrank_eq.symm.trans (LinearMap.toContinuousLinearMap
-      (𝕜 := ℝ) (E := TangentSpace I x) (F' := ℝ)).finrank_eq
-  exact (LinearMap.injective_iff_surjective_of_finrank_eq_finrank h_finrank_eq).mp (flatL_inj g x)
-
-/-- The "musical" isomorphism (index lowering) from `TₓM` to its dual,
-as a continuous linear equivalence. This equivalence is a direct result of `gₓ` being
-a non-degenerate bilinear form (O'Neill, Def 17(3), p. 46; Lemma 19, p. 47). -/
-def flatEquiv
-    (g : PseudoRiemannianMetric E H M n I)
-    (x : M) :
-    TangentSpace I x ≃L[ℝ] (TangentSpace I x →L[ℝ] ℝ) :=
-  have : T2Space (TangentSpace I x) := inferInstanceAs (T2Space E)
-  LinearEquiv.toContinuousLinearEquiv
-    (LinearEquiv.ofBijective
-      ((g.flatL x).toLinearMap)
-      ⟨g.flatL_inj x, g.flatL_surj x⟩)
-
-lemma coe_flatEquiv
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (g.flatEquiv x : TangentSpace I x →ₗ[ℝ] (TangentSpace I x →L[ℝ] ℝ)) = g.flatL x := rfl
-
-@[simp]
-lemma flatEquiv_apply
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (v w : TangentSpace I x) :
-    (g.flatEquiv x v) w = g.val x v w := rfl
-
-end Flat
-
-/-! ## Sharp -/
-
-section Sharp
-
-/-- The "musical" isomorphism (index raising) from the dual of `TₓM` to `TₓM`.
-This is the inverse of `flatEquiv g x`, and its existence as an isomorphism is
-guaranteed by the non-degeneracy of `gₓ` (O'Neill, Lemma 19, p. 47). -/
-def sharpEquiv
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (TangentSpace I x →L[ℝ] ℝ) ≃L[ℝ] TangentSpace I x :=
-  (g.flatEquiv x).symm
-
-/-- The index raising map `sharp` as a continuous linear map. -/
-def sharpL
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (TangentSpace I x →L[ℝ] ℝ) →L[ℝ] TangentSpace I x := (g.sharpEquiv x).toContinuousLinearMap
-
-lemma sharpL_eq_toContinuousLinearMap
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-  g.sharpL x = (g.sharpEquiv x).toContinuousLinearMap := rfl
-
-lemma coe_sharpEquiv
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (g.sharpEquiv x : (TangentSpace I x →L[ℝ] ℝ) →L[ℝ] TangentSpace I x) = g.sharpL x := rfl
-
-/-- The index raising map `sharp` as a linear map. -/
-noncomputable def sharp
-    (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (TangentSpace I x →L[ℝ] ℝ) →ₗ[ℝ] TangentSpace I x := (g.sharpEquiv x).toLinearEquiv.toLinearMap
-
-@[simp]
-lemma sharpL_apply_flatL
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (v : TangentSpace I x) :
-    g.sharpL x (g.flatL x v) = v :=
-  (g.flatEquiv x).left_inv v
-
-@[simp]
-lemma flatL_apply_sharpL
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (ω : TangentSpace I x →L[ℝ] ℝ) :
-    g.flatL x (g.sharpL x ω) = ω := (g.flatEquiv x).right_inv ω
-
-/-- Applying `sharp` then `flat` recovers the original covector. -/
-@[simp]
-lemma flat_sharp_apply
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (ω : TangentSpace I x →L[ℝ] ℝ) :
-    g.flat x (g.sharp x ω) = ω :=
-  flatL_apply_sharpL g x ω
-
-@[simp]
-lemma sharp_flat_apply
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (v : TangentSpace I x) :
-    g.sharp x (g.flat x v) = v :=
-  sharpL_apply_flatL g x v
-
-/-- The metric evaluated at `sharp ω₁` and `sharp ω₂`. -/
-@[simp]
-lemma apply_sharp_sharp
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) :
-    g.val x (g.sharpL x ω₁) (g.sharpL x ω₂) = ω₁ (g.sharpL x ω₂) := by
-  rw [← flatL_apply g x (g.sharpL x ω₁), flatL_apply_sharpL g x ω₁]
-
-/-- The metric evaluated at `v` and `sharp ω`. -/
-lemma apply_vec_sharp
-    (g : PseudoRiemannianMetric E H M n I) (x : M) (v : TangentSpace I x)
-    (ω : TangentSpace I x →L[ℝ] ℝ) :
-    g.val x v (g.sharpL x ω) = ω v := by
-  rw [g.symm x v (g.sharpL x ω), ← flatL_apply g x (g.sharpL x ω), flatL_apply_sharpL g x ω]
-
-end Sharp
-
-/-! ## Cotangent -/
-section Cotangent
-
-variable {E : Type v} {H : Type w} {M : Type w} {n : WithTop ℕ∞}
-variable [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M] [ChartedSpace H E]
-variable {I : ModelWithCorners ℝ E H}
-variable [IsManifold I (n + 1) M]
-variable [inst_tangent_findim : ∀ (x : M), FiniteDimensional ℝ (TangentSpace I x)]
-
-/-- The value of the induced metric on the cotangent space at point `x`. -/
-noncomputable def cotangentMetricVal (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) : ℝ :=
-  g.val x (g.sharpL x ω₁) (g.sharpL x ω₂)
-
-@[simp]
-lemma cotangentMetricVal_eq_apply_sharp (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) :
-  cotangentMetricVal g x ω₁ ω₂ = ω₁ (g.sharpL x ω₂) :=
-  apply_sharp_sharp g x ω₁ ω₂
-
-lemma cotangentMetricVal_symm (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) :
-  cotangentMetricVal g x ω₁ ω₂ = cotangentMetricVal g x ω₂ ω₁ := by
-  simpa only [cotangentMetricVal] using g.symm x (g.sharpL x ω₁) (g.sharpL x ω₂)
-
-/-- The induced metric on the cotangent space at point `x` as a bilinear form.
-For covectors `ω₁` and `ω₂`, this gives `g(ω₁^#, ω₂^#)`, where `ω^#` is
-the "sharp" musical isomorphism raising indices. -/
-noncomputable def cotangentToBilinForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    LinearMap.BilinForm ℝ (TangentSpace I x →L[ℝ] ℝ) where
-  toFun ω₁ := { toFun := λ ω₂ => cotangentMetricVal g x ω₁ ω₂,
-                map_add' := λ ω₂ ω₃ => by
-                  simp only [cotangentMetricVal,
-                    ContinuousLinearMap.map_add],
-                map_smul' := λ c ω₂ => by
-                  simp only [cotangentMetricVal,
-                    map_smul, smul_eq_mul, RingHom.id_apply] }
-  map_add' := λ ω₁ ω₂ => by
-    ext ω₃
-    simp only [cotangentMetricVal,
-      ContinuousLinearMap.map_add,
-      add_apply,
-      LinearMap.coe_mk, AddHom.coe_mk, LinearMap.add_apply]
-  map_smul' := λ c ω₁ => by
-    ext ω₂
-    simp only [cotangentMetricVal,
-      ContinuousLinearMap.map_smul,
-      _root_.smul_apply,
-      LinearMap.coe_mk, AddHom.coe_mk,
-      RingHom.id_apply, LinearMap.smul_apply]
-
-/-- The cometric on the cotangent space T_x*M at `x`, expressed as a quadratic form.
-It is induced by the pseudo-Riemannian metric on the tangent space T_xM. -/
-noncomputable def cotangentToQuadraticForm (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    QuadraticForm ℝ (TangentSpace I x →L[ℝ] ℝ) where
-  toFun ω := cotangentMetricVal g x ω ω
-  toFun_smul a ω := by
-    simp only [cotangentMetricVal,
-      ContinuousLinearMap.map_smul,
-      _root_.smul_apply,
-      smul_smul]
-  exists_companion' :=
-      ⟨LinearMap.mk₂ ℝ (fun ω₁ ω₂ =>
-          cotangentMetricVal g x ω₁ ω₂ + cotangentMetricVal g x ω₂ ω₁)
-        (fun ω₁ ω₂ ω₃ => by simp only [cotangentMetricVal, map_add, add_apply]; ring)
-        (fun a ω₁ ω₂ => by
-          simp only [cotangentMetricVal, map_smul, smul_apply]; ring)
-        (fun ω₁ ω₂ ω₃ => by
-          simp only [cotangentMetricVal, map_add, add_apply]; ring)
-        (fun a ω₁ ω₂ => by
-          simp only [cotangentMetricVal, map_smul, smul_apply]; ring),
-          by
-            intro ω₁ ω₂
-            simp only [LinearMap.mk₂_apply, cotangentMetricVal]
-            simp only [ContinuousLinearMap.map_add, add_apply]
-            ring⟩
-
-@[simp]
-lemma cotangentToBilinForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (ω₁ ω₂ : TangentSpace I x →L[ℝ] ℝ) :
-  cotangentToBilinForm g x ω₁ ω₂ = cotangentMetricVal g x ω₁ ω₂ := rfl
-
-@[simp]
-lemma cotangentToQuadraticForm_apply (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (ω : TangentSpace I x →L[ℝ] ℝ) :
-  cotangentToQuadraticForm g x ω = cotangentMetricVal g x ω ω := rfl
-
-@[simp]
-lemma cotangentToBilinForm_isSymm (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (cotangentToBilinForm g x).IsSymm := ⟨cotangentMetricVal_symm g x⟩
-
-/-- The cotangent metric is non-degenerate: if `cotangentMetricVal g x ω v = 0` for all `v`,
-    then `ω = 0`. -/
-lemma cotangentMetricVal_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M)
-    (ω : TangentSpace I x →L[ℝ] ℝ) (h : ∀ v : TangentSpace I x →L[ℝ] ℝ,
-      cotangentMetricVal g x ω v = 0) :
-    ω = 0 := by
-  apply ContinuousLinearMap.ext
-  intro w
-  have hw := h (g.flatL x w)
-  rw [cotangentMetricVal_eq_apply_sharp, sharpL_apply_flatL] at hw
-  simpa using hw
-
-@[simp]
-lemma cotangentToBilinForm_nondegenerate (g : PseudoRiemannianMetric E H M n I) (x : M) :
-    (cotangentToBilinForm g x).Nondegenerate := by
-  refine ⟨fun ω hω => cotangentMetricVal_nondegenerate g x ω hω, fun ω hω => ?_⟩
-  refine cotangentMetricVal_nondegenerate g x ω fun v => ?_
-  exact (cotangentMetricVal_symm g x ω v).trans (hω v)
-
-end Cotangent
-
-end PseudoRiemannianMetric
-end
-end PseudoRiemannianMetric
+open Bundle Module
+open scoped Manifold Bundle Topology ContDiff
+
+section TangentSpaceInstances
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {x : M}
+
+/-- A tangent space is Hausdorff, being a copy of the model space. `TangentSpace` is not
+reducible, so this must be provided explicitly; the musical isomorphisms need it. -/
+instance TangentSpace.instT2Space : T2Space (TangentSpace I x) := inferInstanceAs (T2Space E)
+
+instance TangentSpace.instFiniteDimensional [FiniteDimensional ℝ E] :
+    FiniteDimensional ℝ (TangentSpace I x) :=
+  inferInstanceAs (FiniteDimensional ℝ E)
+
+/-- The tangent spaces of a vector space, viewed as a manifold modelled on itself, inherit its
+pseudo-inner product.
+
+Deliberately a `def`: as an instance it would outrank `InnerProductSpace.toPseudoInnerProductSpace`
+on a `RiemannianBundle` whose base is a normed space modelled on itself, silently replacing the
+Riemannian form by this one. Introduce it with `letI`. -/
+@[reducible] noncomputable def TangentSpace.pseudoInnerProductSpace {V : Type*}
+    [NormedAddCommGroup V] [NormedSpace ℝ V] [PseudoInnerProductSpace V] (x : V) :
+    PseudoInnerProductSpace (TangentSpace 𝓘(ℝ, V) x) :=
+  inferInstanceAs (PseudoInnerProductSpace V)
+
+set_option backward.isDefEq.respectTransparency false in
+/-- **A vector space with a pseudo-inner product is a pseudo-Riemannian manifold**, with constant
+metric. Together with `Lorentz.Vector.minkowskiPseudoInner` this is what makes the indefinite half
+of the theory non-vacuous. -/
+lemma isContMDiffPseudoRiemannianBundle_self {V : Type*} [NormedAddCommGroup V]
+    [NormedSpace ℝ V] [PseudoInnerProductSpace V] (n : ℕ∞ω) :
+    letI := TangentSpace.pseudoInnerProductSpace (V := V)
+    IsContMDiffPseudoRiemannianBundle 𝓘(ℝ, V) n V (TangentSpace 𝓘(ℝ, V) : V → Type _) := by
+  letI := TangentSpace.pseudoInnerProductSpace (V := V)
+  refine ⟨fun _ ↦ PseudoInnerProductSpace.pseudoInnerSL, fun x ↦ ?_, fun _ _ _ ↦ rfl⟩
+  simp only [contMDiffAt_section]
+  convert! contMDiffAt_const (c := PseudoInnerProductSpace.pseudoInnerSL (E := V))
+  refine ContinuousLinearMap.ext fun v ↦ ContinuousLinearMap.ext fun w ↦ ?_
+  simp [hom_trivializationAt_apply, ContinuousLinearMap.inCoordinates]
+  rfl
+
+end TangentSpaceInstances
+
+/-- A `C^n` pseudo-Riemannian metric on `M`: the tangent-bundle case of
+`Bundle.ContMDiffPseudoRiemannianMetric`. Use it to produce the instances that theorems are
+stated with. -/
+abbrev PseudoRiemannianMetric {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] (I : ModelWithCorners ℝ E H) (n : WithTop ℕ∞)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M] [IsManifold I 1 M] :=
+  Bundle.ContMDiffPseudoRiemannianMetric (IB := I) (n := n) (F := E)
+    (E := fun x : M ↦ TangentSpace I x)
+
+namespace PseudoRiemannian
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] {n : WithTop ℕ∞}
+  [∀ x : M, PseudoInnerProductSpace (TangentSpace I x)]
+
+variable (I) in
+/-- The index of the metric at `x`: the number of negative directions. Index `0` is Riemannian. -/
+noncomputable def index (x : M) : ℕ := PseudoInnerProductSpace.index (TangentSpace I x)
+
+variable (I) in
+/-- The coindex of the metric at `x`: the number of positive directions. Coindex `1` is
+Lorentzian in Physlib's `+---` convention. -/
+noncomputable def coindex (x : M) : ℕ := PseudoInnerProductSpace.coindex (TangentSpace I x)
+
+lemma coindex_add_index_eq_finrank [FiniteDimensional ℝ E] (x : M) :
+    coindex I x + index I x = Module.finrank ℝ E :=
+  PseudoInnerProductSpace.coindex_add_index_eq_finrank (TangentSpace I x)
+
+variable [IsManifold I 1 M] [FiniteDimensional ℝ E]
+
+/-- **The index is locally constant.** Smoothness and pointwise nondegeneracy already force
+signature constancy, so it is nowhere assumed. -/
+theorem isLocallyConstant_index (n : ℕ∞ω)
+    [IsContMDiffPseudoRiemannianBundle I n E (TangentSpace I : M → Type _)] :
+    IsLocallyConstant (index I : M → ℕ) :=
+  Bundle.isLocallyConstant_index (IB := I) n (F := E)
+    (E := fun x : M ↦ TangentSpace I x)
+
+/-- The coindex is locally constant too, the two summing to the dimension. -/
+theorem isLocallyConstant_coindex (n : ℕ∞ω)
+    [IsContMDiffPseudoRiemannianBundle I n E (TangentSpace I : M → Type _)] :
+    IsLocallyConstant (coindex I : M → ℕ) := by
+  have heq : (coindex I : M → ℕ) = (fun k ↦ finrank ℝ E - k) ∘ (index I) := by
+    funext x
+    have := coindex_add_index_eq_finrank (I := I) x
+    simp only [Function.comp_apply]
+    omega
+  rw [heq]
+  exact (isLocallyConstant_index (I := I) n).comp _
+
+lemma index_eq_of_isPreconnected (n : ℕ∞ω)
+    [IsContMDiffPseudoRiemannianBundle I n E (TangentSpace I : M → Type _)] {s : Set M}
+    (hs : IsPreconnected s) {x y : M} (hx : x ∈ s) (hy : y ∈ s) : index I x = index I y :=
+  (isLocallyConstant_index (I := I) n).apply_eq_of_isPreconnected hs hx hy
+
+lemma index_eq_of_preconnectedSpace (n : ℕ∞ω) [PreconnectedSpace M]
+    [IsContMDiffPseudoRiemannianBundle I n E (TangentSpace I : M → Type _)] (x y : M) :
+    index I x = index I y :=
+  (isLocallyConstant_index (I := I) n).apply_eq_of_preconnectedSpace x y
+
+lemma index_eq_of_mem_connectedComponent (n : ℕ∞ω)
+    [IsContMDiffPseudoRiemannianBundle I n E (TangentSpace I : M → Type _)] {x y : M}
+    (hy : y ∈ connectedComponent x) : index I y = index I x :=
+  index_eq_of_isPreconnected n isConnected_connectedComponent.isPreconnected hy
+    mem_connectedComponent
+
+end PseudoRiemannian
