@@ -28,13 +28,11 @@ is an instrument (`Measurement/Instrument.lean`).
 
 @[expose] public section
 
-variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
-  [Module ℝ E] [PosSMulMono ℝ E] [One E] [IsOrderUnit E]
+variable {E : Type*} [AddCommMonoid E] [PartialOrder E] [Module ℝ E] [One E]
 
 /-- An operation on `E`: a positive linear endomorphism that never sends the certain event above
 itself. -/
-def Operation (E : Type*) [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
-    [Module ℝ E] [PosSMulMono ℝ E] [One E] [IsOrderUnit E] :=
+def Operation (E : Type*) [AddCommMonoid E] [PartialOrder E] [Module ℝ E] [One E] :=
   {op : E →ₚ[ℝ] E // op 1 ≤ 1}
 
 namespace Operation
@@ -53,6 +51,8 @@ lemma map_nonneg (op : Operation E) {x : E} (hx : 0 ≤ x) : 0 ≤ op x :=
 /-- An operation never sends the certain event above itself. -/
 lemma apply_one_le_one (op : Operation E) : op 1 ≤ 1 :=
   op.2
+
+variable [AddCommGroup E] [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E]
 
 /-- The image of the certain event under an operation, as an effect: the probability of the
 operation actually "firing" in a given state. -/

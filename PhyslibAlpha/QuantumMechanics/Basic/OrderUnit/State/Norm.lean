@@ -13,7 +13,7 @@ public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.Norm
 # States are bounded by the order-unit norm
 
 A state assigns real numbers to observables with no continuity assumed anywhere — `𝓢[ℝ, E]` is
-built purely from positivity and unitality (`States/Basic.lean`). It turns out to be bounded
+built purely from positivity and unitality. It turns out to be bounded
 regardless: `|ω x| ≤ ‖x‖`, the order-unit norm of `OrderUnit/Norm.lean`. Physically, a state can
 never predict an expectation value bigger than the biggest an observable can actually read, and
 this is exactly that fact, with the tightest possible constant.

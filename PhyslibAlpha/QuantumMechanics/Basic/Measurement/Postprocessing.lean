@@ -69,7 +69,7 @@ omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] [Fintype ι] [De
   [Fintype κ] [DecidableEq κ] in
 /-- Postprocessing twice, through `K` then `L`, is postprocessing once through their composite:
 postprocessing is a genuine (contravariant) action of classical channels on measurements. -/
-lemma postprocess_postprocess {μ : Type*} [Fintype μ] [DecidableEq μ]
+lemma postprocess_postprocess {μ : Type*}
     (M : (ι → ℝ) →ₚ₁[ℝ] E) (K : (κ → ℝ) →ₚ₁[ℝ] (ι → ℝ)) (L : (μ → ℝ) →ₚ₁[ℝ] (κ → ℝ)) :
     postprocess (postprocess M K) L = postprocess M (K.comp L) :=
   UnitalPositiveLinearMap.ext fun _ => rfl

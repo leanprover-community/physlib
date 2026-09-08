@@ -61,7 +61,6 @@ private lemma smul_one_comm (r : ℝ) (x : A) : (r • (1 : A)) * x = x * (r •
 /-- The commutator only sees fluctuations, not means: centering `a` and `b` changes nothing about
 how badly they fail to commute, since scalar multiples of `1` commute with everything and so
 contribute nothing to `ab - ba`. -/
-@[simp]
 lemma bracket_centered (ω : 𝓢[A]) (a b : Observable A) :
     ⁅centered ω a, centered ω b⁆ = ⁅a, b⁆ := by
   apply Subtype.ext

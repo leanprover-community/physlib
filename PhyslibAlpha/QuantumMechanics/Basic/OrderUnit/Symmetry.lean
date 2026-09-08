@@ -24,7 +24,7 @@ group of such automorphisms. Every symmetry, via `UnitalPositiveLinearMap.comp`,
 state: precomposing a state `ω : E →ₚ₁[ℝ] ℝ` with `φ⁻¹` gives the state that assigns to an
 observable `x` whatever `ω` assigned to the pulled-back observable `φ⁻¹ x`. This needs no new
 proof of positivity or normalization — `ω.comp φ⁻¹` is already a unital positive linear map
-because `.comp` always is (`UnitalPositiveLinearMap.comp` in `States/Basic.lean`); all that is new
+because `.comp` always is; all that is new
 here is checking this assignment is a genuine group action, `(g*h) • ω = g • (h • ω)` and
 `1 • ω = ω`, which reduces to associativity and identity laws for `.comp` already on hand.
 
@@ -53,8 +53,7 @@ variable {E : Type*} [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E]
 
 /-! ## Composition of unital positive linear maps is associative
 
-Not stated in `States/Basic.lean`, but immediate from the definition of `.comp` there; we need it
-to check the group laws below. -/
+Immediate from the definition of `.comp`; used to check the group laws below. -/
 
 namespace UnitalPositiveLinearMap
 

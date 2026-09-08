@@ -59,7 +59,6 @@ lemma toChannel_apply (e : ι → Effect E) (he : ∑ i, (e i : E) = 1) (f : ι 
 
 omit [IsOrderUnit E] in
 /-- The channel matching a family of effects agrees with that family on each point mass. -/
-@[simp]
 lemma toChannel_single (e : ι → Effect E) (he : ∑ i, (e i : E) = 1) (i : ι) :
     toChannel e he (Pi.single i (1 : ℝ)) = (e i : E) := by
   rw [toChannel_apply,
@@ -130,7 +129,6 @@ noncomputable def ofChannel (M : (ι → ℝ) →ₚ₁[ℝ] E) : Measurement E 
 assigns to `i`, computed from the channel `M` via `ofChannel`, is just that state pulled back
 through `M` and evaluated at the point mass for `i` — the classical state `ω ∘ M` on the point
 mass, exactly as if `i` had been measured directly on the classical system. -/
-@[simp]
 lemma ofChannel_outcomeDistribution_apply (M : (ι → ℝ) →ₚ₁[ℝ] E) (ω : 𝓢[ℝ, E])
     (i : (ofChannel M).outcomes) :
     (ofChannel M).outcomeDistribution ω i = ω (M (Pi.single (i : ι) (1 : ℝ))) := by

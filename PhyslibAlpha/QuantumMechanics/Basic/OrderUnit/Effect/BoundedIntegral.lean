@@ -19,62 +19,16 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 
 # Integrating bounded measurable functions against an effect-valued measure
 
-`Effect/Integral.lean` builds `EffectValuedMeasure.simpleIntegral`, the integral of a *simple*
-function `∑ i, c i • 𝟙_{s i}` against a POVM `μ : EffectValuedMeasure Ω E`, and stops there — its
-own closing remark spells out exactly what extending it to all bounded measurable `f : Ω → ℝ`
-needs: a uniform-limit argument, which needs `E` complete with respect to its order-unit norm, a
-hypothesis that file deliberately leaves unstated. This file supplies that extension in full: the
-mesh construction and its uniform convergence, the resulting Cauchy sequence, the integral itself
-(under an explicit `[CompleteSpace E]`, fixed via the order-unit norm exactly as that file's
-closing remark prescribes), its independence from every choice made along the way (mesh scale,
-partition, even the bound `M`), and its linearity, positivity, and agreement with `simpleIntegral`
-on functions that already are simple.
+`Effect/Integral.lean` defines `EffectValuedMeasure.simpleIntegral`. This file extends it to
+bounded measurable `f : Ω → ℝ`, assuming `E` is complete for its order-unit norm.
 
 ## Construction
 
-For a bound `M` with `|f x| ≤ M` everywhere and mesh scale `n`, `meshPiece f M n` partitions `Ω`
-into the level sets of `x ↦ ⌊(n+1) * f x⌋`, restricted to the (finite, `M`-dependent) range of
-labels that can actually occur; `meshWeight M n` reads each label back off as a real number over
-`(n+1)`. The resulting simple function differs from `f` by at most the mesh width `1/(n+1)`
-everywhere (`abs_simpleValue_meshWeight_meshPiece_sub_le`), and refining the mesh moves the simple
-integral by at most the mesh width too, in the order-unit norm (`orderUnitNorm_simpleIntegral_sub_le`,
-built by comparing both partitions against their common refinement) — enough for
-`cauchySeq_meshSimpleIntegral`, hence, given `[CompleteSpace E]`, for `integral` itself as the
-limit.
-
-## What "the same limit" means here
-
-`orderUnitNorm_simpleIntegral_sub_le` is stated for *any* two simple functions that stay within
-`ε`, resp. `ε'`, of `f`, not just two stages of the canonical mesh — so it powers not only the
-Cauchy property but `tendsto_of_uniformly_approximating`: *every* sequence of simple-function
-partitions converging to `f` uniformly (with an explicit `→ 0` error bound, not just the mesh
-sequence) has the same limit against `μ`. Everything past that point — independence from the bound
-`M` (`integral_indep_of_bound`), agreement with `simpleIntegral` on functions that already are
-simple (`integral_eq_simpleIntegral`), and linearity (`integral_add`, `integral_smul`) — is proved
-by exhibiting *some* uniformly-approximating sequence with the right exact value at every finite
-stage (a constant sequence, a rescaled mesh, a mesh built from the pairwise intersections of two
-other meshes) and invoking `tendsto_nhds_unique` against the canonical mesh limit; no bespoke
-convergence argument is needed past that first one. Positivity (`nonneg_integral`) instead argues
-directly: every mesh stage is nonnegative once `f` is (`simpleIntegral_nonneg'`), and a limit of
-elements each within `ε` of being `≥ 0`, for every `ε > 0`, is itself `≥ 0`
-(`IsArchimedeanOrderUnit.le_zero_of_forall_pos_smul_one_le` applied to `-integral`).
-
-Two general-purpose facts about `E`'s order-unit norm, needed above but not present in
-`OrderUnit/Norm.lean`, are proved here: `orderUnitNorm_smul_le` (`‖c • x‖ ≤ |c| * ‖x‖`, needed for
-`integral_smul` since this generality never assumes `E` is a `NormedSpace ℝ E`, only a normed
-*group*) and `le_smul_one_of_orderUnitNorm_lt` (an order-unit-norm estimate on `y` gives an actual
-order bound `y ≤ r • 1`, not just a metric one).
-
-## What this file does not attempt
-
-Recovering a self-adjoint operator from its own spectral measure, by integrating the identity
-function against it, is out of scope here: that statement belongs to spectral theory proper
-(`OrderUnit/Effect/EffectValuedMeasure.lean` only packages what a POVM *is*, not the spectral
-theorem producing one from an operator) and isn't attempted in this file. Nothing here tries to
-drop the `[CompleteSpace E]` hypothesis or to give `integral` a
-`Measure`-theoretic domain of definition beyond "bounded and measurable" (e.g. extending to
-almost-everywhere-defined or unbounded functions); both are genuine further extensions, not loose
-ends of what's proved.
+For a bound `M` with `|f x| ≤ M` and scale `n`, `meshPiece f M n` and `meshWeight M n` define a
+finite simple approximation with uniform error at most `1/(n+1)`. The comparison lemma for two
+simple approximations makes these integrals Cauchy and proves that every uniformly approximating
+sequence has the same limit. The resulting integral is independent of the bound, agrees with
+`simpleIntegral`, and is linear and positive.
 
 ## Main definitions
 
@@ -505,7 +459,9 @@ variable {Ω E : Type*} [MeasurableSpace Ω] [AddCommGroup E] [PartialOrder E]
 
 open IsArchimedeanOrderUnit Filter Topology
 
-noncomputable local instance : NormedAddCommGroup E :=
+/-- The order-unit norm supplies the ambient normed additive-group structure for this section. -/
+@[nolint docBlame]
+noncomputable local instance instNormedAddCommGroup : NormedAddCommGroup E :=
   IsArchimedeanOrderUnit.orderUnitNormedAddCommGroup
 
 variable [CompleteSpace E]
@@ -714,7 +670,8 @@ theorem integral_add {g : Ω → ℝ} (hg : Measurable g) {M' : ℝ} (hM' : ∀ 
       atTop (𝓝 (integral hf hM μ + integral hg hM' μ)) := by
     have heq : ∀ n, simpleIntegral μ (comb n) (combPiece n) (hcombPart n)
         = simpleIntegral μ (meshWeight M n) (meshPiece f M n) (isPartition_meshPiece hf hM n)
-          + simpleIntegral μ (meshWeight M' n) (meshPiece g M' n) (isPartition_meshPiece hg hM' n) :=
+          + simpleIntegral μ (meshWeight M' n) (meshPiece g M' n)
+              (isPartition_meshPiece hg hM' n) :=
       fun n => (simpleIntegral_add_simpleIntegral μ _ _).symm
     simp_rw [heq]
     exact (integral_tendsto hf hM μ).add (integral_tendsto hg hM' μ)

@@ -106,6 +106,7 @@ scoped instance instMul : Mul (selfAdjoint A) := ⟨jordanMul⟩
 @[simp]
 theorem mul_def (a b : selfAdjoint A) : a * b = jordanMul a b := rfl
 
+/-- The Jordan product is commutative. -/
 scoped instance instCommMagma : CommMagma (selfAdjoint A) where
   mul_comm := jordanMul_comm
 

@@ -28,24 +28,6 @@ functor from unital positive linear maps to weights, contravariant in `φ`.
 
 - `Weight.comp`, `Weight.IsFinite.comp`, `Weight.IsState.comp`
 
-## Future work
-
-- **Measurement as a channel.** A finite-outcome measurement is a channel into a classical
-  (simplex) state space, equivalently a finite family of effects summing to `1`. Formalizing this
-  needs the classical `n`-outcome system as an order-unit space (`ι → ℝ`, pointwise order, unit
-  the constant function `1`) and a proof that unital positive linear maps out of it correspond to
-  such effect families — genuinely new content, not yet built here. The `EffectValuedMeasure`
-  already built in this layer is the σ-algebra generalization of the same idea.
-- **Instruments.** An instrument (a channel into `Σ × K`, giving both the outcome and the
-  post-measurement state) is strictly more informative than an `EffectValuedMeasure` alone,
-  which only gives outcome probabilities. Not yet built.
-- **Complete positivity.** A channel is positive automatically here (`Weight.comp` never leaves
-  the cone); *completely* positive is a strictly stronger condition once a bystander system is
-  tensored in, and whether it holds depends on which tensor product of order-unit spaces is
-  chosen (trivial for the minimal and maximal tensor products, nontrivial in between — the regime
-  ordinary quantum mechanics sits in). None of this can be stated without a tensor product of
-  order-unit spaces, which this layer does not have.
-
 -/
 
 @[expose] public section

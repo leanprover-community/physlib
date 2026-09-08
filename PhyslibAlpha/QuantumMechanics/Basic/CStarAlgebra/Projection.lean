@@ -43,7 +43,7 @@ calculus that `selfAdjoint A` already carries for a C⋆-algebra `A`.
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-- A projection: an idempotent effect in the self-adjoint part of a C⋆-algebra. -/
-def Projection (A : Type*) [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A] :=
+def Projection (A : Type*) [CStarAlgebra A] [PartialOrder A] :=
   {p : Effect (selfAdjoint A) // IsIdempotentElem (((p : selfAdjoint A) : A))}
 
 namespace Projection

@@ -69,7 +69,7 @@ end CStarAlgebra
 /-- A projection-valued measure: a POVM every one of whose effects is a genuine projection
 (sharp effect). -/
 def PVM (Ω E : Type*) [MeasurableSpace Ω] [AddCommGroup E] [PartialOrder E]
-    [IsOrderedAddMonoid E] [Module ℝ E] [PosSMulMono ℝ E] [One E] [IsOrderUnit E] :=
+    [IsOrderedAddMonoid E] [Module ℝ E] [One E] [IsOrderUnit E] :=
   {μ : POVM Ω E // μ.IsPVM}
 
 namespace PVM

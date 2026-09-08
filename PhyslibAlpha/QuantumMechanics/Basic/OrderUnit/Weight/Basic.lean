@@ -57,10 +57,6 @@ lemma map_zero (w : Weight E) : w 0 = 0 := _root_.map_zero w
 @[simp]
 lemma map_add (w : Weight E) (x y : PosCone E) : w (x + y) = w x + w y := _root_.map_add w x y
 
-@[simp]
-lemma map_smul (w : Weight E) (c : ℝ≥0) (x : PosCone E) : w (c • x) = c • w x :=
-  _root_.map_smul w c x
-
 /-- A bigger outcome never gets less weight. -/
 lemma mono (w : Weight E) : Monotone (w : PosCone E → ℝ≥0∞) := by
   intro x y hxy

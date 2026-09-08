@@ -128,8 +128,7 @@ channel composition (`Postprocessing.lean`), this falls out of `Covariance.lean`
 `IsCovariant.comp`. -/
 theorem postprocess_isCovariant
     {G ι κ E : Type*} [Group G]
-    [MulAction G ι] [Fintype ι] [DecidableEq ι]
-    [MulAction G κ] [Fintype κ] [DecidableEq κ]
+    [MulAction G ι] [MulAction G κ]
     [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E]
     {ρ : G →* Symmetry E} {M : (ι → ℝ) →ₚ₁[ℝ] E} {K : (κ → ℝ) →ₚ₁[ℝ] (ι → ℝ)}
     (hM : M.IsCovariant (inducedAction (G := G) (ι := ι)) ρ)
@@ -146,8 +145,7 @@ channel (`classicalPullback f`) that is itself covariant for the induced actions
 automatically "measurable". -/
 lemma classicalPullback_isCovariant
     {G ι κ : Type*} [Group G]
-    [MulAction G ι] [Fintype ι] [DecidableEq ι]
-    [MulAction G κ] [Fintype κ] [DecidableEq κ]
+    [MulAction G ι] [MulAction G κ]
     (f : κ → ι) (hf : ∀ (g : G) (k : κ), f (g • k) = g • f k) :
     (classicalPullback f).IsCovariant
       (inducedAction (G := G) (ι := ι)) (inducedAction (G := G) (ι := κ)) := by

@@ -142,7 +142,6 @@ noncomputable scoped instance instBracket : Bracket (selfAdjoint A) (selfAdjoint
 @[simp]
 theorem bracket_def (a b : selfAdjoint A) : ⁅a, b⁆ = lieMul a b := rfl
 
-@[simp]
 theorem coe_bracket (a b : selfAdjoint A) :
     ((⁅a, b⁆ : selfAdjoint A) : A) = (-(Complex.I / 2)) • ((a : A) * b - (b : A) * a) :=
   val_lieMul a b
@@ -181,6 +180,7 @@ theorem bracket_smul (t : ℝ) (a b : selfAdjoint A) :
   rw [mul_smul_comm, smul_mul_assoc]
   module
 
+/-- The Lie bracket is compatible with the real scalar structure. -/
 noncomputable scoped instance instLieAlgebra : LieAlgebra ℝ (selfAdjoint A) where
   toModule := inferInstance
   lie_smul := bracket_smul
@@ -189,13 +189,11 @@ end LieRing
 
 /-! ## Elementary identities -/
 
-@[simp]
 theorem bracket_one_right (a : selfAdjoint A) : ⁅a, (1 : selfAdjoint A)⁆ = 0 := by
   apply Subtype.ext
   rw [coe_bracket]
   simp
 
-@[simp]
 theorem bracket_one_left (a : selfAdjoint A) : ⁅(1 : selfAdjoint A), a⁆ = 0 := by
   apply Subtype.ext
   rw [coe_bracket]

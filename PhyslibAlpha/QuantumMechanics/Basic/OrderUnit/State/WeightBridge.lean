@@ -13,7 +13,7 @@ public import PhyslibAlpha.QuantumMechanics.Basic.OrderUnit.State.Basic
 # States, independently of weights
 
 A state is, on its own terms, a normalized positive linear functional — `𝓢[ℝ, E]`, already fully
-built in `States/Basic.lean`. It is not *defined* as a weight; `Weight.stateEquiv` is the genuine
+built in `State/Basic.lean`. It is not *defined* as a weight; `Weight.stateEquiv` is the genuine
 theorem connecting the two independent notions, replacing what would otherwise be an inheritance
 chain forcing every state-level fact through weight machinery.
 
@@ -41,15 +41,8 @@ namespace IsState
 /-- The extension of a state weight is its finite-weight extension. -/
 noncomputable abbrev toFun (hw : w.IsState) : E → ℝ := hw.finite.toFun
 
-@[simp]
-lemma toFun_of_nonneg (hw : w.IsState) (x : PosCone E) : toFun hw (x : E) = (w x).toReal :=
-  hw.finite.toFun_of_nonneg x
-
 /-- The linear extension of a state weight is its finite-weight extension. -/
 noncomputable abbrev toLinearMap (hw : w.IsState) : E →ₗ[ℝ] ℝ := hw.finite.toLinearMap
-
-@[simp]
-lemma toLinearMap_apply (hw : w.IsState) (x : E) : toLinearMap hw x = toFun hw x := rfl
 
 /-- A finite normalized weight extends to a state. -/
 noncomputable def toUnitalPositiveLinearMap (hw : w.IsState) : 𝓢[ℝ, E] :=
