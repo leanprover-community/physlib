@@ -63,3 +63,14 @@ public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.Invariants
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.Module
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.OrbitRepresentative
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.SwapDoublet
+public import PhyslibAlpha.StringTheory.DBranes.Basic
+public import PhyslibAlpha.StringTheory.DBranes.CoulombBranch.Complexity
+public import PhyslibAlpha.StringTheory.DBranes.CoulombBranch.Shell
+public import PhyslibAlpha.StringTheory.DBranes.CoulombBranch.SphereEntanglement
+public import PhyslibAlpha.StringTheory.DBranes.CoulombBranch.StripEntanglement
+public import PhyslibAlpha.StringTheory.DBranes.CoulombBranch.TargetSpaceEntanglement
+public import PhyslibAlpha.StringTheory.DBranes.DecouplingLimit
+public import PhyslibAlpha.StringTheory.Holography.Complexity
+public import PhyslibAlpha.StringTheory.Holography.EntropicCFunction
+public import PhyslibAlpha.StringTheory.Holography.FlatSpaceRT
+public import PhyslibAlpha.StringTheory.Holography.RyuTakayanagi
