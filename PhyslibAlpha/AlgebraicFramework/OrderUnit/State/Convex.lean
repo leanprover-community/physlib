@@ -14,8 +14,23 @@ public import Mathlib.Topology.UnitInterval
 
 # Convex state spaces
 
+## i. Overview
+
 Mixtures of complex-valued states on ordered complex vector spaces with a distinguished unit.
 No multiplication, star operation, norm, topology, completeness, or C⋆ structure is required.
+
+## ii. Key definitions and results
+
+- `UnitalPositiveLinearMap.finiteMix`: a finite convex mixture of states.
+- `UnitalPositiveLinearMap.mix`: a binary mixture.
+- `UnitalPositiveLinearMap.stateSpace`: states embedded in the algebraic dual.
+- `UnitalPositiveLinearMap.stateSpace_convex`: convexity of the state space.
+
+## iii. Table of contents
+
+- A. Finite mixtures
+- B. Binary mixtures
+- C. The state space in the algebraic dual
 
 -/
 
@@ -27,6 +42,8 @@ namespace UnitalPositiveLinearMap
 
 variable {A : Type*} [AddCommGroup A] [PartialOrder A] [IsOrderedAddMonoid A]
   [Module ℂ A] [One A]
+
+/-! ## A. Finite mixtures -/
 
 /-- The state obtained from a finite family using probability weights `p`. -/
 noncomputable def finiteMix {ι : Type*} [Fintype ι] (ω : ι → 𝓢[A])
@@ -62,6 +79,8 @@ def binaryWeights (t : unitInterval) : stdSimplex ℝ (Fin 2) :=
 
 @[simp] lemma binaryWeights_one (t : unitInterval) :
     binaryWeights t 1 = 1 - (t : ℝ) := rfl
+
+/-! ## B. Binary mixtures -/
 
 /-- Randomize between two states with probability `t` of choosing the first. -/
 noncomputable def mix (ω φ : 𝓢[A]) (t : unitInterval) : 𝓢[A] :=
@@ -105,6 +124,8 @@ lemma mem_openSegment_iff_exists_mix (ω φ ψ : 𝓢[A]) :
     · exact_mod_cast unitInterval.pos_iff_ne_zero.mpr ht₀
     · exact sub_pos.mpr (by exact_mod_cast unitInterval.lt_one_iff_ne_one.mpr ht₁)
     · rw [mix_toLinearMap]
+
+/-! ## C. The state space in the algebraic dual -/
 
 /-- General states embedded into the complex algebraic dual. -/
 def stateSpace : Set (A →ₗ[ℂ] ℂ) :=

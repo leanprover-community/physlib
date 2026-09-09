@@ -12,16 +12,24 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.State.Basic
 
 # States, independently of weights
 
+## i. Overview
+
 A state is, on its own terms, a normalized positive linear functional — `𝓢[ℝ, E]`, already fully
 built in `State/Basic.lean`. It is not *defined* as a weight; `Weight.stateEquiv` is the genuine
 theorem connecting the two independent notions, replacing what would otherwise be an inheritance
 chain forcing every state-level fact through weight machinery.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `Weight.IsState.toUnitalPositiveLinearMap` : a state weight, as a state.
 - `UnitalPositiveLinearMap.toWeight` : a state, as a (finite, normalized) weight.
 - `Weight.stateEquiv` : the equivalence between the two.
+
+## iii. Table of contents
+
+- A. From state weights to states
+- B. From states to weights
+- C. The equivalence
 
 -/
 
@@ -37,6 +45,8 @@ namespace Weight
 variable {w : Weight E}
 
 namespace IsState
+
+/-! ## A. From state weights to states -/
 
 /-- The extension of a state weight is its finite-weight extension. -/
 noncomputable abbrev toFun (hw : w.IsState) : E → ℝ := hw.finite.toFun
@@ -62,6 +72,8 @@ end IsState
 end Weight
 
 namespace UnitalPositiveLinearMap
+
+/-! ## B. From states to weights -/
 
 /-- The weight induced by a state: `ENNReal.ofReal` applied to the state's values on the positive
 cone, where they are automatically nonnegative — so this loses no information about `s` there
@@ -102,6 +114,8 @@ lemma toWeight_isState (s : 𝓢[ℝ, E]) : s.toWeight.IsState where
 end UnitalPositiveLinearMap
 
 namespace Weight
+
+/-! ## C. The equivalence -/
 
 /-- Finite normalized weights correspond exactly to states. This is the representation theorem
 that replaces bundling a state as a subtype of `Weight`: `Weight` and `𝓢[ℝ, E]` are independent

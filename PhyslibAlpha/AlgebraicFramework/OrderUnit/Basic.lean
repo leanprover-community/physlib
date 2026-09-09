@@ -8,10 +8,13 @@ module
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
 public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
 
 # Order units and the positive cone
+
+## i. Overview
 
 `E` is where measurement outcomes and expectation values live, and `≤` is the natural order on
 them: `0 ≤ x` means `x` could be a probability, or the expectation value of a
@@ -26,17 +29,42 @@ thing: nothing is infinitesimally smaller than `1` without actually being `≤ 0
 `PosCone E` is just the possible outcomes on their own. Adding two of them, or scaling one down by
 a probability, keeps you among possible outcomes, and does so as a `ℝ≥0`-module.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `IsOrderUnit E`
 - `IsArchimedeanOrderUnit E`
+- `IsOrderUnitElement u`
+- `IsArchimedeanOrderUnitElement u`
 - `PosCone E`
+- `IsOrderUnit.exists_eq_sub_nonneg`
+
+## iii. Table of contents
+
+- A. Order units
+- B. The positive cone
 
 -/
 
 @[expose] public section
 
 open scoped NNReal
+
+/-!
+
+## A. Order units
+-/
+
+/-- An element `u` is an order unit when it is nonnegative and every element is bounded above by
+a natural multiple of `u`. In an ordered additive group, applying the same condition to `-x`
+supplies the corresponding lower bound. -/
+def IsOrderUnitElement {E : Type*} [AddCommMonoid E] [PartialOrder E] (u : E) : Prop :=
+  0 ≤ u ∧ ∀ x : E, ∃ n : ℕ, x ≤ n • u
+
+/-- An element `u` is an Archimedean order unit when it is an order unit and an element lying
+below every positive real multiple of `u` is nonpositive. -/
+def IsArchimedeanOrderUnitElement {E : Type*} [AddCommGroup E] [PartialOrder E] [Module ℝ E]
+    (u : E) : Prop :=
+  IsOrderUnitElement u ∧ ∀ x : E, (∀ ε : ℝ, 0 < ε → x ≤ ε • u) → x ≤ 0
 
 /-- The identity is the biggest outcome around: everything else is bounded by finitely many
 copies of it. -/
@@ -54,6 +82,50 @@ class IsArchimedeanOrderUnit (E : Type*) [AddCommGroup E] [PartialOrder E] [Modu
   `≤ 0`. -/
   le_zero_of_forall_pos_smul_one_le : ∀ x : E,
     (∀ ε : ℝ, 0 < ε → x ≤ ε • (1 : E)) → x ≤ 0
+
+/-- The distinguished unit is an order-unit element whenever `E` carries `IsOrderUnit`. -/
+lemma isOrderUnitElement_one {E : Type*} [AddCommMonoid E] [PartialOrder E] [One E]
+    [IsOrderUnit E] : IsOrderUnitElement (1 : E) :=
+  ⟨IsOrderUnit.one_nonneg, IsOrderUnit.exists_nsmul_one_le⟩
+
+/-- The distinguished unit is an Archimedean order-unit element whenever `E` carries
+`IsArchimedeanOrderUnit`. -/
+lemma isArchimedeanOrderUnitElement_one {E : Type*} [AddCommGroup E] [PartialOrder E]
+    [Module ℝ E] [One E] [IsArchimedeanOrderUnit E] :
+    IsArchimedeanOrderUnitElement (1 : E) :=
+  ⟨isOrderUnitElement_one, IsArchimedeanOrderUnit.le_zero_of_forall_pos_smul_one_le⟩
+
+namespace IsOrderUnitElement
+
+variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
+
+/-- Every vector is a difference of two nonnegative vectors when a specified order unit exists. -/
+lemma exists_eq_sub_nonneg {u : E} (hu : IsOrderUnitElement u) (x : E) :
+    ∃ xp xn : E, 0 ≤ xp ∧ 0 ≤ xn ∧ x = xp - xn := by
+  obtain ⟨n, hn⟩ := hu.2 (-x)
+  refine ⟨n • u + x, n • u, ?_, nsmul_nonneg hu.1 n, ?_⟩
+  · simpa [sub_eq_add_neg] using sub_nonneg.mpr hn
+  · abel
+
+end IsOrderUnitElement
+
+namespace IsOrderUnit
+
+variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [One E]
+  [IsOrderUnit E]
+
+/-- Every element of an order-unit space is a difference of two nonnegative elements. In cone
+language, the positive cone is reproducing. -/
+lemma exists_eq_sub_nonneg (x : E) :
+    ∃ xp xn : E, 0 ≤ xp ∧ 0 ≤ xn ∧ x = xp - xn :=
+  isOrderUnitElement_one.exists_eq_sub_nonneg x
+
+end IsOrderUnit
+
+/-!
+
+## B. The positive cone
+-/
 
 /-- The possible measurement outcomes on their own. -/
 abbrev PosCone (E : Type*) [AddCommMonoid E] [PartialOrder E] := {x : E // 0 ≤ x}

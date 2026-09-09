@@ -12,15 +12,25 @@ public import Mathlib.Analysis.Complex.Basic
 
 # Channels
 
+## i. Overview
+
 A channel from system `A` to system `B` is, in the Schrödinger picture, an affine map on states.
 Dualizing gives a unital positive linear map on effects in the other direction (the Heisenberg
 picture): `UnitalPositiveLinearMap` is exactly that dual, and `E₁ →ₚ₁[R] E₂` reads as "the
 adjoint of a channel `A → B`" whenever `E₁`, `E₂` are the effect algebras of `A`, `B`.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `UnitalPositiveLinearMap` is the type of positive linear maps that preserve `1`.
 - `E₁ →ₚ₁[R] E₂` is notation for it.
+- Endomorphisms `E →ₚ₁[R] E` form a monoid under composition.
+
+## iii. Table of contents
+
+- A. Unital positive linear maps
+- B. Constructors
+- C. Coercions and extensionality
+- D. Identity and composition
 
 ## Implementation details
 
@@ -31,6 +41,8 @@ We follow the implementation of `PositiveLinearMap` closely.
 @[expose] public section
 
 section UnitalPositiveLinearMap
+
+/-! ## A. Unital positive linear maps -/
 
 /-- A positive linear map that preserves `1`. -/
 structure UnitalPositiveLinearMap (R E₁ E₂ : Type*) [Semiring R]
@@ -44,6 +56,8 @@ attribute [nolint docBlame] UnitalPositiveLinearMap.toOneHom
 notation:25 E " →ₚ₁[" R:25 "] " F:0 => UnitalPositiveLinearMap R E F
 
 section UnitalPositiveLinearMapClass
+
+/-! ## B. Constructors -/
 
 variable {F R E₁ E₂ : Type*} [Semiring R]
   [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
@@ -73,12 +87,15 @@ end UnitalPositiveLinearMap
 
 namespace UnitalPositiveLinearMap
 
-variable {R E₁ E₂ E₃ : Type*} [Semiring R]
+/-! ## C. Coercions and extensionality -/
+
+variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
     [AddCommMonoid E₁] [PartialOrder E₁]
     [AddCommMonoid E₂] [PartialOrder E₂]
     [AddCommMonoid E₃] [PartialOrder E₃]
-    [Module R E₁] [Module R E₂] [Module R E₃]
-    [One E₁] [One E₂] [One E₃]
+    [AddCommMonoid E₄] [PartialOrder E₄]
+    [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
+    [One E₁] [One E₂] [One E₃] [One E₄]
 
 instance : FunLike (E₁ →ₚ₁[R] E₂) E₁ E₂ where
   coe f := f.toFun
@@ -124,12 +141,20 @@ variable (R E₁) in
 @[simp] lemma toOrderHom_id : (UnitalPositiveLinearMap.id R E₁).toOrderHom = .id := rfl
 @[simp] lemma toOneHom_id : (UnitalPositiveLinearMap.id R E₁).toOneHom = .id E₁ := rfl
 
+/-! ## D. Identity and composition -/
+
 /-- Composition of positive linear one-preserving maps. -/
 @[simps! apply]
 def comp (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) : E₁ →ₚ₁[R] E₃ where
   toLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
   monotone' := g.monotone'.comp f.monotone'
   map_one' := by simp
+
+/-- Composition of unital positive linear maps is associative. -/
+lemma comp_assoc (h : E₃ →ₚ₁[R] E₄) (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) :
+    (h.comp g).comp f = h.comp (g.comp f) := by
+  ext x
+  simp
 
 @[simp] lemma toPositiveLinearMap_comp (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) :
     (g.comp f).toPositiveLinearMap = g.toPositiveLinearMap.comp f.toPositiveLinearMap :=
@@ -141,6 +166,18 @@ def comp (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) : E₁ →ₚ
 
 @[simp] lemma comp_id (f : E₁ →ₚ₁[R] E₂) : f.comp (.id R E₁) = f := rfl
 @[simp] lemma id_comp (f : E₁ →ₚ₁[R] E₂) : (UnitalPositiveLinearMap.id R E₂).comp f = f := rfl
+
+/-- Unital positive endomorphisms form a monoid under composition. -/
+instance instMonoid : Monoid (E₁ →ₚ₁[R] E₁) where
+  one := .id R E₁
+  mul := comp
+  one_mul := id_comp
+  mul_one := comp_id
+  mul_assoc := comp_assoc
+
+@[simp] lemma one_apply (x : E₁) : (1 : E₁ →ₚ₁[R] E₁) x = x := rfl
+
+@[simp] lemma mul_apply (f g : E₁ →ₚ₁[R] E₁) (x : E₁) : (f * g) x = f (g x) := rfl
 
 @[simp]
 lemma map_smul_of_tower {S : Type*} [SMul S E₁] [SMul S E₂]

@@ -11,8 +11,21 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.State.Convex
 
 # Pure states
 
+## i. Overview
+
 Pure states are extreme points of the general convex state space. Equivalently, they cannot be
 written as a genuine mixture of other states.
+
+## ii. Key definitions and results
+
+- `UnitalPositiveLinearMap.IsPure`
+- `UnitalPositiveLinearMap.isPure_iff_binary_decompositions_trivial`
+- `UnitalPositiveLinearMap.not_isPure_iff_nontrivial_binary_decomposition`
+
+## iii. Table of contents
+
+- A. Pure states
+- B. Binary-decomposition characterizations
 
 -/
 
@@ -25,9 +38,13 @@ namespace UnitalPositiveLinearMap
 variable {A : Type*} [AddCommGroup A] [PartialOrder A] [IsOrderedAddMonoid A]
   [Module ℂ A] [One A]
 
+/-! ## A. Pure states -/
+
 /-- A pure state is an extreme point of the general state space. -/
 def IsPure (ω : 𝓢[A]) : Prop :=
   ω.toLinearMap ∈ (stateSpace (A := A)).extremePoints ℝ
+
+/-! ## B. Binary-decomposition characterizations -/
 
 /-- A state is pure exactly when every genuine binary decomposition is trivial. -/
 lemma isPure_iff_binary_decompositions_trivial (ω : 𝓢[A]) :

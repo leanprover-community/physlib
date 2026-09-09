@@ -19,10 +19,12 @@ public import Mathlib.Analysis.Normed.Group.Uniform
 
 # Integrating bounded measurable functions against an effect-valued measure
 
+## i. Overview
+
 `Effect/Integral.lean` defines `EffectValuedMeasure.simpleIntegral`. This file extends it to
 bounded measurable `f : Ω → ℝ`, assuming `E` is complete for its order-unit norm.
 
-## Construction
+## ii. Construction
 
 For a bound `M` with `|f x| ≤ M` and scale `n`, `meshPiece f M n` and `meshWeight M n` define a
 finite simple approximation with uniform error at most `1/(n+1)`. The comparison lemma for two
@@ -30,7 +32,7 @@ simple approximations makes these integrals Cauchy and proves that every uniform
 sequence has the same limit. The resulting integral is independent of the bound, agrees with
 `simpleIntegral`, and is linear and positive.
 
-## Main definitions
+## iii. Key definitions and results
 
 - `EffectValuedMeasure.meshBound`, `MeshIndex`, `meshWeight`, `meshPiece` : the width-`1/(n+1)`
   mesh simple function approximating a bounded measurable `f` with `|f x| ≤ M`, and its uniform
@@ -47,13 +49,20 @@ sequence has the same limit. The resulting integral is independent of the bound,
 - `EffectValuedMeasure.integral_add`, `integral_smul`, `nonneg_integral` : linearity and
   positivity.
 
+## iv. Table of contents
+
+- A. Mesh approximation
+- B. Linear operations on simple values
+- C. Comparison of simple integrals
+- D. Construction by completeness
+
 -/
 
 @[expose] public section
 
 namespace EffectValuedMeasure
 
-/-! ## The mesh approximation of a bounded measurable function -/
+/-! ## A. The mesh approximation of a bounded measurable function -/
 
 section Mesh
 
@@ -170,6 +179,8 @@ end Mesh
 
 section SimpleValueLinear
 
+/-! ## B. Linear operations on simple values -/
+
 variable {Ω : Type*} {ι : Type*} [Fintype ι]
 
 /-- `simpleValue` is additive in the weights, pointwise. -/
@@ -190,7 +201,7 @@ lemma simpleValue_smul (r : ℝ) (c : ι → ℝ) (s : ι → Set Ω) (x : Ω) :
 
 end SimpleValueLinear
 
-/-! ## Comparing the simple integrals of two approximations
+/-! ## C. Comparing the simple integrals of two approximations
 
 The key ingredient for both the Cauchy property and the independence of the eventual integral
 from the choice of approximating sequence: if two simple functions (over possibly different
@@ -442,7 +453,7 @@ lemma le_smul_one_of_orderUnitNorm_lt {y : E} {r : ℝ} (h : orderUnitNorm y < r
 
 end Comparison
 
-/-! ## The integral, via completeness
+/-! ## D. The integral, via completeness
 
 `E`'s order-unit norm (`IsArchimedeanOrderUnit.orderUnitNorm`) makes it a normed group via
 `IsArchimedeanOrderUnit.orderUnitNormedAddCommGroup`, deliberately not a registered instance at

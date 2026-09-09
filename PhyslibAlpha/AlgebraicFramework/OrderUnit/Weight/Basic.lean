@@ -13,6 +13,8 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Basic
 
 # Weights
 
+## i. Overview
+
 A weight is a statistical weight: a number in `[0, ∞]` on each outcome saying how much of it
 there is, with no requirement that the total be finite or normalized to 1 — hence the `∞` and
 the fact that weights are compared, never subtracted. They live on `PosCone E`, the space of
@@ -24,13 +26,20 @@ give (contrast `Effect`, a bounded slice of `E` that needs `Effect.convex` to st
 mixing). `Weight.IsState.mix` is the one thing that *does* need proving: that this combination
 preserves normalization when the coefficients sum to `1`.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `Weight E`
 - `Weight.IsFaithful`, `Weight.IsFinite`, `Weight.IsSemifinite`, `Weight.IsNormal` : the standard
   refinements.
 - `Weight.IsState` : a finite weight normalized at the order unit — an actual state.
 - `Weight.mix`, `Weight.IsState.mix` : mixing two (state) weights.
+
+## iii. Table of contents
+
+- A. Weights on the positive cone
+- B. Standard properties of weights
+- C. Mixtures
+- D. State weights
 
 -/
 
@@ -46,6 +55,8 @@ abbrev Weight (E : Type*) [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid 
     [Module ℝ E] [PosSMulMono ℝ E] := PosCone E →ₗ[ℝ≥0] ℝ≥0∞
 
 namespace Weight
+
+/-! ## A. Weights on the positive cone -/
 
 @[ext]
 lemma ext {w₁ w₂ : Weight E} (h : ∀ x, w₁ x = w₂ x) : w₁ = w₂ :=
@@ -70,6 +81,8 @@ lemma mono (w : Weight E) : Monotone (w : PosCone E → ℝ≥0∞) := by
     _ = w (x + z) := (map_add w x z).symm
     _ = w y := by rw [hxz]
 
+/-! ## B. Standard properties of weights -/
+
 /-- Only the impossible outcome carries no weight at all. -/
 def IsFaithful (w : Weight E) : Prop := ∀ x : PosCone E, w x = 0 → x = 0
 
@@ -86,6 +99,8 @@ def IsNormal (w : Weight E) : Prop :=
   ∀ (D : Set (PosCone E)) (x : PosCone E), D.Nonempty → DirectedOn (· ≤ ·) D → IsLUB D x →
     IsLUB (w '' D) (w x)
 
+/-! ## C. Mixtures -/
+
 /-- Mixing two weights with `ℝ≥0` coefficients: already a weight, for free, since `Weight E` is
 itself an `ℝ≥0`-module. -/
 noncomputable def mix (w₁ w₂ : Weight E) (a b : ℝ≥0) : Weight E := a • w₁ + b • w₂
@@ -95,6 +110,8 @@ lemma mix_apply (w₁ w₂ : Weight E) (a b : ℝ≥0) (x : PosCone E) :
     mix w₁ w₂ a b x = a • w₁ x + b • w₂ x := rfl
 
 variable [One E] [IsOrderUnit E]
+
+/-! ## D. State weights -/
 
 /-- The certain outcome, as a point of the cone. -/
 def unit : PosCone E := ⟨1, IsOrderUnit.one_nonneg⟩

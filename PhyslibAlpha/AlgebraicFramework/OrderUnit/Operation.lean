@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 # Operations
 
+## i. Overview
+
 An operation on `E` is a positive linear endomorphism that is not required to be unital: unlike a
 channel (`Channel/Basic.lean`), it can lose "probability mass" — the way a single, non-selective
 outcome of a measurement transforms a state without necessarily preserving its normalization.
@@ -20,15 +22,23 @@ What keeps it physical rather than an arbitrary positive map is that it never *g
 `UnitalPositiveLinearMap`); a finite family of operations whose images of `1` sum to exactly `1`
 is an instrument (`Measurement/Instrument.lean`).
 
-## Main definitions
+## ii. Key definitions and results
 
 - `Operation E`
+- `Operation.outcomeEffect`
+
+## iii. Table of contents
+
+- A. Operations
+- B. Outcome effects
 
 -/
 
 @[expose] public section
 
 variable {E : Type*} [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E]
+
+/-! ## A. Operations -/
 
 /-- An operation on `E`: a positive linear endomorphism that never sends the certain event above
 itself. -/
@@ -53,6 +63,8 @@ lemma apply_one_le_one (op : Operation E) : op 1 ≤ 1 :=
   op.2
 
 variable [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E]
+
+/-! ## B. Outcome effects -/
 
 /-- The image of the certain event under an operation, as an effect: the probability of the
 operation actually "firing" in a given state. -/

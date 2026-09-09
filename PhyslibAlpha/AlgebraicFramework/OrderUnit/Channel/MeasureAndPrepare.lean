@@ -12,6 +12,8 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Basic
 
 # Measure-and-prepare channels
 
+## i. Overview
+
 A channel `E₂ →ₚ₁[ℝ] E₁` (the Heisenberg picture of a Schrödinger channel `E₁ → E₂`) is
 measure-and-prepare when it factors through a finite classical system: measure the input, then
 prepare a (possibly different) output state for each outcome. Dually, this is exactly
@@ -23,9 +25,13 @@ This is the abstract, order-unit-level version of an entanglement-breaking chann
 factorization definition extends to any outcome type (not just finite ones) with no change, unlike
 a hard-coded sum over a fixed outcome set.
 
-## Main definitions
+## ii. Key definitions
 
 - `UnitalPositiveLinearMap.IsMeasureAndPrepare`
+
+## iii. Table of contents
+
+- A. Factorization through a finite classical system
 
 -/
 
@@ -38,6 +44,8 @@ variable {E₁ E₂ : Type*}
   [One E₂]
 
 namespace UnitalPositiveLinearMap
+
+/-! ## A. Factorization through a finite classical system -/
 
 /-- A channel is measure-and-prepare when it factors through a finite classical system: measure,
 then prepare a state for each outcome. This is the general-probabilistic-theory abstraction of an

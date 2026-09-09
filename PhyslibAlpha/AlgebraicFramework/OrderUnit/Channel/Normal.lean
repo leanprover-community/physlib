@@ -11,16 +11,23 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Basic
 
 # Normal channels
 
+## i. Overview
+
 A channel is normal when it preserves suprema of directed sets: its value at a directed supremum
 is the supremum of its values on the directed set. This is the extra continuity — beyond mere
 positivity — needed to push a countably-additive effect-valued measure forward along a channel and
 keep it countably additive (`Measurement/MeasurableOutcome.lean`); it plays the same role for
 channels that `Weight.IsNormal` plays for weights.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `UnitalPositiveLinearMap.IsNormal`
 - `UnitalPositiveLinearMap.isNormal_id`, `UnitalPositiveLinearMap.IsNormal.comp`
+
+## iii. Table of contents
+
+- A. Normality
+- B. Identity and composition
 
 -/
 
@@ -36,6 +43,8 @@ variable {E₁ E₂ E₃ : Type*}
 
 namespace UnitalPositiveLinearMap
 
+/-! ## A. Normality -/
+
 /-- A channel is normal when it carries the supremum of every directed set to the supremum of the
 image: it does not "jump" at a limit. -/
 def IsNormal (φ : E₁ →ₚ₁[ℝ] E₂) : Prop :=
@@ -46,6 +55,8 @@ omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] in
 lemma isNormal_id : (UnitalPositiveLinearMap.id ℝ E₁).IsNormal := fun D x _ _ hlub => by
   rwa [show (UnitalPositiveLinearMap.id ℝ E₁) '' D = D from Set.image_id D,
     UnitalPositiveLinearMap.id_apply]
+
+/-! ## B. Identity and composition -/
 
 omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] [IsOrderedAddMonoid E₂] [PosSMulMono ℝ E₂]
   [IsOrderedAddMonoid E₃] [PosSMulMono ℝ E₃] in

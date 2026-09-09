@@ -13,16 +13,26 @@ public import Mathlib.Topology.UnitInterval
 
 # Effects
 
+## i. Overview
+
 An effect is a bounded element of `E`: `0 ≤ e ≤ 1`, a possible outcome of a yes/no measurement.
 
 Effects are also closed under mixing: a probabilistic combination of two effects is again an
 effect (`Effect.convex`, `Effect.mix`) — the same fact as `Set.Icc` being convex.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `Effect E`
 - `Effect.complement`
 - `Effect.mix` : a probabilistic mixture of two effects, again an effect.
+- `Effect.IsSharp` : extremality in the effect interval.
+
+## iii. Table of contents
+
+- A. Effects and complements
+- B. Convex mixtures
+- C. Sharp effects
+- D. Pairing effects with weights
 
 -/
 
@@ -34,6 +44,8 @@ variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [O
 abbrev Effect (E : Type*) [AddCommGroup E] [PartialOrder E] [One E] := Set.Icc (0 : E) 1
 
 namespace Effect
+
+/-! ## A. Effects and complements -/
 
 /-- Regard an effect as an element of the positive cone, forgetting the upper bound. -/
 def toPosCone (e : Effect E) : PosCone E := ⟨e.1, e.2.1⟩
@@ -69,6 +81,8 @@ omit [IsOrderedAddMonoid E] in
 
 variable [Module ℝ E] [PosSMulMono ℝ E]
 
+/-! ## B. Convex mixtures -/
+
 omit [IsOrderUnit E] in
 /-- Effects are closed under probabilistic mixing: mixing two possible outcomes gives another
 possible outcome. This is the same convexity that makes states convex (`States/Convex.lean`):
@@ -99,6 +113,8 @@ positive cone of an ordered vector space meets its negation only at `0`. Not spe
 but stated here for lack of a better shared home; reused e.g. by `StarAlgebra/SharpEffect.lean`. -/
 lemma nonneg_add_eq_zero {a b : E} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 0) : a = 0 :=
   le_antisymm (hab ▸ le_add_of_nonneg_right hb) ha
+
+/-! ## C. Sharp effects -/
 
 /-- An effect is sharp when it is an extreme point of the effect interval `[0, 1]`: it cannot be
 written as a nontrivial mixture of two distinct effects. Sharp effects generalize projections: in
@@ -148,6 +164,8 @@ lemma isSharp_one : IsSharp (1 : Effect E) :=
 end Effect
 
 namespace Weight
+
+/-! ## D. Pairing effects with weights -/
 
 variable [Module ℝ E] [PosSMulMono ℝ E] [IsOrderUnit E]
 

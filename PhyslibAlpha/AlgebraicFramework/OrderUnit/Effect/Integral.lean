@@ -11,6 +11,8 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Effect.EffectValuedMeasu
 
 # Integrating a simple function against an effect-valued measure
 
+## i. Overview
+
 `EffectValuedMeasure Ω E` (`OrderUnit/Effect/EffectValuedMeasure.lean`'s POVM) already assigns an
 effect to every measurable event. Physically, an *observable* with outcome space `(Ω, Σ)` is
 recovered from its POVM `μ` by integration: `∫ f dμ ∈ E` for a bounded measurable `f : Ω → ℝ`,
@@ -38,7 +40,7 @@ this generic order-unit layer does not yet provide (see `OrderUnit/Norm.lean`'s
 canonical topology is fixed at this level of generality) — left as future work, see the docstring
 remark at the end of this file.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `EffectValuedMeasure.apply_union_of_disjoint` : binary additivity of `μ`, derived from the
   countable additivity already in `EffectValuedMeasure`.
@@ -55,13 +57,20 @@ remark at the end of this file.
   partitions, by first refining both to a shared one).
 - `EffectValuedMeasure.simpleIntegral_nonneg` : positivity.
 
+## iii. Table of contents
+
+- A. Finite measurable partitions and simple functions
+- B. Finite additivity
+- C. The integral of a simple function
+- D. Beyond simple functions
+
 -/
 
 @[expose] public section
 
 namespace EffectValuedMeasure
 
-/-! ## Finite measurable partitions and the simple functions they carry
+/-! ## A. Finite measurable partitions and the simple functions they carry
 
 Nothing here refers to `E` or to a POVM at all yet: a partition and the simple function it carries
 are facts about `Ω` alone. -/
@@ -106,7 +115,7 @@ variable {Ω E : Type*} [MeasurableSpace Ω] [AddCommGroup E] [PartialOrder E]
 
 namespace EffectValuedMeasure
 
-/-! ## Finite additivity
+/-! ## B. Finite additivity
 
 `EffectValuedMeasure` only bundles *countable* additivity (`countably_additive`). Finite
 additivity is the special case of a family that is eventually `∅`, and the least upper bound of an
@@ -266,7 +275,7 @@ lemma apply_iUnion_of_disjoint {ι : Type*} [Fintype ι] [DecidableEq ι]
   rw [apply_congr μ (t := ⋃ i, f i) (by simp) (ht := MeasurableSet.iUnion hfm)] at h
   simpa using h
 
-/-! ## The integral of a simple function -/
+/-! ## C. The integral of a simple function -/
 
 /-- The integral of the simple function `∑ i, c i • 𝟙_{s i}` against `μ`: `∑ i, c i • μ(s i)`.
 Well-defined independently of the chosen partition by `simpleIntegral_eq_of_pointwise_eq`, and
@@ -371,7 +380,7 @@ lemma simpleIntegral_nonneg (μ : EffectValuedMeasure Ω E) {c : ι → ℝ} (hc
   Finset.sum_nonneg fun i _ => smul_nonneg (hc i) (μ (s i) (hs.measurable i)).2.1
 
 /-!
-## Beyond simple functions
+## D. Beyond simple functions
 
 Extending `simpleIntegral` to all bounded measurable functions — the standard uniform-limit
 construction, approximating `f` by simple functions on a mesh of the right width and passing to the

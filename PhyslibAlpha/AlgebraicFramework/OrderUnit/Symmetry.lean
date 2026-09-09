@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Group.Action.Hom
 
 # Symmetry: order-automorphisms and their action on states
 
+## i. Overview
+
 Physically, a symmetry of a system is a *reversible* transformation: a change of description that
 loses no information and can always be undone. In the order-unit picture (`Channel/Basic.lean`) a
 transformation between effect algebras is a channel, a unital positive linear map; a symmetry is
@@ -33,7 +35,7 @@ invertible (`Channel/Basic.lean`'s `Weight.comp` is the same idea one level down
 the positive cone; working with the state directly as a `UnitalPositiveLinearMap` avoids the extra
 order-unit hypotheses `Weight.comp` needs and is the cleaner route here).
 
-## Main definitions
+## ii. Key definitions and results
 
 - `IsOrderAutomorphism φ`: `φ` is a channel with a two-sided inverse that is also a channel.
 - `Symmetry E`: the bundled group of order-automorphisms of `E`, with `Group` instance
@@ -45,32 +47,20 @@ order-unit hypotheses `Weight.comp` needs and is the cleaner route here).
 - `OneParameterAutomorphismGroup E`: a one-parameter (reversible dynamics) family
   `α : ℝ → (E →ₚ₁[ℝ] E)` with `α 0 = id` and `α (s + t) = α s ∘ α t`, each `α t` an automorphism.
 
+## iii. Table of contents
+
+- A. Order automorphisms
+- B. The symmetry group
+- C. The induced action on states
+- D. One-parameter automorphism groups
+
 -/
 
 @[expose] public section
 
 variable {E : Type*} [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E]
 
-/-! ## Composition of unital positive linear maps is associative
-
-Immediate from the definition of `.comp`; used to check the group laws below. -/
-
-namespace UnitalPositiveLinearMap
-
-variable {R E₁ E₂ E₃ E₄ : Type*} [Semiring R]
-  [AddCommMonoid E₁] [PartialOrder E₁] [AddCommMonoid E₂] [PartialOrder E₂]
-  [AddCommMonoid E₃] [PartialOrder E₃] [AddCommMonoid E₄] [PartialOrder E₄]
-  [Module R E₁] [Module R E₂] [Module R E₃] [Module R E₄]
-  [One E₁] [One E₂] [One E₃] [One E₄]
-
-lemma comp_assoc (h : E₃ →ₚ₁[R] E₄) (g : E₂ →ₚ₁[R] E₃) (f : E₁ →ₚ₁[R] E₂) :
-    (h.comp g).comp f = h.comp (g.comp f) := by
-  ext x
-  simp
-
-end UnitalPositiveLinearMap
-
-/-! ## Order-automorphisms -/
+/-! ## A. Order automorphisms -/
 
 /-- `φ` is an order-automorphism of `E`: a channel with a two-sided inverse that is itself a
 channel. Equivalently, `φ` is bijective and both `φ` and `φ⁻¹` are positive and unital
@@ -124,7 +114,7 @@ lemma bijective (h : IsOrderAutomorphism φ) : Function.Bijective φ :=
 
 end IsOrderAutomorphism
 
-/-! ## The group of order-automorphisms -/
+/-! ## B. The symmetry group -/
 
 /-- A symmetry of `E`: an order-automorphism, bundled with its defining property. Composition
 makes these into a group, `Symmetry.instGroup` below. Reducible, so the underlying channel
@@ -159,7 +149,21 @@ noncomputable instance instGroup : Group (Symmetry E) where
   mul_one φ := Subtype.ext (UnitalPositiveLinearMap.comp_id φ.1)
   inv_mul_cancel φ := Subtype.ext φ.2.inverse_comp
 
-/-! ## The induced action on states -/
+/-- The symmetry group is canonically equivalent to the group of units of the monoid of unital
+positive endomorphisms. This identifies the explicit order-automorphism presentation with
+Mathlib's general algebraic notion of an invertible element. -/
+noncomputable def unitsEquiv : Symmetry E ≃* (E →ₚ₁[ℝ] E)ˣ where
+  toFun φ :=
+    { val := φ.1
+      inv := φ.2.inverse
+      val_inv := φ.2.comp_inverse
+      inv_val := φ.2.inverse_comp }
+  invFun φ := ⟨φ.val, ⟨φ.inv, φ.inv_val, φ.val_inv⟩⟩
+  left_inv _ := Symmetry.ext fun _ => rfl
+  right_inv _ := Units.ext rfl
+  map_mul' _ _ := Units.ext rfl
+
+/-! ## C. The induced action on states -/
 
 /-- The canonical action of `Symmetry E` on the state space `𝓢[ℝ, E]`: a symmetry `φ` transports a
 state `ω` by pulling it back along the inverse automorphism, `φ • ω = ω ∘ φ⁻¹`. This is exactly
@@ -196,7 +200,7 @@ lemma stateSMul_mul {G : Type*} [Group G] (ρ : G →* Symmetry E) (g h : G) (ω
 
 end Symmetry
 
-/-! ## One-parameter automorphism groups: reversible dynamics -/
+/-! ## D. One-parameter automorphism groups: reversible dynamics -/
 
 /-- A one-parameter group of order-automorphisms of `E`, indexed by time: `α t` is the
 automorphism of "let `t` units of time pass". This is exactly the "reversible dynamics" idea named

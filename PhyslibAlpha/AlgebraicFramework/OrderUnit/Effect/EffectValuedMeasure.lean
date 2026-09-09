@@ -13,6 +13,8 @@ public import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 # Effect-valued measures
 
+## i. Overview
+
 An effect-valued measure assigns each measurable set an effect, with `∅ ↦ 0`, `univ ↦ 1`, and
 countable additivity: the effects of a pairwise disjoint countable family have partial sums
 (computed in `E`, since `Effect E` is not itself closed under addition) whose least upper bound
@@ -24,9 +26,14 @@ operator-valued measure). Nothing here is an operator, though: this layer only e
 `Effect E` to be bounded elements of an ordered vector space, which is why the name doesn't
 mention operators.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `EffectValuedMeasure Ω E`
+
+## iii. Table of contents
+
+- A. Effect-valued measures
+- B. Basic API
 
 -/
 
@@ -34,6 +41,8 @@ mention operators.
 
 variable {Ω E : Type*} [MeasurableSpace Ω] [AddCommGroup E] [PartialOrder E]
   [IsOrderedAddMonoid E] [One E] [IsOrderUnit E]
+
+/-! ## A. Effect-valued measures -/
 
 /-- An effect-valued measure: `∅ ↦ 0`, `univ ↦ 1`, countably additive up to least upper bound. -/
 structure EffectValuedMeasure (Ω : Type*) [MeasurableSpace Ω] (E : Type*) [AddCommGroup E]
@@ -53,6 +62,8 @@ structure EffectValuedMeasure (Ω : Type*) [MeasurableSpace Ω] (E : Type*) [Add
         ((toFun (⋃ n, s n) (MeasurableSet.iUnion hsm) : Effect E) : E)
 
 namespace EffectValuedMeasure
+
+/-! ## B. Basic API -/
 
 instance : CoeFun (EffectValuedMeasure Ω E) fun _ => ∀ s : Set Ω, MeasurableSet s → Effect E where
   coe m := m.toFun

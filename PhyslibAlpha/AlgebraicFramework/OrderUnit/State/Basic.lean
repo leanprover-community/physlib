@@ -11,18 +11,26 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Basic
 
 # States
 
+## i. Overview
+
 A state is a normalized positive linear functional: an element of `𝓟[𝕜, A]`, the positive linear
 functionals on `A`, that sends the unit to `1`. `𝓢[𝕜, A]` is just `A →ₚ₁[𝕜] 𝕜` — the state space
 is a special case of the channel type, with the target system the base field itself.
 
-## Main definitions
+## ii. Key definitions
 
 - `𝓟[𝕜, A]` is the type of positive linear functionals on an ordered `𝕜`-vector space.
 - `𝓢[𝕜, A]` is the state space of an ordered `𝕜`-vector space with unit.
 
+## iii. Table of contents
+
+- A. Positive functionals and states
+
 -/
 
 @[expose] public section
+
+/-! ## A. Positive functionals and states -/
 
 /-- Positive linear functionals on an ordered `𝕜`-vector space. -/
 notation " 𝓟[" 𝕜 ", " A "] " => A →ₚ[𝕜] 𝕜

@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.AlgebraicFramework.StarAlgebra.Observable
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.OrderUnit
-public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Composite
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
@@ -36,24 +35,6 @@ was cut: the continuous functional calculus behind `a⁺`, `a⁻` needs complete
 C⋆-identity to exist at all, so `[CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]` is the
 correct, load-bearing hypothesis, not one to weaken.
 
-## Why this matters beyond this file
-
-`OrderUnit/Composite.lean`'s "Future work" section identifies the missing ingredient for proving
-`MaxCone E₁ E₂` (the maximal-cone tensor product of two order-unit spaces) is itself an order-unit
-space: an arbitrary element of `E₁ ⊗[ℝ] E₂` is *some* finite sum `∑ xᵢ ⊗ₜ yᵢ` with no control over
-the sign of the individual `xᵢ`, `yᵢ`, and — in a bare order-unit space — "there is no Jordan-type
-decomposition of `t` into a difference of two elements of `MaxCone E₁ E₂` to fall back on, unlike
-the C*-algebra/matrix setting". This file is exactly that C⋆-algebra-level fallback, for the
-specific case `E = Observable A = selfAdjoint A`. It does **not** resolve `Composite.lean`'s gap in
-general — that gap is about an arbitrary order-unit space `E` with no further structure, and no
-amount of C⋆-algebra machinery reaches that generality. What it does provide, as a genuinely short
-consequence proved below (`exists_sub_mem_maxConeSet`), is that every element of
-`Observable A ⊗[ℝ] Observable B` (for `A`, `B` both C⋆-algebras) *is* such a difference of two
-elements of `MaxCone (Observable A) (Observable B)` — the one piece of `Composite.lean`'s "Future
-work" that the Jordan decomposition alone settles. Boundedness by a multiple of `1 ⊗ₜ 1` (the rest
-of `IsOrderUnit`) is a separate, harder fact — the docstring there is explicit that it "genuinely
-needs more than the order-unit axioms this file assumes" — and is not attempted here.
-
 ## Main definitions
 
 - `Observable.posPart`, `Observable.negPart` : the positive and negative parts of an observable, as
@@ -62,8 +43,6 @@ needs more than the order-unit axioms this file assumes" — and is not attempte
 - `Observable.posPart_mul_negPart`, `Observable.negPart_mul_posPart` : the two parts are orthogonal.
 - `Observable.posPart_negPart_unique` : this is the *only* decomposition of `a` into a difference of
   orthogonal positive observables.
-- `exists_sub_mem_maxConeSet` : every element of `Observable A ⊗[ℝ] Observable B` is a difference of
-  two elements of the maximal cone `MaxCone (Observable A) (Observable B)` (see above).
 
 -/
 
@@ -123,55 +102,3 @@ lemma posPart_negPart_unique (a : Observable A) (b c : PositiveObservable A)
   exact ⟨Subtype.ext (Subtype.ext hb), Subtype.ext (Subtype.ext hc)⟩
 
 end Observable
-
-/-! ## C. A partial step towards `Composite.lean`'s order unit
-
-This section is a bonus, not the main deliverable of this file (see the module doc above for the
-precise scope of what it does and does not establish). It uses the Jordan decomposition to settle,
-for `E₁ = Observable A`, `E₂ = Observable B` with `A`, `B` C⋆-algebras, exactly the one gap
-`OrderUnit/Composite.lean`'s "Future work" section names by that name: every element of
-`Observable A ⊗[ℝ] Observable B` is a difference of two elements of `MaxCone (Observable A)
-(Observable B)`. The remaining, harder half of `IsOrderUnit` — bounding every such element by a
-multiple of `1 ⊗ₜ 1` — is not attempted; `Composite.lean` itself is explicit that this needs
-genuinely more (a Cauchy–Schwarz-type argument using the C⋆-norm), not just this decomposition. -/
-
-open scoped TensorProduct
-
-variable {B : Type*} [CStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
-
-/-- Every element of `Observable A ⊗[ℝ] Observable B` is a difference of two elements of the
-maximal cone `MaxCone (Observable A) (Observable B)`: expand a simple tensor `x ⊗ₜ y` using the
-Jordan decomposition `x = x⁺ - x⁻`, `y = y⁺ - y⁻` on each factor,
-`x ⊗ₜ y = (x⁺ ⊗ₜ y⁺ + x⁻ ⊗ₜ y⁻) - (x⁺ ⊗ₜ y⁻ + x⁻ ⊗ₜ y⁺)`, a difference of two sums of simple tensors
-of positive elements, and extend additively over `TensorProduct.induction_on`. -/
-theorem exists_sub_mem_maxConeSet (t : Observable A ⊗[ℝ] Observable B) :
-    ∃ t₁ t₂ : MaxCone (Observable A) (Observable B),
-      (t₁ : Observable A ⊗[ℝ] Observable B) - (t₂ : Observable A ⊗[ℝ] Observable B) = t := by
-  induction t using TensorProduct.induction_on with
-  | zero => exact ⟨0, 0, by simp⟩
-  | tmul x y =>
-      set xp := (Observable.posPart x).1
-      set xn := (Observable.negPart x).1
-      set yp := (Observable.posPart y).1
-      set yn := (Observable.negPart y).1
-      have hx : xp - xn = x := Observable.posPart_sub_negPart x
-      have hy : yp - yn = y := Observable.posPart_sub_negPart y
-      have hxp : (0 : Observable A) ≤ xp := (Observable.posPart x).2
-      have hxn : (0 : Observable A) ≤ xn := (Observable.negPart x).2
-      have hyp : (0 : Observable B) ≤ yp := (Observable.posPart y).2
-      have hyn : (0 : Observable B) ≤ yn := (Observable.negPart y).2
-      refine ⟨⟨xp ⊗ₜ[ℝ] yp, tmul_mem_maxConeSet hxp hyp⟩ +
-        ⟨xn ⊗ₜ[ℝ] yn, tmul_mem_maxConeSet hxn hyn⟩,
-        ⟨xp ⊗ₜ[ℝ] yn, tmul_mem_maxConeSet hxp hyn⟩ +
-        ⟨xn ⊗ₜ[ℝ] yp, tmul_mem_maxConeSet hxn hyp⟩, ?_⟩
-      show xp ⊗ₜ[ℝ] yp + xn ⊗ₜ[ℝ] yn - (xp ⊗ₜ[ℝ] yn + xn ⊗ₜ[ℝ] yp) = x ⊗ₜ[ℝ] y
-      rw [← hx, ← hy]
-      simp only [TensorProduct.sub_tmul, TensorProduct.tmul_sub]
-      abel
-  | add t₁ t₂ h₁ h₂ =>
-      obtain ⟨a1, a2, ha⟩ := h₁
-      obtain ⟨b1, b2, hb⟩ := h₂
-      refine ⟨a1 + b1, a2 + b2, ?_⟩
-      show ((a1 : _) + (b1 : _)) - ((a2 : _) + (b2 : _)) = t₁ + t₂
-      rw [show ((a1 : Observable A ⊗[ℝ] Observable B) + (b1 : _)) - ((a2 : _) + (b2 : _)) =
-        ((a1 : _) - (a2 : _)) + ((b1 : _) - (b2 : _)) from by abel, ha, hb]

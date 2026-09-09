@@ -12,6 +12,8 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Effect.Basic
 
 # State discrimination
 
+## i. Overview
+
 A system is prepared in state `ω₀` with prior probability `p₀`, or `ω₁` with prior `p₁`. Guess
 which from a single yes/no test (an effect `e`): guess `0` if `e` clicks, `1` otherwise. The
 optimal guess succeeds with probability
@@ -22,10 +24,16 @@ optimal guess succeeds with probability
 — the Helstrom bound, in the same spirit as the familiar `(1 + ‖p₀ρ₀ - p₁ρ₁‖₁) / 2` trace-distance
 formula, here with the effect supremum playing the trace norm's role directly.
 
-## Main definitions and results
+## ii. Key definitions and results
 
 - `successProb`, `optimalSuccessProb`
 - `optimalSuccessProb_eq`
+
+## iii. Table of contents
+
+- A. Success probability of a fixed test
+- B. Optimal success probability
+- C. The abstract Helstrom formula
 
 -/
 
@@ -35,6 +43,8 @@ variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [M
   [PosSMulMono ℝ E] [One E] [IsOrderUnit E]
 
 namespace UnitalPositiveLinearMap
+
+/-! ## A. Success probability of a fixed test -/
 
 /-- The probability of correctly guessing between `ω₀` (prior `p₀`) and `ω₁` (prior `p₁`) using
 the test `e`: guess `0` when `e` clicks, `1` when its complement does. -/
@@ -49,6 +59,8 @@ lemma successProb_eq_add_advantage (ω₀ ω₁ : 𝓢[ℝ, E]) (p₀ p₁ : ℝ
   show p₀ * ω₀ (e : E) + p₁ * ω₁ (1 - (e : E)) = p₁ + (p₀ * ω₀ (e : E) - p₁ * ω₁ (e : E))
   rw [map_sub, map_one]
   ring
+
+/-! ## B. Optimal success probability -/
 
 /-- The best a single test can do: the supremum of `successProb` over every possible effect. -/
 noncomputable def optimalSuccessProb (ω₀ ω₁ : 𝓢[ℝ, E]) (p₀ p₁ : ℝ) : ℝ :=
@@ -69,6 +81,8 @@ distinguishing power of `ω₀` against `ω₁`, bounded above by `advantage_le`
 lemma bddAbove_advantage (ω₀ ω₁ : 𝓢[ℝ, E]) {p₀ p₁ : ℝ} (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) :
     BddAbove (Set.range fun e : Effect E => p₀ * ω₀ (e : E) - p₁ * ω₁ (e : E)) :=
   ⟨p₀, by rintro _ ⟨e, rfl⟩; exact advantage_le ω₀ ω₁ hp₀ hp₁ e⟩
+
+/-! ## C. The abstract Helstrom formula -/
 
 omit [PosSMulMono ℝ E] in
 /-- The abstract Helstrom bound: the optimal one-shot success probability of distinguishing `ω₀`

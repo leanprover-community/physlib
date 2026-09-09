@@ -13,6 +13,8 @@ public import Mathlib.Tactic.Module
 
 # Extending finite weights
 
+## i. Overview
+
 A finite weight on the positive cone of an order-unit space extends uniquely to a positive linear
 functional on the whole space. Normalized weights therefore give states as a specialization.
 
@@ -21,11 +23,18 @@ adding enough copies of `1` (`exists_real_shift_nonneg` gives `r` with `r • 1 
 `toFun x := w (r • 1 + x) - r * w 1` — undo the shift after reading `w` on the cone
 and check it's independent of the `r` chosen.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `Weight.IsFinite.toFun`
 - `Weight.IsFinite.toLinearMap`
 - `Weight.IsFinite.toPositiveLinearMap`
+
+## iii. Table of contents
+
+- A. Shifting vectors into the positive cone
+- B. Shift independence
+- C. The additive extension
+- D. The positive linear extension
 
 -/
 
@@ -37,6 +46,8 @@ variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
   [Module ℝ E] [PosSMulMono ℝ E] [One E] [IsOrderUnit E]
 
 namespace Weight
+
+/-! ## A. Shifting vectors into the positive cone -/
 
 omit [PosSMulMono ℝ E] in
 /-- Every element of `E` becomes nonnegative after adding enough copies of the order unit.
@@ -67,6 +78,8 @@ lemma toReal_map_nnreal_smul (w : Weight E) (k : ℝ≥0) (c : PosCone E) :
 variable {w : Weight E}
 
 namespace IsFinite
+
+/-! ## B. Shift independence -/
 
 /-- `x` shifted into the cone by `r` copies of the order unit, minus the corresponding multiple
 of the weight of the order unit. -/
@@ -101,6 +114,8 @@ noncomputable def toFun (hw : w.IsFinite) (x : E) : ℝ :=
 lemma toFun_eq (hw : w.IsFinite) (x : E) {r : ℝ} (h : 0 ≤ r • (1 : E) + x) :
     toFun hw x = rawValue hw x r h :=
   rawValue_indep hw x _ h
+
+/-! ## C. The additive extension -/
 
 @[simp]
 lemma toFun_of_nonneg (hw : w.IsFinite) (x : PosCone E) : toFun hw (x : E) = (w x).toReal := by
@@ -158,6 +173,8 @@ lemma toFun_smul (hw : w.IsFinite) (t : ℝ) (x : E) : toFun hw (t • x) = t * 
   · have h1 : t • x = -((-t) • x) := by rw [neg_smul, neg_neg]
     rw [h1, toFun_neg, toFun_real_nonneg_smul hw (neg_nonneg.mpr ht) x]
     ring
+
+/-! ## D. The positive linear extension -/
 
 /-- The `ℝ`-linear map extending a finite weight. -/
 noncomputable def toLinearMap (hw : w.IsFinite) : E →ₗ[ℝ] ℝ where

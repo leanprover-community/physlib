@@ -12,15 +12,24 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Basic
 
 # The order-unit norm
 
+## i. Overview
+
 `IsOrderUnit` only lets us compare outcomes to `1`; `IsArchimedeanOrderUnit` is what turns that
 into an actual distance. `orderUnitNorm x` is the least `r` with `-r • 1 ≤ x ≤ r • 1` — how many
 copies of the certain outcome it takes to sandwich `x` on both sides. This is a genuine norm, not
 just a seminorm, exactly because nothing is infinitesimally close to `0` without being `0`.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `IsArchimedeanOrderUnit.orderUnitNorm`
 - `IsArchimedeanOrderUnit.orderUnitNormedAddCommGroup`
+
+## iii. Table of contents
+
+- A. Order-unit bounds
+- B. Norm laws
+- C. Positive definiteness
+- D. The induced normed group
 
 -/
 
@@ -30,6 +39,8 @@ namespace IsArchimedeanOrderUnit
 
 variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module ℝ E]
   [PosSMulMono ℝ E] [One E] [IsArchimedeanOrderUnit E]
+
+/-! ## A. Order-unit bounds -/
 
 /-- The nonnegative real bounds of `x` by the order unit. -/
 def orderUnitBounds (x : E) : Set ℝ :=
@@ -88,6 +99,8 @@ omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsArchimedeanOrderUnit E] in
 lemma orderUnitNorm_le {x : E} {r : ℝ} (hr : r ∈ orderUnitBounds x) : orderUnitNorm x ≤ r :=
   csInf_le (orderUnitBounds_bddBelow x) hr
 
+/-! ## B. Norm laws -/
+
 /-- The order-unit norm of zero is zero. -/
 @[simp]
 lemma orderUnitNorm_zero : orderUnitNorm (0 : E) = 0 := by
@@ -145,6 +158,8 @@ lemma orderUnitNorm_add_le (x y : E) :
       rw [show (orderUnitNorm x + ε / 2) + (orderUnitNorm y + ε / 2) =
         (orderUnitNorm x + orderUnitNorm y) + (ε / 2 + ε / 2) by ac_rfl, add_halves]
 
+/-! ## C. Positive definiteness -/
+
 /-- If the order-unit norm of `x` vanishes, `x` lies below every positive multiple of the unit. -/
 lemma le_pos_smul_one_of_orderUnitNorm_eq_zero {x : E} (hx : orderUnitNorm x = 0)
     {ε : ℝ} (hε : 0 < ε) : x ≤ ε • (1 : E) := by
@@ -175,6 +190,8 @@ lemma orderUnitNorm_eq_zero_iff {x : E} : orderUnitNorm x = 0 ↔ x = 0 := by
     exact le_antisymm hle_zero hnonneg
   · rintro rfl
     exact orderUnitNorm_zero
+
+/-! ## D. The induced normed group -/
 
 /-- The order-unit norm packaged as an additive-group norm. -/
 noncomputable def orderUnitAddGroupNorm : AddGroupNorm E where

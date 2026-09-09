@@ -12,6 +12,8 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Basic
 
 # Weight pushforward along a channel
 
+## i. Overview
+
 A channel from system `A` to system `B` is, in the Schrödinger picture, an affine map on states.
 Dualizing gives a unital positive linear map on effects in the other direction (the Heisenberg
 picture): that map is already `UnitalPositiveLinearMap`, so a channel's adjoint needs no new
@@ -24,9 +26,15 @@ on `A` with `φ` gives a weight on `B` — the Schrödinger-picture pushforward 
 `Weight.comp_comp` show this assignment respects identities and composition, so pushforward is a
 functor from unital positive linear maps to weights, contravariant in `φ`.
 
-## Main definitions
+## ii. Key definitions and results
 
 - `Weight.comp`, `Weight.IsFinite.comp`, `Weight.IsState.comp`
+
+## iii. Table of contents
+
+- A. Pushforward of weights
+- B. Functoriality
+- C. Preservation of finite weights and states
 
 -/
 
@@ -43,6 +51,8 @@ variable {E₁ E₂ E₃ : Type*}
   [One E₃]
 
 namespace Weight
+
+/-! ## A. Pushforward of weights -/
 
 /-- Precompose a weight on `E₁` with the adjoint `φ : E₂ →ₚ₁[ℝ] E₁` of a channel `E₁ → E₂`,
 giving a weight on `E₂`: the Schrödinger-picture pushforward of `w` along the channel. -/
@@ -70,6 +80,8 @@ noncomputable def comp (w : Weight E₁) (φ : E₂ →ₚ₁[ℝ] E₁) : Weigh
 lemma comp_apply (w : Weight E₁) (φ : E₂ →ₚ₁[ℝ] E₁) (y : PosCone E₂) :
     w.comp φ y = w ⟨φ (y : E₂), φ.map_nonneg y.2⟩ := rfl
 
+/-! ## B. Functoriality -/
+
 @[simp]
 lemma comp_id (w : Weight E₁) : w.comp (.id ℝ E₁) = w := by
   ext y
@@ -79,6 +91,8 @@ lemma comp_comp (w : Weight E₁) (φ : E₂ →ₚ₁[ℝ] E₁) (ψ : E₃ →
     w.comp (φ.comp ψ) = (w.comp φ).comp ψ := by
   ext y
   simp
+
+/-! ## C. Preservation of finite weights and states -/
 
 /-- Pushing a finite weight forward along a channel's adjoint stays finite: `φ` never sends the
 cone anywhere `w` is infinite. -/
