@@ -166,8 +166,7 @@ classical channel `classicalPullback Prod.fst`, using that `Prod.fst` intertwine
 action on `ι × κ` with the action on `ι` (`Prod.smul_fst`). -/
 theorem marginal_isCovariant
     {G ι κ E : Type*} [Group G]
-    [MulAction G ι] [Fintype ι] [DecidableEq ι]
-    [MulAction G κ] [Fintype κ] [DecidableEq κ]
+    [MulAction G ι] [MulAction G κ]
     [AddCommGroup E] [PartialOrder E] [Module ℝ E] [One E]
     {ρ : G →* Symmetry E} {J : (ι × κ → ℝ) →ₚ₁[ℝ] E}
     (hJ : J.IsCovariant (inducedAction (G := G) (ι := ι × κ)) ρ) :

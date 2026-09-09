@@ -59,6 +59,7 @@ operation actually "firing" in a given state. -/
 def outcomeEffect (op : Operation E) : Effect E :=
   ⟨op 1, op.map_nonneg IsOrderUnit.one_nonneg, op.apply_one_le_one⟩
 
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
 @[simp]
 lemma coe_outcomeEffect (op : Operation E) : (outcomeEffect op : E) = op 1 := rfl
 

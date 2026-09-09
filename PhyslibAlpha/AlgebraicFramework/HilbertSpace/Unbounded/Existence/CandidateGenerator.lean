@@ -62,6 +62,7 @@ orbit functions agree identically and `HasDerivAt.add` applies directly.
 
 `hUmul` is not used in this proof, but is retained so this lemma has the same group parameter as
 `stoneCandidateDomain`. -/
+@[nolint unusedArguments]
 theorem stoneCandidateDomainPred_add {ψ₁ ψ₂ : H}
     (h₁ : stoneCandidateDomainPred (U := U) ψ₁) (h₂ : stoneCandidateDomainPred (U := U) ψ₂) :
     stoneCandidateDomainPred (U := U) (ψ₁ + ψ₂) := by

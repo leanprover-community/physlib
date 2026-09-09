@@ -86,10 +86,12 @@ namespace PVM
 /-- A PVM, viewed as a POVM, forgetting the sharpness of its effects. -/
 instance : CoeOut (PVM Ω E) (POVM Ω E) := ⟨Subtype.val⟩
 
+omit [PosSMulMono ℝ E] in
 @[ext]
 lemma ext {π ρ : PVM Ω E} (h : ∀ s hs, (π : POVM Ω E) s hs = (ρ : POVM Ω E) s hs) : π = ρ :=
   Subtype.ext (EffectValuedMeasure.ext h)
 
+omit [PosSMulMono ℝ E] in
 /-- Every effect of a PVM is sharp: unfolding what it means to be one. -/
 lemma isSharp_apply (π : PVM Ω E) (s : Set Ω) (hs : MeasurableSet s) :
     Effect.IsSharp ((π : POVM Ω E) s hs) :=

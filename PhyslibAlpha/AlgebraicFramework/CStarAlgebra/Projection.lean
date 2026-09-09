@@ -51,6 +51,7 @@ namespace Projection
 /-- A projection, viewed as an effect, forgetting idempotence. -/
 instance : CoeOut (Projection A) (Effect (selfAdjoint A)) := ⟨Subtype.val⟩
 
+omit [StarOrderedRing A] in
 @[ext]
 lemma ext {p q : Projection A} (h : (p : Effect (selfAdjoint A)) = (q : Effect (selfAdjoint A))) :
     p = q :=
@@ -70,6 +71,7 @@ def complement (p : Projection A) : Projection A :=
 lemma complement_complement (p : Projection A) : complement (complement p) = p :=
   Subtype.ext (Effect.complement_complement (p : Effect (selfAdjoint A)))
 
+omit [StarOrderedRing A] in
 /-- The real spectrum of a projection is contained in `{0, 1}`. -/
 lemma spectrum_subset_zero_one (p : Projection A) :
     spectrum ℝ (((p : Effect (selfAdjoint A)) : selfAdjoint A) : A) ⊆ {0, 1} :=

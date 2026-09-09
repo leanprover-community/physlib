@@ -40,7 +40,7 @@ def IsCompatible (M₁ : (ι → ℝ) →ₚ₁[ℝ] E) (M₂ : (κ → ℝ) →
     postprocess J (classicalPullback Prod.fst) = M₁ ∧
       postprocess J (classicalPullback Prod.snd) = M₂
 
-omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] [Fintype ι] [DecidableEq ι] in
 /-- Every measurement is compatible with itself: the joint measurement pulled back along the
 diagonal `i ↦ (i, i)` marginalizes to the original measurement along either coordinate. -/
 lemma isCompatible_self (M : (ι → ℝ) →ₚ₁[ℝ] E) : IsCompatible M M := by
@@ -50,7 +50,8 @@ lemma isCompatible_self (M : (ι → ℝ) →ₚ₁[ℝ] E) : IsCompatible M M :
   · rw [postprocess_postprocess, classicalPullback_comp,
       show Prod.snd ∘ (fun i : ι => (i, i)) = id from rfl, classicalPullback_id, postprocess_id]
 
-omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E]
+  [Fintype ι] [DecidableEq ι] [Fintype κ] [DecidableEq κ] in
 /-- Compatibility is symmetric: swap the two coordinates of the joint measurement. -/
 lemma isCompatible_comm {M₁ : (ι → ℝ) →ₚ₁[ℝ] E} {M₂ : (κ → ℝ) →ₚ₁[ℝ] E} (h : IsCompatible M₁ M₂) :
     IsCompatible M₂ M₁ := by
