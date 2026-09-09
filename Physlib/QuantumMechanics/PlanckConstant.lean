@@ -38,7 +38,8 @@ lemma ℏ_nonneg : 0 ≤ (ℏ : ℝ) := le_of_lt ℏ.2
 @[simp]
 lemma ℏ_ne_zero : (ℏ : ℝ) ≠ 0 := ne_of_gt ℏ.2
 
-/-- The definition of Planck's constant in terms of Reduced Planck's constant, defined as `2 π ℏ` -/
+/-- The definition of Planck's constant in terms of Reduced Planck's constant,
+ defined as `2 π ℏ` -/
 noncomputable def h : Subtype fun x : ℝ => 0 < x := ⟨2 * Real.pi * (ℏ : ℝ), mul_pos (mul_pos (by norm_num) Real.pi_pos) ℏ_pos⟩
 
 /-- Planck's constant is positive. -/
