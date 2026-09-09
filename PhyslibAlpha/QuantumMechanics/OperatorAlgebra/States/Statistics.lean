@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.States.Basic
 public import PhyslibAlpha.QuantumMechanics.OperatorAlgebra.Observables.Jordan
-public import PhyslibAlpha.QuantumMechanics.Basic.StarAlgebra.Observable
+public import PhyslibAlpha.AlgebraicFramework.StarAlgebra.Observable
 
 /-!
 
