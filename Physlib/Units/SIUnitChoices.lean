@@ -25,8 +25,8 @@ temperature, amount of substance and luminous intensity. Four of the correspondi
 unit types already exist (`LengthUnit`, `MassUnit`, `TimeUnit`, `TemperatureUnit`); the
 remaining three — `CurrentUnit`, `AmountUnit`, `LuminousIntensityUnit` — are introduced
 here. They follow the `LengthUnit` convention of a positive-real magnitude and support
-rescaling; the remaining unit-ratio relation API can be filled in later and, following
-PhysLib's layout, they would ultimately live under the relevant physics directories.
+rescaling and unit-ratio laws through `derive_positive_real_unit`. Following PhysLib's
+layout, these types may ultimately live under the relevant physics directories.
 
 `SIUnitChoices := UnitSystem ISQDimensionBase` is then the typed SI unit choice, and
 `SIUnitChoices.SI` is the coherent SI choice (metre, kilogram, second, ampere, kelvin,

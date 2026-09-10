@@ -1,19 +1,52 @@
+/-
+Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
+Copyright (c) 2026 Hirotaka Monya. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Joseph Tooby-Smith, Hirotaka Monya
+-/
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public meta import Lean.Elab.Command
+
+/-!
+# A. Shared arithmetic for positive-real unit types
+
+`PositiveRealUnitCore` records a unit magnitude and its inverse construction.
+Division and rescaling laws are proved once against this interface. The arithmetic
+is adapted from the existing unit modules by Joseph Tooby-Smith.
+
+`derive_positive_real_unit` supplies the interface instance and compatibility API
+for an existing concrete unit structure. The structures remain distinct types.
+Call the command at the root namespace with a unit type having fields `val : Real`
+and `property : 0 < val`.
+
+The generated scaling definition retains its constructor body so existing proofs
+that unfold a concrete `scale` continue to work. Its scaling laws use the shared
+core. This is independent of `UnitMagnitudeCatalog` and `UnitSystem`, which select
+and combine units rather than implement an individual unit type.
+-/
 
 @[expose] public section
 
 open NNReal
 open Lean Elab Command
 
+/-!
+## A.1. Shared representation and arithmetic
+-/
+
 /-- Common representation API for unit types whose magnitude is a positive real. -/
 class PositiveRealUnitCore (U : Type) where
+  /-- The underlying real magnitude of a unit. -/
   val : U → ℝ
+  /-- Every unit has a strictly positive magnitude. -/
   pos : ∀ x, 0 < val x
+  /-- Construct a unit from a positive real magnitude. -/
   ofVal : (r : ℝ) → 0 < r → U
+  /-- Construction preserves the supplied magnitude. -/
   val_ofVal : ∀ r hr, val (ofVal r hr) = r
+  /-- Reconstructing a unit from its magnitude returns that unit. -/
   ofVal_val : ∀ x, ofVal (val x) (pos x) = x
 
 namespace PositiveRealUnitCore
@@ -23,6 +56,7 @@ variable {U : Type} [PositiveRealUnitCore U]
 @[simp] lemma val_ne_zero (x : U) : val x ≠ 0 :=
   Ne.symm (ne_of_lt (pos x))
 
+/-- The ratio of the magnitudes of two units of the same type. -/
 noncomputable def ratio (x y : U) : NNReal :=
   ⟨val x / val y, div_nonneg (pos x).le (pos y).le⟩
 
@@ -44,6 +78,7 @@ lemma ratio_symm (x y : U) : ratio x y = (ratio y x)⁻¹ := by
   change val x / val y = (val y / val x)⁻¹
   rw [inv_div]
 
+/-- Unit ratios compose along an intermediate choice of unit. -/
 lemma ratio_mul_ratio (x y z : U) :
     ratio x y * ratio y z = ratio x z := by
   apply NNReal.eq
@@ -56,6 +91,7 @@ lemma ratio_mul_ratio (x y z : U) :
   change val x / val y * (val y / val z) = val x / val z
   field_simp [val_ne_zero]
 
+/-- Rescale a unit by a strictly positive real factor. -/
 def scale (r : ℝ) (x : U) (hr : 0 < r := by norm_num) : U :=
   ofVal (r * val x) (mul_pos hr (pos x))
 
@@ -63,10 +99,12 @@ def scale (r : ℝ) (x : U) (hr : 0 < r := by norm_num) : U :=
     val (scale r x hr) = r * val x :=
   val_ofVal _ _
 
-theorem ext {x y : U} (h : val x = val y) : x = y := by
+/-- Units with equal magnitudes are equal. -/
+lemma ext {x y : U} (h : val x = val y) : x = y := by
   rw [← ofVal_val x, ← ofVal_val y]
   congr
 
+/-- The ratio of a rescaled unit to the original is the scaling factor. -/
 @[simp] lemma scale_ratio_self (x : U) (r : ℝ) (hr : 0 < r) :
     ratio (scale r x hr) x = (⟨r, le_of_lt hr⟩ : NNReal) := by
   apply NNReal.eq
@@ -74,6 +112,7 @@ theorem ext {x y : U} (h : val x = val y) : x = y := by
   rw [scale_val]
   field_simp [val_ne_zero]
 
+/-- The reverse ratio is the reciprocal of the scaling factor. -/
 @[simp] lemma self_ratio_scale (x : U) (r : ℝ) (hr : 0 < r) :
     ratio x (scale r x hr) =
       (⟨1 / r, _root_.div_nonneg (by simp) (le_of_lt hr)⟩ : NNReal) := by
@@ -85,6 +124,7 @@ theorem ext {x y : U} (h : val x = val y) : x = y := by
   apply ext
   simp
 
+/-- Rescaling two units multiplies their ratio by the ratio of the factors. -/
 @[simp] lemma scale_ratio_scale
     (x1 x2 : U) {r1 r2 : ℝ} (hr1 : 0 < r1) (hr2 : 0 < r2) :
     ratio (scale r1 x1 hr1) (scale r2 x2 hr2) =
@@ -95,19 +135,25 @@ theorem ext {x y : U} (h : val x = val y) : x = y := by
   rw [scale_val, scale_val]
   rw [div_mul_div_comm]
 
+/-- Successive rescalings compose by multiplication of their factors. -/
 @[simp] lemma scale_scale
     (x : U) (r1 r2 : ℝ) (hr1 : 0 < r1) (hr2 : 0 < r2) :
     scale r1 (scale r2 x hr2) hr1 =
       scale (r1 * r2) x (mul_pos hr1 hr2) := by
   apply ext
-  simp
-  ring
+  simp only [scale_val, mul_assoc]
 
 end PositiveRealUnitCore
 
+/-!
+## A.2. Generated compatibility API
+-/
+
+/-- Generate the shared-core instance and arithmetic API for an existing unit structure. -/
 syntax (name := derivePositiveRealUnit)
   "derive_positive_real_unit " ident : command
 
+/-- Elaborate the compatibility declarations, using the shared arithmetic laws. -/
 @[command_elab derivePositiveRealUnit]
 meta def elabDerivePositiveRealUnit : CommandElab := fun stx =>
   match stx with
@@ -202,9 +248,10 @@ meta def elabDerivePositiveRealUnit : CommandElab := fun stx =>
         exact PositiveRealUnitCore.ratio_mul_ratio_coe x y z))
 
     elabCommand (← `(command|
+      /-- Rescale this unit by a strictly positive real factor. -/
       def $scale (r : ℝ) (x : $name)
           (hr : 0 < r := by norm_num) : $name :=
-        PositiveRealUnitCore.scale r x hr))
+        ⟨r * x.val, mul_pos hr x.property⟩))
 
     elabCommand (← `(command|
       @[simp] lemma $scaleDivSelf (x : $name) (r : ℝ) (hr : 0 < r) :

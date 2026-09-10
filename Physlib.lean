@@ -564,6 +564,7 @@ public import Physlib.Units.Integral
 public import Physlib.Units.LTMCTDimensionBase
 public import Physlib.Units.ParametricDimensionExamples
 public import Physlib.Units.ParametricUnits
+public import Physlib.Units.PositiveRealUnit
 public import Physlib.Units.SIUnitChoices
 public import Physlib.Units.UnitDependent
 public import Physlib.Units.UnitSystem
