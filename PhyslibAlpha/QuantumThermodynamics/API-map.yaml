@@ -1,0 +1,135 @@
+version: v0.1
+
+Title: Quantum thermodynamics
+
+Overview: |
+    The quantum-thermodynamics API begins with the finite-dimensional thermal
+    (Gibbs) state of a Hamiltonian, `MState.thermalBetaReal H β = exp(-βH) / Z(β)`,
+    and its physical-temperature form `MState.thermal H T`. The thermal state is
+    proved to have trace one and a positive-definite, full-rank density matrix.
+    Its logarithm gives a general Gibbs relative-entropy balance relating energy,
+    von Neumann entropy, and quantum relative entropy.
+
+    A `QuantumThermodynamics.LandauerProcess` starts a system and thermal reservoir
+    in a product state and evolves them by a joint unitary. The API defines the final
+    marginals, entropy changes, heat, and reservoir relative entropy, then proves the
+    exact Landauer identity and the Landauer bound. The open requirements identify
+    the shared infrastructure for the entropy-production and quantum-resource-theory
+    campaigns: total correlation, thermal operations, thermo-majorization, and
+    nonequilibrium quantum free energy.
+
+ParentAPIs:
+  - Mixed quantum states (QuantumInfo/States/Mixed/MState)
+  - Quantum entropy and relative entropy (QuantumInfo/Entropy)
+  - Temperature (Physlib/Thermodynamics/Temperature)
+  - Canonical ensemble (Physlib/StatisticalMechanics/CanonicalEnsemble)
+
+References:
+  - Reeb and Wolf, An improved Landauer principle with finite-size corrections.
+  - Esposito, Lindenberg, and Van den Broeck, New Journal of Physics 12, 013013 (2010).
+  - Horodecki and Oppenheim, Nature Communications 4, 2059 (2013).
+  - Brandão, Horodecki, Ng, Oppenheim, and Wehner, PNAS 112, 3275 (2015).
+
+Requirements:
+
+  - description: >
+      The API defines the finite-dimensional quantum partition function at a real
+      inverse temperature and proves that it is strictly positive.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/ThermalState.lean
+      (HermitianMat.partitionFunctionBetaReal, HermitianMat.partitionFunctionBetaReal_pos)
+
+  - description: >
+      The API constructs the thermal state both from a real inverse temperature and
+      from Physlib's physical `Temperature` type.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/ThermalState.lean
+      (MState.thermalBetaReal, MState.thermal)
+
+  - description: >
+      The thermal-state API proves trace-one normalization, full rank, and positive
+      definiteness of the density matrix.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/ThermalState.lean
+      (MState.thermalBetaReal_trace, MState.thermalBetaReal_nonSingular,
+      MState.thermalBetaReal_posDef)
+
+  - description: >
+      The real-inverse-temperature and physical-temperature parametrizations are
+      connected by an explicit bridge lemma.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/ThermalState.lean
+      (MState.thermal_eq_thermalBetaReal)
+
+  - description: >
+      The API proves the general Gibbs relative-entropy balance for both the real
+      inverse-temperature and physical-temperature parametrizations.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/ThermalState.lean
+      (MState.gibbsRelativeEntropyBalanceBetaReal,
+      MState.gibbsRelativeEntropyBalance)
+
+  - description: >
+      A minimal finite-dimensional Landauer process is defined by an initial system
+      state, reservoir Hamiltonian and temperature, and joint unitary evolution.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/Landauer.lean
+      (QuantumThermodynamics.LandauerProcess)
+
+  - description: >
+      The Landauer-process API defines its initial and final joint states, final
+      marginals, entropy changes, reservoir heat, and reservoir relative entropy.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/Landauer.lean
+      (LandauerProcess.initialReservoir, LandauerProcess.initialJoint,
+      LandauerProcess.finalJoint, LandauerProcess.finalSystem,
+      LandauerProcess.finalReservoir, LandauerProcess.systemEntropyDecrease,
+      LandauerProcess.reservoirEntropyIncrease, LandauerProcess.reservoirHeat,
+      LandauerProcess.reservoirRelativeEntropy)
+
+  - description: >
+      The API proves that the reservoir entropy increase equals the system entropy
+      decrease plus the final system-reservoir mutual information.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/Landauer.lean
+      (LandauerProcess.entropyBalance)
+
+  - description: >
+      The API proves the exact Landauer identity and derives the Landauer bound from
+      nonnegativity of mutual information and quantum relative entropy.
+    done: true
+    location: >
+      PhyslibAlpha/QuantumThermodynamics/Landauer.lean
+      (LandauerProcess.landauerIdentity, LandauerProcess.landauerBound)
+
+  - description: >
+      The API shall define an n-ary total-correlation functional and prove its
+      nonnegativity, supporting multi-reservoir entropy-production identities.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall define thermal operations and Gibbs-preserving quantum channels,
+      including their preservation laws for thermal states.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall define the thermo-majorization order on energy-incoherent states
+      and connect it to conversion by thermal operations.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall define nonequilibrium quantum free energy for mixed states and
+      relate it to quantum relative entropy from the thermal state.
+    done: false
+    location: N/A
