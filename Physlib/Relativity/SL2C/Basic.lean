@@ -220,6 +220,21 @@ lemma toLorentzGroup_eq_trace (M : SL(2,ℂ)) (i j : Fin 1 ⊕ Fin 3) :
   rw [h, real_smul]
   ring
 
+/-- The covering map intertwines conjugate transposition with matrix
+  transposition: `L(M†) = L(M)ᵀ`. -/
+lemma toLorentzGroup_conjTranspose {M N : SL(2,ℂ)} (hN : N.1 = M.1ᴴ) :
+    (toLorentzGroup N).1 = (toLorentzGroup M).1ᵀ := by
+  ext l i
+  refine Complex.ofReal_injective ?_
+  have h1 := toLorentzGroup_eq_trace N l i
+  have h2 := toLorentzGroup_eq_trace M i l
+  rw [hN] at h1
+  rw [Matrix.transpose_apply, h1, h2]
+  congr 1
+  rw [Matrix.conjTranspose_conjTranspose, ← Matrix.mul_assoc, ← Matrix.mul_assoc,
+    Matrix.trace_mul_cycle, ← Matrix.mul_assoc, Matrix.trace_mul_comm,
+    ← Matrix.mul_assoc]
+
 /-- The first column of the Lorentz matrix formed from an element of `SL(2, ℂ)`. -/
 lemma toLorentzGroup_fst_col (M : SL(2, ℂ)) :
     (fun μ => (toLorentzGroup M).1 μ (Sum.inl 0)) = fun μ =>

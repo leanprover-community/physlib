@@ -1,0 +1,120 @@
+{
+  "./Physlib/Particles/StandardModel/HiggsBoson/AlgebraValued/Basic.lean": [
+    {
+      "id": "1787912669766-gsoif9cz7",
+      "line": 193,
+      "text": "For the Higgs submodule also define derivSubmodule.\n- We also want to show that they commute. \n- We want to show that they are closed under the group action. \n- ",
+      "timestamp": 1787912751941,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    }
+  ],
+  "./Physlib/Particles/StandardModel/IsGaugeSector/Basic.lean": [
+    {
+      "id": "1787912833232-x9sbq4b6r",
+      "line": 96,
+      "text": "Show that derivSubmodule here commute, and is closed under the Lorentz group and the gauge group.",
+      "timestamp": 1787912833232,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    }
+  ],
+  "./Physlib/Particles/StandardModel/IsCovStandardModel/FermionGaugeSector/Basic.lean": [
+    {
+      "id": "1787913087338-wv0k7v7ft",
+      "line": 0,
+      "text": "We do not want to define IsFermionGaugeSector in the same way as we have IsFermionSector, however we can repeat some of the calculations here. \n\nFirst give the decomposition of the sectorMassweight submodules up to weight 8 into derivatives from the fermion sector and the gauge sector.",
+      "timestamp": 1787913128260,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    }
+  ],
+  "./Physlib/Particles/StandardModel/IsCovStandardModel/YukawaSector/Basic.lean": [
+    {
+      "id": "1787913197924-gvm6e874s",
+      "line": 0,
+      "text": "We do not want to define IsYukawaSector in the same way as we have IsFermionSector, however we can repeat some of the calculations here.\n\nFirst give the decomposition of the sectorMassweight submodules up to weight 8 into submodules derivatives from the fermion sector and the higgs sector.",
+      "timestamp": 1787913197924,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    }
+  ],
+  "./Physlib/Particles/StandardModel/IsFermionSector/GaugeWeightDecomposition.lean": [
+    {
+      "id": "1787913429728-roea8meg3",
+      "line": 60,
+      "text": "Move isoWeight and colorWieght to the GuageDecomposition file",
+      "timestamp": 1787913429728,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913477040-9a39jq79d",
+      "line": 83,
+      "text": "Move these .valueGaugeWeight to the files where the fermions are defined",
+      "timestamp": 1787913477040,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913500863-ed1dyukp4",
+      "line": 168,
+      "text": "Move these .repGaugeGroupI_gaugeTorusGen_basis to the file where the fermions are defined.",
+      "timestamp": 1787913500863,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913566110-a4ry11ryw",
+      "line": 213,
+      "text": "Move this lemma to the GaugeGroupI file",
+      "timestamp": 1787913566110,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913578937-7xqs595g8",
+      "line": 192,
+      "text": "Move this to the file where GaugeGroupI is defined",
+      "timestamp": 1787913578937,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913606044-kspaat8oj",
+      "line": 331,
+      "text": "Move the .repGaugeGroupI_conj_dual_gaugeTorusGen_coord lemmas to the corresponding file for those fermions",
+      "timestamp": 1787913606044,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913669657-xgcqc0smc",
+      "line": 452,
+      "text": "Could these rangeGaugeWeight_? lemmas be made into instances.",
+      "timestamp": 1787913669657,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    },
+    {
+      "id": "1787913693373-ccl7ihssb",
+      "line": 564,
+      "text": "Could derivSubmoduleGaugeWeight be made into an instance.",
+      "timestamp": 1787913693373,
+      "author": "js4814",
+      "priority": "low",
+      "category": "note"
+    }
+  ]
+}

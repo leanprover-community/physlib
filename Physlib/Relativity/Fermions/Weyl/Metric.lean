@@ -117,6 +117,13 @@ lemma leftMetric_apply_one : leftMetric (1 : ℂ) = leftMetricVal := by
   change (1 : ℂ) • leftMetricVal = leftMetricVal
   simp only [one_smul]
 
+/-- The metric `εᵃᵃ` is invariant under the action of `SL(2,ℂ)`. -/
+lemma leftMetricVal_rep (M : SL(2,ℂ)) :
+    TensorProduct.map (LeftHandedWeyl.rep M) (LeftHandedWeyl.rep M) leftMetricVal =
+      leftMetricVal := by
+  have h := LinearMap.congr_fun (leftMetric.isIntertwining' M) (1 : ℂ)
+  simpa [leftMetric_apply_one, Representation.tprod_apply] using h.symm
+
 /-- The metric `εₐₐ` as an element of `(dualLeftHanded ⊗ dualLeftHanded).V`. -/
 def dualLeftMetricVal : (DualLeftHandedWeyl ⊗[ℂ] DualLeftHandedWeyl) :=
   dualLeftdualLeftToMatrix.symm metricRaw

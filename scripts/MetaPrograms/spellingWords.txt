@@ -620,6 +620,9 @@ coupling
 couplings
 covariance
 covariant
+covariantization
+covariantized
+covariantizing
 covector
 covectors
 cover
