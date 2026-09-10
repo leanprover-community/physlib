@@ -118,10 +118,10 @@ noncomputable instance : UnitMagnitudeCatalog LTMCTDimensionBase where
     | .temperature => TemperatureUnit
   mag {b} :=
     match b with
-    | .length | .time | .mass | .charge | .temperature => fun u => ⟨u.val, u.val_pos.le⟩
+    | .length | .time | .mass | .charge | .temperature => fun u => ⟨u.val, u.property.le⟩
   mag_pos {b} :=
     match b with
-    | .length | .time | .mass | .charge | .temperature => fun u => NNReal.coe_pos.mp u.val_pos
+    | .length | .time | .mass | .charge | .temperature => fun u => NNReal.coe_pos.mp u.property
 
 /-- Type-safety check: a unit system over `LTMCTDimensionBase` projects onto the named typed
   unit types, so the length slot is a `LengthUnit` (and cannot hold a `MassUnit`). -/
@@ -202,24 +202,24 @@ namespace LTMCTUnitChoices
 
 private lemma length_ratio (u1 u2 : LTMCTUnitChoices) :
     u1.length / u2.length = u1.toScale.scale .length / u2.toScale.scale .length := by
-  apply NNReal.eq; rw [LengthUnit.div_eq_val, NNReal.coe_div]; rfl
+  apply NNReal.eq; rw [PositiveRealUnitCore.div_eq_val, NNReal.coe_div]; rfl
 
 private lemma time_ratio (u1 u2 : LTMCTUnitChoices) :
     u1.time / u2.time = u1.toScale.scale .time / u2.toScale.scale .time := by
-  apply NNReal.eq; rw [TimeUnit.div_eq_val, NNReal.coe_div]; rfl
+  apply NNReal.eq; rw [PositiveRealUnitCore.div_eq_val, NNReal.coe_div]; rfl
 
 private lemma mass_ratio (u1 u2 : LTMCTUnitChoices) :
     u1.mass / u2.mass = u1.toScale.scale .mass / u2.toScale.scale .mass := by
-  apply NNReal.eq; rw [MassUnit.div_eq_val, NNReal.coe_div]; rfl
+  apply NNReal.eq; rw [PositiveRealUnitCore.div_eq_val, NNReal.coe_div]; rfl
 
 private lemma charge_ratio (u1 u2 : LTMCTUnitChoices) :
     u1.charge / u2.charge = u1.toScale.scale .charge / u2.toScale.scale .charge := by
-  apply NNReal.eq; rw [ChargeUnit.div_eq_val, NNReal.coe_div]; rfl
+  apply NNReal.eq; rw [PositiveRealUnitCore.div_eq_val, NNReal.coe_div]; rfl
 
 private lemma temperature_ratio (u1 u2 : LTMCTUnitChoices) :
     u1.temperature / u2.temperature =
       u1.toScale.scale .temperature / u2.toScale.scale .temperature := by
-  apply NNReal.eq; rw [TemperatureUnit.div_eq_val, NNReal.coe_div]; rfl
+  apply NNReal.eq; rw [PositiveRealUnitCore.div_eq_val, NNReal.coe_div]; rfl
 
 /-- The hand-rolled five-factor `LTMCTUnitChoices.dimScale` equals the basis-generic
   `UnitScale.dimScale` fold at `LTMCTDimensionBase`, applied to `toScale`. The scaling law

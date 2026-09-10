@@ -143,8 +143,9 @@ lemma dimScale_transitive (u1 u2 u3 : LTMCTUnitChoices) (d : Dimension LTMCTDime
       (u2.temperature / u3.temperature) ^ (d.temperature : ℝ))
   · ring
   repeat rw [← mul_rpow]
-  rw [LengthUnit.div_mul_div, TimeUnit.div_mul_div, MassUnit.div_mul_div,
-    ChargeUnit.div_mul_div, TemperatureUnit.div_mul_div]
+  rw [PositiveRealUnitCore.div_mul_div, PositiveRealUnitCore.div_mul_div,
+    PositiveRealUnitCore.div_mul_div, PositiveRealUnitCore.div_mul_div,
+    PositiveRealUnitCore.div_mul_div]
 
 @[simp]
 lemma dimScale_mul_symm (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase) :
@@ -167,11 +168,11 @@ lemma dimScale_symm (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase
     dimScale u1 u2 d = (dimScale u2 u1 d)⁻¹ := by
   simp only [dimScale_apply, mul_inv]
   congr
-  · rw [LengthUnit.div_symm, inv_rpow]
-  · rw [TimeUnit.div_symm, inv_rpow]
-  · rw [MassUnit.div_symm, inv_rpow]
-  · rw [ChargeUnit.div_symm, inv_rpow]
-  · rw [TemperatureUnit.div_symm, inv_rpow]
+  · rw [PositiveRealUnitCore.div_symm, inv_rpow]
+  · rw [PositiveRealUnitCore.div_symm, inv_rpow]
+  · rw [PositiveRealUnitCore.div_symm, inv_rpow]
+  · rw [PositiveRealUnitCore.div_symm, inv_rpow]
+  · rw [PositiveRealUnitCore.div_symm, inv_rpow]
 
 lemma dimScale_of_inv_eq_swap (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase) :
     dimScale u1 u2 d⁻¹ = dimScale u2 u1 d := by
@@ -230,11 +231,11 @@ lemma SI_temperature : SI.temperature = TemperatureUnit.kelvin := rfl
   of the underlying units. This is useful in proving that a result is not
   dimensionally correct. -/
 noncomputable def SIPrimed : LTMCTUnitChoices where
-  length := LengthUnit.scale 2 LengthUnit.meters
-  time := TimeUnit.scale 3 TimeUnit.seconds
-  mass := MassUnit.scale 5 MassUnit.kilograms
-  charge := ChargeUnit.scale 7 ChargeUnit.coulombs
-  temperature := TemperatureUnit.scale 11 TemperatureUnit.kelvin
+  length := PositiveRealUnitCore.scale 2 LengthUnit.meters
+  time := PositiveRealUnitCore.scale 3 TimeUnit.seconds
+  mass := PositiveRealUnitCore.scale 5 MassUnit.kilograms
+  charge := PositiveRealUnitCore.scale 7 ChargeUnit.coulombs
+  temperature := PositiveRealUnitCore.scale 11 TemperatureUnit.kelvin
 
 @[simp]
 lemma dimScale_SI_SIPrimed (d : Dimension LTMCTDimensionBase) :

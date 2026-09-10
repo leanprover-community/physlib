@@ -173,36 +173,33 @@ open UnitDependent
 
 noncomputable instance : UnitDependent LTMCTUnitChoices where
   scaleUnit u1 u2 u := ⟨
-      LengthUnit.scale (u2.length/u1.length) u.length (by simp),
-      TimeUnit.scale (u2.time/u1.time) u.time (by simp),
-      MassUnit.scale (u2.mass/u1.mass) u.mass (by simp),
-      ChargeUnit.scale (u2.charge/u1.charge) u.charge (by simp),
-      TemperatureUnit.scale (u2.temperature/u1.temperature) u.temperature (by simp)⟩
+      PositiveRealUnitCore.scale (u2.length/u1.length) u.length (by simp),
+      PositiveRealUnitCore.scale (u2.time/u1.time) u.time (by simp),
+      PositiveRealUnitCore.scale (u2.mass/u1.mass) u.mass (by simp),
+      PositiveRealUnitCore.scale (u2.charge/u1.charge) u.charge (by simp),
+      PositiveRealUnitCore.scale (u2.temperature/u1.temperature) u.temperature (by simp)⟩
   scaleUnit_trans u1 u2 u3 u := by
     congr 1 <;> simp
   scaleUnit_trans' u1 u2 u3 u := by
     congr 1
-    · simp [LengthUnit.div_eq_val, toReal]
-    · simp [TimeUnit.div_eq_val, toReal]
-    · simp [MassUnit.div_eq_val, toReal]
-    · simp [ChargeUnit.div_eq_val, toReal]
-    · simp [TemperatureUnit.div_eq_val, toReal]
+    · simp [PositiveRealUnitCore.div_eq_val, toReal]
+    · simp [PositiveRealUnitCore.div_eq_val, toReal]
+    · simp [PositiveRealUnitCore.div_eq_val, toReal]
+    · simp [PositiveRealUnitCore.div_eq_val, toReal]
+    · simp [PositiveRealUnitCore.div_eq_val, toReal]
   scaleUnit_id u1 u := by simp
 
 @[simp]
 lemma LTMCTUnitChoices.scaleUnit_apply_fst (u1 u2 : LTMCTUnitChoices) :
     (scaleUnit u1 u2 u1) = u2 := by
-  ext <;> simp [scaleUnit, LengthUnit.scale, TimeUnit.scale, MassUnit.scale, ChargeUnit.scale,
-    TemperatureUnit.scale, LengthUnit.div_eq_val, TimeUnit.div_eq_val, MassUnit.div_eq_val,
-    ChargeUnit.div_eq_val, TemperatureUnit.div_eq_val, toReal]
+  ext <;> exact PositiveRealUnitCore.scale_div _ _ (by simp)
 
 @[simp]
 lemma LTMCTUnitChoices.dimScale_scaleUnit {u1 u2 u : LTMCTUnitChoices}
     (d : Dimension LTMCTDimensionBase) :
     u.dimScale (scaleUnit u1 u2 u) d = u1.dimScale u2 d := by
   simp [dimScale, scaleUnit]
-  simp [LengthUnit.div_eq_val, TimeUnit.div_eq_val, MassUnit.div_eq_val, ChargeUnit.div_eq_val,
-    TemperatureUnit.div_eq_val, toReal]
+  simp [PositiveRealUnitCore.div_eq_val, toReal]
 
 lemma Dimensionful.of_scaleUnit {M : Type} [CarriesDimension M] {u1 u2 u : LTMCTUnitChoices}
     (c : Dimensionful M) :

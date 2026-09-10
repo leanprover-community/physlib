@@ -100,17 +100,17 @@ namespace LTMCTUnitChoices
 /-- Read a five-field `LTMCTUnitChoices` as a `UnitScale` over `LTMCTDimensionBase`. -/
 noncomputable def toScale (u : LTMCTUnitChoices) : UnitScale LTMCTDimensionBase where
   scale
-    | .length => ⟨u.length.val, u.length.val_pos.le⟩
-    | .time => ⟨u.time.val, u.time.val_pos.le⟩
-    | .mass => ⟨u.mass.val, u.mass.val_pos.le⟩
-    | .charge => ⟨u.charge.val, u.charge.val_pos.le⟩
-    | .temperature => ⟨u.temperature.val, u.temperature.val_pos.le⟩
+    | .length => ⟨u.length.val, u.length.property.le⟩
+    | .time => ⟨u.time.val, u.time.property.le⟩
+    | .mass => ⟨u.mass.val, u.mass.property.le⟩
+    | .charge => ⟨u.charge.val, u.charge.property.le⟩
+    | .temperature => ⟨u.temperature.val, u.temperature.property.le⟩
   scale_pos b := by
     cases b
-    · exact NNReal.coe_pos.mp u.length.val_pos
-    · exact NNReal.coe_pos.mp u.time.val_pos
-    · exact NNReal.coe_pos.mp u.mass.val_pos
-    · exact NNReal.coe_pos.mp u.charge.val_pos
-    · exact NNReal.coe_pos.mp u.temperature.val_pos
+    · exact NNReal.coe_pos.mp u.length.property
+    · exact NNReal.coe_pos.mp u.time.property
+    · exact NNReal.coe_pos.mp u.mass.property
+    · exact NNReal.coe_pos.mp u.charge.property
+    · exact NNReal.coe_pos.mp u.temperature.property
 
 end LTMCTUnitChoices

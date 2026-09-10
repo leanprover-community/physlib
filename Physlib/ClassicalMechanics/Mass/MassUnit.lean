@@ -41,10 +41,17 @@ structure MassUnit where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit MassUnit
+instance : PositiveRealUnitCore MassUnit where
+  val := MassUnit.val
+  pos := MassUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 open NNReal
 
 namespace MassUnit
+
+open PositiveRealUnitCore
 
 /-!
 

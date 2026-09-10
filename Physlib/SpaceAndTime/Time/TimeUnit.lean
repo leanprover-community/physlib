@@ -39,10 +39,17 @@ structure TimeUnit : Type where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit TimeUnit
+instance : PositiveRealUnitCore TimeUnit where
+  val := TimeUnit.val
+  pos := TimeUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 open NNReal
 
 namespace TimeUnit
+
+open PositiveRealUnitCore
 
 /-!
 

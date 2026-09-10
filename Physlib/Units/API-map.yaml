@@ -171,13 +171,11 @@ Requirements:
 
   - description: "Units of electric current, of amount of substance and of luminous intensity are defined, each a positive magnitude with its quotient by another unit of the same kind."
     done: true
-    # The concrete API is generated; the locations below identify its invocation
-    # and shared implementation. Declaration checks also require a Lean environment.
     location: >
-      Physlib/Units/SIUnitChoices.lean
-      (CurrentUnit, AmountUnit, LuminousIntensityUnit, derive_positive_real_unit);
+      Physlib/Units/SIUnitChoices.lean (CurrentUnit, AmountUnit, LuminousIntensityUnit);
       Physlib/Units/PositiveRealUnit.lean
-      (PositiveRealUnitCore.pos, PositiveRealUnitCore.ratio, elabDerivePositiveRealUnit)
+      (PositiveRealUnitCore, PositiveRealUnitCore.pos, PositiveRealUnitCore.instHDiv,
+      PositiveRealUnitCore.ratio, PositiveRealUnitCore.div_eq_val)
 
   - description: "The coherent SI units ampere, mole and candela are named."
     done: true
@@ -197,16 +195,12 @@ Requirements:
 
   - description: "The unit types for electric current, amount of substance and luminous intensity shall carry the same rescaling operation as the other five, so that a decimal multiple such as the milliampere can be named."
     done: true
-    # The concrete API is generated; the locations below identify its invocation
-    # and shared implementation. Declaration checks also require a Lean environment.
     location: >
-      Physlib/Units/SIUnitChoices.lean
-      (derive_positive_real_unit, CurrentUnit.milliamperes);
+      Physlib/Units/SIUnitChoices.lean (CurrentUnit.milliamperes);
       Physlib/Units/PositiveRealUnit.lean
-      (PositiveRealUnitCore.scale, PositiveRealUnitCore.scale_ratio_self,
-      PositiveRealUnitCore.self_ratio_scale, PositiveRealUnitCore.scale_one,
-      PositiveRealUnitCore.scale_ratio_scale, PositiveRealUnitCore.scale_scale,
-      elabDerivePositiveRealUnit)
+      (PositiveRealUnitCore.scale, PositiveRealUnitCore.scale_div_self,
+      PositiveRealUnitCore.self_div_scale, PositiveRealUnitCore.scale_one,
+      PositiveRealUnitCore.scale_div_scale, PositiveRealUnitCore.scale_scale)
 
   - description: "A unit-dependent type comes with the transformation of its elements induced by a change of unit, subject to composition along a chain of unit choices and triviality on an unchanged choice."
     done: true

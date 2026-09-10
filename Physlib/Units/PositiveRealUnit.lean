@@ -7,33 +7,26 @@ Authors: Joseph Tooby-Smith, Hirotaka Monya
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public meta import Lean.Elab.Command
 
 /-!
 # A. Shared arithmetic for positive-real unit types
 
 `PositiveRealUnitCore` records a unit magnitude and its inverse construction.
-Division and rescaling laws are proved once against this interface. The arithmetic
-is adapted from the existing unit modules by Joseph Tooby-Smith.
+Each concrete unit declares this instance explicitly and keeps its own structure.
+The inhabited and same-type division instances, rescaling operation, and arithmetic
+laws are provided generically. No command or type-specific lemma wrappers are needed.
 
-`derive_positive_real_unit` supplies the interface instance and compatibility API
-for an existing concrete unit structure. The structures remain distinct types.
-Call the command at the root namespace with a unit type having fields `val : Real`
-and `property : 0 < val`.
-
-The generated scaling definition retains its constructor body so existing proofs
-that unfold a concrete `scale` continue to work. Its scaling laws use the shared
-core. This is independent of `UnitMagnitudeCatalog` and `UnitSystem`, which select
-and combine units rather than implement an individual unit type.
+The arithmetic is adapted from the existing unit modules by Joseph Tooby-Smith.
+This interface describes an individual unit type, independently of the selection
+and combination of units by `UnitMagnitudeCatalog` and `UnitSystem`.
 -/
 
 @[expose] public section
 
 open NNReal
-open Lean Elab Command
 
 /-!
-## A.1. Shared representation and arithmetic
+## A.1. Representation and instances
 -/
 
 /-- Common representation API for unit types whose magnitude is a positive real. -/
@@ -53,49 +46,74 @@ namespace PositiveRealUnitCore
 
 variable {U : Type} [PositiveRealUnitCore U]
 
-@[simp] lemma val_ne_zero (x : U) : val x ≠ 0 :=
-  Ne.symm (ne_of_lt (pos x))
+/-- The unit of magnitude one supplies a default unit. -/
+instance (priority := 100) instInhabited : Inhabited U where
+  default := ofVal 1 (by norm_num)
+
+@[simp]
+lemma val_ne_zero (x : U) : val x ≠ 0 :=
+  ne_of_gt (pos x)
 
 /-- The ratio of the magnitudes of two units of the same type. -/
 noncomputable def ratio (x y : U) : NNReal :=
-  ⟨val x / val y, div_nonneg (pos x).le (pos y).le⟩
+  ⟨val x / val y, _root_.div_nonneg (pos x).le (pos y).le⟩
 
-lemma ratio_pos (x y : U) : 0 < ratio x y := by
+/-- Division of two units of the same type is their nonnegative real ratio. -/
+noncomputable instance (priority := 100) instHDiv : HDiv U U NNReal where
+  hDiv := ratio
+
+/-!
+## A.2. Unit ratios
+-/
+
+/-- Unit division agrees with the ratio of the two magnitudes. -/
+lemma div_eq_val (x y : U) :
+    x / y = (⟨val x / val y, _root_.div_nonneg (pos x).le (pos y).le⟩ : NNReal) := rfl
+
+@[simp]
+lemma div_pos (x y : U) : (0 : NNReal) < x / y := by
   apply NNReal.coe_pos.mp
   change 0 < val x / val y
-  exact div_pos (pos x) (pos y)
+  exact _root_.div_pos (pos x) (pos y)
 
-@[simp] lemma ratio_ne_zero (x y : U) : ratio x y ≠ 0 :=
-  ne_of_gt (ratio_pos x y)
+@[simp]
+lemma div_ne_zero (x y : U) : x / y ≠ (0 : NNReal) :=
+  ne_of_gt (div_pos x y)
 
-@[simp] lemma ratio_self (x : U) : ratio x x = 1 := by
+@[simp]
+lemma div_self (x : U) : x / x = (1 : NNReal) := by
   apply NNReal.eq
   change val x / val x = 1
-  exact div_self (val_ne_zero x)
+  exact _root_.div_self (val_ne_zero x)
 
-lemma ratio_symm (x y : U) : ratio x y = (ratio y x)⁻¹ := by
+lemma div_symm (x y : U) : x / y = (y / x : NNReal)⁻¹ := by
   apply NNReal.eq
   change val x / val y = (val y / val x)⁻¹
   rw [inv_div]
 
 /-- Unit ratios compose along an intermediate choice of unit. -/
-lemma ratio_mul_ratio (x y z : U) :
-    ratio x y * ratio y z = ratio x z := by
+lemma div_mul_div (x y z : U) : (x / y : NNReal) * (y / z) = x / z := by
   apply NNReal.eq
   change val x / val y * (val y / val z) = val x / val z
   rw [div_mul_div_comm, mul_comm (val x) (val y),
     mul_div_mul_left _ _ (val_ne_zero y)]
 
-@[simp] lemma ratio_mul_ratio_coe (x y z : U) :
-    (ratio x y : ℝ) * (ratio y z : ℝ) = ratio x z := by
+@[simp]
+lemma div_mul_div_coe (x y z : U) :
+    (x / y : ℝ) * (y / z : ℝ) = x / z := by
   change val x / val y * (val y / val z) = val x / val z
   field_simp [val_ne_zero]
+
+/-!
+## A.3. Positive rescaling
+-/
 
 /-- Rescale a unit by a strictly positive real factor. -/
 def scale (r : ℝ) (x : U) (hr : 0 < r := by norm_num) : U :=
   ofVal (r * val x) (mul_pos hr (pos x))
 
-@[simp] lemma scale_val (r : ℝ) (x : U) (hr : 0 < r) :
+@[simp]
+lemma scale_val (r : ℝ) (x : U) (hr : 0 < r) :
     val (scale r x hr) = r * val x :=
   val_ofVal _ _
 
@@ -105,30 +123,34 @@ lemma ext {x y : U} (h : val x = val y) : x = y := by
   congr
 
 /-- The ratio of a rescaled unit to the original is the scaling factor. -/
-@[simp] lemma scale_ratio_self (x : U) (r : ℝ) (hr : 0 < r) :
-    ratio (scale r x hr) x = (⟨r, le_of_lt hr⟩ : NNReal) := by
+@[simp]
+lemma scale_div_self (x : U) (r : ℝ) (hr : 0 < r) :
+    scale r x hr / x = (⟨r, le_of_lt hr⟩ : NNReal) := by
   apply NNReal.eq
   change val (scale r x hr) / val x = r
   rw [scale_val]
   field_simp [val_ne_zero]
 
 /-- The reverse ratio is the reciprocal of the scaling factor. -/
-@[simp] lemma self_ratio_scale (x : U) (r : ℝ) (hr : 0 < r) :
-    ratio x (scale r x hr) =
+@[simp]
+lemma self_div_scale (x : U) (r : ℝ) (hr : 0 < r) :
+    x / scale r x hr =
       (⟨1 / r, _root_.div_nonneg (by simp) (le_of_lt hr)⟩ : NNReal) := by
   apply NNReal.eq
-  simp [ratio, scale, val_ofVal]
+  change val x / val (scale r x hr) = 1 / r
+  rw [scale_val]
   field_simp [val_ne_zero, ne_of_gt hr]
 
-@[simp] lemma scale_one (x : U) : scale 1 x = x := by
+@[simp]
+lemma scale_one (x : U) : scale 1 x = x := by
   apply ext
-  simp
+  simp only [scale_val, one_mul]
 
 /-- Rescaling two units multiplies their ratio by the ratio of the factors. -/
-@[simp] lemma scale_ratio_scale
-    (x1 x2 : U) {r1 r2 : ℝ} (hr1 : 0 < r1) (hr2 : 0 < r2) :
-    ratio (scale r1 x1 hr1) (scale r2 x2 hr2) =
-      (⟨r1, le_of_lt hr1⟩ / ⟨r2, le_of_lt hr2⟩) * ratio x1 x2 := by
+@[simp]
+lemma scale_div_scale (x1 x2 : U) {r1 r2 : ℝ} (hr1 : 0 < r1) (hr2 : 0 < r2) :
+    scale r1 x1 hr1 / scale r2 x2 hr2 =
+      (⟨r1, le_of_lt hr1⟩ / ⟨r2, le_of_lt hr2⟩ : NNReal) * (x1 / x2) := by
   apply NNReal.eq
   change val (scale r1 x1 hr1) / val (scale r2 x2 hr2) =
     (r1 / r2) * (val x1 / val x2)
@@ -136,166 +158,20 @@ lemma ext {x y : U} (h : val x = val y) : x = y := by
   rw [div_mul_div_comm]
 
 /-- Successive rescalings compose by multiplication of their factors. -/
-@[simp] lemma scale_scale
-    (x : U) (r1 r2 : ℝ) (hr1 : 0 < r1) (hr2 : 0 < r2) :
+@[simp]
+lemma scale_scale (x : U) (r1 r2 : ℝ) (hr1 : 0 < r1) (hr2 : 0 < r2) :
     scale r1 (scale r2 x hr2) hr1 =
       scale (r1 * r2) x (mul_pos hr1 hr2) := by
   apply ext
   simp only [scale_val, mul_assoc]
 
+/-- Rescaling a unit by the ratio to a target unit produces that target. -/
+@[simp]
+lemma scale_div (x y : U) (hr : 0 < (y / x : ℝ)) :
+    scale (y / x) x hr = y := by
+  apply ext
+  rw [scale_val]
+  change (val y / val x) * val x = val y
+  field_simp [val_ne_zero]
+
 end PositiveRealUnitCore
-
-/-!
-## A.2. Generated compatibility API
--/
-
-/-- Generate the shared-core instance and arithmetic API for an existing unit structure. -/
-syntax (name := derivePositiveRealUnit)
-  "derive_positive_real_unit " ident : command
-
-/-- Elaborate the compatibility declarations, using the shared arithmetic laws. -/
-@[command_elab derivePositiveRealUnit]
-meta def elabDerivePositiveRealUnit : CommandElab := fun stx =>
-  match stx with
-  | `(derive_positive_real_unit $name:ident) => do
-    let base := name.getId
-    let q (n : Name) := mkIdentFrom name (base ++ n) (canonical := true)
-    let valProj := q `val
-    let propertyProj := q `property
-    let valNeZero := q `val_ne_zero
-    let valPos := q `val_pos
-    let divEqVal := q `div_eq_val
-    let divNeZero := q `div_ne_zero
-    let divPos := q `div_pos
-    let divSelf := q `div_self
-    let divSymm := q `div_symm
-    let divMulDiv := q `div_mul_div
-    let divMulDivCoe := q `div_mul_div_coe
-    let scale := q `scale
-    let scaleDivSelf := q `scale_div_self
-    let selfDivScale := q `self_div_scale
-    let scaleOne := q `scale_one
-    let scaleDivScale := q `scale_div_scale
-    let scaleScale := q `scale_scale
-
-    elabCommand (← `(command|
-      instance : PositiveRealUnitCore $name where
-        val := $valProj
-        pos := $propertyProj
-        ofVal := fun r hr => ⟨r, hr⟩
-        val_ofVal := by intros; rfl
-        ofVal_val := by intro x; cases x; rfl))
-
-    elabCommand (← `(command|
-      instance : Inhabited $name where default := ⟨1, by norm_num⟩))
-
-    elabCommand (← `(command|
-      noncomputable instance : HDiv $name $name NNReal where
-        hDiv x y := PositiveRealUnitCore.ratio x y))
-
-    elabCommand (← `(command|
-      @[simp] lemma $valNeZero (x : $name) : x.val ≠ 0 := by
-        change PositiveRealUnitCore.val x ≠ 0
-        exact PositiveRealUnitCore.val_ne_zero x))
-
-    elabCommand (← `(command|
-      lemma $valPos (x : $name) : 0 < x.val := x.property))
-
-    elabCommand (← `(command|
-      lemma $divEqVal (x y : $name) :
-          x / y = (⟨x.val / y.val,
-            div_nonneg x.property.le y.property.le⟩ : NNReal) := rfl))
-
-    elabCommand (← `(command|
-      @[simp] lemma $divNeZero (x y : $name) :
-          ¬ x / y = (0 : NNReal) := by
-        change PositiveRealUnitCore.ratio x y ≠ 0
-        exact PositiveRealUnitCore.ratio_ne_zero x y))
-
-    elabCommand (← `(command|
-      @[simp] lemma $divPos (x y : $name) :
-          (0 : NNReal) < x / y := by
-        change 0 < PositiveRealUnitCore.ratio x y
-        exact PositiveRealUnitCore.ratio_pos x y))
-
-    elabCommand (← `(command|
-      @[simp] lemma $divSelf (x : $name) :
-          x / x = (1 : NNReal) := by
-        change PositiveRealUnitCore.ratio x x = 1
-        exact PositiveRealUnitCore.ratio_self x))
-
-    elabCommand (← `(command|
-      lemma $divSymm (x y : $name) :
-          x / y = (y / x)⁻¹ := by
-        change PositiveRealUnitCore.ratio x y =
-          (PositiveRealUnitCore.ratio y x)⁻¹
-        exact PositiveRealUnitCore.ratio_symm x y))
-
-    elabCommand (← `(command|
-      lemma $divMulDiv (x y z : $name) :
-          (x / y) * (y / z) = x / z := by
-        change PositiveRealUnitCore.ratio x y *
-          PositiveRealUnitCore.ratio y z =
-          PositiveRealUnitCore.ratio x z
-        exact PositiveRealUnitCore.ratio_mul_ratio x y z))
-
-    elabCommand (← `(command|
-      @[simp] lemma $divMulDivCoe (x y z : $name) :
-          (x / y : ℝ) * (y / z : ℝ) = x / z := by
-        change (PositiveRealUnitCore.ratio x y : ℝ) *
-          (PositiveRealUnitCore.ratio y z : ℝ) =
-          PositiveRealUnitCore.ratio x z
-        exact PositiveRealUnitCore.ratio_mul_ratio_coe x y z))
-
-    elabCommand (← `(command|
-      /-- Rescale this unit by a strictly positive real factor. -/
-      def $scale (r : ℝ) (x : $name)
-          (hr : 0 < r := by norm_num) : $name :=
-        ⟨r * x.val, mul_pos hr x.property⟩))
-
-    elabCommand (← `(command|
-      @[simp] lemma $scaleDivSelf (x : $name) (r : ℝ) (hr : 0 < r) :
-          $scale r x hr / x = (⟨r, le_of_lt hr⟩ : NNReal) := by
-        change PositiveRealUnitCore.ratio
-          (PositiveRealUnitCore.scale r x hr) x =
-          (⟨r, le_of_lt hr⟩ : NNReal)
-        exact PositiveRealUnitCore.scale_ratio_self x r hr))
-
-    elabCommand (← `(command|
-      @[simp] lemma $selfDivScale (x : $name) (r : ℝ) (hr : 0 < r) :
-          x / $scale r x hr =
-            (⟨1 / r, _root_.div_nonneg (by simp) (le_of_lt hr)⟩ : NNReal) := by
-        change PositiveRealUnitCore.ratio x
-          (PositiveRealUnitCore.scale r x hr) =
-          (⟨1 / r, _root_.div_nonneg (by simp) (le_of_lt hr)⟩ : NNReal)
-        exact PositiveRealUnitCore.self_ratio_scale x r hr))
-
-    elabCommand (← `(command|
-      @[simp] lemma $scaleOne (x : $name) : $scale 1 x = x := by
-        change PositiveRealUnitCore.scale 1 x = x
-        exact PositiveRealUnitCore.scale_one x))
-
-    elabCommand (← `(command|
-      @[simp] lemma $scaleDivScale
-          (x1 x2 : $name) {r1 r2 : ℝ}
-          (hr1 : 0 < r1) (hr2 : 0 < r2) :
-          $scale r1 x1 hr1 / $scale r2 x2 hr2 =
-            (⟨r1, le_of_lt hr1⟩ / ⟨r2, le_of_lt hr2⟩) * (x1 / x2) := by
-        change PositiveRealUnitCore.ratio
-          (PositiveRealUnitCore.scale r1 x1 hr1)
-          (PositiveRealUnitCore.scale r2 x2 hr2) =
-          (⟨r1, le_of_lt hr1⟩ / ⟨r2, le_of_lt hr2⟩) *
-            PositiveRealUnitCore.ratio x1 x2
-        exact PositiveRealUnitCore.scale_ratio_scale x1 x2 hr1 hr2))
-
-    elabCommand (← `(command|
-      @[simp] lemma $scaleScale
-          (x : $name) (r1 r2 : ℝ)
-          (hr1 : 0 < r1) (hr2 : 0 < r2) :
-          $scale r1 ($scale r2 x hr2) hr1 =
-            $scale (r1 * r2) x (mul_pos hr1 hr2) := by
-        change PositiveRealUnitCore.scale r1
-          (PositiveRealUnitCore.scale r2 x hr2) hr1 =
-          PositiveRealUnitCore.scale (r1 * r2) x (mul_pos hr1 hr2)
-        exact PositiveRealUnitCore.scale_scale x r1 r2 hr1 hr2))
-  | _ => throwError "invalid derive_positive_real_unit command"

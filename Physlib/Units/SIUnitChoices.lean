@@ -25,7 +25,7 @@ temperature, amount of substance and luminous intensity. Four of the correspondi
 unit types already exist (`LengthUnit`, `MassUnit`, `TimeUnit`, `TemperatureUnit`); the
 remaining three — `CurrentUnit`, `AmountUnit`, `LuminousIntensityUnit` — are introduced
 here. They follow the `LengthUnit` convention of a positive-real magnitude and support
-rescaling and unit-ratio laws through `derive_positive_real_unit`. Following PhysLib's
+rescaling and unit-ratio laws through `PositiveRealUnitCore`. Following PhysLib's
 layout, these types may ultimately live under the relevant physics directories.
 
 `SIUnitChoices := UnitSystem ISQDimensionBase` is then the typed SI unit choice, and
@@ -54,9 +54,16 @@ structure CurrentUnit where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit CurrentUnit
+instance : PositiveRealUnitCore CurrentUnit where
+  val := CurrentUnit.val
+  pos := CurrentUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 
 namespace CurrentUnit
+
+open PositiveRealUnitCore
 
 /-- The SI coherent unit of electric current, the ampere. -/
 def amperes : CurrentUnit := ⟨1, by norm_num⟩
@@ -74,9 +81,16 @@ structure AmountUnit where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit AmountUnit
+instance : PositiveRealUnitCore AmountUnit where
+  val := AmountUnit.val
+  pos := AmountUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 
 namespace AmountUnit
+
+open PositiveRealUnitCore
 
 /-- The SI coherent unit of amount of substance, the mole. -/
 def moles : AmountUnit := ⟨1, by norm_num⟩
@@ -90,9 +104,16 @@ structure LuminousIntensityUnit where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit LuminousIntensityUnit
+instance : PositiveRealUnitCore LuminousIntensityUnit where
+  val := LuminousIntensityUnit.val
+  pos := LuminousIntensityUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 
 namespace LuminousIntensityUnit
+
+open PositiveRealUnitCore
 
 /-- The SI coherent unit of luminous intensity, the candela. -/
 def candelas : LuminousIntensityUnit := ⟨1, by norm_num⟩
@@ -120,11 +141,11 @@ noncomputable instance : UnitMagnitudeCatalog ISQDimensionBase where
   mag {b} :=
     match b with
     | .length | .mass | .time | .current | .temperature | .amount | .luminousIntensity =>
-        fun u => ⟨u.val, u.val_pos.le⟩
+        fun u => ⟨u.val, u.property.le⟩
   mag_pos {b} :=
     match b with
     | .length | .mass | .time | .current | .temperature | .amount | .luminousIntensity =>
-        fun u => NNReal.coe_pos.mp u.val_pos
+        fun u => NNReal.coe_pos.mp u.property
 
 /-!
 

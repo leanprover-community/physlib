@@ -42,10 +42,17 @@ structure ChargeUnit where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit ChargeUnit
+instance : PositiveRealUnitCore ChargeUnit where
+  val := ChargeUnit.val
+  pos := ChargeUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 open NNReal
 
 namespace ChargeUnit
+
+open PositiveRealUnitCore
 
 /-!
 

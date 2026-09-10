@@ -70,39 +70,28 @@ Requirements:
 
   - description: "The key data structure `TemperatureUnit`, a choice of temperature scale carrying a positive scale factor, is defined."
     done: true
-    # The concrete API is generated; the locations below identify its invocation
-    # and shared implementation. Declaration checks also require a Lean environment.
     location: >
-      Physlib/Thermodynamics/Temperature/TemperatureUnits.lean
-      (TemperatureUnit, derive_positive_real_unit, Inhabited TemperatureUnit);
+      Physlib/Thermodynamics/Temperature/TemperatureUnits.lean (TemperatureUnit);
       Physlib/Units/PositiveRealUnit.lean
-      (PositiveRealUnitCore.val, PositiveRealUnitCore.pos,
-      PositiveRealUnitCore.val_ne_zero, elabDerivePositiveRealUnit)
+      (PositiveRealUnitCore, PositiveRealUnitCore.val_ne_zero, PositiveRealUnitCore.pos,
+      PositiveRealUnitCore.instInhabited)
 
   - description: "The API contains the ratio of two temperature units as a nonnegative real, with its positivity and its reflexivity, symmetry and composition properties."
     done: true
-    # The concrete API is generated; the locations below identify its invocation
-    # and shared implementation. Declaration checks also require a Lean environment.
     location: >
-      Physlib/Thermodynamics/Temperature/TemperatureUnits.lean
-      (derive_positive_real_unit, HDiv TemperatureUnit TemperatureUnit ℝ≥0);
       Physlib/Units/PositiveRealUnit.lean
-      (PositiveRealUnitCore.ratio, PositiveRealUnitCore.ratio_pos,
-      PositiveRealUnitCore.ratio_ne_zero, PositiveRealUnitCore.ratio_self,
-      PositiveRealUnitCore.ratio_symm, PositiveRealUnitCore.ratio_mul_ratio,
-      PositiveRealUnitCore.ratio_mul_ratio_coe, elabDerivePositiveRealUnit)
+      (PositiveRealUnitCore.instHDiv, PositiveRealUnitCore.div_eq_val,
+      PositiveRealUnitCore.div_ne_zero, PositiveRealUnitCore.div_pos,
+      PositiveRealUnitCore.div_self, PositiveRealUnitCore.div_symm,
+      PositiveRealUnitCore.div_mul_div, PositiveRealUnitCore.div_mul_div_coe)
 
   - description: "The API contains the rescaling of a temperature unit by a positive real, with the ratios it induces and its composition law."
     done: true
-    # The concrete API is generated; the locations below identify its invocation
-    # and shared implementation. Declaration checks also require a Lean environment.
     location: >
-      Physlib/Thermodynamics/Temperature/TemperatureUnits.lean (derive_positive_real_unit);
       Physlib/Units/PositiveRealUnit.lean
-      (PositiveRealUnitCore.scale, PositiveRealUnitCore.scale_ratio_self,
-      PositiveRealUnitCore.self_ratio_scale, PositiveRealUnitCore.scale_one,
-      PositiveRealUnitCore.scale_ratio_scale, PositiveRealUnitCore.scale_scale,
-      elabDerivePositiveRealUnit)
+      (PositiveRealUnitCore.scale, PositiveRealUnitCore.scale_div_self,
+      PositiveRealUnitCore.self_div_scale, PositiveRealUnitCore.scale_one,
+      PositiveRealUnitCore.scale_div_scale, PositiveRealUnitCore.scale_scale)
 
   - description: "The API contains kelvin as the reference temperature unit, together with the units obtained from it by rescaling."
     done: true

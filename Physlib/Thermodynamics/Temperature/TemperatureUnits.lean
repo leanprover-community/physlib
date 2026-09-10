@@ -38,10 +38,17 @@ structure TemperatureUnit where
   val : ℝ
   property : 0 < val
 
-derive_positive_real_unit TemperatureUnit
+instance : PositiveRealUnitCore TemperatureUnit where
+  val := TemperatureUnit.val
+  pos := TemperatureUnit.property
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 open NNReal
 
 namespace TemperatureUnit
+
+open PositiveRealUnitCore
 
 /-!
 

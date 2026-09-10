@@ -208,7 +208,7 @@ open TimeUnit
 
 /-- The distance between two points in `TimeTransMan` in the units of `x : TimeUnit`. -/
 noncomputable def dist (x : TimeUnit) (t1 t2 : TimeTransMan) : ℝ :=
-  1/x.val * ‖t2.val - t1.val‖
+  1/(PositiveRealUnitCore.val x) * ‖t2.val - t1.val‖
 
 /-!
 
@@ -222,14 +222,14 @@ noncomputable def diff (x : TimeUnit) (t2 t1 : TimeTransMan) : ℝ :=
   if t1 ≤ t2 then dist x t1 t2 else - dist x t1 t2
 
 lemma diff_eq_val (x : TimeUnit) (t1 t2 : TimeTransMan) :
-    diff x t1 t2 = 1/x.val * (t1.val - t2.val) := by
+    diff x t1 t2 = 1/(PositiveRealUnitCore.val x) * (t1.val - t2.val) := by
   by_cases h : t2 ≤ t1
   · simp [diff, dist, h]
     simpa [le_def] using h
   · simp [diff, dist, h]
     simp [le_def] at h
     rw [abs_of_neg]
-    have hx : x.val ≠ 0 := x.val_ne_zero
+    have hx : (PositiveRealUnitCore.val x) ≠ 0 := (PositiveRealUnitCore.val_ne_zero x)
     field_simp
     linarith
 
@@ -268,20 +268,20 @@ lemma diff_fst_surjective (x : TimeUnit) (t : TimeTransMan) :
     Function.Surjective (diff x · t) := by
   intro r
   simp [diff, dist]
-  use x.1 * r +ᵥ t
+  use (PositiveRealUnitCore.val x) * r +ᵥ t
   simp [abs_mul]
-  rw [abs_of_nonneg (le_of_lt x.val_pos)]
-  simp only [ne_eq, TimeUnit.val_ne_zero, not_false_eq_true, inv_mul_cancel_left₀]
+  rw [abs_of_nonneg (le_of_lt (PositiveRealUnitCore.pos x))]
+  simp only [ne_eq, PositiveRealUnitCore.val_ne_zero, not_false_eq_true, inv_mul_cancel_left₀]
   by_cases h : 0 ≤ r
   · rw [if_pos]
     exact abs_of_nonneg h
     simp [le_def]
-    apply mul_nonneg (le_of_lt x.val_pos) h
+    apply mul_nonneg (le_of_lt (PositiveRealUnitCore.pos x)) h
   · rw [if_neg]
     rw [abs_of_neg (by simpa using h)]
     simp only [neg_neg]
     simp [le_def]
-    refine mul_neg_of_pos_of_neg x.val_pos (by simpa using h)
+    refine mul_neg_of_pos_of_neg (PositiveRealUnitCore.pos x) (by simpa using h)
 
 lemma diff_fst_bijective (x : TimeUnit) (t : TimeTransMan) :
     Function.Bijective (diff x · t) :=
@@ -300,14 +300,14 @@ noncomputable def addTime (x : TimeUnit) (r : ℝ) (t : TimeTransMan) : TimeTran
   Function.invFun (diff x · t) r
 
 lemma addTime_eq_val (x : TimeUnit) (r : ℝ) (t : TimeTransMan) :
-    (addTime x r t) = ⟨x.1 * r + t.val⟩ := by
+    (addTime x r t) = ⟨(PositiveRealUnitCore.val x) * r + t.val⟩ := by
   apply diff_fst_injective x t
   change (diff x · t) (Function.invFun ((diff x · t)) r) = _
   rw [Function.rightInverse_invFun (diff_fst_surjective x t)]
   simp [diff_eq_val]
 
 lemma addTime_val (x : TimeUnit) (r : ℝ) (t : TimeTransMan) :
-    (addTime x r t).val = x.1 * r + t.val := by
+    (addTime x r t).val = (PositiveRealUnitCore.val x) * r + t.val := by
   rw [addTime_eq_val]
 
 /-!
@@ -353,7 +353,7 @@ noncomputable def toTime (zero : TimeTransMan) (x : TimeUnit) : TimeTransMan ≃
   continuous_invFun := by
     rw [← Homeomorph.comp_continuous_iff valHomeomorphism]
     have h1 : (⇑valHomeomorphism ∘ (fun r : Time => addTime x r.val zero)) = fun r =>
-        (x.val * r.val + zero.val) := by
+        ((PositiveRealUnitCore.val x) * r.val + zero.val) := by
       ext
       simp [valHomeomorphism, addTime_val]
     rw [h1]
@@ -367,7 +367,7 @@ noncomputable def toTime (zero : TimeTransMan) (x : TimeUnit) : TimeTransMan ≃
   continuous_toFun := by
     rw [← Homeomorph.comp_continuous_iff Time.toRealCLE.toHomeomorph]
     have h1 : (⇑Time.toRealCLE.toHomeomorph ∘ (fun t => ⟨diff x t zero⟩)) = fun t =>
-        (1/x.val) * (t.val - zero.val) := by
+        (1/(PositiveRealUnitCore.val x)) * (t.val - zero.val) := by
       ext
       simp [Time.toRealCLE, diff_eq_val]
     rw [h1]
