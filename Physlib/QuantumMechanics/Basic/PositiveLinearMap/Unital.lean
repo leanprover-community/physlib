@@ -137,3 +137,41 @@ lemma toPositiveLinearMap_injective :
 lemma toPositiveLinearMap_inj {f g : E₁ →ₚ₁[R] E₂} :
     f.toPositiveLinearMap = g.toPositiveLinearMap ↔ f = g :=
   toPositiveLinearMap_injective.eq_iff
+
+
+open Convexity
+
+variable
+  [IsOrderedAddMonoid E₂]
+  [SMulCommClass R R E₂] [PartialOrder R]
+  [IsStrictOrderedRing R] [PosSMulMono R E₂]
+
+instance _root_.PositiveLinearMap.instConvexSpace : ConvexSpace R (E₁ →ₚ[R] E₂) where
+  sConvexComb w := PositiveLinearMap.mk (w.weights.sum fun m r ↦ r • m.toLinearMap) <| by
+    refine monotone_iff_forall_lt.mpr fun a b h ↦ ?_
+    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearMap.finsupp_sum_apply,
+      LinearMap.smul_apply, PositiveLinearMap.coe_toLinearMap]
+    exact Finsupp.sum_le_sum fun f hf ↦
+      smul_le_smul_of_nonneg_left (f.monotone h.le) (w.nonneg f)
+  sConvexComb_single := by simp
+  assoc _ := by
+    simp [Finsupp.sum_mapDomain_index, add_smul, Finsupp.sum_sum_index,
+    Finsupp.sum_smul_index, mul_smul, Finsupp.smul_sum]
+
+theorem _root_.Finsupp.sum_smul  {α β R M : Type*}
+    [Zero β] [AddCommMonoid M] [Semiring R] [Module R M] {ν : α →₀ β} {h : α → β → R} {x : M} :
+    (ν.sum h) • x = (ν.sum fun a b ↦ h a b • x) := Finset.sum_smul
+
+noncomputable instance : ConvexSpace R (E₁ →ₚ₁[R] E₂) where
+  sConvexComb w := UnitalPositiveLinearMap.mk
+    (sConvexComb (w.map (fun f ↦ f.toPositiveLinearMap))) <| by
+    simp [sConvexComb, Finsupp.sum_mapDomain_index, add_smul, ← Finsupp.sum_smul]
+  sConvexComb_single := by simp
+  assoc _ := by
+    simp [sConvexComb, Finsupp.sum_mapDomain_index, add_smul,
+      Finsupp.sum_sum_index, Finsupp.smul_sum, Finsupp.sum_smul_index', smul_smul]
+
+theorem sConvexComb_def (w : StdSimplex R (E₁ →ₚ₁[R] E₂)) :
+    sConvexComb w = ∑ m ∈ w.weights.support, w.weights m • m.toLinearMap := by
+  simp [sConvexComb, Finsupp.sum_mapDomain_index, add_smul]
+  rfl
