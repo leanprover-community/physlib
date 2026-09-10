@@ -325,3 +325,19 @@ Requirements:
   - description: "The equality of a length with a speed times a time holds propositionally rather than definitionally, so the two tagged types are bridged by a cast, and the same comparison is repeated over a set of base dimensions with no physical unit system, namely bits and symbols."
     done: true
     location: "Physlib/Units/ParametricDimensionExamples.lean (ParametricDimensionExamples.Info, ParametricDimensionExamples.bitDim, ParametricDimensionExamples.symbolDim)"
+
+  - description: "At a fixed numerical unit representation, dimension-tagged values inherit real-module and normed-space structures without replacing the existing additive operations or nonnegative-real action. Explicit coordinate equivalences transport functions and their Frechet derivatives."
+    done: true
+    location: >
+      Physlib/Units/WithDim/Basic.lean (instModuleReal, real_smul_val);
+      Physlib/Units/WithDim/Analysis.lean
+      (toValueAddEquiv, toValueLinearEquiv, instNormedAddCommGroup, instNormedSpace,
+      toValueLinearIsometryEquiv, transport, transportLinearMap, hasFDerivAt_transport)
+
+  - description: "A fixed-coordinate adapter expresses the existing harmonic-oscillator potential energy with length input and energy output tags, reusing its numerical function and coordinate time-derivative theorem. This does not assert invariance with model parameters held fixed under a change of units."
+    done: true
+    location: >
+      Physlib/ClassicalMechanics/HarmonicOscillator/WithDim.lean
+      (potentialEnergyWithDim, potentialEnergyWithDim_val,
+      hasFDerivAt_potentialEnergyWithDim, continuous_potentialEnergyWithDim,
+      potentialEnergyWithDim_deriv_val)

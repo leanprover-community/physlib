@@ -143,17 +143,17 @@ def EnergyMass' (m : Dimensionful (WithDim M𝓭 ℝ))
 /-- The lemma that the proposition `EnergyMass` is dimensionally correct-/
 lemma energyMass_isDimensionallyCorrect :
     IsDimensionallyCorrect EnergyMass := by
-  /- Scale such that the unit u1 is taken to u2. -/
   intro u1 u2
-  /- Let `m` be the mass, `E` be the energy and `u` be the actual units we start with. -/
   funext m E u
-  unfold EnergyMass
-  simp only [eq_iff_iff, UnitDependent.scaleUnit_apply_fun_left,
-    UnitDependent.scaleUnit_apply_fun, Dimensionful.of_scaleUnit, dim_apply,
-    WithDim.scaleUnit_val, WithDim.smul_val, map_mul, mul_pow, NNReal.smul_def, smul_eq_mul,
-    NNReal.coe_mul]
-  ring_nf
-  simp [mul_assoc, mul_eq_mul_left_iff, dimScale_ne_zero]
+  change EnergyMassWithDim (scaleUnit u2 u1 m) (scaleUnit u2 u1 E)
+    (speedOfLight (scaleUnit u2 u1 u)) = EnergyMassWithDim m E (speedOfLight u)
+  have hs : speedOfLight (scaleUnit u2 u1 u) =
+      scaleUnit u2 u1 (speedOfLight u) := by
+    simpa only [HasDim.scaleUnit_apply] using
+      (Dimensionful.of_scaleUnit (u1 := u2) (u2 := u1) (u := u) speedOfLight)
+  rw [hs]
+  exact congrFun (congrFun (congrFun (energyMassWithDim_isDimensionallyCorrect u1 u2)
+    m) E) (speedOfLight u)
 
 /-!
 

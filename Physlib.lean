@@ -13,6 +13,7 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.KineticEnergy
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
+public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
@@ -567,6 +568,7 @@ public import Physlib.Units.ParametricUnits
 public import Physlib.Units.SIUnitChoices
 public import Physlib.Units.UnitDependent
 public import Physlib.Units.UnitSystem
+public import Physlib.Units.WithDim.Analysis
 public import Physlib.Units.WithDim.Area
 public import Physlib.Units.WithDim.Basic
 public import Physlib.Units.WithDim.Energy

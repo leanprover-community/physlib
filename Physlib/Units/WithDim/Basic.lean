@@ -19,6 +19,10 @@ The *unit-scaling* structure (`HasDim`, `DMul`, and the `scaleUnit` lemmas), whi
 routes through `LTMCTUnitChoices.dimScale`, is provided for the standard basis
 `LTMCTDimensionBase`.
 
+Real scalar multiplication acts on numerical values. Import
+`Physlib.Units.WithDim.Analysis` for the normed-space structures and explicit
+coordinate equivalences used to reuse existing analytic results.
+
 -/
 
 @[expose] public section
@@ -181,6 +185,29 @@ instance {B : Type} [DimensionBasis B] (d : Dimension B) (M : Type) [MulAction �
 lemma smul_val {B : Type} [DimensionBasis B] {d : Dimension B} {M : Type} [MulAction ℝ≥0 M]
     (a : ℝ≥0) (m : WithDim d M) :
     (a • m).val = a • m.val := rfl
+
+/-
+Real scalar multiplication.
+
+Real scalars here are dimensionless coefficients. This instance leaves the existing
+`NNReal` action in place and uses the same underlying operations on `M`.
+-/
+
+/-- Dimensionless real scalars act on the numerical value of a tagged quantity. -/
+instance instModuleReal {B : Type} [DimensionBasis B] (d : Dimension B) (M : Type)
+    [AddCommMonoid M] [Module ℝ M] : Module ℝ (WithDim d M) where
+  smul r x := ⟨r • x.val⟩
+  one_smul x := WithDim.ext _ _ (one_smul ℝ x.val)
+  mul_smul r s x := WithDim.ext _ _ (mul_smul r s x.val)
+  smul_zero r := WithDim.ext _ _ (smul_zero r)
+  smul_add r x y := WithDim.ext _ _ (smul_add r x.val y.val)
+  add_smul r s x := WithDim.ext _ _ (add_smul r s x.val)
+  zero_smul x := WithDim.ext _ _ (zero_smul ℝ x.val)
+
+@[simp]
+lemma real_smul_val {B : Type} [DimensionBasis B] {d : Dimension B} {M : Type}
+    [AddCommMonoid M] [Module ℝ M] (r : ℝ) (x : WithDim d M) :
+    (r • x).val = r • x.val := rfl
 
 instance {B : Type} [DimensionBasis B] {d1 d2 : Dimension B} :
     HMul (WithDim d1 ℝ) (WithDim d2 ℝ) (WithDim (d1 * d2) ℝ) where
