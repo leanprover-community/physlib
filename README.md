@@ -12,9 +12,9 @@
 
 [![](https://img.shields.io/badge/Getting-Started-darkgreen)](https://physlib.io/GettingStarted.html)
 [![](https://img.shields.io/badge/The-Website-darkgreen)](https://physlib.io)
-[![](https://img.shields.io/badge/How_To-Get_Involved-darkgreen)](https://physlib.io/GetInvolved.html)
+[![](https://img.shields.io/badge/How_To-Get_Involved-darkgreen)](https://physlib.io/get-involved)
 [![](https://img.shields.io/badge/Physlib_Zulip-Discussion-darkgreen)](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/)
-[![](https://img.shields.io/badge/TODO-List-darkgreen)](https://physlib.io/TODOList)
+[![](https://img.shields.io/badge/TODO-List-darkgreen)](https://physlib.io/todo)
 
 
 [![](https://img.shields.io/badge/View_The-Stats-blue)](https://physlib.io/Stats)
@@ -116,9 +116,9 @@ and add them to the .bib file.
 
 If you unsure where you would like to contribute, you may find ideas on:
 - our [open issues](https://github.com/leanprover-community/physlib/issues).
-- our [todo list](https://physlib.io/TODOList)
-- our [Get Involved page](https://physlib.io/GetInvolved.html)
-- the [quantumInfo todo page](./QuantumInfo/WildeTODO.md)
+- our [todo list](https://physlib.io/todo)
+- our [Get Involved page](https://physlib.io/get-involved)
+- the [quantumInfo todo page](./docs/WildeTODO.md)
 > [!NOTE]
 > If stuck at any point there are lots of people happly to help on the [Physlib zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib)
 
