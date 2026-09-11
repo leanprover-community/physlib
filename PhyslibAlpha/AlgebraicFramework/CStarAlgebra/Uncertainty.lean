@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Tom Ole Diem. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tom Ole Diem
+Authors: Tom Ole Diem, Eduardo Nava-Hernandez
 -/
 module
 
@@ -11,7 +11,7 @@ public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.GNS
 
 /-!
 
-# Uncertainty relations
+# A. Uncertainty relations
 
 Positivity of a state gives a Cauchy–Schwarz inequality for expectation values. Applied to
 centered observables, this yields the Robertson–Schrödinger and Robertson uncertainty relations.
@@ -31,7 +31,7 @@ The commutator observable used to state the relations is the Lie bracket `⁅a, 
 `StarAlgebra/Lie.lean`; the only fact about it needed here beyond what that file already proves is
 that centering leaves it unchanged (`bracket_centered`).
 
-## Main results
+## A.1. Main results
 
 - `gns_cauchy_schwarz` : Cauchy–Schwarz for the state-induced sesquilinear form on `A`.
 - `robertson_schrodinger` : the Robertson–Schrödinger uncertainty inequality, jointly bounding
@@ -95,7 +95,7 @@ lemma apply_centered_mul_centered (ω : 𝓢[A]) (a b : Observable A) :
     ring
   rw [hcomm, show covariance ω a b = z.re from rfl, mul_comm, Complex.re_add_im]
 
-/-! ## Cauchy–Schwarz -/
+/-! ## A.2. Cauchy–Schwarz -/
 
 /-- The image of `x`, `y : A` under `π_ω` at the cyclic vector inner-products to `ω(x⋆y)`: the
 key identity connecting `A`'s sesquilinear form `(x, y) ↦ ω(x⋆y)` to the genuine inner product on
@@ -142,7 +142,7 @@ lemma centered_cauchy_schwarz (ω : 𝓢[A]) (a b : Observable A) :
       simp [Complex.normSq_eq_norm_sq, pow_two]
     _ ≤ _ := centered_gns_cauchy_schwarz ω a b
 
-/-! ## Uncertainty relations -/
+/-! ## A. Uncertainty relations -/
 
 /-- The Robertson–Schrödinger uncertainty inequality: the sharpest relation here, jointly bounding
 covariance and the commutator's expectation by the product of the individual spreads. Dropping
@@ -167,5 +167,60 @@ from `robertson_schrodinger` by dropping the covariance term. -/
 lemma robertson (ω : 𝓢[A]) (a b : Observable A) :
     ω⟨⁅a, b⁆⟩ ^ 2 ≤ variance ω a * variance ω b := by
   nlinarith [robertson_schrodinger ω a b, sq_nonneg (covariance ω a b)]
+
+/-! ## A.4. Equality in the uncertainty relations -/
+
+/-- The Cauchy–Schwarz defect for the two centered observables in the state's
+positive sesquilinear form. It measures the gap in Robertson–Schrödinger. -/
+noncomputable def centeredGramDefect (ω : 𝓢[A]) (a b : Observable A) : ℝ :=
+  variance ω a * variance ω b -
+    Complex.normSq (ω ((centered ω a : A) * centered ω b))
+
+/-- Positivity of the state makes the centered Gram defect nonnegative. -/
+lemma centeredGramDefect_nonneg (ω : 𝓢[A]) (a b : Observable A) :
+    0 ≤ centeredGramDefect ω a b :=
+  sub_nonneg.mpr (centered_cauchy_schwarz ω a b)
+
+/-- The squared centered pairing consists of squared covariance and squared
+expectation of the observable Lie bracket. -/
+lemma normSq_centered_pairing (ω : 𝓢[A]) (a b : Observable A) :
+    Complex.normSq (ω ((centered ω a : A) * centered ω b)) =
+      covariance ω a b ^ 2 + ω⟨⁅a, b⁆⟩ ^ 2 := by
+  rw [apply_centered_mul_centered, Complex.normSq_apply]
+  simp [pow_two]
+
+/-- Robertson's gap is the sum of the Gram defect and squared covariance.
+This separates the two ways in which its inequality can be strict. -/
+lemma robertson_gap_decomposition (ω : 𝓢[A]) (a b : Observable A) :
+    variance ω a * variance ω b - ω⟨⁅a, b⁆⟩ ^ 2 =
+      centeredGramDefect ω a b + covariance ω a b ^ 2 := by
+  unfold centeredGramDefect
+  rw [normSq_centered_pairing]
+  ring
+
+/-- Robertson–Schrödinger saturates exactly when the centered Gram defect vanishes. -/
+lemma robertson_schrodinger_eq_iff_gram_zero (ω : 𝓢[A]) (a b : Observable A) :
+    covariance ω a b ^ 2 + ω⟨⁅a, b⁆⟩ ^ 2 = variance ω a * variance ω b ↔
+      centeredGramDefect ω a b = 0 := by
+  unfold centeredGramDefect
+  rw [normSq_centered_pairing]
+  constructor <;> intro h <;> linarith
+
+/-- Robertson saturates exactly when Cauchy–Schwarz saturates for the centered
+pairing and the covariance is zero. Includes zero-variance cases without division. -/
+lemma robertson_eq_iff_gram_zero_and_covariance_zero (ω : 𝓢[A])
+    (a b : Observable A) :
+    ω⟨⁅a, b⁆⟩ ^ 2 = variance ω a * variance ω b ↔
+      centeredGramDefect ω a b = 0 ∧ covariance ω a b = 0 := by
+  have hgap := robertson_gap_decomposition ω a b
+  have hgram := centeredGramDefect_nonneg ω a b
+  have hcov := sq_nonneg (covariance ω a b)
+  constructor
+  · intro h
+    have hc : covariance ω a b = 0 := by nlinarith
+    exact ⟨by nlinarith, hc⟩
+  · rintro ⟨hg, hc⟩
+    rw [hg, hc] at hgap
+    nlinarith
 
 end UnitalPositiveLinearMap
