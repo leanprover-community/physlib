@@ -334,10 +334,14 @@ Requirements:
       (toValueAddEquiv, toValueLinearEquiv, instNormedAddCommGroup, instNormedSpace,
       toValueLinearIsometryEquiv, transport, transportLinearMap, hasFDerivAt_transport)
 
-  - description: "A fixed-coordinate adapter expresses the existing harmonic-oscillator potential energy with length input and energy output tags, reusing its numerical function and coordinate time-derivative theorem. This does not assert invariance with model parameters held fixed under a change of units."
+  - description: "The harmonic oscillator example carries the mass and spring constant with their physical dimensions. Its potential-energy expression is assembled from dimension-tagged quantities, agrees in coordinates with the existing numerical oscillator, and reuses the generic derivative transport API."
     done: true
     location: >
       Physlib/ClassicalMechanics/HarmonicOscillator/WithDim.lean
-      (potentialEnergyWithDim, potentialEnergyWithDim_val,
-      hasFDerivAt_potentialEnergyWithDim, continuous_potentialEnergyWithDim,
-      potentialEnergyWithDim_deriv_val)
+      (HarmonicOscillatorWithDim, HarmonicOscillatorWithDim.toHarmonicOscillator,
+      HarmonicOscillatorWithDim.positionNormSq,
+      HarmonicOscillatorWithDim.potentialEnergy,
+      HarmonicOscillatorWithDim.potentialEnergy_val,
+      HarmonicOscillatorWithDim.potentialEnergy_eq_transport,
+      HarmonicOscillatorWithDim.hasFDerivAt_potentialEnergy,
+      HarmonicOscillatorWithDim.continuous_potentialEnergy)
