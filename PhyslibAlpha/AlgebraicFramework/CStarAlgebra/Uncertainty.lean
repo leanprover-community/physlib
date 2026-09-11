@@ -223,4 +223,24 @@ lemma robertson_eq_iff_gram_zero_and_covariance_zero (ω : 𝓢[A])
     rw [hg, hc] at hgap
     nlinarith
 
+/-! ## A.5. Normalization and positivity for downstream variance bounds -/
+
+/-- A raw commutator expectation of magnitude one yields the normalized variance
+product bound for arbitrary states, with no extra positivity hypotheses. -/
+lemma normalized_variance_product (ω : 𝓢[A]) (a b : Observable A)
+    (hnorm : ω⟨⁅a, b⁆⟩ ^ 2 = (1 : ℝ) / 4) :
+    1 ≤ 4 * variance ω a * variance ω b := by
+  have h := robertson ω a b
+  rw [hnorm] at h
+  nlinarith
+
+/-- Normalization itself forces both variances to be positive. -/
+lemma variances_pos_of_normalized_pairing (ω : 𝓢[A]) (a b : Observable A)
+    (hnorm : ω⟨⁅a, b⁆⟩ ^ 2 = (1 : ℝ) / 4) :
+    0 < variance ω a ∧ 0 < variance ω b := by
+  have h := normalized_variance_product ω a b hnorm
+  have ha := variance_nonneg ω a
+  have hb := variance_nonneg ω b
+  constructor <;> by_contra! hn <;> nlinarith
+
 end UnitalPositiveLinearMap
