@@ -1,0 +1,157 @@
+name: Agent PR Review
+
+on:
+  pull_request_target:
+    types: [labeled]
+
+# One concurrent run per PR; cancel any in-flight run for the same PR when a new label fires.
+concurrency:
+  group: agent-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  agent-review:
+    name: Agent review pass
+    runs-on: ubuntu-latest
+
+    # Only run when the triggering label is `agent-review`.  Skip drafts and PRs marked
+    # `awaiting-author`.
+    if: |
+      github.event.label.name == 'agent-review' &&
+      github.event.pull_request.draft == false &&
+      !contains(github.event.pull_request.labels.*.name, 'awaiting-author')
+
+    steps:
+      - name: Checkout PR base
+        uses: actions/checkout@v4
+        with:
+          # Check out the base branch so the agent can search the repository.
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 0
+
+      - name: Fetch PR head
+        run: |
+          git fetch origin pull/${{ github.event.pull_request.number }}/head:pr-head
+
+      - name: Generate unified diff
+        run: |
+          git diff ${{ github.event.pull_request.base.sha }}...pr-head \
+            -- '*.lean' '*.md' > /tmp/pr.diff
+          wc -l /tmp/pr.diff
+
+      - name: Read rubric
+        run: |
+          cp AGENTS-REVIEW.md /tmp/rubric.md
+          cp AGENTS.md /tmp/agents.md
+          cp AI-POLICY.md /tmp/ai-policy.md
+          cp docs/ReviewGuidelines.md /tmp/review-guidelines.md
+
+      - name: Run agent review
+        id: review
+        env:
+          AGENT_REVIEW_API_KEY: ${{ secrets.AGENT_REVIEW_API_KEY }}
+          # Configure the model here. Default: a mid-tier model.
+          # Escalate to a top-tier model only for large or complex PRs by exception.
+          AGENT_MODEL: "claude-sonnet-4-5"
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          python3 - <<'EOF'
+          import os, json, urllib.request, sys
+          from pathlib import Path
+
+          api_key    = os.environ["AGENT_REVIEW_API_KEY"]
+          model      = os.environ.get("AGENT_MODEL", "claude-sonnet-4-5")
+          pr_title   = os.environ["PR_TITLE"]
+          pr_number  = os.environ["PR_NUMBER"]
+
+          rubric     = Path("/tmp/rubric.md").read_text()
+          agents     = Path("/tmp/agents.md").read_text()
+          policy     = Path("/tmp/ai-policy.md").read_text()
+          guidelines = Path("/tmp/review-guidelines.md").read_text()
+          diff       = Path("/tmp/pr.diff").read_text()
+
+          # Truncate diff if very large; the agent is told to flag scope issues.
+          MAX_DIFF_CHARS = 40_000
+          if len(diff) > MAX_DIFF_CHARS:
+              diff = diff[:MAX_DIFF_CHARS] + "\n\n[diff truncated — PR exceeds token budget]"
+
+          system_prompt = f"""You are performing a single review pass on a Physlib pull request.
+          Follow AGENTS-REVIEW.md exactly.
+
+          ---
+          AGENTS-REVIEW.md:
+          {rubric}
+
+          ---
+          AGENTS.md (authoring rules):
+          {agents}
+
+          ---
+          AI-POLICY.md:
+          {policy}
+
+          ---
+          docs/ReviewGuidelines.md:
+          {guidelines}
+          """
+
+          user_prompt = f"""PR #{pr_number}: {pr_title}
+
+          Unified diff (Lean and Markdown files only):
+
+          {diff}
+
+          Produce your review now. Follow the output contract in AGENTS-REVIEW.md §5 exactly.
+          If no issues found, say so and stop.
+          """
+
+          payload = {
+              "model": model,
+              "max_tokens": 2048,
+              "system": system_prompt,
+              "messages": [{"role": "user", "content": user_prompt}],
+          }
+
+          req = urllib.request.Request(
+              "https://api.anthropic.com/v1/messages",
+              data=json.dumps(payload).encode(),
+              headers={
+                  "x-api-key": api_key,
+                  "anthropic-version": "2023-06-01",
+                  "content-type": "application/json",
+              },
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=120) as resp:
+              body = json.loads(resp.read())
+
+          review_text = body["content"][0]["text"]
+
+          # Write for the next step to pick up.
+          Path("/tmp/review.md").write_text(review_text)
+
+          print(review_text)
+          EOF
+
+      - name: Post review comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          REVIEW=$(cat /tmp/review.md)
+          BODY="<!-- agent-review -->
+          **Agent review pass** (model: \`$AGENT_MODEL\`, rubric: [AGENTS-REVIEW.md](https://github.com/${{ github.repository }}/blob/${{ github.event.pull_request.base.sha }}/AGENTS-REVIEW.md))
+
+          > This is an automated first-pass review. A human reviewer will follow. All findings are
+          > advisory unless labeled \`blocking\`. Mathlib citations are suggestions only.
+
+          ---
+
+          ${REVIEW}"
+
+          gh pr comment "$PR_NUMBER" --body "$BODY"
