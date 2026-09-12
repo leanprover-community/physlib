@@ -36,9 +36,10 @@ variable {fn : ℕ → T} {_lb _ub : T} {hl : ∀ n, _lb ≤ fn n} {hu : ∀ n, 
 
 /-- The `InfRegularized` value is also lower bounded. -/
 theorem lb : _lb ≤ InfRegularized fn hl hu := by
-  convert le_csSup ?_ ?_;
-  · exact ⟨ _ub, fun a ha => by rcases Filter.eventually_atTop.mp ha with ⟨ n, hn ⟩ ; exact le_trans ( hn _ le_rfl ) ( hu _ ) ⟩;
-  · aesop
+  rw [InfRegularized, Filter.liminf_eq]
+  refine le_csSup ⟨_ub, fun a ha => ?_⟩ (Filter.Eventually.of_forall hl)
+  obtain ⟨n, hn⟩ := Filter.eventually_atTop.mp ha
+  exact (hn n le_rfl).trans (hu n)
 
 /-- The `InfRegularized` value is also upper bounded. -/
 theorem ub : InfRegularized fn hl hu ≤ _ub := by
@@ -62,12 +63,10 @@ theorem anti_inf (h : Antitone fn) :
   any particular value. -/
 theorem anti_ub (h : Antitone fn) : ∀ n, InfRegularized fn hl hu ≤ fn n := by
   intro n
-  have h_inf_le : InfRegularized fn hl hu ≤ fn n := by
-    convert csSup_le _ _;
-    · exact ⟨ _lb, Filter.eventually_atTop.2 ⟨ 0, fun n hn => hl n ⟩ ⟩;
-    · simp +zetaDelta at *;
-      exact fun b x hx => le_trans ( hx ( Max.max x n ) ( le_max_left _ _ ) ) ( h ( le_max_right _ _ ) )
-  exact h_inf_le
+  rw [InfRegularized, Filter.liminf_eq]
+  refine csSup_le ⟨_lb, Filter.Eventually.of_forall hl⟩ fun b hb => ?_
+  obtain ⟨m, hm⟩ := Filter.eventually_atTop.mp hb
+  exact (hm (max m n) (le_max_left _ _)).trans (h (le_max_right _ _))
 
 end InfRegularized
 
@@ -121,41 +120,24 @@ end SupRegularized
 
 section real
 
-private def realNegOrderIso : ℝ ≃o ℝᵒᵈ where
-  toEquiv := Equiv.neg ℝ
-  map_rel_iff' := by
-    intro a b
-    change (-b : ℝ) ≤ -a ↔ a ≤ b
-    simpa using neg_le_neg_iff
-
-private theorem limsup_eq_neg_liminf_neg {fn : ℕ → ℝ} {_lb _ub : ℝ}Expand commentComment on line R131Resolved
-    (hl : ∀ n, _lb ≤ fn n) (hu : ∀ n, fn n ≤ _ub) :
-    Filter.atTop.limsup fn = -Filter.atTop.liminf (fun n => -fn n) := by
-  have hneg : -Filter.atTop.limsup fn = Filter.atTop.liminf (fun n => -fn n) := by
-    have hdual := OrderIso.limsup_apply (f := Filter.atTop) (u := fn) realNegOrderIso
-      (hu := Filter.isBoundedUnder_of_eventually_le (f := Filter.atTop) (u := fn)
-        (Filter.Eventually.of_forall hu))
-      (hu_co := Filter.isCoboundedUnder_le_of_le Filter.atTop hl)
-      (hgu := Filter.isBoundedUnder_of_eventually_le (α := ℝᵒᵈ) (f := Filter.atTop)
-        (u := fun n => (-fn n : ℝᵒᵈ)) (Filter.Eventually.of_forall fun n => neg_le_neg (hu n)))
-      (hgu_co := Filter.isCoboundedUnder_le_of_le (α := ℝᵒᵈ) Filter.atTop
-        (f := fun n => (-fn n : ℝᵒᵈ)) (x := (-_lb : ℝᵒᵈ)) fun n => neg_le_neg (hl n))
-    simpa [Filter.limsup, Filter.liminf, Filter.limsSup, Filter.limsInf, realNegOrderIso] using
-      congrArg OrderDual.ofDual hdual
-  linarith
-
 variable {fn : ℕ → ℝ} {_lb _ub : ℝ} {hl : ∀ n, _lb ≤ fn n} {hu : ∀ n, fn n ≤ _ub}
+
+/-- Negating a real sequence swaps `liminf` and `limsup`. -/
+private theorem liminf_neg (s : ℕ → ℝ) :
+    Filter.liminf (fun n ↦ -s n) Filter.atTop = -Filter.limsup s Filter.atTop := by
+  rw [Filter.liminf_eq, Filter.limsup_eq, Real.sInf_def, neg_neg]
+  congr 1
+  ext a
+  simp [le_neg]
 
 theorem InfRegularized.to_SupRegularized : InfRegularized fn hl hu = -SupRegularized (-fn ·)
     (lb := -_ub) (ub := -_lb) (neg_le_neg_iff.mpr <| hu ·) (neg_le_neg_iff.mpr <| hl ·) := by
-  have liminf_neg : Filter.liminf fn Filter.atTop = -(Filter.limsup (-fn) Filter.atTop) := by
-    simp [Filter.limsup_eq, Filter.liminf_eq, Real.sInf_def]
-  exact Real.ext_cauchy (congrArg Real.cauchy liminf_neg)
+  rw [InfRegularized, SupRegularized, ← liminf_neg]
+  simp
 
 theorem SupRegularized.to_InfRegularized : SupRegularized fn hl hu = -InfRegularized (-fn ·)
     (lb := -_ub) (ub := -_lb) (neg_le_neg_iff.mpr <| hu ·) (neg_le_neg_iff.mpr <| hl ·) := by
-  unfold InfRegularized SupRegularized
-  exact limsup_eq_neg_liminf_neg hl hu
+  rw [InfRegularized, SupRegularized, liminf_neg, neg_neg]
 
 /-- For `Antitone` functions, the value `Filter.Tendsto` the `InfRegularized` value. -/
 theorem InfRegularized.anti_tendsto (h : Antitone fn) :
@@ -174,9 +156,9 @@ theorem InfRegularized.of_Subadditive (hf : Subadditive (fun n ↦ fn n * n))
     rintro x ⟨y,(rfl : _ / _ = _)⟩
     rcases y with (_|n)
     · simp
-    · rw [inf_le_iff]
-      convert Or.inr (hl (n+1))
-      field_simp
+    · refine inf_le_right.trans ?_
+      rw [mul_div_assoc, div_self (by positivity), mul_one]
+      exact hl (n + 1)
   )
   have h₂ : Filter.Tendsto fn .atTop (nhds hf.lim) := by
     refine h₁.congr' ?_

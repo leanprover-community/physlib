@@ -14,6 +14,8 @@ open MState
 open BigOperators
 open scoped RealInnerProductSpace InnerProductSpace
 
+set_option backward.isDefEq.respectTransparency false
+
 noncomputable section
 
 /-- A mixed-state ensemble is a random variable valued in `MState d`. That is,
@@ -65,8 +67,13 @@ ensembles that mixes into it. -/
 def mix (e : MEnsemble d α) : MState d := ProbDistribution.expect_val e
 
 @[simp]
+theorem mix_M (e : MEnsemble d α) : (mix e).M = ∑ i, (e.distr i : ℝ) • (e.states i).M :=
+  ProbDistribution.to_U_expect_val e
+
+@[simp]
 theorem mix_of (e : MEnsemble d α) : (mix e).m = ∑ i, (e.distr i : ℝ) • (e.states i).m := by
-  apply AddSubgroup.val_finsetSum -- *laughs in defeq*
+  rw [← DensityOp.mat_M, mix_M]
+  simp
 
 /-- Two mixed-state ensembles indexed by `\alpha` and `\beta` are equivalent if `α ≃ β`. -/
 def congrMEnsemble (σ : α ≃ β) : MEnsemble d α ≃ MEnsemble d β := ProbDistribution.congrRandVar σ
@@ -133,15 +140,19 @@ theorem mix_pEnsemble_pure_iff_pure {e : PEnsemble d α} :
   · apply MState.eq_of_sum_eq_pure ?_ ?_ ?_ e.distr.normalized i (Finset.mem_univ i)
     · exact_mod_cast lt_of_le_of_ne (e.distr i).zero_le hi.symm
     · exact (MState.pure_iff_purity_one _).mp ⟨ψ, rfl⟩
-    · exact congr_arg MState.M h.symm
+    · rw [← h]
+      exact Ensemble.mix_M _
     · grind
-  · have h_sum : mix (toMEnsemble e) = ∑ i, (e.distr i).val • (MState.pure ψ).M := by
+  · have h_sum : (mix (toMEnsemble e)).M = ∑ i, (e.distr i).val • (MState.pure ψ).M := by
+      rw [Ensemble.mix_M]
       refine Finset.sum_congr rfl fun i _ => ?_
       by_cases hi : e.distr i = 0
       · simp [hi]
       · rw [← h i hi]
         rfl
-    simp [MState.ext_iff, h_sum, ← Finset.sum_smul]
+    apply DensityOp.ext
+    rw [h_sum, ← Finset.sum_smul]
+    simp
 
 /- The theorem below is also false for the same reason as the original `mix_pEnsemble_pure_iff_pure`:
    knowing `MState.pure (e.states i) = MState.pure ψ` does not imply `e.states i = ψ` as Kets,
@@ -203,13 +214,12 @@ theorem MState.exp_val_pure_eq_one_iff {d : Type*} [Fintype d] [DecidableEq d]
     have hsq : ⟪ρ.M - (MState.pure ψ).M, ρ.M - (MState.pure ψ).M⟫ =
         ⟪ρ.M, ρ.M⟫ - 2 * ⟪ρ.M, (MState.pure ψ).M⟫ + ⟪(MState.pure ψ).M, (MState.pure ψ).M⟫ := by
       simp only [HermitianMat.inner_def, IsMaximalSelfAdjoint.RCLike_selfadjMap, HermitianMat.mat_sub,
-        MState.mat_M, RCLike.re_to_complex]
+        DensityOp.mat_M, RCLike.re_to_complex]
       simp [Matrix.mul_sub, Matrix.sub_mul, Matrix.trace_sub, Matrix.trace_mul_comm (ρ.m)]; ring
-    exact MState.ext (eq_of_sub_eq_zero (inner_self_eq_zero.mp (le_antisymm
+    exact DensityOp.ext (eq_of_sub_eq_zero (inner_self_eq_zero.mp (le_antisymm
       (by rw [hsq]; linarith) (ρ.M - (MState.pure ψ).M).inner_self_nonneg)))
   · rintro rfl; simpa [MState.exp_val] using hpure_inner
 
-set_option backward.isDefEq.respectTransparency false in
 theorem mix_mEnsemble_pure_iff_pure {e : MEnsemble d α} :
     mix e = pure ψ ↔ ∀ i : α, e.distr i ≠ 0 → e.states i = MState.pure ψ := by
   have h : (mix e).exp_val ↑(MState.pure ψ) = ∑ i, ↑(e.distr i) * (e.states i).exp_val ↑(MState.pure ψ) := by
@@ -219,9 +229,8 @@ theorem mix_mEnsemble_pure_iff_pure {e : MEnsemble d α} :
   · exact fun i => ( e.distr i ).2.1;
   · simp
   · intro i
-    apply (e.states i).exp_val_le_one (MState.le_one _)
+    apply (e.states i).exp_val_le_one (DensityOp.le_one _)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The average of `f : MState d → T` on an ensemble that mixes to a pure state `ψ` is `f (pure ψ)` -/
 theorem mix_mEnsemble_pure_average {e : MEnsemble d α} {T : Type _} {U : Type*} [AddCommGroup U] [Module ℝ U] [inst : Mixable U T] (f : MState d → T) (hmix : mix e = pure ψ) :
   average f e = f (pure ψ) := by
@@ -257,12 +266,11 @@ def trivial_mEnsemble (ρ : MState d) (i : α) : MEnsemble d α := ⟨fun _ ↦ 
 
 /-- The trivial mixed-state ensemble of `ρ` mixes to `ρ` -/
 theorem trivial_mEnsemble_mix (ρ : MState d) : ∀ i : α, mix (trivial_mEnsemble ρ i) = ρ := fun i ↦by
-  apply MState.ext_m
+  apply DensityOp.ext_m
   classical simp only [trivial_mEnsemble, ProbDistribution.constant, mix_of, DFunLike.coe, apply_ite,
     Prob.coe_one, Prob.coe_zero, ite_smul, one_smul, zero_smul, Finset.sum_ite_eq,
     Finset.mem_univ, ↓reduceIte]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The average of `f : MState d → T` on a trivial ensemble of `ρ` is `f ρ`-/
 theorem trivial_mEnsemble_average {T : Type _} {U : Type*} [AddCommGroup U] [Module ℝ U] [inst : Mixable U T] (f : MState d → T) (ρ : MState d):
   ∀ i : α, average f (trivial_mEnsemble ρ i) = f ρ := fun i ↦ by
@@ -279,15 +287,13 @@ def trivial_pEnsemble (ψ : Ket d) (i : α) : PEnsemble d α := ⟨fun _ ↦ ψ,
 
 variable (ψ : Ket d)
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The trivial pure-state ensemble of `ψ` mixes to `ψ` -/
 theorem trivial_pEnsemble_mix : ∀ i : α, mix (toMEnsemble (trivial_pEnsemble ψ i)) = MState.pure ψ := fun i ↦ by
-  apply MState.ext_m
+  apply DensityOp.ext_m
   classical simp only [trivial_pEnsemble, ProbDistribution.constant, toMEnsemble_mk, mix_of, DFunLike.coe,
     apply_ite, Prob.coe_one, Prob.coe_zero, MEnsemble.states, Function.comp_apply, ite_smul,
     one_smul, zero_smul, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
 
-set_option backward.isDefEq.respectTransparency false in
 omit [DecidableEq d] in
 /-- The average of `f : Ket d → T` on a trivial ensemble of `ψ` is `f ψ`-/
 theorem trivial_pEnsemble_average {T : Type _} {U : Type*} [AddCommGroup U] [Module ℝ U] [inst : Mixable U T] (f : Ket d → T) :
@@ -328,11 +334,13 @@ theorem spectral_decomposition_sum {d 𝕜 : Type*} [Fintype d] [DecidableEq d] 
 
 /-- The spectral pure-state ensemble of `ρ` mixes to `ρ` -/
 theorem spectral_ensemble_mix {ρ : MState d} : mix (↑(spectral_ensemble ρ) : MEnsemble d d) = ρ := by
-  ext i j
-  convert rfl;
-  convert rfl;
-  apply MState.ext_m;
-  convert Ensemble.mix_of _
-  convert! (spectral_decomposition_sum ρ.Hermitian) using 1
+  apply DensityOp.ext_m
+  rw [Ensemble.mix_of]
+  conv_rhs => rw [spectral_decomposition_sum ρ.Hermitian]
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
+  congr 1
+  ext j k
+  show (MState.pure ((spectral_ensemble ρ).states i)).m j k = _
+  simp [Matrix.vecMulVec_apply, Ket.apply, spectral_ensemble]
 
 end Ensemble

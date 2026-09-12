@@ -515,3 +515,27 @@ lemma inner_eq_doubly_stochastic_sum {d : Type*} [Fintype d] [DecidableEq d]
       simp only [RCLike.ofReal_eq_complex_ofReal]; ring
   rw [inner_eq_re_trace, key, Matrix.trace_mul_cycle, hUU, one_mul, hC_trace]
   exact Complex.ofReal_re _
+
+section kronecker
+
+open Kronecker
+
+variable {n m 𝕜 : Type*} [Fintype n] [Fintype m] [RCLike 𝕜]
+
+/-- Pairing against `A ⊗ₖ 1` is pairing the right partial trace against `A`. -/
+theorem inner_kron_one [DecidableEq m] (A : HermitianMat n 𝕜) (M : HermitianMat (n × m) 𝕜) :
+    ⟪A ⊗ₖ (1 : HermitianMat m 𝕜), M⟫ = ⟪A, M.traceRight⟫ := by
+  rw [inner_comm, inner_comm A, inner_eq_re_trace, inner_eq_re_trace, kronecker_mat, mat_one,
+    Matrix.trace_mul_kron_one_right, traceRight_mat]
+
+/-- Pairing against `1 ⊗ₖ B` is pairing the left partial trace against `B`. -/
+theorem inner_one_kron [DecidableEq n] (B : HermitianMat m 𝕜) (M : HermitianMat (n × m) 𝕜) :
+    ⟪(1 : HermitianMat n 𝕜) ⊗ₖ B, M⟫ = ⟪B, M.traceLeft⟫ := by
+  rw [inner_comm, inner_comm B, inner_eq_re_trace, inner_eq_re_trace, kronecker_mat, mat_one,
+    Matrix.trace_mul_one_kron_right, traceLeft_mat]
+
+end kronecker
+
+theorem inner_eq_zero_of_mul_eq_zero {n 𝕜 : Type*} [Fintype n] [RCLike 𝕜]
+    {A B : HermitianMat n 𝕜} (h : A.mat * B.mat = 0) : ⟪A, B⟫ = 0 := by
+  rw [inner_eq_re_trace, h, Matrix.trace_zero, map_zero]

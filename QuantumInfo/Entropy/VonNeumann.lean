@@ -72,9 +72,50 @@ open scoped InnerProductSpace RealInnerProductSpace
 
 section entropy
 
-/-- Von Neumann entropy of a mixed state. -/
-def Sᵥₙ (ρ : MState d) : ℝ :=
-  Hₛ ρ.spectrum
+section operator
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
+variable {ι : Type*} [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι]
+
+/-- Von Neumann entropy of a mixed state: the trace of `-ρ log ρ`, where the operator function is
+given by the continuous functional calculus.
+
+This makes no reference to a basis. `Sᵥₙ_eq_Hₛ_spectrum` identifies it with the Shannon entropy of
+the spectrum, and `Sᵥₙ_eq_trace_cfc_negMulLog` is the matrix analogue. -/
+def Sᵥₙ (ρ : DensityOp E) : ℝ :=
+  (ρ.op.cfc Real.negMulLog).trace
+
+/-- **Matrix analogue of `Sᵥₙ`**: the von Neumann entropy is the trace of `x ↦ -x * log x` applied
+to the density matrix through the continuous functional calculus. -/
+theorem Sᵥₙ_eq_trace_cfc_negMulLog (ρ : DensityOp E) :
+    Sᵥₙ ρ = ((ρ.M : HermitianMat ι ℂ).cfc Real.negMulLog).trace := by
+  simp only [Sᵥₙ, ← HermitianOp.trace_toMat (ι := ι), HermitianOp.toMat_cfc]
+  rfl
+
+/-- **Matrix analogue of `Sᵥₙ`**, phrased with the continuous functional calculus on the raw
+density matrix rather than on a `HermitianMat`. -/
+theorem Sᵥₙ_eq_re_trace_matrix_cfc (ρ : DensityOp E) :
+    Sᵥₙ ρ = (cfc Real.negMulLog (ρ.m : Matrix ι ι ℂ)).trace.re := by
+  rw [Sᵥₙ_eq_trace_cfc_negMulLog (ι := ι), HermitianMat.trace, HermitianMat.mat_cfc,
+    IsMaximalSelfAdjoint.RCLike_selfadjMap, RCLike.re_to_complex, DensityOp.mat_M]
+
+/-- The von Neumann entropy is unchanged by reading a state on a different space with the same
+preferred index type. -/
+@[simp]
+theorem Sᵥₙ_transport {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℂ F] [StdBasis ℂ F ι]
+    (ρ : DensityOp E) : Sᵥₙ (ρ.transport F) = Sᵥₙ ρ := by
+  rw [Sᵥₙ_eq_trace_cfc_negMulLog (ι := ι), Sᵥₙ_eq_trace_cfc_negMulLog (ι := ι),
+    DensityOp.M_transport]
+
+end operator
+
+/-- The von Neumann entropy is the Shannon entropy of the spectrum. -/
+theorem Sᵥₙ_eq_Hₛ_spectrum (ρ : MState d) : Sᵥₙ ρ = Hₛ ρ.spectrum := by
+  rw [Sᵥₙ_eq_trace_cfc_negMulLog (ι := d), ← HermitianMat.sum_eigenvalues_eq_trace, Hₛ]
+  obtain ⟨e, he⟩ := ρ.M.cfc_eigenvalues (f := Real.negMulLog)
+  refine Finset.sum_equiv e (by simp) fun i _ ↦ ?_
+  rw [congrFun he i]
+  simp [H₁, MState.spectrum, ProbDistribution.mk', ProbDistribution.prob]
 
 /-- The Quantum Conditional Entropy S(ρᴬ|ρᴮ) is given by S(ρᴬᴮ) - S(ρᴮ). -/
 def qConditionalEnt (ρ : MState (dA × dB)) : ℝ :=
@@ -88,26 +129,94 @@ def qMutualInfo (ρ : MState (dA × dB)) : ℝ :=
   entropy of the image under Λ of the purification of ρ. -/
 def coherentInfo (ρ : MState d₁) (Λ : CPTPMap d₁ d₂) : ℝ :=
   let ρPure : MState (d₁ × d₁) := MState.pure ρ.purify
-  let ρImg : MState (d₂ × d₁) := Λ.prod (CPTPMap.id (dIn := d₁)) ρPure
+  let ρImg : MState (d₂ × d₁) := Λ.prod (CPTPOp.id (dIn := d₁)) ρPure
   (- qConditionalEnt ρImg)
 
 /-- The Quantum Conditional Mutual Information, I(A;C|B) = S(A|B) - S(A|BC). -/
 def qcmi (ρ : MState (dA × dB × dC)) : ℝ :=
   qConditionalEnt ρ.assoc'.traceRight - qConditionalEnt ρ
 
+section bipartite
+
+/-! ### Basis-free forms of the composite-system entropies
+
+The definitions above are stated for a system whose index type is a product; these are their
+counterparts for a state on an honest tensor product, together with the "matrix analogue"
+theorems identifying the two through `DensityOp.transport`. -/
+
+open scoped TensorProduct
+
+variable {E F G : Type*}
+variable [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F]
+variable [NormedAddCommGroup G] [InnerProductSpace ℂ G]
+
+namespace DensityOp
+
+section Defs
+
+variable [FiniteDimensional ℂ E] [FiniteDimensional ℂ F] [FiniteDimensional ℂ G]
+
+/-- The quantum conditional entropy `S(E|F) = S(EF) - S(F)` of a state on `E ⊗ F`. -/
+def qConditionalEnt (ρ : DensityOp (E ⊗[ℂ] F)) : ℝ :=
+  Sᵥₙ ρ - Sᵥₙ ρ.traceLeft
+
+/-- The quantum mutual information `I(E:F) = S(E) + S(F) - S(EF)` of a state on `E ⊗ F`. -/
+def qMutualInfo (ρ : DensityOp (E ⊗[ℂ] F)) : ℝ :=
+  Sᵥₙ ρ.traceLeft + Sᵥₙ ρ.traceRight - Sᵥₙ ρ
+
+/-- The quantum conditional mutual information `I(E;G|F) = S(E|F) - S(E|FG)` of a state on
+`E ⊗ (F ⊗ G)`. -/
+def qcmi (ρ : DensityOp (E ⊗[ℂ] (F ⊗[ℂ] G))) : ℝ :=
+  ((ρ.congr (TensorProduct.assocIsometry ℂ E F G).symm).traceRight).qConditionalEnt -
+    ρ.qConditionalEnt
+
+end Defs
+
+end DensityOp
+
+section Analogue
+
+variable [StdBasis ℂ E dA] [StdBasis ℂ F dB] [StdBasis ℂ G dC]
+
+/-- **Matrix analogue of `DensityOp.qConditionalEnt`.** -/
+@[simp]
+theorem qConditionalEnt_transport (ρ : MState (dA × dB)) :
+    (ρ.transport (E ⊗[ℂ] F)).qConditionalEnt = qConditionalEnt ρ := by
+  rw [DensityOp.qConditionalEnt, qConditionalEnt, MState.traceLeft_transport, Sᵥₙ_transport,
+    Sᵥₙ_transport]
+
+/-- **Matrix analogue of `DensityOp.qMutualInfo`.** -/
+@[simp]
+theorem qMutualInfo_transport (ρ : MState (dA × dB)) :
+    (ρ.transport (E ⊗[ℂ] F)).qMutualInfo = qMutualInfo ρ := by
+  rw [DensityOp.qMutualInfo, qMutualInfo, MState.traceLeft_transport, MState.traceRight_transport,
+    Sᵥₙ_transport, Sᵥₙ_transport, Sᵥₙ_transport]
+
+/-- **Matrix analogue of `DensityOp.qcmi`.** -/
+@[simp]
+theorem qcmi_transport (ρ : MState (dA × dB × dC)) :
+    (ρ.transport (E ⊗[ℂ] (F ⊗[ℂ] G))).qcmi = qcmi ρ := by
+  rw [DensityOp.qcmi, qcmi, ← MState.assoc'_transport, MState.traceRight_transport,
+    qConditionalEnt_transport, qConditionalEnt_transport]
+
+end Analogue
+
+end bipartite
+
 /-- von Neumman entropy is nonnegative. -/
 theorem Sᵥₙ_nonneg (ρ : MState d) : 0 ≤ Sᵥₙ ρ :=
-  Hₛ_nonneg _
+  (Hₛ_nonneg _).trans (Sᵥₙ_eq_Hₛ_spectrum ρ).ge
 
 /-- von Neumman entropy is at most log d. -/
 theorem Sᵥₙ_le_log_d (ρ : MState d) : Sᵥₙ ρ ≤ Real.log (Finset.card Finset.univ (α := d)):=
-  Hₛ_le_log_d _
+  (Sᵥₙ_eq_Hₛ_spectrum ρ).trans_le (Hₛ_le_log_d _)
 
 /-- von Neumman entropy of pure states is zero. -/
 @[simp]
 theorem Sᵥₙ_of_pure_zero (ψ : Ket d) : Sᵥₙ (MState.pure ψ) = 0 := by
   obtain ⟨i, hi⟩ := MState.spectrum_pure_eq_constant ψ
-  rw [Sᵥₙ, hi, Hₛ_constant_eq_zero]
+  rw [Sᵥₙ_eq_Hₛ_spectrum, hi, Hₛ_constant_eq_zero]
 
 set_option backward.isDefEq.respectTransparency false in
 theorem Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ.M⟫ := by
@@ -115,23 +224,11 @@ theorem Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ
   rw [log, inner_eq_re_trace]
   nth_rw 2 [← cfc_id ρ.M]
   rw [← mat_cfc_mul]
-  simp only [Sᵥₙ, Hₛ, H₁, Real.negMulLog, neg_mul, Finset.sum_neg_distrib, neg_inj]
+  simp only [Sᵥₙ_eq_Hₛ_spectrum, Hₛ, H₁, Real.negMulLog, neg_mul, Finset.sum_neg_distrib, neg_inj]
   rw [← trace_eq_re_trace, ← sum_eigenvalues_eq_trace]
   obtain ⟨e, he⟩ := ρ.M.cfc_eigenvalues (Real.log * id)
   apply Finset.sum_equiv e.symm (by simp)
   simp [MState.spectrum, ProbDistribution.mk', he, mul_comm]
-
-/-- Von Neumann entropy is the trace of the matrix function `x ↦ -x log x`. -/
-theorem Sᵥₙ_eq_trace_cfc_negMulLog (ρ : MState d) :
-    Sᵥₙ ρ = (ρ.M.cfc Real.negMulLog).trace := by
-  open HermitianMat in
-  unfold Real.negMulLog
-  rw [Sᵥₙ_eq_neg_trace_log, trace, log, inner_eq_re_trace, IsMaximalSelfAdjoint.RCLike_selfadjMap]
-  nth_rw 2 [← cfc_id ρ.M]
-  rw [← mat_cfc_mul, RCLike.re_to_complex, ← Complex.neg_re, ← Matrix.trace_neg]
-  rw [← mat_neg, ← ρ.M.cfc_neg]
-  congr! 5
-  simp [mul_comm]
 
 @[simp]
 theorem Sᵥₙ_unit_zero [Unique d] (ρ : MState d) : Sᵥₙ ρ = 0 := by
@@ -147,12 +244,14 @@ theorem Sᵥₙ_relabel (ρ : MState d₁) (e : d₂ ≃ d₁) :
 /-- Von Neumann entropy is unchanged under SWAP. TODO: All unitaries-/
 @[simp]
 theorem Sᵥₙ_of_SWAP_eq (ρ : MState (d₁ × d₂)) : Sᵥₙ ρ.SWAP = Sᵥₙ ρ := by
+  rw [Sᵥₙ_eq_Hₛ_spectrum, Sᵥₙ_eq_Hₛ_spectrum]
   apply Hₛ_eq_of_multiset_map_eq
   exact ρ.multiset_spectrum_relabel_eq (Equiv.prodComm d₁ d₂).symm
 
 /-- Von Neumann entropy is unchanged under assoc. -/
 @[simp]
 theorem Sᵥₙ_of_assoc_eq (ρ : MState ((d₁ × d₂) × d₃)) : Sᵥₙ ρ.assoc = Sᵥₙ ρ := by
+  rw [Sᵥₙ_eq_Hₛ_spectrum, Sᵥₙ_eq_Hₛ_spectrum]
   apply Hₛ_eq_of_multiset_map_eq
   apply ρ.multiset_spectrum_relabel_eq
 
@@ -168,14 +267,8 @@ theorem selfAdjointMap_Continuous {𝕜 : Type*} [RCLike 𝕜] :
   fun_prop
 
 @[fun_prop]
-theorem HermitianMat.trace_Continuous {d 𝕜 : Type*} [Fintype d] [RCLike 𝕜]  :
-    Continuous (HermitianMat.trace : HermitianMat d 𝕜 → ℝ) := by
-  rw [funext HermitianMat.trace_eq_re_trace]
-  fun_prop
-
-@[fun_prop]
-theorem Sᵥₙ_continuous : Continuous (Sᵥₙ (d := d)) := by
-  rw [funext Sᵥₙ_eq_trace_cfc_negMulLog]
+theorem Sᵥₙ_continuous : Continuous (Sᵥₙ (E := EuclideanSpace ℂ d)) := by
+  rw [funext (Sᵥₙ_eq_trace_cfc_negMulLog (ι := d))]
   fun_prop
 
 section partial_trace_pure
@@ -209,8 +302,11 @@ The left partial trace of `vecToMat` is the transpose of M^H * M.
 private lemma traceLeft_eq_transpose_conjTranspose_mul (ψ : Ket (d₁ × d₂)) :
     (MState.pure ψ).traceLeft.M.val =
     ((vecToMat ψ.vec).conjTranspose * (vecToMat ψ.vec)).transpose := by
-  norm_num +zetaDelta at *;
-  convert! traceLeft_eq_transpose_mul_conj ψ using 1
+  rw [traceLeft_eq_transpose_mul_conj]
+  ext i j
+  simp only [Matrix.transpose_apply, Matrix.mul_apply, Matrix.conjTranspose_apply,
+    Matrix.map_apply]
+  exact Finset.sum_congr rfl fun k _ ↦ mul_comm _ _
 
 /--
 Shannon entropy is determined by the multiset of non-zero probabilities.
@@ -258,6 +354,7 @@ private lemma Sᵥₙ_eq_of_nonzero_eigenvalues_eq (ρ₁ : MState d₁) (ρ₂ 
     (h : (Finset.univ.val.map ρ₁.spectrum.prob).filter (· ≠ 0) =
       (Finset.univ.val.map ρ₂.spectrum.prob).filter (· ≠ 0)) :
     Sᵥₙ ρ₁ = Sᵥₙ ρ₂ := by
+  rw [Sᵥₙ_eq_Hₛ_spectrum, Sᵥₙ_eq_Hₛ_spectrum]
   exact Hₛ_eq_of_nonzero_multiset_eq _ _ h
 
 /--

@@ -10,7 +10,13 @@ public import QuantumInfo.Channels.CPTP
 public import QuantumInfo.Channels.Dual
 public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.Channels.Unbundled
-public import Physlib.Meta.Sorry
+
+/-! # Fidelity between quantum states
+
+The fidelity `F(ρ,σ) = Tr[√(√ρ σ √ρ)]` of two states. The definition here is basis-free, on
+`DensityOp`; `DensityOp.fidelity_eq_matrix` and `DensityOp.fidelity_eq_traceNorm` are the matrix
+analogues. -/
+
 @[expose] public section
 
 noncomputable section
@@ -18,38 +24,40 @@ noncomputable section
 open BigOperators
 open ComplexConjugate
 open Kronecker
-open scoped Matrix ComplexOrder RealInnerProductSpace InnerProductSpace
+open scoped Matrix ComplexOrder
 
-variable {d d₂ : Type*} [Fintype d] [DecidableEq d] [Fintype d₂] (ρ σ : MState d)
+variable {d d₂ : Type*} [Fintype d] [DecidableEq d] [Fintype d₂]
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
 
-namespace MState
+namespace DensityOp
 
 /-- The fidelity of two quantum states. This is the quantum version of the Bhattacharyya
-  coefficient. -/
-def fidelity (ρ σ : MState d) : ℝ :=
-  (σ.M.conj ρ.M.sqrt.mat).sqrt.trace
+coefficient.
 
-theorem fidelity_ge_zero : 0 ≤ fidelity ρ σ := by
-  apply HermitianMat.trace_nonneg
-  apply HermitianMat.sqrt_nonneg
+This makes no reference to a basis; `fidelity_eq_matrix` is the matrix analogue. -/
+def fidelity (ρ σ : DensityOp E) : ℝ :=
+  (σ.op.conj ρ.op.sqrt.op).sqrt.trace
+
+variable (ρ σ : DensityOp E)
+
+/-- **Matrix analogue of `DensityOp.fidelity`.** -/
+theorem fidelity_eq_matrix {ι : Type*} [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] :
+    fidelity ρ σ = ((σ.M : HermitianMat ι ℂ).conj (ρ.M : HermitianMat ι ℂ).sqrt.mat).sqrt.trace := by
+  have h : StdBasis.toMat ℂ E ι ρ.op.sqrt.op = ((ρ.M : HermitianMat ι ℂ).sqrt).mat := by
+    rw [← HermitianOp.toMat_mat (ι := ι), HermitianOp.toMat_sqrt]
+    rfl
+  rw [fidelity, ← HermitianOp.trace_toMat (ι := ι), HermitianOp.toMat_sqrt,
+    HermitianOp.toMat_conj, h]
+  rfl
+
+theorem fidelity_ge_zero : 0 ≤ fidelity ρ σ :=
+  HermitianOp.trace_nonneg (HermitianOp.sqrt_nonneg _)
 
 theorem fidelity_le_one : fidelity ρ σ ≤ 1 := by
-  unfold fidelity
-  rw [HermitianMat.sqrt_eq_cfc_rpow_half, ← HermitianMat.rpow_eq_cfc]
-  calc ((σ.M.conj ρ.M.sqrt.mat) ^ (1/2 : ℝ)).trace
-      ≤ ((σ.M ^ (2/2 : ℝ)).trace ^ (1/2 : ℝ) *
-         (ρ.M.sqrt ^ (2 : ℝ)).trace ^ (1/2 : ℝ)) ^ (2 * (1/2 : ℝ)) :=
-        HermitianMat.trace_rpow_conj_le σ.nonneg (HermitianMat.sqrt_nonneg ρ.M)
-          (by norm_num) (by norm_num) (by norm_num) (by norm_num)
-    _ = 1 := by
-        have h1 : (σ.M ^ (2/2 : ℝ)).trace = 1 := by
-          rw [show (2:ℝ)/2 = 1 from by norm_num, HermitianMat.rpow_one]; exact σ.tr
-        have h2 : (ρ.M.sqrt ^ (2 : ℝ)).trace = 1 := by
-          rw [show ρ.M.sqrt = ρ.M ^ (1/2 : ℝ) from by
-            rw [HermitianMat.sqrt_eq_cfc_rpow_half, ← HermitianMat.rpow_eq_cfc],
-            ← HermitianMat.rpow_mul ρ.nonneg,
-            show (1:ℝ)/2 * 2 = 1 from by norm_num, HermitianMat.rpow_one]; exact ρ.tr
-        simp [h2]
+  let _ : StdBasis ℂ E (Fin (Module.finrank ℂ E)) := StdBasis.some ℂ E
+  rw [fidelity_eq_matrix (ι := Fin (Module.finrank ℂ E))]
+  refine (HermitianMat.trace_sqrt_conj_sqrt_le σ.nonneg ρ.nonneg).trans_eq ?_
+  rw [σ.tr, ρ.tr, Real.sqrt_one, one_mul]
 
 /-- The fidelity, as a `Prob` probability with value between 0 and 1. -/
 def fidelity_prob : Prob :=
@@ -57,85 +65,119 @@ def fidelity_prob : Prob :=
 
 /-- A state has perfect fidelity with itself. -/
 theorem fidelity_self_eq_one : fidelity ρ ρ = 1 := by
-  simp only [fidelity, HermitianMat.sqrt_eq_cfc_rpow_half]
+  let _ : StdBasis ℂ E (Fin (Module.finrank ℂ E)) := StdBasis.some ℂ E
+  rw [fidelity_eq_matrix (ι := Fin (Module.finrank ℂ E))]
+  simp only [HermitianMat.sqrt_eq_cfc_rpow_half]
   conv =>
     enter [1, 1, 1, 2]
-    rw [← HermitianMat.cfc_id ρ.M]
+    rw [← HermitianMat.cfc_id (ρ.M : HermitianMat _ ℂ)]
   rw [HermitianMat.cfc_conj, ← HermitianMat.cfc_comp_apply]
   convert ρ.tr using 2
-  convert ρ.M.cfc_id using 1
+  convert (ρ.M : HermitianMat _ ℂ).cfc_id using 1
   apply HermitianMat.cfc_congr_of_nonneg ρ.nonneg
   intro x hx
   simp only [one_div, Pi.mul_apply, id_eq, Pi.pow_apply]
   rw [← Real.rpow_two, Real.rpow_inv_rpow hx (by norm_num), ← sq, ← Real.rpow_two]
   exact Real.rpow_rpow_inv hx (by norm_num)
 
-/-- Fidelity can be rewritten as the trace norm of the product of square roots. -/
-theorem fidelity_eq_traceNorm_sqrt_mul_sqrt (ρ σ : MState d) :
-    fidelity ρ σ = (σ.M.sqrt.mat * ρ.M.sqrt.mat).traceNorm := by
-  open MatrixOrder in
-  rw [fidelity, HermitianMat.sqrt_eq_cfc_rpow_half, HermitianMat.trace_eq_re_trace,
-    Matrix.traceNorm, CFC.sqrt_eq_rpow]
-  change RCLike.re (((σ.M.conj ρ.M.sqrt.mat) ^ (1 / 2 : ℝ)).mat.trace) = _
-  rw [show ((σ.M.conj ρ.M.sqrt.mat) ^ (1 / 2 : ℝ)).mat =
-      ((σ.M.conj ρ.M.sqrt.mat).mat) ^ (1 / 2 : ℝ) by
-    rw [HermitianMat.rpow_eq_cfc, HermitianMat.mat_cfc, CFC.rpow_eq_cfc_real (ha := by positivity)]]
-  simp [HermitianMat.conj_apply_mat, Matrix.mul_assoc, (HermitianMat.sqrt_sq σ.nonneg).symm]
-
 /-- The fidelity is 1 if and only if the two states are the same. -/
 theorem fidelity_eq_one_iff_self : fidelity ρ σ = 1 ↔ ρ = σ := by
-  refine ⟨fun h => ?_, fun h => h ▸ fidelity_self_eq_one ρ⟩
-  set A : Matrix d d ℂ := ρ.M.sqrt.mat
-  set B : Matrix d d ℂ := σ.M.sqrt.mat
-  have hAh : Aᴴ = A := by simp [A]
-  have hBh : Bᴴ = B := by simp [B]
-  have hAeq : ρ.m = Aᴴ * A := by simpa [hAh] using (HermitianMat.sqrt_sq ρ.nonneg).symm
-  have hBeq : σ.m = Bᴴ * B := by simpa [hBh] using (HermitianMat.sqrt_sq σ.nonneg).symm
-  obtain ⟨U, hU⟩ := (Matrix.traceNorm_eq_max_re_tr_U (B * A)).left
-  have hUB : (U.1 * B)ᴴ * (U.1 * B) = Bᴴ * B := by
-    rw [Matrix.conjTranspose_mul, Matrix.mul_assoc]
-    simp [show (U.1)ᴴ = star U.1 from rfl, ← Matrix.mul_assoc, U.2.1]
-  set z : ℂ := (U.1 * (B * A)).trace
-  have hzre : z.re = 1 := hU.trans ((fidelity_eq_traceNorm_sqrt_mul_sqrt ρ σ).symm.trans h)
-  have hzconj : z + conj z = 2 := by rw [Complex.add_conj, hzre]; push_cast; ring
-  have hz1 : (Aᴴ * (U.1 * B)).trace = z := by
-    show _ = (U.1 * (B * A)).trace
-    rw [hAh, ← Matrix.mul_assoc, Matrix.trace_mul_cycle, Matrix.trace_mul_comm]
-  have hz2 : ((U.1 * B)ᴴ * A).trace = conj z := by
-    rw [show ((U.1 * B)ᴴ * A) = (Aᴴ * (U.1 * B))ᴴ from by
-      simp [Matrix.conjTranspose_mul, hAh, hBh]]
-    simpa [hz1] using Matrix.trace_conjTranspose (Aᴴ * (U.1 * B))
-  have hAU : A = U.1 * B := by
-    refine sub_eq_zero.mp <| Matrix.trace_conjTranspose_mul_self_eq_zero_iff.mp ?_
-    have h_expand : ((A - U.1 * B)ᴴ * (A - U.1 * B)).trace =
-        (Aᴴ * A).trace - (Aᴴ * (U.1 * B)).trace - ((U.1 * B)ᴴ * A).trace
-          + ((U.1 * B)ᴴ * (U.1 * B)).trace := by
-      simp [sub_eq_add_neg, Matrix.conjTranspose_mul, Matrix.mul_add, Matrix.add_mul,
-        Matrix.trace_add, Matrix.trace_neg, add_assoc, add_left_comm, add_comm]
-    rw [h_expand, hz1, hz2, ← hAeq, ρ.tr', hUB, ← hBeq, σ.tr']
-    linear_combination -hzconj
-  exact MState.ext_m <| by rw [hAeq, hAU, hUB, ← hBeq]
+  refine ⟨fun h ↦ ?_, fun h ↦ h ▸ fidelity_self_eq_one ρ⟩
+  let _ : StdBasis ℂ E (Fin (Module.finrank ℂ E)) := StdBasis.some ℂ E
+  rw [fidelity_eq_matrix (ι := Fin (Module.finrank ℂ E))] at h
+  exact (DensityOp.ext (ι := Fin (Module.finrank ℂ E))
+    (HermitianMat.eq_of_trace_sqrt_conj_sqrt_eq_one σ.nonneg ρ.nonneg σ.tr ρ.tr h)).symm
 
 /-- The fidelity is a symmetric quantity. -/
 theorem fidelity_symm : fidelity ρ σ = fidelity σ ρ := by
-  simp only [fidelity]
-  have expand : ∀ (a b : MState d), (a.M.conj b.M.sqrt.mat).mat =
-      (b.M.sqrt.mat * a.M.sqrt.mat) * (a.M.sqrt.mat * b.M.sqrt.mat) := fun a b => by
-    simp [HermitianMat.conj_apply_mat, b.M.sqrt.conjTranspose_mat,
-      (HermitianMat.sqrt_sq a.nonneg).symm, Matrix.mul_assoc]
-  have h_eig := ((σ.M.conj ρ.M.sqrt.mat).H.eigenvalues_eq_eigenvalues_iff
-    (ρ.M.conj σ.M.sqrt.mat).H).mpr (by rw [expand σ ρ, expand ρ σ, Matrix.charpoly_mul_comm])
-  show ((σ.M.conj ρ.M.sqrt.mat).cfc Real.sqrt).trace = ((ρ.M.conj σ.M.sqrt.mat).cfc Real.sqrt).trace
-  rw [HermitianMat.trace_cfc_eq, HermitianMat.trace_cfc_eq, h_eig]
+  let _ : StdBasis ℂ E (Fin (Module.finrank ℂ E)) := StdBasis.some ℂ E
+  rw [fidelity_eq_matrix (ι := Fin (Module.finrank ℂ E)),
+    fidelity_eq_matrix (ι := Fin (Module.finrank ℂ E))]
+  exact HermitianMat.trace_sqrt_conj_sqrt_comm σ.nonneg ρ.nonneg
 
-/-- The fidelity cannot decrease under the application of a channel. -/
-@[sorryful]
-theorem fidelity_channel_nondecreasing [DecidableEq d₂] (Λ : CPTPMap d d₂) : fidelity (Λ ρ) (Λ σ) ≥ fidelity ρ σ :=
-  sorry
+/-- The fidelity of a pure state with any other state is the square root of the expectation value
+of the pure state's projector, `F(∣ψ⟩⟨ψ∣, σ) = √(⟨ψ∣σ∣ψ⟩)`. -/
+theorem fidelity_pure (ψ : Ket d) (σ : MState d) :
+    fidelity (MState.pure ψ) σ = Real.sqrt (σ.exp_val (MState.pure ψ).M) := by
+  have hP : (MState.pure ψ).M.sqrt = (MState.pure ψ).M :=
+    HermitianMat.sqrt_eq_self (MState.pure ψ).nonneg (by
+      rw [DensityOp.mat_M, MState.pure_mul_self]
+      rfl)
+  rw [fidelity_eq_matrix (ι := d), hP, MState.conj_pure,
+    HermitianMat.sqrt_smul (MState.pure ψ).nonneg
+      (MState.exp_val_nonneg σ (MState.pure ψ).nonneg),
+    HermitianMat.trace_smul, hP, (MState.pure ψ).tr, mul_one]
+
+/-- **Matrix analogue of `DensityOp.fidelity`** as a trace norm. -/
+theorem fidelity_eq_traceNorm (ρ σ : MState d) :
+    fidelity ρ σ = ((σ.M : HermitianMat d ℂ).sqrt.mat
+      * (ρ.M : HermitianMat d ℂ).sqrt.mat).traceNorm := by
+  rw [fidelity_eq_matrix (ι := d), HermitianMat.trace_sqrt_conj_sqrt_eq_traceNorm σ.nonneg]
+
+open scoped MatrixOrder in
+omit [DecidableEq d] in
+/-- The Kraus form of the Cauchy-Schwarz bound `Matrix.re_trace_conjTranspose_mul_le_traceNorm'`,
+applied to the stacked matrices `(X K₁ᴴ, X K₂ᴴ, …)` and `(Y K₁ᴴ, Y K₂ᴴ, …)`. -/
+private theorem re_trace_kraus_le [DecidableEq d₂] {κ : Type*} [Fintype κ] (K : κ → Matrix d₂ d ℂ)
+    (hcard : Fintype.card d₂ ≤ Fintype.card (κ × d)) (X Y : Matrix d d ℂ) :
+    RCLike.re (∑ i, K i * (Xᴴ * Y) * (K i)ᴴ).trace ≤
+      (CFC.sqrt (∑ i, K i * (Yᴴ * Y) * (K i)ᴴ) *
+        CFC.sqrt (∑ i, K i * (Xᴴ * X) * (K i)ᴴ)).traceNorm := by
+  have hstack : ∀ Z Z' : Matrix d d ℂ,
+      (Matrix.stack fun i ↦ Z * (K i)ᴴ)ᴴ * (Matrix.stack fun i ↦ Z' * (K i)ᴴ)
+        = ∑ i, K i * (Zᴴ * Z') * (K i)ᴴ := fun Z Z' ↦ by
+    rw [Matrix.conjTranspose_stack_mul_stack]
+    exact Finset.sum_congr rfl fun i _ ↦ by
+      simp [Matrix.conjTranspose_mul, Matrix.mul_assoc]
+  have key := Matrix.re_trace_conjTranspose_mul_le_traceNorm'
+    (Matrix.stack fun i ↦ X * (K i)ᴴ) (Matrix.stack fun i ↦ Y * (K i)ᴴ) hcard
+  rwa [hstack, hstack, hstack] at key
+
+/-- The fidelity cannot decrease under the application of a channel.
+
+Writing `Λ` in Kraus form `Λ(M) = ∑ᵢ Kᵢ M Kᵢᴴ` and letting `W` be a unitary attaining
+`F(ρ,σ) = Re Tr[W √σ √ρ]`, the two stacked matrices `P = (√ρ Kᵢᴴ)ᵢ` and `Q = (W √σ Kᵢᴴ)ᵢ` satisfy
+`PᴴP = Λ(ρ)`, `QᴴQ = Λ(σ)` and `Re Tr[PᴴQ] = F(ρ,σ)`, so the Cauchy-Schwarz bound
+`Matrix.re_trace_conjTranspose_mul_le_traceNorm'` gives `F(ρ,σ) ≤ F(Λ ρ, Λ σ)`. -/
+theorem fidelity_channel_nondecreasing [DecidableEq d₂] (ρ σ : MState d) (Λ : CPTPMap d d₂) :
+    fidelity (Λ ρ) (Λ σ) ≥ fidelity ρ σ := by
+  obtain ⟨K, hK⟩ := Λ.map_cp.exists_kraus _
+  have hmap (M : Matrix d d ℂ) : ∑ i, K i * M * (K i)ᴴ = Λ.map M := by
+    rw [hK, MatrixMap.of_kraus_apply]
+  obtain ⟨W, hWinv, hW⟩ :=
+    Matrix.exists_unitary_re_trace_eq_traceNorm
+      ((σ.M : HermitianMat d ℂ).sqrt.mat * (ρ.M : HermitianMat d ℂ).sqrt.mat)
+  have hWW : Wᴴ * W = 1 := by simpa using hWinv 1
+  have hd : 0 < Fintype.card d := Fintype.card_pos_iff.mpr (MState.nonempty ρ)
+  have hcard : Fintype.card d₂ ≤ Fintype.card ((d₂ × d) × d) := by
+    simp only [Fintype.card_prod]
+    calc Fintype.card d₂ = Fintype.card d₂ * 1 * 1 := by ring
+      _ ≤ Fintype.card d₂ * Fintype.card d * Fintype.card d := by gcongr <;> omega
+  have key := re_trace_kraus_le K hcard (ρ.M : HermitianMat d ℂ).sqrt.mat
+    (W * (σ.M : HermitianMat d ℂ).sqrt.mat)
+  have hXX : ((ρ.M : HermitianMat d ℂ).sqrt.mat)ᴴ * (ρ.M : HermitianMat d ℂ).sqrt.mat = ρ.m := by
+    rw [HermitianMat.conjTranspose_mat, HermitianMat.sqrt_sq ρ.nonneg, mat_M]
+  have hYY : (W * (σ.M : HermitianMat d ℂ).sqrt.mat)ᴴ * (W * (σ.M : HermitianMat d ℂ).sqrt.mat)
+      = σ.m := by
+    rw [Matrix.conjTranspose_mul, HermitianMat.conjTranspose_mat, Matrix.mul_assoc,
+      ← Matrix.mul_assoc Wᴴ, hWW, Matrix.one_mul, HermitianMat.sqrt_sq σ.nonneg, mat_M]
+  have hXY : ((ρ.M : HermitianMat d ℂ).sqrt.mat)ᴴ * (W * (σ.M : HermitianMat d ℂ).sqrt.mat)
+      = (ρ.M : HermitianMat d ℂ).sqrt.mat * (W * (σ.M : HermitianMat d ℂ).sqrt.mat) := by
+    rw [HermitianMat.conjTranspose_mat]
+  rw [hXX, hYY, hXY, hmap, hmap, hmap, ← CPTPOp.mat_coe_eq_apply_mat,
+    ← CPTPOp.mat_coe_eq_apply_mat] at key
+  rw [ge_iff_le, fidelity_eq_traceNorm, fidelity_eq_traceNorm]
+  refine le_trans (le_of_eq ?_) (key.trans (le_of_eq ?_))
+  · rw [← hW, Λ.map_TP _]
+    congr 1
+    rw [← Matrix.mul_assoc, ← Matrix.mul_assoc]
+    exact Matrix.trace_mul_cycle _ _ _
+  · rw [← mat_M, ← mat_M, ← HermitianMat.mat_sqrt (Λ σ).nonneg,
+      ← HermitianMat.mat_sqrt (Λ ρ).nonneg]
 
 --TODO: Real.arccos ∘ fidelity forms a metric (triangle inequality), the Fubini–Study metric.
 --Matches with classical (squared) Bhattacharyya coefficient
 --Invariance under unitaries
 --Uhlmann's theorem
 
-end MState
+end DensityOp

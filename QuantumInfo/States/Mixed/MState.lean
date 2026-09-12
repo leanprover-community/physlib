@@ -10,12 +10,15 @@ public import QuantumInfo.ForMathlib.ComplexLaplaceTransform
 public import QuantumInfo.ForMathlib.ContinuousSup
 public import QuantumInfo.ForMathlib.Filter
 public import QuantumInfo.ForMathlib.HermitianMat
+public import QuantumInfo.ForMathlib.HermitianOp
 public import QuantumInfo.ForMathlib.Isometry
 public import QuantumInfo.ForMathlib.LinearEquiv
 public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
 public import QuantumInfo.ForMathlib.Matrix
 public import QuantumInfo.ForMathlib.Minimax
 public import QuantumInfo.ForMathlib.Misc
+public import QuantumInfo.ForMathlib.PartialTrace
+public import QuantumInfo.ForMathlib.StdBasis
 public import QuantumInfo.ForMathlib.Unitary
 public import QuantumInfo.ClassicalInfo.Distribution
 public import QuantumInfo.States.Pure.Braket
@@ -25,16 +28,12 @@ public import Mathlib.Logic.Equiv.Basic
 /-!
 Finite dimensional quantum mixed states, ρ.
 
-The same comments apply as in `Braket`:
-
-These could be done with a Hilbert space of Fintype, which would look like
-```lean4
-(H : Type*) [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H] [FiniteDimensional ℂ H]
-```
-or by choosing a particular `Basis` and asserting it is `Fintype`. But frankly it seems easier to
-mostly focus on the basis-dependent notion of `Matrix`, which has the added benefit of an obvious
-"classical" interpretation (as the basis elements, or diagonal elements of a mixed state). In that
-sense, this quantum theory comes with the a particular classical theory always preferred.
+A state is stored basis-freely, as a positive unit-trace operator on a finite dimensional Hilbert
+space: this is `DensityOp E`. A preferred orthonormal basis -- a `StdBasis ℂ E ι` instance -- turns
+that operator into a density *matrix* `ρ.M : HermitianMat ι ℂ`, and every matrix-level fact below
+is derived from an operator-level one through `HermitianOp.toMat`. The abbreviation `MState d` is
+`DensityOp (EuclideanSpace ℂ d)`, whose preferred basis is the computational one; it carries the
+"classical" interpretation of the diagonal entries as a probability distribution over `d`.
 
 Important definitions:
  * `instMixable`: the `Mixable` instance allowing convex combinations of `MState`s
@@ -48,6 +47,8 @@ Important definitions:
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false
+
 noncomputable section
 
 open BigOperators
@@ -55,15 +56,28 @@ open ComplexConjugate
 open HermitianMat
 open scoped Matrix ComplexOrder
 
-/-- A **mixed quantum state** is a PSD matrix with trace 1.
+/-- A **mixed quantum state** on a finite-dimensional Hilbert space: a positive operator of unit
+trace.
 
-We don't `extend (M : HermitianMat d ℂ)` because that gives an annoying thing where
-`M` is actually a `Subtype`, which means `ρ.M.foo` notation doesn't work. -/
-@[ext]
-structure MState (d : Type*) [Fintype d] [DecidableEq d] where
-  M : HermitianMat d ℂ
-  nonneg : 0 ≤ M
-  tr : M.trace = 1
+The state is stored as an *operator* so that it does not depend on a choice of basis. Given a
+preferred orthonormal basis -- that is, a `StdBasis ℂ E ι` instance -- `DensityOp.M` is the density
+*matrix*, and the matrix-level facts below are all derived from the operator-level ones through
+`HermitianOp.toMat`. -/
+structure DensityOp (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℂ E]
+    [FiniteDimensional ℂ E] where
+  /-- The density operator. -/
+  op : HermitianOp E
+  /-- A density operator is positive semidefinite. -/
+  op_nonneg : 0 ≤ op
+  /-- A density operator has unit trace. -/
+  op_trace : op.trace = 1
+
+/-- A **mixed quantum state** on a system whose preferred basis is indexed by `d`.
+
+This is `DensityOp` on `EuclideanSpace ℂ d`, so `ρ.M : HermitianMat d ℂ` is the density matrix in
+the computational basis. -/
+abbrev MState (d : Type*) [Fintype d] [DecidableEq d] : Type _ :=
+  DensityOp (EuclideanSpace ℂ d)
 
 variable {d d₁ d₂ d₃ : Type*}
 variable [Fintype d] [Fintype d₁] [Fintype d₂] [Fintype d₃]
@@ -72,112 +86,322 @@ variable [DecidableEq d] [DecidableEq d₁] [DecidableEq d₂] [DecidableEq d₃
 variable (ψ φ : Ket d)
 variable (ρ σ : MState d)
 
-namespace MState
+namespace DensityOp
 
-attribute [coe] MState.M
-instance instCoe : Coe (MState d) (HermitianMat d ℂ) := ⟨MState.M⟩
+section Operator
 
-attribute [simp] MState.tr
+variable {E ι : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
+variable [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι]
 
-/-- The underlying `Matrix` in an MState. Prefer `MState.M` for the `HermitianMat`. -/
-def m (ρ : MState d) : Matrix d d ℂ := ρ.M.mat
+/-- The **density matrix** of a state, in the preferred basis. -/
+@[coe] def M (ρ : DensityOp E) : HermitianMat ι ℂ :=
+  ρ.op.toMat
 
 @[simp]
-theorem mat_M : ρ.M.mat = ρ.m := by
+theorem toMat_op (ρ : DensityOp E) : ρ.op.toMat = (M ρ : HermitianMat ι ℂ) :=
   rfl
 
-theorem pos (ρ : MState d) : 0 < ρ.M := by
-  apply ρ.nonneg.lt_of_ne'
-  intro h
-  have := ρ.tr
-  simp [h] at this
+theorem nonneg (ρ : DensityOp E) : 0 ≤ (M ρ : HermitianMat ι ℂ) := by
+  rw [M, ← HermitianOp.toMat_zero (E := E) (ι := ι), HermitianOp.toMat_le_toMat]
+  exact ρ.op_nonneg
+
+@[simp]
+theorem tr (ρ : DensityOp E) : (M ρ : HermitianMat ι ℂ).trace = 1 := by
+  rw [M, HermitianOp.trace_toMat]
+  exact ρ.op_trace
+
+/-- Build a state from its density matrix in the preferred basis. -/
+def ofMat (A : HermitianMat ι ℂ) (h₁ : 0 ≤ A) (h₂ : A.trace = 1) : DensityOp E where
+  op := HermitianOp.ofMat A
+  op_nonneg := by
+    rw [← HermitianOp.toMat_le_toMat (ι := ι)]
+    simpa using h₁
+  op_trace := by
+    rw [← HermitianOp.trace_toMat (ι := ι)]
+    simpa using h₂
+
+@[simp]
+theorem M_ofMat (A : HermitianMat ι ℂ) (h₁ : 0 ≤ A) (h₂ : A.trace = 1) :
+    (M (ofMat (E := E) A h₁ h₂) : HermitianMat ι ℂ) = A := by
+  simp [M, ofMat]
+
+/-- Two states with the same density operator are equal. -/
+theorem ext_op {ρ σ : DensityOp E} (h : ρ.op = σ.op) : ρ = σ := by
+  cases ρ; cases σ; simp_all
+
+/-- Two states with the same density matrix are equal. -/
+@[ext] theorem ext {ρ σ : DensityOp E} (h : (M ρ : HermitianMat ι ℂ) = M σ) : ρ = σ :=
+  ext_op (HermitianOp.toMat_injective (ι := ι) h)
+
+@[simp]
+theorem ofMat_M (ρ : DensityOp E) :
+    ofMat (M ρ : HermitianMat ι ℂ) ρ.nonneg ρ.tr = ρ :=
+  DensityOp.ext (by simp)
+
+/-- The underlying `Matrix` of a state. Prefer `DensityOp.M` for the `HermitianMat`. -/
+def m (ρ : DensityOp E) : Matrix ι ι ℂ := (M ρ : HermitianMat ι ℂ).mat
+
+@[simp]
+theorem mat_M (ρ : DensityOp E) : (M ρ : HermitianMat ι ℂ).mat = m ρ := by
+  rfl
+
+@[simp]
+theorem m_ofMat (A : HermitianMat ι ℂ) (h₁ : 0 ≤ A) (h₂ : A.trace = 1) :
+    (m (ofMat (E := E) A h₁ h₂) : Matrix ι ι ℂ) = A.mat := by
+  rw [← mat_M, M_ofMat]
+
+theorem pos (ρ : DensityOp E) : 0 < (M ρ : HermitianMat ι ℂ) := by
+  refine (nonneg ρ).lt_of_ne' fun h ↦ ?_
+  have h₁ : (M ρ : HermitianMat ι ℂ).trace = 1 := tr ρ
+  rw [h] at h₁
+  simp at h₁
+
+theorem psd (ρ : DensityOp E) : (m ρ : Matrix ι ι ℂ).PosSemidef :=
+  HermitianMat.zero_le_iff.mp ρ.nonneg
+
+/-- Every mixed state is Hermitian. -/
+theorem Hermitian (ρ : DensityOp E) : (m ρ : Matrix ι ι ℂ).IsHermitian :=
+  (M ρ : HermitianMat ι ℂ).H
+
+@[simp]
+theorem tr' (ρ : DensityOp E) : (m ρ : Matrix ι ι ℂ).trace = 1 := by
+  rw [← mat_M, ← HermitianMat.trace_eq_trace_rc, ρ.tr]
+  simp
+
+theorem ext_m {ρ₁ ρ₂ : DensityOp E} (h : (m ρ₁ : Matrix ι ι ℂ) = m ρ₂) : ρ₁ = ρ₂ :=
+  DensityOp.ext (HermitianMat.ext h)
+
+/-- The map from mixed states to their matrices is injective -/
+theorem m_inj : Function.Injective (m (E := E) (ι := ι)) :=
+  fun _ _ h ↦ ext_m h
+
+theorem M_Injective : Function.Injective (M (E := E) (ι := ι)) :=
+  fun _ _ h ↦ DensityOp.ext h
+
+-- Could have used properties of ρ.spectrum
+theorem eigenvalue_nonneg (ρ : DensityOp E) : ∀ i, 0 ≤ (ρ.Hermitian (ι := ι)).eigenvalues i := by
+  rw [← Matrix.PosSemidef.nonneg_iff_eigenvalue_nonneg (ρ.Hermitian (ι := ι))]
+  exact ρ.nonneg
+
+-- Could have used properties of ρ.spectrum
+theorem eigenvalue_le_one (ρ : DensityOp E) : ∀ i, (ρ.Hermitian (ι := ι)).eigenvalues i ≤ 1 := by
+  intro i
+  have h := Finset.single_le_sum (f := (M ρ : HermitianMat ι ℂ).H.eigenvalues)
+    (fun y _ ↦ (ρ.psd (ι := ι)).eigenvalues_nonneg y) (Finset.mem_univ i)
+  rwa [(M ρ : HermitianMat ι ℂ).sum_eigenvalues_eq_trace, ρ.tr] at h
+
+theorem le_one (ρ : DensityOp E) : (M ρ : HermitianMat ι ℂ) ≤ 1 := by
+  open MatrixOrder in
+  suffices h : (m ρ : Matrix ι ι ℂ) ≤ (1 : ℝ) • 1 by
+    rw [one_smul] at h
+    exact h
+  rw [← Matrix.PosSemidef.le_smul_one_of_eigenvalues_iff (ρ.Hermitian (ι := ι))]
+  exact eigenvalue_le_one ρ
+
+end Operator
+
+section PartialTrace
+
+/-! ### Partial traces
+
+The reduced states of a state on a tensor product. These are the basis-free versions; the
+`MState`-level partial traces on a product index type are `MState.traceLeft` and
+`MState.traceRight`, and the two agree through `DensityOp.traceLeft_M`. -/
+
+open scoped TensorProduct
+
+variable {E F ι κ : Type*}
+variable [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F] [FiniteDimensional ℂ F]
+
+section Left
+
+/-- The **partial trace** of a state over the left factor: the reduced state on `F`. -/
+def traceLeft (ρ : DensityOp (E ⊗[ℂ] F)) : DensityOp F where
+  op := ρ.op.traceLeft
+  op_nonneg := HermitianOp.traceLeft_nonneg _ ρ.op_nonneg
+  op_trace := by rw [HermitianOp.trace_traceLeft, ρ.op_trace]
+
+@[simp]
+theorem op_traceLeft (ρ : DensityOp (E ⊗[ℂ] F)) : ρ.traceLeft.op = ρ.op.traceLeft :=
+  rfl
+
+/-- **Matrix analogue of `DensityOp.traceLeft`.** -/
+@[simp]
+theorem traceLeft_M [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι]
+    [Fintype κ] [DecidableEq κ] [StdBasis ℂ F κ] (ρ : DensityOp (E ⊗[ℂ] F)) :
+    (M ρ.traceLeft : HermitianMat κ ℂ) = (M ρ : HermitianMat (ι × κ) ℂ).traceLeft := by
+  rw [M, M, op_traceLeft, HermitianOp.toMat_traceLeft (ι := ι)]
+
+end Left
+
+section Right
+
+/-- The **partial trace** of a state over the right factor: the reduced state on `E`. -/
+def traceRight (ρ : DensityOp (E ⊗[ℂ] F)) : DensityOp E where
+  op := ρ.op.traceRight
+  op_nonneg := HermitianOp.traceRight_nonneg _ ρ.op_nonneg
+  op_trace := by rw [HermitianOp.trace_traceRight, ρ.op_trace]
+
+@[simp]
+theorem op_traceRight (ρ : DensityOp (E ⊗[ℂ] F)) : ρ.traceRight.op = ρ.op.traceRight :=
+  rfl
+
+/-- **Matrix analogue of `DensityOp.traceRight`.** -/
+@[simp]
+theorem traceRight_M [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι]
+    [Fintype κ] [DecidableEq κ] [StdBasis ℂ F κ] (ρ : DensityOp (E ⊗[ℂ] F)) :
+    (M ρ.traceRight : HermitianMat ι ℂ) = (M ρ : HermitianMat (ι × κ) ℂ).traceRight := by
+  rw [M, M, op_traceRight, HermitianOp.toMat_traceRight (κ := κ)]
+
+end Right
+
+end PartialTrace
+
+section Congr
+
+/-! ### Transport along an isometry
+
+A linear isometry equivalence `E ≃ₗᵢ[ℂ] F` carries states on `E` to states on `F`. The case of
+interest is `StdBasis.equiv`, which identifies two spaces whose preferred bases share an index
+type; along it the density matrix is literally unchanged, which is what lets a state on
+`EuclideanSpace ℂ (d₁ × d₂)` be read as a state on a tensor product. -/
+
+variable {E F ι : Type*}
+variable [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F] [FiniteDimensional ℂ F]
+
+/-- Transport a state along a linear isometry equivalence. -/
+def congr (ρ : DensityOp E) (e : E ≃ₗᵢ[ℂ] F) : DensityOp F where
+  op := ρ.op.congr e
+  op_nonneg := HermitianOp.congr_nonneg ρ.op_nonneg e
+  op_trace := by rw [HermitianOp.trace_congr, ρ.op_trace]
+
+@[simp]
+theorem op_congr (ρ : DensityOp E) (e : E ≃ₗᵢ[ℂ] F) : (ρ.congr e).op = ρ.op.congr e :=
+  rfl
+
+@[simp]
+theorem congr_congr_symm (ρ : DensityOp E) (e : E ≃ₗᵢ[ℂ] F) : (ρ.congr e).congr e.symm = ρ := by
+  refine ext_op (HermitianOp.ext ?_)
+  rw [op_congr, op_congr, HermitianOp.op_congr, HermitianOp.op_congr,
+    ← LinearIsometryEquiv.symm_conjStarAlgEquiv, StarAlgEquiv.symm_apply_apply]
+
+@[simp]
+theorem congr_symm_congr (ρ : DensityOp F) (e : E ≃ₗᵢ[ℂ] F) : (ρ.congr e.symm).congr e = ρ := by
+  simpa using congr_congr_symm ρ e.symm
+
+/-- **Matrix analogue of `DensityOp.congr`** along `StdBasis.equiv`: the density matrix is
+unchanged. -/
+@[simp]
+theorem M_congr [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] [StdBasis ℂ F ι] (ρ : DensityOp E) :
+    (M (ρ.congr (StdBasis.equiv ℂ E F ι)) : HermitianMat ι ℂ) = (M ρ : HermitianMat ι ℂ) := by
+  rw [M, M, op_congr, HermitianOp.toMat_congr_equiv]
+
+/-- **Matrix analogue of `DensityOp.congr`** along an isometry that carries the preferred basis of
+`E` to that of `F` up to a relabelling `σ` of the index: the density matrix is relabelled along
+`σ`. -/
+theorem M_congr_of_stdBasis {κ : Type*} [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] [Fintype κ]
+    [DecidableEq κ] [StdBasis ℂ F κ] (ρ : DensityOp E) (e : E ≃ₗᵢ[ℂ] F) (σ : ι ≃ κ)
+    (he : ∀ i, e (stdBasis (𝕜 := ℂ) (E := E) i) = stdBasis (𝕜 := ℂ) (E := F) (σ i)) :
+    (M (ρ.congr e) : HermitianMat κ ℂ) = (M ρ : HermitianMat ι ℂ).reindex σ := by
+  rw [M, M, op_congr, HermitianOp.toMat_congr_of_stdBasis _ e σ he]
+
+variable (F) in
+/-- Read a state on `E` as a state on any other space whose preferred basis has the same index
+type, by matching up the two preferred bases. The density matrix is unchanged: `M_transport`. -/
+noncomputable def transport [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] [StdBasis ℂ F ι]
+    (ρ : DensityOp E) : DensityOp F :=
+  ρ.congr (StdBasis.equiv ℂ E F ι)
+
+/-- **Matrix analogue of `DensityOp.transport`**: the density matrix is unchanged. -/
+@[simp]
+theorem M_transport [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] [StdBasis ℂ F ι]
+    (ρ : DensityOp E) : (M (ρ.transport F) : HermitianMat ι ℂ) = (M ρ : HermitianMat ι ℂ) :=
+  M_congr ρ
+
+@[simp]
+theorem transport_self [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] (ρ : DensityOp E) :
+    ρ.transport E = ρ :=
+  DensityOp.ext (M_transport ρ)
+
+@[simp]
+theorem transport_transport [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] [StdBasis ℂ F ι]
+    (ρ : DensityOp E) : (ρ.transport F).transport E = ρ :=
+  DensityOp.ext (by rw [M_transport, M_transport])
+
+/-- Every state is the transport of a state on the Euclidean space with the same index type. Used
+to reduce a basis-free statement to its index-level counterpart: `obtain ⟨μ, rfl⟩ :=
+ρ.exists_transport_eq` replaces `ρ` by `μ.transport _` throughout. -/
+theorem exists_transport_eq [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] (ρ : DensityOp E) :
+    ∃ μ : MState ι, μ.transport E = ρ :=
+  ⟨ρ.transport _, transport_transport ρ⟩
+
+end Congr
+
+end DensityOp
+
+namespace MState
+
+open DensityOp
+
+instance instCoe : Coe (MState d) (HermitianMat d ℂ) := ⟨DensityOp.M⟩
 
 open Lean Meta Mathlib.Meta.Positivity in
-/-- Positivity extension for `MState.M`: it is always positive (`0 < ρ.M`).
-Note: we must not call `whnfR` on `e` because `MState.M` is a structure
-projection (reducible), so `whnfR` would reduce it and destroy the pattern. -/
-@[positivity MState.M _]
-meta def evalMStateM : PositivityExt where eval {_u _α} _zα _pα? e :=
-  match _pα? with | none => pure .none | some _ => do
-  let ρ := e.appArg!
-  pure (.positive (← mkAppM ``MState.pos #[ρ]))
+/-- Positivity extension for `DensityOp.M`: it is always positive (`0 < ρ.M`). -/
+@[positivity DensityOp.M _]
+meta def evalMStateM : PositivityExt where eval {_u _α} _zα pα? e :=
+  match pα? with
+  | none => pure .none
+  | some _ => do
+    let .const _ lvls := e.getAppFn | throwError "not an application of DensityOp.M"
+    pure (.positive (mkAppN (.const ``DensityOp.pos lvls) e.getAppArgs))
 
 --TODO: There should be a bunch of places where we can use `positivity` to prove things,
 -- that are currently proved manually.
 example (ρ : MState d) : 0 < ρ.M := by positivity
 
---XXX These are methods that directly reference the matrix, "m" or ".val".
--- We'd like to remove these (where possible) so that mostly go through HermitianMat
--- where possible.
-theorem psd : ρ.m.PosSemidef :=
-  HermitianMat.zero_le_iff.mp ρ.nonneg
-
-
-/-- Every mixed state is Hermitian. -/
-theorem Hermitian : ρ.m.IsHermitian :=
-  ρ.M.H
-
-@[simp]
-theorem tr' : ρ.m.trace = 1 := by
-  rw [MState.m.eq_def, ← HermitianMat.trace_eq_trace_rc, ρ.tr]
-  simp
-
-theorem ext_m {ρ₁ ρ₂ : MState d} (h : ρ₁.m = ρ₂.m) : ρ₁ = ρ₂ := by
-  rw [MState.mk.injEq]
-  ext1
-  exact h
-
-/-- The map from mixed states to their matrices is injective -/
-theorem m_inj : (MState.m (d := d)).Injective :=
-  fun _ _ h ↦ by ext1; ext1; exact h
-
-theorem M_Injective : Function.Injective (MState.M (d := d)) := by
-  intro _ _
-  exact MState.ext
-
 variable (d) in
 /-- The matrices corresponding to MStates are `Convex ℝ` -/
-theorem convex : Convex ℝ (Set.range (MState.M (d := d))) := by
+theorem convex :
+    Convex ℝ (Set.range (DensityOp.M (E := EuclideanSpace ℂ d) (ι := d))) := by
   simp only [Convex, Set.mem_range, StarConvex,
     forall_exists_index, forall_apply_eq_imp_iff]
   intro x y a b ha hb hab
   replace hab : a + b = (1 : ℂ) := by norm_cast
   have := HermitianMat.convex_cone x.nonneg y.nonneg ha hb
-  exact ⟨⟨_, this, by simpa using mod_cast hab⟩, rfl⟩
+  exact ⟨DensityOp.ofMat _ this (by simpa using mod_cast hab), by simp⟩
 
 instance instMixable : Mixable (HermitianMat d ℂ) (MState d) where
-  to_U := MState.M
-  to_U_inj := MState.ext
+  to_U := DensityOp.M
+  to_U_inj := DensityOp.ext
   mkT {u} := fun h ↦
-    ⟨⟨u, h.casesOn fun t ht ↦ ht ▸ t.nonneg,
-      h.casesOn fun t ht ↦ ht ▸ t.tr⟩, rfl⟩
+    ⟨DensityOp.ofMat u (h.casesOn fun t ht ↦ ht ▸ t.nonneg)
+      (h.casesOn fun t ht ↦ ht ▸ t.tr), by simp⟩
   convex := convex d
 
+/-- Mixing states mixes their density matrices. -/
+@[simp]
+theorem mix_M (p : Prob) (ρ σ : MState d) :
+    (p [ρ ↔ σ]).M = (p : ℝ) • ρ.M + (1 - (p : ℝ)) • σ.M := by
+  have h : Mixable.to_U (p [ρ ↔ σ] : MState d)
+      = (p : ℝ) • Mixable.to_U ρ + ((1 - p : Prob) : ℝ) • Mixable.to_U σ :=
+    (Mixable.mkT _).2
+  have hU (τ : MState d) : Mixable.to_U τ = τ.M := rfl
+  simpa [hU] using h
+
+@[simp]
+theorem mix_m (p : Prob) (ρ σ : MState d) :
+    (p [ρ ↔ σ]).m = (p : ℝ) • ρ.m + (1 - (p : ℝ)) • σ.m := by
+  rw [← mat_M, mix_M]
+  simp
+
+--An MState is a witness that d is nonempty.
 include ρ in
-/-- An MState is a witness that d is nonempty. -/
-lemma nonempty : Nonempty d := by
+theorem nonempty : Nonempty d := by
   by_contra h
   simpa [HermitianMat.trace_eq_re_trace, not_nonempty_iff.mp h] using ρ.tr
 
--- Could have used properties of ρ.spectrum
-theorem eigenvalue_nonneg : ∀ i, 0 ≤ ρ.Hermitian.eigenvalues i := by
-  rw [← Matrix.PosSemidef.nonneg_iff_eigenvalue_nonneg ρ.Hermitian]
-  exact ρ.nonneg
-
-set_option backward.isDefEq.respectTransparency false in
--- Could have used properties of ρ.spectrum
-theorem eigenvalue_le_one : ∀ i, ρ.Hermitian.eigenvalues i ≤ 1 := by
-  intro i
-  convert! Finset.single_le_sum (fun y _ ↦ ρ.psd.eigenvalues_nonneg y) (Finset.mem_univ i)
-  rw [ρ.M.sum_eigenvalues_eq_trace, ρ.tr]
-
-theorem le_one : ρ.M ≤ 1 := by
-  open MatrixOrder in
-  suffices h : ρ.m ≤ (1 : ℝ) • 1 by
-    rw [one_smul] at h
-    exact h
-  rw [← Matrix.PosSemidef.le_smul_one_of_eigenvalues_iff ρ.Hermitian]
-  exact eigenvalue_le_one ρ
 
 open scoped RealInnerProductSpace InnerProductSpace
 
@@ -264,23 +488,28 @@ end exp_val
 
 section pure
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A mixed state can be constructed as a pure state arising from a ket. -/
-def pure (ψ : Ket d) : MState d where
-  M := {
-    val := Matrix.vecMulVec ψ (ψ : Bra d)
-    property := (Matrix.PosSemidef.outer_self_conj ψ).1
-  }
-  nonneg := HermitianMat.zero_le_iff.mpr (.outer_self_conj ψ)
-  tr := by
-    have h₁ (x) : ψ x * conj (ψ x) = Complex.normSq (ψ x) := by
-      rw [mul_comm, Complex.normSq_eq_conj_mul_self]
-    simp [HermitianMat.trace_eq_re_trace, Matrix.trace, Matrix.vecMulVec_apply, Bra.eq_conj, h₁]
-    exact ψ.normalized
+def pure (ψ : Ket d) : MState d :=
+  DensityOp.ofMat ⟨Matrix.vecMulVec ψ (ψ : Bra d), (Matrix.PosSemidef.outer_self_conj ψ).1⟩
+    (HermitianMat.zero_le_iff.mpr (.outer_self_conj ψ))
+    (by
+      have h₁ (x : d) : (Matrix.vecMulVec (ψ : d → ℂ) ((ψ : Bra d) : d → ℂ)).diag x
+          = (Complex.normSq (ψ x) : ℂ) := by
+        rw [Matrix.diag_apply, Matrix.vecMulVec_apply, Bra.eq_conj, mul_comm,
+          Complex.normSq_eq_conj_mul_self]
+      rw [HermitianMat.trace_eq_re_trace, HermitianMat.mat_mk, Matrix.trace]
+      simp_rw [h₁]
+      rw [← Complex.ofReal_sum]
+      simpa using ψ.normalized)
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem pure_M (ψ : Ket d) :
+    (pure ψ).M = ⟨Matrix.vecMulVec ψ (ψ : Bra d), (Matrix.PosSemidef.outer_self_conj ψ).1⟩ := by
+  rw [pure, M_ofMat]
+
+/-- The overlap of two pure states is the squared magnitude of their bracket. -/
 theorem pure_inner : ⟪pure ψ, pure φ⟫_Prob = ‖Braket.dot ψ φ‖^2 := by
-  simp [MState.inner_def, HermitianMat.inner_def, pure, Matrix.vecMulVec_mul_vecMulVec,
+  simp [MState.inner_def, HermitianMat.inner_def, pure_M, Matrix.vecMulVec_mul_vecMulVec,
     Braket.dot_eq_dotProduct, Matrix.trace_smul]
   rw [show ((ψ : d → ℂ) ⬝ᵥ ((φ : Bra d) : d → ℂ)) =
       conj (((ψ : Bra d) : d → ℂ) ⬝ᵥ (φ : d → ℂ)) from by
@@ -294,12 +523,45 @@ theorem pure_inner : ⟪pure ψ, pure φ⟫_Prob = ‖Braket.dot ψ φ‖^2 := b
 
 @[simp]
 theorem pure_apply {i j : d} : (pure ψ).m i j = (ψ i) * conj (ψ j) := by
-  rfl
+  rw [← mat_M, pure_M, mat_mk]
+  simp [Matrix.vecMulVec_apply, Bra.eq_conj]
 
-set_option backward.isDefEq.respectTransparency false in
+@[simp]
+theorem pure_M_apply {i j : d} : (pure ψ).M i j = (ψ i) * conj (ψ j) := by
+  rw [← mat_apply, mat_M, pure_apply]
+
 theorem pure_mul_self : (pure ψ).m * (pure ψ).m = (pure ψ : Matrix d d ℂ) := by
-  dsimp [pure, MState.m]
+  rw [show ((pure ψ : Matrix d d ℂ)) = (pure ψ).m from rfl, ← mat_M, pure_M]
   simp [Matrix.vecMulVec_mul_vecMulVec, ← Braket.dot_eq_dotProduct]
+
+/-- Sandwiching a state between two copies of the projector `∣ψ⟩⟨ψ∣` gives that projector back,
+scaled by the expectation value `⟨ψ∣σ∣ψ⟩`. -/
+theorem conj_pure : σ.M.conj (pure ψ).M.mat = (σ.exp_val (pure ψ).M) • (pure ψ).M := by
+  set u : d → ℂ := fun i ↦ ψ i with hu
+  set v : d → ℂ := fun i ↦ conj (ψ i) with hv
+  have hmat : (pure ψ).m = Matrix.vecMulVec u v := by
+    rw [← mat_M, pure_M, HermitianMat.mat_mk]
+    ext i j
+    simp [Matrix.vecMulVec_apply, Bra.eq_conj, hu, hv]
+  have hsc : ((σ.exp_val (pure ψ).M : ℝ) : ℂ) = (v ᵥ* σ.m) ⬝ᵥ u := by
+    rw [← RCLike.ofReal_eq_complex_ofReal, exp_val, HermitianMat.inner_eq_trace_rc,
+      mat_M, mat_M, hmat, Matrix.mul_vecMulVec, ← Matrix.dotProduct_mulVec, dotProduct_comm]
+    rfl
+  ext1
+  rw [HermitianMat.conj_apply_mat, HermitianMat.conjTranspose_mat, HermitianMat.mat_smul]
+  simp only [mat_M, hmat]
+  rw [Matrix.vecMulVec_mul, Matrix.vecMulVec_mul_vecMulVec, Matrix.vecMulVec_smul, ← hsc]
+  ext i j
+  simp [Complex.real_smul]
+
+/-- The projectors onto the standard basis states sum to the identity. -/
+theorem sum_pure_basis : ∑ i : d, (pure (Ket.basis i)).M = 1 := by
+  ext1
+  rw [show (∑ i : d, (pure (Ket.basis i)).M).mat = ∑ i : d, ((pure (Ket.basis i)).M).mat from
+    map_sum (HermitianMat.matₗ (R := ℝ)) _ _]
+  ext i j
+  simp [Matrix.sum_apply, Matrix.vecMulVec_apply, Bra.eq_conj, Ket.basis, Ket.apply,
+    Matrix.one_apply, apply_ite, eq_comm]
 
 /-- The purity of a state is Tr[ρ^2]. This is a `Prob`, because it is always
 between zero and one. -/
@@ -323,7 +585,7 @@ theorem spectrum_pure_eq_constant :
       -- Prove ψ is an eigenvector of ρ = pure ψ
       have hv : ρ.M *ᵥ ψ = ψ := by
         ext
-        simp_rw [ρ, pure, Matrix.mulVec, mat, Matrix.vecMulVec_apply, dotProduct,
+        simp_rw [ρ, pure_M, Matrix.mulVec, mat_mk, Matrix.vecMulVec_apply, dotProduct,
         Bra.apply', Ket.apply, mul_assoc, ← Finset.mul_sum, ← Complex.normSq_eq_conj_mul_self,
         ← Complex.ofReal_sum, ← Ket.apply, ψ.normalized, Complex.ofReal_one, mul_one]
       let U : Matrix.unitaryGroup d ℂ := star ρ.M.H.eigenvectorUnitary -- Diagonalizing unitary of ρ
@@ -367,17 +629,16 @@ theorem spectrum_pure_eq_constant :
       have hDiagj := congr_fun hDiag j
       rw [Matrix.mulVec_diagonal, mul_eq_right₀ hwNonZero'] at hDiagj
       use j
-      simp_all
+      simpa [ρ] using hDiagj
     obtain ⟨i, hEig'⟩ := hEig
     use i
     ext
-    exact hEig'
+    simpa using hEig'
   --If 1 is in a distribution, the distribution is a constant.
   obtain ⟨i, hi⟩ := this
   use i
   exact ProbDistribution.constant_of_exists_one hi
 
-set_option backward.isDefEq.respectTransparency false in
 /-- If the spectrum of a mixed state is (1,0,0...) i.e. a constant distribution, it is
  a pure state. -/
 theorem pure_of_constant_spectrum (h : ∃ i, ρ.spectrum = ProbDistribution.constant i) :
@@ -431,7 +692,6 @@ theorem pure_iff_constant_spectrum : (∃ ψ, ρ = pure ψ) ↔
   ⟨fun h ↦ h.rec fun ψ h₂ ↦ h₂ ▸ spectrum_pure_eq_constant ψ,
   pure_of_constant_spectrum ρ⟩
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pure_iff_purity_one : (∃ ψ, ρ = pure ψ) ↔ ρ.purity = 1 := by
   --purity = exp(-Collision entropy)
   --purity eq 1 iff collision entropy is zero
@@ -439,42 +699,71 @@ theorem pure_iff_purity_one : (∃ ψ, ρ = pure ψ) ↔ ρ.purity = 1 := by
   --distribution is constant iff pure
   constructor <;> intro h;
   · obtain ⟨w, rfl⟩ := h
-    dsimp [purity, inner]
-    have := pure_mul_self w
-    aesop;
-  · -- A state is pure iff its spectrum is constant.
-    apply (pure_iff_constant_spectrum ρ).mpr
+    have h₁ : ((⟪(pure w).M, (pure w).M⟫ : ℝ) : ℂ) = 1 := by
+      rw [← RCLike.ofReal_eq_complex_ofReal, HermitianMat.inner_eq_trace_rc, mat_M, pure_mul_self]
+      exact (pure w).tr'
+    ext
+    show (⟪(pure w).M, (pure w).M⟫ : ℝ) = 1
+    exact_mod_cast h₁
+  · --TODO Cleanup
+    -- Apply the theorem that states a mixed state is pure if and only if its spectrum is constant.
+    apply (pure_iff_constant_spectrum ρ).mpr;
     have h_eigenvalues : ∑ i, (ρ.spectrum i).val ^ 2 = 1 := by
       -- By definition of purity, we know that the sum of the squares of the eigenvalues is equal to the trace of ρ squared.
-      have h_trace_sq : ∑ i, (ρ.spectrum i).val ^ 2 = ρ.purity := by
-        have h_eigenvalues : ∑ i, (ρ.M.H.eigenvalues i) ^ 2 = (ρ.M.mat * ρ.M.mat).trace := by
-          have := Matrix.IsHermitian.spectral_theorem ρ.M.H;
-          conv_rhs => rw [ this ];
-          simp [ Matrix.trace_mul_comm, Matrix.mul_assoc ];
-          exact Finset.sum_congr rfl fun _ _ => by ring;
-        convert! congr_arg Complex.re h_eigenvalues using 1;
+      have h_trace_sq : ∑ i, (ρ.spectrum i).val ^ 2 = (ρ.purity : ℝ) := by
+        have h_eig : ((∑ i, ρ.M.H.eigenvalues i ^ 2 : ℝ) : ℂ) = (ρ.M.mat * ρ.M.mat).trace := by
+          have := Matrix.IsHermitian.spectral_theorem ρ.M.H
+          conv_rhs => rw [this]
+          simp [Matrix.trace_mul_comm, Matrix.mul_assoc]
+          exact Finset.sum_congr rfl fun _ _ => by ring
+        have h_pur : ((ρ.purity : ℝ) : ℂ) = (ρ.M.mat * ρ.M.mat).trace := by
+          rw [show (ρ.purity : ℝ) = ⟪ρ.M, ρ.M⟫ from rfl,
+            ← RCLike.ofReal_eq_complex_ofReal, HermitianMat.inner_eq_trace_rc]
+        have h_sp (i : d) : (ρ.spectrum i).val = ρ.M.H.eigenvalues i := by
+          simp [spectrum, ProbDistribution.mk']
+        simp only [h_sp]
+        exact_mod_cast h_eig.trans h_pur.symm
       simp_all only [Set.Icc.coe_one]
-    -- Each eigenvalue satisfies `λᵢ (1 - λᵢ) ≥ 0`, and these terms sum to
-    -- `∑ λᵢ - ∑ λᵢ² = 1 - 1 = 0`, so every `λᵢ` is `0` or `1`.
-    have hbin : ∀ i, (ρ.spectrum i).val = 0 ∨ (ρ.spectrum i).val = 1 := by
-      have hnn : ∀ i ∈ Finset.univ, 0 ≤ (ρ.spectrum i).val * (1 - (ρ.spectrum i).val) :=
-        fun i _ => mul_nonneg (ρ.spectrum i).2.1 (by linarith [(ρ.spectrum i).2.2])
-      have hz : ∑ i, (ρ.spectrum i).val * (1 - (ρ.spectrum i).val) = 0 := by
-        have e : ∑ i, (ρ.spectrum i).val * (1 - (ρ.spectrum i).val)
-            = (∑ i, (ρ.spectrum i : ℝ)) - ∑ i, (ρ.spectrum i).val ^ 2 := by
-          rw [← Finset.sum_sub_distrib]
-          exact Finset.sum_congr rfl fun i _ => by ring
-        rw [e, h_eigenvalues, ρ.spectrum.normalized]; norm_num
-      exact fun i => (mul_eq_zero.mp ((Finset.sum_eq_zero_iff_of_nonneg hnn).mp hz i
-        (Finset.mem_univ i))).imp id fun h => by linarith
-    -- Since `∑ λᵢ = 1`, not all eigenvalues vanish, so one of them equals `1`.
+    have h_eigenvalues : ∑ i, (ρ.spectrum i).val * ((ρ.spectrum i).val - 1) = 0 := by
+      simp_all [ sq, mul_sub ];
+    -- Since each term in the sum is non-positive and their sum is zero, each term must be zero.
+    have h_each_zero : ∀ i, (ρ.spectrum i).val * ((ρ.spectrum i).val - 1) = 0 := by
+      have h_each_zero : ∀ i, (ρ.spectrum i).val * ((ρ.spectrum i).val - 1) ≤ 0 := by
+        exact fun i => by nlinarith only [ show ( ρ.spectrum i : ℝ ) ≥ 0 by exact_mod_cast ( ρ.spectrum i ) |>.2.1, show ( ρ.spectrum i : ℝ ) ≤ 1 by exact_mod_cast ( ρ.spectrum i ) |>.2.2 ] ;
+      exact fun i => le_antisymm ( h_each_zero i ) ( by simpa [ h_eigenvalues ] using Finset.single_le_sum ( fun i _ => neg_nonneg.mpr ( h_each_zero i ) ) ( Finset.mem_univ i ) );
+    -- Since each term in the sum is non-positive and their sum is zero, each term must be zero. Therefore, for each i, either (ρ.spectrum i).val = 0 or (ρ.spectrum i).val = 1.
+    have h_each_zero : ∀ i, (ρ.spectrum i).val = 0 ∨ (ρ.spectrum i).val = 1 := by
+      exact fun i => mul_eq_zero.mp ( h_each_zero i ) |> Or.imp id fun h => by linarith;
+    have h_sum_one : ∑ i, (ρ.spectrum i).val = 1 := by
+      grind;
     obtain ⟨i, hi⟩ : ∃ i, (ρ.spectrum i).val = 1 := by
-      by_contra hcon
-      simp only [not_exists] at hcon
-      simpa [fun i => (hbin i).resolve_right (hcon i)] using ρ.spectrum.normalized
-    exact ⟨i, ProbDistribution.constant_of_exists_one (Subtype.ext hi)⟩
+      contrapose! h_sum_one; aesop;
+    -- Since the sum of the eigenvalues is 1 and one of them is 1, the remaining eigenvalues must sum to 0. Given that each eigenvalue is either 0 or 1, the only way their sum can be 0 is if all of them are 0.
+    have h_sum_zero : ∑ j ∈ Finset.univ.erase i, (ρ.spectrum j).val = 0 := by
+      rw [ ← Finset.sum_erase_add _ _ ( Finset.mem_univ i ), hi ] at h_sum_one ; linarith;
+    rw [ Finset.sum_eq_zero_iff_of_nonneg ] at h_sum_zero
+    · simp_all only [Finset.sum_const_zero, mul_eq_zero, Set.Icc.coe_eq_zero, Set.Icc.coe_eq_one,
+        ProbDistribution.normalized, Finset.mem_erase, ne_eq, Finset.mem_univ, and_true]
+      apply Exists.intro
+      · ext x : 2
+        simp_all only [ProbDistribution.constant_eq]
+        split
+        next h_1 =>
+          subst h_1
+          simp_all only [Set.Icc.coe_one, Set.Icc.coe_eq_one]
+          exact hi
+        next h_1 =>
+          simp_all only [Set.Icc.coe_zero, Set.Icc.coe_eq_zero]
+          apply h_sum_zero
+          apply Aesop.BuiltinRules.not_intro
+          intro a
+          subst a
+          simp_all only [not_true_eq_false]
+    · intro i_1 a
+      simp_all only [Finset.sum_const_zero, mul_eq_zero, Set.Icc.coe_eq_zero, Set.Icc.coe_eq_one,
+        ProbDistribution.normalized, Finset.mem_univ, Finset.sum_erase_eq_sub, Set.Icc.coe_one, sub_self, Finset.mem_erase,
+        ne_eq, and_true, Prob.zero_le_coe]
 
-set_option backward.isDefEq.respectTransparency false in
 --TODO: Would be better if there was an `MState.eigenstate` or similar (maybe extending
 -- a similar thing for `HermitianMat`) and then this could be an equality with that, as
 -- an explicit formula, instead of this `Exists`.
@@ -485,25 +774,34 @@ theorem spectralDecomposition (ρ : MState d) :
   nth_rw 1 [ρ.M.H.spectral_theorem]
   --TODO Cleanup
   simp only [Complex.coe_algebraMap, spectrum, ProbDistribution.mk',
-    ProbDistribution.funlike_apply, pure, Matrix.IsHermitian.eigenvectorUnitary_apply]
+    ProbDistribution.funlike_apply, Matrix.IsHermitian.eigenvectorUnitary_apply]
   rw [HermitianMat.mat_finset_sum]
   simp only [Unitary.conjStarAlgAut_apply]
   rw [Finset.sum_apply, Finset.sum_apply, Matrix.mul_apply]
   congr!
   simp only [Matrix.mul_diagonal, Matrix.IsHermitian.eigenvectorUnitary_apply,
     mul_comm, Matrix.star_apply, RCLike.star_def]
-  simp only [Function.comp_apply, mat_M, mat_apply, HermitianMat.smul_apply, Complex.real_smul]
-  rw [mul_assoc]
-  rfl
+  simp only [Function.comp_apply, mat_M, mat_apply, HermitianMat.smul_apply, Complex.real_smul,
+    pure_M_apply, Ket.apply]
+  ring
 
 end pure
 
 section prod
 
-def prod (ρ₁ : MState d₁) (ρ₂ : MState d₂) : MState (d₁ × d₂) where
-  M := ρ₁.M ⊗ₖ ρ₂.M
-  nonneg := HermitianMat.zero_le_iff.mpr (ρ₁.psd.PosSemidef_kronecker ρ₂.psd)
-  tr := by simp
+def prod (ρ₁ : MState d₁) (ρ₂ : MState d₂) : MState (d₁ × d₂) :=
+  DensityOp.ofMat (ρ₁.M ⊗ₖ ρ₂.M)
+    (HermitianMat.zero_le_iff.mpr (ρ₁.psd.PosSemidef_kronecker ρ₂.psd))
+    (by simp)
+
+@[simp]
+theorem prod_M (ρ₁ : MState d₁) (ρ₂ : MState d₂) : (prod ρ₁ ρ₂).M = ρ₁.M ⊗ₖ ρ₂.M := by
+  rw [prod, M_ofMat]
+
+@[simp]
+theorem prod_m (ρ₁ : MState d₁) (ρ₂ : MState d₂) :
+    (prod ρ₁ ρ₂).m = Matrix.kroneckerMap (· * ·) ρ₁.m ρ₂.m := by
+  rw [← mat_M, prod_M, kronecker_mat, mat_M, mat_M]
 
 infixl:100 " ⊗ᴹ " => MState.prod
 
@@ -512,7 +810,7 @@ theorem prod_inner_prod (ξ1 ψ1 : MState d₁) (ξ2 ψ2 : MState d₂) :
   ext1
   simp only [inner_def, Prob.coe_mul, ← Complex.ofReal_inj]
   --Lots of this should actually be facts about HermitianMat first
-  simp only [prod, Complex.ofReal_mul]
+  simp only [prod_M, Complex.ofReal_mul]
   simp only [← RCLike.ofReal_eq_complex_ofReal, inner_eq_trace_rc]
   simp only [kronecker, ← Matrix.trace_kronecker]
   simp only [mat_M, mat_mk, Matrix.mul_kronecker_mul]
@@ -520,22 +818,21 @@ theorem prod_inner_prod (ξ1 ψ1 : MState d₁) (ξ2 ψ2 : MState d₂) :
 /-- The product of pure states is a pure product state , `Ket.prod`. -/
 theorem pure_prod_pure (ψ₁ : Ket d₁) (ψ₂ : Ket d₂) : pure (ψ₁ ⊗ᵠ ψ₂) = (pure ψ₁) ⊗ᴹ (pure ψ₂) := by
   ext : 3
-  simp [Ket.prod, Ket.apply, prod, -mat_apply]
-  ac_rfl
+  simp [Ket.prod, Ket.apply, Matrix.vecMulVec_apply, Bra.eq_conj, kronecker_apply]
+  ring
 
 end prod
 
-set_option backward.isDefEq.respectTransparency false in
 /-- A representation of a classical distribution as a quantum state, diagonal in the given basis. -/
-def ofClassical (dist : ProbDistribution d) : MState d where
-  M := diagonal ℂ (fun x ↦ dist x)
-  nonneg := by simp [zero_le_iff, diagonal, Matrix.posSemidef_diagonal_iff]
-  tr := by simp [trace_diagonal]
+def ofClassical (dist : ProbDistribution d) : MState d :=
+  DensityOp.ofMat (diagonal ℂ (fun x ↦ dist x))
+    (by simp [zero_le_iff, diagonal, Matrix.posSemidef_diagonal_iff])
+    (by simp [trace_diagonal])
 
 @[simp]
 theorem coe_ofClassical (dist : ProbDistribution d) :
     (ofClassical dist).M = diagonal ℂ (dist ·) := by
-  rfl
+  rw [ofClassical, M_ofMat]
 
 theorem ofClassical_pow (dist : ProbDistribution d) (p : ℝ) :
     (ofClassical dist).M ^ p = diagonal ℂ (fun i ↦ (dist i) ^ p) := by
@@ -556,7 +853,7 @@ instance instUnique [Unique d] : Unique (MState d) where
     ext
     have h₁ := ρ.tr
     have h₂ := (@uniform _ _ _ _ : MState d).tr
-    simp [Matrix.trace, Unique.eq_default, -MState.tr, HermitianMat.trace_eq_re_trace] at h₁ h₂ ⊢
+    simp [Matrix.trace, Unique.eq_default, -DensityOp.tr, HermitianMat.trace_eq_re_trace] at h₁ h₂ ⊢
     apply Complex.ext
     · exact h₁.trans h₂.symm
     · rw [complex_im_eq_zero, complex_im_eq_zero]
@@ -570,24 +867,89 @@ lemma default_eq [Nonempty d] : (default : MState d) = uniform := rfl
 
 @[simp]
 theorem M_default [Unique d] : (default : MState d).M = 1 := by
-  simp [default_eq, uniform]
-  rfl
+  show (uniform : MState d).M = 1
+  rw [uniform, coe_ofClassical]
+  ext1
+  ext i j
+  simp [Subsingleton.elim i j]
 
 section ptrace
 
 /-- Partial tracing out the left half of a system. -/
-@[simps]
-def traceLeft (ρ : MState (d₁ × d₂)) : MState d₂ where
-  M := ρ.M.traceLeft
-  nonneg := zero_le_iff.mpr ρ.psd.traceLeft
-  tr := by simp [trace]
+def traceLeft (ρ : MState (d₁ × d₂)) : MState d₂ :=
+  DensityOp.ofMat ρ.M.traceLeft (zero_le_iff.mpr ρ.psd.traceLeft) (by simp [trace])
+
+@[simp]
+theorem traceLeft_M (ρ : MState (d₁ × d₂)) : (traceLeft ρ).M = ρ.M.traceLeft := by
+  rw [traceLeft, M_ofMat]
+
+@[simp]
+theorem traceLeft_m (ρ : MState (d₁ × d₂)) : (traceLeft ρ).m = ρ.m.traceLeft := by
+  rw [← mat_M, traceLeft_M, traceLeft_mat, mat_M]
 
 /-- Partial tracing out the right half of a system. -/
-@[simps]
-def traceRight (ρ : MState (d₁ × d₂)) : MState d₁ where
-  M := ρ.M.traceRight
-  nonneg := zero_le_iff.mpr ρ.psd.traceRight
-  tr := by simp [trace]
+def traceRight (ρ : MState (d₁ × d₂)) : MState d₁ :=
+  DensityOp.ofMat ρ.M.traceRight (zero_le_iff.mpr ρ.psd.traceRight) (by simp [trace])
+
+@[simp]
+theorem traceRight_M (ρ : MState (d₁ × d₂)) : (traceRight ρ).M = ρ.M.traceRight := by
+  rw [traceRight, M_ofMat]
+
+@[simp]
+theorem traceRight_m (ρ : MState (d₁ × d₂)) : (traceRight ρ).m = ρ.m.traceRight := by
+  rw [← mat_M, traceRight_M, traceRight_mat, mat_M]
+
+section Tensor
+
+open scoped TensorProduct
+
+/-- A bipartite state, read as a state on an honest tensor product.
+
+`MState (d₁ × d₂)` is a state on `EuclideanSpace ℂ (d₁ × d₂)`, whose preferred basis happens to be
+indexed by a product; this transports it along `StdBasis.equiv` to the tensor product of the two
+factors, where the basis-free partial traces `DensityOp.traceLeft` and `DensityOp.traceRight`
+live. -/
+noncomputable def toTensor (ρ : MState (d₁ × d₂)) :
+    DensityOp (EuclideanSpace ℂ d₁ ⊗[ℂ] EuclideanSpace ℂ d₂) :=
+  ρ.transport _
+
+@[simp]
+theorem M_toTensor (ρ : MState (d₁ × d₂)) : (M ρ.toTensor : HermitianMat (d₁ × d₂) ℂ) = ρ.M :=
+  DensityOp.M_transport ρ
+
+section Factors
+
+variable {E F : Type*}
+variable [NormedAddCommGroup E] [InnerProductSpace ℂ E] [StdBasis ℂ E d₁]
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F] [StdBasis ℂ F d₂]
+
+/-- The index-level partial trace is the operator-level one, read through `DensityOp.transport`. -/
+@[simp]
+theorem traceLeft_transport (ρ : MState (d₁ × d₂)) :
+    (ρ.transport (E ⊗[ℂ] F)).traceLeft = ρ.traceLeft.transport F := by
+  ext1
+  rw [DensityOp.traceLeft_M (ι := d₁), DensityOp.M_transport, DensityOp.M_transport, traceLeft_M]
+
+/-- The index-level partial trace is the operator-level one, read through `DensityOp.transport`. -/
+@[simp]
+theorem traceRight_transport (ρ : MState (d₁ × d₂)) :
+    (ρ.transport (E ⊗[ℂ] F)).traceRight = ρ.traceRight.transport E := by
+  ext1
+  rw [DensityOp.traceRight_M (κ := d₂), DensityOp.M_transport, DensityOp.M_transport, traceRight_M]
+
+end Factors
+
+/-- The index-level partial trace is the operator-level one, read through `MState.toTensor`. -/
+@[simp]
+theorem traceLeft_toTensor (ρ : MState (d₁ × d₂)) : ρ.toTensor.traceLeft = ρ.traceLeft := by
+  rw [toTensor, traceLeft_transport, DensityOp.transport_self]
+
+/-- The index-level partial trace is the operator-level one, read through `MState.toTensor`. -/
+@[simp]
+theorem traceRight_toTensor (ρ : MState (d₁ × d₂)) : ρ.toTensor.traceRight = ρ.traceRight := by
+  rw [toTensor, traceRight_transport, DensityOp.transport_self]
+
+end Tensor
 
 /-- Taking the direct product on the left and tracing it back out gives the same state. -/
 @[simp]
@@ -652,14 +1014,14 @@ theorem sInf_spectrum_prod (ρ : MState d) (σ : MState d₂) :
     sInf (_root_.spectrum ℝ (ρ ⊗ᴹ σ).m) = sInf (_root_.spectrum ℝ ρ.m) * sInf (_root_.spectrum ℝ σ.m) := by
   rcases isEmpty_or_nonempty d with _ | _; · simp
   rcases isEmpty_or_nonempty d₂ with _ | _; · simp
-  rw [MState.m, MState.prod, HermitianMat.spectrum_prod, ← MState.m, ← MState.m]
+  rw [DensityOp.m, prod_M, HermitianMat.spectrum_prod, ← DensityOp.m, ← DensityOp.m]
   apply csInf_mul_nonneg
   · exact ContinuousFunctionalCalculus.spectrum_nonempty _ ρ.M.H
-  · rw [MState.m, ρ.M.H.spectrum_real_eq_range_eigenvalues]
+  · rw [DensityOp.m, ρ.M.H.spectrum_real_eq_range_eigenvalues]
     rintro _ ⟨i, rfl⟩
     apply ρ.eigenvalue_nonneg
   · exact ContinuousFunctionalCalculus.spectrum_nonempty _ σ.M.H
-  · rw [MState.m, σ.M.H.spectrum_real_eq_range_eigenvalues]
+  · rw [DensityOp.m, σ.M.H.spectrum_real_eq_range_eigenvalues]
     rintro _ ⟨i, rfl⟩
     apply σ.eigenvalue_nonneg
 
@@ -677,7 +1039,6 @@ theorem IsSeparable_prod (ρ₁ : MState d₁) (ρ₂ : MState d₂) : IsSeparab
   use { only }, ProbDistribution.constant ⟨only, Finset.mem_singleton_self only⟩
   simp [prod, Unique.eq_default, only]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem eq_of_sum_eq_pure {d : Type*} [Fintype d] [DecidableEq d]
     {ι : Type*} {s : Finset ι} {p : ι → ℝ} {ρs : ι → MState d}
     {ρ : MState d} (h_pure : ρ.purity = 1) (h_sum : ρ.M = ∑ i ∈ s, p i • (ρs i).M)
@@ -723,13 +1084,13 @@ theorem eq_of_sum_eq_pure {d : Type*} [Fintype d] [DecidableEq d]
           have h_eq : ⟪A, A⟫ ≤ A.trace * A.trace := by
             apply HermitianMat.inner_le_mul_trace hA_nonneg hA_nonneg;
           aesop;
-        exact ⟨ by assumption, h_eq _ ( ρs i |>.2 ) ( ρs i |>.3 ) ⟩;
+        exact ⟨ by assumption, h_eq _ (ρs i).nonneg (ρs i).tr ⟩;
       linarith [ h_trace i hi hpi, (ρ.M - (ρs i).M).inner_self_nonneg ];
     -- Since the inner product of a matrix with itself is zero if and only if the matrix is zero, we have ρ.M - (ρs i).M = 0.
     have h_zero : ρ.M - (ρs i).M = 0 := by
       apply inner_self_eq_zero.mp h_eq;
     exact eq_of_sub_eq_zero h_zero;
-  exact MState.ext h_eq.symm
+  exact DensityOp.ext h_eq.symm
 
 theorem purity_prod {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂] [DecidableEq d₁] [DecidableEq d₂]
     (ρ₁ : MState d₁) (ρ₂ : MState d₂) : (ρ₁ ⊗ᴹ ρ₂).purity = ρ₁.purity * ρ₂.purity := by
@@ -766,7 +1127,7 @@ theorem pure_eq_pure_iff {d : Type*} [Fintype d] [DecidableEq d] (ψ φ : Ket d)
       simp [ *, Complex.ext_iff ];
       intro i j; rw [ Complex.norm_def ] at left; simp_all [ Complex.normSq ];
       grind +ring;
-    exact MState.ext_m ( by ext i j; exact h_simp i j )
+    exact DensityOp.ext_m ( by ext i j; simpa [ Matrix.vecMulVec, Ket.apply ] using h_simp i j )
 
 /-- Two kets are phase-equivalent if and only if their pure states are equal. -/
 theorem PhaseEquiv_iff_pure_eq {d : Type*} [Fintype d] [DecidableEq d] (ψ φ : Ket d) :
@@ -788,7 +1149,6 @@ theorem pureQ_injective {d : Type*} [Fintype d] [DecidableEq d] : Function.Injec
   simp [pureQ] at h
   exact Quotient.sound ((PhaseEquiv_iff_pure_eq _ _).mpr h)
 
-set_option backward.isDefEq.respectTransparency false in
 theorem pure_separable_imp_IsProd {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂] [DecidableEq d₁] [DecidableEq d₂]
     (ψ : Ket (d₁ × d₂)) (h : IsSeparable (pure ψ)) : ψ.IsProd := by
   obtain ⟨ ρLRs, ps, hps ⟩ := h;
@@ -805,33 +1165,26 @@ theorem pure_separable_imp_IsProd {d₁ d₂ : Type*} [Fintype d₁] [Fintype d�
     use fun x => ( ps x : ℝ );
     use fun x => MState.prod x.val.1 x.val.2;
     all_goals norm_cast;
+    · simpa using hps
     · exact fun i a => unitInterval.nonneg (ps i);
     · exact ps.2;
     · exact Finset.mem_univ k;
-    · obtain ⟨val, property⟩ := k
-      obtain ⟨fst, snd⟩ := val
-      have fwd : 0 ≤ (ps ⟨(fst, snd), property⟩).1 := le_of_lt hk
-      apply Iff.intro
+    · constructor
       · intro a
-        exact MState.ext_iff.mpr a.symm
+        exact DensityOp.ext (by simpa using a.symm)
       · intro a
         rw [← a]
-        rfl
+        simp
   -- Since `pure ψ` is pure (`purity = 1`), by `MState.pure_iff_purity_one`, `ρL_k = pure ξ` and `ρR_k = pure φ` for some `ξ, φ`.
-  obtain ⟨ξ, hξ⟩ : ∃ ξ : MState d₁, k.val.1 = ξ ∧ ξ.purity = 1 := by
-    have h_purity : (pure ψ).purity = (k.val.1).purity * (k.val.2).purity := by
-      convert MState.purity_prod _ _;
-      exact MState.ext hk.2;
-    have h_purity_one : (pure ψ).purity = 1 := by
-      exact ( pure_iff_purity_one _ ).mp ⟨ ψ, rfl ⟩;
-    rw [ h_purity, Prob.mul_eq_one_iff ] at h_purity_one ; aesop
-  obtain ⟨φ, hφ⟩ : ∃ φ : MState d₂, k.val.2 = φ ∧ φ.purity = 1 := by
-    have h_purity_prod : (pure ψ).purity = (k.val.1).purity * (k.val.2).purity := by
-      convert MState.purity_prod _ _;
-      exact MState.ext hk.2;
-    have h_purity_one : (MState.pure ψ).purity = 1 := by
-      exact pure_iff_purity_one _ |>.1 ⟨ ψ, rfl ⟩;
-    aesop;
+  have hprod : pure ψ = k.val.1 ⊗ᴹ k.val.2 := DensityOp.ext (by simpa using hk.2)
+  have h_purity : (pure ψ).purity = (k.val.1).purity * (k.val.2).purity := by
+    rw [hprod, MState.purity_prod]
+  have h_purity_one : (pure ψ).purity = 1 := (pure_iff_purity_one _).mp ⟨ψ, rfl⟩
+  rw [h_purity, Prob.mul_eq_one_iff] at h_purity_one
+  obtain ⟨ξ, hξ⟩ : ∃ ξ : MState d₁, k.val.1 = ξ ∧ ξ.purity = 1 :=
+    ⟨k.val.1, rfl, h_purity_one.1⟩
+  obtain ⟨φ, hφ⟩ : ∃ φ : MState d₂, k.val.2 = φ ∧ φ.purity = 1 :=
+    ⟨k.val.2, rfl, h_purity_one.2⟩
   -- Since `ξ` and `φ` are pure states, we have `ξ = pure ξ'` and `φ = pure φ'` for some `ξ', φ'`.
   obtain ⟨ξ', hξ'⟩ : ∃ ξ' : Ket d₁, ξ = MState.pure ξ' := by
     have := MState.pure_iff_purity_one ξ;
@@ -841,18 +1194,19 @@ theorem pure_separable_imp_IsProd {d₁ d₂ : Type*} [Fintype d₁] [Fintype d�
   -- Since `pure ψ = pure ξ ⊗ᵠ pure φ`, we have `ψ = ξ ⊗ᵠ φ` up to a global phase `z`.
   have h_eq : (pure ψ).M = (pure (ξ' ⊗ᵠ φ')).M := by
     rw [ hk.2, hξ.1, hξ', hφ.1, hφ', MState.pure_prod_pure ];
-    exact rfl;
+    simp
   -- Since `pure ψ = pure (ξ' ⊗ᵠ φ')`, we have `ψ = ξ' ⊗ᵠ φ'` up to a global phase `z`.
   have h_eq_ket : ∃ z : ℂ, ‖z‖ = 1 ∧ ψ.vec = z • (ξ' ⊗ᵠ φ').vec := by
     have := MState.pure_eq_pure_iff ψ ( ξ' ⊗ᵠ φ' );
-    exact this.mp ( MState.ext h_eq );
+    exact this.mp ( DensityOp.ext h_eq );
   obtain ⟨ z, hz₁, hz₂ ⟩ := h_eq_ket;
   use ⟨ fun i => z * ξ' i, ?_ ⟩, φ';
-  ext ⟨ i, j ⟩ ; simp [ Ket.prod ];
-  convert! congr_fun hz₂ ( i, j ) using 1;
-  exact mul_assoc _ _ _;
+  ext ⟨ i, j ⟩
+  have hz := congr_fun hz₂ ( i, j )
+  simp only [ Ket.prod, Ket.apply, Pi.smul_apply, smul_eq_mul ] at hz ⊢
+  linear_combination hz
   simp [ hz₁]
-  exact ξ'.normalized'
+  simpa [ Complex.normSq_eq_norm_sq, Ket.apply ] using ξ'.normalized'
 
 /-- A pure state is separable iff the ket is a product state. -/
 theorem pure_separable_iff_IsProd (ψ : Ket (d₁ × d₂)) :
@@ -870,6 +1224,11 @@ theorem pure_iff_rank_eq_one {d : Type*} [Fintype d] [DecidableEq d] (ρ : MStat
     (∃ ψ, ρ = pure ψ) ↔ ρ.m.rank = 1 := by
   constructor <;> intro h;
   · obtain ⟨w, rfl⟩ := h
+    have hm : (pure w).m = Matrix.vecMulVec (w : d → ℂ) (conj (w : d → ℂ)) := by
+      ext i j
+      rw [pure_apply]
+      rfl
+    rw [hm]
     -- The rank of the outer product of a vector with itself is 1.
     have h_rank : ∀ (v : d → ℂ), v ≠ 0 → Matrix.rank (Matrix.vecMulVec v (conj v)) = 1 := by
       intro v hv_ne_zero
@@ -905,9 +1264,8 @@ theorem pure_iff_rank_eq_one {d : Type*} [Fintype d] [DecidableEq d] (ρ : MStat
             rw [ Fintype.card_subtype ] at h_diag ; exact h_diag;
           obtain ⟨i, hi⟩ : ∃ i : d, h_herm.eigenvalues i ≠ 0 := by
             exact not_forall.mp fun h => by simp [ h ] at h_diag;
-          rw [ Finset.sum_eq_add_sum_sdiff_singleton i _ (by simp) ] at h_diag;
-          exact ⟨i, hi, fun j hj => Classical.not_not.1 fun hj' =>
-            absurd h_diag ( by rw [ if_neg hi ] ; exact ne_of_gt ( lt_add_of_pos_right _ ( lt_of_lt_of_le ( by simp [ hj' ] ) ( Finset.single_le_sum ( fun x _ => by positivity ) ( Finset.mem_sdiff.2 ⟨ Finset.mem_univ j, by simp [ hj ] ⟩ ) ) ) ) ) ⟩;
+          rw [ ← Finset.add_sum_erase _ _ ( Finset.mem_univ i ) ] at h_diag;
+          exact ⟨ i, hi, fun j hj => Classical.not_not.1 fun hj' => absurd h_diag ( by rw [ if_neg hi ] ; exact ne_of_gt ( lt_add_of_pos_right _ ( lt_of_lt_of_le ( by simp [ hj' ] ) ( Finset.single_le_sum ( fun x _ => by positivity ) ( Finset.mem_erase.2 ⟨ hj, Finset.mem_univ j ⟩ ) ) ) ) ) ⟩;
         -- Since the diagonal matrix in the spectral theorem has exactly one non-zero entry, we can write ρ.m as |ψ⟩⟨ψ| for some ket ψ.
         use fun j => (h_herm.eigenvectorUnitary : Matrix d d ℂ) j i * Real.sqrt (h_herm.eigenvalues i);
         convert this using 1
@@ -925,7 +1283,7 @@ theorem pure_iff_rank_eq_one {d : Type*} [Fintype d] [DecidableEq d] (ρ : MStat
     use ⟨ψ, by
       simpa [ Complex.normSq_eq_norm_sq ] using h_norm⟩
     generalize_proofs at *;
-    refine' MState.ext_m _ ; aesop
+    refine' DensityOp.ext_m _ ; aesop
 
 /--
 A ket on a product space is a product state if and only if its coefficient matrix has rank 1.
@@ -952,9 +1310,13 @@ theorem Ket.IsProd_iff_rank_eq_one {d₁ d₂ : Type*} [Fintype d₁] [Fintype d
         exact ⟨ ∑ j, ψ' j * y j, by ext i; simp [ Matrix.mulVec, dotProduct, mul_comm, mul_left_comm, Finset.mul_sum _ _ _ ] ⟩;
       exact le_trans ( Submodule.finrank_mono h_range ) ( finrank_span_le_card _ ) |> le_trans <| by norm_num;
     cases h_rank.eq_or_lt <;> simp_all [ Matrix.rank, Submodule.eq_bot_iff ];
-    · convert! ‹Module.finrank ℂ ( LinearMap.range ( Matrix.mulVecLin ( Matrix.of fun i j => ξ i * ψ' j ) ) ) = 1› using 3 ; aesop;
+    · convert ‹Module.finrank ℂ ( LinearMap.range ( Matrix.mulVecLin ( Matrix.of fun i j => ξ i * ψ' j ) ) ) = 1› using 3 ; aesop;
       · aesop;
       · ext; simp [hξψ'];
+      · have hof : (Matrix.of fun i j => ψ (i, j)) = (Matrix.of fun i j => ξ i * ψ' j) := by
+          ext i j
+          simp [hξψ']
+        rw [hof]
     · have := ψ.exists_ne_zero
       simp_all only [ne_eq, mul_eq_zero, not_or, Prod.exists, exists_and_left, exists_and_right]
       obtain ⟨left, right⟩ := this
@@ -988,10 +1350,10 @@ theorem pure_separable_iff_traceLeft_pure (ψ : Ket (d₁ × d₂)) : IsSeparabl
   have h2 := Ket.IsProd_iff_rank_eq_one ψ;
   have h3 := MState.pure_iff_rank_eq_one ( ( MState.pure ψ ).traceLeft )
   simp_all
-  have h4 : Matrix.rank ((MState.pure ψ).traceLeft.m) = Matrix.rank (Matrix.of (fun i j => ψ (i, j))) := by
-    have h4 : (MState.pure ψ).traceLeft.m = Matrix.transpose (Matrix.conjTranspose (Matrix.of (fun i j => ψ (i, j))) * Matrix.of (fun i j => ψ (i, j))) := by
+  have h4 : Matrix.rank ((MState.pure ψ).m.traceLeft) = Matrix.rank (Matrix.of (fun i j => ψ (i, j))) := by
+    have h4 : (MState.pure ψ).m.traceLeft = Matrix.transpose (Matrix.conjTranspose (Matrix.of (fun i j => ψ (i, j))) * Matrix.of (fun i j => ψ (i, j))) := by
       ext i j
-      simp [ MState.traceLeft, Matrix.mul_apply ] ;
+      simp [ Matrix.traceLeft, Matrix.mul_apply ] ;
       exact Finset.sum_congr rfl fun _ _ => mul_comm _ _;
     rw [ h4, Matrix.rank_transpose, Matrix.rank_conjTranspose_mul_self ];
   grind
@@ -1023,29 +1385,30 @@ def purify (ρ : MState d) : Ket (d × d) where
  original mixed state. -/
 @[simp]
 theorem purify_spec (ρ : MState d) : (pure ρ.purify).traceRight = ρ := by
+  -- The spectral theorem, written out entrywise.
+  have h_spectral : ∀ i j, ∑ x, ρ.Hermitian.eigenvectorUnitary i x *
+      (ρ.Hermitian.eigenvalues x : ℂ) *
+      starRingEnd ℂ (ρ.Hermitian.eigenvectorUnitary j x) = (ρ.M : Matrix d d ℂ) i j := by
+    intro i j
+    have h : (ρ.M : Matrix d d ℂ) = Matrix.of (fun i j => ∑ x,
+        ρ.Hermitian.eigenvectorUnitary i x * (ρ.Hermitian.eigenvalues x : ℂ) *
+        starRingEnd ℂ (ρ.Hermitian.eigenvectorUnitary j x)) := by
+      conv_lhs => rw [mat_M, ρ.Hermitian.spectral_theorem]
+      ext i j
+      simp [Unitary.conjStarAlgAut_apply, Matrix.mul_apply, Matrix.diagonal_apply]
+    exact (congr_fun (congr_fun h i) j).symm
   ext i j
   simp_rw [purify, traceRight, HermitianMat.traceRight, Matrix.traceRight]
-  simp only [Matrix.IsHermitian.eigenvectorUnitary_apply, mat_M, pure_apply,
-    mat_mk, Matrix.of_apply]
-  simp only [Ket.apply]
-  simp only [map_mul]
-  simp_rw [mul_assoc, mul_comm, ← mul_assoc (Complex.ofReal _), Complex.mul_conj]
-  -- By definition of eigenvectorUnitary and the properties of the unitary matrix and the eigenvalues, we can show that the matrix constructed from the purification is equal to ρ.
-  have h_eigenvectorUnitary : ∀ i j, ∑ x, ρ.Hermitian.eigenvectorUnitary i x * ((ρ.Hermitian.eigenvalues x).sqrt ^ 2) * starRingEnd ℂ (ρ.Hermitian.eigenvectorUnitary j x) = ρ.M i j := by
-    intro i j
-    have h_eigenvectorUnitary : ρ.M = Matrix.of (fun i j => ∑ x, ρ.Hermitian.eigenvectorUnitary i x * ρ.Hermitian.eigenvalues x * starRingEnd ℂ (ρ.Hermitian.eigenvectorUnitary j x)) := by
-      have := ρ.Hermitian.spectral_theorem;
-      convert! this using 1;
-      ext i j; simp [ Matrix.mul_apply, Matrix.diagonal ] ;
-    replace h_eigenvectorUnitary := congr_fun ( congr_fun h_eigenvectorUnitary i ) j
-    simp_all only [mat_apply, Matrix.IsHermitian.eigenvectorUnitary_apply, Matrix.of_apply]
-    congr! 2;
-    norm_num [ Complex.ext_iff, sq ];
-    exact Or.inl (Real.mul_self_sqrt (ρ.psd.eigenvalues_nonneg _))
-  simp_all [ Complex.normSq, sq ];
-  have h1 := h_eigenvectorUnitary i j
-  convert! h1 using 1;
-  simp [mul_assoc]
+  simp only [Matrix.IsHermitian.eigenvectorUnitary_apply, m_ofMat, mat_M, pure_apply,
+    mat_mk, Matrix.of_apply, Ket.apply, map_mul, Complex.conj_ofReal]
+  show _ = (ρ.M : Matrix d d ℂ) i j
+  rw [← h_spectral i j]
+  refine Finset.sum_congr rfl fun x _ ↦ ?_
+  have hs : ((ρ.Hermitian.eigenvalues x : ℝ) : ℂ) =
+      (√(ρ.Hermitian.eigenvalues x) : ℂ) * (√(ρ.Hermitian.eigenvalues x) : ℂ) := by
+    rw [← Complex.ofReal_mul, Real.mul_self_sqrt (ρ.eigenvalue_nonneg x)]
+  simp only [Matrix.IsHermitian.eigenvectorUnitary_apply, hs]
+  ring
 
 /-- `MState.purify` bundled with its defining property `MState.traceRight_of_purify`. -/
 def purifyX (ρ : MState d) : { ψ : Ket (d × d) // (pure ψ).traceRight = ρ } :=
@@ -1053,15 +1416,17 @@ def purifyX (ρ : MState d) : { ψ : Ket (d × d) // (pure ψ).traceRight = ρ }
 
 end purification
 
-@[simps]
-def relabel (ρ : MState d₁) (e : d₂ ≃ d₁) : MState d₂ where
-  M := ρ.M.reindex e.symm
-  nonneg := by simp [zero_le_iff, ρ.psd]
-  tr := by simp [trace]
+def relabel (ρ : MState d₁) (e : d₂ ≃ d₁) : MState d₂ :=
+  DensityOp.ofMat (ρ.M.reindex e.symm) (by simp [zero_le_iff, ρ.psd]) (by simp [trace])
+
+@[simp]
+theorem relabel_M (ρ : MState d₁) (e : d₂ ≃ d₁) : (ρ.relabel e).M = ρ.M.reindex e.symm := by
+  rw [relabel, M_ofMat]
 
 @[simp]
 theorem relabel_m (ρ : MState d₁) (e : d₂ ≃ d₁) :
     (ρ.relabel e).m = ρ.m.submatrix e e := by
+  rw [← mat_M, relabel_M]
   rfl
 
 @[simp]
@@ -1073,27 +1438,34 @@ theorem relabel_refl {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
 /-- Relabeling a pure state by a bijection yields another pure state. -/
 theorem relabel_pure_exists (ψ : Ket d₁) (e : d₂ ≃ d₁) :
     ∃ ψ' : Ket d₂, (pure ψ).relabel e = pure ψ' := by
-  refine ⟨⟨fun i => ψ (e i), ?_⟩, rfl⟩
-  rw [← ψ.normalized', Fintype.sum_equiv e]
-  congr!
+  have hnorm : ∑ i, ‖ψ (e i)‖ ^ 2 = 1 := by
+    rw [← ψ.normalized', Fintype.sum_equiv e]
+    congr!
+  refine ⟨⟨fun i => ψ (e i), hnorm⟩, ?_⟩
+  ext i j
+  simp [reindex_apply, Ket.apply, Matrix.vecMulVec_apply, Bra.eq_conj]
 
 @[simp]
 theorem relabel_relabel {d d₂ d₃ : Type*}
     [Fintype d] [DecidableEq d] [Fintype d₂] [DecidableEq d₂] [Fintype d₃] [DecidableEq d₃]
     (ρ : MState d) (e : d₂ ≃ d) (e₂ : d₃ ≃ d₂) : (ρ.relabel e).relabel e₂ = ρ.relabel (e₂.trans e) := by
-  rfl
+  ext
+  simp [reindex_apply]
 
 theorem eq_relabel_iff {d₁ d₂ : Type u} [Fintype d₁] [DecidableEq d₁] [Fintype d₂] [DecidableEq d₂]
     (ρ : MState d₁) (σ : MState d₂) (h : d₁ ≃ d₂) :
     ρ = σ.relabel h ↔ ρ.relabel h.symm = σ := by
-  simp only [MState.ext_iff, HermitianMat.ext_iff, mat_M, relabel_m]
-  exact ⟨(by simp[·]), (by simp[← ·])⟩
+  constructor
+  · rintro rfl
+    simp
+  · rintro rfl
+    simp
 
 theorem relabel_comp {d₁ d₂ d₃ : Type*} [Fintype d₁] [DecidableEq d₁] [Fintype d₂] [DecidableEq d₂]
       [Fintype d₃] [DecidableEq d₃] (ρ : MState d₁) (e : d₂ ≃ d₁) (f : d₃ ≃ d₂) :
     (ρ.relabel e).relabel f = ρ.relabel (f.trans e) := by
   ext
-  simp
+  simp [reindex_apply]
 
 theorem relabel_cast {d₁ d₂ : Type u} [Fintype d₁] [DecidableEq d₁]
     [Fintype d₂] [DecidableEq d₂]
@@ -1106,7 +1478,6 @@ theorem relabel_cast {d₁ d₂ : Type u} [Fintype d₁] [DecidableEq d₁]
   symm
   apply cast_heq
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 theorem spectrum_relabel {ρ : MState d} (e : d₂ ≃ d) :
     _root_.spectrum ℝ (ρ.relabel e).m = _root_.spectrum ℝ ρ.m := by
@@ -1132,6 +1503,15 @@ theorem purity_relabel (ρ : MState d₁) (e : d₂ ≃ d₁) : (ρ.relabel e).p
 def SWAP (ρ : MState (d₁ × d₂)) : MState (d₂ × d₁) :=
   ρ.relabel (Equiv.prodComm d₁ d₂).symm
 
+@[simp]
+theorem SWAP_M (ρ : MState (d₁ × d₂)) : ρ.SWAP.M = ρ.M.reindex (Equiv.prodComm d₁ d₂) := by
+  rw [SWAP, relabel_M, Equiv.symm_symm]
+
+@[simp]
+theorem SWAP_m (ρ : MState (d₁ × d₂)) : ρ.SWAP.m =
+    ρ.m.submatrix (Equiv.prodComm d₁ d₂).symm (Equiv.prodComm d₁ d₂).symm := by
+  rw [SWAP, relabel_m]
+
 /--
 The multiset of values in the spectrum of a relabeled state is the same as the multiset of values in the spectrum of the original state.
 -/
@@ -1139,7 +1519,7 @@ lemma multiset_spectrum_relabel_eq {d₁ d₂ : Type*} [Fintype d₁] [Decidable
     (ρ : MState d₁) (e : d₂ ≃ d₁) :
     Multiset.map (ρ.relabel e).spectrum Finset.univ.val = Multiset.map ρ.spectrum Finset.univ.val := by
   have h_charpoly : Matrix.charpoly (ρ.relabel e).m = Matrix.charpoly ρ.m := by
-    exact Matrix.charpoly_reindex e.symm ρ.m
+    simpa [relabel_m] using Matrix.charpoly_reindex e.symm ρ.m
   have h_eigenvalues : Multiset.map (ρ.relabel e).M.H.eigenvalues Finset.univ.val = Multiset.map ρ.M.H.eigenvalues Finset.univ.val := by
     have h_eigenvalues : Polynomial.roots (Matrix.charpoly (ρ.relabel e).m) = Polynomial.roots (Matrix.charpoly ρ.m) := by
       rw [h_charpoly];
@@ -1163,7 +1543,7 @@ lemma multiset_spectrum_relabel_eq {d₁ d₂ : Type*} [Fintype d₁] [Decidable
     congr! 2;
     exact beq_eq_beq.mp rfl
 
-lemma spectrum_SWAP (ρ : MState (d₁ × d₂)) : ∃ e, ρ.SWAP.spectrum.relabel e = ρ.spectrum := by
+theorem spectrum_SWAP (ρ : MState (d₁ × d₂)) : ∃ e, ρ.SWAP.spectrum.relabel e = ρ.spectrum := by
   -- Apply the lemma exists_equiv_of_multiset_map_eq with the appropriate parameters.
   obtain ⟨w, h⟩ := exists_equiv_of_multiset_map_eq (fun p => ρ.spectrum p) (fun p => ρ.SWAP.spectrum p)
     (ρ.multiset_spectrum_relabel_eq (Equiv.prodComm _ _).symm ▸ rfl)
@@ -1173,16 +1553,19 @@ lemma spectrum_SWAP (ρ : MState (d₁ × d₂)) : ∃ e, ρ.SWAP.spectrum.relab
   rfl
 
 @[simp]
-theorem SWAP_SWAP (ρ : MState (d₁ × d₂)) : ρ.SWAP.SWAP = ρ :=
-  rfl
+theorem SWAP_SWAP (ρ : MState (d₁ × d₂)) : ρ.SWAP.SWAP = ρ := by
+  ext
+  simp [SWAP, reindex_apply]
 
 @[simp]
-theorem traceLeft_SWAP (ρ : MState (d₁ × d₂)) : ρ.SWAP.traceLeft = ρ.traceRight :=
-  rfl
+theorem traceLeft_SWAP (ρ : MState (d₁ × d₂)) : ρ.SWAP.traceLeft = ρ.traceRight := by
+  ext
+  simp [SWAP, reindex_apply, traceLeft_apply, traceRight_apply]
 
 @[simp]
-theorem traceRight_SWAP (ρ : MState (d₁ × d₂)) : ρ.SWAP.traceRight = ρ.traceLeft :=
-  rfl
+theorem traceRight_SWAP (ρ : MState (d₁ × d₂)) : ρ.SWAP.traceRight = ρ.traceLeft := by
+  ext
+  simp [SWAP, reindex_apply, traceLeft_apply, traceRight_apply]
 
 /-- The associator that re-clusters the parts of a quantum system. -/
 def assoc (ρ : MState ((d₁ × d₂) × d₃)) : MState (d₁ × d₂ × d₃) :=
@@ -1192,19 +1575,50 @@ def assoc (ρ : MState ((d₁ × d₂) × d₃)) : MState (d₁ × d₂ × d₃)
 def assoc' (ρ : MState (d₁ × d₂ × d₃)) : MState ((d₁ × d₂) × d₃) :=
   ρ.SWAP.assoc.SWAP.assoc.SWAP
 
+/-- `MState.assoc'` is the relabelling along `Equiv.prodAssoc`; the chain of swaps and associators
+in its definition composes to that single permutation. -/
+theorem assoc'_eq_relabel (ρ : MState (d₁ × d₂ × d₃)) :
+    ρ.assoc' = ρ.relabel (Equiv.prodAssoc d₁ d₂ d₃) := by
+  apply DensityOp.ext_m
+  ext ⟨⟨i, j⟩, k⟩ ⟨⟨i', j'⟩, k'⟩
+  simp [assoc', assoc, SWAP]
+
+@[simp]
+theorem assoc_M (ρ : MState ((d₁ × d₂) × d₃)) :
+    ρ.assoc.M = ρ.M.reindex (Equiv.prodAssoc d₁ d₂ d₃) := by
+  rw [assoc, relabel_M, Equiv.symm_symm]
+
+@[simp]
+theorem assoc_m (ρ : MState ((d₁ × d₂) × d₃)) : ρ.assoc.m =
+    ρ.m.submatrix (Equiv.prodAssoc d₁ d₂ d₃).symm (Equiv.prodAssoc d₁ d₂ d₃).symm := by
+  rw [assoc, relabel_m]
+
+@[simp]
+theorem assoc'_M (ρ : MState (d₁ × d₂ × d₃)) :
+    ρ.assoc'.M = ρ.M.reindex (Equiv.prodAssoc d₁ d₂ d₃).symm := by
+  rw [assoc'_eq_relabel, relabel_M]
+
+@[simp]
+theorem assoc'_m (ρ : MState (d₁ × d₂ × d₃)) :
+    ρ.assoc'.m = ρ.m.submatrix (Equiv.prodAssoc d₁ d₂ d₃) (Equiv.prodAssoc d₁ d₂ d₃) := by
+  rw [assoc'_eq_relabel, relabel_m]
+
 @[simp]
 theorem assoc_assoc' (ρ : MState (d₁ × d₂ × d₃)) : ρ.assoc'.assoc = ρ := by
-  rfl
+  ext
+  simp [assoc, assoc', SWAP, reindex_apply]
 
 @[simp]
 theorem assoc'_assoc (ρ : MState ((d₁ × d₂) × d₃)) : ρ.assoc.assoc' = ρ := by
-  rfl
+  ext
+  simp [assoc, assoc', SWAP, reindex_apply]
 
 @[simp]
 theorem traceLeft_right_assoc (ρ : MState ((d₁ × d₂) × d₃)) :
     ρ.assoc.traceLeft.traceRight = ρ.traceRight.traceLeft := by
   ext
-  exact Finset.sum_comm
+  simpa [assoc, reindex_apply, traceLeft_apply, traceRight_apply]
+    using Finset.sum_comm
 
 @[simp]
 theorem traceRight_left_assoc' (ρ : MState (d₁ × d₂ × d₃)) :
@@ -1214,14 +1628,14 @@ theorem traceRight_left_assoc' (ρ : MState (d₁ × d₂ × d₃)) :
 @[simp]
 theorem traceRight_assoc (ρ : MState ((d₁ × d₂) × d₃)) :
     ρ.assoc.traceRight = ρ.traceRight.traceRight := by
-  ext : 3
-  apply Finset.sum_product
+  ext
+  simp [assoc, reindex_apply, traceRight_apply, Fintype.sum_prod_type]
 
 @[simp]
 theorem traceLeft_assoc' (ρ : MState (d₁ × d₂ × d₃)) :
     ρ.assoc'.traceLeft = ρ.traceLeft.traceLeft := by
-  convert! ρ.SWAP.assoc.SWAP.traceRight_assoc
-  simp
+  ext
+  simp [assoc', traceLeft_apply]
 
 @[simp]
 theorem traceLeft_left_assoc (ρ : MState ((d₁ × d₂) × d₃)) :
@@ -1233,6 +1647,8 @@ theorem traceRight_right_assoc' (ρ : MState (d₁ × d₂ × d₃)) :
     ρ.assoc'.traceRight.traceRight = ρ.traceRight := by
   simp [assoc']
 
+/-- **Matrix analogue of unit trace**: a density matrix, being PSD with trace one, has trace
+norm one. -/
 @[simp]
 theorem traceNorm_eq_one (ρ : MState d) : ρ.m.traceNorm = 1 :=
   have := calc (ρ.m.traceNorm : ℂ)
@@ -1240,15 +1656,57 @@ theorem traceNorm_eq_one (ρ : MState d) : ρ.m.traceNorm = 1 :=
     _ = 1 := ρ.tr'
   Complex.ofReal_eq_one.mp this
 
+section TensorRearrange
+
+/-! ### Rearranging tensor factors, operator-side
+
+`MState.SWAP` and `MState.assoc` relabel the index type of a composite system; read through
+`DensityOp.transport`, they are the tensor-product isometries of Mathlib. -/
+
+open scoped TensorProduct
+
+variable {E F G : Type*}
+variable [NormedAddCommGroup E] [InnerProductSpace ℂ E] [StdBasis ℂ E d₁]
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F] [StdBasis ℂ F d₂]
+variable [NormedAddCommGroup G] [InnerProductSpace ℂ G] [StdBasis ℂ G d₃]
+
+/-- Swapping the two halves of a bipartite state is `TensorProduct.commIsometry`. -/
+theorem SWAP_transport (ρ : MState (d₁ × d₂)) :
+    ρ.SWAP.transport (F ⊗[ℂ] E) = (ρ.transport (E ⊗[ℂ] F)).congr (TensorProduct.commIsometry ℂ E F)
+    := by
+  ext1
+  rw [DensityOp.M_congr_of_stdBasis _ _ (Equiv.prodComm d₁ d₂) StdBasis.commIsometry_stdBasis,
+    DensityOp.M_transport, DensityOp.M_transport, SWAP_M]
+
+/-- Reassociating a tripartite state is `TensorProduct.assocIsometry`. -/
+theorem assoc_transport (ρ : MState ((d₁ × d₂) × d₃)) :
+    ρ.assoc.transport (E ⊗[ℂ] (F ⊗[ℂ] G)) =
+      (ρ.transport ((E ⊗[ℂ] F) ⊗[ℂ] G)).congr (TensorProduct.assocIsometry ℂ E F G) := by
+  ext1
+  rw [DensityOp.M_congr_of_stdBasis _ _ (Equiv.prodAssoc d₁ d₂ d₃)
+    StdBasis.assocIsometry_stdBasis, DensityOp.M_transport, DensityOp.M_transport, assoc_M]
+
+/-- Reassociating a tripartite state the other way is `TensorProduct.assocIsometry.symm`. -/
+theorem assoc'_transport (ρ : MState (d₁ × d₂ × d₃)) :
+    ρ.assoc'.transport ((E ⊗[ℂ] F) ⊗[ℂ] G) =
+      (ρ.transport (E ⊗[ℂ] (F ⊗[ℂ] G))).congr (TensorProduct.assocIsometry ℂ E F G).symm := by
+  have h := assoc_transport (E := E) (F := F) (G := G) ρ.assoc'
+  rw [assoc_assoc'] at h
+  rw [h, DensityOp.congr_congr_symm]
+
+end TensorRearrange
+
 --TODO: This naming is very inconsistent. Should be better about "prod" vs "kron"
 
 theorem relabel_kron (ρ : MState d₁) (σ : MState d₂) (e : d₃ ≃ d₁) :
     ((ρ.relabel e) ⊗ᴹ σ) = (ρ ⊗ᴹ σ).relabel (e.prodCongr (Equiv.refl d₂)) := by
-  rfl --is this defeq abuse? I don't know
+  ext i j
+  simp [reindex_apply, kronecker_apply]
 
 theorem kron_relabel (ρ : MState d₁) (σ : MState d₂) (e : d₃ ≃ d₂) :
     (ρ ⊗ᴹ σ.relabel e) = (ρ ⊗ᴹ σ).relabel ((Equiv.refl d₁).prodCongr e) := by
-  rfl
+  ext i j
+  simp [reindex_apply, kronecker_apply]
 
 theorem prod_assoc (ρ : MState d₁) (σ : MState d₂) (τ : MState d₃) :
     (ρ ⊗ᴹ (σ ⊗ᴹ τ)) = (ρ ⊗ᴹ σ ⊗ᴹ τ).relabel (Equiv.prodAssoc d₁ d₂ d₃).symm := by
@@ -1260,52 +1718,52 @@ section topology
 
 /-- Mixed states inherit the subspace topology from matrices -/
 instance : TopologicalSpace (MState d) :=
-  TopologicalSpace.induced MState.M inferInstance
+  TopologicalSpace.induced DensityOp.M inferInstance
 
 /-- The projection from mixed states to their Hermitian matrices is an embedding -/
-theorem toMat_IsEmbedding : Topology.IsEmbedding (MState.M (d := d)) where
+theorem toMat_IsEmbedding :
+    Topology.IsEmbedding (DensityOp.M : MState d → HermitianMat d ℂ) where
   eq_induced := rfl
-  injective := @MState.ext _ _ _
+  injective := DensityOp.M_Injective
 
 instance : T3Space (MState d) :=
   Topology.IsEmbedding.t3Space toMat_IsEmbedding
 
 instance : CompactSpace (MState d) := by
   constructor
-  rw [(Topology.IsInducing.induced MState.M).isCompact_iff]
+  rw [(Topology.IsInducing.induced DensityOp.M).isCompact_iff]
   suffices IsCompact (Set.Icc 0 1 ∩ { m | m.trace = 1} : Set (HermitianMat d ℂ)) by
     convert this
     ext1 m
     constructor
     · rintro ⟨ρ, _, rfl⟩
       simp [ρ.nonneg, ρ.le_one]
-    · simpa using fun m_pos _ m_tr ↦ ⟨⟨m, m_pos, m_tr⟩, rfl⟩
+    · simpa using fun m_pos _ m_tr ↦ ⟨DensityOp.ofMat m m_pos m_tr, by simp⟩
   apply isCompact_Icc.inter_right
   refine isClosed_eq ?_ continuous_const
   rw [funext trace_eq_re_trace]
   fun_prop
 
 noncomputable instance : MetricSpace (MState d) :=
-  MetricSpace.induced MState.M MState.M_Injective inferInstance
+  MetricSpace.induced DensityOp.M DensityOp.M_Injective inferInstance
 
 theorem dist_eq (x y : MState d) : dist x y = dist x.M y.M := by
   rfl
 
-set_option backward.isDefEq.respectTransparency false in
 instance : BoundedSpace (MState d) where
   bounded_univ :=
     CompactSpace.isCompact_univ.isBounded
 
 @[fun_prop]
-theorem Continuous_HermitianMat : Continuous (MState.M (d := d)) :=
+theorem Continuous_HermitianMat : Continuous (DensityOp.M : MState d → HermitianMat d ℂ) :=
   continuous_iff_le_induced.mpr fun _ => id
 
 @[fun_prop]
-theorem Continuous_Matrix : Continuous (MState.m (d := d)) := by
-  show Continuous (fun ρ : MState d => ρ.M.mat)
+theorem Continuous_Matrix : Continuous (DensityOp.m : MState d → Matrix d d ℂ) := by
+  unfold DensityOp.m
   fun_prop
 
-theorem image_M_isBounded (S : Set (MState d)) : Bornology.IsBounded (MState.M '' S) := by
+theorem image_M_isBounded (S : Set (MState d)) : Bornology.IsBounded (DensityOp.M '' S) := by
   rw [← Bornology.isBounded_induced]
   exact Bornology.IsBounded.all S
 
@@ -1316,16 +1774,19 @@ section finprod
 variable {ι : Type u} [DecidableEq ι] [fι : Fintype ι]
 variable {dI : ι → Type v} [∀(i :ι), Fintype (dI i)] [∀(i :ι), DecidableEq (dI i)]
 
-set_option backward.isDefEq.respectTransparency false in
-def piProd (ρi : (i:ι) → MState (dI i)) : MState ((i:ι) → dI i) where
-  M := {
-    val := Matrix.piProd (fun i ↦ (ρi i).m)
-    property := Matrix.IsHermitian.piProd (fun i ↦ (ρi i).Hermitian)
-  }
-  nonneg := by
-    rw [zero_le_iff]
-    exact Matrix.PosSemidef.piProd (fun i => psd (ρi i))
-  tr := by simp [trace, Matrix.trace_piProd]
+def piProd (ρi : (i:ι) → MState (dI i)) : MState ((i:ι) → dI i) :=
+  DensityOp.ofMat
+    ⟨Matrix.piProd (fun i ↦ (ρi i).m), Matrix.IsHermitian.piProd (fun i ↦ (ρi i).Hermitian)⟩
+    (by
+      rw [zero_le_iff]
+      exact Matrix.PosSemidef.piProd (fun i => psd (ρi i)))
+    (by simp [trace, Matrix.trace_piProd])
+
+@[simp]
+theorem piProd_M (ρi : (i:ι) → MState (dI i)) :
+    (piProd ρi).M =
+      ⟨Matrix.piProd (fun i ↦ (ρi i).m), Matrix.IsHermitian.piProd (fun i ↦ (ρi i).Hermitian)⟩ := by
+  rw [piProd, M_ofMat]
 
 /-- The n-copy "power" of a mixed state, with the standard basis indexed by pi types. -/
 def npow (ρ : MState d) (n : ℕ) : MState (Fin n → d) :=
@@ -1339,38 +1800,35 @@ end finprod
 section posdef
 
 theorem PosDef.kron {d₁ d₂ : Type*} [Fintype d₁] [DecidableEq d₁] [Fintype d₂] [DecidableEq d₂]
-    {σ₁ : MState d₁} {σ₂ : MState d₂} (hσ₁ : σ₁.m.PosDef) (hσ₂ : σ₂.m.PosDef) : (σ₁ ⊗ᴹ σ₂).m.PosDef :=
-  hσ₁.kron hσ₂
+    {σ₁ : MState d₁} {σ₂ : MState d₂} (hσ₁ : σ₁.m.PosDef) (hσ₂ : σ₂.m.PosDef) : (σ₁ ⊗ᴹ σ₂).m.PosDef := by
+  rw [prod_m]
+  exact hσ₁.kron hσ₂
 
 theorem PosDef.relabel {d₁ d₂ : Type*} [Fintype d₁] [DecidableEq d₁] [Fintype d₂] [DecidableEq d₂]
-    {ρ : MState d₁} (hρ : ρ.m.PosDef) (e : d₂ ≃ d₁) : (ρ.relabel e).m.PosDef :=
-  Matrix.PosDef.reindex hρ e.symm
+    {ρ : MState d₁} (hρ : ρ.m.PosDef) (e : d₂ ≃ d₁) : (ρ.relabel e).m.PosDef := by
+  simpa [relabel_m] using Matrix.PosDef.reindex hρ e.symm
 
 /-- If both states positive definite, so is their mixture. -/
 theorem PosDef_mix {d : Type*} [Fintype d] [DecidableEq d] {σ₁ σ₂ : MState d}
-    (hσ₁ : σ₁.m.PosDef) (hσ₂ : σ₂.m.PosDef) (p : Prob) : (p [σ₁ ↔ σ₂]).m.PosDef :=
-  Matrix.PosDef.Convex hσ₁ hσ₂ p.zero_le (1 - p).zero_le (by simp)
+    (hσ₁ : σ₁.m.PosDef) (hσ₂ : σ₂.m.PosDef) (p : Prob) : (p [σ₁ ↔ σ₂]).m.PosDef := by
+  rw [mix_m]
+  exact Matrix.PosDef.Convex hσ₁ hσ₂ p.zero_le_coe (sub_nonneg.mpr Prob.coe_le_one) (by ring)
 
 /-- If one state is positive definite and the mixture is nondegenerate, their mixture is also positive definite. -/
 theorem PosDef_mix_of_ne_zero {d : Type*} [Fintype d] [DecidableEq d] {σ₁ σ₂ : MState d}
     (hσ₁ : σ₁.m.PosDef) (p : Prob) (hp : p ≠ 0) : (p [σ₁ ↔ σ₂]).m.PosDef := by
-  rw [← zero_lt_iff] at hp
-  exact (hσ₁.smul hp).add_posSemidef (σ₂.psd.rsmul (1 - p).zero_le)
+  rw [mix_m]
+  have hp' : (0 : ℝ) < (p : ℝ) :=
+    Prob.zero_le_coe.lt_of_ne fun h ↦ hp (Prob.ext (by simpa using h.symm))
+  exact (hσ₁.smul hp').add_posSemidef (σ₂.psd.rsmul (sub_nonneg.mpr Prob.coe_le_one))
 
 /-- If the second state is positive definite and the mixture is nondegenerate, their mixture is also positive definite. -/
 theorem PosDef_mix_of_ne_one {d : Type*} [Fintype d] [DecidableEq d] {σ₁ σ₂ : MState d}
     (hσ₂ : σ₂.m.PosDef) (p : Prob) (hp : p ≠ 1) : (p [σ₁ ↔ σ₂]).m.PosDef := by
-  have : 0 < 1 - p := by
-    --TODO this is ridiculous, move to Prob
-    contrapose! hp
-    have : (1 : ℝ) - (p : ℝ) = (0 : ℝ) := by
-      have := le_antisymm hp (1 - p).zero_le
-      rw [Subtype.ext_iff] at this
-      simpa using this
-    ext
-    change (p : ℝ) = 1
-    linarith
-  exact (hσ₂.smul this).posSemidef_add (σ₁.psd.rsmul p.zero_le)
+  rw [mix_m]
+  have hp' : (0 : ℝ) < 1 - (p : ℝ) :=
+    sub_pos.mpr <| Prob.coe_le_one.lt_of_ne fun h ↦ hp (Prob.ext (by simpa using h))
+  exact (hσ₂.smul hp').posSemidef_add (σ₁.psd.rsmul Prob.zero_le_coe)
 
 theorem uniform_posDef {d : Type*} [Nonempty d] [Fintype d] [DecidableEq d] :
     (uniform (d := d)).m.PosDef := by

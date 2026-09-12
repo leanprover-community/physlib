@@ -192,7 +192,6 @@ private lemma blockDiagonal_le_left_wrap {A0 A1 B0 B1 : L ℋ}
   exact sub_nonneg.mp ((ContinuousLinearMap.nonneg_iff_isPositive _).2 hleftPos)
 
 -- Theorem 2.5.2 `(iv) → (v)`.
-set_option maxHeartbeats 3000000 in
 -- Block-matrix normalization in this wrapper needs a larger local heartbeat budget.
 theorem theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
     (hcont : ContinuousOn f Set.univ) :
@@ -304,7 +303,6 @@ theorem theorem_2_5_2_i_all_imp_v {f : ℝ → ℝ} (hf : CondIAll.{u} f) :
   exact theorem_2_5_2_i_all_imp_iv (ℋ := K) (f := f) hf
 
 -- Uniform localized consequence of Theorem 2.5.2: `(i) → (v)` on `Set.Ici 0`.
-set_option maxHeartbeats 3000000 in
 -- The localized wrapper repeats the same block-operator normalization as
 -- `theorem_2_5_2_iv_imp_v`.
 theorem theorem_2_5_2_i_ici_all_imp_v {f : ℝ → ℝ}

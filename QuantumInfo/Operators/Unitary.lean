@@ -7,10 +7,11 @@ module
 
 public import QuantumInfo.States.Mixed.MState
 
-/-! # Unitary operators on quantum state
+/-! # Unitary evolution of quantum states
 
-This file is intended for lemmas about unitary matrices (`Matrix.unitaryGroup`) and how they
-apply to `Bra`s, `Ket`s, and `MState` mixed states.
+This file is about the action of a unitary on a state, by conjugation. The basis-free version
+`DensityOp.uConj` takes a unitary operator; `MState.uConj`, notated `U ◃ ρ`, is the matrix
+analogue, taking a unitary matrix (`Matrix.unitaryGroup`).
 
 This is imported by `CPTPMap` to define things like unitary channels, Kraus operators, and
 complementary channels, so this file itself does not discuss channels yet. -/
@@ -22,6 +23,31 @@ noncomputable section
 open RealInnerProductSpace
 open InnerProductSpace
 
+namespace DensityOp
+
+variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
+
+/-- Conjugate a state by a unitary operator (applying the unitary as an evolution). -/
+def uConj (ρ : DensityOp E) (U : unitary (E →L[ℂ] E)) : DensityOp E where
+  op := ρ.op.conj U.val
+  op_nonneg := HermitianOp.conj_nonneg ρ.op_nonneg U.val
+  op_trace := by rw [HermitianOp.trace_conj_unitary, ρ.op_trace]
+
+@[simp]
+theorem uConj_op (ρ : DensityOp E) (U : unitary (E →L[ℂ] E)) :
+    (ρ.uConj U).op = ρ.op.conj U.val :=
+  rfl
+
+/-- **Matrix analogue of `DensityOp.uConj`.** -/
+@[simp]
+theorem uConj_M {ι : Type*} [Fintype ι] [DecidableEq ι] [StdBasis ℂ E ι] (ρ : DensityOp E)
+    (U : unitary (E →L[ℂ] E)) :
+    ((ρ.uConj U).M : HermitianMat ι ℂ) = (ρ.M : HermitianMat ι ℂ).conj
+      (StdBasis.toMatUnitary (ι := ι) U).val :=
+  HermitianOp.toMat_conj_unitary ρ.op U
+
+end DensityOp
+
 namespace MState
 
 variable {d d₁ d₂ d₃ : Type*}
@@ -30,15 +56,22 @@ variable [DecidableEq d]
 variable {ψ φ f : Ket d}
 
 /-- Conjugate a state by a unitary matrix (applying the unitary as an evolution). -/
-def uConj (ρ : MState d) (U : 𝐔[d]) : MState d where
-  M := ρ.M.conj U.val
-  nonneg := HermitianMat.conj_nonneg U.val ρ.nonneg
-  tr := by simp
+def uConj (ρ : MState d) (U : 𝐔[d]) : MState d :=
+  DensityOp.uConj ρ (StdBasis.unitaryOfMat U)
 
 /-- `MState.uConj`, the action of a unitary on a mixed state by conjugation.
 The ◃ notation comes from the theory of racks and quandles, where this is a
 conjugation-like operation. -/
 scoped[MState] notation:80 U:80 " ◃ " ρ:81 => MState.uConj ρ U
+
+@[simp]
+theorem uConj_M (ρ : MState d) (U : 𝐔[d]) : (U ◃ ρ).M = ρ.M.conj U.val := by
+  rw [uConj, DensityOp.uConj_M, StdBasis.toMatUnitary_unitaryOfMat]
+
+@[simp]
+theorem uConj_m (ρ : MState d) (U : 𝐔[d]) :
+    (U ◃ ρ).m = U.val * ρ.m * U.val.conjTranspose := by
+  rw [← DensityOp.mat_M, uConj_M, HermitianMat.conj_apply_mat, DensityOp.mat_M]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- You might think this should only be true up to permutation, so that it would read like
@@ -48,11 +81,11 @@ of a matrix are always canonically sorted, this is actually an equality.
 @[simp]
 theorem uConj_spectrum_eq (ρ : MState d) (U : 𝐔[d]) :
     (ρ.uConj U).spectrum = ρ.spectrum := by
-  simp [spectrum, uConj]
+  simp [spectrum]
 
 @[simp]
 theorem inner_uConj (ρ σ : MState d) (U : 𝐔[d]) : ⟪U ◃ ρ, U ◃ σ⟫_Prob = ⟪ρ, σ⟫_Prob := by
-  simp [uConj, inner_def]
+  simp [inner_def]
 
 /-- The **No-cloning theorem**, saying that if states `ψ` and `φ` can both be perfectly cloned
 using a unitary `U` and a fiducial state `f`, and they aren't identical (their inner product is
@@ -63,23 +96,13 @@ theorem no_cloning {U : 𝐔[d × d]}
     (hφ : U ◃ pure (φ ⊗ᵠ f) = pure (φ ⊗ᵠ φ))
     (H : ⟪pure ψ, pure φ⟫_Prob < (1 : ℝ)) :
     ⟪pure ψ, pure φ⟫_Prob = (0 : ℝ) := by
-  set ρψ := pure ψ
-  set ρφ := pure φ
-  have h1 : ⟪ρψ, ρφ⟫_Prob * ⟪ρψ, ρφ⟫_Prob = ⟪pure (ψ ⊗ᵠ ψ), pure (φ ⊗ᵠ φ)⟫_Prob := by
-    grind only [pure_prod_pure, prod_inner_prod]
-  have h2 : (⟪pure (ψ ⊗ᵠ ψ), pure (φ ⊗ᵠ φ)⟫_Prob : ℝ) =
-      ⟪U ◃ pure (ψ ⊗ᵠ f), U ◃ pure (φ ⊗ᵠ f)⟫_Prob := by
-    grind only [pure_prod_pure]
-  replace h2 : ((pure (ψ ⊗ᵠ ψ)).m * (pure (φ ⊗ᵠ φ)).m).trace.re = (ρψ.m * ρφ.m).trace.re := by
-    convert! ← h2
-    simp +zetaDelta only [inner_uConj, pure_prod_pure, prod]
-    simp [inner, ← Matrix.mul_kronecker_mul, pure_mul_self,
-      Matrix.trace_kronecker]
-  have h3 : (ρψ.m * ρφ.m).trace.re * ((ρψ.m * ρφ.m).trace.re - 1) = 0 := by
-    rw [mul_sub, sub_eq_zero, mul_one]
-    exact congr(Subtype.val $h1).trans h2
-  rw [mul_eq_zero] at h3
-  apply h3.resolve_right
-  exact sub_ne_zero_of_ne H.ne
+  have hff : ⟪pure f, pure f⟫_Prob = 1 := (pure_iff_purity_one _).mp ⟨f, rfl⟩
+  -- Cloning turns the overlap into its own square: `x * x = x`.
+  have key : ⟪pure ψ, pure φ⟫_Prob * ⟪pure ψ, pure φ⟫_Prob = ⟪pure ψ, pure φ⟫_Prob := by
+    rw [← prod_inner_prod, ← pure_prod_pure, ← pure_prod_pure, ← hψ, ← hφ, inner_uConj,
+      pure_prod_pure, pure_prod_pure, prod_inner_prod, hff, mul_one]
+  have hx : (⟪pure ψ, pure φ⟫_Prob : ℝ) * ⟪pure ψ, pure φ⟫_Prob = ⟪pure ψ, pure φ⟫_Prob := by
+    exact_mod_cast congrArg Subtype.val key
+  nlinarith [hx, H, (Prob.zero_le_coe : (0:ℝ) ≤ ⟪pure ψ, pure φ⟫_Prob)]
 
 end MState

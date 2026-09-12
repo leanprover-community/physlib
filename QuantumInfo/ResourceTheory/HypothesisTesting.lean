@@ -87,7 +87,7 @@ theorem iInf_IsConvex (ρ : MState d) (ε : Prob) : Convex ℝ { m | ρ.exp_val 
   rw [← eq_sub_iff_add_eq'] at hab
   subst b
   refine And.intro ?_ (And.intro ?_ ?_)
-  · simp only [MState.exp_val, inner_sub_right, HermitianMat.inner_one, MState.tr,
+  · simp only [MState.exp_val, inner_sub_right, HermitianMat.inner_one, DensityOp.tr,
       tsub_le_iff_right, inner_add_right, inner_smul_right] at hx₁ hy₁ ⊢
     linear_combination a * hx₁ + (1 - a) * hy₁
   · apply HermitianMat.convex_cone <;> assumption
@@ -159,7 +159,7 @@ theorem exists_min' (ρ : MState d) (ε : Prob) (S : Set (MState d)):
       refine Continuous.comp (g := fun T ↦ ⨆ (i : S), i.val.exp_val T) ?_ continuous_subtype_val
       convert! h with T
       rw [← sSup_image' (s := S) (f := fun i ↦ i.exp_val T)]
-      rw [← sSup_image' (s := (MState.M '' S)) (f := fun i ↦ i.innerₗ T)]
+      rw [← sSup_image' (s := (DensityOp.M '' S)) (f := fun i ↦ i.innerₗ T)]
       simp [Set.image, MState.exp_val, HermitianMat.innerₗ]
     )
   clear hT₁
@@ -268,7 +268,7 @@ theorem pos_of_lt_one {ρ : MState d} (S : Set (MState d))
 set_option backward.isDefEq.respectTransparency false in
 --Lemma 3 from Hayashi
 theorem Lemma3 {ρ : MState d} (ε : Prob) {S : Set (MState d)} (hS₁ : IsCompact S)
-    (hS₂ : Convex ℝ (MState.M '' S)) : ⨆ σ ∈ S, β_ ε(ρ‖{σ}) = β_ ε(ρ‖S) := by
+    (hS₂ : Convex ℝ (DensityOp.M '' S)) : ⨆ σ ∈ S, β_ ε(ρ‖{σ}) = β_ ε(ρ‖S) := by
   --Work out the case where S is empty, so we can now assume it's nonempty
   rcases S.eq_empty_or_nonempty with rfl|hnS
   · simpa using _root_.bot_eq_zero
@@ -280,7 +280,7 @@ theorem Lemma3 {ρ : MState d} (ε : Prob) {S : Set (MState d)} (hS₁ : IsCompa
   --This parts needs the minimax theorem. Set up the relevant sets and hypotheses.
   --The function `f` will be the `MState.exp_val` function, but bundled as a bilinear form.
   let f : LinearMap.BilinForm ℝ (HermitianMat d ℂ) := HermitianMat.innerₗ
-  let S' : Set (HermitianMat d ℂ) := MState.M '' S
+  let S' : Set (HermitianMat d ℂ) := DensityOp.M '' S
   let T' : Set (HermitianMat d ℂ) := { m | ρ.exp_val (1 - m) ≤ ε ∧ 0 ≤ m ∧ m ≤ 1 }
 
   have hS'₁ : IsCompact S' := hS₁.image MState.Continuous_HermitianMat
@@ -336,14 +336,14 @@ theorem optimalHypothesisRate_antitone (ρ σ : MState d) (ℰ : CPTPMap d d₂)
     β_ ε(ρ‖{σ}) ≤ β_ ε(ℰ ρ‖{ℰ σ}) := by
   simp only [of_singleton]
   obtain ⟨ℰdualSubtype, h⟩ :
-      ∃ e : ({ m : HermitianMat d₂ ℂ // (ℰ ρ).exp_val (1 - m) ≤ ε ∧ 0 ≤ m ∧ m ≤ 1} →
+      ∃ e : ({ m : HermitianMat d₂ ℂ // MState.exp_val (ℰ ρ) (1 - m) ≤ ε ∧ 0 ≤ m ∧ m ≤ 1} →
       { m : HermitianMat d ℂ // ρ.exp_val (1 - m) ≤ ε ∧ 0 ≤ m ∧ m ≤ 1}),
       ∀ x, e x = ℰ.hermDual x
        := by
     constructor; swap
     · rintro ⟨m, hm₁, hm₂⟩
-      refine ⟨ℰ.toPTPMap.hermDual m, ?_, PTPMap.hermDual.PTP_POVM ℰ.toPTPMap hm₂⟩
-      have hℰd : (ℰ ρ).exp_val (1 - m) = ρ.exp_val (ℰ.hermDual (1 - m)) :=
+      refine ⟨ℰ.toPTPOp.hermDual m, ?_, PTPOp.hermDual.PTP_POVM ℰ.toPTPOp hm₂⟩
+      have hℰd : MState.exp_val (ℰ ρ) (1 - m) = ρ.exp_val (ℰ.hermDual (1 - m)) :=
         ℰ.exp_val_hermDual ρ (1 - m)
       simpa [hℰd] using hm₁
     · rintro ⟨m, hm₁, hm₂⟩
@@ -367,11 +367,12 @@ theorem Ref81Lem5 (ρ σ : MState d) (ε : Prob) (hε : ε < 1) (α : ℝ) (hα 
     —log β_ ε(ρ‖{σ}) ≤ D̃_ α(ρ‖σ) + —log (1 - ε) *
       (.ofNNReal ⟨α, zero_le_one.trans hα.le⟩) / (.ofNNReal ⟨α - 1, sub_nonneg_of_le hα.le⟩)
     := by
-  generalize_proofs pf1 pf2
+  generalize_proofs pfF pf1 pf2
   --If ρ isn't in the support of σ, the right hand side is just ⊤. (The left hand side is not, necessarily!)
   by_cases h_supp : σ.M.ker ≤ ρ.M.ker
   swap
-  · simp [SandwichedRelRentropy, h_supp, zero_lt_one.trans hα]
+  · rw [sandwichedRelRentropy_eq_top (zero_lt_one.trans hα) h_supp, top_add]
+    exact le_top
 
   --Now we know that ρ.support ≤ σ.support. This is the main case we actually care about.
   --Proof from https://link.springer.com/article/10.1007/s00220-016-2645-4 reproduced below.
@@ -456,11 +457,13 @@ theorem Ref81Lem5 (ρ σ : MState d) (ε : Prob) (hε : ε < 1) (α : ℝ) (hα 
 
 
   --The Renyi entropy is finite
-  rw [SandwichedRelRentropy, dif_pos (zero_lt_one.trans hα), dif_pos ?_]; swap
+  rw [MState.sandwichedRelRentropy_eq_matrix, dif_pos (zero_lt_one.trans hα), dif_pos ?_]; swap
   · suffices q2.M.ker = ⊥ by
       simp only [this, bot_le]
     --q2 has eigenvalues β_ ε(ρ‖{σ}) and 1-β_ ε(ρ‖{σ}), so as long as β_ ε(ρ‖{σ}) isn't 0 or 1,
     --this is true.
+    rw [show q2.M = HermitianMat.diagonal ℂ (ProbDistribution.coin q ·) from
+      MState.coe_ofClassical _]
     exact ker_diagonal_prob_eq_bot hq hq₂
 
   conv => enter [2, 1, 1, 1]; rw [if_neg hα.ne']

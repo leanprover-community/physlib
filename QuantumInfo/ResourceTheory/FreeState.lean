@@ -102,13 +102,13 @@ theorem prodRelabel_relabel_cast_prod
     (ρ₁.relabel (Equiv.cast (congrArg H hik))) ⊗ᵣ (ρ₂.relabel (Equiv.cast (congrArg H hlj))) := by
   subst hik
   subst hlj
-  rfl
+  simp only [Equiv.cast_refl, MState.relabel_refl]
 
 /-- The `prod` operation of `ResourcePretheory` gives the natural product operation on `CPTPMap`s. Accessible
 by the notation `M₁ ⊗ᶜᵖᵣ M₂`. -/
 noncomputable def prodCPTPMap (M₁ : CPTPMap (H i) (H j)) (M₂ : CPTPMap (H k) (H l)) :
     CPTPMap (H (i * k)) (H (j * l)) :=
-  (CPTPMap.ofEquiv (prodEquiv j l).symm).compose ((M₁ ⊗ᶜᵖ M₂).compose (CPTPMap.ofEquiv (prodEquiv i k)))
+  (CPTPOp.ofEquiv (prodEquiv j l).symm).compose ((M₁ ⊗ᶜᵖ M₂).compose (CPTPOp.ofEquiv (prodEquiv i k)))
 
 @[inherit_doc]
 scoped notation M₁ " ⊗ᶜᵖᵣ " M₂ => prodCPTPMap M₁ M₂
@@ -325,7 +325,7 @@ lemma sInf_spectrum_spacePow (σ : MState (H i)) (n : ℕ) :
       enter [1, 1, 2]
       equals 1 =>
         ext1
-        simp [default, MState.uniform, MState.ofClassical, MState.m, HermitianMat.diagonal]
+        simp [default, MState.uniform, MState.ofClassical, DensityOp.m, HermitianMat.diagonal]
     rw [spectrum.one_eq, csInf_singleton]
   · rename_i n ih
     rw [statePow_succ, sInf_spectrum_rprod, ih, pow_succ]
@@ -357,7 +357,7 @@ class FreeStateTheory (ι : Type*) extends ResourcePretheory ι where
   /-- The set F(H) of free states is closed -/
   free_closed : IsClosed (@IsFree i)
   /-- The set F(H) of free states is convex (more precisely, their matrices are) -/
-  free_convex : Convex ℝ (MState.M '' (@IsFree i))
+  free_convex : Convex ℝ (DensityOp.M '' (@IsFree i))
   /-- The set of free states is closed under tensor product -/
   free_prod {ρ₁ : MState (H i)} {ρ₂ : MState (H j)} (h₁ : IsFree ρ₁) (h₂ : IsFree ρ₂) : IsFree (ρ₁ ⊗ᵣ ρ₂)
   /-- The set F(H) of free states contains a full-rank state `ρfull`, equivalently `ρfull` is positive definite. -/
@@ -387,7 +387,10 @@ theorem IsFree.mix {ι : Type*} [FreeStateTheory ι] {i : ι} {σ₁ σ₂ : MSt
   obtain ⟨m, hm₁, hm₂⟩ := free_convex (i := i) ⟨σ₁, hσ₁, rfl⟩ ⟨σ₂, hσ₂, rfl⟩ p.zero_le (1 - p).zero_le (by simp)
   simp [Mixable.mix, Mixable.mix_ab, MState.instMixable]
   simp at hm₂
-  convert! ← hm₁
+  refine Set.mem_of_eq_of_mem ?_ hm₁
+  refine DensityOp.ext (ι := H i) ?_
+  rw [DensityOp.M_ofMat]
+  exact hm₂.symm
 
 end FreeStateTheory
 
@@ -467,7 +470,11 @@ theorem RelativeEntResource.Subadditive (ρ : MState (H i)) : Subadditive fun n 
     exact free_prod hσ₂f hσ₃f
   · apply le_of_eq
     rw [← qRelEntropy_prodRelabel]
-    exact qRelEntropy_heq_congr ht (statePow_add ρ m n) (by rw [MState.relabel_cast]; exact cast_heq _ _)
+    refine qRelEntropy_heq_congr ht ?_ ?_
+    · apply statePow_add
+    · rw [← eq_cast_iff_heq]
+      apply MState.relabel_cast
+      rw [spacePow_add]
 
 noncomputable def RegularizedRelativeEntResource (ρ : MState (H i)) : ℝ≥0 :=
   ⟨(RelativeEntResource.Subadditive ρ).lim, by

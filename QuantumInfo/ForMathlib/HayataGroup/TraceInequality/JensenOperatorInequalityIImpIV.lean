@@ -299,7 +299,6 @@ private theorem nontrivial_hsumL [Nontrivial ℋ] : Nontrivial (L (HSum ℋ)) :=
 set_option synthInstance.maxHeartbeats 100000 in
 -- `CFC.sqrt` on block-diagonal operators triggers expensive instance search through the product map.
 set_option linter.unusedSectionVars false in
-set_option maxHeartbeats 400000 in
 private lemma sqrt_blockDiagonal_of_nonneg
     [Nontrivial ℋ]
     {A B : L ℋ} (hA : IsSelfAdjoint A) (hB : IsSelfAdjoint B)

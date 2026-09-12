@@ -33,7 +33,7 @@ theorem tendsto_lim (hbdd : BddAbove (Set.range fun n => u n / n)) :
   )
   convert this.neg using 1
   · ext; rw [neg_div', neg_neg]
-  · simp only [lim, Subadditive.lim, Real.sInf_def, neg_neg, nhds_eq_nhds_iff,
+  · simp only [lim, Subadditive.lim, Real.sInf_def, neg_neg,
       ← Set.image_neg_eq_neg, Set.image_image, neg_div', neg_neg]
 
 end Superadditive

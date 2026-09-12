@@ -17,7 +17,10 @@ public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
 public import QuantumInfo.ForMathlib.Matrix
 public import QuantumInfo.ForMathlib.Minimax
 public import QuantumInfo.ForMathlib.Misc
+public import QuantumInfo.ForMathlib.Superadditive
+public import QuantumInfo.ForMathlib.ULift
 public import QuantumInfo.ForMathlib.Unitary
+public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.JensenOperatorInequalityIVtoV
 
 --Code
 public import QuantumInfo.Channels.DegradableOrder
@@ -29,8 +32,12 @@ public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.States.Mixed.Fidelity
 public import QuantumInfo.States.Mixed.TraceDistance
 public import QuantumInfo.States.Pure.Qubit
+public import QuantumInfo.States.Pure.BlochSphere
+public import QuantumInfo.States.Pure.BargmannInvariant
+public import QuantumInfo.StdBasisState
 public import QuantumInfo.ResourceTheory.FreeState
 public import QuantumInfo.ResourceTheory.SteinsLemma
+public import QuantumInfo.ResourceTheory.ResourceTheory
 public import QuantumInfo.States.Pure.Braket
 public import QuantumInfo.Capacity.Capacity
 public import QuantumInfo.States.Ensemble
@@ -39,17 +46,19 @@ public import QuantumInfo.Entropy.VonNeumann
 public import QuantumInfo.Entropy.SSA
 public import QuantumInfo.Entropy.Relative
 public import QuantumInfo.Entropy.DPI
+public import QuantumInfo.Entropy.Axiomatized.Renyi
 public import QuantumInfo.States.Mixed.MState
 public import QuantumInfo.Channels.Pinching
 public import QuantumInfo.Measurements.POVM
 public import QuantumInfo.Operators.Unitary
+public import QuantumInfo.Regularized
 
 --Documentation without code
 public import QuantumInfo.Capacity.Capacity_doc
 
 --Classical information theory
--- import QuantumInfo.ClassicalInfo.Capacity
--- import QuantumInfo.ClassicalInfo.Channel
+public import QuantumInfo.ClassicalInfo.Capacity
+public import QuantumInfo.ClassicalInfo.Channel
 public import QuantumInfo.ClassicalInfo.Distribution
 public import QuantumInfo.ClassicalInfo.Entropy
 public import QuantumInfo.ClassicalInfo.Prob

@@ -63,12 +63,12 @@ omit [CompleteSpace ℋ] in
 private theorem nontrivial_hsumL : Nontrivial (L (HSum ℋ)) := by
   have h_not_sub : ¬ Subsingleton ℋ := by
     intro hsub
-    letI : Subsingleton ℋ := hsub
-    letI : Subsingleton (L ℋ) := by infer_instance
+    let : Subsingleton ℋ := hsub
+    let : Subsingleton (L ℋ) := by infer_instance
     exact (not_nontrivial_iff_subsingleton.mpr (by infer_instance))
       (inferInstance : Nontrivial (L ℋ))
   have hH_nontriv : Nontrivial ℋ := (not_subsingleton_iff_nontrivial.mp h_not_sub)
-  letI : Nontrivial ℋ := hH_nontriv
+  let : Nontrivial ℋ := hH_nontriv
   rcases exists_pair_ne ℋ with ⟨x, y, hxy⟩
   let w : ℋ := x - y
   have hw : w ≠ 0 := sub_ne_zero.mpr hxy
@@ -114,7 +114,6 @@ private lemma blockOp_mul (A00 A01 A10 A11 B00 B01 B10 B11 : L ℋ) :
     simp [ContinuousLinearMap.mul_def, add_left_comm, add_comm]
 
 set_option synthInstance.maxHeartbeats 400000 in
-set_option maxHeartbeats 800000 in
 omit [Nontrivial ℋ] in
 private lemma cfcR_blockDiagonal (f : ℝ → ℝ)
     (A B : L ℋ) (hA : IsSelfAdjoint A) (hB : IsSelfAdjoint B)
@@ -184,7 +183,6 @@ private lemma blockDiagonal_le_left {A0 A1 B0 B1 : L ℋ}
 -- Scratch theorem for fast feedback while formalizing Theorem 2.5.2 `(iv) → (v)`.
 -- This file intentionally avoids importing the heavy `(i) → (iv)` proof.
 set_option synthInstance.maxHeartbeats 400000 in
-set_option maxHeartbeats 3000000 in
 -- The block-matrix reduction creates large normalization goals in this scratch file.
 theorem theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
     (hcont : ContinuousOn f Set.univ) :
@@ -200,7 +198,7 @@ theorem theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
     simpa [Set.Ici] using hBs hx
   let Atilde : L (HSum ℋ) := blockDiagonal (ℋ := ℋ) A B
   let Xtilde : L (HSum ℋ) := blockOp (ℋ := ℋ) X 0 Y 0
-  letI : Nontrivial (L (HSum ℋ)) := nontrivial_hsumL (ℋ := ℋ)
+  let : Nontrivial (L (HSum ℋ)) := nontrivial_hsumL (ℋ := ℋ)
   have hAtilde_sa : IsSelfAdjoint Atilde := by
     simpa [Atilde] using blockDiagonal_selfAdjoint (ℋ := ℋ) hA hB
   have hAtilde0 : (0 : L (HSum ℋ)) ≤ Atilde := by

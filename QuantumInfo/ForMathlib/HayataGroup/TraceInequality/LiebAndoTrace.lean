@@ -240,7 +240,6 @@ private lemma aeval_apply_of_mem_eigenspace_realpoly
       (f := T.toLinearMap) (p := p.map (algebraMap ℝ ℂ)) (μ := (r : ℂ)) (x := x) ⟨hx, hx0⟩)
 
 -- The interpolation-based `cfcR`-on-eigenspace lemma is elaboration-heavy.
-set_option maxHeartbeats 400000 in
 private lemma cfcR_apply_of_mem_eigenspace_real
     {𝓚 : Type*} [NormedAddCommGroup 𝓚] [InnerProductSpace ℂ 𝓚] [CompleteSpace 𝓚]
     [FiniteDimensional ℂ 𝓚]
@@ -298,7 +297,6 @@ private lemma cfcR_apply_of_mem_eigenspace_real
           simpa using congrArg (fun t : ℝ => (t : ℂ)) (hq_spec hr_spec).symm
 
 -- This proof is isolated because the joint eigenspace decomposition is heartbeat-heavy.
-set_option maxHeartbeats 800000 in
 private lemma hmiddle_leftMul_rightMul
     {s : ℝ} {A B : L ℋ}
     (hA : A ∈ pdSet (ℋ := ℋ)) (hB : B ∈ pdSet (ℋ := ℋ)) :
@@ -551,7 +549,6 @@ private lemma hmiddle_leftMul_rightMul
 
 -- The bridge lemma expands a large `HSOp`-valued generalized perspective term.
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 800000 in
 private lemma phiK_operatorPowerMean_eq_liebTraceMap
     {s : ℝ} (K A B : L ℋ) (hA : A ∈ pdSet (ℋ := ℋ)) (hB : B ∈ pdSet (ℋ := ℋ)) :
     phiK (ℋ := ℋ) K
@@ -835,7 +832,6 @@ private lemma phiK_leftMul_rightMul_eq_traceRe (K C D : L ℋ) :
           simpa [X, mul_assoc] using htrace'.trans hcycle
 
 omit [FiniteDimensional ℂ ℋ] in
-set_option maxHeartbeats 400000 in
 private lemma pdSet_rpow_of_mem_Icc_zero_one
     {p : ℝ} (hp : p ∈ Set.Icc (0 : ℝ) 1) {A : L ℋ} (hA : A ∈ pdSet (ℋ := ℋ)) :
     A ^ p ∈ pdSet (ℋ := ℋ) := by
@@ -877,7 +873,6 @@ private lemma pdSet_rpow_of_mem_Icc_zero_one
     ⟨r ^ p, Real.rpow_pos_of_pos hr p, hbound⟩
 
 omit [Nontrivial ℋ] in
-set_option maxHeartbeats 400000 in
 private lemma liebTraceMap_mono_right
     {s : ℝ} (hs : 1 - s ∈ Set.Icc (0 : ℝ) 1)
     (K A B₁ B₂ : L ℋ)
@@ -948,7 +943,6 @@ private lemma liebTraceMap_mono_right
   linarith [hrewrite ▸ hphi]
 
 omit [Nontrivial ℋ] in
-set_option maxHeartbeats 400000 in
 private lemma liebTraceMap_antitone_right
     {s : ℝ} (hs : 1 - s ∈ Set.Icc (-1 : ℝ) 0)
     (K A B₁ B₂ : L ℋ)
@@ -1180,7 +1174,6 @@ theorem liebTrace_jointlyConvexOn_pdSet
       hA₁ hA₂ hB₁ hB₂] at hphi_mono
   simpa [add_comm, add_left_comm, add_assoc] using hphi_mono
 
-set_option maxHeartbeats 600000 in
 theorem liebExtensionTrace_jointlyConcaveOn_pdSet
     {p q : ℝ} (hp : 0 < p) (hq : 0 < q) (hpq : p + q ≤ 1) (K : L ℋ) :
     JointlyConcaveOn (pdSet (ℋ := ℋ)) (pdSet (ℋ := ℋ))
@@ -1297,7 +1290,6 @@ theorem liebExtensionTrace_jointlyConcaveOn_pdSet
   simpa [hpow_rewrite hB₁_mem, hpow_rewrite hB₂_mem, hpow_rewrite hB_combo_mem] using
     (le_trans hconc hmono)
 
-set_option maxHeartbeats 600000 in
 theorem andoTrace_jointlyConvexOn_pdSet
     {q r : ℝ} (hq1 : 1 ≤ q) (hq2 : q ≤ 2) (hr0 : 0 ≤ r) (hr1 : r ≤ 1)
     (hqr : 1 ≤ q - r) (K : L ℋ) :

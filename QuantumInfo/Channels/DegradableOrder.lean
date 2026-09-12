@@ -48,7 +48,7 @@ def DegradablePreorder (dIn : Type*) [Fintype dIn] [DecidableEq dIn] : Preorder
   le_refl Λ :=
     let _ := Λ.fst.snd.1;
     let _ := Λ.fst.snd.2;
-    ⟨CPTPMap.id, CPTPMap.compose_id Λ.snd⟩
+    ⟨CPTPOp.id, CPTPOp.compose_id Λ.snd⟩
   le_trans Λ₁ Λ₂ Λ₃ h₁₂ h₂₃ := by
     let _ := Λ₁.fst.snd.1;
     let _ := Λ₁.fst.snd.2;
@@ -59,6 +59,6 @@ def DegradablePreorder (dIn : Type*) [Fintype dIn] [DecidableEq dIn] : Preorder
     obtain ⟨D₁₂, hD₁₂⟩ := h₁₂;
     obtain ⟨D₂₃, hD₂₃⟩ := h₂₃;
     use D₁₂.compose D₂₃
-    rwa [CPTPMap.compose_assoc, hD₂₃]
+    rwa [CPTPOp.compose_assoc, hD₂₃]
 
 end
