@@ -1,0 +1,55 @@
+version: v0.1
+
+Title: Observable algebra
+
+Overview: |
+    The observable structure of a physical system is described by a unital complex C⋆-algebra `A`
+    (`OperatorAlgebra`), the same framework covering both quantum (`B(H)`, noncommutative) and
+    classical (`C(M)`, commutative) systems. The API defines the basic vocabulary built on this
+    algebra: observable, positive element, effect, state, unitary, channel and finite POVM.
+
+ParentAPIs: []
+
+References: []
+
+Requirements:
+
+  - description: "A unital complex C⋆-algebra with a compatible order making `≤` the usual positivity order is defined as the key data structure."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (OperatorAlgebra)"
+
+  - description: "An observable is defined as a self-adjoint element of the algebra."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (Observable)"
+
+  - description: "A positive element (an observable whose measurement outcomes are all nonnegative) is defined."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (PositiveElement)"
+
+  - description: "An effect (an observable between zero and the identity, representing a yes/no measurement outcome) is defined."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (Effect)"
+
+  - description: "A finite POVM, the most general notion of a measurement with outcomes in a finite type, is defined, with the effects resolving the identity."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (POVM)"
+
+  - description: "A unitary element of the algebra, implementing a reversible transformation acting on observables by conjugation, is defined."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (Unitary)"
+
+  - description: "A state, a positive complex-linear functional normalized to send the identity to one, is defined."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (State)"
+
+  - description: "A channel between two observable algebras, a unital completely positive map, is defined as the most general notion of dynamics."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (Channel)"
+
+  - description: "A Hilbert-space representation of the algebra, a unital ⋆-homomorphism into the bounded operators on a Hilbert space, is defined as the target of the GNS construction."
+    done: true
+    location: "Physlib/QuantumMechanics/OperatorAlgebra/Basic.lean (Representation)"
+
+  - description: "Elementary results about each notion (observable, effect, state, ...) are proved in their own file, as announced in the module docstring."
+    done: false
+    location: N/A
