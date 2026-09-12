@@ -7,6 +7,7 @@ module
 
 public import Physlib.StatisticalMechanics.MicroCanonicalEnsemble.ThermoQuantities
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
+public import Physlib.Meta.Implementations
 /-!
 
 ## Ideal gas as a Micro Canonical Ensemble
@@ -16,6 +17,10 @@ In this module we give the
 @[expose] public section
 
 noncomputable section
+
+other_implementation
+  "https://github.com/ATOMSLab/LeanChemicalTheories/blob/020d0f78cfd0abd55947a3c940dfa4cc873e714d/src/thermodynamics/basic.lean#L127"
+  "This provides another implementation of the ideal gas law."
 
 --! Specializing to an ideal gas of distinguishable particles.
 
