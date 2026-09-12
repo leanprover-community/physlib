@@ -46,6 +46,10 @@ In the `Basic` module:
 - `IsUnderdamped`, `IsCriticallyDamped`, and `IsOverdamped` define the three damping
   regimes from the discriminant `γ^2 - 4 * m * k`.
 - `angularFrequency` selects the real frequency parameter from the damping regime.
+- `qualityFactor` and `relaxationTime` define the quality factor `Q = ω / (2 β)` and the
+  amplitude relaxation time `τ = 1 / β` from the decay rate `β = γ / (2 m)`;
+  `isUnderdamped_iff_qualityFactor` and its companions characterise the three damping
+  regimes by `Q`.
 - `toUndamped_equationOfMotion` relates the damped and undamped equations of motion when
   the damping coefficient is zero.
 - `lagrangian` defines the Caldirola–Kanai lagrangian `exp (γ/m * t) * (T - V)`.
@@ -67,6 +71,8 @@ In the `Solution` module:
   - C.1. The force
   - C.2. Equation of motion if and only if Newton's second law
 - D. Damping regimes
+  - D.1. The discriminant, the decay rate and the angular frequency
+  - D.2. The quality factor and the relaxation time
 - E. To undamped oscillator
 - F. The Caldirola–Kanai lagrangian and the equation of motion
   - F.1. The lagrangian
@@ -104,10 +110,6 @@ open Time
 TODO "Create a new file for the geometric model which properly models the
   position as a configuration space and velocity as its tangent space, see the
   HarmonicOscillator file."
-
-TODO "Define and prove properties of the quality factor Q."
-
-TODO "Define and prove properties of the relaxation time τ."
 
 /-!
 
@@ -245,6 +247,12 @@ real frequency that appears in the explicit solution formulas.
 
 -/
 
+/-!
+
+### D.1. The discriminant, the decay rate and the angular frequency
+
+-/
+
 /-- The discriminant that determines the damping regime. -/
 noncomputable def discriminant : ℝ := S.γ^2 - 4 * S.m * S.k
 
@@ -293,6 +301,10 @@ lemma discriminant_eq_four_mul_m_sq_mul_decayRate_sq_sub_ω_sq :
 /-- The decay rate is nonnegative. -/
 lemma decayRate_nonneg : 0 ≤ S.decayRate := by
   exact div_nonneg S.γ_nonneg (by nlinarith [S.m_pos])
+
+/-- The decay rate is positive when the damping coefficient is positive. -/
+lemma decayRate_pos (hγ : 0 < S.γ) : 0 < S.decayRate :=
+  div_pos hγ (by linarith [S.m_pos])
 
 /-- An undamped oscillator lies in the underdamped regime. -/
 lemma isUnderdamped_of_gamma_eq_zero (hγ : S.γ = 0) : S.IsUnderdamped := by
@@ -390,6 +402,136 @@ lemma angularFrequency_pos_of_overdamped (hS : S.IsOverdamped) :
 lemma angularFrequency_ne_zero_of_overdamped (hS : S.IsOverdamped) :
     S.angularFrequency ≠ 0 :=
   (S.angularFrequency_pos_of_overdamped hS).ne'
+
+/-- The underdamped regime is characterised by `β < ω`. -/
+lemma isUnderdamped_iff_decayRate_lt : S.IsUnderdamped ↔ S.decayRate < S.ω := by
+  refine ⟨S.isUnderdamped_decayRate, fun h => ?_⟩
+  rcases S.isUnderdamped_or_isCriticallyDamped_or_isOverdamped with hS | hS | hS
+  · exact hS
+  · exact absurd (S.isCriticallyDamped_decayRate hS) h.ne'
+  · exact absurd (S.isOverdamped_decayRate hS) (lt_asymm h)
+
+/-- The critically damped regime is characterised by `ω = β`. -/
+lemma isCriticallyDamped_iff_eq_decayRate : S.IsCriticallyDamped ↔ S.ω = S.decayRate := by
+  refine ⟨S.isCriticallyDamped_decayRate, fun h => ?_⟩
+  rcases S.isUnderdamped_or_isCriticallyDamped_or_isOverdamped with hS | hS | hS
+  · exact absurd (S.isUnderdamped_decayRate hS) (by rw [h]; exact lt_irrefl _)
+  · exact hS
+  · exact absurd (S.isOverdamped_decayRate hS) (by rw [h]; exact lt_irrefl _)
+
+/-- The overdamped regime is characterised by `ω < β`. -/
+lemma isOverdamped_iff_lt_decayRate : S.IsOverdamped ↔ S.ω < S.decayRate := by
+  refine ⟨S.isOverdamped_decayRate, fun h => ?_⟩
+  rcases S.isUnderdamped_or_isCriticallyDamped_or_isOverdamped with hS | hS | hS
+  · exact absurd (S.isUnderdamped_decayRate hS) (lt_asymm h)
+  · exact absurd (S.isCriticallyDamped_decayRate hS) h.ne
+  · exact hS
+
+/-!
+
+### D.2. The quality factor and the relaxation time
+
+The quality factor `Q = ω / (2 β)` and the amplitude relaxation time `τ = 1 / β` are the
+usual dimensionless and dimensionful measures of the damping, both expressed through the
+decay rate `β = γ / (2 m)`. When `γ = 0` both are `0` by the convention `x / 0 = 0` of Lean,
+so the lemmas below assume `0 < γ` whenever the value matters.
+
+-/
+
+/-- The quality factor `Q = ω / (2 β)`, equal to `m ω / γ` and to `√(m k) / γ`: the ratio of
+the natural angular frequency to the width `γ / m` of the resonance.
+
+When `γ = 0` the value is `0` by the convention `x / 0 = 0`. -/
+noncomputable def qualityFactor : ℝ := S.ω / (2 * S.decayRate)
+
+/-- The relaxation time `τ = 1 / β` of the amplitude, equal to `2 m / γ`; the exponential
+factor of the solutions is `exp (-t / τ)` (see `exp_neg_decayRate_mul`).
+
+When `γ = 0` the value is `0` by the convention `0⁻¹ = 0`. -/
+noncomputable def relaxationTime : ℝ := S.decayRate⁻¹
+
+/-- The quality factor equals `m ω / γ`. -/
+lemma qualityFactor_eq_m_mul_ω_div : S.qualityFactor = S.m * S.ω / S.γ := by
+  unfold qualityFactor decayRate
+  field_simp [S.m_ne_zero]
+
+/-- The quality factor equals `√(m k) / γ`. -/
+lemma qualityFactor_eq_sqrt_div : S.qualityFactor = √(S.m * S.k) / S.γ := by
+  rw [S.qualityFactor_eq_m_mul_ω_div, S.k_eq_m_mul_ω_sq,
+    show S.m * (S.m * S.ω ^ 2) = (S.m * S.ω) ^ 2 by ring,
+    Real.sqrt_sq (mul_nonneg S.m_pos.le S.ω_pos.le)]
+
+/-- The quality factor is positive when the damping coefficient is positive. -/
+lemma qualityFactor_pos (hγ : 0 < S.γ) : 0 < S.qualityFactor := by
+  rw [S.qualityFactor_eq_m_mul_ω_div]
+  exact div_pos (mul_pos S.m_pos S.ω_pos) hγ
+
+/-- The square of the quality factor equals `m k / γ ^ 2`. -/
+lemma qualityFactor_sq : S.qualityFactor ^ 2 = S.m * S.k / S.γ ^ 2 := by
+  rw [S.qualityFactor_eq_sqrt_div, div_pow, Real.sq_sqrt (mul_nonneg S.m_pos.le S.k_pos.le)]
+
+/-- The discriminant in terms of the quality factor: `γ ^ 2 - 4 m k = 4 m k (1 / (4 Q ^ 2) - 1)`;
+for `γ = 0` both sides equal `-4 m k`. -/
+lemma discriminant_eq_qualityFactor :
+    S.discriminant = 4 * S.m * S.k * (1 / (4 * S.qualityFactor ^ 2) - 1) := by
+  rw [S.qualityFactor_sq, discriminant]
+  rcases eq_or_ne S.γ 0 with h | h
+  · simp [h]
+  · field_simp [h, S.m_ne_zero, S.k_ne_zero]
+
+/-- The underdamped regime is characterised by `1 / 2 < Q` when `0 < γ`. -/
+lemma isUnderdamped_iff_qualityFactor (hγ : 0 < S.γ) :
+    S.IsUnderdamped ↔ 1 / 2 < S.qualityFactor := by
+  have hβ := S.decayRate_pos hγ
+  rw [S.isUnderdamped_iff_decayRate_lt, qualityFactor, lt_div_iff₀ (by linarith)]
+  constructor <;> intro h <;> linarith
+
+/-- The critically damped regime is characterised by `Q = 1 / 2` when `0 < γ`. -/
+lemma isCriticallyDamped_iff_qualityFactor (hγ : 0 < S.γ) :
+    S.IsCriticallyDamped ↔ S.qualityFactor = 1 / 2 := by
+  have hβ := S.decayRate_pos hγ
+  rw [S.isCriticallyDamped_iff_eq_decayRate, qualityFactor, div_eq_iff (by linarith)]
+  constructor <;> intro h <;> linarith
+
+/-- The overdamped regime is characterised by `Q < 1 / 2` when `0 < γ`. -/
+lemma isOverdamped_iff_qualityFactor (hγ : 0 < S.γ) :
+    S.IsOverdamped ↔ S.qualityFactor < 1 / 2 := by
+  have hβ := S.decayRate_pos hγ
+  rw [S.isOverdamped_iff_lt_decayRate, qualityFactor, div_lt_iff₀ (by linarith)]
+  constructor <;> intro h <;> linarith
+
+/-- In the underdamped regime the selected angular frequency satisfies
+`ω_d ^ 2 = ω ^ 2 (1 - 1 / (4 Q ^ 2))` when `0 < γ`. -/
+lemma angularFrequency_sq_eq_qualityFactor (hγ : 0 < S.γ) (hS : S.IsUnderdamped) :
+    S.angularFrequency ^ 2 = S.ω ^ 2 * (1 - 1 / (4 * S.qualityFactor ^ 2)) := by
+  have hβ := (S.decayRate_pos hγ).ne'
+  rw [S.angularFrequency_sq_of_underdamped hS, qualityFactor]
+  field_simp [S.ω_ne_zero, hβ]
+  ring
+
+/-- The relaxation time equals `2 m / γ`. -/
+lemma relaxationTime_eq : S.relaxationTime = 2 * S.m / S.γ := by
+  rw [relaxationTime, decayRate, inv_div]
+
+/-- The decay rate and the relaxation time are inverse to each other when `0 < γ`. -/
+lemma decayRate_mul_relaxationTime (hγ : 0 < S.γ) : S.decayRate * S.relaxationTime = 1 :=
+  mul_inv_cancel₀ (S.decayRate_pos hγ).ne'
+
+/-- The relaxation time is positive when the damping coefficient is positive. -/
+lemma relaxationTime_pos (hγ : 0 < S.γ) : 0 < S.relaxationTime :=
+  inv_pos.mpr (S.decayRate_pos hγ)
+
+/-- The quality factor equals `ω τ / 2`; this holds for `γ = 0` as well, both sides being `0`. -/
+lemma qualityFactor_eq_ω_mul_relaxationTime : S.qualityFactor = S.ω * S.relaxationTime / 2 := by
+  rw [qualityFactor, relaxationTime]
+  ring
+
+/-- The exponential factor `exp (-β t)` of the solutions equals `exp (-t / τ)`; for `γ = 0`
+both sides equal `1`. -/
+lemma exp_neg_decayRate_mul (t : Time) :
+    exp (-S.decayRate * t) = exp (-(t : ℝ) / S.relaxationTime) := by
+  rw [relaxationTime, div_inv_eq_mul]
+  ring_nf
 
 /-!
 ## E. To undamped oscillator

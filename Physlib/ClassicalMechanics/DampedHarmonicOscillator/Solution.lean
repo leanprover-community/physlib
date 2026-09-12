@@ -23,7 +23,8 @@ case, polynomial for the critically damped case, and hyperbolic for the overdamp
 
 - `InitialConditions` is a structure for the initial position and velocity.
 - `trajectory` selects the appropriate regime-specific trajectory from the sign of the
-  discriminant.
+  discriminant; `trajectory_eq_of_underdamped_relaxationTime` rewrites the underdamped
+  solution with the relaxation time `τ`.
 - `trajectory_equationOfMotion_of_underdamped`,
   `trajectory_equationOfMotion_of_criticallyDamped`, and
   `trajectory_equationOfMotion_of_overdamped` prove the selected trajectory satisfies the
@@ -163,6 +164,16 @@ lemma trajectory_eq_of_overdamped (IC : InitialConditions) (hS : S.IsOverdamped)
     rw [IsCriticallyDamped]
     linarith
   simp [trajectory, hnotUnder, hnotCritical]
+
+/-- In the underdamped regime, the selected trajectory is `exp (-t / τ)` times the
+trigonometric base, `τ` being the relaxation time. -/
+lemma trajectory_eq_of_underdamped_relaxationTime (IC : InitialConditions)
+    (hS : S.IsUnderdamped) :
+    S.trajectory IC =
+      fun t : Time => exp (-(t : ℝ) / S.relaxationTime) • S.underdampedBase IC t := by
+  rw [S.trajectory_eq_of_underdamped IC hS]
+  funext t
+  rw [S.exp_neg_decayRate_mul t]
 
 /-- The selected trajectory is smooth. -/
 lemma trajectory_contDiff (IC : InitialConditions) :
