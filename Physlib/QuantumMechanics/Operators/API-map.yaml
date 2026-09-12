@@ -161,6 +161,10 @@ Requirements:
     done: true
     location: "Physlib/QuantumMechanics/Operators/Uncertainty.lean (centeredCommutatorExpectation, rawCommutatorExpectation, inner_centered_commutator_of_raw_commutator, state_uncertainty_squared_of_centered_commutator, state_uncertainty_squared_with_covariance_of_centered_commutator, state_uncertainty_of_centered_commutator, state_uncertainty_squared_of_raw_commutator, state_uncertainty_squared_with_covariance_of_raw_commutator, state_uncertainty_of_raw_commutator)"
 
+  - description: "Robertson's uncertainty relation for finite-dimensional mixed states (density matrices) is proved, in both the squared-commutator form and the multiplicative normalized form, via Cauchy-Schwarz on the Hilbert-Schmidt space."
+    done: true
+    location: "Physlib/QuantumMechanics/Operators/MixedStateUncertainty.lean (HermitianMat.bracket_mat, MState.robertson_uncertainty, MState.robertson_normalized)"
+
   - description: "The API shall contain the Heisenberg uncertainty relation for position and momentum, that the product of the standard deviations of xᵢ and pᵢ in any unit state of a common domain is at least ℏ/2, which needs the position and momentum operators on a common domain before the present commutator can be fed into the present Robertson bound."
     done: false
     location: N/A

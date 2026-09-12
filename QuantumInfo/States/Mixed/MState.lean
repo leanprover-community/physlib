@@ -260,6 +260,40 @@ theorem exp_val_le_exp_val (ρ : MState d) {A B : HermitianMat d ℂ} (h : A ≤
   simp only [MState.exp_val]
   refine inner_mono ρ.nonneg h
 
+/-- `exp_val_ℂ` on a Hermitian matrix is real, and equal to `exp_val`. -/
+@[simp]
+theorem exp_val_ℂ_hermitian (A : HermitianMat d ℂ) :
+    ρ.exp_val_ℂ A.mat = (ρ.exp_val A : ℂ) := by
+  have hreal : (starRingEnd ℂ) (ρ.exp_val_ℂ A.mat) = ρ.exp_val_ℂ A.mat := by
+    simp only [MState.exp_val_ℂ, starRingEnd_apply, ← Matrix.trace_conjTranspose,
+      Matrix.conjTranspose_mul, ρ.Hermitian.eq, (A.H).eq]
+    rw [Matrix.trace_mul_comm]
+  have hre : (ρ.exp_val_ℂ A.mat).re = ρ.exp_val A := by
+    simp only [MState.exp_val_ℂ, MState.exp_val, HermitianMat.inner_eq_re_trace, MState.mat_M]
+    rw [Matrix.trace_mul_comm]
+    simp
+  rw [← hre]
+  exact (Complex.conj_eq_iff_re.mp hreal).symm
+
+/-- The **variance** of a Hermitian observable `A` on the state `ρ`. -/
+def variance (A : HermitianMat d ℂ) : ℝ :=
+  ρ.exp_val (A ^ 2) - (ρ.exp_val A) ^ 2
+
+/-- `Var_ρ(A) ≥ 0`. -/
+theorem variance_nonneg (A : HermitianMat d ℂ) : 0 ≤ ρ.variance A := by
+  set μ := ρ.exp_val A
+  have hsq : (A - μ • (1 : HermitianMat d ℂ)) ^ 2 =
+      A ^ 2 - (2 * μ) • A + μ ^ 2 • (1 : HermitianMat d ℂ) := by
+    ext1
+    simp only [HermitianMat.mat_pow, HermitianMat.mat_sub, HermitianMat.mat_smul,
+      HermitianMat.mat_add, HermitianMat.mat_one, pow_two]
+    rw [sub_mul, mul_sub, mul_sub]
+    simp only [mul_smul_comm, smul_mul_assoc, mul_one, one_mul, smul_smul]
+    module
+  have h := ρ.exp_val_nonneg (T := (A - μ • 1) ^ 2) HermitianMat.sq_nonneg
+  rw [hsq, exp_val_add, exp_val_sub, exp_val_smul, exp_val_smul, exp_val_one] at h
+  unfold variance; linarith
+
 end exp_val
 
 section pure
