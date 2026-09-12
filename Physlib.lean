@@ -356,6 +356,7 @@ public import Physlib.QuantumMechanics.InfiniteSquareWell.Basic
 public import Physlib.QuantumMechanics.Operators.AngularMomentum
 public import Physlib.QuantumMechanics.Operators.Commutation
 public import Physlib.QuantumMechanics.Operators.Covariance
+public import Physlib.QuantumMechanics.Operators.Derivative
 public import Physlib.QuantumMechanics.Operators.Examples
 public import Physlib.QuantumMechanics.Operators.Momentum
 public import Physlib.QuantumMechanics.Operators.Multiplication
