@@ -124,6 +124,14 @@ lemma ξ_inv : (Q.ξ i)⁻¹ = √Q.m * √(Q.ω i) / √ℏ := by simp [ξ_eq]
 
 lemma ξ_inv' : (Q.ξ i)⁻¹ = Q.m * Q.ω i * Q.ξ i / ℏ := by field_simp; simp [ξ_sq, mul_assoc]
 
+/-- `ξᵢ² m ωᵢ = ℏ`, as complex numbers. -/
+lemma ξ_sq_mul_ofReal :
+    ((Q.ξ i : ℝ) : ℂ) ^ 2 * ((Q.m : ℝ) : ℂ) * ((Q.ω i : ℝ) : ℂ) = (ℏ : ℂ) := by
+  have h := Q.ξ_sq i
+  rw [eq_div_iff (mul_ne_zero Q.m_ne_zero (Q.ω_ne_zero i))] at h
+  have h' : Q.ξ i ^ 2 * Q.m * Q.ω i = ℏ := by rw [mul_assoc]; exact h
+  exact_mod_cast h'
+
 /-!
 ### B.1. Coordinate rescaling
 -/
@@ -183,6 +191,30 @@ def potentialQuadraticForm : QuadraticForm ℝ (Fin d → ℝ) := Q.potentialMat
 def potentialFunction : Space d → ℝ := Q.potentialQuadraticForm ∘ Space.val
 
 lemma potentialFunction_eq : Q.potentialFunction = Q.potentialQuadraticForm ∘ Space.val := rfl
+
+/-- `V(x) = ∑ᵢ ½ m ωᵢ² xᵢ²`. -/
+lemma potentialFunction_apply (x : Space d) :
+    Q.potentialFunction x = ∑ i, 2⁻¹ * Q.m * Q.ω i ^ 2 * x i ^ 2 := by
+  simp only [potentialFunction_eq, potentialQuadraticForm, Matrix.toQuadraticForm',
+    Function.comp_apply]
+  simp [Matrix.toLinearMap₂'_apply, potentialMatrix_eq, Matrix.diagonal_apply, Finset.mul_sum]
+  refine Finset.sum_congr rfl fun i _ => by ring
+
+/-- The potential function, as a complex-valued function, has temperate growth. -/
+lemma potentialFunction_hasTemperateGrowth :
+    Function.HasTemperateGrowth (fun x : Space d => (Q.potentialFunction x : ℂ)) := by
+  have hc : ∀ i, Function.HasTemperateGrowth (fun x : Space d => ((x i : ℝ) : ℂ)) := fun i => by
+    have h := (Complex.ofRealCLM ∘L Space.coordCLM i).hasTemperateGrowth
+    convert h using 1
+    ext x
+    simp [Space.coordCLM_apply, Space.coord_apply]
+  have h : (fun x : Space d => (Q.potentialFunction x : ℂ)) =
+      fun x => ∑ i, ((2⁻¹ * Q.m * Q.ω i ^ 2 : ℝ) : ℂ) * ((x i : ℝ) : ℂ) ^ 2 := by
+    ext x
+    simp [potentialFunction_apply]
+  rw [h]
+  exact Function.HasTemperateGrowth.sum fun i _ =>
+    (Function.HasTemperateGrowth.const _).mul ((hc i).pow 2)
 
 /-- The potential function for the harmonic oscillator is a.e. strongly measurable. -/
 informal_lemma potentialFunction_aestronglyMeasurable where
