@@ -177,6 +177,10 @@ lemma neg_apply {d : ℕ} (v : Vector d) (i : Fin 1 ⊕ Fin d) :
 lemma zero_apply {d : ℕ} (i : Fin 1 ⊕ Fin d) :
     (0 : Vector d) i = 0 := rfl
 
+/-- The componentwise complexification of a Lorentz vector. -/
+def toComplexVector {d : ℕ} (k : Vector d) : Fin 1 ⊕ Fin d → ℂ :=
+  fun μ => (k μ : ℂ)
+
 /-- The continuous linear map from a Lorentz vector to one of its coordinates. -/
 def coordCLM {d : ℕ} (i : Fin 1 ⊕ Fin d) : Vector d →L[ℝ] ℝ := LinearMap.toContinuousLinearMap {
   toFun v := v i
