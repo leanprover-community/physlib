@@ -7,13 +7,13 @@ Overview: |
   fermion together with a dual right-handed one. The key data structure is the
   structure `Dirac`, which carries a module structure over ℂ, the chiral basis
   indexed by `Fin 4`, and the representation of SL(2, ℂ) induced from the two
-  Weyl factors. Alongside it sit the gamma matrices in the Dirac
-  representation, which generate the Dirac algebra and realize it as a
-  quotient of the Clifford algebra of the Minkowski quadratic form. Note that
-  the gamma matrices are written in the Dirac representation while `Dirac`
-  itself is presented in the chiral basis; the change of basis between the two
-  is not yet in the library, which is why the gamma action on `Dirac` is
-  recorded below as still to be built. Completing this API is what allows the
+  Weyl factors. Gamma endomorphisms are defined directly in the chiral basis
+  and satisfy the Clifford relations with Minkowski signature (+,-,-,-).
+  Their chirality operator defines complementary left and right chiral
+  projectors. Separately, the concrete gamma matrices in the Dirac
+  representation generate the Dirac algebra and realize it as a quotient of
+  the Clifford algebra of the Minkowski quadratic form. The comparison between
+  these two matrix representations is not yet formalized. Completing this API allows the
   Dirac equation, the Dirac bilinears, and the fermionic terms of the Standard
   Model Lagrangian to be stated.
 
@@ -66,11 +66,27 @@ Requirements:
     done: false
     location: N/A
 
-  - description: "The API shall contain the action of the gamma matrices on `Dirac` as linear maps (blocked: `γ0`--`γ3` are given in the Dirac representation while `chiralBasis` is the chiral basis, so this needs the change of basis between the two to be fixed first)."
+  - description: "Gamma endomorphisms of `Dirac` are defined using its chiral basis and Physlib's Pauli-matrix conventions."
+    done: true
+    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gammaMatrix, gammaMatrix_eq_fromBlocks, gamma, gamma_toMatrix, gamma_apply_chiralBasis, gamma_apply_chiralBasis_repr)
+
+  - description: "The gamma endomorphisms satisfy the Clifford anticommutator with signature (+,-,-,-), including their squares and anticommutation for distinct indices."
+    done: true
+    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gamma_anticomm, gamma_mul_self, gamma_inl_zero_mul_self, gamma_inr_mul_self, gamma_mul_gamma_of_ne)
+
+  - description: "The chirality endomorphism is defined, has chiral matrix diag(-1,-1,1,1), squares to the identity, and anticommutes with every gamma endomorphism."
+    done: true
+    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gamma5, gamma5_toMatrix, gamma5_mul_self, gamma5_mul_gamma)
+
+  - description: "The left and right chiral projectors have the corresponding diagonal matrices, are idempotent and orthogonal, and sum to the identity."
+    done: true
+    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (leftChiralProjector, rightChiralProjector, leftChiralProjector_toMatrix, rightChiralProjector_toMatrix, leftChiralProjector_mul_self, rightChiralProjector_mul_self, leftChiralProjector_mul_rightChiralProjector, rightChiralProjector_mul_leftChiralProjector, leftChiralProjector_add_rightChiralProjector)
+
+  - description: "The API shall contain the Lorentz equivariance of the chiral projectors."
     done: false
     location: N/A
 
-  - description: "The API shall contain the chiral projectors onto the left-handed and dual right-handed components, and their Lorentz equivariance."
+  - description: "The API shall relate the chiral gamma matrices to the existing matrices in the Dirac representation by change of basis."
     done: false
     location: N/A
 

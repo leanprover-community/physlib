@@ -382,6 +382,7 @@ public import Physlib.QuantumMechanics.SpaceDQuantumSystem
 public import Physlib.Relativity.Bispinors.Basic
 public import Physlib.Relativity.CliffordAlgebra
 public import Physlib.Relativity.Fermions.Dirac.Basic
+public import Physlib.Relativity.Fermions.Dirac.GammaMatrices
 public import Physlib.Relativity.Fermions.Weyl.Contraction
 public import Physlib.Relativity.Fermions.Weyl.DualLeftHanded
 public import Physlib.Relativity.Fermions.Weyl.DualRightHanded
