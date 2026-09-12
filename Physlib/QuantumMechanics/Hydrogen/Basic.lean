@@ -38,10 +38,6 @@ TODO "Prove that (the closure of) the Hydrogen Hamiltonian has eigenvalues (poin
 TODO "Prove that (the closure of) the Hydrogen Hamiltonian has continuous spectrum [0,∞).
   These correspond to scattering states."
 
-TODO "Define the Rydberg formula and Lyman, Balmer, Paschen, etc. series."
-
-TODO "Determine the wavelengths / frequencies of the Lyman, Balmer, Paschen, etc. series."
-
 TODO "Analyze the Zeeman effect using first-order degenerate perturbation theory."
 
 TODO "Analyze the Stark effect using first-order degenerate perturbation theory."
