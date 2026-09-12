@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Tom Ole Diem. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tom Ole Diem
+Authors: Tom Ole Diem, Eduardo Nava-Hernandez
 -/
 module
 
@@ -167,5 +167,25 @@ from `robertson_schrodinger` by dropping the covariance term. -/
 lemma robertson (ω : 𝓢[A]) (a b : Observable A) :
     ω⟨⁅a, b⁆⟩ ^ 2 ≤ variance ω a * variance ω b := by
   nlinarith [robertson_schrodinger ω a b, sq_nonneg (covariance ω a b)]
+
+/-! ## A.3. Normalization and positivity for downstream variance bounds -/
+
+/-- A raw commutator expectation of magnitude one yields the normalized variance
+product bound for arbitrary states, with no extra positivity hypotheses. -/
+lemma normalized_variance_product (ω : 𝓢[A]) (a b : Observable A)
+    (hnorm : ω⟨⁅a, b⁆⟩ ^ 2 = (1 : ℝ) / 4) :
+    1 ≤ 4 * variance ω a * variance ω b := by
+  have h := robertson ω a b
+  rw [hnorm] at h
+  nlinarith
+
+/-- Normalization itself forces both variances to be positive. -/
+lemma variances_pos_of_normalized_pairing (ω : 𝓢[A]) (a b : Observable A)
+    (hnorm : ω⟨⁅a, b⁆⟩ ^ 2 = (1 : ℝ) / 4) :
+    0 < variance ω a ∧ 0 < variance ω b := by
+  have h := normalized_variance_product ω a b hnorm
+  have ha := variance_nonneg ω a
+  have hb := variance_nonneg ω b
+  constructor <;> by_contra! hn <;> nlinarith
 
 end UnitalPositiveLinearMap
