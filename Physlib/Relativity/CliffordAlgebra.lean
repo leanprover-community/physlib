@@ -5,17 +5,19 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Data.Matrix.Reflection
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Basic
-public import Physlib.Meta.TODO.Basic
+public import Physlib.Relativity.Fermions.Dirac.GammaMatrices
 /-!
 # The Clifford Algebra
 
-This file defines the Gamma matrices and their relationship to the Clifford algebra.
+This file obtains the gamma matrices in the Dirac representation from the endomorphisms
+`Fermion.Dirac.gamma` and describes their relationship to the Clifford algebra.
+The algebra equivalence `diracMatrix` changes their chiral coordinates to Dirac coordinates,
+preserving the existing matrix entries and the `Fin 4` indexing of `γ`.
 
 ## Main Definitions
 
+- `diracMatrix`: Dirac endomorphisms as matrices in the Dirac representation
 - `γ0, γ1, γ2, γ3`: The four gamma matrices in the Dirac representation (4×4 complex matrices)
 - `γSet`: The set of gamma matrices
 - `diracForm`: The quadratic form with Minkowski signature (+,-,-,-)
@@ -41,44 +43,95 @@ open Complex
 
 noncomputable section diracRepresentation
 
+/-! ## A. Dirac matrix representation -/
+
+open Fermion.Dirac in
+/-- Dirac endomorphisms as matrices in the Dirac representation. The change of coordinates
+from the chiral representation is `S = [1, 1; -1, 1]`, with `2 × 2` blocks, so this map sends
+`f` to `S [f] S⁻¹`. The common normalization factor `1 / √2` cancels in conjugation. -/
+def diracMatrix : Module.End ℂ Fermion.Dirac ≃ₐ[ℂ] Matrix (Fin 4) (Fin 4) ℂ :=
+  (LinearEquiv.conjAlgEquiv ℂ
+    (Matrix.toLinOfInv chiralBasis chiralBasis
+      (M := !![1, 0, 1, 0; 0, 1, 0, 1; -1, 0, 1, 0; 0, -1, 0, 1])
+      (M' := (2 : ℂ)⁻¹ • !![1, 0, -1, 0; 0, 1, 0, -1; 1, 0, 1, 0; 0, 1, 0, 1])
+      (by ext i j; fin_cases i <;> fin_cases j <;>
+          norm_num [Matrix.cons_val_two, Matrix.cons_val_three, Matrix.one_apply])
+      (by ext i j; fin_cases i <;> fin_cases j <;>
+          norm_num [Matrix.cons_val_two, Matrix.cons_val_three, Matrix.one_apply]))).trans
+    (LinearMap.toMatrixAlgEquiv chiralBasis)
+
+open Fermion.Dirac in
+/-- The change of coordinates from the chiral representation to the Dirac representation. -/
+lemma diracMatrix_apply (f : Module.End ℂ Fermion.Dirac) :
+    diracMatrix f =
+      !![1, 0, 1, 0; 0, 1, 0, 1; -1, 0, 1, 0; 0, -1, 0, 1] *
+        LinearMap.toMatrix chiralBasis chiralBasis f *
+        ((2 : ℂ)⁻¹ • !![1, 0, -1, 0; 0, 1, 0, -1; 1, 0, 1, 0; 0, 1, 0, 1]) := by
+  simp only [diracMatrix, AlgEquiv.trans_apply, LinearEquiv.conjAlgEquiv_apply,
+    LinearMap.toMatrixAlgEquiv, AlgEquiv.ofLinearEquiv_apply]
+  simp only [Matrix.toLinOfInv, LinearEquiv.symm_mk]
+  simp only [LinearMap.toMatrix_comp chiralBasis chiralBasis chiralBasis,
+    Matrix.mul_assoc]
+  apply congrArg₂ (· * ·)
+  · exact LinearMap.toMatrix_toLin chiralBasis chiralBasis _
+  · apply congrArg _
+    exact LinearMap.toMatrix_toLin chiralBasis chiralBasis _
+
 /-- The γ⁰ gamma matrix in the Dirac representation. -/
 def γ0 : Matrix (Fin 4) (Fin 4) ℂ :=
-  !![1, 0, 0, 0; 0, 1, 0, 0; 0, 0, -1, 0; 0, 0, 0, -1]
+  diracMatrix (Fermion.Dirac.gamma (Sum.inl 0))
 
 /-- The γ¹ gamma matrix in the Dirac representation. -/
 def γ1 : Matrix (Fin 4) (Fin 4) ℂ :=
-  !![0, 0, 0, 1; 0, 0, 1, 0; 0, -1, 0, 0; -1, 0, 0, 0]
+  diracMatrix (Fermion.Dirac.gamma (Sum.inr 0))
 
 /-- The γ² gamma matrix in the Dirac representation. -/
 def γ2 : Matrix (Fin 4) (Fin 4) ℂ :=
-  !![0, 0, 0, - I; 0, 0, I, 0; 0, I, 0, 0; -I, 0, 0, 0]
+  diracMatrix (Fermion.Dirac.gamma (Sum.inr 1))
 
 /-- The γ³ gamma matrix in the Dirac representation. -/
 def γ3 : Matrix (Fin 4) (Fin 4) ℂ :=
-  !![0, 0, 1, 0; 0, 0, 0, -1; -1, 0, 0, 0; 0, 1, 0, 0]
+  diracMatrix (Fermion.Dirac.gamma (Sum.inr 2))
 
 theorem _root_.Matrix.one_fin_four {α} [Zero α] [One α] :
     (1 : Matrix (Fin 4) (Fin 4) α) = !![1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1] :=
   Matrix.etaExpand_eq _ |>.symm
 
-@[simp] lemma γ0_mul_γ0 : γ0 * γ0 = 1 := by simp [γ0, Matrix.one_fin_four]
-@[simp] lemma γ1_mul_γ1 : γ1 * γ1 = -1 := by simp [γ1, Matrix.one_fin_four]
-@[simp] lemma γ2_mul_γ2 : γ2 * γ2 = -1 := by simp [γ2, Matrix.one_fin_four]
-@[simp] lemma γ3_mul_γ3 : γ3 * γ3 = -1 := by simp [γ3, Matrix.one_fin_four]
+@[simp] lemma γ0_mul_γ0 : γ0 * γ0 = 1 := by simp [γ0, ← map_mul]
+@[simp] lemma γ1_mul_γ1 : γ1 * γ1 = -1 := by simp [γ1, ← map_mul]
+@[simp] lemma γ2_mul_γ2 : γ2 * γ2 = -1 := by simp [γ2, ← map_mul]
+@[simp] lemma γ3_mul_γ3 : γ3 * γ3 = -1 := by simp [γ3, ← map_mul]
 
-@[simp] lemma γ1_mul_γ0 : γ1 * γ0 = -(γ0 * γ1) := by simp [γ0, γ1]
-@[simp] lemma γ2_mul_γ0 : γ2 * γ0 = -(γ0 * γ2) := by simp [γ0, γ2]
-@[simp] lemma γ3_mul_γ0 : γ3 * γ0 = -(γ0 * γ3) := by simp [γ0, γ3]
-@[simp] lemma γ2_mul_γ1 : γ2 * γ1 = -(γ1 * γ2) := by simp [γ1, γ2]
-@[simp] lemma γ3_mul_γ1 : γ3 * γ1 = -(γ1 * γ3) := by simp [γ1, γ3]
-@[simp] lemma γ3_mul_γ2 : γ3 * γ2 = -(γ2 * γ3) := by simp [γ2, γ3]
+@[simp] lemma γ1_mul_γ0 : γ1 * γ0 = -(γ0 * γ1) := by
+  rw [γ1, γ0, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
+@[simp] lemma γ2_mul_γ0 : γ2 * γ0 = -(γ0 * γ2) := by
+  rw [γ2, γ0, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
+@[simp] lemma γ3_mul_γ0 : γ3 * γ0 = -(γ0 * γ3) := by
+  rw [γ3, γ0, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
+@[simp] lemma γ2_mul_γ1 : γ2 * γ1 = -(γ1 * γ2) := by
+  rw [γ2, γ1, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
+@[simp] lemma γ3_mul_γ1 : γ3 * γ1 = -(γ1 * γ3) := by
+  rw [γ3, γ1, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
+@[simp] lemma γ3_mul_γ2 : γ3 * γ2 = -(γ2 * γ3) := by
+  rw [γ3, γ2, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
 
 /-- The γ⁵ gamma matrix in the Dirac representation. -/
 def γ5 : Matrix (Fin 4) (Fin 4) ℂ := I • (γ0 * γ1 * γ2 * γ3)
 
+/-- The chirality matrix is the Dirac representation of the chirality endomorphism. -/
+lemma γ5_eq_diracMatrix : γ5 = diracMatrix Fermion.Dirac.gamma5 := by
+  simp only [γ5, Fermion.Dirac.gamma5, map_smul, map_mul, γ0, γ1, γ2, γ3]
+
 /-- The γ gamma matrices in the Dirac representation. -/
 @[simp]
 def γ : Fin 4 → Matrix (Fin 4) (Fin 4) ℂ := ![γ0, γ1, γ2, γ3]
+
+/-- The indexed matrices are the Dirac representation of the upper-index gamma endomorphisms. -/
+lemma γ_eq_diracMatrix (μ : Fin 4) :
+    γ μ = diracMatrix (Fermion.Dirac.gamma (finSumFinEquiv.symm μ)) := by
+  fin_cases μ <;> rfl
+
+/-! ## B. The algebra generated by the gamma matrices -/
 
 namespace γ
 
@@ -140,7 +193,7 @@ lemma ofCliffordAlgebra_ι_single (i : Fin 4) (r : ℝ) :
       simp [Pi.single_eq_of_ne hb]
     · simp
 
-/-! ### Surjectivity of ofCliffordAlgebra -/
+/-! ### B.1. Surjectivity of ofCliffordAlgebra -/
 
 /-- Each gamma matrix (as an element of diracAlgebra) is in the range of ofCliffordAlgebra. -/
 lemma γ_subtype_in_range (i : Fin 4) :

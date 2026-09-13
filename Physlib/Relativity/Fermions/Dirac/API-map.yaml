@@ -10,10 +10,10 @@ Overview: |
   Weyl factors. Gamma endomorphisms are defined directly in the chiral basis
   and satisfy the Clifford relations with Minkowski signature (+,-,-,-).
   Their chirality operator defines complementary left and right chiral
-  projectors. Separately, the concrete gamma matrices in the Dirac
-  representation generate the Dirac algebra and realize it as a quotient of
-  the Clifford algebra of the Minkowski quadratic form. The comparison between
-  these two matrix representations is not yet formalized. Completing this API allows the
+  projectors. A change of coordinates derives the concrete gamma matrices in
+  the Dirac representation from these endomorphisms. They generate the Dirac
+  algebra and realize it as a quotient of the Clifford algebra of the Minkowski
+  quadratic form. Completing this API allows the
   Dirac equation, the Dirac bilinears, and the fermionic terms of the Standard
   Model Lagrangian to be stated.
 
@@ -50,9 +50,9 @@ Requirements:
     done: true
     location: Physlib/Relativity/Fermions/Dirac/Basic.lean (decomposeRepEquiv)
 
-  - description: "The gamma matrices in the Dirac representation are defined, together with the chirality matrix and the set they form."
+  - description: "The gamma matrices in the Dirac representation are derived from the gamma endomorphisms, together with the chirality matrix and the set they form."
     done: true
-    location: Physlib/Relativity/CliffordAlgebra.lean (γ0, γ1, γ2, γ3, γ5, γ, γSet, γ_in_γSet)
+    location: Physlib/Relativity/CliffordAlgebra.lean (γ0, γ1, γ2, γ3, γ5, γ5_eq_diracMatrix, γ, γ_eq_diracMatrix, γSet, γ_in_γSet)
 
   - description: "The Dirac algebra generated over ℝ by the gamma matrices is defined, and contains each gamma matrix."
     done: true
@@ -68,11 +68,11 @@ Requirements:
 
   - description: "Clifford multiplication is a real linear map from Lorentz vectors to complex linear endomorphisms of `Dirac`, using its chiral basis and Physlib's Pauli-matrix conventions. Upper-index gamma components are derived from this map on the Lorentz basis."
     done: true
-    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gammaMatrix, gammaMatrix_toMatrix, gamma, gammaMatrix_basis, gammaMatrix_eq_sum, gamma_toMatrix)
+    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gammaMatrix, gammaMatrix_toMatrix, gammaMatrix_basis_toMatrix, gamma, gammaMatrix_basis, gammaMatrix_eq_sum, gamma_toMatrix)
 
   - description: "Clifford multiplication satisfies the anticommutator for arbitrary Lorentz vectors and their Minkowski product. The component relations, squares, and anticommutation for distinct indices follow with signature (+,-,-,-)."
     done: true
-    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gammaMatrix_anticomm, gammaMatrix_mul_self, gamma_anticomm, gamma_mul_self, gamma_inl_zero_mul_self, gamma_inr_mul_self, gamma_mul_gamma_of_ne)
+    location: Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean (gammaMatrix_basis_anticomm, gammaMatrix_anticomm, gammaMatrix_mul_self, gamma_anticomm, gamma_mul_self, gamma_inl_zero_mul_self, gamma_inr_mul_self, gamma_mul_gamma_of_ne)
 
   - description: "The chirality endomorphism is defined, has chiral matrix diag(-1,-1,1,1), squares to the identity, and anticommutes with every gamma endomorphism."
     done: true
@@ -86,9 +86,9 @@ Requirements:
     done: false
     location: N/A
 
-  - description: "The API shall relate the chiral gamma matrices to the existing matrices in the Dirac representation by change of basis."
-    done: false
-    location: N/A
+  - description: "An algebra equivalence converts Dirac endomorphisms to the Dirac representation, with an explicit change-of-coordinates formula from the chiral basis."
+    done: true
+    location: Physlib/Relativity/CliffordAlgebra.lean (diracMatrix, diracMatrix_apply)
 
   - description: "The API shall contain the Dirac adjoint of a Dirac fermion."
     done: false

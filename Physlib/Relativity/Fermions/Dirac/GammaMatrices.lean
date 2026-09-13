@@ -77,7 +77,8 @@ lemma gammaMatrix_toMatrix (v : Lorentz.Vector) :
         finSumFinEquiv.symm finSumFinEquiv.symm :=
   (LinearMap.toMatrix chiralBasis chiralBasis).apply_symm_apply _
 
-private lemma gammaMatrix_basis_toMatrix (μ : Fin 1 ⊕ Fin 3) :
+/-- The chiral matrices of Clifford multiplication on the Lorentz basis vectors. -/
+lemma gammaMatrix_basis_toMatrix (μ : Fin 1 ⊕ Fin 3) :
     LinearMap.toMatrix chiralBasis chiralBasis (gammaMatrix (Lorentz.Vector.basis μ)) =
       match μ with
       | Sum.inl 0 => !![0, 0, 1, 0; 0, 0, 0, 1; 1, 0, 0, 0; 0, 1, 0, 0]
@@ -94,7 +95,8 @@ private lemma gammaMatrix_basis_toMatrix (μ : Fin 1 ⊕ Fin 3) :
       Matrix.fromBlocks, Fin.castAdd, Fin.castLE, Fin.natAdd, Fin.addNat,
       Matrix.cons_val_two, Matrix.cons_val_three]
 
-private lemma gammaMatrix_basis_anticomm (μ ν : Fin 1 ⊕ Fin 3) :
+/-- The Clifford anticommutator on pairs of Lorentz basis vectors. -/
+lemma gammaMatrix_basis_anticomm (μ ν : Fin 1 ⊕ Fin 3) :
     gammaMatrix (Lorentz.Vector.basis μ) * gammaMatrix (Lorentz.Vector.basis ν) +
       gammaMatrix (Lorentz.Vector.basis ν) * gammaMatrix (Lorentz.Vector.basis μ) =
       (2 * ⟪Lorentz.Vector.basis μ, Lorentz.Vector.basis ν⟫ₘ) •
