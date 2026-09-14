@@ -9,7 +9,9 @@ import Lean
 
 # Check file imports
 
-This file checks that the imports in `Physlib.lean` are sorted and complete.
+This file checks that the imports in each library root file (`Physlib.lean` and
+`QuantumInfo.lean`) are sorted and complete. `PhyslibAlpha.lean` has its own check,
+`alphaFileImports`.
 
 It can be run from the terminal using
 `lake exe check_file_imports`.
@@ -42,13 +44,12 @@ partial def addModulesIn (recurse : Bool) (prev : Array Name) (root : Name := .a
         r := r.push (root.mkStr mod)
   pure r
 
-/-- Compute imports expected by `Physlib.lean` by looking at file structure. -/
-def expectedPhyslibImports : IO (Array Name) := do
+/-- Compute imports expected by `<lib>.lean` by looking at the file structure under `<lib>/`. -/
+def expectedImports (lib : Name) : IO (Array Name) := do
   let mut needed := #[]
-  for top in ← FilePath.readDir "Physlib" do
-      let nm := `Physlib
+  for top in ← FilePath.readDir lib.toString do
       let rootname := FilePath.withExtension top.fileName ""
-      let root :=  nm.mkStr rootname.toString
+      let root :=  lib.mkStr rootname.toString
       if ← top.path.isDir then
         needed ← addModulesIn (recurse := true) needed (root := root) top.path
       else if top.path.extension == some "lean" then
@@ -78,7 +79,7 @@ def arrayImportSorted (imports : Array Import) : IO Bool :=  do
 
 /-- Checks every file in `reqImports` is imported into `modData`
   return true if this is NOT the case. -/
-def checkMissingImports (modData : ModuleData) (reqImports : Array Name) :
+def checkMissingImports (lib : Name) (modData : ModuleData) (reqImports : Array Name) :
     IO Bool := do
   let names : Std.HashSet Name := Std.HashSet.ofArray (modData.imports.map (·.module))
   let mut warned := false
@@ -89,25 +90,38 @@ def checkMissingImports (modData : ModuleData) (reqImports : Array Name) :
       none)
   if nameArray.size ≠ 0  then
     let nameArraySort := nameArray.qsort (·.toString < ·.toString)
-    IO.print s!"Files are not imported add the following to the `Physlib` file: \n"
+    IO.print s!"Files are not imported add the following to the `{lib}` file: \n"
     for name in nameArraySort do
       IO.print s!"import {name}\n"
     warned := true
   pure warned
 
-def main (_ : List String) : IO UInt32 := do
-  initSearchPath (← findSysroot)
-  let mods : Name := `Physlib
-  let imp : Import := {module := mods}
+/-- Check one library root `<lib>.lean` against the files under `<lib>/`.
+  Returns `true` if the root is unsorted or has missing imports. -/
+def checkLib (lib : Name) : IO Bool := do
+  let imp : Import := {module := lib}
   let mFile ← findOLean imp.module
   unless (← mFile.pathExists) do
         throw <| IO.userError s!"object file '{mFile}' of module {imp.module} does not exist"
-  let (physlibMod, _) ← readModuleData mFile
-  let ePhyslibImports ← expectedPhyslibImports
-  let sortedWarned ← arrayImportSorted physlibMod.imports
-  let warned ← checkMissingImports physlibMod ePhyslibImports
+  let (libMod, _) ← readModuleData mFile
+  let eImports ← expectedImports lib
+  let sortedWarned ← arrayImportSorted libMod.imports
+  let warned ← checkMissingImports lib libMod eImports
   if (warned ∨ sortedWarned) then
-    throw <| IO.userError s!"\x1b[31mThe Physlib.lean file is not sorted, or has missing imports.\x1b[0m"
+    IO.println s!"\x1b[31mThe {lib}.lean file is not sorted, or has missing imports.\x1b[0m"
   else
-    IO.println s!"\x1b[32mAll files are imported correctly into Physlib.lean.\x1b[0m"
+    IO.println s!"\x1b[32mAll files are imported correctly into {lib}.lean.\x1b[0m"
+  pure (warned ∨ sortedWarned)
+
+/-- The library roots this check covers. `PhyslibAlpha` has its own check,
+  `alphaFileImports`. -/
+def libraries : List Name := [`Physlib, `QuantumInfo]
+
+def main (_ : List String) : IO UInt32 := do
+  initSearchPath (← findSysroot)
+  let mut failed := false
+  for lib in libraries do
+    failed := (← checkLib lib) || failed
+  if failed then
+    throw <| IO.userError s!"\x1b[31mA library root file is not sorted, or has missing imports.\x1b[0m"
   pure 0
