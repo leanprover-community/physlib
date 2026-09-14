@@ -52,9 +52,9 @@ Requirements:
 
   - description: "The gamma matrices in the Dirac representation are derived from the gamma endomorphisms, together with the chirality matrix and the set they form."
     done: true
-    location: Physlib/Relativity/CliffordAlgebra.lean (γ0, γ1, γ2, γ3, γ5, γ5_eq_diracMatrix, γ, γ_eq_diracMatrix, γSet, γ_in_γSet)
+    location: Physlib/Relativity/CliffordAlgebra.lean (γ0, γ1, γ2, γ3, γ5, γ5_eq_endEquivMatrix, γSet, γ_in_γSet)
 
-  - description: "The Dirac algebra generated over ℝ by the gamma matrices is defined, and contains each gamma matrix."
+  - description: "The Dirac algebra generated over ℝ by the Dirac representations of the gamma endomorphisms is defined, and contains each generator, indexed by Fin 1 ⊕ Fin 3."
     done: true
     location: Physlib/Relativity/CliffordAlgebra.lean (diracAlgebra, γSet_subset_diracAlgebra, γ_in_diracAlgebra)
 
@@ -88,7 +88,7 @@ Requirements:
 
   - description: "An algebra equivalence converts Dirac endomorphisms to the Dirac representation, with an explicit change-of-coordinates formula from the chiral basis."
     done: true
-    location: Physlib/Relativity/CliffordAlgebra.lean (diracMatrix, diracMatrix_apply)
+    location: Physlib/Relativity/Fermions/Dirac/Basic.lean (endEquivMatrix, endEquivMatrix_apply)
 
   - description: "The API shall contain the Dirac adjoint of a Dirac fermion."
     done: false
