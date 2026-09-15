@@ -129,21 +129,23 @@ theorem trace_function_convex_univ (g : ℝ → ℝ) (hg : ConvexOn ℝ Set.univ
       have h_eigenvalue : C.H.eigenvalues i =
           a * ((A.conj (star C.H.eigenvectorUnitary.val)).mat i i).re +
           b * ((B.conj (star C.H.eigenvectorUnitary.val)).mat i i).re := by
-        have h_eigenvalue : (C.conj (star C.H.eigenvectorUnitary.val)).mat i i =
+        have h_add : (C.conj (star C.H.eigenvectorUnitary.val)).mat i i =
             a * (A.conj (star C.H.eigenvectorUnitary.val)).mat i i +
             b * (B.conj (star C.H.eigenvectorUnitary.val)).mat i i := by
-          simp +zetaDelta at *
-          simp [conj]
-          exact Complex.ext rfl rfl
-        have h_eigenvalue : (C.conj (star C.H.eigenvectorUnitary.val)) =
+          simp +zetaDelta only [mat_add, mat_smul, map_add, mat_apply]
+          simp only [conj, AddMonoidHom.coe_mk, ZeroHom.coe_mk, mat_smul, Algebra.mul_smul_comm,
+            Algebra.smul_mul_assoc]
+          rfl
+        have h_eig2 : (C.conj (star C.H.eigenvectorUnitary.val)) =
             (diagonal ℂ C.H.eigenvalues).conj 1 := by
           convert congr_arg (conj (star C.H.eigenvectorUnitary.val) ·) (eq_conj_diagonal C) using 1
           simp [conj_conj]
-        simp_all [conj]
-        convert congr_arg Complex.re ‹ (diagonal ℂ _) i i = _ › using 1
-        · exact Eq.symm (by erw [show (diagonal ℂ _ : HermitianMat d ℂ) i i =
-            (C.H.eigenvalues i : ℂ) by exact if_pos rfl]; norm_cast)
-        · norm_num [Complex.ext_iff]
+        -- In the eigenbasis of `C`, the `i`-th diagonal entry is exactly the `i`-th eigenvalue.
+        have h_diag : (C.conj (star C.H.eigenvectorUnitary.val)).mat i i =
+            (C.H.eigenvalues i : ℂ) := by
+          rw [h_eig2, conj_one, mat_apply, diagonal_apply, if_pos rfl]
+          rfl
+        simpa using congr_arg Complex.re (h_diag.symm.trans h_add)
       rw [h_eigenvalue]
       exact hg.2 trivial trivial ha hb hab
     simpa only [Finset.mul_sum, Finset.sum_add_distrib] using Finset.sum_le_sum fun i _ => h_sum i
@@ -199,11 +201,12 @@ theorem trace_function_convex_ici {g : ℝ → ℝ} (hg : ConvexOn ℝ (Set.Ici 
             (diagonal ℂ C.H.eigenvalues).conj 1 := by
           convert congr_arg (conj (star C.H.eigenvectorUnitary.val) ·) (eq_conj_diagonal C) using 1
           simp [conj_conj]
-        simp_all [conj]
-        convert congr_arg Complex.re h_eigenvalue using 1
-        · exact Eq.symm (by erw [show (diagonal ℂ _ : HermitianMat d ℂ) i i =
-            (C.H.eigenvalues i : ℂ) by exact if_pos rfl]; norm_cast)
-        · norm_num [Complex.ext_iff]
+        -- In the eigenbasis of `C`, the `i`-th diagonal entry is exactly the `i`-th eigenvalue.
+        have h_diag : (C.conj (star C.H.eigenvectorUnitary.val)).mat i i =
+            (C.H.eigenvalues i : ℂ) := by
+          rw [h_eig2, conj_one, mat_apply, diagonal_apply, if_pos rfl]
+          rfl
+        simpa using congr_arg Complex.re (h_diag.symm.trans h_eigenvalue)
       rw [h_eigenvalue]
       refine hg.2 ?_ ?_ ha hb hab
       · simp

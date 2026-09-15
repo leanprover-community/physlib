@@ -790,7 +790,6 @@ theorem IsHermitian.cfc_eigenvalues {M : Matrix d d 𝕜} (hM : M.IsHermitian) (
   simp_all only [Function.comp_apply, Equiv.apply_symm_apply, algebraMap.coe_inj]
 
 
-set_option maxHeartbeats 0 in
 --Should be combined the above...? TODO Cleanup
 /--
 If a Hermitian matrix A is unitarily similar to a diagonal matrix with real entries f, then the eigenvalues of A are a permutation of f.
@@ -912,6 +911,184 @@ theorem PosSemidef.pow_mul {A : Matrix d d 𝕜} {x y : ℝ} (hA : A.PosSemidef)
 
 end more_cfc
 
+section polar
+
+open scoped ComplexOrder MatrixOrder
+
+variable {n 𝕜 : Type*} [Fintype n] [DecidableEq n] [RCLike 𝕜]
+
+theorem toEuclideanLin_mul (M N : Matrix n n 𝕜) :
+    toEuclideanLin (M * N) = (toEuclideanLin M) ∘ₗ (toEuclideanLin N) := by
+  ext x i
+  simp [Matrix.mulVec_mulVec]
+
+theorem adjoint_toEuclideanLin_of_isHermitian {M : Matrix n n 𝕜} (hM : Mᴴ = M) :
+    LinearMap.adjoint M.toEuclideanLin = M.toEuclideanLin := by
+  rw [← toEuclideanLin_conjTranspose_eq_adjoint, hM]
+
+/-- The trace of `M`, as the sum of the diagonal inner products `⟪eᵢ, M eᵢ⟫`. -/
+theorem trace_eq_sum_inner (M : Matrix n n 𝕜) : M.trace = ∑ i, inner (𝕜 := 𝕜)
+    (EuclideanSpace.single i (1 : 𝕜)) (M.toEuclideanLin (EuclideanSpace.single i 1)) := by
+  rw [Matrix.trace]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [EuclideanSpace.inner_single_left]
+  simp [Matrix.mulVec_single]
+
+theorem inner_toEuclideanLin_self (A : Matrix n n 𝕜) (x : EuclideanSpace 𝕜 n) :
+    (inner (𝕜 := 𝕜) (A.toEuclideanLin x) (A.toEuclideanLin x)) =
+      inner (𝕜 := 𝕜) x ((Aᴴ * A).toEuclideanLin x) := by
+  rw [toEuclideanLin_mul, toEuclideanLin_conjTranspose_eq_adjoint, LinearMap.comp_apply,
+    LinearMap.adjoint_inner_right]
+
+/-- Two matrices with the same `Aᴴ * A` act with the same norms on every vector. -/
+theorem norm_toEuclideanLin_eq_of_conjTranspose_mul_self_eq {A B : Matrix n n 𝕜}
+    (h : Aᴴ * A = Bᴴ * B) (x : EuclideanSpace 𝕜 n) :
+    ‖A.toEuclideanLin x‖ = ‖B.toEuclideanLin x‖ := by
+  have h₂ : (inner (𝕜 := 𝕜) (A.toEuclideanLin x) (A.toEuclideanLin x)) =
+      inner (𝕜 := 𝕜) (B.toEuclideanLin x) (B.toEuclideanLin x) := by
+    rw [inner_toEuclideanLin_self, inner_toEuclideanLin_self, h]
+  rw [inner_self_eq_norm_sq_to_K, inner_self_eq_norm_sq_to_K] at h₂
+  simpa using congrArg RCLike.re h₂
+
+/-- **Polar decomposition** of a square matrix: every `A` factors as a unitary times the
+positive semidefinite matrix `√(Aᴴ * A)`. The unitary is built by extending the isometry
+`√(Aᴴ * A) x ↦ A x`, which is well defined since the two sides have equal kernels. -/
+theorem exists_unitary_mul_sqrt_conjTranspose_mul_self (A : Matrix n n 𝕜) :
+    ∃ U ∈ unitaryGroup n 𝕜, A = U * CFC.sqrt (Aᴴ * A) := by
+  set P := CFC.sqrt (Aᴴ * A) with hP
+  have hPnn : (0 : Matrix n n 𝕜) ≤ P := CFC.sqrt_nonneg _
+  have hPsa : Pᴴ = P := (Matrix.nonneg_iff_posSemidef.mp hPnn).isHermitian
+  have hkey : Pᴴ * P = Aᴴ * A := by
+    rw [hPsa, hP, CFC.sqrt_mul_sqrt_self _
+      (Matrix.nonneg_iff_posSemidef.mpr A.posSemidef_conjTranspose_mul_self)]
+  set p := P.toEuclideanLin with hp
+  set a := A.toEuclideanLin with ha
+  have hnorm : ∀ x, ‖p x‖ = ‖a x‖ :=
+    norm_toEuclideanLin_eq_of_conjTranspose_mul_self_eq hkey
+  have hker : LinearMap.ker p = LinearMap.ker a := by
+    ext x
+    simp only [LinearMap.mem_ker]
+    rw [← norm_eq_zero, hnorm x, norm_eq_zero]
+  set L₀ : (LinearMap.range p) →ₗ[𝕜] EuclideanSpace 𝕜 n :=
+    (Submodule.liftQ (LinearMap.ker p) a hker.le) ∘ₗ
+      ((LinearMap.quotKerEquivRange p).symm : (LinearMap.range p) →ₗ[𝕜] _) with hL₀
+  have hL₀_apply : ∀ x, L₀ ⟨p x, LinearMap.mem_range_self p x⟩ = a x := by
+    intro x
+    have h₁ : (LinearMap.quotKerEquivRange p) (Submodule.Quotient.mk x) =
+        ⟨p x, LinearMap.mem_range_self p x⟩ := rfl
+    rw [hL₀, LinearMap.comp_apply, LinearEquiv.coe_coe, ← h₁, LinearEquiv.symm_apply_apply]
+    rfl
+  have hL₀_norm : ∀ y : LinearMap.range p, ‖L₀ y‖ = ‖y‖ := by
+    rintro ⟨y, x, rfl⟩
+    rw [hL₀_apply x]
+    exact (hnorm x).symm
+  set L : (LinearMap.range p) →ₗᵢ[𝕜] EuclideanSpace 𝕜 n := ⟨L₀, hL₀_norm⟩ with hL
+  set u := L.extend with hu
+  have hu_apply : ∀ x, u (p x) = a x := by
+    intro x
+    rw [hu, ← hL₀_apply x]
+    exact L.extend_apply ⟨p x, LinearMap.mem_range_self p x⟩
+  refine ⟨toEuclideanLin.symm u.toLinearMap, ?_, ?_⟩
+  · rw [Matrix.mem_unitaryGroup_iff', star_eq_conjTranspose]
+    apply toEuclideanLin.injective
+    rw [toEuclideanLin_mul, toEuclideanLin_conjTranspose_eq_adjoint, toEuclideanLin_one,
+      LinearEquiv.apply_symm_apply]
+    refine LinearMap.ext fun x => ?_
+    apply ext_inner_left 𝕜
+    intro v
+    rw [LinearMap.comp_apply, LinearMap.adjoint_inner_right]
+    exact u.inner_map_map v x
+  · apply toEuclideanLin.injective
+    rw [toEuclideanLin_mul, LinearEquiv.apply_symm_apply]
+    exact LinearMap.ext fun x => (hu_apply x).symm
+
+end polar
+
+section hilbertSchmidt
+
+variable {n 𝕜 : Type*} [Fintype n] [RCLike 𝕜]
+
+/-- A square matrix viewed as a vector in Euclidean space indexed by pairs, so that the Euclidean
+inner product is the Hilbert–Schmidt inner product `Tr[AᴴB]`. -/
+def toEuclideanHS (A : Matrix n n 𝕜) : EuclideanSpace 𝕜 (n × n) :=
+  WithLp.toLp 2 fun p ↦ A p.1 p.2
+
+omit [Fintype n] [RCLike 𝕜] in
+theorem toEuclideanHS_injective :
+    Function.Injective (toEuclideanHS (n := n) (𝕜 := 𝕜)) := by
+  intro A B h
+  ext i j
+  exact congrFun congr(WithLp.ofLp $h) (i, j)
+
+/-- The Euclidean inner product of `toEuclideanHS` is the Hilbert–Schmidt inner product. -/
+theorem inner_toEuclideanHS (A B : Matrix n n 𝕜) :
+    inner 𝕜 (toEuclideanHS A) (toEuclideanHS B) = (Aᴴ * B).trace := by
+  simp only [toEuclideanHS, PiLp.inner_apply, RCLike.inner_apply,
+    Matrix.trace, Matrix.diag_apply, Matrix.mul_apply, Matrix.conjTranspose_apply,
+    Fintype.sum_prod_type]
+  rw [Finset.sum_comm]
+  exact Finset.sum_congr rfl fun i _ ↦ Finset.sum_congr rfl fun j _ ↦ mul_comm _ _
+
+/-- The squared Hilbert–Schmidt norm of `A` is `Tr[AᴴA]`. -/
+theorem norm_toEuclideanHS_sq (A : Matrix n n 𝕜) :
+    ‖toEuclideanHS A‖ ^ 2 = RCLike.re (Aᴴ * A).trace := by
+  rw [← inner_toEuclideanHS A A, inner_self_eq_norm_sq_to_K, ← RCLike.ofReal_pow,
+    RCLike.ofReal_re]
+
+/-- **Cauchy–Schwarz for the Hilbert–Schmidt inner product**: `Re Tr[AᴴB]` is at most the
+product of the Hilbert–Schmidt norms `√(Tr[AᴴA])` and `√(Tr[BᴴB])`. -/
+theorem re_trace_conjTranspose_mul_le (A B : Matrix n n 𝕜) :
+    RCLike.re (Aᴴ * B).trace ≤
+      Real.sqrt (RCLike.re (Aᴴ * A).trace) * Real.sqrt (RCLike.re (Bᴴ * B).trace) := by
+  rw [← inner_toEuclideanHS, ← norm_toEuclideanHS_sq, ← norm_toEuclideanHS_sq,
+    Real.sqrt_sq (norm_nonneg _), Real.sqrt_sq (norm_nonneg _)]
+  exact re_inner_le_norm _ _
+
+/-- Equality case of `re_trace_conjTranspose_mul_le` for matrices of unit Hilbert–Schmidt norm. -/
+theorem eq_of_re_trace_conjTranspose_mul_eq_one {A B : Matrix n n 𝕜}
+    (hA : RCLike.re (Aᴴ * A).trace = 1) (hB : RCLike.re (Bᴴ * B).trace = 1)
+    (h : RCLike.re (Aᴴ * B).trace = 1) : A = B := by
+  set x := toEuclideanHS A with hx
+  set y := toEuclideanHS B with hy
+  have hxn : ‖x‖ = 1 := by
+    have h' := norm_toEuclideanHS_sq A
+    rw [hA, ← hx] at h'
+    nlinarith [norm_nonneg x]
+  have hyn : ‖y‖ = 1 := by
+    have h' := norm_toEuclideanHS_sq B
+    rw [hB, ← hy] at h'
+    nlinarith [norm_nonneg y]
+  have hxy : inner 𝕜 x y = 1 := by
+    have h1 : RCLike.re (inner 𝕜 x y) = 1 := by rw [hx, hy, inner_toEuclideanHS]; exact h
+    have h2 : ‖inner 𝕜 x y‖ ≤ 1 := by
+      simpa [hxn, hyn] using norm_inner_le_norm (𝕜 := 𝕜) x y
+    have h3 : ‖inner 𝕜 x y‖ ^ 2 =
+        RCLike.re (inner 𝕜 x y) * RCLike.re (inner 𝕜 x y) +
+          RCLike.im (inner 𝕜 x y) * RCLike.im (inner 𝕜 x y) :=
+      RCLike.norm_sq_eq_def
+    apply RCLike.ext
+    · simpa using h1
+    · have : RCLike.im (inner 𝕜 x y) = 0 := by nlinarith [norm_nonneg (inner 𝕜 x y)]
+      simpa using this
+  apply toEuclideanHS_injective
+  have := (inner_eq_norm_mul_iff (𝕜 := 𝕜) (x := x) (y := y)).mp (by simp [hxy, hxn, hyn])
+  simpa [hxn, hyn] using this
+
+/-- A matrix with vanishing Hilbert–Schmidt norm is zero. -/
+theorem eq_zero_of_re_trace_conjTranspose_mul_self_eq_zero {X : Matrix n n 𝕜}
+    (h : RCLike.re (Xᴴ * X).trace = 0) : X = 0 := by
+  have h0 : ‖toEuclideanHS X‖ = 0 := by
+    have h1 := norm_toEuclideanHS_sq X
+    rw [h] at h1
+    nlinarith [norm_nonneg (toEuclideanHS X)]
+  apply toEuclideanHS_injective
+  rw [norm_eq_zero] at h0
+  rw [h0]
+  ext p
+  simp [toEuclideanHS]
+
+end hilbertSchmidt
+
 section subm
 
 variable {α : Type*} [AddCommMonoid α]
@@ -928,7 +1105,6 @@ end subm
 section spectrum_kron
 
 --This is really really ugly, and already *after* trying to clean it up a bit.
-set_option maxHeartbeats 7200000
 
 open Kronecker
 open scoped Pointwise
@@ -1075,7 +1251,6 @@ private lemma spectrum_prod_le {d d₂ : Type*}
   simp only [RCLike.algebraMap_eq_ofReal] at h₁
   exact_mod_cast h₁
 
-set_option maxHeartbeats 800000
 open Kronecker in
 open scoped Pointwise in
 theorem spectrum_prod {d d₂ : Type*}
@@ -1513,13 +1688,65 @@ theorem unitaryGroup_row_norm [Fintype n] (U : Matrix.unitaryGroup n ℂ) (i : n
   simpa [Matrix.mul_apply, Complex.sq_norm, Complex.normSq_eq_conj_mul_self]
     using congr($(U.prop.left) i i)
 
+/-- The coordinates of a matrix in `Matrix.stdBasis` are just its entries. -/
+@[simp]
+theorem stdBasis_repr_apply {m n R : Type*} [Fintype m] [Fintype n] [CommSemiring R]
+    (Y : Matrix m n R) (p : m × n) : (Matrix.stdBasis R m n).repr Y p = Y p.1 p.2 := by
+  simp [Matrix.stdBasis]
+
 section finprod
 
-variable {ι : Type*} {d : ι → Type*} [fι : Fintype ι]
+variable {ι : Type*} {d d' d'' : ι → Type*} [fι : Fintype ι]
 variable {R : Type*}
 
-def piProd [CommMonoid R] (A : ∀ i, Matrix (d i) (d i) R) : Matrix (∀ i, d i) (∀ i, d i) R :=
-  Matrix.of (fun j k : (∀ i, d i) ↦ ∏ i, A i (j i) (k i))
+/-- The Kronecker product of an `ι`-indexed family of matrices, as a matrix indexed by the
+corresponding Pi types. -/
+def piProd [CommMonoid R] (A : ∀ i, Matrix (d i) (d' i) R) : Matrix (∀ i, d i) (∀ i, d' i) R :=
+  Matrix.of (fun j k ↦ ∏ i, A i (j i) (k i))
+
+theorem piProd_apply [CommMonoid R] (A : ∀ i, Matrix (d i) (d' i) R) (j : ∀ i, d i)
+    (k : ∀ i, d' i) : piProd A j k = ∏ i, A i (j i) (k i) :=
+  rfl
+
+theorem piProd_mul [DecidableEq ι] [CommSemiring R] [∀ i, Fintype (d' i)]
+    (A : ∀ i, Matrix (d i) (d' i) R) (B : ∀ i, Matrix (d' i) (d'' i) R) :
+    piProd A * piProd B = piProd (fun i ↦ A i * B i) := by
+  ext j k
+  simp only [Matrix.mul_apply, piProd, Matrix.of_apply]
+  rw [Finset.prod_univ_sum]
+  exact (Fintype.sum_equiv (Equiv.refl _) _ _ fun x ↦ by simp [Finset.prod_mul_distrib]).symm
+
+theorem conjTranspose_piProd [CommSemiring R] [StarRing R] (A : ∀ i, Matrix (d i) (d' i) R) :
+    (piProd A)ᴴ = piProd (fun i ↦ (A i)ᴴ) := by
+  ext j k
+  simp [piProd, star_prod]
+
+/-- A Kronecker product of matrix units is the corresponding matrix unit. -/
+theorem piProd_single [CommSemiring R] [∀ i, DecidableEq (d i)] [∀ i, DecidableEq (d' i)]
+    (a : ∀ i, d i) (b : ∀ i, d' i) :
+    piProd (fun i ↦ Matrix.single (a i) (b i) (1 : R)) = Matrix.single a b 1 := by
+  classical
+  ext j k
+  simp only [piProd, Matrix.of_apply, Matrix.single_apply]
+  by_cases h : a = j ∧ b = k
+  · obtain ⟨rfl, rfl⟩ := h
+    simp
+  · rw [if_neg h]
+    obtain ⟨i, hi⟩ : ∃ i, ¬(a i = j i ∧ b i = k i) := by
+      by_contra hc
+      push Not at hc
+      exact h ⟨funext fun i ↦ (hc i).1, funext fun i ↦ (hc i).2⟩
+    exact Finset.prod_eq_zero (Finset.mem_univ i) (if_neg hi)
+
+/-- Kronecker products distribute over sums in each factor: summing the Kronecker products over
+all tuples of indices is the Kronecker product of the summed factors. -/
+theorem sum_piProd [DecidableEq ι] [CommSemiring R] {κ : ι → Type*} [∀ i, Fintype (κ i)]
+    (A : ∀ i, κ i → Matrix (d i) (d' i) R) :
+    ∑ k : (∀ i, κ i), piProd (fun i ↦ A i (k i)) = piProd (fun i ↦ ∑ x, A i x) := by
+  ext j l
+  simp only [Matrix.sum_apply, piProd, Matrix.of_apply]
+  rw [Finset.prod_univ_sum]
+  rfl
 
 variable {A : ∀ i, Matrix (d i) (d i) R}
 
@@ -1582,6 +1809,28 @@ theorem submatrix_eq_mul_mul {d d₂ d₃ R : Type*} [DecidableEq d] [Fintype d]
     A.submatrix e f = (submatrix (α := R) 1 e id : Matrix d₂ d R) * A * (submatrix (α := R) 1 id f) := by
   rw [show id = Equiv.refl d by rfl, Matrix.mul_submatrix_one, Matrix.one_submatrix_mul]
   simp
+
+section stack
+
+variable {k n R : Type*}
+
+/-- Stack a family of matrices, all with the same shape, on top of each other to make one tall
+matrix, with rows indexed by `κ × k`. -/
+def stack {κ : Type*} (A : κ → Matrix k n R) : Matrix (κ × k) n R :=
+  Matrix.of fun p j ↦ A p.1 p.2 j
+
+@[simp]
+theorem stack_apply {κ : Type*} (A : κ → Matrix k n R) (p : κ × k) (j : n) :
+    stack A p j = A p.1 p.2 j :=
+  rfl
+
+/-- The Gram matrix of a stack of matrices is the sum of their Gram matrices. -/
+theorem conjTranspose_stack_mul_stack {κ : Type*} [Semiring R] [StarRing R] [Fintype κ] [Fintype k]
+    (A B : κ → Matrix k n R) : (stack A)ᴴ * (stack B) = ∑ i, (A i)ᴴ * (B i) := by
+  ext j j'
+  simp [Matrix.mul_apply, Fintype.sum_prod_type, Matrix.sum_apply, Finset.sum_comm (γ := κ)]
+
+end stack
 
 open scoped Matrix Kronecker in
 /--

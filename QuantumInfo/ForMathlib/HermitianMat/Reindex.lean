@@ -31,6 +31,9 @@ def reindex (e : d ≃ d₂) : HermitianMat d₂ 𝕜 :=
 theorem mat_reindex : (A.reindex e).mat = A.mat.reindex e e := by
   rfl
 
+theorem reindex_apply (i j : d₂) : A.reindex e i j = A (e.symm i) (e.symm j) := by
+  rfl
+
 /-! Our simp-normal form for expressions involving `HermitianMat.reindex` is that we try to push
 the reindexing as far out as possible, so that it can be absorbed by `HermitianMat.trace`, or
 cancelled our in a `HermitianMat.inner`. In places where it commutes (like `HermitianMat.inner`)

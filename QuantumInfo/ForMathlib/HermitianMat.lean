@@ -6,6 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Basic
+public import QuantumInfo.ForMathlib.HermitianMat.BlockDiag
 public import QuantumInfo.ForMathlib.HermitianMat.CFC
 public import QuantumInfo.ForMathlib.HermitianMat.Inner
 public import QuantumInfo.ForMathlib.HermitianMat.LiebConcavity
@@ -18,4 +19,5 @@ public import QuantumInfo.ForMathlib.HermitianMat.Reindex
 public import QuantumInfo.ForMathlib.HermitianMat.Schatten
 public import QuantumInfo.ForMathlib.HermitianMat.Sqrt
 public import QuantumInfo.ForMathlib.HermitianMat.Trace
+public import QuantumInfo.ForMathlib.HermitianMat.TraceNorm
 public import QuantumInfo.ForMathlib.HermitianMat.Unitary

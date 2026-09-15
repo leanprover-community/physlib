@@ -204,7 +204,6 @@ lemma Real.tendsto_log_div_add_atTop (x : ℝ) :
     refine h_div.congr' ( by filter_upwards [ Filter.eventually_gt_atTop 0 ] with b hb using by rw [ show ( 1 + b ) / ( x + b ) = ( 1 / b + 1 ) / ( x / b + 1 ) by rw [ div_add_one, div_add_one, div_div_div_cancel_right₀ ] <;> positivity ] );
   exact le_trans ( Filter.Tendsto.log ( Filter.Tendsto.div ( Filter.Tendsto.add ( tendsto_const_nhds.div_atTop Filter.tendsto_id ) tendsto_const_nhds ) ( Filter.Tendsto.add ( tendsto_const_nhds.div_atTop Filter.tendsto_id ) tendsto_const_nhds ) ( by positivity ) ) ( by positivity ) ) ( by norm_num )
 
-set_option maxHeartbeats 1000000 in
 set_option backward.isDefEq.respectTransparency false in
 open ComplexOrder MeasureTheory intervalIntegral in
 /--

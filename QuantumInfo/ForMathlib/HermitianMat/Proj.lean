@@ -209,6 +209,25 @@ theorem supportProj_eq_cfc : A.supportProj = A.cfc (if · = 0 then 0 else 1) := 
   simp [ Finset.sum_ite, Finset.filter_eq, Finset.filter_and ];
   rw [ Finset.sum_eq_single i ] <;> aesop
 
+/-
+`HermitianMat.kerProj` as a cfc.
+-/
+theorem kerProj_eq_cfc : A.kerProj = A.cfc (if · = 0 then 1 else 0) := by
+  have h : A.cfc (fun x ↦ (1 : ℝ) - (if x = 0 then 0 else 1)) = A.cfc (if · = 0 then 1 else 0) := by
+    congr 1
+    funext x
+    split_ifs <;> norm_num
+  rw [← h, cfc_sub_apply, cfc_const, one_smul, ← supportProj_eq_cfc, eq_sub_iff_add_eq,
+    kerProj_add_supportProj]
+
+/-- `HermitianMat.kerProj` is idempotent. -/
+theorem kerProj_sq : A.kerProj.mat * A.kerProj.mat = A.kerProj.mat := by
+  have hf : (fun x : ℝ ↦ (if x = 0 then (1 : ℝ) else 0) * (if x = 0 then 1 else 0))
+      = (if · = 0 then 1 else 0) := by
+    funext x
+    split_ifs <;> norm_num
+  rw [kerProj_eq_cfc, ← mat_cfc_mul_apply, hf]
+
 /-- Projector onto the non-negative eigenspace of `B - A`. Accessible by the notation
 `{A ≤ₚ B}`, which is scoped to `HermitianMat`. This is the unique maximum operator `P`
 such that `P^2 = P` and `P * A * P ≤ P * B * P` in the Loewner order. -/
@@ -536,3 +555,37 @@ theorem nonneg_iff_inner_nonneg (A : HermitianMat n 𝕜) :
   classical
   use A⁻, negPart_nonneg A
   rwa [inner_negPart_neg_iff]
+
+section kronecker
+
+open Kronecker
+
+variable {m : Type*} [Fintype m] [DecidableEq m]
+
+theorem ker_le_ker_supportProj (A : HermitianMat n ℂ) : A.ker ≤ A.supportProj.ker := by
+  rw [supportProj_eq_cfc]
+  exact ker_le_ker_cfc (fun i hi ↦ by simp [hi])
+
+lemma supportProj_kron_diagonal (f : n → ℝ) (g : m → ℝ) :
+    (diagonal 𝕜 f ⊗ₖ diagonal 𝕜 g).supportProj =
+      (diagonal 𝕜 f).supportProj ⊗ₖ (diagonal 𝕜 g).supportProj := by
+  rw [supportProj_eq_cfc, supportProj_eq_cfc, supportProj_eq_cfc, kronecker_diagonal,
+    cfc_diagonal, cfc_diagonal, cfc_diagonal, kronecker_diagonal]
+  congr 1
+  funext i
+  by_cases h1 : f i.1 = 0 <;> by_cases h2 : g i.2 = 0 <;> simp [h1, h2]
+
+/-- The support projector of a Kronecker product is the Kronecker product of the support
+projectors. -/
+theorem supportProj_kron (A : HermitianMat n 𝕜) (B : HermitianMat m 𝕜) :
+    (A ⊗ₖ B).supportProj = A.supportProj ⊗ₖ B.supportProj := by
+  obtain ⟨UA, DA, rfl⟩ : ∃ UA : Matrix.unitaryGroup n 𝕜, ∃ DA, A = (diagonal 𝕜 DA).conj UA.val :=
+    ⟨_, _, eq_conj_diagonal A⟩
+  obtain ⟨UB, DB, rfl⟩ : ∃ UB : Matrix.unitaryGroup m 𝕜, ∃ DB, B = (diagonal 𝕜 DB).conj UB.val :=
+    ⟨_, _, eq_conj_diagonal B⟩
+  rw [← kronecker_conj, supportProj_eq_cfc,
+    cfc_conj_unitary _ _ ⟨_, Matrix.kronecker_mem_unitary UA.2 UB.2⟩, ← supportProj_eq_cfc,
+    supportProj_kron_diagonal, kronecker_conj]
+  congr 1 <;> rw [supportProj_eq_cfc, supportProj_eq_cfc, cfc_conj_unitary]
+
+end kronecker

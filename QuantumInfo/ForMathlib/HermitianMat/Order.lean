@@ -538,6 +538,65 @@ theorem eigenvalues_le_imp_le_smul_one [DecidableEq n] (A : HermitianMat n ℂ) 
   exact
     (Matrix.PosSemidef.le_smul_one_of_eigenvalues_iff A.H M).mp h
 
+/-- Containment of kernels is preserved by the partial trace, provided the smaller one is PSD.
+
+Given `x` in the kernel of `A.traceRight`, each of the vectors `v b := x ⊗ eᵦ` has
+`⟪v b, A v b⟫ ≥ 0`, and these terms sum to `⟪x, A.traceRight x⟫ = 0`; so each one vanishes and
+each `v b` lies in `ker A ≤ ker B`. Summing `B *ᵥ v b` over `b` recovers `B.traceRight *ᵥ x`. -/
+theorem ker_traceRight_le {dA dB : Type*} [Fintype dA] [Fintype dB] [DecidableEq dA]
+    [DecidableEq dB] {A B : HermitianMat (dA × dB) 𝕜} (hA : 0 ≤ A) (h : A.ker ≤ B.ker) :
+    A.traceRight.ker ≤ B.traceRight.ker := by
+  intro x hx
+  rw [mem_ker_iff_mulVec_zero] at hx ⊢
+  set v : dB → EuclideanSpace 𝕜 (dA × dB) := fun b ↦
+    WithLp.toLp 2 fun p ↦ if p.2 = b then x.ofLp p.1 else 0 with hv
+  have key : ∀ (M : HermitianMat (dA × dB) 𝕜) (a : dA),
+      (M.traceRight.mat *ᵥ x.ofLp) a = ∑ b, (M.mat *ᵥ (v b).ofLp) (a, b) := by
+    intro M a
+    have hR : ∀ j : dB, (M.mat *ᵥ (v j).ofLp) (a, j) = ∑ b, M.mat (a, j) (b, j) * x.ofLp b := by
+      intro j
+      simp only [hv, WithLp.ofLp_toLp, Matrix.mulVec, dotProduct, Fintype.sum_prod_type,
+        mul_ite, mul_zero]
+      refine Finset.sum_congr rfl fun b _ ↦ ?_
+      rw [Finset.sum_eq_single j]
+      · rw [if_pos rfl]
+      · intro k _ hk
+        rw [if_neg hk]
+      · intro hj
+        exact absurd (Finset.mem_univ j) hj
+    rw [show (∑ b, (M.mat *ᵥ (v b).ofLp) (a, b)) = ∑ j, ∑ b, M.mat (a, j) (b, j) * x.ofLp b from
+      Finset.sum_congr rfl fun j _ ↦ hR j]
+    simp only [Matrix.mulVec, dotProduct, traceRight_mat, Matrix.traceRight,
+      Matrix.of_apply, Finset.sum_mul]
+    exact Finset.sum_comm
+  have hnn : ∀ b, 0 ≤ star (v b).ofLp ⬝ᵥ A.mat *ᵥ (v b).ofLp :=
+    fun b ↦ inner_mulVec_nonneg hA _
+  have hsum0 : ∑ b, star (v b).ofLp ⬝ᵥ A.mat *ᵥ (v b).ofLp = 0 := by
+    have h1 : ∀ b, star (v b).ofLp ⬝ᵥ A.mat *ᵥ (v b).ofLp
+        = ∑ a, star (x.ofLp a) * (A.mat *ᵥ (v b).ofLp) (a, b) := by
+      intro b
+      simp only [dotProduct, hv, WithLp.ofLp_toLp, Fintype.sum_prod_type, Pi.star_apply]
+      refine Finset.sum_congr rfl fun a _ ↦ ?_
+      rw [Finset.sum_eq_single b]
+      · rw [if_pos rfl]
+      · intro k _ hk
+        simp [hk]
+      · intro hb
+        exact absurd (Finset.mem_univ b) hb
+    simp only [h1]
+    rw [Finset.sum_comm]
+    simp only [← Finset.mul_sum, ← key A, hx, Pi.zero_apply, mul_zero, Finset.sum_const_zero]
+  have hker : ∀ b, v b ∈ A.ker := by
+    intro b
+    refine mem_ker_of_inner_mulVec_zero hA _ ?_
+    exact le_antisymm (hsum0 ▸ Finset.single_le_sum (fun j _ ↦ hnn j) (Finset.mem_univ b)) (hnn b)
+  funext a
+  rw [key B a]
+  refine Finset.sum_eq_zero fun b _ ↦ ?_
+  have := (mem_ker_iff_mulVec_zero _ _).mp (h (hker b))
+  rw [this]
+  rfl
+
 --TODO: Positivity extensions for traceLeft, traceRight, rpow, nat powers, inverse function,
 -- the various `proj` function (in Proj.lean), and the inner product.
 

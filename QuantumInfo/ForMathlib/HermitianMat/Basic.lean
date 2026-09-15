@@ -65,6 +65,11 @@ theorem mat_apply {A : HermitianMat n α} {i j : n} : A.mat i j = A i j := by
   rfl
 
 @[simp]
+theorem mk_apply (x : Matrix n n α) (h) (i j : n) :
+    DFunLike.coe (F := HermitianMat n α) ⟨x, h⟩ i j = x i j := by
+  rfl
+
+@[simp]
 theorem conjTranspose_mat (A : HermitianMat n α) :
     A.mat.conjTranspose = A.mat :=
   A.H
@@ -525,6 +530,10 @@ theorem diagonal_mat : (diagonal 𝕜 f).mat = Matrix.diagonal (f · : n → �
   rfl
 
 @[simp]
+theorem diagonal_apply (i j : n) : diagonal 𝕜 f i j = if i = j then (f i : 𝕜) else 0 := by
+  rw [← mat_apply, diagonal_mat, Matrix.diagonal_apply]
+
+@[simp]
 theorem diagonal_zero : (diagonal 𝕜 0) = (0 : HermitianMat n 𝕜) := by
   ext1; simp
 
@@ -581,6 +590,10 @@ theorem kronecker_mat (A : HermitianMat m α) (B : HermitianMat n α) :
     (A ⊗ₖ B).mat = A.mat ⊗ₖ B.mat := by
   rfl
 
+theorem kronecker_apply (A : HermitianMat m α) (B : HermitianMat n α) (i j : m × n) :
+    (A ⊗ₖ B) i j = A i.1 j.1 * B i.2 j.2 := by
+  rfl
+
 @[simp]
 theorem zero_kronecker (A : HermitianMat m α) : (0 : HermitianMat n α) ⊗ₖ A = 0 := by
   ext1; simp
@@ -601,6 +614,20 @@ theorem add_kronecker : (A + B) ⊗ₖ C = A ⊗ₖ C + B ⊗ₖ C := by
 variable (A : HermitianMat m α) (B C : HermitianMat n α) in
 theorem kronecker_add : A ⊗ₖ (B + C) = A ⊗ₖ B + A ⊗ₖ C := by
   ext1; simp [Matrix.kronecker_add]
+
+variable (A B : HermitianMat m α) (C : HermitianMat n α) in
+theorem sub_kronecker : (A - B) ⊗ₖ C = A ⊗ₖ C - B ⊗ₖ C := by
+  ext1
+  simp only [kronecker_mat, mat_sub]
+  ext i j
+  simp [Matrix.kroneckerMap_apply, Matrix.sub_apply, sub_mul]
+
+variable (A : HermitianMat m α) (B C : HermitianMat n α) in
+theorem kronecker_sub : A ⊗ₖ (B - C) = A ⊗ₖ B - A ⊗ₖ C := by
+  ext1
+  simp only [kronecker_mat, mat_sub]
+  ext i j
+  simp [Matrix.kroneckerMap_apply, Matrix.sub_apply, mul_sub]
 
 lemma kronecker_diagonal [DecidableEq m] [DecidableEq n] (d₁ : m → ℝ) (d₂ : n → ℝ) :
     (diagonal 𝕜 d₁ ⊗ₖ diagonal 𝕜 d₂) = diagonal 𝕜 (fun (i : m × n) => d₁ i.1 * d₂ i.2) := by

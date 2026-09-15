@@ -255,7 +255,6 @@ private lemma conj_le_conj {X Y T : L ℋ} (hXY : X ≤ Y) (hT : IsSelfAdjoint T
     simp [sub_eq_add_neg, mul_add, add_mul, mul_assoc]
   exact sub_nonneg.mp (by simpa [hsub] using hconj)
 
-set_option maxHeartbeats 800000 in
 -- The generalized-perspective normalization expands several nested CFC products.
 private theorem theorem_2_5_forward_jointlyConvexOn_psd_pd_of_condV
     {f h : ℝ → ℝ}
