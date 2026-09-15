@@ -177,9 +177,6 @@ TODO "Express the Hubble parameter as a function of the scale factor, `H(a)`, an
   redshift, `H(z)`, using `a = 1 / (1 + z)` with the normalization `a₀ = 1`; define the
   reduced Hubble function `E(z) = H(z) / H₀`."
 
-TODO "Prove the change-of-variable relations underlying the age and distance integrals:
-  `∂ₜ a = a * hubbleConstant a`, `dt = − dz / ((1 + z) * H)` and `dχ = c * dz / H`."
-
 /-- The deceleration parameter defined in terms of the scale factor
   as `- (dₜdₜ a) a / (dₜ a)^2`.
 
