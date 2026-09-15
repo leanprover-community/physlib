@@ -10,6 +10,7 @@ public import QuantumInfo.ForMathlib.ContinuousLinearMap
 public import QuantumInfo.ForMathlib.ComplexLaplaceTransform
 public import QuantumInfo.ForMathlib.ContinuousSup
 public import QuantumInfo.ForMathlib.Filter
+public import QuantumInfo.ForMathlib.FisherRao
 public import QuantumInfo.ForMathlib.HermitianMat
 public import QuantumInfo.ForMathlib.Isometry
 public import QuantumInfo.ForMathlib.LinearEquiv
