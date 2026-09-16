@@ -634,7 +634,6 @@ The proof uses the resolvent approach and compactness.
 5. For B with ‖B - A₀‖ < δ: spectrum ℝ B.mat ⊆ Metric.closedBall 0 M (by step 1) and spectrum ℝ B.mat ∩ K = ∅ (by step 4). So spectrum ℝ B.mat ⊆ Metric.closedBall 0 M \ K ⊆ U.
 Note: we need to connect spectrum ℝ B.mat (the real spectrum) to IsUnit in the complex matrix ring. Use that for self-adjoint elements, t ∈ spectrum ℝ A.mat iff algebraMap ℝ (Matrix d d ℂ) t ∈ spectrum ℂ A.mat, and the resolvent set is open. We can use spectrum.isOpen_resolventSet or the characterization via IsUnit.
 -/
-set_option maxHeartbeats 400000 in
 set_option backward.isDefEq.respectTransparency false in
 lemma spectrum_subset_of_isOpen (A₀ : HermitianMat d ℂ) (U : Set ℝ)
     (hU : IsOpen U) (hAU : spectrum ℝ A₀.mat ⊆ U) :
@@ -733,7 +732,6 @@ Both terms → 0, so the map is ContinuousWithinAt.
 Use `Metric.continuousWithinAt_iff` and an ε/2 argument.
 -/
 set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 800000 in
 lemma continuousWithinAt_cfc_of_continuousOn {T : Set ℝ} {g : ℝ → ℝ}
     {A₀ : HermitianMat d ℂ}
     (hg : ContinuousOn g T) (hA₀ : spectrum ℝ A₀.mat ⊆ T) :
@@ -836,7 +834,6 @@ Use `by_contra` and arrive at contradiction, or construct the neighborhood direc
 IMPORTANT: To get the open sets V_i, use `ContinuousWithinAt` of f at (x₀, λᵢ) which gives an eventually filter statement, then extract using `mem_nhdsWithin_iff_exists_mem_nhds_inter` and `mem_nhds_prod_iff`.
 For the continuity of A composed with spectrum_subset_of_isOpen: use `ContinuousWithinAt.eventually` or compose the filter. Specifically: `(hA₂ x₀ hx₀).eventually (spectrum_subset_of_isOpen (A x₀) W hW_open hW_contains)` gives `∀ᶠ y in nhdsWithin x₀ S, spectrum(A y) ⊆ W`. Then use `Filter.Eventually.exists_mem` to get U'.
 -/
-set_option maxHeartbeats 800000 in
 lemma dist_lt_of_continuous_spectrum {X : Type*} [TopologicalSpace X]
     {f : X → ℝ → ℝ} {A : X → HermitianMat d ℂ} {S : Set X} {T : Set ℝ}
     (hf : ContinuousOn (fun (p : X × ℝ) ↦ f p.1 p.2) (S ×ˢ T))

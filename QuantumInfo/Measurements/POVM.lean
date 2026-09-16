@@ -51,66 +51,80 @@ namespace POVM
 
 variable {X : Type*} {d : Type*} [Fintype X] [Fintype d] [DecidableEq d] [DecidableEq X]
 
+open Kronecker in
+/-- The matrix of the measurement channel `POVM.measurementMap`. -/
+def measurementMatrixMap (Λ : POVM X d) : MatrixMap d (d × X) ℂ :=
+  ∑ (x : X), {
+    toFun := fun ρ ↦ ((((Λ.mats x) ^ (1/2:ℝ)).mat * ρ * ((Λ.mats x)^(1/2:ℝ)).mat) ⊗ₖ Matrix.single x x 1)
+    map_add' := by simp [mul_add, add_mul, Matrix.kroneckerMap_add_left]
+    map_smul' := by simp [Matrix.smul_kronecker]
+  }
+
+theorem measurementMatrixMap_cp (Λ : POVM X d) :
+    MatrixMap.IsCompletelyPositive Λ.measurementMatrixMap := by
+  rw [measurementMatrixMap]
+  apply Finset.sum_induction
+  · exact fun _ _ ha ↦ ha.add
+  · exact MatrixMap.IsCompletelyPositive.zero _ _
+  · intro x _
+    --Note: this map M₁ would do as well as an object on its own, it's "measure and forget the result".
+    let M₁ : MatrixMap d d ℂ := ⟨⟨
+      fun ρ ↦ ((Λ.mats x) ^ (1/2:ℝ)).mat * ρ * ((Λ.mats x)^(1/2:ℝ)).mat,
+      by simp [mul_add, add_mul]⟩,
+      by simp⟩
+    let M₂ : MatrixMap d (d × X) ℂ := ⟨⟨
+      fun ρ ↦ (ρ.kronecker (Matrix.single x x 1)),
+      by simp [add_mul, Matrix.kroneckerMap_add_left]⟩,
+      by simp [Matrix.smul_kronecker]⟩
+    set M₃ := LinearMap.comp M₂ M₁ with hM₃
+    simp only [M₁, M₂, LinearMap.comp, kronecker, LinearMap.coe_mk, AddHom.coe_mk] at hM₃
+    rw [← hM₃]
+    apply MatrixMap.IsCompletelyPositive.comp
+    · dsimp [M₁]
+      conv =>
+        enter [1, 1, 1, ρ, 2]
+        rw [← HermitianMat.conjTranspose_mat]
+      exact MatrixMap.conj_isCompletelyPositive (Λ.mats x ^ (1 / 2)).mat
+    · apply MatrixMap.kron_kronecker_const
+      exact (Matrix.PosSemidef.stdBasisMatrix_iff_eq x x (zero_lt_one' ℂ)).2 rfl
+
+theorem measurementMatrixMap_TP (Λ : POVM X d) :
+    MatrixMap.IsTracePreserving Λ.measurementMatrixMap := by
+  intro x
+  rw [measurementMatrixMap, LinearMap.sum_apply, trace_sum]
+  dsimp
+  simp only [Matrix.trace_kronecker, Matrix.trace_mul_cycle (B := x),
+    Matrix.trace_single_eq_same, mul_one]
+  rw [← trace_sum, ← Finset.sum_mul]
+  congr
+  convert one_mul x
+  rw [show (1 : Matrix d d ℂ) = (1 : HermitianMat d ℂ).mat by rfl, ← Λ.normalized]
+  rw [HermitianMat.mat_finset_sum]
+  congr! with i _
+  exact HermitianMat.pow_half_mul (Λ.nonneg i)
+
 /-- The act of measuring is a quantum channel, that maps a `d`-dimensional quantum
 state to an `d × X`-dimensional quantum-classical state. -/
-def measurementMap (Λ : POVM X d) : CPTPMap d (d × X) where
-  toLinearMap :=
-    ∑ (x : X), open Kronecker in {
-      toFun := fun ρ ↦ ((((Λ.mats x) ^ (1/2:ℝ)).mat * ρ * ((Λ.mats x)^(1/2:ℝ)).mat) ⊗ₖ Matrix.single x x 1)
-      map_add' := by simp [mul_add, add_mul, Matrix.kroneckerMap_add_left]
-      map_smul' := by simp [Matrix.smul_kronecker]
-    }
-  cp := by
-    apply Finset.sum_induction
-    · exact fun _ _ ha ↦ ha.add
-    · exact MatrixMap.IsCompletelyPositive.zero _ _
-    · intro x _
-      --Note: this map M₁ would do as well as an object on its own, it's "measure and forget the result".
-      let M₁ : MatrixMap d d ℂ := ⟨⟨
-        fun ρ ↦ ((Λ.mats x) ^ (1/2:ℝ)).mat * ρ * ((Λ.mats x)^(1/2:ℝ)).mat,
-        by simp [mul_add, add_mul]⟩,
-        by simp⟩
-      let M₂ : MatrixMap d (d × X) ℂ := ⟨⟨
-        fun ρ ↦ (ρ.kronecker (Matrix.single x x 1)),
-        by simp [add_mul, Matrix.kroneckerMap_add_left]⟩,
-        by simp [Matrix.smul_kronecker]⟩
-      set M₃ := LinearMap.comp M₂ M₁ with hM₃
-      simp only [M₁, M₂, LinearMap.comp, kronecker, LinearMap.coe_mk, AddHom.coe_mk] at hM₃
-      rw [← hM₃]
-      apply MatrixMap.IsCompletelyPositive.comp
-      · dsimp [M₁]
-        conv =>
-          enter [1, 1, 1, ρ, 2]
-          rw [← HermitianMat.conjTranspose_mat]
-        exact MatrixMap.conj_isCompletelyPositive (Λ.mats x ^ (1 / 2)).mat
-      · apply MatrixMap.kron_kronecker_const
-        exact (Matrix.PosSemidef.stdBasisMatrix_iff_eq x x (zero_lt_one' ℂ)).2 rfl
-  TP := by
-    intro x
-    rw [LinearMap.sum_apply, trace_sum]
-    dsimp
-    simp only [Matrix.trace_kronecker, Matrix.trace_mul_cycle (B := x),
-      Matrix.trace_single_eq_same, mul_one]
-    rw [← trace_sum, ← Finset.sum_mul]
-    congr
-    convert one_mul x
-    rw [show (1 : Matrix d d ℂ) = (1 : HermitianMat d ℂ).mat by rfl, ← Λ.normalized]
-    rw [HermitianMat.mat_finset_sum]
-    congr! with i _
-    exact HermitianMat.pow_half_mul (Λ.nonneg i)
+def measurementMap (Λ : POVM X d) : CPTPMap d (d × X) :=
+  CPTPOp.ofMat Λ.measurementMatrixMap Λ.measurementMatrixMap_cp Λ.measurementMatrixMap_TP
+
+/-- **Matrix analogue of the measurement channel**. -/
+@[simp]
+theorem measurementMap_map (Λ : POVM X d) :
+    Λ.measurementMap.map = Λ.measurementMatrixMap :=
+  CPTPOp.map_ofMat _ _ _
 
 open Kronecker in
 theorem measurementMap_apply_matrix (Λ : POVM X d) (m : Matrix d d ℂ) :
   Λ.measurementMap.map m =  ∑ x : X,
     ((((Λ.mats x) ^ (1/2:ℝ)).mat * m * ((Λ.mats x)^(1/2:ℝ)).mat) ⊗ₖ Matrix.single x x 1) := by
-  dsimp [measurementMap, HPMap.map]
-  rw [LinearMap.sum_apply]
+  rw [measurementMap_map, measurementMatrixMap, LinearMap.sum_apply]
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
 open HermitianMat in
 theorem measurementMap_apply_hermitianMat (Λ : POVM X d) (m : HermitianMat d ℂ) :
-  Λ.measurementMap.toHPMap m = ∑ x : X,
+  Λ.measurementMap.toHPOp m = ∑ x : X,
     --TODO: Something like `HermitianMat.single` to make this better
     ((m.conj ((Λ.mats x)^(1/2:ℝ)).mat : HermitianMat d ℂ) ⊗ₖ HermitianMat.diagonal ℂ (fun y ↦ ite (x = y) 1 0)) := by
   ext1
@@ -119,7 +133,7 @@ theorem measurementMap_apply_hermitianMat (Λ : POVM X d) (m : HermitianMat d �
     kronecker_mat, mat_mk]
   congr!
   ext i j
-  simp only [HermitianMat.diagonal, mat_mk, diagonal_apply, single, of_apply]
+  simp only [HermitianMat.diagonal, mat_mk, Matrix.diagonal_apply, single, of_apply]
   split_ifs <;> grind only [= map_zero, = map_one]
 
 /-- A POVM leads to a distribution of outcomes on any given mixed state ρ. -/
@@ -132,16 +146,16 @@ def measure (Λ : POVM X d) (ρ : MState d) : ProbDistribution X := .mk'
 
 /-- The quantum-classical `POVM.measurement_map`, gives a marginal on the right equal to `POVM.measure`.-/
 theorem traceLeft_measurementMap_eq_measure (Λ : POVM X d) (ρ : MState d) :
-    (Λ.measurementMap ρ).traceLeft = MState.ofClassical (Λ.measure ρ) := by
+    MState.traceLeft (Λ.measurementMap ρ) = MState.ofClassical (Λ.measure ρ) := by
   open Kronecker in
+  apply DensityOp.ext_m
+  rw [MState.traceLeft_m, CPTPOp.mat_coe_eq_apply_mat, MState.ofClassical, DensityOp.m_ofMat,
+    measurementMap_apply_matrix]
   ext i j
-  rcases ρ with ⟨⟨ρ, ρH⟩, hρ0, hρ1⟩
-  change (Matrix.traceLeft (Λ.measurementMap.map ρ)) i j = _
-  rw [measurementMap_apply_matrix]
   --TODO: a lemma for Matrix.traceLeft (∑ x, _) = ∑ x, (Matrix.traceLeft _)
   simp_rw [Matrix.traceLeft, Matrix.of_apply, Matrix.sum_apply]
   rw [Finset.sum_comm]
-  simp only [kroneckerMap_apply, MState.coe_ofClassical]
+  simp only [kroneckerMap_apply]
   simp only [single, of_apply, mul_ite, mul_one, mul_zero, Finset.sum_ite_irrel,
     Finset.sum_const_zero]
   simp only [HermitianMat.diagonal, HermitianMat.mat_mk, diagonal_apply]
@@ -159,7 +173,7 @@ theorem traceLeft_measurementMap_eq_measure (Λ : POVM X d) (ρ : MState d) :
 the mixed state recording the outcome. This resulting state is purely diagonal, as given in
 `POVM.measureDiscard_apply`. -/
 noncomputable def measureDiscard (Λ : POVM X d) : CPTPMap d X :=
-  CPTPMap.traceLeft ∘ₘ Λ.measurementMap
+  CPTPOp.traceLeft ∘ₘ Λ.measurementMap
 
 theorem measureDiscard_apply (Λ : POVM X d) (ρ : MState d) :
     Λ.measureDiscard ρ = MState.ofClassical (Λ.measure ρ) := by
@@ -168,22 +182,20 @@ theorem measureDiscard_apply (Λ : POVM X d) (ρ : MState d) :
 /-- The action of measuring a state with the POVM `Λ`, forgetting the measurement outcome, and
 keeping the disturbed state. -/
 noncomputable def measureForget (Λ : POVM X d) : CPTPMap d d :=
-  CPTPMap.traceRight ∘ₘ Λ.measurementMap
+  CPTPOp.traceRight ∘ₘ Λ.measurementMap
 
 theorem measureForget_eq_kraus (Λ : POVM X d) :
-    Λ.measureForget = CPTPMap.of_kraus_CPTPMap (fun i ↦ (Λ.mats i) ^ (1/2 : ℝ)) (by
+    Λ.measureForget = CPTPOp.of_kraus_CPTPMap (fun i ↦ (Λ.mats i) ^ (1/2 : ℝ)) (by
       simpa [-one_div, fun x ↦ HermitianMat.pow_half_mul (Λ.nonneg x), HermitianMat.ext_iff]
         using Λ.normalized
     ) := by
-  apply CPTPMap.funext
+  rw [CPTPOp.funext_iff]
   intro ρ
-  apply MState.ext_m
-  rw [CPTPMap.mat_coe_eq_apply_mat (Λ := Λ.measureForget) (ρ := ρ)]
+  apply DensityOp.ext_m
+  rw [measureForget, CPTPOp.compose_eq, CPTPOp.traceRight_eq_MState_traceRight,
+    MState.traceRight_m, CPTPOp.mat_coe_eq_apply_mat, CPTPOp.mat_coe_eq_apply_mat,
+    CPTPOp.map_of_kraus_CPTPMap, measurementMap_apply_matrix]
   ext i j
-  change (Matrix.traceRight (Λ.measurementMap.map ρ.m)) i j =
-    (MatrixMap.of_kraus (fun i ↦ ((Λ.mats i) ^ (1 / 2 : ℝ)).mat)
-      (fun i ↦ ((Λ.mats i) ^ (1 / 2 : ℝ)).mat) ρ.m) i j
-  rw [measurementMap_apply_matrix]
   simp [Matrix.traceRight, MatrixMap.of_kraus]
   simp_rw [Matrix.sum_apply]
   refine Finset.sum_congr rfl fun x _ ↦ ?_

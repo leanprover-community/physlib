@@ -100,7 +100,7 @@ And other important theorems like superdense coding, nonadditivity, superactivat
 
 @[expose] public section
 
-namespace CPTPMap
+namespace CPTPOp
 
 variable {d₁ d₂ d₃ d₄ d₅ d₆ : Type*}
 variable [Fintype d₁] [Fintype d₂] [Fintype d₃] [Fintype d₄] [Fintype d₅] [Fintype d₆]
@@ -124,7 +124,7 @@ A channel A `εApproximates` channel B of the same dimensions if for every state
 fidelity F(A(ρ), B(ρ)) is at least 1-ε.
 -/
 def εApproximates (A B : CPTPMap d₁ d₂) (ε : ℝ) : Prop :=
-  ∀ (ρ : MState d₁), (A ρ).fidelity (B ρ) ≥ 1-ε
+  ∀ (ρ : MState d₁), DensityOp.fidelity (A ρ) (B ρ) ≥ 1-ε
 
 /--
 A channel A `AchievesRate` R:ℝ if for every ε>0, some n copies of A emulates a channel B such
@@ -133,9 +133,9 @@ that log2(dimout(B))/n ≥ R, and that B εApproximates the identity channel.
 def AchievesRate (A : CPTPMap d₁ d₂) (R : ℝ) : Prop :=
   ∀ ε : ℝ, ε > 0 →
     ∃ n > 0, ∃ (dimB : ℕ) (B : CPTPMap (Fin dimB) (Fin dimB)),
-      (CPTPMap.piProd (fun (_ : Fin n) ↦ A)).Emulates B ∧
+      (CPTPOp.piProd (fun (_ : Fin n) ↦ A)).Emulates B ∧
       Real.logb 2 dimB ≥ R*n ∧
-      B.εApproximates CPTPMap.id ε
+      B.εApproximates CPTPOp.id ε
 
 /-- The quantum capacity of a channel A: the supremum of all rates R such that
 `A.AchievesRate R`, i.e. the maximum asymptotic rate at which quantum information can be
@@ -155,7 +155,7 @@ variable [DecidableEq d₃] [DecidableEq d₄] [DecidableEq d₅]
 /-- Every quantum channel emulates itself. -/
 @[refl]
 theorem emulates_self (Λ : CPTPMap d₁ d₂) : Λ.Emulates Λ :=
-  ⟨CPTPMap.id, CPTPMap.id, by simp⟩
+  ⟨CPTPOp.id, CPTPOp.id, by simp⟩
 
 /-- If a quantum channel A emulates B, and B emulates C, then A emulates C. -/
 @[trans]
@@ -175,10 +175,12 @@ end emulates
 
 section εApproximates
 
+omit [DecidableEq d₂] in
 /-- Every quantum channel perfectly approximates itself, that is, `εApproximates` with `ε = 0`. -/
 theorem εApproximates_self (Λ : CPTPMap d₁ d₂) : Λ.εApproximates Λ 0 :=
-  fun ρ ↦ ((Λ ρ).fidelity_self_eq_one.trans (sub_zero 1).symm).ge
+  fun ρ ↦ ((DensityOp.fidelity_self_eq_one (Λ ρ)).trans (sub_zero 1).symm).ge
 
+omit [DecidableEq d₂] in
 /-- If a quantum channel A approximates B with ε₀, it also approximates B with all larger ε₁. -/
 theorem εApproximates_monotone {A B : CPTPMap d₁ d₂} {ε₀ : ℝ} (h : A.εApproximates B ε₀)
     {ε₁ : ℝ} (h₂ : ε₀ ≤ ε₁) : A.εApproximates B ε₁ :=
@@ -194,12 +196,15 @@ end εApproximates
 
 section AchievesRate
 
-/-- Every quantum channel out of a nonempty space achieves at least a rate of zero. -/
-theorem achievesRate_0 (Λ : CPTPMap d₁ d₂) [Nonempty d₁] : Λ.AchievesRate 0 := fun ε hε => by
-  have : Nonempty d₂ := Λ.toPTPMap.nonemptyOut
-  refine ⟨1, one_pos, 1, default, ⟨default, default, Subsingleton.elim _ _⟩, by norm_num, ?_⟩
-  simpa [show (default : CPTPMap (Fin 1) (Fin 1)) = id from Subsingleton.elim _ _] using
-    εApproximates_monotone (εApproximates_self (id (dIn := Fin 1))) hε.le
+/-- Every quantum channel on a nonempty space achieves a rate of zero. (The hypothesis is needed:
+a channel out of an empty space into a nonempty one emulates nothing at all, since an emulation
+would need both a channel into the empty space and one out of the nonempty one.) -/
+theorem achievesRate_0 [Nonempty d₁] (Λ : CPTPMap d₁ d₂) : Λ.AchievesRate 0 := by
+  have : Nonempty d₂ := MState.nonempty (Λ default)
+  intro ε hε
+  refine ⟨1, zero_lt_one, 1, default, ⟨default, default, Unique.eq_default _⟩, by norm_num, ?_⟩
+  rw [Unique.eq_default (id : CPTPMap (Fin 1) (Fin 1))]
+  exact εApproximates_monotone (εApproximates_self default) hε.le
 
 /-- The identity channel on D dimensional space achieves a rate of log2(D). -/
 theorem id_achievesRate_log_dim :
@@ -207,46 +212,139 @@ theorem id_achievesRate_log_dim :
   intro ε hε
   use 1, zero_lt_one, Fintype.card d₁, id
   constructor
-  · --piProd of id's is id, then use emulates_self up to equivalence
-    rw [show (fun (_ : Fin 1) ↦ id (dIn := d₁)) = (fun _ ↦ id) from rfl, piProd_id]
-    exact let σ := Fintype.equivFinOfCardEq (by simp +decide :
-            Fintype.card (Fin 1 → d₁) = Fintype.card d₁)
-      ⟨ofEquiv σ.symm, ofEquiv σ, by ext1; simp⟩
+  · --they are equivalent up to permutation
+    -- TODO: Instead this proof should be `@[simp] piProd (fun x => id) = id` and `emulates_self`
+    refine' ⟨ _, _, _ ⟩;
+    exact CPTPOp.ofEquiv ( Fintype.equivFinOfCardEq ( by simp +decide ) ).symm;
+    exact CPTPOp.ofEquiv ( Fintype.equivFinOfCardEq ( by simp +decide ) );
+    apply CPTPOp.ext_map
+    simp only [compose_map, piProd_map, id_map, ofEquiv_map]
+    rw [show (fun _ : Fin 1 ↦ (LinearMap.id : MatrixMap d₁ d₁ ℂ)) =
+      (fun i : Fin 1 ↦ MatrixMap.id ((fun _ : Fin 1 ↦ d₁) i) ℂ) from rfl]
+    simp [MatrixMap.id]
   constructor
   · norm_num
   · exact εApproximates_monotone (εApproximates_self id) hε.le
 
-/-- A channel cannot achieve a rate greater than log2(D), where D is the input dimension. -/
-@[sorryful]
-theorem not_achievesRate_gt_log_dim_in (Λ : CPTPMap d₁ d₂) {R : ℝ}
-    (hR : Real.logb 2 (Fintype.card d₁) < R) : ¬Λ.AchievesRate R := by
-  sorry
+/-- A channel `D ∘ E` that factors through `d₂` can only approximate the identity channel on `d₁` if
+`d₂` is nearly as large as `d₁`: each of the `card d₁` basis states `∣i⟩` must come back out of `D`
+with probability at least `(1-ε)²`, and these probabilities are the expectation values of a POVM
+whose total trace is only `card d₂`. -/
+theorem card_mul_le_card_of_εApproximates_id (E : CPTPMap d₁ d₂) (D : CPTPMap d₂ d₁) {ε : ℝ}
+    (hε : ε ≤ 1) (h : (D.compose E).εApproximates CPTPOp.id ε) :
+    (Fintype.card d₁ : ℝ) * (1 - ε)^2 ≤ Fintype.card d₂ := by
+  have key : ∀ i : d₁, (1 - ε)^2 ≤ (D.dual (MState.pure (Ket.basis i)).M).trace := by
+    intro i
+    have h1 := h (MState.pure (Ket.basis i))
+    rw [ge_iff_le, compose_eq, id_MState, DensityOp.fidelity_symm, DensityOp.fidelity_pure] at h1
+    have hnn : 0 ≤ MState.exp_val (D (E (MState.pure (Ket.basis i))))
+        (MState.pure (Ket.basis i)).M :=
+      MState.exp_val_nonneg _ (MState.pure (Ket.basis i)).nonneg
+    have h2 := mul_self_le_mul_self (by linarith : (0:ℝ) ≤ 1 - ε) h1
+    rw [Real.mul_self_sqrt hnn, ← sq] at h2
+    calc (1 - ε)^2
+        ≤ MState.exp_val (D (E (MState.pure (Ket.basis i)))) (MState.pure (Ket.basis i)).M := h2
+      _ = MState.exp_val (E (MState.pure (Ket.basis i))) (D.dual (MState.pure (Ket.basis i)).M) :=
+          exp_val_Dual D _ _
+      _ ≤ MState.exp_val (E (MState.pure (Ket.basis i)))
+            ((D.dual (MState.pure (Ket.basis i)).M).trace • 1) :=
+          MState.exp_val_le_exp_val _
+            (HermitianMat.le_trace_smul_one (D.dual_pos (MState.pure (Ket.basis i)).nonneg))
+      _ = (D.dual (MState.pure (Ket.basis i)).M).trace := by
+          rw [MState.exp_val_smul, MState.exp_val_one, mul_one]
+  calc (Fintype.card d₁ : ℝ) * (1 - ε)^2 = ∑ _i : d₁, (1 - ε)^2 := by
+        rw [Finset.sum_const, Finset.card_univ, nsmul_eq_mul]
+    _ ≤ ∑ i : d₁, (D.dual (MState.pure (Ket.basis i)).M).trace :=
+        Finset.sum_le_sum fun i _ ↦ key i
+    _ = (D.dual (∑ i : d₁, (MState.pure (Ket.basis i)).M)).trace := by
+        rw [map_sum, HermitianMat.trace_sum]
+    _ = Fintype.card d₂ := by rw [MState.sum_pure_basis, map_one, HermitianMat.trace_one]
 
-noncomputable section AristotleLemmas
+/-- A channel cannot achieve a rate greater than log2(D), where D is the input dimension.
 
-end AristotleLemmas
+If `Λ` achieved a rate `R` above `L = log₂(D)`, then for every `ε` there would be a channel `B` on
+`2^(Rn)` dimensions, `ε`-approximating the identity, that factors through the `Dⁿ`-dimensional
+input of `Λ⊗ⁿ`. By `card_mul_le_card_of_εApproximates_id` that forces `2^(Rn) (1-ε)² ≤ 2^(Ln)`,
+that is, `(1-ε)² ≤ 2^((L-R)n) ≤ 2^(L-R) < 1`, which fails once `ε` is small enough. -/
+theorem not_achievesRate_gt_log_dim_in (Λ : CPTPMap d₁ d₂) {R : ℝ} (hR : Real.logb 2 (Fintype.card d₁) < R) :
+    ¬Λ.AchievesRate R := by
+  intro hach
+  set L := Real.logb 2 (Fintype.card d₁) with hL
+  have hL0 : 0 ≤ L := by
+    rcases Nat.eq_zero_or_pos (Fintype.card d₁) with h | h
+    · simp [hL, h]
+    · exact Real.logb_nonneg one_lt_two (by exact_mod_cast h)
+  have hR0 : 0 < R := lt_of_le_of_lt hL0 hR
+  have hpow : (0:ℝ) < 2 ^ (L - R) := Real.rpow_pos_of_pos two_pos _
+  set t := Real.sqrt (2 ^ (L - R)) with ht
+  have ht0 : 0 < t := Real.sqrt_pos.mpr hpow
+  have ht1 : t < 1 := by
+    rw [ht, show (1:ℝ) = Real.sqrt 1 from Real.sqrt_one.symm]
+    refine Real.sqrt_lt_sqrt hpow.le ?_
+    calc (2:ℝ) ^ (L - R) < 2 ^ (0:ℝ) :=
+          (Real.rpow_lt_rpow_left_iff one_lt_two).mpr (by linarith)
+      _ = 1 := Real.rpow_zero 2
+  obtain ⟨n, hn, dimB, B, ⟨E', D', hED⟩, hRate, hApprox⟩ := hach ((1 - t)/2) (by linarith)
+  have hnR : (0:ℝ) < n := by exact_mod_cast hn
+  have hRn : 0 < R * n := mul_pos hR0 hnR
+  -- Regroup the emulation `B = D' ∘ Λ⊗ⁿ ∘ E'` as a factorization through `Fin n → d₁`.
+  have hApprox' : ((D'.compose (CPTPOp.piProd fun _ : Fin n ↦ Λ)).compose E').εApproximates
+      CPTPOp.id ((1 - t)/2) := by
+    rw [compose_assoc, hED]
+    exact hApprox
+  have hcount : (dimB : ℝ) * (1 - (1 - t)/2)^2 ≤ ((Fintype.card d₁ : ℝ)) ^ n := by
+    have h := card_mul_le_card_of_εApproximates_id E' (D'.compose (piProd fun _ : Fin n ↦ Λ))
+      (by linarith) hApprox'
+    rwa [Fintype.card_fin, Fintype.card_fun, Fintype.card_fin, Nat.cast_pow] at h
+  have hd0 : 0 < dimB := by
+    rcases Nat.eq_zero_or_pos dimB with h | h
+    · rw [h] at hRate
+      simp only [Nat.cast_zero, Real.logb_zero, ge_iff_le] at hRate
+      linarith
+    · exact h
+  have hdimB : (2:ℝ) ^ (R * n) ≤ dimB :=
+    calc (2:ℝ) ^ (R * n) ≤ 2 ^ Real.logb 2 dimB :=
+          (Real.rpow_le_rpow_left_iff one_lt_two).mpr hRate
+      _ = dimB := Real.rpow_logb two_pos (by norm_num) (by exact_mod_cast hd0)
+  have hcard : ((Fintype.card d₁ : ℝ)) ^ n ≤ (2:ℝ) ^ (L * n) := by
+    rcases Nat.eq_zero_or_pos (Fintype.card d₁) with h | h
+    · rw [h, Nat.cast_zero, zero_pow hn.ne']
+      positivity
+    · have hc : ((Fintype.card d₁ : ℝ)) = 2 ^ L :=
+        (Real.rpow_logb two_pos (by norm_num) (by exact_mod_cast h)).symm
+      rw [hc, ← Real.rpow_natCast (2 ^ L) n, ← Real.rpow_mul zero_le_two]
+  have hsq : (1 - (1 - t)/2)^2 ≤ t^2 := by
+    rw [ht, Real.sq_sqrt hpow.le]
+    have h1 : (2:ℝ) ^ (R * n) * (1 - (1 - t)/2)^2 ≤ 2 ^ (L * n) :=
+      le_trans (mul_le_mul_of_nonneg_right hdimB (by positivity)) (hcount.trans hcard)
+    have h2 : (2:ℝ) ^ (L * n) ≤ 2 ^ (R * n) * 2 ^ (L - R) := by
+      rw [← Real.rpow_add two_pos]
+      refine (Real.rpow_le_rpow_left_iff one_lt_two).mpr ?_
+      have hn1 : (1:ℝ) ≤ n := by exact_mod_cast hn
+      nlinarith [mul_le_mul_of_nonneg_left hn1 (sub_pos.mpr hR).le]
+    exact le_of_mul_le_mul_left (h1.trans h2) (Real.rpow_pos_of_pos two_pos _)
+  nlinarith [mul_pos (sub_pos.mpr ht1) (show (0:ℝ) < 1 + 3*t by linarith)]
 
 /-- A channel cannot achieve a rate greater than log2(D), where D is the output dimension. -/
 @[sorryful]
 theorem not_achievesRate_gt_log_dim_out (Λ : CPTPMap d₁ d₂) {R : ℝ}
     (hR : Real.logb 2 (Fintype.card d₂) < R) : ¬Λ.AchievesRate R := by
   intro h;
-  -- We show that the identity channel on the output space `d₂` emulates `Λ`. Since capacity
-  -- is monotonic under emulation, `Q(Λ) ≤ Q(id_{d₂})`.
-  have h_emulate : (CPTPMap.id (dIn := d₂)).Emulates Λ := by
-    exact ⟨Λ, CPTPMap.id, by simp⟩
-  -- If `Λ` achieves rate `R`, then `id_{d₂}` achieves rate `R`. This follows because if
-  -- `Λ^{\otimes n}` emulates `B`, and `id^{\otimes n}` emulates `Λ^{\otimes n}` (by
-  -- functoriality of tensor product), then `id^{\otimes n}` emulates `B`.
-  have h_id_achieves : (CPTPMap.id (dIn := d₂)).AchievesRate R := by
+  -- We show that the identity channel on the output space `d₂` emulates `Λ`. Since capacity is monotonic under emulation, `Q(Λ) ≤ Q(id_{d₂})`.
+  have h_emulate : (CPTPOp.id (dIn := d₂)).Emulates Λ := by
+    exact ⟨Λ, CPTPOp.id, by simp⟩
+  -- If `Λ` achieves rate `R`, then `id_{d₂}` achieves rate `R`. This follows because if `Λ^{\otimes n}` emulates `B`, and `id^{\otimes n}` emulates `Λ^{\otimes n}` (by functoriality of tensor product), then `id^{\otimes n}` emulates `B`.
+  have h_id_achieves : (CPTPOp.id (dIn := d₂)).AchievesRate R := by
     intro ε hε_pos
     obtain ⟨n, hn, dimB, B, hB_emulate, hB_rate, hB_approx⟩ := h ε hε_pos
-    have h_id_emulate :
-        (CPTPMap.piProd (fun (_ : Fin n) => CPTPMap.id (dIn := d₂))).Emulates B := by
-      rw [piProd_id]
-      obtain ⟨E, D, hD⟩ := h_emulate
-      exact emulates_trans _ _ _ ⟨piProd fun _ => E, piProd fun _ => D,
-        by simp [← hD, ← CPTPMap.piProd_comp]⟩ hB_emulate
+    have h_id_emulate : (CPTPOp.piProd (fun (_ : Fin n) => CPTPOp.id (dIn := d₂))).Emulates B := by
+      -- Since `id_{d₂}` emulates `Λ`, we can use the fact that the tensor product of emulations is an emulation.
+      have h_tensor_emulate : ∀ (n : ℕ), (CPTPOp.piProd (fun (_ : Fin n) => CPTPOp.id (dIn := d₂))).Emulates (CPTPOp.piProd (fun (_ : Fin n) => Λ)) := by
+        intro n
+        obtain ⟨E, D, hD⟩ := h_emulate
+        use CPTPOp.piProd (fun (_ : Fin n) => E), CPTPOp.piProd (fun (_ : Fin n) => D);
+        simp [ ← hD, ← CPTPOp.piProd_comp];
+      exact emulates_trans _ _ _ ( h_tensor_emulate n ) hB_emulate;
     exact ⟨ n, hn, dimB, B, h_id_emulate, hB_rate, hB_approx ⟩;
   refine not_le_of_gt hR <| not_lt.mp fun h => ?_
   exact not_lt_of_ge ( le_of_not_gt fun h' => not_achievesRate_gt_log_dim_in _ h' h_id_achieves ) h
@@ -269,10 +367,8 @@ end AchievesRate
 
 section capacity
 
-/-- Quantum channel capacity is nonnegative for channels out of a nonempty space. -/
-@[sorryful]
-theorem zero_le_quantumCapacity (Λ : CPTPMap d₁ d₂) [Nonempty d₁] :
-    0 ≤ Λ.quantumCapacity :=
+/-- Quantum channel capacity is nonnegative. -/
+theorem zero_le_quantumCapacity [Nonempty d₁] (Λ : CPTPMap d₁ d₂) : 0 ≤ Λ.quantumCapacity :=
   le_csSup (bddAbove_achievesRate Λ) (achievesRate_0 Λ)
 
 /-- Quantum channel capacity is at most log2(D), where D is the input dimension. -/
@@ -301,7 +397,7 @@ theorem coherentInfo_le_quantumCapacity (Λ : CPTPMap d₁ d₂) (ρ : MState d�
 /-- The quantum capacity is the limit of the coherent information of n-copy uses of the channel. -/
 @[sorryful]
 theorem quantumCapacity_eq_piProd_coherentInfo (Λ : CPTPMap d₁ d₂) : Λ.quantumCapacity =
-    sSup { r : ℝ | ∃ n ρ, r = coherentInfo ρ (CPTPMap.piProd (fun (_ : Fin n) ↦ Λ))} := by
+    sSup { r : ℝ | ∃ n ρ, r = coherentInfo ρ (CPTPOp.piProd (fun (_ : Fin n) ↦ Λ))} := by
   sorry
 
 end capacity

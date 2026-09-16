@@ -522,7 +522,6 @@ theorem mulVec_sharedEigenbasisB (j : d) :
 PROVIDED SOLUTION
 This is exactly analogous to star_shared_mul_B_mul_IsDiag (which is proved below in this file), but for A instead of B. Use the same proof structure: rw isDiag_iff_diagonal_diag, apply toEuclideanLin.injective, ext with basis, simp, then use mulVec_sharedEigenbasisA (instead of mulVec_sharedEigenbasisB), sharedEigenvectorUnitary_mulVec, h_simp2 (orthogonality/unit property), and by_cases on index equality, simplifying with simp +decide. Reference the B version's proof approach for the exact tactic sequence.
 -/
-set_option maxHeartbeats 0 in
 
 theorem star_shared_mul_A_mul_IsDiag : IsDiag
     ((star (sharedEigenvectorUnitary hA hB hAB : Matrix d d 𝕜)) * A *

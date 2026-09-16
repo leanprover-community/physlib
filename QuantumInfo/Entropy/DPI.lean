@@ -11,6 +11,10 @@ public import QuantumInfo.ForMathlib.HermitianMat.LiebConcavity
 
 @[expose] public section
 
+set_option backward.isDefEq.respectTransparency false
+set_option maxHeartbeats 1000000
+set_option maxRecDepth 100000
+
 noncomputable section
 
 variable {d d₁ d₂ d₃ : Type*}
@@ -78,11 +82,18 @@ when `σ.M.ker ≤ ρ.M.ker`.
 theorem sandwichedRelRentropy_eq_log_traceFunctional (hα₀ : 0 < α) (hα₁ : α ≠ 1)
     (hker : σ.M.ker ≤ ρ.M.ker) :
     D̃_ α(ρ‖σ) = ENNReal.ofReal (Real.log (Q̃_ α(ρ‖σ)) / (α - 1)) := by
-  rw [ENNReal.ofReal_eq_coe_nnreal]
-  unfold SandwichedRelRentropy sandwichedTraceFunctional
-  split
-  next h => simp_all only; norm_cast
-  next h => rfl
+  have hQ : Q̃_ α(ρ‖σ) = ((ρ.M.conj (σ.M ^ ((1 - α) / (2 * α))).mat) ^ α).trace := rfl
+  have hnn : 0 ≤ Real.log (Q̃_ α(ρ‖σ)) / (α - 1) := by
+    rw [hQ]
+    simpa only [if_neg hα₁] using sandwichedRelRentropy_nonneg hα₀ hker
+  rw [MState.sandwichedRelRentropy_eq_matrix, dif_pos hα₀, dif_pos hker,
+    ENNReal.ofReal_eq_coe_nnreal hnn]
+  congr! 1
+  apply NNReal.coe_injective
+  show (if α = 1 then ⟪ρ.M, ρ.M.log - σ.M.log⟫
+      else ((ρ.M.conj (σ.M ^ ((1 - α) / (2 * α))).mat) ^ α).trace.log / (α - 1))
+    = Real.log (Q̃_ α(ρ‖σ)) / (α - 1)
+  rw [if_neg hα₁, hQ]
 
 /-
 `Q̃_α(ρ‖σ)` is nonneg when `α > 0`.
@@ -120,7 +131,6 @@ The trace functional is invariant under joint unitary conjugation:
 This corresponds to equation (2.3) in the paper.
 Proved using `rpow_conj_unitary` (f(UXU†) = U f(X) U†) and `conj_conj`.
 -/
-set_option backward.isDefEq.respectTransparency false in
 theorem sandwichedTraceFunctional_conj_unitary_hermitian
     (U : Matrix.unitaryGroup d ℂ) (A B : HermitianMat d ℂ) :
     let γ := (1 - α) / (2 * α)
@@ -140,7 +150,7 @@ theorem sandwichedTraceFunctional_conj_unitary_hermitian
 theorem sandwichedTraceFunctional_conj_unitary_MState
     (U : Matrix.unitaryGroup d ℂ) (ρ σ : MState d) :
     Q̃_ α(ρ.uConj U‖σ.uConj U) = Q̃_ α(ρ‖σ) := by
-  unfold sandwichedTraceFunctional MState.uConj
+  rw [sandwichedTraceFunctional, sandwichedTraceFunctional, MState.uConj_M, MState.uConj_M]
   exact sandwichedTraceFunctional_conj_unitary_hermitian U ρ.M σ.M
 
 /-! ## Joint Convexity for α > 1
@@ -854,7 +864,7 @@ theorem sandwichedTraceFunctional_self (hα : 0 < α) (ρ : MState d) :
       rw [← rpow_mul]
       exact le_of_lt this
     field_simp at *
-    simp_all only [add_sub_cancel, one_div, rpow_one, MState.tr]
+    simp_all only [add_sub_cancel, one_div, rpow_one, DensityOp.tr]
 
 /-- The trace functional is invariant under tensoring with a fixed state.
 This follows from multiplicativity (`sandwichedTraceFunctional_mul`) and
@@ -878,8 +888,8 @@ def MState.conjTensorUnitary (ρ : MState (dA × dB)) (V : Matrix.unitaryGroup d
 the twirling set gives `ρ_A ⊗ uniform_B`. We state the HermitianMat-level
 equality needed for the joint convexity argument. -/
 theorem MState.conjTensorUnitary_M (ρ : MState (dA × dB)) (V : Matrix.unitaryGroup dB ℂ) :
-    (ρ.conjTensorUnitary V).M = ρ.M.conj ((1 : Matrix.unitaryGroup dA ℂ) ⊗ᵤ V).val := by
-  rfl
+    (ρ.conjTensorUnitary V).M = ρ.M.conj ((1 : Matrix.unitaryGroup dA ℂ) ⊗ᵤ V).val :=
+  MState.uConj_M ρ _
 
 /-- The trace functional is invariant under `1_A ⊗ V` conjugation. -/
 theorem sandwichedTraceFunctional_conj_tensorUnitary
@@ -988,6 +998,8 @@ lemma conjTensorUnitary'_entry (ρ : MState (dA × dB)) (V : Matrix.unitaryGroup
     (ρ.conjTensorUnitary' V).M.val (a₁, b₁) (a₂, b₂) =
     ((V : Matrix dB dB ℂ) * (Matrix.of fun b₁' b₂' => ρ.M.val (a₁, b₁') (a₂, b₂')) *
      (V : Matrix dB dB ℂ).conjTranspose) b₁ b₂ := by
+  simp only [MState.conjTensorUnitary', MState.uConj_M, HermitianMat.val_eq_coe,
+    HermitianMat.conj_apply_mat]
   apply conj_kron_one_entry
 
 -- The RHS entry: (ρ.traceRight ⊗ᴹ uniform).M at ((a₁,b₁),(a₂,b₂)).
@@ -1227,8 +1239,6 @@ theorem sandwichedRenyiEntropy_mono_traceRight [Nonempty dB]
 /-
 The sandwiched Rényi divergence is invariant under unitary conjugation.
 -/
-set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 400000 in
 theorem sandwichedRenyiEntropy_conj_unitary (hα : 0 < α) (ρ σ : MState d)
     (U : Matrix.unitaryGroup d ℂ) :
     D̃_ α(ρ.uConj U‖σ.uConj U) = D̃_ α(ρ‖σ) := by
@@ -1272,14 +1282,23 @@ theorem sandwichedRenyiEntropy_conj_unitary (hα : 0 < α) (ρ σ : MState d)
         simp_all [Matrix.mulVec_mulVec]
         exact PiLp.ext (congrFun hy')
       exact hy
-  by_cases h : σ.M.ker ≤ ρ.M.ker <;> simp_all [SandwichedRelRentropy]
-  split_ifs <;> simp_all [MState.uConj]
-  · congr 1
-    rw [inner_sub_right, inner_sub_right]
-    grind only [log_conj_unitary, inner_conj_unitary]
-  · ext1
-    congr 3
-    convert! congr_arg Real.log (sandwichedTraceFunctional_conj_unitary_MState U ρ σ) using 1
+  rw [MState.sandwichedRelRentropy_eq_matrix, MState.sandwichedRelRentropy_eq_matrix,
+    dif_pos hα, dif_pos hα]
+  by_cases h : σ.M.ker ≤ ρ.M.ker
+  swap
+  · rw [dif_neg h, dif_neg fun hc ↦ h (h_kernel.mpr hc)]
+  rw [dif_pos (h_kernel.mp h), dif_pos h, ENNReal.coe_inj]
+  apply NNReal.coe_injective
+  show (if α = 1 then ⟪(ρ.uConj U).M, (ρ.uConj U).M.log - (σ.uConj U).M.log⟫
+        else (((ρ.uConj U).M.conj
+          ((σ.uConj U).M ^ ((1 - α) / (2 * α))).mat) ^ α).trace.log / (α - 1))
+      = (if α = 1 then ⟪ρ.M, ρ.M.log - σ.M.log⟫
+        else ((ρ.M.conj (σ.M ^ ((1 - α) / (2 * α))).mat) ^ α).trace.log / (α - 1))
+  split_ifs with hα₁
+  · rw [MState.uConj_M, MState.uConj_M, log_conj_unitary, log_conj_unitary, ← map_sub,
+      inner_conj_unitary]
+  · exact congrArg (· / (α - 1))
+      (congrArg Real.log (sandwichedTraceFunctional_conj_unitary_MState U ρ σ))
 
 /-
 The sandwiched Rényi divergence is invariant under tensoring with a fixed pure state:
@@ -1305,10 +1324,9 @@ theorem sandwichedRenyiEntropy_mono_traceRight' [Nonempty dB]
     D̃_ α(ρ.traceRight‖σ.traceRight) ≤ D̃_ α(ρ‖σ) := by
   by_cases hker : σ.M.ker ≤ ρ.M.ker
   · exact sandwichedRenyiEntropy_mono_traceRight hα ρ σ hker
-  · simp only [SandwichedRelRentropy, MState.traceRight_M]
-    split
-    next h => simp_all only [le_top]
-    next h => simp_all only [not_lt, le_refl]
+  · rw [MState.sandwichedRelRentropy_eq_matrix α ρ σ, dif_pos (by linarith : (0 : ℝ) < α),
+      dif_neg hker]
+    exact le_top
 
 /-- Monotonicity of the sandwiched Rényi divergence under `traceLeft` for `α > 1`.
 Follows from `sandwichedRenyiEntropy_mono_traceRight'` + SWAP invariance. -/
@@ -1322,56 +1340,57 @@ theorem sandwichedRenyiEntropy_mono_traceLeft [Nonempty dA]
         sandwichedRenyiEntropy_mono_traceRight' hα ρ.SWAP σ.SWAP
     _ = D̃_ α(ρ‖σ) := sandwichedRenyiEntropy_SWAP ρ σ
 
-/-- Helper: The Stinespring preparation `prep ∘ append` equals tensoring with a fixed pure state.
-`append = ofEquiv (Equiv.prodPUnit d₁).symm`.
+/-- Helper: The Stinespring preparation `CPTPOp.prepDefault` equals tensoring with a fixed pure
+state.
 TODO: PULLOUT to a more reasonable place. -/
-theorem prep_append_eq_tensor_pure [Inhabited d₂] (ρ : MState d₁) :
-    let ψ₀ : Ket (d₂ × d₂) := Ket.basis default
-    let τ := MState.pure ψ₀
-    let zero_prep : CPTPMap Unit (d₂ × d₂) := CPTPMap.replacement τ
-    let prep := (CPTPMap.id ⊗ᶜᵖ zero_prep)
-    let append : CPTPMap d₁ (d₁ × Unit) := CPTPMap.ofEquiv (Equiv.prodPUnit d₁).symm
-    (prep ∘ₘ append) ρ = ρ ⊗ᴹ τ := by
-  apply MState.ext
-  ext1
-  funext ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
-  have h := CPTPMap.prep_append_map_entry ρ.m a₁ b₁ a₂ b₂
-  simp only [MState.prod, kronecker]
-  exact h
+theorem prepDefault_eq_tensor_pure [Inhabited d₂] (ρ : MState d₁) :
+    (CPTPOp.prepDefault : CPTPMap d₁ (d₁ × d₂ × d₂)) ρ =
+      ρ ⊗ᴹ MState.pure (Ket.basis (default : d₂ × d₂)) := by
+  apply DensityOp.ext_m
+  rw [CPTPOp.mat_coe_eq_apply_mat, MState.prod_m]
+  ext ⟨a₁, b₁⟩ ⟨a₂, b₂⟩
+  exact CPTPOp.prep_append_map_entry ρ.m a₁ b₁ a₂ b₂
 
 /-- The Data Processing Inequality for the Sandwiched Rényi relative entropy (α > 1).
 Every CPTP map `Φ` satisfies `D̃_α(Φρ‖Φσ) ≤ D̃_α(ρ‖σ)`.
 
-The proof uses the Stinespring representation (see `CPTPMap.exists_purify`):
+The proof uses the Stinespring representation (see `CPTPOp.exists_purify`):
 every CPTP map can be written as ancilla preparation + unitary conjugation + partial trace.
 Since the sandwiched Rényi divergence is invariant under the first two operations
 (by additivity and relabel invariance) and monotone under partial trace
 (by `sandwichedRenyiEntropy_mono_traceRight`), the DPI follows. -/
 theorem sandwichedRenyiEntropy_DPI_gt_one (hα : 1 < α) (ρ σ : MState d₁) (Φ : CPTPMap d₁ d₂) :
     D̃_ α(Φ ρ‖Φ σ) ≤ D̃_ α(ρ‖σ) := by
-  have _ : Nonempty d₁ := ρ.nonempty
-  have _ : Nonempty d₂ := (Φ ρ).nonempty
+  have _ : Nonempty d₁ := MState.nonempty ρ
+  have _ : Nonempty d₂ := MState.nonempty (Φ ρ)
   have : Inhabited d₂ := Classical.inhabited_of_nonempty ‹_›
   let ψ₀ : Ket (d₂ × d₂) := Ket.basis default
   let τ := MState.pure ψ₀
   obtain ⟨U, hU⟩ := Φ.purify_IsUnitary
-  -- USe the `zero_prep` / `prep` / `append` from `CPTPMap.purify_trace`
-  let zero_prep : CPTPMap Unit (d₂ × d₂) := CPTPMap.replacement τ
-  let prep := ((CPTPMap.id : CPTPMap d₁ d₁) ⊗ᶜᵖ zero_prep)
-  let append : CPTPMap d₁ (d₁ × Unit) := CPTPMap.ofEquiv (Equiv.prodPUnit d₁).symm
+  let prep : CPTPMap d₁ (d₁ × d₂ × d₂) := CPTPOp.prepDefault
   calc D̃_ α(Φ ρ‖Φ σ)
-    _ = D̃_ α((Φ.purify ((prep ∘ₘ append) ρ)).traceLeft.traceLeft‖
-            (Φ.purify ((prep ∘ₘ append) σ)).traceLeft.traceLeft) := by
-        have h_trace (ξ) : Φ ξ = (Φ.purify ((prep ∘ₘ append) ξ)).traceLeft.traceLeft := by
-          exact congr($Φ.purify_trace ξ)
+    _ = D̃_ α(MState.traceLeft (MState.traceLeft (Φ.purify (prep ρ)))‖
+            MState.traceLeft (MState.traceLeft (Φ.purify (prep σ)))) := by
+        have h_trace (ξ) : Φ ξ =
+            MState.traceLeft (MState.traceLeft (Φ.purify (prep ξ))) := by
+          show Φ ξ = MState.traceLeft (MState.traceLeft
+            (Φ.purify (CPTPOp.prepDefault (dIn := d₁) (dOut := d₂) ξ)))
+          conv_lhs => rw [Φ.purify_trace]
+          simp only [CPTPOp.compose_eq, CPTPOp.traceLeft_eq_MState_traceLeft]
         rw [h_trace ρ, h_trace σ]
-    _ = D̃_ α(((ρ ⊗ᴹ τ).uConj U).traceLeft.traceLeft‖
-             ((σ ⊗ᴹ τ).uConj U).traceLeft.traceLeft) := by
-        have h_app (ξ) : Φ.purify ξ = ξ.uConj U := congr($hU ξ)
-        rw [prep_append_eq_tensor_pure ρ, prep_append_eq_tensor_pure σ, h_app, h_app]
-    _ ≤ D̃_ α(((ρ ⊗ᴹ τ).uConj U).traceLeft‖((σ ⊗ᴹ τ).uConj U).traceLeft) :=
+    _ = D̃_ α(MState.traceLeft (MState.traceLeft (MState.uConj (ρ ⊗ᴹ τ) U))‖
+             MState.traceLeft (MState.traceLeft (MState.uConj (σ ⊗ᴹ τ) U))) := by
+        have h_app (ξ) : Φ.purify ξ = MState.uConj ξ U :=
+          (congr($hU ξ)).trans (CPTPOp.ofUnitary_eq_conj U ξ)
+        show D̃_ α(MState.traceLeft (MState.traceLeft
+              (Φ.purify (CPTPOp.prepDefault (dIn := d₁) (dOut := d₂) ρ)))‖
+            MState.traceLeft (MState.traceLeft
+              (Φ.purify (CPTPOp.prepDefault (dIn := d₁) (dOut := d₂) σ)))) = _
+        rw [prepDefault_eq_tensor_pure ρ, prepDefault_eq_tensor_pure σ, h_app, h_app]
+    _ ≤ D̃_ α(MState.traceLeft (MState.uConj (ρ ⊗ᴹ τ) U)‖
+             MState.traceLeft (MState.uConj (σ ⊗ᴹ τ) U)) :=
         sandwichedRenyiEntropy_mono_traceLeft hα ..
-    _ ≤ D̃_ α((ρ ⊗ᴹ τ).uConj U‖(σ ⊗ᴹ τ).uConj U) :=
+    _ ≤ D̃_ α(MState.uConj (ρ ⊗ᴹ τ) U‖MState.uConj (σ ⊗ᴹ τ) U) :=
         sandwichedRenyiEntropy_mono_traceLeft hα ..
     _ = D̃_ α(ρ ⊗ᴹ τ‖σ ⊗ᴹ τ) :=
         sandwichedRenyiEntropy_conj_unitary (by positivity) _ _ _
@@ -1486,9 +1505,7 @@ private lemma sandwichedTraceFunctional_sub_one_div_eventually_le
 `HermitianMat.ker_weighted_sum_le`. -/
 private lemma mix_M_eq_weighted_sum (p : Prob) (τ₁ τ₂ : MState d) :
     (p [τ₁ ↔ τ₂]).M = ∑ i, ![(p : ℝ), 1 - (p : ℝ)] i • (![τ₁, τ₂] i).M := by
-  simp only [Mixable.mix, Mixable.mix_ab, MState.instMixable, Fin.sum_univ_two,
-    Matrix.cons_val_zero, Matrix.cons_val_one, Prob.coe_one_minus]
-  rfl
+  simp [Fin.sum_univ_two]
 
 /-- A binary mixture preserves the support condition (kernel inclusion) of its
 components. -/
@@ -1594,3 +1611,38 @@ theorem qRelativeEnt_joint_convexity :
           add_le_add (mul_le_mul_of_nonneg_left h₁ hp0'.le)
             (mul_le_mul_of_nonneg_left h₂ (by linarith))
   exact le_of_tendsto_of_tendsto h_lhs h_rhs h_ev
+
+section BasisFree
+
+/-! ## Basis-free forms
+
+The data processing inequality above is stated for states indexed by a type. This is its
+counterpart for states on an abstract finite-dimensional Hilbert space, obtained by picking an
+arbitrary preferred basis on each side (`StdBasis.some`) and transporting; the relative entropies
+are insensitive to that choice, so nothing is lost. -/
+
+variable {E F : Type*}
+variable [NormedAddCommGroup E] [InnerProductSpace ℂ E] [FiniteDimensional ℂ E]
+variable [NormedAddCommGroup F] [InnerProductSpace ℂ F] [FiniteDimensional ℂ F]
+
+namespace DensityOp
+
+/-- The Data Processing Inequality for the sandwiched Rényi relative entropy. -/
+theorem sandwichedRenyiEntropy_DPI (hα : 1 ≤ α) (ρ σ : DensityOp E) (Φ : CPTPOp E F) :
+    D̃_ α(Φ ρ‖Φ σ) ≤ D̃_ α(ρ‖σ) := by
+  let := StdBasis.some ℂ E
+  let := StdBasis.some ℂ F
+  obtain ⟨μ, rfl⟩ := ρ.exists_transport_eq
+  obtain ⟨ν, rfl⟩ := σ.exists_transport_eq
+  have h := _root_.sandwichedRenyiEntropy_DPI hα μ ν
+    (Φ.transport (Fin (Module.finrank ℂ E)) (Fin (Module.finrank ℂ F)))
+  rw [CPTPOp.transport_apply, CPTPOp.transport_apply, sandwichedRelRentropy_transport] at h
+  exact h.trans_eq (sandwichedRelRentropy_transport (F := E) α μ ν).symm
+
+/-- The Data Processing Inequality for the quantum relative entropy. -/
+theorem qRelativeEnt_DPI (ρ σ : DensityOp E) (Φ : CPTPOp E F) : 𝐃(Φ ρ‖Φ σ) ≤ 𝐃(ρ‖σ) :=
+  sandwichedRenyiEntropy_DPI le_rfl ρ σ Φ
+
+end DensityOp
+
+end BasisFree

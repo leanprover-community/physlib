@@ -142,7 +142,6 @@ noncomputable def compoundMatrix (M : Matrix d d ℂ) (k : ℕ) :
     @Matrix.det (Fin k) _ _ ℂ _
       (M.submatrix (fun i => S.1.orderEmbOfFin S.2 i) (fun j => T.1.orderEmbOfFin T.2 j))
 
-set_option maxHeartbeats 400000 in
 /-- **Cauchy–Binet formula** for rectangular matrices: if `A` is `m × n` and `B` is
 `n × m`, then `det(A * B) = ∑_S det(A[:,S]) * det(B[S,:])` where the sum is
 over `m`-element subsets `S` of the column/row index. -/
@@ -537,7 +536,6 @@ lemma prod_singularValues_subset_le_sorted_prod (M : Matrix d d ℂ) (k : ℕ)
   intro i j hij
   simpa [g] using congr_arg σ hij
 
-set_option maxHeartbeats 800000 in
 set_option backward.isDefEq.respectTransparency false in
 lemma exists_subset_prod_eq_sorted_prod (M : Matrix d d ℂ) (k : ℕ)
     (hk : k ≤ Fintype.card d) :

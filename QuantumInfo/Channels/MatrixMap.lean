@@ -142,6 +142,18 @@ def of_kraus (M N : κ → Matrix B A R) : MatrixMap A B R :=
     map_smul' r x := by rw [RingHom.id_apply, Matrix.mul_smul, Matrix.smul_mul]
   }
 
+open scoped Matrix in
+omit [DecidableEq A] in
+theorem of_kraus_apply (M N : κ → Matrix B A R) (X : Matrix A A R) :
+    of_kraus M N X = ∑ k : κ, M k * X * (N k)ᴴ := by
+  simp [of_kraus]
+
+omit [DecidableEq A] in
+/-- Reindexing the Kraus operators along an equivalence does not change the map. -/
+theorem of_kraus_comp_equiv {κ' : Type*} [Fintype κ'] (e : κ' ≃ κ) (M N : κ → Matrix B A R) :
+    of_kraus (M ∘ e) (N ∘ e) = of_kraus M N :=
+  Fintype.sum_equiv e _ _ fun _ => rfl
+
 end kraus
 
 section kraus_exists
@@ -224,7 +236,6 @@ noncomputable def kron [CommSemiring R] (M₁ : MatrixMap A B R) (M₂ : MatrixM
 
 scoped[MatrixMap] infixl:100 " ⊗ₖₘ " => MatrixMap.kron
 
-set_option maxHeartbeats 800000 in
 set_option synthInstance.maxHeartbeats 60000 in
 /-- The extensional definition of the Kronecker product `MatrixMap.kron`, in terms of the entries of
   its image. -/
@@ -447,6 +458,12 @@ theorem choi_matrix_piProd (Λi : ∀ i, MatrixMap (dI i) (dO i) R) :
 -- notation3:100 "⨂ₜₘ "(...)", "r:(scoped f => tprod R f) => r
 -- syntax (name := bigsum) "∑ " bigOpBinders ("with " term)? ", " term:67 : term
 
+/-- The tensor product of identity maps is the identity map. -/
+@[simp]
+theorem piProd_id : piProd (fun i ↦ (id (dI i) R)) = id ((i : ι) → dI i) R := by
+  simp [piProd, id, PiTensorProduct.map_id, LinearMap.toMatrix_id_eq_basis_toMatrix,
+    Module.Basis.toMatrix_self]
+
 /--
 Composition of `MatrixMap.piProd` maps distributes over the tensor product.
 -/
@@ -459,11 +476,41 @@ theorem piProd_comp
     piProd (fun i ↦ (Λ₂ i) ∘ₗ (Λ₁ i)) = (piProd Λ₂) ∘ₗ (piProd Λ₁) := by
   simp [piProd, PiTensorProduct.map_comp, ← Matrix.toLin_mul, ← LinearMap.toMatrix_comp]
 
-@[simp]
-theorem piProd_id :
-    piProd (fun i ↦ (LinearMap.id : MatrixMap (dI i) (dI i) R)) = LinearMap.id := by
-  simp [piProd, PiTensorProduct.map_id, LinearMap.toMatrix_id_eq_basis_toMatrix,
-    Module.Basis.toMatrix_self, Matrix.reindex_apply, Matrix.submatrix_one_equiv,
-    Matrix.toLin_one]
+omit [∀i, DecidableEq (dO i)] in
+/-- **Matrix analogue of the Pi-type tensor product**: on matrix units, `MatrixMap.piProd` acts
+as the Kronecker product `Matrix.piProd` of the images of the individual factors. Since the matrix
+units span, this determines `piProd` completely. -/
+theorem piProd_single (Λi : ∀ i, MatrixMap (dI i) (dO i) R) (a b : ∀ i, dI i) :
+    piProd Λi (Matrix.single a b 1) =
+      Matrix.piProd (fun i ↦ Λi i (Matrix.single (a i) (b i) 1)) := by
+  rw [show Matrix.single a b (1 : R) = Matrix.stdBasis R _ _ (a, b) from
+    (Matrix.stdBasis_eq_single _ _ _).symm]
+  simp only [piProd]
+  rw [Matrix.toLin_self]
+  simp only [Matrix.reindex_apply, Matrix.submatrix_apply, LinearMap.toMatrix_apply,
+    _root_.Basis.piTensorProduct_apply, Equiv.arrowProdEquivProdArrow_symm_apply,
+    PiTensorProduct.map_tprod, _root_.Basis.piTensorProduct_repr_tprod_apply,
+    Matrix.stdBasis_repr_apply, Matrix.stdBasis_eq_single]
+  rw [← Module.Basis.sum_repr (Matrix.stdBasis R ((i : ι) → dO i) ((i : ι) → dO i))
+    (Matrix.piProd fun i ↦ (Λi i) (Matrix.single (a i) (b i) 1))]
+  exact Finset.sum_congr rfl fun x _ ↦ by rw [Matrix.stdBasis_repr_apply]; rfl
+
+omit [(i : ι) → DecidableEq (dO i)] in
+open scoped Matrix in
+/-- Kraus representations of the factors assemble into a Kraus representation of the
+`MatrixMap.piProd`, whose Kraus operators are the Kronecker products of the individual ones. -/
+theorem piProd_of_kraus [StarRing R] {κ : ι → Type*} [∀ i, Fintype (κ i)]
+    (K : ∀ i, κ i → Matrix (dO i) (dI i) R) :
+    piProd (fun i ↦ of_kraus (K i) (K i)) =
+      of_kraus (fun k : ∀ i, κ i ↦ Matrix.piProd fun i ↦ K i (k i))
+        (fun k : ∀ i, κ i ↦ Matrix.piProd fun i ↦ K i (k i)) := by
+  refine (Matrix.stdBasis R ((i : ι) → dI i) ((i : ι) → dI i)).ext fun p ↦ ?_
+  obtain ⟨a, b⟩ := p
+  rw [Matrix.stdBasis_eq_single, piProd_single, of_kraus_apply]
+  simp only [of_kraus_apply]
+  rw [← Matrix.sum_piProd]
+  refine Finset.sum_congr rfl fun k _ ↦ ?_
+  rw [Matrix.conjTranspose_piProd, ← Matrix.piProd_single a b, Matrix.piProd_mul,
+    Matrix.piProd_mul]
 
 end pi

@@ -233,67 +233,40 @@ def EoF : MState (d₁ × d₂) → ℝ≥0 :=
   convex_roof (KetUpToPhase.lift
     (fun ψ ↦ ⟨Sᵥₙ (pure ψ).traceRight, Sᵥₙ_nonneg (pure ψ).traceRight⟩)
     (fun ψ φ h ↦ by
-      congr 1
-      congr 1
-      exact congrArg MState.traceRight ((MState.PhaseEquiv_iff_pure_eq ψ φ).mp h)))
+      have hpure : (pure ψ : MState (d₁ × d₂)) = pure φ :=
+        (MState.PhaseEquiv_iff_pure_eq ψ φ).mp h
+      simp only [hpure]
+      rfl))
 
 /-
 The partial trace of the maximally entangled state is the maximally mixed state.
 -/
 theorem traceRight_pure_MES (d : Type*) [Fintype d] [DecidableEq d] [Nonempty d] :
     (MState.pure (Ket.MES d)).traceRight = MState.uniform := by
-  -- By definition of partial trace, we sum over the second system.
-  have h_partial_trace : ∀ (i j : d), ∑ k : d, (Ket.MES d).vec (i, k) * (star (Ket.MES d).vec (j, k)) = (1 / Fintype.card d : ℝ) * (if i = j then 1 else 0) := by
-    unfold Ket.MES
-    intro i j
-    simp only [one_div, Pi.star_apply, RCLike.star_def, ite_mul, zero_mul, Finset.sum_ite_eq,
-      Finset.mem_univ, ↓reduceIte, Complex.ofReal_inv]
-    split
-    · subst i
-      simp only [map_inv₀, Complex.conj_ofReal]
-      ring_nf; norm_cast; norm_num;
-    · grind
-  unfold MState.pure MState.traceRight MState.uniform
   ext i j
-  convert! h_partial_trace i j
-  simp_all only [Pi.star_apply, RCLike.star_def, one_div, Complex.ofReal_inv,
-    Complex.ofReal_natCast, mul_ite, mul_one, mul_zero, HermitianMat.mat_apply,
-    coe_ofClassical, ProbDistribution.uniform_def, Finset.card_univ]
-  unfold HermitianMat.diagonal
-  simp_all only [map_inv₀, map_natCast]
-  rfl
-
-/-
-The von Neumann entropy of a state is equal to the trace of `ρ log ρ` (technically `cfc ρ negMulLog`).
--/
-theorem Sᵥₙ_eq_trace_cfc {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
-    Sᵥₙ ρ = (HermitianMat.cfc ρ.M Real.negMulLog).trace := by
-  -- By definition of von Neumann entropy, we have Sᵥₙ ρ = Finset.sum Finset.univ (fun x ↦ Real.negMulLog (ρ.M.H.eigenvalues x)).
-  have h_def : Sᵥₙ ρ = Finset.sum Finset.univ (fun x ↦ Real.negMulLog (ρ.M.H.eigenvalues x)) := by
-    rfl
-  -- By definition of trace, the trace of `cfc ρ.M Real.negMulLog` is the sum of its eigenvalues.
-  have h_trace : (ρ.M.cfc Real.negMulLog).trace =
-      ∑ x, (ρ.M.cfc Real.negMulLog).H.eigenvalues x := by
-    exact (HermitianMat.sum_eigenvalues_eq_trace _).symm
-  obtain ⟨e, he⟩ : ∃ e : d ≃ d, (ρ.M.cfc Real.negMulLog).H.eigenvalues =
-      Real.negMulLog ∘ ρ.M.H.eigenvalues ∘ e := by
-   exact Matrix.IsHermitian.cfc_eigenvalues _ _
-  rw [h_def, h_trace, he]
-  simp only [Function.comp_apply]
-  conv_lhs => rw [ ← Equiv.sum_comp e ]
+  rw [MState.traceRight_M, MState.uniform, coe_ofClassical]
+  simp only [HermitianMat.mat_apply, HermitianMat.traceRight_apply, MState.pure_M_apply,
+    HermitianMat.diagonal_apply, ProbDistribution.uniform_def, Ket.apply, Ket.MES, ite_mul,
+    zero_mul, Finset.sum_ite_eq, Finset.mem_univ, if_true, Finset.card_univ, one_div]
+  rcases eq_or_ne i j with rfl | h
+  · rw [if_pos rfl, if_pos rfl, map_inv₀, Complex.conj_ofReal, ← mul_inv, ← Complex.ofReal_mul,
+      Real.mul_self_sqrt (by positivity)]
+    push_cast
+    ring
+  · rw [if_neg h, if_neg h.symm]
+    simp
 
 /-
 The von Neumann entropy of a classical state (diagonal in the basis) is equal to the Shannon entropy of the corresponding distribution.
 -/
 theorem Sᵥₙ_ofClassical {d : Type*} [Fintype d] [DecidableEq d] (dist : ProbDistribution d) :
     Sᵥₙ (MState.ofClassical dist) = Hₛ dist := by
-  -- Let's unfold the definition of `Sᵥₙ` using `Sᵥₙ_eq_trace_cfc`.
-  have h_def : Sᵥₙ (MState.ofClassical dist) = (HermitianMat.cfc (MState.ofClassical dist).M Real.negMulLog).trace := by
-    exact Sᵥₙ_eq_trace_cfc (ofClassical dist);
+  have h_def : Sᵥₙ (MState.ofClassical dist) = (HermitianMat.cfc (MState.ofClassical dist).M Real.negMulLog).trace :=
+    Sᵥₙ_eq_trace_cfc_negMulLog (ι := d) (ofClassical dist)
   convert h_def using 1;
   -- By definition of $MState.ofClassical$, we know that $(MState.ofClassical dist).M$ is a diagonal matrix with entries $dist i$.
-  have h_diag : (MState.ofClassical dist).M = HermitianMat.diagonal ℂ (fun x => dist x) := by
-    exact rfl;
+  have h_diag : (MState.ofClassical dist).M = HermitianMat.diagonal ℂ (fun x => dist x) :=
+    coe_ofClassical dist
   rw [ h_diag, HermitianMat.cfc_diagonal, HermitianMat.trace_diagonal ] ; aesop
 
 set_option backward.isDefEq.respectTransparency false in

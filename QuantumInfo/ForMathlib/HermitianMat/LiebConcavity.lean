@@ -189,7 +189,6 @@ private lemma tendsto_add_eps (σ : HermitianMat d ℂ) :
 
 /-! ### Helper lemmas for the core concavity proof -/
 
-set_option maxHeartbeats 800000 in
 /-- **AB/BA trace identity for rpow**: `Tr[(C^*C)^p] = Tr[(CC^*)^p]` for any square C. -/
 private lemma trace_rpow_conjTranspose_mul_comm [Nonempty d]
     (C : Matrix d d ℂ) (p : ℝ) :
@@ -270,7 +269,6 @@ private lemma variational_eq_optimizer
 Joint concavity of the Lieb extension trace map on HermitianMat.
   This bridges `liebExtensionTrace_jointlyConcaveOn_pdSet` to HermitianMat.
 -/
-set_option maxHeartbeats 1600000 in
 private lemma liebExtension_bridge [Nonempty d]
     {q r : ℝ} (hq : 0 < q) (hr : 0 < r) (hqr : q + r ≤ 1)
     (K : HermitianMat d ℂ)
@@ -398,7 +396,6 @@ private lemma liebExtension_bridge_psd [Nonempty d]
   refine' Continuous.tendsto' _ _ _ _ <;> norm_num
   fun_prop
 
-set_option maxHeartbeats 1600000 in
 /-- Core concavity inequality on positive definite matrices. -/
 private lemma trace_conj_rpow_concave_pd [Nonempty d] {α : ℝ} (hα : 1 < α)
     (H : HermitianMat d ℂ) (hH : 0 ≤ H)
