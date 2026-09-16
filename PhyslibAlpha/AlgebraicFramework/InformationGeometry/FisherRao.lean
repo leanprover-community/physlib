@@ -146,7 +146,8 @@ end OpenSimplex
 /-! ## III. Classical Fisher information -/
 
 /-- Classical Fisher information for a 1-parameter discrete family
-    $\theta \mapsto p(\cdot|\theta)$, given as $I(\theta) = \sum_i \frac{(\partial p_i / \partial \theta)^2}{p_i(\theta)}$.
+    $\theta \mapsto p(\cdot|\theta)$, given as
+    $I(\theta) = \sum_i \frac{(\partial p_i / \partial \theta)^2}{p_i(\theta)}$.
     This equals the Fisher--Rao squared norm of the score tangent vector. -/
 def fisherInfo (p : α → ℝ) (dp : α → ℝ) : ℝ :=
   ∑ i : α, dp i ^ 2 / p i
