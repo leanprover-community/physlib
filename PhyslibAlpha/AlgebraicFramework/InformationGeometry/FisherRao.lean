@@ -3,12 +3,14 @@ Copyright (c) 2026 Eduardo Nava Hernandez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava Hernandez
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Algebra.BigOperators.Finprod
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset.Basic
-import Mathlib.Topology.Algebra.InfiniteSum.Basic
-import PhyslibAlpha.Basic
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Algebra.BigOperators.Finprod
+public import Mathlib.Algebra.Order.Field.Basic
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Topology.Algebra.InfiniteSum.Basic
+public import PhyslibAlpha.Basic
 
 /-!
 # Fisher--Rao metric and Cramer--Rao bound (finite case)
