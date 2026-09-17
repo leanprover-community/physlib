@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
@@ -8,8 +8,6 @@ module
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.Trace
-
-@[expose] public section
 
 /-!
 # Obstrucción de traza al conmutador escalar en dimensión finita
@@ -29,6 +27,8 @@ Dos afirmaciones, independientes entre sí:
    `W₁ = !![0,1;1,0]`, `W₂ = !![1,0;0,-1]` satisface exactamente
    `W₂ W₁ = -(W₁ W₂)` (`parWeyl_anticonmuta`).
 -/
+
+@[expose] public section
 
 noncomputable section
 

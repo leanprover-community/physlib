@@ -1,16 +1,14 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D6_Fiedler
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D7_Niven
-public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimensionalUncertainty.D8_Szego
-public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimensionalUncertainty.D9_Monotonia
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D6_Fiedler
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D7_Niven
+public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D8_Szego
+public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D9_Monotonia
 
 /-!
 # D10 — Certificado conjunto: Fiedler + Niven + Szegő en `H_d`
@@ -50,6 +48,8 @@ Punto. Si quieren continuo infinito, aquí no es hotel — \(d=\infty\) no se
 hospeda en este paquete; a lo más se le ve llegar por la ventana como límite
 (`D8_Szego.lean`), pero nunca cruza la puerta.
 -/
+
+@[expose] public section
 
 noncomputable section
 

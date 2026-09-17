@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D3_GrafoCamino
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D3_GrafoCamino
 
 /-!
 # D4 — Por qué no un paso diagonal
@@ -31,6 +29,8 @@ paso "diagonal" (cambiar más de una coordenada a la vez) como alternativa:
    ningún paso mínimo posible. La diagonal presupone, para poder
    enunciarse de forma no vacía, dos ejes ya distinguidos entre sí.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -1,19 +1,17 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D3_GrafoCamino
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D3_GrafoCamino
 public import Mathlib.Analysis.CStarAlgebra.Module.Constructions
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 public import Mathlib.Analysis.Matrix.Hermitian
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.SimpleRing.Principal
-
-@[expose] public section
 
 /-!
 # D5 — Estado de máxima tensión y observable `i[T_d,P_d]`
@@ -30,6 +28,8 @@ explícitas (fase seno), el mismo estado extremal para el par concreto
 Se cierra con un certificado concreto de no conmutatividad:
 `[T_d,P_d] ≠ 0` para `d ≥ 2`, exhibido en una única entrada de matriz.
 -/
+
+@[expose] public section
 
 noncomputable section
 

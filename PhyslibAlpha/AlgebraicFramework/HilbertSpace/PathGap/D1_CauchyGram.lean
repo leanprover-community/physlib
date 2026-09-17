@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Complex.Norm
-
-@[expose] public section
 
 /-!
 # D1 — Cauchy–Schwarz vía el defecto de Gram
@@ -23,6 +21,8 @@ Cauchy–Schwarz. Escribiendo `⟨x,y⟩` en sus partes real e imaginaria se
 obtiene de inmediato la desigualdad de Robertson–Schrödinger (`D2_Robertson.lean`)
 como consecuencia algebraica, no como postulado adicional.
 -/
+
+@[expose] public section
 
 noncomputable section
 

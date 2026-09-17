@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D5_MaximaTension
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D5_MaximaTension
 
 /-!
 # D6 — Descomposición espectral de Fiedler sobre el camino discreto
@@ -20,6 +18,8 @@ observable `i[T_d,P_d]`. Contenido íntegro, sin modificar, de la
 descomposición espectral del corpus original — es álgebra lineal y teoría
 espectral de grafos pura, sin ninguna capa interpretativa.
 -/
+
+@[expose] public section
 
 noncomputable section
 

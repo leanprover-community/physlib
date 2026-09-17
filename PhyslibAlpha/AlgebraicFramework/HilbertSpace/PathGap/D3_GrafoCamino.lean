@@ -1,14 +1,12 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D0_Habitat
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D0_Habitat
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
-
-@[expose] public section
 
 /-!
 # D3 — Operadores de transporte y posición sobre el grafo camino
@@ -27,6 +25,8 @@ compatible con dos condiciones puramente combinatorias: localidad
 elemental). Cualquier grafo local en `Fin d` que no omita un paso mínimo
 **es** `pathGraph d`; no hay otro candidato.
 -/
+
+@[expose] public section
 
 namespace TransportePosicion
 

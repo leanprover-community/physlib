@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimensionalUncertainty.D10_Certificado
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D10_Certificado
 
 /-!
 # D11 — Cuanto cuántico elemental de área
@@ -29,6 +27,8 @@ Cauchy--Gram → Robertson--Schrödinger → instancia `T_d/P_d` →
 Niven/Szegő/monotonía. No modifica Robertson 1929; lo usa como ancla y
 deriva el piso de área de su realización discreta.
 -/
+
+@[expose] public section
 
 noncomputable section
 
@@ -114,8 +114,7 @@ theorem escala_no_negativa_conserva_cuanto_cuantico
 /-- Alias operativo para la escala externa no negativa. -/
 theorem escala_no_negativa_conserva_cuadrito
     (escala : ℝ) (hesc : 0 ≤ escala) (d : ℕ) (hd : 4 ≤ d) :
-    escala * cuadritoMinimo ≤ escala * areaResolucionHd d :=
-by
+    escala * cuadritoMinimo ≤ escala * areaResolucionHd d := by
   simpa [cuadritoMinimo] using escala_no_negativa_conserva_cuanto_cuantico escala hesc d hd
 
 /-- Con una escala externa positiva, el cuanto escalado sigue siendo
@@ -129,8 +128,7 @@ theorem cuanto_cuantico_escalado_pos
 estrictamente positivo. -/
 theorem cuadrito_escalado_pos
     (escala : ℝ) (hesc : 0 < escala) :
-    0 < escala * cuadritoMinimo :=
-by
+    0 < escala * cuadritoMinimo := by
   simpa [cuadritoMinimo] using cuanto_cuantico_escalado_pos escala hesc
 
 /-- Certificado citable del cuanto cuántico elemental de área. -/

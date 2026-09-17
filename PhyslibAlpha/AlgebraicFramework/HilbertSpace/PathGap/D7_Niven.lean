@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D2_Robertson
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D2_Robertson
 
 /-!
 # D7 — Teorema de Niven: la saturación sólo ocurre en `d ∈ {2,3}`
@@ -24,6 +22,8 @@ sobre el modo fundamental del camino discreto— se cumple **si y sólo si**
 `C_Nava(d) − 1` es estrictamente positiva (segunda mitad de este archivo,
 `Constructor_DeltaGeom_Pos`).
 -/
+
+@[expose] public section
 
 open Real
 

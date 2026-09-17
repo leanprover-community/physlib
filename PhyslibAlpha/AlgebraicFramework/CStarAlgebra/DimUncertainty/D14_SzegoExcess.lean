@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimensionalUncertainty.D9_Monotonia
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D9_Monotonia
 
 /-!
 # El exceso sobre el límite de Szegő
@@ -19,6 +17,8 @@ exactamente en `d = 4`, estrictamente decreciente en `d`, y se disuelve a
 `0`. No es un pilar nuevo: es la misma cadena de `D9_Monotonia.lean` leída
 desde el lado del remanente en vez del valor mismo.
 -/
+
+@[expose] public section
 
 open Filter
 open scoped Topology

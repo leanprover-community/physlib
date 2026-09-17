@@ -1,13 +1,11 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimensionalUncertainty.D8_Szego
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D8_Szego
 
 /-!
 # D9 — Monotonía estricta de `C_Nava` y `deltaGeom`
@@ -24,6 +22,8 @@ mediante cotas formales `3 < π < 22/7`, cotas de Taylor verificadas y
 un certificado polinómico de Bernstein de que el resto es
 estrictamente negativo en la caja compacta correspondiente.
 -/
+
+@[expose] public section
 
 noncomputable section
 

@@ -1,18 +1,16 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D1_CauchyGram
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D1_CauchyGram
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Analysis.Real.Pi.Bounds
 public import Mathlib.Data.Rat.Star
 public import Mathlib.Tactic.IntervalCases
-
-@[expose] public section
 
 /-!
 # D2 — La desigualdad de Robertson (1929)
@@ -35,6 +33,8 @@ También se incluyen aquí cinco lemas aritméticos elementales (`Blindaje`)
 que se usan más adelante para acotar el coseno y para el teorema de Niven
 (`D7_Niven.lean`).
 -/
+
+@[expose] public section
 
 namespace Robertson1929
 

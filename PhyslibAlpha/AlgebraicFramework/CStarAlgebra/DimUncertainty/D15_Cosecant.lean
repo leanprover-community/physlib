@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
@@ -11,8 +11,6 @@ public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExtrema
 public import Mathlib.Algebra.Polynomial.Splits
-
-@[expose] public section
 
 /-!
 # Identidad cosecante clásica vía Chebyshev
@@ -28,6 +26,8 @@ raíces son `cos(kπ/N)`, y la derivada logarítmica evaluada en `±1`
 No depende de ningún objeto definido en otro archivo de este paquete: es
 un resultado de análisis clásico, completo en sí mismo sobre `Mathlib`.
 -/
+
+@[expose] public section
 
 noncomputable section
 

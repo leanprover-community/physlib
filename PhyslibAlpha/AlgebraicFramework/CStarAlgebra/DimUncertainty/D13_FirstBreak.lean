@@ -1,14 +1,12 @@
 /-
-Copyright (c) 2026 Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez. All rights reserved.
+Copyright (c) 2026 Eduardo Nava-Hernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eduardo Nava-Hernández, José Arturo Nava-Hernández, Gerardo Gabriel Nava Gómez
 -/
 module
 
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D3_GrafoCamino
-public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathSpectralGap.D7_Niven
-
-@[expose] public section
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D3_GrafoCamino
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D7_Niven
 
 /-!
 # La primera ruptura combinatoria es `d = 4`
@@ -29,6 +27,8 @@ Dos rutas independientes hacia la misma dimensión:
 la misma dimensión `d = 4`, sin usar ninguna ecuación espectral en la
 mitad combinatoria.
 -/
+
+@[expose] public section
 
 namespace PrimeraRuptura
 
