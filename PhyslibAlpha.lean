@@ -99,6 +99,7 @@ public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.SpectralMeasure
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.Stinespring.Kernel
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.Stinespring.Dilation
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.Uncertainty
+public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimensionalUncertainty
 public import PhyslibAlpha.AlgebraicFramework.WStarAlgebra.Basic
 public import PhyslibAlpha.AlgebraicFramework.WStarAlgebra.ConjSpace
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.Dynamics.Automorphism
