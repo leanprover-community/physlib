@@ -48,6 +48,7 @@ namespace PhyslibAlpha
 
 /-- A point on the open probability simplex: strictly positive weights summing to 1. -/
 structure OpenSimplex (α : Type*) [Fintype α] where
+  /-- The strictly positive probability weight at each outcome. -/
   val : α → ℝ
   pos : ∀ i, 0 < val i
   sum_one : ∑ i : α, val i = 1

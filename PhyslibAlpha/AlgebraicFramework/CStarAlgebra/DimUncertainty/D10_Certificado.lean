@@ -64,6 +64,7 @@ open Gnomon
 
 /-! ## Habitat: no se sale de \(H_d\) -/
 
+/-- Predicate recording that the entire construction remains in the finite Hilbert space `Hd d`. -/
 def HabitatHilbertFinito (d : ℕ) : Prop :=
   Hd d = EuclideanSpace ℂ (Fin d)
 
@@ -135,6 +136,7 @@ theorem defecto_real_positivo_desde_Hd4_hasta_limite :
 
 /-! ## Certificado conjunto citable -/
 
+/-- Joint certificate collecting the finite habitat, saturation classification, and positive gap. -/
 structure CertificadoBlindajeHd where
   habitat : ∀ d : ℕ, HabitatHilbertFinito d
   niven_iff :

@@ -46,10 +46,14 @@ observables conjugados en un estado normalizado de un espacio de Hilbert.
 `⟨ψ,[A,B]ψ⟩`. -/
 structure Evaluacion (H : Type u) [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] where
+  /-- The normalized state in which the observables are evaluated. -/
   estado : H
   normalizado : ‖estado‖ = 1
+  /-- Standard deviation of the first observable. -/
   sigmaA : ℝ
+  /-- Standard deviation of the second observable. -/
   sigmaB : ℝ
+  /-- Expectation value of the commutator. -/
   mediaConmutador : ℂ
   sigmaA_nonneg : 0 ≤ sigmaA
   sigmaB_nonneg : 0 ≤ sigmaB
@@ -65,6 +69,7 @@ conmutador, por lo que el lado derecho de Robertson es el más exigente de la
 familia de estados normalizados. -/
 structure MaximaTension (H : Type u) [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] extends Evaluacion H where
+  /-- Norm of the commutator realized by the maximal-tension state. -/
   normaConmutador : ℝ
   normaConmutador_nonneg : 0 ≤ normaConmutador
   realiza_norma :
@@ -84,9 +89,13 @@ theorem MaximaTension.cota_por_norma
 /-- Evaluación cuadrática Robertson–Schrödinger: el producto de dispersiones
 domina el piso cuadrático compuesto por covarianza y conmutador. -/
 structure EvaluacionSchrodinger where
+  /-- Standard deviation of the first observable. -/
   sigmaA : ℝ
+  /-- Standard deviation of the second observable. -/
   sigmaB : ℝ
+  /-- Symmetric covariance contribution. -/
   covarianza : ℝ
+  /-- Commutator contribution. -/
   conmutador : ℝ
   sigmaA_nonneg : 0 ≤ sigmaA
   sigmaB_nonneg : 0 ≤ sigmaB
@@ -282,4 +291,3 @@ theorem pisoSchrodinger_evaluacionSchrodingerDeGram_le
   simpa [evaluacionSchrodingerDeGram] using h
 
 end ObstruccionGramUnificada
-

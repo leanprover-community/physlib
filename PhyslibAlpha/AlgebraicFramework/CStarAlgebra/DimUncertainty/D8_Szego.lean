@@ -344,6 +344,7 @@ theorem one_lt_CNavaSq_six : 1 < CNavaSq 6 := by
   rw [one_lt_div hden]
   nlinarith [hc_thr, hcpos]
 
+/-- Rational threshold used in the finite-dimensional lower bound for `CNava`. -/
 noncomputable def thrCNava (d : ℕ) : ℝ :=
   ((d : ℝ) - 1) * (((d : ℝ) + 1) ^ 2 - 4) /
     (((d : ℝ) - 1) * (((d : ℝ) + 1) ^ 2 + 2) + 3 * ((d : ℝ) + 1))
@@ -658,4 +659,3 @@ theorem deltaGeom_pos_of_four_le (d : ℕ) (hd : 4 ≤ d) : 0 < deltaGeom d := b
   linarith [one_lt_CNava_of_four_le d hd]
 
 end Gnomon
-

@@ -94,9 +94,11 @@ theorem Ad_mulVec_apply
   simp_rw [ite_mul, one_mul, zero_mul]
   exact sum_pasoMinimo i f
 
+/-- Spectral angle of the `k`th sine mode on the path with `d` vertices. -/
 noncomputable def anguloModo (d : ℕ) (k : Fin d) : ℝ :=
   ((k.val : ℝ) + 1) * Real.pi / ((d : ℝ) + 1)
 
+/-- The unnormalized sine eigenmode of the path adjacency matrix. -/
 noncomputable def modoSeno (d : ℕ) (k : Fin d) : Fin d → ℂ :=
   fun j => (Real.sin (((j.val : ℝ) + 1) * anguloModo d k) : ℂ)
 
@@ -166,6 +168,7 @@ theorem Ad_modoSeno
       subst i
       norm_num [modoSeno, anguloModo]
 
+/-- Adjacency eigenvalue associated with `modoSeno d k`. -/
 noncomputable def autovalorAd (d : ℕ) (k : Fin d) : ℂ :=
   (2 * Real.cos (anguloModo d k) : ℝ)
 
@@ -242,6 +245,7 @@ theorem modosSeno_linearIndependent
     (autovalorAd d) autovalorAd_injective (modoSeno d)
     (modoSeno_hasEigenvector hd)
 
+/-- Basis of sine eigenmodes for the finite path adjacency operator. -/
 noncomputable def baseModosSeno
     {d : ℕ} (hd : 1 ≤ d) : Module.Basis (Fin d) ℂ (Fin d → ℂ) := by
   classical
@@ -364,11 +368,14 @@ theorem norma_autovalorAd_le_rho
       abs_cos_anguloModo_le_cos_fiedler hd k)
     (by norm_num)
 
+/-- Matrix of the Hermitian commutator observable `i[T_d,P_d]`. -/
 noncomputable def Kmat (d : ℕ) : Matrix (Fin d) (Fin d) ℂ :=
   Complex.I • ((Td d * Pd d) - (Pd d * Td d))
 
+/-- Phase factor converting sine modes into commutator eigenmodes. -/
 noncomputable def fase (j : ℕ) : ℂ := (-Complex.I) ^ j
 
+/-- Phase-twisted sine mode for the commutator matrix. -/
 noncomputable def modoFase (d : ℕ) (k : Fin d) : Fin d → ℂ :=
   fun j => fase j.val * modoSeno d k j
 
@@ -479,6 +486,7 @@ theorem Kmat_mulVec_modoFase
   push_cast
   ring
 
+/-- Eigenvalue of `Kmat d` associated with `modoFase d k`. -/
 noncomputable def autovalorK (d : ℕ) (k : Fin d) : ℂ :=
   ((((2 / ((d : ℝ) - 1)) / rho d : ℝ) : ℂ) * autovalorAd d k)
 
@@ -538,6 +546,7 @@ theorem modosFase_linearIndependent
     (autovalorK d) (autovalorK_injective hd) (modoFase d)
     (modoFase_hasEigenvector hd)
 
+/-- Basis of phase-twisted eigenmodes for `Kmat`. -/
 noncomputable def baseModosFase
     {d : ℕ} (hd : 2 ≤ d) : Module.Basis (Fin d) ℂ (Fin d → ℂ) := by
   classical
@@ -627,6 +636,7 @@ theorem KdOp_eq_Kmat (d : ℕ) :
     Matrix (Fin d) (Fin d) ℂ ≃ₗ[ℂ] (Hd d →ₗ[ℂ] Hd d)).map_smul
       Complex.I ((Td d * Pd d) - (Pd d * Td d)) |>.symm
 
+/-- The phase-twisted commutator eigenmode represented in `Hd d`. -/
 noncomputable def modoFaseHd (d : ℕ) (k : Fin d) : Hd d :=
   WithLp.toLp 2 (modoFase d k)
 
@@ -663,6 +673,7 @@ theorem modosFaseHd_linearIndependent
     (autovalorK d) (autovalorK_injective hd) (modoFaseHd d)
     (modoFaseHd_hasEigenvector hd)
 
+/-- Basis of commutator eigenmodes in the finite Hilbert space `Hd d`. -/
 noncomputable def baseModosFaseHd
     {d : ℕ} (hd : 2 ≤ d) : Module.Basis (Fin d) ℂ (Hd d) :=
   (baseModosFase hd).map (WithLp.linearEquiv 2 ℂ (Fin d → ℂ)).symm

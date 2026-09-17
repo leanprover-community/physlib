@@ -54,10 +54,12 @@ theorem existe_indice_extremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) :
       (fun j => |hK.eigenvalues rfl j|) hne
   exact ⟨i, fun j => hi j (Finset.mem_univ j)⟩
 
+/-- An index at which the absolute eigenvalue of `K` is maximal. -/
 def indiceExtremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) :
     Fin (Module.finrank ℂ H) :=
   (existe_indice_extremal K hK).choose
 
+/-- The eigenvalue selected by `indiceExtremal`. -/
 def autovalorExtremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) : ℝ :=
   hK.eigenvalues rfl (indiceExtremal K hK)
 
@@ -477,4 +479,3 @@ theorem KdOp_no_cero (d : ℕ) (hd : 2 ≤ d) : KdOp d ≠ 0 :=
     (conmutador_TdOp_PdOp_no_cero d hd)
 
 end TransportePosicion
-

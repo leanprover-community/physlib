@@ -48,7 +48,7 @@ theorem grafoTP_adj {d : ℕ} {i j : Fin d} :
 def PasoMinimo {d : ℕ} (i j : Fin d) : Prop :=
   i.val + 1 = j.val ∨ j.val + 1 = i.val
 
-instance pasoMinimo_decidable {d : ℕ} (i j : Fin d) :
+instance instDecidablePasoMinimo {d : ℕ} (i j : Fin d) :
     Decidable (PasoMinimo i j) := by
   unfold PasoMinimo
   infer_instance
@@ -147,6 +147,7 @@ def OmitePasoElemental {d : ℕ} (G : SimpleGraph (Fin d)) : Prop :=
 
 /-- Canal ordenado, local y completo en la celda discreta. -/
 structure CanalLocalNoRamificadoOrdenado (d : ℕ) where
+  /-- The graph supporting the ordered local channel. -/
   grafo : SimpleGraph (Fin d)
   localidad_ordenada : LocalidadOrdenada grafo
   pasos_elementales : PasosElementalesCompletos grafo
@@ -178,7 +179,7 @@ theorem canal_local_no_ramificado_iso_pathGraph
 
 /-- El canal canónico `T_d/P_d` satisface directamente el certificado local
 ordenado: no tiene saltos y no omite pasos elementales. -/
-def canal_TP_local_no_ramificado (d : ℕ) :
+def canalTPLocalNoRamificado (d : ℕ) :
     CanalLocalNoRamificadoOrdenado d where
   grafo := TransportePosicion.GrafoTP d
   localidad_ordenada := by
@@ -202,11 +203,11 @@ theorem no_hay_canal_local_mas_simple_que_Pd
 /-- Cierre: el soporte canónico `T_d/P_d` es `pathGraph d`, y cualquier
 intento local de hacerlo "más simple" pierde un paso elemental. -/
 theorem cierre_minimalidad_local_TP (d : ℕ) :
-    (canal_TP_local_no_ramificado d).grafo = SimpleGraph.pathGraph d ∧
-      ¬ OmitePasoElemental (canal_TP_local_no_ramificado d).grafo := by
+    (canalTPLocalNoRamificado d).grafo = SimpleGraph.pathGraph d ∧
+      ¬ OmitePasoElemental (canalTPLocalNoRamificado d).grafo := by
   exact ⟨canal_local_no_ramificado_es_pathGraph
-      (canal_TP_local_no_ramificado d),
+      (canalTPLocalNoRamificado d),
     no_hay_canal_local_mas_simple_que_Pd
-      (canal_TP_local_no_ramificado d)⟩
+      (canalTPLocalNoRamificado d)⟩
 
 end CanalPreFuerza
