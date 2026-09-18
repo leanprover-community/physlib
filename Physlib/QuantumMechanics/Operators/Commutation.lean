@@ -80,6 +80,11 @@ lemma comp_eq_comp_add_commute (A B : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d,
   dsimp only [Bracket.bracket]
   simp only [ContinuousLinearMap.mul_def, add_sub_cancel]
 
+/-- The identity commutes with everything. -/
+lemma id_commutation (A : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
+    ⁅ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ), A⁆ = 0 := by
+  rw [Ring.lie_def, ← ContinuousLinearMap.one_def, one_mul, mul_one, sub_self]
+
 lemma comp_eq_comp_sub_commute (A B : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ)) :
     A ∘L B = B ∘L A - ⁅B, A⁆ := by
   dsimp only [Bracket.bracket]
@@ -164,6 +169,13 @@ lemma position_commutation_momentum : ⁅𝐱 i, 𝐩 j⁆ =
   rcases eq_or_ne i j with (rfl | hne)
   · simp
   · simp [eq_zero_of_ne hne, hne.symm]
+
+/-- The canonical commutation relations, pointwise: `xᵢ (pᵢ ψ)(x) - (pᵢ (xᵢ ψ))(x) = iℏ ψ(x)`. -/
+lemma position_commutation_momentum_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) :
+    ((x i : ℝ) : ℂ) * 𝐩 i ψ x - 𝐩 i (𝐱 i ψ) x = I * ℏ * ψ x := by
+  have h := congrArg (fun T : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) => T ψ x)
+    (position_commutation_momentum (d := d) i i)
+  simpa [Ring.lie_def, eq_one_of_same] using h
 
 lemma momentum_comp_position_eq : 𝐩 j ∘L 𝐱 i =
     𝐱 i ∘L 𝐩 j - (I * ℏ) • δ[i,j] • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) := by

@@ -262,6 +262,36 @@ lemma deriv_component_sq {d : ℕ} {ν μ : Fin d} (x : Space d) :
 
 /-!
 
+### A.8. Derivative of a product of functions of single coordinates
+
+-/
+
+/-- The derivative in direction `μ` of `x ↦ ∏ⱼ gⱼ (xⱼ)`, a product of differentiable functions
+  of one coordinate each, is `gμ' (xμ)` times the product of the other factors. -/
+lemma deriv_prod_coord {d : ℕ} (g : Fin d → ℝ → ℂ) (hg : ∀ j, Differentiable ℝ (g j))
+    (μ : Fin d) (x : Space d) :
+    ∂[μ] (fun x : Space d => ∏ j, g j (x j)) x =
+      _root_.deriv (g μ) (x μ) * ∏ j ∈ Finset.univ.erase μ, g j (x j) := by
+  have hcoord : ∀ j, HasFDerivAt (fun x : Space d => x j) (coordCLM j) x := fun j => by
+    convert (coordCLM j).hasFDerivAt (x := x) using 1
+    funext y
+    simp [coordCLM_apply, coord_apply]
+  have hj : ∀ j ∈ (Finset.univ : Finset (Fin d)), HasFDerivAt (fun x : Space d => g j (x j))
+      (((1 : ℝ →L[ℝ] ℝ).smulRight (_root_.deriv (g j) (x j))).comp (coordCLM j)) x :=
+    fun j _ => by
+      have hd : HasFDerivAt (g j) ((1 : ℝ →L[ℝ] ℝ).smulRight (_root_.deriv (g j) (x j))) (x j) :=
+        (hg j).differentiableAt.hasDerivAt.hasFDerivAt
+      exact hd.comp x (hcoord j)
+  have h := HasFDerivAt.finsetProd hj
+  rw [deriv_eq, h.fderiv]
+  simp only [_root_.sum_apply, _root_.smul_apply, ContinuousLinearMap.comp_apply,
+    ContinuousLinearMap.smulRight_apply, one_apply_eq_self, smul_eq_mul]
+  rw [Finset.sum_eq_single μ (fun b _ hb => by
+    simp [coordCLM_apply, coord_apply, basis_apply, Ne.symm hb]) (by simp)]
+  simp [coordCLM_apply, coord_apply, mul_comm]
+
+/-!
+
 ### A.8. Derivivatives of components
 
 -/
