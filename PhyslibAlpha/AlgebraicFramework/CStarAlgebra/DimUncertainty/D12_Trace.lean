@@ -10,21 +10,21 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.LinearAlgebra.Matrix.Trace
 
 /-!
-# Obstrucción de traza al conmutador escalar en dimensión finita
+# Trace obstruction to a scalar commutator in finite dimension
 
-Complemento algebraico a la construcción de `T_d`, `P_d` en
-`D3_GrafoCamino.lean`: en dimensión finita ningún conmutador matricial
-puede ser un múltiplo escalar no nulo de la identidad, mientras que sí
-existen pares de matrices unitarias que anticonmutan exactamente.
+Algebraic complement to the construction of `T_d`, `P_d` in
+`D3_GrafoCamino.lean`: in finite dimension no matrix commutator can
+equal a nonzero scalar multiple of the identity, while exact
+anticommuting unitary pairs do exist.
 
-Dos afirmaciones, independientes entre sí:
+Two independent statements:
 
-1. Todo conmutador matricial `[Q,P] = QP - PQ` tiene traza cero
-   (`Matrix.trace_mul_comm`), así que nunca puede igualar `c • 1` para
+1. Every matrix commutator `[Q,P] = QP - PQ` has trace zero
+   (`Matrix.trace_mul_comm`), so it can never equal `c • 1` for
    `c ≠ 0` (`no_nonzero_scalar_exact_commutator`).
-2. Esa obstrucción es sobre el conmutador aditivo; no impide la
-   no-conmutatividad multiplicativa: el par de matrices `2×2`
-   `W₁ = !![0,1;1,0]`, `W₂ = !![1,0;0,-1]` satisface exactamente
+2. That obstruction is on the additive commutator; it does not prevent
+   multiplicative non-commutativity: the `2×2` matrix pair
+   `W₁ = !![0,1;1,0]`, `W₂ = !![1,0;0,-1]` satisfies exactly
    `W₂ W₁ = -(W₁ W₂)` (`parWeyl_anticonmuta`).
 -/
 
@@ -34,19 +34,19 @@ noncomputable section
 
 namespace ConmutadorEscalarFinito
 
-/-- Conmutador matricial. -/
+/-- Matrix commutator. -/
 def commutator {d : ℕ}
     (Q P : Matrix (Fin d) (Fin d) ℂ) : Matrix (Fin d) (Fin d) ℂ :=
   Q * P - P * Q
 
-/-- La traza de todo conmutador matricial finito es cero. -/
+/-- The trace of every finite matrix commutator is zero. -/
 theorem trace_commutator_zero {d : ℕ}
     (Q P : Matrix (Fin d) (Fin d) ℂ) :
     Matrix.trace (commutator Q P) = 0 := by
   rw [commutator, Matrix.trace_sub, Matrix.trace_mul_comm Q P, sub_self]
 
-/-- En dimensión finita positiva, un conmutador no puede ser un múltiplo
-escalar no nulo de la identidad. -/
+/-- In positive finite dimension, a commutator cannot be a nonzero
+scalar multiple of the identity. -/
 theorem no_nonzero_scalar_exact_commutator {d : ℕ} (hd : 0 < d)
     (Q P : Matrix (Fin d) (Fin d) ℂ) (c : ℂ) (hc : c ≠ 0) :
     commutator Q P ≠ c • (1 : Matrix (Fin d) (Fin d) ℂ) := by
@@ -61,33 +61,33 @@ theorem no_nonzero_scalar_exact_commutator {d : ℕ} (hd : 0 < d)
     exact_mod_cast (Nat.ne_of_gt hd)
   exact (mul_ne_zero hc hd0) ht.symm
 
-/-- Corolario: en particular, el conmutador tampoco puede igualar un
-múltiplo imaginario `i·c` de la identidad para ningún real `c ≠ 0`. -/
+/-- Corollary: in particular, the commutator cannot equal an imaginary
+multiple `i·c` of the identity for any real `c ≠ 0`. -/
 theorem commutador_ne_escalar_imaginario {d : ℕ} (hd : 0 < d)
     (Q P : Matrix (Fin d) (Fin d) ℂ) (c : ℝ) (hc : c ≠ 0) :
     commutator Q P ≠ (Complex.I * (c : ℂ)) • (1 : Matrix (Fin d) (Fin d) ℂ) := by
   apply no_nonzero_scalar_exact_commutator hd Q P
   exact mul_ne_zero Complex.I_ne_zero (Complex.ofReal_ne_zero.mpr hc)
 
-/-! ## Un par de Weyl exacto en dimensión dos -/
+/-! ## An exact Weyl pair in dimension two -/
 
-/-- Primera matriz del par de Weyl `2×2`. -/
+/-- First matrix of the `2×2` Weyl pair. -/
 def W1 : Matrix (Fin 2) (Fin 2) ℂ :=
   !![0, 1; 1, 0]
 
-/-- Segunda matriz del par de Weyl `2×2`. -/
+/-- Second matrix of the `2×2` Weyl pair. -/
 def W2 : Matrix (Fin 2) (Fin 2) ℂ :=
   !![1, 0; 0, -1]
 
-/-- Relación de Weyl exacta: `W₂ W₁ = -(W₁ W₂)`. La obstrucción de traza de
-arriba es sobre el conmutador *aditivo*; no impide esta anticonmutación
-*multiplicativa* exacta en dimensión finita. -/
+/-- Exact Weyl relation: `W₂ W₁ = -(W₁ W₂)`. The trace obstruction
+above is on the *additive* commutator; it does not prevent this exact
+*multiplicative* anticommutation in finite dimension. -/
 theorem parWeyl_anticonmuta : W2 * W1 = -(W1 * W2) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
     norm_num [W1, W2, Matrix.mul_apply, Fin.sum_univ_two]
 
-/-- En particular, `W₁` y `W₂` no conmutan. -/
+/-- In particular, `W₁` and `W₂` do not commute. -/
 theorem parWeyl_no_conmuta : W2 * W1 ≠ W1 * W2 := by
   intro h
   have hij := congrFun (congrFun h (0 : Fin 2)) (1 : Fin 2)

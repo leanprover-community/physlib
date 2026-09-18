@@ -8,15 +8,15 @@ module
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D5_MaximaTension
 
 /-!
-# D6 — Descomposición espectral de Fiedler sobre el camino discreto
+# D6 — Fiedler spectral decomposition on the discrete path
 
-Diagonalización explícita, en base de modos seno/fase, del operador de
-adyacencia `A_d` y del observable `i[T_d,P_d]` sobre `pathGraph d`. Se
-obtiene el espectro completo en forma cerrada y se identifica el modo
-fundamental (el vector de Fiedler) como el autovector extremal del
-observable `i[T_d,P_d]`. Contenido íntegro, sin modificar, de la
-descomposición espectral del corpus original — es álgebra lineal y teoría
-espectral de grafos pura, sin ninguna capa interpretativa.
+Explicit diagonalization, in the sine/phase mode basis, of the adjacency
+operator `A_d` and the observable `i[T_d,P_d]` on `pathGraph d`. The
+complete spectrum is obtained in closed form and the fundamental mode
+(the Fiedler vector) is identified as the extremal eigenvector of the
+observable `i[T_d,P_d]`. Full, unmodified content from the original
+corpus spectral decomposition — pure linear algebra and spectral graph
+theory, with no interpretive layer.
 -/
 
 @[expose] public section

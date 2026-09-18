@@ -13,18 +13,18 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Chebyshev.RootsExt
 public import Mathlib.Algebra.Polynomial.Splits
 
 /-!
-# Identidad cosecante clásica vía Chebyshev
+# Classical cosecant identity via Chebyshev
 
-Identidad clásica de análisis, autocontenida:
+Self-contained classical analysis identity:
 \[
 \sum_{k=1}^{N-1}\csc^2(k\pi/N)=(N^2-1)/3.
 \]
-Prueba vía el polinomio de Chebyshev de segunda especie `U_{N-1}`: sus
-raíces son `cos(kπ/N)`, y la derivada logarítmica evaluada en `±1`
-(descomponiendo `1/(1-x²) = ½(1/(1-x) + 1/(1+x))`) da la suma cerrada.
+Proof via the Chebyshev polynomial of the second kind `U_{N-1}`: its
+roots are `cos(kπ/N)`, and the logarithmic derivative evaluated at `±1`
+(decomposing `1/(1-x²) = ½(1/(1-x) + 1/(1+x))`) gives the closed sum.
 
-No depende de ningún objeto definido en otro archivo de este paquete: es
-un resultado de análisis clásico, completo en sí mismo sobre `Mathlib`.
+Does not depend on any object defined in another file of this package:
+it is a classical analysis result, self-contained over `Mathlib`.
 -/
 
 @[expose] public section
@@ -38,7 +38,7 @@ open scoped BigOperators
 
 namespace IdentidadCosecanteChebyshev
 
-/-! ## Chebyshev: `U_n` se parte en lineales reales -/
+/-! ## Chebyshev: `U_n` factors into real linears -/
 
 theorem U_splits_real (n : ℕ) : (U ℝ n).Splits := by
   rw [splits_iff_card_roots]
@@ -60,13 +60,13 @@ theorem U_splits_real (n : ℕ) : (U ℝ n).Splits := by
     rw [hdeg]
     exact hcard
 
-/-! ## Derivadas de `U_n` en `±1` -/
+/-! ## Derivatives of `U_n` at `±1` -/
 
 theorem U_deriv_eval_one (n : ℕ) :
     (derivative (U ℝ (n : ℤ))).eval (1 : ℝ) =
       ((n : ℝ) + 2) * ((n : ℝ) + 1) * (n : ℝ) / 3 := by
   have h := derivative_U_eval_one (R := ℝ) (n : ℤ)
-  -- `3 * U'(1) = (n+2)(n+1)n` con coerciones enteras
+  -- `3 * U'(1) = (n+2)(n+1)n` with integer coercions
   push_cast at h
   linarith
 
@@ -74,7 +74,7 @@ theorem U_deriv_eval_neg_one (n : ℕ) :
     (derivative (U ℝ (n : ℤ))).eval (-1 : ℝ) =
       -((-1 : ℝ) ^ n) *
         (((n : ℝ) + 2) * ((n : ℝ) + 1) * (n : ℝ) / 3) := by
-  -- Paridad: U_n(-x) = (-1)^n U_n(x)
+  -- Parity: U_n(-x) = (-1)^n U_n(x)
   have hfun :
       (fun x : ℝ ↦ (U ℝ (n : ℤ)).eval (-x)) =
         fun x ↦ (-1 : ℝ) ^ n * (U ℝ (n : ℤ)).eval x := by
@@ -99,7 +99,8 @@ theorem U_deriv_eval_neg_one (n : ℕ) :
   rw [hUd1] at hder
   linarith
 
-/-! ## Sumas sobre raíces -/
+/-! ## Sums over roots -/
+
 
 theorem sum_one_div_one_sub_roots (n : ℕ) (hn : 1 ≤ n) :
     ((U ℝ (n : ℤ)).roots.map fun z : ℝ ↦ (1 : ℝ) / (1 - z)).sum =
@@ -198,7 +199,7 @@ theorem sum_one_div_one_sub_sq_roots (n : ℕ) (hn : 1 ≤ n) :
       intro h; exact hzm1 (by linarith)
     field_simp [hz1', hzm, hden]
     ring
-  -- levantar la identidad puntual a la suma sobre el multiconjunto
+  -- lift the pointwise identity to the sum over the multiset
   have hdecomp :
       ((U ℝ (n : ℤ)).roots.map fun z : ℝ ↦ (1 : ℝ) / (1 - z ^ 2)).sum =
         (1 / 2 : ℝ) *
@@ -221,7 +222,7 @@ theorem sum_one_div_one_sub_sq_roots (n : ℕ) (hn : 1 ≤ n) :
   rw [hdecomp, h1, h2]
   ring
 
-/-- **Identidad cosecante clásica.** `∑_{k=1}^{N-1} csc²(kπ/N) = (N²-1)/3`. -/
+/-- **Classical cosecant identity.** `∑_{k=1}^{N-1} csc²(kπ/N) = (N²-1)/3`. -/
 theorem sum_csc_sq (N : ℕ) (hN : 2 ≤ N) :
     ∑ k ∈ Finset.Ico 1 N, (sin ((k : ℝ) * π / N))⁻¹ ^ 2 =
       ((N : ℝ) ^ 2 - 1) / 3 := by
@@ -232,7 +233,7 @@ theorem sum_csc_sq (N : ℕ) (hN : 2 ≤ N) :
   have hinj :
       Set.InjOn (fun k : ℕ ↦ cos ((k + 1) * π / (n + 1))) (Finset.range n) :=
     (Finset.range n).nodup_map_iff_injOn.mp (roots_U_real_nodup n)
-  -- suma sobre raíces vista como multiconjunto → suma sobre `range n`
+  -- sum over roots as multiset → sum over `range n`
   have hfin :
       ((U ℝ (n : ℤ)).roots.map fun z : ℝ ↦ (1 : ℝ) / (1 - z ^ 2)).sum =
         ∑ k ∈ Finset.range n,
@@ -249,7 +250,7 @@ theorem sum_csc_sq (N : ℕ) (hN : 2 ≤ N) :
         sin ((k + 1 : ℝ) * π / (n + 1)) ^ 2 := by
       linarith [sin_sq_add_cos_sq ((k + 1 : ℝ) * π / (n + 1))]
     rw [h1, one_div, inv_pow]
-  -- reindexar `Ico 1 (n+1)` como imagen de `range n` bajo `·+1`
+  -- reindex `Ico 1 (n+1)` as image of `range n` under `·+1`
   have himg :
       Finset.Ico 1 (n + 1) = (Finset.range n).image (fun k ↦ k + 1) := by
     ext k

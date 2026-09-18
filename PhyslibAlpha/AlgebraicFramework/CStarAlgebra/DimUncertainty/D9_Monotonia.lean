@@ -8,19 +8,19 @@ module
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D8_Szego
 
 /-!
-# D9 — Monotonía estricta de `C_Nava` y `deltaGeom`
+# D9 — Strict monotonicity of `C_Nava` and `deltaGeom`
 
-Sin barrido numérico: `CNava` (y por tanto `deltaGeom`) crece
-estrictamente para toda dimensión `d ≥ 4`. En particular, `d = 4` es
-el mínimo global de la cola `d ≥ 4` y cada valor finito se aproxima a
-`Cinf` estrictamente por debajo (`CNava_lt_Cinf`, `deltaGeom_lt_deltaInf`).
+Without numerical sweep: `CNava` (and hence `deltaGeom`) is strictly
+increasing for every dimension `d ≥ 4`. In particular, `d = 4` is the
+global minimum of the `d ≥ 4` tail and each finite value approaches
+`Cinf` strictly from below (`CNava_lt_Cinf`, `deltaGeom_lt_deltaInf`).
 
-La prueba no supone que `π` sea racional. Las llamadas a `ring`
-certifican únicamente identidades algebraicas formales con `π` como
-elemento real simbólico. El signo estricto de la derivada se obtiene
-mediante cotas formales `3 < π < 22/7`, cotas de Taylor verificadas y
-un certificado polinómico de Bernstein de que el resto es
-estrictamente negativo en la caja compacta correspondiente.
+The proof does not assume `π` is rational. The `ring` calls certify
+only formal algebraic identities with `π` as a symbolic real element.
+The strict sign of the derivative is obtained via formal bounds
+`3 < π < 22/7`, verified Taylor bounds, and a Bernstein polynomial
+certificate that the remainder is strictly negative in the
+corresponding compact box.
 -/
 
 @[expose] public section

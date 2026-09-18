@@ -13,25 +13,26 @@ public import Mathlib.Data.Rat.Star
 public import Mathlib.Tactic.IntervalCases
 
 /-!
-# D2 — La desigualdad de Robertson (1929)
+# D2 — The Robertson inequality (1929)
 
-Formalización abstracta de la desigualdad de Robertson (1929) para un par de
-observables conjugados evaluados en un estado normalizado de un espacio de
-Hilbert. Se incluyen dos formas: la forma lineal clásica (`Evaluacion`,
-con la cota `|⟨[A,B]⟩|/2 ≤ σ_A σ_B`) y la forma cuadrática de
-Robertson–Schrödinger (`EvaluacionSchrodinger`, con covarianza).
+Abstract formalization of Robertson's (1929) inequality for a pair
+of conjugate observables evaluated in a normalized Hilbert-space
+state. Two forms are included: the classical linear form
+(`Evaluacion`, with `|⟨[A,B]⟩|/2 ≤ σ_A σ_B`) and the quadratic
+Robertson–Schrödinger form (`EvaluacionSchrodinger`, with
+covariance).
 
-Punto central de este archivo: la hipótesis `cota_cuadratica` que
-`EvaluacionSchrodinger` exige como dato **no se postula** — al final del
-archivo (`ObstruccionGramUnificada.evaluacionSchrodingerDeGram`) se prueba
-que todo par de vectores de un espacio de Hilbert produce automáticamente una
-`EvaluacionSchrodinger` válida, con esa cota derivada directamente de
-`D1_CauchyGram.gramDefectC_nonneg`. Cauchy–Schwarz ⇒ Gram ⇒
-Robertson–Schrödinger, como teorema, no como axioma adicional.
+Key point: the hypothesis `cota_cuadratica` required by
+`EvaluacionSchrodinger` is **not postulated** — at the end of
+this file (`ObstruccionGramUnificada.evaluacionSchrodingerDeGram`)
+we prove that every pair of Hilbert-space vectors automatically
+yields a valid `EvaluacionSchrodinger`, with the bound derived
+from `D1_CauchyGram.gramDefectC_nonneg`. Cauchy–Schwarz ⇒ Gram ⇒
+Robertson–Schrödinger, as a theorem, not an additional axiom.
 
-También se incluyen aquí cinco lemas aritméticos elementales (`Blindaje`)
-que se usan más adelante para acotar el coseno y para el teorema de Niven
-(`D7_Niven.lean`).
+Five elementary arithmetic lemmas (`Blindaje` / Shielding) used
+later for cosine bounds and the Niven theorem (`D7_Niven.lean`)
+are also included here.
 -/
 
 @[expose] public section
@@ -40,10 +41,9 @@ namespace Robertson1929
 
 universe u
 
-/-- Evaluación exacta del teorema de Robertson (1929) tras evaluar dos
-observables conjugados en un estado normalizado de un espacio de Hilbert.
-`sigmaA`, `sigmaB` son las desviaciones y `mediaConmutador` es
-`⟨ψ,[A,B]ψ⟩`. -/
+/-- Exact evaluation of Robertson's (1929) theorem for two conjugate
+observables in a normalized Hilbert-space state. `sigmaA`, `sigmaB`
+are the standard deviations; `mediaConmutador` is `⟨ψ,[A,B]ψ⟩`. -/
 structure Evaluacion (H : Type u) [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] where
   /-- The normalized state in which the observables are evaluated. -/
@@ -59,14 +59,14 @@ structure Evaluacion (H : Type u) [NormedAddCommGroup H]
   sigmaB_nonneg : 0 ≤ sigmaB
   cota : ‖mediaConmutador‖ / 2 ≤ sigmaA * sigmaB
 
-/-- Saturación exacta de la cota de Robertson en la evaluación dada. -/
+/-- Exact saturation of the Robertson bound for the given evaluation. -/
 def Saturada {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     (R : Evaluacion H) : Prop :=
   R.sigmaA * R.sigmaB = ‖R.mediaConmutador‖ / 2
 
-/-- Evaluación en máxima tensión: el estado normalizado realiza la norma del
-conmutador, por lo que el lado derecho de Robertson es el más exigente de la
-familia de estados normalizados. -/
+/-- Maximal-tension evaluation: the normalized state realizes the
+commutator norm, so Robertson's right-hand side is the tightest
+among all normalized states. -/
 structure MaximaTension (H : Type u) [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] extends Evaluacion H where
   /-- Norm of the commutator realized by the maximal-tension state. -/
@@ -75,8 +75,8 @@ structure MaximaTension (H : Type u) [NormedAddCommGroup H]
   realiza_norma :
     ‖toEvaluacion.mediaConmutador‖ = normaConmutador
 
-/-- En máxima tensión, Robertson entrega la cota evaluada en la norma del
-conmutador. -/
+/-- At maximal tension, Robertson yields the bound evaluated at the
+commutator norm. -/
 theorem MaximaTension.cota_por_norma
     {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
     (R : MaximaTension H) :
@@ -84,10 +84,10 @@ theorem MaximaTension.cota_por_norma
   rw [← R.realiza_norma]
   exact R.cota
 
-/-! ## Ancla Robertson–Schrödinger: forma cuadrática -/
+/-! ## Robertson–Schrödinger anchor: quadratic form -/
 
-/-- Evaluación cuadrática Robertson–Schrödinger: el producto de dispersiones
-domina el piso cuadrático compuesto por covarianza y conmutador. -/
+/-- Quadratic Robertson–Schrödinger evaluation: the dispersion product
+dominates the quadratic floor composed of covariance and commutator. -/
 structure EvaluacionSchrodinger where
   /-- Standard deviation of the first observable. -/
   sigmaA : ℝ
@@ -101,11 +101,11 @@ structure EvaluacionSchrodinger where
   sigmaB_nonneg : 0 ≤ sigmaB
   cota_cuadratica : covarianza ^ 2 + conmutador ^ 2 ≤ sigmaA ^ 2 * sigmaB ^ 2
 
-/-- Piso Robertson–Schrödinger: raíz cuadrada del término cuadrático. -/
+/-- Robertson–Schrödinger floor: square root of the quadratic term. -/
 noncomputable def pisoSchrodinger (S : EvaluacionSchrodinger) : ℝ :=
   Real.sqrt (S.covarianza ^ 2 + S.conmutador ^ 2)
 
-/-- Saturación Robertson–Schrödinger exacta. -/
+/-- Exact Robertson–Schrödinger saturation. -/
 def SaturadaSchrodinger (S : EvaluacionSchrodinger) : Prop :=
   S.sigmaA ^ 2 * S.sigmaB ^ 2 = S.covarianza ^ 2 + S.conmutador ^ 2
 
@@ -115,8 +115,8 @@ theorem saturadaSchrodinger_iff (S : EvaluacionSchrodinger) :
         S.covarianza ^ 2 + S.conmutador ^ 2 := by
   rfl
 
-/-- El piso Robertson–Schrödinger es positivo si y sólo si covarianza o
-conmutador son no nulos. -/
+/-- The Robertson–Schrödinger floor is positive iff the covariance or
+the commutator is nonzero. -/
 theorem pisoSchrodinger_pos_iff (S : EvaluacionSchrodinger) :
     0 < pisoSchrodinger S ↔ S.covarianza ≠ 0 ∨ S.conmutador ≠ 0 := by
   rw [pisoSchrodinger, Real.sqrt_pos]
@@ -129,8 +129,8 @@ theorem pisoSchrodinger_pos_iff (S : EvaluacionSchrodinger) :
     · nlinarith [sq_pos_of_ne_zero hcov, sq_nonneg S.conmutador]
     · nlinarith [sq_nonneg S.covarianza, sq_pos_of_ne_zero hcomm]
 
-/-- La cota cuadrática Robertson–Schrödinger implica la cota lineal sobre el
-producto de dispersiones no negativas. -/
+/-- The quadratic Robertson–Schrödinger bound implies the linear bound
+on the nonnegative dispersion product. -/
 theorem pisoSchrodinger_le_producto (S : EvaluacionSchrodinger) :
     pisoSchrodinger S ≤ S.sigmaA * S.sigmaB := by
   have hsum : 0 ≤ S.covarianza ^ 2 + S.conmutador ^ 2 := by positivity
@@ -146,8 +146,8 @@ theorem pisoSchrodinger_le_producto (S : EvaluacionSchrodinger) :
   rw [hprod_sq] at hcota
   nlinarith
 
-/-- Forma limpia del ancla: Robertson–Schrödinger aporta una cota lineal y no
-permite afirmar simultáneamente esa cota y su negación. -/
+/-- Clean anchor form: Robertson–Schrödinger yields a linear bound and
+does not allow asserting the bound and its negation simultaneously. -/
 theorem anclaSchrodinger_limpia (S : EvaluacionSchrodinger) :
     pisoSchrodinger S ≤ S.sigmaA * S.sigmaB ∧
     ¬ (pisoSchrodinger S ≤ S.sigmaA * S.sigmaB ∧
@@ -158,17 +158,17 @@ theorem anclaSchrodinger_limpia (S : EvaluacionSchrodinger) :
 
 end Robertson1929
 
-/-! ## Cinco lemas aritméticos elementales (`Blindaje`)
+/-! ## Five elementary arithmetic lemmas (`Blindaje` / Shielding)
 
-Usados más adelante por el teorema de Niven (`D7_Niven.lean`): R3 acota el
-coseno para `d ≥ 5`; R5 es la observación aritmética de que una cota
-estrictamente positiva impide que cualquiera de sus dos factores sea nulo. -/
+Used later by the Niven theorem (`D7_Niven.lean`): R3 bounds the
+cosine for `d ≥ 5`; R5 is the arithmetic observation that a strictly
+positive bound prevents either factor from vanishing. -/
 
 open Real Finset
 
 namespace Blindaje
 
-/-- Identidad término a término, exacta en ℚ. -/
+/-- Term-by-term identity, exact over ℚ. -/
 theorem R1b_termino (k : ℕ) (hk : 1 ≤ k) :
     (1 : ℚ) / k ^ 2 - 1 / (k * (k + 1)) = 1 / (k ^ 2 * (k + 1)) := by
   have hk0 : (k : ℚ) ≠ 0 := Nat.cast_ne_zero.mpr (by omega)
@@ -176,7 +176,7 @@ theorem R1b_termino (k : ℕ) (hk : 1 ≤ k) :
   field_simp
   ring
 
-/-- El telescopio cierra exacto: `Σ_{k=2..N} 1/(k(k+1)) = 1/2 − 1/(N+1)`. -/
+/-- Exact telescoping: `Σ_{k=2..N} 1/(k(k+1)) = 1/2 − 1/(N+1)`. -/
 theorem R1a_telescopio (N : ℕ) (hN : 2 ≤ N) :
     ∑ k ∈ Icc 2 N, (1 : ℚ) / (k * (k + 1)) = 1 / 2 - 1 / (N + 1) := by
   induction N with
@@ -199,7 +199,7 @@ theorem R1d_modo_positivo (k : ℕ) (hk : 2 ≤ k) :
   have : (0 : ℚ) < k := by exact_mod_cast (by omega : 0 < k)
   positivity
 
-/-- Si `(3+√5)/8 = 3/4` entonces `√5 = 3`, entonces `5 = 9`: absurdo. -/
+/-- If `(3+√5)/8 = 3/4` then `√5 = 3`, then `5 = 9`: absurd. -/
 theorem R2_cinco_no_es_nueve : (3 + Real.sqrt 5) / 8 ≠ 3 / 4 := by
   intro h
   have h3 : Real.sqrt 5 = 3 := by linarith
@@ -209,7 +209,7 @@ theorem R2_cinco_no_es_nueve : (3 + Real.sqrt 5) / 8 ≠ 3 / 4 := by
     linarith [this]
   norm_num at h5
 
-/-- Techo del coseno: para `d ≥ 5`, `cos²(π/(d+1)) < (d−1)/4`. -/
+/-- Cosine ceiling: for `d ≥ 5`, `cos²(π/(d+1)) < (d−1)/4`. -/
 theorem R3_techo_coseno (d : ℕ) (hd : 5 ≤ d) :
     Real.cos (π / (d + 1)) ^ 2 < (d - 1 : ℝ) / 4 := by
   have hd1 : (0 : ℝ) < (d : ℝ) + 1 := by positivity
@@ -240,8 +240,8 @@ theorem R4a_siete_fracciones :
 
 theorem R4_pi_mayor_que_tres : (3 : ℝ) < π := Real.pi_gt_three
 
-/-- Obstrucción aritmética: si la cota `c` es estrictamente positiva y
-`c ≤ α·β`, entonces ninguno de los dos factores puede anularse. -/
+/-- Arithmetic obstruction: if the bound `c` is strictly positive and
+`c ≤ α·β`, then neither factor can vanish. -/
 theorem R5_obstruccion_aritmetica (var_A var_B cota_robertson : ℝ)
     (h_robertson : cota_robertson ≤ var_A * var_B)
     (h_cota_positiva : 0 < cota_robertson) :
@@ -256,17 +256,17 @@ theorem R5_obstruccion_aritmetica (var_A var_B cota_robertson : ℝ)
 
 end Blindaje
 
-/-! ## Cierre del puente: Cauchy–Schwarz ⇒ Robertson–Schrödinger -/
+/-! ## Bridge closure: Cauchy–Schwarz ⇒ Robertson–Schrödinger -/
 
 noncomputable section
 
 namespace ObstruccionGramUnificada
 
-/-- Puente con `Robertson1929`: cualquier par de vectores en un espacio de
-Hilbert complejo produce una `EvaluacionSchrodinger` cuya cota cuadrática no
-se postula como campo libre — se deriva del defecto de Gram no negativo
-(`gramDefectC_nonneg`). La hipótesis `cota_cuadratica` que
-`Robertson1929.EvaluacionSchrodinger` exige como dato queda aquí demostrada. -/
+/-- Bridge to `Robertson1929`: any pair of vectors in a complex Hilbert
+space yields an `EvaluacionSchrodinger` whose quadratic bound is not
+postulated — it is derived from the nonneg Gram defect
+(`gramDefectC_nonneg`). The `cota_cuadratica` hypothesis required by
+`Robertson1929.EvaluacionSchrodinger` is proved here. -/
 def evaluacionSchrodingerDeGram {H : Type*} [NormedAddCommGroup H]
     [InnerProductSpace ℂ H] (x y : H) :
     Robertson1929.EvaluacionSchrodinger where
@@ -280,10 +280,10 @@ def evaluacionSchrodingerDeGram {H : Type*} [NormedAddCommGroup H]
     have h := robertsonSchrodinger_from_gram x y
     simpa [varianceC] using h
 
-/-- El piso Robertson–Schrödinger de la evaluación construida por Gram queda
-dominado por el producto de normas: la misma conclusión de
-`Robertson1929.pisoSchrodinger_le_producto`, instanciada sobre una evaluación
-que ya no es un supuesto sino un teorema. -/
+/-- The Robertson–Schrödinger floor of the Gram-constructed evaluation
+is dominated by the norm product: the same conclusion as
+`Robertson1929.pisoSchrodinger_le_producto`, instantiated on an
+evaluation that is now a theorem, not an assumption. -/
 theorem pisoSchrodinger_evaluacionSchrodingerDeGram_le
     {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] (x y : H) :
     Robertson1929.pisoSchrodinger (evaluacionSchrodingerDeGram x y) ≤ ‖x‖ * ‖y‖ := by

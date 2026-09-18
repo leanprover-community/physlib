@@ -11,42 +11,42 @@ public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D8_Sze
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.DimUncertainty.D9_Monotonia
 
 /-!
-# D10 — Certificado conjunto: Fiedler + Niven + Szegő en `H_d`
+# D10 — Joint certificate: Fiedler + Niven + Szegő in `H_d`
 
-Reúne, en un único certificado citable, los tres pilares que se apoyan sobre
-el hábitat común `H_d = ℂ^d` (`D0_Habitat.lean`): la descomposición
-espectral de Fiedler (`D6_Fiedler.lean`), el teorema de Niven
-(`D7_Niven.lean`) y el límite de Szegő con la positividad de la brecha
-(`D8_Szego.lean`). Este es el teorema terminal del paquete: aquí se acaba
-la matemática que se demuestra en este repositorio.
+Gathers, in a single citable certificate, the three pillars that rest on
+the common habitat `H_d = ℂ^d` (`D0_Habitat.lean`): the Fiedler spectral
+decomposition (`D6_Fiedler.lean`), the Niven theorem (`D7_Niven.lean`),
+and the Szegő limit with gap positivity (`D8_Szego.lean`). This is the
+terminal theorem of the package: the mathematics proved in this
+repository ends here.
 
-# Blindaje de `δ_geom(d)` en el Hilbert finito `H_d`
+# Shielding `δ_geom(d)` in the finite Hilbert space `H_d`
 
-**Hábitat:** \(H_d=\mathtt{EuclideanSpace}\,\mathbb{C}\,(\mathtt{Fin}\,d)\).
-No se abandona ese espacio: es el que acoge la derivación del marco.
+**Habitat:** \(H_d=\mathtt{EuclideanSpace}\,\mathbb{C}\,(\mathtt{Fin}\,d)\).
+This space is never left: it is where the framework derivation lives.
 
-**Terna de escudos** (todo sobre el discreto):
+**Shield triad** (all on the discrete setting):
 
-| Escudo | Contenido Lean |
-|--------|----------------|
-| **Fiedler** | modo fundamental / `KdOp` / radio espectral en \(H_d\) |
+| Shield | Lean content |
+|--------|-------------|
+| **Fiedler** | fundamental mode / `KdOp` / spectral radius in \(H_d\) |
 | **Niven** | `saturacion_iff` + `no_reposición_saturacion_camino` + `deltaGeom_pos_of_four_le` |
-| **Szegő** | `limite_szego_CNava` + `deltaInf_pos` + ∞ no es dimensión |
-| **Monotonía** | `deltaGeom_four_le`: `δ_geom(4)` es el piso global para todo `d ≥ 4` |
+| **Szegő** | `limite_szego_CNava` + `deltaInf_pos` + ∞ is not a dimension |
+| **Monotonicity** | `deltaGeom_four_le`: `δ_geom(4)` is the global floor for all `d ≥ 4` |
 
-Lectura: los productos trigonométricos simultáneamente racionales de la
-saturación del camino **solo** existen en \(d\in\{2,3\}\). No hay más
-semillas; por eso **nada repone la cota unitaria** después de \(d=4\).
-Además, la monotonía certificada fija a \(d=4\) como el menor defecto
-realizado: cualquier medición en un \(H_d\) físico con \(d\ge4\) queda
-separada del cero por al menos \(\delta_{\rm geom}(4)\). Al crecer la
-familia finita, el defecto no se apaga: converge a
+Reading: the simultaneously rational trigonometric products of path
+saturation **only** exist at \(d\in\{2,3\}\). There are no more seeds;
+that is why **nothing restores the unit bound** after \(d=4\).
+Moreover, certified monotonicity pins \(d=4\) as the smallest realized
+defect: any measurement in a physical \(H_d\) with \(d\ge4\) is
+separated from zero by at least \(\delta_{\rm geom}(4)\). As the finite
+family grows, the defect does not vanish: it converges to
 \(\delta_\infty>0\).
 
-**Cierre del hábitat:** \(H_d = \mathbb{C}^d \cong \mathbb{R}^{2d}\), finito.
-Punto. Si quieren continuo infinito, aquí no es hotel — \(d=\infty\) no se
-hospeda en este paquete; a lo más se le ve llegar por la ventana como límite
-(`D8_Szego.lean`), pero nunca cruza la puerta.
+**Habitat closure:** \(H_d = \mathbb{C}^d \cong \mathbb{R}^{2d}\), finite.
+Period. For continuous infinite, this is not a hotel — \(d=\infty\) is not
+hosted in this package; at most one sees it arriving through the window as
+a limit (`D8_Szego.lean`), but it never crosses the door.
 -/
 
 @[expose] public section
@@ -62,7 +62,7 @@ namespace BlindajeHd
 open TransportePosicion
 open Gnomon
 
-/-! ## Habitat: no se sale de \(H_d\) -/
+/-! ## Habitat: stays within \(H_d\) -/
 
 /-- Predicate recording that the entire construction remains in the finite Hilbert space `Hd d`. -/
 def HabitatHilbertFinito (d : ℕ) : Prop :=
@@ -77,13 +77,13 @@ theorem infinito_no_es_habitat :
       0 < deltaInf :=
   infinito_no_es_dimension_sino_limite
 
-/-! ## Niven: cota unitaria no se repone -/
+/-! ## Niven: the unit bound does not recover -/
 
 theorem niven_saturacion_solo_semillas (d : ℕ) (hd : 2 ≤ d) :
     cos (π / (d + 1)) ^ 2 = ((d : ℝ) - 1) / 4 ↔ d = 2 ∨ d = 3 :=
   saturacion_iff d hd
 
-/-- **Nada repone la cota** tras \(d=4\). -/
+/-- **Nothing restores the bound** after \(d=4\). -/
 theorem niven_cota_unitaria_no_se_repone (d : ℕ) (hd : 4 ≤ d) :
     cos (π / (d + 1)) ^ 2 ≠ ((d : ℝ) - 1) / 4 :=
   no_reposición_saturacion_camino d hd
@@ -96,14 +96,14 @@ theorem piso_precision_deltaGeom_d4_en_Hd (d : ℕ) (hd : 4 ≤ d) :
     deltaGeom 4 ≤ deltaGeom d :=
   deltaGeom_four_le d hd
 
-/-- En el régimen físico finito `H_d`, `d ≥ 4`, no existe lectura con defecto
-por debajo del piso elemental `δ_geom(4)`. -/
+/-- In the finite physical regime `H_d`, `d ≥ 4`, no reading has defect
+below the elementary floor `δ_geom(4)`. -/
 theorem no_medicion_absoluta_bajo_piso_d4_en_Hd
     (d : ℕ) (hd : 4 ≤ d) (ε : ℝ) (hε : ε < deltaGeom 4) :
     ε < deltaGeom d :=
   lt_of_lt_of_le hε (piso_precision_deltaGeom_d4_en_Hd d hd)
 
-/-! ## Fiedler: espectro y banda en \(H_d\) -/
+/-! ## Fiedler: spectrum and band in \(H_d\) -/
 
 theorem fiedler_autovector_en_Hd (d : ℕ) (hd : 2 ≤ d) :
     KdOp d (vectorFiedlerExplicito d) =
@@ -119,7 +119,7 @@ theorem fiedler_radio_banda (d : ℕ) (hd : 2 ≤ d) :
   letI : Nontrivial (Hd d) := inferInstance
   exact radioEspectral_KdOp_eq_paso d hd
 
-/-! ## Szegő: asintótica de la familia finita -/
+/-! ## Szegő: asymptotics of the finite family -/
 
 theorem szego_limite_familia_finita :
     Tendsto CNava atTop (𝓝 Cinf) :=
@@ -134,7 +134,7 @@ theorem defecto_real_positivo_desde_Hd4_hasta_limite :
       0 < deltaInf :=
   ⟨niven_deltaGeom_pos_en_Hd, limite_defecto_geometrico, szego_deltaInf_pos⟩
 
-/-! ## Certificado conjunto citable -/
+/-! ## Joint citable certificate -/
 
 /-- Joint certificate collecting the finite habitat, saturation classification, and positive gap. -/
 structure CertificadoBlindajeHd where

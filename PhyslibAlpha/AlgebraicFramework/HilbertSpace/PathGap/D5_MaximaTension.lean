@@ -14,19 +14,20 @@ public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
-# D5 — Estado de máxima tensión y observable `i[T_d,P_d]`
+# D5 — Maximal-tension state and the observable `i[T_d,P_d]`
 
-En dimensión finita, `i[T,P]` es simétrico (hermitiano) siempre que `T` y
-`P` lo son; por el teorema espectral finito, posee una base ortonormal de
-autovectores. Este archivo elige el autovector cuyo autovalor tiene módulo
-máximo y demuestra la envolvente sobre todos los estados normalizados: ese
-estado realiza, entre todos los estados unitarios del mismo canal, la mayor
-tensión posible del conmutador. También se exhibe, en coordenadas
-explícitas (fase seno), el mismo estado extremal para el par concreto
-`(T_d,P_d)` del camino discreto: es el "modo de Fiedler" de la cadena.
+In finite dimension, `i[T,P]` is symmetric (Hermitian) whenever `T`
+and `P` are; by the finite spectral theorem it has an orthonormal
+eigenbasis. This file picks the eigenvector whose eigenvalue has
+maximal absolute value and proves the envelope over all normalised
+states: that state realises, among all unit states of the same
+channel, the greatest possible commutator tension. The same extremal
+state is then exhibited in explicit coordinates (sine-phase mode)
+for the concrete pair `(T_d,P_d)` of the discrete path: it is the
+"Fiedler mode" of the chain.
 
-Se cierra con un certificado concreto de no conmutatividad:
-`[T_d,P_d] ≠ 0` para `d ≥ 2`, exhibido en una única entrada de matriz.
+Closes with a concrete non-commutativity certificate:
+`[T_d,P_d] ≠ 0` for `d ≥ 2`, witnessed by a single matrix entry.
 -/
 
 @[expose] public section
@@ -40,8 +41,8 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H]
   [FiniteDimensional ℂ H] [Nontrivial H]
 
-/-- En dimensión positiva existe un índice cuyo autovalor tiene módulo
-máximo. -/
+/-- In positive dimension there exists an index whose eigenvalue
+has maximal absolute value. -/
 theorem existe_indice_extremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) :
     ∃ i : Fin (Module.finrank ℂ H),
       ∀ j : Fin (Module.finrank ℂ H),
@@ -63,11 +64,11 @@ def indiceExtremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) :
 def autovalorExtremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) : ℝ :=
   hK.eigenvalues rfl (indiceExtremal K hK)
 
-/-- Radio espectral realizado por el estado elegido. -/
+/-- Spectral radius realised by the chosen state. -/
 def radioEspectral (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) : ℝ :=
   |autovalorExtremal K hK|
 
-/-- Estado unitario de máxima tensión. -/
+/-- Unit state of maximal tension. -/
 def estadoExtremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) : H :=
   hK.eigenvectorBasis rfl (indiceExtremal K hK)
 
@@ -90,8 +91,8 @@ theorem aplica_estadoExtremal (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) :
       (autovalorExtremal K hK : ℂ) • estadoExtremal K hK := by
   exact hK.apply_eigenvectorBasis rfl (indiceExtremal K hK)
 
-/-- La acción de un operador simétrico queda acotada por el radio espectral
-elegido. -/
+/-- The action of a symmetric operator is bounded by the chosen
+spectral radius. -/
 theorem norma_aplicacion_le_radio_mul_norma
     (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) (v : H) :
     ‖K v‖ ≤ radioEspectral K hK * ‖v‖ := by
@@ -151,7 +152,7 @@ theorem norma_aplicacion_le_radio_mul_norma
     mul_nonneg (radioEspectral_nonneg K hK) (norm_nonneg _)
   nlinarith
 
-/-- Envolvente de la forma cuadrática sobre la esfera unidad. -/
+/-- Envelope of the quadratic form on the unit sphere. -/
 theorem expectativa_le_radio
     (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric)
     (v : H) (hv : ‖v‖ = 1) :
@@ -164,7 +165,7 @@ theorem expectativa_le_radio
         (norma_aplicacion_le_radio_mul_norma K hK v) (norm_nonneg _)
     _ = radioEspectral K hK := by rw [hv]; ring
 
-/-- El estado elegido realiza exactamente el radio espectral. -/
+/-- The chosen state realises exactly the spectral radius. -/
 theorem estadoExtremal_realiza_radio
     (K : H →ₗ[ℂ] H) (hK : K.IsSymmetric) :
     ‖@inner ℂ H _ (estadoExtremal K hK) (K (estadoExtremal K hK))‖ =
@@ -173,15 +174,15 @@ theorem estadoExtremal_realiza_radio
   rw [inner_self_eq_norm_sq_to_K, estadoExtremal_normalizado K hK]
   simp [radioEspectral, autovalorExtremal]
 
-/-- Conmutador crudo total `[T,P]`. -/
+/-- Raw commutator `[T,P]`. -/
 def conmutador (T P : H →ₗ[ℂ] H) : H →ₗ[ℂ] H :=
   T.comp P - P.comp T
 
-/-- Observable hermitiano de tensión `i[T,P]`. -/
+/-- Hermitian tension observable `i[T,P]`. -/
 def observableTension (T P : H →ₗ[ℂ] H) : H →ₗ[ℂ] H :=
   Complex.I • conmutador T P
 
-/-- Para operadores simétricos, `i[T,P]` es simétrico. -/
+/-- For symmetric operators, `i[T,P]` is symmetric. -/
 theorem observableTension_simetrico
     {E : Type u} [NormedAddCommGroup E] [InnerProductSpace ℂ E]
     (T P : E →ₗ[ℂ] E) (hT : T.IsSymmetric) (hP : P.IsSymmetric) :
@@ -224,11 +225,11 @@ namespace TransportePosicion
 
 open ConstructorEspectralTP
 
-/-- Realización lineal total de la matriz de transporte canónica. -/
+/-- Full linear realisation of the canonical transport matrix. -/
 noncomputable def TdOp (d : ℕ) : Hd d →ₗ[ℂ] Hd d :=
   Matrix.toEuclideanLin (Td d)
 
-/-- Realización lineal total de la matriz de posición canónica. -/
+/-- Full linear realisation of the canonical position matrix. -/
 noncomputable def PdOp (d : ℕ) : Hd d →ₗ[ℂ] Hd d :=
   Matrix.toEuclideanLin (Pd d)
 
@@ -240,7 +241,7 @@ theorem pasoMinimo_simetrico {d : ℕ} {i j : Fin d} :
   · exact Or.inr h
   · exact Or.inl h
 
-/-- La matriz de transporte es hermitiana. -/
+/-- The transport matrix is Hermitian. -/
 theorem Td_isHermitian (d : ℕ) : Matrix.IsHermitian (Td d) := by
   rw [Matrix.IsHermitian.ext_iff]
   intro i j
@@ -255,7 +256,7 @@ theorem Td_isHermitian (d : ℕ) : Matrix.IsHermitian (Td d) := by
       exact h (pasoMinimo_simetrico.mpr hji)
     simp [Td, Ad, h, h']
 
-/-- La matriz diagonal de posición es hermitiana. -/
+/-- The diagonal position matrix is Hermitian. -/
 theorem Pd_isHermitian (d : ℕ) : Matrix.IsHermitian (Pd d) := by
   rw [Matrix.IsHermitian.ext_iff]
   intro i j
@@ -271,7 +272,7 @@ theorem TdOp_simetrico (d : ℕ) : (TdOp d).IsSymmetric := by
 theorem PdOp_simetrico (d : ℕ) : (PdOp d).IsSymmetric := by
   exact Matrix.isSymmetric_toEuclideanLin_iff.mpr (Pd_isHermitian d)
 
-/-- Observable hermitiano concreto `i[T_d,P_d]`. -/
+/-- Concrete Hermitian observable `i[T_d,P_d]`. -/
 noncomputable def KdOp (d : ℕ) : Hd d →ₗ[ℂ] Hd d :=
   observableTension (TdOp d) (PdOp d)
 
@@ -279,8 +280,8 @@ theorem KdOp_simetrico (d : ℕ) : (KdOp d).IsSymmetric :=
   observableTension_simetrico (TdOp d) (PdOp d)
     (TdOp_simetrico d) (PdOp_simetrico d)
 
-/-- Estado canónico `ψ_d`: autovector unitario de `i[T_d,P_d]` cuyo
-autovalor tiene módulo máximo. -/
+/-- Canonical state `ψ_d`: unit eigenvector of `i[T_d,P_d]` whose
+eigenvalue has maximal absolute value. -/
 noncomputable def psiD (d : ℕ) (hd : 1 ≤ d) : Hd d := by
   letI : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
   exact estadoExtremal (KdOp d) (KdOp_simetrico d)
@@ -290,26 +291,26 @@ theorem psiD_normalizado (d : ℕ) (hd : 1 ≤ d) :
   letI : Nonempty (Fin d) := ⟨⟨0, hd⟩⟩
   exact estadoExtremal_normalizado (KdOp d) (KdOp_simetrico d)
 
-/-! ## Vector de Fiedler explícito
+/-! ## Explicit Fiedler vector
 
-La elección espectral anterior realiza la máxima tensión, pero no expone sus
-coordenadas. El modo siguiente fija la realización seno-fase sobre `Fin d`.
-La positividad de `sin` en `(0, π)` prueba constructivamente que ninguna
-coordenada desaparece. -/
+The spectral choice above realises the maximal tension but does not
+expose its coordinates. The following mode pins the sine-phase
+realisation on `Fin d`. Positivity of `sin` on `(0, π)`
+constructively proves that no coordinate vanishes. -/
 
-/-- Ángulo fundamental del camino finito. -/
+/-- Fundamental angle of the finite path. -/
 noncomputable def anguloFiedler (d : ℕ) : ℝ :=
   Real.pi / ((d : ℝ) + 1)
 
-/-- Modo seno con la fase compleja asociada a `i[T_d,P_d]`, todavía sin
-normalizar. -/
+/-- Sine mode with the complex phase of `i[T_d,P_d]`, not yet
+normalized. -/
 noncomputable def vectorFiedlerCrudo (d : ℕ) : Hd d :=
   WithLp.toLp 2 fun j : Fin d =>
     (-Complex.I) ^ j.val *
       (Real.sin (((j.val : ℝ) + 1) * anguloFiedler d) : ℂ)
 
-/-- Todas las amplitudes seno del modo fundamental son estrictamente
-positivas. -/
+/-- All sine amplitudes of the fundamental mode are strictly
+positive. -/
 theorem seno_fiedler_pos
     (d : ℕ) (hd : 1 ≤ d) (j : Fin d) :
     0 < Real.sin (((j.val : ℝ) + 1) * anguloFiedler d) := by
@@ -344,7 +345,7 @@ theorem vectorFiedlerCrudo_ne_zero
   have hj := congrArg (fun v : Hd d => v j) h
   exact vectorFiedlerCrudo_coordenada_ne_zero d hd j hj
 
-/-- Vector de Fiedler explícito normalizado, sin elección de autovector. -/
+/-- Explicit normalized Fiedler vector, no eigenvector choice. -/
 noncomputable def vectorFiedlerExplicito (d : ℕ) : Hd d :=
   ((‖vectorFiedlerCrudo d‖ : ℂ)⁻¹) • vectorFiedlerCrudo d
 
@@ -414,7 +415,7 @@ theorem posicionCoord_succ_sub
   field_simp
   ring
 
-/-- Certificado concreto de no conmutatividad: una sola entrada vecina basta. -/
+/-- Concrete non-commutativity certificate: one neighbour entry suffices. -/
 theorem conmutador_matriz_entrada_vecina_no_cero
     (d : ℕ) (hd : 2 ≤ d) :
     let i : Fin d := ⟨0, by omega⟩
@@ -465,7 +466,7 @@ theorem conmutador_TdOp_PdOp_eq_matriz (d : ℕ) :
       Matrix.toEuclideanLin ((Td d * Pd d) - (Pd d * Td d)) := by
   simp [conmutador, TdOp, PdOp, Matrix.toEuclideanLin, Matrix.toLpLin_mul_same]
 
-/-- `[T_d,P_d] ≠ 0` para `d ≥ 2`. -/
+/-- `[T_d,P_d] ≠ 0` for `d ≥ 2`. -/
 theorem conmutador_TdOp_PdOp_no_cero (d : ℕ) (hd : 2 ≤ d) :
     conmutador (TdOp d) (PdOp d) ≠ 0 := by
   rw [conmutador_TdOp_PdOp_eq_matriz]

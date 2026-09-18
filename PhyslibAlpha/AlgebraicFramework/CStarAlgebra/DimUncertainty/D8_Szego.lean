@@ -13,22 +13,22 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Sinc
 public import Mathlib.Tactic.IntervalCases
 
 /-!
-# D8 — El límite de Szegő y la positividad de la brecha
+# D8 — The Szegő limit and gap positivity
 
-Define la constante de coherencia finita `C_Nava(d)` (forma cerrada exacta
-en `cos`/`sin` de `π/(d+1)`) y su brecha `deltaGeom(d) = C_Nava(d) − 1`.
-Dos resultados centrales:
+Defines the finite coherence constant `C_Nava(d)` (exact closed form
+in `cos`/`sin` of `π/(d+1)`) and its gap `deltaGeom(d) = C_Nava(d) − 1`.
+Two central results:
 
-1. **Positividad** (`deltaGeom_pos_of_four_le`): `deltaGeom(d) > 0` para
-   todo `d ≥ 4`. Se verifica `d = 4, 5` en forma cerrada exacta y `d ≥ 6`
-   mediante cotas de Taylor certificadas para seno y coseno — sin apelar a
-   ningún cálculo numérico externo, sólo álgebra racional y las cotas
-   `Real.pi_gt_d2`/`Real.pi_lt_d2` de Mathlib.
-2. **Límite de Szegő** (`limite_szego_CNava`): `C_Nava(d) → C_∞ = √(π²/3−2)`
-   cuando `d → ∞` (como filtro `atTop` sobre la sucesión de espacios
-   finitos, no como un nuevo espacio de Hilbert en `d = ∞`; ver
-   `infinito_no_es_dimension_sino_limite`). En particular
-   `deltaInf = C_∞ − 1 > 0`, consecuencia exacta de `π > 3`.
+1. **Positivity** (`deltaGeom_pos_of_four_le`): `deltaGeom(d) > 0` for
+   all `d ≥ 4`. Verified at `d = 4, 5` in exact closed form and `d ≥ 6`
+   via certified Taylor bounds on sine and cosine — without appealing to
+   any external numerical computation, only rational algebra and the
+   `Real.pi_gt_d2`/`Real.pi_lt_d2` bounds from Mathlib.
+2. **Szegő limit** (`limite_szego_CNava`): `C_Nava(d) → C_∞ = √(π²/3−2)`
+   as `d → ∞` (as an `atTop` filter over the sequence of finite spaces,
+   not as a new Hilbert space at `d = ∞`; see
+   `infinito_no_es_dimension_sino_limite`). In particular
+   `deltaInf = C_∞ − 1 > 0`, an exact consequence of `π > 3`.
 -/
 
 @[expose] public section
@@ -41,32 +41,32 @@ open scoped Topology
 
 namespace Gnomon
 
-/-! ## Forma cerrada y límite asintótico -/
+/-! ## Closed form and asymptotic limit -/
 
-/-- `N = d + 1`, notación para el grafo camino `pathGraph d`. -/
+/-- `N = d + 1`, notation for the path graph `pathGraph d`. -/
 noncomputable def Nreal (d : ℕ) : ℝ := (d : ℝ) + 1
 
-/-- Ángulo espectral fundamental `θ_d = π/(d+1)`. -/
+/-- Fundamental spectral angle `θ_d = π/(d+1)`. -/
 noncomputable def theta (d : ℕ) : ℝ := π / Nreal d
 
-/-- Forma cerrada exacta de `C_Nava(d)²`. -/
+/-- Exact closed form of `C_Nava(d)²`. -/
 noncomputable def CNavaSq (d : ℕ) : ℝ :=
   2 * ((d : ℝ) - 1) / (Nreal d * Real.cos (theta d) ^ 2) *
     (((Nreal d ^ 2 + 2) / 6) * Real.sin (theta d) ^ 2 - 1)
 
-/-- Constante de coherencia finita. -/
+/-- Finite coherence constant. -/
 noncomputable def CNava (d : ℕ) : ℝ := Real.sqrt (CNavaSq d)
 
-/-- Límite universal de Szegő. -/
+/-- Universal Szegő limit. -/
 noncomputable def Cinf : ℝ := Real.sqrt (π ^ 2 / 3 - 2)
 
-/-- Defecto geométrico finito `δ_geom(d) = C_Nava(d) - 1`. -/
+/-- Finite geometric defect `δ_geom(d) = C_Nava(d) - 1`. -/
 noncomputable def deltaGeom (d : ℕ) : ℝ := CNava d - 1
 
-/-- Defecto asintótico `δ_∞ = C_∞ - 1`. -/
+/-- Asymptotic defect `δ_∞ = C_∞ - 1`. -/
 noncomputable def deltaInf : ℝ := Cinf - 1
 
-/-- Término principal de la expansión de Szegő. -/
+/-- Leading term of the Szegő expansion. -/
 noncomputable def deltaSzegoPrincipal (d : ℕ) : ℝ :=
   deltaInf - Cinf / Nreal d
 
@@ -75,8 +75,8 @@ theorem CNavaSq_forma_cerrada (d : ℕ) :
       2 * ((d : ℝ) - 1) / (Nreal d * Real.cos (theta d) ^ 2) *
         (((Nreal d ^ 2 + 2) / 6) * Real.sin (theta d) ^ 2 - 1) := rfl
 
-/-- La forma cerrada reescrita mediante `sinc`. Elimina la singularidad
-aparente y permite tomar el límite en Lean. -/
+/-- The closed form rewritten via `sinc`. Removes the apparent
+singularity and allows taking the limit in Lean. -/
 theorem CNavaSq_forma_regularizada (d : ℕ) :
     CNavaSq d =
       2 * (1 - 2 / Nreal d) / Real.cos (theta d) ^ 2 *
@@ -147,32 +147,32 @@ private theorem CNavaSq_regularizada_tendsto :
   · ext d
     ring_nf
 
-/-- TEOREMA DE SZEGŐ, forma cuadrática: `C_Nava(d)² → (π²-6)/3`. -/
+/-- SZEGŐ THEOREM, quadratic form: `C_Nava(d)² → (π²-6)/3`. -/
 theorem limite_szego_CNavaSq :
     Tendsto CNavaSq atTop (𝓝 (π ^ 2 / 3 - 2)) := by
   apply CNavaSq_regularizada_tendsto.congr'
   filter_upwards with d
   exact (CNavaSq_forma_regularizada d).symm
 
-/-- LÍMITE DE SZEGŐ: `C_Nava(d) → C_∞ = √((π²-6)/3)`, construido sobre la
-teoría clásica de distribución espectral de Szegő. -/
+/-- SZEGŐ LIMIT: `C_Nava(d) → C_∞ = √((π²-6)/3)`, built on the
+classical Szegő spectral distribution theory. -/
 theorem limite_szego_CNava : Tendsto CNava atTop (𝓝 Cinf) := by
   unfold CNava Cinf
   exact Real.continuous_sqrt.continuousAt.tendsto.comp limite_szego_CNavaSq
 
-/-- Nombre citable de la especialización. Es un alias del resultado ya
-demostrado, no una rederivación de la teoría clásica de Toeplitz/Szegő. -/
+/-- Citable name for the specialization. An alias of the already proved
+result, not a re-derivation of the classical Toeplitz/Szegő theory. -/
 theorem limite_nava_szego_CNava : Tendsto CNava atTop (𝓝 Cinf) :=
   limite_szego_CNava
 
-/-- El defecto geométrico converge al defecto universal asintótico. -/
+/-- The geometric defect converges to the universal asymptotic defect. -/
 theorem limite_defecto_geometrico :
     Tendsto deltaGeom atTop (𝓝 deltaInf) := by
   unfold deltaGeom deltaInf
   exact limite_szego_CNava.sub_const 1
 
-/-- El defecto universal jamás se anula: `δ_∞ > 0`, consecuencia exacta de
-`π > 3`. -/
+/-- The universal defect never vanishes: `δ_∞ > 0`, an exact consequence
+of `π > 3`. -/
 theorem deltaInf_pos : 0 < deltaInf := by
   unfold deltaInf Cinf
   have hpi : (3 : ℝ) < π := Real.pi_gt_three
@@ -182,8 +182,8 @@ theorem deltaInf_pos : 0 < deltaInf := by
   rw [Real.sqrt_one] at hs
   linarith
 
-/-- El infinito no se añade como una dimensión realizada: la sucesión de
-defectos finitos sólo converge al valor límite estricto `δ∞ = C∞ - 1`. -/
+/-- Infinity is not added as a realized dimension: the sequence of
+finite defects only converges to the strict limit value `δ∞ = C∞ - 1`. -/
 theorem infinito_no_es_dimension_sino_limite :
     Tendsto deltaGeom atTop (𝓝 deltaInf) ∧ deltaInf = Cinf - 1 ∧ 0 < deltaInf :=
   ⟨limite_defecto_geometrico, rfl, deltaInf_pos⟩
@@ -193,8 +193,8 @@ theorem Cinf_pos : 0 < Cinf := by
   unfold deltaInf at h
   linarith
 
-/-- Monotonía asintótica: el término principal `δ_∞ - C_∞/(d+1)` de la
-expansión de Szegő es estrictamente creciente. -/
+/-- Asymptotic monotonicity: the leading term `δ_∞ - C_∞/(d+1)` of the
+Szegő expansion is strictly increasing. -/
 theorem deltaSzegoPrincipal_strictMono : StrictMono deltaSzegoPrincipal := by
   intro a b hab
   have hNa : 0 < Nreal a := by
@@ -210,23 +210,23 @@ theorem deltaSzegoPrincipal_strictMono : StrictMono deltaSzegoPrincipal := by
   have hmul := mul_lt_mul_of_pos_left hinv Cinf_pos
   simpa [div_eq_mul_inv] using sub_lt_sub_left hmul deltaInf
 
-/-! ## Positividad de la brecha para `d ≥ 4`
+/-! ## Gap positivity for `d ≥ 4`
 
-Niven cierra la ecuación de saturación en `d ∈ {2,3}` (`D7_Niven.lean`).
-Lo que sigue traduce ese hecho trigonométrico a la desigualdad algebraica
-`1 < CNava(d)` (equivalentemente `0 < deltaGeom d`) para todo `d ≥ 4`,
-verificando los casos `d = 4, 5` en forma cerrada exacta y `d ≥ 6` mediante
-las mismas cotas de Taylor certificadas usadas arriba para el límite. -/
+Niven closes the saturation equation at `d ∈ {2,3}` (`D7_Niven.lean`).
+What follows translates that trigonometric fact into the algebraic
+inequality `1 < CNava(d)` (equivalently `0 < deltaGeom d`) for all
+`d ≥ 4`, verifying `d = 4, 5` in exact closed form and `d ≥ 6` via the
+same certified Taylor bounds used above for the limit. -/
 
-/-! ## Consecuencia: `δ_geom(d) > 0` para todo `d ≥ 4`
+/-! ## Consequence: `δ_geom(d) > 0` for all `d ≥ 4`
 
-Niven cierra la ecuación de saturación en `d ∈ {2,3}`. El resto de esta
-sección traduce ese hecho trigonométrico a la desigualdad algebraica
-`1 < CNava(d)` (equivalentemente `0 < deltaGeom d`) para todo `d ≥ 4`,
-verificando los casos `d = 4, 5` en forma cerrada exacta y `d ≥ 6` mediante
-cotas de Taylor certificadas para seno y coseno (sin apelar a ningún
-resultado numérico externo: sólo `Real.pi_gt_d2`/`pi_lt_d2` de Mathlib y
-álgebra racional). -/
+Niven closes the saturation equation at `d ∈ {2,3}`. The rest of this
+section translates that trigonometric fact into the algebraic inequality
+`1 < CNava(d)` (equivalently `0 < deltaGeom d`) for all `d ≥ 4`,
+verifying `d = 4, 5` in exact closed form and `d ≥ 6` via certified
+Taylor bounds on sine and cosine (without appealing to any external
+numerical result: only `Real.pi_gt_d2`/`pi_lt_d2` from Mathlib and
+rational algebra). -/
 
 theorem CNavaSq_two : CNavaSq 2 = 1 := by
   simp only [CNavaSq, Nreal, theta, Nat.cast_ofNat]
@@ -639,8 +639,8 @@ theorem one_lt_CNavaSq_of_six_le (d : ℕ) (hd : 6 ≤ d) : 1 < CNavaSq d := by
     (by simpa [N] using hcos_pos)
     (by simpa [N] using hcos_thr)
 
-/-- `CNava(d)² > 1` para todo `d ≥ 4`: casos `4, 5` exactos, `d ≥ 6` vía cotas
-de Taylor certificadas. -/
+/-- `CNava(d)² > 1` for all `d ≥ 4`: exact cases `4, 5`, `d ≥ 6` via
+certified Taylor bounds. -/
 theorem one_lt_CNavaSq (d : ℕ) (hd : 4 ≤ d) : 1 < CNavaSq d := by
   match d with
   | 0 | 1 | 2 | 3 => omega
@@ -652,7 +652,7 @@ theorem one_lt_CNava_of_four_le (d : ℕ) (hd : 4 ≤ d) : 1 < CNava d := by
   rw [CNava, ← sqrt_one]
   exact sqrt_lt_sqrt (by norm_num) (one_lt_CNavaSq d hd)
 
-/-- TEOREMA CENTRAL DE NIVEN → POSITIVIDAD: `δ_geom(d) > 0` para todo
+/-- CENTRAL NIVEN THEOREM → POSITIVITY: `δ_geom(d) > 0` for all
 `d ≥ 4`. -/
 theorem deltaGeom_pos_of_four_le (d : ℕ) (hd : 4 ≤ d) : 0 < deltaGeom d := by
   unfold deltaGeom

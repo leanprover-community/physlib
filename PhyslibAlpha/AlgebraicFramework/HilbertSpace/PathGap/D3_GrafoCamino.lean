@@ -9,21 +9,19 @@ public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D0_Habitat
 public import Mathlib.Combinatorics.SimpleGraph.Hasse
 
 /-!
-# D3 — Operadores de transporte y posición sobre el grafo camino
+# D3 — Transport and position operators on the path graph
 
-El soporte discreto no introduce un grafo ad hoc: es literalmente
-`SimpleGraph.pathGraph d` de Mathlib, el camino con `d` vértices
-`0,1,…,d−1` y aristas sólo entre vecinos consecutivos. Sobre esa base se
-definen dos matrices hermitianas: `T_d` (transporte, soportado en las
-aristas del camino) y `P_d` (posición, diagonal, con coordenadas
-centradas en `[-1,1]`).
+The discrete support is not an ad-hoc graph: it is literally
+`SimpleGraph.pathGraph d` from Mathlib, the path on `d` vertices
+`0,1,…,d−1` with edges only between consecutive neighbours. Two
+Hermitian matrices are built on it: `T_d` (transport, supported on
+path edges) and `P_d` (position, diagonal, centered in `[-1,1]`).
 
-La segunda mitad del archivo (`CanalPreFuerza`) prueba, sin apelar a
-ninguna elección de diseño, que el grafo camino es la **única** opción
-compatible con dos condiciones puramente combinatorias: localidad
-(ninguna arista salta vecinos) y completitud (no falta ningún paso
-elemental). Cualquier grafo local en `Fin d` que no omita un paso mínimo
-**es** `pathGraph d`; no hay otro candidato.
+The second half (`CanalPreFuerza`) proves, without any design choice,
+that the path graph is the **only** option compatible with two purely
+combinatorial conditions: locality (no edge skips a neighbour) and
+completeness (no elementary step is missing). Any local graph on
+`Fin d` that omits no minimal step **is** `pathGraph d`.
 -/
 
 @[expose] public section
@@ -32,19 +30,18 @@ namespace TransportePosicion
 
 open SimpleGraph
 
-/-- Grafo de fase del canal transporte–posición: el camino `pathGraph d`
-de Mathlib. -/
+/-- Phase graph of the transport–position channel: Mathlib's
+`pathGraph d`. -/
 abbrev GrafoTP (d : ℕ) : SimpleGraph (Fin d) :=
   SimpleGraph.pathGraph d
 
-/-- Adyacencia elemental del camino: sólo hay desplazamiento mínimo de un
-paso. -/
+/-- Elementary path adjacency: only single minimal-step displacement. -/
 theorem grafoTP_adj {d : ℕ} {i j : Fin d} :
     (GrafoTP d).Adj i j ↔ i.val + 1 = j.val ∨ j.val + 1 = i.val := by
   simpa [GrafoTP] using
     (SimpleGraph.pathGraph_adj (n := d) (u := i) (v := j))
 
-/-- Predicado decidible del desplazamiento mínimo en la línea discreta. -/
+/-- Decidable minimal-displacement predicate on the discrete line. -/
 def PasoMinimo {d : ℕ} (i j : Fin d) : Prop :=
   i.val + 1 = j.val ∨ j.val + 1 = i.val
 
@@ -53,37 +50,37 @@ instance instDecidablePasoMinimo {d : ℕ} (i j : Fin d) :
   unfold PasoMinimo
   infer_instance
 
-/-- El paso mínimo decidible es exactamente la adyacencia de `pathGraph`. -/
+/-- The decidable minimal step is exactly `pathGraph` adjacency. -/
 theorem pasoMinimo_iff_adj {d : ℕ} {i j : Fin d} :
     PasoMinimo i j ↔ (GrafoTP d).Adj i j := by
   rw [grafoTP_adj]
   rfl
 
-/-- El soporte discreto `T_d/P_d` es isomorfo a `pathGraph d` por definición
-canónica. -/
+/-- The discrete support `T_d/P_d` is isomorphic to `pathGraph d` by
+canonical definition. -/
 theorem grafoTP_es_pathGraph (d : ℕ) :
     Nonempty (GrafoTP d ≃g SimpleGraph.pathGraph d) := by
   change Nonempty (SimpleGraph.pathGraph d ≃g SimpleGraph.pathGraph d)
   exact ⟨SimpleGraph.Iso.refl⟩
 
-/-- Matriz de adyacencia compleja del canal de transporte. -/
+/-- Complex adjacency matrix of the transport channel. -/
 noncomputable def Ad (d : ℕ) : Matrix (Fin d) (Fin d) ℂ :=
   fun i j => if PasoMinimo i j then 1 else 0
 
-/-- Radio espectral usado para normalizar el transporte de la cadena
-finita: `ρ_d = 2 cos(π/(d+1))`. -/
+/-- Spectral radius for normalizing the finite-chain transport:
+`ρ_d = 2 cos(π/(d+1))`. -/
 noncomputable def rho (d : ℕ) : ℝ :=
   2 * Real.cos (Real.pi / ((d : ℝ) + 1))
 
-/-- Operador de transporte normalizado `T_d = A_d / ρ_d`. -/
+/-- Normalized transport operator `T_d = A_d / ρ_d`. -/
 noncomputable def Td (d : ℕ) : Matrix (Fin d) (Fin d) ℂ :=
   fun i j => Ad d i j / (rho d : ℂ)
 
-/-- Coordenada centrada de posición sobre la base discreta, en `[-1,1]`. -/
+/-- Centered position coordinate on the discrete basis, in `[-1,1]`. -/
 noncomputable def posicionCoord (d : ℕ) (j : Fin d) : ℝ :=
   (2 * ((j.val : ℝ) + 1) - ((d : ℝ) + 1)) / ((d : ℝ) - 1)
 
-/-- Operador de posición diagonal `P_d`. -/
+/-- Diagonal position operator `P_d`. -/
 noncomputable def Pd (d : ℕ) : Matrix (Fin d) (Fin d) ℂ :=
   fun i j => if i = j then (posicionCoord d i : ℂ) else 0
 
@@ -103,12 +100,12 @@ theorem Td_eq_zero_of_not_adj {d : ℕ} {i j : Fin d}
     exact h (pasoMinimo_iff_adj.mp hp)
   simp [Td, Ad, hpaso]
 
-/-- `P_d` es diagonal en la base discreta. -/
+/-- `P_d` is diagonal in the discrete basis. -/
 theorem Pd_eq_zero_offdiag {d : ℕ} {i j : Fin d} (hij : i ≠ j) :
     Pd d i j = 0 := by
   simp [Pd, hij]
 
-/-- En la diagonal, `P_d` devuelve la coordenada discreta centrada. -/
+/-- On the diagonal, `P_d` returns the centered discrete coordinate. -/
 theorem Pd_diag {d : ℕ} (i : Fin d) :
     Pd d i i = (posicionCoord d i : ℂ) := by
   simp [Pd]
@@ -116,52 +113,52 @@ theorem Pd_diag {d : ℕ} (i : Fin d) :
 end TransportePosicion
 
 /-!
-## Por qué `pathGraph d` y no otro grafo
+## Why `pathGraph d` and not another graph
 
-Un canal local (toda arista es un paso mínimo entre vecinos) y completo
-(no falta ningún paso mínimo posible) sobre `Fin d` es, por extensionalidad
-de la relación de adyacencia, exactamente `pathGraph d`. No hay una
-"simplificación" que conserve ambas propiedades: quitar una arista rompe
-la completitud.
+A local channel (every edge is a minimal step between neighbours) and
+complete (no possible minimal step is missing) on `Fin d` is, by
+extensionality of the adjacency relation, exactly `pathGraph d`. There
+is no "simplification" preserving both properties: removing an edge
+breaks completeness.
 -/
 
 namespace CanalPreFuerza
 
 open SimpleGraph
 
-/-- Localidad estricta: toda arista del canal es un paso entre vecinos
-consecutivos. No se permiten saltos ni atajos. -/
+/-- Strict locality: every channel edge is a step between consecutive
+neighbours. No jumps or shortcuts allowed. -/
 def LocalidadOrdenada {d : ℕ} (G : SimpleGraph (Fin d)) : Prop :=
   ∀ {i j : Fin d}, G.Adj i j → TransportePosicion.PasoMinimo i j
 
-/-- Completitud: todo paso entre vecinos consecutivos debe estar presente.
-Quitar uno rompe el movimiento local completo entre los extremos de la
-celda. -/
+/-- Completeness: every step between consecutive neighbours must be
+present. Removing one breaks full local movement between the cell
+endpoints. -/
 def PasosElementalesCompletos {d : ℕ} (G : SimpleGraph (Fin d)) : Prop :=
   ∀ {i j : Fin d}, TransportePosicion.PasoMinimo i j → G.Adj i j
 
-/-- Defecto por intentar simplificar más que `pathGraph d`: se omite al
-menos un paso elemental consecutivo. -/
+/-- Defect from trying to simplify beyond `pathGraph d`: at least one
+consecutive elementary step is omitted. -/
 def OmitePasoElemental {d : ℕ} (G : SimpleGraph (Fin d)) : Prop :=
   ∃ i j : Fin d, TransportePosicion.PasoMinimo i j ∧ ¬ G.Adj i j
 
-/-- Canal ordenado, local y completo en la celda discreta. -/
+/-- Ordered, local and complete channel on the discrete cell. -/
 structure CanalLocalNoRamificadoOrdenado (d : ℕ) where
   /-- The graph supporting the ordered local channel. -/
   grafo : SimpleGraph (Fin d)
   localidad_ordenada : LocalidadOrdenada grafo
   pasos_elementales : PasosElementalesCompletos grafo
 
-/-- En un canal local ordenado completo, la adyacencia es exactamente el
-paso mínimo de la celda. -/
+/-- In a complete ordered local channel, adjacency is exactly the
+minimal step of the cell. -/
 theorem CanalLocalNoRamificadoOrdenado.adj_iff_paso
     {d : ℕ} (C : CanalLocalNoRamificadoOrdenado d) {i j : Fin d} :
     C.grafo.Adj i j ↔ TransportePosicion.PasoMinimo i j := by
   exact ⟨fun h => C.localidad_ordenada h,
     fun h => C.pasos_elementales h⟩
 
-/-- Teorema de minimalidad: localidad ordenada y pasos elementales
-completos fuerzan que el soporte sea exactamente `pathGraph d`. -/
+/-- Minimality theorem: ordered locality and complete elementary steps
+force the support to be exactly `pathGraph d`. -/
 theorem canal_local_no_ramificado_es_pathGraph
     {d : ℕ} (C : CanalLocalNoRamificadoOrdenado d) :
     C.grafo = SimpleGraph.pathGraph d := by
@@ -170,15 +167,15 @@ theorem canal_local_no_ramificado_es_pathGraph
   simpa [TransportePosicion.GrafoTP] using
     (TransportePosicion.pasoMinimo_iff_adj (d := d) (i := i) (j := j))
 
-/-- Versión isomórfica del mismo cierre. -/
+/-- Isomorphic version of the same closure. -/
 theorem canal_local_no_ramificado_iso_pathGraph
     {d : ℕ} (C : CanalLocalNoRamificadoOrdenado d) :
     Nonempty (C.grafo ≃g SimpleGraph.pathGraph d) := by
   rw [canal_local_no_ramificado_es_pathGraph C]
   exact ⟨SimpleGraph.Iso.refl⟩
 
-/-- El canal canónico `T_d/P_d` satisface directamente el certificado local
-ordenado: no tiene saltos y no omite pasos elementales. -/
+/-- The canonical channel `T_d/P_d` directly satisfies the ordered local
+certificate: it has no jumps and omits no elementary steps. -/
 def canalTPLocalNoRamificado (d : ℕ) :
     CanalLocalNoRamificadoOrdenado d where
   grafo := TransportePosicion.GrafoTP d
@@ -191,8 +188,8 @@ def canalTPLocalNoRamificado (d : ℕ) :
     exact (TransportePosicion.pasoMinimo_iff_adj
       (d := d) (i := i) (j := j)).mp h
 
-/-- Ningún canal que ya satisface el certificado local ordenado puede omitir
-un paso elemental: "no hay una simplificación local más simple que
+/-- No channel that already satisfies the ordered local certificate can
+omit an elementary step: "there is no local simplification simpler than
 `pathGraph d`". -/
 theorem no_hay_canal_local_mas_simple_que_Pd
     {d : ℕ} (C : CanalLocalNoRamificadoOrdenado d) :
@@ -200,8 +197,8 @@ theorem no_hay_canal_local_mas_simple_que_Pd
   rintro ⟨i, j, hpaso, hno⟩
   exact hno (C.pasos_elementales hpaso)
 
-/-- Cierre: el soporte canónico `T_d/P_d` es `pathGraph d`, y cualquier
-intento local de hacerlo "más simple" pierde un paso elemental. -/
+/-- Closure: the canonical support `T_d/P_d` is `pathGraph d`, and any
+local attempt to make it "simpler" loses an elementary step. -/
 theorem cierre_minimalidad_local_TP (d : ℕ) :
     (canalTPLocalNoRamificado d).grafo = SimpleGraph.pathGraph d ∧
       ¬ OmitePasoElemental (canalTPLocalNoRamificado d).grafo := by

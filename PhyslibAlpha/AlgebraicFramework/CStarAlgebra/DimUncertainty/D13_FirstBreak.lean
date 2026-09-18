@@ -9,23 +9,23 @@ public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D3_GrafoCamin
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.PathGap.D7_Niven
 
 /-!
-# La primera ruptura combinatoria es `d = 4`
+# The first combinatorial break is `d = 4`
 
-Complemento combinatorio al teorema de Niven (`D7_Niven.lean`): la
-saturación espectral de Robertson–Schrödinger sobre `P_d` deja de
-cumplirse exactamente cuando `P_d` adquiere su primera arista *interior*
-(una arista entre dos vértices que no son extremos del camino), y esa
-coincidencia ocurre exactamente en `d = 4`.
+Combinatorial complement to the Niven theorem (`D7_Niven.lean`):
+Robertson–Schrödinger spectral saturation on `P_d` fails exactly when
+`P_d` acquires its first *interior* edge (an edge between two vertices
+that are not endpoints of the path), and that coincidence occurs
+exactly at `d = 4`.
 
-Dos rutas independientes hacia la misma dimensión:
+Two independent routes to the same dimension:
 
-* **espectral** (`D7_Niven.lean`): `cos²(π/(d+1)) = (d-1)/4 ↔ d ∈ {2,3}`;
-* **combinatoria** (aquí): `P_d` tiene una arista entre dos vértices
-  interiores si y sólo si `4 ≤ d`.
+* **spectral** (`D7_Niven.lean`): `cos²(π/(d+1)) = (d-1)/4 ↔ d ∈ {2,3}`;
+* **combinatorial** (here): `P_d` has an edge between two interior
+  vertices if and only if `4 ≤ d`.
 
-`primera_ruptura_iff_dimension_cuatro` certifica que ambas rutas señalan
-la misma dimensión `d = 4`, sin usar ninguna ecuación espectral en la
-mitad combinatoria.
+`primera_ruptura_iff_dimension_cuatro` certifies that both routes point
+to the same dimension `d = 4`, without using any spectral equation in
+the combinatorial half.
 -/
 
 @[expose] public section
@@ -34,39 +34,39 @@ namespace PrimeraRuptura
 
 open SimpleGraph
 
-/-- Ecuación aritmético-espectral que representa la saturación del camino
-(la misma de `Gnomon.saturacion_iff`, escrita como predicado). -/
+/-- Arithmetic-spectral equation representing path saturation
+(the same as `Gnomon.saturacion_iff`, written as a predicate). -/
 def SaturacionCamino (d : ℕ) : Prop :=
   Real.cos (Real.pi / (d + 1)) ^ 2 = ((d : ℝ) - 1) / 4
 
-/-- Ruptura: negación de la igualdad de saturación del camino. -/
+/-- Break: negation of the path saturation equality. -/
 def RupturaCamino (d : ℕ) : Prop := ¬ SaturacionCamino d
 
-/-- Desde la dimensión mínima `2`, la ruptura ocurre exactamente desde `4`. -/
+/-- From the minimum dimension `2`, the break occurs exactly from `4`. -/
 theorem ruptura_camino_iff_cuatro_le (d : ℕ) (hd : 2 ≤ d) :
     RupturaCamino d ↔ 4 ≤ d := by
   unfold RupturaCamino SaturacionCamino
   rw [Gnomon.saturacion_iff d hd]
   omega
 
-/-- La dimensión cuatro ya está en ruptura. -/
+/-- Dimension four is already in break. -/
 theorem ruptura_camino_cuatro : RupturaCamino 4 := by
   exact (ruptura_camino_iff_cuatro_le 4 (by norm_num)).2 (by norm_num)
 
-/-- Predicado puramente combinatorio de vértice no terminal del camino. -/
+/-- Purely combinatorial predicate for non-terminal path vertices. -/
 def VerticeInterior {d : ℕ} (i : Fin d) : Prop :=
   0 < i.val ∧ i.val + 1 < d
 
-/-- Existe una arista genuinamente interior cuando dos vértices no
-terminales del camino son adyacentes. -/
+/-- A genuinely interior edge exists when two non-terminal
+vertices of the path are adjacent. -/
 def TieneAristaInterior (d : ℕ) : Prop :=
   ∃ i j : Fin d,
     VerticeInterior i ∧ VerticeInterior j ∧
       (SimpleGraph.pathGraph d).Adj i j
 
-/-- El camino tiene una arista interior si y sólo si posee al menos cuatro
-vértices. Esta equivalencia no usa Robertson ni la ecuación de saturación:
-es pura combinatoria del camino. -/
+/-- The path has an interior edge iff it has at least four
+vertices. This equivalence uses neither Robertson nor the saturation
+equation: it is pure path combinatorics. -/
 theorem tiene_arista_interior_iff_cuatro_le (d : ℕ) :
     TieneAristaInterior d ↔ 4 ≤ d := by
   constructor
@@ -86,21 +86,21 @@ theorem tiene_arista_interior_iff_cuatro_le (d : ℕ) :
     · rw [SimpleGraph.pathGraph_adj]
       exact Or.inl rfl
 
-/-- Coincidencia central: dentro del régimen `d ≥ 2`, tener una arista entre
-dos vértices interiores equivale exactamente a romper la saturación. Las dos
-caras se demuestran por rutas independientes: combinatoria y espectral. -/
+/-- Central coincidence: within the `d ≥ 2` regime, having an edge between
+two interior vertices is exactly equivalent to breaking saturation. The two
+faces are proved by independent routes: combinatorial and spectral. -/
 theorem transporte_interior_iff_ruptura (d : ℕ) (hd : 2 ≤ d) :
     TieneAristaInterior d ↔ RupturaCamino d := by
   exact (tiene_arista_interior_iff_cuatro_le d).trans
     (ruptura_camino_iff_cuatro_le d hd).symm
 
-/-- La primera ruptura es una propiedad de orden: hay ruptura en `d`, y `d`
-es menor o igual que cualquier otra dimensión admisible que también rompa. -/
+/-- The first break is an order property: there is a break at `d`, and `d`
+is less than or equal to every other admissible dimension that also breaks. -/
 def EsPrimeraRuptura (d : ℕ) : Prop :=
   2 ≤ d ∧ RupturaCamino d ∧
     ∀ n : ℕ, 2 ≤ n → RupturaCamino n → d ≤ n
 
-/-- Caracterización dimensional: la primera ruptura es exactamente `d = 4`. -/
+/-- Dimensional characterization: the first break is exactly `d = 4`. -/
 theorem primera_ruptura_iff_dimension_cuatro (d : ℕ) :
     EsPrimeraRuptura d ↔ d = 4 := by
   constructor
