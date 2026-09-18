@@ -19,15 +19,21 @@ Overview: |
     scale factor, the Hubble parameter, and the deceleration parameter with the
     relation ∂ₜ H = -H^2 (1 + q). The FLRW type itself is a placeholder; the file
     records a TODO to replace it with a structure bundling a positive scale
-    factor and a spatial geometry. Six further modules, ConformalTime.lean,
-    DensityParameters.lean, Distances.lean, Dynamics.lean, MatterContent.lean and
-    Solutions.lean, contain only TODO items: conformal time and the conformal
-    Hubble factor, the critical density and density parameters, cosmological
-    distances and redshift, energy conditions and the Big-Bang singularity, the
-    matter content with its continuity equation and scaling laws, and the exact
-    de Sitter, radiation-dominated, Einstein-de Sitter, Milne and Einstein static
-    solutions. The requirements below record the two most basic of those open
-    items. Cosmology/Basic.lean is a placeholder module doc with no declarations.
+    factor and a spatial geometry. MatterContent.lean contains the continuity
+    equation of the cosmic fluid and its relation to the two Friedmann equations,
+    the barotropic equation of state with the density scaling laws, and the
+    cosmological constant as a fluid. Solutions.lean contains the exact de
+    Sitter, radiation-dominated, Einstein-de Sitter, Milne and Einstein static
+    solutions. DensityParameters.lean contains the critical density, the density
+    parameters with the closure relation, the reduced Hubble function of the
+    standard cosmological model and the age of the universe. Dynamics.lean
+    contains the energy conditions, the acceleration criterion, the deceleration
+    parameter in terms of the density parameters, eternal expansion and the
+    Big-Bang bound. Distances.lean contains the comoving, proper and transverse
+    comoving distances, the redshift, the Hubble-Lemaître law and the particle
+    and event horizons. One further module, ConformalTime.lean, contains only
+    TODO items: conformal time and the conformal Hubble factor.
+    Cosmology/Basic.lean is a placeholder module doc with no declarations.
 
 ParentAPIs:
   - Time (Physlib/SpaceAndTime/Time)
@@ -89,10 +95,75 @@ Requirements:
     location: "Physlib/Cosmology/FLRW/Basic.lean (decelerationParameter, deriv_hubbleConstant, decelerationParameter_eq_one_plus_hubbleConstant, deriv_hubbleConstant_eq_neg_sq_mul, deriv_hubbleConstant_neg_iff, exists_deriv_hubbleConstant_neg_iff)"
 
   - description: >
-      The continuity equation ∂ₜ ρ + 3 H (ρ + P/c^2) = 0 of the cosmic fluid, the
-      barotropic equation of state P = w ρ c^2, and the density scaling law
-      ρ ∝ a^(-3(1+w)) with its dust, radiation and vacuum-energy special cases.
-      Recorded as TODO items in Physlib/Cosmology/FLRW/MatterContent.lean; no
-      declarations exist yet.
-    done: false
-    location: "N/A"
+      The continuity equation ∂ₜ ρ + 3 H (ρ + P/c^2) = 0 of the cosmic fluid is
+      defined as a proposition at an instant, and the API relates it to the two
+      Friedmann equations: it follows from the first-order equation holding at all
+      times together with the second-order equation, and conversely the
+      second-order equation follows from the first-order equation and the
+      continuity equation wherever ∂ₜ a ≠ 0.
+    done: true
+    location: "Physlib/Cosmology/FLRW/MatterContent.lean (ContinuityEquation, deriv_firstOrderFriedmann, continuityEquation_of_friedmann, secondOrderFriedmann_of_continuityEquation)"
+
+  - description: >
+      The barotropic equation of state P = w ρ c^2 is defined, and the API
+      contains the density scaling law ρ t = ρ t₀ (a t / a t₀)^(-3(1+w)) under the
+      barotropic continuity equation holding at all times, its converse, and its
+      dust, radiation and vacuum-energy special cases.
+    done: true
+    location: "Physlib/Cosmology/FLRW/MatterContent.lean (barotropicPressure, deriv_of_continuityEquation_barotropic, density_scaling, continuityEquation_of_scaling, density_scaling_dust, density_scaling_radiation, density_scaling_vacuum)"
+
+  - description: >
+      The cosmological constant as a fluid: the density ρ_Λ = Λ c^2 / (8πG) and
+      the pressure p_Λ = -ρ_Λ c^2 are defined, each Friedmann equation with Λ is
+      equivalent to the same equation without Λ for the fluid ρ + ρ_Λ, p + p_Λ,
+      and p_Λ is the w = -1 barotropic pressure of ρ_Λ.
+    done: true
+    location: "Physlib/Cosmology/FLRW/MatterContent.lean (cosmologicalConstantDensity, cosmologicalConstantPressure, firstOrderFriedmann_iff_lambdaFluid, secondOrderFriedmann_iff_lambdaFluid, cosmologicalConstantPressure_eq_barotropic)"
+
+  - description: >
+      The critical density ρ_cr = 3 H^2 / (8πG) and the density parameters Ω = ρ
+      / ρ_cr, Ω_K = -k c^2 / (H^2 a^2) and Ω_Λ = Λ c^2 / (3 H^2) are defined,
+      and the first-order Friedmann equation is read as the closure relation Ω +
+      Ω_Λ + Ω_K = 1.
+    done: true
+    location: "Physlib/Cosmology/FLRW/DensityParameters.lean (criticalDensity, densityParameter, curvatureDensityParameter, lambdaDensityParameter, densityParameter_add_lambda_add_curvature, densityParameter_add_curvature)"
+
+  - description: >
+      The reduced Hubble function E(x)^2 = Ω_Λ + Ω_m x^-3 + Ω_r x^-4 + Ω_K x^-2
+      of the standard cosmological model is defined, with H = H₀ E(a / a₀) for
+      matter and radiation obeying their scaling laws, the age t₀ = H₀^-1 ∫₀¹ dx
+      / (x E(x)) and the radiation-matter and matter-Λ equality scale factors.
+    done: true
+    location: "Physlib/Cosmology/FLRW/DensityParameters.lean (reducedHubble, sq_hubbleConstant_eq_reducedHubble, hubbleConstant_eq_reducedHubble, age, age_eq, equalityScaleFactorRadiationMatter, equalityScaleFactorMatterLambda)"
+
+  - description: >
+      The null, weak, strong and dominant energy conditions of the cosmic fluid
+      are defined with the implications between them, and the API contains the
+      acceleration criterion ∂ₜ ∂ₜ a > 0 ↔ ρ + 3 p / c^2 < 0, without and with
+      Λ, and the deceleration parameter in terms of the density parameters, q =
+      ½ Σ_i Ω_i (1 + 3 w_i), with its ΛCDM special case.
+    done: true
+    location: "Physlib/Cosmology/FLRW/Dynamics.lean (NullEnergyCondition, WeakEnergyCondition, StrongEnergyCondition, DominantEnergyCondition, deriv_deriv_pos_iff, deriv_deriv_pos_iff_lambda, decelerationParameter_eq_sum, decelerationParameter_lambdaCDM)"
+
+  - description: >
+      Eternal expansion for k ≤ 0, Λ ≥ 0 and positive density, and the Big-Bang
+      bound: a decelerating universe expanding at t₀ with a t₀ > 0 has a zero of
+      its scale factor at most 1 / H₀ in the past, whereas the de Sitter scale
+      factor is positive at all times.
+    done: true
+    location: "Physlib/Cosmology/FLRW/Dynamics.lean (deriv_ne_zero_of_friedmann, deriv_pos_of_friedmann, deriv_deriv_nonpos_of_friedmann, scaleFactor_nonpos_of_decelerating, exists_scaleFactor_eq_zero, deSitterScaleFactor_pos)"
+
+  - description: >
+      The comoving distance χ = c ∫ dt / a, the redshift 1 + z = a(t₀) / a(t)
+      and the proper distance are defined, with ∂ₜ χ = -c / a, ∂ₜ z = -(1 + z)
+      H, the Hubble-Lemaître law and the Hubble radius.
+    done: true
+    location: "Physlib/Cosmology/FLRW/Distances.lean (comovingDistance, deriv_comovingDistance, redshift, deriv_redshift, deriv_comovingDistance_eq_mul_deriv_redshift, properDistance, deriv_properDistance, hubbleRadius, deriv_properDistance_eq_iff)"
+
+  - description: >
+      The transverse comoving distance is defined through the spatial geometry
+      of a given curvature parameter, with its closed forms for positive, zero
+      and negative curvature, together with the particle and event horizons and
+      the particle horizon of the Einstein-de Sitter solution.
+    done: true
+    location: "Physlib/Cosmology/FLRW/Distances.lean (spatialGeometryOfCurvature, transverseComovingDistance, transverseComovingDistance_of_pos, transverseComovingDistance_zero, transverseComovingDistance_of_neg, particleHorizon, eventHorizon, particleHorizon_einsteinDeSitter)"
