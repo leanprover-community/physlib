@@ -105,7 +105,6 @@ namespace Matrix
 
 variable {n R ι : Type*} [Fintype n]-- [DecidableEq n]
 
-@[simp]
 lemma trace_reindex [Semiring R] [Fintype ι] (e : n ≃ ι) (A : Matrix n n R) :
     trace (A.submatrix e.symm e.symm) = trace A := by
   simp only [trace, diag_apply, submatrix_apply]
