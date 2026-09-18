@@ -28,6 +28,8 @@ In this module we define and prove basic lemmas about derivatives of functions o
   reparametrised through the canonical equivalence `toRealCLE.symm : ℝ ≃L[ℝ] Time`.
 - `deriv_comp_toRealCLE_of_hasDerivAt` : Its converse, a `HasDerivAt` on `ℝ` read as the time
   derivative of the curve pulled back to `Time` through `toRealCLE`.
+- `hasDerivAt_mk_of_differentiableAt` and `deriv_eq_of_hasDerivAt` : The same two bridges for a
+  real-valued curve `f : Time → ℝ`, stated at `t : Time` through the curve `τ ↦ f ⟨τ⟩` on `ℝ`.
 - `deriv_comp_neg` and `deriv_deriv_comp_neg` : The first and second time derivatives under the
   reversal of time `t ↦ -t`.
 
@@ -115,16 +117,18 @@ lemma deriv_comp_toRealCLE_of_hasDerivAt [NormedAddCommGroup M] [NormedSpace ℝ
     fderiv_eq_smul_deriv, h.deriv]
   exact Eq.trans (by rfl) (Time.one_val ▸ one_smul _ v)
 
-/-- The time derivative of `t ↦ γ t.val` at `t` is the derivative of `γ` at `t.val`. -/
-lemma deriv_comp_val {γ : ℝ → ℝ} {t : Time} {v : ℝ} (h : HasDerivAt γ v t.val) :
-    ∂ₜ (fun s : Time => γ s.val) t = v :=
-  deriv_comp_toRealCLE_of_hasDerivAt γ t v h
-
 /-- The time derivative of any `f : Time → ℝ` at `t` is the derivative at `t.val` of the curve
   `τ ↦ f ⟨τ⟩` on `ℝ`. -/
 lemma deriv_eq_of_hasDerivAt {f : Time → ℝ} {t : Time} {v : ℝ}
     (h : HasDerivAt (fun τ : ℝ => f ⟨τ⟩) v t.val) : ∂ₜ f t = v :=
   deriv_comp_toRealCLE_of_hasDerivAt (fun τ : ℝ => f ⟨τ⟩) t v h
+
+/-- A curve `f : Time → ℝ` differentiable at `t` gives the curve `σ ↦ f ⟨σ⟩` on `ℝ`,
+  whose Mathlib derivative at `t.val` is the time derivative `∂ₜ f t`. -/
+lemma hasDerivAt_mk_of_differentiableAt {f : Time → ℝ} {t : Time}
+    (hf : DifferentiableAt ℝ f t) :
+    HasDerivAt (fun σ : ℝ => f ⟨σ⟩) (∂ₜ f t) t.val :=
+  hasDerivAt_comp_toRealCLE_symm f t.val hf
 
 /-!
 
