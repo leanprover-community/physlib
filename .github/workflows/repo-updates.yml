@@ -1,0 +1,36 @@
+name: Repo Updates
+
+on:
+  repository_dispatch:
+    types: [zulip-dm]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Send reviewer report to Zulip
+        env:
+          # These GitHub tokens are already configured
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+          # Number of reviews to consider 'busy'
+          BUSY_THRESHOLD: "3"
+
+          # These Zulip secrets are configured in the repo settings
+          # (Physlib -> Settings -> Secrets and variables -> Actions)
+          ZULIP_SITE: ${{ secrets.ZULIP_SITE }}
+          ZULIP_BOT_EMAIL: ${{ secrets.ZULIP_BOT_EMAIL }}
+          ZULIP_BOT_API_KEY: ${{ secrets.ZULIP_BOT_API_KEY }}
+          ZULIP_STREAM: ${{ secrets.ZULIP_STREAM }}
+          ZULIP_TOPIC: "Repo Updates"
+        run: python3 scripts/repo-updates-script.py
