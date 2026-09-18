@@ -214,7 +214,8 @@ unsafe def sorryfulPseudoTest : MetaM Unit := do
   let allConst ← Physlib.allUserConsts
   let allConst := allConst.map fun c => c.name
   let allWithSorry := allWithSorry.filter fun n => n ∈ allConst
-  let allWithSorry := allWithSorry ++ (← structuresWithSorryDefault).filter fun n => ¬ n ∈ allWithSorry
+  let fromDefaults ← structuresWithSorryDefault
+  let allWithSorry := allWithSorry ++ fromDefaults.filter fun n => ¬ n ∈ allWithSorry
   let allWithPseudo := allWithPseudo.filter fun n => n ∈ allConst
   let sorryAttributed ← allSorryfulAttributed
   let pseudoAttributed ← allPseudoAttributed
