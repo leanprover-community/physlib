@@ -84,8 +84,8 @@ lemma timelike_time_component_ne_zero {d : ℕ} {v : Vector d}
     (hv : causalCharacter v = .timeLike) :
     timeComponent v ≠ 0 := time_component_ne_zero_of_timelike hv
 
-/-- A vector is timelike if and only if its time component squared is less than
-    the sum of its spatial components squared -/
+/-- A vector is timelike if and only if the sum of its spatial components squared is
+    less than its time component squared -/
 lemma timeLike_iff_time_lt_space {d : ℕ} {v : Vector d} :
     causalCharacter v = .timeLike ↔
     ⟪spatialPart v, spatialPart v⟫_ℝ < v (Sum.inl 0) * v (Sum.inl 0) := by
