@@ -171,9 +171,8 @@ lemma leviCivita_mul_pauliDual :
   · rfl
 
 /-- The three-Pauli identity
-`σ^μ barσ^ν σ^ρ = g^{μν} σ^ρ - g^{μρ} σ^ν + g^{νρ} σ^μ
-  + i ε^{μνρκ} σ_κ`, with barred and lowered forms expressed through index dualization `τ`.
-This is equation (2.54) of arXiv:0812.1594. [ref: Dreiner:2008tw] -/
+`σ^μ barσ^ν σ^ρ = g^{μν} σ^ρ - g^{μρ} σ^ν + g^{νρ} σ^μ + i ε^{μνρκ} σ_κ`,
+with barred and lowered forms expressed through index dualization `τ`. -/
 lemma pauliContr_mul_pauliContrDown_mul_pauliContr : ({
     σ^^^ | μ α β ⊗ σ^^^ | ν τ(α') τ(β) ⊗ σ^^^ | ρ α' β' =
       ((((η | μ ν ⊗ σ^^^ | ρ α β') + (-((η | μ ρ ⊗ σ^^^ | ν α β'))))
@@ -199,9 +198,8 @@ lemma pauliContr_mul_pauliContrDown_mul_pauliContr : ({
   decide +revert +kernel
 
 /-- The conjugate three-Pauli identity
-`barσ^μ σ^ν barσ^ρ = g^{μν} barσ^ρ - g^{μρ} barσ^ν + g^{νρ} barσ^μ
-  - i ε^{μνρκ} barσ_κ`, with barred and lowered forms expressed through index dualization `τ`.
-This is equation (2.55) of arXiv:0812.1594. [ref: Dreiner:2008tw] -/
+`barσ^μ σ^ν barσ^ρ = g^{μν} barσ^ρ - g^{μρ} barσ^ν + g^{νρ} barσ^μ - i ε^{μνρκ} barσ_κ`,
+with barred and lowered forms expressed through index dualization `τ`. -/
 lemma pauliContrDown_mul_pauliContr_mul_pauliContrDown : ({
     σ^^^ | μ τ(α) τ(β) ⊗ σ^^^ | ν α β' ⊗ σ^^^ | ρ τ(α') τ(β') =
       ((((η | μ ν ⊗ σ^^^ | ρ τ(α') τ(β))
