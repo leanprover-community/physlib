@@ -165,6 +165,7 @@ public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.Unbounded.EssentialSp
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.Unbounded.EssentialSpectrum.Discrete
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.State.Density
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.State.Vector
+public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.State.VectorUncertainty
 public import PhyslibAlpha.AlgebraicFramework.Measurement.Basic
 public import PhyslibAlpha.AlgebraicFramework.Measurement.ClassicalSystem
 public import PhyslibAlpha.AlgebraicFramework.Measurement.Compatibility
