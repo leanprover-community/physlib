@@ -229,4 +229,5 @@ public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.JordanStatistics
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.JordanPositivity
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.JordanCFC
 public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.JordanSpecial
+public import PhyslibAlpha.AlgebraicFramework.InformationGeometry.FisherRao
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
