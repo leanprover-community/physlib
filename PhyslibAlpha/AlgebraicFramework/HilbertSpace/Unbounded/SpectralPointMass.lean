@@ -111,7 +111,7 @@ private theorem bisectStep_measure_one (h01 : ∀ E : Set ℝ, MeasurableSet E �
   have hm1 : p.1 ≤ m := by rw [hm_def]; linarith
   have hm2 : m ≤ p.2 := by rw [hm_def]; linarith
   by_cases hc : μ (Icc p.1 m) = 1
-  · simpa [hc]
+  · simp [hc]
   · simp only [hc, ite_false]
     have hc0 : μ (Icc p.1 m) = 0 := (h01 _ measurableSet_Icc).resolve_right hc
     have hunion : Icc p.1 m ∪ Ioc m p.2 = Icc p.1 p.2 := Icc_union_Ioc_eq_Icc hm1 hm2

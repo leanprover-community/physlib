@@ -42,7 +42,7 @@ theorem isTraceClass_rankOne (x y : H) :
   · subst hy
     have hz : InnerProductSpace.rankOne ℂ x (0 : H) = 0 := by
       ext z
-      simp [InnerProductSpace.rankOne_apply]
+      simp
     rw [hz]
     exact isTraceClass_zero
   · have hyy : IsTraceClass (InnerProductSpace.rankOne ℂ y y) :=
@@ -78,10 +78,10 @@ private theorem rankOneTraceClass_norm_le (x y : H) :
       apply Subtype.ext
       change InnerProductSpace.rankOne ℂ x 0 = 0
       ext v
-      simp [InnerProductSpace.rankOne_apply]
+      simp
     rw [hzero]
     simp
-  · letI : Nontrivial H := ⟨⟨y, 0, hy⟩⟩
+  · let : Nontrivial H := ⟨⟨y, 0, hy⟩⟩
     let P : H →L[ℂ] H := InnerProductSpace.rankOne ℂ y y
     have hP : IsTraceClass P := isTraceClass_rankOne_self y
     have hT : IsTraceClass (InnerProductSpace.rankOne ℂ x y) :=
@@ -131,8 +131,7 @@ private theorem rankOneTraceClass_norm_le (x y : H) :
       _ = ‖x‖ * ‖y‖ := by
         rw [hnormP]
         dsimp [c]
-        simp [norm_inv, norm_pow, Complex.norm_real,
-          abs_of_nonneg (norm_nonneg y), InnerProductSpace.norm_rankOne]
+        simp [norm_inv, norm_pow, Complex.norm_real, InnerProductSpace.norm_rankOne]
         field_simp
 
 private theorem trace_rankOne (x y : H) :
@@ -188,7 +187,7 @@ private def sesquilinearFormOfFunctional
                 change InnerProductSpace.rankOne ℂ x (y + z) =
                   InnerProductSpace.rankOne ℂ x y + InnerProductSpace.rankOne ℂ x z
                 ext v
-                simp [InnerProductSpace.rankOne_apply, inner_add_left, add_smul]
+                simp [InnerProductSpace.rankOne_apply]
               rw [h, map_add]
               simp
             map_smul' := by
@@ -199,7 +198,7 @@ private def sesquilinearFormOfFunctional
                 change InnerProductSpace.rankOne ℂ x (c • y) =
                   (starRingEnd ℂ c) • InnerProductSpace.rankOne ℂ x y
                 ext v
-                simp [InnerProductSpace.rankOne_apply, inner_smul_left]
+                simp [InnerProductSpace.rankOne_apply]
               rw [h, map_smul]
               simp }
         map_add' := by
@@ -213,7 +212,7 @@ private def sesquilinearFormOfFunctional
             change InnerProductSpace.rankOne ℂ (x + z) y =
               InnerProductSpace.rankOne ℂ x y + InnerProductSpace.rankOne ℂ z y
             ext v
-            simp [InnerProductSpace.rankOne_apply, add_smul]
+            simp [InnerProductSpace.rankOne_apply]
           rw [h, map_add]
           simp
         map_smul' := by
@@ -227,7 +226,7 @@ private def sesquilinearFormOfFunctional
             change InnerProductSpace.rankOne ℂ (c • x) y =
               c • InnerProductSpace.rankOne ℂ x y
             ext v
-            simp [InnerProductSpace.rankOne_apply]
+            simp
           rw [h, map_smul]
           simp }
     bound := by

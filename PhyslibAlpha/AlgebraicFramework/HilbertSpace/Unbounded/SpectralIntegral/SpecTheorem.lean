@@ -856,8 +856,8 @@ lemma maximalSpectralIntegral_plus_resolvent_inverse_apply (x : H) :
       funext a
       simp [Pi.add_apply]
     have hunitx := congrArg (fun A : H →WOT[ℂ] H => A x) hunit
-    convert hunitx using 1 <;>
-      simp only [hsumfun, boundedIntegral_const]
+    convert hunitx using 1
+    simp only [boundedIntegral_const]
     simp [ContinuousLinearMapWOT.one_apply]
   let x' : (M + Complex.I • (1 : H →ₗ.[ℂ] H)).inverse.domain :=
     ⟨x, by
@@ -960,8 +960,8 @@ lemma maximalSpectralIntegral_minus_resolvent_inverse_apply (x : H) :
       funext a
       simp [Pi.sub_apply]
     have hunitx := congrArg (fun A : H →WOT[ℂ] H => A x) hunit
-    convert hunitx using 1 <;>
-      simp only [hsubfun, boundedIntegral_const]
+    convert hunitx using 1
+    simp only [boundedIntegral_const]
     simp [ContinuousLinearMapWOT.one_apply]
   let x' : (M - Complex.I • (1 : H →ₗ.[ℂ] H)).inverse.domain :=
     ⟨x, by
