@@ -54,6 +54,14 @@ Requirements:
     done: true
     location: Physlib/Relativity/CliffordAlgebra.lean (γ0, γ1, γ2, γ3, γ5, γ5_eq_endEquivMatrix, γSet, γ_in_γSet)
 
+  - description: "The gamma matrices in the Dirac representation satisfy the Clifford anticommutator against the Minkowski metric, with signature (+,-,-,-)."
+    done: true
+    location: Physlib/Relativity/CliffordAlgebra.lean (γ_anticomm)
+
+  - description: "The Dirac slash of a Lorentz vector is defined in the Dirac representation, contracting the lowered vector coordinates with the gamma matrices, is real linear, and extends to products of slash factors."
+    done: true
+    location: Physlib/Relativity/CliffordAlgebra.lean (Slash.slash, notation k̸, Slash.slash_eq_sum, Slash.slashLinear, Slash.slash_zero, Slash.slash_add, Slash.slash_smul, Slash.slashMulLeft, Slash.slashProd, Slash.slashProd_nil, Slash.slashProd_cons)
+
   - description: "The Dirac algebra generated over ℝ by the Dirac representations of the gamma endomorphisms is defined, and contains each generator, indexed by Fin 1 ⊕ Fin 3."
     done: true
     location: Physlib/Relativity/CliffordAlgebra.lean (diracAlgebra, γSet_subset_diracAlgebra, γ_in_diracAlgebra)
