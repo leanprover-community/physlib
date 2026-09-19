@@ -166,10 +166,10 @@ lemma leviCivita_mul_pauliDual :
     ({ε4ℂ | μ ν ρ κ ⊗ σ^^^ | τ(κ) α β =
       ε4ℂ | μ ν ρ κ ⊗ σ_^^ | κ α β}ᵀ : Prop) := by
   conv_lhs =>
-    simp only [leviCivita_eq_ofRat, toTensor_dualLorentz_eq_ofRat]
+    simp only [leviCivita_eq_ofRat_prod, toTensor_dualLorentz_eq_ofRat]
     rw [prodT_ofRat_ofRat, contrT_ofRat]
   conv_rhs =>
-    simp only [leviCivita_eq_ofRat, pauliCo_eq_ofRat]
+    simp only [leviCivita_eq_ofRat_prod, pauliCo_eq_ofRat]
     rw [prodT_ofRat_ofRat, contrT_ofRat]
   apply (Tensor.basis _).repr.injective
   ext b
