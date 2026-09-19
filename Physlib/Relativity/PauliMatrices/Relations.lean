@@ -192,7 +192,7 @@ lemma pauliContr_mul_pauliContrDown_mul_pauliContr : ({
   conv_rhs =>
     rw [leviCivita_mul_pauliDual]
     simp only [contrMetric_eq_ofRat, toTensor_eq_ofRat, prodT_ofRat_ofRat]
-    simp only [leviCivita_eq_ofRat, pauliCo_eq_ofRat]
+    simp only [leviCivita_eq_ofRat_prod, pauliCo_eq_ofRat]
     rw [prodT_ofRat_ofRat, contrT_ofRat, permT_ofRat]
   apply (Tensor.basis _).repr.injective
   ext b
@@ -200,7 +200,7 @@ lemma pauliContr_mul_pauliContrDown_mul_pauliContr : ({
   simp only [map_add, Finsupp.coe_add, Pi.add_apply]
   simp only [permT_basis_repr_symm_apply, map_neg, Finsupp.coe_neg, Pi.neg_apply,
     map_smul, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, ofRat_basis_repr_apply]
-  rw [Physlib.RatComplexNum.I_mul_toComplexNum]
+  conv_rhs => arg 2; rw [Physlib.RatComplexNum.I_mul_toComplexNum]
   apply Physlib.RatComplexNum.toComplexNum_eq_add_neg_add_add_iff.mpr
   decide +revert +kernel
 
@@ -219,7 +219,7 @@ lemma pauliContrDown_mul_pauliContr_mul_pauliContrDown : ({
       prodT_ofRat_ofRat, contrT_ofRat]
   conv_rhs =>
     simp only [contrMetric_eq_ofRat, toTensor_dualWeyl_eq_ofRat, prodT_ofRat_ofRat]
-    simp only [leviCivita_eq_ofRat, toTensor_dualAll_eq_ofRat]
+    simp only [leviCivita_eq_ofRat_prod, toTensor_dualAll_eq_ofRat]
     rw [prodT_ofRat_ofRat, contrT_ofRat, permT_ofRat]
   apply (Tensor.basis _).repr.injective
   ext b
@@ -227,7 +227,7 @@ lemma pauliContrDown_mul_pauliContr_mul_pauliContrDown : ({
   simp only [map_add, Finsupp.coe_add, Pi.add_apply]
   simp only [permT_basis_repr_symm_apply, map_neg, Finsupp.coe_neg, Pi.neg_apply,
     map_smul, Finsupp.coe_smul, Pi.smul_apply, smul_eq_mul, ofRat_basis_repr_apply]
-  rw [Physlib.RatComplexNum.neg_I_mul_toComplexNum]
+  conv_rhs => arg 2; rw [Physlib.RatComplexNum.neg_I_mul_toComplexNum]
   apply Physlib.RatComplexNum.toComplexNum_eq_add_neg_add_add_iff.mpr
   decide +revert +kernel
 
