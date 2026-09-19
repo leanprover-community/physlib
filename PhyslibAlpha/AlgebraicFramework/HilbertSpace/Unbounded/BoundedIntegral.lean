@@ -8,7 +8,11 @@ module
 public import PhyslibAlpha.AlgebraicFramework.HilbertSpace.Unbounded.ScalarMeasure
 public import Mathlib.MeasureTheory.Measure.Complex
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
-public import Mathlib.MeasureTheory.Integral.SetToL1
+public import Mathlib.MeasureTheory.Integral.SetToL1.ChangeMeasure
+public import Mathlib.MeasureTheory.Integral.SetToL1.DominatedConvergence
+public import Mathlib.MeasureTheory.Integral.SetToL1.Function
+public import Mathlib.MeasureTheory.Integral.SetToL1.L1
+public import Mathlib.MeasureTheory.Integral.SetToL1.SimpleFunc
 
 /-!
 

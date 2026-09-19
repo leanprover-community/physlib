@@ -69,7 +69,7 @@ instance ringMeasure_hasTemperateGrowth :
 
 instance ringMeasure_prod_volume_hasTemperateGrowth :
     (ringMeasure.prod (volume (α := Space))).HasTemperateGrowth := by
-  exact IsDistBounded.instHasTemperateGrowthProdProdOfOpensMeasurableSpace ringMeasure volume
+  infer_instance
 
 instance ringMeasure_sFinite: SFinite ringMeasure := by
   rw [ringMeasure]

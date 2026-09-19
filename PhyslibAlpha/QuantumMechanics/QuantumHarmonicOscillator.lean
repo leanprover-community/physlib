@@ -388,7 +388,6 @@ def coherentState_ℓ2 (α : ℂ) : lp (fun _ : ℕ => ℂ) 2 := {
       simp_rw [div_pow] at this
       have h := this.mul_left (Real.exp (-‖α‖ ^ 2 / 2) ^ 2)
       convert h using 2 with i
-      · rfl
       · unfold coherentState
         rw [norm_div, norm_mul, norm_pow, Complex.norm_real, Complex.norm_real,
           Real.norm_eq_abs, Real.norm_eq_abs, Real.abs_exp, div_pow, mul_pow]

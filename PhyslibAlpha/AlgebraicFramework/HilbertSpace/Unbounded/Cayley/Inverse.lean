@@ -232,14 +232,14 @@ omit [CompleteSpace H] in
 lemma linearPMap_comp_inverse_apply {Q : H →ₗ.[ℂ] H}
     (hker : Q.toFun.ker = ⊥) (y : Q.inverse.domain) :
     Q (⟨Q.inverse y, by
-      rw [← LinearPMap.inverse_range hker]
+      rw [← LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hker)]
       exact LinearMap.mem_range_self _ y⟩ : Q.domain) = y := by
   have hc := LinearPMap.compRestricted_inverse_eq hker
   obtain ⟨hcd, hcf⟩ := LinearPMap.dExt_iff.mp hc
   let ac : (Q ∘ᵣ Q.inverse).domain :=
     ⟨(y : H), by
       refine LinearPMap.mem_compRestricted_domain_iff.mpr ⟨y.property, ?_⟩
-      rw [← LinearPMap.inverse_range hker]
+      rw [← LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hker)]
       exact LinearMap.mem_range_self _ y⟩
   let ad : (LinearPMap.domRestrict (1 : H →ₗ.[ℂ] H) Q.inverse.domain).domain :=
     ⟨(y : H), by
@@ -281,7 +281,8 @@ lemma inverseCayleyPMap_cayleyUnitary_domain {T : H →ₗ.[ℂ] H}
     simp only [LinearPMap.sub_apply, LinearPMap.smul_apply]
     module
   have hrange : (1 - unitaryToPMap (cayleyUnitary T hT)).toFun.range = T.domain := by
-    rw [hEq, linearPMap_range_smul _ (by norm_num), LinearPMap.inverse_range hplusker]
+    rw [hEq, linearPMap_range_smul _ (by norm_num),
+      LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hplusker)]
     simp [LinearPMap.add_domain]
   rw [inverseCayleyPMap_domain, hrange]
 
@@ -297,7 +298,7 @@ lemma inverseCayleyPMap_apply_on_range {u : H ≃ₗᵢ[ℂ] H}
       rw [LinearPMap.inverse_domain]
       exact LinearMap.mem_range_self _ a⟩
   have hy : (1 - unitaryToPMap u).inverse y = a := by
-    apply LinearPMap.inverse_apply_eq hker
+    apply LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hker)
     rfl
   simp only [inverseCayleyPMap, LinearPMap.mul_def, LinearPMap.compRestricted_apply,
     LinearPMap.smul_apply]
@@ -351,7 +352,7 @@ lemma inverseCayleyPMap_cayleyUnitary {T : H →ₗ.[ℂ] H}
       exact Submodule.mem_top⟩
   let zp : (T + Complex.I • (1 : H →ₗ.[ℂ] H)).domain :=
     ⟨(T + Complex.I • (1 : H →ₗ.[ℂ] H)).inverse ai, by
-      rw [← LinearPMap.inverse_range hplusker]
+      rw [← LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hplusker)]
       exact LinearMap.mem_range_self _ ai⟩
   let zpT : T.domain :=
     ⟨(zp : H), by simpa [LinearPMap.add_domain] using zp.property⟩

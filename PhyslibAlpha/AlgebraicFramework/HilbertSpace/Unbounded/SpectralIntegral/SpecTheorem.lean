@@ -693,7 +693,7 @@ lemma maximalSpectralIntegral_resolvent_inverse_apply {z : ℂ} (hz : z.im ≠ 0
       exact Submodule.mem_top⟩
   have hxy : (M - z • (1 : H →ₗ.[ℂ] H)) y = x' := by
     simpa [x'] using hsum
-  exact LinearPMap.inverse_apply_eq hker hxy
+  exact LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hker) hxy
 
 lemma maximalSpectralIntegral_plus_resolvent_range :
     (maximalSpectralIntegral μS + Complex.I • (1 : H →ₗ.[ℂ] H)).toFun.range = ⊤ := by
@@ -865,7 +865,7 @@ lemma maximalSpectralIntegral_plus_resolvent_inverse_apply (x : H) :
       exact Submodule.mem_top⟩
   have hxy : (M + Complex.I • (1 : H →ₗ.[ℂ] H)) y = x' := by
     simpa [x'] using hsum
-  exact LinearPMap.inverse_apply_eq hker hxy
+  exact LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hker) hxy
 
 lemma maximalSpectralIntegral_minus_resolvent_inverse_apply (x : H) :
     (maximalSpectralIntegral μS - Complex.I • (1 : H →ₗ.[ℂ] H)).inverse
@@ -969,7 +969,7 @@ lemma maximalSpectralIntegral_minus_resolvent_inverse_apply (x : H) :
       exact Submodule.mem_top⟩
   have hxy : (M - Complex.I • (1 : H →ₗ.[ℂ] H)) y = x' := by
     simpa [x'] using hsum
-  exact LinearPMap.inverse_apply_eq hker hxy
+  exact LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hker) hxy
 
 /-! ### The canonical self-adjoint realization
 

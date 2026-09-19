@@ -351,6 +351,7 @@ theorem traceNorm_nonneg (T : H →L[ℂ] H) (h : IsTraceClass T) : 0 ≤ traceN
   exact tsum_nonneg fun i => real_inner_nonneg_of_nonneg (CFC.abs_nonneg T)
     (h.choose_spec.choose i)
 
+omit [CompleteSpace H] in
 private lemma real_inner_mono_of_le {P Q : H →L[ℂ] H} (hPQ : P ≤ Q) (x : H) :
     (⟪x, P x⟫_ℂ).re ≤ (⟪x, Q x⟫_ℂ).re := by
   have hdiff : 0 ≤ Q - P := sub_nonneg.mpr hPQ

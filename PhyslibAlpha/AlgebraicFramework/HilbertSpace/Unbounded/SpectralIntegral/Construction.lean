@@ -432,8 +432,8 @@ lemma truncationIntegral_cauchy (μS : WOTSpectralMeasure ℝ H) {x : H}
     simpa [A] using truncation_error_lintegral_tendsto_zero μS x hx
   have hq : 0 < ε ^ 2 / 8 := by positivity
   have hsmall : ∀ᶠ n : ℕ in Filter.atTop, A n < ENNReal.ofReal (ε ^ 2 / 8) := by
-    apply hA.eventually
-    exact Iio_mem_nhds ((ENNReal.ofReal_pos).2 hq)
+    exact hA.eventually (p := fun y => y < ENNReal.ofReal (ε ^ 2 / 8))
+      (Iio_mem_nhds ((ENNReal.ofReal_pos).2 hq))
   rcases (Filter.eventually_atTop.1 hsmall) with ⟨N, hN⟩
   refine ⟨N, ?_⟩
   intro n hn m hm
@@ -510,7 +510,7 @@ lemma truncation_norm_lintegral_tendsto
     exact tendsto_nhds_of_eventually_eq (by
       filter_upwards [truncationFunction_eventually_eq r] with n hn
       have hnormsq : ‖(r : ℂ)‖ₑ ^ 2 = ENNReal.ofReal (r ^ 2) := by
-        rw [← ofReal_norm_eq_enorm (r : ℂ), pow_two,
+        rw [← ofReal_norm (r : ℂ), pow_two,
           ← ENNReal.ofReal_mul (norm_nonneg (r : ℂ))]
         simp [Complex.norm_real, Real.norm_eq_abs]
         congr 1

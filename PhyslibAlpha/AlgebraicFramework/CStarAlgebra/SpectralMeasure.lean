@@ -142,7 +142,7 @@ noncomputable def realSpectralMeasure (ω : 𝓢[A]) (a : Observable A) : Measur
 
 instance realSpectralMeasure_isProbabilityMeasure (ω : 𝓢[A]) (a : Observable A) :
     IsProbabilityMeasure (realSpectralMeasure ω a) :=
-  Measure.isProbabilityMeasure_map measurable_subtype_coe.aemeasurable
+  (Measure.isProbabilityMeasure_map_iff measurable_subtype_coe.aemeasurable).mpr inferInstance
 
 /-- `μ_{ω,a}` is concentrated on `a`'s spectrum. -/
 lemma realSpectralMeasure_compl_spectrum (ω : 𝓢[A]) (a : Observable A) :

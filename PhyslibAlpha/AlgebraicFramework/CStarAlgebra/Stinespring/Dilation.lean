@@ -9,6 +9,8 @@ public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.Stinespring.Kernel
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.Analysis.InnerProductSpace.Completion
 public import Mathlib.Topology.Algebra.LinearMapCompletion
+public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-!
 
@@ -140,11 +142,9 @@ lemma tensorInner_conj_symm_tmul (J : A →CP (H →L[ℂ] H)) (a b : A) (h k : 
 
 lemma tensorInner_conj_symm (J : A →CP (H →L[ℂ] H)) (x y : T A H) :
     starRingEnd ℂ (tensorInner J x y) = tensorInner J y x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro a h
-    refine TensorProduct.induction_on y ?_ ?_ ?_
-    · simp
+    refine TensorProduct.inductionOn y ?_ ?_
     · intro b k
       exact tensorInner_conj_symm_tmul J a b h k
     · intro y z ihy ihz
@@ -198,11 +198,9 @@ lemma leftMul_tmul (a b : A) (h : H) :
 
 lemma tensorInner_leftMul (J : A →CP (H →L[ℂ] H)) (a : A) (x y : T A H) :
     tensorInner J (leftMul a x) y = tensorInner J x (leftMul (star a) y) := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro b h
-    refine TensorProduct.induction_on y ?_ ?_ ?_
-    · simp
+    refine TensorProduct.inductionOn y ?_ ?_
     · intro c k
       simp [leftMul, star_mul, mul_assoc]
     · intro y z ihy ihz
@@ -213,8 +211,7 @@ lemma tensorInner_leftMul (J : A →CP (H →L[ℂ] H)) (a : A) (x y : T A H) :
 
 lemma leftMul_mul (a b : A) (x : T A H) :
     leftMul (a * b) x = leftMul a (leftMul b x) := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro c h
     simp [leftMul]
   · intro x y ihx ihy
@@ -222,8 +219,7 @@ lemma leftMul_mul (a b : A) (x : T A H) :
 
 lemma leftMul_add (a b : A) (x : T A H) :
     leftMul (a + b) x = leftMul a x + leftMul b x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro c h
     simp [leftMul, add_mul, TensorProduct.add_tmul]
   · intro x y ihx ihy
@@ -233,8 +229,7 @@ lemma leftMul_add (a b : A) (x : T A H) :
 
 lemma leftMul_smul (r : ℂ) (a : A) (x : T A H) :
     leftMul (r • a) x = r • leftMul a x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro b h
     rw [leftMul_tmul, leftMul_tmul]
     rw [smul_mul_assoc]
@@ -243,8 +238,7 @@ lemma leftMul_smul (r : ℂ) (a : A) (x : T A H) :
     rw [(leftMul (r • a)).map_add, (leftMul a).map_add, ihx, ihy, smul_add]
 
 lemma leftMul_one (x : T A H) : leftMul (1 : A) x = x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro a h
     simp [leftMul]
   · intro x y ihx ihy
@@ -253,8 +247,7 @@ lemma leftMul_one (x : T A H) : leftMul (1 : A) x = x := by
 lemma leftMul_norm_sub (a : A) (x : T A H) :
     leftMul ((‖a‖ ^ 2 : ℝ) • (1 : A) - star a * a) x =
       (‖a‖ ^ 2 : ℂ) • x - leftMul (star a * a) x := by
-  refine TensorProduct.induction_on x ?_ ?_ ?_
-  · simp
+  refine TensorProduct.inductionOn x ?_ ?_
   · intro b h
     simp [leftMul, Algebra.smul_def, sub_mul, TensorProduct.sub_tmul]
     simp [Algebra.smul_def, TensorProduct.smul_tmul']

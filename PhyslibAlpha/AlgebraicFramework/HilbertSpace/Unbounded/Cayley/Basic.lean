@@ -163,7 +163,7 @@ lemma cayleyPMap_domain_top {T : H →ₗ.[ℂ] H} (hT : IsSelfAdjoint T) :
     ⟨x, by rw [hinvdom]; exact Submodule.mem_top⟩
   have hv' : (T + Complex.I • 1).inverse xi ∈
       (T + Complex.I • 1).domain := by
-    rw [← LinearPMap.inverse_range hker]
+    rw [← LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hker)]
     exact LinearMap.mem_range_self _ xi
   have hv : (T + Complex.I • 1).inverse xi ∈ T.domain := hplusdom ▸ hv'
   have hxi' : xi ∈
@@ -220,7 +220,7 @@ lemma cayleyPMap_eq_one_sub {T : H →ₗ.[ℂ] H} (hT : IsSelfAdjoint T) :
   let xi : (T + Complex.I • 1).inverse.domain :=
     ⟨x, by rw [hinvdom]; exact Submodule.mem_top⟩
   have hxi : (T + Complex.I • 1).inverse xi ∈ (T + Complex.I • 1).domain := by
-    rw [← LinearPMap.inverse_range hker]
+    rw [← LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hker)]
     exact LinearMap.mem_range_self _ xi
   have hxi_range : (x : H) ∈ LinearMap.range (T + Complex.I • 1).toFun := by
     rw [← LinearPMap.inverse_domain]
@@ -230,7 +230,7 @@ lemma cayleyPMap_eq_one_sub {T : H →ₗ.[ℂ] H} (hT : IsSelfAdjoint T) :
     change (T + Complex.I • 1) x₀ = x
     exact hx₀
   have hinv₀ : (T + Complex.I • 1).inverse xi = x₀ :=
-    LinearPMap.inverse_apply_eq hker hxy
+    LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hker) hxy
   have hinv : (T + Complex.I • 1)
       ⟨(T + Complex.I • 1).inverse xi, hxi⟩ = x := by
     have heq : (⟨(T + Complex.I • 1).inverse xi, hxi⟩ :
@@ -360,7 +360,7 @@ lemma cayleyContinuousLinearMap_apply_of_mem_range {T : H →ₗ.[ℂ] H}
     exact Submodule.mem_top
   have hminus_inv : (T - (-Complex.I) • 1).inverse
       ⟨x, hxinv⟩ = hyminus := by
-    exact LinearPMap.inverse_apply_eq hres.1 hyminus_eq
+    exact LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hres.1) hyminus_eq
   have hc : Continuous (T - (-Complex.I) • 1).inverse.toFun := hres.2.2
   simp only [cayleyContinuousLinearMap, sub_apply, smul_apply]
   rw [topDomainToContinuousLinearMap_apply _ _ hc]

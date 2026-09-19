@@ -5,9 +5,9 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Data.ENNReal.Basic
-public import Mathlib.Data.ENNReal.Action
-public import Mathlib.Data.ENNReal.Inv
+public import Mathlib.Basic.ENNReal.Basic
+public import Mathlib.Basic.ENNReal.Action
+public import Mathlib.Basic.ENNReal.Inv
 public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Basic
 
 /-!
