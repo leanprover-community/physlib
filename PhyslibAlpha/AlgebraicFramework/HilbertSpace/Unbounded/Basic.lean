@@ -7,6 +7,7 @@ module
 
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure
 public import Mathlib.Analysis.InnerProductSpace.WeakOperatorTopology
+public import Mathlib.MeasureTheory.VectorMeasure.Operations
 
 /-!
 

@@ -119,7 +119,10 @@ theorem Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ
   rw [← trace_eq_re_trace, ← sum_eigenvalues_eq_trace]
   obtain ⟨e, he⟩ := ρ.M.cfc_eigenvalues (Real.log * id)
   apply Finset.sum_equiv e.symm (by simp)
-  simp [MState.spectrum, ProbDistribution.mk', he, mul_comm]
+  simp only [MState.spectrum, ProbDistribution.mk']
+  intro i
+  rw [he]
+  simp [mul_comm]
 
 /-- Von Neumann entropy is the trace of the matrix function `x ↦ -x log x`. -/
 theorem Sᵥₙ_eq_trace_cfc_negMulLog (ρ : MState d) :

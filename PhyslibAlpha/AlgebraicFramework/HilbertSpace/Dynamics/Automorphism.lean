@@ -122,7 +122,7 @@ theorem hasDerivAt_toAutomorphism (U : UnitaryOneParameterGroup H) (a : H →L[�
   simp only [toAutomorphism_apply, LieRing.of_associative_ring_bracket]
   have hcomm := (U.commute_generator t).smul_left Complex.I
   have hd := ((U.hasDerivAt t).mul_const a).mul (U.hasDerivAt_star t)
-  convert hd using 1 <;> try rfl
+  convert hd using 1; try rfl
   simp only [mul_neg]
   rw [← hcomm.eq]
   noncomm_ring
@@ -148,7 +148,7 @@ private lemma hasDerivAt_conj_zero (U : UnitaryOneParameterGroup H)
   simp only [LieRing.of_associative_ring_bracket] at hα
   have hcomm := (U.commute_generator s).smul_left Complex.I
   have hd := ((U.hasDerivAt_star s).mul (hα s)).mul (U.hasDerivAt s)
-  convert hd using 1 <;> try rfl
+  convert hd using 1; try rfl
   simp only [Pi.mul_apply, mul_neg]
   rw [← hcomm.eq]
   noncomm_ring

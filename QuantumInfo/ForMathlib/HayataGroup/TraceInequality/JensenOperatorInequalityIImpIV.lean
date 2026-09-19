@@ -196,6 +196,7 @@ private lemma cfcR_blockDiagonal (f : ℝ → ℝ)
           simp [φ, blockDiagonalHom]
 
 -- Converting positivity on a block-diagonal operator to each diagonal block is expensive.
+omit [CompleteSpace ℋ] in
 private lemma blockDiagonal_le_left {A0 A1 B0 B1 : L ℋ}
     (h : blockDiagonal (ℋ := ℋ) A0 A1 ≤ blockDiagonal (ℋ := ℋ) B0 B1) :
     A0 ≤ B0 := by
@@ -211,7 +212,7 @@ private lemma blockDiagonal_le_left {A0 A1 B0 B1 : L ℋ}
     exact hsub ▸ sub_nonneg.mpr h
   have hpos :
       (blockDiagonal (ℋ := ℋ) (B0 - A0) (B1 - A1)).IsPositive :=
-    (ContinuousLinearMap.nonneg_iff_isPositive _).1 hnonneg
+    ContinuousLinearMap.nonneg_iff_isPositive.1 hnonneg
   have hleftPos : (B0 - A0).IsPositive := by
     rw [ContinuousLinearMap.isPositive_iff_complex]
     intro x
@@ -219,7 +220,7 @@ private lemma blockDiagonal_le_left {A0 A1 B0 B1 : L ℋ}
       (ContinuousLinearMap.isPositive_iff_complex
         (blockDiagonal (ℋ := ℋ) (B0 - A0) (B1 - A1))).1 hpos (hsumIncl ℋ 0 x)
     simpa [blockDiagonal, hsumProj, hsumIncl, hsumEquiv, PiLp.inner_apply] using hx
-  exact (sub_nonneg.mp ((ContinuousLinearMap.nonneg_iff_isPositive _).2 hleftPos))
+  exact (sub_nonneg.mp (ContinuousLinearMap.nonneg_iff_isPositive.2 hleftPos))
 
 private lemma blockDiagonal_selfAdjoint {A B : L ℋ}
     (hA : IsSelfAdjoint A) (hB : IsSelfAdjoint B) :
@@ -236,7 +237,7 @@ private lemma cfcR_zero (f : ℝ → ℝ) :
 private lemma cfcR_conj_unitary (f : ℝ → ℝ) (hcont : ContinuousOn f Set.univ)
     (u : unitary (L ℋ)) (A : L ℋ) (hA : IsSelfAdjoint A) :
     cfcR (ℋ := ℋ) f (star u * A * u) = star u * cfcR (ℋ := ℋ) f A * u := by
-  let φ : L ℋ →⋆ₐ[ℝ] L ℋ := Unitary.conjStarAlgAut ℝ (L ℋ) (star u)
+  let φ : L ℋ →⋆ₐ[ℝ] L ℋ := (Unitary.conjStarAlgAut ℝ (L ℋ) (star u)).toStarAlgHom
   have hφ : Continuous φ := by
     have h1 : Continuous (fun x : L ℋ => (star u : L ℋ) * x * (u : L ℋ)) := by
       fun_prop
@@ -254,7 +255,7 @@ private lemma cfcR_conj_unitary_on (s : Set ℝ) (f : ℝ → ℝ) (hcont : Cont
     {A : L ℋ} (hAs : spectrum ℝ A ⊆ s)
     (u : unitary (L ℋ)) (hA : IsSelfAdjoint A) :
     cfcR (ℋ := ℋ) f (star u * A * u) = star u * cfcR (ℋ := ℋ) f A * u := by
-  let φ : L ℋ →⋆ₐ[ℝ] L ℋ := Unitary.conjStarAlgAut ℝ (L ℋ) (star u)
+  let φ : L ℋ →⋆ₐ[ℝ] L ℋ := (Unitary.conjStarAlgAut ℝ (L ℋ) (star u)).toStarAlgHom
   have hφ : Continuous φ := by
     have h1 : Continuous (fun x : L ℋ => (star u : L ℋ) * x * (u : L ℋ)) := by
       fun_prop

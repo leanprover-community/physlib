@@ -46,7 +46,7 @@ theorem isTraceClass_rankOne_self (x : H) :
   have h := (hasSum_norm_sq_inner_basis b x).summable
   apply h.congr
   intro i
-  simpa only [rankOne_self_diagonal, ← inner_conj_symm x (b i), RCLike.norm_conj]
+  simp only [rankOne_self_diagonal, ← inner_conj_symm x (b i), RCLike.norm_conj]
 
 theorem trace_rankOne_self (x : H) :
     trace (InnerProductSpace.rankOne ℂ x x) (isTraceClass_rankOne_self x) =
@@ -77,6 +77,6 @@ theorem traceNorm_rankOne_self (x : H) :
     funext i
     rw [CFC.abs_of_nonneg _ ((InnerProductSpace.rankOne ℂ x x).nonneg_iff_isPositive.mpr
       (InnerProductSpace.isPositive_rankOne_self x))]
-    simpa only [rankOne_self_diagonal, ← inner_conj_symm x (b i), RCLike.norm_conj]
+    simp only [rankOne_self_diagonal, ← inner_conj_symm x (b i), RCLike.norm_conj]
   rw [hdiag]
   exact h.tsum_eq

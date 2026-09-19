@@ -316,7 +316,8 @@ private lemma mulOperator_adjoint_domain_le
     · suffices h : ∀ ψ : SpaceDHilbertSpace d μ, ‖ψ‖ ^ 2 = (∫⁻ x, ‖‖ψ x‖ ^ 2‖ₑ ∂μ).toReal by
         simp only [← h, this]
       intro ψ
-      rw [Lp.norm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top]
+      rw [Lp.norm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top
+        (Lp.aestronglyMeasurable ψ)]
       simp [← ENNReal.toReal_pow, ← ENNReal.rpow_mul_natCast]
   suffices ‖φ n‖ ^ 2 ≤ ‖ξ‖ * ‖φ n‖ by
     nlinarith [this, sq_nonneg (‖ξ‖ - ‖φ n‖)]

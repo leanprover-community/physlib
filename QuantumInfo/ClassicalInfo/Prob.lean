@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-public import Mathlib.Data.NNReal.Basic
+public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UnitInterval
@@ -50,7 +50,8 @@ instance instOne : One Prob :=
 
 instance instMul : Mul Prob :=
   ⟨fun x y ↦ ⟨x.1 * y.1,
-    ⟨mul_nonneg x.2.1 y.2.1, mul_le_one₀ x.2.2 y.2.1 y.2.2⟩⟩⟩
+    ⟨mul_nonneg x.2.1 y.2.1,
+      (mul_le_of_le_one_left y.2.1 x.2.2).trans y.2.2⟩⟩⟩
 
 @[simp, norm_cast]
 theorem coe_zero : (0 : Prob).val = 0 :=
@@ -493,7 +494,7 @@ theorem negLog_eq_neg_ENNReal_log (p : Prob) : —log p = -ENNReal.log p := by
   rw [negLog]
   split_ifs with hp
   · simp [hp]
-  · rw [log, if_neg, if_neg]
+  · rw [log, ite_eq_right, ite_eq_right]
     · norm_cast
     · finiteness
     · rw [Subtype.ext_iff] at hp
@@ -532,7 +533,7 @@ theorem Continuous_negLog : Continuous negLog := by
   --Thanks Aristotle
   have h_cont_at_zero : ContinuousAt —log 0 := by
     unfold Prob.negLog
-    rw [ContinuousAt, if_pos rfl, ENNReal.tendsto_nhds_top_iff_nnreal]
+    rw [ContinuousAt, ite_eq_left rfl, ENNReal.tendsto_nhds_top_iff_nnreal]
     intro x
     rw [Metric.eventually_nhds_iff]
     use Real.exp (-x), by positivity

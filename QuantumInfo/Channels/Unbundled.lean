@@ -661,7 +661,7 @@ theorem conj_isCompletelyPositive (M : Matrix B A R) : (conj M).IsCompletelyPosi
   ext
   simp +contextual only [Matrix.kroneckerMap_apply, Matrix.conjTranspose_apply, RCLike.star_def,
     Matrix.one_apply, apply_ite, mul_one, mul_zero, star_zero, ↓reduceIte, ite_eq_right_iff,
-    map_eq_zero, if_true_left]
+    map_eq_zero, ite_true_left]
   tauto
 
 /-- `MatrixMap.submatrix` is completely positive -/
@@ -816,7 +816,8 @@ theorem positive_subunital_norm_apply_le {M : MatrixMap A B ℂ} [DecidableEq B]
   let eB := Matrix.toEuclideanCLM (n := B) (𝕜 := ℂ)
   have hXle : X ≤ ‖X‖ • (1 : Matrix A A ℂ) := by
     refine (map_le_map_iff eA).mp ?_
-    have h := IsSelfAdjoint.le_algebraMap_norm_self (IsSelfAdjoint.of_nonneg (map_nonneg eA hX))
+    have h := IsSelfAdjoint.le_algebraMap_norm_self (eA X)
+      (IsSelfAdjoint.of_nonneg (map_nonneg eA hX))
     have hs : algebraMap ℝ (EuclideanSpace ℂ A →L[ℂ] EuclideanSpace ℂ A) ‖eA X‖ =
         eA (‖X‖ • (1 : Matrix A A ℂ)) := by
       rw [Algebra.algebraMap_eq_smul_one]
@@ -836,8 +837,8 @@ theorem positive_subunital_norm_apply_le {M : MatrixMap A B ℂ} [DecidableEq B]
     rcases subsingleton_or_nontrivial (Matrix B B ℂ) with h | h
     · simp [Subsingleton.elim (1 : Matrix B B ℂ) 0]
     · exact CStarRing.norm_one.le
-  refine (CStarAlgebra.norm_le_norm_of_nonneg_of_le (map_nonneg eB hMX_nn)
-    ((map_le_map_iff eB).mpr hMX_le)).trans ?_
+  refine (CStarAlgebra.norm_le_norm_of_le_of_nonneg ((map_le_map_iff eB).mpr hMX_le)
+    (map_nonneg eB hMX_nn)).trans ?_
   change ‖‖X‖ • (1 : Matrix B B ℂ)‖ ≤ ‖X‖
   rw [show (‖X‖ • (1 : Matrix B B ℂ)) = ((‖X‖ : ℂ) • (1 : Matrix B B ℂ)) by ext; simp, norm_smul]
   simpa using mul_le_mul_of_nonneg_left hone (norm_nonneg X)
@@ -851,9 +852,9 @@ theorem cp_subunital_opNorm_le_one {M : MatrixMap A B ℂ} [DecidableEq B]
   refine (sq_le_sq₀ (norm_nonneg (M X)) (norm_nonneg X)).mp ?_
   simp only [sq, ← CStarRing.norm_star_mul_self, Matrix.star_eq_conjTranspose]
   let e := Matrix.toEuclideanCLM (n := B) (𝕜 := ℂ)
-  exact (CStarAlgebra.norm_le_norm_of_nonneg_of_le
-      (map_nonneg e (star_mul_self_nonneg (M X)))
-      ((map_le_map_iff e).mpr (cp_subunital_kadison_schwarz hM hM1 X))).trans
+  exact (CStarAlgebra.norm_le_norm_of_le_of_nonneg
+      ((map_le_map_iff e).mpr (cp_subunital_kadison_schwarz hM hM1 X))
+      (map_nonneg e (star_mul_self_nonneg (M X)))).trans
     (positive_subunital_norm_apply_le hM.IsPositive hM1 (star_mul_self_nonneg X))
 
 /--

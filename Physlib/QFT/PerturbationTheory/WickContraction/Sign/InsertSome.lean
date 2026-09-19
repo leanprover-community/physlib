@@ -42,7 +42,7 @@ lemma stat_ofFinset_eq_one_of_gradingCompliant (φs : List 𝓕.FieldOp)
   simp only [Fin.getElem_fin, Fintype.prod_sum_type]
   conv_lhs =>
     enter [2, 2, x]
-    rw [Equiv.sumCompl_apply_inr, if_neg (hnon x.1 (by simpa using x.2))]
+    rw [Equiv.sumCompl_apply_inr, ite_eq_right (hnon x.1 (by simpa using x.2))]
   simp only [Equiv.sumCompl_apply_inl, Finset.prod_const_one, mul_one]
   rw [← φsΛ.sigmaContractedEquiv.prod_comp, Fintype.prod_sigma]
   refine Fintype.prod_eq_one _ fun x => ?_
@@ -251,14 +251,19 @@ lemma sign_insert_some (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp) (φsΛ : Wi
   · split
     · rename_i h h1
       simp only [Nat.succ_eq_add_one, finCongr_apply, h1, true_and]
-      rw [if_pos, ofFinset_erase, stat_ofFinset_of_insertAndContractLiftFinset]
+      rw [ite_eq_left, ofFinset_erase, stat_ofFinset_of_insertAndContractLiftFinset]
       simp only [Fin.getElem_fin, Fin.val_cast, insertIdx_getElem_fin, map_mul,
         exchangeSign_symm]
       · rw [succAbove_mem_insertAndContractLiftFinset]
         simp only [signFinset, Finset.mem_filter, Finset.mem_univ, true_and]
         exact ⟨h1.1, h1.2.1, Or.inl ((φsΛ.getDual?_eq_none_iff_mem_uncontracted ↑j).mpr j.2)⟩
       · simp_all
-    · rw [if_neg, stat_ofFinset_of_insertAndContractLiftFinset]
+        refine h1.2.2.trans ?_
+        rcases lt_or_ge (φsΛ.fstFieldOfContract a).castSucc i with hc | hc
+        · rw [Fin.succAbove_of_castSucc_lt _ _ hc]
+        · rw [Fin.succAbove_of_le_castSucc _ _ hc]
+          exact Fin.castSucc_le_succ _
+    · rw [ite_eq_right, stat_ofFinset_of_insertAndContractLiftFinset]
       simp_all
 
 lemma signInsertSomeProd_eq_one_if (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp)
@@ -277,10 +282,10 @@ lemma signInsertSomeProd_eq_one_if (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp)
   congr
   funext a
   split
-  · rw [if_pos (by omega)]
+  · rw [ite_eq_left (by omega)]
   · split
-    · rw [hφj, if_pos (by omega)]
-    · rw [if_neg (by omega)]
+    · rw [hφj, ite_eq_left (by omega)]
+    · rw [ite_eq_right (by omega)]
 
 lemma signInsertSomeProd_eq_prod_prod (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp)
     (φsΛ : WickContraction φs.length)
@@ -299,7 +304,7 @@ lemma signInsertSomeProd_eq_prod_prod (φ : 𝓕.FieldOp) (φs : List 𝓕.Field
   congr
   funext a
   rw [prod_finset_eq_mul_fst_snd]
-  nth_rewrite 3 [if_neg]
+  nth_rewrite 3 [ite_eq_right]
   · simp only [Nat.succ_eq_add_one, not_lt, Fin.getElem_fin,
       fstFieldOfContract_getDual?, Option.get_some, mul_one, hg a]
   · simp only [sndFieldOfContract_getDual?, Option.get_some]
@@ -473,7 +478,7 @@ lemma signInsertSome_mul_filter_contracted_of_lt (φ : 𝓕.FieldOp) (φs : List
     𝓢(𝓕 |>ₛ φ, 𝓕 |>ₛ ⟨φs.get, φsΛ.uncontracted.filter (fun x => x ≤ ↑k)⟩)
     = 𝓢(𝓕 |>ₛ φ, 𝓕 |>ₛ ⟨φs.get, Finset.univ.filter (fun x => i.succAbove x < i)⟩) := by
   rw [signInsertSome, signInsertSomeProd_eq_finset (hφj := hg.2) (hg := hg.1),
-    signInsertSomeCoef_eq_finset (hφj := hg.2), if_neg (by omega), ← map_mul, ← map_mul]
+    signInsertSomeCoef_eq_finset (hφj := hg.2), ite_eq_right (by omega), ← map_mul, ← map_mul]
   congr 1
   rw [mul_eq_iff_eq_mul, ofFinset_union_disjoint]
   swap
@@ -603,7 +608,7 @@ lemma signInsertSome_mul_filter_contracted_of_not_lt (φ : 𝓕.FieldOp) (φs : 
     = 𝓢(𝓕 |>ₛ φ, 𝓕 |>ₛ ⟨φs.get, Finset.univ.filter (fun x => i.succAbove x < i)⟩) := by
   have hik : i.succAbove ↑k ≠ i := Fin.succAbove_ne i ↑k
   rw [signInsertSome, signInsertSomeProd_eq_finset (hφj := hg.2) (hg := hg.1),
-    signInsertSomeCoef_eq_finset (hφj := hg.2), if_pos (by omega), ← map_mul, ← map_mul]
+    signInsertSomeCoef_eq_finset (hφj := hg.2), ite_eq_left (by omega), ← map_mul, ← map_mul]
   congr 1
   rw [mul_eq_iff_eq_mul, ofFinset_union, ofFinset_union]
   apply (mul_eq_one_iff _ _).mp

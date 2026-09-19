@@ -241,11 +241,12 @@ lemma dense_top (hμ : μ ≤ volume) [μ.IsOpenPosMeasure] [IsFiniteMeasureOnCo
       -- Split `φₙ = σₙ + (φₙ - σₐ)` with `σₙ ≔ [bₙξ]` a sequence in `SpaceDHilbertSpace`
       let s (n : ℕ) : Space d → ℂ := fun x ↦ b n x * ξ x
       let σ (n : ℕ) : SpaceDHilbertSpace d μ := by
-        refine mk (f := s n) ⟨?_, ?_⟩
-        · exact (continuous_ofReal.comp (b n).continuous).aestronglyMeasurable.mul
-            ξ.val.aestronglyMeasurable
-        · refine lt_of_le_of_lt ?_ (memHS_coe ξ).2
-          exact eLpNorm_mono_enorm (enorm_bump_mul_le_enorm (b n) ξ)
+        refine mk (f := s n) ?_
+        refine lt_of_le_of_lt ?_ (memHS_coe ξ)
+        exact eLpNorm_mono_enorm
+          ((continuous_ofReal.comp (b n).continuous).aestronglyMeasurable.mul
+            ξ.val.aestronglyMeasurable)
+          (enorm_bump_mul_le_enorm (b n) ξ)
       have hψ_ae (n : ℕ) : ψ n =ᵐ[μ] f n := (schwartzEquiv_symm_coe_ae ⟨ψ n, hψ n⟩).symm
       have hφ_ae (n : ℕ) : φ n =ᵐ[μ] g n := schwartzEquiv_coe_ae (g n)
       have hσ_ae (n : ℕ) : σ n =ᵐ[μ] s n := coeFn_mk _
@@ -261,8 +262,12 @@ lemma dense_top (hμ : μ ≤ volume) [μ.IsOpenPosMeasure] [IsFiniteMeasureOnCo
         have hξB : Tendsto (fun n ↦ ∫⁻ x in B n, ‖ξ x‖ₑ ^ 2 ∂μ) atTop (nhds 0) := by
           refine tendsto_setLIntegral_zero ?_ ?_
           · refine lt_top_iff_ne_top.mp ?_
-            simpa [eLpNorm_one_eq_lintegral_enorm, Real.rpow_ofNat, enorm_pow, enorm_norm]
-              using L2.eLpNorm_rpow_two_norm_lt_top ξ
+            have h := L2.eLpNorm_rpow_two_norm_lt_top ξ
+            have hξ2 : AEStronglyMeasurable (fun x ↦ ‖(ξ : Space d → ℂ) x‖ ^ 2) μ :=
+              ξ.val.aestronglyMeasurable.norm.pow 2
+            simp only [Real.rpow_ofNat] at h
+            rw [eLpNorm_one_eq_lintegral_enorm hξ2] at h
+            simpa [enorm_pow, enorm_norm] using h
           · have : NeZero d := ⟨hd.ne'⟩
             refine tendsto_const_nhds.squeeze ?_ zero_le (fun n ↦ hμ (B n))
             let C : ℝ := (ENNReal.ofReal (√Real.pi ^ d / Real.Gamma (d / 2 + 1))).toReal

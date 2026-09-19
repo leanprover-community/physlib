@@ -237,7 +237,7 @@ lemma integrable_space_fderiv_mul {d : ℕ} {f : Space d → ℝ} (hf : IsDistBo
 instance {D1 : Type} [NormedAddCommGroup D1] [MeasurableSpace D1]
     {D2 : Type} [NormedAddCommGroup D2] [MeasurableSpace D2]
     (μ1 : Measure D1) (μ2 : Measure D2)
-    [Measure.HasTemperateGrowth μ1] [Measure.HasTemperateGrowth μ2]
+    [Measure.HasTemperateGrowth μ1] [Measure.HasTemperateGrowth μ2] [SFinite μ2]
     [OpensMeasurableSpace (D1 × D2)] :
     Measure.HasTemperateGrowth (μ1.prod μ2) where
   exists_integrable := by

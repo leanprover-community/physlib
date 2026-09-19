@@ -44,9 +44,9 @@ lemma norm_mul_self (x : ClosedGeneratedByOne a) : ‖x * x‖ = ‖x‖ ^ 2 := 
 /-- The generic Banach-algebra spectral-radius bound, specialized to the closed JB generator.  The
 reverse inequality is the genuinely JB-specific spectral theorem and is intentionally not folded
 into this generic estimate. -/
-lemma spectralRadius_le_norm [Nontrivial E] (x : ClosedGeneratedByOne a) :
+lemma spectralRadius_le_norm (x : ClosedGeneratedByOne a) :
     spectralRadius ℝ x ≤ (‖x‖₊ : ℝ≥0∞) := by
-  exact spectrum.spectralRadius_le_nnnorm x
+  exact spectralRadius_le_nnnorm x
 
 /-- Along powers of two, the closed one-generator algebra has a uniform norm. -/
 lemma norm_pow_two_pow (x : ClosedGeneratedByOne a) (n : ℕ) :

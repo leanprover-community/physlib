@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
-public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!

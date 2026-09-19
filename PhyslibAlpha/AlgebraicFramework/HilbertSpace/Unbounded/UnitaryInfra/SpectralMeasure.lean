@@ -61,7 +61,7 @@ lemma cfcSpectralOperator_inner (S : Set (spectrum ℂ U)) (x y : H) :
 lemma cfcSpectralOperator_apply_eq_zero_of_not_measurableSet {S : Set (spectrum ℂ U)}
     (hS : ¬MeasurableSet S) : cfcSpectralOperator U hU S = 0 := by
   unfold cfcSpectralOperator
-  rw [dif_neg hS]
+  rw [dite_eq_right hS]
 
 set_option maxHeartbeats 1000000 in
 /-- The `Complex.I`-inversion companion of `cfcScalarMeasure_real_I_smul`: rewrites a Riesz
@@ -199,7 +199,7 @@ lemma cfcSpectralOperator_isPositive {S : Set (spectrum ℂ U)} (hS : Measurable
 
 lemma cfcSpectralOperator_nonneg {S : Set (spectrum ℂ U)} (hS : MeasurableSet S) :
     0 ≤ cfcSpectralOperator U hU S :=
-  (ContinuousLinearMap.nonneg_iff_isPositive _).mpr (cfcSpectralOperator_isPositive U hU hS)
+  ContinuousLinearMap.nonneg_iff_isPositive.mpr (cfcSpectralOperator_isPositive U hU hS)
 
 /-- `cfcSpectralOperator U hU S` is monotone in `S`, for measurable sets, in the Loewner order on
 `H →L[ℂ] H`. -/
@@ -484,7 +484,7 @@ lemma cfcSpectralOperator_isIdempotent_of_isCompact
       exact cfcSpectralOperator_le_cfcRealOperator_of_compact_subset_open
         U hU hK hV hKV f hfK hfV hf
     have hF0 : 0 ≤ cfcRealOperator U hU f :=
-      (ContinuousLinearMap.nonneg_iff_isPositive _).mpr
+      ContinuousLinearMap.nonneg_iff_isPositive.mpr
         (cfcRealOperator_nonneg U hU f (fun z => (hf z).1))
     have hFone := hF1 f hf
     constructor
@@ -591,7 +591,7 @@ lemma cfcSpectralOperator_isIdempotent_of_isCompact
     let Q := cfcRealOperator U hU q
     have hQ0 : 0 ≤ Q := by
       dsimp [Q]
-      exact (ContinuousLinearMap.nonneg_iff_isPositive _).mpr
+      exact ContinuousLinearMap.nonneg_iff_isPositive.mpr
         (cfcRealOperator_nonneg U hU q (fun z => (hq z).1))
     have hQ1 : Q ≤ 1 := by
       dsimp [Q]
@@ -618,7 +618,7 @@ lemma cfcSpectralOperator_isIdempotent_of_isCompact
       nlinarith [norm_nonneg (Q x)]
     have hFop : ‖F‖ ≤ 1 := by
       exact (CStarAlgebra.norm_le_one_iff_of_nonneg F
-        ((ContinuousLinearMap.nonneg_iff_isPositive _).mpr
+        (ContinuousLinearMap.nonneg_iff_isPositive.mpr
           (cfcRealOperator_nonneg U hU f0 (fun z => (hf0 z).1)))).2
         (hF1 f0 hf0)
     have hexpand : A * A - A =
@@ -765,7 +765,7 @@ lemma cfcSpectralOperatorAux_isIdempotentElem (S : Set (spectrum ℂ U)) (hS : M
       nlinarith [norm_nonneg (D z)]
     have hPop : ‖P‖ ≤ 1 := by
       exact (CStarAlgebra.norm_le_one_iff_of_nonneg P
-        ((ContinuousLinearMap.nonneg_iff_isPositive _).mpr
+        (ContinuousLinearMap.nonneg_iff_isPositive.mpr
           (cfcSpectralOperator_isPositive U hU hK.measurableSet))).2 hP1
     have hexpand : A * A - A = (A - P) * A + P * (A - P) - (A - P) := by
       calc

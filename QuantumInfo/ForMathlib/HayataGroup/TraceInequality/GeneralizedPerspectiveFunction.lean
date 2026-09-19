@@ -480,7 +480,7 @@ private lemma generalizedPerspective_neg
     ((fun x : ℝ ↦ -f x) Δ h) A B = -((f Δ h) A B) := by
   simp [GeneralizedPerspective, cfcR, cfc_neg, mul_assoc]
 
-omit [Nontrivial ℋ] in
+omit [CompleteSpace ℋ] [Nontrivial ℋ] in
 private lemma jointlyConvexOn_neg
     {s : Set (L ℋ)} {t : Set (L ℋ)} {Φ : L ℋ → L ℋ → L ℋ}
     (hΦ : JointlyConvexOn s t (fun A B ↦ -Φ A B)) :

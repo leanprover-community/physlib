@@ -90,7 +90,7 @@ lemma coe_restrictSAC_apply (f : A₁ →ₚ[ℂ] ℂ) (x : selfAdjoint A₁) :
     (f.restrictSAC x : ℂ) = f (x : A₁) := by
   have : conj (f x) = f x := by
     rw [← star_def, ← isSelfAdjoint_iff]
-    exact IsSelfAdjoint.map isSelfAdjoint f
+    exact IsSelfAdjoint.map f isSelfAdjoint
   simpa [restrictSAC] using (conj_eq_iff_re.mp this)
 
 end Complex
@@ -136,7 +136,7 @@ lemma coe_restrictSAC_apply (f : A₁ →ₚ₁[ℂ] ℂ) (x : selfAdjoint A₁)
     (f.restrictSAC x : ℂ) = f (x : A₁) := by
   have : conj (f x) = f x := by
     rw [← star_def, ← isSelfAdjoint_iff]
-    exact IsSelfAdjoint.map isSelfAdjoint f
+    exact IsSelfAdjoint.map f isSelfAdjoint
   simpa [restrictSAC] using (conj_eq_iff_re.mp this)
 
 end UnitalPositiveLinearMap

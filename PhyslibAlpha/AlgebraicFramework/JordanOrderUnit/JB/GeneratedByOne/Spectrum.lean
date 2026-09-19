@@ -282,10 +282,16 @@ theorem jordanSpectralRadius_eq_norm [Nontrivial E] [PartialOrder E] [IsOrderedA
   · rcases norm_or_neg_norm_mem_spectrum a x with hx | hx
     · calc
         (‖x‖₊ : ENNReal) = ‖(‖x‖ : ℝ)‖₊ := by rw [nnnorm_norm]
-        _ ≤ spectralRadius ℝ x := le_iSup₂ (α := ENNReal) (‖x‖ : ℝ) hx
+        _ ≤ spectralRadius ℝ x := by
+          rw [spectralRadius_eq_of_unital]
+          exact le_iSup₂ (f := fun (k : ℝ) (_ : k ∈ spectrum ℝ x) => (‖k‖₊ : ENNReal))
+            (‖x‖ : ℝ) hx
     · calc
         (‖x‖₊ : ENNReal) = ‖(-‖x‖ : ℝ)‖₊ := by simp only [nnnorm_neg, nnnorm_norm]
-        _ ≤ spectralRadius ℝ x := le_iSup₂ (α := ENNReal) (-‖x‖ : ℝ) hx
+        _ ≤ spectralRadius ℝ x := by
+          rw [spectralRadius_eq_of_unital]
+          exact le_iSup₂ (f := fun (k : ℝ) (_ : k ∈ spectrum ℝ x) => (‖k‖₊ : ENNReal))
+            (-‖x‖ : ℝ) hx
 
 end ClosedGeneratedByOne
 
@@ -388,8 +394,7 @@ theorem nnnorm_aeval_closedGenerator [Nontrivial E] [PartialOrder E] [IsOrderedA
       ⨆ l ∈ jordanSpectrum a, (‖p.eval l‖₊ : ENNReal) := by
   rw [← JBAlgebra.ClosedGeneratedByOne.jordanSpectralRadius_eq_norm a
     (Polynomial.aeval (closedGenerator a) p)]
-  unfold spectralRadius
-  rw [← jordanSpectrum_aeval a p, iSup_image]
+  rw [spectralRadius_eq_of_unital, ← jordanSpectrum_aeval a p, iSup_image]
 
 /-- Norm form of the polynomial-evaluation isometry, expressed in `ℝ≥0∞` so that the spectral
 supremum is total. -/

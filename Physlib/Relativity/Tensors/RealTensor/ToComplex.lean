@@ -181,7 +181,7 @@ lemma toComplex_repr {n} {c : Fin n → realLorentzTensor.Color}
   rw [toComplex_eq_sum_basis, map_sum]
   simp only [← Complex.coe_smul, map_smul, Finsupp.coe_finsetSum, Finset.sum_apply,
     Finsupp.smul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero, Finset.sum_ite_eq', Finset.mem_univ, if_true, Equiv.symm_apply_apply]
+    mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ite_true, Equiv.symm_apply_apply]
 
 /-- `toComplex` sends basis elements to basis elements. -/
 @[simp]

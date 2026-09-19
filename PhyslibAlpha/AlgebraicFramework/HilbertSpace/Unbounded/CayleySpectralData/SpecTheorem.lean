@@ -451,7 +451,8 @@ lemma VectorMeasure.integral_real_withDensity_mul
                 exact (Lp.aestronglyMeasurable f).sub
                   (Lp.aestronglyMeasurable k) |>.enorm
             rw [hlin, ← hvar]
-            rw [← eLpNorm_one_eq_lintegral_enorm]
+            rw [← eLpNorm_one_eq_lintegral_enorm (f := fun x => f x - k x)
+              ((Lp.aestronglyMeasurable f).sub (Lp.aestronglyMeasurable k))]
             have he : eLpNorm (fun x => f x - k x) 1 (μ.withDensity q B).variation =
                 eLpNorm (⇑(f - k)) 1 (μ.withDensity q B).variation :=
               eLpNorm_congr_ae (Lp.coeFn_sub f k).symm

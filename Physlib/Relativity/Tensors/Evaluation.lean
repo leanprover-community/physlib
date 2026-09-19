@@ -322,8 +322,8 @@ lemma evalT_prodT_right {n n1 : ℕ} {c : Fin n → C} {c1 : Fin (n1 + 1) → C}
       · have hprod : ComponentIdx.prod.symm (b, b1) (Fin.natAdd (m := n1 + 1) n i) =
             basisIdxCongr (by simp) x := by
           simp [hi]
-        rw [prodT_basis', evalT_basis, if_pos hprod, permT_basis]
-        rw [evalT_basis, if_pos hi, prodT_basis']
+        rw [prodT_basis', evalT_basis, ite_eq_left hprod, permT_basis]
+        rw [evalT_basis, ite_eq_left hi, prodT_basis']
         congr
         ext j
         refine Fin.addCases (fun a => ?_) (fun a => ?_) j
@@ -360,8 +360,8 @@ lemma evalT_prodT_right {n n1 : ℕ} {c : Fin n → C} {c1 : Fin (n1 + 1) → C}
             basisIdxCongr (by simp) x := by
           intro hprod
           exact hi (by simpa [ComponentIdx.prod] using hprod)
-        rw [prodT_basis', evalT_basis, if_neg hprod]
-        rw [evalT_basis, if_neg hi]
+        rw [prodT_basis', evalT_basis, ite_eq_right hprod]
+        rw [evalT_basis, ite_eq_right hi]
         simp
     · simp
     · simp [ht]
@@ -431,7 +431,7 @@ lemma eq_sum_evalT {n : ℕ} {c : Fin (n + 1) → C} (t : Tensor S c) :
           basisIdxCongr_apply_apply]
         exact ComponentIdx.congr_right _ _ _ (by fin_cases j; rfl)
     · intro j h1 h1
-      rw [if_neg (by grind)]
+      rw [ite_eq_right (by grind)]
       simp
     · simp
   · simp
@@ -462,13 +462,13 @@ lemma eq_sum_evalT_zero {n : ℕ} {c : Fin (n + 1) → C} (t : Tensor S c) :
           ComponentIdx.single_symm_apply, basisIdxCongr_apply_apply]
         exact ComponentIdx.congr_right b 0 0 rfl
       · simp only [ComponentIdx.prod, Equiv.coe_fn_symm_mk, Fin.addCases]
-        rw [dif_neg (by simp)]
+        rw [dite_eq_right (by simp)]
         simp only [eqRec_eq_cast, basisIdxCongr, Equiv.cast_apply, cast_cast]
         symm
         rw [cast_eq_iff_heq]
         congr 1
     · intro j h1 h1
-      rw [if_neg (by grind)]
+      rw [ite_eq_right (by grind)]
       simp
     · simp
   · simp

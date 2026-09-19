@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.Tactic.Abel
 
 /-!

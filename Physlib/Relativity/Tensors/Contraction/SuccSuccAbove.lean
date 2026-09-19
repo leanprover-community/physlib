@@ -156,7 +156,8 @@ lemma succSuccAbove_eq_orderEmbOfFin {n : ℕ}
     (i j : Fin (n + 1 + 1)) (hij : i ≠ j) :
     succSuccAbove i j = Finset.orderEmbOfFin {i, j}ᶜ
     (by rw [Finset.card_compl]; simp [Finset.card_pair hij]) := by
-  apply ((succSuccAbove_strictMono i j).range_inj (OrderEmbedding.strictMono _)).mp
+  apply ((succSuccAbove_strictMono i j).range_inj_of_wellFoundedLT
+    (OrderEmbedding.strictMono _)).mp
   simp only [succSuccAbove_range hij, Finset.range_orderEmbOfFin, Finset.coe_compl,
       Finset.coe_insert, Finset.coe_singleton]
 

@@ -390,12 +390,12 @@ omit [CompleteSpace ℋ] in
 
 lemma leftMulHS_nonneg {A : L ℋ} (hA0 : 0 ≤ A) :
     0 ≤ leftMulHS (ℋ := ℋ) A := by
-  have hApos : A.IsPositive := (ContinuousLinearMap.nonneg_iff_isPositive A).1 hA0
+  have hApos : A.IsPositive := ContinuousLinearMap.nonneg_iff_isPositive.1 hA0
   have hA_sa : IsSelfAdjoint A := hApos.isSelfAdjoint
   have hleft_sa : IsSelfAdjoint (leftMulHS (ℋ := ℋ) A) := by
     change star (leftMulHS (ℋ := ℋ) A) = leftMulHS (ℋ := ℋ) A
     simp [hA_sa.star_eq, leftMulHS_star (ℋ := ℋ) A]
-  refine (ContinuousLinearMap.nonneg_iff_isPositive _).2 ?_
+  refine ContinuousLinearMap.nonneg_iff_isPositive.2 ?_
   rw [ContinuousLinearMap.isPositive_iff_complex]
   intro X
   constructor

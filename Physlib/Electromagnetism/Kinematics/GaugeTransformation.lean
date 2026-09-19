@@ -378,7 +378,7 @@ lemma toFieldStrength_eval_bareGradient_inl_inr {d : ℕ} (i : Fin d)
   simp_rw [hfderiv]
   simp only [_root_.add_apply, FunLike.coe_smul,
     Pi.smul_apply, Lorentz.Vector.coordCLM_apply, smul_eq_mul, Lorentz.Vector.basis_apply]
-  simp only [mul_ite, mul_one, mul_zero, ite_add, zero_add, if_true]
+  simp only [mul_ite, mul_one, mul_zero, ite_add, zero_add, ite_true]
   simp only [minkowskiMatrix.inl_0_inl_0, minkowskiMatrix.inr_i_inr_i]
   simp only [reduceCtorEq, ↓reduceIte, add_zero]
   simp only [Lorentz.Vector.fderiv_coord, Lorentz.Vector.coordCLM_apply,

@@ -317,7 +317,7 @@ an isometry. -/
 theorem isClosed_range_jordanCfcHom [Nontrivial E] [PartialOrder E] [IsOrderedAddMonoid E]
     [IsArchimedeanOrderUnit E] [PosSMulMono ℝ E] [IsJBOrderUnit E] (a : E) :
     IsClosed (Set.range (jordanCfcHom a)) :=
-  (jordanCfcHom_isometry a).antilipschitz.isClosed_range
+  (jordanCfcHom_isometry a).antilipschitzWith.isClosed_range
     (jordanCfcHom_isometry a).uniformContinuous
 
 /-- The algebraic one-generator submodule included into its norm closure. -/

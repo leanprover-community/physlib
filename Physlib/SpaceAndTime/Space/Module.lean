@@ -695,7 +695,7 @@ lemma basis_eq_mfderiv_modelDiffeo_single (d : ℕ) (μ : Fin d) (x : Space d) :
     CompTriple.comp_eq, modelWithCornersSelf_coe, Set.range_id,
     OpenPartialHomeomorph.coe_toPartialEquiv_symm, Homeomorph.toOpenPartialHomeomorph_symm_apply,
     fderivWithin_univ]
-  rw [if_pos (modelDiffeo.mdifferentiable (WithTop.top_ne_zero)).mdifferentiableAt]
+  rw [ite_eq_left (modelDiffeo.mdifferentiable (WithTop.top_ne_zero)).mdifferentiableAt]
   ext i
   have h := fderiv_space_components i ((⇑modelDiffeo ∘ ⇑(homEuclideanSpaceSpace d)))
     (by simpa [Function.comp_def, homEuclideanSpaceSpace] using by fun_prop)

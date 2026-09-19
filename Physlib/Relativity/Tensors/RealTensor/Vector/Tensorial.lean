@@ -144,8 +144,7 @@ lemma tensor_basis_repr_toTensor_prod_apply {d} (F : Vector d ⊗[ℝ] Vector d)
     (b : ComponentIdx (S := realLorentzTensor d) (Fin.append ![Color.up] ![Color.up])) :
     (Tensor.basis _).repr (toTensor F) b = (basis.tensorProduct basis).repr F (b 0, b 1) := by
   rw [Tensorial.basis_toTensor_apply, Tensorial.basis_map_prod]
-  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-    Equiv.symm_symm, Fin.isValue]
+  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Fin.isValue]
   rw [tensor_basis_map_eq_basis_reindex]
   have hb : (((basis (d := d)).reindex indexEquiv.symm).tensorProduct
       (basis.reindex indexEquiv.symm)) =
@@ -153,7 +152,7 @@ lemma tensor_basis_repr_toTensor_prod_apply {d} (F : Vector d ⊗[ℝ] Vector d)
       (indexEquiv.symm.prodCongr indexEquiv.symm) := by
     ext ⟨i, j⟩
     simp
-  rw [hb, Module.Basis.repr_reindex_apply]
+  rw [hb, Finsupp.equivMapDomain_apply, Module.Basis.repr_reindex_apply]
   congr 1
 
 /-!

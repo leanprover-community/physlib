@@ -266,8 +266,7 @@ cone when both factors have order units. -/
 lemma exists_eq_sub_minTensorCone (t : E₁ ⊗[ℝ] E₂) :
     ∃ tp tn : minTensorCone E₁ E₂,
       t = (tp : E₁ ⊗[ℝ] E₂) - (tn : E₁ ⊗[ℝ] E₂) := by
-  induction t using TensorProduct.induction_on with
-  | zero => exact ⟨0, 0, by simp⟩
+  induction t using TensorProduct.inductionOn with
   | tmul x y =>
       obtain ⟨xp, xn, hxp, hxn, hx⟩ := IsOrderUnit.exists_eq_sub_nonneg x
       obtain ⟨yp, yn, hyp, hyn, hy⟩ := IsOrderUnit.exists_eq_sub_nonneg y

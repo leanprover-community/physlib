@@ -167,11 +167,11 @@ protected noncomputable def SchurTriangulationAux.of
           | ⟨true, i⟩ => show bE ⟨true, i⟩ = bV i from
             show (int.collectedBasis fun b => (B b).toBasis).toOrthonormalBasis _ ⟨true, i⟩ = bV i
             by simp only [Basis.coe_toOrthonormalBasis, DirectSum.IsInternal.collectedBasis_coe,
-              cond_true, OrthonormalBasis.coe_toBasis, B, V, W]
+              Bool.cond_true, OrthonormalBasis.coe_toBasis, B, V, W]
           | ⟨false, j⟩ => show bE ⟨false, j⟩ = bW j from
             show (int.collectedBasis fun b => (B b).toBasis).toOrthonormalBasis _ ⟨false, j⟩ = bW j
             by simp only [Basis.coe_toOrthonormalBasis, DirectSum.IsInternal.collectedBasis_coe,
-              cond_false, OrthonormalBasis.coe_toBasis, B, V, W]
+              Bool.cond_false, OrthonormalBasis.coe_toBasis, B, V, W]
         have hf {bi i' bj j'} (hi : e i = ⟨bi, i'⟩) (hj : e j = ⟨bj, j'⟩) :=
           calc toMatrixOrthonormal basis f i j
             _ = toMatrixOrthonormal bE f (e i) (e j) := by

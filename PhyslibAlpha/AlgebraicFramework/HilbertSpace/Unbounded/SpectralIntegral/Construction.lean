@@ -49,7 +49,7 @@ lemma spectralCutoffSet_mono : Monotone spectralCutoffSet := by
 
 lemma spectralCutoffSet_iUnion : ⋃ n, spectralCutoffSet n = Set.univ := by
   ext r
-  simp only [mem_iUnion, mem_Icc, mem_univ, iff_true]
+  simp only [mem_iUnion, mem_univ, iff_true]
   obtain ⟨n, hn⟩ := exists_nat_ge |r|
   exact ⟨n, neg_le_of_abs_le hn, le_trans (le_abs_self r) hn⟩
 
@@ -125,7 +125,7 @@ lemma truncationIntegral_inner_tendsto_complexWeakIntegral
     · filter_upwards [] with r
       exact truncationFunction_tendsto r
   convert hdom using 1
-  simpa [WOTSpectralMeasure.complexWeakIntegral, ν] using hdom
+  simp [WOTSpectralMeasure.complexWeakIntegral, ν]
 
 @[nolint synTaut]
 lemma integral_indicator_real_eq_complex
@@ -137,9 +137,7 @@ lemma integral_indicator_real_eq_complex
         ∂[ContinuousLinearMap.lsmul ℝ ℂ; μ] := by
   have hfun : (fun x => s.indicator (fun _ => (c : ℂ)) x) =
       (fun x => (s.indicator (fun _ => c) x : ℂ)) := by
-    simpa [Function.comp_def] using
-      (Set.indicator_comp_of_zero (s := s) (f := fun _ : α => c)
-        (g := Complex.ofRealCLM) Complex.ofRealCLM.map_zero)
+    simp
   exact congrArg (fun f : α → ℂ =>
     ∫ᵛ x, f x ∂[ContinuousLinearMap.lsmul ℝ ℂ; μ]) hfun
 
@@ -156,7 +154,7 @@ lemma integral_real_eq_complex
     change μ.variation s < ⊤ at hfinite
     have hfinite' : IsFiniteMeasure (μ.variation.restrict s) := by
       exact MeasureTheory.isFiniteMeasure_restrict.mpr hfinite.ne
-    letI := hfinite'
+    let := hfinite'
     calc
       ∫ᵛ x, s.indicator (fun _ => c) x
           ∂[ContinuousLinearMap.lsmul ℝ ℝ (E := ℂ); μ] =
@@ -260,8 +258,7 @@ lemma spectralSquareMomentDomain_zero (μS : WOTSpectralMeasure ℝ H) :
   rw [mem_spectralSquareMomentDomain_iff]
   have hzero : (0 : H) = (0 : ℂ) • (0 : H) := by simp
   rw [hzero, μS.diagonalMeasure_smul]
-  simpa [norm_zero, pow_two] using (integrable_zero_measure :
-    Integrable (fun r : ℝ => r ^ 2) (0 : Measure ℝ))
+  simp [norm_zero, pow_two]
 
 lemma spectralSquareMomentDomain_add (μS : WOTSpectralMeasure ℝ H) {x y : H}
     (hx : x ∈ spectralSquareMomentDomain μS)
@@ -325,7 +322,7 @@ lemma truncationIntegral_sub_norm_sq_le (μS : WOTSpectralMeasure ℝ H) (n m : 
         ‖truncationFunction n r - truncationFunction m r‖ =
             ‖(truncationFunction n r - (r : ℂ)) -
               (truncationFunction m r - (r : ℂ))‖ := by
-                congr 1 <;> ring
+                congr 1; ring
         _ ≤ _ := norm_sub_le _ _
     dsimp [a, b]
     have hc : 0 ≤ ‖truncationFunction n r - truncationFunction m r‖ := norm_nonneg _
@@ -432,8 +429,8 @@ lemma truncationIntegral_cauchy (μS : WOTSpectralMeasure ℝ H) {x : H}
     simpa [A] using truncation_error_lintegral_tendsto_zero μS x hx
   have hq : 0 < ε ^ 2 / 8 := by positivity
   have hsmall : ∀ᶠ n : ℕ in Filter.atTop, A n < ENNReal.ofReal (ε ^ 2 / 8) := by
-    apply hA.eventually
-    exact Iio_mem_nhds ((ENNReal.ofReal_pos).2 hq)
+    exact hA.eventually (p := fun y => y < ENNReal.ofReal (ε ^ 2 / 8))
+      (Iio_mem_nhds ((ENNReal.ofReal_pos).2 hq))
   rcases (Filter.eventually_atTop.1 hsmall) with ⟨N, hN⟩
   refine ⟨N, ?_⟩
   intro n hn m hm
@@ -463,7 +460,7 @@ lemma truncationIntegral_cauchy (μS : WOTSpectralMeasure ℝ H) {x : H}
                   · exact htwo _
           _ = ENNReal.ofReal (2 * (ε ^ 2 / 8) + 2 * (ε ^ 2 / 8)) :=
             (ENNReal.ofReal_add (by positivity) (by positivity)).symm
-          _ = ENNReal.ofReal (ε ^ 2 / 2) := by congr 1 <;> ring
+          _ = ENNReal.ofReal (ε ^ 2 / 2) := by congr 1; ring
       _ < ENNReal.ofReal (ε ^ 2) := by
         exact (ENNReal.ofReal_lt_ofReal_iff (by positivity)).2 (by nlinarith)
   have hnormsq : ENNReal.ofReal
@@ -510,7 +507,7 @@ lemma truncation_norm_lintegral_tendsto
     exact tendsto_nhds_of_eventually_eq (by
       filter_upwards [truncationFunction_eventually_eq r] with n hn
       have hnormsq : ‖(r : ℂ)‖ₑ ^ 2 = ENNReal.ofReal (r ^ 2) := by
-        rw [← ofReal_norm_eq_enorm (r : ℂ), pow_two,
+        rw [← ofReal_norm (r : ℂ), pow_two,
           ← ENNReal.ofReal_mul (norm_nonneg (r : ℂ))]
         simp [Complex.norm_real, Real.norm_eq_abs]
         congr 1
@@ -547,8 +544,7 @@ lemma truncationLimit_add (μS : WOTSpectralMeasure ℝ H)
     (by
       convert hxy using 1
       funext n
-      simpa using (ContinuousLinearMapWOT.toCLM (truncationIntegral μS n)).map_add
-        (x : H) (y : H))
+      simp)
 
 lemma truncationLimit_smul (μS : WOTSpectralMeasure ℝ H)
     (c : ℂ) (x : spectralSquareMomentSubmodule μS) :
@@ -558,8 +554,7 @@ lemma truncationLimit_smul (μS : WOTSpectralMeasure ℝ H)
     (by
       convert hcx using 1
       funext n
-      simpa using (ContinuousLinearMapWOT.toCLM (truncationIntegral μS n)).map_smul c
-        (x : H))
+      simp)
 
 lemma truncationIntegral_norm_sq (μS : WOTSpectralMeasure ℝ H) (n : ℕ) (x : H) :
     ENNReal.ofReal (‖truncationIntegral μS n x‖ ^ 2) =
@@ -628,7 +623,7 @@ lemma maximalSpectralIntegral_isSymmetric (μS : WOTSpectralMeasure ℝ H) :
 @[nolint unusedArguments]
 
 lemma spectralCutoff_mem_spectralSquareMomentDomain
-    (μS : WOTSpectralMeasure ℝ H) (x : H) {C : ℝ} (hC : 0 ≤ C) :
+    (μS : WOTSpectralMeasure ℝ H) (x : H) {C : ℝ} (_hC : 0 ≤ C) :
     μS (Set.Icc (-C) C) x ∈ spectralSquareMomentDomain μS := by
   let K : Set ℝ := Set.Icc (-C) C
   have hK : MeasurableSet K := measurableSet_Icc
@@ -817,7 +812,7 @@ lemma maximalSpectralIntegral_apply (μS : WOTSpectralMeasure ℝ H)
 @[nolint unusedArguments]
 
 lemma scalarMeasure_inner_projection (μS : WOTSpectralMeasure ℝ H)
-    (x y : H) (S : Set ℝ) (hS : MeasurableSet S) :
+    (x y : H) (S : Set ℝ) (_hS : MeasurableSet S) :
     ⟪y, μS S x⟫_ℂ = ⟪μS S y, μS S x⟫_ℂ := by
   let p : H →L[ℂ] H := ContinuousLinearMapWOT.toCLM (μS S)
   have hmul : p * p = p := by
@@ -868,7 +863,7 @@ lemma truncationIntegral_inner_tendsto_weakIntegral
         ContinuousLinearMap.lsmul ℝ ℝ (E := ℂ); μS.scalarMeasure x y])
       Filter.atTop (𝓝 (μS.weakIntegral id x y)) := by
   let ν := μS.scalarMeasure x y
-  letI := scalarMeasure_isFiniteVariation μS x y
+  let := scalarMeasure_isFiniteVariation μS x y
   have hlimit : μS.complexWeakIntegral (fun r : ℝ => (r : ℂ)) x y =
       μS.weakIntegral id x y := by
     unfold WOTSpectralMeasure.complexWeakIntegral WOTSpectralMeasure.weakIntegral
@@ -1048,7 +1043,7 @@ theorem boundedIntegral_ofReal_eq_measurableSpectralIntegral
     boundedIntegral μS (fun r : ℝ => (f r : ℂ))
         (Complex.measurable_ofReal.comp hf)
         (by
-          rcases hfb with ⟨C, hC, hCbound⟩
+          rcases hfb with ⟨C, _hC, hCbound⟩
           exact ⟨C, fun r => by
             simpa [Complex.norm_real, Real.norm_eq_abs] using hCbound r⟩) x =
       (measurableSpectralIntegral μS f hf)
@@ -1057,7 +1052,7 @@ theorem boundedIntegral_ofReal_eq_measurableSpectralIntegral
           exact Submodule.mem_top⟩ := by
   apply ext_inner_left ℂ
   intro y
-  letI : IsFiniteMeasure (μS.scalarMeasure x y).variation :=
+  let : IsFiniteMeasure (μS.scalarMeasure x y).variation :=
     scalarMeasure_isFiniteVariation μS x y
   have hfi : (μS.scalarMeasure x y).Integrable f := by
     rcases hfb with ⟨C, hC, hCbound⟩
