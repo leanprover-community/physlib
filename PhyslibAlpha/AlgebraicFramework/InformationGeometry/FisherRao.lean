@@ -26,6 +26,8 @@ Robertson--Schrödinger in algebraic uncertainty frameworks.
 
 * `PhyslibAlpha.OpenSimplex` — a point on the open probability simplex.
 * `PhyslibAlpha.OpenSimplex.fisherRaoInner` — the Fisher--Rao inner product $g_p(u,v)$.
+* `PhyslibAlpha.OpenSimplex.expect`, `PhyslibAlpha.OpenSimplex.variance` — expectation and
+  variance of a function under a point of the simplex.
 * `PhyslibAlpha.fisherInfo` — classical Fisher information $I(θ)$ for a parametric family.
 * `PhyslibAlpha.cramerRao` — the Cramer--Rao lower bound $\mathrm{Var}(T) \ge 1/I(θ)$.
 
@@ -175,46 +177,50 @@ theorem fisherInfo_eq_fisherRaoSq (q : OpenSimplex α) (dp : α → ℝ) :
 
 /-! ## IV. Cramer--Rao lower bound -/
 
+namespace OpenSimplex
+
+variable (p : OpenSimplex α)
+
 /-- Weighted expectation $\mathbb{E}_p[f] = \sum_i f(i) p(i)$. -/
-def expect (p : α → ℝ) (f : α → ℝ) : ℝ :=
-  ∑ i : α, f i * p i
+def expect (f : α → ℝ) : ℝ :=
+  ∑ i : α, f i * p.val i
 
 /-- Weighted variance $\mathrm{Var}_p(f) = \mathbb{E}_p[(f - \mathbb{E}_p[f])^2]$. -/
-def variance (p : α → ℝ) (f : α → ℝ) : ℝ :=
-  expect p (fun i => (f i - expect p f) ^ 2)
+def variance (f : α → ℝ) : ℝ :=
+  p.expect fun i => (f i - p.expect f) ^ 2
 
-/-- **Cramer--Rao lower bound.** For a parametric family with
-    all $p_i > 0$ and an estimator $T$ satisfying the unbiasedness
-    derivative condition $\sum_i T(i) \cdot (\partial p_i / \partial \theta) = 1$, we have
+end OpenSimplex
 
-      $\mathrm{Var}_p(T) \ge 1 / I(\theta)$
+/-- **Cramer--Rao lower bound.** For a parametric family through a point `q` of the open
+    simplex with derivative vector `dp` (so $\sum_i dp_i = 0$), and an estimator $T$ satisfying
+    the unbiasedness derivative condition $\sum_i T(i) \cdot dp_i = 1$, we have
 
-    where $I(\theta) = \mathrm{fisherInfo}(p, dp)$. The proof is a single application
+      $\mathrm{Var}_q(T) \ge 1 / I(\theta)$
+
+    where $I(\theta) = \mathrm{fisherInfo}(q, dp)$. The proof is a single application
     of Cauchy--Schwarz on the Fisher--Rao inner product to the pair
-    $(T - \mathbb{E}[T], dp/p)$. -/
-theorem cramerRao (p dp : α → ℝ) (T : α → ℝ)
-    (hpos : ∀ i, 0 < p i)
-    (hsum : ∑ i : α, p i = 1)
+    $(T - \mathbb{E}[T], dp/q)$. -/
+theorem cramerRao (q : OpenSimplex α) (dp T : α → ℝ)
     (hdsum : ∑ i : α, dp i = 0)
     (hunbiased : ∑ i : α, T i * dp i = 1)
-    (hI : 0 < fisherInfo p dp) :
-    1 / fisherInfo p dp ≤ variance p T := by
-  let q : OpenSimplex α := ⟨p, hpos, hsum⟩
-  let a : α → ℝ := fun i => (T i - expect p T) * p i
+    (hI : 0 < fisherInfo q.val dp) :
+    1 / fisherInfo q.val dp ≤ q.variance T := by
+  let a : α → ℝ := fun i => (T i - q.expect T) * q.val i
   have cs := q.fisherRao_cauchy_schwarz a dp
-  have hpne : ∀ i, p i ≠ 0 := fun i => ne_of_gt (hpos i)
+  have hpne : ∀ i, q.val i ≠ 0 := q.val_ne_zero
   have inner_eq : q.fisherRaoInner a dp = 1 := by
     simp only [OpenSimplex.fisherRaoInner, a]
-    conv => lhs; arg 2; ext i; rw [show ((T i - expect p T) * p i) * dp i / p i =
-        (T i - expect p T) * dp i from by field_simp [hpne i]]
+    conv => lhs; arg 2; ext i; rw [show ((T i - q.expect T) * q.val i) * dp i / q.val i =
+        (T i - q.expect T) * dp i from by field_simp [hpne i]]
     simp_rw [sub_mul]
     rw [Finset.sum_sub_distrib, ← Finset.mul_sum, hdsum, mul_zero, sub_zero]
     exact hunbiased
-  have sq_u_eq : q.fisherRaoSq a = variance p T := by
-    simp only [OpenSimplex.fisherRaoSq, OpenSimplex.fisherRaoInner, variance, expect, a]
+  have sq_u_eq : q.fisherRaoSq a = q.variance T := by
+    simp only [OpenSimplex.fisherRaoSq, OpenSimplex.fisherRaoInner, OpenSimplex.variance,
+      OpenSimplex.expect, a]
     apply Finset.sum_congr rfl; intro i _
-    simp only [q]; field_simp [hpne i]
-  have sq_v_eq : q.fisherRaoSq dp = fisherInfo p dp := by
+    field_simp [hpne i]
+  have sq_v_eq : q.fisherRaoSq dp = fisherInfo q.val dp := by
     simp only [OpenSimplex.fisherRaoSq, OpenSimplex.fisherRaoInner, fisherInfo]
     apply Finset.sum_congr rfl; intro i _; ring
   rw [inner_eq, sq_u_eq, sq_v_eq] at cs
