@@ -573,38 +573,29 @@ lemma exists_contraction_pair_of_card_ge_zero {φs : List 𝓕.FieldOp}
     ∃ a, a ∈ φsΛ.1 :=
   Finset.card_pos.mp h
 
-set_option backward.isDefEq.respectTransparency false in
-set_option maxHeartbeats 800000 in
 lemma exists_join_singleton_of_card_ge_zero {φs : List 𝓕.FieldOp} (φsΛ : WickContraction φs.length)
     (h : 0 < φsΛ.1.card) (hc : φsΛ.GradingCompliant) :
     ∃ (i j : Fin φs.length) (h : i < j) (φsucΛ : WickContraction [singleton h]ᵘᶜ.length),
     φsΛ = join (singleton h) φsucΛ ∧ (𝓕 |>ₛ φs[i]) = (𝓕 |>ₛ φs[j])
     ∧ φsucΛ.GradingCompliant ∧ φsucΛ.1.card + 1 = φsΛ.1.card := by
   obtain ⟨a, ha⟩ := exists_contraction_pair_of_card_ge_zero φsΛ h
-  use φsΛ.fstFieldOfContract ⟨a, ha⟩
-  use φsΛ.sndFieldOfContract ⟨a, ha⟩
-  use φsΛ.fstFieldOfContract_lt_sndFieldOfContract ⟨a, ha⟩
-  let φsucΛ :
-    WickContraction [singleton (φsΛ.fstFieldOfContract_lt_sndFieldOfContract ⟨a, ha⟩)]ᵘᶜ.length :=
-    congr (by simp [← subContraction_singleton_eq_singleton])
-    (φsΛ.quotContraction {a} (by simpa using ha))
-  use φsucΛ
-  simp only [Fin.getElem_fin]
-  apply And.intro
-  · have h1 := join_congr (subContraction_singleton_eq_singleton _ ⟨a, ha⟩).symm (φsucΛ := φsucΛ)
-    simp only [h1, congr_trans_apply, congr_refl, φsucΛ]
-    rw [join_sub_quot]
-  · apply And.intro (hc ⟨a, ha⟩)
-    apply And.intro
-    · simp only [φsucΛ]
-      rw [gradingCompliant_congr (φs' := [(φsΛ.subContraction {a} (by simpa using ha))]ᵘᶜ)]
-      simp only [congr_trans_apply, congr_refl]
-      exact quotContraction_gradingCompliant hc
-      rw [← subContraction_singleton_eq_singleton]
-    · simp only [card_congr, φsucΛ]
-      have h1 := subContraction_card_plus_quotContraction_card_eq _ {a} (by simpa using ha)
-      simp only [subContraction, Finset.card_singleton] at h1
-      omega
+  /- Stated for a general `c` so that substituting `c = subContraction {a} _` avoids any
+    cast between `[subContraction {a} _]ᵘᶜ.length` and `[singleton _]ᵘᶜ.length`. -/
+  have key : ∀ (c : WickContraction φs.length)
+      (_ : c = φsΛ.subContraction {a} (by simpa using ha)),
+      ∃ φsucΛ : WickContraction [c]ᵘᶜ.length, φsΛ = join c φsucΛ ∧
+        GradingCompliant [c]ᵘᶜ φsucΛ ∧ φsucΛ.1.card + 1 = φsΛ.1.card := by
+    rintro c rfl
+    refine ⟨φsΛ.quotContraction {a} (by simpa using ha), (join_sub_quot _ _ _).symm,
+      quotContraction_gradingCompliant hc, ?_⟩
+    have hcard := subContraction_card_plus_quotContraction_card_eq _ {a} (by simpa using ha)
+    have hone : (φsΛ.subContraction {a} (by simpa using ha)).1.card = 1 := by
+      simp [subContraction]
+    omega
+  obtain ⟨φsucΛ, hj, hg, hcard⟩ :=
+    key (singleton (φsΛ.fstFieldOfContract_lt_sndFieldOfContract ⟨a, ha⟩))
+      (subContraction_singleton_eq_singleton _ ⟨a, ha⟩).symm
+  exact ⟨_, _, _, φsucΛ, hj, hc ⟨a, ha⟩, hg, hcard⟩
 
 lemma join_not_gradingCompliant_of_left_not_gradingCompliant {φs : List 𝓕.FieldOp}
     (φsΛ : WickContraction φs.length) (φsucΛ : WickContraction [φsΛ]ᵘᶜ.length)
