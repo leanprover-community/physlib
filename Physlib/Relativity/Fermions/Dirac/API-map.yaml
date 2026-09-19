@@ -54,6 +54,10 @@ Requirements:
     done: true
     location: Physlib/Relativity/CliffordAlgebra.lean (γ0, γ1, γ2, γ3, γ5, γ5_eq_endEquivMatrix, γSet, γ_in_γSet)
 
+  - description: "The gamma matrices in the Dirac representation satisfy the Clifford anticommutator against the Minkowski metric, with signature (+,-,-,-)."
+    done: true
+    location: Physlib/Relativity/CliffordAlgebra.lean (γ_anticomm)
+
   - description: "The Dirac algebra generated over ℝ by the Dirac representations of the gamma endomorphisms is defined, and contains each generator, indexed by Fin 1 ⊕ Fin 3."
     done: true
     location: Physlib/Relativity/CliffordAlgebra.lean (diracAlgebra, γSet_subset_diracAlgebra, γ_in_diracAlgebra)
