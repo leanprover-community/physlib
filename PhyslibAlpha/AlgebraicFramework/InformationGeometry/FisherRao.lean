@@ -36,6 +36,8 @@ Robertson--Schrödinger in algebraic uncertainty frameworks.
 * H. Cramer, *Mathematical Methods of Statistics*, Princeton (1946).
 -/
 
+@[expose] public section
+
 noncomputable section
 
 open Finset BigOperators
