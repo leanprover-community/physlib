@@ -309,7 +309,7 @@ theorem hilbertSchmidtPartial_apply_basis {w : Set H} (S : H →L[ℂ] H)
   rw [hilbertSchmidtPartial_apply]
   classical
   by_cases hj : j ∈ F
-  · rw [if_pos hj]
+  · rw [ite_eq_left hj]
     calc
       (∑ i ∈ F, ⟪b i, b j⟫_ℂ • S (b i)) =
           ∑ i ∈ F, (if i = j then 1 else 0) • S (b i) := by
@@ -321,7 +321,7 @@ theorem hilbertSchmidtPartial_apply_basis {w : Set H} (S : H →L[ℂ] H)
             · rw [b.orthonormal.2 hij]
               simp [hij]
       _ = S (b j) := by simp [hj]
-  · rw [if_neg hj]
+  · rw [ite_eq_right hj]
     calc
       (∑ i ∈ F, ⟪b i, b j⟫_ℂ • S (b i)) =
           ∑ i ∈ F, (if i = j then 1 else 0) • S (b i) := by

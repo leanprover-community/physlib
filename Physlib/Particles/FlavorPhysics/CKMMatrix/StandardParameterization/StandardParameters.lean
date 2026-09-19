@@ -144,11 +144,11 @@ lemma S₁₂_of_Vub_one {V : Quotient CKMMatrixSetoid} (ha : VubAbs V = 1) : S�
 lemma S₁₃_of_Vub_one {V : Quotient CKMMatrixSetoid} (ha : VubAbs V = 1) : S₁₃ V = 1 := ha
 
 lemma S₂₃_of_Vub_eq_one {V : Quotient CKMMatrixSetoid} (ha : VubAbs V = 1) : S₂₃ V = VcdAbs V := by
-  rw [S₂₃, if_pos ha]
+  rw [S₂₃, ite_eq_left ha]
 
 lemma S₂₃_of_Vub_ne_one {V : Quotient CKMMatrixSetoid} (ha : VubAbs V ≠ 1) :
     S₂₃ V = VcbAbs V / √ (VudAbs V ^ 2 + VusAbs V ^ 2) := by
-  rw [S₂₃, if_neg ha]
+  rw [S₂₃, ite_eq_right ha]
 
 end sines
 

@@ -229,7 +229,7 @@ theorem LowerSemicontinuousOn.dite_top {α β : Type*} [TopologicalSpace α] [Pr
     filter_upwards [self_mem_nhdsWithin,
       mem_nhdsWithin_of_mem_nhds (hu.isOpen_compl.mem_nhds hxu)]
     intro z hzs hzu
-    rw [dif_neg (show ¬p z from fun hpz ↦ hzu ((hsu z hzs).mpr hpz))]
+    rw [dite_eq_right (show ¬p z from fun hpz ↦ hzu ((hsu z hzs).mpr hpz))]
     exact hy
 
 theorem LowerSemicontinuousOn.comp_continuousOn {α β γ : Type*}
@@ -711,6 +711,7 @@ theorem sion_minimax
   rw [imp_false, not_lt]
   have := hS₁.elim_finite_subfamily_closed (fun (y : T) ↦ { x | x ∈ S ∧ f x y ≤ b}) ?_ ?_
   · rcases this with ⟨u, hu⟩
+    rw [Set.disjoint_iff_inter_eq_empty] at hu
     have hu' : u.Nonempty := by
       grind [Finset.not_nonempty_iff_eq_empty, Set.iInter_univ,
         Set.inter_univ, Set.not_nonempty_empty]
@@ -737,7 +738,8 @@ theorem sion_minimax
     specialize hfc₂ i i.2
     rw [lowerSemicontinuousOn_iff_isClosed_preimage] at hfc₂
     exact hfc₂ b
-  · convert Set.inter_empty _
+  · rw [Set.disjoint_iff_inter_eq_empty]
+    convert Set.inter_empty _
     by_contra hu
     simp only [Set.iInter_coe_set, Set.iInter_eq_empty_iff, Set.mem_iInter, Set.mem_ofPred_eq,
       Classical.not_imp, not_and, not_le, not_forall, not_exists, not_lt] at hu

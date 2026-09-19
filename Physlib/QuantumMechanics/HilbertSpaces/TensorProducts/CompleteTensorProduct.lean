@@ -178,10 +178,10 @@ variable {𝕜 E F}
   and `TensorProduct`. -/
 @[elab_as_elim]
 lemma induction_on {motive : E ⊗ₕ[𝕜] F → Prop} (z : E ⊗ₕ[𝕜] F)
-    (zero : motive 0) (tmul : ∀ (x : E) (y : F), motive (x ⊗ₜ[𝕜] y))
+    (tmul : ∀ (x : E) (y : F), motive (x ⊗ₜ[𝕜] y))
     (add : ∀ x y : E ⊗[𝕜] F, motive x → motive y → motive ↑(x + y))
     (closed : IsClosed {x | motive x}) : motive z :=
-  Completion.induction_on z closed fun x ↦ x.induction_on zero tmul add
+  Completion.induction_on z closed fun x ↦ x.inductionOn tmul add
 
 end Induction
 
@@ -223,7 +223,7 @@ lemma _root_.TensorProduct.denseRange_map
     DenseRange (TensorProduct.map f g) := by
   intro x
   change x ∈ (TensorProduct.map f g).range.topologicalClosure
-  refine x.induction_on (Submodule.zero_mem _) (fun a b ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
+  refine x.inductionOn (fun a b ↦ ?_) (fun _ _ ↦ Submodule.add_mem _)
   refine map_mem_closure₂' (fun u ↦ ?_) (fun v ↦ ?_) (hf a) (hg b) ?_
   · refine Metric.continuous_iff.mpr fun v ε hε ↦ ⟨ε / (1 + ‖u‖), by positivity, fun s hs ↦ ?_⟩
     rw [dist_eq_norm, ← TensorProduct.tmul_sub, TensorProduct.norm_tmul] at *

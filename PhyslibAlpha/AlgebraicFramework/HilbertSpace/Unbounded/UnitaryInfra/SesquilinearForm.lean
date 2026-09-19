@@ -508,7 +508,7 @@ of `A` to identify `⟪x, A ^ 2 x⟫` with `⟪A x, A x⟫ = ‖A x‖ ^ 2`. -/
 lemma norm_sq_le_inner_of_isPositive_of_le_one {A : H →L[ℂ] H}
     (hA0 : 0 ≤ A) (hA1 : A ≤ 1) (x : H) :
     ‖A x‖ ^ 2 ≤ RCLike.re ⟪x, A x⟫_ℂ := by
-  have hApos : A.IsPositive := (ContinuousLinearMap.nonneg_iff_isPositive A).mp hA0
+  have hApos : A.IsPositive := ContinuousLinearMap.nonneg_iff_isPositive.mp hA0
   have hAsa : IsSelfAdjoint A := hApos.isSelfAdjoint
   have hanti : Antitone (A ^ · : ℕ → H →L[ℂ] H) := CStarAlgebra.pow_antitone hA0 hA1
   have hsq_le : A ^ 2 ≤ A ^ 1 := hanti (by norm_num)

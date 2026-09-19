@@ -6,7 +6,7 @@ Authors: Giuseppe Sorge
 module
 
 public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Data.Real.Basic
+public import Mathlib.Basic.Real.Basic
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Mathlib.LinearAlgebra.Matrix.Notation
 /-!

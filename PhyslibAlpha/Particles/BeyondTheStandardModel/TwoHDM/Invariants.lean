@@ -376,10 +376,10 @@ lemma monomial_mem_adjoin_neutralBilinear (m : Fin 6 →₀ ℕ)
         by_cases h1 : i = k
         · by_cases h2 : j = k
           · exact absurd (h1.trans h2.symm) hij
-          · rw [if_pos h1, if_neg h2]; subst h1; simpa using Nat.one_le_iff_ne_zero.mpr hmi
+          · rw [ite_eq_left h1, ite_eq_right h2]; subst h1; simpa using Nat.one_le_iff_ne_zero.mpr hmi
         · by_cases h2 : j = k
-          · rw [if_neg h1, if_pos h2]; subst h2; simpa using Nat.one_le_iff_ne_zero.mpr hmj
-          · rw [if_neg h1, if_neg h2]; simp
+          · rw [ite_eq_right h1, ite_eq_left h2]; subst h2; simpa using Nat.one_le_iff_ne_zero.mpr hmj
+          · rw [ite_eq_right h1, ite_eq_right h2]; simp
       set m' := m - (Finsupp.single i 1 + Finsupp.single j 1) with hm'def
       have hdecomp : m = (Finsupp.single i 1 + Finsupp.single j 1) + m' := by
         rw [hm'def, add_tsub_cancel_of_le hle]

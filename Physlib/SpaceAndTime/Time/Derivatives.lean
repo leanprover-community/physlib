@@ -10,6 +10,7 @@ public import Physlib.SpaceAndTime.Space.Module
 public import Physlib.SpaceAndTime.Time.InnerProductSpace
 public import Mathlib.Analysis.Calculus.Deriv.Inv
 public import Mathlib.Analysis.InnerProductSpace.Calculus
+public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
 /-!
 
 # Time Derivatives

@@ -393,7 +393,6 @@ private theorem LemmaS3_sup {ε : Prob}
   --the (f n) / n term will go to zero.
   trans Filter.atTop.limsup fun n ↦ (—log β_ ε(ρ n‖{σ₂ n}) + f n) / n
   · refine Filter.limsup_le_limsup (.of_forall ?_)
-    dsimp
     intro x
     grw [LemmaS3_helper _ _ _ _ hσ]
   · apply le_of_eq
@@ -1367,7 +1366,7 @@ private theorem EquationS62
           congrArg HermitianMat.mat (congrFun (congrFun Esum ε2) n)
         conv =>
           enter [1]
-          rw [dif_pos zero_lt_one]
+          rw [dite_eq_left zero_lt_one]
           enter [1, 1, 1]
           rw [HermitianMat.inner_def]
           rw [← hMulOne]
@@ -1769,7 +1768,7 @@ theorem Lemma7 (ρ : MState (H i)) {ε : Prob} (hε : 0 < ε ∧ ε < 1) (σ : (
   --Before proceeding, let's reduce to the case that they're finite.
   have hR1 : R1 ρ ε ≠ ⊤ := hR1R2.ne_top
   rcases eq_or_ne (R2 ρ σ) ⊤ with hR2|hR2
-  · rw [hR2, ENNReal.top_sub hR1, ENNReal.mul_top', if_neg]
+  · rw [hR2, ENNReal.top_sub hR1, ENNReal.mul_top', ite_eq_right]
     · simp
     · have : ε'.val < 1 := hε'₂.trans hε.2
       rcases ε' with ⟨ε', hε'₁, hε'₂⟩

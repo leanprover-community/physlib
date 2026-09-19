@@ -76,7 +76,7 @@ lemma cayley_im (x : ℝ) : (cayley x).im = (-2 * x) / (x ^ 2 + 1) := by
   ring_nf
 
 lemma cayleyInverse_cayley (x : ℝ) : cayleyInverse (cayley x) = x := by
-  rw [cayleyInverse, if_neg (cayley_ne_one x), cayley_im, cayley_re]
+  rw [cayleyInverse, ite_eq_right (cayley_ne_one x), cayley_im, cayley_re]
   have h : x ^ 2 + 1 ≠ 0 := by nlinarith [sq_nonneg x]
   field_simp
   ring
@@ -104,7 +104,7 @@ lemma cayley_cayleyInverse {z : ℂ} (hz : ‖z‖ = 1) (hz1 : z ≠ 1) :
     apply hz1
     apply Complex.ext <;> assumption
   rw [Complex.ext_iff]
-  simp only [cayleyInverse, if_neg hz1]
+  simp only [cayleyInverse, ite_eq_right hz1]
   rw [cayley_re, cayley_im]
   have hx : (-(z.im) / (1 - z.re)) ^ 2 + 1 ≠ 0 := by
     positivity

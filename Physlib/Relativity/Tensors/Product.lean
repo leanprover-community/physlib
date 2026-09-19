@@ -488,8 +488,7 @@ noncomputable def tensorEquivProd {n n2 : ℕ} {c : Fin n → C} {c1 : Fin n2 �
         (Tensor.basis c1) (ComponentIdx.prod b).2)
     let P (x : S.Tensor c ⊗[k] S.Tensor c1) := f (TensorProduct.lift prodT x) = x
     change P x
-    apply TensorProduct.induction_on
-    · simp [P]
+    apply TensorProduct.inductionOn
     · intro t1 t2
       apply induction_on_basis (t := t1)
       · intro b1

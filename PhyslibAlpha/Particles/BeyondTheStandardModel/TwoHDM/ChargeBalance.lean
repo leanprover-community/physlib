@@ -33,7 +33,7 @@ lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynom
     rw [aeval_C, MvPolynomial.algebraMap_eq, coeff_C]
     by_cases hm : (0 : σ →₀ ℕ) = m
     · subst hm; simp
-    · rw [if_neg hm, mul_zero]
+    · rw [ite_eq_right hm, mul_zero]
   | add p q hp hq =>
     rw [map_add, coeff_add, coeff_add, hp m, hq m, mul_add]
   | mul_X p i hp =>
@@ -43,7 +43,7 @@ lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynom
       rw [mul_left_comm]
     rw [hrw, coeff_C_mul, coeff_mul_X', coeff_mul_X']
     by_cases hi : i ∈ m.support
-    · rw [if_pos hi, if_pos hi, hp (m - Finsupp.single i 1)]
+    · rw [ite_eq_left hi, ite_eq_left hi, hp (m - Finsupp.single i 1)]
       have hmi : 1 ≤ m i := Nat.one_le_iff_ne_zero.mpr (Finsupp.mem_support_iff.mp hi)
       have hle : Finsupp.single i 1 ≤ m := Finsupp.single_le_iff.mpr hmi
       have hsplit : m = (m - Finsupp.single i 1) + Finsupp.single i 1 :=
@@ -56,7 +56,7 @@ lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynom
         simp
       rw [hprod]
       ring
-    · rw [if_neg hi, if_neg hi, mul_zero, mul_zero]
+    · rw [ite_eq_right hi, ite_eq_right hi, mul_zero, mul_zero]
 
 /-- **Charge balancing.** If each variable `Xᵢ` carries an integer charge `w i`, `c` is a phase of
   infinite order, and the polynomial `f` is invariant under the charge rotation

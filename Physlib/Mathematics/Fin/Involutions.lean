@@ -64,12 +64,12 @@ def involutionCons (n : ℕ) : {f : Fin n.succ → Fin n.succ // Function.Involu
         by_cases hja : j = a
         · subst hja
           simp
-        · rw [Function.update_apply, if_neg hja]
+        · rw [Function.update_apply, ite_eq_right hja]
           simp only [Function.comp_apply, Fin.cons_succ]
           have hf2 := f.2.2 hs
           change f.1.1 a = a at hf2
           have hjf1 : f.1.1 j ≠ a := fun hn => hja (by rw [← f.1.2 j, hn, hf2])
-          rw [Function.update_apply, if_neg hjf1]
+          rw [Function.update_apply, ite_eq_right hjf1]
           simp only [Function.comp_apply, Fin.succ_inj]
           rw [f.1.2]
     · simp only [succ_eq_add_one, hs, Bool.false_eq_true, ↓reduceDIte]
@@ -85,7 +85,7 @@ def involutionCons (n : ℕ) : {f : Fin n.succ → Fin n.succ // Function.Involu
     | ⟨f, hf⟩ =>
     have hpred (j : Fin n) (hj : f j.succ ≠ 0) :
         (↑(if h : f j.succ = 0 then j else (f j.succ).pred h) + 1 : ℕ) = ↑(f j.succ) := by
-      rw [dif_neg hj, Fin.val_pred]
+      rw [dite_eq_right hj, Fin.val_pred]
       have hv : (f j.succ).val ≠ 0 := fun h => hj (Fin.ext (by simpa using h))
       omega
     simp only [succ_eq_add_one, Option.isSome_dite', Option.get_dite', Fin.succ_pred,
@@ -99,13 +99,13 @@ def involutionCons (n : ℕ) : {f : Fin n.succ → Fin n.succ // Function.Involu
       · subst hj
         simp only [Fin.cons_succ, Function.comp_apply, Fin.val_succ]
         refine hpred j fun hj => Fin.succ_ne_zero j (hf.injective (hj.trans h0.symm))
-    · rw [if_neg h0]
+    · rw [ite_eq_right h0]
       by_cases hf' : i = f 0
       · subst hf'
         simp only [Function.update_self, Fin.val_zero]
         rw [hf]
         simp
-      · rw [Function.update_apply, if_neg hf']
+      · rw [Function.update_apply, ite_eq_right hf']
         rcases Fin.eq_zero_or_eq_succ i with hi | ⟨j, hj⟩
         · subst hi
           simp
@@ -125,10 +125,10 @@ def involutionCons (n : ℕ) : {f : Fin n.succ → Fin n.succ // Function.Involu
           exact Eq.symm (Fin.val_eq_of_eq (hf0 hs))
         · simp only [ne_eq, Fin.succ_inj, hi, not_false_eq_true, Function.update_of_ne,
           Fin.cons_succ, Function.comp_apply, Fin.pred_succ, dite_eq_ite]
-          rw [if_neg (Fin.succ_ne_zero (f i))]
+          rw [ite_eq_right (Fin.succ_ne_zero (f i))]
       · simp only [hs, Bool.false_eq_true, ↓reduceDIte, Fin.cons_succ, Function.comp_apply,
         Fin.pred_succ, dite_eq_ite]
-        rw [if_neg (Fin.succ_ne_zero (f i))]
+        rw [ite_eq_right (Fin.succ_ne_zero (f i))]
     · simp only [Nat.succ_eq_add_one, Option.dite_none_left_eq_some, Option.some.injEq]
       by_cases hs : f0.isSome
       · simp only [hs, ↓reduceDIte]
@@ -193,7 +193,7 @@ lemma involutionAddEquiv_none_image_zero {n : ℕ} :
   by_contra hf0
   simp only [Fin.zero_eta] at hf0
   simp only [succ_eq_add_one, involutionCons, Equiv.coe_fn_mk, involutionAddEquiv,
-    Option.isSome_some, Option.get_some, Option.isSome_none, dif_neg hf0] at h
+    Option.isSome_some, Option.get_some, Option.isSome_none, dite_eq_right hf0] at h
   exact absurd h (Option.some_ne_none _)
 
 lemma involutionAddEquiv_cast {n : ℕ} {f1 f2 : {f : Fin n → Fin n // Function.Involutive f}}

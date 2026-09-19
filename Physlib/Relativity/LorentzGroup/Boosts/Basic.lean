@@ -96,8 +96,8 @@ where
             ring
           · simp only [hk', ↓reduceIte, Fin.isValue]
             rw [one_apply_ne fun a => hk (id (Eq.symm a))]
-            rw [if_neg (by exact fun a => hk (id (Eq.symm a)))]
-            rw [if_neg (by exact fun a => hk' (id (Eq.symm a)))]
+            rw [ite_eq_right (by exact fun a => hk (id (Eq.symm a)))]
+            rw [ite_eq_right (by exact fun a => hk' (id (Eq.symm a)))]
             simp
       · intro b _ hb
         simp [hb]
@@ -122,7 +122,8 @@ where
           · rw [one_apply]
             simp only [Fin.isValue, reduceCtorEq, ↓reduceIte, Sum.inr.injEq, hk, and_true, and_self,
               neg_mul, one_mul, neg_neg, zero_add]
-            rw [if_neg (fun a => hk (id (Eq.symm a))), if_neg (fun a => hk (id (Eq.symm a)))]
+            rw [ite_eq_right (fun a => hk (id (Eq.symm a))),
+              ite_eq_right (fun a => hk (id (Eq.symm a)))]
         · rw [one_apply]
           simp [hj']
       · intro b _ hb

@@ -129,19 +129,19 @@ lemma signInsertNone_eq_mul_fst_snd (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp
   · rename_i h
     simp only [Fin.getElem_fin, h.1, ↓reduceIte, mul_ite, exchangeSign_mul_self,
       mul_one]
-    rw [if_neg]
+    rw [ite_eq_right]
     omega
   · rename_i h
     simp only [Nat.succ_eq_add_one, not_and, not_lt] at h
     split <;> rename_i h1
     · simp_all only [forall_const, Fin.getElem_fin, mul_ite,
       exchangeSign_mul_self, mul_one]
-      rw [if_pos]
+      rw [ite_eq_left]
       have h1 :i.succAbove (φsΛ.sndFieldOfContract a) ≠ i :=
         Fin.succAbove_ne i (φsΛ.sndFieldOfContract a)
       omega
     · simp only [not_lt] at h1
-      rw [if_neg]
+      rw [ite_eq_right]
       simp only [mul_one]
       have hn := fstFieldOfContract_lt_sndFieldOfContract φsΛ a
       have hx := (Fin.succAbove_lt_succAbove_iff (p := i)).mpr hn
@@ -179,11 +179,11 @@ lemma signInsertNone_eq_prod_getDual?_Some (φ : 𝓕.FieldOp) (φs : List 𝓕.
   conv_rhs =>
     rhs
     enter [2, a]
-    rw [if_neg (by simpa [e2] using a.2)]
+    rw [ite_eq_right (by simpa [e2] using a.2)]
   conv_rhs =>
     lhs
     enter [2, a]
-    rw [if_pos (by simpa [e2] using a.2)]
+    rw [ite_eq_left (by simpa [e2] using a.2)]
   simp only [Equiv.symm_symm, Equiv.sumCompl_apply_inl, Finset.prod_const_one, mul_one, e2]
   rfl
   exact hG

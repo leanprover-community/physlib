@@ -189,8 +189,7 @@ lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : DistElectromagneticPote
     distDeriv (b 0) A ε (b 1) := by
   rw [Tensorial.basis_toTensor_apply]
   rw [Tensorial.basis_map_prod]
-  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-    Equiv.symm_symm, Fin.isValue]
+  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Fin.isValue]
   rw [Lorentz.Vector.tensor_basis_map_eq_basis_reindex,
     Lorentz.CoVector.tensor_basis_map_eq_basis_reindex]
   have hb : (((Lorentz.CoVector.basis (d := d)).reindex
@@ -203,7 +202,8 @@ lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : DistElectromagneticPote
     | ⟨i, j⟩ =>
     simp
   rw [hb]
-  rw [Module.Basis.repr_reindex_apply, distTensorDeriv_basis_repr_apply]
+  rw [Finsupp.equivMapDomain_apply, Module.Basis.repr_reindex_apply,
+    distTensorDeriv_basis_repr_apply]
   rfl
 
 end DistElectromagneticPotential

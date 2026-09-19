@@ -129,7 +129,7 @@ theorem norm_mul_self_le_add' (a b : selfAdjoint A) : ‖a * a‖ ≤ ‖a * a +
   have h0' : (0 : A) ≤ (a : A) * (a : A) := by
     calc (0 : A) ≤ star (a : A) * (a : A) := star_mul_self_nonneg _
       _ = (a : A) * (a : A) := by rw [a.2]
-  exact CStarAlgebra.norm_le_norm_of_nonneg_of_le h0' (le_add_of_nonneg_right h0)
+  exact CStarAlgebra.norm_le_norm_of_le_of_nonneg (le_add_of_nonneg_right h0) h0'
 
 /-- `selfAdjoint A`, for any unital C⋆-algebra `A`, is a JB-algebra under the normalized Jordan
 product: the canonical realization at the head of the architecture

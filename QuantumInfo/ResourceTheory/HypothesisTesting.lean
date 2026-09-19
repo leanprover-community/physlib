@@ -456,18 +456,18 @@ theorem Ref81Lem5 (ρ σ : MState d) (ε : Prob) (hε : ε < 1) (α : ℝ) (hα 
 
 
   --The Renyi entropy is finite
-  rw [SandwichedRelRentropy, dif_pos (zero_lt_one.trans hα), dif_pos ?_]; swap
+  rw [SandwichedRelRentropy, dite_eq_left (zero_lt_one.trans hα), dite_eq_left ?_]; swap
   · suffices q2.M.ker = ⊥ by
       simp only [this, bot_le]
     --q2 has eigenvalues β_ ε(ρ‖{σ}) and 1-β_ ε(ρ‖{σ}), so as long as β_ ε(ρ‖{σ}) isn't 0 or 1,
     --this is true.
     exact ker_diagonal_prob_eq_bot hq hq₂
 
-  conv => enter [2, 1, 1, 1]; rw [if_neg hα.ne']
+  conv => enter [2, 1, 1, 1]; rw [ite_eq_right hα.ne']
 
   --The logs are finite
-  rw [Prob.negLog, Prob.negLog, if_neg hq.ne']
-  rw [if_neg (show 1 - ε ≠ 0 by simpa [Subtype.ext_iff, Prob.coe_sub] using h₂.ne')]
+  rw [Prob.negLog, Prob.negLog, ite_eq_right hq.ne']
+  rw [ite_eq_right (show 1 - ε ≠ 0 by simpa [Subtype.ext_iff, Prob.coe_sub] using h₂.ne')]
 
   --Turn the ENNReal problem into a Real problem
   have hα₂ : Subtype.mk _ pf2 ≠ 0 := by

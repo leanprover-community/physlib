@@ -63,7 +63,7 @@ lemma toChannel_single (e : ι → Effect E) (he : ∑ i, (e i : E) = 1) (i : ι
     toChannel e he (Pi.single i (1 : ℝ)) = (e i : E) := by
   rw [toChannel_apply,
     Finset.sum_eq_single i
-      (fun j _ hji => by rw [Pi.single_apply, if_neg hji, zero_smul])
+      (fun j _ hji => by rw [Pi.single_apply, ite_eq_right hji, zero_smul])
       (fun h => absurd (Finset.mem_univ i) h)]
   simp
 
@@ -111,7 +111,7 @@ noncomputable def channelEquiv :
       split_ifs <;> ring
     rw [hx, map_smul, toChannel_apply]
     rw [Finset.sum_eq_single i
-      (fun j _ hji => by rw [Pi.single_apply, if_neg hji, zero_smul])
+      (fun j _ hji => by rw [Pi.single_apply, ite_eq_right hji, zero_smul])
       (fun h => absurd (Finset.mem_univ i) h)]
     simp [coe_outcomeEffect]
   right_inv p := by

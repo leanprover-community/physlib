@@ -314,7 +314,7 @@ lemma joinSignLeftExtra_eq_joinSignRightExtra {φs : List 𝓕.FieldOp}
   conv_lhs =>
     enter [2, 2, x]
     simp only [Equiv.symm_symm, Equiv.sumCompl_apply_inl, Equiv.sumCompl_apply_inr, e2]
-    rw [if_neg (by
+    rw [ite_eq_right (by
         simp only [Finset.mem_filter, mem_signFinset, not_and, not_forall, not_lt, and_imp]
         intro h1 h2
         have hx := x.2
@@ -331,7 +331,7 @@ lemma joinSignLeftExtra_eq_joinSignRightExtra {φs : List 𝓕.FieldOp}
     join_sndFieldOfContract_joinLift, singleton_sndFieldOfContract, lt_self_iff_false, and_false,
     ↓reduceIte, map_one, mul_one, join_fstFieldOfContract_joinLiftRight,
     join_sndFieldOfContract_joinLiftRight, getElem_uncontractedListEmd]
-  rw [if_neg (by omega)]
+  rw [ite_eq_right (by omega)]
   simp only [map_one, one_mul]
   /- Introducing joinSignRightExtra. -/
   rw [joinSignRightExtra_eq_i_j_finset_eq_if]

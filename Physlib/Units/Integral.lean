@@ -46,8 +46,9 @@ noncomputable instance (M : Type)
     · exact measurable_const_smul (α := M) ↑(u2.dimScale u3 (dim M)).1
   scaleUnit_id u μ := by
     simp [scaleUnit_id]
-  scaleUnit_mul u1 u2 r μ := by
-    simp
+  scaleUnit_mul u1 u2 r μ :=
+    Measure.map_smul r
+      (measurable_const_smul (α := M) ↑(u1.dimScale u2 (dim M)).1).aemeasurable
 
 variable {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] [HasDim M]
     [MeasurableSpace M] [MeasurableConstSMul ℝ M]

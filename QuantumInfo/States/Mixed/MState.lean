@@ -420,7 +420,7 @@ theorem pure_of_constant_spectrum (h : ∃ i, ρ.spectrum = ProbDistribution.con
   have hsum : ∀ x ∈ Finset.univ, x ∉ ({i} : Finset d) → (ρ.M.H.eigenvectorBasis x j) * (↑(if x = i then 1 else 0) : ℝ) * (starRingEnd ℂ) (ρ.Hermitian.eigenvectorBasis x k) = 0 := by
     intros x hx hxnoti
     rw [Finset.mem_singleton] at hxnoti
-    rw [if_neg hxnoti, Complex.ofReal_zero]
+    rw [ite_eq_right hxnoti, Complex.ofReal_zero]
     ring
   simp_rw [←Finset.sum_subset (Finset.subset_univ {i}) hsum, Finset.sum_singleton, reduceIte, Complex.ofReal_one, mul_one]
   rfl
@@ -907,7 +907,7 @@ theorem pure_iff_rank_eq_one {d : Type*} [Fintype d] [DecidableEq d] (ρ : MStat
             exact not_forall.mp fun h => by simp [ h ] at h_diag;
           rw [ Finset.sum_eq_add_sum_sdiff_singleton i _ (by simp) ] at h_diag;
           exact ⟨i, hi, fun j hj => Classical.not_not.1 fun hj' =>
-            absurd h_diag ( by rw [ if_neg hi ] ; exact ne_of_gt ( lt_add_of_pos_right _ ( lt_of_lt_of_le ( by simp [ hj' ] ) ( Finset.single_le_sum ( fun x _ => by positivity ) ( Finset.mem_sdiff.2 ⟨ Finset.mem_univ j, by simp [ hj ] ⟩ ) ) ) ) ) ⟩;
+            absurd h_diag ( by rw [ ite_eq_right hi ] ; exact ne_of_gt ( lt_add_of_pos_right _ ( lt_of_lt_of_le ( by simp [ hj' ] ) ( Finset.single_le_sum ( fun x _ => by positivity ) ( Finset.mem_sdiff.2 ⟨ Finset.mem_univ j, by simp [ hj ] ⟩ ) ) ) ) ) ⟩;
         -- Since the diagonal matrix in the spectral theorem has exactly one non-zero entry, we can write ρ.m as |ψ⟩⟨ψ| for some ket ψ.
         use fun j => (h_herm.eigenvectorUnitary : Matrix d d ℂ) j i * Real.sqrt (h_herm.eigenvalues i);
         convert this using 1

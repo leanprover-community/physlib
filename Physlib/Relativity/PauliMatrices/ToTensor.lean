@@ -137,10 +137,10 @@ lemma toTensor_basis_expand : σ^^^ =
   all_goals
     simp
   all_goals
-    try rw [if_pos (by decide)]
-    try rw [if_neg (by decide)]
-    try rw [if_neg (by decide)]
-    try rw [if_pos (by decide)]
+    try rw [ite_eq_left (by decide)]
+    try rw [ite_eq_right (by decide)]
+    try rw [ite_eq_right (by decide)]
+    try rw [ite_eq_left (by decide)]
     simp [pauliMatrix]
 
 open Lorentz in

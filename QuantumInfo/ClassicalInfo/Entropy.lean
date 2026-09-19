@@ -89,7 +89,7 @@ def Hₛ (d : ProbDistribution α) : ℝ :=
 
 /-- Shannon entropy of a distribution is nonnegative. -/
 theorem Hₛ_nonneg (d : ProbDistribution α) : 0 ≤ Hₛ d :=
-  Finset.sum_nonneg' fun _ ↦ H₁_nonneg _
+  Finset.sum_nonneg fun _ _ ↦ H₁_nonneg _
 
 /-- Shannon entropy of a distribution is at most ln d. -/
 theorem Hₛ_le_log_d (d : ProbDistribution α) : Hₛ d ≤ Real.log (Fintype.card α) := by

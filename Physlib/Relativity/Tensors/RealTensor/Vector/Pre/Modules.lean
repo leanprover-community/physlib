@@ -54,9 +54,13 @@ def toFin1dℝFun : ContrMod d ≃ (Fin 1 ⊕ Fin d → ℝ) where
   with `Fin 1 ⊕ Fin d → ℝ`. -/
 instance : AddCommGroup (ContrMod d) := Equiv.addCommGroup toFin1dℝFun
 
+/-- The additive equivalence between `ContrMod` and `Fin 1 ⊕ Fin d → ℝ`. -/
+def toFin1dℝAddEquiv : ContrMod d ≃+ (Fin 1 ⊕ Fin d → ℝ) :=
+  { toFin1dℝFun with map_add' _ _ := rfl }
+
 /-- The instance of `Module` on `ContrMod` defined via its equivalence
   with `Fin 1 ⊕ Fin d → ℝ`. -/
-instance : Module ℝ (ContrMod d) := Equiv.module ℝ toFin1dℝFun
+instance : Module ℝ (ContrMod d) := AddEquiv.module ℝ toFin1dℝAddEquiv
 
 @[simp]
 lemma val_add (ψ ψ' : ContrMod d) : (ψ + ψ').val = ψ.val + ψ'.val := rfl
@@ -66,7 +70,7 @@ lemma val_smul (r : ℝ) (ψ : ContrMod d) : (r • ψ).val = r • ψ.val := rf
 
 /-- The linear equivalence between `ContrMod` and `(Fin 1 ⊕ Fin d → ℝ)`. -/
 def toFin1dℝEquiv : ContrMod d ≃ₗ[ℝ] (Fin 1 ⊕ Fin d → ℝ) :=
-  Equiv.linearEquiv ℝ toFin1dℝFun
+  AddEquiv.linearEquiv ℝ toFin1dℝAddEquiv
 
 /-- The underlying element of `Fin 1 ⊕ Fin d → ℝ` of a element in `ContrMod` defined
   through the linear equivalence `toFin1dℝEquiv`. -/
@@ -327,13 +331,17 @@ def toFin1dℝFun : CoMod d ≃ (Fin 1 ⊕ Fin d → ℝ) where
   with `Fin 1 ⊕ Fin d → ℝ`. -/
 instance : AddCommGroup (CoMod d) := Equiv.addCommGroup toFin1dℝFun
 
+/-- The additive equivalence between `CoℝModule` and `Fin 1 ⊕ Fin d → ℝ`. -/
+def toFin1dℝAddEquiv : CoMod d ≃+ (Fin 1 ⊕ Fin d → ℝ) :=
+  { toFin1dℝFun with map_add' _ _ := rfl }
+
 /-- The instance of `Module` on `CoℝModule` defined via its equivalence
   with `Fin 1 ⊕ Fin d → ℝ`. -/
-instance : Module ℝ (CoMod d) := Equiv.module ℝ toFin1dℝFun
+instance : Module ℝ (CoMod d) := AddEquiv.module ℝ toFin1dℝAddEquiv
 
 /-- The linear equivalence between `CoℝModule` and `(Fin 1 ⊕ Fin d → ℝ)`. -/
 def toFin1dℝEquiv : CoMod d ≃ₗ[ℝ] (Fin 1 ⊕ Fin d → ℝ) :=
-  Equiv.linearEquiv ℝ toFin1dℝFun
+  AddEquiv.linearEquiv ℝ toFin1dℝAddEquiv
 
 /-- The underlying element of `Fin 1 ⊕ Fin d → ℝ` of a element in `CoℝModule` defined
   through the linear equivalence `toFin1dℝEquiv`. -/
