@@ -33,9 +33,8 @@ permutation via `Matrix.det_permutation`.
 - `leviCivitaSymbol_comp_swap` : antisymmetry under transposition of two indices.
 - `leviCivitaSymbol_swap_comp` : antisymmetry under transposition of two index values.
 - `leviCivitaSymbol_eq_zero_iff` : the symbol vanishes exactly on repeated indices.
-- `leviCivitaSymbolProd` : the product over pairs `i < j` of the sign of `g j - g i`, for
-  `g : Fin n → Fin n`.
-- `leviCivitaSymbol_eq_leviCivitaSymbolProd` : on `Fin n` the symbol equals this product.
+- `leviCivitaSymbol_eq_prod_prod_Ioi` : on `Fin n` the symbol is the product over pairs
+  `i < j` of the sign of `g j - g i`.
 
 ## iii. Table of contents
 
@@ -162,17 +161,12 @@ lemma leviCivitaSymbol_eq_zero_iff {g : ι → ι} :
 
 -/
 
-/-- The product over pairs `i < j` of the sign of `g j - g i`, for `g : Fin n → Fin n`.
-This equals `leviCivitaSymbol g` by `leviCivitaSymbol_eq_leviCivitaSymbolProd` and, unlike
-the determinant defining `leviCivitaSymbol`, is cheap to evaluate, e.g. by `decide`. -/
-def leviCivitaSymbolProd {n : ℕ} (g : Fin n → Fin n) : ℤ :=
-  ∏ i, ∏ j ∈ Finset.Ioi i, (if g i < g j then 1 else if g i = g j then 0 else -1)
-
 /-- On `Fin n` the Levi-Civita symbol is the product over pairs `i < j` of the sign of
-`g j - g i`. -/
-lemma leviCivitaSymbol_eq_leviCivitaSymbolProd {n : ℕ} (g : Fin n → Fin n) :
-    leviCivitaSymbol g = leviCivitaSymbolProd g := by
-  unfold leviCivitaSymbolProd
+`g j - g i`. Unlike the determinant defining `leviCivitaSymbol`, this product is cheap to
+evaluate, e.g. by `decide`. -/
+lemma leviCivitaSymbol_eq_prod_prod_Ioi {n : ℕ} (g : Fin n → Fin n) :
+    leviCivitaSymbol g =
+      ∏ i, ∏ j ∈ Finset.Ioi i, (if g i < g j then 1 else if g i = g j then 0 else -1) := by
   by_cases hg : Function.Injective g
   · obtain ⟨σ, rfl⟩ : ∃ σ : Equiv.Perm (Fin n), ⇑σ = g :=
       ⟨Equiv.ofBijective g (Finite.injective_iff_bijective.mp hg), rfl⟩
