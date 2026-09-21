@@ -13,6 +13,10 @@ public import Mathlib
 
 The unit vector `ψ_d ∈ ℂ^d` with coordinates `(-i)^j √(2 / (d + 1)) sin ((j + 1) π / (d + 1))`.
 
+It is called extremal because it is the eigenvector of `i [T_d, P_d]` (the path observables of
+`PathObservables`) for the largest eigenvalue `2 / (d - 1)`. This file only defines `ψ_d` and
+computes its norm: that it is extremal is neither proved nor used here.
+
 -/
 
 @[expose] public section
@@ -73,7 +77,8 @@ lemma norm_sq_sineMode (d : ℕ) (hd : 1 ≤ d) : ‖sineMode d‖ ^ 2 = ((d : �
   rw [sineMode, WithLp.ofLp_toLp, norm_mul, norm_pow, norm_neg, Complex.norm_I, one_pow, one_mul,
     Complex.norm_real, Real.norm_eq_abs, sq_abs]
 
-/-- The extremal state: the unit vector `√(2 / (d + 1)) • sineMode d`. -/
+/-- The extremal state: the unit vector `√(2 / (d + 1)) • sineMode d`. By definition it is this
+explicit vector; extremality is not part of the definition. -/
 noncomputable def extremalState (d : ℕ) : EuclideanSpace ℂ (Fin d) :=
   ((Real.sqrt (2 / ((d : ℝ) + 1)) : ℝ) : ℂ) • sineMode d
 
