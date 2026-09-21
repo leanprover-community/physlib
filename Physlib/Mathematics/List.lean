@@ -287,7 +287,7 @@ lemma orderedInsert_eraseIdx_orderedInsertPos_le {I : Type} (le1 : I → I → P
         omega
       rw [hn]
       simp only [List.eraseIdx_cons_succ, List.cons.injEq, true_and]
-      rw [dropWile_eraseIdx, if_pos]
+      rw [dropWile_eraseIdx, ite_eq_left]
       · rw [orderedInsertPos] at hi
         omega
       · exact hr
@@ -467,7 +467,7 @@ lemma orderedInsert_eq_insertIdx_orderedInsertPos {I : Type} (le1 : I → I → 
   apply List.ext_get
   · simp only [List.orderedInsert_length]
     rw [List.length_insertIdx]
-    exact (if_pos (Nat.le_of_succ_le_succ (orderedInsertPos_lt_length le1 r r0))).symm
+    exact (ite_eq_left (Nat.le_of_succ_le_succ (orderedInsertPos_lt_length le1 r r0))).symm
   intro n h1 h2
   obtain ⟨n', hn'⟩ := (orderedInsertEquiv le1 r r0).surjective ⟨n, h1⟩
   rw [← hn']
@@ -730,7 +730,7 @@ lemma mem_take_finrange : (n m : ℕ) → (a : Fin n) → a ∈ List.take m (Lis
     simp [List.finRange_succ]
   | n +1, m + 1, ⟨i + 1, h⟩ => by
     simp only [List.finRange_succ, List.take_succ_cons, List.mem_cons, Fin.ext_iff, Fin.val_zero,
-      AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, false_or, add_lt_add_iff_right]
+      Nat.add_eq_zero_iff, one_ne_zero, and_false, false_or, add_lt_add_iff_right]
     rw [← List.map_take, @List.mem_map]
     apply Iff.intro
     · intro h

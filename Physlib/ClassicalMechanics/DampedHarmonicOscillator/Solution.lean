@@ -534,7 +534,7 @@ lemma equationOfMotion_unique (x y : Time → EuclideanSpace ℝ (Fin 1))
     (v := fun _ p => S.phaseVectorField p) (s := fun _ => Set.univ) (t₀ := (0 : ℝ))
     (f := fun τ : ℝ => (x (Time.toRealCLE.symm τ), ∂ₜ x (Time.toRealCLE.symm τ)))
     (g := fun τ : ℝ => (y (Time.toRealCLE.symm τ), ∂ₜ y (Time.toRealCLE.symm τ)))
-    (fun _ => S.phaseVectorField.lipschitz.lipschitzOnWith)
+    (fun _ => S.phaseVectorField.lipschitzWith.lipschitzOnWith)
     (fun τ => ⟨S.phaseCurve_hasDerivAt x hx hEOMx τ, Set.mem_univ _⟩)
     (fun τ => ⟨S.phaseCurve_hasDerivAt y hy hEOMy τ, Set.mem_univ _⟩)
     hIC

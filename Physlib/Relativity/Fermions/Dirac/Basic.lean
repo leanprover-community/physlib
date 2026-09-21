@@ -63,7 +63,7 @@ def decomposeEquiv : Dirac ≃ LeftHandedWeyl × DualRightHandedWeyl where
 
 instance : AddCommGroup Dirac := Equiv.addCommGroup decomposeEquiv
 
-instance : Module ℂ Dirac := Equiv.module ℂ decomposeEquiv
+instance : Module ℂ Dirac := AddEquiv.module ℂ { decomposeEquiv with map_add' _ _ := rfl }
 
 @[simp]
 lemma left_add (d₁ d₂ : Dirac) : (d₁ + d₂).left = d₁.left + d₂.left := rfl

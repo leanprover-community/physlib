@@ -276,11 +276,11 @@ lemma diff_fst_surjective (x : TimeUnit) (t : TimeTransMan) :
   rw [abs_of_nonneg (le_of_lt (PositiveRealUnitCore.pos x))]
   simp only [ne_eq, PositiveRealUnitCore.val_ne_zero, not_false_eq_true, inv_mul_cancel_left₀]
   by_cases h : 0 ≤ r
-  · rw [if_pos]
+  · rw [ite_eq_left]
     exact abs_of_nonneg h
     simp [le_def]
     apply mul_nonneg (le_of_lt (PositiveRealUnitCore.pos x)) h
-  · rw [if_neg]
+  · rw [ite_eq_right]
     rw [abs_of_neg (by simpa using h)]
     simp only [neg_neg]
     simp [le_def]

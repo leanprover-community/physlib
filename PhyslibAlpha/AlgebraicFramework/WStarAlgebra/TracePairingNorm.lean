@@ -37,7 +37,7 @@ private theorem isTraceClass_rankOne (x y : H) :
   · subst hy
     have hz : InnerProductSpace.rankOne ℂ x (0 : H) = 0 := by
       ext z
-      simp [InnerProductSpace.rankOne_apply]
+      simp
     rw [hz]
     exact isTraceClass_zero
   · have hyy : IsTraceClass (InnerProductSpace.rankOne ℂ y y) :=
@@ -111,7 +111,7 @@ theorem norm_le_tracePairing (A : H →L[ℂ] H) :
       intro hx0
       apply hx
       simp [hx0]
-    letI : Nontrivial H := ⟨⟨x, 0, hx0⟩⟩
+    let : Nontrivial H := ⟨⟨x, 0, hx0⟩⟩
     have hy : ‖y‖ = 1 := by
       dsimp [y]
       rw [norm_smul, norm_inv, Complex.norm_real]
@@ -122,8 +122,7 @@ theorem norm_le_tracePairing (A : H →L[ℂ] H) :
       rw [tracePairing_rankOne]
       dsimp [y]
       rw [inner_smul_left, inner_self_eq_norm_sq_to_K]
-      simp [map_inv₀, Complex.norm_real, norm_inv, norm_norm,
-        norm_ne_zero_iff.mpr hx]
+      simp [map_inv₀, Complex.norm_real, norm_inv]
       field_simp [norm_ne_zero_iff.mpr hx]
     have hR : ‖(ofOperator (InnerProductSpace.rankOne ℂ x y)
         (isTraceClass_rankOne x y) : TraceClass H)‖ ≤ ‖x‖ := by

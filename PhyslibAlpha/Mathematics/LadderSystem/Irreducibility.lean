@@ -204,7 +204,7 @@ omit [CharZero K] in
 /-- `moveOneTo` at the color it moves quanta *into* just increments that color's count. -/
 lemma moveOneTo_self (α : Fin d → ℕ) (i j : Fin d) : moveOneTo α i j i = α i + 1 := by
   show (if i = i then α i + 1 else if i = j then α j - 1 else α i) = α i + 1
-  rw [if_pos rfl]
+  rw [ite_eq_left rfl]
 
 omit [CharZero K] in
 /-- Moving a quantum from `j` to `i` and then immediately back from `i` to `j` is the identity. -/
@@ -212,21 +212,21 @@ lemma moveOneTo_moveOneTo {i j : Fin d} (hij : i ≠ j) {α : Fin d → ℕ} (hj
     moveOneTo (moveOneTo α i j) j i = α := by
   have hβj : moveOneTo α i j j = α j - 1 := by
     show (if j = i then α i + 1 else if j = j then α j - 1 else α j) = α j - 1
-    rw [if_neg (Ne.symm hij), if_pos rfl]
+    rw [ite_eq_right (Ne.symm hij), ite_eq_left rfl]
   have hβi : moveOneTo α i j i = α i + 1 := moveOneTo_self α i j
   funext c
   show (if c = j then moveOneTo α i j j + 1 else if c = i then moveOneTo α i j i - 1
       else moveOneTo α i j c) = α c
   rcases eq_or_ne c j with rfl | hcj
-  · rw [if_pos rfl, hβj]
+  · rw [ite_eq_left rfl, hβj]
     omega
-  · rw [if_neg hcj]
+  · rw [ite_eq_right hcj]
     rcases eq_or_ne c i with rfl | hci
-    · rw [if_pos rfl, hβi]
+    · rw [ite_eq_left rfl, hβi]
       omega
-    · rw [if_neg hci]
+    · rw [ite_eq_right hci]
       show (if c = i then α i + 1 else if c = j then α j - 1 else α c) = α c
-      rw [if_neg hci, if_neg hcj]
+      rw [ite_eq_right hci, ite_eq_right hcj]
 
 /-- The atomic move: if `W` is `E i j`-invariant and contains the word for `β`, and mode `k`
 is occupied, `W` also contains the word obtained by moving one quantum from `k` to any other
@@ -263,8 +263,8 @@ lemma word_countWord_hub_mem_of_mem {hd : 0 < d} {Ω : V} (P : L.HasVacuum Ω)
           Finset.add_sum_erase _ α (Finset.mem_univ hub0)
         funext c
         by_cases hc : c = hub0
-        · subst hc; rw [if_pos rfl]; exact hα0
-        · rw [if_neg hc]
+        · subst hc; rw [ite_eq_left rfl]; exact hα0
+        · rw [ite_eq_right hc]
           have hle : α c ≤ ∑ c' ∈ Finset.univ.erase hub0, α c' :=
             Finset.single_le_sum (fun _ _ => Nat.zero_le _)
               (Finset.mem_erase.mpr ⟨hc, Finset.mem_univ c⟩)
@@ -308,8 +308,8 @@ lemma word_countWord_mem_of_hub_mem {hd : 0 < d} {Ω : V} (P : L.HasVacuum Ω)
           Finset.add_sum_erase _ α (Finset.mem_univ hub0)
         funext c
         by_cases hc : c = hub0
-        · subst hc; rw [if_pos rfl]; exact hα0
-        · rw [if_neg hc]
+        · subst hc; rw [ite_eq_left rfl]; exact hα0
+        · rw [ite_eq_right hc]
           have hle : α c ≤ ∑ c' ∈ Finset.univ.erase hub0, α c' :=
             Finset.single_le_sum (fun _ _ => Nat.zero_le _)
               (Finset.mem_erase.mpr ⟨hc, Finset.mem_univ c⟩)

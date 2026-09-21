@@ -157,7 +157,7 @@ lemma stinespringOrtho {R : Type*} [RCLike R]
       simp_rw [RCLike.conj_mul]
       norm_cast
       exact EuclideanSpace.norm_sq_eq (WithLp.toLp 2 fun i ↦ α i j)
-    · rw [if_neg g₀]
+    · rw [ite_eq_right g₀]
       have : (1 : Matrix m m R) i j = 0 := by
         exact one_apply_ne' fun a ↦ g₀ (id (Eq.symm a))
       rw [this] at h₁
@@ -716,7 +716,7 @@ lemma krausCompletion_isometry_of_TNI {R : Type*} [RCLike R] {m r : ℕ}
     intro x i c
     rw [hS]
     unfold krausCompletion
-    rw [dif_pos (by exact i.isLt)]
+    rw [dite_eq_left (by exact i.isLt)]
     congr 1
   -- The last block of the completion is `W`.
   have hlast : ∀ (x : Fin m) (c : Fin m),
@@ -724,7 +724,7 @@ lemma krausCompletion_isometry_of_TNI {R : Type*} [RCLike R] {m r : ℕ}
     intro x c
     rw [hW, hS]
     unfold krausCompletion
-    rw [dif_neg (by simp)]
+    rw [dite_eq_right (by simp)]
   -- `Cᴴ * C = Sᴴ * S + Wᴴ * W` by splitting the row sum into the first `r` blocks and the last.
   have key : (krausCompletion K)ᴴ * krausCompletion K = Sᴴ * S + Wᴴ * W := by
     ext a b

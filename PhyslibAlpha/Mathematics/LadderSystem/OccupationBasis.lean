@@ -94,7 +94,7 @@ omit [CharZero K] in
 lemma pow_a_comm_ac {i c : Fin d} (hic : i ≠ c) (k : ℕ) (y : V) :
     ((L.a i) ^ k) (L.ac c y) = L.ac c (((L.a i) ^ k) y) := by
   have h := L.comm_a_ac i c
-  rw [if_neg hic, LieRing.of_associative_ring_bracket, sub_eq_zero] at h
+  rw [ite_eq_right hic, LieRing.of_associative_ring_bracket, sub_eq_zero] at h
   have hpow : (L.a i) ^ k * L.ac c = L.ac c * (L.a i) ^ k := Commute.pow_left h k
   have happly := congrArg (fun f : Module.End K V => f y) hpow
   simpa [Module.End.mul_apply] using happly

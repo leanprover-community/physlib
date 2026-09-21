@@ -495,7 +495,7 @@ lemma not_lipschitzOnWith_force (K : NNReal) {ε : ℝ} (hε : 0 < ε) :
     exact hw.2
   have := h.dist_le_mul _ (hmem y hy) _ (hmem z hz)
   rw [force_eq, force_eq, dist_smul_single, dist_smul_single] at this
-  simp only [PiLp.smul_apply, PiLp.single_apply, if_true, smul_eq_mul, mul_one,
+  simp only [PiLp.smul_apply, PiLp.single_apply, ite_true, smul_eq_mul, mul_one,
     ← mul_sub, abs_mul, abs_of_pos S.m_pos] at this
   show dist √y √z ≤ (K : ℝ) / S.m * dist y z
   rw [Real.dist_eq, Real.dist_eq, div_mul_eq_mul_div, le_div_iff₀ S.m_pos, mul_comm]

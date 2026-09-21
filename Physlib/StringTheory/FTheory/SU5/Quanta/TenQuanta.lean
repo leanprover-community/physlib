@@ -206,7 +206,7 @@ lemma reduce_filter (x : TenQuanta 𝓩) (q : 𝓩) (h : q ∈ x.toCharges) :
   rw [Multiset.filter_map]
   simp only [Function.comp_apply]
   have hx : (Multiset.filter (fun x => x = q) x.toCharges.dedup) = {q} := by
-    rw [Multiset.filter_eq', Multiset.count_dedup, if_pos h, Multiset.replicate_one]
+    rw [Multiset.filter_eq', Multiset.count_dedup, ite_eq_left h, Multiset.replicate_one]
   rw [hx]
   simp
 

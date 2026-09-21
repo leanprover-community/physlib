@@ -142,7 +142,7 @@ theorem trace_function_convex_univ (g : ℝ → ℝ) (hg : ConvexOn ℝ Set.univ
         simp_all [conj]
         convert congr_arg Complex.re ‹ (diagonal ℂ _) i i = _ › using 1
         · exact Eq.symm (by erw [show (diagonal ℂ _ : HermitianMat d ℂ) i i =
-            (C.H.eigenvalues i : ℂ) by exact if_pos rfl]; norm_cast)
+            (C.H.eigenvalues i : ℂ) by exact ite_eq_left rfl]; norm_cast)
         · norm_num [Complex.ext_iff]
       rw [h_eigenvalue]
       exact hg.2 trivial trivial ha hb hab
@@ -202,7 +202,7 @@ theorem trace_function_convex_ici {g : ℝ → ℝ} (hg : ConvexOn ℝ (Set.Ici 
         simp_all [conj]
         convert congr_arg Complex.re h_eigenvalue using 1
         · exact Eq.symm (by erw [show (diagonal ℂ _ : HermitianMat d ℂ) i i =
-            (C.H.eigenvalues i : ℂ) by exact if_pos rfl]; norm_cast)
+            (C.H.eigenvalues i : ℂ) by exact ite_eq_left rfl]; norm_cast)
         · norm_num [Complex.ext_iff]
       rw [h_eigenvalue]
       refine hg.2 ?_ ?_ ha hb hab

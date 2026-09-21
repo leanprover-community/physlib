@@ -647,7 +647,6 @@ lemma analyticExp_inner_deficiency_hasDerivAt
     exact sub_eq_zero.mp horth
   have hinner := (hasDerivAt_const (x := s) y).inner ℂ hderiv
   convert hinner using 1
-  · rfl
   · simp only [inner_zero_left, inner_smul_right]
     rw [hrelation]
     ring_nf
@@ -678,8 +677,6 @@ lemma analyticExp_inner_deficiency_eq_zero
       simpa only [hz] using hp
     change HasDerivAt (fun r : ℝ => (Real.exp r : ℂ) * f r) 0 s
     convert hp' using 1
-    funext r
-    rfl
   have hconst : ∀ s : ℝ, g s = g 0 := by
     intro s
     exact is_const_of_deriv_eq_zero (fun r => (hg r).differentiableAt)
@@ -754,7 +751,6 @@ lemma analyticExp_inner_deficiency_hasDerivAt_neg
   let _ : InnerProductSpace ℝ H := InnerProductSpace.rclikeToReal ℂ H
   have hinner := (hasDerivAt_const (x := s) y).inner ℂ hderiv
   convert hinner using 1
-  · rfl
   · simp only [inner_zero_left, inner_smul_right]
     rw [hrelation]
     ring_nf
@@ -790,8 +786,6 @@ lemma analyticExp_inner_deficiency_eq_zero_neg
       simpa only [hz] using hp
     change HasDerivAt (fun r : ℝ => (Real.exp (-r) : ℂ) * f r) 0 s
     convert hp' using 1
-    funext r
-    rfl
   have hconst : ∀ s : ℝ, g s = g 0 := by
     intro s
     exact is_const_of_deriv_eq_zero (fun r => (hg r).differentiableAt)

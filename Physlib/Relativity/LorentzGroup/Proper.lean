@@ -87,13 +87,13 @@ lemma detContinuous_eq_zero (Λ : LorentzGroup d) :
     Subtype.mk.injEq, Nat.reduceAdd]
   refine Iff.intro (fun h => ?_) (fun h => ?_)
   · by_contra hn
-    rw [if_pos] at h
+    rw [ite_eq_left] at h
     · change (0 : Fin 2) = (1 : Fin 2) at h
       simp only [Fin.isValue, zero_ne_one] at h
     · cases' det_eq_one_or_neg_one Λ with h2 h2
       · simp_all only [ite_true]
       · simp_all only [not_true_eq_false]
-  · rw [if_neg]
+  · rw [ite_eq_right]
     · rfl
     · cases' det_eq_one_or_neg_one Λ with h2 h2
       · rw [h]

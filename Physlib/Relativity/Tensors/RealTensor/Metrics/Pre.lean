@@ -144,7 +144,7 @@ lemma contrCoContract_apply_metric {d : ℕ} :
         rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ x)]
         · simp [minkowskiMatrix.η_apply_mul_η_apply_diag, contrCoContract_basis]
         · intro b _ hb
-          simp [contrCoContract_basis, if_neg (Ne.symm hb)]
+          simp [contrCoContract_basis, ite_eq_right (Ne.symm hb)]
   rw [preCoContrUnit_apply_one, preCoContrUnitVal_expand_tmul]
   simp [map_sum]
 
@@ -183,7 +183,7 @@ lemma coContrContract_apply_metric {d : ℕ} :
         rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ x)]
         · simp [minkowskiMatrix.η_apply_mul_η_apply_diag, coContrContract_basis]
         · intro b _ hb
-          simp [coContrContract_basis, if_neg (Ne.symm hb)]
+          simp [coContrContract_basis, ite_eq_right (Ne.symm hb)]
   rw [preContrCoUnit_apply_one, preContrCoUnitVal_expand_tmul]
   simp [map_sum]
 

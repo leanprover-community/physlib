@@ -152,7 +152,7 @@ theorem traceLeft_measurementMap_eq_measure (Λ : POVM X d) (ρ : MState d) :
     change _ = Matrix.trace _
     rw [Matrix.trace_mul_cycle, HermitianMat.pow_half_mul (Λ.nonneg i)]
     exact HermitianMat.inner_eq_trace_rc _ _
-  · conv => enter [2, 2, x]; rw [if_neg (by grind)]
+  · conv => enter [2, 2, x]; rw [ite_eq_right (by grind)]
     simp
 
 /-- The action of measuring a state with the POVM `Λ`, discarding the resulting state, and keeping

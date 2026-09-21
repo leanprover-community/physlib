@@ -179,6 +179,7 @@ theorem quadRep_add_mul_self_eq_comp (a b : E) :
         (U a + (2 : ℝ) • quadRepBilin a b + U b) := by
   rw [quadRep_mul_self_eq_comp, quadRep_add_eq]
 
+set_option maxHeartbeats 500000 in
 /-- The positive polarization of the square identity, fully expanded in the canonical bilinear
 quadratic operator.  Pairing this equation with its signed counterpart isolates the standard
 mixed quadratic coefficient. -/

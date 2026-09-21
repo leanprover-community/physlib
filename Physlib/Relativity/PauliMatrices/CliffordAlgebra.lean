@@ -48,6 +48,6 @@ lemma ofCliffordAlgebra_ι_single (i : Fin 3) (r : ℝ) :
     simp only [Fin.isValue, Nat.succ_eq_add_one, Nat.reduceAdd, LinearMap.coe_sum,
       LinearMap.coe_smulRight, LinearMap.coe_proj, Function.eval, SetLike.mk_smul_mk,
       Finset.sum_apply, AddSubmonoidClass.coe_finsetSum, Pi.single_apply, ite_smul, zero_smul,
-      Finset.sum_ite_eq', Finset.mem_univ, if_true]
+      Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 
 end PauliMatrix

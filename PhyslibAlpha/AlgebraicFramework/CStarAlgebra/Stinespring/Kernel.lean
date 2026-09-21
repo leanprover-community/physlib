@@ -10,6 +10,7 @@ public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
 
 /-!
 
@@ -161,7 +162,7 @@ def blockMatrixRepresentation {n : ℕ} :
 
 lemma blockMatrixMap_isPositive {n : ℕ} {M : CStarMatrix (Fin n) (Fin n) (H →L[ℂ] H)}
     (hM : 0 ≤ M) : (blockMatrixMap M).IsPositive := by
-  apply (ContinuousLinearMap.nonneg_iff_isPositive _).mp
+  apply ContinuousLinearMap.nonneg_iff_isPositive.mp
   change 0 ≤ (blockMatrixRepresentation (H := H) (n := n)) M
   exact map_nonneg (blockMatrixRepresentation (H := H) (n := n)) hM
 

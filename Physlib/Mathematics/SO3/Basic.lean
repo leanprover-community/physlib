@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.Topology.Algebra.Group.Units
 /-!
 # The group SO(3)
 
@@ -109,7 +110,7 @@ lemma toGL_embedding : IsEmbedding toGL.toFun where
 /-- The instance of a topological group on `SO(3)`, defined through the embedding of `SO(3)`
   into `GL(n)`. -/
 instance : IsTopologicalGroup SO(3) :=
-  IsInducing.topologicalGroup toGL toGL_embedding.toIsInducing
+  IsInducing.isTopologicalGroup toGL toGL_embedding.toIsInducing
 
 /-- The determinant of an `SO(3)` matrix minus the identity is equal to zero. -/
 lemma det_minus_id (A : SO(3)) : det (A.1 - 1) = 0 := by

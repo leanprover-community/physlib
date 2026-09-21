@@ -56,6 +56,7 @@ noncomputable def traceₚ : (E →L[ℂ] E) →ₚ[ℂ] ℂ := .mk₀
     (fun x h ↦ by
       simpa using (x.isPositive_toLinearMap_iff.mpr (x.nonneg_iff_isPositive.mp h)).trace_nonneg)
 
+omit [CompleteSpace E] in
 /-- The trace is a tracial functional: cyclic under multiplication, connecting the concrete
 Hilbert-space trace here to `LinearMap.IsTracial` from `StarAlgebra/Traciality.lean`. -/
 lemma traceₚ_isTracial : (traceₚ (E := E)).toLinearMap.IsTracial :=

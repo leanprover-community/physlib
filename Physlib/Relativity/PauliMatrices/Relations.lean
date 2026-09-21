@@ -18,6 +18,12 @@ for the Pauli four-vectors.
 The current way this result is proved is by using tensor tree manipulations.
 There is likely a more direct path to this result.
 
+## References
+
+* Dreiner, Haber and Martin, *Two-component spinor techniques and Feynman rules for quantum
+  field theory and supersymmetry*, arXiv:0812.1594, equations (2.54) and (2.55), in the
+  conventions `g = diag(+1, -1, -1, -1)` and `ε⁰¹²³ = +1`. [ref: Dreiner:2008tw]
+
 -/
 
 @[expose] public section
@@ -159,14 +165,21 @@ lemma dualWeyl_mul_pauliContr_eq_ofRat :
 lemma leviCivita_mul_pauliDual :
     ({ε4ℂ | μ ν ρ κ ⊗ σ^^^ | τ(κ) α β =
       ε4ℂ | μ ν ρ κ ⊗ σ_^^ | κ α β}ᵀ : Prop) := by
-  rw [pauliDual_eq_pauliCo, prodT_permT_right, contrT_permT]
-  apply permT_congr
-  · decide
-  · rfl
+  conv_lhs =>
+    simp only [leviCivita_eq_ofRat, toTensor_dualLorentz_eq_ofRat]
+    rw [prodT_ofRat_ofRat, contrT_ofRat]
+  conv_rhs =>
+    simp only [leviCivita_eq_ofRat, pauliCo_eq_ofRat]
+    rw [prodT_ofRat_ofRat, contrT_ofRat]
+  apply (Tensor.basis _).repr.injective
+  ext b
+  rw [ofRat_basis_repr_apply, permT_basis_repr_symm_apply, ofRat_basis_repr_apply]
+  apply (Function.Injective.eq_iff Physlib.RatComplexNum.toComplexNum_injective).mpr
+  decide +revert +kernel
 
-/-- Equation (2.26), the three-Pauli identity
-`σ^μ barσ^ν σ^ρ = g^{μν} σ^ρ - g^{μρ} σ^ν + g^{νρ} σ^μ
-  + i ε^{μνρκ} σ_κ`, with barred and lowered forms expressed through index dualization `τ`. -/
+/-- The three-Pauli identity
+`σ^μ barσ^ν σ^ρ = g^{μν} σ^ρ - g^{μρ} σ^ν + g^{νρ} σ^μ + i ε^{μνρκ} σ_κ`,
+with barred and lowered forms expressed through index dualization `τ`. -/
 lemma pauliContr_mul_pauliContrDown_mul_pauliContr : ({
     σ^^^ | μ α β ⊗ σ^^^ | ν τ(α') τ(β) ⊗ σ^^^ | ρ α' β' =
       ((((η | μ ν ⊗ σ^^^ | ρ α β') + (-((η | μ ρ ⊗ σ^^^ | ν α β'))))
@@ -191,9 +204,9 @@ lemma pauliContr_mul_pauliContrDown_mul_pauliContr : ({
   apply Physlib.RatComplexNum.toComplexNum_eq_add_neg_add_add_iff.mpr
   decide +revert +kernel
 
-/-- Equation (2.27), the conjugate three-Pauli identity
-`barσ^μ σ^ν barσ^ρ = g^{μν} barσ^ρ - g^{μρ} barσ^ν + g^{νρ} barσ^μ
-  - i ε^{μνρκ} barσ_κ`, with barred and lowered forms expressed through index dualization `τ`. -/
+/-- The conjugate three-Pauli identity
+`barσ^μ σ^ν barσ^ρ = g^{μν} barσ^ρ - g^{μρ} barσ^ν + g^{νρ} barσ^μ - i ε^{μνρκ} barσ_κ`,
+with barred and lowered forms expressed through index dualization `τ`. -/
 lemma pauliContrDown_mul_pauliContr_mul_pauliContrDown : ({
     σ^^^ | μ τ(α) τ(β) ⊗ σ^^^ | ν α β' ⊗ σ^^^ | ρ τ(α') τ(β') =
       ((((η | μ ν ⊗ σ^^^ | ρ τ(α') τ(β))

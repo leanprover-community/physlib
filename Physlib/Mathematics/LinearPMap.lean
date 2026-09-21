@@ -357,25 +357,31 @@ end Monoid
 
 section Inverses
 
+/-- The kernel of `f.toFun` is trivial exactly when the kernel of `f` is. -/
+lemma toFun_ker_eq_bot_iff {f : E →ₗ.[R] F} : f.toFun.ker = ⊥ ↔ f.ker = ⊥ := by
+  rw [LinearMap.ker_eq_bot', LinearPMap.ker_eq_bot']
+  rfl
+
 variable {f : E →ₗ.[R] F} (h_ker : f.toFun.ker = ⊥)
 include h_ker
 
 lemma inverse_ker : f.inverse.toFun.ker = ⊥ := by
   refine LinearMap.ker_eq_bot'.mpr fun ⟨y, hy⟩ hy' ↦ ?_
   obtain ⟨x, hx⟩ := inverse_domain (f := f) ▸ hy
-  simp_all [inverse_apply_eq (x := x) (y := ⟨y, hy⟩) h_ker hx]
+  simp_all [inverse_apply_eq (x := x) (y := ⟨y, hy⟩) (toFun_ker_eq_bot_iff.mp h_ker) hx]
 
 lemma inverse_inverse : f.inverse.inverse = f := by
   ext x hx hx'
-  · rw [inverse_domain, inverse_range h_ker]
+  · rw [inverse_domain, inverse_range (toFun_ker_eq_bot_iff.mp h_ker)]
   · refine inverse_apply_eq (y := ⟨x, hx⟩) (x := ⟨f ⟨x, hx'⟩, by simp [inverse_domain]⟩) ?_ ?_
-    · exact inverse_ker h_ker
-    · exact inverse_apply_eq (y := ⟨f ⟨x, hx'⟩, by simp [inverse_domain]⟩) (x := ⟨x, hx'⟩) h_ker rfl
+    · exact toFun_ker_eq_bot_iff.mp (inverse_ker h_ker)
+    · exact inverse_apply_eq (y := ⟨f ⟨x, hx'⟩, by simp [inverse_domain]⟩) (x := ⟨x, hx'⟩)
+        (toFun_ker_eq_bot_iff.mp h_ker) rfl
 
 lemma inverse_compRestricted_eq : f.inverse ∘ᵣ f = domRestrict 1 f.domain := by
   ext x hx hx'
-  · simp [mem_compRestricted_domain_iff, inverse_domain, ← toFun_eq_coe]
-  · exact inverse_apply_eq (x := ⟨x, hx.2⟩) h_ker rfl
+  · simp [mem_compRestricted_domain_iff, inverse_domain, ← toFun_eq_coe, -coe_toFun_eq_coe]
+  · exact inverse_apply_eq (x := ⟨x, hx.2⟩) (toFun_ker_eq_bot_iff.mp h_ker) rfl
 
 lemma compRestricted_inverse_eq : f ∘ᵣ f.inverse = domRestrict 1 f.inverse.domain := by
   nth_rw 1 [← inverse_inverse h_ker]

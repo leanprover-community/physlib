@@ -27,15 +27,15 @@ open scoped Classical in
   by `∏ᵢ (d i) ^ (m i)`. -/
 lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynomial σ R)
     (m : σ →₀ ℕ) :
-    coeff m (aeval (fun i => C (d i) * X i) f) = (m.prod fun i k => d i ^ k) * coeff m f := by
+    (aeval (fun i => C (d i) * X i) f).coeff m = (m.prod fun i k => d i ^ k) * f.coeff m := by
   induction f using MvPolynomial.induction_on generalizing m with
   | C a =>
     rw [aeval_C, MvPolynomial.algebraMap_eq, coeff_C]
     by_cases hm : (0 : σ →₀ ℕ) = m
     · subst hm; simp
-    · rw [if_neg hm, mul_zero]
+    · rw [ite_eq_right hm, mul_zero]
   | add p q hp hq =>
-    rw [map_add, coeff_add, coeff_add, hp m, hq m, mul_add]
+    simp only [map_add, AddMonoidAlgebra.coeff_add, Finsupp.add_apply, hp m, hq m, mul_add]
   | mul_X p i hp =>
     rw [map_mul, aeval_X]
     have hrw : (aeval (fun i => C (d i) * X i) p) * (C (d i) * X i)
@@ -43,7 +43,7 @@ lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynom
       rw [mul_left_comm]
     rw [hrw, coeff_C_mul, coeff_mul_X', coeff_mul_X']
     by_cases hi : i ∈ m.support
-    · rw [if_pos hi, if_pos hi, hp (m - Finsupp.single i 1)]
+    · rw [ite_eq_left hi, ite_eq_left hi, hp (m - Finsupp.single i 1)]
       have hmi : 1 ≤ m i := Nat.one_le_iff_ne_zero.mpr (Finsupp.mem_support_iff.mp hi)
       have hle : Finsupp.single i 1 ≤ m := Finsupp.single_le_iff.mpr hmi
       have hsplit : m = (m - Finsupp.single i 1) + Finsupp.single i 1 :=
@@ -56,7 +56,7 @@ lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynom
         simp
       rw [hprod]
       ring
-    · rw [if_neg hi, if_neg hi, mul_zero, mul_zero]
+    · rw [ite_eq_right hi, ite_eq_right hi, mul_zero, mul_zero]
 
 /-- **Charge balancing.** If each variable `Xᵢ` carries an integer charge `w i`, `c` is a phase of
   infinite order, and the polynomial `f` is invariant under the charge rotation
@@ -65,7 +65,7 @@ lemma coeff_eq_zero_of_charge_ne_zero {σ K : Type*} [Field K] (w : σ → ℤ) 
     (hroot : ∀ n : ℤ, c ^ n = 1 → n = 0) {f : MvPolynomial σ K}
     (hf : aeval (fun i => C (c ^ (w i)) * X i) f = f) {m : σ →₀ ℕ}
     (hm : ∑ i ∈ m.support, (m i : ℤ) * w i ≠ 0) :
-    coeff m f = 0 := by
+    f.coeff m = 0 := by
   classical
   have key := coeff_aeval_diag (fun i => c ^ (w i)) f m
   rw [hf] at key
@@ -80,7 +80,7 @@ lemma coeff_eq_zero_of_charge_ne_zero {σ K : Type*} [Field K] (w : σ → ℤ) 
       rw [← zpow_natCast (c ^ w x) (m x), ← zpow_mul, mul_comm]
   rw [Finsupp.prod, hgen] at key
   have hne : c ^ (∑ i ∈ m.support, (m i : ℤ) * w i) ≠ 1 := fun h => hm (hroot _ h)
-  have h2 : (1 - c ^ (∑ i ∈ m.support, (m i : ℤ) * w i)) * coeff m f = 0 := by
+  have h2 : (1 - c ^ (∑ i ∈ m.support, (m i : ℤ) * w i)) * f.coeff m = 0 := by
     rw [sub_mul, one_mul, ← key, sub_self]
   rcases mul_eq_zero.mp h2 with h | h
   · exact absurd (sub_eq_zero.mp h).symm hne

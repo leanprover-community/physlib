@@ -146,7 +146,7 @@ omit [Nontrivial ℋ] in
 private lemma phiK_nonneg (K : L ℋ) {T : L (HSOp ℋ)} (hT : 0 ≤ T) :
     0 ≤ phiK (ℋ := ℋ) K T := by
   dsimp [phiK]
-  have hpos : T.IsPositive := (ContinuousLinearMap.nonneg_iff_isPositive T).1 hT
+  have hpos : T.IsPositive := ContinuousLinearMap.nonneg_iff_isPositive.1 hT
   have hnonneg : 0 ≤ Complex.re (inner ℂ (T (ofOp (star K))) (ofOp (star K))) := by
     exact ((ContinuousLinearMap.isPositive_iff_complex T).1 hpos (ofOp (star K))).2
   have hre :
@@ -208,7 +208,7 @@ private lemma re_inner_nonneg_of_nonneg
     {T : 𝓚 →L[ℂ] 𝓚} (hT : 0 ≤ T) :
     ∀ x : 𝓚, 0 ≤ Complex.re (inner ℂ x (T x)) := by
   intro x
-  have hpos : T.IsPositive := (ContinuousLinearMap.nonneg_iff_isPositive T).1 hT
+  have hpos : T.IsPositive := ContinuousLinearMap.nonneg_iff_isPositive.1 hT
   have hnonneg : 0 ≤ Complex.re (inner ℂ (T x) x) :=
     ((ContinuousLinearMap.isPositive_iff_complex T).1 hpos x).2
   have hre :

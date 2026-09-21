@@ -1195,7 +1195,7 @@ theorem ker_le_traceRight {ρ σ : MState (dA × dB)}
     intro b
     exact Finset.sum_eq_zero_iff_of_nonneg (fun b _ => h_nonneg b) |>.mp hin b (Finset.mem_univ _)
   have h_σ_zero : ∀ b : dB, σ.M.mat *ᵥ (vecTensorBasis v.ofLp b) = 0 :=
-    fun b => (hσ_psd.dotProduct_mulVec_zero_iff _).mp (h_each_zero b)
+    fun b => hσ_psd.dotProduct_mulVec_zero_iff.mp (h_each_zero b)
   have h_ρ_zero : ∀ b : dB, ρ.M.mat *ᵥ (vecTensorBasis v.ofLp b) = 0 := by
     intro b
     have hmem_σ : (WithLp.toLp 2 (vecTensorBasis v.ofLp b) : EuclideanSpace ℂ _) ∈ σ.M.ker := by
@@ -1440,7 +1440,7 @@ private lemma sandwichedTraceFunctional_sub_one_div_eventually_le
   have h_r_nonneg : ∀ α : ℝ, 1 < α → 0 ≤ r α := by
     intro α hα
     have h := sandwichedRelRentropy_nonneg (ρ := ρ) (σ := σ) (α := α) (by linarith) hker
-    rw [if_neg hα.ne'] at h
+    rw [ite_eq_right hα.ne'] at h
     simpa [hr_def, sandwichedTraceFunctional] using h
   have h_eq : ∀ α : ℝ, 1 < α → D̃_ α(ρ‖σ) = ENNReal.ofReal (r α) := fun α hα =>
     sandwichedRelRentropy_eq_log_traceFunctional (by linarith) hα.ne' hker
