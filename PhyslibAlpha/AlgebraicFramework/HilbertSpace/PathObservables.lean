@@ -16,6 +16,9 @@ The transport `T_d` (the adjacency matrix of `SimpleGraph.pathGraph d`, normalis
 radius) and the position `P_d` (the diagonal of the centered coordinate), as observables of
 `ℂ^d →L[ℂ] ℂ^d`.
 
+For `d = 1` the spectral radius is `0` and `coordinate` divides by `d - 1 = 0`, so both matrices
+take Lean's junk values there. They are meant for `2 ≤ d`, which every later statement assumes.
+
 -/
 
 @[expose] public section
@@ -34,7 +37,8 @@ open scoped Classical in
 noncomputable def transport (d : ℕ) : Matrix (Fin d) (Fin d) ℂ :=
   ((spectralRadius d : ℝ) : ℂ)⁻¹ • (pathGraph d).adjMatrix ℂ
 
-/-- The centered coordinate of the `j`-th basis vector, ranging over `[-1, 1]`. -/
+/-- The centered coordinate of the `j`-th basis vector; for `2 ≤ d` it ranges over `[-1, 1]`,
+from `-1` at `j = 0` to `1` at `j = d - 1`. -/
 noncomputable def coordinate (d : ℕ) (j : Fin d) : ℝ :=
   (2 * ((j : ℕ) + 1) - ((d : ℝ) + 1)) / ((d : ℝ) - 1)
 
