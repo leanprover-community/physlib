@@ -40,6 +40,8 @@ public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Basic
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.LadderOperators
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Vacuum
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
+public import PhyslibAlpha.QuantumThermodynamics.Landauer
+public import PhyslibAlpha.QuantumThermodynamics.ThermalState
 public import PhyslibAlpha.Mathematics.PartialDerivativeTest
 public import PhyslibAlpha.Mathematics.LadderSystem.Basic
 public import PhyslibAlpha.Mathematics.LadderSystem.Vacuum
