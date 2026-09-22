@@ -605,8 +605,8 @@ lemma prodT_default_right {n} {c : Fin n → C}
 
 lemma prodT_zero_right {n} {c : Fin n → C}
     {c1 : Fin 0 → C} (t : S.Tensor c) (t1 : S.Tensor c1) :
-    prodT t t1 = (toField t1) • permT id (IsReindexing.append_zero_right) t := by
-  conv_lhs => rw [Tensor.eq_smul_toField t1]
+    prodT t t1 = (toScalar t1) • permT id (IsReindexing.append_zero_right) t := by
+  conv_lhs => rw [Tensor.eq_smul_toScalar t1]
   rw [map_smul]
   congr 1
   convert prodT_default_right _

@@ -40,7 +40,7 @@ This file realizes `Tensor S c` as a `PiTensorProduct`, relates pure tensors to
 their components, constructs the component basis, and supplies the inherited
 finite-dimensional and module-topology instances. It also defines the natural
 action of `G` on pure tensors and tensors, the associated permutation maps, and
-the map from rank-zero tensors to the base field.
+the map from rank-zero tensors to the scalars `k`.
 
 From this setup we get the usual index-notation operations in a uniform way:
 contraction, raising/lowering, and permutation of indices.
@@ -642,63 +642,63 @@ lemma permT_injective {n m : ℕ} {c : Fin n → C} {c1 : Fin m → C}
   (injective_iff_map_eq_zero' _).mpr (permT_eq_zero_iff h)
 
 /-!
-## field
+## Rank-zero tensors as scalars
 -/
 
-/-- The linear map between tensors with zero indices and the underlying field
+/-- The linear map between tensors with zero indices and the underlying scalars
   `k`. -/
-noncomputable def toField {c : Fin 0 → C} : S.Tensor c →ₗ[k] k :=
+noncomputable def toScalar {c : Fin 0 → C} : S.Tensor c →ₗ[k] k :=
   (PiTensorProduct.isEmptyEquiv (Fin 0)).toLinearMap
 
-lemma toField_default {c : Fin 0 → C} :
-    toField (Pure.toTensor default : S.Tensor c) = 1 := by
-  simp [toField, Pure.toTensor]
+lemma toScalar_default {c : Fin 0 → C} :
+    toScalar (Pure.toTensor default : S.Tensor c) = 1 := by
+  simp [toScalar, Pure.toTensor]
 
-lemma toField_injective {c : Fin 0 → C} :
-    Function.Injective (toField : S.Tensor c → k) :=
+lemma toScalar_injective {c : Fin 0 → C} :
+    Function.Injective (toScalar : S.Tensor c → k) :=
   (PiTensorProduct.isEmptyEquiv (Fin 0)).injective
 
 @[simp]
-lemma toField_pure {c : Fin 0 → C} (p : Pure S c) :
-    toField (p.toTensor : S.Tensor c) = 1 := by
-  rw [Subsingleton.elim p default, toField_default]
+lemma toScalar_pure {c : Fin 0 → C} (p : Pure S c) :
+    toScalar (p.toTensor : S.Tensor c) = 1 := by
+  rw [Subsingleton.elim p default, toScalar_default]
 
-lemma toField_permT {c c1 : Fin 0 → C} (σ : Fin 0 → Fin 0)
+lemma toScalar_permT {c c1 : Fin 0 → C} (σ : Fin 0 → Fin 0)
     (h : IsReindexing c c1 σ) (t : S.Tensor c) :
-    toField (permT σ h t) = toField t := by
+    toScalar (permT σ h t) = toScalar t := by
   induction' t using induction_on_basis with b r t ht t1 t2 h1 h2
-  · simp [toField_pure, basis_apply, permT_pure]
+  · simp [toScalar_pure, basis_apply, permT_pure]
   · simp
   · simp [ht]
   · simp [h1, h2]
 
 @[simp]
-lemma toField_basis_default {c : Fin 0 → C} :
-    toField (basis c (@default (ComponentIdx (S := S) c) Unique.instInhabited)) = 1 := by
+lemma toScalar_basis_default {c : Fin 0 → C} :
+    toScalar (basis c (@default (ComponentIdx (S := S) c) Unique.instInhabited)) = 1 := by
   simp [basis_apply]
 
-lemma toField_basis {c : Fin 0 → C} (b : ComponentIdx (S := S) c) :
-    toField (basis c b) = 1 := by
+lemma toScalar_basis {c : Fin 0 → C} (b : ComponentIdx (S := S) c) :
+    toScalar (basis c b) = 1 := by
   simp [basis_apply]
 
-lemma toField_eq_repr {c : Fin 0 → C} (t : Tensor S c) :
-    t.toField = (basis c).repr t (fun j => Fin.elim0 j) := by
+lemma toScalar_eq_repr {c : Fin 0 → C} (t : Tensor S c) :
+    t.toScalar = (basis c).repr t (fun j => Fin.elim0 j) := by
   obtain ⟨t, rfl⟩ := (basis c).repr.symm.surjective t
   simp only [Basis.repr_symm_apply, Basis.repr_linearCombination]
-  rw [Finsupp.linearCombination_unique, map_smul, toField_basis_default, smul_eq_mul, mul_one]
+  rw [Finsupp.linearCombination_unique, map_smul, toScalar_basis_default, smul_eq_mul, mul_one]
   rfl
 
 @[simp]
-lemma toField_equivariant {c : Fin 0 → C} (g : G) (t : Tensor S c) :
-    toField (g • t) = toField t := by
+lemma toScalar_equivariant {c : Fin 0 → C} (g : G) (t : Tensor S c) :
+    toScalar (g • t) = toScalar t := by
   induction t using induction_on_pure with
   | h p => simp [actionT_pure]
   | hsmul r t hp => simp [hp]
   | hadd t1 t2 hp1 hp2 => simp [hp1, hp2]
 
-lemma eq_smul_toField {c : Fin 0 → C} (t : Tensor S c) :
-    t = toField t • (basis c (@default (ComponentIdx (S := S) c) Unique.instInhabited)) := by
-  apply toField_injective
+lemma eq_smul_toScalar {c : Fin 0 → C} (t : Tensor S c) :
+    t = toScalar t • (basis c (@default (ComponentIdx (S := S) c) Unique.instInhabited)) := by
+  apply toScalar_injective
   simp
 
 end Tensor

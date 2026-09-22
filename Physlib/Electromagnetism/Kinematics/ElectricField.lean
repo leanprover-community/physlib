@@ -150,7 +150,7 @@ lemma electricField_eq_toFieldStrength_eval {c : SpeedOfLight}
     (A : ElectromagneticPotential d) (t : Time)
     (x : Space d) (i : Fin d) (hA : Differentiable ℝ A) :
     A.electricField c t x i = - c *
-    toField {A.toFieldStrength ((toTimeAndSpace c).symm (t, x)) | [Sum.inl 0] [Sum.inr i]}ᵀ := by
+    toScalar {A.toFieldStrength ((toTimeAndSpace c).symm (t, x)) | [Sum.inl 0] [Sum.inr i]}ᵀ := by
   rw [toFieldStrength_eval_apply_eq_single]
   simp only [Fin.isValue, inl_0_inl_0, one_mul, inr_i_inr_i, neg_mul, sub_neg_eq_add]
   rw [electricField]
@@ -189,7 +189,7 @@ lemma electricField_eq_toFieldStrength_eval {c : SpeedOfLight}
 lemma toFieldStrength_eval_inl_inr_eq_electricField {c : SpeedOfLight}
     (A : ElectromagneticPotential d)
     (x : SpaceTime d) (i : Fin d) (hA : Differentiable ℝ A) :
-    toField {A.toFieldStrength x | [Sum.inl 0] [Sum.inr i]}ᵀ =
+    toScalar {A.toFieldStrength x | [Sum.inl 0] [Sum.inr i]}ᵀ =
     - (1 /c) * A.electricField c (x.time c) x.space i := by
   rw [electricField_eq_toFieldStrength_eval A (x.time c) x.space i hA]
   simp
@@ -197,7 +197,7 @@ lemma toFieldStrength_eval_inl_inr_eq_electricField {c : SpeedOfLight}
 lemma toFieldStrength_eval_inr_inl_eq_electricField {c : SpeedOfLight}
     (A : ElectromagneticPotential d)
     (x : SpaceTime d) (i : Fin d) (hA : Differentiable ℝ A) :
-    toField {A.toFieldStrength x | [Sum.inr i] [Sum.inl 0]}ᵀ =
+    toScalar {A.toFieldStrength x | [Sum.inr i] [Sum.inl 0]}ᵀ =
     (1 /c) * A.electricField c (x.time c) x.space i := by
   rw [toFieldStrength_eval_antisymm A x (Sum.inr i) (Sum.inl 0),
     toFieldStrength_eval_inl_inr_eq_electricField A x i hA]
@@ -308,7 +308,7 @@ open Space
 lemma time_deriv_electricField_eq_toFieldStrength_eval {d} {A : ElectromagneticPotential d}
     {c : SpeedOfLight} (hA : ContDiff ℝ 2 A) (t : Time) (x : Space d) (i : Fin d) :
     ∂ₜ (fun t => A.electricField c t x) t i =
-    - c ^ 2 * ∂_ (Sum.inl 0) (fun x => toField {A.toFieldStrength x | [Sum.inl 0] [Sum.inr i]}ᵀ)
+    - c ^ 2 * ∂_ (Sum.inl 0) (fun x => toScalar {A.toFieldStrength x | [Sum.inl 0] [Sum.inr i]}ᵀ)
     ((toTimeAndSpace c).symm (t, x)) := by
   rw [SpaceTime.deriv_sum_inl c]
   simp only [one_div, ContinuousLinearEquiv.apply_symm_apply, Fin.isValue, smul_eq_mul, neg_mul]
@@ -326,7 +326,7 @@ lemma time_deriv_electricField_eq_toFieldStrength_eval {d} {A : ElectromagneticP
 lemma div_electricField_eq_toFieldStrength_eval {d} {A : ElectromagneticPotential d}
     {c : SpeedOfLight} (hA : ContDiff ℝ 2 A) (t : Time) (x : Space d) :
     (∇ ⬝ A.electricField c t) x = c * ∑ (μ : (Fin 1 ⊕ Fin d)),
-      (∂_ μ (fun x => toField {A.toFieldStrength x | [μ] [Sum.inl 0]}ᵀ)
+      (∂_ μ (fun x => toScalar {A.toFieldStrength x | [μ] [Sum.inl 0]}ᵀ)
         ((toTimeAndSpace c).symm (t, x))) := by
   rw [Finset.mul_sum]
   simp only [Fin.isValue, Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero,

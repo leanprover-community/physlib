@@ -300,7 +300,7 @@ lemma leviCivita_contract_three : {ε4 | μ ν ρ σ ⊗ ε4 | τ(μ) τ(ν) τ(
 products of their matching standard-basis components. -/
 @[nolint checkType]
 lemma leviCivita_contract_self_eq_sum :
-    {ε4 | μ ν ρ σ ⊗ ε4 | τ(μ) τ(ν) τ(ρ) τ(σ)}ᵀ.toField =
+    {ε4 | μ ν ρ σ ⊗ ε4 | τ(μ) τ(ν) τ(ρ) τ(σ)}ᵀ.toScalar =
       ∑ b : ComponentIdx (S := realLorentzTensor 3)
           ![Color.up, Color.up, Color.up, Color.up],
         (Tensor.basis _).repr ε4 b *
@@ -318,7 +318,7 @@ lemma leviCivita_contract_self_eq_sum :
         (![x0, x1, x2, x3], ![x0, x1, x2, x3]) := by
     dsimp only
     apply Prod.ext <;> funext m <;> fin_cases m <;> rfl
-  rw [Tensor.toField_eq_repr]
+  rw [Tensor.toScalar_eq_repr]
   simp only [contrT_basis_repr_apply_eq_fin, prodT_basis_repr_apply,
     route]
   let F (b : Fin 4 → Fin 1 ⊕ Fin 3) := (Tensor.basis _).repr ε4 b *
@@ -337,7 +337,7 @@ lemma leviCivita_contract_self_eq_sum :
 /-- Fully contracting the Lorentzian Levi-Civita tensor with a lowered copy gives `-24`. -/
 @[nolint checkType]
 lemma leviCivita_contract_self :
-    {ε4 | μ ν ρ σ ⊗ ε4 | τ(μ) τ(ν) τ(ρ) τ(σ)}ᵀ.toField = - 24 := by
+    {ε4 | μ ν ρ σ ⊗ ε4 | τ(μ) τ(ν) τ(ρ) τ(σ)}ᵀ.toScalar = - 24 := by
   rw [leviCivita_contract_self_eq_sum]
   calc
     _ = - ∑ b : ComponentIdx (S := realLorentzTensor 3)

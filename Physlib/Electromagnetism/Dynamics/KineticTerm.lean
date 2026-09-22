@@ -87,7 +87,7 @@ Lorentz invariant.
 noncomputable def kineticTerm {d} (𝓕 : FreeSpace) (A : ElectromagneticPotential d) :
     SpaceTime d → ℝ := fun x =>
   - 1/(4 * 𝓕.μ₀) * {η' d | μ μ' ⊗ η' d | ν ν' ⊗
-    A.toFieldStrength x | μ ν ⊗ A.toFieldStrength x | μ' ν'}ᵀ.toField
+    A.toFieldStrength x | μ ν ⊗ A.toFieldStrength x | μ' ν'}ᵀ.toScalar
 
 /-!
 
@@ -105,7 +105,7 @@ lemma kineticTerm_equivariant {d} {𝓕 : FreeSpace} (A : ElectromagneticPotenti
   conv_lhs =>
     enter [2]
     rw [toFieldStrength_equivariant A Λ hf, Tensorial.toTensor_smul, ← actionT_coMetric Λ]
-    simp only [prodT_equivariant, contrT_equivariant, toField_equivariant]
+    simp only [prodT_equivariant, contrT_equivariant, toScalar_equivariant]
 
 /-!
 
@@ -116,9 +116,9 @@ lemma kineticTerm_equivariant {d} {𝓕 : FreeSpace} (A : ElectromagneticPotenti
 lemma kineticTerm_eq_sum {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential d) (x : SpaceTime d) :
     A.kineticTerm 𝓕 x =
     - 1/(4 * 𝓕.μ₀) * ∑ μ, ∑ ν, ∑ μ', ∑ ν', η μ μ' * η ν ν' *
-      toField {A.toFieldStrength x | [μ] [ν]}ᵀ * toField {A.toFieldStrength x | [μ'] [ν']}ᵀ := by
+      toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ * toScalar {A.toFieldStrength x | [μ'] [ν']}ᵀ := by
   rw [kineticTerm]
-  rw [toField_eq_repr]
+  rw [toScalar_eq_repr]
   rw [contrT_basis_repr_apply_eq_fin]
   conv_lhs =>
     enter [2, 2, μ]
@@ -161,7 +161,7 @@ lemma kineticTerm_eq_sum {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential d)
 
 lemma kineticTerm_eq_sum_sq {d} {𝓕 : FreeSpace}
     (A : ElectromagneticPotential d) (x : SpaceTime d) : A.kineticTerm 𝓕 x =
-    - 1/(4 * 𝓕.μ₀) * ∑ μ, ∑ ν, η μ μ * η ν ν * ‖toField {A.toFieldStrength x | [μ] [ν]}ᵀ‖ ^ 2 := by
+    - 1/(4 * 𝓕.μ₀) * ∑ μ, ∑ ν, η μ μ * η ν ν * ‖toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ‖ ^ 2 := by
   rw [kineticTerm_eq_sum]
   congr 1
   refine Finset.sum_congr rfl fun μ _ => Finset.sum_congr rfl fun ν _ => ?_
@@ -252,12 +252,12 @@ lemma kineticTerm_eq_electricMatrix_magneticFieldMatrix_time_space {𝓕 : FreeS
   rw [Finset.sum_add_distrib]
   simp only [Fin.isValue, Finset.sum_neg_distrib]
   have h1 : ∑ i, ∑ j, magneticFieldMatrix 𝓕.c A t x (i, j) ^ 2
-      = ∑ i, ∑ j, toField {A.toFieldStrength ((toTimeAndSpace 𝓕.c).symm (t, x)) |
+      = ∑ i, ∑ j, toScalar {A.toFieldStrength ((toTimeAndSpace 𝓕.c).symm (t, x)) |
         [Sum.inr i] [Sum.inr j]}ᵀ ^ 2 := by rfl
   rw [h1]
   ring_nf
   have h2 : ‖electricField 𝓕.c A t x‖ ^ 2 = 𝓕.c.val ^ 2 *
-      ∑ i, |toField {A.toFieldStrength ((toTimeAndSpace 𝓕.c).symm (t, x)) |
+      ∑ i, |toScalar {A.toFieldStrength ((toTimeAndSpace 𝓕.c).symm (t, x)) |
       [Sum.inl 0] [Sum.inr i]}ᵀ| ^ 2 := by
     rw [EuclideanSpace.norm_sq_eq]
     conv_lhs =>
@@ -311,7 +311,7 @@ lemma kineticTerm_contDiff {d} {n : WithTop ℕ∞} {𝓕 : FreeSpace} (A : Elec
     (hA : ContDiff ℝ (n + 1) A) :
     ContDiff ℝ n (A.kineticTerm 𝓕) := by
   rw [funext fun x => kineticTerm_eq_sum (𝓕 := 𝓕) A x]
-  have h (μ ν) : ContDiff ℝ n (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) :=
+  have h (μ ν) : ContDiff ℝ n (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) :=
     toFieldStrength_eval_contDiff hA
   fun_prop
 
@@ -502,7 +502,7 @@ components of the field strength tensor.
 lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential d)
     (x : SpaceTime d) (ha : ContDiff ℝ ∞ A) :
     A.gradKineticTerm 𝓕 x = ∑ (ν : (Fin 1 ⊕ Fin d)), (1/𝓕.μ₀ * η ν ν) •
-    (∑ (μ : (Fin 1 ⊕ Fin d)), (∂_ μ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) x))
+    (∑ (μ : (Fin 1 ⊕ Fin d)), (∂_ μ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) x))
     • Lorentz.Vector.basis ν := by
   calc _
     _ = ∑ (ν : (Fin 1 ⊕ Fin d)), ∑ (μ : (Fin 1 ⊕ Fin d)),
@@ -518,7 +518,7 @@ lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : Electromagnet
         ring_nf
         simp
     _ = ∑ (ν : (Fin 1 ⊕ Fin d)), ∑ (μ : (Fin 1 ⊕ Fin d)),
-      ((1/𝓕.μ₀ * η ν ν) * (∂_ μ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) x)) •
+      ((1/𝓕.μ₀ * η ν ν) * (∂_ μ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) x)) •
           Lorentz.Vector.basis ν := by
         refine Finset.sum_congr rfl fun ν _ => Finset.sum_congr rfl fun μ _ => ?_
         congr 2
@@ -528,7 +528,7 @@ lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : Electromagnet
             fderiv_const_mul (by fun_prop), fderiv_const_mul (by fun_prop)]
         simp [SpaceTime.deriv_eq]
     _ = ∑ (ν : (Fin 1 ⊕ Fin d)), (1/𝓕.μ₀ * η ν ν) •
-        (∑ (μ : (Fin 1 ⊕ Fin d)), (∂_ μ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) x))
+        (∑ (μ : (Fin 1 ⊕ Fin d)), (∂_ μ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) x))
         • Lorentz.Vector.basis ν := by
         apply Finset.sum_congr rfl (fun ν _ => ?_)
         rw [← Finset.sum_smul, ← Finset.mul_sum, ← smul_smul]
@@ -622,7 +622,7 @@ lemma gradKineticTerm_smul {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential 
   apply Finset.sum_congr rfl (fun μ _ => ?_)
   conv_rhs =>
     rw [SpaceTime.deriv_eq]
-    change (c • fderiv ℝ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) x)
+    change (c • fderiv ℝ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) x)
       (Lorentz.Vector.basis μ)
     rw [← fderiv_const_smul
       (toFieldStrength_eval_differentiable <| hA.of_le (ENat.LEInfty.out)).differentiableAt,

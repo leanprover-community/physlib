@@ -219,13 +219,13 @@ lemma contrT_eq_sum_evalT {n} {d} (c : Fin (n + 1 + 1) → Color) (i j : Fin (n 
   · simp [Finset.smul_sum, h]
   · simp [h1, h2, Finset.sum_add_distrib]
 
-lemma contrT_toField {d} (c : Fin 2 → Color)
+lemma contrT_toScalar {d} (c : Fin 2 → Color)
     (h : 0 ≠ 1 ∧ (realLorentzTensor d).τ (c 0) = c 1) (t : ℝT(d, c)) :
-    (contrT 0 0 1 h t).toField = ∑ (μ : Fin 1 ⊕ Fin d), {t | [μ] [μ]}ᵀ.toField := by
+    (contrT 0 0 1 h t).toScalar = ∑ (μ : Fin 1 ⊕ Fin d), {t | [μ] [μ]}ᵀ.toScalar := by
   rw [contrT_eq_sum_evalT, map_sum]
   congr
   ext μ
-  simp only [toField_permT]
+  simp only [toScalar_permT]
   rfl
 
 open ComponentIdx in

@@ -38,13 +38,13 @@ open Tensor
 
 /-- The Minkowski product of Lorentz vectors in the +--- convention.. -/
 def minkowskiProductMap {d : ℕ} (p q : Vector d) : ℝ :=
-  {η' d | μ ν ⊗ p | μ ⊗ q | ν}ᵀ.toField
+  {η' d | μ ν ⊗ p | μ ⊗ q | ν}ᵀ.toScalar
 
 lemma minkowskiProductMap_toCoord {d : ℕ} (p q : Vector d) :
     minkowskiProductMap p q = p (Sum.inl 0) * q (Sum.inl 0) -
     ∑ i, p (Sum.inr i) * q (Sum.inr i) := by
   dsimp only [minkowskiProductMap, Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue]
-  rw [toField_eq_repr, contrT_basis_repr_apply_eq_fin]
+  rw [toScalar_eq_repr, contrT_basis_repr_apply_eq_fin]
   conv_lhs =>
     enter [2, x]
     rw [prodT_basis_repr_apply, contrT_basis_repr_apply_eq_fin]
@@ -149,7 +149,7 @@ lemma minkowskiProduct_invariant {d : ℕ} (p q : Vector d) (Λ : LorentzGroup d
   rw [minkowskiProduct_apply, minkowskiProductMap, ← actionT_coMetric Λ]
   simp only [Tensorial.toTensor_smul]
   rw [prodT_equivariant, contrT_equivariant, prodT_equivariant, contrT_equivariant,
-    toField_equivariant]
+    toScalar_equivariant]
   rfl
 
 open InnerProductSpace in

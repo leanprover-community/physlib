@@ -17,7 +17,7 @@ public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 In this module we define the field strength tensor in terms of the electromagnetic potential.
 
 We define the tensor and prove various properties of it. Its components are accessed
-through index evaluation, `toField {A.toFieldStrength x | [μ] [ν]}ᵀ`.
+through index evaluation, `toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ`.
 
 ## ii. Key results
 
@@ -136,9 +136,9 @@ tensor in.
 -/
 
 /-- The statement that `F = F^{μν} eᵤ ⊗ eᵥ` written explicitly, with
-  the components extracted via `toField`. -/
+  the components extracted via `toScalar`. -/
 lemma toFieldStrength_eq_sum_basis_eval {d} {A : ElectromagneticPotential d} :
-    A.toFieldStrength = fun x => ∑ μ, ∑ ν, toField {A.toFieldStrength x| [μ] [ν]}ᵀ •
+    A.toFieldStrength = fun x => ∑ μ, ∑ ν, toScalar {A.toFieldStrength x| [μ] [ν]}ᵀ •
       Vector.basis μ ⊗ₜ[ℝ] Vector.basis ν := by
   ext x
   exact prod_eq_sum_eval Vector.basis_eq_map_tensor_basis
@@ -233,7 +233,7 @@ lemma contDiff_toFieldStrength {d} {n : WithTop ℕ∞} {A : ElectromagneticPote
 ### A.5. Components of the field strength tensor
 
 The components `F^{μν}` of the field strength tensor are accessed through index evaluation,
-`toField {A.toFieldStrength x | [μ] [ν]}ᵀ`. This is the canonical way to refer to the
+`toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ`. This is the canonical way to refer to the
 components of the field strength tensor, and is what should be used downstream.
 
 #### A.5.1. Index evaluation
@@ -244,9 +244,9 @@ components of the field strength tensor, and is what should be used downstream.
 tensor basis. -/
 lemma toFieldStrength_eval_eq_tensor_basis_repr {d} (A : ElectromagneticPotential d)
     (x : SpaceTime d) (μ ν : Fin 1 ⊕ Fin d) :
-    toField {A.toFieldStrength x | [μ] [ν]}ᵀ =
+    toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ =
     (Tensor.basis _).repr (Tensorial.toTensor (toFieldStrength A x)) (fun | 0 => μ | 1 => ν) := by
-  rw [Vector.toField_eval_eval_eq_tensorProduct_repr, Vector.tensor_basis_repr_toTensor_prod_apply]
+  rw [Vector.toScalar_eval_eval_eq_tensorProduct_repr, Vector.tensor_basis_repr_toTensor_prod_apply]
 
 /-- The coefficient of the field strength tensor in the tensor basis is given by
 index evaluation. -/
@@ -254,7 +254,7 @@ lemma toFieldStrength_tensor_basis_repr_eq_eval {d} (A : ElectromagneticPotentia
     (x : SpaceTime d)
     (b : ComponentIdx (S := realLorentzTensor d) (Fin.append ![Color.up] ![Color.up])) :
     (Tensor.basis _).repr (Tensorial.toTensor (toFieldStrength A x)) b =
-    toField {A.toFieldStrength x | [b 0] [b 1]}ᵀ := by
+    toScalar {A.toFieldStrength x | [b 0] [b 1]}ᵀ := by
   rw [toFieldStrength_eval_eq_tensor_basis_repr]
   congr 1
   funext i
@@ -264,7 +264,7 @@ lemma toFieldStrength_tensor_basis_repr_eq_eval {d} (A : ElectromagneticPotentia
 electromagnetic potential. -/
 lemma toFieldStrength_eval_apply {d} (A : ElectromagneticPotential d)
     (x : SpaceTime d) (μ ν : Fin 1 ⊕ Fin d) :
-    toField {A.toFieldStrength x | [μ] [ν]}ᵀ =
+    toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ =
     ∑ κ, (η μ κ * ∂_ κ A x ν - η ν κ * ∂_ κ A x μ) := by
   rw [toFieldStrength_eval_eq_tensor_basis_repr, toTensor_toFieldStrength]
   simp only [map_sub, Finsupp.coe_sub, Pi.sub_apply, Tensor.permT_basis_repr_symm_apply,
@@ -277,7 +277,7 @@ lemma toFieldStrength_eval_apply {d} (A : ElectromagneticPotential d)
 Minkowski metric. -/
 lemma toFieldStrength_eval_apply_eq_single {d} (A : ElectromagneticPotential d)
     (x : SpaceTime d) (μ ν : Fin 1 ⊕ Fin d) :
-    toField {A.toFieldStrength x | [μ] [ν]}ᵀ =
+    toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ =
     η μ μ * ∂_ μ A x ν - η ν ν * ∂_ ν A x μ := by
   rw [toFieldStrength_eval_apply, Finset.sum_sub_distrib,
     Finset.sum_eq_single μ
@@ -294,35 +294,35 @@ open ContDiff
 
 lemma toFieldStrength_eval_differentiable {d} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ 2 A) :
-    Differentiable ℝ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
+    Differentiable ℝ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
   simp only [toFieldStrength_eval_apply_eq_single]
   fun_prop
 
 lemma toFieldStrength_eval_differentiable_space {d} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ 2 A) (t : Time) {c : SpeedOfLight} :
     Differentiable ℝ (fun x =>
-      toField {A.toFieldStrength ((toTimeAndSpace c).symm (t, x)) | [μ] [ν]}ᵀ) := by
-  change Differentiable ℝ ((fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) ∘
+      toScalar {A.toFieldStrength ((toTimeAndSpace c).symm (t, x)) | [μ] [ν]}ᵀ) := by
+  change Differentiable ℝ ((fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) ∘
     fun x => (toTimeAndSpace c).symm (t, x))
   exact (toFieldStrength_eval_differentiable hA).comp (by fun_prop)
 
 lemma toFieldStrength_eval_differentiable_time {d} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ 2 A) (x : Space d) {c : SpeedOfLight} :
     Differentiable ℝ (fun t =>
-      toField {A.toFieldStrength ((toTimeAndSpace c).symm (t, x)) | [μ] [ν]}ᵀ) := by
-  change Differentiable ℝ ((fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) ∘
+      toScalar {A.toFieldStrength ((toTimeAndSpace c).symm (t, x)) | [μ] [ν]}ᵀ) := by
+  change Differentiable ℝ ((fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) ∘
     fun t => (toTimeAndSpace c).symm (t, x))
   exact (toFieldStrength_eval_differentiable hA).comp (by fun_prop)
 
 lemma toFieldStrength_eval_contDiff {d} {n : WithTop ℕ∞} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ (n + 1) A) :
-    ContDiff ℝ n (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
+    ContDiff ℝ n (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
   simp only [toFieldStrength_eval_apply_eq_single]
   fun_prop
 
 lemma toFieldStrength_eval_smooth {d} {A : ElectromagneticPotential d}
     (hA : ContDiff ℝ ∞ A) (μ ν : Fin 1 ⊕ Fin d) :
-    ContDiff ℝ ∞ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) :=
+    ContDiff ℝ ∞ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) :=
   toFieldStrength_eval_contDiff (by simpa using hA)
 
 /-!
@@ -335,13 +335,13 @@ We show that the field strength tensor is antisymmetric.
 
 lemma toFieldStrength_eval_antisymm {d} (A : ElectromagneticPotential d) (x : SpaceTime d)
     (μ ν : Fin 1 ⊕ Fin d) :
-    toField {A.toFieldStrength x | [μ] [ν]}ᵀ = - toField {A.toFieldStrength x | [ν] [μ]}ᵀ := by
+    toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ = - toScalar {A.toFieldStrength x | [ν] [μ]}ᵀ := by
   rw [toFieldStrength_eval_apply, toFieldStrength_eval_apply, ← Finset.sum_neg_distrib]
   exact Finset.sum_congr rfl fun κ _ => by simp
 
 lemma toFieldStrength_eval_diag_eq_zero {d} (A : ElectromagneticPotential d) (x : SpaceTime d)
     (μ : Fin 1 ⊕ Fin d) :
-    toField {A.toFieldStrength x | [μ] [μ]}ᵀ = 0 := by
+    toScalar {A.toFieldStrength x | [μ] [μ]}ᵀ = 0 := by
   rw [toFieldStrength_eval_apply_eq_single, sub_self]
 
 lemma toFieldStrength_antisymmetric {d} (A : ElectromagneticPotential d) (x : SpaceTime d) :
@@ -362,9 +362,9 @@ lemma toFieldStrength_antisymmetric {d} (A : ElectromagneticPotential d) (x : Sp
 lemma toFieldStrength_eval_equivariant {d} (A : ElectromagneticPotential d)
     (Λ : LorentzGroup d) (hf : Differentiable ℝ A) (x : SpaceTime d)
     (μ ν : Fin 1 ⊕ Fin d) :
-    toField {(Λ • A).toFieldStrength x | [μ] [ν]}ᵀ =
-    ∑ κ, ∑ ρ, (Λ.1 μ κ * Λ.1 ν ρ) * toField {A.toFieldStrength (Λ⁻¹ • x) | [κ] [ρ]}ᵀ := by
-  simp only [Vector.toField_eval_eval_eq_tensorProduct_repr]
+    toScalar {(Λ • A).toFieldStrength x | [μ] [ν]}ᵀ =
+    ∑ κ, ∑ ρ, (Λ.1 μ κ * Λ.1 ν ρ) * toScalar {A.toFieldStrength (Λ⁻¹ • x) | [κ] [ρ]}ᵀ := by
+  simp only [Vector.toScalar_eval_eval_eq_tensorProduct_repr]
   rw [toFieldStrength_equivariant A Λ hf x]
   generalize A.toFieldStrength (Λ⁻¹ • x) = F
   induction F using TensorProduct.inductionOn with
@@ -386,7 +386,7 @@ matrix elements Λ^μ_κ and Λ^ν_ρ applied to the original field components. 
 lemma toFieldStrength_action_eq_sum {d} (A : ElectromagneticPotential d) (Λ : LorentzGroup d)
     (hf : Differentiable ℝ A) (x : SpaceTime d) :
     (Λ • A).toFieldStrength x = ∑ μ, ∑ ν,
-      (∑ κ, ∑ ρ, Λ.1 μ κ * Λ.1 ν ρ * toField {A.toFieldStrength (Λ⁻¹ • x) | [κ] [ρ]}ᵀ) •
+      (∑ κ, ∑ ρ, Λ.1 μ κ * Λ.1 ν ρ * toScalar {A.toFieldStrength (Λ⁻¹ • x) | [κ] [ρ]}ᵀ) •
       Vector.basis μ ⊗ₜ[ℝ] Vector.basis ν := by
   rw [toFieldStrength_eq_sum_basis_eval]
   simp only [toFieldStrength_eval_equivariant A Λ hf x]
@@ -402,8 +402,8 @@ We show that the field strength tensor is linear in the potential.
 lemma toFieldStrength_eval_add {d} (A1 A2 : ElectromagneticPotential d)
     (x : SpaceTime d) (hA1 : Differentiable ℝ A1) (hA2 : Differentiable ℝ A2)
     (μ ν : Fin 1 ⊕ Fin d) :
-    toField {(A1 + A2).toFieldStrength x | [μ] [ν]}ᵀ =
-    toField {A1.toFieldStrength x | [μ] [ν]}ᵀ + toField {A2.toFieldStrength x | [μ] [ν]}ᵀ := by
+    toScalar {(A1 + A2).toFieldStrength x | [μ] [ν]}ᵀ =
+    toScalar {A1.toFieldStrength x | [μ] [ν]}ᵀ + toScalar {A2.toFieldStrength x | [μ] [ν]}ᵀ := by
   simp only [toFieldStrength_eval_apply, ← Finset.sum_add_distrib]
   refine Finset.sum_congr rfl fun κ _ => ?_
   simp only [SpaceTime.deriv_eq, add_val, fderiv_add hA1.differentiableAt hA2.differentiableAt,
@@ -421,8 +421,8 @@ lemma toFieldStrength_add {d} (A1 A2 : ElectromagneticPotential d)
 
 lemma toFieldStrength_eval_smul {d} (c : ℝ) (A : ElectromagneticPotential d)
     (x : SpaceTime d) (hA : Differentiable ℝ A) (μ ν : Fin 1 ⊕ Fin d) :
-    toField {(c • A).toFieldStrength x | [μ] [ν]}ᵀ =
-    c * toField {A.toFieldStrength x | [μ] [ν]}ᵀ := by
+    toScalar {(c • A).toFieldStrength x | [μ] [ν]}ᵀ =
+    c * toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ := by
   simp only [toFieldStrength_eval_apply, Finset.mul_sum]
   refine Finset.sum_congr rfl fun κ _ => ?_
   simp only [SpaceTime.deriv_eq, smul_val, fderiv_const_smul hA.differentiableAt, FunLike.coe_smul,

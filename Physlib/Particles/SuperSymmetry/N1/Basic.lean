@@ -412,12 +412,12 @@ def conjChiralCovector
     ((chiralTensor (ι := ι)).conjT t)
 
 set_option backward.isDefEq.respectTransparency false in
-/-- For scalar tensors, `toField` of the normalized tensor conjugate is the complex conjugate of
-`toField`. -/
-lemma toField_conjScalar (t : (chiralTensor (ι := ι)).Tensor ![]) :
-    (conjScalar t).toField = star t.toField := by
-  rw [conjScalar, toField_permT]
-  rw [toField_eq_repr, toField_eq_repr]
+/-- For scalar tensors, `toScalar` of the normalized tensor conjugate is the complex conjugate of
+`toScalar`. -/
+lemma toScalar_conjScalar (t : (chiralTensor (ι := ι)).Tensor ![]) :
+    (conjScalar t).toScalar = star t.toScalar := by
+  rw [conjScalar, toScalar_permT]
+  rw [toScalar_eq_repr, toScalar_eq_repr]
   change componentMap (S := (chiralTensor (ι := ι)).toTensorSpecies)
       ((chiralTensor (ι := ι)).bar ∘ ![]) ((chiralTensor (ι := ι)).conjT t) (fun j => Fin.elim0 j) =
     star ((basis (S := (chiralTensor (ι := ι)).toTensorSpecies) ![]).repr t (fun j => Fin.elim0 j))

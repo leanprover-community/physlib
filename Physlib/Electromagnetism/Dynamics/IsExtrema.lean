@@ -90,7 +90,7 @@ lemma isExtrema_iff_toFieldStrength_eval {𝓕 : FreeSpace}
     (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ ∞ A) (J : LorentzCurrentDensity d) (hJ : ContDiff ℝ ∞ J) :
     IsExtrema 𝓕 A J ↔
-    ∀ x, ∀ ν, ∑ μ, ∂_ μ (fun x => toField {A.toFieldStrength x | [μ] [ν]}ᵀ) x =
+    ∀ x, ∀ ν, ∑ μ, ∂_ μ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) x =
       𝓕.μ₀ * J x ν := by
   rw [isExtrema_iff_gradLagrangian, gradLagrangian_eq_sum_toFieldStrength_eval A hA J hJ,
     funext_iff]

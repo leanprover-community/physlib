@@ -129,7 +129,7 @@ lemma canonicalMomentum_eq_gradient_kineticTerm {d}
 lemma canonicalMomentum_eq {d} {𝓕 : FreeSpace} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ 2 A) (J : LorentzCurrentDensity d) :
     A.canonicalMomentum 𝓕 J = fun x => fun μ =>
-      (1/𝓕.μ₀) * η μ μ • toField {A.toFieldStrength x | [μ] [Sum.inl 0]}ᵀ := by
+      (1/𝓕.μ₀) * η μ μ • toScalar {A.toFieldStrength x | [μ] [Sum.inl 0]}ᵀ := by
   rw [canonicalMomentum_eq_gradient_kineticTerm A hA J]
   funext x
   apply ext_inner_right (𝕜 := ℝ)

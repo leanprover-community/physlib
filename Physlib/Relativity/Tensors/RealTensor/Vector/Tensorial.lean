@@ -131,9 +131,9 @@ lemma tensor_basis_repr_toTensor_apply {d : ℕ} (p : Vector d) (μ : ComponentI
 
 /-- Evaluating both indices of an element of `Vector d ⊗ Vector d` gives its coefficient
   in the tensor-product basis. -/
-lemma toField_eval_eval_eq_tensorProduct_repr {d} (F : Vector d ⊗[ℝ] Vector d)
+lemma toScalar_eval_eval_eq_tensorProduct_repr {d} (F : Vector d ⊗[ℝ] Vector d)
     (μ ν : Fin 1 ⊕ Fin d) :
-    toField {F | [μ] [ν]}ᵀ = (basis.tensorProduct basis).repr F (μ, ν) := by
+    toScalar {F | [μ] [ν]}ᵀ = (basis.tensorProduct basis).repr F (μ, ν) := by
   conv_rhs => rw [Tensorial.prod_eq_sum_eval basis_eq_map_tensor_basis basis_eq_map_tensor_basis F]
   simp [-Fintype.sum_sum_type, Basis.tensorProduct_repr_tmul_apply, Finsupp.single_apply]
   rfl

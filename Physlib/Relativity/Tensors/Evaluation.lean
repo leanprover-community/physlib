@@ -382,19 +382,19 @@ set_option backward.isDefEq.respectTransparency false in
   yields the field element `1` if `b = x` (transported across `![c] 0 = c`) and `0` otherwise:
   evaluation of a one-index basis tensor is the Kronecker delta. -/
 lemma evalT_basis_single {c : C} (b : basisIdx c) (x : basisIdx (![c] 0)) :
-    (evalT 0 x (basis (S := S) ![c] (ComponentIdx.single.symm b))).toField =
+    (evalT 0 x (basis (S := S) ![c] (ComponentIdx.single.symm b))).toScalar =
     if basisIdxCongr (by simp) b =  x then 1 else 0 := by
   rw [evalT_basis]
   simp only [ComponentIdx.single_symm_apply]
   split_ifs
-  · exact toField_basis _
+  · exact toScalar_basis _
   · simp
 
 /-- Basis expansion of a one-index tensor: every `t : Tensor S ![c]` is the sum over basis
-  indices `i` of its evaluation coefficient `toField (evalT 0 i t)` times the corresponding
+  indices `i` of its evaluation coefficient `toScalar (evalT 0 i t)` times the corresponding
   basis tensor. -/
 lemma eq_sum_evalT_of_single_tensor_basis {c : C} (t : Tensor S ![c]) :
-    t = ∑ i, toField (evalT 0 i t) • basis ![c] (ComponentIdx.single.symm
+    t = ∑ i, toScalar (evalT 0 i t) • basis ![c] (ComponentIdx.single.symm
       (basisIdxCongr (by simp) i)) := by
   induction' t using Tensor.induction_on_basis with b a t h t1 t2 h1 h2
   · obtain ⟨i, rfl⟩ := ComponentIdx.single.symm.surjective b

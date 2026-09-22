@@ -81,7 +81,7 @@ lemma electricField_apply_x_boost_zero {d : ℕ} {c : SpeedOfLight} (β : ℝ) (
     enter [2]
     rw [toFieldStrength_eval_antisymm]
   trans γ β ^ 2 * (1 - β ^ 2) *
-      toField {A.toFieldStrength
+      toScalar {A.toFieldStrength
       ((boost (d := d.succ) 0 β hβ)⁻¹ • (SpaceTime.toTimeAndSpace c).symm (t, x)) |
       [Sum.inl 0] [Sum.inr 0]}ᵀ
   · ring

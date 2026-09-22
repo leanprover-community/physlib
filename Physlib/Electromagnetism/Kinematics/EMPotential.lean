@@ -601,7 +601,7 @@ open Tensorial
 /-- Evaluation of the tensor components of `∂_ μ A x ν`. -/
 lemma tensorDeriv_eval_eq {d} {A : ElectromagneticPotential d} (hA : Differentiable ℝ A)
     (x : SpaceTime d) (μ ν : Fin 1 ⊕ Fin d) :
-    toField {tensorDeriv A.val x | [μ] [ν]}ᵀ = ∂_ μ A x ν := by
+    toScalar {tensorDeriv A.val x | [μ] [ν]}ᵀ = ∂_ μ A x ν := by
   trans (Lorentz.CoVector.basis.tensorProduct Lorentz.Vector.basis).repr (deriv A x) (μ, ν); swap
   · simp [deriv, Basis.tensorProduct_repr_tmul_apply, Finsupp.single_apply]
   rw [deriv_eq_tensorDeriv _ hA]
@@ -609,7 +609,7 @@ lemma tensorDeriv_eval_eq {d} {A : ElectromagneticPotential d} (hA : Differentia
   obtain ⟨t, rfl⟩ := toTensor.symm.surjective t
   induction' t using Tensor.induction_on_basis with b a t h t1 t2 h1 h2
   · simp only [LinearEquiv.apply_symm_apply, basis_apply, evalT_pure, Pure.evalP, map_smul,
-      toField_pure, smul_eq_mul, mul_one, Pure.evalPCoeff]
+      toScalar_pure, smul_eq_mul, mul_one, Pure.evalPCoeff]
     change _ * (Lorentz.contrBasis d).repr (Lorentz.contrBasis d (b 1)) ν = _
     /- Transforming the basis -/
     let e : ComponentIdx (Fin.append ![Color.down] ![Color.up])
