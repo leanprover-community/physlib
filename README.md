@@ -78,7 +78,6 @@ Quantum information theory. Currently a distinct codebase with its own conventio
 
 🎯 The project shall contain results (definitions, theorems, lemmas and calculations) from **physics**,
   including quantum information, formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
-including quantum information, formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
 
 🎯 The project shall be **organized** by **physics**.
 
@@ -89,7 +88,6 @@ including quantum information, formalized (or **digitalized**) into the interact
 🎯 The project shall contain Physics Lean **tactics**, **notation** and **syntax** for physicists.
 
 🎯 The project shall *not* be tied to physics axiomizations (e.g. axiomatic QFT), but rather flexiable enough to accommodate different approaches and starting points.
-🎯 The project shall _not_ be tied to physics axiomizations (e.g. axiomatic QFT), but rather flexiable enough to accommodate different approaches and starting points.
 
 🎯 The content of the project shall be carefully **reviewed** and curated, to ensure reusability, readability and fit.
 
