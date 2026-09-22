@@ -14,6 +14,8 @@ public import Physlib.QuantumMechanics.Operators.Momentum
 ## i. Overview
 
 In this module we introduce several angular momentum operators for quantum mechanics on `Space d`.
+Each component also acts on `SpaceDHilbertSpace d` with domain `SchwartzSubmodule d`.
+Symmetry on this domain is proved in `QuantumMechanics.Operators.Commutation`.
 
 ## ii. Key results
 
@@ -24,6 +26,8 @@ Definitions:
     as `½ ∑ᵢⱼ 𝐋ᵢⱼ∘𝐋ᵢⱼ`.
 - `angularMomentumOperator2D` : the (pseudo)scalar angular momentum operator for `d = 2`.
 - `angularMomentumOperator3D` : the (pseudo)vector angular momentum operator for `d = 3`.
+- `angularMomentumHilbertOperator` : each component as a partially defined operator on
+    `SpaceDHilbertSpace d`, preserving the dense Schwartz submodule.
 
 Notation:
 - `𝐋` for `angularMomentumOperator`
@@ -35,6 +39,7 @@ Notation:
   - A.1 Antisymmetry
 - B. Angular momentum squared operator
 - C. Special cases in low dimensions
+- D. Hilbert-space angular momentum operator
 
 ## iv. References
 
@@ -138,6 +143,38 @@ def angularMomentumOperator3D (i : Fin 3) : 𝓢(Space 3, ℂ) →L[ℂ] 𝓢(Sp
     | 0 => 𝐋 1 2
     | 1 => 𝐋 2 0
     | 2 => 𝐋 0 1
+
+/-!
+## D. Hilbert-space angular momentum operator
+-/
+
+open MeasureTheory SpaceDHilbertSpace SchwartzSubmodule
+
+variable {d : ℕ} (i j : Fin d)
+
+/-- Component `i j` of angular momentum on the Hilbert space, with Schwartz domain.
+This transports the existing Schwartz-space operator `𝐋 i j`. -/
+def angularMomentumHilbertOperator : SpaceDHilbertSpace d →ₗ.[ℂ] SpaceDHilbertSpace d where
+  domain := SchwartzSubmodule d
+  toFun := (schwartzIncl volume).1 ∘ₗ (𝐋 i j).1 ∘ₗ (schwartzEquiv volume).symm.1
+
+lemma angularMomentumHilbertOperator_domain_eq :
+    (angularMomentumHilbertOperator i j).domain = SchwartzSubmodule d := rfl
+
+lemma angularMomentumHilbertOperator_apply (ψ : SchwartzSubmodule d) :
+    angularMomentumHilbertOperator i j ψ =
+      schwartzEquiv volume (𝐋 i j ((schwartzEquiv volume).symm ψ)) := rfl
+
+lemma angularMomentumHilbertOperator_apply_ae (ψ : SchwartzSubmodule d) :
+    angularMomentumHilbertOperator i j ψ =ᵐ[volume] 𝐋 i j ((schwartzEquiv volume).symm ψ) :=
+  schwartzEquiv_coe_ae _
+
+lemma angularMomentumHilbertOperator_range (ψ : SchwartzSubmodule d) :
+    angularMomentumHilbertOperator i j ψ ∈ SchwartzSubmodule d := by
+  simp [angularMomentumHilbertOperator_apply]
+
+lemma angularMomentumHilbertOperator_hasDenseDomain :
+    (angularMomentumHilbertOperator i j).HasDenseDomain := SchwartzSubmodule.dense d _
 
 end
 end QuantumMechanics

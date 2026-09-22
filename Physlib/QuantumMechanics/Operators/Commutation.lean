@@ -15,6 +15,7 @@ public import Physlib.QuantumMechanics.Operators.AngularMomentum
 ## i. Overview
 
 In this module we compute the commutators for common operators acting on Schwartz maps on `Space d`.
+We also use these relations to prove symmetry of angular momentum on the Schwartz submodule.
 
 Commutator lemmas come in three flavors:
   - 1. `a_commutation_b` lemmas are of the form `⁅a, b⁆ = (⋯)`.
@@ -31,6 +32,8 @@ Commutator lemmas come in three flavors:
     infinitessimal rotations.
 - `angularMomentum_commutation_angularMomentum` : Angular momenta generate an `𝔰𝔬(d)` algebra.
 - `angularMomentumSqr_commutation_angularMomentum` : `𝐋²` is a quadratic Casimir of `𝔰𝔬(d)`.
+- `angularMomentumHilbertOperator_isSymmetric` : angular momentum is symmetric on the
+    Schwartz submodule of `SpaceDHilbertSpace d`.
 
 ## iii. Table of contents
 
@@ -42,6 +45,7 @@ Commutator lemmas come in three flavors:
   - B.4. Angular momentum / position
   - B.5. Angular momentum / momentum
   - B.6. Angular momentum / angular momentum
+- C. Symmetry of Hilbert-space angular momentum
 
 ## iv. References
 
@@ -320,6 +324,37 @@ lemma angularMomentumSqr_commutation_angularMomentum : ⁅𝐋²[d], 𝐋 i j⁆
     sum_smul, ← Finset.smul_sum, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   abel_nf
   simp [smul_zero]
+
+/-!
+## C. Symmetry of Hilbert-space angular momentum
+-/
+
+open MeasureTheory SpaceDHilbertSpace SchwartzSubmodule
+
+/-- Reversing the order of position and momentum leaves angular momentum unchanged. -/
+lemma angularMomentumOperator_eq_momentum_position :
+    𝐋 i j = 𝐩 j ∘L 𝐱 i - 𝐩 i ∘L 𝐱 j := by
+  rw [momentum_comp_position_eq, momentum_comp_position_eq, KroneckerDelta.symm j i]
+  simp [angularMomentumOperator]
+
+/-- Each angular momentum component is symmetric on the Schwartz domain. -/
+lemma angularMomentumHilbertOperator_isSymmetric :
+    (angularMomentumHilbertOperator i j).IsSymmetric := by
+  intro ψ φ
+  obtain ⟨f, rfl⟩ := (schwartzEquiv volume).surjective ψ
+  obtain ⟨g, rfl⟩ := (schwartzEquiv volume).surjective φ
+  simp only [angularMomentumHilbertOperator_apply, LinearEquiv.symm_apply_apply,
+    ← Submodule.coe_inner]
+  rw [angularMomentumOperator_apply_fun, map_sub, inner_sub_left,
+    positionCLM_inner, positionCLM_inner, momentumCLM_inner, momentumCLM_inner,
+    ← inner_sub_right, ← map_sub, angularMomentumOperator_eq_momentum_position]
+  rfl
+
+/-- Angular momentum on the Schwartz domain is densely defined and closable. -/
+lemma angularMomentumHilbertOperator_isUnbounded :
+    (angularMomentumHilbertOperator i j).IsUnbounded :=
+  (angularMomentumHilbertOperator_isSymmetric i j).isUnbounded_iff_hasDenseDomain.mpr
+    (angularMomentumHilbertOperator_hasDenseDomain i j)
 
 end
 end QuantumMechanics

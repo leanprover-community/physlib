@@ -84,7 +84,7 @@ lemma momentumCLM_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) : 𝐩 i ψ x = 
 -/
 
 open LinearPMap
-open MeasureTheory
+open MeasureTheory InnerProductSpace
 open SpaceDHilbertSpace
 open SchwartzSubmodule
 
@@ -136,6 +136,13 @@ lemma momentumOperator_isSymmetric : (𝓟 i).IsSymmetric := by
   symm
   congr 2
   exact integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable hI₂ hI₃ hI₄ (by fun_prop) (by fun_prop)
+
+/-- Momentum is symmetric for the Hilbert-space inner product of Schwartz maps. -/
+lemma momentumCLM_inner (f g : 𝓢(Space d, ℂ)) :
+    ⟪schwartzEquiv volume (𝐩 i f), schwartzEquiv volume g⟫_ℂ =
+      ⟪schwartzEquiv volume f, schwartzEquiv volume (𝐩 i g)⟫_ℂ := by
+  simpa only [momentumOperator_apply, LinearEquiv.symm_apply_apply, Submodule.coe_inner] using
+    momentumOperator_isSymmetric i (schwartzEquiv volume f) (schwartzEquiv volume g)
 
 lemma momentumOperator_isUnbounded : (𝓟 i).IsUnbounded := by
   refine (LinearPMap.IsSymmetric.isUnbounded_iff_hasDenseDomain ?_).mpr ?_

@@ -137,7 +137,11 @@ Requirements:
     done: true
     location: "Physlib/QuantumMechanics/Operators/Commutation.lean (angularMomentumSqr_commutation_angularMomentum, angularMomentumSqr_commutation_momentumSqr, angularMomentumSqr_commutation_radiusRegPow, angularMomentum_commutation_momentumSqr, angularMomentum_commutation_radiusRegPow)"
 
-  - description: "The API shall carry angular momentum over from Schwartz maps, where it currently lives only as continuous linear maps, to the Hilbert space as a self-adjoint partially defined operator, with its spectrum, the raising and lowering operators, the eigenvalues ℏ² l (l + 1) of 𝐋² and ℏ m of a chosen component, and the spherical harmonics as the corresponding eigenfunctions."
+  - description: "Each angular momentum component acts on the Hilbert space with dense Schwartz domain, agrees almost everywhere with its Schwartz-space action, preserves the Schwartz submodule, and is symmetric and closable."
+    done: true
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumHilbertOperator, angularMomentumHilbertOperator_domain_eq, angularMomentumHilbertOperator_apply, angularMomentumHilbertOperator_apply_ae, angularMomentumHilbertOperator_range, angularMomentumHilbertOperator_hasDenseDomain); Physlib/QuantumMechanics/Operators/Commutation.lean (angularMomentumOperator_eq_momentum_position, angularMomentumHilbertOperator_isSymmetric, angularMomentumHilbertOperator_isUnbounded)"
+
+  - description: "The API shall extend angular momentum from its Schwartz domain to self-adjoint operators on the Hilbert space, with their spectra, the raising and lowering operators, the eigenvalues ℏ² l (l + 1) of 𝐋² and ℏ m of a chosen component, and the spherical harmonics as the corresponding eigenfunctions."
     done: false
     location: N/A
 

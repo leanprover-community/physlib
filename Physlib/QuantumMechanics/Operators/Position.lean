@@ -54,7 +54,7 @@ Notation:
 namespace QuantumMechanics
 
 open Filter
-open MeasureTheory
+open MeasureTheory InnerProductSpace
 open SchwartzMap
 open SpaceDHilbertSpace
 open SchwartzSubmodule PolyBddSchwartzSubmodule
@@ -92,6 +92,14 @@ lemma positionCLM_apply_fun (ψ : 𝓢(Space d, ℂ)) : 𝐱 i ψ = (fun x : Spa
 @[simp]
 lemma positionCLM_apply (ψ : 𝓢(Space d, ℂ)) (x : Space d) : 𝐱 i ψ x = x i * ψ x := by
   simp [positionCLM_apply_fun]
+
+/-- Position is symmetric for the Hilbert-space inner product of Schwartz maps. -/
+lemma positionCLM_inner [μ.HasTemperateGrowth] [μ.IsOpenPosMeasure]
+    (f g : 𝓢(Space d, ℂ)) :
+    ⟪schwartzEquiv μ (𝐱 i f), schwartzEquiv μ g⟫_ℂ =
+      ⟪schwartzEquiv μ f, schwartzEquiv μ (𝐱 i g)⟫_ℂ := by
+  simp only [schwartzEquiv_inner, positionCLM_apply, map_mul, Complex.conj_ofReal,
+    mul_left_comm, mul_assoc]
 
 /-!
 ### A.2. Radius powers (regularized)
