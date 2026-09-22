@@ -171,7 +171,6 @@ lemma schwartzMap_integrable_slice_symm {d : ℕ} (i : Fin d.succ) (η : 𝓢(Sp
   · fun_prop
   · simp
 
-set_option maxSynthPendingDepth 10000 in
 lemma schwartzMap_fderiv_integrable_slice_symm {d : ℕ} (η : 𝓢(Space d.succ, ℝ)) (x : Space d)
     (i : Fin d.succ) :
     Integrable (fun r => fderiv ℝ (fun x => η (((slice i).symm (r, x)))) x) volume := by

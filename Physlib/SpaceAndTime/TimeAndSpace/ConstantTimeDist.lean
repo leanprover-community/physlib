@@ -292,7 +292,6 @@ lemma time_integral_differentiable {d : ℕ} (η : 𝓢(Time × Space d, ℝ)) :
 
 -/
 
-set_option maxSynthPendingDepth 10000 in
 @[fun_prop]
 lemma integrable_fderiv_space {d : ℕ} (η : 𝓢(Time × Space d, ℝ)) (x : Space d) :
     Integrable (fun t => fderiv ℝ (fun x => η (t, x)) x) volume := by
