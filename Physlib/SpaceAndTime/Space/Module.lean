@@ -253,6 +253,14 @@ instance {d} : InnerProductSpace ℝ (Space d) where
     simpa only [smul_vadd_zero, inner_vadd_zero, conj_trivial]
       using InnerProductSpace.smul_left v1 v2 a
 
+/-- The normed space structure on `Space d`, registered directly. It is definitionally the
+  one underlying the inner product space structure, but registering it as its own instance is
+  needed for typeclass search to find the operator-norm structure on `Space d →L[ℝ] ℝ`
+  (for example `NormSMulClass ℝ (Space d →L[ℝ] ℝ)`), which is not found when
+  `NormedSpace ℝ (Space d)` arises only as a nested subgoal through
+  `InnerProductSpace.toNormedSpace`. -/
+noncomputable instance {d} : NormedSpace ℝ (Space d) := InnerProductSpace.toNormedSpace
+
 lemma norm_smul_sphere {d : ℕ} (n : ↑(Metric.sphere (0 : Space d) 1))
     {r : ℝ} (hr : 0 ≤ r) :
     ‖(r • (n : Space d))‖ = r := by
