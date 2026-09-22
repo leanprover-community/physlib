@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.Hydrogen.Basic
-public import Physlib.QuantumMechanics.Operators.Commutation
+public import Physlib.QuantumMechanics.Operators.AngularMomentum
 /-!
 
 # Laplace-Runge-Lenz vector
@@ -48,7 +48,7 @@ lemma lrlOperator_eq (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = 𝐱 i �
   calc
     _ = (2 : ℝ)⁻¹ • ∑ j, ((𝐩 j ∘L 𝐱 i) ∘L 𝐩 j + 𝐱 i ∘L 𝐩 j ∘L 𝐩 j
         - ((𝐩 j ∘L 𝐱 j) ∘L 𝐩 i + 𝐱 j ∘L 𝐩 j ∘L 𝐩 i)) := by
-      simp_rw [dotProduct, mul_def, ← Finset.sum_add_distrib, angularMomentumOperator, comp_sub,
+      simp_rw [dotProduct, mul_def, ← Finset.sum_add_distrib, angularMomentumCLM, comp_sub,
         sub_comp, comp_assoc, momentum_comp_commute, ← sub_sub, add_sub, sub_add_eq_add_sub]
     _ = (2 : ℂ)⁻¹ • ∑ j, ((2 : ℂ) • 𝐱 i ∘L 𝐩 j ∘L 𝐩 j - (I * ℏ) • δ[i,j] • 𝐩 j
         - ((2 : ℂ) • (𝐱 j ∘L 𝐩 j) ∘L 𝐩 i - (I * ℏ) • 𝐩 i)) := by
@@ -72,7 +72,7 @@ lemma lrlOperator_eq' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i =
   rw [lrlOperator_eq, sub_left_inj, add_left_inj]
   symm
   trans ∑ j, 𝐱 i ∘L 𝐩 j ∘L 𝐩 j - ∑ j, (𝐱 j ∘L 𝐩 j) ∘L 𝐩 i
-  · simp [dotProduct, mul_def, angularMomentumOperator, comp_assoc, momentum_comp_commute]
+  · simp [dotProduct, mul_def, angularMomentumCLM, comp_assoc, momentum_comp_commute]
   simp [← comp_finsetSum, ← finsetSum_comp, dotProduct, mul_def]
 
 /-- `𝐀(ε)ᵢ = 𝐩ⱼ𝐋ᵢⱼ - ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
@@ -103,7 +103,7 @@ lemma angularMomentum_commutation_Ldot_p (i j k : Fin H.d) :
     comp_smul, smul_comp, comp_sub, sub_comp, add_comp]
   simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, ← Finset.smul_sum,
     KroneckerDelta.sum_smul]
-  rw [angularMomentumOperator_antisymm k i, angularMomentumOperator_antisymm k j]
+  rw [angularMomentumCLM_antisymm k i, angularMomentumCLM_antisymm k j]
   simp only [neg_comp]
   module
 
@@ -182,9 +182,9 @@ private lemma positionCompMomentumSqr_comm {d : ℕ} (i j : Fin d) :
       simp [lie_leibniz, leibniz_lie, comp_assoc]
     _ = (2 * I * ℏ) • 𝐋 j i ∘L (𝐩 ⬝ᵥ 𝐩) := by
       simp_rw [← lie_skew (𝐩 ⬝ᵥ 𝐩) _, position_commutation_momentumSqr, comp_neg, comp_smul,
-        ← sub_eq_add_neg, ← smul_sub, smul_comp, angularMomentumOperator]
+        ← sub_eq_add_neg, ← smul_sub, smul_comp, angularMomentumCLM]
     _ = (-2 * I * ℏ) • (𝐩 ⬝ᵥ 𝐩) ∘L 𝐋 i j := by
-      rw [angularMomentumOperator_antisymm j i, neg_comp, smul_neg, ← neg_smul, ← neg_mul,
+      rw [angularMomentumCLM_antisymm j i, neg_comp, smul_neg, ← neg_smul, ← neg_mul,
         ← neg_mul, momentumSqr_comp_angularMomentum_commute]
 
 private lemma positionCompMomentumSqr_comm_positionDotMomentumCompMomentum_add
@@ -194,7 +194,7 @@ private lemma positionCompMomentumSqr_comm_positionDotMomentumCompMomentum_add
       = (-I * ℏ) • (𝐱 k ∘L 𝐩 l - δ[k,l] • (𝐱 ⬝ᵥ 𝐩)) ∘L (𝐩 ⬝ᵥ 𝐩) by
     nth_rw 2 [← lie_skew]
     simp_rw [this, ← sub_eq_add_neg, ← smul_sub, ← sub_comp, symm j i, sub_sub_sub_cancel_right,
-      momentumSqr_comp_angularMomentum_commute, angularMomentumOperator]
+      momentumSqr_comp_angularMomentum_commute, angularMomentumCLM]
   intro k l
   calc
     _ = (𝐱 ⬝ᵥ 𝐩) ∘L ⁅𝐱 k, 𝐩 l⁆ ∘L (𝐩 ⬝ᵥ 𝐩) + 𝐱 k ∘L ⁅𝐩[d] ⬝ᵥ 𝐩, 𝐱[d] ⬝ᵥ 𝐩⁆ ∘L 𝐩 l
@@ -248,7 +248,7 @@ private lemma positionCompMomentumSqr_comm_radiusRegInvCompPosition_add
     _ = 𝐫₀ ε (-1) ∘L (𝐱 i ∘L ⁅𝐩[d] ⬝ᵥ 𝐩, 𝐱 j⁆ - 𝐱 j ∘L ⁅𝐩[d] ⬝ᵥ 𝐩, 𝐱 i⁆) := by simp [hA]
     _ = (-2 * I * ℏ) • 𝐫₀ ε (-1) ∘L 𝐋 i j := by
       simp_rw [← lie_skew _ (𝐱 _), position_commutation_momentumSqr, comp_neg, comp_smul,
-        ← neg_smul, ← neg_mul, ← smul_sub, comp_smul, angularMomentumOperator]
+        ← neg_smul, ← neg_mul, ← smul_sub, comp_smul, angularMomentumCLM]
 
 private lemma momentum_comm_radiusRegPow_position_symm {d : ℕ} (ε : ℝˣ) (s : ℝ) (i j : Fin d) :
     ⁅𝐩 i, 𝐫₀ ε s ∘L 𝐱 j⁆ = ⁅𝐩 j, 𝐫₀ ε s ∘L 𝐱 i⁆ := by
@@ -262,8 +262,8 @@ private lemma positionDotMomentumCompMomentum_comm_radiusRegInvCompPosition_add
     nth_rw 2 [← lie_skew]
     simp_rw [leibniz_lie, this,
       momentum_comm_radiusRegPow_position_symm, ← sub_eq_add_neg, add_sub_add_left_eq_sub,
-      smul_comp, ← smul_sub, comp_assoc, ← comp_sub, angularMomentumOperator_antisymm i j, comp_neg,
-      smul_neg, neg_mul, neg_smul, angularMomentumOperator]
+      smul_comp, ← smul_sub, comp_assoc, ← comp_sub, angularMomentumCLM_antisymm i j, comp_neg,
+      smul_neg, neg_mul, neg_smul, angularMomentumCLM]
   intro k
   calc
     _ = -(I * ℏ) • (ε.1 ^ 2) • 𝐫₀ ε (-1-2) ∘L 𝐱 k := by
@@ -330,7 +330,7 @@ private lemma xL_Lx_eq {d : ℕ} (ε : ℝˣ) (i : Fin d) :
     𝐱 ⬝ᵥ 𝐋 i + 𝐋 i ⬝ᵥ 𝐱 = (2 : ℝ) • (𝐱 ⬝ᵥ 𝐩) ∘L 𝐱 i + (-I * ℏ * (d - 3)) • 𝐱 i
     + ((-2 : ℝ) • 𝐫₀ ε 2 ∘L 𝐩 i + (2 * ε.1 ^ 2 : ℝ) • 𝐩 i) := by
   -- Change summand
-  simp_rw [dotProduct, mul_def, ← Finset.sum_add_distrib, angularMomentumOperator, comp_sub,
+  simp_rw [dotProduct, mul_def, ← Finset.sum_add_distrib, angularMomentumCLM, comp_sub,
     sub_comp, comp_assoc, sub_add_sub_comm, momentum_comp_position_eq, comp_sub, comp_smul,
     comp_id, ← comp_assoc, position_comp_commute i _, ← add_sub_assoc, ← two_smul ℝ,
     sub_sub_eq_add_sub, sub_add_eq_add_sub, comp_assoc, comp_eq_comp_add_commute (𝐱 i) (𝐩 _),
@@ -425,14 +425,14 @@ private lemma sum_Lpp (d : ℕ) : ∑ i : Fin d, ∑ j, 𝐋 i j ∘L 𝐩 j ∘
   rw [sum_symmetrize]
   conv_lhs =>
     enter [2, 2, i, 2, j]
-    rw [angularMomentumOperator_antisymm j i, momentum_comp_commute j i]
+    rw [angularMomentumCLM_antisymm j i, momentum_comp_commute j i]
   simp
 
 private lemma sum_ppL (d : ℕ) : ∑ i : Fin d, ∑ j, 𝐩 i ∘L 𝐩 j ∘L 𝐋 i j = 0 := by
   rw [sum_symmetrize]
   conv_lhs =>
     enter [2, 2, i, 2, j]
-    rw [← comp_assoc, ← comp_assoc, angularMomentumOperator_antisymm j i, momentum_comp_commute j i]
+    rw [← comp_assoc, ← comp_assoc, angularMomentumCLM_antisymm j i, momentum_comp_commute j i]
   simp
 
 private lemma sum_LppL (d : ℕ) :
@@ -442,15 +442,15 @@ private lemma sum_LppL (d : ℕ) :
     enter [2, 2, i, 2, j, 2, k]
     calc
       _ = (𝐋 i k ∘L 𝐩 k ∘L 𝐩 j - 𝐋 j k ∘L 𝐩 k ∘L 𝐩 i) ∘L 𝐋 i j := by
-        simp [angularMomentumOperator_antisymm j i, comp_neg, ← comp_assoc, sub_eq_add_neg]
+        simp [angularMomentumCLM_antisymm j i, comp_neg, ← comp_assoc, sub_eq_add_neg]
       _ = (𝐱 i ∘L 𝐩 k ∘L 𝐩 k ∘L 𝐩 j - 𝐱 k ∘L 𝐩 i ∘L 𝐩 k ∘L 𝐩 j
           - (𝐱 j ∘L 𝐩 k ∘L 𝐩 k ∘L 𝐩 i - 𝐱 k ∘L 𝐩 j ∘L 𝐩 k ∘L 𝐩 i)) ∘L 𝐋 i j := by
-        simp_rw [angularMomentumOperator, sub_comp, comp_assoc]
+        simp_rw [angularMomentumCLM, sub_comp, comp_assoc]
       _ = (𝐱 i ∘L 𝐩 j ∘L 𝐩 k ∘L 𝐩 k - 𝐱 j ∘L 𝐩 i ∘L 𝐩 k ∘L 𝐩 k) ∘L 𝐋 i j := by
         simp_rw [momentum_comp_commute k, ← comp_assoc (𝐩 _), momentum_comp_commute k,
           momentum_comp_commute i j, sub_sub_sub_cancel_right]
       _ = 𝐋 i j ∘L (𝐩 k ∘L 𝐩 k) ∘L 𝐋 i j := by
-        simp_rw [← comp_assoc, ← sub_comp, angularMomentumOperator]
+        simp_rw [← comp_assoc, ← sub_comp, angularMomentumCLM]
   trans (2 : ℂ)⁻¹ • ∑ i, ∑ j, 𝐋 i j ∘L (𝐩 ⬝ᵥ 𝐩) ∘L 𝐋 i j
   · simp_rw [← comp_finsetSum, ← finsetSum_comp, ← comp_assoc, dotProduct, mul_def]
   simp_rw [← comp_assoc, ← momentumSqr_comp_angularMomentum_commute, comp_assoc, ← comp_finsetSum,
@@ -464,9 +464,9 @@ private lemma sum_Lprx (d : ℕ) (ε : ℝˣ) :
     enter [1, 2, 2, i, 2, j]
     calc
       _ = 𝐋 i j ∘L (𝐩 j ∘L 𝐱 i - 𝐩 i ∘L 𝐱 j) := by
-        simp [angularMomentumOperator_antisymm j i, comp_assoc, sub_eq_add_neg]
+        simp [angularMomentumCLM_antisymm j i, comp_assoc, sub_eq_add_neg]
       _ = 𝐋 i j ∘L 𝐋 i j := by
-        simp [momentum_comp_position_eq, symm j i, angularMomentumOperator]
+        simp [momentum_comp_position_eq, symm j i, angularMomentumCLM]
   rw [← angularMomentumSqr_comp_radiusRegPow_commute, angularMomentumOperatorSqr]
 
 private lemma sum_rxpL (d : ℕ) (ε : ℝˣ) :
@@ -475,8 +475,8 @@ private lemma sum_rxpL (d : ℕ) (ε : ℝˣ) :
   rw [sum_symmetrize]
   conv_lhs =>
     enter [2, 2, 2, i, 2, j]
-    rw [angularMomentumOperator_antisymm j i, comp_neg, comp_neg, ← sub_eq_add_neg, ← comp_assoc,
-      ← comp_assoc, ← sub_comp, ← angularMomentumOperator]
+    rw [angularMomentumCLM_antisymm j i, comp_neg, comp_neg, ← sub_eq_add_neg, ← comp_assoc,
+      ← comp_assoc, ← sub_comp, ← angularMomentumCLM]
   rw [angularMomentumOperatorSqr]
 
 private lemma sum_prx (d : ℕ) (ε : ℝˣ) :

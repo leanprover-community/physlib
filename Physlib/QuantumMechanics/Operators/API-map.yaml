@@ -127,19 +127,19 @@ Requirements:
 
   - description: "The components 𝐋ᵢⱼ = xᵢpⱼ - xⱼpᵢ of the angular momentum operator and the scalar 𝐋² are defined on Schwartz maps, with antisymmetry in the two indices and the vanishing of a repeated index, and the one-, two- and three-dimensional cases are treated separately."
     done: true
-    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumOperator, notation 𝐋, angularMomentumOperator_apply, angularMomentumOperator_antisymm, angularMomentumOperator_eq_zero, angularMomentumOperatorSqr, notation 𝐋², angularMomentumOperatorSqr_apply, angularMomentumOperator1D_trivial, angularMomentumOperator2D, angularMomentumOperator3D)"
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumCLM, notation 𝐋, angularMomentumCLM_apply, angularMomentumCLM_antisymm, angularMomentumCLM_eq_zero, angularMomentumOperatorSqr, notation 𝐋², angularMomentumOperatorSqr_apply, angularMomentumOperator1D_trivial, angularMomentumOperator2D, angularMomentumOperator3D)"
 
   - description: "Position and momentum transform as vectors under the angular momenta, which close into the Lie algebra of rotations."
     done: true
-    location: "Physlib/QuantumMechanics/Operators/Commutation.lean (angularMomentum_commutation_position, angularMomentum_commutation_momentum, angularMomentum_commutation_angularMomentum)"
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentum_commutation_position, angularMomentum_commutation_momentum, angularMomentum_commutation_angularMomentum)"
 
   - description: "The scalar 𝐋² commutes with every angular momentum component, with the momentum squared and with any regularized power of the radius."
     done: true
-    location: "Physlib/QuantumMechanics/Operators/Commutation.lean (angularMomentumSqr_commutation_angularMomentum, angularMomentumSqr_commutation_momentumSqr, angularMomentumSqr_commutation_radiusRegPow, angularMomentum_commutation_momentumSqr, angularMomentum_commutation_radiusRegPow)"
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumSqr_commutation_angularMomentum, angularMomentumSqr_commutation_momentumSqr, angularMomentumSqr_commutation_radiusRegPow, angularMomentum_commutation_momentumSqr, angularMomentum_commutation_radiusRegPow)"
 
   - description: "Each angular momentum component acts on the Hilbert space with dense Schwartz domain, agrees almost everywhere with its Schwartz-space action, preserves the Schwartz submodule, and is symmetric and closable."
     done: true
-    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumHilbertOperator, angularMomentumHilbertOperator_domain_eq, angularMomentumHilbertOperator_apply, angularMomentumHilbertOperator_apply_ae, angularMomentumHilbertOperator_range, angularMomentumHilbertOperator_hasDenseDomain); Physlib/QuantumMechanics/Operators/Commutation.lean (angularMomentumOperator_eq_momentum_position, angularMomentumHilbertOperator_isSymmetric, angularMomentumHilbertOperator_isUnbounded)"
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumOperator, angularMomentumOperator_domain_eq, angularMomentumOperator_apply, angularMomentumOperator_apply_ae, angularMomentumOperator_range, angularMomentumOperator_hasDenseDomain, angularMomentumCLM_eq_momentum_position, angularMomentumOperator_isSymmetric, angularMomentumOperator_isUnbounded)"
 
   - description: "The API shall extend angular momentum from its Schwartz domain to self-adjoint operators on the Hilbert space, with their spectra, the raising and lowering operators, the eigenvalues ℏ² l (l + 1) of 𝐋² and ℏ m of a chosen component, and the spherical harmonics as the corresponding eigenfunctions."
     done: false

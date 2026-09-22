@@ -7,15 +7,16 @@ module
 
 public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Tensorial
-public import Physlib.QuantumMechanics.Operators.AngularMomentum
+public import Physlib.QuantumMechanics.Operators.Position
+public import Physlib.QuantumMechanics.Operators.Momentum
 /-!
 
 # Commutation relations
 
 ## i. Overview
 
-In this module we compute the commutators for common operators acting on Schwartz maps on `Space d`.
-We also use these relations to prove symmetry of angular momentum on the Schwartz submodule.
+In this module we compute the commutators of position and momentum operators on Schwartz maps
+on `Space d`, including regularized powers of the radius.
 
 Commutator lemmas come in three flavors:
   - 1. `a_commutation_b` lemmas are of the form `⁅a, b⁆ = (⋯)`.
@@ -25,15 +26,6 @@ Commutator lemmas come in three flavors:
 ## ii. Key results
 
 - `position_commutation_momentum` : The canonical commutation relations.
-- `angularMomentum_commutation_position` : The position operator transforms as a vector under
-    infinitessimal rotations.
-- `angularMomentum_commutation_radiusRegPow` : Functions of `‖x‖²` commute with the angular momenta.
-- `angularMomentum_commutation_momentum` : The momentum operator transforms as a vector under
-    infinitessimal rotations.
-- `angularMomentum_commutation_angularMomentum` : Angular momenta generate an `𝔰𝔬(d)` algebra.
-- `angularMomentumSqr_commutation_angularMomentum` : `𝐋²` is a quadratic Casimir of `𝔰𝔬(d)`.
-- `angularMomentumHilbertOperator_isSymmetric` : angular momentum is symmetric on the
-    Schwartz submodule of `SpaceDHilbertSpace d`.
 
 ## iii. Table of contents
 
@@ -42,10 +34,6 @@ Commutator lemmas come in three flavors:
   - B.1. Position / position
   - B.2. Momentum / momentum
   - B.3. Position / momentum
-  - B.4. Angular momentum / position
-  - B.5. Angular momentum / momentum
-  - B.6. Angular momentum / angular momentum
-- C. Symmetry of Hilbert-space angular momentum
 
 ## iv. References
 
@@ -61,7 +49,7 @@ open KroneckerDelta
 open Bracket
 open SchwartzMap ContinuousLinearMap
 
-variable {d : ℕ} (i j k l : Fin d) (ε : ℝˣ) (s t : ℝ)
+variable {d : ℕ} (i j k : Fin d) (ε : ℝˣ) (s t : ℝ)
 
 /-!
 
@@ -238,123 +226,6 @@ lemma radiusRegPow_commutation_momentumSqr :
       ring_nf
       simp_rw [← sub_add, sub_sub, ← add_smul, I_sq, sub_eq_add_neg, ← neg_smul]
       ring_nf
-
-/-!
-
-### B.4. Angular momentum / position
-
--/
-
-lemma angularMomentum_commutation_position :
-    ⁅𝐋 i j, 𝐱 k⁆ = (I * ℏ) • (δ[i,k] • 𝐱 j - δ[j,k] • 𝐱 i) := by
-  trans 𝐱 i ∘L ⁅𝐩 j, 𝐱 k⁆ - 𝐱 j ∘L ⁅𝐩 i, 𝐱 k⁆
-  · simp [angularMomentumOperator, leibniz_lie]
-  simp only [← lie_skew (𝐩 _), comp_neg, sub_neg_eq_add, add_comm, ← sub_eq_add_neg,
-    position_commutation_momentum, comp_smul, comp_id, smul_sub, symm k _]
-
-@[simp]
-lemma angularMomentum_commutation_radiusRegPow : ⁅𝐋 i j, 𝐫₀[d] ε s⁆ = 0 := by
-  trans 𝐱 i ∘L ⁅𝐩 j, 𝐫₀ ε s⁆ - 𝐱 j ∘L ⁅𝐩 i, 𝐫₀ ε s⁆
-  · simp [angularMomentumOperator, leibniz_lie]
-  simp [← lie_skew (𝐩 _), radiusRegPow_commutation_momentum, comp_neg,
-    ← position_comp_radiusRegPow_commute, ← comp_assoc, position_comp_commute]
-
-lemma angularMomentum_comp_radiusRegPow_commute : 𝐋 i j ∘L 𝐫₀ ε s = 𝐫₀ ε s ∘L 𝐋 i j := by
-  rw [comp_eq_comp_add_commute, angularMomentum_commutation_radiusRegPow, add_zero]
-
-@[simp]
-lemma angularMomentumSqr_commutation_radiusRegPow : ⁅𝐋²[d], 𝐫₀[d] ε s⁆ = 0 := by
-  simp [angularMomentumOperatorSqr, sum_lie, leibniz_lie]
-
-lemma angularMomentumSqr_comp_radiusRegPow_commute : 𝐋² ∘L 𝐫₀[d] ε s = 𝐫₀ ε s ∘L 𝐋² := by
-  rw [comp_eq_comp_add_commute, angularMomentumSqr_commutation_radiusRegPow, add_zero]
-
-/-!
-
-### B.5. Angular momentum / momentum
-
--/
-
-lemma angularMomentum_commutation_momentum :
-    ⁅𝐋 i j, 𝐩 k⁆ = (I * ℏ) • (δ[i,k] • 𝐩 j - δ[j,k] • 𝐩 i) := by
-  trans ⁅𝐱 i, 𝐩 k⁆ ∘L 𝐩 j - ⁅𝐱 j, 𝐩 k⁆ ∘L 𝐩 i
-  · simp [angularMomentumOperator, leibniz_lie]
-  simp only [position_commutation_momentum, smul_comp, id_comp, smul_sub]
-
-lemma momentum_comp_angularMomentum_eq :
-    𝐩 k ∘L 𝐋 i j = 𝐋 i j ∘L 𝐩 k - (I * ℏ) • (δ[i,k] • 𝐩 j - δ[j,k] • 𝐩 i) := by
-  rw [comp_eq_comp_sub_commute, angularMomentum_commutation_momentum]
-
-@[simp]
-lemma angularMomentum_commutation_momentumSqr : ⁅𝐋 i j, 𝐩[d] ⬝ᵥ 𝐩⁆ = 0 := by
-  simp only [dotProduct, mul_def, lie_sum, lie_leibniz, angularMomentum_commutation_momentum,
-    comp_smul, comp_sub, smul_comp, sub_comp, ← smul_add, ← Finset.smul_sum, Finset.sum_add_distrib,
-    Finset.sum_sub_distrib, sum_smul, sub_add_sub_cancel, sub_self, smul_zero]
-
-lemma momentumSqr_comp_angularMomentum_commute : (𝐩 ⬝ᵥ 𝐩) ∘L 𝐋 i j = 𝐋 i j ∘L (𝐩 ⬝ᵥ 𝐩) := by
-  rw [comp_eq_comp_sub_commute, angularMomentum_commutation_momentumSqr, sub_zero]
-
-@[simp]
-lemma angularMomentumSqr_commutation_momentumSqr : ⁅𝐋²[d], 𝐩[d] ⬝ᵥ 𝐩⁆ = 0 := by
-  simp [angularMomentumOperatorSqr, sum_lie, leibniz_lie]
-
-/-!
-
-### B.6. Angular momentum / angular momentum
-
--/
-
-lemma angularMomentum_commutation_angularMomentum : ⁅𝐋 i j, 𝐋 k l⁆ =
-    (I * ℏ) • (δ[i,k] • 𝐋 j l - δ[i,l] • 𝐋 j k - δ[j,k] • 𝐋 i l + δ[j,l] • 𝐋 i k) := by
-  nth_rw 2 [angularMomentumOperator]
-  simp only [angularMomentum_commutation_position, angularMomentum_commutation_momentum,
-    lie_sub, lie_leibniz, comp_smul, smul_comp, comp_sub, sub_comp, ← smul_add, ← smul_sub]
-  dsimp [angularMomentumOperator]
-  ext
-  simp only [nsmul_eq_mul, smul_apply, sub_apply, add_apply, mul_apply_eq_comp, comp_apply,
-    _root_.natCast_apply, positionCLM_apply, momentumCLM_apply, neg_mul, mul_neg, smul_neg,
-    sub_neg_eq_add, smul_eq_mul, smul_add]
-  ring
-
-@[simp]
-lemma angularMomentumSqr_commutation_angularMomentum : ⁅𝐋²[d], 𝐋 i j⁆ = 0 := by
-  simp only [angularMomentumOperatorSqr, smul_lie, sum_lie, leibniz_lie, ← smul_add, comp_smul,
-    comp_add, comp_sub, smul_comp, add_comp, sub_comp, angularMomentum_commutation_angularMomentum,
-    angularMomentumOperator_antisymm _ i, angularMomentumOperator_antisymm j _, symm _ i, symm _ j,
-    sum_smul, ← Finset.smul_sum, Finset.sum_add_distrib, Finset.sum_sub_distrib]
-  abel_nf
-  simp [smul_zero]
-
-/-!
-## C. Symmetry of Hilbert-space angular momentum
--/
-
-open MeasureTheory SpaceDHilbertSpace SchwartzSubmodule
-
-/-- Reversing the order of position and momentum leaves angular momentum unchanged. -/
-lemma angularMomentumOperator_eq_momentum_position :
-    𝐋 i j = 𝐩 j ∘L 𝐱 i - 𝐩 i ∘L 𝐱 j := by
-  rw [momentum_comp_position_eq, momentum_comp_position_eq, KroneckerDelta.symm j i]
-  simp [angularMomentumOperator]
-
-/-- Each angular momentum component is symmetric on the Schwartz domain. -/
-lemma angularMomentumHilbertOperator_isSymmetric :
-    (angularMomentumHilbertOperator i j).IsSymmetric := by
-  intro ψ φ
-  obtain ⟨f, rfl⟩ := (schwartzEquiv volume).surjective ψ
-  obtain ⟨g, rfl⟩ := (schwartzEquiv volume).surjective φ
-  simp only [angularMomentumHilbertOperator_apply, LinearEquiv.symm_apply_apply,
-    ← Submodule.coe_inner]
-  rw [angularMomentumOperator_apply_fun, map_sub, inner_sub_left,
-    positionCLM_inner, positionCLM_inner, momentumCLM_inner, momentumCLM_inner,
-    ← inner_sub_right, ← map_sub, angularMomentumOperator_eq_momentum_position]
-  rfl
-
-/-- Angular momentum on the Schwartz domain is densely defined and closable. -/
-lemma angularMomentumHilbertOperator_isUnbounded :
-    (angularMomentumHilbertOperator i j).IsUnbounded :=
-  (angularMomentumHilbertOperator_isSymmetric i j).isUnbounded_iff_hasDenseDomain.mpr
-    (angularMomentumHilbertOperator_hasDenseDomain i j)
 
 end
 end QuantumMechanics
