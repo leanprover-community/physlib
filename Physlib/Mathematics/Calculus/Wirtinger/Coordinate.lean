@@ -270,7 +270,7 @@ coordinate-difference rule `dWirtingerCoord_coordDiff` and the conjugate-coordin
   funext u
   rw [dWirtingerCoord_apply I, fderiv_coordProj, fderiv_coordProj]
   by_cases h : I = J
-  · subst h; rw [Pi.single_eq_same, Pi.single_eq_same, if_pos rfl, Complex.I_mul_I]; ring
+  · subst h; rw [Pi.single_eq_same, Pi.single_eq_same, ite_eq_left rfl, Complex.I_mul_I]; ring
   · simp [h]
 
 /-- Pointwise additivity of the holomorphic coordinate derivative at `u`:

@@ -165,7 +165,7 @@ lemma termOfMassDim_isInvariant {V : EffectivePotential} {n : ℕ} (h : HasMaxMa
     have hcoeff := congrArg (fun p => p.coeff m) hp
     simpa only [Polynomial.finsetSum_coeff, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
       mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_range, Nat.lt_succ_iff, hmn,
-      if_true, Polynomial.coeff_zero, sub_eq_zero] using hcoeff
+      ite_true, Polynomial.coeff_zero, sub_eq_zero] using hcoeff
   · rw [termOfMassDim_eq_zero_of_max_lt h (not_le.mp hmn),
       termOfMassDim_eq_zero_of_max_lt h (not_le.mp hmn)]
 

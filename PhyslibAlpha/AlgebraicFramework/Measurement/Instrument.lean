@@ -66,19 +66,20 @@ that outcome has nonzero probability: apply the operation, then renormalize by t
 probability, so the certain event is again sent to `1`. -/
 noncomputable def conditionalState (𝓘 : Instrument E ι) (i : ι) (ω : 𝓢[ℝ, E])
     (hpos : 0 < ω ((𝓘.op i : E → E) 1)) : 𝓢[ℝ, E] :=
-  UnitalPositiveLinearMap.ofLinearMap
-    ((ω ((𝓘.op i : E → E) 1))⁻¹ • (ω.toLinearMap.comp (𝓘.op i).1.toLinearMap))
-    (fun x hx => by
-      have : (0:ℝ) ≤ (ω ((𝓘.op i : E → E) 1))⁻¹ * ω ((𝓘.op i : E → E) x) :=
-        mul_nonneg (inv_nonneg.mpr hpos.le) (ω.map_nonneg ((𝓘.op i).map_nonneg hx))
-      simpa [LinearMap.smul_apply, smul_eq_mul] using this)
-    (by simp [LinearMap.smul_apply, smul_eq_mul, inv_mul_cancel₀ hpos.ne'])
+  (𝓘.op i).condition ω hpos
 
 @[simp]
 lemma conditionalState_apply (𝓘 : Instrument E ι) (i : ι) (ω : 𝓢[ℝ, E])
     (hpos : 0 < ω ((𝓘.op i : E → E) 1)) (a : E) :
     𝓘.conditionalState i ω hpos a =
       (ω ((𝓘.op i : E → E) 1))⁻¹ * ω ((𝓘.op i : E → E) a) :=
-  rfl
+  Operation.condition_apply _ _ _ _
+
+/-- A normal instrument operation sends a normal input state to a normal conditional state,
+whenever its outcome has nonzero probability. -/
+theorem conditionalState_isNormal (𝓘 : Instrument E ι) (i : ι) (ω : 𝓢[ℝ, E])
+    (hpos : 0 < ω ((𝓘.op i : E → E) 1)) (hOp : (𝓘.op i).IsNormal) (hω : ω.IsNormal) :
+    (𝓘.conditionalState i ω hpos).IsNormal :=
+  Operation.condition_isNormal (𝓘.op i) ω hpos hOp hω
 
 end Instrument

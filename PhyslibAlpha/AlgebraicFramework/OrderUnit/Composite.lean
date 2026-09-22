@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
+public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Basic
 
 /-!
@@ -96,6 +97,51 @@ structure TensorCone where
 namespace TensorCone
 
 instance : Coe (TensorCone E₁ E₂) (PointedCone ℝ (E₁ ⊗[ℝ] E₂)) := ⟨toPointedCone⟩
+
+/-- A pair of positive functionals evaluates nonnegatively on every element of a compatible
+composite cone.  This is the defining operational content of the maximal tensor bound. -/
+lemma productFunctional_nonneg (C : TensorCone E₁ E₂) (φ : PositiveLinearMap ℝ E₁ ℝ)
+    (ψ : PositiveLinearMap ℝ E₂ ℝ)
+    {z : E₁ ⊗[ℝ] E₂} (hz : z ∈ C.toPointedCone) :
+    0 ≤ TensorProduct.dualDistrib ℝ E₁ E₂ (φ.toLinearMap ⊗ₜ[ℝ] ψ.toLinearMap) z := by
+  have hzmax : z ∈ maxTensorCone E₁ E₂ := C.le_max hz
+  change z ∈ PointedCone.maxTensorProduct (PointedCone.positive ℝ E₁)
+    (PointedCone.positive ℝ E₂) at hzmax
+  rw [PointedCone.mem_maxTensorProduct] at hzmax
+  exact hzmax φ.toLinearMap (fun x hx => φ.map_nonneg hx)
+    ψ.toLinearMap (fun y hy => ψ.map_nonneg hy)
+
+variable {F₁ F₂ : Type*}
+  [AddCommGroup F₁] [PartialOrder F₁] [IsOrderedAddMonoid F₁] [Module ℝ F₁]
+  [PosSMulMono ℝ F₁]
+  [AddCommGroup F₂] [PartialOrder F₂] [IsOrderedAddMonoid F₂] [Module ℝ F₂]
+  [PosSMulMono ℝ F₂]
+
+/-- The image of the positive cone under a positive linear map remains in the positive cone. -/
+lemma positiveCone_map_le (φ : PositiveLinearMap ℝ E₁ F₁) :
+    (PointedCone.positive ℝ E₁).map φ.toLinearMap ≤ PointedCone.positive ℝ F₁ := by
+  rintro _ ⟨x, hx, rfl⟩
+  exact φ.map_nonneg hx
+
+/-- Tensor products of positive maps preserve the minimal tensor cone. -/
+lemma minTensorCone_map_le (φ : PositiveLinearMap ℝ E₁ F₁)
+    (ψ : PositiveLinearMap ℝ E₂ F₂) :
+    (minTensorCone E₁ E₂).map (TensorProduct.map φ.toLinearMap ψ.toLinearMap) ≤
+      minTensorCone F₁ F₂ :=
+  (PointedCone.minTensorProduct_map_le φ.toLinearMap ψ.toLinearMap _ _).trans
+    (PointedCone.minTensorProduct_mono
+      (positiveCone_map_le (E₁ := E₁) (F₁ := F₁) φ)
+      (positiveCone_map_le (E₁ := E₂) (F₁ := F₂) ψ))
+
+/-- Tensor products of positive maps preserve the maximal tensor cone. -/
+lemma maxTensorCone_map_le (φ : PositiveLinearMap ℝ E₁ F₁)
+    (ψ : PositiveLinearMap ℝ E₂ F₂) :
+    (maxTensorCone E₁ E₂).map (TensorProduct.map φ.toLinearMap ψ.toLinearMap) ≤
+      maxTensorCone F₁ F₂ :=
+  (PointedCone.maxTensorProduct_map_le φ.toLinearMap ψ.toLinearMap _ _).trans
+    (PointedCone.maxTensorProduct_mono
+      (positiveCone_map_le (E₁ := E₁) (F₁ := F₁) φ)
+      (positiveCone_map_le (E₁ := E₂) (F₁ := F₂) ψ))
 
 /-- The elements of a compatible tensor cone form an `ℝ≥0`-module. This bridges Mathlib's
 generic nonnegative-scalar subtype with `NNReal`, which this order-unit API uses throughout. -/
@@ -220,8 +266,7 @@ cone when both factors have order units. -/
 lemma exists_eq_sub_minTensorCone (t : E₁ ⊗[ℝ] E₂) :
     ∃ tp tn : minTensorCone E₁ E₂,
       t = (tp : E₁ ⊗[ℝ] E₂) - (tn : E₁ ⊗[ℝ] E₂) := by
-  induction t using TensorProduct.induction_on with
-  | zero => exact ⟨0, 0, by simp⟩
+  induction t using TensorProduct.inductionOn with
   | tmul x y =>
       obtain ⟨xp, xn, hxp, hxn, hx⟩ := IsOrderUnit.exists_eq_sub_nonneg x
       obtain ⟨yp, yn, hyp, hyn, hy⟩ := IsOrderUnit.exists_eq_sub_nonneg y

@@ -47,9 +47,13 @@ instance : AddCommMonoid ContrℂModule := Equiv.addCommMonoid toFin13ℂFun
   with `Fin 1 ⊕ Fin 3 → ℂ`. -/
 instance : AddCommGroup ContrℂModule := Equiv.addCommGroup toFin13ℂFun
 
+/-- The additive equivalence between `ContrℂModule` and `Fin 1 ⊕ Fin 3 → ℂ`. -/
+def toFin13ℂAddEquiv : ContrℂModule ≃+ (Fin 1 ⊕ Fin 3 → ℂ) :=
+  { toFin13ℂFun with map_add' _ _ := rfl }
+
 /-- The instance of `Module` on `ContrℂModule` defined via its equivalence
   with `Fin 1 ⊕ Fin 3 → ℂ`. -/
-instance : Module ℂ ContrℂModule := Equiv.module ℂ toFin13ℂFun
+instance : Module ℂ ContrℂModule := AddEquiv.module ℂ toFin13ℂAddEquiv
 
 @[ext]
 lemma ext (ψ ψ' : ContrℂModule) (h : ψ.val = ψ'.val) : ψ = ψ' := by
@@ -67,7 +71,7 @@ lemma val_smul (r : ℂ) (ψ : ContrℂModule) : (r • ψ).val = r • ψ.val :
 /-- The linear equivalence between `ContrℂModule` and `(Fin 1 ⊕ Fin 3 → ℂ)`. -/
 @[simps!]
 def toFin13ℂEquiv : ContrℂModule ≃ₗ[ℂ] (Fin 1 ⊕ Fin 3 → ℂ) :=
-  Equiv.linearEquiv ℂ toFin13ℂFun
+  AddEquiv.linearEquiv ℂ toFin13ℂAddEquiv
 
 /-- The underlying element of `Fin 1 ⊕ Fin 3 → ℂ` of a element in `ContrℂModule` defined
   through the linear equivalence `toFin13ℂEquiv`. -/
@@ -119,9 +123,13 @@ instance : AddCommMonoid CoℂModule := Equiv.addCommMonoid toFin13ℂFun
   with `Fin 1 ⊕ Fin 3 → ℂ`. -/
 instance : AddCommGroup CoℂModule := Equiv.addCommGroup toFin13ℂFun
 
+/-- The additive equivalence between `CoℂModule` and `Fin 1 ⊕ Fin 3 → ℂ`. -/
+def toFin13ℂAddEquiv : CoℂModule ≃+ (Fin 1 ⊕ Fin 3 → ℂ) :=
+  { toFin13ℂFun with map_add' _ _ := rfl }
+
 /-- The instance of `Module` on `CoℂModule` defined via its equivalence
   with `Fin 1 ⊕ Fin 3 → ℂ`. -/
-instance : Module ℂ CoℂModule := Equiv.module ℂ toFin13ℂFun
+instance : Module ℂ CoℂModule := AddEquiv.module ℂ toFin13ℂAddEquiv
 
 @[ext]
 lemma ext (ψ ψ' : CoℂModule) (h : ψ.val = ψ'.val) : ψ = ψ' := by
@@ -139,7 +147,7 @@ lemma val_smul (r : ℂ) (ψ : CoℂModule) : (r • ψ).val = r • ψ.val := r
 /-- The linear equivalence between `CoℂModule` and `(Fin 1 ⊕ Fin 3 → ℂ)`. -/
 @[simps!]
 def toFin13ℂEquiv : CoℂModule ≃ₗ[ℂ] (Fin 1 ⊕ Fin 3 → ℂ) :=
-  Equiv.linearEquiv ℂ toFin13ℂFun
+  AddEquiv.linearEquiv ℂ toFin13ℂAddEquiv
 
 /-- The underlying element of `Fin 1 ⊕ Fin 3 → ℂ` of a element in `CoℂModule` defined
   through the linear equivalence `toFin13ℂEquiv`. -/

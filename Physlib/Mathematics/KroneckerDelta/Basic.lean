@@ -58,9 +58,9 @@ def kroneckerDelta (i j : α) : ℕ := if i = j then 1 else 0
 notation "δ[" i "," j "]" => kroneckerDelta i j
 
 @[simp]
-lemma eq_one_of_same (i : α) : δ[i,i] = 1 := if_pos rfl
+lemma eq_one_of_same (i : α) : δ[i,i] = 1 := ite_eq_left rfl
 
-lemma eq_zero_of_ne {i j : α} (h : i ≠ j) : δ[i,j] = 0 := if_neg h
+lemma eq_zero_of_ne {i j : α} (h : i ≠ j) : δ[i,j] = 0 := ite_eq_right h
 
 @[simp]
 lemma eq_of_coe {p : α → Prop} (i j : Subtype p) : δ[(i : α),j] = δ[i,j] := by

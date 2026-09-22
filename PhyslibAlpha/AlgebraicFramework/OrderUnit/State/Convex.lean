@@ -16,7 +16,7 @@ public import Mathlib.Topology.UnitInterval
 
 ## i. Overview
 
-Mixtures of complex-valued states on ordered complex vector spaces with a distinguished unit.
+Mixtures of real- or complex-valued states on ordered vector spaces with a distinguished unit.
 No multiplication, star operation, norm, topology, completeness, or C⋆ structure is required.
 
 ## ii. Key definitions and results
@@ -40,16 +40,16 @@ open scoped ComplexOrder
 
 namespace UnitalPositiveLinearMap
 
-variable {A : Type*} [AddCommGroup A] [PartialOrder A] [IsOrderedAddMonoid A]
-  [Module ℂ A] [One A]
+variable {𝕜 A : Type*} [RCLike 𝕜] [PosMulMono 𝕜]
+  [AddCommGroup A] [PartialOrder A] [IsOrderedAddMonoid A] [Module 𝕜 A] [One A]
 
 /-! ## A. Finite mixtures -/
 
 /-- The state obtained from a finite family using probability weights `p`. -/
-noncomputable def finiteMix {ι : Type*} [Fintype ι] (ω : ι → 𝓢[A])
-    (p : stdSimplex ℝ ι) : 𝓢[A] :=
-  ofLinearMap (R := ℂ) (E₁ := A) (E₂ := ℂ)
-    (∑ i, (p i : ℂ) • (ω i).toLinearMap)
+noncomputable def finiteMix {ι : Type*} [Fintype ι] (ω : ι → 𝓢[𝕜, A])
+    (p : stdSimplex ℝ ι) : 𝓢[𝕜, A] :=
+  ofLinearMap (R := 𝕜) (E₁ := A) (E₂ := 𝕜)
+    (∑ i, (p i : 𝕜) • (ω i).toLinearMap)
     (fun a ha => by
       simp only [LinearMap.coe_sum, Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul]
       exact Finset.sum_nonneg fun i _ =>
@@ -62,10 +62,10 @@ noncomputable def finiteMix {ι : Type*} [Fintype ι] (ω : ι → 𝓢[A])
 
 /-- Evaluation of a finite mixture is its pointwise weighted sum. -/
 @[simp]
-lemma finiteMix_apply {ι : Type*} [Fintype ι] (ω : ι → 𝓢[A])
+lemma finiteMix_apply {ι : Type*} [Fintype ι] (ω : ι → 𝓢[𝕜, A])
     (p : stdSimplex ℝ ι) (a : A) :
-    finiteMix ω p a = ∑ i, (p i : ℂ) * ω i a := by
-  change (∑ i, (p i : ℂ) • (ω i).toLinearMap) a = _
+    finiteMix ω p a = ∑ i, (p i : 𝕜) * ω i a := by
+  change (∑ i, (p i : 𝕜) • (ω i).toLinearMap) a = _
   simp only [LinearMap.coe_sum, Finset.sum_apply, LinearMap.smul_apply, smul_eq_mul]
   exact Finset.sum_congr rfl fun i _ => rfl
 
@@ -83,19 +83,19 @@ def binaryWeights (t : unitInterval) : stdSimplex ℝ (Fin 2) :=
 /-! ## B. Binary mixtures -/
 
 /-- Randomize between two states with probability `t` of choosing the first. -/
-noncomputable def mix (ω φ : 𝓢[A]) (t : unitInterval) : 𝓢[A] :=
+noncomputable def mix (ω φ : 𝓢[𝕜, A]) (t : unitInterval) : 𝓢[𝕜, A] :=
   finiteMix ![ω, φ] (binaryWeights t)
 
 /-- Evaluation of a binary mixture is its pointwise convex combination. -/
 @[simp]
-lemma mix_apply (ω φ : 𝓢[A]) (t : unitInterval) (a : A) :
+lemma mix_apply (ω φ : 𝓢[𝕜, A]) (t : unitInterval) (a : A) :
     mix ω φ t a = (t : ℝ) • ω a + (1 - (t : ℝ)) • φ a := by
     unfold mix
     rw [finiteMix_apply, Fin.sum_univ_two]
     simp [RCLike.real_smul_eq_coe_mul]
 
 /-- The underlying linear functional of a mixture is the pointwise convex combination. -/
-lemma mix_toLinearMap (ω φ : 𝓢[A]) (t : unitInterval) :
+lemma mix_toLinearMap (ω φ : 𝓢[𝕜, A]) (t : unitInterval) :
     (mix ω φ t).toLinearMap =
       (t : ℝ) • ω.toLinearMap + (1 - (t : ℝ)) • φ.toLinearMap := by
   ext a
@@ -104,7 +104,7 @@ lemma mix_toLinearMap (ω φ : 𝓢[A]) (t : unitInterval) :
 
 /-- A state lies in the open segment between two states exactly when it is a genuine mixture of
 them. -/
-lemma mem_openSegment_iff_exists_mix (ω φ ψ : 𝓢[A]) :
+lemma mem_openSegment_iff_exists_mix (ω φ ψ : 𝓢[𝕜, A]) :
     ω.toLinearMap ∈ openSegment ℝ φ.toLinearMap ψ.toLinearMap ↔
       ∃ t : unitInterval, t ≠ 0 ∧ t ≠ 1 ∧ mix φ ψ t = ω := by
   constructor
@@ -127,12 +127,12 @@ lemma mem_openSegment_iff_exists_mix (ω φ ψ : 𝓢[A]) :
 
 /-! ## C. The state space in the algebraic dual -/
 
-/-- General states embedded into the complex algebraic dual. -/
-def stateSpace : Set (A →ₗ[ℂ] ℂ) :=
-  Set.range fun ω : 𝓢[A] => ω.toLinearMap
+/-- General states embedded into the algebraic dual. -/
+def stateSpace : Set (A →ₗ[𝕜] 𝕜) :=
+  Set.range fun ω : 𝓢[𝕜, A] => ω.toLinearMap
 
 /-- The general state space is convex in the algebraic dual. -/
-lemma stateSpace_convex : Convex ℝ (stateSpace (A := A)) := by
+lemma stateSpace_convex : Convex ℝ (stateSpace (𝕜 := 𝕜) (A := A)) := by
   rintro x ⟨ω, rfl⟩ y ⟨φ, rfl⟩ t s ht hs hts
   have ht₁ : t ≤ 1 := by linarith
   let u : unitInterval := ⟨t, by exact ⟨ht, ht₁⟩⟩

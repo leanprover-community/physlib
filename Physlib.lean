@@ -332,6 +332,7 @@ public import Physlib.QuantumMechanics.FreeParticle.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.Eigenstates
 public import Physlib.QuantumMechanics.HarmonicOscillator.LadderOperators
+public import Physlib.QuantumMechanics.HarmonicOscillator.NumberOperator
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Completeness
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
@@ -384,6 +385,7 @@ public import Physlib.QuantumMechanics.SpaceDQuantumSystem
 public import Physlib.Relativity.Bispinors.Basic
 public import Physlib.Relativity.CliffordAlgebra
 public import Physlib.Relativity.Fermions.Dirac.Basic
+public import Physlib.Relativity.Fermions.Dirac.GammaMatrices
 public import Physlib.Relativity.Fermions.Weyl.Contraction
 public import Physlib.Relativity.Fermions.Weyl.DualLeftHanded
 public import Physlib.Relativity.Fermions.Weyl.DualRightHanded

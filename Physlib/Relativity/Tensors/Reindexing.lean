@@ -62,7 +62,7 @@ lemma append_succAbove_const_eq_cycleIcc {n : ℕ} (i : Fin (n + 1)) :
   · rw [Fin.append_right]
     have : (Fin.natAdd n a : Fin (n + 1)) = Fin.last n := by
       apply Fin.ext; simp [Fin.val_natAdd]
-    rw [this, Fin.cycleIcc_of_le_of_le (Fin.le_last _) (Fin.le_last _), if_pos rfl]
+    rw [this, Fin.cycleIcc_of_le_of_le (Fin.le_last _) (Fin.le_last _), ite_eq_left rfl]
 
 end Fin
 

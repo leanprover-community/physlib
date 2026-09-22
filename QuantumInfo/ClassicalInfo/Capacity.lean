@@ -6,6 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Data.Fin.Basic
+public import Physlib.Meta.Linters.Sorry
 
 @[expose] public section
 
@@ -41,7 +42,11 @@ structure FixedLengthCode extends Code A I O where
  take `O = I ⊕ Unit` or `Option I`.
 
  We define the behavior of a block code to "fail" if the input is not a multiple of the block size,
- by having it return an empty list. -/
+ by having it return an empty list.
+
+ The string encoder, the decoder and the two length lemmas are left as `sorry` in the
+ field defaults. -/
+@[sorryful]
 structure BlockCode (io : I → O) extends FixedLengthCode A I O where
   block_in : ℕ
   block_out : ℕ

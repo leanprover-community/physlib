@@ -14,7 +14,8 @@ public import PhyslibAlpha.AlgebraicFramework.StarAlgebra.Jordan
 
 # Lie structure on observables
 
-Dually to the Jordan product `a ∘ b := a * b + b * a` of `StarAlgebra/Jordan.lean`, which
+Dually to the normalized Jordan product `a ∘ b := ½(a * b + b * a)` of
+`StarAlgebra/Jordan.lean`, which
 symmetrizes the associative product of two self-adjoint elements, the *antisymmetric* part of the
 same product is self-adjoint once corrected by a factor of `i`:
 $$ \mathrm{star}(ab - ba) = b a - a b = -(ab - ba), $$
@@ -22,8 +23,9 @@ so `ab - ba` is *skew*-adjoint, and multiplying a skew-adjoint element by `i` (o
 imaginary scalar) makes it self-adjoint. This gives the observable Lie bracket
 $$ ⁅a, b⁆ := -(i / 2) (ab - ba), $$
 the (negative, half of the) imaginary part of `a * b`. Together, the Jordan product and the Lie
-bracket are the symmetric and antisymmetric halves of the raw associative product: `2 * (a * b) =
-(a ∘ b) + 2 i ⁅a, b⁆`, `mul_decomposition` below. The bracket measures noncommutativity of the two
+bracket are the symmetric and antisymmetric halves of the raw associative product:
+`a * b = (a ∘ b) + i ⁅a, b⁆`, as recorded by `mul_decomposition` below. The bracket measures
+noncommutativity of the two
 observables and, as a real Lie algebra, governs infinitesimal unitary dynamics (Heisenberg's
 equation of motion is literally `dȧ/dt = ⁅H, a⁆` for a suitably normalized Hamiltonian `H`).
 
@@ -95,12 +97,11 @@ theorem isSelfAdjoint_mul_iff_commute (a b : selfAdjoint A) :
     IsSelfAdjoint ((a : A) * (b : A)) ↔ Commute (a : A) (b : A) := by
   rw [isSelfAdjoint_iff, star_mul, a.property.star_eq, b.property.star_eq, commute_iff_eq, eq_comm]
 
-/-- The ambient product of two self-adjoint elements splits into its Jordan and Lie parts:
-`2 (a * b) = (a ∘ b) + 2 i ⁅a, b⁆`, or equivalently (avoiding division by clearing denominators on
-both the Jordan and Lie side) as stated here. -/
+/-- The ambient product of two self-adjoint elements splits into its normalized Jordan and Lie
+parts: `a * b = (a ∘ b) + i ⁅a, b⁆`. -/
 theorem mul_decomposition (a b : selfAdjoint A) :
     (a : A) * b =
-      (2 : ℂ)⁻¹ • (jordanMul a b : A) + Complex.I • ((lieMul a b : selfAdjoint A) : A) := by
+      (jordanMul a b : A) + Complex.I • ((lieMul a b : selfAdjoint A) : A) := by
   rw [val_jordanMul, val_lieMul, smul_smul]
   have h2 : Complex.I * -(Complex.I / 2) = (2 : ℂ)⁻¹ := by
     rw [mul_neg, ← mul_div_assoc, Complex.I_mul_I]

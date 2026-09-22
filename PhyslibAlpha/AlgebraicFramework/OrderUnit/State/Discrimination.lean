@@ -27,13 +27,17 @@ formula, here with the effect supremum playing the trace norm's role directly.
 ## ii. Key definitions and results
 
 - `successProb`, `optimalSuccessProb`
-- `optimalSuccessProb_eq`
+- `weightedStateBaseNorm`
+- `optimalSuccessProb_eq`, `optimalSuccessProb_eq_half_one_add_baseNorm`
+- `weightedStateBaseNorm_pullback_le`
 
 ## iii. Table of contents
 
 - A. Success probability of a fixed test
 - B. Optimal success probability
 - C. The abstract Helstrom formula
+- D. The operational base norm
+- E. Data processing
 
 -/
 
@@ -116,5 +120,192 @@ theorem optimalSuccessProb_eq (ω₀ ω₁ : 𝓢[ℝ, E]) {p₀ p₁ : ℝ} (hp
       rw [successProb_eq_add_advantage] at h1
       linarith
     linarith
+
+/-! ## D. The operational base norm -/
+
+/-- The base norm of the signed functional `p₀ ω₀ - p₁ ω₁`, presented operationally through
+binary effects.  The centering term is its value on the order unit.  This normalization makes
+the abstract Helstrom formula take the familiar form `(1 + ‖p₀ω₀ - p₁ω₁‖) / 2` when the priors
+sum to one. -/
+noncomputable def weightedStateBaseNorm (ω₀ ω₁ : 𝓢[ℝ, E]) (p₀ p₁ : ℝ) : ℝ :=
+  2 * sSup (Set.range fun e : Effect E => p₀ * ω₀ (e : E) - p₁ * ω₁ (e : E)) - (p₀ - p₁)
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
+/-- The operational base norm of a weighted state difference is at most the total weight. -/
+lemma weightedStateBaseNorm_le (ω₀ ω₁ : 𝓢[ℝ, E]) {p₀ p₁ : ℝ}
+    (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) :
+    weightedStateBaseNorm ω₀ ω₁ p₀ p₁ ≤ p₀ + p₁ := by
+  have hs : sSup (Set.range fun e : Effect E =>
+      p₀ * ω₀ (e : E) - p₁ * ω₁ (e : E)) ≤ p₀ :=
+    csSup_le ⟨_, Set.mem_range_self (0 : Effect E)⟩
+      (fun _ h => by obtain ⟨e, rfl⟩ := h; exact advantage_le ω₀ ω₁ hp₀ hp₁ e)
+  unfold weightedStateBaseNorm
+  linarith
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
+/-- The operational base norm dominates the absolute total mass of the signed functional. -/
+lemma abs_sub_le_weightedStateBaseNorm (ω₀ ω₁ : 𝓢[ℝ, E]) {p₀ p₁ : ℝ}
+    (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) :
+    |p₀ - p₁| ≤ weightedStateBaseNorm ω₀ ω₁ p₀ p₁ := by
+  let g : Effect E → ℝ := fun e => p₀ * ω₀ (e : E) - p₁ * ω₁ (e : E)
+  have hbdd : BddAbove (Set.range g) := bddAbove_advantage ω₀ ω₁ hp₀ hp₁
+  have hzero : 0 ≤ sSup (Set.range g) := by
+    have : g 0 = 0 := by simp [g]
+    rw [← this]
+    exact le_csSup hbdd (Set.mem_range_self 0)
+  have hone : p₀ - p₁ ≤ sSup (Set.range g) := by
+    have : g 1 = p₀ - p₁ := by simp [g]
+    rw [← this]
+    exact le_csSup hbdd (Set.mem_range_self 1)
+  rw [abs_le]
+  unfold weightedStateBaseNorm
+  constructor <;> linarith
+
+omit [PosSMulMono ℝ E] in
+/-- Abstract Helstrom formula in base-norm form for normalized prior probabilities. -/
+theorem optimalSuccessProb_eq_half_one_add_baseNorm (ω₀ ω₁ : 𝓢[ℝ, E])
+    {p₀ p₁ : ℝ} (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) (hsum : p₀ + p₁ = 1) :
+    optimalSuccessProb ω₀ ω₁ p₀ p₁ =
+      (1 + weightedStateBaseNorm ω₀ ω₁ p₀ p₁) / 2 := by
+  rw [optimalSuccessProb_eq ω₀ ω₁ hp₀ hp₁]
+  unfold weightedStateBaseNorm
+  linarith
+
+/-! ## E. Data processing -/
+
+variable {F : Type*} [AddCommGroup F] [PartialOrder F] [IsOrderedAddMonoid F] [Module ℝ F]
+  [PosSMulMono ℝ F] [One F] [IsOrderUnit F]
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderedAddMonoid F] [PosSMulMono ℝ F]
+  [IsOrderUnit F] in
+/-- Pulling two states back along a channel cannot increase their maximal effect advantage. -/
+lemma sSup_advantage_pullback_le (φ : E →ₚ₁[ℝ] F) (ω₀ ω₁ : 𝓢[ℝ, F])
+    {p₀ p₁ : ℝ} (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) :
+    sSup (Set.range fun e : Effect E =>
+      p₀ * (φ.pullbackState ω₀) (e : E) - p₁ * (φ.pullbackState ω₁) (e : E)) ≤
+    sSup (Set.range fun e : Effect F => p₀ * ω₀ (e : F) - p₁ * ω₁ (e : F)) := by
+  let g : Effect F → ℝ := fun e => p₀ * ω₀ (e : F) - p₁ * ω₁ (e : F)
+  have hbdd : BddAbove (Set.range g) := bddAbove_advantage ω₀ ω₁ hp₀ hp₁
+  apply csSup_le ⟨_, Set.mem_range_self (0 : Effect E)⟩
+  rintro _ ⟨e, rfl⟩
+  change g (φ.mapEffect e) ≤ sSup (Set.range g)
+  exact le_csSup hbdd (Set.mem_range_self (φ.mapEffect e))
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderedAddMonoid F] [PosSMulMono ℝ F]
+  [IsOrderUnit F] in
+/-- Data processing for the operational base norm: a channel cannot make two weighted states
+more distinguishable. -/
+theorem weightedStateBaseNorm_pullback_le (φ : E →ₚ₁[ℝ] F) (ω₀ ω₁ : 𝓢[ℝ, F])
+    {p₀ p₁ : ℝ} (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) :
+    weightedStateBaseNorm (φ.pullbackState ω₀) (φ.pullbackState ω₁) p₀ p₁ ≤
+      weightedStateBaseNorm ω₀ ω₁ p₀ p₁ := by
+  unfold weightedStateBaseNorm
+  have h := sSup_advantage_pullback_le φ ω₀ ω₁ hp₀ hp₁
+  linarith
+
+omit [PosSMulMono ℝ E] [PosSMulMono ℝ F] in
+/-- Data processing for binary discrimination: applying a channel before measuring cannot
+increase the optimal success probability. -/
+theorem optimalSuccessProb_pullback_le (φ : E →ₚ₁[ℝ] F) (ω₀ ω₁ : 𝓢[ℝ, F])
+    {p₀ p₁ : ℝ} (hp₀ : 0 ≤ p₀) (hp₁ : 0 ≤ p₁) :
+    optimalSuccessProb (φ.pullbackState ω₀) (φ.pullbackState ω₁) p₀ p₁ ≤
+      optimalSuccessProb ω₀ ω₁ p₀ p₁ := by
+  rw [optimalSuccessProb_eq _ _ hp₀ hp₁, optimalSuccessProb_eq _ _ hp₀ hp₁]
+  simpa [add_comm] using add_le_add_left (sSup_advantage_pullback_le φ ω₀ ω₁ hp₀ hp₁) p₁
+
+/-! ## F. Operational distance of states -/
+
+/-- The largest probability gap two states assign to the same effect. -/
+noncomputable def operationalDistance (ω φ : 𝓢[ℝ, E]) : ℝ :=
+  sSup (Set.range fun e : Effect E => |ω (e : E) - φ (e : E)|)
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
+/-- The probability gap of two states on one effect is at most one. -/
+lemma effectGap_le_one (ω φ : 𝓢[ℝ, E]) (e : Effect E) :
+    |ω (e : E) - φ (e : E)| ≤ 1 := by
+  have hω0 : 0 ≤ ω (e : E) := ω.map_nonneg e.2.1
+  have hφ1 : φ (e : E) ≤ 1 := (φ.monotone' e.2.2).trans_eq (map_one φ)
+  have hφ0 : 0 ≤ φ (e : E) := φ.map_nonneg e.2.1
+  have hω1 : ω (e : E) ≤ 1 := (ω.monotone' e.2.2).trans_eq (map_one ω)
+  rw [abs_le]
+  constructor <;> linarith
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
+/-- Effect probability gaps are uniformly bounded by one. -/
+lemma bddAbove_effectGap (ω φ : 𝓢[ℝ, E]) :
+    BddAbove (Set.range fun e : Effect E => |ω (e : E) - φ (e : E)|) := by
+  exact ⟨1, by rintro _ ⟨e, rfl⟩; exact effectGap_le_one ω φ e⟩
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
+/-- Operational distance is nonnegative. -/
+lemma operationalDistance_nonneg (ω φ : 𝓢[ℝ, E]) : 0 ≤ operationalDistance ω φ := by
+  unfold operationalDistance
+  exact (abs_nonneg (ω (0 : E) - φ 0)).trans
+    (le_csSup (bddAbove_effectGap ω φ) (Set.mem_range_self (0 : Effect E)))
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
+/-- Operational distance is at most one. -/
+lemma operationalDistance_le_one (ω φ : 𝓢[ℝ, E]) : operationalDistance ω φ ≤ 1 := by
+  unfold operationalDistance
+  exact csSup_le ⟨_, Set.mem_range_self (0 : Effect E)⟩ fun _ h => by
+    obtain ⟨e, rfl⟩ := h
+    exact effectGap_le_one ω φ e
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
+@[simp]
+lemma operationalDistance_self (ω : 𝓢[ℝ, E]) : operationalDistance ω ω = 0 := by
+  unfold operationalDistance
+  simp
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
+/-- Operational distance is symmetric. -/
+lemma operationalDistance_comm (ω φ : 𝓢[ℝ, E]) :
+    operationalDistance ω φ = operationalDistance φ ω := by
+  unfold operationalDistance
+  congr 2
+  funext e
+  exact abs_sub_comm _ _
+
+@[simp]
+lemma operationalDistance_eq_zero_iff (ω φ : 𝓢[ℝ, E]) :
+    operationalDistance ω φ = 0 ↔ ω = φ := by
+  constructor
+  · intro hzero
+    change sSup (Set.range fun e : Effect E => |ω (e : E) - φ (e : E)|) = 0 at hzero
+    apply ext_of_onEffect_eq
+    intro e
+    apply Subtype.ext
+    change ω (e : E) = φ (e : E)
+    have hle := le_csSup (bddAbove_effectGap ω φ) (Set.mem_range_self e)
+    rw [hzero] at hle
+    exact sub_eq_zero.mp (abs_eq_zero.mp (le_antisymm hle (abs_nonneg _)))
+  · rintro rfl
+    exact operationalDistance_self ω
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] in
+/-- Operational distance satisfies the triangle inequality. -/
+lemma operationalDistance_triangle (ω φ ψ : 𝓢[ℝ, E]) :
+    operationalDistance ω ψ ≤ operationalDistance ω φ + operationalDistance φ ψ := by
+  unfold operationalDistance
+  apply csSup_le ⟨_, Set.mem_range_self (0 : Effect E)⟩
+  rintro _ ⟨e, rfl⟩
+  calc
+    |ω (e : E) - ψ (e : E)| ≤
+        |ω (e : E) - φ (e : E)| + |φ (e : E) - ψ (e : E)| := abs_sub_le _ _ _
+    _ ≤ sSup (Set.range fun e : Effect E => |ω (e : E) - φ (e : E)|) +
+        sSup (Set.range fun e : Effect E => |φ (e : E) - ψ (e : E)|) := add_le_add
+      (le_csSup (bddAbove_effectGap ω φ) (Set.mem_range_self e))
+      (le_csSup (bddAbove_effectGap φ ψ) (Set.mem_range_self e))
+
+omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderedAddMonoid F] [PosSMulMono ℝ F]
+  [IsOrderUnit F] in
+/-- Operational distance obeys data processing under every channel. -/
+theorem operationalDistance_pullback_le (φ : E →ₚ₁[ℝ] F) (ω ψ : 𝓢[ℝ, F]) :
+    operationalDistance (φ.pullbackState ω) (φ.pullbackState ψ) ≤
+      operationalDistance ω ψ := by
+  unfold operationalDistance
+  apply csSup_le ⟨_, Set.mem_range_self (0 : Effect E)⟩
+  rintro _ ⟨e, rfl⟩
+  exact le_csSup (bddAbove_effectGap ω ψ) (Set.mem_range_self (φ.mapEffect e))
 
 end UnitalPositiveLinearMap

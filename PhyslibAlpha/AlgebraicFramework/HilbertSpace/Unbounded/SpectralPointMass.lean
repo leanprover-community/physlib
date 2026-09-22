@@ -111,8 +111,8 @@ private theorem bisectStep_measure_one (h01 : ∀ E : Set ℝ, MeasurableSet E �
   have hm1 : p.1 ≤ m := by rw [hm_def]; linarith
   have hm2 : m ≤ p.2 := by rw [hm_def]; linarith
   by_cases hc : μ (Icc p.1 m) = 1
-  · simpa [hc]
-  · simp only [hc, if_false]
+  · simp [hc]
+  · simp only [hc, ite_false]
     have hc0 : μ (Icc p.1 m) = 0 := (h01 _ measurableSet_Icc).resolve_right hc
     have hunion : Icc p.1 m ∪ Ioc m p.2 = Icc p.1 p.2 := Icc_union_Ioc_eq_Icc hm1 hm2
     have hdisj : Disjoint (Icc p.1 m) (Ioc m p.2) := by
@@ -315,7 +315,7 @@ theorem eq_smul_one_of_forall_spectralMeasure_eq_zero_or_one
         have h2 := congrArg (fun m : MeasureTheory.Measure ℝ => m Set.univ) hveq.symm
         simpa [MeasureTheory.Measure.restrict_apply' (measurableSet_singleton r).compl] using h2
       have hae : ({r} : Set ℝ) =ᵐ[ν.variation] (Set.univ : Set ℝ) := by
-        rw [Filter.eventuallyEq_set, MeasureTheory.ae_iff]
+        rw [Filter.eventuallyEqSet_iff, MeasureTheory.ae_iff]
         have hset : {z : ℝ | ¬(z ∈ ({r} : Set ℝ) ↔ z ∈ (Set.univ : Set ℝ))} = {r}ᶜ := by
           ext z; simp
         rw [hset]

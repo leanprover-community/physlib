@@ -378,7 +378,7 @@ instance {k : Type} [RCLike k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : TensorSpecies k C G V basisIdx rep b)
     {c : Fin n → C} : IsTopologicalAddGroup (S.Tensor c) :=
-  IsModuleTopology.topologicalAddGroup (R := k) (S.Tensor c)
+  IsModuleTopology.isTopologicalAddGroup (R := k) (S.Tensor c)
 
 /-!
 

@@ -148,6 +148,6 @@ lemma isometry_smul (g : EuclideanGroup d) :
 /-- The Euclidean-group action on `TimeAndSpace d` is antilipschitz. -/
 lemma antilipschitz_smul (g : EuclideanGroup d) :
     AntilipschitzWith 1 (fun tx : TimeAndSpace d => g • tx) :=
-  (isometry_smul g).antilipschitz
+  (isometry_smul g).antilipschitzWith
 
 end TimeAndSpace

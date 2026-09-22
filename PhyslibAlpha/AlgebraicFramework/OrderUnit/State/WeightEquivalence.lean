@@ -10,7 +10,7 @@ public import PhyslibAlpha.AlgebraicFramework.OrderUnit.State.Basic
 
 /-!
 
-# States, independently of weights
+# Equivalence between states and finite normalized weights
 
 ## i. Overview
 
@@ -24,12 +24,15 @@ chain forcing every state-level fact through weight machinery.
 - `Weight.IsState.toUnitalPositiveLinearMap` : a state weight, as a state.
 - `UnitalPositiveLinearMap.toWeight` : a state, as a (finite, normalized) weight.
 - `Weight.stateEquiv` : the equivalence between the two.
+- `Weight.finiteEquiv` : finite weights correspond to positive real linear functionals.
+- `Weight.IsFinite.normalizedState` : the canonical state obtained from a finite nonzero weight.
 
 ## iii. Table of contents
 
 - A. From state weights to states
 - B. From states to weights
 - C. The equivalence
+- D. Normalizing a finite weight
 
 -/
 
@@ -113,9 +116,58 @@ lemma toWeight_isState (s : 𝓢[ℝ, E]) : s.toWeight.IsState where
 
 end UnitalPositiveLinearMap
 
+namespace PositiveLinearMap
+
+/-! ## C. Positive functionals and finite weights -/
+
+/-- The finite weight induced by a positive real linear functional. -/
+noncomputable def toWeight (f : E →ₚ[ℝ] ℝ) : Weight E where
+  toFun x := ENNReal.ofReal (f (x : E))
+  map_add' x y := by
+    rw [show f ((x + y : PosCone E) : E) = f (x : E) + f (y : E) by simp,
+      ENNReal.ofReal_add (f.map_nonneg x.2) (f.map_nonneg y.2)]
+  map_smul' c x := by
+    show ENNReal.ofReal (f ((c : ℝ) • (x : E))) = c • ENNReal.ofReal (f (x : E))
+    rw [map_smul, smul_eq_mul, ENNReal.ofReal_mul c.coe_nonneg,
+      ENNReal.ofReal_coe_nnreal, ENNReal.smul_def, smul_eq_mul]
+
+omit [One E] [IsOrderUnit E] in
+@[simp]
+lemma toWeight_apply (f : E →ₚ[ℝ] ℝ) (x : PosCone E) :
+    f.toWeight x = ENNReal.ofReal (f (x : E)) := rfl
+
+omit [One E] [IsOrderUnit E] in
+/-- A positive functional's induced weight is finite. -/
+lemma toWeight_isFinite (f : E →ₚ[ℝ] ℝ) : f.toWeight.IsFinite :=
+  fun _ => ENNReal.ofReal_ne_top
+
+omit [One E] [IsOrderUnit E] in
+/-- Passing from a positive functional to a weight and back to real values loses no information
+on the positive cone. -/
+lemma toReal_toWeight_apply (f : E →ₚ[ℝ] ℝ) (x : PosCone E) :
+    (f.toWeight x).toReal = f (x : E) := by
+  rw [toWeight_apply, ENNReal.toReal_ofReal (f.map_nonneg x.2)]
+
+end PositiveLinearMap
+
 namespace Weight
 
-/-! ## C. The equivalence -/
+/-! ## D. The equivalences -/
+
+/-- Finite weights correspond exactly to positive real linear functionals. -/
+noncomputable def finiteEquiv : {w : Weight E // w.IsFinite} ≃ (E →ₚ[ℝ] ℝ) where
+  toFun w := w.2.toPositiveLinearMap
+  invFun f := ⟨f.toWeight, f.toWeight_isFinite⟩
+  left_inv := by
+    rintro ⟨w, hw⟩
+    refine Subtype.ext (Weight.ext fun x => ?_)
+    change ENNReal.ofReal (hw.toPositiveLinearMap (x : E)) = w x
+    rw [hw.toPositiveLinearMap_apply_of_nonneg]
+    exact ENNReal.ofReal_toReal (hw x)
+  right_inv := by
+    intro f
+    exact (f.toWeight_isFinite.toPositiveLinearMap_unique f fun x =>
+      (f.toReal_toWeight_apply x).symm).symm
 
 /-- Finite normalized weights correspond exactly to states. This is the representation theorem
 that replaces bundling a state as a subtype of `Weight`: `Weight` and `𝓢[ℝ, E]` are independent
@@ -140,5 +192,26 @@ noncomputable def stateEquiv : {w : Weight E // w.IsState} ≃ 𝓢[ℝ, E] wher
       show ((Weight.unit : PosCone E) : E) = 1 from rfl, _root_.map_add, _root_.map_smul,
       smul_eq_mul, _root_.map_one]
     ring
+
+/-! ## E. Normalizing a finite weight -/
+
+namespace IsFinite
+
+/-- The canonical state associated to a finite weight of nonzero mass: first divide the weight by
+its value at the order unit, then use `stateEquiv`. All state statistics, including covariance,
+are inherited through this map rather than redeclared for weights. -/
+noncomputable def normalizedState {w : Weight E} (hw : w.IsFinite) (hmass : w unit ≠ 0) :
+    𝓢[ℝ, E] :=
+  (hw.normalize_isState hmass).toUnitalPositiveLinearMap
+
+/-- Converting the normalized state back to a weight recovers normalization of the original
+weight. -/
+theorem normalizedState_toWeight {w : Weight E} (hw : w.IsFinite) (hmass : w unit ≠ 0) :
+    (hw.normalizedState hmass).toWeight = normalize w := by
+  have h := (stateEquiv (E := E)).symm_apply_apply
+    ⟨normalize w, hw.normalize_isState hmass⟩
+  exact congrArg Subtype.val h
+
+end IsFinite
 
 end Weight

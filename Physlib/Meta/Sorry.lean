@@ -20,7 +20,8 @@ are correctly attributed `sorryful` and `pseudo` respectively.
 
 - `sorryfulPseudoTest` : A test that all results attributed `sorryful` depend on the
   `sorryAx` axiom and vice versa, and all results attributed `pseudo` depend on the
-  `Lean.ofReduceBool` axiom and vice versa.
+  `Lean.ofReduceBool` axiom and vice versa. A structure counts as depending on `sorryAx`
+  when one of its field defaults does.
 
 ## iii. Table of contents
 
@@ -31,6 +32,7 @@ are correctly attributed `sorryful` and `pseudo` respectively.
   - A.4. Given an array updating the state with all names depending on axioms
   - A.5. Given an array getting all names depending on axioms
   - A.6. Getting all names depending on axioms from all user defined constants
+  - A.7. Structures whose field defaults depend on `sorryAx`
 - B. Collecting all names attributed `sorryful` and `pseudo`
 - C. Testing the `sorryful` and `pseudo` attributions are correctly applied
 
@@ -162,6 +164,27 @@ def allWithSorryPseudo : CoreM (Array Name × Array Name) := do
 
 /-!
 
+### A.7. Structures whose field defaults depend on `sorryAx`
+
+A field default compiles to an internal definition `S.field._default`, which `allUserConsts`
+skips, so its `sorry` is charged to the structure `S` instead.
+
+-/
+
+/-- The structure `S` behind a field-default definition `S.field._default`. -/
+def structureOfDefault : Name → Option Name
+  | .str (.str S _) "_default" => some S
+  | _ => none
+
+/-- All structures with a field default that depends on `sorryAx`. -/
+def structuresWithSorryDefault : CoreM (Array Name) := do
+  let consts ← (← Physlib.allImports).flatMapM fun imp => (Physlib.Imports.getConsts imp : IO _)
+  let defaults := (consts.map (·.name)).filter fun n => (structureOfDefault n).isSome
+  let (withSorry, _) ← collectSorryPseudo defaults
+  return (withSorry.filterMap structureOfDefault).toList.eraseDups.toArray
+
+/-!
+
 ## B. Collecting all names attributed `sorryful` and `pseudo`
 
 -/
@@ -191,6 +214,8 @@ unsafe def sorryfulPseudoTest : MetaM Unit := do
   let allConst ← Physlib.allUserConsts
   let allConst := allConst.map fun c => c.name
   let allWithSorry := allWithSorry.filter fun n => n ∈ allConst
+  let fromDefaults ← structuresWithSorryDefault
+  let allWithSorry := allWithSorry ++ fromDefaults.filter fun n => ¬ n ∈ allWithSorry
   let allWithPseudo := allWithPseudo.filter fun n => n ∈ allConst
   let sorryAttributed ← allSorryfulAttributed
   let pseudoAttributed ← allPseudoAttributed

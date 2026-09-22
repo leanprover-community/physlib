@@ -1048,7 +1048,6 @@ lemma inner_deficiency_eq_zero
         (-⟪y, U s⟫_ℂ) s := by
       have hinner := (hasDerivAt_const (x := s) y).inner ℂ (U.hasDerivAt s)
       convert hinner using 1
-      · rfl
       · simp only [inner_zero_left, inner_smul_right]
         rw [hrelation]
         ring_nf
@@ -1065,8 +1064,6 @@ lemma inner_deficiency_eq_zero
       simpa only [hz] using hp
     change HasDerivAt (fun r : ℝ => (Real.exp r : ℂ) * f r) 0 s
     convert hp' using 1
-    funext r
-    rfl
   have hconst : ∀ s : ℝ, g s = g 0 := by
     intro s
     exact is_const_of_deriv_eq_zero (fun r => (hg r).differentiableAt)
@@ -1132,7 +1129,6 @@ lemma inner_deficiency_eq_zero_neg
         (⟪y, U s⟫_ℂ) s := by
       have hinner := (hasDerivAt_const (x := s) y).inner ℂ (U.hasDerivAt s)
       convert hinner using 1
-      · rfl
       · simp only [inner_zero_left, inner_smul_right]
         rw [hrelation]
         ring_nf
@@ -1155,8 +1151,6 @@ lemma inner_deficiency_eq_zero_neg
       simpa only [hz] using hp
     change HasDerivAt (fun r : ℝ => (Real.exp (-r) : ℂ) * f r) 0 s
     convert hp' using 1
-    funext r
-    rfl
   have hconst : ∀ s : ℝ, g s = g 0 := by
     intro s
     exact is_const_of_deriv_eq_zero (fun r => (hg r).differentiableAt)

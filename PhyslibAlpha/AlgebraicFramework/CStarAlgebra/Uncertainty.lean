@@ -11,7 +11,7 @@ public import PhyslibAlpha.AlgebraicFramework.CStarAlgebra.GNS
 
 /-!
 
-# A. Uncertainty relations
+# Uncertainty relations
 
 Positivity of a state gives a Cauchy–Schwarz inequality for expectation values. Applied to
 centered observables, this yields the Robertson–Schrödinger and Robertson uncertainty relations.
@@ -31,7 +31,7 @@ The commutator observable used to state the relations is the Lie bracket `⁅a, 
 `StarAlgebra/Lie.lean`; the only fact about it needed here beyond what that file already proves is
 that centering leaves it unchanged (`bracket_centered`).
 
-## A.1. Main results
+## Main results
 
 - `gns_cauchy_schwarz` : Cauchy–Schwarz for the state-induced sesquilinear form on `A`.
 - `robertson_schrodinger` : the Robertson–Schrödinger uncertainty inequality, jointly bounding
@@ -68,10 +68,12 @@ lemma bracket_centered (ω : 𝓢[A]) (a b : Observable A) :
   congr 1
   show (centered ω a : A) * centered ω b - (centered ω b : A) * centered ω a =
       (a : A) * b - (b : A) * a
-  simp only [centered, AddSubgroup.coe_sub, selfAdjoint.val_smul, selfAdjoint.val_one, mul_sub,
-    sub_mul]
-  rw [smul_one_comm (ω⟨b⟩) (a : A), smul_one_comm (ω⟨a⟩) (b : A),
-    smul_one_comm (ω⟨a⟩) (ω⟨b⟩ • (1 : A))]
+  simp only [centered, LinearMap.centered, AddSubgroup.coe_sub, selfAdjoint.val_smul,
+    selfAdjoint.val_one, mul_sub, sub_mul]
+  rw [smul_one_comm ((expectation ω).toLinearMap b) (a : A),
+    smul_one_comm ((expectation ω).toLinearMap a) (b : A),
+    smul_one_comm ((expectation ω).toLinearMap a)
+      ((expectation ω).toLinearMap b • (1 : A))]
   abel
 
 /-- The expectation of a raw product of two fluctuations splits into a real symmetric part
@@ -93,9 +95,11 @@ lemma apply_centered_mul_centered (ω : 𝓢[A]) (a b : Observable A) :
     rw [Complex.I_sq]
     push_cast
     ring
-  rw [hcomm, show covariance ω a b = z.re from rfl, mul_comm, Complex.re_add_im]
+  have hcov : covariance ω a b = z.re := by
+    rw [covariance_eq_re_apply_centered_mul, hz]
+  rw [hcomm, hcov, mul_comm, Complex.re_add_im]
 
-/-! ## A.2. Cauchy–Schwarz -/
+/-! ## Cauchy–Schwarz -/
 
 /-- The image of `x`, `y : A` under `π_ω` at the cyclic vector inner-products to `ω(x⋆y)`: the
 key identity connecting `A`'s sesquilinear form `(x, y) ↦ ω(x⋆y)` to the genuine inner product on
@@ -142,7 +146,7 @@ lemma centered_cauchy_schwarz (ω : 𝓢[A]) (a b : Observable A) :
       simp [Complex.normSq_eq_norm_sq, pow_two]
     _ ≤ _ := centered_gns_cauchy_schwarz ω a b
 
-/-! ## A. Uncertainty relations -/
+/-! ## Uncertainty relations -/
 
 /-- The Robertson–Schrödinger uncertainty inequality: the sharpest relation here, jointly bounding
 covariance and the commutator's expectation by the product of the individual spreads. Dropping
@@ -168,7 +172,7 @@ lemma robertson (ω : 𝓢[A]) (a b : Observable A) :
     ω⟨⁅a, b⁆⟩ ^ 2 ≤ variance ω a * variance ω b := by
   nlinarith [robertson_schrodinger ω a b, sq_nonneg (covariance ω a b)]
 
-/-! ## A.4. Equality in the uncertainty relations -/
+/-! ## Equality in the uncertainty relations -/
 
 /-- The Cauchy–Schwarz defect for the two centered observables in the state's
 positive sesquilinear form. It measures the gap in Robertson–Schrödinger. -/
@@ -222,5 +226,25 @@ lemma robertson_eq_iff_gram_zero_and_covariance_zero (ω : 𝓢[A])
   · rintro ⟨hg, hc⟩
     rw [hg, hc] at hgap
     nlinarith
+
+/-! ## A.5. Normalization and positivity for downstream variance bounds -/
+
+/-- A raw commutator expectation of magnitude one yields the normalized variance
+product bound for arbitrary states, with no extra positivity hypotheses. -/
+lemma normalized_variance_product (ω : 𝓢[A]) (a b : Observable A)
+    (hnorm : ω⟨⁅a, b⁆⟩ ^ 2 = (1 : ℝ) / 4) :
+    1 ≤ 4 * variance ω a * variance ω b := by
+  have h := robertson ω a b
+  rw [hnorm] at h
+  nlinarith
+
+/-- Normalization itself forces both variances to be positive. -/
+lemma variances_pos_of_normalized_pairing (ω : 𝓢[A]) (a b : Observable A)
+    (hnorm : ω⟨⁅a, b⁆⟩ ^ 2 = (1 : ℝ) / 4) :
+    0 < variance ω a ∧ 0 < variance ω b := by
+  have h := normalized_variance_product ω a b hnorm
+  have ha := variance_nonneg ω a
+  have hb := variance_nonneg ω b
+  constructor <;> by_contra! hn <;> nlinarith
 
 end UnitalPositiveLinearMap

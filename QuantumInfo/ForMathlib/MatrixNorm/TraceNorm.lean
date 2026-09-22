@@ -201,7 +201,7 @@ theorem exists_svd_sqrt_eigenvalues (A : Matrix n n ℂ) :
     dsimp [u, s, Set.domRestrict]
     have hi' : hH.eigenvalues i.1 ≠ 0 := i.2
     have hj' : hH.eigenvalues j.1 ≠ 0 := j.2
-    simp only [hi', hj', not_false_eq_true, if_true]
+    simp only [hi', hj', not_false_eq_true, ite_true]
     rw [inner_smul_left, inner_smul_right, inner_A_mulVec_eq, hH.mulVec_eigenvectorBasis j.1]
     by_cases hij : i.1 = j.1
     · cases Subtype.ext hij

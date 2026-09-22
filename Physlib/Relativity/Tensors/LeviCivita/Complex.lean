@@ -101,4 +101,21 @@ lemma leviCivita_eq_ofRat : ε4ℂ = ofRat (fun
     (b (IsReindexing.inv id leviCivita_isReindexing i))).trans
     (congrArg (fun x => (b x).val) (hinv i))
 
+/-- The components of the complex Levi-Civita tensor as the product over pairs `i < j` of the
+sign of `b j - b i`, from `leviCivitaSymbol_eq_prod_prod_Ioi`. Unlike the determinant appearing
+in `leviCivita_eq_ofRat`, these components are cheap to evaluate, e.g. by `decide`. -/
+lemma leviCivita_eq_ofRat_prod : ε4ℂ = ofRat (fun
+    b : ComponentIdx (S := complexLorentzTensor) ![Color.up, Color.up, Color.up, Color.up] =>
+    ⟨((∏ i : Fin 4, ∏ j ∈ Finset.Ioi i,
+      (if (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4) <
+          (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 1
+        else if (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4) =
+          (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 0 else -1) : ℤ) : ℚ), 0⟩) := by
+  rw [leviCivita_eq_ofRat]
+  refine congrArg ofRat (funext fun b => ?_)
+  have h := leviCivitaSymbol_eq_prod_prod_Ioi
+    (fun i : Fin 4 => (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4))
+  rw [← h]
+  rfl
+
 end complexLorentzTensor

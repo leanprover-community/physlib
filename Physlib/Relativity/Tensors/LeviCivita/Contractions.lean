@@ -213,7 +213,7 @@ lemma leviCivita_basis_contract_three (a b : Fin 1 ⊕ Fin 3) :
       by_cases hab : a = b
       · subst hab
         simp [KroneckerDelta.eq_one_of_same]
-      · rw [if_neg hab,
+      · rw [ite_eq_right hab,
           KroneckerDelta.eq_zero_of_ne (fun h => hab (finSumFinEquiv.injective h))]
         norm_num
 

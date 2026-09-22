@@ -89,7 +89,8 @@ along the equivalence `equivEuclidean`.
 
 noncomputable instance : AddCommGroup (FiniteHilbertSpace d) := equivEuclidean.addCommGroup
 
-noncomputable instance : Module ℂ (FiniteHilbertSpace d) := equivEuclidean.module ℂ
+noncomputable instance : Module ℂ (FiniteHilbertSpace d) :=
+  AddEquiv.module ℂ { equivEuclidean with map_add' := fun _ _ => rfl }
 
 @[simp]
 lemma val_add (ψ φ : FiniteHilbertSpace d) : (ψ + φ).val = ψ.val + φ.val := rfl

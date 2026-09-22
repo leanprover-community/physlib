@@ -60,9 +60,13 @@ instance : AddCommMonoid LeftHandedWeyl := Equiv.addCommMonoid toFin2ℂFun
   with `Fin 2 → ℂ`. -/
 instance : AddCommGroup LeftHandedWeyl := Equiv.addCommGroup toFin2ℂFun
 
+/-- The additive equivalence between `LeftHandedWeyl` and `Fin 2 → ℂ`. -/
+def toFin2ℂAddEquiv : LeftHandedWeyl ≃+ (Fin 2 → ℂ) :=
+  { toFin2ℂFun with map_add' _ _ := rfl }
+
 /-- The instance of `Module` on `LeftHandedWeyl` defined via its equivalence
   with `Fin 2 → ℂ`. -/
-instance : Module ℂ LeftHandedWeyl := Equiv.module ℂ toFin2ℂFun
+instance : Module ℂ LeftHandedWeyl := AddEquiv.module ℂ toFin2ℂAddEquiv
 
 /-- The linear equivalence between `LeftHandedWeyl` and `(Fin 2 → ℂ)`. -/
 @[simps!]
@@ -88,13 +92,12 @@ lemma toFin2ℂ_eq_val (ψ : LeftHandedWeyl) : ψ.toFin2ℂ = ψ.val := rfl
 
 /-- The standard basis on left-handed Weyl fermions. -/
 def basis : Basis (Fin 2) ℂ LeftHandedWeyl := Basis.ofEquivFun
-  (Equiv.linearEquiv ℂ LeftHandedWeyl.toFin2ℂFun)
+  (AddEquiv.linearEquiv ℂ LeftHandedWeyl.toFin2ℂAddEquiv)
 
 lemma basis_apply (i j : Fin 2) : (basis i).1 j = if j = i then 1 else 0 := by
-  simp only [basis, Equiv.linearEquiv, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe,
+  simp only [basis, AddEquiv.linearEquiv, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe,
     EquivLike.coe_coe, Equiv.invFun_as_coe, AddEquiv.coe_toEquiv_symm, Basis.coe_ofEquivFun,
-    LinearEquiv.symm_mk, LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk,
-    Equiv.addEquiv_symm_apply]
+    LinearEquiv.symm_mk, LinearMap.coe_mk, AddHom.coe_mk, LinearEquiv.coe_mk]
   change Pi.single i 1 j = _
   simp [Pi.single_apply]
 

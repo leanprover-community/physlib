@@ -18,7 +18,7 @@
 
 
 [![](https://img.shields.io/badge/View_The-Stats-blue)](https://physlib.io/Stats)
-[![](https://img.shields.io/badge/Lean-v4.33.0-blue)](https://github.com/leanprover/lean4/releases/tag/v4.33.0)
+[![](https://img.shields.io/badge/Lean-v4.34.0-blue)](https://github.com/leanprover/lean4/releases/tag/v4.34.0)
 [![Gitpod Ready-to-Code](https://img.shields.io/badge/Gitpod-ready--to--code-blue?logo=gitpod)](https://gitpod.io/#https://github.com/leanprover-community/physlib)
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/leanprover-community/physlib)
 [![api_docs](https://img.shields.io/badge/doc-API_docs-blue)](https://physlib.io/docs/)
@@ -51,7 +51,6 @@ The core library — physics digitalizations reviewed and curated to a high stan
 <td width="33%" valign="top">
 
 ###  [**PhyslibAlpha**](./PhyslibAlpha)
-### [**PhyslibAlpha**](./PhyslibAlpha)
 
 PhyslibAlpha exists for the rapid development of physics digitalizations, enabled by a lighter review process built to handle large-scale, human- or AI-generated contributions.
 
@@ -78,7 +77,6 @@ Quantum information theory. Currently a distinct codebase with its own conventio
 
 🎯 The project shall contain results (definitions, theorems, lemmas and calculations) from **physics**,
   including quantum information, formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
-including quantum information, formalized (or **digitalized**) into the interactive theorem prover **Lean 4**.
 
 🎯 The project shall be **organized** by **physics**.
 
@@ -89,7 +87,6 @@ including quantum information, formalized (or **digitalized**) into the interact
 🎯 The project shall contain Physics Lean **tactics**, **notation** and **syntax** for physicists.
 
 🎯 The project shall *not* be tied to physics axiomizations (e.g. axiomatic QFT), but rather flexiable enough to accommodate different approaches and starting points.
-🎯 The project shall _not_ be tied to physics axiomizations (e.g. axiomatic QFT), but rather flexiable enough to accommodate different approaches and starting points.
 
 🎯 The content of the project shall be carefully **reviewed** and curated, to ensure reusability, readability and fit.
 

@@ -33,7 +33,7 @@ def PositiveLinearMap.ofVec (ψ : H) : 𝓟[𝕜, H →L[𝕜] H] where
   map_add' x y := by simp [inner_add_right]
   map_smul' x y := by simp [inner_smul_right]
   monotone' x y hxy := by
-    simpa [inner_sub_right] using ((le_def x y).mp hxy).inner_nonneg_right ψ
+    simpa [inner_sub_right] using (le_def.mp hxy).inner_nonneg_right ψ
 
 /-- The vector state associated with a unit vector. -/
 @[simps! apply]

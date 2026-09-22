@@ -155,7 +155,8 @@ def componentEquiv : frame.Vector ≃ (Fin d → ℝ) :=
 
 instance : AddCommGroup frame.Vector := componentEquiv.addCommGroup
 
-instance : Module ℝ frame.Vector := componentEquiv.module ℝ
+instance : Module ℝ frame.Vector :=
+  AddEquiv.module ℝ { componentEquiv with map_add' _ _ := rfl }
 
 /-- Scalar multiplication by a positive real. -/
 instance : SMul {x : ℝ // 0 < x} frame.Vector where

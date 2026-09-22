@@ -131,8 +131,7 @@ lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : DistElectromagneticPotenti
       (b 0, b 1) := by
   rw [Tensorial.basis_toTensor_apply]
   rw [Tensorial.basis_map_prod]
-  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-    Equiv.symm_symm, Fin.isValue]
+  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Fin.isValue]
   rw [Lorentz.Vector.tensor_basis_map_eq_basis_reindex]
   have hb : (((Lorentz.Vector.basis (d := d)).reindex Lorentz.Vector.indexEquiv.symm).tensorProduct
           (Lorentz.Vector.basis.reindex Lorentz.Vector.indexEquiv.symm)) =
@@ -143,7 +142,7 @@ lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : DistElectromagneticPotenti
         | ⟨i, j⟩ =>
         simp
   rw [hb]
-  rw [Module.Basis.repr_reindex_apply]
+  rw [Finsupp.equivMapDomain_apply, Module.Basis.repr_reindex_apply]
   congr 1
 
 lemma fieldStrengthAux_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}

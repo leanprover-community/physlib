@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Module.Defs
 public import Mathlib.Algebra.Order.Nonneg.Basic
-public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Geometry.Convex.Cone.Pointed
 
 /-!
@@ -82,6 +82,20 @@ class IsArchimedeanOrderUnit (E : Type*) [AddCommGroup E] [PartialOrder E] [Modu
   `≤ 0`. -/
   le_zero_of_forall_pos_smul_one_le : ∀ x : E,
     (∀ ε : ℝ, 0 < ε → x ≤ ε • (1 : E)) → x ≤ 0
+
+/-- The real numbers, ordered in the usual way and with order unit `1`, form the basic
+Archimedean order-unit space. -/
+instance instIsArchimedeanOrderUnitReal : IsArchimedeanOrderUnit ℝ where
+  one_nonneg := zero_le_one
+  exists_nsmul_one_le x := by
+    obtain ⟨n, hn⟩ := exists_nat_ge x
+    exact ⟨n, by simpa using hn⟩
+  le_zero_of_forall_pos_smul_one_le x hx := by
+    by_contra h
+    have hxpos : 0 < x := lt_of_not_ge h
+    have := hx (x / 2) (by positivity)
+    simp only [smul_eq_mul, mul_one] at this
+    linarith
 
 /-- The distinguished unit is an order-unit element whenever `E` carries `IsOrderUnit`. -/
 lemma isOrderUnitElement_one {E : Type*} [AddCommMonoid E] [PartialOrder E] [One E]

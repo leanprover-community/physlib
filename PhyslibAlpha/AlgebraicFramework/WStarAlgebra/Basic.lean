@@ -30,8 +30,9 @@ identification — built directly on `Basic/CStarAlgebra/`'s bare-hypothesis con
 class. It is a different name for a related but genuinely different (data vs. `Prop`) notion than
 Mathlib's `WStarAlgebra`, not a competing definition of the same one; connecting the two — every
 `WStarAlgebraStructure A` gives a proof of `WStarAlgebra A` — needs converting our `≃ₗᵢ[ℂ]`
-(linear) identification to Mathlib's `≃ₗᵢ⋆[ℂ]` (conjugate-linear) one, genuine linear-algebra work
-not attempted here.
+(linear) identification to Mathlib's `≃ₗᵢ⋆[ℂ]` (conjugate-linear) one. This conversion is carried
+out in `WStarAlgebra/Mathlib.lean` (`WStarAlgebraStructure.toWStarAlgebra`), via the
+scalar-conjugation type twist `WStarAlgebra/ConjSpace.lean` sets up.
 
 Mathlib's own weak-⋆ topology machinery for the dual of a normed space
 (`Mathlib.Analysis.Normed.Module.WeakDual`, `WeakDual`/`StrongDual`) does essentially all of the
@@ -56,9 +57,15 @@ only the identification and its transport back along it.
 
 ## Concrete realization
 
-The genuinely concrete instance — `A := B(H)` with predual the trace-class operators `𝒮₁(H)` and
-`toDual` the trace pairing `a ↦ (ρ ↦ Tr(aρ))` — needs a `TraceClass H` Banach space this repo does
-not yet have. This file stays at the abstract weak-⋆ and normal-state layer.
+The genuinely concrete instance — `A := H →L[ℂ] H` with predual the trace-class operators
+`𝒮₁(H)` (`HilbertSpace/TraceClass/Banach.lean`) and `toDual` the trace pairing `a ↦ (ρ ↦ Tr(aρ))`
+— is built in `WStarAlgebra/Concrete.lean`, as
+`instWStarAlgebraStructureContinuousLinearMap`. The trace pairing's boundedness and linearity are
+proved in `HilbertSpace/TraceClass/Pairing.lean`; its isometry (via rank-one test vectors) in
+`WStarAlgebra/TracePairingNorm.lean`; and its surjectivity onto the full strong dual of `𝒮₁(H)`
+(via a Hilbert–Schmidt truncation/density argument) in
+`WStarAlgebra/TracePairingSurjectivity.lean`. This file itself stays at the abstract weak-⋆ and
+normal-state layer.
 
 -/
 

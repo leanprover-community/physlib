@@ -159,7 +159,7 @@ lemma contrT_ofRat {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color
   rw [Finset.sum_eq_single (Fin.cast (by simp [← h.2, repDim_tau]) x)]
   · simp
   · intro y _ hy
-    rw [if_neg]
+    rw [ite_eq_right]
     · simp
     · simp only [DropPairSection.ofFinEquiv_apply_fst, DropPairSection.ofFinEquiv_apply_snd]
       rw [@Fin.ne_iff_vne] at hy

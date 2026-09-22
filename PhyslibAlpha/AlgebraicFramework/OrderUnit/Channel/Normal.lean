@@ -41,28 +41,21 @@ variable {E₁ E₂ E₃ : Type*}
   [AddCommGroup E₃] [PartialOrder E₃] [IsOrderedAddMonoid E₃] [Module ℝ E₃] [PosSMulMono ℝ E₃]
   [One E₃]
 
-namespace UnitalPositiveLinearMap
+namespace PositiveLinearMap
 
-/-! ## A. Normality -/
+/-! ## A. Normal positive maps -/
 
-/-- A channel is normal when it carries the supremum of every directed set to the supremum of the
-image: it does not "jump" at a limit. -/
-def IsNormal (φ : E₁ →ₚ₁[ℝ] E₂) : Prop :=
+/-- A positive linear map is normal when it preserves suprema of directed sets.  Unital channels
+and subunital operations are both special cases, so normality belongs here rather than being
+duplicated for each operational wrapper. -/
+def IsNormal (φ : E₁ →ₚ[ℝ] E₂) : Prop :=
   ∀ (D : Set E₁) (x : E₁), D.Nonempty → DirectedOn (· ≤ ·) D → IsLUB D x → IsLUB (φ '' D) (φ x)
 
-omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] in
-/-- The identity channel is normal: the image of a directed set under it is itself. -/
-lemma isNormal_id : (UnitalPositiveLinearMap.id ℝ E₁).IsNormal := fun D x _ _ hlub => by
-  rwa [show (UnitalPositiveLinearMap.id ℝ E₁) '' D = D from Set.image_id D,
-    UnitalPositiveLinearMap.id_apply]
-
-/-! ## B. Identity and composition -/
-
-omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] [IsOrderedAddMonoid E₂] [PosSMulMono ℝ E₂]
-  [IsOrderedAddMonoid E₃] [PosSMulMono ℝ E₃] in
-/-- Normality survives composition: normality is exactly the continuity needed to carry a
-directed supremum through each stage of the composite. -/
-lemma IsNormal.comp {φ : E₁ →ₚ₁[ℝ] E₂} {ψ : E₂ →ₚ₁[ℝ] E₃} (hφ : φ.IsNormal) (hψ : ψ.IsNormal) :
+omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] [One E₁]
+  [IsOrderedAddMonoid E₂] [PosSMulMono ℝ E₂] [One E₂]
+  [IsOrderedAddMonoid E₃] [PosSMulMono ℝ E₃] [One E₃] in
+/-- Normality of positive linear maps is closed under composition. -/
+lemma IsNormal.comp {φ : E₁ →ₚ[ℝ] E₂} {ψ : E₂ →ₚ[ℝ] E₃} (hφ : φ.IsNormal) (hψ : ψ.IsNormal) :
     (ψ.comp φ).IsNormal := fun D x hD hdirected hlub => by
   have hφD : IsLUB (φ '' D) (φ x) := hφ D x hD hdirected hlub
   have hdirectedφD : DirectedOn (· ≤ ·) (φ '' D) :=
@@ -71,5 +64,32 @@ lemma IsNormal.comp {φ : E₁ →ₚ₁[ℝ] E₂} {ψ : E₂ →ₚ₁[ℝ] E�
   have himg := hψ (φ '' D) (φ x) hφDnonempty hdirectedφD hφD
   rw [Set.image_image] at himg
   exact himg
+
+end PositiveLinearMap
+
+namespace UnitalPositiveLinearMap
+
+/-! ## A. Normality -/
+
+/-- A normal channel is simply a normal positive linear map which also preserves the order unit.
+The abbreviation preserves the established channel-facing API while giving operations and
+channels one canonical normality predicate. -/
+abbrev IsNormal (φ : E₁ →ₚ₁[ℝ] E₂) : Prop := φ.toPositiveLinearMap.IsNormal
+
+omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] in
+/-- The identity channel is normal: the image of a directed set under it is itself. -/
+lemma isNormal_id : (UnitalPositiveLinearMap.id ℝ E₁).IsNormal := fun D x _ _ hlub => by
+  change IsLUB ((fun y : E₁ => y) '' D) x
+  simpa using hlub
+
+/-! ## B. Identity and composition -/
+
+omit [IsOrderedAddMonoid E₁] [PosSMulMono ℝ E₁] [IsOrderedAddMonoid E₂] [PosSMulMono ℝ E₂]
+  [IsOrderedAddMonoid E₃] [PosSMulMono ℝ E₃] in
+/-- Normality survives composition: normality is exactly the continuity needed to carry a
+directed supremum through each stage of the composite. -/
+lemma IsNormal.comp {φ : E₁ →ₚ₁[ℝ] E₂} {ψ : E₂ →ₚ₁[ℝ] E₃} (hφ : φ.IsNormal) (hψ : ψ.IsNormal) :
+    (ψ.comp φ).IsNormal :=
+  PositiveLinearMap.IsNormal.comp hφ hψ
 
 end UnitalPositiveLinearMap

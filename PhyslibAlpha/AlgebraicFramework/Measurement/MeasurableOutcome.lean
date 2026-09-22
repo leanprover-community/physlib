@@ -6,7 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Normal
-public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Effect.EffectValuedMeasure
+public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Effect.Integral
+public import PhyslibAlpha.AlgebraicFramework.OrderUnit.State.Basic
 
 /-!
 
@@ -24,6 +25,7 @@ supremum).
 ## Main definitions
 
 - `EffectValuedMeasure.map`
+- `EffectValuedMeasure.scalarize`
 
 -/
 
@@ -67,6 +69,7 @@ noncomputable def map (μ : EffectValuedMeasure Ω C) (φ : C →ₚ₁[ℝ] E) 
     have hlub : IsLUB D (μ (⋃ n, s n) (MeasurableSet.iUnion hsm) : C) :=
       μ.countably_additive s hsm hs'
     have hpush := hφ D _ hnonempty hdirected hlub
+    change IsLUB (φ '' D) (φ (μ (⋃ n, s n) (MeasurableSet.iUnion hsm) : C)) at hpush
     have himage : φ '' D =
         Set.range fun N => ∑ n ∈ Finset.range N, φ (μ (s n) (hsm n) : C) := by
       rw [hD, ← Set.range_comp]
@@ -74,5 +77,46 @@ noncomputable def map (μ : EffectValuedMeasure Ω C) (φ : C →ₚ₁[ℝ] E) 
       funext N
       exact map_sum φ (fun n => (μ (s n) (hsm n) : C)) (Finset.range N)
     rwa [himage] at hpush
+
+omit [PosSMulMono ℝ C] [PosSMulMono ℝ E] in
+@[simp]
+lemma coe_map_apply (μ : EffectValuedMeasure Ω C) (φ : C →ₚ₁[ℝ] E) (hφ : φ.IsNormal)
+    (s : Set Ω) (hs : MeasurableSet s) :
+    ((μ.map φ hφ) s hs : E) = φ (μ s hs : C) := rfl
+
+/-- Scalarizing an effect-valued measure by a normal state gives its ordinary real-valued
+probability law, represented as an effect-valued measure in the classical order-unit space
+`ℝ`.  For each measurable event this is precisely the abstract Born rule `ω(μ(s))`. -/
+noncomputable def scalarize (μ : EffectValuedMeasure Ω C) (ω : 𝓢[ℝ, C]) (hω : ω.IsNormal) :
+    EffectValuedMeasure Ω ℝ := μ.map ω hω
+
+omit [PosSMulMono ℝ C] in
+@[simp]
+lemma coe_scalarize_apply (μ : EffectValuedMeasure Ω C) (ω : 𝓢[ℝ, C]) (hω : ω.IsNormal)
+    (s : Set Ω) (hs : MeasurableSet s) :
+    ((μ.scalarize ω hω) s hs : ℝ) = ω (μ s hs : C) := rfl
+
+omit [PosSMulMono ℝ C] [PosSMulMono ℝ E] in
+/-- Pushing an effect-valued measure through a normal channel commutes with its finite simple
+integral. This is the finite, algebraic naturality law underlying scalarization of the bounded
+projection calculus; no second integration construction is introduced. -/
+theorem map_simpleIntegral (μ : EffectValuedMeasure Ω C) (φ : C →ₚ₁[ℝ] E) (hφ : φ.IsNormal)
+    {ι : Type*} [Fintype ι] (c : ι → ℝ) (s : ι → Set Ω)
+    (hs : IsPartition s) :
+    φ (simpleIntegral μ c s hs) = simpleIntegral (μ.map φ hφ) c s hs := by
+  unfold simpleIntegral
+  rw [map_sum]
+  apply Finset.sum_congr rfl
+  intro i _
+  rw [map_smul, coe_map_apply]
+
+omit [PosSMulMono ℝ C] [PosSMulMono ℝ E] in
+/-- Scalarizing a simple effect-valued integral by a normal state is the corresponding ordinary
+real simple integral. -/
+theorem scalarize_simpleIntegral (μ : EffectValuedMeasure Ω C) (ω : 𝓢[ℝ, C])
+    (hω : ω.IsNormal) {ι : Type*} [Fintype ι] (c : ι → ℝ) (s : ι → Set Ω)
+    (hs : IsPartition s) :
+    ω (simpleIntegral μ c s hs) = simpleIntegral (μ.scalarize ω hω) c s hs :=
+  map_simpleIntegral μ ω hω c s hs
 
 end EffectValuedMeasure

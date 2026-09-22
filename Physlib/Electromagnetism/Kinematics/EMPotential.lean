@@ -643,8 +643,7 @@ lemma toTensor_deriv_basis_repr_apply {d} (A : ElectromagneticPotential d)
     (Tensor.basis _).repr (Tensorial.toTensor (deriv A x)) b =
     ∂_ (b 0) A x (b 1) := by
   rw [Tensorial.basis_toTensor_apply, Tensorial.basis_map_prod]
-  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Finsupp.mapDomain_equiv_apply,
-    Equiv.symm_symm, Fin.isValue]
+  simp only [Nat.reduceSucc, Nat.reduceAdd, Basis.repr_reindex, Fin.isValue]
   rw [Lorentz.Vector.tensor_basis_map_eq_basis_reindex,
     Lorentz.CoVector.tensor_basis_map_eq_basis_reindex]
   have hb : (((Lorentz.CoVector.basis (d := d)).reindex
@@ -654,7 +653,7 @@ lemma toTensor_deriv_basis_repr_apply {d} (A : ElectromagneticPotential d)
       (Lorentz.CoVector.indexEquiv.symm.prodCongr Lorentz.Vector.indexEquiv.symm) := by
     ext ⟨i, j⟩
     simp
-  rw [hb, Module.Basis.repr_reindex_apply, deriv_basis_repr_apply]
+  rw [hb, Finsupp.equivMapDomain_apply, Module.Basis.repr_reindex_apply, deriv_basis_repr_apply]
   rfl
 
 /-!

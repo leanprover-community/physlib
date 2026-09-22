@@ -211,7 +211,7 @@ theorem stdBasisMatrix_iff_eq (i j : m) {c : 𝕜} (hc : 0 < c) : (single i j c)
   · intro ⟨hherm, _⟩
     rw [IsHermitian, ← ext_iff] at hherm
     replace hherm := hherm i j
-    simp only [single, conjTranspose_apply, of_apply, true_and, RCLike.star_def, if_true] at hherm
+    simp only [single, conjTranspose_apply, of_apply, true_and, RCLike.star_def, ite_true] at hherm
     apply_fun (starRingEnd 𝕜) at hherm
     have hcstar := RCLike.conj_eq_iff_im.mpr (RCLike.pos_iff.mp hc).right
     rw [starRingEnd_self_apply, hcstar, ite_eq_left_iff] at hherm
@@ -243,7 +243,7 @@ theorem stdBasisMatrix_iff_eq (i j : m) {c : 𝕜} (hc : 0 < c) : (single i j c)
             by_contra hz'
             apply hz
             exact ⟨hz'.left.symm, hz'.right.symm⟩
-          rw [ite_cond_eq_false _ _ (eq_false h₁)]
+          rw [ite_eq_right_of_eq_false _ _ (eq_false h₁)]
           ring
         rw [Fintype.sum_eq_single ⟨i, i⟩]
         · simp [mul_assoc]
@@ -286,7 +286,7 @@ theorem zero_dotProduct_zero_iff : (∀ x : m → 𝕜, 0 = star x ⬝ᵥ A.mulV
   constructor
   · intro h
     ext i j
-    have h₂ := fun x ↦ (PosSemidef.dotProduct_mulVec_zero_iff hA x).mp (h x).symm
+    have h₂ := fun x ↦ (PosSemidef.dotProduct_mulVec_zero_iff hA (x := x)).mp (h x).symm
     classical have : DecidableEq m := inferInstance
     convert! congrFun (h₂ (Pi.single j 1)) i using 1
     simp
@@ -663,7 +663,8 @@ theorem PosSemidef.traceLeft [DecidableEq d₁] (hA : A.PosSemidef) : A.traceLef
   constructor
   · exact hA.1.traceLeft
   · intro x
-    convert Finset.sum_nonneg' (s := .univ) (fun (i : d₁) ↦ hA.2 (fun (j,k) ↦ if i = j then x k else 0))
+    convert Finset.sum_nonneg (s := .univ)
+      (fun (i : d₁) _ ↦ hA.2 (fun (j,k) ↦ if i = j then x k else 0))
     simp_rw [Matrix.traceLeft, dotProduct_mulVec]
     simpa [dotProduct, vecMul_eq_sum, ite_apply, Fintype.sum_prod_type, Finset.mul_sum, Finset.sum_mul,
       apply_ite] using Finset.sum_comm_cycle
@@ -673,7 +674,8 @@ theorem PosSemidef.traceRight [DecidableEq d₂] (hA : A.PosSemidef) : A.traceRi
   constructor
   · exact hA.1.traceRight
   · intro x
-    convert Finset.sum_nonneg' (s := .univ) (fun (i : d₂) ↦ hA.2 (fun (j,k) ↦ if i = k then x j else 0))
+    convert Finset.sum_nonneg (s := .univ)
+      (fun (i : d₂) _ ↦ hA.2 (fun (j,k) ↦ if i = k then x j else 0))
     simp_rw [Matrix.traceRight, dotProduct_mulVec]
     simpa [dotProduct, vecMul_eq_sum, ite_apply, Fintype.sum_prod_type, Finset.mul_sum, Finset.sum_mul,
       apply_ite] using Finset.sum_comm_cycle
@@ -864,7 +866,7 @@ theorem cfc_diagonal (g : d → ℝ) (f : ℝ → ℝ) :
       change Matrix.conjTranspose _ = _
       simp [Matrix.conjTranspose]
   --TODO cfc_cont_tac
-  rw [cfc, dif_pos ⟨h_self_adjoint, continuousOn_iff_continuous_domRestrict.mpr <| by fun_prop⟩]
+  rw [cfc, dite_eq_left ⟨h_self_adjoint, continuousOn_iff_continuous_domRestrict.mpr <| by fun_prop⟩]
   rw [cfcHom_eq_of_continuous_of_map_id]
   rotate_left
   · refine' { .. }

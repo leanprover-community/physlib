@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Weight.Basic
+public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Basic
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.UnitInterval
 
@@ -24,15 +25,18 @@ effect (`Effect.convex`, `Effect.mix`) — the same fact as `Set.Icc` being conv
 
 - `Effect E`
 - `Effect.complement`
+- `Effect.Orthogonal`, `Effect.addOfOrthogonal`
 - `Effect.mix` : a probabilistic mixture of two effects, again an effect.
 - `Effect.IsSharp` : extremality in the effect interval.
 
 ## iii. Table of contents
 
 - A. Effects and complements
-- B. Convex mixtures
-- C. Sharp effects
-- D. Pairing effects with weights
+- B. Partial addition
+- C. Convex mixtures
+- D. Sharp effects
+- E. Pairing effects with weights
+- F. Channels acting on effects
 
 -/
 
@@ -79,9 +83,136 @@ omit [IsOrderedAddMonoid E] in
 @[simp] lemma complement_one : complement (1 : Effect E) = 0 := by
   apply Subtype.ext; simp [complement]
 
+/-! ## B. Partial addition -/
+
+/-- Two effects are orthogonal when their sum is still bounded by the order unit. This is the
+domain of the partial addition operation of the effect algebra `[0, 1]`. -/
+def Orthogonal (e f : Effect E) : Prop := (e : E) + (f : E) ≤ 1
+
+/-- The partial sum of two orthogonal effects. -/
+def addOfOrthogonal (e f : Effect E) (h : Orthogonal e f) : Effect E :=
+  ⟨(e : E) + (f : E), add_nonneg e.2.1 f.2.1, h⟩
+
+omit [IsOrderUnit E] in
+@[simp]
+lemma coe_addOfOrthogonal (e f : Effect E) (h : Orthogonal e f) :
+    (addOfOrthogonal e f h : E) = (e : E) + (f : E) := rfl
+
+omit [IsOrderedAddMonoid E] [IsOrderUnit E] in
+lemma orthogonal_comm {e f : Effect E} : Orthogonal e f ↔ Orthogonal f e := by
+  simp only [Orthogonal, add_comm]
+
+omit [IsOrderedAddMonoid E] in
+lemma orthogonal_zero_left (e : Effect E) : Orthogonal 0 e := by
+  simpa [Orthogonal] using e.2.2
+
+omit [IsOrderedAddMonoid E] in
+lemma orthogonal_zero_right (e : Effect E) : Orthogonal e 0 :=
+  orthogonal_comm.mpr (orthogonal_zero_left e)
+
+omit [IsOrderUnit E] in
+lemma orthogonal_complement (e : Effect E) : Orthogonal e (complement e) := by
+  simp [Orthogonal, complement]
+
+@[simp]
+lemma addOfOrthogonal_zero_left (e : Effect E) :
+    addOfOrthogonal 0 e (orthogonal_zero_left e) = e := by
+  ext
+  simp
+
+@[simp]
+lemma addOfOrthogonal_zero_right (e : Effect E) :
+    addOfOrthogonal e 0 (orthogonal_zero_right e) = e := by
+  ext
+  simp
+
+@[simp]
+lemma addOfOrthogonal_complement (e : Effect E) :
+    addOfOrthogonal e (complement e) (orthogonal_complement e) = 1 := by
+  ext
+  simp [complement]
+
+omit [IsOrderUnit E] in
+/-- Partial addition of effects is commutative whenever it is defined. -/
+lemma addOfOrthogonal_comm (e f : Effect E) (h : Orthogonal e f) :
+    addOfOrthogonal e f h = addOfOrthogonal f e (orthogonal_comm.mp h) := by
+  ext
+  exact add_comm _ _
+
+omit [IsOrderUnit E] in
+/-- If `(e ⊕ f) ⊕ g` is defined, then so is `f ⊕ g`. -/
+lemma orthogonal_right_of_addOfOrthogonal_left (e f g : Effect E) (hef : Orthogonal e f)
+    (hefg : Orthogonal (addOfOrthogonal e f hef) g) : Orthogonal f g := by
+  show (f : E) + (g : E) ≤ 1
+  calc
+    (f : E) + (g : E) ≤ (e : E) + ((f : E) + (g : E)) := le_add_of_nonneg_left e.2.1
+    _ = ((e : E) + (f : E)) + (g : E) := by abel
+    _ ≤ 1 := hefg
+
+omit [IsOrderUnit E] in
+/-- If `(e ⊕ f) ⊕ g` is defined, then the reassociated sum `e ⊕ (f ⊕ g)` is defined. -/
+lemma orthogonal_addOfOrthogonal_right (e f g : Effect E) (hef : Orthogonal e f)
+    (hefg : Orthogonal (addOfOrthogonal e f hef) g) :
+    Orthogonal e
+      (addOfOrthogonal f g (orthogonal_right_of_addOfOrthogonal_left e f g hef hefg)) := by
+  simpa [Orthogonal, add_assoc] using hefg
+
+omit [IsOrderUnit E] in
+/-- Associativity of the partial effect sum, including the proof that the reassociated sum is
+defined. -/
+lemma addOfOrthogonal_assoc (e f g : Effect E) (hef : Orthogonal e f)
+    (hefg : Orthogonal (addOfOrthogonal e f hef) g) :
+    addOfOrthogonal (addOfOrthogonal e f hef) g hefg =
+      addOfOrthogonal e
+        (addOfOrthogonal f g (orthogonal_right_of_addOfOrthogonal_left e f g hef hefg))
+        (orthogonal_addOfOrthogonal_right e f g hef hefg) := by
+  ext
+  simp only [coe_addOfOrthogonal]
+  exact add_assoc _ _ _
+
+omit [IsOrderUnit E] in
+/-- Cancellation for partial effect addition. -/
+lemma addOfOrthogonal_left_cancel {e f g : Effect E} {hef : Orthogonal e f}
+    {heg : Orthogonal e g} (h : addOfOrthogonal e f hef = addOfOrthogonal e g heg) : f = g := by
+  apply Subtype.ext
+  apply add_left_cancel (a := (e : E))
+  exact congrArg Subtype.val h
+
+/-- An orthogonal partner summing with `e` to `1` is necessarily the complement of `e`. -/
+lemma eq_complement_of_addOfOrthogonal_eq_one {e f : Effect E} (horth : Orthogonal e f)
+    (hsum : addOfOrthogonal e f horth = 1) : f = complement e := by
+  apply Subtype.ext
+  have hval : (e : E) + (f : E) = 1 := congrArg Subtype.val hsum
+  change (f : E) = 1 - (e : E)
+  rw [← hval]
+  abel
+
+/-- The residual effect `f - e`, defined whenever `e ≤ f`. -/
+def subEffect (f e : Effect E) (h : e ≤ f) : Effect E :=
+  ⟨(f : E) - (e : E), sub_nonneg.mpr h, sub_le_self (f : E) e.2.1 |>.trans f.2.2⟩
+
+omit [IsOrderUnit E] in
+@[simp]
+lemma coe_subEffect (f e : Effect E) (h : e ≤ f) :
+    (subEffect f e h : E) = (f : E) - (e : E) := rfl
+
+omit [IsOrderUnit E] in
+/-- An effect is orthogonal to the residual left after subtracting it from a larger effect. -/
+lemma orthogonal_subEffect (f e : Effect E) (h : e ≤ f) : Orthogonal e (subEffect f e h) := by
+  show (e : E) + ((f : E) - (e : E)) ≤ 1
+  simpa [add_sub_cancel_left] using f.2.2
+
+omit [IsOrderUnit E] in
+/-- Adding an effect to its residual recovers the original larger effect. -/
+@[simp]
+lemma addOfOrthogonal_subEffect (f e : Effect E) (h : e ≤ f) :
+    addOfOrthogonal e (subEffect f e h) (orthogonal_subEffect f e h) = f := by
+  ext
+  simp
+
 variable [Module ℝ E] [PosSMulMono ℝ E]
 
-/-! ## B. Convex mixtures -/
+/-! ## C. Convex mixtures -/
 
 omit [IsOrderUnit E] in
 /-- Effects are closed under probabilistic mixing: mixing two possible outcomes gives another
@@ -114,7 +245,7 @@ but stated here for lack of a better shared home; reused e.g. by `StarAlgebra/Sh
 lemma nonneg_add_eq_zero {a b : E} (ha : 0 ≤ a) (hb : 0 ≤ b) (hab : a + b = 0) : a = 0 :=
   le_antisymm (hab ▸ le_add_of_nonneg_right hb) ha
 
-/-! ## C. Sharp effects -/
+/-! ## D. Sharp effects -/
 
 /-- An effect is sharp when it is an extreme point of the effect interval `[0, 1]`: it cannot be
 written as a nontrivial mixture of two distinct effects. Sharp effects generalize projections: in
@@ -165,7 +296,7 @@ end Effect
 
 namespace Weight
 
-/-! ## D. Pairing effects with weights -/
+/-! ## E. Pairing effects with weights -/
 
 variable [Module ℝ E] [PosSMulMono ℝ E] [IsOrderUnit E]
 
@@ -180,3 +311,47 @@ lemma pairing_ne_top (w : Weight E) (hw : w unit ≠ ⊤) (e : Effect E) :
   ne_top_of_le_ne_top hw (w.pairing_le_unit e)
 
 end Weight
+
+namespace UnitalPositiveLinearMap
+
+/-! ## F. Channels acting on effects -/
+
+variable {E₁ E₂ : Type*}
+  [AddCommGroup E₁] [PartialOrder E₁] [IsOrderedAddMonoid E₁] [Module ℝ E₁] [One E₁]
+  [AddCommGroup E₂] [PartialOrder E₂] [IsOrderedAddMonoid E₂] [Module ℝ E₂] [One E₂]
+  [IsOrderUnit E₁] [IsOrderUnit E₂]
+
+/-- A channel sends an effect to an effect: positivity preserves the lower bound, while
+monotonicity and unitality preserve the upper bound. -/
+def mapEffect (φ : E₁ →ₚ₁[ℝ] E₂) (e : Effect E₁) : Effect E₂ :=
+  ⟨φ (e : E₁), φ.map_nonneg e.2.1, (φ.monotone' e.2.2).trans_eq (map_one φ)⟩
+
+omit [IsOrderedAddMonoid E₁] [IsOrderedAddMonoid E₂] [IsOrderUnit E₁] [IsOrderUnit E₂] in
+@[simp]
+lemma coe_mapEffect (φ : E₁ →ₚ₁[ℝ] E₂) (e : Effect E₁) :
+    (φ.mapEffect e : E₂) = φ (e : E₁) := rfl
+
+omit [IsOrderUnit E₁] [IsOrderUnit E₂] in
+@[simp]
+lemma mapEffect_complement (φ : E₁ →ₚ₁[ℝ] E₂) (e : Effect E₁) :
+    φ.mapEffect (Effect.complement e) = Effect.complement (φ.mapEffect e) := by
+  ext
+  simp [mapEffect, Effect.complement]
+
+omit [IsOrderedAddMonoid E₁] [IsOrderedAddMonoid E₂] [IsOrderUnit E₁] [IsOrderUnit E₂] in
+lemma mapEffect_orthogonal (φ : E₁ →ₚ₁[ℝ] E₂) {e f : Effect E₁}
+    (h : Effect.Orthogonal e f) : Effect.Orthogonal (φ.mapEffect e) (φ.mapEffect f) := by
+  show φ (e : E₁) + φ (f : E₁) ≤ 1
+  rw [← map_add, ← map_one φ]
+  exact φ.monotone' h
+
+omit [IsOrderUnit E₁] [IsOrderUnit E₂] in
+@[simp]
+lemma mapEffect_addOfOrthogonal (φ : E₁ →ₚ₁[ℝ] E₂) (e f : Effect E₁)
+    (h : Effect.Orthogonal e f) :
+    φ.mapEffect (Effect.addOfOrthogonal e f h) =
+      Effect.addOfOrthogonal (φ.mapEffect e) (φ.mapEffect f) (φ.mapEffect_orthogonal h) := by
+  ext
+  simp
+
+end UnitalPositiveLinearMap

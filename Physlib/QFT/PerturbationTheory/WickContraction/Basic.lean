@@ -342,7 +342,7 @@ def contractEquivFinTwo (c : WickContraction n) (a : c.1) :
     · rw [hi]
       simp only [↓reduceIte, Fin.isValue]
       exact Subtype.ext hi.symm
-    · rw [hi, if_neg]
+    · rw [hi, ite_eq_right]
       · exact Subtype.ext hi.symm
       · exact Ne.symm <| fstFieldOfContract_ne_sndFieldOfContract c a
   right_inv i := by

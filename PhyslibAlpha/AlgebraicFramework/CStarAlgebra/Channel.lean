@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
+public import PhyslibAlpha.AlgebraicFramework.StarAlgebra.Restrict
 
 /-!
 
@@ -21,12 +22,21 @@ bystander system without constructing a tensor product explicitly.
 
 A UCP map is automatically positive (`CompletelyPositiveMapClass` gives `OrderHomClass`), so
 `Channel A₁ A₂` restricts, on the self-adjoint parts, to the abstract order-unit-level notion
-already built (`OrderUnit/Channel/Basic.lean`'s `UnitalPositiveLinearMap`) — connecting the two is
-future work, needing the positive/negative part decomposition of a self-adjoint element.
+already built (`OrderUnit/Channel/Basic.lean`'s `UnitalPositiveLinearMap`):
+`Channel.toUnitalPositiveLinearMap` is exactly this restriction, built from
+`UnitalPositiveLinearMap.ofClass` (repackaging the `ℂ`-linear, positive, unital map as a
+`UnitalPositiveLinearMap`) composed with `UnitalPositiveLinearMap.restrictSA`
+(`StarAlgebra/Restrict.lean`), which uses exactly the positive/negative part decomposition of a
+self-adjoint element (`SelfAdjointDecompose`, backed by the continuous functional calculus's
+`posPart`/`negPart`, the same decomposition packaged at the observable level in
+`CStarAlgebra/JordanDecomposition.lean`) to see that a self-adjoint input is sent to a self-adjoint
+output.
 
 ## Main definitions
 
 - `Channel A₁ A₂`
+- `Channel.toUnitalPositiveLinearMap` : the restriction of a channel to self-adjoint parts, as a
+  `UnitalPositiveLinearMap`.
 
 -/
 
@@ -70,5 +80,25 @@ instance : OneHomClass (Channel A₁ A₂) A₁ A₂ where
 @[ext]
 lemma ext {f g : Channel A₁ A₂} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
+
+section UnitalPositiveLinearMap
+
+variable {A₁ A₂ : Type*} [CStarAlgebra A₁] [CStarAlgebra A₂]
+    [PartialOrder A₁] [PartialOrder A₂] [StarOrderedRing A₁] [StarOrderedRing A₂]
+
+/-- A channel restricts, on self-adjoint parts, to a `UnitalPositiveLinearMap`
+(`OrderUnit/Channel/Basic.lean`). This packages the channel as a `ℂ`-linear unital positive map
+(`UnitalPositiveLinearMap.ofClass`, using that complete positivity gives positivity, i.e.
+`OrderHomClass`) and restricts it to self-adjoint elements (`UnitalPositiveLinearMap.restrictSA`),
+which is well-defined because a self-adjoint element decomposes as a difference of nonnegative
+elements (`SelfAdjointDecompose`, via the continuous functional calculus's `posPart`/`negPart`,
+i.e. the Jordan decomposition of `CStarAlgebra/JordanDecomposition.lean`): the image of such a
+decomposition under a positive map is again a difference of nonnegative, hence self-adjoint,
+elements. -/
+noncomputable def toUnitalPositiveLinearMap (f : Channel A₁ A₂) :
+    selfAdjoint A₁ →ₚ₁[ℝ] selfAdjoint A₂ :=
+  (UnitalPositiveLinearMap.ofClass (R := ℂ) f).restrictSA
+
+end UnitalPositiveLinearMap
 
 end Channel

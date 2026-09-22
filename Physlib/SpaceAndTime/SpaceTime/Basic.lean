@@ -5,8 +5,9 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Relativity.LorentzGroup.Rotations
 public import Physlib.Relativity.SpeedOfLight
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Tensorial
+public import Physlib.SpaceAndTime.Space.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Physlib.SpaceAndTime.Time.InnerProductSpace
 public import Physlib.Meta.Informal.Basic
@@ -25,6 +26,8 @@ allowing it to be used in tensorial expressions.
 ## ii. Key results
 
 - `SpaceTime d` : The type corresponding to `d+1` dimensional spacetime.
+- `space_equivariant` : Spatial projection intertwines the Lorentz and Euclidean actions
+  of the same rotation about the coordinate origin.
 - `toTimeAndSpace` : A continuous linear equivalence between `SpaceTime d`
   and `Time × Space d`.
 
@@ -225,13 +228,19 @@ lemma space_toCoord_symm {d : ℕ} (f : Fin 1 ⊕ Fin d → ℝ) :
 
 -/
 
-open realLorentzTensor
-open Tensor
-
-/-- The function `space` is equivariant with respect to rotations. -/
-informal_lemma space_equivariant where
-  deps := [``space]
-  tag := "7MTYX"
+/-- Spatial projection intertwines a rotation's Lorentz action on spacetime with its
+Euclidean action on space, using the same special orthogonal matrix on both sides.
+These are rotations about the coordinate origin; no boosts or translations are included. -/
+lemma space_equivariant {d : ℕ}
+    (R : Matrix.specialOrthogonalGroup (Fin d) ℝ) (x : SpaceTime d) :
+    space ((LorentzGroup.ofSpecialOrthogonal R : LorentzGroup d) • x) =
+      EuclideanGroup.ofRotation R • space x := by
+  ext i
+  rw [Lorentz.Vector.smul_eq_mulVec, EuclideanGroup.smul_apply]
+  -- The Lorentz spatial block is R; the Euclidean action has zero translation.
+  change (Matrix.fromBlocks 1 0 0 R.val *ᵥ x) (Sum.inr i) =
+    (R.val *ᵥ (fun j => x (Sum.inr j) - 0)) i + 0
+  simp [Matrix.fromBlocks_mulVec, Function.comp_def]
 
 /-!
 

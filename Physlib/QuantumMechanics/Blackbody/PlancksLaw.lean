@@ -80,7 +80,7 @@ noncomputable def spectralRadiance (c : SpeedOfLight) (ν : ℝ) (T : Temperatur
 lemma spectralRadiance_pos (c : SpeedOfLight) (ν : ℝ) (T : Temperature)
     (ν_pos : 0 < ν) (T_pos : 0 < T.val) : 0 < spectralRadiance c ν T := by
     have if_cond : 0 < ν ∧ 0 < (T : ℝ) := ⟨ν_pos, by exact_mod_cast T_pos⟩
-    rw [spectralRadiance, if_pos if_cond]
+    rw [spectralRadiance, ite_eq_left if_cond]
     refine div_pos ?numerator ?denominator
     · exact mul_pos (mul_pos (by norm_num) h_pos) (pow_pos ν_pos 3)
     · have expo_term : 0 < h * ν / (kB * (T : ℝ)) :=
@@ -91,7 +91,7 @@ lemma spectralRadiance_pos (c : SpeedOfLight) (ν : ℝ) (T : Temperature)
 /-- Explicit promise for Spectral Radiance vanishing at absolute zero Temperature. -/
 lemma spectralRadiance_absZero (c : SpeedOfLight) (ν : ℝ) :
     spectralRadiance c ν ⟨0⟩ = 0 := by
-    rw [spectralRadiance, if_neg]
+    rw [spectralRadiance, ite_eq_right]
     rintro ⟨ν_pos, T_zero⟩
     exact lt_irrefl _ T_zero
 

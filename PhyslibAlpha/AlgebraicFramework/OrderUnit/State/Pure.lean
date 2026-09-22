@@ -35,21 +35,21 @@ open scoped ComplexOrder
 
 namespace UnitalPositiveLinearMap
 
-variable {A : Type*} [AddCommGroup A] [PartialOrder A] [IsOrderedAddMonoid A]
-  [Module ℂ A] [One A]
+variable {𝕜 A : Type*} [RCLike 𝕜] [PosMulMono 𝕜]
+  [AddCommGroup A] [PartialOrder A] [IsOrderedAddMonoid A] [Module 𝕜 A] [One A]
 
 /-! ## A. Pure states -/
 
 /-- A pure state is an extreme point of the general state space. -/
-def IsPure (ω : 𝓢[A]) : Prop :=
+def IsPure (ω : 𝓢[𝕜, A]) : Prop :=
   ω.toLinearMap ∈ (stateSpace (A := A)).extremePoints ℝ
 
 /-! ## B. Binary-decomposition characterizations -/
 
 /-- A state is pure exactly when every genuine binary decomposition is trivial. -/
-lemma isPure_iff_binary_decompositions_trivial (ω : 𝓢[A]) :
+lemma isPure_iff_binary_decompositions_trivial (ω : 𝓢[𝕜, A]) :
     IsPure ω ↔
-      ∀ (φ ψ : 𝓢[A]) (t : unitInterval), t ≠ 0 → t ≠ 1 →
+      ∀ (φ ψ : 𝓢[𝕜, A]) (t : unitInterval), t ≠ 0 → t ≠ 1 →
         mix φ ψ t = ω → φ = ω ∧ ψ = ω := by
   simp only [IsPure, mem_extremePoints]
   constructor
@@ -65,15 +65,15 @@ lemma isPure_iff_binary_decompositions_trivial (ω : 𝓢[A]) :
     exact ⟨rfl, rfl⟩
 
 /-- A genuine mixture equal to a pure state can only repeat that state at both endpoints. -/
-lemma IsPure.eq_of_mix {ω φ ψ : 𝓢[A]} (hω : IsPure ω) (t : unitInterval)
+lemma IsPure.eq_of_mix {ω φ ψ : 𝓢[𝕜, A]} (hω : IsPure ω) (t : unitInterval)
     (ht₀ : t ≠ 0) (ht₁ : t ≠ 1) (hmix : mix φ ψ t = ω) :
     φ = ω ∧ ψ = ω :=
   (isPure_iff_binary_decompositions_trivial ω).mp hω φ ψ t ht₀ ht₁ hmix
 
 /-- A state is mixed exactly when it has a genuine nontrivial binary decomposition. -/
-lemma not_isPure_iff_nontrivial_binary_decomposition (ω : 𝓢[A]) :
+lemma not_isPure_iff_nontrivial_binary_decomposition (ω : 𝓢[𝕜, A]) :
     ¬ IsPure ω ↔
-      ∃ (φ ψ : 𝓢[A]) (t : unitInterval), t ≠ 0 ∧ t ≠ 1 ∧
+      ∃ (φ ψ : 𝓢[𝕜, A]) (t : unitInterval), t ≠ 0 ∧ t ≠ 1 ∧
         mix φ ψ t = ω ∧ (φ ≠ ω ∨ ψ ≠ ω) := by
   rw [isPure_iff_binary_decompositions_trivial]
   push Not

@@ -160,7 +160,7 @@ lemma toFieldStrength_eq_sum_basis {d} {A : ElectromagneticPotential d}
         Vector.basis_eq_map_tensor_basis,
     toFieldStrength_eq_sub_tensorDeriv hA, ← deriv_eq_tensorDeriv _ hA, map_sub, Basis.repr_reindex,
     Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply, LinearEquiv.apply_symm_apply,
-    Finsupp.coe_sub, Pi.sub_apply, Finsupp.mapDomain_equiv_apply, permT_basis_repr_symm_apply,
+    Finsupp.coe_sub, Pi.sub_apply, Finsupp.equivMapDomain_apply, permT_basis_repr_symm_apply,
     Function.comp_apply, contrT_basis_repr_apply_eq_fin, prodT_basis_repr_apply,
     contrMetric_repr_apply_eq_minkowskiMatrix,
     prod_tensor_basis_eq_map_reindex CoVector.basis_eq_map_tensor_basis
@@ -367,8 +367,7 @@ lemma toFieldStrength_eval_equivariant {d} (A : ElectromagneticPotential d)
   simp only [Vector.toField_eval_eval_eq_tensorProduct_repr]
   rw [toFieldStrength_equivariant A Λ hf x]
   generalize A.toFieldStrength (Λ⁻¹ • x) = F
-  induction F using TensorProduct.induction_on with
-  | zero => simp
+  induction F using TensorProduct.inductionOn with
   | tmul v w =>
     rw [Tensorial.smul_prod]
     simp only [Basis.tensorProduct_repr_tmul_apply, Lorentz.Vector.basis_repr_apply, smul_eq_mul]

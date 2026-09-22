@@ -51,8 +51,7 @@ lemma unitTensor_eq_permT_dual (c : C) :
   rw [unitTensor, fromConstPair]
   simp [fromPairT]
   generalize (S.unit (S.τ c)) 1 = u at *
-  induction' u using TensorProduct.induction_on with x y
-  · simp
+  induction' u using TensorProduct.inductionOn with x y
   · simp [fromSingleT_map]
     generalize (fromSingleT (S := S) y) = y at *
     generalize (fromSingleT (S := S) x) = x at *

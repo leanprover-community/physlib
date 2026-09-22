@@ -114,7 +114,7 @@ lemma finExtractOne_symm_inr {n : ℕ} (i : Fin n.succ) :
     · rfl
     rename_i hn
     simp_all only [Nat.succ_eq_add_one, not_lt, Fin.le_def, Fin.val_castSucc, Fin.val_succ,
-      left_eq_add, one_ne_zero]
+      left_eq_add]
     omega
   · generalize_proofs hp
     have h1 : (finSumFinEquiv.symm (Fin.cast hp x)) =

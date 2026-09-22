@@ -446,7 +446,7 @@ theorem inner_mulVec_nonneg (hA : 0 ≤ A) (v : n → 𝕜) :
 
 theorem mem_ker_of_inner_mulVec_zero [DecidableEq n] (hA : 0 ≤ A) (v : EuclideanSpace 𝕜 n)
     (h : star v ⬝ᵥ A.mat *ᵥ v = 0) : v ∈ A.ker := by
-  have := ((zero_le_iff.mp hA).dotProduct_mulVec_zero_iff v).mp h
+  have := ((zero_le_iff.mp hA).dotProduct_mulVec_zero_iff (x := v)).mp h
   exact congr(WithLp.toLp 2 $this)
 
 theorem ker_add [DecidableEq n] (hA : 0 ≤ A) (hB : 0 ≤ B) :
@@ -461,8 +461,8 @@ theorem ker_add [DecidableEq n] (hA : 0 ≤ A) (hB : 0 ≤ B) :
     rw [Matrix.posSemidef_iff_dotProduct_mulVec] at hA' hB'
     obtain ⟨hzA, hzB⟩ := (add_eq_zero_iff_of_nonneg (hA'.2 v) (hB'.2 v)).mp h3
     rw [← Matrix.posSemidef_iff_dotProduct_mulVec] at hA' hB'
-    exact ⟨(hA'.dotProduct_mulVec_zero_iff v).mp hzA,
-           (hB'.dotProduct_mulVec_zero_iff v).mp hzB⟩
+    exact ⟨(hA'.dotProduct_mulVec_zero_iff (x := v)).mp hzA,
+           (hB'.dotProduct_mulVec_zero_iff (x := v)).mp hzB⟩
   · simp +contextual [Matrix.add_mulVec]
 
 theorem ker_sum [DecidableEq n] (f : ι → HermitianMat n 𝕜) (hf : ∀ i, 0 ≤ f i) :
@@ -492,8 +492,8 @@ theorem ker_conj [DecidableEq n] (hA : 0 ≤ A) (B : Matrix n n 𝕜) :
 
   ext v; simp [HermitianMat.conj];
   constructor <;> intro h;
-  · have := Matrix.PosSemidef.dotProduct_mulVec_zero_iff ( show Matrix.PosSemidef A.mat from zero_le_iff.mp hA );
-    convert this ( Bᴴ.mulVec v ) |>.1 _ using 1;
+  · have hA' : Matrix.PosSemidef A.mat := zero_le_iff.mp hA;
+    convert hA'.dotProduct_mulVec_zero_iff (x := Bᴴ.mulVec v) |>.1 _ using 1;
     · rw [ mem_ker_iff_mulVec_zero ];
       congr! 2;
     · convert congr_arg ( fun x : EuclideanSpace _ _ => star v.ofLp ⬝ᵥ x ) h using 1

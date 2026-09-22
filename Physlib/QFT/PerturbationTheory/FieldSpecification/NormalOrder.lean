@@ -65,7 +65,7 @@ lemma koszulSignInsert_create (φ : 𝓕.CrAnFieldOp)
   | [] => rfl
   | φ' :: φs => by
     dsimp only [Wick.koszulSignInsert]
-    rw [if_pos]
+    rw [ite_eq_left]
     · exact koszulSignInsert_create φ hφ φs
     · dsimp only [normalOrderRel]
       rw [hφ]
@@ -117,7 +117,7 @@ lemma koszulSignInsert_annihilate_cons_create (φc φa : 𝓕.CrAnFieldOp)
   rw [Wick.koszulSignInsert_cons]
   simp only [mul_eq_mul_right_iff]
   apply Or.inl
-  rw [Wick.koszulSignCons, if_neg, FieldStatistic.exchangeSign_symm,
+  rw [Wick.koszulSignCons, ite_eq_right, FieldStatistic.exchangeSign_symm,
     FieldStatistic.exchangeSign_eq_if]
   rw [normalOrderRel, hφa, hφc]
   simp [CreateAnnihilate.normalOrder]
@@ -196,7 +196,7 @@ lemma normalOrderSign_swap_annihilate_annihilate_fst (φa φa' : 𝓕.CrAnFieldO
   rw [Wick.koszulSignInsert_cons, Wick.koszulSignInsert_cons, mul_assoc, mul_assoc]
   congr 1
   · dsimp only [Wick.koszulSignCons]
-    rw [if_pos, if_pos]
+    rw [ite_eq_left, ite_eq_left]
     · simp [normalOrderRel, hφa, hφa', CreateAnnihilate.normalOrder]
     · simp [normalOrderRel, hφa, hφa', CreateAnnihilate.normalOrder]
   · rw [NonUnitalNormedCommRing.mul_comm]
@@ -252,7 +252,7 @@ lemma orderedInsert_create (φ : 𝓕.CrAnFieldOp)
   | [] => rfl
   | φ' :: φs => by
     simp only [List.orderedInsert.eq_2]
-    rw [if_pos]
+    rw [ite_eq_left]
     dsimp only [normalOrderRel]
     rw [hφ]
     dsimp [CreateAnnihilate.normalOrder]
@@ -375,7 +375,7 @@ lemma orderedInsert_createFilter_append_annihilate (φ : 𝓕.CrAnFieldOp)
     rcases CreateAnnihilate.eq_create_or_annihilate (𝓕 |>ᶜ φ') with hφ' | hφ'
     · rw [createFilter_cons_create hφ']
       simp only [List.cons_append, List.orderedInsert.eq_2]
-      rw [if_neg, orderedInsert_createFilter_append_annihilate φ hφ φs φs']
+      rw [ite_eq_right, orderedInsert_createFilter_append_annihilate φ hφ φs φs']
       simp [normalOrderRel, hφ, hφ', CreateAnnihilate.normalOrder]
     · rw [createFilter_cons_annihilate hφ', orderedInsert_createFilter_append_annihilate φ hφ φs]
 
@@ -388,7 +388,7 @@ lemma orderedInsert_annihilateFilter (φ : 𝓕.CrAnFieldOp) : (φs : List 𝓕.
     · rw [annihilateFilter_cons_create hφ', orderedInsert_annihilateFilter φ φs]
     · rw [annihilateFilter_cons_annihilate hφ']
       simp only [List.orderedInsert.eq_2]
-      rw [if_pos]
+      rw [ite_eq_left]
       dsimp only [normalOrderRel]
       rw [hφ']
       rcases CreateAnnihilate.eq_create_or_annihilate (𝓕 |>ᶜ φ) with hφ | hφ

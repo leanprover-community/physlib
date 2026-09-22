@@ -411,36 +411,6 @@ theorem orderUnitNorm_simpleIntegral_sub_le {ι ι' : Type*} [Fintype ι] [Finty
     _ ≤ |simpleValue c s x - f x| + |simpleValue c' s' x - f x| := abs_sub _ _
     _ ≤ ε + ε' := add_le_add h1 h2
 
-private lemma orderUnitNorm_smul_le_of_nonneg {c : ℝ} (hc : 0 ≤ c) (x : E) :
-    orderUnitNorm (c • x) ≤ c * orderUnitNorm x := by
-  apply le_of_forall_pos_le_add
-  intro ε hε
-  rcases hc.eq_or_lt with hc0 | hc0
-  · rw [← hc0]; simpa using hε.le
-  · obtain ⟨r, hr, hrlt⟩ := exists_orderUnitBound_lt_orderUnitNorm_add x (div_pos hε hc0)
-    have hmem : c * r ∈ orderUnitBounds (c • x) := by
-      refine ⟨mul_nonneg hc hr.1, ?_, ?_⟩
-      · calc -((c * r) • (1 : E)) = c • (-(r • (1 : E))) := by module
-          _ ≤ c • x := smul_le_smul_of_nonneg_left hr.2.1 hc
-      · calc c • x ≤ c • (r • (1 : E)) := smul_le_smul_of_nonneg_left hr.2.2 hc
-          _ = (c * r) • (1 : E) := by module
-    have hc0' : c ≠ 0 := hc0.ne'
-    calc orderUnitNorm (c • x) ≤ c * r := orderUnitNorm_le hmem
-      _ ≤ c * (orderUnitNorm x + ε / c) := (mul_lt_mul_of_pos_left hrlt hc0).le
-      _ = c * orderUnitNorm x + ε := by field_simp
-
-/-- The order-unit norm is `|c|`-Lipschitz under scaling by a fixed real: needed since this level
-of generality never assumes `E` is a normed *space* over `ℝ` (only a normed *group*, since no
-compatibility between the order-unit norm and the `ℝ`-action is otherwise available), so scalar
-multiplication's continuity has to be established by hand from this bound wherever it's used
-below. -/
-lemma orderUnitNorm_smul_le (c : ℝ) (x : E) : orderUnitNorm (c • x) ≤ |c| * orderUnitNorm x := by
-  rcases le_total 0 c with hc | hc
-  · rw [abs_of_nonneg hc]
-    exact orderUnitNorm_smul_le_of_nonneg hc x
-  · rw [abs_of_nonpos hc, show c • x = -((-c) • x) by rw [neg_smul, neg_neg], orderUnitNorm_neg]
-    exact orderUnitNorm_smul_le_of_nonneg (neg_nonneg.mpr hc) x
-
 /-- Any real strictly above the order-unit norm of `y` is itself an order-unit bound of `y`: since
 `orderUnitBounds y` is an up-set with infimum `orderUnitNorm y`, anything strictly past that
 infimum is already in the set. The positivity argument below needs this to turn a norm estimate
@@ -720,6 +690,23 @@ theorem integral_smul (c : ℝ) {hcf : Measurable (c • f)} {hMcf : ∀ x, |(c 
       (isPartition_meshPiece hf hM n)) atTop (𝓝 (c • integral hf hM μ)) :=
     tendsto_const_smul_of_tendsto c (integral_tendsto hf hM μ)
   exact tendsto_nhds_unique key1 key2
+
+/-- The bounded integral in the explicit order-unit-norm copy of the real line.  The generic
+bounded-integral section intentionally fixes its order-unit norm as a local instance; this
+wrapper supplies completeness for that *same* local topology via the real-line isometry, so users
+of the copy never have to mix it with the ordinary scalar norm. -/
+noncomputable def scalarCopyIntegral {Ω : Type*} [MeasurableSpace Ω]
+    (f : Ω → ℝ) (hf : Measurable f) {M : ℝ} (hM : ∀ x, |f x| ≤ M)
+    (μ : EffectValuedMeasure Ω (WithOrderUnitNorm ℝ)) : WithOrderUnitNorm ℝ := by
+  let e : WithOrderUnitNorm ℝ ≃ₗᵢ[ℝ] ℝ :=
+    { __ := (WithOrderUnitNorm.linearEquiv (E := ℝ)).symm
+      norm_map' := fun x => by
+        change |(show ℝ from x)| = IsArchimedeanOrderUnit.orderUnitNorm (show ℝ from x)
+        exact (IsArchimedeanOrderUnit.orderUnitNorm_real _).symm }
+  let hcomplete : CompleteSpace (WithOrderUnitNorm ℝ) :=
+    (completeSpace_congr (e := e.toLinearEquiv.toEquiv) e.isometry.isUniformEmbedding).mpr
+      inferInstance
+  exact @integral Ω (WithOrderUnitNorm ℝ) _ _ _ _ _ _ _ _ hcomplete f hf M hM μ
 
 end Definition
 

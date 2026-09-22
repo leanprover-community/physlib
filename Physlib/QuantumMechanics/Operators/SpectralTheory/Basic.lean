@@ -198,14 +198,16 @@ lemma mem_regularityDomain_iff {T : H →ₗ.[ℂ] H} {z : ℂ} :
     rw [inverse_domain] at hx
     obtain ⟨y, hy⟩ := hx
     specialize h_bound ⟨y, y.2.1⟩
-    simp_all [le_inv_mul_iff₀, sub_apply, inverse_apply_eq h_ker (y := ⟨x, hx⟩) hy]
+    simp_all [le_inv_mul_iff₀, sub_apply,
+      inverse_apply_eq (toFun_ker_eq_bot_iff.mp h_ker) (y := ⟨x, hx⟩) hy]
   · intro ⟨h_ker, h_cont⟩
     obtain ⟨c, hc, h_bound⟩ := LinearMap.continuous_iff_bounded.mp h_cont
     refine ⟨c⁻¹, inv_pos.mpr hc, fun x ↦ ?_⟩
     apply (inv_mul_le_iff₀ hc).mpr
     have hx : ↑x ∈ (T - z • 1).domain := by simp [sub_domain]
     specialize h_bound ⟨(T - z • 1) ⟨x, hx⟩, by simp [inverse_domain]⟩
-    simp only [toFun_eq_coe, inverse_apply_eq h_ker (x := ⟨x, hx⟩), coe_norm] at h_bound
+    simp only [toFun_eq_coe,
+      inverse_apply_eq (toFun_ker_eq_bot_iff.mp h_ker) (x := ⟨x, hx⟩), norm_coe] at h_bound
     simp_all [sub_apply]
 
 /-- The regularity domain of `T` contains open balls with radii controlled by the lower bounds. -/
@@ -592,7 +594,7 @@ theorem numericalRange_convex (T : H →ₗ.[ℂ] H) : Convex ℝ (Θ T) := by
     -- `g 0 = 0`, `g 1 = 1` and continuity ensure that all of `[0,1]` is also in `Θ S`.
     let g : ℝ → ℝ := fun t ↦ (t ^ 2 + (1 - t) * t * (⟪↑y₀, S y₂⟫_ℂ + ⟪↑y₂, S y₀⟫_ℂ).re) / ‖f t‖ ^ 2
     have hg₀ : g 0 = 0 := by simp [g]
-    have hg₁ : g 1 = 1 := by simp [g, f, coe_norm y₂ ▸ hy₂]
+    have hg₁ : g 1 = 1 := by simp [g, f, (norm_coe y₂).symm ▸ hy₂]
     have hg_cont : Continuous g := Continuous.div₀ (by fun_prop) (by fun_prop) (by simp [hf])
     intro c ⟨t, ht, htc⟩
     obtain ⟨r, hr, hrt⟩ := (hg₀ ▸ hg₁ ▸ intermediate_value_Icc zero_le_one hg_cont.continuousOn) ht
@@ -646,7 +648,7 @@ lemma resolventSet_eq_empty [CompleteSpace H] {T : H →ₗ.[ℂ] H} (h : ¬T.Is
     have hTz : T - z • 1 + z • 1 = T :=
       eq_of_le_of_domain_eq (sub_add_le_cancel _ _) (by simp [add_domain, sub_domain])
     exact h <| hTz ▸ this.add_continuous (Continuous.const_smul (by fun_prop) _) (by simp)
-  apply (inverse_closed_iff h_ker).mp
+  apply (inverse_closed_iff (toFun_ker_eq_bot_iff.mp h_ker)).mp
   apply (isClosed_iff_isClosed_domain_of_continuous h_cont).mpr
   simp [inverse_domain, h_range]
 
@@ -661,7 +663,7 @@ lemma IsClosed.resolventSet_eq [CompleteSpace H] {T : H →ₗ.[ℂ] H} (hT : T.
   rw [mem_resolventSet_iff, Set.mem_ofPred_eq, and_congr_right_iff, and_iff_left_iff_imp]
   intro h_ker h_range
   refine continuous_of_isClosed_domain ?_ ?_
-  · apply (inverse_closed_iff h_ker).mpr
+  · apply (inverse_closed_iff (toFun_ker_eq_bot_iff.mp h_ker)).mpr
     exact hT.sub_continuous (Continuous.const_smul (by fun_prop) _) (by simp)
   · simp [inverse_domain, h_range]
 
@@ -803,7 +805,7 @@ lemma IsClosed.spectrum_eq [CompleteSpace H] {T : H →ₗ.[ℂ] H} (hT : T.IsCl
         rw [mem_continuousSpectrum_iff, ← inverse_domain]
         refine fun h ↦ h_cont ?_
         refine continuous_of_isClosed_domain ?_ h
-        apply (inverse_closed_iff h_ker).mpr
+        apply (inverse_closed_iff (toFun_ker_eq_bot_iff.mp h_ker)).mpr
         exact hT.sub_continuous (Continuous.const_smul (by fun_prop) _) le_top
     · left; left; exact h_ker
   · refine union_subset ?_ T.continuousSpectrum_subset_spectrum
@@ -842,7 +844,8 @@ lemma resolvent_sub
       ext x
       · suffices 𝑅 T₂ z ⟨x, by simp [inverse_domain, hz₂.2]⟩ ∈ T₁.domain by
           simp [sub_domain, mem_compRestricted_domain_iff, inverse_domain, hz₁.2, hz₂.2, this]
-        have hR₂ : (𝑅 T₂ z).toFun.range = T₂.domain := by simp [inverse_range hz₂.1, sub_domain]
+        have hR₂ : (𝑅 T₂ z).toFun.range = T₂.domain := by
+          simp [inverse_range (toFun_ker_eq_bot_iff.mp hz₂.1), sub_domain]
         exact hT (hR₂ ▸ mem_range_self _)
       · rfl
 
@@ -874,7 +877,8 @@ lemma resolvent_sub' {T : H →ₗ.[ℂ] H} (z₁ z₂ : ℂ) (hz₁ : z₁ ∈ 
       _ = (z₁ - z₂) • 𝑅 S z₁ := by
         congr
         ext
-        · simp [mem_compRestricted_domain_iff, ← inverse_range hz₁'.1]
+        · simp [mem_compRestricted_domain_iff,
+            ← inverse_range (toFun_ker_eq_bot_iff.mp hz₁'.1)]
         · rfl
 
 end

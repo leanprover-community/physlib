@@ -102,7 +102,7 @@ lemma orderedInsert_commute {α : Type} (r : α → α → Prop) [DecidableRel r
     simp only [List.orderedInsert]
     by_cases h : r a c
     · simp only [h, ↓reduceIte, List.orderedInsert.eq_2, hrb]
-      rw [if_pos (IsTrans.trans (r := r) _ _ _ hrb h)]
+      rw [ite_eq_left (IsTrans.trans (r := r) _ _ _ hrb h)]
       simp only [List.orderedInsert, hr, ↓reduceIte, h]
     · simp only [h, ↓reduceIte, List.orderedInsert.eq_2]
       by_cases hbc : r b c

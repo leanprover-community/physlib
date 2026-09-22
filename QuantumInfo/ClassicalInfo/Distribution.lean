@@ -47,7 +47,7 @@ def mk' (f : α → ℝ) (h₁ : ∀i, 0 ≤ f i) (hN : ∑ i, f i = 1) : ProbDi
   have h₃ : ∀x, f x ≤ 1 := by
     intro x
     simp [← hN, Fintype.sum_eq_sum_compl_add x]
-    exact Finset.sum_nonneg' h₁
+    exact Finset.sum_nonneg fun i _ ↦ h₁ i
   ⟨ fun i ↦ ⟨f i, ⟨h₁ i, h₃ i⟩⟩, hN⟩
 
 instance instFunLikeProb : FunLike (ProbDistribution α) α Prob where
@@ -116,7 +116,7 @@ theorem constant_of_exists_one {D : ProbDistribution α} {x : α} (h : D x = 1) 
     rw [← Finset.add_sum_erase _ _ (Finset.mem_univ x), h, Prob.coe_one] at this
     rw [← Finset.add_sum_erase _ _ (a := y) (by simpa using (Ne.symm h₂))] at this
     have : 0 ≤ ∑ x ∈ Finset.erase (Finset.erase Finset.univ x) y, (D x : ℝ) :=
-      Finset.sum_nonneg' (fun _ ↦ Prob.zero_le_coe)
+      Finset.sum_nonneg (fun _ _ ↦ Prob.zero_le_coe)
     linarith
 
 /-- Make an uniform distribution. -/

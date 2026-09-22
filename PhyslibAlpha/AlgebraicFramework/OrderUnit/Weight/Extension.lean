@@ -7,7 +7,9 @@ module
 
 public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Weight.Basic
 public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Channel.Basic
+public import PhyslibAlpha.AlgebraicFramework.OrderUnit.Norm
 public import Mathlib.Tactic.Module
+public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 
 /-!
 
@@ -190,6 +192,25 @@ noncomputable def toPositiveLinearMap (hw : w.IsFinite) : E →ₚ[ℝ] ℝ :=
   PositiveLinearMap.mk₀ (toLinearMap hw) fun x hx => by
     rw [toLinearMap_apply, toFun_of_nonneg hw ⟨x, hx⟩]
     exact ENNReal.toReal_nonneg
+
+@[simp]
+lemma toPositiveLinearMap_apply_of_nonneg (hw : w.IsFinite) (x : PosCone E) :
+    hw.toPositiveLinearMap (x : E) = (w x).toReal :=
+  hw.toFun_of_nonneg x
+
+/-- The positive linear extension of a finite weight is unique: any positive linear functional
+agreeing with the weight on the positive cone agrees with its extension on all of `E`. -/
+lemma toPositiveLinearMap_unique (hw : w.IsFinite) (f : E →ₚ[ℝ] ℝ)
+    (h : ∀ x : PosCone E, f (x : E) = (w x).toReal) :
+    f = hw.toPositiveLinearMap := by
+  refine PositiveLinearMap.ext fun x => ?_
+  obtain ⟨xp, xn, hxp, hxn, hx⟩ := IsOrderUnit.exists_eq_sub_nonneg x
+  rw [hx, map_sub, map_sub]
+  have hp : f xp = hw.toPositiveLinearMap xp :=
+    (h ⟨xp, hxp⟩).trans (hw.toPositiveLinearMap_apply_of_nonneg ⟨xp, hxp⟩).symm
+  have hn : f xn = hw.toPositiveLinearMap xn :=
+    (h ⟨xn, hxn⟩).trans (hw.toPositiveLinearMap_apply_of_nonneg ⟨xn, hxn⟩).symm
+  rw [hp, hn]
 
 end IsFinite
 

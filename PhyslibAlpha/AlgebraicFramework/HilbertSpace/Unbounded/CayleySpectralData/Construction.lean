@@ -433,7 +433,7 @@ lemma cayleyBoundedOperator_one_eigenspace_eq_bot
   let xi : (T + Complex.I • 1).inverse.domain :=
     ⟨x, by rw [hinvdom]; exact Submodule.mem_top⟩
   have hxi : (T + Complex.I • 1).inverse xi ∈ (T + Complex.I • 1).domain := by
-    rw [← LinearPMap.inverse_range hker]
+    rw [← LinearPMap.inverse_range (LinearPMap.toFun_ker_eq_bot_iff.mp hker)]
     exact LinearMap.mem_range_self _ xi
   let y : (T + Complex.I • 1).domain :=
     ⟨(T + Complex.I • 1).inverse xi, hxi⟩
@@ -445,7 +445,7 @@ lemma cayleyBoundedOperator_one_eigenspace_eq_bot
     change (T + Complex.I • 1) x₀ = x
     exact hx₀
   have hinv₀ : (T + Complex.I • 1).inverse xi = x₀ :=
-    LinearPMap.inverse_apply_eq hker hxy
+    LinearPMap.inverse_apply_eq (LinearPMap.toFun_ker_eq_bot_iff.mp hker) hxy
   have hy : (T + Complex.I • 1) y = x := by
     have heq : y = x₀ := Subtype.ext hinv₀
     rw [heq]

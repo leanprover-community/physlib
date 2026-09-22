@@ -23,8 +23,8 @@ covariance predicate on a POVM itself.
 
 ## Main definitions
 
-- `UnitalPositiveLinearMap.mapEffect`, `Symmetry.instSMulEffect` : a channel — in particular a
-  symmetry — sends effects to effects.
+- `Symmetry.instSMulEffect` : a symmetry acts on effects through the general
+  `UnitalPositiveLinearMap.mapEffect` operation.
 - `MeasurableAction G Ω` : `G` acts on `Ω` by measurable bijections.
 - `EffectValuedMeasure.IsCovariant` : `μ (g • S) = ρ g • μ S`, the abstract form of
   `E(gS) = α_g(E(S))`.
@@ -39,16 +39,6 @@ section EffectAction
 
 variable {E : Type*} [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module ℝ E]
   [PosSMulMono ℝ E] [One E] [IsOrderUnit E]
-
-/-- A channel sends effects to effects: positivity gives `0 ≤ φ e`, and monotonicity applied to
-`e ≤ 1` together with unitality gives `φ e ≤ φ 1 = 1`. -/
-def UnitalPositiveLinearMap.mapEffect (φ : E →ₚ₁[ℝ] E) (e : Effect E) : Effect E :=
-  ⟨φ (e : E), φ.map_nonneg e.2.1, (φ.monotone' e.2.2).trans_eq (map_one φ)⟩
-
-omit [IsOrderedAddMonoid E] [PosSMulMono ℝ E] [IsOrderUnit E] in
-@[simp]
-lemma UnitalPositiveLinearMap.coe_mapEffect (φ : E →ₚ₁[ℝ] E) (e : Effect E) :
-    (φ.mapEffect e : E) = φ (e : E) := rfl
 
 /-- A symmetry acts on effects the way it acts on `E` itself, via the underlying channel — the
 dual of `Symmetry`'s existing action on states (`OrderUnit/Symmetry.lean`). -/

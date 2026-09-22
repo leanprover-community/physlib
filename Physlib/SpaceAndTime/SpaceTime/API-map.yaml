@@ -29,6 +29,10 @@ Requirements:
     done: true
     location: "Physlib/SpaceAndTime/SpaceTime/Basic.lean (space, time, toTimeAndSpace)"
 
+  - description: "The spatial projection intertwines the Lorentz and Euclidean actions of the same special orthogonal rotation about the coordinate origin."
+    done: true
+    location: "Physlib/SpaceAndTime/SpaceTime/Basic.lean (space_equivariant)"
+
   - description: "The API contains the derivatives of functions from `SpaceTime` to a normed space."
     done: true
     location: "Physlib/SpaceAndTime/SpaceTime/Derivatives.lean (deriv, tensorDeriv)"

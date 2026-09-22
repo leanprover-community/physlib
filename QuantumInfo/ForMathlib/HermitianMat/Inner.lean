@@ -509,7 +509,7 @@ lemma inner_eq_doubly_stochastic_sum {d : Type*} [Fintype d] [DecidableEq d]
     push_cast
     simp only [Matrix.trace, Matrix.diag_apply, Matrix.mul_apply, hC_norm]
     simp only [Matrix.diagonal_apply, ite_mul, zero_mul, mul_ite, mul_zero,
-      Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, if_true, Function.comp_apply,
+      Finset.sum_ite_eq, Finset.sum_ite_eq', Finset.mem_univ, ite_true, Function.comp_apply,
       Matrix.conjTranspose_apply]
     exact Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by
       simp only [RCLike.ofReal_eq_complex_ofReal]; ring

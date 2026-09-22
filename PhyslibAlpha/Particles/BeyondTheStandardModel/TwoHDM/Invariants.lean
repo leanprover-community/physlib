@@ -297,7 +297,7 @@ lemma coeff_Qslice_eq_zero {V : EffectivePotential} (hI : IsInvariant V)
     {P : MvPolynomial (Fin 6) ℝ} (hP : ∀ a, V (sliceR a) = P.eval a) (m : Fin 6 →₀ ℕ)
     (hm : (∑ i ∈ m.support, (m i : ℤ) * cartanCharge i ≠ 0) ∨
           (∑ i ∈ m.support, (m i : ℤ) * hyperCharge i ≠ 0)) :
-    coeff m (Qslice P) = 0 := by
+    (Qslice P).coeff m = 0 := by
   obtain ⟨ω, hω⟩ := exists_infiniteOrder_unitary
   have hω0 : (ω : ℂ) ≠ 0 := by intro h; have := ω.2.1; rw [h] at this; simp at this
   rcases hm with hmA | hmB
@@ -376,10 +376,12 @@ lemma monomial_mem_adjoin_neutralBilinear (m : Fin 6 →₀ ℕ)
         by_cases h1 : i = k
         · by_cases h2 : j = k
           · exact absurd (h1.trans h2.symm) hij
-          · rw [if_pos h1, if_neg h2]; subst h1; simpa using Nat.one_le_iff_ne_zero.mpr hmi
+          · rw [ite_eq_left h1, ite_eq_right h2]; subst h1
+            simpa using Nat.one_le_iff_ne_zero.mpr hmi
         · by_cases h2 : j = k
-          · rw [if_neg h1, if_pos h2]; subst h2; simpa using Nat.one_le_iff_ne_zero.mpr hmj
-          · rw [if_neg h1, if_neg h2]; simp
+          · rw [ite_eq_right h1, ite_eq_left h2]; subst h2
+            simpa using Nat.one_le_iff_ne_zero.mpr hmj
+          · rw [ite_eq_right h1, ite_eq_right h2]; simp
       set m' := m - (Finsupp.single i 1 + Finsupp.single j 1) with hm'def
       have hdecomp : m = (Finsupp.single i 1 + Finsupp.single j 1) + m' := by
         rw [hm'def, add_tsub_cancel_of_le hle]
@@ -413,7 +415,7 @@ lemma monomial_mem_adjoin_neutralBilinear (m : Fin 6 →₀ ℕ)
             by rw [← X_pow_eq_monomial, pow_one],
           show (X j : MvPolynomial (Fin 6) ℂ) = monomial (Finsupp.single j 1) 1 from
             by rw [← X_pow_eq_monomial, pow_one],
-          monomial_mul, monomial_mul, one_mul, one_mul, add_assoc]
+          monomial_mul_monomial, monomial_mul_monomial, one_mul, one_mul, add_assoc]
       rw [hfact]
       exact Subalgebra.mul_mem _ hgen (ih (∑ k, m' k) hsum' m' rfl hA' hB')
     -- main case split
@@ -489,7 +491,7 @@ lemma Qslice_mem_adjoin_neutralBilinear {V : EffectivePotential} (hI : IsInvaria
   rw [(Qslice P).as_sum]
   apply Subalgebra.sum_mem
   intro m hm
-  have hcoeff : coeff m (Qslice P) ≠ 0 := MvPolynomial.mem_support_iff.mp hm
+  have hcoeff : (Qslice P).coeff m ≠ 0 := MvPolynomial.mem_support_iff.mp hm
   have hsuppA : ∑ i ∈ m.support, (m i : ℤ) * cartanCharge i = 0 := by
     by_contra h0
     exact hcoeff (coeff_Qslice_eq_zero hI hP m (Or.inl h0))
@@ -500,7 +502,7 @@ lemma Qslice_mem_adjoin_neutralBilinear {V : EffectivePotential} (hI : IsInvaria
     monomial_mem_adjoin_neutralBilinear m
       ((charge_univ_eq_support cartanCharge m).trans hsuppA)
       ((charge_univ_eq_support hyperCharge m).trans hsuppB)
-  have hrw : monomial m (coeff m (Qslice P)) = C (coeff m (Qslice P)) * monomial m 1 := by
+  have hrw : monomial m ((Qslice P).coeff m) = C ((Qslice P).coeff m) * monomial m 1 := by
     rw [C_mul_monomial, mul_one]
   rw [hrw]
   exact Subalgebra.mul_mem _
@@ -570,8 +572,8 @@ noncomputable def realPart (H : MvPolynomial (Fin 5) ℂ) : MvPolynomial (Fin 5)
 
 open MvPolynomial in
 @[simp] lemma realPart_coeff (H : MvPolynomial (Fin 5) ℂ) (m : Fin 5 →₀ ℕ) :
-    coeff m (realPart H) = (coeff m H).re := by
-  simp only [realPart, coeff, AddMonoidAlgebra.coeff_ofCoeff, Finsupp.mapRange_apply]
+    (realPart H).coeff m = (H.coeff m).re := by
+  simp only [realPart, AddMonoidAlgebra.coeff_ofCoeff, Finsupp.mapRange_apply]
 
 open MvPolynomial in
 lemma realPart_C (a : ℂ) : realPart (C a) = C a.re := by

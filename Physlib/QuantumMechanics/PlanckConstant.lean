@@ -5,7 +5,7 @@ Authors: Samyak Rai, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Data.NNReal.Defs
+public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 /-!
 
@@ -37,6 +37,9 @@ lemma ℏ_nonneg : 0 ≤ (ℏ : ℝ) := le_of_lt ℏ.2
 /-- reduced Planck's constant is not equal to zero. -/
 @[simp]
 lemma ℏ_ne_zero : (ℏ : ℝ) ≠ 0 := ne_of_gt ℏ.2
+
+/-- reduced Planck's constant is not equal to zero, as a complex number. -/
+lemma ℏ_ofReal_ne_zero : ((ℏ : ℝ) : ℂ) ≠ 0 := by exact_mod_cast ℏ_ne_zero
 
 /-- The definition of Planck's constant in terms of Reduced Planck's constant,
  defined as `2 π ℏ` -/

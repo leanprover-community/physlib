@@ -246,7 +246,7 @@ lemma hamiltonian_apply_localizedState (n : Fin T.N) :
   simp only [hamiltonian, LinearMap.sub_apply, LinearMap.smul_apply, LinearMap.coe_sum,
     Finset.sum_apply, LinearMap.add_apply, smul_add, Finset.sum_add_distrib,
     localizedComp_apply_localizedState, ← eq_sub_iff_add_eq, Finset.sum_ite_eq', Finset.mem_univ,
-    if_true]
+    ite_true]
   module
 
 /-!

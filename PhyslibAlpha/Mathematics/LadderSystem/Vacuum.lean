@@ -118,14 +118,14 @@ lemma word_peel (L : LadderSystem K V d) (i : Fin d) {x : V} (hx : L.a i x = 0) 
     rw [step, word_peel L i hx v']
     by_cases hic : i = c
     · subst hic
-      rw [if_pos rfl, List.count_cons_self, List.erase_cons_head]
+      rw [ite_eq_left rfl, List.count_cons_self, List.erase_cons_head]
       by_cases hmem : i ∈ v'
       · have hperm : L.word v' x = L.word (i :: v'.erase i) x :=
           word_perm L (List.perm_cons_erase hmem) x
         rw [succ_nsmul, map_nsmul, ← word_cons, ← hperm]
       · have hcount : v'.count i = 0 := List.count_eq_zero_of_not_mem hmem
         simp [hcount]
-    · rw [if_neg hic, List.count_cons_of_ne (Ne.symm hic),
+    · rw [ite_eq_right hic, List.count_cons_of_ne (Ne.symm hic),
         List.erase_cons_tail (by simpa using Ne.symm hic), map_nsmul, ← word_cons, add_zero]
 
 /-- How `E i j` acts on a word: removes one occurrence of `j`, adds one of `i`, scaled by `j`'s
@@ -177,7 +177,7 @@ lemma count_countWord {d : ℕ} (α : Fin d → ℕ) (i : Fin d) :
         rw [List.count_replicate, hzero]
         simp
       · have hine : i ≠ c := fun h => hcl' (h ▸ hil')
-        rw [List.count_replicate, if_neg (by simpa using hine.symm), zero_add]
+        rw [List.count_replicate, ite_eq_right (by simpa using hine.symm), zero_add]
         exact ih hnodup' hil'
   exact key (List.finRange d) (List.nodup_finRange d) (List.mem_finRange i)
 
@@ -190,7 +190,7 @@ lemma sum_count_eq_length {d : ℕ} : ∀ v : List (Fin d), (∑ c : Fin d, v.co
       rw [List.count_cons]
       simp only [beq_iff_eq]
     have hone : (∑ c : Fin d, if a = c then (1 : ℕ) else 0) = 1 := by
-      rw [Finset.sum_eq_single a (fun b _ hb => if_neg (Ne.symm hb))
+      rw [Finset.sum_eq_single a (fun b _ hb => ite_eq_right (Ne.symm hb))
         (fun h => absurd (Finset.mem_univ a) h)]
       simp
     simp only [hcount, List.length_cons]

@@ -195,11 +195,10 @@ lemma angularMomentumOperator_isSymmetric :
   intro ψ φ
   obtain ⟨f, rfl⟩ := (schwartzEquiv volume).surjective ψ
   obtain ⟨g, rfl⟩ := (schwartzEquiv volume).surjective φ
-  simp only [angularMomentumOperator_apply, LinearEquiv.symm_apply_apply,
-    ← Submodule.coe_inner]
-  rw [angularMomentumCLM_apply_fun, map_sub, inner_sub_left,
+  simp only [angularMomentumOperator_apply, LinearEquiv.symm_apply_apply]
+  rw [angularMomentumCLM_apply_fun, map_sub, Submodule.coe_sub, inner_sub_left,
     positionCLM_inner, positionCLM_inner, momentumCLM_inner, momentumCLM_inner,
-    ← inner_sub_right, ← map_sub, angularMomentumCLM_eq_momentum_position]
+    ← inner_sub_right, ← Submodule.coe_sub, ← map_sub, angularMomentumCLM_eq_momentum_position]
   rfl
 
 /-- Angular momentum on the Schwartz domain is densely defined and closable. -/

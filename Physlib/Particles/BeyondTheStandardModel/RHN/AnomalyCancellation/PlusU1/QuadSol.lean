@@ -119,21 +119,21 @@ lemma toQuadInv_special (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 = 0) :
     specialToQuad C (toQuadInv C S).1 (toQuadInv C S).2.1 (toQuadInv C S).2.2
     ((toQuadInv_α₁_α₂ C S).mp h).1 ((toQuadInv_α₁_α₂ C S).mp h).2 = S := by
   simp only [toQuadInv_fst]
-  rw [show (toQuadInv C S).2.1 = 1 by rw [toQuadInv, if_pos h],
-    show (toQuadInv C S).2.2 = 0 by rw [toQuadInv, if_pos h], special_on_quad]
+  rw [show (toQuadInv C S).2.1 = 1 by rw [toQuadInv, ite_eq_left h],
+    show (toQuadInv C S).2.2 = 0 by rw [toQuadInv, ite_eq_left h], special_on_quad]
 
 lemma toQuadInv_generic (S : (PlusU1 n).QuadSols) (h : α₁ C S.1 ≠ 0) :
     (toQuadInv C S).2.1 • genericToQuad C (toQuadInv C S).1 = S := by
   simp only [toQuadInv_fst]
-  rw [show (toQuadInv C S).2.1 = (α₁ C S.1)⁻¹ by rw [toQuadInv, if_neg h],
+  rw [show (toQuadInv C S).2.1 = (α₁ C S.1)⁻¹ by rw [toQuadInv, ite_eq_right h],
     genericToQuad_ne_zero C S h]
 
 lemma toQuad_rightInverse : Function.RightInverse (@toQuadInv n C) (toQuad C) := by
   intro S
   by_cases h : α₁ C S.1 = 0
-  · rw [toQuad, dif_pos ((toQuadInv_α₁_α₂ C S).mp h)]
+  · rw [toQuad, dite_eq_left ((toQuadInv_α₁_α₂ C S).mp h)]
     exact toQuadInv_special C S h
-  · rw [toQuad, dif_neg ((toQuadInv_α₁_α₂ C S).mpr.mt h)]
+  · rw [toQuad, dite_eq_right ((toQuadInv_α₁_α₂ C S).mpr.mt h)]
     exact toQuadInv_generic C S h
 
 theorem toQuad_surjective : Function.Surjective (toQuad C) :=
