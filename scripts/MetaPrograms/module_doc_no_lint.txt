@@ -44,7 +44,6 @@ Physlib/Mathematics/List.lean
 Physlib/Mathematics/List/InsertIdx.lean
 Physlib/Mathematics/List/InsertionSort.lean
 Physlib/Mathematics/PiTensorProduct.lean
-Physlib/Mathematics/RatComplexNum.lean
 Physlib/Mathematics/SO3/Basic.lean
 Physlib/Mathematics/SchurTriangulation.lean
 Physlib/Mathematics/SpecialFunctions/PhysHermite.lean
@@ -239,7 +238,7 @@ Physlib/Relativity/Tensors/ComplexTensor/Matrix/Pre.lean
 Physlib/Relativity/Tensors/ComplexTensor/Metrics/Basic.lean
 Physlib/Relativity/Tensors/ComplexTensor/Metrics/Lemmas.lean
 Physlib/Relativity/Tensors/ComplexTensor/Metrics/Pre.lean
-Physlib/Relativity/Tensors/ComplexTensor/OfRat.lean
+Physlib/Relativity/Tensors/ComplexTensor/OfGaussianInt.lean
 Physlib/Relativity/Tensors/ComplexTensor/Units/Basic.lean
 Physlib/Relativity/Tensors/ComplexTensor/Units/Pre.lean
 Physlib/Relativity/Tensors/ComplexTensor/Units/Symm.lean

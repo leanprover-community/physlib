@@ -5,7 +5,7 @@ Authors: Robert Sneiderman
 -/
 module
 
-public import Physlib.Relativity.Tensors.ComplexTensor.OfRat
+public import Physlib.Relativity.Tensors.ComplexTensor.OfGaussianInt
 public import Physlib.Relativity.Tensors.LeviCivita.Basic
 public import Physlib.Relativity.Tensors.RealTensor.ToComplex
 /-!
@@ -13,7 +13,7 @@ public import Physlib.Relativity.Tensors.RealTensor.ToComplex
 # The Levi-Civita tensor as a complex Lorentz tensor
 
 This file complexifies the real Lorentz Levi-Civita tensor and records its components in the
-rational complex tensor basis.
+Gaussian integer tensor basis.
 
 -/
 
@@ -61,17 +61,17 @@ scoped[complexLorentzTensor] notation "ε4ℂ" => leviCivita
 
 /-- The complex Levi-Civita tensor has the Levi-Civita symbol as its real component and zero
 imaginary component in the standard basis. -/
-lemma leviCivita_eq_ofRat : ε4ℂ = ofRat (fun
+lemma leviCivita_eq_ofGaussianInt : ε4ℂ = ofGaussianInt (fun
     b : ComponentIdx (S := complexLorentzTensor) ![Color.up, Color.up, Color.up, Color.up] =>
-    ⟨generalizedKroneckerDelta
-      (fun i => Fin.cast (by fin_cases i <;> rfl) (b i)) (id : Fin 4 → Fin 4), 0⟩) := by
+    (generalizedKroneckerDelta
+      (fun i => Fin.cast (by fin_cases i <;> rfl) (b i)) (id : Fin 4 → Fin 4) : GaussianInt)) := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [leviCivita, permT_basis_repr_symm_apply]
   have hinv (i : Fin 4) : IsReindexing.inv id leviCivita_isReindexing i = i := by
     have h := IsReindexing.inv_apply_apply id leviCivita_isReindexing i
     simpa using h
-  rw [ofRat_basis_repr_apply]
+  rw [ofGaussianInt_basis_repr_apply]
   let j : ComponentIdx (S := complexLorentzTensor)
       (realLorentzTensor.colorToComplex ∘
         ![realLorentzTensor.Color.up, realLorentzTensor.Color.up,
@@ -84,7 +84,7 @@ lemma leviCivita_eq_ofRat : ε4ℂ = ofRat (fun
     (ComponentIdx.complexify.symm j)
   rw [Equiv.apply_symm_apply] at hrepr
   rw [hrepr, realLorentzTensor.leviCivita_basis_repr_apply]
-  simp [Physlib.RatComplexNum.toComplexNum]
+  simp only [map_intCast, Complex.ofReal_intCast, Int.cast_inj]
   apply congrArg (fun f : Fin 4 → Fin 4 => generalizedKroneckerDelta f id)
   funext i
   have hcomplexify :
@@ -103,16 +103,17 @@ lemma leviCivita_eq_ofRat : ε4ℂ = ofRat (fun
 
 /-- The components of the complex Levi-Civita tensor as the product over pairs `i < j` of the
 sign of `b j - b i`, from `leviCivitaSymbol_eq_prod_prod_Ioi`. Unlike the determinant appearing
-in `leviCivita_eq_ofRat`, these components are cheap to evaluate, e.g. by `decide`. -/
-lemma leviCivita_eq_ofRat_prod : ε4ℂ = ofRat (fun
+in `leviCivita_eq_ofGaussianInt`, these components are cheap to evaluate, e.g. by `decide`. -/
+lemma leviCivita_eq_ofGaussianInt_prod : ε4ℂ = ofGaussianInt (fun
     b : ComponentIdx (S := complexLorentzTensor) ![Color.up, Color.up, Color.up, Color.up] =>
-    ⟨((∏ i : Fin 4, ∏ j ∈ Finset.Ioi i,
+    (((∏ i : Fin 4, ∏ j ∈ Finset.Ioi i,
       (if (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4) <
           (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 1
         else if (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4) =
-          (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 0 else -1) : ℤ) : ℚ), 0⟩) := by
-  rw [leviCivita_eq_ofRat]
-  refine congrArg ofRat (funext fun b => ?_)
+          (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 0 else -1) : ℤ) :
+      GaussianInt))) := by
+  rw [leviCivita_eq_ofGaussianInt]
+  refine congrArg ofGaussianInt (funext fun b => ?_)
   have h := leviCivitaSymbol_eq_prod_prod_Ioi
     (fun i : Fin 4 => (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4))
   rw [← h]

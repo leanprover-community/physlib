@@ -6,11 +6,15 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.ComplexTensor.Basic
-public import Physlib.Mathematics.RatComplexNum
-public import Physlib.Relativity.Tensors.Dual
+public import Mathlib.NumberTheory.Zsqrtd.GaussianInt
 /-!
 
-# Basis for tensors in a tensor species
+# Complex Lorentz tensors with Gaussian integer components
+
+A complex Lorentz tensor whose components in the standard basis are Gaussian integers can be
+written as `ofGaussianInt f` for a map `f` from component indices to `GaussianInt`. The
+product, contraction and permutation of such tensors are again of this form, so identities
+between them reduce to decidable equalities of Gaussian integers.
 
 -/
 
@@ -21,22 +25,20 @@ open CategoryTheory
 open MonoidalCategory
 
 namespace complexLorentzTensor
-open Physlib.RatComplexNum
-open Physlib
 
 open TensorSpecies
 open Tensor
 
-/--A complex Lorentz tensor from a map
-  `(Π j, Fin (complexLorentzTensor.repDim (c j))) → RatComplexNum`. All
-  complex Lorentz tensors with rational coefficients with respect to the basis are of this
-  form. -/
-noncomputable def ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
-    ((ComponentIdx (S := complexLorentzTensor) c) → RatComplexNum) →ₛₗ[toComplexNum] ℂT(c) where
+/-- A complex Lorentz tensor from a map
+  `(Π j, Fin (complexLorentzTensor.repDim (c j))) → GaussianInt`. All complex Lorentz tensors
+  with Gaussian integer coefficients with respect to the basis are of this form. -/
+noncomputable def ofGaussianInt {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
+    ((ComponentIdx (S := complexLorentzTensor) c) → GaussianInt) →ₛₗ[GaussianInt.toComplex]
+      ℂT(c) where
   toFun f := (Tensor.basis c).repr.symm <|
     (Finsupp.linearEquivFunOnFinite ℂ ℂ
     ((j : Fin n) → Fin (complexLorentzTensor.repDim (c j)))).symm <|
-    (fun j => toComplexNum (f j))
+    (fun j => GaussianInt.toComplex (f j))
   map_add' f f1 := by
     apply (Tensor.basis _).repr.injective
     ext b
@@ -47,34 +49,29 @@ noncomputable def ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
     simp
 
 @[simp]
-lemma ofRat_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
-    (f : (ComponentIdx c) → RatComplexNum)
+lemma ofGaussianInt_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
+    (f : (ComponentIdx c) → GaussianInt)
     (b :(ComponentIdx c)) :
-  (Tensor.basis c).repr (ofRat f) b = toComplexNum (f b) := by
-  simp [ofRat]
+  (Tensor.basis c).repr (ofGaussianInt f) b = GaussianInt.toComplex (f b) := by
+  simp [ofGaussianInt]
 
-lemma basis_eq_ofRat {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
+lemma basis_eq_ofGaussianInt {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
     (b : (ComponentIdx c)) :
     Tensor.basis c b
-    = ofRat (fun b' => if b = b' then ⟨1, 0⟩ else ⟨0, 0⟩) := by
+    = ofGaussianInt (fun b' => if b = b' then 1 else 0) := by
   apply (Tensor.basis c).repr.injective
-  simp only [Basis.repr_self]
   ext b'
-  simp only [ofRat_basis_repr_apply]
-  rw [Finsupp.single_apply, toComplexNum]
-  simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
-  split
-  simp only [Rat.cast_one, Rat.cast_zero, zero_mul, add_zero]
-  simp
+  rw [Basis.repr_self, ofGaussianInt_basis_repr_apply, Finsupp.single_apply]
+  split <;> simp
 
 set_option backward.isDefEq.respectTransparency false in
-lemma contr_basis_ratComplexNum {c : complexLorentzTensor.Color}
+lemma contr_basis_gaussianInt {c : complexLorentzTensor.Color}
     (i : Fin (complexLorentzTensor.repDim c))
     (j : Fin (complexLorentzTensor.repDim (complexLorentzTensor.τ c))) :
       ((complexLorentzTensor.contr c)
       (complexLorentzTensor.basis c i ⊗ₜ
       complexLorentzTensor.basis (complexLorentzTensor.τ c) j))
-      = toComplexNum (if i.val = j.val then 1 else 0) := by
+      = GaussianInt.toComplex (if i.val = j.val then 1 else 0) := by
   match c with
   | Color.upL =>
     change Fermion.leftDualContraction
@@ -109,22 +106,23 @@ lemma contr_basis_ratComplexNum {c : complexLorentzTensor.Color}
 open TensorSpecies
 open Tensor
 
-lemma prodT_ofRat_ofRat {n n1 : ℕ} {c : Fin n → complexLorentzTensor.Color}
-    (f : (ComponentIdx c) → RatComplexNum)
+lemma prodT_ofGaussianInt_ofGaussianInt {n n1 : ℕ} {c : Fin n → complexLorentzTensor.Color}
+    (f : (ComponentIdx c) → GaussianInt)
     {c1 : Fin n1 → complexLorentzTensor.Color}
-    (f1 : (ComponentIdx c1) → RatComplexNum) :
-    (prodT (ofRat f) (ofRat f1)) =
-    ((ofRat (fun b => f (ComponentIdx.prod b).1 *
+    (f1 : (ComponentIdx c1) → GaussianInt) :
+    (prodT (ofGaussianInt f) (ofGaussianInt f1)) =
+    ((ofGaussianInt (fun b => f (ComponentIdx.prod b).1 *
       f1 (ComponentIdx.prod b).2))) := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [prodT_basis_repr_apply]
-  simp only [ofRat_basis_repr_apply, map_mul]
+  simp only [ofGaussianInt_basis_repr_apply, map_mul]
 
-lemma contrT_ofRat_eq_sum_dropPairSection {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color}
+lemma contrT_ofGaussianInt_eq_sum_dropPairSection {n : ℕ}
+    {c : Fin (n + 1 + 1) → complexLorentzTensor.Color}
     {i j : Fin (n + 1 + 1)} {h : i ≠ j ∧ complexLorentzTensor.τ (c i) = c j }
-    (f : (ComponentIdx c) → RatComplexNum) :
-  (contrT n i j h (ofRat f)) = ((ofRat (fun b =>
+    (f : (ComponentIdx c) → GaussianInt) :
+  (contrT n i j h (ofGaussianInt f)) = ((ofGaussianInt (fun b =>
     (∑ x : ComponentIdx.DropPairSection b,
       f x.1 * if (x.1 i).1 = (x.1 j).1 then 1 else 0)))) := by
   apply (Tensor.basis _).repr.injective
@@ -132,24 +130,24 @@ lemma contrT_ofRat_eq_sum_dropPairSection {n : ℕ} {c : Fin (n + 1 + 1) → com
   rw [contrT_basis_repr_apply]
   conv_lhs =>
     enter [2, x]
-    rw [contr_basis_ratComplexNum]
+    rw [contr_basis_gaussianInt]
     simp only [Nat.succ_eq_add_one, Finset.univ_eq_attach,
-    ofRat_basis_repr_apply, Fin.val_cast, mul_one,
+    ofGaussianInt_basis_repr_apply, Fin.val_cast, mul_one,
     mul_zero, Function.comp_apply]
-    rw [← Physlib.RatComplexNum.toComplexNum.map_mul]
-  rw [← map_sum Physlib.RatComplexNum.toComplexNum]
-  rw [ofRat_basis_repr_apply]
+    rw [← GaussianInt.toComplex.map_mul]
+  rw [← map_sum GaussianInt.toComplex]
+  rw [ofGaussianInt_basis_repr_apply]
   simp [basisIdxCongr_eq_cast]
 
 open ComponentIdx
-lemma contrT_ofRat {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color}
+lemma contrT_ofGaussianInt {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color}
     {i j : Fin (n + 1 + 1)} {h : i ≠ j ∧ complexLorentzTensor.τ (c i) = c j }
-    (f : (ComponentIdx c) → RatComplexNum) :
-  (contrT n i j h (ofRat f)) = ((ofRat (fun b =>
+    (f : (ComponentIdx c) → GaussianInt) :
+  (contrT n i j h (ofGaussianInt f)) = ((ofGaussianInt (fun b =>
     (∑ x : Fin (complexLorentzTensor.repDim (c i)),
       f (DropPairSection.ofFinEquiv h.1 b (x, Fin.cast (by
         simp [← h.2, complexLorentzTensor.repDim_tau]) x)))))) := by
-  rw [contrT_ofRat_eq_sum_dropPairSection]
+  rw [contrT_ofGaussianInt_eq_sum_dropPairSection]
   congr
   funext b
   rw [← (DropPairSection.ofFinEquiv h.1 b).sum_comp]
@@ -167,16 +165,16 @@ lemma contrT_ofRat {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color
       exact fun a => hy ((Eq.symm a))
   · simp
 
-lemma permT_ofRat {n m : ℕ} {c : Fin n → complexLorentzTensor.Color}
+lemma permT_ofGaussianInt {n m : ℕ} {c : Fin n → complexLorentzTensor.Color}
     {c1 : Fin m → complexLorentzTensor.Color}
     {σ : Fin m → Fin n} (h : IsReindexing c c1 σ)
-    (f : ComponentIdx c → RatComplexNum) :
-    (permT σ h ((ofRat f))) =
-    ((ofRat (fun b => f (fun i => Fin.cast (by simp [IsReindexing.inv_perserve_color])
+    (f : ComponentIdx c → GaussianInt) :
+    (permT σ h ((ofGaussianInt f))) =
+    ((ofGaussianInt (fun b => f (fun i => Fin.cast (by simp [IsReindexing.inv_perserve_color])
       (b (h.inv σ i)))))) := by
   apply (Tensor.basis _).repr.injective
   ext b
-  simp only [permT_basis_repr_symm_apply, ofRat_basis_repr_apply]
+  simp only [permT_basis_repr_symm_apply, ofGaussianInt_basis_repr_apply]
   congr
   ext i
   simp [basisIdxCongr_eq_cast]

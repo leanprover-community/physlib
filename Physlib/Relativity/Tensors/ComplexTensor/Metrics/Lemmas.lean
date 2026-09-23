@@ -35,7 +35,7 @@ lemma coMetric_symm : {η' | μ ν = η' | ν μ}ᵀ := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [permT_basis_repr_symm_apply]
-  rw [coMetric_eq_ofRat, ofRat_basis_repr_apply, ofRat_basis_repr_apply]
+  rw [coMetric_eq_ofGaussianInt, ofGaussianInt_basis_repr_apply, ofGaussianInt_basis_repr_apply]
   congr 1
   revert b
   decide
@@ -45,7 +45,7 @@ lemma contrMetric_symm : {η | μ ν = η | ν μ}ᵀ := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [permT_basis_repr_symm_apply]
-  rw [contrMetric_eq_ofRat, ofRat_basis_repr_apply, ofRat_basis_repr_apply]
+  rw [contrMetric_eq_ofGaussianInt, ofGaussianInt_basis_repr_apply, ofGaussianInt_basis_repr_apply]
   congr 1
   revert b
   decide
@@ -55,7 +55,8 @@ lemma leftMetric_antisymm : {εL | α α' = - (εL| α' α)}ᵀ := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [permT_basis_repr_symm_apply]
-  rw [leftMetric_eq_ofRat, ofRat_basis_repr_apply, ← map_neg, ofRat_basis_repr_apply]
+  rw [leftMetric_eq_ofGaussianInt, ofGaussianInt_basis_repr_apply, ← map_neg,
+    ofGaussianInt_basis_repr_apply]
   congr 1
   revert b
   decide
@@ -65,7 +66,8 @@ lemma rightMetric_antisymm : {εR | β β' = - (εR| β' β)}ᵀ := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [permT_basis_repr_symm_apply]
-  rw [rightMetric_eq_ofRat, ofRat_basis_repr_apply, ← map_neg, ofRat_basis_repr_apply]
+  rw [rightMetric_eq_ofGaussianInt, ofGaussianInt_basis_repr_apply, ← map_neg,
+    ofGaussianInt_basis_repr_apply]
   congr 1
   revert b
   decide
@@ -75,7 +77,8 @@ lemma dualLeftMetric_antisymm : {εL' | α α' = - (εL' | α' α)}ᵀ := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [permT_basis_repr_symm_apply]
-  rw [dualLeftMetric_eq_ofRat, ofRat_basis_repr_apply, ← map_neg, ofRat_basis_repr_apply]
+  rw [dualLeftMetric_eq_ofGaussianInt, ofGaussianInt_basis_repr_apply, ← map_neg,
+    ofGaussianInt_basis_repr_apply]
   congr 1
   revert b
   decide
@@ -85,7 +88,8 @@ lemma dualRightMetric_antisymm : {εR' | α α' = - (εR' | α' α)}ᵀ := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [permT_basis_repr_symm_apply]
-  rw [dualRightMetric_eq_ofRat, ofRat_basis_repr_apply, ← map_neg, ofRat_basis_repr_apply]
+  rw [dualRightMetric_eq_ofGaussianInt, ofGaussianInt_basis_repr_apply, ← map_neg,
+    ofGaussianInt_basis_repr_apply]
   congr 1
   revert b
   decide

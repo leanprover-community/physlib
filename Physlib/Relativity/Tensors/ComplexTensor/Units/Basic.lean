@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.ComplexTensor.OfRat
+public import Physlib.Relativity.Tensors.ComplexTensor.OfGaussianInt
 /-!
 
 ## Unit tensors for complex Lorentz tensors
@@ -274,72 +274,72 @@ lemma rightDualRightUnit_eq_tensor_basis : δR =
 
 /-!
 
-### ofRat
+### ofGaussianInt
 
 -/
 
 set_option backward.isDefEq.respectTransparency false in
-lemma coContrUnit_eq_ofRat : δ' = ofRat fun f =>
+lemma coContrUnit_eq_ofGaussianInt : δ' = ofGaussianInt fun f =>
     if f 0 = f 1 then 1 else 0 := by
   rw [coContrUnit_eq_basis]
   conv_lhs =>
     enter [2, x]
-    rw [basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt]
   rw [← map_sum]
   congr
   with_unfolding_all decide
 
 set_option backward.isDefEq.respectTransparency false in
-lemma contrCoUnit_eq_ofRat : δ = ofRat fun f =>
+lemma contrCoUnit_eq_ofGaussianInt : δ = ofGaussianInt fun f =>
     if f 0 = f 1 then 1 else 0 := by
   rw [contrCoUnit_eq_basis]
   conv_lhs =>
     enter [2, x]
-    rw [basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt]
   rw [← map_sum]
   congr
   with_unfolding_all decide
 
 set_option backward.isDefEq.respectTransparency false in
-lemma dualLeftLeftUnit_eq_ofRat : δL' = ofRat fun f =>
+lemma dualLeftLeftUnit_eq_ofGaussianInt : δL' = ofGaussianInt fun f =>
     if f 0 = f 1 then 1 else 0 := by
   rw [dualLeftLeftUnit_eq_tensor_basis]
   conv_lhs =>
     enter [2, x]
-    rw [basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt]
   rw [← map_sum]
   congr
   with_unfolding_all decide
 
 set_option backward.isDefEq.respectTransparency false in
-lemma leftDualLeftUnit_eq_ofRat : δL = ofRat fun f =>
+lemma leftDualLeftUnit_eq_ofGaussianInt : δL = ofGaussianInt fun f =>
     if f 0 = f 1 then 1 else 0 := by
   rw [leftDualLeftUnit_eq_tensor_basis]
   conv_lhs =>
     enter [2, x]
-    rw [basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt]
   rw [← map_sum]
   congr
   with_unfolding_all decide
 
 set_option backward.isDefEq.respectTransparency false in
-lemma dualRightRightUnit_eq_ofRat : δR' = ofRat fun f =>
+lemma dualRightRightUnit_eq_ofGaussianInt : δR' = ofGaussianInt fun f =>
     if f 0 = f 1 then 1 else 0 := by
   rw [dualRightRightUnit_eq_tensor_basis]
   conv_lhs =>
     enter [2, x]
-    rw [basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt]
   rw [← map_sum]
   congr
   with_unfolding_all decide
 
 set_option backward.isDefEq.respectTransparency false in
-lemma rightDualRightUnit_eq_ofRat : δR = ofRat fun f =>
+lemma rightDualRightUnit_eq_ofGaussianInt : δR = ofGaussianInt fun f =>
     if f 0 = f 1 then 1 else 0 := by
   rw [rightDualRightUnit_eq_tensor_basis]
   conv_lhs =>
     enter [2, x]
-    rw [basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt]
   rw [← map_sum]
   congr
   with_unfolding_all decide

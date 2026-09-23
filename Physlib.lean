@@ -150,7 +150,6 @@ public import Physlib.Mathematics.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.OrthogonalMatrix
 public import Physlib.Mathematics.PiTensorProduct
-public import Physlib.Mathematics.RatComplexNum
 public import Physlib.Mathematics.Resolvent
 public import Physlib.Mathematics.SO3.Basic
 public import Physlib.Mathematics.SchurTriangulation
@@ -429,7 +428,7 @@ public import Physlib.Relativity.Tensors.ComplexTensor.Matrix.Pre
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Lemmas
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Pre
-public import Physlib.Relativity.Tensors.ComplexTensor.OfRat
+public import Physlib.Relativity.Tensors.ComplexTensor.OfGaussianInt
 public import Physlib.Relativity.Tensors.ComplexTensor.Units.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Units.Pre
 public import Physlib.Relativity.Tensors.ComplexTensor.Units.Symm
