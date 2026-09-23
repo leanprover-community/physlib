@@ -35,17 +35,16 @@ open Tensor
 noncomputable def ofGaussianInt {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
     ((ComponentIdx (S := complexLorentzTensor) c) → GaussianInt) →ₛₗ[GaussianInt.toComplex]
       ℂT(c) where
-  toFun f := (Tensor.basis c).repr.symm <|
-    (Finsupp.linearEquivFunOnFinite ℂ ℂ
-    ((j : Fin n) → Fin (complexLorentzTensor.repDim (c j)))).symm <|
-    (fun j => GaussianInt.toComplex (f j))
-  map_add' f f1 := by
-    apply (Tensor.basis _).repr.injective
-    ext b
+  toFun f := ofComponents c (fun b => GaussianInt.toComplex (f b))
+  map_add' f g := by
+    rw [← map_add]
+    congr 1
+    funext b
     simp
   map_smul' r f := by
-    apply (Tensor.basis _).repr.injective
-    ext b
+    rw [← LinearMap.map_smul]
+    congr 1
+    funext b
     simp
 
 @[simp]
@@ -53,6 +52,7 @@ lemma ofGaussianInt_basis_repr_apply {n : ℕ} {c : Fin n → complexLorentzTens
     (f : (ComponentIdx c) → GaussianInt)
     (b :(ComponentIdx c)) :
   (Tensor.basis c).repr (ofGaussianInt f) b = GaussianInt.toComplex (f b) := by
+  rw [← componentMap_eq_repr]
   simp [ofGaussianInt]
 
 lemma basis_eq_ofGaussianInt {n : ℕ} {c : Fin n → complexLorentzTensor.Color}
