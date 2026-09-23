@@ -30,6 +30,7 @@ and we consider them to have down indices `ψ_α` with `α = 1,2`.
 namespace Fermion
 noncomputable section
 
+
 /-- The module in which dual-left handed fermions live. This is equivalent to `Fin 2 → ℂ`. -/
 structure DualLeftHandedWeyl where
   /-- The underlying value in `Fin 2 → ℂ`. -/

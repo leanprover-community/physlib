@@ -136,6 +136,12 @@ lemma boostAxis_conjTranspose (i : Fin 3) (t : ℝ) (ht : t ≠ 0) :
     (boostAxis i t ht).1ᴴ = (boostAxis i t ht).1 := by
   fin_cases i <;> ext j k <;> fin_cases j <;> fin_cases k <;> simp [boostAxis]
 
+/-- Hermiticity read on the entries: conjugating an entry of an axis boost transposes it. -/
+lemma star_boostAxis_apply (i : Fin 3) (t : ℝ) (ht : t ≠ 0) (β α : Fin 2) :
+    star ((boostAxis i t ht).1 β α) = (boostAxis i t ht).1 α β := by
+  have h := congrFun (congrFun (boostAxis_conjTranspose i t ht) α) β
+  rwa [Matrix.conjTranspose_apply] at h
+
 /-!
 
 ## B. Axis conjugation

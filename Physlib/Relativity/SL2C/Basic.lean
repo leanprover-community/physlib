@@ -38,6 +38,29 @@ lemma inverse_coe (M : SL(2, ℂ)) : M.1⁻¹ = (M⁻¹).1 := by
   simp
 
 lemma transpose_coe (M : SL(2, ℂ)) : M.1ᵀ = (M.transpose).1 := rfl
+
+/-- Entrywise complex conjugation as a monoid endomorphism of `SL(2,ℂ)`: Mathlib's
+  `SpecialLinearGroup.map` along `starRingEnd ℂ`. -/
+abbrev conjHom : SL(2,ℂ) →* SL(2,ℂ) := SpecialLinearGroup.map (starRingEnd ℂ)
+
+lemma conjHom_coe (g : SL(2,ℂ)) : (conjHom g).1 = g.1.map star := rfl
+
+/-- Conjugation is an involution, hence surjective. -/
+lemma conjHom_involutive : Function.Involutive conjHom := by
+  intro g
+  apply Subtype.ext
+  ext i j
+  simp
+
+/-- Conjugating the group argument undoes the conjugation of the entries: the inverse
+  conjugate transpose at `conjHom g` is the inverse transpose at `g`. -/
+lemma conjHom_inv_conjTranspose (g : SL(2,ℂ)) : (((conjHom g).1)⁻¹)ᴴ = (g.1⁻¹)ᵀ := by
+  have h1 : ((conjHom g).1)⁻¹ = (g.1⁻¹).map star := by
+    rw [inverse_coe, ← map_inv, inverse_coe]
+    rfl
+  rw [h1]
+  ext i j
+  simp [Matrix.conjTranspose_apply, Matrix.map_apply]
 /-!
 
 ## Representation of SL(2, ℂ) on spacetime
@@ -179,6 +202,18 @@ lemma toLorentzGroup_eq_pauliBasis' (M : SL(2, ℂ)) :
     PauliMatrix.pauliBasis' PauliMatrix.pauliBasis' (toSelfAdjointMap M) := by
   rfl
 
+/-- **The centre of `SL(2, ℂ)` covers the identity Lorentz transformation.** The covering
+  map sandwiches, `A ↦ M A Mᴴ`, so the two signs of `-1` cancel. Together with
+  `_root_.map_one` this says that the covering map is two-to-one. -/
+lemma toLorentzGroup_neg_one : toLorentzGroup (-1) = 1 := by
+  ext1
+  have h : toSelfAdjointMap (-1) = LinearMap.id := by
+    ext1 A
+    simp [toSelfAdjointMap]
+  show toMatrix (-1) = _
+  simp only [toMatrix, MonoidHom.coe_mk, OneHom.coe_mk, h, LinearMap.toMatrix_id]
+  rfl
+
 lemma toSelfAdjointMap_basis (i : Fin 1 ⊕ Fin 3) :
     toSelfAdjointMap M (PauliMatrix.pauliBasis' i) =
     ∑ j, (toLorentzGroup M).1 j i • PauliMatrix.pauliBasis' j := by
@@ -187,6 +222,25 @@ lemma toSelfAdjointMap_basis (i : Fin 1 ⊕ Fin 3) :
   nth_rewrite 1 [← (Basis.sum_repr PauliMatrix.pauliBasis'
     ((toSelfAdjointMap M) (PauliMatrix.pauliBasis' i)))]
   rfl
+
+/-- The intertwining identity `toSelfAdjointMap_basis` read entrywise: sandwiching the
+  covariant Pauli matrix `σ_μ` between `g` and `gᴴ` mixes the covariant Pauli matrices by the
+  column `μ` of the Lorentz matrix of `g`, the summed Lorentz index first. -/
+lemma sum_pauliLower_mul_sl2c (g : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (β β' : Fin 2) :
+    ∑ p : Fin 2 × Fin 2, PauliMatrix.pauliLower μ p.1 p.2 * (g.1 β p.1 * star (g.1 β' p.2))
+      = ∑ ν : Fin 1 ⊕ Fin 3, (((toLorentzGroup g).1 ν μ : ℝ) : ℂ)
+        * PauliMatrix.pauliLower ν β β' := by
+  have h := congrArg (fun A : selfAdjoint (Matrix (Fin 2) (Fin 2) ℂ) => A.1 β β')
+    (toSelfAdjointMap_basis (M := g) μ)
+  simp only [toSelfAdjointMap_apply_coe, AddSubmonoidClass.coe_finsetSum,
+    Matrix.sum_apply, selfAdjoint.val_smul, Matrix.smul_apply, Complex.real_smul,
+    PauliMatrix.pauliBasis'_coe] at h
+  rw [← h, Matrix.mul_apply, Fintype.sum_prod_type_right]
+  refine Finset.sum_congr rfl fun p₂ _ => ?_
+  rw [Matrix.mul_apply, Finset.sum_mul]
+  exact Finset.sum_congr rfl fun p₁ _ => by
+    rw [Matrix.conjTranspose_apply]
+    ring
 
 lemma toSelfAdjointMap_pauliBasis (i : Fin 1 ⊕ Fin 3) :
     toSelfAdjointMap M (PauliMatrix.pauliBasis i) =
@@ -219,6 +273,21 @@ lemma toLorentzGroup_eq_trace (M : SL(2,ℂ)) (i j : Fin 1 ⊕ Fin 3) :
     Finset.mem_univ, ite_true] at h
   rw [h, real_smul]
   ring
+
+/-- The covering map intertwines conjugate transposition with matrix
+  transposition: `L(M†) = L(M)ᵀ`. -/
+lemma toLorentzGroup_conjTranspose {M N : SL(2,ℂ)} (hN : N.1 = M.1ᴴ) :
+    (toLorentzGroup N).1 = (toLorentzGroup M).1ᵀ := by
+  ext l i
+  refine Complex.ofReal_injective ?_
+  have h1 := toLorentzGroup_eq_trace N l i
+  have h2 := toLorentzGroup_eq_trace M i l
+  rw [hN] at h1
+  rw [Matrix.transpose_apply, h1, h2]
+  congr 1
+  rw [Matrix.conjTranspose_conjTranspose, ← Matrix.mul_assoc, ← Matrix.mul_assoc,
+    Matrix.trace_mul_cycle, ← Matrix.mul_assoc, Matrix.trace_mul_comm,
+    ← Matrix.mul_assoc]
 
 /-- The first column of the Lorentz matrix formed from an element of `SL(2, ℂ)`. -/
 lemma toLorentzGroup_fst_col (M : SL(2, ℂ)) :

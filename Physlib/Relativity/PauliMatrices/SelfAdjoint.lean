@@ -470,4 +470,28 @@ lemma pauliBasis_minkowskiMetric_pauliBasis' (i : Fin 1 ⊕ Fin 3) :
     simp [pauliSelfAdjoint', pauliSelfAdjoint, pauliBasis, pauliBasis',
       minkowskiMatrix.inr_i_inr_i, Subtype.ext_iff, NegMemClass.coe_neg, neg_neg]
 
+/-! ### The covariant Pauli matrices as plain matrices -/
+
+/-- The Pauli matrices with the vector index lowered by the Minkowski metric,
+  `σ_μ = η_{μμ} σ^μ`, as plain matrices: the underlying matrices of `pauliSelfAdjoint'`. -/
+def pauliLower (μ : Fin 1 ⊕ Fin 3) : Matrix (Fin 2) (Fin 2) ℂ := (pauliSelfAdjoint' μ).1
+
+/-- The covariant Pauli matrices are the underlying matrices of the basis `pauliBasis'`. -/
+lemma pauliBasis'_coe (μ : Fin 1 ⊕ Fin 3) : (pauliBasis' μ).1 = pauliLower μ := by
+  rw [pauliBasis', Basis.coe_mk, pauliLower]
+
+/-- Lowering the vector index multiplies by the diagonal entry of the metric. -/
+lemma pauliLower_eq_smul (μ : Fin 1 ⊕ Fin 3) :
+    pauliLower μ = ((minkowskiMatrixZ μ μ : ℤ) : ℂ) • pauliMatrix μ := by
+  rcases μ with μ | μ <;> fin_cases μ <;> simp [pauliLower, pauliSelfAdjoint', minkowskiMatrixZ]
+
+/-- The Fierz completeness relation: the covariant Pauli matrices span the `2 × 2` matrices,
+  with the trace pairing as the duality and normalisation `2`. -/
+lemma sum_pauliLower_mul_pauliLower (α α' β β' : Fin 2) :
+    ∑ ρ : Fin 1 ⊕ Fin 3, pauliLower ρ β' β * pauliLower ρ α α'
+      = 2 * ((if α = β then 1 else 0) * (if α' = β' then 1 else 0)) := by
+  fin_cases α <;> fin_cases α' <;> fin_cases β <;> fin_cases β' <;>
+    simp [pauliLower, pauliSelfAdjoint', pauliMatrix, Fintype.sum_sum_type, Fin.sum_univ_three] <;>
+    norm_num [Complex.ext_iff]
+
 end PauliMatrix

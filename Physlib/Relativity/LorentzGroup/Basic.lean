@@ -471,6 +471,27 @@ lemma toComplex_transpose_mul_minkowskiMatrix_mul_self (Λ : LorentzGroup d) :
   · simp only [Matrix.map_mul]
   simp only [transpose_mul_minkowskiMatrix_mul_self]
 
+/-- The defining relation `Λ η Λᵀ = η` over `ℂ`, read on the entry `(a, b)` and with the
+  integer Minkowski matrix in place of `minkowskiMatrix`. This is the form the invariant
+  classifications contract against, one metric pairing per pair of slots. -/
+lemma sum_minkowskiMatrixZ_mul (Λ : LorentzGroup d) (a b : Fin 1 ⊕ Fin d) :
+    ∑ x : Fin 1 ⊕ Fin d, ∑ y : Fin 1 ⊕ Fin d, ((minkowskiMatrixZ x y : ℤ) : ℂ)
+        * (((Λ.1 a x : ℝ) : ℂ) * ((Λ.1 b y : ℝ) : ℂ))
+      = ((minkowskiMatrixZ a b : ℤ) : ℂ) := by
+  have hR : ∑ x : Fin 1 ⊕ Fin d, ∑ y : Fin 1 ⊕ Fin d,
+      ((minkowskiMatrixZ x y : ℤ) : ℝ) * (Λ.1 a x * Λ.1 b y)
+        = ((minkowskiMatrixZ a b : ℤ) : ℝ) := by
+    have h := congrFun (congrFun
+      (mul_minkowskiMatrix_mul_transpose (Λ := Λ)) a) b
+    simp only [Matrix.mul_apply, Matrix.transpose_apply] at h
+    rw [minkowskiMatrixZ.cast_apply, ← h, Finset.sum_comm]
+    refine Finset.sum_congr rfl fun y _ => ?_
+    rw [Finset.sum_mul]
+    exact Finset.sum_congr rfl fun x _ => by rw [minkowskiMatrixZ.cast_apply]; ring
+  have hC := congrArg (fun r : ℝ => (r : ℂ)) hR
+  push_cast at hC ⊢
+  exact hC
+
 lemma toComplex_mulVec_ofReal (v : Fin 1 ⊕ Fin d → ℝ) (Λ : LorentzGroup d) :
     toComplex Λ *ᵥ (ofRealHom ∘ v) = ofRealHom ∘ (Λ *ᵥ v) := by
   simp only [toComplex, MonoidHom.coe_mk, OneHom.coe_mk]
