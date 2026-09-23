@@ -141,7 +141,19 @@ Requirements:
     done: true
     location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumOperator, angularMomentumOperator_domain_eq, angularMomentumOperator_apply, angularMomentumOperator_apply_ae, angularMomentumOperator_range, angularMomentumOperator_hasDenseDomain, angularMomentumCLM_eq_momentum_position, angularMomentumOperator_isSymmetric, angularMomentumOperator_isUnbounded)"
 
-  - description: "The API shall extend angular momentum from its Schwartz domain to self-adjoint operators on the Hilbert space, with their spectra, the raising and lowering operators, the eigenvalues ℏ² l (l + 1) of 𝐋² and ℏ m of a chosen component, and the spherical harmonics as the corresponding eigenfunctions."
+  - description: "Angular momentum squared is lifted to the Hilbert space with invariant dense Schwartz domain, agrees with the half-sum of component squares, and is symmetric and closable."
+    done: true
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum.lean (angularMomentumSqOperator, angularMomentumSqOperator_apply, angularMomentumSqOperator_apply_ae, angularMomentumSqOperator_range, angularMomentumSqOperator_apply_eq_sum, angularMomentumSqOperator_hasDenseDomain, angularMomentumSqr_inner, angularMomentumSqOperator_isSymmetric, angularMomentumSqOperator_isUnbounded)"
+
+  - description: "The right-handed Cartesian components in three dimensions act on the invariant Schwartz domain, satisfy the Levi-Civita and cyclic commutation relations, and their three squares sum to angular momentum squared."
+    done: true
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum/ThreeDimensional.lean (angularMomentum3DOperator, angularMomentum3DOperator_isSymmetric, angularMomentumOperatorSqr_eq_sum_3D, angularMomentumSqOperator_apply_eq_sum_3D, angularMomentum3D_commutation, angularMomentum3D_commutation_xy, angularMomentum3D_commutation_yz, angularMomentum3D_commutation_zx, angularMomentum3DOperator_commutation, angularMomentumSqOperator_commutation_3D)"
+
+  - description: "Angular momentum ladder operators L± = Lx ± i Ly are defined on Schwartz maps and lifted to the Hilbert space with invariant dense Schwartz domain, where [Lz, L±] = ±ℏ L± and [L², L±] = 0."
+    done: true
+    location: "Physlib/QuantumMechanics/Operators/AngularMomentum/ThreeDimensional.lean (angularMomentumRaisingCLM, angularMomentumLoweringCLM, angularMomentumRaisingOperator, angularMomentumLoweringOperator, angularMomentumZ_commutation_raising, angularMomentumZ_commutation_lowering, angularMomentumSqr_commutation_raising, angularMomentumSqr_commutation_lowering, angularMomentumZOperator_commutation_raising, angularMomentumZOperator_commutation_lowering, angularMomentumSqOperator_commutation_raising, angularMomentumSqOperator_commutation_lowering)"
+
+  - description: "The API shall extend angular momentum from its Schwartz domain to self-adjoint operators on the Hilbert space, with their spectra, the eigenvalues ℏ² l (l + 1) of 𝐋² and ℏ m of a chosen component, and the spherical harmonics as the corresponding eigenfunctions."
     done: false
     location: N/A
 
