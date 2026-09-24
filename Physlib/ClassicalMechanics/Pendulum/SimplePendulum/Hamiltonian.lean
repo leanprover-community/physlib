@@ -309,14 +309,14 @@ lemma equationOfMotion_tfae (θ : Time → EuclideanSpace ℝ (Fin 1)) (hθ : Co
   rw [← S.equationOfMotion_iff_hamiltonEqOp_eq_zero θ hθ,
     ← S.equationOfMotion_iff_scalar θ]
   rw [hamiltons_equations_varGradient, euler_lagrange_varGradient]
-  simp only [List.tfae_cons_self]
+  simp only [List.tfae_cons_of_mem, List.mem_cons_self]
   rw [← S.gradLagrangian_eq_eulerLagrangeOp θ hθ,
     ← S.equationOfMotion_iff_gradLagrangian_zero θ hθ]
-  simp only [List.tfae_cons_self]
+  simp only [List.tfae_cons_of_mem, List.mem_cons_self]
   show List.TFAE [S.EquationOfMotion θ,
     S.hamiltonEqOp (fun t => S.canonicalMomentum t (θ t) (∂ₜ θ t)) θ = 0]
   rw [← S.equationOfMotion_iff_hamiltonEqOp_eq_zero θ hθ]
-  simp only [List.tfae_cons_self, List.tfae_singleton]
+  simp only [List.tfae_cons_of_mem, List.mem_cons_self, List.tfae_singleton]
   · exact hθ
   · exact S.contDiff_lagrangian _
   · simp only [S.canonicalMomentum_eq]; fun_prop
