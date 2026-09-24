@@ -6,6 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.Operators.Commutation
+public import Physlib.Mathematics.CrossProductMatrix
 /-!
 
 # Angular momentum operator
@@ -147,12 +148,10 @@ lemma angularMomentumOperator1D_trivial : 𝐋[1] = 0 := by
 /-- The angular momentum (pseudo)scalar operator in two dimensions, `𝐋 ≔ 𝐋₀₁`. -/
 def angularMomentumOperator2D : 𝓢(Space 2, ℂ) →L[ℂ] 𝓢(Space 2, ℂ) := 𝐋 0 1
 
-/-- The angular momentum (pseudo)vector operator in three dimension, `𝐋ᵢ ≔ ½ ∑ⱼₖ εᵢⱼₖ 𝐋ⱼₖ`. -/
+/-- The angular momentum (pseudo)vector operator in three dimensions, `𝐋ᵢ ≔ ½ ∑ⱼₖ εᵢⱼₖ 𝐋ⱼₖ`.
+The transpose matches the convention of `Matrix.crossProductVee`, giving `(𝐋₁₂, 𝐋₂₀, 𝐋₀₁)`. -/
 def angularMomentumOperator3D (i : Fin 3) : 𝓢(Space 3, ℂ) →L[ℂ] 𝓢(Space 3, ℂ) :=
-  match i with
-    | 0 => 𝐋 1 2
-    | 1 => 𝐋 2 0
-    | 2 => 𝐋 0 1
+  Matrix.crossProductVee (Matrix.transpose 𝐋[3]) i
 
 /-!
 ## D. Hilbert-space angular momentum operator
