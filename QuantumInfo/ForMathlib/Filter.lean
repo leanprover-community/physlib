@@ -51,7 +51,7 @@ theorem ENNReal.tendsto_toReal_iff_of_eventually_ne_top
     (hx : x ≠ ∞) : Tendsto (fun n => (f n).toReal) fi (𝓝 x.toReal) ↔ Tendsto f fi (𝓝 x) := by
   have he₁ : f =ᶠ[fi] (fun n ↦ (f n).toNNReal) := by
     rw [EventuallyEq]
-    peel hf with h
+    filter_upwards [hf] with i h
     simp [h]
   have he₂ : (fun n ↦ (f n).toReal) = (fun n ↦ ((f n).toNNReal : ℝ≥0∞).toReal) :=
     rfl

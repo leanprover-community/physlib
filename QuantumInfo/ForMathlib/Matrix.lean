@@ -722,7 +722,8 @@ theorem PosSemidef.rsmul {n : Type*} [Fintype n] {M : Matrix n n ℂ} (hM : M.Po
   rw [Matrix.posSemidef_iff_dotProduct_mulVec] at hM ⊢
   constructor
   · exact hM.1.smul_real c
-  · peel hM.2
+  · intro x
+    have := hM.2 x
     rw [smul_mulVec, dotProduct_smul]
     positivity
 

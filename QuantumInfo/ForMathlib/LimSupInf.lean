@@ -186,7 +186,7 @@ lemma exists_liminf_zero_of_forall_liminf_le_with_UB (y : ℝ≥0) (f : ℝ≥0 
   · beta_reduce
     rwa [Filter.liminf_congr]
     have h := hg₁.eventually (gt_mem_nhds <| half_pos hz)
-    peel h with h
+    filter_upwards [h] with n h
     rw [min_eq_left h.le]
 
 /- (∀ x, x > 0 → liminf (n ↦ f x n) ≤ y) →
