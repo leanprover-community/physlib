@@ -490,10 +490,8 @@ lemma eq_neg_curl_of_div_zero (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : C
     rw [fderiv_comp _ (by fun_prop) (by fun_prop), fderiv_comp _ (by fun_prop) (by fun_prop),
       fderiv_fun_smul (by fun_prop) (by fun_prop)]
     simp only [Function.comp_apply, ContinuousLinearMap.fderiv, fderiv_fun_const, Pi.zero_apply,
-      fderiv_fun_id, ContinuousLinearMap.coe_comp, _root_.add_apply,
-      FunLike.coe_smul, Pi.smul_apply, _root_.zero_apply, smul_zero,
-      ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.coe_id', id_eq, one_smul, zero_add,
-      PiLp.proj_apply]
+      fderiv_fun_id, ContinuousLinearMap.coe_comp, smul_zero, ContinuousLinearMap.smulRight_apply,
+      ContinuousLinearMap.coe_id', id_eq, one_smul, zero_add, PiLp.proj_apply]
   have hi (x : Space) (i : Fin 3) : ∫ (t : ℝ) in 0..1, (t * f (t • x) i * 2) -
         t * (- fderiv ℝ f (t • x) (t • x)) i ∂(volume) = f x i := by
     trans ∫ (t : ℝ) in 0..1, fderiv ℝ (fun t => t ^ 2 * f (t • x) i) t 1 ∂(volume)
