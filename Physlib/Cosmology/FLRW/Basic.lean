@@ -103,7 +103,11 @@ def FLRW : Type := sorry
 
 TODO "Replace the placeholder `FLRW` type with a concrete structure bundling a positive
   scale factor `a : Time → ℝ` (smooth, or at least twice differentiable) together with an
-  element of `SpatialGeometry`."
+  element of `SpatialGeometry`. If the structure also bundles the dynamics, it should carry the
+  first- and second-order Friedmann equations as fields and obtain the continuity equation as a
+  lemma through `FriedmannEquation.continuityEquation_of_friedmann`, never the other way round:
+  where `∂ₜ a = 0` the first-order and continuity equations leave the pressure unconstrained,
+  whereas the second-order equation fixes `ρ + 3 p / c²` (the Einstein static universe)."
 
 namespace FLRW
 
