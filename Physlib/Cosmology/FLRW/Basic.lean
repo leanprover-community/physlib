@@ -103,7 +103,11 @@ def FLRW : Type := sorry
 
 TODO "Replace the placeholder `FLRW` type with a concrete structure bundling a positive
   scale factor `a : Time → ℝ` (smooth, or at least twice differentiable) together with an
-  element of `SpatialGeometry`."
+  element of `SpatialGeometry`. If the structure also bundles the dynamics, it should carry the
+  first- and second-order Friedmann equations as fields and obtain the continuity equation as a
+  lemma through `FriedmannEquation.continuityEquation_of_friedmann`, never the other way round:
+  where `∂ₜ a = 0` the first-order and continuity equations leave the pressure unconstrained,
+  whereas the second-order equation fixes `ρ + 3 p / c²` (the Einstein static universe)."
 
 namespace FLRW
 
@@ -176,9 +180,6 @@ TODO "Define the Hubble constant `H₀ = H(t₀)`, the present-day value of the 
 TODO "Express the Hubble parameter as a function of the scale factor, `H(a)`, and of the
   redshift, `H(z)`, using `a = 1 / (1 + z)` with the normalization `a₀ = 1`; define the
   reduced Hubble function `E(z) = H(z) / H₀`."
-
-TODO "Prove the change-of-variable relations underlying the age and distance integrals:
-  `∂ₜ a = a * hubbleConstant a`, `dt = − dz / ((1 + z) * H)` and `dχ = c * dz / H`."
 
 /-- The deceleration parameter defined in terms of the scale factor
   as `- (dₜdₜ a) a / (dₜ a)^2`.
