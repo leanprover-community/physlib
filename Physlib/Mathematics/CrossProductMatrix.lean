@@ -16,6 +16,8 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 The hat map sends a vector `ω : Fin 3 → ℝ` to the skew-symmetric matrix `[ω]ₓ` characterised by
 `[ω]ₓ *ᵥ v = ω ⨯₃ v`. It realises the correspondence between `ℝ³` and the skew-symmetric `3 × 3`
 matrices (the Lie algebra `𝖘𝖔(3)`), and underlies the angular velocity of a rigid body.
+The vee map only selects matrix entries and is defined for arbitrary coefficient types,
+including operator-valued matrices.
 
 -/
 
@@ -43,8 +45,10 @@ lemma crossProductMatrix_transpose (ω : Fin 3 → ℝ) :
   ext i j
   fin_cases i <;> fin_cases j <;> simp [crossProductMatrix]
 
-/-- The vee map: reads the vector off a `3 × 3` matrix. It is a left inverse of the hat map. -/
-def crossProductVee (A : Matrix (Fin 3) (Fin 3) ℝ) : Fin 3 → ℝ := ![A 2 1, A 0 2, A 1 0]
+/-- The vee map: reads the vector off a `3 × 3` matrix with arbitrary coefficients.
+For real coefficients, it is a left inverse of the hat map. -/
+def crossProductVee {α : Type*} (A : Matrix (Fin 3) (Fin 3) α) : Fin 3 → α :=
+  ![A 2 1, A 0 2, A 1 0]
 
 /-- The vee map is a left inverse of the hat map. -/
 @[simp]

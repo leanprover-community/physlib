@@ -6,6 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.Operators.Commutation
+public import Physlib.Mathematics.CrossProductMatrix
 /-!
 
 # Angular momentum operator
@@ -27,9 +28,11 @@ Definitions:
 - `angularMomentumOperator3D` : the (pseudo)vector angular momentum operator for `d = 3`.
 - `angularMomentumOperator` : each component as a partially defined operator on
     `SpaceDHilbertSpace d`, preserving the dense Schwartz submodule.
+- `angularMomentumSqOperator` : angular momentum squared on the same Schwartz domain.
 
 Lemmas:
 - `angularMomentumOperator_isSymmetric` : angular momentum is symmetric on the Schwartz domain.
+- `angularMomentumSqOperator_isSymmetric` : its sum of component squares is also symmetric.
 - `angularMomentum_commutation_angularMomentum` : angular momenta generate an `𝔰𝔬(d)` algebra.
 
 Notation:
@@ -43,6 +46,7 @@ Notation:
 - B. Angular momentum squared operator
 - C. Special cases in low dimensions
 - D. Hilbert-space angular momentum operator
+  - D.1. Angular momentum squared on the Hilbert space
 - E. Commutation relations
   - E.1. Angular momentum / position
   - E.2. Angular momentum / momentum
@@ -144,18 +148,17 @@ lemma angularMomentumOperator1D_trivial : 𝐋[1] = 0 := by
 /-- The angular momentum (pseudo)scalar operator in two dimensions, `𝐋 ≔ 𝐋₀₁`. -/
 def angularMomentumOperator2D : 𝓢(Space 2, ℂ) →L[ℂ] 𝓢(Space 2, ℂ) := 𝐋 0 1
 
-/-- The angular momentum (pseudo)vector operator in three dimension, `𝐋ᵢ ≔ ½ ∑ⱼₖ εᵢⱼₖ 𝐋ⱼₖ`. -/
+/-- The angular momentum (pseudo)vector operator in three dimensions, `𝐋ᵢ ≔ ½ ∑ⱼₖ εᵢⱼₖ 𝐋ⱼₖ`.
+The transpose matches the convention of `Matrix.crossProductVee`, giving `(𝐋₁₂, 𝐋₂₀, 𝐋₀₁)`. -/
 def angularMomentumOperator3D (i : Fin 3) : 𝓢(Space 3, ℂ) →L[ℂ] 𝓢(Space 3, ℂ) :=
-  match i with
-    | 0 => 𝐋 1 2
-    | 1 => 𝐋 2 0
-    | 2 => 𝐋 0 1
+  Matrix.crossProductVee (Matrix.transpose 𝐋[3]) i
 
 /-!
 ## D. Hilbert-space angular momentum operator
 -/
 
 open MeasureTheory SpaceDHilbertSpace SchwartzSubmodule
+open scoped InnerProductSpace
 
 variable {d : ℕ} (i j : Fin d)
 
@@ -206,6 +209,88 @@ lemma angularMomentumOperator_isUnbounded :
     (angularMomentumOperator i j).IsUnbounded :=
   (angularMomentumOperator_isSymmetric i j).isUnbounded_iff_hasDenseDomain.mpr
     (angularMomentumOperator_hasDenseDomain i j)
+
+/-- The component symmetry identity, expressed directly on Schwartz maps. -/
+lemma angularMomentumCLM_inner (f g : 𝓢(Space d, ℂ)) :
+    ⟪(schwartzEquiv volume (𝐋 i j f) : SpaceDHilbertSpace d), schwartzEquiv volume g⟫_ℂ =
+      ⟪(schwartzEquiv volume f : SpaceDHilbertSpace d), schwartzEquiv volume (𝐋 i j g)⟫_ℂ := by
+  simpa only [angularMomentumOperator_apply, LinearEquiv.symm_apply_apply] using
+    angularMomentumOperator_isSymmetric i j (schwartzEquiv volume f) (schwartzEquiv volume g)
+
+/-!
+### D.1. Angular momentum squared on the Hilbert space
+-/
+
+/-- Angular momentum squared on the Hilbert space, with the invariant Schwartz domain.
+This transports the existing Schwartz operator `𝐋²`, including its factor `1/2`. -/
+def angularMomentumSqOperator : SpaceDHilbertSpace d →ₗ.[ℂ] SpaceDHilbertSpace d where
+  domain := SchwartzSubmodule d
+  toFun := (schwartzIncl volume).1 ∘ₗ (𝐋²).1 ∘ₗ (schwartzEquiv volume).symm.1
+
+@[inherit_doc QuantumMechanics.angularMomentumSqOperator]
+scoped[AngularMomentum] notation "𝓛²" => QuantumMechanics.angularMomentumSqOperator
+
+lemma angularMomentumSqOperator_domain_eq :
+    (angularMomentumSqOperator (d := d)).domain = SchwartzSubmodule d := rfl
+
+lemma angularMomentumSqOperator_apply (ψ : SchwartzSubmodule d) :
+    angularMomentumSqOperator ψ =
+      schwartzEquiv volume (𝐋² ((schwartzEquiv volume).symm ψ)) := rfl
+
+lemma angularMomentumSqOperator_apply_ae (ψ : SchwartzSubmodule d) :
+    angularMomentumSqOperator ψ =ᵐ[volume] 𝐋² ((schwartzEquiv volume).symm ψ) :=
+  schwartzEquiv_coe_ae _
+
+lemma angularMomentumSqOperator_range (ψ : SchwartzSubmodule d) :
+    angularMomentumSqOperator ψ ∈ SchwartzSubmodule d := by
+  simp [angularMomentumSqOperator_apply]
+
+/-- The squared operator is the sum of squares of Hilbert-space components on their
+common invariant domain. The inner applications land in Schwartz by `angularMomentumOperator_range`.
+-/
+lemma angularMomentumSqOperator_apply_eq_sum (ψ : SchwartzSubmodule d) :
+    angularMomentumSqOperator ψ = (2 : ℂ)⁻¹ • ∑ i, ∑ j,
+      angularMomentumOperator i j
+        ⟨angularMomentumOperator i j ψ, angularMomentumOperator_range i j ψ⟩ := by
+  obtain ⟨f, rfl⟩ := (schwartzEquiv volume).surjective ψ
+  simp only [angularMomentumSqOperator_apply, angularMomentumOperator_apply,
+    LinearEquiv.symm_apply_apply, angularMomentumOperatorSqr_apply_fun,
+    map_smul, map_sum, Submodule.coe_sum, Submodule.coe_smul]
+  congr 1
+  apply Finset.sum_congr rfl
+  intro i _
+  apply Finset.sum_congr rfl
+  intro j _
+  change _ = schwartzIncl volume
+    (𝐋 i j ((schwartzEquiv volume).symm (schwartzEquiv volume (𝐋 i j f))))
+  rw [LinearEquiv.symm_apply_apply]
+  rfl
+
+lemma angularMomentumSqOperator_hasDenseDomain :
+    (angularMomentumSqOperator (d := d)).HasDenseDomain := SchwartzSubmodule.dense d _
+
+/-- Symmetry of `𝐋²` follows by moving each component across the inner product twice. -/
+lemma angularMomentumSqr_inner (f g : 𝓢(Space d, ℂ)) :
+    ⟪(schwartzEquiv volume (𝐋² f) : SpaceDHilbertSpace d), schwartzEquiv volume g⟫_ℂ =
+      ⟪(schwartzEquiv volume f : SpaceDHilbertSpace d), schwartzEquiv volume (𝐋² g)⟫_ℂ := by
+  simp only [angularMomentumOperatorSqr_apply_fun, map_smul, map_sum,
+    Submodule.coe_smul, Submodule.coe_sum, inner_smul_left, inner_smul_right,
+    sum_inner, inner_sum, angularMomentumCLM_inner, map_inv₀, map_ofNat]
+
+/-- Angular momentum squared is symmetric on the Schwartz domain. -/
+lemma angularMomentumSqOperator_isSymmetric :
+    (angularMomentumSqOperator (d := d)).IsSymmetric := by
+  intro ψ φ
+  obtain ⟨f, rfl⟩ := (schwartzEquiv volume).surjective ψ
+  obtain ⟨g, rfl⟩ := (schwartzEquiv volume).surjective φ
+  simpa only [angularMomentumSqOperator_apply, LinearEquiv.symm_apply_apply] using
+    angularMomentumSqr_inner f g
+
+/-- In Physlib terminology, the squared operator is densely defined and closable. -/
+lemma angularMomentumSqOperator_isUnbounded :
+    (angularMomentumSqOperator (d := d)).IsUnbounded :=
+  angularMomentumSqOperator_isSymmetric.isUnbounded_iff_hasDenseDomain.mpr
+    angularMomentumSqOperator_hasDenseDomain
 
 /-!
 ## E. Commutation relations
