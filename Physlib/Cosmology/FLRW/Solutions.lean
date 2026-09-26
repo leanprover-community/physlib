@@ -108,7 +108,7 @@ lemma deriv_deSitterScaleFactor (a₀ σ Λ c : ℝ) :
     refine h.congr_deriv ?_
     simp only [id_eq]
     ring
-  exact deriv_comp_val h
+  exact deriv_eq_of_hasDerivAt h
 
 lemma deriv_deriv_deSitterScaleFactor (a₀ σ Λ c : ℝ) :
     ∂ₜ (∂ₜ (deSitterScaleFactor a₀ σ Λ c)) =
@@ -124,7 +124,7 @@ lemma deriv_deriv_deSitterScaleFactor (a₀ σ Λ c : ℝ) :
     refine h.congr_deriv ?_
     simp only [id_eq]
     ring
-  exact deriv_comp_val h
+  exact deriv_eq_of_hasDerivAt h
 
 /-- `σ² (√(Λ/3))² c² = Λ c² / 3` for `σ = ±1` and `0 ≤ Λ`. -/
 lemma sq_deSitterRate {σ Λ c : ℝ} (hΛ : 0 ≤ Λ) (hσ : σ = 1 ∨ σ = -1) :
@@ -233,7 +233,7 @@ lemma deriv_powerLaw {t₀ : Time} (ht₀ : t₀.val ≠ 0) (n : ℝ) {t : Time}
     refine h.congr_deriv ?_
     simp only [id_eq]
     ring
-  exact deriv_comp_val h
+  exact deriv_eq_of_hasDerivAt h
 
 /-- `∂ₜ ∂ₜ (t / t₀) ^ n = n (n - 1) / t₀² (t / t₀) ^ (n - 2)` for `0 < t.val`. The first
   derivative is only known away from `t.val = 0`, which is enough since `0 < t.val` is an open
@@ -441,12 +441,12 @@ noncomputable def milneScaleFactor (c : ℝ) : Time → ℝ :=
 
 lemma deriv_milneScaleFactor (c : ℝ) : ∂ₜ (milneScaleFactor c) = fun _ => c := by
   funext t
-  exact deriv_comp_val (((hasDerivAt_id t.val).const_mul c).congr_deriv (mul_one c))
+  exact deriv_eq_of_hasDerivAt (((hasDerivAt_id t.val).const_mul c).congr_deriv (mul_one c))
 
 lemma deriv_deriv_milneScaleFactor (c : ℝ) : ∂ₜ (∂ₜ (milneScaleFactor c)) = fun _ => 0 := by
   rw [deriv_milneScaleFactor]
   funext t
-  exact deriv_comp_val (γ := fun _ => c) (hasDerivAt_const t.val c)
+  exact deriv_eq_of_hasDerivAt (f := fun _ => c) (hasDerivAt_const t.val c)
 
 /-- The Milne solution solves the first-order Friedmann equation with `ρ = 0`, `k = -1` and
   `Λ = 0`, for `t > 0`. -/
