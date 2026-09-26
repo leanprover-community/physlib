@@ -85,9 +85,11 @@ def main (args : List String) : IO UInt32 := do
   let skipMathlib := args.contains "--no-mathlib"
   let skipAlpha := args.contains "--no-alpha"
 
+  let mut mathlibOk := true
   if !skipMathlib then
     say "Fetching Mathlib's prebuilt files ..."
-    unless ← runStreamed "lake" #["exe", "cache", "get"] do
+    mathlibOk ← runStreamed "lake" #["exe", "cache", "get"]
+    unless mathlibOk do
       say "  could not fetch Mathlib's cache -- continuing anyway."
       say "  ('lake build' may then have to compile Mathlib, which is slow.)"
     say ""
@@ -109,10 +111,18 @@ def main (args : List String) : IO UInt32 := do
       say "  could not fetch PhyslibAlpha's cache -- continuing anyway."
       say "  ('lake build PhyslibAlpha' would then compile it from source.)"
 
-  if ok then
+  -- Repeated here because the failure itself scrolls away above Physlib's output.
+  unless mathlibOk do
+    say ""
+    say "Could not fetch Mathlib's cache (see the errors near the top), so 'lake build'"
+    say "would compile Mathlib from source, which takes hours."
+    say "If the errors say access denied (os error 5), old build files could not be"
+    say "overwritten, typically after a toolchain bump. Close your editor (its Lean server"
+    say "locks them), delete the folders .lake/packages/*/.lake/build, and run this again."
+  if ok && mathlibOk then
     say ""
     say "Done. Now run: lake build"
-  else
+  else if !ok then
     say ""
     say "Could not fetch Physlib's cache. This is not a fatal error -- run 'lake build'"
     say "as usual, it will just take longer, compiling the whole project from source."
