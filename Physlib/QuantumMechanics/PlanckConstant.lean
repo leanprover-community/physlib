@@ -58,4 +58,7 @@ lemma h_nonneg : 0 ≤ (h : ℝ) := le_of_lt h.2
 @[simp]
 lemma h_ne_zero : (h : ℝ) ≠ 0 := ne_of_gt h.2
 
+/-- Planck's constant is `2 π` times the reduced Planck's constant. -/
+lemma h_eq_two_pi_hbar : (h : ℝ) = 2 * Real.pi * (ℏ : ℝ) := rfl
+
 end Constants
