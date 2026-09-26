@@ -50,6 +50,7 @@ public import PhyslibAlpha.Mathematics.LadderSystem.Irreducibility
 public import PhyslibAlpha.Mathematics.LadderSystem.OccupationBasis
 public import PhyslibAlpha.Mathematics.LadderSystem.SymmetricPower
 public import PhyslibAlpha.ClassicalMechanics.CoupledSpringPotential
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.ChargeBalance
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.EffectivePotential
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.GaugeSlice
