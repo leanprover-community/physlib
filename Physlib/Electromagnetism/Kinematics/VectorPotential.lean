@@ -279,23 +279,6 @@ lemma vectorPotential_apply_contDiff {n} {d} {c : SpeedOfLight} (A : Electromagn
   · exact ContinuousLinearMap.contDiff (𝕜 := ℝ) (n := n) (EuclideanSpace.proj i)
   · exact vectorPotential_contDiff A hA
 
-@[fun_prop]
-lemma vectorPotential_contDiff_space {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ n A) (t : Time) : ContDiff ℝ n (A.vectorPotential c t) := by
-  fun_prop
-
-@[fun_prop]
-lemma vectorPotential_apply_contDiff_space {n} {d} {c : SpeedOfLight}
-    (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ n A) (t : Time) (i : Fin d) :
-    ContDiff ℝ n (fun x => A.vectorPotential c t x i) := by
-  fun_prop
-
-@[fun_prop]
-lemma vectorPotential_contDiff_time {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ n A) (x : Space d) : ContDiff ℝ n (A.vectorPotential c · x) := by
-  fun_prop
-
 /-!
 
 ## C. Differentiablity of the vector potential

@@ -314,12 +314,6 @@ lemma magneticFieldMatrix_space_contDiff {n} {c : SpeedOfLight} (A : Electromagn
     ContDiff ℝ n (fun x => A.magneticFieldMatrix c t x ij) := by
   fun_prop
 
-@[fun_prop]
-lemma magneticFieldMatrix_time_contDiff {n} {c : SpeedOfLight} (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ (n + 1) A) (x : Space d) (ij) :
-    ContDiff ℝ n (fun t => A.magneticFieldMatrix c t x ij) := by
-  fun_prop
-
 /-!
 
 ### C.5. Differentiablity of the magnetic field matrix
@@ -330,18 +324,6 @@ lemma magneticFieldMatrix_time_contDiff {n} {c : SpeedOfLight} (A : Electromagne
 lemma magneticFieldMatrix_differentiable {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ 2 A) (ij) : Differentiable ℝ ↿(fun t x => A.magneticFieldMatrix c t x ij) := by
   exact (toFieldStrength_eval_differentiable hA).comp (toTimeAndSpace c).symm.differentiable
-
-@[fun_prop]
-lemma magneticFieldMatrix_differentiable_space {c : SpeedOfLight} (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ 2 A) (t : Time) (ij) :
-    Differentiable ℝ (fun x => A.magneticFieldMatrix c t x ij) := by
-  fun_prop
-
-@[fun_prop]
-lemma magneticFieldMatrix_differentiable_time {c : SpeedOfLight} (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ 2 A) (x : Space d) (ij) :
-    Differentiable ℝ (fun t => A.magneticFieldMatrix c t x ij) := by
-  fun_prop
 
 /-!
 
@@ -364,9 +346,9 @@ lemma magneticFieldMatrix_space_deriv_eq {c : SpeedOfLight} (A : Electromagnetic
     enter [2, 2, x]
     rw [magneticFieldMatrix_eq_vectorPotential A (hA.differentiable (by simp)) t x]
   rw [fun_deriv_sub, fun_deriv_sub, fun_deriv_sub]
-  rw [Space.deriv_commute _ (vectorPotential_apply_contDiff_space _ hA _ i),
-      Space.deriv_commute _ (vectorPotential_apply_contDiff_space _ hA _ j),
-      Space.deriv_commute _ (vectorPotential_apply_contDiff_space _ hA _ k)]
+  rw [Space.deriv_commute (fun x => A.vectorPotential c t x i) (by fun_prop),
+      Space.deriv_commute (fun x => A.vectorPotential c t x j) (by fun_prop),
+      Space.deriv_commute (fun x => A.vectorPotential c t x k) (by fun_prop)]
   ring
   all_goals fun_prop
 
@@ -396,7 +378,7 @@ lemma time_deriv_magneticFieldMatrix {d : ℕ} {c : SpeedOfLight} (A : Electroma
     _ = ∂[i] (A.electricField c t · j) x - ∂[j] (A.electricField c t · i) x := by
       have hφ : ContDiff ℝ 2 (A.scalarPotential c t) := by fun_prop
       have hd1 (k : Fin d) : DifferentiableAt ℝ (fun x => -(A.electricField c t x) k) x := by
-        fun_prop
+        apply Differentiable.differentiableAt; fun_prop
       have hd2 (k : Fin d) : DifferentiableAt ℝ (∂[k] (A.scalarPotential c t)) x := by fun_prop
       conv_lhs =>
         enter [1, 2, x]

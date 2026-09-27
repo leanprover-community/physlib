@@ -206,21 +206,10 @@ lemma electricField_contDiff {n} {c : SpeedOfLight} {A : ElectromagneticPotentia
     (ContinuousLinearEquiv.contDiff (toTimeAndSpace c).symm)
 
 @[fun_prop]
-lemma electricField_apply_contDiff {n} {c : SpeedOfLight} {A : ElectromagneticPotential d}
-    (hA : ContDiff ℝ (n + 1) A) : ContDiff ℝ n (↿(fun t x => A.electricField c t x i)) := by
-  fun_prop
-
-@[fun_prop]
 lemma electricField_apply_contDiff_space {n} {A : ElectromagneticPotential d}
     {c : SpeedOfLight}
     (hA : ContDiff ℝ (n + 1) A) (t : Time) :
     ContDiff ℝ n (fun x => A.electricField c t x i) := by
-  fun_prop
-
-@[fun_prop]
-lemma electricField_apply_contDiff_time {n} {c : SpeedOfLight} {A : ElectromagneticPotential d}
-    (hA : ContDiff ℝ (n + 1) A) (x : Space d) :
-    ContDiff ℝ n (fun t => A.electricField c t x i) := by
   fun_prop
 
 /-!
@@ -230,39 +219,8 @@ lemma electricField_apply_contDiff_time {n} {c : SpeedOfLight} {A : Electromagne
 -/
 
 @[fun_prop]
-lemma electricField_differentiable {A : ElectromagneticPotential d} {c : SpeedOfLight}
-    (hA : ContDiff ℝ 2 A) : Differentiable ℝ (↿(A.electricField c)) := by
-  fun_prop
-
-@[fun_prop]
 lemma electricField_differentiable_time {A : ElectromagneticPotential d} {c : SpeedOfLight}
     (hA : ContDiff ℝ 2 A) (x : Space d) : Differentiable ℝ (A.electricField c · x) := by
-  fun_prop
-
-@[fun_prop]
-lemma electricField_differentiable_space {A : ElectromagneticPotential d} {c : SpeedOfLight}
-    (hA : ContDiff ℝ 2 A) (t : Time) : Differentiable ℝ (A.electricField c t) := by
-  fun_prop
-
-@[fun_prop]
-lemma electricField_apply_differentiable {A : ElectromagneticPotential d}
-    {c : SpeedOfLight}
-    (hA : ContDiff ℝ 2 A) :
-    Differentiable ℝ (fun (tx : Time × Space d) => A.electricField c tx.1 tx.2 i) := by
-  fun_prop
-
-@[fun_prop]
-lemma electricField_apply_differentiable_space {A : ElectromagneticPotential d}
-    {c : SpeedOfLight}
-    (hA : ContDiff ℝ 2 A) (t : Time) (i : Fin d) :
-    Differentiable ℝ (fun x => A.electricField c t x i) := by
-  fun_prop
-
-@[fun_prop]
-lemma electricField_apply_differentiable_time {A : ElectromagneticPotential d}
-    {c : SpeedOfLight}
-    (hA : ContDiff ℝ 2 A) (x : Space d) (i : Fin d) :
-    Differentiable ℝ (fun t => A.electricField c t x i) := by
   fun_prop
 
 /-!

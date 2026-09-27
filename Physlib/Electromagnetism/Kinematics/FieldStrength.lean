@@ -324,12 +324,6 @@ lemma toFieldStrength_eval_contDiff {d} {n : WithTop ℕ∞} {A : Electromagneti
   simp only [toFieldStrength_eval_apply_eq_single]
   fun_prop
 
-@[fun_prop]
-lemma toFieldStrength_eval_smooth {d} {A : ElectromagneticPotential d}
-    (hA : ContDiff ℝ ∞ A) (μ ν : Fin 1 ⊕ Fin d) :
-    ContDiff ℝ ∞ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
-  fun_prop
-
 /-!
 
 ### A.6. The antisymmetry of the field strength tensor
