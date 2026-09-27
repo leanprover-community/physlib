@@ -261,13 +261,6 @@ lemma vectorPotential_apply_contDiff {n} {d} {c : SpeedOfLight} (A : Electromagn
   · exact ContinuousLinearMap.contDiff (𝕜 := ℝ) (n := n) (EuclideanSpace.proj i)
   · exact vectorPotential_contDiff A hA
 
-lemma vectorPotential_comp_contDiff {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
-    (hA : ContDiff ℝ n A) (i : Fin d) : ContDiff ℝ n ↿(fun t x => A.vectorPotential c t x i) := by
-  change ContDiff ℝ n (EuclideanSpace.proj i ∘ ↿(A.vectorPotential c))
-  refine ContDiff.comp ?_ ?_
-  · exact ContinuousLinearMap.contDiff (𝕜 := ℝ) (n := n) (EuclideanSpace.proj i)
-  · exact vectorPotential_contDiff A hA
-
 lemma vectorPotential_contDiff_space {n} {d} {c : SpeedOfLight} (A : ElectromagneticPotential d)
     (hA : ContDiff ℝ n A) (t : Time) : ContDiff ℝ n (A.vectorPotential c t) := by
   change ContDiff ℝ n (↿(A.vectorPotential c) ∘ fun x => (t, x))

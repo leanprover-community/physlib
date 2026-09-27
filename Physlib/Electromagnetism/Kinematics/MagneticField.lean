@@ -405,12 +405,12 @@ lemma time_deriv_magneticFieldMatrix {d : ℕ} {c : SpeedOfLight} (A : Electroma
       all_goals
       · apply Differentiable.differentiableAt
         apply Space.space_deriv_differentiable_time
-        apply vectorPotential_comp_contDiff _ hA
+        apply vectorPotential_apply_contDiff _ hA
     _ = ∂[j] (fun x => ∂ₜ (fun t => A.vectorPotential c t x i) t) x
         - ∂[i] (fun x => ∂ₜ (fun t => A.vectorPotential c t x j) t) x := by
       rw [Space.time_deriv_comm_space_deriv _, Space.time_deriv_comm_space_deriv _]
       all_goals
-      · apply vectorPotential_comp_contDiff _ hA
+      · apply vectorPotential_apply_contDiff _ hA
     _ = ∂[i] (A.electricField c t · j) x - ∂[j] (A.electricField c t · i) x := by
       have hφ := scalarPotential_contDiff_space c A hA t
       have hd1 : ∀ k : Fin d, DifferentiableAt ℝ (fun x => -(A.electricField c t x).ofLp k) x :=
