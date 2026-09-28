@@ -56,7 +56,7 @@ jobs:
        contains(github.event.comment.body, 'Claim'))
     steps:
       - name: Check out the claim script
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           sparse-checkout: scripts/review_claim.py
           sparse-checkout-cone-mode: false
@@ -75,7 +75,7 @@ jobs:
       github.event_name == 'pull_request_review'
     steps:
       - name: Check out the claim script
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           sparse-checkout: scripts/review_claim.py
           sparse-checkout-cone-mode: false

@@ -42,7 +42,7 @@ jobs:
     steps:
       # Full history so lake can look back for a commit with a cache,
       # a shallow clone only has one so the restore below never finds anything
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -126,7 +126,7 @@ jobs:
       LAKE_CACHE_DIR: .lake/cache
     steps:
       # Full history, see the physlib job above
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 

@@ -22,12 +22,12 @@ jobs:
     if: github.repository == 'leanprover-community/physlib'
     steps:
     - name: Checkout master branch to build autolabel from
-      uses: actions/checkout@v7.0.0
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: master
         path: tools
     - name: Configure Lean
-      uses: leanprover/lean-action@v1.5.0
+      uses: leanprover/lean-action@38fbc41a8c28c4cbaec22d7f7de508ec2e7c0dd9 # v1.5.0
       with:
         auto-config: false
         use-github-cache: false
@@ -38,7 +38,7 @@ jobs:
       run: |
         lake build autolabel
     - name: Checkout branch to label
-      uses: actions/checkout@v7.0.0
+      uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
       with:
         ref: ${{ github.event.pull_request.head.sha || github.sha }}
         fetch-depth: 0

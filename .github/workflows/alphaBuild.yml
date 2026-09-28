@@ -18,7 +18,7 @@ jobs:
     steps:
 
       # Full history so lake can look back for a commit with a cache, see build.yml
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -48,7 +48,7 @@ jobs:
 
       - name: build PhyslibAlpha
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
         with:
           linters: gcc
           run: |
@@ -57,7 +57,7 @@ jobs:
       - name: runLinter on PhyslibAlpha
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
         timeout-minutes: 4
         with:
           linters: gcc
@@ -78,18 +78,18 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # Run the case checker action
       - name: Check Case Sensitivity
-        uses: credfeto/action-case-checker@v1.3.0
+        uses: credfeto/action-case-checker@cb652aeab29ed363bbdb7d9ee1bfcc010c46cac5 # v1.3.0
 
       - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@v1.1.0
+        uses: credfeto/action-no-ignored-files@0c61dc01fd498dd8fa6786f21062be4fd158c8b1 # v1.1.0
 
       - name: install Python
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: 3.8
 
