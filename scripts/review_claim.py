@@ -517,8 +517,15 @@ def handle_review(github, event):
 
 
 def expire(github):
-    """Remind about, and release, claims on every open PR carrying the label."""
-    issues = github.paginate(f'/issues?state=open&labels={CLAIM_LABEL}')
+    """
+    Remind about, complete and release claims on every PR carrying the label.
+
+    Reviews on fork PRs arrive with a read-only token, so the `review` handler cannot
+    complete those claims; this hourly run does it instead.  Closed PRs are included
+    so that a claim on a PR closed before the next run does not keep its label.
+    """
+    issues = (list(github.paginate(f'/issues?state=open&labels={CLAIM_LABEL}'))
+              + list(github.paginate(f'/issues?state=closed&labels={CLAIM_LABEL}')))
     at = now()
 
     for issue in issues:
@@ -541,6 +548,18 @@ def expire(github):
         until = parse_iso(claim['until'])
         hours_left = (until - at).total_seconds() / 3600
 
+        if has_reviewed_since(github, number, claimant, claimed_at):
+            print(f'#{number}: {claimant} has reviewed; completing the claim.')
+            # The label goes, but the assignee stays: they did the work.
+            release_claim(github, number)
+            write_status(github, number, dict(claim, state='completed'), status_comment)
+            continue
+
+        if issue['state'] == 'closed':
+            print(f'#{number}: closed without a review from {claimant}; clearing the label.')
+            release_claim(github, number)
+            continue
+
         if at < until:
             # Smallest reminder that is both due and shorter than the window: if a
             # scheduled run is skipped and we come back with 20h left, that sends
@@ -551,11 +570,6 @@ def expire(github):
             if due is None:
                 print(f'#{number}: {claimant} has {hours_left:.1f}h left, no reminder due.')
                 continue
-            if has_reviewed_since(github, number, claimant, claimed_at):
-                print(f'#{number}: {claimant} has already reviewed, '
-                      f'skipping the {due}h reminder.')
-                continue
-
             # Keyed to the deadline, so the hourly runs in between do not repeat a
             # reminder and an extension earns a fresh set.
             marker = REMINDER_MARKER.format(until=claim['until'], hours=due)
@@ -574,14 +588,7 @@ def expire(github):
             ])})
             continue
 
-        reviewed = has_reviewed_since(github, number, claimant, claimed_at)
-        print(f'#{number}: claim by {claimant} ran out; reviewed={reviewed}.')
-
-        if reviewed:
-            # The label goes, but the assignee stays: they did the work.
-            release_claim(github, number)
-            write_status(github, number, dict(claim, state='completed'), status_comment)
-            continue
+        print(f'#{number}: claim by {claimant} ran out without a review.')
 
         release_claim(github, number, claimant)
         write_status(github, number, dict(claim, state='expired'), status_comment)
