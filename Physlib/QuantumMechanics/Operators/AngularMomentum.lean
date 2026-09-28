@@ -233,9 +233,8 @@ scoped[AngularMomentum] notation "𝓛²" => QuantumMechanics.angularMomentumSqO
 lemma angularMomentumSqOperator_domain_eq :
     (angularMomentumSqOperator (d := d)).domain = SchwartzSubmodule d := rfl
 
-lemma angularMomentumSqOperator_apply (ψ : SchwartzSubmodule d) :
-    angularMomentumSqOperator ψ =
-      schwartzEquiv volume (𝐋² ((schwartzEquiv volume).symm ψ)) := rfl
+lemma angularMomentumSqOperator_apply (ψ : SchwartzSubmodule d) : angularMomentumSqOperator ψ =
+    schwartzEquiv volume (𝐋² ((schwartzEquiv volume).symm ψ)) := rfl
 
 lemma angularMomentumSqOperator_apply_ae (ψ : SchwartzSubmodule d) :
     angularMomentumSqOperator ψ =ᵐ[volume] 𝐋² ((schwartzEquiv volume).symm ψ) :=
@@ -278,8 +277,7 @@ lemma angularMomentumSqr_inner (f g : 𝓢(Space d, ℂ)) :
     sum_inner, inner_sum, angularMomentumCLM_inner, map_inv₀, map_ofNat]
 
 /-- Angular momentum squared is symmetric on the Schwartz domain. -/
-lemma angularMomentumSqOperator_isSymmetric :
-    (angularMomentumSqOperator (d := d)).IsSymmetric := by
+lemma angularMomentumSqOperator_isSymmetric : (angularMomentumSqOperator (d := d)).IsSymmetric := by
   intro ψ φ
   obtain ⟨f, rfl⟩ := (schwartzEquiv volume).surjective ψ
   obtain ⟨g, rfl⟩ := (schwartzEquiv volume).surjective φ
@@ -287,8 +285,7 @@ lemma angularMomentumSqOperator_isSymmetric :
     angularMomentumSqr_inner f g
 
 /-- In Physlib terminology, the squared operator is densely defined and closable. -/
-lemma angularMomentumSqOperator_isUnbounded :
-    (angularMomentumSqOperator (d := d)).IsUnbounded :=
+lemma angularMomentumSqOperator_isUnbounded : (angularMomentumSqOperator (d := d)).IsUnbounded :=
   angularMomentumSqOperator_isSymmetric.isUnbounded_iff_hasDenseDomain.mpr
     angularMomentumSqOperator_hasDenseDomain
 

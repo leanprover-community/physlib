@@ -82,13 +82,11 @@ scoped[AngularMomentum] notation "𝓛₃" => QuantumMechanics.angularMomentumDi
 
 open scoped AngularMomentum
 
-lemma angularMomentumDimThreeCLM_x : 𝐋₃ 0 = 𝐋 1 2 := rfl
-lemma angularMomentumDimThreeCLM_y : 𝐋₃ 1 = 𝐋 2 0 := rfl
-lemma angularMomentumDimThreeCLM_z : 𝐋₃ 2 = 𝐋 0 1 := rfl
+lemma angularMomentumDimThreeCLM_zero_eq : 𝐋₃ 0 = 𝐋 1 2 := rfl
 
-lemma angularMomentumDimThreeOperator_x : 𝓛₃ 0 = angularMomentumOperator 1 2 := rfl
-lemma angularMomentumDimThreeOperator_y : 𝓛₃ 1 = angularMomentumOperator 2 0 := rfl
-lemma angularMomentumDimThreeOperator_z : 𝓛₃ 2 = angularMomentumOperator 0 1 := rfl
+lemma angularMomentumDimThreeCLM_one_eq : 𝐋₃ 1 = 𝐋 2 0 := rfl
+
+lemma angularMomentumDimThreeCLM_two_eq : 𝐋₃ 2 = 𝐋 0 1 := rfl
 
 /-!
 ### A.1. Hilbert-space transport
@@ -96,8 +94,7 @@ lemma angularMomentumDimThreeOperator_z : 𝓛₃ 2 = angularMomentumOperator 0 
 
 variable (i : Fin 3)
 
-lemma angularMomentumDimThreeOperator_domain_eq :
-    (𝓛₃ i).domain = SchwartzSubmodule 3 := rfl
+lemma angularMomentumDimThreeOperator_domain_eq : (𝓛₃ i).domain = SchwartzSubmodule 3 := rfl
 
 lemma angularMomentumDimThreeOperator_apply (ψ : SchwartzSubmodule 3) :
     𝓛₃ i ψ = schwartzEquiv volume (𝐋₃ i ((schwartzEquiv volume).symm ψ)) := rfl
@@ -121,12 +118,10 @@ lemma angularMomentumDimThreeOperator_apply_apply (j : Fin 3) (ψ : SchwartzSubm
 lemma angularMomentumDimThreeOperator_hasDenseDomain :
     (𝓛₃ i).HasDenseDomain := SchwartzSubmodule.dense 3 _
 
-lemma angularMomentumDimThreeOperator_isSymmetric :
-    (𝓛₃ i).IsSymmetric := by
+lemma angularMomentumDimThreeOperator_isSymmetric : (𝓛₃ i).IsSymmetric := by
   fin_cases i <;> exact angularMomentumOperator_isSymmetric _ _
 
-lemma angularMomentumDimThreeOperator_isUnbounded :
-    (𝓛₃ i).IsUnbounded :=
+lemma angularMomentumDimThreeOperator_isUnbounded : (𝓛₃ i).IsUnbounded :=
   (angularMomentumDimThreeOperator_isSymmetric i).isUnbounded_iff_hasDenseDomain.mpr
     (angularMomentumDimThreeOperator_hasDenseDomain i)
 
@@ -135,11 +130,11 @@ lemma angularMomentumDimThreeOperator_isUnbounded :
 -/
 
 /-- The antisymmetric-index definition agrees with the Cartesian sum of squares. -/
-lemma angularMomentumOperatorSqr_eq_sum_dimThree :
-    𝐋²[3] = ∑ i : Fin 3, 𝐋₃ i ∘L 𝐋₃ i := by
+lemma angularMomentumOperatorSqr_eq_sum_dimThree : 𝐋²[3] = ∑ i : Fin 3, 𝐋₃ i ∘L 𝐋₃ i := by
   simp only [angularMomentumOperatorSqr, Fin.sum_univ_three,
-    angularMomentumDimThreeCLM_x, angularMomentumDimThreeCLM_y, angularMomentumDimThreeCLM_z,
-    angularMomentumCLM_eq_zero, angularMomentumCLM_antisymm (0 : Fin 3) 2,
+    angularMomentumDimThreeCLM_zero_eq, angularMomentumDimThreeCLM_one_eq,
+    angularMomentumDimThreeCLM_two_eq, angularMomentumCLM_eq_zero,
+    angularMomentumCLM_antisymm (0 : Fin 3) 2,
     angularMomentumCLM_antisymm (1 : Fin 3) 0, angularMomentumCLM_antisymm (2 : Fin 3) 1,
     comp_zero, neg_comp, comp_neg, neg_neg, add_zero, zero_add]
   module
@@ -166,35 +161,34 @@ attribute [local instance 100] LieAlgebra.ofAssociativeAlgebra
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Cartesian angular momentum algebra, with the right-handed Levi-Civita symbol. -/
-lemma angularMomentumDimThree_commutation (j : Fin 3) :
-    ⁅𝐋₃ i, 𝐋₃ j⁆ =
-      (I * ℏ) • ∑ k : Fin 3, (leviCivitaSymbol ![i, j, k] : ℂ) • 𝐋₃ k := by
+lemma angularMomentumDimThree_commutation (j : Fin 3) : ⁅𝐋₃ i, 𝐋₃ j⁆ =
+    (I * ℏ) • ∑ k : Fin 3, (leviCivitaSymbol ![i, j, k] : ℂ) • 𝐋₃ k := by
   simp only [leviCivitaSymbol_eq_det, Matrix.det_fin_three]
   fin_cases i <;> fin_cases j <;>
-    norm_num [angularMomentumDimThreeCLM_x, angularMomentumDimThreeCLM_y,
-      angularMomentumDimThreeCLM_z, angularMomentum_commutation_angularMomentum,
+    norm_num [angularMomentumDimThreeCLM_zero_eq, angularMomentumDimThreeCLM_one_eq,
+      angularMomentumDimThreeCLM_two_eq, angularMomentum_commutation_angularMomentum,
       kroneckerDelta, Fin.sum_univ_three, angularMomentumCLM_eq_zero,
       angularMomentumCLM_antisymm (0 : Fin 3) 2, angularMomentumCLM_antisymm (1 : Fin 3) 0,
       angularMomentumCLM_antisymm (2 : Fin 3) 1]
 
 /-- `[Lx, Ly] = iℏ Lz`. -/
 lemma angularMomentumDimThree_commutation_xy : ⁅𝐋₃ 0, 𝐋₃ 1⁆ = (I * ℏ) • 𝐋₃ 2 := by
-  simpa [angularMomentumDimThreeCLM_x, angularMomentumDimThreeCLM_y,
-    angularMomentumDimThreeCLM_z, kroneckerDelta,
+  simpa [angularMomentumDimThreeCLM_zero_eq, angularMomentumDimThreeCLM_one_eq,
+    angularMomentumDimThreeCLM_two_eq, kroneckerDelta,
     angularMomentumCLM_antisymm (1 : Fin 3) 0] using
     angularMomentum_commutation_angularMomentum (d := 3) 1 2 2 0
 
 /-- `[Ly, Lz] = iℏ Lx`. -/
 lemma angularMomentumDimThree_commutation_yz : ⁅𝐋₃ 1, 𝐋₃ 2⁆ = (I * ℏ) • 𝐋₃ 0 := by
-  simpa [angularMomentumDimThreeCLM_x, angularMomentumDimThreeCLM_y,
-    angularMomentumDimThreeCLM_z, kroneckerDelta,
+  simpa [angularMomentumDimThreeCLM_zero_eq, angularMomentumDimThreeCLM_one_eq,
+    angularMomentumDimThreeCLM_two_eq, kroneckerDelta,
     angularMomentumCLM_antisymm (2 : Fin 3) 1] using
     angularMomentum_commutation_angularMomentum (d := 3) 2 0 0 1
 
 /-- `[Lz, Lx] = iℏ Ly`. -/
 lemma angularMomentumDimThree_commutation_zx : ⁅𝐋₃ 2, 𝐋₃ 0⁆ = (I * ℏ) • 𝐋₃ 1 := by
-  simpa [angularMomentumDimThreeCLM_x, angularMomentumDimThreeCLM_y,
-    angularMomentumDimThreeCLM_z, kroneckerDelta,
+  simpa [angularMomentumDimThreeCLM_zero_eq, angularMomentumDimThreeCLM_one_eq,
+    angularMomentumDimThreeCLM_two_eq, kroneckerDelta,
     angularMomentumCLM_antisymm (0 : Fin 3) 2] using
     angularMomentum_commutation_angularMomentum (d := 3) 0 1 1 2
 
@@ -218,10 +212,8 @@ lemma angularMomentumDimThreeOperator_commutation (j : Fin 3) (ψ : SchwartzSubm
 
 /-- `[L², Li] = 0` on the common invariant Hilbert-space domain. -/
 lemma angularMomentumSqOperator_commutation_dimThree (ψ : SchwartzSubmodule 3) :
-    angularMomentumSqOperator
-        ⟨𝓛₃ i ψ, angularMomentumDimThreeOperator_range i ψ⟩ -
-      𝓛₃ i
-        ⟨angularMomentumSqOperator ψ, angularMomentumSqOperator_range ψ⟩ = 0 := by
+    angularMomentumSqOperator ⟨𝓛₃ i ψ, angularMomentumDimThreeOperator_range i ψ⟩ -
+      𝓛₃ i ⟨angularMomentumSqOperator ψ, angularMomentumSqOperator_range ψ⟩ = 0 := by
   change schwartzIncl volume (𝐋² ((schwartzEquiv volume).symm
       (schwartzEquiv volume (𝐋₃ i ((schwartzEquiv volume).symm ψ))))) -
     schwartzIncl volume (𝐋₃ i ((schwartzEquiv volume).symm
@@ -249,6 +241,7 @@ def angularMomentumLoweringCLM : 𝓢(Space 3, ℂ) →L[ℂ] 𝓢(Space 3, ℂ)
 
 @[inherit_doc QuantumMechanics.angularMomentumRaisingCLM]
 scoped[AngularMomentum] notation "𝐋⁺" => QuantumMechanics.angularMomentumRaisingCLM
+
 @[inherit_doc QuantumMechanics.angularMomentumLoweringCLM]
 scoped[AngularMomentum] notation "𝐋⁻" => QuantumMechanics.angularMomentumLoweringCLM
 
@@ -290,10 +283,12 @@ def angularMomentumLoweringOperator : SpaceDHilbertSpace 3 →ₗ.[ℂ] SpaceDHi
 
 @[inherit_doc QuantumMechanics.angularMomentumRaisingOperator]
 scoped[AngularMomentum] notation "𝓛⁺" => QuantumMechanics.angularMomentumRaisingOperator
+
 @[inherit_doc QuantumMechanics.angularMomentumLoweringOperator]
 scoped[AngularMomentum] notation "𝓛⁻" => QuantumMechanics.angularMomentumLoweringOperator
 
 lemma angularMomentumRaisingOperator_domain_eq : (𝓛⁺).domain = SchwartzSubmodule 3 := rfl
+
 lemma angularMomentumLoweringOperator_domain_eq : (𝓛⁻).domain = SchwartzSubmodule 3 := rfl
 
 lemma angularMomentumRaisingOperator_apply (ψ : SchwartzSubmodule 3) :
