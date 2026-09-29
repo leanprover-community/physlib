@@ -473,6 +473,18 @@ lemma dWirtingerAntiCoord_eq_zero_of_holomorphic_apply {u : (ι → ℂ)}
     dWirtingerAntiCoord f I u = 0 :=
   dWirtingerAntiDir_eq_zero_of_clinear (clinear_of_holomorphic hf _)
 
+/-- **Cauchy–Riemann in coordinates**, the form `∂̄_Ī W = 0` used in physics. Coordinate
+directions suffice by `LinearMap.commutesI_of_basis`. -/
+theorem differentiableAt_complex_iff_dWirtingerAntiCoord_eq_zero
+    (f : (ι → ℂ) → ℂ) (u : ι → ℂ) :
+    DifferentiableAt ℂ f u ↔
+      DifferentiableAt ℝ f u ∧ ∀ I, dWirtingerAntiCoord f I u = 0 := by
+  rw [differentiableAt_complex_iff_dWirtingerAntiDir_eq_zero]
+  refine and_congr_right fun _ => ⟨fun h I => h _, fun h v => ?_⟩
+  refine dWirtingerAntiDir_eq_zero_of_clinear ?_
+  exact LinearMap.commutesI_of_basis (fderiv ℝ f u : (ι → ℂ) →ₗ[ℝ] ℂ) (Pi.basisFun ℂ ι)
+    (fun J => by simpa using clinear_of_dWirtingerAntiDir_eq_zero (h J)) v
+
 /-!
 
 ### Coordinate-difference Wirtinger derivatives
