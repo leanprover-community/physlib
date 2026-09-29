@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.Product
 public import Physlib.Relativity.Tensors.Evaluation
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
 /-!

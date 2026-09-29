@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Defs
 public import Mathlib.LinearAlgebra.Basis.Defs
 public import Mathlib.Algebra.Star.Basic
 

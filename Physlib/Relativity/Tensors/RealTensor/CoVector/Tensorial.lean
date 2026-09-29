@@ -7,7 +7,6 @@ module
 
 public import Physlib.Relativity.Tensors.RealTensor.CoVector.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Basic
-public import Mathlib.Geometry.Manifold.ChartedSpace
 /-!
 
 # Tensorial nature of Lorentz covectors

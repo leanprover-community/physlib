@@ -5,7 +5,6 @@ Authors: Samyak Rai, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 /-!
 

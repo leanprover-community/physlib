@@ -7,9 +7,6 @@ module
 
 public import Physlib.Mathematics.InnerProductSpace.Gaussian
 public import Physlib.Mathematics.HasTemperateGrowth
-public import Physlib.Mathematics.KroneckerDelta.Basic
-public import Physlib.Mathematics.SpecialFunctions.PhysHermite
-public import Physlib.QuantumMechanics.HarmonicOscillator.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.NumberOperator
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
 public import Physlib.Meta.Linters.Sorry

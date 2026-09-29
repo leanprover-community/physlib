@@ -9,7 +9,6 @@ public import Physlib.Relativity.MinkowskiMatrix
 public import Physlib.Meta.TODO.Basic
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Algebra.Group.Units
-public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
 public import Mathlib.Topology.Metrizable.Uniformity
 public import Mathlib.Basic.Complex.Basic

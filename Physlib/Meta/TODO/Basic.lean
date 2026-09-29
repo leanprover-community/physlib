@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public meta import Lean.Elab.Command
-public import Lean.Exception
 /-!
 
 # Basic underlying structure for TODOs.

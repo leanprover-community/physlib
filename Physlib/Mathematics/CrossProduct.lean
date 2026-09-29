@@ -6,8 +6,6 @@ Authors: Giuseppe Sorge
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Operations
-public import Mathlib.Data.Matrix.Mul
-public import Mathlib.Basic.Real.Basic
 public import Mathlib.LinearAlgebra.CrossProduct
 /-!
 

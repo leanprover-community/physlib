@@ -7,7 +7,6 @@ module
 
 public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Mathlib.LinearAlgebra.Matrix.Permutation
-public import Mathlib.GroupTheory.Perm.Fin
 /-!
 
 # The Levi-Civita symbol in general dimension

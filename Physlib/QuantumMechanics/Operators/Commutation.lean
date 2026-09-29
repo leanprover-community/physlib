@@ -9,7 +9,6 @@ public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Physlib.QuantumMechanics.Operators.Position
 public import Physlib.QuantumMechanics.Operators.Momentum
 public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Analysis.CStarAlgebra.Classes
 /-!
 
 # Commutation relations

@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public meta import Physlib.Meta.Notes.HTMLNote
-public import Physlib.Meta.Notes.Basic
 public meta import Physlib.Meta.Notes.NoteFile
 /-!
 

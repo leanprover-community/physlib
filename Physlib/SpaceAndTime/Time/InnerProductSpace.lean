@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Linear
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 public import Physlib.SpaceAndTime.Time.Basic
 /-!

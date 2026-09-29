@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Electromagnetism.Kinematics.EMPotential
-public import Physlib.Relativity.Tensors.RealTensor.Metrics.Basic
 /-!
 
 # The Field Strength Tensor

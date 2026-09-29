@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Electromagnetism.Distributional.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Metrics.Basic
 public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
 

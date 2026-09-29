@@ -5,11 +5,8 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Relativity.Tensors.Contraction.Basic
 public import Physlib.Relativity.Tensors.Contraction.Basis
 public import Physlib.Mathematics.ConjModule
-public import Mathlib.Algebra.Star.Basic
-public import Mathlib.LinearAlgebra.Finsupp.LSum
 
 /-!
 

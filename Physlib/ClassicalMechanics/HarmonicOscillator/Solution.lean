@@ -6,7 +6,6 @@ Authors: Nathaneal Sajan, Joseph Tooby-Smith, Lode Vermeulen
 module
 
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
-public import Mathlib.Analysis.SpecialFunctions.Complex.Arg
 /-!
 
 # Solutions to the classical harmonic oscillator

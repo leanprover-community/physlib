@@ -6,9 +6,6 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.SpaceAndTime.Space.IsDistBounded
-public import Physlib.SpaceAndTime.Space.Module
-public import Mathlib.MeasureTheory.Constructions.HaarToSphere
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 /-!
 
 # Integrability of norm powers on subsets of Space

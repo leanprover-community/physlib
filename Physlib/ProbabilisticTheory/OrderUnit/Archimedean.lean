@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.Topology.Sequences
-public import Mathlib.Topology.Order.OrderClosed
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 
 /-!

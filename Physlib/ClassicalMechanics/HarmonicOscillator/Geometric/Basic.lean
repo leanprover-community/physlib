@@ -6,8 +6,6 @@ Authors: Nicola Bernini, Nathaneal Sajan
 module
 
 public import Physlib.SpaceAndTime.Space.Basic
-public import Mathlib.Geometry.Manifold.Diffeomorph
-public import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 public import Physlib.Meta.TODO.Basic
 
 /-!

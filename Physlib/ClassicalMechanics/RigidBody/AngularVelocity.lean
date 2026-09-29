@@ -7,7 +7,6 @@ module
 
 public import Physlib.ClassicalMechanics.RigidBody.Motion
 public import Physlib.Mathematics.CrossProductMatrix
-public import Physlib.SpaceAndTime.Time.MatrixDerivatives
 /-!
 
 # The angular velocity of a rigid body

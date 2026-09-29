@@ -7,8 +7,6 @@ module
 
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 /-!
 # Geometric trajectories of the harmonic oscillator
 

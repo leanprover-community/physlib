@@ -5,7 +5,6 @@ Authors: Raunak Chhatwal
 -/
 module
 
-public import Mathlib.LinearAlgebra.AffineSpace.Basis
 public import Physlib.SpaceAndTime.Space.Basic
 public import Physlib.SpaceAndTime.Time.Basic
 public import Mathlib.Topology.Homeomorph.TransferInstance
