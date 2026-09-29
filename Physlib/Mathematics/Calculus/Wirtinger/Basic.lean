@@ -6,7 +6,6 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Complex.Basic
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
 
 /-!
