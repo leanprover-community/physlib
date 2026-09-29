@@ -38,6 +38,7 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.Current
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.CurrentEigenstates
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.ElementalUncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MandelstamTamm
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.MandelstamTammMaxCurrent
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Saturation
