@@ -35,6 +35,7 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Current
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.CurrentEigenstates
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Uncertainty
 public import PhyslibAlpha.Mathematics.Analysis.Normed.HolderDual
