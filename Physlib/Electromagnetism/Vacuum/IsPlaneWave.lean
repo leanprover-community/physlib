@@ -7,6 +7,7 @@ module
 
 public import Physlib.ClassicalMechanics.WaveEquation.Basic
 public import Physlib.Electromagnetism.Dynamics.IsExtrema
+public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
 
 # Electromagnetic wave equation

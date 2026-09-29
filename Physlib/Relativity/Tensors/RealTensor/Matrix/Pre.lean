@@ -16,7 +16,7 @@ public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 @[expose] public section
 noncomputable section
 
-open Matrix Module MatrixGroups Complex TensorProduct CategoryTheory.MonoidalCategory
+open Matrix Module MatrixGroups Complex TensorProduct
 
 namespace Lorentz
 

@@ -6,8 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.Meta.Informal.Basic
-public import Physlib.QuantumMechanics.Operators.Momentum
-public import Physlib.QuantumMechanics.QuantumSystem.Basic
+public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 /-!
 
 # The infinite square well

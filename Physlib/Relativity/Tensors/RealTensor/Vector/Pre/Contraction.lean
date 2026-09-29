@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Pre.Basic
+public import Mathlib.RepresentationTheory.Rep.Basic
 /-!
 
 # Contraction of Real Lorentz vectors

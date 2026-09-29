@@ -5,12 +5,8 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.Channels.Bundled
-public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.Dual
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 public import Physlib.Meta.TODO.Basic
+public import QuantumInfo.ForMathlib.HermitianMat.Unitary
 
 /-!
 Quantum theory and operations specific to qubits.

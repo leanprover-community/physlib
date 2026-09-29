@@ -7,6 +7,8 @@ module
 
 public import Physlib.Units.LTMCTDimensionBase
 public import Physlib.Units.ISQDimensionBase
+public import Mathlib.Tactic.Ring
+public import Mathlib.Tactic.Linarith
 /-!
 
 # Bridging PhysLib's default basis and the ISQ basis

@@ -5,8 +5,8 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Init
 public import Aesop.Frontend.Command
+public import Aesop.Frontend.Basic
 
 /-!
 # Commutes Rule Set

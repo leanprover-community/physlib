@@ -6,7 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ClassicalInfo.Distribution
-public import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+public import Mathlib.Tactic.Measurability
 
 @[expose] public section
 

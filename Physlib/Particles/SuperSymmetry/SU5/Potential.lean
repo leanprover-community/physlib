@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
+public import Mathlib.Tactic.DeriveFintype
 /-!
 
 # Potential of the SU(5) + U(1) GUT

@@ -7,6 +7,8 @@ module
 
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.MinimallyAllowsTerm.OfFinset
 public import Physlib.StringTheory.FTheory.SU5.Fluxes.NoExotics.Completeness
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
+public import Mathlib.Algebra.Group.Action.Defs
 /-!
 
 # Quanta of 5-d representations

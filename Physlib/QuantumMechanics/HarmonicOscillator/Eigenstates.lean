@@ -12,7 +12,7 @@ public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.QuantumMechanics.HarmonicOscillator.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.NumberOperator
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
-public import Physlib.Meta.Sorry
+public import Physlib.Meta.Linters.Sorry
 /-!
 
 # Energy eigenstates of the quantum harmonic oscillator

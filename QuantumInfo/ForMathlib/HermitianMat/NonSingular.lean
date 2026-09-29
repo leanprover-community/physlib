@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Order
-public import QuantumInfo.ForMathlib.Isometry
 
 @[expose] public section
 

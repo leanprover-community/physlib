@@ -6,7 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Sqrt
-public import QuantumInfo.ForMathlib.HermitianMat.LiebConcavity
+public import QuantumInfo.ForMathlib.HermitianMat.Unitary
 
 @[expose] public section
 

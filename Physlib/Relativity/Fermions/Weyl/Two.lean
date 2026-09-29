@@ -9,6 +9,7 @@ public import Physlib.Relativity.Fermions.Weyl.LeftHanded
 public import Physlib.Relativity.Fermions.Weyl.RightHanded
 public import Physlib.Relativity.Fermions.Weyl.DualLeftHanded
 public import Physlib.Relativity.Fermions.Weyl.DualRightHanded
+public import Physlib.Relativity.SL2C.Basic
 /-!
 
 # Tensor product of two Weyl fermion

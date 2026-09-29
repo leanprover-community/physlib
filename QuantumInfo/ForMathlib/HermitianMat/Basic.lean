@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.Matrix
-public import QuantumInfo.ForMathlib.IsMaximalSelfAdjoint
 public import QuantumInfo.ForMathlib.ContinuousLinearMap
 public import QuantumInfo.ForMathlib.Tactic.Commutes
 

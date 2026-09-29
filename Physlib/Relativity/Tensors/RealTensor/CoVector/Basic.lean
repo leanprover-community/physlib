@@ -6,7 +6,8 @@ Authors: Matteo Cipollina, Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Geometry.Manifold.IsManifold.Basic
+public import Mathlib.Geometry.Manifold.ChartedSpace
+public import Mathlib.Tactic.Positivity
 /-!
 
 # Lorentz co vectors

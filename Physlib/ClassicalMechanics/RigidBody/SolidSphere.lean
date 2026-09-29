@@ -6,8 +6,8 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.ClassicalMechanics.RigidBody.Basic
-public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Physlib.Meta.Linters.Sorry
+public import Mathlib.MeasureTheory.Measure.Haar.Unique
 /-!
 
 # The solid sphere as a rigid body

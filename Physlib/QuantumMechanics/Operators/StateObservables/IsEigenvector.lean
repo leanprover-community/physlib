@@ -5,7 +5,9 @@ Authors: Matteo Cipollina, Krystian Nowakowski
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Unbounded
+public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Data.Sym.Sym2
+public import Mathlib.Analysis.Complex.Basic
 /-!
 # Eigenvectors of partial linear maps
 

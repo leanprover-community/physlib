@@ -6,6 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.SL2C.AxisRotations
+public import Physlib.Relativity.SL2C.Basic
 /-!
 # Coordinate-axis boosts in `SL(2,ℂ)` and the Lorentz group
 

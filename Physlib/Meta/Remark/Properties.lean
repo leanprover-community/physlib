@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Meta.Remark.Basic
+public meta import Physlib.Meta.Remark.Basic
 /-!
 
 ## Underlying structure for remarks

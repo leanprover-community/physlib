@@ -8,7 +8,9 @@ module
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Physlib.Mathematics.KroneckerDelta.Basic
-public import Physlib.Mathematics.CrossProduct
+public import Mathlib.LinearAlgebra.CrossProduct
+public import Mathlib.Logic.Equiv.PartialEquiv
+public import Mathlib.Tactic.Positivity
 /-!
 
 ## Pauli matrices

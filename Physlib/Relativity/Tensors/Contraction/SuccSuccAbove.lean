@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Nat.SuccPred
+public import Mathlib.Algebra.Order.Group.Nat
 /-!
 
 # Defining succSuccAbove

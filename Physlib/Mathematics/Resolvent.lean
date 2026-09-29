@@ -6,9 +6,11 @@ Authors: Adam Bornemann
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.Analysis.Normed.Algebra.GelfandFormula
+public import Mathlib.Analysis.Calculus.ContDiff.Operations
+public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 /-!
 
 # Temperate growth of the resolvent of a non-real complex number

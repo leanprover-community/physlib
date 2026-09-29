@@ -6,12 +6,10 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Int.Star
 public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Tactic.Bound
-public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.Finiteness.Attr

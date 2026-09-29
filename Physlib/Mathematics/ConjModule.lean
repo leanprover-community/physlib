@@ -6,9 +6,8 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.Algebra.Module.Equiv.Defs
-public import Mathlib.Algebra.Star.Module
 public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.Tactic.Ring
+public import Mathlib.Algebra.Star.Basic
 
 /-!
 

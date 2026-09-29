@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Electromagnetism.Kinematics.EMPotential
-public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
 
 # The vector Potential

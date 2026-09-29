@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Physlib.Meta.Linters.Sorry
-public import Physlib.Meta.Informal.Basic
 public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
