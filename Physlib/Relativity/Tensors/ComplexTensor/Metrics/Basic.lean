@@ -259,28 +259,12 @@ lemma contrMetric_eq_basis : η =
       (fun | 0 => (2 : Fin 4) | 1 => (2 : Fin 4)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.up, Color.up]
       (fun | 0 => (3 : Fin 4) | 1 => (3 : Fin 4))) := by
-  rw [contrMetric_eq_complexContrBasisFin4]
-  conv_lhs =>
-    enter [2]
-    change fromPairT ((complexLorentzTensor.basis .up _) ⊗ₜ[ℂ]
-      (complexLorentzTensor.basis .up _))
+  have h : ∀ i : Fin 4, fromPairT (complexContrBasisFin4 i ⊗ₜ[ℂ] complexContrBasisFin4 i) =
+      Tensor.basis (S := complexLorentzTensor) ![Color.up, Color.up]
+        (fun | 0 => i | 1 => i) := fun i => by
+    change fromPairT ((complexLorentzTensor.basis .up i) ⊗ₜ[ℂ] (complexLorentzTensor.basis .up i))
     rw [fromPairT_apply_basis_repr]
-  conv_lhs =>
-    enter [1, 2]
-    change fromPairT ((complexLorentzTensor.basis .up _) ⊗ₜ[ℂ]
-      (complexLorentzTensor.basis .up _))
-    rw [fromPairT_apply_basis_repr]
-  conv_lhs =>
-    enter [1, 1, 2]
-    change fromPairT ((complexLorentzTensor.basis .up _) ⊗ₜ[ℂ]
-      (complexLorentzTensor.basis .up _))
-    rw [fromPairT_apply_basis_repr]
-  conv_lhs =>
-    enter [1, 1, 1]
-    change fromPairT ((complexLorentzTensor.basis .up _) ⊗ₜ[ℂ]
-      (complexLorentzTensor.basis .up _))
-    rw [fromPairT_apply_basis_repr]
-  rfl
+  rw [contrMetric_eq_complexContrBasisFin4, h, h, h, h]
 
 open Fermion in
 lemma leftMetric_eq_basis : εL =

@@ -5,9 +5,12 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib
-
-public import Mathlib.Tactic.Bound
+public import Mathlib.Analysis.SpecificLimits.Basic
+public import Mathlib.Algebra.CharP.Defs
+public import Mathlib.Algebra.Order.Floor.Semifield
+public import Mathlib.Topology.Instances.ENNReal.Lemmas
+public import Mathlib.Tactic.Finiteness
+public import Mathlib.Tactic.Peel
 
 @[expose] public section
 

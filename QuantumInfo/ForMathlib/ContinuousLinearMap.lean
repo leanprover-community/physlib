@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
-public import Mathlib.Order.CompletePartialOrder
 
 /-!
 # Continuous linear maps
