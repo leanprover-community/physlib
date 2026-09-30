@@ -10,7 +10,6 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.LinearAlgebra.Determinant
 public import Mathlib.LinearAlgebra.Matrix.Block
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
-public import Mathlib.Tactic.Positivity
 /-! # Extra lemmas regarding `Lorentz.SL2C.toSelfAdjointMap`
 
 This file redefines `Lorentz.SL2C.toSelfAdjointMap` by dropping the special linear condition for its

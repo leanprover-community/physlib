@@ -5,7 +5,6 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Data.Sym.Sym2
 public import Mathlib.LinearAlgebra.LinearPMap
 /-!
 

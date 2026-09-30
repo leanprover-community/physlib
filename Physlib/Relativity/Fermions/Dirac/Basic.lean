@@ -7,7 +7,6 @@ module
 
 public import Physlib.Relativity.Fermions.Weyl.LeftHanded
 public import Physlib.Relativity.Fermions.Weyl.DualRightHanded
-public import Mathlib.CategoryTheory.Category.Basic
 public import Mathlib.RepresentationTheory.Intertwining
 /-!
 

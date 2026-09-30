@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Electromagnetism.Dynamics.Lagrangian
-public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
 
 # The Hamiltonian in electromagnetism

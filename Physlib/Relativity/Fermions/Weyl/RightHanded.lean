@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.Tactic.Positivity
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 

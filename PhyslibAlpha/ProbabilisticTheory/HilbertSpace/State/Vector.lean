@@ -7,11 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import Mathlib.Analysis.InnerProductSpace.Positive
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 
 /-!

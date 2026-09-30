@@ -8,7 +8,6 @@ module
 public import Physlib.Relativity.LorentzGroup.Basic
 public import Mathlib.Topology.Connected.PathConnected
 public import Mathlib.Tactic.Cases
-public import Mathlib.Analysis.Normed.Field.Basic
 /-!
 # The Proper Lorentz Group
 

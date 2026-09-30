@@ -6,7 +6,7 @@ Authors: Robert Sneiderman
 module
 
 public import Physlib.Meta.Informal.Basic
-public import Batteries.Tactic.Lint
+public meta import Batteries.Tactic.Lint
 /-!
 
 # Physlib exemptions for the `defsWithUnderscore` linter

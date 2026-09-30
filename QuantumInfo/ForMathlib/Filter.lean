@@ -6,8 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Order.Floor.Semifield
-public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.SpecificLimits.Basic
 

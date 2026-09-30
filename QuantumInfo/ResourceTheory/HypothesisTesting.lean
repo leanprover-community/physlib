@@ -19,7 +19,6 @@ public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.Measurements.POVM
 public import QuantumInfo.ForMathlib.ContinuousSup
-public import Mathlib.RingTheory.PicardGroup
 public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 /-!

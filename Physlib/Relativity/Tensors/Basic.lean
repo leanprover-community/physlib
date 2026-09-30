@@ -9,7 +9,6 @@ public import Physlib.Relativity.Tensors.Reindexing
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Tactic.Cases
-public import Mathlib.CategoryTheory.Category.Basic
 public import Physlib.Relativity.Tensors.ComponentIdx.Basic
 /-!
 

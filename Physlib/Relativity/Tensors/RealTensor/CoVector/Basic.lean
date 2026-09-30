@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.ChartedSpace
-public import Mathlib.Tactic.Positivity
 /-!
 
 # Lorentz co vectors

@@ -6,7 +6,6 @@ Authors: Florian Wiesner
 module
 
 public import Physlib.SpaceAndTime.Space.Basic
-public import Mathlib.Tactic.Measurability
 public import Physlib.SpaceAndTime.Time.Basic
 /-!
 

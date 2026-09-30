@@ -5,7 +5,6 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Data.Sym.Sym2
 public import Mathlib.Analysis.RCLike.Basic
 
 /-!
