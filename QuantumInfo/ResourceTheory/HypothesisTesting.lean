@@ -6,7 +6,6 @@ Authors: Alex Meiburg, Leonardo A. Lessa, Rodolfo R. Soldati
 module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Analysis.Subadditive
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.Data.EReal.Basic

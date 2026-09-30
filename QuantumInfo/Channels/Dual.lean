@@ -6,7 +6,6 @@ Authors: Alex Meiburg, Dennj Osele
 module
 
 public import QuantumInfo.Channels.Bundled
-public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 
 /-! # Duals of matrix map
 
