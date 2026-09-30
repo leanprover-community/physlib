@@ -79,6 +79,8 @@ namespace ChargeSpectrum
   with the Yukawa term up-to 4-inserstions of singlets. -/
 def ZModCharges (n : ℕ) [NeZero n] : Finset (ChargeSpectrum (ZMod n)) :=
   let S : Finset (ChargeSpectrum (ZMod n)) := ofFinset Finset.univ Finset.univ
+  -- `&&` rather than `∧`: since lean4#8309 the compiled `Decidable (p ∧ q)` does not
+  -- short-circuit, and the level-4 Yukawa check is too expensive to run on every candidate.
   S.filter (fun x => decide (IsComplete x) && !decide x.IsPhenoConstrained &&
     !decide (x.YukawaGeneratesDangerousAtLevel 4))
 
