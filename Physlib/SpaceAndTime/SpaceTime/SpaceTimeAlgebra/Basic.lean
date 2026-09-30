@@ -87,12 +87,12 @@ open MvPowerSeries
 
 ### B.1. Commutation of formal partial derivatives
 
-The formal partial derivative `pderiv μ` acts on coefficients, lowering the power of `x^μ` in each
-monomial by one and multiplying by the old power. Formal partial derivatives in different
-directions commute, so an iterated derivative depends only on how many times each direction
-occurs. We therefore index iterated derivatives by a multiset `s` of directions and write `∂^s f`
-for `iteratedPDeriv s f`. For example, the multiset containing `μ` twice and `ν` once gives
-`∂_μ ∂_μ ∂_ν f`.
+`pderiv μ` differentiates a series term by term with the power rule in `x^μ`, treating the other
+variables as constants. Formal partial derivatives in different directions commute, so an iterated
+derivative depends only on how many times each direction occurs. We therefore index iterated
+derivatives by a multiset `s` of directions (an unordered list in which repetition is allowed) and
+write `∂^s f` for `iteratedPDeriv s f`. For example, the multiset containing `μ` twice and `ν` once
+gives `∂_μ ∂_μ ∂_ν f`.
 
 -/
 
