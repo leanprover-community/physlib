@@ -9,6 +9,9 @@ public import QuantumInfo.ForMathlib.HermitianMat.CompoundMatrix
 public import QuantumInfo.ForMathlib.HermitianMat.LogExp
 public import QuantumInfo.ForMathlib.HermitianMat.Sqrt
 public import QuantumInfo.ForMathlib.HermitianMat.Unitary
+public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
+public import Mathlib.Analysis.SpecialFunctions.Integrability.Basic
+public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 
 @[expose] public section
 

@@ -8,6 +8,7 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Uncertainty
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Density
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Vector
+public import Mathlib.Analysis.InnerProductSpace.Trace
 
 /-!
 

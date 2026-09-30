@@ -5,8 +5,10 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib
+public import Mathlib.Data.Int.Star
+public import Mathlib.Data.Set.PowersetCard
 public import QuantumInfo.ForMathlib.Matrix
+public import Mathlib.Tactic.Cases
 
 /-! # Majorization and weak log-majorization
 

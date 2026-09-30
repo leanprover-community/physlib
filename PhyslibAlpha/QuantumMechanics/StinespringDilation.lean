@@ -8,7 +8,14 @@ public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Physlib.Meta.TODO.Basic
-public import Mathlib
+public import Mathlib.Analysis.Matrix.Order
+public import Mathlib.Data.Int.Star
+public import Mathlib.LinearAlgebra.FreeModule.PID
+public import Mathlib.RingTheory.Flat.TorsionFree
+public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.PicardGroup
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.SimpleRing.Principal
 /-!
 # Stinespring dilation
 -/

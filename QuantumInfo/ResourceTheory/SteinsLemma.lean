@@ -11,6 +11,7 @@ public import QuantumInfo.ForMathlib.LimSupInf
 public import QuantumInfo.ResourceTheory.FreeState
 public import QuantumInfo.ResourceTheory.HypothesisTesting
 public import QuantumInfo.ForMathlib.Filter
+public import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 @[expose] public section
 

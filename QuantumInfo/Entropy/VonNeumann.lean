@@ -11,6 +11,10 @@ public import QuantumInfo.Channels.CPTP
 public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.ClassicalInfo.Entropy
+public import Mathlib.Data.Multiset.Functor
+public import Mathlib.RingTheory.Henselian
+public import Mathlib.RingTheory.RegularLocalRing.Defs
+public import Mathlib.RingTheory.SimpleRing.Principal
 
 /-!
 Quantum notions of information and entropy.
