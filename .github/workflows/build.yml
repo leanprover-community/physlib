@@ -112,6 +112,11 @@ jobs:
         if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
         run: env LEAN_ABORT_ON_PANIC=1 lake exe alphaFileImports
 
+      # Only reads import headers, so it does not depend on any build having succeeded.
+      - name: Check ForMathlib imports and uses
+        if: ${{ !cancelled() }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe forMathlib_lint
+
       # Runs the occasionally used scripts (TODO_to_yml, stats, informal, make_tag), which
       # import Physlib, QuantumInfo and PhyslibAlpha, so both builds must have succeeded.
       - name: auxiliary script test
