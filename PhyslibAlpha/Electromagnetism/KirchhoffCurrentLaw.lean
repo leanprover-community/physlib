@@ -200,9 +200,9 @@ variable {𝓕 : FreeSpace} (V : ElectromagneticPotential 3) (J₄ : LorentzCurr
 
 lemma magneticField_contDiff_space (hV : ContDiff ℝ ∞ V) (t : Time) :
     ContDiff ℝ 2 (V.magneticField 𝓕.c t) := by
+  have hV3 : ContDiff ℝ (2 + 1) V := hV.of_le (WithTop.coe_le_coe.mpr le_top)
   simp only [magneticField_eq_3D]
-  exact Space.curl_contDiff (n := 2) _
-    (vectorPotential_contDiff_space V (hV.of_le (WithTop.coe_le_coe.mpr le_top)) t)
+  exact Space.curl_contDiff (n := 2) _ (by fun_prop)
 
 /-- The continuity equation: Maxwell's equations imply local conservation of charge. -/
 theorem continuityEquation (t : Time) (x : Space)
