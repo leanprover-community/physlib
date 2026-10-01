@@ -121,14 +121,10 @@ public import Physlib.Mathematics.Calculus.Wirtinger.Basic
 public import Physlib.Mathematics.Calculus.Wirtinger.Coordinate
 public import Physlib.Mathematics.Distribution.Basic
 public import Physlib.Mathematics.Distribution.PowMul
-public import Physlib.Mathematics.ForMathlib.DataStructures.FourTree.Basic
-public import Physlib.Mathematics.ForMathlib.DataStructures.FourTree.UniqueMap
 public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
 public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Fin
 public import Physlib.Mathematics.ForMathlib.Fin.Involutions
-public import Physlib.Mathematics.ForMathlib.Geometry.Metric.PseudoRiemannian.Defs
-public import Physlib.Mathematics.ForMathlib.Geometry.Metric.Riemannian.Defs
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Physlib.Mathematics.ForMathlib.LinearMaps
 public import Physlib.Mathematics.ForMathlib.LinearPMap
@@ -138,8 +134,6 @@ public import Physlib.Mathematics.ForMathlib.List.InsertionSort
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
-public import Physlib.Mathematics.ForMathlib.PiTensorProduct
-public import Physlib.Mathematics.ForMathlib.Resolvent
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh

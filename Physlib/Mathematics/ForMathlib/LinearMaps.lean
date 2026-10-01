@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Data.Fintype.BigOperators
-public import Physlib.Meta.TODO.Basic
 public import Mathlib.Algebra.Ring.Rat
 /-!
 # Linear maps
@@ -18,8 +17,6 @@ quadratic and cubic equations.
 -/
 
 @[expose] public section
-TODO "Replace the definitions of bi-linear maps in `./Mathematics/LinaerMaps`
-  with definitions from Mathlib."
 
 /-- The structure defining a homogeneous quadratic equation. -/
 @[simp]
