@@ -17,7 +17,7 @@ The spacetime algebra `SpaceTimeAlgebra` is the ring of formal power series with
 coefficients in four variables, one for each spacetime direction. The value at the base point of
 an iterated partial derivative of a series is the corresponding coefficient multiplied by a
 factorial. Consequently, a series is determined by these derivative values, and every family of
-values arises from exactly its Taylor series.
+values arises from exactly one series.
 
 ## ii. Key results
 
@@ -25,9 +25,9 @@ values arises from exactly its Taylor series.
 - `SpaceTimeAlgebra.iteratedPDeriv` : iterated formal partial derivatives.
 - `SpaceTimeAlgebra.constantCoeff_iteratedPDeriv` : derivative values are `s!` times coefficients.
 - `SpaceTimeAlgebra.ext_of_constantCoeff_iteratedPDeriv` : derivative values determine a series.
-- `SpaceTimeAlgebra.taylorSeries` : the series with given derivative values.
-- `SpaceTimeAlgebra.taylorSeries_constantCoeff_iteratedPDeriv` : Taylor's formula.
-- `SpaceTimeAlgebra.taylorEquiv` : series and derivative values are linearly equivalent.
+- `SpaceTimeAlgebra.ofDerivValues` : the series with given derivative values.
+- `SpaceTimeAlgebra.ofDerivValues_constantCoeff_iteratedPDeriv` : Taylor's formula.
+- `SpaceTimeAlgebra.derivValuesEquiv` : series and derivative values are linearly equivalent.
 
 ## iii. Table of contents
 
@@ -36,7 +36,7 @@ values arises from exactly its Taylor series.
   - B.1. Commutation of formal partial derivatives
   - B.2. Base-point values of iterated derivatives
 - C. Series with equal derivative values
-- D. Taylor series
+- D. Series from derivative values
   - D.1. Series with prescribed derivative values
   - D.2. The linear equivalence
 
@@ -61,16 +61,15 @@ The four spacetime directions are indexed by `Fin 1 ⊕ Fin 3`, with `Sum.inl 0`
 and `Sum.inr i` the three space directions. The spacetime algebra has one variable `x^μ` for each
 direction `μ`.
 
-These power series are formal, in the sense that the variables are indeterminates and are not
-assigned numerical values. A series is an arbitrary family of complex coefficients, one for
-each monomial, and no convergence condition is imposed.
+These power series are formal, meaning that a series is an arbitrary family of complex
+coefficients, one for each monomial, and no convergence condition is imposed.
 
-We think of the variables as coordinate displacements from a fixed base point, which is not
-itself recorded. In differential geometry, the data of all derivatives of a smooth map at a point
-is called its infinite-order jet at that point (a mathematical notion, unrelated to jets in
-collider physics). In fixed coordinates, the infinite-order jet of a smooth complex-valued field
-at the base point is recorded by the series of its Taylor coefficients, which is an element of
-the spacetime algebra.
+The formal variables represent coordinate displacements from a fixed, implicit spacetime point, the
+base point. The constant coefficient represents the field value at that point. In differential
+geometry, the data of all derivatives of a smooth map at a point is called its infinite-order jet
+at that point (a mathematical notion, unrelated to jets in collider physics). In fixed coordinates,
+the infinite-order jet of a smooth complex-valued field at the base point is recorded by the
+series of its Taylor coefficients, which is an element of the spacetime algebra.
 
 -/
 
@@ -134,13 +133,13 @@ lemma iteratedPDeriv_singleton (μ : Fin 1 ⊕ Fin 3) (f : SpaceTimeAlgebra) :
 
 ### B.2. Base-point values of iterated derivatives
 
-We take the base-point value of a series to be its constant coefficient, writing `(∂^s f)(0)` for
-the constant coefficient of `∂^s f` and calling the family `s ↦ (∂^s f)(0)` the base-point
-derivative values of `f`. A multiset `s` corresponds to the monomial `x^s`, in which each `x^μ`
-appears as often as `μ` occurs in `s`, and `s!` denotes the product of the factorials of these
-multiplicities. Applying `∂^s` to `x^s` leaves the constant `s!`, while every other monomial
-vanishes or retains a positive power. Hence `(∂^s f)(0)` is `s!` times the coefficient of `x^s` in
-`f`, the multivariable analogue of `f⁽ⁿ⁾(0) = n! aₙ` for a power series in one variable.
+Since the base point is where every displacement `x^μ` is zero, we write `(∂^s f)(0)` for the
+constant coefficient of `∂^s f` and call the family `s ↦ (∂^s f)(0)` the base-point derivative
+values of `f`. A multiset `s` corresponds to the monomial `x^s`, in which each `x^μ` appears as
+often as `μ` occurs in `s`, and `s!` denotes the product of the factorials of these multiplicities.
+Applying `∂^s` to `x^s` leaves the constant `s!`, while every other monomial either vanishes or
+retains a positive power. Hence `(∂^s f)(0)` is `s!` times the coefficient of `x^s` in `f`, the
+multivariable analogue of `f⁽ⁿ⁾(0) = n! aₙ` for a power series in one variable.
 
 -/
 
@@ -164,11 +163,6 @@ lemma constantCoeff_iteratedPDeriv (s : Multiset (Fin 1 ⊕ Fin 3)) (f : SpaceTi
     push_cast
     ring
 
-/-- The factorial `s!` is nonzero. -/
-lemma prod_factorial_ne_zero (s : Multiset (Fin 1 ⊕ Fin 3)) :
-    ((∏ ν, (s.count ν).factorial : ℕ) : ℂ) ≠ 0 :=
-  Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr fun _ _ => Nat.factorial_ne_zero _)
-
 /-!
 
 ## C. Series with equal derivative values
@@ -189,7 +183,8 @@ lemma ext_of_constantCoeff_iteratedPDeriv {f g : SpaceTimeAlgebra}
   have hm := h (Finsupp.toMultiset m)
   rw [constantCoeff_iteratedPDeriv, constantCoeff_iteratedPDeriv,
     Finsupp.toMultiset_toFinsupp] at hm
-  exact mul_left_cancel₀ (prod_factorial_ne_zero _) hm
+  exact mul_left_cancel₀ (Nat.cast_ne_zero.mpr
+    (Finset.prod_ne_zero_iff.mpr fun _ _ => Nat.factorial_ne_zero _)) hm
 
 /-- A series with vanishing first derivatives is constant. -/
 lemma eq_C_of_pderiv_eq_zero {f : SpaceTimeAlgebra} (hf : ∀ μ, pderiv μ f = 0) :
@@ -198,11 +193,11 @@ lemma eq_C_of_pderiv_eq_zero {f : SpaceTimeAlgebra} (hf : ∀ μ, pderiv μ f = 
 
 /-!
 
-## D. Taylor series
+## D. Series from derivative values
 
 ### D.1. Series with prescribed derivative values
 
-A family `F` of complex numbers indexed by multisets defines the series `taylorSeries F`, whose
+A family `F` of complex numbers indexed by multisets defines the series `ofDerivValues F`, whose
 coefficient of `x^s` is `F s` divided by `s!`. By B.2, its base-point derivative values are the
 values of `F`. Applied to the base-point derivative values of a series `f`, this construction
 returns `f`, which is Taylor's formula `f = Σ_s (∂^s f)(0) / s! · x^s` (Haukkanen, Theorem 4.1).
@@ -210,52 +205,53 @@ returns `f`, which is Taylor's formula `f = Σ_s (∂^s f)(0) / s! · x^s` (Hauk
 -/
 
 /-- The series whose base-point derivative values are `F`. -/
-noncomputable def taylorSeries (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ) : SpaceTimeAlgebra :=
+noncomputable def ofDerivValues (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ) : SpaceTimeAlgebra :=
   fun m => ((∏ ν, (m ν).factorial : ℕ) : ℂ)⁻¹ * F (Finsupp.toMultiset m)
 
-lemma coeff_taylorSeries (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
-    coeff m (taylorSeries F) =
+lemma coeff_ofDerivValues (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
+    coeff m (ofDerivValues F) =
       ((∏ ν, (m ν).factorial : ℕ) : ℂ)⁻¹ * F (Finsupp.toMultiset m) :=
   rfl
 
-/-- The base-point derivative values of `taylorSeries F` are `F`. -/
-lemma constantCoeff_iteratedPDeriv_taylorSeries (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ)
+/-- The base-point derivative values of `ofDerivValues F` are `F`. -/
+lemma constantCoeff_iteratedPDeriv_ofDerivValues (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ)
     (s : Multiset (Fin 1 ⊕ Fin 3)) :
-    constantCoeff (iteratedPDeriv s (taylorSeries F)) = F s := by
-  simp only [constantCoeff_iteratedPDeriv, coeff_taylorSeries, Multiset.toFinsupp_apply,
-    Multiset.toFinsupp_toMultiset, ← mul_assoc, mul_inv_cancel₀ (prod_factorial_ne_zero s),
-    one_mul]
+    constantCoeff (iteratedPDeriv s (ofDerivValues F)) = F s := by
+  have hs : ((∏ ν, (s.count ν).factorial : ℕ) : ℂ) ≠ 0 :=
+    Nat.cast_ne_zero.mpr (Finset.prod_ne_zero_iff.mpr fun _ _ => Nat.factorial_ne_zero _)
+  simp only [constantCoeff_iteratedPDeriv, coeff_ofDerivValues, Multiset.toFinsupp_apply,
+    Multiset.toFinsupp_toMultiset, ← mul_assoc, mul_inv_cancel₀ hs, one_mul]
 
-/-- Every series is the Taylor series of its base-point derivative values. -/
-lemma taylorSeries_constantCoeff_iteratedPDeriv (f : SpaceTimeAlgebra) :
-    taylorSeries (fun s => constantCoeff (iteratedPDeriv s f)) = f :=
-  ext_of_constantCoeff_iteratedPDeriv fun s => constantCoeff_iteratedPDeriv_taylorSeries _ s
+/-- A series is recovered from its base-point derivative values by `ofDerivValues`. -/
+lemma ofDerivValues_constantCoeff_iteratedPDeriv (f : SpaceTimeAlgebra) :
+    ofDerivValues (fun s => constantCoeff (iteratedPDeriv s f)) = f :=
+  ext_of_constantCoeff_iteratedPDeriv fun s => constantCoeff_iteratedPDeriv_ofDerivValues _ s
 
 /-!
 
 ### D.2. The linear equivalence
 
 The two constructions are mutually inverse and `ℂ`-linear, so together they form the linear
-equivalence `taylorEquiv` between the spacetime algebra and `Multiset (Fin 1 ⊕ Fin 3) → ℂ`.
+equivalence `derivValuesEquiv` between the spacetime algebra and `Multiset (Fin 1 ⊕ Fin 3) → ℂ`.
 
 -/
 
 /-- The linear equivalence between series and their base-point derivative values. -/
-noncomputable def taylorEquiv : SpaceTimeAlgebra ≃ₗ[ℂ] (Multiset (Fin 1 ⊕ Fin 3) → ℂ) :=
+noncomputable def derivValuesEquiv : SpaceTimeAlgebra ≃ₗ[ℂ] (Multiset (Fin 1 ⊕ Fin 3) → ℂ) :=
   LinearEquiv.symm
-    { toFun := taylorSeries
-      map_add' F G := by ext m; simp [coeff_taylorSeries, mul_add]
-      map_smul' c F := by ext m; simp [coeff_taylorSeries, mul_left_comm]
+    { toFun := ofDerivValues
+      map_add' F G := by ext m; simp [coeff_ofDerivValues, mul_add]
+      map_smul' c F := by ext m; simp [coeff_ofDerivValues, mul_left_comm]
       invFun f s := constantCoeff (iteratedPDeriv s f)
-      left_inv F := funext (constantCoeff_iteratedPDeriv_taylorSeries F)
-      right_inv := taylorSeries_constantCoeff_iteratedPDeriv }
+      left_inv F := funext (constantCoeff_iteratedPDeriv_ofDerivValues F)
+      right_inv := ofDerivValues_constantCoeff_iteratedPDeriv }
 
 @[simp]
-lemma taylorEquiv_apply (f : SpaceTimeAlgebra) (s : Multiset (Fin 1 ⊕ Fin 3)) :
-    taylorEquiv f s = constantCoeff (iteratedPDeriv s f) := rfl
+lemma derivValuesEquiv_apply (f : SpaceTimeAlgebra) (s : Multiset (Fin 1 ⊕ Fin 3)) :
+    derivValuesEquiv f s = constantCoeff (iteratedPDeriv s f) := rfl
 
 @[simp]
-lemma taylorEquiv_symm_apply (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ) :
-    taylorEquiv.symm F = taylorSeries F := rfl
+lemma derivValuesEquiv_symm_apply (F : Multiset (Fin 1 ⊕ Fin 3) → ℂ) :
+    derivValuesEquiv.symm F = ofDerivValues F := rfl
 
 end SpaceTimeAlgebra
