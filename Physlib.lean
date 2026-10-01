@@ -143,6 +143,7 @@ public import Physlib.Mathematics.ForMathlib.Resolvent
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
+public import Physlib.Mathematics.Groups.SO3.Basic
 public import Physlib.Mathematics.InnerProductSpace.Adjoint
 public import Physlib.Mathematics.InnerProductSpace.Basic
 public import Physlib.Mathematics.InnerProductSpace.Calculus
@@ -154,7 +155,6 @@ public import Physlib.Mathematics.LeviCivita.Basic
 public import Physlib.Mathematics.Modules.ConjModule
 public import Physlib.Mathematics.Modules.CrossProduct
 public import Physlib.Mathematics.Modules.CrossProductMatrix
-public import Physlib.Mathematics.SO3.Basic
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.Mathematics.VariationalCalculus.Basic

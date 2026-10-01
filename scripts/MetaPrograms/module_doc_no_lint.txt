@@ -45,10 +45,10 @@ Physlib/Mathematics/ForMathlib/List/InsertionSort.lean
 Physlib/Mathematics/ForMathlib/PiTensorProduct.lean
 Physlib/Mathematics/ForMathlib/SchurTriangulation.lean
 Physlib/Mathematics/ForMathlib/Trigonometry/Tanh.lean
+Physlib/Mathematics/Groups/SO3/Basic.lean
 Physlib/Mathematics/InnerProductSpace/Adjoint.lean
 Physlib/Mathematics/InnerProductSpace/Basic.lean
 Physlib/Mathematics/InnerProductSpace/Calculus.lean
-Physlib/Mathematics/SO3/Basic.lean
 Physlib/Mathematics/SpecialFunctions/PhysHermite.lean
 Physlib/Mathematics/VariationalCalculus/Basic.lean
 Physlib/Mathematics/VariationalCalculus/HasVarAdjDeriv.lean
