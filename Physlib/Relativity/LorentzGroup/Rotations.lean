@@ -19,7 +19,6 @@ noncomputable section
 
 namespace LorentzGroup
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The subgroup of rotations of the Lorentz group. -/
 def Rotations (d) : Subgroup (LorentzGroup d) where
   carrier Λ := Λ.1 (Sum.inl 0) (Sum.inl 0) = 1 ∧ IsProper Λ

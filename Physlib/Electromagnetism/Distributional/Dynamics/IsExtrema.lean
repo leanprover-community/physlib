@@ -219,7 +219,6 @@ A natural consequence of this is that the speed of light is the same in all iner
 
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma isExterma_equivariant {𝓕 : FreeSpace}
     (A : DistElectromagneticPotential d)
     (J : DistLorentzCurrentDensity d) (Λ : LorentzGroup d) :

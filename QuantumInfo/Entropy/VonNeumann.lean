@@ -109,7 +109,6 @@ theorem Sᵥₙ_of_pure_zero (ψ : Ket d) : Sᵥₙ (MState.pure ψ) = 0 := by
   obtain ⟨i, hi⟩ := MState.spectrum_pure_eq_constant ψ
   rw [Sᵥₙ, hi, Hₛ_constant_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ.M⟫ := by
   open HermitianMat in
   rw [log, inner_eq_re_trace]

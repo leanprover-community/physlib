@@ -178,7 +178,6 @@ def pauliContrDownComponent (mu : Fin 4) (a b : Fin 2) : GaussianInt :=
   if mu.val = 3 ∧ a.val = 0 ∧ b.val = 0 then ⟨-1, 0⟩ else
   if mu.val = 3 ∧ a.val = 1 ∧ b.val = 1 then ⟨1, 0⟩ else 0
 
-set_option backward.isDefEq.respectTransparency false in
 lemma toTensor_eq_ofGaussianInt : σ^^^ = ofGaussianInt (fun b =>
     pauliContrComponent (b 0) (b 1) (b 2)) := by
   apply (Tensor.basis _).repr.injective
@@ -195,7 +194,6 @@ lemma toTensor_eq_ofGaussianInt : σ^^^ = ofGaussianInt (fun b =>
   revert b
   decide +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gaussian integer components of `σ^^^` after dualizing its left-handed Weyl index. -/
 lemma toTensor_dualLeft_eq_ofGaussianInt :
     {σ^^^ | μ τ(α) β}ᵀ =
@@ -216,7 +214,6 @@ lemma toTensor_dualLeft_eq_ofGaussianInt :
   refine congrArg ofGaussianInt (funext fun b => ?_)
   decide +revert +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gaussian integer components of `σ^^^` after dualizing both Weyl indices. -/
 lemma toTensor_dualWeyl_eq_ofGaussianInt :
     {σ^^^ | μ τ(α) τ(β)}ᵀ =
@@ -236,7 +233,6 @@ lemma toTensor_dualWeyl_eq_ofGaussianInt :
   funext b
   decide +revert +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gaussian integer components of `σ^^^` after dualizing its Lorentz index. -/
 lemma toTensor_dualLorentz_eq_ofGaussianInt :
     {σ^^^ | τ(μ) α β}ᵀ =
@@ -254,7 +250,6 @@ lemma toTensor_dualLorentz_eq_ofGaussianInt :
   funext b
   decide +revert +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gaussian integer components of `σ^^^` after dualizing its Lorentz and left-handed Weyl
 indices. -/
 lemma toTensor_dualLorentzLeft_eq_ofGaussianInt :
@@ -276,7 +271,6 @@ lemma toTensor_dualLorentzLeft_eq_ofGaussianInt :
   refine congrArg ofGaussianInt (funext fun b => ?_)
   decide +revert +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Gaussian integer components of `σ^^^` after dualizing all three indices. -/
 lemma toTensor_dualAll_eq_ofGaussianInt :
     {σ^^^ | τ(μ) τ(α) τ(β)}ᵀ =
@@ -295,13 +289,11 @@ lemma toTensor_dualAll_eq_ofGaussianInt :
   funext b
   decide +revert +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma smul_eq_self (Λ : SL(2,ℂ)) : Λ • pauliMatrix = pauliMatrix := by
   rw [smul_eq, toTensor_eq_asConsTensor, actionT_fromConstTriple, ← toTensor_eq_asConsTensor]
   simp
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma toTensor_smul_eq_self (Λ : SL(2,ℂ)) : Λ • σ^^^ = σ^^^ := by
   rw [toTensor_eq_asConsTensor]
@@ -340,7 +332,6 @@ scoped[PauliMatrix] notation "σ^__" => PauliMatrix.pauliContrDown
 -/
 open Lorentz
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pauliCo_eq_ofGaussianInt : pauliCo = ofGaussianInt (fun b =>
     pauliContrDownComponent (b 0) (b 1) (b 2)) := by
   apply (Tensor.basis _).repr.injective
@@ -361,7 +352,6 @@ lemma pauliCo_eq_ofGaussianInt : pauliCo = ofGaussianInt (fun b =>
   revert b
   decide +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pauliCoDown_eq_ofGaussianInt : pauliCoDown = ofGaussianInt (fun b =>
     pauliContrComponent (b 0) (b 1) (b 2)) := by
   apply (Tensor.basis _).repr.injective
@@ -394,7 +384,6 @@ lemma pauliCoDown_eq_ofGaussianInt : pauliCoDown = ofGaussianInt (fun b =>
   revert b
   decide +kernel
 
-set_option backward.isDefEq.respectTransparency false in
 lemma pauliContrDown_ofGaussianInt : pauliContrDown = ofGaussianInt (fun b =>
     pauliContrDownComponent (b 0) (b 1) (b 2)) := by
   apply (Tensor.basis _).repr.injective
@@ -447,7 +436,6 @@ lemma toTensor_dualAll_eq_pauliCoDown :
   rw [pauliCoDown_eq_ofGaussianInt, permT_ofGaussianInt]
   congr
 
-set_option backward.isDefEq.respectTransparency false in
 /-- Lowering the Lorentz index of `σ^^^` with `τ` gives `σ_^^`. -/
 lemma pauliDual_eq_pauliCo :
     ({σ^^^ | τ(μ) α β = σ_^^ | μ α β}ᵀ : Prop) := by
@@ -499,13 +487,11 @@ lemma pauliContrDownDual_eq_pauliCoDown :
 
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tensor `pauliCo` is invariant under the action of `SL(2,ℂ)`. -/
 lemma smul_pauliCo (g : SL(2,ℂ)) : g • pauliCo = pauliCo := by
   rw [← permT_equivariant, ← contrT_equivariant, ← prodT_equivariant]
   rw [toTensor_smul_eq_self, actionT_coMetric]
 
-set_option backward.isDefEq.respectTransparency false in
 set_option maxRecDepth 2000 in
 /-- The tensor `pauliCoDown` is invariant under the action of `SL(2,ℂ)`. -/
 lemma smul_pauliCoDown (g : SL(2,ℂ)) : g • pauliCoDown = pauliCoDown := by
@@ -513,7 +499,6 @@ lemma smul_pauliCoDown (g : SL(2,ℂ)) : g • pauliCoDown = pauliCoDown := by
     ← contrT_equivariant, ← prodT_equivariant]
   rw [smul_pauliCo, actionT_dualLeftMetric, actionT_dualRightMetric]
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The tensor `pauliContrDown` is invariant under the action of `SL(2,ℂ)`. -/
 lemma smul_pauliContrDown (g : SL(2,ℂ)) : g • pauliContrDown = pauliContrDown := by
   rw [← permT_equivariant, ← contrT_equivariant, ← prodT_equivariant,

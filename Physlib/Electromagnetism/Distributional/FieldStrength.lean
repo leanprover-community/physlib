@@ -283,7 +283,6 @@ lemma fieldStrength_antisymmetric_basis {d} (A : DistElectromagneticPotential d)
 
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 lemma fieldStrength_equivariant {d} (A : DistElectromagneticPotential d)
     (Λ : LorentzGroup d) :
     (Λ • A).fieldStrength = Λ • A.fieldStrength := by
