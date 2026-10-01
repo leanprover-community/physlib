@@ -8,7 +8,7 @@ module
 public import Physlib.Relativity.SL2C.SelfAdjoint
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Physlib.Relativity.LorentzGroup.Restricted.Basic
-public import Physlib.Mathematics.SchurTriangulation
+public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 /-!
 # The group SL(2, ℂ) and it's relation to the Lorentz group
 

@@ -6,7 +6,7 @@ Authors: Giuseppe Sorge
 module
 
 public import Physlib.ClassicalMechanics.RigidBody.Basic
-public import Physlib.Mathematics.CrossProduct
+public import Physlib.Mathematics.Modules.CrossProduct
 /-!
 
 # Angular momentum of a rigid body

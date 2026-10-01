@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Mathematics.List.InsertIdx
+public import Physlib.Mathematics.ForMathlib.List.InsertIdx
 public import Mathlib.Tactic.FinCases
 public import Mathlib.Algebra.BigOperators.Group.Finset.Piecewise
 public import Mathlib.Data.Fintype.Card

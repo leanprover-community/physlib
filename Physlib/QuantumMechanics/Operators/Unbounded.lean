@@ -6,7 +6,7 @@ Authors: Adam Bornemann, Gregory J. Loges
 module
 
 public import Physlib.Mathematics.InnerProductSpace.Submodule
-public import Physlib.Mathematics.LinearPMap
+public import Physlib.Mathematics.ForMathlib.LinearPMap
 public import Physlib.Meta.TODO.Basic
 /-!
 

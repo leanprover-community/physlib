@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Mathematics.OneParameterSubgroups.Unitary
+public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Meta.TODO.Basic
 public import Physlib.QuantumMechanics.PlanckConstant
 /-!

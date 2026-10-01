@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Calculus.Deriv.Star
-public import Physlib.Mathematics.OneParameterSubgroups.Basic
+public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 
 /-!
 

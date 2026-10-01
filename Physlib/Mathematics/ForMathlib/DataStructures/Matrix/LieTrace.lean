@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
-public import Physlib.Mathematics.SchurTriangulation
+public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 
 /-!
 # Lie's Trace Formula

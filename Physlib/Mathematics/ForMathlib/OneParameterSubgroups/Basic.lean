@@ -21,7 +21,7 @@ Let `E` be a real Banach algebra. This file proves that every continuous additiv
 
 This is the Banach-algebra argument underlying the correspondence between norm-continuous unitary
 one-parameter groups and bounded self-adjoint generators. See
-`Physlib.Mathematics.OneParameterSubgroups.Unitary` for that correspondence.
+`Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary` for that correspondence.
 
 **Proof outline.** Continuity at zero implies that, for sufficiently small `d > 0`, the integral of
 `U` over `[0, d]` is close to `d • 1` and therefore invertible. If `I` is the indefinite integral of

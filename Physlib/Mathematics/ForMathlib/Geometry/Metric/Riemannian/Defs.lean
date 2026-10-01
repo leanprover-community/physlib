@@ -5,7 +5,7 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Physlib.Mathematics.Geometry.Metric.PseudoRiemannian.Defs
+public import Physlib.Mathematics.ForMathlib.Geometry.Metric.PseudoRiemannian.Defs
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 /-!
 # Riemannian Metric Definitions

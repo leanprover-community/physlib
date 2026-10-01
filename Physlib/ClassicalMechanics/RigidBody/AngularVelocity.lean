@@ -6,7 +6,7 @@ Authors: Giuseppe Sorge
 module
 
 public import Physlib.ClassicalMechanics.RigidBody.Motion
-public import Physlib.Mathematics.CrossProductMatrix
+public import Physlib.Mathematics.Modules.CrossProductMatrix
 /-!
 
 # The angular velocity of a rigid body
@@ -22,8 +22,9 @@ rules for time derivatives of matrices used for this live in
 `Physlib.SpaceAndTime.Time.MatrixDerivatives`.
 
 In three dimensions the skew-symmetric tensor `Ω` is dual to the *angular velocity vector*
-`ω(t) = Ωᵛ` via the hat map (`Physlib.Mathematics.CrossProductMatrix`), with `[ω]ₓ = Ω`; `ω` is the
-angular velocity proper, appearing in the decomposition `v = V + ω × r` as an honest cross product.
+`ω(t) = Ωᵛ` via the hat map (`Physlib.Mathematics.Modules.CrossProductMatrix`), with
+`[ω]ₓ = Ω`; `ω` is the angular velocity proper, appearing in the decomposition `v = V + ω × r`
+as an honest cross product.
 
 The angular velocity can equally be expressed in the *body frame*: the moving coordinate system
 rigidly attached to the body, with origin at the centre of mass and axes rotating with the body,

@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Mathematics.LinearMaps
+public import Physlib.Mathematics.ForMathlib.LinearMaps
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Tactic.Cases
 /-!

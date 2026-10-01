@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Tooby-Smith
 -/
 module
-public import Physlib.Mathematics.List
-import all Physlib.Mathematics.List
+public import Physlib.Mathematics.ForMathlib.List
+import all Physlib.Mathematics.ForMathlib.List
 /-!
 # List lemmas
 

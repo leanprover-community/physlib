@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Automorphism
-public import Physlib.Mathematics.OneParameterSubgroups.Unitary
+public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Mathlib.Analysis.Normed.Operator.ContinuousAlgEquiv
 public import Mathlib.Analysis.CStarAlgebra.Hom
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
