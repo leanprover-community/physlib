@@ -39,6 +39,8 @@ elements of a POVM.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-!
 
 ## A. Effects
@@ -86,3 +88,5 @@ lemma exists_pos_smul_mem {B : E} (hB : 0 ≤ B) :
   exact hn.trans (smul_le_smul_of_nonneg_right (by linarith) one_nonneg)
 
 end Effect
+
+end ProbabilisticTheory

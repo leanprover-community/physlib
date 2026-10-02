@@ -30,6 +30,8 @@ actually run is itself a legitimate measurement.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {E : Type*} [OrderUnitSpace E]
 
 namespace Effect
@@ -54,3 +56,5 @@ lemma coe_mix (e f : Effect E) (t : unitInterval) :
     ((mix e f t : Effect E) : E) = (t : ℝ) • (e : E) + (1 - (t : ℝ)) • (f : E) := rfl
 
 end Effect
+
+end ProbabilisticTheory

@@ -30,6 +30,8 @@ be written as a nontrivial mixture of two distinct effects. Sharp effects genera
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace Effect
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -70,3 +72,5 @@ lemma isSharp_one : IsSharp (1 : Effect E) :=
   complement_zero (E := E) ▸ isSharp_complement isSharp_zero
 
 end Effect
+
+end ProbabilisticTheory

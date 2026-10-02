@@ -31,6 +31,8 @@ Physically, a state's probability of "no" is always `1` minus its probability of
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace Effect
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -80,3 +82,5 @@ lemma complement_mix (e f : Effect E) (t : unitInterval) :
   ext; simp; module
 
 end Effect
+
+end ProbabilisticTheory

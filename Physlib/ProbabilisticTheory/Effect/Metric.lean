@@ -32,6 +32,8 @@ Effects also correspond to points of the order-unit-norm ball, by the affine res
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open ArchimedeanOrderUnitSpace
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
@@ -105,3 +107,5 @@ noncomputable def effectEquiv : Effect E ≃ {A : E // orderUnitNorm A ≤ 1} wh
   right_inv A := Subtype.ext (two_smul_two_inv_smul_one_add_sub_one (A : E))
 
 end Effect
+
+end ProbabilisticTheory
