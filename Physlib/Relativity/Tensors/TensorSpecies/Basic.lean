@@ -125,6 +125,13 @@ lemma map_basis_eq {c c1 : C} (h : c = c1) (i : basisIdx c) :
   subst h
   simp
 
+omit [(c : C) → Fintype (basisIdx c)] [(c : C) → DecidableEq (basisIdx c)] in
+/-- `map_basis_eq` with the cast spelled `Equiv.cast`, the form `contr_tmul_symm` applies to its
+  first vector. -/
+lemma equivCast_basis {c c1 : C} (h : c = c1) (i : basisIdx c) :
+    Equiv.cast (congrArg V h) (basis c i) = basis c1 (basisIdxCongr h i) :=
+  map_basis_eq h i
+
 set_option linter.unusedVariables false in
 /-- The number of indices `n` from a tensor. -/
 @[nolint unusedArguments]
