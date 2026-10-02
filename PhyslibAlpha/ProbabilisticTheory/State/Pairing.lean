@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Separation
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Convex
+public import Physlib.ProbabilisticTheory.Effect.Convex
 
 /-!
 # The state–effect pairing

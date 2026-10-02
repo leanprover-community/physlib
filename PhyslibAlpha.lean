@@ -123,10 +123,6 @@ public import PhyslibAlpha.ProbabilisticTheory.Dynamics.Generator
 public import PhyslibAlpha.ProbabilisticTheory.Dynamics.GeneratorIsDerivation
 public import PhyslibAlpha.ProbabilisticTheory.Dynamics.OneParameterGroup
 public import PhyslibAlpha.ProbabilisticTheory.Effect.Basic
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Convex
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Metric
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
 public import PhyslibAlpha.ProbabilisticTheory.Examples.GBit
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.ProbabilisticTheory.Examples.Qubit
