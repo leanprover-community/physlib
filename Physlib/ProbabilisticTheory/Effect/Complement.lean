@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Convex
+public import Physlib.ProbabilisticTheory.Effect.Convex
 
 /-!
 # Complementary effects
@@ -48,8 +48,11 @@ def complement (e : Effect E) : Effect E :=
   ⟨1 - e.1, sub_nonneg.mpr e.2.2, sub_le_self 1 e.2.1⟩
 
 @[simp]
-lemma complement_complement (e : Effect E) : complement (complement e) = e :=
-  Subtype.ext (by simp [complement])
+lemma coe_complement (e : Effect E) : ((complement e : Effect E) : E) = 1 - e := rfl
+
+@[simp]
+lemma complement_complement (e : Effect E) : complement (complement e) = e := by
+  ext; simp
 
 /-!
 
@@ -62,10 +65,10 @@ lemma complement_antitone : Antitone (complement (E := E)) :=
   fun _ _ h => sub_le_sub_left (show (_ : E) ≤ _ from h) 1
 
 @[simp]
-lemma complement_zero : complement (0 : Effect E) = 1 := Subtype.ext (by simp [complement])
+lemma complement_zero : complement (0 : Effect E) = 1 := by ext; simp
 
 @[simp]
-lemma complement_one : complement (1 : Effect E) = 0 := Subtype.ext (by simp [complement])
+lemma complement_one : complement (1 : Effect E) = 0 := by ext; simp
 
 /-!
 
@@ -75,9 +78,8 @@ lemma complement_one : complement (1 : Effect E) = 0 := Subtype.ext (by simp [co
 
 /-- Mixing commutes with taking the complement. -/
 lemma complement_mix (e f : Effect E) (t : unitInterval) :
-    complement (mix e f t) = mix (complement e) (complement f) t :=
-  Subtype.ext (show (1 : E) - ((t : ℝ) • (e : E) + (1 - (t : ℝ)) • (f : E))
-      = (t : ℝ) • ((1 : E) - (e : E)) + (1 - (t : ℝ)) • ((1 : E) - (f : E)) from by module)
+    complement (mix e f t) = mix (complement e) (complement f) t := by
+  ext; simp; module
 
 end Effect
 

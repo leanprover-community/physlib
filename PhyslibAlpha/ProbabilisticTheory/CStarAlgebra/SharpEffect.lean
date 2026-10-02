@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.CStarAlgebra.Basic
 public import Mathlib.Algebra.Module.Torsion.Free

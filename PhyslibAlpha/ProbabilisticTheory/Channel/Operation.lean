@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap

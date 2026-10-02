@@ -215,7 +215,6 @@ def generalizedBoost (u v : Velocity d) : LorentzGroup d :=
       genBoostAux₁_add_genBoostAux₂_minkowskiProduct]
   ring⟩
 
-set_option backward.isDefEq.respectTransparency false in
 lemma generalizedBoost_apply (u v : Velocity d) (x : Vector d) :
     generalizedBoost u v • x = x + genBoostAux₁ u v x + genBoostAux₂ u v x:= by
   rw [smul_eq_mulVec]

@@ -19,15 +19,16 @@ Overview: |
     scale factor, the Hubble parameter, and the deceleration parameter with the
     relation ∂ₜ H = -H^2 (1 + q). The FLRW type itself is a placeholder; the file
     records a TODO to replace it with a structure bundling a positive scale
-    factor and a spatial geometry. Six further modules, ConformalTime.lean,
-    DensityParameters.lean, Distances.lean, Dynamics.lean, MatterContent.lean and
-    Solutions.lean, contain only TODO items: conformal time and the conformal
-    Hubble factor, the critical density and density parameters, cosmological
-    distances and redshift, energy conditions and the Big-Bang singularity, the
-    matter content with its continuity equation and scaling laws, and the exact
-    de Sitter, radiation-dominated, Einstein-de Sitter, Milne and Einstein static
-    solutions. The requirements below record the two most basic of those open
-    items. Cosmology/Basic.lean is a placeholder module doc with no declarations.
+    factor and a spatial geometry. MatterContent.lean contains the continuity
+    equation of the cosmic fluid and its relation to the two Friedmann equations,
+    the equation of state and the scaling laws being TODO items there.
+    Solutions.lean contains the exact de Sitter, radiation-dominated, Einstein-de
+    Sitter, Milne and Einstein static solutions. Four further modules,
+    ConformalTime.lean, DensityParameters.lean, Distances.lean and Dynamics.lean,
+    contain only TODO items: conformal time and the conformal Hubble factor, the
+    critical density and density parameters, cosmological distances and redshift,
+    energy conditions and the Big-Bang singularity. Cosmology/Basic.lean is a
+    placeholder module doc with no declarations.
 
 ParentAPIs:
   - Time (Physlib/SpaceAndTime/Time)
@@ -89,8 +90,17 @@ Requirements:
     location: "Physlib/Cosmology/FLRW/Basic.lean (decelerationParameter, deriv_hubbleConstant, decelerationParameter_eq_one_plus_hubbleConstant, deriv_hubbleConstant_eq_neg_sq_mul, deriv_hubbleConstant_neg_iff, exists_deriv_hubbleConstant_neg_iff)"
 
   - description: >
-      The continuity equation ∂ₜ ρ + 3 H (ρ + P/c^2) = 0 of the cosmic fluid, the
-      barotropic equation of state P = w ρ c^2, and the density scaling law
+      The continuity equation ∂ₜ ρ + 3 H (ρ + P/c^2) = 0 of the cosmic fluid is
+      defined as a proposition at an instant, and the API relates it to the two
+      Friedmann equations: it follows from the first-order equation holding at all
+      times together with the second-order equation, and conversely the
+      second-order equation follows from the first-order equation and the
+      continuity equation wherever ∂ₜ a ≠ 0.
+    done: true
+    location: "Physlib/Cosmology/FLRW/MatterContent.lean (ContinuityEquation, deriv_firstOrderFriedmann, continuityEquation_of_friedmann, secondOrderFriedmann_of_continuityEquation)"
+
+  - description: >
+      The barotropic equation of state P = w ρ c^2, and the density scaling law
       ρ ∝ a^(-3(1+w)) with its dust, radiation and vacuum-energy special cases.
       Recorded as TODO items in Physlib/Cosmology/FLRW/MatterContent.lean; no
       declarations exist yet.

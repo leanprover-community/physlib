@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
+public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!

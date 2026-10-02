@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Metric
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
+public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Mathlib.Algebra.Order.Group.CompleteLattice
 
 /-!
@@ -149,27 +149,27 @@ lemma ciSup_sub_eq_ciSup_abs_sub (ω₀ ω₁ : 𝓢[ℝ, E]) :
     exact abs_le.mpr ⟨by linarith, h1⟩
 
 /-- The state distance is the largest `|ω₀ e - ω₁ e|` over unit-ball effects
-(`Effect.equivBall`). -/
+(`Effect.effectEquiv`). -/
 lemma dist_eq_ciSup_abs_sub (ω₀ ω₁ : 𝓢[ℝ, E]) :
     dist ω₀ ω₁ =
-      ⨆ e : Effect E, |ω₀ ((Effect.equivBall e : E)) - ω₁ ((Effect.equivBall e : E))| := by
+      ⨆ e : Effect E, |ω₀ ((Effect.effectEquiv e : E)) - ω₁ ((Effect.effectEquiv e : E))| := by
   have hbdd' : BddAbove (Set.range
-      fun e : Effect E => |ω₀ ((Effect.equivBall e : E)) - ω₁ ((Effect.equivBall e : E))|) := by
+      fun e : Effect E => |ω₀ ((Effect.effectEquiv e : E)) - ω₁ ((Effect.effectEquiv e : E))|) := by
     obtain ⟨b, hb⟩ := dist_bddAbove ω₀ ω₁
-    exact ⟨b, by rintro _ ⟨e, rfl⟩; exact hb (Set.mem_range_self (Effect.equivBall e))⟩
+    exact ⟨b, by rintro _ ⟨e, rfl⟩; exact hb (Set.mem_range_self (Effect.effectEquiv e))⟩
   apply le_antisymm
   · apply ciSup_le
     intro A
-    rw [← Effect.equivBall.apply_symm_apply A]
-    exact le_ciSup hbdd' (Effect.equivBall.symm A)
-  · exact ciSup_le fun e => le_ciSup (dist_bddAbove ω₀ ω₁) (Effect.equivBall e)
+    rw [← Effect.effectEquiv.apply_symm_apply A]
+    exact le_ciSup hbdd' (Effect.effectEquiv.symm A)
+  · exact ciSup_le fun e => le_ciSup (dist_bddAbove ω₀ ω₁) (Effect.effectEquiv e)
 
 /-- The state distance is twice the largest state-value difference over all effects. -/
 lemma dist_eq_two_mul_ciSup_sub (ω₀ ω₁ : 𝓢[ℝ, E]) :
     dist ω₀ ω₁ = 2 * ⨆ e : Effect E, (ω₀ (e : E) - ω₁ (e : E)) := by
   rw [ciSup_sub_eq_ciSup_abs_sub, dist_eq_ciSup_abs_sub, Real.mul_iSup_of_nonneg zero_le_two]
   congr 1 with e
-  rw [apply_equivBall, apply_equivBall, ← abs_two, ← abs_mul]
+  rw [apply_effectEquiv, apply_effectEquiv, ← abs_two, ← abs_mul]
   ring_nf
 
 /-- For equal priors, the Helstrom bound is `1/2` plus a quarter of the state distance. -/

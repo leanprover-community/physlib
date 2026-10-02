@@ -33,6 +33,8 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.PhysicalSpace
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.PosPartPow
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Current
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.CurrentEigenstates
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Uncertainty
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
@@ -123,10 +125,6 @@ public import PhyslibAlpha.ProbabilisticTheory.Dynamics.Generator
 public import PhyslibAlpha.ProbabilisticTheory.Dynamics.GeneratorIsDerivation
 public import PhyslibAlpha.ProbabilisticTheory.Dynamics.OneParameterGroup
 public import PhyslibAlpha.ProbabilisticTheory.Effect.Basic
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Convex
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Metric
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
 public import PhyslibAlpha.ProbabilisticTheory.Examples.GBit
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.ProbabilisticTheory.Examples.Qubit
@@ -285,6 +283,7 @@ public import PhyslibAlpha.ProbabilisticTheory.Weight.Continuous
 public import PhyslibAlpha.ProbabilisticTheory.Weight.Extension
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.LadderSystem
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Vacuum
+public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere

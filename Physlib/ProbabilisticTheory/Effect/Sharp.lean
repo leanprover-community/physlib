@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.Convex.Strict.Extreme
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
+public import Physlib.ProbabilisticTheory.Effect.Complement
 
 /-!
 # Sharp effects
@@ -44,7 +44,7 @@ variable {E : Type*} [OrderUnitSpace E]
 
 /-- An effect is sharp when it is an extreme point of the effect interval: it cannot be written as
 a nontrivial mixture of two distinct effects. -/
-def IsSharp (e : Effect E) : Prop := (e : E) ∈ Set.extremePoints ℝ (Effect E : Set E)
+def IsSharp (e : Effect E) : Prop := (e : E) ∈ Set.extremePoints ℝ (Effect E)
 
 /-- The impossible outcome 0 is sharp. -/
 lemma isSharp_zero : IsSharp (0 : Effect E) := by
@@ -57,15 +57,11 @@ lemma isSharp_zero : IsSharp (0 : Effect E) := by
 `e ↦ 1 - e` is an affine involution of the effect interval. -/
 lemma isSharp_complement {e : Effect E} (h : IsSharp e) : IsSharp (complement e) := by
   refine ⟨(complement e).2, fun x₁ hx₁ x₂ hx₂ ⟨a, b, ha, hb, hab, hz⟩ => ?_⟩
-  have key : a • (1 - x₁) + b • (1 - x₂) = (e : E) := by
-    rw [show a • (1 - x₁) + b • (1 - x₂) = (a • (1 : E) + b • (1 : E)) - (a • x₁ + b • x₂) from
-      by module, ← add_smul, hab, one_smul, hz]
-    show (1 : E) - (1 - (e : E)) = (e : E)
-    abel
-  have x1eq := (mem_extremePoints_iff_left.mp h).2 (1 - x₁)
-    ⟨sub_nonneg.mpr hx₁.2, sub_le_self 1 hx₁.1⟩ (1 - x₂)
-    ⟨sub_nonneg.mpr hx₂.2, sub_le_self 1 hx₂.1⟩ ⟨a, b, ha, hb, hab, key⟩
-  exact eq_sub_of_add_eq (by rw [← x1eq]; abel)
+  rw [coe_complement] at hz ⊢
+  have h₁ := (mem_extremePoints_iff_left.mp h).2 (1 - x₁) (complement ⟨x₁, hx₁⟩).2 (1 - x₂)
+    (complement ⟨x₂, hx₂⟩).2
+    ⟨a, b, ha, hb, hab, by linear_combination (norm := module) hab • (1 : E) - hz⟩
+  rw [← h₁, sub_sub_cancel]
 
 /-- Sharpness is preserved by taking the complement, in either direction. -/
 lemma isSharp_complement_iff {e : Effect E} : IsSharp (complement e) ↔ IsSharp e :=

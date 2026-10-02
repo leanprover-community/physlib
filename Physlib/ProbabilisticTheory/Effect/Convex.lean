@@ -5,9 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Analysis.Convex.Basic
 public import Mathlib.Topology.UnitInterval
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Basic
+public import Physlib.ProbabilisticTheory.Effect.Basic
 
 /-!
 # Convexity and mixtures of effects
@@ -44,7 +43,7 @@ namespace Effect
 -/
 
 /-- The effect interval is convex. -/
-lemma convex : Convex ℝ (Effect E : Set E) := convex_Icc 0 1
+lemma convex : Convex ℝ (Effect E) := convex_Icc 0 1
 
 /-- Randomize between two effects with probability `t` of testing the first. -/
 def mix (e f : Effect E) (t : unitInterval) : Effect E :=
