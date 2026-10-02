@@ -271,9 +271,8 @@ lemma repDim_tau {c : complexLorentzTensor.Color} :
     repDim (complexLorentzTensor.τ c) = repDim c := by
   cases c <;> rfl
 
-/-- A complex Lorentz color and its dual have the same representation dimension (`repDim_tau`),
-and the matching `finCongr repDim_tau` satisfies the δ law: it is the basis contraction of each of
-the six Weyl and Lorentz pairings. -/
+/-- At every complex Lorentz color, the bases at the color and its dual are dual bases, with
+labels matched by `finCongr repDim_tau`. -/
 lemma isContrDualMatching_finCongr (c : complexLorentzTensor.Color) :
     IsContrDualMatching complexLorentzTensor c (finCongr repDim_tau) := by
   intro x₁ x₂

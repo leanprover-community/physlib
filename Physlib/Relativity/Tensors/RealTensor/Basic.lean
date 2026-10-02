@@ -164,8 +164,8 @@ lemma τ_down_eq_up {d : ℕ} : (realLorentzTensor d).τ Color.down = Color.up :
 attribute [-simp] Fintype.sum_sum_type
 open TensorSpecies Tensor
 
-/-- The basis at every real Lorentz color is indexed by `Fin 1 ⊕ Fin d`, and the identity
-matching satisfies the δ law: it is the basis contraction of the two Lorentz pairings. -/
+/-- At every real Lorentz color, the bases at the color and its dual are dual bases, with
+labels matched by the identity. -/
 lemma isContrDualMatching_refl (c : realLorentzTensor.Color) :
     IsContrDualMatching (realLorentzTensor d) c (Equiv.refl _) := by
   intro x₁ x₂
