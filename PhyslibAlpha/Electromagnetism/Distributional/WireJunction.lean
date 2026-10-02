@@ -10,19 +10,21 @@ public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 
 /-!
 
-# Kirchhoff's current law for distributional currents
+# Junctions of thin wires
 
 Let `A` be a distributional electromagnetic potential and `J` a distributional Lorentz current
 density such that Maxwell's equations hold, `IsExtrema 𝓕 A J`. Taking the divergence of
 Ampère's law and using Gauss's law gives the continuity equation `∂ₜ ρ + ∇ ⬝ J = 0` as an
 equation of distributions.
 
-Distributions allow the currents of a circuit to be carried by thin wires. A junction is
-modelled by finitely many straight, semi-infinite wires leaving the origin in the directions
-`u k`, carrying steady currents `I k`. The divergence of such a current density is
-`(∑ k, I k) δ₀`: the wires end at the origin, where the currents must come from somewhere. If no
-charge accumulates, the continuity equation forces `∑ k, I k = 0`. This is Kirchhoff's current
-law.
+Distributions allow currents to be carried by thin wires. A junction is modelled by finitely
+many straight, semi-infinite wires leaving the origin in the directions `u k`, carrying steady
+currents `I k`. The divergence of such a current density is `(∑ k, I k) δ₀`: the wires end at
+the origin, where the currents must come from somewhere. If no charge accumulates, the
+continuity equation forces `∑ k, I k = 0`.
+
+This is motivated by Kirchhoff's current law, of which it is a special case: a single node with
+steady currents, rather than the branch currents at every node of a lumped-element circuit.
 
 ## Main results
 
@@ -32,8 +34,8 @@ law.
   junction of thin wires.
 - `Electromagnetism.DistLorentzCurrentDensity.IsWireJunction.distSpaceDiv_currentDensity` : the
   divergence of the current density of a junction.
-- `Electromagnetism.DistElectromagneticPotential.kirchhoffCurrentLaw` : Kirchhoff's current law
-  for a junction of thin wires.
+- `Electromagnetism.DistLorentzCurrentDensity.IsWireJunction.sum_currents_eq_zero` : the
+  currents leaving a junction of thin wires sum to zero.
 
 ## Contents
 
@@ -42,9 +44,9 @@ law.
   - A.2. Schwartz functions along a ray
   - A.3. Integrating test functions over time
 - B. The continuity equation
-- C. Kirchhoff's current law
-  - C.1. Junctions of thin wires
-  - C.2. Kirchhoff's current law
+- C. Junctions of thin wires
+  - C.1. The current density of a junction
+  - C.2. The currents at a junction sum to zero
 
 -/
 
@@ -209,9 +211,9 @@ open MeasureTheory Set
 
 /-!
 
-## C. Kirchhoff's current law
+## C. Junctions of thin wires
 
-### C.1. Junctions of thin wires
+### C.1. The current density of a junction
 
 The `k`-th wire is the ray `s ↦ s • u k`, `s > 0`. A current `I k` along it has current density
 `I k` times the unit tangent times the arc-length measure on the ray; in the parameter `s` this is
@@ -244,29 +246,25 @@ lemma IsWireJunction.distSpaceDiv_currentDensity {d} {c : SpeedOfLight}
     timeIntegralSchwartz_apply]
   ring
 
-end DistLorentzCurrentDensity
-
-namespace DistElectromagneticPotential
-
 /-!
 
-### C.2. Kirchhoff's current law
+### C.2. The currents at a junction sum to zero
 
 -/
 
-/-- Kirchhoff's current law for a junction of thin wires: if Maxwell's equations hold and no
-charge accumulates, the currents leaving the junction along its wires sum to zero. -/
-theorem kirchhoffCurrentLaw {d} {𝓕 : FreeSpace} (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) (h : IsExtrema 𝓕 A J)
-    (hρ : distTimeDeriv (J.chargeDensity 𝓕.c) = 0) {ι : Type} [Fintype ι]
-    {u : ι → EuclideanSpace ℝ (Fin d)} {I : ι → ℝ} (hJ : J.IsWireJunction 𝓕.c u I)
-    (hu : ∀ k, u k ≠ 0) :
+/-- If Maxwell's equations hold and no charge accumulates, the steady currents leaving a junction
+of thin wires sum to zero. This is motivated by Kirchhoff's current law, of which it is the
+special case of a single node. -/
+lemma IsWireJunction.sum_currents_eq_zero {d} {𝓕 : FreeSpace} {J : DistLorentzCurrentDensity d}
+    {ι : Type} [Fintype ι] {u : ι → EuclideanSpace ℝ (Fin d)} {I : ι → ℝ}
+    (hJ : J.IsWireJunction 𝓕.c u I) (hu : ∀ k, u k ≠ 0) (A : DistElectromagneticPotential d)
+    (h : DistElectromagneticPotential.IsExtrema 𝓕 A J)
+    (hρ : distTimeDeriv (J.chargeDensity 𝓕.c) = 0) :
     ∑ k, I k = 0 := by
   obtain ⟨η, hη⟩ := exists_integral_time_ne_zero (d := d)
-  have hcont := continuityEquation A J h η
-  rw [hρ, _root_.zero_apply, zero_add,
-    hJ.distSpaceDiv_currentDensity hu] at hcont
+  have hcont := DistElectromagneticPotential.continuityEquation A J h η
+  rw [hρ, _root_.zero_apply, zero_add, hJ.distSpaceDiv_currentDensity hu] at hcont
   exact (mul_eq_zero.mp hcont).resolve_right hη
 
-end DistElectromagneticPotential
+end DistLorentzCurrentDensity
 end Electromagnetism

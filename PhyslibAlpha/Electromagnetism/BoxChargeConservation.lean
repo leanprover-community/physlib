@@ -10,7 +10,7 @@ public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 
 /-!
 
-# Kirchhoff's current law from Maxwell's equations
+# Charge conservation on a box from Maxwell's equations
 
 Let `V` be an electromagnetic potential and `J₄` a Lorentz current density such that `V` is an
 extremum of the free-space action with source `J₄`, i.e. Maxwell's equations hold. Taking the
@@ -20,9 +20,12 @@ density. This gives the continuity equation `∂ₜ ρ + ∇ ⬝ J = 0`.
 
 Integrating the continuity equation over a coordinate box `[a, b]` and applying the divergence
 theorem, the net current leaving the box equals minus the rate of change of the charge it
-contains. A node of a circuit is modelled by such a box: in the steady state of a lumped
-circuit no charge accumulates at the node, so the currents leaving through the six faces of
-the box sum to zero. This is Kirchhoff's current law.
+contains. In particular, if no charge accumulates inside the box, the currents leaving through
+its six faces sum to zero.
+
+This is motivated by Kirchhoff's current law, but is not that law: Kirchhoff's current law is a
+statement about the branch currents meeting at the nodes of a lumped-element circuit, whereas
+the results here are the integral form of charge conservation on a single box.
 
 ## Main results
 
@@ -33,7 +36,8 @@ the box sum to zero. This is Kirchhoff's current law.
   coordinate box, and the net current leaving the box.
 - `Electromagnetism.ThreeDimension.boxOutwardCurrent_eq` : the integral form of charge
   conservation.
-- `Electromagnetism.ThreeDimension.kirchhoffCurrentLaw` : Kirchhoff's current law.
+- `Electromagnetism.ThreeDimension.boxOutwardCurrent_eq_zero_of_steady` : the net current
+  leaving a box in which no charge accumulates is zero.
 
 ## Contents
 
@@ -44,10 +48,10 @@ the box sum to zero. This is Kirchhoff's current law.
 - B. The continuity equation
   - B.1. The continuity equation from Gauss's and Ampère's laws
   - B.2. The continuity equation for an electromagnetic potential
-- C. Kirchhoff's current law
+- C. Charge conservation on a box
   - C.1. Currents through a box
-  - C.2. Charge conservation on a box
-  - C.3. Kirchhoff's current law
+  - C.2. The integral form of charge conservation
+  - C.3. Steady charge in a box
 
 -/
 
@@ -214,7 +218,7 @@ theorem continuityEquation (t : Time) (x : Space)
 
 /-!
 
-## C. Kirchhoff's current law
+## C. Charge conservation on a box
 
 ### C.1. Currents through a box
 
@@ -235,7 +239,7 @@ noncomputable def _root_.Electromagnetism.LorentzCurrentDensity.boxOutwardCurren
 
 /-!
 
-### C.2. Charge conservation on a box
+### C.2. The integral form of charge conservation
 
 -/
 
@@ -257,18 +261,19 @@ lemma boxOutwardCurrent_eq (t : Time) (a b : Fin 3 → ℝ) (hle : a ≤ b)
 
 /-!
 
-### C.3. Kirchhoff's current law
+### C.3. Steady charge in a box
 
 -/
 
-/-- Kirchhoff's current law: for a node enclosed in the coordinate box `[a, b]`, if no charge
-accumulates inside the box, the currents leaving through its six faces sum to zero. -/
-theorem kirchhoffCurrentLaw (t : Time) (a b : Fin 3 → ℝ) (hle : a ≤ b)
+/-- If no charge accumulates inside the coordinate box `[a, b]`, the net current leaving through
+its six faces is zero. This is motivated by Kirchhoff's current law, with the box enclosing a
+node of a circuit. -/
+lemma boxOutwardCurrent_eq_zero_of_steady (t : Time) (a b : Fin 3 → ℝ) (hle : a ≤ b)
     (h : IsExtrema 𝓕 V J₄) (hV : ContDiff ℝ ∞ V) (hJ : ContDiff ℝ ∞ J₄)
     (hsteady : ∀ x ∈ Icc a b, ∂ₜ (fun t => J₄.chargeDensity 𝓕.c t ⟨x⟩) t = 0) :
-    ∑ i, (J₄.boxFaceCurrent 𝓕.c t a b i (b i) - J₄.boxFaceCurrent 𝓕.c t a b i (a i)) = 0 := by
-  rw [← LorentzCurrentDensity.boxOutwardCurrent, boxOutwardCurrent_eq V J₄ t a b hle h hV hJ,
-    setIntegral_eq_zero_of_forall_eq_zero hsteady, neg_zero]
+    J₄.boxOutwardCurrent 𝓕.c t a b = 0 := by
+  rw [boxOutwardCurrent_eq V J₄ t a b hle h hV hJ, setIntegral_eq_zero_of_forall_eq_zero hsteady,
+    neg_zero]
 
 end ThreeDimension
 end Electromagnetism
