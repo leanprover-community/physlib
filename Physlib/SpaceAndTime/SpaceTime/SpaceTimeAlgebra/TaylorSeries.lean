@@ -9,24 +9,24 @@ public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 /-!
 
-# Taylor series of smooth functions
+# Taylor series of functions on spacetime
 
 ## i. Overview
 
-The Taylor series of a smooth complex-valued function `f` on spacetime at a point `x₀` is the
-element of the spacetime algebra whose base-point derivative values are the iterated derivatives of
-`f` at `x₀`. It depends `ℂ`-linearly on `f`, and it takes the derivative of `f` along a direction
-to the formal partial derivative of the series along the same direction.
+The Taylor series of a complex-valued function `f` on spacetime at a point `x₀` is the element of
+the spacetime algebra whose base-point derivative values are the iterated derivatives of `f` at
+`x₀`. For smooth `f` it is additive and `ℂ`-homogeneous in `f`, and it takes the derivative of `f`
+along a direction to the formal partial derivative of the series along the same direction.
 
 ## ii. Key results
 
-- `SpaceTimeAlgebra.taylorSeries` : the Taylor series of a smooth function at a point.
+- `SpaceTimeAlgebra.taylorSeries` : the Taylor series of a function at a point.
 - `SpaceTimeAlgebra.constantCoeff_iteratedPDeriv_taylorSeries` : derivative values of `f` at `x₀`.
-- `SpaceTimeAlgebra.taylorSeries_smoothDeriv` : derivatives become formal partial derivatives.
+- `SpaceTimeAlgebra.taylorSeries_deriv` : derivatives become formal partial derivatives.
 
 ## iii. Table of contents
 
-- A. The Taylor series of a smooth function
+- A. The Taylor series of a function
 - B. Taylor series of derivatives
 
 ## iv. References
@@ -40,46 +40,49 @@ namespace SpaceTimeAlgebra
 
 open MvPowerSeries SpaceTime
 
+open scoped ContDiff
+
 /-!
 
-## A. The Taylor series of a smooth function
+## A. The Taylor series of a function
 
-The iterated derivatives `iteratedSmoothDeriv s f` of a smooth function are indexed by multisets of
-directions, like the iterated formal partial derivatives of a series. The Taylor series of `f` at
-`x₀` is the series `ofDerivValues` built from their values at `x₀`, so that its coefficient of
-`x^s` is `(∂^s f)(x₀)` divided by `s!` and the base point of the spacetime algebra is identified
-with `x₀`. Iterated derivatives distribute over sums and scalar multiples, so the Taylor series is
-`ℂ`-linear.
+The iterated derivatives `iteratedDeriv s f` of a function are indexed by multisets of directions,
+like the iterated formal partial derivatives of a series. The Taylor series of `f` at `x₀` is the
+series `ofDerivValues` built from their values at `x₀`, so that its coefficient of `x^s` is
+`(∂^s f)(x₀)` divided by `s!` and the base point of the spacetime algebra is identified with `x₀`.
+For smooth functions, iterated derivatives distribute over sums and scalar multiples, and so does
+the Taylor series.
 
 -/
 
-/-- The Taylor series at `x₀` of a smooth complex-valued function on spacetime. -/
-noncomputable def taylorSeries (x₀ : SpaceTime) : smoothFunctions →ₗ[ℂ] SpaceTimeAlgebra where
-  toFun f := ofDerivValues fun s => (iteratedSmoothDeriv s f : SpaceTime → ℂ) x₀
-  map_add' f g := by
-    simp only [← derivValuesEquiv_symm_apply, iteratedSmoothDeriv_add, Subalgebra.coe_add,
-      Pi.add_apply, ← map_add]
-    rfl
-  map_smul' a f := by
-    simp only [← derivValuesEquiv_symm_apply, iteratedSmoothDeriv_smul, Subalgebra.coe_smul,
-      Pi.smul_apply, RingHom.id_apply, ← map_smul]
-    rfl
+/-- The Taylor series at `x₀` of a complex-valued function on spacetime. -/
+noncomputable def taylorSeries (x₀ : SpaceTime) (f : SpaceTime → ℂ) : SpaceTimeAlgebra :=
+  ofDerivValues fun s => iteratedDeriv s f x₀
 
-lemma taylorSeries_apply (x₀ : SpaceTime) (f : smoothFunctions) :
-    taylorSeries x₀ f = ofDerivValues fun s => (iteratedSmoothDeriv s f : SpaceTime → ℂ) x₀ :=
-  rfl
-
-lemma coeff_taylorSeries (x₀ : SpaceTime) (f : smoothFunctions) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
-    coeff m (taylorSeries x₀ f) = ((∏ ν, (m ν).factorial : ℕ) : ℂ)⁻¹ *
-      (iteratedSmoothDeriv (Finsupp.toMultiset m) f : SpaceTime → ℂ) x₀ :=
+lemma coeff_taylorSeries (x₀ : SpaceTime) (f : SpaceTime → ℂ) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
+    coeff m (taylorSeries x₀ f) =
+      ((∏ ν, (m ν).factorial : ℕ) : ℂ)⁻¹ * iteratedDeriv (Finsupp.toMultiset m) f x₀ :=
   rfl
 
 /-- The base-point derivative values of `taylorSeries x₀ f` are the derivatives of `f` at `x₀`. -/
-lemma constantCoeff_iteratedPDeriv_taylorSeries (x₀ : SpaceTime) (f : smoothFunctions)
+lemma constantCoeff_iteratedPDeriv_taylorSeries (x₀ : SpaceTime) (f : SpaceTime → ℂ)
     (s : Multiset (Fin 1 ⊕ Fin 3)) :
-    constantCoeff (iteratedPDeriv s (taylorSeries x₀ f)) =
-      (iteratedSmoothDeriv s f : SpaceTime → ℂ) x₀ := by
-  rw [taylorSeries_apply, constantCoeff_iteratedPDeriv_ofDerivValues]
+    constantCoeff (iteratedPDeriv s (taylorSeries x₀ f)) = iteratedDeriv s f x₀ :=
+  constantCoeff_iteratedPDeriv_ofDerivValues _ s
+
+lemma taylorSeries_add (x₀ : SpaceTime) {f g : SpaceTime → ℂ} (hf : ContDiff ℝ ∞ f)
+    (hg : ContDiff ℝ ∞ g) :
+    taylorSeries x₀ (f + g) = taylorSeries x₀ f + taylorSeries x₀ g := by
+  simp only [taylorSeries, ← derivValuesEquiv_symm_apply, iteratedDeriv_add _ hf hg,
+    Pi.add_apply, ← map_add]
+  rfl
+
+lemma taylorSeries_const_smul (x₀ : SpaceTime) (c : ℂ) {f : SpaceTime → ℂ}
+    (hf : ContDiff ℝ ∞ f) :
+    taylorSeries x₀ (c • f) = c • taylorSeries x₀ f := by
+  simp only [taylorSeries, ← derivValuesEquiv_symm_apply, iteratedDeriv_const_smul _ c hf,
+    Pi.smul_apply, ← map_smul]
+  rfl
 
 /-!
 
@@ -93,10 +96,11 @@ each `s`. A series is determined by its base-point derivative values, so the two
 -/
 
 /-- The Taylor series of a derivative is the formal partial derivative of the Taylor series. -/
-lemma taylorSeries_smoothDeriv (x₀ : SpaceTime) (μ : Fin 1 ⊕ Fin 3) (f : smoothFunctions) :
-    taylorSeries x₀ (smoothDeriv μ f) = pderiv μ (taylorSeries x₀ f) :=
+lemma taylorSeries_deriv (x₀ : SpaceTime) (μ : Fin 1 ⊕ Fin 3) {f : SpaceTime → ℂ}
+    (hf : ContDiff ℝ ∞ f) :
+    taylorSeries x₀ (∂_ μ f) = pderiv μ (taylorSeries x₀ f) :=
   ext_of_constantCoeff_iteratedPDeriv fun s => by
     rw [constantCoeff_iteratedPDeriv_taylorSeries, ← iteratedPDeriv_cons,
-      constantCoeff_iteratedPDeriv_taylorSeries, iteratedSmoothDeriv_cons]
+      constantCoeff_iteratedPDeriv_taylorSeries, iteratedDeriv_cons μ s hf]
 
 end SpaceTimeAlgebra

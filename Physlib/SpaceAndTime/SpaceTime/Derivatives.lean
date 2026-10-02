@@ -10,6 +10,7 @@ public import Physlib.Relativity.Tensors.RealTensor.CoVector.Tensorial
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
+public import Physlib.Mathematics.ForMathlib.FDerivCommute
 /-!
 
 # Derivatives on SpaceTime
@@ -31,9 +32,7 @@ distributions on `SpaceTime d`.
   derivative on `Space d`.
 - `deriv_sum_inl` : The derivative along the temporal coordinate in terms of the
   derivative on `Time`.
-- `smoothFunctions` : The `ℂ`-algebra of smooth complex-valued functions on `SpaceTime d`.
-- `smoothDeriv` : The derivative along the `μ` coordinate as a `ℂ`-linear map on smooth functions.
-- `iteratedSmoothDeriv` : Iterated derivatives of smooth functions, indexed by multisets.
+- `iteratedDeriv` : Iterated derivatives along a multiset of coordinates.
 - `distDeriv` : The derivative of a distribution on `SpaceTime d` along the `μ` coordinate.
 - `distDeriv_commute` : Derivatives of distributions on `SpaceTime d` commute.
 
@@ -47,7 +46,7 @@ distributions on `SpaceTime d`.
   - A.5. Derivatives commute
   - A.6. The derivative of a function composed with a Lorentz transformation
   - A.7. Spacetime derivatives in terms of time and space derivatives
-  - A.8. Derivatives of smooth complex-valued functions
+  - A.8. Iterated derivatives
 - B. Derivatives of distributions
   - B.1. Commutation of derivatives of distributions
   - B.2. Lorentz group action on derivatives of distributions
@@ -357,87 +356,78 @@ lemma deriv_sum_inl {d : ℕ} {M : Type} [NormedAddCommGroup M]
 
 /-!
 
-### A.8. Derivatives of smooth complex-valued functions
+### A.8. Iterated derivatives
 
-The smooth complex-valued functions on `SpaceTime d` form the `ℂ`-subalgebra `smoothFunctions d`
-of all functions `SpaceTime d → ℂ`. The derivative of a smooth function is again smooth, so `∂_ μ`
-restricts to a `ℂ`-linear map `smoothDeriv μ` on this subalgebra, and these maps commute with one
-another by A.5. An iterated derivative of a smooth function therefore depends only on how many
-times each direction occurs, and we index iterated derivatives by a multiset `s` of directions,
-writing `iteratedSmoothDeriv s f`.
+Derivatives along different directions commute for smooth functions, so an iterated derivative of
+a smooth function depends only on how many times each direction occurs. We therefore index iterated
+derivatives by a multiset `s` of directions and write `iteratedDeriv s f`. For an arbitrary function
+the derivatives are taken in the order of the list `s.toList`, and the lemmas that reorder
+directions assume that `f` is smooth.
 
 -/
 
 open scoped ContDiff
 
-/-- The `ℂ`-subalgebra of smooth complex-valued functions on `SpaceTime d`. -/
-def smoothFunctions (d : ℕ := 3) : Subalgebra ℂ (SpaceTime d → ℂ) where
-  carrier := {f | ContDiff ℝ ∞ f}
-  mul_mem' {f g} (hf : ContDiff ℝ ∞ f) (hg : ContDiff ℝ ∞ g) := hf.mul hg
-  add_mem' {f g} (hf : ContDiff ℝ ∞ f) (hg : ContDiff ℝ ∞ g) := hf.add hg
-  algebraMap_mem' a := (contDiff_const : ContDiff ℝ ∞ fun _ : SpaceTime d => a)
-
-lemma mem_smoothFunctions {d : ℕ} {f : SpaceTime d → ℂ} :
-    f ∈ smoothFunctions d ↔ ContDiff ℝ ∞ f :=
-  Iff.rfl
-
-/-- The derivative along the `μ` coordinate, as a `ℂ`-linear map on smooth functions. -/
-def smoothDeriv {d : ℕ} (μ : Fin 1 ⊕ Fin d) : smoothFunctions d →ₗ[ℂ] smoothFunctions d where
-  toFun f := ⟨∂_ μ (f : SpaceTime d → ℂ), mem_smoothFunctions.mpr
-    (contDiff_deriv (n := ∞) μ _ (by simpa using mem_smoothFunctions.mp f.2))⟩
-  map_add' f g := Subtype.ext (deriv_add μ _ _
-    ((mem_smoothFunctions.mp f.2).differentiable (by simp))
-    ((mem_smoothFunctions.mp g.2).differentiable (by simp)))
-  map_smul' a f := Subtype.ext
-    (deriv_const_smul μ a ((mem_smoothFunctions.mp f.2).differentiable (by simp)))
+/-- The iterated derivative of `f`, differentiating once along each element of `s`. -/
+noncomputable def iteratedDeriv {M : Type} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
+    {d : ℕ} (s : Multiset (Fin 1 ⊕ Fin d)) (f : SpaceTime d → M) : SpaceTime d → M :=
+  s.toList.foldl (fun g μ => ∂_ μ g) f
 
 @[simp]
-lemma coe_smoothDeriv {d : ℕ} (μ : Fin 1 ⊕ Fin d) (f : smoothFunctions d) :
-    (smoothDeriv μ f : SpaceTime d → ℂ) = ∂_ μ f :=
-  rfl
-
-/-- Derivatives of smooth functions can be iterated over a multiset of directions. -/
-instance {d : ℕ} :
-    RightCommutative (fun (f : smoothFunctions d) (μ : Fin 1 ⊕ Fin d) => smoothDeriv μ f) where
-  right_comm f μ ν := Subtype.ext
-    (deriv_commute ν μ _ ((mem_smoothFunctions.mp f.2).of_le ENat.LEInfty.out))
-
-/-- The iterated derivative `∂^s f` of a smooth function, differentiating once along each
-  element of `s`. -/
-def iteratedSmoothDeriv {d : ℕ} (s : Multiset (Fin 1 ⊕ Fin d)) (f : smoothFunctions d) :
-    smoothFunctions d :=
-  s.foldl (fun f μ => smoothDeriv μ f) f
+lemma iteratedDeriv_zero {M : Type} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M] {d : ℕ}
+    (f : SpaceTime d → M) :
+    iteratedDeriv 0 f = f := by
+  simp [iteratedDeriv]
 
 @[simp]
-lemma iteratedSmoothDeriv_zero {d : ℕ} (f : smoothFunctions d) :
-    iteratedSmoothDeriv 0 f = f :=
-  rfl
+lemma iteratedDeriv_singleton {M : Type} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
+    {d : ℕ} (μ : Fin 1 ⊕ Fin d) (f : SpaceTime d → M) :
+    iteratedDeriv {μ} f = ∂_ μ f := by
+  simp [iteratedDeriv]
 
-@[simp]
-lemma iteratedSmoothDeriv_cons {d : ℕ} (μ : Fin 1 ⊕ Fin d) (s : Multiset (Fin 1 ⊕ Fin d))
-    (f : smoothFunctions d) :
-    iteratedSmoothDeriv (μ ::ₘ s) f = iteratedSmoothDeriv s (smoothDeriv μ f) :=
-  Multiset.foldl_cons _ _ _ _
+/-- Iterated derivatives of a smooth function are smooth. -/
+lemma contDiff_iteratedDeriv {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
+    (s : Multiset (Fin 1 ⊕ Fin d)) {f : SpaceTime d → M} (hf : ContDiff ℝ ∞ f) :
+    ContDiff ℝ ∞ (iteratedDeriv s f) := by
+  unfold iteratedDeriv
+  induction s.toList generalizing f with
+  | nil => exact hf
+  | cons μ l ih => exact ih (contDiff_deriv μ f (by simpa using hf))
 
-@[simp]
-lemma iteratedSmoothDeriv_singleton {d : ℕ} (μ : Fin 1 ⊕ Fin d) (f : smoothFunctions d) :
-    iteratedSmoothDeriv {μ} f = smoothDeriv μ f :=
-  rfl
+/-- An iterated derivative of a smooth function may begin with any of its directions. -/
+lemma iteratedDeriv_cons {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
+    (μ : Fin 1 ⊕ Fin d) (s : Multiset (Fin 1 ⊕ Fin d)) {f : SpaceTime d → M}
+    (hf : ContDiff ℝ ∞ f) :
+    iteratedDeriv (μ ::ₘ s) f = iteratedDeriv s (∂_ μ f) := by
+  have hp : (μ ::ₘ s).toList.Perm (μ :: s.toList) :=
+    Multiset.coe_eq_coe.mp (by rw [Multiset.coe_toList, ← Multiset.cons_coe, Multiset.coe_toList])
+  exact hp.foldl_fderiv_apply (fun ν => Lorentz.Vector.basis ν) hf
 
 /-- Iterated derivatives of smooth functions distribute over addition. -/
-lemma iteratedSmoothDeriv_add {d : ℕ} (s : Multiset (Fin 1 ⊕ Fin d)) (f g : smoothFunctions d) :
-    iteratedSmoothDeriv s (f + g) = iteratedSmoothDeriv s f + iteratedSmoothDeriv s g := by
-  induction s using Multiset.induction_on generalizing f g with
-  | empty => rfl
-  | cons μ s ih => simp only [iteratedSmoothDeriv_cons, map_add, ih]
+lemma iteratedDeriv_add {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
+    (s : Multiset (Fin 1 ⊕ Fin d)) {f g : SpaceTime d → M} (hf : ContDiff ℝ ∞ f)
+    (hg : ContDiff ℝ ∞ g) :
+    iteratedDeriv s (f + g) = iteratedDeriv s f + iteratedDeriv s g := by
+  unfold iteratedDeriv
+  induction s.toList generalizing f g with
+  | nil => rfl
+  | cons μ l ih =>
+    simp only [List.foldl_cons]
+    rw [deriv_add μ f g (hf.differentiable (by simp)) (hg.differentiable (by simp))]
+    exact ih (contDiff_deriv μ f (by simpa using hf)) (contDiff_deriv μ g (by simpa using hg))
 
 /-- Iterated derivatives of smooth functions commute with multiplication by a constant. -/
-lemma iteratedSmoothDeriv_smul {d : ℕ} (s : Multiset (Fin 1 ⊕ Fin d)) (a : ℂ)
-    (f : smoothFunctions d) :
-    iteratedSmoothDeriv s (a • f) = a • iteratedSmoothDeriv s f := by
-  induction s using Multiset.induction_on generalizing f with
-  | empty => rfl
-  | cons μ s ih => simp only [iteratedSmoothDeriv_cons, map_smul, ih]
+lemma iteratedDeriv_const_smul {M R : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] [Semiring R]
+    [Module R M] [SMulCommClass ℝ R M] [ContinuousConstSMul R M] {d : ℕ}
+    (s : Multiset (Fin 1 ⊕ Fin d)) (c : R) {f : SpaceTime d → M} (hf : ContDiff ℝ ∞ f) :
+    iteratedDeriv s (c • f) = c • iteratedDeriv s f := by
+  unfold iteratedDeriv
+  induction s.toList generalizing f with
+  | nil => rfl
+  | cons μ l ih =>
+    simp only [List.foldl_cons]
+    rw [deriv_const_smul μ c (hf.differentiable (by simp))]
+    exact ih (contDiff_deriv μ f (by simpa using hf))
 
 /-!
 
