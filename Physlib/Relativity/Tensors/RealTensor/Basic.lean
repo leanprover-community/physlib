@@ -20,13 +20,12 @@ which are used to define `realLorentzTensor`.
 
 open Matrix
 open MatrixGroups
-open Complex
 open TensorProduct
 
 namespace realLorentzTensor
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The colors associated with complex representations of SL(2, ℂ) of interest to physics. -/
+/-- The colors associated with real representations of O(1, 3) of interest to physics. -/
 inductive Color
   /-- The color associated with contravariant Lorentz vectors. -/
   | up : Color
@@ -34,7 +33,7 @@ inductive Color
   | down : Color
 deriving Fintype
 
-/-- Color for complex Lorentz tensors is decidable. -/
+/-- Color for real Lorentz tensors is decidable. -/
 instance : DecidableEq Color := fun x y =>
   match x, y with
   | Color.up, Color.up => isTrue rfl
@@ -64,7 +63,7 @@ TODO "Replace Lorentz.ContrMod and Lorentz.CoMod in the definition of realLorent
 
 noncomputable section
 open realLorentzTensor in
-/-- The tensor structure for complex Lorentz tensors. -/
+/-- The tensor structure for real Lorentz tensors. -/
 def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     ℝ realLorentzTensor.Color (LorentzGroup d)
     (fun | Color.up => Lorentz.ContrMod d | Color.down => Lorentz.CoMod d)

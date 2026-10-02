@@ -29,11 +29,11 @@ namespace realLorentzTensor
 
 -/
 
-/-- The metric `ηᵢᵢ` as a complex Lorentz tensor. -/
+/-- The metric `ηᵢᵢ` as a real Lorentz tensor. -/
 abbrev coMetric (d : ℕ := 3) : ℝT[d, .down, .down] :=
   (realLorentzTensor d).metricTensor .down
 
-/-- The metric `ηⁱⁱ` as a complex Lorentz tensor. -/
+/-- The metric `ηⁱⁱ` as a real Lorentz tensor. -/
 abbrev contrMetric (d : ℕ := 3) : ℝT[d, .up, .up] :=
   (realLorentzTensor d).metricTensor .up
 
@@ -43,10 +43,10 @@ abbrev contrMetric (d : ℕ := 3) : ℝT[d, .up, .up] :=
 
 -/
 
-/-- The metric `ηᵢᵢ` as a complex Lorentz tensors. -/
+/-- The metric `ηᵢᵢ` as a real Lorentz tensors. -/
 scoped[realLorentzTensor] notation "η'" => @coMetric
 
-/-- The metric `ηⁱⁱ` as a complex Lorentz tensors. -/
+/-- The metric `ηⁱⁱ` as a real Lorentz tensors. -/
 scoped[realLorentzTensor] notation "η" => @contrMetric
 
 /-!
