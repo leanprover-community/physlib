@@ -10,7 +10,6 @@ public import Physlib.Relativity.Tensors.RealTensor.CoVector.Tensorial
 public import Mathlib.Analysis.InnerProductSpace.TensorProduct
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
-public import Physlib.Mathematics.ForMathlib.FDerivCommute
 /-!
 
 # Derivatives on SpaceTime
@@ -252,6 +251,22 @@ lemma deriv_commute {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : �
   · exact hf.contDiffAt.isSymmSndFDerivAt (by simp [minSmoothness_of_isRCLikeNormedField])
   all_goals fun_prop
 
+open scoped ContDiff
+
+/-- For a smooth function, iterated derivatives along a list of directions do not depend on the
+  order of the list. -/
+lemma foldl_deriv_perm {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
+    {l₁ l₂ : List (Fin 1 ⊕ Fin d)} (h : l₁.Perm l₂) {f : SpaceTime d → M}
+    (hf : ContDiff ℝ ∞ f) :
+    l₁.foldl (fun g μ => ∂_ μ g) f = l₂.foldl (fun g μ => ∂_ μ g) f := by
+  induction h generalizing f with
+  | nil => rfl
+  | cons μ _ ih => exact ih (contDiff_deriv μ f (by simpa using hf))
+  | swap μ ν l =>
+    simp only [List.foldl_cons]
+    rw [deriv_commute _ _ f (hf.of_le (by simp))]
+  | trans _ _ ih₁ ih₂ => exact (ih₁ hf).trans (ih₂ hf)
+
 /-!
 
 ### A.6. The derivative of a function composed with a Lorentz transformation
@@ -366,8 +381,6 @@ directions assume that `f` is smooth.
 
 -/
 
-open scoped ContDiff
-
 /-- The iterated derivative of `f`, differentiating once along each element of `s`. -/
 noncomputable def iteratedDeriv {M : Type} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
     {d : ℕ} (s : Multiset (Fin 1 ⊕ Fin d)) (f : SpaceTime d → M) : SpaceTime d → M :=
@@ -401,7 +414,7 @@ lemma iteratedDeriv_cons {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {
     iteratedDeriv (μ ::ₘ s) f = iteratedDeriv s (∂_ μ f) := by
   have hp : (μ ::ₘ s).toList.Perm (μ :: s.toList) :=
     Multiset.coe_eq_coe.mp (by rw [Multiset.coe_toList, ← Multiset.cons_coe, Multiset.coe_toList])
-  exact hp.foldl_fderiv_apply (fun ν => Lorentz.Vector.basis ν) hf
+  exact foldl_deriv_perm hp hf
 
 /-- Iterated derivatives of smooth functions distribute over addition. -/
 lemma iteratedDeriv_add {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M] {d : ℕ}
