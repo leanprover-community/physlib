@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
+public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
@@ -42,6 +42,8 @@ adding up to `1`, one for each outcome.
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 
 open Function
 
@@ -271,3 +273,5 @@ lemma coe_mapOutcome_apply (N : EffectValuedMeasure Ω' E) (f : Ω' → Ω) (hf 
   rfl
 
 end EffectValuedMeasure
+
+end ProbabilisticTheory

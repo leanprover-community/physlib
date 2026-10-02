@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Geometry.Convex.Cone.Pointed
-public import Mathlib.Basic.Real.Basic
-public import Mathlib.Basic.NNReal.Defs
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 
 /-!
@@ -36,6 +34,8 @@ These elements form a cone: they are closed under addition and scaling by nonneg
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 
 open scoped NNReal
 
@@ -99,3 +99,5 @@ lemma coe_one : ((1 : PosCone E) : E) = (1 : E) := rfl
 end OrderUnitSpace
 
 end PosCone
+
+end ProbabilisticTheory

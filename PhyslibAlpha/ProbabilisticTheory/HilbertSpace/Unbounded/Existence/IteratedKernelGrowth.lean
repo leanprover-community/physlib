@@ -29,6 +29,8 @@ differentiable orbits.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -247,3 +249,5 @@ lemma gardingVectorAt_iteratedKernel_hasDerivAt {H : Type*} [NormedAddCommGroup 
 end
 
 end QuantumMechanics
+
+end ProbabilisticTheory

@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Units.PositiveRealUnit
-public import Mathlib.Analysis.RCLike.Basic
 /-!
 
 # Units on Mass

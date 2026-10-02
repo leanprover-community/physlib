@@ -8,7 +8,6 @@ module
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 public import Mathlib.Geometry.Manifold.Instances.Sphere
-public import Mathlib.Topology.Covering.AddCircle
 /-!
 
 # Configuration space of the simple pendulum

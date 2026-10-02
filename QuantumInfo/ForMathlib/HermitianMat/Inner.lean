@@ -7,7 +7,6 @@ module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Order
 public import Mathlib.Analysis.Convex.Contractible
-public import Mathlib.Topology.Instances.Real.Lemmas
 
 /-! # Inner product of Hermitian Matrices
 

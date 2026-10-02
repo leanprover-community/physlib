@@ -7,7 +7,6 @@ module
 
 public import Physlib.QuantumMechanics.Operators.StateObservables.ExpectedValue
 public import Physlib.QuantumMechanics.Operators.StateObservables.IsEigenvector
-public import Mathlib.Analysis.SpecialFunctions.Sqrt
 /-!
 # Variance and standard deviation
 

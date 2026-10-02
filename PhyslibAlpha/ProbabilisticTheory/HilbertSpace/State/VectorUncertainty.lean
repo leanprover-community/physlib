@@ -31,6 +31,8 @@ Cauchy–Schwarz defect of their fluctuation vectors.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 open ContinuousLinearMap
 
@@ -70,3 +72,5 @@ lemma centeredGramDefect_ofVec (h : ‖ψ‖ = 1) (a b : Observable (H →L[ℂ]
     Complex.normSq_eq_norm_sq]
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

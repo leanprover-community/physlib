@@ -42,6 +42,8 @@ measures push forward along measurable maps.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
@@ -188,7 +190,12 @@ end QuantumMechanics
 ## C. Coming from a norm-continuous `SpectralMeasure`
 -/
 
+end ProbabilisticTheory
+
 namespace SpectralMeasure
+open ProbabilisticTheory
+open scoped Topology InnerProductSpace Function
+open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
 open QuantumMechanics
 

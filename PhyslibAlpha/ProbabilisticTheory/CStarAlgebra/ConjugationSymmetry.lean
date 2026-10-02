@@ -39,9 +39,10 @@ representation of a group `G` gives a symmetry action of `G`.
 
 @[expose] public section
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace unitary
+open ProbabilisticTheory
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-! ## A. Conjugation as a linear map -/
 
@@ -147,6 +148,10 @@ lemma conjugationSymmetryHom_apply (u : unitary A) :
 
 end unitary
 
+namespace ProbabilisticTheory
+
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+
 /-! ## D. Unitary representations induce symmetry actions -/
 
 namespace Unitary
@@ -167,3 +172,5 @@ lemma Representation.toSymmetryHom_apply_coe {G : Type*} [Group G] (U : G →* u
     ((Representation.toSymmetryHom U g).1 a : A) = (U g : A) * (a : A) * star (U g : A) := rfl
 
 end Unitary
+
+end ProbabilisticTheory

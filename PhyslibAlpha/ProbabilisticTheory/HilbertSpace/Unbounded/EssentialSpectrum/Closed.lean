@@ -34,6 +34,8 @@ orthogonal to more and more vectors of a countable dense subset, is a singular s
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open Filter Topology TopologicalSpace
 open scoped InnerProductSpace
 
@@ -176,3 +178,5 @@ lemma isClosed_essSpectrum {A : H →ₗ.[ℂ] H} (hA : IsSelfAdjoint A) :
     exact squeeze_zero (fun k => norm_nonneg _) hbnd hrhs
 
 end QuantumMechanics.Essential
+
+end ProbabilisticTheory

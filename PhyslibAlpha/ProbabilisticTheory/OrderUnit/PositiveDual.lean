@@ -33,6 +33,8 @@ functional that vanishes on the unit vanishes everywhere.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace OrderUnitSpace
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -50,6 +52,8 @@ end OrderUnitSpace
 /-! ## B. Positive functionals -/
 
 /-- A positive functional with total weight zero vanishes. -/
-lemma PositiveLinearMap.eq_zero_of_map_one_eq_zero {E : Type*} [OrderUnitSpace E]
+lemma _root_.PositiveLinearMap.eq_zero_of_map_one_eq_zero {E : Type*} [OrderUnitSpace E]
     {ψ : E →ₚ[ℝ] ℝ} (h : ψ 1 = 0) : ψ = 0 :=
-  eq_zero_of_map_eq_zero OrderUnitSpace.isOrderUnit_one h
+  PositiveLinearMap.eq_zero_of_map_eq_zero OrderUnitSpace.isOrderUnit_one h
+
+end ProbabilisticTheory

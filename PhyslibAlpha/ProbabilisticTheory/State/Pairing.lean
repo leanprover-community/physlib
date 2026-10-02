@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Separation
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Convex
+public import Physlib.ProbabilisticTheory.Effect.Convex
 
 /-!
 # The state–effect pairing
@@ -41,6 +41,8 @@ another.
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
 
@@ -95,19 +97,21 @@ lemma injective_apply_effect :
 
 /-- The distance between two effects is the supremum of the difference in their evaluations over
 all states. -/
-lemma _root_.Effect.dist_eq_sSup_abs_apply [Nontrivial E] (e f : Effect E) :
+lemma _root_.ProbabilisticTheory.Effect.dist_eq_sSup_abs_apply [Nontrivial E] (e f : Effect E) :
     Dist.dist e f = sSup (Set.range fun ω : 𝓢[ℝ, E] => |ω (e : E) - ω (f : E)|) := by
   rw [Effect.dist_eq_orderUnitNorm, ← sSup_abs_apply_eq_orderUnitNorm]
   simp_rw [map_sub]
 
 /-- An effect is determined by its values under all states. -/
-lemma _root_.Effect.ext_of_forall_apply_eq {e f : Effect E}
+lemma _root_.ProbabilisticTheory.Effect.ext_of_forall_apply_eq {e f : Effect E}
     (h : ∀ ω : 𝓢[ℝ, E], ω (e : E) = ω (f : E)) : e = f :=
   Subtype.ext (UnitalPositiveLinearMap.ext_of_forall_apply_eq h)
 
 /-- Evaluation by states is injective on effects. -/
-lemma _root_.Effect.injective_apply_state :
+lemma _root_.ProbabilisticTheory.Effect.injective_apply_state :
     Function.Injective (fun (e : Effect E) (ω : 𝓢[ℝ, E]) => ω (e : E)) :=
   fun _ _ h => Effect.ext_of_forall_apply_eq (congrFun h)
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

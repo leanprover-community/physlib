@@ -32,6 +32,8 @@ vector by vector.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
@@ -155,5 +157,7 @@ lemma unitaryConjSpectralMeasure_weakIntegral
 end WOTSpectralMeasure
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

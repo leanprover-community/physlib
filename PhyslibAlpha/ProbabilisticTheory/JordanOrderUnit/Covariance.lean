@@ -35,6 +35,8 @@ is positive semidefinite, which gives a Cauchy–Schwarz inequality for covarian
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace IsJordanOrderUnit
 
 variable {E : Type*} [IsJordanOrderUnit E]
@@ -91,3 +93,5 @@ lemma covMatrix_posSemidef {ι : Type*} [Fintype ι] (ω : 𝓢[ℝ, E]) (a : ι
   ring
 
 end IsJordanOrderUnit
+
+end ProbabilisticTheory

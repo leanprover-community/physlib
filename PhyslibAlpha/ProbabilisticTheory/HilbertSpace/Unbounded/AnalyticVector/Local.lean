@@ -802,7 +802,7 @@ lemma eq_of_adjacent_of_le
           F (j + 1) (s - ((j + 1 : ℤ) : ℝ) * δ) := by
         convert hstep using 1
         push_cast
-        ring
+        ring_nf
       exact hprev.trans hstep'
   exact hchain n hmn le_rfl hn
 
@@ -1174,3 +1174,4 @@ lemma inner_deficiency_eq_zero_neg
 end GlobalAnalyticOrbit
 
 end LinearPMap
+

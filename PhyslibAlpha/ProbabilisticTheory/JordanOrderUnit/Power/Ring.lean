@@ -33,6 +33,8 @@ of commutative algebras applies.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -151,3 +153,5 @@ noncomputable instance instAlgebra : Algebra ℝ (GeneratedByOne a) where
 end GeneratedByOne
 
 end JordanAlgebra
+
+end ProbabilisticTheory

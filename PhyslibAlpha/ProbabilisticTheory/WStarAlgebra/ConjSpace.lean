@@ -29,6 +29,8 @@ public import Mathlib.Analysis.Complex.Basic
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexConjugate
 
 /-- The complex conjugate of `X`: the same type, with `c • x = conj c • x`. -/
@@ -104,3 +106,5 @@ instance instNormedSpace : NormedSpace ℂ (ConjSpace X) where
 instance instCompleteSpace [CompleteSpace X] : CompleteSpace (ConjSpace X) := ‹CompleteSpace X›
 
 end ConjSpace
+
+end ProbabilisticTheory

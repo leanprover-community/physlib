@@ -29,6 +29,8 @@ equivalent to `f (a b) = f (b a)`. A finite tracial weight gives a tracial state
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace Weight
 
 variable {A : Type*} [OrderUnitSpace A] [Mul A] [Star A]
@@ -73,7 +75,10 @@ lemma isTracial (hw : w.IsState) (ht : w.IsTracial) :
 
 end Weight.IsState
 
+end ProbabilisticTheory
+
 namespace LinearMap
+open ProbabilisticTheory
 
 variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℂ A]
   [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
@@ -106,3 +111,4 @@ lemma isTracial_iff_star_mul_self_eq_mul_star_self (f : A →ₗ[ℂ] ℂ) :
       (-Complex.I / 2) * hq - (1 / 2) * hp
 
 end LinearMap
+

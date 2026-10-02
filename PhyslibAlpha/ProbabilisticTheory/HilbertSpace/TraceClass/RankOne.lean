@@ -27,6 +27,8 @@ the normalization of vector states.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -84,3 +86,5 @@ lemma traceNorm_rankOne_self (x : H) :
     simp only [rankOne_self_diagonal, ← inner_conj_symm x (b i), RCLike.norm_conj]
   rw [hdiag]
   exact h.tsum_eq
+
+end ProbabilisticTheory

@@ -30,6 +30,8 @@ most the norm.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JBAlgebra
 
 variable {E : Type*} [NormedJordanAlgebra E] [JBAlgebra E]
@@ -69,3 +71,5 @@ lemma norm_pow_two_pow (x : ClosedGeneratedByOne a) (n : ℕ) :
 end ClosedGeneratedByOne
 
 end JBAlgebra
+
+end ProbabilisticTheory

@@ -30,6 +30,7 @@ Every self-adjoint `a` lies below `‖a‖ • 1`, and the positive cone is clos
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace selfAdjoint
+open ProbabilisticTheory
 
 /-- Nonnegative real scalars preserve the order on self-adjoint elements: scaling by a
 nonnegative real is the same as multiplying by a nonnegative (central) algebra element, and a
@@ -74,3 +75,4 @@ noncomputable instance instIsArchimedeanOrderUnit : ArchimedeanOrderUnitSpace (s
     rwa [hcast] at hle'
 
 end selfAdjoint
+

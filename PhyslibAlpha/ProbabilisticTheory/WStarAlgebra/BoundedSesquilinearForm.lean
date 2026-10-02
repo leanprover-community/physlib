@@ -28,6 +28,8 @@ represented by a bounded operator `T` with `⟪y, T x⟫ = conj (B x y)`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -70,3 +72,5 @@ lemma operator_inner (x y : H) :
   rw [← inner_conj_symm, h]
 
 end BoundedSesquilinearForm
+
+end ProbabilisticTheory

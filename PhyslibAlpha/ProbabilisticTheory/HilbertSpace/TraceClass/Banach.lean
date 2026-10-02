@@ -41,6 +41,8 @@ which gives completeness.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace Topology Filter
 open Filter
 
@@ -406,5 +408,7 @@ noncomputable instance instCompleteSpace : CompleteSpace (TraceClass H) := by
   exact squeeze_zero (fun n => dist_nonneg) hbound_S htail_tendsto
 
 end TraceClass
+
+end ProbabilisticTheory
 
 end

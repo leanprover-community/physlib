@@ -6,8 +6,8 @@ Authors: Nikolai Kashcheev, Joseph Tooby-Smith
 module
 
 public import Physlib.SpaceAndTime.SpaceTime.Basic
-public import Physlib.Meta.Linters.Sorry
 public import Mathlib.RingTheory.RootsOfUnity.Complex
+public import Physlib.Meta.Informal.Basic
 /-!
 # The Standard Model
 

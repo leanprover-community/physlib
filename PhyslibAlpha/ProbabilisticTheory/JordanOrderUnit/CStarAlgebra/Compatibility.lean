@@ -30,6 +30,8 @@ a`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
@@ -60,3 +62,5 @@ lemma isJordanCompatible_of_commute {a b : selfAdjoint A}
   abel
 
 end JB
+
+end ProbabilisticTheory

@@ -27,6 +27,8 @@ On powers the quadratic representation acts by `U_{aᵐ} aⁿ = a²ᵐ⁺ⁿ`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -66,3 +68,5 @@ lemma quadRep_jpow_comp_jpow (a : E) (m n k : ℕ) :
   omega
 
 end JordanAlgebra
+
+end ProbabilisticTheory

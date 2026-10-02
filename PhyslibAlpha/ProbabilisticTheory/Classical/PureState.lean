@@ -49,6 +49,8 @@ every pure state is nonnegative.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open StateSpace
 
 open ArchimedeanOrderUnitSpace Set
@@ -212,3 +214,5 @@ lemma evalPure_le_iff {f g : E} : evalPure f ≤ evalPure g ↔ f ≤ g :=
 end PureState
 
 end Archimedean
+
+end ProbabilisticTheory

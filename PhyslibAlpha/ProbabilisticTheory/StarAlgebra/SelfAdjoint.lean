@@ -29,6 +29,7 @@ Mathlib describes self-adjointness by the predicate `IsSelfAdjoint`, the additiv
 @[expose] public section
 
 namespace selfAdjoint
+open ProbabilisticTheory
 
 @[simp]
 lemma mem_selfAdjoint_iff_isSelfAdjoint {R : Type*} [AddGroup R] [StarAddMonoid R] (x : R) :
@@ -89,14 +90,18 @@ def submoduleUPLMSymm : selfAdjoint A →ₚ₁[R] submodule R A :=
 
 end selfAdjoint
 
+namespace ProbabilisticTheory
+
 open ComplexOrder
 
 /-- The map from self-adjoint complex numbers to real numbers as a unital positive linear map. -/
 @[simps!]
-noncomputable def Complex.selfAdjointUPLM : selfAdjoint ℂ →ₚ₁[ℝ] ℝ where
+noncomputable def _root_.Complex.selfAdjointUPLM : selfAdjoint ℂ →ₚ₁[ℝ] ℝ where
   toPositiveLinearMap :=
     { toLinearMap := Complex.selfAdjointEquiv.toLinearMap
       monotone' a b hab := by simp; gcongr }
   map_one' := by
     change Complex.selfAdjointEquiv (1 : selfAdjoint ℂ) = 1
     simp
+
+end ProbabilisticTheory

@@ -28,6 +28,8 @@ effect itself, the outcome `false` its complement.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace Effect
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -59,3 +61,5 @@ lemma binaryMeasurement_false (e : Effect F) (h : MeasurableSet {false}) :
   Subtype.ext (Measurement.coe_ofAtoms_singleton _ _ _ h)
 
 end Effect
+
+end ProbabilisticTheory

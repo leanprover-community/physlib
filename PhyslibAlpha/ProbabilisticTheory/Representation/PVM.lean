@@ -27,6 +27,8 @@ POVM whose values are sharp effects. A POVM whose values are projections is a PV
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-- A positive-operator-valued measure: the physics name for `EffectValuedMeasure`. -/
 abbrev POVM (Ω E : Type*) [MeasurableSpace Ω] [OrderUnitSpace E] := EffectValuedMeasure Ω E
 
@@ -79,3 +81,5 @@ lemma isSharp_apply (π : PVM Ω E) (s : Set Ω) (hs : MeasurableSet s) :
   π.2 s hs
 
 end PVM
+
+end ProbabilisticTheory

@@ -41,6 +41,7 @@ i ⁅a, b⁆`, and it makes the observables a real Lie algebra. The bracket is a
 @[expose] public section
 
 namespace selfAdjoint
+open ProbabilisticTheory
 
 variable {A : Type*} [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A]
 
@@ -167,7 +168,11 @@ lemma bracket_one_left (a : selfAdjoint A) : ⁅(1 : selfAdjoint A), a⁆ = 0 :=
 
 end selfAdjoint
 
+namespace ProbabilisticTheory
+
 /-- The Lie bracket of observables. -/
 noncomputable abbrev Observable.lieMul {A : Type*} [Ring A] [StarRing A] [Module ℂ A]
     [StarModule ℂ A] (a b : Observable A) : Observable A :=
   selfAdjoint.lieMul a b
+
+end ProbabilisticTheory

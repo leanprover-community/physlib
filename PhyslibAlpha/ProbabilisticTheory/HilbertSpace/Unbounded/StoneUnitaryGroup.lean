@@ -33,6 +33,8 @@ For a spectral measure `μ` on `ℝ`, integrating `λ ↦ exp(i t λ)` gives uni
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
@@ -329,5 +331,7 @@ noncomputable def expUnitaryGroup (μS : WOTSpectralMeasure ℝ H) :
 end WOTSpectralMeasure
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

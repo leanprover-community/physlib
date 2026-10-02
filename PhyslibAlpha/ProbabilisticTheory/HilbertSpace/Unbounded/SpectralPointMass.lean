@@ -29,6 +29,8 @@ point.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set Filter Topology Classical
 
 namespace QuantumMechanics
@@ -333,3 +335,5 @@ lemma eq_smul_one_of_forall_spectralMeasure_eq_zero_or_one
 end ScalarOperator
 
 end QuantumMechanics
+
+end ProbabilisticTheory

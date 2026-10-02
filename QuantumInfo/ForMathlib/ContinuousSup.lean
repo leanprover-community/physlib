@@ -5,10 +5,9 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
-public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+public import Mathlib.Analysis.InnerProductSpace.Defs
 
 @[expose] public section
 

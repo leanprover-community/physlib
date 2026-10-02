@@ -6,18 +6,11 @@ Authors: Alex Meiburg, Rodolfo Soldati
 module
 
 public import QuantumInfo.ForMathlib.ContinuousLinearMap
-public import QuantumInfo.ForMathlib.ComplexLaplaceTransform
-public import QuantumInfo.ForMathlib.ContinuousSup
-public import QuantumInfo.ForMathlib.Filter
 public import QuantumInfo.ForMathlib.HermitianMat
 public import QuantumInfo.ForMathlib.Isometry
 public import QuantumInfo.ForMathlib.LinearEquiv
-public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
 public import QuantumInfo.ForMathlib.Matrix
-public import QuantumInfo.ForMathlib.Minimax
 public import QuantumInfo.ForMathlib.Misc
-public import QuantumInfo.ForMathlib.Unitary
-public import QuantumInfo.ClassicalInfo.Distribution
 
 /-!
 Finite dimensional quantum pure states, bra and kets. Mixed states are `MState` in that file.

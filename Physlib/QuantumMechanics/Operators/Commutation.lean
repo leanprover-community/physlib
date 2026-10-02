@@ -6,9 +6,9 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.Mathematics.KroneckerDelta.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Tensorial
 public import Physlib.QuantumMechanics.Operators.Position
 public import Physlib.QuantumMechanics.Operators.Momentum
+public import Mathlib.Algebra.Lie.OfAssociative
 /-!
 
 # Commutation relations

@@ -5,9 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Normed.Field.Lemmas
-public import Mathlib.Tactic.DeriveFintype
 public import Physlib.Units.Exponent
+public import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 /-!
 
 # Dimension
@@ -34,8 +33,6 @@ a suitable basis `B`.
 -/
 
 @[expose] public section
-
-open NNReal
 
 /-!
 

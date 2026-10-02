@@ -32,6 +32,10 @@ def main (args : List String) : IO UInt32 := do
   let alphaFileImports ← IO.Process.output {cmd := "lake", args := #["exe", "alphaFileImports"]}
   println! alphaFileImports.stdout
 
+  println! "\x1b[36m(3/7) ForMathlib imports and uses\x1b[0m"
+  let forMathlibLint ← IO.Process.output {cmd := "lake", args := #["exe", "forMathlib_lint"]}
+  println! forMathlibLint.stdout
+
   println! "\x1b[36m(4/7) TODO tag duplicates \x1b[0m"
   let todoCheck ← IO.Process.output {cmd := "lake", args := #["exe", "check_dup_tags"]}
   println! todoCheck.stdout

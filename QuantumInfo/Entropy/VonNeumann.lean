@@ -8,10 +8,10 @@ module
 public import QuantumInfo.States.Pure.Braket
 public import QuantumInfo.Channels.Bundled
 public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.Dual
 public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.ClassicalInfo.Entropy
+public import Mathlib.Data.Multiset.Functor
 
 /-!
 Quantum notions of information and entropy.
@@ -109,7 +109,6 @@ theorem Sᵥₙ_of_pure_zero (ψ : Ket d) : Sᵥₙ (MState.pure ψ) = 0 := by
   obtain ⟨i, hi⟩ := MState.spectrum_pure_eq_constant ψ
   rw [Sᵥₙ, hi, Hₛ_constant_eq_zero]
 
-set_option backward.isDefEq.respectTransparency false in
 theorem Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ.M⟫ := by
   open HermitianMat in
   rw [log, inner_eq_re_trace]

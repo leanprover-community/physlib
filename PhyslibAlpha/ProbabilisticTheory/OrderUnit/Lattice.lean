@@ -37,6 +37,8 @@ two pieces, one below each summand, and every observable is close to a step func
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-!
 
 ## A. Order-unit lattices
@@ -58,3 +60,5 @@ lemma map_sup_of_map_inf {ω : E →ₚ[ℝ] ℝ} (h : ∀ f g, ω (f ⊓ g) = m
   linarith [min_add_max (ω f) (ω g)]
 
 end OrderUnitLattice
+
+end ProbabilisticTheory

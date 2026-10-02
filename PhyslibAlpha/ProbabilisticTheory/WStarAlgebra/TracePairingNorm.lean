@@ -26,10 +26,11 @@ trace pairing is an isometry.
 
 -/
 
-
 @[expose] public section
 
 noncomputable section
+
+namespace ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -204,3 +205,5 @@ lemma tracePairingLinearIsometry_norm (A : H →L[ℂ] H) :
   (tracePairingLinearIsometry : (H →L[ℂ] H) →ₗᵢ[ℂ] (TraceClass H →L[ℂ] ℂ)).norm_map' A
 
 end TraceClass
+
+end ProbabilisticTheory

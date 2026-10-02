@@ -35,6 +35,8 @@ polynomials on both sides gives `b = √a`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace NormedJordanAlgebra
 
 open scoped JordanAlgebra
@@ -274,3 +276,5 @@ lemma eq_of_nonneg_of_mul_self_eq_mul_self [Nontrivial E]
 end
 
 end NormedJordanAlgebra
+
+end ProbabilisticTheory

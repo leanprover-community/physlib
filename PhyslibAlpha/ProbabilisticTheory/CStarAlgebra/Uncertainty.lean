@@ -39,6 +39,8 @@ bound on the covariance.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 open ContinuousLinearMap
 
@@ -238,3 +240,5 @@ lemma variances_pos_of_normalized_pairing (ω : 𝓢[ℂ, A]) (a b : Observable 
   constructor <;> by_contra! hn <;> nlinarith
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

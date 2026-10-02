@@ -5,7 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Electromagnetism.Distributional.ElectricField
+public import Physlib.Electromagnetism.Distributional.FieldStrength
+public import Physlib.Electromagnetism.Distributional.VectorPotential
 /-!
 
 # The Magnetic Field

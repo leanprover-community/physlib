@@ -35,6 +35,8 @@ The Jordan identity says that `L_a` and `L_{a²}` commute.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E]
@@ -212,7 +214,7 @@ lemma quadRepPolar_apply (a b x : E) :
 lemma quadRepPolar_comm (a b : E) : quadRepPolar a b = quadRepPolar b a := by
   ext x
   rw [quadRepPolar_apply, quadRepPolar_apply, mul_comm b a]
-  abel
+  abel_nf
 
 /-- The polarization is additive in its first outer variable. -/
 lemma quadRepPolar_add_left (a b c : E) :
@@ -426,3 +428,5 @@ lemma innerDerivation_swap (a b : E) : innerDerivation a b = -innerDerivation b 
 end Linear
 
 end JordanAlgebra
+
+end ProbabilisticTheory

@@ -9,6 +9,7 @@ public import Physlib.Relativity.Fermions.Weyl.LeftHanded
 public import Physlib.Relativity.Fermions.Weyl.RightHanded
 public import Physlib.Relativity.Fermions.Weyl.DualLeftHanded
 public import Physlib.Relativity.Fermions.Weyl.DualRightHanded
+public import Mathlib.RepresentationTheory.Intertwining
 /-!
 
 # Contraction of Weyl fermions
@@ -32,8 +33,6 @@ open TensorProduct
 ## Contraction of Weyl fermions.
 
 -/
-open CategoryTheory.MonoidalCategory
-
 /-- The bi-linear map corresponding to contraction of a left-handed Weyl fermion with a
   dual-left-handed Weyl fermion. -/
 def leftDualBi : LeftHandedWeyl →ₗ[ℂ] DualLeftHandedWeyl →ₗ[ℂ] ℂ where

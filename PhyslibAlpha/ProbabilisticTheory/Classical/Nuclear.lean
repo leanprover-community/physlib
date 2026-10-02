@@ -56,9 +56,10 @@ observable from the minimal cone.
 
 @[expose] public section
 
-open OrderUnitLattice VectorLattice
 
 namespace Bidual
+open ProbabilisticTheory
+open OrderUnitLattice VectorLattice
 
 variable {E : Type*} [OrderUnitSpace E]
 
@@ -177,6 +178,10 @@ lemma exists_measure_prepare {n : ℕ} (x : Fin n → Bidual E) {η : ℝ} (hη 
       _ ≤ x k - ∑ i, x k (φ i) • p i := sub_le_sub_right hlo _
 
 end Bidual
+
+namespace ProbabilisticTheory
+
+open OrderUnitLattice VectorLattice
 
 /-! ## C. Positive functionals on the minimal cone -/
 
@@ -361,3 +366,5 @@ lemma isClassical_iff_isNuclear : IsClassical E ↔ IsNuclear E :=
   ⟨IsClassical.isNuclear, IsNuclear.isClassical⟩
 
 end Final
+
+end ProbabilisticTheory

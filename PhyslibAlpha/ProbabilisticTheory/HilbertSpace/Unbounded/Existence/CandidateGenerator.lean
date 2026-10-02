@@ -33,6 +33,8 @@ derivative. It is a symmetric operator.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -158,3 +160,8 @@ lemma stoneCandidateGenerator_isSymmetric :
   have hconjI : (starRingEnd ℂ) (-Complex.I) = Complex.I := by simp
   rw [hconjI]
   linear_combination Complex.I * hzero
+
+end
+end QuantumMechanics
+
+end ProbabilisticTheory

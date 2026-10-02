@@ -44,6 +44,8 @@ norm. Every bounded measurable function is such a limit, which gives the integra
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
@@ -609,5 +611,7 @@ noncomputable def boundedIntegral [Nonempty α] (f : α → ℂ) (hf : Measurabl
 end WOTSpectralMeasure
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

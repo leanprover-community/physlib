@@ -7,7 +7,6 @@ module
 
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.BlockDiagonal
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.LownerHeinzTheorem
-public import Mathlib.Analysis.CStarAlgebra.Unitary.Span
 
 @[expose] public section
 

@@ -64,6 +64,8 @@ observables are complete, these give joint effects exactly.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped NNReal
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -71,7 +73,7 @@ variable {E : Type*} [OrderUnitSpace E]
 /-! ## A. Riesz decomposition gives compatibility -/
 
 /-- With Riesz decomposition, every two effects have a joint effect: split `e ≤ f + (1 - f)`. -/
-lemma HasRieszDecomposition.exists_isBinaryJointEffect (hE : HasRieszDecomposition E)
+lemma _root_.HasRieszDecomposition.exists_isBinaryJointEffect (hE : HasRieszDecomposition E)
     (e f : Effect E) : ∃ g : E, Effect.IsBinaryJointEffect e f g := by
   obtain ⟨g, ⟨hg0, hgf⟩, hrest⟩ := hE f.2.1 (sub_nonneg.2 f.2.2) ⟨e.2.1, by simpa using e.2.2⟩
   refine ⟨g, hg0, sub_nonneg.1 hrest.1, hgf, ?_⟩
@@ -84,14 +86,20 @@ section Archimedean
 variable {F : Type*} [ArchimedeanOrderUnitSpace F]
 
 /-- With Riesz decomposition, every two yes/no measurements are jointly measurable. -/
-lemma HasRieszDecomposition.jointlyMeasurable (hF : HasRieszDecomposition F) (e f : Effect F) :
+lemma _root_.HasRieszDecomposition.jointlyMeasurable
+    (hF : HasRieszDecomposition F) (e f : Effect F) :
     Measurement.JointlyMeasurable (Effect.binaryMeasurement e)
       (Effect.binaryMeasurement f) :=
   (Effect.jointlyMeasurable_binaryMeasurement_iff e f).2 (hF.exists_isBinaryJointEffect e f)
 
 end Archimedean
 
+end ProbabilisticTheory
+
 namespace Bidual
+open ProbabilisticTheory
+open scoped NNReal
+variable {E : Type*} [OrderUnitSpace E]
 
 /-! ## B. Approximating effects of the bidual -/
 
@@ -452,10 +460,15 @@ lemma hasRieszDecomposition : HasRieszDecomposition (Bidual E) := by
 
 end Bidual
 
+namespace ProbabilisticTheory
+
+open scoped NNReal
+variable {E : Type*} [OrderUnitSpace E]
+
 /-! ## E. Compatibility makes the dual cone a lattice -/
 
 /-- An observable as a positive map into the bidual. -/
-def Bidual.ofEPos : E →ₚ[ℝ] Bidual E :=
+def _root_.Bidual.ofEPos : E →ₚ[ℝ] Bidual E :=
   .mk₀ Bidual.ofE fun _ hA φ => map_nonneg φ hA
 
 /-- If the bidual has Riesz decomposition, the positive functionals on `E` form a lattice: the least
@@ -523,3 +536,5 @@ lemma isClassical_iff_jointlyMeasurable :
     (h.exists_isBinaryJointEffect e f), isClassical_of_jointlyMeasurable⟩
 
 end Complete
+
+end ProbabilisticTheory

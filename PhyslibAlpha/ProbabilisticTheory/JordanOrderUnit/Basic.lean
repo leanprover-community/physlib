@@ -33,6 +33,8 @@ the operator picture `⟪ψ, a² ψ⟫ = ‖a ψ‖² ≥ 0`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. The compatibility class -/
 
 /-- A coherent unital Jordan algebra with an order unit and positive squares. Bundling the
@@ -58,3 +60,5 @@ variable {E : Type*} [IsJordanOrderUnit E]
 lemma sq_nonneg (a : E) : 0 ≤ a * a := mul_self_nonneg a
 
 end IsJordanOrderUnit
+
+end ProbabilisticTheory

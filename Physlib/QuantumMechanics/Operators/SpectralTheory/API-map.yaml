@@ -26,7 +26,7 @@ Overview: |
 
 ParentAPIs:
   - "Operator algebra (Physlib/QuantumMechanics/Operators)"
-  - "Partially defined linear maps (Physlib/Mathematics/LinearPMap.lean)"
+  - "Partially defined linear maps (Physlib/Mathematics/ForMathlib/LinearPMap.lean)"
   - "Inner product spaces (Physlib/Mathematics/InnerProductSpace)"
 
 References:

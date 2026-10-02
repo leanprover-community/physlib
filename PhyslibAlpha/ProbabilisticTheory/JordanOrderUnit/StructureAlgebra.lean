@@ -32,6 +32,8 @@ derivations.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -209,3 +211,5 @@ lemma inner_comm (a b c d : E) :
 end Inner
 
 end JordanAlgebra
+
+end ProbabilisticTheory

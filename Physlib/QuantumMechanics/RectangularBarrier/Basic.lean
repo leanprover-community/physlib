@@ -8,7 +8,6 @@ module
 public import Physlib.Meta.Informal.Basic
 public import Physlib.QuantumMechanics.Operators.Momentum
 public import Physlib.QuantumMechanics.Operators.Multiplication
-public import Physlib.QuantumMechanics.QuantumSystem.Basic
 /-!
 
 # The rectangular potential barrier

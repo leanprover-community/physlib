@@ -36,6 +36,8 @@ eigenvectors with real eigenvalues is essentially self-adjoint.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -233,3 +235,5 @@ end HilbertBasisCriterion
 end
 
 end QuantumMechanics
+
+end ProbabilisticTheory

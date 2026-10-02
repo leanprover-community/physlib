@@ -32,6 +32,8 @@ negative parts are Jordan orthogonal.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
@@ -86,3 +88,5 @@ lemma jordanOrthogonal_posPart_negPart (a : selfAdjoint A) :
   simp
 
 end JB
+
+end ProbabilisticTheory

@@ -45,6 +45,7 @@ kernel.
 @[expose] public section
 
 namespace BoundedMeasurable
+open ProbabilisticTheory
 
 open UnitalPositiveLinearMap MeasureTheory ProbabilityTheory
 
@@ -163,3 +164,4 @@ noncomputable def kernelEquiv :
   right_inv κ := by have := κ.2; exact Subtype.ext (toKernel_ofKernel κ.1)
 
 end BoundedMeasurable
+

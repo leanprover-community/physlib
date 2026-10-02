@@ -29,6 +29,8 @@ outcome of nonzero probability gives the post-measurement state.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {E ι : Type*} [ArchimedeanOrderUnitSpace E] [Fintype ι]
 
 /-- A finite-outcome instrument: an operation for each outcome, whose images of the certain event
@@ -80,3 +82,5 @@ lemma conditionalState_isNormal (𝓘 : Instrument E ι) (i : ι) (ω : 𝓢[ℝ
   Operation.condition_isNormal (𝓘.op i) ω hpos hOp hω
 
 end Instrument
+
+end ProbabilisticTheory

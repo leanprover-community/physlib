@@ -47,6 +47,8 @@ prepared state.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory ProbabilityTheory Filter Topology
 
 universe u v w
@@ -268,3 +270,5 @@ lemma forgetfulOutcome_isPostprocessing (p : Preparation E X) (M : Measurement Î
   Kernel.const_factorsThrough _ _
 
 end Preparation
+
+end ProbabilisticTheory

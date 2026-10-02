@@ -50,6 +50,8 @@ on simple functions.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace EffectValuedMeasure
 
 /-! ## A. The mesh approximation of a bounded measurable function -/
@@ -671,3 +673,5 @@ lemma integral_smul (c : ℝ) {hcf : Measurable (c • f)} {hMcf : ∀ x, |(c �
 end Definition
 
 end EffectValuedMeasure
+
+end ProbabilisticTheory

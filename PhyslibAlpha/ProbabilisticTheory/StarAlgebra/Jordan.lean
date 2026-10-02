@@ -31,6 +31,7 @@ A`, since for commutative `A` Mathlib already gives `selfAdjoint A` the ordinary
 @[expose] public section
 
 namespace selfAdjoint
+open ProbabilisticTheory
 
 variable {A : Type*} [Ring A] [StarRing A] [Module ℝ A] [StarModule ℝ A]
 
@@ -215,8 +216,12 @@ end AlgebraStructure
 
 end selfAdjoint
 
+namespace ProbabilisticTheory
+
 /-- The Jordan product of observables. -/
 noncomputable abbrev Observable.jordanMul {A : Type*} [Ring A] [StarRing A] [Module ℝ A]
     [StarModule ℝ A] (a b : Observable A) :
     Observable A :=
   selfAdjoint.jordanMul a b
+
+end ProbabilisticTheory

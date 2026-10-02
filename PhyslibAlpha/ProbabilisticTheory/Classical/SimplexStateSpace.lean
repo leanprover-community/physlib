@@ -49,6 +49,8 @@ and this identification respects the order.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open StateSpace
 
 open MeasureTheory PureState
@@ -217,3 +219,5 @@ lemma le_of_toPositive_le {μ θ : Measure (PureState E)} [μ.Regular] [θ.Regul
   exact Measure.le_add_right le_rfl
 
 end Simplex
+
+end ProbabilisticTheory

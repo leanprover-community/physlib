@@ -13,7 +13,7 @@ project.
 Below we summarize the linters Physlib has, in each bullet point the initial `code snippet`
 is how the linter can be run locally.
 
-The first two linters are the most important, but in an ideal world you would check that
+The first three linters are the most important, but in an ideal world you would check that
 all of the following linters run correctly.
 
 - `lake exe lint_all` (**A PR must in general pass this linter**): This linter is split into seven steps, strictly speaking not all of these steps must be past for a PR to be merged, but it is best to just fix them all.
@@ -29,6 +29,12 @@ This linter may need running a number of times.
 - `./scripts/lint-style.sh` (**A PR must pass this linter**): This linter checks for some
   style errors e.g. too long lines or wrong indentations, as well as checking if all necessary `simp` lemmas are of the form `simp only [...]`. For this linter
   to work properly you must first commit your changes to github.
+- `lake exe auxillary_script_test` (**A PR must pass this linter**): Runs and checks the auxiliary
+  scripts `lake exe make_tag`, `lake exe TODO_to_yml mkFile`, `lake exe stats mkHTML` and
+  `lake exe informal mkFile mkDot mkHTML`, which generate the website data. `TODO_to_yml` imports
+  `Physlib`, `QuantumInfo` and `PhyslibAlpha` together, so this also catches declarations with the
+  same name in two of these libraries. It needs all three libraries built
+  (`lake build Physlib QuantumInfo PhyslibAlpha`), and it leaves no files behind.
 - `lake exe style_lint` : A linter which only does step 1 of `lake exe lint_all`.
 - `lake exe runPhyslibLinters` : A linter which only does step 6 of `lake exe lint_all`.
 - `lake exe module_doc_lint` : Checks that module documentation is laid out according to a set standard. This does not check any file in the list `./scripts/MetaPrograms/module_doc_no_lint.txt`. Slowly we will empty this list of files.

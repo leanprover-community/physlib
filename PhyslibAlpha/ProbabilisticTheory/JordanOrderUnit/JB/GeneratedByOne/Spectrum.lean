@@ -35,6 +35,8 @@ Banach algebra `C(a)`. It is a compact subset of `ℝ`, and polynomials map spec
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace NormedJordanAlgebra
 
 variable {E : Type*}
@@ -409,3 +411,5 @@ lemma norm_aeval_closedGenerator [Nontrivial E] (a : E) (p : Polynomial ℝ) :
 end
 
 end NormedJordanAlgebra
+
+end ProbabilisticTheory

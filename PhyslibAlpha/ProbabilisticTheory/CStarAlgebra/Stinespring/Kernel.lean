@@ -40,6 +40,8 @@ operator `V : H → K` with `J a = V⋆ π(a) V`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder CStarAlgebra
 open ContinuousLinearMap
 
@@ -298,3 +300,7 @@ lemma map_eq_apply (a : A) :
   W.map_eq a
 
 end StinespringWitness
+
+end
+
+end ProbabilisticTheory

@@ -27,6 +27,8 @@ A JBW-algebra is a monotone-complete JB-algebra whose normal states separate poi
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-- A JBW-algebra, presented as a monotone-complete JB-algebra with enough normal states.
 The ordinary JB, order-unit, and scalar-order data stay in their existing canonical classes. -/
 class JBWAlgebra (E : Type*) [IsJBOrderUnit E] : Prop
@@ -78,3 +80,5 @@ lemma exists_normal_finite_weight_ne_zero {x : E} (hx : 0 ≤ x) (hxne : x ≠ 0
     (lt_of_le_of_ne (ω.map_nonneg hx) hωx.symm)
 
 end JBWAlgebra
+
+end ProbabilisticTheory

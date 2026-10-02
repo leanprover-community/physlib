@@ -41,6 +41,8 @@ square roots, absolute values and positive and negative parts.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace NormedJordanAlgebra
 
 variable {E : Type*}
@@ -821,3 +823,5 @@ lemma jordanPosPart_jordanOrthogonal_jordanNegPart [Nontrivial E]
 end
 
 end NormedJordanAlgebra
+
+end ProbabilisticTheory

@@ -24,6 +24,8 @@ observable is a square in its closed one-generator subalgebra.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JBAlgebra
 
 variable {E : Type*} [IsJBOrderUnit E] [Nontrivial E]
@@ -43,3 +45,5 @@ lemma nonneg_iff_exists_mul_self (a : E) :
     exact IsJordanOrderUnit.mul_self_nonneg b
 
 end JBAlgebra
+
+end ProbabilisticTheory

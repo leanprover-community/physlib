@@ -25,6 +25,8 @@ linear-algebra trace, so this applies to finite-dimensional Hilbert spaces.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open ComplexOrder ContinuousLinearMap
 
 namespace UnitalPositiveLinearMap
@@ -43,3 +45,5 @@ lemma ofDensity_apply {ρ : H →L[ℂ] H} (hpos : 0 ≤ ρ)
   ρ.traceMulOpₚ_apply_of_nonneg hpos x
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

@@ -51,6 +51,8 @@ gives a bounded sesquilinear form for each such function.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
 
@@ -1380,5 +1382,7 @@ lemma cfcSesquilinearForm_apply (S : Set (spectrum ℂ U)) (hS : MeasurableSet S
 end CFCScalar
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

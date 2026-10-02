@@ -40,9 +40,14 @@ measurement, for the diagonal action on a product of outcome spaces, are covaria
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. The induced action on the classical system -/
 
+end ProbabilisticTheory
+
 namespace BoundedMeasurable
+open ProbabilisticTheory
 
 variable {G Ω : Type*} [Group G] [MeasurableSpace Ω] [MulAction G Ω] [MeasurableAction G Ω]
 
@@ -91,6 +96,9 @@ lemma comap_isCovariant (g : Ω' → Ω) (hg : Measurable g)
 
 end BoundedMeasurable
 
+namespace ProbabilisticTheory
+
+
 /-! ## B. Covariant measurements -/
 
 namespace Measurement
@@ -128,3 +136,5 @@ lemma IsCovariant.marginal {ρ : G →* Symmetry E} {J : Measurement (Ω × Ω')
   hJ.mapOutcome _ _ fun _ _ => rfl
 
 end Measurement
+
+end ProbabilisticTheory

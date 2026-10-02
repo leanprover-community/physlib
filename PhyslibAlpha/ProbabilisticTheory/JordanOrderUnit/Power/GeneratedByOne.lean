@@ -30,6 +30,8 @@ Jordan product.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -75,3 +77,5 @@ lemma mul_mem_generatedByOne (a : E) {x y : E} (hx : x ∈ generatedByOne a)
   | smul_right r _ _ _ _ ih => simpa [mul_smul_comm] using (generatedByOne a).smul_mem r ih
 
 end JordanAlgebra
+
+end ProbabilisticTheory

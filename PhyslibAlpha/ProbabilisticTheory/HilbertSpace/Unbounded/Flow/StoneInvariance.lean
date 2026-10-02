@@ -27,6 +27,8 @@ the domain of `T` and commutes with `T` there.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open QuantumMechanics.WOTSpectralMeasure
 
@@ -102,3 +104,5 @@ lemma expUnitaryGroup_translate (x : T.domain) (s : ℝ) :
 end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
+
+end ProbabilisticTheory

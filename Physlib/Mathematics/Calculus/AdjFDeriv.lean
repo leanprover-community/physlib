@@ -6,7 +6,7 @@ Authors: Tomas Skrivan
 module
 
 public import Mathlib.Analysis.Calculus.Gradient.Basic
-public import Physlib.Mathematics.FDerivCurry
+public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.InnerProductSpace.Adjoint
 public import Physlib.Mathematics.InnerProductSpace.Calculus
 /-!

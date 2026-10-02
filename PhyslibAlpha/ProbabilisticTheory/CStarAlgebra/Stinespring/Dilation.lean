@@ -41,6 +41,8 @@ commutative `A` this contains Naimark's dilation of a POVM.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder CStarAlgebra TensorProduct
 open ContinuousLinearMap
 
@@ -739,3 +741,7 @@ lemma exists_stinespringWitness (J : A →CP (H →L[ℂ] H)) :
   ⟨Canonical.canonicalWitness J⟩
 
 end Stinespring
+
+end
+
+end ProbabilisticTheory

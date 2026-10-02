@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Jordan.Basic
 
-public import QuantumInfo.ForMathlib.HermitianMat.CFC
 public import QuantumInfo.ForMathlib.HermitianMat.Order
 
 /-!

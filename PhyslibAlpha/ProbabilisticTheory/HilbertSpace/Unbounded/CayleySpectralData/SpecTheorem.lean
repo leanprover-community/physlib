@@ -38,6 +38,8 @@ to the closure of an essentially self-adjoint operator.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
 open QuantumMechanics.WOTSpectralMeasure
@@ -856,5 +858,7 @@ lemma unboundedSpectralTheorem_of_essentiallySelfAdjoint
   exact cayleyDomainAwareSelfAdjointSpectralTheorem T.closure hT
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

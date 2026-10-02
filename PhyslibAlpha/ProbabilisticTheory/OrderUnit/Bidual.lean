@@ -35,6 +35,7 @@ the observables of the bidual form a lattice.
 @[expose] public section
 
 namespace Bidual
+open ProbabilisticTheory
 
 variable {E : Type*} [OrderUnitSpace E]
 
@@ -85,3 +86,4 @@ noncomputable instance instOrderUnitLattice [Fact (HasLatticeDualCone E)] :
     OrderUnitLattice (Bidual E) where
 
 end Bidual
+

@@ -7,7 +7,8 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Operator
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Algebra.Statistics
 
 /-!
@@ -38,6 +39,8 @@ orthogonal when `p ∘ q = 0`. A Jordan projection is an effect, and its quadrat
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 
 namespace IsJordanOrderUnit
 
@@ -218,3 +221,5 @@ lemma IsJordanProjection.quadRep_one {p : E} (hp : IsJordanProjection p) : U p (
 end Compression
 
 end JordanAlgebra
+
+end ProbabilisticTheory

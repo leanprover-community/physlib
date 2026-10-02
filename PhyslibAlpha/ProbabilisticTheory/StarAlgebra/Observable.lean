@@ -28,6 +28,8 @@ restricts to a real state on its observables, the expectation-value functional.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-- An observable in a space with an additive involution. -/
 abbrev Observable (A : Type*) [AddGroup A] [StarAddMonoid A] := selfAdjoint A
 
@@ -72,3 +74,5 @@ example (s : 𝓢[ℝ, E]) (h1 : IsSelfAdjoint (1 : E)) : s ((⟨1, h1⟩ : Obse
   map_one s
 
 end OrderUnit
+
+end ProbabilisticTheory

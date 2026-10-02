@@ -36,6 +36,8 @@ bijections, and a channel is covariant when it intertwines two symmetry actions.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped Pointwise
 
 section EffectAction
@@ -134,3 +136,5 @@ lemma UnitalPositiveLinearMap.IsCovariant.comp {ρ₁ : G →* Symmetry E₁} {�
   simpa only [UnitalPositiveLinearMap.comp_apply] using (congrArg ψ hφx).trans hψx
 
 end CovariantChannel
+
+end ProbabilisticTheory

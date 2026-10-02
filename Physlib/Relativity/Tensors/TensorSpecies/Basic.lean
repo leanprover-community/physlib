@@ -5,10 +5,9 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.RepresentationTheory.Rep.Basic
-public import Physlib.Mathematics.PiTensorProduct
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Physlib.Meta.TODO.Basic
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Mathlib.RepresentationTheory.Intertwining
 /-!
 
 # Tensor species

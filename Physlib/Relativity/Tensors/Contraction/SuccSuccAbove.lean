@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Mathlib.Data.Finset.Sort
-public import Mathlib.Data.Nat.SuccPred
 /-!
 
 # Defining succSuccAbove
@@ -282,7 +281,7 @@ lemma succSuccAbove_comm_natAdd {n n1 : ℕ}
     (i j : Fin (n + 1 + 1)) (m : Fin n) :
     succSuccAbove (n := n1 + n) (Fin.natAdd n1 i) (Fin.natAdd n1 j) (Fin.natAdd n1 m)
     = Fin.natAdd (n1) (succSuccAbove i j m) := by
-  simp only [succSuccAbove, val_natAdd, add_lt_add_iff_left, add_le_add_iff_left, Fin.ext_iff]
+  simp only [succSuccAbove, val_natAdd, Fin.ext_iff]
   grind
 
 /-!

@@ -36,6 +36,8 @@ measure.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder
 
 namespace JB
@@ -98,3 +100,5 @@ lemma variance_eq_integral_sq_sub (ω : 𝓢[ℂ, A]) (a : selfAdjoint A) :
     _ = _ := by rw [moment_eq_integral, apply_eq_integral]
 
 end JB
+
+end ProbabilisticTheory

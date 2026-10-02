@@ -26,6 +26,8 @@ fundamental formula.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 open scoped JordanAlgebra
@@ -56,3 +58,5 @@ lemma quadRepPositiveLinearMap_fundamental (a b : E) :
   exact quadRep_fundamental_apply a b x
 
 end JordanAlgebra
+
+end ProbabilisticTheory

@@ -46,6 +46,8 @@ separation fact.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open ArchimedeanOrderUnitSpace
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
@@ -202,3 +204,5 @@ lemma norm_toOrderUnitContinuousLinearMap [Nontrivial E] (ω : 𝓢[ℝ, E]) :
           orderUnitNorm_one, mul_one]
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

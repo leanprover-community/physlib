@@ -25,6 +25,8 @@ suprema in the whole space, where the state is normal.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ENNReal
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -72,3 +74,5 @@ lemma IsNormal.toWeight_isNormal {s : 𝓢[ℝ, E]} (hs : s.IsNormal) : s.toWeig
   exact hENN
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

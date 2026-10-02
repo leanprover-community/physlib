@@ -5,10 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Normed.Group.AddTorsor
-public import Mathlib.Analysis.Normed.Group.Real
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Defs
 /-!
 # Time
 

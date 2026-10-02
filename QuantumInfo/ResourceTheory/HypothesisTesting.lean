@@ -6,12 +6,10 @@ Authors: Alex Meiburg, Leonardo A. Lessa, Rodolfo R. Soldati
 module
 
 public import Mathlib.Algebra.Module.Submodule.Lattice
-public import Mathlib.Analysis.Subadditive
 public import Mathlib.CategoryTheory.Functor.FullyFaithful
 public import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 public import Mathlib.Data.EReal.Basic
 public import QuantumInfo.Entropy.VonNeumann
-public import QuantumInfo.Entropy.SSA
 public import QuantumInfo.Entropy.Relative
 public import QuantumInfo.Entropy.DPI
 public import QuantumInfo.Channels.Bundled
@@ -20,6 +18,8 @@ public import QuantumInfo.Channels.Dual
 public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.Measurements.POVM
+public import QuantumInfo.ForMathlib.ContinuousSup
+public import Mathlib.Topology.Compactification.OnePoint.ProjectiveLine
 
 /-!
 Defines `OptimalHypothesisRate`, the optimal rate of distinguishing an `MState` ρ from a set of other

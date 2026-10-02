@@ -33,6 +33,8 @@ so `U = V`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -216,3 +218,5 @@ lemma stoneCandidateGenerator_reconstruction (x : H) (t : ℝ) :
 
 end
 end QuantumMechanics
+
+end ProbabilisticTheory

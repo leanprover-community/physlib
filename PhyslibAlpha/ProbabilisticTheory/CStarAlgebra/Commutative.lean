@@ -37,9 +37,10 @@ self-adjoint part of a commutative C⋆-algebra is a classical system.
 
 @[expose] public section
 
-open scoped ComplexOrder
 
 namespace CommCStarAlgebra
+open ProbabilisticTheory
+open scoped ComplexOrder
 
 variable {A : Type*} [CommCStarAlgebra A]
 
@@ -133,3 +134,4 @@ lemma isClassical : IsClassical (selfAdjoint A) :=
   hasRieszDecomposition.hasLatticeDualCone
 
 end CommCStarAlgebra
+

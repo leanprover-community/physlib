@@ -56,6 +56,8 @@ dimensional.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -712,5 +714,7 @@ lemma HasFiniteMultiplicity.trace_eq_finrank_range_of_finiteDimensional
         p hp.2.choose_spec.choose).symm
     _ = (Module.finrank ℂ (LinearMap.range p.toLinearMap) : ℂ) :=
       (LinearMap.IsIdempotentElem.isProj_range p.toLinearMap hpIdem).trace
+
+end ProbabilisticTheory
 
 end

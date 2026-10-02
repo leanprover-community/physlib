@@ -39,6 +39,8 @@ a weight that is finite and normalized.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ENNReal NNReal
 
 /-!
@@ -143,3 +145,5 @@ lemma IsFinite.normalize_isState {w : Weight E} (hw : w.IsFinite) (h : w 1 ≠ 0
 end OrderUnitSpace
 
 end Weight
+
+end ProbabilisticTheory

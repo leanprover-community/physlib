@@ -37,6 +37,8 @@ So `μ` sends every normal state to a probability distribution over its outcomes
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Function
 
 variable {Ω E : Type*} [MeasurableSpace Ω]
@@ -115,3 +117,5 @@ lemma probabilityLaw_mapOutcome (N : EffectValuedMeasure Ω' E) (f : Ω' → Ω)
 end Relabel
 
 end EffectValuedMeasure
+
+end ProbabilisticTheory

@@ -37,6 +37,8 @@ functional calculus; here they are positive observables.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 namespace Observable
@@ -91,3 +93,5 @@ lemma posPart_negPart_unique (a : Observable A) (b c : PositiveObservable A)
   exact ⟨Subtype.ext (Subtype.ext hb), Subtype.ext (Subtype.ext hc)⟩
 
 end Observable
+
+end ProbabilisticTheory

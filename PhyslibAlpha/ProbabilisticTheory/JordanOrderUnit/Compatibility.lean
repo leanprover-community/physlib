@@ -31,6 +31,8 @@ observables of a C⋆-algebra are compatible.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -63,3 +65,5 @@ lemma isJordanCompatible_one_right (a : E) : IsJordanCompatible a 1 :=
   (isJordanCompatible_one_left a).symm
 
 end JordanAlgebra
+
+end ProbabilisticTheory

@@ -33,6 +33,8 @@ differentiable at `0`, and then the derivative at time `t` is `i T exp(i t T) x`
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set
 open scoped Topology InnerProductSpace Function
 open QuantumMechanics.WOTSpectralMeasure
@@ -274,5 +276,7 @@ lemma expUnitaryGroup_star (D : DomainAwareSelfAdjointSpectralTheorem T μS) (t 
 end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

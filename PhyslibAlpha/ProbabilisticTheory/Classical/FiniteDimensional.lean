@@ -41,6 +41,8 @@ finitely many of them, and by the Krein–Milman theorem they span the state spa
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open StateSpace
 
 open MeasureTheory ArchimedeanOrderUnitSpace Set
@@ -174,3 +176,5 @@ lemma isSimplexStateSpace_of_affineEquiv_stdSimplexSet {ι : Type*} [Fintype ι]
     (e : WeakDual ℝ E ≃ᵃ[ℝ] (ι → ℝ)) (he : e '' stateSpace E = stdSimplexSet ι) :
     IsSimplexStateSpace E :=
   PureState.isSimplexStateSpace_of_isSimplex (isSimplex_of_affineEquiv_stdSimplexSet e he)
+
+end ProbabilisticTheory

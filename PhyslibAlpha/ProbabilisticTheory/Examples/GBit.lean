@@ -45,6 +45,8 @@ not a qubit either: the shape of the cone matters, not just the dimension.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-!
 
 ## A. The gbit as a norm cone
@@ -106,3 +108,5 @@ lemma not_isSimplex_stateSpace :
     simp [finrank_eq_four] at this
 
 end GBit
+
+end ProbabilisticTheory

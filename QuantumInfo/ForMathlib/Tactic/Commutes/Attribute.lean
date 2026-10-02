@@ -5,7 +5,6 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Init
 public import Aesop.Frontend.Command
 
 /-!

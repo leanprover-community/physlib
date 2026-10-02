@@ -6,10 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.Calculus.Wirtinger.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Pi
-public import Mathlib.Analysis.Calculus.FDeriv.RestrictScalars
 public import Mathlib.Analysis.Calculus.FDeriv.Star
-public import Mathlib.Data.Fintype.Defs
 
 /-!
 

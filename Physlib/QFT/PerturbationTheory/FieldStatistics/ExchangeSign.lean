@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.QFT.PerturbationTheory.FieldStatistics.Basic
-public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Basic.Complex.Basic
 /-!
 
 # Exchange sign for field statistics

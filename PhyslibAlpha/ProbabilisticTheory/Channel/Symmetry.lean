@@ -40,6 +40,8 @@ dynamics.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {E : Type*} [OrderUnitSpace E]
 
 /-! ## A. Order automorphisms -/
@@ -233,3 +235,5 @@ lemma stateEvolution_add (α : OneParameterAutomorphismGroup E) (s t : ℝ) (ω 
   exact Symmetry.stateSMul_mul α.toSymmetryHom (Multiplicative.ofAdd s) (Multiplicative.ofAdd t) ω
 
 end OneParameterAutomorphismGroup
+
+end ProbabilisticTheory

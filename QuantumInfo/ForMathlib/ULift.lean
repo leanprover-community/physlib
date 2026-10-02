@@ -5,7 +5,8 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib
+public import Mathlib.Algebra.Field.ULift
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Typeclass instances for `ULift`

@@ -36,6 +36,8 @@ weakly null sequence to a sequence converging to `0` in norm.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open Filter Topology
 open scoped InnerProductSpace
 
@@ -45,7 +47,7 @@ omit [CompleteSpace H] in
 /-- An orthonormal sequence is **weakly null**: for every fixed `g`, the inner products
 `⟪g, ψ n⟫` tend to `0`. (Bessel's inequality makes `∑ ‖⟪ψ n, g⟫‖²` summable, so its terms — hence
 `‖⟪g, ψ n⟫‖` — tend to `0`.) -/
-lemma Orthonormal.tendsto_inner_atTop_zero {ψ : ℕ → H} (hψ : Orthonormal ℂ ψ) (g : H) :
+lemma _root_.Orthonormal.tendsto_inner_atTop_zero {ψ : ℕ → H} (hψ : Orthonormal ℂ ψ) (g : H) :
     Tendsto (fun n => ⟪g, ψ n⟫_ℂ) atTop (𝓝 0) := by
   have hsq : Tendsto (fun n => ‖⟪ψ n, g⟫_ℂ‖ ^ 2) atTop (𝓝 0) :=
     (hψ.inner_products_summable g).tendsto_atTop_zero
@@ -66,7 +68,7 @@ lemma Orthonormal.tendsto_inner_atTop_zero {ψ : ℕ → H} (hψ : Orthonormal �
 which it stays `≥ ε`; it lands in the compact set `closure (K '' closedBall 0 C)`, so a further
 subsequence converges in norm to some `a`; weak nullness (via the adjoint) forces `⟪a, a⟫ = 0`,
 i.e. `a = 0`, contradicting `ε ≤ ‖a‖`. -/
-lemma IsCompactOperator.tendsto_norm_apply_of_weaklyNull
+lemma _root_.IsCompactOperator.tendsto_norm_apply_of_weaklyNull
     {K : H →L[ℂ] H} (hK : IsCompactOperator (K : H → H)) {u : ℕ → H} {C : ℝ}
     (hbdd : ∀ n, ‖u n‖ ≤ C)
     (hweak : ∀ g : H, Tendsto (fun n => ⟪g, u n⟫_ℂ) atTop (𝓝 0)) :
@@ -108,3 +110,5 @@ lemma IsCompactOperator.tendsto_norm_apply_of_weaklyNull
   have hε_le : ε ≤ ‖a‖ := ge_of_tendsto' hnorm_tend (fun n => hφ (ψ n))
   rw [ha0, norm_zero] at hε_le
   exact absurd hε_le (not_le.mpr hε)
+
+end ProbabilisticTheory

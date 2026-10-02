@@ -33,6 +33,8 @@ carries the canonical norm without changing the structures on `E` itself.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open ArchimedeanOrderUnitSpace
 
 /-! ## A. The normed copy -/
@@ -134,3 +136,5 @@ lemma orderUnitNorm_map_le (φ : Channel E F) (x : E) :
       _ = orderUnitNorm x • (1 : F) := by rw [map_smul, map_one]
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

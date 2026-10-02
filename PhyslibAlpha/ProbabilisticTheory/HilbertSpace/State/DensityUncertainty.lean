@@ -8,6 +8,7 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Uncertainty
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Density
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Vector
+public import Mathlib.Analysis.InnerProductSpace.Trace
 
 /-!
 
@@ -37,6 +38,8 @@ traces against `ρ`, and the state of a rank-one projection `|ψ⟩⟨ψ|` is th
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace selfAdjoint
 open ContinuousLinearMap
@@ -107,3 +110,5 @@ lemma ofDensity_rankOne {ψ : H} (h : ‖ψ‖ = 1) :
   rfl
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

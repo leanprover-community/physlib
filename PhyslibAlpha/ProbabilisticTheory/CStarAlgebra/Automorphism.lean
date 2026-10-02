@@ -46,6 +46,8 @@ dynamics; it can be transported along a `⋆`-isomorphism and induces dynamics o
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. Action on observables -/
 
 section StarAlgEquivObservable
@@ -56,7 +58,7 @@ variable {A : Type*} [Ring A] [StarRing A] [Module ℂ A] [StarModule ℂ A]
 
 omit [StarModule ℂ A] in
 /-- A ⋆-automorphism `β` acts on observables by `a ↦ β a`. -/
-def StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) : Observable A :=
+def _root_.StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) : Observable A :=
   ⟨β (a : A), by
     show star (β (a : A)) = β (a : A)
     rw [← map_star, a.2]⟩
@@ -64,13 +66,13 @@ def StarAlgEquiv.observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) : Obser
 omit [StarModule ℂ A] in
 /-- Unfolds `StarAlgEquiv.observable` to its underlying algebra element. -/
 @[simp]
-lemma StarAlgEquiv.observable_coe (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma _root_.StarAlgEquiv.observable_coe (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
     (β.observable a : A) = β (a : A) := rfl
 
 omit [StarModule ℂ A] in
 /-- The identity automorphism acts trivially on observables. -/
 @[simp]
-lemma StarAlgEquiv.refl_observable :
+lemma _root_.StarAlgEquiv.refl_observable :
     (StarAlgEquiv.refl (R := ℂ) (A := A)).observable = id := by
   funext a
   exact Subtype.ext rfl
@@ -78,29 +80,29 @@ lemma StarAlgEquiv.refl_observable :
 omit [StarModule ℂ A] in
 /-- Composing `β` then `γ` acts on observables as `γ ∘ β`. -/
 @[simp]
-lemma StarAlgEquiv.trans_observable (β γ : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma _root_.StarAlgEquiv.trans_observable (β γ : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
     (β.trans γ).observable a = γ.observable (β.observable a) :=
   Subtype.ext (StarAlgEquiv.trans_apply β γ (a : A))
 
 omit [StarModule ℂ A] in
 /-- Undoing `β.observable` by `β.symm.observable` recovers the original observable. -/
 @[simp]
-lemma StarAlgEquiv.symm_observable_observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma _root_.StarAlgEquiv.symm_observable_observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
     β.symm.observable (β.observable a) = a :=
   Subtype.ext (β.symm_apply_apply (a : A))
 
 omit [StarModule ℂ A] in
 /-- Applying `β.observable` after `β.symm.observable` recovers the original observable. -/
 @[simp]
-lemma StarAlgEquiv.observable_symm_observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
+lemma _root_.StarAlgEquiv.observable_symm_observable (β : A ≃⋆ₐ[ℂ] A) (a : Observable A) :
     β.observable (β.symm.observable a) = a :=
   Subtype.ext (β.apply_symm_apply (a : A))
 
 /-- Star automorphisms preserve the observable Lie bracket. -/
-lemma StarAlgEquiv.observable_bracket (β : A ≃⋆ₐ[ℂ] A) (a b : Observable A) :
+lemma _root_.StarAlgEquiv.observable_bracket (β : A ≃⋆ₐ[ℂ] A) (a b : Observable A) :
     β.observable ⁅a, b⁆ = ⁅β.observable a, β.observable b⁆ := by
   apply Subtype.ext
-  simp only [observable_coe, selfAdjoint.coe_bracket, map_smul, map_sub, map_mul]
+  simp only [StarAlgEquiv.observable_coe, selfAdjoint.coe_bracket, map_smul, map_sub, map_mul]
 
 end StarAlgEquivObservable
 
@@ -112,12 +114,12 @@ variable {A B : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
   [CStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
 
 /-- The quantum channel of a ⋆-isomorphism. -/
-noncomputable def StarAlgEquiv.toQuantumChannel (β : A ≃⋆ₐ[ℂ] B) : QuantumChannel A B where
+noncomputable def _root_.StarAlgEquiv.toQuantumChannel (β : A ≃⋆ₐ[ℂ] B) : QuantumChannel A B where
   toCompletelyPositiveMap := β.toStarAlgHom
   map_one' := β.map_one
 
 /-- The channel a ⋆-isomorphism induces between the self-adjoint observables. -/
-noncomputable def StarAlgEquiv.toObservableChannel (β : A ≃⋆ₐ[ℂ] B) :
+noncomputable def _root_.StarAlgEquiv.toObservableChannel (β : A ≃⋆ₐ[ℂ] B) :
     Channel (selfAdjoint A) (selfAdjoint B) :=
   .ofLinearMap
     { toFun := fun a => ⟨β (a : A), by
@@ -138,7 +140,7 @@ noncomputable def StarAlgEquiv.toObservableChannel (β : A ≃⋆ₐ[ℂ] B) :
       exact β.map_one)
 
 @[simp]
-lemma StarAlgEquiv.coe_toObservableChannel_apply (β : A ≃⋆ₐ[ℂ] B) (a : selfAdjoint A) :
+lemma _root_.StarAlgEquiv.coe_toObservableChannel_apply (β : A ≃⋆ₐ[ℂ] B) (a : selfAdjoint A) :
     (β.toObservableChannel a : B) = β (a : A) := rfl
 
 end StarAlgEquivChannel
@@ -149,17 +151,18 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-- On observables of a single algebra, the induced channel is the action on observables. -/
 @[simp]
-lemma StarAlgEquiv.toObservableChannel_apply (β : A ≃⋆ₐ[ℂ] A) (a : selfAdjoint A) :
+lemma _root_.StarAlgEquiv.toObservableChannel_apply (β : A ≃⋆ₐ[ℂ] A) (a : selfAdjoint A) :
     β.toObservableChannel a = β.observable a := rfl
 
 /-- Every C⋆-⋆-automorphism induces a symmetry of the self-adjoint observables. -/
-noncomputable def StarAlgEquiv.observableSymmetry (β : A ≃⋆ₐ[ℂ] A) : Symmetry (selfAdjoint A) :=
+noncomputable def _root_.StarAlgEquiv.observableSymmetry (β : A ≃⋆ₐ[ℂ] A) :
+    Symmetry (selfAdjoint A) :=
   ⟨β.toObservableChannel, β.symm.toObservableChannel,
     UnitalPositiveLinearMap.ext fun a => β.symm_observable_observable a,
     UnitalPositiveLinearMap.ext fun a => β.observable_symm_observable a⟩
 
 @[simp]
-lemma StarAlgEquiv.val_observableSymmetry (β : A ≃⋆ₐ[ℂ] A) :
+lemma _root_.StarAlgEquiv.val_observableSymmetry (β : A ≃⋆ₐ[ℂ] A) :
     (β.observableSymmetry : Channel (selfAdjoint A) (selfAdjoint A)) = β.toObservableChannel :=
   rfl
 
@@ -365,3 +368,5 @@ lemma AutomorphismGroup.conj_conj_symm (α : AutomorphismGroup A) (β : A ≃⋆
   simp
 
 end AutomorphismGroupConj
+
+end ProbabilisticTheory

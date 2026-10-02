@@ -32,6 +32,8 @@ operators to the dual of `𝒮₁(H)`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 namespace TraceClass
@@ -161,3 +163,5 @@ lemma tracePairingContinuousLinearMap_apply (A : H →L[ℂ] H) :
     tracePairingContinuousLinearMap A = tracePairing A := rfl
 
 end TraceClass
+
+end ProbabilisticTheory

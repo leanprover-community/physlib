@@ -26,6 +26,8 @@ Gårding vector of the `n`-th derivative of the heat kernel. Its norm is at most
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -158,3 +160,4 @@ end
 
 end QuantumMechanics
 
+end ProbabilisticTheory

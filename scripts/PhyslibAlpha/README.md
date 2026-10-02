@@ -11,6 +11,14 @@ lake exe runPhyslibAlphaLinters
 ```
 This picks up things like lack of doc-strings on definitions, or incompatible `@[simp]` attributes.
 
+### auxillary_script_test
+```
+lake exe auxillary_script_test
+```
+This runs the auxiliary scripts which generate the website data. One of them imports `Physlib`,
+`QuantumInfo` and `PhyslibAlpha` together, so this fails if a declaration in PhyslibAlpha has the
+same name as one in `Physlib` or `QuantumInfo`. See [../README.md](../README.md).
+
 ## Python-based linters
 
 ### alphaFileImports.py

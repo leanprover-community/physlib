@@ -6,6 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Reindex
+public import QuantumInfo.ForMathlib.IsMaximalSelfAdjoint
 
 /-! # Trace of Hermitian Matrices
 

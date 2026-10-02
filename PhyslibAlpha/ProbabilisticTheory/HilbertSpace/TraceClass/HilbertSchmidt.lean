@@ -41,6 +41,8 @@ diagonal in every basis, with the diagonal sum symmetric in the two factors.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -521,5 +523,7 @@ lemma tsum_norm_sq_mul_right_le_of_selfAdjoint {S A : H →L[ℂ] H}
     _ = ‖A‖ ^ 2 * (∑' j : w, ‖S (b j)‖ ^ 2) := tsum_mul_left
 
 end HilbertSchmidt
+
+end ProbabilisticTheory
 
 end

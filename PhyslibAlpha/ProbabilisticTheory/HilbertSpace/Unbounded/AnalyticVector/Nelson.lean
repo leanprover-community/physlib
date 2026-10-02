@@ -44,7 +44,6 @@ open Filter
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-
 /-- Every entire vector supplies a `GlobalAnalyticOrbit` once the operator is known to be
 symmetric on a dense domain.  This packages the global case through the same certificate used by
 the finite-radius Nelson argument. -/
@@ -573,5 +572,5 @@ lemma IsSymmetric.isEssentiallySelfAdjoint_of_denseAnalyticVectors
   exact hsym.isEssentiallySelfAdjoint_of_denseAnalyticVectors_of_globalOrbit
     hdense hOrbit
 
-
 end LinearPMap
+

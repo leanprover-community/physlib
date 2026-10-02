@@ -27,6 +27,8 @@ is a matrix coefficient. This recovers a predual element from its values on rank
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 namespace TraceClass
@@ -63,3 +65,5 @@ lemma tracePairing_rankOne_left (T : TraceClass H) (x y : H) :
     _ = ⟪y, T.1 x⟫_ℂ := trace_rankOne_formula (T.1 x) y
 
 end TraceClass
+
+end ProbabilisticTheory

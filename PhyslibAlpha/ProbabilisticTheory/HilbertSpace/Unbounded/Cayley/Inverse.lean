@@ -38,6 +38,8 @@ Cayley transform is self-adjoint. It inverts the Cayley transform of a self-adjo
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 open Function Set
 
@@ -635,5 +637,7 @@ lemma CayleyUnitaryData.inverse_isSelfAdjoint {u : H ≃ₗᵢ[ℂ] H}
   inverseCayleyPMap_isSelfAdjoint_of_ker_eq_bot hu.one_sub_injective
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

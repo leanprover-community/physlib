@@ -37,6 +37,8 @@ along `u`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
@@ -190,5 +192,7 @@ lemma unitaryConjSpectralMeasure_diagonalMeasure
 end WOTSpectralMeasure
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

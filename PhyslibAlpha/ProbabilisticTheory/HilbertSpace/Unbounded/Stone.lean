@@ -34,6 +34,8 @@ quotients of `exp(i t T) x` converge for `x` of finite second moment.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set
 open scoped Topology InnerProductSpace Function
 
@@ -697,5 +699,7 @@ lemma expIntegral_strong_slope_tendsto
   simpa [dist_eq_norm] using hnormlt
 
 end QuantumMechanics.WOTSpectralMeasure
+
+end ProbabilisticTheory
 
 end

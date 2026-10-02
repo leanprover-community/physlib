@@ -5,23 +5,17 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.LinearAlgebra.TensorProduct.Matrix
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.Data.Set.Card
 public import Mathlib.Algebra.Module.LinearMap.Basic
 public import QuantumInfo.ForMathlib.ContinuousLinearMap
-public import QuantumInfo.ForMathlib.ComplexLaplaceTransform
-public import QuantumInfo.ForMathlib.ContinuousSup
-public import QuantumInfo.ForMathlib.Filter
 public import QuantumInfo.ForMathlib.HermitianMat
 public import QuantumInfo.ForMathlib.Isometry
 public import QuantumInfo.ForMathlib.LinearEquiv
 public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
 public import QuantumInfo.ForMathlib.Matrix
-public import QuantumInfo.ForMathlib.Minimax
 public import QuantumInfo.ForMathlib.Misc
-public import QuantumInfo.ForMathlib.Unitary
 public import QuantumInfo.States.Pure.Braket
 public import QuantumInfo.States.Mixed.MState
 

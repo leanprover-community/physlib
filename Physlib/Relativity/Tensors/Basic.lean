@@ -5,12 +5,11 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.ComponentIdx.Single
 public import Physlib.Relativity.Tensors.Reindexing
-public import Physlib.Relativity.Tensors.Contraction.SuccSuccAbove
 public import Mathlib.Topology.Algebra.Module.ModuleTopology
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Tactic.Cases
+public import Physlib.Relativity.Tensors.ComponentIdx.Basic
 /-!
 
 # Tensors

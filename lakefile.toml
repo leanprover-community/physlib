@@ -86,6 +86,11 @@ srcDir = "scripts/PhyslibAlpha"
 supportInterpreter = true
 
 [[lean_exe]]
+name = "forMathlib_lint"
+srcDir = "scripts"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "testImportScripts"
 srcDir = "Meta/test"
 supportInterpreter = true
@@ -141,6 +146,11 @@ supportInterpreter = true
 name = "informal"
 srcDir = "scripts/MetaPrograms"
 supportInterpreter = true
+
+[[lean_exe]]
+name = "auxillary_script_test"
+root = "«auxillary-script-test»"
+srcDir = "scripts"
 
 [[lean_exe]]
 name = "find_TODOs"

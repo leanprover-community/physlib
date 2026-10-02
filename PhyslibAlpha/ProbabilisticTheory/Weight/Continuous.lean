@@ -27,11 +27,12 @@ is a continuous linear functional on the observables with the order-unit norm.
 
 @[expose] public section
 
+
+namespace PositiveLinearMap
+open ProbabilisticTheory
 open ArchimedeanOrderUnitSpace
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
-
-namespace PositiveLinearMap
 
 /-- A positive functional is order-unit-norm bounded, with bound given by its value at the order
 unit.  For a normalized positive functional this specializes to the contractive state bound. -/
@@ -65,6 +66,12 @@ lemma toOrderUnitContinuousLinearMap_apply (f : E →ₚ[ℝ] ℝ) (x : E) :
 
 end PositiveLinearMap
 
+namespace ProbabilisticTheory
+
+open ArchimedeanOrderUnitSpace
+
+variable {E : Type*} [ArchimedeanOrderUnitSpace E]
+
 namespace Weight.IsFinite
 
 /-- The canonical continuous linear extension of a finite weight to the order-unit-norm copy. -/
@@ -79,3 +86,5 @@ lemma toOrderUnitContinuousLinearMap_apply_of_nonneg {w : Weight E} (hw : w.IsFi
     toPositiveLinearMap_apply_of_nonneg]
 
 end Weight.IsFinite
+
+end ProbabilisticTheory

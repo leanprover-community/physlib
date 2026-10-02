@@ -37,6 +37,8 @@ over the finite outcome type avoids hard-coding a particular classical system.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {E₁ E₂ : Type*} [OrderUnitSpace E₁] [OrderUnitSpace E₂]
 
 namespace UnitalPositiveLinearMap
@@ -51,3 +53,5 @@ def IsMeasureAndPrepare (Φ : Channel E₂ E₁) : Prop :=
     (P : Channel E₂ (FiniteClassicalSystem ι)), Φ = M.comp P
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

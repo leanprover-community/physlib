@@ -41,6 +41,8 @@ for the weak-⋆ topology.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder Topology
 open TopologicalSpace
 open Filter
@@ -182,3 +184,5 @@ lemma continuous (ω : NormalState A) : Continuous (ω : A → ℂ) :=
   continuous_le_dom (WStarAlgebraStructure.norm_le_weakStarTopology A) ω.weakStar_continuous
 
 end NormalState
+
+end ProbabilisticTheory

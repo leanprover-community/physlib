@@ -37,6 +37,8 @@ same value, by passing to their common refinement. The integral is linear and po
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace EffectValuedMeasure
 
 /-! ## A. Finite measurable partitions and simple functions
@@ -329,3 +331,5 @@ lemma simpleIntegral_nonneg (μ : EffectValuedMeasure Ω E) {c : ι → ℝ} (hc
   Finset.sum_nonneg fun i _ => smul_nonneg (hc i) (μ (s i) (hs.measurable i)).2.1
 
 end EffectValuedMeasure
+
+end ProbabilisticTheory

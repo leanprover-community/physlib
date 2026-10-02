@@ -44,6 +44,7 @@ probability measures on its outcomes.
 @[expose] public section
 
 namespace BoundedMeasurable
+open ProbabilisticTheory
 
 open UnitalPositiveLinearMap
 
@@ -78,6 +79,7 @@ lemma isPure_eval (x : Ω) : (eval x).IsPure :=
 end BoundedMeasurable
 
 namespace BoundedMeasurable
+open ProbabilisticTheory
 
 open UnitalPositiveLinearMap MeasureTheory Filter Topology
 
@@ -212,3 +214,4 @@ noncomputable def normalStateEquiv :
   right_inv μ := toMeasure_ofMeasure μ
 
 end BoundedMeasurable
+

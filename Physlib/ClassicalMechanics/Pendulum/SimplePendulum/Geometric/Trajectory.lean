@@ -7,7 +7,6 @@ module
 
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Geometric.Basic
 public import Physlib.SpaceAndTime.Time.InnerProductSpace
-public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 /-!
 
 # Geometric trajectories of the simple pendulum

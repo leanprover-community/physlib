@@ -33,6 +33,8 @@ form it carries the Lorentz cone. Only the algebraic structure is built here.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
@@ -101,11 +103,11 @@ lemma mul_comm (hB : B.IsSymm) (z w : SpinFactor R V B) : z * w = w * z := by
 
 instance : IsScalarTower R (SpinFactor R V B) (SpinFactor R V B) where
   smul_assoc r z w := by
-    ext <;> simp [smul_add, smul_smul, smul_eq_mul] <;> ring
+    ext <;> simp [smul_add, smul_smul, smul_eq_mul] <;> ring_nf
 
 instance : SMulCommClass R (SpinFactor R V B) (SpinFactor R V B) where
   smul_comm r z w := by
-    ext <;> simp [smul_add, smul_smul, smul_eq_mul] <;> ring
+    ext <;> simp [smul_add, smul_smul, smul_eq_mul] <;> ring_nf
 
 /-- A symmetric form gives the commutative Jordan algebra structure on the spin factor. -/
 @[instance_reducible]
@@ -150,3 +152,5 @@ lemma mul_self_sub_two_smul_snd_mul_add_determinant_smul_one
 end SpinFactor
 
 end JordanAlgebra
+
+end ProbabilisticTheory

@@ -6,8 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
-public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
-public import Physlib.SpaceAndTime.Space.DistOfFunction
 public import Physlib.SpaceAndTime.SpaceTime.TimeSlice
 
 /-!

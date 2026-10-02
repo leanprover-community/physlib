@@ -7,7 +7,7 @@ module
 
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.SmallAngle
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
-public import Physlib.Mathematics.Trigonometry.SinSq
+public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 /-!
 
 # The period formula of the simple gravity pendulum

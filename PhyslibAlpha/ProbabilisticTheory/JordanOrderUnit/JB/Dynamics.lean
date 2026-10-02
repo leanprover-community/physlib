@@ -36,6 +36,8 @@ one-parameter family of Jordan automorphisms is a Jordan derivation.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace NormedJordanAlgebra
 
 variable {E : Type*} [NormedJordanAlgebra E]
@@ -107,3 +109,5 @@ lemma isDerivation_of_isAutomorphismFamily {α : ℝ → E → E}
   IsGenerator.isDerivation_of_isAutomorphismFamily isBoundedBilinearMap_mul hα0 hmul hD
 
 end NormedJordanAlgebra
+
+end ProbabilisticTheory

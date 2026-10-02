@@ -6,7 +6,6 @@ Authors: Tomas Skrivan, Joseph Tooby-Smith
 module
 
 public import Physlib.Mathematics.VariationalCalculus.IsTestFunction
-public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 /-!
 
 # Fundamental lemma of the calculus of variations

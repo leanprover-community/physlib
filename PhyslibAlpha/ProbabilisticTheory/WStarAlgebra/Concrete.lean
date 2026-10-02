@@ -34,6 +34,8 @@ with predual the trace-class operators.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 namespace TraceClass
@@ -67,3 +69,5 @@ noncomputable instance instWStarAlgebraStructureContinuousLinearMap :
   predualNormedSpace := TraceClass.instNormedSpace
   predualCompleteSpace := TraceClass.instCompleteSpace
   toDual := TraceClass.tracePairingEquiv
+
+end ProbabilisticTheory

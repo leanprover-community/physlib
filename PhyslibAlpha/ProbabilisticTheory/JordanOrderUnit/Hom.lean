@@ -27,6 +27,8 @@ Jordan product.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E F G : Type*} [NonAssocCommRing E] [Module ℝ E]
@@ -105,3 +107,5 @@ lemma comp_assoc (h : JordanHom G E) (g : JordanHom F G) (f : JordanHom E F) :
 end JordanHom
 
 end JordanAlgebra
+
+end ProbabilisticTheory

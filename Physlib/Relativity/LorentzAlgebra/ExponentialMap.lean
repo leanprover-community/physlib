@@ -5,7 +5,7 @@ Authors: Matteo Cipollina
 -/
 module
 
-public import Physlib.Mathematics.DataStructures.Matrix.LieTrace
+public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
 public import Physlib.Relativity.LorentzAlgebra.Basic
 public import Physlib.Relativity.LorentzGroup.Restricted.Basic
 

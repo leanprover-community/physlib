@@ -34,6 +34,8 @@ uses only the Jordan identity, through the inner derivations `[L_a, L_b]` and th
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -388,7 +390,6 @@ lemma innerDerivation_sub_left (a b c : E) :
   simp only [innerDerivation_apply, LinearMap.sub_apply]
   simp only [sub_mul, mul_sub]
   module
-
 
 omit [Module ℝ E] [SMulCommClass ℝ E E] [IsCommJordan E] in
 /-- The diagonal fact for the triple product at `(a, a, x)`: telescoping cancellation collapses
@@ -989,7 +990,6 @@ lemma quadRep_fundamental_apply (x y z : E) :
 
   exact hmain'.trans hinnerUx.symm
 
-
 /-- The fundamental formula for the quadratic representation:
 `U_{U_x y} = U_x ∘ U_y ∘ U_x`. -/
 lemma quadRep_fundamental (x y : E) :
@@ -1010,3 +1010,5 @@ lemma quadRep_fundamental_jpow (a : E) (m n k : ℕ) :
   omega
 
 end JordanAlgebra
+
+end ProbabilisticTheory

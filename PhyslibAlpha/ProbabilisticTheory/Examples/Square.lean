@@ -40,6 +40,8 @@ four vertex values in `E`, which again satisfy the diagonal relation.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open TensorProduct
 
 /-! ## A. The square -/
@@ -228,3 +230,5 @@ lemma mem_maxTensorCone_iff {E : Type*} [ArchimedeanOrderUnitSpace E] {z : E ⊗
     mem_maxTensorCone_of_vals_nonneg⟩
 
 end Square
+
+end ProbabilisticTheory

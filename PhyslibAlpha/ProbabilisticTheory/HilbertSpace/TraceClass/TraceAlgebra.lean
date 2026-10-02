@@ -32,6 +32,8 @@ A)` for trace-class `T` and bounded `A`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
 
@@ -117,3 +119,5 @@ lemma trace_mul_cycle {A T : H →L[ℂ] H} (hT : IsTraceClass T) :
     _ = ∑' i : w, ⟪b i, (R * (S * A)) (b i)⟫_ℂ := h₂
     _ = ∑' i : w, ⟪b i, (T * A) (b i)⟫_ℂ := by
           rw [h₄]
+
+end ProbabilisticTheory

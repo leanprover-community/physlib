@@ -50,6 +50,8 @@ way.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open StateSpace
 
 open scoped NNReal
@@ -245,7 +247,6 @@ lemma isClosed_setOf_isPure : IsClosed {ω : stateSpace E | (toState ω).IsPure}
 
 end OrderUnitLattice
 
-
 namespace OrderUnitLattice
 
 open PureState
@@ -309,7 +310,13 @@ end OrderUnitLattice
 
 -/
 
+end ProbabilisticTheory
+
 namespace BoundedMeasurable
+open ProbabilisticTheory
+open StateSpace
+open scoped NNReal
+open ArchimedeanOrderUnitSpace MeasureTheory Set
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
@@ -323,6 +330,12 @@ lemma hasUniquePureDecomposition
   OrderUnitLattice.hasUniquePureDecomposition φ
 
 end BoundedMeasurable
+
+namespace ProbabilisticTheory
+
+open StateSpace
+open scoped NNReal
+open ArchimedeanOrderUnitSpace MeasureTheory Set
 
 /-!
 
@@ -343,3 +356,5 @@ lemma isBauerSimplexStateSpace : IsBauerSimplexStateSpace (FiniteClassicalSystem
   OrderUnitLattice.isBauerSimplexStateSpace _
 
 end FiniteClassicalSystem
+
+end ProbabilisticTheory

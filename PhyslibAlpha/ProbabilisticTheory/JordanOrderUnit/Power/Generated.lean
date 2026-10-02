@@ -26,6 +26,8 @@ under the Jordan product containing it. For a single observable it is the span o
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E]
@@ -189,3 +191,5 @@ lemma generatedBySet_singleton_eq_generatedByOne (a : E) :
         · exact ih
 
 end JordanAlgebra
+
+end ProbabilisticTheory

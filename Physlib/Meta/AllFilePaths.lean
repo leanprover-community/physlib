@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Meta.TODO.Basic
 /-!
 
 ## Getting an array of all file paths in Physlib.

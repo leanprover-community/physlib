@@ -1356,5 +1356,5 @@ structure LocalAnalyticOrbit (T : H →ₗ.[ℂ] H) (x : H) where
       (Complex.I • T.closure ⟨toFun s, mem_domain s hs⟩) s
   norm_eq : ∀ (s : ℝ) (_hs : |s| < radius), ‖toFun s‖ = ‖x‖
 
-
 end LinearPMap
+

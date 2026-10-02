@@ -8,6 +8,8 @@ module
 public import Physlib.QuantumMechanics.Operators.Multiplication
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.PolyBddSchwartzSubmodule
 public import Physlib.SpaceAndTime.Space.Norm.Regularized
+public import Physlib.SpaceAndTime.Space.Derivatives.Basic
+public import Physlib.SpaceAndTime.Space.Integrals.NormPow
 /-!
 
 # Position operators

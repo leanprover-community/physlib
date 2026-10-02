@@ -28,6 +28,8 @@ of a C⋆-algebra is special.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped JB selfAdjoint
 
 /-- A witness that `E` is special: an isometric unital Jordan embedding into the self-adjoint part
@@ -90,3 +92,5 @@ lemma isSpecial_selfAdjoint : JBAlgebra.IsSpecial (selfAdjoint A) :=
   ⟨A, ‹_›, ‹_›, ‹_›, ⟨isSpecialWitnessRefl⟩⟩
 
 end JB
+
+end ProbabilisticTheory

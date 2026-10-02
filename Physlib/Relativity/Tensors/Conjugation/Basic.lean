@@ -5,11 +5,8 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Relativity.Tensors.Contraction.Basic
 public import Physlib.Relativity.Tensors.Contraction.Basis
-public import Physlib.Mathematics.ConjModule
-public import Mathlib.Algebra.Star.Basic
-public import Mathlib.LinearAlgebra.Finsupp.LSum
+public import Physlib.Mathematics.Modules.ConjModule
 
 /-!
 
@@ -38,10 +35,11 @@ last makes reality and Hermiticity compatible with raising and lowering indices.
 
 At the single-index level, `conjEquiv : V c ≃ₛₗ V (bar c)` realises this conjugation: it reads a
 vector's coordinates, conjugates them with `ConjModule.starFinsupp`, and re-seats them at the
-conjugate colour. It rests on the conjugate module `ConjModule` (`Physlib.Mathematics.ConjModule`),
-the same vectors with the scalar action twisted by conjugation (`i` acts as `−i`). Equipping the
-conjugate colours with such conjugate-module carriers is what makes a metric `V c ⊗ V (bar c) → k`
-genuinely bilinear and `IsHermitian` an honest conjugate-transpose.
+conjugate colour. It rests on the conjugate module `ConjModule`
+(`Physlib.Mathematics.Modules.ConjModule`), the same vectors with the scalar action twisted by
+conjugation (`i` acts as `−i`). Equipping the conjugate colours with such conjugate-module
+carriers is what makes a metric `V c ⊗ V (bar c) → k` genuinely bilinear and `IsHermitian` an
+honest conjugate-transpose.
 
 ## ii. Key results
 

@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import Mathlib
+public import Mathlib.Analysis.InnerProductSpace.StarOrder
 
 /-!
 
@@ -26,6 +26,8 @@ A unit vector `ψ` defines the vector state `x ↦ ⟪ψ, x ψ⟫` on the bounde
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open ComplexOrder ContinuousLinearMap
 open scoped InnerProductSpace
 
@@ -35,7 +37,7 @@ variable {H 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpac
 
 /-- The vector functional associated with `ψ`. -/
 @[simps apply]
-def PositiveLinearMap.ofVec (ψ : H) : 𝓟[𝕜, H →L[𝕜] H] where
+def _root_.PositiveLinearMap.ofVec (ψ : H) : 𝓟[𝕜, H →L[𝕜] H] where
   toFun x := ⟪ψ, x • ψ⟫_𝕜
   map_add' x y := by simp [inner_add_right]
   map_smul' x y := by simp [inner_smul_right]
@@ -64,3 +66,5 @@ example (ψ : H) (h : ‖ψ‖ = 1) :
   simp
 
 end Example
+
+end ProbabilisticTheory

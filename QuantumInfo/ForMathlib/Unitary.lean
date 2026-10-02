@@ -6,8 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import QuantumInfo.ForMathlib.HermitianMat.Unitary
+public import Mathlib.Analysis.InnerProductSpace.Spectrum
 
 @[expose] public section
 

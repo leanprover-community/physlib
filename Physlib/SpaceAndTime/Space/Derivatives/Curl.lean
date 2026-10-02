@@ -8,8 +8,8 @@ module
 public import Physlib.SpaceAndTime.Space.Derivatives.Laplacian
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Poincare
 public import Physlib.SpaceAndTime.Space.CrossProduct
-public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Physlib.Mathematics.LeviCivita.Basic
+public import Mathlib.Tactic.Cases
 
 /-!
 

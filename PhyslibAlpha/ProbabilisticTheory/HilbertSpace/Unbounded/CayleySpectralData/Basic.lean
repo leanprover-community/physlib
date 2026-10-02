@@ -40,6 +40,8 @@ measure on `ℝ`, the candidate spectral measure of `T`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
 open QuantumMechanics.WOTSpectralMeasure
@@ -500,7 +502,6 @@ lemma cayleyBoundedOperator_one_eigenspace_eq_bot
       rw [hy']
       simp
 
-
 lemma cayleyBoundedSpectralMeasure_id_integrable
     (T : H →ₗ.[ℂ] H) (hT : IsSelfAdjoint T) (x y : H) :
     ((cayleyBoundedSpectralMeasure T hT).scalarMeasure x y).Integrable id := by
@@ -838,5 +839,7 @@ lemma cayleyMap_cayleyRealSpectralMeasure
   exact (cayleyBoundedUnitarySpectralData T hT).cayleyMap_realSpectralMeasure
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

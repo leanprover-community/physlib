@@ -43,6 +43,8 @@ space, its order, and this distinguished unit gives the abstract order-unit sett
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-!
 
 ## A. Ordered vector spaces and order-unit elements
@@ -106,3 +108,5 @@ lemma nonneg_add_eq_zero {A B : E} (hA : 0 ≤ A) (hB : 0 ≤ B) (hAB : A + B = 
   le_antisymm (hAB ▸ le_add_of_nonneg_right hB) hA
 
 end OrderedVectorSpace
+
+end ProbabilisticTheory

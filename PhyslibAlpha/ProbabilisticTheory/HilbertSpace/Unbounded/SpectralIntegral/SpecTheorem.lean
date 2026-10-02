@@ -37,6 +37,8 @@ measure equals this integral, which identifies its domain with the vectors of fi
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 open QuantumMechanics.WOTSpectralMeasure
@@ -1232,3 +1234,5 @@ lemma maximal_eq_of_domain_inclusion
 end SelfAdjointSpectralTheorem
 
 end QuantumMechanics
+
+end ProbabilisticTheory

@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - master
+  merge_group:
 
 name: Style linters
 
@@ -48,13 +49,21 @@ jobs:
           lake cache get --scope="physlib-master/$(tr '/:' '--' < lean-toolchain | tr -d '[:space:]')/physlib" \
             || echo "no existing cache to restore -- building from scratch"
 
+      # PhyslibAlpha has its own cache in the bucket so we pull that one too
+      - name: PhyslibAlpha's build cache
+        env:
+          LAKE_CONFIG: ${{ github.workspace }}/lake-cache.toml
+        run: |
+          lake cache get --scope="physlib-master/$(tr '/:' '--' < lean-toolchain | tr -d '[:space:]')/alpha" \
+            || echo "no existing cache to restore -- building from scratch"
+
       - name: build Physlib
         id: build
         uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI --iofail | tee stdout.log"
 
       - name: check file imports
         run: |
@@ -76,6 +85,44 @@ jobs:
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runPhyslibLinters
+
+      # PhyslibAlpha is built on top of Physlib, so this only needs Physlib to have built:
+      # a failing Physlib linter above does not stop it.
+      - name: build PhyslibAlpha
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        id: alpha_build
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI --iofail PhyslibAlpha | tee stdout.log"
+
+      - name: runLinter on PhyslibAlpha
+        if: ${{ !cancelled() && (steps.alpha_build.outcome == 'success' || steps.alpha_build.outcome == 'failure') }}
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
+        timeout-minutes: 4
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runPhyslibAlphaLinters
+
+      - name: Check no PhyslibAlpha in Physlib and QuantumInfo
+        if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe noAlphaImports
+
+      - name: Check PhyslibAlpha imports
+        if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe alphaFileImports
+
+      # Only reads import headers, so it does not depend on any build having succeeded.
+      - name: Check ForMathlib imports and uses
+        if: ${{ !cancelled() }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe forMathlib_lint
+
+      # Runs the occasionally used scripts (TODO_to_yml, stats, informal, make_tag), which
+      # import Physlib, QuantumInfo and PhyslibAlpha, so both builds must have succeeded.
+      - name: auxiliary script test
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe auxillary_script_test
 
   style_lint:
     name: Python based style linter
@@ -109,6 +156,11 @@ jobs:
         run: |
           python -m pip install PyYAML==6.0.2
           python scripts/api_map_linter.py --repo .
+
+      - name: Python linters for PhyslibAlpha
+        run: |
+          chmod u+x scripts/PhyslibAlpha/alphaPythonLinters.sh
+          ./scripts/PhyslibAlpha/alphaPythonLinters.sh
 
   codespell:
     name: Check for spelling errors

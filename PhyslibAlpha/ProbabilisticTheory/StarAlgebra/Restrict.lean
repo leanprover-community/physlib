@@ -26,6 +26,8 @@ complex state becomes a real one.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 section Restrict
 
 variable {R S E₁ E₂ : Type*}
@@ -37,7 +39,7 @@ variable {R S E₁ E₂ : Type*}
 
 /-- Restrict a positive linear map to submodules it preserves. -/
 @[simps!]
-def PositiveLinearMap.restrict (f : E₁ →ₚ[R] E₂) {F₁ : Submodule S E₁} {F₂ : Submodule S E₂}
+def _root_.PositiveLinearMap.restrict (f : E₁ →ₚ[R] E₂) {F₁ : Submodule S E₁} {F₂ : Submodule S E₂}
     (h : ∀ ⦃x⦄, x ∈ F₁ → f x ∈ F₂) : F₁ →ₚ[S] F₂ where
   toLinearMap := (f.toLinearMap.restrictScalars S).restrict (by simpa)
   monotone' a b h := f.monotone (by simpa)
@@ -56,7 +58,10 @@ def UnitalPositiveLinearMap.restrict (f : E₁ →ₚ₁[R] E₂) {F₁ : Submod
 
 end Restrict
 
+end ProbabilisticTheory
+
 section SelfAdjoint
+open ProbabilisticTheory
 
 variable {A₁ A₂ : Type*}
 
@@ -106,6 +111,14 @@ end Complex
 
 end PositiveLinearMap
 
+end SelfAdjoint
+
+namespace ProbabilisticTheory
+
+section SelfAdjoint
+
+variable {A₁ A₂ : Type*}
+
 namespace UnitalPositiveLinearMap
 
 variable
@@ -153,3 +166,5 @@ lemma coe_restrictSAC_apply (f : A₁ →ₚ₁[ℂ] ℂ) (x : selfAdjoint A₁)
 end UnitalPositiveLinearMap
 
 end SelfAdjoint
+
+end ProbabilisticTheory

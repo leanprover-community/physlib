@@ -49,6 +49,7 @@ noncomputable local instance : NormedAlgebra ℚ (H →L[ℂ] H) :=
   .restrictScalars ℚ ℂ (H →L[ℂ] H)
 
 namespace UnitaryOneParameterGroup
+open ProbabilisticTheory
 
 omit [CompleteSpace H] in
 /-- A real scalar multiple on `H →L[ℂ] H` agrees with the corresponding complex scalar multiple. -/
@@ -301,3 +302,4 @@ lemma hamiltonianFlow_iff_exists_unitary (ℏ : ℝ) (hℏ : ℏ ≠ 0) [Nontriv
     simpa [Unitary.conjStarAlgAut_apply] using hc
 
 end UnitaryOneParameterGroup
+

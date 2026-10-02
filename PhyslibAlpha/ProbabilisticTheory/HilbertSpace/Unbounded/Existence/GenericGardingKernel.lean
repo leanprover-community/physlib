@@ -30,6 +30,8 @@ the Gårding vector is differentiable at `0`, with derivative the Gårding vecto
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -118,3 +120,5 @@ lemma gardingVectorAt_hasDerivAt (hUunit : ∀ t, U t ∈ unitary (H →L[ℂ] H
 end
 
 end QuantumMechanics
+
+end ProbabilisticTheory

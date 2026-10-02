@@ -58,6 +58,8 @@ trivial, with every expectation value almost surely independent of the roll.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory ProbabilityTheory UnitalPositiveLinearMap
 
 universe u v w
@@ -260,3 +262,5 @@ lemma isMixed_iff_exists_sideInfo (hω : ω.IsNormal) :
   exact h (isPure_of_isTrivial hω fun p hp => p.isTrivial_iff_noSideInfo.2 (hno p hp))
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

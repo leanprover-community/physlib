@@ -37,6 +37,8 @@ vector state `x`. A spectral measure is determined by its complex measures.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 
@@ -317,5 +319,7 @@ lemma diagonalMeasure_parallelogram (x y : H) :
 end WOTSpectralMeasure
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

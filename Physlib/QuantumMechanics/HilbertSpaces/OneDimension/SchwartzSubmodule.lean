@@ -7,7 +7,6 @@ module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Basic
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Schwartz submodule of the Hilbert space

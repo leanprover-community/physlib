@@ -26,6 +26,8 @@ integration of bounded functions.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace EffectValuedMeasure
 
 section SimpleNaturality
@@ -82,3 +84,5 @@ lemma map_integral {f : Ω → ℝ} {M : ℝ} (hf : Measurable f) (hM : ∀ x, |
 end BoundedNaturality
 
 end EffectValuedMeasure
+
+end ProbabilisticTheory

@@ -37,6 +37,8 @@ this, which gives an equivalence between spectral measures on `ℝ` and such mea
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open Function MeasureTheory Set
 open scoped ComplexOrder InnerProductSpace
 
@@ -154,5 +156,7 @@ lemma cayleyMap_weakIntegral {μS : WOTSpectralMeasure ℝ H}
 
 end WOTSpectralMeasure
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

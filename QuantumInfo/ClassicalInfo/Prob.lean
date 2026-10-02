@@ -5,13 +5,13 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Analysis.Convex.Mul
 public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 public import Mathlib.Basic.NNReal.Basic
 public import Mathlib.Data.EReal.Basic
 public import Mathlib.Tactic.Finiteness
 public import Mathlib.Topology.UnitInterval
+public import Mathlib.Analysis.Convex.Basic
 
 /-! # Probabilities
 

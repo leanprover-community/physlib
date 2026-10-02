@@ -44,6 +44,8 @@ is a Bauer simplex exactly when ensembles refine and the pure states are closed.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open StateSpace
 
 open MeasureTheory PureState Set
@@ -82,3 +84,5 @@ lemma isBauerSimplexStateSpace_iff : IsBauerSimplexStateSpace E ↔
     EnsemblesRefine E ∧ IsClosed {ω : stateSpace E | (toState ω).IsPure} :=
   ⟨fun h => ⟨h.1.ensemblesRefine, h.2⟩,
     fun ⟨hE, hP⟩ => ⟨(isSimplexStateSpace_iff_ensemblesRefine_of_isClosed hP).2 hE, hP⟩⟩
+
+end ProbabilisticTheory

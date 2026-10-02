@@ -31,6 +31,8 @@ form a state again, the barycenter of `μ`. It is the state that the random proc
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open StateSpace
 
 open MeasureTheory ArchimedeanOrderUnitSpace Filter Topology
@@ -76,3 +78,5 @@ lemma barycenter_apply (μ : ProbabilityMeasure (stateSpace E)) (A : E) :
     barycenter μ A = ∫ ω : stateSpace E, toState ω A ∂(μ : Measure (stateSpace E)) := rfl
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

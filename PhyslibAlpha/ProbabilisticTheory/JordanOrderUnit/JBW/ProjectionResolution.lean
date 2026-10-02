@@ -37,6 +37,8 @@ separate projection resolutions, so a projection resolution is determined by its
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory
 
 namespace MeasurableProjectionResolution
@@ -86,3 +88,5 @@ lemma eq_of_forall_normal_probabilityLaw_eq {P Q : MeasurableProjectionResolutio
     (ω.map_nonneg (Q s hs).2.1)).mp hmeasure
 
 end MeasurableProjectionResolution
+
+end ProbabilisticTheory

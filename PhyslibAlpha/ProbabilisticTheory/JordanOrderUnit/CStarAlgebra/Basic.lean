@@ -37,6 +37,8 @@ The instances are scoped to `JB`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
@@ -180,3 +182,5 @@ lemma jordanOrthogonal_iff {p q : selfAdjoint A} :
   simp [(by norm_num : (2:ℝ)⁻¹ ≠ 0)]
 
 end JB
+
+end ProbabilisticTheory

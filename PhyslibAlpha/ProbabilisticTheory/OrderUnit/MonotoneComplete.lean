@@ -26,6 +26,8 @@ least upper bound.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-- An order is monotone complete when every nonempty upward-directed bounded set has a supremum.
 No lattice operations are bundled: ordered vector spaces need not be lattices. -/
 class MonotoneCompleteOrder (E : Type*) [Preorder E] : Prop where
@@ -68,3 +70,5 @@ lemma isLUB_rangeSup (x : ℕ → E) (hx : Monotone x)
     hx.directed_le.directedOn_range hbounded
 
 end MonotoneCompleteOrder
+
+end ProbabilisticTheory

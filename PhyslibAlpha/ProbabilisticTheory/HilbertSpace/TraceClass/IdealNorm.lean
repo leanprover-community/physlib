@@ -30,6 +30,8 @@ two-sided ideal estimate `‖B T C‖₁ ≤ ‖B‖ ‖T‖₁ ‖C‖`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
 
@@ -367,5 +369,7 @@ lemma traceNorm_mul_mul_le {A B T : H →L[ℂ] H} (hT : IsTraceClass T)
             ‖A‖ * ‖B‖ * (Real.sqrt (traceNorm T hT) * Real.sqrt (traceNorm T hT)) by ring,
           Real.mul_self_sqrt (traceNorm_nonneg T hT)]
         ring
+
+end ProbabilisticTheory
 
 end

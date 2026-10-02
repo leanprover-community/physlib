@@ -25,6 +25,8 @@ of the quadratic representation: `{a, b, a} = U_a b`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -116,3 +118,5 @@ lemma jordanTriple_smul_middle (r : ℝ) (a b c : E) :
   simp only [smul_add, smul_sub]
 
 end JordanAlgebra
+
+end ProbabilisticTheory

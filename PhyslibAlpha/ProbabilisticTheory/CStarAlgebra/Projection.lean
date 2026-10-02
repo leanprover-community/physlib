@@ -28,6 +28,8 @@ complement, and their spectrum lies in `{0, 1}`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-- A projection: an idempotent effect in the self-adjoint part of a C⋆-algebra. -/
@@ -66,3 +68,5 @@ lemma spectrum_subset_zero_one (p : Projection A) :
     ((p : Effect (selfAdjoint A)) : selfAdjoint A).2).mp p.2
 
 end Projection
+
+end ProbabilisticTheory

@@ -36,6 +36,8 @@ the vectors `x` with `∫ f² dμₓ < ∞`, as the limit of the bounded integra
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
 open QuantumMechanics.WOTSpectralMeasure
@@ -1185,3 +1187,5 @@ lemma boundedIntegral_tendsto_of_pointwise_tendsto_of_bound
   convert hnorm using 1
 
 end QuantumMechanics.WOTSpectralMeasure
+
+end ProbabilisticTheory

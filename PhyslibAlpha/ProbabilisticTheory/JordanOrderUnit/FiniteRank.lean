@@ -27,6 +27,8 @@ each defining the expectation `a ↦ tr(ρ ∘ a)`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -99,3 +101,5 @@ lemma expectation_sq_smul_add_sq_smul (τ : TraceDeterminant E)
 end TraceDeterminant
 
 end JordanAlgebra
+
+end ProbabilisticTheory

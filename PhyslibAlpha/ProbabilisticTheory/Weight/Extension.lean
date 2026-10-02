@@ -30,6 +30,8 @@ check the result does not depend on the `r` chosen.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ENNReal NNReal
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -174,3 +176,5 @@ lemma toPositiveLinearMap_apply_of_nonneg (hw : w.IsFinite) (A : PosCone E) :
 end IsFinite
 
 end Weight
+
+end ProbabilisticTheory

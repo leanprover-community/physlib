@@ -5,8 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Physlib.SpaceAndTime.Space.Derivatives.Basic
-public import Physlib.SpaceAndTime.Space.Integrals.NormPow
+public import Physlib.SpaceAndTime.Space.Module
 /-!
 
 # Regularized powers of the norm on space

@@ -33,10 +33,11 @@ continuous functional is a trace pairing.
 
 -/
 
-
 @[expose] public section
 
 noncomputable section
+
+namespace ProbabilisticTheory
 
 open scoped BigOperators ComplexOrder InnerProductSpace Topology
 open Filter Set Metric
@@ -482,3 +483,5 @@ lemma tracePairing_surjective_concrete :
   tracePairing_surjective_of_rankOneSpan_dense rankOneSpan_dense
 
 end TraceClass
+
+end ProbabilisticTheory

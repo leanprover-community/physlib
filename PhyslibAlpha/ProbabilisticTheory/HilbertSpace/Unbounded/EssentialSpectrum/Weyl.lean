@@ -42,6 +42,8 @@ not change the essential spectrum.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open Filter Topology Complex
 open scoped InnerProductSpace
 
@@ -228,3 +230,5 @@ lemma essSpectrum_eq_of_isCompactOperator_perturb
     (isCompactOperator_resolvent_sub_of_isCompactOperator_perturb hA hB hRA hRB hdom W hW hVW)
 
 end QuantumMechanics.Essential
+
+end ProbabilisticTheory

@@ -7,7 +7,7 @@ module
 
 public import Physlib.Relativity.Tensors.Product
 public import Physlib.Relativity.Tensors.Contraction.Basis
-public import Physlib.Meta.Sorry
+public import Physlib.Relativity.Tensors.ComponentIdx.Single
 /-!
 
 # Evaluation of tensor indices

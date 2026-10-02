@@ -39,6 +39,8 @@ the identity is `U`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
 
@@ -297,7 +299,6 @@ the estimate `‖A x‖² ≤ re ⟪x, A x⟫` for `0 ≤ A ≤ 1` and outer reg
 Inner regularity extends it to measurable sets, and multiplicativity on intersections follows from
 additivity.
 -/
-
 
 section OrderRegularityHelpers
 
@@ -966,5 +967,7 @@ lemma cfcSpectralMeasure_commute_of_commute_unitary
 end CFCScalar
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

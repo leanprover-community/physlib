@@ -29,6 +29,8 @@ stated for an arbitrary type `E`; preservation of structure and continuity are s
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. The group law -/
 
 /-- `α : ℝ → E → E` is a one-parameter group of (not-yet-specified-as-anything) transformations of
@@ -59,3 +61,5 @@ lemma bijective (t : ℝ) : Function.Bijective (α t) :=
   Function.bijective_iff_has_inverse.mpr ⟨α (-t), h.left_inv t, h.right_inv t⟩
 
 end IsOneParameterGroup
+
+end ProbabilisticTheory

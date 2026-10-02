@@ -29,6 +29,8 @@ an effect-valued measure `μ` on `E` therefore gives one, `μ.map φ`, on `F`, w
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 variable {Ω E F : Type*} [MeasurableSpace Ω] [OrderUnitSpace E] [OrderUnitSpace F]
 
 /-! ## A. Channels send effects to effects -/
@@ -68,3 +70,5 @@ lemma coe_map_apply (μ : EffectValuedMeasure Ω E) (φ : Channel E F) (hφ : φ
     (s : Set Ω) (hs : MeasurableSet s) : (μ.map φ hφ s hs : F) = φ (μ s hs) := rfl
 
 end EffectValuedMeasure
+
+end ProbabilisticTheory

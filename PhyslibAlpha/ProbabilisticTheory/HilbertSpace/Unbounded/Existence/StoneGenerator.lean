@@ -28,6 +28,8 @@ generator and are dense. By Nelson's theorem the candidate generator is essentia
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -70,3 +72,5 @@ lemma stoneCandidateGenerator_isEssentiallySelfAdjoint (hU0 : U 0 = 1)
 end
 
 end QuantumMechanics
+
+end ProbabilisticTheory

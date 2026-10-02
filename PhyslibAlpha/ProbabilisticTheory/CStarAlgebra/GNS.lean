@@ -32,6 +32,8 @@ representation.
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 open scoped ComplexOrder InnerProductSpace
 open Complex ContinuousLinearMap UniformSpace Completion
 
@@ -132,3 +134,5 @@ lemma injective_gnsRep_of_isFaithful (h : ω.IsFaithful) : Function.Injective ω
   exact sub_eq_zero.mp (key _ hz)
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

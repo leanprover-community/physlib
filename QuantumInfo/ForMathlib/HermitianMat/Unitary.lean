@@ -6,8 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Inner
-public import QuantumInfo.ForMathlib.HermitianMat.NonSingular
-public import QuantumInfo.ForMathlib.Isometry
 
 @[expose] public section
 

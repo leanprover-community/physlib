@@ -40,6 +40,8 @@ functor from unital positive linear maps to weights, contravariant in `φ`.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ENNReal
 
 variable {E₁ E₂ E₃ : Type*} [OrderUnitSpace E₁] [OrderUnitSpace E₂] [OrderUnitSpace E₃]
@@ -115,3 +117,5 @@ lemma IsState.comp {w : Weight F₁} (hw : w.IsState) (φ : Channel F₂ F₁) :
 end OrderUnitSpace
 
 end Weight
+
+end ProbabilisticTheory

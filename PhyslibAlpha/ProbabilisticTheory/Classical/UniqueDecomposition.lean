@@ -55,6 +55,8 @@ agree.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory PositiveLinearMap PureState Set ArchimedeanOrderUnitSpace
 open scoped ENNReal
 
@@ -432,3 +434,5 @@ lemma EnsemblesRefine.hasUniquePureDecomposition (hE : EnsemblesRefine E) {ω : 
   obtain ⟨μ, hμr, hμp, hμf⟩ := h
   refine ⟨μ, ⟨hμr, hμp, hμf⟩, fun ν ⟨hνr, hνp, hνf⟩ => ?_⟩
   exact hE.eq_of_toPositive_eq (PositiveLinearMap.ext fun f => (hνf f).trans (hμf f).symm)
+
+end ProbabilisticTheory

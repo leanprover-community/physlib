@@ -50,6 +50,8 @@ observables is classical exactly when its ensembles refine.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory ArchimedeanOrderUnitSpace Set StateSpace
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
@@ -152,3 +154,5 @@ ensembles refine. -/
 lemma isSimplexStateSpace_iff_ensemblesRefine : IsSimplexStateSpace E ↔ EnsemblesRefine E :=
   ⟨IsSimplexStateSpace.ensemblesRefine, fun hE ω =>
     hE.hasUniquePureDecomposition (PureState.hasPureDecomposition_of_separable ω)⟩
+
+end ProbabilisticTheory

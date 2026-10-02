@@ -5,9 +5,10 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Mathematics.LinearMaps
+public import Physlib.Mathematics.ForMathlib.LinearMaps
 public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Tactic.Cases
+public import Physlib.Meta.TODO.Basic
 /-!
 # Anomaly cancellation conditions
 
@@ -567,3 +568,6 @@ TODO "Anomaly cancellation conditions can be derived formally from the gauge gro
 
 TODO "Anomaly cancellation conditions can be defined using algebraic varieties.
   Link such an approach to the approach here."
+
+TODO "Replace the definitions of bi-linear maps in
+  `Physlib.Mathematics.ForMathlib.LinearMaps` with definitions from Mathlib."

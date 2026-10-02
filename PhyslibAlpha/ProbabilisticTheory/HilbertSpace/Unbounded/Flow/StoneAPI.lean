@@ -27,6 +27,8 @@ is differentiable at `0`, and the derivative is then `i T x`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open Filter
 open scoped Topology InnerProductSpace Function
 
@@ -122,3 +124,5 @@ lemma expUnitaryGroup_hasDerivAt_iff (x : H) (y : H) (s : ℝ) :
 end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
+
+end ProbabilisticTheory

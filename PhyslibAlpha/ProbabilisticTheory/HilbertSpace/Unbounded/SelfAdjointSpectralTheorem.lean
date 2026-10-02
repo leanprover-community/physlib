@@ -39,6 +39,8 @@ the domain of `T` is the set of vectors with `∫ λ² dμₓ < ∞`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped Topology InnerProductSpace Function
 open MeasureTheory Set
 
@@ -296,5 +298,7 @@ lemma unitaryConj {H' : Type*} [NormedAddCommGroup H'] [InnerProductSpace ℂ H'
 end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

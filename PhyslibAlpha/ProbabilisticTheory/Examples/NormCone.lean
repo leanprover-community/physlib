@@ -55,6 +55,8 @@ with the sup norm: same dimension, different norm, different state space.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-!
 
 ## A. The ice-cream cone order
@@ -178,7 +180,6 @@ lemma mem_effect_iff {z : NormCone V} :
     z ∈ (Effect (NormCone V) : Set (NormCone V)) ↔
       ‖(toProd z).2‖ ≤ (toProd z).1 ∧ ‖(toProd z).2‖ ≤ 1 - (toProd z).1 := by
   simp [Set.mem_Icc, le_iff]
-
 
 /-!
 
@@ -382,3 +383,5 @@ lemma supCone_mem_effect_iff {m : ℕ} {z : NormCone (Fin m → ℝ)} :
   mem_effect_iff
 
 end NormCone
+
+end ProbabilisticTheory

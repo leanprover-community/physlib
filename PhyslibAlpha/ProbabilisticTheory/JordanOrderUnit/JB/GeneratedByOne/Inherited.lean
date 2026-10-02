@@ -26,6 +26,8 @@ Archimedean order-unit space.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JBAlgebra
 
 variable {E : Type*} [NormedJordanAlgebra E] [JBAlgebra E]
@@ -141,3 +143,5 @@ end ClosedGeneratedByOne
 end Ordered
 
 end JBAlgebra
+
+end ProbabilisticTheory

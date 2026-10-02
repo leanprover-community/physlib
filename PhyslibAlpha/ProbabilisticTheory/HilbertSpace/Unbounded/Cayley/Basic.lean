@@ -36,6 +36,8 @@ unitary. This reduces the spectral theory of unbounded self-adjoint operators to
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open Function MeasureTheory Set
 open scoped ComplexOrder InnerProductSpace
 
@@ -432,5 +434,7 @@ lemma cayleyUnitary_apply (T : H →ₗ.[ℂ] H) (hT : IsSelfAdjoint T) (x : H) 
   rfl
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

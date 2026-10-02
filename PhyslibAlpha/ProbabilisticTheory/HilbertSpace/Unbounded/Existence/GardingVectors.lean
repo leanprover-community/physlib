@@ -38,6 +38,8 @@ by smoothing against the derivative of the kernel.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace QuantumMechanics
 
 noncomputable section
@@ -385,8 +387,8 @@ lemma stoneCandidateGenerator_analyticGardingVector (hUunit : ∀ t, U t ∈ uni
     rw [neg_smul]
   rw [hneg, smul_neg, neg_smul, neg_neg]
 
-
-
 end
 
 end QuantumMechanics
+
+end ProbabilisticTheory

@@ -33,6 +33,8 @@ functions against it gives a bounded Borel functional calculus.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open Function
 
 section Core
@@ -289,3 +291,5 @@ lemma ext_of_forall_boundedBorel_eq {P Q : MeasurableProjectionResolution Ω E}
 end BoundedBorel
 
 end MeasurableProjectionResolution
+
+end ProbabilisticTheory

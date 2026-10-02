@@ -36,6 +36,8 @@ follows by induction.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
@@ -179,3 +181,5 @@ lemma pow_add (a : E) (m n : ℕ) : a ^[m] * a ^[n] = a ^[m + n] := by
         _ = a ^[m + n + 1] := (jpow_succ a (m + n)).symm
 
 end JordanAlgebra
+
+end ProbabilisticTheory

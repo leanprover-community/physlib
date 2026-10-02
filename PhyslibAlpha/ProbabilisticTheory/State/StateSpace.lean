@@ -46,6 +46,8 @@ On `𝓢[ℝ, E]` itself the states carry the finer state metric.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open ArchimedeanOrderUnitSpace MeasureTheory Filter Topology
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
@@ -203,3 +205,5 @@ lemma isPure_iff_mem_extremePoints (ω : stateSpace E) :
   rwa [range_ofState] at this
 
 end StateSpace
+
+end ProbabilisticTheory

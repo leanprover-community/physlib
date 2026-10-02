@@ -28,6 +28,8 @@ isometric.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A]
@@ -106,3 +108,5 @@ lemma jordanCfc_monotone (a : selfAdjoint A) : Monotone (jordanCfc a) := by
 end Order
 
 end JB
+
+end ProbabilisticTheory

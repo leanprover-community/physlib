@@ -58,6 +58,8 @@ minimal cone: its composites are unique.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open TensorProduct
 open scoped NNReal
 
@@ -72,7 +74,13 @@ abbrev Composite.tmul (x : E) (y : F) : Composite E F := x ⊗ₜ[ℝ] y
 
 /-! ## A. Slices and product functionals -/
 
+end ProbabilisticTheory
+
 namespace PositiveLinearMap
+open ProbabilisticTheory
+open TensorProduct
+open scoped NNReal
+variable {E F : Type*} [OrderUnitSpace E] [OrderUnitSpace F]
 
 /-- Apply a positive functional to the second factor. -/
 noncomputable def rslice (ψ : F →ₚ[ℝ] ℝ) : E ⊗[ℝ] F →ₗ[ℝ] E :=
@@ -110,6 +118,12 @@ lemma tensor_apply_eq_lslice (φ : E →ₚ[ℝ] ℝ) (ψ : F →ₚ[ℝ] ℝ) (
   exact TensorProduct.ext' fun x y => by simp
 
 end PositiveLinearMap
+
+namespace ProbabilisticTheory
+
+open TensorProduct
+open scoped NNReal
+variable {E F : Type*} [OrderUnitSpace E] [OrderUnitSpace F]
 
 /-! ## B. The minimal and the maximal cone -/
 
@@ -413,3 +427,5 @@ lemma mem_maxTensorCone_iff_rslice {z : E ⊗[ℝ] F} :
   exact mem_maxTensorCone.1 h ω.toPositiveLinearMap ψ
 
 end Archimedean
+
+end ProbabilisticTheory

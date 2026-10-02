@@ -5,7 +5,7 @@ Authors: Tom Diem
 -/
 module
 
-public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.LadderOperators
+public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.LadderSystem
 public import Physlib.Mathematics.InnerProductSpace.Gaussian
 /-!
 
@@ -23,16 +23,16 @@ The isotropic unit-length case (`Q.ξ i = 1` for all `i`) is represented by
 `stdGaussian (Space d) ℂ`, the function `x ↦ exp(-‖x‖²/2)` from
 `Physlib.Mathematics.InnerProductSpace.Gaussian`.
 `hasVacuum_stdGaussian_of_forall_xi_eq_one` derives the unit-length case from `vacuumGaussian`.
-The theorem `annihilationCLM_stdGaussian_of_xi_eq_one` assumes unit length only in the selected
+The theorem `loweringCLM_stdGaussian_of_xi_eq_one` assumes unit length only in the selected
 mode, so it is proved separately.
 
 ## ii. Key results
 
 - `diagEquiv` : the diagonal rescaling of `Space d` by the characteristic lengths.
 - `vacuumGaussian` : the anisotropic vacuum Gaussian, `exp(-∑ᵢ(xᵢ/ξᵢ)²/2)`.
-- `annihilationCLM_vacuumGaussian` : every `annihilationCLM i` kills the vacuum Gaussian.
+- `loweringCLM_vacuumGaussian` : every `loweringCLM i` kills the vacuum Gaussian.
 - `hasVacuum_vacuumGaussian` : `Q.vacuumGaussian` is a vacuum for `Q.toLadderSystem`.
-- `annihilationCLM_stdGaussian_of_xi_eq_one`, `hasVacuum_stdGaussian_of_forall_xi_eq_one` : the
+- `loweringCLM_stdGaussian_of_xi_eq_one`, `hasVacuum_stdGaussian_of_forall_xi_eq_one` : the
     isotropic-unit-length special case.
 
 ## iii. References
@@ -211,14 +211,14 @@ lemma momentumCLM_vacuumGaussian (i : Fin d) (x : Space d) :
   rw [deriv_vacuumGaussian]
   ring
 
-/-- Every `annihilationCLM i` kills the vacuum Gaussian, without an isotropy or unit-length
+/-- Every `loweringCLM i` kills the vacuum Gaussian, without an isotropy or unit-length
 assumption. -/
-theorem annihilationCLM_vacuumGaussian (i : Fin d) :
-    Q.annihilationCLM i (Q.vacuumGaussian) = 0 := by
+theorem loweringCLM_vacuumGaussian (i : Fin d) :
+    Q.loweringCLM i (Q.vacuumGaussian) = 0 := by
   have hℏ : (ℏ : ℂ) ≠ 0 := by exact_mod_cast Constants.ℏ_ne_zero
   have hξ : (Q.ξ i : ℂ) ≠ 0 := by exact_mod_cast Q.ξ_ne_zero i
   ext x
-  rw [annihilationCLM_apply_fun]
+  rw [loweringCLM_eq]
   simp only [smul_apply, add_apply, smul_eq_mul, zero_apply, positionCLM_apply]
   rw [show (𝐩 i) (Q.vacuumGaussian) x =
       (𝐩[d] i (Q.vacuumGaussian) : 𝓢(Space d, ℂ)) x from rfl,
@@ -234,10 +234,10 @@ theorem hasVacuum_vacuumGaussian : Q.toLadderSystem.HasVacuum (Q.vacuumGaussian)
     have hpt := congrFun (congrArg DFunLike.coe h) (⟨fun _ => 0⟩ : Space d)
     simp [Q.vacuumGaussian_apply] at hpt
   ann i := by
-    show (Q.annihilationCLM i).toLinearMap (Q.vacuumGaussian) = 0
-    rw [show (Q.annihilationCLM i).toLinearMap (Q.vacuumGaussian) =
-        Q.annihilationCLM i (Q.vacuumGaussian) from rfl,
-      Q.annihilationCLM_vacuumGaussian i]
+    show (Q.loweringCLM i).toLinearMap (Q.vacuumGaussian) = 0
+    rw [show (Q.loweringCLM i).toLinearMap (Q.vacuumGaussian) =
+        Q.loweringCLM i (Q.vacuumGaussian) from rfl,
+      Q.loweringCLM_vacuumGaussian i]
 
 /-!
 
@@ -245,15 +245,15 @@ theorem hasVacuum_vacuumGaussian : Q.toLadderSystem.HasVacuum (Q.vacuumGaussian)
 
 -/
 
-/-- Every `annihilationCLM i` kills the standard Gaussian, provided that mode has unit
-characteristic length. Independent of `hasVacuum_vacuumGaussian`/`annihilationCLM_vacuumGaussian`
+/-- Every `loweringCLM i` kills the standard Gaussian, provided that mode has unit
+characteristic length. Independent of `hasVacuum_vacuumGaussian`/`loweringCLM_vacuumGaussian`
 above: the hypothesis here is genuinely weaker (unit length in mode `i` alone, not every mode), so
 this isn't a corollary of the general anisotropic result. -/
-lemma annihilationCLM_stdGaussian_of_xi_eq_one (i : Fin d) (hξ : Q.ξ i = 1) :
-    Q.annihilationCLM i (stdGaussian (Space d) ℂ) = 0 := by
+lemma loweringCLM_stdGaussian_of_xi_eq_one (i : Fin d) (hξ : Q.ξ i = 1) :
+    Q.loweringCLM i (stdGaussian (Space d) ℂ) = 0 := by
   have hℏ : (ℏ : ℂ) ≠ 0 := by exact_mod_cast Constants.ℏ_ne_zero
   ext x
-  rw [annihilationCLM_apply_fun]
+  rw [loweringCLM_eq]
   simp only [smul_apply, add_apply, smul_eq_mul, zero_apply, positionCLM_apply]
   rw [show (𝐩 i) (stdGaussian (Space d) ℂ) x =
       (𝐩[d] i (stdGaussian (Space d) ℂ) : 𝓢(Space d, ℂ)) x from rfl,

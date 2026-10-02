@@ -6,7 +6,6 @@ Authors: Nicolas Rouquette
 module
 
 public import Physlib.Units.UnitSystem
-public import Physlib.Units.PositiveRealUnit
 public import Physlib.Units.ISQDimensionBase
 /-!
 

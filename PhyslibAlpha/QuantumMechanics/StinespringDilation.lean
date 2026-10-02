@@ -8,7 +8,7 @@ public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Physlib.Meta.TODO.Basic
-public import Mathlib
+public import Mathlib.Analysis.Matrix.Order
 /-!
 # Stinespring dilation
 -/

@@ -31,6 +31,8 @@ the quadratic representation `x ↦ U_{√e} x`, and conditioning a state on `e`
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace NormedJordanAlgebra
 
 open JordanAlgebra
@@ -130,3 +132,5 @@ lemma luedersCondition_toEffect_of_projection {p : E} (hp : IsJordanProjection p
   simp only [hp.coe_toEffect]
 
 end NormedJordanAlgebra
+
+end ProbabilisticTheory

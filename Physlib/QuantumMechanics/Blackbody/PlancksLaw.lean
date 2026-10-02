@@ -5,10 +5,7 @@ Authors: Samyak Rai
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Exponential
-public import Physlib.Meta.Informal.Basic
 public import Physlib.Thermodynamics.Temperature.Basic
-public import Physlib.StatisticalMechanics.BoltzmannConstant
 public import Physlib.Relativity.SpeedOfLight
 public import Physlib.QuantumMechanics.PlanckConstant
 

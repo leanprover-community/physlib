@@ -27,6 +27,8 @@ Nuclear elements pass through associators, and the associator changes sign under
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open IsAlternative
 
 variable {D : Type*} [NonUnitalNonAssocRing D] [IsAlternative D]
@@ -101,3 +103,5 @@ lemma nuclear_comm_associator {n : D} (hn : IsInNucleus n) (x y z : D) :
     unfold associator; simp only [mul_sub]; abel
   rw [hz] at hs
   linear_combination (norm := abel) -h4 + h5 + hs
+
+end ProbabilisticTheory

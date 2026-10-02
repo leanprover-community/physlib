@@ -34,6 +34,8 @@ observables themselves form a lattice, as they do for the functions on a sample 
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. Classical systems -/
 
 /-- A system is **classical** when every state decomposes uniquely into pure states: its state
@@ -43,3 +45,5 @@ abbrev IsClassical (E : Type*) [OrderUnitSpace E] : Prop := HasLatticeDualCone E
 /-- A system whose observables form a lattice is classical. -/
 lemma OrderUnitLattice.isClassical (E : Type*) [OrderUnitLattice E] : IsClassical E :=
   VectorLattice.hasLatticeDualCone E
+
+end ProbabilisticTheory

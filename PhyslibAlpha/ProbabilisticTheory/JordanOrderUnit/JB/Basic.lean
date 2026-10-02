@@ -46,6 +46,8 @@ in one class, and `JBAlgebra` adds completeness and the JB axioms.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. Normed Jordan algebras -/
 
 /-- A real normed unital Jordan algebra. -/
@@ -265,3 +267,5 @@ lemma completeWithOrderUnitNorm : CompleteSpace (WithOrderUnitNorm E) := by
 end Ordered
 
 end JBAlgebra
+
+end ProbabilisticTheory

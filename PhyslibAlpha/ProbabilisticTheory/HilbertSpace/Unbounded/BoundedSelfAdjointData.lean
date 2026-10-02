@@ -31,6 +31,8 @@ measure on `ℝ` that reconstructs the operator.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
 
@@ -132,5 +134,7 @@ lemma exists_boundedSelfAdjointSpectralSupport
   simp
 
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

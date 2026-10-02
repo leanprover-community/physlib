@@ -7,7 +7,6 @@ module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Basic
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Gaussians and the hilbert space

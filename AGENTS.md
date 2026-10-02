@@ -55,7 +55,11 @@ When a long proof cannot be split, make sure it contains comments.
 - New physics terms that trip the spell-checker go in `scripts/MetaPrograms/spellingWords.txt`.
 - Check that `lake build` works (run `lake exe cache get` first).
 - Check that `lake exe lint_all` passes.
+- Check that `lake exe forMathlib_lint` passes: files in `Physlib/Mathematics/ForMathlib/` may only
+  import from within that directory, and each must be used outside it.
 - Check `./scripts/lint-style.sh`, but **commit your changes first**; this linter reads committed state.
+- Check that `lake exe auxillary_script_test` passes (needs `Physlib`, `QuantumInfo` and
+  `PhyslibAlpha` built).
 - If edited a `PhyslibAlpha` file, check the following:
   - `lake exe runPhyslibAlphaLinters`
   - `lake exe noAlphaImports`

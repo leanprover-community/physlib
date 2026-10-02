@@ -39,6 +39,8 @@ transform gives a spectral measure on `ℝ`, which is determined by its Cayley p
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped InnerProductSpace
 
 namespace QuantumMechanics
@@ -165,5 +167,7 @@ lemma realSpectralMeasure_eq_of_cayleyMap_eq
 end BoundedUnitarySpectralData
 end WOTSpectralMeasure
 end QuantumMechanics
+
+end ProbabilisticTheory
 
 end

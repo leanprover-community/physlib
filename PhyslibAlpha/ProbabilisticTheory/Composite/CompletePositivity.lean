@@ -45,6 +45,8 @@ for a classical output any positive map works.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open TensorProduct
 
 variable {E F : Type*} [OrderUnitSpace E] [OrderUnitSpace F]
@@ -119,3 +121,5 @@ lemma map_mem_of_isClassical_right {F : Type*} [ArchimedeanOrderUnitSpace F] (hF
   map_mem_of_isNuclear_right' hF.isNuclear φ C₁ hC₂ hz
 
 end CompositeCone
+
+end ProbabilisticTheory

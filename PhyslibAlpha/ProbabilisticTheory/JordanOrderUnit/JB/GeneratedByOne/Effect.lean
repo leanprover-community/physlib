@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.CFC
-public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.Effect.Sharp
 
 /-!
 
@@ -23,6 +23,8 @@ A continuous function of an observable with values in `[0, 1]` is an effect.
 -/
 
 @[expose] public section
+
+namespace ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -52,3 +54,5 @@ lemma coe_jordanCfcEffect [Nontrivial E] (a : E)
 end
 
 end NormedJordanAlgebra
+
+end ProbabilisticTheory

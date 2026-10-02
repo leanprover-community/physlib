@@ -34,6 +34,8 @@ order-unit spaces of observables.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped CStarAlgebra
 
 variable {A₁ A₂ : Type*} [NonUnitalCStarAlgebra A₁] [NonUnitalCStarAlgebra A₂]
@@ -91,3 +93,5 @@ noncomputable def toChannel (f : QuantumChannel A₁ A₂) :
 end Observables
 
 end QuantumChannel
+
+end ProbabilisticTheory

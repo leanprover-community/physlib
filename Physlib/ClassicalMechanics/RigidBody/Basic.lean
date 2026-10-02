@@ -8,6 +8,7 @@ module
 public import Physlib.SpaceAndTime.Space.SmoothFunctions
 public import Physlib.Meta.Informal.Basic
 public import Mathlib.Geometry.Manifold.Algebra.SmoothFunctions
+public import Physlib.Meta.TODO.Basic
 /-!
 
 # Rigid bodies

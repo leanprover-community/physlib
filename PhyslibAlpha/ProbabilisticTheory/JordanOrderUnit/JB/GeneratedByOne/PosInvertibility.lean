@@ -31,6 +31,8 @@ invertible and nonnegative exactly when it lies in the interior of the positive 
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JBAlgebra
 
 variable {E : Type*}
@@ -522,3 +524,5 @@ end
 end ClosedGeneratedByOne
 
 end JBAlgebra
+
+end ProbabilisticTheory

@@ -37,6 +37,8 @@ this needs a norm, and positivity of the variance uses only that `star x * x ≥
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder
 open scoped selfAdjoint
 
@@ -208,3 +210,5 @@ lemma variance_nonneg (ω : 𝓢[ℂ, A]) (a : Observable A) :
   exact (RCLike.nonneg_iff.mp (ω.map_nonneg h)).1
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

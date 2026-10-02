@@ -33,6 +33,8 @@ real vector space.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-! ## A. The Leibniz rule -/
 
 /-- `D` is a derivation of the multiplication on `E`: `D (a b) = D a b + a D b`. Only a
@@ -64,3 +66,5 @@ lemma IsDerivation.smul [SMulCommClass ℝ E E] [IsScalarTower ℝ E E] (c : ℝ
     (h : IsDerivation D) : IsDerivation (c • D) := by
   intro a b
   simp only [LinearMap.smul_apply, h a b, smul_add, smul_mul_assoc, mul_smul_comm]
+
+end ProbabilisticTheory

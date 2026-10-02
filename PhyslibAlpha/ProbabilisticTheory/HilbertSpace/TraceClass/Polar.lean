@@ -36,6 +36,8 @@ isometry `U` with `T = U |T|` and `U⋆ T = |T|`.
 
 noncomputable section
 
+namespace ProbabilisticTheory
+
 open scoped ComplexOrder InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
@@ -244,5 +246,7 @@ lemma star_polarFactor_mul_self (T : H →L[ℂ] H) : star (polarFactor T) * T =
     (Submodule.le_topologicalClosure _ (LinearMap.mem_range_self _ x))
 
 end Polar
+
+end ProbabilisticTheory
 
 end

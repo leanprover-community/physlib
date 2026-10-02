@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Pre.Modules
-public import Mathlib.RepresentationTheory.Rep.Basic
+public import Mathlib.RepresentationTheory.Intertwining
 /-!
 
 # Real Lorentz vectors
@@ -106,8 +106,6 @@ lemma coBasisFin_toFin1dℝ {d : ℕ} (i : Fin (1 + d)) :
 
 lemma coBasisFin_repr_apply {d : ℕ} (p : CoMod d) (i : Fin (1 + d)) :
     (coBasisFin d).repr p i = p.val (finSumFinEquiv.symm i) := by rfl
-
-open CategoryTheory.MonoidalCategory
 
 /-!
 

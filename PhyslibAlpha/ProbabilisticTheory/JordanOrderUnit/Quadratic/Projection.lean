@@ -35,6 +35,8 @@ For a Jordan projection `p` every observable splits into the Peirce components w
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E]
@@ -314,3 +316,5 @@ lemma quadRep_add_sub_quadRep [SMulCommClass ℝ E E] (p x : E) :
   abel
 
 end JordanAlgebra
+
+end ProbabilisticTheory

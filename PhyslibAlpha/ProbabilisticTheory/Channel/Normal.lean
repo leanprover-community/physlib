@@ -32,9 +32,10 @@ preserves finite sums; a normal channel also preserves countable sums of positiv
 
 @[expose] public section
 
-variable {E F G : Type*} [OrderUnitSpace E] [OrderUnitSpace F] [OrderUnitSpace G]
 
 namespace PositiveLinearMap
+open ProbabilisticTheory
+variable {E F G : Type*} [OrderUnitSpace E] [OrderUnitSpace F] [OrderUnitSpace G]
 
 /-! ## A. Normal positive maps -/
 
@@ -58,6 +59,10 @@ lemma IsNormal.isLUB_partialSums {φ : E →ₚ[ℝ] F} (hφ : φ.IsNormal) {f :
 
 end PositiveLinearMap
 
+namespace ProbabilisticTheory
+
+variable {E F G : Type*} [OrderUnitSpace E] [OrderUnitSpace F] [OrderUnitSpace G]
+
 namespace UnitalPositiveLinearMap
 
 /-! ## B. Normal channels -/
@@ -72,3 +77,5 @@ lemma IsNormal.comp {φ : Channel E F} {ψ : Channel F G} (hφ : φ.IsNormal) (h
   PositiveLinearMap.IsNormal.comp hφ hψ
 
 end UnitalPositiveLinearMap
+
+end ProbabilisticTheory

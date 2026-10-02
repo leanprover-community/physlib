@@ -39,13 +39,20 @@ system is Archimedean.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 open BoundedMeasurable UnitalPositiveLinearMap
 
 variable {Ω E : Type*} [MeasurableSpace Ω] [Fintype Ω] [MeasurableSingletonClass Ω]
 
 /-! ## A. Observables of a finite classical system -/
 
+end ProbabilisticTheory
+
 namespace BoundedMeasurable
+open ProbabilisticTheory
+open BoundedMeasurable UnitalPositiveLinearMap
+variable {Ω E : Type*} [MeasurableSpace Ω] [Fintype Ω] [MeasurableSingletonClass Ω]
 
 /-- An observable of a finite classical system is a combination of point indicators. -/
 lemma eq_sum_indicator (f : BoundedMeasurable Ω) :
@@ -60,6 +67,11 @@ lemma sum_indicator_singleton :
   simpa using (eq_sum_indicator (1 : BoundedMeasurable Ω)).symm
 
 end BoundedMeasurable
+
+namespace ProbabilisticTheory
+
+open BoundedMeasurable UnitalPositiveLinearMap
+variable {Ω E : Type*} [MeasurableSpace Ω] [Fintype Ω] [MeasurableSingletonClass Ω]
 
 /-! ## B. Normality is automatic -/
 
@@ -161,3 +173,5 @@ lemma ext_of_singleton {M N : Measurement Ω E}
   simp only [h]
 
 end Measurement
+
+end ProbabilisticTheory

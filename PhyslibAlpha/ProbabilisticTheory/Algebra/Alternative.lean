@@ -30,6 +30,8 @@ algebras satisfy the flexible law and the left Moufang identity.
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-- An alternative multiplication has associative repeated factors on either side. -/
 class IsAlternative (A : Type*) [Mul A] : Prop where
   /-- Left alternativity. -/
@@ -168,3 +170,5 @@ lemma left_bumping (x y z : A) : associator x y (z * x) = x * associator y z x :
   rw [key, cyc, sub_self, mul_zero]
 
 end IsAlternative
+
+end ProbabilisticTheory

@@ -35,13 +35,18 @@ observables are even a lattice. For a mechanical system, `Ω` is its phase space
 
 @[expose] public section
 
+namespace ProbabilisticTheory
+
 /-!
 
 ## A. The order-unit space
 
 -/
 
+end ProbabilisticTheory
+
 namespace BoundedMeasurable
+open ProbabilisticTheory
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
@@ -63,6 +68,7 @@ instance : OrderUnitLattice (BoundedMeasurable Ω) :=
 end BoundedMeasurable
 
 namespace BoundedMeasurable
+open ProbabilisticTheory
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
@@ -88,3 +94,4 @@ noncomputable def outcomeMeasurement : EffectValuedMeasure Ω (BoundedMeasurable
   countably_additive' _ hs hd := isLUB_sum_indicator hs hd
 
 end BoundedMeasurable
+

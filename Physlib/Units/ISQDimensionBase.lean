@@ -6,6 +6,7 @@ Authors: Nicolas Rouquette
 module
 
 public import Physlib.Units.Dimension
+public import Mathlib.Data.Fintype.Card
 /-!
 
 # The ISQ base quantities

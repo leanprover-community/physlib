@@ -6,8 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Electromagnetism.Kinematics.EMPotential
-public import Physlib.Relativity.Tensors.RealTensor.Metrics.Basic
-public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
 
 # The Field Strength Tensor
@@ -292,12 +290,14 @@ lemma toFieldStrength_eval_apply_eq_single {d} (A : ElectromagneticPotential d)
 -/
 open ContDiff
 
+@[fun_prop]
 lemma toFieldStrength_eval_differentiable {d} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ 2 A) :
     Differentiable ℝ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
   simp only [toFieldStrength_eval_apply_eq_single]
   fun_prop
 
+@[fun_prop]
 lemma toFieldStrength_eval_differentiable_space {d} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ 2 A) (t : Time) {c : SpeedOfLight} :
     Differentiable ℝ (fun x =>
@@ -306,6 +306,7 @@ lemma toFieldStrength_eval_differentiable_space {d} {A : ElectromagneticPotentia
     fun x => (toTimeAndSpace c).symm (t, x))
   exact (toFieldStrength_eval_differentiable hA).comp (by fun_prop)
 
+@[fun_prop]
 lemma toFieldStrength_eval_differentiable_time {d} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ 2 A) (x : Space d) {c : SpeedOfLight} :
     Differentiable ℝ (fun t =>
@@ -314,16 +315,12 @@ lemma toFieldStrength_eval_differentiable_time {d} {A : ElectromagneticPotential
     fun t => (toTimeAndSpace c).symm (t, x))
   exact (toFieldStrength_eval_differentiable hA).comp (by fun_prop)
 
+@[fun_prop]
 lemma toFieldStrength_eval_contDiff {d} {n : WithTop ℕ∞} {A : ElectromagneticPotential d}
     {μ ν : Fin 1 ⊕ Fin d} (hA : ContDiff ℝ (n + 1) A) :
     ContDiff ℝ n (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) := by
   simp only [toFieldStrength_eval_apply_eq_single]
   fun_prop
-
-lemma toFieldStrength_eval_smooth {d} {A : ElectromagneticPotential d}
-    (hA : ContDiff ℝ ∞ A) (μ ν : Fin 1 ⊕ Fin d) :
-    ContDiff ℝ ∞ (fun x => toScalar {A.toFieldStrength x | [μ] [ν]}ᵀ) :=
-  toFieldStrength_eval_contDiff (by simpa using hA)
 
 /-!
 

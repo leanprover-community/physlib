@@ -7,7 +7,6 @@ module
 
 public import Physlib.Meta.Informal.Basic
 public import Physlib.QuantumMechanics.Operators.Momentum
-public import Physlib.QuantumMechanics.QuantumSystem.Basic
 /-!
 
 # The free particle on `Space d`
