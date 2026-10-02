@@ -133,13 +133,14 @@ lemma iteratedPDeriv_singleton (μ : Fin 1 ⊕ Fin 3) (f : SpaceTimeAlgebra) :
 
 ### B.2. Base-point values of iterated derivatives
 
-Since the base point is where every displacement `x^μ` is zero, we write `(∂^s f)(0)` for the
-constant coefficient of `∂^s f` and call the family `s ↦ (∂^s f)(0)` the base-point derivative
-values of `f`. A multiset `s` corresponds to the monomial `x^s`, in which each `x^μ` appears as
-often as `μ` occurs in `s`, and `s!` denotes the product of the factorials of these multiplicities.
-Applying `∂^s` to `x^s` leaves the constant `s!`, while every other monomial either vanishes or
-retains a positive power. Hence `(∂^s f)(0)` is `s!` times the coefficient of `x^s` in `f`, the
-multivariable analogue of `f⁽ⁿ⁾(0) = n! aₙ` for a power series in one variable.
+For a power series in one variable, the `n`-th derivative at `0` is `n!` times the coefficient of
+`xⁿ`. This section proves the analogue in several variables, on which the rest of the file is
+built. We write `(∂^s f)(0)` for the constant coefficient of `∂^s f`, which is its value at the base
+point where every `x^μ` is zero, and call the family `s ↦ (∂^s f)(0)` the base-point derivative
+values of `f`. A multiset `s` determines the monomial `x^s`, containing each `x^μ` as often as `μ`
+occurs in `s`, and the number `s!`, the product of the factorials of these multiplicities. Applying
+`∂^s` turns `x^s` into the constant `s!`, while every other monomial ends up either zero or without
+a constant term, so `(∂^s f)(0)` is `s!` times the coefficient of `x^s` in `f`.
 
 -/
 
