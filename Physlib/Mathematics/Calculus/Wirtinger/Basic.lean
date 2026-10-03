@@ -6,7 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Complex.Basic
+public import Physlib.Mathematics.ForMathlib.ComplexLinear
 
 /-!
 
@@ -104,6 +104,10 @@ of §G.
     `dWirtingerAntiDir_eq_zero_of_clinear` : the holomorphic collapse, keyed on
     `ℂ`-linearity of the real derivative along the direction (each with a
     conjugate-`ℂ`-linear dual).
+- `Physlib.Wirtinger.clinear_of_dWirtingerAntiDir_eq_zero` : `∂̄_v f = 0` implies
+    `d_{i·v} f = i·d_v f`, the converse of `dWirtingerAntiDir_eq_zero_of_clinear`.
+- `Physlib.Wirtinger.differentiableAt_complex_iff_dWirtingerAntiDir_eq_zero` : the
+    Cauchy–Riemann criterion.
 - `Physlib.Wirtinger.differentiableAt_dWirtingerDir` /
     `differentiableAt_dWirtingerAntiDir` : the directional derivative of a `C²`
     field is itself real-differentiable.
@@ -532,11 +536,9 @@ algebra: unfold `∂_v f = (1/2)(d_v f − i·d_{i·v} f)`, substitute the ident
 reduces to `d_v f` while `∂̄_v f` cancels to `0`. No property of the domain `V` enters, so a
 single proof covers every complex `V`.
 
-**The domain-specific bridge.** Holomorphy is stated through the complex derivative
-`fderiv ℂ`, but the collapse is about the real derivative `fderiv ℝ`; the implication
-`f` holomorphic ⟹ `d_{i·v} f = i·d_v f` is the bridge between them. Relating the two
-derivatives is domain-specific, so each consumer establishes the bridge in its own setting,
-then applies the domain-general lemma above.
+**The bridge.** Holomorphy is stated through `fderiv ℂ`, the identity `d_{i·v} f = i·d_v f`
+through `fderiv ℝ`. The Cauchy–Riemann criterion
+`differentiableAt_complex_iff_dWirtingerAntiDir_eq_zero` relates them.
 
 -/
 
@@ -571,6 +573,38 @@ lemma dWirtingerAntiDir_eq_of_antilinear {v : V}
     dWirtingerAntiDir f v u = fderiv ℝ f u v := by
   simp only [dWirtingerAntiDir_apply, h, smul_eq_mul]
   linear_combination -fderiv ℝ f u v / 2 * Complex.I_sq
+
+/-- The converse of `dWirtingerAntiDir_eq_zero_of_clinear`. It needs no differentiability. -/
+lemma clinear_of_dWirtingerAntiDir_eq_zero {v : V} (h : dWirtingerAntiDir f v u = 0) :
+    fderiv ℝ f u (Complex.I • v) = Complex.I • fderiv ℝ f u v := by
+  rw [dWirtingerAntiDir_apply] at h
+  have h' : fderiv ℝ f u v + Complex.I * fderiv ℝ f u (Complex.I • v) = 0 := by
+    linear_combination (2 : ℂ) * h
+  rw [smul_eq_mul]
+  linear_combination (-Complex.I) * h' + fderiv ℝ f u (Complex.I • v) * Complex.I_sq
+
+section CauchyRiemann
+
+variable [IsScalarTower ℝ ℂ V]
+
+/-- **Cauchy–Riemann.** `f` is `ℂ`-differentiable at `u` iff it is real-differentiable there and
+every anti-holomorphic Wirtinger derivative vanishes. Real differentiability is needed: `fderiv`
+is `0` where `f` is not differentiable. -/
+theorem differentiableAt_complex_iff_dWirtingerAntiDir_eq_zero (f : V → ℂ) (u : V) :
+    DifferentiableAt ℂ f u ↔
+      DifferentiableAt ℝ f u ∧ ∀ v, dWirtingerAntiDir f v u = 0 := by
+  constructor
+  · intro hf
+    refine ⟨hf.restrictScalars ℝ, fun v => ?_⟩
+    refine dWirtingerAntiDir_eq_zero_of_clinear ?_
+    rw [DifferentiableAt.fderiv_restrictScalars ℝ hf, ContinuousLinearMap.coe_restrictScalars',
+      map_smul]
+  · rintro ⟨hR, hv⟩
+    rw [differentiableAt_iff_restrictScalars ℝ hR]
+    exact ⟨ContinuousLinearMap.complexOfCommutesI (fderiv ℝ f u)
+      (fun v => clinear_of_dWirtingerAntiDir_eq_zero (hv v)), rfl⟩
+
+end CauchyRiemann
 
 /-!
 
