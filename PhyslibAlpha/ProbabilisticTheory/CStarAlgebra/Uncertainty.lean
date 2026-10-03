@@ -8,6 +8,8 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Statistics
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNS
+public import Mathlib.Analysis.InnerProductSpace.GramMatrix
+public import Mathlib.Analysis.Matrix.PosDef
 
 /-!
 
@@ -27,6 +29,7 @@ bound on the covariance.
   relation.**
 - `UnitalPositiveLinearMap.robertson` : **the Robertson uncertainty relation.**
 - `UnitalPositiveLinearMap.covariance_cauchy_schwarz` : `|cov(a, b)| ≤ σ_a σ_b`.
+- `Matrix.PosDef.norm_det_le_re_det` : `‖det B‖ ≤ det A` when `A ± B` are positive semidefinite.
 
 ## iii. Table of contents
 
@@ -34,6 +37,7 @@ bound on the covariance.
 - B. Uncertainty relations
 - C. Equality in the uncertainty relations
 - D. Normalized variance bounds
+- E. A determinant bound for positive matrices
 
 -/
 
@@ -242,3 +246,149 @@ lemma variances_pos_of_normalized_pairing (ω : 𝓢[ℂ, A]) (a b : Observable 
 end UnitalPositiveLinearMap
 
 end ProbabilisticTheory
+
+/-! ## E. A determinant bound for positive matrices -/
+
+namespace Matrix
+
+open scoped ComplexOrder
+open Unitary Filter Topology
+
+variable {n : Type*} [Fintype n] [DecidableEq n]
+
+/-- A matrix `T` with `T A Tᴴ = 1` for a positive definite `A`: the inverse square roots of the
+eigenvalues of `A` times the adjoint of its eigenvector unitary. -/
+noncomputable def PosDef.normalizer {A : Matrix n n ℂ} (hA : A.PosDef) : Matrix n n ℂ :=
+  diagonal (fun i => ((Real.sqrt (hA.1.eigenvalues i))⁻¹ : ℂ)) *
+    star (hA.1.eigenvectorUnitary : Matrix n n ℂ)
+
+lemma PosDef.normalizer_mul_mul_conjTranspose {A : Matrix n n ℂ} (hA : A.PosDef) :
+    hA.normalizer * A * hA.normalizerᴴ = 1 := by
+  set U : Matrix n n ℂ := (hA.1.eigenvectorUnitary : Matrix n n ℂ)
+  set α := hA.1.eigenvalues
+  set D : Matrix n n ℂ := diagonal fun i => ((Real.sqrt (α i))⁻¹ : ℂ)
+  have hUU : star U * U = 1 := coe_star_mul_self _
+  have hAU : A = U * diagonal (fun i => (α i : ℂ)) * star U := by
+    conv_lhs => rw [hA.1.spectral_theorem, conjStarAlgAut_apply]
+    rfl
+  have hDD : D * diagonal (fun i => (α i : ℂ)) * D = 1 := by
+    rw [diagonal_mul_diagonal, diagonal_mul_diagonal, ← diagonal_one]
+    congr 1
+    ext i
+    have hs : (Real.sqrt (α i) : ℂ) ^ 2 = α i := by
+      rw [← Complex.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_pos i).le]
+    have hne : (Real.sqrt (α i) : ℂ) ≠ 0 := by
+      exact_mod_cast (Real.sqrt_pos.mpr (hA.eigenvalues_pos i)).ne'
+    rw [← hs]
+    field_simp
+  have hT : hA.normalizer = D * star U := rfl
+  have hTH : hA.normalizerᴴ = U * D := by
+    simp [hT, D, conjTranspose_mul, diagonal_conjTranspose, Pi.star_def, star_eq_conjTranspose]
+  rw [hTH, hT]
+  rw [hAU]
+  calc D * star U * (U * diagonal (fun i => (α i : ℂ)) * star U) * (U * D)
+      = D * (star U * U) * diagonal (fun i => (α i : ℂ)) * (star U * U) * D := by
+        simp only [mul_assoc]
+    _ = 1 := by rw [hUU, mul_one, mul_one, hDD]
+
+/-- The eigenvalues of a hermitian `K` with `1 − K` and `1 + K` positive semidefinite lie in
+`[−1, 1]`. -/
+lemma IsHermitian.abs_eigenvalues_le_one {K : Matrix n n ℂ} (hK : K.IsHermitian)
+    (hm : (1 - K).PosSemidef) (hp : (1 + K).PosSemidef) (i : n) : |hK.eigenvalues i| ≤ 1 := by
+  set v := hK.eigenvectorBasis i
+  have hv : star (v : n → ℂ) ⬝ᵥ (v : n → ℂ) = 1 := by
+    rw [dotProduct_comm, ← EuclideanSpace.inner_eq_star_dotProduct, inner_self_eq_norm_sq_to_K,
+      hK.eigenvectorBasis.orthonormal.1 i]
+    simp
+  have h0 := hm.re_dotProduct_nonneg (v : n → ℂ)
+  have h1 := hp.re_dotProduct_nonneg (v : n → ℂ)
+  rw [sub_mulVec, one_mulVec, dotProduct_sub, hK.mulVec_eigenvectorBasis, dotProduct_smul,
+    hv] at h0
+  rw [add_mulVec, one_mulVec, dotProduct_add, hK.mulVec_eigenvectorBasis, dotProduct_smul,
+    hv] at h1
+  simp at h0 h1
+  exact abs_le.mpr ⟨by linarith, by linarith⟩
+
+/-- If `A` is positive definite, `B` hermitian and `A − B`, `A + B` positive semidefinite, then
+`‖det B‖ ≤ re (det A)`: conjugating by the normalizer of `A` puts `B` between `−1` and `1`. -/
+lemma PosDef.norm_det_le_re_det {A B : Matrix n n ℂ} (hA : A.PosDef) (hB : B.IsHermitian)
+    (h₁ : (A - B).PosSemidef) (h₂ : (A + B).PosSemidef) : ‖B.det‖ ≤ (A.det).re := by
+  set T := hA.normalizer
+  have hT := hA.normalizer_mul_mul_conjTranspose
+  set K := T * B * Tᴴ
+  have hK : K.IsHermitian := by
+    simp only [IsHermitian, K, conjTranspose_mul, conjTranspose_conjTranspose, hB.eq, mul_assoc]
+  have hm : (1 - K).PosSemidef := by
+    have := h₁.mul_mul_conjTranspose_same T
+    rwa [mul_sub, sub_mul, hT] at this
+  have hp : (1 + K).PosSemidef := by
+    have := h₂.mul_mul_conjTranspose_same T
+    rwa [mul_add, add_mul, hT] at this
+  have hdetK : ‖K.det‖ ≤ 1 := by
+    rw [hK.det_eq_prod_eigenvalues, norm_prod]
+    refine Finset.prod_le_one₀ (fun i _ => norm_nonneg _) fun i _ => ?_
+    rw [RCLike.norm_ofReal]
+    exact hK.abs_eigenvalues_le_one hm hp i
+  have hdetA : A.det = ((∏ i, hA.1.eigenvalues i : ℝ) : ℂ) := by
+    rw [hA.1.det_eq_prod_eigenvalues]
+    push_cast
+    rfl
+  have hprod : 0 < ∏ i, hA.1.eigenvalues i := Finset.prod_pos fun i _ => hA.eigenvalues_pos i
+  have hBK : B.det = K.det * A.det := by
+    have h := congrArg det hT
+    rw [det_mul, det_mul, det_one] at h
+    simp only [K, det_mul]
+    linear_combination (-B.det) * h
+  rw [hBK, norm_mul, hdetA, Complex.ofReal_re, Complex.norm_real, Real.norm_eq_abs,
+    abs_of_pos hprod]
+  nlinarith [norm_nonneg K.det]
+
+omit [Fintype n] in
+lemma map_ofReal_add_smul_one (S : Matrix n n ℝ) (ε : ℝ) :
+    (S + ε • 1).map ((↑) : ℝ → ℂ) = S.map ((↑) : ℝ → ℂ) + (ε : ℂ) • 1 := by
+  ext i j
+  by_cases h : i = j <;> simp [h]
+
+/-- For real `S` and `W`, if `S − iW` and `S + iW` are positive semidefinite then
+`|det W| ≤ det S`. -/
+lemma abs_det_le_det_of_posSemidef {S W : Matrix n n ℝ}
+    (h₁ : (S.map ((↑) : ℝ → ℂ) - Complex.I • W.map ((↑) : ℝ → ℂ)).PosSemidef)
+    (h₂ : (S.map ((↑) : ℝ → ℂ) + Complex.I • W.map ((↑) : ℝ → ℂ)).PosSemidef) :
+    |W.det| ≤ S.det := by
+  have hS : (S.map ((↑) : ℝ → ℂ)).PosSemidef := by
+    have h := (h₁.add h₂).smul (Complex.zero_le_real.mpr (by norm_num : (0 : ℝ) ≤ 1 / 2))
+    convert h using 1
+    ext i j
+    simp only [Matrix.smul_apply, Matrix.add_apply, Matrix.sub_apply, smul_eq_mul]
+    push_cast
+    ring
+  have hB : (Complex.I • W.map ((↑) : ℝ → ℂ)).IsHermitian := by
+    rw [show Complex.I • W.map ((↑) : ℝ → ℂ) =
+      S.map ((↑) : ℝ → ℂ) - (S.map ((↑) : ℝ → ℂ) - Complex.I • W.map ((↑) : ℝ → ℂ)) by abel]
+    exact hS.1.sub h₁.1
+  have key : ∀ ε : ℝ, 0 < ε → |W.det| ≤ (S + ε • 1).det := by
+    intro ε hε
+    have hε1 : ((ε : ℂ) • (1 : Matrix n n ℂ)).PosSemidef :=
+      PosSemidef.one.smul (Complex.zero_le_real.mpr hε.le)
+    have hA : ((S + ε • 1).map ((↑) : ℝ → ℂ)).PosDef := by
+      rw [map_ofReal_add_smul_one]
+      exact PosDef.posSemidef_add hS (PosDef.one.smul (Complex.zero_lt_real.mpr hε))
+    have h₁' : ((S + ε • 1).map ((↑) : ℝ → ℂ) - Complex.I • W.map ((↑) : ℝ → ℂ)).PosSemidef := by
+      rw [map_ofReal_add_smul_one, add_sub_right_comm]
+      exact h₁.add hε1
+    have h₂' : ((S + ε • 1).map ((↑) : ℝ → ℂ) + Complex.I • W.map ((↑) : ℝ → ℂ)).PosSemidef := by
+      rw [map_ofReal_add_smul_one, add_right_comm]
+      exact h₂.add hε1
+    have h := hA.norm_det_le_re_det hB h₁' h₂'
+    have hW : (W.map ((↑) : ℝ → ℂ)).det = (W.det : ℂ) := (RingHom.map_det Complex.ofRealHom W).symm
+    have hSε : ((S + ε • 1).map ((↑) : ℝ → ℂ)).det = ((S + ε • 1).det : ℂ) :=
+      (RingHom.map_det Complex.ofRealHom _).symm
+    rwa [det_smul, hW, hSε, norm_mul, norm_pow, Complex.norm_I, one_pow, one_mul,
+      Complex.norm_real, Real.norm_eq_abs, Complex.ofReal_re] at h
+  have hlim : Tendsto (fun ε : ℝ => (S + ε • (1 : Matrix n n ℝ)).det) (𝓝[>] 0) (𝓝 S.det) := by
+    have hc : Continuous fun ε : ℝ => (S + ε • (1 : Matrix n n ℝ)).det :=
+      (continuous_const.add (continuous_id.smul continuous_const)).matrix_det
+    simpa using (hc.tendsto 0).mono_left nhdsWithin_le_nhds
+  exact ge_of_tendsto hlim (eventually_nhdsWithin_of_forall fun ε hε => key ε hε)
+
+end Matrix
