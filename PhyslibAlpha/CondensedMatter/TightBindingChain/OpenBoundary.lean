@@ -10,6 +10,8 @@ public import Physlib.CondensedMatter.TightBindingChain.Basic
 
 # The tight binding chain with open boundary conditions
 
+The position operator and the Hamiltonian of the tight binding chain with open boundaries.
+
 ## i. Overview
 
 A finite piece of a 1d solid has two ends: the electron cannot hop from the last site back to

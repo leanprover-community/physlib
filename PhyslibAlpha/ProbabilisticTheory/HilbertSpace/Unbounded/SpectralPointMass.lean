@@ -12,16 +12,33 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 # Spectral measures taking values `0` and `1`
 
+A `{0, 1}`-valued spectral measure on `ℝ` with bounded support is a point mass.
+
 ## i. Overview
 
 A measure on `ℝ` with bounded support that only takes the values `0` and `1` is a point mass.
 Bisecting the support and keeping the half of measure `1` gives nested intervals shrinking to the
-point.
+point. As a consequence, a bounded self-adjoint operator all of whose spectral projections are `0`
+or `1` is a scalar multiple of the identity.
 
 ## ii. Key results
 
+- `WOTSpectralMeasure.bisect` : the nested bisection intervals.
+- `WOTSpectralMeasure.bisectPoint` : the point the bisection intervals shrink to.
 - `WOTSpectralMeasure.exists_forall_notMem_measure_eq_zero` : such a measure vanishes on every set
   avoiding some point `r`.
+- `eq_smul_one_of_forall_spectralMeasure_eq_zero_or_one` : a bounded self-adjoint operator with
+  only trivial spectral projections is a scalar multiple of the identity.
+
+## iii. Table of contents
+
+- A. Bisection intervals
+- B. The limit point of the bisection
+- C. Operators with trivial spectral projections
+
+## iv. References
+
+* None.
 
 -/
 
@@ -38,6 +55,12 @@ namespace QuantumMechanics
 namespace WOTSpectralMeasure
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Bisection intervals
+
+-/
 
 section Bisect
 
@@ -148,6 +171,12 @@ lemma bisect_diff_measure_zero
 
 end Bisect
 
+/-!
+
+## B. The limit point of the bisection
+
+-/
+
 section Limit
 
 variable (μ : WOTSpectralMeasure ℝ H) {a b : ℝ}
@@ -257,6 +286,12 @@ lemma exists_forall_notMem_measure_eq_zero
 end Limit
 
 end WOTSpectralMeasure
+
+/-!
+
+## C. Operators with trivial spectral projections
+
+-/
 
 section ScalarOperator
 

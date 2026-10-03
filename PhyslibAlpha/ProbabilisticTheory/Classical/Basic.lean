@@ -10,6 +10,8 @@ public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Lattice
 /-!
 # Classical systems
 
+Classical systems: those whose positive functionals have least upper bounds.
+
 ## i. Overview
 
 A system is classical when every state decomposes in exactly one way into pure states: a state is
@@ -21,7 +23,7 @@ Classicality is characterized operationally by the absence of incompatibility (K
 and by the uniqueness of composites (the Namioka–Phelps theorem). It is weaker than asking that the
 observables themselves form a lattice, as they do for the functions on a sample space.
 
-## ii. Key definitions and results
+## ii. Key results
 
 - `IsClassical E` : the system `E` is classical.
 - `OrderUnitLattice.isClassical` : a system whose observables form a lattice is classical.
@@ -29,6 +31,10 @@ observables themselves form a lattice, as they do for the functions on a sample 
 ## iii. Table of contents
 
 - A. Classical systems
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Star.Basic
 
 # Nuclear involutions
 
+Nuclear elements and nuclear involutions of alternative algebras, and their associators.
+
 ## i. Overview
 
 An element of an algebra is in the nucleus when it associates with all elements. A nuclear
@@ -23,6 +25,15 @@ Nuclear elements pass through associators, and the associator changes sign under
 - `IsInNucleus`, `IsNuclearInvolution` : nuclear elements and nuclear involutions.
 - `nuclear_comm_associator` : nuclear elements commute with associators.
 
+## iii. Table of contents
+
+- A. Nuclear elements
+- B. Nuclear involutions
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -32,6 +43,12 @@ namespace ProbabilisticTheory
 open IsAlternative
 
 variable {D : Type*} [NonUnitalNonAssocRing D] [IsAlternative D]
+
+/-!
+
+## A. Nuclear elements
+
+-/
 
 /-- An element associating trivially in every slot. -/
 def IsInNucleus (x : D) : Prop :=
@@ -60,6 +77,12 @@ lemma nuclear_slip_last_right {n : D} (hn : IsInNucleus n) (x y z : D) :
   have h := teichmuller x y z n
   rw [(hn (x * y) z).2.2, (hn x (y * z)).2.2, (hn y z).2.2, mul_zero] at h
   linear_combination (norm := abel) h
+
+/-!
+
+## B. Nuclear involutions
+
+-/
 
 variable [StarAddMonoid D]
 

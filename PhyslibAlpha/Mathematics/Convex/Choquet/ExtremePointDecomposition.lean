@@ -12,6 +12,8 @@ public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional
 /-!
 # Every point is a mixture of extreme points
 
+Choquet's theorem: each point of a metrizable compact convex set is a mixture of extreme points.
+
 ## i. Overview
 
 Let `S` be a compact convex set that is metrizable and whose points are separated by countably many
@@ -37,6 +39,10 @@ closed set.
 - A. The extreme points are Borel
 - B. Splitting mass between endpoints
 - C. The boundary theorem
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.HilbertSc
 
 # Basis independence of the trace
 
+The trace of every trace-class operator is an absolutely summable, basis-independent sum.
+
 ## i. Overview
 
 For a trace-class operator `T`, `√|T|` is Hilbert–Schmidt, so the diagonal of `T = (U √|T|) √|T|` is
@@ -25,6 +27,15 @@ operator is an absolutely convergent sum whose value does not depend on the basi
   summable.
 - `trace_eq_of_hilbertBasis` : the trace does not depend on the basis.
 
+## iii. Table of contents
+
+- A. The Hilbert–Schmidt square root of `|T|`
+- B. Basis independence of the trace
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -37,6 +48,12 @@ open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. The Hilbert–Schmidt square root of `|T|`
+
+-/
 
 lemma sqrt_abs_diagonal_eq_norm_sq {T : H →L[ℂ] H} {w : Set H} (b : HilbertBasis w ℂ H)
     (i : w) :
@@ -62,6 +79,12 @@ lemma isHilbertSchmidt_sqrt_abs_of_isTraceClass {T : H →L[ℂ] H} (hT : IsTrac
   refine ⟨w, b, ?_⟩
   have hdiag : Summable (fun i : w => (⟪b i, CFC.abs T (b i)⟫_ℂ).re) := isTraceClass_iff.mp hT w b
   exact hdiag.congr (fun i => sqrt_abs_diagonal_eq_norm_sq b i)
+
+/-!
+
+## B. Basis independence of the trace
+
+-/
 
 lemma summable_trace_diagonal_of_isTraceClass {T : H →L[ℂ] H} (hT : IsTraceClass T)
     {w : Set H} (b : HilbertBasis w ℂ H) :

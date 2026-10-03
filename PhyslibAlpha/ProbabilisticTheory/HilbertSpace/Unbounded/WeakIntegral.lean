@@ -13,18 +13,32 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 # The vector-measure integral against a scalar matrix coefficient
 
+Weak integrals `∫ f d⟪y, μS(·) x⟫` of possibly unbounded functions against a spectral measure.
+
+## i. Overview
+
 For a bounded multiplier `f`, testing the spectral integral against two vectors and integrating
 the scalar spectral measure give the same result:
 `⟪y, (∫ f dμS) x⟫ = ∫ f d(μS.scalarMeasure x y)`. The right-hand side makes sense for unbounded
 `f` as well, which gives the weak integrals `∫ f d⟪y, μS(·) x⟫` used to state `T = ∫ λ dE(λ)`
 vector by vector.
 
-## Main definitions
+## ii. Key results
 
 - `weakIntegral`, `complexWeakIntegral` : `∫ f d⟪y, μS(·)x⟫`, for real- and complex-valued `f`.
 - `boundedIntegralOfUniformApprox_inner` : the weak integral of a bounded multiplier is the matrix
   coefficient of its spectral integral.
+- `weakIntegral_map`, `complexWeakIntegral_map` : weak integrals against a pushforward measure.
 - `unitaryConjSpectralMeasure_weakIntegral` : compatibility with unitary transport.
+
+## iii. Table of contents
+
+- A. Bounded integrals agree with the vector-measure integral
+- B. The weak integral of a possibly-unbounded multiplier
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Measurement.EffectValuedMeasure
 /-!
 # Observables of a sample space
 
+Bounded measurable functions on a sample space as a classical order-unit lattice.
+
 ## i. Overview
 
 The observables of a sample space `Ω` are the bounded measurable functions on `Ω`, ordered
@@ -30,6 +32,10 @@ observables are even a lattice. For a mechanical system, `Ω` is its phase space
 
 - A. The order-unit space
 - B. Indicator effects
+
+## iv. References
+
+* None.
 
 -/
 

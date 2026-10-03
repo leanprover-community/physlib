@@ -15,6 +15,8 @@ public import Mathlib.Analysis.Normed.Group.Completeness
 
 # The trace-class Banach space
 
+Trace-class operators form a Banach space under the trace norm.
+
 ## i. Overview
 
 The trace-class operators form a Banach space `𝒮₁(H)` under the trace norm. The trace norm dominates
@@ -34,6 +36,10 @@ which gives completeness.
 
 - A. Arithmetic closure of `IsTraceClass`
 - B. The trace-class submodule and Banach space
+
+## iv. References
+
+* None.
 
 -/
 

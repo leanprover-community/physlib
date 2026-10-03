@@ -16,6 +16,8 @@ public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 
 # The occupation-number basis
 
+The occupation-number states form a basis of `vacuumSpan L Ω n`, of dimension `(d+n-1).choose n`.
+
 ## i. Overview
 
 The occupation-number states `word (countWord d α) Ω`, indexed by degree-`n` count functions

@@ -14,6 +14,8 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpo
 
 # Positive and negative parts of observables
 
+Every observable of a C⋆-algebra splits uniquely into orthogonal positive and negative parts.
+
 ## i. Overview
 
 Every observable `a` of a C⋆-algebra splits uniquely as `a = a⁺ - a⁻` with `a⁺`, `a⁻` positive and
@@ -32,6 +34,10 @@ functional calculus; here they are positive observables.
 
 - A. Positive observables
 - B. Positive and negative parts
+
+## iv. References
+
+* None.
 
 -/
 

@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.State.WeightEquivalence
 
 # Tracial states and weights
 
+Tracial weights, tracial states and tracial complex-linear functionals.
+
 ## i. Overview
 
 A state `ω` is tracial when `ω (a⋆ a) = ω (a a⋆)`. For a complex-linear functional this is
@@ -25,11 +27,23 @@ equivalent to `f (a b) = f (b a)`. A finite tracial weight gives a tracial state
 - `LinearMap.isTracial_iff_star_mul_self_eq_mul_star_self` : a complex functional is tracial iff `f
   (a⋆ a) = f (a a⋆)`.
 
+## iii. Table of contents
+
+- A. Tracial weights
+- B. Tracial states
+- C. Tracial complex-linear functionals
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-! ## A. Tracial weights -/
 
 namespace Weight
 
@@ -55,6 +69,8 @@ end IsTracial
 
 end Weight
 
+/-! ## B. Tracial states -/
+
 namespace UnitalPositiveLinearMap
 
 variable {A : Type*} [OrderUnitSpace A] [Mul A] [Star A]
@@ -76,6 +92,8 @@ lemma isTracial (hw : w.IsState) (ht : w.IsTracial) :
 end Weight.IsState
 
 end ProbabilisticTheory
+
+/-! ## C. Tracial complex-linear functionals -/
 
 namespace LinearMap
 open ProbabilisticTheory

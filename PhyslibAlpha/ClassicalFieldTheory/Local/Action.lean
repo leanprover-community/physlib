@@ -10,6 +10,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.Variation
 /-!
 # Local action functionals
 
+The local action of a field, its value under admissible variations, and critical fields.
+
 ## i. Overview
 
 This module defines the local action functional associated with a local Lagrangian, together with

@@ -14,6 +14,8 @@ public import Mathlib.Topology.Order.MonotoneConvergence
 /-!
 # The Born rule for effect-valued measures
 
+An effect-valued measure sends each normal state to a probability law on its outcomes.
+
 ## i. Overview
 
 A state is a normal channel `ω : 𝓢[ℝ, E]`, so it pushes an effect-valued measure `μ` on `E`
@@ -32,6 +34,10 @@ So `μ` sends every normal state to a probability distribution over its outcomes
 - A. Effect-valued measures on `ℝ` are probability measures
 - B. The Born rule
 - C. Relabeling outcomes
+
+## iv. References
+
+* None.
 
 -/
 

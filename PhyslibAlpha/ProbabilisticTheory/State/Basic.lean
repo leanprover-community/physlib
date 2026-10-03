@@ -10,6 +10,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 /-!
 # States
 
+Notation `𝓢[𝕜, A]` for states, the normalized positive linear functionals.
+
 ## i. Overview
 
 A state assigns each observable its expectation value: a positive linear functional
@@ -23,6 +25,10 @@ A state assigns each observable its expectation value: a positive linear functio
 ## iii. Table of contents
 
 - A. Notation for positive functionals and states
+
+## iv. References
+
+* None.
 
 -/
 

@@ -10,6 +10,8 @@ public import Physlib.SpaceAndTime.Space.Derivatives.Iterated
 /-!
 # Coordinate-level jet points
 
+Coordinate-level jet points of fields on `Space d` and the jets of a field at a point.
+
 ## i. Overview
 
 This module introduces the coordinate-level point of the locally trivialized `k`-jet bundle for

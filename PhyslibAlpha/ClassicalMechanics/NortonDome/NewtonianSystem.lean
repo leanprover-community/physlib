@@ -13,6 +13,8 @@ public import Physlib.SpaceAndTime.Time.Derivatives
 
 # Conservative Newtonian systems and determinism
 
+Conservative Newtonian systems: a locally Lipschitz force gives determinism.
+
 ## i. Overview
 
 A conservative Newtonian system is a point mass `m` in a configuration space `X` under a

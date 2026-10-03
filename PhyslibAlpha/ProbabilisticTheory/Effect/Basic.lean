@@ -10,6 +10,8 @@ public import Physlib.ProbabilisticTheory.Effect.Basic
 /-!
 # Orthogonal effects
 
+Effects: the order interval `[0, 1]` of an ordered space, modelling yes/no measurement outcomes.
+
 ## i. Overview
 
 Two effects are orthogonal when their sum is still an effect, that is, still bounded by the order

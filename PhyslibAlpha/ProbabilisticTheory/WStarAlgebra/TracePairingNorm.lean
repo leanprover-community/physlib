@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.RankOne
 
 # The trace pairing is isometric
 
+The trace pairing of bounded operators against trace-class operators is an isometry.
+
 ## i. Overview
 
 The trace of `A |x⟩⟨y|` is `⟪y, A x⟫`, so testing the trace pairing of a bounded operator `A` on
@@ -23,6 +25,17 @@ trace pairing is an isometry.
 - `trace_rankOne` : the trace of a rank-one operator.
 - `TraceClass.norm_tracePairing` : `‖Tr (A ·)‖ = ‖A‖`.
 - `TraceClass.tracePairingLinearIsometry` : the trace pairing as a linear isometry.
+
+## iii. Table of contents
+
+- A. Rank-one operators are trace class
+- B. The trace pairing with rank-one operators
+- C. The norm of the trace pairing
+- D. The trace pairing as a linear isometry
+
+## iv. References
+
+* None.
 
 -/
 
@@ -37,6 +50,12 @@ open scoped ComplexOrder InnerProductSpace
 namespace TraceClass
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Rank-one operators are trace class
+
+-/
 
 lemma isTraceClass_rankOne (x y : H) :
     IsTraceClass (InnerProductSpace.rankOne ℂ x y) := by
@@ -82,6 +101,12 @@ lemma trace_rankOne (x y : H) :
   rw [hterm]
   exact hsum.tsum_eq
 
+/-!
+
+## B. The trace pairing with rank-one operators
+
+-/
+
 lemma tracePairing_rankOne (A : H →L[ℂ] H) (x y : H) :
     tracePairing A (ofOperator (InnerProductSpace.rankOne ℂ x y) (isTraceClass_rankOne x y)) =
       ⟪y, A x⟫_ℂ := by
@@ -104,6 +129,12 @@ lemma tracePairing_rankOne (A : H →L[ℂ] H) (x y : H) :
         (isTraceClass_rankOne (A x) y) := by
       congr 1
     _ = ⟪y, A x⟫_ℂ := trace_rankOne (A x) y
+
+/-!
+
+## C. The norm of the trace pairing
+
+-/
 
 /- The trace pairing has the sharp lower bound `‖A‖ ≤ ‖Tr (A ·)‖`. -/
 lemma norm_le_tracePairing (A : H →L[ℂ] H) :
@@ -188,6 +219,12 @@ lemma norm_tracePairing (A : H →L[ℂ] H) :
 lemma norm_tracePairingContinuousLinearMap (A : H →L[ℂ] H) :
     ‖tracePairingContinuousLinearMap A‖ = ‖A‖ := by
   rw [tracePairingContinuousLinearMap_apply, norm_tracePairing]
+
+/-!
+
+## D. The trace pairing as a linear isometry
+
+-/
 
 /-- The trace pairing, as a linear isometry from bounded operators into the dual of the trace-class
 operators. -/

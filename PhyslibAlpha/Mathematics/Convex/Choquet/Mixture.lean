@@ -13,6 +13,8 @@ public import Mathlib.Tactic.Module
 /-!
 # Mixtures in a convex set
 
+Mixtures of points in a convex set, convex functions, and extreme points as non-midpoints.
+
 ## i. Overview
 
 In a convex set `S` any two points can be mixed: `t x + (1 - t) y` lies in `S` for `0 ≤ t ≤ 1`. For
@@ -34,6 +36,10 @@ are the pure states. A point that is not extreme is the midpoint of two differen
 - A. Mixtures
 - B. Convex functions
 - C. Extreme points as non-midpoints
+
+## iv. References
+
+* None.
 
 -/
 

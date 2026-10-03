@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Lie.Basic
 
 # Jordan derivations
 
+Jordan derivations, their commutator Lie algebra and the inner derivations `[L_a, L_b]`.
+
 ## i. Overview
 
 A Jordan derivation is a linear map `D` with `D (a ∘ b) = D a ∘ b + a ∘ D b`, an infinitesimal
@@ -24,7 +26,14 @@ derivations.
 - `JordanAlgebra.JordanDerivation` : Jordan derivations.
 - `JordanAlgebra.inner` : inner derivations.
 
-## iii. References
+## iii. Table of contents
+
+- A. Jordan derivations
+- B. The vector space of derivations
+- C. The commutator Lie algebra
+- D. Inner derivations
+
+## iv. References
 
 - Adapted from Cobord, `Jordan/StructureAlgebra.lean`.
 
@@ -38,6 +47,8 @@ namespace JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
   [IsScalarTower ℝ E E]
+
+/-! ## A. Jordan derivations -/
 
 /-- A bundled real Jordan derivation. -/
 structure JordanDerivation (E : Type*) [NonAssocCommRing E] [Module ℝ E] where
@@ -71,6 +82,8 @@ def submodule : Submodule ℝ (E →ₗ[ℝ] E) where
   zero_mem' := IsDerivation.zero
   add_mem' hD hE := IsDerivation.add hD hE
   smul_mem' c _ hD := IsDerivation.smul c hD
+
+/-! ## B. The vector space of derivations -/
 
 /-- The zero infinitesimal symmetry. -/
 instance : Zero (JordanDerivation E) := ⟨⟨0, IsDerivation.zero⟩⟩
@@ -135,6 +148,8 @@ instance : Module ℝ (JordanDerivation E) where
     exact add_smul c d (D.toLinearMap x)
   zero_smul D := by ext x; simp only [smul_apply, zero_smul, zero_apply]
 
+/-! ## C. The commutator Lie algebra -/
+
 /-- The commutator of two derivations is again a derivation. -/
 def comm (D₁ D₂ : JordanDerivation E) : JordanDerivation E where
   toLinearMap := D₁.toLinearMap.comp D₂.toLinearMap - D₂.toLinearMap.comp D₁.toLinearMap
@@ -184,6 +199,8 @@ instance : LieAlgebra ℝ (JordanDerivation E) where
     simp only [lie_apply, smul_apply, map_smul, smul_sub]
 
 end JordanDerivation
+
+/-! ## D. Inner derivations -/
 
 section Inner
 

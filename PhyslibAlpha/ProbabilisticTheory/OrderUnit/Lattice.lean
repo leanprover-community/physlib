@@ -14,6 +14,8 @@ public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 /-!
 # Lattice-ordered observables
 
+Order-unit lattices: Archimedean order-unit spaces whose order is a lattice.
+
 ## i. Overview
 
 An order-unit lattice is a space of observables in which any two observables have a least upper
@@ -32,6 +34,10 @@ two pieces, one below each summand, and every observable is close to a step func
 ## iii. Table of contents
 
 - A. Order-unit lattices
+
+## iv. References
+
+* None.
 
 -/
 

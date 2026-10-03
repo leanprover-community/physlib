@@ -9,7 +9,35 @@ public import Physlib.SpaceAndTime.Space.Translations
 public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 /-!
 
-## Ring surface in `Space 3`
+# Ring surface in `Space 3`
+
+The unit ring in `Space 3` with its measure and the distribution of integration around it.
+
+## i. Overview
+
+The ring surface is the unit circle `S¹` of `Space 2`, embedded into `Space 3` by `ring`. Pushing
+forward the measure on the sphere gives the finite measure `ringMeasure`, of total mass `2π`, and
+integrating against it gives the distribution `ringDist`. The file also gives integrability
+criteria for continuous functions and the invariance of `ringMeasure.prod volume` under a shear.
+
+## ii. Key results
+
+- `ring` : the embedding of the unit circle into `Space 3`.
+- `ringMeasure` : the measure corresponding to integration around the ring.
+- `ringMeasure_univ` : the total mass of the ring measure is `2π`.
+- `integrable_ringMeasure_of_continuous` : continuous functions on the ring are integrable.
+- `ringDist` : the distribution corresponding to integration around the ring.
+- `ringDist_eq_integral_delta` : `ringDist` as an integral of Dirac deltas over the ring.
+
+## iii. Table of contents
+
+- A. The definition of the ring surface
+- B. The measure associated with the ring
+- C. The distribution associated with the ring
+
+## iv. References
+
+* None.
 
 -/
 @[expose] public section

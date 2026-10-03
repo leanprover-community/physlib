@@ -15,6 +15,8 @@ public import Mathlib.Analysis.Polynomial.Factorization
 
 # The spectrum of an observable in a JB-algebra
 
+The spectrum of a JB-algebra observable: compact, nonempty, with polynomial spectral mapping.
+
 ## i. Overview
 
 The spectrum of an observable `a` of a JB-algebra is its spectrum as an element of the commutative
@@ -25,11 +27,22 @@ Banach algebra `C(a)`. It is a compact subset of `ℝ`, and polynomials map spec
 - `NormedJordanAlgebra.closedGenerator` : `a` as an element of `C(a)`.
 - `NormedJordanAlgebra.jordanSpectrum` : the spectrum of `a`.
 - `NormedJordanAlgebra.isCompact_jordanSpectrum` : the spectrum is compact.
+- `JBAlgebra.ClosedGeneratedByOne.jordanSpectralRadius_eq_norm` : in `C(a)` the spectral radius
+  is the norm.
+- `NormedJordanAlgebra.jordanSpectrum_nonempty` : the spectrum of an ordered JB observable is
+  nonempty.
+- `NormedJordanAlgebra.jordanSpectrum_aeval` : polynomial spectral mapping.
 
 ## iii. Table of contents
 
 - A. The generator in its closed algebra
 - B. The canonical spectrum
+- C. The spectral radius is the norm
+- D. Nonemptiness and polynomial spectral mapping
+
+## iv. References
+
+* None.
 
 -/
 
@@ -246,6 +259,12 @@ end
 
 end NormedJordanAlgebra
 
+/-!
+
+## C. The spectral radius is the norm
+
+-/
+
 namespace JBAlgebra
 
 variable {E : Type*}
@@ -304,6 +323,12 @@ end
 end ClosedGeneratedByOne
 
 end JBAlgebra
+
+/-!
+
+## D. Nonemptiness and polynomial spectral mapping
+
+-/
 
 namespace NormedJordanAlgebra
 

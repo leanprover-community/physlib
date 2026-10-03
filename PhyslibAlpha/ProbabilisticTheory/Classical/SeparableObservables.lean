@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.State.Barycenter
 /-!
 # Classical systems with separable observables
 
+Choquet–Meyer: with separable observables, classical exactly when ensembles refine.
+
 ## i. Overview
 
 Most systems in physics can be described by countably many observables: the observables are

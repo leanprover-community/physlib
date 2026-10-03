@@ -16,6 +16,8 @@ public import Mathlib.Analysis.Normed.Module.FiniteDimension
 /-!
 # Classical theories are those without incompatibility
 
+Kuramochi's theorem: a system is classical exactly when all yes/no measurements are compatible.
+
 ## i. Overview
 
 In classical probability every two yes/no questions can be asked at once. In quantum theory they

@@ -10,7 +10,7 @@ public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 
-## Right handed Weyl fermions
+# Right handed Weyl fermions
 
 
 In this file we define Right handed Weyl fermions.

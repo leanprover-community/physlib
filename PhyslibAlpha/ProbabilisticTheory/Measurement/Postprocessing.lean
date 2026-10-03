@@ -11,6 +11,8 @@ public import PhyslibAlpha.Mathematics.Probability.Kernel.Factorization
 /-!
 # Post-processing of measurements
 
+Post-processing of measurements through Markov kernels, the information preorder, and Born laws.
+
 ## i. Overview
 
 A measurement `M` is a post-processing of a measurement `N` when `M` can be simulated by performing
@@ -33,6 +35,10 @@ Born law of `M` is the Born law of `N` composed with the kernel.
 - A. Post-processing
 - B. Relabeling outcomes
 - C. Born laws
+
+## iv. References
+
+* None.
 
 -/
 

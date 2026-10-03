@@ -14,6 +14,8 @@ public import Mathlib.Analysis.Normed.Operator.Extend
 
 # Continuous functional calculus in JB-algebras
 
+The isometric continuous functional calculus of an observable in a JB-algebra.
+
 ## i. Overview
 
 Evaluating polynomials at an observable `a` of a JB-algebra is isometric for the sup norm on its
@@ -29,6 +31,9 @@ square roots, absolute values and positive and negative parts.
 - `NormedJordanAlgebra.jordanSqrt` : the square root of a nonnegative observable.
 - `NormedJordanAlgebra.jordanAbs`, `NormedJordanAlgebra.jordanPosPart`,
   `NormedJordanAlgebra.jordanNegPart` : absolute value and positive and negative parts.
+- `NormedJordanAlgebra.jordanCfc_mul` : the functional calculus is multiplicative.
+- `NormedJordanAlgebra.jordanPosPart_sub_jordanNegPart` : `a = a₊ - a₋`.
+- `NormedJordanAlgebra.jordanPosPart_jordanOrthogonal_jordanNegPart` : `a₊ ∘ a₋ = 0`.
 
 ## iii. Table of contents
 
@@ -36,6 +41,10 @@ square roots, absolute values and positive and negative parts.
 - B. Completion from polynomial functions
 - C. Positive square roots
 - D. Absolute value and positive/negative parts
+
+## iv. References
+
+* None.
 
 -/
 

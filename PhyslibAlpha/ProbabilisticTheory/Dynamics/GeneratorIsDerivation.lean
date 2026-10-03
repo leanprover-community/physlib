@@ -16,6 +16,8 @@ public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 # Generators of automorphism groups are derivations
 
+The generator of a one-parameter family of automorphisms is a derivation.
+
 ## i. Overview
 
 If a one-parameter family `α` with `α 0 = id` preserves a bounded bilinear multiplication at every
@@ -31,6 +33,10 @@ the product are used.
 ## iii. Table of contents
 
 - A. The generator is a derivation
+
+## iv. References
+
+* None.
 
 -/
 

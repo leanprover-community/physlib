@@ -14,6 +14,8 @@ public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 
 # Observables
 
+Observables as self-adjoint elements, and the real state on observables of a complex state.
+
 ## i. Overview
 
 An observable is a self-adjoint element of a space with an involution. A complex state on the space
@@ -24,11 +26,23 @@ restricts to a real state on its observables, the expectation-value functional.
 - `Observable`, `PositiveObservable` : observables and positive observables.
 - `UnitalPositiveLinearMap.onObservables` : the real state on observables of a complex state.
 
+## iii. Table of contents
+
+- A. Observables
+- B. The real state on observables
+- C. Examples: states on observables
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-! ## A. Observables -/
 
 /-- An observable in a space with an additive involution. -/
 abbrev Observable (A : Type*) [AddGroup A] [StarAddMonoid A] := selfAdjoint A
@@ -36,6 +50,8 @@ abbrev Observable (A : Type*) [AddGroup A] [StarAddMonoid A] := selfAdjoint A
 /-- A positive observable in an ordered space with an additive involution. -/
 abbrev PositiveObservable (A : Type*) [AddGroup A] [StarAddMonoid A] [PartialOrder A] :=
   {a : Observable A // 0 ≤ (a : A)}
+
+/-! ## B. The real state on observables -/
 
 open scoped ComplexOrder
 
@@ -56,6 +72,8 @@ lemma coe_onObservables_apply (ω : 𝓢[ℂ, A]) (a : Observable A) :
   exact coe_restrictSAC_apply ω a
 
 end UnitalPositiveLinearMap
+
+/-! ## C. Examples: states on observables -/
 
 section OrderUnit
 

@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 # The self-adjoint part of a C⋆-algebra is a JB-algebra
 
+The self-adjoint elements of a unital C⋆-algebra form a JB-algebra under `½ (a b + b a)`.
+
 ## i. Overview
 
 The self-adjoint elements of a unital C⋆-algebra, with the Jordan product `a ∘ b = ½ (a b + b a)`,
@@ -26,12 +28,17 @@ The instances are scoped to `JB`.
 - `JB.mul_self_eq` : the Jordan square is the ordinary square.
 - `JB.quadRep_eq_conj` : `U_a b = a b a`.
 - `JB.isJordanProjection_iff_isIdempotentElem` : Jordan projections are the ordinary projections.
+- `JB.jordanOrthogonal_iff` : Jordan orthogonality of `p`, `q` is `p q + q p = 0`.
 
 ## iii. Table of contents
 
 - A. C⋆ order compatibility
 - B. The JB-algebra instance
 - C. Squares, `U_a = aba` and projections
+
+## iv. References
+
+* None.
 
 -/
 

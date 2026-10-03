@@ -14,6 +14,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Channel.Operation
 
 # Lüders operations
 
+Lüders operations `x ↦ U_{√e} x` of effects and the states conditioned on effects.
+
 ## i. Overview
 
 An effect `e` of an ordered JB-algebra has a positive square root. The Lüders operation of `e` is
@@ -26,6 +28,16 @@ the quadratic representation `x ↦ U_{√e} x`, and conditioning a state on `e`
 - `NormedJordanAlgebra.luedersOperation` : the Lüders operation.
 - `NormedJordanAlgebra.luedersCondition` : the state conditioned on an effect.
 - `NormedJordanAlgebra.luedersCondition_isNormal` : conditioning preserves normality.
+
+## iii. Table of contents
+
+- A. The Lüders operation
+- B. Lüders operations of projections
+- C. Lüders conditioning
+
+## iv. References
+
+* None.
 
 -/
 
@@ -40,6 +52,8 @@ open scoped JordanAlgebra
 
 variable {E : Type*} [IsJBOrderUnit E] [Nontrivial E]
   [IsQuadraticallyPositive E]
+
+/-! ## A. The Lüders operation -/
 
 /-- The intrinsic positive square root selected by the JB continuous functional calculus for an
 effect. -/
@@ -76,6 +90,8 @@ lemma luedersOperation_outcomeEffect (e : Effect E) :
     (Operation.outcomeEffect (luedersOperation e) : E) = e := by
   rw [Operation.coe_outcomeEffect, luedersOperation_apply, luedersMap_one]
 
+/-! ## B. Lüders operations of projections -/
+
 omit [IsQuadraticallyPositive E] in
 /-- The CFC square root of a sharp Jordan event is the event itself.  This is the point where
 the general effect operation recovers projection compression. -/
@@ -88,6 +104,8 @@ lemma effectSqrt_toEffect_of_projection {p : E} (hp : IsJordanProjection p) :
 lemma luedersMap_toEffect_of_projection {p : E} (hp : IsJordanProjection p) :
     luedersMap hp.toEffect = quadRepPositiveLinearMap p := by
   rw [luedersMap, effectSqrt_toEffect_of_projection hp]
+
+/-! ## C. Lüders conditioning -/
 
 /-- The normalized post-measurement state associated with an effect of nonzero probability. -/
 noncomputable def luedersCondition (ω : 𝓢[ℝ, E]) (e : Effect E) (hmass : 0 < ω e) :

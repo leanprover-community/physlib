@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Existence.
 
 # The unitary group preserves the domain of its generator
 
+A unitary group preserves the domain of its candidate generator and commutes with it.
+
 ## i. Overview
 
 A strongly continuous unitary group preserves the domain of its candidate generator `T` and commutes
@@ -22,6 +24,15 @@ derivative `i T (U s ψ)`.
 - `stoneCandidateDomain_translate` : the group preserves the domain.
 - `stoneCandidateGenerator_translate` : the generator commutes with the group.
 - `stoneCandidateGenerator_hasDerivAt` : orbits of domain vectors are differentiable at every time.
+
+## iii. Table of contents
+
+- A. Invariance of the candidate domain
+- B. Commutation and differentiability of orbits
+
+## iv. References
+
+* None.
 
 -/
 
@@ -39,6 +50,12 @@ universe u
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 variable {U : ℝ → H →L[ℂ] H} (hUmul : ∀ s t, U (s + t) = U s * U t)
+
+/-!
+
+## A. Invariance of the candidate domain
+
+-/
 
 omit [CompleteSpace H] in
 include hUmul in
@@ -82,6 +99,12 @@ include hUmul in
 lemma stoneCandidateDomain_translate_mem (ψ : stoneCandidateDomain (U := U) hUmul) (t : ℝ) :
     (U t (ψ : H)) ∈ stoneCandidateDomain (U := U) hUmul :=
   stoneCandidateDomain_translate hUmul ψ.property t
+
+/-!
+
+## B. Commutation and differentiability of orbits
+
+-/
 
 omit [CompleteSpace H] in
 include hUmul in

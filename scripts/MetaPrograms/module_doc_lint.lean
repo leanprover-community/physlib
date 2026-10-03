@@ -15,10 +15,144 @@ This file lints the module documentation for consistency.
 It currently only checks module headings, and as such many improvements to this file could
 be made.
 
+Headings are only read from module documentation (`/-! … -/` blocks), outside of code fences,
+so `#check` commands and headings in declaration docstrings are ignored.
+Errors are reported grouped by the kind of error, each with a file and line number.
+
+This linter is run in CI and must pass. Files listed in
+`scripts/MetaPrograms/module_doc_no_lint.txt` are not checked.
+
 -/
 
 open Lean System Meta
 
+/-!
+
+## Reading the module documentation
+
+-/
+
+/-- `s` with leading and trailing whitespace removed. -/
+def strip (s : String) : String := s.trimAscii.copy
+
+/-- `s` with trailing whitespace removed. -/
+def rstrip (s : String) : String :=
+  String.ofList (s.toList.reverse.dropWhile Char.isWhitespace).reverse
+
+/-- The lines of module documentation in a file, paired with their (1-indexed) line numbers.
+  Lines inside code fences, and the fence markers themselves, are left out. -/
+def moduleDocLines (lines : Array String) : Array (Nat × String) := Id.run do
+  let mut out : Array (Nat × String) := #[]
+  let mut inDoc := false
+  let mut inFence := false
+  let mut n := 0
+  for line in lines do
+    n := n + 1
+    let content : Option String :=
+      if inDoc then some line
+      else
+        let t := strip line
+        if t.startsWith "/-!" then some ("/-!".intercalate ((t.splitOn "/-!").drop 1)) else none
+    if let some c := content then
+      unless inDoc do
+        inDoc := true
+        inFence := false
+      let (c, closes) := match c.splitOn "-/" with
+        | x :: _ :: _ => (x, true)
+        | _ => (c, false)
+      if (strip c).startsWith "```" then
+        inFence := !inFence
+      else if !inFence then
+        out := out.push (n, c)
+      if closes then inDoc := false
+  return out
+
+/-- A heading in the module documentation. -/
+structure Heading where
+  /-- The line number of the heading. -/
+  line : Nat
+  /-- The number of leading `#`s. -/
+  level : Nat
+  /-- The heading after the leading `#`s, with surrounding whitespace removed. -/
+  text : String
+  /-- The whole heading, with surrounding whitespace removed. -/
+  raw : String
+  /-- Whether the leading `#`s are followed by a space (or nothing). -/
+  spaced : Bool
+deriving Inhabited
+
+def parseHeading (n : Nat) (line : String) : Option Heading :=
+  let raw := strip line
+  if !raw.startsWith "#" then none else
+  let cs := raw.toList
+  let hashes := cs.takeWhile (· == '#')
+  let rest := cs.drop hashes.length
+  some { line := n, level := hashes.length, text := strip (String.ofList rest), raw,
+         spaced := rest.head?.all (· == ' ') }
+
+/-!
+
+## Kinds of errors
+
+-/
+
+inductive ErrorKind where
+  | noModuleDoc
+  | titleHead
+  | extraTitle
+  | overviewHead
+  | keyResultsHead
+  | tableOfContentsHead
+  | referencesHead
+  | sectionOrder
+  | noSections
+  | sectionTag
+  | duplicateTag
+  | headingFullStop
+  | tableOfContentsCorrect
+deriving DecidableEq
+
+/-- All kinds of errors, in the order they are reported. -/
+def ErrorKind.all : List ErrorKind :=
+  [.noModuleDoc, .titleHead, .extraTitle, .overviewHead, .keyResultsHead, .tableOfContentsHead,
+    .referencesHead, .sectionOrder, .noSections, .sectionTag, .duplicateTag, .headingFullStop,
+    .tableOfContentsCorrect]
+
+def ErrorKind.name : ErrorKind → String
+  | .noModuleDoc => "No module documentation headings"
+  | .titleHead => "Missing or malformed title"
+  | .extraTitle => "Extra title headings"
+  | .overviewHead => "Missing or malformed overview section"
+  | .keyResultsHead => "Missing or malformed key results section"
+  | .tableOfContentsHead => "Missing or malformed table of contents section"
+  | .referencesHead => "Missing or malformed references section"
+  | .sectionOrder => "Standard sections out of order"
+  | .noSections => "No section headings"
+  | .sectionTag => "Malformed section tags"
+  | .duplicateTag => "Duplicate section tags"
+  | .headingFullStop => "Headings ending in a full stop"
+  | .tableOfContentsCorrect => "Table of contents does not match headings"
+
+def ErrorKind.hint : ErrorKind → String
+  | .noModuleDoc => "Add module documentation `/-! … -/` with the standard headings."
+  | .titleHead => "Add a title heading starting with '# ' for the whole module, as the first heading."
+  | .extraTitle => "Only the module title should use '# '; use '## A.', '### A.1.' etc. for sections."
+  | .overviewHead => "Add an overview section '## i. Overview' after the title heading."
+  | .keyResultsHead => "Add a key results section '## ii. Key results' after the overview section."
+  | .tableOfContentsHead => "Add a table of contents section '## iii. Table of contents' after the key results section. This can be filled in later."
+  | .referencesHead => "Add a references section '## iv. References' after the table of contents section."
+  | .sectionOrder => "The headings should start: title, '## i. Overview', '## ii. Key results', '## iii. Table of contents', '## iv. References'."
+  | .noSections => "Add other headings for sections and subsections using e.g. '## A.', '### A.1.', '#### A.1.2' etc."
+  | .sectionTag => "Section tags end in a dot and have one dot fewer than the heading has '#'s, e.g. '## A.', '### A.1.', '#### A.1.2.'."
+  | .duplicateTag => "Each section tag should be used only once."
+  | .headingFullStop => "Ensure all headings do not end in a full stop."
+  | .tableOfContentsCorrect => "Fix the table of contents to match the headings in the file."
+
+structure DocLintError where
+  kind : ErrorKind
+  file : FilePath
+  line : Nat
+  msg : String
 
 /-!
 
@@ -26,186 +160,140 @@ open Lean System Meta
 
 -/
 
-structure DocLintError where
-  msg : String
-  file : FilePath
+/-- One of the standard sections following the title. -/
+structure StandardSection where
+  kind : ErrorKind
+  /-- The heading exactly as it should appear. -/
+  expected : String
+  /-- The heading with numbering, case and a trailing dot ignored, used to find near misses. -/
+  key : String
 
-def getHeaddings (f : FilePath) : IO (Array String) := do
+def standardSections : List StandardSection :=
+  [⟨.overviewHead, "## i. Overview", "overview"⟩,
+   ⟨.keyResultsHead, "## ii. Key results", "key results"⟩,
+   ⟨.tableOfContentsHead, "## iii. Table of contents", "table of contents"⟩,
+   ⟨.referencesHead, "## iv. References", "references"⟩]
+
+/-- The text of a heading with a leading roman numeral, case and a trailing dot ignored. -/
+def Heading.key (h : Heading) : String :=
+  let ws := (h.text.splitOn " ").filter (· ≠ "")
+  let ws := match ws with
+    | w :: rest => if ["i.", "ii.", "iii.", "iv."].contains w.toLower then rest else ws
+    | [] => []
+  let s := (" ".intercalate ws).toLower
+  if s.endsWith "." then String.ofList s.toList.dropLast else s
+
+def hashes (n : Nat) : String := String.ofList (List.replicate n '#')
+
+/-- The first difference between the given table of contents entries (with line numbers) and the
+  expected ones, as an optional line number and a message. -/
+def tocMismatch : List (Nat × String) → List String → Option (Option Nat × String)
+  | [], [] => none
+  | (n, x) :: gs, y :: es =>
+    if x == y then tocMismatch gs es else some (some n, s!"Entry '{x}' should be '{y}'")
+  | [], y :: es =>
+    some (none, s!"Missing entry '{y}'" ++ if es.isEmpty then "" else s!" (and {es.length} more)")
+  | (n, x) :: gs, [] =>
+    some (some n, s!"Unexpected entry '{x}'" ++ if gs.isEmpty then "" else s!" (and {gs.length} more)")
+
+def checkHeadings (f : FilePath) : IO (Array DocLintError) := do
   let lines ← IO.FS.lines f
-  return lines.filter (fun l ↦ l.trim.startsWith "#")
+  let docLines := moduleDocLines lines
+  let headings := docLines.filterMap fun (n, c) ↦ parseHeading n c
+  let err (kind : ErrorKind) (line : Nat) (msg : String) : DocLintError :=
+    { kind, file := f, line, msg }
+  let some first := headings[0]?
+    | return #[err .noModuleDoc 1 <| if docLines.isEmpty
+        then "No module documentation `/-! … -/` found"
+        else "The module documentation has no headings"]
+  let mut errs : Array DocLintError := #[]
 
-def getTableOfContents (f : FilePath) : IO (Array String) := do
-  let lines := (← IO.FS.lines f).toList
-  let tofC := ((lines.splitAt (lines.findIdx (fun l ↦ l.trim == "## iii. Table of contents")+1))).2
-  let toc := (tofC.splitAt (tofC.findIdx (fun l ↦ l.trim == "## iv. References"))).1
-  return toc.toArray
+  /- Title. -/
+  let hasTitle := first.level == 1
+  let titleLine := first.line
+  if !hasTitle then
+    errs := errs.push <| err .titleHead first.line
+      s!"The first heading '{first.raw}' should be a title starting with '# '"
+  else if !first.spaced then
+    errs := errs.push <| err .titleHead first.line
+      s!"The title '{first.raw}' should start with '# '"
+  for h in headings.toList.drop 1 do
+    if h.level == 1 then
+      errs := errs.push <| err .extraTitle h.line s!"'{h.raw}' uses '# ', which is for the title"
 
-inductive Steps where
-  | titleHead
-  | overviewHead
-  | keyResultsHead
-  | tableOfContentsHead
-  | referencesHead
-  | otherHeadings
-  | headingsNoFullStops
-  | tableOfContentsCorrect
-deriving DecidableEq
+  /- Standard sections, found by name rather than by position. -/
+  let mut standardIdx : Array (Option Nat) := #[]
+  for s in standardSections do
+    match headings.findIdx? (·.raw == s.expected) with
+    | some i => standardIdx := standardIdx.push (some i)
+    | none =>
+      match headings.findIdx? (·.key == s.key) with
+      | some i =>
+        errs := errs.push <| err s.kind headings[i]!.line
+          s!"Heading '{headings[i]!.raw}' should be exactly '{s.expected}'"
+        standardIdx := standardIdx.push (some i)
+      | none =>
+        errs := errs.push <| err s.kind titleLine s!"Missing '{s.expected}'"
+        standardIdx := standardIdx.push none
+  let mut prev : Option Nat := if hasTitle then some 0 else none
+  for oi in standardIdx do
+    if let some i := oi then
+      if let some p := prev then
+        if i ≠ p + 1 then
+          errs := errs.push <| err .sectionOrder headings[i]!.line
+            s!"'{headings[i]!.raw}' should come directly after '{headings[p]!.raw}'"
+      prev := some i
 
-def Steps.toString : Steps → String
-  | .titleHead => "Add a title heading starting with '# ' for the whole module."
-  | .overviewHead => "Add an overview section '## i. Overview' after the title heading."
-  | .keyResultsHead => "Add a key results section '## ii. Key results' after the overview section."
-  | .tableOfContentsHead => "Add a table of contents section '## iii. Table of contents' after the key results section. This can be filled in later."
-  | .referencesHead => "Add a references section '## iv. References' after the table of contents section."
-  | .otherHeadings => "Add other headings for sections and subsections using e.g. '## A.', '### A.1.', '#### A.1.2' etc."
-  | .headingsNoFullStops => "Ensure all headings do not end in a full stop."
-  | .tableOfContentsCorrect => "Fix the table of contents to match the headings in the file."
+  let standardHeading (kind : ErrorKind) : Option Nat :=
+    ((standardSections.zip standardIdx.toList).find? (·.1.kind == kind)).bind (·.2)
+  /- The text of the module documentation between the heading `k` and the next heading. -/
+  let body (k : Nat) : Array (Nat × String) :=
+    let start := headings[k]!.line
+    let stop := (headings[k + 1]?.map (·.line)).getD (lines.size + 1)
+    (docLines.filter fun (n, c) ↦ start < n && n < stop && !(strip c).isEmpty).map
+      fun (n, c) ↦ (n, rstrip c)
 
-def Steps.anyTrue (e  : Steps → Bool × String) : Bool :=
-  (e .titleHead).1 || (e .overviewHead).1 || (e .keyResultsHead).1 ||
-  (e .tableOfContentsHead).1 || (e .referencesHead).1 ||
-  (e .otherHeadings).1 || (e .headingsNoFullStops).1 ||
-  (e .tableOfContentsCorrect).1
+  /- Section headings: everything other than the title and the standard sections. -/
+  let claimed := standardIdx.filterMap id
+  let sections := (List.range headings.size).filterMap fun i ↦
+    if (i == 0 && hasTitle) || claimed.contains i || headings[i]!.level == 1 then none
+    else headings[i]?
+  if sections.isEmpty then
+    errs := errs.push <| err .noSections titleLine "No section headings found"
+  let mut seen : List (String × Nat) := []
+  for h in sections do
+    if !h.spaced then
+      errs := errs.push <| err .sectionTag h.line s!"'{h.raw}' needs a space after the '#'s"
+      continue
+    let tag := ((h.text.splitOn " ").head?).getD ""
+    if tag.isEmpty then
+      errs := errs.push <| err .sectionTag h.line s!"'{h.raw}' has no section tag"
+      continue
+    if !tag.endsWith "." then
+      errs := errs.push <| err .sectionTag h.line s!"Section tag '{tag}' should end in a dot"
+    else
+      let depth := tag.toList.count '.'
+      if depth + 1 ≠ h.level then
+        errs := errs.push <| err .sectionTag h.line
+          s!"Section tag '{tag}' should have heading level '{hashes (depth + 1)}', not '{hashes h.level}'"
+    match seen.lookup tag with
+    | some l =>
+      errs := errs.push <| err .duplicateTag h.line s!"Section tag '{tag}' is already used on line {l}"
+    | none => seen := (tag, h.line) :: seen
 
-def checkHeadings (f : FilePath) : IO (List DocLintError) := do
-  let headings ← getHeaddings f
-  let mut errors : Steps → Bool × String := fun _ ↦ (false, "")
+  /- Full stops. -/
+  for h in headings do
+    if h.raw.endsWith "." then
+      errs := errs.push <| err .headingFullStop h.line s!"'{h.raw}' ends in a full stop"
 
-  /- Step: titleHead. -/
-
-  let title := headings[0]?
-  let mut titleError := ""
-  match title with
-  | none =>
-    titleError := "No title heading found"
-  | some t =>
-    if !(t.startsWith "# ") then
-      titleError := s!"Title heading '{t}' does not start with '# '"
-  if titleError ≠ "" then
-    errors := Function.update errors .titleHead (true, titleError)
-
-  /- Step: overviewHead -/
-
-  let overview := headings[1]?
-  let mut overviewError := ""
-  match overview with
-  | none =>
-    overviewError := "  No overview heading found"
-  | some o =>
-    if o ≠  "## i. Overview" then
-      overviewError := s!"  Overview heading '{o}' is not '## i. Overview'"
-  if overviewError ≠ "" then
-    errors := Function.update errors .overviewHead (true, overviewError)
-
-  /- Step: keyResultsHead -/
-
-  let keyResults := headings[2]?
-  let mut keyResultsError := ""
-  match keyResults with
-  | none =>
-    keyResultsError := "  No key results heading found"
-  | some k =>
-    if k ≠ "## ii. Key results" then
-      keyResultsError := s!"  Key results heading '{k}' is not '## ii. Key results'"
-  if keyResultsError ≠ "" then
-    errors := Function.update errors .keyResultsHead (true, keyResultsError)
-
-  /- Step: tableOfContentsHead -/
-  let toc := headings[3]?
-  let mut tocError := ""
-  match toc with
-  | none =>
-    tocError := " No table of contents heading found"
-  | some t =>
-    if t ≠ "## iii. Table of contents" then
-      tocError := s!"Table of contents heading '{t}' is not '## iii. Table of contents'"
-  if tocError ≠ "" then
-    errors := Function.update errors .tableOfContentsHead (true, tocError)
-
-  /- Step: referencesHead -/
-  let references := headings[4]?
-  let mut referencesError := ""
-  match references with
-  | none =>
-    referencesError := "  No references heading found"
-  | some r =>
-    if r ≠ "## iv. References" then
-      referencesError := s!"  References heading '{r}' is not '## iv. References'"
-  if referencesError ≠ "" then
-    errors := Function.update errors .referencesHead (true, referencesError)
-  /- Step: otherHeadings. -/
-  let mut otherHeadingsError := ""
-  let otherHeadings := headings.drop 5
-  if otherHeadings.any (fun h ↦ h.startsWith "# ") then
-    otherHeadingsError := otherHeadingsError ++ s!"  Other headings found with `# `: {otherHeadings.filter (fun h ↦ h.startsWith "# ")}"
-  if otherHeadings = #[] then
-    otherHeadingsError := otherHeadingsError ++ "  No other headings found"
-  let otherHeaddingsSplit := otherHeadings.map (fun h ↦ (h.splitOn " ").take 2)
-  /- Should be something like '[##, ###, ##]`. -/
-  let levels := otherHeaddingsSplit.map (fun h ↦ h[0]!)
-  /- levels should be something like '[##, ###, ##]`. -/
-  let notJustHashes := levels.filter (fun l ↦ !(l.all (· == '#')))
-  if notJustHashes.size ≠ 0 then
-    otherHeadingsError := otherHeadingsError ++ s!"\n Malformed space: {notJustHashes}"
-  /- Every section reference should end in a dot.  -/
-  let levelsNoDot := otherHeaddingsSplit.filter (fun l ↦ !(l[1]!.endsWith "."))
-  if levelsNoDot.size ≠ 0 then
-    otherHeadingsError := otherHeadingsError ++ s!"\n Section references not ending in a dot: {levelsNoDot}"
-  /- The number of dots should equal one less then the number of dashes e.g.
-    ## A., ### A.1. etc. -/
-  let badLevels := otherHeaddingsSplit.filter (fun l ↦ l[0]!.count '#' ≠ l[1]!.count '.' + 1 )
-  if badLevels.size ≠ 0 then
-    otherHeadingsError := otherHeadingsError ++ s!"\n Section references with the wrong number of hashes: {badLevels}"
-  /- Duplicate tags -/
-  if ¬ List.Nodup otherHeaddingsSplit.toList then
-    let dups := otherHeaddingsSplit.toList.filter (fun x ↦ otherHeaddingsSplit.toList.count x > 1)
-    otherHeadingsError := otherHeadingsError ++ s!"\n Duplicate section tags found {dups}"
-  if otherHeadingsError ≠ "" then
-    errors := Function.update errors .otherHeadings (true, otherHeadingsError)
-  /- Step: headingsNoFullStops -/
-
-  let mut headingsNoFullStopsError := ""
-  let headingsWithFullStops := headings.filter (fun h ↦ h.trim.endsWith ".")
-  if headingsWithFullStops.size ≠ 0 then
-    headingsNoFullStopsError := s!"  Headings ending in a full stop found: {headingsWithFullStops}"
-  if headingsNoFullStopsError ≠ "" then
-    errors := Function.update errors .headingsNoFullStops (true, headingsNoFullStopsError)
-  /- Table of contents check. -/
-  let tocLines ← getTableOfContents f
-  let mut tocCorrectError := ""
-  let expectedLevel1 (n : ℕ) := (otherHeadings.filter (fun l ↦ l.count '#' ≤ n)).map fun l =>
-    let l' := l
-    let l' := l'.replace "#### "  "    - "
-    let l' := l'.replace "### "  "  - "
-    let l' := l'.replace "## "  "- "
-    l'
-  let tocLinesNoEmpty := tocLines.filter (fun l ↦ l.trim ≠ "")
-  if tocLinesNoEmpty ≠ expectedLevel1 4 then
-    tocCorrectError := s!"  Table of contents does not match headings. \n Given:
-{String.intercalate "\n" tocLinesNoEmpty.toList}\n Expected:
-{String.intercalate "\n" (expectedLevel1 4).toList}\nEnd of Error."
-  if tocCorrectError ≠ "" then
-    errors := Function.update errors .tableOfContentsCorrect (true, tocCorrectError)
-
-  /-
-  ## Formatting the error
-  -/
-  if Steps.anyTrue errors then
-    let mut errormsg := "\n"
-    let mut n := (1 : ℕ)
-    for e in  [Steps.titleHead, .overviewHead, .keyResultsHead, .tableOfContentsHead,
-      .referencesHead, .otherHeadings, .headingsNoFullStops, .tableOfContentsCorrect] do
-      let (b, s) := errors e
-
-      if b then
-        errormsg := errormsg ++ "\x1b[33mStep " ++ toString n ++ ": " ++ Steps.toString e ++ "\x1b[0m\n" ++ s ++ "\n"
-      else
-        errormsg := errormsg ++ "\x1b[32mStep " ++ toString n ++ ": " ++ Steps.toString e ++ "\x1b[0m\n"
-      n := n + 1
-    return [{msg := errormsg, file := f}]
-  else
-    return []
-
+  /- Table of contents: the module documentation lines between its heading and the next one. -/
+  if let some k := standardHeading .tableOfContentsHead then
+    let given := body k
+    let expected := (sections.filter fun h ↦ 2 ≤ h.level && h.level ≤ 4).map fun h ↦
+      String.ofList (List.replicate (2 * (h.level - 2)) ' ') ++ "- " ++ h.text
+    if let some (line, msg) := tocMismatch given.toList expected then
+      errs := errs.push <| err .tableOfContentsCorrect (line.getD headings[k]!.line) msg
+  return errs
 
 /-- The array of modules not to be linted. -/
 def noLintArray : IO (Array FilePath) := do
@@ -219,34 +307,46 @@ def linterExemptions : IO (Array FilePath) := do
   let path := (mkFilePath ["scripts", "LinterExemption"]).addExtension "txt"
   unless (← path.pathExists) do return #[]
   let lines ← IO.FS.lines path
-  return lines.filterMap (fun l ↦ if l.trim == "" then none else some (mkFilePath [l.trim]))
+  return lines.filterMap (fun l ↦ if l.trimAscii.isEmpty then none else some (mkFilePath [l.trimAscii.copy]))
 
-/-- The file paths of the modules imported into the module `mods` (e.g. `Physlib`). -/
-def importedFilePaths (mods : Name) : IO (Array FilePath) := do
-  let imp : Import := {module := mods}
-  let mFile ← findOLean imp.module
-  unless (← mFile.pathExists) do
-        throw <| IO.userError s!"object file '{mFile}' of module {imp.module} does not exist"
-  let (modData, _) ← readModuleData mFile
-  return modData.imports.filterMap (fun imp ↦
-    if imp.module == `Init then
-      none
-    else
-      some ((mkFilePath (imp.module.toString.splitToList (· == '.'))).addExtension "lean"))
+/-- The file paths of the modules imported by the root file of the library `lib`
+  (e.g. `Physlib.lean`). This reads the source file, so no build is needed. -/
+def importedFilePaths (lib : String) : IO (Array FilePath) := do
+  let lines ← IO.FS.lines (System.FilePath.mk lib |>.addExtension "lean")
+  return lines.filterMap fun l ↦
+    match (strip l).splitOn " " |>.filter (· ≠ "") with
+    | ["import", m] | ["public", "import", m] =>
+      some ((mkFilePath (m.splitOn ".")).addExtension "lean")
+    | _ => none
 
 def main (_ : List String) : IO UInt32 := do
-  initSearchPath (← findSysroot)
-  let filePaths := (← importedFilePaths `Physlib) ++ (← importedFilePaths `QuantumInfo)
+  let filePaths := (← importedFilePaths "Physlib") ++ (← importedFilePaths "QuantumInfo") ++
+    (← importedFilePaths "PhyslibAlpha")
   let noLint ← noLintArray
   let exemptions ← linterExemptions
   let modulesToCheck := filePaths.filter (fun p ↦ !noLint.contains p ∧ !exemptions.contains p)
-  let errors := (← modulesToCheck.mapM checkHeadings).toList.flatten
-  /- Printing the errors -/
-  for eM in errors do
-    IO.println s!"\x1b[31mError: \x1b[0m {eM.file}: {eM.msg}"
-  if errors.length > 0 then
-    IO.println "\n"
-    throw <| IO.userError s!"Errors found."
-  else
-    IO.println "\x1b[32mNo documentation style issues found.\x1b[0m"
+  let errors := (← modulesToCheck.mapM checkHeadings).flatten
+  let annotate := (← IO.getEnv "GITHUB_ACTIONS") == some "true"
+  let fileCount (es : Array DocLintError) := (es.map (·.file)).toList.eraseDups.length
+  /- Printing the errors, grouped by kind. -/
+  for kind in ErrorKind.all do
+    let es := errors.filter (·.kind == kind)
+    if es.isEmpty then continue
+    IO.println s!"\x1b[1;31m{kind.name}\x1b[0m ({es.size} in {fileCount es} files)"
+    IO.println s!"\x1b[33m  {kind.hint}\x1b[0m"
+    for e in es do
+      IO.println s!"  {e.file}:{e.line}: {e.msg}"
+      if annotate then
+        IO.println s!"::error file={e.file},line={e.line},title={kind.name}::{e.msg}"
+    IO.println ""
+  if errors.size > 0 then
+    IO.println "\x1b[1mSummary\x1b[0m"
+    for kind in ErrorKind.all do
+      let es := errors.filter (·.kind == kind)
+      unless es.isEmpty do
+        IO.println s!"  {es.size}\t{kind.name}"
+    IO.println s!"\x1b[1;31merror:\x1b[0m {errors.size} module documentation problems in \
+      {fileCount errors} files."
+    return 1
+  IO.println "\x1b[32mNo documentation style issues found.\x1b[0m"
   return 0

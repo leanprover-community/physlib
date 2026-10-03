@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Power.Associative
 
 # Quadratic representations of powers
 
+The quadratic representation on powers: `U_{aᵐ} aⁿ = a²ᵐ⁺ⁿ`.
+
 ## i. Overview
 
 On powers the quadratic representation acts by `U_{aᵐ} aⁿ = a²ᵐ⁺ⁿ`.
@@ -22,6 +24,10 @@ On powers the quadratic representation acts by `U_{aᵐ} aⁿ = a²ᵐ⁺ⁿ`.
 ## iii. Table of contents
 
 - A. Quadratic action on powers
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Cayley.Mea
 
 # Spectral data of bounded normal and unitary operators
 
+Spectral measures reconstructing bounded normal and unitary operators.
+
 ## i. Overview
 
 `BoundedNormalSpectralData` is a spectral measure on `ℂ` whose integral of the identity is a given
@@ -32,6 +34,10 @@ transform gives a spectral measure on `ℝ`, which is determined by its Cayley p
 
 - A. Bounded normal spectral data
 - B. Bounded unitary spectral data
+
+## iv. References
+
+* None.
 
 -/
 

@@ -15,6 +15,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Algebra.Statistics
 
 # Moments, variance and Jordan projections
 
+Moments and variance of observables, and Jordan projections as effects and compressions.
+
 ## i. Overview
 
 The `n`-th moment of an observable `a` in a state `ω` is `ω(aⁿ)`, and the variance is `ω(a²) -
@@ -35,6 +37,10 @@ orthogonal when `p ∘ q = 0`. A Jordan projection is an effect, and its quadrat
 - B. Jordan projections and orthogonality
 - C. Projections as effects
 - D. Compression: `U_p` for an idempotent `p`
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Measure.Prokhorov
 /-!
 # Representing measures and the Choquet order
 
+Representing measures of points of a convex set, the Choquet order, and maximal measures.
+
 ## i. Overview
 
 A probability measure on a convex set `S` represents a point `x` when `x` is its average: every
@@ -35,6 +37,10 @@ compact set every point has a representing measure that is maximal in this order
 - A. Representing measures
 - B. The Choquet order
 - C. Maximal representing measures
+
+## iv. References
+
+* None.
 
 -/
 

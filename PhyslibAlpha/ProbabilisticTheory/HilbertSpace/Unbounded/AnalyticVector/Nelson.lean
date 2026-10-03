@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.AnalyticVe
 
 # Nelson's analytic-vector theorem
 
+Nelson's theorem: a symmetric operator with dense analytic vectors is essentially self-adjoint.
+
 ## i. Overview
 
 The exponential series of an analytic vector can be restarted from any point of its orbit with a

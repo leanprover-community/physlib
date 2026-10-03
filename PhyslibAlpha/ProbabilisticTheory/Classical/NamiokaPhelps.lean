@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Classical.Compatibility
 /-!
 # Classical theories compose uniquely with the square
 
+Namioka–Phelps square test: classical exactly when composition with the square is unique.
+
 ## i. Overview
 
 When a system is combined with another, the parts do not decide which composite observables are

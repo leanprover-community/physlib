@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Lie.Submodule
 
 # Vacuum states and creation-operator words
 
+Vacuum states of a ladder system, creation-operator words, and the `n`-particle sector.
+
 ## i. Overview
 
 A vacuum `Ω` of a `LadderSystem` is a nonzero vector killed by every annihilation operator. This

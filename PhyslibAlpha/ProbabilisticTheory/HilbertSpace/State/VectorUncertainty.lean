@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Vector
 
 # Uncertainty in vector states
 
+Variance and uncertainty defect in a vector state via fluctuation vectors `a ψ - ⟨a⟩ ψ`.
+
 ## i. Overview
 
 In a vector state `ψ` the centered observable `a - ⟨a⟩` sends `ψ` to the fluctuation vector `a ψ -
@@ -27,6 +29,14 @@ Cauchy–Schwarz defect of their fluctuation vectors.
 - `UnitalPositiveLinearMap.centeredGramDefect_ofVec` : the uncertainty defect is `‖x‖² ‖y‖² - ‖⟪x,
   y⟫‖²`.
 
+## iii. Table of contents
+
+- A. Fluctuation vectors in vector states
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -40,6 +50,12 @@ namespace UnitalPositiveLinearMap
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
   {ψ : H}
+
+/-!
+
+## A. Fluctuation vectors in vector states
+
+-/
 
 /-- The fluctuation vector `a ψ - ⟨a⟩ ψ` is the centered observable applied to `ψ`. -/
 lemma centered_ofVec_apply (h : ‖ψ‖ = 1) (a : Observable (H →L[ℂ] H)) :

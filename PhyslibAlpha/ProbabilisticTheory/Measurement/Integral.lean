@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Measurement.EffectValuedMeasure
 
 # Integrating simple functions against an effect-valued measure
 
+The integral of simple functions against an effect-valued measure, linear and positive.
+
 ## i. Overview
 
 An effect-valued measure `μ` assigns an effect to every event. Integrating a simple function `∑ᵢ cᵢ
@@ -32,6 +34,10 @@ same value, by passing to their common refinement. The integral is linear and po
 - A. Finite measurable partitions and simple functions
 - B. Finite additivity
 - C. The integral of a simple function
+
+## iv. References
+
+* None.
 
 -/
 

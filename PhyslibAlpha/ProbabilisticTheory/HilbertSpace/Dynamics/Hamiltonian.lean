@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Dynamics.Automorphis
 
 # Hamiltonian dynamics
 
+The unitary evolution and Heisenberg flow of a bounded Hamiltonian, and their uniqueness.
+
 ## i. Overview
 
 A bounded Hamiltonian `H` generates the unitary evolution `U(t) = exp(-i t H / ℏ)` and the flow
@@ -35,6 +37,10 @@ unchanged, and this is the only freedom.
 - D. Differential characterization
 - E. Hamiltonians modulo scalar shifts
 - F. Classification up to star-automorphism conjugation
+
+## iv. References
+
+* None.
 
 -/
 

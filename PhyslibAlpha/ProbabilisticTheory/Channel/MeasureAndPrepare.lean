@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 
 # Measure-and-prepare channels
 
+Measure-and-prepare channels: channels that factor through a finite classical system.
+
 ## i. Overview
 
 A channel `Channel E₂ E₁` (the Heisenberg picture of a Schrödinger channel `E₁ → E₂`) is
@@ -25,13 +27,18 @@ family of effects.
 This is the abstract, order-unit-level version of an entanglement-breaking channel. Quantifying
 over the finite outcome type avoids hard-coding a particular classical system.
 
-## ii. Key definitions
+## ii. Key results
 
-- `UnitalPositiveLinearMap.IsMeasureAndPrepare`
+- `UnitalPositiveLinearMap.IsMeasureAndPrepare` : the channel factors through a finite classical
+  system.
 
 ## iii. Table of contents
 
 - A. Factorization through a finite classical system
+
+## iv. References
+
+* None.
 
 -/
 

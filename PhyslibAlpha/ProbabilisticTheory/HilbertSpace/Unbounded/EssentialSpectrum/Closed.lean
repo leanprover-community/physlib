@@ -14,6 +14,8 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 
 # The essential spectrum is closed
 
+The essential spectrum of a self-adjoint operator is closed.
+
 ## i. Overview
 
 The essential spectrum of a self-adjoint operator is closed. For `λₖ → λ` in the essential spectrum,
@@ -24,7 +26,11 @@ orthogonal to more and more vectors of a countable dense subset, is a singular s
 
 - `isClosed_essSpectrum` : the essential spectrum is closed.
 
-## iii. References
+## iii. Table of contents
+
+- A. Closedness of the essential spectrum
+
+## iv. References
 
 - Adapted from `adambornemann-glitch/Spectra`, `SpectralTheory/Essential/Closed.lean` (Apache 2.0).
 
@@ -42,6 +48,12 @@ open scoped InnerProductSpace
 namespace QuantumMechanics.Essential
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Closedness of the essential spectrum
+
+-/
 
 /-- The essential spectrum is closed. -/
 lemma isClosed_essSpectrum {A : H →ₗ.[ℂ] H} (hA : IsSelfAdjoint A) :

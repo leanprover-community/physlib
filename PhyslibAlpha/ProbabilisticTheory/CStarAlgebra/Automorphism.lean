@@ -16,6 +16,8 @@ public import Mathlib.Algebra.Star.StarAlgHom
 
 # ⋆-automorphisms and reversible dynamics
 
+⋆-automorphisms as channels on observables, and one-parameter groups of them as reversible dynamics.
+
 ## i. Overview
 
 Reversible transformations of a quantum system act on its algebra by `⋆`-automorphisms. A
@@ -41,6 +43,10 @@ dynamics; it can be transported along a `⋆`-isomorphism and induces dynamics o
 - D. Order-unit dynamics induced by C⋆-automorphisms
 - E. Transporting and conjugating automorphism groups
 - F. Conjugating an automorphism group by a star automorphism
+
+## iv. References
+
+* None.
 
 -/
 

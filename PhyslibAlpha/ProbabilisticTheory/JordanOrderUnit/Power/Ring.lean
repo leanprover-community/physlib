@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Power.GeneratedBy
 
 # `J[a]` is a commutative associative algebra
 
+The span `J[a]` of the powers of `a` is a commutative associative unital real algebra.
+
 ## i. Overview
 
 By power-associativity the Jordan product restricted to the span `J[a]` of the powers of `a` is
@@ -28,6 +30,10 @@ of commutative algebras applies.
 - A. The carrier type and its multiplication
 - B. The commutative ring structure
 - C. The `ℝ`-algebra structure and inclusion
+
+## iv. References
+
+* None.
 
 -/
 

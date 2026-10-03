@@ -16,19 +16,57 @@ public import PhyslibAlpha.Mathematics.PartialDerivativeTest
 /-!
 # Coupled spring potential
 
+The coupled spring potential x₀² + x₀x₁ + x₁² has a local minimum at the origin.
+
+## i. Overview
+
 As a proof of concept, we use the second derivative test in
 `PhyslibAlpha.Mathematics.PartialDerivativeTest`
 to prove that the coupled spring potential
 `U := fun x : EuclideanSpace ℝ (Fin 2) => (x 0)^2 + x 0 * x 1 + (x 1)^2`
 has a local minimum at zero.
+
+To apply the test we show the potential is analytic, that its gradient vanishes at the origin, and
+that its second derivative quadratic map is positive definite there.
+
+## ii. Key results
+
+- `couplingPotential` : the potential energy of a pair of coupled springs.
+- `couplingPotential_gradient_zero` : the gradient of the potential vanishes at the origin.
+- `couplingPotential_posDef` : the second derivative quadratic map is positive definite at the
+  origin.
+- `coupled_spring_potential` : the coupled spring potential has a local minimum at zero.
+
+## iii. Table of contents
+
+- A. The coupled spring potential
+- B. Analyticity and derivatives
+- C. The local minimum at the origin
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 
+/-!
+
+## A. The coupled spring potential
+
+-/
+
 /-- The potential energy of a pair of coupled springs. -/
 noncomputable def couplingPotential (x : EuclideanSpace ℝ (Fin 2)) : ℝ :=
   (x 0) ^ 2 + x 0 * x 1 + (x 1) ^ 2
+
+/-!
+
+## B. Analyticity and derivatives
+
+-/
 
 /-
 The coupling potential is analytic everywhere (it is a polynomial).
@@ -96,6 +134,12 @@ lemma couplingPotential_iteratedFDeriv_two (z : EuclideanSpace ℝ (Fin 2))
         ext; norm_num; ring]; norm_num [hε.le];
     positivity;
   rw [iteratedFDeriv_succ_apply_right]; simp +decide [h_second_deriv]; ring!;
+
+/-!
+
+## C. The local minimum at the origin
+
+-/
 
 /-
 The second derivative quadratic map of the coupling potential is positive definite

@@ -14,6 +14,8 @@ public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 /-!
 # Separation by states
 
+Via Hahn–Banach, states separate points and determine the positive cone and order-unit norm.
+
 ## i. Overview
 
 In an Archimedean order-unit space, states determine the entire ordered normed structure. An
@@ -41,6 +43,10 @@ separation fact.
 - C. The order-unit norm
 - D. Separation of points
 - E. Continuous-dual realization
+
+## iv. References
+
+* None.
 
 -/
 

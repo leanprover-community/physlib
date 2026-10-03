@@ -11,6 +11,8 @@ public import Mathlib.MeasureTheory.MeasurableSpace.Instances
 /-!
 # Binary measurements
 
+The yes/no measurement defined by an effect of an Archimedean system.
+
 ## i. Overview
 
 Every effect of an Archimedean system defines a yes/no measurement: the outcome `true` has the
@@ -23,6 +25,10 @@ effect itself, the outcome `false` its complement.
 ## iii. Table of contents
 
 - A. Binary measurements
+
+## iv. References
+
+* None.
 
 -/
 
