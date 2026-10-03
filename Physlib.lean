@@ -138,6 +138,9 @@ public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
 public import Physlib.Mathematics.Groups.SO3.Basic
+public import Physlib.Mathematics.Groups.SpecialUnitary.Adjoint
+public import Physlib.Mathematics.Groups.SpecialUnitary.Algebra
+public import Physlib.Mathematics.Groups.SpecialUnitary.GellMann
 public import Physlib.Mathematics.InnerProductSpace.Adjoint
 public import Physlib.Mathematics.InnerProductSpace.Basic
 public import Physlib.Mathematics.InnerProductSpace.Calculus
