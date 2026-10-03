@@ -134,4 +134,3 @@ lemma isClassical : IsClassical (selfAdjoint A) :=
   hasRieszDecomposition.hasLatticeDualCone
 
 end CommCStarAlgebra
-

@@ -111,4 +111,3 @@ lemma isTracial_iff_star_mul_self_eq_mul_star_self (f : A →ₗ[ℂ] ℂ) :
       (-Complex.I / 2) * hq - (1 / 2) * hp
 
 end LinearMap
-

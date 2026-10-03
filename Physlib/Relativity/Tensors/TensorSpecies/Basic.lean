@@ -43,8 +43,6 @@ structure TensorSpecies (k : Type) [CommRing k] (C : Type) (G : Type) [Group G]
   contr : (c : C) → ((rep c).tprod (rep (τ c))).IntertwiningMap (Representation.trivial k G k)
   /-- The invariant unit tensor for a given color. -/
   unit : (c : C) → ((Representation.trivial k G k)).IntertwiningMap ((rep (τ c)).tprod (rep c))
-  /-- The invariant metric tensor for a given color. -/
-  metric : (c : C) → ((Representation.trivial k G k)).IntertwiningMap ((rep c).tprod (rep c))
   /-- Contraction is symmetric with respect to duals. -/
   contr_tmul_symm : ∀ c (x : V c) (y : V (τ c)),
       contr c (x ⊗ₜ[k] y) = contr (τ c) (y ⊗ₜ Equiv.cast (congrArg V (τ_involution c).symm) x)
@@ -58,14 +56,25 @@ structure TensorSpecies (k : Type) [CommRing k] (C : Type) (G : Type) [Group G]
     (contr c).toLinearMap.rTensor _ <|
     (TensorProduct.assoc k (V c) (V (τ c)) (V c)).symm <|
     x ⊗ₜ[k] (unit c (1 : k))) = x
+
+/-- A metric on a tensor species: for each color `c` an invariant tensor in `V c ⊗ V c`, whose
+  contraction against the metric of the dual color `τ c` is the unit. Not every species has one:
+  it requires every color to be self-dual, which fails for the fundamental of `SU(N)`, `N ≥ 3`. -/
+class TensorSpecies.WithMetric {k : Type} [CommRing k] {C : Type} {G : Type} [Group G]
+    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+    {rep : (c : C) → Representation k G (V c)} {basis : (c : C) → Basis (basisIdx c) k (V c)}
+    (S : TensorSpecies k C G V basisIdx rep basis) where
+  /-- The invariant metric tensor for a given color. -/
+  metric : (c : C) → ((Representation.trivial k G k)).IntertwiningMap ((rep c).tprod (rep c))
   /-- On contracting metrics we get the unit. -/
   contr_metric : ∀ c,
     (TensorProduct.comm k _ _ <|
       (TensorProduct.lid k _).lTensor _ <|
-      ((contr c).toLinearMap.rTensor (V (τ c))).lTensor (V c) <|
-      (TensorProduct.assoc k (V c) (V (τ c)) (V (τ c))).symm.toLinearMap.lTensor (V c) <|
-      TensorProduct.assoc k (V c) (V c) (V (τ c) ⊗[k] V (τ c)) <|
-      (metric c 1) ⊗ₜ[k] (metric (τ c) 1)) = unit c (1 : k)
+      ((S.contr c).toLinearMap.rTensor (V (S.τ c))).lTensor (V c) <|
+      (TensorProduct.assoc k (V c) (V (S.τ c)) (V (S.τ c))).symm.toLinearMap.lTensor (V c) <|
+      TensorProduct.assoc k (V c) (V c) (V (S.τ c) ⊗[k] V (S.τ c)) <|
+      (metric c 1) ⊗ₜ[k] (metric (S.τ c) 1)) = S.unit c (1 : k)
 
 noncomputable section
 
@@ -125,6 +134,20 @@ lemma map_basis_eq {c c1 : C} (h : c = c1) (i : basisIdx c) :
   subst h
   simp
 
+/-- The metric of a species with a metric, at the color `c`. -/
+abbrev metric [S.WithMetric] (c : C) :
+    ((Representation.trivial k G k)).IntertwiningMap ((rep c).tprod (rep c)) :=
+  WithMetric.metric (S := S) c
+
+/-- On contracting metrics we get the unit. -/
+lemma contr_metric [S.WithMetric] (c : C) :
+    (TensorProduct.comm k _ _ <|
+      (TensorProduct.lid k _).lTensor _ <|
+      ((S.contr c).toLinearMap.rTensor (V (S.τ c))).lTensor (V c) <|
+      (TensorProduct.assoc k (V c) (V (S.τ c)) (V (S.τ c))).symm.toLinearMap.lTensor (V c) <|
+      TensorProduct.assoc k (V c) (V c) (V (S.τ c) ⊗[k] V (S.τ c)) <|
+      (S.metric c 1) ⊗ₜ[k] (S.metric (S.τ c) 1)) = S.unit c (1 : k) :=
+  WithMetric.contr_metric c
 omit [(c : C) → Fintype (basisIdx c)] [(c : C) → DecidableEq (basisIdx c)] in
 /-- `map_basis_eq` with the cast spelled `Equiv.cast`, the form `contr_tmul_symm` applies to its
   first vector. -/

@@ -8,6 +8,8 @@ module
 public import Mathlib.RepresentationTheory.Basic
 public import Physlib.Relativity.LorentzGroup.Basic
 public import Physlib.Relativity.Tensors.RealTensor.CoVector.Basic
+public import Physlib.Relativity.SL2C.Basic
+public import Physlib.Mathematics.RepresentationDual
 /-!
 
 # Representation of the Lorentz group on Lorentz vectors
@@ -79,6 +81,31 @@ lemma rep_surjective (d : ℕ) (Λ : LorentzGroup d) : Function.Surjective (rep 
 
 lemma rep_bijective (d : ℕ) (Λ : LorentzGroup d) : Function.Bijective (rep Λ) :=
   ⟨rep_injective d Λ, rep_surjective d Λ⟩
+
+/-!
+
+## The representation of `SL(2,ℂ)`
+
+-/
+
+/-- The representation of `SL(2,ℂ)` on real Lorentz covectors, obtained from the
+  representation of the Lorentz group through the covering map
+  `SL(2,ℂ) →* LorentzGroup 3`. -/
+noncomputable def sl2Rep : Representation ℝ SL(2,ℂ) Lorentz.CoVector :=
+  MonoidHom.comp Lorentz.CoVector.rep Lorentz.SL2C.toLorentzGroup
+
+/-- The dual of the covector representation on the dual basis: dual covectors
+  transform contravariantly, by the columns of the Lorentz matrix. -/
+lemma sl2Rep_dual_dualBasis (Λ : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) :
+    Lorentz.CoVector.sl2Rep.dual Λ (Lorentz.CoVector.basis.dualBasis μ) =
+      ∑ j, (Lorentz.SL2C.toLorentzGroup Λ).1 j μ •
+        Lorentz.CoVector.basis.dualBasis j := by
+  refine Representation.dual_apply_dualBasis _ _ _ _
+    (Matrix.of fun l j => (Lorentz.SL2C.toLorentzGroup Λ).1 j l) (fun j => ?_)
+  rw [show Lorentz.CoVector.sl2Rep Λ⁻¹ =
+      Lorentz.CoVector.rep (Lorentz.SL2C.toLorentzGroup Λ⁻¹) from rfl,
+    Lorentz.CoVector.rep_apply_basis, ← LorentzGroup.coe_inv, map_inv, inv_inv]
+  rfl
 
 end CoVector
 

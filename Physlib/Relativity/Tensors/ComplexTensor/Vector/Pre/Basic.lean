@@ -6,6 +6,7 @@ Authors: Nikolai Kashcheev, Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
+public import Physlib.Mathematics.RepresentationDual
 /-!
 
 # Complex Lorentz vectors
@@ -113,6 +114,31 @@ lemma complexCoBasis_ρ_apply (M : SL(2,ℂ)) (i j : Fin 1 ⊕ Fin 3) :
 lemma CoℂModule.SL2CRep_val (M : SL(2,ℂ)) (v : CoℂModule) :
     ((CoℂModule.SL2CRep M) v).val =
     (LorentzGroup.toComplex (SL2C.toLorentzGroup M))⁻¹ᵀ *ᵥ v.val := by
+  rfl
+
+/-- The dual of the complex covector representation on the dual basis: dual covectors
+  transform contravariantly, by the columns of the (complexified) Lorentz matrix. The
+  complex analogue of `Lorentz.CoVector.sl2Rep_dual_dualBasis`. -/
+lemma CoℂModule.SL2CRep_dual_dualBasis (Λ : SL(2,ℂ))
+    (μ : Fin 1 ⊕ Fin 3) :
+    Lorentz.CoℂModule.SL2CRep.dual Λ (Lorentz.complexCoBasis.dualBasis μ) =
+      ∑ j, (((Lorentz.SL2C.toLorentzGroup Λ).1 j μ : ℝ) : ℂ) •
+        Lorentz.complexCoBasis.dualBasis j := by
+  refine Representation.dual_apply_dualBasis _ _ _ _
+    (Matrix.of fun l j => (((Lorentz.SL2C.toLorentzGroup Λ).1 j l : ℝ) : ℂ))
+    (fun j => ?_)
+  have hexp : Lorentz.CoℂModule.SL2CRep Λ⁻¹ (Lorentz.complexCoBasis j) =
+      ∑ l, (LinearMap.toMatrix Lorentz.complexCoBasis Lorentz.complexCoBasis
+        (Lorentz.CoℂModule.SL2CRep Λ⁻¹)) l j • Lorentz.complexCoBasis l := by
+    conv_lhs => rw [← Lorentz.complexCoBasis.sum_repr
+      (Lorentz.CoℂModule.SL2CRep Λ⁻¹ (Lorentz.complexCoBasis j))]
+    refine Finset.sum_congr rfl fun l _ => ?_
+    rw [LinearMap.toMatrix_apply]
+  rw [hexp]
+  refine Finset.sum_congr rfl fun l _ => ?_
+  congr 1
+  rw [Lorentz.complexCoBasis_ρ_apply, map_inv, Matrix.transpose_apply,
+    ← LorentzGroup.toComplex_inv, Matrix.inv_inv_of_invertible]
   rfl
 
 /-- The standard basis of complex covariant Lorentz vectors indexed by `Fin 4`. -/

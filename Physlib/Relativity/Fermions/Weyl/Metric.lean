@@ -117,6 +117,13 @@ lemma leftMetric_apply_one : leftMetric (1 : ℂ) = leftMetricVal := by
   change (1 : ℂ) • leftMetricVal = leftMetricVal
   simp only [one_smul]
 
+/-- The metric `εᵃᵃ` is invariant under the action of `SL(2,ℂ)`. -/
+lemma leftMetricVal_rep (M : SL(2,ℂ)) :
+    TensorProduct.map (LeftHandedWeyl.rep M) (LeftHandedWeyl.rep M) leftMetricVal =
+      leftMetricVal := by
+  have h := LinearMap.congr_fun (leftMetric.isIntertwining' M) (1 : ℂ)
+  simpa [leftMetric_apply_one, Representation.tprod_apply] using h.symm
+
 /-- The metric `εₐₐ` as an element of `(dualLeftHanded ⊗ dualLeftHanded).V`. -/
 def dualLeftMetricVal : (DualLeftHandedWeyl ⊗[ℂ] DualLeftHandedWeyl) :=
   dualLeftdualLeftToMatrix.symm metricRaw
@@ -355,3 +362,63 @@ lemma dualRightContraction_apply_metric :
 
 end
 end Fermion
+
+/-!
+
+## The symplectic form as an element of `SL(2,ℂ)`
+
+`ε = metricRaw` has determinant one, so it lies in `SL(2,ℂ)`, and `gᵀ ε g = ε` for every `g`
+there. The single-index identities move a factor of `(g⁻¹)ᵀ` or `(g⁻¹)ᴴ` across `ε`, where it
+becomes a factor of `g` or of its conjugate on the other slot: they are `metricRaw_comm` and
+`metricRaw_comm_star` at `g⁻¹`, read entrywise.
+
+-/
+
+namespace Lorentz.SL2C
+
+open Matrix MatrixGroups
+
+/-- The antisymmetric symplectic form `ε = !![0, 1; -1, 0]`, the Weyl metric
+  `Fermion.metricRaw`, as an element of `SL(2,ℂ)`. -/
+def epsilon : SL(2,ℂ) :=
+  ⟨Fermion.metricRaw, by simp [Fermion.metricRaw, Matrix.det_fin_two_of]⟩
+
+/-- The matrix underlying `epsilon`. -/
+lemma epsilon_coe : (epsilon : Matrix (Fin 2) (Fin 2) ℂ) = !![0, 1; -1, 0] := rfl
+
+/-- The matrix underlying `epsilon` is the Weyl metric `Fermion.metricRaw`. -/
+lemma epsilon_coe_metricRaw : (epsilon : Matrix (Fin 2) (Fin 2) ℂ) = Fermion.metricRaw := rfl
+
+/-- The entries of `ε` are real. -/
+lemma star_epsilon_apply (l k : Fin 2) : star (epsilon.1 l k) = epsilon.1 l k := by
+  fin_cases l <;> fin_cases k <;> simp [epsilon_coe]
+
+/-- `ε g⁻¹ = gᵀ ε`: `Fermion.metricRaw_comm` at `g⁻¹`. -/
+lemma epsilon_mul_inv (g : SL(2,ℂ)) : epsilon.1 * g.1⁻¹ = g.1ᵀ * epsilon.1 := by
+  have h := Fermion.metricRaw_comm g⁻¹
+  rw [inverse_coe g⁻¹, inv_inv, ← inverse_coe g] at h
+  exact h
+
+/-- `ε` is the invariant symplectic form of `SL(2,ℂ)`: `gᵀ ε g = ε`. -/
+lemma transpose_mul_epsilon_mul (g : SL(2,ℂ)) : g.1ᵀ * epsilon.1 * g.1 = epsilon.1 := by
+  rw [← epsilon_mul_inv, Matrix.mul_assoc, Matrix.nonsing_inv_mul _ (by simp), Matrix.mul_one]
+
+/-- Single-index form: a factor of `(g⁻¹)ᵀ` moved across `ε` becomes a factor of `g` on the
+  other slot. -/
+lemma sum_epsilon_mul_inv_transpose (g : SL(2,ℂ)) (l a : Fin 2) :
+    ∑ k : Fin 2, epsilon.1 l k * (g.1⁻¹)ᵀ a k = ∑ b : Fin 2, g.1 b l * epsilon.1 b a := by
+  have h : (epsilon.1 * g.1⁻¹) l a = (g.1ᵀ * epsilon.1) l a := by rw [epsilon_mul_inv]
+  simpa [Matrix.mul_apply, Matrix.transpose_apply] using h
+
+/-- The conjugate single-index form: a factor of `(g⁻¹)ᴴ` moved across `ε` becomes a factor of
+  the conjugate of `g` on the other slot. -/
+lemma sum_epsilon_mul_inv_conjTranspose (g : SL(2,ℂ)) (l a : Fin 2) :
+    ∑ k : Fin 2, epsilon.1 l k * (g.1⁻¹)ᴴ a k
+      = ∑ b : Fin 2, star (g.1 b l) * epsilon.1 b a := by
+  have h0 := Fermion.metricRaw_comm_star g⁻¹
+  rw [inverse_coe g⁻¹, inv_inv, ← inverse_coe g] at h0
+  have h : (epsilon.1 * (g.1⁻¹).map star) l a = (g.1ᴴ * epsilon.1) l a := by
+    rw [epsilon_coe_metricRaw, h0]
+  simpa [Matrix.mul_apply, Matrix.conjTranspose_apply, Matrix.map_apply] using h
+
+end Lorentz.SL2C

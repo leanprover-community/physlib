@@ -1,0 +1,64 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // Select the lines a note is about, then run this task from the command
+      // palette (cmd + shift + p, "Tasks: Run Task"). The TODO command is written
+      // at the nearest safe top-level position below the selection, carrying the
+      // selected line range, and the cursor is put between its quotes ready to type.
+      //
+      // The tasks run the script as a process rather than through a shell: a shell task
+      // starts a login shell first, which costs longer than the whole job.
+      "label": "Physlib: TODO about selection",
+      "type": "process",
+      "command": "python3",
+      "args": [
+        "scripts/insert_todo.py",
+        "${file}",
+        "${lineNumber}",
+        "--from-selection",
+        "--goto"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}",
+        "env": {
+          "PHYSLIB_TODO_SELECTION": "${selectedText}"
+        }
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "clear": true,
+        "echo": false,
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      // The same, for a note about the single line the cursor is on.
+      "label": "Physlib: TODO about this line",
+      "type": "process",
+      "command": "python3",
+      "args": ["scripts/insert_todo.py", "${file}", "${lineNumber}", "--goto"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "clear": true,
+        "echo": false,
+        "showReuseMessage": false
+      },
+      "problemMatcher": []
+    },
+    {
+      // List the TODO items this branch introduces.
+      "label": "Physlib: list TODOs",
+      "type": "shell",
+      "command": "python3",
+      "args": ["scripts/todos.py"],
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "shared", "clear": true },
+      "problemMatcher": []
+    }
+  ]
+}

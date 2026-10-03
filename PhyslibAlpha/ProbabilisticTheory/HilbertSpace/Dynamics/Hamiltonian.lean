@@ -302,4 +302,3 @@ lemma hamiltonianFlow_iff_exists_unitary (ℏ : ℝ) (hℏ : ℏ ≠ 0) [Nontriv
     simpa [Unitary.conjStarAlgAut_apply] using hc
 
 end UnitaryOneParameterGroup
-

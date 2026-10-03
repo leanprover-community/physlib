@@ -136,4 +136,3 @@ lemma apply_centered_mul_centered (omega : E →ₗ[ℝ] ℝ) (homega : omega 1 
   ring
 
 end LinearMap
-
