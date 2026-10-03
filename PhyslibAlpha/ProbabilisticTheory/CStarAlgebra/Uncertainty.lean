@@ -22,6 +22,11 @@ vectors of `x` and `y`. Cauchy–Schwarz for it, applied to centered observables
 Robertson–Schrödinger relation, and from it the Robertson relation `|ω⟨⁅a, b⁆⟩| ≤ σ_a σ_b` and the
 bound on the covariance.
 
+For a family of observables `a : ι → Observable A`, the covariance matrix `Σ` and the matrix `Ω`
+of expectations of brackets give the matrix `Σ + iΩ` of GNS inner products of the centered
+observables. It is a Gram matrix, and with its transpose `Σ − iΩ` it gives Robertson's relation
+for several observables, `|det Ω| ≤ det Σ`.
+
 ## ii. Key results
 
 - `UnitalPositiveLinearMap.gns_cauchy_schwarz` : Cauchy–Schwarz for a state.
@@ -30,6 +35,8 @@ bound on the covariance.
 - `UnitalPositiveLinearMap.robertson` : **the Robertson uncertainty relation.**
 - `UnitalPositiveLinearMap.covariance_cauchy_schwarz` : `|cov(a, b)| ≤ σ_a σ_b`.
 - `Matrix.PosDef.norm_det_le_re_det` : `‖det B‖ ≤ det A` when `A ± B` are positive semidefinite.
+- `UnitalPositiveLinearMap.robertson_det` : **Robertson's uncertainty relation for several
+  observables**, `|det Ω| ≤ det Σ`.
 
 ## iii. Table of contents
 
@@ -38,6 +45,7 @@ bound on the covariance.
 - C. Equality in the uncertainty relations
 - D. Normalized variance bounds
 - E. A determinant bound for positive matrices
+- F. Several observables
 
 -/
 
@@ -392,3 +400,62 @@ lemma abs_det_le_det_of_posSemidef {S W : Matrix n n ℝ}
   exact ge_of_tendsto hlim (eventually_nhdsWithin_of_forall fun ε hε => key ε hε)
 
 end Matrix
+
+/-! ## F. Several observables -/
+
+namespace ProbabilisticTheory
+
+open scoped ComplexOrder InnerProductSpace selfAdjoint
+open Matrix
+
+variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {ι : Type*}
+
+namespace UnitalPositiveLinearMap
+
+/-- The covariance matrix `Σ_jk = cov(a_j, a_k)` of a family of observables. -/
+noncomputable def covarianceMatrix (ω : 𝓢[ℂ, A]) (a : ι → Observable A) : Matrix ι ι ℝ :=
+  of fun j k => covariance ω (a j) (a k)
+
+/-- The matrix `Ω_jk = ω⟨⁅a_j, a_k⁆⟩` of expectations of brackets of a family of observables. -/
+noncomputable def bracketMatrix (ω : 𝓢[ℂ, A]) (a : ι → Observable A) : Matrix ι ι ℝ :=
+  of fun j k => ω⟨⁅a j, a k⁆⟩
+
+/-- The GNS vectors of the centered observables. -/
+noncomputable def centeredGNSVector (ω : 𝓢[ℂ, A]) (a : Observable A) :=
+  ω.gnsRep (centered ω a : A) ω.gnsCyclicVector
+
+/-- `Σ + iΩ` is the Gram matrix of the GNS vectors of the centered observables. -/
+lemma gram_centeredGNSVector (ω : 𝓢[ℂ, A]) (a : ι → Observable A) :
+    gram ℂ (fun j => centeredGNSVector ω (a j)) =
+      (covarianceMatrix ω a).map ((↑) : ℝ → ℂ) +
+        Complex.I • (bracketMatrix ω a).map ((↑) : ℝ → ℂ) := by
+  ext j k
+  rw [gram, of_apply, centeredGNSVector, centeredGNSVector,
+    inner_gnsRep_gnsCyclicVector_gnsRep_gnsCyclicVector, (centered ω (a j)).property.star_eq,
+    apply_centered_mul_centered]
+  simp [covarianceMatrix, bracketMatrix]
+
+/-- `Σ − iΩ` is the transpose of the Gram matrix. -/
+lemma transpose_gram_centeredGNSVector (ω : 𝓢[ℂ, A]) (a : ι → Observable A) :
+    (gram ℂ (fun j => centeredGNSVector ω (a j)))ᵀ =
+      (covarianceMatrix ω a).map ((↑) : ℝ → ℂ) -
+        Complex.I • (bracketMatrix ω a).map ((↑) : ℝ → ℂ) := by
+  ext j k
+  rw [transpose_apply, gram, of_apply, ← inner_conj_symm, centeredGNSVector, centeredGNSVector,
+    inner_gnsRep_gnsCyclicVector_gnsRep_gnsCyclicVector, (centered ω (a j)).property.star_eq,
+    apply_centered_mul_centered]
+  simp [covarianceMatrix, bracketMatrix, sub_eq_add_neg]
+
+/-- **Robertson's uncertainty relation for several observables**: for every state and every
+finite family of observables, `|det Ω| ≤ det Σ`. -/
+theorem robertson_det [Fintype ι] [DecidableEq ι] (ω : 𝓢[ℂ, A]) (a : ι → Observable A) :
+    |(bracketMatrix ω a).det| ≤ (covarianceMatrix ω a).det := by
+  have hG := posSemidef_gram ℂ fun j => centeredGNSVector ω (a j)
+  exact abs_det_le_det_of_posSemidef
+    (by rw [← transpose_gram_centeredGNSVector]; exact hG.transpose)
+    (by rw [← gram_centeredGNSVector]; exact hG)
+
+end UnitalPositiveLinearMap
+
+end ProbabilisticTheory
