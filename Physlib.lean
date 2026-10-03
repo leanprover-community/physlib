@@ -328,6 +328,7 @@ public import Physlib.QFT.QED.AnomalyCancellation.Permutations
 public import Physlib.QFT.QED.AnomalyCancellation.Sorts
 public import Physlib.QFT.QED.AnomalyCancellation.VectorLike
 public import Physlib.QuantumMechanics.Blackbody.PlancksLaw
+public import Physlib.QuantumMechanics.Blackbody.WiensLaw
 public import Physlib.QuantumMechanics.FiniteTarget
 public import Physlib.QuantumMechanics.FreeParticle.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.Basic
