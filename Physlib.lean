@@ -33,6 +33,7 @@ public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Solution
 public import Physlib.ClassicalMechanics.Pendulum.SlidingPendulum
 public import Physlib.ClassicalMechanics.PointParticle.Basic
 public import Physlib.ClassicalMechanics.PointParticle.NewtonianSystem.Basic
+public import Physlib.ClassicalMechanics.PoissonBracket
 public import Physlib.ClassicalMechanics.RigidBody.AngularMomentum
 public import Physlib.ClassicalMechanics.RigidBody.AngularVelocity
 public import Physlib.ClassicalMechanics.RigidBody.Basic

@@ -16,9 +16,10 @@ public import Mathlib.Analysis.InnerProductSpace.Calculus
 Mathlib defines the gradient `∇ f x` of a real-valued function on a real Hilbert space as the
 Riesz representative of its Fréchet derivative, but records no rules for the algebraic operations
 on `f` beyond constants. This file collects the elementary rules used throughout the classical
-mechanics of Physlib: a gradient is unchanged by adding a constant, it commutes with
-multiplication by a constant, the gradient of the quadratic form `⟪y, y⟫` is `2 • y`, and the
-gradient of a coordinate functional on Euclidean space is the corresponding basis vector.
+mechanics of Physlib: a gradient is unchanged by adding a constant, it is additive over
+differentiable functions, it commutes with multiplication by a constant, the gradient of the
+quadratic form `⟪y, y⟫` is `2 • y`, and the gradient of a coordinate functional on Euclidean space
+is the corresponding basis vector.
 
 These are the rules needed to differentiate Lagrangians and Hamiltonians of the form
 `kinetic − potential` with respect to positions and velocities.
@@ -33,6 +34,7 @@ product space. The file is deliberately real: two of its rules (`gradient_const_
 ## ii. Key results
 
 - `gradient_add_const` : `∇ (f + c) = ∇ f`.
+- `gradient_add` : `∇ (f + g) = ∇ f + ∇ g` for differentiable `f` and `g`.
 - `gradient_const_mul` : `∇ (c * f) = c • ∇ f` for differentiable `f`.
 - `gradient_inner_self` : `∇ (fun y => ⟪y, y⟫) x = 2 • x`.
 - `gradient_const_mul_inner_self` : `∇ (fun y => c * ⟪y, y⟫) x = (2 * c) • x`.
@@ -63,8 +65,8 @@ variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteS
 
 ## A. Gradients and constants
 
-Adding a constant does not change the Fréchet derivative, hence not the gradient; multiplying by a
-constant scales both.
+Adding a constant does not change the Fréchet derivative, hence not the gradient; the gradient is
+additive over differentiable functions, and multiplying by a constant scales it.
 
 -/
 
@@ -73,6 +75,13 @@ lemma gradient_add_const {f : F → ℝ} (c : ℝ) (x : F) :
     gradient (fun y => f y + c) x = gradient f x := by
   unfold gradient
   rw [fderiv_add_const]
+
+/-- The gradient of a sum of differentiable functions is the sum of their gradients. -/
+lemma gradient_add {f g : F → ℝ} {x : F} (hf : DifferentiableAt ℝ f x)
+    (hg : DifferentiableAt ℝ g x) :
+    gradient (fun y => f y + g y) x = gradient f x + gradient g x := by
+  unfold gradient
+  rw [fderiv_fun_add hf hg, map_add]
 
 /-- The gradient of a constant multiple of a differentiable function is the constant multiple of
 the gradient. -/
