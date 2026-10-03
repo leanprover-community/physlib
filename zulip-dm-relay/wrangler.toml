@@ -1,0 +1,11 @@
+name = "zulip-dm-relay"
+main = "src/index.js"
+compatibility_date = "2026-07-23"
+
+# Not secret - fine as plain vars.
+[vars]
+GITHUB_OWNER = "Alex-Zughaid"
+GITHUB_REPO = "physlib"
+
+# Secrets (ZULIP_WEBHOOK_TOKEN, GITHUB_TOKEN) are NOT set here.
+# You'll add them with `wrangler secret put` (see instructions).
