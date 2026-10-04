@@ -17,13 +17,15 @@ The spacetime algebra `SpaceTimeAlgebra` is the ring of formal power series with
 coefficients in four variables, one for each spacetime direction. The value at the base point of
 an iterated partial derivative of a series is the corresponding coefficient multiplied by a
 factorial. Consequently, a series is determined by these derivative values, and every family of
-values arises from exactly one series.
+values arises from exactly one series. Iterated derivatives of a product obey the all-orders
+Leibniz rule.
 
 ## ii. Key results
 
 - `SpaceTimeAlgebra` : formal power series in the spacetime directions.
 - `SpaceTimeAlgebra.iteratedPDeriv` : iterated formal partial derivatives.
 - `SpaceTimeAlgebra.constantCoeff_iteratedPDeriv` : derivative values are `s!` times coefficients.
+- `SpaceTimeAlgebra.iteratedPDeriv_mul` : the all-orders Leibniz rule.
 - `SpaceTimeAlgebra.ext_of_constantCoeff_iteratedPDeriv` : derivative values determine a series.
 - `SpaceTimeAlgebra.ofDerivValues` : the series with given derivative values.
 - `SpaceTimeAlgebra.ofDerivValues_constantCoeff_iteratedPDeriv` : Taylor's formula.
@@ -35,6 +37,7 @@ values arises from exactly one series.
 - B. Iterated formal partial derivatives
   - B.1. Commutation of formal partial derivatives
   - B.2. Base-point values of iterated derivatives
+  - B.3. The Leibniz rule
 - C. Series with equal derivative values
 - D. Series from derivative values
   - D.1. Series with prescribed derivative values
@@ -129,6 +132,12 @@ lemma iteratedPDeriv_cons (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)
 lemma iteratedPDeriv_singleton (μ : Fin 1 ⊕ Fin 3) (f : SpaceTimeAlgebra) :
     iteratedPDeriv {μ} f = pderiv μ f := rfl
 
+lemma iteratedPDeriv_add (s : Multiset (Fin 1 ⊕ Fin 3)) (f g : SpaceTimeAlgebra) :
+    iteratedPDeriv s (f + g) = iteratedPDeriv s f + iteratedPDeriv s g := by
+  induction s using Multiset.induction_on generalizing f g with
+  | empty => rfl
+  | cons μ s ih => simp only [iteratedPDeriv_cons, map_add, ih]
+
 /-!
 
 ### B.2. Base-point values of iterated derivatives
@@ -163,6 +172,37 @@ lemma constantCoeff_iteratedPDeriv (s : Multiset (Fin 1 ⊕ Fin 3)) (f : SpaceTi
       Multiset.toFinsupp_apply]
     push_cast
     ring
+
+/-!
+
+### B.3. The Leibniz rule
+
+To apply `∂^s` to `f g`, each direction in `s` acts on either `f` or `g`, so `∂^s (f g)` is a sum
+of `(∂^t₁ f) (∂^t₂ g)` over the splits `t₁ + t₂ = s` in `Multiset.antidiagonal s`. Each split
+appears once for every assignment of the elements of `s` that produces it, so repeated directions
+give multiplicities: `∂_μ² (f g) = (∂_μ² f) g + 2 (∂_μ f) (∂_μ g) + f (∂_μ² g)`. The same formula
+holds for base-point derivative values, but not for the Taylor coefficients, which are divided by
+`s!`.
+
+-/
+
+/-- The all-orders Leibniz rule for iterated formal partial derivatives. -/
+lemma iteratedPDeriv_mul (s : Multiset (Fin 1 ⊕ Fin 3)) (f g : SpaceTimeAlgebra) :
+    iteratedPDeriv s (f * g) =
+      (s.antidiagonal.map fun p => iteratedPDeriv p.1 f * iteratedPDeriv p.2 g).sum := by
+  induction s using Multiset.induction_on generalizing f g with
+  | empty => simp
+  | cons μ s ih =>
+    rw [iteratedPDeriv_cons, Derivation.leibniz, smul_eq_mul, smul_eq_mul, mul_comm g,
+      iteratedPDeriv_add, ih, ih]
+    simp [Multiset.map_map]
+
+/-- The Leibniz rule for the base-point derivative values of a product. -/
+lemma constantCoeff_iteratedPDeriv_mul (s : Multiset (Fin 1 ⊕ Fin 3)) (f g : SpaceTimeAlgebra) :
+    constantCoeff (iteratedPDeriv s (f * g)) =
+      (s.antidiagonal.map fun p =>
+        constantCoeff (iteratedPDeriv p.1 f) * constantCoeff (iteratedPDeriv p.2 g)).sum := by
+  simp [iteratedPDeriv_mul, map_multiset_sum, Multiset.map_map]
 
 /-!
 
