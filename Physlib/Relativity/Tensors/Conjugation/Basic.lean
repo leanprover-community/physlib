@@ -360,7 +360,7 @@ lemma conjT_contrT {n : ℕ} {c : Fin (n + 1 + 1) → C} (i j : Fin (n + 1 + 1))
   · exact fun _ => iff_of_true (Finset.mem_attach _ _) (Finset.mem_attach _ _)
   intro b'' _
   simp only [Equiv.subtypeEquiv_apply]
-  erw [← componentMap_eq_repr (S.bar ∘ c), componentMap_conjT, componentMap_eq_repr c t,
+  rw [← componentMap_eq_repr (fun i => S.bar (c i)), componentMap_conjT, componentMap_eq_repr c t,
     star_mul']
   congr 1
   rw [S.conj_contrComm (c i) ((S.componentReindex c b''.1) i)

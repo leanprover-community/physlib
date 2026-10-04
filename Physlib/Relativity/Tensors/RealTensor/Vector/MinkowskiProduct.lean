@@ -51,7 +51,7 @@ lemma minkowskiProductMap_toCoord {d : ℕ} (p q : Vector d) :
     enter [1, 2, y]
     rw [prodT_basis_repr_apply]
     enter [1]
-    erw [coMetric_repr_apply_eq_minkowskiMatrix]
+    rw [coMetric_repr_apply_eq_minkowskiMatrix]
   simp only [tensor_basis_repr_toTensor_apply]
   change ∑ x, (∑ y, minkowskiMatrix y x * p y) * q x = _
   conv_lhs =>
