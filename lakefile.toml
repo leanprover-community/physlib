@@ -32,62 +32,62 @@ moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
 
 [[lean_exe]]
 name = "get_cache"
-srcDir = "scripts"
+srcDir = "scripts/dev"
 
 [[lean_exe]]
 name = "check_file_imports"
-srcDir = "scripts"
+srcDir = "scripts/lint/required"
 
 [[lean_exe]]
 name = "autolabel"
-srcDir = "scripts"
+srcDir = "scripts/github"
 
 [[lean_exe]]
 name = "style_lint"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/optional"
 
 [[lean_exe]]
 name = "type_former_lint"
-srcDir = "scripts"
+srcDir = "scripts/lint/optional"
 
 [[lean_exe]]
 name = "lint_all"
-srcDir = "scripts"
+srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "check_dup_tags"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "sorry_lint"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "runPhyslibLinters"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "runPhyslibAlphaLinters"
-srcDir = "scripts/PhyslibAlpha"
+srcDir = "scripts/lint/required/alpha"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "noAlphaImports"
-srcDir = "scripts/PhyslibAlpha"
+srcDir = "scripts/lint/required/alpha"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "alphaFileImports"
-srcDir = "scripts/PhyslibAlpha"
+srcDir = "scripts/lint/required/alpha"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "forMathlib_lint"
-srcDir = "scripts"
+srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
@@ -97,73 +97,73 @@ supportInterpreter = true
 
 [[lean_exe]]
 name = "free_simps"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/dev"
 
 [[lean_exe]]
 name = "spelling"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/optional"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "check_rfl"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/dev"
 
 [[lean_exe]]
 name = "redundant_imports"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/optional"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "module_doc_lint"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/lint/optional"
 
 [[lean_exe]]
 name = "stats"
-srcDir = "scripts"
+srcDir = "scripts/website"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "api_map_index"
 root = "APIMapIndex"
-srcDir = "scripts"
+srcDir = "scripts/website"
 
 [[lean_exe]]
 name = "local_stats"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/dev"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "make_tag"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/website"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "TODO_to_yml"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/website"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "informal"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/website"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "auxillary_script_test"
 root = "«auxillary-script-test»"
-srcDir = "scripts"
+srcDir = "scripts/lint/required"
 
 [[lean_exe]]
 name = "find_TODOs"
-srcDir = "scripts"
+srcDir = "scripts/dev"
 
 [[lean_exe]]
 name = "notes"
-srcDir = "scripts/MetaPrograms"
+srcDir = "scripts/website"
 supportInterpreter = true
 
 [[lean_exe]]
 name = "mathlib_textLint_on_physlib"
-srcDir = "scripts"
+srcDir = "scripts/lint/optional"
 
 [[lean_exe]]
 name = "no_docs"

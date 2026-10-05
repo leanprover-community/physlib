@@ -13,7 +13,7 @@
 # The deadline is read back out of the claim's status comment, so extending a
 # claim (`claim` again) moves the deadline and resets its reminders with it.
 #
-# The work itself is in `scripts/review_claim.py`.
+# The work itself is in `scripts/github/review_claim.py`.
 
 name: Expire review claims
 
@@ -40,11 +40,11 @@ jobs:
       - name: Check out the claim script
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          sparse-checkout: scripts/review_claim.py
+          sparse-checkout: scripts/github/review_claim.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - name: Remind and expire
-        run: python3 scripts/review_claim.py expire
+        run: python3 scripts/github/review_claim.py expire
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Same bot credentials as the Physlib Zulip bots.  Missing secrets

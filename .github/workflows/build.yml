@@ -149,18 +149,18 @@ jobs:
 
       - name: lint
         run: |
-          chmod u+x scripts/lint-style.sh
-          ./scripts/lint-style.sh
+          chmod u+x scripts/lint/required/lint-style.sh
+          ./scripts/lint/required/lint-style.sh
 
       - name: Check API maps
         run: |
           python -m pip install PyYAML==6.0.2
-          python scripts/api_map_linter.py --repo .
+          python scripts/lint/required/api_map_linter.py --repo .
 
       - name: Python linters for PhyslibAlpha
         run: |
-          chmod u+x scripts/PhyslibAlpha/alphaPythonLinters.sh
-          ./scripts/PhyslibAlpha/alphaPythonLinters.sh
+          chmod u+x scripts/lint/required/alpha/alphaPythonLinters.sh
+          ./scripts/lint/required/alpha/alphaPythonLinters.sh
 
   codespell:
     name: Check for spelling errors
@@ -169,5 +169,5 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
       - uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2
         with:
-          exclude_file: scripts/MetaPrograms/spellingWords.txt,scripts/physlibNoShake.json
+          exclude_file: scripts/lint/exemptions/spellingWords.txt,scripts/lint/exemptions/physlibNoShake.json
           ignore_words_file: .codespellignore

@@ -20,7 +20,7 @@
 # that a comment merely discussing claims does not trigger one.  Commands need
 # no repository permissions -- anyone can claim a review.
 #
-# The work itself is in `scripts/review_claim.py`.
+# The work itself is in `scripts/github/review_claim.py`.
 
 name: Review claims
 
@@ -58,11 +58,11 @@ jobs:
       - name: Check out the claim script
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          sparse-checkout: scripts/review_claim.py
+          sparse-checkout: scripts/github/review_claim.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - name: Claim or disclaim
-        run: python3 scripts/review_claim.py comment
+        run: python3 scripts/github/review_claim.py comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -79,10 +79,10 @@ jobs:
       - name: Check out the claim script
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          sparse-checkout: scripts/review_claim.py
+          sparse-checkout: scripts/github/review_claim.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - name: Clear the claim once its claimant has reviewed
-        run: python3 scripts/review_claim.py review
+        run: python3 scripts/github/review_claim.py review
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

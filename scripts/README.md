@@ -1,3 +1,17 @@
+# Scripts
+
+The scripts are grouped by purpose:
+
+- `lint/required/` : linters run by CI on every pull-request; a PR cannot be merged until they
+  pass. The `alpha/` subfolder holds those specific to PhyslibAlpha, see
+  [lint/required/alpha/README.md](lint/required/alpha/README.md).
+- `lint/optional/` : linters which are useful to run locally but are not enforced by CI.
+- `lint/exemptions/` : data files read by the linters, such as exemption lists and the
+  spelling word list.
+- `website/` : scripts which generate the data and pages for the Physlib website.
+- `github/` : scripts run by GitHub workflows and bots.
+- `dev/` : tools for local development and maintenance.
+
 # Linting Physlib
 
 `Linting` is the process of checking changes to the project
@@ -26,7 +40,7 @@ all of the following linters run correctly.
   - step 7: Checks there are not transitive imports, e.g. A imports B and C, but B already
   imports C.
 This linter may need running a number of times.
-- `./scripts/lint-style.sh` (**A PR must pass this linter**): This linter checks for some
+- `./scripts/lint/required/lint-style.sh` (**A PR must pass this linter**): This linter checks for some
   style errors e.g. too long lines or wrong indentations, as well as checking if all necessary `simp` lemmas are of the form `simp only [...]`. For this linter
   to work properly you must first commit your changes to github.
 - `lake exe auxillary_script_test` (**A PR must pass this linter**): Runs and checks the auxiliary
@@ -37,13 +51,13 @@ This linter may need running a number of times.
   (`lake build Physlib QuantumInfo PhyslibAlpha`), and it leaves no files behind.
 - `lake exe style_lint` : A linter which only does step 1 of `lake exe lint_all`.
 - `lake exe runPhyslibLinters` : A linter which only does step 6 of `lake exe lint_all`.
-- `lake exe module_doc_lint` : Checks that module documentation is laid out according to a set standard. This does not check any file in the list `./scripts/MetaPrograms/module_doc_no_lint.txt`. Slowly we will empty this list of files.
+- `lake exe module_doc_lint` : Checks that module documentation is laid out according to a set standard. This does not check any file in the list `./scripts/lint/exemptions/module_doc_no_lint.txt`. Slowly we will empty this list of files.
 - `lake exe spelling` : Checks the spelling of words in Physlib against a given list
-  of correctly spelled words which can be found in `./scripts/MetaPrograms/spellingWords.txt`
+  of correctly spelled words which can be found in `./scripts/lint/exemptions/spellingWords.txt`
 
 ## Checking golf pull requests
 
-- `scripts/check_golf.py` : Verifies that a pull request only *golfs* proofs, i.e.
+- `scripts/github/check_golf.py` : Verifies that a pull request only *golfs* proofs, i.e.
   that no declaration statement (its signature/type) changed and only proofs and
   definition bodies changed. Comment `/check-golf` on a PR to run it via the
   [`check-golf`](../.github/workflows/check-golf.yml) workflow; the bot posts its
@@ -51,7 +65,7 @@ This linter may need running a number of times.
   To run it locally against two revisions:
 
   ```
-  scripts/check_golf.py --base <merge-base> --head <head-sha>
+  scripts/github/check_golf.py --base <merge-base> --head <head-sha>
   ```
 
   It parses the changed Lean files textually (no build required): comments and
@@ -67,5 +81,5 @@ This linter may need running a number of times.
 
   ```
   lake exe cache get && lake build
-  scripts/check_golf.py --base <merge-base> --head <head-sha> --measure
+  scripts/github/check_golf.py --base <merge-base> --head <head-sha> --measure
   ```

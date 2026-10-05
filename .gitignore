@@ -3,6 +3,6 @@
 .lake/*
 .DS_Store
 
-# Python bytecode (e.g. from scripts/check_golf.py)
+# Python bytecode (e.g. from scripts/github/check_golf.py)
 __pycache__/
 *.pyc
