@@ -488,6 +488,7 @@ public import Physlib.Relativity.Tensors.RealTensor.Vector.Tensorial
 public import Physlib.Relativity.Tensors.RealTensor.Velocity.Basic
 public import Physlib.Relativity.Tensors.Reindexing
 public import Physlib.Relativity.Tensors.TensorSpecies.Basic
+public import Physlib.Relativity.Tensors.TensorSpecies.DualBasis
 public import Physlib.Relativity.Tensors.Tensorial
 public import Physlib.Relativity.Tensors.UnitTensor
 public import Physlib.SpaceAndTime.GalileanGroup.Basic
@@ -526,6 +527,8 @@ public import Physlib.SpaceAndTime.SpaceTime.Basic
 public import Physlib.SpaceAndTime.SpaceTime.Boosts
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.SpaceTime.LorentzAction
+public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
+public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.TaylorSeries
 public import Physlib.SpaceAndTime.SpaceTime.TimeSlice
 public import Physlib.SpaceAndTime.Time.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives

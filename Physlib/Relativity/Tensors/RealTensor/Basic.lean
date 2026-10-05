@@ -20,13 +20,12 @@ which are used to define `realLorentzTensor`.
 
 open Matrix
 open MatrixGroups
-open Complex
 open TensorProduct
 
 namespace realLorentzTensor
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The colors associated with complex representations of SL(2, ℂ) of interest to physics. -/
+/-- The colors associated with real representations of O(1, 3) of interest to physics. -/
 inductive Color
   /-- The color associated with contravariant Lorentz vectors. -/
   | up : Color
@@ -34,7 +33,7 @@ inductive Color
   | down : Color
 deriving Fintype
 
-/-- Color for complex Lorentz tensors is decidable. -/
+/-- Color for real Lorentz tensors is decidable. -/
 instance : DecidableEq Color := fun x y =>
   match x, y with
   | Color.up, Color.up => isTrue rfl
@@ -64,7 +63,7 @@ TODO "Replace Lorentz.ContrMod and Lorentz.CoMod in the definition of realLorent
 
 noncomputable section
 open realLorentzTensor in
-/-- The tensor structure for complex Lorentz tensors. -/
+/-- The tensor structure for real Lorentz tensors. -/
 def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     ℝ realLorentzTensor.Color (LorentzGroup d)
     (fun | Color.up => Lorentz.ContrMod d | Color.down => Lorentz.CoMod d)
@@ -165,26 +164,31 @@ lemma τ_down_eq_up {d : ℕ} : (realLorentzTensor d).τ Color.down = Color.up :
 attribute [-simp] Fintype.sum_sum_type
 open TensorSpecies Tensor
 
+/-- At every real Lorentz color, the bases at the color and its dual are dual bases, with
+labels matched by the identity. -/
+lemma isContrDualMatching_refl (c : realLorentzTensor.Color) :
+    IsContrDualMatching (realLorentzTensor d) c (Equiv.refl _) := by
+  intro x₁ x₂
+  cases c
+  · exact Lorentz.contrCoContract_basis x₁ x₂
+  · exact Lorentz.coContrContract_basis x₁ x₂
+
+/-- Real Lorentz tensors have dual bases under contraction, with the identity matching. -/
+instance : HasContrDualBases (realLorentzTensor d) where
+  exists_matching c := ⟨_, isContrDualMatching_refl c⟩
+
+/-- The dual-label matching of real Lorentz tensors is the identity. -/
+@[simp]
+lemma contrDualIdxEquiv_eq_refl (c : realLorentzTensor.Color) :
+    HasContrDualBases.contrDualIdxEquiv (realLorentzTensor d) c = Equiv.refl _ :=
+  HasContrDualBases.contrDualIdxEquiv_eq_of_isContrDualMatching (isContrDualMatching_refl c)
+
 lemma contrPCoeff_basis {d n : ℕ} {c : Fin n → realLorentzTensor.Color} (i j : Fin n)
     (hij : i ≠ j ∧ (realLorentzTensor d).τ (c i) = c j)
     (b : ComponentIdx (S := realLorentzTensor d) c) :
     Pure.contrPCoeff i j hij (Pure.basisVector c b) = if b i = b j then 1 else 0 := by
-  simp only [Pure.contrPCoeff, Pure.basisVector]
-  generalize_proofs h1 h2
-  generalize b i = b1 at *
-  generalize b j = b2 at *
-  generalize c i = ci at *
-  generalize c j = cj at *
-  subst h2
-  fin_cases ci
-  · simp [realLorentzTensor]
-    erw [LinearEquiv.cast_apply]
-    simp only [cast_eq]
-    erw [Lorentz.contrCoContract_basis]
-  · simp [realLorentzTensor]
-    erw [LinearEquiv.cast_apply]
-    simp only [cast_eq]
-    erw [Lorentz.coContrContract_basis]
+  rw [Pure.contrPCoeff_basisVector, contrDualIdxEquiv_eq_refl]
+  rfl
 
 lemma contrT_eq_sum_evalT {n} {d} (c : Fin (n + 1 + 1) → Color) (i j : Fin (n + 1 + 1))
     (h : i ≠ j ∧ (realLorentzTensor d).τ (c i) = c j) (t : ℝT(d, c)) :
@@ -235,26 +239,8 @@ lemma contrT_basis_repr_apply_eq_fin {n d: ℕ} {c : Fin (n + 1 + 1) → realLor
     (basis (c ∘ Fin.succSuccAbove i j)).repr (contrT n i j h t) b =
     ∑ (x : Fin 1 ⊕ Fin d), ((basis c).repr t
     (DropPairSection.ofFinEquiv h.1 b ⟨x, x⟩)) := by
-  rw [contrT_basis_repr_apply_eq_sum_fin]
-  generalize_proofs h h2 h3
-  generalize c j = cj at *
-  generalize c i = ci at *
-  subst h3
-  fin_cases ci
-  · simp [realLorentzTensor]
-    congr
-    funext x
-    conv_lhs =>
-      enter [2, x];
-      erw [Lorentz.contrCoContract_basis]
-    simp
-  · simp [realLorentzTensor]
-    congr
-    funext x
-    conv_lhs =>
-      enter [2, x];
-      erw [Lorentz.coContrContract_basis]
-    simp
+  rw [contrT_basis_repr_apply_eq_sum_dual, contrDualIdxEquiv_eq_refl]
+  rfl
 
 end realLorentzTensor
 end

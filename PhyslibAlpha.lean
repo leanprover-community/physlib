@@ -35,8 +35,13 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Current
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.CurrentEigenstates
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.MandelstamTamm
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Saturation
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Uncertainty
+public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
+public import PhyslibAlpha.Electromagnetism.Distributional.WireJunction
 public import PhyslibAlpha.Mathematics.Analysis.Normed.HolderDual
 public import PhyslibAlpha.Mathematics.Analysis.RealBounds
 public import PhyslibAlpha.Mathematics.Convex.Choquet.BoundaryRepresentation
@@ -283,6 +288,7 @@ public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.LadderSystem
 public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Vacuum
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Product
+public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductState
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
