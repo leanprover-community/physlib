@@ -43,6 +43,11 @@ name = "autolabel"
 srcDir = "scripts/github"
 
 [[lean_exe]]
+name = "windows_test"
+srcDir = "scripts/github"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "style_lint"
 srcDir = "scripts/lint/optional"
 
