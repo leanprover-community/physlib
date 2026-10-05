@@ -13,6 +13,8 @@ public import Mathlib.MeasureTheory.VectorMeasure.Operations
 
 # Weak-operator spectral measures
 
+Projection-valued measures that are countably additive in the weak operator topology.
+
 ## i. Overview
 
 A spectral measure of an unbounded self-adjoint operator is a projection-valued measure that is
@@ -35,6 +37,10 @@ measures push forward along measurable maps.
 - A. The structure and its basic algebra
 - B. Pushforward along a measurable map
 - C. Coming from a norm-continuous `SpectralMeasure`
+
+## iv. References
+
+* None.
 
 -/
 

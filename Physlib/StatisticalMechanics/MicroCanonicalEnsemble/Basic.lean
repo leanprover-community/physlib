@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
 /-!
 
-## The Microcanonical Ensemble
+# The Microcanonical Ensemble
 
 -/
 

@@ -10,6 +10,8 @@ public import Physlib.Mathematics.VariationalCalculus.Basic
 /-!
 # First variation core objects
 
+The linearized first-variation density and its Euler-Lagrange pairing.
+
 ## i. Overview
 
 This module contains the basic objects used throughout the local first-variation theory:

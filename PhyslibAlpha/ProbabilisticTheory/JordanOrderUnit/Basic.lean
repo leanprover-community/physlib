@@ -12,6 +12,8 @@ public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 
 # Jordan order-unit spaces
 
+Jordan order-unit spaces: order-unit spaces that are Jordan algebras with nonnegative squares.
+
 ## i. Overview
 
 Quantum observables carry, besides their order and unit, the Jordan product `a ∘ b`, a commutative
@@ -28,6 +30,10 @@ the operator picture `⟪ψ, a² ψ⟫ = ‖a ψ‖² ≥ 0`.
 
 - A. The compatibility class
 - B. Consequences
+
+## iv. References
+
+* None.
 
 -/
 

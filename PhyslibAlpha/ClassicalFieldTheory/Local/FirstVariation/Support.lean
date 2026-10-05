@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstVariation.Basic
 /-!
 # First variation support lemmas
 
+Support lemmas for the first variation: varied fields, test functions, varied jet coordinates.
+
 ## i. Overview
 
 This module collects the reusable support lemmas used by the analytic part of the local

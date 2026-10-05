@@ -18,6 +18,8 @@ public import Mathlib.MeasureTheory.Integral.SetToL1.SimpleFunc
 
 # Integrating bounded functions against a spectral measure
 
+The integral of a bounded measurable function against a weak spectral measure.
+
 ## i. Overview
 
 For a weak spectral measure `μ` and a bounded measurable `f`, the operator `∫ f dμ` is defined in
@@ -37,6 +39,10 @@ norm. Every bounded measurable function is such a limit, which gives the integra
 - A. The simple-function integral
 - B. Uniform approximation and the limiting integral
 - C. The canonical integral
+
+## iv. References
+
+* None.
 
 -/
 

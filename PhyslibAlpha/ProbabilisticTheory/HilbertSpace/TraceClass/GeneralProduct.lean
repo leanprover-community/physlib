@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.GeneralId
 
 # Products of Hilbert–Schmidt operators
 
+Products of Hilbert–Schmidt operators are trace class; trace class is a ⋆-closed ideal.
+
 ## i. Overview
 
 A product of two Hilbert–Schmidt operators is trace class. Every trace-class operator `T` factors as
@@ -25,6 +27,15 @@ closed under sums and adjoints.
 - `isTraceClass_mul_mul` : trace-class operators form a two-sided ideal.
 - `isTraceClass_star` : trace-class operators are closed under the adjoint.
 
+## iii. Table of contents
+
+- A. Products of Hilbert–Schmidt operators
+- B. Closure properties of trace class
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -37,6 +48,12 @@ open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Products of Hilbert–Schmidt operators
+
+-/
 
 /-- The diagonal of `star W * (R * S)` (for any contraction `W`) unwinds to a Hilbert–Schmidt
 Cauchy–Schwarz pairing. This is the pointwise identity feeding both the master product theorem and
@@ -97,6 +114,12 @@ lemma isHilbertSchmidt_polarFactor_mul_sqrt_abs_and_sqrt_abs {T : H →L[ℂ] H}
   refine ⟨hUS, hS, ?_⟩
   rw [mul_assoc, CFC.sqrt_mul_sqrt_self (CFC.abs T) (CFC.abs_nonneg T)]
   exact Polar.polarFactor_mul_absOperator T
+
+/-!
+
+## B. Closure properties of trace class
+
+-/
 
 /-- Trace-class operators are closed under addition. -/
 lemma isTraceClass_add {T T' : H →L[ℂ] H} (hT : IsTraceClass T) (hT' : IsTraceClass T') :

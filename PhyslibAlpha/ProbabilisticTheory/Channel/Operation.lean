@@ -14,6 +14,8 @@ public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 # Operations
 
+Operations: positive maps with op 1 ≤ 1, their outcome effects and conditioned states.
+
 ## i. Overview
 
 An operation is a positive linear map `op` with `op 1 ≤ 1`. It describes how a system changes when
@@ -32,6 +34,10 @@ to `1` is an instrument.
 
 - A. Operations
 - B. Outcome effects
+
+## iv. References
+
+* None.
 
 -/
 

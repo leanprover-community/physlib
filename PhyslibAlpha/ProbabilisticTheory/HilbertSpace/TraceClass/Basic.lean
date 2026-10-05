@@ -19,6 +19,8 @@ public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 # Trace-class operators
 
+Defines trace-class operators, their trace norm and trace, and shows basis independence.
+
 ## i. Overview
 
 For a bounded operator `T` on a complex Hilbert space, `|T| = √(T⋆T)` is its absolute value. `T` is
@@ -49,6 +51,10 @@ dimensional.
 - A. Trace class
   - A.1. Basis independence
 - B. Finite multiplicity
+
+## iv. References
+
+* None.
 
 -/
 

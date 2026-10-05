@@ -14,6 +14,8 @@ public import Mathlib.Analysis.Calculus.Deriv.Pow
 
 # Schwarzschild's incompressible fluid sphere and its junction with the exterior solution
 
+Junction of Schwarzschild's incompressible fluid sphere with the exterior Schwarzschild metric.
+
 ## i. Overview
 
 In his second 1916 paper, Schwarzschild solved Einstein's equations for a static sphere of

@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNS
 
 # Uncertainty relations
 
+Cauchy–Schwarz for states and the Robertson and Robertson–Schrödinger uncertainty relations.
+
 ## i. Overview
 
 A state gives the sesquilinear form `(x, y) ↦ ω(x⋆ y)`, which is the inner product of the GNS
@@ -34,6 +36,10 @@ bound on the covariance.
 - B. Uncertainty relations
 - C. Equality in the uncertainty relations
 - D. Normalized variance bounds
+
+## iv. References
+
+* None.
 
 -/
 

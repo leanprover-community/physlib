@@ -36,6 +36,10 @@ of the factor state.
 - C. Statistics of the first coordinate
 - D. Statistics of the second coordinate
 
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section

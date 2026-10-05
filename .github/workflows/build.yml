@@ -77,6 +77,12 @@ jobs:
         run: |
           bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint"
 
+      # Reads the source files directly, so it does not need the build above to have succeeded.
+      - name: module documentation linter
+        if: ${{ !cancelled() }}
+        run: |
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe module_doc_lint"
+
       - name: runLinter on Physlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint

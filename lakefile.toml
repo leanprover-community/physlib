@@ -115,7 +115,7 @@ supportInterpreter = true
 
 [[lean_exe]]
 name = "module_doc_lint"
-srcDir = "scripts/lint/optional"
+srcDir = "scripts/lint/required"
 
 [[lean_exe]]
 name = "stats"

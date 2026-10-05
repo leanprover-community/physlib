@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SelfAdjoin
 
 # The spectral theorem for unbounded self-adjoint operators
 
+The spectral theorem for unbounded self-adjoint operators via the Cayley transform.
+
 ## i. Overview
 
 The spectral measure on `ℝ` obtained from the Cayley transform of a self-adjoint operator `T`
@@ -31,6 +33,10 @@ to the closure of an essentially self-adjoint operator.
 - A. Restriction identities for PVM scalar measures
 - B. Complex vector-measure density transport
 - C. The inverse-moment transport lemma
+
+## iv. References
+
+* None.
 
 -/
 

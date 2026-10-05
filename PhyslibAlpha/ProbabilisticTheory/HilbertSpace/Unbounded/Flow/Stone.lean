@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Stone
 
 # The unitary group of a self-adjoint operator
 
+The unitary group exp(i t T) of a self-adjoint operator and its differentiable orbits.
+
 ## i. Overview
 
 For a self-adjoint operator `T` with spectral measure `μ`, the unitary group `exp(i t T)` is the
@@ -26,6 +28,16 @@ differentiable at `0`, and then the derivative at time `t` is `i T exp(i t T) x`
 - `mem_domain_iff_expUnitaryGroup_hasDerivAt_zero` : the domain is the set of vectors with
   differentiable orbit.
 - `expUnitaryGroup_star` : `exp(i t T)⋆ = exp(-i t T)`.
+
+## iii. Table of contents
+
+- A. Differentiability of orbits
+- B. The domain via differentiable orbits
+- C. The adjoint of the unitary group
+
+## iv. References
+
+* None.
 
 -/
 
@@ -46,6 +58,12 @@ variable {T : H →ₗ.[ℂ] H}
 variable {μS : QuantumMechanics.WOTSpectralMeasure ℝ H}
 
 namespace DomainAwareSelfAdjointSpectralTheorem
+
+/-!
+
+## A. Differentiability of orbits
+
+-/
 
 /-- For `x` in the domain of `T`, the difference quotients `(exp(i t T) x - x) / t` converge to `i T
 x`. -/
@@ -125,6 +143,12 @@ lemma expUnitaryGroup_hasDerivAt
       rw [hgroup]
     _ = U' (D.expUnitaryGroup (t - s) (x : H)) := by
       rfl
+
+/-!
+
+## B. The domain via differentiable orbits
+
+-/
 
 lemma mem_domain_iff_expUnitaryGroup_strong_slope
     (D : DomainAwareSelfAdjointSpectralTheorem T μS) (x : H) :
@@ -267,6 +291,12 @@ lemma mem_domain_iff_expUnitaryGroup_hasDerivAt_zero
     convert hy using 1
     funext t
     simp [slope, D.expUnitaryGroup_zero]
+
+/-!
+
+## C. The adjoint of the unitary group
+
+-/
 
 /-- `exp(i t T)⋆ = exp(-i t T)`. -/
 lemma expUnitaryGroup_star (D : DomainAwareSelfAdjointSpectralTheorem T μS) (t : ℝ) :

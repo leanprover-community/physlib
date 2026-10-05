@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 
 # Weight pushforward along a channel
 
+Pushing weights and states forward along a channel, functorially in the channel.
+
 ## i. Overview
 
 A channel from system `A` to system `B` is, in the Schrödinger picture, an affine map on states.
@@ -26,15 +28,22 @@ on `A` with `φ` gives a weight on `B` — the Schrödinger-picture pushforward 
 `Weight.comp_comp` show this assignment respects identities and composition, so pushforward is a
 functor from unital positive linear maps to weights, contravariant in `φ`.
 
-## ii. Key definitions and results
+## ii. Key results
 
-- `Weight.comp`, `Weight.IsFinite.comp`, `Weight.IsState.comp`
+- `Weight.comp` : the pushforward of a weight along a channel.
+- `Weight.comp_id`, `Weight.comp_comp` : pushforward respects identities and composition.
+- `Weight.IsFinite.comp`, `Weight.IsState.comp` : finite weights and states push forward to
+  finite weights and states.
 
 ## iii. Table of contents
 
 - A. Pushforward of weights
 - B. Functoriality
 - C. Preservation of finite weights and states
+
+## iv. References
+
+* None.
 
 -/
 

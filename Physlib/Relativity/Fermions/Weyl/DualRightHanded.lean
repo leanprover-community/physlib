@@ -11,7 +11,7 @@ public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 
-## Dual right handed Weyl fermions
+# Dual right handed Weyl fermions
 
 
 In this file we define dual right handed Weyl fermions.

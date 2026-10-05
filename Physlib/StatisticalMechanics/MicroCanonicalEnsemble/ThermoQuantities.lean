@@ -9,7 +9,7 @@ public import Physlib.StatisticalMechanics.MicroCanonicalEnsemble.Basic
 public import QuantumInfo.ForMathlib.ComplexLaplaceTransform
 /-!
 
-## The theormodynamical quantities of a microcanonical ensemble
+# The theormodynamical quantities of a microcanonical ensemble
 
 -/
 @[expose] public section

@@ -12,6 +12,8 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
 
 # The Norton dome
 
+The Norton dome: energies, force, equation of motion, and the non-Lipschitz force at the apex.
+
 ## i. Overview
 
 The Norton dome is a point mass `m` sliding without friction, under gravity `g`, on a

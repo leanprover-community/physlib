@@ -15,6 +15,8 @@ public import Mathlib.Algebra.Module.Torsion.Free
 
 # Projections are sharp
 
+An idempotent effect of a C⋆-algebra is not a proper mixture of two different effects.
+
 ## i. Overview
 
 A projection `p` is a sharp effect: it is not a proper mixture of two different effects. If `p = t
@@ -24,6 +26,17 @@ y₁ + s y₂`, conjugating by `1 - p` kills both `y₁` and `y₂`, so by the C
 ## ii. Key results
 
 - `IsIdempotentElem.isSharp` : idempotent effects are sharp.
+- `ProbabilisticTheory.eq_of_mem_openSegment_of_isIdempotentElem` : the algebraic heart of the
+  proof, stated on bare elements.
+
+## iii. Table of contents
+
+- A. Consequences of the C⋆-identity
+- B. Projections are sharp
+
+## iv. References
+
+* None.
 
 -/
 
@@ -32,6 +45,12 @@ y₁ + s y₂`, conjugating by `1 - p` kills both `y₁` and `y₂`, so by the C
 namespace ProbabilisticTheory
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+
+/-!
+
+## A. Consequences of the C⋆-identity
+
+-/
 
 /-- In a partially ordered additive group, two nonnegative terms summing to zero vanish. -/
 lemma nonneg_add_eq_zero {x y : A} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x + y = 0) :
@@ -130,6 +149,12 @@ lemma eq_of_mem_openSegment_of_isIdempotentElem {a y₁ y₂ : A} (ha0 : 0 ≤ a
     (smul_nonneg hs.le (sub_nonneg.mpr hle2)) hfin
   have h3 : a - y₁ = 0 := (smul_eq_zero.mp hz3).resolve_left ht.ne'
   exact (sub_eq_zero.mp h3).symm
+
+/-!
+
+## B. Projections are sharp
+
+-/
 
 /-- **Projections are sharp**: an idempotent effect is not a proper mixture of two different
 effects. -/

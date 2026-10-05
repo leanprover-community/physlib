@@ -12,17 +12,34 @@ public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Pos
 
 # Operators on the Hilbert space of a finite target system
 
-The bounded operators `𝓗[d] →L[ℂ] 𝓗[d]` form a C⋆-algebra, ordered by the Loewner order.
-This file registers, directly on these operators,
+Real scalar tower and self-adjoint decomposition instances for operators on `𝓗[d]`.
 
-- the real scalar action commuting with composition (`IsScalarTower ℝ`, `SMulCommClass ℝ`);
-- the decomposition of a self-adjoint operator into positive and negative parts
-  (`SelfAdjointDecompose`), from the continuous functional calculus.
+## i. Overview
+
+The bounded operators `𝓗[d] →L[ℂ] 𝓗[d]` form a C⋆-algebra, ordered by the Loewner order.
+This file registers, directly on these operators, the real scalar action commuting with
+composition and the decomposition of a self-adjoint operator into positive and negative parts.
 
 These instances hold for the operators on any complex Hilbert space, but on `𝓗[d]` inferring
 them unifies the two real actions on operators through the transferred complex module,
 which runs out of budget. Stated here once, they let hermitian operators on `𝓗[d]` be used
 where `SelfAdjointDecompose` is required, for instance as observables.
+
+## ii. Key results
+
+- `IsScalarTower ℝ`, `SMulCommClass ℝ` instances : the real scalar action on `𝓗[d] →L[ℂ] 𝓗[d]`
+  commutes with composition.
+- `SelfAdjointDecompose` instance : the decomposition of a self-adjoint operator into positive and
+  negative parts, from the continuous functional calculus.
+
+## iii. Table of contents
+
+- A. The real scalar action
+- B. Positive and negative parts
+
+## iv. References
+
+* None.
 
 -/
 
@@ -34,11 +51,23 @@ namespace FiniteHilbertSpace
 
 variable {d : Type*} [Fintype d] [DecidableEq d]
 
+/-!
+
+## A. The real scalar action
+
+-/
+
 instance : IsScalarTower ℝ (𝓗[d] →L[ℂ] 𝓗[d]) (𝓗[d] →L[ℂ] 𝓗[d]) :=
   ⟨fun _ _ _ => by ext; simp⟩
 
 instance : SMulCommClass ℝ (𝓗[d] →L[ℂ] 𝓗[d]) (𝓗[d] →L[ℂ] 𝓗[d]) :=
   ⟨fun _ _ _ => by ext; simp⟩
+
+/-!
+
+## B. Positive and negative parts
+
+-/
 
 instance : SelfAdjointDecompose (𝓗[d] →L[ℂ] 𝓗[d]) := CFC.instSelfAdjointDecompose
 

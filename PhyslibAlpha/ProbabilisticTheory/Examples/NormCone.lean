@@ -15,6 +15,8 @@ public import Mathlib.LinearAlgebra.Basis.Defs
 /-!
 # Order-unit spaces built from a normed vector space
 
+The order-unit space `ℝ × V` ordered by the norm cone of `V`, and its states as the dual ball.
+
 ## i. Overview
 
 Any real normed vector space `V` carries a natural order-unit structure on `ℝ × V`: order unit

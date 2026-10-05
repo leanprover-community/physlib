@@ -11,6 +11,8 @@ public import Physlib.Meta.Linters.Sorry
 
 # Peano's existence theorem (statements)
 
+Statements of Peano's existence theorem for ODEs, pending its proof in Mathlib.
+
 ## i. Overview
 
 Peano's existence theorem: the initial value problem `x' = f (t, x)`, `x t₀ = x₀` has a

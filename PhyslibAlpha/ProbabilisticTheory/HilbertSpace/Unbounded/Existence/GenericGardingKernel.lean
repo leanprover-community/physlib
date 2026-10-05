@@ -14,6 +14,8 @@ public import Mathlib.MeasureTheory.Group.Integral
 
 # Gårding vectors of smooth kernels
 
+Gårding vectors of a general kernel and the differentiability of their orbits.
+
 ## i. Overview
 
 For a kernel `k` on `ℝ`, the Gårding vector of `ψ` is `∫ k(t) U t ψ dt`. Translating it by `U s`
@@ -25,6 +27,15 @@ the Gårding vector is differentiable at `0`, with derivative the Gårding vecto
 - `gardingVectorAt` : the Gårding vector of `ψ` for a kernel `k`.
 - `gardingVectorAt_translate` : translating a Gårding vector translates the kernel.
 - `gardingVectorAt_hasDerivAt` : the orbit of a Gårding vector is differentiable at `0`.
+
+## iii. Table of contents
+
+- A. Gårding vectors and translation
+- B. Differentiability of the orbit
+
+## iv. References
+
+* None.
 
 -/
 
@@ -43,6 +54,12 @@ universe u
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 variable {U : ℝ → H →L[ℂ] H} (hUmul : ∀ s t, U (s + t) = U s * U t)
+
+/-!
+
+## A. Gårding vectors and translation
+
+-/
 
 variable (U) in
 /-- The Gårding vector of `ψ` against a generic (real-valued) kernel `k`, generalizing
@@ -64,6 +81,12 @@ lemma gardingVectorAt_translate (k : ℝ → ℝ) (ψ : H)
   simp_rw [hpt]
   rw [← integral_add_right_eq_self (fun u : ℝ => (k (u - s) : ℂ) • U u ψ) s]
   simp only [add_sub_cancel_right]
+
+/-!
+
+## B. Differentiability of the orbit
+
+-/
 
 include hUmul in
 /-- If `k` is differentiable with a locally dominated continuous derivative `k'`, the orbit of the

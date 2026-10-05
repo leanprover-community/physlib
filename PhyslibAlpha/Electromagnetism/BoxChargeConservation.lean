@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Integral.DivergenceTheorem
 
 # Charge conservation on a box from Maxwell's equations
 
+## i. Overview
+
 Let `V` be an electromagnetic potential and `J₄` a Lorentz current density such that `V` is an
 extremum of the free-space action with source `J₄`, i.e. Maxwell's equations hold. Taking the
 divergence of Ampère's law, the divergence of the curl of the magnetic field vanishes, and the
@@ -27,7 +29,7 @@ This is motivated by Kirchhoff's current law, but is not that law: Kirchhoff's c
 statement about the branch currents meeting at the nodes of a lumped-element circuit, whereas
 the results here are the integral form of charge conservation on a single box.
 
-## Main results
+## ii. Key results
 
 - `Space.integral_div_box` : the divergence theorem on a coordinate box in `Space`.
 - `Electromagnetism.ThreeDimension.continuityEquation` : the continuity equation.
@@ -39,7 +41,7 @@ the results here are the integral form of charge conservation on a single box.
 - `Electromagnetism.ThreeDimension.boxOutwardCurrent_eq_zero_of_steady` : the net current
   leaving a box in which no charge accumulates is zero.
 
-## Contents
+## iii. Table of contents
 
 - A. Vector calculus on `Space`
   - A.1. Time derivatives and the divergence
@@ -52,6 +54,10 @@ the results here are the integral form of charge conservation on a single box.
   - C.1. Currents through a box
   - C.2. The integral form of charge conservation
   - C.3. Steady charge in a box
+
+## iv. References
+
+* None.
 
 -/
 

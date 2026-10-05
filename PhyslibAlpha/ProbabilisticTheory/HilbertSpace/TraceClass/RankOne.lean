@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.GeneralId
 
 # Rank-one positive operators
 
+The rank-one operator `|x⟩⟨x|` is trace class with trace and trace norm `‖x‖²`.
+
 ## i. Overview
 
 The positive rank-one operator `|x⟩⟨x|` is trace class, with trace and trace norm `‖x‖²`. This is
@@ -20,6 +22,14 @@ the normalization of vector states.
 
 - `isTraceClass_rankOne_self` : `|x⟩⟨x|` is trace class.
 - `trace_rankOne_self`, `traceNorm_rankOne_self` : its trace and trace norm are `‖x‖²`.
+
+## iii. Table of contents
+
+- A. Rank-one positive operators
+
+## iv. References
+
+* None.
 
 -/
 
@@ -32,6 +42,12 @@ namespace ProbabilisticTheory
 open scoped ComplexOrder InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Rank-one positive operators
+
+-/
 
 omit [CompleteSpace H] in
 lemma rankOne_self_diagonal {x : H} {w : Set H}

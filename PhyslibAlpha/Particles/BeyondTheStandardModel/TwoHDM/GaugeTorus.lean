@@ -9,6 +9,10 @@ public import Physlib.Particles.BeyondTheStandardModel.TwoHDM.GramMatrix
 /-!
 # The gauge torus acting on Higgs vectors
 
+The SU(2) Cartan element diag(a, ā), which with ofU1Subgroup realises the gauge torus.
+
+## i. Overview
+
 The maximal torus of the gauge group acting on a Higgs doublet is the group of diagonal phase
 rotations `diag(a, b)` of the two components. We realise it using
 
@@ -17,6 +21,20 @@ rotations `diag(a, b)` of the two components. We realise it using
 
 Together these realise an arbitrary diagonal phase `diag(a, b)`, which is the symmetry underlying
 the charge-balancing ("Condition A") of the effective potential on the orbit representatives.
+
+## ii. Key results
+
+- `StandardModel.GaugeGroupI.gaugeCartan` : the Cartan `SU(2)` gauge element `diag(a, ā)`.
+- `StandardModel.GaugeGroupI.gaugeCartan_smul_eq` : it acts on a Higgs vector as `diag(a, ā)`.
+
+## iii. Table of contents
+
+- A. The Cartan gauge element
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -27,6 +45,12 @@ namespace StandardModel
 namespace GaugeGroupI
 
 open Matrix Complex
+
+/-!
+
+## A. The Cartan gauge element
+
+-/
 
 /-- The Cartan `SU(2)` gauge element `diag(a, ā)`, for `a` a phase. -/
 noncomputable def gaugeCartan (a : unitary ℂ) : GaugeGroupI :=

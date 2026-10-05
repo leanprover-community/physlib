@@ -14,21 +14,38 @@ public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 # Integrating unbounded functions against a spectral measure
 
+The maximal spectral integral `∫ f dμ` of an unbounded function, built from bounded truncations.
+
 ## i. Overview
 
 For a real measurable function `f` and a spectral measure `μ`, the integral `∫ f dμ` is defined on
 the vectors `x` with `∫ f² dμₓ < ∞`, as the limit of the bounded integrals of the truncations of
-`f`. It is densely defined, closable, symmetric and essentially self-adjoint.
+`f`. It is densely defined, closable, symmetric and essentially self-adjoint. The construction is
+carried out for the identity function `λ ↦ λ`, and a general `f` is handled by pushing `μ` forward
+along `f`.
 
 ## ii. Key results
 
-- `truncationFunction` : the truncation of `f` to the set where `|f| ≤ n`.
-- `maximalSpectralIntegral` : the integral `∫ f dμ` on its maximal domain.
+- `truncationFunction` : the spectral variable `λ` truncated to `[-n, n]`.
+- `truncationIntegral` : the bounded integral of the `n`-th truncation.
+- `spectralSquareMomentSubmodule` : the vectors of finite second moment, as a submodule.
+- `maximalSpectralIntegral` : the integral `∫ λ dμ` on its maximal domain.
+- `maximalSpectralIntegral_isSymmetric` : the maximal integral is symmetric.
+- `maximalSpectralIntegral_hasDenseDomain` : its domain is dense.
+- `maximalSpectralIntegral_isClosable` : it is closable.
+- `measurableSpectralIntegral` : the integral of a measurable real function `f`, obtained by
+  pushing the spectral measure forward along `f`.
+- `boundedIntegral_tendsto_of_pointwise_tendsto_of_bound` : bounded spectral integrals converge
+  when the integrands converge pointwise under a uniform bound.
 
 ## iii. Table of contents
 
 - A. Measurable real functional calculus
 - B. Convergence of bounded spectral multipliers
+
+## iv. References
+
+* None.
 
 -/
 

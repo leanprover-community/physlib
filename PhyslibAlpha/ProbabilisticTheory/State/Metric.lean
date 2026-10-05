@@ -12,6 +12,8 @@ public import Mathlib.Topology.MetricSpace.HausdorffDistance
 /-!
 # The metric space of states
 
+States are bounded by the order-unit norm, giving a metric on states and a distance to purity.
+
 ## i. Overview
 
 A state is just a positive linear functional — no continuity is assumed. It turns out to be
@@ -34,6 +36,10 @@ distance to the set of pure states.
 - A. States are bounded by the order-unit norm
 - B. The state metric
 - C. Distance to pure states
+
+## iv. References
+
+* None.
 
 -/
 

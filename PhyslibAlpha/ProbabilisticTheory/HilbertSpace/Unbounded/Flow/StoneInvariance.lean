@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Flow.Stone
 
 # The unitary group preserves the domain of its generator
 
+The unitary group exp(i t T) preserves the domain of T and commutes with T.
+
 ## i. Overview
 
 For a self-adjoint operator `T` with spectral measure `μ`, the unitary group `exp(i t T)` preserves
@@ -20,6 +22,15 @@ the domain of `T` and commutes with `T` there.
 
 - `expUnitaryGroup_translate_mem` : `exp(i s T)` preserves the domain of `T`.
 - `expUnitaryGroup_translate` : `T` commutes with `exp(i s T)` on its domain.
+
+## iii. Table of contents
+
+- A. Invariance of the domain
+- B. Commutation with the generator
+
+## iv. References
+
+* None.
 
 -/
 
@@ -43,6 +54,12 @@ namespace DomainAwareSelfAdjointSpectralTheorem
 variable (D : DomainAwareSelfAdjointSpectralTheorem T μS)
 
 include D
+
+/-!
+
+## A. Invariance of the domain
+
+-/
 
 /-- The group law: `D.expUnitaryGroup t (D.expUnitaryGroup s x) = D.expUnitaryGroup (t + s) x`,
 via `expUnitaryGroup_add` and the (definitional) fact that `WOT`-multiplication is composition. -/
@@ -69,6 +86,12 @@ lemma expUnitaryGroup_translate_mem (x : T.domain) (s : ℝ) :
     exact (D.expUnitaryGroup_translate_comm (x : H) s t).symm
   rw [hfun_eq] at hshift
   exact (D.mem_domain_iff_expUnitaryGroup_hasDerivAt_zero _).2 ⟨_, hshift⟩
+
+/-!
+
+## B. Commutation with the generator
+
+-/
 
 /-- `T` commutes with `D.expUnitaryGroup s` on `T.domain`: for `x ∈ T.domain`,
 `D.expUnitaryGroup s x ∈ T.domain` and `T (D.expUnitaryGroup s x) = D.expUnitaryGroup s (T x)`. -/

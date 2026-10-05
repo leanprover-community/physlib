@@ -21,6 +21,8 @@ public import Mathlib.Order.Filter.AtTopBot.Ring
 
 # Analytic vectors
 
+Analytic and entire vectors, their exponential series and an essential self-adjointness test.
+
 ## i. Overview
 
 A vector `ψ` in the domain of all powers of an operator `T` is analytic when `∑ₙ ‖Tⁿ ψ‖ tⁿ / n!`

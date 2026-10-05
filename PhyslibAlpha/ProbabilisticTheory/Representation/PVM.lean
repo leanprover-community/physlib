@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SharpEffect
 
 # POVMs and PVMs
 
+POVMs as effect-valued measures, and PVMs as POVMs whose values are sharp effects.
+
 ## i. Overview
 
 For the self-adjoint part of an operator algebra, an effect-valued measure is a POVM. A PVM is a
@@ -23,11 +25,23 @@ POVM whose values are sharp effects. A POVM whose values are projections is a PV
 - `POVM.IsPVM`, `PVM` : projection-valued measures.
 - `POVM.isPVM_of_forall_isIdempotentElem` : a POVM of projections is a PVM.
 
+## iii. Table of contents
+
+- A. POVMs
+- B. POVMs of projections
+- C. PVMs
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-! ## A. POVMs -/
 
 /-- A positive-operator-valued measure: the physics name for `EffectValuedMeasure`. -/
 abbrev POVM (Ω E : Type*) [MeasurableSpace Ω] [OrderUnitSpace E] := EffectValuedMeasure Ω E
@@ -49,6 +63,8 @@ lemma isSharp_apply_univ (μ : POVM Ω E) : Effect.IsSharp (μ Set.univ Measurab
 
 end POVM
 
+/-! ## B. POVMs of projections -/
+
 section CStarAlgebra
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
@@ -61,6 +77,8 @@ lemma POVM.isPVM_of_forall_isIdempotentElem {Ω : Type*} [MeasurableSpace Ω]
   fun s hs => (h s hs).isSharp
 
 end CStarAlgebra
+
+/-! ## C. PVMs -/
 
 /-- Projection-valued measures: POVMs whose values are sharp effects. -/
 def PVM (Ω E : Type*) [MeasurableSpace Ω] [OrderUnitSpace E] :=

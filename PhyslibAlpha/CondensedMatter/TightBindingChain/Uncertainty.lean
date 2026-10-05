@@ -13,19 +13,33 @@ public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 
 # Energy–position uncertainty in the open tight binding chain
 
+The energy–position uncertainty relation for the tight binding chain with open boundaries.
+
+## i. Overview
+
 The Hamiltonian and the position operator of the tight binding chain with open boundary
 conditions are observables of the C⋆-algebra of operators on the Hilbert space of the chain.
 The Robertson–Schrödinger relation then bounds their spreads in every state by the expected
 bracket `⁅H, X⁆ = -(i/2) (H X - X H)`, which only sees hopping: its matrix elements are
 `-(i/2) a (n - m) ⟨m|H|n⟩`.
 
-## Main results
+## ii. Key results
 
 - `toObservable` : a hermitian operator of the chain as an observable.
 - `openHamiltonianObservable`, `positionObservable` : `H` and `X` as observables.
 - `inner_bracket_openHamiltonian_position` : the matrix elements of `⁅H, X⁆`.
 - `inner_bracket_openHamiltonian_position_eq` : `⁅H, X⁆` moves exactly one site `a`.
 - `robertson_schrodinger_openHamiltonian_position` : the energy–position uncertainty relation.
+
+## iii. Table of contents
+
+- A. The Hamiltonian and position as observables
+- B. The bracket of the Hamiltonian and position
+- C. The uncertainty relation
+
+## iv. References
+
+* None.
 
 -/
 
@@ -39,6 +53,12 @@ namespace CondensedMatter
 namespace TightBindingChain
 variable (T : TightBindingChain)
 
+/-!
+
+## A. The Hamiltonian and position as observables
+
+-/
+
 /-- A hermitian operator of the chain as an observable. -/
 noncomputable def toObservable (A : T.HilbertSpace →ₗ[ℂ] T.HilbertSpace) (hA : A.IsSymmetric) :
     Observable (T.HilbertSpace →L[ℂ] T.HilbertSpace) :=
@@ -50,6 +70,12 @@ noncomputable abbrev openHamiltonianObservable :=
 
 /-- The position operator as an observable. -/
 noncomputable abbrev positionObservable := T.toObservable T.position T.position_hermitian
+
+/-!
+
+## B. The bracket of the Hamiltonian and position
+
+-/
 
 /-- The bracket `⁅H, X⁆` only connects sites joined by hopping, weighted by their distance. -/
 lemma inner_bracket_openHamiltonian_position (m n : Fin T.N) :
@@ -80,6 +106,12 @@ lemma inner_bracket_openHamiltonian_position_eq (m n : Fin T.N) :
     push_cast [hm]
     ring
   split_ifs with h <;> simp_all
+
+/-!
+
+## C. The uncertainty relation
+
+-/
 
 /-- **Energy–position uncertainty of the open tight binding chain.** In every state `ω`,
 `Cov(H, X)² + ⟨⁅H, X⁆⟩² ≤ Var H · Var X`. -/

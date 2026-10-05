@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Quadratic.Fundame
 
 # Composing quadratic operations
 
+The fundamental formula as an identity between the positive linear maps `U_a`.
+
 ## i. Overview
 
 For quadratically positive Jordan algebras the positive maps `U_a` compose according to the
@@ -21,6 +23,14 @@ fundamental formula.
 
 - `JordanAlgebra.quadRepPositiveLinearMap_fundamental` : the fundamental formula for the positive
   maps `U_a`.
+
+## iii. Table of contents
+
+- A. Composition of positive quadratic operations
+
+## iv. References
+
+* None.
 
 -/
 
@@ -34,6 +44,8 @@ open scoped JordanAlgebra
 
 variable {E : Type*} [NonAssocCommRing E] [PartialOrder E] [IsOrderedAddMonoid E]
   [Module ℝ E] [SMulCommClass ℝ E E] [IsQuadraticallyPositive E] [IsCommJordan E]
+
+/-! ## A. Composition of positive quadratic operations -/
 
 /-- Squaring the filtering observable composes its positive quadratic operation with itself.
 This is the bundled operational form of `U_(a²) = U_a ∘ U_a`. -/

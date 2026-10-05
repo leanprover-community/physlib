@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Banach
 
 # Linearity and cyclicity of the trace
 
+The trace is linear on trace-class operators and cyclic against bounded operators.
+
 ## i. Overview
 
 The trace is linear on trace-class operators and cyclic against bounded operators: `Tr (A T) = Tr (T
@@ -24,7 +26,12 @@ A)` for trace-class `T` and bounded `A`.
 
 ## iii. Table of contents
 
+- A. Linearity and cyclicity of the trace
   - A.1. Additivity and cyclicity
+
+## iv. References
+
+* None.
 
 -/
 
@@ -38,6 +45,12 @@ open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Linearity and cyclicity of the trace
+
+-/
 
 /-- Scalar homogeneity of the trace, with the canonical trace-class proof for the scaled
 operator. -/

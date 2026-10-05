@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.WStarAlgebra.TracePairingSurjecti
 
 # Rank-one operators in the trace pairing
 
+The trace pairing of a rank-one operator `|x⟩⟨y|` with a trace-class `T` is `⟪y, T x⟫`.
+
 ## i. Overview
 
 For a bounded operator `A` and a trace-class operator `T`, the trace pairing of `A |x⟩⟨y|` with `T`
@@ -20,6 +22,15 @@ is a matrix coefficient. This recovers a predual element from its values on rank
 
 - `trace_rankOne_formula` : the trace of a rank-one operator times a trace-class operator.
 - `TraceClass.tracePairing_rankOne_left` : the trace pairing with a rank-one operator.
+
+## iii. Table of contents
+
+- A. The trace of a rank-one operator
+- B. The trace pairing with a rank-one operator
+
+## iv. References
+
+* None.
 
 -/
 
@@ -35,6 +46,12 @@ namespace TraceClass
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
+/-!
+
+## A. The trace of a rank-one operator
+
+-/
+
 lemma trace_rankOne_formula (x y : H) :
     trace (InnerProductSpace.rankOne ℂ x y) (isTraceClass_rankOne x y) =
       ⟪y, x⟫_ℂ := by
@@ -48,6 +65,12 @@ lemma trace_rankOne_formula (x y : H) :
     simp only [InnerProductSpace.rankOne_apply, inner_smul_right]
   rw [hterm]
   exact hsum.tsum_eq
+
+/-!
+
+## B. The trace pairing with a rank-one operator
+
+-/
 
 lemma tracePairing_rankOne_left (T : TraceClass H) (x y : H) :
     tracePairing (InnerProductSpace.rankOne ℂ x y) T =

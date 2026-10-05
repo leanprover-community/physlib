@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Measure.Complex
 
 # Scalar and diagonal measures of a spectral measure
 
+The scalar and diagonal measures obtained by pairing a spectral measure with vectors.
+
 ## i. Overview
 
 Pairing a spectral measure `μ` with two vectors gives the complex measure `S ↦ ⟪y, μ S x⟫`, and with
@@ -30,6 +32,10 @@ vector state `x`. A spectral measure is determined by its complex measures.
 - A. The scalar (matrix-coefficient) measure and extensionality
 - B. Positivity on the diagonal
 - C. The diagonal (vector-state) measure
+
+## iv. References
+
+* None.
 
 -/
 

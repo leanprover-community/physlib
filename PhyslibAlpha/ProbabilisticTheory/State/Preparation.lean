@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 /-!
 # Preparation procedures
 
+Preparation procedures: random preparations of states, their prepared states and outcome laws.
+
 ## i. Overview
 
 A preparation procedure rolls a die and, depending on the outcome `x`, prepares the state
@@ -42,6 +44,10 @@ prepared state.
 - C. Preparing one of two states
 - D. Conditional states
 - E. Measurement outcomes
+
+## iv. References
+
+* None.
 
 -/
 

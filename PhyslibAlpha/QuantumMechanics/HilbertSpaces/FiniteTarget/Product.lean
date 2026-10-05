@@ -32,6 +32,10 @@ operators, and hermitian operators stay hermitian.
 - C. Composition
 - D. Hermiticity
 
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section

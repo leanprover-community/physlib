@@ -9,7 +9,7 @@ public import Physlib.StatisticalMechanics.MicroCanonicalEnsemble.ThermoQuantiti
 public import Mathlib.Analysis.SpecialFunctions.Gaussian.FourierTransform
 /-!
 
-## Ideal gas as a Micro Canonical Ensemble
+# Ideal gas as a Micro Canonical Ensemble
 
 In this module we give the
 -/

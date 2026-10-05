@@ -13,6 +13,8 @@ public import Mathlib.Tactic.LinearCombination
 
 # Alternative algebras
 
+Alternative algebras, the associator, the flexible law, and the left Moufang identity.
+
 ## i. Overview
 
 An algebra is alternative when the associator `(a, b, c) = (a b) c - a (b c)` is alternating. The
@@ -25,12 +27,29 @@ algebras satisfy the flexible law and the left Moufang identity.
 - `associator` : the associator.
 - `IsAlternative.mul_flexible` : the flexible law.
 - `IsAlternative.moufang_left` : the left Moufang identity.
+- `IsAlternative.left_bumping` : McCrimmon's left bumping formula.
+
+## iii. Table of contents
+
+- A. Alternative multiplications
+- B. The associator
+- C. Identities in alternative algebras
+
+## iv. References
+
+* None.
 
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-!
+
+## A. Alternative multiplications
+
+-/
 
 /-- An alternative multiplication has associative repeated factors on either side. -/
 class IsAlternative (A : Type*) [Mul A] : Prop where
@@ -43,6 +62,12 @@ class IsAlternative (A : Type*) [Mul A] : Prop where
 instance (priority := 100) {A : Type*} [Semigroup A] : IsAlternative A where
   mul_alternative_left x y := (mul_assoc x x y).symm
   mul_alternative_right x y := mul_assoc y x x
+
+/-!
+
+## B. The associator
+
+-/
 
 namespace IsAlternative
 
@@ -76,6 +101,12 @@ lemma teichmuller (x y z w : A) :
   unfold associator
   simp only [sub_mul, mul_sub]
   abel
+
+/-!
+
+## C. Identities in alternative algebras
+
+-/
 
 variable [IsAlternative A]
 

@@ -12,6 +12,8 @@ public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 
 # Junctions of thin wires
 
+## i. Overview
+
 Let `A` be a distributional electromagnetic potential and `J` a distributional Lorentz current
 density such that Maxwell's equations hold, `IsExtrema 𝓕 A J`. Taking the divergence of
 Ampère's law and using Gauss's law gives the continuity equation `∂ₜ ρ + ∇ ⬝ J = 0` as an
@@ -26,7 +28,7 @@ continuity equation forces `∑ k, I k = 0`.
 This is motivated by Kirchhoff's current law, of which it is a special case: a single node with
 steady currents, rather than the branch currents at every node of a lumped-element circuit.
 
-## Main results
+## ii. Key results
 
 - `Electromagnetism.DistElectromagneticPotential.continuityEquation` : the continuity equation
   for distributions.
@@ -37,7 +39,7 @@ steady currents, rather than the branch currents at every node of a lumped-eleme
 - `Electromagnetism.DistLorentzCurrentDensity.IsWireJunction.sum_currents_eq_zero` : the
   currents leaving a junction of thin wires sum to zero.
 
-## Contents
+## iii. Table of contents
 
 - A. Analysis on `Space`
   - A.1. Time derivatives and the divergence of distributions
@@ -47,6 +49,10 @@ steady currents, rather than the branch currents at every node of a lumped-eleme
 - C. Junctions of thin wires
   - C.1. The current density of a junction
   - C.2. The currents at a junction sum to zero
+
+## iv. References
+
+* None.
 
 -/
 

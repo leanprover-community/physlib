@@ -13,6 +13,8 @@ public import Mathlib.Analysis.Calculus.Deriv.Pow
 
 # The mass as a cohomology class of the Galilean Lie algebra (Souriau)
 
+The total mass as a non-trivial cohomology class of the Galilean Lie algebra (Souriau).
+
 ## i. Overview
 
 In chapter 12 of Structure des systèmes dynamiques (Dunod 1970), Souriau computes the moment of
@@ -90,8 +92,6 @@ What is not formalised here:
   (12.40)-(12.49), pp. 139-140 (12.72)-(12.76), p. 148 (12.114), pp. 150-153 (12.118)-(12.141);
   p. 27 (2.45), p. 50 (6.12 b) and p. 113 (11.22 a) for the bracket; p. 50 (6.13 b), p. 109
   (11.16), p. 114 (11.24) and p. 116, note (1), for the coboundaries of the algebra.
-
-## References
 
 * J.-M. Souriau, *Structure des systèmes dynamiques*, Maîtrises de mathématiques, Dunod,
   Paris, 1970: chapter 12, pp. 132-153, and pp. 27, 50, 109, 113-116 for the conventions (2.45),

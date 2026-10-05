@@ -12,6 +12,8 @@ public import Mathlib.Basic.Real.Pointwise
 /-!
 # Positive majorants
 
+A positive functional of weight at most m at u that dominates P - N, via Hahn–Banach.
+
 ## i. Overview
 
 Fix an order unit `u` and two positive functionals `P` and `N`. If `P - N` is at most
@@ -29,6 +31,10 @@ Fix an order unit `u` and two positive functionals `P` and `N`. If `P - N` is at
 
 - A. The majorant gauge
 - B. Positive majorants
+
+## iv. References
+
+* None.
 
 -/
 

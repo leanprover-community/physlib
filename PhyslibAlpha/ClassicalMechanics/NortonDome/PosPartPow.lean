@@ -13,6 +13,8 @@ public import Mathlib.Analysis.Calculus.Deriv.Slope
 
 # Powers of the positive part
 
+The derivative and `C^(n+1)` regularity of `y ↦ max (y - c) 0 ^ (n + 2)`.
+
 ## i. Overview
 
 The function `y ↦ max (y - c) 0 ^ (n + 2)` vanishes to the left of `c` and is a polynomial to

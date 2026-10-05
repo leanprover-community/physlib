@@ -11,6 +11,8 @@ public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 # The excitation sector is the symmetric power
 
+The excitation-number sector `vacuumSpan L Ω n` is linearly isomorphic to `Sym^n(K^d)`.
+
 ## i. Overview
 
 `vacuumSpan L Ω n` is linearly isomorphic to the `n`-th symmetric power of `K^d` -- concretely, to
@@ -22,9 +24,16 @@ isomorphism sends this basis to the occupation-number states, i.e. it is exactly
 
 ## ii. Key results
 
-- `LadderSystem.vacuumSpanSymEquiv` : `vacuumSpan L Ω n ≃ₗ[K] (Sym (Fin d) n →₀ K)`.
+- `LadderSystem.vacuumSpanSymEquiv` : `(Sym (Fin d) n →₀ K) ≃ₗ[K] vacuumSpan L Ω n`.
+- `LadderSystem.vacuumSpanSymEquiv_single` : the basis vector of a multiset is sent to the
+  occupation-number state of its count function.
 
-## iii. References
+## iii. Table of contents
+
+- A. The isomorphism with the symmetric power
+- B. The image of the basis vectors
+
+## iv. References
 
 * None.
 -/
@@ -38,12 +47,24 @@ namespace LadderSystem
 variable {K V : Type*} [Field K] [CharZero K] [AddCommGroup V] [Module K V] {d : ℕ}
     (L : LadderSystem K V d)
 
+/-!
+
+## A. The isomorphism with the symmetric power
+
+-/
+
 /-- `vacuumSpan L Ω n` is linearly isomorphic to `Sym^n(K^d)` (realized as the free `K`-module
 on `Sym (Fin d) n`), matching the natural monomial-type basis on one side to the occupation-number
 basis on the other. -/
 noncomputable def vacuumSpanSymEquiv {Ω : V} (P : L.HasVacuum Ω) (n : ℕ) :
     (Sym (Fin d) n →₀ K) ≃ₗ[K] L.vacuumSpan Ω n :=
   Finsupp.basisSingleOne.equiv (vacuumBasis L P n) (countFunEquivSym d n).symm
+
+/-!
+
+## B. The image of the basis vectors
+
+-/
 
 /-- The isomorphism sends the basis vector for multiset `s` to the occupation-number state with
 that multiset's count function. -/

@@ -16,6 +16,8 @@ public import Mathlib.Tactic.Linarith
 /-!
 # Positive functionals
 
+Positive functionals on an ordered vector space, their order, and extension from the cone.
+
 ## i. Overview
 
 A positive functional on an ordered real vector space `E` is a linear functional that is
@@ -40,6 +42,10 @@ extends uniquely to a positive functional.
 - A. Scaling positive functionals
 - B. The order on positive functionals
 - C. Extending from the cone
+
+## iv. References
+
+* None.
 
 -/
 

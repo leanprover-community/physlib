@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstVariation.Support
 /-!
 # First variation regularity
 
+Continuity of the Euler-Lagrange operator and smooth regularity from coordinate regularity.
+
 ## i. Overview
 
 This module contains regularity consequences used in the local Euler-Lagrange criterion: continuity

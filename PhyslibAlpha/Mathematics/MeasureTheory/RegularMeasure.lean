@@ -10,6 +10,8 @@ public import Mathlib.MeasureTheory.Measure.Regular
 /-!
 # Regular measures
 
+Inner regularity and regularity pass to smaller measures, continuous images and subsets.
+
 ## i. Overview
 
 A measure is regular when the measure of a set is approximated by compact sets from inside and by
@@ -32,6 +34,10 @@ regularity does too.
 
 - A. Measures below inner regular measures
 - B. Regularity from inner regularity
+
+## iv. References
+
+* None.
 
 -/
 

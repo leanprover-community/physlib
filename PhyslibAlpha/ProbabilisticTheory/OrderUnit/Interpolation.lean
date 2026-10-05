@@ -13,6 +13,8 @@ public import Mathlib.Analysis.SpecificLimits.Basic
 /-!
 # Interpolation of complete observables
 
+Exact interpolants and the Riesz decomposition for complete observables with a lattice dual cone.
+
 ## i. Overview
 
 Given finitely many lower observables `a i` below finitely many upper observables `b j`, an
@@ -32,6 +34,10 @@ exact interpolants exist. Then the observables have the Riesz decomposition.
 
 - A. Closed order intervals
 - B. Exact interpolants
+
+## iv. References
+
+* None.
 
 -/
 

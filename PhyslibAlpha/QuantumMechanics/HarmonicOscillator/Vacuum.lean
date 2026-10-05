@@ -11,6 +11,8 @@ public import Physlib.Mathematics.InnerProductSpace.Gaussian
 
 # A vacuum state for the harmonic oscillator
 
+An explicit Gaussian vacuum for the d-dimensional harmonic oscillator ladder system.
+
 ## i. Overview
 
 For a `d`-dimensional oscillator `Q`, `vacuumGaussian` is the Gaussian
@@ -35,7 +37,13 @@ mode, so it is proved separately.
 - `loweringCLM_stdGaussian_of_xi_eq_one`, `hasVacuum_stdGaussian_of_forall_xi_eq_one` : the
     isotropic-unit-length special case.
 
-## iii. References
+## iii. Table of contents
+
+- A. The standard Gaussian: derivative and momentum action
+- B. The general, anisotropic vacuum
+- C. The isotropic-unit-length special case
+
+## iv. References
 
 * None.
 -/
@@ -52,7 +60,7 @@ variable {d : ℕ} (Q : HarmonicOscillator d)
 
 /-!
 
-## The standard Gaussian: derivative and momentum action
+## A. The standard Gaussian: derivative and momentum action
 
 `Q`-free prerequisites about the plain, unscaled Gaussian, reused by both the general anisotropic
 case below and the isotropic-unit-length special case at the end of this file.
@@ -110,7 +118,7 @@ lemma momentumCLM_stdGaussian (i : Fin d) (x : Space d) :
 
 /-!
 
-## The general, anisotropic vacuum
+## B. The general, anisotropic vacuum
 
 No isotropy assumption needed: every oscillator `Q` (any masses/frequencies, hence any
 characteristic lengths `ξᵢ`) has an explicit vacuum, the Gaussian rescaled coordinatewise by `ξ`.
@@ -241,7 +249,7 @@ theorem hasVacuum_vacuumGaussian : Q.toLadderSystem.HasVacuum (Q.vacuumGaussian)
 
 /-!
 
-## The isotropic-unit-length special case
+## C. The isotropic-unit-length special case
 
 -/
 

@@ -15,6 +15,8 @@ public import Mathlib.Probability.Kernel.CompProdEqIff
 /-!
 # Purity is the absence of side information
 
+A normal state is pure exactly when no preparation of it carries side information.
+
 ## i. Overview
 
 Roll a die and, depending on the roll, prepare a state; then perform a measurement. Someone who is
@@ -53,6 +55,10 @@ trivial, with every expectation value almost surely independent of the roll.
 - C. Pure states from trivial preparations
 - D. Side information
 - E. Purity is the absence of side information
+
+## iv. References
+
+* None.
 
 -/
 
