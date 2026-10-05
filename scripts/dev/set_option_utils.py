@@ -5,7 +5,7 @@ import re
 import subprocess
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent.parent
+PROJECT_DIR = Path(__file__).resolve().parents[2]
 
 DEFAULT_OPTIONS = [
     "backward.isDefEq.respectTransparency",

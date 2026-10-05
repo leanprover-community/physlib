@@ -11,7 +11,7 @@ Authors: Henrik Böving
 Modifications include: Style changes.
 
 Test these changes with:
-- cp ./scripts/Template.lean .lake/packages/doc-gen4/DocGen4/Output/Template.lean
+- cp ./scripts/website/Template.lean .lake/packages/doc-gen4/DocGen4/Output/Template.lean
 - lake -Kenv=dev build Batteries:docs; rm -rf ./docs/docs; mv .lake/build/doc docs/docs
 - cd ./docs
 - bundle exec jekyll serve

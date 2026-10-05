@@ -368,7 +368,7 @@ unsafe def main (args : List String): IO UInt32 := do
     for dir in data.dirs do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| AutoLabel.githubAnnotation "error" "scripts/github/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.physlibLabelData }`"
           s!"directory '{dir}' does not exist but is included by label '{label}'. \
           Please update `{ ``AutoLabel.physlibLabelData }`!"
@@ -376,7 +376,7 @@ unsafe def main (args : List String): IO UInt32 := do
     for dir in data.exclusions do
       unless ← FilePath.pathExists dir do
         -- print github annotation error
-        println <| AutoLabel.githubAnnotation "error" "scripts/autolabel.lean"
+        println <| AutoLabel.githubAnnotation "error" "scripts/github/autolabel.lean"
           s!"Misformatted `{ ``AutoLabel.physlibLabelData }`"
           s!"directory '{dir}' does not exist but is excluded by label '{label}'. \
           Please update `{ ``AutoLabel.physlibLabelData }`!"
@@ -390,7 +390,7 @@ unsafe def main (args : List String): IO UInt32 := do
     -- print github annotation warning
     -- note: only emitting a warning because the workflow is only triggered on the first commit
     -- of a PR and could therefore lead to unexpected behaviour if a folder was created later.
-    println <| AutoLabel.githubAnnotation "warning" "scripts/autolabel.lean"
+    println <| AutoLabel.githubAnnotation "warning" "scripts/github/autolabel.lean"
       s!"Incomplete `{ ``AutoLabel.physlibLabelData }`"
       s!"the following paths inside `Physlib/` are not covered \
       by any label: {notMatchedPaths} Please modify `AutoLabel.physlibLabels` accordingly!"

@@ -8,7 +8,7 @@ Authors: Robert Sneiderman
 
 This executable gathers every `API-map.yaml` in the library into a single
 YAML data file, `docs/_data/APIMap.yml`, for the website to render. It follows
-the pattern of `scripts/MetaPrograms/TODO_to_yml.lean`, which builds
+the pattern of `scripts/website/TODO_to_yml.lean`, which builds
 `docs/_data/TODO.yml` for the website's TODO list: the YAML is printed to
 standard output, and passing `mkFile` writes the file.
 
@@ -18,7 +18,7 @@ module context, a GitHub link, and the map's `version`, `Title`, `Overview`,
 and total completion counts.
 
 The project has no YAML parser dependency. The parser below reads the API-map
-schema checked by `scripts/api_map_linter.py`: the six top-level keys and the
+schema checked by `scripts/lint/required/api_map_linter.py`: the six top-level keys and the
 `description`/`done`/`location` fields of each requirement, with inline
 scalars, multi-line plain scalars, and `|`/`>` block scalars. Lines outside
 the schema are ignored rather than raising errors.

@@ -59,11 +59,11 @@ ERR_NSP = 20 # non-terminal simp
 
 exceptions = []
 
-SCRIPTS_DIR = Path(__file__).parent.resolve()
-ROOT_DIR = SCRIPTS_DIR.parent
+ROOT_DIR = Path(__file__).resolve().parents[3]
+EXEMPTIONS_DIR = ROOT_DIR / "scripts" / "lint" / "exemptions"
 
 
-with SCRIPTS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
+with EXEMPTIONS_DIR.joinpath("style-exceptions.txt").open(encoding="utf-8") as f:
     for exline in f:
         filename, _, _, _, _, errno, *extra = exline.split()
         path = ROOT_DIR / filename

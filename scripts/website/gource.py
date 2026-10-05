@@ -12,7 +12,7 @@
 #
 # Run it from the root of the git repo using:
 #
-# $ uv run scripts/gource.py
+# $ uv run scripts/website/gource.py
 #
 # It will produce a file called `gource.mp4` in the root of the git repo. You
 # will also see the progress live while the script is running.

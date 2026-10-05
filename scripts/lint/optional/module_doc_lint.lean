@@ -209,14 +209,15 @@ def checkHeadings (f : FilePath) : IO (List DocLintError) := do
 
 /-- The array of modules not to be linted. -/
 def noLintArray : IO (Array FilePath) := do
-  let path := (mkFilePath ["scripts", "MetaPrograms", "module_doc_no_lint"]).addExtension "txt"
+  let path :=
+    (mkFilePath ["scripts", "lint", "exemptions", "module_doc_no_lint"]).addExtension "txt"
   let lines ← IO.FS.lines path
   return lines.map (fun l ↦ mkFilePath [l])
 
-/-- The array of modules exempt from all linters, read from `scripts/LinterExemption.txt`.
-  This is used to lint `QuantumInfo` file-by-file. -/
+/-- The array of modules exempt from all linters, read from
+  `scripts/lint/exemptions/LinterExemption.txt`. This is used to lint `QuantumInfo` file-by-file. -/
 def linterExemptions : IO (Array FilePath) := do
-  let path := (mkFilePath ["scripts", "LinterExemption"]).addExtension "txt"
+  let path := (mkFilePath ["scripts", "lint", "exemptions", "LinterExemption"]).addExtension "txt"
   unless (← path.pathExists) do return #[]
   let lines ← IO.FS.lines path
   return lines.filterMap (fun l ↦ if l.trim == "" then none else some (mkFilePath [l.trim]))

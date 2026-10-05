@@ -15,10 +15,11 @@ open System (FilePath)
 
 open Lake
 
-/-- The file paths of modules exempt from all linters, read from `scripts/LinterExemption.txt`.
-  This is used to lint `QuantumInfo` file-by-file. -/
+/-- The file paths of modules exempt from all linters, read from
+  `scripts/lint/exemptions/LinterExemption.txt`. This is used to lint `QuantumInfo` file-by-file. -/
 def linterExemptions : IO (Array String) := do
-  let path : FilePath := (System.mkFilePath ["scripts", "LinterExemption"]).addExtension "txt"
+  let path : FilePath :=
+    (System.mkFilePath ["scripts", "lint", "exemptions", "LinterExemption"]).addExtension "txt"
   unless (← path.pathExists) do return #[]
   let lines ← IO.FS.lines path
   return lines.filterMap (fun l ↦ if l.trimAscii.copy == "" then none else some l.trimAscii.copy)
@@ -51,7 +52,8 @@ unsafe def runLinterOnModule (module : Name) (exemptions : Array String) : IO Bo
   Prod.fst <$> (CoreM.toIO · ctx state) do
     let env ← getEnv
     let decls ← getDeclsInPackage module.getRoot
-    -- Skip declarations whose source module is listed in `scripts/LinterExemption.txt`.
+    -- Skip declarations whose source module is listed in
+    -- `scripts/lint/exemptions/LinterExemption.txt`.
     let decls := decls.filter fun n =>
       match env.getModuleIdxFor? n with
       | some idx => !exemptions.contains (moduleToFilePathString env.header.moduleNames[idx]!)

@@ -24,9 +24,9 @@ is nothing to keep in sync anywhere else.
 
 Sample usage, from the workflows in .github/workflows/review_claim*.yml:
 
-    $ python scripts/review_claim.py comment   # handle an issue_comment event
-    $ python scripts/review_claim.py review    # handle a pull_request_review event
-    $ python scripts/review_claim.py expire    # remind about, and expire, claims
+    $ python scripts/github/review_claim.py comment   # handle an issue_comment event
+    $ python scripts/github/review_claim.py review    # handle a pull_request_review event
+    $ python scripts/github/review_claim.py expire    # remind about, and expire, claims
 
 The first two read the event from GITHUB_EVENT_PATH.  All three need GITHUB_TOKEN
 and GITHUB_REPOSITORY; the Zulip announcement additionally needs ZULIP_SITE,

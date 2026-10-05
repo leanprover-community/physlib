@@ -8,11 +8,17 @@ set -exo pipefail
 
 # 1. Call the Lean file linter, implemented in Python
 
-touch scripts/style-exceptions.txt
+touch scripts/lint/exemptions/style-exceptions.txt
+touch scripts/lint/exemptions/LinterExemption.txt
 
-git ls-files 'PhyslibAlpha/*.lean' | xargs ./scripts/lint-style.py "$@"
+# Lint all Lean files in `Physlib` and `QuantumInfo`, except those listed (one path per line)
+# in `scripts/lint/exemptions/LinterExemption.txt`. The exemption list lets us lint `QuantumInfo`
+# file-by-file: remove a file from the list once it passes the linters.
+git ls-files 'Physlib/*.lean' 'QuantumInfo/*.lean' \
+	| grep -vxF -f scripts/lint/exemptions/LinterExemption.txt \
+	| xargs ./scripts/lint/required/lint-style.py "$@"
 
-# 2. Global checks on the PhyslibAlpha repository
+# 2. Global checks on the mathlib repository
 
 # 2.1 Check for executable bit on Lean files
 

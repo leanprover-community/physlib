@@ -55,7 +55,7 @@ def allWords : MetaM (Array String) := do
 
 /-- The custom dictionary of correctly spelled words. -/
 def dictionary : MetaM (Array String) := do
-  let path : System.FilePath := "./scripts/MetaPrograms/spellingWords.txt"
+  let path : System.FilePath := "./scripts/lint/exemptions/spellingWords.txt"
   let lines ← IO.FS.lines path
   return lines.map (fun s => s.toLower)
 

@@ -8,14 +8,14 @@ Checks, for every module docstring References section:
     bibliography and aren't useful indexed as formal references -- they should
     be left as plain, untagged URLs in the docstring instead)
 
-Usage: ./scripts/check_references.py
+Usage: ./scripts/lint/optional/check_references.py
 Exits non-zero (and prints one message per problem) if any check fails.
 """
 import pathlib
 import re
 import sys
 
-ROOT = pathlib.Path(__file__).resolve().parent.parent
+ROOT = pathlib.Path(__file__).resolve().parents[3]
 HEAD_RE = re.compile(r'^#{1,4}\s*(?:(?:i{1,3}v?|\d+)\.\s*)?References?:?\s*$')
 REF_TAG_RE = re.compile(r'\[ref:\s*([^\]]+?)\]')
 BIB_ENTRY_RE = re.compile(r'^@(\w+)\{\s*([^,\s]+)\s*,(.*?)^\}', re.MULTILINE | re.DOTALL)

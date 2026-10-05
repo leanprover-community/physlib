@@ -133,9 +133,9 @@ def importedFilePaths (mods : Name) : IO (Array FilePath) := do
       some ((mkFilePath (imp.module.toString.splitToList (· == '.'))).addExtension "lean"))
 
 /-- The file paths of modules which should be skipped by the linters, read from
-  `scripts/LinterExemption.txt`. This is used to lint `QuantumInfo` file-by-file. -/
+  `scripts/lint/exemptions/LinterExemption.txt`. This is used to lint `QuantumInfo` file-by-file. -/
 def linterExemptions : IO (Array String) := do
-  let path : FilePath := mkFilePath ["scripts", "LinterExemption.txt"]
+  let path : FilePath := mkFilePath ["scripts", "lint", "exemptions", "LinterExemption.txt"]
   unless (← path.pathExists) do return #[]
   let lines ← IO.FS.lines path
   return lines.filterMap (fun l ↦ if l.trimAscii.copy == "" then none else some l.trimAscii.copy)
