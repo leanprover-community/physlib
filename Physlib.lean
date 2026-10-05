@@ -7,7 +7,8 @@ public import Physlib.ClassicalMechanics.DampedHarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.EulerLagrange
 public import Physlib.ClassicalMechanics.Force
 public import Physlib.ClassicalMechanics.FreeParticle.Basic
-public import Physlib.ClassicalMechanics.HamiltonsEquations
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.KineticEnergy

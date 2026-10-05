@@ -2,7 +2,7 @@ Physlib/ClassicalMechanics/Basic.lean
 Physlib/ClassicalMechanics/EulerLagrange.lean
 Physlib/ClassicalMechanics/Force.lean
 Physlib/ClassicalMechanics/FreeParticle/Basic.lean
-Physlib/ClassicalMechanics/HamiltonsEquations.lean
+Physlib/ClassicalMechanics/HamiltonianMechanics/HamiltonsEquations.lean
 Physlib/ClassicalMechanics/HarmonicOscillator/WithDim.lean
 Physlib/ClassicalMechanics/Lagrangian/TotalDerivativeEquivalence.lean
 Physlib/ClassicalMechanics/Mass/MassUnit.lean

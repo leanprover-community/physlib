@@ -5,7 +5,7 @@ Authors: Aadarsh Agarwal
 -/
 module
 
-public import Physlib.ClassicalMechanics.HamiltonsEquations
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Basic
 /-!
 

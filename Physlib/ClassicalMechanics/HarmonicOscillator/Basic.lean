@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith, Lode Vermeulen
 module
 
 public import Physlib.ClassicalMechanics.EulerLagrange
-public import Physlib.ClassicalMechanics.HamiltonsEquations
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
 public import Physlib.Mathematics.Calculus.Gradient
 public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
