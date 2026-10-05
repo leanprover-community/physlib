@@ -14,8 +14,9 @@ name: Windows test
 
 # Checks that Physlib executables can be built on a Windows machine without a C compiler,
 # by building and running `lake exe windows_test` with `cc` removed from the PATH.
-# This currently fails: `leansqlite` (a dependency of `doc-gen4`) compiles its C code with `cc`,
-# and Lake links the C libraries of every dependency into every executable.
+# Lake links the C libraries of every dependency into every executable, so this fails if
+# Physlib depends on a package compiling C code with `cc`, such as `leansqlite` (a dependency
+# of `doc-gen4`, which is why `doc-gen4` lives in the nested `docbuild` project).
 
 jobs:
   windows_test:

@@ -10,11 +10,12 @@ Authors: Henrik Böving
 
 Modifications include: Style changes.
 
-Test these changes with:
+Test these changes with (doc-gen4 is a dependency of the nested `docbuild` project, not of
+Physlib, see `docbuild/lakefile.toml`):
+- (cd docbuild && lake build Physlib.Meta.Basic:docs) to fetch and build doc-gen4
 - cp ./scripts/website/Template.lean .lake/packages/doc-gen4/DocGen4/Output/Template.lean
-- lake -Kenv=dev build Batteries:docs; rm -rf ./docs/docs; mv .lake/build/doc docs/docs
-- cd ./docs
-- bundle exec jekyll serve
+- (cd docbuild && lake build Physlib.Meta.Basic:docs)
+- (cd docbuild/.lake/build/doc && python3 -m http.server)
 
 -/
 import DocGen4.Output.ToHtmlFormat
