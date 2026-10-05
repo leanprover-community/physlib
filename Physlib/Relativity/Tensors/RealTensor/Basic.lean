@@ -82,10 +82,6 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     match c with
     | Color.up => Lorentz.contrCoContract
     | Color.down => Lorentz.coContrContract
-  metric := fun c =>
-    match c with
-    | Color.up => Lorentz.preContrMetric d
-    | Color.down => Lorentz.preCoMetric d
   unit := fun c =>
     match c with
     | Color.up => Lorentz.preCoContrUnit d
@@ -102,6 +98,14 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     match c with
     | Color.up => Lorentz.preCoContrUnit_symm
     | Color.down => Lorentz.preContrCoUnit_symm
+
+open realLorentzTensor in
+/-- The Minkowski metric of the real Lorentz tensors, on both vector colors. -/
+instance realLorentzTensor.instWithMetric (d : ℕ) : (realLorentzTensor d).WithMetric where
+  metric := fun c =>
+    match c with
+    | Color.up => Lorentz.preContrMetric d
+    | Color.down => Lorentz.preCoMetric d
   contr_metric := fun c =>
     match c with
     | Color.up => Lorentz.contrCoContract_apply_metric

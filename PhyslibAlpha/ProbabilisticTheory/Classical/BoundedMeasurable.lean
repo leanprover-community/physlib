@@ -94,4 +94,3 @@ noncomputable def outcomeMeasurement : EffectValuedMeasure Ω (BoundedMeasurable
   countably_additive' _ hs hd := isLUB_sum_indicator hs hd
 
 end BoundedMeasurable
-

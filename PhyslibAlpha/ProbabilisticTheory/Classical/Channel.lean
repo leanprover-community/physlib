@@ -164,4 +164,3 @@ noncomputable def kernelEquiv :
   right_inv κ := by have := κ.2; exact Subtype.ext (toKernel_ofKernel κ.1)
 
 end BoundedMeasurable
-

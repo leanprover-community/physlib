@@ -173,4 +173,3 @@ lemma toAutomorphism_unique (U : UnitaryOneParameterGroup H)
       (U t * star (U t)) * α t a * (U t * star (U t)) by noncomm_ring, hmul, one_mul, mul_one] at h
 
 end UnitaryOneParameterGroup
-
