@@ -35,10 +35,12 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Current
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.CurrentEigenstates
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.ElementalUncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MandelstamTamm
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Saturation
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.SpeedLimit
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Uncertainty
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.Distributional.WireJunction
