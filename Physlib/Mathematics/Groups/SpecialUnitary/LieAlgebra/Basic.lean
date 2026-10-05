@@ -6,11 +6,12 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Algebra.Lie.Basic
+public import Mathlib.Algebra.Lie.BaseChange
 public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.LinearAlgebra.Complex.Module
 /-!
 
 # The Lie algebra `su(n)` in the hermitian presentation
@@ -30,6 +31,7 @@ entries in any commutative `*`-ring `R` that is both a real and a complex `*`-al
 - `SULieAlgebra n R` : traceless hermitian `n × n` matrices over `R`, as a real Lie algebra.
 - `SULieAlgebra.conj` : the representation `x ↦ U x U†` of the unitary group.
 - `SULieAlgebra.conj_lie` : conjugation by a unitary matrix preserves the bracket.
+- `SULieAlgebra.Complexification n` : the complexification `ℂ ⊗[ℝ] su(n)`.
 
 ## iii. Table of contents
 
@@ -37,6 +39,7 @@ entries in any commutative `*`-ring `R` that is both a real and a complex `*`-al
 - B. The conjugation representation
 - C. The bracket
 - D. Conjugation preserves the bracket
+- E. The complexification
 
 -/
 
@@ -71,8 +74,7 @@ variable {n : ℕ} {R : Type*} [CommRing R] [StarRing R] [Algebra ℝ R] [StarMo
 
 /-- The element given by a traceless hermitian matrix. -/
 def ofMatrix (A : Matrix (Fin n) (Fin n) R) (hA : star A = A) (hT : A.trace = 0) :
-    SULieAlgebra n R :=
-  ⟨A, hA, hT⟩
+    SULieAlgebra n R := ⟨A, hA, hT⟩
 
 /-- The underlying matrix of `ofMatrix A hA hT` is `A`. -/
 @[simp]
@@ -183,3 +185,13 @@ lemma conj_lie (U : unitaryGroup (Fin n) R) (x y : SULieAlgebra n R) :
     one_mul]
 
 end SULieAlgebra
+
+/-!
+
+## E. The complexification
+
+-/
+
+open TensorProduct in
+/-- The complexification `ℂ ⊗[ℝ] su(n)` of `su(n)`, a complex Lie algebra. -/
+abbrev SULieAlgebra.Complexification (n : ℕ) : Type := ℂ ⊗[ℝ] SULieAlgebra n ℂ
