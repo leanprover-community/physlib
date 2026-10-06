@@ -445,6 +445,7 @@ public import Physlib.Relativity.Tensors.ComplexTensor.Vector.Pre.Contraction
 public import Physlib.Relativity.Tensors.ComplexTensor.Vector.Pre.Modules
 public import Physlib.Relativity.Tensors.ComponentIdx.Basic
 public import Physlib.Relativity.Tensors.ComponentIdx.Contraction
+public import Physlib.Relativity.Tensors.ComponentIdx.Pair
 public import Physlib.Relativity.Tensors.ComponentIdx.Product
 public import Physlib.Relativity.Tensors.ComponentIdx.Single
 public import Physlib.Relativity.Tensors.Conjugation.Basic
