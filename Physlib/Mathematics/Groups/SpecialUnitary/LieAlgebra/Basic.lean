@@ -41,6 +41,10 @@ entries in any commutative `*`-ring `R` that is both a real and a complex `*`-al
 - D. Conjugation preserves the bracket
 - E. The complexification
 
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -184,8 +188,6 @@ lemma conj_lie (U : unitaryGroup (Fin n) R) (x y : SULieAlgebra n R) :
   congr 2 <;> simp only [mul_assoc, ← mul_assoc (star U.1) U.1, UnitaryGroup.star_mul_self,
     one_mul]
 
-end SULieAlgebra
-
 /-!
 
 ## E. The complexification
@@ -194,4 +196,6 @@ end SULieAlgebra
 
 open TensorProduct in
 /-- The complexification `ℂ ⊗[ℝ] su(n)` of `su(n)`, a complex Lie algebra. -/
-abbrev SULieAlgebra.Complexification (n : ℕ) : Type := ℂ ⊗[ℝ] SULieAlgebra n ℂ
+abbrev Complexification (n : ℕ) : Type := ℂ ⊗[ℝ] SULieAlgebra n ℂ
+
+end SULieAlgebra
