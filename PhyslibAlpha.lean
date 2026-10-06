@@ -300,6 +300,7 @@ public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductSt
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
+public import PhyslibAlpha.Relativity.PauliMatrices.Anticommuting
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.HalfPlane
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.Line
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.Ring
