@@ -169,14 +169,6 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.downR => Fermion.dualRightContraction
     | Color.up => Lorentz.contrCoContraction
     | Color.down => Lorentz.coContrContraction
-  metric := fun c =>
-    match c with
-    | Color.upL => Fermion.leftMetric
-    | Color.downL => Fermion.dualLeftMetric
-    | Color.upR => Fermion.rightMetric
-    | Color.downR => Fermion.dualRightMetric
-    | Color.up => Lorentz.contrMetric
-    | Color.down => Lorentz.coMetric
   unit := fun c =>
     match c with
     | Color.upL => Fermion.dualLeftLeftUnit
@@ -209,22 +201,28 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.downR => Fermion.rightDualRightUnit_symm
     | Color.up => Lorentz.coContrUnit_symm
     | Color.down => Lorentz.contrCoUnit_symm
-  contr_metric := fun c =>
-    match c with
-    | Color.upL => by
-      simpa using Fermion.leftDualContraction_apply_metric
-    | Color.downL => by
-      simpa using Fermion.dualLeftContraction_apply_metric
-    | Color.upR => by
-      simpa using Fermion.rightDualContraction_apply_metric
-    | Color.downR => by
-      simpa using Fermion.dualRightContraction_apply_metric
-    | Color.up => by
-      simpa using Lorentz.contrCoContraction_apply_metric
-    | Color.down => by
-      simpa using Lorentz.coContrContraction_apply_metric
 
 namespace complexLorentzTensor
+
+/-- The metrics of the complex Lorentz tensors: `ε` on the four Weyl colors and `η` on the two
+  vector colors. -/
+instance instWithMetric : complexLorentzTensor.WithMetric where
+  metric := fun c =>
+    match c with
+    | Color.upL => Fermion.leftMetric
+    | Color.downL => Fermion.dualLeftMetric
+    | Color.upR => Fermion.rightMetric
+    | Color.downR => Fermion.dualRightMetric
+    | Color.up => Lorentz.contrMetric
+    | Color.down => Lorentz.coMetric
+  contr_metric := fun c =>
+    match c with
+    | Color.upL => Fermion.leftDualContraction_apply_metric
+    | Color.downL => Fermion.dualLeftContraction_apply_metric
+    | Color.upR => Fermion.rightDualContraction_apply_metric
+    | Color.downR => Fermion.dualRightContraction_apply_metric
+    | Color.up => Lorentz.contrCoContraction_apply_metric
+    | Color.down => Lorentz.coContrContraction_apply_metric
 
 /-- Complex Lorentz tensor. -/
 syntax (name := complexLorentzTensorSyntax) "ℂT[" term,* "]" : term

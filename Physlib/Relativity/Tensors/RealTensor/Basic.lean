@@ -82,10 +82,6 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     match c with
     | Color.up => Lorentz.contrCoContract
     | Color.down => Lorentz.coContrContract
-  metric := fun c =>
-    match c with
-    | Color.up => Lorentz.preContrMetric d
-    | Color.down => Lorentz.preCoMetric d
   unit := fun c =>
     match c with
     | Color.up => Lorentz.preCoContrUnit d
@@ -102,12 +98,20 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     match c with
     | Color.up => Lorentz.preCoContrUnit_symm
     | Color.down => Lorentz.preContrCoUnit_symm
+
+
+namespace realLorentzTensor
+
+/-- The Minkowski metric of the real Lorentz tensors, on both vector colors. -/
+instance instWithMetric (d : ℕ) : (realLorentzTensor d).WithMetric where
+  metric := fun c =>
+    match c with
+    | Color.up => Lorentz.preContrMetric d
+    | Color.down => Lorentz.preCoMetric d
   contr_metric := fun c =>
     match c with
     | Color.up => Lorentz.contrCoContract_apply_metric
     | Color.down => Lorentz.coContrContract_apply_metric
-
-namespace realLorentzTensor
 
 /-- Notation for a real Lorentz tensor. -/
 syntax (name := realLorentzTensorSyntax) "ℝT[" term,* "]" : term
