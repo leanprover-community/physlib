@@ -529,6 +529,7 @@ public import Physlib.SpaceAndTime.SpaceTime.Boosts
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.SpaceTime.LorentzAction
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
+public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Star
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.TaylorSeries
 public import Physlib.SpaceAndTime.SpaceTime.TimeSlice
 public import Physlib.SpaceAndTime.Time.Basic
