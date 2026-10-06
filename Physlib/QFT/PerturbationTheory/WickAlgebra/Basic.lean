@@ -6,8 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.QFT.PerturbationTheory.FieldOpFreeAlgebra.SuperCommute
-public import Mathlib.Algebra.RingQuot
-public import Mathlib.RingTheory.TwoSidedIdeal.Operations
 /-!
 
 # The Wick Algebra

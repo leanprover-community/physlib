@@ -6,7 +6,7 @@ Authors: Florian Wiesner
 module
 
 public import Physlib.SpaceAndTime.Space.Basic
-public import Physlib.SpaceAndTime.Time.InnerProductSpace
+public import Physlib.SpaceAndTime.Time.Basic
 /-!
 
 # Basic field types for fluid dynamics

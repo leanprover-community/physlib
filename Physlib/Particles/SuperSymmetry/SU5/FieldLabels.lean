@@ -5,7 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Tactic.DeriveFintype
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Fintype.Defs
 /-!
 
 # The field labels

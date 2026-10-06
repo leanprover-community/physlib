@@ -6,13 +6,12 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Units.PositiveRealUnit
-public import Mathlib.Analysis.RCLike.Basic
 /-!
 
 # Units on time
 
 A unit of time corresponds to a choice of translationally-invariant
-metric on the time manifold `TimeTransMan`. Such a choice is (non-canonically) equivalent to a
+metric on the time manifold. Such a choice is (non-canonically) equivalent to a
 choice of positive real number. We define the type `TimeUnit` to be equivalent to the
 positive reals.
 
@@ -32,7 +31,7 @@ existence of the time unit of seconds, and construct all other time units from t
 
 open NNReal
 
-/-- The choices of translationally-invariant metrics on the manifold `TimeTransMan`.
+/-- The choices of translationally-invariant metrics on the time manifold.
   Such a choice corresponds to a choice of units for time. -/
 structure TimeUnit : Type where
   /-- The underlying scale of the unit. -/

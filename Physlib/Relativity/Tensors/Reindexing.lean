@@ -5,11 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.ComponentIdx.Single
 public import Physlib.Relativity.Tensors.Contraction.SuccSuccAbove
-public import Mathlib.Topology.Algebra.Module.ModuleTopology
-public import Mathlib.Analysis.RCLike.Basic
-public import Mathlib.Tactic.Cases
 public import Mathlib.GroupTheory.Perm.Fin
 /-!
 
@@ -68,11 +64,7 @@ end Fin
 
 namespace TensorSpecies
 
-variable {k : Type} [CommRing k] {C : Type} {G : Type} [Group G]
-    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
-    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
-    {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
-    (S : TensorSpecies k C G V basisIdx rep b)
+variable {C : Type}
 
 namespace Tensor
 

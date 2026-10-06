@@ -5,7 +5,6 @@ Authors: Adam Bornemann, Gregory J. Loges
 -/
 module
 
-public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 /-!
 

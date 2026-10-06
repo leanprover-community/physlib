@@ -6,13 +6,11 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.Complex.Basic
-public import Physlib.Meta.TODO.Basic
-public import Physlib.Relativity.SL2C.Basic
-public import Physlib.Meta.Informal.Basic
-public import Physlib.Meta.TODO.Basic
+public import Mathlib.RepresentationTheory.Basic
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 
-## Left handed Weyl fermions
+# Left handed Weyl fermions
 
 
 In this file we define Left handed Weyl fermions.

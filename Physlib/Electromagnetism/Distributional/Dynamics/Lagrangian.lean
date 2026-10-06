@@ -7,7 +7,6 @@ module
 
 public import Physlib.Electromagnetism.Distributional.Dynamics.CurrentDensity
 public import Physlib.Electromagnetism.Distributional.Dynamics.KineticTerm
-public import Physlib.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 /-!
 
 # The Lagrangian in electromagnetism

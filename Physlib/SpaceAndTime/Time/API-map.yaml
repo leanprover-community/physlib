@@ -9,9 +9,8 @@ Overview: |
     time, and no instant is canonically zero. Choosing the implicit origin `Time.mk 0`
     gives the version of time most often used in non-relativistic physics,
     forming a 1d real inner-product space. The API also contains the time
-    derivative `∂ₜ` of functions on `Time`, and the related types `TimeMan`,
-    `TimeTransMan` and `TimeUnit`, versions of time with fewer choices made,
-    related to `Time` via a choice of units or origin.
+    derivative `∂ₜ` of functions on `Time`, the oriented time manifold `TimeMan`,
+    and the type `TimeUnit` of choices of time unit.
 
 ParentAPIs:
   - "Space (Physlib/SpaceAndTime/Space)"
@@ -65,10 +64,6 @@ Requirements:
     done: true
     location: "Physlib/SpaceAndTime/Time/TimeUnit.lean (TimeUnit, HDiv TimeUnit TimeUnit ℝ≥0, scale, seconds, hours_div_seconds)"
 
-  - description: "The API contains the time manifold `TimeTransMan` with a transitive action of `ℝ`, an orientation, unit-dependent differences and translations (`diff`, `addTime`, `neg`), and the homeomorphism `toTime` to `Time` given a choice of origin and unit."
-    done: true
-    location: "Physlib/SpaceAndTime/Time/TimeTransMan.lean (TimeTransMan, AddAction ℝ TimeTransMan, diff, addTime, neg, toTime)"
-
   - description: "The API shall contain an action of the translation group on `Time`."
     done: false
     location: N/A
@@ -78,13 +73,5 @@ Requirements:
     location: N/A
 
   - description: "The API shall contain derivatives of distributions from `Time` to manifolds."
-    done: false
-    location: N/A
-
-  - description: "The API shall show that the homeomorphism `toTime` from `TimeTransMan` to `Time` is a diffeomorphism."
-    done: false
-    location: N/A
-
-  - description: "The API shall show that translationally-invariant metrics on `TimeTransMan` are in one-to-one correspondence with the positive reals (choices of `TimeUnit`)."
     done: false
     location: N/A

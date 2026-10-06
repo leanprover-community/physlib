@@ -10,11 +10,32 @@ public import Physlib.Particles.BeyondTheStandardModel.TwoHDM.Basic
 
 # The Module structure on the two Higgs doublet model
 
+The complex vector space (module) structure on two Higgs doublet configurations.
+
+## i. Overview
+
+Configurations of the two Higgs doublet model are pairs of Higgs vectors `(Φ1, Φ2)`. This file
+defines addition, zero, negation and complex scalar multiplication componentwise, and assembles
+them into an additive commutative group and a `ℂ`-module structure on `TwoHiggsDoublet`.
+
+## ii. Key results
+
+- `AddCommGroup TwoHiggsDoublet` : the additive commutative group structure (an instance).
+- `Module ℂ TwoHiggsDoublet` : the `ℂ`-module structure (an instance).
+
+## iii. Table of contents
+
+- A. The structure of a module
+
+## iv. References
+
+* None.
+
 -/
 @[expose] public section
 /-!
 
-## The structure of a module
+## A. The structure of a module
 
 -/
 

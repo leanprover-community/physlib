@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstVariation.Support
 /-!
 # First variation integration by parts
 
+Repeated integration by parts for the local first-variation formula.
+
 ## i. Overview
 
 This module contains the repeated integration-by-parts step needed for the local first-variation

@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Mathematics.Fin.Involutions
+public import Physlib.Mathematics.ForMathlib.Fin.Involutions
 public import Physlib.QFT.PerturbationTheory.WickContraction.ExtractEquiv
 public import Physlib.QFT.PerturbationTheory.WickContraction.Involutions
 /-!

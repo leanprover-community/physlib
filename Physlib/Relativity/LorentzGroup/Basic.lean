@@ -7,11 +7,11 @@ module
 
 public import Physlib.Relativity.MinkowskiMatrix
 public import Physlib.Meta.TODO.Basic
-public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.Topology.Algebra.Group.Units
-public import Mathlib.Topology.Maps.Basic
 public import Mathlib.Topology.Algebra.Group.ClosedSubgroup
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Topology.Algebra.Ring.Real
 /-!
 # The Lorentz Group
 

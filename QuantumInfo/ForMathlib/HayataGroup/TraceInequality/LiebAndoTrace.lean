@@ -7,9 +7,7 @@ module
 
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.OperatorGeometricMean
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.HilbertSchmidtOperatorSpace
-public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
-public import Mathlib.Analysis.Matrix.HermitianFunctionalCalculus
 public import Mathlib.LinearAlgebra.Lagrange
 public import Mathlib.LinearAlgebra.Trace
 

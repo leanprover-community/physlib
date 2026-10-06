@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.PauliMatrices.ToTensor
+public import Physlib.Meta.Informal.Basic
 /-!
 
 ## Bispinors

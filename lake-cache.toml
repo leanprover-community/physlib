@@ -4,7 +4,7 @@
 #
 #   LAKE_CONFIG=$PWD/lake-cache.toml lake cache get
 #
-# `lake exe get_cache` (scripts/get_cache.lean) does that for you. Bucket
+# `lake exe get_cache` (scripts/dev/get_cache.lean) does that for you. Bucket
 # endpoints are public information, which is why this file is committed; the
 # credential that authorises uploads is NOT here. It is supplied via the
 # LAKE_CACHE_KEY environment variable, held as an encrypted GitHub Actions

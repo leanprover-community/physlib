@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.ComplexTensor.OfRat
+public import Physlib.Relativity.Tensors.ComplexTensor.OfGaussianInt
 /-!
 
 ## Metrics as complex Lorentz tensors
@@ -360,71 +360,73 @@ lemma dualRightMetric_eq_basis : εR' =
 
 /-!
 
-### ofRat
+### ofGaussianInt
 
 -/
 
 set_option backward.isDefEq.respectTransparency false in
-lemma coMetric_eq_ofRat : η' = ofRat fun f =>
+lemma coMetric_eq_ofGaussianInt : η' = ofGaussianInt fun f =>
     if f 0 = Fin.cast (by rfl) (0 : Fin 4) ∧ f 1 = Fin.cast (by rfl) (0 : Fin 4) then 1 else
     if f 0 = f 1 then - 1 else 0 := by
   rw [coMetric_eq_basis]
   conv_lhs =>
-    rw [basis_eq_ofRat, basis_eq_ofRat, basis_eq_ofRat, basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt, basis_eq_ofGaussianInt,
+      basis_eq_ofGaussianInt]
   rw [← map_sub, ← map_sub, ← map_sub]
   congr
   with_unfolding_all decide
 
 set_option backward.isDefEq.respectTransparency false in
-lemma contrMetric_eq_ofRat : η = ofRat fun f =>
+lemma contrMetric_eq_ofGaussianInt : η = ofGaussianInt fun f =>
     if f 0 = Fin.cast (by rfl) (0 : Fin 4) ∧ f 1 = Fin.cast (by rfl) (0 : Fin 4) then 1 else
     if f 0 = f 1 then - 1 else 0 := by
   rw [contrMetric_eq_basis]
   conv_lhs =>
-    rw [basis_eq_ofRat, basis_eq_ofRat, basis_eq_ofRat, basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt, basis_eq_ofGaussianInt,
+      basis_eq_ofGaussianInt]
   rw [← map_sub, ← map_sub, ← map_sub]
   congr
   with_unfolding_all decide
 
-lemma leftMetric_eq_ofRat : εL = ofRat fun f =>
+lemma leftMetric_eq_ofGaussianInt : εL = ofGaussianInt fun f =>
     if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then - 1 else
     if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then
       1 else 0 := by
   rw [leftMetric_eq_basis]
   conv_lhs =>
-    rw [basis_eq_ofRat, basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
   rw [← map_neg, ← map_add]
   congr
   with_unfolding_all decide
 
-lemma dualLeftMetric_eq_ofRat : εL' = ofRat fun f =>
+lemma dualLeftMetric_eq_ofGaussianInt : εL' = ofGaussianInt fun f =>
     if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then 1 else
     if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then
       - 1 else 0 := by
   rw [dualLeftMetric_eq_basis]
   conv_lhs =>
-    rw [basis_eq_ofRat, basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
   rw [← map_sub]
   congr
   with_unfolding_all decide
 
-lemma rightMetric_eq_ofRat : εR = ofRat fun f =>
+lemma rightMetric_eq_ofGaussianInt : εR = ofGaussianInt fun f =>
     if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then - 1 else
     if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then 1 else 0 := by
   rw [rightMetric_eq_basis]
   conv_lhs =>
-    rw [basis_eq_ofRat, basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
   rw [← map_neg, ← map_add]
   congr
   with_unfolding_all decide
 
-lemma dualRightMetric_eq_ofRat : εR' = ofRat fun f =>
+lemma dualRightMetric_eq_ofGaussianInt : εR' = ofGaussianInt fun f =>
     if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then 1 else
     if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then
       - 1 else 0 := by
   rw [dualRightMetric_eq_basis]
   conv_lhs =>
-    rw [basis_eq_ofRat, basis_eq_ofRat]
+    rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
   rw [← map_sub]
   congr
   with_unfolding_all decide

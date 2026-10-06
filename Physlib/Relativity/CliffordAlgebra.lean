@@ -26,6 +26,7 @@ to Dirac coordinates, preserving the existing matrix entries.
 
 ## Main Results
 
+- `γ_anticomm`: The Clifford anticommutator for the gamma matrices
 - `ofCliffordAlgebra_surjective`: The homomorphism `ofCliffordAlgebra` is surjective
 
 ## TODO
@@ -81,6 +82,15 @@ theorem _root_.Matrix.one_fin_four {α} [Zero α] [One α] :
   rw [γ3, γ1, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
 @[simp] lemma γ3_mul_γ2 : γ3 * γ2 = -(γ2 * γ3) := by
   rw [γ3, γ2, ← map_mul, Fermion.Dirac.gamma_mul_gamma_of_ne (by decide), map_neg, map_mul]
+
+/-- The Clifford anticommutator for the gamma matrices in the Dirac representation, with
+signature `(+,-,-,-)`. It is the image of `Fermion.Dirac.gamma_anticomm` under the change
+of coordinates `Fermion.Dirac.endEquivMatrix`. -/
+theorem γ_anticomm (μ ν : Fin 1 ⊕ Fin 3) :
+    endEquivMatrix (gamma μ) * endEquivMatrix (gamma ν) +
+      endEquivMatrix (gamma ν) * endEquivMatrix (gamma μ) =
+      (2 * (minkowskiMatrix μ ν : ℂ)) • (1 : Matrix (Fin 4) (Fin 4) ℂ) := by
+  rw [← map_mul, ← map_mul, ← map_add, Fermion.Dirac.gamma_anticomm, map_smul, map_one]
 
 /-- The γ⁵ gamma matrix in the Dirac representation. -/
 def γ5 : Matrix (Fin 4) (Fin 4) ℂ := I • (γ0 * γ1 * γ2 * γ3)

@@ -5,7 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Analysis.RCLike.Basic
 
 /-!
 # Maximal self-adjoint subrings

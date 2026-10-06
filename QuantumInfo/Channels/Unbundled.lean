@@ -7,6 +7,7 @@ module
 
 public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
+public import Mathlib.LinearAlgebra.Matrix.Bilinear
 
 /-! # Properties of Matrix Maps
 

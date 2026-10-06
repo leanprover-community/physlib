@@ -6,6 +6,8 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.LorentzGroup.Basic
+public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Analysis.Real.Sqrt
 /-!
 # Boosts in the Lorentz group
 

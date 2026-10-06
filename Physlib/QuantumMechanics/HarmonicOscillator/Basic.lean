@@ -8,7 +8,6 @@ module
 public import Physlib.Meta.Informal.Basic
 public import Physlib.QuantumMechanics.Operators.Momentum
 public import Physlib.QuantumMechanics.Operators.Multiplication
-public import Physlib.QuantumMechanics.QuantumSystem.Basic
 /-!
 
 # The quantum harmonic oscillator
@@ -220,10 +219,17 @@ lemma potentialFunction_hasTemperateGrowth :
   exact Function.HasTemperateGrowth.sum fun i _ =>
     (Function.HasTemperateGrowth.const _).mul ((hc i).pow 2)
 
+/-- The potential function for the harmonic oscillator is continuous. -/
+lemma potentialFunction_continuous : Continuous Q.potentialFunction := by
+  have heq : Q.potentialFunction = fun x => ∑ i, 2⁻¹ * Q.m * Q.ω i ^ 2 * x i ^ 2 :=
+    funext Q.potentialFunction_apply
+  rw [heq]
+  fun_prop
+
 /-- The potential function for the harmonic oscillator is a.e. strongly measurable. -/
-informal_lemma potentialFunction_aestronglyMeasurable where
-  deps := [``HarmonicOscillator]
-  tag := "QM-HO-potAESM"
+lemma potentialFunction_aestronglyMeasurable :
+    MeasureTheory.AEStronglyMeasurable Q.potentialFunction MeasureTheory.volume :=
+  Q.potentialFunction_continuous.aestronglyMeasurable
 
 end
 
@@ -309,10 +315,11 @@ lemma potentialOperator_apply_schwartz (f : 𝓢(Space d, ℂ))
   rw [hx1]
   simp [hx2]
 
-/-- The potential operators for the harmonic oscillator is self-adjoint. -/
-informal_lemma potentialOperator_isSelfAdjoint where
-  deps := [``HarmonicOscillator.potentialFunction_aestronglyMeasurable]
-  tag := "QM-HO-potSA"
+/-- The potential operator for the harmonic oscillator is self-adjoint. -/
+lemma potentialOperator_isSelfAdjoint : IsSelfAdjoint Q.potentialOperator :=
+  mulOperator_isSelfAdjoint_ofReal
+    (Complex.continuous_ofReal.comp Q.potentialFunction_continuous).aestronglyMeasurable
+    (by ext; simp)
 
 end
 

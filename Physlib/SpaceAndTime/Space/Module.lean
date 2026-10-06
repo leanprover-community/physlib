@@ -8,7 +8,6 @@ module
 public import Physlib.SpaceAndTime.Space.Origin
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-public import Mathlib.Tactic.Cases
 /-!
 
 # The structure of a module on Space

@@ -6,12 +6,10 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Analysis.Normed.Ring.Lemmas
 public import Mathlib.Data.Finset.Attr
 public import Mathlib.Data.Int.Star
 public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Tactic.Bound
-public import Mathlib.Tactic.Peel
 public import Mathlib.Tactic.Common
 public import Mathlib.Tactic.Continuity
 public import Mathlib.Tactic.Finiteness.Attr
@@ -186,7 +184,7 @@ lemma exists_liminf_zero_of_forall_liminf_le_with_UB (y : ℝ≥0) (f : ℝ≥0 
   · beta_reduce
     rwa [Filter.liminf_congr]
     have h := hg₁.eventually (gt_mem_nhds <| half_pos hz)
-    peel h with h
+    filter_upwards [h] with n h
     rw [min_eq_left h.le]
 
 /- (∀ x, x > 0 → liminf (n ↦ f x n) ≤ y) →

@@ -6,6 +6,7 @@ on:
   pull_request:
     branches:
       - master
+  merge_group:
 
 name: Style linters
 
@@ -19,7 +20,7 @@ jobs:
 
       # Need the full history here, lake looks back through the commits to find
       # one with a cache. A shallow clone only has one so it never finds anything.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           fetch-depth: 0
 
@@ -48,13 +49,21 @@ jobs:
           lake cache get --scope="physlib-master/$(tr '/:' '--' < lean-toolchain | tr -d '[:space:]')/physlib" \
             || echo "no existing cache to restore -- building from scratch"
 
+      # PhyslibAlpha has its own cache in the bucket so we pull that one too
+      - name: PhyslibAlpha's build cache
+        env:
+          LAKE_CONFIG: ${{ github.workspace }}/lake-cache.toml
+        run: |
+          lake cache get --scope="physlib-master/$(tr '/:' '--' < lean-toolchain | tr -d '[:space:]')/alpha" \
+            || echo "no existing cache to restore -- building from scratch"
+
       - name: build Physlib
         id: build
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
         with:
           linters: gcc
           run: |
-            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI | tee stdout.log"
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI --iofail | tee stdout.log"
 
       - name: check file imports
         run: |
@@ -68,14 +77,58 @@ jobs:
         run: |
           bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint"
 
+      # Reads the source files directly, so it does not need the build above to have succeeded.
+      - name: module documentation linter
+        if: ${{ !cancelled() }}
+        run: |
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe module_doc_lint"
+
       - name: runLinter on Physlib
         if: ${{ always() && steps.build.outcome == 'success' || steps.build.outcome == 'failure' }}
         id: lint
-        uses: liskin/gh-problem-matcher-wrap@v3
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
         timeout-minutes: 4
         with:
           linters: gcc
           run: env LEAN_ABORT_ON_PANIC=1 lake exe runPhyslibLinters
+
+      # PhyslibAlpha is built on top of Physlib, so this only needs Physlib to have built:
+      # a failing Physlib linter above does not stop it.
+      - name: build PhyslibAlpha
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        id: alpha_build
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
+        with:
+          linters: gcc
+          run: |
+            bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build -KCI --iofail PhyslibAlpha | tee stdout.log"
+
+      - name: runLinter on PhyslibAlpha
+        if: ${{ !cancelled() && (steps.alpha_build.outcome == 'success' || steps.alpha_build.outcome == 'failure') }}
+        uses: liskin/gh-problem-matcher-wrap@e7b7beaaafa52524748b31a381160759d68d61fb # v3
+        timeout-minutes: 4
+        with:
+          linters: gcc
+          run: env LEAN_ABORT_ON_PANIC=1 lake exe runPhyslibAlphaLinters
+
+      - name: Check no PhyslibAlpha in Physlib and QuantumInfo
+        if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe noAlphaImports
+
+      - name: Check PhyslibAlpha imports
+        if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe alphaFileImports
+
+      # Only reads import headers, so it does not depend on any build having succeeded.
+      - name: Check ForMathlib imports and uses
+        if: ${{ !cancelled() }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe forMathlib_lint
+
+      # Runs the occasionally used scripts (TODO_to_yml, stats, informal, make_tag), which
+      # import Physlib, QuantumInfo and PhyslibAlpha, so both builds must have succeeded.
+      - name: auxiliary script test
+        if: ${{ !cancelled() && steps.build.outcome == 'success' && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe auxillary_script_test
 
   style_lint:
     name: Python based style linter
@@ -85,37 +138,42 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # Run the case checker action
       - name: Check Case Sensitivity
-        uses: credfeto/action-case-checker@v1.3.0
+        uses: credfeto/action-case-checker@cb652aeab29ed363bbdb7d9ee1bfcc010c46cac5 # v1.3.0
 
       - name: Look for ignored files
-        uses: credfeto/action-no-ignored-files@v1.1.0
+        uses: credfeto/action-no-ignored-files@0c61dc01fd498dd8fa6786f21062be4fd158c8b1 # v1.1.0
 
       - name: install Python
         if: ${{ 'ubuntu-latest' == 'ubuntu-latest' }}
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: 3.8
 
       - name: lint
         run: |
-          chmod u+x scripts/lint-style.sh
-          ./scripts/lint-style.sh
+          chmod u+x scripts/lint/required/lint-style.sh
+          ./scripts/lint/required/lint-style.sh
 
       - name: Check API maps
         run: |
           python -m pip install PyYAML==6.0.2
-          python scripts/api_map_linter.py --repo .
+          python scripts/lint/required/api_map_linter.py --repo .
+
+      - name: Python linters for PhyslibAlpha
+        run: |
+          chmod u+x scripts/lint/required/alpha/alphaPythonLinters.sh
+          ./scripts/lint/required/alpha/alphaPythonLinters.sh
 
   codespell:
     name: Check for spelling errors
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
-      - uses: codespell-project/actions-codespell@v2
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: codespell-project/actions-codespell@8f01853be192eb0f849a5c7d721450e7a467c579 # v2
         with:
-          exclude_file: scripts/MetaPrograms/spellingWords.txt,scripts/physlibNoShake.json
+          exclude_file: scripts/lint/exemptions/spellingWords.txt,scripts/lint/exemptions/physlibNoShake.json
           ignore_words_file: .codespellignore

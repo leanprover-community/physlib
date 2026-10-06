@@ -8,6 +8,7 @@ module
 public import QuantumInfo.Entropy.Relative
 public import QuantumInfo.ForMathlib.HermitianMat.Sqrt
 public import QuantumInfo.ForMathlib.HermitianMat.LiebConcavity
+public import Mathlib.Data.Fintype.Shrink
 
 @[expose] public section
 

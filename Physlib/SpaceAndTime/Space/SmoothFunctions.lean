@@ -6,7 +6,6 @@ Authors: Giuseppe Sorge
 module
 
 public import Physlib.SpaceAndTime.Space.Module
-public import Mathlib.Geometry.Manifold.ContMDiffMap
 /-!
 
 # Smooth real-valued functions on space

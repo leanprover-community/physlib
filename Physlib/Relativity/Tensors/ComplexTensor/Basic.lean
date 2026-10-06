@@ -169,14 +169,6 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.downR => Fermion.dualRightContraction
     | Color.up => Lorentz.contrCoContraction
     | Color.down => Lorentz.coContrContraction
-  metric := fun c =>
-    match c with
-    | Color.upL => Fermion.leftMetric
-    | Color.downL => Fermion.dualLeftMetric
-    | Color.upR => Fermion.rightMetric
-    | Color.downR => Fermion.dualRightMetric
-    | Color.up => Lorentz.contrMetric
-    | Color.down => Lorentz.coMetric
   unit := fun c =>
     match c with
     | Color.upL => Fermion.dualLeftLeftUnit
@@ -209,22 +201,28 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.downR => Fermion.rightDualRightUnit_symm
     | Color.up => Lorentz.coContrUnit_symm
     | Color.down => Lorentz.contrCoUnit_symm
-  contr_metric := fun c =>
-    match c with
-    | Color.upL => by
-      simpa using Fermion.leftDualContraction_apply_metric
-    | Color.downL => by
-      simpa using Fermion.dualLeftContraction_apply_metric
-    | Color.upR => by
-      simpa using Fermion.rightDualContraction_apply_metric
-    | Color.downR => by
-      simpa using Fermion.dualRightContraction_apply_metric
-    | Color.up => by
-      simpa using Lorentz.contrCoContraction_apply_metric
-    | Color.down => by
-      simpa using Lorentz.coContrContraction_apply_metric
 
 namespace complexLorentzTensor
+
+/-- The metrics of the complex Lorentz tensors: `ε` on the four Weyl colors and `η` on the two
+  vector colors. -/
+instance instWithMetric : complexLorentzTensor.WithMetric where
+  metric := fun c =>
+    match c with
+    | Color.upL => Fermion.leftMetric
+    | Color.downL => Fermion.dualLeftMetric
+    | Color.upR => Fermion.rightMetric
+    | Color.downR => Fermion.dualRightMetric
+    | Color.up => Lorentz.contrMetric
+    | Color.down => Lorentz.coMetric
+  contr_metric := fun c =>
+    match c with
+    | Color.upL => Fermion.leftDualContraction_apply_metric
+    | Color.downL => Fermion.dualLeftContraction_apply_metric
+    | Color.upR => Fermion.rightDualContraction_apply_metric
+    | Color.downR => Fermion.dualRightContraction_apply_metric
+    | Color.up => Lorentz.contrCoContraction_apply_metric
+    | Color.down => Lorentz.coContrContraction_apply_metric
 
 /-- Complex Lorentz tensor. -/
 syntax (name := complexLorentzTensorSyntax) "ℂT[" term,* "]" : term
@@ -271,33 +269,36 @@ lemma repDim_tau {c : complexLorentzTensor.Color} :
     repDim (complexLorentzTensor.τ c) = repDim c := by
   cases c <;> rfl
 
+/-- At every complex Lorentz color, the bases at the color and its dual are dual bases, with
+labels matched by `finCongr repDim_tau`. -/
+lemma isContrDualMatching_finCongr (c : complexLorentzTensor.Color) :
+    IsContrDualMatching complexLorentzTensor c (finCongr repDim_tau) := by
+  intro x₁ x₂
+  cases c <;> refine Eq.trans ?_ (if_congr Fin.ext_iff.symm rfl rfl)
+  exacts [Fermion.leftDualContraction_basis x₁ x₂, Fermion.dualLeftContraction_basis x₁ x₂,
+    Fermion.rightDualContraction_basis x₁ x₂, Fermion.dualRightContraction_basis x₁ x₂,
+    Lorentz.contrCoContraction_basis x₁ x₂, Lorentz.coContrContraction_basis x₁ x₂]
+
+/-- Complex Lorentz tensors have dual bases under contraction, with the matching
+`finCongr repDim_tau`. -/
+instance : HasContrDualBases complexLorentzTensor where
+  exists_matching c := ⟨_, isContrDualMatching_finCongr c⟩
+
+/-- The dual-label matching of complex Lorentz tensors is `finCongr repDim_tau`. -/
+@[simp]
+lemma contrDualIdxEquiv_eq_finCongr (c : complexLorentzTensor.Color) :
+    HasContrDualBases.contrDualIdxEquiv complexLorentzTensor c = finCongr repDim_tau :=
+  HasContrDualBases.contrDualIdxEquiv_eq_of_isContrDualMatching (isContrDualMatching_finCongr c)
+
 lemma contrPCoeff_basis {n : ℕ} {c : Fin n → complexLorentzTensor.Color} (i j : Fin n)
     (hij : i ≠ j ∧ (complexLorentzTensor.τ (c i) = c j))
     (b : ComponentIdx (S := complexLorentzTensor) c) :
     Pure.contrPCoeff i j hij (Pure.basisVector c b) = if b i =
       Fin.cast (by simp [← hij.2, repDim_tau]) (b j)
     then 1 else 0 := by
-  simp only [Pure.contrPCoeff, Pure.basisVector]
-  generalize_proofs h1 h2
-  generalize b i = b1 at *
-  generalize b j = b2 at *
-  generalize c i = ci at *
-  generalize c j = cj at *
-  subst h2
-  cases ci
-  all_goals simp only [complexLorentzTensor]
-  · erw [Fermion.leftDualContraction_basis]
-    exact if_congr Fin.ext_iff.symm rfl rfl
-  · erw [Fermion.dualLeftContraction_basis]
-    exact if_congr Fin.ext_iff.symm rfl rfl
-  · erw [Fermion.rightDualContraction_basis]
-    exact if_congr Fin.ext_iff.symm rfl rfl
-  · erw [Fermion.dualRightContraction_basis]
-    exact if_congr Fin.ext_iff.symm rfl rfl
-  · erw [Lorentz.contrCoContraction_basis]
-    exact if_congr Fin.ext_iff.symm rfl rfl
-  · erw [Lorentz.coContrContraction_basis]
-    exact if_congr Fin.ext_iff.symm rfl rfl
+  rw [Pure.contrPCoeff_basisVector, contrDualIdxEquiv_eq_finCongr]
+  refine if_congr (Eq.congr_right ?_) rfl rfl
+  simp [basisIdxCongr_eq_cast]
 
 end complexLorentzTensor
 end

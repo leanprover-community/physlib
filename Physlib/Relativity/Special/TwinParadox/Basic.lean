@@ -137,7 +137,6 @@ lemma ageGap_nonneg : 0 ≤ T.ageGap := by
 
 -/
 
-set_option backward.isDefEq.respectTransparency false in
 /-- The twin paradox in which:
 - Twin A starts at `0` and travels at constant
   speed to `[15, 0, 0, 0]`.
@@ -179,12 +178,10 @@ def example1 : InstantaneousTwinParadox where
     simp [Fin.sum_univ_three]
     norm_num
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma example1_properTimeTwinA : example1.properTimeTwinA = 15 := by
   simp [properTimeTwinA, example1, properTime, minkowskiProduct_toCoord]
 
-set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma example1_properTimeTwinB : example1.properTimeTwinB = 9 := by
   simp [properTimeTwinB, properTime, example1, minkowskiProduct_toCoord, Fin.sum_univ_three]

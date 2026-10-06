@@ -5,8 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Basic.Real.Basic
-public import Mathlib.LinearAlgebra.AffineSpace.Defs
+public import Mathlib.Geometry.Manifold.IsManifold.Basic
 /-!
 # Time
 
@@ -18,9 +17,12 @@ The field `Time.val` is an implementation coordinate, not a frame-relative time
 coordinate. A reference frame chooses its own time origin. Import
 `Physlib.SpaceAndTime.Time.InnerProductSpace` to use the inner product space structure with the
 implicit origin `Time.mk 0`, including addition of instants, norms, and derivatives.
+
 -/
 
-@[expose] public section
+@[expose] public noncomputable section
+
+open scoped Manifold ContDiff
 
 /-!
 # A. The `Time` type
@@ -59,5 +61,26 @@ instance : AddTorsor ℝ Time where
   add_vadd dt₁ dt₂ t := by ext; simp [add_assoc]
   vsub_vadd' t₁ t₂ := by ext; simp
   vadd_vsub' dt t := by simp
+
+/-!
+# C. The metric and manifold structure
+-/
+
+instance : MetricSpace Time := metricSpaceOfNormedAddCommGroupOfAddTorsor ℝ Time
+
+instance : NormedAddTorsor ℝ Time where
+  dist_eq_norm' _ _ := rfl
+
+instance : ChartedSpace ℝ Time :=
+  let chartAt t := (Homeomorph.vaddConst t).symm.toOpenPartialHomeomorph
+  { chartAt,
+    atlas := Set.range chartAt,
+    mem_chart_source := Set.mem_univ,
+    chart_mem_atlas := by simp }
+
+instance : IsManifold 𝓘(ℝ, ℝ) ω Time := by
+  apply isManifold_of_contDiffOn
+  rintro _ _ ⟨_, rfl⟩ ⟨_, rfl⟩
+  exact contDiff_id.add contDiff_const |>.sub contDiff_const |>.contDiffOn
 
 end Time

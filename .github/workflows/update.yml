@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Update Lean project
-        uses: leanprover-community/lean-update@main
+        uses: leanprover-community/lean-update@d290683c61477adeb282fa32f2079339fff7f608 # main as of 2026-10-02

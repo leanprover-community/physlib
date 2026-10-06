@@ -6,7 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.Operators.Commutation
-public import Physlib.Mathematics.CrossProductMatrix
+public import Physlib.Mathematics.Modules.CrossProductMatrix
 /-!
 
 # Angular momentum operator

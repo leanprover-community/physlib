@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 public import Physlib.QFT.PerturbationTheory.FieldStatistics.ExchangeSign
-public import Physlib.Mathematics.List
+public import Physlib.Mathematics.ForMathlib.List
 import all Mathlib.Data.List.Sort
 /-!
 

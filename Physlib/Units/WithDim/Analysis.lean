@@ -7,7 +7,6 @@ module
 
 public import Physlib.Units.WithDim.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
-public import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # A. Analysis of dimension-tagged quantities

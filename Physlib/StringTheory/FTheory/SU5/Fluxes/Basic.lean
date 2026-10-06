@@ -5,7 +5,9 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Normed.Ring.Lemmas
+public import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
+public import Mathlib.Tactic.Ring.RingNF
+
 /-!
 
 # Fluxes of representations

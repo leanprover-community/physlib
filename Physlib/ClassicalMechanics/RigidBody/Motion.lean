@@ -6,9 +6,7 @@ Authors: Giuseppe Sorge
 module
 
 public import Physlib.ClassicalMechanics.RigidBody.Basic
-public import Physlib.SpaceAndTime.Time.Derivatives
 public import Physlib.SpaceAndTime.Time.MatrixDerivatives
-public import Mathlib.LinearAlgebra.UnitaryGroup
 /-!
 
 # Rigid body motion

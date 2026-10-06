@@ -14,9 +14,9 @@ jobs:
 
         steps:
             - name: Checkout
-              uses: actions/checkout@v2
+              uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
             - name: Comment a pull_request
-              uses: mb2dev/github-action-comment-pull-request@1.0.0
+              uses: mb2dev/github-action-comment-pull-request@8d73cba182e64cdbf74b91ea0f3a7c2da37c4b3e # 1.0.0
               with:
                 message:  |
                   Thank you for this pull-request (PR). If this is your first PR, welcome to the community!

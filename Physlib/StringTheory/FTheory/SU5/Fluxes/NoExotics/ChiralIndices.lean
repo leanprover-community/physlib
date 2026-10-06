@@ -6,6 +6,11 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.StringTheory.FTheory.SU5.Fluxes.Basic
+public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
+public import Mathlib.Algebra.Order.Group.Int
+public import Mathlib.Algebra.Order.Sub.Basic
+public import Mathlib.Data.Finset.Insert
+public import Mathlib.Data.Multiset.OrderedMonoid
 /-!
 
 # Constraints on chiral indices from the condition of no chiral exotics

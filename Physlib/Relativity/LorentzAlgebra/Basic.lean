@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.MinkowskiMatrix
-public import Mathlib.Algebra.Lie.SerreConstruction
 /-!
 # The Lorentz Algebra
 

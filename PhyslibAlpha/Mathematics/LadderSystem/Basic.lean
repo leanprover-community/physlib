@@ -14,6 +14,8 @@ public import Physlib.Mathematics.KroneckerDelta.Basic
 
 # Ladder systems
 
+Ladder systems of creation and annihilation operators, their `gl(d)` action and number operators.
+
 ## i. Overview
 
 A `LadderSystem K V d` packages `d` pairs of creation and annihilation endomorphisms of a

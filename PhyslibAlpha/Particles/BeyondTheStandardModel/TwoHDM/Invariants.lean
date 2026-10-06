@@ -18,6 +18,8 @@ public import Mathlib.Analysis.Real.Pi.Irrational
 /-!
 # The two Higgs doublet potential as a polynomial in the gauge invariants
 
+Every gauge-invariant polynomial 2HDM potential is a polynomial in the four Gram bilinears.
+
 ## i. Overview
 
 In the *bilinear formalism* of the two Higgs doublet model (hep-ph/0605184
@@ -39,6 +41,9 @@ and runs the following physical pipeline:
 4. **Coprimality.** `‖Φ1‖²` and `‖Φ2‖²` are coprime in the (algebraically independent) Gram ring,
    which removes these factors and yields the Gram polynomial.
 
+Mathematically the result is the first fundamental theorem of invariant theory for `SU(2)`
+acting on two doublets in `ℂ²`.
+
 ## ii. Key results
 
 * `exists_polynomial_repHiggs_sliceBilinear` — on gauge representatives, the potential is a
@@ -52,20 +57,18 @@ and runs the following physical pipeline:
 
 ## iii. Table of contents
 
-* A. Gauge-torus invariance of the potential on the slice
-* B. Hypercharge eigen-coordinates and charge balancing
-* C. Generation by the neutral gauge-invariant bilinears
-* D. The potential on representatives as a polynomial in the bilinears
-* E. Clearing the `‖Φ1‖²` and `‖Φ2‖²` factors
-* F. Independence and coprimality of the Gram invariants
-* G. The gauge-invariant potential as a polynomial in the Gram vector
+- A. Gauge-torus invariance of the potential on the slice
+- B. Hypercharge eigen-coordinates and charge balancing
+- C. Generation by the neutral gauge-invariant bilinears
+- D. The potential on representatives as a polynomial in the bilinears
+- E. Clearing the `‖Φ1‖²` and `‖Φ2‖²` factors
+- F. Independence and coprimality of the Gram invariants
+- G. The gauge-invariant potential as a polynomial in the Gram vector
 
 ## iv. References
 
 * The bilinear formalism: https://arxiv.org/abs/hep-ph/0605184. [ref: arxiv_hep_ph_0605184]
 
-Mathematically the result is the first fundamental theorem of invariant theory for `SU(2)`
-acting on two doublets in `ℂ²`.
 -/
 
 @[expose] public section

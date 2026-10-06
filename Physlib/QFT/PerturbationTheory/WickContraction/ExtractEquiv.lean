@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-meta import Physlib.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
 public import Physlib.QFT.PerturbationTheory.WickContraction.InsertAndContractNat
 import all Init.Data.Fin.Fold
 /-!

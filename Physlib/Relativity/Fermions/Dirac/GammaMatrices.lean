@@ -6,6 +6,7 @@ Authors: Zhuoran Li
 module
 
 public import Physlib.Relativity.Fermions.Dirac.Basic
+public import Physlib.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 /-!
 # Gamma endomorphisms of Dirac fermions
 

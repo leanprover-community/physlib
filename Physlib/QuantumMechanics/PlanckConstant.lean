@@ -5,7 +5,6 @@ Authors: Samyak Rai, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Basic.NNReal.Defs
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 /-!
 
@@ -57,5 +56,8 @@ lemma h_nonneg : 0 ≤ (h : ℝ) := le_of_lt h.2
 /-- Planck's constnat is not equal to zero. -/
 @[simp]
 lemma h_ne_zero : (h : ℝ) ≠ 0 := ne_of_gt h.2
+
+/-- Planck's constant is `2 π` times the reduced Planck's constant. -/
+lemma h_eq_two_pi_hbar : (h : ℝ) = 2 * Real.pi * (ℏ : ℝ) := rfl
 
 end Constants

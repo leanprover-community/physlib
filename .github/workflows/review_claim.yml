@@ -20,7 +20,7 @@
 # that a comment merely discussing claims does not trigger one.  Commands need
 # no repository permissions -- anyone can claim a review.
 #
-# The work itself is in `scripts/review_claim.py`.
+# The work itself is in `scripts/github/review_claim.py`.
 
 name: Review claims
 
@@ -56,31 +56,33 @@ jobs:
        contains(github.event.comment.body, 'Claim'))
     steps:
       - name: Check out the claim script
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          sparse-checkout: scripts/review_claim.py
+          sparse-checkout: scripts/github/review_claim.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - name: Claim or disclaim
-        run: python3 scripts/review_claim.py comment
+        run: python3 scripts/github/review_claim.py comment
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   complete:
     name: Complete claim on review
     runs-on: ubuntu-latest
-    # Don't run on forks, where we wouldn't have permission to act on the PR anyway.
+    # Reviews on fork PRs get a read-only token, so only same-repository PRs are
+    # handled here; the hourly `review_claim_expiry.yml` completes the others.
     if: >-
       github.repository == 'leanprover-community/physlib' &&
-      github.event_name == 'pull_request_review'
+      github.event_name == 'pull_request_review' &&
+      github.event.pull_request.head.repo.full_name == github.repository
     steps:
       - name: Check out the claim script
-        uses: actions/checkout@v7.0.0
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
-          sparse-checkout: scripts/review_claim.py
+          sparse-checkout: scripts/github/review_claim.py
           sparse-checkout-cone-mode: false
           persist-credentials: false
       - name: Clear the claim once its claimant has reviewed
-        run: python3 scripts/review_claim.py review
+        run: python3 scripts/github/review_claim.py review
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

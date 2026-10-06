@@ -11,6 +11,8 @@ public import Physlib.Mathematics.LeviCivita.Basic
 /-!
 # Three-dimensional angular momentum
 
+Cartesian components, commutation relations, and ladder operators on the Schwartz domain.
+
 ## i. Overview
 
 The Cartesian components use the right-handed convention

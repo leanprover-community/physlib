@@ -11,6 +11,8 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.PosPartPow
 
 # The motions of the Norton dome and the failure of uniqueness
 
+The Norton dome has infinitely many motions from rest at its apex: uniqueness fails.
+
 ## i. Overview
 
 A particle at rest on the apex of the Norton dome satisfies `r̈ = √r` by staying there forever,

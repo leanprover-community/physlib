@@ -8,9 +8,6 @@ module
 public import QuantumInfo.States.Pure.Braket
 public import QuantumInfo.States.Ensemble
 public import QuantumInfo.Entropy.VonNeumann
-public import QuantumInfo.Entropy.SSA
-public import QuantumInfo.Entropy.Relative
-public import QuantumInfo.Entropy.DPI
 public import QuantumInfo.ClassicalInfo.Entropy
 
 /-!

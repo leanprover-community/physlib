@@ -39,7 +39,7 @@ ParentAPIs:
   - "Hilbert spaces on Space (Physlib/QuantumMechanics/HilbertSpaces/SpaceD)"
   - "Space (Physlib/SpaceAndTime/Space)"
   - "Planck constant (Physlib/QuantumMechanics/PlanckConstant.lean)"
-  - "Partially defined linear maps (Physlib/Mathematics/LinearPMap.lean)"
+  - "Partially defined linear maps (Physlib/Mathematics/ForMathlib/LinearPMap.lean)"
   - "Inner product spaces (Physlib/Mathematics/InnerProductSpace)"
 
 References:

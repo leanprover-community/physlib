@@ -55,4 +55,4 @@ lake build
   (write) operations. Egress, the usual scaling problem, is free on R2.
 - Each half publishes under its own scope, `physlib-master/<toolchain>/physlib`
   and `.../alpha`, so the two CI jobs do not overwrite each other's mappings.
-  The workflow and `scripts/get_cache.lean` must build the same strings.
+  The workflow and `scripts/dev/get_cache.lean` must build the same strings.

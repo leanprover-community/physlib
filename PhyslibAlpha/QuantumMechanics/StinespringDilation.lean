@@ -8,9 +8,58 @@ public import Mathlib.Data.Matrix.PEquiv
 public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Physlib.Meta.TODO.Basic
-public import Mathlib
+public import Mathlib.Analysis.Matrix.Order
 /-!
 # Stinespring dilation
+
+Kraus maps, the Stinespring isometry and unitary dilation, and completion of Kraus families.
+
+## i. Overview
+
+Completely positive maps on matrices over an `RCLike` field, given by a Kraus family `K`, act as
+`krausApply K ρ = ∑ i, K i * ρ * (K i)ᴴ`. The Stinespring operator `stinespringOp K` (often `V`)
+stacks the Kraus operators into one matrix, and the Kraus map is recovered as the partial trace of
+`V ρ Vᴴ`. For a trace-preserving family `V` is an isometry; its columns are extended to an
+orthonormal basis to build a unitary dilation `Ud`, which acts on `ρ` tensored with an ancilla
+state. A trace non-increasing family is completed to a trace-preserving one by adding one extra
+Kraus operator.
+
+There is a different version of the Stinespring dilation in `QuantumInfo.Channels.CPTP`; see the
+TODO in this file about unifying the two.
+
+## ii. Key results
+
+- `krausApply` : the completely positive map of a Kraus family.
+- `IsKrausChannel`, `QuantumOperation` : trace-preserving and trace non-increasing Kraus families.
+- `densityMatrix` : density matrices.
+- `tr₂` : the partial trace over the second factor.
+- `stinespringOp` : the Stinespring isometry `V`.
+- `stinespringForm_CPTP_isometry` : `V` is an isometry for a trace-preserving family.
+- `Ud`, `Ud_unitary` : the unitary dilation, and its unitarity.
+- `stinespringGeneralForm_works`, `stinespringUnitaryForm_works` : the dilation forms reproduce
+  `krausApply K`.
+- `krausCompletion`, `krausCompletion_isometry_of_TNI` : the completion of a trace non-increasing
+  family, and its isometry property.
+- `CPTP_of_CPTNI` : every quantum operation extends to a quantum channel.
+- `stinespringForm_eq` : a version of the Stinespring dilation theorem,
+  `tr₂ (stinespringDilation K ρ) = krausApply K ρ`.
+
+## iii. Table of contents
+
+- A. Kraus maps and density matrices
+- B. The Stinespring isometry
+- C. Extending the Stinespring columns to an orthonormal basis
+- D. The unitary dilation
+- E. Stinespring forms
+- F. The Kraus completion
+- G. Partial traces and unitary dilations
+- H. Completing quantum operations to channels
+- I. The Stinespring dilation theorem
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -22,6 +71,12 @@ TODO "There is a different version of the Stienspring dilation in
   do not restrict to `ℂ`. This is something we should modify in `QuantumInfo`."
 
 open Matrix MatrixOrder ComplexOrder RCLike TensorProduct Kronecker
+
+/-!
+
+## A. Kraus maps and density matrices
+
+-/
 
 /-- Completely positive map given by a (not necessarily minimal) Kraus family. -/
 def krausApply {R : Type*} [Mul R] [Star R] [AddCommMonoid R]
@@ -38,8 +93,8 @@ lemma krausApply.posSemidef {R : Type*} [Ring R] [PartialOrder R] [StarRing R]
     (krausApply K ρ).PosSemidef :=
   posSemidef_sum _ fun _ _ => hρ.mul_mul_conjTranspose_same _
 
-/-- Quantum channel. -/
-def QuantumChannel {R : Type*} [Mul R] [One R] [Star R] [AddCommMonoid R]
+/-- A Kraus family defines a quantum channel: its Kraus operators satisfy `∑ Kᵢᴴ Kᵢ = 1`. -/
+def IsKrausChannel {R : Type*} [Mul R] [One R] [Star R] [AddCommMonoid R]
     {q r : Type*} [Fintype q] [Fintype r] [DecidableEq q]
     (K : r → Matrix q q R) :=
   ∑ i, (K i)ᴴ * K i = 1
@@ -62,6 +117,12 @@ def densityMatrix.convexComb {R : Type*} [RCLike R]
   · exact (ρ₀.2.1.smul hp₀).add (ρ₁.2.1.smul hp₁)
   · rw [trace_add, trace_smul, smul_eq_mul, trace_smul, ρ₀.2.2, ρ₁.2.2]
     simp⟩
+
+/-!
+
+## B. The Stinespring isometry
+
+-/
 
 /-- Also known as `partialTraceRight`. -/
 def tr₂ {R : Type*} [Ring R] {m n m' : Type*} [Fintype n]
@@ -166,6 +227,12 @@ lemma stinespringOrtho {R : Type*} [RCLike R]
       congr
       ext x
       ring_nf
+
+/-!
+
+## C. Extending the Stinespring columns to an orthonormal basis
+
+-/
 
 /-- `m` will of course be finite and bounded by `n` here,
 but no need to assume or prove that.
@@ -335,6 +402,12 @@ lemma onbPart_norm {R : Type*} [RCLike R] {m r : ℕ} {K : Fin r → Matrix (Fin
 
 
 
+/-!
+
+## D. The unitary dilation
+
+-/
+
 /-- Also known as `unitaryDilation`. Respects x,y order. -/
 def Ud {R : Type*} [RCLike R] {m r : ℕ}
     {K : Fin r → Matrix (Fin m) (Fin m) R}
@@ -503,6 +576,12 @@ lemma Ud_unitary {R : Type*} [RCLike R]
      · exact this
      · exact (mul_eq_one_comm_of_card_eq _ _ _ rfl).mp this
 
+/-!
+
+## E. Stinespring forms
+
+-/
+
 open Kronecker TensorProduct
 
 /-- Taking the partial trace of a tensor product with a matrix of trace 1 is the
@@ -670,6 +749,12 @@ lemma stinespringUnitaryForm_works {R : Type*} [RCLike R] {m r : ℕ}
   rw [← stinespringGeneralForm_works K z (Ud hK z) ]
   rw [unitaryForm_of_general]
 
+/-!
+
+## F. The Kraus completion
+
+-/
+
 /-- The "orthogonal" CPTP completion of a CPTNI map.
 `Vtilde` is an alternative name for `krausCompletion`.
 -/
@@ -747,6 +832,12 @@ lemma krausCompletion_isometry_of_TNI {R : Type*} [RCLike R] {m r : ℕ}
   abel
 
 
+/-!
+
+## G. Partial traces and unitary dilations
+
+-/
+
 /-- A unital operator. -/
 def unital {R : Type*} [RCLike R] {m r : ℕ}
     (K : Fin r → Matrix (Fin m) (Fin m) R) := ∑ i, K i * star (K i) = 1
@@ -790,15 +881,21 @@ lemma trace_tr₂ {R : Type*} [RCLike R] {m n : ℕ}
     trace ρ = trace (tr₂ ρ) := Fintype.sum_prod_type fun x ↦ ρ x x
 
 
+/-!
+
+## H. Completing quantum operations to channels
+
+-/
+
 /-- The Kraus completion as a map from
 operations to channels. -/
 def krausCompletionChannelMap {R : Type*} [RCLike R] {q r : ℕ}
     {K : Fin r → Matrix (Fin q) (Fin q) R} (hK : QuantumOperation K) :
-    {K : Fin (r+1) → Matrix (Fin q) (Fin q) R | QuantumChannel K} := by
+    {K : Fin (r+1) → Matrix (Fin q) (Fin q) R | IsKrausChannel K} := by
   constructor
   swap
   · exact fun i x => krausCompletion K (x, i)
-  · unfold QuantumChannel
+  · unfold IsKrausChannel
     rw [← krausCompletion_isometry_of_TNI hK]
     ext x y
     rw [mul_apply, Fintype.sum_prod_type, Finset.sum_comm, Matrix.sum_apply]
@@ -811,7 +908,7 @@ lemma CPTP_of_CPTNI {R : Type*} [RCLike R]
     {K : Fin r → Matrix (Fin q) (Fin q) R}
     (hq : QuantumOperation K) :
     ∃ K' : Fin (r+1) → Matrix (Fin q) (Fin q) R,
-    QuantumChannel K' ∧
+    IsKrausChannel K' ∧
     ∀ i, ∀ H : i ≠ Fin.last r, K' i = K ⟨i.1, Fin.val_lt_last H⟩ := by
   use (fun i x => krausCompletion K (x, i))
   constructor
@@ -832,6 +929,12 @@ lemma CPTP_of_CPTNI {R : Type*} [RCLike R]
       erw [Finset.sum_fn]
       simp
     · exact False.elim <| H <| Fin.eq_last_of_not_lt g₀
+
+/-!
+
+## I. The Stinespring dilation theorem
+
+-/
 
 /-- Partial trace on the left of a tensor product. -/
 def partialTraceLeft {R : Type*} [RCLike R]

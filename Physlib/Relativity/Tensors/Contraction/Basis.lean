@@ -7,6 +7,7 @@ module
 
 public import Physlib.Relativity.Tensors.Contraction.Basic
 public import Physlib.Relativity.Tensors.ComponentIdx.Contraction
+public import Physlib.Relativity.Tensors.TensorSpecies.DualBasis
 /-!
 
 # Contractions on basis tensors
@@ -35,6 +36,18 @@ lemma Pure.dropPair_basisVector {n : ℕ} {c : Fin (n + 1 + 1) → C}
     basisVector (S := S) (c ∘ Fin.succSuccAbove i j) fun m => b (Fin.succSuccAbove i j m) := by
   funext l
   simp [dropPair, basisVector]
+
+/-- For a species with dual bases (`HasContrDualBases`), the contraction coefficient of a basis
+  vector is the Kronecker δ of its labels at `i` and `j`, the label at `j` read as a label at the
+  color `c i`. The per-species `contrPCoeff_basis` lemmas follow from it. -/
+lemma Pure.contrPCoeff_basisVector [HasContrDualBases S] {n : ℕ} {c : Fin n → C} (i j : Fin n)
+    (hij : i ≠ j ∧ S.τ (c i) = c j) (φ : ComponentIdx (S := S) c) :
+    Pure.contrPCoeff i j hij (Pure.basisVector c φ) =
+      if φ i = HasContrDualBases.contrDualIdxEquiv S (c i) (basisIdxCongr hij.2.symm (φ j)) then 1
+      else 0 := by
+  simp only [Pure.contrPCoeff, Pure.basisVector]
+  rw [map_basis_eq]
+  exact HasContrDualBases.contr_basis_eq_ite (c i) (φ i) _
 
 attribute [-simp] LinearEquiv.cast_apply
 lemma contrT_basis_repr_apply {n : ℕ} {c : Fin (n + 1 + 1) → C} {i j : Fin (n + 1 + 1)}
@@ -86,6 +99,21 @@ lemma contrT_basis_repr_apply_eq_sum_fin {n : ℕ} {c : Fin (n + 1 + 1) → C} {
   rw [contrT_basis_repr_apply h t φ, ← (DropPairSection.ofFinEquiv h.1 φ).sum_comp,
     Fintype.sum_prod_type]
   simp
+
+/-- For a species with dual bases (`HasContrDualBases`), a component of a contraction is a single
+  sum over the labels at the first contracted index: the δ law
+  (`HasContrDualBases.contr_basis_eq_ite`) fixes the label at the second. This collapses the double
+  sum of `contrT_basis_repr_apply_eq_sum_fin`. -/
+lemma contrT_basis_repr_apply_eq_sum_dual [HasContrDualBases S] {n : ℕ} {c : Fin (n + 1 + 1) → C}
+    {i j : Fin (n + 1 + 1)} (h : i ≠ j ∧ S.τ (c i) = c j) (t : Tensor S c)
+    (φ : ComponentIdx (c ∘ Fin.succSuccAbove i j)) :
+    (basis (c ∘ Fin.succSuccAbove i j)).repr (contrT n i j h t) φ =
+    ∑ x : basisIdx (c i), (basis c).repr t
+      (DropPairSection.ofFinEquiv h.1 φ
+        (x, basisIdxCongr h.2 ((HasContrDualBases.contrDualIdxEquiv S (c i)).symm x))).1 := by
+  rw [contrT_basis_repr_apply_eq_sum_fin]
+  simp [HasContrDualBases.contr_basis_eq_ite, mul_ite, ← Equiv.symm_apply_eq,
+    ← basisIdxCongr_symm h.2]
 
 lemma contrT_basis {n : ℕ} {c : Fin (n + 1 + 1) → C} {i j : Fin (n + 1 + 1)}
     (h : i ≠ j ∧ S.τ (c i) = c j) (b : ComponentIdx (S := S) c) :

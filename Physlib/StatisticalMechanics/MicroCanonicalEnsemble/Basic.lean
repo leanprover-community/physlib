@@ -5,12 +5,10 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Constructions.BorelSpace.WithTop
-public import Physlib.Meta.Sorry
 /-!
 
-## The Microcanonical Ensemble
+# The Microcanonical Ensemble
 
 -/
 
