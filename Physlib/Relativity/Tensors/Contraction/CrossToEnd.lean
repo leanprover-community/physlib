@@ -5,6 +5,9 @@ Authors: Andrea Pari
 -/
 module
 
+public import Physlib.Relativity.Tensors.ComponentIdx.Insert
+public import Physlib.Relativity.Tensors.ComponentIdx.Pair
+public import Physlib.Relativity.Tensors.Contraction.Basis
 public import Physlib.Relativity.Tensors.Contraction.Products
 /-!
 
@@ -34,6 +37,15 @@ The complementary convention keeps the replacement index in place. Contracting s
 - `TensorSpecies.Tensor.crossToEnd` : the slot-addressed cross contraction.
 - `TensorSpecies.Tensor.crossToEnd_two` : at rank two on each factor, a plain `contrT` of the
     product on slots `1, 2`.
+- `TensorSpecies.Tensor.crossToEnd_basis` : the contraction of two basis tensors, which
+    characterises `crossToEnd`.
+- `TensorSpecies.Tensor.crossToEnd_basis_repr_eq_sum_fin` : the component formula at arbitrary
+    slots and ranks for any species, the contraction of the two contracted basis vectors left as an
+    opaque coefficient.
+- `TensorSpecies.Tensor.crossToEnd_basis_repr_eq_sum_dual` : the same formula for a species with
+    contraction-dual bases, the δ collapsing the two sums into one.
+- `TensorSpecies.Tensor.crossToEnd_pair_basis_repr` : the component formula at rank two on each
+    factor.
 - `TensorSpecies.Tensor.crossToEnd_equivariant` : the contraction commutes with the `G`-action.
 - `TensorSpecies.Tensor.crossToEnd_assoc_rankTwo` : rebracket the chain
     `A —(iA·0)— B —(last·0)— C` at rank-two `B` and `C`, up to `permT id`. Not full associativity.
@@ -43,7 +55,7 @@ The complementary convention keeps the replacement index in place. Contracting s
 ## iii. Table of contents
 
 - A. Slot-addressed cross contraction
-- B. Equivariance
+- B. Component formulas and equivariance
 - C. Rebracketing the metric chain
 - D. Permutation commutators
 
@@ -126,13 +138,120 @@ lemma crossToEnd_two {cA cB : Fin 2 → C} (h : S.τ (cA (Fin.last 1)) = cB 0)
 
 /-!
 
-## B. Equivariance
+## B. Component formulas and equivariance
 
 `crossToEnd i j hc` is the curried bilinear map `LinearMap.compr₂ prodT` post-composed with the
 linear `permT`/`contrT` factors, so additivity, scalar multiplication, and finite sums in either
 argument are already the generic `map_add`/`map_smul`/`map_sum` and need no lemmas of their own.
 
 -/
+
+/-- Cross contraction of two basis tensors: the contraction of the two contracted basis vectors
+times the basis tensor of the surviving labels. These values determine `crossToEnd i j hc`, a
+bilinear map in the two tensors. -/
+lemma crossToEnd_basis {nA nB : ℕ} {cA : Fin (nA + 1) → C} {cB : Fin (nB + 1) → C}
+    (i : Fin (nA + 1)) (j : Fin (nB + 1)) (hc : S.τ (cA i) = cB j)
+    (φA : ComponentIdx (S := S) cA) (φB : ComponentIdx (S := S) cB) :
+    crossToEnd i j hc (basis cA φA) (basis cB φB) =
+      S.contr (cA i) (b (cA i) (φA i) ⊗ₜ[k] b (S.τ (cA i)) (basisIdxCongr hc.symm (φB j))) •
+        basis (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))
+          (ComponentIdx.prod.symm (fun m => φA (i.succAbove m), fun m => φB (j.succAbove m))) := by
+  simp only [crossToEnd, LinearMap.compr₂_apply, LinearMap.comp_apply]
+  rw [prodT_basis', permT_basis, contrT_basis, map_smul, permT_basis]
+  congr 1
+  · simp only [Pure.contrPCoeff, Pure.basisVector]
+    rw [map_basis_eq, S.contr_basis_transport (a' := cA i) (by simp)]
+    congr 3
+    · exact eq_of_heq ((basisIdxCongr_heq _ _).trans ((basisIdxCongr_heq _ _).trans
+        (ComponentIdx.prod_symm_heq_castAdd _ _ (Fin.ext (by simp)))))
+    · exact eq_of_heq ((basisIdxCongr_heq _ _).trans ((basisIdxCongr_heq _ _).trans
+        ((basisIdxCongr_heq _ _).trans ((ComponentIdx.prod_symm_heq_natAdd _ _
+          (Fin.ext (by simp))).trans (basisIdxCongr_heq _ _).symm))))
+  · congr 1
+    funext m
+    refine eq_of_heq ((basisIdxCongr_heq _ _).trans ?_)
+    refine Fin.addCases (fun a => ?_) (fun a => ?_) m
+    · refine ((basisIdxCongr_heq _ _).trans
+        (ComponentIdx.prod_symm_heq_castAdd φA φB (a := i.succAbove a) ?_)).trans
+        (ComponentIdx.prod_symm_heq_castAdd (fun m => φA (i.succAbove m))
+          (fun m => φB (j.succAbove m)) (a := a) rfl).symm
+      simpa using Fin.succSuccAbove_castAdd_natAdd_apply_castAdd i j a
+    · refine ((basisIdxCongr_heq _ _).trans
+        (ComponentIdx.prod_symm_heq_natAdd φA φB (a := j.succAbove a) ?_)).trans
+        (ComponentIdx.prod_symm_heq_natAdd (fun m => φA (i.succAbove m))
+          (fun m => φB (j.succAbove m)) (a := a) rfl).symm
+      simpa using Fin.succSuccAbove_castAdd_natAdd_apply_natAdd i j a
+
+/-- The component formula for a cross contraction at arbitrary slots and ranks, for any species:
+each contracted label is summed over its own slot, with the contraction of the two basis vectors as
+coefficient. The counterpart of `contrT_basis_repr_apply_eq_sum_fin` for two tensors. -/
+lemma crossToEnd_basis_repr_eq_sum_fin {nA nB : ℕ} {cA : Fin (nA + 1) → C}
+    {cB : Fin (nB + 1) → C} (i : Fin (nA + 1)) (j : Fin (nB + 1)) (hc : S.τ (cA i) = cB j)
+    (t1 : Tensor S cA) (t2 : Tensor S cB)
+    (φ : ComponentIdx (S := S) (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))) :
+    (basis (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))).repr
+        (crossToEnd i j hc t1 t2) φ =
+      ∑ x₁ : basisIdx (cA i), ∑ x₂ : basisIdx (cB j),
+        ((basis cA).repr t1 (ComponentIdx.insert i (x₁, (ComponentIdx.prod φ).1)) *
+          (basis cB).repr t2 (ComponentIdx.insert j (x₂, (ComponentIdx.prod φ).2))) *
+        S.contr (cA i) (b (cA i) x₁ ⊗ₜ[k]
+          b (S.τ (cA i)) (basisIdxCongr (by rw [hc]) x₂)) := by
+  -- Expand both tensors in their bases and evaluate each term by `crossToEnd_basis`.
+  conv_lhs => rw [← (basis cA).sum_repr t1, ← (basis cB).sum_repr t2]
+  simp only [map_sum, map_smul, LinearMap.sum_apply, LinearMap.smul_apply, crossToEnd_basis,
+    Finsupp.coe_finsetSum, Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply, smul_eq_mul,
+    Module.Basis.repr_self, Finsupp.single_apply, Equiv.symm_apply_eq, Prod.ext_iff, Finset.mul_sum]
+  -- Split each summed index at its contracted slot and keep the term matching `φ`.
+  rw [Finset.sum_comm, ← (ComponentIdx.insert i).sum_comp, Fintype.sum_prod_type]
+  refine Finset.sum_congr rfl fun x₁ _ => ?_
+  simp only [ComponentIdx.insert_apply_succAbove, ComponentIdx.insert_apply_self, mul_ite, mul_one,
+    mul_zero, ite_and]
+  rw [Finset.sum_eq_single (ComponentIdx.prod φ).1
+    (fun p _ hp => Finset.sum_eq_zero fun x _ => by simp [hp]) (by simp)]
+  rw [← (ComponentIdx.insert j).sum_comp, Fintype.sum_prod_type]
+  refine Finset.sum_congr rfl fun x₂ _ => ?_
+  simp only [ComponentIdx.insert_apply_succAbove, ComponentIdx.insert_apply_self, ite_true]
+  rw [Finset.sum_eq_single (ComponentIdx.prod φ).2 (fun p _ hp => by simp [hp]) (by simp)]
+  simp only [ite_true]
+  ring
+
+/-- The component formula for a cross contraction at arbitrary slots and ranks, for a species with
+contraction-dual bases: the contraction coefficient is `δ` and one sum remains, the contracted label
+of `t2` matched to that of `t1` by `contrDualIdxEquiv`. -/
+lemma crossToEnd_basis_repr_eq_sum_dual [HasContrDualBases S] {nA nB : ℕ} {cA : Fin (nA + 1) → C}
+    {cB : Fin (nB + 1) → C} (i : Fin (nA + 1)) (j : Fin (nB + 1)) (hc : S.τ (cA i) = cB j)
+    (t1 : Tensor S cA) (t2 : Tensor S cB)
+    (φ : ComponentIdx (S := S) (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))) :
+    (basis (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))).repr
+        (crossToEnd i j hc t1 t2) φ =
+      ∑ x : basisIdx (cA i),
+        (basis cA).repr t1 (ComponentIdx.insert i (x, (ComponentIdx.prod φ).1)) *
+        (basis cB).repr t2 (ComponentIdx.insert j
+          (basisIdxCongr hc ((HasContrDualBases.contrDualIdxEquiv S (cA i)).symm x),
+            (ComponentIdx.prod φ).2)) := by
+  rw [crossToEnd_basis_repr_eq_sum_fin]
+  simp [HasContrDualBases.contr_basis_eq_ite, mul_ite, ← Equiv.symm_apply_eq,
+    ← basisIdxCongr_symm hc]
+
+/-- The component formula for cross-contracting the last slot of a rank-two tensor with the first
+slot of another. The surviving labels are supplied as a dependent pair, so the formula applies when
+the species has colour-dependent basis-index types. -/
+lemma crossToEnd_pair_basis_repr [HasContrDualBases S] {c0 c1 c2 c3 : C} (h : S.τ c1 = c2)
+    (t1 : Tensor S ![c0, c1]) (t2 : Tensor S ![c2, c3])
+    (y0 : basisIdx c0) (y3 : basisIdx c3) :
+    (basis (Fin.append (![c0, c1] ∘ (Fin.last 1).succAbove)
+        (![c2, c3] ∘ (0 : Fin 2).succAbove))).repr
+      (crossToEnd (Fin.last 1) (0 : Fin 2) h t1 t2)
+      (ComponentIdx.pair.symm (y0, y3)) =
+      ∑ x : basisIdx c1,
+        (basis ![c0, c1]).repr t1 (ComponentIdx.pair.symm (y0, x)) *
+        (basis ![c2, c3]).repr t2
+          (ComponentIdx.pair.symm
+            (basisIdxCongr h ((HasContrDualBases.contrDualIdxEquiv S c1).symm x), y3)) := by
+  refine (crossToEnd_basis_repr_eq_sum_dual (Fin.last 1) (0 : Fin 2) h t1 t2
+    (ComponentIdx.pair.symm (y0, y3))).trans ?_
+  refine Finset.sum_congr rfl fun x _ => ?_
+  congr 1 <;> apply congrArg <;> funext i <;> fin_cases i <;> rfl
 
 /-- Cross contraction is `G`-equivariant, each of `prodT`, `contrT` and `permT` being so. -/
 @[simp]
