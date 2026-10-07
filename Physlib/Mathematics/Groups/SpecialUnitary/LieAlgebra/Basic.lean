@@ -5,13 +5,11 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.BaseChange
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.LinearAlgebra.Matrix.Trace
+public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.LinearAlgebra.Matrix.FiniteDimensional
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Complex.Module
 /-!
 
 # The Lie algebra `su(n)` in the hermitian presentation
@@ -26,12 +24,22 @@ This file makes the traceless hermitian matrices into a real Lie algebra with th
 entries in any commutative `*`-ring `R` that is both a real and a complex `*`-algebra, as
 `SULieAlgebra n R`; the Lie algebra `su(n)` itself is `SULieAlgebra n ℂ`.
 
+Sending `z ⊗ x` to the matrix `z x` identifies the complexification `ℂ ⊗[ℝ] su(n)` with the
+traceless complex matrices. The inverse writes a traceless matrix `M` as `ℜ M + i ℑ M`, its real
+and imaginary parts `ℜ M` and `ℑ M` being traceless hermitian.
+
 ## ii. Key results
 
 - `SULieAlgebra n R` : traceless hermitian `n × n` matrices over `R`, as a real Lie algebra.
 - `SULieAlgebra.conj` : the representation `x ↦ U x U†` of the unitary group.
 - `SULieAlgebra.conj_lie` : conjugation by a unitary matrix preserves the bracket.
 - `SULieAlgebra.Complexification n` : the complexification `ℂ ⊗[ℝ] su(n)`.
+- `SULieAlgebra.toMatrixℂ` : the underlying matrix of an element of the complexification.
+- `SULieAlgebra.toMatrixℂ_lie` : the matrix of a bracket is `i` times the commutator.
+- `SULieAlgebra.toMatrixℂ_injective`, `SULieAlgebra.range_toMatrixℂ` : the complexification is
+  the traceless complex matrices.
+- `SULieAlgebra.finrank_eq`, `SULieAlgebra.finrank_complexification` : `su(n)` and its
+  complexification have dimension `n² - 1`.
 
 ## iii. Table of contents
 
@@ -40,6 +48,11 @@ entries in any commutative `*`-ring `R` that is both a real and a complex `*`-al
 - C. The bracket
 - D. Conjugation preserves the bracket
 - E. The complexification
+  - E.1. The underlying matrix of the complexification
+  - E.2. The element with a given traceless matrix
+  - E.3. The injectivity and surjectivity of the matrix map
+  - E.4. Commuting with all elements of `su(n)`
+- F. The dimension
 
 ## iv. References
 
@@ -49,7 +62,7 @@ entries in any commutative `*`-ring `R` that is both a real and a complex `*`-al
 
 @[expose] public section
 
-open Matrix
+open Matrix TensorProduct ComplexStarModule
 
 /-!
 
@@ -194,8 +207,165 @@ lemma conj_lie (U : unitaryGroup (Fin n) R) (x y : SULieAlgebra n R) :
 
 -/
 
-open TensorProduct in
 /-- The complexification `ℂ ⊗[ℝ] su(n)` of `su(n)`, a complex Lie algebra. -/
 abbrev Complexification (n : ℕ) : Type := ℂ ⊗[ℝ] SULieAlgebra n ℂ
+
+/-!
+
+### E.1. The underlying matrix of the complexification
+
+-/
+
+/-- The underlying matrix of an element of the complexification, `z ⊗ x ↦ z x`. -/
+noncomputable def toMatrixℂ : Complexification n →ₗ[ℂ] Matrix (Fin n) (Fin n) ℂ :=
+  (SULieAlgebra.submodule n ℂ).subtype.liftBaseChange ℂ
+
+@[simp]
+lemma toMatrixℂ_tmul (z : ℂ) (x : SULieAlgebra n ℂ) : toMatrixℂ (z ⊗ₜ x) = z • x.1 := rfl
+
+/-- The underlying matrix of an element of the complexification is traceless. -/
+lemma trace_toMatrixℂ (A : Complexification n) : (toMatrixℂ A).trace = 0 := by
+  induction A using TensorProduct.inductionOn with
+  | tmul z x => rw [toMatrixℂ_tmul, Matrix.trace_smul, x.trace_val_eq_zero, smul_zero]
+  | add A B hA hB => rw [map_add, Matrix.trace_add, hA, hB, add_zero]
+
+/-- The matrix of a bracket is `i` times the commutator of the matrices, `[A, B] ↦ i (A B - B A)`,
+  as in `su(n)` itself. -/
+lemma toMatrixℂ_lie (A B : Complexification n) :
+    toMatrixℂ ⁅A, B⁆ = Complex.I • (toMatrixℂ A * toMatrixℂ B - toMatrixℂ B * toMatrixℂ A) := by
+  induction A using TensorProduct.inductionOn with
+  | tmul z x =>
+    induction B using TensorProduct.inductionOn with
+    | tmul w y =>
+      rw [LieAlgebra.ExtendScalars.bracket_tmul, toMatrixℂ_tmul, toMatrixℂ_tmul, toMatrixℂ_tmul,
+        val_bracket]
+      simp only [Matrix.smul_mul, Matrix.mul_smul]
+      module
+    | add B B' hB hB' =>
+      rw [lie_add (L := Complexification n), map_add, hB, hB', map_add, Matrix.mul_add,
+        Matrix.add_mul]
+      module
+  | add A A' hA hA' =>
+    rw [add_lie (L := Complexification n), map_add, hA, hA', map_add, Matrix.mul_add,
+      Matrix.add_mul]
+    module
+
+/-!
+
+### E.2. The element with a given traceless matrix
+
+-/
+
+/-- The element `1 ⊗ ℜ M + i ⊗ ℑ M` of the complexification with the traceless matrix `M`. -/
+noncomputable def ofTracelessℂ (M : Matrix (Fin n) (Fin n) ℂ) (hM : M.trace = 0) :
+    Complexification n :=
+  1 ⊗ₜ ofMatrix (ℜ M) (selfAdjoint.mem_iff.mp (ℜ M).2) (by
+      simp [realPart_apply_coe, trace_smul, trace_add, star_eq_conjTranspose,
+        trace_conjTranspose, hM]) +
+    Complex.I ⊗ₜ ofMatrix (ℑ M) (selfAdjoint.mem_iff.mp (ℑ M).2) (by
+      simp [imaginaryPart_apply_coe, trace_smul, trace_sub, star_eq_conjTranspose,
+        trace_conjTranspose, hM])
+
+/-- The matrix of `ofTracelessℂ M` is `M = ℜ M + i ℑ M`. -/
+@[simp]
+lemma toMatrixℂ_ofTracelessℂ (M : Matrix (Fin n) (Fin n) ℂ) (hM : M.trace = 0) :
+    toMatrixℂ (ofTracelessℂ M hM) = M := by
+  rw [ofTracelessℂ, map_add, toMatrixℂ_tmul, toMatrixℂ_tmul, one_smul, val_ofMatrix,
+    val_ofMatrix, realPart_add_I_smul_imaginaryPart]
+
+/-- `ofTracelessℂ` is additive. -/
+lemma ofTracelessℂ_add (M N : Matrix (Fin n) (Fin n) ℂ) (hM : M.trace = 0) (hN : N.trace = 0)
+    (hMN : (M + N).trace = 0) :
+    ofTracelessℂ (M + N) hMN = ofTracelessℂ M hM + ofTracelessℂ N hN := by
+  rw [ofTracelessℂ, ofTracelessℂ, ofTracelessℂ, add_add_add_comm, ← tmul_add, ← tmul_add]
+  congr 2 <;> exact Subtype.ext (by simp)
+
+/-- An element of the complexification is recovered from its matrix. -/
+@[simp]
+lemma ofTracelessℂ_toMatrixℂ (A : Complexification n) :
+    ofTracelessℂ (toMatrixℂ A) (trace_toMatrixℂ A) = A := by
+  induction A using TensorProduct.inductionOn with
+  | tmul z x =>
+    have hre : ∀ h₁ h₂, ofMatrix (ℜ (z • x.1)) h₁ h₂ = z.re • x := fun _ _ => Subtype.ext (by
+      simp [realPart_smul, IsSelfAdjoint.coe_realPart x.star_val_eq,
+        IsSelfAdjoint.imaginaryPart x.star_val_eq])
+    have him : ∀ h₁ h₂, ofMatrix (ℑ (z • x.1)) h₁ h₂ = z.im • x := fun _ _ => Subtype.ext (by
+      simp [imaginaryPart_smul, IsSelfAdjoint.coe_realPart x.star_val_eq,
+        IsSelfAdjoint.imaginaryPart x.star_val_eq])
+    rw [ofTracelessℂ]
+    simp only [toMatrixℂ_tmul, hre, him]
+    rw [← smul_tmul, ← smul_tmul, ← add_tmul, Complex.real_smul, Complex.real_smul, mul_one,
+      Complex.re_add_im]
+  | add A B hA hB =>
+    calc _ = ofTracelessℂ (toMatrixℂ A + toMatrixℂ B)
+          (by rw [← map_add]; exact trace_toMatrixℂ _) := by
+          congr 1
+          exact map_add _ _ _
+      _ = A + B := by rw [ofTracelessℂ_add _ _ (trace_toMatrixℂ A) (trace_toMatrixℂ B), hA, hB]
+
+/-!
+
+### E.3. The injectivity and surjectivity of the matrix map
+
+-/
+
+/-- An element of the complexification is determined by its matrix. -/
+lemma toMatrixℂ_injective : Function.Injective (toMatrixℂ (n := n)) := fun A B h => by
+  rw [← ofTracelessℂ_toMatrixℂ A, ← ofTracelessℂ_toMatrixℂ B]
+  congr 1
+
+/-- The matrices of elements of the complexification are exactly the traceless matrices. -/
+lemma range_toMatrixℂ :
+    LinearMap.range (toMatrixℂ (n := n)) = LinearMap.ker (Matrix.traceLinearMap (Fin n) ℂ ℂ) := by
+  ext M
+  rw [LinearMap.mem_range, LinearMap.mem_ker, Matrix.traceLinearMap_apply]
+  exact ⟨fun ⟨A, hA⟩ => hA ▸ trace_toMatrixℂ A,
+    fun hM => ⟨ofTracelessℂ M hM, toMatrixℂ_ofTracelessℂ M hM⟩⟩
+
+/-!
+
+### E.4. Commuting with all elements of `su(n)`
+
+-/
+
+/-- A matrix commuting with every element of `su(n)` commutes with every matrix: it commutes with
+  the traceless matrices, which `su(n)` spans over `ℂ`, and with the identity. -/
+lemma commute_of_forall_commute_val {M : Matrix (Fin n) (Fin n) ℂ}
+    (h : ∀ x : SULieAlgebra n ℂ, Commute M x.1) (N : Matrix (Fin n) (Fin n) ℂ) : Commute M N := by
+  have hA (A : Complexification n) : Commute M (toMatrixℂ A) := by
+    induction A using TensorProduct.inductionOn with
+    | tmul z x => exact toMatrixℂ_tmul z x ▸ (h x).smul_right z
+    | add A B hA hB => exact map_add toMatrixℂ A B ▸ hA.add_right hB
+  rcases Nat.eq_zero_or_pos n with rfl | hn
+  · exact Subsingleton.elim (M * N) (N * M)
+  have hN : (N - (N.trace / n) • (1 : Matrix (Fin n) (Fin n) ℂ)).trace = 0 := by
+    rw [Matrix.trace_sub, Matrix.trace_smul, Matrix.trace_one, Fintype.card_fin, smul_eq_mul,
+      div_mul_cancel₀ _ (by exact_mod_cast hn.ne'), sub_self]
+  have h1 := toMatrixℂ_ofTracelessℂ _ hN ▸ hA (ofTracelessℂ _ hN)
+  simpa using h1.add_right ((Commute.one_right M).smul_right (N.trace / n))
+
+/-!
+
+## F. The dimension
+
+-/
+
+/-- The complexification `ℂ ⊗[ℝ] su(n)` has complex dimension `n² - 1`: it is the traceless
+  matrices, and the trace is onto. -/
+lemma finrank_complexification : Module.finrank ℂ (Complexification n) = n ^ 2 - 1 := by
+  rw [← LinearMap.finrank_range_of_inj toMatrixℂ_injective, range_toMatrixℂ]
+  rcases Nat.eq_zero_or_pos n with rfl | hn
+  · exact Module.finrank_zero_of_subsingleton
+  have hsurj : LinearMap.range (Matrix.traceLinearMap (Fin n) ℂ ℂ) = ⊤ :=
+    LinearMap.range_eq_top.2 fun c => ⟨single ⟨0, hn⟩ ⟨0, hn⟩ c, by simp⟩
+  have h := LinearMap.finrank_range_add_finrank_ker (Matrix.traceLinearMap (Fin n) ℂ ℂ)
+  rw [hsurj, finrank_top, Module.finrank_matrix, Fintype.card_fin, Module.finrank_self] at h
+  rw [sq]
+  omega
+
+/-- `su(n)` has real dimension `n² - 1`, the dimension of its complexification. -/
+lemma finrank_eq : Module.finrank ℝ (SULieAlgebra n ℂ) = n ^ 2 - 1 := by
+  rw [← Module.finrank_baseChange (R := ℂ)]
+  exact finrank_complexification
 
 end SULieAlgebra
