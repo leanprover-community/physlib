@@ -120,6 +120,7 @@ public import Physlib.Mathematics.Calculus.Gradient
 public import Physlib.Mathematics.Calculus.ParametricIntegration
 public import Physlib.Mathematics.Calculus.Wirtinger.Basic
 public import Physlib.Mathematics.Calculus.Wirtinger.Coordinate
+public import Physlib.Mathematics.Calculus.Wirtinger.Hessian
 public import Physlib.Mathematics.Distribution.Basic
 public import Physlib.Mathematics.Distribution.PowMul
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
