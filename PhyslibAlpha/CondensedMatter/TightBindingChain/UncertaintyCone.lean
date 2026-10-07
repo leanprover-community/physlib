@@ -39,7 +39,8 @@ three are timelike together from `4 × 4 × 4` on (`nava_robertson_schrodinger_c
 
 ## iv. References
 
-* B. L. van der Waerden, *Spinoranalyse*, Nachr. Ges. Wiss. Göttingen (1929) 100–109.
+* B. L. van der Waerden, *Spinoranalyse*, Nachrichten von der Gesellschaft der Wissenschaften
+  zu Göttingen (1929) 100–109.
 
 -/
 
