@@ -44,7 +44,8 @@ in the closed future cone, and it is an equality exactly when the four-vector is
 
 ## iv. References
 
-* B. L. van der Waerden, *Spinoranalyse*, Nachr. Ges. Wiss. Göttingen (1929) 100–109.
+* B. L. van der Waerden, *Spinoranalyse*, Nachrichten von der Gesellschaft der Wissenschaften
+  zu Göttingen (1929) 100–109.
 * H. P. Robertson, *A general formulation of the uncertainty principle and its classical
   interpretation*, Phys. Rev. 35 (1930) 667.
 
