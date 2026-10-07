@@ -5,8 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Lie.TraceForm
 public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.RepresentationTheory.Intertwining
@@ -41,8 +41,6 @@ under the bracket and nondegenerate (B.2).
 - `SULieAlgebra.adjointℂContr` : the contraction of two complex adjoint indices.
 - `SULieAlgebra.adjointContr_self_pos` : the real contraction is positive definite.
 - `SULieAlgebra.adjointℂContr_nondegenerate` : the complex contraction is nondegenerate.
-- `SULieAlgebra.adjointContr_eq_killingForm` : the contraction is `-1 / (2n)` times the Killing
-  form.
 
 ## iii. Table of contents
 
@@ -52,7 +50,6 @@ under the bracket and nondegenerate (B.2).
 - B. The contraction of adjoint indices
   - B.1. The real case
   - B.2. The complex case
-  - B.3. The Killing form
 
 ## iv. References
 
@@ -62,7 +59,7 @@ under the bracket and nondegenerate (B.2).
 
 @[expose] public section
 
-open Matrix TensorProduct ComplexStarModule Kronecker LieAlgebra
+open Matrix TensorProduct ComplexStarModule
 open scoped ComplexOrder
 
 namespace SULieAlgebra
@@ -422,70 +419,5 @@ lemma adjointℂContr_nondegenerate {n : ℕ} :
     (TensorProduct.curry (adjointℂContr (n := n)).toLinearMap).Nondegenerate :=
   ⟨fun A hA => adjointℂContr_separating_left A hA,
     fun B hB => adjointℂContr_separating_right B hB⟩
-
-/-!
-
-### B.3. The Killing form
-
--/
-
-/-- The contraction is the Killing form on the complexified Lie
-  algebra, up to a factor of `-1/(2n)`. -/
-lemma adjointℂContr_eq_killingForm {n : ℕ} (A B : Complexification n) :
-    adjointℂContr (A ⊗ₜ B) = -(1 / (2 * (n : ℂ))) * killingForm ℂ (Complexification n) A B := by
-  set K : Matrix (Fin n × Fin n) (Fin n × Fin n) ℂ :=
-    -(1 ⊗ₖ (toMatrixℂ A * toMatrixℂ B) - (toMatrixℂ B)ᵀ ⊗ₖ toMatrixℂ A
-      - (toMatrixℂ A)ᵀ ⊗ₖ toMatrixℂ B + (toMatrixℂ B * toMatrixℂ A)ᵀ ⊗ₖ 1)
-  let e : Matrix (Fin n) (Fin n) ℂ ≃ₗ[ℂ] (Fin n × Fin n → ℂ) :=
-    LinearEquiv.ofBijective ⟨⟨vec, vec_add⟩, vec_smul⟩ vec_bijective
-  set F := e.symm.conj (toLin' K)
-  have hF (M : Matrix (Fin n) (Fin n) ℂ) :
-      F M = -(toMatrixℂ A * (toMatrixℂ B * M - M * toMatrixℂ B)
-        - (toMatrixℂ B * M - M * toMatrixℂ B) * toMatrixℂ A) := by
-    apply e.injective
-    simp only [F, e, LinearEquiv.conj_apply, LinearMap.comp_apply, LinearEquiv.coe_coe,
-      LinearEquiv.symm_symm, LinearEquiv.apply_symm_apply, LinearEquiv.ofBijective_apply,
-      LinearMap.coe_mk, AddHom.coe_mk, toLin'_apply, K, neg_mulVec, sub_mulVec, add_mulVec,
-      kronecker_mulVec_vec, transpose_transpose, transpose_one, Matrix.mul_one, Matrix.one_mul,
-      ← vec_sub, ← vec_add, ← vec_neg]
-    congr 1
-    noncomm_ring
-  have h1 : toMatrixℂ ∘ₗ (ad ℂ (Complexification n) A ∘ₗ ad ℂ (Complexification n) B)
-      = F ∘ₗ toMatrixℂ := by
-    refine LinearMap.ext fun M => ?_
-    simp only [LinearMap.comp_apply, ad_apply, toMatrixℂ_lie, hF, Matrix.mul_smul,
-      Matrix.smul_mul, ← smul_sub, smul_smul, Complex.I_mul_I, neg_one_smul]
-  obtain ⟨π, hπ⟩ := LinearMap.exists_leftInverse_of_injective toMatrixℂ
-    (LinearMap.ker_eq_bot.2 toMatrixℂ_injective)
-  have h2 : (toMatrixℂ ∘ₗ π) ∘ₗ F = F := by
-    refine LinearMap.ext fun M => ?_
-    have hM : (F M).trace = 0 := by
-      rw [hF, trace_neg, trace_sub, trace_mul_comm, sub_self, neg_zero]
-    rw [LinearMap.comp_apply, LinearMap.comp_apply, ← toMatrixℂ_ofTracelessℂ (F M) hM,
-      ← LinearMap.comp_apply π, hπ, LinearMap.id_apply]
-  have hK : killingForm ℂ (Complexification n) A B = -(2 * n) * adjointℂContr (A ⊗ₜ B) := by
-    rw [killingForm_apply_apply, ← LinearMap.id_comp (ad ℂ (Complexification n) A ∘ₗ _), ← hπ,
-      LinearMap.comp_assoc, h1, LinearMap.trace_comp_comm', LinearMap.comp_assoc,
-      ← Module.End.mul_eq_comp, LinearMap.trace_mul_comm, Module.End.mul_eq_comp, h2,
-      adjointℂContr_tmul]
-    simp only [F, LinearMap.trace_conj', trace_toLin'_eq, K, trace_neg, trace_sub, trace_add,
-      trace_kronecker, trace_one, trace_transpose, trace_toMatrixℂ, Fintype.card_fin, mul_zero,
-      trace_mul_comm (toMatrixℂ B)]
-    ring
-  rw [hK]
-  rcases Nat.eq_zero_or_pos n with rfl | hn
-  · simp [adjointℂContr_tmul, Matrix.trace]
-  · have : (n : ℂ) ≠ 0 := by exact_mod_cast hn.ne'
-    field_simp
-
-/-- The contraction is the Killing form on the Lie algebra, up to a factor of `-1/(2n)`. -/
-lemma adjointContr_eq_killingForm {n : ℕ} (x y : SULieAlgebra n ℂ) :
-    adjointContr (x ⊗ₜ y) = -(1 / (2 * (n : ℝ))) * killingForm ℝ (SULieAlgebra n ℂ) x y := by
-  have h := adjointℂContr_eq_killingForm (1 ⊗ₜ x) (1 ⊗ₜ y)
-  rw [adjointℂContr_one_tmul, killingForm, LieModule.traceForm_baseChange,
-    LinearMap.BilinForm.baseChange_tmul, mul_one, Complex.real_smul, mul_one] at h
-  apply Complex.ofReal_injective
-  push_cast
-  exact h
 
 end SULieAlgebra

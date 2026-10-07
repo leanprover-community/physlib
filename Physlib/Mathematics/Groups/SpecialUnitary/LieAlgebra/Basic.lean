@@ -38,6 +38,8 @@ and imaginary parts `ℜ M` and `ℑ M` being traceless hermitian.
 - `SULieAlgebra.toMatrixℂ_lie` : the matrix of a bracket is `i` times the commutator.
 - `SULieAlgebra.toMatrixℂ_injective`, `SULieAlgebra.range_toMatrixℂ` : the complexification is
   the traceless complex matrices.
+- `SULieAlgebra.equivTraceKer` : the linear equivalence between the complexification and the
+  traceless complex matrices.
 - `SULieAlgebra.finrank_eq`, `SULieAlgebra.finrank_complexification` : `su(n)` and its
   complexification have dimension `n² - 1`.
 
@@ -52,6 +54,7 @@ and imaginary parts `ℜ M` and `ℑ M` being traceless hermitian.
   - E.2. The element with a given traceless matrix
   - E.3. The injectivity and surjectivity of the matrix map
   - E.4. Commuting with all elements of `su(n)`
+  - E.5. Linear equivalences
 - F. The dimension
 
 ## iv. References
@@ -346,12 +349,38 @@ lemma commute_of_forall_commute_val {M : Matrix (Fin n) (Fin n) ℂ}
 
 /-!
 
+### E.5. Linear equivalences
+
+-/
+
+/-- The linear equivalence between the complexification of `su(n)` and the traceless complex
+  matrices, sending an element to its matrix. -/
+noncomputable def equivTraceKer :
+    Complexification n ≃ₗ[ℂ] LinearMap.ker (Matrix.traceLinearMap (Fin n) ℂ ℂ) where
+  toFun A := ⟨toMatrixℂ A, trace_toMatrixℂ A⟩
+  invFun M := ofTracelessℂ M.1 M.2
+  map_add' A B := Subtype.ext (map_add _ A B)
+  map_smul' z A := Subtype.ext (map_smul _ z A)
+  left_inv := ofTracelessℂ_toMatrixℂ
+  right_inv _ := Subtype.ext (toMatrixℂ_ofTracelessℂ _ _)
+
+/-- The matrix of `equivTraceKer A` is the matrix of `A`. -/
+@[simp]
+lemma val_equivTraceKer (A : Complexification n) : (equivTraceKer A).1 = toMatrixℂ A := rfl
+
+/-- The matrix of `equivTraceKer.symm M` is `M`. -/
+@[simp]
+lemma toMatrixℂ_equivTraceKer_symm (M : LinearMap.ker (traceLinearMap (Fin n) ℂ ℂ)) :
+    toMatrixℂ (equivTraceKer.symm M) = M.1 := toMatrixℂ_ofTracelessℂ _ M.2
+
+/-!
+
 ## F. The dimension
 
 -/
 
 /-- The complexification `ℂ ⊗[ℝ] su(n)` has complex dimension `n² - 1`: it is the traceless
-  matrices, and the trace is onto. -/
+  matrices, and the trace is onto for `0 < n`. -/
 lemma finrank_complexification : Module.finrank ℂ (Complexification n) = n ^ 2 - 1 := by
   rw [← LinearMap.finrank_range_of_inj toMatrixℂ_injective, range_toMatrixℂ]
   rcases Nat.eq_zero_or_pos n with rfl | hn
