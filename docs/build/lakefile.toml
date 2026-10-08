@@ -6,9 +6,11 @@
 #   lake build Physlib:docs QuantumInfo:docs
 # The documentation is written to `docs/build/.lake/build/doc`.
 #
-# On a version bump, update `rev` below to match Lean, then run
-#   MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4
-# from this directory. After updating the dependencies of Physlib, run `lake update Physlib`.
+# On a version bump, first update Physlib's dependencies at the repository root.
+# Update `rev` below to match Lean, then run from this directory:
+#   MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4 Physlib
+# Check that both lean-toolchain files agree and that this manifest's inherited
+# dependency revisions match Physlib's manifest.
 
 name = "docbuild"
 reservoir = false
