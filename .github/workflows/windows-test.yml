@@ -16,7 +16,7 @@ name: Windows test
 # by building and running `lake exe windows_test` with `cc` removed from the PATH.
 # Lake links the C libraries of every dependency into every executable, so this fails if
 # Physlib depends on a package compiling C code with `cc`, such as `leansqlite` (a dependency
-# of `doc-gen4`, which is why `doc-gen4` lives in the nested `docbuild` project).
+# of `doc-gen4`, which is why `doc-gen4` lives in the nested `docs/build` project).
 
 jobs:
   windows_test:

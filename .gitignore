@@ -1,7 +1,7 @@
 /build
 /lake-packages/*
 .lake/*
-docbuild/.lake/
+docs/build/.lake/
 .DS_Store
 
 # Python bytecode (e.g. from scripts/github/check_golf.py)

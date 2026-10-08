@@ -4,7 +4,7 @@
 #
 # From this directory, build the documentation with
 #   lake build Physlib:docs QuantumInfo:docs
-# The documentation is written to `docbuild/.lake/build/doc`.
+# The documentation is written to `docs/build/.lake/build/doc`.
 #
 # On a version bump, update `rev` below to match Lean, then run
 #   MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4
@@ -13,7 +13,7 @@
 name = "docbuild"
 reservoir = false
 version = "0.1.0"
-packagesDir = "../.lake/packages"
+packagesDir = "../../.lake/packages"
 
 [[require]]
 scope = "leanprover"
@@ -22,4 +22,4 @@ rev = "v4.34.1"
 
 [[require]]
 name = "Physlib"
-path = "../"
+path = "../../"
