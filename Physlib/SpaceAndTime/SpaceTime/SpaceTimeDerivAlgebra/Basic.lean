@@ -12,21 +12,22 @@ public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 
 # The spacetime derivative algebra
 
-The algebra of derivative symbols on spacetime, paired with the spacetime algebra by evaluating
-derivatives at the base point.
+The algebra of derivative symbols on spacetime, which evaluate on the spacetime algebra.
 
 ## i. Overview
 
 In field theory, local quantities are built from a field and finitely many of its derivatives at
-a point. This file sets up the algebra `SpaceTimeDerivAlgebraℂ` of derivative symbols `∂_μ` that
-label such constant-coefficient expressions, and pairs it with the spacetime algebra so that a
-symbol `P` and the Taylor series `taylorSeries x₀ φ` of a smooth field `φ` give the number
-`(P φ)(x₀)`.
+a point. A linear combination of such derivatives is the value `(P φ)(x₀)` of a linear
+differential operator `P` with constant coefficients, and such an operator is a polynomial in the
+partial derivatives `∂_μ`. These polynomials, which we call derivative symbols, form the algebra
+`SpaceTimeDerivAlgebraℂ`. The value `(P φ)(x₀)` is determined by the derivatives of `φ` at `x₀`,
+which its Taylor series `taylorSeries x₀ φ` records as an element of the spacetime algebra. We
+therefore pair a symbol `P` with any series `f` by applying `P` to `f` and taking the value at the
+base point, so that pairing with `taylorSeries x₀ φ` gives `(P φ)(x₀)`.
 
-Throughout we use the notation of `SpaceTimeAlgebra`, whose elements we call series. For
-monomials `x^s`, iterated derivatives `∂^s f`, their base-point values `(∂^s f)(0)` and the
-factorials `s!`, indexed by multisets `s` of directions. The Taylor series `taylorSeries x₀ φ` of
-a field identifies the base point with the spacetime point `x₀`.
+We use the notation of `SpaceTimeAlgebra`, whose elements we call series, for the monomials `x^s`,
+the iterated derivatives `∂^s f`, their base-point values `(∂^s f)(0)` and the factorials `s!`, all
+indexed by multisets `s` of directions.
 
 ## ii. Key results
 
@@ -60,11 +61,11 @@ a field identifies the base point with the spacetime point `x₀`.
 
 ## A. The derivative algebra
 
-The partial derivatives of a smooth field commute, so a constant-coefficient differential
-expression is a polynomial in commuting symbols `∂_μ`, and it involves finitely many derivatives
-(whereas the Taylor series of the field keeps all of them). Formally, the derivative algebra is the
-symmetric algebra on `Module.Dual ℂ Lorentz.CoℂModule`, the dual of the complex covector module,
-with `∂_μ` the dual basis vector in direction `μ` and time coordinate is `x⁰ = ct`.
+The partial derivatives of a smooth field commute, so these polynomials are in commuting symbols
+`∂_μ`. Each symbol involves finitely many derivatives (whereas the Taylor series of a field keeps
+all of them). Formally, the derivative algebra is the symmetric algebra on
+`Module.Dual ℂ Lorentz.CoℂModule`, the dual of the complex covector module, with `∂_μ` the dual
+basis vector in direction `μ` and time coordinate `x⁰ = ct`.
 
 -/
 
