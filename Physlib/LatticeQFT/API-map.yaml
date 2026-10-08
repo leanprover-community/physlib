@@ -16,7 +16,7 @@ Overview: |
   matrix and the mass gap, confinement through Wilson loops, and the behaviour as
   the lattice spacing tends to zero and the volume tends to infinity.
 
-  This is a tracking map for issue #1593. No part of it is formalized in the
+  No part of it is formalized in the
   current library: Physlib/LatticeQFT/Basic.lean is a stub module with no
   declarations, and the neighbouring stub Physlib/CondensedMatter/LatticeModels
   is also empty. Every requirement below is therefore recorded as not done with
