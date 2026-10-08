@@ -25,9 +25,14 @@ which its Taylor series `taylorSeries x₀ φ` records as an element of the spac
 therefore pair a symbol `P` with any series `f` by applying `P` to `f` and taking the value at the
 base point, so that pairing with `taylorSeries x₀ φ` gives `(P φ)(x₀)`.
 
-We use the notation of `SpaceTimeAlgebra`, whose elements we call series, for the monomials `x^s`,
-the iterated derivatives `∂^s f`, their base-point values `(∂^s f)(0)` and the factorials `s!`, all
-indexed by multisets `s` of directions.
+Throughout we use the notation of `SpaceTimeAlgebra`, whose elements we call series. For a
+multiset `s` of directions,
+
+- `x^s` is the monomial in which each `x^μ` occurs as often as `μ` occurs in `s`;
+- `∂^s f` is the iterated derivative of a series `f`, and `(∂^s f)(0)` is its value at the base
+  point;
+- `s!` is the product of the factorials of the multiplicities in `s`;
+- `∂^s` is the derivative symbol of `∂^s f`, written `∂^[s]` in Lean.
 
 ## ii. Key results
 
@@ -81,10 +86,8 @@ open MvPowerSeries SpaceTimeAlgebra
 
 ### A.1. The monomial basis
 
-The monomial `∂^s` takes one derivative along each element of the multiset `s`, so its order is
-the size of `s`. It is the symbol of the iterated derivative `∂^s f`, and multiplying monomials
-adds their multisets. The basis is Mathlib's `Module.Basis.symmetricAlgebra`, reindexed by
-multisets.
+The order of the monomial `∂^s` is the size of `s`, and multiplying monomials adds their
+multisets. The basis is Mathlib's `Module.Basis.symmetricAlgebra`, reindexed by multisets.
 
 -/
 
@@ -92,29 +95,35 @@ multisets.
 noncomputable def basis : Module.Basis (Multiset (Fin 1 ⊕ Fin 3)) ℂ SpaceTimeDerivAlgebraℂ :=
   Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.reindex Multiset.toFinsupp.toEquiv.symm
 
+@[inherit_doc basis]
+scoped notation "∂^[" s "]" => basis s
+
+/-- The derivative symbol `∂_μ` in direction `μ`, the monomial `basis {μ}`. -/
+scoped notation "∂[" μ "]" => basis {μ}
+
 /-- The monomial `∂^s` is the polynomial monomial whose exponents are the multiplicities in
   `s`. -/
 lemma basis_apply (s : Multiset (Fin 1 ⊕ Fin 3)) :
-    basis s = (SymmetricAlgebra.equivMvPolynomial Lorentz.complexCoBasis.dualBasis).symm
+    ∂^[s] = (SymmetricAlgebra.equivMvPolynomial Lorentz.complexCoBasis.dualBasis).symm
       (MvPolynomial.monomial (Multiset.toFinsupp s) 1) := by
   rw [basis, Module.Basis.reindex_apply, Equiv.symm_symm]
   rfl
 
 /-- The empty monomial is the unit. -/
 @[simp]
-lemma basis_zero : basis 0 = 1 := by
+lemma basis_zero : ∂^[0] = 1 := by
   rw [basis_apply, Multiset.toFinsupp_zero, MvPolynomial.monomial_zero', MvPolynomial.C_1,
     map_one]
 
 /-- The monomial of a single direction `μ` is the derivative symbol `∂_μ`. -/
 lemma basis_singleton (μ : Fin 1 ⊕ Fin 3) :
-    basis {μ} = SymmetricAlgebra.ι ℂ _ (Lorentz.complexCoBasis.dualBasis μ) := by
+    ∂[μ] = SymmetricAlgebra.ι ℂ _ (Lorentz.complexCoBasis.dualBasis μ) := by
   rw [basis_apply, Multiset.toFinsupp_singleton]
   exact SymmetricAlgebra.equivMvPolynomial_symm_X _ μ
 
 /-- Monomials multiply by adding multisets, `∂^s ∂^t = ∂^(s + t)`. -/
 lemma basis_mul (s t : Multiset (Fin 1 ⊕ Fin 3)) :
-    basis s * basis t = basis (s + t) := by
+    ∂^[s] * ∂^[t] = ∂^[s + t] := by
   rw [basis_apply, basis_apply, basis_apply, ← map_mul, MvPolynomial.monomial_mul_monomial,
     mul_one, Multiset.toFinsupp_add]
 
@@ -146,7 +155,7 @@ the symbol `∂_μ²` paired with the series `(x^μ)²` gives `2`, while the coe
 
 /-- The monomial `∂^s` pairs with `f` to the base-point value `(∂^s f)(0)`. -/
 lemma pairing_basis (s : Multiset (Fin 1 ⊕ Fin 3)) (f : SpaceTimeAlgebra) :
-    pairing (basis s) f = constantCoeff (iteratedPDeriv s f) := by
+    pairing ∂^[s] f = constantCoeff (iteratedPDeriv s f) := by
   rw [pairing, Module.Basis.constr_basis]
   rfl
 
@@ -202,8 +211,8 @@ Appending `∂_μ` to a symbol amounts to differentiating the series along `μ`,
 /-- Multiplying a symbol by `∂_μ` corresponds to applying `pderiv μ` to the series. -/
 lemma pairing_mul_basis_singleton (p : SpaceTimeDerivAlgebraℂ) (μ : Fin 1 ⊕ Fin 3)
     (f : SpaceTimeAlgebra) :
-    pairing (p * basis {μ}) f = pairing p (pderiv μ f) := by
-  have h : pairing.flip f ∘ₗ LinearMap.mulRight ℂ (basis {μ}) =
+    pairing (p * ∂[μ]) f = pairing p (pderiv μ f) := by
+  have h : pairing.flip f ∘ₗ LinearMap.mulRight ℂ ∂[μ] =
       pairing.flip (pderiv μ f) := basis.ext fun s => by
     rw [LinearMap.comp_apply, LinearMap.mulRight_apply, LinearMap.flip_apply,
       LinearMap.flip_apply, basis_mul, pairing_basis, pairing_basis, add_comm,
