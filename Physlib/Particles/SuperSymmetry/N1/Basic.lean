@@ -70,6 +70,8 @@ is real. The species can express none of these alone.
 - `SUSY.N1.chiralTensor` : the `ConjTensorSpecies` assembled from the above, whose
     `τ`-discipline makes the F-term contraction type-safe and whose `bar` carries the
     chiral-antichiral conjugation in which reality and Hermiticity conditions are phrased.
+- `SUSY.N1.chiralTensor.instHasContrDualBases` : the chiral species has dual bases at dual
+    colours, matched by the identity on `ι`.
 
 ## iii. Table of contents
 
@@ -370,6 +372,26 @@ instance chiralTensor.instWithMetric : (chiralTensor (ι := ι)).WithMetric wher
   metric c := { LinearMap.toSpanSingleton ℂ _ (deltaCap (chiralBasis c)) with
       isIntertwining' g := by ext; simp [Representation.tprod_apply, chiralRep, deltaCap] }
   contr_metric c := by cases c <;> exact deltaContr₂_metric _ _
+
+/-- The chiral contraction of two basis vectors is the Kronecker δ. -/
+lemma chiralTensor_contr_chiralBasis (d : ChiralColor) (x₁ x₂ : ι) :
+    (chiralTensor (ι := ι)).contr d
+        (chiralBasis (ι := ι) d x₁ ⊗ₜ[ℂ] chiralBasis (ι := ι) ((chiralTensor (ι := ι)).τ d) x₂)
+      = if x₁ = x₂ then 1 else 0 := by
+  cases d <;> exact deltaContr₂_basis_basis _ _ x₁ x₂
+
+/-- The chiral species has dual bases at dual colours, matched by the identity on `ι`. -/
+instance chiralTensor.instHasContrDualBases :
+    TensorSpecies.HasContrDualBases (chiralTensor (ι := ι)).toTensorSpecies where
+  exists_matching c := ⟨Equiv.refl ι, chiralTensor_contr_chiralBasis c⟩
+
+/-- The dual-label matching of the chiral species is the identity. -/
+@[simp]
+lemma contrDualIdxEquiv_eq_refl (c : ChiralColor) :
+    TensorSpecies.HasContrDualBases.contrDualIdxEquiv (chiralTensor (ι := ι)).toTensorSpecies c =
+      Equiv.refl ι :=
+  TensorSpecies.HasContrDualBases.contrDualIdxEquiv_eq_of_isContrDualMatching
+    (chiralTensor_contr_chiralBasis c)
 
 /-!
 ## F. Conjugation
