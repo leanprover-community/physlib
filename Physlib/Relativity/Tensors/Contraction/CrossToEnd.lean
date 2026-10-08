@@ -160,7 +160,7 @@ lemma crossToEnd_basis {nA nB : ℕ} {cA : Fin (nA + 1) → C} {cB : Fin (nB + 1
   rw [prodT_basis', permT_basis, contrT_basis, map_smul, permT_basis]
   congr 1
   · simp only [Pure.contrPCoeff, Pure.basisVector]
-    rw [map_basis_eq, S.contr_basis_transport (a' := cA i) (by simp)]
+    rw [map_basis_eq, S.contr_basis_congr (a' := cA i) (by simp)]
     congr 3
     · exact eq_of_heq ((basisIdxCongr_heq _ _).trans ((basisIdxCongr_heq _ _).trans
         (ComponentIdx.prod_symm_heq_castAdd _ _ (Fin.ext (by simp)))))
@@ -192,8 +192,8 @@ lemma crossToEnd_basis_repr_eq_sum_fin {nA nB : ℕ} {cA : Fin (nA + 1) → C}
     (basis (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))).repr
         (crossToEnd i j hc t1 t2) φ =
       ∑ x₁ : basisIdx (cA i), ∑ x₂ : basisIdx (cB j),
-        ((basis cA).repr t1 (ComponentIdx.insert i (x₁, (ComponentIdx.prod φ).1)) *
-          (basis cB).repr t2 (ComponentIdx.insert j (x₂, (ComponentIdx.prod φ).2))) *
+        ((basis cA).repr t1 (ComponentIdx.insert i (x₁, φ.prod.1)) *
+          (basis cB).repr t2 (ComponentIdx.insert j (x₂, φ.prod.2))) *
         S.contr (cA i) (b (cA i) x₁ ⊗ₜ[k]
           b (S.τ (cA i)) (basisIdxCongr (by rw [hc]) x₂)) := by
   -- Expand both tensors in their bases and evaluate each term by `crossToEnd_basis`.
@@ -206,12 +206,12 @@ lemma crossToEnd_basis_repr_eq_sum_fin {nA nB : ℕ} {cA : Fin (nA + 1) → C}
   refine Finset.sum_congr rfl fun x₁ _ => ?_
   simp only [ComponentIdx.insert_apply_succAbove, ComponentIdx.insert_apply_self, mul_ite, mul_one,
     mul_zero, ite_and]
-  rw [Finset.sum_eq_single (ComponentIdx.prod φ).1
+  rw [Finset.sum_eq_single φ.prod.1
     (fun p _ hp => Finset.sum_eq_zero fun x _ => by simp [hp]) (by simp)]
   rw [← (ComponentIdx.insert j).sum_comp, Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun x₂ _ => ?_
   simp only [ComponentIdx.insert_apply_succAbove, ComponentIdx.insert_apply_self, ite_true]
-  rw [Finset.sum_eq_single (ComponentIdx.prod φ).2 (fun p _ hp => by simp [hp]) (by simp)]
+  rw [Finset.sum_eq_single φ.prod.2 (fun p _ hp => by simp [hp]) (by simp)]
   simp only [ite_true]
   ring
 
@@ -225,10 +225,10 @@ lemma crossToEnd_basis_repr_eq_sum_dual [HasContrDualBases S] {nA nB : ℕ} {cA 
     (basis (Fin.append (cA ∘ i.succAbove) (cB ∘ j.succAbove))).repr
         (crossToEnd i j hc t1 t2) φ =
       ∑ x : basisIdx (cA i),
-        (basis cA).repr t1 (ComponentIdx.insert i (x, (ComponentIdx.prod φ).1)) *
+        (basis cA).repr t1 (ComponentIdx.insert i (x, φ.prod.1)) *
         (basis cB).repr t2 (ComponentIdx.insert j
           (basisIdxCongr hc ((HasContrDualBases.contrDualIdxEquiv S (cA i)).symm x),
-            (ComponentIdx.prod φ).2)) := by
+            φ.prod.2)) := by
   rw [crossToEnd_basis_repr_eq_sum_fin]
   simp [HasContrDualBases.contr_basis_eq_ite, mul_ite, ← Equiv.symm_apply_eq,
     ← basisIdxCongr_symm hc]

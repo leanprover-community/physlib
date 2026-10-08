@@ -67,12 +67,12 @@ def ComponentIdx.prod {n1 n2 : ℕ} {c : Fin n1 → C} {c1 : Fin n2 → C} :
 
 lemma ComponentIdx.prod_apply_fst {n1 n2 : ℕ} {c : Fin n1 → C} {c1 : Fin n2 → C}
     (p : ComponentIdx (S := S) (Fin.append c c1)) (i : Fin n1) :
-    (ComponentIdx.prod p).1 i =
+    p.prod.1 i =
       basisIdxCongr (by simp) (p (Fin.castAdd n2 i)) := rfl
 
 lemma ComponentIdx.prod_apply_snd {n1 n2 : ℕ} {c : Fin n1 → C} {c1 : Fin n2 → C}
     (p : ComponentIdx (S := S) (Fin.append c c1)) (i : Fin n2) :
-    (ComponentIdx.prod p).2 i =
+    p.prod.2 i =
       basisIdxCongr (by simp) (p (Fin.natAdd n1 i)) := rfl
 
 @[simp]

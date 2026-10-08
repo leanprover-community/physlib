@@ -122,7 +122,7 @@ lemma map_basis_eq {c c1 : C} (h : c = c1) (i : basisIdx c) :
 
 /-- The contraction of two basis vectors does not change when their colour is transported along an
 equality and their labels with it. -/
-lemma contr_basis_transport {a a' : C} (h : a = a') (x : basisIdx a) (y : basisIdx (S.τ a)) :
+lemma contr_basis_congr {a a' : C} (h : a = a') (x : basisIdx a) (y : basisIdx (S.τ a)) :
     S.contr a (basis a x ⊗ₜ[k] basis (S.τ a) y) =
       S.contr a' (basis a' (basisIdxCongr h x) ⊗ₜ[k]
         basis (S.τ a') (basisIdxCongr (congrArg S.τ h) y)) := by

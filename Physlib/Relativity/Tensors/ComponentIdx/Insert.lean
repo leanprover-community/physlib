@@ -56,6 +56,8 @@ variable {k : Type} [CommRing k] {C G : Type} [Group G]
 
 namespace Tensor
 
+namespace ComponentIdx
+
 /-!
 
 ## A. The single-slot equivalence
@@ -65,21 +67,23 @@ namespace Tensor
 /-- Splitting a component index at a named slot: the label at slot `i`, together with a component
 index for the colours of the remaining slots. The dependent counterpart of `Fin.cons`, and the
 single-slot analogue of the two-slot `DropPairSection.ofFinEquiv`. -/
-def ComponentIdx.insert {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1)) :
+def insert {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1)) :
     basisIdx (c i) × ComponentIdx (S := S) (c ∘ i.succAbove) ≃ ComponentIdx (S := S) c :=
   Fin.insertNthEquiv (fun j => basisIdx (c j)) i
 
 @[simp]
-lemma ComponentIdx.insert_apply_self {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
+lemma insert_apply_self {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
     (x : basisIdx (c i) × ComponentIdx (S := S) (c ∘ i.succAbove)) :
-    ComponentIdx.insert (S := S) i x i = x.1 :=
+    insert (S := S) i x i = x.1 :=
   Fin.insertNth_apply_same (α := fun j => basisIdx (c j)) i x.1 x.2
 
 @[simp]
-lemma ComponentIdx.insert_apply_succAbove {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
+lemma insert_apply_succAbove {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
     (x : basisIdx (c i) × ComponentIdx (S := S) (c ∘ i.succAbove)) (m : Fin n) :
-    ComponentIdx.insert (S := S) i x (i.succAbove m) = x.2 m :=
+    insert (S := S) i x (i.succAbove m) = x.2 m :=
   Fin.insertNth_apply_succAbove (α := fun j => basisIdx (c j)) i x.1 x.2 m
+
+end ComponentIdx
 
 end Tensor
 
