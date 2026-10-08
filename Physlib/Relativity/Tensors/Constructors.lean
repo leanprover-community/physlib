@@ -442,6 +442,36 @@ lemma fromMatrixT_matrixOf {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
     fromMatrixT (S := S) c0 c1 (matrixOf t) = t :=
   (fromMatrixT c0 c1).apply_symm_apply t
 
+/-- The component matrix of a rank-two tensor at any colour list `cs`: the `(x, y)` entry is
+  `repr t (ComponentIdx.pair.symm (x, y))`. -/
+noncomputable def matrixOfCs {cs : Fin 2 → C} (t : S.Tensor cs) :
+    Matrix (basisIdx (cs 0)) (basisIdx (cs 1)) k :=
+  Matrix.of fun x y => (basis cs).repr t (ComponentIdx.pair.symm (x, y))
+
+@[simp]
+lemma matrixOfCs_apply {cs : Fin 2 → C} (t : S.Tensor cs)
+    (x : basisIdx (cs 0)) (y : basisIdx (cs 1)) :
+    matrixOfCs t x y = (basis cs).repr t (ComponentIdx.pair.symm (x, y)) := rfl
+
+/-- Rank-two tensors with equal component matrices are equal. -/
+lemma matrixOfCs_injective {cs : Fin 2 → C} :
+    Function.Injective (matrixOfCs (S := S) (cs := cs)) := by
+  intro t1 t2 h
+  apply (basis cs).repr.injective
+  ext φ
+  rw [show φ = ComponentIdx.pair.symm (φ 0, φ 1) from
+    (Equiv.symm_apply_apply ComponentIdx.pair φ).symm]
+  exact congrFun (congrFun h (φ 0)) (φ 1)
+
+/-- At a literal colour list, `matrixOfCs` is `matrixOf`. -/
+lemma matrixOfCs_eq_matrixOf {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
+    matrixOfCs t = matrixOf t := rfl
+
+@[simp]
+lemma matrixOfCs_fromMatrixT (c0 c1 : C) (M : Matrix (basisIdx c0) (basisIdx c1) k) :
+    matrixOfCs (fromMatrixT (S := S) c0 c1 M) = M :=
+  matrixOf_fromMatrixT c0 c1 M
+
 /-!
 
 ## fromTripleT

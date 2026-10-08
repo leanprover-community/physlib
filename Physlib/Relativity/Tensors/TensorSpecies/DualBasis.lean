@@ -37,6 +37,8 @@ contraction are single sums (`contrT_basis_repr_apply_eq_sum_dual`).
 - `TensorSpecies.HasContrDualBases.contr_basis_eq_ite` : the δ law for `contrDualIdxEquiv`.
 - `TensorSpecies.HasContrDualBases.contrDualIdxEquiv_eq_of_isContrDualMatching` : any matching
     satisfying the δ law is `contrDualIdxEquiv`.
+- `TensorSpecies.HasContrDualBases.contrIdx` : the identification a contraction makes between the
+    labels of its two contracted slots.
 - `TensorSpecies.HasContrDualBases.contrDualIdxEquiv_tau` : the matching at `S.τ c` is the
     inverse of the one at `c`, through `S.τ (S.τ c) = c`.
 - `TensorSpecies.HasContrDualBases.contr_tmul_basis_eq_dualBasis` : contracting with a basis vector
@@ -133,6 +135,15 @@ lemma contrDualIdxEquiv_eq_of_isContrDualMatching [Nontrivial k] {c : C}
     {e : basisIdx (S.τ c) ≃ basisIdx c} (he : IsContrDualMatching S c e) :
     contrDualIdxEquiv S c = e :=
   IsContrDualMatching.unique (contr_basis_eq_ite c) he
+
+/-- The identification a contraction makes between the labels of its two contracted slots: a label
+  at `c1` carried across the variance dual by `contrDualIdxEquiv`, then along `h`. -/
+noncomputable def contrIdx {c1 c2 : C} (h : S.τ c1 = c2) : basisIdx c1 ≃ basisIdx c2 :=
+  (contrDualIdxEquiv S c1).symm.trans (basisIdxCongr h)
+
+@[simp]
+lemma contrIdx_apply {c1 c2 : C} (h : S.τ c1 = c2) (x : basisIdx c1) :
+    contrIdx h x = basisIdxCongr h ((contrDualIdxEquiv S c1).symm x) := rfl
 
 /-!
 
