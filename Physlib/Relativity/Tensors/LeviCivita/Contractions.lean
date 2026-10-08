@@ -274,7 +274,7 @@ lemma leviCivita_contract_three : {ε4 | μ ν ρ σ ⊗ ε4 | τ(μ) τ(ν) τ(
   apply (Tensor.basis _).repr.injective
   ext b
   simp only [map_zsmul, Finsupp.coe_smul, Pi.smul_apply, zsmul_eq_mul,
-    permT_basis_repr_symm_apply, basisIdxCongr_eq_refl, Equiv.refl_apply,
+    permT_basis_repr_symm_apply, basisIdxCongr_const, Equiv.refl_apply,
     unitTensor_repr_apply Color.down]
   rw [IsReindexing.inv_eq_self_of_pointwise_eq _ (by decide),
     IsReindexing.inv_eq_self_of_pointwise_eq _ (by decide)]
