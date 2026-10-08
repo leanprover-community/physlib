@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Relativity.Tensors.ComponentIdx.Pair
 public import Physlib.Relativity.Tensors.Contraction.Products
 /-!
 
@@ -387,6 +388,59 @@ lemma actionT_fromConstPair {c1 c2 : C}
     (g : G) : g • fromConstPair (S := S) v = fromConstPair v := by
   rw [fromConstPair, actionT_fromPairT]
   exact congrArg _ (LinearMap.congr_fun (v.isIntertwining' g) 1).symm
+
+/-!
+
+## fromMatrixT
+
+-/
+
+/-- Rank-two tensors and their component matrices, as a linear equivalence: `fromMatrixT c0 c1 M`
+  is the tensor with component matrix `M`. -/
+noncomputable def fromMatrixT (c0 c1 : C) :
+    Matrix (basisIdx c0) (basisIdx c1) k ≃ₗ[k] S.Tensor ![c0, c1] where
+  toFun M := fromPairT ((Basis.tensorProduct (b c0) (b c1)).equivFun.symm fun p => M p.1 p.2)
+  map_add' M N := by
+    rw [← map_add, ← map_add]
+    rfl
+  map_smul' r M := by
+    rw [RingHom.id_apply, ← map_smul, ← map_smul]
+    rfl
+  invFun t := Matrix.of fun x y => (basis ![c0, c1]).repr t (ComponentIdx.pair.symm (x, y))
+  left_inv M := by
+    ext x y
+    change (basis ![c0, c1]).repr (fromPairT _) (ComponentIdx.pair.symm (x, y)) = M x y
+    rw [fromPairT_basis_repr, ← Basis.equivFun_apply, LinearEquiv.apply_symm_apply]
+    rfl
+  right_inv t := by
+    refine (basis ![c0, c1]).repr.injective (Finsupp.ext fun φ => ?_)
+    change (basis ![c0, c1]).repr (fromPairT _) φ = _
+    rw [fromPairT_basis_repr, ← Basis.equivFun_apply, LinearEquiv.apply_symm_apply]
+    exact congrArg _ (ComponentIdx.pair.symm_apply_apply φ)
+
+lemma fromMatrixT_basis_repr (c0 c1 : C) (M : Matrix (basisIdx c0) (basisIdx c1) k)
+    (φ : ComponentIdx ![c0, c1]) :
+    (basis ![c0, c1]).repr (fromMatrixT (S := S) c0 c1 M) φ = M (φ 0) (φ 1) := by
+  change (basis ![c0, c1]).repr (fromPairT _) φ = _
+  rw [fromPairT_basis_repr, ← Basis.equivFun_apply, LinearEquiv.apply_symm_apply]
+
+/-- The component matrix of a rank-two tensor. -/
+noncomputable def matrixOf {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
+    Matrix (basisIdx c0) (basisIdx c1) k :=
+  (fromMatrixT c0 c1).symm t
+
+lemma matrixOf_apply {c0 c1 : C} (t : S.Tensor ![c0, c1]) (x : basisIdx c0) (y : basisIdx c1) :
+    matrixOf t x y = (basis ![c0, c1]).repr t (ComponentIdx.pair.symm (x, y)) := rfl
+
+@[simp]
+lemma matrixOf_fromMatrixT (c0 c1 : C) (M : Matrix (basisIdx c0) (basisIdx c1) k) :
+    matrixOf (fromMatrixT (S := S) c0 c1 M) = M :=
+  (fromMatrixT c0 c1).symm_apply_apply M
+
+@[simp]
+lemma fromMatrixT_matrixOf {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
+    fromMatrixT (S := S) c0 c1 (matrixOf t) = t :=
+  (fromMatrixT c0 c1).apply_symm_apply t
 
 /-!
 

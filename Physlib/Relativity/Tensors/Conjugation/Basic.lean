@@ -127,8 +127,6 @@ variable {k : Type} [CommRing k] [StarRing k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b)
 
-TODO "Extend `complexLorentzTensor` to a  `ConjTensorSpecies`."
-TODO "Extend `realLorentzTensor` to a `ConjTensorSpecies`."
 /-!
 
 ## B. The conjugation of vectors
