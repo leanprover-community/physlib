@@ -165,8 +165,10 @@ therefore recorded as a quantity given in every unit system rather than placed a
 of the quantity it measures. The speed of light is such a constant. Its type consists of
 strictly positive reals, which is why it needs the scaling by a strictly positive factor, and it
 carries the dimension of a length over a time; its value in our world is exactly 299792458
-metres per second. [74][75] Newton's constant, Planck's constant and the Boltzmann constant are
-recorded in the same way. [TODO]
+metres per second. [74][75] Newton's constant, Planck's constant with its reduced form, and the
+Boltzmann constant are recorded in the same way, each carrying its own dimension and its value
+in SI units; the reduced Planck constant is Planck's constant divided by two pi in every unit
+system, not only in SI. [76][77][78][79]
 
 ### Calculus and dimensional correctness
 
@@ -357,6 +359,20 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `SpeedOfLight.instPositiveRealUnitCore`, `SpeedOfLight.positiveRealUnitCore_val`
 75. Physlib/Units/Constants.lean — `HasDim SpeedOfLight`, `speedOfLight`,
    `speedOfLight_in_SI`
+76. Physlib/Relativity/GravitationalConstant.lean — `GravitationalConstant`,
+   `GravitationalConstant.instPositiveRealUnitCore`,
+   `GravitationalConstant.positiveRealUnitCore_val`, `GravitationalConstant.val_pos`
+77. Physlib/QuantumMechanics/PlanckConstant.lean — `PlanckConstant`,
+   `PlanckConstant.instPositiveRealUnitCore`, `PlanckConstant.positiveRealUnitCore_val`,
+   `PlanckConstant.val_pos`
+78. Physlib/StatisticalMechanics/BoltzmannConstant.lean — `BoltzmannConstant`,
+   `BoltzmannConstant.instPositiveRealUnitCore`,
+   `BoltzmannConstant.positiveRealUnitCore_val`, `BoltzmannConstant.val_pos`
+79. Physlib/Units/Constants.lean — `HasDim GravitationalConstant`,
+   `gravitationalConstant`, `gravitationalConstant_in_SI`, `HasDim PlanckConstant`,
+   `planckConstant`, `planckConstant_in_SI`, `reducedPlanckConstant`,
+   `reducedPlanckConstant_in_SI`, `reducedPlanckConstant_val`, `HasDim BoltzmannConstant`,
+   `boltzmannConstant`, `boltzmannConstant_in_SI`
 
 ## References
 
