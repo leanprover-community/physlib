@@ -58,18 +58,19 @@ The two-sector case over `ι₁ ⊕ ι₂` is stated with `Matrix.fromBlocks`.
 - `Physlib.Wirtinger.dWirtingerAntiCoord_block_sum` : `∂̄` of a sum of sector functions along a
     sector-`k` coordinate is the `∂̄` of the sector-`k` function; `dWirtingerCoord_block_sum` is
     the same for `∂`.
-- `Physlib.Wirtinger.hessianMatrixOf_sigma_block` : the Hessian of a sum of sector functions is
-    block-diagonal.
+- `Physlib.Wirtinger.hessianMatrixOf_sum_eq_blockDiagonal'` : the Hessian of a sum of sector
+    functions is block-diagonal.
 - `Physlib.Wirtinger.hessianMatrixOf_comp_equiv` : relabelling the coordinates by `ε` reindexes
     the Hessian by `ε`.
-- `Physlib.Wirtinger.hessianMatrixOf_sum_block` : the two-sector case, as `Matrix.fromBlocks`.
+- `Physlib.Wirtinger.hessianMatrixOf_add_eq_fromBlocks` : the two-sector case, as
+    `Matrix.fromBlocks`.
 
 ## iii. Table of contents
 
 - A. The mixed Wirtinger Hessian
-- B. Sector split over a finite family of blocks
+- B. Block-diagonal Hessian of a sum over sectors
 - C. Coordinate reindexing of the Hessian
-- D. Two-sector special case
+- D. Two sectors
 
 ## iv. References
 
@@ -125,7 +126,7 @@ lemma hessianMatrixOfR_isHermitian {K : (ι → ℂ) → ℝ} {u : ι → ℂ} (
 
 end Hessian
 
-/-! ## B. Sector split over a finite family of blocks
+/-! ## B. Block-diagonal Hessian of a sum over sectors
 
 The fields are labelled by `Σ k, ι k`, with `ι k` labelling the fields of sector `k`. A potential
 that is a sum of sector potentials has a block-diagonal Hessian. -/
@@ -214,7 +215,7 @@ lemma dWirtingerAntiCoord_block_sum (f : ∀ k, (ι k → ℂ) → ℂ) (k₀ : 
 
 /-- The Hessian of a sum of sector functions is the block-diagonal matrix of the sector
 Hessians. -/
-lemma hessianMatrixOf_sigma_block (f : ∀ k, (ι k → ℂ) → ℂ) (u : (Σ k, ι k) → ℂ)
+lemma hessianMatrixOf_sum_eq_blockDiagonal' (f : ∀ k, (ι k → ℂ) → ℂ) (u : (Σ k, ι k) → ℂ)
     (hf : ∀ k, ContDiffAt ℝ 2 (f k) (u ∘ Sigma.mk k)) :
     hessianMatrixOf (fun q => ∑ k, f k (q ∘ Sigma.mk k)) u
       = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k)) := by
@@ -290,7 +291,7 @@ lemma hessianMatrixOf_comp_equiv (ε : ι ≃ ι') (H : (ι' → ℂ) → ℂ) (
 
 end Reindex
 
-/-! ## D. Two-sector special case
+/-! ## D. Two sectors
 
 Two sectors with fields indexed by `ι₁ ⊕ ι₂`, obtained from §B by relabelling with §C. -/
 
@@ -317,7 +318,7 @@ omit [Fintype ι₁] [DecidableEq ι₁] [Fintype ι₂] [DecidableEq ι₂] in
 
 /-- The Hessian of `f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr)` is `fromBlocks` of the two sector
 Hessians. -/
-lemma hessianMatrixOf_sum_block
+lemma hessianMatrixOf_add_eq_fromBlocks
     (f₁ : (ι₁ → ℂ) → ℂ) (f₂ : (ι₂ → ℂ) → ℂ) (u : ι₁ ⊕ ι₂ → ℂ)
     (hf₁ : ContDiffAt ℝ 2 f₁ (u ∘ Sum.inl)) (hf₂ : ContDiffAt ℝ 2 f₂ (u ∘ Sum.inr)) :
     hessianMatrixOf (fun q => f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr)) u
@@ -343,7 +344,7 @@ lemma hessianMatrixOf_sum_block
     show f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr) = ∑ b, g b ((q ∘ ε.symm) ∘ Sigma.mk b)
     rw [Fintype.sum_bool]; exact add_comm _ _
   rw [hfun, hessianMatrixOf_comp_equiv ε H u hHC,
-    (hessianMatrixOf_sigma_block g (u ∘ ε.symm) hfb :
+    (hessianMatrixOf_sum_eq_blockDiagonal' g (u ∘ ε.symm) hfb :
       hessianMatrixOf H (u ∘ ε.symm) = _)]
   -- The reindexed block-diagonal is the two-block `fromBlocks` matrix.
   ext (a | a) (b | b) <;> simp [ε, Equiv.sumEquivSigmaBool, Matrix.blockDiagonal'_apply] <;> rfl
