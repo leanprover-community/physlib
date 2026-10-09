@@ -26,15 +26,23 @@ When the fields split into sectors that do not mix in the Kähler potential, as 
 moduli `T_k` with `K = -∑ k, n_k log (T_k + T̄_k)`, the Kähler metric is block-diagonal and the
 sectors have no kinetic mixing.
 
-In Lean each sector `k` has a finite type `ι k` labelling its fields, for example `ι k = Fin 3`
-for a sector of three fields. All fields together are labelled by pairs `⟨k, a⟩ : Σ k, ι k`, with
-`a : ι k` a field of sector `k`. For a field configuration `q : (Σ k, ι k) → ℂ`, the fields of
-sector `k` are `q ∘ Sigma.mk k : ι k → ℂ`. A potential `F` that is a sum of sector potentials
-`f k`, each depending only on the fields of its own sector, is
+In Lean the fields are labelled as follows.
+
+- Each sector `k` has a finite type `ι k` labelling its fields, for example `ι k = Fin 3` for a
+  sector of three fields.
+- The type `Σ k, ι k` labels all fields of all sectors. Its elements are the pairs
+  `⟨k, a⟩ = Sigma.mk k a`, field `a` of sector `k`. It is a set of labels, not a sum.
+- A field configuration `q : (Σ k, ι k) → ℂ` gives the value of every field. The values of the
+  fields of sector `k` alone are `q ∘ Sigma.mk k : ι k → ℂ`, the map `a ↦ q ⟨k, a⟩`, written
+  `restrict k q` below.
+
+A potential `F` that is a sum of sector potentials `f k`, each depending only on the fields of
+its own sector, with no term mixing two sectors, is
 
   `F q = ∑ k, f k (q ∘ Sigma.mk k)`
 
-and its Hessian is the block-diagonal matrix of the sector Hessians:
+where the sum runs over the sectors. Its Hessian is the block-diagonal matrix of the sector
+Hessians:
 
   `hessianMatrixOf F u = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`
 
