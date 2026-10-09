@@ -24,22 +24,22 @@ weighted by the Kähler metric
 of the real Kähler potential `K`. The metric is Hermitian, `(g_{JĪ})^* = g_{IJ̄}`, so the kinetic
 term is real.
 
-Suppose the fields split into sectors `k`, with fields `φ^{ka}` in sector `k`, and the Kähler
-potential is a sum of sector potentials with no term mixing two sectors:
+Suppose the fields split into sectors `k`, with fields `φ_k = (φ_k^a)` in sector `k`, and the
+Kähler potential is a sum of sector potentials with no term mixing two sectors:
 
-  `K(φ) = ∑_k K_k(φ_(k))`,   `φ_(k) = (φ^{ka})_a`,
+  `K(φ) = ∑_k K_k(φ_k)`,
 
 as for several moduli `T_k` with `K = -∑_k n_k log(T_k + T̄_k)`. Then the metric is
 block-diagonal and the sectors have no kinetic mixing:
 
-  `∂_{ka} ∂̄_{lb} K = δ_{kl} ∂_a ∂̄_b K_k`.
+  `∂²K / ∂φ_k^a ∂φ̄_l^b = δ_{kl} ∂²K_k / ∂φ_k^a ∂φ̄_k^b`.
 
 Each `K_k` need only be `C²` at the point considered, so potentials defined on a proper
 subdomain, such as `log`, are covered.
 
-In Lean, the fields of sector `k` are labelled by a finite type `ι k`, and the field `φ^{ka}`
+In Lean, the fields of sector `k` are labelled by a finite type `ι k`, and the field `φ_k^a`
 by the pair `⟨k, a⟩ : Σ k, ι k`. A point `φ` in field space is a function
-`q : (Σ k, ι k) → ℂ` with `q ⟨k, a⟩ = φ^{ka}`, and the sector fields `φ_(k)` are
+`q : (Σ k, ι k) → ℂ` with `q ⟨k, a⟩ = φ_k^a`, and the sector fields `φ_k` are
 `q ∘ Sigma.mk k`, the function `a ↦ q ⟨k, a⟩`. The sector potentials `K_k` are `f k`. The
 metric `g_{IJ̄}(φ)` is `hessianMatrixOfR K q`, or `hessianMatrixOf` for a complex-valued
 function. The block-diagonal statement reads
