@@ -567,6 +567,7 @@ public import Physlib.Thermodynamics.IdealGas.Basic
 public import Physlib.Thermodynamics.Temperature.Basic
 public import Physlib.Thermodynamics.Temperature.TemperatureUnits
 public import Physlib.Units.Basic
+public import Physlib.Units.Constants
 public import Physlib.Units.Dimension
 public import Physlib.Units.Examples
 public import Physlib.Units.Exponent
