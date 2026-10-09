@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Units.Constants
 public import Physlib.Units.WithDim.Speed
 public import Physlib.Units.FDeriv
 /-!
@@ -34,7 +35,7 @@ set_option backward.isDefEq.respectTransparency false in
 /-- Changing that length to miles.
   400 meters is very almost a quarter of a mile. -/
 example : meters400 {SI with length := LengthUnit.miles} = ⟨1/4 - 73/50292⟩ := by
-  simp [meters400, toDimensionful_apply_apply, dimScale, LengthUnit.miles]
+  simp [meters400, dimScale, LengthUnit.miles]
   ext
   show (1609.344 : ℝ)⁻¹ * 400 = _
   norm_num
@@ -125,7 +126,6 @@ lemma energyMassWithDimNot_not_isDimensionallyCorrect :
 ## Cases with Dimensionful
 
 -/
-open DimSpeed
 
 /-- The equation `E = m c^2`, in this equation we `E` and `m` are implicitly in the
   units `u`, while the speed of light is explicitly written in those units. -/
@@ -146,14 +146,16 @@ lemma energyMass_isDimensionallyCorrect :
   intro u1 u2
   funext m E u
   change EnergyMassWithDim (scaleUnit u2 u1 m) (scaleUnit u2 u1 E)
-    (speedOfLight (scaleUnit u2 u1 u)) = EnergyMassWithDim m E (speedOfLight u)
-  have hs : speedOfLight (scaleUnit u2 u1 u) =
-      scaleUnit u2 u1 (speedOfLight u) := by
-    simpa only [HasDim.scaleUnit_apply] using
-      (Dimensionful.of_scaleUnit (u1 := u2) (u2 := u1) (u := u) speedOfLight)
+    (WithDim.ofPositiveRealUnit (speedOfLight (scaleUnit u2 u1 u))) =
+    EnergyMassWithDim m E (WithDim.ofPositiveRealUnit (speedOfLight u))
+  have hs : WithDim.ofPositiveRealUnit (speedOfLight (scaleUnit u2 u1 u)) =
+      scaleUnit u2 u1 (WithDim.ofPositiveRealUnit (speedOfLight u)) := by
+    rw [Dimensionful.of_scaleUnit_units (u1 := u2) (u2 := u1) (u := u) speedOfLight,
+      WithDim.ofPositiveRealUnit_units_smul, HasDim.scaleUnit_apply_units]
+    rfl
   rw [hs]
   exact congrFun (congrFun (congrFun (energyMassWithDim_isDimensionallyCorrect u1 u2)
-    m) E) (speedOfLight u)
+    m) E) (WithDim.ofPositiveRealUnit (speedOfLight u))
 
 /-!
 
@@ -164,7 +166,7 @@ We now explore the consequences of `energyMass_isDimensionallyCorrect` and how w
 -/
 
 lemma example1_energyMass : EnergyMass ⟨2⟩ ⟨2 * 299792458 ^ 2⟩ SI := by
-  simp [EnergyMass, speedOfLight, toDimensionful_apply_apply, dimScale, SI]
+  simp [EnergyMass, speedOfLight_in_SI]
 
 /- The lemma `energyMass_isDimensionallyCorrect` allows us to scale the units
   of `example1_energyMass`, that is - we proved it in one set of units, but we get the result

@@ -195,6 +195,45 @@ lemma dimScale_pos (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase)
   · simp
   · exact Ne.symm (dimScale_ne_zero u1 u2 d)
 
+/-- The scaling factor `dimScale u1 u2 d` regarded as a unit of `ℝ≥0`, that is as a strictly
+  positive real. Dimensionful quantities are scaled by this rather than by `dimScale u1 u2 d`
+  itself, so that a type whose elements are strictly positive, such as `SpeedOfLight`, can carry
+  a dimension: no action of `ℝ≥0` on such a type can be compatible with the magnitude, since
+  compatibility at `a = 0` would give `val (0 • m) = 0` while `val` is strictly positive. -/
+noncomputable def dimScaleUnits (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase) :
+    ℝ≥0ˣ :=
+  Units.mk0 (dimScale u1 u2 d) (dimScale_ne_zero u1 u2 d)
+
+@[simp]
+lemma dimScaleUnits_coe (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase) :
+    ((dimScaleUnits u1 u2 d : ℝ≥0)) = dimScale u1 u2 d := rfl
+
+@[simp]
+lemma dimScaleUnits_transitive (u1 u2 u3 : LTMCTUnitChoices)
+    (d : Dimension LTMCTDimensionBase) :
+    dimScaleUnits u1 u2 d * dimScaleUnits u2 u3 d = dimScaleUnits u1 u3 d := by
+  apply Units.ext
+  simpa using dimScale_transitive u1 u2 u3 d
+
+/-- Scaling by `dimScaleUnits` agrees with scaling by `dimScale` whenever the type also carries
+  an action of `ℝ≥0`, so that statements phrased either way normalise to the same form. -/
+lemma dimScaleUnits_smul {M : Type} [MulAction ℝ≥0 M] (u1 u2 : LTMCTUnitChoices)
+    (d : Dimension LTMCTDimensionBase) (m : M) :
+    dimScaleUnits u1 u2 d • m = dimScale u1 u2 d • m := rfl
+
+@[simp]
+lemma dimScaleUnits_mul_dim (u1 u2 : LTMCTUnitChoices)
+    (d1 d2 : Dimension LTMCTDimensionBase) :
+    dimScaleUnits u1 u2 (d1 * d2) = dimScaleUnits u1 u2 d1 * dimScaleUnits u1 u2 d2 := by
+  apply Units.ext
+  simp
+
+@[simp]
+lemma dimScaleUnits_self (u : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase) :
+    dimScaleUnits u u d = 1 := by
+  apply Units.ext
+  simp [dimScale_self]
+
 TODO "Make SI : LTMCTUnitChoices computable, probably by
   replacing the axioms defining the units. See here:
   https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/physical.20units/near/534914807"
@@ -268,7 +307,38 @@ end LTMCTUnitChoices
 Dimensions are assigned to types with the following type-classes
 
 - `HasDim` for any type `M` with an associated dimension
-- `CarriesDimension` for a type that also has an instance of `MulAction ℝ≥0 M`
+- `CarriesDimension` for a type that also has an instance of `MulAction ℝ≥0ˣ M`, that is an
+  action of the strictly positive reals
+
+The scaling factors relating two systems of units are never zero, so the positive reals suffice
+here, and taking them rather than `ℝ≥0` lets a type whose elements are strictly positive, such as
+`SpeedOfLight`, carry a dimension. On such a type no action of `ℝ≥0` can be compatible with the
+magnitude, that is satisfy `val (a • x) = a * val x`: at `a = 0` compatibility would give
+`val (0 • x) = 0`, while `val` is strictly positive. (A `MulAction ℝ≥0` does exist on any type,
+the trivial one for instance, but it has nothing to do with the magnitude and so is of no use
+here.)
+
+A type which does carry an action of `ℝ≥0`, such as `ℝ` or any real vector space, obtains the
+action of `ℝ≥0ˣ` by restriction, so it satisfies `CarriesDimension` as soon as it has a `HasDim`
+instance. A declaration about such types should therefore assume `[HasDim M]` and
+`[MulAction ℝ≥0 M]`, never `[CarriesDimension M]` and `[MulAction ℝ≥0 M]` together: with the
+latter pair the two actions of `ℝ≥0ˣ` in scope, the one from `CarriesDimension` and the one
+restricted from `ℝ≥0`, are unrelated, so the lemmas below relating `dimScaleUnits` to `dimScale`
+do not apply and proofs about the scaling get stuck.
+
+Where both actions genuinely coexist on one type, as they do on `Dimensionful M` below for every
+`M` carrying an action of `ℝ≥0`, the declared action and the restricted one agree
+definitionally, so nothing is ambiguous.
+
+The same caution applies to the generic results about these actions, such as the instance on
+`Dimensionful M` below and `WithDim.ofPositiveRealUnit_units_smul`: each is about one particular
+`ℝ≥0ˣ` action, and a type carrying both a `PositiveRealUnitCore` instance and an action of `ℝ≥0`
+would have two. No type does at present.
+
+Several statements below therefore come in two forms, one for each action. The convention is that
+the plain name carries the `ℝ≥0` statement, which needs `[MulAction ℝ≥0 M]` and is the form the
+concrete unit calculations use, while the suffix `_units` marks the `ℝ≥0ˣ` statement, which holds
+for every type carrying a dimension.
 
 -/
 
@@ -282,7 +352,7 @@ alias dim := HasDim.d
 
 /-- A type `M` carries a dimension `d` if every element of `M` is supposed to have
   this dimension. For example, the type `Time` will carry a dimension `T𝓭`. -/
-class abbrev CarriesDimension (M : Type) := HasDim M, MulAction ℝ≥0 M
+class abbrev CarriesDimension (M : Type) := HasDim M, MulAction ℝ≥0ˣ M
 
 /-!
 
@@ -300,13 +370,14 @@ and a type
 -/
 
 /-- A quantity of type `M` which depends on a choice of units `LTMCTUnitChoices` is said to be
-  of dimension `d` if it scales by `LTMCTUnitChoices.dimScale u1 u2 d` under a change in units. -/
+  of dimension `d` if it scales by `LTMCTUnitChoices.dimScaleUnits u1 u2 d` under a change in
+  units. -/
 def HasDimension {M : Type} [CarriesDimension M] (f : LTMCTUnitChoices → M) : Prop :=
-  ∀ u1 u2 : LTMCTUnitChoices, f u2 = LTMCTUnitChoices.dimScale u1 u2 (dim M) • f u1
+  ∀ u1 u2 : LTMCTUnitChoices, f u2 = LTMCTUnitChoices.dimScaleUnits u1 u2 (dim M) • f u1
 
 lemma hasDimension_iff {M : Type} [CarriesDimension M] (f : LTMCTUnitChoices → M) :
     HasDimension f ↔ ∀ u1 u2 : LTMCTUnitChoices, f u2 =
-    LTMCTUnitChoices.dimScale u1 u2 (dim M) • f u1 := by
+    LTMCTUnitChoices.dimScaleUnits u1 u2 (dim M) • f u1 := by
   rfl
 
 /-- The subtype of functions `LTMCTUnitChoices → M`, for which `M` carries a dimension,
@@ -321,11 +392,27 @@ instance {M : Type} [CarriesDimension M] :
 lemma Dimensionful.ext {M : Type} [CarriesDimension M] (f1 f2 : Dimensionful M)
     (h : f1.val = f2.val) : f1 = f2 := Subtype.ext h
 
-instance {M : Type} [CarriesDimension M] : MulAction ℝ≥0 (Dimensionful M) where
+instance {M : Type} [CarriesDimension M] : MulAction ℝ≥0ˣ (Dimensionful M) where
   smul a f := ⟨fun u => a • f.1 u, fun u1 u2 => by
     simp only
-    rw [f.2 u1 u2]
-    rw [smul_comm]⟩
+    rw [f.2 u1 u2, ← mul_smul, ← mul_smul, mul_comm]⟩
+  one_smul f := by
+    ext u
+    change (1 : ℝ≥0ˣ) • f.1 u = f.1 u
+    simp
+  mul_smul a b f := by
+    ext u
+    change (a * b) • f.1 u = a • (b • f.1 u)
+    rw [smul_smul]
+
+/-- When `M` itself carries an action of `ℝ≥0`, a dimensionful quantity of `M` may be scaled by
+  any non-negative real, not only by a strictly positive one. -/
+instance {M : Type} [HasDim M] [MulAction ℝ≥0 M] :
+    MulAction ℝ≥0 (Dimensionful M) where
+  smul a f := ⟨fun u => a • f.1 u, fun u1 u2 => by
+    simp only
+    rw [f.2 u1 u2, LTMCTUnitChoices.dimScaleUnits_smul,
+      LTMCTUnitChoices.dimScaleUnits_smul, ← mul_smul, ← mul_smul, mul_comm]⟩
   one_smul f := by
     ext u
     change (1 : ℝ≥0) • f.1 u = f.1 u
@@ -335,9 +422,15 @@ instance {M : Type} [CarriesDimension M] : MulAction ℝ≥0 (Dimensionful M) wh
     change (a * b) • f.1 u = a • (b • f.1 u)
     rw [smul_smul]
 
+/-- The value of a non-negative real scaling of a dimensionful quantity. -/
 @[simp]
-lemma Dimensionful.smul_apply {M : Type} [CarriesDimension M]
+lemma Dimensionful.smul_apply {M : Type} [HasDim M] [MulAction ℝ≥0 M]
     (a : ℝ≥0) (f : Dimensionful M) (u : LTMCTUnitChoices) :
+    (a • f).1 u = a • f.1 u := rfl
+
+@[simp]
+lemma Dimensionful.smul_apply_units {M : Type} [CarriesDimension M]
+    (a : ℝ≥0ˣ) (f : Dimensionful M) (u : LTMCTUnitChoices) :
     (a • f).1 u = a • f.1 u := rfl
 
 /-- For `M` carrying a dimension `d`, the equivalence between `M` and `Dimension M`,
@@ -346,10 +439,10 @@ noncomputable def CarriesDimension.toDimensionful {M : Type} [CarriesDimension M
     (u : LTMCTUnitChoices) :
     M ≃ Dimensionful M where
   toFun m := {
-    val := fun u1 => (u.dimScale u1 (dim M)) • m
+    val := fun u1 => (u.dimScaleUnits u1 (dim M)) • m
     property := fun u1 u2 => by
-      simp [smul_smul]
-      rw [mul_comm, LTMCTUnitChoices.dimScale_transitive]}
+      simp only [← mul_smul]
+      rw [mul_comm, LTMCTUnitChoices.dimScaleUnits_transitive]}
   invFun f := f.1 u
   left_inv m := by
     simp
@@ -358,6 +451,15 @@ noncomputable def CarriesDimension.toDimensionful {M : Type} [CarriesDimension M
     ext u1
     simpa using (f.2 u u1).symm
 
-lemma CarriesDimension.toDimensionful_apply_apply
+/-- The value of `toDimensionful`, scaled by `dimScaleUnits`. This is the general form, holding
+  for every type carrying a dimension. -/
+lemma CarriesDimension.toDimensionful_apply_apply_units
     {M : Type} [CarriesDimension M] (u1 u2 : LTMCTUnitChoices) (m : M) :
+    (toDimensionful u1 m).1 u2 = (u1.dimScaleUnits u2 (dim M)) • m := by rfl
+
+/-- The value of `toDimensionful` for a type which also carries an action of `ℝ≥0`, phrased with
+  `dimScale` in place of `dimScaleUnits`. This is the form the concrete unit calculations use. -/
+@[simp]
+lemma CarriesDimension.toDimensionful_apply_apply
+    {M : Type} [HasDim M] [MulAction ℝ≥0 M] (u1 u2 : LTMCTUnitChoices) (m : M) :
     (toDimensionful u1 m).1 u2 = (u1.dimScale u2 (dim M)) • m := by rfl

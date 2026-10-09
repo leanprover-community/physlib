@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Basic.Real.Basic
+public import Physlib.Units.PositiveRealUnit
 /-!
 
 # The Speed of Light
@@ -19,6 +19,8 @@ and should be thought of as the speed of light in some chosen but arbitrary syst
 ## ii. Key results
 
 - `SpeedOfLight` : The type of speeds of light in a vacuum.
+- `SpeedOfLight.instPositiveRealUnitCore` : The instance making `SpeedOfLight` a positive-real
+  unit type, supplying the shared magnitude, ratio and rescaling API.
 
 ## iii. Table of contents
 
@@ -53,7 +55,19 @@ namespace SpeedOfLight
 
 ## B. Instances on the type
 
+The speed of light is a positive real magnitude, so it is an instance of
+`PositiveRealUnitCore`. This supplies the ratio of two speeds of light as a non-negative
+real, the rescaling of a speed of light by a positive factor, and the arithmetic laws
+relating them, all shared with the fundamental unit types.
+
 -/
+
+instance instPositiveRealUnitCore : PositiveRealUnitCore SpeedOfLight where
+  val := SpeedOfLight.val
+  pos := SpeedOfLight.pos
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
 
 instance : Coe SpeedOfLight ℝ := ⟨SpeedOfLight.val⟩
 
@@ -70,6 +84,11 @@ instance : One SpeedOfLight := ⟨1, by grind⟩
 
 @[simp]
 lemma val_one : (1 : SpeedOfLight).val = 1 := rfl
+
+/-- The magnitude supplied to `PositiveRealUnitCore` is the underlying value, so that the
+  generic positive-real lemmas apply to `SpeedOfLight`. -/
+@[simp]
+lemma positiveRealUnitCore_val (c : SpeedOfLight) : PositiveRealUnitCore.val c = c.val := rfl
 
 /-!
 

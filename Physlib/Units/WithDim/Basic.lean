@@ -186,6 +186,30 @@ lemma smul_val {B : Type} [DimensionBasis B] {d : Dimension B} {M : Type} [MulAc
     (a : ℝ≥0) (m : WithDim d M) :
     (a • m).val = a • m.val := rfl
 
+/-- The underlying value of a scaling by a unit of `ℝ≥0`, that is by a strictly positive real. -/
+@[simp]
+lemma smul_val_units {B : Type} [DimensionBasis B] {d : Dimension B} {M : Type}
+    [MulAction ℝ≥0 M] (a : ℝ≥0ˣ) (m : WithDim d M) :
+    (a • m).val = (a : ℝ≥0) • m.val := rfl
+
+/-- A positive-real quantity which carries a dimension, regarded as a dimension-tagged real, so
+  that it can be used alongside the other dimension-tagged quantities. The dimension is read off
+  the `HasDim` instance, so the two cannot drift apart. -/
+def ofPositiveRealUnit {U : Type} [PositiveRealUnitCore U] [HasDim U] (x : U) :
+    WithDim (dim U) ℝ :=
+  ⟨PositiveRealUnitCore.val x⟩
+
+@[simp]
+lemma ofPositiveRealUnit_val {U : Type} [PositiveRealUnitCore U] [HasDim U] (x : U) :
+    (ofPositiveRealUnit x).val = PositiveRealUnitCore.val x := rfl
+
+@[simp]
+lemma ofPositiveRealUnit_units_smul {U : Type} [PositiveRealUnitCore U] [HasDim U]
+    (a : ℝ≥0ˣ) (x : U) :
+    ofPositiveRealUnit (a • x) = a • ofPositiveRealUnit x := by
+  apply WithDim.ext
+  simp [PositiveRealUnitCore.val_units_smul, NNReal.smul_def]
+
 /-
 Real scalar multiplication.
 
@@ -222,9 +246,11 @@ instance {d1 d2 : Dimension LTMCTDimensionBase} :
   mul_dim m1 m2 := by
     intro u1 u2
     ext
-    simp only [withDim_hMul_val, dim_apply, map_mul, smul_val]
+    simp only [withDim_hMul_val, dim_apply]
     rw [m1.2 u1, m2.2 u1]
-    simp only [dim_apply, smul_val, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
+    simp only [dim_apply, smul_val_units, withDim_hMul_val,
+      LTMCTUnitChoices.dimScaleUnits_mul_dim, Units.val_mul, Algebra.mul_smul_comm,
+      Algebra.smul_mul_assoc]
     rw [smul_smul]
     congr 1
     rw [mul_comm]

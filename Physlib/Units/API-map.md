@@ -66,8 +66,11 @@ The factor by which a quantity of a given dimension rescales under a change of u
 monoid homomorphism from dimensions to the positive reals. [18] It is one on the trivial
 dimension and on a unit system paired with itself. [19] It is strictly positive and nonzero,
 composes along a chain of three unit choices, and inverts when the two choices are swapped. [20]
-Scaling by it is injective. [21] This is the classical law for the change of a quantity under a
-change of unit {4}.
+Scaling by it is injective. [21] The factor is also available as a strictly positive real, that
+is as a unit of the non-negative reals, and it is by this that dimension-carrying quantities are
+scaled: no change of unit scales by zero, so the positive reals suffice, and taking them lets a
+type whose elements are strictly positive carry a dimension at all. [71] This is the classical
+law for the change of a quantity under a change of unit {4}.
 
 ### Unit systems over a general base set
 
@@ -104,8 +107,11 @@ composes along a chain of unit choices and is trivial on an unchanged choice. [3
 versions require that transformation to commute with a scalar action, to be linear, or to be
 linear and continuous. [40] The transformation is then an equivalence, a linear map, a linear
 equivalence, a continuous linear map or a continuous linear equivalence. [41] The unit choices
-themselves and every dimension-carrying type are unit-dependent. [42] Function types are
-unit-dependent, with the transformation acting on the argument, on the value, or on both. [43]
+themselves and every dimension-carrying type are unit-dependent. [42] Carrying a dimension is
+enough for that on its own, whereas compatibility of the transformation with a non-negative
+scalar is meaningful only when such a scalar acts, and so is asked for separately. [72] Function
+types are unit-dependent, with the transformation acting on the argument, on the value, or on
+both. [43]
 
 A quantity or a statement is dimensionally correct when it is unchanged by a change of unit
 system; for functions this unfolds into conditions acting on the argument, on the value and on
@@ -123,7 +129,10 @@ values and combines the dimensions in the same way. [50] Over the LTMCT base dim
 type carries its dimension, and its transformation under a change of unit is scalar
 multiplication by the scaling factor. [51] A tagged quantity of trivial dimension is unchanged
 by a change of unit. [52] A cast moves a tagged quantity between two tags whose dimensions are
-equal, with the equality discharged automatically. [53]
+equal, with the equality discharged automatically. [53] A quantity whose elements are strictly
+positive is regarded as a dimension-tagged real by recording its magnitude, with the dimension
+read off its type so that the two cannot drift apart, and tagging it commutes both with a
+rescaling and with a change of unit. [73]
 
 At a fixed numerical unit representation, tagged values form a real module without replacing the
 existing additive operations or the action of the nonnegative reals. [68] They also form a
@@ -138,8 +147,8 @@ The base quantities themselves are the subject of the APIs for time {6}, space {
 temperature {8}, and of the mass and charge modules.
 Area has dimension length squared, with the square metre, square foot, square mile, are, hectare
 and acre, their values in SI units, and one acre equal to 43560 square feet. [54] Speed has
-dimension length over time, with the metre per second, mile per hour, kilometre per hour, knot
-and the speed of light, their values in SI units, and the conversions between them. [55] Energy
+dimension length over time, with the metre per second, mile per hour, kilometre per hour and
+knot, their values in SI units, and the conversions between them. [55] Energy
 has dimension mass times length squared over time squared, with the joule, electronvolt, calorie
 and kilowatt hour. [56] Pressure has dimension mass over length over time squared, with the
 pascal, millimetre of mercury, bar, standard atmosphere, torr and pound per square inch. [57]
@@ -147,6 +156,17 @@ Momentum has dimension mass times length over time and takes values in d spatial
 it is the three-momentum rather than the four-momentum. [58] The mass of a particle is a named
 dimension-carrying quantity in the manner of momentum, and so is its velocity in d spatial
 dimensions. [TODO]
+
+### Physical constants
+
+A physical constant is not a unit: it is a definite physical quantity, fixed once and for all,
+and the number recording it is determined by the unit system in which it is read. It is
+therefore recorded as a quantity given in every unit system rather than placed among the units
+of the quantity it measures. The speed of light is such a constant. Its type consists of
+strictly positive reals, which is why it needs the scaling by a strictly positive factor, and it
+carries the dimension of a length over a time; its value in our world is exactly 299792458
+metres per second. [74][75] Newton's constant, Planck's constant and the Boltzmann constant are
+recorded in the same way. [TODO]
 
 ### Calculus and dimensional correctness
 
@@ -246,7 +266,9 @@ the numerical oscillator, and has its derivative from the generic transport of d
 38. Physlib/Units/PositiveRealUnit.lean — `PositiveRealUnitCore.scale`,
    `PositiveRealUnitCore.scale_div_self`, `PositiveRealUnitCore.self_div_scale`,
    `PositiveRealUnitCore.scale_one`, `PositiveRealUnitCore.scale_div_scale`,
-   `PositiveRealUnitCore.scale_scale`
+   `PositiveRealUnitCore.scale_scale`, `PositiveRealUnitCore.unitsSMul`,
+   `PositiveRealUnitCore.instMulActionUnitsNNReal`,
+   `PositiveRealUnitCore.units_smul_eq_scale`, `PositiveRealUnitCore.val_units_smul`
 39. Physlib/Units/UnitDependent.lean — `UnitDependent`
 40. Physlib/Units/UnitDependent.lean — `MulUnitDependent`, `LinearUnitDependent`,
    `ContinuousLinearUnitDependent`
@@ -256,7 +278,8 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `ContinuousLinearUnitDependent.scaleUnitContLinear`,
    `ContinuousLinearUnitDependent.scaleUnitContLinearEquiv`
 42. Physlib/Units/UnitDependent.lean — `LTMCTUnitChoices.scaleUnit_apply_fst`,
-   `LTMCTUnitChoices.dimScale_scaleUnit`, `Dimensionful.of_scaleUnit`, `HasDim.scaleUnit_apply`
+   `LTMCTUnitChoices.dimScale_scaleUnit`, `Dimensionful.of_scaleUnit_units`,
+   `HasDim.scaleUnit_apply`
 43. Physlib/Units/UnitDependent.lean — `UnitDependent.scaleUnit_apply_fun_right`,
    `UnitDependent.scaleUnit_apply_fun_left`, `UnitDependent.scaleUnit_apply_fun`,
    `instUnitDependentTwoSided`, `instUnitDependentTwoSidedMul`,
@@ -283,7 +306,7 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `DimArea.acre_eq_mul_squareFeet`
 55. Physlib/Units/WithDim/Speed.lean — `DimSpeed`, `DimSpeed.oneMeterPerSecond`,
    `DimSpeed.oneMilePerHour`, `DimSpeed.oneKilometerPerHour`, `DimSpeed.oneKnot`,
-   `DimSpeed.speedOfLight`, `DimSpeed.oneMilePerHour_in_SI`, `DimSpeed.speedOfLight_in_SI`,
+   `DimSpeed.oneMilePerHour_in_SI`,
    `DimSpeed.oneKnot_eq_mul_oneKilometerPerHour`, `DimSpeed.oneKilometerPerHour_eq_mul_oneKnot`,
    `DimSpeed.oneMeterPerSecond_eq_mul_oneMilePerHour`
 56. Physlib/Units/WithDim/Energy.lean — `DimEnergy`, `DimEnergy.joule`,
@@ -320,6 +343,20 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `HarmonicOscillatorWithDim.potentialEnergy_eq_transport`,
    `HarmonicOscillatorWithDim.hasFDerivAt_potentialEnergy`,
    `HarmonicOscillatorWithDim.continuous_potentialEnergy`
+71. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScaleUnits`,
+   `LTMCTUnitChoices.dimScaleUnits_coe`, `LTMCTUnitChoices.dimScaleUnits_transitive`,
+   `LTMCTUnitChoices.dimScaleUnits_self`, `LTMCTUnitChoices.dimScaleUnits_mul_dim`,
+   `LTMCTUnitChoices.dimScaleUnits_smul`,
+   `CarriesDimension.toDimensionful_apply_apply_units`, `Dimensionful.smul_apply_units`
+72. Physlib/Units/UnitDependent.lean — `HasDim.scaleUnit_apply_units`,
+   `LTMCTUnitChoices.dimScaleUnits_scaleUnit`
+73. Physlib/Units/WithDim/Basic.lean — `WithDim.smul_val_units`,
+   `WithDim.ofPositiveRealUnit`, `WithDim.ofPositiveRealUnit_val`,
+   `WithDim.ofPositiveRealUnit_units_smul`
+74. Physlib/Relativity/SpeedOfLight.lean — `SpeedOfLight`,
+   `SpeedOfLight.instPositiveRealUnitCore`, `SpeedOfLight.positiveRealUnitCore_val`
+75. Physlib/Units/Constants.lean — `HasDim SpeedOfLight`, `speedOfLight`,
+   `speedOfLight_in_SI`
 
 ## References
 
