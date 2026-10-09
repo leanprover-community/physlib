@@ -399,6 +399,7 @@ public import Physlib.Relativity.Fermions.Weyl.Metric
 public import Physlib.Relativity.Fermions.Weyl.RightHanded
 public import Physlib.Relativity.Fermions.Weyl.Two
 public import Physlib.Relativity.Fermions.Weyl.Unit
+public import Physlib.Relativity.GravitationalConstant
 public import Physlib.Relativity.LorentzAlgebra.Basic
 public import Physlib.Relativity.LorentzAlgebra.Basis
 public import Physlib.Relativity.LorentzAlgebra.ExponentialMap
