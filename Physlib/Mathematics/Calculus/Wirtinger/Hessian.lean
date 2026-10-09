@@ -24,8 +24,16 @@ kinetic term is real.
 
 When the fields split into sectors that do not mix in the Kähler potential, as for several
 moduli `T_k` with `K = -∑ k, n_k log (T_k + T̄_k)`, the Kähler metric is block-diagonal and the
-sectors have no kinetic mixing. For `F q = ∑ k, f k (q ∘ Sigma.mk k)`, with each `f k` reading
-only the fields of sector `k`,
+sectors have no kinetic mixing.
+
+In Lean the fields are indexed by pairs `⟨k, a⟩ : Σ k, ι k`, with `k` the sector and `a` a field
+of that sector. For a field configuration `q : (Σ k, ι k) → ℂ`, the fields of sector `k` are
+`q ∘ Sigma.mk k : ι k → ℂ`. A potential `F` that is a sum of sector potentials `f k`, each
+depending only on the fields of its own sector, is
+
+  `F q = ∑ k, f k (q ∘ Sigma.mk k)`
+
+and its Hessian is the block-diagonal matrix of the sector Hessians:
 
   `hessianMatrixOf F u = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`
 
