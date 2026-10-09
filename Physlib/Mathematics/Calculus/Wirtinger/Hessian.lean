@@ -17,38 +17,44 @@ The mixed Wirtinger Hessian, and its block-diagonal form for a sum of sector fun
 ## i. Overview
 
 In an `N = 1` supersymmetric theory the kinetic terms of the complex scalar fields `φ^I` are
-weighted by the Kähler metric `g_{IJ̄} = ∂_I ∂̄_J K` of the real Kähler potential `K`. Here
-`hessianMatrixOf f u` is the matrix with `(I, J)` entry `∂_I ∂̄_J f` at `u`, and
-`hessianMatrixOfR K u` is the Kähler metric at the field point `u`. It is Hermitian, so the
-kinetic term is real.
+weighted by the Kähler metric
 
-When the fields split into sectors that do not mix in the Kähler potential, as for several
-moduli `T_k` with `K = -∑ k, n_k log (T_k + T̄_k)`, the Kähler metric is block-diagonal and the
-sectors have no kinetic mixing.
+  `g_{IJ̄}(φ) = ∂_I ∂̄_J K(φ)`,   `∂_I = ∂/∂φ^I`,   `∂̄_J = ∂/∂φ̄^J`,
 
-In Lean the fields are labelled as follows.
+of the real Kähler potential `K`. The metric is Hermitian, `(g_{JĪ})^* = g_{IJ̄}`, so the kinetic
+term is real.
 
-- Each sector `k` has a finite type `ι k` labelling its fields, for example `ι k = Fin 3` for a
-  sector of three fields.
-- The type `Σ k, ι k` labels all fields of all sectors. Its elements are the pairs
-  `⟨k, a⟩ = Sigma.mk k a`, field `a` of sector `k`. It is a set of labels, not a sum.
-- A field configuration `q : (Σ k, ι k) → ℂ` gives the value of every field. The values of the
-  fields of sector `k` alone are `q ∘ Sigma.mk k : ι k → ℂ`, the map `a ↦ q ⟨k, a⟩`, written
-  `restrict k q` below.
+Suppose the fields split into sectors `k`, with fields `φ^{ka}` in sector `k`, and the Kähler
+potential is a sum of sector potentials with no term mixing two sectors:
 
-A potential `F` that is a sum of sector potentials `f k`, each depending only on the fields of
-its own sector, with no term mixing two sectors, is
+  `K(φ) = ∑_k K_k(φ_(k))`,   `φ_(k) = (φ^{ka})_a`,
 
-  `F q = ∑ k, f k (q ∘ Sigma.mk k)`
+as for several moduli `T_k` with `K = -∑_k n_k log(T_k + T̄_k)`. Then the metric is
+block-diagonal and the sectors have no kinetic mixing:
 
-where the sum runs over the sectors. Its Hessian is the block-diagonal matrix of the sector
-Hessians:
+  `∂_{ka} ∂̄_{lb} K = δ_{kl} ∂_a ∂̄_b K_k`.
 
-  `hessianMatrixOf F u = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`
+Each `K_k` need only be `C²` at the point considered, so potentials defined on a proper
+subdomain, such as `log`, are covered.
 
-Each `f k` need only be `C²` at `u ∘ Sigma.mk k`, so potentials defined on a proper subdomain,
-such as `log`, are covered. The two-sector case over `ι₁ ⊕ ι₂` is stated with
-`Matrix.fromBlocks`.
+In Lean:
+
+| Physics | Lean |
+|---|---|
+| sector `k`, field label `a` in it | `k`, `a : ι k` |
+| field label `ka` | `⟨k, a⟩ = Sigma.mk k a : Σ k, ι k` |
+| point `φ` in field space | `q : (Σ k, ι k) → ℂ` |
+| sector fields `φ_(k)` | `q ∘ Sigma.mk k = restrict k q : ι k → ℂ` |
+| sector potential `K_k` | `f k : (ι k → ℂ) → ℂ` |
+| `∂_I ∂̄_J K(φ)`, `K` real | `hessianMatrixOfR K q I J` |
+| `∂_I ∂̄_J f(φ)`, `f` complex | `hessianMatrixOf f q I J` |
+
+and the block-diagonal statement reads
+
+  `hessianMatrixOf (fun q => ∑ k, f k (q ∘ Sigma.mk k)) u`
+  `  = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`.
+
+The two-sector case over `ι₁ ⊕ ι₂` is stated with `Matrix.fromBlocks`.
 
 ## ii. Key results
 
