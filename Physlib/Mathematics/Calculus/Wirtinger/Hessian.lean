@@ -37,19 +37,12 @@ block-diagonal and the sectors have no kinetic mixing:
 Each `K_k` need only be `C²` at the point considered, so potentials defined on a proper
 subdomain, such as `log`, are covered.
 
-In Lean:
-
-| Physics | Lean |
-|---|---|
-| sector `k`, field label `a` in it | `k`, `a : ι k` |
-| field label `ka` | `⟨k, a⟩ = Sigma.mk k a : Σ k, ι k` |
-| point `φ` in field space | `q : (Σ k, ι k) → ℂ` |
-| sector fields `φ_(k)` | `q ∘ Sigma.mk k = restrict k q : ι k → ℂ` |
-| sector potential `K_k` | `f k : (ι k → ℂ) → ℂ` |
-| `∂_I ∂̄_J K(φ)`, `K` real | `hessianMatrixOfR K q I J` |
-| `∂_I ∂̄_J f(φ)`, `f` complex | `hessianMatrixOf f q I J` |
-
-and the block-diagonal statement reads
+In Lean, the fields of sector `k` are labelled by a finite type `ι k`, and the field `φ^{ka}`
+by the pair `⟨k, a⟩ : Σ k, ι k`. A point `φ` in field space is a function
+`q : (Σ k, ι k) → ℂ` with `q ⟨k, a⟩ = φ^{ka}`, and the sector fields `φ_(k)` are
+`q ∘ Sigma.mk k`, the function `a ↦ q ⟨k, a⟩`. The sector potentials `K_k` are `f k`. The
+metric `g_{IJ̄}(φ)` is `hessianMatrixOfR K q`, or `hessianMatrixOf` for a complex-valued
+function. The block-diagonal statement reads
 
   `hessianMatrixOf (fun q => ∑ k, f k (q ∘ Sigma.mk k)) u`
   `  = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`.
