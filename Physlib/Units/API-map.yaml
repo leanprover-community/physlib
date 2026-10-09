@@ -291,11 +291,18 @@ Requirements:
       (WithDim.smul_val_units, WithDim.ofPositiveRealUnit,
       WithDim.ofPositiveRealUnit_val, WithDim.ofPositiveRealUnit_units_smul)
 
-  - description: "The physical constants of our world carry their dimensions, so that each records a definite physical quantity rather than its value in one system of units, together with the values they take in SI units. The speed of light is covered; Newton's constant, Planck's constant and the Boltzmann constant are to follow."
-    done: false
+  - description: "The physical constants of our world carry their dimensions, so that each records a definite physical quantity rather than its value in one system of units: the speed of light, Newton's constant, Planck's constant with its reduced form, and the Boltzmann constant, together with the values they take in SI units."
+    done: true
     location: >
       Physlib/Relativity/SpeedOfLight.lean (SpeedOfLight);
-      Physlib/Units/Constants.lean (speedOfLight, speedOfLight_in_SI)
+      Physlib/Relativity/GravitationalConstant.lean (GravitationalConstant);
+      Physlib/QuantumMechanics/PlanckConstant.lean (PlanckConstant);
+      Physlib/StatisticalMechanics/BoltzmannConstant.lean (BoltzmannConstant);
+      Physlib/Units/Constants.lean
+      (speedOfLight, speedOfLight_in_SI, gravitationalConstant,
+      gravitationalConstant_in_SI, planckConstant, planckConstant_in_SI,
+      reducedPlanckConstant, reducedPlanckConstant_in_SI,
+      reducedPlanckConstant_val, boltzmannConstant, boltzmannConstant_in_SI)
 
   - description: "Energy has dimension mass times length squared over time squared, with the joule, electronvolt, calorie and kilowatt hour."
     done: true
