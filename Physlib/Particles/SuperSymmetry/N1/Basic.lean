@@ -44,9 +44,9 @@ distinct carrier from above. Complex conjugation is the conjugate-linear identit
 species' holomorphy flip (`conjEquiv`, hence `conjT`) is built from it. Every
 colour carries the trivial representation over the trivial group `Unit`, so the chiral scalars hold
 no charge. Contracting a colour against its `τ`-dual is the dot product of the two coordinate
-vectors, the Kronecker `δ_{IJ}` on basis labels: `contr` is that pairing `V c ⊗ V (τ c) → ℂ`, `unit`
-its cap in `V (τ c) ⊗ V c`, and `metric` the cap `∑_I b_I ⊗ b_I` in `V c ⊗ V c`. This instance
-equips the chiral sector with the framework's generic tensor API (`.Tensor`, `.contrT`, …).
+vectors, the Kronecker `δ_{IJ}` on basis labels: `contr` is that pairing `V c ⊗ V (τ c) → ℂ`, and
+`unit` its cap in `V (τ c) ⊗ V c`. This instance equips the chiral sector with the framework's
+generic tensor API (`.Tensor`, `.contrT`, …).
 
 Conjugation is intrinsic species data: a `ConjTensorSpecies` is a `TensorSpecies`
 extended with the conjugate-colour involution `ChiralColor.bar` and its coherence. The framework
@@ -196,26 +196,20 @@ noncomputable def chiralBasis : (c : ChiralColor) → Basis ι ℂ (chiralModule
 /-!
 ## D. The δ structure on based finite modules
 
-The contraction, unit, and metric are one δ structure in basis coordinates. Here `metric` is the
-`TensorSpecies.WithMetric` field of that name — the δ index-raising tensor `δ^{IJ}` — and is *not*
-the physical Kähler metric `g_{IJ̄}`, which is built downstream on top of this sector. A contraction
-pairs a colour with its variance dual `τ c`, whose carriers are *distinct* (a module and its dual,
-or their conjugates) but share the index `ι`, so the pairing is the dot product *across two based
-modules* `(M, b)` and `(N, b')`, `(x, y) ↦ ∑_I (b x)_I (b' y)_I`, with cap `∑_I b_I ⊗ b'_I ∈ M ⊗ N`.
-The single-colour cap `deltaCap` (`b = b'`) is what `metric c` uses, since its two slots are the
-same colour; the two-module pairing `deltaContr₂`/`deltaCap₂` is what `contr` and `unit` use. The δ
-data stays within one holomorphy and needs no conjugation; conjugation is carried instead by the
-tensor `conjT` (§F).
+The contraction and unit are one δ structure in basis coordinates. A contraction pairs a colour
+with its variance dual `τ c`, whose carriers are *distinct* (a module and its dual, or their
+conjugates) but share the index `ι`, so the pairing is the dot product *across two based modules*
+`(M, b)` and `(N, b')`, `(x, y) ↦ ∑_I (b x)_I (b' y)_I` (`deltaContr₂`), with cap
+`∑_I b_I ⊗ b'_I ∈ M ⊗ N` (`deltaCap₂`). The δ data stays within one holomorphy and needs no
+conjugation; conjugation is carried instead by the tensor `conjT` (§F).
+
+The species has no `TensorSpecies.WithMetric` instance. The metric of the chiral sector is the
+Kähler metric `g_{IJ̄}`, which pairs a chiral index with an anti-chiral one, depends on the fields,
+and is built downstream on top of this sector.
 
 -/
 
 variable {M : Type*} [AddCommGroup M] [Module ℂ M]
-
-/-- The δ cap `∑_I b_I ⊗ b_I`: the rank-2 tensor in `M ⊗ M` with two upper indices, whose
-components in the basis `b` are `δⁱʲ`. It is an element of `M ⊗ M` (the inverse-metric "cap"),
-not a linear map, and serves as the `metric` of the species' `WithMetric` instance (whose two
-slots share a colour). -/
-def deltaCap (b : Basis ι ℂ M) : M ⊗[ℂ] M := ∑ I, b I ⊗ₜ[ℂ] b I
 
 variable {N : Type*} [AddCommGroup N] [Module ℂ N]
 
@@ -294,26 +288,6 @@ lemma deltaContr₂_unit (b : Basis ι ℂ M) (b' : Basis ι ℂ N) (x : M) :
   rw [TensorProduct.assoc_symm_tmul, LinearMap.rTensor_tmul, TensorProduct.lid_tmul,
     deltaContr₂_tmul_basis]
 
-/-- The `contr_metric` law (two-module): contracting the inner `M`/`N` legs of
-`deltaCap b ⊗ deltaCap b'` yields `deltaCap₂ b' b`. -/
-lemma deltaContr₂_metric (b : Basis ι ℂ M) (b' : Basis ι ℂ N) :
-    (TensorProduct.comm ℂ M N ((TensorProduct.lid ℂ N).lTensor M
-      (((deltaContr₂ b b').rTensor N).lTensor M
-        (((TensorProduct.assoc ℂ M N N).symm.toLinearMap.lTensor M)
-          ((TensorProduct.assoc ℂ M M (N ⊗[ℂ] N))
-            (LinearMap.toSpanSingleton ℂ _ (deltaCap b) 1 ⊗ₜ[ℂ]
-              LinearMap.toSpanSingleton ℂ _ (deltaCap b') 1)))))) =
-      LinearMap.toSpanSingleton ℂ _ (deltaCap₂ b' b) 1 := by
-  rw [LinearMap.toSpanSingleton_apply_one, LinearMap.toSpanSingleton_apply_one,
-    LinearMap.toSpanSingleton_apply_one]
-  conv_lhs => rw [deltaCap, deltaCap, TensorProduct.sum_tmul]
-  conv_rhs => rw [deltaCap₂]
-  simp only [TensorProduct.tmul_sum, map_sum]
-  simp [TensorProduct.assoc_tmul, LinearEquiv.lTensor_tmul, LinearMap.lTensor_tmul,
-    TensorProduct.assoc_symm_tmul, LinearMap.rTensor_tmul, TensorProduct.lid_tmul,
-    TensorProduct.comm_tmul, deltaContr₂_basis_basis, ite_smul]
-  simp [TensorProduct.ite_tmul, Finset.sum_ite_eq]
-
 /-!
 ## E. The chiral-index tensor species
 
@@ -364,14 +338,6 @@ def chiralTensor : ConjTensorSpecies ℂ ChiralColor Unit (chiralModule (ι := �
       intro M₁ M₁' M₂ M₂' _ _ _ _ _ _ _ _ B₁ B₁' B₂ B₂'
       rw [deltaContr₂_basis_basis, deltaContr₂_basis_basis]; split <;> simp
     cases d <;> exact key _ _ _ _
-
-/-- The metric of the chiral-index tensor species: at each colour `c` the single-colour δ cap
-`∑_I b_I ⊗ b_I`. Contracting it against the metric of `τ c` gives the unit by
-`deltaContr₂_metric`. -/
-instance chiralTensor.instWithMetric : (chiralTensor (ι := ι)).WithMetric where
-  metric c := { LinearMap.toSpanSingleton ℂ _ (deltaCap (chiralBasis c)) with
-      isIntertwining' g := by ext; simp [Representation.tprod_apply, chiralRep, deltaCap] }
-  contr_metric c := by cases c <;> exact deltaContr₂_metric _ _
 
 /-- The chiral contraction of two basis vectors is the Kronecker δ. -/
 lemma chiralTensor_contr_chiralBasis (d : ChiralColor) (x₁ x₂ : ι) :
