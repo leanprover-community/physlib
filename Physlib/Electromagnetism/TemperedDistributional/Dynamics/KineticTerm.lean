@@ -5,9 +5,9 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Electromagnetism.Distributional.MagneticField
+public import Physlib.Electromagnetism.TemperedDistributional.MagneticField
 public import Physlib.Electromagnetism.Dynamics.Basic
-public import Physlib.Electromagnetism.Distributional.ElectricField
+public import Physlib.Electromagnetism.TemperedDistributional.ElectricField
 /-!
 
 # The kinetic term

@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Electromagnetism.Distributional.Dynamics.Lagrangian
+public import Physlib.Electromagnetism.TemperedDistributional.Dynamics.Lagrangian
 /-!
 
 # Extrema of the Lagrangian density

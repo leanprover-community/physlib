@@ -6,7 +6,7 @@ Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Physlib.Mathematics.Distribution.Basic
+public import Physlib.Mathematics.Distribution.TemperedDistribution
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace

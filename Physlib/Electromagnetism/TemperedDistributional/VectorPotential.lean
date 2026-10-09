@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Electromagnetism.Distributional.Basic
+public import Physlib.Electromagnetism.TemperedDistributional.Basic
 public import Mathlib.Algebra.Order.Archimedean.Real.Hom
 /-!
 

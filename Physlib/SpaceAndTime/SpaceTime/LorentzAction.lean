@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.SpaceAndTime.SpaceTime.Basic
-public import Physlib.Mathematics.Distribution.Basic
+public import Physlib.Mathematics.Distribution.TemperedDistribution
 /-!
 
 # Lorentz group actions related to SpaceTime

@@ -45,7 +45,7 @@ Requirements:
       vector potentials.
     done: true
     location: >
-      Physlib/Electromagnetism/Distributional/Basic.lean
+      Physlib/Electromagnetism/TemperedDistributional/Basic.lean
       (DistElectromagneticPotential, ofScalarPotential, ofVectorPotential)
 
   - description: >
@@ -70,7 +70,7 @@ Requirements:
     done: true
     location: >
       Physlib/Electromagnetism/Kinematics/ElectricField.lean (electricField);
-      Physlib/Electromagnetism/Distributional/ElectricField.lean (electricField)
+      Physlib/Electromagnetism/TemperedDistributional/ElectricField.lean (electricField)
 
   - description: >
       The magnetic field is defined from the electromagnetic potential, as a vector field in the
@@ -79,7 +79,7 @@ Requirements:
     done: true
     location: >
       Physlib/Electromagnetism/Kinematics/MagneticField.lean (magneticField, magneticFieldMatrix);
-      Physlib/Electromagnetism/Distributional/MagneticField.lean (magneticFieldMatrix)
+      Physlib/Electromagnetism/TemperedDistributional/MagneticField.lean (magneticFieldMatrix)
 
   - description: >
       The kinetic (field-strength) term is defined from the electromagnetic potential, with a
@@ -87,7 +87,7 @@ Requirements:
     done: true
     location: >
       Physlib/Electromagnetism/Dynamics/KineticTerm.lean (kineticTerm, gradKineticTerm);
-      Physlib/Electromagnetism/Distributional/Dynamics/KineticTerm.lean (gradKineticTerm)
+      Physlib/Electromagnetism/TemperedDistributional/Dynamics/KineticTerm.lean (gradKineticTerm)
 
   - description: >
       The Lagrangian is defined from the electromagnetic potential, together with the free
@@ -95,4 +95,4 @@ Requirements:
     done: true
     location: >
       Physlib/Electromagnetism/Dynamics/Lagrangian.lean (lagrangian, freeCurrentPotential, gradLagrangian, gradFreeCurrentPotential);
-      Physlib/Electromagnetism/Distributional/Dynamics/Lagrangian.lean (gradLagrangian, gradFreeCurrentPotential)
+      Physlib/Electromagnetism/TemperedDistributional/Dynamics/Lagrangian.lean (gradLagrangian, gradFreeCurrentPotential) 

@@ -5,8 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Electromagnetism.Distributional.Dynamics.CurrentDensity
-public import Physlib.Electromagnetism.Distributional.Dynamics.KineticTerm
+public import Physlib.Electromagnetism.TemperedDistributional.Dynamics.CurrentDensity
+public import Physlib.Electromagnetism.TemperedDistributional.Dynamics.KineticTerm
 /-!
 
 # The Lagrangian in electromagnetism

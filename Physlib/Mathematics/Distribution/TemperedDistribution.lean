@@ -12,7 +12,7 @@ public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 
 # Distributions
 
-## i. Overview of distributions
+## i. Overview
 
 Distributions are often used implicitly in physics, for example the correct way to handle
 a dirac delta function is to treat it as a distribution. In this file we will
@@ -32,7 +32,7 @@ functions from `E` to `F`. We give a more precise definition of distributions be
 - `Distribution.ofFiniteMeasure_eq_iff` says that finite measures are determined by their
   associated complex scalar distributions.
 
-## iii. Table of Content
+## iii. Table of Contents
 
 - A. The definition of a distribution
 - B. Construction of distributions from linear maps
@@ -40,7 +40,11 @@ functions from `E` to `F`. We give a more precise definition of distributions be
 - D. Fourier transform of distributions
 - E. Specific distributions
 
-## iv. Implementation notes
+## iv. References
+
+* None.
+
+## v. Implementation notes
 
 - In this file we will define distributions generally, in `Physlib.SpaceAndTime.Distributions`
   we define properties of distributions directly related to `Space`.

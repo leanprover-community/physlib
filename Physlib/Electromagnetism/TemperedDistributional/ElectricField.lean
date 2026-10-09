@@ -5,9 +5,9 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Electromagnetism.Distributional.VectorPotential
-public import Physlib.Electromagnetism.Distributional.ScalarPotential
-public import Physlib.Electromagnetism.Distributional.FieldStrength
+public import Physlib.Electromagnetism.TemperedDistributional.VectorPotential
+public import Physlib.Electromagnetism.TemperedDistributional.ScalarPotential
+public import Physlib.Electromagnetism.TemperedDistributional.FieldStrength
 /-!
 
 # The Electric Field
