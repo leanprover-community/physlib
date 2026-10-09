@@ -29,8 +29,8 @@ Kähler potential is a sum of sector potentials with no term mixing two sectors:
 
   `K(φ) = ∑_k K_k(φ_k)`,
 
-as for several moduli `T_k` with `K = -∑_k n_k log(T_k + T̄_k)`. Then the metric is
-block-diagonal and the sectors have no kinetic mixing:
+as for several moduli `T_k` with `K = -∑_k n_k log(T_k + T̄_k)` and positive constants `n_k`.
+Then the metric is block-diagonal and the sectors have no kinetic mixing:
 
   `∂²K / ∂φ_k^a ∂φ̄_l^b = δ_{kl} ∂²K_k / ∂φ_k^a ∂φ̄_k^b`.
 
