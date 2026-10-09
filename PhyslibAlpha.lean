@@ -85,6 +85,7 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState.Sat
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState.UncertaintyRatio
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState.Variances
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.Basic
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.LocalizedUncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.Uncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Width
