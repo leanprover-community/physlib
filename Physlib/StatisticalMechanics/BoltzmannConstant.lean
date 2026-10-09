@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Basic.NNReal.Defs
+public import Physlib.Units.PositiveRealUnit
 /-!
 
 # Boltzmann constant
@@ -15,11 +15,58 @@ The Boltzmann constant is a constant `kB` of dimension `m² kg s⁻² K⁻¹`, t
 
 In this module give the value of the Boltzmann constant.
 
+We also define the type `BoltzmannConstant`, whose elements are the values the Boltzmann
+constant takes in a chosen but arbitrary system of units.
+
 -/
 
 @[expose] public section
 
 open NNReal
+
+/-- The Boltzmann constant. An element of this type should be thought of as the Boltzmann
+  constant in some chosen but arbitrary system of units. -/
+structure BoltzmannConstant where
+  /-- The underlying value of the Boltzmann constant. -/
+  val : ℝ
+  pos : 0 < val
+
+namespace BoltzmannConstant
+
+/-- The Boltzmann constant is a positive real magnitude, so it is an instance of
+  `PositiveRealUnitCore`, which supplies the shared ratio and rescaling API. -/
+instance instPositiveRealUnitCore : PositiveRealUnitCore BoltzmannConstant where
+  val := BoltzmannConstant.val
+  pos := BoltzmannConstant.pos
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
+
+instance : Coe BoltzmannConstant ℝ := ⟨BoltzmannConstant.val⟩
+
+/-- The instance of one for `BoltzmannConstant` is the Boltzmann constant equal to `1`, which is
+  the case in the units in which temperature is measured as an energy. -/
+instance : One BoltzmannConstant := ⟨1, by grind⟩
+
+@[simp]
+lemma val_one : (1 : BoltzmannConstant).val = 1 := rfl
+
+/-- The magnitude supplied to `PositiveRealUnitCore` is the underlying value, so that the
+  generic positive-real lemmas apply to `BoltzmannConstant`. -/
+@[simp]
+lemma positiveRealUnitCore_val (kB : BoltzmannConstant) :
+    PositiveRealUnitCore.val kB = kB.val := rfl
+
+@[simp]
+lemma val_pos (kB : BoltzmannConstant) : 0 < (kB : ℝ) := kB.pos
+
+@[simp]
+lemma val_nonneg (kB : BoltzmannConstant) : 0 ≤ (kB : ℝ) := le_of_lt kB.pos
+
+@[simp]
+lemma val_ne_zero (kB : BoltzmannConstant) : (kB : ℝ) ≠ 0 := ne_of_gt kB.pos
+
+end BoltzmannConstant
 
 namespace Constants
 
