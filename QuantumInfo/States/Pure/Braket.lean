@@ -247,9 +247,9 @@ def Ket.prod (ψ₁ : Ket d₁) (ψ₂ : Ket d₂) : Ket (d₁ × d₂) where
 
 infixl:100 " ⊗ᵠ " => Ket.prod
 
-/-- The tensor product of a finite family of kets, generalizing `Ket.prod`.
-For each party `i`, `d i` is its basis index type. An index of the joint system
-selects one basis index for each party. -/
+/-- The tensor product of a finite family of kets, generalizing `Ket.prod`. Party `i` has
+basis index type `d i`, and a joint index `j` selects one index `j i` for each party; the
+amplitude at `j` is `∏ i, ψ i (j i)`. -/
 def Ket.piProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
     [∀ i, Fintype (d i)] (ψ : (i : ι) → Ket (d i)) : Ket ((i : ι) → d i) where
   vec j := ∏ i, ψ i (j i)
