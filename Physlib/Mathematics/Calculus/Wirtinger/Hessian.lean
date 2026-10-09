@@ -26,10 +26,11 @@ When the fields split into sectors that do not mix in the Kähler potential, as 
 moduli `T_k` with `K = -∑ k, n_k log (T_k + T̄_k)`, the Kähler metric is block-diagonal and the
 sectors have no kinetic mixing.
 
-In Lean the fields are indexed by pairs `⟨k, a⟩ : Σ k, ι k`, with `k` the sector and `a` a field
-of that sector. For a field configuration `q : (Σ k, ι k) → ℂ`, the fields of sector `k` are
-`q ∘ Sigma.mk k : ι k → ℂ`. A potential `F` that is a sum of sector potentials `f k`, each
-depending only on the fields of its own sector, is
+In Lean each sector `k` has a finite type `ι k` labelling its fields, for example `ι k = Fin 3`
+for a sector of three fields. All fields together are labelled by pairs `⟨k, a⟩ : Σ k, ι k`, with
+`a : ι k` a field of sector `k`. For a field configuration `q : (Σ k, ι k) → ℂ`, the fields of
+sector `k` are `q ∘ Sigma.mk k : ι k → ℂ`. A potential `F` that is a sum of sector potentials
+`f k`, each depending only on the fields of its own sector, is
 
   `F q = ∑ k, f k (q ∘ Sigma.mk k)`
 
