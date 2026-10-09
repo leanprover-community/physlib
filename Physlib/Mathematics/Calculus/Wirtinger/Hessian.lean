@@ -16,7 +16,7 @@ The mixed Wirtinger Hessian, and its block-diagonal form for a sum of sector fun
 
 ## i. Overview
 
-In an `N = 1` supersymmetric theory the kinetic terms of the complex scalar fields `z^I` are
+In an `N = 1` supersymmetric theory the kinetic terms of the complex scalar fields `φ^I` are
 weighted by the Kähler metric `g_{IJ̄} = ∂_I ∂̄_J K` of the real Kähler potential `K`. Here
 `hessianMatrixOf f u` is the matrix with `(I, J)` entry `∂_I ∂̄_J f` at `u`, and
 `hessianMatrixOfR K u` is the Kähler metric at the field point `u`. It is Hermitian, so the
