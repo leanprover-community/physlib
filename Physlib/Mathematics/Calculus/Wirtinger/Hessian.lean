@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 public import Physlib.Mathematics.Calculus.Wirtinger.Coordinate
 
 /-!
@@ -15,23 +16,31 @@ The mixed Wirtinger Hessian, and its block-diagonal form for a sum of sector fun
 
 ## i. Overview
 
-The mixed Wirtinger Hessian `hessianMatrixOf f u` of `f : (ι → ℂ) → ℂ` is the matrix with
-`(I, J)` entry `∂_I ∂̄_J f` at `u`. For a real Kähler potential `K` it is the Kähler metric
-`g_{IJ̄}`.
+In an `N = 1` supersymmetric theory the kinetic terms of the complex scalar fields `z^I` are
+weighted by the Kähler metric `g_{IJ̄} = ∂_I ∂̄_J K` of the real Kähler potential `K`. Here
+`hessianMatrixOf f u` is the matrix with `(I, J)` entry `∂_I ∂̄_J f` at `u`, and
+`hessianMatrixOfR K u` is the Kähler metric at the field point `u`. It is Hermitian, so the
+kinetic term is real.
 
-If `F` is a sum of sector functions, `F q = ∑ k, f k (q ∘ Sigma.mk k)` with each `f k` reading
-only the coordinates of sector `k`, the Hessian is block-diagonal:
+When the fields split into sectors that do not mix in the Kähler potential, as for several
+moduli `T_k` with `K = -∑ k, n_k log (T_k + T̄_k)`, the Kähler metric is block-diagonal and the
+sectors have no kinetic mixing. For `F q = ∑ k, f k (q ∘ Sigma.mk k)`, with each `f k` reading
+only the fields of sector `k`,
 
   `hessianMatrixOf F u = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`
 
-Each `f k` need only be `C²` on an open set containing `u ∘ Sigma.mk k`, so functions defined on
-a proper subdomain, such as `log`, are covered. The two-sector case over `ι₁ ⊕ ι₂` is stated with
+Each `f k` need only be `C²` at `u ∘ Sigma.mk k`, so potentials defined on a proper subdomain,
+such as `log`, are covered. The two-sector case over `ι₁ ⊕ ι₂` is stated with
 `Matrix.fromBlocks`.
 
 ## ii. Key results
 
 - `Physlib.Wirtinger.hessianMatrixOf` : the mixed Wirtinger Hessian.
 - `Physlib.Wirtinger.hessianMatrixOfR` : the same for a real-valued function.
+- `Physlib.Wirtinger.hessianMatrixOfR_isHermitian` : the Hessian of a real `C²` function is
+    Hermitian.
+- `Physlib.Wirtinger.dWirtingerAntiCoord_block_sum` : `∂̄` of a sum of sector functions along a
+    sector-`k` coordinate is the `∂̄` of the sector-`k` function.
 - `Physlib.Wirtinger.hessianMatrixOf_sigma_block` : the Hessian of a sum of sector functions is
     block-diagonal.
 - `Physlib.Wirtinger.hessianMatrixOf_comp_equiv` : relabelling the coordinates by `ε` reindexes
@@ -47,7 +56,7 @@ a proper subdomain, such as `log`, are covered. The two-sector case over `ι₁ 
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 
@@ -57,7 +66,10 @@ namespace Physlib.Wirtinger
 
 open Matrix
 
-/-! ## A. The mixed Wirtinger Hessian -/
+/-! ## A. The mixed Wirtinger Hessian
+
+For a real Kähler potential `K` the mixed Wirtinger Hessian is the Kähler metric `g_{IJ̄}`.
+Reality of `K` and Schwarz's theorem make it Hermitian. -/
 
 section Hessian
 
@@ -72,11 +84,35 @@ lemmas about `hessianMatrixOf` apply to it. -/
 noncomputable abbrev hessianMatrixOfR (K : (ι → ℂ) → ℝ) (u : ι → ℂ) : Matrix ι ι ℂ :=
   hessianMatrixOf (Complex.ofReal ∘ K) u
 
+/-- The mixed Wirtinger Hessian of a real `C²` function is Hermitian, `g_{JĪ}^* = g_{IJ̄}`. -/
+lemma hessianMatrixOfR_isHermitian {K : (ι → ℂ) → ℝ} {u : ι → ℂ} (hK : ContDiffAt ℝ 2 K u) :
+    Matrix.IsHermitian (hessianMatrixOfR K u) := by
+  set F : (ι → ℂ) → ℂ := Complex.ofReal ∘ K with hFdef
+  have hF : ContDiffAt ℝ 2 F u := Complex.ofRealCLM.contDiff.contDiffAt.comp u hK
+  -- `F` is real, so `star (∂̄_I F) = ∂_I F` wherever `F` is differentiable, in particular near `u`
+  have hev : ∀ I : ι, (fun w => star (dWirtingerAntiCoord F I w))
+      =ᶠ[nhds u] fun w => dWirtingerCoord F I w :=
+    fun I => (hF.eventually (by simp)).mono fun w hw => by
+      dsimp only
+      rw [← dWirtingerCoord_star_comp_apply (hw.differentiableAt (by norm_num)) I]
+      congr 1
+      funext v
+      simp [hFdef]
+  ext I J
+  rw [Matrix.conjTranspose_apply]
+  simp only [hessianMatrixOfR, hessianMatrixOf, Matrix.of_apply]
+  rw [← dWirtingerAntiCoord_star_comp_apply (differentiableAt_dWirtingerAntiCoord hF I) J,
+    dWirtingerAntiCoord_congr_of_eventuallyEq_apply (hev I) J,
+    ← dWirtingerCoord_dWirtingerAntiCoord_comm hF I J]
+
 end Hessian
 
-/-! ## B. Sector split over a finite family of blocks -/
+/-! ## B. Sector split over a finite family of blocks
 
-section Sigma
+The fields are indexed by `Σ k, ι k`, with block `ι k` the fields of sector `k`. A potential
+that is a sum of sector potentials has a block-diagonal Hessian. -/
+
+section SectorBlocks
 
 variable {K : Type} [Fintype K] [DecidableEq K]
 variable {ι : K → Type} [∀ k, Fintype (ι k)] [∀ k, DecidableEq (ι k)]
@@ -134,57 +170,64 @@ lemma dWirtingerAntiCoord_block_ne {k k' : K} (h : k ≠ k') (g : (ι k' → ℂ
   dWirtingerAntiCoord_comp_clm_zero (restrict k') g ⟨k, a⟩ u hg
     (restrict_single_ne h.symm a 1) (restrict_single_ne h.symm a Complex.I)
 
-/-- The Hessian of a sum of sector functions is the block-diagonal of the sector Hessians. Each
-`f k` need only be `C²` on an open set `s k` containing `u ∘ Sigma.mk k`. -/
-lemma hessianMatrixOf_sigma_block
-    (f : ∀ k, (ι k → ℂ) → ℂ) (s : ∀ k, Set (ι k → ℂ)) (hs : ∀ k, IsOpen (s k))
-    (hf : ∀ k, ∀ v ∈ s k, ContDiffAt ℝ 2 (f k) v)
-    (u : (Σ k, ι k) → ℂ) (hu : ∀ k, (u ∘ Sigma.mk k) ∈ s k) :
+/-- `∂_⟨k₀, a⟩` of a sum of sector functions is the `∂_a` of the sector-`k₀` function. -/
+lemma dWirtingerCoord_block_sum (f : ∀ k, (ι k → ℂ) → ℂ) (k₀ : K) (a : ι k₀)
+    (u : (Σ k, ι k) → ℂ) (hf : ∀ k, DifferentiableAt ℝ (f k) (u ∘ Sigma.mk k)) :
+    dWirtingerCoord (fun q => ∑ k, f k (q ∘ Sigma.mk k)) ⟨k₀, a⟩ u
+      = dWirtingerCoord (f k₀) a (u ∘ Sigma.mk k₀) := by
+  rw [dWirtingerCoord_fun_sum_apply (F := fun k q => f k (q ∘ Sigma.mk k))
+      (fun k _ => (hf k).comp u (restrict k).differentiableAt) ⟨k₀, a⟩,
+    Finset.sum_eq_single k₀]
+  · exact dWirtingerCoord_block_own (f k₀) a u (hf k₀)
+  · exact fun k _ hk => dWirtingerCoord_block_ne (Ne.symm hk) (f k) a u (hf k)
+  · exact absurd (Finset.mem_univ k₀)
+
+/-- `∂̄_⟨k₀, a⟩` of a sum of sector functions is the `∂̄_a` of the sector-`k₀` function. -/
+lemma dWirtingerAntiCoord_block_sum (f : ∀ k, (ι k → ℂ) → ℂ) (k₀ : K) (a : ι k₀)
+    (u : (Σ k, ι k) → ℂ) (hf : ∀ k, DifferentiableAt ℝ (f k) (u ∘ Sigma.mk k)) :
+    dWirtingerAntiCoord (fun q => ∑ k, f k (q ∘ Sigma.mk k)) ⟨k₀, a⟩ u
+      = dWirtingerAntiCoord (f k₀) a (u ∘ Sigma.mk k₀) := by
+  rw [dWirtingerAntiCoord_fun_sum_apply (F := fun k q => f k (q ∘ Sigma.mk k))
+      (fun k _ => (hf k).comp u (restrict k).differentiableAt) ⟨k₀, a⟩,
+    Finset.sum_eq_single k₀]
+  · exact dWirtingerAntiCoord_block_own (f k₀) a u (hf k₀)
+  · exact fun k _ hk => dWirtingerAntiCoord_block_ne (Ne.symm hk) (f k) a u (hf k)
+  · exact absurd (Finset.mem_univ k₀)
+
+/-- The Hessian of a sum of sector functions is the block-diagonal of the sector Hessians. -/
+lemma hessianMatrixOf_sigma_block (f : ∀ k, (ι k → ℂ) → ℂ) (u : (Σ k, ι k) → ℂ)
+    (hf : ∀ k, ContDiffAt ℝ 2 (f k) (u ∘ Sigma.mk k)) :
     hessianMatrixOf (fun q => ∑ k, f k (q ∘ Sigma.mk k)) u
       = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k)) := by
-  set F : ((Σ k, ι k) → ℂ) → ℂ := fun q => ∑ k, f k (q ∘ Sigma.mk k) with hF
-  set S : Set ((Σ k, ι k) → ℂ) := ⋂ k, (restrict k) ⁻¹' (s k) with hS
-  have hScol : ∀ k, ∀ w ∈ S, (w ∘ Sigma.mk k) ∈ s k := fun k w hw => by
-    have := Set.mem_iInter.mp hw k; rwa [Set.mem_preimage, restrict_apply] at this
-  have hSopen : IsOpen S := isOpen_iInter_of_finite fun k => (hs k).preimage (restrict k).continuous
-  have huS : u ∈ S := Set.mem_iInter.mpr fun k => by
-    rw [Set.mem_preimage, restrict_apply]; exact hu k
-  have hSnhds : S ∈ nhds u := hSopen.mem_nhds huS
-  -- differentiability of each sector lift on `S`
-  have hd : ∀ k, ∀ w ∈ S, DifferentiableAt ℝ (fun q => f k (q ∘ Sigma.mk k)) w := fun k w hw =>
-    ((hf k (w ∘ Sigma.mk k) (hScol k w hw)).differentiableAt (by norm_num)).comp w
-      (restrict k).differentiableAt
-  -- the inner anti-derivative of the sum routes to a single sector on `S`
-  have hev : ∀ (k₀ : K) (a' : ι k₀) (w : (Σ k, ι k) → ℂ), w ∈ S →
-      dWirtingerAntiCoord F ⟨k₀, a'⟩ w = dWirtingerAntiCoord (f k₀) a' (w ∘ Sigma.mk k₀) := by
-    intro k₀ a' w hw
-    show dWirtingerAntiCoord (fun v => ∑ k, (fun q => f k (q ∘ Sigma.mk k)) v) ⟨k₀, a'⟩ w = _
-    rw [dWirtingerAntiCoord_fun_sum_apply (fun k _ => hd k w hw) ⟨k₀, a'⟩,
-      Finset.sum_eq_single k₀]
-    · exact dWirtingerAntiCoord_block_own (f k₀) a' w
-        ((hf k₀ _ (hScol k₀ w hw)).differentiableAt (by norm_num))
-    · exact fun k _ hk => dWirtingerAntiCoord_block_ne (Ne.symm hk) (f k) a' w
-        ((hf k _ (hScol k w hw)).differentiableAt (by norm_num))
-    · exact absurd (Finset.mem_univ k₀)
+  -- each `f k` stays `C²` near its sector point, so near `u` the inner anti-derivative of the
+  -- sum routes to a single sector
+  have hnear : ∀ᶠ w in nhds u, ∀ k, ContDiffAt ℝ 2 (f k) (w ∘ Sigma.mk k) :=
+    Filter.eventually_all.mpr fun k =>
+      ((restrict k).continuous.tendsto u).eventually ((hf k).eventually (by simp))
+  have hev : ∀ (k' : K) (a' : ι k'),
+      (fun w => dWirtingerAntiCoord (fun q => ∑ k, f k (q ∘ Sigma.mk k)) ⟨k', a'⟩ w)
+        =ᶠ[nhds u] fun w => dWirtingerAntiCoord (f k') a' (w ∘ Sigma.mk k') :=
+    fun k' a' => hnear.mono fun w hw =>
+      dWirtingerAntiCoord_block_sum f k' a' w fun k => (hw k).differentiableAt (by norm_num)
   ext ⟨k, a⟩ ⟨k', a'⟩
   by_cases hkk : k = k'
   · subst hkk
     rw [blockDiagonal'_apply_eq]
     simp only [hessianMatrixOf, Matrix.of_apply]
-    rw [dWirtingerCoord_congr_of_eventuallyEq_apply
-        (Filter.eventually_of_mem hSnhds fun w hw => hev k a' w hw) ⟨k, a⟩]
+    rw [dWirtingerCoord_congr_of_eventuallyEq_apply (hev k a') ⟨k, a⟩]
     exact dWirtingerCoord_block_own (fun w => dWirtingerAntiCoord (f k) a' w) a u
-      (differentiableAt_dWirtingerAntiCoord (hf k _ (hu k)) a')
+      (differentiableAt_dWirtingerAntiCoord (hf k) a')
   · rw [blockDiagonal'_apply_ne _ _ _ hkk]
     simp only [hessianMatrixOf, Matrix.of_apply]
-    rw [dWirtingerCoord_congr_of_eventuallyEq_apply
-        (Filter.eventually_of_mem hSnhds fun w hw => hev k' a' w hw) ⟨k, a⟩]
+    rw [dWirtingerCoord_congr_of_eventuallyEq_apply (hev k' a') ⟨k, a⟩]
     exact dWirtingerCoord_block_ne hkk (fun w => dWirtingerAntiCoord (f k') a' w) a u
-      (differentiableAt_dWirtingerAntiCoord (hf k' _ (hu k')) a')
+      (differentiableAt_dWirtingerAntiCoord (hf k') a')
 
-end Sigma
+end SectorBlocks
 
-/-! ## C. Coordinate reindexing of the Hessian -/
+/-! ## C. Coordinate reindexing of the Hessian
+
+Relabelling the fields by a bijection `ε` permutes the rows and columns of the Hessian. -/
 
 section Reindex
 
@@ -228,9 +271,11 @@ lemma hessianMatrixOf_comp_equiv (ε : ι ≃ ι') (H : (ι' → ℂ) → ℂ) (
 
 end Reindex
 
-/-! ## D. Two-sector special case -/
+/-! ## D. Two-sector special case
 
-section Sum
+Two sectors with fields indexed by `ι₁ ⊕ ι₂`, obtained from §B by relabelling with §C. -/
+
+section TwoSectors
 
 variable {ι₁ : Type} [Fintype ι₁] [DecidableEq ι₁]
 variable {ι₂ : Type} [Fintype ι₂] [DecidableEq ι₂]
@@ -252,32 +297,26 @@ omit [Fintype ι₁] [DecidableEq ι₁] [Fintype ι₂] [DecidableEq ι₂] in
     restrictInr (ι₁ := ι₁) (ι₂ := ι₂) q = q ∘ Sum.inr := rfl
 
 /-- The Hessian of `f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr)` is `fromBlocks` of the two sector
-Hessians. `f₁` and `f₂` need only be `C²` on open sets containing `u ∘ Sum.inl` and
-`u ∘ Sum.inr`. -/
+Hessians. -/
 lemma hessianMatrixOf_sum_block
-    (f₁ : (ι₁ → ℂ) → ℂ) (f₂ : (ι₂ → ℂ) → ℂ)
-    (s₁ : Set (ι₁ → ℂ)) (s₂ : Set (ι₂ → ℂ))
-    (hs₁ : IsOpen s₁) (hs₂ : IsOpen s₂)
-    (hf₁ : ∀ v ∈ s₁, ContDiffAt ℝ 2 f₁ v) (hf₂ : ∀ v ∈ s₂, ContDiffAt ℝ 2 f₂ v)
-    (u : ι₁ ⊕ ι₂ → ℂ) (hu₁ : (u ∘ Sum.inl) ∈ s₁) (hu₂ : (u ∘ Sum.inr) ∈ s₂) :
+    (f₁ : (ι₁ → ℂ) → ℂ) (f₂ : (ι₂ → ℂ) → ℂ) (u : ι₁ ⊕ ι₂ → ℂ)
+    (hf₁ : ContDiffAt ℝ 2 f₁ (u ∘ Sum.inl)) (hf₂ : ContDiffAt ℝ 2 f₂ (u ∘ Sum.inr)) :
     hessianMatrixOf (fun q => f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr)) u
       = Matrix.fromBlocks (hessianMatrixOf f₁ (u ∘ Sum.inl)) 0 0
           (hessianMatrixOf f₂ (u ∘ Sum.inr)) := by
-  -- Relabel the two sectors as a `Bool`-indexed family `M`, `g`, `sb`.
+  -- Relabel the two sectors as a `Bool`-indexed family `M`, `g`.
   let M : Bool → Type := fun b => bif b then ι₂ else ι₁
   let : ∀ b, Fintype (M b) := Bool.rec ‹Fintype ι₁› ‹Fintype ι₂›
   let : ∀ b, DecidableEq (M b) := Bool.rec ‹DecidableEq ι₁› ‹DecidableEq ι₂›
   let g : ∀ b, (M b → ℂ) → ℂ := Bool.rec f₁ f₂
-  let sb : ∀ b, Set (M b → ℂ) := Bool.rec s₁ s₂
   let ε : ι₁ ⊕ ι₂ ≃ Σ b, M b := Equiv.sumEquivSigmaBool ι₁ ι₂
   let H : ((Σ b, M b) → ℂ) → ℂ := fun p => ∑ b, g b (p ∘ Sigma.mk b)
-  have hsb : ∀ b, IsOpen (sb b) := fun b => by cases b; exacts [hs₁, hs₂]
-  have hfb : ∀ b, ∀ v ∈ sb b, ContDiffAt ℝ 2 (g b) v := fun b => by cases b; exacts [hf₁, hf₂]
-  have hu_sig : ∀ b, ((u ∘ ε.symm) ∘ Sigma.mk b) ∈ sb b := fun b => by cases b; exacts [hu₁, hu₂]
+  have hfb : ∀ b, ContDiffAt ℝ 2 (g b) ((u ∘ ε.symm) ∘ Sigma.mk b) := fun b => by
+    cases b; exacts [hf₁, hf₂]
   -- `H` is `C²` at the relabelled point, each summand being a sector function after `restrict`.
   have hHC : ContDiffAt ℝ 2 H (u ∘ ε.symm) :=
     ContDiffAt.sum fun b _ =>
-      (hfb b _ (hu_sig b)).comp (u ∘ ε.symm) (restrict (ι := M) b).contDiff.contDiffAt
+      (hfb b).comp (u ∘ ε.symm) (restrict (ι := M) b).contDiff.contDiffAt
   -- The combined sector function is `H` pulled back along the relabelling `ε`.
   have hfun : (fun q : ι₁ ⊕ ι₂ → ℂ => f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr))
       = (fun q => H (q ∘ ε.symm)) := by
@@ -285,12 +324,12 @@ lemma hessianMatrixOf_sum_block
     show f₁ (q ∘ Sum.inl) + f₂ (q ∘ Sum.inr) = ∑ b, g b ((q ∘ ε.symm) ∘ Sigma.mk b)
     rw [Fintype.sum_bool]; exact add_comm _ _
   rw [hfun, hessianMatrixOf_comp_equiv ε H u hHC,
-    (hessianMatrixOf_sigma_block g sb hsb hfb (u ∘ ε.symm) hu_sig :
+    (hessianMatrixOf_sigma_block g (u ∘ ε.symm) hfb :
       hessianMatrixOf H (u ∘ ε.symm) = _)]
   -- The reindexed block-diagonal is the two-block `fromBlocks` matrix.
   ext (a | a) (b | b) <;> simp [ε, Equiv.sumEquivSigmaBool, Matrix.blockDiagonal'_apply] <;> rfl
 
-end Sum
+end TwoSectors
 
 end Physlib.Wirtinger
 
