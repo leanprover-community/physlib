@@ -1323,6 +1323,13 @@ def piProd (ρi : (i:ι) → MState (dI i)) : MState ((i:ι) → dI i) where
     exact Matrix.PosSemidef.piProd (fun i => psd (ρi i))
   tr := by simp [trace, Matrix.trace_piProd]
 
+/-- The pure state associated to `Ket.piProd` is the `MState.piProd` of the corresponding pure
+states, generalizing `pure_prod_pure`. -/
+lemma pure_piProd (ψ : (i : ι) → Ket (dI i)) :
+    pure (Ket.piProd ψ) = piProd (fun i ↦ pure (ψ i)) := by
+  ext : 3
+  simp [piProd, Matrix.piProd, -mat_apply, Finset.prod_mul_distrib]
+
 /-- The n-copy "power" of a mixed state, with the standard basis indexed by pi types. -/
 def npow (ρ : MState d) (n : ℕ) : MState (Fin n → d) :=
   piProd (fun _ ↦ ρ)

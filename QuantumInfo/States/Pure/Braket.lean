@@ -247,6 +247,23 @@ def Ket.prod (ψ₁ : Ket d₁) (ψ₂ : Ket d₂) : Ket (d₁ × d₂) where
 
 infixl:100 " ⊗ᵠ " => Ket.prod
 
+/-- The tensor product of a finite family of kets, generalizing `Ket.prod`.
+For each party `i`, `d i` is its basis index type. An index of the joint system
+selects one basis index for each party. -/
+def Ket.piProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (ψ : (i : ι) → Ket (d i)) : Ket ((i : ι) → d i) where
+  vec j := ∏ i, ψ i (j i)
+  normalized' := by
+    simp only [Complex.norm_prod, ← Finset.prod_pow]
+    rw [← Fintype.prod_sum (fun i a ↦ ‖ψ i a‖ ^ 2)]
+    exact Finset.prod_eq_one fun i _ ↦ (ψ i).normalized'
+
+@[simp]
+lemma Ket.piProd_apply {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (ψ : (i : ι) → Ket (d i)) (j : (i : ι) → d i) :
+    Ket.piProd ψ j = ∏ i, ψ i (j i) :=
+  rfl
+
 /-- A Ket is a product if it's `Ket.prod` of two kets. -/
 def Ket.IsProd (ψ : Ket (d₁ × d₂)) : Prop := ∃ ξ φ, ψ = ξ ⊗ᵠ φ
 
