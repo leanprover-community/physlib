@@ -262,6 +262,10 @@ public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.State.Basic
+public import Physlib.ProbabilisticTheory.State.Convex
+public import Physlib.ProbabilisticTheory.State.Discrimination
+public import Physlib.ProbabilisticTheory.State.Metric
 public import Physlib.ProbabilisticTheory.Weight.Basic
 public import Physlib.ProbabilisticTheory.Weight.Extension
 public import Physlib.QFT.AnomalyCancellation.Basic
