@@ -42,7 +42,7 @@ by the pair `⟨k, a⟩ : Σ k, ι k`. A point `φ` in field space is a function
 `q : (Σ k, ι k) → ℂ` with `q ⟨k, a⟩ = φ_k^a`, and the sector fields `φ_k` are
 `q ∘ Sigma.mk k`, the function `a ↦ q ⟨k, a⟩`. The sector potentials `K_k` are `f k`. The
 metric `g_{IJ̄}(φ)` is `hessianMatrixOfR K q`, or `hessianMatrixOf` for a complex-valued
-function. The block-diagonal statement reads
+function. At a point `u`, the block-diagonal statement reads
 
   `hessianMatrixOf (fun q => ∑ k, f k (q ∘ Sigma.mk k)) u`
   `  = blockDiagonal' (fun k => hessianMatrixOf (f k) (u ∘ Sigma.mk k))`.
@@ -56,7 +56,8 @@ The two-sector case over `ι₁ ⊕ ι₂` is stated with `Matrix.fromBlocks`.
 - `Physlib.Wirtinger.hessianMatrixOfR_isHermitian` : the Hessian of a real `C²` function is
     Hermitian.
 - `Physlib.Wirtinger.dWirtingerAntiCoord_block_sum` : `∂̄` of a sum of sector functions along a
-    sector-`k` coordinate is the `∂̄` of the sector-`k` function.
+    sector-`k` coordinate is the `∂̄` of the sector-`k` function; `dWirtingerCoord_block_sum` is
+    the same for `∂`.
 - `Physlib.Wirtinger.hessianMatrixOf_sigma_block` : the Hessian of a sum of sector functions is
     block-diagonal.
 - `Physlib.Wirtinger.hessianMatrixOf_comp_equiv` : relabelling the coordinates by `ε` reindexes
@@ -100,7 +101,8 @@ lemmas about `hessianMatrixOf` apply to it. -/
 noncomputable abbrev hessianMatrixOfR (K : (ι → ℂ) → ℝ) (u : ι → ℂ) : Matrix ι ι ℂ :=
   hessianMatrixOf (Complex.ofReal ∘ K) u
 
-/-- The mixed Wirtinger Hessian of a real `C²` function is Hermitian, `g_{JĪ}^* = g_{IJ̄}`. -/
+/-- The mixed Wirtinger Hessian of a real function `C²` at `u` is Hermitian,
+`(g_{JĪ})^* = g_{IJ̄}`. -/
 lemma hessianMatrixOfR_isHermitian {K : (ι → ℂ) → ℝ} {u : ι → ℂ} (hK : ContDiffAt ℝ 2 K u) :
     Matrix.IsHermitian (hessianMatrixOfR K u) := by
   set F : (ι → ℂ) → ℂ := Complex.ofReal ∘ K with hFdef
@@ -125,7 +127,7 @@ end Hessian
 
 /-! ## B. Sector split over a finite family of blocks
 
-The fields are indexed by `Σ k, ι k`, with block `ι k` the fields of sector `k`. A potential
+The fields are labelled by `Σ k, ι k`, with `ι k` labelling the fields of sector `k`. A potential
 that is a sum of sector potentials has a block-diagonal Hessian. -/
 
 section SectorBlocks
@@ -141,7 +143,7 @@ omit [Fintype K] [DecidableEq K] [(k : K) → Fintype (ι k)] [(k : K) → Decid
 @[simp] lemma restrict_apply (k : K) (q : (Σ k, ι k) → ℂ) : restrict k q = q ∘ Sigma.mk k := rfl
 
 omit [Fintype K] [(k : K) → Fintype (ι k)] in
-/-- Restricting to sector `k` keeps a column of sector `k`. -/
+/-- `restrict k` sends the basis vector of field `⟨k, a'⟩` to the basis vector of field `a'`. -/
 lemma restrict_single_same (k : K) (a' : ι k) (z : ℂ) :
     restrict k (Pi.single (⟨k, a'⟩ : Σ k, ι k) z) = Pi.single a' z := by
   funext a
@@ -149,7 +151,7 @@ lemma restrict_single_same (k : K) (a' : ι k) (z : ℂ) :
   simp
 
 omit [Fintype K] [(k : K) → Fintype (ι k)] in
-/-- Restricting to sector `k` kills a column of another sector. -/
+/-- `restrict k` sends the basis vector of a field of another sector to zero. -/
 lemma restrict_single_ne {k k' : K} (h : k ≠ k') (a' : ι k') (z : ℂ) :
     restrict k (Pi.single (⟨k', a'⟩ : Σ k, ι k) z) = 0 := by
   funext a
@@ -210,7 +212,8 @@ lemma dWirtingerAntiCoord_block_sum (f : ∀ k, (ι k → ℂ) → ℂ) (k₀ : 
   · exact fun k _ hk => dWirtingerAntiCoord_block_ne (Ne.symm hk) (f k) a u (hf k)
   · exact absurd (Finset.mem_univ k₀)
 
-/-- The Hessian of a sum of sector functions is the block-diagonal of the sector Hessians. -/
+/-- The Hessian of a sum of sector functions is the block-diagonal matrix of the sector
+Hessians. -/
 lemma hessianMatrixOf_sigma_block (f : ∀ k, (ι k → ℂ) → ℂ) (u : (Σ k, ι k) → ℂ)
     (hf : ∀ k, ContDiffAt ℝ 2 (f k) (u ∘ Sigma.mk k)) :
     hessianMatrixOf (fun q => ∑ k, f k (q ∘ Sigma.mk k)) u
@@ -258,7 +261,7 @@ omit [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι'] in
     precompEquiv ε q = q ∘ ε.symm := rfl
 
 omit [Fintype ι] [Fintype ι'] in
-/-- Relabelling along `ε` carries the column `c` to the column `ε c`. -/
+/-- `precompEquiv ε` sends the basis vector of field `c` to the basis vector of field `ε c`. -/
 lemma precompEquiv_single (ε : ι ≃ ι') (c : ι) (z : ℂ) :
     precompEquiv ε (Pi.single c z) = Pi.single (ε c) z := by
   funext j
