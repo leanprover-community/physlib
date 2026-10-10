@@ -60,6 +60,7 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.OpenBoundary
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Saturation
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.SpeedLimit
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Uncertainty
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.UncertaintyCone
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.Distributional.WireJunction
@@ -121,6 +122,7 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SpectralMeasure
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Stinespring.Dilation
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Stinespring.Kernel
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Uncertainty
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.UncertaintyCone
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Channel.MeasureAndPrepare
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
