@@ -94,6 +94,11 @@ lemma basisIdxCongr_heq_arg {c1 c2 d : C} (h1 : c1 = d) (h2 : c2 = d)
     basisIdxCongr h1 x = basisIdxCongr h2 y := by
   subst h1; subst h2; cases hxy; rfl
 
+/-- A transported label is heterogeneously equal to the original. -/
+lemma basisIdxCongr_heq {c c1 : C} (h : c = c1) (x : basisIdx c) : basisIdxCongr h x ≍ x := by
+  subst h
+  rfl
+
 variable {k : Type} [CommRing k] {C : Type} {G : Type} [Group G]
     {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
     {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
@@ -114,6 +119,15 @@ lemma map_basis_eq {c c1 : C} (h : c = c1) (i : basisIdx c) :
     LinearEquiv.cast (R := k) h (basis c i) = basis c1 (basisIdxCongr h i) := by
   subst h
   simp
+
+/-- The contraction of two basis vectors does not change when their colour is transported along an
+equality and their labels with it. -/
+lemma contr_basis_congr {a a' : C} (h : a = a') (x : basisIdx a) (y : basisIdx (S.τ a)) :
+    S.contr a (basis a x ⊗ₜ[k] basis (S.τ a) y) =
+      S.contr a' (basis a' (basisIdxCongr h x) ⊗ₜ[k]
+        basis (S.τ a') (basisIdxCongr (congrArg S.τ h) y)) := by
+  subst h
+  rfl
 
 omit [(c : C) → Fintype (basisIdx c)] [(c : C) → DecidableEq (basisIdx c)] in
 /-- `map_basis_eq` with the cast spelled `Equiv.cast`, the form `contr_tmul_symm` applies to its
