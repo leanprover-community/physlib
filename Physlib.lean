@@ -165,6 +165,7 @@ public import Physlib.Mathematics.VariationalCalculus.IsLocalizedfunctionTransfo
 public import Physlib.Mathematics.VariationalCalculus.IsTestFunction
 public import Physlib.Meta.AllFilePaths
 public import Physlib.Meta.Basic
+public import Physlib.Meta.Implementations
 public import Physlib.Meta.Informal.Basic
 public import Physlib.Meta.Informal.Post
 public import Physlib.Meta.Informal.SemiFormal
