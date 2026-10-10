@@ -200,7 +200,9 @@ Requirements:
       Physlib/Units/PositiveRealUnit.lean
       (PositiveRealUnitCore.scale, PositiveRealUnitCore.scale_div_self,
       PositiveRealUnitCore.self_div_scale, PositiveRealUnitCore.scale_one,
-      PositiveRealUnitCore.scale_div_scale, PositiveRealUnitCore.scale_scale)
+      PositiveRealUnitCore.scale_div_scale, PositiveRealUnitCore.scale_scale,
+      PositiveRealUnitCore.unitsSMul, PositiveRealUnitCore.instMulActionUnitsNNReal,
+      PositiveRealUnitCore.units_smul_eq_scale, PositiveRealUnitCore.val_units_smul)
 
   - description: "A unit-dependent type comes with the transformation of its elements induced by a change of unit, subject to composition along a chain of unit choices and triviality on an unchanged choice."
     done: true
@@ -216,7 +218,7 @@ Requirements:
 
   - description: "Instances are given for the unit choices themselves and for every type carrying a dimension."
     done: true
-    location: "Physlib/Units/UnitDependent.lean (LTMCTUnitChoices.scaleUnit_apply_fst, LTMCTUnitChoices.dimScale_scaleUnit, Dimensionful.of_scaleUnit, HasDim.scaleUnit_apply)"
+    location: "Physlib/Units/UnitDependent.lean (LTMCTUnitChoices.scaleUnit_apply_fst, LTMCTUnitChoices.dimScale_scaleUnit, Dimensionful.of_scaleUnit_units, HasDim.scaleUnit_apply)"
 
   - description: "Instances for function types act on the argument, on the value, or on both."
     done: true
@@ -270,9 +272,30 @@ Requirements:
     done: true
     location: "Physlib/Units/WithDim/Area.lean (DimArea, DimArea.squareMeter, DimArea.squareFoot, DimArea.squareMile, DimArea.are, DimArea.hectare, DimArea.acre, DimArea.squareFoot_in_SI, DimArea.squareMile_in_SI, DimArea.acre_in_SI, DimArea.acre_eq_mul_squareFeet)"
 
-  - description: "Speed has dimension length over time, with the metre per second, mile per hour, kilometre per hour, knot and the speed of light, their values in SI units, and the conversions between them."
+  - description: "Speed has dimension length over time, with the metre per second, mile per hour, kilometre per hour and knot, their values in SI units, and the conversions between them."
     done: true
-    location: "Physlib/Units/WithDim/Speed.lean (DimSpeed, DimSpeed.oneMeterPerSecond, DimSpeed.oneMilePerHour, DimSpeed.oneKilometerPerHour, DimSpeed.oneKnot, DimSpeed.speedOfLight, DimSpeed.oneMilePerHour_in_SI, DimSpeed.speedOfLight_in_SI, DimSpeed.oneKnot_eq_mul_oneKilometerPerHour, DimSpeed.oneKilometerPerHour_eq_mul_oneKnot, DimSpeed.oneMeterPerSecond_eq_mul_oneMilePerHour)"
+    location: "Physlib/Units/WithDim/Speed.lean (DimSpeed, DimSpeed.oneMeterPerSecond, DimSpeed.oneMilePerHour, DimSpeed.oneKilometerPerHour, DimSpeed.oneKnot, DimSpeed.oneMilePerHour_in_SI, DimSpeed.oneKnot_eq_mul_oneKilometerPerHour, DimSpeed.oneKilometerPerHour_eq_mul_oneKnot, DimSpeed.oneMeterPerSecond_eq_mul_oneMilePerHour)"
+
+  - description: "The scaling by which a change of unit systems acts on a dimensionful quantity is available as a unit of the non-negative reals, that is as a strictly positive real, so that a type whose elements are strictly positive may carry a dimension. Statements about it come in two forms, the general one marked by the suffix `_units` and the one for types also carrying an action of the non-negative reals under the plain name."
+    done: true
+    location: >
+      Physlib/Units/Basic.lean
+      (LTMCTUnitChoices.dimScaleUnits, LTMCTUnitChoices.dimScaleUnits_coe,
+      LTMCTUnitChoices.dimScaleUnits_transitive, LTMCTUnitChoices.dimScaleUnits_self,
+      LTMCTUnitChoices.dimScaleUnits_mul_dim, LTMCTUnitChoices.dimScaleUnits_smul,
+      CarriesDimension.toDimensionful_apply_apply_units, Dimensionful.smul_apply_units);
+      Physlib/Units/UnitDependent.lean
+      (HasDim.scaleUnit_apply_units, Dimensionful.of_scaleUnit_units,
+      LTMCTUnitChoices.dimScaleUnits_scaleUnit);
+      Physlib/Units/WithDim/Basic.lean
+      (WithDim.smul_val_units, WithDim.ofPositiveRealUnit,
+      WithDim.ofPositiveRealUnit_val, WithDim.ofPositiveRealUnit_units_smul)
+
+  - description: "The physical constants of our world carry their dimensions, so that each records a definite physical quantity rather than its value in one system of units, together with the values they take in SI units. The speed of light is covered; Newton's constant, Planck's constant and the Boltzmann constant are to follow."
+    done: false
+    location: >
+      Physlib/Relativity/SpeedOfLight.lean (SpeedOfLight);
+      Physlib/Units/Constants.lean (speedOfLight, speedOfLight_in_SI)
 
   - description: "Energy has dimension mass times length squared over time squared, with the joule, electronvolt, calorie and kilowatt hour."
     done: true
