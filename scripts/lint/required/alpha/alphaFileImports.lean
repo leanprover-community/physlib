@@ -25,7 +25,8 @@ def extractModuleNameFromImport (importString : String) : String :=
   findAfterImport ((importString.split Char.isWhitespace).toList.map toString)
 
 def checkAllFilesImported (directory : String) (mainFilePath : String) : (IO Bool) := do
-  let modules : HashSet String := HashSet.ofArray $ (← getFilePaths directory).map extractModuleNameFromFilePath 
+  let leanFiles := (← getFilePaths directory).filter (·.extension == some "lean")
+  let modules : HashSet String := HashSet.ofArray $ leanFiles.map extractModuleNameFromFilePath
   let importedModules := HashSet.ofArray $ ((← IO.FS.lines mainFilePath).filter 
     (·.contains "import")).map extractModuleNameFromImport 
   let diff := modules \ importedModules

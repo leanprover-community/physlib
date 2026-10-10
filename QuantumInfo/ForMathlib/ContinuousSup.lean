@@ -18,7 +18,7 @@ variable [TopologicalSpace γ]
 namespace IsCompact
 variable [TopologicalSpace β]
 
-theorem sSup_image_eq_sSup_image_closure {f : β → α}
+lemma sSup_image_eq_sSup_image_closure {f : β → α}
   (hS : IsCompact (closure S)) (hf : Continuous f) :
     sSup (f '' S) = sSup (f '' closure S) := by
   rcases S.eq_empty_or_nonempty with rfl | h; · simp
@@ -35,7 +35,7 @@ theorem sSup_image_eq_sSup_image_closure {f : β → α}
     exact csSup_le ((h.mono subset_closure).image f) fun y hy ↦
       (h_image_closure.trans h_closure_image) hy
 
-theorem sInf_image_eq_sInf_image_closure {f : β → α} (hS : IsCompact (closure S)) (hf : Continuous f) :
+lemma sInf_image_eq_sInf_image_closure {f : β → α} (hS : IsCompact (closure S)) (hf : Continuous f) :
     sInf (f '' S) = sInf (f '' closure S) :=
   sSup_image_eq_sSup_image_closure (α := αᵒᵈ) hS hf
 
@@ -52,12 +52,12 @@ theorem closure_continuous_sInf (hS : IsCompact (closure S)) (hf : Continuous �
     Continuous fun x ↦ sInf (f x '' S) :=
   closure_continuous_sSup (α := αᵒᵈ) hS hf
 
-theorem continuous_iSup (hS : IsCompact (closure S)) (hf : Continuous ↿f) :
+lemma continuous_iSup (hS : IsCompact (closure S)) (hf : Continuous ↿f) :
     Continuous fun x ↦ ⨆ y : S, f x y := by
   simp_rw [iSup, ← Set.image_eq_range]
   exact hS.closure_continuous_sSup hf
 
-theorem continuous_iInf (hS : IsCompact (closure S)) (hf : Continuous ↿f) :
+lemma continuous_iInf (hS : IsCompact (closure S)) (hf : Continuous ↿f) :
     Continuous fun x ↦ ⨅ y : S, f x y :=
   continuous_iSup (α := αᵒᵈ) hS hf
 
@@ -78,12 +78,12 @@ theorem continuous_sInf (hS : Bornology.IsBounded S) (hf : Continuous ↿f) :
     Continuous fun x ↦ sInf (f x '' S) :=
   hS.isCompact_closure.closure_continuous_sInf hf
 
-theorem continuous_iSup (hS : Bornology.IsBounded S) (hf : Continuous ↿f) :
+lemma continuous_iSup (hS : Bornology.IsBounded S) (hf : Continuous ↿f) :
     Continuous fun x ↦ ⨆ y : S, f x y := by
   simp_rw [iSup, ← Set.image_eq_range]
   exact hS.isCompact_closure.closure_continuous_sSup <| by fun_prop
 
-theorem continuous_iInf (hS : Bornology.IsBounded S) (hf : Continuous ↿f) :
+lemma continuous_iInf (hS : Bornology.IsBounded S) (hf : Continuous ↿f) :
     Continuous fun x ↦ ⨅ y : S, f x y :=
   continuous_iSup (α := αᵒᵈ) hS hf
 
@@ -170,7 +170,7 @@ theorem continuous_iSup
     Continuous fun x ↦ ⨆ y : S, f x y :=
   hS.continuous_iSup <| by fun_prop
 
-theorem continuous_iInf
+lemma continuous_iInf
   (f : F →SL[σ₁₂] E →L[𝕜] G) {S : Set E} (hS : Bornology.IsBounded S) :
     Continuous fun x ↦ ⨅ y : S, f x y :=
   hS.continuous_iInf (α := G) <| by fun_prop
@@ -178,7 +178,7 @@ theorem continuous_iInf
 end ContinuousLinearMap
 
 --This is the theorem we actually needed downstream...
-theorem LinearMap.BilinForm.continuous_iSup_fst
+lemma LinearMap.BilinForm.continuous_iSup_fst
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   (f : LinearMap.BilinForm ℝ E) {S : Set E} (hS : Bornology.IsBounded S) :
     Continuous fun x ↦ ⨆ y : S, f y x := by
@@ -257,7 +257,7 @@ theorem LinearMap.BilinForm.continuous_iSup_fst
   -- rw [lt_div_iff₀ (by positivity)] at ha
   -- nlinarith [mul_pos hC1 hM1]
 
-theorem LinearMap.BilinForm.continuous_iInf_fst
+lemma LinearMap.BilinForm.continuous_iInf_fst
   {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDimensional ℝ E]
   (f : LinearMap.BilinForm ℝ E) {S : Set E} (hS : Bornology.IsBounded S) :
     Continuous fun x ↦ ⨅ y : S, f y x :=

@@ -1048,7 +1048,7 @@ private lemma phiK_weightedSum_operatorPowerMean_eq
     phiK_operatorPowerMean_eq_liebTraceMap (ℋ := ℋ) (s := s) K A₂ B₂ hA₂ hB₂]
 
 -- The `HSOp`-valued `operatorPowerMean` terms are large enough that the skeleton itself is expensive.
-theorem liebTrace_jointlyConcaveOn_pdSet
+lemma liebTrace_jointlyConcaveOn_pdSet
     {s : ℝ} (hs0 : 0 < s) (hs1 : s < 1) (K : L ℋ) :
     JointlyConcaveOn (pdSet (ℋ := ℋ)) (pdSet (ℋ := ℋ))
       (liebTraceMap (ℋ := ℋ) s K) := by
@@ -1113,7 +1113,7 @@ theorem liebTrace_jointlyConcaveOn_pdSet
       ((1 - θ) • A₁ + θ • A₂) ((1 - θ) • B₁ + θ • B₂) hA_combo hB_combo] at hphi_mono
   simpa [add_comm, add_left_comm, add_assoc] using hphi_mono
 
-theorem liebTrace_jointlyConvexOn_pdSet
+lemma liebTrace_jointlyConvexOn_pdSet
     {s : ℝ} (hs1 : 1 ≤ s) (hs2 : s ≤ 2) (K : L ℋ) :
     JointlyConvexOn (pdSet (ℋ := ℋ)) (pdSet (ℋ := ℋ))
       (liebTraceMap (ℋ := ℋ) s K) := by
@@ -1179,7 +1179,7 @@ theorem liebTrace_jointlyConvexOn_pdSet
   simpa [add_comm, add_left_comm, add_assoc] using hphi_mono
 
 set_option maxHeartbeats 600000 in
-theorem liebExtensionTrace_jointlyConcaveOn_pdSet
+lemma liebExtensionTrace_jointlyConcaveOn_pdSet
     {p q : ℝ} (hp : 0 < p) (hq : 0 < q) (hpq : p + q ≤ 1) (K : L ℋ) :
     JointlyConcaveOn (pdSet (ℋ := ℋ)) (pdSet (ℋ := ℋ))
       (liebExtensionTraceMap (ℋ := ℋ) q p K) := by
@@ -1296,7 +1296,7 @@ theorem liebExtensionTrace_jointlyConcaveOn_pdSet
     (le_trans hconc hmono)
 
 set_option maxHeartbeats 600000 in
-theorem andoTrace_jointlyConvexOn_pdSet
+lemma andoTrace_jointlyConvexOn_pdSet
     {q r : ℝ} (hq1 : 1 ≤ q) (hq2 : q ≤ 2) (hr0 : 0 ≤ r) (hr1 : r ≤ 1)
     (hqr : 1 ≤ q - r) (K : L ℋ) :
     JointlyConvexOn (pdSet (ℋ := ℋ)) (pdSet (ℋ := ℋ))
@@ -1437,7 +1437,7 @@ theorem andoTrace_jointlyConvexOn_pdSet
     simpa [hpow_rewrite hB₁_mem, hpow_rewrite hB₂_mem, hpow_rewrite hB_combo_mem] using
       (le_trans hmono hconv)
 
-theorem liebCorollaryTrace_jointlyConvexOn_pdSet
+lemma liebCorollaryTrace_jointlyConvexOn_pdSet
     {q r : ℝ} (hr1 : 1 < r) (hrq : r ≤ q) (hq2 : q ≤ 2) (K : L ℋ) :
     JointlyConvexOn (pdSet (ℋ := ℋ)) (pdSet (ℋ := ℋ))
       (liebCorollaryTraceMap (ℋ := ℋ) q r K) := by

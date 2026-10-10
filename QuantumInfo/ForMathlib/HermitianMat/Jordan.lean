@@ -32,20 +32,20 @@ def symmMul : HermitianMat d 𝕜 :=
     by simp [selfAdjoint, IsSelfAdjoint, add_comm, Matrix.star_eq_conjTranspose]⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem symmMul_comm : A.symmMul B = B.symmMul A := by
+lemma symmMul_comm : A.symmMul B = B.symmMul A := by
   rw [symmMul, symmMul, Subtype.mk.injEq, add_comm]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem symmMul_zero : A.symmMul 0 = 0:= by
+lemma symmMul_zero : A.symmMul 0 = 0:= by
   simp [symmMul]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem zero_symmMul : symmMul 0 A = 0 := by
+lemma zero_symmMul : symmMul 0 A = 0 := by
   simp [symmMul]
 
-theorem symmMul_toMat : (A.symmMul B).mat =
+lemma symmMul_toMat : (A.symmMul B).mat =
     (2 : 𝕜)⁻¹ • (A.mat * B.mat + B.mat * A.mat) := by
   rfl
 
@@ -53,31 +53,31 @@ variable [Invertible (2 : 𝕜)]
 
 variable {A B} in
 @[simp]
-theorem symmMul_of_commute (hAB : Commute A.mat B.mat) :
+lemma symmMul_of_commute (hAB : Commute A.mat B.mat) :
     (A.symmMul B).mat = A.mat * B.mat := by
   rw [symmMul_toMat, hAB]
   rw [smul_add, ← add_smul, inv_eq_one_div, ← add_div]
   rw [add_self_div_two, one_smul]
 
-theorem symmMul_self : (symmMul A A).mat = A.mat * A.mat := by
+lemma symmMul_self : (symmMul A A).mat = A.mat * A.mat := by
   simp
 
 variable [DecidableEq d]
 
 @[simp]
-theorem symmMul_one : A.symmMul 1 = A := by
+lemma symmMul_one : A.symmMul 1 = A := by
   ext1; simp
 
 @[simp]
-theorem one_symmMul : symmMul 1 A = A := by
+lemma one_symmMul : symmMul 1 A = A := by
   ext1; simp
 
 @[simp]
-theorem symmMul_neg_one : A.symmMul (-1) = -A := by
+lemma symmMul_neg_one : A.symmMul (-1) = -A := by
   ext1; simp
 
 @[simp]
-theorem neg_one_symmMul : symmMul (-1) A = -A := by
+lemma neg_one_symmMul : symmMul (-1) A = -A := by
   ext1; simp
 
 end HermitianMat
@@ -98,7 +98,7 @@ scoped instance : CommMagma (HermitianMat d 𝕜) where
 -- scoped instance : Mul (HermitianMat d 𝕜) :=
   -- CommMagma.toMul
 
-theorem mul_eq_symmMul : A * B = A.symmMul B := by
+lemma mul_eq_symmMul : A * B = A.symmMul B := by
   rfl
 
 scoped instance : IsCommJordan (HermitianMat d 𝕜) where

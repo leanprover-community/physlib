@@ -407,7 +407,7 @@ lemma toSol_inQuadCube (T : InQuadCubeSol) : ∃ X, toSol X = T.val := by
   simp_all only [toSol]
   exact inQuadCubeToSol_proj T
 
-theorem toSol_surjective : Function.Surjective toSol := by
+lemma toSol_surjective : Function.Surjective toSol := by
   intro T
   by_cases h₁ : ¬ LineEqPropSol T
   · exact toSol_toSolNSProj ⟨T, h₁⟩

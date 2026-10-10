@@ -31,7 +31,7 @@ variable {R S : Type*} [Semiring R] [Semiring S] (σ : R →+* S) (M M₂ : Type
 variable [TopologicalSpace M] [AddCommMonoid M] [TopologicalSpace M₂] [AddCommMonoid M₂]
 variable [Module R M] [Module S M₂]
 
-theorem ker_mk (f : M →ₛₗ[σ] M₂) (hf : Continuous f.toFun) :
+lemma ker_mk (f : M →ₛₗ[σ] M₂) (hf : Continuous f.toFun) :
     (ContinuousLinearMap.mk f hf).ker = LinearMap.ker f := by
   rfl
 

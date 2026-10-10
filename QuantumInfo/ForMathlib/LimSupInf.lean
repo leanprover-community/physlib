@@ -480,7 +480,7 @@ lemma exists_liminf_zero_of_forall_liminf_limsup_le_with_UB (y₁ y₂ : ℝ≥0
 --PULLOUT.
 --PR? This is "not specific to our repo", but might be a bit too specialized to be in Mathlib. Not sure.
 --Definitely would need to clean up the proof first
-theorem extracted_limsup_inequality (z : ℝ≥0∞) (hz : z ≠ ⊤) (y x : ℕ → ℝ≥0∞) (h_lem5 : ∀ (n : ℕ), x n ≤ y n + z)
+lemma extracted_limsup_inequality (z : ℝ≥0∞) (hz : z ≠ ⊤) (y x : ℕ → ℝ≥0∞) (h_lem5 : ∀ (n : ℕ), x n ≤ y n + z)
     : Filter.atTop.limsup (fun n ↦ x n / n) ≤ Filter.atTop.limsup (fun n ↦ y n / n) := by
   --Thanks Aristotle!
   simp only [Filter.limsup_eq, Filter.eventually_atTop, le_sInf_iff, Set.mem_ofPred_eq,

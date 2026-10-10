@@ -43,7 +43,7 @@ variable [Ring α] [StarAddMonoid α] [CommSemiring R] [Algebra R α] [IsMaximal
 instance : Inner R (HermitianMat n α) where
   inner A B := selfadjMap (A.mat * B.mat).trace
 
-theorem inner_def (A B : HermitianMat n α) :
+lemma inner_def (A B : HermitianMat n α) :
     ⟪A, B⟫_R = selfadjMap (A.mat * B.mat).trace := by
   rfl
 
@@ -56,18 +56,18 @@ section semiring
 variable [CommSemiring R] [Ring α] [StarAddMonoid α] [Algebra R α] [IsMaximalSelfAdjoint R α]
 variable (A B C : HermitianMat n α)
 
-protected theorem inner_add_right : ⟪A, B + C⟫_R = ⟪A, B⟫_R + ⟪A, C⟫_R := by
+protected lemma inner_add_right : ⟪A, B + C⟫_R = ⟪A, B⟫_R + ⟪A, C⟫_R := by
   simp [inner_def, left_distrib]
 
-protected theorem inner_add_left : ⟪A + B, C⟫_R = ⟪A, C⟫_R + ⟪B, C⟫_R := by
+protected lemma inner_add_left : ⟪A + B, C⟫_R = ⟪A, C⟫_R + ⟪B, C⟫_R := by
   simp [inner_def, right_distrib]
 
 @[simp]
-protected theorem inner_zero_right : ⟪A, 0⟫_R = 0 := by
+protected lemma inner_zero_right : ⟪A, 0⟫_R = 0 := by
   simp [inner_def]
 
 @[simp]
-protected theorem inner_zero_left : ⟪0, A⟫_R = 0 := by
+protected lemma inner_zero_left : ⟪0, A⟫_R = 0 := by
   simp [inner_def]
 
 end semiring
@@ -77,27 +77,27 @@ variable [CommRing R] [Ring α] [StarAddMonoid α] [Algebra R α] [IsMaximalSelf
 variable (A B C : HermitianMat n α)
 
 @[simp]
-protected theorem inner_neg_left : ⟪-A, B⟫_R = -⟪A, B⟫_R := by
+protected lemma inner_neg_left : ⟪-A, B⟫_R = -⟪A, B⟫_R := by
   simp [inner_def]
 
 @[simp]
-protected theorem inner_neg_right : ⟪A, -B⟫_R = -⟪A, B⟫_R := by
+protected lemma inner_neg_right : ⟪A, -B⟫_R = -⟪A, B⟫_R := by
   simp [inner_def]
 
-protected theorem inner_sub_left : ⟪A, B - C⟫_R = ⟪A, B⟫_R - ⟪A, C⟫_R := by
+protected lemma inner_sub_left : ⟪A, B - C⟫_R = ⟪A, B⟫_R - ⟪A, C⟫_R := by
   simp [inner_def, mul_sub]
 
-protected theorem inner_sub_right : ⟪A - B, C⟫_R = ⟪A, C⟫_R - ⟪B, C⟫_R := by
+protected lemma inner_sub_right : ⟪A - B, C⟫_R = ⟪A, C⟫_R - ⟪B, C⟫_R := by
   simp [inner_def, sub_mul]
 
 variable [StarModule R α]
 
 @[simp]
-protected theorem inner_smul_left (r : R) : ⟪r • A, B⟫_R = r * ⟪A, B⟫_R := by
+protected lemma inner_smul_left (r : R) : ⟪r • A, B⟫_R = r * ⟪A, B⟫_R := by
   simp [inner_def, selfadj_smul]
 
 @[simp]
-protected theorem inner_smul_right (r : R) : ⟪A, r • B⟫_R = r * ⟪A, B⟫_R := by
+protected lemma inner_smul_right (r : R) : ⟪A, r • B⟫_R = r * ⟪A, B⟫_R := by
   simp [inner_def, selfadj_smul]
 
 /-- The Hermitian inner product as bilinear form. Compare with `innerₗ` (in the root namespace)
@@ -118,11 +118,11 @@ variable [CommSemiring R] [Ring α] [StarRing α] [Algebra R α] [IsMaximalSelfA
 variable (A B : HermitianMat n α)
 
 @[simp]
-theorem inner_one : ⟪A, 1⟫_R = A.trace := by
+lemma inner_one : ⟪A, 1⟫_R = A.trace := by
   simp only [inner_def, mat_one,  mul_one, trace]
 
 @[simp]
-theorem one_inner : ⟪1, A⟫_R = A.trace := by
+lemma one_inner : ⟪1, A⟫_R = A.trace := by
   simp only [inner_def, one_mul, mat_one, trace]
 
 end starring
@@ -139,7 +139,7 @@ theorem inner_eq_trace_mul : algebraMap R α ⟪A, B⟫_R = (A.mat * B.mat).trac
   rw [Finset.sum_comm]
   congr! <;> apply congrFun₂ (H _)
 
-theorem inner_comm : ⟪A, B⟫_R = ⟪B, A⟫_R := by
+lemma inner_comm : ⟪A, B⟫_R = ⟪B, A⟫_R := by
   rw [inner_def, inner_def, Matrix.trace_mul_comm]
 
 end commring
@@ -161,15 +161,15 @@ open ComplexOrder
 
 variable {n 𝕜 : Type*} [Fintype n] [RCLike 𝕜] (A B C : HermitianMat n 𝕜)
 
-theorem inner_eq_re_trace : ⟪A, B⟫ = RCLike.re (A.mat * B.mat).trace := by
+lemma inner_eq_re_trace : ⟪A, B⟫ = RCLike.re (A.mat * B.mat).trace := by
   rfl
 
-theorem inner_eq_trace_rc : ⟪A, B⟫ = (A.mat * B.mat).trace := by
+lemma inner_eq_trace_rc : ⟪A, B⟫ = (A.mat * B.mat).trace := by
   rw [inner_eq_re_trace, ← RCLike.conj_eq_iff_re]
   convert! (Matrix.trace_conjTranspose (A.mat * B.mat)).symm using 1
   rw [Matrix.conjTranspose_mul, A.H, B.H, Matrix.trace_mul_comm]
 
-theorem inner_self_nonneg: 0 ≤ ⟪A, A⟫ := by
+lemma inner_self_nonneg: 0 ≤ ⟪A, A⟫ := by
   simp_rw [inner_eq_re_trace, Matrix.trace, Matrix.diag, Matrix.mul_apply, map_sum]
   refine Finset.sum_nonneg fun i _ ↦ Finset.sum_nonneg fun j _ ↦ ?_
   rw [← congrFun₂ A.H, Matrix.conjTranspose_apply]
@@ -180,7 +180,7 @@ theorem inner_self_nonneg: 0 ≤ ⟪A, A⟫ := by
 variable {A B C}
 
 open MatrixOrder in
-theorem inner_mul_nonneg (h : 0 ≤ A.mat * B.mat) : 0 ≤ ⟪A, B⟫ := by
+lemma inner_mul_nonneg (h : 0 ≤ A.mat * B.mat) : 0 ≤ ⟪A, B⟫ := by
   rw [Matrix.nonneg_iff_posSemidef] at h
   exact (RCLike.nonneg_iff.mp h.trace_nonneg).left
 
@@ -193,12 +193,12 @@ theorem inner_ge_zero (hA : 0 ≤ A) (hB : 0 ≤ B) : 0 ≤ ⟪A, B⟫ := by
   nth_rewrite 1 [← (Matrix.nonneg_iff_posSemidef.mp (CFC.sqrt_nonneg A.mat)).left]
   exact (RCLike.nonneg_iff.mp (hB.conjTranspose_mul_mul_same _).trace_nonneg).left
 
-theorem inner_mono (hA : 0 ≤ A) : B ≤ C → ⟪A, B⟫ ≤ ⟪A, C⟫ := by
+lemma inner_mono (hA : 0 ≤ A) : B ≤ C → ⟪A, B⟫ ≤ ⟪A, C⟫ := by
   intro hBC
   classical have hTr : 0 ≤ ⟪A, C - B⟫ := inner_ge_zero hA (zero_le_iff.mpr hBC)
   simpa [inner_def, mul_sub] using hTr
 
-theorem inner_mono' (hA : 0 ≤ A) : B ≤ C → ⟪B, A⟫ ≤ ⟪C, A⟫ := by
+lemma inner_mono' (hA : 0 ≤ A) : B ≤ C → ⟪B, A⟫ ≤ ⟪C, A⟫ := by
   intro hBC
   rw [inner_comm B A, inner_comm C A]
   exact inner_mono hA hBC
@@ -209,7 +209,7 @@ theorem inner_le_mul_trace (hA : 0 ≤ A) (hB : 0 ≤ B) : ⟪A, B⟫ ≤ A.trac
   simp [mul_comm]
 
 --TODO cleanup
-private theorem inner_zero_iff_aux_lemma [DecidableEq n] (hA₁ : A.mat.PosSemidef) (hB₁ : B.mat.PosSemidef) :
+private lemma inner_zero_iff_aux_lemma [DecidableEq n] (hA₁ : A.mat.PosSemidef) (hB₁ : B.mat.PosSemidef) :
   RCLike.re (A.val * B.val).trace = 0 ↔
     LinearMap.range (Matrix.toEuclideanLin A.val) ≤
       LinearMap.ker (Matrix.toEuclideanLin B.val) := by
@@ -261,7 +261,7 @@ theorem inner_zero_iff [DecidableEq n] (hA₁ : 0 ≤ A) (hB₁ : 0 ≤ B)
 variable {d d₂ : Type*} (A B : HermitianMat d 𝕜) [Fintype d₂] [Fintype d]
 
 @[simp]
-theorem reindex_inner (e : d ≃ d₂) (B : HermitianMat d₂ 𝕜) :
+lemma reindex_inner (e : d ≃ d₂) (B : HermitianMat d₂ 𝕜) :
     ⟪A.reindex e, B⟫ = ⟪A, B.reindex e.symm⟫ := by
   simp only [inner_def, mat_reindex, Matrix.reindex_apply, Equiv.symm_symm]
   congr
@@ -286,12 +286,12 @@ variable {d : Type*} [Fintype d] {𝕜 : Type*} [RCLike 𝕜]
 #synth ContractibleSpace (HermitianMat d ℂ)
 
 @[fun_prop]
-theorem inner_continuous : Continuous (Inner.inner ℝ (E := HermitianMat d 𝕜)) := by
+lemma inner_continuous : Continuous (Inner.inner ℝ (E := HermitianMat d 𝕜)) := by
   rw [funext₂ inner_eq_re_trace]
   fun_prop
 
 @[fun_prop] --fun_prop can actually prove this, should I leave this on or not?
-theorem inner_bilinForm_Continuous (A : HermitianMat d 𝕜) : Continuous ⇑(HermitianMat.innerₗ A) :=
+lemma inner_bilinForm_Continuous (A : HermitianMat d 𝕜) : Continuous ⇑(HermitianMat.innerₗ A) :=
   LinearMap.continuous_of_finiteDimensional _
 
 end topology
@@ -337,12 +337,12 @@ norm. -/
 noncomputable instance instNormedGroup : NormedAddCommGroup (HermitianMat d 𝕜) :=
   AddSubgroupClass.normedAddCommGroup _
 
-theorem norm_eq_frobenius (A : HermitianMat d 𝕜) :
+lemma norm_eq_frobenius (A : HermitianMat d 𝕜) :
     ‖A‖ = (∑ i : d, ∑ j : d, ‖A i j‖ ^ 2) ^ (1 / 2 : ℝ) := by
   convert! ← Matrix.frobenius_norm_def A.mat
   exact Real.rpow_ofNat _ 2
 
-theorem norm_eq_sqrt_inner_self (A : HermitianMat d 𝕜) : ‖A‖ = √(⟪A, A⟫) := by
+lemma norm_eq_sqrt_inner_self (A : HermitianMat d 𝕜) : ‖A‖ = √(⟪A, A⟫) := by
   rw [norm_eq_frobenius, ← Real.sqrt_eq_rpow]
   congr
   simp_rw [inner_eq_re_trace, Matrix.trace, Matrix.diag, Matrix.mul_apply]
@@ -388,7 +388,7 @@ scoped[ComplexOrder] attribute [instance] RCLike.instOrderClosed
 variable (A B : HermitianMat d 𝕜)
 
 variable {A B} in
-theorem dist_le_of_mem_Icc (x : HermitianMat d 𝕜) (hA : A ≤ x) (hB : x ≤ B) :
+lemma dist_le_of_mem_Icc (x : HermitianMat d 𝕜) (hA : A ≤ x) (hB : x ≤ B) :
     ‖x - A‖ ≤ ‖B - A‖ := by
   classical
   conv => enter [2, 1]; equals (B - x) + (x - A) => abel
@@ -398,7 +398,7 @@ theorem dist_le_of_mem_Icc (x : HermitianMat d 𝕜) (hA : A ≤ x) (hB : x ≤ 
   apply inner_ge_zero <;> rwa [sub_nonneg]
 
 omit [Fintype n] in
-theorem Matrix.IsHermitian_isClosed : IsClosed { A : Matrix n n 𝕜 | A.IsHermitian } := by
+lemma Matrix.IsHermitian_isClosed : IsClosed { A : Matrix n n 𝕜 | A.IsHermitian } := by
   conv =>
     enter [1, 1, A]
     rw [Matrix.IsHermitian, ← sub_eq_zero]
@@ -407,7 +407,7 @@ theorem Matrix.IsHermitian_isClosed : IsClosed { A : Matrix n n 𝕜 | A.IsHermi
 
 open ComplexOrder
 
-theorem Matrix.PosSemiDef_isClosed : IsClosed { A : Matrix n n 𝕜 | A.PosSemidef } := by
+lemma Matrix.PosSemiDef_isClosed : IsClosed { A : Matrix n n 𝕜 | A.PosSemidef } := by
   rw [show { A : Matrix n n 𝕜 | A.PosSemidef } = { A | A.IsHermitian } ∩ { A | ∀ x : n → 𝕜, 0 ≤ star x ⬝ᵥ A.mulVec x } from by
     ext A; simp [Matrix.posSemidef_iff_dotProduct_mulVec]]
   refine IsHermitian_isClosed.inter ?_
@@ -415,7 +415,7 @@ theorem Matrix.PosSemiDef_isClosed : IsClosed { A : Matrix n n 𝕜 | A.PosSemid
     rwa [← Set.ofPred_forall] at this
   exact isClosed_iInter fun _ ↦ (isClosed_Ici (a := 0)).preimage (by fun_prop)
 
-theorem isClosed_nonneg : IsClosed { A : HermitianMat n 𝕜 | 0 ≤ A } := by
+lemma isClosed_nonneg : IsClosed { A : HermitianMat n 𝕜 | 0 ≤ A } := by
   simp_rw [zero_le_iff]
   exact Matrix.PosSemiDef_isClosed.preimage_val
 
@@ -453,12 +453,12 @@ theorem unitInterval_IsCompact : IsCompact {m : HermitianMat d 𝕜 | 0 ≤ m �
   CompactIccSpace.isCompact_Icc
 
 @[simp]
-theorem norm_one : ‖(1 : HermitianMat d 𝕜)‖ = √(Fintype.card d : ℝ) := by
+lemma norm_one : ‖(1 : HermitianMat d 𝕜)‖ = √(Fintype.card d : ℝ) := by
   rw [norm_eq_sqrt_real_inner (F := HermitianMat d 𝕜)]
   congr 1
   simp [-inner_self_eq_norm_sq_to_K, inner_def]
 
-theorem norm_eq_trace_sq : ‖A‖ ^ 2 = (A.mat ^ 2).trace := by
+lemma norm_eq_trace_sq : ‖A‖ ^ 2 = (A.mat ^ 2).trace := by
   rw [norm_eq_frobenius, ← RCLike.ofReal_pow, ← Real.rpow_two, ← Real.rpow_mul (by positivity)]
   simp only [one_div, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, inv_mul_cancel₀, Real.rpow_one]
   simp only [sq A.mat, map_sum, map_pow, Matrix.trace, Matrix.diag_apply, Matrix.mul_apply, mat_apply]

@@ -69,11 +69,11 @@ def euclideanOfRelabel (e : d ≃ d₂) : EuclideanSpace 𝕜 d₂ ≃ₗ[𝕜] 
   (WithLp.linearEquiv 2 𝕜 _).trans ((ofRelabel _ e).trans (WithLp.linearEquiv 2 𝕜 _).symm)
 
 @[simp]
-theorem ofRelabel_refl : ofRelabel R (.refl d) = LinearEquiv.refl R (d → R) := by
+lemma ofRelabel_refl : ofRelabel R (.refl d) = LinearEquiv.refl R (d → R) := by
   rfl
 
 @[simp]
-theorem euclideanOfRelabel_refl : euclideanOfRelabel 𝕜 (.refl d) =
+lemma euclideanOfRelabel_refl : euclideanOfRelabel 𝕜 (.refl d) =
     LinearEquiv.refl 𝕜 (EuclideanSpace 𝕜 d) := by
   rfl
 
@@ -91,35 +91,35 @@ variable {R : Type*} [CommSemiring R]
 variable [Fintype d] [DecidableEq d]
 variable [Fintype d₂] [DecidableEq d₂]
 
-theorem reindex_toLin' (e : d₁ ≃ d₃) (f : d₂ ≃ d) (M : Matrix d₁ d₂ R) :
+lemma reindex_toLin' (e : d₁ ≃ d₃) (f : d₂ ≃ d) (M : Matrix d₁ d₂ R) :
     (M.reindex e f).toLin' = (LinearEquiv.ofRelabel R e.symm) ∘ₗ
       M.toLin' ∘ₗ (LinearEquiv.ofRelabel R f) := by
   ext
   simp [mulVec, dotProduct, Equiv.piCongrLeft_apply]
 
-theorem reindex_toEuclideanLin (e : d₁ ≃ d₃) (f : d₂ ≃ d) (M : Matrix d₁ d₂ 𝕜) :
+lemma reindex_toEuclideanLin (e : d₁ ≃ d₃) (f : d₂ ≃ d) (M : Matrix d₁ d₂ 𝕜) :
     (M.reindex e f).toEuclideanLin = (LinearEquiv.euclideanOfRelabel 𝕜 e.symm) ∘ₗ
       M.toEuclideanLin ∘ₗ (LinearEquiv.euclideanOfRelabel 𝕜 f) := by
   ext
   simp [mulVec, dotProduct, Equiv.piCongrLeft_apply]
 
-theorem reindex_right_toLin' (e : d ≃ d₂) (M : Matrix d₃ d R) :
+lemma reindex_right_toLin' (e : d ≃ d₂) (M : Matrix d₃ d R) :
     (M.reindex (.refl d₃) e).toLin' = M.toLin' ∘ₗ (LinearEquiv.ofRelabel R e) := by
   rw [reindex_toLin']
   simp
 
-theorem reindex_right_toEuclideanLin (e : d ≃ d₂) (M : Matrix d₃ d 𝕜) :
+lemma reindex_right_toEuclideanLin (e : d ≃ d₂) (M : Matrix d₃ d 𝕜) :
     (M.reindex (.refl d₃) e).toEuclideanLin =
       M.toEuclideanLin ∘ₗ (LinearEquiv.euclideanOfRelabel 𝕜 e) := by
   ext
   simp [mulVec, dotProduct, Equiv.piCongrLeft_apply]
 
-theorem reindex_left_toLin' (e : d₁ ≃ d₃) (M : Matrix d₁ d₂ R) :
+lemma reindex_left_toLin' (e : d₁ ≃ d₃) (M : Matrix d₁ d₂ R) :
     (M.reindex e (.refl d₂)).toLin' = (LinearEquiv.ofRelabel R e.symm) ∘ M.toLin' := by
   rw [Matrix.reindex_toLin']
   simp
 
-theorem reindex_left_toEuclideanLin (e : d₁ ≃ d₃) (M : Matrix d₁ d₂ 𝕜) :
+lemma reindex_left_toEuclideanLin (e : d₁ ≃ d₃) (M : Matrix d₁ d₂ 𝕜) :
     (M.reindex e (.refl d₂)).toEuclideanLin =
       (LinearEquiv.euclideanOfRelabel 𝕜 e.symm) ∘ M.toEuclideanLin := by
   rw [Matrix.reindex_toEuclideanLin]

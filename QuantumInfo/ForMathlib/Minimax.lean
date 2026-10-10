@@ -29,7 +29,7 @@ attribute [fun_prop] ConvexOn ConcaveOn
 attribute [fun_prop] ConvexOn.quasiconvexOn ConcaveOn.quasiconcaveOn
 attribute [fun_prop] LinearMap.convexOn LinearMap.concaveOn
 
-theorem _root_.IsCompact.exists_isMinOn_lowerSemicontinuousOn {α β : Type*}
+lemma _root_.IsCompact.exists_isMinOn_lowerSemicontinuousOn {α β : Type*}
   [LinearOrder α] [TopologicalSpace α] [TopologicalSpace β] [ClosedIicTopology α]
   {s : Set β} (hs : IsCompact s) (ne_s : s.Nonempty) {f : β → α} (hf : LowerSemicontinuousOn f s) :
     ∃ x ∈ s, IsMinOn f s x := by
@@ -71,7 +71,7 @@ theorem _root_.IsCompact.exists_isMinOn_lowerSemicontinuousOn {α β : Type*}
   exact hx_min
 
 @[fun_prop]
-theorem LinearMap.quasilinearOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+lemma LinearMap.quasilinearOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid E] [Module 𝕜 E]
   [PartialOrder β] [AddCommMonoid β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   (f : E →ₗ[𝕜] β) {s : Set E} (hs : Convex 𝕜 s) :
@@ -85,7 +85,7 @@ theorem LinearMap.quasilinearOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrde
     assumption --why doesn't fun_prop find this assumption? TODO
 
 @[fun_prop]
-theorem LinearMap.quasiconvexOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+lemma LinearMap.quasiconvexOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid E] [Module 𝕜 E]
   [PartialOrder β] [AddCommMonoid β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   (f : E →ₗ[𝕜] β) {s : Set E} (hs : Convex 𝕜 s) :
@@ -93,7 +93,7 @@ theorem LinearMap.quasiconvexOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrde
   (f.quasilinearOn hs).left
 
 @[fun_prop]
-theorem LinearMap.quasiconcaveOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
+lemma LinearMap.quasiconcaveOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrder 𝕜]
   [AddCommMonoid E] [Module 𝕜 E]
   [PartialOrder β] [AddCommMonoid β] [IsOrderedAddMonoid β] [Module 𝕜 β] [PosSMulMono 𝕜 β]
   (f : E →ₗ[𝕜] β) {s : Set E} (hs : Convex 𝕜 s) :
@@ -101,7 +101,7 @@ theorem LinearMap.quasiconcaveOn {E β 𝕜 : Type*} [Semiring 𝕜] [PartialOrd
   (f.quasilinearOn hs).right
 
 --??
-theorem continuous_stupid.{u_2, u_1} {M : Type u_1} [inst : NormedAddCommGroup M] [inst_1 : Module ℝ M]
+lemma continuous_stupid.{u_2, u_1} {M : Type u_1} [inst : NormedAddCommGroup M] [inst_1 : Module ℝ M]
   [inst_3 : ContinuousSMul ℝ M] {N : Type u_2} [inst_4 : NormedAddCommGroup N]
   [inst_5 : Module ℝ N]
   [FiniteDimensional ℝ M]

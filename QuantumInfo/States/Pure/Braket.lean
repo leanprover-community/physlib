@@ -78,7 +78,7 @@ def dot (ξ : Bra d) (ψ : Ket d) : ℂ := ∑ x, (ξ x) * (ψ x)
 
 scoped notation "〈" ξ:90 "‖" ψ:90 "〉" => dot (ξ : Bra _) (ψ : Ket _)
 
-theorem dot_eq_dotProduct (ψ : Bra d) (φ : Ket d) :〈ψ‖φ〉= dotProduct (m := d) ψ φ := by
+lemma dot_eq_dotProduct (ψ : Bra d) (φ : Ket d) :〈ψ‖φ〉= dotProduct (m := d) ψ φ := by
   rfl
 
 end Braket
@@ -88,26 +88,26 @@ open Braket
 
 variable {d : Type*} [Fintype d]
 
-theorem Ket.apply (ψ : Ket d) (i : d) : ψ i = ψ.vec i :=
+lemma Ket.apply (ψ : Ket d) (i : d) : ψ i = ψ.vec i :=
   rfl
 
-theorem Bra.apply (ψ : Bra d) (i : d) : ψ i = ψ.vec i :=
+lemma Bra.apply (ψ : Bra d) (i : d) : ψ i = ψ.vec i :=
   rfl
 
 @[ext]
-theorem Ket.ext {ξ ψ : Ket d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
+lemma Ket.ext {ξ ψ : Ket d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
   DFunLike.ext ξ ψ h
 
 @[ext]
-theorem Bra.ext {ξ ψ : Bra d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
+lemma Bra.ext {ξ ψ : Bra d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
   DFunLike.ext ξ ψ h
 
-theorem Ket.normalized (ψ : Ket d) : ∑ x, Complex.normSq (ψ x) = 1 := by
+lemma Ket.normalized (ψ : Ket d) : ∑ x, Complex.normSq (ψ x) = 1 := by
   convert ψ.normalized'
   rw [Complex.normSq_eq_norm_sq]
   rfl
 
-theorem Bra.normalized (ψ : Bra d) : ∑ x, Complex.normSq (ψ x) = 1 := by
+lemma Bra.normalized (ψ : Bra d) : ∑ x, Complex.normSq (ψ x) = 1 := by
   convert ψ.normalized'
   rw [Complex.normSq_eq_norm_sq]
   rfl
@@ -127,20 +127,20 @@ instance instBraOfKet : Coe (Ket d) (Bra d) := ⟨Ket.to_bra⟩
 instance instKetOfBra : Coe (Bra d) (Ket d) := ⟨Bra.to_ket⟩
 
 @[simp]
-theorem Bra.eq_conj (ψ : Ket d) (x : d) :〈ψ∣ x = conj (∣ψ〉 x) :=
+lemma Bra.eq_conj (ψ : Ket d) (x : d) :〈ψ∣ x = conj (∣ψ〉 x) :=
   rfl
 
-theorem Bra.apply' (ψ : Ket d) (i : d) : 〈ψ∣ i = conj (ψ.vec i) :=
+lemma Bra.apply' (ψ : Ket d) (i : d) : 〈ψ∣ i = conj (ψ.vec i) :=
   rfl
 
-theorem Ket.exists_ne_zero (ψ : Ket d) : ∃ x, ψ x ≠ 0 := by
+lemma Ket.exists_ne_zero (ψ : Ket d) : ∃ x, ψ x ≠ 0 := by
   have hzerolt : ∑ x : d, Complex.normSq (ψ x) > ∑ x : d, 0 := by rw [ψ.normalized, Finset.sum_const_zero]; exact zero_lt_one
   have hpos : ∃ x ∈ Finset.univ, 0 < Complex.normSq (ψ x) := Finset.exists_lt_of_sum_lt hzerolt
   obtain ⟨x, _, hpos⟩ := hpos
   rw [Complex.normSq_pos] at hpos
   use x
 
-theorem Bra.exists_ne_zero (ψ : Bra d) : ∃ x, ψ x ≠ 0 := by
+lemma Bra.exists_ne_zero (ψ : Bra d) : ∃ x, ψ x ≠ 0 := by
   have hzerolt : ∑ x : d, Complex.normSq (ψ x) > ∑ x : d, 0 := by rw [ψ.normalized, Finset.sum_const_zero]; exact zero_lt_one
   have hpos : ∃ x ∈ Finset.univ, 0 < Complex.normSq (ψ x) := Finset.exists_lt_of_sum_lt hzerolt
   obtain ⟨x, _, hpos⟩ := hpos
@@ -414,15 +414,15 @@ def KetUpToPhase.lift {α : Sort*} (f : Ket d → α)
   @Quotient.lift _ _ Ket.PhaseEquiv f hf
 
 @[simp]
-theorem KetUpToPhase.lift_mk {α : Sort*} (f : Ket d → α)
+lemma KetUpToPhase.lift_mk {α : Sort*} (f : Ket d → α)
     (hf : ∀ ψ φ, Ket.PhaseEquiv.r ψ φ → f ψ = f φ) (ψ : Ket d) :
     KetUpToPhase.lift f hf (KetUpToPhase.mk ψ) = f ψ := rfl
 
-theorem KetUpToPhase.ind {p : KetUpToPhase d → Prop}
+lemma KetUpToPhase.ind {p : KetUpToPhase d → Prop}
     (h : ∀ ψ : Ket d, p (KetUpToPhase.mk ψ)) : ∀ q, p q :=
   @Quotient.ind _ Ket.PhaseEquiv p h
 
-theorem KetUpToPhase.surjective_mk : Function.Surjective (KetUpToPhase.mk (d := d)) :=
+lemma KetUpToPhase.surjective_mk : Function.Surjective (KetUpToPhase.mk (d := d)) :=
   fun q => @Quotient.ind _ Ket.PhaseEquiv (fun q => ∃ a, KetUpToPhase.mk a = q) (fun a => ⟨a, rfl⟩) q
 
 end equiv

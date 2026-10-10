@@ -35,11 +35,11 @@ namespace TrDistance
 
 variable {d d₂ : Type*} [Fintype d] [Fintype d₂] (ρ σ : MState d)
 
-theorem ge_zero : 0 ≤ TrDistance ρ σ := by
+lemma ge_zero : 0 ≤ TrDistance ρ σ := by
   rw [TrDistance]
   simp [Matrix.traceNorm_nonneg]
 
-theorem le_one : TrDistance ρ σ ≤ 1 := by
+lemma le_one : TrDistance ρ σ ≤ 1 := by
   have htri := Matrix.traceNorm_add_le ρ.m (-σ.m)
   simp [TrDistance, sub_eq_add_neg, Matrix.traceNorm_neg,
     ρ.traceNorm_eq_one, σ.traceNorm_eq_one] at htri ⊢

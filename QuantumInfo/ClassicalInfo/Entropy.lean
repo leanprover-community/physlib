@@ -59,7 +59,7 @@ theorem H₁_le_exp_m1 (p : Prob) : H₁ p ≤ Real.exp (-1) :=
   Real.negMulLog_le_rexp_neg_one p.zero_le_coe
 
 set_option backward.isDefEq.respectTransparency false in
-theorem H₁_concave : ∀ (x y : Prob), ∀ (p : Prob), p[H₁ x ↔ H₁ y] ≤ H₁ (p[x ↔ y]) := by
+lemma H₁_concave : ∀ (x y : Prob), ∀ (p : Prob), p[H₁ x ↔ H₁ y] ≤ H₁ (p[x ↔ y]) := by
   intros x y p
   simp only [H₁, smul_eq_mul, Prob.coe_one_minus, Mixable.mix, Mixable.mix_ab, Mixable.mkT_instUniv,
     Prob.mkT_mixable, Prob.to_U_mixable, Mixable.to_U_instUniv, Prob.to_U_mixable]

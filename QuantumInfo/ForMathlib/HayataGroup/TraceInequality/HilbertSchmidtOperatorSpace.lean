@@ -518,7 +518,7 @@ noncomputable def rightMulHSStarAlgHom : (L ℋ)ᵐᵒᵖ →⋆ₐ[ℝ] L (HSOp
     intro A
     simp [rightMulHS_star (ℋ := ℋ) (MulOpposite.unop A)]
 
-@[simp] theorem rightMulHSStarAlgHom_apply (A : (L ℋ)ᵐᵒᵖ) :
+@[simp] lemma rightMulHSStarAlgHom_apply (A : (L ℋ)ᵐᵒᵖ) :
     rightMulHSStarAlgHom (ℋ := ℋ) A = rightMulHS (ℋ := ℋ) (MulOpposite.unop A) :=
   rfl
 

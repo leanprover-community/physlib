@@ -45,6 +45,11 @@ def main (args : List String) : IO UInt32 := do
   println! sorryPseudoCheck.stdout
   println! sorryPseudoCheck.stderr
 
+  println! "\x1b[36m(5/7) Theorem and lemma linter \x1b[0m"
+  let theoremCheck ← IO.Process.output {cmd := "lake", args := #["exe", "theorem_lint"]}
+  println! theoremCheck.stdout
+  println! theoremCheck.stderr
+
   if ¬ "--fast" ∈ args then
     println! "\x1b[36m(6/7) Lean linter \x1b[0m"
     println! "\x1b[2mExpect this linter to take a while to run, it can be skipped with

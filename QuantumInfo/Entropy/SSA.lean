@@ -39,7 +39,7 @@ noncomputable def Matrix.opNorm (A : Matrix m n 𝕜) : ℝ :=
 /-
 An isometry preserves the Euclidean norm.
 -/
-theorem Matrix.isometry_preserves_norm (A : Matrix n m 𝕜) (hA : A.Isometry) (x : EuclideanSpace 𝕜 m) :
+lemma Matrix.isometry_preserves_norm (A : Matrix n m 𝕜) (hA : A.Isometry) (x : EuclideanSpace 𝕜 m) :
     ‖Matrix.toEuclideanLin A x‖ = ‖x‖ := by
   rw [ ← sq_eq_sq₀ ( by positivity ) ( by positivity ), Matrix.Isometry ] at *;
   simp [ EuclideanSpace.norm_eq]
@@ -58,7 +58,7 @@ theorem Matrix.isometry_preserves_norm (A : Matrix n m 𝕜) (hA : A.Isometry) (
 /-
 The operator norm of an isometry is 1 (assuming the domain is non-empty).
 -/
-theorem Matrix.opNorm_isometry [Nonempty m] (A : Matrix n m 𝕜) (hA : A.Isometry) : Matrix.opNorm A = 1 := by
+lemma Matrix.opNorm_isometry [Nonempty m] (A : Matrix n m 𝕜) (hA : A.Isometry) : Matrix.opNorm A = 1 := by
   have h_opNorm : ∀ x : EuclideanSpace 𝕜 m, ‖Matrix.toEuclideanLin A x‖ = ‖x‖ := by
     convert Matrix.isometry_preserves_norm A hA;
   refine' le_antisymm ( csInf_le _ _ ) ( le_csInf _ _ );
@@ -74,7 +74,7 @@ variable (d₁ d₂) in
 def map_to_tensor_MES : Matrix ((d₁ × d₂) × d₂) d₁ ℂ :=
   Matrix.of fun ((i, j), k) l => if i = l ∧ j = k then 1 else 0
 
-theorem map_to_tensor_MES_prop (A : Matrix (d₁ × d₂) (d₁ × d₂) ℂ) :
+lemma map_to_tensor_MES_prop (A : Matrix (d₁ × d₂) (d₁ × d₂) ℂ) :
     (map_to_tensor_MES d₁ d₂).conjTranspose * (Matrix.kronecker A (1 : Matrix d₂ d₂ ℂ)) * (map_to_tensor_MES d₁ d₂) =
     A.traceRight := by
   ext i j; simp [map_to_tensor_MES, Matrix.mul_apply]
@@ -251,7 +251,7 @@ theorem Matrix.opNorm_mul_le {l m n 𝕜 : Type*} [Fintype l] [Fintype m] [Finty
   exact ContinuousLinearMap.opNorm_comp_le (LinearMap.toContinuousLinearMap (Matrix.toEuclideanLin A))
     (LinearMap.toContinuousLinearMap (Matrix.toEuclideanLin B))
 
-theorem Matrix.opNorm_reindex_proven {l m n p : Type*} [Fintype l] [Fintype m] [Fintype n] [Fintype p]
+lemma Matrix.opNorm_reindex_proven {l m n p : Type*} [Fintype l] [Fintype m] [Fintype n] [Fintype p]
     [DecidableEq l] [DecidableEq m] [DecidableEq n] [DecidableEq p]
     (e : m ≃ l) (f : n ≃ p) (A : Matrix m n 𝕜) :
     Matrix.opNorm (A.reindex e f) = Matrix.opNorm A := by
@@ -297,7 +297,7 @@ theorem Matrix.opNorm_conjTranspose_eq_opNorm {m n : Type*} [Fintype m] [Fintype
   rw [toEuclideanLin_conjTranspose_eq_adjoint]
   rfl
 
-theorem isometry_mul_conjTranspose_le_one {m n : Type*} [Fintype m] [Fintype n]
+lemma isometry_mul_conjTranspose_le_one {m n : Type*} [Fintype m] [Fintype n]
     [DecidableEq m] [DecidableEq n]
     (V : Matrix m n ℂ) (hV : V.conjTranspose * V = 1) :
     V * V.conjTranspose ≤ 1 := by
@@ -314,7 +314,7 @@ theorem isometry_mul_conjTranspose_le_one {m n : Type*} [Fintype m] [Fintype n]
 If `A†A = I` and `B†B = I` (both isometries into the same space), then `||(A†B)|| ≤ 1`,
   equivalently `(A†B)†(A†B) ≤ I`.
 -/
-theorem conjTranspose_isometry_mul_isometry_le_one {m n k : Type*}
+lemma conjTranspose_isometry_mul_isometry_le_one {m n k : Type*}
     [Fintype m] [Fintype n] [Fintype k] [DecidableEq m] [DecidableEq n] [DecidableEq k]
     (A : Matrix k m ℂ) (B : Matrix k n ℂ)
     (hA : A.conjTranspose * A = 1) (hB : B.conjTranspose * B = 1) :
@@ -333,13 +333,13 @@ theorem conjTranspose_isometry_mul_isometry_le_one {m n k : Type*}
 /-! ### Helper lemmas for operator_ineq_SSA -/
 
 /- Reindexing preserves the HermitianMat ordering. -/
-theorem HermitianMat.reindex_le_reindex_iff {d d₂ : Type*} [Fintype d] [DecidableEq d]
+lemma HermitianMat.reindex_le_reindex_iff {d d₂ : Type*} [Fintype d] [DecidableEq d]
     [Fintype d₂] [DecidableEq d₂] (e : d ≃ d₂) (A B : HermitianMat d ℂ) :
     A.reindex e ≤ B.reindex e ↔ A ≤ B := by
   constructor <;> intro h <;> rw [HermitianMat.le_iff] at * <;> aesop;
 
 /- Inverse of a Kronecker product of HermitianMat. -/
-theorem HermitianMat.inv_kronecker {m n : Type*} [Fintype m] [DecidableEq m]
+lemma HermitianMat.inv_kronecker {m n : Type*} [Fintype m] [DecidableEq m]
     [Fintype n] [DecidableEq n] [Nonempty m] [Nonempty n]
     (A : HermitianMat m ℂ) (B : HermitianMat n ℂ)
     [A.NonSingular] [B.NonSingular] :
@@ -354,14 +354,14 @@ theorem HermitianMat.inv_kronecker {m n : Type*} [Fintype m] [DecidableEq m]
   refine' Subtype.ext ( Matrix.inv_eq_right_inv h_inv )
 
 /- Inverse of a reindexed HermitianMat. -/
-theorem HermitianMat.inv_reindex {d d₂ : Type*} [Fintype d] [DecidableEq d]
+lemma HermitianMat.inv_reindex {d d₂ : Type*} [Fintype d] [DecidableEq d]
     [Fintype d₂] [DecidableEq d₂] (A : HermitianMat d ℂ) (e : d ≃ d₂) :
     (A.reindex e)⁻¹ = A⁻¹.reindex e := by
   ext1
   simp
 
 /- Kronecker of PosDef matrices is PosDef. -/
-theorem HermitianMat.PosDef_kronecker {m n : Type*} [Fintype m] [DecidableEq m]
+lemma HermitianMat.PosDef_kronecker {m n : Type*} [Fintype m] [DecidableEq m]
     [Fintype n] [DecidableEq n]
     (A : HermitianMat m ℂ) (B : HermitianMat n ℂ)
     (hA : A.mat.PosDef) (hB : B.mat.PosDef) :
@@ -369,7 +369,7 @@ theorem HermitianMat.PosDef_kronecker {m n : Type*} [Fintype m] [DecidableEq m]
   exact Matrix.PosDef.kron hA hB
 
 /- Reindex of PosDef is PosDef. -/
-theorem HermitianMat.PosDef_reindex {d d₂ : Type*} [Fintype d] [DecidableEq d]
+lemma HermitianMat.PosDef_reindex {d d₂ : Type*} [Fintype d] [DecidableEq d]
     [Fintype d₂] [DecidableEq d₂] (A : HermitianMat d ℂ) (e : d ≃ d₂)
     (hA : A.mat.PosDef) :
     (A.reindex e).mat.PosDef := by

@@ -492,7 +492,7 @@ end VariationalAndBridge
   `σ ↦ Tr[(σ^s H σ^s)^p]` is concave on PSD matrices,
   where `s = (α-1)/(2α)` and `p = α/(α-1)`.
 -/
-theorem trace_conj_rpow_concave {α : ℝ} (hα : 1 < α)
+lemma trace_conj_rpow_concave {α : ℝ} (hα : 1 < α)
     (H : HermitianMat d ℂ) (hH : 0 ≤ H) :
     ConcaveOn ℝ {σ : HermitianMat d ℂ | 0 ≤ σ}
       (fun σ ↦ ((H.conj (σ ^ ((α - 1) / (2 * α))).mat) ^ (α / (α - 1))).trace) := by

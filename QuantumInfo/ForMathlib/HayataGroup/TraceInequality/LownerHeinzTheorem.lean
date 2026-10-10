@@ -144,7 +144,7 @@ def OperatorConcaveOnAll (s : Set ℝ) (f : ℝ → ℝ) : Prop :=
     [Nontrivial K],
     OperatorConcaveOn (ℋ := K) s f
 
-theorem operatorConvex_convexOn_univ {f : ℝ → ℝ} (hf : OperatorConvex (ℋ := ℋ) f) :
+lemma operatorConvex_convexOn_univ {f : ℝ → ℝ} (hf : OperatorConvex (ℋ := ℋ) f) :
     ConvexOn ℝ Set.univ f := by
   refine ⟨convex_univ, ?_⟩
   intro x _ y _ a b ha hb hab
@@ -208,70 +208,70 @@ theorem operatorConvex_convexOn_univ {f : ℝ → ℝ} (hf : OperatorConvex (ℋ
     simpa [hz_eq] using hspec_le z hz
   simpa [smul_eq_mul, ha'] using hscalar'
 
-theorem operatorConvex_continuousOn_univ {f : ℝ → ℝ} (hf : OperatorConvex (ℋ := ℋ) f) :
+lemma operatorConvex_continuousOn_univ {f : ℝ → ℝ} (hf : OperatorConvex (ℋ := ℋ) f) :
     ContinuousOn f Set.univ :=
   ConvexOn.continuousOn isOpen_univ (operatorConvex_convexOn_univ (ℋ := ℋ) hf)
 
-theorem operatorConvex_continuousOn_spectrum_union {f : ℝ → ℝ}
+lemma operatorConvex_continuousOn_spectrum_union {f : ℝ → ℝ}
     (hf : OperatorConvex (ℋ := ℋ) f) (A B : L ℋ) :
     ContinuousOn f (spectrum ℝ A ∪ spectrum ℝ B) :=
   (operatorConvex_continuousOn_univ (ℋ := ℋ) hf).mono (by intro x hx; simp)
 
 
 omit [Nontrivial ℋ] in
-theorem one_div_operatorAntitoneOn_Ioi :
+lemma one_div_operatorAntitoneOn_Ioi :
     OperatorAntitoneOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) (fun x : ℝ ↦ 1 / x) := by
   exact (LownerHeinzCore.one_div_operatorAntitoneOn_Ioi (𝓐 := L ℋ))
 
-theorem one_div_operatorConvexOn_Ioi :
+lemma one_div_operatorConvexOn_Ioi :
     OperatorConvexOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) (fun x : ℝ ↦ 1 / x) := by
   exact (LownerHeinzCore.one_div_operatorConvexOn_Ioi (𝓐 := L ℋ))
 
 omit [Nontrivial ℋ] in
-theorem one_div_add_t_operatorAntitoneOn_Ici : ∀ (t : ℝ), 0 < t →
+lemma one_div_add_t_operatorAntitoneOn_Ici : ∀ (t : ℝ), 0 < t →
     OperatorAntitoneOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x : ℝ ↦ 1 / (x + t)) := by
   intro t ht
   exact (LownerHeinzCore.one_div_add_t_operatorAntitoneOn_Ici (𝓐 := L ℋ) t ht)
 
-theorem one_div_add_t_operatorConvexOn_Ici : ∀ (t : ℝ), 0 < t →
+lemma one_div_add_t_operatorConvexOn_Ici : ∀ (t : ℝ), 0 < t →
     OperatorConvexOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x : ℝ ↦ 1 / (x + t)) := by
   intro t ht
   exact (LownerHeinzCore.one_div_add_t_operatorConvexOn_Ici (𝓐 := L ℋ) t ht)
 
 omit [Nontrivial ℋ] in
-theorem ratio_add_t_operatorMonotoneOn_Ici : ∀ (t : ℝ), 0 < t →
+lemma ratio_add_t_operatorMonotoneOn_Ici : ∀ (t : ℝ), 0 < t →
     OperatorMonotoneOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x : ℝ ↦ x / (x + t)) := by
   intro t ht
   exact (LownerHeinzCore.ratio_add_t_operatorMonotoneOn_Ici (𝓐 := L ℋ) t ht)
 
-theorem ratio_add_t_operatorConcaveOn_Ici : ∀ (t : ℝ), 0 < t →
+lemma ratio_add_t_operatorConcaveOn_Ici : ∀ (t : ℝ), 0 < t →
     OperatorConcaveOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x : ℝ ↦ x / (x + t)) := by
   intro t ht
   exact (LownerHeinzCore.ratio_add_t_operatorConcaveOn_Ici (𝓐 := L ℋ) t ht)
 
 omit [Nontrivial ℋ] in
-theorem power_Icc_zero_one_operatorMonotoneOn_Ici : ∀ p ∈ Set.Icc (0 : ℝ) 1,
+lemma power_Icc_zero_one_operatorMonotoneOn_Ici : ∀ p ∈ Set.Icc (0 : ℝ) 1,
     OperatorMonotoneOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x ↦ x ^ p) := by
   intro p hp
   exact (LownerHeinzCore.power_Icc_zero_one_operatorMonotoneOn_Ici (𝓐 := L ℋ) p hp)
 
-theorem power_Icc_zero_one_operatorConcaveOn_Ici : ∀ p ∈ Set.Icc (0 : ℝ) 1,
+lemma power_Icc_zero_one_operatorConcaveOn_Ici : ∀ p ∈ Set.Icc (0 : ℝ) 1,
     OperatorConcaveOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x ↦ x ^ p) := by
   intro p hp
   exact (LownerHeinzCore.power_Icc_zero_one_operatorConcaveOn_Ici (𝓐 := L ℋ) p hp)
 
-theorem power_Icc_one_two_operatorConvexOn_Ici : ∀ p ∈ Set.Icc (1 : ℝ) 2,
+lemma power_Icc_one_two_operatorConvexOn_Ici : ∀ p ∈ Set.Icc (1 : ℝ) 2,
     OperatorConvexOn (ℋ := ℋ) (Set.Ici (0 : ℝ)) (fun x ↦ x ^ p) := by
   intro p hp
   exact (LownerHeinzCore.power_Icc_one_two_operatorConvexOn_Ici (𝓐 := L ℋ) p hp)
 
 omit [Nontrivial ℋ] in
-theorem power_Icc_neg_one_zero_neg_operatorMonotoneOn_Ioi : ∀ p ∈ Set.Icc (-1 : ℝ) 0,
+lemma power_Icc_neg_one_zero_neg_operatorMonotoneOn_Ioi : ∀ p ∈ Set.Icc (-1 : ℝ) 0,
     OperatorMonotoneOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) (fun x ↦ -(x ^ p)) := by
   intro p hp
   exact (LownerHeinzCore.power_Icc_neg_one_zero_neg_operatorMonotoneOn_Ioi (𝓐 := L ℋ) p hp)
 
-theorem power_Icc_neg_one_zero_neg_operatorConcaveOn_Ioi : ∀ p ∈ Set.Icc (-1 : ℝ) 0,
+lemma power_Icc_neg_one_zero_neg_operatorConcaveOn_Ioi : ∀ p ∈ Set.Icc (-1 : ℝ) 0,
     OperatorConcaveOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) (fun x ↦ -(x ^ p)) := by
   intro p hp
   exact (LownerHeinzCore.power_Icc_neg_one_zero_neg_operatorConcaveOn_Ioi (𝓐 := L ℋ) p hp)

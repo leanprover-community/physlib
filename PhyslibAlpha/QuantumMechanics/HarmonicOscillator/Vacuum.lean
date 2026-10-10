@@ -136,9 +136,9 @@ noncomputable def diagEquiv (Q : HarmonicOscillator d) : Space d ≃L[ℝ] Space
       fun i => ContinuousLinearEquiv.smulLeft (Units.mk0 (Q.ξ i) (Q.ξ_ne_zero i))).trans
       (Space.equivPi d).symm
 
-@[simp] theorem diagEquiv_apply (x : Space d) (i : Fin d) : Q.diagEquiv x i = Q.ξ i * x i := rfl
+@[simp] lemma diagEquiv_apply (x : Space d) (i : Fin d) : Q.diagEquiv x i = Q.ξ i * x i := rfl
 
-@[simp] theorem diagEquiv_symm_apply (x : Space d) (i : Fin d) :
+@[simp] lemma diagEquiv_symm_apply (x : Space d) (i : Fin d) :
     Q.diagEquiv.symm x i = (Q.ξ i)⁻¹ * x i := rfl
 
 /-- The vacuum Gaussian of `Q`: the anisotropic Gaussian `exp(-∑ᵢ(xᵢ/ξᵢ)²/2)`, `Q.diagEquiv`

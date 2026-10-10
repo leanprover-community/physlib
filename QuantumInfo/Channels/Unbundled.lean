@@ -199,7 +199,7 @@ variable {M : MatrixMap A B R}
 omit [Fintype A] [Fintype B]
 
 @[simp]
-theorem map_1 (h : M.Unital) : M 1 = 1 :=
+lemma map_1 (h : M.Unital) : M 1 = 1 :=
   h
 
 /-- The identity `MatrixMap` is `Unital`. -/
@@ -251,7 +251,7 @@ namespace IsPositive
 variable [Fintype A] [Fintype B] [Fintype C]
 
 /- Every `MatrixMap` that `IsPositive` is also `IsHermitianPreserving`. -/
-theorem IsHermitianPreserving {M : MatrixMap A B R}
+lemma IsHermitianPreserving {M : MatrixMap A B R}
     (hM : IsPositive M) : IsHermitianPreserving M := by
   intro x hx
   let xH : HermitianMat _ _ := ⟨x, hx⟩
@@ -319,7 +319,7 @@ theorem of_Fintype  {M : MatrixMap A B R} (h : IsCompletelyPositive M)
     exact h.submatrix _
 
 /- Every `MatrixMap` that `IsCompletelyPositive` also `IsPositiveMap`. -/
-theorem IsPositive {M : MatrixMap A B R}
+lemma IsPositive {M : MatrixMap A B R}
     (hM : IsCompletelyPositive M) : IsPositive M := by
   intro x hx
   let x' : Matrix (A × Fin 1) (A × Fin 1) R := x ⊗ₖ 1
@@ -440,7 +440,7 @@ theorem kron_kronecker_const {C : Matrix d d R} (h : C.PosSemidef) {h₁ h₂ : 
     simp_all only [RingHom.id_apply, Finset.mem_univ, not_true_eq_false]
 
 omit [Fintype B] in
-theorem choi_of_kraus (K : κ → Matrix B A 𝕜) :
+lemma choi_of_kraus (K : κ → Matrix B A 𝕜) :
     (MatrixMap.of_kraus K K).choi_matrix = ∑ k, Matrix.vecMulVec (fun (x : B × A) => K k x.1 x.2) (fun (x : B × A) => star (K k x.1 x.2)) := by
   -- By definition of Choi matrix, we can expand the left-hand side using the linearity of the map and the properties of the Choi matrix.
   ext ⟨b₁, a₁⟩ ⟨b₂, a₂⟩
@@ -461,11 +461,11 @@ def _root_.MatrixMap.conj (y : Matrix B A R) : MatrixMap A B R where
   map_smul' r x := by rw [RingHom.id_apply, Matrix.mul_smul, Matrix.smul_mul]
 
 omit [DecidableEq A] in
-theorem conj_isPositive (M : Matrix B A 𝕜) : (conj M).IsPositive := by
+lemma conj_isPositive (M : Matrix B A 𝕜) : (conj M).IsPositive := by
   exact fun X hX => hX.mul_mul_conjTranspose_same M
 
 omit [DecidableEq A] in
-theorem IsPositive_sum {ι : Type*} [Fintype ι] (f : ι → MatrixMap A B ℂ) (h : ∀ i, (f i).IsPositive) :
+lemma IsPositive_sum {ι : Type*} [Fintype ι] (f : ι → MatrixMap A B ℂ) (h : ∀ i, (f i).IsPositive) :
     (∑ i, f i).IsPositive := by
   intro X hX;
   replace hX : ∀ i, ((f i) X).PosSemidef := fun i => h i hX;
@@ -481,14 +481,14 @@ theorem IsPositive_sum {ι : Type*} [Fintype ι] (f : ι → MatrixMap A B ℂ) 
   exact Finset.sum_nonneg fun i _ => by simpa [ mul_assoc, mul_comm, mul_left_comm, Finset.mul_sum _ _ _, Finset.sum_mul ] using hX i |>.2 x;
 
 omit [DecidableEq A] in
-theorem of_kraus_isPositive (K : κ → Matrix B A ℂ) :
+lemma of_kraus_isPositive (K : κ → Matrix B A ℂ) :
     (of_kraus K K).IsPositive := by
   rw [of_kraus]
   apply IsPositive_sum
   intro k
   exact conj_isPositive (K k)
 
-theorem conj_kron (M : Matrix B A 𝕜) (N : Matrix D C 𝕜) [DecidableEq C] :
+lemma conj_kron (M : Matrix B A 𝕜) (N : Matrix D C 𝕜) [DecidableEq C] :
     conj M ⊗ₖₘ conj N = conj (M ⊗ₖ N) := by
   apply LinearMap.ext
   intro x
@@ -529,11 +529,11 @@ theorem conj_kron (M : Matrix B A 𝕜) (N : Matrix D C 𝕜) [DecidableEq C] :
   obtain ⟨ coeffs, rfl ⟩ := h_decomp x;
   exact Submodule.sum_mem _ fun a₁ _ => Submodule.sum_mem _ fun c₁ _ => Submodule.sum_mem _ fun a₂ _ => Submodule.sum_mem _ fun c₂ _ => Submodule.smul_mem _ _ ( Submodule.subset_span ⟨ ( Matrix.single a₁ a₂ 1, Matrix.single c₁ c₂ 1 ), rfl ⟩ )
 
-theorem congruence_one_eq_id : conj (1 : Matrix A A ℂ) = MatrixMap.id A ℂ := by
+lemma congruence_one_eq_id : conj (1 : Matrix A A ℂ) = MatrixMap.id A ℂ := by
   ext x
   simp [conj]
 
-theorem congruence_CP {A B : Type*} [Fintype A] [Fintype B] [DecidableEq A] [DecidableEq B] (M : Matrix B A 𝕜) : (conj M).IsCompletelyPositive := by
+lemma congruence_CP {A B : Type*} [Fintype A] [Fintype B] [DecidableEq A] [DecidableEq B] (M : Matrix B A 𝕜) : (conj M).IsCompletelyPositive := by
   intro n;
   -- The tensor product of congruence maps is a congruence map.
   have h_tensor_congruence : conj M ⊗ₖₘ LinearMap.id = conj (M ⊗ₖ (1 : Matrix (Fin n) (Fin n) 𝕜)) := by
@@ -542,17 +542,17 @@ theorem congruence_CP {A B : Type*} [Fintype A] [Fintype B] [DecidableEq A] [Dec
     simp
   convert conj_isPositive ( M ⊗ₖ ( 1 : Matrix ( Fin n ) ( Fin n ) 𝕜 ) ) using 1
 
-theorem IsCompletelyPositive_sum {ι : Type*} [Fintype ι] (f : ι → MatrixMap A B ℂ) (h : ∀ i, (f i).IsCompletelyPositive) :
+lemma IsCompletelyPositive_sum {ι : Type*} [Fintype ι] (f : ι → MatrixMap A B ℂ) (h : ∀ i, (f i).IsCompletelyPositive) :
     (∑ i, f i).IsCompletelyPositive := by
       convert IsCompletelyPositive.finset_sum h using 1
 
 omit [Fintype B] [DecidableEq A] in
-theorem of_kraus_eq_sum_conj (K : κ → Matrix B A 𝕜) :
+lemma of_kraus_eq_sum_conj (K : κ → Matrix B A 𝕜) :
     of_kraus K K = ∑ k, conj (K k) := by
   ext
   simp [MatrixMap.of_kraus, conj]
 
-theorem of_kraus_CP (K : κ → Matrix B A 𝕜) : (of_kraus K K).IsCompletelyPositive := by
+lemma of_kraus_CP (K : κ → Matrix B A 𝕜) : (of_kraus K K).IsCompletelyPositive := by
   -- By definition of `MatrixMap.of_kraus`, we know that it is a sum of congruence maps.
   have h_sum_congruence : MatrixMap.of_kraus K K = ∑ k, conj (K k) := by
     -- By definition of `MatrixMap.of_kraus`, we know that it is equal to the sum of the congruence maps of each Kraus operator.
@@ -565,7 +565,7 @@ theorem of_kraus_CP (K : κ → Matrix B A 𝕜) : (of_kraus K K).IsCompletelyPo
   exact h_sum_congruence.symm ▸ IsCompletelyPositive.finset_sum h_congruence_CP
 
 set_option backward.isDefEq.respectTransparency false in
-theorem exists_kraus_of_choi_PSD
+lemma exists_kraus_of_choi_PSD
     (C : Matrix (B × A) (B × A) 𝕜) (hC : C.PosSemidef) :
     ∃ (K : (B × A) → Matrix B A 𝕜), C = (MatrixMap.of_kraus K K).choi_matrix := by
   classical
@@ -581,7 +581,7 @@ theorem exists_kraus_of_choi_PSD
 /-
 The Choi matrix of M is the image of the unnormalized maximally entangled state projector under M ⊗ id.
 -/
-theorem choi_matrix_eq_map_proj (M : MatrixMap A B R) :
+lemma choi_matrix_eq_map_proj (M : MatrixMap A B R) :
     M.choi_matrix = (M ⊗ₖₘ MatrixMap.id A R) (Matrix.vecMulVec (fun (x : A × A) => if x.1 = x.2 then 1 else 0) (fun (x : A × A) => star (if x.1 = x.2 then 1 else 0))) := by
   have h_choi : ∀ (M : MatrixMap A B R), MatrixMap.kron M (MatrixMap.id A R) (Matrix.vecMulVec (fun (x : A × A) => if x.1 = x.2 then 1 else 0) (fun (x : A × A) => star (if x.1 = x.2 then 1 else 0))) = MatrixMap.choi_matrix M := by
     intro M
@@ -605,7 +605,7 @@ theorem choi_PSD_iff_CP_map (M : MatrixMap A B R) :
     exact of_kraus_CP K
 
 omit [Fintype B] [DecidableEq A] in
-theorem conj_eq_mulRightLinearMap_comp_mulRightLinearMap (y : Matrix B A R) :
+lemma conj_eq_mulRightLinearMap_comp_mulRightLinearMap (y : Matrix B A R) :
     conj y = mulRightLinearMap B R y.conjTranspose ∘ₗ mulLeftLinearMap A R y := by
   ext1; simp
 
@@ -704,7 +704,7 @@ The Choi matrix of M is the result of applying M \otimes I to the unnormalized m
 -/
 variable {A B R : Type*} [Fintype A] [Fintype B] [DecidableEq A] [RCLike R]
 
-theorem choi_eq_kron_id_apply_choi_id (M : MatrixMap A B R) :
+lemma choi_eq_kron_id_apply_choi_id (M : MatrixMap A B R) :
     M.choi_matrix = (M ⊗ₖₘ MatrixMap.id A R) ((MatrixMap.id A R).choi_matrix) := by
   ext ⟨j₁, a₁⟩ ⟨j₂, a₂⟩ : 2
   rw [ MatrixMap.kron_def ]
@@ -732,7 +732,7 @@ theorem choi_eq_kron_id_apply_choi_id (M : MatrixMap A B R) :
 /-
 The Choi matrix of the identity map is positive semidefinite.
 -/
-theorem choi_id_is_PSD {A R : Type*} [Fintype A] [DecidableEq A] [RCLike R] :
+lemma choi_id_is_PSD {A R : Type*} [Fintype A] [DecidableEq A] [RCLike R] :
     (MatrixMap.id A R).choi_matrix.PosSemidef := by
   -- Let $v$ be the vector with $v_{(a,b)} = \delta_{ab}$.
   set v : A × A → R := fun p => if p.1 = p.2 then 1 else 0;
@@ -753,12 +753,12 @@ theorem choi_id_is_PSD {A R : Type*} [Fintype A] [DecidableEq A] [RCLike R] :
 /-
 If a map is completely positive, its Choi matrix is positive semidefinite.
 -/
-theorem is_CP_implies_choi_PSD {A B R : Type*} [Fintype A] [Fintype B] [DecidableEq A] [DecidableEq B] [RCLike R] (M : MatrixMap A B R) (hCP : M.IsCompletelyPositive) :
+lemma is_CP_implies_choi_PSD {A B R : Type*} [Fintype A] [Fintype B] [DecidableEq A] [DecidableEq B] [RCLike R] (M : MatrixMap A B R) (hCP : M.IsCompletelyPositive) :
     M.choi_matrix.PosSemidef := by
   rw [choi_eq_kron_id_apply_choi_id]
   exact MatrixMap.IsCompletelyPositive.of_Fintype hCP A choi_id_is_PSD
 
-theorem IsCompletelyPositive.exists_kraus (Φ : MatrixMap A B R) (hCP : Φ.IsCompletelyPositive) :
+lemma IsCompletelyPositive.exists_kraus (Φ : MatrixMap A B R) (hCP : Φ.IsCompletelyPositive) :
     ∃ (M : (B × A) → Matrix B A R), Φ = of_kraus M M := by
   rw [choi_PSD_iff_CP_map] at hCP
   convert exists_kraus_of_choi_PSD Φ.choi_matrix hCP using 1;
@@ -768,7 +768,7 @@ theorem IsCompletelyPositive.exists_kraus (Φ : MatrixMap A B R) (hCP : Φ.IsCom
 
 open scoped MatrixOrder in
 /-- Kadison-Schwarz for completely positive subunital matrix maps. -/
-theorem cp_subunital_kadison_schwarz {M : MatrixMap A B ℂ} [DecidableEq B]
+lemma cp_subunital_kadison_schwarz {M : MatrixMap A B ℂ} [DecidableEq B]
     (hM : M.IsCompletelyPositive) (hM1 : M 1 ≤ (1 : Matrix B B ℂ))
     (X : Matrix A A ℂ) :
     (M X)ᴴ * M X ≤ M (Xᴴ * X) := by

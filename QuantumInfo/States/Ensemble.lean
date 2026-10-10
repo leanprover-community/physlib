@@ -41,7 +41,7 @@ namespace Ensemble
 instance : Coe (PEnsemble d α) (MEnsemble d α) := ⟨toMEnsemble⟩
 
 @[simp]
-theorem toMEnsemble_mk : (toMEnsemble ⟨ps, distr⟩ : MEnsemble d α) = ⟨pure ∘ ps, distr⟩ :=
+lemma toMEnsemble_mk : (toMEnsemble ⟨ps, distr⟩ : MEnsemble d α) = ⟨pure ∘ ps, distr⟩ :=
   rfl
 
 /-- A mixed-state ensemble comes from a pure-state ensemble if and only if all states are pure. -/
@@ -64,7 +64,7 @@ ensembles that mixes into it. -/
 def mix (e : MEnsemble d α) : MState d := ProbDistribution.expect_val e
 
 @[simp]
-theorem mix_of (e : MEnsemble d α) : (mix e).m = ∑ i, (e.distr i : ℝ) • (e.states i).m := by
+lemma mix_of (e : MEnsemble d α) : (mix e).m = ∑ i, (e.distr i : ℝ) • (e.states i).m := by
   apply AddSubgroup.val_finsetSum -- *laughs in defeq*
 
 /-- Two mixed-state ensembles indexed by `\alpha` and `\beta` are equivalent if `α ≃ β`. -/
@@ -117,7 +117,7 @@ theorem average_of_pure_ensemble {T : Type _} {U : Type*} [AddCommGroup U] [Modu
 variable {ψ : Ket d}
 
 @[simp]
-theorem distr_toMEnsemble (e : PEnsemble d α) : (toMEnsemble e).distr = e.distr := by
+lemma distr_toMEnsemble (e : PEnsemble d α) : (toMEnsemble e).distr = e.distr := by
   rfl
 
 /-
@@ -125,7 +125,7 @@ A pure-state ensemble mixes into a pure state if and only if
 the only states in the ensemble with nonzero probability are equal
 to the same Ket `ψ` up to a global phase.
 -/
-theorem mix_pEnsemble_pure_iff_pure {e : PEnsemble d α} :
+lemma mix_pEnsemble_pure_iff_pure {e : PEnsemble d α} :
     mix (toMEnsemble e) = MState.pure ψ ↔
     ∀ i : α, e.distr i ≠ 0 → MState.pure (e.states i) = MState.pure ψ := by
   refine ⟨fun h i hi ↦ ?_, fun h ↦ ?_⟩
@@ -166,7 +166,7 @@ theorem mix_pEnsemble_pure_average {e : PEnsemble d α} {T : Type _} {U : Type*}
     · rw [hfeq i hdi]
   rw [Finset.sum_congr rfl h2, ← Finset.sum_smul, ProbDistribution.normalized, one_smul]
 
-theorem sum_prob_mul_eq_one_iff {ι : Type*} [Fintype ι] (p : ι → ℝ) (x : ι → ℝ)
+lemma sum_prob_mul_eq_one_iff {ι : Type*} [Fintype ι] (p : ι → ℝ) (x : ι → ℝ)
     (hp : ∀ i, 0 ≤ p i) (hsum : ∑ i, p i = 1) (hx : ∀ i, x i ≤ 1) :
     (∑ i, p i * x i = 1) ↔ ∀ i, p i ≠ 0 → x i = 1 := by
   constructor
@@ -187,7 +187,7 @@ theorem sum_prob_mul_eq_one_iff {ι : Type*} [Fintype ι] (p : ι → ℝ) (x : 
     · simp [hi]
     · simp [a i hi]
 
-theorem MState.exp_val_pure_eq_one_iff {d : Type*} [Fintype d] [DecidableEq d]
+lemma MState.exp_val_pure_eq_one_iff {d : Type*} [Fintype d] [DecidableEq d]
     (ρ : MState d) (ψ : Ket d) :
     ρ.exp_val (pure ψ) = 1 ↔ ρ = pure ψ := by
   have hpure_inner_prob : ⟪MState.pure ψ, MState.pure ψ⟫_Prob = 1 :=
@@ -209,7 +209,7 @@ theorem MState.exp_val_pure_eq_one_iff {d : Type*} [Fintype d] [DecidableEq d]
   · rintro rfl; simpa [MState.exp_val] using hpure_inner
 
 set_option backward.isDefEq.respectTransparency false in
-theorem mix_mEnsemble_pure_iff_pure {e : MEnsemble d α} :
+lemma mix_mEnsemble_pure_iff_pure {e : MEnsemble d α} :
     mix e = pure ψ ↔ ∀ i : α, e.distr i ≠ 0 → e.states i = MState.pure ψ := by
   have h : (mix e).exp_val ↑(MState.pure ψ) = ∑ i, ↑(e.distr i) * (e.states i).exp_val ↑(MState.pure ψ) := by
     simp [MState.exp_val, HermitianMat.inner_def, Finset.sum_mul]
@@ -312,7 +312,7 @@ def spectral_ensemble (ρ : MState d) : PEnsemble d d where
   distr := ρ.spectrum
 
 --PULLOUT
-theorem spectral_decomposition_sum {d 𝕜 : Type*} [Fintype d] [DecidableEq d] [RCLike 𝕜]
+lemma spectral_decomposition_sum {d 𝕜 : Type*} [Fintype d] [DecidableEq d] [RCLike 𝕜]
     {A : Matrix d d 𝕜} (hA : A.IsHermitian) :
     A = ∑ i, (hA.eigenvalues i) • (Matrix.vecMulVec (hA.eigenvectorBasis i) (star (hA.eigenvectorBasis i))) := by
   nth_rw 1 [hA.spectral_theorem]

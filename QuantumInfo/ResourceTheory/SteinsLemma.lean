@@ -31,7 +31,7 @@ noncomputable def Lemma6_σn (m : ℕ) (σf : MState (H i)) (σₘ : MState (H (
     rw [← pow_mul, ← spacePow_add, Nat.div_add_mod n m]
   )
 
-theorem Lemma6_σn_IsFree {σ₁ : MState (H i)} {σₘ : (m : ℕ) → MState (H (i ^ m))} (hσ₁_free : IsFree σ₁)
+lemma Lemma6_σn_IsFree {σ₁ : MState (H i)} {σₘ : (m : ℕ) → MState (H (i ^ m))} (hσ₁_free : IsFree σ₁)
     (hσₘ : ∀ (m : ℕ), σₘ m ∈ IsFree) (m n : ℕ) : Lemma6_σn m σ₁ (σₘ m) n ∈ IsFree := by
   rw [Lemma6_σn, relabel_cast_isFree]
   · apply free_prod --pick a better name / alias for this
@@ -189,7 +189,7 @@ open PosSemidef
 -- between Eqs. (S77) and (S78)
 
 open scoped HermitianMat in
-theorem LemmaS2liminf {ε3 : Prob} {ε4 : ℝ≥0} (hε4 : 0 < ε4)
+lemma LemmaS2liminf {ε3 : Prob} {ε4 : ℝ≥0} (hε4 : 0 < ε4)
   {d : ℕ → Type*} [∀ n, Fintype (d n)] [∀ n, DecidableEq (d n)] (ρ : (n : ℕ) → MState (d n)) (σ : (n : ℕ) → MState (d n))
   {Rinf : ℝ≥0} (hRinf : Rinf ≥ Filter.atTop.liminf (fun (n : ℕ) ↦ —log β_ ε3(ρ n‖{σ n}) / n))
   :
@@ -257,7 +257,7 @@ theorem LemmaS2liminf {ε3 : Prob} {ε4 : ℝ≥0} (hε4 : 0 < ε4)
   exact (ρ n).exp_val_nonneg ((Real.exp (n * (Rinf + ε4)) • (σ n).M).projLE_nonneg (ρ n).M)
 
 open scoped HermitianMat in
-theorem LemmaS2limsup {ε3 : Prob} {ε4 : ℝ≥0} (hε4 : 0 < ε4)
+lemma LemmaS2limsup {ε3 : Prob} {ε4 : ℝ≥0} (hε4 : 0 < ε4)
   {d : ℕ → Type*} [∀ n, Fintype (d n)] [∀ n, DecidableEq (d n)] (ρ : (n : ℕ) → MState (d n)) (σ : (n : ℕ) → MState (d n))
   {Rsup : ℝ≥0} (hRsup : Rsup ≥ Filter.atTop.limsup (fun (n : ℕ) ↦ —log β_ ε3(ρ n‖{σ n}) / n))
   :
@@ -320,7 +320,7 @@ theorem LemmaS2limsup {ε3 : Prob} {ε4 : ℝ≥0} (hε4 : 0 < ε4)
   rw [HermitianMat.inner_comm, ← MState.exp_val]
   exact (ρ n).exp_val_nonneg ((Real.exp (n * (Rsup + ε4)) • (σ n).M).projLE_nonneg (ρ n))
 
-private theorem LemmaS3_helper {ε : Prob} {d : ℕ → Type*} [∀ n, Fintype (d n)] [∀ n, DecidableEq (d n)]
+private lemma LemmaS3_helper {ε : Prob} {d : ℕ → Type*} [∀ n, Fintype (d n)] [∀ n, DecidableEq (d n)]
   (ρ σ₁ σ₂ : (n : ℕ) → MState (d n))
   (f : ℕ → ℝ≥0) (hσ : ∀ (i : ℕ), Real.exp (-f i) • (σ₂ i).M ≤ (σ₁ i)) (n : ℕ) :
     —log β_ ε(ρ n‖{σ₁ n}) ≤ —log β_ ε(ρ n‖{σ₂ n}) + f n := by
@@ -382,7 +382,7 @@ private theorem LemmaS3_inf {ε : Prob}
       use 1
       finiteness
 
-private theorem LemmaS3_sup {ε : Prob}
+private lemma LemmaS3_sup {ε : Prob}
     {d : ℕ → Type*} [∀ n, Fintype (d n)] [∀ n, DecidableEq (d n)]
     (ρ σ₁ σ₂ : (n : ℕ) → MState (d n))
     (f : ℕ → ℝ≥0) (hf : (f · : ℕ → ℝ) =o[.atTop] (· : ℕ → ℝ))
@@ -718,34 +718,34 @@ section σ₁_c_and_f
 
 variable (i)
 
-private theorem σ₁_pos : (σ₁ i).m.PosDef :=
+private lemma σ₁_pos : (σ₁ i).m.PosDef :=
   (FreeStateTheory.free_fullRank i).choose_spec.left
 
-private theorem σ₁_isFree : IsFree (σ₁ i) :=
+private lemma σ₁_isFree : IsFree (σ₁ i) :=
   (FreeStateTheory.free_fullRank i).choose_spec.right
 
-private theorem mineig_pos : 0 < σ₁_mineig i := by
+private lemma mineig_pos : 0 < σ₁_mineig i := by
   --because σ₁ is PosDef, all eigenvalues are positive, so their minimum is positive
   obtain ⟨i_min, hi_min⟩ := exists_eq_ciInf_of_finite (f := (HermitianMat.H (σ₁ i).M).eigenvalues)
   unfold σ₁_mineig
   rw [← hi_min]
   exact (σ₁_pos i).eigenvalues_pos i_min
 
-private theorem mineig_le_one : σ₁_mineig i ≤ 1 := by
+private lemma mineig_le_one : σ₁_mineig i ≤ 1 := by
     --all eigenvalues of a state are at most 1. (We might not actually need this fact.)
     obtain ⟨i_min, hi_min⟩ := exists_eq_ciInf_of_finite (f := (HermitianMat.H (σ₁ i).M).eigenvalues)
     unfold σ₁_mineig
     rw [← hi_min]
     exact (σ₁ i).eigenvalue_le_one i_min
 
-private theorem σ₁_c_pos (n) : 0 < σ₁_c i n := by
+private lemma σ₁_c_pos (n) : 0 < σ₁_c i n := by
   rw [σ₁_c]
   have h_min_pos := mineig_pos i
   have h_min_le_one := mineig_le_one i
   have h₁ : 0 ≤ Real.log (1 / σ₁_mineig i) := by bound
   positivity
 
-private theorem σ₁_c_div_lim : Filter.atTop.Tendsto (fun n ↦ (σ₁_c i n) / n) (𝓝 0) := by
+private lemma σ₁_c_div_lim : Filter.atTop.Tendsto (fun n ↦ (σ₁_c i n) / n) (𝓝 0) := by
   unfold σ₁_c
   have h_const : Filter.atTop.Tendsto (fun n : ℕ ↦ Real.log (1 / σ₁_mineig i) / n) (𝓝 0) :=
       tendsto_const_nhds.div_atTop tendsto_natCast_atTop_atTop;
@@ -764,7 +764,7 @@ private lemma σ₁_c_identity {n : ℕ} (hn : 0 < n) :
   simp only [Real.exp_add, mul_add, neg_add_rev, mul_assoc, h]
   simp [Real.exp_neg, Real.exp_log, Real.exp_log (mineig_pos i), Real.exp_nat_mul]
 
-theorem σ₁_c_littleO : (fun n : ℕ ↦ σ₁_c i n + Real.log 3) =o[Filter.atTop] (fun x ↦ (x : ℝ)) := by
+lemma σ₁_c_littleO : (fun n : ℕ ↦ σ₁_c i n + Real.log 3) =o[Filter.atTop] (fun x ↦ (x : ℝ)) := by
   apply Asymptotics.IsLittleO.add
   · rw [Asymptotics.isLittleO_iff_tendsto']
     · exact σ₁_c_div_lim i
@@ -800,11 +800,11 @@ private theorem f_le_log (n : ℕ) (lam : ℝ) : f_map i n lam < Real.log lam + 
     field_simp
     rfl
 
-private theorem le_exp_f (n : ℕ) (x : ℝ) (hx : 0 < x) : x ≤ Real.exp (f_map i n x) := by
+private lemma le_exp_f (n : ℕ) (x : ℝ) (hx : 0 < x) : x ≤ Real.exp (f_map i n x) := by
   convert! Real.exp_monotone (log_le_f i n x)
   rw [Real.exp_log hx]
 
-private theorem exp_f_le (n : ℕ) (x : ℝ) (hx : 0 < x) : Real.exp (f_map i n x) < Real.exp (σ₁_c i n) * x := by
+private lemma exp_f_le (n : ℕ) (x : ℝ) (hx : 0 < x) : Real.exp (f_map i n x) < Real.exp (σ₁_c i n) * x := by
   convert! Real.exp_strictMono (f_le_log i n x) using 1
   rw [Real.exp_add (Real.log x), Real.exp_log hx, mul_comm]
 
@@ -813,35 +813,35 @@ end σ₁_c_and_f
 variable (ρ : MState (H i)) (ε : Prob)
 variable (m : ℕ) (σ : (n : ℕ) → IsFree (i := i ^ n)) (n : ℕ)
 
-private theorem «σ̃_isFree» : IsFree («σ̃» m σ n) :=
+private lemma «σ̃_isFree» : IsFree («σ̃» m σ n) :=
   Lemma6_σn_IsFree (σ₁_isFree i) (fun n ↦ (σ n).2) m n
 
-private theorem «σ⋆_free» : IsFree («σ⋆» ρ ε n) :=
+private lemma «σ⋆_free» : IsFree («σ⋆» ρ ε n) :=
   haveI σ_max_exists (n : ℕ) := IsCompact_IsFree.exists_isMaxOn Set.Nonempty.of_subtype
       (f := fun σ ↦ β_ ε(ρ ⊗ᵣ^[n]‖{σ})) (hf := Continuous.continuousOn (by fun_prop))
   (σ_max_exists n).choose_spec.left
 
-private theorem «σ⋆_max» :
+private lemma «σ⋆_max» :
     IsMaxOn (fun σ ↦ β_ ε(ρ ⊗ᵣ^[n]‖{σ})) IsFree («σ⋆» ρ ε n) :=
   haveI σ_max_exists (n : ℕ) := IsCompact_IsFree.exists_isMaxOn Set.Nonempty.of_subtype
       (f := fun σ ↦ β_ ε(ρ ⊗ᵣ^[n]‖{σ})) (hf := Continuous.continuousOn (by fun_prop))
   (σ_max_exists n).choose_spec.right
 
-private theorem σ'_free : IsFree (σ' ρ ε m σ n) := by
+private lemma σ'_free : IsFree (σ' ρ ε m σ n) := by
   -- by convexity of `IsFree` and that the three constituents are free
   unfold σ'
   apply IsFree.mix
   · exact («σ̃_isFree» m σ n).mix («σ⋆_free» ρ ε n) _
   · exact (σ₁_isFree i).npow n
 
-private theorem σ'_posdef : (σ' ρ ε m σ n).m.PosDef := by
+private lemma σ'_posdef : (σ' ρ ε m σ n).m.PosDef := by
   --because σ₁ is PosDef, so is σ₁⊗^[n], and so is any convex mixture.
   unfold σ'
   apply MState.PosDef_mix_of_ne_one
   · apply UnitalPretheory.PosDef.npow (σ₁_pos i)
   · norm_num [← Prob.ne_iff]
 
-private theorem hσ'n_eq_sum_third : (σ' ρ ε m σ n).M =
+private lemma hσ'n_eq_sum_third : (σ' ρ ε m σ n).M =
     (1 / 3 : ℝ) • («σ̃» m σ n) + (1 / 3 : ℝ) • («σ⋆» ρ ε n) + (1 / 3 : ℝ) • ((σ₁ i) ⊗ᵣ^[n]) := by
   unfold σ'
   change _ • _ + _ = _
@@ -851,21 +851,21 @@ private theorem hσ'n_eq_sum_third : (σ' ρ ε m σ n).M =
   dsimp [Mixable.to_U]
   norm_num only [one_div, Prob.coe_one_minus, smul_add, smul_smul]
 
-private theorem hσ₁_le_σ' : (1 / 3 : ℝ) • ((σ₁ i) ⊗ᵣ^[n]).M ≤ (σ' ρ ε m σ n).M := by
+private lemma hσ₁_le_σ' : (1 / 3 : ℝ) • ((σ₁ i) ⊗ᵣ^[n]).M ≤ (σ' ρ ε m σ n).M := by
     rw [hσ'n_eq_sum_third]
     apply le_add_of_nonneg_left
     have := («σ⋆» ρ ε n).nonneg
     have := («σ̃» m σ n).nonneg
     positivity
 
-private theorem σ''_unnormalized_PosDef : Matrix.PosDef (σ''_unnormalized ρ ε m σ n).mat := by
+private lemma σ''_unnormalized_PosDef : Matrix.PosDef (σ''_unnormalized ρ ε m σ n).mat := by
   dsimp [σ''_unnormalized]
   rw [HermitianMat.cfc_posDef]
   intro
   positivity
 
 set_option backward.isDefEq.respectTransparency false in
-private theorem σ''_tr_bounds : 1 ≤ (σ''_unnormalized ρ ε m σ n).trace ∧
+private lemma σ''_tr_bounds : 1 ≤ (σ''_unnormalized ρ ε m σ n).trace ∧
     (σ''_unnormalized ρ ε m σ n).trace < Real.exp (σ₁_c i n) := by
   have hσ' := (σ' ρ ε m σ n).tr
   constructor
@@ -953,7 +953,7 @@ private lemma σ''_le_σ' (n) : σ'' ρ ε m σ n ≤ Real.exp (σ₁_c i n) •
     suffices 0 ≤ 1 - x⁻¹ by positivity
     simpa using inv_le_one_of_one_le₀ (σ''_tr_bounds ρ ε m σ n).left
 
-private theorem «σ''_ge_σ⋆» n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i n) / 3) • («σ⋆» ρ ε n).M := by
+private lemma «σ''_ge_σ⋆» n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i n) / 3) • («σ⋆» ρ ε n).M := by
     grw [ge_iff_le, ← σ'_le_σ'', div_eq_mul_inv, ← smul_smul, ← one_div]
     rw [smul_le_smul_iff_of_pos_left (by positivity), hσ'n_eq_sum_third]
     apply le_add_of_le_of_nonneg
@@ -963,7 +963,7 @@ private theorem «σ''_ge_σ⋆» n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c 
     · have := ((σ₁ i) ⊗ᵣ^[n]).nonneg
       positivity
 
-private theorem «σ''_ge_σ̃» n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i n) / 3) • («σ̃» m σ n).M := by
+private lemma «σ''_ge_σ̃» n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i n) / 3) • («σ̃» m σ n).M := by
     grw [ge_iff_le, ← σ'_le_σ'', div_eq_mul_inv, ← smul_smul, ← one_div]
     rw [smul_le_smul_iff_of_pos_left (by positivity), hσ'n_eq_sum_third]
     apply le_add_of_le_of_nonneg
@@ -973,7 +973,7 @@ private theorem «σ''_ge_σ̃» n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i
     · have := ((σ₁ i) ⊗ᵣ^[n]).nonneg
       positivity
 
-private theorem σ''_ge_σ₁ n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i n) / 3) • ((σ₁ i) ⊗ᵣ^[n]).M := by
+private lemma σ''_ge_σ₁ n : σ'' ρ ε m σ n ≥ (Real.exp (-σ₁_c i n) / 3) • ((σ₁ i) ⊗ᵣ^[n]).M := by
     grw [ge_iff_le, ← σ'_le_σ'', div_eq_mul_inv, ← smul_smul, ← one_div]
     rw [smul_le_smul_iff_of_pos_left (by positivity)]
     exact hσ₁_le_σ' ρ ε m σ n
@@ -982,7 +982,7 @@ private abbrev ε₀_func (ε' : Prob) : ℝ := (R2 ρ σ - R1 ρ ε).toReal * (
 
 end sigmas
 
-private theorem EquationS88 (ρ : MState (H i)) (σ : (n : ℕ) → ↑IsFree) {ε ε' : Prob}
+private lemma EquationS88 (ρ : MState (H i)) (σ : (n : ℕ) → ↑IsFree) {ε ε' : Prob}
   (hR1R2 : R1 ρ ε < R2 ρ σ) (hR1 : R1 ρ ε ≠ ⊤) (hR2 : R2 ρ σ ≠ ⊤) (hε₀_1 : 0 < ε₀_func ρ ε σ ε') (m : ℕ)
   :
   let ℰ := fun n => pinching_map (σ'' ρ ε m σ n);
@@ -1090,7 +1090,7 @@ private theorem EquationS88 (ρ : MState (H i)) (σ : (n : ℕ) → ↑IsFree) {
 
 set_option maxHeartbeats 1000000 in
 set_option backward.isDefEq.respectTransparency false in
-private theorem EquationS62
+private lemma EquationS62
     (ρ : MState (H i)) (σ : (n : ℕ) → IsFree (i := i ^ n))
     {ε ε' : Prob} (hε'₁ : 0 < ε') (hε'₂ : ε' < ε) (hε : ε < 1)
     (hR1R2 : R1 ρ ε < R2 ρ σ) (hR1 : R1 ρ ε ≠ ⊤) (hR2 : R2 ρ σ ≠ ⊤)

@@ -33,13 +33,13 @@ variable {d : Type*} [Fintype d] [DecidableEq d]
 def pinching_kraus (ρ : MState d) : spectrum ℝ ρ.m → HermitianMat d ℂ :=
   fun x ↦ ρ.M.cfc (fun y ↦ if y = x then 1 else 0)
 
-theorem pinching_kraus_commutes (ρ : MState d) (i : spectrum ℝ ρ.m) :
+lemma pinching_kraus_commutes (ρ : MState d) (i : spectrum ℝ ρ.m) :
     Commute (pinching_kraus ρ i).mat ρ.m := by
   rw [MState.m, ← ρ.M.cfc_id, commute_iff_eq, pinching_kraus]
   rw [← ρ.M.mat_cfc_mul, ← ρ.M.mat_cfc_mul]
   congr 2; ext; simp
 
-theorem pinching_kraus_mul_self (ρ : MState d) (i : spectrum ℝ ρ.m) :
+lemma pinching_kraus_mul_self (ρ : MState d) (i : spectrum ℝ ρ.m) :
     (pinching_kraus ρ i).mat * ρ.m = i.val • pinching_kraus ρ i := by
   dsimp [MState.m]
   nth_rw 1 [← ρ.M.cfc_id]
@@ -52,7 +52,7 @@ theorem pinching_kraus_mul_self (ρ : MState d) (i : spectrum ℝ ρ.m) :
 instance finite_spectrum_inst (ρ : MState d) : Fintype (spectrum ℝ ρ.m) :=
   Fintype.ofFinite (spectrum ℝ ρ.m)
 
-theorem pinching_kraus_orthogonal (ρ : MState d) {i j : spectrum ℝ ρ.m} (h : i ≠ j) :
+lemma pinching_kraus_orthogonal (ρ : MState d) {i j : spectrum ℝ ρ.m} (h : i ≠ j) :
     (pinching_kraus ρ i).mat * (pinching_kraus ρ j).mat = 0 := by
   convert! (HermitianMat.mat_cfc_mul ρ.M _ _).symm
   convert! congr($((ρ.M.cfc_const 0).symm).mat)
@@ -76,7 +76,7 @@ theorem pinching_kraus_ortho (ρ : MState d) (i j : spectrum ℝ ρ.m) :
   · exact pinching_kraus_orthogonal ρ hij
 
 set_option backward.isDefEq.respectTransparency false in
-theorem pinching_sum (ρ : MState d) : ∑ k, pinching_kraus ρ k = 1 := by
+lemma pinching_sum (ρ : MState d) : ∑ k, pinching_kraus ρ k = 1 := by
   ext i j
   simp only [pinching_kraus, HermitianMat.cfc]
   have heq : Set.EqOn (fun x => ∑ i : spectrum ℝ ρ.m, if x = ↑i then (1 : ℝ) else 0) 1 (spectrum ℝ ρ.m) := by
@@ -99,17 +99,17 @@ def pinching_map (ρ : MState d) : CPTPMap d d ℂ :=
   simp [pinching_sum]
   )
 
-theorem pinchingMap_apply_M (σ ρ : MState d) : (pinching_map σ ρ).M =
+lemma pinchingMap_apply_M (σ ρ : MState d) : (pinching_map σ ρ).M =
   ⟨_, (MatrixMap.of_kraus_isCompletelyPositive
     (HermitianMat.mat ∘ pinching_kraus σ)).IsPositive.IsHermitianPreserving ρ.M.H⟩ := by
   rfl
 
-theorem pinching_eq_sum_conj (σ ρ : MState d) : (pinching_map σ ρ).M =
+lemma pinching_eq_sum_conj (σ ρ : MState d) : (pinching_map σ ρ).M =
     ∑ k, (pinching_kraus σ k).mat * ρ.M * (pinching_kraus σ k).mat := by
   rw [pinchingMap_apply_M]
   simp [MatrixMap.of_kraus, Matrix.mul_assoc]
 
-theorem pinching_commutes_kraus (σ ρ : MState d) (i : spectrum ℝ σ.m) :
+lemma pinching_commutes_kraus (σ ρ : MState d) (i : spectrum ℝ σ.m) :
     Commute (pinching_map σ ρ).m (pinching_kraus σ i).mat := by
   have h_expand := pinching_eq_sum_conj σ ρ
   simp only [MState.mat_M] at h_expand
@@ -120,7 +120,7 @@ theorem pinching_commutes_kraus (σ ρ : MState d) (i : spectrum ℝ σ.m) :
   by_cases h : x = i <;> simp [ h, ← mul_assoc, pinching_kraus_ortho ];
   grind
 
-theorem pinching_commutes (ρ σ : MState d) :
+lemma pinching_commutes (ρ σ : MState d) :
     Commute (pinching_map σ ρ).m σ.m := by
   dsimp [MState.m, Commute, SemiconjBy]
   rw [pinchingMap_apply_M]
@@ -138,7 +138,7 @@ theorem pinching_commutes (ρ σ : MState d) :
   simp
 
 @[simp]
-theorem pinching_self (ρ : MState d) : pinching_map ρ ρ = ρ := by
+lemma pinching_self (ρ : MState d) : pinching_map ρ ρ = ρ := by
   ext1
   rw [pinchingMap_apply_M]
   simp only [MatrixMap.of_kraus, Function.comp_apply]
@@ -232,7 +232,7 @@ theorem pinching_bound (ρ σ : MState d) : ρ.M ≤ (↑(Fintype.card (spectrum
     · exact h_mul x x
 
 open ComplexOrder in
-theorem ker_le_ker_pinching_of_PosDef (ρ σ : MState d) (hpos : σ.m.PosDef) : σ.M.ker ≤ (pinching_map σ ρ).M.ker := by
+lemma ker_le_ker_pinching_of_PosDef (ρ σ : MState d) (hpos : σ.m.PosDef) : σ.M.ker ≤ (pinching_map σ ρ).M.ker := by
   have h_ker : σ.M.ker = ⊥ := by
     have := hpos.toLin_ker_eq_bot
     simp [LinearMap.ker_eq_bot', HermitianMat.ker] at this ⊢
@@ -241,7 +241,7 @@ theorem ker_le_ker_pinching_of_PosDef (ρ σ : MState d) (hpos : σ.m.PosDef) : 
   rw [h_ker]
   exact bot_le
 
-theorem pinching_idempotent (ρ σ : MState d) :
+lemma pinching_idempotent (ρ σ : MState d) :
     (pinching_map σ) (pinching_map σ ρ) = (pinching_map σ ρ) := by
   rw [MState.ext_iff]
   have h_idempotent : (∑ k, (pinching_kraus σ k).mat * (∑ l, (pinching_kraus σ l).mat * ρ.M * (pinching_kraus σ l).mat) * (pinching_kraus σ k).mat) = (∑ k, (pinching_kraus σ k).mat * ρ.M * (pinching_kraus σ k).mat) := by
@@ -251,7 +251,7 @@ theorem pinching_idempotent (ρ σ : MState d) :
   grind [pinching_eq_sum_conj]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem inner_cfc_pinching (ρ σ : MState d) (f : ℝ → ℝ) :
+lemma inner_cfc_pinching (ρ σ : MState d) (f : ℝ → ℝ) :
     ⟪ρ.M, (pinching_map σ ρ).M.cfc f⟫ = ⟪(pinching_map σ ρ).M, (pinching_map σ ρ).M.cfc f⟫ := by
   nth_rw 2 [pinchingMap_apply_M]
   rw [HermitianMat.inner_eq_re_trace, HermitianMat.inner_eq_re_trace]
@@ -277,7 +277,7 @@ theorem inner_cfc_pinching (ρ σ : MState d) (f : ℝ → ℝ) :
   convert! congr($(pinching_sum σ).mat)
   simp
 
-theorem inner_cfc_pinching_right (ρ σ : MState d) (f : ℝ → ℝ) :
+lemma inner_cfc_pinching_right (ρ σ : MState d) (f : ℝ → ℝ) :
     ⟪(pinching_map σ ρ).M, σ.M.cfc f⟫ = ⟪ρ.M, σ.M.cfc f⟫ := by
   --TODO Cleanup
   -- By definition of pinching_map, we have pinching_map σ ρ = ∑ k, (pinching_kraus σ k).toMat * ρ.toMat * (pinching_kraus σ k).toMat.
@@ -306,12 +306,12 @@ theorem inner_cfc_pinching_right (ρ σ : MState d) (f : ℝ → ℝ) :
   · simp [ Matrix.trace ]
 
 open ComplexOrder in
-theorem pinching_map_eq_sum_conj_hermitian (σ ρ : MState d) :
+lemma pinching_map_eq_sum_conj_hermitian (σ ρ : MState d) :
     (pinching_map σ ρ).M = ∑ k, ρ.M.conj (pinching_kraus σ k).mat := by
   ext1
   simp [pinching_eq_sum_conj σ ρ]
 
-theorem pinching_map_ker_le (ρ σ : MState d) : (pinching_map σ ρ).M.ker ≤ ρ.M.ker := by
+lemma pinching_map_ker_le (ρ σ : MState d) : (pinching_map σ ρ).M.ker ≤ ρ.M.ker := by
   have h_ker_sum : (∑ k, ρ.M.conj (pinching_kraus σ k).mat).ker = ⨅ k, (ρ.M.conj (pinching_kraus σ k).mat).ker := by
     apply HermitianMat.ker_sum
     exact fun i ↦ HermitianMat.conj_nonneg (pinching_kraus σ i).mat ρ.nonneg
@@ -335,7 +335,7 @@ noncomputable section AristotleLemmas
 /-
 If v is in the kernel of σ, then for any non-zero eigenvalue k, the projection of v onto the k-eigenspace is 0.
 -/
-theorem pinching_kraus_ker_of_ne_zero {d : Type*} [Fintype d] [DecidableEq d]
+lemma pinching_kraus_ker_of_ne_zero {d : Type*} [Fintype d] [DecidableEq d]
     (σ : MState d) (v : d → ℂ) (hv : σ.m.mulVec v = 0)
     (k : spectrum ℝ σ.m) (hk : k.val ≠ 0) :
     (pinching_kraus σ k).mat *ᵥ v = 0 := by
@@ -353,7 +353,7 @@ theorem pinching_kraus_ker_of_ne_zero {d : Type*} [Fintype d] [DecidableEq d]
 
 end AristotleLemmas
 
-theorem ker_le_ker_pinching_map_ker (ρ σ : MState d) (h : σ.M.ker ≤ ρ.M.ker) :
+lemma ker_le_ker_pinching_map_ker (ρ σ : MState d) (h : σ.M.ker ≤ ρ.M.ker) :
     σ.M.ker ≤ (pinching_map σ ρ).M.ker := by
   --TODO Cleanup
   intro v hv;

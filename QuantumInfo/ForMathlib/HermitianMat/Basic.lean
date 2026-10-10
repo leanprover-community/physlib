@@ -27,7 +27,7 @@ section addgroup
 
 variable [AddGroup α] [StarAddMonoid α]
 
-theorem eq_IsHermitian : HermitianMat n α  = { m : Matrix n n α // m.IsHermitian} := by
+lemma eq_IsHermitian : HermitianMat n α  = { m : Matrix n n α // m.IsHermitian} := by
   rfl
 
 @[coe] def mat : HermitianMat n α → Matrix n n α :=
@@ -36,15 +36,15 @@ theorem eq_IsHermitian : HermitianMat n α  = { m : Matrix n n α // m.IsHermiti
 instance : Coe (HermitianMat n α) (Matrix n n α) := ⟨mat⟩
 
 @[simp]
-theorem val_eq_coe (A : HermitianMat n α) : A.val = A := by
+lemma val_eq_coe (A : HermitianMat n α) : A.val = A := by
   rfl
 
 @[simp]
-theorem mat_mk (x : Matrix n n α) (h) : mat ⟨x, h⟩ = x := by
+lemma mat_mk (x : Matrix n n α) (h) : mat ⟨x, h⟩ = x := by
   rfl
 
 @[simp]
-theorem mk_mat {A : HermitianMat n α} (h : A.mat.IsHermitian) : ⟨A.mat, h⟩ = A := by
+lemma mk_mat {A : HermitianMat n α} (h : A.mat.IsHermitian) : ⟨A.mat, h⟩ = A := by
   rfl
 
 /-- Alias for HermitianMat.property or HermitianMat.2, this gets the fact that the value
@@ -52,7 +52,7 @@ theorem mk_mat {A : HermitianMat n α} (h : A.mat.IsHermitian) : ⟨A.mat, h⟩ 
 theorem H (A : HermitianMat n α) : A.mat.IsHermitian :=
   A.2
 
-@[ext] protected theorem ext {A B : HermitianMat n α} : A.mat = B.mat → A = B :=
+@[ext] protected lemma ext {A B : HermitianMat n α} : A.mat = B.mat → A = B :=
   Subtype.ext
 
 instance instFun : FunLike (HermitianMat n α) n (n → α) where
@@ -60,11 +60,11 @@ instance instFun : FunLike (HermitianMat n α) n (n → α) where
   coe_injective _ _ h := HermitianMat.ext h
 
 @[simp]
-theorem mat_apply {A : HermitianMat n α} {i j : n} : A.mat i j = A i j := by
+lemma mat_apply {A : HermitianMat n α} {i j : n} : A.mat i j = A i j := by
   rfl
 
 @[simp]
-theorem conjTranspose_mat (A : HermitianMat n α) :
+lemma conjTranspose_mat (A : HermitianMat n α) :
     A.mat.conjTranspose = A.mat :=
   A.H
 
@@ -76,29 +76,29 @@ instance [IsEmpty n] : Unique (HermitianMat n α) where
   uniq a := by ext; exact (IsEmpty.false ‹_›).elim
 
 @[simp, norm_cast]
-theorem mat_zero : (0 : HermitianMat n α).mat = 0 := by
+lemma mat_zero : (0 : HermitianMat n α).mat = 0 := by
   rfl
 
 @[simp]
-theorem mk_zero (h : (0 : Matrix n n α).IsHermitian) : ⟨0, h⟩ = (0 : HermitianMat n α) := by
+lemma mk_zero (h : (0 : Matrix n n α).IsHermitian) : ⟨0, h⟩ = (0 : HermitianMat n α) := by
   rfl
 
 @[simp]
-theorem zero_apply (i j : n) : (0 : HermitianMat n 𝕜) i j = 0 := by
+lemma zero_apply (i j : n) : (0 : HermitianMat n 𝕜) i j = 0 := by
   rfl
 
 @[simp, norm_cast]
-theorem mat_add (A B : HermitianMat n α) :
+lemma mat_add (A B : HermitianMat n α) :
     (A + B).mat = A.mat + B.mat := by
   rfl
 
 @[simp, norm_cast]
-theorem mat_sub (A B : HermitianMat n α) :
+lemma mat_sub (A B : HermitianMat n α) :
     (A - B).mat = A.mat - B.mat := by
   rfl
 
 @[simp, norm_cast]
-theorem mat_neg (A : HermitianMat n α) :
+lemma mat_neg (A : HermitianMat n α) :
     (-A).mat = -A.mat := by
   rfl
 
@@ -109,12 +109,12 @@ instance : SMul R (HermitianMat n α) :=
   ⟨fun c A ↦ ⟨c • A.mat, (IsSelfAdjoint.all _).smul A.H⟩⟩
 
 @[simp, norm_cast]
-theorem mat_smul (c : R) (A : HermitianMat n α) :
+lemma mat_smul (c : R) (A : HermitianMat n α) :
     (c • A).mat = c • A.mat := by
   rfl
 
 @[simp]
-theorem smul_apply (c : R) (A : HermitianMat n α) (i j : n) :
+lemma smul_apply (c : R) (A : HermitianMat n α) (i j : n) :
     (c • A) i j = c • A i j := by
   rfl
 end smul
@@ -129,7 +129,7 @@ instance : TopologicalSpace (HermitianMat n α) :=
 it will look through and see that `HermitianMat.mat` is `Subtype.val` *here*, but not in downstream
 applications of the tactic. -/
 @[fun_prop]
-theorem continuous_mat : Continuous (HermitianMat.mat : HermitianMat n α → Matrix n n α) := by
+lemma continuous_mat : Continuous (HermitianMat.mat : HermitianMat n α → Matrix n n α) := by
   fun_prop
 
 lemma continuousOn_iff_coe {X : Type*} [TopologicalSpace X] {s : Set X}
@@ -189,7 +189,7 @@ instance : AddCommGroup (HermitianMat n α) :=
   AddSubgroup.toAddCommGroup _
 
 @[simp, norm_cast]
-theorem mat_finset_sum (f : ι → HermitianMat n α) (s : Finset ι) :
+lemma mat_finset_sum (f : ι → HermitianMat n α) (s : Finset ι) :
     (∑ i ∈ s, f i).mat = ∑ i ∈ s, (f i).mat := by
   apply AddSubgroup.val_finsetSum
 
@@ -222,15 +222,15 @@ instance : One (HermitianMat n α) :=
       Matrix.one_apply, apply_ite (β := α), eq_comm]⟩
 
 @[simp, norm_cast]
-theorem mat_one : (1 : HermitianMat n α).mat = 1 := by
+lemma mat_one : (1 : HermitianMat n α).mat = 1 := by
   rfl
 
 @[simp]
-theorem mk_one (h : (1 : Matrix n n α).IsHermitian) : ⟨1, h⟩ = (1 : HermitianMat n α) := by
+lemma mk_one (h : (1 : Matrix n n α).IsHermitian) : ⟨1, h⟩ = (1 : HermitianMat n α) := by
   rfl
 
 @[simp]
-theorem one_apply (i j : n) : (1 : HermitianMat n α) i j = (1 : Matrix n n α) i j := by
+lemma one_apply (i j : n) : (1 : HermitianMat n α) i j = (1 : Matrix n n α) i j := by
   rfl
 
 noncomputable instance : AddCommMonoidWithOne (HermitianMat n 𝕜) where
@@ -250,82 +250,82 @@ noncomputable instance instInv : Inv (HermitianMat m α) :=
   ⟨fun x ↦ ⟨x⁻¹, x.H.inv⟩⟩
 
 @[simp, norm_cast]
-theorem mat_inv : (A⁻¹).mat = A.mat⁻¹ := by
+lemma mat_inv : (A⁻¹).mat = A.mat⁻¹ := by
   rfl
 
 @[simp]
-theorem zero_inv : ((0 : HermitianMat m α)⁻¹) = 0 := by
+lemma zero_inv : ((0 : HermitianMat m α)⁻¹) = 0 := by
   ext1; simp
 
 @[simp]
-theorem one_inv : ((1 : HermitianMat m α)⁻¹) = 1 := by
+lemma one_inv : ((1 : HermitianMat m α)⁻¹) = 1 := by
   ext1; simp
 
 noncomputable instance instPow : Pow (HermitianMat m α) ℕ :=
   ⟨fun x n ↦ ⟨x ^ n, x.H.pow n⟩⟩
 
 @[simp, norm_cast]
-theorem mat_pow (n : ℕ) : (A ^ n).mat = A.mat ^ n := by
+lemma mat_pow (n : ℕ) : (A ^ n).mat = A.mat ^ n := by
   rfl
 
 @[simp]
-theorem pow_zero : A ^ 0 = 1 := by
+lemma pow_zero : A ^ 0 = 1 := by
   ext1; simp
 
 @[simp]
-theorem zero_pow (hn : n ≠ 0): (0 : HermitianMat m α) ^ n = 0 := by
+lemma zero_pow (hn : n ≠ 0): (0 : HermitianMat m α) ^ n = 0 := by
   ext1; simp [hn]
 
 @[simp]
-theorem one_pow : ((1 : HermitianMat m α) ^ n) = 1 := by
+lemma one_pow : ((1 : HermitianMat m α) ^ n) = 1 := by
   ext1; simp
 
 noncomputable instance instZPow : Pow (HermitianMat m α) ℤ :=
   ⟨fun x z ↦ ⟨x ^ z, x.H.zpow z⟩⟩
 
 @[simp]
-theorem mat_zpow (z : ℤ) : (A ^ z).mat = A.mat ^ z := by
+lemma mat_zpow (z : ℤ) : (A ^ z).mat = A.mat ^ z := by
   rfl
 
 @[simp, norm_cast]
-theorem zpow_natCast : A ^ (n : ℤ) = A ^ n := by
+lemma zpow_natCast : A ^ (n : ℤ) = A ^ n := by
   rfl
 
 @[simp]
-theorem zpow_zero : A ^ (0 : ℤ) = 1 := by
+lemma zpow_zero : A ^ (0 : ℤ) = 1 := by
   ext1; simp
 
 @[simp]
-theorem zpow_one : A ^ (1 : ℤ) = A := by
+lemma zpow_one : A ^ (1 : ℤ) = A := by
   ext1; simp
 
 @[simp]
-theorem one_zpow : ((1 : HermitianMat m α) ^ z) = 1 := by
+lemma one_zpow : ((1 : HermitianMat m α) ^ z) = 1 := by
   ext1; simp
 
 @[simp]
-theorem zpow_neg_one : A ^ (-1 : ℤ) = A⁻¹ := by
+lemma zpow_neg_one : A ^ (-1 : ℤ) = A⁻¹ := by
   ext1; exact A.mat.zpow_neg_one
 
 @[simp]
-theorem inv_zpow : A⁻¹ ^ z = (A ^ z)⁻¹ := by
+lemma inv_zpow : A⁻¹ ^ z = (A ^ z)⁻¹ := by
   ext1; exact A.mat.inv_zpow z
 
 add_aesop_rules safe norm (rule_sets := [Commutes])
   [mat_zero, mat_one, mat_smul, mat_add, mat_sub, mat_neg, mat_pow, mat_zpow, mat_inv]
 
 @[aesop safe apply (rule_sets := [Commutes])]
-theorem _root_.Matrix.inv_commute {α : Type*} {A : Matrix m m α} [CommRing α] : Commute A⁻¹ A := by
+lemma _root_.Matrix.inv_commute {α : Type*} {A : Matrix m m α} [CommRing α] : Commute A⁻¹ A := by
   rcases A.nonsing_inv_cancel_or_zero with h | h
   · simp [Commute, SemiconjBy, h]
   . simp [h]
 
 @[aesop safe apply (rule_sets := [Commutes])]
-theorem commute_inv_self : Commute A⁻¹.mat A.mat := by
+lemma commute_inv_self : Commute A⁻¹.mat A.mat := by
   commutes
 
 @[aesop safe apply (rule_sets := [Commutes])]
-theorem commute_self_inv : Commute A.mat A⁻¹.mat := by
+lemma commute_self_inv : Commute A.mat A⁻¹.mat := by
   commutes
 
 end commring
@@ -336,13 +336,13 @@ instance FiniteDimensional : FiniteDimensional ℝ (HermitianMat n 𝕜) :=
   FiniteDimensional.finiteDimensional_submodule (selfAdjoint.submodule ℝ (Matrix n n 𝕜))
 
 @[simp]
-theorem im_diag_eq_zero (A : HermitianMat n 𝕜) (x : n) :
+lemma im_diag_eq_zero (A : HermitianMat n 𝕜) (x : n) :
     RCLike.im (A x x) = 0 := by
   simpa [CharZero.eq_neg_self_iff] using congrArg (RCLike.im <| · x x) A.H.symm
 
 --Repeat it explicitly for Complex.im so that simp can find it
 @[simp]
-theorem complex_im_eq_zero (A : HermitianMat n ℂ) (x : n) :
+lemma complex_im_eq_zero (A : HermitianMat n ℂ) (x : n) :
     (A x x).im = 0 :=
   A.im_diag_eq_zero x
 
@@ -370,16 +370,16 @@ def conj {m} (B : Matrix m n α) : HermitianMat n α →+ HermitianMat m α wher
   map_add' _ _ := by ext1; simp [Matrix.mul_add, Matrix.add_mul]
   map_zero' := by simp
 
-theorem conj_apply (B : Matrix m n α) (A : HermitianMat n α) :
+lemma conj_apply (B : Matrix m n α) (A : HermitianMat n α) :
     conj B A = ⟨B * A.mat * B.conjTranspose, (conj B A).2⟩ := by
   rfl
 
 @[simp]
-theorem conj_apply_mat (B : Matrix m n α) (A : HermitianMat n α) :
+lemma conj_apply_mat (B : Matrix m n α) (A : HermitianMat n α) :
     (A.conj B).mat = B * A.mat * B.conjTranspose := by
   rfl
 
-theorem conj_conj {m l} [Fintype m] (B : Matrix m n α) (C : Matrix l m α) :
+lemma conj_conj {m l} [Fintype m] (B : Matrix m n α) (C : Matrix l m α) :
     (A.conj B).conj C = A.conj (C * B) := by
   ext1
   simp [Matrix.conjTranspose_mul, Matrix.mul_assoc]
@@ -388,12 +388,12 @@ variable (B : HermitianMat n α)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem conj_zero [DecidableEq n] : A.conj (0 : Matrix m n α) = 0 := by
+lemma conj_zero [DecidableEq n] : A.conj (0 : Matrix m n α) = 0 := by
   simp [conj_apply]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem conj_one [DecidableEq n] : A.conj 1 = A := by
+lemma conj_one [DecidableEq n] : A.conj 1 = A := by
   simp [conj_apply]
 
 @[simp]
@@ -413,7 +413,7 @@ def conjLinear {m} (B : Matrix m n α) : HermitianMat n α →ₗ[R] HermitianMa
     simp
 
 @[simp]
-theorem conjLinear_apply (B : Matrix m n α) : conjLinear R B A = conj B A  := by
+lemma conjLinear_apply (B : Matrix m n α) : conjLinear R B A = conj B A  := by
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
@@ -438,15 +438,15 @@ noncomputable def lin : EuclideanSpace 𝕜 n →L[𝕜] EuclideanSpace 𝕜 n w
   cont := LinearMap.continuous_of_finiteDimensional _
 
 @[simp]
-theorem isSymmetric : A.lin.IsSymmetric :=
+lemma isSymmetric : A.lin.IsSymmetric :=
   Matrix.isSymmetric_toEuclideanLin_iff.symm.mp A.H
 
 @[simp]
-theorem lin_zero : (0 : HermitianMat n 𝕜).lin = 0 := by
+lemma lin_zero : (0 : HermitianMat n 𝕜).lin = 0 := by
   simp [lin]; rfl
 
 @[simp]
-theorem lin_one : (1 : HermitianMat n 𝕜).lin = 1 := by
+lemma lin_one : (1 : HermitianMat n 𝕜).lin = 1 := by
   simp [lin]; rfl
 
 noncomputable def eigenspace (μ : 𝕜) : Submodule 𝕜 (EuclideanSpace 𝕜 n) :=
@@ -457,7 +457,7 @@ noncomputable def eigenspace (μ : 𝕜) : Submodule 𝕜 (EuclideanSpace 𝕜 n
 noncomputable def ker : Submodule 𝕜 (EuclideanSpace 𝕜 n) :=
   LinearMap.ker A.lin.toLinearMap
 
-theorem mem_ker_iff_mulVec_zero (x : EuclideanSpace 𝕜 n) : x ∈ A.ker ↔ A.mat.mulVec x = 0 := by
+lemma mem_ker_iff_mulVec_zero (x : EuclideanSpace 𝕜 n) : x ∈ A.ker ↔ A.mat.mulVec x = 0 := by
   simp [ker, LinearMap.mem_ker, lin, Matrix.toLpLin_apply]
 
 /-- The kernel of a Hermitian matrix is its zero eigenspace. -/
@@ -466,14 +466,14 @@ theorem ker_eq_eigenspace_zero : A.ker = A.eigenspace 0 := by
   simp [ker, eigenspace]
 
 @[simp]
-theorem ker_zero : (0 : HermitianMat n 𝕜).ker = ⊤ := by
+lemma ker_zero : (0 : HermitianMat n 𝕜).ker = ⊤ := by
   simp [ker]
 
 @[simp]
-theorem ker_one : (1 : HermitianMat n 𝕜).ker = ⊥ := by
+lemma ker_one : (1 : HermitianMat n 𝕜).ker = ⊥ := by
   simp [ker]; rfl
 
-theorem ker_pos_smul {c : ℝ} (hc : c ≠ 0) : (c • A).ker = A.ker := by
+lemma ker_pos_smul {c : ℝ} (hc : c ≠ 0) : (c • A).ker = A.ker := by
   ext x
   simp [mem_ker_iff_mulVec_zero, Matrix.smul_mulVec, hc]
 
@@ -487,21 +487,21 @@ theorem support_eq_sup_eigenspace_nonzero : A.support = ⨆ μ ≠ 0, A.eigenspa
   exact A.lin.support_eq_sup_eigenspace_nonzero A.isSymmetric
 
 @[simp]
-theorem support_zero : (0 : HermitianMat n 𝕜).support = ⊥ := by
+lemma support_zero : (0 : HermitianMat n 𝕜).support = ⊥ := by
   simp [support]
 
 @[simp]
-theorem support_one : (1 : HermitianMat n 𝕜).support = ⊤ := by
+lemma support_one : (1 : HermitianMat n 𝕜).support = ⊤ := by
   simpa [support] using LinearMap.ker_eq_bot_iff_range_eq_top.mp rfl
 
 @[simp]
-theorem ker_orthogonal_eq_support : A.kerᗮ = A.support := by
+lemma ker_orthogonal_eq_support : A.kerᗮ = A.support := by
   rw [ker, support]
   convert ContinuousLinearMap.orthogonal_ker A.lin
   simp
 
 @[simp]
-theorem support_orthogonal_eq_range : A.supportᗮ = A.ker := by
+lemma support_orthogonal_eq_range : A.supportᗮ = A.ker := by
   rw [ker, support]
   convert! ContinuousLinearMap.orthogonal_range A.lin
   simp
@@ -520,15 +520,15 @@ def diagonal (f : n → ℝ) : HermitianMat n 𝕜 :=
 variable (f g : n → ℝ)
 
 @[simp]
-theorem diagonal_mat : (diagonal 𝕜 f).mat = Matrix.diagonal (f · : n → 𝕜) := by
+lemma diagonal_mat : (diagonal 𝕜 f).mat = Matrix.diagonal (f · : n → 𝕜) := by
   rfl
 
 @[simp]
-theorem diagonal_zero : (diagonal 𝕜 0) = (0 : HermitianMat n 𝕜) := by
+lemma diagonal_zero : (diagonal 𝕜 0) = (0 : HermitianMat n 𝕜) := by
   ext1; simp
 
 @[simp]
-theorem diagonal_one : (diagonal 𝕜 1) = (1 : HermitianMat n 𝕜) := by
+lemma diagonal_one : (diagonal 𝕜 1) = (1 : HermitianMat n 𝕜) := by
   ext; rw [diagonal_mat]; simp
 
 lemma diagonal_add : diagonal 𝕜 (f + g) = diagonal 𝕜 f + diagonal 𝕜 g := by
@@ -540,11 +540,11 @@ lemma diagonal_add_apply : diagonal 𝕜 (fun x ↦ f x + g x) = diagonal 𝕜 f
 lemma diagonal_sub : diagonal 𝕜 (f - g) = diagonal 𝕜 f - diagonal 𝕜 g := by
   ext1; simp
 
-theorem diagonal_mul (c : ℝ) : diagonal 𝕜 (fun x ↦ c * f x) = c • diagonal 𝕜 f := by
+lemma diagonal_mul (c : ℝ) : diagonal 𝕜 (fun x ↦ c * f x) = c • diagonal 𝕜 f := by
   ext1; simp [← Matrix.diagonal_smul]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem diagonal_conj_diagonal [Fintype n] :
+lemma diagonal_conj_diagonal [Fintype n] :
     (diagonal 𝕜 f).conj (diagonal 𝕜 g) = diagonal 𝕜 (fun i ↦ f i * (g i)^2) := by
   ext1
   simp [diagonal, conj]
@@ -576,29 +576,29 @@ def kronecker (A : HermitianMat m α) (B : HermitianMat n α) : HermitianMat (m 
 scoped[HermitianMat] infixl:100 " ⊗ₖ " => HermitianMat.kronecker
 
 @[simp, norm_cast]
-theorem kronecker_mat (A : HermitianMat m α) (B : HermitianMat n α) :
+lemma kronecker_mat (A : HermitianMat m α) (B : HermitianMat n α) :
     (A ⊗ₖ B).mat = A.mat ⊗ₖ B.mat := by
   rfl
 
 @[simp]
-theorem zero_kronecker (A : HermitianMat m α) : (0 : HermitianMat n α) ⊗ₖ A = 0 := by
+lemma zero_kronecker (A : HermitianMat m α) : (0 : HermitianMat n α) ⊗ₖ A = 0 := by
   ext1; simp
 
 @[simp]
-theorem kronecker_zero (A : HermitianMat m α) : A ⊗ₖ (0 : HermitianMat n α) = 0 := by
+lemma kronecker_zero (A : HermitianMat m α) : A ⊗ₖ (0 : HermitianMat n α) = 0 := by
   ext1; simp
 
 variable [DecidableEq m] [DecidableEq n] in
 @[simp]
-theorem kronecker_one_one : (1 : HermitianMat m α) ⊗ₖ (1 : HermitianMat n α) = 1 := by
+lemma kronecker_one_one : (1 : HermitianMat m α) ⊗ₖ (1 : HermitianMat n α) = 1 := by
   ext1; simp
 
 variable (A B : HermitianMat m α) (C : HermitianMat n α) in
-theorem add_kronecker : (A + B) ⊗ₖ C = A ⊗ₖ C + B ⊗ₖ C := by
+lemma add_kronecker : (A + B) ⊗ₖ C = A ⊗ₖ C + B ⊗ₖ C := by
   ext1; simp [Matrix.add_kronecker]
 
 variable (A : HermitianMat m α) (B C : HermitianMat n α) in
-theorem kronecker_add : A ⊗ₖ (B + C) = A ⊗ₖ B + A ⊗ₖ C := by
+lemma kronecker_add : A ⊗ₖ (B + C) = A ⊗ₖ B + A ⊗ₖ C := by
   ext1; simp [Matrix.kronecker_add]
 
 lemma kronecker_diagonal [DecidableEq m] [DecidableEq n] (d₁ : m → ℝ) (d₂ : n → ℝ) :
@@ -646,7 +646,7 @@ variable {d d₂ : Type*} [Fintype d] [DecidableEq d] [Fintype d₂] [DecidableE
 /-
 If the range of a Hermitian matrix is contained in its kernel, the matrix is zero.
 -/
-theorem range_le_ker_imp_zero {A : HermitianMat d 𝕜}
+lemma range_le_ker_imp_zero {A : HermitianMat d 𝕜}
     (h : LinearMap.range A.mat.toEuclideanLin ≤ LinearMap.ker A.mat.toEuclideanLin) : A = 0 := by
   rw [HermitianMat.ext_iff, mat_zero]
   ext i j
@@ -716,7 +716,7 @@ theorem _root_.Matrix.range_mul_conjTranspose_of_ker_le_ker {A : Matrix d d 𝕜
     obtain ⟨ z, rfl ⟩ := hy.1;
     exact ⟨ z, by simpa [ Matrix.toEuclideanLin ] using hy.2 ⟩
 
-theorem conj_ne_zero {A : HermitianMat d 𝕜} {M : Matrix d₂ d 𝕜} (hA : A ≠ 0)
+lemma conj_ne_zero {A : HermitianMat d 𝕜} {M : Matrix d₂ d 𝕜} (hA : A ≠ 0)
     (h : LinearMap.ker M.toEuclideanLin ≤ A.ker) : A.conj M ≠ 0 := by
   by_contra h_contra
   have h_range : LinearMap.range A.mat.toEuclideanLin ≤ LinearMap.ker A.mat.toEuclideanLin := by
@@ -728,7 +728,7 @@ theorem conj_ne_zero {A : HermitianMat d 𝕜} {M : Matrix d₂ d 𝕜} (hA : A 
     exact h_range.trans h
   exact hA (range_le_ker_imp_zero h_range)
 
-theorem conj_ne_zero_iff {A : HermitianMat d 𝕜} {M : Matrix d₂ d 𝕜}
+lemma conj_ne_zero_iff {A : HermitianMat d 𝕜} {M : Matrix d₂ d 𝕜}
     (h : LinearMap.ker M.toEuclideanLin ≤ A.ker) : A.conj M ≠ 0 ↔ A ≠ 0  := by
   refine ⟨?_, (conj_ne_zero · h)⟩
   intro h rfl; grind
@@ -737,7 +737,7 @@ section spectrum
 
 variable [Fintype n] [DecidableEq n] [Fintype m] [DecidableEq m]
 
-theorem _root_.Matrix.IsHermitian.spectrum_rcLike {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
+lemma _root_.Matrix.IsHermitian.spectrum_rcLike {A : Matrix n n 𝕜} (hA : A.IsHermitian) :
     RCLike.ofReal '' spectrum ℝ A = spectrum 𝕜 A := by
   rw [hA.spectrum_eq_image_range, hA.spectrum_real_eq_range_eigenvalues]
 
@@ -748,7 +748,7 @@ theorem spectrum_rcLike (A : HermitianMat n 𝕜) :
     spectrum 𝕜 A.mat = RCLike.ofReal '' spectrum ℝ A.mat := by
   exact A.H.spectrum_rcLike.symm
 
-theorem ne_zero_iff_ne_zero_spectrum (A : HermitianMat n 𝕜) :
+lemma ne_zero_iff_ne_zero_spectrum (A : HermitianMat n 𝕜) :
     A ≠ 0 ↔ ∃ x ∈ spectrum ℝ A.mat, x ≠ 0 := by
   constructor;
   · intro h_nonzero
@@ -764,7 +764,7 @@ theorem ne_zero_iff_ne_zero_spectrum (A : HermitianMat n 𝕜) :
       hx', Matrix.isUnit_iff_isUnit_det] at hx
 
 open scoped Pointwise in
-theorem spectrum_prod
+lemma spectrum_prod
   {A : HermitianMat m 𝕜} {B : HermitianMat n 𝕜} :
     spectrum ℝ (A ⊗ₖ B).mat = spectrum ℝ A.mat * spectrum ℝ B.mat :=
   Matrix.spectrum_prod A.H B.H

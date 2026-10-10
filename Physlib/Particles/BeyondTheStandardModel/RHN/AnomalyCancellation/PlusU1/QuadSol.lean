@@ -136,7 +136,7 @@ lemma toQuad_rightInverse : Function.RightInverse (@toQuadInv n C) (toQuad C) :=
   · rw [toQuad, dite_eq_right ((toQuadInv_α₁_α₂ C S).mpr.mt h)]
     exact toQuadInv_generic C S h
 
-theorem toQuad_surjective : Function.Surjective (toQuad C) :=
+lemma toQuad_surjective : Function.Surjective (toQuad C) :=
   Function.RightInverse.surjective (toQuad_rightInverse C)
 
 end QuadSol

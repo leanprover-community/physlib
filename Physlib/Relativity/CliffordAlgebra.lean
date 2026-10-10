@@ -61,7 +61,7 @@ def γ2 : Matrix (Fin 4) (Fin 4) ℂ :=
 def γ3 : Matrix (Fin 4) (Fin 4) ℂ :=
   endEquivMatrix (Fermion.Dirac.gamma (Sum.inr 2))
 
-theorem _root_.Matrix.one_fin_four {α} [Zero α] [One α] :
+lemma _root_.Matrix.one_fin_four {α} [Zero α] [One α] :
     (1 : Matrix (Fin 4) (Fin 4) α) = !![1, 0, 0, 0; 0, 1, 0, 0; 0, 0, 1, 0; 0, 0, 0, 1] :=
   Matrix.etaExpand_eq _ |>.symm
 

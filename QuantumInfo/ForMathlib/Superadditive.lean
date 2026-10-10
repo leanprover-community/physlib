@@ -17,7 +17,7 @@ namespace Superadditive
 variable {u : ℕ → ℝ} (h : Superadditive u)
 
 include h in
-theorem to_Subadditive : Subadditive (-u ·) :=
+lemma to_Subadditive : Subadditive (-u ·) :=
   (by dsimp; linarith [h · ·])
 
 noncomputable def lim (_h : Superadditive u) :=
@@ -44,7 +44,7 @@ namespace Subadditive
 variable {u : ℕ → ℝ} (h : Subadditive u)
 
 include h in
-theorem to_Superadditive : Superadditive (-u ·) :=
+lemma to_Superadditive : Superadditive (-u ·) :=
   (by dsimp; linarith [h · ·])
 
 end Subadditive

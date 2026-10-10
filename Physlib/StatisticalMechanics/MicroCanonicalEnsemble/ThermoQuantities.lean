@@ -38,7 +38,7 @@ def PartitionZComplex (z : ℂ) : ℂ :=
 def ZComplexConvergenceDomain : Set ℂ :=
   ComplexLaplaceConvergenceDomain (fun config : H.dim d → ℝ => H.H config)
 
-private theorem partitionZ_eq_re_partitionZComplex {β : ℝ}
+private lemma partitionZ_eq_re_partitionZComplex {β : ℝ}
     (hβ : (β : ℂ) ∈ H.ZComplexConvergenceDomain d) :
     H.partitionZ d β = (H.PartitionZComplex d β).re := by
   have hInt : MeasureTheory.Integrable (μ := MeasureTheory.volume)
@@ -62,7 +62,7 @@ private theorem partitionZ_eq_re_partitionZComplex {β : ℝ}
         (fun config : H.dim d → ℝ => H.H config) (β : ℂ) x) := integral_re hInt
 
 open scoped ContDiff Topology in
-theorem contDiffAt_partitionZ_of_mem_interior_convergenceDomain {β : ℝ}
+lemma contDiffAt_partitionZ_of_mem_interior_convergenceDomain {β : ℝ}
     (hβ : (β : ℂ) ∈ interior (H.ZComplexConvergenceDomain d)) :
     ContDiffAt ℝ ⊤ (H.partitionZ d) β := by
   refine (analyticAt_complexLaplaceTransform_of_mem_interior_convergenceDomain

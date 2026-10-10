@@ -272,7 +272,7 @@ def vacuumSpanLieSubmodule (L : LadderSystem K V d) {Ω : V} (P : L.HasVacuum Ω
   rw [heq]
   exact forall_toGlHomLinear_mem_of_forall_E_mem L (E_mem_vacuumSpan L P n) x hm
 
-@[simp] theorem coe_vacuumSpanLieSubmodule (L : LadderSystem K V d) {Ω : V} (P : L.HasVacuum Ω)
+@[simp] lemma coe_vacuumSpanLieSubmodule (L : LadderSystem K V d) {Ω : V} (P : L.HasVacuum Ω)
     (n : ℕ) : (vacuumSpanLieSubmodule L P n : Submodule K V) = vacuumSpan L Ω n := rfl
 
 end LadderSystem

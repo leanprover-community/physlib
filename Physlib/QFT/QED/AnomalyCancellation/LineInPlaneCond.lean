@@ -109,7 +109,7 @@ lemma linesInPlane_eq_sq {S : (PureU1 (n.succ.succ.succ.succ.succ)).LinSols}
   intro M
   exact lineInPlaneCond_eq_last (lineInPlaneCond_perm hS M)
 
-theorem linesInPlane_constAbs {S : (PureU1 (n.succ.succ.succ.succ.succ)).LinSols}
+lemma linesInPlane_constAbs {S : (PureU1 (n.succ.succ.succ.succ.succ)).LinSols}
     (hS : LineInPlaneCond S) : ConstAbs S.val := by
   intro i j
   rcases eq_or_ne i j with hij | hij
@@ -154,7 +154,7 @@ lemma linesInPlane_constAbs_four (S : (PureU1 4).Sols)
   · rw [hij]
   · exact linesInPlane_eq_sq_four hS i j hij
 
-theorem linesInPlane_constAbs_AF (S : (PureU1 (n.succ.succ.succ.succ)).Sols)
+lemma linesInPlane_constAbs_AF (S : (PureU1 (n.succ.succ.succ.succ)).Sols)
     (hS : LineInPlaneCond S.1.1) : ConstAbs S.val := by
   induction n
   · exact linesInPlane_constAbs_four S hS

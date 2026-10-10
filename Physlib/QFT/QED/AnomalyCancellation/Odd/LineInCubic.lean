@@ -144,7 +144,7 @@ lemma lineInCubicPerm_constAbs {S : (PureU1 (2 * n.succ.succ + 1)).LinSols}
     (LIC : LineInCubicPerm S) : ConstAbs S.val :=
   linesInPlane_constAbs (lineInCubicPerm_last_perm LIC)
 
-theorem lineInCubicPerm_zero {S : (PureU1 (2 * n.succ.succ + 1)).LinSols}
+lemma lineInCubicPerm_zero {S : (PureU1 (2 * n.succ.succ + 1)).LinSols}
     (LIC : LineInCubicPerm S) : S = 0 :=
   ConstAbs.boundary_value_odd S (lineInCubicPerm_constAbs LIC)
 

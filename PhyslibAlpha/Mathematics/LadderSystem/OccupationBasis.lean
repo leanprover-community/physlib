@@ -126,7 +126,7 @@ def annMono (cs : List (Fin d)) (α : Fin d → ℕ) : Module.End K V :=
   (cs.map (fun c => (L.a c) ^ (α c))).prod
 
 omit [CharZero K] in
-@[simp] theorem annMono_nil (α : Fin d → ℕ) : L.annMono [] α = 1 := rfl
+@[simp] lemma annMono_nil (α : Fin d → ℕ) : L.annMono [] α = 1 := rfl
 
 omit [CharZero K] in
 lemma annMono_cons (c : Fin d) (cs : List (Fin d)) (α : Fin d → ℕ) :

@@ -48,7 +48,7 @@ lemma exists_plane_exists_basis {n : ℕ} (hE : ExistsPlane n) :
   simp only [neg_eq_zero] at h4
   exact fun i => i.rec h3 h4
 
-theorem plane_exists_dim_le_7 {n : ℕ} (hn : ExistsPlane n) : n ≤ 7 := by
+lemma plane_exists_dim_le_7 {n : ℕ} (hn : ExistsPlane n) : n ≤ 7 := by
   obtain ⟨B, hB⟩ := exists_plane_exists_basis hn
   have h1 := LinearIndependent.fintype_card_le_finrank hB
   simp only [Fintype.card_sum, Fintype.card_fin,

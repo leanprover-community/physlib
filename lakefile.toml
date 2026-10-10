@@ -66,6 +66,11 @@ srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
+name = "theorem_lint"
+srcDir = "scripts/lint/required"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "runPhyslibLinters"
 srcDir = "scripts/lint/required"
 supportInterpreter = true

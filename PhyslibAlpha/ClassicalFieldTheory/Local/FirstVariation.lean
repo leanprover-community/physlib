@@ -49,7 +49,7 @@ namespace Local
 
 -/
 
-theorem hasSmoothEulerLagrangeRegularity_of_smoothInCoordinates
+lemma hasSmoothEulerLagrangeRegularity_of_smoothInCoordinates
     (L : Lagrangian d m k) (hL : Lagrangian.SmoothInCoordinates L) :
     HasSmoothEulerLagrangeRegularity L := by
   exact hasSmoothEulerLagrangeRegularity_of_contDiffCoordDerivInCoordinates L hL.2
@@ -59,7 +59,7 @@ theorem hasSmoothEulerLagrangeRegularity_of_smoothInCoordinates
 
 -/
 
-theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothInCoordinates
+lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothInCoordinates
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hL : Lagrangian.SmoothInCoordinates L)
     (hbase : HasFiniteAction L f) :
@@ -68,7 +68,7 @@ theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothInCoordinates
     isCritical_iff_eulerLagrange_zero_of_hasFiniteAction_and_continuousInCoordinates
       L f hf hL.2 hL.1 hbase
 
-theorem isCritical_iff_eulerLagrange_zero_of_admissibleForAction_and_smoothInCoordinates
+lemma isCritical_iff_eulerLagrange_zero_of_admissibleForAction_and_smoothInCoordinates
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m))
     (hLf : IsAdmissibleForAction L f)
     (hL : Lagrangian.SmoothInCoordinates L) :

@@ -139,7 +139,7 @@ lemma quadSolToSolInv_rightInverse : Function.RightInverse (@quadSolToSolInv n) 
   · rw [quadSolToSol, dite_eq_right (quadSolToSolInv_α₁_α₂_ne_zero S h)]
     exact quadSolToSolInv_generic S h
 
-theorem quadSolToSol_surjective : Function.Surjective (@quadSolToSol n) :=
+lemma quadSolToSol_surjective : Function.Surjective (@quadSolToSol n) :=
   Function.RightInverse.surjective quadSolToSolInv_rightInverse
 
 end PlusU1

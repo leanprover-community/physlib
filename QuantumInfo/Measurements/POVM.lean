@@ -99,7 +99,7 @@ def measurementMap (Λ : POVM X d) : CPTPMap d (d × X) where
     exact HermitianMat.pow_half_mul (Λ.nonneg i)
 
 open Kronecker in
-theorem measurementMap_apply_matrix (Λ : POVM X d) (m : Matrix d d ℂ) :
+lemma measurementMap_apply_matrix (Λ : POVM X d) (m : Matrix d d ℂ) :
   Λ.measurementMap.map m =  ∑ x : X,
     ((((Λ.mats x) ^ (1/2:ℝ)).mat * m * ((Λ.mats x)^(1/2:ℝ)).mat) ⊗ₖ Matrix.single x x 1) := by
   dsimp [measurementMap, HPMap.map]
@@ -108,7 +108,7 @@ theorem measurementMap_apply_matrix (Λ : POVM X d) (m : Matrix d d ℂ) :
 
 set_option backward.isDefEq.respectTransparency false in
 open HermitianMat in
-theorem measurementMap_apply_hermitianMat (Λ : POVM X d) (m : HermitianMat d ℂ) :
+lemma measurementMap_apply_hermitianMat (Λ : POVM X d) (m : HermitianMat d ℂ) :
   Λ.measurementMap.toHPMap m = ∑ x : X,
     --TODO: Something like `HermitianMat.single` to make this better
     ((m.conj ((Λ.mats x)^(1/2:ℝ)).mat : HermitianMat d ℂ) ⊗ₖ HermitianMat.diagonal ℂ (fun y ↦ ite (x = y) 1 0)) := by
@@ -160,7 +160,7 @@ the mixed state recording the outcome. This resulting state is purely diagonal, 
 noncomputable def measureDiscard (Λ : POVM X d) : CPTPMap d X :=
   CPTPMap.traceLeft ∘ₘ Λ.measurementMap
 
-theorem measureDiscard_apply (Λ : POVM X d) (ρ : MState d) :
+lemma measureDiscard_apply (Λ : POVM X d) (ρ : MState d) :
     Λ.measureDiscard ρ = MState.ofClassical (Λ.measure ρ) := by
   simp [measureDiscard, traceLeft_measurementMap_eq_measure]
 
@@ -169,7 +169,7 @@ keeping the disturbed state. -/
 noncomputable def measureForget (Λ : POVM X d) : CPTPMap d d :=
   CPTPMap.traceRight ∘ₘ Λ.measurementMap
 
-theorem measureForget_eq_kraus (Λ : POVM X d) :
+lemma measureForget_eq_kraus (Λ : POVM X d) :
     Λ.measureForget = CPTPMap.of_kraus_CPTPMap (fun i ↦ (Λ.mats i) ^ (1/2 : ℝ)) (by
       simpa [-one_div, fun x ↦ HermitianMat.pow_half_mul (Λ.nonneg x), HermitianMat.ext_iff]
         using Λ.normalized

@@ -274,7 +274,7 @@ private lemma cfcR_real_sqrt_eq_sqrt {A : L ℋ} (hA : (0 : L ℋ) ≤ A) :
   rw [CFC.sqrt_eq_real_sqrt A hA, cfcₙ_eq_cfc (f := Real.sqrt) (a := A) (hf0 := by simp), cfcR]
 
 omit [CompleteSpace ℋ] in
-private theorem nontrivial_hsumL [Nontrivial ℋ] : Nontrivial (L (HSum ℋ)) := by
+private lemma nontrivial_hsumL [Nontrivial ℋ] : Nontrivial (L (HSum ℋ)) := by
   have h_not_sub : ¬ Subsingleton ℋ := by
     intro hsub
     let : Subsingleton ℋ := hsub
@@ -543,7 +543,7 @@ private lemma spectrum_zero_subset_Ici :
 
 set_option maxHeartbeats 2000000 in
 -- The localized proof duplicates the block-matrix normalization from the global theorem.
-theorem theorem_2_5_2_i_ici_all_imp_iv {f : ℝ → ℝ} (hf : CondIciAll.{u} f) :
+lemma theorem_2_5_2_i_ici_all_imp_iv {f : ℝ → ℝ} (hf : CondIciAll.{u} f) :
     CondIV (ℋ := ℋ) f := by
   rcases hf with ⟨hconvAll, hcontIci, hf0⟩
   intro A X hA hAs hX
@@ -801,7 +801,7 @@ theorem theorem_2_5_2_i_ici_all_imp_iv {f : ℝ → ℝ} (hf : CondIciAll.{u} f)
 
 set_option maxHeartbeats 2000000 in
 -- The global proof repeats the same block-matrix normalization and unitary conjugation pattern.
-theorem theorem_2_5_2_i_all_imp_iv {f : ℝ → ℝ} (hf : CondIAll.{u} f) :
+lemma theorem_2_5_2_i_all_imp_iv {f : ℝ → ℝ} (hf : CondIAll.{u} f) :
     CondIV (ℋ := ℋ) f := by
   rcases hf with ⟨hconvAll, hf0⟩
   intro A X hA hAs hX

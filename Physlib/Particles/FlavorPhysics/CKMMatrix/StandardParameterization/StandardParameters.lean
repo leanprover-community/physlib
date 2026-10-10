@@ -490,7 +490,7 @@ lemma eq_standParam_of_ubOnePhaseCond {V : CKMMatrix} (hV : ubOnePhaseCond V) :
       rw [C₁₃_eq_ℂcos_θ₁₃ ⟦V⟧, C₁₃_of_Vub_eq_one h1, hV.2.2.1]
       exact Eq.symm (mul_eq_zero_of_right (sin ↑(θ₂₃ ⟦V⟧)) rfl)
 
-theorem exists_δ₁₃ (V : CKMMatrix) :
+lemma exists_δ₁₃ (V : CKMMatrix) :
     ∃ (δ₃ : ℝ), V ≈ standParam (θ₁₂ ⟦V⟧) (θ₁₃ ⟦V⟧) (θ₂₃ ⟦V⟧) δ₃ := by
   obtain ⟨U, hU⟩ := fstRowThdColRealCond_holds_up_to_equiv V
   have hUV : ⟦U⟧ = ⟦V⟧ := (Quotient.eq.mpr (phaseShiftRelation_equiv.symm hU.1))
@@ -514,7 +514,7 @@ theorem exists_δ₁₃ (V : CKMMatrix) :
     exact hUVa2
 
 open Invariant in
-theorem eq_standardParameterization_δ₃ (V : CKMMatrix) :
+lemma eq_standardParameterization_δ₃ (V : CKMMatrix) :
     V ≈ standParam (θ₁₂ ⟦V⟧) (θ₁₃ ⟦V⟧) (θ₂₃ ⟦V⟧) (δ₁₃ ⟦V⟧) := by
   obtain ⟨δ₁₃', hδ₃⟩ := exists_δ₁₃ V
   have hSV := (Quotient.eq.mpr (hδ₃))
@@ -539,7 +539,7 @@ theorem eq_standardParameterization_δ₃ (V : CKMMatrix) :
     · exact on_param_sin_θ₁₃_eq_zero δ₁₃' h
     · exact on_param_sin_θ₂₃_eq_zero δ₁₃' h
 
-theorem exists_for_CKMatrix (V : CKMMatrix) :
+lemma exists_for_CKMatrix (V : CKMMatrix) :
     ∃ (θ₁₂ θ₁₃ θ₂₃ δ₁₃ : ℝ), V ≈ standParam θ₁₂ θ₁₃ θ₂₃ δ₁₃ := by
   use θ₁₂ ⟦V⟧, θ₁₃ ⟦V⟧, θ₂₃ ⟦V⟧, δ₁₃ ⟦V⟧
   exact eq_standardParameterization_δ₃ V

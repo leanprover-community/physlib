@@ -29,40 +29,40 @@ variable (A : HermitianMat d 𝕜) (f : ℝ → ℝ) (g : ℝ → ℝ) (q r : �
 /- Adding this to the `CStarAlgebra` aesop set allows `cfc_tac` to use it. -/
 omit [Fintype d] [DecidableEq d] in
 @[aesop safe apply (rule_sets := [CStarAlgebra])]
-theorem isSelfAdjoint : IsSelfAdjoint A.mat := by
+lemma isSelfAdjoint : IsSelfAdjoint A.mat := by
   exact A.H
 
 /- Adding this to `fun_prop` allows `cfc_cont_tac` to use it. -/
 @[fun_prop]
-theorem continuousOn_finite {α β : Type*} (f : α → β) (S : Set α)
+lemma continuousOn_finite {α β : Type*} (f : α → β) (S : Set α)
     [TopologicalSpace α] [TopologicalSpace β] [T1Space α] [Finite S] : ContinuousOn f S := by
   rw [continuousOn_iff_continuous_domRestrict]
   exact continuous_of_discreteTopology
 
 @[simp]
-theorem conjTranspose_cfc : (cfc f A.mat).conjTranspose = cfc f A.mat := by
+lemma conjTranspose_cfc : (cfc f A.mat).conjTranspose = cfc f A.mat := by
   exact cfc_predicate f A.mat
 
 protected def cfc : HermitianMat d 𝕜 :=
   ⟨cfc f A.mat, cfc_predicate _ _⟩
 
-theorem cfc_eq : A.cfc f = ⟨cfc f A.mat, cfc_predicate f A.mat⟩ := by
+lemma cfc_eq : A.cfc f = ⟨cfc f A.mat, cfc_predicate f A.mat⟩ := by
   rfl
 
 @[simp]
-theorem mat_cfc : (A.cfc f).mat = _root_.cfc f A.mat := by
+lemma mat_cfc : (A.cfc f).mat = _root_.cfc f A.mat := by
   rfl
 
 section congr
 
 variable {f g A}
 
-theorem cfc_eq_cfc_iff_eqOn (f g : ℝ → ℝ) :
+lemma cfc_eq_cfc_iff_eqOn (f g : ℝ → ℝ) :
     A.cfc f = A.cfc g ↔ Set.EqOn f g (spectrum ℝ A.mat) := by
   rw [HermitianMat.ext_iff, mat_cfc, mat_cfc]
   exact _root_.cfc_eq_cfc_iff_eqOn A.H
 
-nonrec theorem cfc_congr (hfg : Set.EqOn f g (spectrum ℝ A.mat)) :
+nonrec lemma cfc_congr (hfg : Set.EqOn f g (spectrum ℝ A.mat)) :
     A.cfc f = A.cfc g := by
   ext1
   exact cfc_congr hfg
@@ -88,21 +88,21 @@ section commute
 variable {A B : HermitianMat d 𝕜}
 
 @[aesop unsafe apply 50% (rule_sets := [Commutes])]
-theorem _root_.Commute.cfc_left (hAB : Commute A.mat B.mat) :
+lemma _root_.Commute.cfc_left (hAB : Commute A.mat B.mat) :
     Commute (A.cfc f).mat B.mat := by
   exact hAB.cfc_real f
 
 @[aesop unsafe apply 50% (rule_sets := [Commutes])]
-theorem _root_.Commute.cfc_right (hAB : Commute A.mat B.mat) :
+lemma _root_.Commute.cfc_right (hAB : Commute A.mat B.mat) :
     Commute A.mat (B.cfc f).mat :=
   (hAB.symm.cfc_left f).symm
 
-theorem cfc_commute (f g : ℝ → ℝ) (hAB : Commute A.mat B.mat) :
+lemma cfc_commute (f g : ℝ → ℝ) (hAB : Commute A.mat B.mat) :
     Commute (A.cfc f).mat (B.cfc g).mat := by
   exact (hAB.cfc_right g).cfc_left f
 
 @[aesop safe apply (rule_sets := [Commutes])]
-theorem cfc_self_commute (A : HermitianMat d 𝕜) (f g : ℝ → ℝ) :
+lemma cfc_self_commute (A : HermitianMat d 𝕜) (f g : ℝ → ℝ) :
     Commute (A.cfc f).mat (A.cfc g).mat := by
   commutes
 
@@ -115,7 +115,7 @@ theorem cfc_reindex (e : d ≃ d₂) : (A.reindex e).cfc f = (A.cfc f).reindex e
   simp only [mat_cfc, mat_reindex]
   exact Matrix.cfc_reindex f e
 
-theorem spectrum_cfc_eq_image (A : HermitianMat d 𝕜) (f : ℝ → ℝ) :
+lemma spectrum_cfc_eq_image (A : HermitianMat d 𝕜) (f : ℝ → ℝ) :
     spectrum ℝ (A.cfc f).mat = f '' (spectrum ℝ A.mat) := by
   exact cfc_map_spectrum f A.mat
 
@@ -144,7 +144,7 @@ theorem cfc_toMat_eq_sum_smul_proj : (A.cfc f).mat =
 set_option backward.isDefEq.respectTransparency false in
 #synth LocallyCompactSpace (HermitianMat d 𝕜)
 
-theorem cfc_eigenvalues (A : HermitianMat d 𝕜) :
+lemma cfc_eigenvalues (A : HermitianMat d 𝕜) :
     ∃ (e : d ≃ d), (A.cfc f).H.eigenvalues = f ∘ A.H.eigenvalues ∘ e :=
   A.H.cfc_eigenvalues f
 
@@ -152,29 +152,29 @@ theorem cfc_eigenvalues (A : HermitianMat d 𝕜) :
 etc. We need these because (as above) `HermitianMat.cfc` is different from `_root_.cfc`. -/
 
 @[simp]
-nonrec theorem cfc_id : A.cfc id = A := by
+nonrec lemma cfc_id : A.cfc id = A := by
   simpa [HermitianMat.ext_iff] using cfc_id ℝ A.mat
 
 @[simp]
-nonrec theorem cfc_id' : A.cfc (·) = A :=
+nonrec lemma cfc_id' : A.cfc (·) = A :=
   cfc_id A
 
-nonrec theorem cfc_add : A.cfc (f + g) = A.cfc f + A.cfc g := by
+nonrec lemma cfc_add : A.cfc (f + g) = A.cfc f + A.cfc g := by
   ext1; exact cfc_add ..
 
-theorem cfc_add_apply : A.cfc (fun x ↦ f x + g x) = A.cfc f + A.cfc g :=
+lemma cfc_add_apply : A.cfc (fun x ↦ f x + g x) = A.cfc f + A.cfc g :=
   cfc_add A f g
 
-nonrec theorem cfc_sub : A.cfc (f - g) = A.cfc f - A.cfc g := by
+nonrec lemma cfc_sub : A.cfc (f - g) = A.cfc f - A.cfc g := by
   ext1; exact cfc_sub ..
 
-theorem cfc_sub_apply : A.cfc (fun x ↦ f x - g x) = A.cfc f - A.cfc g :=
+lemma cfc_sub_apply : A.cfc (fun x ↦ f x - g x) = A.cfc f - A.cfc g :=
   cfc_sub A f g
 
-nonrec theorem cfc_neg : A.cfc (-f) = -A.cfc f := by
+nonrec lemma cfc_neg : A.cfc (-f) = -A.cfc f := by
   ext1; exact cfc_neg ..
 
-theorem cfc_neg_apply : A.cfc (fun x ↦ -f x) = -A.cfc f :=
+lemma cfc_neg_apply : A.cfc (fun x ↦ -f x) = -A.cfc f :=
   cfc_neg A f
 
 /-- We don't have a direct analog of `cfc_mul`, since we can't generally multiply
@@ -185,57 +185,57 @@ theorem mat_cfc_mul : (A.cfc (f * g)).mat = A.cfc f * A.cfc g := by
   simp only [mat_cfc]
   exact cfc_mul ..
 
-theorem mat_cfc_mul_apply : (A.cfc (fun x ↦ f x * g x)).mat = A.cfc f * A.cfc g := by
+lemma mat_cfc_mul_apply : (A.cfc (fun x ↦ f x * g x)).mat = A.cfc f * A.cfc g := by
   exact mat_cfc_mul ..
 
-nonrec theorem cfc_comp : A.cfc (g ∘ f) = (A.cfc f).cfc g := by
+nonrec lemma cfc_comp : A.cfc (g ∘ f) = (A.cfc f).cfc g := by
   ext1; exact cfc_comp ..
 
-theorem cfc_comp_apply : A.cfc (fun x ↦ g (f x)) = (A.cfc f).cfc g :=
+lemma cfc_comp_apply : A.cfc (fun x ↦ g (f x)) = (A.cfc f).cfc g :=
   cfc_comp A f g
 
-nonrec theorem cfc_conj : (A.cfc f).conj (A.cfc g) = A.cfc (f * g^2) := by
+nonrec lemma cfc_conj : (A.cfc f).conj (A.cfc g) = A.cfc (f * g^2) := by
   ext1
   simp only [conj_apply, mat_cfc, mat_mk, conjTranspose_cfc]
   rw [← cfc_mul, ← cfc_mul, Pi.mul_def, Pi.pow_def]
   grind only
 
 @[simp]
-theorem cfc_diagonal (g : d → ℝ) : (diagonal 𝕜 g).cfc f = diagonal 𝕜 (f ∘ g) := by
+lemma cfc_diagonal (g : d → ℝ) : (diagonal 𝕜 g).cfc f = diagonal 𝕜 (f ∘ g) := by
   ext1
   exact Matrix.cfc_diagonal g f
 
-theorem cfc_conj_unitary (U : Matrix.unitaryGroup d 𝕜) :
+lemma cfc_conj_unitary (U : Matrix.unitaryGroup d 𝕜) :
     (A.conj U.val).cfc f = (A.cfc f).conj U := by
   ext1
   exact Matrix.cfc_conj_unitary f U
 
 @[simp]
-nonrec theorem cfc_const : (A.cfc (fun _ ↦ r)) = r • 1 := by
+nonrec lemma cfc_const : (A.cfc (fun _ ↦ r)) = r • 1 := by
   ext1
   simp only [mat_cfc, mat_smul, mat_one]
   rw [cfc_const r A.mat]
   exact Algebra.algebraMap_eq_smul_one r
 
 @[simp]
-nonrec theorem cfc_const_mul_id : A.cfc (fun x ↦ r * x) = r • A := by
+nonrec lemma cfc_const_mul_id : A.cfc (fun x ↦ r * x) = r • A := by
   ext1
   rw [mat_cfc, mat_smul, cfc_const_mul_id r A.mat]
 
 @[simp]
-nonrec theorem cfc_const_mul : A.cfc (fun x ↦ r * f x) = r • A.cfc f := by
+nonrec lemma cfc_const_mul : A.cfc (fun x ↦ r * f x) = r • A.cfc f := by
   rw [← cfc_const_mul_id, ← cfc_comp]
   rfl
 
 @[simp]
-nonrec theorem cfc_apply_zero : (0 : HermitianMat d 𝕜).cfc f = f 0 • 1 := by
+nonrec lemma cfc_apply_zero : (0 : HermitianMat d 𝕜).cfc f = f 0 • 1 := by
   simp [HermitianMat.ext_iff, Algebra.algebraMap_eq_smul_one]
 
 @[simp]
-nonrec theorem cfc_apply_one : (1 : HermitianMat d 𝕜).cfc f = f 1 • 1 := by
+nonrec lemma cfc_apply_one : (1 : HermitianMat d 𝕜).cfc f = f 1 • 1 := by
   simp [HermitianMat.ext_iff, Algebra.algebraMap_eq_smul_one]
 
-theorem cfc_pow {n : ℕ} : A.cfc (· ^ n) = A ^ n := by
+lemma cfc_pow {n : ℕ} : A.cfc (· ^ n) = A ^ n := by
   ext1
   induction n
   · simp
@@ -243,14 +243,14 @@ theorem cfc_pow {n : ℕ} : A.cfc (· ^ n) = A ^ n := by
     congr
 
 set_option backward.isDefEq.respectTransparency false in
-theorem cfc_nonneg_iff : 0 ≤ A.cfc f ↔ ∀ i, 0 ≤ f (A.H.eigenvalues i) := by
+lemma cfc_nonneg_iff : 0 ≤ A.cfc f ↔ ∀ i, 0 ≤ f (A.H.eigenvalues i) := by
   open MatrixOrder in
   rw [cfc_eq, ← Subtype.coe_le_coe, ZeroMemClass.coe_zero]
   rw [_root_.cfc_nonneg_iff f A.mat, A.H.spectrum_real_eq_range_eigenvalues]
   grind
 
 open ComplexOrder in
-theorem cfc_posDef : (A.cfc f).mat.PosDef ↔ ∀ i, 0 < f (A.H.eigenvalues i) := by
+lemma cfc_posDef : (A.cfc f).mat.PosDef ↔ ∀ i, 0 < f (A.H.eigenvalues i) := by
   rw [(A.cfc f).H.posDef_iff_eigenvalues_pos]
   obtain ⟨e, he⟩ := A.cfc_eigenvalues f
   rw [he]
@@ -266,21 +266,21 @@ theorem cfc_nonneg_of_nonneg (hA : 0 ≤ A) (hf : ∀ i ≥ 0, 0 ≤ f i) :
   exact fun i ↦ hf _ (hA i)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem cfc_nonSingular (hf : ∀ i, f (A.H.eigenvalues i) ≠ 0) : NonSingular (A.cfc f) := by
+lemma cfc_nonSingular (hf : ∀ i, f (A.H.eigenvalues i) ≠ 0) : NonSingular (A.cfc f) := by
   rw [nonSingular_iff_eigenvalue_ne_zero]
   obtain ⟨e, he⟩ := cfc_eigenvalues f A
   simpa [he] using fun i ↦ hf (e i)
 
 
 set_option backward.isDefEq.respectTransparency false in
-theorem trace_mul_cfc (A : HermitianMat d 𝕜) (f : ℝ → ℝ) :
+lemma trace_mul_cfc (A : HermitianMat d 𝕜) (f : ℝ → ℝ) :
     (A.mat * (A.cfc f).mat).trace = ∑ i, A.H.eigenvalues i * f (A.H.eigenvalues i) := by
   conv_lhs => rw [A.eq_conj_diagonal]
   rw [cfc_conj_unitary]
   simp [conj, Matrix.mul_assoc, A.H.eigenvectorUnitary.val.trace_mul_comm]
   simp [← Matrix.mul_assoc, Matrix.IsHermitian.eigenvectorUnitary ]
 
-theorem norm_eq_sum_eigenvalues_sq (A : HermitianMat d 𝕜) :
+lemma norm_eq_sum_eigenvalues_sq (A : HermitianMat d 𝕜) :
     ‖A‖ ^ 2 = ∑ i, (A.H.eigenvalues i)^2 := by
   rw [← RCLike.ofReal_inj (K := 𝕜), RCLike.ofReal_pow, norm_eq_trace_sq]
   conv_lhs => change (A ^ 2).mat.trace; rw [(A ^ 2).H.trace_eq_sum_eigenvalues]
@@ -291,7 +291,7 @@ theorem norm_eq_sum_eigenvalues_sq (A : HermitianMat d 𝕜) :
   exact e.sum_comp (fun x ↦ (algebraMap ℝ 𝕜) (A.H.eigenvalues x) ^ 2)
 
 variable {A} in
-theorem lt_smul_of_norm_lt {r : ℝ} (h : ‖A‖ ≤ r) : A ≤ r • 1 := by
+lemma lt_smul_of_norm_lt {r : ℝ} (h : ‖A‖ ≤ r) : A ≤ r • 1 := by
   rcases lt_or_ge r 0 with _ | hr
   · have := norm_nonneg A
     order
@@ -311,7 +311,7 @@ theorem lt_smul_of_norm_lt {r : ℝ} (h : ‖A‖ ≤ r) : A ≤ r • 1 := by
   refine le_trans ?_ h'
   exact Finset.single_le_sum (f := fun x ↦ (A.H.eigenvalues x)^2) (by intros; positivity) (Finset.mem_univ _)
 
-theorem ball_subset_Icc : Metric.ball A r ⊆ Set.Icc (A - r • 1) (A + r • 1) := by
+lemma ball_subset_Icc : Metric.ball A r ⊆ Set.Icc (A - r • 1) (A + r • 1) := by
   intro x
   simp only [Metric.mem_ball, dist_eq_norm, Set.mem_Icc, tsub_le_iff_right]
   intro h
@@ -322,7 +322,7 @@ theorem ball_subset_Icc : Metric.ball A r ⊆ Set.Icc (A - r • 1) (A + r • 1
   · grw [← lt_smul_of_norm_lt h.le]
     simp
 
-theorem spectrum_subset_of_mem_Icc (A B : HermitianMat d 𝕜) :
+lemma spectrum_subset_of_mem_Icc (A B : HermitianMat d 𝕜) :
     ∃ a b, ∀ x, A ≤ x ∧ x ≤ B → spectrum ℝ x.mat ⊆ Set.Icc a b := by
   use ⨅ i, A.H.eigenvalues i, ⨆ i, B.H.eigenvalues i
   rintro x ⟨hl, hr⟩
@@ -355,7 +355,7 @@ theorem spectrum_subset_of_mem_Icc (A B : HermitianMat d 𝕜) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
-protected theorem cfc_continuous {f : ℝ → ℝ} (hf : Continuous f) :
+protected lemma cfc_continuous {f : ℝ → ℝ} (hf : Continuous f) :
     Continuous (HermitianMat.cfc · f : HermitianMat d ℂ → HermitianMat d ℂ) := by
   unfold HermitianMat.cfc
   suffices Continuous (fun A : HermitianMat d ℂ ↦ _root_.cfc f A.mat) by
@@ -379,7 +379,7 @@ protected theorem cfc_continuous {f : ℝ → ℝ} (hf : Continuous f) :
     simp
 
 open ComplexOrder in
-theorem Matrix.PosDef.spectrum_subset_Ioi {d 𝕜 : Type*} [Fintype d] [DecidableEq d] [RCLike 𝕜]
+lemma Matrix.PosDef.spectrum_subset_Ioi {d 𝕜 : Type*} [Fintype d] [DecidableEq d] [RCLike 𝕜]
     {A : Matrix d d 𝕜} (hA : A.PosDef) : spectrum ℝ A ⊆ Set.Ioi 0 := by
   intro x hx;
   -- Since $A$ is positive definite, all its eigenvalues are positive.
@@ -563,7 +563,7 @@ lemma continuousOn_cfc_of_compact {K : Set ℝ} {g : ℝ → ℝ} (hK : IsCompac
 end joint_continuity
 
 set_option backward.isDefEq.respectTransparency false in
-theorem continuous_cfc_joint_compact {X d : Type*} [TopologicalSpace X] [Fintype d] [DecidableEq d]
+lemma continuous_cfc_joint_compact {X d : Type*} [TopologicalSpace X] [Fintype d] [DecidableEq d]
   {f : X → ℝ → ℝ} {A : X → HermitianMat d ℂ} {S : Set X} {T : Set ℝ}
   (hT : IsCompact T)
   (hf : ContinuousOn (fun (p : X × ℝ) ↦ f p.1 p.2) (S ×ˢ T))
@@ -942,7 +942,7 @@ In code, the proof structure should mirror continuous_cfc_joint_compact closely,
 -/
 set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
-theorem continuous_cfc_joint {X d : Type*} [TopologicalSpace X] [Fintype d] [DecidableEq d]
+lemma continuous_cfc_joint {X d : Type*} [TopologicalSpace X] [Fintype d] [DecidableEq d]
   {f : X → ℝ → ℝ} {A : X → HermitianMat d ℂ} {S : Set X} {T : Set ℝ}
   (hf : ContinuousOn (fun (p : X × ℝ) ↦ f p.1 p.2) (S ×ˢ T))
   (hA₁ : ∀ x ∈ S, spectrum ℝ (A x).mat ⊆ T)
@@ -1047,7 +1047,7 @@ lemma inv_cfc_eq_cfc_inv (hf : ∀ i, f (A.H.eigenvalues i) ≠ 0) :
     rw [ Finset.sum_eq_single j ] <;> aesop;
   rw [ Matrix.inv_eq_right_inv h_inv ];
 
-theorem cfc_inv [NonSingular A] : A.cfc (fun u ↦ u⁻¹) = A⁻¹ := by
+lemma cfc_inv [NonSingular A] : A.cfc (fun u ↦ u⁻¹) = A⁻¹ := by
   simpa using (inv_cfc_eq_cfc_inv id nonSingular_eigenvalue_ne_zero).symm
 
 section integral
@@ -1144,7 +1144,7 @@ lemma integral_cfc_eq_cfc_integral (T₁ T₂ : ℝ) {μ : Measure ℝ} (f : ℝ
 
 end integral
 
-theorem cfc_pos_of_pos {A : HermitianMat d 𝕜} {f : ℝ → ℝ} (hA : 0 < A)
+lemma cfc_pos_of_pos {A : HermitianMat d 𝕜} {f : ℝ → ℝ} (hA : 0 < A)
     (hf : ∀ i > 0, 0 < f i) (hf₂ : 0 ≤ f 0) : 0 < A.cfc f := by
   have h_pos := (posSemidef_iff_spectrum_nonneg A).mp hA.le
   have h_f_pos : ∃ x ∈ spectrum ℝ (A.cfc f).mat, x ≠ 0 := by
@@ -1182,7 +1182,7 @@ theorem _root_.Commute.exists_HermitianMat_cfc (hAB : Commute A.mat B.mat) :
     · exact ⟨0, by simp [HermitianMat.ext_iff, hg₂]⟩
 
 open ComplexOrder in
-theorem cfc_le_cfc_of_PosDef (hfg : ∀ i, 0 < i → f i ≤ g i) (hA : A.mat.PosDef) :
+lemma cfc_le_cfc_of_PosDef (hfg : ∀ i, 0 < i → f i ≤ g i) (hA : A.mat.PosDef) :
     A.cfc f ≤ A.cfc g := by
   rw [← sub_nonneg, ← HermitianMat.cfc_sub, cfc_nonneg_iff]
   intro i
@@ -1196,7 +1196,7 @@ variable {f} in
 /- TODO: Write a version of this that holds more broadly for some sets. Esp closed intervals of reals,
 which correspond nicely to closed intervals of matrices. Write the specialization to Set.univ (Monotone
 instead of MonotoneOn). Also a version that works for StrictMonoOn. -/
-theorem cfc_le_cfc_of_commute_monoOn (hf : MonotoneOn f (Set.Ioi 0))
+lemma cfc_le_cfc_of_commute_monoOn (hf : MonotoneOn f (Set.Ioi 0))
   (hAB₁ : Commute A.mat B.mat) (hAB₂ : A ≤ B) (hA : A.mat.PosDef) (hB : B.mat.PosDef) :
     A.cfc f ≤ B.cfc f := by
   obtain ⟨C, ⟨g₁, rfl⟩, ⟨g₂, rfl⟩⟩ := hAB₁.exists_HermitianMat_cfc
@@ -1227,7 +1227,7 @@ theorem cfc_le_cfc_of_commute (hf : Monotone f) (hAB₁ : Commute A.mat B.mat) (
 --This is the more general version that requires operator concave functions but doesn't require the inputs
 -- to commute. Requires the correct statement of operator convexity though, which we don't have right now.
 open ComplexOrder in
-theorem cfc_monoOn_pos_of_monoOn_posDef {d : Type*} [Fintype d] [DecidableEq d]
+lemma cfc_monoOn_pos_of_monoOn_posDef {d : Type*} [Fintype d] [DecidableEq d]
   {f : ℝ → ℝ} (hf_is_operator_convex : False) :
     MonotoneOn (HermitianMat.cfc · f) { A : HermitianMat d ℂ | A.mat.PosDef } := by
   exact False.elim hf_is_operator_convex
@@ -1235,7 +1235,7 @@ theorem cfc_monoOn_pos_of_monoOn_posDef {d : Type*} [Fintype d] [DecidableEq d]
 section uncategorized_cleanup
 
 open ComplexOrder in
-theorem inv_ge_one_of_le_one (hA : A.mat.PosDef) (h : A ≤ 1) : 1 ≤ A⁻¹ := by
+lemma inv_ge_one_of_le_one (hA : A.mat.PosDef) (h : A ≤ 1) : 1 ≤ A⁻¹ := by
   -- Since $A$ is positive definite and $A \leq 1$, we have $A.cfc (fun x => x⁻¹ - 1) \geq 0$.
   have h_cfc_nonneg : 0 ≤ A.cfc (fun x => x⁻¹ - 1) := by
     have h_cfc_nonneg : ∀ i, 0 ≤ (A.H.eigenvalues i)⁻¹ - 1 := by
@@ -1425,12 +1425,12 @@ lemma ker_le_ker_cfc_nonneg (hA : 0 ≤ A) (h : ∀ i ≥ 0, i = 0 → f i = 0) 
   rw [posSemidef_iff_spectrum_Ici] at hA
   exact ker_le_ker_cfc_on_set hA h
 
-theorem ker_cfc_eq_ker (h : ∀ i, f i = 0 ↔ i = 0) :
+lemma ker_cfc_eq_ker (h : ∀ i, f i = 0 ↔ i = 0) :
     (A.cfc f).ker = A.ker := by
   refine le_antisymm (ker_cfc_le_ker ?_) (ker_le_ker_cfc ?_)
   <;> grind only
 
-theorem ker_cfc_eq_ker_nonneg (hA : 0 ≤ A) (h : ∀ i ≥ 0, f i = 0 ↔ i = 0) :
+lemma ker_cfc_eq_ker_nonneg (hA : 0 ≤ A) (h : ∀ i ≥ 0, f i = 0 ↔ i = 0) :
     (A.cfc f).ker = A.ker := by
   refine le_antisymm (ker_cfc_le_ker_nonneg hA ?_) (ker_le_ker_cfc_nonneg hA ?_)
   <;> grind only

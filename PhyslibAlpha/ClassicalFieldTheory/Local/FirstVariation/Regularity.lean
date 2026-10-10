@@ -101,7 +101,7 @@ lemma continuous_eulerLagrangeOp_of_regular
 
 -/
 
-theorem hasSmoothEulerLagrangeRegularity_of_contDiffCoordDerivInCoordinates
+lemma hasSmoothEulerLagrangeRegularity_of_contDiffCoordDerivInCoordinates
     (L : Lagrangian d m k) (hcoord : Lagrangian.ContDiffCoordDerivInCoordinates L) :
     HasSmoothEulerLagrangeRegularity L := by
   intro f hf

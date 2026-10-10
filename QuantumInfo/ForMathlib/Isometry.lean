@@ -29,7 +29,7 @@ def Matrix.Isometry (A : Matrix d d₂ R) : Prop :=
   Aᴴ * A = 1
 
 omit [Fintype d₃] [DecidableEq d₂] in
-theorem Matrix.submatrix_one_isometry {e : d₂ → d} {f : d₃ → d} (he : e.Bijective) (hf : f.Injective) :
+lemma Matrix.submatrix_one_isometry {e : d₂ → d} {f : d₃ → d} (he : e.Bijective) (hf : f.Injective) :
     (submatrix (α := R) 1 e f).Isometry := by
   -- Since $e$ is injective and $f$ is bijective, the submatrix of the identity matrix formed by $e$ and $f$ is a permutation matrix.
   have h_perm : ∀ i j, (Matrix.submatrix (1 : Matrix d d R) e f) i j = if e i = f j then 1 else 0 := by
@@ -62,21 +62,21 @@ theorem Matrix.submatrix_one_isometry {e : d₂ → d} {f : d₃ → d} (he : e.
     exact Finset.sum_eq_zero fun x hx => by specialize h_no_x x; aesop
 
 omit [DecidableEq d₂] in
-theorem Matrix.submatrix_one_id_left_isometry {e : d₂ → d} (he : e.Bijective) :
+lemma Matrix.submatrix_one_id_left_isometry {e : d₂ → d} (he : e.Bijective) :
     (submatrix (1 : Matrix d d R) e id).Isometry :=
   submatrix_one_isometry he Function.injective_id
 
 omit [Fintype d₂] in
-theorem Matrix.submatrix_one_id_right_isometry {e : d₂ → d} (he : e.Injective) :
+lemma Matrix.submatrix_one_id_right_isometry {e : d₂ → d} (he : e.Injective) :
     (submatrix (1 : Matrix d d R) id e).Isometry :=
   submatrix_one_isometry Function.bijective_id he
 
-theorem Matrix.mem_unitaryGroup_iff_isometry (A : Matrix d d R) :
+lemma Matrix.mem_unitaryGroup_iff_isometry (A : Matrix d d R) :
     A ∈ unitaryGroup d R ↔ A.Isometry ∧ Aᴴ.Isometry := by
   rw [Isometry, Isometry, conjTranspose_conjTranspose]
   rfl
 
-theorem Equiv.Perm.permMatrix_mem_unitaryGroup (e : Perm d) :
+lemma Equiv.Perm.permMatrix_mem_unitaryGroup (e : Perm d) :
     e.permMatrix R ∈ Matrix.unitaryGroup d R := by
   -- Since $e$ is a permutation, its permutation matrix $P_e$ is orthogonal, meaning $P_e * P_e^T = I$.
   have h_perm_ortho : (Equiv.Perm.permMatrix R e) * (Equiv.Perm.permMatrix R e)ᵀ = 1 := by
@@ -92,7 +92,7 @@ theorem Equiv.Perm.permMatrix_mem_unitaryGroup (e : Perm d) :
     simp [Matrix.star_eq_conjTranspose, Equiv.Perm.permMatrix]
 
 omit [Fintype d₃] [DecidableEq d₂] in
-theorem Matrix.reindex_one_isometry (e : d ≃ d₂) (f : d ≃ d₃) :
+lemma Matrix.reindex_one_isometry (e : d ≃ d₂) (f : d ≃ d₃) :
     (reindex (α := R) e f 1).Isometry := by
   -- Since $e$ and $f$ are bijections, the reindexing of the identity matrix by $e$ and $f$ is a permutation matrix, which is unitary.
   have h_perm : ∀ (e : d ≃ d₂) (f : d ≃ d₃), (Matrix.reindex e f (1 : Matrix d d R)).Isometry := by
@@ -101,7 +101,7 @@ theorem Matrix.reindex_one_isometry (e : d ≃ d₂) (f : d ≃ d₃) :
   exact h_perm e f
 
 omit [Fintype d] in
-theorem Matrix.reindex_one_mem_unitaryGroup (e : d ≃ d₂)  :
+lemma Matrix.reindex_one_mem_unitaryGroup (e : d ≃ d₂)  :
     reindex (α := R) e e 1 ∈ unitaryGroup d₂ R := by
   -- The reindex of the identity matrix under an equivalence e is just the identity matrix on d₂.
   have h_reindex_id : Matrix.reindex e e (1 : Matrix d d R) = 1 := by
@@ -111,19 +111,19 @@ theorem Matrix.reindex_one_mem_unitaryGroup (e : d ≃ d₂)  :
   simp only [h_reindex_id, one_mem]
 
 omit [Fintype d₂] [DecidableEq d₂] [StarRing R] in
-theorem Matrix.reindex_eq_conj (A : Matrix d d R) (e : d ≃ d₂) : reindex e e A =
+lemma Matrix.reindex_eq_conj (A : Matrix d d R) (e : d ≃ d₂) : reindex e e A =
     (reindex (α := R) e (.refl d) 1) * A * (reindex (α := R) (.refl d) e 1) := by
   ext i j
   simp only [Matrix.mul_apply, Matrix.reindex]
   simp [Matrix.one_apply]
 
-theorem Matrix.reindex_eq_conj_unitaryGroup' (A : Matrix d d R) (e : Equiv.Perm d) : reindex e e A =
+lemma Matrix.reindex_eq_conj_unitaryGroup' (A : Matrix d d R) (e : Equiv.Perm d) : reindex e e A =
     (⟨_, e⁻¹.permMatrix_mem_unitaryGroup⟩ : unitaryGroup d R) * A * (⟨_, e.permMatrix_mem_unitaryGroup⟩ : unitaryGroup d R) := by
   ext i j;
   simp [Matrix.mul_apply]
   rw [Finset.sum_eq_single ( e.symm j )] <;> aesop
 
-theorem Matrix.IsHermitian.eigenvalue_ext (hA : A.IsHermitian)
+lemma Matrix.IsHermitian.eigenvalue_ext (hA : A.IsHermitian)
   (h : ∀ (v : d → 𝕜) (lam : 𝕜), A *ᵥ v = lam • v → B *ᵥ v = lam • v) :
     A = B := by
   -- Since A is Hermitian, it is diagonalizable, and its eigenvectors form a complete basis. Therefore, for any vector v, we have Av = Bv.
@@ -220,7 +220,7 @@ theorem Matrix.IsHermitian.cfc_eq_any_unitary {n 𝕜 : Type*} [RCLike 𝕜] [Fi
     hA.cfc f = U.val * diagonal (RCLike.ofReal ∘ f ∘ D) * star U.val :=
   Matrix.IsHermitian.cfc_eq_any_isometry hA U.2.2 U.2.1 hUD f
 
-private theorem Matrix.cfc_conj_isometry' (hA : A.IsHermitian) (f : ℝ → ℝ) {u : Matrix d₂ d 𝕜}
+private lemma Matrix.cfc_conj_isometry' (hA : A.IsHermitian) (f : ℝ → ℝ) {u : Matrix d₂ d 𝕜}
   (hu₁ : u.Isometry) (hu₂ : uᴴ.Isometry) :
     cfc f (u * A * uᴴ) = u * (cfc f A) * uᴴ := by
   let D := hA.eigenvalues
@@ -247,7 +247,7 @@ private theorem Matrix.cfc_conj_isometry' (hA : A.IsHermitian) (f : ℝ → ℝ)
   simp only [Matrix.mul_assoc, conjTranspose_mul, star_eq_conjTranspose, U', D]
   exact isHermitian_mul_mul_conjTranspose _ hA
 
-theorem Matrix.cfc_conj_isometry (f : ℝ → ℝ) {u : Matrix d₂ d 𝕜}
+lemma Matrix.cfc_conj_isometry (f : ℝ → ℝ) {u : Matrix d₂ d 𝕜}
   (hu₁ : u.Isometry) (hu₂ : uᴴ.Isometry) :
     cfc f (u * A * uᴴ) = u * (cfc f A) * uᴴ := by
   by_cases hA : A.IsHermitian
@@ -261,19 +261,19 @@ theorem Matrix.cfc_conj_isometry (f : ℝ → ℝ) {u : Matrix d₂ d 𝕜}
     simp only [Matrix.mul_assoc, hu₃]
     simp [← Matrix.mul_assoc, hu₃]
 
-theorem Matrix.cfc_conj_unitary (f : ℝ → ℝ) (u : unitaryGroup d 𝕜) :
+lemma Matrix.cfc_conj_unitary (f : ℝ → ℝ) (u : unitaryGroup d 𝕜) :
     cfc f (u * A * u⁻¹) = u * (cfc f A) * u⁻¹ := by
   have hu := u.prop
   rw [mem_unitaryGroup_iff_isometry] at hu
   exact Matrix.cfc_conj_isometry f hu.left hu.right
 
-theorem Matrix.cfc_conj_unitary' (f : ℝ → ℝ) (u : unitaryGroup d 𝕜) :
+lemma Matrix.cfc_conj_unitary' (f : ℝ → ℝ) (u : unitaryGroup d 𝕜) :
     cfc f (uᴴ * A * u.val) = uᴴ * (cfc f A) * u.val := by
   have h1 := cfc_conj_unitary (A := A) f u⁻¹
   simp_all only [inv_inv]
   exact h1
 
-theorem Matrix.cfc_reindex (f : ℝ → ℝ) (e : d ≃ d₂) :
+lemma Matrix.cfc_reindex (f : ℝ → ℝ) (e : d ≃ d₂) :
     cfc f (reindex e e A) = reindex e e (cfc f A) := by
   rw [reindex_eq_conj, reindex_eq_conj]
   convert Matrix.cfc_conj_isometry f (u := (Matrix.reindex e (Equiv.refl d) : Matrix d d 𝕜 → Matrix d₂ d 𝕜) 1) ?_ ?_
@@ -283,7 +283,7 @@ theorem Matrix.cfc_reindex (f : ℝ → ℝ) (e : d ≃ d₂) :
   · rw [conjTranspose_reindex, conjTranspose_one]
     apply reindex_one_isometry
 
-theorem Matrix.commute_euclideanLin (hAB : Commute A B) :
+lemma Matrix.commute_euclideanLin (hAB : Commute A B) :
     Commute A.toEuclideanLin B.toEuclideanLin := by
   rw [commute_iff_eq] at hAB ⊢
   ext v i
@@ -417,7 +417,7 @@ noncomputable def LinearMap.sharedEigenvaluesB {A B : EuclideanSpace 𝕜 d →�
   fun i => RCLike.re (inner 𝕜 (LinearMap.sharedEigenbasis hA hB hAB i) (B (LinearMap.sharedEigenbasis hA hB hAB i)))
 
 omit [DecidableEq d] in
-theorem LinearMap.mem_eigenspace_inf_of_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[𝕜] EuclideanSpace 𝕜 d}
+lemma LinearMap.mem_eigenspace_inf_of_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[𝕜] EuclideanSpace 𝕜 d}
     (hA : A.IsSymmetric) (hB : B.IsSymmetric) (hAB : Commute A B) (i : d) :
     ∃ (μ : Module.End.Eigenvalues A) (ν : Module.End.Eigenvalues B),
       LinearMap.sharedEigenbasis hA hB hAB i ∈ Module.End.eigenspace A μ ⊓ Module.End.eigenspace B ν := by
@@ -433,7 +433,7 @@ theorem LinearMap.mem_eigenspace_inf_of_sharedEigenbasis {A B : EuclideanSpace �
   exact hV.subordinateOrthonormalBasis_subordinate hn j hV'
 
 omit [DecidableEq d] in
-theorem LinearMap.apply_A_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[𝕜] EuclideanSpace 𝕜 d}
+lemma LinearMap.apply_A_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[𝕜] EuclideanSpace 𝕜 d}
     (hA : A.IsSymmetric) (hB : B.IsSymmetric) (hAB : Commute A B) (i : d) :
     A (sharedEigenbasis hA hB hAB i) = (sharedEigenvaluesA hA hB hAB i : 𝕜) • (sharedEigenbasis hA hB hAB i) := by
   obtain ⟨μ, ν, h⟩ := mem_eigenspace_inf_of_sharedEigenbasis hA hB hAB i
@@ -449,7 +449,7 @@ theorem LinearMap.apply_A_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[�
     hA ((sharedEigenbasis hA hB hAB) i) ((sharedEigenbasis hA hB hAB) i)
 
 omit [DecidableEq d] in
-theorem LinearMap.apply_B_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[𝕜] EuclideanSpace 𝕜 d}
+lemma LinearMap.apply_B_sharedEigenbasis {A B : EuclideanSpace 𝕜 d →ₗ[𝕜] EuclideanSpace 𝕜 d}
     (hA : A.IsSymmetric) (hB : B.IsSymmetric) (hAB : Commute A B) (i : d) :
     B (sharedEigenbasis hA hB hAB i) = (sharedEigenvaluesB hA hB hAB i : 𝕜) • (sharedEigenbasis hA hB hAB i) := by
   obtain ⟨μ, ν, h⟩ := mem_eigenspace_inf_of_sharedEigenbasis hA hB hAB i
@@ -508,7 +508,7 @@ theorem mulVec_sharedEigenbasisA (j : d) :
   simp [Matrix.toEuclideanLin, Matrix.toLpLin_apply] at this
   exact this
 
-theorem mulVec_sharedEigenbasisB (j : d) :
+lemma mulVec_sharedEigenbasisB (j : d) :
     B *ᵥ (sharedEigenbasis hA hB hAB j) =
     (sharedEigenvalueB hA hB hAB) j • WithLp.ofLp (sharedEigenbasis hA hB hAB j) := by
   rw [isSymmetric_toEuclideanLin_iff.symm] at hA hB
@@ -524,7 +524,7 @@ This is exactly analogous to star_shared_mul_B_mul_IsDiag (which is proved below
 -/
 set_option maxHeartbeats 0 in
 
-theorem star_shared_mul_A_mul_IsDiag : IsDiag
+lemma star_shared_mul_A_mul_IsDiag : IsDiag
     ((star (sharedEigenvectorUnitary hA hB hAB : Matrix d d 𝕜)) * A *
       (sharedEigenvectorUnitary hA hB hAB : Matrix d d 𝕜)) := by
   intro i j hij;
@@ -589,7 +589,7 @@ end Matrix.SharedEigenbasis
 
 end commute_module
 
-theorem Commute.exists_unitary (hA : A.IsHermitian) (hB : B.IsHermitian) (hAB : Commute A B) :
+lemma Commute.exists_unitary (hA : A.IsHermitian) (hB : B.IsHermitian) (hAB : Commute A B) :
     ∃ U : Matrix.unitaryGroup d 𝕜, (U.val * A * Uᴴ).IsDiag ∧ (U.val * B * Uᴴ).IsDiag := by
   use (Matrix.sharedEigenvectorUnitary hA hB hAB)⁻¹
   constructor

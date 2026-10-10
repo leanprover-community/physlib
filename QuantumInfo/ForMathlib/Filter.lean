@@ -16,7 +16,7 @@ public import Mathlib.Tactic.Bound
 open Topology
 
 --This is a stupid name for a stupid lemma
-theorem Filter.Tendsto_inv_nat_mul_div_real (m : ℕ)
+lemma Filter.Tendsto_inv_nat_mul_div_real (m : ℕ)
    : Filter.Tendsto (fun (x : ℕ) => ((↑x)⁻¹ * ↑(x / m) : ℝ)) Filter.atTop (𝓝 (1 / ↑m)) := by
   --Thanks aristotle!
   -- This simplifies to $\lim_{x \to \infty} \frac{\lfloor x / m \rfloor}{x} = \frac{1}{m}$ because the floor function grows asymptotically like $x / m$.
@@ -48,7 +48,7 @@ theorem Filter.Tendsto_inv_nat_mul_div_real (m : ℕ)
 --Similar to `ENNReal.tendsto_toReal_iff` in `Mathlib/Topology/Instances/ENNReal/Lemmas`, but
 -- instead of requiring finiteness for all values, just eventually is needed.
 open Filter Topology ENNReal in
-theorem ENNReal.tendsto_toReal_iff_of_eventually_ne_top
+lemma ENNReal.tendsto_toReal_iff_of_eventually_ne_top
   {ι} {fi : Filter ι} {f : ι → ℝ≥0∞} (hf : ∀ᶠ i in fi, f i ≠ ∞) {x : ℝ≥0∞}
     (hx : x ≠ ∞) : Tendsto (fun n => (f n).toReal) fi (𝓝 x.toReal) ↔ Tendsto f fi (𝓝 x) := by
   have he₁ : f =ᶠ[fi] (fun n ↦ (f n).toNNReal) := by

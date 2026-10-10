@@ -113,7 +113,7 @@ theorem IsHermitianPreserving.dual {M : MatrixMap dIn dOut ℂ} (h : M.IsHermiti
 
 open MatrixOrder
 --TODO Cleanup, find home, abstract out to HermitianMats...?
-theorem _root_.Matrix.PosSemidef.trace_mul_nonneg {n : Type*} [Fintype n] [DecidableEq n]
+lemma _root_.Matrix.PosSemidef.trace_mul_nonneg {n : Type*} [Fintype n] [DecidableEq n]
     {A B : Matrix n n 𝕜} (hA : A.PosSemidef) (hB : B.PosSemidef) :
     0 ≤ (A * B).trace := by
   open scoped Matrix in
@@ -217,7 +217,7 @@ The dual of the identity map is the identity map.
 lemma dual_id : (MatrixMap.id dIn 𝕜).dual = MatrixMap.id dIn 𝕜 := by
   exact dual_unique (id dIn 𝕜) (id dIn 𝕜) fun A_1 => congrFun rfl
 
-private theorem matrix_mem_span_kronecker {A C : Type*} [Fintype A] [Fintype C]
+private lemma matrix_mem_span_kronecker {A C : Type*} [Fintype A] [Fintype C]
     [DecidableEq A] [DecidableEq C] (X : Matrix (A × C) (A × C) 𝕜) :
     X ∈ Submodule.span 𝕜
       (Set.range (fun p : (Matrix A A 𝕜 × Matrix C C 𝕜) => p.1 ⊗ₖ p.2)) := by
@@ -265,7 +265,7 @@ lemma dual_kron {A B C D : Type*} [Fintype A] [Fintype B] [Fintype C] [Fintype D
 
 --The dual of a CompletelyPositive map is always CP, more generally it's k-positive
 -- see Lemma 3.1 of https://www.math.uwaterloo.ca/~krdavids/Preprints/CDPRpositivereal.pdf
-theorem IsCompletelyPositive.dual {M : MatrixMap dIn dOut ℂ} (h : M.IsCompletelyPositive) : M.dual.IsCompletelyPositive := by
+lemma IsCompletelyPositive.dual {M : MatrixMap dIn dOut ℂ} (h : M.IsCompletelyPositive) : M.dual.IsCompletelyPositive := by
   intro n
   have h_dual_pos : (MatrixMap.dual (M ⊗ₖₘ MatrixMap.id (Fin n) ℂ)).IsPositive := by
     exact IsPositive.dual (h n);
@@ -307,7 +307,7 @@ lemma Module.Basis.toDualEquiv_symm_comp_dualMap_toDualEquiv {ι R M : Type*} [F
   ac_rfl
 
 @[simp]
-theorem dual_dual : M.dual.dual = M := by
+lemma dual_dual : M.dual.dual = M := by
   refine dual_unique (M := M.dual) (M' := M) ?_
   intro A B
   calc
@@ -326,7 +326,7 @@ def dual (M : CPTPMap dIn dOut) : CPUMap dOut dIn where
   unital := M.TP.dual
   cp := .dual M.cp
 
-theorem dual_pos (M : CPTPMap dIn dOut) {T : HermitianMat dOut ℂ} (hT : 0 ≤ T) :
+lemma dual_pos (M : CPTPMap dIn dOut) {T : HermitianMat dOut ℂ} (hT : 0 ≤ T) :
     0 ≤ M.dual T := by
   exact M.dual.pos_Hermitian hT
 
@@ -390,7 +390,7 @@ set_option backward.isDefEq.respectTransparency false in
 omit [Fintype dOut] in
 --PULLOUT
 @[simp]
-theorem HPMap.linearMap_ofHermitianMat (f : HermitianMat dIn ℂ →ₗ[ℝ] HermitianMat dOut ℂ) :
+lemma HPMap.linearMap_ofHermitianMat (f : HermitianMat dIn ℂ →ₗ[ℝ] HermitianMat dOut ℂ) :
     LinearMap.ofClass (HPMap.ofHermitianMat f) = f := by
   ext1 ⟨x, hx⟩
   ext1
@@ -404,7 +404,7 @@ theorem HPMap.linearMap_ofHermitianMat (f : HermitianMat dIn ℂ →ₗ[ℝ] Her
 --PULLOUT
 omit [Fintype dOut] in
 @[simp]
-theorem HPMap.ofHermitianMat_linearMap (f : HPMap dIn dOut ℂ) :
+lemma HPMap.ofHermitianMat_linearMap (f : HPMap dIn dOut ℂ) :
     ofHermitianMat (LinearMap.ofClass f) = f := by
   ext : 3
   simp only [map, ofHermitianMat, instFunLike, LinearMap.coe_ofClass, LinearMap.coe_mk, AddHom.coe_mk]
@@ -426,7 +426,7 @@ def HPMap.hermDual : HPMap dOut dIn :=
   HPMap.ofHermitianMat (LinearMap.ofClass f).adjoint
 
 @[simp]
-theorem HPMap.hermDual_hermDual : f.hermDual.hermDual = f := by
+lemma HPMap.hermDual_hermDual : f.hermDual.hermDual = f := by
   simp [hermDual]
 
 open RealInnerProductSpace
@@ -484,7 +484,7 @@ def hermDual (M : PTPMap dIn dOut) : PUMap dOut dIn where
   pos := M.pos.hermDual
   unital := M.TP.hermDual
 
-theorem hermDual_pos (M : PTPMap dIn dOut) {T : HermitianMat dOut ℂ} (hT : 0 ≤ T) :
+lemma hermDual_pos (M : PTPMap dIn dOut) {T : HermitianMat dOut ℂ} (hT : 0 ≤ T) :
     0 ≤ M.hermDual T := by
   exact M.hermDual.pos_Hermitian hT
 

@@ -53,6 +53,8 @@ lemma hamiltonEqOp_eq_zero_iff_hamiltons_equations (H : Time → X → X → ℝ
     (∀ t, ∂ₜ p t = -gradient (fun x => H t (p t) x) (q t)) := by
   simp [hamiltonEqOp_eq, funext_iff, Prod.mk_eq_zero, forall_and, add_eq_zero_iff_neg_eq]
 
+/-- The variational derivative of `⟪(pq' t).1, ∂ₜ (Prod.snd ∘ pq') t⟫_ℝ - H t (pq' t).1 (pq' t).2`
+  for a hamiltonian `H` is equal to the Hamilton equations operator. -/
 theorem hamiltons_equations_varGradient
     (H : Time → X → X → ℝ) (pq : Time → X × X) (hp : ContDiff ℝ ∞ pq)
     (hL : ContDiff ℝ ∞ ↿H) :

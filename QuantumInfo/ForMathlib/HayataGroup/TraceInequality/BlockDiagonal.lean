@@ -68,17 +68,17 @@ noncomputable def hsumIncl (ℋ : Type u) [NormedAddCommGroup ℋ] [InnerProduct
     (ContinuousLinearMap.single ℂ (fun _ : Fin 2 => ℋ) i)
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem hsumProj_hsumIncl_apply (i j : Fin 2) (x : ℋ) :
+@[simp] lemma hsumProj_hsumIncl_apply (i j : Fin 2) (x : ℋ) :
     hsumProj ℋ i (hsumIncl ℋ j x) = if i = j then x else 0 := by
   fin_cases i <;> fin_cases j <;> simp [hsumProj, hsumIncl, hsumEquiv]
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem inner_hsumIncl_hsumIncl (i j : Fin 2) (x y : ℋ) :
+@[simp] lemma inner_hsumIncl_hsumIncl (i j : Fin 2) (x y : ℋ) :
     inner ℂ (hsumIncl ℋ i x) (hsumIncl ℋ j y) = if i = j then inner ℂ x y else 0 := by
   fin_cases i <;> fin_cases j <;> simp [hsumIncl, hsumEquiv, PiLp.inner_apply]
 
 omit [Nontrivial ℋ] in
-@[simp] theorem hsumIncl_adjoint (i : Fin 2) :
+@[simp] lemma hsumIncl_adjoint (i : Fin 2) :
     (hsumIncl ℋ i).adjoint = hsumProj ℋ i := by
   fin_cases i
   · ext x
@@ -91,7 +91,7 @@ omit [Nontrivial ℋ] in
     simp [hsumProj, hsumIncl, hsumEquiv, PiLp.inner_apply]
 
 omit [Nontrivial ℋ] in
-@[simp] theorem hsumProj_adjoint (i : Fin 2) :
+@[simp] lemma hsumProj_adjoint (i : Fin 2) :
     (hsumProj ℋ i).adjoint = hsumIncl ℋ i := by
   calc
     (hsumProj ℋ i).adjoint = ((hsumIncl ℋ i).adjoint).adjoint := by
@@ -99,7 +99,7 @@ omit [Nontrivial ℋ] in
     _ = hsumIncl ℋ i := ContinuousLinearMap.adjoint_adjoint _
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem hsumIncl_proj_sum (z : HSum ℋ) :
+@[simp] lemma hsumIncl_proj_sum (z : HSum ℋ) :
     hsumIncl ℋ 0 (hsumProj ℋ 0 z) + hsumIncl ℋ 1 (hsumProj ℋ 1 z) = z := by
   ext i
   fin_cases i <;> simp [hsumProj, hsumIncl, hsumEquiv]
@@ -116,7 +116,7 @@ noncomputable def blockOp (A00 A01 A10 A11 : L ℋ) : L (HSum ℋ) :=
     hsumIncl ℋ 1 ∘L A11 ∘L hsumProj ℋ 1
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-theorem blockOp_ext {T S : L (HSum ℋ)}
+lemma blockOp_ext {T S : L (HSum ℋ)}
     (h0 : ∀ z : HSum ℋ, hsumProj ℋ 0 (T z) = hsumProj ℋ 0 (S z))
     (h1 : ∀ z : HSum ℋ, hsumProj ℋ 1 (T z) = hsumProj ℋ 1 (S z)) :
     T = S := by
@@ -126,7 +126,7 @@ theorem blockOp_ext {T S : L (HSum ℋ)}
   · exact h1 z
 
 omit [Nontrivial ℋ] in
-@[simp] theorem blockDiagonal_star (A B : L ℋ) :
+@[simp] lemma blockDiagonal_star (A B : L ℋ) :
     star (blockDiagonal (ℋ := ℋ) A B) = blockDiagonal (ℋ := ℋ) (star A) (star B) := by
   ext z i
   fin_cases i
@@ -164,28 +164,28 @@ noncomputable def blockDiagonalHom : (L ℋ × L ℋ) →⋆ₐ[ℝ] L (HSum ℋ
     simp
 
 omit [Nontrivial ℋ] in
-@[simp] theorem blockDiagonalHom_apply (p : L ℋ × L ℋ) :
+@[simp] lemma blockDiagonalHom_apply (p : L ℋ × L ℋ) :
     blockDiagonalHom (ℋ := ℋ) p = blockDiagonal (ℋ := ℋ) p.1 p.2 :=
   rfl
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem hsumProj_blockDiagonal_zero (A B : L ℋ) (z : HSum ℋ) :
+@[simp] lemma hsumProj_blockDiagonal_zero (A B : L ℋ) (z : HSum ℋ) :
     hsumProj ℋ 0 (blockDiagonal A B z) = A (hsumProj ℋ 0 z) := by
   simp [blockDiagonal]
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem hsumProj_blockDiagonal_one (A B : L ℋ) (z : HSum ℋ) :
+@[simp] lemma hsumProj_blockDiagonal_one (A B : L ℋ) (z : HSum ℋ) :
     hsumProj ℋ 1 (blockDiagonal A B z) = B (hsumProj ℋ 1 z) := by
   simp [blockDiagonal]
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem blockDiagonal_one :
+@[simp] lemma blockDiagonal_one :
     blockDiagonal (ℋ := ℋ) (1 : L ℋ) (1 : L ℋ) = (1 : L (HSum ℋ)) := by
   ext z i
   fin_cases i <;> simp [blockDiagonal]
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-theorem blockDiagonal_nonneg {A B : L ℋ} (hA : 0 ≤ A) (hB : 0 ≤ B) :
+lemma blockDiagonal_nonneg {A B : L ℋ} (hA : 0 ≤ A) (hB : 0 ≤ B) :
     0 ≤ blockDiagonal (ℋ := ℋ) A B := by
   have hApos : A.IsPositive := ContinuousLinearMap.nonneg_iff_isPositive.mp hA
   have hBpos : B.IsPositive := ContinuousLinearMap.nonneg_iff_isPositive.mp hB
@@ -226,19 +226,19 @@ theorem blockDiagonal_nonneg {A B : L ℋ} (hA : 0 ≤ A) (hB : 0 ≤ B) :
     exact add_nonneg hAz.2 hBz.2
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem hsumProj_blockOp_zero (A00 A01 A10 A11 : L ℋ) (z : HSum ℋ) :
+@[simp] lemma hsumProj_blockOp_zero (A00 A01 A10 A11 : L ℋ) (z : HSum ℋ) :
     hsumProj ℋ 0 (blockOp (ℋ := ℋ) A00 A01 A10 A11 z) =
       A00 (hsumProj ℋ 0 z) + A01 (hsumProj ℋ 1 z) := by
   simp [blockOp]
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in
-@[simp] theorem hsumProj_blockOp_one (A00 A01 A10 A11 : L ℋ) (z : HSum ℋ) :
+@[simp] lemma hsumProj_blockOp_one (A00 A01 A10 A11 : L ℋ) (z : HSum ℋ) :
     hsumProj ℋ 1 (blockOp (ℋ := ℋ) A00 A01 A10 A11 z) =
       A10 (hsumProj ℋ 0 z) + A11 (hsumProj ℋ 1 z) := by
   simp [blockOp]
 
 omit [Nontrivial ℋ] in
-@[simp] theorem blockOp_star (A00 A01 A10 A11 : L ℋ) :
+@[simp] lemma blockOp_star (A00 A01 A10 A11 : L ℋ) :
     star (blockOp (ℋ := ℋ) A00 A01 A10 A11) =
       blockOp (ℋ := ℋ) (star A00) (star A10) (star A01) (star A11) := by
   ext z i

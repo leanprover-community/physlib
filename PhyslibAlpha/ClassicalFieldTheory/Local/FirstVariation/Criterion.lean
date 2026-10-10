@@ -90,6 +90,7 @@ lemma eulerLagrange_zero_of_isCritical (L : Lagrangian d m k)
     have hzero : firstVariationValue L f η = 0 := HasDerivAt.unique hfirstη hcritη
     simpa [firstVariationValue, η] using hzero
 
+/-- A criterion for a field to be critical in terms of the Euler-Lagrange operator. -/
 theorem isCritical_iff_eulerLagrange_zero (L : Lagrangian d m k)
     (f : Space d → EuclideanSpace ℝ (Fin m))
     (hfirst : HasFirstVariationFormula L f)
@@ -153,7 +154,7 @@ private lemma hasFirstVariationFormula_of_contDiff_underIntegral_and_termwise
 
 /-- The local Euler-Lagrange criterion obtained from the packaged analytic ingredients of the
 first-variation formula. This is the current formalized form of Theorem 5.2. -/
-private theorem isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_and_parts
+private lemma isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_and_parts
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m))
     (hint : HasActionVariationDerivativeUnderIntegral L f)
     (hpoint : HasPointwiseLinearizedDensityFormula L f)
@@ -167,7 +168,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_an
 
 /-- Variant of the local Euler-Lagrange criterion where the integration-by-parts input is reduced
 to a termwise hypothesis. -/
-private theorem isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_and_termwise
+private lemma isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_and_termwise
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m))
     (hint : HasActionVariationDerivativeUnderIntegral L f)
     (hpoint : HasPointwiseLinearizedDensityFormula L f)
@@ -178,7 +179,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_an
   exact isCritical_iff_eulerLagrange_zero_of_underIntegral_linearized_and_parts L f
     hint hpoint (hasIntegratedByPartsFormula_of_termwise L f hterm) hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_underIntegral_and_termwise
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_underIntegral_and_termwise
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hint : HasActionVariationDerivativeUnderIntegral L f)
     (hterm : HasTermwiseIntegratedByPartsFormula L f)
@@ -189,7 +190,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_underIntegral_and_
     (hasFirstVariationFormula_of_contDiff_underIntegral_and_termwise L f hf hint hterm)
     hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_continuous_coordDeriv_and_termwise
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_continuous_coordDeriv_and_termwise
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hcontVar : ∀ η : AdmissibleVariation d (EuclideanSpace ℝ (Fin m)),
       ∀ I : DerivativeIndex d k, ∀ a : Fin m,
@@ -204,7 +205,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_continuous_coordDe
       hcontVar)
     hterm hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_regular
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_regular
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hcontVar : ∀ η : AdmissibleVariation d (EuclideanSpace ℝ (Fin m)),
       Lagrangian.ContinuousCoordDerivAlongFamily L (fun s : ℝ => variedField f η s))
@@ -217,7 +218,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_regular
     (hasTermwiseIntegratedByPartsFormula_of_regular L f hcoeff)
     hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hreg : HasEulerLagrangeRegularityAt L f)
     (hfin : AllVariationsHaveFiniteAction L f)
@@ -227,7 +228,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_regular L f hf hcontVar hcoeff
     hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegularity
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegularity
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hreg : HasSmoothEulerLagrangeRegularity L)
     (hfin : AllVariationsHaveFiniteAction L f)
@@ -236,7 +237,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegulari
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt L f hf (hreg f hf)
     hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegularity
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegularity
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hcoord : Lagrangian.ContDiffCoordDerivInCoordinates L)
     (hfin : AllVariationsHaveFiniteAction L f)
@@ -245,7 +246,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegu
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegularity L f hf
     (hasSmoothEulerLagrangeRegularity_of_contDiffCoordDerivInCoordinates L hcoord) hfin hcont
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt'
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt'
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hreg : HasEulerLagrangeRegularityAt L f)
     (hfin : AllVariationsHaveFiniteAction L f) :
@@ -254,14 +255,14 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt'
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_regular L f hf hcontVar hcoeff hfin
     (continuous_eulerLagrangeOp_of_regular L f hcoeff)
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegularity'
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegularity'
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hreg : HasSmoothEulerLagrangeRegularity L)
     (hfin : AllVariationsHaveFiniteAction L f) :
     IsCritical L f ↔ eulerLagrangeOp L f = 0 := by
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_regularityAt' L f hf (hreg f hf) hfin
 
-private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegularity'
+private lemma isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegularity'
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hcoord : Lagrangian.ContDiffCoordDerivInCoordinates L)
     (hfin : AllVariationsHaveFiniteAction L f) :
@@ -269,7 +270,7 @@ private theorem isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegu
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothRegularity' L f hf
     (hasSmoothEulerLagrangeRegularity_of_contDiffCoordDerivInCoordinates L hcoord) hfin
 
-private theorem
+private lemma
     isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegularity_of_hasFiniteAction
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hcoord : Lagrangian.ContDiffCoordDerivInCoordinates L)
@@ -284,7 +285,7 @@ private theorem
       L f η hbase (hlocal η)
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_coordinateRegularity' L f hf hcoord hfin
 
-theorem isCritical_iff_eulerLagrange_zero_of_hasFiniteAction_and_continuousInCoordinates
+lemma isCritical_iff_eulerLagrange_zero_of_hasFiniteAction_and_continuousInCoordinates
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hcoord : Lagrangian.ContDiffCoordDerivInCoordinates L)
     (hcontL : Lagrangian.ContinuousInCoordinates L)

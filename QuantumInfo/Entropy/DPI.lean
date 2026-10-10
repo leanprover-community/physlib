@@ -76,7 +76,7 @@ notation "Q̃_" α "(" ρ "‖" σ ")" => sandwichedTraceFunctional α ρ σ
 The sandwiched Rényi divergence equals `log(Q̃_α) / (α - 1)` for `α > 0`, `α ≠ 1`,
 when `σ.M.ker ≤ ρ.M.ker`.
 -/
-theorem sandwichedRelRentropy_eq_log_traceFunctional (hα₀ : 0 < α) (hα₁ : α ≠ 1)
+lemma sandwichedRelRentropy_eq_log_traceFunctional (hα₀ : 0 < α) (hα₁ : α ≠ 1)
     (hker : σ.M.ker ≤ ρ.M.ker) :
     D̃_ α(ρ‖σ) = ENNReal.ofReal (Real.log (Q̃_ α(ρ‖σ)) / (α - 1)) := by
   rw [ENNReal.ofReal_eq_coe_nnreal]
@@ -88,7 +88,7 @@ theorem sandwichedRelRentropy_eq_log_traceFunctional (hα₀ : 0 < α) (hα₁ :
 /-
 `Q̃_α(ρ‖σ)` is nonneg when `α > 0`.
 -/
-theorem sandwichedTraceFunctional_nonneg (ρ σ : MState d) :
+lemma sandwichedTraceFunctional_nonneg (ρ σ : MState d) :
     0 ≤ Q̃_ α(ρ‖σ) := by
   rw [sandwichedTraceFunctional]
   apply trace_nonneg
@@ -122,7 +122,7 @@ This corresponds to equation (2.3) in the paper.
 Proved using `rpow_conj_unitary` (f(UXU†) = U f(X) U†) and `conj_conj`.
 -/
 set_option backward.isDefEq.respectTransparency false in
-theorem sandwichedTraceFunctional_conj_unitary_hermitian
+lemma sandwichedTraceFunctional_conj_unitary_hermitian
     (U : Matrix.unitaryGroup d ℂ) (A B : HermitianMat d ℂ) :
     let γ := (1 - α) / (2 * α)
     ((A.conj U.val).conj ((B.conj U.val) ^ γ).mat ^ α).trace =
@@ -186,7 +186,7 @@ noncomputable def H_hat (α : ℝ) (ρ σ : MState d) : HermitianMat d ℂ :=
 /-
 **Step 1a**: The optimizer `H_hat` is PSD.
 -/
-theorem H_hat_nonneg (ρ σ : MState d) : 0 ≤ H_hat α ρ σ := by
+lemma H_hat_nonneg (ρ σ : MState d) : 0 ≤ H_hat α ρ σ := by
   apply conj_nonneg
   apply rpow_nonneg
   positivity
@@ -237,7 +237,7 @@ theorem H_hat_conj_sigma (hα : 1 < α) (ρ σ : MState d) :
 Sub-lemma for Step 1b: the inner product ⟪ρ.M, H_hat⟫ equals Tr[(σ^γ ρ σ^γ)^α].
 By cyclicity of trace: Tr[ρ · σ^γ · (σ^γ ρ σ^γ)^{α−1} · σ^γ] = Tr[(σ^γ ρ σ^γ)^α].
 -/
-theorem inner_rho_H_hat (hα : 1 < α) (ρ σ : MState d) :
+lemma inner_rho_H_hat (hα : 1 < α) (ρ σ : MState d) :
     let γ := (1 - α) / (2 * α)
     ⟪ρ.M, H_hat α ρ σ⟫_ℝ = ((ρ.M.conj (σ.M ^ γ).mat) ^ α).trace := by
   unfold H_hat; simp [inner_def]
@@ -267,7 +267,7 @@ theorem inner_rho_H_hat (hα : 1 < α) (ρ σ : MState d) :
 This is the key computation that verifies the variational formula at the optimizer.
 Proof: f_α(H_hat, ρ, σ) = α · Tr[(σ^γ ρ σ^γ)^α] - (α-1) · Tr[(σ^γ ρ σ^γ)^α] = Tr[(σ^γ ρ σ^γ)^α] = Q̃.
 -/
-theorem f_alpha_at_optimizer (hα : 1 < α) (ρ σ : MState d) :
+lemma f_alpha_at_optimizer (hα : 1 < α) (ρ σ : MState d) :
     f_alpha α (H_hat α ρ σ) ρ σ = Q̃_ α(ρ‖σ) := by
   have h_inner : ⟪ρ.M, H_hat α ρ σ⟫_ℝ = ((ρ.M.conj (σ.M ^ ((1 - α) / (2 * α))).mat) ^ α).trace := by
     exact inner_rho_H_hat hα ρ σ
@@ -493,7 +493,7 @@ theorem f_alpha_convex_in_sigma (hα : 1 < α) (H : HermitianMat d ℂ) (hH : 0 
 f_α decomposes as a function linear in ρ (independent of σ) plus a function convex
 in σ (independent of ρ).
 -/
-theorem f_alpha_jointly_convex (hα : 1 < α) (H : HermitianMat d ℂ) (hH : 0 ≤ H)
+lemma f_alpha_jointly_convex (hα : 1 < α) (H : HermitianMat d ℂ) (hH : 0 ≤ H)
     {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (hw_nonneg : ∀ i, 0 ≤ w i) (hw_sum : ∑ i, w i = 1)
     (ρs σs : ι → MState d) (ρ_mix σ_mix : MState d)
@@ -516,7 +516,7 @@ The range of `H ↦ f_alpha α H ρ σ` over PSD `H` is bounded above.
 This follows from the variational formula: the supremum equals `Q̃_α(ρ‖σ)`,
 which is a finite real number.
 -/
-theorem f_alpha_bddAbove (hα : 1 < α) (ρ σ : MState d) (hker : σ.M.ker ≤ ρ.M.ker) :
+lemma f_alpha_bddAbove (hα : 1 < α) (ρ σ : MState d) (hker : σ.M.ker ≤ ρ.M.ker) :
     BddAbove (Set.range (fun H : {H : HermitianMat d ℂ // 0 ≤ H} => f_alpha α H.1 ρ σ)) := by
   exact ⟨_, Set.forall_mem_range.mpr fun H => f_alpha_le_at_optimizer hα ρ σ _ H.2 hker⟩
 
@@ -526,7 +526,7 @@ convex `f_alpha α H` is jointly convex. This is a standard fact: for each `H`,
 `f_alpha α H (ρ_mix) (σ_mix) ≤ ∑ wᵢ f_alpha α H (ρᵢ) (σᵢ) ≤ ∑ wᵢ sup_H f_alpha ...`,
 so taking sup on the left gives the result.
 -/
-theorem iSup_f_alpha_jointly_convex (hα : 1 < α)
+lemma iSup_f_alpha_jointly_convex (hα : 1 < α)
     {ι : Type*} [Fintype ι]
     (w : ι → ℝ) (hw_nonneg : ∀ i, 0 ≤ w i) (hw_sum : ∑ i, w i = 1)
     (ρs σs : ι → MState d) (ρ_mix σ_mix : MState d)
@@ -826,7 +826,7 @@ This corresponds to equation (2.4) in the paper. -/
 The trace functional is multiplicative over tensor products:
 `Q̃_α(ρ₁ ⊗ ρ₂ ‖ σ₁ ⊗ σ₂) = Q̃_α(ρ₁‖σ₁) · Q̃_α(ρ₂‖σ₂)`.
 -/
-theorem sandwichedTraceFunctional_mul
+lemma sandwichedTraceFunctional_mul
     (ρ₁ σ₁ : MState dA) (ρ₂ σ₂ : MState dB) :
     Q̃_ α(ρ₁ ⊗ᴹ ρ₂‖σ₁ ⊗ᴹ σ₂) = Q̃_ α(ρ₁‖σ₁) * Q̃_ α(ρ₂‖σ₂) := by
   exact sandwiched_term_product ρ₁ σ₁ ρ₂ σ₂ α ((1 - α) / (2 * α))
@@ -837,7 +837,7 @@ This follows from the calculation: `γ = (1-α)/(2α)` gives `2γ + 1 = 1/α`,
 so `σ^γ · σ · σ^γ = σ^(2γ+1) = σ^(1/α)`, and `(σ^(1/α))^α = σ^1`,
 whose trace equals 1 since σ is a state.
 -/
-theorem sandwichedTraceFunctional_self (hα : 0 < α) (ρ : MState d) :
+lemma sandwichedTraceFunctional_self (hα : 0 < α) (ρ : MState d) :
     Q̃_ α(ρ‖ρ) = 1 := by
   by_cases h : α = 1
   · subst h; simp [sandwichedTraceFunctional]
@@ -1005,7 +1005,7 @@ lemma prod_traceRight_uniform_entry [Nonempty dB] (ρ : MState (dA × dB))
   rw [Matrix.diagonal_apply]
   simp only [mul_ite, mul_zero]
 
-theorem twirling_average_eq [Nonempty dB]
+lemma twirling_average_eq [Nonempty dB]
     (κ : Type) [Fintype κ] (V : κ → Matrix.unitaryGroup dB ℂ)
     (hV : ∀ (X : HermitianMat dB ℂ),
       (Fintype.card κ : ℝ)⁻¹ • ∑ i : κ, X.conj (V i : Matrix dB dB ℂ) =
@@ -1230,7 +1230,7 @@ The sandwiched Rényi divergence is invariant under unitary conjugation.
 -/
 set_option backward.isDefEq.respectTransparency false in
 set_option maxHeartbeats 400000 in
-theorem sandwichedRenyiEntropy_conj_unitary (hα : 0 < α) (ρ σ : MState d)
+lemma sandwichedRenyiEntropy_conj_unitary (hα : 0 < α) (ρ σ : MState d)
     (U : Matrix.unitaryGroup d ℂ) :
     D̃_ α(ρ.uConj U‖σ.uConj U) = D̃_ α(ρ‖σ) := by
   -- Since unitary conjugation preserves the kernel, the condition σ.M.ker ≤ ρ.M.ker is
@@ -1286,7 +1286,7 @@ theorem sandwichedRenyiEntropy_conj_unitary (hα : 0 < α) (ρ σ : MState d)
 The sandwiched Rényi divergence is invariant under tensoring with a fixed pure state:
 `D̃_α(ρ ⊗ |ψ⟩⟨ψ| ‖ σ ⊗ |ψ⟩⟨ψ|) = D̃_α(ρ ‖ σ)`.
 -/
-theorem sandwichedRenyiEntropy_tensor_pure (hα : 0 < α) (ρ σ : MState d₁) (ψ : Ket d₂) :
+lemma sandwichedRenyiEntropy_tensor_pure (hα : 0 < α) (ρ σ : MState d₁) (ψ : Ket d₂) :
     D̃_ α(ρ ⊗ᴹ MState.pure ψ‖σ ⊗ᴹ MState.pure ψ) = D̃_ α(ρ‖σ) := by
   simp [hα]
 
@@ -1301,7 +1301,7 @@ Monotonicity of the sandwiched Rényi divergence under traceRight for `α > 1`,
 without the kernel condition. When the kernel condition fails, `D̃_α = ⊤` and
 the inequality is trivial.
 -/
-theorem sandwichedRenyiEntropy_mono_traceRight' [Nonempty dB]
+lemma sandwichedRenyiEntropy_mono_traceRight' [Nonempty dB]
     (hα : 1 < α) (ρ σ : MState (dA × dB)) :
     D̃_ α(ρ.traceRight‖σ.traceRight) ≤ D̃_ α(ρ‖σ) := by
   by_cases hker : σ.M.ker ≤ ρ.M.ker
@@ -1384,7 +1384,7 @@ The DPI for the sandwiched Rényi divergence at α = 1 (the quantum relative ent
 This follows from the α > 1 case by taking a limit, using the continuity of
 `α ↦ D̃_α(ρ‖σ)` established in `sandwichedRelRentropy.continuousOn`.
 -/
-theorem sandwichedRenyiEntropy_DPI_eq_one (ρ σ : MState d₁) (Φ : CPTPMap d₁ d₂) :
+lemma sandwichedRenyiEntropy_DPI_eq_one (ρ σ : MState d₁) (Φ : CPTPMap d₁ d₂) :
     D̃_ 1(Φ ρ‖Φ σ) ≤ D̃_ 1(ρ‖σ) := by
   -- Since α → D_α(ρ‖σ) is continuous on (0, ∞), we can take the limit as α → 1.
   have h_cont :

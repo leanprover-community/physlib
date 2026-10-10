@@ -235,7 +235,7 @@ lemma isSolution_only_if_zero (f : Fin 11 → ℚ) (hS : (PlusU1 3).IsSolution (
   simp
 
 set_option backward.isDefEq.respectTransparency false in
-theorem basis_linear_independent : LinearIndependent ℚ B :=
+lemma basis_linear_independent : LinearIndependent ℚ B :=
   Fintype.linearIndependent_iff.mpr fun f h ↦ isSolution_f_zero f
     ⟨chargeToAF 0 (by with_unfolding_all rfl) (by with_unfolding_all rfl)
       (by with_unfolding_all rfl) (by with_unfolding_all rfl) (by with_unfolding_all rfl)
@@ -243,7 +243,7 @@ theorem basis_linear_independent : LinearIndependent ℚ B :=
 
 end ElevenPlane
 
-theorem eleven_dim_plane_of_no_sols_exists : ∃ (B : Fin 11 → (PlusU1 3).Charges),
+lemma eleven_dim_plane_of_no_sols_exists : ∃ (B : Fin 11 → (PlusU1 3).Charges),
     LinearIndependent ℚ B ∧
     ∀ (f : Fin 11 → ℚ), (PlusU1 3).IsSolution (∑ i, f i • B i) → ∑ i, f i • B i = 0 :=
   ⟨ElevenPlane.B, ElevenPlane.basis_linear_independent, ElevenPlane.isSolution_only_if_zero⟩

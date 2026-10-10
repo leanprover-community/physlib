@@ -22,24 +22,24 @@ namespace HermitianMat
 noncomputable def sqrt (A : HermitianMat d 𝕜) : HermitianMat d 𝕜 :=
   A.cfc Real.sqrt
 
-theorem sqrt_sq_eq_proj (A : HermitianMat d 𝕜) :
+lemma sqrt_sq_eq_proj (A : HermitianMat d 𝕜) :
     A.sqrt.mat * A.sqrt.mat = A⁺ := by
   rw [sqrt, ← mat_cfc_mul, ← HermitianMat.ext_iff, posPart_eq_cfc_ite]
   congr! 2 with x
   grind [Pi.mul_apply, Real.mul_self_sqrt, Real.sqrt_eq_zero']
 
-theorem sqrt_sq (hA : 0 ≤ A) :
+lemma sqrt_sq (hA : 0 ≤ A) :
     A.sqrt.mat * A.sqrt.mat = A := by
   rw [sqrt_sq_eq_proj, posPart_eq_self hA]
 
 @[aesop unsafe apply 50% (rule_sets := [Commutes])]
-theorem commute_sqrt_left (hAB : Commute A.mat B.mat) :
+lemma commute_sqrt_left (hAB : Commute A.mat B.mat) :
     Commute A.sqrt.mat B.mat := by
   rw [sqrt]
   commutes
 
 @[aesop unsafe apply 50% (rule_sets := [Commutes])]
-theorem commute_sqrt_right (hAB : Commute A.mat B.mat) :
+lemma commute_sqrt_right (hAB : Commute A.mat B.mat) :
     Commute A.mat B.sqrt.mat := by
   commutes
 
@@ -58,15 +58,15 @@ lemma sqrt_inv_mul_self_mul_sqrt_inv_eq_one {A : HermitianMat d 𝕜} (hA : A.ma
   apply Matrix.mul_nonsing_inv
   exact isUnit_iff_ne_zero.mpr hA.det_pos.ne'
 
-theorem sqrt_nonneg (A : HermitianMat d 𝕜) : 0 ≤ A.sqrt := by
+lemma sqrt_nonneg (A : HermitianMat d 𝕜) : 0 ≤ A.sqrt := by
   rw [sqrt, cfc_nonneg_iff]
   intro; positivity
 
-theorem sqrt_pos (h : 0 < A) : 0 < A.sqrt := by
+lemma sqrt_pos (h : 0 < A) : 0 < A.sqrt := by
   rw [sqrt]
   apply cfc_pos_of_pos h (by intros; positivity) (by simp)
 
-theorem sqrt_posDef {A : HermitianMat d 𝕜} (hA : A.mat.PosDef) :
+lemma sqrt_posDef {A : HermitianMat d 𝕜} (hA : A.mat.PosDef) :
     A.sqrt.mat.PosDef := by
   rw [sqrt, cfc_posDef]
   simp [hA.eigenvalues_pos]

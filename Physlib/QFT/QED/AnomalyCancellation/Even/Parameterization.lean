@@ -140,7 +140,7 @@ lemma generic_or_special (S : (PureU1 (2 * n.succ)).Sols) :
   · exact Or.inl (genericCase_exists S ⟨g, f, h, h1⟩)
   · exact Or.inr (specialCase_exists S ⟨g, f, h, h1⟩)
 
-theorem generic_case {S : (PureU1 (2 * n.succ)).Sols} (h : GenericCase S) :
+lemma generic_case {S : (PureU1 (2 * n.succ)).Sols} (h : GenericCase S) :
     ∃ g f a, S = parameterization g f a := by
   obtain ⟨g, f, hS⟩ := span_basis S.1.1
   use g, f,
@@ -181,7 +181,7 @@ lemma special_case_lineInCubic_perm {S : (PureU1 (2 * n.succ)).Sols}
     LineInCubicPerm S.1.1 :=
   fun M => special_case_lineInCubic (h M)
 
-theorem special_case {S : (PureU1 (2 * n.succ.succ)).Sols}
+lemma special_case {S : (PureU1 (2 * n.succ.succ)).Sols}
     (h : ∀ (M : (FamilyPermutations (2 * n.succ.succ)).group),
     SpecialCase ((FamilyPermutations (2 * n.succ.succ)).solAction.toFun _ _ S M)) :
     ∃ (M : (FamilyPermutations (2 * n.succ.succ)).group),

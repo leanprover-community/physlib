@@ -18,18 +18,18 @@ variable {α : Type*} [NonUnitalNonAssocSemiring α] [StarRing α]
 variable {α β : Type*} [DecidableEq α] [Fintype α] [DecidableEq β] [Fintype β]
 
 @[simp]
-theorem neg_unitary_val (u : 𝐔[α]) : (-u).val = -u := by
+lemma neg_unitary_val (u : 𝐔[α]) : (-u).val = -u := by
   rfl
 
 omit [DecidableEq α] [Fintype α] [DecidableEq β] [Fintype β] in
 open Kronecker in
 @[simp]
-theorem star_kron (a : Matrix α α ℂ) (b : Matrix β β ℂ) : star (a ⊗ₖ b) = (star a) ⊗ₖ (star b) := by
+lemma star_kron (a : Matrix α α ℂ) (b : Matrix β β ℂ) : star (a ⊗ₖ b) = (star a) ⊗ₖ (star b) := by
   ext _ _
   simp
 
 open Kronecker in
-theorem kron_unitary (a : 𝐔[α]) (b : 𝐔[β]) : a.val ⊗ₖ b.val ∈ 𝐔[α × β] := by
+lemma kron_unitary (a : 𝐔[α]) (b : 𝐔[β]) : a.val ⊗ₖ b.val ∈ 𝐔[α × β] := by
   simp [Matrix.mem_unitaryGroup_iff, ← Matrix.mul_kronecker_mul]
 
 open Kronecker in
@@ -39,12 +39,12 @@ def unitary_kron (a : 𝐔[α]) (b : 𝐔[β]) : 𝐔[α × β] :=
 scoped infixl:60 " ⊗ᵤ " => unitary_kron
 
 @[simp]
-theorem unitary_kron_apply (a : 𝐔[α]) (b : 𝐔[β]) (i₁ i₂ : α) (j₁ j₂ : β) :
+lemma unitary_kron_apply (a : 𝐔[α]) (b : 𝐔[β]) (i₁ i₂ : α) (j₁ j₂ : β) :
     (a ⊗ᵤ b) (i₁, j₁) (i₂, j₂) = (a i₁ i₂) * (b j₁ j₂) := by
   rfl
 
 @[simp]
-theorem unitary_kron_one_one : (1 : 𝐔[α]) ⊗ᵤ (1 : 𝐔[β]) = (1 : 𝐔[α × β]) := by
+lemma unitary_kron_one_one : (1 : 𝐔[α]) ⊗ᵤ (1 : 𝐔[β]) = (1 : 𝐔[α × β]) := by
   simp [Matrix.unitary_kron]
 
 --TODO: Cleanup? Or at least write the signature better. Definitely belongs in Mathlib in some form
@@ -81,11 +81,11 @@ variable (A B : HermitianMat n 𝕜) (U : Matrix.unitaryGroup n 𝕜)
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem trace_conj_unitary : (conj U.val A).trace = A.trace := by
+lemma trace_conj_unitary : (conj U.val A).trace = A.trace := by
   simp [Matrix.trace_mul_cycle, conj, ← Matrix.star_eq_conjTranspose, trace]
 
 @[simp]
-theorem le_conj_unitary : A.conj U.val ≤ B.conj U ↔ A ≤ B := by
+lemma le_conj_unitary : A.conj U.val ≤ B.conj U ↔ A ≤ B := by
   rw [← sub_nonneg, ← sub_nonneg (b := A), ← map_sub]
   constructor
   · intro h
@@ -95,7 +95,7 @@ theorem le_conj_unitary : A.conj U.val ≤ B.conj U ↔ A ≤ B := by
 set_option backward.isDefEq.respectTransparency false in
 open RealInnerProductSpace in
 @[simp]
-theorem inner_conj_unitary : ⟪A.conj U.val, B.conj U.val⟫ = ⟪A, B⟫ := by
+lemma inner_conj_unitary : ⟪A.conj U.val, B.conj U.val⟫ = ⟪A, B⟫ := by
   dsimp [conj]
   simp only [inner_eq_re_trace, mat_mk]
   rw [← mul_assoc, ← mul_assoc, mul_assoc _ _ U.val]
