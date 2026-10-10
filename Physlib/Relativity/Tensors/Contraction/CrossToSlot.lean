@@ -31,6 +31,11 @@ operation live with the unit-tensor collapse theory in
     to result-to-end contraction.
 - `TensorSpecies.Tensor.crossToSlotInv` : the returning half of a round trip, the contraction
     against the second factor with the round trip's color cast absorbed.
+- `TensorSpecies.Tensor.crossToSlot_basis_repr_eq_sum_fin` : the component formula at arbitrary
+    rank and slot for any species, the contraction of the two contracted basis vectors left as an
+    opaque coefficient.
+- `TensorSpecies.Tensor.crossToSlot_basis_repr_eq_sum_dual` : the same formula for a species with
+    contraction-dual bases, the δ collapsing the two sums into one.
 - `TensorSpecies.Tensor.crossToSlot_permT_right_id` : an identity reindexing of the rank-2 tensor
     passes through the contraction.
 - `TensorSpecies.Tensor.crossToSlot_equivariant` : the contraction commutes with the `G`-action.
@@ -151,6 +156,72 @@ lemma crossToSlot_permT_right_id {nA : ℕ} {c : Fin (nA + 1) → C} {cM cM' : F
     simpa only [Function.comp_apply, Function.comp_id, id_eq] using
       congrFun Fin.append_castAdd_natAdd_eq_id ((Fin.cycleIcc i (Fin.last nA)).symm x)
   · rfl
+
+/-- The component formula for a cross contraction into an arbitrary slot, for a species whose bases
+are not assumed adapted to the contraction: each contracted label is summed over its own slot and
+the contraction of the two basis vectors remains an opaque coefficient. Rotating the survivor back
+to its slot only transports the surviving labels, so this is `crossToEnd_basis_repr_eq_sum_fin` read
+through the cycle. -/
+lemma crossToSlot_basis_repr_eq_sum_fin {nA : ℕ} {c : Fin (nA + 1) → C}
+    {cM : Fin 2 → C} (i : Fin (nA + 1)) (j : Fin 2) (hc : S.τ (c i) = cM j)
+    (M : S.Tensor cM) (t : S.Tensor c)
+    (φ : ComponentIdx (S := S) (Function.update c i (cM (j.succAbove 0)))) :
+    (basis (Function.update c i (cM (j.succAbove 0)))).repr
+        (crossToSlot i j hc M t) φ =
+      ∑ x₁ : basisIdx (c i), ∑ x₂ : basisIdx (cM j),
+        ((basis c).repr t (ComponentIdx.insert i
+            (x₁, fun m => basisIdxCongr (by simp [Function.update_of_ne]) (φ (i.succAbove m)))) *
+          (basis cM).repr M (ComponentIdx.insert j
+            (x₂, fun m => basisIdxCongr (by fin_cases m; simp) (φ i)))) *
+        S.contr (c i) (b (c i) x₁ ⊗ₜ[k]
+          b (S.τ (c i)) (basisIdxCongr (by rw [hc]) x₂)) := by
+  rw [crossToSlot_eq_crossToEnd, permT_basis_repr_symm_apply,
+    crossToEnd_basis_repr_eq_sum_fin]
+  let hslot := IsReindexing.crossToSlot_cycle (C := C) (c := c) (cM := cM) i j
+  have hinv : ∀ p, hslot.inv ⇑(Fin.cycleIcc i (Fin.last nA)).symm p =
+      Fin.cycleIcc i (Fin.last nA) p := fun p => by
+    apply hslot.1.1
+    rw [IsReindexing.inv_apply_apply ⇑(Fin.cycleIcc i (Fin.last nA)).symm hslot]
+    exact (Equiv.symm_apply_apply _ _).symm
+  refine Finset.sum_congr rfl fun x₁ _ => ?_
+  refine Finset.sum_congr rfl fun x₂ _ => ?_
+  congr 2
+  · apply congrArg
+    funext m
+    refine Fin.succAboveCases i ?_ (fun a => ?_) m
+    · simp
+    · simp only [ComponentIdx.prod_apply_fst, ComponentIdx.insert_apply_succAbove]
+      rw [basisIdxCongr_apply_apply]
+      exact basisIdxCongr_heq_arg _ _ (congr_arg_heq φ ((hinv _).trans (by
+        rw [← Fin.append_succAbove_const_eq_cycleIcc i, Fin.append_left])))
+  · apply congrArg
+    funext m
+    refine Fin.succAboveCases j ?_ (fun a => ?_) m
+    · simp
+    · fin_cases a
+      simp only [ComponentIdx.prod_apply_snd, ComponentIdx.insert_apply_succAbove]
+      rw [basisIdxCongr_apply_apply]
+      exact basisIdxCongr_heq_arg _ _ (congr_arg_heq φ ((hinv _).trans (by
+        rw [← Fin.append_succAbove_const_eq_cycleIcc i, Fin.append_right])))
+
+/-- The component formula for a cross contraction into an arbitrary slot, for a species with
+contraction-dual bases: the contraction coefficient is `δ` and one sum remains, the contracted label
+of `M` matched to that of `t` by `contrDualIdxEquiv`. -/
+lemma crossToSlot_basis_repr_eq_sum_dual [HasContrDualBases S] {nA : ℕ} {c : Fin (nA + 1) → C}
+    {cM : Fin 2 → C} (i : Fin (nA + 1)) (j : Fin 2) (hc : S.τ (c i) = cM j)
+    (M : S.Tensor cM) (t : S.Tensor c)
+    (φ : ComponentIdx (S := S) (Function.update c i (cM (j.succAbove 0)))) :
+    (basis (Function.update c i (cM (j.succAbove 0)))).repr
+        (crossToSlot i j hc M t) φ =
+      ∑ x : basisIdx (c i),
+        (basis c).repr t (ComponentIdx.insert i
+          (x, fun m => basisIdxCongr (by simp [Function.update_of_ne]) (φ (i.succAbove m)))) *
+        (basis cM).repr M (ComponentIdx.insert j
+          (basisIdxCongr hc ((HasContrDualBases.contrDualIdxEquiv S (c i)).symm x),
+            fun m => basisIdxCongr (by fin_cases m; simp) (φ i))) := by
+  rw [crossToSlot_basis_repr_eq_sum_fin]
+  simp [HasContrDualBases.contr_basis_eq_ite, mul_ite, ← Equiv.symm_apply_eq,
+    ← basisIdxCongr_symm hc]
 
 /-- Cross contraction into a slot is `G`-equivariant, both constituents (`crossToEnd`, `permT`)
   being so. -/
