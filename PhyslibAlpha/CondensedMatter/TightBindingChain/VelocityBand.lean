@@ -5,6 +5,7 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Cube
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Saturation
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.SpeedLimit
 /-!
@@ -20,6 +21,11 @@ moving faster, with `v* < |⟨J⟩| ≤ maxCurrent`, carries a positive defect. 
 band `Ϙ = (v*, maxCurrent]`. For `N = 2, 3` the maximal current state has minimum uncertainty,
 so the band is empty.
 
+On the cube the band forces the defect axis by axis, for every state and not only for products:
+a state of the cube with minimum uncertainty along `x` has minimum uncertainty slice by slice, and
+its speed along `x` is an average of the speeds of the slices, all at most `v*`. So a speed along
+`x` in the band of `Tx` forces a positive defect along `x`, and likewise along `y` and `z`.
+
 ## ii. Key results
 
 - `defectOf` : the centered Gram defect of `H` and `X` in a vector.
@@ -29,12 +35,17 @@ so the band is empty.
 - `velocityBand` : the band `Ϙ = (threshold, maxCurrent]`.
 - `defectOf_pos_of_mem_velocityBand` : in the band, the defect is forced.
 - `velocityBand_eq_empty` : for `N = 2, 3` the band is empty.
+- `centeredGramDefect_alongX_pos` (and `Y`, `Z`) : on the cube, a speed in the band of an axis
+  forces the defect of that axis, for every state.
+- `nava_robertson_schrodinger_cube_of_mem_velocityBand` : speeds in the three bands force the
+  defects of the three axes.
 
 ## iii. Table of contents
 
 - A. Uncertainty in a vector
 - B. The threshold
 - C. The band
+- D. The band on the cube
 
 ## iv. References
 
@@ -47,7 +58,7 @@ namespace CondensedMatter
 namespace TightBindingChain
 open scoped ComplexOrder selfAdjoint
 open ProbabilisticTheory
-open InnerProductSpace UnitalPositiveLinearMap
+open InnerProductSpace UnitalPositiveLinearMap QuantumMechanics.FiniteHilbertSpace
 variable (T : TightBindingChain)
 
 /-!
@@ -169,6 +180,68 @@ lemma velocityBand_eq_empty (ht : T.t ≠ 0) (hN : T.N = 2 ∨ T.N = 3) :
   rw [← T.expectation_ofVec T.norm_maxCurrentState _ T.current_hermitian,
     T.abs_expectation_current_maxCurrentState] at h
   exact Set.Ioc_eq_empty (not_lt.mpr h)
+
+/-!
+
+## D. The band on the cube
+
+-/
+
+/-- A vector of minimum uncertainty moves no faster than the threshold. -/
+lemma abs_expectation_current_le_threshold {ψ : T.HilbertSpace} (hψ : ‖ψ‖ = 1)
+    (h : centeredGramDefect (ofVec hψ) T.openHamiltonianObservable T.positionObservable = 0) :
+    |(ofVec hψ)⟨T.currentObservable⟩| ≤ T.threshold := by
+  rw [T.expectation_ofVec hψ _ T.current_hermitian]
+  exact T.le_threshold ⟨mem_sphere_zero_iff_norm.mpr hψ, by
+    rw [Set.mem_preimage, ← T.centeredGramDefect_ofVec_eq hψ, h, Set.mem_singleton_iff]⟩
+
+variable (Tx Ty Tz : TightBindingChain) {Ψ : Tx.CubeHilbertSpace Ty Tz} (hΨ : ‖Ψ‖ = 1)
+
+/-- **Forced uncertainty along `x`.** Every state of the cube whose speed along `x` lies in the
+band of `Tx` carries a positive uncertainty defect along `x`, product state or not. -/
+lemma centeredGramDefect_alongX_pos
+    (hv : |(ofVec hΨ)⟨Tx.alongX Ty Tz Tx.currentObservable⟩| ∈ Tx.velocityBand) :
+    0 < centeredGramDefect (ofVec hΨ) (Tx.alongX Ty Tz Tx.openHamiltonianObservable)
+      (Tx.alongX Ty Tz Tx.positionObservable) :=
+  (centeredGramDefect_nonneg _ _ _).lt_of_ne fun h => (hv.1.trans_le
+    (abs_expectation_onFstObservable_le (fun _ hu => Tx.abs_expectation_current_le_threshold hu)
+      hΨ h.symm)).false
+
+/-- **Forced uncertainty along `y`.** Every state of the cube whose speed along `y` lies in the
+band of `Ty` carries a positive uncertainty defect along `y`. -/
+lemma centeredGramDefect_alongY_pos
+    (hv : |(ofVec hΨ)⟨Tx.alongY Ty Tz Ty.currentObservable⟩| ∈ Ty.velocityBand) :
+    0 < centeredGramDefect (ofVec hΨ) (Tx.alongY Ty Tz Ty.openHamiltonianObservable)
+      (Tx.alongY Ty Tz Ty.positionObservable) :=
+  (centeredGramDefect_nonneg _ _ _).lt_of_ne fun h => (hv.1.trans_le
+    (abs_expectation_onSndObservable_le (fun _ hu h' => abs_expectation_onFstObservable_le
+      (fun _ hu' => Ty.abs_expectation_current_le_threshold hu') hu h') hΨ h.symm)).false
+
+/-- **Forced uncertainty along `z`.** Every state of the cube whose speed along `z` lies in the
+band of `Tz` carries a positive uncertainty defect along `z`. -/
+lemma centeredGramDefect_alongZ_pos
+    (hv : |(ofVec hΨ)⟨Tx.alongZ Ty Tz Tz.currentObservable⟩| ∈ Tz.velocityBand) :
+    0 < centeredGramDefect (ofVec hΨ) (Tx.alongZ Ty Tz Tz.openHamiltonianObservable)
+      (Tx.alongZ Ty Tz Tz.positionObservable) :=
+  (centeredGramDefect_nonneg _ _ _).lt_of_ne fun h => (hv.1.trans_le
+    (abs_expectation_onSndObservable_le (fun _ hu h' => abs_expectation_onSndObservable_le
+      (fun _ hu' => Tz.abs_expectation_current_le_threshold hu') hu h') hΨ h.symm)).false
+
+/-- **Nava–Robertson–Schrödinger on the cube, in the band.** Every state of the cube whose speeds
+along `x`, `y`, `z` lie in the bands of `Tx`, `Ty`, `Tz` carries a positive uncertainty defect on
+the three axes at once. -/
+theorem nava_robertson_schrodinger_cube_of_mem_velocityBand
+    (hx : |(ofVec hΨ)⟨Tx.alongX Ty Tz Tx.currentObservable⟩| ∈ Tx.velocityBand)
+    (hy : |(ofVec hΨ)⟨Tx.alongY Ty Tz Ty.currentObservable⟩| ∈ Ty.velocityBand)
+    (hz : |(ofVec hΨ)⟨Tx.alongZ Ty Tz Tz.currentObservable⟩| ∈ Tz.velocityBand) :
+    0 < centeredGramDefect (ofVec hΨ) (Tx.alongX Ty Tz Tx.openHamiltonianObservable)
+        (Tx.alongX Ty Tz Tx.positionObservable) ∧
+      0 < centeredGramDefect (ofVec hΨ) (Tx.alongY Ty Tz Ty.openHamiltonianObservable)
+        (Tx.alongY Ty Tz Ty.positionObservable) ∧
+      0 < centeredGramDefect (ofVec hΨ) (Tx.alongZ Ty Tz Tz.openHamiltonianObservable)
+        (Tx.alongZ Ty Tz Tz.positionObservable) :=
+  ⟨Tx.centeredGramDefect_alongX_pos Ty Tz hΨ hx, Tx.centeredGramDefect_alongY_pos Ty Tz hΨ hy,
+    Tx.centeredGramDefect_alongZ_pos Ty Tz hΨ hz⟩
 
 end TightBindingChain
 end CondensedMatter
