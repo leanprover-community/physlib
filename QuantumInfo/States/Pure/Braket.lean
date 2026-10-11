@@ -235,6 +235,24 @@ lemma Braket.dot_swap_conj (ψ₁ ψ₂ : Ket d) :
   simp +decide [Braket.dot]
   ac_rfl
 
+section relabel
+variable {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂]
+
+/-- Relabel a ket along an equivalence of basis index types. Given `e : d₂ ≃ d₁`,
+the amplitude of `ψ.relabel e` at `i : d₂` is the amplitude of `ψ` at `e i`. -/
+def Ket.relabel (ψ : Ket d₁) (e : d₂ ≃ d₁) : Ket d₂ where
+  vec i := ψ (e i)
+  normalized' := by
+    rw [← ψ.normalized']
+    exact Equiv.sum_comp e (fun i ↦ ‖ψ i‖ ^ 2)
+
+@[simp]
+lemma Ket.relabel_apply (ψ : Ket d₁) (e : d₂ ≃ d₁) (i : d₂) :
+    ψ.relabel e i = ψ (e i) :=
+  rfl
+
+end relabel
+
 section prod
 variable {d d₁ d₂ : Type*} [Fintype d] [Fintype d₁] [Fintype d₂]
 
@@ -345,6 +363,36 @@ theorem Ket.IsProd_iff_mul_eq_mul (ψ : Ket (d₁ × d₂)) : ψ.IsProd ↔
         exact hψfun
       · simp_all [Ket.apply]
     · simp
+
+/-- A ket on the joint system of a finite family of parties is a product state if it is
+the `Ket.piProd` of one ket for each party, generalizing `Ket.IsProd`. -/
+def Ket.IsPiProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (ψ : Ket ((i : ι) → d i)) : Prop :=
+  ∃ φ : (i : ι) → Ket (d i), ψ = Ket.piProd φ
+
+/-- Every `Ket.piProd` state satisfies `Ket.IsPiProd`, generalizing `Ket.IsProd_prod`. -/
+@[simp]
+lemma Ket.isPiProd_piProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (φ : (i : ι) → Ket (d i)) : (Ket.piProd φ).IsPiProd :=
+  ⟨φ, rfl⟩
+
+/-- For two parties, `Ket.IsPiProd` agrees with `Ket.IsProd` after relabeling the joint
+index type `(i : Fin 2) → d i` as `d 0 × d 1`. -/
+lemma Ket.isPiProd_iff_isProd_relabel {d : Fin 2 → Type*} [∀ i, Fintype (d i)]
+    (ψ : Ket ((i : Fin 2) → d i)) :
+    ψ.IsPiProd ↔ (ψ.relabel (piFinTwoEquiv d).symm).IsProd := by
+  constructor
+  · rintro ⟨φ, rfl⟩
+    refine ⟨φ 0, φ 1, Ket.ext fun ⟨a, b⟩ ↦ ?_⟩
+    rw [Ket.relabel_apply, Ket.piProd_apply, Fin.prod_univ_two]
+    rfl
+  · rintro ⟨ξ, η, h⟩
+    refine ⟨(piFinTwoEquiv fun i ↦ Ket (d i)).symm (ξ, η), Ket.ext fun j ↦ ?_⟩
+    have hj := congrArg (fun χ : Ket (d 0 × d 1) ↦ χ (piFinTwoEquiv d j)) h
+    rw [Ket.relabel_apply, Equiv.symm_apply_apply] at hj
+    rw [hj, Ket.piProd_apply, Fin.prod_univ_two]
+    rfl
+
 end prod
 
 section mes
@@ -426,6 +474,31 @@ theorem KetUpToPhase.surjective_mk : Function.Surjective (KetUpToPhase.mk (d := 
   fun q => @Quotient.ind _ Ket.PhaseEquiv (fun q => ∃ a, KetUpToPhase.mk a = q) (fun a => ⟨a, rfl⟩) q
 
 end equiv
+
+section piProd_phase
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)]
+
+/-- If a ket is phase-equivalent to a `Ket.IsPiProd` state, then it is also a
+`Ket.IsPiProd` state, provided there is at least one party. The global phase is
+absorbed into one tensor factor. -/
+lemma Ket.IsPiProd.of_phaseEquiv [Nonempty ι] {ψ ψ' : Ket ((i : ι) → d i)}
+    (h' : ψ'.IsPiProd) (h : Ket.PhaseEquiv.r ψ ψ') : ψ.IsPiProd := by
+  obtain ⟨z, hz, hψ⟩ := h
+  obtain ⟨φ, rfl⟩ := h'
+  obtain ⟨i₀⟩ := ‹Nonempty ι›
+  refine ⟨Function.update φ i₀ ⟨fun a ↦ z * φ i₀ a, ?_⟩, Ket.ext fun j ↦ ?_⟩
+  · simpa [norm_mul, hz, Ket.apply] using (φ i₀).normalized'
+  · have hj : ψ j = z * ∏ i, φ i (j i) := congrFun hψ j
+    rw [hj, Ket.piProd_apply,
+      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i₀),
+      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i₀),
+      Function.update_self, ← mul_assoc]
+    congr 1
+    refine Finset.prod_congr rfl fun i hi ↦ ?_
+    rw [Function.update_of_ne (Finset.ne_of_mem_erase hi)]
+
+end piProd_phase
 
 /-! ## Norm bounds -/
 
