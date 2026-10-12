@@ -100,7 +100,7 @@ noncomputable def CNava : ℝ :=
       |T.a * T.t * Real.cos (Real.pi / (T.N + 1))|
 
 /-- The bound `a t cos (π / (N + 1))` is nonzero for `t ≠ 0` and `N ≥ 2`. -/
-private lemma bound_ne_zero (ht : T.t ≠ 0) (hN : 2 ≤ T.N) :
+lemma bound_ne_zero (ht : T.t ≠ 0) (hN : 2 ≤ T.N) :
     T.a * T.t * Real.cos (Real.pi / (T.N + 1)) ≠ 0 := by
   have hN' : (2 : ℝ) ≤ T.N := by exact_mod_cast hN
   refine mul_ne_zero (mul_ne_zero T.a_pos.ne' ht) (Real.cos_pos_of_mem_Ioo ⟨?_, ?_⟩).ne'
