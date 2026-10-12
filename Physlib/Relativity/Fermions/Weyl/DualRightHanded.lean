@@ -124,11 +124,9 @@ instance : Nontrivial DualRightHandedWeyl := toFin2ℂEquiv.toEquiv.nontrivial
 
 -/
 
-
 /-- The standard basis on dual-right-handed Weyl fermions. -/
 def basis : Basis (Fin 2) ℂ DualRightHandedWeyl := Basis.ofEquivFun
   (AddEquiv.linearEquiv ℂ DualRightHandedWeyl.toFin2ℂAddEquiv)
-
 
 lemma basis_apply (i j : Fin 2) : (basis i).1 j = if j = i then 1 else 0 := by
   simp only [basis, AddEquiv.linearEquiv, AddEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe,
