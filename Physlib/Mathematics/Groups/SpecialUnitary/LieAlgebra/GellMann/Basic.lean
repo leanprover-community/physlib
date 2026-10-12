@@ -8,13 +8,12 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.RingTheory.TensorProduct.Free
-public import Physlib.Relativity.PauliMatrices.Basic
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Adjoint
 /-!
 
 # The generalized Gell-Mann matrices
 
-The generalized Gell-Mann matrices, as well as the specific results in the n = 3 case.
+The generalized Gell-Mann matrices, orthogonality, the basis and the structure constants they form.
 
 ## i. Overview
 
@@ -27,31 +26,26 @@ which has `n² - 1` elements, of three kinds (A):
 - for `1 ≤ m ≤ n - 1` the diagonal matrix `√(2 / (m (m + 1))) (E_00 + ⋯ + E_(m-1)(m-1) - m E_mm)`.
 
 They are orthogonal under the contraction, `adjointContr (λ_i ⊗ λ_j) = tr (λ_i λ_j) = 2 δ_ij`, and
-so linearly independent. For `n = 3` they are the Gell-Mann matrices `λ₁, …, λ₈` (B).
+so linearly independent (B).
 
 As there are as many as the dimension `n² - 1` of `su(n)`, they form a basis, whose coordinates
 are the contractions `adjointContr (λ_i ⊗ x) / 2`, and its base change is a basis of the
-complexification (C). In this basis the adjoint action of `g ∈ SU(n)` is a real orthogonal matrix,
-with entries `re tr (λ_i g λ_j g†) / 2` (D).
+complexification (C). In this basis the bracket defines the structure constants
+`[λ_a, λ_b] = 2 i f_abc λ_c`, which are totally antisymmetric (D).
 
 ## ii. Key results
 
 - `SULieAlgebra.GellMannIndex` : the labels of the generalized Gell-Mann matrices.
 - `SULieAlgebra.gellMannMatrices` : the generalized Gell-Mann matrices.
 - `SULieAlgebra.adjointContr_gellMannMatrices` : the Gell-Mann matrices are orthogonal.
-- `SULieAlgebra.gellMannMatrices_two` : for `n = 2`, the Pauli matrices `σ₁, σ₂, σ₃`.
-- `SULieAlgebra.gellMannMatrices_three` : for `n = 3`, the Gell-Mann matrices `λ₁, …, λ₈`.
 - `SULieAlgebra.gellMannBasis` : the Gell-Mann basis of `su(n)`.
 - `SULieAlgebra.gellMannBasisℂ` : the Gell-Mann basis of the complexification of `su(n)`.
-- `SULieAlgebra.adjointGellMannBasis` : the matrix of the adjoint action in the Gell-Mann basis.
-- `SULieAlgebra.adjointGellMannBasis_transpose_mul_self` : that matrix is orthogonal.
 - `SULieAlgebra.gellMannStructureConst` : the structure constants, `[λ_a, λ_b] = 2 i f_abc λ_c`.
 
 ## iii. Table of contents
 
 - A. The indexing type of the Gell-Mann matrices
-  - A.1. The `n = 2` and `n = 3` equivalences
-  - A.2. The cardinality of `GellMannIndex`
+  - A.1. The cardinality of `GellMannIndex`
 - B. The generalized Gell-Mann matrices
   - B.1. Symmetry properties
   - B.2. Explicit forms
@@ -60,12 +54,10 @@ with entries `re tr (λ_i g λ_j g†) / 2` (D).
     - B.3.2. Between the same type
     - B.3.3. The full orthogonality relation
   - B.4. Linear independence
-  - B.5. The Pauli and Gell-Mann matrices
 - C. The Gell-Mann basis
   - C.1. The basis of `su(n)`
   - C.2. The basis of the complexification
-- D. The adjoint action in the Gell-Mann basis
-- E. The structure constants
+- D. The structure constants
 
 ## iv. References
 
@@ -94,47 +86,7 @@ deriving DecidableEq, Repr, Fintype
 
 /-!
 
-### A.1. The `n = 2` and `n = 3` equivalences
-
--/
-
-/-- For `n = 2`, the labelling of the generalized Gell-Mann matrices as the Pauli matrices
-  `σ₁, σ₂, σ₃` (as `0, 1, 2`): the symmetric, antisymmetric and diagonal matrices. -/
-def GellMannIndex.equivTwo : GellMannIndex 2 ≃ Fin 3 where
-  toFun
-    | .symm _ _ _ => 0
-    | .antisymm _ _ _ => 1
-    | .diag _ => 2
-  invFun := ![.symm 0 1 (by simp), .antisymm 0 1 (by simp), .diag 0]
-  left_inv := by
-    rintro (⟨p, q, h⟩ | ⟨p, q, h⟩ | l)
-    · fin_cases p <;> fin_cases q <;> first | rfl | simp at h
-    · fin_cases p <;> fin_cases q <;> first | rfl | simp at h
-    · fin_cases l
-      rfl
-  right_inv i := by fin_cases i <;> rfl
-
-/-- For `n = 3`, the labelling of the Gell-Mann matrices in the standard order `λ₁, …, λ₈`
-  (as `0, …, 7`): `λ₁, λ₂, λ₃` are the symmetric, antisymmetric and diagonal matrices of the first
-  two coordinates, `λ₄, λ₅` the symmetric and antisymmetric ones of the coordinates `0, 2`,
-  `λ₆, λ₇` those of the coordinates `1, 2`, and `λ₈` the second diagonal matrix. -/
-def GellMannIndex.equivThree : GellMannIndex 3 ≃ Fin 8 where
-  toFun
-    | .symm p q _ => if p.1 = 0 then (if q.1 = 1 then 0 else 3) else 5
-    | .antisymm p q _ => if p.1 = 0 then (if q.1 = 1 then 1 else 4) else 6
-    | .diag l => if l.1 = 0 then 2 else 7
-  invFun := ![.symm 0 1 (by simp), .antisymm 0 1 (by simp), .diag 0, .symm 0 2 (by simp),
-    .antisymm 0 2 (by simp), .symm 1 2 (by simp), .antisymm 1 2 (by simp), .diag 1]
-  left_inv := by
-    rintro (⟨p, q, h⟩ | ⟨p, q, h⟩ | l)
-    · fin_cases p <;> fin_cases q <;> first | rfl | simp [Fin.lt_def] at h
-    · fin_cases p <;> fin_cases q <;> first | rfl | simp [Fin.lt_def] at h
-    · fin_cases l <;> rfl
-  right_inv i := by fin_cases i <;> rfl
-
-/-!
-
-### A.2. The cardinality of `GellMannIndex`
+### A.1. The cardinality of `GellMannIndex`
 
 -/
 
@@ -425,36 +377,6 @@ lemma linearIndependent_gellMannMatrices {n : ℕ} :
 
 /-!
 
-### B.5. The Pauli and Gell-Mann matrices
-
--/
-
-/-- For `n = 2` the generalized Gell-Mann matrices are the Pauli matrices `σ₁, σ₂, σ₃`, labelled
-  by `GellMannIndex.equivTwo`. -/
-lemma gellMannMatrices_two (i : Fin 3) :
-    (gellMannMatrices (GellMannIndex.equivTwo.symm i)).1 = PauliMatrix.pauliMatrix (Sum.inr i) := by
-  fin_cases i <;> ext a b <;> fin_cases a <;> fin_cases b <;>
-    simp [GellMannIndex.equivTwo, gellMannMatrices, PauliMatrix.pauliMatrix]
-
-/-- For `n = 3` the generalized Gell-Mann matrices are the Gell-Mann matrices `λ₁, …, λ₈`, labelled
-  in the standard order by `GellMannIndex.equivThree`. -/
-lemma gellMannMatrices_three :
-    (fun i => (gellMannMatrices (GellMannIndex.equivThree.symm i)).1) =
-    ![!![0, 1, 0; 1, 0, 0; 0, 0, 0],
-      !![0, -Complex.I, 0; Complex.I, 0, 0; 0, 0, 0],
-      !![1, 0, 0; 0, -1, 0; 0, 0, 0],
-      !![0, 0, 1; 0, 0, 0; 1, 0, 0],
-      !![0, 0, -Complex.I; 0, 0, 0; Complex.I, 0, 0],
-      !![0, 0, 0; 0, 0, 1; 0, 1, 0],
-      !![0, 0, 0; 0, 0, -Complex.I; 0, Complex.I, 0],
-      (1 / Real.sqrt 3 : ℂ) • !![1, 0, 0; 0, 1, 0; 0, 0, -2]] := by
-  funext i
-  fin_cases i <;> ext a b <;> fin_cases a <;> fin_cases b <;>
-    simp [GellMannIndex.equivThree, gellMannMatrices, one_add_one_eq_two, div_mul_eq_div_div,
-      show (1 : ℝ) + 2 = 3 by norm_num]
-
-/-!
-
 ## C. The Gell-Mann basis
 
 ### C.1. The basis of `su(n)`
@@ -512,65 +434,7 @@ lemma gellMannBasisℂ_repr_apply {n : ℕ} (A : Complexification n) (i : GellMa
 
 /-!
 
-## D. The adjoint action in the Gell-Mann basis
-
--/
-
-/-- The matrix of the adjoint action of `g` in the Gell-Mann basis, a real matrix, as a monoid
-  homomorphism from `SU(n)`. -/
-noncomputable def adjointGellMannBasis {n : ℕ} :
-    specialUnitaryGroup (Fin n) ℂ →* Matrix (GellMannIndex n) (GellMannIndex n) ℝ :=
-  (MonoidHomClass.toMonoidHom (LinearMap.toMatrixAlgEquiv gellMannBasis)).comp adjoint
-
-/-- The entries of the matrix of the adjoint action, `re tr (λ_i g λ_j g†) / 2`. -/
-lemma adjointGellMannBasis_apply {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ)
-    (i j : GellMannIndex n) : adjointGellMannBasis g i j =
-      ((gellMannMatrices i).1 * (g.1 * (gellMannMatrices j).1 * star g.1)).trace.re / 2 := by
-  rw [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_coe,
-    LinearMap.toMatrixAlgEquiv_apply, gellMannBasis_repr_apply, adjointContr_tmul,
-    gellMannBasis_apply, adjoint_val]
-
-/-- The matrix of the adjoint action of `g⁻¹` is the transpose of that of `g`, the adjoint action
-  preserving the contraction. -/
-lemma adjointGellMannBasis_inv {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
-    adjointGellMannBasis g⁻¹ = (adjointGellMannBasis g)ᵀ := by
-  ext i j
-  rw [transpose_apply, adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.comp_apply,
-    MonoidHom.coe_coe, LinearMap.toMatrixAlgEquiv_apply, LinearMap.toMatrixAlgEquiv_apply,
-    gellMannBasis_repr_apply, gellMannBasis_repr_apply, gellMannBasis_apply, gellMannBasis_apply,
-    ← adjointContr_adjoint g, Representation.self_inv_apply, adjointContr_symm]
-
-/-- The matrix of the adjoint action is orthogonal. -/
-lemma adjointGellMannBasis_transpose_mul_self {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
-    (adjointGellMannBasis g)ᵀ * adjointGellMannBasis g = 1 := by
-  rw [← adjointGellMannBasis_inv, ← map_mul, inv_mul_cancel, map_one]
-
-/-- The matrix of the complex adjoint action in the complex Gell-Mann basis is the real matrix of
-  the adjoint action. -/
-lemma toMatrix_adjointℂ_gellMannBasisℂ {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
-    LinearMap.toMatrix gellMannBasisℂ gellMannBasisℂ (adjointℂ g) =
-      (adjointGellMannBasis g).map (algebraMap ℝ ℂ) :=
-  LinearMap.toMatrix_baseChange ℂ (adjoint g) gellMannBasis gellMannBasis
-
-/-- The adjoint action on a Gell-Mann matrix is a combination of Gell-Mann matrices with
-  coefficients the entries of the matrix of the adjoint action,
-  `g λ_j g† = ∑ i, R_ij(g) λ_i`. -/
-lemma adjoint_gellMannMatrices {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) (j : GellMannIndex n) :
-    adjoint g (gellMannMatrices j) = ∑ i, adjointGellMannBasis g i j • gellMannMatrices i := by
-  conv_lhs => rw [← gellMannBasis.sum_repr (adjoint g (gellMannMatrices j))]
-  simp only [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_coe,
-    LinearMap.toMatrixAlgEquiv_apply, gellMannBasis_apply]
-
-/-- The adjoint action on the coordinates in the Gell-Mann basis is multiplication by the matrix of
-  the adjoint action, `A^i ↦ R_ij(g) A^j`. -/
-lemma gellMannBasis_repr_adjoint {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ)
-    (x : SULieAlgebra n ℂ) :
-    gellMannBasis.repr (adjoint g x) = adjointGellMannBasis g *ᵥ gellMannBasis.repr x :=
-  (LinearMap.toMatrix_mulVec_repr gellMannBasis gellMannBasis (adjoint g) x).symm
-
-/-!
-
-## E. The structure constants
+## D. The structure constants
 
 -/
 
