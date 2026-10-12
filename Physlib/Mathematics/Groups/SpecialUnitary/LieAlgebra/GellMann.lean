@@ -514,33 +514,34 @@ lemma gellMannBasisℂ_repr_apply {n : ℕ} (A : Complexification n) (i : GellMa
 
 -/
 
-/-- The matrix of the adjoint action of `g` in the Gell-Mann basis, a real matrix. -/
-noncomputable def adjointGellMannBasis {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
-    Matrix (GellMannIndex n) (GellMannIndex n) ℝ :=
-  LinearMap.toMatrix gellMannBasis gellMannBasis (adjoint g)
+/-- The matrix of the adjoint action of `g` in the Gell-Mann basis, a real matrix, as a monoid
+  homomorphism from `SU(n)`. -/
+noncomputable def adjointGellMannBasis {n : ℕ} :
+    specialUnitaryGroup (Fin n) ℂ →* Matrix (GellMannIndex n) (GellMannIndex n) ℝ :=
+  (MonoidHomClass.toMonoidHom (LinearMap.toMatrixAlgEquiv gellMannBasis)).comp adjoint
 
 /-- The entries of the matrix of the adjoint action, `re tr (λ_i g λ_j g†) / 2`. -/
 lemma adjointGellMannBasis_apply {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ)
     (i j : GellMannIndex n) : adjointGellMannBasis g i j =
       ((gellMannMatrices i).1 * (g.1 * (gellMannMatrices j).1 * star g.1)).trace.re / 2 := by
-  rw [adjointGellMannBasis, LinearMap.toMatrix_apply, gellMannBasis_repr_apply,
-    adjointContr_tmul, gellMannBasis_apply, adjoint_val]
+  rw [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_coe,
+    LinearMap.toMatrixAlgEquiv_apply, gellMannBasis_repr_apply, adjointContr_tmul,
+    gellMannBasis_apply, adjoint_val]
 
 /-- The matrix of the adjoint action of `g⁻¹` is the transpose of that of `g`, the adjoint action
   preserving the contraction. -/
 lemma adjointGellMannBasis_inv {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
     adjointGellMannBasis g⁻¹ = (adjointGellMannBasis g)ᵀ := by
   ext i j
-  rw [transpose_apply, adjointGellMannBasis, adjointGellMannBasis, LinearMap.toMatrix_apply,
-    LinearMap.toMatrix_apply, gellMannBasis_repr_apply, gellMannBasis_repr_apply,
-    gellMannBasis_apply, gellMannBasis_apply, ← adjointContr_adjoint g,
-    Representation.self_inv_apply, adjointContr_symm]
+  rw [transpose_apply, adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.comp_apply,
+    MonoidHom.coe_coe, LinearMap.toMatrixAlgEquiv_apply, LinearMap.toMatrixAlgEquiv_apply,
+    gellMannBasis_repr_apply, gellMannBasis_repr_apply, gellMannBasis_apply, gellMannBasis_apply,
+    ← adjointContr_adjoint g, Representation.self_inv_apply, adjointContr_symm]
 
 /-- The matrix of the adjoint action is orthogonal. -/
 lemma adjointGellMannBasis_transpose_mul_self {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
     (adjointGellMannBasis g)ᵀ * adjointGellMannBasis g = 1 := by
-  rw [← adjointGellMannBasis_inv, adjointGellMannBasis, adjointGellMannBasis,
-    ← LinearMap.toMatrix_mul, ← map_mul, inv_mul_cancel, map_one, LinearMap.toMatrix_one]
+  rw [← adjointGellMannBasis_inv, ← map_mul, inv_mul_cancel, map_one]
 
 /-- The matrix of the complex adjoint action in the complex Gell-Mann basis is the real matrix of
   the adjoint action. -/
@@ -555,7 +556,8 @@ lemma toMatrix_adjointℂ_gellMannBasisℂ {n : ℕ} (g : specialUnitaryGroup (F
 lemma adjoint_gellMannMatrices {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) (j : GellMannIndex n) :
     adjoint g (gellMannMatrices j) = ∑ i, adjointGellMannBasis g i j • gellMannMatrices i := by
   conv_lhs => rw [← gellMannBasis.sum_repr (adjoint g (gellMannMatrices j))]
-  simp only [adjointGellMannBasis, LinearMap.toMatrix_apply, gellMannBasis_apply]
+  simp only [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_coe,
+    LinearMap.toMatrixAlgEquiv_apply, gellMannBasis_apply]
 
 /-- The adjoint action on the coordinates in the Gell-Mann basis is multiplication by the matrix of
   the adjoint action, `A^i ↦ R_ij(g) A^j`. -/
