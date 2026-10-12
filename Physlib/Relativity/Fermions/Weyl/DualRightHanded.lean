@@ -5,12 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.Complex.Polynomial.Basic
-public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RepresentationTheory.Irreducible
-public import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 
 # Dual right handed Weyl fermions
