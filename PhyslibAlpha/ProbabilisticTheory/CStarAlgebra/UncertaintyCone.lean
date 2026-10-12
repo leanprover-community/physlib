@@ -168,7 +168,7 @@ theorem pauliRadius_gramMatrix_le :
 
 /-- The Gram four-vector is null exactly when the Robertson–Schrödinger relation is an equality,
 that is when the centered Gram defect vanishes. -/
-theorem pauliRadius_gramMatrix_eq_iff :
+lemma pauliRadius_gramMatrix_eq_iff :
     pauliRadius (gramMatrix ω a b) = scalarCoeff (gramMatrix ω a b) ↔
       centeredGramDefect ω a b = 0 := by
   have hd := det_gramMatrix ω a b
@@ -195,7 +195,7 @@ noncomputable def gramVector : Lorentz.ContrMod 3 :=
 
 /-- **The Minkowski square of the Gram vector is the centered Gram defect**, the slack in the
 Robertson–Schrödinger relation. -/
-theorem minkowski_gramVector :
+lemma minkowski_gramVector :
     Lorentz.contrContrContractField (gramVector ω a b ⊗ₜ gramVector ω a b) =
       centeredGramDefect ω a b := by
   have h := Lorentz.contrContrContractField.same_eq_det_toSelfAdjoint (gramVector ω a b)

@@ -66,7 +66,7 @@ lemma vectorCoeff_gramMatrix_maxCurrentState :
   rw [(vectorCoeff_gramMatrix _ _ _).1, covariance_maxCurrentState]
 
 /-- The Gram four-vector of the maximal current state is null exactly for `N = 2` and `N = 3`. -/
-theorem pauliRadius_gramMatrix_maxCurrentState_eq_iff (ht : T.t ≠ 0) (hN : 2 ≤ T.N) :
+lemma pauliRadius_gramMatrix_maxCurrentState_eq_iff (ht : T.t ≠ 0) (hN : 2 ≤ T.N) :
     pauliRadius (gramMatrix T.maxCurrentVectorState T.openHamiltonianObservable
         T.positionObservable) =
       scalarCoeff (gramMatrix T.maxCurrentVectorState T.openHamiltonianObservable
@@ -74,7 +74,7 @@ theorem pauliRadius_gramMatrix_maxCurrentState_eq_iff (ht : T.t ≠ 0) (hN : 2 �
   rw [pauliRadius_gramMatrix_eq_iff, T.centeredGramDefect_maxCurrentState_eq_zero_iff ht hN]
 
 /-- From four sites on, the Gram four-vector of the maximal current state is timelike. -/
-theorem pauliRadius_gramMatrix_maxCurrentState_lt (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
+lemma pauliRadius_gramMatrix_maxCurrentState_lt (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
     pauliRadius (gramMatrix T.maxCurrentVectorState T.openHamiltonianObservable
         T.positionObservable) <
       scalarCoeff (gramMatrix T.maxCurrentVectorState T.openHamiltonianObservable
