@@ -15,10 +15,37 @@ public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 
 # Dual right handed Weyl fermions
 
+Dual right-handed Weyl fermions and the irreducible representation of `SL(2, ℂ)` they carry.
 
-In this file we define dual right handed Weyl fermions.
-These sit in the dual-conjugate representation of `SL(2,ℂ)`,
-and we consider them to have down indices `ψ_\dot α}` with `α = 1,2`.
+## i. Overview
+
+Dual right-handed Weyl fermions sit in the dual-conjugate representation of `SL(2,ℂ)`,
+and we consider them to have down indices `ψ_{dot α}` with `α = 1,2`.
+
+In this file we define the type `DualRightHandedWeyl`, equip it with the structure of a
+two-dimensional complex vector space with a standard basis, define the representation `rep` of
+`SL(2, ℂ)` on it by `M ↦ (M⁻¹)^†`, and show that `rep` is irreducible (C.1).
+
+## ii. Key results
+
+- `DualRightHandedWeyl` : the type of dual right-handed Weyl fermions.
+- `DualRightHandedWeyl.basis` : the standard basis, indexed by `Fin 2`.
+- `DualRightHandedWeyl.rep` : the representation of `SL(2, ℂ)`.
+- `DualRightHandedWeyl.eq_zero_of_rep_eq_smul` : `rep` has no common eigenvector.
+- `DualRightHandedWeyl.end_eq_smul_id_of_commute_rep` : Schur's lemma for `rep`.
+
+## iii. Table of contents
+
+- A. The definition of the type
+  - A.1. Underlying module structure
+- B. Basis
+- C. Representation
+  - C.1. Irreducibility
+
+## iv. References
+
+* Dreiner, Haber and Martin, Two-component spinor techniques and Feynman rules for quantum
+  field theory and supersymmetry, Phys. Rept. 494 (2010) 1-196. [ref: Dreiner:2008tw]
 
 -/
 
@@ -26,6 +53,12 @@ and we consider them to have down indices `ψ_\dot α}` with `α = 1,2`.
 
 namespace Fermion
 noncomputable section
+
+/-!
+
+## A. The definition of the type
+
+-/
 
 /-- The module in which dual-right handed fermions live. This is equivalent to `Fin 2 → ℂ`. -/
 structure DualRightHandedWeyl where
@@ -40,7 +73,7 @@ open TensorProduct
 
 /-!
 
-## Underlying module structure
+### A.1. Underlying module structure
 
 -/
 
@@ -87,7 +120,7 @@ instance : Nontrivial DualRightHandedWeyl := toFin2ℂEquiv.toEquiv.nontrivial
 
 /-!
 
-## Basis
+## B. Basis
 
 -/
 
@@ -121,7 +154,7 @@ lemma finrank_eq_two : Module.finrank ℂ DualRightHandedWeyl = 2 := by
 
 /-!
 
-## Representation
+## C. Representation
 
 -/
 
@@ -179,7 +212,7 @@ lemma rep_apply_basis_repr (M : SL(2,ℂ)) (i j : Fin 2) :
 
 /-!
 
-## Irreducibility
+### C.1. Irreducibility
 
 -/
 
