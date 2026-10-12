@@ -242,7 +242,7 @@ lemma defectOf_eq_of_meanOf_current_eq (ht : T.t ≠ 0) {ψ : T.HilbertSpace} (h
 -/
 
 /-- From four sites on, the threshold lies strictly below the speed limit. -/
-theorem threshold_lt_maxCurrent (ht : T.t ≠ 0) (hN : 4 ≤ T.N) : T.threshold < T.maxCurrent := by
+lemma threshold_lt_maxCurrent (ht : T.t ≠ 0) (hN : 4 ≤ T.N) : T.threshold < T.maxCurrent := by
   obtain ⟨ψ, ⟨hψ, h0⟩, hv⟩ := T.exists_threshold
   have hψ' := mem_sphere_zero_iff_norm.mp hψ
   have hpos : T.defectOf T.maxCurrentState ≠ 0 := fun h => by
