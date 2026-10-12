@@ -120,6 +120,7 @@ public import Physlib.Mathematics.Calculus.Gradient
 public import Physlib.Mathematics.Calculus.ParametricIntegration
 public import Physlib.Mathematics.Calculus.Wirtinger.Basic
 public import Physlib.Mathematics.Calculus.Wirtinger.Coordinate
+public import Physlib.Mathematics.Calculus.Wirtinger.Hessian
 public import Physlib.Mathematics.Distribution.Basic
 public import Physlib.Mathematics.Distribution.PowMul
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
@@ -252,6 +253,7 @@ public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
+public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
@@ -260,6 +262,8 @@ public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.Weight.Basic
+public import Physlib.ProbabilisticTheory.Weight.Extension
 public import Physlib.QFT.AnomalyCancellation.Basic
 public import Physlib.QFT.AnomalyCancellation.GroupActions
 public import Physlib.QFT.PerturbationTheory.CreateAnnihilate
@@ -538,6 +542,7 @@ public import Physlib.SpaceAndTime.SpaceTime.LorentzAction
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Star
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.TaylorSeries
+public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra.Basic
 public import Physlib.SpaceAndTime.SpaceTime.TimeSlice
 public import Physlib.SpaceAndTime.Time.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives

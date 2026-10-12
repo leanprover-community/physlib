@@ -59,9 +59,9 @@ lemma crossToEnd_basis_repr_apply_eq_fin {d nA nB : ℕ} {cA : Fin (nA + 1) → 
   simp only [LinearMap.compr₂_apply, LinearMap.comp_apply]
   rw [permT_basis_repr_symm_apply, contrT_basis_repr_apply_eq_fin]
   conv_lhs => enter [2, x]; rw [permT_basis_repr_symm_apply, prodT_basis_repr_apply]
-  simp only [basisIdxCongr_eq_refl, Equiv.refl_apply]
+  simp only [basisIdxCongr_const, Equiv.refl_apply]
   refine Finset.sum_congr rfl fun x _ => ?_
-  simp only [ComponentIdx.prod, Equiv.coe_fn_mk, basisIdxCongr_eq_refl, Equiv.refl_apply]
+  simp only [ComponentIdx.prod, Equiv.coe_fn_mk, basisIdxCongr_const, Equiv.refl_apply]
   congr 1
   · congr 1
     funext m
@@ -76,7 +76,7 @@ lemma crossToEnd_basis_repr_apply_eq_fin {d nA nB : ℕ} {cA : Fin (nA + 1) → 
       simp only [Fin.cast_cast, Fin.cast_eq_self]
       rw [(ComponentIdx.DropPairSection.mem_iff_apply_succSuccAbove_eq _ _).mp
         (ComponentIdx.DropPairSection.ofFinEquiv _ _ _).2]
-      simp only [basisIdxCongr_eq_refl, Equiv.refl_apply]
+      simp only [basisIdxCongr_const, Equiv.refl_apply]
       exact congrArg φ (IsReindexing.inv_id_eq _ _)
   · congr 1
     funext m
@@ -91,7 +91,7 @@ lemma crossToEnd_basis_repr_apply_eq_fin {d nA nB : ℕ} {cA : Fin (nA + 1) → 
       simp only [Fin.cast_cast, Fin.cast_eq_self]
       rw [(ComponentIdx.DropPairSection.mem_iff_apply_succSuccAbove_eq _ _).mp
         (ComponentIdx.DropPairSection.ofFinEquiv _ _ _).2]
-      simp only [basisIdxCongr_eq_refl, Equiv.refl_apply]
+      simp only [basisIdxCongr_const, Equiv.refl_apply]
       exact congrArg φ (IsReindexing.inv_id_eq _ _)
 
 end realLorentzTensor

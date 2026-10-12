@@ -153,11 +153,6 @@ These re-express fields of `realLorentzTensor d` in terms of `Lorentz` data.
 
 -/
 
-@[simp]
-lemma basisIdxCongr_eq_refl {d : ℕ} {c1 c2 : realLorentzTensor.Color} (h : c1 = c2) :
-    TensorSpecies.basisIdxCongr (basisIdx := fun _ => Fin 1 ⊕ Fin d) h = Equiv.refl _ := by
-  rfl
-
 lemma basisIdxCongr_apply {d : ℕ} {c1 c2 : realLorentzTensor.Color} (h : c1 = c2)
     (i : Fin 1 ⊕ Fin d) :
     TensorSpecies.basisIdxCongr (basisIdx := fun _ => Fin 1 ⊕ Fin d) h i = i := by
@@ -232,7 +227,7 @@ lemma contrT_eq_sum_evalT {n} {d} (c : Fin (n + 1 + 1) → Color) (i j : Fin (n 
     · rw [permT_basis]
       congr
       ext x
-      simp only [Function.comp_apply, ComponentIdx.dropPair, id_eq, basisIdxCongr_eq_refl,
+      simp only [Function.comp_apply, ComponentIdx.dropPair, id_eq, basisIdxCongr_const,
         Equiv.refl_apply]
       rw [Fin.succSuccAbove_eq_predAbove h.1]
     · symm at h₁; contradiction

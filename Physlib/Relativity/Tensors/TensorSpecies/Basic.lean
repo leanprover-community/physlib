@@ -99,6 +99,15 @@ lemma basisIdxCongr_heq {c c1 : C} (h : c = c1) (x : basisIdx c) : basisIdxCongr
   subst h
   rfl
 
+/-- For a species whose every colour carries the same label type `I`, a label transport is the
+identity. -/
+@[simp]
+lemma basisIdxCongr_const {I : Type} {c c1 : C} (h : c = c1) :
+    basisIdxCongr (basisIdx := fun _ : C => I) h = Equiv.refl I := by
+  -- A tactic proof keeps this a rewriting `simp` lemma; a term-mode `rfl` makes `simp` apply it
+  -- definitionally, which leaves goals that later `rw` steps cannot match.
+  rfl
+
 variable {k : Type} [CommRing k] {C : Type} {G : Type} [Group G]
     {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
     {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]

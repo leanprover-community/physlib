@@ -489,7 +489,7 @@ omit [NormedSpace ℂ V] [NormedSpace ℂ V'] in
 /-- Chain rule for an inner continuous linear map `L`. Because the derivative of a linear
 map is the map itself, the real Fréchet derivative of `g ∘ L` at `u`, applied to `x`, equals
 the derivative of `g` at `L u` applied to `L x`. -/
-private lemma fderiv_comp_clm_apply {g : V' → ℂ} {L : V →L[ℝ] V'} {u : V}
+lemma fderiv_comp_clm_apply {g : V' → ℂ} {L : V →L[ℝ] V'} {u : V}
     (hg : DifferentiableAt ℝ g (L u)) (x : V) :
     fderiv ℝ (fun p => g (L p)) u x = fderiv ℝ g (L u) (L x) :=
   DFunLike.congr_fun (hg.hasFDerivAt.comp u L.hasFDerivAt).fderiv x
