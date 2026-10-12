@@ -17,6 +17,7 @@ The superpotential of the N=1 chiral sector, and its gradient as a chiral tensor
 ## i. Overview
 
 A superpotential on a domain `D` of configurations is a function `W` that is holomorphic on `D`.
+It coerces to that function, so `W u` is its value at `u`.
 Its gradient `∂_I W` is the covector of colour `chiralDown` whose components are the holomorphic
 Wirtinger derivatives of `W`. The conjugates `W̄` and `∂̄_J̄ W̄` are `star W` and
 `conjChiralCovector` of the gradient.
@@ -64,20 +65,25 @@ namespace Superpotential
 
 variable {D : Set (ChiralScalarConfiguration ι)}
 
+attribute [coe] Superpotential.W
+
+/-- A superpotential is applied as the function `W`. -/
+instance : CoeFun (Superpotential ι D) (fun _ => ChiralScalarConfiguration ι → ℂ) := ⟨W⟩
+
 /-!
 ## B. The gradient
 
 -/
 
 /-- The gradient `∂_I W` of the superpotential, a covector of colour `chiralDown`. -/
-def dW (sp : Superpotential ι D) (u : ChiralScalarConfiguration ι) :
+def dW (W : Superpotential ι D) (u : ChiralScalarConfiguration ι) :
     (chiralTensor (ι := ι)).Tensor ![chiralDown] :=
-  ofComponents ![chiralDown] (fun φ => dWirtingerCoord sp.W (φ 0) u)
+  ofComponents ![chiralDown] (fun φ => dWirtingerCoord W (φ 0) u)
 
 /-- The `I`-th component of the gradient is `∂_I W`. -/
-lemma repr_dW (sp : Superpotential ι D) (u : ChiralScalarConfiguration ι) (I : ι) :
-    (basis (S := (chiralTensor (ι := ι)).toTensorSpecies) ![chiralDown]).repr (sp.dW u) ![I] =
-      dWirtingerCoord sp.W I u := by
+lemma repr_dW (W : Superpotential ι D) (u : ChiralScalarConfiguration ι) (I : ι) :
+    (basis (S := (chiralTensor (ι := ι)).toTensorSpecies) ![chiralDown]).repr (W.dW u) ![I] =
+      dWirtingerCoord W I u := by
   rw [← componentMap_eq_repr, dW, componentMap_ofComponents]
   rfl
 
