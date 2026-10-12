@@ -1136,7 +1136,7 @@ private lemma purify_AB_traceRight_eq (ρ : MState (dA × dB × dC)) :
     convert congr_arg ( fun m => m.assoc'.traceRight ) h_traceRight using 1;
     ext i j; simp [ MState.traceRight, MState.assoc' ] ;
     simp [ HermitianMat.traceRight, MState.SWAP, MState.assoc ];
-    simp [ Matrix.traceRight, Matrix.submatrix ];
+    simp [ Matrix.traceRight ];
     congr! 2;
     ext i j; simp [ perm_AB_CR' ] ;
     exact Fintype.sum_prod_type _

@@ -99,7 +99,7 @@ Quantum information theory. Currently a distinct codebase with its own conventio
 
 ## PhyslibAlpha
 
-PhyslibAlpha sits downstream of `./Physlib` (within the same repository). The core idea is that PhyslibAlpha has a lower review-standards then Physlib making it easier to contribute large PRs, AI-generated content, or formalizations which are not-quite-perfect. PRs for PhyslibAlpha must pass basic linter checks, described [here](https://github.com/leanprover-community/physlib/blob/master/scripts/lint/required/alpha/README.md). PRs must also undergo a light 'one-look' review checking 1) Whether the content is main-stream physics, 2) Whether it looks reasonable (no axioms, easy to read etc.), 3) Whether it is within the right place within PhyslibAlpha (mirroring its place in Physlib).
+PhyslibAlpha sits downstream of `./Physlib` (within the same repository). The core idea is that PhyslibAlpha has lower review-standards than Physlib making it easier to contribute large PRs, AI-generated content, or formalizations which are not-quite-perfect. PRs for PhyslibAlpha must pass basic linter checks, described [here](https://github.com/leanprover-community/physlib/blob/master/scripts/lint/required/alpha/README.md). PRs must also undergo a light 'one-look' review checking 1) Whether the content is main-stream physics, 2) Whether it looks reasonable (no axioms, easy to read etc.), 3) Whether it is within the right place within PhyslibAlpha (mirroring its place in Physlib).
 
 Because of the lower-review bar for PhyslibAlpha we cannot promise to maintain contributions when they break — we will simply record when this happens.
 
@@ -111,13 +111,13 @@ and our team of maintainers will review it and iterate with you on feedback unti
 can be merged. Please add references to the `## References` section at the top of the file
 and add them to the .bib file.
 
-If you unsure where you would like to contribute, you may find ideas on:
+If you're unsure where you would like to contribute, you may find ideas on:
 - our [open issues](https://github.com/leanprover-community/physlib/issues).
 - our [todo list](https://physlib.io/todo)
 - our [Get Involved page](https://physlib.io/get-involved)
 - the [quantumInfo todo page](./docs/WildeTODO.md)
 > [!NOTE]
-> If stuck at any point there are lots of people happly to help on the [Physlib zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib)
+> If stuck at any point there are lots of people happy to help on the [Physlib zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib)
 
 ### Installing Lean 4
 
@@ -162,7 +162,7 @@ to run locally:
 
 Most importantly:
 > [!NOTE]
-> When making contributing to Physlib it is much better to do it with small steps. This makes it easier for us to review, and allows you to get feedback sooner.
+> When contributing to Physlib it is much better to do it with small steps. This makes it easier for us to review, and allows you to get feedback sooner.
 
 ## Maintainers
 

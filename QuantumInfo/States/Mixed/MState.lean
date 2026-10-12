@@ -1066,12 +1066,17 @@ lemma relabel_refl {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
   ext
   simp
 
-/-- Relabeling a pure state by a bijection yields another pure state. -/
+/-- Relabeling the pure state associated to a ket gives the pure state associated to the
+relabeled ket. -/
+@[simp]
+lemma relabel_pure (ψ : Ket d₁) (e : d₂ ≃ d₁) :
+    (pure ψ).relabel e = pure (ψ.relabel e) :=
+  rfl
+
+/-- Relabeling a pure state along an equivalence of basis index types yields another pure state. -/
 theorem relabel_pure_exists (ψ : Ket d₁) (e : d₂ ≃ d₁) :
-    ∃ ψ' : Ket d₂, (pure ψ).relabel e = pure ψ' := by
-  refine ⟨⟨fun i => ψ (e i), ?_⟩, rfl⟩
-  rw [← ψ.normalized', Fintype.sum_equiv e]
-  congr!
+    ∃ ψ' : Ket d₂, (pure ψ).relabel e = pure ψ' :=
+  ⟨ψ.relabel e, relabel_pure ψ e⟩
 
 @[simp]
 lemma relabel_relabel {d d₂ d₃ : Type*}
@@ -1322,6 +1327,24 @@ def piProd (ρi : (i:ι) → MState (dI i)) : MState ((i:ι) → dI i) where
     rw [zero_le_iff]
     exact Matrix.PosSemidef.piProd (fun i => psd (ρi i))
   tr := by simp [trace, Matrix.trace_piProd]
+
+/-- The pure state of `Ket.piProd ψ` is `MState.piProd` of the pure states `pure (ψ i)`,
+generalizing `MState.pure_prod_pure`. -/
+lemma pure_piProd (ψ : (i : ι) → Ket (dI i)) :
+    pure (Ket.piProd ψ) = piProd (fun i ↦ pure (ψ i)) := by
+  ext : 3
+  simp [piProd, Matrix.piProd, -mat_apply, Finset.prod_mul_distrib]
+
+/-- With at least one party, a ket satisfies `Ket.IsPiProd` if and only if its associated
+pure state `MState.pure ψ` is an `MState.piProd` of pure states. -/
+lemma isPiProd_iff_exists_pure_eq_piProd [Nonempty ι] (ψ : Ket ((i : ι) → dI i)) :
+    ψ.IsPiProd ↔ ∃ φ : (i : ι) → Ket (dI i), pure ψ = piProd (fun i ↦ pure (φ i)) := by
+  constructor
+  · rintro ⟨φ, rfl⟩
+    exact ⟨φ, pure_piProd φ⟩
+  · rintro ⟨φ, h⟩
+    rw [← pure_piProd φ, ← PhaseEquiv_iff_pure_eq] at h
+    exact (Ket.isPiProd_piProd φ).of_phaseEquiv h
 
 /-- The n-copy "power" of a mixed state, with the standard basis indexed by pi types. -/
 def npow (ρ : MState d) (n : ℕ) : MState (Fin n → d) :=
