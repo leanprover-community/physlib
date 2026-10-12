@@ -270,7 +270,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGrou
 /-- **Uniqueness of inner regular Fourier--Stieltjes measures.** On the Pontryagin dual of a
 locally compact abelian group, two finite inner regular measures are equal when their transforms
 agree on every element of the group. No countability or metrizability is assumed. -/
-theorem
+lemma
     _root_.MeasureTheory.FiniteMeasure.ext_of_forall_pontryaginMeasureTransform_eq_of_innerRegular
     {P Q : FiniteMeasure (_root_.PontryaginDual (Multiplicative G))}
     [P.toMeasure.InnerRegular] [Q.toMeasure.InnerRegular]

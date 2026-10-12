@@ -104,7 +104,7 @@ lemma IsPositiveDefiniteSub.exists_pontryaginMeasureTransform_eq_of_continuousAt
 /-- **Unique inner regular form of Bochner's theorem.** A positive-definite function continuous at
 `0` has a unique finite inner regular representing measure on the Pontryagin dual. No countability
 or metrizability assumption is needed. -/
-theorem
+lemma
     IsPositiveDefiniteSub.existsUnique_innerRegular_pontryaginMeasureTransform_eq_of_continuousAt
     {φ : G → ℂ} (hφ : IsPositiveDefiniteSub φ) (hφ₀ : ContinuousAt φ 0) :
     ∃! μ : FiniteMeasure (PontryaginDual (Multiplicative G)),
@@ -117,7 +117,7 @@ theorem
 /-- **Bochner's characterization without countability assumptions.** A function on a locally
 compact abelian group is continuous and positive definite if and only if it is the
 Fourier–Stieltjes transform of a unique finite inner regular measure on the Pontryagin dual. -/
-theorem
+lemma
     continuous_and_isPositiveDefiniteSub_iff_existsUnique_innerRegular_pontryaginMeasureTransform_eq
     (φ : G → ℂ) :
     (Continuous φ ∧ IsPositiveDefiniteSub φ) ↔
