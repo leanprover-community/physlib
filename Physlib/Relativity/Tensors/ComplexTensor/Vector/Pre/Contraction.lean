@@ -150,6 +150,12 @@ lemma coContrContraction_basis' (i j : Fin 1 ⊕ Fin 3) :
   refine ite_congr ?h₁ (congrFun rfl) (congrFun rfl)
   simp only [eq_comm]
 
+TODO "Prove the analogue of `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr` for complex
+  Lorentz vectors: every intertwining map `ContrℂModule.SL2CRep.tprod CoℂModule.SL2CRep →
+  Representation.trivial ℂ SL(2,ℂ) ℂ` is a scalar multiple of `contrCoContraction`, and likewise
+  for `coContrContraction`. This is Schur's lemma for the vector representation of `SL(2,ℂ)`,
+  which is irreducible."
+
 /-!
 
 ## Symmetry

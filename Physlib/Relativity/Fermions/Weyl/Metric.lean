@@ -272,6 +272,12 @@ lemma dualRightMetric_apply_one : dualRightMetric (1 : ℂ) = dualRightMetricVal
   change (1 : ℂ) • dualRightMetricVal = dualRightMetricVal
   simp only [one_smul]
 
+TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
+  LeftHandedWeyl.rep.tprod LeftHandedWeyl.rep` is a scalar multiple of `leftMetric`, and likewise
+  for `dualLeftMetric`, `rightMetric` and `dualRightMetric`: up to scale, `ε` is the unique
+  `SL(2,ℂ)`-invariant element of `LeftHandedWeyl ⊗ LeftHandedWeyl`. Compare
+  `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
+
 /-!
 
 ## Contraction of metrics

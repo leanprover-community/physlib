@@ -123,6 +123,12 @@ lemma coMetric_apply_one : coMetric (1 : ℂ) = coMetricVal := by
   change (1 : ℂ) • coMetricVal = coMetricVal
   simp only [one_smul]
 
+TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
+  ContrℂModule.SL2CRep.tprod ContrℂModule.SL2CRep` is a scalar multiple of `contrMetric`, and
+  likewise for `coMetric`: up to scale, the Minkowski metric is the unique `SL(2,ℂ)`-invariant
+  element of `ContrℂModule ⊗ ContrℂModule`. Compare
+  `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
+
 /-!
 
 ## Contraction of metrics
