@@ -69,7 +69,7 @@ An endomorphism commuting with the adjoint action preserves the line spanned by 
 
 /-- An endomorphism commuting with the adjoint action keeps an element supported at an
   off-diagonal entry `(p, q)` supported there. -/
-lemma toMatrixℂ_apply_eq_single_of_comp_eq {n : ℕ} {T : Module.End ℂ (Complexification n)}
+lemma toMatrixℂ_end_eq_single_of_toMatrixℂ_eq_single {n : ℕ} {T : Module.End ℂ (Complexification n)}
     (hT : ∀ g, T ∘ₗ adjointℂ g = adjointℂ g ∘ₗ T) {p q : Fin n} (hpq : p ≠ q)
     {A : Complexification n} {c : ℂ} (hA : toMatrixℂ A = single p q c) :
     toMatrixℂ (T A) = single p q (toMatrixℂ (T A) p q) := by
@@ -111,7 +111,8 @@ lemma exists_end_eq_smul_of_toMatrixℂ_eq_single {n : ℕ} {T : Module.End ℂ 
   have hsmul (B : Complexification n) (c : ℂ) (hB : toMatrixℂ B = single p q c) : B = c • E :=
     toMatrixℂ_injective (by simp [hB, hE])
   obtain ⟨μ, hμ⟩ : ∃ μ, T E = μ • E :=
-    ⟨_, hsmul _ _ (toMatrixℂ_apply_eq_single_of_comp_eq hT hpq (toMatrixℂ_ofTracelessℂ _ _))⟩
+    ⟨_, hsmul _ _ (toMatrixℂ_end_eq_single_of_toMatrixℂ_eq_single hT hpq
+      (toMatrixℂ_ofTracelessℂ _ _))⟩
   exact ⟨μ, fun A c hA => by rw [hsmul A c hA, map_smul, hμ, smul_comm]⟩
 
 /-!
