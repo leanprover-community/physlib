@@ -58,7 +58,7 @@ with entries `re tr (λ_i g λ_j g†) / 2` (D).
   - B.3. Orthogonality
     - B.3.1. Between different types
     - B.3.2. Between the same type
-    - B.3.3. Overall
+    - B.3.3. The full orthogonality relation
   - B.4. Linear independence
   - B.5. The Pauli and Gell-Mann matrices
 - C. The Gell-Mann basis
@@ -385,10 +385,12 @@ lemma adjointContr_gellMannMatrices_diag_orthogonal {n : ℕ} (l l' : Fin (n - 1
 
 /-!
 
-#### B.3.3. Overall
+#### B.3.3. The full orthogonality relation
 
 -/
 
+/-- The generalized Gell-Mann matrices are orthogonal under the trace pairing,
+  with normalization `tr (λ_i λ_j) = 2 δ_ij`. -/
 lemma adjointContr_gellMannMatrices {n : ℕ} (i j : GellMannIndex n) :
     adjointContr (gellMannMatrices i ⊗ₜ gellMannMatrices j) = if i = j then 2 else 0 := by
   rcases i with ⟨p, q, h⟩ | ⟨p, q, h⟩ | l <;> rcases j with ⟨p', q', h'⟩ | ⟨p', q', h'⟩ | l' <;>
