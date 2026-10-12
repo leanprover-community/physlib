@@ -75,7 +75,7 @@ noncomputable def angleNRS : ℝ :=
       variance T.maxCurrentVectorState T.positionObservable))
 
 /-- **The NRS angle.** `cos θ_NRS = 1 / C_Nava`. -/
-theorem angleNRS_eq (ht : T.t ≠ 0) (hN : 2 ≤ T.N) :
+lemma angleNRS_eq (ht : T.t ≠ 0) (hN : 2 ≤ T.N) :
     T.angleNRS = Real.arccos (1 / T.CNava) := by
   have hC := (zero_lt_one.trans_le (T.one_le_CNava ht hN)).ne'
   have hB : |T.a * T.t * Real.cos (Real.pi / (T.N + 1))| ≠ 0 := fun h => by
@@ -105,13 +105,13 @@ private lemma arccos_inv_lt {C C' : ℝ} (hC : 1 ≤ C) (hCC' : C < C') :
     (one_div_lt_one_div_of_lt (by linarith) hCC') (div_le_one_of_le₀ hC (by linarith))
 
 /-- From four sites on, the NRS angle grows strictly with the number of sites. -/
-theorem angleNRS_lt_angleNRS {T T' : TightBindingChain} (ht : T.t ≠ 0) (ht' : T'.t ≠ 0)
+lemma angleNRS_lt_angleNRS {T T' : TightBindingChain} (ht : T.t ≠ 0) (ht' : T'.t ≠ 0)
     (hN : 4 ≤ T.N) (hNN' : T.N < T'.N) : T.angleNRS < T'.angleNRS := by
   rw [T.angleNRS_eq ht (by omega), T'.angleNRS_eq ht' (by omega)]
   exact arccos_inv_lt (T.one_le_CNava ht (by omega)) (CNava_lt_CNava ht ht' hN hNN')
 
 /-- From four sites on, the NRS angle stays below `arccos (1 / √(π² / 3 - 2))`. -/
-theorem angleNRS_lt (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
+lemma angleNRS_lt (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
     T.angleNRS < Real.arccos (1 / √(Real.pi ^ 2 / 3 - 2)) := by
   rw [T.angleNRS_eq ht (by omega)]
   exact arccos_inv_lt (T.one_le_CNava ht (by omega)) (T.CNava_lt_sqrt_pi_sq_div_three_sub_two ht hN)
@@ -167,7 +167,7 @@ noncomputable def volQuantum : ℝ := Tx.dimQuantum * Ty.dimQuantum * Tz.dimQuan
 variable {Tx Ty Tz}
 
 /-- The volumetric quantum vanishes iff some axis has `2` or `3` sites. -/
-theorem volQuantum_eq_zero_iff (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
+lemma volQuantum_eq_zero_iff (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
     (hNx : 2 ≤ Tx.N) (hNy : 2 ≤ Ty.N) (hNz : 2 ≤ Tz.N) :
     volQuantum Tx Ty Tz = 0 ↔
       (Tx.N = 2 ∨ Tx.N = 3) ∨ (Ty.N = 2 ∨ Ty.N = 3) ∨ (Tz.N = 2 ∨ Tz.N = 3) := by
@@ -175,13 +175,13 @@ theorem volQuantum_eq_zero_iff (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t �
     Ty.dimQuantum_eq_zero_iff hy hNy, Tz.dimQuantum_eq_zero_iff hz hNz, or_assoc]
 
 /-- From `4 × 4 × 4` on, the volumetric quantum is positive. -/
-theorem volQuantum_pos (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
+lemma volQuantum_pos (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
     (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N) : 0 < volQuantum Tx Ty Tz :=
   mul_pos (mul_pos (Tx.dimQuantum_pos hx hNx) (Ty.dimQuantum_pos hy hNy))
     (Tz.dimQuantum_pos hz hNz)
 
 /-- From `4 × 4 × 4` on, the volumetric quantum grows strictly along `x`. -/
-theorem volQuantum_lt_volQuantum_x {Tx' : TightBindingChain} (hx : Tx.t ≠ 0) (hx' : Tx'.t ≠ 0)
+lemma volQuantum_lt_volQuantum_x {Tx' : TightBindingChain} (hx : Tx.t ≠ 0) (hx' : Tx'.t ≠ 0)
     (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0) (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N)
     (h : Tx.N < Tx'.N) : volQuantum Tx Ty Tz < volQuantum Tx' Ty Tz := by
   have := Ty.dimQuantum_pos hy hNy
@@ -191,7 +191,7 @@ theorem volQuantum_lt_volQuantum_x {Tx' : TightBindingChain} (hx : Tx.t ≠ 0) (
   exact dimQuantum_lt_dimQuantum hx hx' hNx h
 
 /-- From `4 × 4 × 4` on, the volumetric quantum grows strictly along `y`. -/
-theorem volQuantum_lt_volQuantum_y {Ty' : TightBindingChain} (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0)
+lemma volQuantum_lt_volQuantum_y {Ty' : TightBindingChain} (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0)
     (hy' : Ty'.t ≠ 0) (hz : Tz.t ≠ 0) (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N)
     (h : Ty.N < Ty'.N) : volQuantum Tx Ty Tz < volQuantum Tx Ty' Tz := by
   have := Tx.dimQuantum_pos hx hNx
@@ -201,7 +201,7 @@ theorem volQuantum_lt_volQuantum_y {Ty' : TightBindingChain} (hx : Tx.t ≠ 0) (
   exact dimQuantum_lt_dimQuantum hy hy' hNy h
 
 /-- From `4 × 4 × 4` on, the volumetric quantum grows strictly along `z`. -/
-theorem volQuantum_lt_volQuantum_z {Tz' : TightBindingChain} (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0)
+lemma volQuantum_lt_volQuantum_z {Tz' : TightBindingChain} (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0)
     (hz : Tz.t ≠ 0) (hz' : Tz'.t ≠ 0) (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N)
     (h : Tz.N < Tz'.N) : volQuantum Tx Ty Tz < volQuantum Tx Ty Tz' := by
   have := Tx.dimQuantum_pos hx hNx
@@ -211,7 +211,7 @@ theorem volQuantum_lt_volQuantum_z {Tz' : TightBindingChain} (hx : Tx.t ≠ 0) (
   exact dimQuantum_lt_dimQuantum hz hz' hNz h
 
 /-- From `4 × 4 × 4` on, the volumetric quantum stays below `(√(π² / 3 - 2) - 1)³`. -/
-theorem volQuantum_lt (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
+lemma volQuantum_lt (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
     (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N) :
     volQuantum Tx Ty Tz < (√(Real.pi ^ 2 / 3 - 2) - 1) ^ 3 := by
   have := Tx.dimQuantum_pos hx hNx

@@ -81,7 +81,7 @@ variable {α 𝕜 E : Type*} [MeasurableSpace α] [RCLike 𝕜]
 almost everywhere outside `U`, and `φ` stays within `ε` of `y` on `U`, then the integral of `φ`
 against `f` is within `ε * ‖f‖` of `y`. The integrand `f • φ` is assumed almost everywhere
 strongly measurable. -/
-theorem norm_integral_smul_sub_le {f : α →₁[μ] 𝕜} (hf : ∫ x, f x ∂μ = 1) {U : Set α}
+lemma norm_integral_smul_sub_le {f : α →₁[μ] 𝕜} (hf : ∫ x, f x ∂μ = 1) {U : Set α}
     (hfU : ∀ᵐ x ∂μ, x ∉ U → f x = 0) {φ : α → E}
     (hφ : AEStronglyMeasurable (fun x ↦ f x • φ x) μ) {y : E}
     {ε : ℝ} (hφU : ∀ x ∈ U, ‖φ x - y‖ ≤ ε) :
@@ -111,7 +111,7 @@ classes which eventually have unit integral and `L¹` norm at most `C`, and whic
 `x₀`: for every neighbourhood `U` of `x₀`, eventually `f i` vanishes almost everywhere outside `U`.
 Then `∫ x, f i x • φ x ∂μ` tends to `a` for every `φ` tending to `a` at `x₀` whose products
 `f i • φ` are eventually almost everywhere strongly measurable. -/
-theorem tendsto_integral_smul_of_tendsto {ι : Type*} {l : Filter ι} {f : ι → α →₁[μ] 𝕜}
+lemma tendsto_integral_smul_of_tendsto {ι : Type*} {l : Filter ι} {f : ι → α →₁[μ] 𝕜}
     {C : ℝ} {x₀ : α} [TopologicalSpace α] (hf : ∀ᶠ i in l, ∫ x, f i x ∂μ = 1)
     (hfC : ∀ᶠ i in l, ‖f i‖ ≤ C) (hfx₀ : ∀ U ∈ 𝓝 x₀, ∀ᶠ i in l, ∀ᵐ x ∂μ, x ∉ U → f i x = 0)
     {φ : α → E} (hφ : ∀ᶠ i in l, AEStronglyMeasurable (fun x ↦ f i x • φ x) μ) {a : E}
@@ -136,7 +136,7 @@ variable (𝕜 μ) in
 neighbourhood of each point, every neighbourhood `U` of a point carries an `L¹` class of unit
 integral and unit `L¹` norm vanishing almost everywhere outside `U`: the indicator of a
 neighbourhood of finite measure inside `U`, normalized by that measure. -/
-theorem exists_integral_eq_one_norm_eq_one [TopologicalSpace α] [OpensMeasurableSpace α]
+lemma exists_integral_eq_one_norm_eq_one [TopologicalSpace α] [OpensMeasurableSpace α]
     [μ.IsOpenPosMeasure] [IsLocallyFiniteMeasure μ] {x₀ : α} {U : Set α} (hU : U ∈ 𝓝 x₀) :
     ∃ f : α →₁[μ] 𝕜, ∫ x, f x ∂μ = 1 ∧ ‖f‖ = 1 ∧ ∀ᵐ x ∂μ, x ∉ U → f x = 0 := by
   -- An open neighbourhood `V ⊆ U` of `x₀` of positive, finite measure.

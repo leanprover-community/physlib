@@ -68,13 +68,13 @@ def circleEquivPontryaginDualInt : Circle ≃ₜ* PontryaginDual (Multiplicative
 
 /-- The character attached to `z` sends `n` to `zⁿ`. -/
 @[simp]
-theorem circleEquivPontryaginDualInt_apply_apply (z : Circle) (n : Multiplicative ℤ) :
+lemma circleEquivPontryaginDualInt_apply_apply (z : Circle) (n : Multiplicative ℤ) :
     circleEquivPontryaginDualInt z n = z ^ n.toAdd :=
   (rfl)
 
 /-- The point of the circle attached to a character of `ℤ` is its value at `1`. -/
 @[simp]
-theorem circleEquivPontryaginDualInt_symm_apply (χ : PontryaginDual (Multiplicative ℤ)) :
+lemma circleEquivPontryaginDualInt_symm_apply (χ : PontryaginDual (Multiplicative ℤ)) :
     circleEquivPontryaginDualInt.symm χ = χ (Multiplicative.ofAdd 1) :=
   (rfl)
 

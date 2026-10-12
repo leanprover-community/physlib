@@ -143,7 +143,7 @@ lemma ne_two : n ≠ 2 := by
   simp at this
 
 /-- **A nonempty Clifford family has size at least four.** -/
-theorem four_le (hn : n ≠ 0) : 4 ≤ n := by
+lemma four_le (hn : n ≠ 0) : 4 ≤ n := by
   obtain ⟨k, hk⟩ := hγ.even
   have := hγ.ne_two
   omega
@@ -162,7 +162,7 @@ lemma isCliffordFamily_gamma : IsCliffordFamily fun μ => endEquivMatrix (gamma 
 
 /-- **The gamma matrices need four dimensions (Dirac, 1928).** The smallest size of a nonempty
 Clifford family is four. -/
-theorem isLeast_size_isCliffordFamily :
+lemma isLeast_size_isCliffordFamily :
     IsLeast {n : ℕ | n ≠ 0 ∧ ∃ γ : Fin 1 ⊕ Fin 3 → Matrix (Fin n) (Fin n) ℂ,
       IsCliffordFamily γ} 4 :=
   ⟨⟨by norm_num, _, isCliffordFamily_gamma⟩, fun _ ⟨hn, _, hγ⟩ => hγ.four_le hn⟩

@@ -54,7 +54,7 @@ universe u v w
 
 variable {α : Type v}
 
-private theorem posSemidef_of_support_posSemidef {R : Type u}
+private lemma posSemidef_of_support_posSemidef {R : Type u}
     [Ring R] [PartialOrder R] [StarRing R] (K : α → α → R)
     (hHerm : (Matrix.of fun a b => K a b).IsHermitian) (hgram : ∀ x : α →₀ R,
       (Matrix.of fun i j : x.support => K (i : α) (j : α)).PosSemidef) :
@@ -81,7 +81,7 @@ private theorem posSemidef_of_support_posSemidef {R : Type u}
 /-- The rank-one matrix `(a, b) ↦ star (g a) · g b` is positive semidefinite for an arbitrary
 index type. Such matrices are elementary building blocks for positive-semidefinite matrices;
 taking `g ≡ 1` gives the constant matrix `1`. -/
-theorem posSemidef_rankOne {R : Type u}
+lemma posSemidef_rankOne {R : Type u}
     [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] (g : α → R) :
     Matrix.PosSemidef (fun a b => star (g a) * g b) := by
   refine posSemidef_of_support_posSemidef (fun a b => star (g a) * g b) ?_ fun x => ?_
@@ -91,13 +91,13 @@ theorem posSemidef_rankOne {R : Type u}
     simp [Matrix.vecMulVec_apply]
 
 /-- The constant matrix with value `1` is positive semidefinite. -/
-theorem posSemidef_const_one {R : Type u}
+lemma posSemidef_const_one {R : Type u}
     [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R] :
     Matrix.PosSemidef (fun _ _ : α => (1 : R)) := by
   simpa using posSemidef_rankOne (R := R) (α := α) (fun _ => (1 : R))
 
 /-- A nonnegative constant gives a positive-semidefinite constant matrix. -/
-theorem posSemidef_const_of_nonneg {R : Type u}
+lemma posSemidef_const_of_nonneg {R : Type u}
     [Ring R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
     {c : R} (hc : 0 ≤ c) : Matrix.PosSemidef (fun _ _ : α => c) := by
   have heq : (Matrix.diagonal (fun _ : Unit => c)).submatrix (fun _ : α => ())
@@ -107,7 +107,7 @@ theorem posSemidef_const_of_nonneg {R : Type u}
 
 /-- The quadratic-form characterization of an arbitrary-index positive-semidefinite matrix:
 conjugate symmetry and nonnegativity on every finite family, allowing repeated indices. -/
-theorem posSemidef_iff_finite_sum {R : Type u} [Ring R] [PartialOrder R] [StarRing R]
+lemma posSemidef_iff_finite_sum {R : Type u} [Ring R] [PartialOrder R] [StarRing R]
     {K : α → α → R} :
     Matrix.PosSemidef K ↔
       (∀ a b, star (K a b) = K b a) ∧
@@ -144,7 +144,7 @@ theorem posSemidef_iff_finite_sum {R : Type u} [Ring R] [PartialOrder R] [StarRi
 variable {𝕜 : Type u} [RCLike 𝕜]
 
 /-- Finite pointwise Schur products of positive-semidefinite matrices are positive semidefinite. -/
-theorem posSemidef_schur_finset_prod {ι : Type w} {s : Finset ι}
+lemma posSemidef_schur_finset_prod {ι : Type w} {s : Finset ι}
     {K : ι → α → α → 𝕜} (hK : ∀ i ∈ s, Matrix.PosSemidef (K i)) :
     Matrix.PosSemidef (fun a b => ∏ i ∈ s, K i a b) := by
   have heq : (∏ i ∈ s, K i) = fun a b => ∏ i ∈ s, K i a b := by ext; simp
@@ -154,7 +154,7 @@ theorem posSemidef_schur_finset_prod {ι : Type w} {s : Finset ι}
 
 /-- For weights `w` in `[0, 1]` and finite sets `L i`, the matrix
 `(i, j) ↦ ∏_{a ∈ L i ∪ L j} w a` is positive semidefinite. -/
-theorem posSemidef_prod_union {ι : Type w} [DecidableEq α] (L : ι → Finset α)
+lemma posSemidef_prod_union {ι : Type w} [DecidableEq α] (L : ι → Finset α)
     {w : α → ℝ} (hw₀ : ∀ a, 0 ≤ w a) (hw₁ : ∀ a, w a ≤ 1) :
     Matrix.PosSemidef (fun i j => ∏ a ∈ L i ∪ L j, w a) := by
   -- The indicator of `a ∉ L i`.
@@ -189,7 +189,7 @@ theorem posSemidef_prod_union {ι : Type w} [DecidableEq α] (L : ι → Finset 
 end TauCeti
 
 /-- Schur powers of a positive-semidefinite matrix are positive semidefinite. -/
-theorem Matrix.PosSemidef.hadamard_pow {α 𝕜 : Type*} [RCLike 𝕜] {K : α → α → 𝕜}
+lemma Matrix.PosSemidef.hadamard_pow {α 𝕜 : Type*} [RCLike 𝕜] {K : α → α → 𝕜}
     (hK : Matrix.PosSemidef K) (n : ℕ) :
     Matrix.PosSemidef (fun a b => K a b ^ n) := by
   induction n with

@@ -291,7 +291,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [IsTopologicalAddGrou
 strongly continuous unitary representation `π` of a locally compact abelian group `G` on a
 Hilbert space `H` and a vector `ξ`, the matrix coefficient `g ↦ ⟪ξ, π(g) ξ⟫` is the
 Fourier–Stieltjes transform of a finite inner regular measure on the Pontryagin dual of `G`. -/
-theorem ContRepresentation.exists_pontryaginMeasureTransform_eq_inner
+lemma ContRepresentation.exists_pontryaginMeasureTransform_eq_inner
     (π : ContRepresentation ℂ (Multiplicative G) H)
     (hcont : ∀ v, Continuous fun g : G ↦ π (.ofAdd g) v)
     (hπ : ContRepresentation.IsUnitary π) (ξ : H) :

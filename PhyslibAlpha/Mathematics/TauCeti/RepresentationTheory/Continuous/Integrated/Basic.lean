@@ -119,7 +119,7 @@ variable {𝕜 G E : Type*} [RCLike 𝕜] [AddGroup G] [TopologicalSpace G] [Mea
 
 omit [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] in
 /-- The integrand of the integrated form is integrable. -/
-private theorem integrable_smul_apply (hcont : ∀ v, Continuous fun g : G ↦ π (.ofAdd g) v)
+private lemma integrable_smul_apply (hcont : ∀ v, Continuous fun g : G ↦ π (.ofAdd g) v)
     {C : ℝ} (hC : ∀ g, ‖π g‖ ≤ C) {f : G → 𝕜} (hf : Integrable f μ) (v : E) :
     Integrable (fun g ↦ f g • π (.ofAdd g) v) μ := by
   refine (hf.norm.mul_const (C * ‖v‖)).mono'
@@ -132,7 +132,7 @@ omit [TopologicalSpace G] [R1Space G] [BorelSpace G] [μ.InnerRegularCompactLTTo
   [SMulCommClass ℝ 𝕜 E] in
 /-- The integral of the integrand of the integrated form is bounded by the `L¹` norm of the
 weight. -/
-private theorem norm_integral_smul_apply_le {C : ℝ} (hC : ∀ g, ‖π g‖ ≤ C) {f : G → 𝕜}
+private lemma norm_integral_smul_apply_le {C : ℝ} (hC : ∀ g, ‖π g‖ ≤ C) {f : G → 𝕜}
     (hf : Integrable f μ) (v : E) :
     ‖∫ g, f g • π (.ofAdd g) v ∂μ‖ ≤ C * (∫ g, ‖f g‖ ∂μ) * ‖v‖ := by
   calc ‖∫ g, f g • π (.ofAdd g) v ∂μ‖ ≤ ∫ g, ‖f g‖ * (C * ‖v‖) ∂μ := by
@@ -178,13 +178,13 @@ noncomputable def _root_.ContRepresentation.integratedOperatorL1
 variable {hcont : ∀ v, Continuous fun g : G ↦ π (.ofAdd g) v} {hbdd : ∃ C, ∀ g, ‖π g‖ ≤ C}
 
 /-- The integrated form acts on a vector by integrating its orbit against the weight. -/
-theorem _root_.ContRepresentation.integratedOperatorL1_apply (f : G →₁[μ] 𝕜) (v : E) :
+lemma _root_.ContRepresentation.integratedOperatorL1_apply (f : G →₁[μ] 𝕜) (v : E) :
     π.integratedOperatorL1 hcont hbdd μ f v = ∫ g, f g • π (.ofAdd g) v ∂μ :=
   (rfl)
 
 /-- The integrated form of the class of an integrable function. -/
 @[simp]
-theorem _root_.ContRepresentation.integratedOperatorL1_toL1 {f : G → 𝕜} (hf : Integrable f μ)
+lemma _root_.ContRepresentation.integratedOperatorL1_toL1 {f : G → 𝕜} (hf : Integrable f μ)
     (v : E) :
     π.integratedOperatorL1 hcont hbdd μ (hf.toL1 f) v = ∫ g, f g • π (.ofAdd g) v ∂μ := by
   rw [ContRepresentation.integratedOperatorL1_apply]
@@ -194,7 +194,7 @@ theorem _root_.ContRepresentation.integratedOperatorL1_toL1 {f : G → 𝕜} (hf
 
 /-- The integrated form is bounded by the uniform bound of the representation times the `L¹`
 norm of the weight. -/
-theorem _root_.ContRepresentation.norm_integratedOperatorL1_le {C : ℝ} (hC : ∀ g, ‖π g‖ ≤ C)
+lemma _root_.ContRepresentation.norm_integratedOperatorL1_le {C : ℝ} (hC : ∀ g, ‖π g‖ ≤ C)
     (f : G →₁[μ] 𝕜) :
     ‖π.integratedOperatorL1 hcont hbdd μ f‖ ≤ C * ‖f‖ := by
   have hC0 : 0 ≤ C := (norm_nonneg _).trans (hC 1)
@@ -204,7 +204,7 @@ theorem _root_.ContRepresentation.norm_integratedOperatorL1_le {C : ℝ} (hC : �
 
 /-- Translating the weight on the left by `h` amounts to composing the integrated form with
 `π h`. -/
-theorem _root_.ContRepresentation.comp_integratedOperatorL1 [CompleteSpace E] [MeasurableAdd G]
+lemma _root_.ContRepresentation.comp_integratedOperatorL1 [CompleteSpace E] [MeasurableAdd G]
     [μ.IsAddLeftInvariant] (h : G) (f : G →₁[μ] 𝕜) :
     π (.ofAdd h) ∘L π.integratedOperatorL1 hcont hbdd μ f =
       π.integratedOperatorL1 hcont hbdd μ
@@ -227,7 +227,7 @@ theorem _root_.ContRepresentation.comp_integratedOperatorL1 [CompleteSpace E] [M
 /-- Although `π` is only strongly continuous, `h ↦ π h ∘L π(f)` is continuous in the operator norm:
 by `comp_integratedOperatorL1` it is the integrated form of the left translates of `f`, which
 depend continuously on `h` in `L¹`. -/
-theorem _root_.ContRepresentation.continuous_comp_integratedOperatorL1 [CompleteSpace E]
+lemma _root_.ContRepresentation.continuous_comp_integratedOperatorL1 [CompleteSpace E]
     [IsTopologicalAddGroup G] [MeasurableAdd G] [μ.IsAddLeftInvariant] [IsLocallyFiniteMeasure μ]
     (f : G →₁[μ] 𝕜) :
     Continuous fun h : G ↦ π (.ofAdd h) ∘L π.integratedOperatorL1 hcont hbdd μ f := by
@@ -250,7 +250,7 @@ variable {𝕜 G E : Type*} [RCLike 𝕜] [AddCommGroup G] [TopologicalSpace G]
 
 /-- Every action operator of a representation of an abelian group commutes with its
 integrated operators. No invariance hypothesis on the measure is needed. -/
-theorem _root_.ContRepresentation.commute_integratedOperatorL1
+lemma _root_.ContRepresentation.commute_integratedOperatorL1
     (g : Multiplicative G) (f : G →₁[μ] 𝕜) :
     Commute (π g) (π.integratedOperatorL1 hcont hbdd μ f) := by
   apply ContinuousLinearMap.ext
@@ -266,7 +266,7 @@ theorem _root_.ContRepresentation.commute_integratedOperatorL1
       ((Commute.all g (.ofAdd t)).map π.toMonoidHom).eq)
 
 /-- Integrated operators of an abelian-group representation commute for any measure. -/
-theorem _root_.ContRepresentation.integratedOperatorL1_commute (f₁ f₂ : G →₁[μ] 𝕜) :
+lemma _root_.ContRepresentation.integratedOperatorL1_commute (f₁ f₂ : G →₁[μ] 𝕜) :
     Commute (π.integratedOperatorL1 hcont hbdd μ f₁)
       (π.integratedOperatorL1 hcont hbdd μ f₂) := by
   apply ContinuousLinearMap.ext
@@ -297,7 +297,7 @@ variable {𝕜 G E : Type*} [RCLike 𝕜] [AddCommGroup G] [TopologicalSpace G] 
 
 /-- The integrated form turns convolution of weights into composition of operators:
 `π(f₁ ⋆ f₂) = π(f₁) ∘L π(f₂)`. -/
-theorem _root_.ContRepresentation.integratedOperatorL1_convolution {f₁ f₂ : G → 𝕜}
+lemma _root_.ContRepresentation.integratedOperatorL1_convolution {f₁ f₂ : G → 𝕜}
     (hf₁ : Integrable f₁ μ) (hf₂ : Integrable f₂ μ) :
     π.integratedOperatorL1 hcont hbdd μ
         ((hf₁.integrable_convolution (ContinuousLinearMap.mul 𝕜 𝕜) hf₂).toL1 _) =
@@ -347,7 +347,7 @@ variable {𝕜 G E : Type*} [RCLike 𝕜] [AddGroup G] [TopologicalSpace G] [Mea
 
 /-- Matrix coefficients of the integrated form are the integrals of the matrix coefficients of the
 representation against the weight. -/
-theorem _root_.ContRepresentation.inner_integratedOperatorL1_apply (f : G →₁[μ] 𝕜) (w v : E) :
+lemma _root_.ContRepresentation.inner_integratedOperatorL1_apply (f : G →₁[μ] 𝕜) (w v : E) :
     ⟪w, π.integratedOperatorL1 hcont hbdd μ f v⟫_𝕜 = ∫ g, f g * ⟪w, π (.ofAdd g) v⟫_𝕜 ∂μ := by
   rw [ContRepresentation.integratedOperatorL1_apply,
     ← integral_inner (integrable_smul_apply hcont hbdd.choose_spec (L1.integrable_coeFn f) v)]
@@ -355,7 +355,7 @@ theorem _root_.ContRepresentation.inner_integratedOperatorL1_apply (f : G →₁
 
 /-- The adjoint of the integrated form of a unitary representation is the integrated form of the
 involuted weight `g ↦ conj (f (-g))`. -/
-theorem _root_.ContRepresentation.adjoint_integratedOperatorL1 [MeasurableNeg G]
+lemma _root_.ContRepresentation.adjoint_integratedOperatorL1 [MeasurableNeg G]
     [μ.IsNegInvariant] (hπ : ContRepresentation.IsUnitary π) (f : G →₁[μ] 𝕜) :
     ContinuousLinearMap.adjoint (π.integratedOperatorL1 hcont hbdd μ f) =
       π.integratedOperatorL1 hcont hbdd μ
@@ -385,7 +385,7 @@ variable {𝕜 G E : Type*} [RCLike 𝕜] [AddCommGroup G] [TopologicalSpace G]
   {hbdd : ∃ C, ∀ g, ‖π g‖ ≤ C}
 
 /-- The integrated operators of a unitary abelian-group representation are normal. -/
-theorem _root_.ContRepresentation.isStarNormal_integratedOperatorL1
+lemma _root_.ContRepresentation.isStarNormal_integratedOperatorL1
     (hπ : ContRepresentation.IsUnitary π) (f : G →₁[μ] 𝕜) :
     IsStarNormal (π.integratedOperatorL1 hcont hbdd μ f) := by
   constructor
@@ -409,7 +409,7 @@ variable {𝕜 G E : Type*} [RCLike 𝕜] [AddGroup G] [TopologicalSpace G] [Mea
 integral and `L¹` norm at most `C`, and concentrate at `0` (for every neighbourhood `U` of `0`,
 eventually `f i` vanishes almost everywhere outside `U`), then `π(f i)` tends strongly to the
 identity: `π(f i) v → v` for every `v`. -/
-theorem _root_.ContRepresentation.tendsto_integratedOperatorL1_apply {ι : Type*} {l : Filter ι}
+lemma _root_.ContRepresentation.tendsto_integratedOperatorL1_apply {ι : Type*} {l : Filter ι}
     {f : ι → G →₁[μ] 𝕜} {C : ℝ} (hf : ∀ᶠ i in l, ∫ g, f i g ∂μ = 1)
     (hfC : ∀ᶠ i in l, ‖f i‖ ≤ C)
     (hf₀ : ∀ U ∈ 𝓝 (0 : G), ∀ᶠ i in l, ∀ᵐ g ∂μ, g ∉ U → f i g = 0) (v : E) :
@@ -422,7 +422,7 @@ theorem _root_.ContRepresentation.tendsto_integratedOperatorL1_apply {ι : Type*
 /-- **The integrated form is nondegenerate.** For a measure positive on nonempty open sets and
 finite on some neighbourhood of each point, such as a Haar measure on a locally compact group, every
 vector `v` is a limit of vectors `π(f) v`. -/
-theorem _root_.ContRepresentation.mem_closure_range_integratedOperatorL1_apply
+lemma _root_.ContRepresentation.mem_closure_range_integratedOperatorL1_apply
     [μ.IsOpenPosMeasure] [IsLocallyFiniteMeasure μ] (v : E) :
     v ∈ closure (Set.range fun f : G →₁[μ] 𝕜 ↦ π.integratedOperatorL1 hcont hbdd μ f v) := by
   -- One normalized weight inside each neighbourhood of `0`, indexed as a net shrinking to `0`.

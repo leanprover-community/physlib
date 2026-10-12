@@ -76,13 +76,13 @@ instance (a : A) : IsFiniteMeasure (gnsStructureFactor hα a) :=
 
 /-- **The Fourier transform of the momentum distribution is the correlation function**:
 `∫ χ(g) dμ_a(χ) = ω(a⋆ α_g(a))`. -/
-theorem integral_gnsStructureFactor (a : A) (g : Multiplicative G) :
+lemma integral_gnsStructureFactor (a : A) (g : Multiplicative G) :
     ∫ χ, ((χ g : Circle) : ℂ) ∂gnsStructureFactor hα a = ω (star a * α g a) := by
   rw [gnsStructureFactor, ← inner_eq_integral_vectorMeasure]
   exact inner_gnsRep_cyclicVector_gnsUnitary hα g a
 
 /-- The total momentum weight of the excitation `π(a) Ω` is `ω(a⋆ a)`. -/
-theorem gnsStructureFactor_univ (a : A) :
+lemma gnsStructureFactor_univ (a : A) :
     (gnsStructureFactor hα a).real Set.univ = (ω (star a * a)).re := by
   have h := integral_gnsStructureFactor hα a 1
   simp only [map_one, Circle.coe_one, integral_const] at h
@@ -96,7 +96,7 @@ omit [BorelSpace (PontryaginDual (Multiplicative G))] in
 omit [MeasurableSpace (PontryaginDual (Multiplicative G))] in
 /-- The cyclic vector of an invariant state has momentum zero: its spectral measure is carried
 by the trivial character. -/
-theorem gnsCyclicVector_mem_sector :
+lemma gnsCyclicVector_mem_sector :
     ω.gnsCyclicVector ∈ ProbabilisticTheory.Representation.sector (toEnd (gnsUnitaryRep hα))
       (fun g => (((1 : PontryaginDual (Multiplicative G)) g : Circle) : ℂ)) := by
   intro g
@@ -107,7 +107,7 @@ theorem gnsCyclicVector_mem_sector :
 
 /-- **The vacuum has momentum zero.** For a countable symmetry group the spectral projection of
 the trivial character fixes the cyclic vector. -/
-theorem projection_one_gnsCyclicVector [Countable G] :
+lemma projection_one_gnsCyclicVector [Countable G] :
     projection (gnsUnitaryRep hα) {(1 : PontryaginDual (Multiplicative G))} ω.gnsCyclicVector =
       ω.gnsCyclicVector :=
   projection_singleton_eq_self_of_mem_sector _ 1 (gnsCyclicVector_mem_sector hα)

@@ -51,7 +51,7 @@ noncomputable def _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform
   ∫ χ, (χ (Multiplicative.ofAdd g) : ℂ) ∂μ.toMeasure
 
 /-- The transform evaluated at a group element is the integral of character evaluations. -/
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_apply
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_apply
     (μ : FiniteMeasure (PontryaginDual (Multiplicative G))) (g : G) :
     μ.pontryaginMeasureTransform g =
       ∫ χ, (χ (Multiplicative.ofAdd g) : ℂ) ∂μ.toMeasure := by
@@ -60,21 +60,21 @@ theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_apply
 
 /-- At the identity, the transform records the total mass of the measure. -/
 @[simp]
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_zero
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_zero
     (μ : FiniteMeasure (PontryaginDual (Multiplicative G))) :
     μ.pontryaginMeasureTransform 0 = (μ.toMeasure.real Set.univ : ℂ) := by
   simp [FiniteMeasure.pontryaginMeasureTransform]
 
 /-- The transform of the zero measure vanishes. -/
 @[simp]
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_zero_measure :
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_zero_measure :
     (0 : FiniteMeasure (PontryaginDual (Multiplicative G))).pontryaginMeasureTransform = 0 := by
   funext g
   simp [FiniteMeasure.pontryaginMeasureTransform]
 
 /-- The transform commutes with nonnegative scalar multiplication of finite measures. -/
 @[simp]
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_smul
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_smul
     (c : NNReal) (μ : FiniteMeasure (PontryaginDual (Multiplicative G))) :
     (c • μ).pontryaginMeasureTransform = c • μ.pontryaginMeasureTransform := by
   funext g
@@ -84,7 +84,7 @@ variable [OpensMeasurableSpace (PontryaginDual (Multiplicative G))]
 
 /-- The transform commutes with addition of finite measures. -/
 @[simp]
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_add
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_add
     (μ ν : FiniteMeasure (PontryaginDual (Multiplicative G))) :
     (μ + ν).pontryaginMeasureTransform =
       μ.pontryaginMeasureTransform + ν.pontryaginMeasureTransform := by
@@ -98,7 +98,7 @@ theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_add
 
 /-- The transform of a point mass is its character. -/
 @[simp]
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_dirac
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_dirac
     (χ : PontryaginDual (Multiplicative G)) (g : G) :
     FiniteMeasure.pontryaginMeasureTransform
       (⟨Measure.dirac χ, inferInstance⟩ : FiniteMeasure

@@ -119,7 +119,7 @@ variable [TopologicalSpace G] [DiscreteTopology G]
 /-- **The structure factor exists.** The correlation function of an observable in an invariant
 positive functional is the Fourier transform of a finite positive measure on the momenta:
 `ω(a⋆ α_g(a)) = ∫ χ(g) dμ_a(χ)`. -/
-theorem exists_measure (hpos : ∀ b : B, 0 ≤ ω (star b * b)) (hinv : ∀ g b, ω (α g b) = ω b)
+lemma exists_measure (hpos : ∀ b : B, 0 ≤ ω (star b * b)) (hinv : ∀ g b, ω (α g b) = ω b)
     (a : B) :
     ∃ μ : Measure (PontryaginDual (Multiplicative G)), IsFiniteMeasure μ ∧ μ.InnerRegular ∧
       ∀ g : G, ∫ χ, ((χ (Multiplicative.ofAdd g) : Circle) : ℂ) ∂μ = correlation ω α a g := by
@@ -145,7 +145,7 @@ variable [Countable G]
 
 /-- **The structure factor is unique.** For a countable group a finite measure on the momenta is
 determined by its Fourier transform. -/
-theorem eq_of_transform_eq {μ ν : Measure (PontryaginDual (Multiplicative G))}
+lemma eq_of_transform_eq {μ ν : Measure (PontryaginDual (Multiplicative G))}
     [IsFiniteMeasure μ] [IsFiniteMeasure ν]
     (h : ∀ g : G, ∫ χ, ((χ (Multiplicative.ofAdd g) : Circle) : ℂ) ∂μ =
       ∫ χ, ((χ (Multiplicative.ofAdd g) : Circle) : ℂ) ∂ν) : μ = ν := by
@@ -168,7 +168,7 @@ measures.** A coupling `J(r)` depending only on the displacement `r` is positive
 the sense that every finite quadratic form `∑ c_i c̄_j J(r_i - r_j)` is nonnegative, if and only if
 it is the Fourier transform of a finite positive measure on the momenta, whose density is the
 dispersion of the coupling. -/
-theorem isPositiveDefiniteSub_iff_exists_measure (J : G → ℂ) :
+lemma isPositiveDefiniteSub_iff_exists_measure (J : G → ℂ) :
     TauCeti.IsPositiveDefiniteSub J ↔
       ∃ μ : Measure (PontryaginDual (Multiplicative G)), IsFiniteMeasure μ ∧ μ.InnerRegular ∧
         ∀ r : G, J r = ∫ χ, ((χ (Multiplicative.ofAdd r) : Circle) : ℂ) ∂μ := by

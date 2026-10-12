@@ -164,7 +164,7 @@ lemma hopping_planeWave (A : G → Matrix (Fin N) (Fin N) ℂ) (χ : AddChar G �
 
 /-- **The spectrum of a translation-invariant operator on a finite periodic crystal is the union
 of the spectra of its Bloch matrices.** -/
-theorem spectrum_hopping (A : G → Matrix (Fin N) (Fin N) ℂ) :
+lemma spectrum_hopping (A : G → Matrix (Fin N) (Fin N) ℂ) :
     spectrum ℂ (hopping A) = ⋃ χ : AddChar G ℂ, spectrum ℂ (bloch A χ) := by
   ext μ
   simp only [Set.mem_iUnion, mem_spectrum_iff_exists, mem_spectrum_matrix_iff]

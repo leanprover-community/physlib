@@ -290,7 +290,7 @@ include hι
 open scoped Matrix.Norms.Operator in
 /-- **The spectrum of the operator of a symbol is contained in the union of the spectra of the
 symbol's values**: a translation-invariant operator has no spectrum outside its Bloch bands. -/
-theorem spectrum_blochHom_subset
+lemma spectrum_blochHom_subset
     (b : C(PontryaginDual (Multiplicative G), Matrix (Fin N) (Fin N) ℂ)) :
     spectrum ℂ (blochHom π ι hι b) ⊆
       ⋃ χ : PontryaginDual (Multiplicative G), spectrum ℂ (b χ) := by

@@ -368,7 +368,7 @@ lemma bracketMatrix_cubePairs (ω : 𝓢[ℂ, Tx.CubeOperators Ty Tz]) :
 /-- **Robertson's relation on the cube.** In every state of the cube the volume `det Σ` of the
 dispersion of the six observables is at least the product of the squared brackets of the three
 axes. -/
-theorem robertson_det_cube (ω : 𝓢[ℂ, Tx.CubeOperators Ty Tz]) :
+lemma robertson_det_cube (ω : 𝓢[ℂ, Tx.CubeOperators Ty Tz]) :
     (Tx.axisBracket Ty Tz ω 0 * Tx.axisBracket Ty Tz ω 1 * Tx.axisBracket Ty Tz ω 2) ^ 2 ≤
       (covarianceMatrix ω (Tx.cubePairs Ty Tz)).det := by
   have h := robertson_det ω (Tx.cubePairs Ty Tz)
@@ -531,7 +531,7 @@ lemma det_covarianceMatrix_maxCurrentCubeState (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 
 
 /-- **Robertson's relation is strict in the maximal current state of the cube.** From
 `4 × 4 × 4` on, `|det Ω| < det Σ` for the six observables of the cube. -/
-theorem robertson_det_maxCurrentCubeState_strict (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0)
+lemma robertson_det_maxCurrentCubeState_strict (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0)
     (hz : Tz.t ≠ 0) (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N) :
     |(bracketMatrix (Tx.maxCurrentCubeVectorState Ty Tz) (Tx.cubePairs Ty Tz)).det| <
       (covarianceMatrix (Tx.maxCurrentCubeVectorState Ty Tz) (Tx.cubePairs Ty Tz)).det := by

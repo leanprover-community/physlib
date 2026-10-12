@@ -62,24 +62,24 @@ noncomputable def spanIndices (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
 
 /-- The selected subspace is the span of its basis vectors.
 Use this identity to apply `Submodule.span`'s induction or universal property. -/
-theorem spanIndices_eq_span (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
+lemma spanIndices_eq_span (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
     b.spanIndices s = Submodule.span 𝕜 (b '' s) := (rfl)
 
 /-- Selecting more indices spans more. -/
-theorem spanIndices_mono (b : OrthonormalBasis ι 𝕜 E) {s t : Set ι} (h : s ⊆ t) :
+lemma spanIndices_mono (b : OrthonormalBasis ι 𝕜 E) {s t : Set ι} (h : s ⊆ t) :
     b.spanIndices s ≤ b.spanIndices t := by
   rw [b.spanIndices_eq_span s, b.spanIndices_eq_span t]
   exact Submodule.span_mono (Set.image_mono h)
 
 /-- A selected basis vector lies in the span of its index set. -/
-theorem mem_spanIndices_of_mem (b : OrthonormalBasis ι 𝕜 E) {s : Set ι} {i : ι}
+lemma mem_spanIndices_of_mem (b : OrthonormalBasis ι 𝕜 E) {s : Set ι} {i : ι}
     (hi : i ∈ s) : b i ∈ b.spanIndices s := by
   rw [b.spanIndices_eq_span]
   exact Submodule.subset_span ⟨i, hi, rfl⟩
 
 /-- A vector in the span of a selected subfamily has zero coordinate at any
 index outside the selection. -/
-theorem repr_eq_zero_of_mem_spanIndices (b : OrthonormalBasis ι 𝕜 E)
+lemma repr_eq_zero_of_mem_spanIndices (b : OrthonormalBasis ι 𝕜 E)
     {s : Set ι} {x : E} (hx : x ∈ b.spanIndices s) {i : ι} (hi : i ∉ s) :
     b.repr x i = 0 := by
   rw [b.spanIndices_eq_span] at hx
@@ -99,7 +99,7 @@ theorem repr_eq_zero_of_mem_spanIndices (b : OrthonormalBasis ι 𝕜 E)
 /-- Membership in the span of a selected subfamily is exactly the vanishing of
 the coordinates outside the selection. -/
 @[simp]
-theorem mem_spanIndices_iff (b : OrthonormalBasis ι 𝕜 E)
+lemma mem_spanIndices_iff (b : OrthonormalBasis ι 𝕜 E)
     {s : Set ι} {x : E} :
     x ∈ b.spanIndices s ↔ ∀ i ∉ s, b.repr x i = 0 := by
   classical
@@ -113,7 +113,7 @@ theorem mem_spanIndices_iff (b : OrthonormalBasis ι 𝕜 E)
 
 /-- The span of a selected subfamily has dimension the number of selected
 indices. -/
-theorem finrank_spanIndices (b : OrthonormalBasis ι 𝕜 E) (s : Finset ι) :
+lemma finrank_spanIndices (b : OrthonormalBasis ι 𝕜 E) (s : Finset ι) :
     finrank 𝕜 (b.spanIndices ↑s) = s.card := by
   have h : finrank 𝕜 (Submodule.span 𝕜
       (Set.range fun i : ↥(↑s : Set ι) => b ↑i)) = Fintype.card ↥(↑s : Set ι) :=
@@ -124,7 +124,7 @@ theorem finrank_spanIndices (b : OrthonormalBasis ι 𝕜 E) (s : Finset ι) :
 
 /-- The span of a selected set of basis vectors has dimension equal to the
 number of selected indices. -/
-theorem finrank_spanIndices_set (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
+lemma finrank_spanIndices_set (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
     finrank 𝕜 (b.spanIndices s) = s.ncard := by
   classical
   rw [Set.ncard_eq_toFinset_card']
@@ -132,7 +132,7 @@ theorem finrank_spanIndices_set (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
 
 /-- The orthogonal complement of the span of a selected subfamily is the span
 of the complementary subfamily. -/
-theorem orthogonal_spanIndices (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
+lemma orthogonal_spanIndices (b : OrthonormalBasis ι 𝕜 E) (s : Set ι) :
     (b.spanIndices s)ᗮ = b.spanIndices sᶜ := by
   classical
   have : FiniteDimensional 𝕜 E := Module.Finite.of_basis b.toBasis

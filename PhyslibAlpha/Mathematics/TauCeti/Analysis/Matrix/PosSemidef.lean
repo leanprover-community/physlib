@@ -66,7 +66,7 @@ variable {α : Type v}
 variable {𝕜 : Type u} [RCLike 𝕜]
 
 /-- The `2 × 2` principal submatrix at two indices is positive semidefinite. -/
-private theorem finTwo_posSemidef {K : α → α → 𝕜}
+private lemma finTwo_posSemidef {K : α → α → 𝕜}
     (hK : Matrix.PosSemidef K) (a b : α) :
     (Matrix.of fun i j : Fin 2 => K (![a, b] i) (![a, b] j)).PosSemidef := by
   have h := hK.submatrix (fun i : Fin 2 => ![a, b] i)
@@ -79,7 +79,7 @@ private theorem finTwo_posSemidef {K : α → α → 𝕜}
   exact heq ▸ h
 
 /-- Scalar Cauchy--Schwarz for an `RCLike`-valued positive-semidefinite matrix. -/
-theorem normSq_le {K : α → α → 𝕜}
+lemma normSq_le {K : α → α → 𝕜}
     (hK : Matrix.PosSemidef K) (a b : α) :
     RCLike.normSq (K a b) ≤ RCLike.re (K a a) * RCLike.re (K b b) := by
   have hsymm (x y : α) : conj (K x y) = K y x := by
@@ -99,7 +99,7 @@ theorem normSq_le {K : α → α → 𝕜}
   nlinarith
 
 /-- A zero diagonal entry forces the corresponding row entry to vanish. -/
-theorem eq_zero_of_apply_self_eq_zero_left {K : α → α → 𝕜}
+lemma eq_zero_of_apply_self_eq_zero_left {K : α → α → 𝕜}
     (hK : Matrix.PosSemidef K) {a b : α} (ha : K a a = 0) : K a b = 0 := by
   have hnorm := hK.normSq_le a b
   have hdiag : RCLike.re (K a a) * RCLike.re (K b b) = 0 := by simp [ha]
@@ -108,7 +108,7 @@ theorem eq_zero_of_apply_self_eq_zero_left {K : α → α → 𝕜}
   exact RCLike.normSq_eq_zero.mp hnorm_zero
 
 /-- A zero diagonal entry forces the corresponding column entry to vanish. -/
-theorem eq_zero_of_apply_self_eq_zero_right {K : α → α → 𝕜}
+lemma eq_zero_of_apply_self_eq_zero_right {K : α → α → 𝕜}
     (hK : Matrix.PosSemidef K) {a b : α} (hb : K b b = 0) : K a b = 0 := by
   have hba := hK.eq_zero_of_apply_self_eq_zero_left (a := b) (b := a) hb
   have hconj : conj (K a b) = K b a := by
@@ -119,7 +119,7 @@ theorem eq_zero_of_apply_self_eq_zero_right {K : α → α → 𝕜}
 
 /-- If two diagonal entries are `1`, then the corresponding off-diagonal entry has norm at most
 `1`. -/
-theorem norm_le_one_of_apply_self_eq_one {K : α → α → 𝕜}
+lemma norm_le_one_of_apply_self_eq_one {K : α → α → 𝕜}
     (hK : Matrix.PosSemidef K) {a b : α} (ha : K a a = 1) (hb : K b b = 1) :
     ‖K a b‖ ≤ 1 := by
   refine le_of_sq_le_sq ?_ zero_le_one
@@ -127,7 +127,7 @@ theorem norm_le_one_of_apply_self_eq_one {K : α → α → 𝕜}
 
 /-- **The diagonal of a positive-semidefinite matrix bounds all of its entries.** Cauchy--Schwarz
 turns a uniform bound on the (nonnegative real) diagonal entries into the same bound everywhere. -/
-theorem norm_le_of_norm_apply_self_le {K : α → α → 𝕜} {C : ℝ}
+lemma norm_le_of_norm_apply_self_le {K : α → α → 𝕜} {C : ℝ}
     (hK : Matrix.PosSemidef K) (hdiag : ∀ i, ‖K i i‖ ≤ C) (a b : α) : ‖K a b‖ ≤ C := by
   have hnonneg : ∀ i : α, 0 ≤ RCLike.re (K i i) := fun i =>
     (RCLike.nonneg_iff.mp (by simpa using hK.diag_nonneg (i := i))).1
@@ -150,7 +150,7 @@ variable {𝕜 : Type*} [RCLike 𝕜]
 squares satisfy the Cauchy--Schwarz inequality `b n ^ 2 ≤ b 0 * b (n + n)` cannot increase at the
 first step. If it did, the ratio `r = b 1 / b 0` would exceed `1` and the doubling inequality would
 push `b (2 ^ k)` past `b 0 * r ^ (2 ^ k)`, which is unbounded. -/
-private theorem apply_one_le_apply_zero_of_sq_le_mul {b : ℕ → ℝ} {D : ℝ} (hb0 : 0 ≤ b 0)
+private lemma apply_one_le_apply_zero_of_sq_le_mul {b : ℕ → ℝ} {D : ℝ} (hb0 : 0 ≤ b 0)
     (hsq : ∀ n, b n ^ 2 ≤ b 0 * b (n + n)) (hbd : ∀ n, b n ≤ D) : b 1 ≤ b 0 := by
   rcases le_or_gt (b 1) (b 0) with hle | hlt
   · exact hle
@@ -194,7 +194,7 @@ If `(m, n) ↦ a (m + n)` is positive semidefinite and the real parts of `a` are
 — the entries are automatically real — then `a 1 ≤ a 0` in the `RCLike` order. Cauchy--Schwarz
 alone gives `a n ^ 2 ≤ a 0 * a (2 n)`, and the bound rules out a ratio `a 1 / a 0` greater
 than `1`. -/
-theorem sub_nonneg_of_posSemidef_hankel {a : ℕ → 𝕜} {D : ℝ}
+lemma sub_nonneg_of_posSemidef_hankel {a : ℕ → 𝕜} {D : ℝ}
     (ha : Matrix.PosSemidef fun m n : ℕ => a (m + n)) (hbd : ∀ n, RCLike.re (a n) ≤ D) :
     0 ≤ a 0 - a 1 := by
   have hreal : ∀ n, (starRingEnd 𝕜) (a n) = a n := by

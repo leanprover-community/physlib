@@ -109,7 +109,7 @@ variable (hι : ∀ (M : Matrix (Fin N) (Fin N) ℂ) (g : Multiplicative G),
 include hι
 
 /-- The operator of a Hermitian symbol is self-adjoint. -/
-theorem isSelfAdjoint_blochHom
+lemma isSelfAdjoint_blochHom
     (b : C(PontryaginDual (Multiplicative G), Matrix (Fin N) (Fin N) ℂ))
     (hb : ∀ χ, (b χ).IsHermitian) : IsSelfAdjoint (blochHom π ι hι b) := by
   have hstar : star b = b := by
@@ -120,7 +120,7 @@ theorem isSelfAdjoint_blochHom
 
 /-- **Every point of the spectrum of the operator of a Hermitian symbol is a band value**: it is
 the `k`-th band `ε_k(χ)` of some crystal momentum `χ`. -/
-theorem exists_band_eq_of_mem_spectrum
+lemma exists_band_eq_of_mem_spectrum
     (b : C(PontryaginDual (Multiplicative G), Matrix (Fin N) (Fin N) ℂ))
     (hb : ∀ χ, (b χ).IsHermitian) {z : ℂ} (hz : z ∈ spectrum ℂ (blochHom π ι hι b)) :
     ∃ (χ : PontryaginDual (Multiplicative G)) (k : Fin (Fintype.card (Fin N))),

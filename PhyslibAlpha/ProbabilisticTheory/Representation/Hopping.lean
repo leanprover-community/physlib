@@ -94,7 +94,7 @@ lemma blochMatrix_apply (A : G →₀ Matrix (Fin N) (Fin N) ℂ)
 include hι
 
 /-- **The hopping operator is the integral of its Bloch matrix.** -/
-theorem blochHom_blochMatrix (A : G →₀ Matrix (Fin N) (Fin N) ℂ) :
+lemma blochHom_blochMatrix (A : G →₀ Matrix (Fin N) (Fin N) ℂ) :
     blochHom π ι hι (blochMatrix A) = hopping π ι A := by
   have hentry : ∀ i j : Fin N, calculus π (entry (blochMatrix A) i j) =
       ∑ r ∈ A.support, A r i j • ((π (Multiplicative.ofAdd r) : unitary (H →L[ℂ] H)) :
@@ -138,7 +138,7 @@ include hι
 
 /-- The spectrum of a finite-range translation-invariant operator is contained in the union of the
 spectra of its Bloch matrices. -/
-theorem spectrum_hopping_subset (A : G →₀ Matrix (Fin N) (Fin N) ℂ) :
+lemma spectrum_hopping_subset (A : G →₀ Matrix (Fin N) (Fin N) ℂ) :
     spectrum ℂ (hopping π ι A) ⊆
       ⋃ χ : PontryaginDual (Multiplicative G), spectrum ℂ (blochMatrix A χ) := by
   rw [← blochHom_blochMatrix π ι hι A]

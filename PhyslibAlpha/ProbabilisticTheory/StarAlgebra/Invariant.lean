@@ -307,7 +307,7 @@ def AlgState.invariantLimit (φ : AlgState A) (hb : ∀ a : A, IsBounded a) (�
 /-- **The Følner limit of a state is invariant.** When the sets `F i` are asymptotically invariant
 under right translation along `𝒰`, every limit of the averages of a state over them is invariant
 under the group. -/
-theorem AlgState.invariantLimit_invariant (φ : AlgState A) (hb : ∀ a : A, IsBounded a)
+lemma AlgState.invariantLimit_invariant (φ : AlgState A) (hb : ∀ a : A, IsBounded a)
     (𝒰 : Ultrafilter ι) (hF : IsRightFolner F 𝒰) (h : Γ) (a : A) :
     AlgState.invariantLimit α F hne φ hb 𝒰 (α h a) = AlgState.invariantLimit α F hne φ hb 𝒰 a := by
   set ψ : ι → AlgState A := fun i => φ.average (fun g => α g) (F i) (hne i) with hψ

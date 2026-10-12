@@ -330,7 +330,7 @@ variable [TopologicalSpace G] [DiscreteTopology G]
 /-- **A localized state has a uniform momentum distribution**: its spectral measure for the
 translations is the Haar measure of the dual group, weighted by the squared norm of the internal
 state. -/
-theorem vectorMeasure_localized (e : EuclideanSpace ℂ (Fin N)) :
+lemma vectorMeasure_localized (e : EuclideanSpace ℂ (Fin N)) :
     UnitaryRep.vectorMeasure (translation G N) (localized e) =
       ENNReal.ofReal (‖e‖ ^ 2) • dualHaar (G := G) := by
   symm
@@ -366,7 +366,7 @@ lemma projection_localized_ne_zero {U : Set (PontryaginDual (Multiplicative G))}
 
 /-- **The regular representation has full support**: every crystal momentum occurs in every
 internal state. -/
-theorem hasFullSupport :
+lemma hasFullSupport :
     UnitaryRep.HasFullSupport (translation G N) (internal (G := G) (N := N)) := by
   intro U hU hne i hzero
   set e : EuclideanSpace ℂ (Fin N) := EuclideanSpace.single i (1 : ℂ) with he

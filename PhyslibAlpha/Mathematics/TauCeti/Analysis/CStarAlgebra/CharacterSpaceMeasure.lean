@@ -140,7 +140,7 @@ variable [MeasurableSpace (characterSpace ℂ A)] [BorelSpace (characterSpace �
 A linear functional on a unital commutative C⋆-algebra that is nonnegative on every
 `star a * a` is integration against a finite inner regular positive measure `μ` on the
 character space: `f a = ∫ ω, ω a ∂μ`. -/
-theorem LinearMap.exists_isFiniteMeasure_integral_characterSpace_eq (f : A →ₗ[ℂ] ℂ)
+lemma LinearMap.exists_isFiniteMeasure_integral_characterSpace_eq (f : A →ₗ[ℂ] ℂ)
     (hf : ∀ a, 0 ≤ f (star a * a)) :
     ∃ μ : Measure (characterSpace ℂ A), IsFiniteMeasure μ ∧ μ.InnerRegular ∧
       ∀ a, f a = ∫ ω, ω a ∂μ := by
@@ -172,7 +172,7 @@ theorem LinearMap.exists_isFiniteMeasure_integral_characterSpace_eq (f : A →�
 `ω ↦ ω (star a * a) = |ω a|²` gives the squared `L²` norm of `ω ↦ ω a`. Hence if `μ` represents a
 functional `f`, as in `LinearMap.exists_isFiniteMeasure_integral_characterSpace_eq`, then
 `f (star a * a) = ∫ |ω a|² dμ(ω)`. -/
-theorem WeakDual.CharacterSpace.integral_apply_star_mul_self {E : Type*} [CStarAlgebra E]
+lemma WeakDual.CharacterSpace.integral_apply_star_mul_self {E : Type*} [CStarAlgebra E]
     [MeasurableSpace (characterSpace ℂ E)] (μ : Measure (characterSpace ℂ E)) (a : E) :
     ∫ ω, ω (star a * a) ∂μ = ((∫ ω, ‖ω a‖ ^ 2 ∂μ : ℝ) : ℂ) := by
   simp_rw [map_mul, map_star, Complex.star_def, Complex.conj_mul', ← Complex.ofReal_pow]
@@ -198,7 +198,7 @@ private lemma inner_star_mul_self_apply (ξ : H) (a : B) :
 /-- For a closed star algebra `B` of operators, if a measure `μ` on the character space
 represents the positive vector functional of `ξ`, then `∫ |ω a|² dμ(ω) = ‖a ξ‖²` for every
 `a ∈ B`. -/
-theorem StarSubalgebra.integral_norm_sq_eq_norm_apply_sq {μ : Measure (characterSpace ℂ B)}
+lemma StarSubalgebra.integral_norm_sq_eq_norm_apply_sq {μ : Measure (characterSpace ℂ B)}
     {ξ : H} (hμ : ∀ a : B, ⟪ξ, (a : H →L[ℂ] H) ξ⟫_ℂ = ∫ ω, ω a ∂μ) (a : B) :
     ∫ ω, ‖ω a‖ ^ 2 ∂μ = ‖(a : H →L[ℂ] H) ξ‖ ^ 2 := by
   have h := hμ (star a * a)
@@ -213,7 +213,7 @@ variable [IsMulCommutative B] [BorelSpace (characterSpace ℂ B)]
 commutative star algebra `B` of operators on a complex Hilbert space and a vector `ξ`, the
 positive vector functional `a ↦ ⟪ξ, a ξ⟫` is integration against a finite inner regular positive
 measure on the character space of `B`. -/
-theorem StarSubalgebra.exists_isFiniteMeasure_integral_characterSpace_eq_inner (ξ : H) :
+lemma StarSubalgebra.exists_isFiniteMeasure_integral_characterSpace_eq_inner (ξ : H) :
     ∃ μ : Measure (characterSpace ℂ B), IsFiniteMeasure μ ∧ μ.InnerRegular ∧
       ∀ a : B, ⟪ξ, (a : H →L[ℂ] H) ξ⟫_ℂ = ∫ ω, ω a ∂μ := by
   let f : B →ₗ[ℂ] ℂ :=

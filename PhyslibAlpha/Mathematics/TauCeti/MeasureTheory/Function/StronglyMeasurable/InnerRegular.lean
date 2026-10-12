@@ -64,7 +64,7 @@ variable {α β : Type*} [TopologicalSpace α] [MeasurableSpace α] [R1Space α]
 /-- For a measure that is inner regular with respect to compact sets on sets of finite measure, a
 function continuous on a measurable set `s` of finite measure is a.e. strongly measurable for the
 restriction of the measure to `s`. -/
-theorem ContinuousOn.aestronglyMeasurable_of_measure_ne_top {f : α → β} {s : Set α}
+lemma ContinuousOn.aestronglyMeasurable_of_measure_ne_top {f : α → β} {s : Set α}
     (hf : ContinuousOn f s) (hs : MeasurableSet s) (hμs : μ s ≠ ∞) :
     AEStronglyMeasurable f (μ.restrict s) := by
   -- Exhaust `s` up to a null set by countably many closed compact subsets.
@@ -84,7 +84,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_measure_ne_top {f : α → β} {s :
 /-- A continuous function is a.e. strongly measurable for a σ-finite measure that is inner regular
 with respect to compact sets on sets of finite measure. Compare `Continuous.aestronglyMeasurable`,
 which asks for second countability of the source or the target instead. -/
-theorem Continuous.aestronglyMeasurable_of_sigmaFinite [SigmaFinite μ] {f : α → β}
+lemma Continuous.aestronglyMeasurable_of_sigmaFinite [SigmaFinite μ] {f : α → β}
     (hf : Continuous f) : AEStronglyMeasurable f μ := by
   rw [← Measure.restrict_univ (μ := μ), ← iUnion_spanningSets μ, aestronglyMeasurable_iUnion_iff]
   exact fun n ↦ hf.continuousOn.aestronglyMeasurable_of_measure_ne_top
@@ -95,7 +95,7 @@ one, and a continuous function `g` is a.e. strongly measurable, for a measure th
 with respect to compact sets on sets of finite measure. No σ-finiteness of the measure and no
 second countability is needed: `f` vanishes outside a σ-finite set, on which `g` is a.e. strongly
 measurable by `Continuous.aestronglyMeasurable_of_sigmaFinite`. -/
-theorem MeasureTheory.AEFinStronglyMeasurable.aestronglyMeasurable_smul {𝕜 : Type*}
+lemma MeasureTheory.AEFinStronglyMeasurable.aestronglyMeasurable_smul {𝕜 : Type*}
     [TopologicalSpace 𝕜] [T2Space 𝕜] [Zero 𝕜] [Zero β] [SMulWithZero 𝕜 β] [ContinuousSMul 𝕜 β]
     {f : α → 𝕜} (hf : AEFinStronglyMeasurable f μ) {g : α → β} (hg : Continuous g) :
     AEStronglyMeasurable (fun x ↦ f x • g x) μ := by

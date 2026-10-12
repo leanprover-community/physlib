@@ -160,7 +160,7 @@ def spectralMeasure : WOTSpectralMeasure (PontryaginDual (Multiplicative G)) H :
 /-- **Spectral theorem for unitary representations of abelian groups**: every operator `π(g)` of
 the representation is the integral of the character `χ ↦ χ(g)` against the projection-valued
 measure on the Pontryagin dual. -/
-theorem boundedIntegral_character (g : Multiplicative G) :
+lemma boundedIntegral_character (g : Multiplicative G) :
     ContinuousLinearMapWOT.toCLM
       (WOTSpectralMeasure.boundedIntegral (spectralMeasure π)
         (fun χ : PontryaginDual (Multiplicative G) => ((χ g : Circle) : ℂ))

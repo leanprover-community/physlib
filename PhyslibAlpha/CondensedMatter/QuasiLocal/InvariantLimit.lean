@@ -73,7 +73,7 @@ def invariantLimit (φ : AlgState (uniformNet (S := S) Ω₀).Quasilocal) (F : �
     (AlgebraNet.isBounded_of_isLocallyBounded quantumNet_isLocallyBounded) 𝒰
 
 /-- **The invariant limit of a state is invariant under the site symmetries.** -/
-theorem invariantLimit_invariant (φ : AlgState (uniformNet (S := S) Ω₀).Quasilocal)
+lemma invariantLimit_invariant (φ : AlgState (uniformNet (S := S) Ω₀).Quasilocal)
     (F : ι → Finset Γ) (hne : ∀ i, (F i).Nonempty) (𝒰 : Ultrafilter ι)
     (hF : IsRightFolner F 𝒰) (γ : Γ) (a : (uniformNet (S := S) Ω₀).Quasilocal) :
     invariantLimit φ F hne 𝒰 (symAction (Ω₀ := Ω₀) γ a) = invariantLimit φ F hne 𝒰 a :=
@@ -81,7 +81,7 @@ theorem invariantLimit_invariant (φ : AlgState (uniformNet (S := S) Ω₀).Quas
 
 /-- **Existence of invariant states**: if the finite sets of site symmetries are asymptotically
 invariant, every state of the quasi-local algebra has an invariant limit state. -/
-theorem exists_invariant_state (φ : AlgState (uniformNet (S := S) Ω₀).Quasilocal)
+lemma exists_invariant_state (φ : AlgState (uniformNet (S := S) Ω₀).Quasilocal)
     (F : ι → Finset Γ) (hne : ∀ i, (F i).Nonempty) (𝒰 : Ultrafilter ι)
     (hF : IsRightFolner F 𝒰) :
     ∃ ψ : AlgState (uniformNet (S := S) Ω₀).Quasilocal,
@@ -101,7 +101,7 @@ def Interaction.invariantLimitState (I : Interaction (fun _ : S => Ω₀)) (β :
   invariantLimit (I.canonicalLimitState β 𝒰₀ h𝒰₀) F hne 𝒰
 
 /-- The symmetric limit state of an interaction is invariant under the site symmetries. -/
-theorem Interaction.invariantLimitState_invariant (I : Interaction (fun _ : S => Ω₀)) (β : ℝ)
+lemma Interaction.invariantLimitState_invariant (I : Interaction (fun _ : S => Ω₀)) (β : ℝ)
     (𝒰₀ : Ultrafilter (Finset S)) (h𝒰₀ : (𝒰₀ : Filter (Finset S)) ≤ atTop) (F : ι → Finset Γ)
     (hne : ∀ i, (F i).Nonempty) (𝒰 : Ultrafilter ι) (hF : IsRightFolner F 𝒰) (γ : Γ)
     (a : (uniformNet (S := S) Ω₀).Quasilocal) :

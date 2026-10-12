@@ -84,7 +84,7 @@ variable {E : Type*} [TopologicalSpace E] [MeasurableSpace E]
 /-- **A separating submonoid of test functions determines a finite measure.** Two finite Borel
 measures on a Polish space that give the same integral to every member of a submonoid `S` of the
 real bounded continuous functions are equal, provided the members of `S` separate points. -/
-theorem ext_of_forall_mem_submonoid_integral_eq_of_polish [PolishSpace E] [BorelSpace E]
+lemma ext_of_forall_mem_submonoid_integral_eq_of_polish [PolishSpace E] [BorelSpace E]
     {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P'] {S : Submonoid (E →ᵇ ℝ)}
     (hS : ∀ ⦃x y : E⦄, x ≠ y → ∃ g ∈ S, g x ≠ g y)
     (heq : ∀ g ∈ S, ∫ x, g x ∂P = ∫ x, g x ∂P') : P = P' := by
@@ -122,7 +122,7 @@ section Tight
 variable [T2Space E] [OpensMeasurableSpace E]
   {P P' : Measure E} [IsFiniteMeasure P] [IsFiniteMeasure P']
 
-private theorem abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet_of_borel
+private lemma abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet_of_borel
     [BorelSpace E]
     (hP : IsTightMeasureSet {P}) (hP' : IsTightMeasureSet {P'}) (f : E →ᵇ ℝ)
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hA : (A.map (toContinuousMapₐ ℝ)).SeparatesPoints)
@@ -168,7 +168,7 @@ private theorem abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet_of_
 real subalgebra `A` of `E →ᵇ ℝ` equally, then their integrals of `mulExpNegMulSq ε ∘ f` differ by
 at most `6 √ε`. This is the tight form of Mathlib's `dist_integral_mulExpNegMulSq_comp_le`, which
 assumes a complete second-countable pseudo-metric space instead. -/
-theorem abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet
+lemma abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet
     (hP : IsTightMeasureSet {P}) (hP' : IsTightMeasureSet {P'}) (f : E →ᵇ ℝ)
     {A : Subalgebra ℝ (E →ᵇ ℝ)} (hA : (A.map (toContinuousMapₐ ℝ)).SeparatesPoints)
     (heq : ∀ g ∈ A, ∫ x, (g : E → ℝ) x ∂P = ∫ x, (g : E → ℝ) x ∂P') {ε : ℝ} (hε : 0 < ε) :
@@ -202,7 +202,7 @@ theorem abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet
     ← integral_trim hm f.continuous.mulExpNegMulSq.stronglyMeasurable] at h
 
 omit [T2Space E] in
-private theorem tendsto_integral_mulExpNegMulSq_comp_of_opens (f : E →ᵇ ℝ) :
+private lemma tendsto_integral_mulExpNegMulSq_comp_of_opens (f : E →ᵇ ℝ) :
     Tendsto (fun ε => ∫ x, mulExpNegMulSq ε (f x) ∂P) (𝓝[>] 0) (𝓝 (∫ x, f x ∂P)) := by
   let m0 : MeasurableSpace E := ‹MeasurableSpace E›
   let hm : borel E ≤ m0 := OpensMeasurableSpace.borel_le
@@ -221,7 +221,7 @@ private theorem tendsto_integral_mulExpNegMulSq_comp_of_opens (f : E →ᵇ ℝ)
 measures on a Hausdorff space that integrate every member of a point-separating star
 subalgebra `A` of `E →ᵇ 𝕜` equally give the same integral to every real bounded continuous
 function. -/
-theorem integral_eq_of_forall_mem_subalgebra_integral_eq_of_isTightMeasureSet {𝕜 : Type*} [RCLike 𝕜]
+lemma integral_eq_of_forall_mem_subalgebra_integral_eq_of_isTightMeasureSet {𝕜 : Type*} [RCLike 𝕜]
     (hP : IsTightMeasureSet {P}) (hP' : IsTightMeasureSet {P'})
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') (f : E →ᵇ ℝ) :
@@ -275,7 +275,7 @@ measures that integrate every member of a point-separating star subalgebra `A` o
 equally are equal. Unlike
 `MeasureTheory.ext_of_forall_mem_subalgebra_integral_eq_of_polish`, no metrizability or
 countability is assumed. -/
-theorem ext_of_forall_mem_subalgebra_integral_eq_of_innerRegular {𝕜 : Type*} [RCLike 𝕜]
+lemma ext_of_forall_mem_subalgebra_integral_eq_of_innerRegular {𝕜 : Type*} [RCLike 𝕜]
     [BorelSpace E] [LocallyCompactSpace E] [P.InnerRegular] [P'.InnerRegular]
     {A : StarSubalgebra 𝕜 (E →ᵇ 𝕜)} (hA : (A.map (toContinuousMapStarₐ 𝕜)).SeparatesPoints)
     (heq : ∀ g ∈ A, ∫ x, (g : E → 𝕜) x ∂P = ∫ x, (g : E → 𝕜) x ∂P') : P = P' :=

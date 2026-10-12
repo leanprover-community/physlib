@@ -60,12 +60,12 @@ def gnsVector (a : G) : hF.gnsSpace := hF.posSemidef.kolmogorovFeature a
 
 /-- The inner product of two GNS vectors is the original positive-definite kernel. -/
 @[simp]
-theorem inner_gnsVector (a b : G) : ⟪hF.gnsVector a, hF.gnsVector b⟫_ℂ = F (a - b) :=
+lemma inner_gnsVector (a b : G) : ⟪hF.gnsVector a, hF.gnsVector b⟫_ℂ = F (a - b) :=
   hF.posSemidef.inner_kolmogorovFeature a b
 
 /-- Squared distances between GNS vectors are controlled by the real part of the function. -/
 @[simp]
-theorem norm_gnsVector_sub_sq (a b : G) :
+lemma norm_gnsVector_sub_sq (a b : G) :
     ‖hF.gnsVector a - hF.gnsVector b‖ ^ 2 =
       2 * ((F 0).re - (F (a - b)).re) := by
   rw [gnsVector, gnsVector, Matrix.PosSemidef.norm_kolmogorovFeature_sub_sq]
@@ -76,11 +76,11 @@ theorem norm_gnsVector_sub_sq (a b : G) :
   ring
 
 /-- The GNS vectors span a dense subspace. -/
-theorem gnsVector_dense :
+lemma gnsVector_dense :
     (Submodule.span ℂ (Set.range hF.gnsVector)).topologicalClosure = ⊤ :=
   hF.posSemidef.kolmogorovFeature_dense
 
-private theorem translated_gnsVector_dense (g : G) :
+private lemma translated_gnsVector_dense (g : G) :
     (Submodule.span ℂ (Set.range fun a : G => hF.gnsVector (g + a))).topologicalClosure = ⊤ := by
   have hrange : Set.range (fun a : G => hF.gnsVector (g + a)) = Set.range hF.gnsVector := by
     ext x
@@ -103,14 +103,14 @@ def gnsTranslation (g : G) : hF.gnsSpace ≃ₗᵢ[ℂ] hF.gnsSpace :=
 
 /-- Translation acts on the canonical GNS vectors by addition. -/
 @[simp]
-theorem gnsTranslation_gnsVector (g a : G) :
+lemma gnsTranslation_gnsVector (g a : G) :
     hF.gnsTranslation g (hF.gnsVector a) = hF.gnsVector (g + a) :=
   by simpa only [gnsTranslation, gnsVector] using
     hF.posSemidef.kolmogorovEquiv_apply _ _ _ a
 
 /-- The translation at zero is the identity operator. -/
 @[simp]
-theorem gnsTranslation_zero : hF.gnsTranslation 0 = LinearIsometryEquiv.refl ℂ hF.gnsSpace := by
+lemma gnsTranslation_zero : hF.gnsTranslation 0 = LinearIsometryEquiv.refl ℂ hF.gnsSpace := by
   apply LinearIsometryEquiv.toLinearIsometry_injective
   have hinner : ∀ a b, ⟪hF.gnsVector a, hF.gnsVector b⟫_ℂ = F (a - b) :=
     hF.inner_gnsVector
@@ -121,7 +121,7 @@ theorem gnsTranslation_zero : hF.gnsTranslation 0 = LinearIsometryEquiv.refl ℂ
 
 /-- GNS translations compose according to the group law. -/
 @[simp]
-theorem gnsTranslation_add (g k : G) :
+lemma gnsTranslation_add (g k : G) :
     hF.gnsTranslation (g + k) = (hF.gnsTranslation k).trans (hF.gnsTranslation g) := by
   apply LinearIsometryEquiv.toLinearIsometry_injective
   have hinner : ∀ a b,
@@ -150,26 +150,26 @@ def gnsRepresentation : Multiplicative G →* (hF.gnsSpace ≃ₗᵢ[ℂ] hF.gns
 
 /-- The representation operator at `g` is translation by `g`. -/
 @[simp]
-theorem gnsRepresentation_ofAdd (g : G) :
+lemma gnsRepresentation_ofAdd (g : G) :
     hF.gnsRepresentation (Multiplicative.ofAdd g) = hF.gnsTranslation g := by
   simp [gnsRepresentation]
 
 /-- The representation translates each GNS vector. -/
-theorem gnsRepresentation_gnsVector (g a : G) :
+lemma gnsRepresentation_gnsVector (g a : G) :
     hF.gnsRepresentation (Multiplicative.ofAdd g) (hF.gnsVector a) =
       hF.gnsVector (g + a) :=
   by simpa only [hF.gnsRepresentation_ofAdd] using hF.gnsTranslation_gnsVector g a
 
 /-- A positive-definite function is a matrix coefficient of its canonical unitary
 representation. -/
-theorem eq_inner_gnsRepresentation (g : G) :
+lemma eq_inner_gnsRepresentation (g : G) :
     F g = ⟪hF.gnsRepresentation (Multiplicative.ofAdd g) (hF.gnsVector 0),
       hF.gnsVector 0⟫_ℂ := by
   simp only [hF.gnsRepresentation_gnsVector, add_zero, hF.inner_gnsVector, sub_zero]
 
 /-- Continuity of a positive-definite function at zero makes its canonical feature map
 continuous. This is the regularity needed for a strongly continuous representation. -/
-theorem continuous_gnsVector [TopologicalSpace G] [IsTopologicalAddGroup G]
+lemma continuous_gnsVector [TopologicalSpace G] [IsTopologicalAddGroup G]
     (hcont : ContinuousAt F 0) : Continuous hF.gnsVector := by
   rw [continuous_iff_continuousAt]
   intro a
@@ -193,7 +193,7 @@ theorem continuous_gnsVector [TopologicalSpace G] [IsTopologicalAddGroup G]
       abs_of_nonneg (norm_nonneg _), Real.sqrt_zero] using this
   exact tendsto_iff_norm_sub_tendsto_zero.mpr hsqrt
 
-private theorem continuous_gnsTranslation_gnsVector [TopologicalSpace G] [IsTopologicalAddGroup G]
+private lemma continuous_gnsTranslation_gnsVector [TopologicalSpace G] [IsTopologicalAddGroup G]
     (hcont : ContinuousAt F 0) (a : G) :
     Continuous (fun g : G => hF.gnsTranslation g (hF.gnsVector a)) := by
   simpa [Function.comp_def] using
@@ -201,7 +201,7 @@ private theorem continuous_gnsTranslation_gnsVector [TopologicalSpace G] [IsTopo
 
 /-- The GNS translation representation is strongly continuous: every vector has a continuous
 orbit. -/
-theorem continuous_gnsTranslation_apply [TopologicalSpace G] [IsTopologicalAddGroup G]
+lemma continuous_gnsTranslation_apply [TopologicalSpace G] [IsTopologicalAddGroup G]
     (hcont : ContinuousAt F 0) (x : hF.gnsSpace) :
     Continuous (fun g : G => hF.gnsTranslation g x) := by
   have hdense : Dense (Submodule.span ℂ (Set.range hF.gnsVector) : Set hF.gnsSpace) :=
@@ -245,7 +245,7 @@ theorem continuous_gnsTranslation_apply [TopologicalSpace G] [IsTopologicalAddGr
       (ContinuousLinearMap.tendsto_apply_of_dense hdense hbound htendsto x)
 
 /-- The canonical unitary representation has continuous orbits. -/
-theorem continuous_gnsRepresentation_apply [TopologicalSpace G] [IsTopologicalAddGroup G]
+lemma continuous_gnsRepresentation_apply [TopologicalSpace G] [IsTopologicalAddGroup G]
     (hcont : ContinuousAt F 0) (x : hF.gnsSpace) :
     Continuous (fun g : Multiplicative G => hF.gnsRepresentation g x) := by
   have heq : (fun g : Multiplicative G => hF.gnsRepresentation g x) =

@@ -113,7 +113,7 @@ lemma linearIndependent [Fintype ι] [Nontrivial ι] :
   simpa using h
 
 /-- **An anticommuting family of `2 × 2` matrices has at most three members.** -/
-theorem card_le_three [Fintype ι] : Fintype.card ι ≤ 3 := by
+lemma card_le_three [Fintype ι] : Fintype.card ι ≤ 3 := by
   by_contra hlt
   have : Nontrivial ι := Fintype.one_lt_card_iff_nontrivial.mp (by omega)
   have h := (hτ.linearIndependent (ι := ι)).fintype_card_le_finrank
@@ -136,7 +136,7 @@ lemma isAnticommuting_pauliMatrix : IsAnticommuting fun i : Fin 3 => pauliMatrix
 
 /-- **The Pauli matrices are a maximal anticommuting family.** The largest anticommuting family
 of `2 × 2` matrices has three members. -/
-theorem isGreatest_card_isAnticommuting :
+lemma isGreatest_card_isAnticommuting :
     IsGreatest {n : ℕ | ∃ τ : Fin n → Matrix (Fin 2) (Fin 2) ℂ, IsAnticommuting τ} 3 :=
   ⟨⟨_, isAnticommuting_pauliMatrix⟩, fun n ⟨_, hτ⟩ => by
     simpa using hτ.card_le_three⟩

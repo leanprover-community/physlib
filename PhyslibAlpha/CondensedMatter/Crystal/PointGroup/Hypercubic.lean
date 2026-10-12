@@ -204,7 +204,7 @@ lemma signedPerm_mem_pointStabilizer (π : Equiv.Perm (Fin d)) (ε : Fin d → B
 
 /-- **The lattice automorphisms preserving the bonds of the hypercubic lattice are exactly the
 signed permutations.** -/
-theorem mem_pointStabilizer_hypercubic_iff (A : Multiplicative (AddAut (Fin d → ℤ))) :
+lemma mem_pointStabilizer_hypercubic_iff (A : Multiplicative (AddAut (Fin d → ℤ))) :
     A ∈ (hypercubicGraph d).pointStabilizer ↔
       ∃ (π : Equiv.Perm (Fin d)) (ε : Fin d → Bool), Multiplicative.toAdd A = signedPerm π ε := by
   constructor
@@ -262,7 +262,7 @@ noncomputable def pointStabilizerEquivSignedPerm :
         exact ⟨(π, ε), Subtype.ext (by simp [← h])⟩⟩
 
 /-- **The point group of the hypercubic lattice in `d` dimensions has order `2 ^ d * d !`.** -/
-theorem card_pointGroup_hypercubic (d : ℕ) :
+lemma card_pointGroup_hypercubic (d : ℕ) :
     Nat.card (hypercubicGraph d).pointGroup = 2 ^ d * d.factorial := by
   rw [Nat.card_congr (pointGroupEquiv (hypercubicGraph d)).toEquiv,
     ← Nat.card_congr (pointStabilizerEquivSignedPerm (d := d)), Nat.card_eq_fintype_card,

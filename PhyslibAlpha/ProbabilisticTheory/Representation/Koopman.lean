@@ -167,7 +167,7 @@ include hT in
 /-- **Invariant observables of a classical system have zero momentum**: the spectral projection of
 the trivial character of the Koopman representation projects onto the translation-invariant
 functions in `L²(μ)`.   -/
-theorem range_projection_one_koopman :
+lemma range_projection_one_koopman :
     LinearMap.range (projection (koopman (E := E) μ T hT)
         {(1 : PontryaginDual (Multiplicative G))} : Lp E 2 μ →L[ℂ] Lp E 2 μ).toLinearMap =
       ProbabilisticTheory.Representation.sector (toEnd (koopman (E := E) μ T hT)) (fun _ =>

@@ -73,7 +73,7 @@ def translationInvariantLimit (φ : AlgState (crystalAlgebra Ω₀ (Fin d → �
 
 omit [Fintype F] in
 /-- **The translation invariant limit of a state is invariant under the translations.** -/
-theorem translationInvariantLimit_invariant (φ : AlgState (crystalAlgebra Ω₀ (Fin d → ℤ) F))
+lemma translationInvariantLimit_invariant (φ : AlgState (crystalAlgebra Ω₀ (Fin d → ℤ) F))
     (a : Fin d → ℤ) (x : crystalAlgebra Ω₀ (Fin d → ℤ) F) :
     translationInvariantLimit Ω₀ φ (translationAction Ω₀ (Multiplicative.ofAdd a) x) =
       translationInvariantLimit Ω₀ φ x :=
@@ -91,7 +91,7 @@ def _root_.CondensedMatter.QuasiLocal.Interaction.translationInvariantState [Non
 
 omit [Fintype F] in
 /-- The translation invariant state of an interaction is invariant under the translations. -/
-theorem translationInvariantState_invariant [Nonempty Ω₀]
+lemma translationInvariantState_invariant [Nonempty Ω₀]
     (I : Interaction (fun _ : CellSite (Fin d → ℤ) F => Ω₀)) (β : ℝ) (a : Fin d → ℤ)
     (x : crystalAlgebra Ω₀ (Fin d → ℤ) F) :
     I.translationInvariantState β (translationAction Ω₀ (Multiplicative.ofAdd a) x) =

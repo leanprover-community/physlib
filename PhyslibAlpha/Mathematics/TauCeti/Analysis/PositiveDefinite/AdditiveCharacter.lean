@@ -51,7 +51,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G]
 
 /-- Precomposing a Pontryagin character with `Multiplicative.ofAdd` gives a continuous function in
 subtraction-positive-definite form. -/
-theorem isPositiveDefiniteSub
+lemma isPositiveDefiniteSub
     (χ : PontryaginDual (Multiplicative G)) :
     Continuous (fun g : G => (χ (Multiplicative.ofAdd g) : ℂ)) ∧
       IsPositiveDefiniteSub

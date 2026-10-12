@@ -48,7 +48,7 @@ variable [MeasurableSpace (PontryaginDual (Multiplicative G))]
   [OpensMeasurableSpace (PontryaginDual (Multiplicative G))]
 
 /-- The transform of a finite positive measure on the dual is positive definite. -/
-theorem _root_.MeasureTheory.FiniteMeasure.isPositiveDefiniteSub_pontryaginMeasureTransform
+lemma _root_.MeasureTheory.FiniteMeasure.isPositiveDefiniteSub_pontryaginMeasureTransform
     (μ : FiniteMeasure (PontryaginDual (Multiplicative G))) :
     IsPositiveDefiniteSub μ.pontryaginMeasureTransform := by
   refine isPositiveDefiniteSub_iff_forall_sum_nonneg.mpr ?_
@@ -77,7 +77,7 @@ theorem _root_.MeasureTheory.FiniteMeasure.isPositiveDefiniteSub_pontryaginMeasu
     (PontryaginDual.isPositiveDefiniteSub χ).2) n c v
 
 /-- The absolute value of a measure transform is bounded by the measure's total mass. -/
-theorem _root_.MeasureTheory.FiniteMeasure.norm_pontryaginMeasureTransform_le
+lemma _root_.MeasureTheory.FiniteMeasure.norm_pontryaginMeasureTransform_le
     (μ : FiniteMeasure (PontryaginDual (Multiplicative G))) (g : G) :
     ‖μ.pontryaginMeasureTransform g‖ ≤ μ.toMeasure.real Set.univ := by
   simpa using

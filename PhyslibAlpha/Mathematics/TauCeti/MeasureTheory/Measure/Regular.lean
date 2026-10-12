@@ -46,7 +46,7 @@ variable {α β : Type*} [MeasurableSpace α] [TopologicalSpace α]
 
 /-- A measurable map continuous on a measurable set of full measure preserves inner regularity.
 No separation, countability or finiteness assumption is required. -/
-theorem innerRegular_map_of_continuousOn {μ : Measure α} [μ.InnerRegular]
+lemma innerRegular_map_of_continuousOn {μ : Measure α} [μ.InnerRegular]
     {f : α → β} {s : Set α} (hf : Measurable f) (hs : MeasurableSet s)
     (hcont : ContinuousOn f s) (hmem : ∀ᵐ x ∂μ, x ∈ s) :
     (Measure.map f μ).InnerRegular := by

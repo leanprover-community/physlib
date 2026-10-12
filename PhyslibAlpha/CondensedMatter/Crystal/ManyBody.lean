@@ -107,7 +107,7 @@ omit [BorelSpace (PontryaginDual (Multiplicative G))] in
 omit [MeasurableSpace (PontryaginDual (Multiplicative G))] in
 omit [TopologicalSpace G] in
 /-- **The translations and the symmetries are covariant on the GNS space.** -/
-theorem manyBodyRep_covariant :
+lemma manyBodyRep_covariant :
     UnitaryRep.IsCovariantRep (linearAut H) (manyBodyTranslation H ω hω htrans)
       (manyBodyRep H ω hω) := by
   refine UnitaryRep.isCovariantRep_comp (linearAut H) (manyBodyRep H ω hω)
@@ -158,7 +158,7 @@ and `τ` an automorphism preserving `ω` and commuting with `H`: a time evolutio
 implementing `τ` is reduced by the sectors of total momentum, and its restriction to the sector of
 the momenta in a set `S` has the same spectrum as its restriction to the sector of the momenta in
 the image of `S` under any symmetry `s` in `H`. -/
-theorem spectrum_sectorOp_eq_manyBody (s : H)
+lemma spectrum_sectorOp_eq_manyBody (s : H)
     {S : Set (PontryaginDual (Multiplicative G))} (hS : MeasurableSet S) :
     spectrum ℂ (UnitaryRep.sectorOp
         (commute_manyBodyTranslation H ω hω htrans τ hτ hcomm) S) =

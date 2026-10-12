@@ -52,7 +52,7 @@ variable [SeminormedAddCommGroup Y] [NormedSpace 𝕜 Y]
 /-- Comparing two continuous linear maps of norm at most `K` at `x` costs at most `2 K ‖x - y‖`
 more than comparing them at `y`. This is the shared estimate of the two density arguments below:
 `y` is chosen in the dense subset, close to the arbitrary vector `x`. -/
-theorem norm_sub_apply_le_of_norm_le {T S : X →L[𝕜] Y} {K : ℝ}
+lemma norm_sub_apply_le_of_norm_le {T S : X →L[𝕜] Y} {K : ℝ}
     (hT : ‖T‖ ≤ K) (hS : ‖S‖ ≤ K)
     (x y : X) : ‖T x - S x‖ ≤ ‖T y - S y‖ + 2 * K * ‖x - y‖ := by
   have hbound : ‖T - S‖ ≤ 2 * K := (norm_sub_le T S).trans (by linarith)
@@ -65,7 +65,7 @@ theorem norm_sub_apply_le_of_norm_le {T S : X →L[𝕜] Y} {K : ℝ}
 
 /-- A uniformly bounded family of continuous linear maps that converges pointwise on a dense
 subset converges pointwise everywhere. -/
-theorem tendsto_apply_of_dense {ι : Type*} {l : Filter ι} {D : Set X}
+lemma tendsto_apply_of_dense {ι : Type*} {l : Filter ι} {D : Set X}
     (hD : Dense D) {f : ι → X →L[𝕜] Y} {g : X →L[𝕜] Y} {C : ℝ}
     (hbound : ∀ᶠ i in l, ‖f i‖ ≤ C)
     (htendsto : ∀ x ∈ D, Tendsto (fun i => f i x) l (nhds (g x))) (x : X) :
@@ -97,7 +97,7 @@ theorem tendsto_apply_of_dense {ι : Type*} {l : Filter ι} {D : Set X}
 
 /-- A uniformly bounded family of continuous linear maps that is uniformly Cauchy on a parameter
 set at every vector in a dense subset is uniformly Cauchy there at every vector. -/
-theorem uniformCauchySeqOn_apply_of_dense {ι Z : Type*} {p : Filter ι}
+lemma uniformCauchySeqOn_apply_of_dense {ι Z : Type*} {p : Filter ι}
     {D : Set X}
     (hD : Dense D) {f : ι → Z → X →L[𝕜] Y} {s : Set Z} {C : ℝ}
     (hbound : ∀ᶠ i in p, ∀ z ∈ s, ‖f i z‖ ≤ C)

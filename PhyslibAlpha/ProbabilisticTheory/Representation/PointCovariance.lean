@@ -123,7 +123,7 @@ omit [MeasurableSpace (PontryaginDual (Multiplicative G))] in
 omit [TopologicalSpace G] in
 /-- A representation of a group `Q` acting on the translations, restricted to the translations,
 is covariant when the group relation `s t(a) = t(φ(s) a) s` holds. -/
-theorem isCovariantRep_comp {Q : Type*} [Group Q] (φ : Q →* MulAut (Multiplicative G))
+lemma isCovariantRep_comp {Q : Type*} [Group Q] (φ : Q →* MulAut (Multiplicative G))
     (U : Q →* unitary (H →L[ℂ] H)) (τ : Multiplicative G →* Q)
     (h : ∀ (s : Q) (a : Multiplicative G), s * τ a = τ (φ s a) * s) :
     IsCovariantRep φ (U.comp τ) U := fun s a => by
@@ -154,7 +154,7 @@ variable [Countable G]
 
 /-- **The spectral measure of `ρ(p) ξ` is the pushforward of that of `ξ`** under the action of `p`
 on the characters. -/
-theorem vectorMeasure_rho (hcov : IsCovariantRep φ π ρ) (p : P) (ξ : H) :
+lemma vectorMeasure_rho (hcov : IsCovariantRep φ π ρ) (p : P) (ξ : H) :
     vectorMeasure π (((ρ p : unitary (H →L[ℂ] H)) : H →L[ℂ] H) ξ) =
       Measure.map (dualAct φ p) (vectorMeasure π ξ) := by
   symm
@@ -187,7 +187,7 @@ lemma inner_projection_self (S : Set (PontryaginDual (Multiplicative G))) (η : 
 /-- **The spectral projections are covariant**: `ρ(p) P(S) = P(p • S) ρ(p)` for every measurable
 set `S` of characters. The unitary `ρ(p)` carries the sector of momenta in `S` onto the sector of
 momenta in `p • S`. -/
-theorem rho_mul_projection (hcov : IsCovariantRep φ π ρ) (p : P)
+lemma rho_mul_projection (hcov : IsCovariantRep φ π ρ) (p : P)
     {S : Set (PontryaginDual (Multiplicative G))} (hS : MeasurableSet S) :
     ((ρ p : unitary (H →L[ℂ] H)) : H →L[ℂ] H) * projection π S =
       projection π (dualAct φ p '' S) * ((ρ p : unitary (H →L[ℂ] H)) : H →L[ℂ] H) := by

@@ -89,7 +89,7 @@ lemma projection_eq_zero_of_not_measurable {S : Set (PontryaginDual (Multiplicat
 
 /-- **The commutant is decomposable**: every bounded operator commuting with the representation
 commutes with every spectral projection. -/
-theorem projection_commute {T : H →L[ℂ] H}
+lemma projection_commute {T : H →L[ℂ] H}
     (hT : ∀ g, Commute ((π g : unitary (H →L[ℂ] H)) : H →L[ℂ] H) T)
     (S : Set (PontryaginDual (Multiplicative G))) : Commute (projection π S) T := by
   by_cases hS : MeasurableSet S
@@ -139,7 +139,7 @@ lemma inner_unitary_left (g : Multiplicative G) (x w : H) :
 
 /-- A closed subspace invariant under the representation is invariant under every spectral
 projection. -/
-theorem mapsTo_projection_of_invariant (W : Submodule ℂ H) [W.HasOrthogonalProjection]
+lemma mapsTo_projection_of_invariant (W : Submodule ℂ H) [W.HasOrthogonalProjection]
     (hW : ∀ g, ∀ v ∈ W, ((π g : unitary (H →L[ℂ] H)) : H →L[ℂ] H) v ∈ W)
     (S : Set (PontryaginDual (Multiplicative G))) {v : H} (hv : v ∈ W) :
     projection π S v ∈ W := by
@@ -159,7 +159,7 @@ theorem mapsTo_projection_of_invariant (W : Submodule ℂ H) [W.HasOrthogonalPro
 
 /-- A closed subspace invariant under every spectral projection is invariant under the
 representation. -/
-theorem mapsTo_of_projection_invariant (W : Submodule ℂ H) [W.HasOrthogonalProjection]
+lemma mapsTo_of_projection_invariant (W : Submodule ℂ H) [W.HasOrthogonalProjection]
     (hW : ∀ (S : Set (PontryaginDual (Multiplicative G))), ∀ v ∈ W, projection π S v ∈ W)
     (g : Multiplicative G) {v : H} (hv : v ∈ W) :
     ((π g : unitary (H →L[ℂ] H)) : H →L[ℂ] H) v ∈ W := by
@@ -367,7 +367,7 @@ lemma projection_singleton_eq_self_of_mem_sector (χ : PontryaginDual (Multiplic
 /-- **The spectral projection of a single character is the projection onto the sector of
 definite momentum**: its range is the subspace of vectors on which the group acts through the
 character. -/
-theorem range_projection_singleton (χ : PontryaginDual (Multiplicative G)) :
+lemma range_projection_singleton (χ : PontryaginDual (Multiplicative G)) :
     LinearMap.range (projection π {χ} : H →L[ℂ] H).toLinearMap =
       ProbabilisticTheory.Representation.sector (toEnd π) (fun g => ((χ g : Circle) : ℂ)) := by
   ext v

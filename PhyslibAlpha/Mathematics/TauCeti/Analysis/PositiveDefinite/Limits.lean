@@ -68,7 +68,7 @@ variable {M : Type*} [AddMonoid M] [StarAddMonoid M]
 /-- Positive-definiteness is preserved under pointwise limits along a nontrivial filter. The
 hypothesis on positive-definiteness is eventual, so this applies equally to nets that are
 eventually positive definite. -/
-theorem of_tendsto {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {G : M → ℂ}
+lemma of_tendsto {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {G : M → ℂ}
     (hF : ∀ᶠ i in l, IsPositiveDefinite (F i))
     (hlim : ∀ x : M, Tendsto (fun i => F i x) l (𝓝 (G x))) :
     IsPositiveDefinite G :=
@@ -79,13 +79,13 @@ theorem of_tendsto {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ}
 
 /-- A pointwise limit of a family of positive-definite functions is positive definite. This is the
 non-eventual form of `TauCeti.IsPositiveDefinite.of_tendsto`. -/
-theorem of_forall_tendsto {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {G : M → ℂ}
+lemma of_forall_tendsto {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {G : M → ℂ}
     (hF : ∀ i, IsPositiveDefinite (F i)) (hlim : ∀ x : M, Tendsto (fun i => F i x) l (𝓝 (G x))) :
     IsPositiveDefinite G :=
   of_tendsto (Eventually.of_forall hF) hlim
 
 /-- Sequential pointwise limits of eventually positive-definite functions are positive definite. -/
-theorem of_seq_tendsto {F : ℕ → M → ℂ} {G : M → ℂ} (hF : ∀ᶠ n in atTop, IsPositiveDefinite (F n))
+lemma of_seq_tendsto {F : ℕ → M → ℂ} {G : M → ℂ} (hF : ∀ᶠ n in atTop, IsPositiveDefinite (F n))
     (hlim : ∀ x : M, Tendsto (fun n => F n x) atTop (𝓝 (G x))) :
     IsPositiveDefinite G :=
   of_tendsto hF hlim
@@ -97,7 +97,7 @@ variable [TopologicalSpace M]
 Unlike continuity, positive-definiteness itself only needs pointwise convergence; local uniform
 convergence is converted to pointwise convergence before applying
 `TauCeti.IsPositiveDefinite.of_tendsto`. -/
-theorem of_tendstoLocallyUniformly {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {G : M → ℂ}
+lemma of_tendstoLocallyUniformly {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {G : M → ℂ}
     (hF : ∀ᶠ i in l, IsPositiveDefinite (F i)) (hlim : TendstoLocallyUniformly F G l) :
     IsPositiveDefinite G :=
   of_tendsto hF fun x =>

@@ -287,7 +287,7 @@ open scoped Matrix.Norms.Operator in
 /-- **The spectrum of a translation-invariant operator is the union of its Bloch bands.** For
 every continuous symbol `b` on the Brillouin zone, the spectrum of the operator `∫ b dP` on
 `ℓ²(G, ℂ^N)` is the union over crystal momenta `χ` of the spectra of the matrices `b(χ)`. -/
-theorem spectrum_blochOperator
+lemma spectrum_blochOperator
     (b : C(PontryaginDual (Multiplicative G), Matrix (Fin N) (Fin N) ℂ)) :
     spectrum ℂ (blochOperator b) =
       ⋃ χ : PontryaginDual (Multiplicative G), spectrum ℂ (b χ) := by
@@ -381,7 +381,7 @@ theorem spectrum_blochOperator
 /-- **The band structure**: for a Hermitian symbol, the spectrum of the translation-invariant
 operator on `ℓ²(G, ℂ^N)` is exactly the set of band values `ε_k(χ)`, the ordered eigenvalues of the
 Bloch matrices.   -/
-theorem spectrum_blochOperator_eq_bands
+lemma spectrum_blochOperator_eq_bands
     (b : C(PontryaginDual (Multiplicative G), Matrix (Fin N) (Fin N) ℂ))
     (hb : ∀ χ, (b χ).IsHermitian) :
     spectrum ℂ (blochOperator b) =

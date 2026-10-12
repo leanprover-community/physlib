@@ -146,7 +146,7 @@ omit [DiscreteTopology G] in
 omit [TopologicalSpace G] in
 /-- **The translations and the bond-preserving symmetries form a covariant representation on
 `ℓ²` of the sites.** -/
-theorem siteTranslation_covariant :
+lemma siteTranslation_covariant :
     UnitaryRep.IsCovariantRep (latticeAut g) (siteTranslation G F) (siteSymmetry g) := by
   intro s a
   refine Subtype.ext (ContinuousLinearMap.ext fun f => ?_)
@@ -180,7 +180,7 @@ crystal, commuting with the translations and with the bond-preserving symmetries
 to the sector of total momenta in a set `S` of characters is unitarily equivalent to its restriction
 to the sector of momenta in the image of `S` under any symmetry, by the symmetry itself. In
 particular their spectra agree. -/
-theorem spectrum_sectorOp_eq_site {T : SiteSpace G F →L[ℂ] SiteSpace G F}
+lemma spectrum_sectorOp_eq_site {T : SiteSpace G F →L[ℂ] SiteSpace G F}
     (hTπ : ∀ a, Commute ((siteTranslation G F a : unitary _) : SiteSpace G F →L[ℂ] SiteSpace G F) T)
     (hTρ : ∀ s, Commute ((siteSymmetry g s : unitary _) : SiteSpace G F →L[ℂ] SiteSpace G F) T)
     (s : g.symmetries) {S : Set (PontryaginDual (Multiplicative G))} (hS : MeasurableSet S) :

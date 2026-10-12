@@ -71,7 +71,7 @@ section Algebra
 
 variable {E : Type*} [AddMonoid E] [StarAddMonoid E] {F : E → ℂ}
 
-private theorem gram_three_add_star_expand_of_values
+private lemma gram_three_add_star_expand_of_values
     {x y : E} {lam : ℂ} {c : Fin 3 → ℂ} {p : Fin 3 → E}
     (hc0 : c 0 = 1) (hc1 : c 1 = -1) (hc2 : c 2 = lam)
     (hp0 : p 0 = x) (hp1 : p 1 = y) (hp2 : p 2 = 0) (hx : x + star x = 0) (hy : y + star y = 0)
@@ -86,7 +86,7 @@ private theorem gram_three_add_star_expand_of_values
   simp only [map_one, mul_one, one_mul, map_neg, mul_neg, neg_mul, neg_neg, add_zero]
   ring_nf
 
-private theorem gram_three_add_star_expand {x y : E} (hx : x + star x = 0) (hy : y + star y = 0)
+private lemma gram_three_add_star_expand {x y : E} (hx : x + star x = 0) (hy : y + star y = 0)
     (hyx : F (y + star x) = conj (F (x + star y)))
     (hnx : F (star x) = conj (F x)) (hny : F (0 + star y) = conj (F y)) {lam : ℂ} :
     (∑ i : Fin 3, ∑ j : Fin 3,
@@ -101,7 +101,7 @@ private theorem gram_three_add_star_expand {x y : E} (hx : x + star x = 0) (hy :
 
 -- The remaining calculation is pure complex algebra after `F 0` has been normalized to a
 -- positive real scalar and `lam = -d / F 0` has been substituted.
-private theorem gram_three_sub_re_complex_algebra {r : ℝ} {z d lam : ℂ}
+private lemma gram_three_sub_re_complex_algebra {r : ℝ} {z d lam : ℂ}
     (hlam : lam = -d / (r : ℂ)) (hr : 0 < r) :
     ((r : ℂ) - z + conj lam * d - conj z + (r : ℂ) + lam * conj d
         + lam * conj lam * (r : ℂ)).re
@@ -112,7 +112,7 @@ private theorem gram_three_sub_re_complex_algebra {r : ℝ} {z d lam : ℂ}
   field_simp [hr.ne']
   ring_nf
 
-private theorem gram_three_add_star_re_algebra (hF : IsPositiveDefinite F)
+private lemma gram_three_add_star_re_algebra (hF : IsPositiveDefinite F)
     {x y : E} (hx : x + star x = 0) (hy : y + star y = 0)
     (hyx : F (y + star x) = conj (F (x + star y)))
     (hnx : F (star x) = conj (F x)) (hny : F (0 + star y) = conj (F y)) {C d lam : ℂ}
@@ -141,7 +141,7 @@ private theorem gram_three_add_star_re_algebra (hF : IsPositiveDefinite F)
     exact hlam
   exact gram_three_sub_re_complex_algebra hlam' hCpos
 
-private theorem gram_three_add_star_re_eq (hF : IsPositiveDefinite F)
+private lemma gram_three_add_star_re_eq (hF : IsPositiveDefinite F)
     {x y : E} (hx : x + star x = 0) (hy : y + star y = 0) {C d lam : ℂ}
     (hC : C = F 0) (hd : d = F x - F y) (hlam : lam = -d / C) (hCpos : 0 < (F 0).re) :
     (∑ i : Fin 3, ∑ j : Fin 3,
@@ -160,7 +160,7 @@ private theorem gram_three_add_star_re_eq (hF : IsPositiveDefinite F)
   exact hF.gram_three_add_star_re_algebra hx hy hyx hnx hny hC hd hlam hCpos
 
 /-- The local monoid-level real-part form of the standard positive-definite continuity estimate. -/
-theorem norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_add_star_eq_zero
+lemma norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_add_star_eq_zero
     (hF : IsPositiveDefinite F) {x y : E} (hx : x + star x = 0) (hy : y + star y = 0) :
     ‖F x - F y‖ ^ 2
       ≤ 2 * (F 0).re * ((F 0).re - (F (x + star y)).re) := by
@@ -196,7 +196,7 @@ theorem norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_add_star_eq_zero
 
 /-- The local monoid-level norm-valued form of the standard positive-definite continuity
 estimate. -/
-theorem norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_add_star_eq_zero
+lemma norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_add_star_eq_zero
     (hF : IsPositiveDefinite F) {x y : E} (hx : x + star x = 0) (hy : y + star y = 0) :
     ‖F x - F y‖ ^ 2 ≤ 2 * (F 0).re * ‖F (x + star y) - F 0‖ := by
   have hre :
@@ -216,7 +216,7 @@ section GroupAlgebra
 variable {E : Type*} [AddGroup E] [StarAddMonoid E] {F : E → ℂ}
 
 /-- The local real-part form of the standard positive-definite continuity estimate. -/
-theorem norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_star_eq_neg (hF : IsPositiveDefinite F)
+lemma norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_star_eq_neg (hF : IsPositiveDefinite F)
     {x y : E} (hx : star x = -x) (hy : star y = -y) :
     ‖F x - F y‖ ^ 2
       ≤ 2 * (F 0).re * ((F 0).re - (F (x - y)).re) := by
@@ -227,14 +227,14 @@ theorem norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_star_eq_neg (hF : IsPos
 
 /-- The real-part form of the standard positive-definite continuity estimate under a globally
 negating involution. -/
-theorem norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_forall_star_eq_neg
+lemma norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_forall_star_eq_neg
     (hF : IsPositiveDefinite F) (hstar : ∀ x : E, star x = -x) (x y : E) :
     ‖F x - F y‖ ^ 2
       ≤ 2 * (F 0).re * ((F 0).re - (F (x - y)).re) :=
   hF.norm_sub_sq_le_two_mul_map_zero_re_mul_re_sub_of_star_eq_neg (hstar x) (hstar y)
 
 /-- The local norm-valued form of the standard positive-definite continuity estimate. -/
-theorem norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_star_eq_neg (hF : IsPositiveDefinite F)
+lemma norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_star_eq_neg (hF : IsPositiveDefinite F)
     {x y : E} (hx : star x = -x) (hy : star y = -y) :
     ‖F x - F y‖ ^ 2 ≤ 2 * (F 0).re * ‖F (x - y) - F 0‖ := by
   have hx0 : x + star x = 0 := by rw [hx, add_neg_cancel]
@@ -244,7 +244,7 @@ theorem norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_star_eq_neg (hF : IsP
 
 /-- The norm-valued form of the standard positive-definite continuity estimate under a globally
 negating involution. -/
-theorem norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_forall_star_eq_neg
+lemma norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_forall_star_eq_neg
     (hF : IsPositiveDefinite F) (hstar : ∀ x : E, star x = -x) (x y : E) :
     ‖F x - F y‖ ^ 2 ≤ 2 * (F 0).re * ‖F (x - y) - F 0‖ :=
   hF.norm_sub_sq_le_two_mul_map_zero_re_mul_norm_sub_of_star_eq_neg (hstar x) (hstar y)
@@ -257,7 +257,7 @@ variable {E : Type*} [SeminormedAddGroup E] [StarAddMonoid E] {F : E → ℂ}
 
 /-- A positive-definite function on a seminormed additive group with the negation involution is
 uniformly continuous as soon as it is continuous at the origin. -/
-theorem uniformContinuous_of_continuousAt_zero_of_forall_star_eq_neg (hF : IsPositiveDefinite F)
+lemma uniformContinuous_of_continuousAt_zero_of_forall_star_eq_neg (hF : IsPositiveDefinite F)
     (hstar : ∀ x : E, star x = -x) (hcont : ContinuousAt F 0) :
     UniformContinuous F := by
   rw [Metric.uniformContinuous_iff]

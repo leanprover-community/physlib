@@ -164,7 +164,7 @@ lemma image_mul_boxes (d n : ℕ) (h : Multiplicative (Fin d → ℤ)) :
 
 /-- **The cubes are a Følner family** for the translations of `ℤ^d`, along any ultrafilter on
 `ℕ` finer than the filter of large cubes. -/
-theorem isRightFolner_boxes (d : ℕ) (𝒰 : Ultrafilter ℕ) (h𝒰 : (𝒰 : Filter ℕ) ≤ atTop) :
+lemma isRightFolner_boxes (d : ℕ) (𝒰 : Ultrafilter ℕ) (h𝒰 : (𝒰 : Filter ℕ) ≤ atTop) :
     IsRightFolner (boxes d) 𝒰 := by
   intro h
   refine ((tendsto_box_sdiff d (Multiplicative.toAdd h)).mono_left h𝒰).congr fun n => ?_

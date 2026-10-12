@@ -88,7 +88,7 @@ lemma rationalCircle_eq_zero {x : AddCircle (1 : ℚ)} (h : rationalCircle x = 0
 variable {G : Type*} [AddCommGroup G]
 
 /-- **Characters separate the points of a discrete abelian group.** -/
-theorem exists_character_apply_ne_one [TopologicalSpace G] [DiscreteTopology G] {g : G}
+lemma exists_character_apply_ne_one [TopologicalSpace G] [DiscreteTopology G] {g : G}
     (hg : g ≠ 0) : ∃ χ : PontryaginDual (Multiplicative G), χ (Multiplicative.ofAdd g) ≠ 1 := by
   obtain ⟨c, hc⟩ := CharacterModule.exists_character_apply_ne_zero_of_ne_zero hg
   refine ⟨⟨⟨⟨fun a => Additive.toMul (rationalCircle (c (Multiplicative.toAdd a))), ?_⟩, ?_⟩,
@@ -125,7 +125,7 @@ instance : IsProbabilityMeasure (dualHaar (G := G)) :=
 open scoped Classical in
 /-- **Orthogonality of characters**: the evaluation characters are orthonormal for the Haar
 probability measure of the dual group. -/
-theorem integral_character_dualHaar (g : G) :
+lemma integral_character_dualHaar (g : G) :
     ∫ χ, ((χ (Multiplicative.ofAdd g) : Circle) : ℂ) ∂(dualHaar (G := G)) =
       if g = 0 then 1 else 0 := by
   by_cases hg : g = 0

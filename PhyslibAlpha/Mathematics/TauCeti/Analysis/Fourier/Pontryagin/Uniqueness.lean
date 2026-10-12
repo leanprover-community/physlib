@@ -81,21 +81,21 @@ def evalBoundedContinuous (g : G) :
 
 /-- Evaluation of `evalBoundedContinuous` at a character. -/
 @[simp]
-theorem evalBoundedContinuous_apply (g : G)
+lemma evalBoundedContinuous_apply (g : G)
     (χ : _root_.PontryaginDual (Multiplicative G)) :
     evalBoundedContinuous g χ = (χ (Multiplicative.ofAdd g) : ℂ) :=
   (rfl)
 
 /-- Evaluation at zero is the constant function one. -/
 @[simp]
-theorem evalBoundedContinuous_zero :
+lemma evalBoundedContinuous_zero :
     evalBoundedContinuous (0 : G) = 1 := by
   ext χ
   simp
 
 /-- Evaluation turns addition in the original group into pointwise multiplication. -/
 @[simp]
-theorem evalBoundedContinuous_add (g h : G) :
+lemma evalBoundedContinuous_add (g h : G) :
     evalBoundedContinuous (g + h) =
       evalBoundedContinuous g * evalBoundedContinuous h := by
   ext χ
@@ -103,7 +103,7 @@ theorem evalBoundedContinuous_add (g h : G) :
 
 /-- Evaluation at the negative of a group element is the pointwise star of evaluation there. -/
 @[simp]
-theorem evalBoundedContinuous_neg (g : G) :
+lemma evalBoundedContinuous_neg (g : G) :
     evalBoundedContinuous (-g) = star (evalBoundedContinuous g) := by
   ext χ
   simp only [evalBoundedContinuous_apply, ofAdd_neg, map_inv,
@@ -120,7 +120,7 @@ def evalMonoidHom : Multiplicative G →*
 
 /-- Evaluation of `evalMonoidHom` at a character. -/
 @[simp]
-theorem evalMonoidHom_apply (g : Multiplicative G)
+lemma evalMonoidHom_apply (g : Multiplicative G)
     (χ : _root_.PontryaginDual (Multiplicative G)) :
     evalMonoidHom g χ = (χ g : ℂ) := by
   simp [evalMonoidHom]
@@ -133,7 +133,7 @@ def evalAlgHom : AddMonoidAlgebra ℂ G →ₐ[ℂ]
 
 /-- Evaluation of `evalAlgHom` is the corresponding finite linear combination of characters. -/
 @[simp]
-theorem evalAlgHom_apply (a : AddMonoidAlgebra ℂ G)
+lemma evalAlgHom_apply (a : AddMonoidAlgebra ℂ G)
     (χ : _root_.PontryaginDual (Multiplicative G)) :
     evalAlgHom a χ = a.coeff.sum fun g c => c * (χ (Multiplicative.ofAdd g) : ℂ) := by
   rw [evalAlgHom, AddMonoidAlgebra.lift_apply]
@@ -141,7 +141,7 @@ theorem evalAlgHom_apply (a : AddMonoidAlgebra ℂ G)
     BoundedContinuousFunction.coe_smul, evalMonoidHom_apply, smul_eq_mul]
 
 /-- The range of `evalAlgHom` is closed under pointwise complex conjugation. -/
-theorem star_mem_range_evalAlgHom
+lemma star_mem_range_evalAlgHom
     {f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ}
     (hf : f ∈ evalAlgHom.range) : star f ∈ evalAlgHom.range := by
   simp only [AlgHom.mem_range] at hf ⊢
@@ -160,13 +160,13 @@ def evalPoly : StarSubalgebra ℂ
   star_mem' := star_mem_range_evalAlgHom
 
 /-- The underlying subalgebra of `evalPoly` is the range of `evalAlgHom`. -/
-theorem evalPoly_toSubalgebra :
+lemma evalPoly_toSubalgebra :
     (evalPoly (G := G)).toSubalgebra = evalAlgHom.range := by
   rw [evalPoly]
 
 /-- Membership in `evalPoly` means being a finite linear combination of evaluation
 characters. -/
-theorem mem_evalPoly (f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ) :
+lemma mem_evalPoly (f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ) :
     f ∈ evalPoly ↔
       ∃ a : AddMonoidAlgebra ℂ G,
         f = a.coeff.sum fun g c => c • evalBoundedContinuous g := by
@@ -180,12 +180,12 @@ theorem mem_evalPoly (f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ) :
   simp only [hsum, eq_comm]
 
 /-- Every evaluation character belongs to `evalPoly`. -/
-theorem evalBoundedContinuous_mem_evalPoly (g : G) :
+lemma evalBoundedContinuous_mem_evalPoly (g : G) :
     evalBoundedContinuous g ∈ evalPoly :=
   (mem_evalPoly _).mpr ⟨AddMonoidAlgebra.single g 1, by simp⟩
 
 /-- The evaluation-character algebra separates points of the Pontryagin dual. -/
-theorem separatesPoints_evalPoly :
+lemma separatesPoints_evalPoly :
     ((evalPoly : StarSubalgebra ℂ
       (_root_.PontryaginDual (Multiplicative G) →ᵇ ℂ)).map
         (BoundedContinuousFunction.toContinuousMapStarₐ ℂ)).SeparatesPoints := by
@@ -209,7 +209,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G]
 
 /-- Two finite measures on the dual with the same Fourier--Stieltjes transform integrate every
 finite linear combination of evaluation characters equally. -/
-theorem _root_.MeasureTheory.FiniteMeasure.integral_eq_of_forall_pontryaginMeasureTransform_eq
+lemma _root_.MeasureTheory.FiniteMeasure.integral_eq_of_forall_pontryaginMeasureTransform_eq
     {P Q : FiniteMeasure (_root_.PontryaginDual (Multiplicative G))}
     (h : ∀ g, P.pontryaginMeasureTransform g = Q.pontryaginMeasureTransform g)
     {f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ} (hf : f ∈ _root_.PontryaginDual.evalPoly) :
@@ -241,7 +241,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G]
 
 /-- **Uniqueness of Fourier--Stieltjes measures on a Polish Pontryagin dual.** Two finite measures
 on the dual are equal when their transforms agree on every element of the original group. -/
-theorem _root_.MeasureTheory.FiniteMeasure.ext_of_forall_pontryaginMeasureTransform_eq
+lemma _root_.MeasureTheory.FiniteMeasure.ext_of_forall_pontryaginMeasureTransform_eq
     {P Q : FiniteMeasure (_root_.PontryaginDual (Multiplicative G))}
     (h : ∀ g, P.pontryaginMeasureTransform g = Q.pontryaginMeasureTransform g) :
     P = Q :=
@@ -251,7 +251,7 @@ theorem _root_.MeasureTheory.FiniteMeasure.ext_of_forall_pontryaginMeasureTransf
 
 /-- The Fourier--Stieltjes transform is injective on finite measures on a Polish Pontryagin
 dual. -/
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_injective :
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_injective :
     Function.Injective
       (fun P : FiniteMeasure (_root_.PontryaginDual (Multiplicative G)) =>
         P.pontryaginMeasureTransform) := by
@@ -283,7 +283,7 @@ theorem
 
 /-- The Fourier--Stieltjes transform is injective on finite inner regular measures on the
 Pontryagin dual of a locally compact abelian group. -/
-theorem _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_injOn_innerRegular :
+lemma _root_.MeasureTheory.FiniteMeasure.pontryaginMeasureTransform_injOn_innerRegular :
     Set.InjOn
       (fun P : FiniteMeasure (_root_.PontryaginDual (Multiplicative G)) =>
         P.pontryaginMeasureTransform)

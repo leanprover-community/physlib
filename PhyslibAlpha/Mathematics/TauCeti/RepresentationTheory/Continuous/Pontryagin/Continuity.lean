@@ -88,14 +88,14 @@ def integratedCharacterSet : Set (characterSpace ℂ A) :=
 omit [μ.IsAddLeftInvariant] [IsLocallyFiniteMeasure μ] [CompleteSpace A] in
 /-- Membership in the integrated-character set means nonvanishing on some integrated operator. -/
 @[simp]
-theorem mem_integratedCharacterSet_iff (ω : characterSpace ℂ A) :
+lemma mem_integratedCharacterSet_iff (ω : characterSpace ℂ A) :
     ω ∈ π.integratedCharacterSet hcont hbdd A hA ↔
       ∃ f : G →₁[μ] ℂ, ω ⟨π.integratedOperatorL1 hcont hbdd μ f, hA f⟩ ≠ 0 :=
   Iff.rfl
 
 omit [μ.IsAddLeftInvariant] [IsLocallyFiniteMeasure μ] [CompleteSpace A] in
 /-- The integrated-character set is open in the character space. -/
-theorem isOpen_integratedCharacterSet :
+lemma isOpen_integratedCharacterSet :
     IsOpen (π.integratedCharacterSet hcont hbdd A hA) := by
   rw [isOpen_iff_mem_nhds]
   intro ω hω
@@ -117,7 +117,7 @@ noncomputable def integratedCharacterToPontryaginDual
 
 /-- The defining multiplier identity for the group character detected by an integrated
 character. -/
-theorem integratedCharacterToPontryaginDual_spec
+lemma integratedCharacterToPontryaginDual_spec
     (ω : π.integratedCharacterSet hcont hbdd A hA) (g : G) (f : G →₁[μ] ℂ) :
     ω.1
         ⟨π.integratedOperatorL1 hcont hbdd μ
@@ -130,7 +130,7 @@ theorem integratedCharacterToPontryaginDual_spec
       ((π.mem_integratedCharacterSet_iff hcont hbdd A hA ω).mp ω.2))).1 g f
 
 /-- Local quotient formula for the group character detected by an integrated character. -/
-theorem coe_integratedCharacterToPontryaginDual_apply_eq_div
+lemma coe_integratedCharacterToPontryaginDual_apply_eq_div
     (ω : π.integratedCharacterSet hcont hbdd A hA) (g : G) (f : G →₁[μ] ℂ)
     (hf : ω.1 ⟨π.integratedOperatorL1 hcont hbdd μ f, hA f⟩ ≠ 0) :
     (π.integratedCharacterToPontryaginDual hcont hbdd A hA hπ ω (.ofAdd g) : ℂ) =
@@ -143,7 +143,7 @@ theorem coe_integratedCharacterToPontryaginDual_apply_eq_div
 
 /-- The group character detected by a nonvanishing integrated character depends continuously on
 the algebra character. -/
-theorem continuous_integratedCharacterToPontryaginDual :
+lemma continuous_integratedCharacterToPontryaginDual :
     Continuous (π.integratedCharacterToPontryaginDual hcont hbdd A hA hπ) := by
   let D := π.integratedCharacterSet hcont hbdd A hA
   let θ : D → PontryaginDual (Multiplicative G) :=

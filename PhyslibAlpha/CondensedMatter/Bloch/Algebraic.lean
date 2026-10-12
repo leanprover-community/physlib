@@ -192,7 +192,7 @@ lemma symbol_apply (χ : AddChar Λ K) (D : (Λ →₀ M) →ₗ[K] (Λ →₀ M
 
 /-- **Bloch theorem.** Fourier evaluation intertwines a translation-equivariant linear map with
 its Bloch matrix. -/
-theorem ev_apply {D : (Λ →₀ M) →ₗ[K] (Λ →₀ M)}
+lemma ev_apply {D : (Λ →₀ M) →ₗ[K] (Λ →₀ M)}
     (hD : IsEquivariant (translation (K := K)) (translation (K := K)) D)
     (χ : AddChar Λ K) (ψ : Λ →₀ M) : ev χ (D ψ) = symbol χ D (ev χ ψ) := by
   have h1 := hD.cobound_le_comap (charFun χ) (sub_single_ev_mem_cobound χ ψ)

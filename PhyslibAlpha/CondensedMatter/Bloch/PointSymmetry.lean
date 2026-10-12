@@ -181,7 +181,7 @@ lemma smul_apply_linear (s : CellSymmetry G F) (χ : BrillouinZone G) (r : G) :
   rw [Crystal.smul_apply, AddEquiv.symm_apply_apply]
 
 /-- **Invariant hopping has a covariant Bloch symbol.** -/
-theorem isCovariant_of_invariant {T : G →₀ Matrix F F ℂ} {s : CellSymmetry G F}
+lemma isCovariant_of_invariant {T : G →₀ Matrix F F ℂ} {s : CellSymmetry G F}
     (hT : IsInvariant T s) : IsCovariant (hoppingSymbol T) s := by
   classical
   intro χ'
@@ -252,7 +252,7 @@ lemma charpoly_eq_of_covariant {b : BrillouinZone G → Matrix F F ℂ} {s : Cel
 
 /-- **The bands agree at momenta related by a symmetry.** If the Bloch matrices are Hermitian,
 their eigenvalues at `χ` and `s • χ` coincide. -/
-theorem eigenvalues_eq_of_covariant {b : BrillouinZone G → Matrix F F ℂ}
+lemma eigenvalues_eq_of_covariant {b : BrillouinZone G → Matrix F F ℂ}
     (hH : ∀ χ, (b χ).IsHermitian) {s : CellSymmetry G F} (hb : IsCovariant b s)
     (χ : BrillouinZone G) : (hH (s • χ)).eigenvalues = (hH χ).eigenvalues :=
   (Matrix.IsHermitian.eigenvalues_eq_eigenvalues_iff (hH _) (hH _)).2
@@ -281,7 +281,7 @@ lemma commute_of_smul_eq {b : BrillouinZone G → Matrix F F ℂ} {s : CellSymme
 /-- **Symmetry-enforced degeneracy.** If `M` commutes with a set of matrices and every nonzero
 subspace invariant under them has dimension at least `m`, every eigenspace of `M` has dimension
 at least `m`. -/
-theorem le_finrank_eigenspace (M : Matrix F F ℂ) (S : Set (Matrix F F ℂ))
+lemma le_finrank_eigenspace (M : Matrix F F ℂ) (S : Set (Matrix F F ℂ))
     (hcomm : ∀ V ∈ S, V * M = M * V) {m : ℕ}
     (hS : ∀ W : Submodule ℂ (F → ℂ), W ≠ ⊥ → (∀ V ∈ S, ∀ w ∈ W, V.mulVec w ∈ W) →
       m ≤ Module.finrank ℂ W) (μ : ℂ) (hμ : ∃ v : F → ℂ, v ≠ 0 ∧ M.mulVec v = μ • v) :
@@ -299,7 +299,7 @@ theorem le_finrank_eigenspace (M : Matrix F F ℂ) (S : Set (Matrix F F ℂ))
 symmetries of a crystal, if every nonzero subspace of `ℂ^F` invariant under the fibre matrices of
 the little group at `χ` has dimension at least `m`, every eigenspace of the Bloch matrix at `χ` has
 dimension at least `m`. -/
-theorem le_finrank_eigenspace_of_littleGroup {g : PeriodicGraph (Crystal.ofUnitCell G F)}
+lemma le_finrank_eigenspace_of_littleGroup {g : PeriodicGraph (Crystal.ofUnitCell G F)}
     {b : BrillouinZone G → Matrix F F ℂ} (hb : ∀ s : g.symmetries, IsCovariant b s)
     (χ : BrillouinZone G) {m : ℕ}
     (hS : ∀ W : Submodule ℂ (F → ℂ), W ≠ ⊥ →
@@ -358,7 +358,7 @@ lemma isInvariant_uniformHopping (g : PeriodicGraph (Crystal.ofUnitCell G F)) (t
   exact if_congr ((PeriodicGraph.mem_symmetries_iff g s).1 hs j i r).symm rfl rfl
 
 /-- **Uniform hopping has a covariant Bloch symbol under every bond-preserving symmetry.** -/
-theorem isCovariant_uniformHopping (g : PeriodicGraph (Crystal.ofUnitCell G F)) (t : ℂ)
+lemma isCovariant_uniformHopping (g : PeriodicGraph (Crystal.ofUnitCell G F)) (t : ℂ)
     (s : g.symmetries) : IsCovariant (hoppingSymbol (uniformHopping g t)) s :=
   isCovariant_of_invariant (isInvariant_uniformHopping g t s.2)
 
@@ -447,7 +447,7 @@ lemma spectrum_eq_of_covariant {b : BrillouinZone G → Matrix F F ℂ}
 /-- **The spectrum over the whole Brillouin zone is the spectrum over an irreducible zone.** If a
 symbol is covariant under the bond-preserving symmetries, it suffices to take the union of the
 spectra of its Bloch matrices over a set of momenta that covers the orbits of the point group. -/
-theorem iUnion_spectrum_eq_of_covers {g : PeriodicGraph (Crystal.ofUnitCell G F)}
+lemma iUnion_spectrum_eq_of_covers {g : PeriodicGraph (Crystal.ofUnitCell G F)}
     {b : BrillouinZone G → Matrix F F ℂ} (hH : ∀ χ, (b χ).IsHermitian)
     (hb : ∀ s : g.symmetries, IsCovariant b s) {D : Set (BrillouinZone G)}
     (hD : CoversOrbits g D) :

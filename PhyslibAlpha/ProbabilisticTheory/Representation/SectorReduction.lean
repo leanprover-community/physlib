@@ -212,7 +212,7 @@ include hcov hTρ in
 /-- **Symmetry reduction.** The spectrum of an operator invariant under the translations and the
 covariant point group, restricted to the sector of the characters in `S`, is its spectrum on the
 sector of the characters in `p • S`. -/
-theorem spectrum_sectorOp_eq (p : P) {S : Set (PontryaginDual (Multiplicative G))}
+lemma spectrum_sectorOp_eq (p : P) {S : Set (PontryaginDual (Multiplicative G))}
     (hS : MeasurableSet S) :
     spectrum ℂ (sectorOp hTπ S) = spectrum ℂ (sectorOp hTπ (dualAct φ p '' S)) := by
   let e := (sectorEquiv hcov p hS).toLinearEquiv

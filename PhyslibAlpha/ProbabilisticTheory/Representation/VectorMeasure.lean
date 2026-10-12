@@ -89,7 +89,7 @@ lemma vectorMeasure_eq_map (ξ : H) :
 
 /-- **The spectral measure of a vector represents its matrix coefficients**:
 `⟪ξ, π(g) ξ⟫ = ∫ χ(g) dμ_ξ(χ)`. -/
-theorem inner_eq_integral_vectorMeasure (ξ : H) (g : Multiplicative G) :
+lemma inner_eq_integral_vectorMeasure (ξ : H) (g : Multiplicative G) :
     ⟪ξ, ((π g : unitary (H →L[ℂ] H)) : H →L[ℂ] H) ξ⟫_ℂ =
       ∫ χ, ((χ g : Circle) : ℂ) ∂vectorMeasure π ξ := by
   rw [vectorMeasure_eq_map, integral_map (continuous_dual π).aemeasurable
@@ -109,7 +109,7 @@ variable [Countable G]
 /-- **Uniqueness of the spectral measure of a vector.** For a countable group, a finite measure on
 the Pontryagin dual whose Fourier–Stieltjes transform is `g ↦ ⟪ξ, π(g) ξ⟫` is the spectral
 measure of `ξ`. -/
-theorem eq_vectorMeasure_of_transform_eq (ξ : H) (μ : Measure (PontryaginDual (Multiplicative G)))
+lemma eq_vectorMeasure_of_transform_eq (ξ : H) (μ : Measure (PontryaginDual (Multiplicative G)))
     [IsFiniteMeasure μ]
     (h : ∀ g : Multiplicative G, ∫ χ, ((χ g : Circle) : ℂ) ∂μ =
       ⟪ξ, ((π g : unitary (H →L[ℂ] H)) : H →L[ℂ] H) ξ⟫_ℂ) :

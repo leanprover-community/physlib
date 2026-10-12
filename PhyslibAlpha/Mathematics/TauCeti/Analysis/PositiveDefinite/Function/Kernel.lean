@@ -69,7 +69,7 @@ variable {M : Type*} [AddMonoid M] [StarAddMonoid M] {F : M → ℂ}
 
 /-- A function `F` on an involutive additive monoid is positive definite if and only if the
 two-variable kernel `K(a, b) = F(a + b⋆)` is positive definite. -/
-theorem isPositiveDefinite_iff_posSemidef :
+lemma isPositiveDefinite_iff_posSemidef :
     IsPositiveDefinite F ↔ Matrix.PosSemidef (fun a b => F (a + star b)) :=
   ⟨IsPositiveDefinite.posSemidef, IsPositiveDefinite.of_posSemidef⟩
 
@@ -80,7 +80,7 @@ variable {G : Type*} [SubNegMonoid G] [StarAddMonoid G] {F : G → ℂ}
 /-- Under the negation involution `a⋆ = -a`, a positive-definite function `F` gives the
 translation-invariant positive-definite kernel `K(a, b) = F(a - b)`. This is the form in which
 positive definiteness is usually stated on groups such as `ℝᵈ` or a real inner-product space. -/
-theorem posSemidef_sub (hstar : ∀ a : G, star a = -a) (hF : IsPositiveDefinite F) :
+lemma posSemidef_sub (hstar : ∀ a : G, star a = -a) (hF : IsPositiveDefinite F) :
     Matrix.PosSemidef (fun a b => F (a - b)) := by
   have hfun : (fun a b : G => F (a + star b)) = fun a b => F (a - b) := by
     funext a b
@@ -94,7 +94,7 @@ variable {G : Type*} [SubNegMonoid G] [StarAddMonoid G] {F : G → ℂ}
 
 /-- Under the negation involution `a⋆ = -a`, `F` is positive definite if and only if the
 translation-invariant kernel `K(a, b) = F(a - b)` is positive definite. -/
-theorem isPositiveDefinite_iff_posSemidef_sub (hstar : ∀ a : G, star a = -a) :
+lemma isPositiveDefinite_iff_posSemidef_sub (hstar : ∀ a : G, star a = -a) :
     IsPositiveDefinite F ↔ Matrix.PosSemidef (fun a b => F (a - b)) := by
   have hfun : (fun a b : G => F (a + star b)) = fun a b => F (a - b) := by
     funext a b

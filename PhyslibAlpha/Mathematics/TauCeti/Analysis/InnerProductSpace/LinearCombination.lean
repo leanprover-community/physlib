@@ -48,7 +48,7 @@ variable {𝕜 α E F : Type*} [RCLike 𝕜]
 
 /-- Families with equal pairwise inner products give linear combinations of equal norm
 for the same finitely supported coefficients. -/
-theorem norm_linearCombination_eq_of_inner_eq (f : α →₀ 𝕜) {φ : α → E} {ψ : α → F}
+lemma norm_linearCombination_eq_of_inner_eq (f : α →₀ 𝕜) {φ : α → E} {ψ : α → F}
     (h : ∀ a b, ⟪φ a, φ b⟫_𝕜 = ⟪ψ a, ψ b⟫_𝕜) :
     ‖linearCombination 𝕜 φ f‖ = ‖linearCombination 𝕜 ψ f‖ := by
   apply (sq_eq_sq₀ (norm_nonneg _) (norm_nonneg _)).mp

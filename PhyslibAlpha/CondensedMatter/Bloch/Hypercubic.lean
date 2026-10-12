@@ -110,7 +110,7 @@ lemma smul_brillouinPoint_signedPerm (π : Equiv.Perm (Fin d)) (ε : Fin d → B
   smul_brillouinPoint_of_linear _ π ε rfl k
 
 /-- **Every momentum is carried into the irreducible zone by a signed permutation.** -/
-theorem exists_signedPerm_to_cone (k : Fin d → ℝ) :
+lemma exists_signedPerm_to_cone (k : Fin d → ℝ) :
     ∃ (π : Equiv.Perm (Fin d)) (ε : Fin d → Bool) (k' : Fin d → ℝ), k' ∈ hypercubicCone d ∧
       (⟨signedPerm π ε, 1, 0⟩ : CellSymmetry (Fin d → ℤ) Unit) • brillouinPoint k =
         brillouinPoint k' := by
@@ -145,7 +145,7 @@ theorem exists_signedPerm_to_cone (k : Fin d → ℝ) :
       ring
 
 /-- **The hypercubic zone covers the orbits of the point group.** -/
-theorem coversOrbits_hypercubic :
+lemma coversOrbits_hypercubic :
     CoversOrbits (hypercubicGraph d) (hypercubicZone d) := by
   intro χ
   obtain ⟨k, rfl⟩ := brillouinPoint_surjective χ
@@ -180,7 +180,7 @@ private lemma circle_exp_add_neg (x : ℝ) :
 
 /-- **The Bloch matrix of nearest-neighbour hopping on the hypercubic lattice** is the `1 × 1`
 matrix with the entry `2 t ∑_j cos (2π k_j)`. -/
-theorem hoppingSymbol_hypercubic (t : ℝ) (k : Fin d → ℝ) :
+lemma hoppingSymbol_hypercubic (t : ℝ) (k : Fin d → ℝ) :
     hoppingSymbol (uniformHopping (hypercubicGraph d) (t : ℂ)) (brillouinPoint k) =
       Matrix.of fun _ _ => ((hypercubicBand t k : ℝ) : ℂ) := by
   classical
@@ -248,7 +248,7 @@ private lemma spectrum_const (c : ℂ) :
 /-- **The spectrum of nearest-neighbour hopping on the hypercubic lattice** is the set of values
 of the band `2 t ∑_j cos (2π k_j)` on the irreducible zone `0 ≤ k_{d-1} ≤ … ≤ k_0 ≤ 1/2`, which is
 `1 / (2^d d!)` of the Brillouin zone. -/
-theorem iUnion_spectrum_hypercubic (t : ℝ) :
+lemma iUnion_spectrum_hypercubic (t : ℝ) :
     (⋃ χ : BrillouinZone (Fin d → ℤ),
         spectrum ℂ (hoppingSymbol (uniformHopping (hypercubicGraph d) (t : ℂ)) χ)) =
       {z : ℂ | ∃ k ∈ hypercubicCone d, z = ((hypercubicBand t k : ℝ) : ℂ)} := by
@@ -295,7 +295,7 @@ lemma abs_hypercubicBand_le (t : ℝ) (k : Fin d → ℝ) :
 
 /-- **The band of nearest-neighbour hopping takes exactly the values in `[-2 d |t|, 2 d |t|]` on
 the irreducible zone.** -/
-theorem hypercubicBand_image (t : ℝ) :
+lemma hypercubicBand_image (t : ℝ) :
     hypercubicBand t '' hypercubicCone d = Set.Icc (-(2 * d * |t|)) (2 * d * |t|) := by
   refine Set.Subset.antisymm ?_ ?_
   · rintro _ ⟨k, -, rfl⟩
@@ -327,7 +327,7 @@ theorem hypercubicBand_image (t : ℝ) :
 
 /-- **The spectrum of nearest-neighbour hopping on the hypercubic lattice is the interval
 `[-2 d |t|, 2 d |t|]`.** -/
-theorem iUnion_spectrum_hypercubic_eq_Icc (t : ℝ) :
+lemma iUnion_spectrum_hypercubic_eq_Icc (t : ℝ) :
     (⋃ χ : BrillouinZone (Fin d → ℤ),
         spectrum ℂ (hoppingSymbol (uniformHopping (hypercubicGraph d) (t : ℂ)) χ)) =
       ((↑) : ℝ → ℂ) '' Set.Icc (-(2 * d * |t|)) (2 * d * |t|) := by
@@ -341,7 +341,7 @@ theorem iUnion_spectrum_hypercubic_eq_Icc (t : ℝ) :
 /-! ## D. The fully symmetric momenta -/
 
 /-- **The centre `Γ` of the Brillouin zone is fixed by every symmetry.** -/
-theorem littleGroup_gamma (d : ℕ) :
+lemma littleGroup_gamma (d : ℕ) :
     (hypercubicGraph d).littleGroup (brillouinPoint (0 : Fin d → ℝ)) = ⊤ := by
   refine (Subgroup.eq_top_iff' _).2 fun s => ?_
   rw [PeriodicGraph.mem_littleGroup]
@@ -353,7 +353,7 @@ theorem littleGroup_gamma (d : ℕ) :
 
 /-- **The corner `R = (1/2, …, 1/2)` of the Brillouin zone is fixed by every symmetry**: its
 little group is the whole group. -/
-theorem littleGroup_corner (d : ℕ) :
+lemma littleGroup_corner (d : ℕ) :
     (hypercubicGraph d).littleGroup (brillouinPoint (fun _ : Fin d => (1 / 2 : ℝ))) = ⊤ := by
   refine (Subgroup.eq_top_iff' _).2 fun s => ?_
   rw [PeriodicGraph.mem_littleGroup]

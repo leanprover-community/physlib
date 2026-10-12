@@ -54,7 +54,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [LocallyCompactSpace 
 
 /-- The transform of a tight finite measure on the Pontryagin dual is continuous. Tightness is
 automatic for finite Radon measures and is the regularity needed when the dual is not metrizable. -/
-theorem _root_.MeasureTheory.FiniteMeasure.continuous_pontryaginMeasureTransform
+lemma _root_.MeasureTheory.FiniteMeasure.continuous_pontryaginMeasureTransform
     (μ : FiniteMeasure (PontryaginDual (Multiplicative G)))
     (hμ : IsTightMeasureSet {μ.toMeasure}) :
     Continuous μ.pontryaginMeasureTransform := by

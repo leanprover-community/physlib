@@ -61,7 +61,7 @@ variable {G : Type*} [AddCommGroup G] [TopologicalSpace G] [DiscreteTopology G]
 /-- **Bochner's theorem on a discrete abelian group.** A function on a discrete abelian group is
 positive definite if and only if it is the Fourier–Stieltjes transform of a finite inner regular
 measure on the Pontryagin dual. -/
-theorem isPositiveDefiniteSub_iff_exists_pontryaginMeasureTransform_eq (φ : G → ℂ) :
+lemma isPositiveDefiniteSub_iff_exists_pontryaginMeasureTransform_eq (φ : G → ℂ) :
     IsPositiveDefiniteSub φ ↔
       ∃ μ : FiniteMeasure (PontryaginDual (Multiplicative G)),
         μ.toMeasure.InnerRegular ∧ μ.pontryaginMeasureTransform = φ :=

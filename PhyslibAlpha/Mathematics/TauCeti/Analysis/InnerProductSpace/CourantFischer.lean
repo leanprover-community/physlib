@@ -73,7 +73,7 @@ variable {𝕜 E : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpac
 /-- Parseval: in an orthonormal basis the squared norms of the coordinates sum
 to the squared norm.  Thin wrapper around
 `OrthonormalBasis.sum_sq_norm_inner_right`. -/
-private theorem sum_sq_norm_repr_eq_sq_norm (b : OrthonormalBasis (Fin n) 𝕜 E) (x : E) :
+private lemma sum_sq_norm_repr_eq_sq_norm (b : OrthonormalBasis (Fin n) 𝕜 E) (x : E) :
     ∑ i : Fin n, ‖b.repr x i‖ ^ 2 = ‖x‖ ^ 2 := by
   simp_rw [b.repr_apply_apply]
   exact b.sum_sq_norm_inner_right x
@@ -87,7 +87,7 @@ omit [FiniteDimensional 𝕜 E] in
 /-- Diagonalization of the quadratic form in any orthonormal eigenbasis: if
 `S (w i) = μ i • w i` for all `i`, then
 `re ⟪S x, x⟫ = ∑ i, μ i * ‖w.repr x i‖ ^ 2`. -/
-theorem re_inner_apply_self_eq_sum_of_eigenbasis
+lemma re_inner_apply_self_eq_sum_of_eigenbasis
     (hS : S.IsSymmetric) (w : OrthonormalBasis (Fin n) 𝕜 E) {μ : Fin n → ℝ}
     (hw : ∀ i, S (w i) = (μ i : 𝕜) • w i) (x : E) :
     RCLike.re ⟪S x, x⟫_𝕜 = ∑ i : Fin n, μ i * ‖w.repr x i‖ ^ 2 := by
@@ -107,7 +107,7 @@ omit [FiniteDimensional 𝕜 E] in
 /-- On the span of the eigenvectors selected by `s`, the quadratic form is
 bounded below by any lower bound on the selected values (general-eigenbasis
 version of `le_re_inner_apply_self_of_mem_spanIndices`). -/
-theorem le_re_inner_of_eigenbasis
+lemma le_re_inner_of_eigenbasis
     (hS : S.IsSymmetric) (w : OrthonormalBasis (Fin n) 𝕜 E) {μ : Fin n → ℝ}
     (hw : ∀ i, S (w i) = (μ i : 𝕜) • w i) {s : Set (Fin n)} {c : ℝ}
     (hc : ∀ i ∈ s, c ≤ μ i) {x : E} (hx : x ∈ w.spanIndices s) :
@@ -123,7 +123,7 @@ theorem le_re_inner_of_eigenbasis
 
 omit [FiniteDimensional 𝕜 E] in
 /-- Dual of `le_re_inner_of_eigenbasis`. -/
-theorem re_inner_le_of_eigenbasis
+lemma re_inner_le_of_eigenbasis
     (hS : S.IsSymmetric) (w : OrthonormalBasis (Fin n) 𝕜 E) {μ : Fin n → ℝ}
     (hw : ∀ i, S (w i) = (μ i : 𝕜) • w i) {s : Set (Fin n)} {c : ℝ}
     (hc : ∀ i ∈ s, μ i ≤ c) {x : E} (hx : x ∈ w.spanIndices s) :
@@ -145,7 +145,7 @@ its eigenbasis: it is the eigenvalue-weighted sum of the squared norms of the
 coordinates of `x`.  This is the diagonalization of the quadratic form.  (For
 symmetric `T` the inner product `⟪T x, x⟫` is real, so no information is lost
 by taking the real part.) -/
-theorem re_inner_apply_self_eq_sum_eigenvalues_mul_sq
+lemma re_inner_apply_self_eq_sum_eigenvalues_mul_sq
     (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) (x : E) :
     RCLike.re ⟪T x, x⟫_𝕜
       = ∑ i : Fin n, hT.eigenvalues hn i * ‖(hT.eigenvectorBasis hn).repr x i‖ ^ 2 := by
@@ -156,7 +156,7 @@ theorem re_inner_apply_self_eq_sum_eigenvalues_mul_sq
 is bounded by any bound on the selected eigenvalues: if
 `x ∈ b.spanIndices s` (so its coordinates vanish off `s`) and every selected
 eigenvalue satisfies `λᵢ ≤ c`, then `re ⟪T x, x⟫ ≤ c ‖x‖²`. -/
-theorem re_inner_apply_self_le_of_mem_spanIndices
+lemma re_inner_apply_self_le_of_mem_spanIndices
     (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) {s : Set (Fin n)} {c : ℝ}
     (hc : ∀ i ∈ s, hT.eigenvalues hn i ≤ c)
     {x : E} (hx : x ∈ (hT.eigenvectorBasis hn).spanIndices s) :
@@ -167,7 +167,7 @@ theorem re_inner_apply_self_le_of_mem_spanIndices
 /-- Dual of `re_inner_apply_self_le_of_mem_spanIndices`: if
 `x ∈ b.spanIndices s` and every selected eigenvalue satisfies `c ≤ λᵢ`, then
 `c ‖x‖² ≤ re ⟪T x, x⟫`. -/
-theorem le_re_inner_apply_self_of_mem_spanIndices
+lemma le_re_inner_apply_self_of_mem_spanIndices
     (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) {s : Set (Fin n)} {c : ℝ}
     (hc : ∀ i ∈ s, c ≤ hT.eigenvalues hn i)
     {x : E} (hx : x ∈ (hT.eigenvectorBasis hn).spanIndices s) :
@@ -181,7 +181,7 @@ theorem le_re_inner_apply_self_of_mem_spanIndices
 `k + 1` there is a unit vector `x` with `re ⟪T x, x⟫ ≤ λₖ(T)`, where `λ` is the
 decreasing enumeration `LinearMap.IsSymmetric.eigenvalues` of the eigenvalues
 of the symmetric operator `T`. -/
-theorem exists_unit_vector_re_inner_le_eigenvalue
+lemma exists_unit_vector_re_inner_le_eigenvalue
     (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) (k : Fin n)
     (V : Submodule 𝕜 E) (hV : finrank 𝕜 V = (k : ℕ) + 1) :
     ∃ x ∈ V, ‖x‖ = 1 ∧ RCLike.re ⟪T x, x⟫_𝕜 ≤ hT.eigenvalues hn k := by
@@ -219,7 +219,7 @@ eigenvalues of the symmetric operator `T`.
 
 Witness: `V = span {bᵢ : i ≤ k}`; on it the quadratic form is bounded below by
 `λₖ` since all involved eigenvalues are `≥ λₖ`. -/
-theorem exists_submodule_forall_unit_eigenvalue_le_re_inner
+lemma exists_submodule_forall_unit_eigenvalue_le_re_inner
     (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) (k : Fin n) :
     ∃ V : Submodule 𝕜 E, finrank 𝕜 V = (k : ℕ) + 1 ∧
       ∀ x ∈ V, ‖x‖ = 1 → hT.eigenvalues hn k ≤ RCLike.re ⟪T x, x⟫_𝕜 := by
@@ -244,7 +244,7 @@ of the infimum of the Rayleigh quotient `re ⟪T x, x⟫` over the unit vectors 
 `V`.
 
 Horn & Johnson, *Matrix Analysis* 2nd ed., Theorem 4.2.6. -/
-theorem eigenvalues_eq_iSup_iInf_re_inner
+lemma eigenvalues_eq_iSup_iInf_re_inner
     (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) (k : Fin n) :
     hT.eigenvalues hn k =
       ⨆ V : {V : Submodule 𝕜 E // finrank 𝕜 V = (k : ℕ) + 1},
@@ -318,7 +318,7 @@ are monotone in the quadratic form (Loewner order). -/
 diagonalizes the symmetric operator `S` with an *antitone* value list `μ`,
 then `μ` is the sorted eigenvalue list: `hS.eigenvalues hn = μ`.
 (Courant–Fischer: both lists satisfy the same minimax characterization.) -/
-theorem eigenvalues_eq_of_eigenbasis
+lemma eigenvalues_eq_of_eigenbasis
     (hS : S.IsSymmetric) (hn : finrank 𝕜 E = n) (w : OrthonormalBasis (Fin n) 𝕜 E)
     {μ : Fin n → ℝ} (hμ : Antitone μ) (hw : ∀ i, S (w i) = (μ i : 𝕜) • w i) :
     hS.eigenvalues hn = μ := by
@@ -356,7 +356,7 @@ theorem eigenvalues_eq_of_eigenbasis
 
 /-- **Loewner monotonicity of the sorted eigenvalues.**  If the quadratic form
 of `T` is dominated by that of `S`, then so is every sorted eigenvalue. -/
-theorem eigenvalue_mono
+lemma eigenvalue_mono
     (hT : T.IsSymmetric) (hS : S.IsSymmetric) (hn : finrank 𝕜 E = n)
     (h : ∀ x, RCLike.re ⟪T x, x⟫_𝕜 ≤ RCLike.re ⟪S x, x⟫_𝕜) (k : Fin n) :
     hT.eigenvalues hn k ≤ hS.eigenvalues hn k := by
@@ -370,7 +370,7 @@ theorem eigenvalue_mono
 
 /-- The span of a selected subfamily of the eigenbasis of a symmetric operator
 is invariant under the operator. -/
-theorem map_mem_spanIndices (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n)
+lemma map_mem_spanIndices (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n)
     (s : Set (Fin n)) {x : E}
     (hx : x ∈ (hT.eigenvectorBasis hn).spanIndices s) :
     T x ∈ (hT.eigenvectorBasis hn).spanIndices s := by
@@ -399,7 +399,7 @@ We take a witness subspace `V` of dimension `k + 1` on which
 `λₖ(S) ≤ re ⟪S x, x⟫` (lower direction for `S`), then a unit vector `x ∈ V`
 with `re ⟪T x, x⟫ ≤ λₖ(T)` (upper direction for `T`).  The difference is
 controlled by Cauchy–Schwarz. -/
-private theorem eigenvalues_sub_le
+private lemma eigenvalues_sub_le
     (hT : T.IsSymmetric) (hS : S.IsSymmetric) (hn : finrank 𝕜 E = n)
     {ε : ℝ} (hε : ∀ x : E, ‖(S - T) x‖ ≤ ε * ‖x‖) (k : Fin n) :
     hS.eigenvalues hn k - hT.eigenvalues hn k ≤ ε := by
@@ -433,7 +433,7 @@ operator-norm form.
 
 Horn & Johnson, *Matrix Analysis* 2nd ed., Theorem 4.3.1; Bhatia,
 *Matrix Analysis*, Corollary III.2.6. -/
-theorem abs_eigenvalue_sub_eigenvalue_le
+lemma abs_eigenvalue_sub_eigenvalue_le
     (hT : T.IsSymmetric) (hS : S.IsSymmetric) (hn : finrank 𝕜 E = n)
     {ε : ℝ} (hε : ∀ x : E, ‖(T - S) x‖ ≤ ε * ‖x‖) (k : Fin n) :
     |hT.eigenvalues hn k - hS.eigenvalues hn k| ≤ ε := by
@@ -460,7 +460,7 @@ instance needs `CompleteSpace E`, which `FiniteDimensional` deliberately does
 not register as an instance).
 
 The bound is expressed directly in the norm of a continuous linear map. -/
-theorem abs_eigenvalue_sub_eigenvalue_le_norm
+lemma abs_eigenvalue_sub_eigenvalue_le_norm
     {T S : E →L[𝕜] E}
     (hT : LinearMap.IsSymmetric (T : E →ₗ[𝕜] E))
     (hS : LinearMap.IsSymmetric (S : E →ₗ[𝕜] E))
@@ -472,7 +472,7 @@ theorem abs_eigenvalue_sub_eigenvalue_le_norm
 /-- Weyl's inequality for linear maps, using the operator norm of the
 corresponding continuous linear map.  Unlike the preceding theorem, the symmetry
 hypotheses and eigenvalue enumeration are directly attached to `LinearMap`s. -/
-theorem abs_eigenvalues_sub_le_opNorm
+lemma abs_eigenvalues_sub_le_opNorm
     {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric)
     (hn : finrank 𝕜 E = n) (k : Fin n) :
     |hT.eigenvalues hn k - hS.eigenvalues hn k|
@@ -483,7 +483,7 @@ theorem abs_eigenvalues_sub_le_opNorm
 
 /-- Sorted eigenvalues are congruent along an operator equality (the eigenvalue
 enumeration depends only on the operator, not on the symmetry proof). -/
-theorem eigenvalues_congr {S₁ S₂ : E →ₗ[𝕜] E} (h : S₁ = S₂)
+lemma eigenvalues_congr {S₁ S₂ : E →ₗ[𝕜] E} (h : S₁ = S₂)
     (hS₁ : S₁.IsSymmetric) (hS₂ : S₂.IsSymmetric) (hn : finrank 𝕜 E = n) :
     hS₁.eigenvalues hn = hS₂.eigenvalues hn := by
   subst h; rfl
@@ -496,7 +496,7 @@ Both spellings occur in practice.  A matrix over `Fin n` has
 `Matrix.IsHermitian.eigenvalues₀` indexed by `Fin (Fintype.card (Fin n))`, while the
 operator theory it is transported to indexes by `Fin n`; `Fintype.card (Fin n) = n` is a
 theorem and not definitional, so the two index types are genuinely different. -/
-theorem eigenvalues_cast {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {m : ℕ}
+lemma eigenvalues_cast {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {m : ℕ}
     (hm : finrank 𝕜 E = m) (hn : finrank 𝕜 E = n) (hmn : m = n) (i : Fin m) :
     hT.eigenvalues hm i = hT.eigenvalues hn (Fin.cast hmn i) := by
   subst hmn; rfl
