@@ -198,9 +198,8 @@ noncomputable def gellMannMatrices {n : ℕ} : GellMannIndex n → SULieAlgebra 
       (by simp [star_eq_conjTranspose, conjTranspose_single, add_comm])
       (by rw [trace_add, trace_single_eq_of_ne _ _ _ h.ne, trace_single_eq_of_ne _ _ _ h.ne',
         add_zero])
-  | .diag l => ofMatrix (diagonal fun x =>
-      (Real.sqrt (2 / (((l.1 + 1 : ℕ) : ℝ) * ((l.1 + 1 : ℕ) + 1))) : ℂ) *
-        if x.1 < l.1 + 1 then 1 else if x.1 = l.1 + 1 then -((l.1 + 1 : ℕ) : ℂ) else 0)
+  | .diag l => ofMatrix (diagonal fun x => (√(2 / ((l.1 + 1) * (l.1 + 2))) : ℝ) *
+      if x.1 ≤ l.1 then 1 else if x.1 = l.1 + 1 then -(l.1 + 1 : ℂ) else 0)
       (by
         ext x y
         simp only [star_apply, diagonal_apply]
@@ -209,15 +208,14 @@ noncomputable def gellMannMatrices {n : ℕ} : GellMannIndex n → SULieAlgebra 
       (by
         have hl := l.2
         rw [trace_diagonal, ← Finset.mul_sum, Fin.sum_univ_eq_sum_range (fun x =>
-          if x < l.1 + 1 then (1 : ℂ) else if x = l.1 + 1 then -((l.1 + 1 : ℕ) : ℂ) else 0),
-          Finset.sum_congr rfl fun x _ => (show (if x < l.1 + 1 then (1 : ℂ) else if x = l.1 + 1
-            then -((l.1 + 1 : ℕ) : ℂ) else 0) = (if x < l.1 + 1 then 1 else 0) +
-              if x = l.1 + 1 then -((l.1 + 1 : ℕ) : ℂ) else 0 by
-              split_ifs <;> first | omega | simp),
-          Finset.sum_add_distrib, Finset.sum_ite_eq', Finset.sum_boole,
-          show (Finset.range n).filter (· < l.1 + 1) = Finset.range (l.1 + 1) by
-            ext; simp; omega, Finset.card_range]
-        simp [show l.1 + 1 < n by omega])
+          if x ≤ l.1 then (1 : ℂ) else if x = l.1 + 1 then -(l.1 + 1 : ℂ) else 0),
+          ← Finset.sum_range_add_sum_Ico _ (show l.1 + 2 ≤ n by omega), Finset.sum_range_succ,
+          Finset.sum_congr (s₁ := Finset.range (l.1 + 1)) rfl fun x hx =>
+            ite_eq_left (Nat.lt_succ_iff.1 (Finset.mem_range.1 hx)),
+          Finset.sum_eq_zero (s := Finset.Ico (l.1 + 2) n) fun x hx => by
+            have := (Finset.mem_Ico.1 hx).1
+            rw [ite_eq_right (by omega), ite_eq_right (by omega)]]
+        simp)
 
 /-!
 
@@ -255,9 +253,8 @@ lemma gellMannMatrices_antisymm_val_eq {n : ℕ} (p q : Fin n) (h : p < q) :
   rfl
 
 lemma gellMannMatrices_diag_val_eq {n : ℕ} (l : Fin (n - 1)) :
-    (gellMannMatrices (.diag l)).1 = diagonal fun x =>
-      (Real.sqrt (2 / (((l.1 + 1 : ℕ) : ℝ) * ((l.1 + 1 : ℕ) + 1))) : ℂ) *
-        if x.1 < l.1 + 1 then 1 else if x.1 = l.1 + 1 then -((l.1 + 1 : ℕ) : ℂ) else 0 := by
+    (gellMannMatrices (.diag l)).1 = diagonal fun x => (√(2 / ((l.1 + 1) * (l.1 + 2))) : ℝ) *
+      if x.1 ≤ l.1 then 1 else if x.1 = l.1 + 1 then -(l.1 + 1 : ℂ) else 0 := by
   rfl
 
 /-!
@@ -338,58 +335,53 @@ lemma adjointContr_gellMannMatrices_antisymm_orthogonal {n : ℕ} (p q : Fin n) 
     trace_single_mul, Matrix.add_apply, single_apply, Fin.ext_iff, smul_eq_mul]
   split_ifs <;> (try norm_num) <;> omega
 
+/-- The diagonal Gell-Mann matrices are normalized, `tr (λ_l λ_l) = 2`. -/
+lemma adjointContr_gellMannMatrices_diag_self {n : ℕ} (l : Fin (n - 1)) :
+    adjointContr (gellMannMatrices (.diag l) ⊗ₜ gellMannMatrices (.diag l)) = 2 := by
+  have hl := l.2
+  apply Complex.ofReal_injective
+  rw [ofReal_adjointContr_tmul, Complex.ofReal_ofNat, gellMannMatrices_diag_val_eq,
+    diagonal_mul_diagonal, trace_diagonal,
+    Fin.sum_univ_eq_sum_range (fun x => ((√(2 / ((l.1 + 1) * (l.1 + 2))) : ℝ) : ℂ) *
+      (if x ≤ l.1 then 1 else if x = l.1 + 1 then -(l.1 + 1 : ℂ) else 0) *
+      (((√(2 / ((l.1 + 1) * (l.1 + 2))) : ℝ) : ℂ) *
+      (if x ≤ l.1 then 1 else if x = l.1 + 1 then -(l.1 + 1 : ℂ) else 0))),
+    ← Finset.sum_range_add_sum_Ico _ (show l.1 + 2 ≤ n by omega), Finset.sum_range_succ,
+    Finset.sum_congr (s₁ := Finset.range (l.1 + 1)) rfl fun x hx => by
+      rw [ite_eq_left (Nat.lt_succ_iff.1 (Finset.mem_range.1 hx))],
+    Finset.sum_eq_zero (s := Finset.Ico (l.1 + 2) n) fun x hx => by
+      have := (Finset.mem_Ico.1 hx).1
+      rw [ite_eq_right (by omega), ite_eq_right (by omega), mul_zero, zero_mul]]
+  simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul, mul_one, Nat.cast_add,
+    Nat.cast_one, add_le_iff_nonpos_right, nonpos_iff_eq_zero, one_ne_zero, ↓reduceIte, add_zero]
+  have hc : ((√(2 / ((l.1 + 1) * (l.1 + 2))) : ℝ) : ℂ) * ((√(2 / ((l.1 + 1) * (l.1 + 2))) : ℝ) : ℂ)
+      * ((l.1 + 1) * (l.1 + 2)) = 2 := by
+    have : (l.1 : ℂ) + 2 ≠ 0 := by exact_mod_cast (by omega : l.1 + 2 ≠ 0)
+    rw [← Complex.ofReal_mul, Real.mul_self_sqrt (by positivity)]
+    push_cast
+    field_simp
+  linear_combination hc
+
 lemma adjointContr_gellMannMatrices_diag_orthogonal {n : ℕ} (l l' : Fin (n - 1)) :
     adjointContr (gellMannMatrices (.diag l) ⊗ₜ gellMannMatrices (.diag l')) =
       if l = l' then 2 else 0 := by
-  apply Complex.ofReal_injective
-  rw [ofReal_adjointContr_tmul, gellMannMatrices_diag_val_eq, gellMannMatrices_diag_val_eq,
-    diagonal_mul_diagonal, trace_diagonal, show ((if l = l' then (2 : ℝ) else 0 : ℝ) : ℂ)
-      = if l.1 + 1 = l'.1 + 1 then 2 else 0 by
-        simp only [add_left_inj, ← Fin.ext_iff]
-        split_ifs <;> simp]
-  obtain ⟨hm0, hmn⟩ : 0 < l.1 + 1 ∧ l.1 + 1 < n := by have := l.2; omega
-  obtain ⟨hm0', hmn'⟩ : 0 < l'.1 + 1 ∧ l'.1 + 1 < n := by have := l'.2; omega
-  generalize l.1 + 1 = m at *
-  generalize l'.1 + 1 = m' at *
-  have hsum : ∑ x : Fin n, (if x.1 < m then (1 : ℂ) else if x.1 = m then -(m : ℂ) else 0) = 0 := by
-    rw [Fin.sum_univ_eq_sum_range (fun x => if x < m then (1 : ℂ) else if x = m then -(m : ℂ)
-      else 0), Finset.sum_congr rfl fun x _ => (show (if x < m then (1 : ℂ) else if x = m then
-        -(m : ℂ) else 0) = (if x < m then 1 else 0) + if x = m then -(m : ℂ) else 0 by
-          split_ifs <;> first | omega | simp), Finset.sum_add_distrib, Finset.sum_ite_eq',
-      Finset.sum_boole, show (Finset.range n).filter (· < m) = Finset.range m by ext; simp; omega,
-      Finset.card_range]
-    simp [hmn]
-  have hsum' : ∑ x : Fin n,
-      (if x.1 < m' then (1 : ℂ) else if x.1 = m' then -(m' : ℂ) else 0) = 0 := by
-    rw [Fin.sum_univ_eq_sum_range (fun x => if x < m' then (1 : ℂ) else if x = m' then -(m' : ℂ)
-      else 0), Finset.sum_congr rfl fun x _ => (show (if x < m' then (1 : ℂ) else if x = m' then
-        -(m' : ℂ) else 0) = (if x < m' then 1 else 0) + if x = m' then -(m' : ℂ) else 0 by
-          split_ifs <;> first | omega | simp), Finset.sum_add_distrib, Finset.sum_ite_eq',
-      Finset.sum_boole, show (Finset.range n).filter (· < m') = Finset.range m' by
-        ext; simp; omega, Finset.card_range]
-    simp [hmn']
-  set c := (Real.sqrt (2 / ((m : ℝ) * (m + 1))) : ℂ) with hc
-  set c' := (Real.sqrt (2 / ((m' : ℝ) * (m' + 1))) : ℂ) with hc'
-  rcases lt_trichotomy m m' with h | rfl | h
-  · rw [ite_eq_right h.ne, Finset.sum_congr rfl (g := fun x : Fin n => c * c' *
-      if x.1 < m then 1 else if x.1 = m then -(m : ℂ) else 0) fun x _ => by
-        split_ifs <;> first | omega | ring, ← Finset.mul_sum, hsum, mul_zero]
-  · rw [ite_eq_left rfl, Finset.sum_congr rfl (g := fun x : Fin n => c ^ 2 *
-      ((if x.1 < m then 1 else 0) + if x.1 = m then (m : ℂ) ^ 2 else 0)) fun x _ => by
-        split_ifs <;> first | omega | ring, ← Finset.mul_sum, Fin.sum_univ_eq_sum_range
-        (fun x => (if x < m then (1 : ℂ) else 0) + if x = m then (m : ℂ) ^ 2 else 0),
-      Finset.sum_add_distrib, Finset.sum_ite_eq', Finset.sum_boole,
-      show (Finset.range n).filter (· < m) = Finset.range m by ext; simp; omega,
-      Finset.card_range, ite_eq_left (Finset.mem_range.2 hmn), hc, ← Complex.ofReal_pow,
-      Real.sq_sqrt (by positivity)]
-    have : (m : ℂ) ≠ 0 := by exact_mod_cast hm0.ne'
-    have : (m : ℂ) + 1 ≠ 0 := by exact_mod_cast Nat.succ_ne_zero m
-    push_cast
-    field_simp
-    ring
-  · rw [ite_eq_right h.ne', Finset.sum_congr rfl (g := fun x : Fin n => c * c' *
-      if x.1 < m' then 1 else if x.1 = m' then -(m' : ℂ) else 0) fun x _ => by
-        split_ifs <;> first | omega | ring, ← Finset.mul_sum, hsum', mul_zero]
+  -- for `a < b`, `λ_b` is constant on the support of `λ_a`, so `λ_a λ_b` is a multiple of `λ_a`
+  have hmul {a b : Fin (n - 1)} (h : a < b) :
+      (gellMannMatrices (.diag a)).1 * (gellMannMatrices (.diag b)).1 =
+        ((√(2 / ((b.1 + 1) * (b.1 + 2))) : ℝ) : ℂ) • (gellMannMatrices (.diag a)).1 := by
+    have := Fin.lt_def.1 h
+    rw [gellMannMatrices_diag_val_eq, gellMannMatrices_diag_val_eq, diagonal_mul_diagonal,
+      ← diagonal_smul]
+    congr 1
+    funext x
+    rw [Pi.smul_apply, smul_eq_mul]
+    split_ifs <;> first | omega | ring
+  rcases lt_trichotomy l l' with h | rfl | h
+  · rw [ite_eq_right h.ne, ← Complex.ofReal_inj, ofReal_adjointContr_tmul, hmul h, trace_smul,
+      trace_val_eq_zero, smul_zero, Complex.ofReal_zero]
+  · rw [adjointContr_gellMannMatrices_diag_self, ite_eq_left rfl]
+  · rw [ite_eq_right h.ne', ← Complex.ofReal_inj, ofReal_adjointContr_tmul, trace_mul_comm,
+      hmul h, trace_smul, trace_val_eq_zero, smul_zero, Complex.ofReal_zero]
 
 /-!
 
@@ -440,7 +432,7 @@ lemma linearIndependent_gellMannMatrices {n : ℕ} :
 lemma gellMannMatrices_two (i : Fin 3) :
     (gellMannMatrices (GellMannIndex.equivTwo.symm i)).1 = PauliMatrix.pauliMatrix (Sum.inr i) := by
   fin_cases i <;> ext a b <;> fin_cases a <;> fin_cases b <;>
-    simp [GellMannIndex.equivTwo, gellMannMatrices, PauliMatrix.pauliMatrix, one_add_one_eq_two]
+    simp [GellMannIndex.equivTwo, gellMannMatrices, PauliMatrix.pauliMatrix]
 
 /-- For `n = 3` the generalized Gell-Mann matrices are the Gell-Mann matrices `λ₁, …, λ₈`, labelled
   in the standard order by `GellMannIndex.equivThree`. -/
@@ -457,7 +449,7 @@ lemma gellMannMatrices_three :
   funext i
   fin_cases i <;> ext a b <;> fin_cases a <;> fin_cases b <;>
     simp [GellMannIndex.equivThree, gellMannMatrices, one_add_one_eq_two, div_mul_eq_div_div,
-      show (2 : ℝ) + 1 = 3 by norm_num]
+      show (1 : ℝ) + 2 = 3 by norm_num]
 
 /-!
 
