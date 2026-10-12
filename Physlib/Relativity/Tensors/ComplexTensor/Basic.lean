@@ -169,14 +169,6 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.downR => Fermion.dualRightContraction
     | Color.up => Lorentz.contrCoContraction
     | Color.down => Lorentz.coContrContraction
-  metric := fun c =>
-    match c with
-    | Color.upL => Fermion.leftMetric
-    | Color.downL => Fermion.dualLeftMetric
-    | Color.upR => Fermion.rightMetric
-    | Color.downR => Fermion.dualRightMetric
-    | Color.up => Lorentz.contrMetric
-    | Color.down => Lorentz.coMetric
   unit := fun c =>
     match c with
     | Color.upL => Fermion.dualLeftLeftUnit
@@ -209,22 +201,28 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.downR => Fermion.rightDualRightUnit_symm
     | Color.up => Lorentz.coContrUnit_symm
     | Color.down => Lorentz.contrCoUnit_symm
-  contr_metric := fun c =>
-    match c with
-    | Color.upL => by
-      simpa using Fermion.leftDualContraction_apply_metric
-    | Color.downL => by
-      simpa using Fermion.dualLeftContraction_apply_metric
-    | Color.upR => by
-      simpa using Fermion.rightDualContraction_apply_metric
-    | Color.downR => by
-      simpa using Fermion.dualRightContraction_apply_metric
-    | Color.up => by
-      simpa using Lorentz.contrCoContraction_apply_metric
-    | Color.down => by
-      simpa using Lorentz.coContrContraction_apply_metric
 
 namespace complexLorentzTensor
+
+/-- The metrics of the complex Lorentz tensors: `ε` on the four Weyl colors and `η` on the two
+  vector colors. -/
+instance instWithMetric : complexLorentzTensor.WithMetric where
+  metric := fun c =>
+    match c with
+    | Color.upL => Fermion.leftMetric
+    | Color.downL => Fermion.dualLeftMetric
+    | Color.upR => Fermion.rightMetric
+    | Color.downR => Fermion.dualRightMetric
+    | Color.up => Lorentz.contrMetric
+    | Color.down => Lorentz.coMetric
+  contr_metric := fun c =>
+    match c with
+    | Color.upL => Fermion.leftDualContraction_apply_metric
+    | Color.downL => Fermion.dualLeftContraction_apply_metric
+    | Color.upR => Fermion.rightDualContraction_apply_metric
+    | Color.downR => Fermion.dualRightContraction_apply_metric
+    | Color.up => Lorentz.contrCoContraction_apply_metric
+    | Color.down => Lorentz.coContrContraction_apply_metric
 
 /-- Complex Lorentz tensor. -/
 syntax (name := complexLorentzTensorSyntax) "ℂT[" term,* "]" : term
@@ -302,5 +300,65 @@ lemma contrPCoeff_basis {n : ℕ} {c : Fin n → complexLorentzTensor.Color} (i 
   refine if_congr (Eq.congr_right ?_) rfl rfl
   simp [basisIdxCongr_eq_cast]
 
+/-- Complex conjugation of colours: it swaps handedness and fixes the vector colours. -/
+def Color.bar : Color → Color
+  | Color.upL => Color.upR
+  | Color.downL => Color.downR
+  | Color.upR => Color.upL
+  | Color.downR => Color.downL
+  | Color.up => Color.up
+  | Color.down => Color.down
+
 end complexLorentzTensor
+
+open complexLorentzTensor in
+/-- The complex Lorentz tensors as a conjugation species: conjugation swaps left- and
+  right-handed Weyl colours and fixes the vector colours. -/
+def complexLorentzConjTensor : ConjTensorSpecies ℂ Color SL(2, ℂ) modules
+    (fun c => Fin (repDim c)) rep basis where
+  toTensorSpecies := complexLorentzTensor
+  bar := Color.bar
+  bar_involution c := by cases c <;> rfl
+  bar_tau c := by cases c <;> rfl
+  barIdx_eq c := by cases c <;> rfl
+  conj_basis_equivariant c g i j := by
+    cases c
+    · change Fermion.LeftHandedWeyl.basis.repr (Fermion.LeftHandedWeyl.rep g
+          (Fermion.LeftHandedWeyl.basis i)) j = star (Fermion.RightHandedWeyl.basis.repr
+          (Fermion.RightHandedWeyl.rep g (Fermion.RightHandedWeyl.basis i)) j)
+      rw [Fermion.LeftHandedWeyl.rep_apply_basis_repr,
+        Fermion.RightHandedWeyl.rep_apply_basis_repr, star_star]
+    · change Fermion.DualLeftHandedWeyl.basis.repr (Fermion.DualLeftHandedWeyl.rep g
+          (Fermion.DualLeftHandedWeyl.basis i)) j = star (Fermion.DualRightHandedWeyl.basis.repr
+          (Fermion.DualRightHandedWeyl.rep g (Fermion.DualRightHandedWeyl.basis i)) j)
+      rw [Fermion.DualLeftHandedWeyl.rep_apply_basis_repr,
+        Fermion.DualRightHandedWeyl.rep_apply_basis_repr, star_star]
+    · change Fermion.RightHandedWeyl.basis.repr (Fermion.RightHandedWeyl.rep g
+          (Fermion.RightHandedWeyl.basis i)) j = star (Fermion.LeftHandedWeyl.basis.repr
+          (Fermion.LeftHandedWeyl.rep g (Fermion.LeftHandedWeyl.basis i)) j)
+      rw [Fermion.LeftHandedWeyl.rep_apply_basis_repr,
+        Fermion.RightHandedWeyl.rep_apply_basis_repr]
+    · change Fermion.DualRightHandedWeyl.basis.repr (Fermion.DualRightHandedWeyl.rep g
+          (Fermion.DualRightHandedWeyl.basis i)) j = star (Fermion.DualLeftHandedWeyl.basis.repr
+          (Fermion.DualLeftHandedWeyl.rep g (Fermion.DualLeftHandedWeyl.basis i)) j)
+      rw [Fermion.DualLeftHandedWeyl.rep_apply_basis_repr,
+        Fermion.DualRightHandedWeyl.rep_apply_basis_repr]
+    · change Lorentz.complexContrBasisFin4.repr (Lorentz.ContrℂModule.SL2CRep g
+          (Lorentz.complexContrBasisFin4 i)) j = star (Lorentz.complexContrBasisFin4.repr
+          (Lorentz.ContrℂModule.SL2CRep g (Lorentz.complexContrBasisFin4 i)) j)
+      rw [Lorentz.complexContrBasisFin4_eq_reindex, Module.Basis.repr_reindex_apply,
+        Module.Basis.reindex_apply, ← LinearMap.toMatrix_apply, Lorentz.complexContrBasis_ρ_apply,
+        LorentzGroup.star_toComplex_apply]
+    · change Lorentz.complexCoBasisFin4.repr (Lorentz.CoℂModule.SL2CRep g
+          (Lorentz.complexCoBasisFin4 i)) j = star (Lorentz.complexCoBasisFin4.repr
+          (Lorentz.CoℂModule.SL2CRep g (Lorentz.complexCoBasisFin4 i)) j)
+      rw [Lorentz.complexCoBasisFin4_eq_reindex, Module.Basis.repr_reindex_apply,
+        Module.Basis.reindex_apply, ← LinearMap.toMatrix_apply, Lorentz.complexCoBasis_ρ_apply,
+        LorentzGroup.toComplex_inv, Matrix.transpose_apply, LorentzGroup.star_toComplex_apply]
+  conj_contrComm d x₁ x₂ := by
+    cases d <;>
+    · simp only [TensorSpecies.HasContrDualBases.contr_basis_eq_ite, contrDualIdxEquiv_eq_finCongr]
+      rw [apply_ite star]
+      exact if_congr Iff.rfl (by simp) (by simp)
+
 end

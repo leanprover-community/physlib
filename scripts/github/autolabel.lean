@@ -23,6 +23,8 @@ needs to be updated here if necessary:
 * `AutoLabel.physlibLabels` contains an assignment of GitHub labels to folders inside
   the physlib repository. If no folder is specified, a label like `t-quantum-mechanics` will be
   interpreted as matching the folder `"Physlib" / "QuantumMechanics"`.
+* The `PhyslibAlpha` label is exclusive: it is only added when every modified file lies in
+  `PhyslibAlpha/` or is `PhyslibAlpha.lean`.
 * `AutoLabel.physlibUnlabelled` contains subfolders of `Physlib/` which are deliberately
   left without topic label.
 
@@ -125,6 +127,9 @@ inductive Label where
   | «t-states-qi»
   | «CI»
 
+  -- PhyslibAlpha
+  | «PhyslibAlpha»
+
   deriving BEq, Hashable, Repr
 
 def physlibLabels : Array Label := #[
@@ -134,7 +139,7 @@ def physlibLabels : Array Label := #[
   .«t-space-and-time», .«t-statistical-mechanics», .«t-string-theory», .«t-thermodynamics»,
   .«t-units», .«t-capacity-qi», .«t-channels-qi», .«t-classical-info-qi», .«t-entropy-qi»,
   .«t-for-mathlib-qi», .«t-measurements-qi», .«t-operators-qi», .«t-resource-theory-qi», .«t-states-qi»,
-  .«CI»
+  .«CI», .«PhyslibAlpha»
 ]
 
 
@@ -167,6 +172,7 @@ def Label.toString : Label → String
   | .«t-resource-theory-qi»            => "t-resource-theory-qi"
   | .«t-states-qi»                     => "t-states-qi"
   | .«CI»                              => "CI"
+  | .«PhyslibAlpha»                    => "PhyslibAlpha"
 
 instance : ToString Label where
   toString := Label.toString
@@ -179,7 +185,9 @@ A `LabelData` consists of the
   ones that start with the ones in `dirs`.
   Any modifications to a file in an excluded path is ignored for the purposes of labelling.
 * The `dependencies` field is the array of all labels, which are lower in the import hierarchy
-  and which should be excluded if the label is present.-/
+  and which should be excluded if the label is present.
+* The `exclusive` field, if `true`, makes the label applicable only when every modified file
+  lies in one of `dirs`.-/
 structure LabelData (label : Label) where
   /-- Array of paths which fall under this label. e.g. `"Physlib" / "Cosmology"`.
 
@@ -198,6 +206,9 @@ structure LabelData (label : Label) where
   alongside the label. For example, in Mathlib, any PR to `t-ring-theory` might modify files from `t-algebra`
   but should only get the former label -/
   dependencies : Array Label := #[]
+  /-- If `true`, the label is only applicable when every (non-excluded) modified file lies in
+  one of `dirs`. -/
+  exclusive : Bool := false
   deriving BEq, Hashable
 
 
@@ -232,6 +243,7 @@ def physlibLabelData: (l: Label) → LabelData l
   | .«t-resource-theory-qi» => {}
   | .«t-states-qi» => {}
   | .«CI» => { dirs := #["scripts"] }
+  | .«PhyslibAlpha» => { dirs := #["PhyslibAlpha", "PhyslibAlpha.lean"], exclusive := true }
 
 /-- Exceptions inside `Physlib/` which are not covered by any label.
 (For the First versions, no exceptions) -/
@@ -248,16 +260,18 @@ def _root_.System.FilePath.isPrefixOf (dir path : FilePath) : Bool :=
 
 /--
 Return all labels in `physlibLabels` which match
-at least one of the `files`.
+at least one of the `files`. A label with `exclusive := true` must instead match all of
+the `files`.
 * `files`: array of relative paths starting from the physlib root directory. -/
 def getMatchingLabels (files : Array FilePath) : Array Label :=
   let applicable := physlibLabels.filter fun label ↦
     -- first exclude all files the label excludes,
-    -- then see if any file remains included by the label
+    -- then see if any (or, for an exclusive label, every) remaining file is included by the label
     let data := physlibLabelData label
     let notExcludedFiles := files.filter fun file ↦
       data.exclusions.all (!·.isPrefixOf file)
-    data.dirs.any (fun dir ↦ notExcludedFiles.any (dir.isPrefixOf ·))
+    let isIncluded (file : FilePath) : Bool := data.dirs.any (·.isPrefixOf file)
+    notExcludedFiles.any isIncluded && (!data.exclusive || notExcludedFiles.all isIncluded)
   -- return sorted list of labels
   applicable |>.qsort (·.toString < ·.toString)
 
@@ -298,6 +312,16 @@ section Tests
 
 -- Test targeting a file instead of a directory
 #guard getMatchingLabels #["scripts" / "lint-style.py"] == #[.«CI»]
+
+-- Test the exclusive `PhyslibAlpha` label: applied only if every file is in `PhyslibAlpha/`
+-- or is `PhyslibAlpha.lean`
+#guard getMatchingLabels #["PhyslibAlpha" / "Relativity" / "Basic.lean"] == #[.«PhyslibAlpha»]
+#guard getMatchingLabels #["PhyslibAlpha" / "Relativity" / "Basic.lean", "PhyslibAlpha.lean"] ==
+  #[.«PhyslibAlpha»]
+#guard getMatchingLabels #["PhyslibAlpha.lean"] == #[.«PhyslibAlpha»]
+#guard getMatchingLabels #["PhyslibAlpha.lean", "Physlib" / "Cosmology" / "Basic.lean"] ==
+  #[.«t-cosmology»]
+#guard getMatchingLabels #["PhyslibAlpha.lean", "README.md"] == #[]
 
 /-- Testing function to ensure the labels defined in `physlibLabels` cover all
 subfolders of `Physlib/` and `QuantumInfo/`. -/
@@ -402,7 +426,9 @@ unsafe def main (args : List String): IO UInt32 := do
     cmd := "git",
     args := #["diff", "--name-only", "origin/master...HEAD"] }
   println s!"---\n{gitDiff}\n---"
-  let modifiedFiles : Array FilePath := (gitDiff.splitOn "\n").toArray.map (⟨·⟩)
+  -- drop the empty entry from the trailing newline, which would block exclusive labels
+  let modifiedFiles : Array FilePath :=
+    (gitDiff.splitOn "\n").toArray.filter (!·.isEmpty) |>.map (⟨·⟩)
 
   -- find labels covering the modified files
   let labels := dropDependentLabels <| getMatchingLabels modifiedFiles

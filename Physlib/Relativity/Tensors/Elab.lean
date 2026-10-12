@@ -683,7 +683,7 @@ variable {k : Type} [RCLike k] {C : Type} [DecidableEq C]  {G : Type} [Group G]
     {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
     {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Module.Basis (basisIdx c) k (V c)}
-    {S : TensorSpecies k C G V basisIdx rep b}
+    {S : TensorSpecies k C G V basisIdx rep b} [S.WithMetric]
     {c : Fin 2 → C} {t t' : S.Tensor c} (a : k) (g : G) (y : basisIdx (c 0))
     {c1 c2 c3 : C} {u : S.Tensor ![c1, c2]} {u' : S.Tensor ![c2, c1]}
     {w : S.Tensor ![c3]} {td : S.Tensor ![S.τ c1, S.τ c2]}

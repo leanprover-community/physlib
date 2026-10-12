@@ -1,0 +1,27 @@
+# Nested project for building the documentation of Physlib with doc-gen4, following
+# https://github.com/leanprover/doc-gen4#usage. It is kept separate from Physlib so that
+# doc-gen4 and its dependencies (some of which need a C compiler) are not dependencies of Physlib.
+#
+# From this directory, build the documentation with
+#   lake build Physlib:docs QuantumInfo:docs
+# The documentation is written to `docs/build/.lake/build/doc`.
+#
+# On a version bump, first update Physlib's dependencies at the repository root.
+# Update `rev` below to match Lean, then run from this directory:
+#   MATHLIB_NO_CACHE_ON_UPDATE=1 lake update doc-gen4 Physlib
+# Check that both lean-toolchain files agree and that this manifest's inherited
+# dependency revisions match Physlib's manifest.
+
+name = "docbuild"
+reservoir = false
+version = "0.1.0"
+packagesDir = "../../.lake/packages"
+
+[[require]]
+scope = "leanprover"
+name = "doc-gen4"
+rev = "v4.34.1"
+
+[[require]]
+name = "Physlib"
+path = "../../"

@@ -34,9 +34,13 @@ References:
 
 Requirements:
 
-  - description: "The key data structure `TensorSpecies` (a group, a type of index colors, a representation and a basis for each color, the dual-color involution `τ`, and the contraction, unit and metric data satisfying the coherence conditions) is defined."
+  - description: "The key data structure `TensorSpecies` (a group, a type of index colors, a representation and a basis for each color, the dual-color involution `τ`, and the contraction and unit data satisfying the coherence conditions) is defined."
     done: true
     location: "Physlib/Relativity/Tensors/TensorSpecies/Basic.lean (TensorSpecies, basisIdxCongr, τ_τ_apply, basis_congr, numIndices)"
+
+  - description: "The class `TensorSpecies.WithMetric` of tensor species carrying a metric, an invariant tensor for each color whose contraction against the metric of the dual color is the unit, is defined."
+    done: true
+    location: "Physlib/Relativity/Tensors/TensorSpecies/Basic.lean (TensorSpecies.WithMetric, TensorSpecies.metric, TensorSpecies.contr_metric)"
 
   - description: "The API contains the type `Tensor` of tensors with a given list of index colors, the type `Pure` of pure tensors, the type `ComponentIdx` of component labels, the passage between a tensor and its components, the component basis, and the identification of rank-zero tensors with the scalars."
     done: true

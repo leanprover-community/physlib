@@ -449,6 +449,12 @@ lemma toComplex_inv (Λ : LorentzGroup d) : (toComplex Λ)⁻¹ = toComplex Λ�
   rw [← toComplex.map_mul, mul_inv_cancel]
   simp
 
+/-- The entries of `toComplex Λ` are real. -/
+@[simp]
+lemma star_toComplex_apply (Λ : LorentzGroup d) (i j : Fin 1 ⊕ Fin d) :
+    star (toComplex Λ i j) = toComplex Λ i j := by
+  simp [toComplex]
+
 @[simp]
 lemma toComplex_mul_minkowskiMatrix_mul_transpose (Λ : LorentzGroup d) :
     toComplex Λ * minkowskiMatrix.map ofRealHom * (toComplex Λ)ᵀ =
