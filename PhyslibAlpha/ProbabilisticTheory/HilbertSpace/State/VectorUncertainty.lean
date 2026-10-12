@@ -150,7 +150,7 @@ lemma gram_mulVec_eq_zero_iff [Fintype ι] (v : ι → H) (c : ι → ℂ) :
 /-- **Equality in Robertson's relation for several observables.** In a vector state with
 `|det Ω| = det Σ ≠ 0`, the fluctuation vectors of the family satisfy linear relations
 `∑ j, c j • (a_j ψ - ⟨a_j⟩ ψ) = 0` forming a space of at least half the size of the family. -/
-theorem card_le_two_mul_finrank_ker_gram_fluctuation [Fintype ι] [DecidableEq ι] (h : ‖ψ‖ = 1)
+lemma card_le_two_mul_finrank_ker_gram_fluctuation [Fintype ι] [DecidableEq ι] (h : ‖ψ‖ = 1)
     (a : ι → Observable (H →L[ℂ] H)) (hΩ : (bracketMatrix (ofVec h) a).det ≠ 0)
     (heq : |(bracketMatrix (ofVec h) a).det| = (covarianceMatrix (ofVec h) a).det) :
     Fintype.card ι ≤
