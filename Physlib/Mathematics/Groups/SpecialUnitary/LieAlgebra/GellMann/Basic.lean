@@ -8,7 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Pow.Real
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
 public import Mathlib.RingTheory.TensorProduct.Free
-public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Adjoint
+public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Contractions
 /-!
 
 # The generalized Gell-Mann matrices

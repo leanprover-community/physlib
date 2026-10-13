@@ -143,11 +143,11 @@ public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
 public import Physlib.Mathematics.Groups.SO3.Basic
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Adjoint
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Basic
+public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Contractions
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.GellMann.Adjoint
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.GellMann.Basic
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.GellMann.SpecialCases
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.KillingForm
-public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Schur
 public import Physlib.Mathematics.InnerProductSpace.Adjoint
 public import Physlib.Mathematics.InnerProductSpace.Basic
 public import Physlib.Mathematics.InnerProductSpace.Calculus

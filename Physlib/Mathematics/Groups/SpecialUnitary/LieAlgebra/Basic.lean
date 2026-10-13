@@ -408,27 +408,20 @@ lemma submodule_eq_top_of_singleℂ_mem_of_diagDiffℂ_mem {n : ℕ}
     W = ⊤ := by
   refine Submodule.eq_top_iff'.2 fun A => ?_
   obtain hn | ⟨⟨i⟩⟩ := isEmpty_or_nonempty (Fin n)
-  · rw [show A = 0 from toMatrixℂ_injective (Subsingleton.elim _ _)]
-    exact W.zero_mem
-  -- `A` is an element with zero diagonal plus a combination of the elements `E_pp - E_ii`
+  · simp [show A = 0 from toMatrixℂ_injective (Subsingleton.elim _ _)]
   rw [← sub_add_cancel A (∑ p, toMatrixℂ A p p • diagDiffℂ p i)]
-  refine Submodule.add_mem _ ?_ (Submodule.sum_mem _ fun p _ =>
-    Submodule.smul_mem _ _ (hdiag p i))
-  set B := A - ∑ p, toMatrixℂ A p p • diagDiffℂ p i with hB
+  refine Submodule.add_mem _ ?_ (Submodule.sum_mem _ fun p _ => Submodule.smul_mem _ _ (hdiag p i))
+  set B := A - ∑ p, toMatrixℂ A p p • diagDiffℂ p i
   have hd (p : Fin n) : toMatrixℂ B p p = 0 := by
     have h0 : ∑ p, toMatrixℂ A p p = 0 := trace_toMatrixℂ A
-    simp [hB, diagDiffℂ, Matrix.sum_apply, single_apply, mul_sub, Finset.sum_sub_distrib, h0]
-  -- an element with zero diagonal is the sum of its off-diagonal entries
+    simp [B, diagDiffℂ, Matrix.sum_apply, single_apply, mul_sub, Finset.sum_sub_distrib, h0]
   have htr (p q : Fin n) : (single p q (toMatrixℂ B p q)).trace = 0 := by
-    rcases eq_or_ne p q with rfl | h
-    · simp [hd]
-    · simp [h]
+    obtain rfl | h := eq_or_ne p q <;> simp [*]
   rw [show B = ∑ p, ∑ q, ofTracelessℂ _ (htr p q) from
     toMatrixℂ_injective (by simp [← matrix_eq_sum_single])]
   refine Submodule.sum_mem _ fun p _ => Submodule.sum_mem _ fun q _ => ?_
   obtain rfl | h := eq_or_ne p q
-  · rw [show ofTracelessℂ _ (htr p p) = 0 from toMatrixℂ_injective (by simp [hd])]
-    exact W.zero_mem
+  · simp [show ofTracelessℂ _ (htr p p) = 0 from toMatrixℂ_injective (by simp [hd])]
   · rw [show ofTracelessℂ _ (htr p q) = toMatrixℂ B p q • singleℂ p q h from
       toMatrixℂ_injective (by simp [singleℂ])]
     exact Submodule.smul_mem _ _ (hoff p q h)
@@ -437,11 +430,10 @@ lemma submodule_eq_top_of_singleℂ_mem_of_diagDiffℂ_mem {n : ℕ}
   diagonal entries, span the complexification. -/
 lemma singleℂ_diagDiffℂ_span_eq_top {n : ℕ} :
     Submodule.span ℂ ({A : Complexification n | ∃ (p q : Fin n) (h : p ≠ q), A = singleℂ p q h} ∪
-      {A : Complexification n | ∃ p q : Fin n, A = diagDiffℂ p q}) = ⊤ := by
-  refine submodule_eq_top_of_singleℂ_mem_of_diagDiffℂ_mem
-    (fun p q h => Submodule.subset_span ?_) (fun p q => Submodule.subset_span ?_)
-  · exact Or.inl ⟨p, q, h, rfl⟩
-  · exact Or.inr ⟨p, q, rfl⟩
+      {A : Complexification n | ∃ p q : Fin n, A = diagDiffℂ p q}) = ⊤ :=
+  submodule_eq_top_of_singleℂ_mem_of_diagDiffℂ_mem
+    (fun p q h => Submodule.subset_span (Or.inl ⟨p, q, h, rfl⟩))
+    fun p q => Submodule.subset_span (Or.inr ⟨p, q, rfl⟩)
 
 /-!
 

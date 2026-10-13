@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Algebra.Lie.TraceForm
-public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Adjoint
+public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Contractions
 /-!
 
 # The Killing form of `su(n)`
