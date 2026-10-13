@@ -152,7 +152,6 @@ lemma finrank_eq_two : Module.finrank ℂ DualRightHandedWeyl = 2 := by
 
 -/
 
-
 /-- The vector space ℂ^2 carrying the representation of SL(2,C) given by
     M → (M⁻¹)^†.
     In index notation this corresponds to a Weyl fermion with index `ψ_{dot a}`. -/
@@ -210,72 +209,42 @@ lemma rep_apply_basis_repr (M : SL(2,ℂ)) (i j : Fin 2) :
 
 -/
 
-/-- The representation `rep` has no common eigenvector: a dual right-handed Weyl fermion which
-  is an eigenvector of `rep M` for every `M` in `SL(2, ℂ)` is zero. Equivalently, `rep` leaves
-  no line in `DualRightHandedWeyl` invariant. -/
+/-- The representation `rep` has no common eigenvector. -/
 lemma eq_zero_of_rep_eq_smul (ψ : DualRightHandedWeyl)
     (h : ∀ M : SL(2,ℂ), ∃ c : ℂ, rep M ψ = c • ψ) : ψ = 0 := by
-  -- the hypothesis, read off componentwise
-  have key : ∀ M : SL(2,ℂ), ∃ c : ℂ, ∀ i, ((M.1⁻¹).conjTranspose *ᵥ ψ.1) i = c * ψ.1 i := by
+  have h : ∀ M : SL(2,ℂ), ∃ c : ℂ, ∀ i, ((M.1⁻¹).conjTranspose *ᵥ ψ.1) i = c * ψ.1 i := by
     intro M
     obtain ⟨c, hc⟩ := h M
     rw [rep_apply] at hc
     exact ⟨c, fun i => congrFun (congrArg DualRightHandedWeyl.val hc) i⟩
-  -- the matrices `(M⁻¹)^†` through which the two elements `M` below act are the transvections
-  -- `!![1, 1; 0, 1]` and `!![1, 0; 1, 1]`, whose fixed lines are distinct
-  have e₁ : ((!![(1 : ℂ), 0; -1, 1])⁻¹).conjTranspose = !![1, 1; 0, 1] := by
-    ext i j
-    fin_cases i <;> fin_cases j <;>
-      simp [Matrix.inv_def, Matrix.det_fin_two_of, Matrix.adjugate_fin_two_of]
-  have e₂ : ((!![(1 : ℂ), -1; 0, 1])⁻¹).conjTranspose = !![1, 0; 1, 1] := by
-    ext i j
-    fin_cases i <;> fin_cases j <;>
-      simp [Matrix.inv_def, Matrix.det_fin_two_of, Matrix.adjugate_fin_two_of]
-  obtain ⟨c₁, hc₁⟩ := key ⟨!![1, 0; -1, 1], by simp [Matrix.det_fin_two_of]⟩
-  obtain ⟨c₂, hc₂⟩ := key ⟨!![1, -1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
+  obtain ⟨c₁, hc₁⟩ := h ⟨!![1, 0; -1, 1], by simp [Matrix.det_fin_two_of]⟩
+  obtain ⟨c₂, hc₂⟩ := h ⟨!![1, -1; 0, 1], by simp [Matrix.det_fin_two_of]⟩
   have h₁₀ := hc₁ 0
   have h₁₁ := hc₁ 1
   have h₂₁ := hc₂ 1
-  simp only [e₁] at h₁₀ h₁₁
-  simp only [e₂] at h₂₁
-  simp [Matrix.mulVec, Matrix.vecHead, Matrix.vecTail] at h₁₀ h₁₁ h₂₁
-  -- the first transvection scales `ψ` only if its second component vanishes
-  have hb : ψ.val 1 = 0 := by
-    rcases eq_or_ne c₁ 1 with rfl | hc
-    · linear_combination h₁₀
-    · exact (mul_eq_zero.1 (show ψ.val 1 * (1 - c₁) = 0 by
-        linear_combination h₁₁)).resolve_right (sub_ne_zero_of_ne (Ne.symm hc))
-  -- the second transvection then kills the first component as well
+  simp [Matrix.mulVec, Matrix.inv_def, Matrix.det_fin_two_of,
+    Matrix.adjugate_fin_two_of] at h₁₀ h₁₁ h₂₁
+  have hb : ψ.val 1 = 0 := sq_eq_zero_iff.1 (by linear_combination ψ.val 1 * h₁₀ - ψ.val 0 * h₁₁)
   have ha : ψ.val 0 = 0 := by linear_combination h₂₁ + (c₂ - 1) * hb
-  apply toFin2ℂEquiv.injective
-  rw [map_zero]
-  funext i
-  fin_cases i
-  · exact ha
-  · exact hb
+  refine toFin2ℂEquiv.injective (funext fun i => ?_)
+  fin_cases i <;> assumption
 
 /-- A submodule of `DualRightHandedWeyl` stable under `rep` is either `⊥` or everything. -/
 lemma eq_bot_or_eq_top_of_rep_mem (p : Submodule ℂ DualRightHandedWeyl)
     (h : ∀ (M : SL(2,ℂ)) (ψ : DualRightHandedWeyl), ψ ∈ p → rep M ψ ∈ p) :
     p = ⊥ ∨ p = ⊤ := by
-  rcases eq_or_ne p ⊥ with hp | hp
-  · exact Or.inl hp
-  refine Or.inr ?_
+  refine (eq_or_ne p ⊥).imp id fun hp => ?_
   obtain ⟨ψ, hψp, hψ⟩ := (Submodule.ne_bot_iff p).1 hp
   rcases eq_or_lt_of_le ((Submodule.span_singleton_le_iff_mem ψ p).2 hψp) with heq | hlt
-  · -- `p` is the line through `ψ`, so `ψ` is a common eigenvector of `rep`: contradiction
-    refine absurd (eq_zero_of_rep_eq_smul ψ fun M => ?_) hψ
-    obtain ⟨c, hc⟩ := Submodule.mem_span_singleton.1
-      (show rep M ψ ∈ ℂ ∙ ψ by rw [heq]; exact h M ψ hψp)
-    exact ⟨c, hc.symm⟩
-  · -- `p` strictly contains a line, so has rank two, so is everything
-    have h₁ := Submodule.finrank_lt_finrank_of_lt hlt
+  · exact absurd (eq_zero_of_rep_eq_smul ψ fun M =>
+      (Submodule.mem_span_singleton.1 (heq.symm ▸ h M ψ hψp)).imp fun c hc => hc.symm) hψ
+  · have h₁ := Submodule.finrank_lt_finrank_of_lt hlt
     rw [finrank_span_singleton hψ] at h₁
     have h₂ : Module.finrank ℂ p ≤ 2 := by simpa using Submodule.finrank_le p
     exact Submodule.eq_top_of_finrank_eq (by rw [finrank_eq_two]; omega)
 
 /-- The representation `rep` of `SL(2, ℂ)` is irreducible. -/
-instance : Representation.IsIrreducible rep where
+instance : rep.IsIrreducible where
   exists_pair_ne := ⟨⊥, ⊤, fun h => bot_ne_top (congrArg Subrepresentation.toSubmodule h)⟩
   eq_bot_or_eq_top p :=
     (eq_bot_or_eq_top_of_rep_mem p.toSubmodule
@@ -283,9 +252,7 @@ instance : Representation.IsIrreducible rep where
       (fun h => Subrepresentation.toSubmodule_injective h)
       fun h => Subrepresentation.toSubmodule_injective h
 
-/-- Schur's lemma for dual right-handed Weyl fermions: every endomorphism of
-  `DualRightHandedWeyl` commuting with the action of `SL(2, ℂ)` is a multiple of the
-  identity. -/
+/-- Schur's lemma for dual right-handed Weyl fermions. -/
 lemma end_eq_smul_id_of_commute_rep {T : Module.End ℂ DualRightHandedWeyl}
     (hT : ∀ M : SL(2,ℂ), T ∘ₗ rep M = rep M ∘ₗ T) : ∃ μ : ℂ, T = μ • LinearMap.id := by
   obtain ⟨μ, hμ⟩ :=
