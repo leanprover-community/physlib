@@ -199,7 +199,7 @@ lemma rayleighJeans_eq_meanEnergy (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
 
 /-- Planck's law lies strictly below the Rayleigh–Jeans law at every positive frequency and
 every positive temperature. -/
-theorem spectralRadiance_lt_rayleighJeans (B : BlackBody) (c : SpeedOfLight) {ν : ℝ}
+lemma spectralRadiance_lt_rayleighJeans (B : BlackBody) (c : SpeedOfLight) {ν : ℝ}
     (hν : 0 < ν) (hT : 0 < (B.T : ℝ)) :
     B.spectralRadiance c ν < B.rayleighJeans c ν := by
   rw [spectralRadiance_eq_meanEnergy B c hν hT, rayleighJeans_eq_meanEnergy B c ν hT]
