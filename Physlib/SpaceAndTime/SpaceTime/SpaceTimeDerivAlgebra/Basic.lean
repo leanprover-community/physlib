@@ -29,8 +29,8 @@ Throughout we use the notation of `SpaceTimeAlgebra`, whose elements we call ser
 multiset `s` of directions,
 
 - `x^s` is the monomial in which each `x^μ` occurs as often as `μ` occurs in `s`;
-- `∂^s f` is the iterated derivative of a series `f`, and `(∂^s f)(0)` is its value at the base
-  point;
+- `∂^s f` is the iterated derivative of a series `f`, and `(∂^s f)(x₀)` is its value at the base
+  point `x₀`;
 - `s!` is the product of the factorials of the multiplicities in `s`;
 - `∂^s` is the derivative symbol of `∂^s f`, written `∂^[s]` in Lean.
 
@@ -41,7 +41,7 @@ multiset `s` of directions,
 - `SpaceTimeDerivAlgebraℂ.basis_mul` : monomials multiply by adding multisets.
 - `SpaceTimeDerivAlgebraℂ.pairing` : applies a symbol to a series and evaluates at the base
   point.
-- `SpaceTimeDerivAlgebraℂ.pairing_basis` : `∂^s` pairs with `f` to the value `(∂^s f)(0)`.
+- `SpaceTimeDerivAlgebraℂ.pairing_basis` : `∂^s` pairs with `f` to the value `(∂^s f)(x₀)`.
 - `SpaceTimeDerivAlgebraℂ.pairing_injective` : the pairing separates derivative symbols.
 - `SpaceTimeDerivAlgebraℂ.pairing_mul_basis_singleton` : multiplying by `∂_μ` differentiates the
   series.
@@ -54,6 +54,7 @@ multiset `s` of directions,
   - B.1. Pairing with monomials
   - B.2. Injectivity of the pairing
   - B.3. Multiplication by a derivative symbol
+  - B.4. Pairing with a product
 
 ## iv. References
 
@@ -131,7 +132,7 @@ lemma basis_mul (s t : Multiset (Fin 1 ⊕ Fin 3)) :
 
 ## B. Pairing symbols with series
 
-The monomial `∂^s` pairs with a series `f` to `(∂^s f)(0)`, and the pairing extends linearly in
+The monomial `∂^s` pairs with a series `f` to `(∂^s f)(x₀)`, and the pairing extends linearly in
 the symbol (in commutative algebra this is the apolarity pairing, with power series in place of
 polynomials). On the Taylor series of a field it gives `(∂^s φ)(x₀)`, by
 `constantCoeff_iteratedPDeriv_taylorSeries`.
@@ -147,19 +148,19 @@ noncomputable def pairing : SpaceTimeDerivAlgebraℂ →ₗ[ℂ] SpaceTimeAlgebr
 
 ### B.1. Pairing with monomials
 
-Since `(∂^s f)(0)` is `s!` times the coefficient of `x^s` in `f` (`constantCoeff_iteratedPDeriv`),
+Since `(∂^s f)(x₀)` is `s!` times the coefficient of `x^s` in `f` (`constantCoeff_iteratedPDeriv`),
 the symbol `∂_μ²` paired with the series `(x^μ)²` gives `2`, while the coefficient of `(x^μ)²` is
 `1`.
 
 -/
 
-/-- The monomial `∂^s` pairs with `f` to the base-point value `(∂^s f)(0)`. -/
+/-- The monomial `∂^s` pairs with `f` to the base-point value `(∂^s f)(x₀)`. -/
 lemma pairing_basis (s : Multiset (Fin 1 ⊕ Fin 3)) (f : SpaceTimeAlgebra) :
     pairing ∂^[s] f = constantCoeff (iteratedPDeriv s f) := by
   rw [pairing, Module.Basis.constr_basis]
   rfl
 
-/-- The unit symbol pairs with `f` to its base-point value `f(0)`. -/
+/-- The unit symbol pairs with `f` to its base-point value `f(x₀)`. -/
 lemma pairing_one (f : SpaceTimeAlgebra) : pairing 1 f = constantCoeff f := by
   rw [← basis_zero, pairing_basis, iteratedPDeriv_zero]
 
@@ -218,5 +219,22 @@ lemma pairing_mul_basis_singleton (p : SpaceTimeDerivAlgebraℂ) (μ : Fin 1 ⊕
       LinearMap.flip_apply, basis_mul, pairing_basis, pairing_basis, add_comm,
       Multiset.singleton_add, iteratedPDeriv_cons]
   exact LinearMap.congr_fun h p
+
+/-!
+
+### B.4. Pairing with a product
+
+Pairing `∂^s` with a product `χ f` gives `(∂^s (χ f))(x₀)`, which the Leibniz rule
+`constantCoeff_iteratedPDeriv_mul` expands as a sum of terms `(∂^t₁ χ)(x₀) (∂^t₂ f)(x₀)` with
+`t₁ + t₂ = s`.
+
+-/
+
+/-- Pairing `∂^s` with a product `χ f` expands by the Leibniz rule. -/
+lemma pairing_basis_mul (s : Multiset (Fin 1 ⊕ Fin 3)) (χ f : SpaceTimeAlgebra) :
+    pairing ∂^[s] (χ * f) =
+      (s.antidiagonal.map fun t =>
+        constantCoeff (iteratedPDeriv t.1 χ) * pairing ∂^[t.2] f).sum := by
+  simp only [pairing_basis, constantCoeff_iteratedPDeriv_mul]
 
 end SpaceTimeDerivAlgebraℂ

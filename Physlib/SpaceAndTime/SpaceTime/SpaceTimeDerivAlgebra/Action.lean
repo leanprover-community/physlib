@@ -14,12 +14,12 @@ The action of formal power series in spacetime coordinates on polynomials in der
 
 ## i. Overview
 
-Multiplying a field `φ` by a spacetime-dependent function `χ`, as in a local gauge
-transformation, changes its derivatives by the product rule. At a point `x₀`,
+Multiplying a field component `φ` by a spacetime-dependent function `χ`, such as a matrix element
+of a local gauge transformation, changes its derivatives by the product rule. At a point `x₀`,
 `∂_μ (χ φ)(x₀) = χ(x₀) ∂_μ φ(x₀) + (∂_μ χ)(x₀) φ(x₀)`, so a first derivative of `χ φ` is a
 combination of derivatives of `φ`, and the same holds for any derivative symbol `P`. The symbol
-`seriesAction χ P` records this combination, applying `P` after multiplying by `χ`. We define it
-on monomials by the product rule, and the action respects sums and products of series, so
+`seriesAction χ P` records this combination, applying `P` after multiplying by `χ`. We define the
+action on monomials by the product rule, and it respects sums and products of series, so
 `seriesAction` is a ring homomorphism from the spacetime algebra to the linear endomorphisms of
 the derivative algebra.
 
@@ -61,10 +61,9 @@ open MvPowerSeries SpaceTimeAlgebra
 
 ### A.1. The action on monomials
 
-The action of `χ` on a monomial `∂^s` comes from the Leibniz rule
-`constantCoeff_iteratedPDeriv_mul`, which expands `(∂^s (χ f))(x₀)` as a sum of terms
-`(∂^t₁ χ)(x₀) (∂^t₂ f)(x₀)` with `t₁ + t₂ = s`. Replacing each `(∂^t₂ f)(x₀)` by the symbol
-`∂^t₂` gives a finite sum, so the image is again a derivative symbol.
+The action of `χ` on a monomial `∂^s` comes from the Leibniz rule for the pairing,
+`pairing_basis_mul`, by replacing each `(∂^t₂ f)(x₀)` in the expansion of `(∂^s (χ f))(x₀)` by the
+symbol `∂^t₂`. The result is a finite sum, so the image is again a derivative symbol.
 
 -/
 
@@ -74,10 +73,7 @@ private lemma pairing_constr_leibniz (χ : SpaceTimeAlgebra) (p : SpaceTimeDeriv
       constantCoeff (iteratedPDeriv t.1 χ) • ∂^[t.2]).sum) p) f = pairing p (χ * f) := by
   show (pairing.flip f ∘ₗ _) p = pairing.flip (χ * f) p
   refine LinearMap.congr_fun (basis.ext fun s => ?_) p
-  simp only [LinearMap.comp_apply, Module.Basis.constr_basis, map_multiset_sum,
-    Multiset.map_map, LinearMap.flip_apply, pairing_basis, constantCoeff_iteratedPDeriv_mul]
-  refine congrArg Multiset.sum (Multiset.map_congr rfl fun t _ => ?_)
-  simp only [Function.comp_apply, map_smul, LinearMap.flip_apply, pairing_basis, smul_eq_mul]
+  simp [pairing_basis_mul, map_multiset_sum, Multiset.map_map, Function.comp_def]
 
 /-- The action of series on derivative symbols, defined on monomials by the product rule. -/
 noncomputable def seriesAction : SpaceTimeAlgebra →+* Module.End ℂ SpaceTimeDerivAlgebraℂ where
@@ -100,9 +96,9 @@ lemma seriesAction_basis (χ : SpaceTimeAlgebra) (s : Multiset (Fin 1 ⊕ Fin 3)
 
 ### A.2. Multiplication before differentiation
 
-Pairing a symbol with a series applies it at `x₀`, so the action of `χ` is described by
-`pairing (seriesAction χ P) f = pairing P (χ * f)`. In particular the constant series `C c` acts
-as multiplication by `c`.
+Pairing a symbol with a series applies it and takes the value at `x₀`, so
+`pairing (seriesAction χ P) f = pairing P (χ * f)` says that `seriesAction χ P` applies `P` after
+multiplying by `χ`. In particular the constant series `C c` acts as multiplication by `c`.
 
 -/
 
@@ -124,8 +120,8 @@ lemma seriesAction_C (c : ℂ) : seriesAction (C c) = c • LinearMap.id :=
 
 ### B.1. The unit and first-order symbols
 
-A series acts on the unit symbol by `χ(x₀)`, and sends `∂_μ` to `χ(x₀) ∂_μ + (∂_μ χ)(x₀)`, which
-is the product rule at the base point.
+A series `χ` acts on the unit symbol by `χ(x₀)`, and sends `∂_μ` to `χ(x₀) ∂_μ + (∂_μ χ)(x₀)`,
+which is the product rule at the base point.
 
 -/
 
@@ -153,8 +149,7 @@ multiplication by `∂_μ`.
 
 -/
 
-/-- Multiplying by `∂_μ` before the action of `χ` equals the action of `χ` followed by
-  multiplication by `∂_μ`, plus the action of `pderiv μ χ`. -/
+/-- The action commutes with multiplication by `∂_μ` up to the action of `pderiv μ χ`. -/
 lemma seriesAction_mul_basis_singleton (χ : SpaceTimeAlgebra) (p : SpaceTimeDerivAlgebraℂ)
     (μ : Fin 1 ⊕ Fin 3) :
     seriesAction χ (p * ∂[μ]) = seriesAction χ p * ∂[μ] + seriesAction (pderiv μ χ) p :=
