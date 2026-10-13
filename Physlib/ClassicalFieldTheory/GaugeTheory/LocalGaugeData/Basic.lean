@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Tooby-Smith
+Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
@@ -40,37 +40,39 @@ locate a jet around the base point:
   Lie algebra;
 * the formal spacetime derivatives `deriv μ` on `𝔤J`, commuting, satisfying the Leibniz
   rule for the bracket, and killing constants;
-* multiplication by the coordinates `coord μ`, vanishing at the base point and central for
-  the bracket, with `∂_μ (x_ν a) = x_ν ∂_μ a + δ_{μν} a`; these are used for the Euler
-  identity and the radial Maurer–Cartan component, and hence for `Free`;
+* multiplication by the coordinates `mulCoord μ`, vanishing at the base point and central for
+  the bracket, with `∂_μ (x_ν a) = x_ν ∂_μ a + δ_{μν} a`; these give the Euler identity
+  `evalLie_iteratedDeriv_mulCoord`;
 * the adjoint action of `GJ` on `𝔤J`, by Lie algebra automorphisms, evaluating at the base
   point to the adjoint action of `G₀` on `𝔤`;
 * the Maurer–Cartan form `maurerCartan U μ = i (∂_μ U) U⁻¹`, with its cocycle law, its
-  flatness equation `maurerCartan_structure` and the Leibniz rule `deriv_adjoint` for the
+  flatness equation `maurerCartan_structure` and the Leibniz rule `deriv_adjointJ` for the
   adjoint action.
 
 ## ii. Key results
 
 - `LocalGaugeData` : the structure.
-- `LocalGaugeData.maurerCartan_one`, `LocalGaugeData.maurerCartan_inv` : the values of the
-  Maurer–Cartan form on the identity and on inverses, from the cocycle law.
-- `LocalGaugeData.maurerCartan_eq_of_deriv_adjoint` : the Maurer–Cartan form is determined
-  by the Leibniz rule `deriv_adjoint` up to the centre of `𝔤J`, and so is genuine data
-  only because that centre can be nonzero.
+- `LocalGaugeData.adjoint_bracket` : the adjoint action of `G₀` on `𝔤` is by Lie algebra
+  automorphisms, from the jet-level law applied to constants.
 - `LocalGaugeData.iteratedDeriv` : the iterated derivative `∂_s` on `𝔤J` along a multiset
   of directions, with `iteratedDeriv_cons`, `iteratedDeriv_add` and the iterated Leibniz
   rule `iteratedDeriv_bracket`.
-- `LocalGaugeData.evalLie_iteratedDeriv_coord` : the Euler identity for the coordinates.
-- `LocalGaugeData.Faithful` : the jets are determined by their base-point Taylor data.
-- `LocalGaugeData.Hom` : a morphism of local gauge data.
+- `LocalGaugeData.evalLie_iteratedDeriv_mulCoord` : the Euler identity for the coordinates.
+- `LocalGaugeData.Hom` : a morphism of local gauge data, with `Hom.id` and `Hom.comp`.
 
 ## iii. Table of contents
 
 - A. The structure
-- B. First consequences of the laws
-- C. The iterated derivative
-- D. Faithful packages
-- E. Morphisms
+- B. Simple derived properties
+- C. The iterated derivative on the jet Lie algebra
+  - C.1. Commutativity of derivatives
+  - C.2. Definition of the iterated derivative
+  - C.3. Properties of the iterated derivative
+- D. Morphisms
+  - D.1. The adjoint action
+  - D.2. Relation to iterated derivatives
+  - D.3. Identity morphisms
+  - D.4. Composition of morphisms
 
 ## iv. References
 
@@ -87,11 +89,7 @@ locate a jet around the base point:
 /-- Local gauge data. A gauge group `G₀` with Lie algebra `𝔤`, its group of jets `GJ` with
   Lie algebra of jets `𝔤J`, evaluation at the base point, formal derivatives, the adjoint
   action and the Maurer–Cartan form, subject to the identities used by the transformation
-  laws of gauge and matter fields.
-
-  This is data attached to the four carriers, not a property of them, and it is passed
-  explicitly: the generic theory takes `jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J` as an argument rather
-  than searching for it. -/
+  laws of gauge and matter fields. -/
 structure LocalGaugeData (G₀ : Type) [Group G₀] (𝔤 : Type) [LieRing 𝔤] [LieAlgebra ℝ 𝔤]
     (GJ : Type) [Group GJ] (𝔤J : Type) [LieRing 𝔤J] [LieAlgebra ℝ 𝔤J] where
   /-- Evaluation of a gauge jet at the base point. -/
@@ -102,8 +100,7 @@ structure LocalGaugeData (G₀ : Type) [Group G₀] (𝔤 : Type) [LieRing 𝔤]
   /-- Evaluation of a Lie algebra jet at the base point. -/
   evalLie : 𝔤J →ₗ⁅ℝ⁆ 𝔤
   /-- A constant Lie algebra element as a jet. -/
-  ofConstantLie : 𝔤 →ₗ[ℝ] 𝔤J
-  ofConstantLie_lie : ∀ a b, ofConstantLie ⁅a, b⁆ = ⁅ofConstantLie a, ofConstantLie b⁆
+  ofConstantLie : 𝔤 →ₗ⁅ℝ⁆ 𝔤J
   evalLie_ofConstantLie : ∀ a, evalLie (ofConstantLie a) = a
   /-- The formal derivative in the direction `μ`. -/
   deriv : (Fin 1 ⊕ Fin 3) → 𝔤J →ₗ[ℝ] 𝔤J
@@ -112,21 +109,21 @@ structure LocalGaugeData (G₀ : Type) [Group G₀] (𝔤 : Type) [LieRing 𝔤]
     deriv μ ⁅x, y⁆ = ⁅deriv μ x, y⁆ + ⁅x, deriv μ y⁆
   deriv_ofConstantLie : ∀ (μ : Fin 1 ⊕ Fin 3) (a : 𝔤), deriv μ (ofConstantLie a) = 0
   /-- Multiplication of a jet by the spacetime coordinate `x_μ`. -/
-  coord : (Fin 1 ⊕ Fin 3) → 𝔤J →ₗ[ℝ] 𝔤J
+  mulCoord : (Fin 1 ⊕ Fin 3) → 𝔤J →ₗ[ℝ] 𝔤J
   /-- The Leibniz rule for a coordinate: `∂_μ (x_ν a) = x_ν ∂_μ a + δ_{μν} a`. -/
-  deriv_coord : ∀ (μ ν : Fin 1 ⊕ Fin 3) (a : 𝔤J),
-    deriv μ (coord ν a) = coord ν (deriv μ a) + if μ = ν then a else 0
-  /-- A coordinate vanishes at the base point. -/
-  evalLie_coord : ∀ (μ : Fin 1 ⊕ Fin 3) (a : 𝔤J), evalLie (coord μ a) = 0
-  /-- The coordinates are central for the bracket. -/
-  coord_lie : ∀ (μ : Fin 1 ⊕ Fin 3) (a b : 𝔤J), ⁅coord μ a, b⁆ = coord μ ⁅a, b⁆
+  deriv_mulCoord : ∀ (μ ν : Fin 1 ⊕ Fin 3) (a : 𝔤J),
+    deriv μ (mulCoord ν a) = mulCoord ν (deriv μ a) + if μ = ν then a else 0
+  /-- A multiple of a coordinate vanishes at the base point. -/
+  evalLie_mulCoord : ∀ (μ : Fin 1 ⊕ Fin 3) (a : 𝔤J), evalLie (mulCoord μ a) = 0
+  /-- Multiplication by a coordinate commutes with the bracket. -/
+  mulCoord_bracket : ∀ (μ : Fin 1 ⊕ Fin 3) (a b : 𝔤J), ⁅mulCoord μ a, b⁆ = mulCoord μ ⁅a, b⁆
   /-- The adjoint action of the jet group on the jet Lie algebra. -/
-  adjoint : Representation ℝ GJ 𝔤J
-  adjoint_lie : ∀ (U : GJ) (x y : 𝔤J), adjoint U ⁅x, y⁆ = ⁅adjoint U x, adjoint U y⁆
+  adjointJ : Representation ℝ GJ 𝔤J
+  adjointJ_bracket : ∀ (U : GJ) (x y : 𝔤J), adjointJ U ⁅x, y⁆ = ⁅adjointJ U x, adjointJ U y⁆
   /-- The adjoint representation of the value group on its Lie algebra. -/
-  adjointValue : Representation ℝ G₀ 𝔤
+  adjoint : Representation ℝ G₀ 𝔤
   /-- At the base point the adjoint action of a jet is the adjoint action of its value. -/
-  evalLie_adjoint : ∀ (U : GJ) (x : 𝔤J), evalLie (adjoint U x) = adjointValue (eval U) (evalLie x)
+  evalLie_adjointJ : ∀ (U : GJ) (x : 𝔤J), evalLie (adjointJ U x) = adjoint (eval U) (evalLie x)
   /-- The Maurer–Cartan form `i (∂_μ U) U⁻¹` of a gauge jet. -/
   maurerCartan : GJ → (Fin 1 ⊕ Fin 3) → 𝔤J
   /-- A constant gauge transformation has vanishing Maurer–Cartan form: it has no
@@ -134,14 +131,14 @@ structure LocalGaugeData (G₀ : Type) [Group G₀] (𝔤 : Type) [LieRing 𝔤]
   maurerCartan_ofConstant : ∀ (g : G₀) (μ : Fin 1 ⊕ Fin 3), maurerCartan (ofConstant g) μ = 0
   /-- The Maurer–Cartan form is a cocycle for the adjoint action. -/
   maurerCartan_cocycle : ∀ (U V : GJ) (μ : Fin 1 ⊕ Fin 3),
-    maurerCartan (U * V) μ = maurerCartan U μ + adjoint U (maurerCartan V μ)
+    maurerCartan (U * V) μ = maurerCartan U μ + adjointJ U (maurerCartan V μ)
   /-- The Maurer–Cartan form is flat. -/
   maurerCartan_structure : ∀ (U : GJ) (μ ν : Fin 1 ⊕ Fin 3),
     deriv μ (maurerCartan U ν) - deriv ν (maurerCartan U μ)
       + ⁅maurerCartan U μ, maurerCartan U ν⁆ = 0
   /-- The Leibniz rule for the adjoint action. -/
-  deriv_adjoint : ∀ (U : GJ) (μ : Fin 1 ⊕ Fin 3) (x : 𝔤J),
-    deriv μ (adjoint U x) = adjoint U (deriv μ x) - ⁅maurerCartan U μ, adjoint U x⁆
+  deriv_adjointJ : ∀ (U : GJ) (μ : Fin 1 ⊕ Fin 3) (x : 𝔤J),
+    deriv μ (adjointJ U x) = adjointJ U (deriv μ x) - ⁅maurerCartan U μ, adjointJ U x⁆
 
 namespace LocalGaugeData
 
@@ -151,58 +148,45 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 
 /-!
 
-## B. First consequences of the laws
+## B. Simple derived properties
 
 -/
 
-/-- The Maurer–Cartan form of the identity vanishes: the cocycle law at `1 * 1 = 1`. -/
-@[simp]
-lemma maurerCartan_one (μ : Fin 1 ⊕ Fin 3) : jets.maurerCartan 1 μ = 0 := by
-  have h := jets.maurerCartan_cocycle 1 1 μ
-  rw [one_mul, map_one, Module.End.one_apply] at h
-  exact add_left_cancel (h.symm.trans (add_zero _).symm)
+/-- Every global gauge transformation is the value of a jet, namely its constant jet. -/
+lemma eval_surjective : Function.Surjective jets.eval :=
+  Function.LeftInverse.surjective jets.eval_ofConstant
 
-/-- The Maurer–Cartan form of an inverse: `ω_μ(U⁻¹) = − Ad_{U⁻¹} ω_μ(U)`, the cocycle
-  law applied to `U⁻¹ U = 1`. -/
-lemma maurerCartan_inv (U : GJ) (μ : Fin 1 ⊕ Fin 3) :
-    jets.maurerCartan U⁻¹ μ = - jets.adjoint U⁻¹ (jets.maurerCartan U μ) := by
-  have h := jets.maurerCartan_cocycle U⁻¹ U μ
-  rw [inv_mul_cancel, jets.maurerCartan_one] at h
-  exact eq_neg_of_add_eq_zero_left h.symm
+lemma ofConstant_injective : Function.Injective jets.ofConstant :=
+  Function.LeftInverse.injective jets.eval_ofConstant
 
-/-- At the base point, the adjoint action of a jet on a constant is the adjoint action of
-  its value. -/
-lemma evalLie_adjoint_ofConstantLie (U : GJ) (a : 𝔤) :
-    jets.evalLie (jets.adjoint U (jets.ofConstantLie a)) = jets.adjointValue (jets.eval U) a := by
-  rw [jets.evalLie_adjoint, jets.evalLie_ofConstantLie]
+lemma evalLie_surjective : Function.Surjective jets.evalLie :=
+  Function.LeftInverse.surjective jets.evalLie_ofConstantLie
 
-/-- The Maurer–Cartan form is determined by the Leibniz rule, up to the centre. Since
-  `adjoint U` is invertible, `deriv_adjoint` says exactly that the inner derivation
-  `⁅maurerCartan U μ, ·⁆` is `adjoint U ∘ deriv μ ∘ adjoint U⁻¹ − deriv μ`; so any other
-  form obeying the same rule differs from it by something acting trivially in the adjoint
-  representation of `𝔤J`. It follows that the Maurer–Cartan form is redundant data exactly
-  when that representation is faithful — which it is not for the Standard Model, whose jet
-  gauge algebra has a central `u(1)` factor. That is why `maurerCartan` is a field of the
-  structure rather than a construction from the rest of it. -/
-lemma maurerCartan_eq_of_deriv_adjoint
-    (hfaithful : ∀ x y : 𝔤J, (∀ z : 𝔤J, ⁅x, z⁆ = ⁅y, z⁆) → x = y)
-    (ω : GJ → (Fin 1 ⊕ Fin 3) → 𝔤J)
-    (hω : ∀ (U : GJ) (μ : Fin 1 ⊕ Fin 3) (x : 𝔤J),
-      jets.deriv μ (jets.adjoint U x)
-        = jets.adjoint U (jets.deriv μ x) - ⁅ω U μ, jets.adjoint U x⁆) :
-    ω = jets.maurerCartan := by
-  funext U μ
-  refine hfaithful _ _ fun z => ?_
-  have hz : jets.adjoint U (jets.adjoint U⁻¹ z) = z := by
-    rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
-  have h1 := hω U μ (jets.adjoint U⁻¹ z)
-  have h2 := jets.deriv_adjoint U μ (jets.adjoint U⁻¹ z)
-  rw [hz] at h1 h2
-  exact sub_right_injective (h1.symm.trans h2)
+lemma ofConstantLie_injective : Function.Injective jets.ofConstantLie :=
+  Function.LeftInverse.injective jets.evalLie_ofConstantLie
+
+lemma adjoint_bracket (g : G₀) (a b : 𝔤) :
+    jets.adjoint g ⁅a, b⁆ = ⁅jets.adjoint g a, jets.adjoint g b⁆ := by
+  have h := jets.evalLie_adjointJ (jets.ofConstant g)
+  rw [jets.eval_ofConstant] at h
+  rw [← jets.evalLie_ofConstantLie ⁅a, b⁆, ← h, LieHom.map_lie jets.ofConstantLie,
+    jets.adjointJ_bracket, LieHom.map_lie, h, h, jets.evalLie_ofConstantLie,
+    jets.evalLie_ofConstantLie]
+
+lemma deriv_adjointJ_ofConstant (g : G₀) (μ : Fin 1 ⊕ Fin 3) (x : 𝔤J) :
+    jets.deriv μ (jets.adjointJ (jets.ofConstant g) x) =
+      jets.adjointJ (jets.ofConstant g) (jets.deriv μ x) := by
+  rw [jets.deriv_adjointJ, jets.maurerCartan_ofConstant, zero_lie, sub_zero]
 
 /-!
 
-## C. The iterated derivative
+## C. The iterated derivative on the jet Lie algebra
+
+-/
+
+/-!
+
+### C.1. Commutativity of derivatives
 
 -/
 
@@ -215,10 +199,22 @@ instance instRightCommutativeCompDeriv : RightCommutative
     refine LinearMap.ext fun a => ?_
     exact congrArg D (jets.deriv_comm μ ν a)
 
+/-!
+
+### C.2. Definition of the iterated derivative
+
+-/
+
 /-- The iterated formal derivative on the jet Lie algebra, in the (unordered, since
   derivatives commute) directions given by the multiset `μs`. -/
 noncomputable def iteratedDeriv (μs : Multiset (Fin 1 ⊕ Fin 3)) : 𝔤J →ₗ[ℝ] 𝔤J :=
   μs.foldl (fun D μ => D.comp (jets.deriv μ)) LinearMap.id
+
+/-!
+
+### C.3. Properties of the iterated derivative
+
+-/
 
 @[simp]
 lemma iteratedDeriv_zero : jets.iteratedDeriv (0 : Multiset (Fin 1 ⊕ Fin 3)) = LinearMap.id := by
@@ -286,28 +282,6 @@ lemma iteratedDeriv_bracket (s : Multiset (Fin 1 ⊕ Fin 3)) (a b : 𝔤J) :
         Multiset.map_map, Function.comp_apply, Prod.map_fst, Prod.map_snd, id_eq]
       abel
 
-/-- The base-point Taylor data of a bracket is determined by that of its arguments.
-  If the base-point values of the iterated derivatives of `a` and `b` along sub-multisets
-  of `w` agree with those of `a'` and `b'`, then so do those of the brackets: the iterated
-  Leibniz rule expands the bracket over the antidiagonal of `w`, whose parts are all
-  sub-multisets of `w`. -/
-lemma evalLie_iteratedDeriv_bracket_congr (w : Multiset (Fin 1 ⊕ Fin 3)) (a b a' b' : 𝔤J)
-    (ha : ∀ p ≤ w, jets.evalLie (jets.iteratedDeriv p a)
-      = jets.evalLie (jets.iteratedDeriv p a'))
-    (hb : ∀ p ≤ w, jets.evalLie (jets.iteratedDeriv p b)
-      = jets.evalLie (jets.iteratedDeriv p b')) :
-    jets.evalLie (jets.iteratedDeriv w ⁅a, b⁆)
-      = jets.evalLie (jets.iteratedDeriv w ⁅a', b'⁆) := by
-  rw [iteratedDeriv_bracket, iteratedDeriv_bracket, map_multiset_sum, map_multiset_sum,
-    Multiset.map_map, Multiset.map_map]
-  refine congrArg Multiset.sum (Multiset.map_congr rfl fun p hp => ?_)
-  simp only [Function.comp_apply]
-  have hp' := Multiset.mem_antidiagonal.mp hp
-  rw [LieHom.map_lie, LieHom.map_lie, ha p.1 (hp' ▸ Multiset.le_add_right _ _),
-    hb p.2 (hp' ▸ Multiset.le_add_left _ _)]
-
-/-- The iterated derivative of a constant jet vanishes for a nonempty multiset of
-  directions. -/
 lemma iteratedDeriv_ofConstantLie_of_ne_zero {p : Multiset (Fin 1 ⊕ Fin 3)} (hp : p ≠ 0)
     (a : 𝔤) : jets.iteratedDeriv p (jets.ofConstantLie a) = 0 := by
   induction p using Multiset.induction_on with
@@ -318,98 +292,131 @@ lemma iteratedDeriv_ofConstantLie_of_ne_zero {p : Multiset (Fin 1 ⊕ Fin 3)} (h
     · rw [iteratedDeriv_zero, LinearMap.id_apply, deriv_ofConstantLie]
     · rw [ih ht, map_zero]
 
-/-- The Euler identity: at the base point, `x_μ` acts on the `s`-th derivative by
-  removing one `μ` and counting how many there were. With `∂_s` the derivatives in `s`,
-  `(∂_s (x_μ a))|₀ = s(μ) · (∂_{s − μ} a)|₀`. -/
-lemma evalLie_iteratedDeriv_coord (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) (a : 𝔤J) :
-    jets.evalLie (jets.iteratedDeriv s (jets.coord μ a)) =
+lemma evalLie_iteratedDeriv_mulCoord (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) (a : 𝔤J) :
+    jets.evalLie (jets.iteratedDeriv s (jets.mulCoord μ a)) =
       s.count μ • jets.evalLie (jets.iteratedDeriv (s.erase μ) a) := by
   induction s using Multiset.induction_on generalizing a with
-  | empty => simp [jets.evalLie_coord]
+  | empty => simp [jets.evalLie_mulCoord]
   | cons ν s ih =>
-      rw [iteratedDeriv_cons_eq_comp_deriv, LinearMap.comp_apply, jets.deriv_coord, map_add,
-        map_add, ih]
-      by_cases hνμ : ν = μ
-      · subst hνμ
-        rw [ite_eq_left rfl, Multiset.count_cons_self, Multiset.erase_cons_head, add_smul, one_smul,
-          ← LinearMap.comp_apply (jets.iteratedDeriv (s.erase ν)),
-          ← iteratedDeriv_cons_eq_comp_deriv]
-        by_cases hμ : ν ∈ s
-        · rw [Multiset.cons_erase hμ]
-        · rw [Multiset.count_eq_zero.mpr hμ, zero_smul, zero_smul]
-      · rw [ite_eq_right hνμ, map_zero, map_zero, add_zero, Multiset.count_cons_of_ne (Ne.symm hνμ),
-          Multiset.erase_cons_tail s hνμ, ← LinearMap.comp_apply (jets.iteratedDeriv (s.erase μ)),
-          ← iteratedDeriv_cons_eq_comp_deriv]
+    rw [iteratedDeriv_cons_eq_comp_deriv, LinearMap.comp_apply, jets.deriv_mulCoord, map_add,
+      map_add, ih, ← LinearMap.comp_apply (jets.iteratedDeriv _),
+      ← iteratedDeriv_cons_eq_comp_deriv]
+    obtain rfl | hνμ := eq_or_ne ν μ
+    · by_cases hν : ν ∈ s <;> simp_all [Multiset.cons_erase, add_smul]
+    · simp [hνμ, Multiset.count_cons_of_ne hνμ.symm, Multiset.erase_cons_tail s hνμ]
 
 /-!
 
-## D. Faithful packages
-
-The transformation laws never ask that the jets be *honest* jets: nothing in the structure
-prevents `𝔤J` from carrying elements invisible to every base-point derivative. The two laws
-below say that it does not, and together they make a pure jet (`eval U = 1`) recoverable
-from its Maurer–Cartan form; see `LocalGaugeData.maurerCartan_injOn_truncationKer_zero`.
-They hold for the full jet group of any matrix group and for its truncations, but are
-recorded separately from the structure because the covariance theory does not need them.
-
--/
-
-/-- A package is faithful when an element of `𝔤J` is determined by the base-point values
-  of its iterated derivatives (Taylor determinacy) and a jet with vanishing Maurer–Cartan
-  form is the constant jet of its value. -/
-class Faithful (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J) : Prop where
-  ext_of_evalLie_iteratedDeriv : ∀ {x y : 𝔤J},
-    (∀ s : Multiset (Fin 1 ⊕ Fin 3),
-      jets.evalLie (jets.iteratedDeriv s x) = jets.evalLie (jets.iteratedDeriv s y)) → x = y
-  eq_ofConstant_of_maurerCartan_eq_zero : ∀ {U : GJ},
-    jets.maurerCartan U = 0 → U = jets.ofConstant (jets.eval U)
-
-/-- Taylor determinacy of a faithful package, in the form of an extensionality lemma. -/
-lemma ext_of_evalLie_iteratedDeriv [jets.Faithful] {x y : 𝔤J}
-    (h : ∀ s : Multiset (Fin 1 ⊕ Fin 3),
-      jets.evalLie (jets.iteratedDeriv s x) = jets.evalLie (jets.iteratedDeriv s y)) :
-    x = y :=
-  Faithful.ext_of_evalLie_iteratedDeriv h
-
-/-!
-
-## E. Morphisms
+## D. Morphisms
 
 -/
 
 variable {G₀' : Type} [Group G₀'] {𝔤' : Type} [LieRing 𝔤'] [LieAlgebra ℝ 𝔤']
   {GJ' : Type} [Group GJ'] {𝔤J' : Type} [LieRing 𝔤J'] [LieAlgebra ℝ 𝔤J']
 
-/-- A morphism of local gauge data, in the minimal form along which structure pulls
-  back: a group map of the jets and real-linear maps of the Lie algebras and their jets,
-  compatible with evaluation and constants of Lie algebra elements, the derivatives, the
-  adjoint action and the Maurer–Cartan form. -/
+/-- A morphism of local gauge data. This contains a group map of the gauge groups and of their jets,
+  and Lie algebra maps of the Lie algebras and of their jets, compatible with evaluation at the
+  base point, constants, the derivatives, multiplication by the coordinates, the adjoint
+  action of the jets and the Maurer–Cartan form. Compatibility with the adjoint action of
+  the gauge group follows, as `Hom.lie_adjoint`. -/
 structure Hom (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J) (jets' : LocalGaugeData G₀' 𝔤' GJ' 𝔤J') where
+  /-- The map of gauge groups. -/
+  group : G₀ →* G₀'
   /-- The map of jet groups. -/
-  grp : GJ →* GJ'
+  groupJ : GJ →* GJ'
+  eval_groupJ : ∀ U, jets'.eval (groupJ U) = group (jets.eval U)
+  groupJ_ofConstant : ∀ g, groupJ (jets.ofConstant g) = jets'.ofConstant (group g)
   /-- The map of Lie algebras. -/
-  lie : 𝔤 →ₗ[ℝ] 𝔤'
+  lie : 𝔤 →ₗ⁅ℝ⁆ 𝔤'
   /-- The map of Lie algebras of jets. -/
-  lieJ : 𝔤J →ₗ[ℝ] 𝔤J'
+  lieJ : 𝔤J →ₗ⁅ℝ⁆ 𝔤J'
   lieJ_ofConstantLie : ∀ c, lieJ (jets.ofConstantLie c) = jets'.ofConstantLie (lie c)
   evalLie_lieJ : ∀ a, jets'.evalLie (lieJ a) = lie (jets.evalLie a)
   lieJ_deriv : ∀ μ a, lieJ (jets.deriv μ a) = jets'.deriv μ (lieJ a)
-  lieJ_adjoint : ∀ U a, lieJ (jets.adjoint U a) = jets'.adjoint (grp U) (lieJ a)
-  lieJ_maurerCartan : ∀ U μ, lieJ (jets.maurerCartan U μ) = jets'.maurerCartan (grp U) μ
+  lieJ_mulCoord : ∀ μ a, lieJ (jets.mulCoord μ a) = jets'.mulCoord μ (lieJ a)
+  lieJ_adjointJ : ∀ U a, lieJ (jets.adjointJ U a) = jets'.adjointJ (groupJ U) (lieJ a)
+  lieJ_maurerCartan : ∀ U μ, lieJ (jets.maurerCartan U μ) = jets'.maurerCartan (groupJ U) μ
 
 namespace Hom
 
 variable {jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J} {jets' : LocalGaugeData G₀' 𝔤' GJ' 𝔤J'}
-  (h : Hom jets jets')
+  (f : Hom jets jets')
+
+/-!
+
+### D.1. The adjoint action
+
+-/
+
+/-- A morphism intertwines the adjoint actions of the gauge groups: the compatibility
+  `lieJ_adjointJ` applied to constant jets and evaluated at the base point. -/
+lemma lie_adjoint (g : G₀) (x : 𝔤) :
+    f.lie (jets.adjoint g x) = jets'.adjoint (f.group g) (f.lie x) := by
+  have h := jets.evalLie_adjointJ (jets.ofConstant g) (jets.ofConstantLie x)
+  rw [jets.eval_ofConstant, jets.evalLie_ofConstantLie] at h
+  rw [← h, ← f.evalLie_lieJ, f.lieJ_adjointJ, f.groupJ_ofConstant, f.lieJ_ofConstantLie,
+    jets'.evalLie_adjointJ, jets'.eval_ofConstant, jets'.evalLie_ofConstantLie]
+
+/-!
+
+### D.2. Relation to iterated derivatives
+
+-/
 
 /-- A morphism commutes with iterated derivatives. -/
 lemma lieJ_iteratedDeriv (s : Multiset (Fin 1 ⊕ Fin 3)) (a : 𝔤J) :
-    h.lieJ (jets.iteratedDeriv s a) = jets'.iteratedDeriv s (h.lieJ a) := by
+    f.lieJ (jets.iteratedDeriv s a) = jets'.iteratedDeriv s (f.lieJ a) := by
   induction s using Multiset.induction_on generalizing a with
   | empty => simp
   | cons μ t ih =>
     rw [iteratedDeriv_cons, iteratedDeriv_cons, LinearMap.comp_apply, LinearMap.comp_apply,
-      h.lieJ_deriv, ih]
+      f.lieJ_deriv, ih]
+
+/-!
+
+### D.3. Identity morphisms
+
+-/
+
+/-- The identity morphism of local gauge data. -/
+protected def id (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J) : Hom jets jets where
+  group := MonoidHom.id G₀
+  groupJ := MonoidHom.id GJ
+  eval_groupJ _ := rfl
+  groupJ_ofConstant _ := rfl
+  lie := LieHom.id
+  lieJ := LieHom.id
+  lieJ_ofConstantLie _ := rfl
+  evalLie_lieJ _ := rfl
+  lieJ_deriv _ _ := rfl
+  lieJ_mulCoord _ _ := rfl
+  lieJ_adjointJ _ _ := rfl
+  lieJ_maurerCartan _ _ := rfl
+
+/-!
+
+### D.4. Composition of morphisms
+
+-/
+
+variable {G₀'' : Type} [Group G₀''] {𝔤'' : Type} [LieRing 𝔤''] [LieAlgebra ℝ 𝔤'']
+  {GJ'' : Type} [Group GJ''] {𝔤J'' : Type} [LieRing 𝔤J''] [LieAlgebra ℝ 𝔤J'']
+  {jets'' : LocalGaugeData G₀'' 𝔤'' GJ'' 𝔤J''}
+
+/-- The composite `g ∘ f` of morphisms of local gauge data. -/
+def comp (g : Hom jets' jets'') : Hom jets jets'' where
+  group := g.group.comp f.group
+  groupJ := g.groupJ.comp f.groupJ
+  eval_groupJ U := by simp [g.eval_groupJ, f.eval_groupJ]
+  groupJ_ofConstant c := by simp [f.groupJ_ofConstant, g.groupJ_ofConstant]
+  lie := g.lie.comp f.lie
+  lieJ := g.lieJ.comp f.lieJ
+  lieJ_ofConstantLie c := by simp [f.lieJ_ofConstantLie, g.lieJ_ofConstantLie]
+  evalLie_lieJ a := by simp [f.evalLie_lieJ, g.evalLie_lieJ]
+  lieJ_deriv μ a := by simp [f.lieJ_deriv, g.lieJ_deriv]
+  lieJ_mulCoord μ a := by simp [f.lieJ_mulCoord, g.lieJ_mulCoord]
+  lieJ_adjointJ U a := by simp [f.lieJ_adjointJ, g.lieJ_adjointJ]
+  lieJ_maurerCartan U μ := by simp [f.lieJ_maurerCartan, g.lieJ_maurerCartan]
 
 end Hom
 
