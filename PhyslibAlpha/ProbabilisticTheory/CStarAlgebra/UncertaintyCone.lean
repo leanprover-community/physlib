@@ -153,7 +153,7 @@ lemma vectorCoeff_gramMatrix :
 
 /-- **Robertson–Schrödinger is the future cone.** The Gram four-vector of two fluctuations lies
 in the closed future cone: `0 ≤ v₀` and `|v⃗| ≤ v₀`. -/
-theorem pauliRadius_gramMatrix_le :
+lemma pauliRadius_gramMatrix_le :
     0 ≤ scalarCoeff (gramMatrix ω a b) ∧
       pauliRadius (gramMatrix ω a b) ≤ scalarCoeff (gramMatrix ω a b) := by
   have h0 : 0 ≤ scalarCoeff (gramMatrix ω a b) := by

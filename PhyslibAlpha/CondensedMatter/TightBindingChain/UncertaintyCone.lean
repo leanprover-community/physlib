@@ -127,7 +127,7 @@ lemma minkowski_axisVectorZ_eq_zero_iff (ht : Tz.t ≠ 0) (hN : 2 ≤ Tz.N) :
 /-- **The Minkowski metric of the cube.** From `4 × 4 × 4` on, the Lorentz vectors of the three
 axes of the maximal current state are timelike: each Minkowski square is the positive centered
 Gram defect of its axis. -/
-theorem minkowski_axisVector_cube_pos (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
+lemma minkowski_axisVector_cube_pos (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
     (hNx : 4 ≤ Tx.N) (hNy : 4 ≤ Ty.N) (hNz : 4 ≤ Tz.N) :
     0 < ⟪Tx.axisVectorX Ty Tz, Tx.axisVectorX Ty Tz⟫ₘ ∧
       0 < ⟪Tx.axisVectorY Ty Tz, Tx.axisVectorY Ty Tz⟫ₘ ∧
