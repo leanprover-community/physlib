@@ -230,7 +230,7 @@ lemma centeredGramDefect_alongZ_pos
 /-- **Nava–Robertson–Schrödinger on the cube, in the band.** Every state of the cube whose speeds
 along `x`, `y`, `z` lie in the bands of `Tx`, `Ty`, `Tz` carries a positive uncertainty defect on
 the three axes at once. -/
-theorem nava_robertson_schrodinger_cube_of_mem_velocityBand
+lemma nava_robertson_schrodinger_cube_of_mem_velocityBand
     (hx : |(ofVec hΨ)⟨Tx.alongX Ty Tz Tx.currentObservable⟩| ∈ Tx.velocityBand)
     (hy : |(ofVec hΨ)⟨Tx.alongY Ty Tz Ty.currentObservable⟩| ∈ Ty.velocityBand)
     (hz : |(ofVec hΨ)⟨Tx.alongZ Ty Tz Tz.currentObservable⟩| ∈ Tz.velocityBand) :
