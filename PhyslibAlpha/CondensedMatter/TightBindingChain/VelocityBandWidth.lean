@@ -258,7 +258,7 @@ lemma threshold_lt_maxCurrent (ht : T.t ≠ 0) (hN : 4 ≤ T.N) : T.threshold < 
     exact h0
 
 /-- From four sites on, the velocity band is not empty: it contains the speed limit. -/
-theorem maxCurrent_mem_velocityBand (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
+lemma maxCurrent_mem_velocityBand (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
     T.maxCurrent ∈ T.velocityBand :=
   ⟨T.threshold_lt_maxCurrent ht hN, le_rfl⟩
 
