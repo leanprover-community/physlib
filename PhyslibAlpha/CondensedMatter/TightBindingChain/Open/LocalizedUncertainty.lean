@@ -121,7 +121,7 @@ lemma inner_bracket_localizedState (n : Fin T.N) :
 /-- **Robertson–Schrödinger is empty in a localized electron.** In `|n⟩`, `Var X = 0` and the
 centered Gram defect is `0`: both sides of the relation vanish. The energy does not:
 `Var H > 0` as soon as the chain hops and has two sites. -/
-theorem robertson_schrodinger_localizedState (ht : T.t ≠ 0) (hN : 2 ≤ T.N) (n : Fin T.N) :
+lemma robertson_schrodinger_localizedState (ht : T.t ≠ 0) (hN : 2 ≤ T.N) (n : Fin T.N) :
     variance (ofVec (T.norm_localizedState n)) T.positionObservable = 0 ∧
       centeredGramDefect (ofVec (T.norm_localizedState n)) T.openHamiltonianObservable
         T.positionObservable = 0 ∧
