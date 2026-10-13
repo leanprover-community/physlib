@@ -211,7 +211,6 @@ lemma exists_toMatrixℂ_adjointℂ_eq_unitary {n : ℕ} (U : unitaryGroup (Fin 
       toMatrixℂ (adjointℂ g A) = U.1 * toMatrixℂ A * star U.1 := by
   rcases Nat.eq_zero_or_pos n with rfl | hn
   · exact ⟨1, fun A => Subsingleton.elim _ _⟩
-  -- a phase `c` with `c ^ n = (det U)⁻¹`, of modulus one as `det U` is
   have hd : Complex.normSq U.1.det = 1 := by
     exact_mod_cast Complex.normSq_eq_conj_mul_self.trans
       (Unitary.star_mul_self_of_mem (det_of_mem_unitary U.2))
@@ -252,30 +251,6 @@ lemma toMatrixℂ_adjointℂ_apply_of_diagonal {n} {g : specialUnitaryGroup (Fin
   rw [toMatrixℂ_adjointℂ, hg, star_eq_conjTranspose, diagonal_conjTranspose, mul_diagonal,
     diagonal_mul, Pi.star_apply]
   ring
-
-/-- An eigenvector of the adjoint action of a diagonal element of `SU(n)`, with eigenvalue `c`,
-  vanishes at the entries `(x, y)` with `d x * star (d y) ≠ c`. -/
-lemma toMatrixℂ_apply_eq_zero_of_adjointℂ_eq_smul {n : ℕ} {g : specialUnitaryGroup (Fin n) ℂ}
-    {d : Fin n → ℂ} (hg : g.1 = diagonal d) {A : Complexification n} {c : ℂ}
-    (hA : adjointℂ g A = c • A) {x y : Fin n} (hxy : d x * star (d y) ≠ c) :
-    toMatrixℂ A x y = 0 := by
-  have h := congrArg (fun B => toMatrixℂ B x y) hA
-  simp only [toMatrixℂ_adjointℂ_apply_of_diagonal hg, map_smul, Matrix.smul_apply, smul_eq_mul] at h
-  exact (mul_eq_zero.1 (show (d x * star (d y) - c) * toMatrixℂ A x y = 0 by
-    linear_combination h)).resolve_left (sub_ne_zero.2 hxy)
-
-/-- An element of the complexification supported at the entry `(p, q)` is an eigenvector of the
-  adjoint action of a diagonal element of `SU(n)`, with eigenvalue `d p * star (d q)`. -/
-lemma adjointℂ_eq_smul_of_toMatrixℂ_apply_eq_zero {n : ℕ} {g : specialUnitaryGroup (Fin n) ℂ}
-    {d : Fin n → ℂ} (hg : g.1 = diagonal d) {A : Complexification n} {p q : Fin n}
-    (hA : ∀ x y, ¬(x = p ∧ y = q) → toMatrixℂ A x y = 0) :
-    adjointℂ g A = (d p * star (d q)) • A := by
-  refine toMatrixℂ_injective (Matrix.ext fun x y => ?_)
-  rw [toMatrixℂ_adjointℂ_apply_of_diagonal hg, map_smul, Matrix.smul_apply, smul_eq_mul]
-  by_cases h : x = p ∧ y = q
-  · obtain ⟨rfl, rfl⟩ := h
-    rfl
-  · rw [hA x y h, mul_zero, mul_zero]
 
 lemma toMatrixℂ_adjointℂ_trace {n} (g : specialUnitaryGroup (Fin n) ℂ) (A : Complexification n) :
     (toMatrixℂ (adjointℂ g A)).trace = (toMatrixℂ A).trace := by
