@@ -8,6 +8,7 @@ module
 public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.RepresentationTheory.Basic
+public import Physlib.Meta.TODO.Basic
 /-!
 # Local gauge data
 
@@ -145,6 +146,8 @@ namespace LocalGaugeData
 variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ 𝔤]
   {GJ : Type} [Group GJ] {𝔤J : Type} [LieRing 𝔤J] [LieAlgebra ℝ 𝔤J]
   (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J)
+
+TODO "Add a constructor for LocalGaugeData from a Lie group and its Lie algebra"
 
 /-!
 
