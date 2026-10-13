@@ -10,6 +10,8 @@ public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
 public import Mathlib.LinearAlgebra.Matrix.Permutation
 public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.RepresentationTheory.Intertwining
+public import Mathlib.RepresentationTheory.Irreducible
+public import Mathlib.RingTheory.RootsOfUnity.Complex
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Basic
 /-!
 
@@ -24,7 +26,10 @@ The adjoint is defined by conjugation, `x ↦ g x g†`. It preserves the bracke
 the centre of `SU(n)`, the scalar matrices (A.1, A.2). On the underlying matrices of the
 complexification the adjoint action of any unitary matrix, and in particular of any permutation of
 the coordinates, is realised by an element of `SU(n)`; diagonal elements of `SU(n)` act on the
-entries by phases (A.3).
+entries by phases (A.3). Averaging the adjoint action over the powers of such a diagonal element
+projects an element onto a single off-diagonal entry, and all the elements supported at a single
+off-diagonal entry lie in one adjoint orbit (A.4). Together these show that the complex adjoint
+representation is irreducible for `2 ≤ n` (A.5).
 
 The contraction `adjointContr` of two real adjoint indices is the trace form `x ⊗ y ↦ tr (x y)` on
 `su(n)`, which is real since `x` and `y` are hermitian, and invariant under the adjoint action by
@@ -40,6 +45,7 @@ under the bracket and nondegenerate (B.2).
 - `SULieAlgebra.adjoint` : the adjoint representation on `su(n)`.
 - `SULieAlgebra.adjointℂ` : the adjoint representation on the complexification.
 - `SULieAlgebra.adjoint_eq_iff` : the adjoint representation is faithful modulo the centre.
+- `SULieAlgebra.isIrreducible_adjointℂ` : the complex adjoint representation is irreducible.
 - `SULieAlgebra.adjointContr` : the contraction of two real adjoint indices.
 - `SULieAlgebra.adjointℂContr` : the contraction of two complex adjoint indices.
 - `SULieAlgebra.adjointContr_self_pos` : the real contraction is positive definite.
@@ -51,6 +57,8 @@ under the bracket and nondegenerate (B.2).
   - A.1. The real adjoint representation
   - A.2. The complex adjoint representation
   - A.3. The action on the underlying matrices
+  - A.4. Relation to single-entry elements
+  - A.5. Irreducibility
 - B. The contraction of adjoint indices
   - B.1. The real case
   - B.2. The complex case
@@ -289,6 +297,253 @@ lemma toMatrixℂ_adjointℂ_trace {n} (g : specialUnitaryGroup (Fin n) ℂ) (A 
     (toMatrixℂ (adjointℂ g A)).trace = (toMatrixℂ A).trace := by
   rw [toMatrixℂ_adjointℂ, Matrix.trace_mul_cycle, Matrix.trace_mul_cycle, Matrix.mul_assoc,
     (mem_specialUnitaryGroup_iff.mp g.2).1.1, Matrix.mul_one]
+
+/-!
+
+### A.4. Relation to single-entry elements
+
+-/
+
+/-- All the elements supported at a single off-diagonal entry lie in one adjoint orbit. -/
+lemma exists_adjointℂ_singleℂ_eq_singleℂ {n : ℕ} {i j p q : Fin n} (hij : i ≠ j) (hpq : p ≠ q) :
+    ∃ g : specialUnitaryGroup (Fin n) ℂ, adjointℂ g (singleℂ i j hij) = singleℂ p q hpq := by
+  obtain ⟨σ, hσi, hσj⟩ : ∃ σ : Equiv.Perm (Fin n), σ i = p ∧ σ j = q := by
+    refine ⟨Equiv.swap (Equiv.swap i p j) q * Equiv.swap i p, ?_, ?_⟩
+    · rw [Equiv.Perm.mul_apply, Equiv.swap_apply_left, Equiv.swap_apply_of_ne_of_ne
+        (fun h => hij ((Equiv.swap i p).injective ((Equiv.swap_apply_left i p).trans h))) hpq]
+    · rw [Equiv.Perm.mul_apply, Equiv.swap_apply_left]
+  obtain ⟨g, hg⟩ := exists_toMatrixℂ_adjointℂ_apply_perm σ
+  refine ⟨g, toMatrixℂ_injective (Matrix.ext fun u v => ?_)⟩
+  have h := hg (singleℂ i j hij) (σ.symm u) (σ.symm v)
+  rw [Equiv.apply_symm_apply, Equiv.apply_symm_apply] at h
+  rw [h]
+  simp only [singleℂ, toMatrixℂ_ofTracelessℂ, single_apply, Equiv.eq_symm_apply, hσi, hσj]
+
+/-- If the matrix of `A` has a non-zero entry at the off-diagonal position `(p, q)`, then
+  `singleℂ p q h` lies in the span of the adjoint orbit of `A`. -/
+lemma singleℂ_mem_span_range_adjointℂ {n : ℕ} {p q : Fin n} (h : p ≠ q)
+    {A : Complexification n} (hA : toMatrixℂ A p q ≠ 0) :
+    singleℂ p q h ∈ Submodule.span ℂ (Set.range fun g => adjointℂ g A) := by
+  -- it suffices to prove that the element with `(p, q)` entry `toMatrixℂ A p q` is in the span
+  rw [← Submodule.smul_mem_iff _ hA, show toMatrixℂ A p q • singleℂ p q h =
+      ofTracelessℂ (single p q (toMatrixℂ A p q)) (trace_single_eq_of_ne _ _ _ h) from
+    toMatrixℂ_injective (by simp [singleℂ])]
+  obtain ⟨ζ, hζ⟩ : ∃ ζ : ℂ, IsPrimitiveRoot ζ 5 := ⟨_, Complex.isPrimitiveRoot_exp 5 (by norm_num)⟩
+  have hζ0 : ζ ≠ 0 := hζ.ne_zero (by norm_num)
+  have hinv : ζ⁻¹ = starRingEnd ℂ ζ := Complex.inv_eq_conj (hζ.norm'_eq_one (by norm_num))
+  have hphase (a b : ℤ) : ζ ^ a * star (ζ ^ b) = ζ ^ (a - b) := by
+    simp [← hinv, zpow_sub₀ hζ0, div_eq_mul_inv]
+  have hgeom (m : ℤ) (hm : ¬ (5 : ℤ) ∣ m) : ∑ k ∈ Finset.range 5, (ζ ^ m) ^ k = 0 := by
+    have h1 : ζ ^ m ≠ 1 := by rw [Ne, hζ.zpow_eq_one_iff_dvd]; exact_mod_cast hm
+    rw [geom_sum_eq h1, ← zpow_natCast (ζ ^ m) 5, ← _root_.zpow_mul,
+      (hζ.zpow_eq_one_iff_dvd _).2 ⟨m, by push_cast; ring⟩, sub_self, zero_div]
+  set e : Fin n → ℤ := fun x => if x = p then 1 else if x = q then -1 else 0 with he
+  have hmem : diagonal (fun x => ζ ^ e x) ∈ specialUnitaryGroup (Fin n) ℂ := by
+    refine mem_specialUnitaryGroup_iff.2 ⟨?_, ?_⟩
+    · simp [mem_unitaryGroup_iff, star_eq_conjTranspose, diagonal_conjTranspose, ← hinv,
+        zpow_ne_zero _ hζ0]
+    · simp [he, apply_ite (ζ ^ · : ℤ → ℂ), Finset.prod_ite, Finset.filter_eq', hζ0, h.symm]
+  set g : specialUnitaryGroup (Fin n) ℂ := ⟨_, hmem⟩ with hg
+  have hpow (k : ℕ) : (g ^ k).1 = diagonal fun x => (ζ ^ e x) ^ k := by
+    rw [SubmonoidClass.coe_pow, hg]
+    exact diagonal_pow _ k
+  have hgk (k : ℕ) (x y : Fin n) :
+      toMatrixℂ (adjointℂ (g ^ k) A) x y = (ζ ^ (e x - e y)) ^ k * toMatrixℂ A x y := by
+    rw [toMatrixℂ_adjointℂ_apply_of_diagonal (hpow k), star_pow, ← mul_pow, hphase]
+  have hcollect (m : ℤ) (c : ℂ) : ∑ k ∈ Finset.range 5, ((5 : ℂ)⁻¹ * (ζ ^ (-2 : ℤ)) ^ k) *
+      ((ζ ^ m) ^ k * c) = (5 : ℂ)⁻¹ * (∑ k ∈ Finset.range 5, (ζ ^ (m - 2)) ^ k) * c := by
+    rw [Finset.mul_sum, Finset.sum_mul]
+    refine Finset.sum_congr rfl fun k _ => ?_
+    rw [show m - 2 = -2 + m by ring, zpow_add₀ hζ0, mul_pow]
+    ring
+  have hentry (x y : Fin n) : ∑ k ∈ Finset.range 5, ((5 : ℂ)⁻¹ * (ζ ^ (-2 : ℤ)) ^ k) *
+      ((ζ ^ (e x - e y)) ^ k * toMatrixℂ A x y) = single p q (toMatrixℂ A p q) x y := by
+    rw [hcollect]
+    by_cases hxy : x = p ∧ y = q
+    · obtain ⟨rfl, rfl⟩ := hxy
+      rw [single_apply_same, show e x - e y - 2 = 0 by simp [he, h.symm]]
+      norm_num
+    · rw [single_apply_of_ne (c := _) (h := mt (And.imp Eq.symm Eq.symm) hxy), hgeom, mul_zero,
+        zero_mul]
+      simp only [he]
+      split_ifs <;> omega
+  rw [show ofTracelessℂ (single p q (toMatrixℂ A p q)) (trace_single_eq_of_ne _ _ _ h)
+      = ∑ k ∈ Finset.range 5, ((5 : ℂ)⁻¹ * (ζ ^ (-2 : ℤ)) ^ k) • adjointℂ (g ^ k) A from
+    toMatrixℂ_injective (Matrix.ext fun x y => by
+      rw [toMatrixℂ_ofTracelessℂ, map_sum]
+      simp only [Matrix.sum_apply, map_smul, Matrix.smul_apply, smul_eq_mul, hgk]
+      exact (hentry x y).symm)]
+  exact Submodule.sum_mem _ fun k _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨g ^ k, rfl⟩)
+
+/-- The adjoint action of some element of `SU(n)` — the rotation by `π / 4` in the `(p, q)`-plane —
+  changes an element whose matrix is the diagonal matrix `d` only in the `(p, q)`-block, by
+  `(d p - d q) / 2` times `singleℂ p q h + singleℂ q p h.symm - diagDiffℂ p q`. -/
+lemma exists_adjointℂ_eq_of_toMatrixℂ_eq_diagonal {n : ℕ} {p q : Fin n} (h : p ≠ q)
+    {A : Complexification n} {d : Fin n → ℂ} (hA : toMatrixℂ A = diagonal d) :
+    ∃ g : specialUnitaryGroup (Fin n) ℂ, adjointℂ g A =
+      A + ((d p - d q) / 2) • (singleℂ p q h + singleℂ q p h.symm - diagDiffℂ p q) := by
+  -- the rotation by `π / 4` in the `(p, q)`-plane
+  set s : ℂ := (((√2)⁻¹ : ℝ) : ℂ)
+  have hs : s ^ 2 = 1 / 2 := by simp [s, ← Complex.ofReal_pow]
+  set U : Matrix (Fin n) (Fin n) ℂ := 1 - single p p 1 - single q q 1 +
+    s • (single p p 1 + single p q 1 + single q p 1 - single q q 1) with hU
+  have hUs : star U = U := by
+    simp [hU, s, star_eq_conjTranspose]
+    module
+  have hUU : U * U = 1 := by
+    simp only [hU, mul_add, add_mul, mul_sub, sub_mul, Matrix.mul_smul, Matrix.smul_mul,
+      Matrix.one_mul, single_mul_single_same, single_mul_single_of_ne _ _ _ _ h,
+      single_mul_single_of_ne _ _ _ _ h.symm, mul_one]
+    match_scalars <;> first | ring1 | linear_combination 2 * hs
+  -- a diagonal matrix rescales the single-entry matrices
+  have hds (i j : Fin n) : diagonal d * single i j (1 : ℂ) = d i • single i j 1 :=
+    Matrix.ext fun x y => by
+      rw [diagonal_mul, Matrix.smul_apply, smul_eq_mul, single_apply]
+      split_ifs with hc <;> simp [hc]
+  have hsd (i j : Fin n) : single i j (1 : ℂ) * diagonal d = d j • single i j 1 :=
+    Matrix.ext fun x y => by
+      rw [mul_diagonal, Matrix.smul_apply, smul_eq_mul, single_apply]
+      split_ifs with hc <;> simp [hc]
+  obtain ⟨g, hg⟩ := exists_toMatrixℂ_adjointℂ_eq_unitary
+    ⟨U, mem_unitaryGroup_iff.2 (by rw [hUs, hUU])⟩
+  refine ⟨g, toMatrixℂ_injective ?_⟩
+  rw [hg]
+  change U * toMatrixℂ A * star U = _
+  -- the conjugate of `diagonal d` by `U` differs from it only in the `(p, q)`-block
+  rw [hUs, hA]
+  simp only [map_add, map_smul, map_sub, singleℂ, diagDiffℂ, toMatrixℂ_ofTracelessℂ, hA, hU,
+    mul_add, add_mul, mul_sub, sub_mul, Matrix.mul_smul, Matrix.smul_mul, Matrix.one_mul,
+    hds, hsd, single_mul_single_same, single_mul_single_of_ne _ _ _ _ h,
+    single_mul_single_of_ne _ _ _ _ h.symm, mul_one, smul_zero]
+  match_scalars <;>
+    first
+      | ring1
+      | linear_combination (d p + d q) * hs
+      | linear_combination (d p - d q) * hs
+
+/-- The difference of two diagonal entries lies in the adjoint orbit of the sum of the two
+  elements supported at the corresponding off-diagonal entries. -/
+lemma exists_adjointℂ_singleℂ_add_singleℂ_eq_diagDiffℂ {n : ℕ} {p q : Fin n} (h : p ≠ q) :
+    ∃ g : specialUnitaryGroup (Fin n) ℂ,
+      adjointℂ g (singleℂ p q h + singleℂ q p h.symm) = diagDiffℂ p q := by
+  -- a single-entry matrix on the diagonal vanishes off the diagonal
+  have key : ∀ i x y : Fin n, x ≠ y → single i i (1 : ℂ) x y = 0 :=
+    fun i x y hxy => single_apply_of_ne i i 1 x y fun hc => hxy (hc.1.symm.trans hc.2)
+  -- the matrix of `diagDiffℂ p q` is diagonal
+  have hdiag : toMatrixℂ (diagDiffℂ p q) =
+      diagonal fun x => toMatrixℂ (diagDiffℂ p q) x x :=
+    Matrix.ext fun x y => by
+      rcases eq_or_ne x y with rfl | hxy
+      · rw [diagonal_apply_eq]
+      · rw [diagonal_apply_ne _ hxy]
+        simp only [diagDiffℂ, toMatrixℂ_ofTracelessℂ, Matrix.sub_apply, key p x y hxy,
+          key q x y hxy, sub_zero]
+  -- the coefficient `(d p - d q) / 2` of the rotation lemma is `1`
+  have hc : (toMatrixℂ (diagDiffℂ p q) p p - toMatrixℂ (diagDiffℂ p q) q q) / 2 = 1 := by
+    simp [diagDiffℂ, h, h.symm]
+  obtain ⟨g, hg⟩ := exists_adjointℂ_eq_of_toMatrixℂ_eq_diagonal h hdiag
+  -- so the `diagDiffℂ p q` terms cancel
+  have hg' : adjointℂ g (diagDiffℂ p q) = singleℂ p q h + singleℂ q p h.symm := by
+    simp only [hg, hc, one_smul]
+    abel
+  exact ⟨g⁻¹, by rw [← hg', Representation.inv_self_apply]⟩
+
+/-- The span of the adjoint orbit of a non-zero element contains an element supported at a single
+  off-diagonal entry. -/
+lemma exists_singleℂ_mem_span_range_adjointℂ {n : ℕ} {A : Complexification n} (hA : A ≠ 0) :
+    ∃ (p q : Fin n) (h : p ≠ q),
+      singleℂ p q h ∈ Submodule.span ℂ (Set.range fun g => adjointℂ g A) := by
+  by_cases hdiag : ∀ x y : Fin n, x ≠ y → toMatrixℂ A x y = 0
+  swap
+  · -- some off-diagonal entry of the matrix of `A` is non-zero
+    push Not at hdiag
+    obtain ⟨x, y, hxy, hne⟩ := hdiag
+    exact ⟨x, y, hxy, singleℂ_mem_span_range_adjointℂ hxy hne⟩
+  -- the matrix of `A` is diagonal
+  obtain ⟨d, hAd⟩ : ∃ d, toMatrixℂ A = diagonal d :=
+    ⟨(toMatrixℂ A).diag, Matrix.ext fun x y => by
+      rcases eq_or_ne x y with rfl | hxy
+      · rw [diagonal_apply_eq]
+        rfl
+      · rw [diagonal_apply_ne _ hxy, hdiag x y hxy]⟩
+  -- `A ≠ 0` gives a non-zero diagonal entry
+  obtain ⟨i, hi⟩ : ∃ i, d i ≠ 0 := by
+    by_contra hc
+    push Not at hc
+    exact hA (toMatrixℂ_injective (by rw [hAd, funext hc, diagonal_zero, map_zero]))
+  -- tracelessness forces two of the diagonal entries to differ
+  obtain ⟨p, q, hpq, hne⟩ : ∃ p q, p ≠ q ∧ d p ≠ d q := by
+    by_contra hc
+    push Not at hc
+    have hsum : ∑ x, d x = 0 := by rw [← Matrix.trace_diagonal d, ← hAd, trace_toMatrixℂ]
+    rw [Finset.sum_congr rfl fun x _ => (eq_or_ne x i).elim (fun hx => hx ▸ rfl)
+      fun hx => hc x i hx, Finset.sum_const, Finset.card_univ, Fintype.card_fin,
+      nsmul_eq_mul] at hsum
+    have hn : n = 0 := Nat.cast_eq_zero.1 ((mul_eq_zero.1 hsum).resolve_right hi)
+    subst hn
+    exact i.elim0
+  -- the rotation in the `(p, q)`-plane gives a non-zero `(p, q)` entry
+  obtain ⟨g, hg⟩ := exists_adjointℂ_eq_of_toMatrixℂ_eq_diagonal hpq hAd
+  have hval : toMatrixℂ (adjointℂ g A) p q = (d p - d q) / 2 := by
+    rw [hg]
+    simp [singleℂ, diagDiffℂ, hAd, hpq, hpq.symm]
+  have hentry : toMatrixℂ (adjointℂ g A) p q ≠ 0 := by
+    rw [hval]
+    exact div_ne_zero (sub_ne_zero.2 hne) two_ne_zero
+  -- the adjoint orbit of `adjointℂ g A` is the adjoint orbit of `A`
+  have hrange : (Set.range fun k => adjointℂ k (adjointℂ g A)) =
+      Set.range fun k => adjointℂ k A := by
+    refine Set.eq_of_subset_of_subset ?_ ?_ <;> rintro _ ⟨k, rfl⟩
+    · exact ⟨k * g, by simp only [map_mul, Module.End.mul_apply]⟩
+    · exact ⟨k * g⁻¹, by simp only [map_mul, Module.End.mul_apply,
+        Representation.inv_self_apply]⟩
+  exact ⟨p, q, hpq, hrange ▸ singleℂ_mem_span_range_adjointℂ hpq hentry⟩
+
+/-!
+
+### A.5. Irreducibility
+
+The complex adjoint representation has no proper non-zero subrepresentations.
+
+-/
+
+/-- The complex adjoint representation of `SU(n)` is irreducible for `2 ≤ n`. -/
+lemma isIrreducible_adjointℂ {n : ℕ} (hn : 2 ≤ n) : (adjointℂ (n := n)).IsIrreducible := by
+  have hij : (⟨0, by omega⟩ : Fin n) ≠ ⟨1, by omega⟩ := by simp
+  -- an element supported at a single off-diagonal entry is non-zero
+  have hne : singleℂ (⟨0, by omega⟩ : Fin n) ⟨1, by omega⟩ hij ≠ 0 := fun h0 => by
+    simpa [singleℂ, toMatrixℂ_ofTracelessℂ] using
+      congrArg (fun A => toMatrixℂ A ⟨0, by omega⟩ ⟨1, by omega⟩) h0
+  -- `⊥ = ⊤` would force that element to vanish, so the subrepresentations are nontrivial
+  have hbot : (⊥ : Subrepresentation (adjointℂ (n := n))) ≠ ⊤ := fun h => hne <| by
+    have h' : (⊥ : Submodule ℂ (Complexification n)) = ⊤ :=
+      congrArg Subrepresentation.toSubmodule h
+    exact Submodule.mem_bot ℂ |>.1 (h'.ge Submodule.mem_top)
+  have : Nontrivial (Subrepresentation (adjointℂ (n := n))) := ⟨⊥, ⊤, hbot⟩
+  refine ⟨fun W => ?_⟩
+  rcases eq_or_ne W ⊥ with rfl | hW
+  · exact Or.inl rfl
+  -- a non-zero subrepresentation contains a non-zero element `A`
+  obtain ⟨A, hAW, hA0⟩ := (Submodule.ne_bot_iff _).1
+    fun h => hW (Subrepresentation.toSubmodule_injective h)
+  -- the span of the adjoint orbit of `A` lies in `W`
+  have horb : Submodule.span ℂ (Set.range fun g => adjointℂ g A) ≤ W.toSubmodule :=
+    Submodule.span_le.2 <| Set.range_subset_iff.2 fun g => W.apply_mem_toSubmodule g hAW
+  obtain ⟨p, q, hpq, hmem⟩ := exists_singleℂ_mem_span_range_adjointℂ hA0
+  -- all the elements supported at a single off-diagonal entry lie in one adjoint orbit
+  have hoff : ∀ (r s : Fin n) (h : r ≠ s), singleℂ r s h ∈ W.toSubmodule := fun r s h => by
+    obtain ⟨g, hg⟩ := exists_adjointℂ_singleℂ_eq_singleℂ hpq h
+    rw [← hg]
+    exact W.apply_mem_toSubmodule g (horb hmem)
+  refine Or.inr (Subrepresentation.toSubmodule_injective
+    (submodule_eq_top_of_singleℂ_mem_of_diagDiffℂ_mem hoff fun r s => ?_))
+  rcases eq_or_ne r s with rfl | h
+  · rw [show diagDiffℂ r r = 0 from toMatrixℂ_injective (by simp [diagDiffℂ])]
+    exact Submodule.zero_mem _
+  -- the differences of diagonal entries are in the orbit of the off-diagonal elements
+  obtain ⟨g, hg⟩ := exists_adjointℂ_singleℂ_add_singleℂ_eq_diagDiffℂ h
+  rw [← hg]
+  exact W.apply_mem_toSubmodule g (add_mem (hoff r s h) (hoff s r h.symm))
 
 /-!
 
