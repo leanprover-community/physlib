@@ -292,6 +292,13 @@ lemma iteratedDeriv_ofConstantLie_of_ne_zero {p : Multiset (Fin 1 ⊕ Fin 3)} (h
     · rw [iteratedDeriv_zero, LinearMap.id_apply, deriv_ofConstantLie]
     · rw [ih ht, map_zero]
 
+lemma iteratedDeriv_adjointJ_ofConstant (g : G₀) (s : Multiset (Fin 1 ⊕ Fin 3)) (x : 𝔤J) :
+    jets.iteratedDeriv s (jets.adjointJ (jets.ofConstant g) x) =
+      jets.adjointJ (jets.ofConstant g) (jets.iteratedDeriv s x) := by
+  induction s using Multiset.induction_on with
+  | empty => simp
+  | cons μ s ih => simp [iteratedDeriv_cons, ih, deriv_adjointJ_ofConstant]
+
 lemma evalLie_iteratedDeriv_mulCoord (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) (a : 𝔤J) :
     jets.evalLie (jets.iteratedDeriv s (jets.mulCoord μ a)) =
       s.count μ • jets.evalLie (jets.iteratedDeriv (s.erase μ) a) := by
