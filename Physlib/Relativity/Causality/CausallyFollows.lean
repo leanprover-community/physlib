@@ -5,8 +5,8 @@ Authors: Philippe Kevorkian
 -/
 module
 
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Causality.TimeLike
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Causality.LightLike
+public import Physlib.Relativity.Causality.TimeLike
+public import Physlib.Relativity.Causality.LightLike
 /-!
 
 # Vectors in the causal future of the origin

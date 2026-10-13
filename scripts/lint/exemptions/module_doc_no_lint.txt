@@ -265,6 +265,10 @@ Physlib/QuantumMechanics/Operators/StateObservables/Variance.lean
 Physlib/QuantumMechanics/Operators/Unbounded.lean
 Physlib/QuantumMechanics/PlanckConstant.lean
 Physlib/Relativity/Bispinors/Basic.lean
+Physlib/Relativity/Causality/Basic.lean
+Physlib/Relativity/Causality/CausallyFollows.lean
+Physlib/Relativity/Causality/LightLike.lean
+Physlib/Relativity/Causality/TimeLike.lean
 Physlib/Relativity/CliffordAlgebra.lean
 Physlib/Relativity/Fermions/Dirac/Basic.lean
 Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean
@@ -342,10 +346,6 @@ Physlib/Relativity/Tensors/RealTensor/Representation/Contraction.lean
 Physlib/Relativity/Tensors/RealTensor/ToComplex.lean
 Physlib/Relativity/Tensors/RealTensor/Units/Pre.lean
 Physlib/Relativity/Tensors/RealTensor/Vector/Basic.lean
-Physlib/Relativity/Tensors/RealTensor/Vector/Causality/Basic.lean
-Physlib/Relativity/Tensors/RealTensor/Vector/Causality/CausallyFollows.lean
-Physlib/Relativity/Tensors/RealTensor/Vector/Causality/LightLike.lean
-Physlib/Relativity/Tensors/RealTensor/Vector/Causality/TimeLike.lean
 Physlib/Relativity/Tensors/RealTensor/Vector/MinkowskiProduct.lean
 Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Basic.lean
 Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean

@@ -5,7 +5,7 @@ Authors: Matteo Cipollina, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Causality.Basic
+public import Physlib.Relativity.Causality.Basic
 
 /-!
 
