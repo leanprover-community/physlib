@@ -631,7 +631,7 @@ lemma transpose_gram_centeredGNSVector (ω : 𝓢[ℂ, A]) (a : ι → Observabl
 
 /-- **Robertson's uncertainty relation for several observables**: for every state and every
 finite family of observables, `|det Ω| ≤ det Σ`. -/
-theorem robertson_det [Fintype ι] [DecidableEq ι] (ω : 𝓢[ℂ, A]) (a : ι → Observable A) :
+lemma robertson_det [Fintype ι] [DecidableEq ι] (ω : 𝓢[ℂ, A]) (a : ι → Observable A) :
     |(bracketMatrix ω a).det| ≤ (covarianceMatrix ω a).det := by
   have hG := posSemidef_gram ℂ fun j => centeredGNSVector ω (a j)
   exact abs_det_le_det_of_posSemidef
