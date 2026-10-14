@@ -226,7 +226,8 @@ lemma pairing_mul_basis_singleton (p : SpaceTimeDerivAlgebraℂ) (μ : Fin 1 ⊕
 
 Pairing `∂^s` with a product `χ f` gives `(∂^s (χ f))(x₀)`, which the Leibniz rule
 `constantCoeff_iteratedPDeriv_mul` expands as a sum of terms `(∂^t₁ χ)(x₀) (∂^t₂ f)(x₀)` with
-`t₁ + t₂ = s`.
+`t₁ + t₂ = s`. Replacing each `(∂^t₂ f)(x₀)` by the symbol `∂^t₂`, and extending linearly to all
+symbols, gives a symbol that pairs with `f` as the original pairs with `χ f`.
 
 -/
 
@@ -236,5 +237,15 @@ lemma pairing_basis_mul (s : Multiset (Fin 1 ⊕ Fin 3)) (χ f : SpaceTimeAlgebr
       (s.antidiagonal.map fun t =>
         constantCoeff (iteratedPDeriv t.1 χ) * pairing ∂^[t.2] f).sum := by
   simp only [pairing_basis, constantCoeff_iteratedPDeriv_mul]
+
+/-- Replacing each monomial `∂^s` of `p` by its Leibniz expansion with `χ` gives a symbol that
+  pairs with `f` as `p` pairs with `χ f`. -/
+lemma pairing_constr_leibniz (χ : SpaceTimeAlgebra) (p : SpaceTimeDerivAlgebraℂ)
+    (f : SpaceTimeAlgebra) :
+    pairing (basis.constr ℂ (fun s => (s.antidiagonal.map fun t =>
+      constantCoeff (iteratedPDeriv t.1 χ) • ∂^[t.2]).sum) p) f = pairing p (χ * f) := by
+  show (pairing.flip f ∘ₗ _) p = pairing.flip (χ * f) p
+  refine LinearMap.congr_fun (basis.ext fun s => ?_) p
+  simp [pairing_basis_mul, map_multiset_sum, Multiset.map_map, Function.comp_def]
 
 end SpaceTimeDerivAlgebraℂ

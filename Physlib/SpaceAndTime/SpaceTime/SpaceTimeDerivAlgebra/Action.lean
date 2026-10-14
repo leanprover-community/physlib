@@ -61,19 +61,10 @@ open MvPowerSeries SpaceTimeAlgebra
 
 ### A.1. The action on monomials
 
-The action of `χ` on a monomial `∂^s` comes from the Leibniz rule for the pairing,
-`pairing_basis_mul`, by replacing each `(∂^t₂ f)(x₀)` in the expansion of `(∂^s (χ f))(x₀)` by the
-symbol `∂^t₂`. The result is a finite sum, so the image is again a derivative symbol.
+The action of `χ` sends each monomial `∂^s` to its Leibniz expansion with `χ`, a finite sum of
+symbols, which pairs with `f` as `∂^s` pairs with `χ f` by `pairing_constr_leibniz`.
 
 -/
-
-private lemma pairing_constr_leibniz (χ : SpaceTimeAlgebra) (p : SpaceTimeDerivAlgebraℂ)
-    (f : SpaceTimeAlgebra) :
-    pairing (basis.constr ℂ (fun s => (s.antidiagonal.map fun t =>
-      constantCoeff (iteratedPDeriv t.1 χ) • ∂^[t.2]).sum) p) f = pairing p (χ * f) := by
-  show (pairing.flip f ∘ₗ _) p = pairing.flip (χ * f) p
-  refine LinearMap.congr_fun (basis.ext fun s => ?_) p
-  simp [pairing_basis_mul, map_multiset_sum, Multiset.map_map, Function.comp_def]
 
 /-- The action of series on derivative symbols, defined on monomials by the product rule. -/
 noncomputable def seriesAction : SpaceTimeAlgebra →+* Module.End ℂ SpaceTimeDerivAlgebraℂ where
