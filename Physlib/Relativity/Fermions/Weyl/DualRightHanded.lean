@@ -258,8 +258,7 @@ lemma end_eq_smul_id_of_commute_rep {T : Module.End ℂ DualRightHandedWeyl}
   obtain ⟨μ, hμ⟩ :=
     (Representation.IsIrreducible.algebraMap_intertwiningMap_bijective_of_isAlgClosed
       (ρ := rep)).2 ⟨T, hT⟩
-  refine ⟨μ, LinearMap.ext fun ψ => ?_⟩
-  simpa [Representation.IntertwiningMap.algebraMap_apply] using (DFunLike.congr_fun hμ ψ).symm
+  exact ⟨μ, congrArg Representation.IntertwiningMap.toLinearMap hμ.symm⟩
 
 end DualRightHandedWeyl
 end
