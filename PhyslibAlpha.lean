@@ -374,6 +374,7 @@ public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.SelfAdjoint
+public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.StateUncertainty
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Statistics
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Traciality
 public import PhyslibAlpha.ProbabilisticTheory.State.Barycenter
