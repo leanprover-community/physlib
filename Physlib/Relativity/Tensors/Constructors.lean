@@ -464,6 +464,21 @@ lemma matrixOfCs_injective {cs : Fin 2 → C} :
     (Equiv.symm_apply_apply ComponentIdx.pair φ).symm]
   exact congrFun (congrFun h (φ 0)) (φ 1)
 
+/-- Swapping the two slots of a rank-two tensor transposes its component matrix. -/
+lemma matrixOfCs_permT_swap {c c1 : Fin 2 → C} (h0 : c 1 = c1 0) (h1 : c 0 = c1 1)
+    (t : S.Tensor c) :
+    matrixOfCs (permT ![1, 0] (IsReindexing.swap_of_eq h0 h1) t) =
+      (matrixOfCs t).transpose.submatrix (basisIdxCongr h0.symm) (basisIdxCongr h1.symm) := by
+  ext u v
+  rw [matrixOfCs_apply, permT_basis_repr_symm_apply]
+  simp only [Matrix.submatrix_apply, Matrix.transpose_apply, matrixOfCs_apply]
+  congr 1 with i
+  have hi := congr_arg_heq ((ComponentIdx.pair (S := S) (cs := c1)).symm (u, v))
+    ((IsReindexing.swap_of_eq h0 h1).apply_inv_apply _ (![1, 0] i))
+  fin_cases i
+  · exact basisIdxCongr_heq_arg _ h1.symm hi
+  · exact basisIdxCongr_heq_arg _ h0.symm hi
+
 /-!
 
 ## fromTripleT
