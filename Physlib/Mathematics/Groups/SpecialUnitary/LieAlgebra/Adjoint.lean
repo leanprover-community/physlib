@@ -263,7 +263,7 @@ lemma toMatrixℂ_adjointℂ_trace {n} (g : specialUnitaryGroup (Fin n) ℂ) (A 
 
 -/
 
-/-- All the elements supported at a single off-diagonal entry lie in one adjoint orbit. -/
+/-- All the off-diagonal matrix units `singleℂ` lie in one adjoint orbit -/
 lemma exists_adjointℂ_singleℂ_eq_singleℂ {n : ℕ} {i j p q : Fin n} (hij : i ≠ j) (hpq : p ≠ q) :
     ∃ g : specialUnitaryGroup (Fin n) ℂ, adjointℂ g (singleℂ i j hij) = singleℂ p q hpq := by
   obtain ⟨σ, hσi, hσj⟩ : ∃ σ : Equiv.Perm (Fin n), σ i = p ∧ σ j = q := by
