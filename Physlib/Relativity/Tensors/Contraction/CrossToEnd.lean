@@ -6,9 +6,8 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Relativity.Tensors.ComponentIdx.Insert
-public import Physlib.Relativity.Tensors.ComponentIdx.Pair
 public import Physlib.Relativity.Tensors.Contraction.Basis
-public import Physlib.Relativity.Tensors.Contraction.Products
+public import Physlib.Relativity.Tensors.Constructors
 /-!
 
 # Cross contraction at named slots
@@ -46,6 +45,8 @@ The complementary convention keeps the replacement index in place. Contracting s
     contraction-dual bases, the δ collapsing the two sums into one.
 - `TensorSpecies.Tensor.crossToEnd_pair_basis_repr` : the component formula at rank two on each
     factor.
+- `TensorSpecies.Tensor.matrixOfCs_crossToEnd_pair` : the same as a matrix equation, cross
+    contraction being the product of the component matrices.
 - `TensorSpecies.Tensor.crossToEnd_equivariant` : the contraction commutes with the `G`-action.
 - `TensorSpecies.Tensor.crossToEnd_assoc_rankTwo` : rebracket the chain
     `A —(iA·0)— B —(last·0)— C` at rank-two `B` and `C`, up to `permT id`. Not full associativity.
@@ -252,6 +253,15 @@ lemma crossToEnd_pair_basis_repr [HasContrDualBases S] {c0 c1 c2 c3 : C} (h : S.
     (ComponentIdx.pair.symm (y0, y3))).trans ?_
   refine Finset.sum_congr rfl fun x _ => ?_
   congr 1 <;> apply congrArg <;> funext i <;> fin_cases i <;> rfl
+
+/-- Cross contraction of two rank-two tensors is the product of their component matrices, the
+  middle labels matched by `HasContrDualBases.contrIdx`. -/
+lemma matrixOfCs_crossToEnd_pair [HasContrDualBases S] {c0 c1 c2 c3 : C} (h : S.τ c1 = c2)
+    (t1 : S.Tensor ![c0, c1]) (t2 : S.Tensor ![c2, c3]) :
+    matrixOfCs (crossToEnd (Fin.last 1) (0 : Fin 2) h t1 t2) =
+      matrixOf t1 * (matrixOf t2).submatrix ⇑(HasContrDualBases.contrIdx h) id := by
+  ext y0 y3
+  exact (crossToEnd_pair_basis_repr h t1 t2 y0 y3).trans rfl
 
 /-- Cross contraction is `G`-equivariant, each of `prodT`, `contrT` and `permT` being so. -/
 @[simp]
