@@ -161,16 +161,23 @@ lemma fderiv_normPowerSeries {d} (n : ℕ) (x y : Space d) :
 
 -/
 
-lemma deriv_normPowerSeries_tendsto {d} (x : Space d) (hx : x ≠ 0) (i : Fin d) :
+/-- The coordinate derivatives of `normPowerSeries` converge pointwise, including at zero. -/
+lemma deriv_normPowerSeries_tendsto {d} (x : Space d) (i : Fin d) :
     Filter.Tendsto (fun n => ∂[i] (normPowerSeries n) x) Filter.atTop (𝓝 (x i * (‖x‖)⁻¹)) := by
   simp only [deriv_normPowerSeries]
-  exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
+  by_cases hx : x = 0
+  · simp [hx]
+  · exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
 
-lemma fderiv_normPowerSeries_tendsto {d} (x y : Space d) (hx : x ≠ 0) :
+/-- For every fixed direction, the derivatives of `normPowerSeries` converge pointwise,
+including at zero. -/
+lemma fderiv_normPowerSeries_tendsto {d} (x y : Space d) :
     Filter.Tendsto (fun n => fderiv ℝ (fun (x : Space d) => normPowerSeries n x) x y)
       Filter.atTop (𝓝 (⟪y, x⟫_ℝ * (‖x‖)⁻¹)) := by
   simp only [fderiv_normPowerSeries]
-  exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
+  by_cases hx : x = 0
+  · simp [hx]
+  · exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
 
 /-!
 
