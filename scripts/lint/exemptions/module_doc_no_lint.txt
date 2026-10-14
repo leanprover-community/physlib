@@ -273,11 +273,8 @@ Physlib/Relativity/Fermions/Dirac/Basic.lean
 Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean
 Physlib/Relativity/Fermions/Dirac/Slash.lean
 Physlib/Relativity/Fermions/Weyl/Contraction.lean
-Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean
 Physlib/Relativity/Fermions/Weyl/Duals.lean
-Physlib/Relativity/Fermions/Weyl/LeftHanded.lean
 Physlib/Relativity/Fermions/Weyl/Metric.lean
-Physlib/Relativity/Fermions/Weyl/RightHanded.lean
 Physlib/Relativity/Fermions/Weyl/Two.lean
 Physlib/Relativity/Fermions/Weyl/Unit.lean
 Physlib/Relativity/LorentzAlgebra/Basic.lean

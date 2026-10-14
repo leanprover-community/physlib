@@ -40,7 +40,11 @@ Requirements:
 
   - description: "Each Weyl type carries a representation of SL(2, ℂ), with its matrix in the basis identified."
     done: true
-    location: Physlib/Relativity/Fermions/Weyl/LeftHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr); Physlib/Relativity/Fermions/Weyl/RightHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr); Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean (rep, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr); Physlib/Relativity/Fermions/Weyl/DualRightHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr)
+    location: Physlib/Relativity/Fermions/Weyl/LeftHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr); Physlib/Relativity/Fermions/Weyl/RightHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr); Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr); Physlib/Relativity/Fermions/Weyl/DualRightHanded.lean (rep, rep_apply, rep_toMatrix, rep_apply_basis, rep_apply_basis_repr)
+
+  - description: "The representation of SL(2, ℂ) on each Weyl type is irreducible, and Schur's lemma holds for it."
+    done: true
+    location: Physlib/Relativity/Fermions/Weyl/LeftHanded.lean (finrank_eq_two, eq_zero_of_rep_eq_smul, eq_bot_or_eq_top_of_rep_mem, end_eq_smul_id_of_commute_rep); Physlib/Relativity/Fermions/Weyl/RightHanded.lean (finrank_eq_two, eq_zero_of_rep_eq_smul, eq_bot_or_eq_top_of_rep_mem, end_eq_smul_id_of_commute_rep); Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean (finrank_eq_two, eq_zero_of_rep_eq_smul, eq_bot_or_eq_top_of_rep_mem, end_eq_smul_id_of_commute_rep); Physlib/Relativity/Fermions/Weyl/DualRightHanded.lean (finrank_eq_two, eq_zero_of_rep_eq_smul, eq_bot_or_eq_top_of_rep_mem, end_eq_smul_id_of_commute_rep)
 
   - description: "The invariant pairings between a Weyl type and its dual are defined as bilinear maps and as intertwining maps of representations."
     done: true
