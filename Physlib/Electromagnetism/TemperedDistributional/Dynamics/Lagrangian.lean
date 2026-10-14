@@ -54,7 +54,7 @@ open Tensor ContDiff
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -73,7 +73,7 @@ We define this through the lemma `gradFreeCurrentPotential_eq_sum_basis`
 
 /-- The variational gradient of the free current potential for distributional potentials. -/
 noncomputable def gradFreeCurrentPotential {d} :
-    DistLorentzCurrentDensity d →ₗ[ℝ] ((SpaceTime d) →d[ℝ] Lorentz.Vector d) where
+    TempDistLorentzCurrentDensity d →ₗ[ℝ] ((SpaceTime d) →d[ℝ] Lorentz.Vector d) where
   toFun J := {
     toFun ε := ∑ μ, (η μ μ • (J ε μ) • Lorentz.Vector.basis μ)
     map_add' ε₁ ε₂ := by
@@ -96,18 +96,18 @@ noncomputable def gradFreeCurrentPotential {d} :
     ring_nf
 
 lemma gradFreeCurrentPotential_eq_sum_basis {d}
-    (J : DistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (J : TempDistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (gradFreeCurrentPotential J) ε =
     (∑ μ, (η μ μ • (J ε μ) • Lorentz.Vector.basis μ)) := rfl
 
 lemma gradFreeCurrentPotential_sum_inl_0 (𝓕 : FreeSpace) {d}
-    (J : DistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (J : TempDistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (gradFreeCurrentPotential J) ε (Sum.inl 0) =
     𝓕.c * (distTimeSlice 𝓕.c).symm (J.chargeDensity 𝓕.c) ε := by
   simp only [gradFreeCurrentPotential, LinearMap.coe_mk, AddHom.coe_mk, Fin.isValue,
     ContinuousLinearMap.coe_mk', apply_sum, apply_smul, Lorentz.Vector.basis_apply, mul_ite,
     mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inl_0_inl_0, one_mul,
-    DistLorentzCurrentDensity.chargeDensity, one_div, temporalCLM, map_smul,
+    TempDistLorentzCurrentDensity.chargeDensity, one_div, temporalCLM, map_smul,
     FunLike.coe_smul, Pi.smul_apply, distTimeSlice_symm_apply,
     ContinuousLinearMap.coe_comp, LinearMap.coe_toContinuousLinearMap', Function.comp_apply,
     smul_eq_mul, ne_eq, SpeedOfLight.val_ne_zero, not_false_eq_true, mul_inv_cancel_left₀]
@@ -115,13 +115,13 @@ lemma gradFreeCurrentPotential_sum_inl_0 (𝓕 : FreeSpace) {d}
   simp
 
 lemma gradFreeCurrentPotential_sum_inr_i (𝓕 : FreeSpace) {d}
-    (J : DistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
+    (J : TempDistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
     (gradFreeCurrentPotential J) ε (Sum.inr i) =
     - (distTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
   simp only [gradFreeCurrentPotential, LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mk',
     apply_sum, apply_smul, Lorentz.Vector.basis_apply, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inr_i_inr_i,
-    DistLorentzCurrentDensity.currentDensity, spatialCLM, distTimeSlice_symm_apply,
+    TempDistLorentzCurrentDensity.currentDensity, spatialCLM, distTimeSlice_symm_apply,
     ContinuousLinearMap.coe_comp, Function.comp_apply]
   rw [← distTimeSlice_symm_apply]
   simp
@@ -133,7 +133,7 @@ lemma gradFreeCurrentPotential_sum_inr_i (𝓕 : FreeSpace) {d}
 -/
 
 lemma gradFreeCurrentPotential_eq_tensor {d}
-    (J : DistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ))
+    (J : TempDistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ))
     (ν : Fin 1 ⊕ Fin d) :
     gradFreeCurrentPotential J ε ν = η ν ν * ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
     (permT id (IsReindexing.auto) {J ε | ν'}ᵀ)) ν:= by
@@ -155,12 +155,12 @@ Defined through `gradLagrangian_eq_kineticTerm_sub`.
 
 /-- The variational gradient of lagrangian for an electromagnetic potential which is
   a distribution. -/
-noncomputable def gradLagrangian {d} (𝓕 : FreeSpace) (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) : ((SpaceTime d) →d[ℝ] Lorentz.Vector d) :=
+noncomputable def gradLagrangian {d} (𝓕 : FreeSpace) (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) : ((SpaceTime d) →d[ℝ] Lorentz.Vector d) :=
   A.gradKineticTerm 𝓕 - gradFreeCurrentPotential J
 
 lemma gradLagrangian_sum_inl_0 {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (J : DistLorentzCurrentDensity d)
+    (A : TempDistElectromagneticPotential d) (J : TempDistLorentzCurrentDensity d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradLagrangian 𝓕 J ε (Sum.inl 0) =
     (1/(𝓕.μ₀ * 𝓕.c) * (distTimeSlice 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε)
@@ -168,7 +168,7 @@ lemma gradLagrangian_sum_inl_0 {𝓕 : FreeSpace}
   simp [gradLagrangian, gradKineticTerm_sum_inl_eq, gradFreeCurrentPotential_sum_inl_0 𝓕]
 
 lemma gradLagrangian_sum_inr_i {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (J : DistLorentzCurrentDensity d)
+    (A : TempDistElectromagneticPotential d) (J : TempDistLorentzCurrentDensity d)
     (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
     A.gradLagrangian 𝓕 J ε (Sum.inr i) =
     𝓕.μ₀⁻¹ * (1 / 𝓕.c ^ 2 *
@@ -186,7 +186,7 @@ lemma gradLagrangian_sum_inr_i {𝓕 : FreeSpace}
 
 attribute [-simp] Nat.reduceAdd Nat.reduceSucc Fin.isValue in
 lemma gradLagrangian_eq_tensor {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (J : DistLorentzCurrentDensity d)
+    (A : TempDistElectromagneticPotential d) (J : TempDistLorentzCurrentDensity d)
     (ε : 𝓢(SpaceTime d, ℝ)) (ν : Fin 1 ⊕ Fin d) :
     A.gradLagrangian 𝓕 J ε ν =
     η ν ν * ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
@@ -207,5 +207,5 @@ lemma gradLagrangian_eq_tensor {𝓕 : FreeSpace}
   fin_cases i
   simp
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

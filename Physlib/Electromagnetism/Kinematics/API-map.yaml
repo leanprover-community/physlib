@@ -11,8 +11,8 @@ Overview: |
     non-relativistic potentials, and a further constructor recovers it from electric and
     magnetic fields (Poincare gauge).
 
-    A distributional counterpart, `DistElectromagneticPotential d`, is defined as a
-    distribution valued in Lorentz vectors, with parallel constructors from scalar and vector
+    A distributional counterpart, `TempDistElectromagneticPotential d`, is defined as a
+    tempered distribution valued in Lorentz vectors, with parallel constructors from scalar and vector
     potentials.
 
     From a potential the API derives the electric field, the magnetic field (as a vector and
@@ -40,13 +40,13 @@ Requirements:
       (ElectromagneticPotential, eq_of_val_eq, add_val, neg_val, sub_val, smul_val)
 
   - description: >
-      A distributional version of the electromagnetic potential is defined, as a distribution
+      A distributional version of the electromagnetic potential is defined, as a tempered distribution
       on spacetime valued in Lorentz vectors, with constructors from distributional scalar and
       vector potentials.
     done: true
     location: >
       Physlib/Electromagnetism/TemperedDistributional/Basic.lean
-      (DistElectromagneticPotential, ofScalarPotential, ofVectorPotential)
+      (TempDistElectromagneticPotential, ofScalarPotential, ofVectorPotential)
 
   - description: >
       Constructors build an electromagnetic potential from a scalar potential, from a vector
@@ -95,4 +95,4 @@ Requirements:
     done: true
     location: >
       Physlib/Electromagnetism/Dynamics/Lagrangian.lean (lagrangian, freeCurrentPotential, gradLagrangian, gradFreeCurrentPotential);
-      Physlib/Electromagnetism/TemperedDistributional/Dynamics/Lagrangian.lean (gradLagrangian, gradFreeCurrentPotential) 
+      Physlib/Electromagnetism/TemperedDistributional/Dynamics/Lagrangian.lean (gradLagrangian, gradFreeCurrentPotential)

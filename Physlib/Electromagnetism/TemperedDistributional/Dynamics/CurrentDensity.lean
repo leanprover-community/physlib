@@ -21,7 +21,7 @@ The current density is given in terms of the charge density `ρ` and the current
 
 ## ii. Key results
 
-- `DistLorentzCurrentDensity` : The type of Lorentz current densities
+- `TempDistLorentzCurrentDensity` : The type of Lorentz current densities
   as distributions.
 
 ## iii. Table of contents
@@ -53,9 +53,9 @@ attribute [-simp] Nat.succ_eq_add_one
 
 -/
 /-- The Lorentz current density, also called four-current as a distribution. -/
-abbrev DistLorentzCurrentDensity (d : ℕ := 3) := (SpaceTime d) →d[ℝ] Lorentz.Vector d
+abbrev TempDistLorentzCurrentDensity (d : ℕ := 3) := (SpaceTime d) →d[ℝ] Lorentz.Vector d
 
-namespace DistLorentzCurrentDensity
+namespace TempDistLorentzCurrentDensity
 
 /-!
 
@@ -65,7 +65,7 @@ namespace DistLorentzCurrentDensity
 
 /-- The charge density underlying a Lorentz current density which is a distribution. -/
 noncomputable def chargeDensity {d : ℕ} (c : SpeedOfLight) :
-    (DistLorentzCurrentDensity d) →ₗ[ℝ] (Time × Space d) →d[ℝ] ℝ where
+    (TempDistLorentzCurrentDensity d) →ₗ[ℝ] (Time × Space d) →d[ℝ] ℝ where
   toFun J := (1 / (c : ℝ)) • (Lorentz.Vector.temporalCLM d ∘L distTimeSlice c J)
   map_add' J1 J2 := by
     simp
@@ -82,12 +82,12 @@ noncomputable def chargeDensity {d : ℕ} (c : SpeedOfLight) :
 /-- The underlying (non-Lorentz) current density associated with a distributive
   Lorentz current density. -/
 noncomputable def currentDensity (c : SpeedOfLight) :
-    DistLorentzCurrentDensity d →ₗ[ℝ] (Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d) where
+    TempDistLorentzCurrentDensity d →ₗ[ℝ] (Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d) where
   toFun J := Lorentz.Vector.spatialCLM d ∘L distTimeSlice c J
   map_add' J1 J2 := by
     simp
   map_smul' r J := by
     simp
 
-end DistLorentzCurrentDensity
+end TempDistLorentzCurrentDensity
 end Electromagnetism

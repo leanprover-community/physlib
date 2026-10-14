@@ -50,7 +50,7 @@ open Physlib
 open Distribution SchwartzMap
 open Space MeasureTheory
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 
 /-!
 
@@ -68,7 +68,7 @@ particle in 3d space.
 /-- The current density of a point particle stationary at a point `r₀`
   of 3d space. -/
 noncomputable def threeDimPointParticleCurrentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 3) :
-    DistLorentzCurrentDensity 3 := (SpaceTime.distTimeSlice c).symm <|
+    TempDistLorentzCurrentDensity 3 := (SpaceTime.distTimeSlice c).symm <|
   constantTime ((c * q) • diracDelta' ℝ r₀ (Lorentz.Vector.basis (Sum.inl 0)))
 
 lemma threeDimPointParticleCurrentDensity_eq_distTranslate (c : SpeedOfLight) (q : ℝ)
@@ -98,7 +98,7 @@ lemma threeDimPointParticleCurrentDensity_chargeDensity (c : SpeedOfLight) (q : 
     (threeDimPointParticleCurrentDensity c q r₀).chargeDensity c =
     constantTime (q • diracDelta ℝ r₀) := by
   ext ε
-  simp only [DistLorentzCurrentDensity.chargeDensity, one_div, Lorentz.Vector.temporalCLM,
+  simp only [TempDistLorentzCurrentDensity.chargeDensity, one_div, Lorentz.Vector.temporalCLM,
     Fin.isValue, threeDimPointParticleCurrentDensity, map_smul, LinearMap.coe_mk, AddHom.coe_mk,
     ContinuousLinearEquiv.apply_symm_apply, FunLike.coe_smul,
     ContinuousLinearMap.coe_comp, LinearMap.coe_toContinuousLinearMap', Pi.smul_apply,
@@ -121,7 +121,7 @@ In other words, there is no current flow for a point particle at rest.
 lemma threeDimPointParticleCurrentDensity_currentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 3) :
     (threeDimPointParticleCurrentDensity c q r₀).currentDensity c = 0 := by
   ext ε i
-  simp [threeDimPointParticleCurrentDensity, DistLorentzCurrentDensity.currentDensity,
+  simp [threeDimPointParticleCurrentDensity, TempDistLorentzCurrentDensity.currentDensity,
     Lorentz.Vector.spatialCLM, constantTime_apply]
 
 /-!
@@ -147,8 +147,8 @@ open Real
 /-- The electromagnetic potential of a point particle stationary at `r₀`
   of 3d space. -/
 noncomputable def threeDimPointParticle (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
-    DistElectromagneticPotential 3 := (SpaceTime.distTimeSlice 𝓕.c).symm <| Space.constantTime <|
-  distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c)/ (4 * π)) * ‖x - r₀‖⁻¹) •
+    TempDistElectromagneticPotential 3 := (SpaceTime.distTimeSlice 𝓕.c).symm <| Space.constantTime
+  <| distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c)/ (4 * π)) * ‖x - r₀‖⁻¹) •
     Lorentz.Vector.basis (Sum.inl 0))
     (((IsDistBounded.inv_shift _).const_mul_fun _).smul_const _)
 
@@ -318,5 +318,5 @@ lemma threeDimPointParticle_isExterma (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space
     rw [gradLagrangian_sum_inr_i]
     simp
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

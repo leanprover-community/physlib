@@ -34,7 +34,7 @@ TODO "Prove that the magnetic field around a circular current loop is as given
   [ref: nasa_ntrs_20140002333]."
 
 namespace Electromagnetism
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 
 attribute [-simp] Nat.succ_eq_add_one
 /-!
@@ -42,5 +42,5 @@ attribute [-simp] Nat.succ_eq_add_one
 ## A. The current density
 
 -/
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

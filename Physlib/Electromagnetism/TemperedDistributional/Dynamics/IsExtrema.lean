@@ -24,11 +24,11 @@ Maxwell's equations with sources, i.e. Gauss's law and Ampère's law.
 
 ## iii. Table of contents
 
-- A. Is Extema condition in the distributional case
+- A. Is Extrema condition in the distributional case
   - A.1. IsExtrema and Gauss's law and Ampère's law
   - A.2. IsExtrema in terms of Vector Potentials
-  - A.3. The exterma condition in terms of tensors
-  - A.4. The invariance of the exterma condition under Lorentz transformations
+  - A.3. The extrema condition in terms of tensors
+  - A.4. The invariance of the extrema condition under Lorentz transformations
 
 ## iv. References
 
@@ -43,29 +43,29 @@ open Tensor ContDiff
 
 /-!
 
-## A. Is Extema condition in the distributional case
+## A. Is Extrema condition in the distributional case
 
 The above results looked at the extrema condition for electromagnetic potentials that are
 functions. We now look at the case where the electromagnetic potential is a distribution.
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 
 /-- The proposition on an electromagnetic potential, corresponding to the statement that
   it is an extrema of the lagrangian. -/
 def IsExtrema {d} (𝓕 : FreeSpace)
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) : Prop := A.gradLagrangian 𝓕 J = 0
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) : Prop := A.gradLagrangian 𝓕 J = 0
 
 lemma isExtrema_iff_gradLagrangian {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) :
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) :
     IsExtrema 𝓕 A J ↔ A.gradLagrangian 𝓕 J = 0 := by rfl
 
 lemma isExtrema_iff_components {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) :
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) :
     IsExtrema 𝓕 A J ↔ (∀ ε, A.gradLagrangian 𝓕 J ε (Sum.inl 0) = 0)
     ∧ (∀ ε i, A.gradLagrangian 𝓕 J ε (Sum.inr i) = 0) := by
   rw [isExtrema_iff_gradLagrangian]
@@ -91,8 +91,8 @@ Here $\mathbf{B}$ is the magnetic field matrix.
 -/
 open Space
 lemma isExtrema_iff_space_time {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) :
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) :
     IsExtrema 𝓕 A J ↔
       (∀ ε, distSpaceDiv (A.electricField 𝓕.c) ε = (1/𝓕.ε₀) * (J.chargeDensity 𝓕.c) ε) ∧
       (∀ ε i, 𝓕.μ₀ * 𝓕.ε₀ * (Space.distTimeDeriv (A.electricField 𝓕.c)) ε i -
@@ -148,8 +148,8 @@ $$\mu_0 \varepsilon_0 \frac{\partial \mathbf{E}_i}{\partial t} -
 -/
 
 lemma isExtrema_iff_vectorPotential {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) :
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) :
     IsExtrema 𝓕 A J ↔
       (∀ ε, distSpaceDiv (A.electricField 𝓕.c) ε = (1/𝓕.ε₀) * (J.chargeDensity 𝓕.c) ε) ∧
       (∀ ε i, 𝓕.μ₀ * 𝓕.ε₀ * distTimeDeriv (A.electricField 𝓕.c) ε i -
@@ -171,7 +171,7 @@ lemma isExtrema_iff_vectorPotential {𝓕 : FreeSpace}
 
 /-!
 
-### A.3. The exterma condition in terms of tensors
+### A.3. The extrema condition in terms of tensors
 
 We show that `A` is an extrema of the lagrangian if and only if the equation
 $$\frac{1}{\mu_0} \partial_\kappa F^{\kappa \nu'} - J^{\nu'} = 0,$$
@@ -181,8 +181,8 @@ holds.
 open SpaceTime minkowskiMatrix
 set_option maxHeartbeats 600000 in
 lemma isExterma_iff_tensor {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) :
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) :
     IsExtrema 𝓕 A J ↔ ∀ ε,
     {((1/ 𝓕.μ₀ : ℝ) • distTensorDeriv A.fieldStrength ε | κ κ ν') + - (J ε | ν')}ᵀ = 0 := by
   apply Iff.intro
@@ -209,9 +209,9 @@ lemma isExterma_iff_tensor {𝓕 : FreeSpace}
 
 /-!
 
-### A.4. The invariance of the exterma condition under Lorentz transformations
+### A.4. The invariance of the extrema condition under Lorentz transformations
 
-We show that the Exterma condition is invariant under Lorentz transformations.
+We show that the Extrema condition is invariant under Lorentz transformations.
 This implies that if an electromagnetic potential is an extrema in one inertial frame,
 it is also an extrema in any other inertial frame.
 In otherwords that the Maxwell's equations are Lorentz invariant.
@@ -220,8 +220,8 @@ A natural consequence of this is that the speed of light is the same in all iner
 -/
 
 lemma isExterma_equivariant {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) (Λ : LorentzGroup d) :
+    (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) (Λ : LorentzGroup d) :
     IsExtrema 𝓕 (Λ • A) (Λ • J) ↔ IsExtrema 𝓕 A J := by
   rw [isExterma_iff_tensor]
   conv_lhs =>
@@ -251,5 +251,5 @@ lemma isExterma_equivariant {𝓕 : FreeSpace}
     rw [h]
     simp
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

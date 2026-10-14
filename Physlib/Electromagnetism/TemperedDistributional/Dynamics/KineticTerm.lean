@@ -25,7 +25,7 @@ In this implementation we have set `μ₀ = 1`. It is a TODO to introduce this c
 
 ## ii. Key results
 
-- `DistElectromagneticPotential.gradKineticTerm` is the variational gradient of the kinetic term
+- `TempDistElectromagneticPotential.gradKineticTerm` is the variational gradient of the kinetic term
   for distributional electromagnetic potentials.
 
 ## iii. Table of contents
@@ -54,7 +54,7 @@ using `ElectromagneticPotential.gradKineticTerm_eq_sum_sum` as the defining form
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open minkowskiMatrix SpaceTime SchwartzMap Lorentz
 attribute [-simp] Fintype.sum_sum_type
 attribute [-simp] Nat.succ_eq_add_one
@@ -62,7 +62,7 @@ attribute [-simp] Nat.succ_eq_add_one
 /-- The gradient of the kinetic term for an Electromagnetic potential which
   is a distribution. -/
 noncomputable def gradKineticTerm {d} (𝓕 : FreeSpace) :
-    DistElectromagneticPotential d →ₗ[ℝ] (SpaceTime d) →d[ℝ] Lorentz.Vector d where
+    TempDistElectromagneticPotential d →ₗ[ℝ] (SpaceTime d) →d[ℝ] Lorentz.Vector d where
   toFun A := {
     toFun ε := ∑ ν, ∑ μ,
       (1 / (𝓕.μ₀) * (η μ μ * η ν ν * distDeriv μ (distDeriv μ A) ε ν -
@@ -93,12 +93,12 @@ noncomputable def gradKineticTerm {d} (𝓕 : FreeSpace) :
     ring_nf
 
 lemma gradKineticTerm_eq_sum_sum {d} {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε = ∑ ν, ∑ μ,
         (1 / (𝓕.μ₀) * (η μ μ * η ν ν * distDeriv μ (distDeriv μ A) ε ν -
         distDeriv μ (distDeriv ν A) ε μ)) • Lorentz.Vector.basis ν := rfl
 
-lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : DistElectromagneticPotential d)
+lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε = ∑ ν, (1/𝓕.μ₀ * η ν ν) •
     (∑ μ, ((Vector.basis.tensorProduct Vector.basis).repr
@@ -120,7 +120,7 @@ lemma gradKineticTerm_eq_fieldStrength {d} {𝓕 : FreeSpace} (A : DistElectroma
   simp
 
 lemma gradKineticTerm_sum_inl_eq {d} {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε (Sum.inl 0) =
     (1/(𝓕.μ₀ * 𝓕.c) * (distTimeSlice 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε) := by
   rw [gradKineticTerm_eq_fieldStrength A ε, Lorentz.Vector.apply_sum, distTimeSlice_symm_apply,
@@ -141,7 +141,7 @@ lemma gradKineticTerm_sum_inl_eq {d} {𝓕 : FreeSpace}
   field_simp
 
 lemma gradKineticTerm_sum_inr_eq {d} {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
     A.gradKineticTerm 𝓕 ε (Sum.inr i) =
     (𝓕.μ₀⁻¹ * (1 / 𝓕.c ^ 2 * (distTimeSlice 𝓕.c).symm
       (Space.distTimeDeriv (A.electricField 𝓕.c)) ε i -
@@ -175,7 +175,7 @@ lemma gradKineticTerm_sum_inr_eq {d} {𝓕 : FreeSpace}
 
 attribute [-simp] Nat.reduceAdd Nat.reduceSucc Fin.isValue in
 lemma gradKineticTerm_eq_distTensorDeriv {d} {𝓕 : FreeSpace}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) (ν : Fin 1 ⊕ Fin d) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) (ν : Fin 1 ⊕ Fin d) :
     A.gradKineticTerm 𝓕 ε ν = η ν ν * ((Tensorial.toTensor (M := Lorentz.Vector d)).symm
     (permT id (IsReindexing.auto) {(1/ 𝓕.μ₀ : ℝ) •
     distTensorDeriv A.fieldStrength ε | κ κ ν'}ᵀ)) ν := by
@@ -222,5 +222,5 @@ lemma gradKineticTerm_eq_distTensorDeriv {d} {𝓕 : FreeSpace}
     · exact absurd h2 (by decide)
     · rfl
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism
