@@ -267,6 +267,8 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.LocalNet.Basic
+public import Physlib.ProbabilisticTheory.LocalNet.GlobalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
