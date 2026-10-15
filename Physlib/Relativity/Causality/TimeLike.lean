@@ -64,6 +64,24 @@ lemma timelike_time_dominates_space {d : ℕ} {v : Vector d}
     exact lt_of_sub_pos h_norm_pos
   exact h
 
+/-- Two timelike vectors have nonzero Minkowski inner product. -/
+lemma minkowskiProduct_ne_zero_of_timeLike {d : ℕ} {u v : Vector d}
+    (hu : causalCharacter u = .timeLike) (hv : causalCharacter v = .timeLike) :
+    ⟪u, v⟫ₘ ≠ 0 := by
+  have hlt : ⟪u.spatialPart, v.spatialPart⟫_ℝ * ⟪u.spatialPart, v.spatialPart⟫_ℝ <
+      (u.timeComponent * v.timeComponent) * (u.timeComponent * v.timeComponent) := by
+    calc
+      _ ≤ ⟪u.spatialPart, u.spatialPart⟫_ℝ * ⟪v.spatialPart, v.spatialPart⟫_ℝ :=
+        real_inner_mul_inner_self_le _ _
+      _ < (u.timeComponent * u.timeComponent) * (v.timeComponent * v.timeComponent) :=
+        mul_lt_mul'' (timelike_time_dominates_space hu) (timelike_time_dominates_space hv)
+          real_inner_self_nonneg real_inner_self_nonneg
+      _ = _ := by ring
+  intro h
+  rw [minkowskiProduct_eq_timeComponent_spatialPart, sub_eq_zero] at h
+  rw [h] at hlt
+  exact lt_irrefl _ hlt
+
 /-- For nonzero timelike vectors, the time component is nonzero -/
 @[simp]
 lemma time_component_ne_zero_of_timelike {d : ℕ} {v : Vector d}
