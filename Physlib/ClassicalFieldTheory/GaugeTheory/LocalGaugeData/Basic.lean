@@ -31,24 +31,9 @@ For a matrix group such as `SU(2)`, the jet of a gauge transformation is a matri
 in `SpaceTimeAlgebra`, the formal Taylor series at `x`. The Taylor series of a product is the
 product of the Taylor series, so the group law is still matrix multiplication, and `GJ` is cut
 out by the same equations `U† U = 1` and `det U = 1` read over `SpaceTimeAlgebra`; likewise
-`𝔤J` is the traceless self-adjoint matrices over `SpaceTimeAlgebra`.
+`𝔤J` is the traceless self-adjoint matrices over `SpaceTimeAlgebra` with the usual bracket
+` ⁅A, B⁆ = i(AB − BA)`.
 
-The structure `LocalGaugeData G₀ 𝔤 GJ 𝔤J` records the data on these four carriers that the
-transformation laws of gauge fields and matter fields use, together with the coordinates that
-locate a jet around the base point:
-
-* the inclusion of constants and evaluation at the base point, on the group and on the
-  Lie algebra;
-* the formal spacetime derivatives `deriv μ` on `𝔤J`, commuting, satisfying the Leibniz
-  rule for the bracket, and killing constants;
-* multiplication by the coordinates `mulCoord μ`, vanishing at the base point and central for
-  the bracket, with `∂_μ (x_ν a) = x_ν ∂_μ a + δ_{μν} a`; these give the Euler identity
-  `evalLie_iteratedDeriv_mulCoord`;
-* the adjoint action of `GJ` on `𝔤J`, by Lie algebra automorphisms, evaluating at the base
-  point to the adjoint action of `G₀` on `𝔤`;
-* the Maurer–Cartan form `maurerCartan U μ = i (∂_μ U) U⁻¹`, with its cocycle law, its
-  flatness equation `maurerCartan_structure` and the Leibniz rule `deriv_adjointJ` for the
-  adjoint action.
 
 ## ii. Key results
 
@@ -84,6 +69,23 @@ locate a jet around the base point:
 /-!
 
 ## A. The structure
+
+We package this local information of a gauge group into the structure `LocalGaugeData G₀ 𝔤 GJ 𝔤J`.
+Alongside the four carriers, it records the operations that the transformation laws of gauge fields
+and matter fields are built from, and the coordinates that place a jet around the base point.
+It consists of:
+
+* the inclusion of constants and evaluation at the base point, on the group and on the
+  Lie algebra;
+* the formal spacetime derivatives `deriv μ` on `𝔤J`, commuting, satisfying the Leibniz
+  rule for the bracket, and killing constants;
+* multiplication by the coordinates `mulCoord μ`, vanishing at the base point and central for
+  the bracket, with `∂_μ (x_ν a) = x_ν ∂_μ a + δ_{μν} a`;
+* the adjoint action of `GJ` on `𝔤J`, by Lie algebra automorphisms, evaluating at the base
+  point to the adjoint action of `G₀` on `𝔤`;
+* the Maurer–Cartan form `maurerCartan U μ = i (∂_μ U) U⁻¹`, with its cocycle law, its
+  flatness equation `maurerCartan_structure` and the Leibniz rule `deriv_adjointJ` for the
+  adjoint action.
 
 -/
 
@@ -193,9 +195,7 @@ lemma deriv_adjointJ_ofConstant (g : G₀) (μ : Fin 1 ⊕ Fin 3) (x : 𝔤J) :
 
 -/
 
-/-- Post-composition with `deriv` is right-commutative, since formal derivatives
-  commute (`deriv_comm`). This is what allows iterated derivatives to be indexed by a
-  `Multiset` of directions. -/
+/-- Post-composition with `deriv` is right-commutative. -/
 instance instRightCommutativeCompDeriv : RightCommutative
     (fun (D : 𝔤J →ₗ[ℝ] 𝔤J) (μ : Fin 1 ⊕ Fin 3) => D.comp (jets.deriv μ)) where
   right_comm D μ ν := by
@@ -208,8 +208,7 @@ instance instRightCommutativeCompDeriv : RightCommutative
 
 -/
 
-/-- The iterated formal derivative on the jet Lie algebra, in the (unordered, since
-  derivatives commute) directions given by the multiset `μs`. -/
+/-- The iterated formal derivative on the jet Lie algebra. -/
 noncomputable def iteratedDeriv (μs : Multiset (Fin 1 ⊕ Fin 3)) : 𝔤J →ₗ[ℝ] 𝔤J :=
   μs.foldl (fun D μ => D.comp (jets.deriv μ)) LinearMap.id
 
@@ -237,8 +236,7 @@ lemma iteratedDeriv_cons (μ : Fin 1 ⊕ Fin 3) (μs : Multiset (Fin 1 ⊕ Fin 3
   rw [iteratedDeriv, Multiset.foldl_cons, h]
   simp
 
-/-- The iterated derivative is additive in the multiset of directions: deriving
-  along `s + t` is deriving along `t` and then along `s`. -/
+/-- The iterated derivative is additive in the multiset. -/
 lemma iteratedDeriv_add (s t : Multiset (Fin 1 ⊕ Fin 3)) :
     jets.iteratedDeriv (s + t) = (jets.iteratedDeriv s).comp (jets.iteratedDeriv t) := by
   induction s using Multiset.induction_on with
@@ -253,16 +251,13 @@ lemma iteratedDeriv_singleton (μ : Fin 1 ⊕ Fin 3) :
   rw [show ({μ} : Multiset (Fin 1 ⊕ Fin 3)) = μ ::ₘ 0 from rfl, iteratedDeriv_cons,
     iteratedDeriv_zero, LinearMap.comp_id]
 
-/-- Since derivatives commute, the direction added by `cons` may be taken first as well
-  as last. -/
 lemma iteratedDeriv_cons_eq_comp_deriv (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) :
     jets.iteratedDeriv (μ ::ₘ s) = (jets.iteratedDeriv s).comp (jets.deriv μ) := by
   rw [show (μ ::ₘ s : Multiset (Fin 1 ⊕ Fin 3)) = s + {μ} from by
       rw [add_comm, Multiset.singleton_add],
     iteratedDeriv_add, iteratedDeriv_singleton]
 
-/-- The iterated Leibniz rule for the bracket: the iterated derivative of a bracket
-  is the antidiagonal convolution of iterated derivatives of the two arguments. -/
+/-- The iterated Leibniz rule for the bracket. -/
 lemma iteratedDeriv_bracket (s : Multiset (Fin 1 ⊕ Fin 3)) (a b : 𝔤J) :
     jets.iteratedDeriv s ⁅a, b⁆ =
       (s.antidiagonal.map fun p =>
@@ -324,11 +319,9 @@ lemma evalLie_iteratedDeriv_mulCoord (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1
 variable {G₀' : Type} [Group G₀'] {𝔤' : Type} [LieRing 𝔤'] [LieAlgebra ℝ 𝔤']
   {GJ' : Type} [Group GJ'] {𝔤J' : Type} [LieRing 𝔤J'] [LieAlgebra ℝ 𝔤J']
 
-/-- A morphism of local gauge data. This contains a group map of the gauge groups and of their jets,
-  and Lie algebra maps of the Lie algebras and of their jets, compatible with evaluation at the
-  base point, constants, the derivatives, multiplication by the coordinates, the adjoint
-  action of the jets and the Maurer–Cartan form. Compatibility with the adjoint action of
-  the gauge group follows, as `Hom.lie_adjoint`. -/
+/-- A morphism of local gauge data.
+
+  `Hom` is the standard name for a morphism in Lean. -/
 structure Hom (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J) (jets' : LocalGaugeData G₀' 𝔤' GJ' 𝔤J') where
   /-- The map of gauge groups. -/
   group : G₀ →* G₀'
@@ -347,6 +340,8 @@ structure Hom (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J) (jets' : LocalGaugeData
   lieJ_adjointJ : ∀ U a, lieJ (jets.adjointJ U a) = jets'.adjointJ (groupJ U) (lieJ a)
   lieJ_maurerCartan : ∀ U μ, lieJ (jets.maurerCartan U μ) = jets'.maurerCartan (groupJ U) μ
 
+TODO "Add the constructor for `Hom` from a Lie group homomorphism."
+
 namespace Hom
 
 variable {jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J} {jets' : LocalGaugeData G₀' 𝔤' GJ' 𝔤J'}
@@ -358,8 +353,7 @@ variable {jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J} {jets' : LocalGaugeData G₀
 
 -/
 
-/-- A morphism intertwines the adjoint actions of the gauge groups: the compatibility
-  `lieJ_adjointJ` applied to constant jets and evaluated at the base point. -/
+/-- A morphism intertwines the adjoint actions of the gauge groups. -/
 lemma lie_adjoint (g : G₀) (x : 𝔤) :
     f.lie (jets.adjoint g x) = jets'.adjoint (f.group g) (f.lie x) := by
   have h := jets.evalLie_adjointJ (jets.ofConstant g) (jets.ofConstantLie x)
