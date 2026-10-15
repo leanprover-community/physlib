@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Relativity.Tensors.Contraction.CrossToSlot
+public import Physlib.Relativity.Tensors.Contraction.UnitTensorContraction
 public import Physlib.Mathematics.Modules.ConjModule
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 
@@ -71,6 +71,9 @@ honest conjugate-transpose.
   positive-definite (`isSymm_toSesqForm_inverseT`, `isPosDef_toSesqForm_inverseT`).
 - `ConjTensorSpecies.nondegenerate_toSesqForm_iff` identifies invertibility of the component
   matrix with nondegeneracy of the sesquilinear form.
+- `ConjTensorSpecies.crossToEnd_right_injective`: contraction with `M` is injective when its
+  component matrix is invertible. Then `crossToEnd_inverseT` and `crossToEnd_inverseT_left` are the
+  contraction laws of the inverse and `eq_inverseT` its uniqueness.
 
 ## iii. Table of contents
 
@@ -86,6 +89,7 @@ honest conjugate-transpose.
 - J. The inverse of a nondegenerate tensor
   - J.1. The inverse
   - J.2. Over a field
+  - J.3. Over `RCLike` scalars
 
 -/
 
@@ -457,6 +461,14 @@ lemma squareMatrixOf_apply {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d])
     S.squareMatrixOf M hbar i j = toMatrix M i ((Equiv.cast (hbar ▸ S.barIdx_eq a)).symm j) :=
   rfl
 
+/-- The component matrix of `M` is recovered from `squareMatrixOf` by carrying the column labels
+back to `bar a`. -/
+lemma toMatrix_eq_submatrix_squareMatrixOf {a d : C} (hbar : S.bar a = d)
+    (M : S.Tensor ![a, d]) :
+    toMatrix M = (S.squareMatrixOf M hbar).submatrix id (Equiv.cast (hbar ▸ S.barIdx_eq a)) := by
+  rw [squareMatrixOf, Matrix.reindex_apply, Matrix.submatrix_submatrix, Equiv.refl_symm,
+    Equiv.coe_refl, Function.id_comp, Equiv.symm_comp_self, Matrix.submatrix_id_id]
+
 /-- Conjugation swaps the two slots of `M : ![a, bar a]`, `M_{IJ̄} = conj M_{JĪ}`, exactly when its
 square component matrix is Hermitian. -/
 lemma conjT_eq_permT_swap_iff_isHermitian {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d]) :
@@ -615,7 +627,9 @@ end PosDef
 ### J.1. The inverse
 
 The inverse of `M : ![a, bar a]` is the tensor at the dual colours `![τ (bar a), τ a]` whose
-component matrix is the inverse of that of `M`. It is Hermitian when `M` is.
+component matrix is the inverse of that of `M`. It is Hermitian when `M` is. When the component
+matrix is invertible, contraction with `M` is injective, and the inverse is the two-sided inverse of
+`M` under contraction (J.3), in the form of the hypotheses of `crossToSlotEquiv`.
 
 -/
 
@@ -686,6 +700,31 @@ lemma isSymm_toSesqForm_inverseT {x y a d : C} (hbar : S.bar a = d)
   rw [squareMatrixOf_inverseT]
   exact hM.inv.submatrix _
 
+/-- Contraction with `M` is injective on rank-two tensors when the component matrix of `M` is
+invertible. -/
+lemma crossToEnd_right_injective {a d c : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d])
+    (hM : IsUnit (S.squareMatrixOf M hbar).det) :
+    Function.Injective (crossToEnd (Fin.last 1) (0 : Fin 2) rfl M (cB := ![S.τ d, c])) := by
+  intro Q Q' h
+  have h := congrArg toMatrixMap h
+  -- `toMatrixMap_crossToEnd_pair` keys through the `Fin.append` colour list only with this option.
+  set_option backward.isDefEq.respectTransparency false in
+  rw [toMatrixMap_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
+    toMatrixMap_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
+    S.toMatrix_eq_submatrix_squareMatrixOf hbar M] at h
+  set N := S.squareMatrixOf M hbar
+  set β := Equiv.cast (hbar ▸ S.barIdx_eq a)
+  -- Move the relabelling `β` across the product, then cancel `N` on the left.
+  have key : ∀ Z : Matrix (basisIdx d) (basisIdx c) k,
+      N.submatrix id β * Z = N * Z.submatrix β.symm id := fun Z => by
+    simpa only [Matrix.submatrix_id_id] using Matrix.submatrix_id_mul_right N Z id β
+  rw [key, key] at h
+  have h2 := congrArg (fun X : Matrix (basisIdx a) (basisIdx c) k => N⁻¹ * X) h
+  simp only [Matrix.nonsing_inv_mul_cancel_left _ _ hM] at h2
+  refine toMatrixMap_injective ?_
+  ext z w
+  simpa [toMatrix_apply] using congrFun (congrFun h2 (β ((dualIdxEquiv rfl).symm z))) w
+
 end ConjTensorSpecies
 
 /-!
@@ -731,6 +770,89 @@ lemma isPosDef_toSesqForm_inverseT {x y a d : C} (hbar : S.bar a = d) (hx : S.τ
   exact hM.inv.submatrix ((Equiv.injective _).comp (Equiv.injective _))
 
 end PosDef
+
+end ConjTensorSpecies
+
+/-!
+
+### J.3. Over `RCLike` scalars
+
+The unit tensor needs `RCLike` scalars, so the contraction laws and uniqueness of the inverse are
+stated over `RCLike k`.
+
+-/
+
+namespace ConjTensorSpecies
+
+open Tensor HasContrDualBases
+open scoped Matrix
+
+variable {k : Type} [RCLike k] {C : Type} {G : Type} [Group G]
+    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+    {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
+    (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
+
+/-- `M` contracted with its inverse is the unit tensor, when its component matrix is invertible. -/
+lemma crossToEnd_inverseT {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d])
+    (hM : IsUnit (S.squareMatrixOf M hbar).det) :
+    crossToEnd (Fin.last 1) (0 : Fin 2) rfl M (S.inverseT M hbar) =
+      permT id (IsReindexing.unitTensor_pair (S := S.toTensorSpecies) (d := d)
+        (S.τ_τ_apply a)) (unitTensor (S := S.toTensorSpecies) (S.τ a)) := by
+  refine toMatrixMap_injective ?_
+  have hMN := S.toMatrix_eq_submatrix_squareMatrixOf hbar M
+  -- `toMatrixMap_crossToEnd_pair` keys through the `Fin.append` colour list only with this option,
+  -- and the casts it leaves in the result are the ones the final index step cancels.
+  set_option backward.isDefEq.respectTransparency false in
+  rw [toMatrixMap_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
+    toMatrixMap_permT_unitTensor (S := S.toTensorSpecies) (σ := id) (S.τ a) (fun _ => rfl),
+    toMatrix_inverseT,
+    Matrix.submatrix_submatrix]
+  set N := S.squareMatrixOf M hbar
+  have hr : (⇑(Equiv.cast (hbar ▸ S.barIdx_eq a)) ∘ ⇑(dualIdxEquiv (rfl : S.τ d = S.τ d)).symm) ∘
+      ⇑(dualIdxEquiv (rfl : S.τ d = S.τ d)) = ⇑(Equiv.cast (hbar ▸ S.barIdx_eq a)) := by
+    funext z
+    simp only [Function.comp_apply, Equiv.symm_apply_apply]
+  rw [hMN, hr, Function.comp_id, Matrix.submatrix_mul_equiv, Matrix.mul_nonsing_inv _ hM]
+  ext x y
+  simp only [Matrix.submatrix_apply, id_eq, Matrix.one_apply]
+  refine if_congr ?_ rfl rfl
+  simp only [dualIdxEquiv_apply, basisIdxCongr, Equiv.cast_apply]
+  constructor <;> rintro rfl <;> simp
+
+/-- The inverse contracted with `M` is the unit tensor, when the component matrix of `M` is
+invertible. -/
+lemma crossToEnd_inverseT_left {a d : C} (hbar : S.bar a = d)
+    (M : S.Tensor ![a, d])
+    (hM : IsUnit (S.squareMatrixOf M hbar).det) :
+    crossToEnd (Fin.last 1) (0 : Fin 2) (S.τ_τ_apply a) (S.inverseT M hbar) M =
+      permT id (IsReindexing.unitTensor_pair (S := S.toTensorSpecies) (d := S.τ a)
+        (rfl : S.τ d = S.τ d)) (unitTensor (S := S.toTensorSpecies) d) := by
+  refine toMatrixMap_injective ?_
+  have hMN := S.toMatrix_eq_submatrix_squareMatrixOf hbar M
+  rw [toMatrixMap_crossToEnd_pair (c1 := S.τ a) (c2 := a) (S.τ_τ_apply a),
+    toMatrixMap_permT_unitTensor (S := S.toTensorSpecies) (σ := id) d (fun _ => rfl),
+    toMatrix_inverseT]
+  set N := S.squareMatrixOf M hbar
+  rw [hMN, Matrix.submatrix_submatrix, Function.id_comp, Function.comp_id,
+    Matrix.submatrix_mul_equiv, Matrix.nonsing_inv_mul _ hM]
+  ext x y
+  simp only [Matrix.submatrix_apply, Function.comp_apply, Matrix.one_apply]
+  refine if_congr ?_ rfl rfl
+  rw [EmbeddingLike.apply_eq_iff_eq]
+  simp only [dualIdxEquiv, Equiv.symm_trans_apply, Equiv.symm_symm]
+  rfl
+
+/-- The inverse is unique: a tensor whose contraction with `M` is the unit tensor is
+`inverseT M`, when the component matrix of `M` is invertible. -/
+lemma eq_inverseT {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d])
+    (hM : IsUnit (S.squareMatrixOf M hbar).det)
+    {Q : S.Tensor ![S.τ d, S.τ a]}
+    (hQ : crossToEnd (Fin.last 1) (0 : Fin 2) rfl M Q =
+      permT id (IsReindexing.unitTensor_pair (S := S.toTensorSpecies) (d := d)
+        (S.τ_τ_apply a)) (unitTensor (S := S.toTensorSpecies) (S.τ a))) :
+    Q = S.inverseT M hbar :=
+  S.crossToEnd_right_injective hbar M hM (hQ.trans (S.crossToEnd_inverseT hbar M hM).symm)
 
 end ConjTensorSpecies
 end
