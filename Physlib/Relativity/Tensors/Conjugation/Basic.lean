@@ -66,6 +66,9 @@ honest conjugate-transpose.
   `ConjTensorSpecies.isSymm_toSesqForm_iff_isHermitian` are its tensor and matrix forms.
 - `ConjTensorSpecies.isPosDef_toSesqForm_iff_posDef`: `M` is positive-definite, i.e. its form is
   (`LinearMap.IsPosDef`), exactly when its square component matrix is `Matrix.PosDef`.
+- `ConjTensorSpecies.inverseT` is the inverse of a rank-two tensor. Its square component matrix
+  is the inverse of that of `M` (`squareMatrixOf_inverseT`), so it stays Hermitian
+  (`isSymm_toSesqForm_inverseT`).
 
 ## iii. Table of contents
 
@@ -78,6 +81,7 @@ honest conjugate-transpose.
 - G. Dual bases under conjugation
 - H. The sesquilinear form of a tensor
 - I. Positive-definite tensors
+- J. The inverse of a nondegenerate tensor
 
 -/
 
@@ -599,6 +603,82 @@ lemma isPosDef_toSesqForm_iff_posDef [HasContrDualBases S.toTensorSpecies]
     Matrix.PosDef.transpose_iff]
 
 end PosDef
+
+/-!
+
+## J. The inverse of a nondegenerate tensor
+
+The inverse of `M : ![a, bar a]` is the tensor at the dual colours `![τ (bar a), τ a]` whose
+component matrix is the inverse of that of `M`. It is Hermitian when `M` is.
+
+-/
+
+/-- The colours of the inverse are again a colour and its conjugate. -/
+lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
+  (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
+
+variable [HasContrDualBases S.toTensorSpecies]
+
+/-- The inverse of `M : ![a, bar a]`, at the dual colours: its component matrix is the inverse of
+the component matrix of `M`, labels carried across by `dualIdxEquiv`. It is zero when that matrix's
+determinant is not a unit; the contraction laws assume `IsUnit` of the determinant. -/
+def inverseT {a d : C} (M : S.Tensor ![a, d]) (hbar : S.bar a = d := by rfl) :
+    S.Tensor ![S.τ d, S.τ a] :=
+  fromMatrixT (S := S.toTensorSpecies) (S.τ d) (S.τ a)
+    ((S.squareMatrixOf M hbar)⁻¹.submatrix
+      (Equiv.cast (hbar ▸ S.barIdx_eq a) ∘ (dualIdxEquiv (rfl : S.τ d = S.τ d)).symm)
+      (dualIdxEquiv (S.τ_τ_apply a)))
+
+/-- The component matrix of the inverse is the inverse component matrix, relabelled. -/
+lemma toMatrix_inverseT {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d]) :
+    toMatrix (S.inverseT M hbar) =
+      (S.squareMatrixOf M hbar)⁻¹.submatrix
+        (Equiv.cast (hbar ▸ S.barIdx_eq a) ∘ (dualIdxEquiv (rfl : S.τ d = S.τ d)).symm)
+        (dualIdxEquiv (S.τ_τ_apply a)) :=
+  toMatrix_fromMatrixT _ _ _
+
+/-- The labels of the two slots of the inverse, carried to the labels of `a`, agree: through the
+conjugate-label identification and the dual matching at `τ a`, and through the dual matching at
+`d`. -/
+lemma dualIdxEquiv_cast_symm_eq [Nontrivial k] {a d : C} (hbar : S.bar a = d)
+    (j : basisIdx (S.τ d)) :
+    dualIdxEquiv (S.τ_τ_apply a)
+        ((Equiv.cast (S.bar_tau_of_bar hbar ▸ S.barIdx_eq (S.τ d))).symm j) =
+      Equiv.cast (hbar ▸ S.barIdx_eq a) ((dualIdxEquiv (rfl : S.τ d = S.τ d)).symm j) := by
+  subst hbar
+  obtain ⟨x, rfl⟩ : ∃ x, dualIdxEquiv (rfl : S.τ (S.bar a) = S.τ (S.bar a))
+      ((Equiv.cast (S.barIdx_eq a)).symm x) = j :=
+    ⟨Equiv.cast (S.barIdx_eq a) ((dualIdxEquiv rfl).symm j), by
+      rw [Equiv.symm_apply_apply, Equiv.apply_symm_apply]⟩
+  rw [Equiv.symm_apply_apply, Equiv.apply_symm_apply,
+    ← dualIdxEquiv_symm (rfl : S.τ a = S.τ a) (S.τ_τ_apply a), Equiv.symm_apply_eq]
+  have h' := S.dualIdxEquiv_bar (rfl : S.τ a = S.τ a) (S.bar_tau a).symm x
+  simp only [dualIdxEquiv_apply, basisIdxCongr, Equiv.cast_apply] at h' ⊢
+  simpa only [← Equiv.cast_symm, Equiv.cast_apply, cast_cast, cast_eq] using
+    congrArg (cast (S.barIdx_eq (S.τ a))) h'
+
+/-- The square component matrix of the inverse is the inverse of that of `M`, with the labels of
+`τ d` carried to those of `a` on both axes. -/
+lemma squareMatrixOf_inverseT {a d : C} (hbar : S.bar a = d)
+    (M : S.Tensor ![a, d]) :
+    S.squareMatrixOf (S.inverseT M hbar) (S.bar_tau_of_bar hbar) =
+      (S.squareMatrixOf M hbar)⁻¹.submatrix
+        (Equiv.cast (hbar ▸ S.barIdx_eq a) ∘ (dualIdxEquiv (rfl : S.τ d = S.τ d)).symm)
+        (Equiv.cast (hbar ▸ S.barIdx_eq a) ∘ (dualIdxEquiv (rfl : S.τ d = S.τ d)).symm) := by
+  nontriviality k
+  rw [squareMatrixOf, toMatrix_inverseT, Matrix.reindex_apply, Matrix.submatrix_submatrix,
+    Equiv.refl_symm, Equiv.coe_refl, Function.comp_id]
+  exact congrArg _ (funext (S.dualIdxEquiv_cast_symm_eq hbar))
+
+/-- The inverse of a Hermitian tensor is Hermitian: if the sesquilinear form of `M` is Hermitian
+(`LinearMap.IsSymm`), so is that of its inverse. -/
+lemma isSymm_toSesqForm_inverseT {x y a d : C} (hbar : S.bar a = d)
+    (hx : S.τ x = a) (hy : S.τ y = S.τ d) {M : S.Tensor ![a, d]}
+    (hM : (S.toSesqForm x M hbar hx).IsSymm) :
+    (S.toSesqForm y (S.inverseT M hbar) (S.bar_tau_of_bar hbar) hy).IsSymm := by
+  rw [isSymm_toSesqForm_iff_isHermitian] at hM ⊢
+  rw [squareMatrixOf_inverseT]
+  exact hM.inv.submatrix _
 
 end ConjTensorSpecies
 end
