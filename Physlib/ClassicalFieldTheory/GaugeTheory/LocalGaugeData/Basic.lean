@@ -43,7 +43,7 @@ out by the same equations `U† U = 1` and `det U = 1` read over `SpaceTimeAlgeb
 - `LocalGaugeData.iteratedDeriv` : the iterated derivative `∂_s` on `𝔤J` along a multiset
   of directions, with `iteratedDeriv_cons`, `iteratedDeriv_add` and the iterated Leibniz
   rule `iteratedDeriv_bracket`.
-- `LocalGaugeData.evalLie_iteratedDeriv_mulCoord` : the Euler identity for the coordinates.
+- `LocalGaugeData.evalLie_iteratedDeriv_mulCoord` : the coordinate multiplication identity 
 - `LocalGaugeData.Hom` : a morphism of local gauge data, with `Hom.id` and `Hom.comp`.
 
 ## iii. Table of contents
