@@ -67,8 +67,10 @@ honest conjugate-transpose.
 - `ConjTensorSpecies.isPosDef_toSesqForm_iff_posDef`: `M` is positive-definite, i.e. its form is
   (`LinearMap.IsPosDef`), exactly when its square component matrix is `Matrix.PosDef`.
 - `ConjTensorSpecies.inverseT` is the inverse of a rank-two tensor. Its square component matrix
-  is the inverse of that of `M` (`squareMatrixOf_inverseT`), so it stays Hermitian
-  (`isSymm_toSesqForm_inverseT`).
+  is the inverse of that of `M` (`squareMatrixOf_inverseT`), so it stays Hermitian and
+  positive-definite (`isSymm_toSesqForm_inverseT`, `isPosDef_toSesqForm_inverseT`).
+- `ConjTensorSpecies.nondegenerate_toSesqForm_iff` identifies invertibility of the component
+  matrix with nondegeneracy of the sesquilinear form.
 
 ## iii. Table of contents
 
@@ -82,6 +84,8 @@ honest conjugate-transpose.
 - H. The sesquilinear form of a tensor
 - I. Positive-definite tensors
 - J. The inverse of a nondegenerate tensor
+  - J.1. The inverse
+  - J.2. Over a field
 
 -/
 
@@ -608,6 +612,8 @@ end PosDef
 
 ## J. The inverse of a nondegenerate tensor
 
+### J.1. The inverse
+
 The inverse of `M : ![a, bar a]` is the tensor at the dual colours `![τ (bar a), τ a]` whose
 component matrix is the inverse of that of `M`. It is Hermitian when `M` is.
 
@@ -679,6 +685,52 @@ lemma isSymm_toSesqForm_inverseT {x y a d : C} (hbar : S.bar a = d)
   rw [isSymm_toSesqForm_iff_isHermitian] at hM ⊢
   rw [squareMatrixOf_inverseT]
   exact hM.inv.submatrix _
+
+end ConjTensorSpecies
+
+/-!
+
+### J.2. Over a field
+
+Over a field, invertibility of the component matrix is nondegeneracy of the sesquilinear form,
+which holds when the form is positive-definite (`LinearMap.IsPosDef.nondegenerate`). The inverse of
+a positive-definite tensor is positive-definite.
+
+-/
+
+namespace ConjTensorSpecies
+
+open Tensor HasContrDualBases
+
+variable {k : Type} [Field k] [StarRing k] {C : Type} {G : Type} [Group G]
+    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+    {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
+    (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
+
+/-- The sesquilinear form of `M` is nondegenerate exactly when its
+component matrix is invertible. -/
+lemma nondegenerate_toSesqForm_iff {x a d : C} (hbar : S.bar a = d) (hx : S.τ x = a)
+    (M : S.Tensor ![a, d]) : (S.toSesqForm x M hbar hx).Nondegenerate ↔
+      IsUnit (S.squareMatrixOf M hbar).det := by
+  rw [LinearMap.nondegenerate_iff_isUnit_det_toMatrix₂
+    ((basis ![x]).reindex (ComponentIdx.single.trans (dualIdxEquiv hx))), toMatrix₂_toSesqForm,
+    Matrix.det_transpose]
+
+section PosDef
+
+variable [PartialOrder k]
+
+/-- The inverse of a positive-definite tensor is positive-definite: if the sesquilinear form of `M`
+is positive-definite (`LinearMap.IsPosDef`), so is that of its inverse. -/
+lemma isPosDef_toSesqForm_inverseT {x y a d : C} (hbar : S.bar a = d) (hx : S.τ x = a)
+    (hy : S.τ y = S.τ d) {M : S.Tensor ![a, d]} (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
+    (S.toSesqForm y (S.inverseT M hbar) (S.bar_tau_of_bar hbar) hy).IsPosDef := by
+  rw [isPosDef_toSesqForm_iff_posDef] at hM ⊢
+  rw [squareMatrixOf_inverseT]
+  exact hM.inv.submatrix ((Equiv.injective _).comp (Equiv.injective _))
+
+end PosDef
 
 end ConjTensorSpecies
 end
