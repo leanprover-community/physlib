@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.FiniteDimension
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 public import Physlib.SpaceAndTime.Space.Slice
+public import Mathlib.Analysis.Calculus.ParametricIntegral
 /-!
 
 # Constant slice distributions

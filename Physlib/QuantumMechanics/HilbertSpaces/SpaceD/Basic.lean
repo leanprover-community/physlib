@@ -172,7 +172,7 @@ lemma MemHS.mono_restrict {Ω Ω' : Set (Space d)} (h : Ω' ≤ Ω) (hf : MemHS 
 
 lemma MemHS.indicator {Ω : Set (Space d)} (hΩ : MeasurableSet Ω) (hf : MemHS f μ) :
     MemHS (Ω.indicator f) μ :=
-  MemLp.indicator hΩ hf
+  MemLp.indicator hΩ.nullMeasurableSet hf
 
 /-- If `f` is a member of the Hilbert space with measure restricted to `Ω` then the representative
   `Ω.indicator f` which vanishes outside `Ω` is a member of `SpaceDHilbertSpace d μ`. -/
@@ -328,7 +328,7 @@ def subspaceIncl : SpaceDHilbertSpaceOn Ω μ →ₗᵢ[ℂ] SpaceDHilbertSpace 
     calc
       _ = (eLpNorm (mk ((memHS_coe ψ).indicator_of_restrict hΩ)) 2 μ).toReal := rfl
       _ = (eLpNorm (Ω.indicator ψ) 2 μ).toReal := congrArg _ (eLpNorm_congr_ae (coeFn_mk _))
-      _ = ‖ψ‖ := congrArg _ (eLpNorm_indicator_eq_eLpNorm_restrict hΩ)
+      _ = ‖ψ‖ := congrArg _ (eLpNorm_indicator_eq_eLpNorm_restrict hΩ.nullMeasurableSet)
 
 variable {μ} in
 lemma subspaceIncl_apply : subspaceIncl hΩ μ φ =ᵐ[μ] Ω.indicator φ :=

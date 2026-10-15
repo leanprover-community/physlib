@@ -446,7 +446,8 @@ lemma exists_isFree_relativeEntResource (ρ : MState (H i)) :
   rw [RelativeEntResource, ← hσ₂.iInf_eq hσ₁, ENNReal.ofNNReal, WithTop.coe_untop, iInf_subtype']
 
 set_option backward.isDefEq.respectTransparency false in
-lemma RelativeEntResource.Subadditive (ρ : MState (H i)) : Subadditive fun n ↦ 𝑅ᵣ (ρ ⊗ᵣ^[n]) := by
+lemma RelativeEntResource.Subadditive (ρ : MState (H i)) :
+    Subadditive fun n ↦ (𝑅ᵣ (ρ ⊗ᵣ^[n]) : ℝ) := by
   intro m n
   obtain ⟨σ₂, hσ₂f, hσ₂d⟩ := exists_isFree_relativeEntResource (ρ ⊗ᵣ^[m])
   obtain ⟨σ₃, hσ₃f, hσ₃d⟩ := exists_isFree_relativeEntResource (ρ ⊗ᵣ^[n])

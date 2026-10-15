@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.Lie.Classical
 public import Mathlib.Basic.Real.Basic
+public import Mathlib.Tactic.NoncommRing
 /-!
 
 # The Minkowski matrix

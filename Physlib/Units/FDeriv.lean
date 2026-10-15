@@ -7,6 +7,7 @@ module
 
 public import Physlib.Units.WithDim.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Equiv
+public import Mathlib.Analysis.Calculus.FDeriv.Add
 /-!
 
 # Dimensional invariance of fderiv

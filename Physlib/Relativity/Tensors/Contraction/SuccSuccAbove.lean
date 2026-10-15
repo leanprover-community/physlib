@@ -317,7 +317,7 @@ lemma succSuccAbove_predPredAbove (i j : Fin (n + 1 + 1)) (hij : i ≠ j) (m : F
     (hm : m ≠ i ∧ m ≠ j) :
     succSuccAbove i j (predPredAbove i j hij m hm) = m := by
   dsimp [succSuccAbove, predPredAbove]
-  grind
+  split_ifs <;> simp_all [Fin.ext_iff] <;> omega
 
 lemma predPredAbove_eq_orderIsoOfFin (i j : Fin (n + 1 + 1)) (hij : i ≠ j) (m : Fin (n + 1 + 1))
     (hm : m ≠ i ∧ m ≠ j) :

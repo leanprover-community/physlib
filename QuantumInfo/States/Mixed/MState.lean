@@ -16,7 +16,6 @@ public import QuantumInfo.ClassicalInfo.Distribution
 public import QuantumInfo.States.Pure.Braket
 
 public import Mathlib.Logic.Equiv.Basic
-public import Mathlib.Tactic.LinearCombinationPrime
 
 /-!
 Finite dimensional quantum mixed states, ρ.
@@ -752,7 +751,7 @@ lemma pure_eq_pure_iff {d : Type*} [Fintype d] [DecidableEq d] (ψ φ : Ket d) :
     simp_all
     -- Since $\overline{z} \cdot \overline{\varphi_k} \neq 0$, we can divide both sides of the equation by $\overline{z} \cdot \overline{\varphi_k}$.
     have h_div : ψ.vec i * starRingEnd ℂ z = φ.vec i := by
-      exact mul_left_cancel₀ ( show starRingEnd ℂ ( φ.vec k ) ≠ 0 from by simpa [ Complex.ext_iff ] using hk ) ( by linear_combination' h_eq );
+      exact mul_left_cancel₀ ( show starRingEnd ℂ ( φ.vec k ) ≠ 0 from by simpa [ Complex.ext_iff ] using hk ) ( by linear_combination h_eq );
     rw [ ← h_div, mul_left_comm, Complex.mul_conj, Complex.normSq_eq_norm_sq ] ; aesop;
   · cases h
     rename_i h

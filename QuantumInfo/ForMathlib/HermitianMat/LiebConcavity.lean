@@ -236,7 +236,7 @@ private lemma variational_lower_bound
     have hZ_pow : ((Z ^ ((p - 1) / p)) ^ (p / (p - 1))) = Z := by
       rw [← HermitianMat.rpow_mul]
       · field_simp
-        rw [div_self (by linarith), HermitianMat.rpow_one]
+        rw [HermitianMat.rpow_one]
       · exact hZ
     simp_all
     field_simp at this

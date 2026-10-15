@@ -6,6 +6,7 @@ Authors: David Gross
 module
 
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Traciality
 

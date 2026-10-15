@@ -117,7 +117,7 @@ lemma deriv_eq_mfderiv {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]
     deriv μ f y =
       mfderiv 𝓘(ℝ, SpaceTime d) 𝓘(ℝ, M) f y
         ((Lorentz.Vector.basis μ : SpaceTime d) : TangentSpace 𝓘(ℝ, SpaceTime d) y) := by
-  rw [deriv_eq, ← mfderiv_eq_fderiv]
+  rw [deriv_eq, mfderiv_eq_fderiv]
   rfl
 
 lemma deriv_eq_manifoldDeriv {M : Type} [NormedAddCommGroup M] [NormedSpace ℝ M]

@@ -113,7 +113,7 @@ lemma curl_contDiff {n : WithTop ℕ∞} (f : Space → EuclideanSpace ℝ (Fin 
   have hfi (j : Fin 3) : ContDiff ℝ (n + 1) (fun x => f x j) :=
     (ContinuousLinearMap.contDiff (𝕜 := ℝ) (EuclideanSpace.proj j)).comp hf
   have hd (j k : Fin 3) : ContDiff ℝ n (fun x => ∂[j] (fun x => f x k) x) :=
-    (contDiff_apply ℝ ℝ j).comp (deriv_contDiff (hfi k))
+    (contDiff_apply ℝ _ j).comp (deriv_contDiff (hfi k))
   exact (hd _ _).sub (hd _ _)
 
 /-!

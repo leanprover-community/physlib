@@ -7,6 +7,8 @@ module
 
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.BlockDiagonal
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.LownerHeinzTheorem
+public import Mathlib.Algebra.Algebra.Spectrum.Pi
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Span
 public import Mathlib.Algebra.Star.UnitaryStarAlgAut
 

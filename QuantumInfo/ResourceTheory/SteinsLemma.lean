@@ -452,7 +452,7 @@ private lemma rexp_mul_smul_proj_lt_mul_sub_le_mul_sub {n : ℕ} {x : ℝ}
         HermitianMat.mat_sub, zero_mul, mul_zero, Matrix.trace_zero, RCLike.re_to_complex,
         Complex.zero_re, HermitianMat.mat_smul, Algebra.mul_smul_comm, trace_smul, Complex.real_smul,
         RCLike.mul_re, Complex.ofReal_re, RCLike.im_to_complex, Complex.ofReal_im, sub_zero]
-      positivity
+      exact mul_nonneg hx.le hℰ
     · simp
   rw [HermMul.mul_eq_symmMul, HermitianMat.symmMul_of_commute (commute_aux n hℰσ hE)]
   dsimp

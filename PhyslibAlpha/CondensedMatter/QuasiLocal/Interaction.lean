@@ -7,6 +7,7 @@ module
 
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Gibbs
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Local
+public import Mathlib.Analysis.Matrix.Normed
 
 /-!
 

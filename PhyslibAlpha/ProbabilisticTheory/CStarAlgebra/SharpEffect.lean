@@ -64,7 +64,7 @@ lemma nonneg_add_eq_zero {x y : A} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x + y = 
 `‖z⋆z‖ = ‖z‖²`, applied to `z := √x * b`, since `z⋆z = b * √x * √x * b = b * x * b`. -/
 lemma sandwich_eq_zero {b x : A} (hb : IsSelfAdjoint b) (hx : 0 ≤ x)
     (h : b * x * b = 0) : CFC.sqrt x * b = 0 := by
-  refine (CStarRing.star_mul_self_eq_zero_iff (CFC.sqrt x * b)).mp ?_
+  refine star_mul_self_eq_zero.mp ?_
   have hstar : star (CFC.sqrt x * b) = b * CFC.sqrt x := by
     rw [star_mul, hb.star_eq, (CFC.sqrt_nonneg x).isSelfAdjoint.star_eq]
   rw [hstar]

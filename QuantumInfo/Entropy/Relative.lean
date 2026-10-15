@@ -426,7 +426,6 @@ private lemma sandwichedRelRentropy_nonneg_α_gt_1 (h : σ.M.ker ≤ ρ.M.ker) (
     0 ≤ ((ρ.M.conj (σ.M ^ ((1 - α)/(2 * α)) ).mat) ^ α).trace.log / (α - 1) := by
   grw [← sandwiched_trace_of_gt_1 h hα]
   positivity
-  positivity
 
 private lemma sandwichedRelRentropy.trace_at_one (ρ σ : MState d) :
     ((ρ.M.conj (σ.M ^ ((1 - (1:ℝ)) / (2 * (1:ℝ)))).mat) ^ (1:ℝ)).trace = 1 := by

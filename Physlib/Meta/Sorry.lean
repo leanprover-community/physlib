@@ -106,7 +106,7 @@ partial def collect (c : Name) (parents : NameSet) : M Unit := do
     | some (ConstantInfo.axiomInfo v) =>
         if v.name == ``sorryAx then
             modify fun s => { s with containsSorry := s.containsSorry.append (parents.insert c) }
-        if v.name == ``Lean.ofReduceBool || (toString v.name).contains "native_decide" then
+        if v.name == `Lean.ofReduceBool || (toString v.name).contains "native_decide" then
             modify fun s => { s with containsOfReduceBool :=
               s.containsOfReduceBool.append (parents.insert c)}
         collectExpr v.type
