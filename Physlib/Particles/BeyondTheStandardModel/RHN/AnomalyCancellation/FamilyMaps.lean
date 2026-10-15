@@ -115,9 +115,8 @@ lemma sum_familyUniversal {n : ℕ} (m : ℕ) (S : (SMνCharges 1).Charges) (j :
       ∑ _i : Fin n, (toSpecies j S ⟨0, by simp⟩) ^ m := by
     rw [Fin.sum_const]
     simp
-  erw [h1]
-  refine Finset.sum_congr rfl (fun i _ => ?_)
-  erw [toSpecies_familyUniversal]
+  refine (Finset.sum_congr rfl (fun i _ => ?_)).trans h1.symm
+  exact congrArg (· ^ m) (toSpecies_familyUniversal j S i)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sum_familyUniversal_one {n : ℕ} (S : (SMνCharges 1).Charges) (j : Fin 6) :
@@ -133,8 +132,7 @@ lemma sum_familyUniversal_two {n : ℕ} (S : (SMνCharges 1).Charges)
     Fin.isValue, Nat.reduceMul]
   rw [Finset.mul_sum]
   refine Finset.sum_congr rfl (fun i _ => ?_)
-  erw [toSpecies_familyUniversal]
-  rfl
+  exact congrArg (· * toSpecies j T i) (toSpecies_familyUniversal j S i)
 
 set_option backward.isDefEq.respectTransparency false in
 lemma sum_familyUniversal_three {n : ℕ} (S : (SMνCharges 1).Charges)
@@ -147,7 +145,8 @@ lemma sum_familyUniversal_three {n : ℕ} (S : (SMνCharges 1).Charges)
   apply Finset.sum_congr
   · rfl
   · intro i _
-    erw [toSpecies_familyUniversal]
+    refine (congrArg (· * toSpecies j T i * toSpecies j L i)
+      (toSpecies_familyUniversal j S i)).trans ?_
     simp only [toSpecies_apply, toSpeciesEquiv_apply, Fin.zero_eta, Fin.isValue, Nat.reduceMul]
     ring
 
@@ -197,7 +196,9 @@ lemma familyUniversal_quadBiLin (S : (SMνCharges 1).Charges) (T : (SMνCharges 
 lemma familyUniversal_accQuad (S : (SMνCharges 1).Charges) :
     accQuad (familyUniversal n S) = n * (accQuad S) := by
   rw [accQuad_decomp]
-  repeat erw [sum_familyUniversal]
+  have h (j : Fin 6) : ∑ i, (toSpecies j (familyUniversal n S) i) ^ 2 =
+      n * (toSpecies j S ⟨0, by simp⟩) ^ 2 := sum_familyUniversal 2 S j
+  rw [h 0, h 1, h 2, h 3, h 4]
   rw [accQuad_decomp]
   simp only [Fin.isValue, toSpecies_apply, sum_one]
   ring
