@@ -6,7 +6,9 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Relativity.Tensors.Contraction.Basis
+public import Physlib.Relativity.Tensors.Constructors
 public import Physlib.Mathematics.Modules.ConjModule
+public import Mathlib.LinearAlgebra.Matrix.Hermitian
 
 /-!
 
@@ -51,6 +53,9 @@ honest conjugate-transpose.
   `conjT t = permT σ h t'`, the workhorse for proving reality and Hermiticity conditions.
 - `ConjTensorSpecies.conjEquiv` is the single-slot conjugate-linear isomorphism `V c ≃ₛₗ V (bar c)`.
 - `ConjTensorSpecies.IsHermitian` is the structural conjugate-transpose condition on a metric slot.
+- `ConjTensorSpecies.squareMatrixOf` is the square component matrix of `M : ![a, bar a]`;
+  `ConjTensorSpecies.conjT_eq_permT_swap_iff_isHermitian` says that conjugation swaps the two slots
+  of `M` exactly when this matrix is Hermitian.
 
 ## iii. Table of contents
 
@@ -215,6 +220,16 @@ lemma conjT_apply {n : ℕ} {c : Fin n → C} (t : S.Tensor c) :
     componentMap (fun i => S.bar (c i)) (S.conjT t) b
       = star (componentMap c t (S.componentReindex c b)) := by
   simp [conjT_apply, componentMap_ofComponents]
+
+/-- The component matrix of a conjugated rank-two tensor is the entrywise `star` of the original,
+with labels carried over by `barIdx_eq`. -/
+lemma toMatrixMap_conjT {cs : Fin 2 → C} (t : S.Tensor cs) :
+    toMatrixMap (S.conjT t) = ((toMatrixMap t).map star).submatrix
+      (Equiv.cast (S.barIdx_eq (cs 0))) (Equiv.cast (S.barIdx_eq (cs 1))) := by
+  ext x y
+  simp only [toMatrixMap_apply, Matrix.submatrix_apply, Matrix.map_apply,
+    ← componentMap_eq_repr, componentMap_conjT]
+  exact congrArg _ (congrArg _ (funext fun i => by fin_cases i <;> rfl))
 
 
 lemma conjT_basis {n : ℕ} {c : Fin n → C} (i : ComponentIdx (S := S.toTensorSpecies) c) :
@@ -381,6 +396,10 @@ A metric slot pairs a colour `c` with its conjugate `bar c`. `IsHermitian` is th
 conjugate-transpose, not a bare `g = g.flip`. The condition is fixed here as `IsHermitian`; a
 downstream metric layer instantiates it for a concrete pairing.
 
+For a tensor `M : ![a, bar a]`, identifying the labels of `bar a` with those of `a` (`barIdx_eq`)
+makes its component matrix square (`squareMatrixOf`). Conjugation swaps the two slots of `M`,
+`M_{IJ̄} = conj M_{JĪ}`, exactly when this matrix is Hermitian.
+
 -/
 
 open scoped TensorProduct in
@@ -389,6 +408,39 @@ via `conjEquiv` returns its `star`: `g (x ⊗ y) = star (g (conjEquiv.symm y ⊗
 def IsHermitian {c : C} (g : V c ⊗[k] V (S.bar c) →ₗ[k] k) : Prop :=
   ∀ (x : V c) (y : V (S.bar c)),
     g (x ⊗ₜ[k] y) = star (g (S.conjEquiv.symm y ⊗ₜ[k] S.conjEquiv x))
+
+/-- The component matrix of `M : ![a, bar a]` as a square matrix over the labels of `a`, the
+labels of `bar a` identified with those of `a` (`barIdx_eq`). -/
+def squareMatrixOf {a d : C} (M : S.Tensor ![a, d]) (hbar : S.bar a = d := by rfl) :
+    Matrix (basisIdx a) (basisIdx a) k :=
+  (toMatrix M).reindex (Equiv.refl _) (Equiv.cast (hbar ▸ S.barIdx_eq a))
+
+lemma squareMatrixOf_apply {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d])
+    (i j : basisIdx a) :
+    S.squareMatrixOf M hbar i j = toMatrix M i ((Equiv.cast (hbar ▸ S.barIdx_eq a)).symm j) :=
+  rfl
+
+/-- Conjugation swaps the two slots of `M : ![a, bar a]`, `M_{IJ̄} = conj M_{JĪ}`, exactly when its
+square component matrix is Hermitian. -/
+lemma conjT_eq_permT_swap_iff_isHermitian {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d]) :
+    S.conjT M = permT ![1, 0] (IsReindexing.swap_of_eq hbar.symm
+      ((congrArg S.bar hbar).symm.trans (S.bar_involution a)).symm) M ↔
+    (S.squareMatrixOf M hbar).IsHermitian := by
+  subst hbar
+  rw [squareMatrixOf, ← toMatrixMap_injective.eq_iff, toMatrixMap_conjT,
+    toMatrixMap_permT_swap rfl (S.bar_involution a).symm, Matrix.IsHermitian, ← Matrix.ext_iff,
+    ← Matrix.ext_iff]
+  have hbb : basisIdx a = basisIdx (S.bar (S.bar a)) := by rw [S.bar_involution]
+  change (∀ (i : basisIdx (S.bar a)) (j : basisIdx (S.bar (S.bar a))),
+      star (toMatrix M (cast (S.barIdx_eq a) i) (cast (S.barIdx_eq (S.bar a)) j)) =
+        toMatrix M (cast hbb.symm j) i) ↔
+    ∀ i j : basisIdx a, star (toMatrix M j (cast (S.barIdx_eq a).symm i)) =
+      toMatrix M i (cast (S.barIdx_eq a).symm j)
+  constructor
+  · intro H i j
+    simpa [cast_cast] using H (cast (S.barIdx_eq a).symm j) (cast hbb i)
+  · intro H i j
+    simpa [cast_cast] using H (cast hbb.symm j) (cast (S.barIdx_eq a) i)
 
 end ConjTensorSpecies
 end
