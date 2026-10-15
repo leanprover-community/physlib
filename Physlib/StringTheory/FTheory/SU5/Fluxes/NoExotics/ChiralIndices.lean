@@ -10,7 +10,7 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Multiset
 public import Mathlib.Algebra.Order.Group.Int
 public import Mathlib.Algebra.Order.Sub.Basic
 public import Mathlib.Data.Finset.Insert
-public import Mathlib.Data.Multiset.OrderedMonoid
+public import Mathlib.Algebra.Order.Monoid.Multiset
 /-!
 
 # Constraints on chiral indices from the condition of no chiral exotics

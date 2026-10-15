@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.Order.Ring.Star
 public import Mathlib.Data.Finset.Attr
-public import Mathlib.Data.Int.Star
+public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Tactic.Bound
 public import Mathlib.Tactic.Common
