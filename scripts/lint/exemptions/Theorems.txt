@@ -471,10 +471,8 @@ Qubit.Z_X_anticomm
 
 [PhyslibAlpha]
 ClassicalFieldTheory.Local.isCritical_iff_eulerLagrange_zero
-CondensedMatter.TightBindingChain.mandelstam_tamm
-CondensedMatter.TightBindingChain.cramer_rao
 Electromagnetism.ThreeDimension.continuityEquation
-Electromagnetism.DistElectromagneticPotential.continuityEquation
+Electromagnetism.TempDistElectromagneticPotential.continuityEquation
 LinearMap.lie_apply_eq_of_lie_basis_eq
 LinearMap.lie_apply_eq_of_lie_span_eq
 LadderSystem.lie_E
@@ -490,7 +488,6 @@ le_of_littleO
 isLocalMin_of_posDef_of_littleo
 second_derivative_test
 second_derivative_test_analyticAt
-ProbabilisticTheory.UnitalPositiveLinearMap.robertson_det
 QuantumMechanics.HarmonicOscillator.loweringCLM_vacuumGaussian
 QuantumMechanics.HarmonicOscillator.hasVacuum_vacuumGaussian
 stinespringOp_apply

@@ -49,16 +49,16 @@ lemma volume_eq_addHaar {d} : (volume (α := Space d)) = Space.basis.toBasis.add
 lemma volume_metricBall_three :
     volume (Metric.ball (0 : Space 3) 1) = ENNReal.ofReal (4 / 3 * Real.pi) := by
   rw [InnerProductSpace.volume_ball_of_dim_odd (k := 1)]
-  simp only [ENNReal.ofReal_one, finrank_eq_dim, one_pow, pow_one, Nat.reduceAdd,
+  · simp only [ENNReal.ofReal_one, finrank_eq_dim, one_pow, pow_one, Nat.reduceAdd,
     Nat.doubleFactorial.eq_3, Nat.doubleFactorial, mul_one, Nat.cast_ofNat, one_mul]
-  ring_nf
+    ring_nf
   simp
 
 @[simp]
 lemma volume_metricBall_two :
     volume (Metric.ball (0 : Space 2) 1) = ENNReal.ofReal Real.pi := by
   rw [InnerProductSpace.volume_ball_of_dim_even (k := 1)]
-  simp [finrank_eq_dim]
+  · simp [finrank_eq_dim]
   simp [finrank_eq_dim]
 
 @[simp]
@@ -185,12 +185,12 @@ instance : SFinite (@Measure.comap ↑(Set.Ioi 0) ℝ Subtype.instMeasurableSpac
         conv_rhs =>
           enter [1, i]
           rw [MeasurableEmbedding.comap_apply (MeasurableEmbedding.subtype_coe measurableSet_Ioi)]
-        have h2 := h.2
-        rw [Measure.ext_iff'] at h2
-        rw [← Measure.sum_apply]
-        exact h2 (Subtype.val '' s)
-        refine MeasurableSet.subtype_image measurableSet_Ioi hs
-        exact hs
+        · have h2 := h.2
+          rw [Measure.ext_iff'] at h2
+          rw [← Measure.sum_apply]
+          · exact h2 (Subtype.val '' s)
+          refine MeasurableSet.subtype_image measurableSet_Ioi hs
+        · exact hs
         apply MeasurableEmbedding.subtype_coe
         simp
 

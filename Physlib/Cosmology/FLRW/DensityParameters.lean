@@ -39,7 +39,10 @@ in `Physlib.Cosmology.FLRW.ReducedHubble`, and the age of the universe in
 
 - `criticalDensity`, `densityParameter`, `curvatureDensityParameter`, `lambdaDensityParameter`.
 - `densityParameter_add_lambda_add_curvature`: the closure relation `Ω + Ω_Λ + Ω_K = 1`;
-  `densityParameter_add_curvature`: `Ω + Ω_K = 1` when `Λ = 0`.
+  `densityParameter_add_curvature`: `Ω + Ω_K = 1` when `Λ = 0`;
+  `FLRW.FriedmannSolution.densityParameter_add_lambda_add_curvature`: the closure relation for
+  an FLRW model whose cosmic fluid solves the Friedmann equations, with `Ω_K` given by its
+  spatial geometry.
 
 ## iii. Table of contents
 
@@ -129,5 +132,17 @@ lemma densityParameter_add_curvature {a ρ : Time → ℝ} {k G c : ℝ} {t : Ti
     ring
   rw [h0, add_zero] at h
   exact h
+
+/-- If the FLRW model `U` filled with the cosmic fluid `F` solves the Friedmann equations, the
+  closure relation `Ω + Ω_Λ + Ω_K = 1` holds at every time of the interval `U.I` at which
+  `H ≠ 0`, the curvature density parameter `Ω_K` being computed from the curvature parameter of
+  the spatial geometry. -/
+lemma _root_.Cosmology.FLRW.FriedmannSolution.densityParameter_add_lambda_add_curvature
+    {U : FLRW} {F : CosmicFluid} {Λ G c : ℝ} (h : U.FriedmannSolution F Λ G c) {t : Time}
+    (ht : t ∈ U.I) (hH : hubbleConstant U.a t ≠ 0) :
+    densityParameter U.a F.ρ G t + lambdaDensityParameter U.a Λ c t
+      + curvatureDensityParameter U.a U.geometry.curvature c t = 1 :=
+  FLRW.FriedmannEquation.densityParameter_add_lambda_add_curvature (U.a_ne_zero ht) hH
+    (h.firstOrder t ht)
 
 end Cosmology.FLRW.FriedmannEquation

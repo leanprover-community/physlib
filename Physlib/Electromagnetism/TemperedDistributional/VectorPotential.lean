@@ -24,7 +24,7 @@ the vector potential is non-relativistic and is therefore a distribution of `Tim
 
 ## ii. Key results
 
-- `DistElectromagneticPotential.vectorPotential` : The vector potential from an
+- `TempDistElectromagneticPotential.vectorPotential` : The vector potential from an
   electromagnetic potential which is a distribution.
 
 ## iii. Table of contents
@@ -49,7 +49,7 @@ open Tensor
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -60,7 +60,7 @@ attribute [-simp] Nat.succ_eq_add_one
 
 /-- The vector potential of an electromagnetic potential which is a distribution. -/
 noncomputable def vectorPotential {d} (c : SpeedOfLight) :
-    DistElectromagneticPotential d →ₗ[ℝ]
+    TempDistElectromagneticPotential d →ₗ[ℝ]
     (Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d) where
   toFun A := Lorentz.Vector.spatialCLM d ∘L distTimeSlice c A
   map_add' A₁ A₂ := by
@@ -68,6 +68,6 @@ noncomputable def vectorPotential {d} (c : SpeedOfLight) :
   map_smul' r A := by
     simp [distTimeSlice]
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 
 end Electromagnetism

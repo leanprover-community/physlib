@@ -219,9 +219,9 @@ lemma deriv_commute [NormedAddCommGroup M] [NormedSpace ℝ M]
   simp only [deriv_eq_fderiv_fun]
   ext x
   rw [fderiv_clm_apply, fderiv_clm_apply]
-  simp only [fderiv_fun_const, Pi.ofNat_apply, ContinuousLinearMap.comp_zero, zero_add,
+  · simp only [fderiv_fun_const, Pi.ofNat_apply, ContinuousLinearMap.comp_zero, zero_add,
     ContinuousLinearMap.flip_apply]
-  rw [(hf.contDiffAt.isSymmSndFDerivAt (by simp)).eq]
+    rw [(hf.contDiffAt.isSymmSndFDerivAt (by simp)).eq]
   repeat fun_prop
 
 /-!

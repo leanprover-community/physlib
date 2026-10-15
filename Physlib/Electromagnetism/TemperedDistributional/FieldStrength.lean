@@ -17,7 +17,7 @@ In this module we define the field strength tensor in terms of the electromagnet
 
 ## ii. Key results
 
-- `DistElectromagneticPotential.fieldStrength` : The field strength for
+- `TempDistElectromagneticPotential.fieldStrength` : The field strength for
   electromagnetic potentials which are distributions.
 
 ## iii. Table of contents
@@ -45,7 +45,7 @@ open Tensor
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -63,13 +63,13 @@ attribute [-simp] Nat.succ_eq_add_one
 /-- An auxiliary definition for the field strength of an electromagnetic potential
   based on a distribution. On Schwartz maps this has the same value as the field strength
   tensor, but no linearity or continuous properties built in. -/
-noncomputable def fieldStrengthAux {d} (A : DistElectromagneticPotential d)
+noncomputable def fieldStrengthAux {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) : Lorentz.Vector d ⊗[ℝ] Lorentz.Vector d :=
   Tensorial.toTensor.symm
       (permT id (IsReindexing.auto) {(η d | μ μ' ⊗ distTensorDeriv A ε | μ' ν) + -
       (η d | ν ν' ⊗ distTensorDeriv A ε | ν' μ)}ᵀ)
 
-lemma fieldStrengthAux_eq_add {d} (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
+lemma fieldStrengthAux_eq_add {d} (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     fieldStrengthAux A ε =
     Tensorial.toTensor.symm
       (permT id (IsReindexing.auto) {(η d | μ μ' ⊗ distTensorDeriv A ε | μ' ν)}ᵀ)
@@ -83,7 +83,7 @@ lemma fieldStrengthAux_eq_add {d} (A : DistElectromagneticPotential d) (ε : �
   · rw [permT_permT]
     rfl
 
-lemma toTensor_fieldStrengthAux {d} (A : DistElectromagneticPotential d)
+lemma toTensor_fieldStrengthAux {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     Tensorial.toTensor (fieldStrengthAux A ε) =
     (permT id (IsReindexing.auto) {(η d | μ μ' ⊗ distTensorDeriv A ε | μ' ν)}ᵀ)
@@ -92,7 +92,7 @@ lemma toTensor_fieldStrengthAux {d} (A : DistElectromagneticPotential d)
   rw [fieldStrengthAux_eq_add]
   simp
 
-lemma toTensor_fieldStrengthAux_basis_repr {d} (A : DistElectromagneticPotential d)
+lemma toTensor_fieldStrengthAux_basis_repr {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ))
     (b : ComponentIdx (S := realLorentzTensor d) (Fin.append ![Color.up] ![Color.up])) :
     (Tensor.basis _).repr (Tensorial.toTensor (fieldStrengthAux A ε)) b =
@@ -122,7 +122,7 @@ lemma toTensor_fieldStrengthAux_basis_repr {d} (A : DistElectromagneticPotential
     change distDeriv n A ε (b 0)
   rw [← Finset.sum_sub_distrib]
 
-lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : DistElectromagneticPotential d)
+lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ))
     (b : ComponentIdx (S := realLorentzTensor d) (Fin.append ![Color.up] ![Color.up])) :
     (Tensor.basis _).repr (Tensorial.toTensor (A.fieldStrengthAux ε)) b =
@@ -145,7 +145,7 @@ lemma fieldStrengthAux_tensor_basis_eq_basis {d} (A : DistElectromagneticPotenti
   congr 1
 
 lemma fieldStrengthAux_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr (A.fieldStrengthAux ε) μν =
     ∑ κ, ((η μν.1 κ * distDeriv κ A ε μν.2) - η μν.2 κ * distDeriv κ A ε μν.1) := by
   match μν with
@@ -156,7 +156,7 @@ lemma fieldStrengthAux_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 
   rw [fieldStrengthAux_tensor_basis_eq_basis]
 
 lemma fieldStrengthAux_basis_repr_apply_eq_single {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr (A.fieldStrengthAux ε) μν =
     ((η μν.1 μν.1 * distDeriv μν.1 A ε μν.2) - η μν.2 μν.2 * distDeriv μν.2 A ε μν.1) := by
   rw [fieldStrengthAux_basis_repr_apply]
@@ -173,7 +173,7 @@ lemma fieldStrengthAux_basis_repr_apply_eq_single {d} {μν : (Fin 1 ⊕ Fin d) 
     exact id (Ne.symm hb)
   · simp
 
-lemma fieldStrengthAux_eq_basis {d} (A : DistElectromagneticPotential d)
+lemma fieldStrengthAux_eq_basis {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     (A.fieldStrengthAux ε) = ∑ μ, ∑ ν,
       ((η μ μ * distDeriv μ A ε ν) - η ν ν * distDeriv ν A ε μ)
@@ -195,7 +195,7 @@ lemma fieldStrengthAux_eq_basis {d} (A : DistElectromagneticPotential d)
 
 /-- The field strength of an electromagnetic potential which is a distribution. -/
 noncomputable def fieldStrength {d} :
-    DistElectromagneticPotential d →ₗ[ℝ]
+    TempDistElectromagneticPotential d →ₗ[ℝ]
     (SpaceTime d) →d[ℝ] Lorentz.Vector d ⊗[ℝ] Lorentz.Vector d where
   toFun A := {
     toFun ε := A.fieldStrengthAux ε
@@ -229,7 +229,7 @@ noncomputable def fieldStrength {d} :
       Pi.smul_apply, Lorentz.Vector.apply_smul, Real.ringHom_apply, Finsupp.coe_smul, smul_eq_mul]
     ring
 
-lemma fieldStrength_eq_fieldStrengthAux {d} (A : DistElectromagneticPotential d)
+lemma fieldStrength_eq_fieldStrengthAux {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.fieldStrength ε = A.fieldStrengthAux ε := by rfl
 /-!
@@ -238,7 +238,7 @@ lemma fieldStrength_eq_fieldStrengthAux {d} (A : DistElectromagneticPotential d)
 
 -/
 
-lemma fieldStrength_eq_basis {d} (A : DistElectromagneticPotential d)
+lemma fieldStrength_eq_basis {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.fieldStrength ε = ∑ μ, ∑ ν,
       ((η μ μ * distDeriv μ A ε ν) - η ν ν * distDeriv ν A ε μ)
@@ -247,14 +247,14 @@ lemma fieldStrength_eq_basis {d} (A : DistElectromagneticPotential d)
   exact fieldStrengthAux_eq_basis A ε
 
 lemma fieldStrength_basis_repr_eq_single {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr (A.fieldStrength ε) μν =
     ((η μν.1 μν.1 * distDeriv μν.1 A ε μν.2) - η μν.2 μν.2 * distDeriv μν.2 A ε μν.1) := by
   rw [fieldStrength]
   exact fieldStrengthAux_basis_repr_apply_eq_single A ε
 
 @[simp]
-lemma fieldStrength_diag_zero {d} (A : DistElectromagneticPotential d)
+lemma fieldStrength_diag_zero {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) (μ : Fin 1 ⊕ Fin d) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr
     (A.fieldStrength ε) (μ, μ) = 0 := by
@@ -262,14 +262,14 @@ lemma fieldStrength_diag_zero {d} (A : DistElectromagneticPotential d)
   simp
 
 @[simp]
-lemma distDeriv_fieldStrength_diag_zero {d} (A : DistElectromagneticPotential d)
+lemma distDeriv_fieldStrength_diag_zero {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) (μ ν : Fin 1 ⊕ Fin d) :
     (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr
     (distDeriv ν A.fieldStrength ε) (μ, μ) = 0 := by
   rw [SpaceTime.distDeriv_apply']
   simp
 
-lemma fieldStrength_antisymmetric_basis {d} (A : DistElectromagneticPotential d)
+lemma fieldStrength_antisymmetric_basis {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) (μ ν : Fin 1 ⊕ Fin d) :
     (Vector.basis.tensorProduct Vector.basis).repr
     (A.fieldStrength ε) (μ, ν) = - (Vector.basis.tensorProduct Vector.basis).repr
@@ -283,7 +283,7 @@ lemma fieldStrength_antisymmetric_basis {d} (A : DistElectromagneticPotential d)
 
 -/
 
-lemma fieldStrength_equivariant {d} (A : DistElectromagneticPotential d)
+lemma fieldStrength_equivariant {d} (A : TempDistElectromagneticPotential d)
     (Λ : LorentzGroup d) :
     (Λ • A).fieldStrength = Λ • A.fieldStrength := by
   ext ε
@@ -295,6 +295,6 @@ lemma fieldStrength_equivariant {d} (A : DistElectromagneticPotential d)
   simp only [Tensorial.toTensor_smul, prodT_equivariant, contrT_equivariant, permT_equivariant,
     ← Tensorial.smul_toTensor_symm, smul_sub]
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 
 end Electromagnetism

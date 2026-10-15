@@ -33,6 +33,8 @@ coordinate `t.val`. Its time derivative `∂ₜ a` is computed through the bridg
 - `hubbleConstant_deSitterScaleFactor`: its Hubble parameter is the constant `σ √(Λ/3) c`
   (for any `σ`, `Λ`, `c`).
 - `decelerationParameter_deSitterScaleFactor`: its deceleration parameter is `q = -1`.
+- `FLRW.deSitter`, `FLRW.friedmannSolution_deSitter`: the de Sitter model, defined at all
+  times, filled with the empty cosmic fluid solves the Friedmann equations.
 - `hubbleConstant_powerLaw`, `decelerationParameter_powerLaw`, `powerLaw_firstOrderFriedmann`,
   `powerLaw_secondOrderFriedmann`: the flat power-law solutions `a = (t / t₀) ^ n`, stated
   inline, have Hubble parameter `n / t` and deceleration parameter `(1 - n) / n`, and solve the
@@ -49,7 +51,9 @@ coordinate `t.val`. Its time derivative `∂ₜ a` is computed through the bridg
 
 - `milneScaleFactor_firstOrderFriedmann`, `milneScaleFactor_secondOrderFriedmann`: the Milne
   scale factor `a = c t` solves the empty (`ρ = 0`, `p = 0`, `Λ = 0`) Friedmann equations with
-  `k = -1`; `q = 0`.
+  `k = -1`; `q = 0`. `FLRW.milne`, `FLRW.friedmannSolution_milne`: the Milne model on the
+  interval `t > 0`, with the saddle geometry of curvature parameter `-1`, filled with the empty
+  cosmic fluid solves the Friedmann equations.
 - `einsteinStatic_density`, `einsteinStatic_curvature`: if `∂ₜ a = ∂ₜ ∂ₜ a = 0` at `t` and the
   Friedmann equations hold there with `p = 0`, then `ρ = Λ c² / (4 π G)` and
   `k c² / a² = 4 π G ρ`, so that `k > 0` when `ρ > 0` (`einsteinStatic_curvature_pos`).
@@ -63,6 +67,7 @@ Bang is at the origin `t.val = 0` of the time chart.
   - A.1. The scale factor and its derivatives
   - A.2. The Friedmann equations
   - A.3. The Hubble and deceleration parameters
+  - A.4. The de Sitter solution as a solution of the Friedmann equations
 - B. The spatially flat power-law solutions
   - B.1. Derivatives of the power-law scale factor
   - B.2. The Hubble and deceleration parameters
@@ -198,6 +203,36 @@ lemma decelerationParameter_deSitterScaleFactor {a₀ σ Λ c : ℝ} (hΛ : 0 < 
   have hσ0 : σ ≠ 0 := by
     rcases hσ with rfl | rfl <;> norm_num
   field_simp
+
+/-!
+
+### A.4. The de Sitter solution as a solution of the Friedmann equations
+
+-/
+
+/-- The de Sitter model, defined at all times: the FLRW model with the scale factor
+  `deSitterScaleFactor a₀ σ Λ c`, `a₀ > 0`, and the flat spatial geometry. -/
+noncomputable def _root_.Cosmology.FLRW.deSitter (a₀ σ Λ c : ℝ) (ha₀ : 0 < a₀) : FLRW where
+  I := Set.univ
+  isOpen_I := isOpen_univ
+  ordConnected_I := Set.ordConnected_univ
+  a := deSitterScaleFactor a₀ σ Λ c
+  a_pos _ _ := mul_pos ha₀ (Real.exp_pos _)
+  differentiableOn_a := by
+    unfold deSitterScaleFactor
+    fun_prop
+  differentiableOn_deriv_a := by
+    rw [deriv_deSitterScaleFactor]
+    fun_prop
+  geometry := .Flat
+
+/-- The de Sitter model filled with the empty cosmic fluid solves the Friedmann equations with
+  cosmological constant `Λ > 0`, for `σ = ±1`. -/
+lemma _root_.Cosmology.FLRW.friedmannSolution_deSitter {a₀ σ Λ : ℝ} (G c : ℝ) (hΛ : 0 < Λ)
+    (ha₀ : 0 < a₀) (hσ : σ = 1 ∨ σ = -1) :
+    (FLRW.deSitter a₀ σ Λ c ha₀).FriedmannSolution CosmicFluid.empty Λ G c :=
+  ⟨fun t _ => deSitterScaleFactor_firstOrderFriedmann hΛ ha₀.ne' hσ t,
+    fun t _ => deSitterScaleFactor_secondOrderFriedmann hΛ ha₀.ne' hσ t⟩
 
 /-!
 
@@ -471,6 +506,36 @@ lemma decelerationParameter_milneScaleFactor (c : ℝ) (t : Time) :
   unfold decelerationParameter
   rw [deriv_deriv_milneScaleFactor, deriv_milneScaleFactor]
   simp
+
+/-- The Milne model, defined on the interval `I = {t | 0 < t.val}` after the Big Bang at
+  `t.val = 0`: the FLRW model with the scale factor `milneScaleFactor c`, `c > 0`, and the saddle
+  geometry `Saddle 1` of curvature parameter `-1`. -/
+noncomputable def _root_.Cosmology.FLRW.milne (c : ℝ) (hc : 0 < c) : FLRW where
+  I := {t | 0 < t.val}
+  isOpen_I := isOpen_lt continuous_const Time.val_differentiable.continuous
+  ordConnected_I := ⟨fun x hx _ _ z hz =>
+    lt_of_lt_of_le (show 0 < x.val from hx) ((Time.le_def x z).mp hz.1)⟩
+  a := milneScaleFactor c
+  a_pos _ ht := mul_pos hc ht
+  differentiableOn_a := by
+    unfold milneScaleFactor
+    fun_prop
+  differentiableOn_deriv_a := by
+    rw [deriv_milneScaleFactor]
+    fun_prop
+  geometry := .Saddle 1 one_pos
+
+/-- The Milne model filled with the empty cosmic fluid solves the Friedmann equations with
+  `Λ = 0` on its interval `t > 0`. -/
+lemma _root_.Cosmology.FLRW.friedmannSolution_milne (G : ℝ) {c : ℝ} (hc : 0 < c) :
+    (FLRW.milne c hc).FriedmannSolution CosmicFluid.empty 0 G c := by
+  have h : (SpatialGeometry.Saddle 1 one_pos).curvature = -1 := by
+    simp [SpatialGeometry.curvature]
+  refine ⟨fun t ht => ?_, fun t _ => milneScaleFactor_secondOrderFriedmann t⟩
+  show FirstOrderFriedmann (milneScaleFactor c) (fun _ => 0)
+    (SpatialGeometry.Saddle 1 one_pos).curvature 0 G c t
+  rw [h]
+  exact milneScaleFactor_firstOrderFriedmann hc ht
 
 /-!
 

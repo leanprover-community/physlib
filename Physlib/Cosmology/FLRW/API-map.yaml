@@ -17,14 +17,20 @@ Overview: |
     metric profile function S and the flat limits of the spherical and saddle
     cases, the first- and second-order Friedmann equations as propositions on a
     scale factor, the Hubble parameter, and the deceleration parameter with the
-    relation ∂ₜ H = -H^2 (1 + q). The FLRW type itself is a placeholder; the file
-    records a TODO to replace it with a structure bundling a positive scale
-    factor and a spatial geometry. MatterContent.lean contains the continuity
-    equation of the cosmic fluid and its relation to the two Friedmann equations,
-    the barotropic equation of state with the density scaling laws, and the
-    cosmological constant as a fluid. Solutions.lean contains the exact de
-    Sitter, radiation-dominated, Einstein-de Sitter, Milne and Einstein static
-    solutions. DensityParameters.lean contains the critical density and the
+    relation ∂ₜ H = -H^2 (1 + q). The same file defines the two structures of
+    the API, FLRW (a scale factor positive and twice differentiable on an open
+    interval of cosmic time, together with a spatial geometry) and CosmicFluid
+    (the energy density and pressure of the cosmic fluid), and the proposition
+    FLRW.FriedmannSolution that a model filled with a fluid satisfies the two
+    Friedmann equations on its interval, the curvature parameter being given by
+    the spatial geometry. MatterContent.lean contains the continuity equation of
+    the cosmic fluid and its relation to the two Friedmann equations (for a
+    solution it is a lemma), the barotropic equation of state with the density
+    scaling laws, and the cosmological constant as a fluid. Solutions.lean
+    contains the exact de Sitter, radiation-dominated, Einstein-de Sitter, Milne
+    and Einstein static solutions, the de Sitter and Milne models also as FLRW
+    models which, filled with the empty fluid, solve the Friedmann equations, at
+    all times and after a Big Bang respectively. DensityParameters.lean contains the critical density and the
     density parameters with the closure relation. ReducedHubble.lean contains
     the reduced Hubble function of the standard cosmological model and the
     equality scale factors. Age.lean contains the age of the universe. Three
@@ -60,12 +66,26 @@ Requirements:
     location: "Physlib/Cosmology/FLRW/Basic.lean (limit_S_sphere, limit_S_saddle, tendsto_sin_rx_over_x, tendsto_sinh_rx_over_x, mul_sin_as_div, mul_sinh_as_div)"
 
   - description: >
-      The key data structure, an FLRW model given by a positive scale factor
-      a : Time → ℝ together with an element of SpatialGeometry, is defined.
-      (FLRW currently exists only as a placeholder type; a TODO in the file
-      records the intended concrete structure.)
-    done: false
-    location: "Physlib/Cosmology/FLRW/Basic.lean (FLRW)"
+      The key data structure, an FLRW model given by a scale factor
+      a : Time → ℝ, positive and twice differentiable on an open interval of
+      cosmic time, together with an element of SpatialGeometry, is defined. The
+      spatial geometry gives the curvature parameter of the Friedmann equations,
+      positive for the spherical geometry, zero for the flat one and negative for
+      the saddle one.
+    done: true
+    location: "Physlib/Cosmology/FLRW/Basic.lean (FLRW, FLRW.a_ne_zero, FLRW.differentiableAt_a, FLRW.differentiableAt_deriv_a, SpatialGeometry.curvature, SpatialGeometry.curvature_flat, SpatialGeometry.curvature_spherical_pos, SpatialGeometry.curvature_saddle_neg)"
+
+  - description: >
+      The cosmic fluid, given by its energy density and pressure as functions of
+      cosmic time, is defined, together with the empty fluid, and the proposition
+      that an FLRW model filled with a cosmic fluid solves the Friedmann equations
+      is defined: both Friedmann equations hold on the interval of the model. The
+      continuity equation follows from it as a lemma, and so does the closure
+      relation of the density parameters. The de Sitter model, at all times, and
+      the Milne model, after its Big Bang, filled with the empty fluid, are
+      examples.
+    done: true
+    location: "Physlib/Cosmology/FLRW/Basic.lean (CosmicFluid, CosmicFluid.empty, FLRW.FriedmannSolution); Physlib/Cosmology/FLRW/MatterContent.lean (FLRW.FriedmannSolution.continuityEquation); Physlib/Cosmology/FLRW/DensityParameters.lean (FLRW.FriedmannSolution.densityParameter_add_lambda_add_curvature); Physlib/Cosmology/FLRW/Solutions.lean (FLRW.deSitter, FLRW.friedmannSolution_deSitter, FLRW.milne, FLRW.friedmannSolution_milne)"
 
   - description: >
       The first-order Friedmann equation
@@ -97,7 +117,8 @@ Requirements:
       The continuity equation ∂ₜ ρ + 3 H (ρ + P/c^2) = 0 of the cosmic fluid is
       defined as a proposition at an instant, and the API relates it to the two
       Friedmann equations: it follows from the first-order equation holding at all
-      times together with the second-order equation, and conversely the
+      times near the instant considered together with the second-order equation,
+      and conversely the
       second-order equation follows from the first-order equation and the
       continuity equation wherever ∂ₜ a ≠ 0.
     done: true

@@ -24,7 +24,7 @@ the scalar potential is non-relativistic and is therefore a distribution of `Tim
 
 ## ii. Key results
 
-- `DistElectromagneticPotential.scalarPotential` : The scalar potential from an
+- `TempDistElectromagneticPotential.scalarPotential` : The scalar potential from an
   electromagnetic potential which is a distribution.
 
 ## iii. Table of contents
@@ -48,7 +48,7 @@ open Tensor
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -59,7 +59,7 @@ attribute [-simp] Nat.succ_eq_add_one
 
 /-- The scalar potential of an electromagnetic potential which is a distribution. -/
 noncomputable def scalarPotential {d} (c : SpeedOfLight) :
-    DistElectromagneticPotential d →ₗ[ℝ]
+    TempDistElectromagneticPotential d →ₗ[ℝ]
     (Time × Space d) →d[ℝ] ℝ where
   toFun A := Lorentz.Vector.temporalCLM d ∘L distTimeSlice c (c.val • A)
   map_add' A₁ A₂ := by
@@ -69,5 +69,5 @@ noncomputable def scalarPotential {d} (c : SpeedOfLight) :
     ext ε
     simp [distTimeSlice, mul_left_comm]
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

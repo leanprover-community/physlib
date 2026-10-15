@@ -19,7 +19,7 @@ in this module for distributions.
 
 ## ii. Key results
 
-- `DistElectromagneticPotential.magneticFieldMatrix` : The magnetic field matrix from the
+- `TempDistElectromagneticPotential.magneticFieldMatrix` : The magnetic field matrix from the
   electromagnetic potential in general spatial dimensions.
 
 ## iii. Table of contents
@@ -47,7 +47,7 @@ open Tensor
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -58,7 +58,7 @@ attribute [-simp] Nat.succ_eq_add_one
 
 /-- The magnetic field matrix of an electromagnetic potential which is a distribution. -/
 noncomputable def magneticFieldMatrix {d} (c : SpeedOfLight) :
-    DistElectromagneticPotential d →ₗ[ℝ]
+    TempDistElectromagneticPotential d →ₗ[ℝ]
     (Time × Space d) →d[ℝ] (EuclideanSpace ℝ (Fin d) ⊗[ℝ] EuclideanSpace ℝ (Fin d)) where
   toFun A :=
     ⟨TensorProduct.map (Lorentz.Vector.spatialCLM d).toLinearMap
@@ -78,7 +78,7 @@ noncomputable def magneticFieldMatrix {d} (c : SpeedOfLight) :
 -/
 
 lemma magneticFieldMatrix_eq_vectorPotential {c : SpeedOfLight}
-    (A : DistElectromagneticPotential d)
+    (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(Time × Space d, ℝ)) :
     A.magneticFieldMatrix c ε = ∑ i, ∑ j,
     (Space.distSpaceDeriv j (A.vectorPotential c) ε i -
@@ -95,7 +95,7 @@ lemma magneticFieldMatrix_eq_vectorPotential {c : SpeedOfLight}
   Space.distSpaceDeriv_apply_CLM, Lorentz.Vector.spatialCLM, neg_add_eq_sub]
 
 lemma magneticFieldMatrix_basis_repr_eq_vector_potential {c : SpeedOfLight}
-    (A : DistElectromagneticPotential d)
+    (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(Time × Space d, ℝ)) (i j : Fin d) :
     ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
         (A.magneticFieldMatrix c ε) (i, j) =
@@ -104,7 +104,7 @@ lemma magneticFieldMatrix_basis_repr_eq_vector_potential {c : SpeedOfLight}
   simp [magneticFieldMatrix_eq_vectorPotential]
 
 lemma magneticFieldMatrix_distSpaceDeriv_basis_repr_eq_vector_potential {c : SpeedOfLight}
-    (A : DistElectromagneticPotential d)
+    (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(Time × Space d, ℝ)) (i j k : Fin d) :
     ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
     (Space.distSpaceDeriv k (A.magneticFieldMatrix c) ε) (i, j) =
@@ -120,7 +120,7 @@ lemma magneticFieldMatrix_distSpaceDeriv_basis_repr_eq_vector_potential {c : Spe
 -/
 
 lemma magneticFieldMatrix_basis_repr_eq_fieldStrength {c : SpeedOfLight}
-    (A : DistElectromagneticPotential d)
+    (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(Time × Space d, ℝ)) (i j : Fin d) :
     ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
         (A.magneticFieldMatrix c ε) (i, j) =
@@ -145,10 +145,10 @@ lemma magneticFieldMatrix_basis_repr_eq_fieldStrength {c : SpeedOfLight}
 
 @[simp]
 lemma magneticFieldMatrix_one_dim_eq_zero {c : SpeedOfLight}
-    (A : DistElectromagneticPotential 1) :
+    (A : TempDistElectromagneticPotential 1) :
     A.magneticFieldMatrix c = 0 := by
   ext ε
   simp [magneticFieldMatrix_eq_vectorPotential]
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

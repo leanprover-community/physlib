@@ -23,7 +23,7 @@ spacetime to contravariant Lorentz vectors.
 
 ## ii. Key results
 
-- `DistElectromagneticPotential` : the type of electromagnetic potentials as distributions.
+- `TempDistElectromagneticPotential` : the type of electromagnetic potentials as distributions.
 
 ## iii. Table of contents
 
@@ -52,10 +52,10 @@ open Tensor
 -/
 
 /-- The electromagnetic potential as a distribution and as a tensor `A^μ`. -/
-noncomputable abbrev DistElectromagneticPotential (d : ℕ := 3) :=
+noncomputable abbrev TempDistElectromagneticPotential (d : ℕ := 3) :=
   (SpaceTime d) →d[ℝ] Lorentz.Vector d
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -72,7 +72,7 @@ attribute [-simp] Nat.succ_eq_add_one
 
 /-- The creation of an electromagnetic potential from a scalar potential. -/
 noncomputable def ofScalarPotential {d} (c : SpeedOfLight) :
-    ((Time × Space d) →d[ℝ] ℝ) →ₗ[ℝ] DistElectromagneticPotential d where
+    ((Time × Space d) →d[ℝ] ℝ) →ₗ[ℝ] TempDistElectromagneticPotential d where
   toFun φ := Lorentz.Vector.ofTemporalComponent ∘L (distTimeSlice c).symm (((1 : ℝ) / c.val) • φ)
   map_add' φ₁ φ₂ := by
     ext ε
@@ -86,7 +86,7 @@ noncomputable def ofScalarPotential {d} (c : SpeedOfLight) :
 
 /-- The creation of an electromagnetic potential from a static scalar potential. -/
 noncomputable def ofStaticScalarPotential {d} (c : SpeedOfLight) :
-    ((Space d) →d[ℝ] ℝ) →ₗ[ℝ] DistElectromagneticPotential d :=
+    ((Space d) →d[ℝ] ℝ) →ₗ[ℝ] TempDistElectromagneticPotential d :=
   ofScalarPotential c ∘ₗ Space.constantTime
 
 /-- The creation of an electromagnetic potential from a static scalar-potential function.
@@ -94,7 +94,7 @@ noncomputable def ofStaticScalarPotential {d} (c : SpeedOfLight) :
 If the function is distribution-bounded, it is first promoted to a distribution using
 `Space.distOfFunction`. Otherwise the constructor returns zero. -/
 noncomputable def ofStaticScalarPotentialFunction {d} (c : SpeedOfLight)
-    (φ : Space d → ℝ) : DistElectromagneticPotential d := by
+    (φ : Space d → ℝ) : TempDistElectromagneticPotential d := by
   classical
   exact if hφ : Space.IsDistBounded φ then
     ofStaticScalarPotential c (Space.distOfFunction φ hφ) else 0
@@ -117,7 +117,7 @@ lemma ofStaticScalarPotentialFunction_eq_zero_of_not_isDistBounded {d}
 /-- The creation of an electromagnetic potential from a vector potential. -/
 noncomputable def ofVectorPotential {d} (c : SpeedOfLight) :
     ((Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d)) →ₗ[ℝ]
-    DistElectromagneticPotential d where
+    TempDistElectromagneticPotential d where
   toFun A := (distTimeSlice c).symm (Lorentz.Vector.ofSpatialComponent ∘L A)
   map_add' A₁ A₂ := by
     ext ε
@@ -128,10 +128,10 @@ noncomputable def ofVectorPotential {d} (c : SpeedOfLight) :
 
 /-- The creation of an electromagnetic potential from a static vector potential. -/
 noncomputable def ofStaticVectorPotential {d} (c : SpeedOfLight) :
-    ((Space d) →d[ℝ] EuclideanSpace ℝ (Fin d)) →ₗ[ℝ] DistElectromagneticPotential d :=
+    ((Space d) →d[ℝ] EuclideanSpace ℝ (Fin d)) →ₗ[ℝ] TempDistElectromagneticPotential d :=
   ofVectorPotential c ∘ₗ Space.constantTime
 
-TODO "Add a constructor for DistElectromagneticPotential from electric and
+TODO "Add a constructor for TempDistElectromagneticPotential from electric and
   magnetic fields."
 
 /-!
@@ -140,7 +140,7 @@ TODO "Add a constructor for DistElectromagneticPotential from electric and
 
 -/
 
-lemma distTensorDeriv_eq_sum_sum {d} (A : DistElectromagneticPotential d)
+lemma distTensorDeriv_eq_sum_sum {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     distTensorDeriv A ε =∑ μ, ∑ ν, (SpaceTime.distDeriv μ A ε ν) •
       Lorentz.CoVector.basis μ ⊗ₜ[ℝ] Lorentz.Vector.basis ν := by
@@ -162,7 +162,7 @@ lemma distTensorDeriv_eq_sum_sum {d} (A : DistElectromagneticPotential d)
 
 @[simp]
 lemma distTensorDeriv_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)}
-    (A : DistElectromagneticPotential d)
+    (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     (Lorentz.CoVector.basis.tensorProduct Lorentz.Vector.basis).repr (distTensorDeriv A ε) μν =
     distDeriv μν.1 A ε μν.2 := by
@@ -180,7 +180,7 @@ lemma distTensorDeriv_basis_repr_apply {d} {μν : (Fin 1 ⊕ Fin d) × (Fin 1 �
     simp [h]
   · simp
 
-lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : DistElectromagneticPotential d)
+lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : TempDistElectromagneticPotential d)
     (ε : 𝓢(SpaceTime d, ℝ)) (b : ComponentIdx (S := realLorentzTensor d)
       (Fin.append ![Color.down] ![Color.up])) :
     (Tensor.basis _).repr (Tensorial.toTensor (distTensorDeriv A ε)) b =
@@ -204,6 +204,6 @@ lemma toTensor_distTensorDeriv_basis_repr_apply {d} (A : DistElectromagneticPote
     distTensorDeriv_basis_repr_apply]
   rfl
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 
 end Electromagnetism

@@ -30,13 +30,13 @@ steady currents, rather than the branch currents at every node of a lumped-eleme
 
 ## ii. Key results
 
-- `Electromagnetism.DistElectromagneticPotential.continuityEquation` : the continuity equation
+- `Electromagnetism.TempDistElectromagneticPotential.continuityEquation` : the continuity equation
   for distributions.
-- `Electromagnetism.DistLorentzCurrentDensity.IsWireJunction` : the current density of a
+- `Electromagnetism.TempDistLorentzCurrentDensity.IsWireJunction` : the current density of a
   junction of thin wires.
-- `Electromagnetism.DistLorentzCurrentDensity.IsWireJunction.distSpaceDiv_currentDensity` : the
+- `Electromagnetism.TempDistLorentzCurrentDensity.IsWireJunction.distSpaceDiv_currentDensity` : the
   divergence of the current density of a junction.
-- `Electromagnetism.DistLorentzCurrentDensity.IsWireJunction.sum_currents_eq_zero` : the
+- `Electromagnetism.TempDistLorentzCurrentDensity.IsWireJunction.sum_currents_eq_zero` : the
   currents leaving a junction of thin wires sum to zero.
 
 ## iii. Table of contents
@@ -164,7 +164,7 @@ end Space
 namespace Electromagnetism
 open Space SchwartzMap
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 
 /-!
 
@@ -174,8 +174,8 @@ namespace DistElectromagneticPotential
 
 /-- The continuity equation for distributions: Maxwell's equations imply local conservation of
 charge. -/
-theorem continuityEquation {d} {𝓕 : FreeSpace} (A : DistElectromagneticPotential d)
-    (J : DistLorentzCurrentDensity d) (h : IsExtrema 𝓕 A J) (ε : 𝓢(Time × Space d, ℝ)) :
+theorem continuityEquation {d} {𝓕 : FreeSpace} (A : TempDistElectromagneticPotential d)
+    (J : TempDistLorentzCurrentDensity d) (h : IsExtrema 𝓕 A J) (ε : 𝓢(Time × Space d, ℝ)) :
     distTimeDeriv (J.chargeDensity 𝓕.c) ε + distSpaceDiv (J.currentDensity 𝓕.c) ε = 0 := by
   obtain ⟨hG, hA⟩ := (isExtrema_iff_vectorPotential A J).mp h
   set E := A.electricField 𝓕.c
@@ -209,9 +209,9 @@ theorem continuityEquation {d} {𝓕 : FreeSpace} (A : DistElectromagneticPotent
   apply mul_left_cancel₀ 𝓕.μ₀_ne_zero
   linear_combination hsum
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 
-namespace DistLorentzCurrentDensity
+namespace TempDistLorentzCurrentDensity
 
 open MeasureTheory Set
 
@@ -230,7 +230,7 @@ the pairing with a test function `η` only sees its time integral.
 
 /-- The current density of `J` is that of steady currents `I k` flowing away from the origin
 along thin, straight, semi-infinite wires in the directions `u k`. -/
-def IsWireJunction {d} (c : SpeedOfLight) (J : DistLorentzCurrentDensity d) {ι : Type}
+def IsWireJunction {d} (c : SpeedOfLight) (J : TempDistLorentzCurrentDensity d) {ι : Type}
     [Fintype ι] (u : ι → EuclideanSpace ℝ (Fin d)) (I : ι → ℝ) : Prop :=
   ∀ η, J.currentDensity c η =
     ∑ k, (I k * ∫ s in Ioi (0 : ℝ), timeIntegralSchwartz η (basis.repr.symm (s • u k))) • u k
@@ -238,7 +238,7 @@ def IsWireJunction {d} (c : SpeedOfLight) (J : DistLorentzCurrentDensity d) {ι 
 /-- The wires of a junction meet at the origin, where they act as a source of strength the
 total current leaving along them. -/
 lemma IsWireJunction.distSpaceDiv_currentDensity {d} {c : SpeedOfLight}
-    {J : DistLorentzCurrentDensity d} {ι : Type} [Fintype ι] {u : ι → EuclideanSpace ℝ (Fin d)}
+    {J : TempDistLorentzCurrentDensity d} {ι : Type} [Fintype ι] {u : ι → EuclideanSpace ℝ (Fin d)}
     {I : ι → ℝ} (hJ : J.IsWireJunction c u I) (hu : ∀ k, u k ≠ 0) (η : 𝓢(Time × Space d, ℝ)) :
     distSpaceDiv (J.currentDensity c) η = (∑ k, I k) * ∫ t, η (t, 0) := by
   have hJ' : ∀ η, J.currentDensity c η = _ := hJ
@@ -261,16 +261,16 @@ lemma IsWireJunction.distSpaceDiv_currentDensity {d} {c : SpeedOfLight}
 /-- If Maxwell's equations hold and no charge accumulates, the steady currents leaving a junction
 of thin wires sum to zero. This is motivated by Kirchhoff's current law, of which it is the
 special case of a single node. -/
-lemma IsWireJunction.sum_currents_eq_zero {d} {𝓕 : FreeSpace} {J : DistLorentzCurrentDensity d}
+lemma IsWireJunction.sum_currents_eq_zero {d} {𝓕 : FreeSpace} {J : TempDistLorentzCurrentDensity d}
     {ι : Type} [Fintype ι] {u : ι → EuclideanSpace ℝ (Fin d)} {I : ι → ℝ}
-    (hJ : J.IsWireJunction 𝓕.c u I) (hu : ∀ k, u k ≠ 0) (A : DistElectromagneticPotential d)
-    (h : DistElectromagneticPotential.IsExtrema 𝓕 A J)
+    (hJ : J.IsWireJunction 𝓕.c u I) (hu : ∀ k, u k ≠ 0) (A : TempDistElectromagneticPotential d)
+    (h : TempDistElectromagneticPotential.IsExtrema 𝓕 A J)
     (hρ : distTimeDeriv (J.chargeDensity 𝓕.c) = 0) :
     ∑ k, I k = 0 := by
   obtain ⟨η, hη⟩ := exists_integral_time_ne_zero (d := d)
-  have hcont := DistElectromagneticPotential.continuityEquation A J h η
+  have hcont := TempDistElectromagneticPotential.continuityEquation A J h η
   rw [hρ, _root_.zero_apply, zero_add, hJ.distSpaceDiv_currentDensity hu] at hcont
   exact (mul_eq_zero.mp hcont).resolve_right hη
 
-end DistLorentzCurrentDensity
+end TempDistLorentzCurrentDensity
 end Electromagnetism

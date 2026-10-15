@@ -420,7 +420,7 @@ lemma fderivD_const [hμ : Measure.IsAddHaarMeasure (volume (α := E))]
   swap
   · simp
   rw [integral_smul_fderiv_eq_neg_fderiv_smul_of_integrable]
-  simp only [evalCLM_apply_apply, fderivCLM_apply, neg_neg]
+  · simp only [evalCLM_apply_apply, fderivCLM_apply, neg_neg]
   · exact (integrable ((SchwartzMap.evalCLM ℝ E ℝ v) ((fderivCLM ℝ) E ℝ η))).smul_const c
   · simp
   · exact (integrable η).smul_const c

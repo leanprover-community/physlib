@@ -45,7 +45,7 @@ open Tensor
 
 -/
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 open TensorSpecies
 open Tensor
 open SpaceTime
@@ -56,7 +56,7 @@ attribute [-simp] Nat.succ_eq_add_one
 
 /-- The electric field of an electromagnetic potential which is a distribution. -/
 noncomputable def electricField {d} (c : SpeedOfLight) :
-    DistElectromagneticPotential d →ₗ[ℝ]
+    TempDistElectromagneticPotential d →ₗ[ℝ]
     (Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d) where
   toFun A := - Space.distSpaceGrad (A.scalarPotential c) -
     Space.distTimeDeriv (A.vectorPotential c)
@@ -74,7 +74,7 @@ noncomputable def electricField {d} (c : SpeedOfLight) :
     ring
 
 lemma electricField_eq_fieldStrength {d} {c : SpeedOfLight}
-    (A : DistElectromagneticPotential d) (ε : 𝓢(Time × Space d, ℝ))
+    (A : TempDistElectromagneticPotential d) (ε : 𝓢(Time × Space d, ℝ))
     (i : Fin d) : A.electricField c ε i = - c * (Vector.basis.tensorProduct Vector.basis).repr
       (distTimeSlice c (A.fieldStrength) ε) (Sum.inl 0, Sum.inr i) := by
   simp only [distTimeSlice_apply, Fin.isValue, fieldStrength_basis_repr_eq_single, inl_0_inl_0,
@@ -91,6 +91,6 @@ lemma electricField_eq_fieldStrength {d} {c : SpeedOfLight}
   field_simp
   ring
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 
 end Electromagnetism

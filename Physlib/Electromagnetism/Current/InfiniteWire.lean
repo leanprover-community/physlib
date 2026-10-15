@@ -47,7 +47,7 @@ open Physlib
 open Distribution SchwartzMap
 open Space MeasureTheory
 
-namespace DistElectromagneticPotential
+namespace TempDistElectromagneticPotential
 
 /-!
 
@@ -62,7 +62,7 @@ $$J(t, x, y, z) = (0, I δ((y, z)), 0, 0).$$
 /-- The current density associated with an infinite wire carrying a current `I`
   along the `x`-axis. -/
 noncomputable def wireCurrentDensity (c : SpeedOfLight) :
-    ℝ →ₗ[ℝ] DistLorentzCurrentDensity 3 where
+    ℝ →ₗ[ℝ] TempDistLorentzCurrentDensity 3 where
   toFun I := (SpaceTime.distTimeSlice c).symm <|
     constantTime <|
     constantSliceDist 0
@@ -74,7 +74,7 @@ noncomputable def wireCurrentDensity (c : SpeedOfLight) :
 lemma wireCurrentDensity_chargeDesnity (c : SpeedOfLight) (I : ℝ) :
     (wireCurrentDensity c I).chargeDensity c = 0 := by
   ext η
-  simp [DistLorentzCurrentDensity.chargeDensity, wireCurrentDensity, constantTime_apply,
+  simp [TempDistLorentzCurrentDensity.chargeDensity, wireCurrentDensity, constantTime_apply,
   constantSliceDist_apply]
 
 lemma wireCurrentDensity_currentDensity_fst (c : SpeedOfLight) (I : ℝ)
@@ -83,21 +83,21 @@ lemma wireCurrentDensity_currentDensity_fst (c : SpeedOfLight) (I : ℝ)
     (constantTime <|
     constantSliceDist 0 <|
     I • diracDelta ℝ 0) η := by
-  simp [wireCurrentDensity, DistLorentzCurrentDensity.currentDensity,
+  simp [wireCurrentDensity, TempDistLorentzCurrentDensity.currentDensity,
     constantTime_apply, constantSliceDist_apply, diracDelta'_apply]
 
 @[simp]
 lemma wireCurrentDensity_currentDensity_snd (c : SpeedOfLight) (I : ℝ)
     (ε : 𝓢(Time × Space 3, ℝ)) :
     (wireCurrentDensity c I).currentDensity c ε 1 = 0 := by
-  simp [wireCurrentDensity, DistLorentzCurrentDensity.currentDensity,
+  simp [wireCurrentDensity, TempDistLorentzCurrentDensity.currentDensity,
     constantTime_apply, constantSliceDist_apply]
 
 @[simp]
 lemma wireCurrentDensity_currentDensity_thrd (c : SpeedOfLight) (I : ℝ)
     (ε : 𝓢(Time × Space 3, ℝ)) :
     (wireCurrentDensity c I).currentDensity c ε 2 = 0 := by
-  simp [wireCurrentDensity, DistLorentzCurrentDensity.currentDensity,
+  simp [wireCurrentDensity, TempDistLorentzCurrentDensity.currentDensity,
     constantTime_apply, constantSliceDist_apply, diracDelta'_apply]
 
 /-!
@@ -112,7 +112,7 @@ $$A(t, x, y, z) = \left(0, -\frac{μ_0 I}{2\pi} \log (\sqrt{y^2 + z^2}), 0, 0\ri
 
 /-- The electromagnetic potential of an infinite wire along the x-axis carrying a current `I`. -/
 noncomputable def infiniteWire (𝓕 : FreeSpace) (I : ℝ) :
-    DistElectromagneticPotential 3 :=
+    TempDistElectromagneticPotential 3 :=
   (SpaceTime.distTimeSlice 𝓕.c).symm <|
   constantTime <|
   constantSliceDist 0
@@ -261,5 +261,5 @@ lemma infiniteWire_isExterma {𝓕 : FreeSpace} {I : ℝ} :
     rw [distSpaceDeriv_commute]
     simp [distSpaceDeriv_apply']
 
-end DistElectromagneticPotential
+end TempDistElectromagneticPotential
 end Electromagnetism

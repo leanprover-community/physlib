@@ -17,17 +17,21 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 This file describes the matter content of a Friedmann-Lemaître-Robertson-Walker universe
 through the continuity equation `∂ₜ ρ + 3 H (ρ + p / c²) = 0` of the cosmic fluid and its
 relation to the two Friedmann equations of `Physlib.Cosmology.FLRW.Basic`: the continuity
-equation follows from the first-order equation (holding at all times) and the second-order
-equation, and conversely the second-order equation follows from the first-order equation and
-the continuity equation whenever `∂ₜ a ≠ 0`. The three equations are therefore not
-independent, but not symmetrically so: where `∂ₜ a = 0` the first-order and the continuity
-equations leave `p` unconstrained, while the second-order equation still fixes
-`ρ + 3 p / c²` (the Einstein static universe of `Physlib.Cosmology.FLRW.Solutions`). The two
-Friedmann equations are the primitive pair, and the continuity equation is derived from them.
-For a barotropic equation of state `p = w ρ c²` with constant `w`, the continuity equation
-gives the density scaling law `ρ ∝ a^(-3(1+w))`, specialised to dust, radiation and vacuum
-energy; and the cosmological constant is equivalent to a `w = -1` fluid of density
-`ρ_Λ = Λ c² / (8 π G)`. The perfect-fluid stress-energy tensor is still a TODO item.
+equation follows from the first-order equation (holding at all times near the instant
+considered) and the second-order equation, and conversely the second-order equation follows
+from the first-order equation and the continuity equation whenever `∂ₜ a ≠ 0`. The three
+equations are therefore not independent, but not symmetrically so: where `∂ₜ a = 0` the
+first-order and the continuity equations leave `p` unconstrained, while the second-order
+equation still fixes `ρ + 3 p / c²` (the Einstein static universe of
+`Physlib.Cosmology.FLRW.Solutions`). The two Friedmann equations are the primitive pair, and
+the continuity equation is derived from them; accordingly, the proposition
+`FLRW.FriedmannSolution` consists of the two Friedmann equations, and the continuity equation is
+the lemma `FLRW.FriedmannSolution.continuityEquation`. For a barotropic equation of state
+`p = w ρ c²` with
+constant `w`, the continuity equation gives the density scaling law `ρ ∝ a^(-3(1+w))`,
+specialised to dust, radiation and vacuum energy; and the cosmological constant is equivalent
+to a `w = -1` fluid of density `ρ_Λ = Λ c² / (8 π G)`. The perfect-fluid stress-energy
+tensor is still a TODO item.
 
 Time derivatives of curves `Time → ℝ` are computed through the bridge
 `Time.hasDerivAt_mk_of_differentiableAt` to Mathlib's `HasDerivAt` on `ℝ`.
@@ -41,6 +45,8 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   equations.
 - `secondOrderFriedmann_of_continuityEquation`: the second-order Friedmann equation follows
   from the first-order equation and the continuity equation when `∂ₜ a ≠ 0`.
+- `FLRW.FriedmannSolution.continuityEquation`: the continuity equation holds on the interval of
+  an FLRW model whose cosmic fluid solves the Friedmann equations.
 - `barotropicPressure`: `p = w ρ c²`; `density_scaling`: under the barotropic continuity
   equation at all times, `ρ t = ρ t₀ (a t / a t₀)^(-3(1+w))`; `continuityEquation_of_scaling`:
   the converse; `density_scaling_dust`, `density_scaling_radiation`,
@@ -58,6 +64,7 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   - A.2. The derivative of the first-order Friedmann equation
   - A.3. Continuity from the Friedmann equations
   - A.4. The second-order Friedmann equation from continuity
+  - A.5. The continuity equation of a solution of the Friedmann equations
 - B. The barotropic equation of state and the density scaling law
   - B.1. The equation of state
   - B.2. The density scaling law
@@ -72,6 +79,7 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
 namespace Cosmology.FLRW.FriedmannEquation
 
 open Real Time
+open scoped Topology
 
 /-!
 
@@ -96,11 +104,11 @@ def ContinuityEquation (a ρ p : Time → ℝ) (c : ℝ) (t : Time) : Prop :=
 
 -/
 
-/-- Differentiating the first-order Friedmann equation, assumed at all times, at `t`:
+/-- Differentiating the first-order Friedmann equation, assumed at all times near `t`, at `t`:
   `2 H (a''/a - H²) = (8 π G / 3) ρ' + 2 k c² H / a²`. -/
 lemma deriv_firstOrderFriedmann {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time} (ha : a t ≠ 0)
     (hd1 : DifferentiableAt ℝ a t) (hd2 : DifferentiableAt ℝ (∂ₜ a) t)
-    (hdρ : DifferentiableAt ℝ ρ t) (hF1 : ∀ s, FirstOrderFriedmann a ρ k Λ G c s) :
+    (hdρ : DifferentiableAt ℝ ρ t) (hF1 : ∀ᶠ s in 𝓝 t, FirstOrderFriedmann a ρ k Λ G c s) :
     2 * (∂ₜ a t / a t) * (∂ₜ (∂ₜ a) t / a t - (∂ₜ a t / a t) ^ 2)
       = 8 * π * G / 3 * ∂ₜ ρ t + 2 * k * c ^ 2 * (∂ₜ a t / a t) / (a t) ^ 2 := by
   obtain ⟨τ⟩ := t
@@ -111,8 +119,9 @@ lemma deriv_firstOrderFriedmann {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time
   have hRd := ((hR.const_mul (8 * π * G / 3)).sub
     ((hasDerivAt_const τ (k * c ^ 2)).div (hA.pow 2) (pow_ne_zero 2 ha))).add_const
     (Λ * c ^ 2 / 3)
-  have hu := hL.unique
-    (hRd.congr_of_eventuallyEq (Filter.Eventually.of_forall fun σ => hF1 ⟨σ⟩))
+  have hF1' : ∀ᶠ σ in 𝓝 τ, FirstOrderFriedmann a ρ k Λ G c ⟨σ⟩ :=
+    (toRealCLE.symm.continuous.tendsto τ).eventually hF1
+  have hu := hL.unique (hRd.congr_of_eventuallyEq hF1')
   simp only [Pi.pow_apply, Pi.div_apply, Nat.cast_ofNat, Nat.add_one_sub_one, pow_one, zero_mul,
     zero_sub] at hu
   field_simp at hu ⊢
@@ -125,16 +134,16 @@ lemma deriv_firstOrderFriedmann {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time
 -/
 
 /-- The continuity equation follows from the first-order Friedmann equation, assumed at all
-  times, and the second-order Friedmann equation at `t`; `a` must be twice differentiable and
-  `ρ` differentiable at `t`. -/
+  times near `t`, and the second-order Friedmann equation at `t`; `a` must be twice
+  differentiable and `ρ` differentiable at `t`. -/
 lemma continuityEquation_of_friedmann {a ρ p : Time → ℝ} {k Λ G c : ℝ} {t : Time}
     (hG : G ≠ 0) (ha : a t ≠ 0) (hd1 : DifferentiableAt ℝ a t)
     (hd2 : DifferentiableAt ℝ (∂ₜ a) t)
-    (hdρ : DifferentiableAt ℝ ρ t) (hF1 : ∀ s, FirstOrderFriedmann a ρ k Λ G c s)
+    (hdρ : DifferentiableAt ℝ ρ t) (hF1 : ∀ᶠ s in 𝓝 t, FirstOrderFriedmann a ρ k Λ G c s)
     (hF2 : SecondOrderFriedmann a ρ p Λ G c t) :
     ContinuityEquation a ρ p c t := by
   have hd := deriv_firstOrderFriedmann ha hd1 hd2 hdρ hF1
-  have h1 := hF1 t
+  have h1 := hF1.self_of_nhds
   unfold FirstOrderFriedmann at h1
   unfold SecondOrderFriedmann at hF2
   unfold ContinuityEquation hubbleConstant
@@ -149,15 +158,17 @@ lemma continuityEquation_of_friedmann {a ρ p : Time → ℝ} {k Λ G c : ℝ} {
 -/
 
 /-- The second-order Friedmann equation at `t` follows from the first-order Friedmann
-  equation, assumed at all times, and the continuity equation at `t`, provided `∂ₜ a t ≠ 0`.
-  Together with `continuityEquation_of_friedmann`, the three equations are not independent. -/
+  equation, assumed at all times near `t`, and the continuity equation at `t`, provided
+  `∂ₜ a t ≠ 0`. Together with `continuityEquation_of_friedmann`, the three equations are not
+  independent. -/
 lemma secondOrderFriedmann_of_continuityEquation {a ρ p : Time → ℝ} {k Λ G c : ℝ}
     {t : Time} (ha : a t ≠ 0) (ha' : ∂ₜ a t ≠ 0) (hd1 : DifferentiableAt ℝ a t)
     (hd2 : DifferentiableAt ℝ (∂ₜ a) t) (hdρ : DifferentiableAt ℝ ρ t)
-    (hF1 : ∀ s, FirstOrderFriedmann a ρ k Λ G c s) (hC : ContinuityEquation a ρ p c t) :
+    (hF1 : ∀ᶠ s in 𝓝 t, FirstOrderFriedmann a ρ k Λ G c s)
+    (hC : ContinuityEquation a ρ p c t) :
     SecondOrderFriedmann a ρ p Λ G c t := by
   have hd := deriv_firstOrderFriedmann ha hd1 hd2 hdρ hF1
-  have h1 := hF1 t
+  have h1 := hF1.self_of_nhds
   unfold FirstOrderFriedmann at h1
   unfold ContinuityEquation hubbleConstant at hC
   unfold SecondOrderFriedmann
@@ -166,6 +177,24 @@ lemma secondOrderFriedmann_of_continuityEquation {a ρ p : Time → ℝ} {k Λ G
     positivity
   apply mul_left_cancel₀ hH
   linear_combination hd + 8 * π * G / 3 * hC + 2 * (∂ₜ a t / a t) * h1
+
+/-!
+
+### A.5. The continuity equation of a solution of the Friedmann equations
+
+-/
+
+/-- If the FLRW model `U` filled with the cosmic fluid `F` solves the Friedmann equations, the
+  continuity equation holds at every time of the interval `U.I` at which the energy density is
+  differentiable: it is obtained from the two Friedmann equations through
+  `continuityEquation_of_friedmann`. -/
+lemma _root_.Cosmology.FLRW.FriedmannSolution.continuityEquation {U : FLRW} {F : CosmicFluid}
+    {Λ G c : ℝ} (h : U.FriedmannSolution F Λ G c) (hG : G ≠ 0) {t : Time} (ht : t ∈ U.I)
+    (hdρ : DifferentiableAt ℝ F.ρ t) :
+    ContinuityEquation U.a F.ρ F.p c t :=
+  continuityEquation_of_friedmann hG (U.a_ne_zero ht) (U.differentiableAt_a ht)
+    (U.differentiableAt_deriv_a ht) hdρ
+    (Filter.eventually_of_mem (U.isOpen_I.mem_nhds ht) h.firstOrder) (h.secondOrder t ht)
 
 /-!
 
