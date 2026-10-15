@@ -56,10 +56,10 @@ lemma parameterizationAsLinear_val (g : Fin n.succ → ℚ) (f : Fin n → ℚ) 
 set_option backward.isDefEq.respectTransparency false in
 lemma parameterizationCharge_cube (g : Fin n.succ → ℚ) (f : Fin n → ℚ) (a : ℚ) :
     accCube (2* n.succ) (parameterizationAsLinear g f a).val = 0 := by
-  change accCubeTriLinSymm.toCubic _ = 0
   rw [parameterizationAsLinear_val, HomogeneousCubic.map_smul,
-    TriLinearSymm.toCubic_add, HomogeneousCubic.map_smul, HomogeneousCubic.map_smul]
-  erw [Unshifted.planeCharges_accCube, Shifted.planeCharges_accCube]
+    accCube, TriLinearSymm.toCubic_add, ← accCube,
+    HomogeneousCubic.map_smul, HomogeneousCubic.map_smul,
+    Unshifted.planeCharges_accCube g, Shifted.planeCharges_accCube f]
   rw [accCubeTriLinSymm.map_smul₁, accCubeTriLinSymm.map_smul₂,
     accCubeTriLinSymm.map_smul₃, accCubeTriLinSymm.map_smul₁, accCubeTriLinSymm.map_smul₂,
     accCubeTriLinSymm.map_smul₃]
@@ -78,12 +78,20 @@ lemma anomalyFree_param {S : (PureU1 (2 * n.succ)).Sols}
       (Shifted.planeCharges f) =
       - accCubeTriLinSymm (Shifted.planeCharges f) (Shifted.planeCharges f)
         (Unshifted.planeCharges g) := by
-  have hC := S.cubicSol
-  rw [hS] at hC
-  change (accCube (2 * n.succ)) (Unshifted.planeCharges g + Shifted.planeCharges f) = 0 at hC
-  erw [TriLinearSymm.toCubic_add, Unshifted.planeCharges_accCube,
-    Shifted.planeCharges_accCube] at hC
-  linear_combination hC / 3
+  have hC : accCube (2 * n.succ)
+      (Unshifted.planeCharges g + Shifted.planeCharges f) = 0 := by
+    rw [← hS]
+    exact S.cubicSol
+  have h3 : accCube (2 * n.succ) (Unshifted.planeCharges g + Shifted.planeCharges f) =
+      accCube (2 * n.succ) (Unshifted.planeCharges g) +
+      accCube (2 * n.succ) (Shifted.planeCharges f) +
+      3 * accCubeTriLinSymm (Unshifted.planeCharges g) (Unshifted.planeCharges g)
+        (Shifted.planeCharges f) +
+      3 * accCubeTriLinSymm (Shifted.planeCharges f) (Shifted.planeCharges f)
+        (Unshifted.planeCharges g) :=
+    TriLinearSymm.toCubic_add _ _ _
+  rw [Unshifted.planeCharges_accCube, Shifted.planeCharges_accCube, hC] at h3
+  linear_combination -h3 / 3
 
 /-- A proposition on a solution which is true if
 `accCubeTriLinSymm (Unshifted.planeCharges g, Unshifted.planeCharges g,
@@ -103,7 +111,7 @@ lemma genericCase_exists (S : (PureU1 (2 * n.succ)).Sols)
   intro g f hS hC
   obtain ⟨g', f', hS', hC'⟩ := hs
   rw [hS] at hS'
-  erw [Pa_eq] at hS'
+  replace hS' := (Pa_eq g g' f f').mp hS'
   rw [hS'.1, hS'.2] at hC
   exact hC' hC
 
@@ -124,7 +132,7 @@ lemma specialCase_exists (S : (PureU1 (2 * n.succ)).Sols)
   intro g f hS
   obtain ⟨g', f', hS', hC'⟩ := hs
   rw [hS] at hS'
-  erw [Pa_eq] at hS'
+  replace hS' := (Pa_eq g g' f f').mp hS'
   rw [hS'.1, hS'.2]
   exact hC'
 
@@ -161,9 +169,9 @@ set_option backward.isDefEq.respectTransparency false in
 lemma special_case_lineInCubic {S : (PureU1 (2 * n.succ)).Sols}
     (h : SpecialCase S) : LineInCubic S.1.1 := by
   intro g f hS a b
-  erw [TriLinearSymm.toCubic_add]
+  rw [accCube, TriLinearSymm.toCubic_add, ← accCube]
   rw [HomogeneousCubic.map_smul, HomogeneousCubic.map_smul]
-  erw [Unshifted.planeCharges_accCube, Shifted.planeCharges_accCube]
+  rw [Unshifted.planeCharges_accCube, Shifted.planeCharges_accCube]
   have h := h g f hS
   rw [accCubeTriLinSymm.map_smul₁, accCubeTriLinSymm.map_smul₂,
     accCubeTriLinSymm.map_smul₃, accCubeTriLinSymm.map_smul₁, accCubeTriLinSymm.map_smul₂,
@@ -172,7 +180,7 @@ lemma special_case_lineInCubic {S : (PureU1 (2 * n.succ)).Sols}
   simp only [Nat.succ_eq_add_one, accCubeTriLinSymm_toFun_apply_apply, neg_eq_zero] at h
   change accCubeTriLinSymm (Shifted.planeCharges f) (Shifted.planeCharges f)
     (Unshifted.planeCharges g) = 0 at h
-  erw [h]
+  rw [h]
   simp
 
 lemma special_case_lineInCubic_perm {S : (PureU1 (2 * n.succ)).Sols}
