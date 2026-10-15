@@ -56,6 +56,9 @@ honest conjugate-transpose.
 - `ConjTensorSpecies.squareMatrixOf` is the square component matrix of `M : ![a, bar a]`;
   `ConjTensorSpecies.conjT_eq_permT_swap_iff_isHermitian` says that conjugation swaps the two slots
   of `M` exactly when this matrix is Hermitian.
+- `ConjTensorSpecies.isContrDualMatching_bar` proves that the dual-label matching at `d`, carried to
+  `bar d` through `barIdx_eq`, satisfies the δ law there; `ConjTensorSpecies.dualIdxEquiv_bar`
+  says that `dualIdxEquiv` commutes with conjugation.
 
 ## iii. Table of contents
 
@@ -65,6 +68,7 @@ honest conjugate-transpose.
 - D. The involution law
 - E. Commutation with contraction
 - F. Hermitian pairings
+- G. Dual bases under conjugation
 
 -/
 
@@ -441,6 +445,46 @@ lemma conjT_eq_permT_swap_iff_isHermitian {a d : C} (hbar : S.bar a = d) (M : S.
     simpa [cast_cast] using H (cast (S.barIdx_eq a).symm j) (cast hbb i)
   · intro H i j
     simpa [cast_cast] using H (cast hbb.symm j) (cast (S.barIdx_eq a) i)
+
+/-!
+
+## G. Dual bases under conjugation
+
+For a species with dual bases, `conj_contrComm` carries the δ law at a colour `d` to the δ law at
+`bar d`. Over a nontrivial ring the matching satisfying the δ law is unique, so the matching at
+`bar d` is the one at `d`, carried through `barIdx_eq` and `bar_tau`.
+
+-/
+
+open HasContrDualBases in
+/-- The dual-label matching at `d`, carried to `bar d` through `barIdx_eq` and `bar_tau`, satisfies
+the δ law at `bar d`. -/
+lemma isContrDualMatching_bar [HasContrDualBases S.toTensorSpecies] (d : C) :
+    IsContrDualMatching S.toTensorSpecies (S.bar d)
+      ((basisIdxCongr (S.bar_tau d)).symm.trans ((Equiv.cast (S.barIdx_eq (S.τ d))).trans
+        ((contrDualIdxEquiv S.toTensorSpecies d).trans (Equiv.cast (S.barIdx_eq d)).symm))) := by
+  intro y₁ y₂
+  have key := S.conj_contrComm d (Equiv.cast (S.barIdx_eq d) y₁)
+    (Equiv.cast (S.barIdx_eq (S.τ d)) ((basisIdxCongr (S.bar_tau d)).symm y₂))
+  rw [contr_basis_eq_ite] at key
+  simp only [Equiv.symm_apply_apply, basisIdxCongr_symm, basisIdxCongr_apply_apply,
+    basisIdxCongr_rfl] at key
+  rw [← key]
+  simp only [Equiv.trans_apply, basisIdxCongr_symm, Equiv.eq_symm_apply]
+  split_ifs <;> simp
+
+open HasContrDualBases in
+/-- The label identification of a contraction commutes with conjugation: contracting `bar c1`
+against `bar c2` matches the conjugates of the labels `c1` and `c2` match. -/
+lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 c2 : C}
+    (h : S.τ c1 = c2) (h' : S.τ (S.bar c1) = S.bar c2) (x : basisIdx c1) :
+    dualIdxEquiv h' (cast (S.barIdx_eq c1).symm x) =
+      cast (S.barIdx_eq c2).symm (dualIdxEquiv h x) := by
+  subst h
+  rw [dualIdxEquiv_apply, dualIdxEquiv_apply,
+    contrDualIdxEquiv_eq_of_isContrDualMatching (S.isContrDualMatching_bar c1)]
+  simp only [basisIdxCongr, ← Equiv.cast_symm, Equiv.symm_trans, Equiv.trans_apply,
+    Equiv.cast_apply, cast_cast, cast_eq, Equiv.cast_refl, Equiv.refl_apply]
 
 end ConjTensorSpecies
 end
