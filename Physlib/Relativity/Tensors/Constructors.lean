@@ -425,38 +425,38 @@ lemma fromMatrixT_basis_repr (c0 c1 : C) (M : Matrix (basisIdx c0) (basisIdx c1)
   rw [fromPairT_basis_repr, ← Basis.equivFun_apply, LinearEquiv.apply_symm_apply]
 
 /-- The component matrix of a rank-two tensor. -/
-noncomputable def matrixOf {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
+noncomputable def toMatrixList {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
     Matrix (basisIdx c0) (basisIdx c1) k :=
   (fromMatrixT c0 c1).symm t
 
-lemma matrixOf_apply {c0 c1 : C} (t : S.Tensor ![c0, c1]) (x : basisIdx c0) (y : basisIdx c1) :
-    matrixOf t x y = (basis ![c0, c1]).repr t (ComponentIdx.pair.symm (x, y)) := rfl
+lemma toMatrixList_apply {c0 c1 : C} (t : S.Tensor ![c0, c1]) (x : basisIdx c0) (y : basisIdx c1) :
+    toMatrixList t x y = (basis ![c0, c1]).repr t (ComponentIdx.pair.symm (x, y)) := rfl
 
 @[simp]
-lemma matrixOf_fromMatrixT (c0 c1 : C) (M : Matrix (basisIdx c0) (basisIdx c1) k) :
-    matrixOf (fromMatrixT (S := S) c0 c1 M) = M :=
+lemma toMatrixList_fromMatrixT (c0 c1 : C) (M : Matrix (basisIdx c0) (basisIdx c1) k) :
+    toMatrixList (fromMatrixT (S := S) c0 c1 M) = M :=
   (fromMatrixT c0 c1).symm_apply_apply M
 
 @[simp]
-lemma fromMatrixT_matrixOf {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
-    fromMatrixT (S := S) c0 c1 (matrixOf t) = t :=
+lemma fromMatrixT_toMatrixList {c0 c1 : C} (t : S.Tensor ![c0, c1]) :
+    fromMatrixT (S := S) c0 c1 (toMatrixList t) = t :=
   (fromMatrixT c0 c1).apply_symm_apply t
 
 /-- The component matrix of a rank-two tensor at any colour list `cs`: the `(x, y)` entry is
-  `repr t (ComponentIdx.pair.symm (x, y))`. At a literal colour list `![c0, c1]` it is `matrixOf`
-  by definition. -/
-noncomputable def matrixOfCs {cs : Fin 2 → C} (t : S.Tensor cs) :
+  `repr t (ComponentIdx.pair.symm (x, y))`. At a literal colour list `![c0, c1]` it is
+  `toMatrixList` by definition. -/
+noncomputable def toMatrixMap {cs : Fin 2 → C} (t : S.Tensor cs) :
     Matrix (basisIdx (cs 0)) (basisIdx (cs 1)) k :=
   Matrix.of fun x y => (basis cs).repr t (ComponentIdx.pair.symm (x, y))
 
 @[simp]
-lemma matrixOfCs_apply {cs : Fin 2 → C} (t : S.Tensor cs)
+lemma toMatrixMap_apply {cs : Fin 2 → C} (t : S.Tensor cs)
     (x : basisIdx (cs 0)) (y : basisIdx (cs 1)) :
-    matrixOfCs t x y = (basis cs).repr t (ComponentIdx.pair.symm (x, y)) := rfl
+    toMatrixMap t x y = (basis cs).repr t (ComponentIdx.pair.symm (x, y)) := rfl
 
 /-- Rank-two tensors with equal component matrices are equal. -/
-lemma matrixOfCs_injective {cs : Fin 2 → C} :
-    Function.Injective (matrixOfCs (S := S) (cs := cs)) := by
+lemma toMatrixMap_injective {cs : Fin 2 → C} :
+    Function.Injective (toMatrixMap (S := S) (cs := cs)) := by
   intro t1 t2 h
   apply (basis cs).repr.injective
   ext φ
@@ -465,13 +465,13 @@ lemma matrixOfCs_injective {cs : Fin 2 → C} :
   exact congrFun (congrFun h (φ 0)) (φ 1)
 
 /-- Swapping the two slots of a rank-two tensor transposes its component matrix. -/
-lemma matrixOfCs_permT_swap {c c1 : Fin 2 → C} (h0 : c 1 = c1 0) (h1 : c 0 = c1 1)
+lemma toMatrixMap_permT_swap {c c1 : Fin 2 → C} (h0 : c 1 = c1 0) (h1 : c 0 = c1 1)
     (t : S.Tensor c) :
-    matrixOfCs (permT ![1, 0] (IsReindexing.swap_of_eq h0 h1) t) =
-      (matrixOfCs t).transpose.submatrix (basisIdxCongr h0.symm) (basisIdxCongr h1.symm) := by
+    toMatrixMap (permT ![1, 0] (IsReindexing.swap_of_eq h0 h1) t) =
+      (toMatrixMap t).transpose.submatrix (basisIdxCongr h0.symm) (basisIdxCongr h1.symm) := by
   ext u v
-  rw [matrixOfCs_apply, permT_basis_repr_symm_apply]
-  simp only [Matrix.submatrix_apply, Matrix.transpose_apply, matrixOfCs_apply]
+  rw [toMatrixMap_apply, permT_basis_repr_symm_apply]
+  simp only [Matrix.submatrix_apply, Matrix.transpose_apply, toMatrixMap_apply]
   congr 1 with i
   have hi := congr_arg_heq ((ComponentIdx.pair (S := S) (cs := c1)).symm (u, v))
     ((IsReindexing.swap_of_eq h0 h1).apply_inv_apply _ (![1, 0] i))
