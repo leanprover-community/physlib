@@ -651,7 +651,7 @@ lemma range_le_ker_imp_zero {A : HermitianMat d 𝕜}
   rw [HermitianMat.ext_iff, mat_zero]
   ext i j
   have hA_sq : (A.mat * A.mat) = 0 := by
-    simp_all only [SetLike.le_def, LinearMap.mem_range, LinearMap.mem_ker, forall_exists_index,
+    simp_all only [IsConcreteLE.le_iff, LinearMap.mem_range, LinearMap.mem_ker, forall_exists_index,
       forall_apply_eq_imp_iff]
     simp_all only [← Matrix.ext_iff, Matrix.mul_apply, mat_apply, Matrix.zero_apply]
     intro i j

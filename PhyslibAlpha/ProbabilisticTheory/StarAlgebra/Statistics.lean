@@ -162,7 +162,8 @@ lemma covariance_eq_re_apply_centered_mul (ω : 𝓢[ℂ, A]) (a b : Observable 
       ((expectation ω (x * y) : ℝ) : ℂ) = (((2 : ℝ)⁻¹ : ℝ) : ℂ) *
           (2 * ((ω ((x : A) * y)).re : ℂ)) := hval.symm
       _ = ((ω ((x : A) * y)).re : ℂ) := by
-        apply Complex.ext <;> (norm_num <;> ring)
+        apply Complex.ext <;> norm_num
+        ring
   exact_mod_cast hval'
 
 /-- The variance is the expectation of the squared fluctuation. -/
