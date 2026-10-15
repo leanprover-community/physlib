@@ -11,6 +11,8 @@ public import Physlib.Mathematics.Calculus.Gradient
 
 # The Poisson bracket
 
+The Poisson bracket of phase-space observables and their Hamiltonian time evolution.
+
 ## i. Overview
 
 The Poisson bracket packages, into a single antisymmetric bilinear operation on phase-space
@@ -33,6 +35,8 @@ derivatives on phase space.
 - `poissonBracket_add_left`, `poissonBracket_add_right`, `poissonBracket_const_mul_left`,
   `poissonBracket_const_mul_right` : the bracket is bilinear, that is additive and homogeneous in
   each argument.
+- `poissonBracket_mul_left`, `poissonBracket_mul_right` : the bracket satisfies the Leibniz rule
+  in each argument.
 - `deriv_comp_eq_inner_gradient_add` : the time derivative of a phase-space function composed with
   a trajectory is the sum of its gradients paired with the trajectory's velocities.
 - `deriv_comp_eq_poissonBracket` : along a solution of Hamilton's equations, the time derivative of
@@ -43,9 +47,10 @@ derivatives on phase space.
 - A. The definition of the Poisson bracket
 - B. Antisymmetry
 - C. Bilinearity
-- D. Time evolution along a Hamiltonian flow
-  - D.1. The chain rule for a phase-space function along a trajectory
-  - D.2. Time evolution as the Poisson bracket with the Hamiltonian
+- D. The Leibniz rule
+- E. Time evolution along a Hamiltonian flow
+  - E.1. The chain rule for a phase-space function along a trajectory
+  - E.2. Time evolution as the Poisson bracket with the Hamiltonian
 
 ## iv. References
 
@@ -62,8 +67,8 @@ namespace ClassicalMechanics
 
 variable {X} [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X]
 
-TODO "Add the canonical commutation relations for coordinate functionals, the Leibniz (product)
-    rule `{f, g * h} = {f, g} * h + g * {f, h}`, and the Jacobi identity for `poissonBracket`."
+TODO "Add the canonical commutation relations for coordinate functionals and the Jacobi identity
+    for `poissonBracket`."
 
 /-!
 
@@ -145,13 +150,45 @@ lemma poissonBracket_const_mul_right (c : ℝ) (f g : X → X → ℝ) (p q : X)
 
 /-!
 
-## D. Time evolution along a Hamiltonian flow
+## D. The Leibniz rule
+
+-/
+
+/-- The Poisson bracket satisfies the Leibniz rule in its first argument. -/
+lemma poissonBracket_mul_left (f₁ f₂ g : X → X → ℝ) (p q : X)
+    (hf₁p : DifferentiableAt ℝ (fun p' => f₁ p' q) p)
+    (hf₂p : DifferentiableAt ℝ (fun p' => f₂ p' q) p)
+    (hf₁q : DifferentiableAt ℝ (fun q' => f₁ p q') q)
+    (hf₂q : DifferentiableAt ℝ (fun q' => f₂ p q') q) :
+    poissonBracket (fun p' q' => f₁ p' q' * f₂ p' q') g p q =
+      poissonBracket f₁ g p q * f₂ p q + f₁ p q * poissonBracket f₂ g p q := by
+  simp only [poissonBracket]
+  rw [(hf₁q.hasGradientAt.mul hf₂q.hasGradientAt).gradient,
+    (hf₁p.hasGradientAt.mul hf₂p.hasGradientAt).gradient]
+  simp only [inner_add_left, real_inner_smul_left]
+  ring
+
+/-- The Poisson bracket satisfies the Leibniz rule in its second argument. -/
+lemma poissonBracket_mul_right (f g₁ g₂ : X → X → ℝ) (p q : X)
+    (hg₁p : DifferentiableAt ℝ (fun p' => g₁ p' q) p)
+    (hg₂p : DifferentiableAt ℝ (fun p' => g₂ p' q) p)
+    (hg₁q : DifferentiableAt ℝ (fun q' => g₁ p q') q)
+    (hg₂q : DifferentiableAt ℝ (fun q' => g₂ p q') q) :
+    poissonBracket f (fun p' q' => g₁ p' q' * g₂ p' q') p q =
+      poissonBracket f g₁ p q * g₂ p q + g₁ p q * poissonBracket f g₂ p q := by
+  rw [poissonBracket_antisymm f, poissonBracket_mul_left g₁ g₂ f p q hg₁p hg₂p hg₁q hg₂q,
+    poissonBracket_antisymm g₁ f, poissonBracket_antisymm g₂ f]
+  ring
+
+/-!
+
+## E. Time evolution along a Hamiltonian flow
 
 -/
 
 /-!
 
-### D.1. The chain rule for a phase-space function along a trajectory
+### E.1. The chain rule for a phase-space function along a trajectory
 
 -/
 
@@ -181,7 +218,7 @@ lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) 
 
 /-!
 
-### D.2. Time evolution as the Poisson bracket with the Hamiltonian
+### E.2. Time evolution as the Poisson bracket with the Hamiltonian
 
 -/
 
