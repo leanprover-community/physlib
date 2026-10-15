@@ -9,10 +9,10 @@ public import Mathlib.LinearAlgebra.SesquilinearForm.Star
 
 /-!
 
-# Positive-definite sesquilinear forms
+# Positive-definite and nondegenerate sesquilinear forms
 
 A sesquilinear form is positive-definite when it is symmetric and strictly positive on nonzero
-vectors.
+vectors, and nondegenerate exactly when its matrix in a basis is invertible.
 
 ## i. Overview
 
@@ -23,6 +23,11 @@ extending `LinearMap.IsSymm`. For a form `M →ₗ⋆[R] M →ₗ[R] R` symmetry
 `star (B x y) = B y x`. A positive-definite form is positive-semidefinite and nondegenerate, and
 in a basis it is positive-definite exactly when its matrix is.
 
+Mathlib relates nondegeneracy of a form to the determinant of its matrix only for bilinear forms
+(`LinearMap.nondegenerate_iff_det_ne_zero`). For a sesquilinear form `B : W →ₗ⋆[k] W →ₗ[k] k`
+the coordinates of the first argument enter conjugated, `B x y = star u_x ⬝ᵥ (A *ᵥ u_y)`, and
+conjugation is a bijection of coordinate vectors, so the same criterion holds.
+
 ## ii. Key results
 
 - `LinearMap.IsPosDef` : a sesquilinear form is symmetric and `0 < B x x` for `x ≠ 0`.
@@ -30,6 +35,8 @@ in a basis it is positive-definite exactly when its matrix is.
 - `LinearMap.IsPosDef.nondegenerate` : a positive-definite form is nondegenerate.
 - `LinearMap.isPosDef_iff_posDef_toMatrix` : a form is positive-definite exactly when its matrix in
   a basis is.
+- `LinearMap.nondegenerate_iff_isUnit_det_toMatrix₂` : a sesquilinear form is nondegenerate
+  exactly when the determinant of its matrix is a unit.
 
 ## iii. Table of contents
 
@@ -37,6 +44,7 @@ in a basis it is positive-definite exactly when its matrix is.
   - A.1. The definition
   - A.2. Consequences over a preorder
   - A.3. The matrix of a positive-definite form
+- B. Nondegeneracy and the determinant
 
 ## iv. References
 
@@ -114,5 +122,43 @@ lemma isPosDef_iff_posDef_toMatrix (b : Basis n R M) : B.IsPosDef ↔ (toMatrix�
     exact h (b.equivFun.map_ne_zero_iff.mpr hx)
 
 end toMatrix
+
+end LinearMap
+
+/-!
+
+## B. Nondegeneracy and the determinant
+
+-/
+
+namespace LinearMap
+
+section Nondegenerate
+
+variable {k ι W : Type*} [Field k] [StarRing k] [AddCommGroup W] [Module k W] [Fintype ι]
+  [DecidableEq ι]
+
+/-- A sesquilinear form is nondegenerate exactly when the determinant of its matrix in a basis is a
+unit. -/
+lemma nondegenerate_iff_isUnit_det_toMatrix₂ (e : Basis ι k W) (B : W →ₗ⋆[k] W →ₗ[k] k) :
+    B.Nondegenerate ↔ IsUnit (toMatrix₂ e e B).det := by
+  rw [isUnit_iff_ne_zero, ← Matrix.nondegenerate_iff_det_ne_zero, Matrix.nondegenerate_iff,
+    Matrix.separatingLeft_def, Matrix.separatingRight_def]
+  refine and_congr ?_ ?_
+  · refine (e.equivFun.toEquiv.trans (starAddEquiv (R := ι → k)).toEquiv).forall_congr
+      fun s => imp_congr (e.equivFun.toEquiv.forall_congr fun t => ?_) ?_
+    · simp only [Equiv.trans_apply, LinearEquiv.coe_toEquiv, AddEquiv.toEquiv_eq_coe,
+        AddEquiv.coe_toEquiv, starAddEquiv_apply, apply_eq_star_dotProduct_toMatrix₂_mulVec e,
+        Basis.equivFun_apply]
+    · simp [star_eq_zero]
+  · refine e.equivFun.toEquiv.forall_congr fun t => imp_congr
+      ((e.equivFun.toEquiv.trans (starAddEquiv (R := ι → k)).toEquiv).forall_congr
+        fun s => ?_) ?_
+    · simp only [Equiv.trans_apply, LinearEquiv.coe_toEquiv, AddEquiv.toEquiv_eq_coe,
+        AddEquiv.coe_toEquiv, starAddEquiv_apply, apply_eq_star_dotProduct_toMatrix₂_mulVec e,
+        Basis.equivFun_apply]
+    · simp
+
+end Nondegenerate
 
 end LinearMap
