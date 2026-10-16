@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.RepresentationTheory.Irreducible
+public import Physlib.Meta.TODO.Basic
 /-!
 
 # Dual left handed Weyl fermions
@@ -205,6 +206,9 @@ lemma rep_apply_basis_repr (M : SL(2,ℂ)) (i j : Fin 2) :
 ### C.1. Irreducibility
 
 -/
+
+TODO "Explore whether the duality between left-handed and dual left-handed Weyl fermions can be
+  leveraged to simplify the proof of irreducibility."
 
 /-- The representation `rep` has no common eigenvector. -/
 lemma eq_zero_of_rep_eq_smul (ψ : DualLeftHandedWeyl)
