@@ -236,11 +236,11 @@ lemma conjT_apply {n : ℕ} {c : Fin n → C} (t : S.Tensor c) :
 
 /-- The component matrix of a conjugated rank-two tensor is the entrywise `star` of the original,
 with labels carried over by `barIdx_eq`. -/
-lemma toMatrixMap_conjT {cs : Fin 2 → C} (t : S.Tensor cs) :
-    toMatrixMap (S.conjT t) = ((toMatrixMap t).map star).submatrix
+lemma toMatrix_conjT {cs : Fin 2 → C} (t : S.Tensor cs) :
+    toMatrix (S.conjT t) = ((toMatrix t).map star).submatrix
       (Equiv.cast (S.barIdx_eq (cs 0))) (Equiv.cast (S.barIdx_eq (cs 1))) := by
   ext x y
-  simp only [toMatrixMap_apply, Matrix.submatrix_apply, Matrix.map_apply,
+  simp only [toMatrix_apply, Matrix.submatrix_apply, Matrix.map_apply,
     ← componentMap_eq_repr, componentMap_conjT]
   exact congrArg _ (congrArg _ (funext fun i => by fin_cases i <;> rfl))
 
@@ -456,9 +456,10 @@ lemma conjT_eq_permT_swap_iff_isHermitian {a d : C} (hbar : S.bar a = d) (M : S.
       ((congrArg S.bar hbar).symm.trans (S.bar_involution a)).symm) M ↔
     (S.squareMatrixOf M hbar).IsHermitian := by
   subst hbar
-  rw [squareMatrixOf, ← toMatrixMap_injective.eq_iff, toMatrixMap_conjT,
-    toMatrixMap_permT_swap rfl (S.bar_involution a).symm, Matrix.IsHermitian, ← Matrix.ext_iff,
-    ← Matrix.ext_iff]
+  rw [squareMatrixOf, ← toMatrix_injective.eq_iff, toMatrix_conjT,
+    toMatrix_permT_swap rfl (S.bar_involution a).symm]
+  dsimp only [Matrix.cons_val_zero, Matrix.cons_val_one]
+  rw [Matrix.IsHermitian, ← Matrix.ext_iff, ← Matrix.ext_iff]
   have hbb : basisIdx a = basisIdx (S.bar (S.bar a)) := by rw [S.bar_involution]
   change (∀ (i : basisIdx (S.bar a)) (j : basisIdx (S.bar (S.bar a))),
       star (toMatrix M (cast (S.barIdx_eq a) i) (cast (S.barIdx_eq (S.bar a)) j)) =
