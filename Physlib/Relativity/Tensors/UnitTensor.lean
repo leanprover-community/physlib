@@ -172,29 +172,26 @@ namespace Tensor
 
 /-- The component matrix of a unit tensor recoloured without moving its slots is the identity, with
   the labels transported back to the unit tensor's colours. -/
-lemma toMatrixMap_permT_unitTensor [HasContrDualBases S] (c : C) {cs : Fin 2 → C}
+lemma toMatrix_permT_unitTensor [HasContrDualBases S] (c : C) {cs : Fin 2 → C}
     {σ : Fin 2 → Fin 2} (hσ : ∀ i, σ i = i) (hperm : IsReindexing ![S.τ c, c] cs σ) :
-    toMatrixMap (permT σ hperm (unitTensor (S := S) c)) =
+    toMatrix (permT σ hperm (unitTensor (S := S) c)) =
       (1 : Matrix (basisIdx c) (basisIdx c) k).submatrix
         (fun x => HasContrDualBases.contrDualIdxEquiv S c
           (basisIdxCongr (by rw [← hperm.2 0, hσ]; rfl) x))
         (fun y => basisIdxCongr (by rw [← hperm.2 1, hσ]; rfl) y) := by
   ext x y
-  rw [toMatrixMap_apply, permT_basis_repr_of_id hσ, unitTensor_basis_repr_eq_ite,
+  rw [toMatrix_apply, permT_basis_repr_of_id hσ, unitTensor_basis_repr_eq_ite,
     Matrix.submatrix_apply, Matrix.one_apply]
   simp only [ComponentIdx.pair_symm_apply_zero, ComponentIdx.pair_symm_apply_one]
   congr 1
 
 /-- The unit tensor's component matrix is the identity, carried along `contrDualIdxEquiv`. -/
-lemma toMatrixList_unitTensor [HasContrDualBases S] (c : C) :
-    toMatrixList (unitTensor (S := S) c) =
+lemma toMatrix_unitTensor [HasContrDualBases S] (c : C) :
+    toMatrix (unitTensor (S := S) c) =
       (1 : Matrix (basisIdx c) (basisIdx c) k).submatrix
         ⇑(HasContrDualBases.contrDualIdxEquiv S c) id := by
   ext x y
-  rw [toMatrixList_apply, unitTensor_basis_repr_eq_ite, Matrix.submatrix_apply, Matrix.one_apply,
-    id_eq]
-  simp only [ComponentIdx.pair_symm_apply_zero, ComponentIdx.pair_symm_apply_one]
-  exact if_congr (Eq.congr (congrArg _ (basisIdxCongr_rfl _ x)) (basisIdxCongr_rfl _ y)) rfl rfl
+  exact unitTensor_basis_repr_eq_ite c (ComponentIdx.pair.symm (x, y))
 
 end Tensor
 

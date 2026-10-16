@@ -45,7 +45,7 @@ The complementary convention keeps the replacement index in place. Contracting s
     contraction-dual bases, the δ collapsing the two sums into one.
 - `TensorSpecies.Tensor.crossToEnd_pair_basis_repr` : the component formula at rank two on each
     factor.
-- `TensorSpecies.Tensor.toMatrixMap_crossToEnd_pair` : the same as a matrix equation, cross
+- `TensorSpecies.Tensor.toMatrix_crossToEnd_pair` : the same as a matrix equation, cross
     contraction being the product of the component matrices.
 - `TensorSpecies.Tensor.crossToEnd_equivariant` : the contraction commutes with the `G`-action.
 - `TensorSpecies.Tensor.crossToEnd_assoc_rankTwo` : rebracket the chain
@@ -256,10 +256,11 @@ lemma crossToEnd_pair_basis_repr [HasContrDualBases S] {c0 c1 c2 c3 : C} (h : S.
 
 /-- Cross contraction of two rank-two tensors is the product of their component matrices, the
   middle labels matched by `HasContrDualBases.dualIdxEquiv`. -/
-lemma toMatrixMap_crossToEnd_pair [HasContrDualBases S] {c0 c1 c2 c3 : C} (h : S.τ c1 = c2)
+lemma toMatrix_crossToEnd_pair [HasContrDualBases S] {c0 c1 c2 c3 : C} (h : S.τ c1 = c2)
     (t1 : S.Tensor ![c0, c1]) (t2 : S.Tensor ![c2, c3]) :
-    toMatrixMap (crossToEnd (Fin.last 1) (0 : Fin 2) h t1 t2) =
-      toMatrixList t1 * (toMatrixList t2).submatrix ⇑(HasContrDualBases.dualIdxEquiv h) id := by
+    toMatrix (crossToEnd (Fin.last 1) (0 : Fin 2) h t1 t2) =
+      toMatrix t1 * (toMatrix t2).submatrix
+        (fun x : basisIdx (![c0, c1] 1) => HasContrDualBases.dualIdxEquiv h x) id := by
   ext y0 y3
   exact (crossToEnd_pair_basis_repr h t1 t2 y0 y3).trans rfl
 
