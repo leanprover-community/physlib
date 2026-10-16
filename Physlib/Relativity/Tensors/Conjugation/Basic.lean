@@ -466,8 +466,9 @@ back to `bar a`. -/
 lemma toMatrix_eq_submatrix_squareMatrixOf {a d : C} (hbar : S.bar a = d)
     (M : S.Tensor ![a, d]) :
     toMatrix M = (S.squareMatrixOf M hbar).submatrix id (Equiv.cast (hbar ▸ S.barIdx_eq a)) := by
-  rw [squareMatrixOf, Matrix.reindex_apply, Matrix.submatrix_submatrix, Equiv.refl_symm,
-    Equiv.coe_refl, Function.id_comp, Equiv.symm_comp_self, Matrix.submatrix_id_id]
+  ext i j
+  exact congrArg (toMatrix M i)
+    ((Equiv.cast (hbar ▸ S.barIdx_eq a)).symm_apply_apply j).symm
 
 /-- Conjugation swaps the two slots of `M : ![a, bar a]`, `M_{IJ̄} = conj M_{JĪ}`, exactly when its
 square component matrix is Hermitian. -/
@@ -686,7 +687,10 @@ lemma squareMatrixOf_inverseT {a d : C} (hbar : S.bar a = d)
         (Equiv.cast (hbar ▸ S.barIdx_eq a) ∘ (dualIdxEquiv (rfl : S.τ d = S.τ d)).symm)
         (Equiv.cast (hbar ▸ S.barIdx_eq a) ∘ (dualIdxEquiv (rfl : S.τ d = S.τ d)).symm) := by
   nontriviality k
-  rw [squareMatrixOf, toMatrix_inverseT, Matrix.reindex_apply, Matrix.submatrix_submatrix,
+  rw [squareMatrixOf, toMatrix_inverseT]
+  -- Normalize the literal colours inside matrix indices and their typeclass instances.
+  dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one]
+  rw [Matrix.reindex_apply, Matrix.submatrix_submatrix,
     Equiv.refl_symm, Equiv.coe_refl, Function.comp_id]
   exact congrArg _ (funext (S.dualIdxEquiv_cast_symm_eq hbar))
 
@@ -706,12 +710,13 @@ lemma crossToEnd_right_injective {a d c : C} (hbar : S.bar a = d) (M : S.Tensor 
     (hM : IsUnit (S.squareMatrixOf M hbar).det) :
     Function.Injective (crossToEnd (Fin.last 1) (0 : Fin 2) rfl M (cB := ![S.τ d, c])) := by
   intro Q Q' h
-  have h := congrArg toMatrixMap h
-  -- `toMatrixMap_crossToEnd_pair` keys through the `Fin.append` colour list only with this option.
+  have h := congrArg toMatrix h
+  -- `toMatrix_crossToEnd_pair` keys through the `Fin.append` colour list only with this option.
   set_option backward.isDefEq.respectTransparency false in
-  rw [toMatrixMap_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
-    toMatrixMap_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
+  rw [toMatrix_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
+    toMatrix_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
     S.toMatrix_eq_submatrix_squareMatrixOf hbar M] at h
+  dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one] at h
   set N := S.squareMatrixOf M hbar
   set β := Equiv.cast (hbar ▸ S.barIdx_eq a)
   -- Move the relabelling `β` across the product, then cancel `N` on the left.
@@ -721,9 +726,10 @@ lemma crossToEnd_right_injective {a d c : C} (hbar : S.bar a = d) (M : S.Tensor 
   rw [key, key] at h
   have h2 := congrArg (fun X : Matrix (basisIdx a) (basisIdx c) k => N⁻¹ * X) h
   simp only [Matrix.nonsing_inv_mul_cancel_left _ _ hM] at h2
-  refine toMatrixMap_injective ?_
+  refine toMatrix_injective ?_
   ext z w
-  simpa [toMatrix_apply] using congrFun (congrFun h2 (β ((dualIdxEquiv rfl).symm z))) w
+  simpa only [Matrix.submatrix_apply, id_eq, Equiv.symm_apply_apply,
+    Equiv.apply_symm_apply] using congrFun (congrFun h2 (β ((dualIdxEquiv rfl).symm z))) w
 
 end ConjTensorSpecies
 
@@ -799,15 +805,16 @@ lemma crossToEnd_inverseT {a d : C} (hbar : S.bar a = d) (M : S.Tensor ![a, d])
     crossToEnd (Fin.last 1) (0 : Fin 2) rfl M (S.inverseT M hbar) =
       permT id (IsReindexing.unitTensor_pair (S := S.toTensorSpecies) (d := d)
         (S.τ_τ_apply a)) (unitTensor (S := S.toTensorSpecies) (S.τ a)) := by
-  refine toMatrixMap_injective ?_
+  refine toMatrix_injective ?_
   have hMN := S.toMatrix_eq_submatrix_squareMatrixOf hbar M
-  -- `toMatrixMap_crossToEnd_pair` keys through the `Fin.append` colour list only with this option,
+  -- `toMatrix_crossToEnd_pair` keys through the `Fin.append` colour list only with this option,
   -- and the casts it leaves in the result are the ones the final index step cancels.
   set_option backward.isDefEq.respectTransparency false in
-  rw [toMatrixMap_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
-    toMatrixMap_permT_unitTensor (S := S.toTensorSpecies) (σ := id) (S.τ a) (fun _ => rfl),
+  rw [toMatrix_crossToEnd_pair (c1 := d) (c2 := S.τ d) rfl,
+    toMatrix_permT_unitTensor (S := S.toTensorSpecies) (σ := id) (S.τ a) (fun _ => rfl),
     toMatrix_inverseT,
     Matrix.submatrix_submatrix]
+  dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one] at hMN ⊢
   set N := S.squareMatrixOf M hbar
   have hr : (⇑(Equiv.cast (hbar ▸ S.barIdx_eq a)) ∘ ⇑(dualIdxEquiv (rfl : S.τ d = S.τ d)).symm) ∘
       ⇑(dualIdxEquiv (rfl : S.τ d = S.τ d)) = ⇑(Equiv.cast (hbar ▸ S.barIdx_eq a)) := by
@@ -828,11 +835,12 @@ lemma crossToEnd_inverseT_left {a d : C} (hbar : S.bar a = d)
     crossToEnd (Fin.last 1) (0 : Fin 2) (S.τ_τ_apply a) (S.inverseT M hbar) M =
       permT id (IsReindexing.unitTensor_pair (S := S.toTensorSpecies) (d := S.τ a)
         (rfl : S.τ d = S.τ d)) (unitTensor (S := S.toTensorSpecies) d) := by
-  refine toMatrixMap_injective ?_
+  refine toMatrix_injective ?_
   have hMN := S.toMatrix_eq_submatrix_squareMatrixOf hbar M
-  rw [toMatrixMap_crossToEnd_pair (c1 := S.τ a) (c2 := a) (S.τ_τ_apply a),
-    toMatrixMap_permT_unitTensor (S := S.toTensorSpecies) (σ := id) d (fun _ => rfl),
+  rw [toMatrix_crossToEnd_pair (c1 := S.τ a) (c2 := a) (S.τ_τ_apply a),
+    toMatrix_permT_unitTensor (S := S.toTensorSpecies) (σ := id) d (fun _ => rfl),
     toMatrix_inverseT]
+  dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one] at hMN ⊢
   set N := S.squareMatrixOf M hbar
   rw [hMN, Matrix.submatrix_submatrix, Function.id_comp, Function.comp_id,
     Matrix.submatrix_mul_equiv, Matrix.nonsing_inv_mul _ hM]
