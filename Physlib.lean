@@ -17,6 +17,7 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.KineticEne
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
+public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
