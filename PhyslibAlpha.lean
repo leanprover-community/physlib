@@ -379,6 +379,7 @@ public import PhyslibAlpha.ProbabilisticTheory.Representation.SectorReduction
 public import PhyslibAlpha.ProbabilisticTheory.Representation.StructureFactor
 public import PhyslibAlpha.ProbabilisticTheory.Representation.VectorMeasure
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.ComplexExtension
+public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.CovarianceForm
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.GNS
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Invariant
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Jordan
