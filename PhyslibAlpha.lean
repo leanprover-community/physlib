@@ -46,6 +46,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
 public import PhyslibAlpha.CondensedMatter.Crystal.BrillouinCoordinates
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Orthorhombic
+public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Rhombohedral
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.ThreeDimensional
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.TetragonalHexagonal
 public import PhyslibAlpha.CondensedMatter.Crystal.Folner
@@ -59,6 +60,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Count
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Cubic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Hypercubic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Orthorhombic
+public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Rhombohedral
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.TetragonalHexagonal
 public import PhyslibAlpha.CondensedMatter.Crystal.QuasiLocal
 public import PhyslibAlpha.CondensedMatter.Crystal.Reciprocal
