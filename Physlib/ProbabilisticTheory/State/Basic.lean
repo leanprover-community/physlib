@@ -19,10 +19,13 @@ A state assigns each observable its expectation value: a positive linear functio
 ## ii. Key results
 
 - `𝓢[𝕜, A]` : states on an ordered `𝕜`-vector space with a distinguished unit.
+- `UnitalPositiveLinearMap.pullback` : the state on the input of a channel that evaluates an
+  observable by first sending it through the channel.
 
 ## iii. Table of contents
 
 - A. Notation for positive functionals and states
+- B. Transporting states along channels
 
 ## iv. References
 
@@ -41,3 +44,26 @@ notation " 𝓟[" 𝕜 ", " A "] " => A →ₚ[𝕜] 𝕜
 
 /-- States on an ordered `𝕜`-vector space with a distinguished unit. -/
 notation " 𝓢[" 𝕜 ", " A "] " => A →ₚ₁[𝕜] 𝕜
+
+/-!
+
+## B. Transporting states along channels
+
+-/
+
+namespace UnitalPositiveLinearMap
+
+variable {k E F : Type*} [Semiring k] [PartialOrder k]
+  [AddCommMonoid E] [PartialOrder E] [AddCommMonoid F] [PartialOrder F]
+  [Module k E] [Module k F] [One E] [One F]
+
+/-- The state on `E` that evaluates an observable by first sending it through a channel `f` and
+then evaluating the state `ω` on the result. -/
+def pullback (f : E →ₚ₁[k] F) (ω : 𝓢[k, F]) : 𝓢[k, E] where
+  toPositiveLinearMap := ω.toPositiveLinearMap.comp f.toPositiveLinearMap
+  map_one' := (congrArg ω f.map_one').trans ω.map_one'
+
+@[simp]
+lemma pullback_apply (f : E →ₚ₁[k] F) (ω : 𝓢[k, F]) (x : E) : pullback f ω x = ω (f x) := rfl
+
+end UnitalPositiveLinearMap

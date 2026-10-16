@@ -269,12 +269,15 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.LocalNet.Basic
+public import Physlib.ProbabilisticTheory.LocalNet.GlobalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
+public import Physlib.ProbabilisticTheory.State.Local
 public import Physlib.ProbabilisticTheory.State.Metric
 public import Physlib.ProbabilisticTheory.State.Pairing
 public import Physlib.ProbabilisticTheory.State.Separation
