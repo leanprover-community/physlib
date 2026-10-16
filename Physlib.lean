@@ -3,6 +3,7 @@ module
 public import Physlib.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Basic
 public import Physlib.ClassicalFieldTheory.Local.Variation
 public import Physlib.ClassicalMechanics.Basic
+public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
 public import Physlib.ClassicalMechanics.DampedHarmonicOscillator.Basic
 public import Physlib.ClassicalMechanics.DampedHarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.EulerLagrange
