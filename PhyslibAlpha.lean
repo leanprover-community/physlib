@@ -58,6 +58,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Count
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Cubic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Hypercubic
+public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Monoclinic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Orthorhombic
 public import PhyslibAlpha.CondensedMatter.Crystal.QuasiLocal
 public import PhyslibAlpha.CondensedMatter.Crystal.Reciprocal
