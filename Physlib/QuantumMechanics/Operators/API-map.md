@@ -1,0 +1,269 @@
+# Operator algebra
+
+An observable of a quantum system is a self-adjoint operator on the Hilbert space of states. The
+observables of interest are almost never defined on the whole space: position multiplies a
+wavefunction by a coordinate and momentum differentiates it, and both send square-integrable
+functions out of the space unless the wavefunction decays or is smooth enough. The object to
+work with is therefore an operator defined on a dense subspace, a partially defined linear map,
+together with the conditions that make it a legitimate observable, namely a dense domain,
+symmetry of the inner-product pairing on that domain, and self-adjointness, which is strictly
+stronger than symmetry once the domain is a proper subspace.
+
+This API builds that framework and then the standard observables of non-relativistic quantum
+mechanics on `Space d`. Multiplication by a real function of position gives the potential energy
+and, componentwise, the position operator; powers of the radius give the multipliers used for
+central potentials. Differentiation gives the momentum operator -iℏ∂ᵢ. The two do not commute,
+and the canonical commutation relation [xᵢ, pⱼ] = iℏ δᵢⱼ is proved on Schwartz maps, alongside
+the commutators of the angular momenta 𝐋ᵢⱼ = xᵢpⱼ - xⱼpᵢ, which close into the Lie algebra of
+rotations and commute with 𝐋², with the momentum squared, and with every regularized power of
+the radius.
+
+The statistics of an observable T in a state ψ are the expectation value ⟨T⟩ = re ⟪ψ, T ψ⟫, the
+variance ‖T ψ - ⟨T⟩ψ‖², and the standard deviation. The API proves that the product of the
+standard deviations of two observables is bounded below by half the size of the expected
+commutator, in both the Robertson and the Robertson-Schrödinger forms.
+
+Everything is stated for partially defined operators on an arbitrary complex Hilbert space,
+and then applied to the Hilbert space on space. The spectrum, the resolvent, the numerical
+range and spectral measures belong to the spectral theory API instead. No module in the
+directory carries a proof gap; the open items below are recorded as TODO entries in the source,
+or are absent from it altogether.
+
+## Built on
+
+- Hilbert spaces on Space — `Physlib/QuantumMechanics/HilbertSpaces/SpaceD`
+- Space — `Physlib/SpaceAndTime/Space`
+- Planck constant — `Physlib/QuantumMechanics/PlanckConstant.lean`
+- Partially defined linear maps — `Physlib/Mathematics/ForMathlib/LinearPMap.lean`
+- Inner product spaces — `Physlib/Mathematics/InnerProductSpace`
+
+## Requirements
+
+A dense domain and the unbounded operators, those that are densely defined and closable, are
+defined. [1]
+
+Symmetry of the inner-product pairing on the domain is defined and characterized by the pairing
+of a vector with its own image being real. [2]
+
+Symmetry is stable under sums, powers and closures, and a self-adjoint operator is symmetric and
+closed. [3]
+
+Essential self-adjointness is defined, an essentially self-adjoint operator is unbounded, and
+its closure is its only self-adjoint extension. [4]
+
+The adjoint calculus is developed, in particular that the adjoint of an unbounded operator is
+again unbounded and that the second adjoint is the closure. [5]
+
+A symmetric densely defined operator whose ranges of T + i and T - i are the whole space is
+self-adjoint. [6]
+
+Conjugation by a unitary is defined and preserves formal adjoints, dense domains and
+surjectivity of T - z. [7]
+
+The multiplication operator of a complex function is defined with its maximal domain, and is
+densely defined for an almost everywhere strongly measurable multiplier. [8]
+
+The domain of a multiplication operator is everything for a bounded multiplier and contains the
+Schwartz maps for one of temperate growth. [9]
+
+The adjoint of a multiplication operator is multiplication by the conjugate, so a real
+multiplier gives a self-adjoint operator, and the operator is closed and unbounded. [10]
+
+Multiplication operators behave predictably under scalar multiples, sums and composition. [11]
+
+Each component of the position operator is defined as multiplication by a coordinate, first on
+Schwartz maps and then as a partially defined operator, and is densely defined, self-adjoint and
+unbounded. [12]
+
+Multiplication by a power of the radius and by its smooth regularization supplies the
+multipliers of central potentials, with the condition for the product to stay square-integrable
+and the limit of the regularized operators. [13]
+
+Each component of the momentum operator is defined as -iℏ∂ᵢ, first on Schwartz maps and then as
+a partially defined operator, and is densely defined, symmetric and unbounded on the Schwartz
+submodule, together with the momentum squared. [14]
+
+The momentum operator will be shown self-adjoint, and not merely symmetric, on the Sobolev
+space H¹ rather than on the Schwartz submodule, and likewise the momentum squared on H². Both
+are recorded as TODO items in the momentum module. [planned]
+
+The canonical commutation relation [xᵢ, pⱼ] = iℏ δᵢⱼ is proved on Schwartz maps, with the
+Leibniz rules used to reduce a commutator of products. [15]
+
+The position components commute among themselves and the momentum components among themselves,
+and the commutator of a position component with the momentum squared is computed. [16]
+
+A regularized power of the radius has its commutators computed: with itself, with a position
+component, with a momentum component and with the momentum squared. [17]
+
+The components 𝐋ᵢⱼ = xᵢpⱼ - xⱼpᵢ of the angular momentum operator and the scalar 𝐋² are defined
+on Schwartz maps, with antisymmetry in the two indices and the vanishing of a repeated index,
+and the one-, two- and three-dimensional cases are treated separately. [18]
+
+Position and momentum transform as vectors under the angular momenta, which close into the Lie
+algebra of rotations. [19]
+
+The scalar 𝐋² commutes with every angular momentum component, with the momentum squared and with
+any regularized power of the radius. [20]
+
+Each angular momentum component acts on the Hilbert space with dense Schwartz domain, agrees
+almost everywhere with its Schwartz-space action, preserves the Schwartz submodule, and is
+symmetric and closable. [21]
+
+Angular momentum squared is lifted to the Hilbert space with invariant dense Schwartz domain,
+agrees with the half-sum of component squares, and is symmetric and closable. [22]
+
+The right-handed Cartesian components in three dimensions act on the invariant Schwartz domain,
+satisfy the Levi-Civita and cyclic commutation relations, and their three squares sum to angular
+momentum squared. [23]
+
+Angular momentum ladder operators L± = Lx ± i Ly are defined on Schwartz maps and lifted to the
+Hilbert space with invariant dense Schwartz domain, where [Lz, L±] = ±ℏ L± and [L², L±] = 0.
+[24]
+
+Angular momentum will be extended from its Schwartz domain to self-adjoint operators on the
+Hilbert space, with their spectra, the eigenvalues ℏ² l (l + 1) of the scalar and ℏ m of a
+chosen component, and the spherical harmonics as the corresponding eigenfunctions. [planned]
+
+The expectation value of an observable in a state is defined as the real part of the pairing of
+the state with its image, together with the centered vector, and the pairing is already real for
+a symmetric operator. [25]
+
+The variance and the standard deviation are defined, with the second-order formula for the
+variance, and vanishing variance for a unit vector is exactly the eigenvector condition. [26]
+
+The eigenvector condition for a partially defined operator is defined. [27]
+
+The covariance of two observables in a state is defined, is symmetric, and reduces to the
+variance on a single observable. [28]
+
+The Robertson and Robertson-Schrödinger uncertainty bounds are proved, in which the product of
+two standard deviations is at least half the size of the expected commutator, stated for both a
+centered and a raw commutator identity. [29]
+
+The Heisenberg uncertainty relation for position and momentum will be proved: in any unit state
+of a common domain the product of the two standard deviations is at least ℏ/2. What it waits on
+is the position and momentum operators on a common domain, after which the commutator above
+feeds straight into the Robertson bound. [planned]
+
+The standard examples separating the classes of operators will be given, since the distinction
+between symmetry and self-adjointness is otherwise invisible. They are recorded as TODO items
+in the examples module, which declares nothing yet. [planned]
+
+## Further reading
+
+- B. C. Hall, Quantum Theory for Mathematicians, Springer (2013), Chapters 9 and 10 (unbounded self-adjoint operators) and Chapter 12 (position, momentum, expectation values and the uncertainty principle)
+- M. Reed and B. Simon, Methods of Modern Mathematical Physics I. Functional Analysis, Academic Press (1980), Chapter VIII (unbounded operators)
+- K. Schmüdgen, Unbounded Self-Adjoint Operators on Hilbert Space, Springer (2012), Chapters 1 to 3 (closed, symmetric and self-adjoint operators, and examples 1.3 and 3.8 on multiplication operators)
+- J. J. Sakurai and J. Napolitano, Modern Quantum Mechanics, 2nd ed., Cambridge University Press (2017), Chapter 1 (observables, expectation values, the canonical commutation relation, the uncertainty relation) and Chapter 3 (angular momentum)
+- D. J. Griffiths and D. F. Schroeter, Introduction to Quantum Mechanics, 3rd ed., Cambridge University Press (2018), Chapter 3 (observables, eigenfunctions of hermitian operators, the generalized uncertainty principle) and Chapter 4 (angular momentum)
+- H. P. Robertson, The Uncertainty Principle, Phys. Rev. 34, 163 (1929)
+- E. Schrödinger, Zum Heisenbergschen Unschärfeprinzip, Sitzungsberichte der Preussischen Akademie der Wissenschaften 19, 296 (1930)
+
+## Lean declarations
+
+1. Physlib/QuantumMechanics/Operators/Unbounded.lean — `HasDenseDomain`, `IsUnbounded`,
+   `isClosable_of_continuous`, `IsClosed.continuous_of_isClosed_domain`
+2. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric`,
+   `isSymmetric_iff_inner_map_self_real`
+3. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric.isClosable`,
+   `IsSymmetric.closure`, `IsSymmetric.add`, `IsSymmetric.pow`, `IsSelfAdjoint.isSymmetric`,
+   `IsSelfAdjoint.isClosed`
+4. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsEssentiallySelfAdjoint`,
+   `IsEssentiallySelfAdjoint.isUnbounded`,
+   `IsEssentiallySelfAdjoint.unique_self_adjoint_extension`
+5. Physlib/QuantumMechanics/Operators/Unbounded.lean — `adjoint_smul`, `adjoint_neg`,
+   `adjoint_antitone`, `adjoint_add_le_add_adjoint`,
+   `adjoint_compRestricted_le_compRestricted_adjoint`, `IsUnbounded.adjoint`,
+   `IsUnbounded.adjoint_closure_eq_adjoint`, `IsUnbounded.adjoint_adjoint_eq_closure`
+6. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric.isSelfAdjoint_of_range_eq_top`,
+   `IsSymmetric.isSelfAdjoint_iff`, `IsSymmetric.isEssentiallySelfAdjoint_iff`
+7. Physlib/QuantumMechanics/Operators/Unbounded.lean — `unitaryConj`,
+   `mem_unitaryConj_domain_iff`, `unitaryConj_apply`, `IsFormalAdjoint.unitaryConj`,
+   `HasDenseDomain.unitaryConj_dense_domain`, `unitaryConj_sub_smul_surjective`
+8. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator`, `notation 𝓜`,
+   `mem_mulOperator_domain_iff`, `mulOperator_apply_ae`, `mulOperator_hasDenseDomain`
+9. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_domain_eq_top`,
+   `mulOperator_domain_antitone`, `mulOperator_conj_domain`,
+   `mulOperator_domain_ge_of_hasTemperateGrowth`
+10. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_adjoint_eq_conj`,
+   `mulOperator_isSelfAdjoint_ofReal`, `mulOperator_isClosable`, `mulOperator_isUnbounded`,
+   `mulOperator_isClosed`
+11. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_const_smul_eq`,
+   `mulOperator_add_ge`, `mulOperator_add_eq`, `mulOperator_sub_ge`, `mulOperator_smul_ge`
+12. Physlib/QuantumMechanics/Operators/Position.lean — `positionCLM`, `notation 𝐱`,
+   `positionCLM_apply`, `positionSqCLM_eq`, `positionOperator`, `notation 𝓧`,
+   `positionOperator_hasDenseDomain`, `positionOperator_isSelfAdjoint`,
+   `positionOperator_isUnbounded`
+13. Physlib/QuantumMechanics/Operators/Position.lean — `radiusRegPowCLM`, `notation 𝐫₀`,
+   `radiusRegPowCLM_comp_eq`, `radiusPowLM`, `notation 𝐫`, `radiusPowLM_apply_memHS`,
+   `radiusRegPow_tendsto_radiusPow`, `radiusRegPowOperator`,
+   `radiusRegPowOperator_isSelfAdjoint`, `radiusPowOperator`, `radiusPowOperator_isSelfAdjoint`,
+   `radiusPowOperator_domain_ge`
+14. Physlib/QuantumMechanics/Operators/Momentum.lean — `momentumCLM`, `notation 𝐩`,
+   `momentumCLM_apply`, `momentumOperator`, `notation 𝓟`, `momentumOperator_apply`,
+   `momentumOperator_hasDenseDomain`, `momentumOperator_isSymmetric`,
+   `momentumOperator_isUnbounded`, `momentumSqOperator`, `momentumSqOperator_domain_eq`
+15. Physlib/QuantumMechanics/Operators/Commutation.lean — `leibniz_lie`, `lie_leibniz`,
+   `comp_eq_comp_add_commute`, `comp_eq_comp_sub_commute`, `position_commutation_momentum`,
+   `momentum_comp_position_eq`, `position_position_commutation_momentum`,
+   `position_commutation_momentum_momentum`
+16. Physlib/QuantumMechanics/Operators/Commutation.lean — `position_commutation_position`,
+   `position_comp_commute`, `momentum_commutation_momentum`, `momentumSqr_commutation_momentum`,
+   `position_commutation_momentumSqr`
+17. Physlib/QuantumMechanics/Operators/Commutation.lean — `position_commutation_radiusRegPow`,
+   `radiusRegPow_commutation_radiusRegPow`, `radiusRegPow_commutation_momentum`,
+   `momentum_comp_radiusRegPow_eq`, `radiusRegPow_commutation_momentumSqr`
+18. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumCLM`,
+   `notation 𝐋`, `angularMomentumCLM_apply`, `angularMomentumCLM_antisymm`,
+   `angularMomentumCLM_eq_zero`, `angularMomentumOperatorSqr`, `notation 𝐋²`,
+   `angularMomentumOperatorSqr_apply`, `angularMomentumOperator1D_trivial`,
+   `angularMomentumOperator2D`, `angularMomentumOperator3D`
+19. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentum_commutation_position`,
+   `angularMomentum_commutation_momentum`, `angularMomentum_commutation_angularMomentum`
+20. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumSqr_commutation_angularMomentum`,
+   `angularMomentumSqr_commutation_momentumSqr`, `angularMomentumSqr_commutation_radiusRegPow`,
+   `angularMomentum_commutation_momentumSqr`, `angularMomentum_commutation_radiusRegPow`
+21. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumOperator`,
+   `angularMomentumOperator_domain_eq`, `angularMomentumOperator_apply`,
+   `angularMomentumOperator_apply_ae`, `angularMomentumOperator_range`,
+   `angularMomentumOperator_hasDenseDomain`, `angularMomentumCLM_eq_momentum_position`,
+   `angularMomentumOperator_isSymmetric`, `angularMomentumOperator_isUnbounded`
+22. Physlib/QuantumMechanics/Operators/AngularMomentum.lean — `angularMomentumSqOperator`,
+   `angularMomentumSqOperator_apply`, `angularMomentumSqOperator_apply_ae`,
+   `angularMomentumSqOperator_range`, `angularMomentumSqOperator_apply_eq_sum`,
+   `angularMomentumSqOperator_hasDenseDomain`, `angularMomentumSqr_inner`,
+   `angularMomentumSqOperator_isSymmetric`, `angularMomentumSqOperator_isUnbounded`
+23. Physlib/QuantumMechanics/Operators/AngularMomentum/DimThree.lean — `angularMomentumDimThreeOperator`,
+   `angularMomentumDimThreeOperator_isSymmetric`, `angularMomentumOperatorSqr_eq_sum_dimThree`,
+   `angularMomentumSqOperator_apply_eq_sum_dimThree`, `angularMomentumDimThree_commutation`,
+   `angularMomentumDimThree_commutation_xy`, `angularMomentumDimThree_commutation_yz`,
+   `angularMomentumDimThree_commutation_zx`, `angularMomentumDimThreeOperator_commutation`,
+   `angularMomentumSqOperator_commutation_dimThree`
+24. Physlib/QuantumMechanics/Operators/AngularMomentum/DimThree.lean — `angularMomentumRaisingCLM`,
+   `angularMomentumLoweringCLM`, `angularMomentumRaisingOperator`,
+   `angularMomentumLoweringOperator`, `angularMomentumZ_commutation_raising`,
+   `angularMomentumZ_commutation_lowering`, `angularMomentumSqr_commutation_raising`,
+   `angularMomentumSqr_commutation_lowering`, `angularMomentumZOperator_commutation_raising`,
+   `angularMomentumZOperator_commutation_lowering`,
+   `angularMomentumSqOperator_commutation_raising`,
+   `angularMomentumSqOperator_commutation_lowering`
+25. Physlib/QuantumMechanics/Operators/StateObservables/ExpectedValue.lean — `expectedValue`,
+   `expectedValue_eq_inner`, `centered`, `centered_eq_zero_iff`, `inner_state_centered_eq_zero`,
+   `inner_centered_state_eq_zero`
+26. Physlib/QuantumMechanics/Operators/StateObservables/Variance.lean — `variance`,
+   `variance_eq_centered_norm_sq`, `variance_eq_norm_sq_sub_expectedValue_sq`,
+   `variance_eq_re_inner_sub_expectedValue_sq`, `variance_nonneg`,
+   `variance_eq_zero_iff_isEigenvector`, `standardDeviation`,
+   `standardDeviation_eq_zero_iff_isEigenvector`
+27. Physlib/QuantumMechanics/Operators/StateObservables/IsEigenvector.lean — `IsEigenvector`,
+   `IsEigenvector.apply_eq`, `IsEigenvector.ne_zero`
+28. Physlib/QuantumMechanics/Operators/Covariance.lean — `covariance`, `covariance_comm`,
+   `covariance_eq_re_symm_centered`, `covariance_self_eq_variance`
+29. Physlib/QuantumMechanics/Operators/Uncertainty.lean — `centeredCommutatorExpectation`,
+   `rawCommutatorExpectation`, `inner_centered_commutator_of_raw_commutator`,
+   `state_uncertainty_squared_of_centered_commutator`,
+   `state_uncertainty_squared_with_covariance_of_centered_commutator`,
+   `state_uncertainty_of_centered_commutator`, `state_uncertainty_squared_of_raw_commutator`,
+   `state_uncertainty_squared_with_covariance_of_raw_commutator`,
+   `state_uncertainty_of_raw_commutator`

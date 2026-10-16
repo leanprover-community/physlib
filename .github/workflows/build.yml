@@ -167,9 +167,7 @@ jobs:
           ./scripts/lint/required/lint-style.sh
 
       - name: Check API maps
-        run: |
-          python -m pip install PyYAML==6.0.2
-          python scripts/lint/required/api_map_linter.py --repo .
+        run: python scripts/lint/required/api_map_linter.py --repo .
 
       - name: Python linters for PhyslibAlpha
         run: |
