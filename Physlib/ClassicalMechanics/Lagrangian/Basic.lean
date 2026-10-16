@@ -72,6 +72,12 @@ abbrev LagrangianSystem := C^∞⟮𝓘(ℝ, Time).prod I.tangent, Time × Tange
 
 namespace LagrangianSystem
 
+/-- The Lagrangian system on a normed space `E` given by a smooth `L(t, q, q̇)`. -/
+def ofNormedSpace (L : Time × E × E → ℝ) (hL : ContDiff ℝ ∞ L) :
+    LagrangianSystem 𝓘(ℝ, E) ⟨E⟩ :=
+  ⟨fun p ↦ L (p.1, p.2.1, p.2.2), hL.contMDiff.comp (contMDiff_fst.prodMk_space
+    (contMDiff_tangentBundleModelSpaceHomeomorph.comp contMDiff_snd))⟩
+
 variable {I M} (S : LagrangianSystem I M) {γ : Time → M} {t₀ t₁ : Time}
 
 /-- The action `∫ L(t, γ, γ̇) dt` over `[t₀, t₁]`. -/
