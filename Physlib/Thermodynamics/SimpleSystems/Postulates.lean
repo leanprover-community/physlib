@@ -52,8 +52,6 @@ volume and component mole numbers, is zero.
 
 ## ii. Key results
 
-* `EquilibriumState.equilibrium_state_exists`: constructs an equilibrium
-  state from a nonempty coordinate domain.
 * `Postulate1`: existence of an equilibrium state.
 * `IsEntropyMaximum`: entropy maximization under wall constraints
   and fixed global totals.
@@ -95,19 +93,6 @@ open scoped BigOperators
 /-!
 ## A. Postulate I: equilibrium states
 -/
-
-namespace EquilibriumState
-
-/-- An equilibrium state exists whenever the set `D` of permitted
-coordinate combinations is nonempty. -/
-lemma equilibrium_state_exists {r : ℕ} {D : Set (StateCoordinates r)}
-    (hD : D.Nonempty) : Nonempty (EquilibriumState D) := by
-  -- Since `D` is nonempty, choose coordinates `(U, V, N)` in `D` with membership proof `h`.
-  obtain ⟨⟨U, V, N⟩, h⟩ := hD
-  -- These coordinates and their membership proof form an equilibrium state.
-  exact ⟨⟨U, V, N, h⟩⟩
-
-end EquilibriumState
 
 /-- Postulate I: At least one equilibrium state exists with coordinates in `D`.
 Each `EquilibriumState` is fully specified by its internal energy,
