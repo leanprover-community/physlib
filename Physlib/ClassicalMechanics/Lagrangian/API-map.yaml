@@ -14,7 +14,7 @@ ParentAPIs:
 References:
   - Ivo Terek, Introductory Variational Calculus on Manifolds
   - V. I. Arnold, Mathematical Methods of Classical Mechanics
-  - Landau and Lifshitz, Mechanics, 3rd ed., Chapter 1 (generalised coordinates, the principle of least action, the Lagrangian)
+  - L. D. Landau and E. M. Lifshitz, Mechanics
 
 Requirements:
   - description: >
