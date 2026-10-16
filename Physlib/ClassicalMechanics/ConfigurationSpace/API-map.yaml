@@ -18,7 +18,7 @@ Requirements:
       A general, system-agnostic `ConfigurationSpace` construction (a configuration manifold
       abstracting over the choice of mechanical system) usable across the Lagrangian API.
     done: true
-    location: "Physlib/ClassicalMechanics/ConfigurationSpace/Basic.lean (IsConfigurationSpace)"
+    location: "Physlib/ClassicalMechanics/ConfigurationSpace/Basic.lean (ConfigurationSpace)"
 
   - description: >
       The API shall prove that, in global generalised coordinates, a curve is smooth if and

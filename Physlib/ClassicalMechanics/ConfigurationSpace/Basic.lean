@@ -18,7 +18,7 @@ The configuration space of a mechanical system is the manifold of its configurat
 
 ## ii. Key results
 
-- `IsConfigurationSpace` : a smooth manifold without boundary; holds for every such manifold.
+- `ConfigurationSpace` : a smooth manifold without boundary.
 
 ## iii. Table of contents
 
@@ -35,18 +35,26 @@ namespace ClassicalMechanics
 
 open scoped ContDiff
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+
 /-!
 ## A. Configuration spaces
 -/
 
 /-- A smooth manifold without boundary. -/
-class IsConfigurationSpace {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*}
-    [TopologicalSpace H] (I : ModelWithCorners ℝ E H) (M : Type*) [TopologicalSpace M]
-    [ChartedSpace H M] : Prop extends IsManifold I ∞ M, BoundarylessManifold I M
+structure ConfigurationSpace (I : ModelWithCorners ℝ E H) where
+  /-- The configurations. -/
+  carrier : Type*
+  [topologicalSpace : TopologicalSpace carrier]
+  [chartedSpace : ChartedSpace H carrier]
+  [isManifold : IsManifold I ∞ carrier]
+  [boundarylessManifold : BoundarylessManifold I carrier]
 
-/-- A smooth manifold without boundary is a configuration space. -/
-instance {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
-    {I : ModelWithCorners ℝ E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-    [IsManifold I ∞ M] [BoundarylessManifold I M] : IsConfigurationSpace I M where
+variable {I : ModelWithCorners ℝ E H}
+
+instance : CoeSort (ConfigurationSpace I) (Type _) := ⟨ConfigurationSpace.carrier⟩
+
+attribute [instance] ConfigurationSpace.topologicalSpace ConfigurationSpace.chartedSpace
+  ConfigurationSpace.isManifold ConfigurationSpace.boundarylessManifold
 
 end ClassicalMechanics

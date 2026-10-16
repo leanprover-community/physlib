@@ -42,8 +42,7 @@ open MeasureTheory
 open scoped Manifold ContDiff
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
-  (I : ModelWithCorners ℝ E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-  [IsConfigurationSpace I M]
+  (I : ModelWithCorners ℝ E H) (M : ConfigurationSpace I)
 
 /-!
 ## A. Lagrangian systems
@@ -62,7 +61,6 @@ structure Variation (γ : Time → M) (t₀ t₁ : Time) where
   /-- Fixes `γ t₁`. -/
   apply_right : ∀ s, toFun (s, t₁) = γ t₁
 
-omit [IsConfigurationSpace I M] in
 variable {I M} in
 /-- A smooth curve admits the constant variation. -/
 lemma Variation.nonempty {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, Time) I ∞ γ) :
