@@ -24,8 +24,8 @@ open _root_.Lorentz.Vector
 
 /-- A Lorentz Velocity is a Lorentz vector which has norm equal to one
   and which is future-directed. -/
-def Velocity (d : ℕ := 3) : Set (Vector d) := fun v => ⟪v, v⟫ₘ = (1 : ℝ)
-  ∧ 0 < v.timeComponent
+def Velocity (d : ℕ := 3) : Set (Vector d) := {v | ⟪v, v⟫ₘ = (1 : ℝ)
+  ∧ 0 < v.timeComponent}
 
 namespace Velocity
 
@@ -42,10 +42,10 @@ lemma mem_iff {v : Vector d} : v ∈ Velocity d ↔ ⟪v, v⟫ₘ = (1 : ℝ) �
   rfl
 
 @[simp]
-lemma minkowskiProduct_self_eq_one (v : Velocity d) : ⟪v.1, v.1⟫ₘ = (1 : ℝ) := v.2.1
+lemma minkowskiProduct_self_eq_one (v : Velocity d) : ⟪v.1, v.1⟫ₘ = (1 : ℝ) := (mem_iff.1 v.2).1
 
 @[simp]
-lemma timeComponent_pos (v : Velocity d) : 0 < v.1.timeComponent := v.2.2
+lemma timeComponent_pos (v : Velocity d) : 0 < v.1.timeComponent := (mem_iff.1 v.2).2
 
 @[simp]
 lemma timeComponent_nonneg (v : Velocity d) : 0 ≤ v.1.timeComponent := by

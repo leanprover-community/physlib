@@ -200,7 +200,7 @@ lemma time_integral_hasFDerivAt {d : ℕ} (η : 𝓢(Time × Space d, ℝ)) (x�
     apply hasFDerivAt_integral_of_dominated_of_fderiv_le
       (bound := fun t => (k * ‖(ContinuousLinearMap.prod (0 : Space d →L[ℝ] Time)
       (ContinuousLinearMap.id ℝ (Space d)))‖) * ‖(1 + ‖t‖) ^ (rt)‖⁻¹)
-    · exact Filter.univ_mem' (hF (F x₀ 0))
+    · exact Filter.Eventually.of_forall (hF (F x₀ 0))
     · filter_upwards with x
       fun_prop
     · simp [F]

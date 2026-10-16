@@ -31,12 +31,12 @@ noncomputable def Lemma6_σn (m : ℕ) (σf : MState (H i)) (σₘ : MState (H (
     rw [← pow_mul, ← spacePow_add, Nat.div_add_mod n m]
   )
 
-lemma Lemma6_σn_IsFree {σ₁ : MState (H i)} {σₘ : (m : ℕ) → MState (H (i ^ m))} (hσ₁_free : IsFree σ₁)
+lemma Lemma6_σn_IsFree {σ₁ : MState (H i)} {σₘ : (m : ℕ) → MState (H (i ^ m))} (hσ₁_free : σ₁ ∈ IsFree)
     (hσₘ : ∀ (m : ℕ), σₘ m ∈ IsFree) (m n : ℕ) : Lemma6_σn m σ₁ (σₘ m) n ∈ IsFree := by
   rw [Lemma6_σn, relabel_cast_isFree]
   · apply free_prod --pick a better name / alias for this
-    · exact (hσₘ m).npow (n / m)
-    · exact hσ₁_free.npow (n % m)
+    · exact IsFree.npow (hσₘ m) (n / m)
+    · exact IsFree.npow hσ₁_free (n % m)
   · rw [← pow_mul, ← spacePow_add, Nat.div_add_mod n m]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -721,7 +721,7 @@ variable (i)
 private lemma σ₁_pos : (σ₁ i).m.PosDef :=
   (FreeStateTheory.free_fullRank i).choose_spec.left
 
-private lemma σ₁_isFree : IsFree (σ₁ i) :=
+private lemma σ₁_isFree : σ₁ i ∈ IsFree :=
   (FreeStateTheory.free_fullRank i).choose_spec.right
 
 private lemma mineig_pos : 0 < σ₁_mineig i := by
@@ -813,10 +813,10 @@ end σ₁_c_and_f
 variable (ρ : MState (H i)) (ε : Prob)
 variable (m : ℕ) (σ : (n : ℕ) → IsFree (i := i ^ n)) (n : ℕ)
 
-private lemma «σ̃_isFree» : IsFree («σ̃» m σ n) :=
+private lemma «σ̃_isFree» : «σ̃» m σ n ∈ IsFree :=
   Lemma6_σn_IsFree (σ₁_isFree i) (fun n ↦ (σ n).2) m n
 
-private lemma «σ⋆_free» : IsFree («σ⋆» ρ ε n) :=
+private lemma «σ⋆_free» : «σ⋆» ρ ε n ∈ IsFree :=
   haveI σ_max_exists (n : ℕ) := IsCompact_IsFree.exists_isMaxOn Set.Nonempty.of_subtype
       (f := fun σ ↦ β_ ε(ρ ⊗ᵣ^[n]‖{σ})) (hf := Continuous.continuousOn (by fun_prop))
   (σ_max_exists n).choose_spec.left
@@ -827,12 +827,12 @@ private lemma «σ⋆_max» :
       (f := fun σ ↦ β_ ε(ρ ⊗ᵣ^[n]‖{σ})) (hf := Continuous.continuousOn (by fun_prop))
   (σ_max_exists n).choose_spec.right
 
-private lemma σ'_free : IsFree (σ' ρ ε m σ n) := by
+private lemma σ'_free : σ' ρ ε m σ n ∈ IsFree := by
   -- by convexity of `IsFree` and that the three constituents are free
   unfold σ'
   apply IsFree.mix
-  · exact («σ̃_isFree» m σ n).mix («σ⋆_free» ρ ε n) _
-  · exact (σ₁_isFree i).npow n
+  · exact IsFree.mix («σ̃_isFree» m σ n) («σ⋆_free» ρ ε n) _
+  · exact IsFree.npow (σ₁_isFree i) n
 
 private lemma σ'_posdef : (σ' ρ ε m σ n).m.PosDef := by
   --because σ₁ is PosDef, so is σ₁⊗^[n], and so is any convex mixture.

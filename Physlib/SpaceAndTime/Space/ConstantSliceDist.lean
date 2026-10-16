@@ -274,7 +274,7 @@ lemma schwartzMap_slice_integral_hasFDerivAt {d : ℕ} (η : 𝓢(Space d.succ, 
     (bound := fun t => (k * ‖(slice i).symm.toContinuousLinearMap.comp
           (ContinuousLinearMap.prod (0 : Space d →L[ℝ] ℝ) (ContinuousLinearMap.id ℝ (Space d)))‖)
           * ‖(1 + ‖t‖) ^ (rt)‖⁻¹)
-  · exact Filter.univ_mem' (hF (F x₀ 0))
+  · exact Filter.Eventually.of_forall (hF (F x₀ 0))
   · filter_upwards with x
     fun_prop
   · simpa [F] using schwartzMap_integrable_slice_symm i η x₀

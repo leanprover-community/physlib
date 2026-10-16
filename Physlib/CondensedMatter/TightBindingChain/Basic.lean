@@ -279,7 +279,7 @@ lemma energy_localizedState (n : Fin T.N) (htn : 1 < T.N) : ⟪|n⟩, T.hamilton
 
 /-- The Brillouin zone of the tight binding model is `[-π/a, π/a)`.
   This is the set in which wave functions are uniquely defined. -/
-def BrillouinZone : Set ℝ := Set.Ico (- Real.pi / T.a) (Real.pi / T.a)
+noncomputable def BrillouinZone : Set ℝ := Set.Ico (- Real.pi / T.a) (Real.pi / T.a)
 
 /-!
 

@@ -355,9 +355,9 @@ class FreeStateTheory (ι : Type*) extends ResourcePretheory ι where
   /-- The set F(H) of free states is convex (more precisely, their matrices are) -/
   free_convex : Convex ℝ (MState.M '' (@IsFree i))
   /-- The set of free states is closed under tensor product -/
-  free_prod {ρ₁ : MState (H i)} {ρ₂ : MState (H j)} (h₁ : IsFree ρ₁) (h₂ : IsFree ρ₂) : IsFree (ρ₁ ⊗ᵣ ρ₂)
+  free_prod {ρ₁ : MState (H i)} {ρ₂ : MState (H j)} (h₁ : ρ₁ ∈ IsFree) (h₂ : ρ₂ ∈ IsFree) : (ρ₁ ⊗ᵣ ρ₂) ∈ IsFree
   /-- The set F(H) of free states contains a full-rank state `ρfull`, equivalently `ρfull` is positive definite. -/
-  free_fullRank (i : ι) : open ComplexOrder in ∃ (ρ : MState (H i)), ρ.m.PosDef ∧ IsFree ρ
+  free_fullRank (i : ι) : open ComplexOrder in ∃ (ρ : MState (H i)), ρ.m.PosDef ∧ ρ ∈ IsFree
 
 namespace FreeStateTheory
 
@@ -379,7 +379,7 @@ theorem IsCompact_IsFree : IsCompact (IsFree (i := i)) :=
 --(well-behaved?) Mixable instance, it certainly works for any `Convex` set (of which `IsFree`
 -- is one, the only relevant property here is `free_convex`.
 lemma IsFree.mix {ι : Type*} [FreeStateTheory ι] {i : ι} {σ₁ σ₂ : MState (H i)}
-    (hσ₁ : IsFree σ₁) (hσ₂ : IsFree σ₂) (p : Prob) : IsFree (p [σ₁ ↔ σ₂]) := by
+    (hσ₁ : σ₁ ∈ IsFree) (hσ₂ : σ₂ ∈ IsFree) (p : Prob) : (p [σ₁ ↔ σ₂]) ∈ IsFree := by
   obtain ⟨m, hm₁, hm₂⟩ := free_convex (i := i) ⟨σ₁, hσ₁, rfl⟩ ⟨σ₂, hσ₂, rfl⟩ p.zero_le (1 - p).zero_le (by simp)
   simp [Mixable.mix, Mixable.mix_ab, MState.instMixable]
   simp at hm₂
@@ -400,7 +400,7 @@ namespace UnitalFreeStateTheory
 variable {ι : Type*} [UnitalFreeStateTheory ι] {i : ι}
 
 lemma _root_.FreeStateTheory.IsFree.npow {i : ι} {ρ : MState (H i)}
-    (hρ : IsFree ρ) (n : ℕ) : IsFree (ρ ⊗ᵣ^[n]) := by
+    (hρ : ρ ∈ IsFree) (n : ℕ) : (ρ ⊗ᵣ^[n]) ∈ IsFree := by
   induction n
   · rw [statePow_zero, spacePow_zero]
     apply IsFree.of_unique
@@ -503,7 +503,7 @@ RG is `GlobalRobustness` and `ρ_n` is any sequence of free states. Equivalently
 over operations and states) on the left-hand side inside the limit.
 -/
 def IsAsymptoticallyNongenerating (dI dO : ι) (f : (n : ℕ) → CPTPMap (H (dI⊗^H[n])) (H (dO⊗^H[n]))) : Prop :=
-  ∀ (ρs : (n : ℕ) → MState (H (dI⊗^H[n]))), (∀ n, IsFree (ρs n)) →
+  ∀ (ρs : (n : ℕ) → MState (H (dI⊗^H[n]))), (∀ n, ρs n ∈ IsFree) →
   Filter.atTop.Tendsto (fun n ↦ GlobalRobustness ((f n) (ρs n))) (𝓝 0)
 
 end UnitalFreeStateTheory
