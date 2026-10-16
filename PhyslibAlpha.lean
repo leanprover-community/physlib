@@ -45,6 +45,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
 public import PhyslibAlpha.CondensedMatter.Crystal.BrillouinCoordinates
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
+public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Monoclinic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Orthorhombic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.ThreeDimensional
 public import PhyslibAlpha.CondensedMatter.Crystal.Folner
