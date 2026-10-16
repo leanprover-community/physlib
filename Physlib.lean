@@ -284,6 +284,7 @@ public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.Qubit.PauliCube
 public import Physlib.ProbabilisticTheory.Qubit.PauliDiagonal
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
