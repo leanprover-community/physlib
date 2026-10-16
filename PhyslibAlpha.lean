@@ -64,6 +64,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Hypercubic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Monoclinic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Orthorhombic
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Rhombohedral
+public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Sublattices
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.TetragonalHexagonal
 public import PhyslibAlpha.CondensedMatter.Crystal.QuasiLocal
 public import PhyslibAlpha.CondensedMatter.Crystal.Reciprocal
