@@ -516,6 +516,7 @@ public import Physlib.Relativity.Tensors.RealTensor.Vector.Pre.Modules
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Tensorial
 public import Physlib.Relativity.Tensors.RealTensor.Velocity.Basic
+public import Physlib.Relativity.Tensors.RealTensor.Velocity.Deriv
 public import Physlib.Relativity.Tensors.Reindexing
 public import Physlib.Relativity.Tensors.TensorSpecies.Basic
 public import Physlib.Relativity.Tensors.TensorSpecies.DualBasis
