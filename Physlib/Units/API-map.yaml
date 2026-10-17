@@ -289,7 +289,8 @@ Requirements:
       LTMCTUnitChoices.dimScaleUnits_scaleUnit);
       Physlib/Units/WithDim/Basic.lean
       (WithDim.smul_val_units, WithDim.ofPositiveRealUnit,
-      WithDim.ofPositiveRealUnit_val, WithDim.ofPositiveRealUnit_units_smul)
+      WithDim.ofPositiveRealUnit_val, WithDim.ofPositiveRealUnit_units_smul,
+      WithDim.ofPositiveRealUnit_of_scaleUnit)
 
   - description: "The physical constants of our world carry their dimensions, so that each records a definite physical quantity rather than its value in one system of units, together with the values they take in SI units. The speed of light is covered; Newton's constant, Planck's constant and the Boltzmann constant are to follow."
     done: false

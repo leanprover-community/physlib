@@ -148,12 +148,7 @@ lemma energyMass_isDimensionallyCorrect :
   change EnergyMassWithDim (scaleUnit u2 u1 m) (scaleUnit u2 u1 E)
     (WithDim.ofPositiveRealUnit (speedOfLight (scaleUnit u2 u1 u))) =
     EnergyMassWithDim m E (WithDim.ofPositiveRealUnit (speedOfLight u))
-  have hs : WithDim.ofPositiveRealUnit (speedOfLight (scaleUnit u2 u1 u)) =
-      scaleUnit u2 u1 (WithDim.ofPositiveRealUnit (speedOfLight u)) := by
-    rw [Dimensionful.of_scaleUnit_units (u1 := u2) (u2 := u1) (u := u) speedOfLight,
-      WithDim.ofPositiveRealUnit_units_smul, HasDim.scaleUnit_apply_units]
-    rfl
-  rw [hs]
+  rw [WithDim.ofPositiveRealUnit_of_scaleUnit speedOfLight]
   exact congrFun (congrFun (congrFun (energyMassWithDim_isDimensionallyCorrect u1 u2)
     m) E) (WithDim.ofPositiveRealUnit (speedOfLight u))
 

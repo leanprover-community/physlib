@@ -210,6 +210,17 @@ lemma ofPositiveRealUnit_units_smul {U : Type} [PositiveRealUnitCore U] [HasDim 
   apply WithDim.ext
   simp [PositiveRealUnitCore.val_units_smul, NNReal.smul_def]
 
+/-- A dimensionful positive-real quantity, such as the speed of light, may be tagged with its
+  dimension either before or after a change of units: `ofPositiveRealUnit` commutes with
+  `scaleUnit`. -/
+lemma ofPositiveRealUnit_of_scaleUnit {U : Type} [PositiveRealUnitCore U] [HasDim U]
+    {u1 u2 u : LTMCTUnitChoices} (c : Dimensionful U) :
+    ofPositiveRealUnit (c.1 (UnitDependent.scaleUnit u1 u2 u)) =
+    UnitDependent.scaleUnit u1 u2 (ofPositiveRealUnit (c.1 u)) := by
+  rw [Dimensionful.of_scaleUnit_units c, ofPositiveRealUnit_units_smul,
+    HasDim.scaleUnit_apply_units]
+  rfl
+
 /-
 Real scalar multiplication.
 
