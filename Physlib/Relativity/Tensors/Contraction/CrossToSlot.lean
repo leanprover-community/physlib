@@ -6,6 +6,8 @@ Authors: Andrea Pari, Robert Sneiderman
 module
 
 public import Physlib.Relativity.Tensors.Contraction.CrossToEnd
+public import Physlib.Relativity.Tensors.ComponentIdx.Single
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 /-!
 
 # Result-to-slot contraction against a rank-2 tensor
@@ -39,10 +41,14 @@ operation live with the unit-tensor collapse theory in
 - `TensorSpecies.Tensor.crossToSlot_permT_right_id` : an identity reindexing of the rank-2 tensor
     passes through the contraction.
 - `TensorSpecies.Tensor.crossToSlot_equivariant` : the contraction commutes with the `G`-action.
+- `TensorSpecies.Tensor.toLinearMap₂` : the bilinear map `t, s ↦ M_{zw} tᶻ sʷ` of a rank-two
+    tensor, with its component formula `toLinearMap₂_apply`; `toMatrix₂_toLinearMap₂` : its
+    matrix in the dual bases is the component matrix of `M`.
 
 ## iii. Table of contents
 
 - A. The result-to-slot contraction
+- B. Pairing a rank-two tensor with two vectors
 
 ## iv. References
 
@@ -232,6 +238,64 @@ lemma crossToSlot_equivariant {nA : ℕ} {c : Fin (nA + 1) → C} {cM : Fin 2 �
     crossToSlot i j hc (g • M) (g • t) = g • crossToSlot i j hc M t := by
   rw [crossToSlot_eq_crossToEnd, crossToSlot_eq_crossToEnd, crossToEnd_equivariant,
     permT_equivariant]
+
+/-!
+
+## B. Pairing a rank-two tensor with two vectors
+
+Contracting a vector into each slot of a rank-two tensor `M` gives a bilinear map. This holds for
+any species: the only colour condition is duality, an argument contracts with a slot when its
+colour is dual to the slot's. For a species without conjugation this map is the metric form
+itself; a species with conjugation composes it with conjugation of one argument to get a
+sesquilinear form (`ConjTensorSpecies.toSesqForm`).
+
+-/
+
+/-- The bilinear map `t, s ↦ M_{zw} tᶻ sʷ` of a rank-two tensor `M`: `t` of colour `x` contracted
+into the first index of `M`, `s` of colour `y` into the second. The colour conditions default to
+`rfl`. -/
+noncomputable def toLinearMap₂ (x y : C) {a d : C} (M : Tensor S ![a, d])
+    (hx : S.τ x = a := by rfl) (hy : S.τ y = d := by rfl) :
+    Tensor S ![x] →ₗ[k] Tensor S ![y] →ₗ[k] k :=
+  ((crossToEnd (0 : Fin 1) (0 : Fin 1)
+    (by simp only [Function.update_self]; show S.τ d = y; rw [← hy, S.τ_τ_apply])).comp
+    (crossToSlot (0 : Fin 1) (0 : Fin 2) hx M)).compr₂ toScalar
+
+/-- The components of `toLinearMap₂`: `∑ t_z M_{z w} s_w`, each contracted pair of labels matched
+by `dualIdxEquiv`. -/
+lemma toLinearMap₂_apply [HasContrDualBases S] {x y a d : C} (hx : S.τ x = a)
+    (hy : S.τ y = d) (M : Tensor S ![a, d]) (t : Tensor S ![x]) (s : Tensor S ![y]) :
+    toLinearMap₂ x y M hx hy t s =
+      ∑ w : basisIdx y, ∑ z : basisIdx x,
+        (basis ![x]).repr t (ComponentIdx.single.symm z) *
+          toMatrix M (HasContrDualBases.dualIdxEquiv hx z) (HasContrDualBases.dualIdxEquiv hy w) *
+          (basis ![y]).repr s (ComponentIdx.single.symm w) := by
+  nontriviality k
+  set_option backward.isDefEq.respectTransparency false in
+  rw [toLinearMap₂, LinearMap.compr₂_apply, LinearMap.comp_apply, toScalar_eq_repr,
+    crossToEnd_basis_repr_eq_sum_dual]
+  simp only [crossToSlot_basis_repr_eq_sum_dual, Finset.sum_mul]
+  refine Fintype.sum_equiv (HasContrDualBases.dualIdxEquiv hy).symm _ _ fun w =>
+    Finset.sum_congr rfl fun z _ => ?_
+  rw [toMatrix_apply, Equiv.apply_symm_apply,
+    HasContrDualBases.dualIdxEquiv_symm hy (by rw [← hy, S.τ_τ_apply])]
+  congr 1
+  · congr 2 with j <;> fin_cases j <;> rfl
+  · congr 1 with j
+    fin_cases j
+    rfl
+
+/-- In the bases dual to the slots of `M` (the labels carried across each contraction by
+`dualIdxEquiv`), the matrix of `toLinearMap₂ M` is the component matrix of `M`. -/
+lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y a d : C}
+    (hx : S.τ x = a) (hy : S.τ y = d) (M : Tensor S ![a, d]) :
+    LinearMap.toMatrix₂
+      ((basis ![x]).reindex (ComponentIdx.single.trans (HasContrDualBases.dualIdxEquiv hx)))
+      ((basis ![y]).reindex (ComponentIdx.single.trans (HasContrDualBases.dualIdxEquiv hy)))
+      (toLinearMap₂ x y M hx hy) = toMatrix M := by
+  ext z w
+  rw [LinearMap.toMatrix₂_apply, toLinearMap₂_apply]
+  simp [Finsupp.single_apply, -HasContrDualBases.dualIdxEquiv_apply]
 
 end Tensor
 

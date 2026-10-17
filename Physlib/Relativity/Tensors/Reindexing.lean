@@ -135,6 +135,15 @@ lemma inv_apply_apply {n m : ℕ} {c : Fin n → C} {c1 : Fin m → C}
   change h.toEquiv.symm (h.toEquiv x) = x
   simp
 
+/-- The swap `![1, 0]` reindexes two rank-two colour lists whose colours match crosswise; `swap`
+with the target colours given by equations. -/
+lemma swap_of_eq {c c1 : Fin 2 → C} (h0 : c 1 = c1 0) (h1 : c 0 = c1 1) :
+    IsReindexing c c1 ![1, 0] := by
+  refine ⟨by decide, fun i => ?_⟩
+  fin_cases i
+  · exact h0
+  · exact h1
+
 lemma inv_eq_self_of_pointwise_eq {n : ℕ} {c c1 : Fin n → C} {σ : Fin n → Fin n}
     (h : IsReindexing c c1 σ) (hσ : ∀ x, σ x = x) (x : Fin n) :
     h.inv σ x = x := by
