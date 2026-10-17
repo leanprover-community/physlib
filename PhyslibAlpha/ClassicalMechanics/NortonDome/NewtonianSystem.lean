@@ -47,7 +47,7 @@ predicates are:
   implies the other.
 - `HasLocalSolutions`: existence, kept separate. For a continuous force on a finite-dimensional
   configuration space it follows from Peano's theorem, whose proof is pending in Mathlib;
-  section E derives it from the statement in `NortonDome.PeanoExistence`, marked `@[sorryful]`.
+  section E derives it from the statement in `NortonDome.PeanoExistence`, informally.
 
 The proof of determinism turns the equation of motion into the first-order system
 `(r, v)' = (v, F(r)/m)` on `X × X`, applies Mathlib's local uniqueness theorem for integral
@@ -482,7 +482,7 @@ and velocity is the initial datum of some solution for a short time. For a conti
 a finite-dimensional configuration space this is Peano's theorem applied to the phase-space
 vector field, as Picard–Lindelöf gives it for the pendulum in
 `SimplePendulum.exists_local_solution`. The statement of Peano's theorem is that of
-`NortonDome.PeanoExistence`, pending in Mathlib, so the results here are marked `@[sorryful]`.
+`NortonDome.PeanoExistence`, pending in Mathlib, so the result here is an informal lemma.
 
 -/
 
@@ -549,58 +549,15 @@ derivatives are read off with `Time.deriv_comp_toRealCLE_of_hasDerivAt`.
 
 /-- Peano's theorem for Newtonian systems: a Newtonian system with a continuous force on a
   finite-dimensional configuration space has local solutions. Pending the proof of Peano's
-  theorem in Mathlib. -/
-@[sorryful]
-lemma hasLocalSolutions_of_continuous_force [FiniteDimensional ℝ X]
-    (hF : Continuous S.force) : S.HasLocalSolutions := by
-  intro x₀ v₀
-  obtain ⟨δ, hδ, L, hP⟩ := S.exists_isPeano_phaseVectorField hF (x₀, v₀)
-  obtain ⟨α, hα0, hα'⟩ := hP.exists_eq_forall_mem_Icc_hasDerivWithinAt₀
-  have hα : ∀ τ ∈ Set.Ioo (-δ) δ, HasDerivAt α (S.phaseVectorField (α τ)) τ := fun τ hτ =>
-    (hα' τ (Set.Ioo_subset_Icc_self hτ)).hasDerivAt (Icc_mem_nhds hτ.1 hτ.2)
-  have hmem : ∀ t : Time, |t.val| ≤ δ / 2 → Time.toRealCLE t ∈ Set.Ioo (-δ) δ := by
-    intro t ht
-    have := abs_le.mp ht
-    change t.val ∈ Set.Ioo (-δ) δ
-    constructor <;> linarith
-  have hd1 : ∀ t : Time, Time.toRealCLE t ∈ Set.Ioo (-δ) δ →
-      ∂ₜ (fun s => (α (Time.toRealCLE s)).1) t = (α (Time.toRealCLE t)).2 := by
-    intro t ht
-    have hfst := (ContinuousLinearMap.fst ℝ X X).hasFDerivAt.comp_hasDerivAt
-      (Time.toRealCLE t) (hα _ ht)
-    apply Time.deriv_comp_toRealCLE_of_hasDerivAt (fun τ => (α τ).1) t
-    simpa [Function.comp_def, phaseVectorField] using hfst
-  have hev : ∀ t : Time, Time.toRealCLE t ∈ Set.Ioo (-δ) δ →
-      ∂ₜ (fun s => (α (Time.toRealCLE s)).1) =ᶠ[nhds t] fun s => (α (Time.toRealCLE s)).2 := by
-    intro t ht
-    have hU : IsOpen {s : Time | Time.toRealCLE s ∈ Set.Ioo (-δ) δ} :=
-      isOpen_Ioo.preimage Time.toRealCLE.continuous
-    exact Filter.eventuallyEq_of_mem (hU.mem_nhds ht) fun s hs => hd1 s hs
-  have hd2 : ∀ t : Time, Time.toRealCLE t ∈ Set.Ioo (-δ) δ →
-      ∂ₜ (∂ₜ (fun s => (α (Time.toRealCLE s)).1)) t =
-        (S.phaseVectorField (α (Time.toRealCLE t))).2 := by
-    intro t ht
-    have hsnd := (ContinuousLinearMap.snd ℝ X X).hasFDerivAt.comp_hasDerivAt
-      (Time.toRealCLE t) (hα _ ht)
-    have h2 : ∂ₜ (fun s => (α (Time.toRealCLE s)).2) t =
-        (S.phaseVectorField (α (Time.toRealCLE t))).2 := by
-      apply Time.deriv_comp_toRealCLE_of_hasDerivAt (fun τ => (α τ).2) t
-      simpa [Function.comp_def] using hsnd
-    rw [Time.deriv_eq, (hev t ht).fderiv_eq, ← Time.deriv_eq, h2]
-  have h0 : Time.toRealCLE (0 : Time) ∈ Set.Ioo (-δ) δ := by
-    rw [map_zero]
-    constructor <;> linarith
-  refine ⟨δ / 2, half_pos hδ, fun t => (α (Time.toRealCLE t)).1, ?_, ?_, fun t ht => ?_⟩
-  · show (α (Time.toRealCLE 0)).1 = x₀
-    rw [map_zero, hα0]
-  · rw [hd1 0 h0, map_zero, hα0]
-  · have hαt := (hα _ (hmem t ht)).differentiableAt
-    refine ⟨hαt.fst.comp t Time.toRealCLE.differentiableAt, ?_, ?_⟩
-    · exact (hev t (hmem t ht)).differentiableAt_iff.mpr
-        (hαt.snd.comp t Time.toRealCLE.differentiableAt)
-    · rw [hd2 t (hmem t ht)]
-      show S.m • (S.m⁻¹ • S.force _) = _
-      rw [smul_smul, mul_inv_cancel₀ S.m_ne_zero, one_smul]
+  theorem in Mathlib.
+
+  Formal statement: [FiniteDimensional ℝ X]
+      (hF : Continuous S.force) : S.HasLocalSolutions
+  -/
+informal_lemma hasLocalSolutions_of_continuous_force where
+  deps := [``NewtonianSystem.HasLocalSolutions, ``NewtonianSystem.exists_isPeano_phaseVectorField,
+    ``IsPeano.exists_eq_forall_mem_Icc_hasDerivWithinAt₀]
+  tag := "CM-ND-locSol"
 
 end NewtonianSystem
 

@@ -8,7 +8,7 @@ module
 public import QuantumInfo.Channels.Bundled
 public import QuantumInfo.Channels.MatrixMap
 public import QuantumInfo.Channels.Unbundled
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Informal.Basic
 @[expose] public section
 
 noncomputable section
@@ -126,10 +126,13 @@ theorem fidelity_symm : fidelity ρ σ = fidelity σ ρ := by
   show ((σ.M.conj ρ.M.sqrt.mat).cfc Real.sqrt).trace = ((ρ.M.conj σ.M.sqrt.mat).cfc Real.sqrt).trace
   rw [HermitianMat.trace_cfc_eq, HermitianMat.trace_cfc_eq, h_eig]
 
-/-- The fidelity cannot decrease under the application of a channel. -/
-@[sorryful]
-theorem fidelity_channel_nondecreasing [DecidableEq d₂] (Λ : CPTPMap d d₂) : fidelity (Λ ρ) (Λ σ) ≥ fidelity ρ σ :=
-  sorry
+/-- The fidelity cannot decrease under the application of a channel.
+
+  Formal statement: [DecidableEq d₂] (Λ : CPTPMap d d₂) : fidelity (Λ ρ) (Λ σ) ≥ fidelity ρ σ
+  -/
+informal_lemma fidelity_channel_nondecreasing where
+  deps := [``fidelity, ``CPTPMap]
+  tag := "QI-fid-mono"
 
 --TODO: Real.arccos ∘ fidelity forms a metric (triangle inequality), the Fubini–Study metric.
 --Matches with classical (squared) Bhattacharyya coefficient

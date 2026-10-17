@@ -9,7 +9,6 @@ public import Physlib.Mathematics.InnerProductSpace.Gaussian
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Physlib.QuantumMechanics.HarmonicOscillator.NumberOperator
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
-public import Physlib.Meta.Linters.Sorry
 /-!
 
 # Energy eigenstates of the quantum harmonic oscillator
@@ -260,12 +259,22 @@ def eigenstate : SchwartzSubmodule d := schwartzEquiv _ (Q.eigenfunction n)
 lemma eigenstate_eq : Q.eigenstate n = schwartzEquiv _ (Q.eigenfunction n) := rfl
 
 /-- The energy eigenstates are orthonormal. -/
-@[simp, sorryful]
-lemma eigenstates_orthonormal : ⟪(Q.eigenstate n : Q.HS), Q.eigenstate n'⟫_ℂ = δ[n,n'] :=
-  -- It might help to first prove an analogue of
-  -- `MeasureTheory.integral_fin_nat_prod_(volume_)eq_prod` for `Space d` in order to split
-  -- `∫ x : Space d, Π i : Fin d, fᵢ (x i) = ∏ i : Fin d, ∫ xᵢ : ℝ, fᵢ xᵢ`, using `Space.equivPi`.
-  sorry
+@[simp]
+lemma eigenstates_orthonormal : ⟪(Q.eigenstate n : Q.HS), Q.eigenstate n'⟫_ℂ = δ[n,n'] := by
+  have hmp : MeasureTheory.MeasurePreserving (equivPi d).symm :=
+    Space.basis.measurePreserving_repr_symm.comp (PiLp.volume_preserving_toLp (Fin d))
+  have h1 (i : Fin d) : ∫ t : ℝ, starRingEnd ℂ ((Q.oneDim i).eigenfunction (n i) t) *
+      (Q.oneDim i).eigenfunction (n' i) t = if n i = n' i then 1 else 0 := by
+    rw [← OneDimension.HilbertSpace.inner_mk_mk]
+    exact orthonormal_iff_ite.mp (Q.oneDim i).eigenfunction_orthonormal (n i) (n' i)
+  rw [← Submodule.coe_inner, eigenstate, eigenstate, SchwartzSubmodule.schwartzEquiv_inner]
+  simp_rw [eigenfunction_eq_prod_oneDim, map_prod, ← Finset.prod_mul_distrib]
+  rw [← hmp.integral_comp (equivPi d).symm.toHomeomorph.measurableEmbedding]
+  refine (MeasureTheory.integral_fintype_prod_volume_eq_prod (f := fun i t =>
+    starRingEnd ℂ ((Q.oneDim i).eigenfunction (n i) t) *
+      (Q.oneDim i).eigenfunction (n' i) t)).trans ?_
+  simp only [h1, Finset.prod_boole, KroneckerDelta.kroneckerDelta, funext_iff]
+  split_ifs <;> simp_all
 
 /-!
 

@@ -13,13 +13,15 @@ public import Physlib.Meta.Linters.Sorry
 ## i. Overview
 
 The purpose of this module is to collect all results which depend on the
-`sorryAx` axiom and the `Lean.ofReduceBool` axiom, and check that these results
-are correctly attributed `sorryful` and `pseudo` respectively.
+`sorryAx` axiom and the `Lean.ofReduceBool` axiom, and check that there are no results of the
+first kind, attributed `sorryful` or not, and that results of the second kind are correctly
+attributed `pseudo`.
 
 ## ii. Key results
 
-- `sorryfulPseudoTest` : A test that all results attributed `sorryful` depend on the
-  `sorryAx` axiom and vice versa, and all results attributed `pseudo` depend on the
+- `sorryfulPseudoTest` : A test, over given libraries, that no result depends on the
+  `sorryAx` axiom (whether or not it is attributed `sorryful`), that no result is attributed
+  `sorryful` without depending on it, and that all results attributed `pseudo` depend on the
   `Lean.ofReduceBool` axiom and vice versa. A structure counts as depending on `sorryAx`
   when one of its field defaults does.
 
@@ -34,7 +36,7 @@ are correctly attributed `sorryful` and `pseudo` respectively.
   - A.6. Getting all names depending on axioms from all user defined constants
   - A.7. Structures whose field defaults depend on `sorryAx`
 - B. Collecting all names attributed `sorryful` and `pseudo`
-- C. Testing the `sorryful` and `pseudo` attributions are correctly applied
+- C. Testing for `sorry` and that the `pseudo` attribution is correctly applied
 
 ## iv. References
 
@@ -157,10 +159,19 @@ def collectSorryPseudo (c : Array Name) : CoreM (Array Name × Array Name) := do
 
 -/
 
-/-- The axioms of a constant. -/
-def allWithSorryPseudo : CoreM (Array Name × Array Name) := do
-  let x ← collectSorryPseudo ((← allUserConsts).map fun c => c.name)
-  return x
+/-- The files of the libraries with root modules `libs`, as the imports of those roots. -/
+def libraryImports (libs : Array Name) : IO (Array Import) := libs.flatMapM fun lib => do
+  let (mod, _) ← readModuleData (← findOLean lib)
+  return mod.imports.filter (·.module != `Init)
+
+/-- The user defined constants of the libraries with root modules `libs`. -/
+def libraryUserConsts (libs : Array Name) : CoreM (Array ConstantInfo) := do
+  (← libraryImports libs).flatMapM Physlib.Imports.getUserConsts
+
+/-- The user defined constants of the libraries `libs` depending on the `sorryAx` axiom and on
+  the `Lean.ofReduceBool` axiom. -/
+def allWithSorryPseudo (libs : Array Name) : CoreM (Array Name × Array Name) := do
+  collectSorryPseudo ((← libraryUserConsts libs).map fun c => c.name)
 
 /-!
 
@@ -176,9 +187,9 @@ def structureOfDefault : Name → Option Name
   | .str (.str S _) "_default" => some S
   | _ => none
 
-/-- All structures with a field default that depends on `sorryAx`. -/
-def structuresWithSorryDefault : CoreM (Array Name) := do
-  let consts ← (← Physlib.allImports).flatMapM fun imp => (Physlib.Imports.getConsts imp : IO _)
+/-- All structures of the libraries `libs` with a field default that depends on `sorryAx`. -/
+def structuresWithSorryDefault (libs : Array Name) : CoreM (Array Name) := do
+  let consts ← (← libraryImports libs).flatMapM fun imp => (Physlib.Imports.getConsts imp : IO _)
   let defaults := (consts.map (·.name)).filter fun n => (structureOfDefault n).isSome
   let (withSorry, _) ← collectSorryPseudo defaults
   return (withSorry.filterMap structureOfDefault).toList.eraseDups.toArray
@@ -203,36 +214,36 @@ unsafe def allPseudoAttributed : CoreM (Array Name) := do
 
 /-!
 
-## C. Testing the `sorryful` and `pseudo` attributions are correctly applied
+## C. Testing for `sorry` and that the `pseudo` attribution is correctly applied
 
 -/
 
-/-- Checks whether all results attributed `sorryful` depend on the ```sorryAx`
-  axiom and vice versa. -/
-unsafe def sorryfulPseudoTest : MetaM Unit := do
-  let (allWithSorry, allWithPseudo) ← Physlib.allWithSorryPseudo
-  let allConst ← Physlib.allUserConsts
+/-- Checks, over the libraries with root modules `libs`, that no result depends on the
+  `sorryAx` axiom, whether or not it is attributed `sorryful`; that no result is attributed
+  `sorryful` without depending on it; and that the results attributed `pseudo` are exactly
+  those depending on the `Lean.ofReduceBool` axiom. Returns whether the test passed. -/
+unsafe def sorryfulPseudoTest (libs : Array Name) : MetaM Bool := do
+  let (allWithSorry, allWithPseudo) ← Physlib.allWithSorryPseudo libs
+  let allConst ← libraryUserConsts libs
   let allConst := allConst.map fun c => c.name
   let allWithSorry := allWithSorry.filter fun n => n ∈ allConst
-  let fromDefaults ← structuresWithSorryDefault
+  let fromDefaults ← structuresWithSorryDefault libs
   let allWithSorry := allWithSorry ++ fromDefaults.filter fun n => ¬ n ∈ allWithSorry
   let allWithPseudo := allWithPseudo.filter fun n => n ∈ allConst
-  let sorryAttributed ← allSorryfulAttributed
-  let pseudoAttributed ← allPseudoAttributed
-  let withSorryAxiomNotAttributed :=
-    allWithSorry.filter fun x => ¬ x ∈ sorryAttributed
+  let sorryAttributed := (← allSorryfulAttributed).filter fun n => n ∈ allConst
+  let pseudoAttributed := (← allPseudoAttributed).filter fun n => n ∈ allConst
   let withPseudoAxiomNotAttributed :=
     allWithPseudo.filter fun x => ¬ x ∈ pseudoAttributed
   let attributedNotWithSorryAxiom :=
     sorryAttributed.filter fun x => ¬ x ∈ allWithSorry
   let attributedNotWithPseudoAxiom :=
     pseudoAttributed.filter fun x => ¬ x ∈ allWithPseudo
-  if withSorryAxiomNotAttributed ≠ #[] ∨ attributedNotWithSorryAxiom ≠ #[]
+  if allWithSorry ≠ #[] ∨ attributedNotWithSorryAxiom ≠ #[]
     ∨ withPseudoAxiomNotAttributed ≠ #[] ∨ attributedNotWithPseudoAxiom ≠ #[] then
     panic! s!"
-\x1b[31mThere is an error in the sorryful/pseudo attribution system:\x1b[0m
-  The following names depend on `sorryAx` but are not attributed `sorryful`:
-  {withSorryAxiomNotAttributed}
+\x1b[31mThere is an error in the sorry/pseudo test:\x1b[0m
+  The following names depend on `sorryAx` (whether or not they are attributed `sorryful`):
+  {allWithSorry}
   The following names are attributed `sorryful` but do not depend on `sorryAx`:
   {attributedNotWithSorryAxiom}
   The following names depend on `Lean.ofReduceBool` or `native_decide`
@@ -241,6 +252,9 @@ unsafe def sorryfulPseudoTest : MetaM Unit := do
   The following names are attributed `pseudo` but do not depend on `Lean.ofReduceBool`
   or `native_decide`:
   {attributedNotWithPseudoAxiom}"
-  println! "\x1b[32mSorryful/pseudo results are all correctly attributed test passed.\x1b[0m"
+    return false
+  println! "\x1b[32mNo results depend on `sorry`, and pseudo results are all correctly \
+    attributed: test passed.\x1b[0m"
+  return true
 
 end Physlib

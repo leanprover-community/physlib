@@ -35,7 +35,7 @@ all of the following linters run correctly.
   - step 2: This builds the project
   - step 3: Checks all files are imported to `Physlib.lean`.
   - step 4: Checks that no tags on TODO items are duplicates of one another.
-  - step 5: Checks that all lemmas and definitions dependent on `sorry` or `Lean.ofReduceBool` are correctly attributed with `@[sorryful]` or `@[pseudo]`
+  - step 5: Checks that no lemma or definition depends on `sorry`, and that those dependent on `Lean.ofReduceBool` are correctly attributed with `@[pseudo]`
   - step 6: Checks that module documentation is laid out according to the set standard (see `lake exe module_doc_lint` below).
   - step 7: Checks all Lean linters run without error, this picks up things like lack of doc-strings on definitions, or incompatible `@[simp]` attributes
   - step 8: Checks there are not transitive imports, e.g. A imports B and C, but B already

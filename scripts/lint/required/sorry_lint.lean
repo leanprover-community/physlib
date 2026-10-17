@@ -9,22 +9,34 @@ import Physlib.Meta.Linters.Sorry
 import Physlib.Meta.Sorry
 /-!
 
-# Script to check sorryful/pseudo attribution
+# Script to check for `sorry` and the pseudo attribution
 
-This script checks that all declarations which depend on `sorryAx` are marked with the
-`sorryful` attribute, and vice versa. It also checks that all declarations which depend on
+This script checks that no declaration depends on `sorryAx`, whether or not it is marked with
+the `sorryful` attribute. It also checks that all declarations which depend on
 `Lean.ofReduceBool` are marked with the `pseudo` attribute, and vice versa.
+
+`lake exe sorry_lint` checks `Physlib`, `QuantumInfo` and `PhyslibAlpha`;
+`lake exe sorry_lint Physlib QuantumInfo` checks only the libraries given.
 
 -/
 open Lean
 
-unsafe def main (_ : List String) : IO Unit := do
+/-- The libraries which are checked. -/
+def libraries : Array Name := #[`Physlib, `QuantumInfo, `PhyslibAlpha]
+
+unsafe def main (args : List String) : IO UInt32 := do
   initSearchPath (← findSysroot)
   Lean.enableInitializersExecution
-  println! "Checking sorryful results."
-  let env ← importModules (loadExts := true) #[`Physlib, `QuantumInfo] {} 0
+  let toCheck := if args.isEmpty then libraries else (args.map String.toName).toArray
+  for library in toCheck do
+    unless libraries.contains library do
+      IO.eprintln s!"Unknown library `{library}`, expected one of {libraries}."
+      return 1
+  println! "Checking for sorry in {", ".intercalate (toCheck.map toString).toList}."
+  let env ← importModules (loadExts := true) (toCheck.map ({ module := · })) {} 0
   let fileName := ""
   let options : Options := {}
   let ctx : Core.Context := {fileName, options, fileMap := default }
   let state := {env}
-  let _ ← (Lean.Core.CoreM.toIO · ctx state) do (Physlib.sorryfulPseudoTest).run'
+  let (passed, _) ← (Lean.Core.CoreM.toIO · ctx state) do (Physlib.sorryfulPseudoTest toCheck).run'
+  return if passed then 0 else 1

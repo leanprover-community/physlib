@@ -73,9 +73,9 @@ jobs:
         run: |
           bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe check_dup_tags"
 
-      - name: sorryful and psuedo attribute linter
+      - name: sorry and psuedo attribute linter on Physlib and QuantumInfo
         run: |
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint Physlib QuantumInfo"
 
       - name: theorem and lemma linter on Physlib and QuantumInfo
         run: |
@@ -118,6 +118,10 @@ jobs:
       - name: theorem and lemma linter on PhyslibAlpha
         if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
         run: env LEAN_ABORT_ON_PANIC=1 lake exe theorem_lint PhyslibAlpha
+
+      - name: sorry and psuedo attribute linter on PhyslibAlpha
+        if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint PhyslibAlpha
 
       - name: Check no PhyslibAlpha in Physlib and QuantumInfo
         if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
