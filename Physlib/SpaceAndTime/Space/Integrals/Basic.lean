@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Mathematics.ForMathlib.Integration.Basic
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
@@ -207,11 +208,10 @@ lemma integral_volume_eq_spherical_integral {d : ℕ} [NeZero d] {F : Type*}
   congr
   funext n
   simp [Measure.volumeIoiPow]
-  erw [integral_withDensity_eq_integral_smul (by fun_prop)]
+  refine (Integration.integral_withDensity_ofReal_eq_integral_smul
+    (f := fun r : Set.Ioi (0 : ℝ) => r.1 ^ (d - 1)) (by fun_prop)
+    (fun r => pow_nonneg r.2.le _) _).trans ?_
   congr
-  funext r
-  have hr : 0 ≤ (r : ℝ) := le_of_lt r.2
-  rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hr (d - 1))]
 
 /-!
 

@@ -420,7 +420,7 @@ lemma schwartzMap_slice_integral_iteratedFDeriv_apply {d : ℕ} (n : ℕ) (η : 
             (fun j => (slice i).symm (0, Fin.tail y j)))) x) (y 0) := by
           congr
           funext x
-          erw [SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
+          exact SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv
     rw [iteratedFDeriv_succ_apply_left]
     simp only [Nat.succ_eq_add_one]
     rw [← fderiv_continuousMultilinear_apply_const_apply, ← fderiv_fun_slice_symm_right_apply]

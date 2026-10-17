@@ -697,7 +697,7 @@ lemma time_integral_iteratedFDeriv_apply {d : ℕ} (n : ℕ) (η : 𝓢(Time × 
       funext x
       congr
       funext t
-      erw [SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
+      exact SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv.symm
     have h1 := time_integral_hasFDerivAt
       (LineDeriv.iteratedLineDerivOpCLM ℝ _ (fun i => ((0, Fin.tail y i) : Time × Space d)) η) x
     rw [h1.fderiv]
@@ -705,9 +705,8 @@ lemma time_integral_iteratedFDeriv_apply {d : ℕ} (n : ℕ) (η : 𝓢(Time × 
     congr
     funext t
     rw [iteratedFDeriv_succ_apply_left]
-    conv_lhs =>
-      enter [1, 2, t]
-      erw [SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
+    simp only [LineDeriv.iteratedLineDerivOpCLM_apply,
+      SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
     rw [fderiv_continuousMultilinear_apply_const_apply]
     change (((fderiv ℝ (iteratedFDeriv ℝ n ⇑η ∘ fun x => (t, x)) x) (y 0))
       fun i => (0, Fin.tail y i)) = _
