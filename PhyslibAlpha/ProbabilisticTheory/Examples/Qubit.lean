@@ -16,6 +16,8 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 # The qubit, in Bloch-vector coordinates
 
+The qubit as the Euclidean norm cone over `ℝ³`: its states form the Bloch ball, not a simplex.
+
 ## i. Overview
 
 A qubit state is a density matrix `ρ = ½(r • I + x · σ)`, given by a number `r` and a Bloch

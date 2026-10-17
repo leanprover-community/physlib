@@ -12,6 +12,8 @@ public import Mathlib.LinearAlgebra.BilinearForm.Properties
 
 # Statistics of a linear functional on a bilinear algebra
 
+Second moments, covariance, variance and centering for a linear functional on a bilinear algebra.
+
 ## i. Overview
 
 Second moments and covariance use only a bilinear multiplication and a linear functional. They do
@@ -27,19 +29,24 @@ Commutativity of the product is used only to prove symmetry. A unit and the norm
 `omega 1 = 1` are used only for centering identities. Positivity enters only for ordered
 algebras.
 
-## ii. Key definitions and results
+## ii. Key results
 
-- `LinearMap.secondMomentForm`
-- `LinearMap.covarianceForm`
-- `LinearMap.variance`
-- `LinearMap.centered`
-- `LinearMap.apply_centered`
-- `LinearMap.apply_centered_mul_centered`
+- `LinearMap.secondMomentForm` : the second-moment bilinear form `(a, b) ↦ omega (a * b)`.
+- `LinearMap.covarianceForm` : the covariance bilinear form.
+- `LinearMap.variance` : the diagonal of the covariance form.
+- `LinearMap.centered` : the element `a - omega a • 1`.
+- `LinearMap.apply_centered` : a normalized functional vanishes on centered elements.
+- `LinearMap.apply_centered_mul_centered` : covariance is the value on a product of centered
+  elements.
 
 ## iii. Table of contents
 
 - A. Second moments and covariance
 - B. Centering a normalized functional
+
+## iv. References
+
+* None.
 
 -/
 

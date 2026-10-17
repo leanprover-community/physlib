@@ -66,7 +66,7 @@ theorem peierls_inequality (A : HermitianMat d ℂ) (g : ℝ → ℝ) (hg : Conv
     exact fun j => Matrix.unitaryGroup_row_norm (H A).eigenvectorUnitary j
   simp_all [trace_cfc_eq]
 
-theorem peierls_inequality_ici (A : HermitianMat d ℂ) (g : ℝ → ℝ) (hg : ConvexOn ℝ (Set.Ici 0) g)
+lemma peierls_inequality_ici (A : HermitianMat d ℂ) (g : ℝ → ℝ) (hg : ConvexOn ℝ (Set.Ici 0) g)
   (hA : 0 ≤ A) :
     ∑ i, g ((A.mat i i).re) ≤ (A.cfc g).trace := by
   -- By the properties of the trace and the convexity of $g$, we have:

@@ -124,7 +124,7 @@ lemma integrableOn_norm_rpow_ball_iff {d : ℕ} [NeZero d] {b : ℝ} (hb : 0 < b
   · have hInter : Set.Ioo 0 b ∩ Set.Ioi 0 = Set.Ioo 0 b := by ext; grind
     simp_rw [integrable_fun_norm_addHaar, g, Space.finrank_eq_dim,
       npow_indicator_rpow_eq (Set.left_notMem_Ioo),
-      _root_.MeasureTheory.integrableOn_indicator_iff measurableSet_Ioo, hInter,
+      _root_.MeasureTheory.integrableOn_indicator_iff measurableSet_Ioo.nullMeasurableSet, hInter,
       Nat.cast_pred (Nat.pos_of_neZero d)]
   rw [intervalIntegral.integrableOn_Ioo_rpow_iff hb, neg_lt_iff_pos_add']
   ring_nf
@@ -145,7 +145,7 @@ lemma integrableOn_norm_rpow_ball_compl_iff {d : ℕ} [NeZero d] {a : ℝ} (ha :
   · have hInter : Set.Ici a ∩ Set.Ioi 0 = Set.Ici a := by ext; grind
     simp_rw [integrable_fun_norm_addHaar, g, Space.finrank_eq_dim,
       npow_indicator_rpow_eq (Set.notMem_Ici.mpr ha),
-      _root_.MeasureTheory.integrableOn_indicator_iff measurableSet_Ici, hInter,
+      _root_.MeasureTheory.integrableOn_indicator_iff measurableSet_Ici.nullMeasurableSet, hInter,
       Nat.cast_pred (Nat.pos_of_neZero d)]
   rw [integrableOn_Ici_iff_integrableOn_Ioi, integrableOn_Ioi_rpow_iff ha, lt_neg_iff_add_neg]
   ring_nf

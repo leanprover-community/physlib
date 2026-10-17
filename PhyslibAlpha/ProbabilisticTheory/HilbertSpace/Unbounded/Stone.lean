@@ -17,6 +17,8 @@ public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 # Differentiating the exponential multiplier
 
+Difference quotients of `exp(i t T) x` converge to `i T x` for `x` of finite second moment.
+
 ## i. Overview
 
 The functions `λ ↦ exp(i t λ)` are differentiable in `t` with derivative `i λ exp(i t λ)`, and their
@@ -27,6 +29,20 @@ quotients of `exp(i t T) x` converge for `x` of finite second moment.
 
 - `expFunction_hasDerivAt` : the derivative of `t ↦ exp(i t λ)`.
 - `expFunction_slope_norm_le` : the difference quotients are bounded by `|λ|`.
+- `expSlope` : the difference quotient `t⁻¹ (exp(i t λ) - 1)`.
+- `expIntegral_inner_slope_tendsto_complexWeakIntegral` : the difference quotients converge weakly.
+- `expIntegral_strong_slope_tendsto` : for `x` in the maximal domain, the difference quotients of
+  `exp(i t T) x` converge in norm to `i T x`.
+
+## iii. Table of contents
+
+- A. The exponential function and its difference quotients
+- B. Weak convergence of the difference quotients
+- C. Strong convergence of the difference quotients
+
+## iv. References
+
+* None.
 
 -/
 
@@ -42,6 +58,12 @@ open scoped Topology InnerProductSpace Function
 namespace QuantumMechanics.WOTSpectralMeasure
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. The exponential function and its difference quotients
+
+-/
 
 lemma expFunction_hasDerivAt (r : ℝ) :
     HasDerivAt (fun t : ℝ => expFunction t r) (Complex.I * (r : ℂ)) 0 := by
@@ -191,6 +213,12 @@ lemma vectorMeasure_expSlope_sub_derivative_tendsto
     (MeasureTheory.VectorMeasure.tendsto_integral_filter_of_dominated_convergence
       (μ := μ) (B := ContinuousLinearMap.lsmul ℝ ℂ (E := ℂ))
       (fun r : ℝ => 3 * |r|) hmeas hdom hbound hlim)
+
+/-!
+
+## B. Weak convergence of the difference quotients
+
+-/
 
 lemma maximalSpectralIntegral_inner_eq_complexWeakIntegral
     (μS : WOTSpectralMeasure ℝ H) (x : H)
@@ -350,6 +378,12 @@ lemma expIntegral_inner_slope_tendsto_complexWeakIntegral
       (𝓝[≠] (0 : ℝ)) (𝓝 (∫ᵛ r, Complex.I * (r : ℂ) ∂[
         ContinuousLinearMap.lsmul ℝ ℂ (E := ℂ); ν])))
   simpa [sub_add_cancel] using hadd
+
+/-!
+
+## C. Strong convergence of the difference quotients
+
+-/
 
 lemma boundedIntegral_sub_maximal_norm_sq
     (μS : WOTSpectralMeasure ℝ H) {g : ℝ → ℂ} (hg : Measurable g)

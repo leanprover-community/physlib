@@ -10,6 +10,8 @@ public import Physlib.ProbabilisticTheory.Effect.Basic
 /-!
 # The metric space of effects
 
+The order-unit metric on effects and their identification with the order-unit-norm ball.
+
 ## i. Overview
 
 Effects sit inside `E`, so pulling back the order-unit norm along the inclusion `Effect E ↪ E`
@@ -27,6 +29,10 @@ Effects also correspond to points of the order-unit-norm ball, by the affine res
 
 - A. The effect metric
 - B. Effects as points of the order-unit-norm ball
+
+## iv. References
+
+* None.
 
 -/
 

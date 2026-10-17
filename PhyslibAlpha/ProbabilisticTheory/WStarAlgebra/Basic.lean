@@ -13,6 +13,8 @@ public import Mathlib.Analysis.Normed.Module.WeakDual
 
 # W⋆-algebras and normal states
 
+W⋆-algebras with a chosen predual, their weak-⋆ topology, and normal states.
+
 ## i. Overview
 
 A W⋆-algebra is a C⋆-algebra that is the dual of a Banach space, its predual. Mathlib's
@@ -34,6 +36,10 @@ for the weak-⋆ topology.
 - A. W⋆-algebras
 - B. The predual pairing
 - C. Normal states
+
+## iv. References
+
+* None.
 
 -/
 

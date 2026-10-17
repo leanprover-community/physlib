@@ -5,7 +5,7 @@ on:
     types: [opened]
   push:
     paths:
-      - scripts/autolabel.lean
+      - scripts/github/autolabel.lean
       - .github/workflows/add_label_from_diff.yaml
 
 # Limit permissions for GITHUB_TOKEN for the entire workflow

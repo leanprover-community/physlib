@@ -8,7 +8,10 @@
 
 ## Content
 
-- Use `lemma`, not `theorem`, unless the result is well known in the physics literature.
+- Use `lemma`, not `theorem`, unless the result is well known in the physics literature. Every
+  `theorem` must have a docstring, and its fully qualified name must be listed under the section
+  of its library (`[Physlib]`, `[QuantumInfo]` or `[PhyslibAlpha]`) in
+  [scripts/lint/exemptions/Theorems.txt](scripts/lint/exemptions/Theorems.txt).
 - Never use the `axiom` declaration.
 - Never use `sorry`.
 - Never use structure fields of type `True`, or theorems returning `True`.
@@ -18,7 +21,7 @@
 - Make sure that hypotheses are distributed compactly and neatly over new lines, only include new lines when genuinely needed.
 - Do not add lemmas that are trivial rewrites of existing Mathlib or Physlib results, unless they add genuine physics context.
 - Place results in the appropriate existing file; do not create new files without good reason. For example, if you need to prove a general result about derivatives on space in order to prove something in classical mechanics, that result should go in `Space.Derivatives.Basic`, not the classical mechanics file.
-- Include sections which are numbered by `# A. ...`, `## A.1. ...`. See [Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean](Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean) for an example.
+- Module documentation (`/-! … -/`) must have the headings: a title `# ...`, followed by a one-line summary of the file; `## i. Overview`; `## ii. Key results`; `## iii. Table of contents`; `## iv. References`; then sections numbered `## A. ...`, `### A.1. ...`, `#### A.1.2. ...`, listed in the table of contents. No heading may end in a full stop. See [Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean](Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean) for an example.
 - Every definition must have a docstring.
 - Important lemmas should have a docstring.
 
@@ -52,19 +55,24 @@ When a long proof cannot be split, make sure it contains comments.
 
 - Make sure all new files are imported into `Physlib.lean` or `PhyslibAlpha.lean` (keep sorted).
 - Anything depending on `sorry` or `Lean.ofReduceBool` must be tagged `@[sorryful]` or `@[pseudo]`.
-- New physics terms that trip the spell-checker go in `scripts/MetaPrograms/spellingWords.txt`.
+- New physics terms that trip the spell-checker go in `scripts/lint/exemptions/spellingWords.txt`.
 - Check that `lake build` works (run `lake exe cache get` first).
 - Check that `lake exe lint_all` passes.
+- Check that `lake exe theorem_lint` passes (needs `Physlib`, `QuantumInfo` and `PhyslibAlpha`
+  built): a declaration is a `theorem` exactly when it is listed under the section of its library
+  in `scripts/lint/exemptions/Theorems.txt`, and every `theorem` has a docstring.
 - Check that `lake exe forMathlib_lint` passes: files in `Physlib/Mathematics/ForMathlib/` may only
   import from within that directory, and each must be used outside it.
-- Check `./scripts/lint-style.sh`, but **commit your changes first**; this linter reads committed state.
+- Check `./scripts/lint/required/lint-style.sh`, but **commit your changes first**; this linter reads committed state.
+- Check that `lake exe module_doc_lint` passes (no build needed). Never add files to
+  `scripts/lint/exemptions/module_doc_no_lint.txt`; fix their module documentation instead.
 - Check that `lake exe auxillary_script_test` passes (needs `Physlib`, `QuantumInfo` and
   `PhyslibAlpha` built).
 - If edited a `PhyslibAlpha` file, check the following:
   - `lake exe runPhyslibAlphaLinters`
   - `lake exe noAlphaImports`
   - `lake exe alphaFileImports`
-  - `./scripts/PhyslibAlpha/alphaPythonLinters.sh`
+  - `./scripts/lint/required/alpha/alphaPythonLinters.sh`
 
 ## PR scope
 

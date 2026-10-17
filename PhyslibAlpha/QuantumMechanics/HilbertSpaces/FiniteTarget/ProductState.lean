@@ -28,6 +28,7 @@ of the factor state.
   `centeredGramDefect_onFstObservable` : the statistics of the first coordinate.
 - `variance_onSndObservable`, `covariance_onSndObservable`,
   `centeredGramDefect_onSndObservable` : the statistics of the second coordinate.
+- `covariance_onFstObservable_onSndObservable` : the two coordinates are uncorrelated.
 
 ## iii. Table of contents
 
@@ -35,6 +36,11 @@ of the factor state.
 - B. Observables on one coordinate
 - C. Statistics of the first coordinate
 - D. Statistics of the second coordinate
+- E. Different coordinates are uncorrelated
+
+## iv. References
+
+* None.
 
 -/
 
@@ -231,6 +237,31 @@ lemma centeredGramDefect_onSndObservable (a b : Observable (𝓗[β] →L[ℂ] �
     fluctuation_onSndObservable hψ hφ, inner_prodVec, inner_self_eq_norm_sq_to_K, norm_prodVec,
     norm_prodVec, hψ]
   simp
+
+/-!
+
+## E. Different coordinates are uncorrelated
+
+-/
+
+/-- The fluctuation vector of an observable is orthogonal to the state. -/
+lemma inner_fluctuation {γ : Type*} [Fintype γ] [DecidableEq γ] {χ : 𝓗[γ]} (hχ : ‖χ‖ = 1)
+    (c : Observable (𝓗[γ] →L[ℂ] 𝓗[γ])) :
+    ⟪χ, (c : 𝓗[γ] →L[ℂ] 𝓗[γ]) χ - (ofVec hχ)⟨c⟩ • χ⟫_ℂ = 0 := by
+  have h := apply_observable_eq_expectation (ofVec hχ) c
+  rw [ofVec_apply] at h
+  rw [inner_sub_right, ← Complex.coe_smul, inner_smul_right, inner_self_eq_norm_sq_to_K, hχ,
+    ← h]
+  simp
+
+/-- In a product state, an observable of the first coordinate and one of the second are
+uncorrelated. -/
+lemma covariance_onFstObservable_onSndObservable (a : Observable (𝓗[α] →L[ℂ] 𝓗[α]))
+    (b : Observable (𝓗[β] →L[ℂ] 𝓗[β])) :
+    covariance (ofVec (norm_prodVec_eq_one hψ hφ)) (onFstObservable a) (onSndObservable b) = 0 := by
+  rw [covariance_eq_re_apply_centered_mul, apply_centered_mul_centered_ofVec,
+    fluctuation_onFstObservable hψ hφ, fluctuation_onSndObservable hψ hφ, inner_prodVec,
+    inner_fluctuation hφ, mul_zero, Complex.zero_re]
 
 end FiniteHilbertSpace
 

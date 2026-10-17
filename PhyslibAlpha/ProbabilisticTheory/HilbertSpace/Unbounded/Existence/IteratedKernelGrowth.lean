@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Existence.
 
 # Pointwise bounds on the derivatives of the heat kernel
 
+Pointwise domination of the shifted derivatives of the heat kernel.
+
 ## i. Overview
 
 Every derivative of the heat kernel, shifted by at most `1`, is dominated by an integrable function
@@ -25,6 +27,18 @@ differentiable orbits.
 - `gardingVectorAt_iteratedKernel_hasDerivAt` : the orbit of the Gårding vector of the `n`-th
   derivative of the heat kernel is differentiable at `0`.
 
+## iii. Table of contents
+
+- A. Polynomial growth of the Hermite polynomials
+- B. Local domination of the kernel derivatives
+- C. Integrability of the dominating functions
+- D. Smoothness of the heat kernel
+- E. Differentiable orbits of iterated-kernel Gårding vectors
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -36,6 +50,12 @@ namespace QuantumMechanics
 noncomputable section
 
 open MeasureTheory Polynomial
+
+/-!
+
+## A. Polynomial growth of the Hermite polynomials
+
+-/
 
 /-- `|Hₙ(y)| ≤ Cₙ (1 + |y|)ⁿ`, with `Cₙ` the sum of the absolute values of the coefficients of `Hₙ`.
 -/
@@ -64,6 +84,12 @@ lemma hermite_aeval_le_poly_growth (n : ℕ) :
           pow_le_pow_right₀ (by linarith [abs_nonneg y]) hi'
         exact mul_le_mul_of_nonneg_left (h2.trans h3) (abs_nonneg _)
     _ = C * (1 + |y|) ^ n := by rw [← Finset.sum_mul]
+
+/-!
+
+## B. Local domination of the kernel derivatives
+
+-/
 
 /-- For `x² ≤ 1`, the `(n + 1)`-th derivative of the heat kernel at `u - x` is dominated by `C (1 +
 |u|)ⁿ⁺¹ exp(-c u²)`, uniformly in `x`. -/
@@ -127,6 +153,12 @@ lemma gaussianKernel_iteratedDeriv_shift_bound (n : ℕ) {ε : ℝ} (hε : 0 < �
     _ = D * ((1 + |u|) ^ (n + 1) * Real.exp (-(u ^ 2) / (2 * ε))) := by
         rw [hD_def, mul_pow]; ring
 
+/-!
+
+## C. Integrability of the dominating functions
+
+-/
+
 /-- `|u|^n` times a Gaussian weight is integrable — the `abs`-of-argument variant of
 `integrable_pow_mul_exp_neg_mul_sq`, obtained via `Integrable.abs` since `|u^n * exp(-cu²)| =
 |u|^n * exp(-cu²)`. -/
@@ -162,6 +194,12 @@ lemma integrable_one_add_abs_pow_mul_exp_neg_mul_sq (n : ℕ) {c : ℝ} (hc : 0 
   intro m _
   exact (integrable_abs_pow_mul_exp_neg_mul_sq m hc).const_mul _
 
+/-!
+
+## D. Smoothness of the heat kernel
+
+-/
+
 /-- `gaussianKernel ε` is smooth to every order (used to get `Continuous`/`Differentiable` facts
 about its iterated derivatives via the generic `ContDiff.continuous_iteratedDeriv`/
 `ContDiff.differentiable_iteratedDeriv`). -/
@@ -188,6 +226,12 @@ lemma gaussianKernel_iteratedDeriv_hasDerivAt (n : ℕ) {ε : ℝ} (hε : 0 < ε
     rw [iteratedDeriv_succ]
   rw [← heq]
   exact hdiff.hasDerivAt
+
+/-!
+
+## E. Differentiable orbits of iterated-kernel Gårding vectors
+
+-/
 
 /-- The `n`-th derivative of the heat kernel is integrable against `t ↦ U t ψ`. -/
 lemma gaussianKernel_iteratedDeriv_smul_integrable {H : Type*} [NormedAddCommGroup H]

@@ -6,12 +6,15 @@ Authors: David Gross
 module
 
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Traciality
 
 /-!
 
 # The trace as a positive map
+
+The trace on bounded operators as a positive tracial functional, and the functional `Tr (x ρ)`.
 
 ## i. Overview
 
@@ -26,11 +29,26 @@ positive.
 - `ContinuousLinearMap.traceMulOpₚ` : `x ↦ Tr (x ρ)`.
 - `ContinuousLinearMap.traceₚ_isTracial` : the trace is tracial.
 
+## iii. Table of contents
+
+- A. Conjugation as a positive map
+- B. The trace as a positive functional
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-!
+
+## A. Conjugation as a positive map
+
+-/
 
 section Conjugate
 
@@ -49,6 +67,12 @@ end Conjugate
 open ComplexOrder
 
 end ProbabilisticTheory
+
+/-!
+
+## B. The trace as a positive functional
+
+-/
 
 section Complex
 open ProbabilisticTheory ComplexOrder

@@ -118,7 +118,7 @@ def convex_roof_of_MState_fun : MState d → ℝ≥0 := convex_roof (f ∘ pureQ
 
 set_option backward.isDefEq.respectTransparency false in
 omit [Nonempty d] in
-theorem le_mixed_convex_roof (ρ : MState d) :
+lemma le_mixed_convex_roof (ρ : MState d) :
   (∀ n > 0, ∀ e : MEnsemble d (Fin n), mix e = ρ → c ≤ average_NNReal f e) → (c ≤ mixed_convex_roof f ρ) := fun h => by
   unfold mixed_convex_roof
   rw [WithTop.le_untop_iff]
@@ -127,7 +127,7 @@ theorem le_mixed_convex_roof (ρ : MState d) :
   exact h n hnpos e hmix
 
 set_option backward.isDefEq.respectTransparency false in
-theorem le_convex_roof (ρ : MState d) :
+lemma le_convex_roof (ρ : MState d) :
   (∀ n > 0, ∀ e : PEnsemble d (Fin n), mix (toMEnsemble e) = ρ → c ≤ pure_average_NNReal (g ∘ KetUpToPhase.mk) e) → (c ≤ convex_roof g ρ) := fun h => by
   unfold convex_roof
   rw [WithTop.le_untop_iff]
@@ -136,7 +136,7 @@ theorem le_convex_roof (ρ : MState d) :
   exact h n hnpos e hmix
 
 set_option backward.isDefEq.respectTransparency false in
-theorem convex_roof_le (ρ : MState d):
+lemma convex_roof_le (ρ : MState d):
 (∃ n > 0, ∃ e : PEnsemble d (Fin n), mix (toMEnsemble e) = ρ ∧ pure_average_NNReal (g ∘ KetUpToPhase.mk) e ≤ c) → (convex_roof g ρ ≤ c) := fun h => by
   obtain ⟨n, hnpos, e, hmix, h⟩ := h
   unfold convex_roof
@@ -147,7 +147,7 @@ theorem convex_roof_le (ρ : MState d):
 
 set_option backward.isDefEq.respectTransparency false in
 omit [Nonempty d] in
-theorem mixed_convex_roof_le (ρ : MState d):
+lemma mixed_convex_roof_le (ρ : MState d):
 (∃ n > 0, ∃ e : MEnsemble d (Fin n), mix e = ρ ∧ average_NNReal f e ≤ c) → (mixed_convex_roof f ρ ≤ c) := fun h => by
   obtain ⟨n, hnpos, e, hmix, h⟩ := h
   unfold mixed_convex_roof
@@ -237,7 +237,7 @@ def EoF : MState (d₁ × d₂) → ℝ≥0 :=
 /-
 The partial trace of the maximally entangled state is the maximally mixed state.
 -/
-theorem traceRight_pure_MES (d : Type*) [Fintype d] [DecidableEq d] [Nonempty d] :
+lemma traceRight_pure_MES (d : Type*) [Fintype d] [DecidableEq d] [Nonempty d] :
     (MState.pure (Ket.MES d)).traceRight = MState.uniform := by
   -- By definition of partial trace, we sum over the second system.
   have h_partial_trace : ∀ (i j : d), ∑ k : d, (Ket.MES d).vec (i, k) * (star (Ket.MES d).vec (j, k)) = (1 / Fintype.card d : ℝ) * (if i = j then 1 else 0) := by
@@ -263,7 +263,7 @@ theorem traceRight_pure_MES (d : Type*) [Fintype d] [DecidableEq d] [Nonempty d]
 /-
 The von Neumann entropy of a state is equal to the trace of `ρ log ρ` (technically `cfc ρ negMulLog`).
 -/
-theorem Sᵥₙ_eq_trace_cfc {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
+lemma Sᵥₙ_eq_trace_cfc {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
     Sᵥₙ ρ = (HermitianMat.cfc ρ.M Real.negMulLog).trace := by
   -- By definition of von Neumann entropy, we have Sᵥₙ ρ = Finset.sum Finset.univ (fun x ↦ Real.negMulLog (ρ.M.H.eigenvalues x)).
   have h_def : Sᵥₙ ρ = Finset.sum Finset.univ (fun x ↦ Real.negMulLog (ρ.M.H.eigenvalues x)) := by
@@ -282,7 +282,7 @@ theorem Sᵥₙ_eq_trace_cfc {d : Type*} [Fintype d] [DecidableEq d] (ρ : MStat
 /-
 The von Neumann entropy of a classical state (diagonal in the basis) is equal to the Shannon entropy of the corresponding distribution.
 -/
-theorem Sᵥₙ_ofClassical {d : Type*} [Fintype d] [DecidableEq d] (dist : ProbDistribution d) :
+lemma Sᵥₙ_ofClassical {d : Type*} [Fintype d] [DecidableEq d] (dist : ProbDistribution d) :
     Sᵥₙ (MState.ofClassical dist) = Hₛ dist := by
   -- Let's unfold the definition of `Sᵥₙ` using `Sᵥₙ_eq_trace_cfc`.
   have h_def : Sᵥₙ (MState.ofClassical dist) = (HermitianMat.cfc (MState.ofClassical dist).M Real.negMulLog).trace := by

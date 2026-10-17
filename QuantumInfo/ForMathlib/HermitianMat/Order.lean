@@ -31,14 +31,14 @@ instance : IsOrderedAddMonoid (HermitianMat n 𝕜) :=
   inferInstanceAs (IsOrderedAddMonoid (selfAdjoint _))
 
 omit [Fintype n] in
-theorem le_iff : A ≤ B ↔ (B - A).mat.PosSemidef := by
+lemma le_iff : A ≤ B ↔ (B - A).mat.PosSemidef := by
   rfl
 
 omit [Fintype n] in
-theorem zero_le_iff : 0 ≤ A ↔ A.mat.PosSemidef := by
+lemma zero_le_iff : 0 ≤ A ↔ A.mat.PosSemidef := by
   rw [le_iff, sub_zero]
 
-theorem le_iff_mulVec_le : A ≤ B ↔
+lemma le_iff_mulVec_le : A ≤ B ↔
     ∀ x, star x ⬝ᵥ A.mat *ᵥ x ≤ star x ⬝ᵥ B.mat *ᵥ x := by
   simp [le_iff, Matrix.posSemidef_iff_dotProduct_mulVec, B.H.sub A.H, Matrix.sub_mulVec]
 
@@ -48,7 +48,7 @@ instance [DecidableEq n] : ZeroLEOneClass (HermitianMat n 𝕜) where
     exact Matrix.PosSemidef.one
 
 omit [Fintype n] in
-theorem lt_iff_posdef : A < B ↔ (B - A).mat.PosSemidef ∧ A ≠ B :=
+lemma lt_iff_posdef : A < B ↔ (B - A).mat.PosSemidef ∧ A ≠ B :=
   lt_iff_le_and_ne
 
 instance : IsStrictOrderedModule ℝ (HermitianMat n 𝕜) where
@@ -69,19 +69,19 @@ instance : IsStrictOrderedModule ℝ (HermitianMat n 𝕜) where
       simpa [eq_comm, hb.ne'] using h
     · rintro rfl; simp
 
-theorem posSemidef_iff_spectrum_Ici [DecidableEq n] (A : HermitianMat n 𝕜) :
+lemma posSemidef_iff_spectrum_Ici [DecidableEq n] (A : HermitianMat n 𝕜) :
     0 ≤ A ↔ spectrum ℝ A.mat ⊆ Set.Ici 0 := by
   rw [zero_le_iff, Matrix.posSemidef_iff_isHermitian_and_spectrum_nonneg]
   simp [A.H, Set.Ici.eq_1]
 
-theorem posSemidef_iff_spectrum_nonneg [DecidableEq n] (A : HermitianMat n 𝕜) :
+lemma posSemidef_iff_spectrum_nonneg [DecidableEq n] (A : HermitianMat n 𝕜) :
     0 ≤ A ↔ ∀ x ∈ spectrum ℝ A.mat, 0 ≤ x := by
   exact A.posSemidef_iff_spectrum_Ici
 
-theorem trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
+lemma trace_nonneg (hA : 0 ≤ A) : 0 ≤ A.trace := by
   exact (RCLike.nonneg_iff.mp (zero_le_iff.mp hA).trace_nonneg).1
 
-theorem trace_pos (hA : 0 < A) : 0 < A.trace := by
+lemma trace_pos (hA : 0 < A) : 0 < A.trace := by
   open ComplexOrder in
   have hA' := hA.le
   rw [HermitianMat.zero_le_iff] at hA'
@@ -114,7 +114,7 @@ instance : SMulPosMono ℝ (HermitianMat n 𝕜) := inferInstance
 instance : PosSMulReflectLE ℝ (HermitianMat n 𝕜) :=
   PosSMulMono.toPosSMulReflectLE
 
-theorem le_trace_smul_one [DecidableEq n] (hA : 0 ≤ A) : A ≤ A.trace • 1 := by
+lemma le_trace_smul_one [DecidableEq n] (hA : 0 ≤ A) : A ≤ A.trace • 1 := by
   have hA' : A.mat.PosSemidef := zero_le_iff.mp hA
   refine (Matrix.PosSemidef.le_smul_one_of_eigenvalues_iff hA'.1 A.trace).mp ?_
   rw [← A.sum_eigenvalues_eq_trace]
@@ -160,11 +160,11 @@ theorem kronecker_pos {A : HermitianMat m 𝕜} (hA : 0 < A) (hB : 0 < B) : 0 < 
 
 omit [Fintype n] in
 open MatrixOrder in
-theorem posSemidef_to_nonneg {A : Matrix n n 𝕜} (hA : A.PosSemidef) : 0 ≤ A := by
+lemma posSemidef_to_nonneg {A : Matrix n n 𝕜} (hA : A.PosSemidef) : 0 ≤ A := by
   exact hA.nonneg
 
 open MatrixOrder in
-theorem posDef_to_pos {A : Matrix n n 𝕜} (hA : A.PosDef) [Nonempty n] : 0 < A := by
+lemma posDef_to_pos {A : Matrix n n 𝕜} (hA : A.PosDef) [Nonempty n] : 0 < A := by
   apply lt_of_le_of_ne hA.posSemidef.nonneg
   rintro rfl
   classical simpa [Matrix.det_zero] using hA.det_pos
@@ -238,10 +238,10 @@ meta def evalMatrixPSD : PositivityExt where eval {_u _α} _zα _pα? e :=
 
 
 omit [Fintype n] in
-theorem mat_posSemidef_to_nonneg (hA : A.mat.PosSemidef) : 0 ≤ A :=
+lemma mat_posSemidef_to_nonneg (hA : A.mat.PosSemidef) : 0 ≤ A :=
   zero_le_iff.mpr hA
 
-theorem mat_posDef_to_pos [Nonempty n] (hA : A.mat.PosDef) : 0 < A := by
+lemma mat_posDef_to_pos [Nonempty n] (hA : A.mat.PosDef) : 0 < A := by
   exact posDef_to_pos hA
 
 open Lean Meta in
@@ -338,7 +338,7 @@ theorem conj_nonneg (hA : 0 ≤ A) : 0 ≤ A.conj M := by
   rw [zero_le_iff] at hA ⊢
   exact Matrix.PosSemidef.mul_mul_conjTranspose_same hA M
 
-theorem conj_pos [DecidableEq n] {A : HermitianMat n 𝕜} {M : Matrix m n 𝕜} (hA : 0 < A)
+lemma conj_pos [DecidableEq n] {A : HermitianMat n 𝕜} {M : Matrix m n 𝕜} (hA : 0 < A)
     (h : LinearMap.ker M.toEuclideanLin ≤ A.ker) : 0 < A.conj M := by
   classical exact (A.conj_nonneg M hA.le).lt_of_ne' (A.conj_ne_zero hA.ne' h)
 
@@ -377,17 +377,17 @@ example (A B : HermitianMat n ℂ) (hA : 0 < A) (hB : 0 < B) :
   positivity
 
 omit [Fintype n] in
-theorem convex_cone (hA : 0 ≤ A) (hB : 0 ≤ B) {c₁ c₂ : ℝ} (hc₁ : 0 ≤ c₁) (hc₂ : 0 ≤ c₂) :
+lemma convex_cone (hA : 0 ≤ A) (hB : 0 ≤ B) {c₁ c₂ : ℝ} (hc₁ : 0 ≤ c₁) (hc₂ : 0 ≤ c₂) :
     0 ≤ (c₁ • A + c₂ • B) := by
   rw [zero_le_iff] at hA hB ⊢
   exact (hA.smul hc₁).add (hB.smul hc₂)
 
-theorem sq_nonneg [DecidableEq n] : 0 ≤ A ^ 2 := by
+lemma sq_nonneg [DecidableEq n] : 0 ≤ A ^ 2 := by
   simp [zero_le_iff, pow_two]
   nth_rewrite 1 [←Matrix.IsHermitian.eq A.H]
   exact Matrix.posSemidef_conjTranspose_mul_self A.mat
 
-theorem ker_antitone [DecidableEq n] (hA : 0 ≤ A) : A ≤ B → B.ker ≤ A.ker := by
+lemma ker_antitone [DecidableEq n] (hA : 0 ≤ A) : A ≤ B → B.ker ≤ A.ker := by
   intro h x hB
   replace h := (le_iff_mulVec_le.mp h) x
   rw [HermitianMat.mem_ker_iff_mulVec_zero] at hB ⊢
@@ -397,7 +397,7 @@ theorem ker_antitone [DecidableEq n] (hA : 0 ≤ A) : A ≤ B → B.ker ≤ A.ke
   rw [Matrix.posSemidef_iff_dotProduct_mulVec] at hA
   exact le_antisymm h (hA.right x)
 
-theorem conj_mono (h : A ≤ B) : A.conj M ≤ B.conj M := by
+lemma conj_mono (h : A ≤ B) : A.conj M ≤ B.conj M := by
   have h_conj_pos : (M * (B - A).mat * Mᴴ).PosSemidef :=
     Matrix.PosSemidef.mul_mul_conjTranspose_same h M
   constructor;
@@ -431,7 +431,7 @@ lemma inv_conj [DecidableEq n] {M : Matrix n n 𝕜} (hM : IsUnit M) :
   simp only [mat_inv, mat_mk]
   rw [Matrix.mul_inv_rev, Matrix.mul_inv_rev, Matrix.inv_eq_left_inv h_inv, mul_assoc]
 
-theorem le_iff_mulVec_le_mulVec (A B : HermitianMat n 𝕜) :
+lemma le_iff_mulVec_le_mulVec (A B : HermitianMat n 𝕜) :
     A ≤ B ↔ ∀ v : n → 𝕜, star v ⬝ᵥ A.mat *ᵥ v ≤ star v ⬝ᵥ B.mat *ᵥ v := by
   rw [← sub_nonneg, HermitianMat.zero_le_iff]
   conv_rhs => enter [v]; rw [← sub_nonneg]
@@ -439,17 +439,17 @@ theorem le_iff_mulVec_le_mulVec (A B : HermitianMat n 𝕜) :
   simp only [HermitianMat.mat_sub] at h
   simp [Matrix.posSemidef_iff_dotProduct_mulVec, Matrix.sub_mulVec, h]
 
-theorem inner_mulVec_nonneg (hA : 0 ≤ A) (v : n → 𝕜) :
+lemma inner_mulVec_nonneg (hA : 0 ≤ A) (v : n → 𝕜) :
     0 ≤ star v ⬝ᵥ A.mat *ᵥ v := by
   rw [le_iff_mulVec_le_mulVec] at hA
   simpa using hA v
 
-theorem mem_ker_of_inner_mulVec_zero [DecidableEq n] (hA : 0 ≤ A) (v : EuclideanSpace 𝕜 n)
+lemma mem_ker_of_inner_mulVec_zero [DecidableEq n] (hA : 0 ≤ A) (v : EuclideanSpace 𝕜 n)
     (h : star v ⬝ᵥ A.mat *ᵥ v = 0) : v ∈ A.ker := by
   have := ((zero_le_iff.mp hA).dotProduct_mulVec_zero_iff (x := v)).mp h
   exact congr(WithLp.toLp 2 $this)
 
-theorem ker_add [DecidableEq n] (hA : 0 ≤ A) (hB : 0 ≤ B) :
+lemma ker_add [DecidableEq n] (hA : 0 ≤ A) (hB : 0 ≤ B) :
     (A + B).ker = A.ker ⊓ B.ker := by
   have hA' := zero_le_iff.mp hA
   have hB' := zero_le_iff.mp hB
@@ -465,7 +465,7 @@ theorem ker_add [DecidableEq n] (hA : 0 ≤ A) (hB : 0 ≤ B) :
            (hB'.dotProduct_mulVec_zero_iff (x := v)).mp hzB⟩
   · simp +contextual [Matrix.add_mulVec]
 
-theorem ker_sum [DecidableEq n] (f : ι → HermitianMat n 𝕜) (hf : ∀ i, 0 ≤ f i) :
+lemma ker_sum [DecidableEq n] (f : ι → HermitianMat n 𝕜) (hf : ∀ i, 0 ≤ f i) :
     (∑ i, f i).ker = ⨅ i, (f i).ker := by
   ext v
   simp only [Submodule.mem_iInf, mem_ker_iff_mulVec_zero]
@@ -487,7 +487,7 @@ theorem ker_sum [DecidableEq n] (f : ι → HermitianMat n 𝕜) (hf : ∀ i, 0 
     simp [Matrix.sum_mulVec, h]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem ker_conj [DecidableEq n] (hA : 0 ≤ A) (B : Matrix n n 𝕜) :
+lemma ker_conj [DecidableEq n] (hA : 0 ≤ A) (B : Matrix n n 𝕜) :
     (A.conj B).ker = Submodule.comap (Matrix.toEuclideanLin B.conjTranspose) A.ker := by
 
   ext v; simp [HermitianMat.conj];
@@ -505,7 +505,7 @@ theorem ker_conj [DecidableEq n] (hA : 0 ≤ A) (B : Matrix n n 𝕜) :
     · simp [HermitianMat.lin, Matrix.toEuclideanLin]
     · exact Eq.symm (LinearMap.map_zero (Matrix.toEuclideanLin B))
 
-theorem ker_le_of_le_smul {α : ℝ} [DecidableEq n] (hα : α ≠ 0) (hA : 0 ≤ A) (hAB : A ≤ α • B) : B.ker ≤ A.ker := by
+lemma ker_le_of_le_smul {α : ℝ} [DecidableEq n] (hα : α ≠ 0) (hA : 0 ≤ A) (hAB : A ≤ α • B) : B.ker ≤ A.ker := by
   rw [← ker_pos_smul B hα]
   exact ker_antitone hA hAB
 
@@ -576,18 +576,18 @@ theorem _root_.Matrix.nonneg_self_mul_conjTranspose {m : Type*} [Fintype m]
 
 omit [Fintype m] in
 open MatrixOrder in
-theorem subtype_mk_nonneg {M : Matrix m m 𝕜} (h : 0 ≤ M) :
+lemma subtype_mk_nonneg {M : Matrix m m 𝕜} (h : 0 ≤ M) :
     0 ≤ (⟨M, (Matrix.LE.le.posSemidef h).isHermitian⟩ : HermitianMat m 𝕜) :=
   h
 
 omit [Fintype m] in
 open MatrixOrder in
-theorem subtype_mk_pos {M : Matrix m m 𝕜} (h : 0 < M) :
+lemma subtype_mk_pos {M : Matrix m m 𝕜} (h : 0 < M) :
     0 < (⟨M, (Matrix.LE.le.posSemidef h.le).isHermitian⟩ : HermitianMat m 𝕜) :=
   h
 
 open MatrixOrder in
-private theorem _root_.Matrix.eigenvalues_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (h : 0 ≤ M) (i : n) :
+private lemma _root_.Matrix.eigenvalues_nonneg [DecidableEq n] {M : Matrix n n 𝕜} (h : 0 ≤ M) (i : n) :
     0 ≤ (Matrix.LE.le.posSemidef h).isHermitian.eigenvalues i :=
   (Matrix.LE.le.posSemidef h).eigenvalues_nonneg i
 

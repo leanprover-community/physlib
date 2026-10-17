@@ -14,6 +14,8 @@ public import Physlib.Mathematics.KroneckerDelta.Basic
 
 # Ladder systems
 
+Ladder systems of creation and annihilation operators, their `gl(d)` action and number operators.
+
 ## i. Overview
 
 A `LadderSystem K V d` packages `d` pairs of creation and annihilation endomorphisms of a
@@ -209,7 +211,7 @@ noncomputable def toGlHomLinear (L : LadderSystem K V d) :
     Matrix (Fin d) (Fin d) K →ₗ[K] Module.End K V :=
   (Matrix.stdBasis K (Fin d) (Fin d)).constr K (fun p => L.E p.1 p.2)
 
-@[simp] theorem toGlHomLinear_stdBasis (L : LadderSystem K V d) (i j : Fin d) :
+@[simp] lemma toGlHomLinear_stdBasis (L : LadderSystem K V d) (i j : Fin d) :
     L.toGlHomLinear (Matrix.stdBasis K (Fin d) (Fin d) (i, j)) = L.E i j :=
   Basis.constr_basis _ _ _ _
 

@@ -10,6 +10,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Weight.Basic
 /-!
 # Extending finite weights
 
+A finite weight extends uniquely to a positive linear functional on the order unit space.
+
 ## i. Overview
 
 A finite weight on the positive cone of an order-unit space extends uniquely to a positive linear
@@ -25,6 +27,10 @@ check the result does not depend on the `r` chosen.
 
 - A. The raw shifted value
 - B. The linear extension
+
+## iv. References
+
+* None.
 
 -/
 

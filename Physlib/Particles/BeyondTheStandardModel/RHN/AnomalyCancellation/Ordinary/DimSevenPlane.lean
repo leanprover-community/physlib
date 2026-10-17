@@ -213,7 +213,7 @@ lemma Bi_Bj_Bk_cubic (i j k : Fin 7) :
   · exact Bi_Bj_ne_cubic hij (B k)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem B_in_accCube (f : Fin 7 → ℚ) : accCube (∑ i, f i • B i) = 0 := by
+lemma B_in_accCube (f : Fin 7 → ℚ) : accCube (∑ i, f i • B i) = 0 := by
   change cubeTriLin _ _ _ = 0
   rw [cubeTriLin.map_sum₁₂₃]
   apply Fintype.sum_eq_zero _ fun i ↦ Fintype.sum_eq_zero _ fun k ↦ Fintype.sum_eq_zero _ fun l ↦ ?_
@@ -237,7 +237,7 @@ lemma B_sum_is_sol (f : Fin 7 → ℚ) : (SM 3).IsSolution (∑ i, f i • B i) 
     (B_in_accCube f), rfl⟩
 
 set_option backward.isDefEq.respectTransparency false in
-theorem basis_linear_independent : LinearIndependent ℚ B := by
+lemma basis_linear_independent : LinearIndependent ℚ B := by
   refine Fintype.linearIndependent_iff.mpr fun f h ↦ ?_
   have h0 := congrFun h (0 : Fin 18)
   have h1 := congrFun h (3 : Fin 18)
@@ -257,7 +257,7 @@ theorem basis_linear_independent : LinearIndependent ℚ B := by
 
 end PlaneSeven
 
-theorem seven_dim_plane_exists : ∃ (B : Fin 7 → (SM 3).Charges),
+lemma seven_dim_plane_exists : ∃ (B : Fin 7 → (SM 3).Charges),
     LinearIndependent ℚ B ∧ ∀ (f : Fin 7 → ℚ), (SM 3).IsSolution (∑ i, f i • B i) :=
   ⟨PlaneSeven.B, And.intro PlaneSeven.basis_linear_independent PlaneSeven.B_sum_is_sol⟩
 

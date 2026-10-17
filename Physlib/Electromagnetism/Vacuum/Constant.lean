@@ -199,9 +199,10 @@ lemma constantEB_electricField {c : SpeedOfLight}
   funext t x
   rw [electricField_eq]
   simp [constantEB_scalarPotential]
-  erw [Space.grad_neg]
+  rw[Space.fun_grad_neg]
+  simp only
   conv_lhs =>
-    enter [1, 1,1, x]
+    enter [1, 1, 1, x]
     rw [real_inner_comm, Space.basis_repr_inner_eq, real_inner_comm]
   rw [Space.grad_inner_right]
   simp

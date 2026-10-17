@@ -8,10 +8,36 @@ module
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.Line
 /-!
 
-## Half-plane surface in `Space 3`
+# Half-plane surface in `Space 3`
+
+The half-plane in `Space 3` with its measure, distribution and vanishing ambient volume.
+
+## i. Overview
 
 The half-plane is the coordinate plane in `Space 3` with nonnegative second
-coordinate.
+coordinate. It is the image of the domain `halfPlaneDomain` in `Space 2` under the coordinate
+plane embedding `halfPlane`. Pushing forward the restricted volume gives the measure
+`halfPlaneMeasure`, and integrating against it gives the distribution `halfPlaneDist`. The
+half-plane lies in a proper linear subspace, so it has ambient volume zero.
+
+## ii. Key results
+
+- `halfPlaneDomain` : the domain of the half-plane inside `Space 2`.
+- `halfPlane` : the coordinate plane embedding of `Space 2` into `Space 3`.
+- `halfPlaneMeasure` : the measure corresponding to integration over the half-plane.
+- `halfPlaneDist` : the distribution corresponding to integration over the half-plane.
+- `volume_halfPlane_image_domain` : the half-plane has ambient volume zero.
+
+## iii. Table of contents
+
+- A. The definition of the half-plane surface
+- B. The measure associated with the half-plane
+- C. The distribution associated with the half-plane
+- D. The half-plane has ambient volume zero
+
+## iv. References
+
+* None.
 
 -/
 

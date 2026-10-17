@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 
 # Monotone-complete ordered spaces
 
+Monotone-complete orders and chosen suprema of bounded directed sets and increasing sequences.
+
 ## i. Overview
 
 An ordered space is monotone complete when every nonempty directed set that is bounded above has a
@@ -22,11 +24,22 @@ least upper bound.
 - `MonotoneCompleteOrder.directedSup` : the supremum of a bounded directed set.
 - `MonotoneCompleteOrder.rangeSup` : the supremum of a bounded increasing sequence.
 
+## iii. Table of contents
+
+- A. Monotone-complete orders
+- B. Chosen suprema
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-! ## A. Monotone-complete orders -/
 
 /-- An order is monotone complete when every nonempty upward-directed bounded set has a supremum.
 No lattice operations are bundled: ordered vector spaces need not be lattices. -/
@@ -34,6 +47,8 @@ class MonotoneCompleteOrder (E : Type*) [Preorder E] : Prop where
   /-- Existence of the directed supremum. -/
   exists_isLUB (D : Set E) : D.Nonempty → DirectedOn (· ≤ ·) D → BddAbove D →
     ∃ x : E, IsLUB D x
+
+/-! ## B. Chosen suprema -/
 
 namespace MonotoneCompleteOrder
 

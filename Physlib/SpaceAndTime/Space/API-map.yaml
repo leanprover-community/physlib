@@ -11,7 +11,7 @@ Overview: |
     derivatives of functions and distributions, and the actions of translations and rotations).
 
 ParentAPIs:
-  - "Distribution (Physlib/Mathematics/Distribution)"
+  - "Distribution (Physlib/Mathematics/TemperedDistribution)"
   - "Time (Physlib/SpaceAndTime/Time)"
   - "Lorentz vectors (Physlib/Relativity/Tensors/RealTensor/Vector)"
 

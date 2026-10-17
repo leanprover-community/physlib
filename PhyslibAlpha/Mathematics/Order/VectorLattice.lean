@@ -16,6 +16,8 @@ public import Mathlib.Tactic.GCongr
 /-!
 # Vector lattices
 
+Elementary arithmetic of infima in real vector lattices: Riesz decomposition and disjointness.
+
 ## i. Overview
 
 A real vector lattice is an ordered real vector space in which any two elements have a least upper
@@ -36,6 +38,10 @@ scalars, and how disjointness interacts with sums and with least upper bounds of
 
 - A. Riesz decomposition and disjointness
 - B. Positive scalars
+
+## iv. References
+
+* None.
 
 -/
 

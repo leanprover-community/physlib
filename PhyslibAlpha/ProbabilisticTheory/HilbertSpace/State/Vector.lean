@@ -8,10 +8,13 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 
 # Vector states
+
+A unit vector `ψ` defines the vector state `x ↦ ⟪ψ, x ψ⟫` on the bounded operators.
 
 ## i. Overview
 
@@ -22,6 +25,15 @@ A unit vector `ψ` defines the vector state `x ↦ ⟪ψ, x ψ⟫` on the bounde
 - `PositiveLinearMap.ofVec` : the positive functional of a vector.
 - `UnitalPositiveLinearMap.ofVec` : the vector state of a unit vector.
 
+## iii. Table of contents
+
+- A. Vector states
+- B. Example
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -30,6 +42,12 @@ namespace ProbabilisticTheory
 
 open ComplexOrder ContinuousLinearMap
 open scoped InnerProductSpace
+
+/-!
+
+## A. Vector states
+
+-/
 
 section ofVec
 
@@ -54,6 +72,12 @@ lemma UnitalPositiveLinearMap.ofVec_apply {ψ : H} (h : ‖ψ‖ = 1) (x : H →
     UnitalPositiveLinearMap.ofVec h x = ⟪ψ, x • ψ⟫_𝕜 := rfl
 
 end ofVec
+
+/-!
+
+## B. Example
+
+-/
 
 section Example
 

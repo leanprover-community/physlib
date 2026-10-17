@@ -10,7 +10,11 @@ public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
 /-!
 
-## Solid cylinder surface in `Space 3`
+# Solid cylinder surface in `Space 3`
+
+The solid unit cylinder in `Space 3` with its measure, distribution and positive volume.
+
+## i. Overview
 
 The solid cylinder is the closed unit disk in `Space 2` extruded along the third coordinate.
 It is the solid analogue of the spherical cylinder, in the same way that the solid sphere is the
@@ -19,6 +23,24 @@ volume, so the measure associated with it is built from the ambient volume of th
 disk (the solid-sphere measure in `Space 2`) extruded along the axis, rather than a pushforward of
 a lower-dimensional surface measure. The measure-zero requirement is therefore not applicable here
 and is replaced by a statement that the solid cylinder has positive ambient volume.
+
+## ii. Key results
+
+- `solidCylinder` : the embedding of a cross-sectional disk extruded along the axis.
+- `solidCylinderMeasure` : the measure corresponding to integration over the solid cylinder.
+- `solidCylinderDist` : the distribution corresponding to integration over the solid cylinder.
+- `solidCylinderMeasure_univ_pos` : the solid cylinder has positive measure.
+
+## iii. Table of contents
+
+- A. The definition of the solid cylinder surface
+- B. The measure associated with the solid cylinder
+- C. The distribution associated with the solid cylinder
+- D. The solid cylinder has positive ambient volume
+
+## iv. References
+
+* None.
 
 -/
 

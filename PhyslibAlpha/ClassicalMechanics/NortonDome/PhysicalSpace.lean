@@ -11,6 +11,8 @@ public import Physlib.SpaceAndTime.Space.Module
 
 # The Norton dome in physical space
 
+The Norton dome chart dynamics as a point mass constrained to the dome surface.
+
 ## i. Overview
 
 `NortonDome.Basic` writes the dynamics on the arc length `r`, with kinetic energy `½ m ṙ²` and

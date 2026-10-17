@@ -236,7 +236,7 @@ private lemma variational_lower_bound
     have hZ_pow : ((Z ^ ((p - 1) / p)) ^ (p / (p - 1))) = Z := by
       rw [← HermitianMat.rpow_mul]
       · field_simp
-        rw [div_self (by linarith), HermitianMat.rpow_one]
+        rw [HermitianMat.rpow_one]
       · exact hZ
     simp_all
     field_simp at this
@@ -492,7 +492,7 @@ end VariationalAndBridge
   `σ ↦ Tr[(σ^s H σ^s)^p]` is concave on PSD matrices,
   where `s = (α-1)/(2α)` and `p = α/(α-1)`.
 -/
-theorem trace_conj_rpow_concave {α : ℝ} (hα : 1 < α)
+lemma trace_conj_rpow_concave {α : ℝ} (hα : 1 < α)
     (H : HermitianMat d ℂ) (hH : 0 ≤ H) :
     ConcaveOn ℝ {σ : HermitianMat d ℂ | 0 ≤ σ}
       (fun σ ↦ ((H.conj (σ ^ ((α - 1) / (2 * α))).mat) ^ (α / (α - 1))).trace) := by

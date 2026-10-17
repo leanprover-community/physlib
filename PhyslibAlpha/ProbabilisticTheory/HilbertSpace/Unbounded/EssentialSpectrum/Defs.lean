@@ -12,6 +12,8 @@ public import Mathlib.Analysis.InnerProductSpace.Basic
 
 # The essential spectrum
 
+The essential spectrum of a self-adjoint operator, defined by singular sequences.
+
 ## i. Overview
 
 A real number `λ` is in the essential spectrum of a self-adjoint operator `A` when there is a
@@ -23,7 +25,11 @@ every `g`, and `‖A ψₙ - λ ψₙ‖ → 0`. Orthonormal approximate eigenve
 - `essSpectrum` : the essential spectrum of a self-adjoint operator.
 - `mem_essSpectrum_of_seq` : membership from a singular sequence.
 
-## iii. References
+## iii. Table of contents
+
+- A. Singular sequences and the essential spectrum
+
+## iv. References
 
 - Adapted from `adambornemann-glitch/Spectra`, `SpectralTheory/Essential/Defs.lean` (Apache 2.0).
 
@@ -41,6 +47,12 @@ open scoped InnerProductSpace
 namespace QuantumMechanics.Essential
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Singular sequences and the essential spectrum
+
+-/
 
 /-- The **essential spectrum** of a self-adjoint operator `A`, defined by singular (Weyl)
 sequences: `λ ∈ essSpectrum hA` iff there is `ψ : ℕ → A.domain` with `‖ψ n‖ → 1`, `ψ` weakly null,

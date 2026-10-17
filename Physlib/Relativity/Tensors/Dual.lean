@@ -60,7 +60,7 @@ variable {k : Type} [RCLike k] {C : Type} {G : Type} [Group G]
     {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
     {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Module.Basis (basisIdx c) k (V c)}
-    {S : TensorSpecies k C G V basisIdx rep b}
+    {S : TensorSpecies k C G V basisIdx rep b} [S.WithMetric]
 
 namespace Tensor
 

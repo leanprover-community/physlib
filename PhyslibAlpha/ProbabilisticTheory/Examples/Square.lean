@@ -10,6 +10,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Composite.TensorCone
 /-!
 # The square
 
+The square state space: its observables, its four facets and vertex values of composites.
+
 ## i. Overview
 
 The square is the simplest state space that is not a simplex: it has four pure states, the
@@ -35,6 +37,10 @@ four vertex values in `E`, which again satisfy the diagonal relation.
 - A. The square
 - B. Facets
 - C. Vertex values of composite observables
+
+## iv. References
+
+* None.
 
 -/
 

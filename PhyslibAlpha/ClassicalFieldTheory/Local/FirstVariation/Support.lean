@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstVariation.Basic
 /-!
 # First variation support lemmas
 
+Support lemmas for the first variation: varied fields, test functions, varied jet coordinates.
+
 ## i. Overview
 
 This module collects the reusable support lemmas used by the analytic part of the local
@@ -71,7 +73,7 @@ lemma contDiff_space_deriv {g : Space d → ℝ} (hg : ContDiff ℝ ∞ g)
     (i : Fin d) : ContDiff ℝ ∞ (∂[i] g) := by
   have hfamily : ContDiff ℝ ∞ (fun x : Space d => fun j : Fin d => ∂[j] g x) := by
     simpa using (Space.deriv_contDiff (n := ∞) hg)
-  exact (contDiff_apply ℝ ℝ i).comp hfamily
+  exact (contDiff_apply ℝ _ i).comp hfamily
 
 lemma isTestFunction_space_deriv {g : Space d → ℝ} (hg : IsTestFunction g) (i : Fin d) :
     IsTestFunction (∂[i] g) := by

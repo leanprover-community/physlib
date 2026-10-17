@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.QuantumChannel
 /-!
 # Matrices over a C⋆-algebra as a composite system
 
+Matrices over a C⋆-algebra as composite observables with an n-level ancilla, and positivity.
+
 ## i. Overview
 
 Coupling a quantum system with observables `A` to an `n`-level ancilla gives the `n × n` matrices
@@ -44,6 +46,10 @@ systems, and for maps out of commutative C⋆-algebras it follows from classical
 - D. Commutative algebras
 - E. Applying a map entrywise
 - F. Channels out of commutative algebras
+
+## iv. References
+
+* None.
 
 -/
 

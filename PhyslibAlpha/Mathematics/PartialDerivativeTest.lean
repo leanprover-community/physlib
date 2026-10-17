@@ -16,23 +16,50 @@ public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 # The Second Partial Derivatives Test
 
+A positive definite Hessian at a critical point of an analytic function gives a local minimum.
+
+## i. Overview
+
 We prove a version of the second partial derivative test from calculus for
 analytic functions `f : V → ℝ`, where `V` is a finite-dimensional vector space.
 
-## Main results
+The second iterated Fréchet derivative is packaged as a quadratic map, a positive definite
+quadratic map is shown to be coercive, and a little-o form of the test is combined with the
+quadratic approximation coming from a power series.
 
-* `second_derivative_test`:
-    Suppose `f` is a real-valued function on a
-    finite-dimensional inner product space that
-    has vanishing gradient at `x₀`, and has a power series on a ball of positive radius
-    around `x₀`. If the second Frechét derivative is positive definite at `x₀` then
-    `f` has  local minimum at `x₀`.
+Tags: partial derivative test, calculus.
 
-## Tags
-partial derivative test, calculus
+## ii. Key results
+
+- `iteratedFDerivQuadraticMap` : the second iterated Fréchet derivative as a quadratic map.
+- `coercive_of_posdef` : positive definiteness implies coercivity.
+- `isLocalMin_of_posDef_of_littleo` : the second partial derivative test, "little oh" form.
+- `second_derivative_test` : Suppose `f` is a real-valued function on a finite-dimensional inner
+  product space that has vanishing gradient at `x₀`, and has a power series on a ball of positive
+  radius around `x₀`. If the second Fréchet derivative is positive definite at `x₀` then `f` has a
+  local minimum at `x₀`.
+- `second_derivative_test_analyticAt` : the same test, assuming only that `f` is analytic at `x₀`.
+
+## iii. Table of contents
+
+- A. Updating vectors of length two
+- B. Quadratic maps from the second derivative
+- C. Coercivity of positive definite forms
+- D. The second derivative test
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
+
+/-!
+
+## A. Updating vectors of length two
+
+-/
 
 /-- Update a vector of length 2 in coordinate 0. -/
 @[simp]
@@ -46,6 +73,12 @@ lemma Function.update₁ {α : Type*} {a b c : α} : Function.update ![a,b] 1 c 
 
 open Nat ContinuousMultilinearMap Finset Function
 
+
+/-!
+
+## B. Quadratic maps from the second derivative
+
+-/
 
 /-- The Hessian companion as a bilinear map. -/
 noncomputable def hessianBilinearCompanion {V : Type*} [NormedAddCommGroup V]
@@ -287,6 +320,12 @@ theorem QuadraticMap.toContinuousMultilinearMap_applyHalf {V : Type*} [NormedAdd
   rfl
 
 
+/-!
+
+## C. Coercivity of positive definite forms
+
+-/
+
 /-- . -/
 lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
     [FiniteDimensional ℝ V] {F : QuadraticMap ℝ V ℝ}
@@ -468,6 +507,12 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
         congr
         refine Real.norm_of_nonneg ?_
         simp)
+
+/-!
+
+## D. The second derivative test
+
+-/
 
 /-- . -/
 theorem le_of_littleO {V : Type*}

@@ -38,7 +38,7 @@ private def ComplexLaplaceEndpointEnvelope {α : Type*} (E : α → WithTop ℝ)
     (x : α) : ℝ :=
   ‖ComplexLaplaceIntegrand E z x‖ + ‖ComplexLaplaceIntegrand E w x‖
 
-private theorem norm_complexLaplaceIntegrand_le_envelope
+private lemma norm_complexLaplaceIntegrand_le_envelope
     {α : Type*} {E : α → WithTop ℝ} {z w : ℂ} {δ : ℝ}
     (hw : w ∈ Metric.closedBall z δ) (x : α) :
     ‖ComplexLaplaceIntegrand E w x‖ ≤ ComplexLaplaceEnvelope E z δ x := by
@@ -64,7 +64,7 @@ private theorem norm_complexLaplaceIntegrand_le_envelope
           mul_zero, sub_zero, Complex.add_re]
         nlinarith [abs_le.mp hre_abs |>.2])
 
-private theorem norm_complexLaplaceIntegrand_horizontal_le_endpointEnvelope
+private lemma norm_complexLaplaceIntegrand_horizontal_le_endpointEnvelope
     {α : Type*} {E : α → WithTop ℝ} {a b : ℂ} {t : ℝ}
     (ht : t ∈ Set.uIcc a.re b.re) (x : α) :
     ‖ComplexLaplaceIntegrand E (t + a.im * Complex.I) x‖ ≤
@@ -97,7 +97,7 @@ private theorem norm_complexLaplaceIntegrand_horizontal_le_endpointEnvelope
           mul_zero, sub_zero, Complex.add_re, Complex.I_re]
         nlinarith)
 
-private theorem norm_complexLaplaceIntegrand_vertical_le_endpointEnvelope
+private lemma norm_complexLaplaceIntegrand_vertical_le_endpointEnvelope
     {α : Type*} {E : α → WithTop ℝ} {a b : ℂ} {t : ℝ}
     (x : α) :
     ‖ComplexLaplaceIntegrand E (b.re + t * Complex.I) x‖ ≤
@@ -121,7 +121,7 @@ theorem analyticAt_complexLaplaceIntegrand
   · fun_prop
   · fun_prop
 
-theorem measurable_complexLaplaceIntegrand
+lemma measurable_complexLaplaceIntegrand
     {α : Type*} [MeasurableSpace α] {E : α → WithTop ℝ} (hE : Measurable E) (z : ℂ) :
     Measurable (ComplexLaplaceIntegrand E z) := by
   rw [show ComplexLaplaceIntegrand E z =
@@ -155,7 +155,7 @@ theorem eventually_integrable_complexLaplaceIntegrand_of_mem_interior_convergenc
       MeasureTheory.Integrable (μ := MeasureTheory.volume) (ComplexLaplaceIntegrand E w) :=
   Filter.mem_of_superset (IsOpen.mem_nhds isOpen_interior hz) _root_.interior_subset
 
-theorem continuousAt_complexLaplaceTransform_of_mem_interior_convergenceDomain
+lemma continuousAt_complexLaplaceTransform_of_mem_interior_convergenceDomain
     {α : Type*} [MeasureTheory.MeasureSpace α] {E : α → WithTop ℝ} {z : ℂ}
     (hz : z ∈ interior (ComplexLaplaceConvergenceDomain E)) :
     ContinuousAt (ComplexLaplaceTransform E) z := by
@@ -185,13 +185,13 @@ theorem continuousAt_complexLaplaceTransform_of_mem_interior_convergenceDomain
       hbound_int
       (Filter.Eventually.of_forall fun x => (analyticAt_complexLaplaceIntegrand E x z).continuousAt)
 
-theorem continuousOn_complexLaplaceTransform_interior_convergenceDomain
+lemma continuousOn_complexLaplaceTransform_interior_convergenceDomain
     {α : Type*} [MeasureTheory.MeasureSpace α] {E : α → WithTop ℝ} :
     ContinuousOn (ComplexLaplaceTransform E) (interior (ComplexLaplaceConvergenceDomain E)) := by
   intro z hz
   exact (continuousAt_complexLaplaceTransform_of_mem_interior_convergenceDomain hz).continuousWithinAt
 
-private theorem integrable_uncurry_complexLaplaceIntegrand_horizontal
+private lemma integrable_uncurry_complexLaplaceIntegrand_horizontal
     {α : Type*} [MeasureTheory.MeasureSpace α]
     [MeasureTheory.SFinite (MeasureTheory.volume : MeasureTheory.Measure α)] {E : α → WithTop ℝ}
     {a b : ℂ}
@@ -232,7 +232,7 @@ private theorem integrable_uncurry_complexLaplaceIntegrand_horizontal
   exact Filter.Eventually.of_forall fun x =>
     norm_complexLaplaceIntegrand_horizontal_le_endpointEnvelope (Set.uIoc_subset_uIcc ht) x
 
-private theorem integrable_uncurry_complexLaplaceIntegrand_vertical
+private lemma integrable_uncurry_complexLaplaceIntegrand_vertical
     {α : Type*} [MeasureTheory.MeasureSpace α]
     [MeasureTheory.SFinite (MeasureTheory.volume : MeasureTheory.Measure α)] {E : α → WithTop ℝ}
     {a b : ℂ}
@@ -261,7 +261,7 @@ private theorem integrable_uncurry_complexLaplaceIntegrand_vertical
   exact Filter.Eventually.of_forall fun p =>
     norm_complexLaplaceIntegrand_vertical_le_endpointEnvelope (a := a) (b := b) (t := p.1) p.2
 
-private theorem wedgeIntegral_complexLaplaceTransform_eq_integral
+private lemma wedgeIntegral_complexLaplaceTransform_eq_integral
     {α : Type*} [MeasureTheory.MeasureSpace α]
     [MeasureTheory.SFinite (MeasureTheory.volume : MeasureTheory.Measure α)] {E : α → WithTop ℝ}
     {a b : ℂ}

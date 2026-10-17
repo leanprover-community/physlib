@@ -142,7 +142,7 @@ section kraus_exists
 
 variable [CommSemiring R] [StarRing R] [Fintype B]
 
-theorem exists_kraus (Φ : MatrixMap A B R) :
+lemma exists_kraus (Φ : MatrixMap A B R) :
     ∃ r : ℕ, ∃ (M N : Fin r → Matrix B A R), Φ = of_kraus M N := by
   classical
   let K := ((B × A) × A) × B
@@ -189,11 +189,11 @@ def submatrix (f : B → A) : MatrixMap A B R where
   map_smul' := by simp [Matrix.submatrix_smul]
 
 @[simp]
-theorem submatrix_id : submatrix R _root_.id = id A R := by
+lemma submatrix_id : submatrix R _root_.id = id A R := by
   ext1; simp
 
 @[simp]
-theorem submatrix_comp (f : C → B) (g : B → A) :
+lemma submatrix_comp (f : C → B) (g : B → A) :
     submatrix R f ∘ₗ submatrix R g = submatrix R (g ∘ f) := by
   ext1; simp
 
@@ -283,28 +283,28 @@ theorem kron_def [CommSemiring R] (M₁ : MatrixMap A B R) (M₂ : MatrixMap C D
 section kron_lemmas
 variable [CommSemiring R]
 
-theorem add_kron (ML₁ ML₂ : MatrixMap A B R) (MR : MatrixMap C D R) : (ML₁ + ML₂) ⊗ₖₘ MR = ML₁ ⊗ₖₘ MR + ML₂ ⊗ₖₘ MR := by
+lemma add_kron (ML₁ ML₂ : MatrixMap A B R) (MR : MatrixMap C D R) : (ML₁ + ML₂) ⊗ₖₘ MR = ML₁ ⊗ₖₘ MR + ML₂ ⊗ₖₘ MR := by
   simp [kron, TensorProduct.map_add_left, Matrix.submatrix_add]
 
-theorem kron_add (ML : MatrixMap A B R) (MR₁ MR₂ : MatrixMap C D R) : ML ⊗ₖₘ (MR₁ + MR₂) = ML ⊗ₖₘ MR₁ + ML ⊗ₖₘ  MR₂ := by
+lemma kron_add (ML : MatrixMap A B R) (MR₁ MR₂ : MatrixMap C D R) : ML ⊗ₖₘ (MR₁ + MR₂) = ML ⊗ₖₘ MR₁ + ML ⊗ₖₘ  MR₂ := by
   simp [kron, TensorProduct.map_add_right, Matrix.submatrix_add]
 
-theorem smul_kron (r : R) (ML : MatrixMap A B R) (MR : MatrixMap C D R) : (r • ML) ⊗ₖₘ MR = r • (ML ⊗ₖₘ MR) := by
+lemma smul_kron (r : R) (ML : MatrixMap A B R) (MR : MatrixMap C D R) : (r • ML) ⊗ₖₘ MR = r • (ML ⊗ₖₘ MR) := by
   simp [kron, TensorProduct.map_smul_left, Matrix.submatrix_smul]
 
-theorem kron_smul (r : R) (ML : MatrixMap A B R) (MR : MatrixMap C D R) : ML ⊗ₖₘ (r • MR) = r • (ML ⊗ₖₘ MR) := by
+lemma kron_smul (r : R) (ML : MatrixMap A B R) (MR : MatrixMap C D R) : ML ⊗ₖₘ (r • MR) = r • (ML ⊗ₖₘ MR) := by
   simp [kron, TensorProduct.map_smul_right, Matrix.submatrix_smul]
 
 @[simp]
-theorem zero_kron (MR : MatrixMap C D R) : (0 : MatrixMap A B R) ⊗ₖₘ MR = 0 := by
+lemma zero_kron (MR : MatrixMap C D R) : (0 : MatrixMap A B R) ⊗ₖₘ MR = 0 := by
   simp [kron]
 
 @[simp]
-theorem kron_zero (ML : MatrixMap A B R) : ML ⊗ₖₘ (0 : MatrixMap C D R) = 0 := by
+lemma kron_zero (ML : MatrixMap A B R) : ML ⊗ₖₘ (0 : MatrixMap C D R) = 0 := by
   simp [kron]
 
 variable [DecidableEq B] in
-theorem kron_id_id : (id A R ⊗ₖₘ id B R) = id (A × B) R := by
+lemma kron_id_id : (id A R ⊗ₖₘ id B R) = id (A × B) R := by
   simp [kron]
 
 variable {Dl₁ Dl₂ Dl₃ Dr₁ Dr₂ Dr₃ : Type*}
@@ -359,7 +359,7 @@ theorem kron_map_of_kron_state [CommRing R] (M₁ : MatrixMap A B R) (M₂ : Mat
       exact congr_arg _ (by ext; simp [Matrix.single])
     simp [h_expand, Matrix.sum_apply]
 
-theorem choi_matrix_state_rep {B : Type*} [Fintype B] [Nonempty A] (M : MatrixMap A B ℂ) :
+lemma choi_matrix_state_rep {B : Type*} [Fintype B] [Nonempty A] (M : MatrixMap A B ℂ) :
     M.choi_matrix = (↑(Fintype.card (α := A)) : ℂ) • (M ⊗ₖₘ (LinearMap.id : MatrixMap A A ℂ)) (MState.pure (Ket.MES A)).m := by
   ext i j
   simp [choi_matrix, kron_def M, Ket.MES, Ket.apply, Finset.mul_sum]
@@ -385,17 +385,17 @@ theorem choi_matrix_state_rep {B : Type*} [Fintype B] [Nonempty A] (M : MatrixMa
       simp [Finset.sum_ite]
     simp [Finset.sum_ite]
 
-theorem submatrix_kron_submatrix [CommSemiring R] (f : B → A) (g : D → C) :
+lemma submatrix_kron_submatrix [CommSemiring R] (f : B → A) (g : D → C) :
     submatrix R f ⊗ₖₘ submatrix R g = submatrix R (Prod.map f g) := by
   ext m i j
   rw [kron_def]
   simp [Prod.map, Matrix.single, ite_and]
 
-theorem submatrix_kron_id [CommSemiring R] (f : B → A) :
+lemma submatrix_kron_id [CommSemiring R] (f : B → A) :
     submatrix R f ⊗ₖₘ id C R = submatrix R (Prod.map f _root_.id) := by
   simp [← submatrix_kron_submatrix]
 
-theorem id_kron_submatrix [CommSemiring R] (f : B → A) :
+lemma id_kron_submatrix [CommSemiring R] (f : B → A) :
     id C R ⊗ₖₘ submatrix R f = submatrix R (Prod.map _root_.id f) := by
   simp [← submatrix_kron_submatrix]
 
@@ -420,7 +420,7 @@ noncomputable def piProd (Λi : ∀ i, MatrixMap (dI i) (dO i) R) : MatrixMap (�
         (_root_.Basis.piTensorProduct (fun i ↦ Matrix.stdBasis R (dO i) (dO i)))
         (PiTensorProduct.map Λi)))
 
-theorem choi_matrix_piProd (Λi : ∀ i, MatrixMap (dI i) (dO i) R) :
+lemma choi_matrix_piProd (Λi : ∀ i, MatrixMap (dI i) (dO i) R) :
     (MatrixMap.piProd Λi).choi_matrix =
       Matrix.reindex
         (Equiv.arrowProdEquivProdArrow ι dO dI)
@@ -455,7 +455,7 @@ theorem piProd_comp
   simp [piProd, PiTensorProduct.map_comp, ← Matrix.toLin_mul, ← LinearMap.toMatrix_comp]
 
 @[simp]
-theorem piProd_id :
+lemma piProd_id :
     piProd (fun i ↦ (LinearMap.id : MatrixMap (dI i) (dI i) R)) = LinearMap.id := by
   simp [piProd, PiTensorProduct.map_id, LinearMap.toMatrix_id_eq_basis_toMatrix,
     Module.Basis.toMatrix_self, Matrix.reindex_apply, Matrix.submatrix_one_equiv,

@@ -13,6 +13,8 @@ public import Mathlib.RingTheory.PowerSeries.Binomial
 
 # Positive elements of `C(a)`
 
+Nonnegative elements of `C(a)` are squares, and positive units form the cone's interior.
+
 ## i. Overview
 
 In `C(a)` every nonnegative element has a square root, given by the binomial series of `√(1 - x)`,
@@ -26,6 +28,19 @@ invertible and nonnegative exactly when it lies in the interior of the positive 
   squares.
 - `JBAlgebra.ClosedGeneratedByOne.isUnit_iff_mem_interior_positiveCone` : the positive invertible
   elements are the interior of the cone.
+- `JBAlgebra.ClosedGeneratedByOne.halfBinomialSqrt_mul_self` : the series squares to `1 - z`
+  for `‖z‖ ≤ 1`.
+- `JBAlgebra.ClosedGeneratedByOne.isUnit_aeval_completed_square` : `(x - c)² + d²` is a unit
+  for `d ≠ 0`.
+
+## iii. Table of contents
+
+- A. The binomial square-root series
+- B. Square roots and invertibility of positive elements
+
+## iv. References
+
+* None.
 
 -/
 
@@ -43,6 +58,12 @@ open scoped Topology
 namespace ClosedGeneratedByOne
 
 variable (a : E)
+
+/-!
+
+## A. The binomial square-root series
+
+-/
 
 section
 
@@ -261,6 +282,12 @@ lemma halfBinomialSqrt_mul_self [Nontrivial E] (z : ClosedGeneratedByOne a) (hz 
     simp [hn0, hn1]
 
 end
+
+/-!
+
+## B. Square roots and invertibility of positive elements
+
+-/
 
 section
 

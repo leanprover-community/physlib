@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Special.ProperTime
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Causality.CausallyFollows
+public import Physlib.Relativity.Causality.CausallyFollows
 /-!
 # Twin Paradox
 

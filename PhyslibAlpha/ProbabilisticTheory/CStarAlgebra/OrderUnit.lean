@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Star.SelfAdjoint
 
 # The observables of a C⋆-algebra
 
+The self-adjoint part of a unital C⋆-algebra is an Archimedean order-unit space.
+
 ## i. Overview
 
 The self-adjoint elements of a unital C⋆-algebra form an Archimedean order-unit space with unit `1`.
@@ -23,6 +25,15 @@ Every self-adjoint `a` lies below `‖a‖ • 1`, and the positive cone is clos
 - `selfAdjoint.instIsOrderUnit` : the order-unit space of observables.
 - `selfAdjoint.instIsArchimedeanOrderUnit` : it is Archimedean.
 
+## iii. Table of contents
+
+- A. Positive scalars
+- B. The order-unit space of observables
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -32,6 +43,12 @@ variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 namespace selfAdjoint
 open ProbabilisticTheory
 
+/-!
+
+## A. Positive scalars
+
+-/
+
 /-- Nonnegative real scalars preserve the order on self-adjoint elements: scaling by a
 nonnegative real is the same as multiplying by a nonnegative (central) algebra element, and a
 nonnegative element times a nonnegative element that commutes with it stays nonnegative. -/
@@ -40,6 +57,12 @@ instance instPosSMulMono : PosSMulMono ℝ (selfAdjoint A) where
     show (c : ℝ) • (a : A) ≤ (c : ℝ) • (b : A)
     have hab' : (a : A) ≤ (b : A) := hab
     gcongr
+
+/-!
+
+## B. The order-unit space of observables
+
+-/
 
 noncomputable instance instIsOrderUnit : OrderUnitSpace (selfAdjoint A) where
   one_nonneg := by

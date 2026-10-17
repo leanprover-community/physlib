@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.SelfAdjoint
 
 # Restricting positive maps
 
+Restricting positive linear maps to submodules and to the self-adjoint elements.
+
 ## i. Overview
 
 A positive linear map restricts to submodules, in particular to the self-adjoint elements, where a
@@ -22,11 +24,23 @@ complex state becomes a real one.
 - `PositiveLinearMap.restrict`, `UnitalPositiveLinearMap.restrict` : restriction to a submodule.
 - `UnitalPositiveLinearMap.restrictSA` : restriction to self-adjoint elements.
 
+## iii. Table of contents
+
+- A. Restriction to submodules
+- B. Positive maps on self-adjoint elements
+- C. Unital positive maps on self-adjoint elements
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-! ## A. Restriction to submodules -/
 
 section Restrict
 
@@ -59,6 +73,8 @@ def UnitalPositiveLinearMap.restrict (f : E₁ →ₚ₁[R] E₂) {F₁ : Submod
 end Restrict
 
 end ProbabilisticTheory
+
+/-! ## B. Positive maps on self-adjoint elements -/
 
 section SelfAdjoint
 open ProbabilisticTheory
@@ -112,6 +128,8 @@ end Complex
 end PositiveLinearMap
 
 end SelfAdjoint
+
+/-! ## C. Unital positive maps on self-adjoint elements -/
 
 namespace ProbabilisticTheory
 

@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Measurement.Postprocessing
 /-!
 # Compatibility of measurements
 
+Compatible and jointly measurable measurements, with an order criterion for binary ones.
+
 ## i. Overview
 
 Two measurements are compatible when both can be obtained from one measurement by classical
@@ -36,6 +38,10 @@ and below `e` and `f`: `g` is the effect of both outcomes being `true`.
 - A. Compatibility of measurements
 - B. Joint measurements
 - C. Binary compatibility
+
+## iv. References
+
+* None.
 
 -/
 

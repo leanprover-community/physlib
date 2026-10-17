@@ -6,7 +6,7 @@ Authors: Zhi Kai Pong, Joseph Tooby-Smith, Lode Vermeulen
 module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Physlib.Mathematics.Distribution.Basic
+public import Physlib.Mathematics.Distribution.TemperedDistribution
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
@@ -103,7 +103,7 @@ open Manifold in
 lemma deriv_eq_mfderiv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ : Fin d) (f : Space d → M) (x : Space d) :
     deriv μ f x = mfderiv 𝓘(ℝ, Space d) 𝓘(ℝ, M) f x (basis μ) := by
-  rw [deriv_eq_fderiv_basis, ← mfderiv_eq_fderiv]
+  rw [deriv_eq_fderiv_basis, mfderiv_eq_fderiv]
   rfl
 
 open Manifold in
@@ -219,9 +219,9 @@ lemma deriv_commute [NormedAddCommGroup M] [NormedSpace ℝ M]
   simp only [deriv_eq_fderiv_fun]
   ext x
   rw [fderiv_clm_apply, fderiv_clm_apply]
-  simp only [fderiv_fun_const, Pi.ofNat_apply, ContinuousLinearMap.comp_zero, zero_add,
+  · simp only [fderiv_fun_const, Pi.ofNat_apply, ContinuousLinearMap.comp_zero, zero_add,
     ContinuousLinearMap.flip_apply]
-  rw [(hf.contDiffAt.isSymmSndFDerivAt (by simp)).eq]
+    rw [(hf.contDiffAt.isSymmSndFDerivAt (by simp)).eq]
   repeat fun_prop
 
 /-!

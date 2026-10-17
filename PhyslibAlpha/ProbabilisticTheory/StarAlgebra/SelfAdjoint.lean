@@ -14,6 +14,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 
 # Self-adjoint elements
 
+Relating the predicate, subgroup and submodule descriptions of self-adjoint elements.
+
 ## i. Overview
 
 Mathlib describes self-adjointness by the predicate `IsSelfAdjoint`, the additive subgroup
@@ -24,12 +26,25 @@ Mathlib describes self-adjointness by the predicate `IsSelfAdjoint`, the additiv
 - `selfAdjoint.submoduleEquiv` : the subgroup and the submodule of self-adjoint elements agree.
 - `selfAdjoint.submoduleUPLM` : the corresponding channel.
 
+## iii. Table of contents
+
+- A. Membership in the self-adjoint part
+- B. Forgetting the submodule structure
+- C. The unit and unital maps
+- D. Self-adjoint complex numbers
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace selfAdjoint
 open ProbabilisticTheory
+
+/-! ## A. Membership in the self-adjoint part -/
 
 @[simp]
 lemma mem_selfAdjoint_iff_isSelfAdjoint {R : Type*} [AddGroup R] [StarAddMonoid R] (x : R) :
@@ -41,6 +56,8 @@ variable {R A : Type*} [Semiring R] [StarMul R] [TrivialStar R]
 @[simp]
 lemma submodule_mem_iff {x : A} : (x ∈ submodule R A) ↔ (x ∈ selfAdjoint A) := by
   rfl
+
+/-! ## B. Forgetting the submodule structure -/
 
 /-- The linear equivalence that forgets the `Submodule` structure on self-adjoint elements. -/
 @[simps!]
@@ -62,6 +79,8 @@ variable (R) in
 @[simps!]
 def submodulePLMSymm : selfAdjoint A →ₚ[R] submodule R A :=
   { selfAdjoint.submoduleEquiv.symm.toLinearMap with monotone' a b hab := by simpa }
+
+/-! ## C. The unit and unital maps -/
 
 variable {R A : Type*} [Semiring R] [StarMul R] [TrivialStar R]
   [Ring A] [StarRing A] [Module R A] [StarModule R A]
@@ -89,6 +108,8 @@ def submoduleUPLMSymm : selfAdjoint A →ₚ₁[R] submodule R A :=
     map_one' := rfl }
 
 end selfAdjoint
+
+/-! ## D. Self-adjoint complex numbers -/
 
 namespace ProbabilisticTheory
 

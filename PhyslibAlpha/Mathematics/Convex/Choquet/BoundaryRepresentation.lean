@@ -11,6 +11,8 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 /-!
 # Representations by measures on a boundary
 
+Boundary representations of points by regular probability measures, and simplices.
+
 ## i. Overview
 
 A family of real-valued tests observes points of a space `X`. A boundary representation of a
@@ -33,6 +35,10 @@ boundary decomposition.
 
 - A. Boundary representations
 - B. Simplices
+
+## iv. References
+
+* None.
 
 -/
 

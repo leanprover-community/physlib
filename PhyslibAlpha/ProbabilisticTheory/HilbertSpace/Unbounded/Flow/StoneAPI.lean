@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Flow.Stone
 
 # The generator of the unitary group
 
+The domain of T is the set of vectors with differentiable orbit under exp(i t T).
+
 ## i. Overview
 
 A vector is in the domain of a self-adjoint operator `T` exactly when its orbit under `exp(i t T)`
@@ -20,6 +22,15 @@ is differentiable at `0`, and the derivative is then `i T x`.
 
 - `mem_domain_iff_expUnitaryGroup_hasDerivAt` : the domain in terms of differentiable orbits.
 - `expUnitaryGroup_hasDerivAt_iff` : the derivative of an orbit is `i T x`.
+
+## iii. Table of contents
+
+- A. The derivative at zero
+- B. The derivative at an arbitrary time
+
+## iv. References
+
+* None.
 
 -/
 
@@ -44,6 +55,12 @@ variable (D : DomainAwareSelfAdjointSpectralTheorem T μS)
 
 include D
 
+/-!
+
+## A. The derivative at zero
+
+-/
+
 /-- If the orbit is differentiable at zero, its derivative is forced by the operator. -/
 lemma expUnitaryGroup_hasDerivAt_zero_iff (x : H) (y : H) :
     HasDerivAt (fun t : ℝ => D.expUnitaryGroup t x) y 0 ↔
@@ -64,6 +81,12 @@ lemma expUnitaryGroup_hasDerivAt_zero_iff (x : H) (y : H) :
     exact ⟨hx, heq⟩
   · rintro ⟨hx, rfl⟩
     exact D.expUnitaryGroup_hasDerivAt_zero ⟨x, hx⟩
+
+/-!
+
+## B. The derivative at an arbitrary time
+
+-/
 
 /-- The generator domain is independent of the time at which differentiability is tested.  This
 is the orbit-level form of Stone's theorem used by evolution arguments. -/

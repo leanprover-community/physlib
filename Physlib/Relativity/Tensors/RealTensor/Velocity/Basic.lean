@@ -72,6 +72,26 @@ lemma norm_spatialPart_sq_eq (v : Velocity d) :
   rw [minkowskiProduct_self_eq_timeComponent_spatialPart]
   simp [timeComponent]
 
+/-- A bound on the proper norm of a vector orthogonal to a unit future
+four-velocity controls its spatial norm in the chosen frame. -/
+lemma norm_spatialPart_le_of_orthogonal (u : Velocity d) (A : Vector d)
+    {C : ℝ} (hC : 0 ≤ C) (horth : ⟪u.1, A⟫ₘ = 0) (hacc : -⟪A, A⟫ₘ ≤ C ^ 2) :
+    ‖A.spatialPart‖ ≤ C * u.1.timeComponent := by
+  have hunit := minkowskiProduct_self_eq_one u
+  rw [Vector.minkowskiProduct_self_eq_sq_sub] at hunit
+  rw [Vector.minkowskiProduct_eq_timeComponent_spatialPart, sub_eq_zero] at horth
+  rw [Vector.minkowskiProduct_self_eq_sq_sub] at hacc
+  have hcs := real_inner_mul_inner_self_le u.1.spatialPart A.spatialPart
+  simp only [real_inner_self_eq_norm_sq] at hcs
+  have horthsq := congrArg (fun x : ℝ => x ^ 2) horth
+  have hacc' := mul_le_mul_of_nonneg_left hacc (sq_nonneg u.1.timeComponent)
+  have hunit' := congrArg (fun x : ℝ => x * ‖A.spatialPart‖ ^ 2) hunit
+  have hb : ‖A.spatialPart‖ ^ 2 ≤ C ^ 2 * u.1.timeComponent ^ 2 := by
+    nlinarith [horthsq, hunit']
+  apply (sq_le_sq₀ (norm_nonneg A.spatialPart)
+    (mul_nonneg hC (timeComponent_nonneg u))).mp
+  nlinarith [hb]
+
 lemma zero_le_minkowskiProduct (u v : Velocity d) :
     0 ≤ ⟪u.1, v.1⟫ₘ := by
   trans ‖u.1.timeComponent‖ * ‖v.1.timeComponent‖ - ‖u.1.spatialPart‖ * ‖v.1.spatialPart‖
@@ -140,7 +160,7 @@ noncomputable def pathFromZero (u : Velocity d) : Path zero u where
         simp only [Fin.isValue, x]
         ring_nf
         rw [Real.sq_sqrt, norm_spatialPart_sq_eq]
-        ring
+        · ring
         · apply add_nonneg
           · exact zero_le_one' ℝ
           · apply mul_nonneg

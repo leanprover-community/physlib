@@ -9,9 +9,50 @@ public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 /-!
 # Quantum harmonic oscillator
+
+Ladder operators, commutation relation and coherent states of the quantum harmonic oscillator.
+
+## i. Overview
+
+The one-dimensional quantum harmonic oscillator in the number basis, with states modelled as
+sequences `ℕ → ℂ`. The annihilation operator `a` and creation operator `a_dag` act by
+`a |n + 1⟩ = √(n + 1) |n⟩` and `a† |n⟩ = √(n + 1) |n + 1⟩`, and satisfy the canonical commutation
+relation `a a† - a† a = 1`. The coherent states are the eigenvectors of `a`; their number
+distribution is Poisson, and they lie in `ℓ²`. The creation operator has no eigenvectors.
+
+## ii. Key results
+
+- `a`, `a_dag` : the annihilation and creation operators.
+- `aLin`, `a_dagLin` : the annihilation and creation operators as linear maps.
+- `commutation_relation`, `commutationRelation` : the canonical commutation relation.
+- `coherentState` : the coherent state with parameter `α`.
+- `probabilityOf_eq_poisson_C` : a coherent state has a Poisson number distribution.
+- `coherentState_only_eigenvector` : the only eigenvectors of `a` are the coherent states.
+- `no_a_dag_eigenvector` : `a_dag` has no nonzero eigenvectors.
+- `coherentState_ℓ2` : the coherent state as an element of `ℓ²(ℂ)`.
+
+## iii. Table of contents
+
+- A. The ladder operators
+- B. Matrix elements and the commutation relation
+- C. Coherent states
+- D. Eigenvectors of the creation operator
+- E. The commutation relation for linear maps
+- F. Coherent states in ℓ²
+
+## iv. References
+
+* None.
+
 -/
 
 noncomputable section
+
+/-!
+
+## A. The ladder operators
+
+-/
 
 /-- Annihilation operator. -/
 def a (x : ℕ → ℂ) : ℕ → ℂ := fun n => √(n + 1) * x (n + 1)
@@ -51,6 +92,12 @@ def a_dagLin : (ℕ → ℂ) →ₗ[ℂ] (ℕ → ℂ) := {
     simp only [Pi.smul_apply, smul_eq_mul, RingHom.id_apply, mul_ite, mul_zero]
     ring_nf
 }
+
+/-!
+
+## B. Matrix elements and the commutation relation
+
+-/
 
 def ε (n : ℕ) (c : ℂ) : ℕ → ℂ := fun i => ite (i = n) c 0
 
@@ -134,6 +181,12 @@ lemma commutation_relation :
     · norm_cast
       refine Real.mul_self_sqrt ?_
       simp
+
+/-!
+
+## C. Coherent states
+
+-/
 
 def coherentState (α : ℂ) : ℕ → ℂ :=
     fun n : ℕ => Real.exp (-‖α‖^2 / 2) * α ^ n / √(n.factorial)
@@ -290,6 +343,12 @@ lemma distinct_eigenvectors_a (α β c : ℂ)
   field_simp at h₁
   exact h₁
 
+/-!
+
+## D. Eigenvectors of the creation operator
+
+-/
+
 /-- Formal eigenvectors for `a_dag` (not in `ℓ²(ℂ)`)
 (fails at n=0) . -/
 lemma a_dagalmost_eigenvector {α : ℂ} (hα : α ≠ 0) {n : ℕ} (hn : n ≠ 0) :
@@ -355,6 +414,12 @@ lemma no_a_dag_eigenvector (α : ℂ) (v : ℕ → ℂ) :
   simp
   rfl
 
+/-!
+
+## E. The commutation relation for linear maps
+
+-/
+
 lemma commutationRelation : ⁅aLin, a_dagLin⁆ = 1 := by
   simp only [Bracket.bracket]
   unfold aLin a_dagLin
@@ -363,6 +428,12 @@ lemma commutationRelation : ⁅aLin, a_dagLin⁆ = 1 := by
   rw [← commutation_relation]
   simp
 
+
+/-!
+
+## F. Coherent states in ℓ²
+
+-/
 
 /-- The `coherentState` with parameter `0` is just the first basis vector. -/
 example : coherentState 0 = fun n => ite (n = 0) 1 0 := by

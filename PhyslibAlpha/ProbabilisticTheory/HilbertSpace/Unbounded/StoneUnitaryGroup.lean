@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.BoundedInt
 
 # The unitary group of a spectral measure
 
+The strongly continuous unitary group `t ↦ exp(i t T)` obtained from a spectral measure on `ℝ`.
+
 ## i. Overview
 
 For a spectral measure `μ` on `ℝ`, integrating `λ ↦ exp(i t λ)` gives unitaries `exp(i t T)` with
@@ -18,7 +20,11 @@ For a spectral measure `μ` on `ℝ`, integrating `λ ↦ exp(i t λ)` gives uni
 
 ## ii. Key results
 
+- `expFunction` : the bounded function `λ ↦ exp(i t λ)`.
 - `expIntegral` : the unitary `exp(i t T)`.
+- `expIntegral_add` : `exp(i (t + s) T) = exp(i t T) exp(i s T)`.
+- `expIntegral_mem_unitary` : each `exp(i t T)` is unitary.
+- `expIntegral_continuous` : `t ↦ exp(i t T) x` is continuous.
 - `StrongUnitaryOneParameterGroup` : a strongly continuous one-parameter unitary group.
 - `expUnitaryGroup` : the unitary group of a spectral measure.
 
@@ -26,6 +32,10 @@ For a spectral measure `μ` on `ℝ`, integrating `λ ↦ exp(i t λ)` gives uni
 
 - A. The exponential multiplier
 - B. The unitary group and its strong continuity
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import Mathlib.Logic.Function.Basic
 
 # One-parameter groups
 
+Defines one-parameter groups `α : ℝ → E → E` satisfying `α 0 = id` and the group law.
+
 ## i. Overview
 
 A one-parameter group is a family `α : ℝ → E → E` with `α 0 = id` and `α (s + t) = α s ∘ α t`. It is
@@ -24,6 +26,10 @@ stated for an arbitrary type `E`; preservation of structure and continuity are s
 ## iii. Table of contents
 
 - A. The group law
+
+## iv. References
+
+* None.
 
 -/
 

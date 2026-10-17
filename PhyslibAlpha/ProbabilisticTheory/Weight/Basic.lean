@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 /-!
 # Weights
 
+Weights: additive, possibly infinite maps on the positive cone; states are finite normalized ones.
+
 ## i. Overview
 
 A state assigns each positive observable a nonnegative expectation value, normalized so the certain

@@ -12,6 +12,8 @@ public import PhyslibAlpha.Mathematics.Order.PositiveDual.Basic
 
 # The unit of an order-unit space as an order unit
 
+The unit of an order-unit space is an order unit, so weight-zero positive functionals vanish.
+
 ## i. Overview
 
 The unit of an order-unit space is an order unit of the underlying ordered vector space, so the
@@ -28,6 +30,10 @@ functional that vanishes on the unit vanishes everywhere.
 
 - A. The unit as an order unit
 - B. Positive functionals
+
+## iv. References
+
+* None.
 
 -/
 

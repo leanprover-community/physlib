@@ -121,16 +121,16 @@ open InnerProductSpace
 
 open scoped Topology BigOperators FourierTransform
 
-lemma normPowerSeries_tendsto {d} (x : Space d) (hx : x ≠ 0) :
+lemma normPowerSeries_tendsto {d} (x : Space d) :
     Filter.Tendsto (fun n => normPowerSeries n x) Filter.atTop (𝓝 (‖x‖)) := by
   have h := (Real.continuous_sqrt.tendsto _).comp
     ((tendsto_const_nhds (x := ‖x‖ ^ 2)).add (tendsto_one_div_add_atTop_nhds_zero_nat (𝕜 := ℝ)))
   simpa only [normPowerSeries_eq, Function.comp_def, add_zero,
-    Real.sqrt_sq (norm_pos_iff.mpr hx).le] using h
+    Real.sqrt_sq (norm_nonneg x)] using h
 
 lemma normPowerSeries_inv_tendsto {d} (x : Space d) (hx : x ≠ 0) :
     Filter.Tendsto (fun n => (normPowerSeries n x)⁻¹) Filter.atTop (𝓝 (‖x‖⁻¹)) :=
-  (normPowerSeries_tendsto x hx).inv₀ (norm_ne_zero_iff.mpr hx)
+  (normPowerSeries_tendsto x).inv₀ (norm_ne_zero_iff.mpr hx)
 
 /-!
 
@@ -161,16 +161,23 @@ lemma fderiv_normPowerSeries {d} (n : ℕ) (x y : Space d) :
 
 -/
 
-lemma deriv_normPowerSeries_tendsto {d} (x : Space d) (hx : x ≠ 0) (i : Fin d) :
+/-- The coordinate derivatives of `normPowerSeries` converge pointwise, including at zero. -/
+lemma deriv_normPowerSeries_tendsto {d} (x : Space d) (i : Fin d) :
     Filter.Tendsto (fun n => ∂[i] (normPowerSeries n) x) Filter.atTop (𝓝 (x i * (‖x‖)⁻¹)) := by
   simp only [deriv_normPowerSeries]
-  exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
+  by_cases hx : x = 0
+  · simp [hx]
+  · exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
 
-lemma fderiv_normPowerSeries_tendsto {d} (x y : Space d) (hx : x ≠ 0) :
+/-- For every fixed direction, the derivatives of `normPowerSeries` converge pointwise,
+including at zero. -/
+lemma fderiv_normPowerSeries_tendsto {d} (x y : Space d) :
     Filter.Tendsto (fun n => fderiv ℝ (fun (x : Space d) => normPowerSeries n x) x y)
       Filter.atTop (𝓝 (⟪y, x⟫_ℝ * (‖x‖)⁻¹)) := by
   simp only [fderiv_normPowerSeries]
-  exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
+  by_cases hx : x = 0
+  · simp [hx]
+  · exact tendsto_const_nhds.mul (normPowerSeries_inv_tendsto x hx)
 
 /-!
 
@@ -450,7 +457,7 @@ lemma gradient_dist_normPowerSeries_zpow_tendsTo_distGrad_norm {d : ℕ} [NeZero
       (normPowerSeries_zpow_le_norm_sq_add_one n m x hx) (abs_nonneg _)
   · filter_upwards [Measure.ae_ne volume 0] with x hx
     exact tendsto_const_nhds.mul
-      ((normPowerSeries_tendsto x hx).zpow₀ m (.inl (norm_ne_zero_iff.mpr hx)))
+      ((normPowerSeries_tendsto x).zpow₀ m (.inl (norm_ne_zero_iff.mpr hx)))
 
 lemma gradient_dist_normPowerSeries_zpow_tendsTo {d : ℕ} [NeZero d] (m : ℤ)
     (hm : - (d - 1 : ℕ) + 1 ≤ m)
@@ -523,7 +530,7 @@ lemma gradient_dist_normPowerSeries_zpow_tendsTo {d : ℕ} [NeZero d] (m : ℤ)
       ring
     rw [h2]
     exact tendsto_const_nhds.mul (tendsto_const_nhds.mul (tendsto_const_nhds.mul
-      ((normPowerSeries_tendsto x hx).zpow₀ _ (.inl (norm_ne_zero_iff.mpr hx)))))
+      ((normPowerSeries_tendsto x).zpow₀ _ (.inl (norm_ne_zero_iff.mpr hx)))))
 
 /-!
 
@@ -599,7 +606,7 @@ lemma gradient_dist_normPowerSeries_log_tendsTo_distGrad_norm {d : ℕ} (hd : 2 
     exact mul_le_mul_of_nonneg_left (normPowerSeries_log_le n x hx) (abs_nonneg _)
   · filter_upwards [Measure.ae_ne volume 0] with x hx
     exact tendsto_const_nhds.mul
-      ((normPowerSeries_tendsto x hx).log (norm_ne_zero_iff.mpr hx))
+      ((normPowerSeries_tendsto x).log (norm_ne_zero_iff.mpr hx))
 
 lemma gradient_dist_normPowerSeries_log_tendsTo {d : ℕ} (hd : 2 ≤ d)
     (η : 𝓢(Space d, ℝ)) (y : EuclideanSpace ℝ (Fin d)) :
@@ -651,7 +658,7 @@ lemma gradient_dist_normPowerSeries_log_tendsTo {d : ℕ} (hd : 2 ≤ d)
       ring
     rw [h2]
     exact tendsto_const_nhds.mul (tendsto_const_nhds.mul
-      ((normPowerSeries_tendsto x hx).zpow₀ _ (.inl (norm_ne_zero_iff.mpr hx))))
+      ((normPowerSeries_tendsto x).zpow₀ _ (.inl (norm_ne_zero_iff.mpr hx))))
 
 /-!
 

@@ -11,6 +11,8 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 /-!
 # Sharp effects
 
+Sharp effects: extreme points of the effect interval, preserved by taking complements.
+
 ## i. Overview
 
 The effect interval `[0, 1]` is convex. A sharp effect is an extreme point of it: one that cannot
@@ -25,6 +27,10 @@ be written as a nontrivial mixture of two distinct effects. Sharp effects genera
 ## iii. Table of contents
 
 - A. Sharp effects
+
+## iv. References
+
+* None.
 
 -/
 

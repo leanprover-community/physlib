@@ -35,7 +35,7 @@ lemma contrCoUnitVal_expand_tmul : contrCoUnitVal =
     + complexContrBasis (Sum.inr 1) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 1)
     + complexContrBasis (Sum.inr 2) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 2) := by
   simp only [contrCoUnitVal, Fin.isValue]
-  erw [contrCoToMatrix_symm_expand_tmul]
+  rw [contrCoToMatrix_symm_expand_tmul]
   simp only [Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
     Finset.sum_singleton, Fin.sum_univ_three, ne_eq, reduceCtorEq, not_false_eq_true, one_apply_ne,
     zero_smul, add_zero, one_apply_eq, one_smul, zero_add, Sum.inr.injEq, zero_ne_one, Fin.reduceEq,

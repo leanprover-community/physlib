@@ -257,7 +257,7 @@ private lemma conj_le_conj {X Y T : L ℋ} (hXY : X ≤ Y) (hT : IsSelfAdjoint T
 
 set_option maxHeartbeats 800000 in
 -- The generalized-perspective normalization expands several nested CFC products.
-private theorem theorem_2_5_forward_jointlyConvexOn_psd_pd_of_condV
+private lemma theorem_2_5_forward_jointlyConvexOn_psd_pd_of_condV
     {f h : ℝ → ℝ}
     (hcoreV : CondV (ℋ := ℋ) f)
     (hconc : OperatorConcaveOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) h)
@@ -449,7 +449,7 @@ private theorem theorem_2_5_forward_jointlyConvexOn_psd_pd_of_condV
   simpa [hleft, hright] using houter
 
 -- Restricted forward form of Theorem 2.5 on the positive cone.
-theorem theorem_2_5_forward_jointlyConvexOn_psd_pd
+lemma theorem_2_5_forward_jointlyConvexOn_psd_pd
     {f h : ℝ → ℝ}
     (hf : CondIAll.{u} f)
     (hconc : OperatorConcaveOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) h)
@@ -462,7 +462,7 @@ theorem theorem_2_5_forward_jointlyConvexOn_psd_pd
     (ℋ := ℋ) (f := f) (h := h) hcoreV hconc hcont hpos
 
 -- Restricted localized forward form of Theorem 2.5 on the positive cone.
-theorem theorem_2_5_forward_jointlyConvexOn_psd_pd_Ici
+lemma theorem_2_5_forward_jointlyConvexOn_psd_pd_Ici
     {f h : ℝ → ℝ}
     (hf : CondIciAll.{u} f)
     (hconc : OperatorConcaveOn (ℋ := ℋ) (Set.Ioi (0 : ℝ)) h)

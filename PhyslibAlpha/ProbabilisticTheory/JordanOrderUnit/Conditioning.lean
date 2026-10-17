@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Quadratic.Order
 
 # Conditioning a state on a projection
 
+Conditioning a state on a Jordan projection `p`: the state `x ↦ ω(U_p x) / ω(p)`.
+
 ## i. Overview
 
 For a Jordan projection `p` with positive quadratic representation `U_p`, and a state `ω` with `ω(p)
@@ -22,10 +24,18 @@ For a Jordan projection `p` with positive quadratic representation `U_p`, and a 
 - `JordanAlgebra.IsJordanProjection.condition` : the conditioned state.
 - `JordanAlgebra.IsJordanProjection.condition_self` : the conditioned state assigns probability `1`
   to `p`.
+- `JordanAlgebra.IsJordanProjection.condition_complement` : the conditioned state assigns
+  probability `0` to the complement `1 - p`.
+- `JordanAlgebra.IsJordanProjection.conditionOfQuadraticPositive` : conditioning when all
+  quadratic representations are positive.
 
 ## iii. Table of contents
 
 - A. Quadratic conditioning
+
+## iv. References
+
+* None.
 
 -/
 

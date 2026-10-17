@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.AnalyticVe
 
 # Local and global analytic orbits
 
+Local analytic orbits agree on overlaps and glue into a global orbit orthogonal to deficiencies.
+
 ## i. Overview
 
 A local analytic orbit is the exponential series of an analytic vector on a finite time interval.

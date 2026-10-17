@@ -50,7 +50,7 @@ jobs:
       # <revisionEndpoint>/<scope>/<sha>.jsonl, so a shared scope would have
       # one job overwrite the other's. The toolchain is in the scope because
       # Lake ignores --toolchain for verbatim scopes.
-      # scripts/get_cache.lean builds the same strings -- keep them in step.
+      # scripts/dev/get_cache.lean builds the same strings -- keep them in step.
       - name: compute cache scope
         run: |
           set -euo pipefail

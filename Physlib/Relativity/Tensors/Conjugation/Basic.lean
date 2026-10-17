@@ -127,8 +127,6 @@ variable {k : Type} [CommRing k] [StarRing k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b)
 
-TODO "Extend `complexLorentzTensor` to a  `ConjTensorSpecies`."
-TODO "Extend `realLorentzTensor` to a `ConjTensorSpecies`."
 /-!
 
 ## B. The conjugation of vectors
@@ -360,7 +358,7 @@ lemma conjT_contrT {n : ℕ} {c : Fin (n + 1 + 1) → C} (i j : Fin (n + 1 + 1))
   · exact fun _ => iff_of_true (Finset.mem_attach _ _) (Finset.mem_attach _ _)
   intro b'' _
   simp only [Equiv.subtypeEquiv_apply]
-  erw [← componentMap_eq_repr (S.bar ∘ c), componentMap_conjT, componentMap_eq_repr c t,
+  rw [← componentMap_eq_repr (fun i => S.bar (c i)), componentMap_conjT, componentMap_eq_repr c t,
     star_mul']
   congr 1
   rw [S.conj_contrComm (c i) ((S.componentReindex c b''.1) i)

@@ -11,6 +11,8 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 
 # The Norton dome and the determinism of Newtonian mechanics
 
+The Norton dome is a Newtonian system with continuous force that is not deterministic.
+
 ## i. Overview
 
 A particle at rest on the apex of the Norton dome may stay there forever or slide off at any

@@ -1,0 +1,112 @@
+version: v0.1
+
+Title: "Lattice QFT"
+
+Overview: |
+  Lattice quantum field theory regularises a Euclidean quantum field theory by
+  replacing continuous spacetime with a hypercubic lattice of spacing `a`, usually
+  taken periodic so that the lattice is a finite torus. Matter fields live on the
+  sites of the lattice, while gauge fields live on the oriented links as elements of
+  a compact gauge group. On a finite lattice the Euclidean path integral becomes an
+  ordinary finite-dimensional integral, Lebesgue measure for scalar fields and Haar
+  measure for link variables, weighted by `exp(-S)` for a lattice action `S`. The
+  theory is then a well-defined probability measure on field configurations, and
+  correlation functions are its moments. The physical questions are the
+  properties of these measures, such as reflection positivity, the transfer
+  matrix and the mass gap, confinement through Wilson loops, and the behaviour as
+  the lattice spacing tends to zero and the volume tends to infinity.
+
+  No part of it is formalized in the
+  current library: Physlib/LatticeQFT/Basic.lean is a stub module with no
+  declarations, and the neighbouring stub Physlib/CondensedMatter/LatticeModels
+  is also empty. Every requirement below is therefore recorded as not done with
+  location N/A. The requirements are ordered roughly in the order they would be
+  built: the lattice and its geometry, scalar fields, gauge fields, structural
+  results, and finally fermions and the continuum limit.
+
+ParentAPIs:
+  - "Gauge theory (Physlib/ClassicalFieldTheory/GaugeTheory)"
+
+References: []
+
+Requirements:
+
+  - description: "The key data structure, the periodic hypercubic lattice in dimension `d` with `L` sites per direction and lattice spacing `a > 0`, shall be defined, together with its finite set of sites and the unit vectors in each lattice direction."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the oriented links between nearest-neighbour sites and the oriented plaquettes (elementary squares) of the lattice, with orientation reversal of links and the boundary of a plaquette as a closed loop of four links."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the forward and backward lattice derivatives of a function on the sites, the lattice Laplacian, the summation-by-parts identity relating them, and the reduction of the lattice derivatives to the continuum derivatives as `a` tends to zero for smooth functions."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the lattice Fourier transform on the periodic lattice, with the Brillouin zone of lattice momenta, and the diagonalisation of the lattice Laplacian with eigenvalues `(4/a^2) Σ_μ sin^2(a p_μ / 2)`."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain real scalar field configurations as functions from sites to the reals, and the lattice φ^4 action, the sum over sites of `a^d` times the kinetic term `(1/2) Σ_μ (∇_μ φ)^2`, the mass term `(1/2) m^2 φ^2` and the interaction `(λ/4!) φ^4`."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the Euclidean lattice measure for a scalar field, the product of Lebesgue measures over sites weighted by `exp(-S)`, together with the proof that the partition function is finite and strictly positive when `λ > 0`, or when `λ = 0` and `m^2 > 0`."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the normalised lattice probability measure on field configurations and the `n`-point correlation (Schwinger) functions as its moments, together with their invariance under lattice translations and the lattice symmetry group."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall show that the free lattice scalar field (`λ = 0`, `m^2 > 0`) is the centred Gaussian measure with covariance `(-Δ + m^2)^(-1)`, and contain the lattice propagator in momentum space `1 / ((4/a^2) Σ_μ sin^2(a p_μ / 2) + m^2)`."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain link variables as functions from oriented links to a compact gauge group `G` with `U` of the reversed link equal to the inverse, the gauge transformations `U_{xy} ↦ g_x U_{xy} g_y⁻¹` for `g : sites → G`, and the plaquette variable as the ordered product of link variables around a plaquette."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the Wilson action `β Σ_p (1 - (1/N) Re tr U_p)` for a matrix gauge group such as `U(N)` or `SU(N)`, and the proof that it is invariant under lattice gauge transformations."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the lattice gauge-theory measure, the product of Haar measures over links weighted by `exp(-S_W)`, together with the proof that its partition function is finite and strictly positive on a finite lattice."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the gauge-covariant coupling of a site-valued matter field to the link variables, with the covariant lattice derivative `U_{x,x+μ} φ(x+μ) - φ(x)` and the gauge invariance of the resulting matter action."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the Wilson loop of a closed lattice path, its invariance under lattice gauge transformations, and the area-law and perimeter-law behaviours of its expectation value as criteria for confinement."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain Elitzur's theorem, that on a finite lattice the expectation value of any observable that is not gauge invariant equals that of its gauge-averaged part, so that local gauge symmetry cannot be spontaneously broken."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the area law for Wilson loops in the strong-coupling regime (small `β`) of lattice gauge theory with a compact gauge group."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain reflection positivity (Osterwalder-Schrader positivity) of the lattice measure for the scalar field and for the Wilson action with respect to reflections in lattice hyperplanes."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the transfer matrix as a positive operator on the Hilbert space of time-slice configurations, the lattice Hamiltonian defined from it, and the relation between the exponential decay rate of the two-point function in Euclidean time and the spectral gap of the transfer matrix."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall show that the Wilson action of a smooth continuum gauge field, with link variables given by parallel transport along the links, converges to the Yang-Mills action as the lattice spacing `a` tends to zero, with corrections of order `a^2`."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain naive lattice fermions, the fermion doubling problem (one continuum species for each of the `2^d` corners of the Brillouin zone), and Wilson fermions, which remove the doublers at the cost of explicitly breaking chiral symmetry."
+    done: false
+    location: "N/A"
+
+  - description: "The API shall contain the Nielsen-Ninomiya theorem, that a local, translation-invariant, hermitian lattice fermion action with exact chiral symmetry has equal numbers of left- and right-handed species."
+    done: false
+    location: "N/A"

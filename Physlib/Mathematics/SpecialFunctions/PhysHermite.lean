@@ -402,7 +402,7 @@ lemma physHermite_orthogonal_lt {n m : ℕ} (hnm : n < m) :
   rw [integral_physHermite_mul_physHermite_eq_integral_deriv]
   simp [iterate_deriv_physHermite_eq_iterate_derivative, iterate_derivative_physHermite_of_gt hnm]
 
-theorem physHermite_orthogonal {n m : ℕ} (hnm : n ≠ m) :
+lemma physHermite_orthogonal {n m : ℕ} (hnm : n ≠ m) :
     ∫ x : ℝ, (physHermite n x * physHermite m x) * Real.exp (- x ^ 2) = 0 := by
   obtain h | h := hnm.lt_or_gt
   · exact physHermite_orthogonal_lt h
@@ -416,7 +416,7 @@ lemma physHermite_orthogonal_cons {n m : ℕ} (hnm : n ≠ m) (c : ℝ) :
   rw [physHermite_orthogonal hnm, smul_zero] at h
   simpa [mul_pow, neg_mul] using h
 
-theorem physHermite_norm (n : ℕ) :
+lemma physHermite_norm (n : ℕ) :
     ∫ x : ℝ, (physHermite n x * physHermite n x) * Real.exp (- x ^ 2) =
     ↑n ! * 2 ^ n * √Real.pi := by
   rw [integral_physHermite_mul_physHermite_eq_integral_deriv,

@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 # Positive quadratic representations
 
+Quadratically positive Jordan order-unit spaces, where each `U_a` is a positive linear map.
+
 ## i. Overview
 
 The quadratic representation `U_a` is the Jordan version of the operation `b ↦ a b a`. A Jordan
@@ -22,6 +24,15 @@ order-unit space is quadratically positive when every `U_a` preserves the positi
 
 - `JordanAlgebra.IsQuadraticallyPositive` : quadratically positive Jordan order-unit spaces.
 - `JordanAlgebra.quadRepPositiveLinearMap` : `U_a` as a positive linear map.
+
+## iii. Table of contents
+
+- A. Quadratically positive Jordan algebras
+- B. The positive linear map `U_a`
+
+## iv. References
+
+* None.
 
 -/
 
@@ -36,6 +47,8 @@ open scoped JordanAlgebra
 variable {E : Type*} [NonAssocCommRing E] [PartialOrder E] [IsOrderedAddMonoid E]
   [Module ℝ E] [SMulCommClass ℝ E E]
 
+/-! ## A. Quadratically positive Jordan algebras -/
+
 /-- Every quadratic representation `U_a` preserves the positive cone. -/
 class IsQuadraticallyPositive (E : Type*) [NonAssocCommRing E] [PartialOrder E]
     [IsOrderedAddMonoid E] [Module ℝ E] [SMulCommClass ℝ E E] : Prop where
@@ -46,6 +59,8 @@ variable [IsQuadraticallyPositive E]
 /-- Quadratic representations map nonnegative observables to nonnegative observables. -/
 lemma quadRep_nonneg (a : E) {b : E} (hb : 0 ≤ b) : 0 ≤ U a b :=
   IsQuadraticallyPositive.quadRep_nonneg a hb
+
+/-! ## B. The positive linear map `U_a` -/
 
 /-- The quadratic representation as a bundled positive linear operation. -/
 def quadRepPositiveLinearMap (a : E) : E →ₚ[ℝ] E :=

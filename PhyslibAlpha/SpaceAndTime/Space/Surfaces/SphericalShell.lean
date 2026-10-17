@@ -9,8 +9,32 @@ public import Physlib.SpaceAndTime.Space.Norm.Basic
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 /-!
 
-## Spherical surfaces on Space.
+# Spherical surfaces on Space
 
+The unit sphere in `Space d` with its measure and the distribution of integration over it.
+
+## i. Overview
+
+The spherical shell is the unit sphere `S^{d-1}` of `Space d`, included by `sphericalShell d`.
+Pushing forward the sphere measure gives `sphericalShellMeasure d`, and integrating against it
+gives the distribution `sphericalShellDist d`, which one can roughly think of as taking a test
+function to its integral against a mass, charge or current distribution on the shell.
+
+## ii. Key results
+
+- `sphericalShell` : the inclusion of the unit sphere into `Space d`.
+- `sphericalShellMeasure` : the measure corresponding to integration over the spherical shell.
+- `sphericalShellDist` : the distribution corresponding to integration over the spherical shell.
+
+## iii. Table of contents
+
+- A. The definition of the spherical shell surface
+- B. The measure associated with the spherical shell
+- C. The distribution associated with the spherical shell
+
+## iv. References
+
+* None.
 
 -/
 @[expose] public section

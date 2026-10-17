@@ -13,6 +13,8 @@ public import Mathlib.Algebra.BigOperators.Fin
 /-!
 # The Riesz–Kantorovich formula
 
+Riesz decomposition makes positive functionals a lattice via the Riesz–Kantorovich formula.
+
 ## i. Overview
 
 An ordered real vector space has the Riesz decomposition when a nonnegative element below a sum of

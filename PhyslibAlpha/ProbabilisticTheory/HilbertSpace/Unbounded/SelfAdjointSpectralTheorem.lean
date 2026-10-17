@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.WeakIntegr
 
 # The spectral theorem, stated
 
+Essential self-adjointness and spectral resolutions of self-adjoint operators, with their domains.
+
 ## i. Overview
 
 An operator is essentially self-adjoint when its closure is self-adjoint; a self-adjoint extension
@@ -23,15 +25,23 @@ the domain of `T` is the set of vectors with `∫ λ² dμₓ < ∞`.
 ## ii. Key results
 
 - `SelfAdjointClosureData` : an operator with self-adjoint closure.
+- `SelfAdjointClosureData.unique_selfAdjoint_extension` : the self-adjoint extension is unique.
 - `IsWeakSpectralResolution` : `⟪y, T x⟫ = ∫ λ d⟪y, μ x⟫` on the domain of `T`.
+- `SelfAdjointSpectralTheorem` : a spectral measure weakly resolving a self-adjoint operator.
 - `spectralSquareMomentDomain` : the vectors with finite second moment.
 - `DomainAwareSelfAdjointSpectralTheorem` : a spectral measure resolving a self-adjoint operator
   together with its domain.
+- `DomainAwareSelfAdjointSpectralTheorem.expUnitaryGroup` : the strongly continuous unitary
+  group attached to the spectral measure.
 
 ## iii. Table of contents
 
 - A. Essential self-adjointness and closure
   - A.1. Spectral resolutions with domain
+
+## iv. References
+
+* None.
 
 -/
 

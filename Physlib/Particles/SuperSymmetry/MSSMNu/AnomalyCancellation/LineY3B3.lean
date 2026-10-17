@@ -61,7 +61,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma doublePoint_Y₃_B₃ (R : MSSMACC.LinSols) :
     cubeTriLin Y₃.val B₃.val R.val = 0 := by
   simp only [cubeTriLin, TriLinearSymm.mk₃_toFun_apply_apply, cubeTriLinToFun]
-  erw [Fin.sum_univ_three, B₃_val, Y₃_val, B₃AsCharge, Y₃AsCharge]
+  rw [sum_MSSMSpecies_numberCharges_eq_expand, B₃_val, Y₃_val, B₃AsCharge, Y₃AsCharge]
   repeat rw [toSMSpecies_toSpecies_inv]
   rw [Hd_toSpecies_inv, Hu_toSpecies_inv, Hd_toSpecies_inv, Hu_toSpecies_inv]
   simp only [mul_one, Fin.isValue, toSMSpecies_apply, one_mul, mul_neg, neg_neg, neg_mul, zero_mul,
@@ -72,7 +72,7 @@ lemma doublePoint_Y₃_B₃ (R : MSSMACC.LinSols) :
   have h2 := hLin (2 : Fin 4)
   have h3 := hLin (3 : Fin 4)
   simp only [accSU2, LinearMap.coe_mk, AddHom.coe_mk, accSU3, accYY] at h1 h2 h3
-  erw [Fin.sum_univ_three] at h1 h2 h3
+  rw [sum_MSSMSpecies_numberCharges_eq_expand] at h1 h2 h3
   simp only [Fin.isValue, toSMSpecies_apply, Nat.reduceMul, Hd_apply, Fin.reduceFinMk,
     Hu_apply] at h1 h2 h3
   linear_combination (norm := ring_nf) -(12 * h2) + 9 * h1 + 3 * h3

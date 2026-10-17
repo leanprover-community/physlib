@@ -331,13 +331,13 @@ lemma eq_integral_grad {f : Space → ℝ} (hf : ContDiff ℝ 1 f) :
       filter_upwards with p
       simp only [Set.indicator, zero_le_one, Set.uIoc_of_le, Set.mem_Ioc]
       split_ifs
-      rw [grad_smul_inner_space]
-      · exact h'
-      · grind
-      · grind
+      · rw [grad_smul_inner_space]
+        · exact h'
+        grind
+      grind
     _ = (f (1 • x) - f 0) + f 0 := by
       rw [intervalIntegral.integral_deriv_eq_sub (by fun_prop)]
-      simp only [one_smul, zero_smul, sub_add_cancel]
+      · simp only [one_smul, zero_smul, sub_add_cancel]
       · apply Continuous.intervalIntegrable
         fun_prop
   simp
@@ -421,13 +421,13 @@ lemma integrable_isDistBounded_inner_grad_schwartzMap_spherical {d : ℕ}
     change Integrable ((fun x => ⟪f x, Space.grad η x⟫_ℝ) ∘ Subtype.val)
       (.comap (Subtype.val (p := fun x => x ∈ ({0}ᶜ : Set _))) volume)
     rw [← MeasureTheory.integrableOn_iff_comap_subtypeVal]
-    exact (integrable_isDistBounded_inner_grad_schwartzMap hf η).integrableOn
+    · exact (integrable_isDistBounded_inner_grad_schwartzMap hf η).integrableOn
     simp
   have he := (MeasureTheory.Measure.measurePreserving_homeomorphUnitSphereProd
     (volume (α := Space d)))
   rw [← he.integrable_comp_emb]
-  convert h1
-  simp only [Function.comp_apply, Homeomorph.symm_apply_apply]
+  · convert h1
+    simp only [Function.comp_apply, Homeomorph.symm_apply_apply]
   exact Homeomorph.measurableEmbedding (homeomorphUnitSphereProd (Space d))
 
 /-!

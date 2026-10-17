@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 
 # Density operators
 
+A positive trace-one operator on a Hilbert space defines the state `x ↦ Tr (x ρ)`.
+
 ## i. Overview
 
 A positive operator `ρ` with trace `1` defines the state `x ↦ Tr (x ρ)`. The trace here is the
@@ -20,6 +22,14 @@ linear-algebra trace, so this applies to finite-dimensional Hilbert spaces.
 ## ii. Key results
 
 - `UnitalPositiveLinearMap.ofDensity` : the state of a density operator.
+
+## iii. Table of contents
+
+- A. The state of a density operator
+
+## iv. References
+
+* None.
 
 -/
 
@@ -33,6 +43,12 @@ namespace UnitalPositiveLinearMap
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 variable {ρ : H →L[ℂ] H} (hpos : 0 ≤ ρ) (hnorm : (ρ : H →ₗ[ℂ] H).trace ℂ H = 1)
+
+/-!
+
+## A. The state of a density operator
+
+-/
 
 /-- A trace-one positive continuous linear map defines a state. -/
 noncomputable def ofDensity : 𝓢[ℂ, H →L[ℂ] H] :=

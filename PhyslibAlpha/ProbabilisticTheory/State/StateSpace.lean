@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 /-!
 # The state space
 
+The weak-star state space: compact, convex, with the pure states as its extreme points.
+
 ## i. Overview
 
 A state is a normalized positive functional: it gives the certain outcome `1` the value `1` and
@@ -41,6 +43,10 @@ On `𝓢[ℝ, E]` itself the states carry the finer state metric.
 - C. Pointwise convergence
 - D. Compactness
 - E. Convexity and pure states
+
+## iv. References
+
+* None.
 
 -/
 

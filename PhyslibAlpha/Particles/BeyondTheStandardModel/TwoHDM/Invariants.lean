@@ -18,6 +18,8 @@ public import Mathlib.Analysis.Real.Pi.Irrational
 /-!
 # The two Higgs doublet potential as a polynomial in the gauge invariants
 
+Every gauge-invariant polynomial 2HDM potential is a polynomial in the four Gram bilinears.
+
 ## i. Overview
 
 In the *bilinear formalism* of the two Higgs doublet model (hep-ph/0605184
@@ -39,6 +41,9 @@ and runs the following physical pipeline:
 4. **Coprimality.** `‖Φ1‖²` and `‖Φ2‖²` are coprime in the (algebraically independent) Gram ring,
    which removes these factors and yields the Gram polynomial.
 
+Mathematically the result is the first fundamental theorem of invariant theory for `SU(2)`
+acting on two doublets in `ℂ²`.
+
 ## ii. Key results
 
 * `exists_polynomial_repHiggs_sliceBilinear` — on gauge representatives, the potential is a
@@ -52,20 +57,18 @@ and runs the following physical pipeline:
 
 ## iii. Table of contents
 
-* A. Gauge-torus invariance of the potential on the slice
-* B. Hypercharge eigen-coordinates and charge balancing
-* C. Generation by the neutral gauge-invariant bilinears
-* D. The potential on representatives as a polynomial in the bilinears
-* E. Clearing the `‖Φ1‖²` and `‖Φ2‖²` factors
-* F. Independence and coprimality of the Gram invariants
-* G. The gauge-invariant potential as a polynomial in the Gram vector
+- A. Gauge-torus invariance of the potential on the slice
+- B. Hypercharge eigen-coordinates and charge balancing
+- C. Generation by the neutral gauge-invariant bilinears
+- D. The potential on representatives as a polynomial in the bilinears
+- E. Clearing the `‖Φ1‖²` and `‖Φ2‖²` factors
+- F. Independence and coprimality of the Gram invariants
+- G. The gauge-invariant potential as a polynomial in the Gram vector
 
 ## iv. References
 
 * The bilinear formalism: https://arxiv.org/abs/hep-ph/0605184. [ref: arxiv_hep_ph_0605184]
 
-Mathematically the result is the first fundamental theorem of invariant theory for `SU(2)`
-acting on two doublets in `ℂ²`.
 -/
 
 @[expose] public section
@@ -550,7 +553,7 @@ lemma aeval_hyperchargeEigen_eigenPoint (X : Fin 4 → ℝ) (k : Fin 6) :
     simp only [hyperchargeEigen, eigenPoint, aRep, Fin.isValue] <;>
     (apply Complex.ext <;>
       simp [Complex.add_re, Complex.add_im, Complex.mul_re,
-        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im] <;> ring)
+        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]; try ring)
 
 open MvPolynomial in
 /-- The complexified slice potential, evaluated at the eigen-point of `repHiggs X`, returns the real
@@ -624,7 +627,7 @@ lemma neutralBilinear_eval_eigenPoint (X : Fin 4 → ℝ) (i : Fin 5) :
     simp only [neutralBilinear, transf, eigenPoint, sliceBilinear, Fin.isValue] <;>
     (apply Complex.ext <;>
       simp [pow_two, Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im, Complex.mul_re,
-        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im] <;> ring)
+        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]; try ring)
 
 open MvPolynomial in
 /-- **The potential on representatives, in the bilinears.** A gauge-invariant polynomial potential,

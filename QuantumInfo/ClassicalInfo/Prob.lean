@@ -54,23 +54,23 @@ instance instMul : Mul Prob :=
       (mul_le_of_le_one_left y.2.1 x.2.2).trans y.2.2⟩⟩⟩
 
 @[simp, norm_cast]
-theorem coe_zero : (0 : Prob).val = 0 :=
+lemma coe_zero : (0 : Prob).val = 0 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_one : (1 : Prob).val = 1 :=
+lemma coe_one : (1 : Prob).val = 1 :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_mul (x y : Prob) : (x * y).val = x.val * y.val :=
+lemma coe_mul (x y : Prob) : (x * y).val = x.val * y.val :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_inf (x y : Prob) : (x ⊓ y).val = x.val ⊓ y.val :=
+lemma coe_inf (x y : Prob) : (x ⊓ y).val = x.val ⊓ y.val :=
   rfl
 
 @[simp, norm_cast]
-theorem coe_sup (x y : Prob) : (x ⊔ y).val = x.val ⊔ y.val :=
+lemma coe_sup (x y : Prob) : (x ⊔ y).val = x.val ⊔ y.val :=
   rfl
 
 instance instCommMonoidWithZero : CommMonoidWithZero Prob where
@@ -99,29 +99,29 @@ instance : LinearOrderedCommMonoidWithZero Prob where
   isBot_zero a := a.2.1
 
 @[simp]
-theorem zero_le_coe {p : Prob} : 0 ≤ (p : ℝ) :=
+lemma zero_le_coe {p : Prob} : 0 ≤ (p : ℝ) :=
   p.2.1
 
 @[simp]
-theorem coe_le_one {p : Prob} : (p : ℝ) ≤ 1 :=
+lemma coe_le_one {p : Prob} : (p : ℝ) ≤ 1 :=
   p.2.2
 
 @[simp]
-theorem zero_le {p : Prob} : 0 ≤ p :=
+lemma zero_le {p : Prob} : 0 ≤ p :=
   zero_le_coe
 
 @[simp]
-theorem le_one {p : Prob} : p ≤ 1 :=
+lemma le_one {p : Prob} : p ≤ 1 :=
   coe_le_one
 
-@[ext] protected theorem ext {n m : Prob} : (n : ℝ) = (m : ℝ) → n = m :=
+@[ext] protected lemma ext {n m : Prob} : (n : ℝ) = (m : ℝ) → n = m :=
   Subtype.ext
 
-theorem ne_iff {x y : Prob} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
+lemma ne_iff {x y : Prob} : (x : ℝ) ≠ (y : ℝ) ↔ x ≠ y :=
   not_congr <| Prob.ext_iff.symm
 
 @[simp, norm_cast]
-theorem toReal_mul (x y : Prob) : (x * y : Prob) = (x : ℝ) * (y : ℝ) := by
+lemma toReal_mul (x y : Prob) : (x * y : Prob) = (x : ℝ) * (y : ℝ) := by
   simp only [coe_mul]
 
 /-- Coercion `Prob → ℝ≥0`. -/
@@ -129,7 +129,7 @@ theorem toReal_mul (x y : Prob) : (x * y : Prob) = (x : ℝ) * (y : ℝ) := by
   fun p ↦ ⟨p.val, zero_le_coe⟩
 
 @[simp]
-theorem toNNReal_mk : toNNReal { val := x, property := hx} = { val := x, property := hx.1 } :=
+lemma toNNReal_mk : toNNReal { val := x, property := hx} = { val := x, property := hx.1 } :=
   rfl
 
 instance : Coe Prob ℝ≥0 := ⟨toNNReal⟩
@@ -137,20 +137,20 @@ instance : Coe Prob ℝ≥0 := ⟨toNNReal⟩
 instance canLiftNN : CanLift ℝ≥0 Prob toNNReal fun r => r ≤ 1 :=
   ⟨fun x hx ↦ ⟨⟨x, ⟨x.2, hx⟩⟩, rfl⟩⟩
 
-protected theorem eq_iff_nnreal (n m : Prob) : (n : ℝ≥0) = (m : ℝ≥0) ↔ n = m := by
+protected lemma eq_iff_nnreal (n m : Prob) : (n : ℝ≥0) = (m : ℝ≥0) ↔ n = m := by
   obtain ⟨n,hn⟩ := n
   obtain ⟨m,hn⟩ := m
   simp only [toNNReal_mk, Subtype.mk.injEq, NNReal]
 
 @[simp, norm_cast]
-theorem toNNReal_zero : (0 : Prob) = (0 : ℝ≥0) :=
+lemma toNNReal_zero : (0 : Prob) = (0 : ℝ≥0) :=
   rfl
 
 @[simp, norm_cast]
-theorem toNNReal_one : (1 : Prob) = (1 : ℝ≥0) :=
+lemma toNNReal_one : (1 : Prob) = (1 : ℝ≥0) :=
   rfl
 
-theorem ofNNReal_toNNReal : ENNReal.ofNNReal (toNNReal p) = ENNReal.ofReal (p : ℝ) := by
+lemma ofNNReal_toNNReal : ENNReal.ofNNReal (toNNReal p) = ENNReal.ofReal (p : ℝ) := by
   simp [toNNReal, ENNReal.ofReal_eq_coe_nnreal]
   norm_cast
 
@@ -160,7 +160,7 @@ def NNReal.asProb (p : ℝ≥0) (hp : p ≤ 1) : Prob :=
 def NNReal.asProb' (p : ℝ≥0) (hp : p.1 ≤ 1) : Prob :=
   ⟨p, ⟨p.2, hp⟩⟩
 
-theorem zero_lt_coe {p : Prob} (hp : p ≠ 0) : (0 : ℝ) < p :=
+lemma zero_lt_coe {p : Prob} (hp : p ≠ 0) : (0 : ℝ) < p :=
   lt_of_le_of_ne' p.zero_le (unitInterval.coe_ne_zero.mpr hp)
 
 /-- Subtract a probability from another. Truncates to zero, so this is often not great
@@ -171,18 +171,18 @@ instance instSub : Sub Prob where
     simpa using le_add_of_le_of_nonneg p.2.2 q.2.1
   ⟩
 
-theorem coe_sub (p q : Prob) : (p - q : Prob)  = (p.val - q.val) ⊔ (0 : ℝ) := by
+lemma coe_sub (p q : Prob) : (p - q : Prob)  = (p.val - q.val) ⊔ (0 : ℝ) := by
   rfl
 
 @[simp, norm_cast]
-theorem coe_one_minus (p : Prob) : (1 - p : Prob) = 1 - (p : ℝ) := by
+lemma coe_one_minus (p : Prob) : (1 - p : Prob) = 1 - (p : ℝ) := by
   simp [coe_sub]
 
-theorem add_one_minus (p : Prob) : p.val + (1 - p).val = 1 := by
+lemma add_one_minus (p : Prob) : p.val + (1 - p).val = 1 := by
   simp
 
 @[simp]
-theorem one_minus_inv (p : Prob) : 1 - (1 - p) = p := by
+lemma one_minus_inv (p : Prob) : 1 - (1 - p) = p := by
   ext
   simp
 
@@ -191,7 +191,7 @@ instance : OrderTopology Prob :=
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
-theorem coe_iInf {ι : Type*} [Nonempty ι] (f : ι → Prob) : ↑(⨅ t, f t) = (⨅ t, f t : ℝ) := by
+lemma coe_iInf {ι : Type*} [Nonempty ι] (f : ι → Prob) : ↑(⨅ t, f t) = (⨅ t, f t : ℝ) := by
   apply Monotone.map_ciInf_of_continuousAt
   · fun_prop
   · exact fun _ _ ↦ id
@@ -201,20 +201,20 @@ instance : Nontrivial Prob where
   exists_pair_ne := ⟨0, 1, by simp [← Prob.ne_iff]⟩
 
 @[simp]
-theorem top_eq_one : (⊤ : Prob) = 1 := by
+lemma top_eq_one : (⊤ : Prob) = 1 := by
   rfl
 
 @[simp]
-theorem sub_zero (p : Prob) : p - 0 = p := by
+lemma sub_zero (p : Prob) : p - 0 = p := by
   ext1; simp [coe_sub]
 
 @[fun_prop]
-theorem toNNReal_Continuous : Continuous Prob.toNNReal := by
+lemma toNNReal_Continuous : Continuous Prob.toNNReal := by
   unfold Prob.toNNReal
   fun_prop
 
 @[simp]
-theorem mul_eq_one_iff (p q : Prob) : p * q = 1 ↔ p = 1 ∧ q = 1 := by
+lemma mul_eq_one_iff (p q : Prob) : p * q = 1 ↔ p = 1 ∧ q = 1 := by
   cases p
   cases q
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
@@ -269,7 +269,7 @@ def mix [inst : Mixable U T] (p : Prob) (x₁ x₂ : T) : T :=
   inst.mix_ab p.zero_le_coe (1 - p).zero_le_coe p.add_one_minus x₁ x₂
 
 @[simp]
-theorem to_U_of_mkT [inst : Mixable U T] (u : U) {h} : inst.to_U (mkT (u := u) h).1 = u :=
+lemma to_U_of_mkT [inst : Mixable U T] (u : U) {h} : inst.to_U (mkT (u := u) h).1 = u :=
   (mkT (u := u) h).2
 
 notation p "[" x₁:80 "↔" x₂ "]" => mix p x₁ x₂
@@ -278,13 +278,13 @@ notation p "[" x₁:80 "↔" x₂ ":" M "]" => mix (inst := M) p x₁ x₂
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem mix_zero [inst : Mixable U T] (x₁ x₂ : T) : (0 : Prob) [ x₁ ↔ x₂ : inst] = x₂ := by
+lemma mix_zero [inst : Mixable U T] (x₁ x₂ : T) : (0 : Prob) [ x₁ ↔ x₂ : inst] = x₂ := by
   apply inst.to_U_inj
   simp [mix, mix_ab]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem mix_one [inst : Mixable U T] (x₁ x₂ : T) : (1 : Prob) [ x₁ ↔ x₂ : inst] = x₁ := by
+lemma mix_one [inst : Mixable U T] (x₁ x₂ : T) : (1 : Prob) [ x₁ ↔ x₂ : inst] = x₁ := by
   apply inst.to_U_inj
   simp [mix, mix_ab]
 
@@ -298,17 +298,17 @@ instance instUniv [AddCommMonoid T] [Module ℝ T] : Mixable T T where
   mkT := fun _ ↦ ⟨_, rfl⟩
 
 @[simp]
-theorem mkT_instUniv [AddCommMonoid T] [Module ℝ T] {t : T} (h : ∃ t', to_U t' = t) :
+lemma mkT_instUniv [AddCommMonoid T] [Module ℝ T] {t : T} (h : ∃ t', to_U t' = t) :
     instUniv.mkT h = ⟨t, rfl⟩ :=
   rfl
 
 @[simp]
-theorem to_U_instUniv [AddCommMonoid T] [Module ℝ T] {t : T} : instUniv.to_U t = t :=
+lemma to_U_instUniv [AddCommMonoid T] [Module ℝ T] {t : T} : instUniv.to_U t = t :=
   rfl
 
 section pi
 
-theorem instPi.lem_1 {D : Type*} {T U : D → Type*} [∀i, AddCommMonoid (U i)] [∀ i, Module ℝ (U i)]
+lemma instPi.lem_1 {D : Type*} {T U : D → Type*} [∀i, AddCommMonoid (U i)] [∀ i, Module ℝ (U i)]
     [inst : ∀i, Mixable (U i) (T i)]
     {u : (i : D) → U i} (h : ∃ (t : (i : D) → T i), (fun d => to_U (t d)) = u) (d : D) :
     ∃ (t : T d), to_U t = u d := by
@@ -333,12 +333,12 @@ instance instPi : Mixable ((i:D) → U i) ((i:D) → T i) where
     simp only [to_U_of_mkT, Pi.add_apply, Pi.smul_apply]
 
 @[simp]
-theorem val_mkT_instPi (D : Type*) [inst : Mixable U T] {u : D → U} (h : ∃ t, to_U t = u) :
+lemma val_mkT_instPi (D : Type*) [inst : Mixable U T] {u : D → U} (h : ∃ t, to_U t = u) :
     (instPi.mkT h).val = fun d ↦ (inst.mkT (instPi.lem_1 h d)).val :=
   rfl
 
 @[simp]
-theorem to_U_instPi (D : Type*) [inst : Mixable U T] {t : D → T} :
+lemma to_U_instPi (D : Type*) [inst : Mixable U T] {t : D → T} :
     (instPi).to_U t = fun d ↦ inst.to_U (t d) :=
   rfl
 
@@ -389,11 +389,11 @@ instance instMixable : Mixable ℝ Prob where
     · nlinarith
 
 @[simp]
-theorem to_U_mixable [AddCommMonoid T] [SMul ℝ T] (t : Prob) : instMixable.to_U t = t.val :=
+lemma to_U_mixable [AddCommMonoid T] [SMul ℝ T] (t : Prob) : instMixable.to_U t = t.val :=
   rfl
 
 @[simp]
-theorem mkT_mixable (u : ℝ) (h : ∃ t : Prob, Mixable.to_U t = u) : Mixable.mkT h =
+lemma mkT_mixable (u : ℝ) (h : ∃ t : Prob, Mixable.to_U t = u) : Mixable.mkT h =
     ⟨⟨u,Exists.casesOn h fun t ht ↦ ht ▸ t.2⟩, rfl⟩ :=
   rfl
 
@@ -417,7 +417,7 @@ scoped notation "—log " => negLog
 
 --TODO: Upgrade to `StrictAnti`. Even better: bundle negLog as `Prob ≃o ENNRealᵒᵈ`.
 set_option backward.isDefEq.respectTransparency false in
-theorem negLog_Antitone : Antitone negLog := by
+lemma negLog_Antitone : Antitone negLog := by
   intro x y h
   dsimp [negLog]
   split_ifs with h₁ h₂ h₂
@@ -434,32 +434,32 @@ theorem negLog_Antitone : Antitone negLog := by
     <;> exact lt_of_le_of_ne zero_le (unitInterval.coe_ne_zero.mpr (by assumption)).symm
 
 @[simp]
-theorem negLog_zero : —log (0 : Prob) = ⊤ := by
+lemma negLog_zero : —log (0 : Prob) = ⊤ := by
   simp [negLog]
 
 @[simp]
-theorem negLog_one : —log 1 = 0 := by
+lemma negLog_one : —log 1 = 0 := by
   simp [negLog]; rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem negLog_eq_top_iff {p : Prob} : —log p = ⊤ ↔ p = 0 := by
+lemma negLog_eq_top_iff {p : Prob} : —log p = ⊤ ↔ p = 0 := by
   simp [negLog]
 
-theorem negLog_pos_ENNReal {p : Prob} (hp : p ≠ 0) : —log p = .ofNNReal ⟨-Real.log p,
+lemma negLog_pos_ENNReal {p : Prob} (hp : p ≠ 0) : —log p = .ofNNReal ⟨-Real.log p,
     Left.nonneg_neg_iff.mpr (Real.log_nonpos p.2.1 p.2.2)⟩ := by
   simp [negLog, hp]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem negLog_pos_Real {p : Prob} : (—log p).toReal = -Real.log p := by
+lemma negLog_pos_Real {p : Prob} : (—log p).toReal = -Real.log p := by
   rw [negLog]
   split_ifs with hp
   · simp [hp]
   · simp; rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem le_negLog_of_le_exp {p : Prob} {x : ℝ} (h : p ≤ Real.exp (-x)) : ENNReal.ofReal x ≤ —log p := by
+lemma le_negLog_of_le_exp {p : Prob} {x : ℝ} (h : p ≤ Real.exp (-x)) : ENNReal.ofReal x ≤ —log p := by
   by_cases hx : 0 ≤ x
   · rw [negLog]
     split_ifs with hp
@@ -484,13 +484,13 @@ theorem le_negLog_of_le_exp {p : Prob} {x : ℝ} (h : p ≤ Real.exp (-x)) : ENN
 
 set_option backward.isDefEq.respectTransparency false in
 @[aesop (rule_sets := [finiteness]) safe apply]
-theorem negLog_ne_top {p : Prob} (hp : 0 < p.val) : —log p ≠ ∞ := by
+lemma negLog_ne_top {p : Prob} (hp : 0 < p.val) : —log p ≠ ∞ := by
   have h1 := ne_of_gt hp
   simp_all only [unitInterval.coe_pos, ne_eq, Set.Icc.coe_eq_zero, negLog_eq_top_iff]
   exact not_false
 
 set_option backward.isDefEq.respectTransparency false in
-theorem negLog_eq_neg_ENNReal_log (p : Prob) : —log p = -ENNReal.log p := by
+lemma negLog_eq_neg_ENNReal_log (p : Prob) : —log p = -ENNReal.log p := by
   rw [negLog]
   split_ifs with hp
   · simp [hp]
@@ -501,7 +501,7 @@ theorem negLog_eq_neg_ENNReal_log (p : Prob) : —log p = -ENNReal.log p := by
       rw [toNNReal, ENNReal.coe_eq_zero]
       exact NNReal.coe_ne_zero.mp hp
 
-theorem negLog_eq_ofReal_neg_log {p : Prob} (hp : 0 < p) :
+lemma negLog_eq_ofReal_neg_log {p : Prob} (hp : 0 < p) :
     ENNReal.ofReal (-Real.log p) = —log p := by
   rcases p with ⟨p, p0, p1⟩
   rw [negLog]
@@ -511,7 +511,7 @@ theorem negLog_eq_ofReal_neg_log {p : Prob} (hp : 0 < p) :
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-theorem zero_lt_negLog {p : Prob} : 0 < —log p ↔ p ≠ 1 := by
+lemma zero_lt_negLog {p : Prob} : 0 < —log p ↔ p ≠ 1 := by
   --This is messy enough it's probably a sign we're missing other simp lemmas
   rw [negLog]
   split_ifs with h
@@ -529,7 +529,7 @@ theorem zero_lt_negLog {p : Prob} : 0 < —log p ↔ p ≠ 1 := by
 
 set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
-theorem Continuous_negLog : Continuous negLog := by
+lemma Continuous_negLog : Continuous negLog := by
   --Thanks Aristotle
   have h_cont_at_zero : ContinuousAt —log 0 := by
     unfold Prob.negLog

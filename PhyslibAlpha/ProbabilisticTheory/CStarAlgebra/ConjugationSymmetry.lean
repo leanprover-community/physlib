@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Star.Unitary
 
 # Unitary conjugation as a symmetry
 
+Conjugation by a unitary as a channel and a symmetry, and symmetry actions of representations.
+
 ## i. Overview
 
 A symmetry of a quantum system is usually implemented as `a ↦ u a u⋆` for a unitary `u`. Conjugation
@@ -34,6 +36,10 @@ representation of a group `G` gives a symmetry action of `G`.
 - B. Conjugation as a unital positive linear map
 - C. Conjugation as a symmetry
 - D. Unitary representations induce symmetry actions
+
+## iv. References
+
+* None.
 
 -/
 

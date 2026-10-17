@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Cayley.Bas
 
 # Spectral measures and the Cayley transform
 
+Spectral measures on ℝ correspond to Cayley-supported spectral measures on ℂ.
+
 ## i. Overview
 
 Spectral measures on `ℝ` push forward along the Cayley transform to spectral measures on `ℂ`
@@ -30,6 +32,10 @@ this, which gives an equivalence between spectral measures on `ℝ` and such mea
 
 - A. Pushforward and pullback along the Cayley transform
 - B. The Cayley equivalence of spectral-measure data
+
+## iv. References
+
+* None.
 
 -/
 

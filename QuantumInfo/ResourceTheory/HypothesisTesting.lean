@@ -103,32 +103,32 @@ theorem of_empty {ρ : MState d} (ε : Prob) : β_ ε(ρ‖∅) = 0 := by
   rfl
 
 set_option backward.isDefEq.respectTransparency false in
-theorem le_sup_exp_val {ρ : MState d} (ε : Prob) {S : Set (MState d)}
+lemma le_sup_exp_val {ρ : MState d} (ε : Prob) {S : Set (MState d)}
     (m : HermitianMat d ℂ) (hExp : ρ.exp_val (1 - m) ≤ ε) (hm : 0 ≤ m ∧ m ≤ 1) :
     β_ ε(ρ‖S) ≤ ⨆ σ ∈ S, ⟨_, σ.exp_val_prob hm⟩ := by
   unfold OptimalHypothesisRate
   apply iInf_le_of_le ⟨m, ⟨hExp, hm⟩⟩ _
   simp only [le_refl]
 
-theorem le_of_subset (ρ : MState d) (ε : Prob) {S1 S2 : Set (MState d)} (h : S1 ⊆ S2) :
+lemma le_of_subset (ρ : MState d) (ε : Prob) {S1 S2 : Set (MState d)} (h : S1 ⊆ S2) :
     β_ ε(ρ‖S1) ≤ β_ ε(ρ‖S2) :=
   iInf_mono (fun _ ↦ iSup_le_iSup_of_subset h)
 
-theorem of_singleton {ρ σ : MState d} {ε : Prob} :
+lemma of_singleton {ρ σ : MState d} {ε : Prob} :
     β_ ε(ρ‖{σ}) =
       ⨅ T : { m : HermitianMat d ℂ // ρ.exp_val (1 - m) ≤ ε ∧ 0 ≤ m ∧ m ≤ 1},
         ⟨_, σ.exp_val_prob T.2.right⟩ := by
   simp only [OptimalHypothesisRate, iSup_singleton]
 
 open scoped Prob in
-theorem negLog_le_singleton (ρ : MState d) (ε : Prob) (S : Set (MState d))
+lemma negLog_le_singleton (ρ : MState d) (ε : Prob) (S : Set (MState d))
     (σ : MState d) (h : σ ∈ S) : —log β_ ε(ρ‖S) ≤ —log β_ ε(ρ‖{σ}) := by
   apply Prob.negLog_Antitone
   apply le_of_subset
   exact Set.singleton_subset_iff.mpr h
 
 set_option backward.isDefEq.respectTransparency false in
-theorem singleton_le_exp_val {ρ σ : MState d} {ε : Prob} (m : HermitianMat d ℂ)
+lemma singleton_le_exp_val {ρ σ : MState d} {ε : Prob} (m : HermitianMat d ℂ)
     (hExp : ρ.exp_val (1 - m) ≤ ε) (hm : 0 ≤ m ∧ m ≤ 1) :
   β_ ε(ρ‖{σ}) ≤ ⟨_, σ.exp_val_prob hm⟩ := by
   rw [of_singleton]
@@ -267,7 +267,7 @@ theorem pos_of_lt_one {ρ : MState d} (S : Set (MState d))
 
 set_option backward.isDefEq.respectTransparency false in
 --Lemma 3 from Hayashi
-theorem Lemma3 {ρ : MState d} (ε : Prob) {S : Set (MState d)} (hS₁ : IsCompact S)
+lemma Lemma3 {ρ : MState d} (ε : Prob) {S : Set (MState d)} (hS₁ : IsCompact S)
     (hS₂ : Convex ℝ (MState.M '' S)) : ⨆ σ ∈ S, β_ ε(ρ‖{σ}) = β_ ε(ρ‖S) := by
   --Work out the case where S is empty, so we can now assume it's nonempty
   rcases S.eq_empty_or_nonempty with rfl|hnS
@@ -310,7 +310,7 @@ theorem Lemma3 {ρ : MState d} (ε : Prob) {S : Set (MState d)} (hS₁ : IsCompa
     rfl
 
 --Maybe should be phrased in terms of `0 < ...` instead? Maybe belongs in another file? It's kiinnnd of specialized..
-theorem ker_diagonal_prob_eq_bot {q : Prob} (hq₁ : 0 < q) (hq₂ : q < 1) :
+lemma ker_diagonal_prob_eq_bot {q : Prob} (hq₁ : 0 < q) (hq₂ : q < 1) :
     HermitianMat.ker (.diagonal ℂ (ProbDistribution.coin q ·)) = ⊥ := by
   have hA : (Matrix.toLin' (HermitianMat.diagonal ℂ (ProbDistribution.coin q ·)).mat).ker = ⊥ := by
     apply Matrix.PosDef.toLin_ker_eq_bot
@@ -530,7 +530,7 @@ theorem Ref81Lem5 (ρ σ : MState d) (ε : Prob) (hε : ε < 1) (α : ℝ) (hα 
     · exact sub_nonneg_of_le q.2.2
 
 set_option backward.isDefEq.respectTransparency false in
-theorem rate_pos_of_smul_pos {ε : Prob} {d : Type*} [Fintype d] [DecidableEq d] {ρ σ₁ σ₂ : MState d}
+lemma rate_pos_of_smul_pos {ε : Prob} {d : Type*} [Fintype d] [DecidableEq d] {ρ σ₁ σ₂ : MState d}
     (hσ₂ : 0 < β_ ε(ρ‖{σ₂})) {c : ℝ} (hc : 0 < c) (hσ : c • σ₂ ≤ σ₁.M) : 0 < β_ ε(ρ‖{σ₁}) := by
   simp only [of_singleton, lt_iInf_iff] at hσ₂ ⊢
   rcases hσ₂ with ⟨⟨b, _, hb_le⟩, hb_pos, hb⟩
@@ -548,7 +548,7 @@ theorem rate_pos_of_smul_pos {ε : Prob} {d : Type*} [Fintype d] [DecidableEq d]
 
 set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
-theorem rate_Continuous_singleton {ε : Prob} {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
+lemma rate_Continuous_singleton {ε : Prob} {d : Type*} [Fintype d] [DecidableEq d] (ρ : MState d) :
     Continuous fun σ ↦ β_ ε(ρ‖{σ}) := by
   have h := HermitianMat.innerₗ.flip.continuous_iInf_fst
     (S := { m | ρ.exp_val (1 - m) ≤ ↑ε ∧ 0 ≤ m ∧ m ≤ 1 })

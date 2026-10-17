@@ -109,7 +109,7 @@ theorem Sᵥₙ_of_pure_zero (ψ : Ket d) : Sᵥₙ (MState.pure ψ) = 0 := by
   obtain ⟨i, hi⟩ := MState.spectrum_pure_eq_constant ψ
   rw [Sᵥₙ, hi, Hₛ_constant_eq_zero]
 
-theorem Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ.M⟫ := by
+lemma Sᵥₙ_eq_neg_trace_log (ρ : MState d) : Sᵥₙ ρ = -⟪ρ.M.log, ρ.M⟫ := by
   open HermitianMat in
   rw [log, inner_eq_re_trace]
   nth_rw 2 [← cfc_id ρ.M]
@@ -136,7 +136,7 @@ theorem Sᵥₙ_eq_trace_cfc_negMulLog (ρ : MState d) :
   simp [mul_comm]
 
 @[simp]
-theorem Sᵥₙ_unit_zero [Unique d] (ρ : MState d) : Sᵥₙ ρ = 0 := by
+lemma Sᵥₙ_unit_zero [Unique d] (ρ : MState d) : Sᵥₙ ρ = 0 := by
   refine le_antisymm ?_ (Sᵥₙ_nonneg ρ)
   simpa using Sᵥₙ_le_log_d ρ
 
@@ -164,19 +164,19 @@ theorem Sᵥₙ_of_assoc'_eq (ρ : MState (d₁ × (d₂ × d₃))) : Sᵥₙ ρ
   rw [← Sᵥₙ_of_assoc_eq, ρ.assoc_assoc']
 
 @[fun_prop]
-theorem selfAdjointMap_Continuous {𝕜 : Type*} [RCLike 𝕜] :
+lemma selfAdjointMap_Continuous {𝕜 : Type*} [RCLike 𝕜] :
     Continuous (IsMaximalSelfAdjoint.selfadjMap : 𝕜 →+ ℝ) := by
   rw [IsMaximalSelfAdjoint.RCLike_selfadjMap]
   fun_prop
 
 @[fun_prop]
-theorem HermitianMat.trace_Continuous {d 𝕜 : Type*} [Fintype d] [RCLike 𝕜]  :
+lemma HermitianMat.trace_Continuous {d 𝕜 : Type*} [Fintype d] [RCLike 𝕜]  :
     Continuous (HermitianMat.trace : HermitianMat d 𝕜 → ℝ) := by
   rw [funext HermitianMat.trace_eq_re_trace]
   fun_prop
 
 @[fun_prop]
-theorem Sᵥₙ_continuous : Continuous (Sᵥₙ (d := d)) := by
+lemma Sᵥₙ_continuous : Continuous (Sᵥₙ (d := d)) := by
   rw [funext Sᵥₙ_eq_trace_cfc_negMulLog]
   fun_prop
 
@@ -276,7 +276,7 @@ to complex numbers.
 private lemma charpoly_roots_filter_ne_zero_eq_eigenvalues_filter_ne_zero {d : Type*} [Fintype d] [DecidableEq d] (A : Matrix d d ℂ) (hA : A.IsHermitian) :
     A.charpoly.roots.filter (· ≠ 0) = ((Finset.univ.val.map hA.eigenvalues).filter (· ≠ 0)).map RCLike.ofReal := by
   convert congr_arg _ ?_;
-  rw [ multiset_filter_map_ofReal_eq ];
+  · rw [ multiset_filter_map_ofReal_eq ];
   -- Since A is Hermitian, its characteristic polynomial is equal to the product of (X - eigenvalue) over all eigenvalues.
   have h_charpoly : A.charpoly = Multiset.prod (Multiset.map (fun i => Polynomial.X - Polynomial.C (RCLike.ofReal (hA.eigenvalues i))) (Finset.univ.val)) := by
     convert! Matrix.IsHermitian.charpoly_eq hA using 1;

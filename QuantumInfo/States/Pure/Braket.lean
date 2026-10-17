@@ -78,7 +78,7 @@ def dot (ξ : Bra d) (ψ : Ket d) : ℂ := ∑ x, (ξ x) * (ψ x)
 
 scoped notation "〈" ξ:90 "‖" ψ:90 "〉" => dot (ξ : Bra _) (ψ : Ket _)
 
-theorem dot_eq_dotProduct (ψ : Bra d) (φ : Ket d) :〈ψ‖φ〉= dotProduct (m := d) ψ φ := by
+lemma dot_eq_dotProduct (ψ : Bra d) (φ : Ket d) :〈ψ‖φ〉= dotProduct (m := d) ψ φ := by
   rfl
 
 end Braket
@@ -88,26 +88,26 @@ open Braket
 
 variable {d : Type*} [Fintype d]
 
-theorem Ket.apply (ψ : Ket d) (i : d) : ψ i = ψ.vec i :=
+lemma Ket.apply (ψ : Ket d) (i : d) : ψ i = ψ.vec i :=
   rfl
 
-theorem Bra.apply (ψ : Bra d) (i : d) : ψ i = ψ.vec i :=
+lemma Bra.apply (ψ : Bra d) (i : d) : ψ i = ψ.vec i :=
   rfl
 
 @[ext]
-theorem Ket.ext {ξ ψ : Ket d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
+lemma Ket.ext {ξ ψ : Ket d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
   DFunLike.ext ξ ψ h
 
 @[ext]
-theorem Bra.ext {ξ ψ : Bra d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
+lemma Bra.ext {ξ ψ : Bra d} (h : ∀ x, ξ x = ψ x) : ξ = ψ :=
   DFunLike.ext ξ ψ h
 
-theorem Ket.normalized (ψ : Ket d) : ∑ x, Complex.normSq (ψ x) = 1 := by
+lemma Ket.normalized (ψ : Ket d) : ∑ x, Complex.normSq (ψ x) = 1 := by
   convert ψ.normalized'
   rw [Complex.normSq_eq_norm_sq]
   rfl
 
-theorem Bra.normalized (ψ : Bra d) : ∑ x, Complex.normSq (ψ x) = 1 := by
+lemma Bra.normalized (ψ : Bra d) : ∑ x, Complex.normSq (ψ x) = 1 := by
   convert ψ.normalized'
   rw [Complex.normSq_eq_norm_sq]
   rfl
@@ -127,20 +127,20 @@ instance instBraOfKet : Coe (Ket d) (Bra d) := ⟨Ket.to_bra⟩
 instance instKetOfBra : Coe (Bra d) (Ket d) := ⟨Bra.to_ket⟩
 
 @[simp]
-theorem Bra.eq_conj (ψ : Ket d) (x : d) :〈ψ∣ x = conj (∣ψ〉 x) :=
+lemma Bra.eq_conj (ψ : Ket d) (x : d) :〈ψ∣ x = conj (∣ψ〉 x) :=
   rfl
 
-theorem Bra.apply' (ψ : Ket d) (i : d) : 〈ψ∣ i = conj (ψ.vec i) :=
+lemma Bra.apply' (ψ : Ket d) (i : d) : 〈ψ∣ i = conj (ψ.vec i) :=
   rfl
 
-theorem Ket.exists_ne_zero (ψ : Ket d) : ∃ x, ψ x ≠ 0 := by
+lemma Ket.exists_ne_zero (ψ : Ket d) : ∃ x, ψ x ≠ 0 := by
   have hzerolt : ∑ x : d, Complex.normSq (ψ x) > ∑ x : d, 0 := by rw [ψ.normalized, Finset.sum_const_zero]; exact zero_lt_one
   have hpos : ∃ x ∈ Finset.univ, 0 < Complex.normSq (ψ x) := Finset.exists_lt_of_sum_lt hzerolt
   obtain ⟨x, _, hpos⟩ := hpos
   rw [Complex.normSq_pos] at hpos
   use x
 
-theorem Bra.exists_ne_zero (ψ : Bra d) : ∃ x, ψ x ≠ 0 := by
+lemma Bra.exists_ne_zero (ψ : Bra d) : ∃ x, ψ x ≠ 0 := by
   have hzerolt : ∑ x : d, Complex.normSq (ψ x) > ∑ x : d, 0 := by rw [ψ.normalized, Finset.sum_const_zero]; exact zero_lt_one
   have hpos : ∃ x ∈ Finset.univ, 0 < Complex.normSq (ψ x) := Finset.exists_lt_of_sum_lt hzerolt
   obtain ⟨x, _, hpos⟩ := hpos
@@ -235,6 +235,24 @@ lemma Braket.dot_swap_conj (ψ₁ ψ₂ : Ket d) :
   simp +decide [Braket.dot]
   ac_rfl
 
+section relabel
+variable {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂]
+
+/-- Relabel a ket along an equivalence of basis index types. Given `e : d₂ ≃ d₁`,
+the amplitude of `ψ.relabel e` at `i : d₂` is the amplitude of `ψ` at `e i`. -/
+def Ket.relabel (ψ : Ket d₁) (e : d₂ ≃ d₁) : Ket d₂ where
+  vec i := ψ (e i)
+  normalized' := by
+    rw [← ψ.normalized']
+    exact Equiv.sum_comp e (fun i ↦ ‖ψ i‖ ^ 2)
+
+@[simp]
+lemma Ket.relabel_apply (ψ : Ket d₁) (e : d₂ ≃ d₁) (i : d₂) :
+    ψ.relabel e i = ψ (e i) :=
+  rfl
+
+end relabel
+
 section prod
 variable {d d₁ d₂ : Type*} [Fintype d] [Fintype d₁] [Fintype d₂]
 
@@ -246,6 +264,23 @@ def Ket.prod (ψ₁ : Ket d₁) (ψ₂ : Ket d₂) : Ket (d₁ × d₂) where
       ← Finset.mul_sum, ψ₁.normalized, ψ₂.normalized]
 
 infixl:100 " ⊗ᵠ " => Ket.prod
+
+/-- The tensor product of a finite family of kets, generalizing `Ket.prod`. Party `i` has
+basis index type `d i`, and a joint index `j` selects one index `j i` for each party; the
+amplitude at `j` is `∏ i, ψ i (j i)`. -/
+def Ket.piProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (ψ : (i : ι) → Ket (d i)) : Ket ((i : ι) → d i) where
+  vec j := ∏ i, ψ i (j i)
+  normalized' := by
+    simp only [Complex.norm_prod, ← Finset.prod_pow]
+    rw [← Fintype.prod_sum (fun i a ↦ ‖ψ i a‖ ^ 2)]
+    exact Finset.prod_eq_one fun i _ ↦ (ψ i).normalized'
+
+@[simp]
+lemma Ket.piProd_apply {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (ψ : (i : ι) → Ket (d i)) (j : (i : ι) → d i) :
+    Ket.piProd ψ j = ∏ i, ψ i (j i) :=
+  rfl
 
 /-- A Ket is a product if it's `Ket.prod` of two kets. -/
 def Ket.IsProd (ψ : Ket (d₁ × d₂)) : Prop := ∃ ξ φ, ψ = ξ ⊗ᵠ φ
@@ -328,6 +363,36 @@ theorem Ket.IsProd_iff_mul_eq_mul (ψ : Ket (d₁ × d₂)) : ψ.IsProd ↔
         exact hψfun
       · simp_all [Ket.apply]
     · simp
+
+/-- A ket on the joint system of a finite family of parties is a product state if it is
+the `Ket.piProd` of one ket for each party, generalizing `Ket.IsProd`. -/
+def Ket.IsPiProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (ψ : Ket ((i : ι) → d i)) : Prop :=
+  ∃ φ : (i : ι) → Ket (d i), ψ = Ket.piProd φ
+
+/-- Every `Ket.piProd` state satisfies `Ket.IsPiProd`, generalizing `Ket.IsProd_prod`. -/
+@[simp]
+lemma Ket.isPiProd_piProd {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)] (φ : (i : ι) → Ket (d i)) : (Ket.piProd φ).IsPiProd :=
+  ⟨φ, rfl⟩
+
+/-- For two parties, `Ket.IsPiProd` agrees with `Ket.IsProd` after relabeling the joint
+index type `(i : Fin 2) → d i` as `d 0 × d 1`. -/
+lemma Ket.isPiProd_iff_isProd_relabel {d : Fin 2 → Type*} [∀ i, Fintype (d i)]
+    (ψ : Ket ((i : Fin 2) → d i)) :
+    ψ.IsPiProd ↔ (ψ.relabel (piFinTwoEquiv d).symm).IsProd := by
+  constructor
+  · rintro ⟨φ, rfl⟩
+    refine ⟨φ 0, φ 1, Ket.ext fun ⟨a, b⟩ ↦ ?_⟩
+    rw [Ket.relabel_apply, Ket.piProd_apply, Fin.prod_univ_two]
+    rfl
+  · rintro ⟨ξ, η, h⟩
+    refine ⟨(piFinTwoEquiv fun i ↦ Ket (d i)).symm (ξ, η), Ket.ext fun j ↦ ?_⟩
+    have hj := congrArg (fun χ : Ket (d 0 × d 1) ↦ χ (piFinTwoEquiv d j)) h
+    rw [Ket.relabel_apply, Equiv.symm_apply_apply] at hj
+    rw [hj, Ket.piProd_apply, Fin.prod_univ_two]
+    rfl
+
 end prod
 
 section mes
@@ -397,18 +462,43 @@ def KetUpToPhase.lift {α : Sort*} (f : Ket d → α)
   @Quotient.lift _ _ Ket.PhaseEquiv f hf
 
 @[simp]
-theorem KetUpToPhase.lift_mk {α : Sort*} (f : Ket d → α)
+lemma KetUpToPhase.lift_mk {α : Sort*} (f : Ket d → α)
     (hf : ∀ ψ φ, Ket.PhaseEquiv.r ψ φ → f ψ = f φ) (ψ : Ket d) :
     KetUpToPhase.lift f hf (KetUpToPhase.mk ψ) = f ψ := rfl
 
-theorem KetUpToPhase.ind {p : KetUpToPhase d → Prop}
+lemma KetUpToPhase.ind {p : KetUpToPhase d → Prop}
     (h : ∀ ψ : Ket d, p (KetUpToPhase.mk ψ)) : ∀ q, p q :=
   @Quotient.ind _ Ket.PhaseEquiv p h
 
-theorem KetUpToPhase.surjective_mk : Function.Surjective (KetUpToPhase.mk (d := d)) :=
+lemma KetUpToPhase.surjective_mk : Function.Surjective (KetUpToPhase.mk (d := d)) :=
   fun q => @Quotient.ind _ Ket.PhaseEquiv (fun q => ∃ a, KetUpToPhase.mk a = q) (fun a => ⟨a, rfl⟩) q
 
 end equiv
+
+section piProd_phase
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*}
+    [∀ i, Fintype (d i)]
+
+/-- If a ket is phase-equivalent to a `Ket.IsPiProd` state, then it is also a
+`Ket.IsPiProd` state, provided there is at least one party. The global phase is
+absorbed into one tensor factor. -/
+lemma Ket.IsPiProd.of_phaseEquiv [Nonempty ι] {ψ ψ' : Ket ((i : ι) → d i)}
+    (h' : ψ'.IsPiProd) (h : Ket.PhaseEquiv.r ψ ψ') : ψ.IsPiProd := by
+  obtain ⟨z, hz, hψ⟩ := h
+  obtain ⟨φ, rfl⟩ := h'
+  obtain ⟨i₀⟩ := ‹Nonempty ι›
+  refine ⟨Function.update φ i₀ ⟨fun a ↦ z * φ i₀ a, ?_⟩, Ket.ext fun j ↦ ?_⟩
+  · simpa [norm_mul, hz, Ket.apply] using (φ i₀).normalized'
+  · have hj : ψ j = z * ∏ i, φ i (j i) := congrFun hψ j
+    rw [hj, Ket.piProd_apply,
+      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i₀),
+      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i₀),
+      Function.update_self, ← mul_assoc]
+    congr 1
+    refine Finset.prod_congr rfl fun i hi ↦ ?_
+    rw [Function.update_of_ne (Finset.ne_of_mem_erase hi)]
+
+end piProd_phase
 
 /-! ## Norm bounds -/
 

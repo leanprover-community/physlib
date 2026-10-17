@@ -46,7 +46,7 @@ open MeasureTheory
 open Set
 
 instance (H : Type*) [SeminormedAddCommGroup H] [InnerProductSpace ℂ H] :
-    IsAddTorsionFree (H →L[ℂ] H) where
+    HasUniqueDiv (H →L[ℂ] H) where
   nsmul_right_injective n hn := by
     refine Function.HasLeftInverse.injective ⟨fun f ↦ (n : ℂ)⁻¹ • f, fun x ↦ ?_⟩
     simp [← Nat.cast_smul_eq_nsmul ℂ, smul_smul, Nat.cast_ne_zero (R := ℂ), hn]

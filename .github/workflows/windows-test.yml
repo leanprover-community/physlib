@@ -1,0 +1,62 @@
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - lakefile.toml
+      - lake-manifest.json
+      - lean-toolchain
+      - scripts/github/windows_test.lean
+      - .github/workflows/windows-test.yml
+
+name: Windows test
+
+# Checks that Physlib executables can be built on a Windows machine without a C compiler,
+# by building and running `lake exe windows_test` with `cc` removed from the PATH.
+# Lake links the C libraries of every dependency into every executable, so this fails if
+# Physlib depends on a package compiling C code with `cc`, such as `leansqlite` (a dependency
+# of `doc-gen4`, which is why `doc-gen4` lives in the nested `docs/build` project).
+
+jobs:
+  windows_test:
+    name: Build an executable without a C compiler
+    runs-on: windows-latest
+    env:
+      # A fresh Lake artifact cache, so the C objects cannot be restored from an earlier build.
+      LAKE_CACHE_DIR: ${{ github.workspace }}/.lake/cache
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+      - name: Install elan
+        shell: pwsh
+        run: |
+          curl.exe -sSfL -o elan-init.ps1 https://raw.githubusercontent.com/leanprover/elan/master/elan-init.ps1
+          ./elan-init.ps1 -NoPrompt 1 -NoModifyPath 1 -DefaultToolchain none
+          Remove-Item elan-init.ps1
+          "$env:USERPROFILE\.elan\bin" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: check versions
+        shell: pwsh
+        run: |
+          lean --version
+          lake --version
+
+      # The runner image comes with C compilers (MinGW, Strawberry Perl, ...), so every PATH entry
+      # providing `cc` is dropped, as on a Windows machine without one. Lean's own bundled `clang`
+      # is not on the PATH and is unaffected.
+      - name: build and run windows_test without cc
+        shell: pwsh
+        run: |
+          $ccNames = @('cc.exe', 'cc.cmd', 'cc.bat', 'cc')
+          $kept = $env:PATH -split ';' | Where-Object {
+            $dir = $_
+            $dir -and -not ($ccNames | Where-Object { Test-Path -LiteralPath (Join-Path $dir $_) -PathType Leaf })
+          }
+          $env:PATH = $kept -join ';'
+          if (Get-Command cc -ErrorAction SilentlyContinue) {
+            Write-Error "cc is still on the PATH: $((Get-Command cc).Source)"
+            exit 1
+          }
+          lake exe windows_test
+          exit $LASTEXITCODE

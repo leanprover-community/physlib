@@ -80,16 +80,16 @@ def CPTP_of_choi_PSD_Tr {M : Matrix (dOut × dIn) (dOut × dIn) ℂ} (h₁ : M.P
     ((MatrixMap.map_choi_inv M).symm ▸ h₂)
 
 @[simp]
-theorem choi_of_CPTP_of_choi (M : Matrix (dOut × dIn) (dOut × dIn) ℂ) {h₁} {h₂} :
+lemma choi_of_CPTP_of_choi (M : Matrix (dOut × dIn) (dOut × dIn) ℂ) {h₁} {h₂} :
     (CPTP_of_choi_PSD_Tr (M := M) h₁ h₂).choi = M := by
   simp only [choi, CPTP_of_choi_PSD_Tr]
   rw [MatrixMap.map_choi_inv]
 
-theorem mat_coe_eq_apply_mat [DecidableEq dOut] (ρ : MState dIn) : (Λ ρ).m = Λ.map ρ.m :=
+lemma mat_coe_eq_apply_mat [DecidableEq dOut] (ρ : MState dIn) : (Λ ρ).m = Λ.map ρ.m :=
   rfl
 
 @[ext]
-theorem funext [DecidableEq dOut] {Λ₁ Λ₂ : CPTPMap dIn dOut} (h : ∀ ρ, Λ₁ ρ = Λ₂ ρ) : Λ₁ = Λ₂ :=
+lemma funext [DecidableEq dOut] {Λ₁ Λ₂ : CPTPMap dIn dOut} (h : ∀ ρ, Λ₁ ρ = Λ₂ ρ) : Λ₁ = Λ₂ :=
   DFunLike.ext _ _ h
 
 /-- The composition of CPTPMaps, as a CPTPMap. -/
@@ -189,12 +189,12 @@ def ofEquiv (σ : dIn ≃ dOut) : CPTPMap dIn dOut where
   TP x := by rw [MatrixMap.IsTracePreserving.submatrix]
 
 @[simp]
-theorem ofEquiv_apply (σ : dIn ≃ dOut) (ρ : MState dIn) :
+lemma ofEquiv_apply (σ : dIn ≃ dOut) (ρ : MState dIn) :
     ofEquiv σ ρ = ρ.relabel σ.symm := by
   rfl
 
 @[simp]
-theorem equiv_inverse (σ : dIn ≃ dOut)  : (ofEquiv σ) ∘ (ofEquiv σ.symm) = id (dIn := dOut) := by
+lemma equiv_inverse (σ : dIn ≃ dOut)  : (ofEquiv σ) ∘ (ofEquiv σ.symm) = id (dIn := dOut) := by
   ext1; simp
 
 variable {d₁ d₂ d₃ : Type*} [Fintype d₁] [Fintype d₂] [Fintype d₃]
@@ -216,19 +216,19 @@ def assoc' : CPTPMap (d₁ × d₂ × d₃) ((d₁ × d₂) × d₃) :=
   ofEquiv (Equiv.prodAssoc d₁ d₂ d₃).symm
 
 @[simp]
-theorem SWAP_eq_MState_SWAP (ρ : MState (d₁ × d₂)) : SWAP (d₁ := d₁) (d₂ := d₂) ρ = ρ.SWAP :=
+lemma SWAP_eq_MState_SWAP (ρ : MState (d₁ × d₂)) : SWAP (d₁ := d₁) (d₂ := d₂) ρ = ρ.SWAP :=
   rfl
 
 @[simp]
-theorem assoc_eq_MState_assoc (ρ : MState ((d₁ × d₂) × d₃)) : assoc (d₁ := d₁) (d₂ := d₂) (d₃ := d₃) ρ = ρ.assoc :=
+lemma assoc_eq_MState_assoc (ρ : MState ((d₁ × d₂) × d₃)) : assoc (d₁ := d₁) (d₂ := d₂) (d₃ := d₃) ρ = ρ.assoc :=
   rfl
 
 @[simp]
-theorem assoc'_eq_MState_assoc' (ρ : MState (d₁ × d₂ × d₃)) : assoc' (d₁ := d₁) (d₂ := d₂) (d₃ := d₃) ρ = ρ.assoc' :=
+lemma assoc'_eq_MState_assoc' (ρ : MState (d₁ × d₂ × d₃)) : assoc' (d₁ := d₁) (d₂ := d₂) (d₃ := d₃) ρ = ρ.assoc' :=
   rfl
 
 @[simp]
-theorem assoc_assoc' : (assoc (d₁ := d₁) (d₂ := d₂) (d₃ := d₃)) ∘ₘ assoc' = id := by
+lemma assoc_assoc' : (assoc (d₁ := d₁) (d₂ := d₂) (d₃ := d₃)) ∘ₘ assoc' = id := by
   ext1 ρ
   simp
 
@@ -276,12 +276,12 @@ def traceRight : CPTPMap (d₁ × d₂) d₁ :=
   traceLeft ∘ₘ SWAP
 
 @[simp]
-theorem traceLeft_eq_MState_traceLeft (ρ : MState (d₁ × d₂)) :
+lemma traceLeft_eq_MState_traceLeft (ρ : MState (d₁ × d₂)) :
     traceLeft (d₁ := d₁) (d₂ := d₂) ρ = ρ.traceLeft := by
   rfl
 
 @[simp]
-theorem traceRight_eq_MState_traceRight (ρ : MState (d₁ × d₂)) :
+lemma traceRight_eq_MState_traceRight (ρ : MState (d₁ × d₂)) :
     traceRight (d₁ := d₁) (d₂ := d₂) ρ = ρ.traceRight := by
   rfl --It's actually pretty crazy that this is a definitional equality, cool
 
@@ -337,7 +337,7 @@ instance instUnique [Nonempty dIn] [Unique dOut] : Unique (CPTPMap dIn dOut) whe
   uniq := fun _ ↦ eq_if_output_unique _ _
 
 @[simp]
-theorem destroy_comp {dOut₂ : Type*} [Unique dOut₂] [DecidableEq dOut] [Nonempty dIn] [Nonempty dOut]
+lemma destroy_comp {dOut₂ : Type*} [Unique dOut₂] [DecidableEq dOut] [Nonempty dIn] [Nonempty dOut]
   (Λ : CPTPMap dIn dOut) :
     destroy (dOut := dOut₂) ∘ₘ Λ = destroy :=
   Unique.eq_default _
@@ -383,7 +383,7 @@ def piProd (Λi : (i:ι) → CPTPMap (dI i) (dO i)) : CPTPMap ((i:ι) → dI i) 
   TP := MatrixMap.IsTracePreserving.piProd (fun i ↦ (Λi i).TP)
 
 set_option backward.isDefEq.respectTransparency false in
-theorem fin_1_piProd
+lemma fin_1_piProd
   {dI : Fin 1 → Type v} [Fintype (dI 0)] [DecidableEq (dI 0)]
   {dO : Fin 1 → Type w} [Fintype (dO 0)] [DecidableEq (dO 0)]
   (Λi : (i : Fin 1) → CPTPMap (dI 0) (dO 0)) :
@@ -421,7 +421,7 @@ theorem piProd_comp
     infer_instance
 
 @[simp]
-theorem piProd_id :
+lemma piProd_id :
     piProd (fun i ↦ (CPTPMap.id : CPTPMap (dI i) (dI i))) = CPTPMap.id := by
   apply CPTPMap.ext
   simp [piProd, id_map, MatrixMap.piProd_id]
@@ -450,7 +450,7 @@ theorem IsUnitary_iff_uConj (Λ : CPTPMap dIn dIn) : IsUnitary Λ ↔ ∃ U, ∀
   simp_rw [IsUnitary, ← ofUnitary_eq_conj, CPTPMap.funext_iff]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem IsUnitary_equiv (σ : dIn ≃ dIn) : IsUnitary (ofEquiv σ) := by
+lemma IsUnitary_equiv (σ : dIn ≃ dIn) : IsUnitary (ofEquiv σ) := by
   have h_unitary : ∃ U : Matrix dIn dIn ℂ, U * U.conjTranspose = 1 ∧ U.conjTranspose * U = 1 ∧ ∀ x : dIn, (∀ y : dIn, (U y x = 1) ↔ (y = σ x)) ∧ ∀ y : dIn, (U y x = 0) ↔ (y ≠ σ x) := by
     simp only [Matrix.conjTranspose, RCLike.star_def];
     refine' ⟨ fun y x => if y = σ x then 1 else 0, ?_, ?_, by simp⟩
@@ -717,7 +717,7 @@ private lemma purify_of_kraus_entry (K : (dOut × dIn) → Matrix dOut dIn ℂ) 
   rw [Finset.sum_comm]
 
 set_option backward.isDefEq.respectTransparency false in
-theorem exists_purify (Λ : CPTPMap dIn dOut) :
+lemma exists_purify (Λ : CPTPMap dIn dOut) :
     ∃ (Λ' : CPTPMap (dIn × dOut × dOut) (dIn × dOut × dOut)),
       Λ'.IsUnitary ∧
       Λ = (
@@ -760,7 +760,7 @@ theorem exists_purify (Λ : CPTPMap dIn dOut) :
 def purify (Λ : CPTPMap dIn dOut) : CPTPMap (dIn × dOut × dOut) (dIn × dOut × dOut) :=
   exists_purify Λ |>.choose
 
-theorem purify_IsUnitary (Λ : CPTPMap dIn dOut) : Λ.purify.IsUnitary :=
+lemma purify_IsUnitary (Λ : CPTPMap dIn dOut) : Λ.purify.IsUnitary :=
   exists_purify Λ |>.choose_spec.1
 
 /-- With a channel Λ : A → B, a valid purification (A×B×B)→(A×B×B) is such that:

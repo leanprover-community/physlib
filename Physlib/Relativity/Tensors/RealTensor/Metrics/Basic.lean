@@ -86,13 +86,13 @@ lemma contrMetric_eq_fromPairT {d : ℕ} :
 /-- The tensor `coMetric` is invariant under the action of `LorentzGroup d`. -/
 @[simp]
 lemma actionT_coMetric {d : ℕ} (g : LorentzGroup d) :
-    g • η' d = η' d:= by
-  erw [TensorSpecies.metricTensor_invariant]
+    g • η' d = η' d := by
+  rw [coMetric, TensorSpecies.metricTensor_invariant]
 
 /-- The tensor `contrMetric` is invariant under the action of `LorentzGroup d`. -/
 @[simp]
 lemma actionT_contrMetric {d} (g : LorentzGroup d) : g • η d = η d := by
-  erw [TensorSpecies.metricTensor_invariant]
+  rw [contrMetric, TensorSpecies.metricTensor_invariant]
 
 /-
 
@@ -155,7 +155,7 @@ lemma toDualMapAtIndex_basis_repr_apply {d n : ℕ} {c : Fin (n + 1) → Color}
   have h := crossToSlot_basis_repr_apply (S := realLorentzTensor d) i (0 : Fin 2) rfl
     (metricTensor (S := realLorentzTensor d) ((realLorentzTensor d).τ (c i))) t φ
   rw [crossToEnd_basis_repr_apply_eq_fin] at h
-  simp only [basisIdxCongr_eq_refl, Equiv.refl_apply] at h
+  simp only [basisIdxCongr_const, Equiv.refl_apply] at h
   refine h.trans (Finset.sum_congr rfl fun x _ => ?_)
   congr 1
   · congr 1

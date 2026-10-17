@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Conditioning
 
 # Jordan positivity in a C⋆-algebra
 
+In a C⋆-algebra, nonnegative observables are Jordan squares and `a₊ ∘ a₋ = 0`.
+
 ## i. Overview
 
 In a C⋆-algebra an observable is nonnegative iff it is a Jordan square, and its positive and
@@ -22,11 +24,17 @@ negative parts are Jordan orthogonal.
 
 - `JB.nonneg_iff_exists_jpow_two` : the positive observables are the Jordan squares.
 - `JB.jordanOrthogonal_posPart_negPart` : positive and negative parts are Jordan orthogonal.
+- `JB.quadRep_nonneg` : the quadratic representation `U_a` preserves positivity.
+- `JB.JordanAlgebra.IsJordanProjection.conditionCStar` : conditioning a state on a projection.
 
 ## iii. Table of contents
 
 - A. Positivity via the Jordan square
 - B. Orthogonality of the Jordan decomposition
+
+## iv. References
+
+* None.
 
 -/
 

@@ -14,6 +14,8 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 /-!
 # Extreme points of `ℓq` balls
 
+The extreme points of the `ℓq` ball are its unit sphere, those of the `ℓ1` ball its vertices.
+
 ## i. Overview
 
 The closed `ℓq` ball `{a | ∑ |a i| ^ q ≤ 1}` in `ℝⁿ` is strictly convex for `1 < q < ∞`: its
@@ -31,6 +33,10 @@ its `2n` vertices `± eᵢ`, and these vertices are its only extreme points.
 
 - A. Extreme points of the `ℓq` ball
 - B. Extreme points of the `ℓ1` ball
+
+## iv. References
+
+* None.
 
 -/
 

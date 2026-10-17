@@ -10,6 +10,8 @@ public import Physlib.ProbabilisticTheory.Effect.Convex
 /-!
 # Complementary effects
 
+The complement `1 - e` of an effect, its antitonicity and compatibility with mixtures.
+
 ## i. Overview
 
 The complement of an effect `e` is the yes/no test that fires exactly when `e` doesn't: `1 - e`.
@@ -26,6 +28,10 @@ Physically, a state's probability of "no" is always `1` minus its probability of
 - A. The complement
 - B. Monotonicity of the complement
 - C. The complement and mixtures
+
+## iv. References
+
+* None.
 
 -/
 

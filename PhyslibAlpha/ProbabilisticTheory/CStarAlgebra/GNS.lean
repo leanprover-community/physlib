@@ -12,6 +12,8 @@ public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 
 # The GNS construction
 
+Every state on a C⋆-algebra is the vector state of a cyclic unit vector in its GNS representation.
+
 ## i. Overview
 
 Every state `ω` on a C⋆-algebra is a vector state of a representation. Mathlib's GNS construction
@@ -29,6 +31,16 @@ representation.
 - `UnitalPositiveLinearMap.injective_gnsRep_of_isFaithful` : faithful states give faithful
   representations.
 
+## iii. Table of contents
+
+- A. The GNS representation
+- B. The cyclic vector
+- C. Faithful states
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -43,6 +55,12 @@ namespace UnitalPositiveLinearMap
 
 variable (ω : 𝓢[ℂ, A])
 
+/-!
+
+## A. The GNS representation
+
+-/
+
 /-- The GNS Hilbert space `H_ω` carried by a state `ω` on a unital C⋆-algebra: the Hilbert space
 completion of `A` with respect to the (semi-)inner product `⟨x, y⟩ := ω(x⋆y)`. -/
 noncomputable abbrev GNS := ω.toPositiveLinearMap.GNS
@@ -50,6 +68,12 @@ noncomputable abbrev GNS := ω.toPositiveLinearMap.GNS
 /-- The GNS representation `π_ω : A → B(H_ω)` carried by a state `ω`: the unital
 `⋆`-homomorphism into the bounded operators on `ω.GNS` induced by left multiplication. -/
 noncomputable abbrev gnsRep : A →⋆ₐ[ℂ] (ω.GNS →L[ℂ] ω.GNS) := ω.toPositiveLinearMap.gnsStarAlgHom
+
+/-!
+
+## B. The cyclic vector
+
+-/
 
 /-- The GNS cyclic vector `Ω_ω ∈ H_ω`: the image of `1 : A` under `A → ω.GNS`. -/
 noncomputable def gnsCyclicVector : ω.GNS :=
@@ -107,6 +131,12 @@ lemma denseRange_gnsRep_gnsCyclicVector :
   rw [this]
   exact hden.comp (Function.Surjective.denseRange hbij.surjective)
     (UniformSpace.Completion.continuous_coe _)
+
+/-!
+
+## C. Faithful states
+
+-/
 
 /-- A state is **faithful** when only `0` gives `x⋆x` weight `0` — the standard notion of a
 faithful state on a C⋆-algebra, and the hypothesis under which the GNS representation `π_ω`

@@ -14,6 +14,8 @@ public import Mathlib.MeasureTheory.Measure.Prokhorov
 /-!
 # Lifting, averaging and conditioning probability measures
 
+Lifting, averaging, conditioning and replacing parts of probability measures.
+
 ## i. Overview
 
 This file collects operations on probability measures used in Choquet's theorem. A probability
@@ -35,6 +37,10 @@ measure.
 - A. Lifting through a compact continuous map
 - B. Averaging two pushforwards
 - C. Conditioning and replacing part of a measure
+
+## iv. References
+
+* None.
 
 -/
 

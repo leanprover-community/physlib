@@ -125,6 +125,14 @@ lemma magneticField_div_eq_zero (A : ElectromagneticPotential)
 
 -/
 
+/-- A scalar-only potential produces no magnetic field. -/
+@[simp]
+lemma ofScalarPotential_magneticField (c : SpeedOfLight)
+    (φ : Time → Space 3 → ℝ) :
+    (ofScalarPotential c φ).magneticField c = 0 := by
+  funext t x
+  simp [magneticField]
+
 open Matrix in
 /-- The magnetic field of the electromagnetic potential created from the electric field
   `E` and the magnetic field `B` is `B`, as long as Gauss's law is satisfied. -/

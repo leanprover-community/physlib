@@ -16,6 +16,8 @@ public import Mathlib.Analysis.Calculus.Deriv.Prod
 
 # The mass cocycle of the Galilean group (Souriau)
 
+Souriau's mass cocycle of the Galilean group is a cocycle but not a coboundary.
+
 ## i. Overview
 
 This file is the group level of `PhyslibAlpha.ClassicalMechanics.MomentMap.GalileanMass`, which
@@ -95,8 +97,6 @@ What is not formalised here:
   (12.73)-(12.77), p. 151 (12.126)-(12.130), pp. 152-153 (12.132)-(12.136); pp. 52-53 (6.24),
   (6.25), (6.28); p. 108 (11.15), p. 109 (11.17), p. 111 (the order of the arguments of the
   derivative of a cocycle), p. 112 (11.19), p. 113 (11.22 b).
-
-## References
 
 * J.-M. Souriau, *Structure des systèmes dynamiques*, Maîtrises de mathématiques, Dunod,
   Paris, 1970, chapters 6, 11 and 12. The equation numbers refer to this edition.

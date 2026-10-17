@@ -194,7 +194,7 @@ private lemma blockDiagonal_le_left_wrap {A0 A1 B0 B1 : L ℋ}
 -- Theorem 2.5.2 `(iv) → (v)`.
 set_option maxHeartbeats 3000000 in
 -- Block-matrix normalization in this wrapper needs a larger local heartbeat budget.
-theorem theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
+lemma theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
     (hcont : ContinuousOn f Set.univ) :
     CondV (ℋ := ℋ) f := by
   intro A B X Y hA hB hAs hBs hXY
@@ -307,7 +307,7 @@ theorem theorem_2_5_2_i_all_imp_v {f : ℝ → ℝ} (hf : CondIAll.{u} f) :
 set_option maxHeartbeats 3000000 in
 -- The localized wrapper repeats the same block-operator normalization as
 -- `theorem_2_5_2_iv_imp_v`.
-theorem theorem_2_5_2_i_ici_all_imp_v {f : ℝ → ℝ}
+lemma theorem_2_5_2_i_ici_all_imp_v {f : ℝ → ℝ}
     (hf : CondIciAll.{u} f) :
     CondV (ℋ := ℋ) f := by
   have hfIci := hf

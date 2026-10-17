@@ -117,6 +117,9 @@ and coordinate facts are function equalities.
 - `Physlib.Wirtinger.dWirtingerCoord_dWirtingerAntiCoord_comm` : Schwarz's
     theorem for the coordinate operators, `∂_I ∂̄_J f = ∂̄_J ∂_I f` on
     `C²` `f`.
+- `Physlib.Wirtinger.dWirtingerCoord_comp_clm_zero` / `dWirtingerCoord_comp_clm_col` (and their
+    anti-holomorphic duals): the derivative of `h ∘ P` for a continuous ℝ-linear map `P`, read off
+    from how `P` acts on the coordinate column (§F).
 
 ## iii. Table of contents
 
@@ -125,6 +128,7 @@ and coordinate facts are function equalities.
 - C. Properties of `dWirtingerAntiCoord`
 - D. Wirtinger chain rules for an outer function
 - E. Schwarz's theorem for the coordinate operators
+- F. Chain rule for an inner continuous linear map
 
 -/
 
@@ -473,6 +477,18 @@ lemma dWirtingerAntiCoord_eq_zero_of_holomorphic_apply {u : (ι → ℂ)}
     dWirtingerAntiCoord f I u = 0 :=
   dWirtingerAntiDir_eq_zero_of_clinear (clinear_of_holomorphic hf _)
 
+/-- **Cauchy–Riemann in coordinates**, the form `∂̄_Ī W = 0` used in physics. Coordinate
+directions suffice by `LinearMap.commutesI_of_basis`. -/
+theorem differentiableAt_complex_iff_dWirtingerAntiCoord_eq_zero
+    (f : (ι → ℂ) → ℂ) (u : ι → ℂ) :
+    DifferentiableAt ℂ f u ↔
+      DifferentiableAt ℝ f u ∧ ∀ I, dWirtingerAntiCoord f I u = 0 := by
+  rw [differentiableAt_complex_iff_dWirtingerAntiDir_eq_zero]
+  refine and_congr_right fun _ => ⟨fun h I => h _, fun h v => ?_⟩
+  refine dWirtingerAntiDir_eq_zero_of_clinear ?_
+  exact LinearMap.commutesI_of_basis (fderiv ℝ f u : (ι → ℂ) →ₗ[ℝ] ℂ) (Pi.basisFun ℂ ι)
+    (fun J => by simpa using clinear_of_dWirtingerAntiDir_eq_zero (h J)) v
+
 /-!
 
 ### Coordinate-difference Wirtinger derivatives
@@ -663,6 +679,61 @@ theorem dWirtingerCoord_dWirtingerAntiCoord_comm (hf2 : ContDiffAt ℝ 2 f u) (I
   dWirtingerDir_dWirtingerAntiDir_comm hf2 (Pi.single I 1) (Pi.single J 1)
 
 end
+
+/-!
+
+## F. Chain rule for an inner continuous linear map
+
+Pre-composition of a coordinate Wirtinger derivative with a continuous ℝ-linear map `P` into a
+coordinate space, over an arbitrary domain `D`. The directional vanishing/routing is controlled
+entirely by `P`'s action on the coordinate columns `Pi.single c 1` and `Pi.single c Complex.I`. -/
+
+section CompCLM
+
+variable {D : Type} [Fintype D] [DecidableEq D]
+
+/-- If the inner continuous ℝ-linear map `P` kills the coordinate column `c`, the holomorphic
+coordinate Wirtinger derivative of `h ∘ P` along `c` vanishes. -/
+lemma dWirtingerCoord_comp_clm_zero {C_s : Type} [Fintype C_s]
+    (P : (D → ℂ) →L[ℝ] (C_s → ℂ)) (h : (C_s → ℂ) → ℂ) (c : D) (u : D → ℂ)
+    (hh : DifferentiableAt ℝ h (P u))
+    (h1 : P (Pi.single c 1) = 0) (hI : P (Pi.single c Complex.I) = 0) :
+    dWirtingerCoord (fun v => h (P v)) c u = 0 := by
+  rw [dWirtingerCoord_apply, fderiv_comp_clm_apply hh, fderiv_comp_clm_apply hh, h1, hI]
+  simp
+
+/-- If the inner continuous ℝ-linear map `P` reads the coordinate column `c` as the sector
+coordinate `a₀`, the holomorphic coordinate Wirtinger derivative of `h ∘ P` along `c` is that
+of `h` along `a₀`, evaluated at `P u`. -/
+lemma dWirtingerCoord_comp_clm_col {C_s : Type} [Fintype C_s] [DecidableEq C_s]
+    (P : (D → ℂ) →L[ℝ] (C_s → ℂ)) (h : (C_s → ℂ) → ℂ) (c : D) (a₀ : C_s)
+    (u : D → ℂ) (hh : DifferentiableAt ℝ h (P u))
+    (h1 : P (Pi.single c 1) = Pi.single a₀ 1)
+    (hI : P (Pi.single c Complex.I) = Pi.single a₀ Complex.I) :
+    dWirtingerCoord (fun v => h (P v)) c u = dWirtingerCoord h a₀ (P u) := by
+  rw [dWirtingerCoord_apply, fderiv_comp_clm_apply hh, fderiv_comp_clm_apply hh, h1, hI,
+    dWirtingerCoord_apply]
+
+/-- Anti-holomorphic mirror of `dWirtingerCoord_comp_clm_zero`. -/
+lemma dWirtingerAntiCoord_comp_clm_zero {C_s : Type} [Fintype C_s]
+    (P : (D → ℂ) →L[ℝ] (C_s → ℂ)) (h : (C_s → ℂ) → ℂ) (c : D) (u : D → ℂ)
+    (hh : DifferentiableAt ℝ h (P u))
+    (h1 : P (Pi.single c 1) = 0) (hI : P (Pi.single c Complex.I) = 0) :
+    dWirtingerAntiCoord (fun v => h (P v)) c u = 0 := by
+  rw [dWirtingerAntiCoord_apply, fderiv_comp_clm_apply hh, fderiv_comp_clm_apply hh, h1, hI]
+  simp
+
+/-- Anti-holomorphic mirror of `dWirtingerCoord_comp_clm_col`. -/
+lemma dWirtingerAntiCoord_comp_clm_col {C_s : Type} [Fintype C_s] [DecidableEq C_s]
+    (P : (D → ℂ) →L[ℝ] (C_s → ℂ)) (h : (C_s → ℂ) → ℂ) (c : D) (a₀ : C_s)
+    (u : D → ℂ) (hh : DifferentiableAt ℝ h (P u))
+    (h1 : P (Pi.single c 1) = Pi.single a₀ 1)
+    (hI : P (Pi.single c Complex.I) = Pi.single a₀ Complex.I) :
+    dWirtingerAntiCoord (fun v => h (P v)) c u = dWirtingerAntiCoord h a₀ (P u) := by
+  rw [dWirtingerAntiCoord_apply, fderiv_comp_clm_apply hh, fderiv_comp_clm_apply hh, h1, hI,
+    dWirtingerAntiCoord_apply]
+
+end CompCLM
 
 end Physlib.Wirtinger
 end

@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SpectralMeasure
 
 # Spectral formulas for Jordan moments
 
+Jordan moments and the variance of an observable as integrals against its spectral measure.
+
 ## i. Overview
 
 The statistics of an observable `a` in a state `ω` of a C⋆-algebra are given by its spectral
@@ -21,16 +23,21 @@ powers `a^{[n]}`. For a single observable these agree with the ordinary powers `
 C⋆-algebra, so every moment, and in particular the variance, is an integral against the spectral
 measure.
 
-## ii. Key definitions and results
+## ii. Key results
 
 - `JB.jpow_eq_pow` : Jordan powers of a single observable are ordinary powers.
 - `JB.moment_eq_integral` : `moment n (ω.onObservables) a = ∫ y, y^n ∂(realSpectralMeasure ω a)`
 - `JB.variance_eq_integral_sq_sub` : the variance as `∫y² dμ - (∫y dμ)²`
+- `JB.apply_eq_integral` : the expectation `ω a` as `∫ y dμ`.
 
 ## iii. Table of contents
 
 - A. Jordan powers of a single element are ordinary powers
 - B. Moments as integrals against the outcome distribution
+
+## iv. References
+
+* None.
 
 -/
 

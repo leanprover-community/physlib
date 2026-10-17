@@ -5,11 +5,11 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Meta.TODO.Basic
 public import Physlib.Relativity.Fermions.Weyl.LeftHanded
 public import Physlib.Relativity.Fermions.Weyl.RightHanded
 public import Physlib.Relativity.Fermions.Weyl.DualLeftHanded
 public import Physlib.Relativity.Fermions.Weyl.DualRightHanded
-public import Mathlib.RepresentationTheory.Intertwining
 /-!
 
 # Contraction of Weyl fermions
@@ -267,6 +267,12 @@ lemma dualRightContraction_basis (i j : Fin 2) :
   simp only [Fin.ext_iff]
   refine ite_congr ?h₁ (congrFun rfl) (congrFun rfl)
   exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
+
+TODO "Prove the analogue of `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr` for Weyl
+  fermions: every intertwining map `LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep →
+  Representation.trivial ℂ SL(2,ℂ) ℂ` is a scalar multiple of `leftDualContraction`, and likewise
+  for `dualLeftContraction`, `rightDualContraction` and `dualRightContraction`. This is Schur's
+  lemma for the Weyl representations of `SL(2,ℂ)`, which are irreducible."
 
 /-!
 

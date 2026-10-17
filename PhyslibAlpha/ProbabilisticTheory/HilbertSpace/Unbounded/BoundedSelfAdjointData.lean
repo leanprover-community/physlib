@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.CayleySpec
 
 # Spectral measures of bounded self-adjoint operators
 
+The real spectral measure of a bounded self-adjoint operator.
+
 ## i. Overview
 
 The spectral measure of a bounded normal operator lives on its complex spectrum. For a self-adjoint
@@ -24,6 +26,15 @@ measure on `ℝ` that reconstructs the operator.
 - `boundedSelfAdjointSpectralMeasure_reconstruction` : the operator is the integral of the identity.
 - `boundedSelfAdjointSpectralMeasure_commute_of_commute` : operators commuting with `T` commute with
   its spectral projections.
+
+## iii. Table of contents
+
+- A. The real spectral measure
+- B. Commutation and bounded support
+
+## iv. References
+
+* None.
 
 -/
 
@@ -39,6 +50,12 @@ open scoped ComplexOrder CStarAlgebra InnerProductSpace
 namespace QuantumMechanics
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. The real spectral measure
+
+-/
 
 /-- The real spectral measure of a bounded self-adjoint operator: the spectral measure on its
 complex spectrum, pushed forward along `Complex.re`. -/
@@ -84,6 +101,12 @@ lemma boundedSelfAdjointSpectralMeasure_reconstruction
   unfold QuantumMechanics.WOTSpectralMeasure.complexWeakIntegral
   rw [cfcSpectralMeasure_scalarMeasure]
   exact polarizedCfcScalarMeasure_integral_spectrum_coe A hA.isStarNormal x y
+
+/-!
+
+## B. Commutation and bounded support
+
+-/
 
 /-- The spectral projections of a bounded self-adjoint operator commute with every unitary that
 commutes with it. -/

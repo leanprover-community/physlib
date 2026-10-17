@@ -14,6 +14,8 @@ public import PhyslibAlpha.ProbabilisticTheory.State.NormalEquivalence
 
 # JBW-algebras
 
+JBW-algebras: monotone-complete JB-algebras whose normal states separate points.
+
 ## i. Overview
 
 A JBW-algebra is a monotone-complete JB-algebra whose normal states separate points.
@@ -23,11 +25,22 @@ A JBW-algebra is a monotone-complete JB-algebra whose normal states separate poi
 - `JBWAlgebra` : JBW-algebras.
 - `JBWAlgebra.eq_of_forall_normal_state_eq` : normal states separate points.
 
+## iii. Table of contents
+
+- A. JBW-algebras
+- B. Separation and monotone convergence
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace ProbabilisticTheory
+
+/-! ## A. JBW-algebras -/
 
 /-- A JBW-algebra, presented as a monotone-complete JB-algebra with enough normal states.
 The ordinary JB, order-unit, and scalar-order data stay in their existing canonical classes. -/
@@ -40,6 +53,8 @@ class JBWAlgebra (E : Type*) [IsJBOrderUnit E] : Prop
 namespace JBWAlgebra
 
 variable {E : Type*} [IsJBOrderUnit E] [JBWAlgebra E]
+
+/-! ## B. Separation and monotone convergence -/
 
 /-- Equality of observables is detected by all normal states. -/
 lemma eq_of_forall_normal_state_eq {x y : E}

@@ -7,6 +7,7 @@ module
 
 public import Physlib.SpaceAndTime.Space.Derivatives.Laplacian
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Poincare
+public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Physlib.SpaceAndTime.Space.CrossProduct
 public import Physlib.Mathematics.LeviCivita.Basic
 public import Mathlib.Tactic.Cases
@@ -180,8 +181,8 @@ lemma deriv_coord_2nd_add (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : ContD
   repeat rw [deriv_eq_fderiv_fun]
   ext x
   rw [fderiv_fun_add, fderiv_fun_add]
-  simp only [_root_.add_apply, Pi.add_apply]
-  ring
+  · simp only [_root_.add_apply, Pi.add_apply]
+    ring
   repeat fun_prop
 
 /-- Second derivatives distribute coordinate-wise over subtraction (two components for curl). -/
@@ -192,7 +193,7 @@ lemma deriv_coord_2nd_sub (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : ContD
   ext x
   simp only [Pi.sub_apply]
   rw [fderiv_fun_sub]
-  simp only [FunLike.coe_sub, Pi.sub_apply]
+  · simp only [FunLike.coe_sub, Pi.sub_apply]
   repeat fun_prop
 
 /-!
@@ -212,7 +213,7 @@ lemma div_of_curl_eq_zero (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : ContD
   simp only [Fin.isValue, Pi.sub_apply]
   rw [deriv_commute fun x => f x 0, deriv_commute fun x => f x 1,
     deriv_commute fun x => f x 2]
-  simp only [Fin.isValue, sub_add_sub_cancel', sub_self]
+  · simp only [Fin.isValue, sub_add_sub_cancel', sub_self]
   repeat
     try apply contDiff_euclidean.mp
     exact hf
@@ -347,7 +348,7 @@ private lemma fderiv_homotopyOperatorIntegrand_eq_fderiv_crossProduct
   · change _ = t • (fderiv ℝ (EuclideanSpace.proj i ∘
       (fun x => (WithLp.toLp 2 ((crossProduct (basis.repr x).ofLp) (f (t • x)).ofLp)))) x) y
     rw [fderiv_comp]
-    simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_comp, Function.comp_apply,
+    · simp only [ContinuousLinearMap.fderiv, ContinuousLinearMap.coe_comp, Function.comp_apply,
       PiLp.proj_apply]
     · fun_prop
     · exact Differentiable.differentiableAt (cross_diff t)
@@ -467,8 +468,8 @@ private lemma deriv_intervalIntegral_homotopyOperatorIntegrand_sub
       intro i
       apply MeasureTheory.IntegrableOn.integrable
       rw [← intervalIntegrable_iff_integrableOn_Ioc_of_le]
-      apply Continuous.intervalIntegrable
-      fun_prop
+      · apply Continuous.intervalIntegrable
+        fun_prop
       simp
   repeat rw [Space.deriv_euclid, Space.deriv, (hfderiv x₀).fderiv]
   rotate_left
@@ -502,8 +503,8 @@ lemma eq_neg_curl_of_div_zero (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : C
       ring
     simp only [fderiv_eq_smul_deriv, smul_eq_mul, one_mul]
     rw [intervalIntegral.integral_deriv_eq_sub (by fun_prop)]
-    simp only [one_pow, one_smul, one_mul, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow,
-      zero_smul, zero_mul, sub_zero]
+    · simp only [one_pow, one_smul, one_mul, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
+      zero_pow, zero_smul, zero_mul, sub_zero]
     · apply Continuous.intervalIntegrable
       fun_prop
   change f = -curl fun x => ∫ (t : ℝ) in 0..1, homotopyOperatorIntegrand f x t
@@ -604,10 +605,10 @@ lemma exists_grad_of_curl_zero (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : 
         fun a => (basis.repr.symm (f a))) a x) y := by rfl
     rw [fderiv_comp _ (by exact
       (InnerProductSpace.toDual ℝ (Space)).differentiable.differentiableAt) (by fun_prop)]
-    erw [(InnerProductSpace.toDual ℝ (Space)).fderiv]
+    rw [(InnerProductSpace.toDual ℝ (Space)).fderiv]
     simp only [ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe,
       LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply]
-    erw [InnerProductSpace.toDual_apply_apply]
+    rw [InnerProductSpace.toDual_apply_apply]
     rw [fderiv_fun_comp _ (by fun_prop) (by fun_prop)]
     simp
   have hdω: ∀ a ∈ s, ∀ (x y : Space), ((fderiv ℝ ω a) x) y = ((fderiv ℝ ω a) y) x := by

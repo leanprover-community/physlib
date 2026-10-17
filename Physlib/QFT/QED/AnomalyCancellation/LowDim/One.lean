@@ -23,7 +23,7 @@ variable {n : ℕ}
 
 namespace One
 
-theorem solEqZero (S : (PureU1 1).LinSols) : S = 0 := by
+lemma solEqZero (S : (PureU1 1).LinSols) : S = 0 := by
   apply ACCSystemLinear.LinSols.ext
   funext i
   rw [Fin.fin_one_eq_zero i, ← Fin.sum_univ_one S.val]

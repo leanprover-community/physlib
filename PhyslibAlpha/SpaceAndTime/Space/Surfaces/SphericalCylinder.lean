@@ -10,10 +10,32 @@ public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Mathlib.MeasureTheory.Integral.Prod
 /-!
 
-## Spherical cylinder surface in `Space 3`
+# Spherical cylinder surface in `Space 3`
+
+The unit spherical cylinder in `Space 3` with its measure and distribution.
+
+## i. Overview
 
 The spherical cylinder is the unit circular shell in `Space 2` extruded along the
-third coordinate.
+third coordinate. The embedding `sphericalCylinder` pushes forward the product of the sphere
+measure and the volume on the axis to give `sphericalCylinderMeasure`, and integrating against it
+gives the distribution `sphericalCylinderDist`.
+
+## ii. Key results
+
+- `sphericalCylinder` : the embedding of the unit circle extruded along the axis.
+- `sphericalCylinderMeasure` : the measure corresponding to integration over the cylinder.
+- `sphericalCylinderDist` : the distribution corresponding to integration over the cylinder.
+
+## iii. Table of contents
+
+- A. The definition of the spherical cylinder surface
+- B. The measure associated with the spherical cylinder
+- C. The distribution associated with the spherical cylinder
+
+## iv. References
+
+* None.
 
 -/
 

@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Module.LinearMap.Basic
 
 # Jordan homomorphisms
 
+Jordan homomorphisms: unital real-linear maps between Jordan algebras preserving the product.
+
 ## i. Overview
 
 A Jordan homomorphism between unital real Jordan algebras is a real-linear unital map preserving the
@@ -22,6 +24,17 @@ Jordan product.
 
 - `JordanAlgebra.JordanHom` : Jordan homomorphisms.
 - `JordanAlgebra.JordanHom.comp` : composition.
+- `JordanAlgebra.JordanHom.id` : the identity Jordan homomorphism.
+- `JordanAlgebra.JordanHom.comp_assoc` : composition is associative.
+
+## iii. Table of contents
+
+- A. Jordan homomorphisms
+- B. Identity and composition
+
+## iv. References
+
+* None.
 
 -/
 
@@ -33,6 +46,12 @@ namespace JordanAlgebra
 
 variable {E F G : Type*} [NonAssocCommRing E] [Module ℝ E]
   [NonAssocCommRing F] [Module ℝ F] [NonAssocCommRing G] [Module ℝ G]
+
+/-!
+
+## A. Jordan homomorphisms
+
+-/
 
 /-- A unital real-linear map preserving the Jordan product. -/
 structure JordanHom (E F : Type*) [NonAssocCommRing E] [Module ℝ E]
@@ -69,6 +88,12 @@ lemma map_one (f : JordanHom E F) : f 1 = 1 := f.map_one'
 @[simp]
 lemma map_mul (f : JordanHom E F) (x y : E) : f (x * y) = f x * f y :=
   f.map_mul' x y
+
+/-!
+
+## B. Identity and composition
+
+-/
 
 /-- The identity Jordan homomorphism. -/
 def id : JordanHom E E where

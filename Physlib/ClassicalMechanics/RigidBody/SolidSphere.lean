@@ -33,7 +33,7 @@ noncomputable def solidSphere (d : ℕ) (m R : ℝ≥0) : RigidBody d where
     intro f g
     simp only [ContMDiffMap.coe_add, Pi.add_apply]
     rw [integral_add]
-    ring
+    · ring
     · exact IntegrableOn.integrable
         (ContinuousOn.integrableOn_compact (isCompact_closedBall 0 R) (by fun_prop))
     · exact IntegrableOn.integrable

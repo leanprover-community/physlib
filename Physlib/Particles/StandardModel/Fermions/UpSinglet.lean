@@ -184,8 +184,9 @@ lemma mem_repGaugeGroupI_ker_iff_eq {g : GaugeGroupI} :
 
 lemma gaugeGroup_subgroup_ℤ₆_le_ker_repGaugeGroupI :
     GaugeGroupQuot.subgroup .ℤ₆ ≤ repGaugeGroupI.ker := by
-  simp only [GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, SetLike.le_def, MonoidHom.mem_range,
-    gaugeGroupℤ₆Hom_apply, Subtype.exists, mem_repGaugeGroupI_ker_iff_eq, forall_exists_index]
+  simp only [GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, IsConcreteLE.le_iff,
+    MonoidHom.mem_range, gaugeGroupℤ₆Hom_apply, Subtype.exists, mem_repGaugeGroupI_ker_iff_eq,
+    forall_exists_index]
   rintro g x hx ⟨rfl⟩
   use  (x ^ 2)
   simp only [gaugeGroupℤ₆OfRoot_toSU3, gaugeGroupℤ₆SU3OfRoot_eq_mul_id, gaugeGroupℤ₆OfRoot_toU1,

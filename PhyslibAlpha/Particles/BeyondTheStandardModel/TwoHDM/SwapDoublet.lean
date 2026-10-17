@@ -11,6 +11,8 @@ public import Mathlib.Algebra.MvPolynomial.Degrees
 /-!
 # Swapping the two Higgs doublets
 
+The doublet swap Φ1 ↔ Φ2 commutes with gauge action, preserving invariance and mass dimension.
+
 ## i. Overview
 
 Exchanging the two doublets `Φ1 ↔ Φ2` is an `ℝ`-linear map `swapDoublet` that commutes with the
@@ -30,10 +32,14 @@ clearing.
 
 ## iii. Table of contents
 
-* A. The doublet-swap map and its components
-* B. Commutation with the gauge action
-* C. The action on the Gram vector
-* D. Effect on gauge invariance and mass dimension
+- A. The doublet-swap map and its components
+- B. Commutation with the gauge action
+- C. The action on the Gram vector
+- D. Effect on gauge invariance and mass dimension
+
+## iv. References
+
+* None.
 
 -/
 

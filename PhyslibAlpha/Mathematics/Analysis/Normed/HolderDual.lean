@@ -16,6 +16,8 @@ public import Mathlib.Tactic.Positivity.Finset
 /-!
 # Hölder duality in finite dimensions
 
+The dual norm of an `ℓp` coordinate norm is the `ℓq` norm of the values on the basis.
+
 ## i. Overview
 
 A continuous linear functional on a finite-dimensional normed space is determined by its values on

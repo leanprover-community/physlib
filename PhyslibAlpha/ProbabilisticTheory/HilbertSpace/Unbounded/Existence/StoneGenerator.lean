@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.AnalyticVe
 
 # Stone's theorem: existence of the generator
 
+Stone's theorem, existence: the candidate generator is essentially self-adjoint.
+
 ## i. Overview
 
 The Gårding vectors of a strongly continuous unitary group are analytic vectors of its candidate
@@ -23,6 +25,15 @@ generator and are dense. By Nelson's theorem the candidate generator is essentia
   are dense.
 - `stoneCandidateGenerator_isEssentiallySelfAdjoint` : **Stone's theorem, existence**: the candidate
   generator is essentially self-adjoint.
+
+## iii. Table of contents
+
+- A. Density of analytic vectors
+- B. Essential self-adjointness
+
+## iv. References
+
+* None.
 
 -/
 
@@ -42,6 +53,12 @@ universe u
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 variable {U : ℝ → H →L[ℂ] H} (hUmul : ∀ s t, U (s + t) = U s * U t)
 
+/-!
+
+## A. Density of analytic vectors
+
+-/
+
 include hUmul in
 /-- **The analytic vectors of the candidate generator are dense**: every vector is a limit of
 Gårding vectors. -/
@@ -58,6 +75,12 @@ lemma stoneCandidateGenerator_denseAnalyticVectors (hU0 : U 0 = 1)
   have hev : ∀ᶠ ε : ℝ in nhdsWithin (0 : ℝ) (Set.Ioi 0), (0 : ℝ) < ε := self_mem_nhdsWithin
   filter_upwards [hev] with ε hε
   exact analyticGardingVector_isAnalyticVector hUmul hUunit hUcont hε ψ
+
+/-!
+
+## B. Essential self-adjointness
+
+-/
 
 include hUmul in
 /-- **Stone's theorem, existence.** The candidate generator of a strongly continuous unitary group

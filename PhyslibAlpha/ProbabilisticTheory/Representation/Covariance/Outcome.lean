@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Group.Action.Prod
 
 # Covariance of measurements under an action on the outcomes
 
+Covariance of measurements under a group action on outcomes, and its preservation.
+
 ## i. Overview
 
 A group `G` acting measurably on an outcome space `Ω` acts on the classical system of `Ω` by
@@ -35,6 +37,10 @@ measurement, for the diagonal action on a product of outcome spaces, are covaria
 
 - A. The induced action on the classical system
 - B. Covariant measurements
+
+## iv. References
+
+* None.
 
 -/
 

@@ -30,7 +30,7 @@ def traceNorm (A : Matrix m n R) : ℝ :=
   RCLike.re (CFC.sqrt (Aᴴ * A)).trace
 
 @[simp]
-theorem traceNorm_zero : traceNorm (0 : Matrix m n R) = 0 := by
+lemma traceNorm_zero : traceNorm (0 : Matrix m n R) = 0 := by
   simp [traceNorm]
 
 /-- The trace norm of the negative is equal to the trace norm. -/
@@ -72,7 +72,7 @@ theorem traceNorm_isometry_right [Fintype k] {A : Matrix n m R} {u : Matrix k m 
   rw [hsqrt, Matrix.trace_mul_comm, ← Matrix.mul_assoc]
   simp [show uᴴ * u = 1 by exact hu₁]
 
-private theorem traceNorm_isometry_conj {A : Matrix n n R} {u : Matrix m n R}
+private lemma traceNorm_isometry_conj {A : Matrix n n R} {u : Matrix m n R}
   (hu : u.Isometry) {v : Matrix m n R} (hv : v.Isometry) :
     traceNorm (u * A * vᴴ) = traceNorm A := by
     rw [traceNorm_isometry_right hv, traceNorm_isometry_left hu]

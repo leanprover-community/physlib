@@ -159,7 +159,7 @@ lemma deriv_eq_mfderiv [NormedAddCommGroup M] [NormedSpace ℝ M]
     deriv f t =
       mfderiv 𝓘(ℝ, Time) 𝓘(ℝ, M) f t
         ((1 : Time) : TangentSpace 𝓘(ℝ, Time) t) := by
-  rw [deriv_eq, ← mfderiv_eq_fderiv]
+  rw [deriv_eq, mfderiv_eq_fderiv]
   rfl
 
 open Manifold in

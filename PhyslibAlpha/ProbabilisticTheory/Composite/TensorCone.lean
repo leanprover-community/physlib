@@ -14,6 +14,8 @@ public import Mathlib.LinearAlgebra.TensorProduct.Associator
 /-!
 # Composite systems
 
+Composite systems: the minimal and maximal tensor cones, composites, and nuclear systems.
+
 ## i. Overview
 
 Two systems with observables `E` and `F` are combined into a composite system whose observables
@@ -53,6 +55,10 @@ minimal cone: its composites are unique.
 - C. Tensor products of positive maps
 - D. Composites
 - E. The closure of the minimal cone and nuclear systems
+
+## iv. References
+
+* None.
 
 -/
 

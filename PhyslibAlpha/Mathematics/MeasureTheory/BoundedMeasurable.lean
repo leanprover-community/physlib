@@ -13,6 +13,8 @@ public import Mathlib.Algebra.Order.Module.Defs
 /-!
 # Bounded measurable functions
 
+The vector lattice of bounded measurable functions, staircase approximation and integrability.
+
 ## i. Overview
 
 The bounded measurable functions on a space `Ω` are the observables of a classical system with
@@ -34,6 +36,10 @@ integrable against every finite measure.
 - C. Least upper bounds of sequences
 - D. Indicators and staircases
 - E. Integrability
+
+## iv. References
+
+* None.
 
 -/
 

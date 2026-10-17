@@ -57,22 +57,22 @@ instance instFunLikeProb : FunLike (ProbDistribution α) α Prob where
       simpa only [Subtype.mk.injEq, coe_inj] using congrFun h v
 
 @[simp]
-theorem normalized (d : ProbDistribution α) : Finset.sum Finset.univ (fun i ↦ (d i : ℝ)) = 1 :=
+lemma normalized (d : ProbDistribution α) : Finset.sum Finset.univ (fun i ↦ (d i : ℝ)) = 1 :=
   d.2
 
 abbrev prob (d : ProbDistribution α) := (d : α → Prob)
 
 @[simp]
-theorem fun_eq_val (d : ProbDistribution α) : d.val = d :=
+lemma fun_eq_val (d : ProbDistribution α) : d.val = d :=
   rfl
 
 @[simp]
-theorem funlike_apply (d : α → Prob) (h : _) (x : α) :
+lemma funlike_apply (d : α → Prob) (h : _) (x : α) :
     DFunLike.coe (self := instFunLikeProb) ⟨d, h⟩ x = d x :=
   rfl
 
 @[ext]
-theorem ext {p q : ProbDistribution α} (h : ∀ x, p x = q x) : p = q :=
+lemma ext {p q : ProbDistribution α} (h : ∀ x, p x = q x) : p = q :=
   DFunLike.ext p q h
 
 /-- A distribution provides a witness that d is nonempty. -/
@@ -87,15 +87,15 @@ def constant (x : α) : ProbDistribution α :=
   ⟨fun y ↦ if x = y then 1 else 0,
     by simp [apply_ite]⟩
 
-theorem constant_def (x : α) : (constant x : α → Prob) = fun y ↦ if x = y then 1 else 0 := by
+lemma constant_def (x : α) : (constant x : α → Prob) = fun y ↦ if x = y then 1 else 0 := by
   rfl
 
 @[simp]
-theorem constant_eq (x : α) : constant x y = if x = y then 1 else 0 := by
+lemma constant_eq (x : α) : constant x y = if x = y then 1 else 0 := by
   rfl
 
 @[simp]
-theorem constant_def' (x y : α) : (constant x : α → Prob) y = if x = y then 1 else 0 := by
+lemma constant_def' (x y : α) : (constant x : α → Prob) y = if x = y then 1 else 0 := by
   rw [← Prob.eq_iff_nnreal]
   change (Prob.toNNReal ∘ (constant x)) y = (if x = y then 1 else 0 : Prob)
   rw [constant_def x]
@@ -127,7 +127,7 @@ def uniform [n : Nonempty α] : ProbDistribution α :=
     bound⟩, by simp⟩
 
 @[simp]
-theorem uniform_def [Nonempty α] (y : α) : ((uniform y) : ℝ) = 1 / (Finset.univ.card (α := α)) :=
+lemma uniform_def [Nonempty α] (y : α) : ((uniform y) : ℝ) = 1 / (Finset.univ.card (α := α)) :=
   rfl
 
 /-- Make a distribution on a product of two Fintypes. -/
@@ -136,7 +136,7 @@ def prod (d1 : ProbDistribution α) (d2 : ProbDistribution β) : ProbDistributio
     simp [← Finset.mul_sum, Fintype.sum_prod_type]⟩
 
 @[simp]
-theorem prod_def (x : α) (y : β) : prod d1 d2 ⟨x, y⟩ = (d1 x) * (d2 y) :=
+lemma prod_def (x : α) (y : β) : prod d1 d2 ⟨x, y⟩ = (d1 x) * (d2 y) :=
   rfl
 
 /-- Given a distribution on α, extend it to a distribution on `Sum α β` by
@@ -183,7 +183,7 @@ def congr (σ : α ≃ β) : ProbDistribution α ≃ ProbDistribution β := by
     simp only [← fun_eq_val, Equiv.apply_symm_apply, Subtype.coe_eta]
 
 @[simp]
-theorem congr_apply (σ : α ≃ β) (d : ProbDistribution α) (j : β): (congr σ d) j = d (σ.symm j) := by
+lemma congr_apply (σ : α ≃ β) (d : ProbDistribution α) (j : β): (congr σ d) j = d (σ.symm j) := by
   rfl
 
 /-- The inverse and congruence operations for distributions commute -/
@@ -198,11 +198,11 @@ def coin (p : Prob) : ProbDistribution (Fin 2) :=
   ⟨(if · = 0 then p else 1 - p), by simp⟩
 
 @[simp]
-theorem coin_val_zero (p : Prob) : coin p 0 = p := by
+lemma coin_val_zero (p : Prob) : coin p 0 = p := by
   simp [coin]
 
 @[simp]
-theorem coin_val_one (p : Prob) : coin p 1 = 1 - p := by
+lemma coin_val_one (p : Prob) : coin p 1 = 1 - p := by
   simp [coin]
 
 /-- Every distribution on two variable is some coin. -/
@@ -214,7 +214,7 @@ theorem fin_two_eq_coin (d : ProbDistribution (Fin 2)) : d = coin (d 0) := by
     Prob.coe_one_minus, Subtype.ext_iff, Prob.coe_one_minus, eq_sub_iff_add_eq, add_comm,
         fun_eq_val, Fin.sum_univ_two] using d.property
 
-theorem coin_eq_iff (p : Prob) (f : ProbDistribution (Fin 2)) :
+lemma coin_eq_iff (p : Prob) (f : ProbDistribution (Fin 2)) :
     ProbDistribution.coin p = f ↔ p = f 0 := by
   constructor
   · rintro rfl

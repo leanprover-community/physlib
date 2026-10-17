@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Basic
 
 # Powers, multiplication operators and the quadratic representation
 
+Jordan powers, multiplication operators `L_a` and the quadratic representation `U_a`.
+
 ## i. Overview
 
 Powers of an observable are `a⁰ = 1` and `aⁿ⁺¹ = a ∘ aⁿ`. The multiplication operator is `L_a b = a
@@ -30,6 +32,10 @@ The Jordan identity says that `L_a` and `L_{a²}` commute.
 - C. The quadratic representation `U_a`
 - D. The Jordan commutation law
 - E. The inner derivation `D_{a,b}`
+
+## iv. References
+
+* None.
 
 -/
 

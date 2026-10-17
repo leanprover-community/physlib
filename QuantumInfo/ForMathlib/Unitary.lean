@@ -23,12 +23,12 @@ variable [FiniteDimensional 𝕜 E]
 open Module.End
 
 @[simp]
-theorem unitary_star_apply_eq (U : unitary (E →ₗ[𝕜] E)) (v : E) :
+lemma unitary_star_apply_eq (U : unitary (E →ₗ[𝕜] E)) (v : E) :
     (star U.val) (U.val v) = v := by
   rw [← mul_apply, (Unitary.mem_iff.mp U.prop).left, one_apply]
 
 @[simp]
-theorem unitary_apply_star_eq (U : unitary (E →ₗ[𝕜] E)) (v : E) :
+lemma unitary_apply_star_eq (U : unitary (E →ₗ[𝕜] E)) (v : E) :
     U.val ((star U.val) v) = v := by
   rw [← mul_apply, (Unitary.mem_iff.mp U.prop).right, one_apply]
 

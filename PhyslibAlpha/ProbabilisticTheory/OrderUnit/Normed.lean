@@ -12,6 +12,8 @@ public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 /-!
 # The canonical normed copy of an order-unit space
 
+The type synonym `WithOrderUnitNorm E` with the canonical order-unit norm; channels contract.
+
 ## i. Overview
 
 An Archimedean order-unit space already has a canonical order-unit norm, but the underlying type
@@ -29,6 +31,11 @@ carries the canonical norm without changing the structures on `E` itself.
 - A. The normed copy
 - B. The real scalar case
 - C. Contractivity of channels
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section

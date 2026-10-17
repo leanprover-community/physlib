@@ -14,6 +14,8 @@ public import Mathlib.Algebra.Ring.IsFormallyReal
 
 # Normed Jordan algebras and JB-algebras
 
+Normed Jordan algebras, JB-algebras and ordered JB-algebras, with their basic properties.
+
 ## i. Overview
 
 `JBAlgebra` is a Banach Jordan algebra satisfying the JB axioms
@@ -29,18 +31,27 @@ norm is the given norm.
 `NormedJordanAlgebra` bundles the ring, module and metric structure of a normed Jordan algebra
 in one class, and `JBAlgebra` adds completeness and the JB axioms.
 
-## ii. Key definitions and results
+## ii. Key results
 
 - `NormedJordanAlgebra E` : a real normed unital Jordan algebra.
 - `JBAlgebra E` : a JB-algebra.
 - `JBAlgebra.norm_mul_self_le_norm_mul_self_add_mul_self` : monotonicity of the norm on sums of
   squares.
+- `IsJBOrderUnit E` : a JB-algebra that is an order-unit space with the order-unit norm.
+- `JBAlgebra.mul_self_eq_zero_iff` : `a ∘ a = 0` iff `a = 0`.
+- `JBAlgebra.isClosed_nonneg` : the positive cone of an ordered JB-algebra is closed.
+- `JBAlgebra.instIsFormallyReal` : an ordered JB-algebra is formally real.
 
 ## iii. Table of contents
 
 - A. Normed Jordan algebras
 - B. JB-algebras
 - C. Basic consequences
+  - C.1. Ordered JB-algebras
+
+## iv. References
+
+* Hanche-Olsen–Størmer, *Jordan Operator Algebras*, Def. 3.1.1.
 
 -/
 
@@ -129,6 +140,12 @@ lemma mul_self_eq_zero_iff {a : E} : a * a = 0 ↔ a = 0 :=
   ⟨eq_zero_of_mul_self_eq_zero, fun h => by simp [h]⟩
 
 end Analytic
+
+/-!
+
+### C.1. Ordered JB-algebras
+
+-/
 
 section Ordered
 

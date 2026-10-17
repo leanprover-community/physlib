@@ -51,7 +51,7 @@ def solOfLinear (S : (PureU1 3).LinSols)
   ⟨⟨S, fun i => Fin.elim0 i⟩,
     (cube_for_linSol S).mp hS⟩
 
-theorem solOfLinear_surjects (S : (PureU1 3).Sols) :
+lemma solOfLinear_surjects (S : (PureU1 3).Sols) :
     ∃ (T : (PureU1 3).LinSols) (hT : T.val (0 : Fin 3) = 0 ∨ T.val (1 : Fin 3) = 0
     ∨ T.val (2 : Fin 3) = 0), solOfLinear T hT = S :=
   ⟨S.1.1, three_sol_zero S, rfl⟩

@@ -29,7 +29,7 @@ instance ULift.instStar {𝕜 : Type u} [Star 𝕜] : Star (ULift.{v,u} 𝕜) wh
   star x := .up (star x.down)
 
 @[simp]
-theorem ULift.star_eq {𝕜 : Type u} [Star 𝕜] (x : ULift.{v,u} 𝕜) : star x = .up (star x.down) := by
+lemma ULift.star_eq {𝕜 : Type u} [Star 𝕜] (x : ULift.{v,u} 𝕜) : star x = .up (star x.down) := by
   rfl
 
 instance ULift.instInvolutiveStar {𝕜 : Type u} [InvolutiveStar 𝕜] :
@@ -43,7 +43,7 @@ instance {𝕜 : Type u} [NonUnitalNonAssocSemiring 𝕜] [StarRing 𝕜] : Star
   star_add x y := by simp; rfl
 
 @[simp]
-theorem ULift.starRingEnd_down {𝕜 : Type u} (x : ULift.{v,u} 𝕜) [CommSemiring 𝕜] [StarRing 𝕜] :
+lemma ULift.starRingEnd_down {𝕜 : Type u} (x : ULift.{v,u} 𝕜) [CommSemiring 𝕜] [StarRing 𝕜] :
     ((starRingEnd (ULift.{v, u} 𝕜)) x).down = star x.down := by
   rfl
 
@@ -55,7 +55,7 @@ instance {𝕜 : Type u} [DenselyNormedField 𝕜] : DenselyNormedField (ULift.{
   lt_norm_lt x y := by simpa using DenselyNormedField.lt_norm_lt x y
 
 @[simp]
-theorem AddEquiv.ulift_apply {α : Type u} [Add α] (x : ULift.{v, u} α) :
+lemma AddEquiv.ulift_apply {α : Type u} [Add α] (x : ULift.{v, u} α) :
     AddEquiv.ulift.{u, v} x = x.down := by
   rfl
 

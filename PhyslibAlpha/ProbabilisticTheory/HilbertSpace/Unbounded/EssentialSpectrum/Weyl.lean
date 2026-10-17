@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.EssentialS
 
 # Weyl's theorem on the essential spectrum
 
+Weyl's theorem: compact resolvent differences preserve the essential spectrum.
+
 ## i. Overview
 
 If the resolvents at `i` of two self-adjoint operators differ by a compact operator, the operators

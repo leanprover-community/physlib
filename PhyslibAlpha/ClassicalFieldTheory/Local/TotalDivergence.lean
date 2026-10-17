@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstOrder
 /-!
 # Total divergences in local classical field theory
 
+Packaged total-divergence Lagrangians and the Euler-Lagrange-triviality property.
+
 ## i. Overview
 
 This module introduces the local coordinate API for total-divergence lagrangians.

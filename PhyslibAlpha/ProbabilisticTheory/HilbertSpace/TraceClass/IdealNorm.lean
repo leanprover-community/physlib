@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.GeneralPr
 
 # Trace-norm estimates
 
+The duality bound for the trace norm, its subadditivity and the two-sided ideal estimate.
+
 ## i. Overview
 
 For a trace-class operator `A`, a contraction `W` and a Hilbert basis `{eᵢ}`, `∑ᵢ ‖⟪W eᵢ, A eᵢ⟫‖ ≤
@@ -24,6 +26,16 @@ two-sided ideal estimate `‖B T C‖₁ ≤ ‖B‖ ‖T‖₁ ‖C‖`.
 - `traceNorm_add_le` : the trace norm is subadditive.
 - `traceNorm_mul_mul_le` : the two-sided ideal estimate.
 
+## iii. Table of contents
+
+- A. The duality bound against contractions
+- B. Attainment at the polar factor and subadditivity
+- C. The two-sided ideal estimate
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -36,6 +48,12 @@ open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. The duality bound against contractions
+
+-/
 
 /-- The trace norm of an operator only depends on the operator, not on the trace-class witness. -/
 lemma traceNorm_transport {X Y : H →L[ℂ] H} (hEq : X = Y) (hX : IsTraceClass X) :
@@ -156,6 +174,12 @@ lemma tsum_norm_inner_contraction_le_traceNorm {A W : H →L[ℂ] H} (hA : IsTra
     _ = ∑' i : w, ‖S (b i)‖ ^ 2 := Real.mul_self_sqrt (tsum_nonneg (fun i => sq_nonneg _))
     _ = traceNorm A hA := tsum_sqrt_abs_norm_sq_eq_traceNorm hA b
 
+/-!
+
+## B. Attainment at the polar factor and subadditivity
+
+-/
+
 /-- The trace-norm diagonal in the basis `b` equals the norm-diagonal pairing against `T`'s own
 polar factor: `⟪eᵢ, |T| eᵢ⟫ = ⟪(polarFactor T) eᵢ, T eᵢ⟫` exactly, and the latter is already a
 nonnegative real. -/
@@ -218,6 +242,12 @@ lemma traceNorm_add_le {T T' : H →L[ℂ] H} (hT : IsTraceClass T) (hT' : IsTra
     _ ≤ traceNorm T hT + traceNorm T' hT' :=
       add_le_add (tsum_norm_inner_contraction_le_traceNorm hT hWnorm b)
         (tsum_norm_inner_contraction_le_traceNorm hT' hWnorm b)
+
+/-!
+
+## C. The two-sided ideal estimate
+
+-/
 
 /-- **Quantitative master lemma**: the trace norm of a product of two Hilbert–Schmidt operators is
 bounded by the product of their Hilbert–Schmidt square-root sums, in any common basis. -/

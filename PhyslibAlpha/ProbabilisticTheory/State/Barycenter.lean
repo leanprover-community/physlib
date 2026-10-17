@@ -12,6 +12,8 @@ public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 /-!
 # Barycenters of random states
 
+The barycenter of a probability measure on states: the state a random preparation produces.
+
 ## i. Overview
 
 A probability measure `μ` on the states is a random state: pick a state `ω` according to `μ`, then
@@ -26,6 +28,10 @@ form a state again, the barycenter of `μ`. It is the state that the random proc
 
 - A. Integrability of expectation values
 - B. Barycenters
+
+## iv. References
+
+* None.
 
 -/
 

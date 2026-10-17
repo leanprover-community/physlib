@@ -83,27 +83,27 @@ noncomputable def T : 𝐔[Qubit] :=
   ⟨!![1, 0; 0, (1 + I)/√2], by constructor <;> matrix_expand⟩
 
 @[simp]
-theorem Z_sq : Z * Z = 1 := by
+lemma Z_sq : Z * Z = 1 := by
   matrix_expand [Z]
 
 @[simp]
-theorem X_sq : X * X = 1 := by
+lemma X_sq : X * X = 1 := by
   matrix_expand [X]
 
 @[simp]
-theorem Y_sq : Y * Y = 1 := by
+lemma Y_sq : Y * Y = 1 := by
   matrix_expand [Y]
 
 @[simp]
-theorem H_sq : H * H = 1 := by
+lemma H_sq : H * H = 1 := by
   matrix_expand [H]
 
 @[simp]
-theorem S_sq : S * S = Z := by
+lemma S_sq : S * S = Z := by
   matrix_expand [S, Z]
 
 @[simp]
-theorem T_sq : T * T = S := by
+lemma T_sq : T * T = S := by
   matrix_expand [T, S]
 
 /-- The anticommutator `{X,Y}` is zero. Marked simp as to put Pauli products in a canonical Y-X-Z order. -/
@@ -120,23 +120,23 @@ theorem Z_X_anticomm : Z * X = -X * Z := by
   matrix_expand [Z, X]
 
 @[simp]
-theorem H_mul_X_eq_Z_mul_H : H * X = Z * H := by
+lemma H_mul_X_eq_Z_mul_H : H * X = Z * H := by
   matrix_expand [H, X, Z]
 
 @[simp]
-theorem H_mul_Z_eq_X_mul_H : H * Z = X * H := by
+lemma H_mul_Z_eq_X_mul_H : H * Z = X * H := by
   matrix_expand [H, X, Z]
 
 @[simp]
-theorem S_Z_comm : Z * S = S * Z := by
+lemma S_Z_comm : Z * S = S * Z := by
   simp [← S_sq, mul_assoc]
 
 @[simp]
-theorem T_Z_comm : Z * T = T * Z := by
+lemma T_Z_comm : Z * T = T * Z := by
   simp [← S_sq, ← T_sq, mul_assoc]
 
 @[simp]
-theorem S_T_comm : S * T = T * S := by
+lemma S_T_comm : S * T = T * S := by
   simp [← T_sq, mul_assoc]
 
 /-- Given a unitary `U` on some Hilbert space `k`, we have the controllized version that acts on `Fin 2 ⊗ k`
@@ -176,36 +176,36 @@ lemma CNOT_matrix :
 variable (g : 𝐔[k]) (j₁ j₂ : k)
 
 @[simp]
-theorem controllize_apply_zero_zero : C[g] (0, j₁) (0, j₂) = (1 : 𝐔[k]) j₁ j₂ := by
+lemma controllize_apply_zero_zero : C[g] (0, j₁) (0, j₂) = (1 : 𝐔[k]) j₁ j₂ := by
   rfl
 
 @[simp]
-theorem controllize_apply_zero_one : C[g] (0, j₁) (1, j₂) = 0 := by
+lemma controllize_apply_zero_one : C[g] (0, j₁) (1, j₂) = 0 := by
   rfl
 
 @[simp]
-theorem controllize_apply_one_zero : C[g] (1, j₁) (0, j₂) = 0 := by
+lemma controllize_apply_one_zero : C[g] (1, j₁) (0, j₂) = 0 := by
   rfl
 
 @[simp]
-theorem controllize_apply_one_one : C[g] (1, j₁) (1, j₂) = g j₁ j₂ := by
+lemma controllize_apply_one_one : C[g] (1, j₁) (1, j₂) = g j₁ j₂ := by
   rfl
 
 @[simp]
-theorem controllize_mul (g₁ g₂ : 𝐔[k]) : C[g₁] * C[g₂] = C[g₁ * g₂] := by
+lemma controllize_mul (g₁ g₂ : 𝐔[k]) : C[g₁] * C[g₂] = C[g₁ * g₂] := by
   matrix_expand
 
 @[simp]
-theorem controllize_one : C[(1 : 𝐔[k])] = 1 := by
+lemma controllize_one : C[(1 : 𝐔[k])] = 1 := by
   matrix_expand
 
 @[simp]
-theorem controllize_mul_inv : C[g] * C[g⁻¹] = 1 := by
+lemma controllize_mul_inv : C[g] * C[g⁻¹] = 1 := by
   simp
 
 open scoped Matrix in
 @[simp]
-theorem X_controllize_X : (X ⊗ᵤ 1) * C[g] * (X ⊗ᵤ 1) = (1 ⊗ᵤ g) * C[g⁻¹] := by
+lemma X_controllize_X : (X ⊗ᵤ 1) * C[g] * (X ⊗ᵤ 1) = (1 ⊗ᵤ g) * C[g⁻¹] := by
   matrix_expand [X, -Complex.ext_iff] with ki kj;
   suffices (1 : Matrix k k ℂ) ki kj = (g * g⁻¹) ki kj by
     convert! this

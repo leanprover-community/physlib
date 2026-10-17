@@ -199,7 +199,7 @@ to the sixth power gives one, and charge `-6` therefore acts trivially.
 /-- The central `ℤ₆` subgroup acts trivially on `(1, 1)_{-6}`. -/
 lemma gaugeGroup_subgroup_ℤ₆_le_ker_repGaugeGroupI :
     GaugeGroupQuot.subgroup .ℤ₆ ≤ repGaugeGroupI.ker := by
-  simp only [GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, SetLike.le_def,
+  simp only [GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, IsConcreteLE.le_iff,
     MonoidHom.mem_range, gaugeGroupℤ₆Hom_apply, Subtype.exists,
     mem_repGaugeGroupI_ker_iff_eq, forall_exists_index]
   rintro g x hx ⟨rfl⟩

@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne
 
 # Uniqueness of the positive square root
 
+A nonnegative square root of an observable equals its functional-calculus square root.
+
 ## i. Overview
 
 Every nonnegative `b` with `b ∘ b = a` is the square root of `a` from the functional calculus.
@@ -30,6 +32,10 @@ polynomials on both sides gives `b = √a`.
 - B. Approximation of the polynomial calculus
 - C. Uniform polynomial approximation of the square root
 - D. Unrestricted uniqueness of the positive square root
+
+## iv. References
+
+* None.
 
 -/
 

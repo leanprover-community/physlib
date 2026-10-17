@@ -19,7 +19,7 @@ public import Mathlib.Topology.MetricSpace.Bounded
 @[expose] public section
 
 @[simp]
-theorem Set.image2_flip {α β γ : Type*} {f : α → β → γ} (s : Set α) (t : Set β) :
+lemma Set.image2_flip {α β γ : Type*} {f : α → β → γ} (s : Set α) (t : Set β) :
     image2 (flip f) t s = image2 f s t := by
   grind [image2, flip]
 
@@ -33,7 +33,7 @@ theorem ciSup_ciInf_le_ciInf_ciSup {ι': Type*} [Nonempty ι]
     ⨆ i, ⨅ j, f i j ≤ ⨅ j, ⨆ i, f i j :=
   ciSup_le fun i ↦ ciInf_mono (Hb i) fun j ↦ le_ciSup (Ha j) i
 
-theorem BddAbove.range_max (hf : BddAbove (Set.range f)) (hg : BddAbove (Set.range g)) :
+lemma BddAbove.range_max (hf : BddAbove (Set.range f)) (hg : BddAbove (Set.range g)) :
     BddAbove (Set.range (max f g)) := by
   rcases hf with ⟨a, ha⟩
   rcases hg with ⟨b, hb⟩
@@ -44,11 +44,11 @@ theorem BddAbove.range_max (hf : BddAbove (Set.range f)) (hg : BddAbove (Set.ran
   specialize hb i
   order
 
-theorem BddBelow.range_min (hf : BddBelow (Set.range f)) (hg : BddBelow (Set.range g)) :
+lemma BddBelow.range_min (hf : BddBelow (Set.range f)) (hg : BddBelow (Set.range g)) :
     BddBelow (Set.range (min f g)) :=
   BddAbove.range_max (α := αᵒᵈ) hf hg
 
-theorem ciInf_eq_min_cInf_inter_diff (S T : Set ι)
+lemma ciInf_eq_min_cInf_inter_diff (S T : Set ι)
   [Nonempty (S ∩ T : Set ι)] [Nonempty (S \ T : Set ι)] (hf : BddBelow (f '' S)) :
     ⨅ i : S, f i = (⨅ i : (S ∩ T : Set ι), f i) ⊓ ⨅ i : (S \ T : Set ι), f i := by
   apply le_antisymm
@@ -70,27 +70,27 @@ theorem ciInf_eq_min_cInf_inter_diff (S T : Set ι)
 
 variable [Nonempty ι]
 
-theorem lt_ciInf_iff (hf : BddBelow (Set.range f)) :
+lemma lt_ciInf_iff (hf : BddBelow (Set.range f)) :
     a < iInf f ↔ ∃ b, a < b ∧ ∀ (i : ι), b ≤ f i :=
   ⟨(⟨iInf f, ·, (ciInf_le hf ·)⟩), fun ⟨_, hb₁, hb₂⟩ ↦ lt_of_lt_of_le hb₁ (le_ciInf hb₂)⟩
 
-theorem sup_ciSup (hf : BddAbove (Set.range f)) : a ⊔ ⨆ x, f x = ⨆ x, a ⊔ f x := by
+lemma sup_ciSup (hf : BddAbove (Set.range f)) : a ⊔ ⨆ x, f x = ⨆ x, a ⊔ f x := by
   rw [ciSup_sup_eq (by simp) hf, ciSup_const]
 
-theorem inf_ciInf (hf : BddBelow (Set.range f)) : a ⊓ ⨅ x, f x = ⨅ x, a ⊓ f x :=
+lemma inf_ciInf (hf : BddBelow (Set.range f)) : a ⊓ ⨅ x, f x = ⨅ x, a ⊓ f x :=
   sup_ciSup (α := αᵒᵈ) hf
 
-theorem ciInf_sup_ciInf_le (hf : BddBelow (Set.range f)) (hg : BddBelow (Set.range g)) :
+lemma ciInf_sup_ciInf_le (hf : BddBelow (Set.range f)) (hg : BddBelow (Set.range g)) :
     (⨅ i, f i) ⊔ ⨅ i, g i ≤ ⨅ i, f i ⊔ g i :=
   le_ciInf (fun i ↦ sup_le_sup (ciInf_le hf i) (ciInf_le hg i))
 
-theorem le_ciSup_inf_ciSup (hf : BddAbove (Set.range f)) (hg : BddAbove (Set.range g)) :
+lemma le_ciSup_inf_ciSup (hf : BddAbove (Set.range f)) (hg : BddAbove (Set.range g)) :
     ⨆ (i : ι), f i ⊓ g i ≤ (⨆ (i : ι), f i) ⊓ ⨆ (i : ι), g i :=
   ciInf_sup_ciInf_le (α := αᵒᵈ) hf hg
 
 end ciSup
 
-theorem QuasiconvexOn.subset
+lemma QuasiconvexOn.subset
   {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [LE β] [SMul 𝕜 E]
   {s : Set E} {f : E → β} (h : QuasiconvexOn 𝕜 s f) {t : Set E} (hts : t ⊆ s) (ht : Convex 𝕜 t) :
     QuasiconvexOn 𝕜 t f := by
@@ -98,21 +98,21 @@ theorem QuasiconvexOn.subset
   convert ht.inter (h b) using 1
   simp +contextual [Set.ext_iff, @hts _]
 
-theorem QuasiconvexOn.mem_segment_le_max
+lemma QuasiconvexOn.mem_segment_le_max
   {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SemilatticeSup β] [SMul 𝕜 E]
   {s : Set E} {f : E → β} (h : QuasiconvexOn 𝕜 s f)
   {x y z : E} (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ segment 𝕜 x y):
     f z ≤ f x ⊔ f y :=
   ((h (f x ⊔ f y)).segment_subset (by simpa) (by simpa) hz).right
 
-theorem QuasiconcaveOn.min_le_mem_segment
+lemma QuasiconcaveOn.min_le_mem_segment
   {𝕜 E β : Type*} [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E] [SemilatticeInf β] [SMul 𝕜 E]
   {s : Set E} {f : E → β} (h : QuasiconcaveOn 𝕜 s f)
   {x y z : E} (hx : x ∈ s) (hy : y ∈ s) (hz : z ∈ segment 𝕜 x y):
     f x ⊓ f y ≤ f z :=
   ((h (f x ⊓ f y)).segment_subset (by simpa) (by simpa) hz).right
 
-theorem LowerSemicontinuousOn.bddBelow {α : Type*} [TopologicalSpace α] {S : Set α} {g : α → ℝ}
+lemma LowerSemicontinuousOn.bddBelow {α : Type*} [TopologicalSpace α] {S : Set α} {g : α → ℝ}
     (hg : LowerSemicontinuousOn g S) (hS : IsCompact S) : BddBelow (g '' S) := by
   rcases S.eq_empty_or_nonempty with rfl | hS₂
   · simp
@@ -139,7 +139,7 @@ theorem LowerSemicontinuousOn.bddBelow {α : Type*} [TopologicalSpace α] {S : S
   rcases Set.mem_iUnion₂.mp (ht.2 hx) with ⟨y, hy, hy'⟩
   linarith [hm y hy, hU y (ht.1 y hy) |>.2 x ⟨hy', hx⟩]
 
-theorem LowerSemicontinuousOn.max {α : Type*} [TopologicalSpace α] {S : Set α} {f g : α → ℝ}
+lemma LowerSemicontinuousOn.max {α : Type*} [TopologicalSpace α] {S : Set α} {f g : α → ℝ}
     (hf : LowerSemicontinuousOn f S) (hg : LowerSemicontinuousOn g S) :
     LowerSemicontinuousOn (fun x ↦ max (f x) (g x)) S := by
   convert! lowerSemicontinuousOn_ciSup (s := S) (f := fun (i : Bool) x' ↦ if i then f x' else g x') ?_ ?_
@@ -150,7 +150,7 @@ theorem LowerSemicontinuousOn.max {α : Type*} [TopologicalSpace α] {S : Set α
 variable {α : Type*} [TopologicalSpace α] {β : Type*} [Preorder β] {f g : α → β} {x : α}
   {s t : Set α} {y z : β} {γ : Type*} [LinearOrder γ]
 
-theorem lowerSemicontinuousOn_iff_isClosed_preimage {f : α → γ} [IsClosed s] :
+lemma lowerSemicontinuousOn_iff_isClosed_preimage {f : α → γ} [IsClosed s] :
     LowerSemicontinuousOn f s ↔ ∀ y, IsClosed (s ∩ f ⁻¹' Set.Iic y) := by
   constructor
   · intro a y
@@ -170,12 +170,12 @@ theorem lowerSemicontinuousOn_iff_isClosed_preimage {f : α → γ} [IsClosed s]
     filter_upwards [ IsOpen.mem_nhds ( isOpen_compl_iff.2 ( a y ) ) hx_not_in ] with z hz hzs
     exact lt_of_not_ge fun h => hz ⟨hzs, h⟩
 
-theorem segment.isConnected {E : Type u_1} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E] (a b : E) :
+lemma segment.isConnected {E : Type u_1} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E] (a b : E) :
     IsConnected (segment ℝ a b) := by
   rw [← Path.range_segment a b]
   exact isConnected_range (Path.segment a b).continuous
 
-theorem BddAbove.range_inf_of_image2 {M N α : Type*} {f : M → N → α} [ConditionallyCompleteLinearOrder α]
+lemma BddAbove.range_inf_of_image2 {M N α : Type*} {f : M → N → α} [ConditionallyCompleteLinearOrder α]
   {S : Set M} {T : Set N} (h_bddA : BddAbove (Set.image2 f S T)) (h_bddB : BddBelow (Set.image2 f S T)) :
     BddAbove (Set.range fun y : T ↦ ⨅ x : S, f x y) := by
   rcases isEmpty_or_nonempty T with hT | hT
@@ -192,12 +192,12 @@ theorem BddAbove.range_inf_of_image2 {M N α : Type*} {f : M → N → α} [Cond
     exact hz (Set.mem_image2_of_mem hx hy)
   exact ⟨_, Set.forall_mem_range.2 (h_inf_le_M _ ·.2)⟩
 
-theorem BddBelow.range_sup_of_image2 {M N α : Type*} {f : M → N → α} [ConditionallyCompleteLinearOrder α]
+lemma BddBelow.range_sup_of_image2 {M N α : Type*} {f : M → N → α} [ConditionallyCompleteLinearOrder α]
   {S : Set M} {T : Set N} (h_bddA : BddAbove (Set.image2 f S T)) (h_bddB : BddBelow (Set.image2 f S T)) :
       BddBelow (Set.range fun y : T ↦ ⨆ x : S, f x y) :=
   BddAbove.range_inf_of_image2 (α := αᵒᵈ) h_bddB h_bddA
 
-theorem ciInf_le_ciInf_of_subset {α β : Type*} [ConditionallyCompleteLattice α]
+lemma ciInf_le_ciInf_of_subset {α β : Type*} [ConditionallyCompleteLattice α]
   {f : β → α} {s t : Set β} (hs : s.Nonempty) (hf : BddBelow (f '' t)) (hst : s ⊆ t) :
     ⨅ x : t, f x ≤ ⨅ x : s, f x := by
   have h_lower_bound : ∀ y ∈ s, ⨅ x : t, f x ≤ f y := by
@@ -209,7 +209,7 @@ theorem ciInf_le_ciInf_of_subset {α β : Type*} [ConditionallyCompleteLattice �
   · exact ⟨_, ⟨⟨_, hs.choose_spec⟩, rfl⟩⟩;
   · aesop
 
-theorem LowerSemicontinuousOn.dite_top {α β : Type*} [TopologicalSpace α] [Preorder β] [OrderTop β]
+lemma LowerSemicontinuousOn.dite_top {α β : Type*} [TopologicalSpace α] [Preorder β] [OrderTop β]
   {s : Set α} (p : α → Prop) [DecidablePred p] {f : (a : α) → p a → β}
   (hf : LowerSemicontinuousOn (fun x : Subtype p ↦ f x.val x.prop) {x | x.val ∈ s})
   (h_relatively_closed : ∃ U : Set α, IsClosed U ∧ s ∩ U = s ∩ Set.ofPred p) :
@@ -232,7 +232,7 @@ theorem LowerSemicontinuousOn.dite_top {α β : Type*} [TopologicalSpace α] [Pr
     rw [dite_eq_right (show ¬p z from fun hpz ↦ hzu ((hsu z hzs).mpr hpz))]
     exact hy
 
-theorem LowerSemicontinuousOn.comp_continuousOn {α β γ : Type*}
+lemma LowerSemicontinuousOn.comp_continuousOn {α β γ : Type*}
   [TopologicalSpace α] [TopologicalSpace β] [Preorder γ] {f : α → β} {s : Set α} {g : β → γ} {t : Set β}
   (hg : LowerSemicontinuousOn g t) (hf : ContinuousOn f s) (h : Set.MapsTo f s t) :
     LowerSemicontinuousOn (g ∘ f) s := by
@@ -247,19 +247,19 @@ theorem LowerSemicontinuousOn.comp_continuousOn {α β γ : Type*}
     filter_upwards [ hf x hx hU_nhds, self_mem_nhdsWithin ] with x' hx' hx'' using ⟨ hx', h hx'' ⟩;
   exact h_final.mono fun x' hx' => hU _ hx'
 
-theorem UpperSemicontinuousOn.comp_continuousOn {α β γ : Type*}
+lemma UpperSemicontinuousOn.comp_continuousOn {α β γ : Type*}
   [TopologicalSpace α] [TopologicalSpace β] [Preorder γ] {f : α → β} {s : Set α} {g : β → γ} {t : Set β}
   (hg : UpperSemicontinuousOn g t) (hf : ContinuousOn f s) (h : Set.MapsTo f s t) :
     UpperSemicontinuousOn (g ∘ f) s :=
   LowerSemicontinuousOn.comp_continuousOn (γ := γᵒᵈ) hg hf h
 
-theorem LowerSemicontinuousOn.ite_top {α β : Type*} [TopologicalSpace α] [Preorder β] [OrderTop β]
+lemma LowerSemicontinuousOn.ite_top {α β : Type*} [TopologicalSpace α] [Preorder β] [OrderTop β]
   {s : Set α} (p : α → Prop) [DecidablePred p] {f : (a : α) → β} (hf : LowerSemicontinuousOn f (s ∩ Set.ofPred p))
   (h_relatively_closed : ∃ U : Set α, IsClosed U ∧ s ∩ U = s ∩ Set.ofPred p) :
     LowerSemicontinuousOn (fun x ↦ ite (p x) (f x) ⊤) s :=
   dite_top p (hf.comp_continuousOn (by fun_prop) (fun z hz ↦ ⟨hz, z.2⟩)) h_relatively_closed
 
-theorem LeftOrdContinuous.comp_lowerSemicontinuousOn_strong_assumptions {α γ δ : Type*}
+lemma LeftOrdContinuous.comp_lowerSemicontinuousOn_strong_assumptions {α γ δ : Type*}
   [TopologicalSpace α] [LinearOrder γ] [LinearOrder δ] [TopologicalSpace δ] [OrderTopology δ]
   [TopologicalSpace γ] [OrderTopology γ] [DenselyOrdered γ] [DenselyOrdered δ]
   {s : Set α} {g : γ → δ} {f : α → γ} (hg : LeftOrdContinuous g) (hf : LowerSemicontinuousOn f s) (hg2 : Monotone g) :
@@ -294,7 +294,7 @@ theorem LeftOrdContinuous.comp_lowerSemicontinuousOn_strong_assumptions {α γ �
   obtain ⟨w, ⟨left, right⟩⟩ := hU
   exact Filter.eventually_inf_principal.2 (Filter.mem_of_superset left right)
 
-theorem UpperSemicontinuousOn.frequently_lt_of_tendsto {α β γ : Type*} [TopologicalSpace β] [Preorder γ]
+lemma UpperSemicontinuousOn.frequently_lt_of_tendsto {α β γ : Type*} [TopologicalSpace β] [Preorder γ]
   {f : β → γ} {T : Set β} (hf : UpperSemicontinuousOn f T) {c : γ} {zs : α → β} {z : β}
   {l : Filter α} [l.NeBot] (hzs : l.Tendsto zs (nhds z)) (hx₂ : f z < c) (hzI : ∀ a, zs a ∈ T) (hzT : z ∈ T) :
     ∀ᶠ a in l, f (zs a) < c := by
@@ -303,7 +303,7 @@ theorem UpperSemicontinuousOn.frequently_lt_of_tendsto {α β γ : Type*} [Topol
       using ⟨hzI n, hn (hzI n)⟩
   simp_all
 
-theorem Finset.ciInf_insert {α β : Type*} [DecidableEq α] [ConditionallyCompleteLattice β]
+lemma Finset.ciInf_insert {α β : Type*} [DecidableEq α] [ConditionallyCompleteLattice β]
   (t : Finset α) (ht : t.Nonempty) (x : α) (f : α → β) :
     ⨅ (a : (insert x t : _)), f a = f x ⊓ ⨅ (a : t), f a := by
   apply le_antisymm
@@ -322,7 +322,7 @@ theorem Finset.ciInf_insert {α β : Type*} [DecidableEq α] [ConditionallyCompl
     apply csInf_le (Set.finite_range _).bddBelow
     aesop
 
-theorem Finset.ciSup_insert {α β : Type*} [DecidableEq α] [ConditionallyCompleteLattice β]
+lemma Finset.ciSup_insert {α β : Type*} [DecidableEq α] [ConditionallyCompleteLattice β]
   (t : Finset α) (ht : t.Nonempty) (x : α) (f : α → β) :
     ⨆ (a : (insert x t : _)), f a = f x ⊔ ⨆ (a : t), f a :=
   t.ciInf_insert (β := βᵒᵈ) ht x f
@@ -341,7 +341,7 @@ variable  {M : Type*} [NormedAddCommGroup M]
   (hS₁ : IsCompact S) (hS₃ : S.Nonempty) (hT₃ : T.Nonempty)
 
 include hfc₂ hS₁ hS₃ in
-private theorem sion_exists_min_lowerSemi (a : ℝ) (hc : ∀ y₀ : T, ⨅ (x : S), f (↑x) y₀ ≤ a) (z : N) (hzT : z ∈ T) :
+private lemma sion_exists_min_lowerSemi (a : ℝ) (hc : ∀ y₀ : T, ⨅ (x : S), f (↑x) y₀ ≤ a) (z : N) (hzT : z ∈ T) :
     ∃ x ∈ S, f x z ≤ a := by
   let _ := hS₃.to_subtype
   contrapose! hc

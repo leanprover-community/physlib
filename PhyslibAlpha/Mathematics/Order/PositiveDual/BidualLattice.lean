@@ -11,6 +11,8 @@ public import PhyslibAlpha.Mathematics.Order.PositiveDual.Interpolation
 /-!
 # The bidual as a lattice
 
+Least upper bounds in the bidual by the Riesz–Kantorovich formula; the bidual is a lattice.
+
 ## i. Overview
 
 When the positive functionals on `E` form a lattice, any two elements `x` and `y` of the bidual have
@@ -29,6 +31,10 @@ with the roles of elements and functionals exchanged. The bidual then is a latti
 - A. Best splits of a positive functional
 - B. The least upper bound
 - C. The lattice structure
+
+## iv. References
+
+* None.
 
 -/
 

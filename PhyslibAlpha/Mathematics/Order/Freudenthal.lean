@@ -16,6 +16,8 @@ public import Mathlib.Tactic.Ring
 /-!
 # Step approximation in vector lattices
 
+Freudenthal's spectral theorem: vector lattice elements are uniformly close to step functions.
+
 ## i. Overview
 
 Fix a nonnegative element `u` of a real vector lattice, a strong unit: every element is below some

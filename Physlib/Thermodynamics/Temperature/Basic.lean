@@ -6,6 +6,7 @@ Authors: Matteo Cipollina, Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Physlib.StatisticalMechanics.BoltzmannConstant
 /-!

@@ -60,7 +60,7 @@ lemma eulerLagrangeOp_zero (q : Time → X) :
     eulerLagrangeOp (fun _ _ _ => 0) q = fun _ => 0 := by
   simp [eulerLagrangeOp_eq, Time.deriv_eq]
 
-/- The variational derivative of `L t (q' t) (deriv q' t))` for a lagrangian `L`
+/-- The variational derivative of `L t (q' t) (deriv q' t))` for a lagrangian `L`
   is equal to the `eulerLagrangeOp`. -/
 theorem euler_lagrange_varGradient
     (L : Time → X → X → ℝ) (q : Time → X)

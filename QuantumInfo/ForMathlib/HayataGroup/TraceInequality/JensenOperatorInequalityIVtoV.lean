@@ -7,6 +7,8 @@ module
 
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.BlockDiagonal
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.LownerHeinzTheorem
+public import Mathlib.Algebra.Algebra.Spectrum.Pi
+public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Pi
 
 @[expose] public section
 
@@ -185,7 +187,7 @@ private lemma blockDiagonal_le_left {A0 A1 B0 B1 : L ℋ}
 set_option synthInstance.maxHeartbeats 400000 in
 set_option maxHeartbeats 3000000 in
 -- The block-matrix reduction creates large normalization goals in this scratch file.
-theorem theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
+lemma theorem_2_5_2_iv_imp_v {f : ℝ → ℝ} (hiv : CondIVAll.{u} f)
     (hcont : ContinuousOn f Set.univ) :
     CondV (ℋ := ℋ) f := by
   intro A B X Y hA hB hAs hBs hXY

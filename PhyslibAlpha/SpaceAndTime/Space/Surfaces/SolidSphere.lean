@@ -9,13 +9,35 @@ public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 /-!
 
-## Solid sphere surfaces in `Space d`
+# Solid sphere surfaces in `Space d`
+
+The closed unit ball in `Space d` with its measure, distribution and positive volume.
+
+## i. Overview
 
 The solid sphere is the closed unit ball in `Space d`. Unlike the line or the spherical
 shell, it is a region of positive ambient volume, so the measure associated with it is the
 ambient volume restricted to the ball rather than a pushforward of a lower-dimensional measure.
 The requirement that the surface has ambient measure zero is therefore not applicable here, and
 is replaced by a statement that the solid sphere has positive ambient volume.
+
+## ii. Key results
+
+- `solidSphere` : the inclusion of the closed unit ball into `Space d`.
+- `solidSphereMeasure` : the measure corresponding to integration over the solid sphere.
+- `solidSphereDist` : the distribution corresponding to integration over the solid sphere.
+- `solidSphere_volume_pos`, `solidSphereMeasure_univ_pos` : the solid sphere has positive volume.
+
+## iii. Table of contents
+
+- A. The definition of the solid sphere surface
+- B. The measure associated with the solid sphere
+- C. The distribution associated with the solid sphere
+- D. The solid sphere has positive ambient volume
+
+## iv. References
+
+* None.
 
 -/
 @[expose] public section

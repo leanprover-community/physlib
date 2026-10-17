@@ -51,7 +51,7 @@ theorem uConj_spectrum_eq (ρ : MState d) (U : 𝐔[d]) :
   simp [spectrum, uConj]
 
 @[simp]
-theorem inner_uConj (ρ σ : MState d) (U : 𝐔[d]) : ⟪U ◃ ρ, U ◃ σ⟫_Prob = ⟪ρ, σ⟫_Prob := by
+lemma inner_uConj (ρ σ : MState d) (U : 𝐔[d]) : ⟪U ◃ ρ, U ◃ σ⟫_Prob = ⟪ρ, σ⟫_Prob := by
   simp [uConj, inner_def]
 
 /-- The **No-cloning theorem**, saying that if states `ψ` and `φ` can both be perfectly cloned

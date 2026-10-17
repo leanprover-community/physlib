@@ -407,7 +407,7 @@ lemma planeLinSols_val (f : Fin n.succ → ℚ) : (planeLinSols f).val = planeCh
 
 -/
 
-theorem basis_linear_independent : LinearIndependent ℚ (@basis n) := by
+lemma basis_linear_independent : LinearIndependent ℚ (@basis n) := by
   apply Fintype.linearIndependent_iff.mpr
   intro f h
   change planeLinSols f = 0 at h
@@ -669,7 +669,7 @@ lemma planeLinSols_val (f : Fin n → ℚ) : (planeLinSols f).val = planeCharges
 
 -/
 
-theorem basis_linear_independent : LinearIndependent ℚ (@basis n) := by
+lemma basis_linear_independent : LinearIndependent ℚ (@basis n) := by
   apply Fintype.linearIndependent_iff.mpr
   intro f h
   change planeLinSols f = 0 at h
@@ -873,7 +873,7 @@ lemma Pa'_P'_P!' (f : (Fin n.succ) ⊕ (Fin n) → ℚ) :
 
 -/
 
-theorem basisa_linear_independent : LinearIndependent ℚ (@basisa n) := by
+lemma basisa_linear_independent : LinearIndependent ℚ (@basisa n) := by
   apply Fintype.linearIndependent_iff.mpr
   intro f h
   change Pa' f = 0 at h

@@ -149,11 +149,11 @@ lemma lineInCubicPerm_constAbs {S : (PureU1 (2 * n.succ.succ)).Sols}
     (LIC : LineInCubicPerm S.1.1) : ConstAbs S.val :=
   linesInPlane_constAbs_AF S (lineInCubicPerm_last_perm LIC)
 
-theorem lineInCubicPerm_vectorLike {S : (PureU1 (2 * n.succ.succ)).Sols}
+lemma lineInCubicPerm_vectorLike {S : (PureU1 (2 * n.succ.succ)).Sols}
     (LIC : LineInCubicPerm S.1.1) : VectorLikeEven S.val :=
   ConstAbs.boundary_value_even S.1.1 (lineInCubicPerm_constAbs LIC)
 
-theorem lineInCubicPerm_in_plane (S : (PureU1 (2 * n.succ.succ)).Sols)
+lemma lineInCubicPerm_in_plane (S : (PureU1 (2 * n.succ.succ)).Sols)
     (LIC : LineInCubicPerm S.1.1) : ∃ (M : (FamilyPermutations (2 * n.succ.succ)).group),
     (FamilyPermutations (2 * n.succ.succ)).linSolRep M S.1.1
     ∈ Submodule.span ℚ (Set.range Unshifted.basis) :=

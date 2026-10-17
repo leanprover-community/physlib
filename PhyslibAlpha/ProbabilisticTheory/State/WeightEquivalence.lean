@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 
 # States and finite normalized weights
 
+Finite normalized weights on an order unit space correspond bijectively to states.
+
 ## i. Overview
 
 A state is a normalized positive linear functional, a weight is a function on the positive cone.
@@ -27,6 +29,10 @@ normalized weight linearly gives a state. These are inverse to each other.
 - A. From a normalized weight to a state
 - B. From a state to a weight
 - C. The equivalence
+
+## iv. References
+
+* None.
 
 -/
 

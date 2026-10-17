@@ -12,6 +12,8 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 
 # Spin factors
 
+Spin factors `V × R` of a symmetric bilinear form, the basic non-associative Jordan algebras.
+
 ## i. Overview
 
 A spin factor is `V × ℝ` with the Jordan product `(x, a) ∘ (y, b) = (a y + b x, B x y + a b)` for a
@@ -24,8 +26,15 @@ form it carries the Lorentz cone. Only the algebraic structure is built here.
 - `JordanAlgebra.SpinFactor.isCommJordan` : it is a Jordan algebra.
 - `JordanAlgebra.SpinFactor.mul_self_sub_two_smul_snd_mul_add_determinant_smul_one` : every element
   satisfies a quadratic equation.
+- `JordanAlgebra.SpinFactor.determinant` : the determinant quadratic form `a² - B x x`.
 
-## iii. References
+## iii. Table of contents
+
+- A. The underlying module
+- B. The Jordan product
+- C. The determinant and the quadratic equation
+
+## iv. References
 
 - Adapted from Cobord, `Jordan/SpinFactor.lean`.
 
@@ -38,6 +47,12 @@ namespace ProbabilisticTheory
 namespace JordanAlgebra
 
 variable (R V : Type*) [CommRing R] [AddCommGroup V] [Module R V]
+
+/-!
+
+## A. The underlying module
+
+-/
 
 /-- The spin factor determined by a bilinear form.  The synonym keeps products belonging to
 different forms from becoming definitionally interchangeable. -/
@@ -68,6 +83,12 @@ def mk (x : V) (a : R) : SpinFactor R V B := (x, a)
 
 @[simp] lemma mk_fst (x : V) (a : R) : (mk B x a).1 = x := rfl
 @[simp] lemma mk_snd (x : V) (a : R) : (mk B x a).2 = a := rfl
+
+/-!
+
+## B. The Jordan product
+
+-/
 
 instance : Mul (SpinFactor R V B) where
   mul z w := mk B (z.2 • w.1 + w.2 • z.1) (B z.1 w.1 + z.2 * w.2)
@@ -126,6 +147,12 @@ lemma isCommJordan (hB : B.IsSymm) :
   obtain ⟨y, b⟩ := w
   have hxy : B x y = B y x := by simpa using hB.eq x y
   ext <;> simp [mul_fst, mul_snd, smul_eq_mul, hxy] <;> [module; ring]
+
+/-!
+
+## C. The determinant and the quadratic equation
+
+-/
 
 /-- The rank-two determinant/norm form of a spin factor. -/
 def determinant : QuadraticMap R (SpinFactor R V B) R :=

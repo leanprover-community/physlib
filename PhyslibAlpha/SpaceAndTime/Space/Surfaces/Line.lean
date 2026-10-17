@@ -9,7 +9,36 @@ public import Physlib.SpaceAndTime.Space.Integrals.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 /-!
 
-## Line surfaces in `Space d`
+# Line surfaces in `Space d`
+
+The coordinate line in `Space d` with its measure, distribution and vanishing ambient volume.
+
+## i. Overview
+
+The line surface is the coordinate line in `Space d`, the image of `ℝ` under the embedding
+`line d`. Pushing forward the volume on `ℝ` gives the measure `lineMeasure d`, and integrating
+against it gives the distribution `lineDist d`, roughly the integral of a test function against a
+density concentrated on a line. For `2 ≤ d` the line lies in a proper linear subspace, so it has
+ambient volume zero.
+
+## ii. Key results
+
+- `line` : the coordinate line embedded in `Space d`.
+- `lineMeasure` : the measure corresponding to integration along the line.
+- `lineDist` : the distribution corresponding to integration along the line.
+- `lineSubmodule` : the linear subspace spanned by the line.
+- `volume_line_range` : for `2 ≤ d` the line has ambient volume zero.
+
+## iii. Table of contents
+
+- A. The definition of the line surface
+- B. The measure associated with the line
+- C. The distribution associated with the line
+- D. The line has ambient volume zero
+
+## iv. References
+
+* None.
 
 -/
 @[expose] public section

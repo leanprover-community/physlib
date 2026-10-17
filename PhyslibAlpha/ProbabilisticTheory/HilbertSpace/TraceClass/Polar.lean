@@ -13,6 +13,8 @@ public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 # Polar decomposition of bounded operators
 
+Polar decomposition `T = U |T|` of a bounded operator with a partial-isometry factor `U`.
+
 ## i. Overview
 
 For a bounded operator `T` with absolute value `|T|`, `‖T x‖ = ‖|T| x‖`. The resulting isometry from
@@ -28,7 +30,12 @@ isometry `U` with `T = U |T|` and `U⋆ T = |T|`.
 
 ## iii. Table of contents
 
+- A. The polar factor
   - A.1. The partial-isometry adjoint identity
+
+## iv. References
+
+* None.
 
 -/
 
@@ -43,6 +50,12 @@ open scoped ComplexOrder InnerProductSpace
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
 namespace Polar
+
+/-!
+
+## A. The polar factor
+
+-/
 
 /-- The absolute value used in the polar construction. -/
 noncomputable def absOperator (T : H →L[ℂ] H) : H →L[ℂ] H := CFC.abs T

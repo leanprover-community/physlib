@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.Channel.Operation
 
 # Instruments
 
+Finite-outcome instruments, their induced measurements and post-measurement states.
+
 ## i. Overview
 
 An instrument with finitely many outcomes describes both the outcome probabilities and the state
@@ -25,6 +27,16 @@ outcome of nonzero probability gives the post-measurement state.
 - `Instrument.measurement` : the underlying measurement.
 - `Instrument.conditionalState` : the post-measurement state.
 
+## iii. Table of contents
+
+- A. Instruments
+- B. The induced measurement
+- C. Conditional states
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -32,6 +44,8 @@ outcome of nonzero probability gives the post-measurement state.
 namespace ProbabilisticTheory
 
 variable {E ι : Type*} [ArchimedeanOrderUnitSpace E] [Fintype ι]
+
+/-! ## A. Instruments -/
 
 /-- A finite-outcome instrument: an operation for each outcome, whose images of the certain event
 exhaust it. The instrument loses no probability overall, even though a single operation may. -/
@@ -42,6 +56,8 @@ structure Instrument (E : Type*) [OrderUnitSpace E] (ι : Type*) [Fintype ι] wh
   sum_op_one_eq_one : ∑ i, (op i : E → E) 1 = 1
 
 namespace Instrument
+
+/-! ## B. The induced measurement -/
 
 section Measurement
 
@@ -59,6 +75,8 @@ lemma coe_measurement_effects (𝓘 : Instrument E ι) (i : ι) :
   Measurement.coe_ofAtoms_singleton _ _ i _
 
 end Measurement
+
+/-! ## C. Conditional states -/
 
 /-- The post-measurement (conditional) state after outcome `i`, given a prior state `ω` for which
 that outcome has nonzero probability: apply the operation, then renormalize by the outcome's

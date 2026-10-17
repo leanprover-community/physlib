@@ -14,6 +14,8 @@ public import Mathlib.Analysis.InnerProductSpace.Trace
 
 # Uncertainty in density-operator states
 
+Expectation, covariance, variance and Robertson–Schrödinger for density-operator states.
+
 ## i. Overview
 
 The state of a density operator `ρ` is a state on the C⋆-algebra of bounded operators, so the
@@ -34,6 +36,10 @@ traces against `ρ`, and the state of a rank-one projection `|ψ⟩⟨ψ|` is th
 - A. Statistics of density states as traces
 - B. Robertson–Schrödinger for density operators
 - C. Vector states as rank-one density states
+
+## iv. References
+
+* None.
 
 -/
 

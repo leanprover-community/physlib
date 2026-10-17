@@ -20,18 +20,28 @@ public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 # The spectral forms of a bounded normal operator
 
+Complex measures `⟪y, E(·) x⟫` of a bounded normal operator and their sesquilinear forms.
+
 ## i. Overview
 
 For a bounded normal operator `U` and vectors `x`, `y`, the functional `f ↦ ⟪x, f(U) y⟫` on
 continuous functions on the spectrum is given, by the Riesz–Markov–Kakutani theorem and
-polarization, by a complex measure. Integrating bounded measurable functions against these measures
-gives a bounded sesquilinear form for each such function.
+polarization, by a complex measure. Evaluating these measures on a measurable set `S` gives a
+bounded sesquilinear form for each such set.
 
 ## ii. Key results
 
+- `CompactPositiveFunctional` : a positive functional on compactly supported continuous functions,
+  with its Riesz measure.
 - `cfcScalarMeasure` : the measure representing `f ↦ ⟪x, f(U) x⟫`.
-- `polarizedCfcScalarMeasure` : the complex measure representing `f ↦ ⟪x, f(U) y⟫`.
-- `cfcSesquilinearForm` : the sesquilinear form of a bounded measurable function.
+- `polarizedCfcScalarMeasure` : the complex measure representing `f ↦ ⟪y, f(U) x⟫`.
+- `polarizedCfcScalarMeasure_complexIntegral_eq_inner` : integrating a real continuous `f` against
+  the polarized measure gives `⟪y, f(U) x⟫`.
+- `polarizedCfcScalarMeasure_smul_left`, `polarizedCfcScalarMeasure_smul_right` : the polarized
+  measure is sesquilinear in the two vectors.
+- `polarizedCfcScalarMeasure_norm_le_mul` : the polarized measure of a set is bounded by
+  `2 ‖x‖ ‖y‖`.
+- `cfcSesquilinearForm` : the bounded sesquilinear form of a measurable set.
 
 ## iii. Table of contents
 
@@ -44,6 +54,10 @@ gives a bounded sesquilinear form for each such function.
 - G. Polarization
 - H. Full complex sesquilinearity of the polarized measure
 - I. Riesz representation of the polarized measure
+
+## iv. References
+
+* None.
 
 -/
 

@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
 
 # The Jordan product of observables
 
+The Jordan product ½ (a b + b a) makes the self-adjoint elements a commutative Jordan ring.
+
 ## i. Overview
 
 The product of two self-adjoint elements is self-adjoint only when they commute, but the symmetrized
@@ -26,6 +28,19 @@ A`, since for commutative `A` Mathlib already gives `selfAdjoint A` the ordinary
 - `selfAdjoint.jordanMul_comm` : the Jordan product is commutative.
 - `selfAdjoint.jordanMul_jordanMul_jordanMul_self` : the Jordan identity.
 
+## iii. Table of contents
+
+- A. The anticommutator
+- B. The normalized Jordan product
+- C. Additivity, scalars and the Jordan identity
+- D. The Jordan product as a multiplication
+- E. The Jordan ring structure
+- F. The Jordan product of observables
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -34,6 +49,8 @@ namespace selfAdjoint
 open ProbabilisticTheory
 
 variable {A : Type*} [Ring A] [StarRing A] [Module ℝ A] [StarModule ℝ A]
+
+/-! ## A. The anticommutator -/
 
 /-- The unnormalized anticommutator, retained as a low-level formula while `jordanMul` is the
 canonical normalized Jordan product. -/
@@ -46,6 +63,8 @@ omit [Module ℝ A] [StarModule ℝ A] in
 lemma coe_anticommutator (a b : selfAdjoint A) :
     ((anticommutator a b : selfAdjoint A) : A) = (a : A) * (b : A) + (b : A) * (a : A) :=
   rfl
+
+/-! ## B. The normalized Jordan product -/
 
 /-- The normalized Jordan product of two self-adjoint elements,
 `a ∘ b := ½(ab + ba)`. It is self-adjoint regardless of whether `a` and `b` commute, since
@@ -75,6 +94,8 @@ lemma one_jordanMul (a : selfAdjoint A) : jordanMul 1 a = a := by
 @[simp]
 lemma jordanMul_one (a : selfAdjoint A) : jordanMul a 1 = a := by
   rw [jordanMul_comm, one_jordanMul]
+
+/-! ## C. Additivity, scalars and the Jordan identity -/
 
 /-- The Jordan product distributes over addition in its right argument. -/
 lemma jordanMul_add_right (a b c : selfAdjoint A) :
@@ -119,6 +140,8 @@ lemma jordanMul_jordanMul_jordanMul_self [SMulCommClass ℝ A A] [IsScalarTower 
   congr 1
   exact anticommutator_identity a b
 
+/-! ## D. The Jordan product as a multiplication -/
+
 /-- The Jordan product as a scoped multiplication on `selfAdjoint A`. -/
 noncomputable scoped instance instMul : Mul (selfAdjoint A) := ⟨jordanMul⟩
 
@@ -153,6 +176,8 @@ lemma jordanMul_jordanMul_right [SMulCommClass ℝ A A] [IsScalarTower ℝ A A]
     jordanMul a (jordanMul b x) =
       ((2 : ℝ)⁻¹ * (2 : ℝ)⁻¹) • anticommutator a (anticommutator b x) := by
   simp only [jordanMul, anticommutator_smul_right, smul_smul]
+
+/-! ## E. The Jordan ring structure -/
 
 section AlgebraStructure
 
@@ -215,6 +240,8 @@ scoped instance instIsCommJordan : IsCommJordan (selfAdjoint A) where
 end AlgebraStructure
 
 end selfAdjoint
+
+/-! ## F. The Jordan product of observables -/
 
 namespace ProbabilisticTheory
 

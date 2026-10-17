@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.AnalyticVe
 
 # Gårding vectors are analytic
 
+Gårding vectors are analytic vectors of the candidate generator.
+
 ## i. Overview
 
 Applying the candidate generator `n` times to a Gårding vector gives, up to a power of `i`, the
@@ -21,6 +23,15 @@ Gårding vector of the `n`-th derivative of the heat kernel. Its norm is at most
 ## ii. Key results
 
 - `analyticGardingVector_isAnalyticVector` : Gårding vectors are analytic vectors.
+
+## iii. Table of contents
+
+- A. The generator on iterated-kernel Gårding vectors
+- B. Analyticity of Gårding vectors
+
+## iv. References
+
+* None.
 
 -/
 
@@ -39,6 +50,12 @@ universe u
 
 variable {H : Type u} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 variable {U : ℝ → H →L[ℂ] H} (hUmul : ∀ s t, U (s + t) = U s * U t)
+
+/-!
+
+## A. The generator on iterated-kernel Gårding vectors
+
+-/
 
 include hUmul in
 /-- Domain membership of the `n`-th iterated-kernel Gårding vector, derived (not assumed) from the
@@ -83,6 +100,12 @@ lemma stoneCandidateGenerator_gardingVectorAt_iteratedKernel
     push_cast
     rw [neg_smul]
   rw [hneg, smul_neg, neg_smul, neg_neg]
+
+/-!
+
+## B. Analyticity of Gårding vectors
+
+-/
 
 include hUmul in
 /-- **Gårding vectors are analytic vectors** of the candidate generator. -/

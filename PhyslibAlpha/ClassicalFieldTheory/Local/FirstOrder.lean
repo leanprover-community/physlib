@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstVariation
 /-!
 # First-order local field theory
 
+Aliases and projections specializing the local field theory API to first-order jets.
+
 ## i. Overview
 
 This module provides a thin usability layer for first-order local field theory, i.e. the
@@ -156,7 +158,7 @@ noncomputable abbrev firstOrderEulerLagrangeOp (L : FirstOrderLagrangian d m)
     (f : Space d → EuclideanSpace ℝ (Fin m)) : Space d → EuclideanSpace ℝ (Fin m) :=
   eulerLagrangeOp L f
 
-theorem firstOrder_isCritical_iff_eulerLagrange_zero
+lemma firstOrder_isCritical_iff_eulerLagrange_zero
     (L : FirstOrderLagrangian d m) (f : Space d → EuclideanSpace ℝ (Fin m))
     (hLf : IsAdmissibleForAction L f)
     (hL : Lagrangian.SmoothInCoordinates L) :

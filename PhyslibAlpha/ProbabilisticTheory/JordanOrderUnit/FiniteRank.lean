@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Ring.IsFormallyReal
 
 # Trace and determinant of finite-rank Jordan algebras
 
+Traces on formally real Jordan algebras, their density observables and expectations.
+
 ## i. Overview
 
 A trace on a formally real Jordan algebra gives density observables: sums of squares with trace one,
@@ -22,6 +24,18 @@ each defining the expectation `a ↦ tr(ρ ∘ a)`.
 - `JordanAlgebra.TraceDeterminant` : a trace and determinant on a Jordan algebra.
 - `JordanAlgebra.TraceDeterminant.states` : the density observables.
 - `JordanAlgebra.TraceDeterminant.expectation` : the expectation of a density observable.
+- `JordanAlgebra.TraceDeterminant.pureStates` : the idempotent density observables.
+- `JordanAlgebra.TraceDeterminant.sq_smul_add_sq_smul_mem_states` : square-weighted mixtures of
+  density observables are density observables.
+
+## iii. Table of contents
+
+- A. Trace and determinant
+- B. Density observables and expectations
+
+## iv. References
+
+* None.
 
 -/
 
@@ -34,6 +48,12 @@ namespace JordanAlgebra
 variable {E : Type*} [NonAssocCommRing E] [Module ℝ E] [SMulCommClass ℝ E E]
   [IsScalarTower ℝ E E] [IsCommJordan E] [IsFormallyReal E]
 
+/-!
+
+## A. Trace and determinant
+
+-/
+
 /-- A trace and a determinant on a formally real Jordan algebra. -/
 structure TraceDeterminant (E : Type*) [NonAssocCommRing E] [Module ℝ E] where
   /-- Jordan rank, i.e. determinant degree and trace of the unit. -/
@@ -45,6 +65,12 @@ structure TraceDeterminant (E : Type*) [NonAssocCommRing E] [Module ℝ E] where
   determinant_smul : ∀ (r : ℝ) (x : E), determinant (r • x) = r ^ rank * determinant x
   trace_one : trace 1 = rank
   determinant_one : determinant 1 = 1
+
+/-!
+
+## B. Density observables and expectations
+
+-/
 
 namespace TraceDeterminant
 

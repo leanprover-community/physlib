@@ -24,8 +24,8 @@ permittivity and permeability.
 ## A.2. Current status
 
 The definitions here are intentionally lightweight. More developed APIs are organized under the
-`Kinematics`, `Dynamics`, `Distributional`, `ThreeDimension`, and `Vacuum` subdirectories. The
-abbreviations in this file remain useful as shared entry points while those APIs continue to
+`Kinematics`, `Dynamics`, `TemperedDistributional`, `ThreeDimension`, and `Vacuum` subdirectories.
+The abbreviations in this file remain useful as shared entry points while those APIs continue to
 converge.
 
 ## A.3. Future work

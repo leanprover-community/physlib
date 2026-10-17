@@ -12,6 +12,8 @@ public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Project
 
 # Projections
 
+Projections of a C⋆-algebra: sharp idempotent effects with complements and spectrum in {0, 1}.
+
 ## i. Overview
 
 A projection is an effect `p` with `p * p = p`. Projections are sharp effects, closed under
@@ -24,6 +26,15 @@ complement, and their spectrum lies in `{0, 1}`.
 - `Projection.complement` : the complementary projection `1 - p`.
 - `Projection.spectrum_subset_zero_one` : the spectrum of a projection lies in `{0, 1}`.
 
+## iii. Table of contents
+
+- A. Projections
+- B. Sharpness, complements and spectrum
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -31,6 +42,12 @@ complement, and their spectrum lies in `{0, 1}`.
 namespace ProbabilisticTheory
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+
+/-!
+
+## A. Projections
+
+-/
 
 /-- A projection: an idempotent effect in the self-adjoint part of a C⋆-algebra. -/
 def Projection (A : Type*) [CStarAlgebra A] [PartialOrder A] :=
@@ -46,6 +63,12 @@ omit [StarOrderedRing A] in
 lemma ext {p q : Projection A} (h : (p : Effect (selfAdjoint A)) = (q : Effect (selfAdjoint A))) :
     p = q :=
   Subtype.ext h
+
+/-!
+
+## B. Sharpness, complements and spectrum
+
+-/
 
 /-- Every projection is a sharp effect. -/
 lemma isSharp (p : Projection A) : Effect.IsSharp (p : Effect (selfAdjoint A)) :=

@@ -13,6 +13,8 @@ public import Mathlib.Tactic.Abel
 
 # Derivations
 
+Derivations of a bilinear multiplication and their closure under linear operations.
+
 ## i. Overview
 
 A derivation of a multiplication is a linear map `D` with `D (a b) = D a b + a D b`. The notion only
@@ -28,6 +30,10 @@ real vector space.
 
 - A. The Leibniz rule
 - B. Closure properties
+
+## iv. References
+
+* None.
 
 -/
 

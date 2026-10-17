@@ -6,11 +6,34 @@ Authors: Joseph Tooby-Smith
 module
 public import Physlib.Meta.TODO.Basic
 /-!
+# PhyslibAlpha
 
-## Overview
+The entry point of PhyslibAlpha, an extension of Physlib with a lighter review process.
+
+## i. Overview
 
 PhyslibAlpha is an extension of Physlib with a lighter review process.
 We expect the file structure to match where possible that of Physlib.
+
+This file contains no declarations; it documents the purpose and review policy of the project.
+
+## ii. Key results
+
+* None: this file contains only documentation.
+
+## iii. Table of contents
+
+- A. Review policy
+
+## iv. References
+
+* None.
+
+-/
+
+/-!
+
+## A. Review policy
 
 The idea is that it sits between the high review standards of Physlib and
 just allowing anything in the project.

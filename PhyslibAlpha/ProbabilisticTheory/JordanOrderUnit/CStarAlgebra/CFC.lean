@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.CStarAlgebra.Basi
 
 # Continuous functional calculus of self-adjoint elements
 
+The continuous functional calculus of a self-adjoint C⋆-algebra element, valued in observables.
+
 ## i. Overview
 
 The continuous functional calculus of a self-adjoint element of a C⋆-algebra, with values in the
@@ -23,6 +25,17 @@ isometric.
 - `JB.jordanCfc` : the functional calculus with values in the observables.
 - `JB.jordanCfc_mul` : it is multiplicative.
 - `JB.norm_jordanCfc` : it is isometric.
+- `JB.jordanCfc_commute` : its values commute with the observable.
+- `JB.jordanCfc_nonneg`, `JB.jordanCfc_monotone` : it is positive and monotone.
+
+## iii. Table of contents
+
+- A. The functional calculus
+- B. Positivity and monotonicity
+
+## iv. References
+
+* None.
 
 -/
 
@@ -35,6 +48,12 @@ namespace JB
 variable {A : Type*} [CStarAlgebra A]
 
 open scoped selfAdjoint
+
+/-!
+
+## A. The functional calculus
+
+-/
 
 /-- The continuous functional calculus of a self-adjoint element, as a linear map into the
 observables. -/
@@ -86,6 +105,12 @@ lemma jordanCfc_commute (a : selfAdjoint A) (f : C(spectrum ℝ (a : A), ℝ)) :
   change Commute (cfcHom (p := IsSelfAdjoint) a.property f) (a : A)
   apply Commute.cfcHom (p := IsSelfAdjoint) a.property (Commute.refl _)
   simpa only [a.property.star_eq] using (Commute.refl (a : A))
+
+/-!
+
+## B. Positivity and monotonicity
+
+-/
 
 section Order
 

@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 /-!
 # Effect-valued measures
 
+Effect-valued measures: countably additive assignments of effects to events.
+
 ## i. Overview
 
 An effect-valued measure with outcomes in `Ω` assigns to each event, a measurable set of outcomes,
@@ -38,6 +40,10 @@ adding up to `1`, one for each outcome.
 - C. Finite-outcome effect-valued measures
 - D. Finite additivity and atomic reconstruction
 - E. Relabeling outcomes
+
+## iv. References
+
+* None.
 
 -/
 

@@ -6,8 +6,8 @@ Authors: Matteo Cipollina, Joseph Tooby-Smith
 module
 
 public import Physlib.SpaceAndTime.SpaceTime.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Causality.LightLike
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Causality.TimeLike
+public import Physlib.Relativity.Causality.LightLike
+public import Physlib.Relativity.Causality.TimeLike
 /-!
 # Proper Time
 

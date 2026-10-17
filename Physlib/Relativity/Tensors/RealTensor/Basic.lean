@@ -7,6 +7,7 @@ module
 
 public import Physlib.Relativity.Tensors.RealTensor.Metrics.Pre
 public import Physlib.Relativity.Tensors.Elab
+public import Physlib.Relativity.Tensors.Conjugation.Basic
 /-!
 
 ## Real Lorentz tensors
@@ -82,10 +83,6 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     match c with
     | Color.up => Lorentz.contrCoContract
     | Color.down => Lorentz.coContrContract
-  metric := fun c =>
-    match c with
-    | Color.up => Lorentz.preContrMetric d
-    | Color.down => Lorentz.preCoMetric d
   unit := fun c =>
     match c with
     | Color.up => Lorentz.preCoContrUnit d
@@ -102,12 +99,35 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     match c with
     | Color.up => Lorentz.preCoContrUnit_symm
     | Color.down => Lorentz.preContrCoUnit_symm
+
+
+open realLorentzTensor in
+/-- The real Lorentz tensors as a conjugation species: over `ℝ` conjugation is trivial, so every
+  colour is its own conjugate. -/
+def realLorentzConjTensor (d : ℕ := 3) : ConjTensorSpecies ℝ Color (LorentzGroup d)
+    (modules d) (fun _ => Fin 1 ⊕ Fin d)
+    (fun | Color.up => Lorentz.ContrMod.rep | Color.down => Lorentz.CoMod.rep)
+    (fun | Color.up => Lorentz.contrBasis d | Color.down => Lorentz.coBasis d) where
+  toTensorSpecies := realLorentzTensor d
+  bar := id
+  bar_involution _ := rfl
+  bar_tau _ := rfl
+  barIdx_eq _ := rfl
+  conj_basis_equivariant _ _ _ _ := by simp
+  conj_contrComm _ _ _ := by simp [TensorSpecies.basisIdxCongr]
+
+namespace realLorentzTensor
+
+/-- The Minkowski metric of the real Lorentz tensors, on both vector colors. -/
+instance instWithMetric (d : ℕ) : (realLorentzTensor d).WithMetric where
+  metric := fun c =>
+    match c with
+    | Color.up => Lorentz.preContrMetric d
+    | Color.down => Lorentz.preCoMetric d
   contr_metric := fun c =>
     match c with
     | Color.up => Lorentz.contrCoContract_apply_metric
     | Color.down => Lorentz.coContrContract_apply_metric
-
-namespace realLorentzTensor
 
 /-- Notation for a real Lorentz tensor. -/
 syntax (name := realLorentzTensorSyntax) "ℝT[" term,* "]" : term
@@ -132,11 +152,6 @@ scoped[realLorentzTensor] notation "ℝT(" d "," c ")" =>
 These re-express fields of `realLorentzTensor d` in terms of `Lorentz` data.
 
 -/
-
-@[simp]
-lemma basisIdxCongr_eq_refl {d : ℕ} {c1 c2 : realLorentzTensor.Color} (h : c1 = c2) :
-    TensorSpecies.basisIdxCongr (basisIdx := fun _ => Fin 1 ⊕ Fin d) h = Equiv.refl _ := by
-  rfl
 
 lemma basisIdxCongr_apply {d : ℕ} {c1 c2 : realLorentzTensor.Color} (h : c1 = c2)
     (i : Fin 1 ⊕ Fin d) :
@@ -212,7 +227,7 @@ lemma contrT_eq_sum_evalT {n} {d} (c : Fin (n + 1 + 1) → Color) (i j : Fin (n 
     · rw [permT_basis]
       congr
       ext x
-      simp only [Function.comp_apply, ComponentIdx.dropPair, id_eq, basisIdxCongr_eq_refl,
+      simp only [Function.comp_apply, ComponentIdx.dropPair, id_eq, basisIdxCongr_const,
         Equiv.refl_apply]
       rw [Fin.succSuccAbove_eq_predAbove h.1]
     · symm at h₁; contradiction

@@ -97,7 +97,7 @@ variable {CΛ₁ CΛ₂ : HPMap dIn dOut ℂ}
 abbrev map (M : HPMap dIn dOut 𝕜) : MatrixMap dIn dOut 𝕜 := M.toLinearMap
 
 @[ext]
-theorem ext (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
+lemma ext (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
   rwa [HPMap.mk.injEq]
 
 /-- Two maps are equal if they agree on all Hermitian inputs. -/
@@ -177,11 +177,11 @@ variable [Fintype dIn] [Fintype dOut]
 namespace PMap
 
 @[ext]
-theorem ext {Λ₁ Λ₂ : PMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
+lemma ext {Λ₁ Λ₂ : PMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
   rw [PMap.mk.injEq]
   exact HPMap.ext h
 
-theorem injective_toHPMap : (PMap.toHPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective :=
+lemma injective_toHPMap : (PMap.toHPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective :=
   fun _ _ ↦ (mk.injEq _ _ _ _).mpr
 
 /-- Positive maps are functions from `HermitianMat`s to `HermitianMat`s. -/
@@ -232,11 +232,11 @@ end CPMap
 namespace PTPMap
 
 @[ext]
-theorem ext {Λ₁ Λ₂ : PTPMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
+lemma ext {Λ₁ Λ₂ : PTPMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
   rw [PTPMap.mk.injEq]
   exact PMap.ext h
 
-theorem injective_toPMap : (PTPMap.toPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective :=
+lemma injective_toPMap : (PTPMap.toPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective :=
   fun _ _ ↦ (mk.injEq _ _ _ _).mpr
 
 /-- Positive trace-preserving maps are functions from `HermitianMat`s to `HermitianMat`s. -/
@@ -289,14 +289,14 @@ instance instMContinuousMapClass [DecidableEq dIn] [DecidableEq dOut] :
     exact (map_continuous f.toHPMap).comp MState.Continuous_HermitianMat
 
 -- @[norm_cast]
-theorem val_apply_MState [DecidableEq dIn] (M : PTPMap dIn dOut) (ρ : MState dIn) :
+lemma val_apply_MState [DecidableEq dIn] (M : PTPMap dIn dOut) (ρ : MState dIn) :
     (M ρ : HermitianMat dOut ℂ) = (instFunLike.coe M) ρ := by
   rfl
 
 --If we have a PTPMap, the input and output dimensions are always both nonempty (otherwise
 --we can't preserve trace) - or they're both empty. So `[Nonempty dIn]` will always suffice.
 -- This would be nice as an `instance` but that would leave `dIn` as a metavariable.
-theorem nonemptyOut (Λ : PTPMap dIn dOut) [hIn : Nonempty dIn] [DecidableEq dIn] : Nonempty dOut := by
+lemma nonemptyOut (Λ : PTPMap dIn dOut) [hIn : Nonempty dIn] [DecidableEq dIn] : Nonempty dOut := by
   by_contra h
   simp only [not_nonempty_iff] at h
   let M := (1 : Matrix dIn dIn ℂ)
@@ -323,7 +323,7 @@ theorem ext {Λ₁ Λ₂ : CPTPMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : 
   rw [CPTPMap.mk.injEq]
   exact PTPMap.ext h
 
-theorem injective_toPTPMap : (CPTPMap.toPTPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective :=
+lemma injective_toPTPMap : (CPTPMap.toPTPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective :=
   fun _ _ ↦ (mk.injEq _ _ _ _).mpr
 
 -- /-- Positive trace-preserving maps are functions from `HermitianMat`s to `HermitianMat`s. -/
@@ -361,7 +361,7 @@ lemma apply_mState_eq_toPTPMap [DecidableEq dOut] (Λ : CPTPMap dIn dOut) (ρ : 
 --   rfl
 
 @[simp]
-theorem IsTracePreserving (Λ : CPTPMap dIn dOut 𝕜) : Λ.map.IsTracePreserving :=
+lemma IsTracePreserving (Λ : CPTPMap dIn dOut 𝕜) : Λ.map.IsTracePreserving :=
   Λ.TP
 
 def of_kraus_CPTPMap {κ : Type*} [Fintype κ]
@@ -377,11 +377,11 @@ namespace PUMap
 variable [DecidableEq dIn] [DecidableEq dOut]
 
 @[ext]
-theorem ext {Λ₁ Λ₂ : PUMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
+lemma ext {Λ₁ Λ₂ : PUMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
   rw [PUMap.mk.injEq]
   exact PMap.ext h
 
-theorem injective_toPMap : (PUMap.toPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective := by
+lemma injective_toPMap : (PUMap.toPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective := by
   intro _ _ _
   rwa [PUMap.mk.injEq]
 
@@ -420,11 +420,11 @@ namespace CPUMap
 variable [DecidableEq dIn] [DecidableEq dOut]
 
 @[ext]
-theorem ext {Λ₁ Λ₂ : CPUMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
+lemma ext {Λ₁ Λ₂ : CPUMap dIn dOut 𝕜} (h : Λ₁.map = Λ₂.map) : Λ₁ = Λ₂ := by
   rw [CPUMap.mk.injEq, CPMap.mk.injEq]
   exact PMap.ext h
 
-theorem injective_toPMap : (CPMap.toPMap ∘ CPUMap.toCPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective := by
+lemma injective_toPMap : (CPMap.toPMap ∘ CPUMap.toCPMap (dIn := dIn) (dOut := dOut) (𝕜 := 𝕜)).Injective := by
   intro _ _ _
   rwa [CPUMap.mk.injEq, CPMap.mk.injEq]
 

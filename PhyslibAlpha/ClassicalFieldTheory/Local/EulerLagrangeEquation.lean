@@ -9,6 +9,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.FirstVariation
 /-!
 # Local Euler-Lagrange equations
 
+A named predicate for the local Euler-Lagrange equations and the criticality criteria using it.
+
 ## i. Overview
 
 This module gives a named predicate for fields satisfying the local Euler-Lagrange equations.
@@ -81,14 +83,14 @@ lemma SatisfiesEulerLagrange.of_eulerLagrangeOp_eq_zero
 
 -/
 
-theorem isCritical_iff_satisfiesEulerLagrange_of_contDiff_and_smoothInCoordinates
+lemma isCritical_iff_satisfiesEulerLagrange_of_contDiff_and_smoothInCoordinates
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m)) (hf : ContDiff ℝ ∞ f)
     (hL : Lagrangian.SmoothInCoordinates L)
     (hbase : HasFiniteAction L f) :
     IsCritical L f ↔ SatisfiesEulerLagrange L f := by
   exact isCritical_iff_eulerLagrange_zero_of_contDiff_and_smoothInCoordinates L f hf hL hbase
 
-theorem isCritical_iff_satisfiesEulerLagrange_of_admissibleForAction_and_smoothInCoordinates
+lemma isCritical_iff_satisfiesEulerLagrange_of_admissibleForAction_and_smoothInCoordinates
     (L : Lagrangian d m k) (f : Space d → EuclideanSpace ℝ (Fin m))
     (hLf : IsAdmissibleForAction L f)
     (hL : Lagrangian.SmoothInCoordinates L) :

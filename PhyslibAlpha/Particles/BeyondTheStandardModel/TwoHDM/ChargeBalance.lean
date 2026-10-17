@@ -11,16 +11,43 @@ public import Mathlib.Tactic.Ring
 /-!
 # Charge balancing for polynomials
 
+A polynomial invariant under a phase rotation of charged variables has only charge-balanced terms.
+
+## i. Overview
+
 If the variables of a polynomial carry charges under a phase (here a single element `c` of infinite
 order), then invariance under the simultaneous phase rotation `Xᵢ ↦ c^{wᵢ} Xᵢ` forces every
 monomial to be *charge balanced* (net charge zero). This is the algebraic content of the statement
 that a gauge invariant potential, restricted to a slice on which the gauge torus acts diagonally,
 can only contain charge-balanced monomials.
+
+## ii. Key results
+
+- `MvPolynomial.coeff_aeval_diag` : rescaling each variable `Xᵢ` by a constant `d i` multiplies the
+  coefficient of a monomial by the corresponding product of the `d i`.
+- `MvPolynomial.coeff_eq_zero_of_charge_ne_zero` : charge balancing, a polynomial invariant under
+  the phase rotation has vanishing coefficients on monomials of nonzero net charge.
+
+## iii. Table of contents
+
+- A. Rescaling the variables
+- B. Charge balancing
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
 
 namespace MvPolynomial
+
+/-!
+
+## A. Rescaling the variables
+
+-/
 
 open scoped Classical in
 /-- Rescaling each variable `Xᵢ` by a constant `d i` multiplies the coefficient of the monomial `m`
@@ -57,6 +84,12 @@ lemma coeff_aeval_diag {σ R : Type*} [CommRing R] (d : σ → R) (f : MvPolynom
       rw [hprod]
       ring
     · rw [ite_eq_right hi, ite_eq_right hi, mul_zero, mul_zero]
+
+/-!
+
+## B. Charge balancing
+
+-/
 
 /-- **Charge balancing.** If each variable `Xᵢ` carries an integer charge `w i`, `c` is a phase of
   infinite order, and the polynomial `f` is invariant under the charge rotation

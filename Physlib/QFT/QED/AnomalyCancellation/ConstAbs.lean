@@ -207,7 +207,7 @@ lemma AFL_odd_zero {A : (PureU1 (2 * n + 1)).LinSols} (h : ConstAbsSorted A.val)
   by_contra hn
   exact (AFL_odd_noBoundary h hn) (AFL_hasBoundary h hn)
 
-theorem AFL_odd (A : (PureU1 (2 * n + 1)).LinSols) (h : ConstAbsSorted A.val) :
+lemma AFL_odd (A : (PureU1 (2 * n + 1)).LinSols) (h : ConstAbsSorted A.val) :
     A = 0 := by
   apply ACCSystemLinear.LinSols.ext
   exact is_zero h (AFL_odd_zero h)
@@ -273,12 +273,12 @@ end ConstAbsSorted
 
 namespace ConstAbs
 
-theorem boundary_value_odd (S : (PureU1 (2 * n + 1)).LinSols) (hs : ConstAbs S.val) :
+lemma boundary_value_odd (S : (PureU1 (2 * n + 1)).LinSols) (hs : ConstAbs S.val) :
     S = 0 :=
   have hS := And.intro (constAbs_sort hs) (sort_sorted S.val)
   sortAFL_zero S (ConstAbsSorted.AFL_odd (sortAFL S) hS)
 
-theorem boundary_value_even (S : (PureU1 (2 * n.succ)).LinSols) (hs : ConstAbs S.val) :
+lemma boundary_value_even (S : (PureU1 (2 * n.succ)).LinSols) (hs : ConstAbs S.val) :
     VectorLikeEven S.val := by
   have hS := And.intro (constAbs_sort hs) (sort_sorted S.val)
   intro i

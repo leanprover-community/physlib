@@ -14,6 +14,8 @@ public import Mathlib.Topology.Sequences
 
 # Compact operators and weakly null sequences
 
+Orthonormal sequences are weakly null, and compact operators make them norm-null.
+
 ## i. Overview
 
 An orthonormal sequence is weakly null, by Bessel's inequality. A compact operator maps a bounded
@@ -25,7 +27,12 @@ weakly null sequence to a sequence converging to `0` in norm.
 - `IsCompactOperator.tendsto_norm_apply_of_weaklyNull` : compact operators map bounded weakly null
   sequences to null sequences.
 
-## iii. References
+## iii. Table of contents
+
+- A. Orthonormal sequences are weakly null
+- B. Compact operators on weakly null sequences
+
+## iv. References
 
 - Adapted from `adambornemann-glitch/Spectra`, `SpectralTheory/Essential/WeakCompact.lean` (Apache
   2.0).
@@ -42,6 +49,12 @@ open Filter Topology
 open scoped InnerProductSpace
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Orthonormal sequences are weakly null
+
+-/
 
 omit [CompleteSpace H] in
 /-- An orthonormal sequence is **weakly null**: for every fixed `g`, the inner products
@@ -60,6 +73,12 @@ lemma _root_.Orthonormal.tendsto_inner_atTop_zero {ψ : ℕ → H} (hψ : Orthon
   have heq : (fun n => ‖⟪g, ψ n⟫_ℂ‖) = fun n => ‖⟪ψ n, g⟫_ℂ‖ :=
     funext fun n => norm_inner_symm g (ψ n)
   rw [heq]; exact hnorm
+
+/-!
+
+## B. Compact operators on weakly null sequences
+
+-/
 
 /-- A **compact** operator maps a bounded weakly-null sequence to a norm-null sequence.
 

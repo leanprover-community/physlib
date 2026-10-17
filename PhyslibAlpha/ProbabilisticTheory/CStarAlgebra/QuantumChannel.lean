@@ -13,6 +13,8 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 # Quantum channels
 
+Quantum channels as unital completely positive maps, and the channels they induce on observables.
+
 ## i. Overview
 
 A quantum channel between C⋆-algebras is a unital completely positive map: it stays positive when
@@ -20,7 +22,7 @@ applied to one half of any larger, possibly entangled, system. Complete positivi
 `CompletelyPositiveMap`. On self-adjoint parts every quantum channel is a channel between the
 order-unit spaces of observables.
 
-## ii. Key definitions
+## ii. Key results
 
 - `QuantumChannel A₁ A₂` : unital completely positive maps from `A₁` to `A₂`.
 - `QuantumChannel.toChannel` : the channel it induces between the self-adjoint parts.
@@ -29,6 +31,10 @@ order-unit spaces of observables.
 
 - A. Quantum channels
 - B. The induced channel on observables
+
+## iv. References
+
+* None.
 
 -/
 

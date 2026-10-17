@@ -11,6 +11,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SpectralIn
 
 # The integral of the identity is self-adjoint
 
+The integral of the identity against a spectral measure on `ℝ` is self-adjoint.
+
 ## i. Overview
 
 The integral of the identity against a spectral measure on `ℝ` has resolvents at `± i` given by the
@@ -19,6 +21,13 @@ measure equals this integral, which identifies its domain with the vectors of fi
 
 ## ii. Key results
 
+- `resolventMultiplier` : the bounded function `λ ↦ (λ - z)⁻¹` for non-real `z`.
+- `maximalSpectralIntegral_resolvent_range` : the shifts by non-real `z` of the maximal integral
+  are onto.
+- `maximalSpectralIntegral_isSelfAdjoint` : the integral of the identity is self-adjoint.
+- `measurableSpectralIntegral_isSelfAdjoint` : so is the integral of any measurable real function.
+- `maximalSpectralIntegral_eq_of_isSelfAdjoint_of_isWeakSpectralResolution` : a self-adjoint
+  operator resolved by a spectral measure equals the integral of the identity.
 - `domainAwareSelfAdjointSpectralTheorem_of_isWeakSpectralResolution` : a spectral measure resolving
   a self-adjoint operator resolves it together with its domain.
 
@@ -30,6 +39,10 @@ measure equals this integral, which identifies its domain with the vectors of fi
 - D. The canonical self-adjoint realization
 - E. Uniqueness of the domain-aware realization
 - F. The canonical operator equality
+
+## iv. References
+
+* None.
 
 -/
 

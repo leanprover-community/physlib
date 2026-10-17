@@ -168,7 +168,7 @@ lemma evalT_permT {n m : ℕ} {c : Fin (n + 1) → C} {c' : Fin (m + 1) → C}
       funext j
       refine (Equiv.eq_symm_apply (basisIdxCongr _)).mp ?_
       simp only [basisIdxCongr_symm]
-      erw [basisIdxCongr_apply_apply]
+      rw [basisIdxCongr_apply_apply]
       apply ComponentIdx.congr_right
       split_ifs with h2
       · simp [h2]
@@ -335,7 +335,7 @@ lemma evalT_prodT_right {n n1 : ℕ} {c : Fin n → C} {c1 : Fin (n1 + 1) → C}
             · simp only [Fin.lt_def, Fin.val_castSucc, Fin.val_castAdd, Fin.val_natAdd]
               omega
           simp only [id_eq]
-          erw [ComponentIdx.congr_right (ComponentIdx.prod.symm (b, b1)) _ _ hidx]
+          rw [ComponentIdx.congr_right (ComponentIdx.prod.symm (b, b1)) _ _ hidx]
           simp only [ComponentIdx.prod_symm_castAdd]
           exact basisIdxCongr_heq_arg _ _ (by
             simp only [basisIdxCongr, Equiv.cast_apply]
@@ -351,7 +351,7 @@ lemma evalT_prodT_right {n n1 : ℕ} {c : Fin n → C} {c1 : Fin (n1 + 1) → C}
             simp only [Fin.succAbove, hcond]
             split_ifs <;> ext <;> simp [Nat.add_assoc]
           simp only [id_eq]
-          erw [ComponentIdx.congr_right (ComponentIdx.prod.symm (b, b1)) _ _ hidx]
+          rw [ComponentIdx.congr_right (ComponentIdx.prod.symm (b, b1)) _ _ hidx]
           simp only [ComponentIdx.prod_symm_natAdd]
           exact basisIdxCongr_heq_arg _ _ (by
             simp only [basisIdxCongr, Equiv.cast_apply]
@@ -425,7 +425,7 @@ lemma eq_sum_evalT {n : ℕ} {c : Fin (n + 1) → C} (t : Tensor S c) :
       congr
       refine Fin.addCases (fun j => ?_) (fun j => ?_) i
       · simp only [id_eq, ComponentIdx.prod_symm_castAdd, Function.comp_apply]
-        erw [basisIdxCongr_apply_apply]
+        rw [basisIdxCongr_apply_apply]
         exact ComponentIdx.congr_right b _ _ (by rw [Fin.succAbove_last]; rfl)
       · simp only [id_eq, ComponentIdx.prod_symm_natAdd, ComponentIdx.single_symm_apply,
           basisIdxCongr_apply_apply]

@@ -20,6 +20,8 @@ public import Mathlib.Analysis.Calculus.MeanValue
 
 # Souriau's moment map on a symplectic vector space
 
+Souriau's moment map, cocycle and Noether theorem for affine actions on a symplectic space.
+
 ## i. Overview
 
 Souriau (Structure des systèmes dynamiques, Dunod 1970, chapter 11) attaches to a Lie group `G`
@@ -73,8 +75,6 @@ field is `Z_{𝔤*}(ν) = ν ∘ Ad(Z)` (11.16).
 - J.-M. Souriau, Structure des systèmes dynamiques, Dunod, Paris, 1970, chapter 11,
   pp. 104-117; English translation: Structure of Dynamical Systems, Birkhäuser, 1997
   (same equation numbers).
-
-## References
 
 * J.-M. Souriau, *Structure des systèmes dynamiques*, Maîtrises de mathématiques, Dunod,
   Paris, 1970, chapter 11, pp. 104-117. The equation numbers (11.7),

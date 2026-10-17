@@ -11,6 +11,8 @@ public import PhyslibAlpha.Mathematics.LadderSystem.SymmetricPower
 
 # The harmonic oscillator as a ladder system
 
+The ladder operators of the d-dimensional harmonic oscillator form a `LadderSystem`.
+
 ## i. Overview
 
 The lowering and raising operators `loweringCLM`/`raisingCLM` of the `d`-dimensional quantum

@@ -11,6 +11,8 @@ public import PhyslibAlpha.Mathematics.Sublinear
 /-!
 # Upper envelopes
 
+Splittings of a positive functional attain the upper envelope of a finite family.
+
 ## i. Overview
 
 Take finitely many elements `A₁, …, Aₙ` of a directed ordered real vector space and a positive

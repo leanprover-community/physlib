@@ -10,6 +10,7 @@ public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Mathlib.Analysis.Calculus.Deriv.Pow
 public import Mathlib.Analysis.Calculus.Deriv.Mul
+public import Mathlib.Analysis.Calculus.Deriv.Linear
 public import Mathlib.Analysis.Calculus.SmoothSeries
 public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.InnerProductSpace.Calculus
@@ -20,6 +21,8 @@ public import Mathlib.Order.Filter.AtTopBot.Ring
 /-!
 
 # Analytic vectors
+
+Analytic and entire vectors, their exponential series and an essential self-adjointness test.
 
 ## i. Overview
 

@@ -53,12 +53,12 @@ namespace IsMaximalSelfAdjoint
 -- take care of proving that anyway.
 
 @[simp]
-theorem trivial_selfadjMap {R} [Star R] [TrivialStar R] [CommSemiring R] :
+lemma trivial_selfadjMap {R} [Star R] [TrivialStar R] [CommSemiring R] :
     (selfadjMap : R →+ R) = .id R := by
   rfl
 
 @[simp]
-theorem RCLike_selfadjMap {α} [RCLike α] : (selfadjMap : α →+ ℝ) = RCLike.re := by
+lemma RCLike_selfadjMap {α} [RCLike α] : (selfadjMap : α →+ ℝ) = RCLike.re := by
   rfl
 
 end IsMaximalSelfAdjoint

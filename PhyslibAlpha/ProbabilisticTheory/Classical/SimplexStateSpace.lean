@@ -13,6 +13,8 @@ public import Mathlib.MeasureTheory.Integral.Bochner.Set
 /-!
 # Classical systems: unique decomposition into pure states
 
+Pure decompositions, simplex and Bauer simplex state spaces, and measures as functionals.
+
 ## i. Overview
 
 A system is classical when every state is a mixture of pure states in exactly one way. A die is the
@@ -44,6 +46,10 @@ and this identification respects the order.
 - A. Pure decompositions and simplices
 - B. Measures on the pure states as positive functionals
 - C. Simplices identify functionals with measures
+
+## iv. References
+
+* None.
 
 -/
 

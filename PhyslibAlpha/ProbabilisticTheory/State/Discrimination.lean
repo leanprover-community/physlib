@@ -12,6 +12,8 @@ public import Mathlib.Algebra.Order.Group.CompleteLattice
 /-!
 # State discrimination
 
+Two-state discrimination by a single effect and the Helstrom bound on the success probability.
+
 ## i. Overview
 
 A system is prepared in state `ω₀` (with probability `p`) or `ω₁` (with probability `1 - p`). We

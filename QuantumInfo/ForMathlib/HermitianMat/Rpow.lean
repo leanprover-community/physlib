@@ -50,27 +50,27 @@ def rpow (A : HermitianMat d 𝕜) (r : ℝ) : HermitianMat d 𝕜 :=
 instance instRPow : Pow (HermitianMat d 𝕜) ℝ :=
   ⟨rpow⟩
 
-theorem rpow_conj_unitary (A : HermitianMat d 𝕜) (U : Matrix.unitaryGroup d 𝕜) (r : ℝ) :
+lemma rpow_conj_unitary (A : HermitianMat d 𝕜) (U : Matrix.unitaryGroup d 𝕜) (r : ℝ) :
     (HermitianMat.conj U.val A) ^ r = HermitianMat.conj U.val (A ^ r) := by
   exact A.cfc_conj_unitary (· ^ r) U
 
-theorem pow_eq_rpow : A ^ r = A.rpow r :=
+lemma pow_eq_rpow : A ^ r = A.rpow r :=
   rfl
 
-theorem rpow_eq_cfc : A ^ r = A.cfc (· ^ r) :=
+lemma rpow_eq_cfc : A ^ r = A.cfc (· ^ r) :=
   rfl
 
-theorem diagonal_pow (f : d → ℝ) :
+lemma diagonal_pow (f : d → ℝ) :
     (diagonal 𝕜 f) ^ r = diagonal 𝕜 (fun i ↦ (f i) ^ r) := by
   simp [rpow_eq_cfc]
   rfl
 
 @[fun_prop]
-theorem rpow_const_continuous {r : ℝ} (hr : 0 ≤ r) : Continuous (fun A : HermitianMat d ℂ ↦ A ^ r) := by
+lemma rpow_const_continuous {r : ℝ} (hr : 0 ≤ r) : Continuous (fun A : HermitianMat d ℂ ↦ A ^ r) := by
   exact HermitianMat.cfc_continuous (Real.continuous_rpow_const hr)
 
 @[fun_prop]
-theorem const_rpow_continuous [NonSingular A] : Continuous (fun r : ℝ ↦ A ^ r) := by
+lemma const_rpow_continuous [NonSingular A] : Continuous (fun r : ℝ ↦ A ^ r) := by
   rw [← continuousOn_univ]
   apply continuousOn_cfc_fun_nonsingular
   simp only [Real.rpow_eq_pow]
@@ -95,7 +95,7 @@ theorem continuousOn_rpow_neg (A : HermitianMat d ℂ) : ContinuousOn (fun x : �
   exact (Real.continuousAt_const_rpow' hx.ne).continuousWithinAt
 
 @[simp]
-theorem rpow_one : A ^ (1 : ℝ) = A := by
+lemma rpow_one : A ^ (1 : ℝ) = A := by
   simp [rpow_eq_cfc]
 
 /--
@@ -108,7 +108,7 @@ lemma sqrt_eq_cfc_rpow_half (A : HermitianMat d 𝕜)  :
   simp [Real.sqrt_eq_rpow]
 
 @[simp]
-theorem one_rpow : (1 : HermitianMat d 𝕜) ^ r = 1 := by
+lemma one_rpow : (1 : HermitianMat d 𝕜) ^ r = 1 := by
   rcases isEmpty_or_nonempty d
   · apply Subsingleton.allEq
   · nth_rw 2 [← HermitianMat.cfc_id (1 : HermitianMat d 𝕜)]
@@ -129,45 +129,45 @@ theorem reindex_rpow (e : d ≃ d₂) :
     A.reindex e ^ r = (A ^ r).reindex e := by
   apply A.cfc_reindex
 
-theorem mat_rpow_add (hA : 0 ≤ A) {p q : ℝ} (hpq : p + q ≠ 0) :
+lemma mat_rpow_add (hA : 0 ≤ A) {p q : ℝ} (hpq : p + q ≠ 0) :
     (A ^ (p + q)).mat = (A ^ p).mat * (A ^ q).mat := by
   simp only [rpow_eq_cfc, ← mat_cfc_mul, ← HermitianMat.ext_iff]
   exact cfc_congr_of_nonneg hA (fun i hi ↦ Real.rpow_add' hi hpq)
 
-theorem rpow_mul (hA : 0 ≤ A) {p q : ℝ} : A ^ (p * q) = (A ^ p) ^ q := by
+lemma rpow_mul (hA : 0 ≤ A) {p q : ℝ} : A ^ (p * q) = (A ^ p) ^ q := by
   simp only [rpow_eq_cfc, ← cfc_comp]
   exact cfc_congr_of_nonneg hA (fun i hi ↦ Real.rpow_mul hi p q)
 
-theorem conj_rpow (hA : 0 ≤ A) (hq : q ≠ 0) (hqr : r + 2 * q ≠ 0) :
+lemma conj_rpow (hA : 0 ≤ A) (hq : q ≠ 0) (hqr : r + 2 * q ≠ 0) :
     (A ^ r).conj (A ^ q) = A ^ (r + 2 * q) := by
   simp only [rpow_eq_cfc, cfc_conj]
   refine cfc_congr_of_nonneg hA (fun i hi ↦ ?_)
   rw [pow_two, Real.rpow_add' hi hqr, two_mul, Real.rpow_add' hi (by simpa)]
   rfl
 
-theorem pow_half_mul (hA : 0 ≤ A) :
+lemma pow_half_mul (hA : 0 ≤ A) :
     (A ^ (1/2 : ℝ)).mat * (A ^ (1/2 : ℝ)).mat = A := by
   rw [← mat_rpow_add hA]
   · norm_num
   · norm_num
 
-theorem rpow_pos {A : HermitianMat d 𝕜} (hA : 0 < A) {p : ℝ} : 0 < A ^ p := by
+lemma rpow_pos {A : HermitianMat d 𝕜} (hA : 0 < A) {p : ℝ} : 0 < A ^ p := by
   convert! cfc_pos_of_pos hA _ _
   · exact fun i hi => Real.rpow_pos_of_pos hi _
   · rcases eq_or_ne p 0 with h | h <;> simp [h]
 
-theorem rpow_nonneg (hA : 0 ≤ A) {p : ℝ} : 0 ≤ A ^ p := by
+lemma rpow_nonneg (hA : 0 ≤ A) {p : ℝ} : 0 ≤ A ^ p := by
   apply cfc_nonneg_of_nonneg hA
   exact fun i hi => Real.rpow_nonneg hi p
 
 open ComplexOrder in
-theorem inv_eq_rpow_neg_one (hA : A.mat.PosDef) : A⁻¹ = A ^ (-1 : ℝ) := by
+lemma inv_eq_rpow_neg_one (hA : A.mat.PosDef) : A⁻¹ = A ^ (-1 : ℝ) := by
   have := nonSingular_of_posDef hA
   rw [← cfc_inv, rpow_eq_cfc]
   simp_rw [Real.rpow_neg_one]
 
 open ComplexOrder in
-theorem sandwich_self (hB : B.mat.PosDef) :
+lemma sandwich_self (hB : B.mat.PosDef) :
     (B.conj (B ^ (-1/2 : ℝ)).mat) = 1 := by
   have hB_inv_sqrt : (B ^ (-1 / 2 : ℝ)).mat * (B ^ (-1 / 2 : ℝ)).mat = (B ^ (-1 : ℝ)).mat := by
     rw [ ← mat_rpow_add ] <;> norm_num
@@ -252,12 +252,12 @@ lemma sandwich_inv (hB : B.mat.PosDef) :
     rw [← rpow_neg_mul_rpow_self hB (1 / 2), neg_div 2 1]
   simp [inv_conj (isUnit_rpow_toMat hB _), h_inv]
 
-theorem ker_rpow_eq_of_nonneg {A : HermitianMat d ℂ} (hA : 0 ≤ A) (hp : r ≠ 0):
+lemma ker_rpow_eq_of_nonneg {A : HermitianMat d ℂ} (hA : 0 ≤ A) (hp : r ≠ 0):
     (A ^ r).ker = A.ker := by
   apply ker_cfc_eq_ker_nonneg hA
   grind [Real.rpow_eq_zero_iff_of_nonneg, Real.rpow_eq_pow]
 
-theorem ker_rpow_le_of_nonneg {A : HermitianMat d ℂ} (hA : 0 ≤ A) :
+lemma ker_rpow_le_of_nonneg {A : HermitianMat d ℂ} (hA : 0 ≤ A) :
     (A ^ r).ker ≤ A.ker := by
   apply ker_cfc_le_ker_nonneg hA
   grind [Real.rpow_eq_zero_iff_of_nonneg, Real.rpow_eq_pow]
@@ -391,7 +391,7 @@ noncomputable def rpowApprox (A : HermitianMat d ℂ) (q T : ℝ) : HermitianMat
 
 set_option backward.isDefEq.respectTransparency false in
 open MeasureTheory ComplexOrder in
-theorem rpowApprox_mono {A B : HermitianMat d ℂ} (hA : A.mat.PosDef) (hB : B.mat.PosDef)
+lemma rpowApprox_mono {A B : HermitianMat d ℂ} (hA : A.mat.PosDef) (hB : B.mat.PosDef)
     (hAB : A ≤ B) (hq : 0 ≤ q) (T : ℝ) (hT : 0 < T) :
     rpowApprox A q T ≤ rpowApprox B q T := by
   unfold HermitianMat.rpowApprox
@@ -435,7 +435,7 @@ noncomputable def scalarRpowApprox (q T x : ℝ) : ℝ :=
   ∫ t in (0)..T, t ^ q * (1 / (1 + t) - 1 / (x + t))
 
 open MeasureTheory ComplexOrder in
-theorem rpowApprox_eq_cfc_scalar (A : HermitianMat d ℂ) (hA : A.mat.PosDef) (q T : ℝ)
+lemma rpowApprox_eq_cfc_scalar (A : HermitianMat d ℂ) (hA : A.mat.PosDef) (q T : ℝ)
     (hq : 0 ≤ q) (hT : 0 < T) :
     rpowApprox A q T = A.cfc (scalarRpowApprox q T) := by
   have rpowApprox_eq_cfc_scalar : ∀ t ∈ Set.Ioc 0 T, t ^ q • ((1 + t)⁻¹ • (1 : HermitianMat d ℂ) - (A + t • 1)⁻¹) = A.cfc (fun u => t ^ q * (1 / (1 + t) - 1 / (u + t))) := by

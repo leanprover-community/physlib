@@ -14,6 +14,8 @@ public import Mathlib.Topology.UnitInterval
 /-!
 # Finite classical systems
 
+The classical system with finitely many outcomes: states are probability vectors.
+
 ## i. Overview
 
 A classical system with finitely many outcomes `ι` has as observables the real functions on `ι`,
@@ -36,6 +38,10 @@ system classical. The classical bit is `ι = Fin 2`.
 - B. States as probability vectors
 - C. The simplex of states
 - D. Effects of `ℝ`
+
+## iv. References
+
+* None.
 
 -/
 

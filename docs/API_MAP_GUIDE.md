@@ -139,8 +139,8 @@ Run it from the repository root, exactly as CI does. The linter needs PyYAML,
 which CI installs with pip before this step; locally, `pip install PyYAML` once
 if you do not have it.
 
-    python scripts/api_map_linter.py --repo .
-    python scripts/api_map_linter.py --repo . --verbose
+    python scripts/lint/required/api_map_linter.py --repo .
+    python scripts/lint/required/api_map_linter.py --repo . --verbose
 
 A clean run reports every file as `ok` and no `MISSING_FILE` or `MISSING_NAME`
 in the summary. `need_Lean_env` counts instance-type claims grep cannot verify;

@@ -123,6 +123,12 @@ lemma coMetric_apply_one : coMetric (1 : ℂ) = coMetricVal := by
   change (1 : ℂ) • coMetricVal = coMetricVal
   simp only [one_smul]
 
+TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
+  ContrℂModule.SL2CRep.tprod ContrℂModule.SL2CRep` is a scalar multiple of `contrMetric`, and
+  likewise for `coMetric`: up to scale, the Minkowski metric is the unique `SL(2,ℂ)`-invariant
+  element of `ContrℂModule ⊗ ContrℂModule`. Compare
+  `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
+
 /-!
 
 ## Contraction of metrics
@@ -139,11 +145,10 @@ lemma contrCoContraction_apply_metric :
   rw [contrMetric_apply_one, coMetric_apply_one]
   rw [contrMetricVal_expand_tmul, coMetricVal_expand_tmul]
   simp [Fin.isValue, tmul_sub, sub_tmul, map_sub]
-  simp only [← Representation.IntertwiningMap.toLinearMap_apply]
-  repeat erw [contrCoContraction_basis']
+  repeat rw [contrCoContraction_basis']
   simp only [Fin.isValue, ↓reduceIte, one_smul, reduceCtorEq, zero_smul, sub_zero, zero_sub,
     Sum.inr.injEq, one_ne_zero, Fin.reduceEq, sub_neg_eq_add, zero_ne_one, sub_self]
-  erw [coContrUnit_apply_one, coContrUnitVal_expand_tmul]
+  rw [coContrUnit_apply_one, coContrUnitVal_expand_tmul]
 
 lemma coContrContraction_apply_metric :
     (TensorProduct.comm ℂ _ _ <|
@@ -155,11 +160,10 @@ lemma coContrContraction_apply_metric :
   rw [coMetric_apply_one, contrMetric_apply_one]
   rw [coMetricVal_expand_tmul, contrMetricVal_expand_tmul]
   simp [Fin.isValue, tmul_sub, sub_tmul, map_sub]
-  simp only [← Representation.IntertwiningMap.toLinearMap_apply]
-  repeat erw [coContrContraction_basis']
+  repeat rw [coContrContraction_basis']
   simp [Fin.isValue, ↓reduceIte, one_smul, reduceCtorEq, Sum.inr.injEq, one_ne_zero,
     Fin.reduceEq, zero_ne_one]
-  erw [contrCoUnit_apply_one, contrCoUnitVal_expand_tmul]
+  rw [contrCoUnit_apply_one, contrCoUnitVal_expand_tmul]
 
 end Lorentz
 end

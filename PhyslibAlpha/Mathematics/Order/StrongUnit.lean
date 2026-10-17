@@ -15,6 +15,8 @@ public import Mathlib.Basic.Real.Basic
 /-!
 # Strong units
 
+Strong units and order units of ordered abelian groups, and the directed order they induce.
+
 ## i. Overview
 
 A strong unit of an ordered abelian group is an element `u` such that every element lies below some
@@ -34,6 +36,10 @@ group a strong unit is nonzero.
 
 - A. Strong units
 - B. Order units
+
+## iv. References
+
+* None.
 
 -/
 

@@ -12,6 +12,8 @@ public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Banach
 
 # The trace pairing
 
+The trace pairing `T ↦ Tr (A T)` as a bounded functional on trace-class operators.
+
 ## i. Overview
 
 A bounded operator `A` defines a bounded functional `T ↦ Tr (A T)` on the trace-class operators, of
@@ -26,6 +28,16 @@ operators to the dual of `𝒮₁(H)`.
 - `TraceClass.tracePairingContinuousLinearMap` : the trace pairing as a bounded linear map into the
   dual.
 
+## iii. Table of contents
+
+- A. Trace bounds and transport
+- B. The trace pairing at a fixed operator
+- C. The trace pairing as a bounded linear map
+
+## iv. References
+
+* None.
+
 -/
 
 @[expose] public section
@@ -39,6 +51,12 @@ open scoped ComplexOrder InnerProductSpace
 namespace TraceClass
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
+
+/-!
+
+## A. Trace bounds and transport
+
+-/
 
 /-- **The trace is dominated by the trace norm**, for an arbitrary (not necessarily positive or
 self-adjoint) trace-class operator. Proved from the duality bound
@@ -66,6 +84,12 @@ trace class: the general two-sided ideal estimate, specialized. -/
 lemma isTraceClass_mul_coe (A : H →L[ℂ] H) (T : TraceClass H) : IsTraceClass (A * T.1) := by
   have h := isTraceClass_mul_mul (A := A) (B := (1 : H →L[ℂ] H)) (isTraceClass_coe T)
   simpa using h
+
+/-!
+
+## B. The trace pairing at a fixed operator
+
+-/
 
 /-- **The trace pairing at a fixed bounded operator `A`**, `T ↦ Tr(A T)`, as a `ℂ`-linear map on
 the trace-class Banach space. -/
@@ -125,6 +149,12 @@ lemma tracePairing_apply (A : H →L[ℂ] H) (T : TraceClass H) :
 /-- The trace pairing's operator norm is bounded by `‖A‖`. -/
 lemma norm_tracePairing_le (A : H →L[ℂ] H) : ‖tracePairing A‖ ≤ ‖A‖ :=
   LinearMap.mkContinuous_norm_le _ (norm_nonneg A) _
+
+/-!
+
+## C. The trace pairing as a bounded linear map
+
+-/
 
 /-- **`A ↦ φ_A` is itself a `ℂ`-linear map** from `H →L[ℂ] H` into the strong dual of the
 trace-class Banach space. -/

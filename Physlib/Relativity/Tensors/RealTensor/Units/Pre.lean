@@ -148,7 +148,7 @@ lemma contr_preContrCoUnit {d : ℕ} (x : CoMod d) :
       = ∑ i, ((coContrContract) (x ⊗ₜ[ℝ] contrBasis d i)) ⊗ₜ[ℝ] coBasis d i := by
     rw [map_sum]
     rfl
-  erw [h2]
+  rw [h2]
   obtain ⟨c, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun ℝ).mp (Basis.mem_span (coBasis d) x)
   have h3 (i : Fin 1 ⊕ Fin d) : (coContrContract)
         ((∑ i : Fin 1 ⊕ Fin d, c i • (coBasis d) i) ⊗ₜ[ℝ] (contrBasis d) i) = c i := by
@@ -182,7 +182,7 @@ lemma contr_preCoContrUnit {d : ℕ} (x : ContrMod d) :
       = ∑ i, ((contrCoContract) (x ⊗ₜ[ℝ] coBasis d i)) ⊗ₜ[ℝ] contrBasis d i := by
     rw [map_sum]
     rfl
-  erw [h2]
+  rw [h2]
   obtain ⟨c, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun ℝ).mp
     (Basis.mem_span (contrBasis d) x)
   have h3 (i : Fin 1 ⊕ Fin d) : (contrCoContract)
