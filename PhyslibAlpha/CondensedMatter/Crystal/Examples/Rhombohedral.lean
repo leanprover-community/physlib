@@ -21,7 +21,8 @@ with `cos α = (2 p q + q ²) / (p ² + 2 q ²)`. The six bonds `±aᵢ` of the 
 the simple cubic lattice, so the first shell alone does not see the threefold axis. When
 `-1 / 4 < cos α < 0` the second shell is made of the six vectors `±(aᵢ + aⱼ)`, and the graph with
 both shells has twelve neighbours. This holds for instance for `(p, q) = (10, -1)`, with
-`cos α = -19 / 102`.
+`cos α = -19 / 102`. The graph is defined by these twelve bonds and does not depend on `p`
+and `q`: that they form the two nearest shells is the statement above, not yet a lemma.
 
 ## ii. Key results
 
