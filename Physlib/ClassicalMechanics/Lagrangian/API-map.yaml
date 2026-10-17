@@ -1,37 +1,66 @@
 version: v0.1
 
-Title: Configuration Space
+Title: Lagrangian mechanics
 
 Overview: |
-    The configuration space `Q` of a mechanical system is the manifold of its
-    possible instantaneous configurations, coordinatised by generalized coordinates.
-    It is the base space of the Lagrangian formulation of mechanics: a Lagrangian is
-    a function on the tangent bundle `TQ` of positions and velocities, and the
-    Euler-Lagrange equations describe physical motions as curves in `Q`.
-
-    The library does not yet have a general, system-agnostic configuration-space
-    abstraction, nor a Lagrangian built over one; those are the requirements below.
-    Concrete per-system configuration spaces exist and are tracked in their own API
-    maps (the geometric harmonic oscillator and the pendulum).
+  A Lagrangian system on a smooth manifold `M` is a smooth function on time and the
+  tangent bundle `TM` of positions and velocities. Its motions are the critical points of
+  the action under smooth variations fixing the endpoints.
 
 ParentAPIs:
-  - Space (Physlib/SpaceAndTime/Space)
+  - Configuration Space (Physlib/ClassicalMechanics/ConfigurationSpace)
+  - Time (Physlib/SpaceAndTime/Time)
 
 References:
-  - Ivo Terek, Introductory Variational Calculus on Manifolds, Section 1
-  - Landau and Lifshitz, Mechanics, 3rd ed., Chapter 1 (generalised coordinates, the principle of least action, the Lagrangian)
+  - Ivo Terek, Introductory Variational Calculus on Manifolds
+  - V. I. Arnold, Mathematical Methods of Classical Mechanics
+  - L. D. Landau and E. M. Lifshitz, Mechanics
 
 Requirements:
+  - description: >
+      The API defines a smooth time-dependent Lagrangian `Time × TM → ℝ` on a smooth
+      manifold `M`.
+    done: true
+    location: "Physlib/ClassicalMechanics/Lagrangian/Basic.lean (LagrangianSystem)"
 
   - description: >
-      A general, system-agnostic `ConfigurationSpace` construction (a configuration manifold
-      abstracting over the choice of mechanical system) usable across the Lagrangian API.
+      The API contains smooth variations of a curve fixing its endpoints, the action, and its
+      critical points.
+    done: true
+    location: "Physlib/ClassicalMechanics/Lagrangian/Basic.lean (Variation, LagrangianSystem.action, LagrangianSystem.IsCriticalPoint)"
+
+  - description: >
+      The API shall prove that a smooth curve is a critical point of the action if and only if
+      the Euler-Lagrange equations hold in every chart.
     done: false
     location: N/A
 
   - description: >
-      A general treatment of generalized coordinates and the velocity phase space (tangent
-      bundle `TQ`) built over a shared configuration-space abstraction, on which a Lagrangian
-      is defined for the Euler-Lagrange API.
+      The API shall prove Noether's theorem: if an autonomous Lagrangian system admits a
+      one-parameter group of diffeomorphisms of `M`, then its Lagrange equations have a first
+      integral.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall prove that the energy of an autonomous Lagrangian system is constant along
+      its motions.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall define natural systems, with Lagrangian kinetic minus potential energy from
+      a Riemannian metric.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall define Lagrangians `L(q, q̇, t)` in generalised coordinates as Lagrangian
+      systems.
+    done: false
+    location: N/A
+
+  - description: >
+      The API shall derive conservation of momentum and angular momentum from Noether's theorem.
     done: false
     location: N/A

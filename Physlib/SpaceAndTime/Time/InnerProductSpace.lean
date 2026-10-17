@@ -406,6 +406,8 @@ noncomputable def toRealLIE : Time ≃ₗᵢ[ℝ] ℝ where
     simp
     rfl
 
+instance : Nontrivial Time := toRealLIE.toEquiv.nontrivial
+
 lemma eq_one_smul (t : Time) :
     t = t.val • 1 := Time.ext (by simp)
 
