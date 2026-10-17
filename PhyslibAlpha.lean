@@ -20,6 +20,7 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.TotalDerivative
 public import PhyslibAlpha.ClassicalFieldTheory.Local.TotalDivergence
 public import PhyslibAlpha.ClassicalFieldTheory.Local.TotalDivergenceEquivalence
 public import PhyslibAlpha.ClassicalFieldTheory.Local.Variation
+public import PhyslibAlpha.ClassicalMechanics.CentralForce.Basic
 public import PhyslibAlpha.ClassicalMechanics.CoupledSpringPotential
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.Basic
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.Cohomology
