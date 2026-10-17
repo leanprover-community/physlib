@@ -13,12 +13,12 @@ public import Physlib.Relativity.SpeedOfLight
 
 ## i. Overview
 
-A physical constant is not a unit: it is a definite physical quantity, and the number recording
-it is fixed once a system of units is chosen. This module gives the types of such constants a
-dimension, so that an element of `Dimensionful` of one of them records the quantity itself rather
-than its value in one system of units, and then defines the values the constants take in our
-world. At present it covers the speed of light; Newton's constant, Planck's constant and the
-Boltzmann constant are to follow.
+Here physical constants are represented as fixed dimensionful quantities, separately from the
+choices of units used to express them. This module gives the type of each constant a dimension,
+so that an element of `Dimensionful` of that type records the quantity itself rather than its
+value in one system of units, and then defines the value the constant takes in our world. At
+present it covers the speed of light; Newton's constant, Planck's constant and the Boltzmann
+constant are to follow.
 
 Such a type consists of strictly positive reals, and so receives its action of `ℝ≥0ˣ`, the
 rescaling by a strictly positive factor that a change of units effects, from

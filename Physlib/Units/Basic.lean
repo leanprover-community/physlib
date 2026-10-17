@@ -195,6 +195,13 @@ lemma dimScale_pos (u1 u2 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase)
   · simp
   · exact Ne.symm (dimScale_ne_zero u1 u2 d)
 
+TODO "Phrase the scaling of dimensionful quantities over a general unit system rather than
+  `LTMCTUnitChoices`. The basis-generic `UnitScale.dimScale` of `Physlib.Units.UnitSystem` already
+  gives the scaling homomorphism of any `UnitSystem B`, as `SIUnitChoices.dimScale` does over the
+  seven ISQ base dimensions, so `dimScaleUnits` and everything built on it (`HasDimension`,
+  `Dimensionful`, `scaleUnit`) should eventually be stated for a `UnitSystem B`. This first needs
+  the `dimScale` lemmas above, proved here only for `LTMCTUnitChoices`, to be available
+  generically."
 /-- The scaling factor `dimScale u1 u2 d` regarded as a unit of `ℝ≥0`, that is as a strictly
   positive real. Dimensionful quantities are scaled by this rather than by `dimScale u1 u2 d`
   itself, so that a type whose elements are strictly positive, such as `SpeedOfLight`, can carry
@@ -310,35 +317,25 @@ Dimensions are assigned to types with the following type-classes
 - `CarriesDimension` for a type that also has an instance of `MulAction ℝ≥0ˣ M`, that is an
   action of the strictly positive reals
 
-The scaling factors relating two systems of units are never zero, so the positive reals suffice
-here, and taking them rather than `ℝ≥0` lets a type whose elements are strictly positive, such as
-`SpeedOfLight`, carry a dimension. On such a type no action of `ℝ≥0` can be compatible with the
-magnitude, that is satisfy `val (a • x) = a * val x`: at `a = 0` compatibility would give
-`val (0 • x) = 0`, while `val` is strictly positive. (A `MulAction ℝ≥0` does exist on any type,
-the trivial one for instance, but it has nothing to do with the magnitude and so is of no use
-here.)
+Changing units rescales a quantity by a strictly positive factor: a length in metres is the same
+length in feet times `0.3048`, and no change of units ever scales by zero. The strictly positive
+reals `ℝ≥0ˣ` are therefore the natural scalars here, and `LTMCTUnitChoices.dimScaleUnits` records
+the factor. Taking them rather than `ℝ≥0` is what lets a type whose elements are strictly
+positive, such as `SpeedOfLight`, carry a dimension: on such a type a scaling compatible with
+the magnitude, that is one satisfying `val (a • x) = a * val x`, cannot exist at `a = 0`, since
+`val` is strictly positive.
 
-A type which does carry an action of `ℝ≥0`, such as `ℝ` or any real vector space, obtains the
-action of `ℝ≥0ˣ` by restriction, so it satisfies `CarriesDimension` as soon as it has a `HasDim`
-instance. A declaration about such types should therefore assume `[HasDim M]` and
-`[MulAction ℝ≥0 M]`, never `[CarriesDimension M]` and `[MulAction ℝ≥0 M]` together: with the
-latter pair the two actions of `ℝ≥0ˣ` in scope, the one from `CarriesDimension` and the one
-restricted from `ℝ≥0`, are unrelated, so the lemmas below relating `dimScaleUnits` to `dimScale`
-do not apply and proofs about the scaling get stuck.
+A type with an action of `ℝ≥0`, such as `ℝ` or any real vector space, obtains the action of
+`ℝ≥0ˣ` by restriction, and so carries a dimension as soon as it has a `HasDim` instance. A
+declaration about such types should assume `[HasDim M]` and `[MulAction ℝ≥0 M]`, never
+`[CarriesDimension M]` and `[MulAction ℝ≥0 M]` together: the latter pair puts two unrelated
+actions of `ℝ≥0ˣ` in scope and proofs about the scaling get stuck. Where both actions genuinely
+coexist, as on `Dimensionful M` below, the declared one and the one restricted from `ℝ≥0` agree
+definitionally.
 
-Where both actions genuinely coexist on one type, as they do on `Dimensionful M` below for every
-`M` carrying an action of `ℝ≥0`, the declared action and the restricted one agree
-definitionally, so nothing is ambiguous.
-
-The same caution applies to the generic results about these actions, such as the instance on
-`Dimensionful M` below and `WithDim.ofPositiveRealUnit_units_smul`: each is about one particular
-`ℝ≥0ˣ` action, and a type carrying both a `PositiveRealUnitCore` instance and an action of `ℝ≥0`
-would have two. No type does at present.
-
-Several statements below therefore come in two forms, one for each action. The convention is that
-the plain name carries the `ℝ≥0` statement, which needs `[MulAction ℝ≥0 M]` and is the form the
-concrete unit calculations use, while the suffix `_units` marks the `ℝ≥0ˣ` statement, which holds
-for every type carrying a dimension.
+Several statements below therefore come in two forms: the plain name carries the `ℝ≥0` statement,
+which the concrete unit calculations use, and the suffix `_units` the `ℝ≥0ˣ` statement, which
+holds for every type carrying a dimension.
 
 -/
 

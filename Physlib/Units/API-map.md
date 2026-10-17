@@ -352,7 +352,7 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `LTMCTUnitChoices.dimScaleUnits_scaleUnit`
 73. Physlib/Units/WithDim/Basic.lean — `WithDim.smul_val_units`,
    `WithDim.ofPositiveRealUnit`, `WithDim.ofPositiveRealUnit_val`,
-   `WithDim.ofPositiveRealUnit_units_smul`
+   `WithDim.ofPositiveRealUnit_units_smul`, `WithDim.ofPositiveRealUnit_of_scaleUnit`
 74. Physlib/Relativity/SpeedOfLight.lean — `SpeedOfLight`,
    `SpeedOfLight.instPositiveRealUnitCore`, `SpeedOfLight.positiveRealUnitCore_val`
 75. Physlib/Units/Constants.lean — `HasDim SpeedOfLight`, `speedOfLight`,
