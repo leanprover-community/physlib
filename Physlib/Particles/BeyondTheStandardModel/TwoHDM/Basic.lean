@@ -50,6 +50,10 @@ lemma ext_of_fst_snd {H1 H2 : TwoHiggsDoublet}
     (h1 : H1.Φ1 = H2.Φ1) (h2 : H1.Φ2 = H2.Φ2) : H1 = H2 := by
   cases H1
   congr
+
+TODO "Define the `Module ℂ TwoHiggsDoublet` instance (with its underlying `AddCommGroup`),
+  making the configuration space `TwoHiggsDoublet` a complex vector space via the componentwise
+  structure on the two `HiggsVec` doublets `Φ1` and `Φ2`."
 /-!
 
 ## B. Gauge group actions

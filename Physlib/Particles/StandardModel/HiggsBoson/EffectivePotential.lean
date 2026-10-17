@@ -93,6 +93,11 @@ lemma polynomial_totalDegree {V : EffectivePotential} {n : ℕ} (h : HasMaxMassD
 lemma apply_eq_polynomial {V : EffectivePotential} {n : ℕ} (h : HasMaxMassDimLE V n)
     (φ : HiggsVec) : V φ = (polynomial V h).eval φ.toRealScalars := (Classical.choose_spec h).1 φ
 
+TODO "Reformulate `HasMaxMassDimLE` (and `polynomial`) to use the basis-independent polynomial
+  ring `MvPolynomial (Module.Dual ℝ HiggsVec) ℝ` rather than `MvPolynomial (Fin 4) ℝ`, so that the
+  effective potential is expressed without reference to the explicit coordinate map
+  `HiggsVec.toRealScalars`."
+
 /-!
 
 ## C. Terms of a given mass dimension
