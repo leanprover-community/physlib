@@ -98,6 +98,7 @@ public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.TemperedDistributional.WireJunction
 public import PhyslibAlpha.Mathematics.Analysis.Normed.HolderDual
 public import PhyslibAlpha.Mathematics.Analysis.RealBounds
+public import PhyslibAlpha.Mathematics.AnalyticNonvanishing
 public import PhyslibAlpha.Mathematics.Convex.Choquet.BoundaryRepresentation
 public import PhyslibAlpha.Mathematics.Convex.Choquet.ExtremePointDecomposition
 public import PhyslibAlpha.Mathematics.Convex.Choquet.Mixture
