@@ -30,14 +30,18 @@ Overview: |
     contains the exact de Sitter, radiation-dominated, Einstein-de Sitter, Milne
     and Einstein static solutions, the de Sitter and Milne models also as FLRW
     models which, filled with the empty fluid, solve the Friedmann equations, at
-    all times and after a Big Bang respectively. DensityParameters.lean contains the critical density and the
-    density parameters with the closure relation. ReducedHubble.lean contains
+    all times and after a Big Bang respectively. DensityParameters.lean
+    contains the critical density and the density parameters with the closure
+    relation. ReducedHubble.lean contains
     the reduced Hubble function of the standard cosmological model and the
-    equality scale factors. Age.lean contains the age of the universe. Three
-    further modules, ConformalTime.lean, Distances.lean and Dynamics.lean,
-    contain only TODO items: conformal time and the conformal Hubble factor,
-    cosmological distances and redshift, energy conditions and the Big-Bang
-    singularity.
+    equality scale factors. Age.lean contains the age of the universe.
+    EnergyConditions.lean contains the energy conditions of the cosmic fluid.
+    FriedmannSolution.lean contains, for a solution of the Friedmann equations
+    on its interval, the acceleration
+    criterion, the deceleration parameter in terms of the density parameters,
+    eternal expansion and the Big-Bang bound on the interval of time. Two further modules, ConformalTime.lean
+    and Distances.lean, contain only TODO items: conformal time and the
+    conformal Hubble factor, cosmological distances and redshift.
     Cosmology/Basic.lean is a placeholder module doc with no declarations.
 
 ParentAPIs:
@@ -139,7 +143,7 @@ Requirements:
       the fluid ρ + ρ_Λ, p + p_Λ, and p_Λ is the w = -1 barotropic pressure of
       ρ_Λ.
     done: true
-    location: "Physlib/Cosmology/FLRW/MatterContent.lean (cosmologicalConstantDensity, cosmologicalConstantPressure, firstOrderFriedmann_iff_lambdaFluid, secondOrderFriedmann_iff_lambdaFluid, cosmologicalConstantPressure_eq_barotropic)"
+    location: "Physlib/Cosmology/FLRW/MatterContent.lean (cosmologicalConstantDensity, cosmologicalConstantPressure, firstOrderFriedmann_iff_lambdaFluid, secondOrderFriedmann_iff_lambdaFluid, cosmologicalConstantPressure_eq_barotropic, CosmicFluid.addCosmologicalConstant, FLRW.friedmannSolution_iff_addCosmologicalConstant)"
 
   - description: >
       The critical density ρ_cr = 3 H^2 / (8πG) and the density parameters Ω = ρ
@@ -156,3 +160,24 @@ Requirements:
       / (x E(x)) and the radiation-matter and matter-Λ equality scale factors.
     done: true
     location: "Physlib/Cosmology/FLRW/ReducedHubble.lean (reducedHubble, sq_hubbleConstant_eq_reducedHubble, hubbleConstant_eq_reducedHubble, equalityScaleFactorRadiationMatter, equalityScaleFactorMatterLambda); Physlib/Cosmology/FLRW/Age.lean (age, age_eq)"
+
+  - description: >
+      The null, weak, strong and dominant energy conditions of the cosmic fluid
+      are defined with the implications between them, and the API contains, on
+      the interval of a solution of the Friedmann equations, the acceleration
+      criterion 0 < ∂ₜ ∂ₜ a ↔ ρ + 3 p / c^2 < 0, without and with Λ, and the
+      deceleration parameter in terms of the density parameters, q =
+      ½ Σ_i Ω_i (1 + 3 w_i), with its ΛCDM special case.
+    done: true
+    location: "Physlib/Cosmology/FLRW/EnergyConditions.lean (CosmicFluid.NullEnergyCondition, CosmicFluid.WeakEnergyCondition, CosmicFluid.StrongEnergyCondition, CosmicFluid.DominantEnergyCondition); Physlib/Cosmology/FLRW/FriedmannSolution.lean (FLRW.FriedmannSolution.deriv_deriv_scaleFactor_pos_iff, FLRW.FriedmannSolution.deriv_deriv_scaleFactor_pos_iff_lambda, FLRW.FriedmannSolution.decelerationParameter_eq_sum, FLRW.FriedmannSolution.decelerationParameter_lambdaCDM)"
+
+  - description: >
+      The API contains eternal expansion on the interval of a solution, for a
+      spatial geometry of non-positive curvature, 0 ≤ Λ and positive density,
+      and the Big-Bang bound: an FLRW model that decelerates on its interval and
+      expands at t₀ lies below its tangent line at t₀ and cannot be defined
+      earlier than t₀ - 1 / H(t₀), so that its interval is bounded below; this
+      holds for a solution with 0 ≤ ρ, 0 ≤ p and Λ = 0, whereas the de Sitter
+      model is defined at all times.
+    done: true
+    location: "Physlib/Cosmology/FLRW/FriedmannSolution.lean (FLRW.FriedmannSolution.deriv_scaleFactor_ne_zero, FLRW.FriedmannSolution.deriv_scaleFactor_pos, FLRW.FriedmannSolution.deriv_deriv_scaleFactor_nonpos, FLRW.scaleFactor_le_tangent, FLRW.lt_of_mem_I_of_decelerating, FLRW.bddBelow_I_of_decelerating, FLRW.FriedmannSolution.lt_of_mem_I, FLRW.FriedmannSolution.bddBelow_I, FLRW.not_bddBelow_deSitter_I, FLRW.mk_mem_I_of_mem_Icc, FLRW.continuousOn_deriv_scaleFactor_mk)"

@@ -55,7 +55,9 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   `ρ_Λ = Λ c² / (8 π G)`, `p_Λ = - ρ_Λ c²`; `firstOrderFriedmann_iff_lambdaFluid`,
   `secondOrderFriedmann_iff_lambdaFluid`: the Friedmann equations with `Λ` are the Friedmann
   equations without `Λ` for the fluid `ρ + ρ_Λ`, `p + p_Λ`;
-  `cosmologicalConstantPressure_eq_barotropic`: `p_Λ` is the `w = -1` barotropic pressure.
+  `cosmologicalConstantPressure_eq_barotropic`: `p_Λ` is the `w = -1` barotropic pressure;
+  `CosmicFluid.addCosmologicalConstant`, `FLRW.friedmannSolution_iff_addCosmologicalConstant`:
+  the same for a solution of the Friedmann equations.
 
 ## iii. Table of contents
 
@@ -361,6 +363,24 @@ lemma cosmologicalConstantPressure_eq_barotropic (Λ G c : ℝ) (t : Time) :
       = barotropicPressure (-1) (fun _ => cosmologicalConstantDensity Λ G c) c t := by
   unfold cosmologicalConstantPressure barotropicPressure
   ring
+
+/-- The cosmic fluid `F` with the cosmological constant folded in as a fluid: the density
+  `ρ + ρ_Λ` and the pressure `p + p_Λ`. -/
+noncomputable def _root_.Cosmology.CosmicFluid.addCosmologicalConstant (F : CosmicFluid)
+    (Λ G c : ℝ) : CosmicFluid :=
+  ⟨fun s => F.ρ s + cosmologicalConstantDensity Λ G c,
+    fun s => F.p s + cosmologicalConstantPressure Λ G c⟩
+
+/-- An FLRW model filled with the cosmic fluid `F` solves the Friedmann equations with the
+  cosmological constant `Λ` if and only if it solves them without cosmological constant for the
+  fluid `F` with `Λ` folded in. -/
+lemma _root_.Cosmology.FLRW.friedmannSolution_iff_addCosmologicalConstant {U : FLRW}
+    {F : CosmicFluid} {Λ G c : ℝ} (hG : G ≠ 0) (hc : c ≠ 0) :
+    U.FriedmannSolution F Λ G c ↔ U.FriedmannSolution (F.addCosmologicalConstant Λ G c) 0 G c :=
+  ⟨fun h => ⟨fun t ht => (firstOrderFriedmann_iff_lambdaFluid hG).mp (h.firstOrder t ht),
+      fun t ht => (secondOrderFriedmann_iff_lambdaFluid hG hc).mp (h.secondOrder t ht)⟩,
+    fun h => ⟨fun t ht => (firstOrderFriedmann_iff_lambdaFluid hG).mpr (h.firstOrder t ht),
+      fun t ht => (secondOrderFriedmann_iff_lambdaFluid hG hc).mpr (h.secondOrder t ht)⟩⟩
 
 /-!
 
