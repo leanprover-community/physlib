@@ -27,7 +27,7 @@ Requirements:
       The API contains smooth variations of a curve fixing its endpoints, the action, and its
       critical points.
     done: true
-    location: "Physlib/ClassicalMechanics/Lagrangian/Basic.lean (LagrangianSystem.action, LagrangianSystem.IsCriticalPoint), Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean (Variation)"
+    location: "Physlib/ClassicalMechanics/Lagrangian/Basic.lean (LagrangianSystem.action, LagrangianSystem.IsCriticalPoint); Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean (Variation)"
 
   - description: >
       The API shall express the action of a Lagrangian system on a normed space as the
