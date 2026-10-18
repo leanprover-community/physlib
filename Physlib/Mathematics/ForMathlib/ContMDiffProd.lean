@@ -1,0 +1,54 @@
+/-
+Copyright (c) 2026 Michal Mogielnicki. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Michal Mogielnicki
+-/
+module
+
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
+
+/-!
+# Smoothness on products of normed spaces
+
+Manifold smoothness on a product of normed spaces is the usual smoothness.
+
+## i. Overview
+
+Extends Mathlib's `contMDiff_iff_contDiff` to the product manifold structure.
+
+## ii. Key results
+
+- `contMDiffAt_prod_self_iff`
+- `contMDiff_prod_self_iff`
+
+## iii. Table of contents
+
+- A. Products of normed spaces
+
+## iv. References
+
+* None.
+-/
+
+@[expose] public section
+
+open scoped Manifold ContDiff
+
+/-!
+## A. Products of normed spaces
+-/
+
+/-- On a product of normed spaces, `C^n` at a point in the manifold sense is the usual one. -/
+lemma contMDiffAt_prod_self_iff {F G K : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup K] [NormedSpace ℝ K]
+    {f : F × G → K} {n : ℕ∞ω} {p : F × G} :
+    ContMDiffAt (𝓘(ℝ, F).prod 𝓘(ℝ, G)) 𝓘(ℝ, K) n f p ↔ ContDiffAt ℝ n f p := by
+  rw [← contMDiffAt_iff_contDiffAt, modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+
+/-- On a product of normed spaces, `C^n` in the manifold sense is `C^n` in the usual sense. -/
+lemma contMDiff_prod_self_iff {F G K : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup K] [NormedSpace ℝ K]
+    {f : F × G → K} {n : ℕ∞ω} :
+    ContMDiff (𝓘(ℝ, F).prod 𝓘(ℝ, G)) 𝓘(ℝ, K) n f ↔ ContDiff ℝ n f :=
+  ⟨fun h ↦ contDiff_iff_contDiffAt.2 fun _ ↦ contMDiffAt_prod_self_iff.1 (h _),
+    fun h _ ↦ contMDiffAt_prod_self_iff.2 h.contDiffAt⟩

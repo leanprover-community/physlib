@@ -100,3 +100,48 @@ lemma contDiff_parametric_intervalIntegral_of_contDiff {n : ℕ} {M : Type}
   induction' n with n ih generalizing F
   · exact contDiff_zero.mpr (by fun_prop)
   · exact contDiff_succ_parametric_intervalIntegral_of_contDiff (hf.of_le (by simp))
+
+open Set Topology intervalIntegral
+
+/-- Differentiation under the integral sign for a `C¹` integrand. -/
+lemma hasDerivAt_intervalIntegral_of_contDiff {F : ℝ × ℝ → ℝ} (hF : ContDiff ℝ 1 F)
+    (a b x₀ : ℝ) :
+    HasDerivAt (fun x ↦ ∫ t in a..b, F (x, t))
+      (∫ t in a..b, fderiv ℝ F (x₀, t) (1, 0)) x₀ := by
+  have hK : IsCompact (Icc (x₀ - 1) (x₀ + 1) ×ˢ uIcc a b) := isCompact_Icc.prod isCompact_uIcc
+  obtain ⟨C, hC⟩ := hK.exists_bound_of_continuousOn (hF.continuous_fderiv one_ne_zero).continuousOn
+  have hcont : ∀ x, Continuous fun t ↦ F (x, t) := fun x ↦ hF.continuous.comp (by fun_prop)
+  refine (intervalIntegral.hasDerivAt_integral_of_dominated_loc_of_deriv_le
+    (F := fun x t ↦ F (x, t)) (F' := fun x t ↦ fderiv ℝ F (x, t) (1, 0))
+    (s := Icc (x₀ - 1) (x₀ + 1)) (bound := fun _ ↦ C) (Icc_mem_nhds (by linarith) (by linarith))
+    (Filter.Eventually.of_forall fun x ↦ (hcont x).aestronglyMeasurable)
+    ((hcont x₀).intervalIntegrable _ _) ?_ ?_ intervalIntegrable_const ?_).2
+  · exact (((hF.continuous_fderiv one_ne_zero).comp (by fun_prop)).clm_apply
+      continuous_const).aestronglyMeasurable
+  · refine Filter.Eventually.of_forall fun t ht x hx ↦ ?_
+    calc ‖fderiv ℝ F (x, t) (1, 0)‖ ≤ ‖fderiv ℝ F (x, t)‖ * ‖((1 : ℝ), (0 : ℝ))‖ :=
+          (fderiv ℝ F (x, t)).le_opNorm _
+      _ ≤ C := by
+        have := hC (x, t) ⟨hx, uIoc_subset_uIcc ht⟩
+        simpa using this
+  · refine Filter.Eventually.of_forall fun t _ x _ ↦ ?_
+    exact ((hF.differentiable one_ne_zero (x, t)).hasFDerivAt.comp_hasDerivAt x
+      ((hasDerivAt_id x).prodMk (hasDerivAt_const x t)))
+
+/-- If two continuous integrands differ by an `s`-independent function, their integrals have the
+same `s`-derivative. -/
+lemma hasDerivAt_integral_of_sub_eq {G Gh : ℝ → ℝ → ℝ} {T a : ℝ} (hG : ∀ s, Continuous (G s))
+    (hGh : ∀ s, Continuous (Gh s)) (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
+    (hd : HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, Gh s τ) a 0) :
+    HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) a 0 := by
+  have hA : ∀ s, ∫ τ in (0 : ℝ)..T, G s τ = (∫ τ in (0 : ℝ)..T, Gh s τ) +
+      ((∫ τ in (0 : ℝ)..T, G 0 τ) - ∫ τ in (0 : ℝ)..T, Gh 0 τ) := fun s ↦ by
+    have h1 : ∫ τ in (0 : ℝ)..T, (G s τ - Gh s τ) = ∫ τ in (0 : ℝ)..T, (G 0 τ - Gh 0 τ) :=
+      intervalIntegral.integral_congr fun τ _ ↦ hkey s τ
+    rw [intervalIntegral.integral_sub ((hG s).intervalIntegrable _ _)
+        ((hGh s).intervalIntegrable _ _),
+      intervalIntegral.integral_sub ((hG 0).intervalIntegrable _ _)
+        ((hGh 0).intervalIntegrable _ _)] at h1
+    linarith
+  rw [show (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) = _ from funext hA]
+  exact hd.add_const _
