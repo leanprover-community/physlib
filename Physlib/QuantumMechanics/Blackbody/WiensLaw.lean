@@ -290,7 +290,7 @@ lemma hasDerivAt_wienProfile (n : ℕ) (x : ℝ)
 
 /-- Critical points of the Planck profile are exactly the solutions of the Wien
   equation `x = n (1 - e⁻ˣ)`. -/
-theorem wienProfile_crit_iff (n : ℕ) (hn : 1 ≤ n) (x : ℝ) (hx : 0 < x) :
+lemma wienProfile_crit_iff (n : ℕ) (hn : 1 ≤ n) (x : ℝ) (hx : 0 < x) :
     deriv (wienProfile n) x = 0 ↔ x = (n : ℝ) * (1 - Real.exp (-x)) := by
   have hexp_gt : (1 : ℝ) < Real.exp x := by
     have h := Real.exp_strictMono hx
@@ -584,7 +584,7 @@ lemma wienRoot_five_gt_four : 4 < wienRoot 5 (by norm_num) := by
   linarith
 
 /-- Enclosure `4 < x₅ < 5` for the wavelength Wien constant. -/
-theorem wienRoot_five_mem :
+lemma wienRoot_five_mem :
     4 < wienRoot 5 (by norm_num) ∧ wienRoot 5 (by norm_num) < 5 :=
   ⟨wienRoot_five_gt_four, wienRoot_lt 5 _⟩
 
@@ -609,13 +609,13 @@ lemma wienRoot_three_gt_two : 2 < wienRoot 3 (by norm_num) := by
   linarith
 
 /-- Enclosure `2 < x₃ < 3` for the frequency Wien constant. -/
-theorem wienRoot_three_mem :
+lemma wienRoot_three_mem :
     2 < wienRoot 3 (by norm_num) ∧ wienRoot 3 (by norm_num) < 3 :=
   ⟨wienRoot_three_gt_two, wienRoot_lt 3 _⟩
 
 /-- The wavelength and frequency Wien constants differ (the peak depends on the
   parametrization). -/
-theorem wien_roots_differ :
+lemma wien_roots_differ :
     wienRoot 3 (by norm_num) ≠ wienRoot 5 (by norm_num) := by
   have h3 := wienRoot_three_mem
   have h5 := wienRoot_five_mem
@@ -632,26 +632,26 @@ noncomputable def wienConstant5 : ℝ := wienRoot 5 (by norm_num)
 noncomputable def wienConstant3 : ℝ := wienRoot 3 (by norm_num)
 
 /-- `4 < x₅ < 5`. -/
-theorem wienConstant5_mem : 4 < wienConstant5 ∧ wienConstant5 < 5 :=
+lemma wienConstant5_mem : 4 < wienConstant5 ∧ wienConstant5 < 5 :=
   wienRoot_five_mem
 
 
 /-- `2 < x₃ < 3`. -/
-theorem wienConstant3_mem : 2 < wienConstant3 ∧ wienConstant3 < 3 :=
+lemma wienConstant3_mem : 2 < wienConstant3 ∧ wienConstant3 < 3 :=
   wienRoot_three_mem
 
 
 /-- `x₅ ≠ x₃` — the wavelength and frequency peaks differ. -/
-theorem wienConstant5_ne_wienConstant3 : wienConstant5 ≠ wienConstant3 := by
+lemma wienConstant5_ne_wienConstant3 : wienConstant5 ≠ wienConstant3 := by
   unfold wienConstant5 wienConstant3
   exact Ne.symm wien_roots_differ
 
 
 /-- `x₅ > 0`. -/
-theorem wienConstant5_pos : 0 < wienConstant5 := wienRoot_pos 5 (by norm_num)
+lemma wienConstant5_pos : 0 < wienConstant5 := wienRoot_pos 5 (by norm_num)
 
 /-- `x₃ > 0`. -/
-theorem wienConstant3_pos : 0 < wienConstant3 := wienRoot_pos 3 (by norm_num)
+lemma wienConstant3_pos : 0 < wienConstant3 := wienRoot_pos 3 (by norm_num)
 
 /-!
 
@@ -776,7 +776,7 @@ lemma wienProfile_strictAntiOn (n : ℕ) (hn : 2 ≤ n) :
 /-- The Planck profile attains its unique global maximum on `(0, ∞)` at the
   Wien root. This is the mathematical core of Wien's displacement law: the
   "peak" of the blackbody spectrum. -/
-theorem wienProfile_isMaxOn (n : ℕ) (hn : 2 ≤ n) :
+lemma wienProfile_isMaxOn (n : ℕ) (hn : 2 ≤ n) :
     IsMaxOn (wienProfile n) (Ioi 0)
       (wienRoot n (by exact_mod_cast lt_of_lt_of_le one_lt_two hn)) := by
   have hnR : (1 : ℝ) < (n : ℝ) := by
@@ -946,7 +946,7 @@ lemma hasDerivAt_wave (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
 
 /-- Critical-point equation for the wavelength curve: `deriv = 0` iff the
   dimensionless variable satisfies the `n = 5` Wien equation. -/
-theorem wave_crit_iff (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
+lemma wave_crit_iff (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
     (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam) :
     deriv (fun lam => B.spectralRadianceWave c lam) lam = 0
       ↔ B.waveVar c lam = 5 * (1 - Real.exp (-(B.waveVar c lam))) := by
@@ -1037,7 +1037,7 @@ lemma hasDerivAt_freq (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
 
 /-- Critical-point equation for the frequency curve: `deriv = 0` iff the
   dimensionless variable satisfies the `n = 3` Wien equation. -/
-theorem freq_crit_iff (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
+lemma freq_crit_iff (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
     (hT : 0 < (B.T : ℝ)) (hν : 0 < ν) :
     deriv (fun ν => B.spectralRadiance c ν) ν = 0
       ↔ B.freqVar ν = 3 * (1 - Real.exp (-(B.freqVar ν))) := by
@@ -1263,7 +1263,7 @@ lemma spectralRadiance_tendsto_nhdsWithin_zero (B : BlackBody) (c : SpeedOfLight
 
 /-- The wavelength curve attains its unique global maximum on `(0, ∞)` at
   `λ* = h c / (kB T x₅)`: the peak of the blackbody spectrum. -/
-theorem spectralRadianceWave_isMaxOn (B : BlackBody) (c : SpeedOfLight)
+lemma spectralRadianceWave_isMaxOn (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
     IsMaxOn (fun lam => B.spectralRadianceWave c lam) (Ioi 0)
       ((h : ℝ) * (c : ℝ) / (kB * (B.T : ℝ) * wienConstant5)) := by
@@ -1298,7 +1298,7 @@ theorem spectralRadianceWave_isMaxOn (B : BlackBody) (c : SpeedOfLight)
 
 /-- The frequency curve attains its unique global maximum on `(0, ∞)` at
   `ν* = kB T x₃ / h`. -/
-theorem spectralRadiance_isMaxOn (B : BlackBody) (c : SpeedOfLight)
+lemma spectralRadiance_isMaxOn (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
     IsMaxOn (fun ν => B.spectralRadiance c ν) (Ioi 0)
       (kB * (B.T : ℝ) * wienConstant3 / (h : ℝ)) := by
@@ -1370,7 +1370,7 @@ lemma spectralRadiance_bddAbove (B : BlackBody) (c : SpeedOfLight)
 
 ## G. Wien's displacement laws
 
-The main physical theorems:
+The main physical laws:
 1. `wien_displacement_wave`: if `lam₁` maximizes `B(lam, T₁)` and `lam₂` maximizes
    `B(lam, T₂)`, then `lam₁ T₁ = lam₂ T₂`.
 2. `wien_displacement_freq`: if `ν₁` maximizes `B(ν, T₁)` and `ν₂` maximizes
@@ -1381,7 +1381,7 @@ The main physical theorems:
 
 /-- Wien's displacement law (wavelength form): critical wavelengths at different
   temperatures satisfy `λ₁ T₁ = λ₂ T₂`. -/
-theorem wien_displacement_wave (B₁ B₂ : BlackBody) (c : SpeedOfLight) (lam₁ lam₂ : ℝ)
+lemma wien_displacement_wave (B₁ B₂ : BlackBody) (c : SpeedOfLight) (lam₁ lam₂ : ℝ)
     (hT₁ : 0 < (B₁.T : ℝ)) (hT₂ : 0 < (B₂.T : ℝ))
     (hlam₁ : 0 < lam₁) (hlam₂ : 0 < lam₂)
     (hcrit₁ : deriv (fun lam => B₁.spectralRadianceWave c lam) lam₁ = 0)
@@ -1413,7 +1413,7 @@ theorem wien_displacement_wave (B₁ B₂ : BlackBody) (c : SpeedOfLight) (lam�
 
 /-- Wien's displacement law (frequency form): critical frequencies at different
   temperatures satisfy `ν₁ / T₁ = ν₂ / T₂`. -/
-theorem wien_displacement_freq (B₁ B₂ : BlackBody) (c : SpeedOfLight) (ν₁ ν₂ : ℝ)
+lemma wien_displacement_freq (B₁ B₂ : BlackBody) (c : SpeedOfLight) (ν₁ ν₂ : ℝ)
     (hT₁ : 0 < (B₁.T : ℝ)) (hT₂ : 0 < (B₂.T : ℝ))
     (hν₁ : 0 < ν₁) (hν₂ : 0 < ν₂)
     (hcrit₁ : deriv (fun ν => B₁.spectralRadiance c ν) ν₁ = 0)
@@ -1443,7 +1443,7 @@ theorem wien_displacement_freq (B₁ B₂ : BlackBody) (c : SpeedOfLight) (ν₁
 
 
 /-- The peak product `lam T` equals `h c / (kB x₅)` (wavelength Wien constant). -/
-theorem wien_peak_product (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
+lemma wien_peak_product (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
     (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam)
     (hcrit : deriv (fun lam => B.spectralRadianceWave c lam) lam = 0) :
     lam * (B.T : ℝ) = (h : ℝ) * (c : ℝ) / (kB * wienConstant5) := by
@@ -1466,7 +1466,7 @@ theorem wien_peak_product (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
   linarith [huniq]
 
 /-- The peak ratio `ν / T` equals `kB x₃ / h` (frequency Wien constant). -/
-theorem wien_peak_ratio (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
+lemma wien_peak_ratio (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
     (hT : 0 < (B.T : ℝ)) (hν : 0 < ν)
     (hcrit : deriv (fun ν => B.spectralRadiance c ν) ν = 0) :
     ν / (B.T : ℝ) = kB * wienConstant3 / (h : ℝ) := by
