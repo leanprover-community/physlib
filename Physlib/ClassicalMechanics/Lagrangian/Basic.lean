@@ -5,8 +5,10 @@ Authors: Michal Mogielnicki
 -/
 module
 
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
+public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
-public import Physlib.SpaceAndTime.Time.Derivatives
+public import Physlib.SpaceAndTime.Time.Basic
 
 /-!
 # Lagrangian systems
@@ -53,9 +55,9 @@ variable {M} in
 @[ext]
 structure Variation (γ : Time → M) (t₀ t₁ : Time) where
   /-- The smooth family of curves. -/
-  toFun : C^∞⟮𝓘(ℝ, ℝ).prod 𝓘(ℝ, Time), ℝ × Time; I, M⟯
+  toFun : C^∞⟮𝓘(ℝ, ℝ).prod 𝓘(ℝ, ℝ), ℝ × Time; I, M⟯
   /-- Starts at `γ`. -/
-  apply_zero : ∀ t ∈ Set.Icc t₀ t₁, toFun (0, t) = γ t
+  apply_zero : ∀ s ∈ Set.Icc 0 (t₁ -ᵥ t₀), toFun (0, s +ᵥ t₀) = γ (s +ᵥ t₀)
   /-- Fixes `γ t₀`. -/
   apply_left : ∀ s, toFun (s, t₀) = γ t₀
   /-- Fixes `γ t₁`. -/
@@ -63,40 +65,41 @@ structure Variation (γ : Time → M) (t₀ t₁ : Time) where
 
 variable {I M} in
 /-- A smooth curve admits the constant variation. -/
-lemma Variation.nonempty {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, Time) I ∞ γ) :
+lemma Variation.nonempty {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) :
     Nonempty (Variation I γ t₀ t₁) :=
   ⟨⟨⟨fun p ↦ γ p.2, hγ.comp contMDiff_snd⟩, fun _ _ ↦ rfl, fun _ ↦ rfl, fun _ ↦ rfl⟩⟩
 
 /-- A smooth time-dependent Lagrangian on `TM`. -/
-abbrev LagrangianSystem := C^∞⟮𝓘(ℝ, Time).prod I.tangent, Time × TangentBundle I M; ℝ⟯
+abbrev LagrangianSystem := C^∞⟮𝓘(ℝ, ℝ).prod I.tangent, Time × TangentBundle I M; ℝ⟯
 
 namespace LagrangianSystem
 
 /-- The Lagrangian system on a normed space `E` given by a smooth `L(t, q, q̇)`. -/
-def ofNormedSpace (L : Time × E × E → ℝ) (hL : ContDiff ℝ ∞ L) :
+def ofNormedSpace (L : Time × E × E → ℝ)
+    (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) :
     LagrangianSystem 𝓘(ℝ, E) ⟨E⟩ :=
-  ⟨fun p ↦ L (p.1, p.2.1, p.2.2), hL.contMDiff.comp (contMDiff_fst.prodMk_space
+  ⟨fun p ↦ L (p.1, p.2.1, p.2.2), hL.comp (contMDiff_fst.prodMk
     (contMDiff_tangentBundleModelSpaceHomeomorph.comp contMDiff_snd))⟩
 
 variable {I M} (S : LagrangianSystem I M) {γ : Time → M} {t₀ t₁ : Time}
 
 /-- The action `∫ L(t, γ, γ̇) dt` over `[t₀, t₁]`. -/
 noncomputable def action (γ : Time → M) (t₀ t₁ : Time) : ℝ :=
-  ∫ t in Set.Icc t₀ t₁, S (t, tangentMap 𝓘(ℝ, Time) I γ ⟨t, (1 : Time)⟩)
+  ∫ s in Set.Icc 0 (t₁ -ᵥ t₀), S (s +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ ⟨s +ᵥ t₀, (1 : ℝ)⟩)
 
 /-- `γ` is smooth and every variation has zero first variation of the action. -/
 def IsCriticalPoint (γ : Time → M) (t₀ t₁ : Time) : Prop :=
-  ContMDiff 𝓘(ℝ, Time) I ∞ γ ∧ ∀ h : Variation I γ t₀ t₁,
+  ContMDiff 𝓘(ℝ, ℝ) I ∞ γ ∧ ∀ h : Variation I γ t₀ t₁,
     HasDerivAt (fun s ↦ S.action (fun t ↦ h.toFun (s, t)) t₀ t₁) 0 0
 
 /-- The action over an empty or one-point interval vanishes. -/
-lemma action_eq_zero_of_le (h : t₁ ≤ t₀) : S.action γ t₀ t₁ = 0 := by
-  simp [action, Measure.restrict_eq_zero.2 ((Set.subsingleton_Icc_of_ge h).measure_zero _)]
+lemma action_eq_zero_of_vsub_nonpos (h : t₁ -ᵥ t₀ ≤ 0) : S.action γ t₀ t₁ = 0 :=
+  setIntegral_measure_zero _ ((Set.subsingleton_Icc_of_ge h).measure_zero _)
 
 /-- Every smooth curve is critical over an empty or one-point interval. -/
-lemma isCriticalPoint_of_le (hγ : ContMDiff 𝓘(ℝ, Time) I ∞ γ) (h : t₁ ≤ t₀) :
+lemma isCriticalPoint_of_vsub_nonpos (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (h : t₁ -ᵥ t₀ ≤ 0) :
     S.IsCriticalPoint γ t₀ t₁ :=
-  ⟨hγ, fun _ ↦ by simp [action_eq_zero_of_le _ h, hasDerivAt_const]⟩
+  ⟨hγ, fun _ ↦ by simp [action_eq_zero_of_vsub_nonpos _ h, hasDerivAt_const]⟩
 
 end LagrangianSystem
 
