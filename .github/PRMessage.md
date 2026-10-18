@@ -4,6 +4,11 @@ that a push to the PR updates it instead of leaving a second one. Keep it first.
 
 Thank you for this pull-request (PR). If this is your first PR, welcome to the community!
 
+Three main points:
+- Comment `-awaiting-author` on its own line to remove that label from your PR.
+- Comment `blocked-by-PR` or `-blocked-by-PR` on its own line to add or remove that label, respectively.
+- Reviewing other people's PRs speeds up the review of your own. See [review guidlines here](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md).
+
 <details>
 <summary><h2>For the author: Please read</h2></summary>
 
