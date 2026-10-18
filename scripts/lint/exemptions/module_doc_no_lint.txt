@@ -278,7 +278,6 @@ Physlib/Relativity/Fermions/Weyl/Metric.lean
 Physlib/Relativity/Fermions/Weyl/Two.lean
 Physlib/Relativity/Fermions/Weyl/Unit.lean
 Physlib/Relativity/LorentzAlgebra/Basic.lean
-Physlib/Relativity/LorentzAlgebra/Basis.lean
 Physlib/Relativity/LorentzAlgebra/ExponentialMap.lean
 Physlib/Relativity/LorentzGroup/Basic.lean
 Physlib/Relativity/LorentzGroup/Boosts/Apply.lean
