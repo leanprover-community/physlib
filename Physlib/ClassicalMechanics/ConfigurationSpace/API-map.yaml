@@ -24,8 +24,8 @@ Requirements:
       The API shall prove that, in global generalised coordinates, a curve is smooth if and
       only if its coordinate curve is, with velocity the time derivative of the coordinate
       curve.
-    done: false
-    location: N/A
+    done: true
+    location: "Physlib/SpaceAndTime/Time/ManifoldCurves.lean (Time.contMDiff_iff_contDiff_vadd, Time.tangentMap_eq_deriv_vadd)"
 
   - description: >
       The configuration spaces of the harmonic oscillator and the simple pendulum shall be

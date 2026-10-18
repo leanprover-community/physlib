@@ -30,8 +30,26 @@ Requirements:
     location: "Physlib/ClassicalMechanics/Lagrangian/Basic.lean (Variation, LagrangianSystem.action, LagrangianSystem.IsCriticalPoint)"
 
   - description: >
-      The API shall prove that a smooth curve is a critical point of the action if and only if
-      the Euler-Lagrange equations hold in every chart.
+      The API shall express the action of a Lagrangian system on a normed space as the
+      integral of `L(t, q, q̇)` along the coordinate curve.
+    done: true
+    location: "Physlib/ClassicalMechanics/Lagrangian/NormedSpace.lean (LagrangianSystem.action_ofNormedSpace)"
+
+  - description: >
+      The API shall prove that, on a normed space, a smooth curve is a critical point of the
+      action over a non-degenerate interval if and only if the Euler-Lagrange equations hold.
+    done: true
+    location: "Physlib/ClassicalMechanics/Lagrangian/EulerLagrange.lean (LagrangianSystem.isCriticalPoint_ofNormedSpace_iff)"
+
+  - description: >
+      The API shall prove that a critical point of the action satisfies the Euler-Lagrange
+      equations in every chart containing it.
+    done: true
+    location: "Physlib/ClassicalMechanics/Lagrangian/EulerLagrangeChart.lean (LagrangianSystem.eulerLagrange_coord_of_isCriticalPoint)"
+
+  - description: >
+      The API shall prove that a smooth curve satisfying the Euler-Lagrange equations in every
+      chart is a critical point of the action (the converse on a general configuration space).
     done: false
     location: N/A
 
@@ -57,8 +75,8 @@ Requirements:
   - description: >
       The API shall define Lagrangians `L(q, q̇, t)` in generalised coordinates as Lagrangian
       systems.
-    done: false
-    location: N/A
+    done: true
+    location: "Physlib/ClassicalMechanics/Lagrangian/NormedSpace.lean (LagrangianSystem.ofNormedSpace)"
 
   - description: >
       The API shall derive conservation of momentum and angular momentum from Noether's theorem.
