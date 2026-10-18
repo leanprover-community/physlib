@@ -47,11 +47,9 @@ concurrency:
     github.event.pull_request.number || inputs.pr || github.ref }}
   cancel-in-progress: true
 
-# Limit permissions for GITHUB_TOKEN for the entire workflow
-permissions:
-  contents: read
-  pull-requests: write  # Only allow PR comments
-  # All other permissions are implicitly 'none'
+# No permissions by default: each job asks for only what it needs. Only `comment` can write, and
+# it runs no code from the pull-request.
+permissions: {}
 
 jobs:
   test:
@@ -59,6 +57,8 @@ jobs:
     # The pull-request which changes the script, not the one to comment on.
     if: github.event_name == 'push' || github.event_name == 'pull_request'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout
@@ -82,10 +82,17 @@ jobs:
       - name: Summarise the last commit
         run: ./.lake/build/bin/pr_summary HEAD~1 HEAD
 
-  comment:
-    name: Comment a pull_request
+  summarise:
+    name: Summarise the pull_request
     if: github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
+    # Read-only: this is the job which checks out the branch of the pull-request.
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      number: ${{ steps.pr.outputs.number }}
+      comment: ${{ steps.assemble.outputs.comment }}
 
     steps:
       - name: Find the pull-request to comment on
@@ -153,6 +160,7 @@ jobs:
           cat "${summary}"
 
       - name: Assemble the comment
+        id: assemble
         run: |
           awk -v summary="${RUNNER_TEMP}/summary.md" '
             $0 == "<!-- PR_SUMMARY -->" {
@@ -161,14 +169,35 @@ jobs:
             }
             { print }' tools/.github/PRMessage.md > "${RUNNER_TEMP}/comment.md"
           cat "${RUNNER_TEMP}/comment.md"
+          # The comment is handed to the `comment` job as a multi-line output. The delimiter is
+          # random, so that no line of the summary, which quotes the pull-request, can end it.
+          delimiter="EOF_$(openssl rand -hex 16)"
+          {
+            printf 'comment<<%s\n' "${delimiter}"
+            cat "${RUNNER_TEMP}/comment.md"
+            printf '\n%s\n' "${delimiter}"
+          } >> "${GITHUB_OUTPUT}"
 
+  comment:
+    name: Comment a pull_request
+    needs: summarise
+    runs-on: ubuntu-latest
+    # The only job which can write, and so the only one which checks nothing out and runs no
+    # code from the pull-request.
+    permissions:
+      pull-requests: write
+
+    steps:
       - name: Comment a pull_request, or update the comment of the previous run
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR: ${{ steps.pr.outputs.number }}
+          PR: ${{ needs.summarise.outputs.number }}
+          # Passed through the environment, never into the script, so it is not run as shell.
+          COMMENT: ${{ needs.summarise.outputs.comment }}
           # The first line of `.github/PRMessage.md`, and so of the comment this workflow leaves.
           MARKER: <!-- physlib-pr-summary -->
         run: |
+          printf '%s' "${COMMENT}" > "${RUNNER_TEMP}/comment.md"
           # The comments are fetched in a step of their own, so that `set -e` stops here if the
           # API call fails: an empty answer would otherwise read as "no comment yet" and leave a
           # second one.
