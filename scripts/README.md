@@ -100,8 +100,9 @@ This linter may need running a number of times.
 ## Summarising a pull request
 
 - `lake exe pr_summary` : Summarises a pull request for its reviewers, as Markdown: the files it
-  adds, removes, renames or modifies, with the number of lines added to and removed from each, and
-  the declarations it adds, removes, moves between files or restates. The
+  adds, removes, renames or modifies, with the number of lines added to and removed from each, the
+  namespaces each `.lean` file opens and any it gains or loses, and the declarations it adds,
+  removes, moves between files or restates. The
   [`PRMessage`](../.github/workflows/PRMessage.yml) workflow runs it on every new PR, and again on
   every push to one, and posts the result, under *Summary of your PR for reviewers*, in the
   comment it leaves; the rest of that comment is

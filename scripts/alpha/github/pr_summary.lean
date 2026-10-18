@@ -8,7 +8,8 @@ import Lean
 
 # PR summary
 
-A script which prints, as Markdown, what a pull-request changes: its files and its declarations.
+A script which prints, as Markdown, what a pull-request changes: its files, their namespaces and
+their declarations.
 
 ## i. Overview
 
@@ -27,8 +28,9 @@ forks.
 git rev-parse <head>                                the commit the links point into
 git merge-base <base> <head>                        the commit the removed lines belong to
 git diff --name-status -M       <base>...<head>     which files changed, and how
-git diff --numstat --no-renames <base>...<head>     lines added to and removed from each file
+git diff --numstat -M -z        <base>...<head>     lines added to and removed from each file
 git diff --unified=0 -M         <base>...<head>     the changed lines themselves
+git show <commit>:<path>                            each changed `.lean` file, for its namespaces
 ```
 
 **What it prints.** For a pull-request which adds one lemma to one file:
@@ -38,6 +40,7 @@ git diff --unified=0 -M         <base>...<head>     the changed lines themselves
 Found differences:
 @@ Physlib.Foo @@
 ! module modified Physlib.Foo (+3 -0)
+  namespaces Foo
 + added lemma Foo.bar
 2 differences
 ```
@@ -47,15 +50,20 @@ Found differences:
 
 The block follows the format of [leaff](https://github.com/alexjbest/leaff): one line per
 change, `+` for an addition, `-` for a removal and `!` for a modification, grouped under
-`@@ <module> @@` headers, with the most important changes first. A pull-request which writes a
+`@@ <module> @@` headers, with the most important changes first. Under each `.lean` file are
+the namespaces it opens, uncoloured, and any it gains (`+ namespace added`) or loses
+(`- namespace removed`). A pull-request which writes a
 result with `theorem` gets a call-out above the block, since Physlib reserves `theorem` for
 named results of the physics literature and `theorem_lint` requires each to be listed in
-`scripts/lint/exemptions/Theorems.txt`. Section F.9 shows the whole output for a small diff.
+`scripts/lint/exemptions/Theorems.txt`. Section G shows the whole output for four small
+pull-requests.
 
 **How it works.** `summarise` is a pure function from the text of the three `git diff` outputs
-to the Markdown, and `gitSummary` is the only thing which runs `git`. In between:
+and of the changed `.lean` files to the Markdown, and `gitSummary` is the only thing which runs
+`git`. In between:
 
 1. `parseNameStatus` and `parseNumstat` read which files changed and by how many lines (B).
+   Both diffs use `-M`, so a renamed file is counted against its old self.
 2. `parseDiff` keeps the added (`+`) and removed (`-`) lines of the diff which start a
    declaration: a line beginning, after its attributes and modifiers, with `lemma`, `def`, … and
    a name (C.1–C.3).
@@ -68,14 +76,18 @@ to the Markdown, and `gitSummary` is the only thing which runs `git`. In between
    | both | the same | moved |
    | both | different | restated |
 
-4. `diffBlock` lists the changes in the format of leaff, and `theoremCallout` adds the
-   call-out (D).
+4. `namespacesOf` reads the namespaces each file opens, in both revisions (D).
+5. `diffBlock` lists the changes in the format of leaff, and `theoremCallout` adds the
+   call-out (E).
 
 **What it misses.** The scan is textual, so it is a guide and not a proof. It does not see
 
 - a declaration whose keyword and name are on different lines;
 - a declaration which does not start at the beginning of its line;
-- namespaces: the `foo` of `namespace A` and the `foo` of `namespace B` are one name to it;
+- namespaces, for declarations: the `foo` of `namespace A` and the `foo` of `namespace B` are one
+  name to it, even though the namespaces of each file are listed;
+- a `namespace`, `section` or `end` which does not start its line, or which sits inside a
+  comment;
 - a change to a proof, or to the body of a definition, which is deliberate.
 
 **Running it.** From the root of a clone which has both revisions:
@@ -102,6 +114,7 @@ only in a clone or a fork do not resolve.
 - `PRSummary.summarise` is the whole summary, as a pure function of the `git diff` outputs.
 - `PRSummary.declHeads` decides whether a line of source starts a declaration.
 - `PRSummary.declDiff` classifies each declaration as added, removed, moved or restated.
+- `PRSummary.namespacesOf` reads the namespaces a `.lean` file opens.
 - `PRSummary.diffBlock` lists the changes in the format of leaff.
 - `PRSummary.git` is the only function which runs a command.
 
@@ -116,21 +129,17 @@ only in a clone or a fork do not resolve.
   - C.2. The declarations a line starts
   - C.3. The declaration lines of a diff
   - C.4. Classifying the declarations
-- D. Rendering the summary
-  - D.1. The diff block
-  - D.2. The call-out about `theorem`
-  - D.3. The summary
-- E. Running `git`
-- F. Tests
-  - F.1. Strings, Markdown and links
-  - F.2. Reading `git diff --name-status` and `--numstat`
-  - F.3. Stripping attributes and modifiers from a line
-  - F.4. The declarations a line starts
-  - F.5. The declaration lines of a diff
-  - F.6. Classifying the declarations
-  - F.7. The diff block
-  - F.8. The call-out about `theorem`
-  - F.9. The whole summary
+- D. The namespaces a pull-request touches
+- E. Rendering the summary
+  - E.1. The diff block
+  - E.2. The call-out about `theorem`
+  - E.3. The summary
+- F. Running `git`
+- G. Tests
+  - G.1. A theorem, and a lemma in a new file
+  - G.2. A renamed file, a removed file, and declarations moving between them
+  - G.3. A theorem, with the theorems file changed
+  - G.4. Nothing changed
 
 ## iv. References
 
@@ -229,18 +238,29 @@ structure FileChange where
   insertions : Option Nat := none
   /-- Lines removed; `none` for a binary file. -/
   deletions : Option Nat := none
+  /-- The namespaces a `.lean` file opens, in the order it opens them: in the head revision,
+  or, for a removed file, in the base revision. -/
+  namespaces : Array String := #[]
+  /-- The namespaces the head revision of the file opens and its base revision does not. -/
+  addedNamespaces : Array String := #[]
+  /-- The namespaces the base revision of the file opens and its head revision does not. -/
+  removedNamespaces : Array String := #[]
   deriving Repr, DecidableEq, Inhabited
 
 /-- Files are reported by status, then by path. -/
 def FileChange.lt (c d : FileChange) : Bool :=
   c.status.rank < d.status.rank || c.status.rank == d.status.rank && c.path < d.path
 
+/-- The path of the file in the base revision: its old path if it was renamed or copied. -/
+def FileChange.oldPath (c : FileChange) : String :=
+  match c.status with
+  | .renamed oldPath | .copied oldPath => oldPath
+  | _ => c.path
+
 /-- The paths the diff may give for lines of the file: its path, and, if it was renamed or
 copied, its old path. -/
 def FileChange.paths (c : FileChange) : List String :=
-  match c.status with
-  | .renamed oldPath | .copied oldPath => [c.path, oldPath]
-  | _ => [c.path]
+  if c.oldPath == c.path then [c.path] else [c.path, c.oldPath]
 
 /-! ### B.1. Reading `git diff --name-status`
 
@@ -277,27 +297,46 @@ def parseNameStatus (lines : Array String) : Array FileChange :=
 
 /-! ### B.2. Reading `git diff --numstat`
 
-Each line is the lines added, the lines removed and the path, separated by tabs; both counts
-are `-` for a binary file:
+The output is read with `-z`, which ends every field with a NUL rather than a line with a
+newline. A file is one field: the lines added, the lines removed and the path, separated by
+tabs, with both counts `-` for a binary file. A renamed file is three fields: the two counts
+followed by an empty path, then the old path, then the new one. Shown one field to a line:
 
 ```
 40	0	Physlib/New.lean
 -	-	docs/figure.png
+2	1
+Physlib/Old.lean
+Physlib/Renamed.lean
 ```
+
+The diff is made with `-M`, as `git diff --name-status` is, so a renamed file is counted against
+its old self: a file which is only renamed is `+0 -0`. Without `-M` it would be counted as a
+removed file and an added one, and looked up by its new path alone it would read as every line
+added and none removed.
 -/
 
-/-- The path and the two counts one line records, or `none` for a line which is not one. -/
-def parseNumstatLine (line : String) : Option (String × Option Nat × Option Nat) :=
-  match (line.splitOn "\t").map trim with
-  | [insertions, deletions, path] => some (path, insertions.toNat?, deletions.toNat?)
-  | _ => none
+/-- The new path and the two counts of each file in the fields of `git diff --numstat -z`. -/
+def parseNumstat (fields : Array String) : Array (String × Option Nat × Option Nat) := Id.run do
+  let mut result : Array (String × Option Nat × Option Nat) := #[]
+  let mut i := 0
+  -- Each step moves past at least one field, so the loop ends before the bound.
+  for _ in [0:fields.size] do
+    if h : i < fields.size then
+      match fields[i].splitOn "\t" with
+      | [insertions, deletions, path] =>
+        if path.isEmpty then
+          -- A rename: the old path and then the new path are the next two fields.
+          if h' : i + 2 < fields.size then
+            result := result.push (fields[i + 2], insertions.toNat?, deletions.toNat?)
+          i := i + 3
+        else
+          result := result.push (path, insertions.toNat?, deletions.toNat?)
+          i := i + 1
+      | _ => i := i + 1
+  return result
 
-/-- The counts recorded by the lines of `git diff --numstat`. -/
-def parseNumstat (lines : Array String) : Array (String × Option Nat × Option Nat) :=
-  lines.filterMap parseNumstatLine
-
-/-- `changes` with the counts of `counts` filled in by path. The counts come from a diff made
-with `--no-renames`, in which a renamed file is counted under its new path. -/
+/-- `changes` with the counts of `counts` filled in by path. -/
 def withLineCounts (changes : Array FileChange)
     (counts : Array (String × Option Nat × Option Nat)) : Array FileChange :=
   changes.map fun c =>
@@ -626,9 +665,59 @@ def declDiff (lines : Array DeclLine) : Array DeclDiff := Id.run do
       result := result.push { decl := added[0]!.decl, change := .restated added[0]!.loc }
   return result
 
-/-! ## D. Rendering the summary -/
+/-! ## D. The namespaces a pull-request touches
 
-/-! ### D.1. The diff block
+The diff shows only the lines which changed, so the namespaces of a file are read from the file
+itself, in both revisions. A `.lean` file opens a namespace with `namespace A.B`, and closes it,
+or a `section`, with `end`. The scopes are tracked as a stack, so that `namespace A` and then
+`namespace B` open `A.B`. Commands start at the beginning of their line, and an indented `end`,
+which closes a `match` or a `do`, is skipped.
+-/
+
+/-- A file as one revision has it. -/
+structure FileContents where
+  path : String
+  /-- Whether this is the head revision (`true`) or the base revision (`false`). -/
+  added : Bool
+  lines : Array String
+  deriving Repr, DecidableEq, Inhabited
+
+/-- The namespaces the lines of a `.lean` file open, in the order they first open them. -/
+def namespacesOf (lines : Array String) : Array String := Id.run do
+  -- The open scopes, innermost first: the components of a namespace, or `[]` for a section or
+  -- a `mutual` block, both of which `end` also closes.
+  let mut scopes : List (List String) := []
+  let mut result : Array String := #[]
+  for line in lines do
+    if line.startsWith " " || line.startsWith "\t" then continue
+    match ((normalise line).splitOn " ").filter (!·.isEmpty) with
+    | "namespace" :: name :: _ =>
+      scopes := name.splitOn "." :: scopes
+      let full := ".".intercalate scopes.reverse.flatten
+      unless result.contains full do result := result.push full
+    | "section" :: _ | "mutual" :: _ => scopes := [] :: scopes
+    | "end" :: _ => scopes := scopes.tail
+    | _ => pure ()
+  return result
+
+/-- `changes` with the namespaces of each file filled in from `contents`, and, for a file in
+both revisions, the namespaces it gained and lost. -/
+def withNamespaces (changes : Array FileChange) (contents : Array FileContents) :
+    Array FileChange :=
+  changes.map fun c =>
+    let head := (contents.find? fun f => f.added && f.path == c.path).map (namespacesOf ·.lines)
+    let base := (contents.find? fun f => !f.added && f.path == c.oldPath).map
+      (namespacesOf ·.lines)
+    match head, base with
+    | some h, some b =>
+      { c with namespaces := h, addedNamespaces := h.filter (!b.contains ·),
+               removedNamespaces := b.filter (!h.contains ·) }
+    | some h, none | none, some h => { c with namespaces := h }
+    | none, none => c
+
+/-! ## E. Rendering the summary -/
+
+/-! ### E.1. The diff block
 
 The changes are listed as in [leaff](https://github.com/alexjbest/leaff): one line per change,
 starting with `+` for an addition, `-` for a removal and `!` for a modification, which GitHub
@@ -673,8 +762,9 @@ def DeclDiff.line (d : DeclDiff) : String :=
     if old.file == new.file then s!"! moved {d.decl.display} within {kindOf new.file}"
     else s!"! moved {d.decl.display} from {moduleOf old.file} to {moduleOf new.file}"
 
-/-- The block: each file in order of status then path, under a header, followed by the
-changes to its declarations in order of importance; at most `limit` lines; then the number of
+/-- The block: each file in order of status then path, under a header, followed by its
+namespaces, the namespaces it gained and lost, and the changes to its declarations in order of
+importance; at most `limit` lines; then the number of
 changes. A moved declaration is listed under the file it is now in. -/
 def diffBlock (files : Array FileChange) (decls : Array DeclDiff) (limit : Nat := 300) :
     String := Id.run do
@@ -684,6 +774,11 @@ def diffBlock (files : Array FileChange) (decls : Array DeclDiff) (limit : Nat :
   for c in files.qsort FileChange.lt do
     lines := lines.push s!"@@ {moduleOf c.path} @@"
     lines := lines.push c.line
+    -- A line starting with a space is left uncoloured inside a `diff` block.
+    unless c.namespaces.isEmpty do
+      lines := lines.push s!"  namespaces {", ".intercalate c.namespaces.toList}"
+    lines := lines ++ c.addedNamespaces.map (s!"+ namespace added {·}")
+    lines := lines ++ c.removedNamespaces.map (s!"- namespace removed {·}")
     for d in (decls.filter (c.paths.contains ·.change.target.file)).qsort DeclDiff.lt do
       lines := lines.push d.line
       listed := listed.push d
@@ -692,10 +787,12 @@ def diffBlock (files : Array FileChange) (decls : Array DeclDiff) (limit : Nat :
   for d in (decls.filter (!listed.contains ·)).qsort DeclDiff.lt do
     lines := lines.push s!"@@ {moduleOf d.change.target.file} @@"
     lines := lines.push d.line
-  let count := plural (files.size + decls.size) "difference"
+  let namespaceChanges := files.foldl
+    (fun n c => n + c.addedNamespaces.size + c.removedNamespaces.size) 0
+  let count := plural (files.size + namespaceChanges + decls.size) "difference"
   return "\n".intercalate (#["Found differences:"] ++ truncate lines limit ++ #[count]).toList
 
-/-! ### D.2. The call-out about `theorem`
+/-! ### E.2. The call-out about `theorem`
 
 Physlib reserves `theorem` for results which are significant in the physics literature and
 writes every other result with `lemma`. Each `theorem` must have a doc-string and be listed in
@@ -730,7 +827,7 @@ def theoremCallout (src : Source) (files : Array FileChange) (decls : Array Decl
     s!"> {listed}.",
     "> `lake exe theorem_lint` checks both."]
 
-/-! ### D.3. The summary -/
+/-! ### E.3. The summary -/
 
 /-- The closing sentence, so a reader knows how far to trust the block. -/
 def caveat : String :=
@@ -744,17 +841,20 @@ def render (src : Source) (files : Array FileChange) (decls : Array DeclDiff) : 
   let parts := #[theoremCallout src files decls, s!"```diff\n{diffBlock files decls}\n```", caveat]
   "\n\n".intercalate (parts.filter (!·.isEmpty)).toList
 
-/-- The whole summary, from the lines of the three `git diff` outputs. This is the entire
-behaviour of the script except for running `git`; F.9 tests it on a small diff. -/
-def summarise (src : Source) (nameStatus numstat diff : Array String) : String :=
+/-- The whole summary, from the lines of `git diff --name-status` and `git diff --unified=0`,
+the fields of `git diff --numstat -z`, and the changed `.lean` files in each revision. This is
+the entire behaviour of the script except for running `git`, and is what G tests. -/
+def summarise (src : Source) (nameStatus numstat diff : Array String)
+    (contents : Array FileContents) : String :=
   render src
-    (withLineCounts (parseNameStatus nameStatus) (parseNumstat numstat))
+    (withNamespaces (withLineCounts (parseNameStatus nameStatus) (parseNumstat numstat))
+      contents)
     (declDiff (parseDiff diff))
 
-/-! ## E. Running `git`
+/-! ## F. Running `git`
 
 This is the only section with side effects. `git` runs the command it is given and reads its
-output; `gitSummary` runs the five commands listed in the overview; `main` prints.
+output; `gitSummary` runs the commands listed in the overview; `main` prints.
 -/
 
 /-- The standard output of `git args`, run in the current directory. Throws if `git` fails. -/
@@ -770,6 +870,25 @@ def gitLines (args : Array String) : IO (Array String) := do
   let out := trimEnd (← git args)
   return if out.isEmpty then #[] else (out.splitOn "\n").toArray
 
+/-- The NUL-terminated fields of the output of `git args`, run with `-z`. -/
+def gitFields (args : Array String) : IO (Array String) := do
+  return ((← git args).splitOn "\x00").toArray.filter (!·.isEmpty)
+
+/-- The changed `.lean` files of `nameStatus` in each revision they are in: the head revision of
+every file but a removed one, and the base revision, at its old path, of every file but an added
+one. -/
+def gitContents (src : Source) (nameStatus : Array String) : IO (Array FileContents) := do
+  let mut result : Array FileContents := #[]
+  for c in parseNameStatus nameStatus do
+    unless c.path.endsWith ".lean" do continue
+    unless c.status == .removed do
+      let lines ← gitLines #["show", s!"{src.head}:{c.path}"]
+      result := result.push { path := c.path, added := true, lines }
+    unless c.status == .added do
+      let lines ← gitLines #["show", s!"{src.base}:{c.oldPath}"]
+      result := result.push { path := c.oldPath, added := false, lines }
+  return result
+
 /-- The commit `revision` names. A link must use a commit: a link to `HEAD` would follow the
 branch rather than point at what was summarised. -/
 def commitOf (revision : String) : IO String :=
@@ -782,14 +901,16 @@ def mergeBase (base head : String) : IO String := do
   catch _ => commitOf base
 
 /-- The summary of the changes `head` makes to `base`. `-M` makes `git` report a renamed file as
-renamed rather than as removed and added, so its declarations are not all reported as moved. -/
+renamed rather than as removed and added, so its declarations are not all reported as moved and
+its lines are counted against its old self. -/
 def gitSummary (base head : String) : IO String := do
   let range := s!"{base}...{head}"
   let src : Source := { base := ← mergeBase base head, head := ← commitOf head }
-  return summarise src
-    (← gitLines #["diff", "--name-status", "-M", range])
-    (← gitLines #["diff", "--numstat", "--no-renames", range])
+  let nameStatus ← gitLines #["diff", "--name-status", "-M", range]
+  return summarise src nameStatus
+    (← gitFields #["diff", "--numstat", "-M", "-z", range])
     (← gitLines #["diff", "--unified=0", "-M", range])
+    (← gitContents src nameStatus)
 
 /-- The revisions from the arguments: `origin/master` and `HEAD` unless given. -/
 def revisions : List String → Except String (String × String)
@@ -798,10 +919,12 @@ def revisions : List String → Except String (String × String)
   | [base, head] => .ok (base, head)
   | args => .error s!"Expected at most two revisions, got {args.length}."
 
-/-! ## F. Tests
+/-! ## G. Tests
 
-These run when the file is compiled, so `lake build pr_summary` fails if one fails. The links in
-the expected outputs are shortened by `shortLinks`, and `testSource` stands in for two commits.
+These test `summarise`, the whole behaviour of the script apart from running `git`, on the
+output `git` gives for four small pull-requests. They run when the file is compiled, so
+`lake build pr_summary` fails if one fails. The links in the expected outputs are shortened by
+`shortLinks`, and `testSource` stands in for the two commits.
 -/
 
 /-- Two stand-in commits. -/
@@ -811,396 +934,9 @@ def testSource : Source := { base := "bsha", head := "hsha" }
 def shortLinks (s : String) : String :=
   "…/".intercalate (s.splitOn s!"https://github.com/{repository}/blob/")
 
-/-! ### F.1. Strings, Markdown and links -/
+/-! ### G.1. A theorem, and a lemma in a new file
 
-/-- info: [`A.lean`](https://github.com/leanprover-community/physlib/blob/hsha/A.lean#L12) -/
-#guard_msgs in
-#eval IO.println (testSource.link (code "A.lean") "A.lean" true 12)
-
--- A removed line is linked in the base revision, and a file at no line in particular.
-/-- info: [`A.lean`](https://github.com/leanprover-community/physlib/blob/bsha/A.lean) -/
-#guard_msgs in
-#eval IO.println (testSource.link (code "A.lean") "A.lean" false)
-
-/-- info: [`A.lean`](…/hsha/A.lean#L12) -/
-#guard_msgs in
-#eval IO.println (shortLinks (testSource.link (code "A.lean") "A.lean" true 12))
-
-/-- info: "1 file, 2 files" -/
-#guard_msgs in
-#eval s!"{plural 1 "file"}, {plural 2 "file"}"
-
-/-- info: "2 added, 1 removed" -/
-#guard_msgs in
-#eval tally #[(2, "added"), (0, "moved"), (1, "removed")]
-
-/-- info: #["a", "… and 2 further lines, left out to keep this short."] -/
-#guard_msgs in
-#eval truncate #["a", "b", "c"] 1
-
-/-! ### F.2. Reading `git diff --name-status` and `--numstat` -/
-
-/--
-info: #[{ path := "Physlib/A.lean", status := PRSummary.FileStatus.added,
-          insertions := none, deletions := none },
-        { path := "Physlib/B.lean", status := PRSummary.FileStatus.modified,
-          insertions := none, deletions := none },
-        { path := "Physlib/C.lean", status := PRSummary.FileStatus.removed,
-          insertions := none, deletions := none },
-        { path := "Physlib/E.lean", status := PRSummary.FileStatus.renamed "Physlib/D.lean",
-          insertions := none, deletions := none }]
--/
-#guard_msgs (whitespace := lax) in
-#eval IO.println (repr (parseNameStatus #["A\tPhyslib/A.lean", "M\tPhyslib/B.lean",
-  "D\tPhyslib/C.lean", "R098\tPhyslib/D.lean\tPhyslib/E.lean"]))
-
-/-- info: #[] -/
-#guard_msgs in
-#eval IO.println (repr (parseNameStatus #["", "not a status line"]))
-
-/-- info: #[("Physlib/A.lean", some 40, some 0), ("Physlib/B.lean", none, none)] -/
-#guard_msgs in
-#eval IO.println (repr (parseNumstat #["40\t0\tPhyslib/A.lean", "-\t-\tPhyslib/B.lean"]))
-
-/--
-info: #[{ path := "Physlib/A.lean", status := PRSummary.FileStatus.added,
-          insertions := some 40, deletions := some 0 }]
--/
-#guard_msgs (whitespace := lax) in
-#eval IO.println (repr (withLineCounts (parseNameStatus #["A\tPhyslib/A.lean"])
-  (parseNumstat #["40\t0\tPhyslib/A.lean"])))
-
-/-! ### F.3. Stripping attributes and modifiers from a line -/
-
-/-- info: "lemma foo : True := trivial" -/
-#guard_msgs in
-#eval normalise "@[simp] lemma foo : True := trivial"
-
-/-- info: "lemma foo : True := trivial" -/
-#guard_msgs in
-#eval normalise "@[simp, nolint docBlame] private lemma foo : True := trivial  "
-
-/-- info: "def foo : Nat := 0" -/
-#guard_msgs in
-#eval normalise "@[simp] noncomputable def foo : Nat := 0"
-
-/-- info: "instance : Foo X := bar" -/
-#guard_msgs in
-#eval normalise "local instance : Foo X := bar"
-
-/-- info: "lemma foo : True := trivial" -/
-#guard_msgs in
-#eval normalise "set_option maxHeartbeats 400000 in lemma foo : True := trivial"
-
-/-- info: "lemma foo : True := trivial" -/
-#guard_msgs in
-#eval normalise "open Finset in lemma foo : True := trivial"
-
--- An attribute which is not closed on the line is left alone.
-/-- info: "@[simp, nolint" -/
-#guard_msgs in
-#eval normalise "@[simp, nolint"
-
-/-! ### F.4. The declarations a line starts -/
-
-/-- The declarations `line` starts. -/
-def printHeads (line : String) : IO Unit := IO.println (repr (declHeads line))
-
-/-- info: #[{ keyword := "lemma", name := "foo", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "lemma foo : True := trivial"
-
-/-- info: #[{ keyword := "theorem", name := "Foo.bar", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "@[simp] protected theorem Foo.bar (x : X) : P x := by simp"
-
-/-- info: #[{ keyword := "def", name := "ψ_eq", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "noncomputable def ψ_eq : Nat := 0"
-
-/-- info: #[{ keyword := "structure", name := "Foo", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "structure Foo extends Bar where"
-
-/-- info: #[{ keyword := "class inductive", name := "Foo", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "class inductive Foo (n : Nat) : Type where"
-
-/-- info: #[{ keyword := "instance", name := "instFoo", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "instance instFoo : Foo X := ⟨bar⟩"
-
--- A priority does not hide the name of an `instance`, and its `:=` does not end the signature.
-/-- info: #[{ keyword := "instance", name := "instInhabited", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "instance (priority := 100) instInhabited : Inhabited U where"
-
-/-- info: #[{ keyword := "instance", name := ": Foo X", anonymous := true }] -/
-#guard_msgs in
-#eval printHeads "instance : Foo X := ⟨bar⟩"
-
-/-- info: #[{ keyword := "instance", name := "{A : Type*} [Semigroup A] : IsAlternative A",
-  anonymous := true }] -/
-#guard_msgs (whitespace := lax) in
-#eval printHeads "instance (priority := 100) {A : Type*} [Semigroup A] : IsAlternative A where"
-
-/-- info: #[{ keyword := "alias", name := "foo_of_bar", anonymous := false },
-  { keyword := "alias", name := "bar_of_foo", anonymous := false }] -/
-#guard_msgs (whitespace := lax) in
-#eval printHeads "alias ⟨foo_of_bar, bar_of_foo⟩ := foo_iff_bar"
-
-/-- info: #[{ keyword := "alias", name := "foo_of_bar", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "alias ⟨foo_of_bar, _⟩ := foo_iff_bar"
-
-/-- info: #[{ keyword := "alias", name := "foo'", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "alias foo' := foo"
-
-/-- info: #[{ keyword := "informal_lemma", name := "foo", anonymous := false }] -/
-#guard_msgs in
-#eval printHeads "informal_lemma foo where"
-
--- Indented lines, lines which start no declaration, and keywords which are only the start of
--- an identifier are all passed over.
-/-- info: #[] -/
-#guard_msgs in
-#eval printHeads "  lemma foo : True := trivial"
-
-/-- info: #[] -/
-#guard_msgs in
-#eval printHeads "  exact foo"
-
-/-- info: #[] -/
-#guard_msgs in
-#eval printHeads "definitely_not_a_declaration"
-
-/-- info: #[] -/
-#guard_msgs in
-#eval printHeads ""
-
-/-! ### F.5. The declaration lines of a diff -/
-
-/-- info: some (10, 11) -/
-#guard_msgs in
-#eval parseHunkHeader "@@ -10,0 +11,2 @@"
-
--- A count left out means one line.
-/-- info: some (3, 3) -/
-#guard_msgs in
-#eval parseHunkHeader "@@ -3 +3 @@ namespace Foo"
-
-/-- info: none -/
-#guard_msgs in
-#eval parseHunkHeader "+lemma foo : True := trivial"
-
-/-- A diff which adds a lemma to one file and renames a definition in another. Its last hunk
-removes the Lean comment `-- a/Physlib/Z.lean`, which reads as a `---` header but is not one. -/
-def exampleDiff : Array String :=
-  #["diff --git a/Physlib/A.lean b/Physlib/A.lean",
-    "--- a/Physlib/A.lean",
-    "+++ b/Physlib/A.lean",
-    "@@ -10,0 +11,2 @@",
-    "+lemma foo_eq_bar : foo = bar := rfl",
-    "+  -- an indented line is not a declaration",
-    "diff --git a/Physlib/B.lean b/Physlib/B.lean",
-    "--- a/Physlib/B.lean",
-    "+++ b/Physlib/B.lean",
-    "@@ -3 +3 @@",
-    "-def oldName : Nat := 0",
-    "+def newName : Nat := 0",
-    "@@ -20,2 +20,0 @@",
-    "--- a/Physlib/Z.lean",
-    "-def afterAComment : Nat := 0"]
-
-/--
-info: #[{ loc := { file := "Physlib/A.lean", line := 11, added := true },
-          decl := { keyword := "lemma", name := "foo_eq_bar", anonymous := false },
-          text := "lemma foo_eq_bar : foo = bar := rfl" },
-        { loc := { file := "Physlib/B.lean", line := 3, added := false },
-          decl := { keyword := "def", name := "oldName", anonymous := false },
-          text := "def oldName : Nat := 0" },
-        { loc := { file := "Physlib/B.lean", line := 3, added := true },
-          decl := { keyword := "def", name := "newName", anonymous := false },
-          text := "def newName : Nat := 0" },
-        { loc := { file := "Physlib/B.lean", line := 21, added := false },
-          decl := { keyword := "def", name := "afterAComment", anonymous := false },
-          text := "def afterAComment : Nat := 0" }]
--/
-#guard_msgs (whitespace := lax) in
-#eval IO.println (repr (parseDiff exampleDiff))
-
-/-! ### F.6. Classifying the declarations -/
-
-/-- The declaration line `text` at line `n` of `file`, added if `added`. -/
-def mkLine (file : String) (n : Nat) (added : Bool) (text : String) : DeclLine :=
-  { loc := { file, line := n, added }, decl := (declHeads text)[0]!, text }
-
-/-- The classification of `lines`, as the block would show it. -/
-def printDeclDiff (lines : Array DeclLine) : IO Unit := do
-  for d in (declDiff lines).qsort DeclDiff.lt do IO.println d.line
-
-/--
-info: + added lemma foo
-- removed def bar
--/
-#guard_msgs in
-#eval printDeclDiff #[
-  mkLine "Physlib/A.lean" 3 true "lemma foo : True := trivial",
-  mkLine "Physlib/B.lean" 7 false "def bar : Nat := 0"]
-
--- The same line removed from one file and added to another: moved.
-/-- info: ! moved lemma foo from Physlib.B to Physlib.A -/
-#guard_msgs in
-#eval printDeclDiff #[
-  mkLine "Physlib/B.lean" 7 false "lemma foo : True := trivial",
-  mkLine "Physlib/A.lean" 3 true "lemma foo : True := trivial"]
-
--- The same name on two different lines: restated.
-/-- info: ! statement changed for lemma foo -/
-#guard_msgs in
-#eval printDeclDiff #[
-  mkLine "Physlib/A.lean" 3 false "lemma foo : True := trivial",
-  mkLine "Physlib/A.lean" 3 true "lemma foo (n : Nat) : n = n := rfl"]
-
--- An attribute is part of the line, so gaining one is a restatement.
-/-- info: ! statement changed for lemma foo -/
-#guard_msgs in
-#eval printDeclDiff #[
-  mkLine "Physlib/A.lean" 3 false "lemma foo : True := trivial",
-  mkLine "Physlib/A.lean" 3 true "@[simp] lemma foo : True := trivial"]
-
--- A `lemma` which became a `theorem` keeps its name: restated, not removed and added.
-/-- info: ! statement changed for theorem foo -/
-#guard_msgs in
-#eval printDeclDiff #[
-  mkLine "Physlib/A.lean" 3 false "lemma foo : True := trivial",
-  mkLine "Physlib/A.lean" 3 true "theorem foo : True := trivial"]
-
--- A move within one file.
-/-- info: ! moved lemma foo within module -/
-#guard_msgs in
-#eval printDeclDiff #[
-  mkLine "Physlib/A.lean" 3 false "lemma foo : True := trivial",
-  mkLine "Physlib/A.lean" 9 true "lemma foo : True := trivial"]
-
-/-! ### F.7. The diff block -/
-
-/-- info: "Physlib.Foo.Bar" -/
-#guard_msgs in
-#eval moduleOf "Physlib/Foo/Bar.lean"
-
-/-- info: "scripts/README.md" -/
-#guard_msgs in
-#eval moduleOf "scripts/README.md"
-
--- Files are listed by status then path, each followed by its declarations with additions
--- first; a declaration which moved is listed under the module it is now in.
-/--
-info: Found differences:
-@@ Physlib.A @@
-+ module added Physlib.A (+40 -0)
-+ added lemma foo
-! moved def baz from Physlib.B to Physlib.A
-@@ Physlib.C @@
-- module removed Physlib.C (+0 -9)
-@@ Physlib.B @@
-! module modified Physlib.B (+2 -1)
-- removed def bar
-! statement changed for lemma qux
-@@ docs/figure.png @@
-! file modified docs/figure.png (binary)
-8 differences
--/
-#guard_msgs in
-#eval IO.println (diffBlock #[
-  { path := "Physlib/C.lean", status := .removed, insertions := some 0, deletions := some 9 },
-  { path := "Physlib/B.lean", status := .modified, insertions := some 2, deletions := some 1 },
-  { path := "docs/figure.png", status := .modified },
-  { path := "Physlib/A.lean", status := .added, insertions := some 40, deletions := some 0 }]
-  (declDiff #[
-    mkLine "Physlib/A.lean" 3 true "lemma foo : True := trivial",
-    mkLine "Physlib/B.lean" 7 false "def bar : Nat := 0",
-    mkLine "Physlib/B.lean" 2 false "def baz : Nat := 0",
-    mkLine "Physlib/A.lean" 9 true "def baz : Nat := 0",
-    mkLine "Physlib/B.lean" 12 false "lemma qux : True := trivial",
-    mkLine "Physlib/B.lean" 12 true "lemma qux : 1 = 1 := rfl"]))
-
--- A renamed file is headed by its new module, and a change inside it, which the diff gives
--- under either path, is listed with it.
-/--
-info: Found differences:
-@@ Physlib.New @@
-! module renamed Physlib.Old → Physlib.New (+1 -1)
-- removed lemma gone
-2 differences
--/
-#guard_msgs in
-#eval IO.println (diffBlock
-  #[{ path := "Physlib/New.lean", status := .renamed "Physlib/Old.lean",
-      insertions := some 1, deletions := some 1 }]
-  (declDiff #[mkLine "Physlib/Old.lean" 3 false "lemma gone : True := trivial"]))
-
-/-- info: No differences found. -/
-#guard_msgs in
-#eval IO.println (diffBlock #[] #[])
-
--- At most `limit` lines are listed; the rest are counted.
-/--
-info: Found differences:
-@@ Physlib.A @@
-… and 2 further lines, left out to keep this short.
-2 differences
--/
-#guard_msgs in
-#eval IO.println (diffBlock (limit := 1)
-  #[{ path := "Physlib/A.lean", status := .modified, insertions := some 1, deletions := some 0 }]
-  (declDiff #[mkLine "Physlib/A.lean" 3 true "lemma foo : True := trivial"]))
-
-/-! ### F.8. The call-out about `theorem` -/
-
-/-- A pull-request which adds a `theorem` and a `lemma`, and moves a `theorem`. -/
-def exampleTheorems : Array DeclDiff :=
-  declDiff #[
-    mkLine "A.lean" 3 true "theorem foo : True := trivial",
-    mkLine "A.lean" 9 true "lemma bar : True := trivial",
-    mkLine "B.lean" 2 false "theorem baz : True := trivial",
-    mkLine "A.lean" 20 true "theorem baz : True := trivial"]
-
--- Only the new `theorem` is called out: `bar` is a `lemma`, and `baz` only moved.
-/-- info: theorem foo -/
-#guard_msgs in
-#eval IO.println ("\n".intercalate ((newTheorems exampleTheorems).toList.map (·.decl.display)))
-
-/--
-info: > [!IMPORTANT]
-> This PR writes 1 result with `theorem`:
-> [`theorem foo`](…/hsha/A.lean#L3).
->
-> `theorem` is reserved for the results which are significant in the physics literature,
-> usually known by name; every other result is a `lemma`. Each one needs a doc-string and
-> a line under the section of its library in `scripts/lint/exemptions/Theorems.txt`,
-> **which this PR does not change**.
-> `lake exe theorem_lint` checks both.
--/
-#guard_msgs in
-#eval IO.println (shortLinks (theoremCallout testSource #[] exampleTheorems))
-
--- A pull-request which also changes the theorems file is told so rather than warned.
-/-- info: true -/
-#guard_msgs in
-#eval ((theoremCallout testSource #[{ path := theoremsFile, status := .modified }]
-  exampleTheorems).splitOn "which this PR also changes").length == 2
-
-/-- info: "" -/
-#guard_msgs in
-#eval theoremCallout testSource #[] (declDiff #[mkLine "A.lean" 3 true "lemma bar : True := rfl"])
-
-/-! ### F.9. The whole summary
-
-The output of `git` for a pull-request which adds a `theorem` to one file and a `lemma` to a
-new file, fed through `summarise`. This is the whole comment, apart from the links being
-shortened.
+The whole comment: the call-out about `theorem`, the block, and the caveat.
 -/
 
 /--
@@ -1217,25 +953,27 @@ info: > [!IMPORTANT]
 ```diff
 Found differences:
 @@ Physlib.Bar @@
-+ module added Physlib.Bar (+20 -0)
++ module added Physlib.Bar (+8 -0)
+  namespaces Bar
 + added lemma Bar.baz
 @@ Physlib.Foo @@
 ! module modified Physlib.Foo (+3 -0)
+  namespaces Foo
 + added theorem Foo.gauss_law
 4 differences
 ```
 
 The declarations are found by reading the diff as text, without regard for namespaces, so a
-declaration whose keyword and name are on different lines is missed, and two declarations of
-the same name in different namespaces are listed as one. A change to a proof, or to the body
-of a definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
+declaration whose keyword and name are on different lines is missed, and two declarations of the
+same name in different namespaces are listed as one. A change to a proof, or to the body of a
+definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
 -/
 #guard_msgs (whitespace := lax) in
 #eval IO.println (shortLinks (summarise testSource
   #["M\tPhyslib/Foo.lean",
     "A\tPhyslib/Bar.lean"]
   #["3\t0\tPhyslib/Foo.lean",
-    "20\t0\tPhyslib/Bar.lean"]
+    "8\t0\tPhyslib/Bar.lean"]
   #["diff --git a/Physlib/Foo.lean b/Physlib/Foo.lean",
     "--- a/Physlib/Foo.lean",
     "+++ b/Physlib/Foo.lean",
@@ -1247,7 +985,7 @@ of a definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
     "new file mode 100644",
     "--- /dev/null",
     "+++ b/Physlib/Bar.lean",
-    "@@ -0,0 +1,20 @@",
+    "@@ -0,0 +1,8 @@",
     "+import Physlib.Foo",
     "+",
     "+namespace Bar",
@@ -1255,19 +993,140 @@ of a definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
     "+/-- A lemma. -/",
     "+lemma Bar.baz : True := trivial",
     "+",
-    "+end Bar"]))
+    "+end Bar"]
+  #[{ path := "Physlib/Foo.lean", added := false, lines := #["namespace Foo", "end Foo"] },
+    { path := "Physlib/Foo.lean", added := true, lines := #["namespace Foo", "end Foo"] },
+    { path := "Physlib/Bar.lean", added := true,
+      lines := #["import Physlib.Foo", "namespace Bar", "end Bar"] }]))
 
-/-- info: Except.ok ("origin/master", "HEAD") -/
-#guard_msgs in
-#eval revisions []
+/-! ### G.2. A renamed file, a removed file, and declarations moving between them
 
-/-- info: Except.ok ("abc", "def") -/
-#guard_msgs in
-#eval revisions ["abc", "def"]
+The renamed file is counted against its old self, so it reads `+3 -1` rather than every line
+added. Its namespaces are read from both revisions. The declarations show a restatement, an
+addition behind an attribute and a modifier, a removal, and a move from the removed file.
+-/
 
-/-- info: Except.error "Expected at most two revisions, got 3." -/
-#guard_msgs in
-#eval revisions ["a", "b", "c"]
+/--
+info: ```diff
+Found differences:
+@@ Physlib.Gone @@
+- module removed Physlib.Gone (+0 -2)
+  namespaces Gone
+- removed def baz
+@@ Physlib.New @@
+! module renamed Physlib.Old → Physlib.New (+3 -1)
+  namespaces Foo, Foo.Bar
++ namespace added Foo.Bar
++ added lemma quux
+! statement changed for lemma foo
+! moved lemma qux from Physlib.Gone to Physlib.New
+@@ docs/figure.png @@
+! file modified docs/figure.png (binary)
+8 differences
+```
+
+The declarations are found by reading the diff as text, without regard for namespaces, so a
+declaration whose keyword and name are on different lines is missed, and two declarations of the
+same name in different namespaces are listed as one. A change to a proof, or to the body of a
+definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
+-/
+#guard_msgs (whitespace := lax) in
+#eval IO.println (shortLinks (summarise testSource
+  #["R090\tPhyslib/Old.lean\tPhyslib/New.lean",
+    "D\tPhyslib/Gone.lean",
+    "M\tdocs/figure.png"]
+  #["3\t1\t", "Physlib/Old.lean", "Physlib/New.lean",
+    "0\t2\tPhyslib/Gone.lean",
+    "-\t-\tdocs/figure.png"]
+  #["diff --git a/Physlib/Old.lean b/Physlib/New.lean",
+    "similarity index 90%",
+    "rename from Physlib/Old.lean",
+    "rename to Physlib/New.lean",
+    "--- a/Physlib/Old.lean",
+    "+++ b/Physlib/New.lean",
+    "@@ -3 +3,3 @@",
+    "-lemma foo : 1 = 1 := rfl",
+    "+lemma foo : (1 : ℕ) = 1 := rfl",
+    "+@[simp] private lemma quux : True := trivial",
+    "+lemma qux : True := trivial",
+    "diff --git a/Physlib/Gone.lean b/Physlib/Gone.lean",
+    "deleted file mode 100644",
+    "--- a/Physlib/Gone.lean",
+    "+++ /dev/null",
+    "@@ -1,2 +0,0 @@",
+    "-def baz : Nat := 0",
+    "-lemma qux : True := trivial"]
+  #[{ path := "Physlib/Old.lean", added := false,
+      lines := #["namespace Foo", "lemma foo : 1 = 1 := rfl", "end Foo"] },
+    { path := "Physlib/New.lean", added := true,
+      lines := #["namespace Foo", "noncomputable section", "namespace Bar",
+        "lemma foo : (1 : ℕ) = 1 := rfl", "end Bar", "end", "end Foo"] },
+    { path := "Physlib/Gone.lean", added := false,
+      lines := #["namespace Gone", "def baz : Nat := 0", "  match x with", "  end", "end Gone"] }]))
+
+/-! ### G.3. A theorem, with the theorems file changed
+
+The call-out says the theorems file is changed rather than warning that it is not.
+-/
+
+/--
+info: > [!IMPORTANT]
+> This PR writes 1 result with `theorem`:
+> [`theorem gauss_law`](…/hsha/Physlib/Foo.lean#L5).
+>
+> `theorem` is reserved for the results which are significant in the physics literature,
+> usually known by name; every other result is a `lemma`. Each one needs a doc-string and
+> a line under the section of its library in `scripts/lint/exemptions/Theorems.txt`,
+> which this PR also changes.
+> `lake exe theorem_lint` checks both.
+
+```diff
+Found differences:
+@@ Physlib.Foo @@
+! module modified Physlib.Foo (+1 -0)
++ added theorem gauss_law
+@@ scripts/lint/exemptions/Theorems.txt @@
+! file modified scripts/lint/exemptions/Theorems.txt (+1 -0)
+3 differences
+```
+
+The declarations are found by reading the diff as text, without regard for namespaces, so a
+declaration whose keyword and name are on different lines is missed, and two declarations of the
+same name in different namespaces are listed as one. A change to a proof, or to the body of a
+definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
+-/
+#guard_msgs (whitespace := lax) in
+#eval IO.println (shortLinks (summarise testSource
+  #["M\tPhyslib/Foo.lean",
+    "M\tscripts/lint/exemptions/Theorems.txt"]
+  #["1\t0\tPhyslib/Foo.lean",
+    "1\t0\tscripts/lint/exemptions/Theorems.txt"]
+  #["diff --git a/Physlib/Foo.lean b/Physlib/Foo.lean",
+    "--- a/Physlib/Foo.lean",
+    "+++ b/Physlib/Foo.lean",
+    "@@ -4,0 +5 @@",
+    "+theorem gauss_law : flux = charge := rfl",
+    "diff --git a/scripts/lint/exemptions/Theorems.txt b/scripts/lint/exemptions/Theorems.txt",
+    "--- a/scripts/lint/exemptions/Theorems.txt",
+    "+++ b/scripts/lint/exemptions/Theorems.txt",
+    "@@ -2,0 +3 @@",
+    "+Foo.gauss_law"]
+  #[]))
+
+/-! ### G.4. Nothing changed -/
+
+/--
+info: ```diff
+No differences found.
+```
+
+The declarations are found by reading the diff as text, without regard for namespaces, so a
+declaration whose keyword and name are on different lines is missed, and two declarations of the
+same name in different namespaces are listed as one. A change to a proof, or to the body of a
+definition, does not appear. See `scripts/alpha/github/pr_summary.lean`.
+-/
+#guard_msgs (whitespace := lax) in
+#eval IO.println (shortLinks (summarise testSource #[] #[] #[] #[]))
 
 end PRSummary
 
