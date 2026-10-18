@@ -7,7 +7,7 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
+public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
 public import Physlib.SpaceAndTime.Time.Basic
 
 /-!
@@ -21,7 +21,6 @@ The motions of a Lagrangian system are the critical points of its action.
 
 ## ii. Key results
 
-- `Variation` : smooth variations fixing the endpoints.
 - `LagrangianSystem` : smooth time-dependent Lagrangians on `TM`.
 - `LagrangianSystem.action` : the action of a curve.
 - `LagrangianSystem.IsCriticalPoint` : critical points of the action.
@@ -50,26 +49,7 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [Top
 ## A. Lagrangian systems
 -/
 
-variable {M} in
-/-- A smooth variation of `γ` on `[t₀, t₁]` fixing `γ t₀` and `γ t₁`. -/
-@[ext]
-structure Variation (γ : Time → M) (t₀ t₁ : Time) where
-  /-- The smooth family of curves. -/
-  toFun : C^∞⟮𝓘(ℝ, ℝ).prod 𝓘(ℝ, ℝ), ℝ × Time; I, M⟯
-  /-- Starts at `γ`. -/
-  apply_zero : ∀ s ∈ Set.Icc 0 (t₁ -ᵥ t₀), toFun (0, s +ᵥ t₀) = γ (s +ᵥ t₀)
-  /-- Fixes `γ t₀`. -/
-  apply_left : ∀ s, toFun (s, t₀) = γ t₀
-  /-- Fixes `γ t₁`. -/
-  apply_right : ∀ s, toFun (s, t₁) = γ t₁
-
-variable {I M} in
-/-- A smooth curve admits the constant variation. -/
-lemma Variation.nonempty {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) :
-    Nonempty (Variation I γ t₀ t₁) :=
-  ⟨⟨⟨fun p ↦ γ p.2, hγ.comp contMDiff_snd⟩, fun _ _ ↦ rfl, fun _ ↦ rfl, fun _ ↦ rfl⟩⟩
-
-/-- A smooth time-dependent Lagrangian on `TM`. -/
+/-- A smooth time-dependent Lagrangian on `TM`, depending on first-order derivatives only. -/
 abbrev LagrangianSystem := C^∞⟮𝓘(ℝ, ℝ).prod I.tangent, Time × TangentBundle I M; ℝ⟯
 
 namespace LagrangianSystem
