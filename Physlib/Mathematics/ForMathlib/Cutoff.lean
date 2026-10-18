@@ -22,6 +22,7 @@ subset and `0` near every point outside the open set.
 - `exists_cutoff`
 - `contDiff_smul_of_cutoff`
 - `exists_contDiff_eq_nhds`
+- `exists_eps_add_smul_mem`
 
 ## iii. Table of contents
 
@@ -35,7 +36,7 @@ subset and `0` near every point outside the open set.
 
 @[expose] public section
 
-open Set Filter Topology Metric
+open Set Topology Metric
 open scoped ContDiff
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 

@@ -20,7 +20,11 @@ vanishes along it.
 
 ## ii. Key results
 
-- `LagrangianSystem.isCriticalPoint_ofNormedSpace_iff`
+- `ClassicalMechanics.hasDerivAt_action_variation`
+- `ClassicalMechanics.exists_variation_bump`
+- `ClassicalMechanics.isCriticalPoint_of_eulerLagrange`
+- `ClassicalMechanics.eulerLagrange_eq_zero_of_isCriticalPoint`
+- `ClassicalMechanics.LagrangianSystem.isCriticalPoint_ofNormedSpace_iff`
 
 ## iii. Table of contents
 
@@ -36,7 +40,7 @@ vanishes along it.
 
 @[expose] public section
 
-open Set MeasureTheory intervalIntegral Filter Topology
+open Set intervalIntegral Topology
 open scoped Manifold ContDiff
 namespace ClassicalMechanics
 
@@ -52,24 +56,21 @@ lemma hasDerivAt_action_variation (L : Time × E × E → ℝ)
     (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁) (ht : 0 ≤ t₁ -ᵥ t₀) :
     HasDerivAt (fun s ↦ (LagrangianSystem.ofNormedSpace L hL).action (fun t ↦ h.toFun (s, t)) t₀ t₁)
       (∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀),
-        eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
-          (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) τ
+        eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) τ
           (fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0))) 0 := by
-  have h0 : ∀ s, h.toFun (s, (0 : ℝ) +ᵥ t₀) = h.toFun (0, (0 : ℝ) +ᵥ t₀) := by
-    intro s; simp [h.apply_left]
-  have hT : ∀ s, h.toFun (s, (t₁ -ᵥ t₀) +ᵥ t₀) = h.toFun (0, (t₁ -ᵥ t₀) +ᵥ t₀) := by
-    intro s; rw [vsub_vadd, h.apply_right, h.apply_right]
-  have := hasDerivAt_integral_variation (L := fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
-    (contDiff_coord L hL t₀) (contDiff_coordVariation h) (t₁ -ᵥ t₀) h0 hT
-  simpa only [action_variation L hL h ht] using this
+  simpa only [action_variation L hL h ht] using
+    hasDerivAt_integral_variation (L := fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
+      (contDiff_coord L hL t₀) (contDiff_coordVariation h) (t₁ -ᵥ t₀)
+      (fun s ↦ by simp [h.apply_left])
+      (fun s ↦ by rw [vsub_vadd, h.apply_right, h.apply_right])
 
 /-!
 ## B. Critical points
 -/
 
 /-- A bump function gives a variation fixing the endpoints. -/
-lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ γ) {ψ : ℝ → ℝ}
-    (hψ : ContDiff ℝ ∞ ψ) (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀)) (w : E) :
+lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ γ) {ψ : ℝ → ℝ} (hψ : ContDiff ℝ ∞ ψ)
+    (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀)) (w : E) :
     ∃ h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁,
       ∀ s τ, h.toFun (s, τ +ᵥ t₀) = γ (τ +ᵥ t₀) + s • (ψ τ • w) := by
   have hψ' : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) ∞ (fun t : Time ↦ ψ (t -ᵥ t₀)) :=
@@ -79,17 +80,14 @@ lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ γ)
     (hγ.comp contMDiff_snd).add (contMDiff_fst.smul ((hψ'.comp contMDiff_snd).smul contMDiff_const))
   have h0 : ψ 0 = 0 := image_eq_zero_of_notMem_tsupport fun h ↦ (hs h).1.false
   have hT : ψ (t₁ -ᵥ t₀) = 0 := image_eq_zero_of_notMem_tsupport fun h ↦ (hs h).2.false
-  have hT' := hT
-  simp only [Time.vsub_eq_val] at hT'
   refine ⟨⟨⟨fun p ↦ γ p.2 + p.1 • (ψ (p.2 -ᵥ t₀) • w), hF⟩, fun s _ ↦ ?_, fun s ↦ ?_, fun s ↦ ?_⟩,
     fun s τ ↦ ?_⟩
-  all_goals simp [h0, hT']
+  all_goals simp_all [Time.vsub_eq_val]
 
 /-- A smooth curve satisfying the Euler-Lagrange equations is a critical point. -/
 lemma isCriticalPoint_of_eulerLagrange (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (ht : 0 < t₁ -ᵥ t₀)
-    (hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)))
-    (hEuler : ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
+    (hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀))) (hEuler : ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
       eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun τ ↦ γ (τ +ᵥ t₀)) τ = 0) :
     (LagrangianSystem.ofNormedSpace L hL).IsCriticalPoint γ t₀ t₁ := by
   refine ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).2 hg, fun h ↦ ?_⟩
@@ -102,22 +100,16 @@ lemma isCriticalPoint_of_eulerLagrange (L : Time × E × E → ℝ)
     filter_upwards [Ioo_mem_nhds hτ.1 hτ.2] with σ hσ
     exact h.apply_zero σ ⟨hσ.1.le, hσ.2.le⟩
   have hzero := eqOn_Icc_of_eqOn_Ioo
-    (contDiff_eulerLagrange (contDiff_coord L hL t₀) hq).continuous ht fun τ hτ ↦ by
-      rw [eulerLagrange_congr (hEq τ hτ)]; exact hEuler τ ⟨hτ.1.le, hτ.2.le⟩
-  have : ∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀), eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
-      (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) τ
-      (fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0)) =
-      ∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀), (0 : ℝ) :=
-    intervalIntegral.integral_congr fun τ hτ ↦ by
-      rw [uIcc_of_le ht.le] at hτ
-      simp [hzero τ hτ]
-  simpa using this
+    (contDiff_eulerLagrange (contDiff_coord L hL t₀) hq).continuous ht fun τ hτ ↦
+      (eulerLagrange_congr (hEq τ hτ)).trans (hEuler τ ⟨hτ.1.le, hτ.2.le⟩)
+  refine (integral_congr (g := fun _ ↦ (0 : ℝ)) fun τ hτ ↦ ?_).trans (by simp)
+  rw [uIcc_of_le ht.le] at hτ
+  simp [hzero τ hτ]
 
 /-- A critical point satisfies the Euler-Lagrange equations. -/
 lemma eulerLagrange_eq_zero_of_isCriticalPoint (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (ht : 0 < t₁ -ᵥ t₀)
-    (hc : (LagrangianSystem.ofNormedSpace L hL).IsCriticalPoint γ t₀ t₁) :
-    ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
+    (hc : (LagrangianSystem.ofNormedSpace L hL).IsCriticalPoint γ t₀ t₁) : ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
       eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) τ = 0 := by
   have hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) :=
     (Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1
@@ -141,8 +133,7 @@ lemma LagrangianSystem.isCriticalPoint_ofNormedSpace_iff (L : Time × E × E →
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (ht : 0 < t₁ -ᵥ t₀) :
     (LagrangianSystem.ofNormedSpace L hL).IsCriticalPoint γ t₀ t₁ ↔
       ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) ∧ ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
-        eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
-          (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) τ = 0 :=
+        eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) τ = 0 :=
   ⟨fun hc ↦ ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1,
       eulerLagrange_eq_zero_of_isCriticalPoint L hL ht hc⟩,
     fun h ↦ isCriticalPoint_of_eulerLagrange L hL ht h.1 h.2⟩

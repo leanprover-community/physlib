@@ -67,31 +67,37 @@ lemma fderiv_apply_zero_prod {L : ℝ × E × E → ℝ} (hL : Differentiable �
     fderiv ℝ L (τ, x, v) (0, a, b) =
       fderiv ℝ (fun y ↦ L (τ, y, v)) x a + fderiv ℝ (fun w ↦ L (τ, x, w)) v b := by
   rw [fderiv_partial_x hL, fderiv_partial_v hL]
-  simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply]
-  rw [← map_add]
-  simp
+  simp [← map_add]
+
+private lemma contDiff_fderiv_along {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
+    (hq : ContDiff ℝ ∞ q) : ContDiff ℝ ∞ fun σ ↦ fderiv ℝ L (σ, q σ, deriv q σ) :=
+  (hL.fderiv_right (m := ∞) (by simp)).comp
+    (contDiff_id.prodMk (hq.prodMk (contDiff_infty_iff_deriv.1 hq).2))
 
 /-- The `x`-derivative of a smooth Lagrangian along a smooth curve is smooth in time. -/
 lemma contDiff_fderiv_partial_x {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
     (hq : ContDiff ℝ ∞ q) :
     ContDiff ℝ ∞ fun σ ↦ fderiv ℝ (fun x ↦ L (σ, x, deriv q σ)) (q σ) := by
   simp_rw [fderiv_partial_x (hL.differentiable (by simp))]
-  exact ((hL.fderiv_right (m := ∞) (by simp)).comp
-    (contDiff_id.prodMk (hq.prodMk (contDiff_infty_iff_deriv.1 hq).2))).clm_comp contDiff_const
+  exact (contDiff_fderiv_along hL hq).clm_comp contDiff_const
 
 /-- The `v`-derivative of a smooth Lagrangian along a smooth curve is smooth in time. -/
 lemma contDiff_fderiv_partial_v {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
     (hq : ContDiff ℝ ∞ q) :
     ContDiff ℝ ∞ fun σ ↦ fderiv ℝ (fun v ↦ L (σ, q σ, v)) (deriv q σ) := by
   simp_rw [fderiv_partial_v (hL.differentiable (by simp))]
-  exact ((hL.fderiv_right (m := ∞) (by simp)).comp
-    (contDiff_id.prodMk (hq.prodMk (contDiff_infty_iff_deriv.1 hq).2))).clm_comp contDiff_const
+  exact (contDiff_fderiv_along hL hq).clm_comp contDiff_const
 
 /-!
 ## B. Two-parameter families
 -/
 
 variable {H : ℝ × ℝ → E}
+
+/-- The directional derivative of a smooth map is smooth. -/
+lemma contDiff_fderiv_apply (hH : ContDiff ℝ ∞ H) (v : ℝ × ℝ) :
+    ContDiff ℝ ∞ fun p ↦ fderiv ℝ H p v :=
+  (hH.fderiv_right (m := ∞) (by simp)).clm_apply contDiff_const
 
 /-- Mixed partial derivatives of a two-parameter family commute. -/
 lemma deriv_fderiv_snd (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
@@ -101,8 +107,8 @@ lemma deriv_fderiv_snd (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
     (hH.fderiv_right (m := 1) (by simp)).differentiable one_ne_zero (s, τ)
   have h1 : HasDerivAt (fun σ : ℝ ↦ (s, σ)) ((0 : ℝ), (1 : ℝ)) τ :=
     (hasDerivAt_const τ s).prodMk (hasDerivAt_id τ)
-  have h2 := hd.hasFDerivAt.comp_hasDerivAt τ h1
-  have h3 := h2.clm_apply (hasDerivAt_const τ ((1 : ℝ), (0 : ℝ)))
+  have h3 := (hd.hasFDerivAt.comp_hasDerivAt τ h1).clm_apply
+    (hasDerivAt_const τ ((1 : ℝ), (0 : ℝ)))
   have h4 : HasFDerivAt (fun p : ℝ × ℝ ↦ fderiv ℝ H p (0, 1))
       ((fderiv ℝ (fderiv ℝ H) (s, τ)).flip ((0 : ℝ), (1 : ℝ))) (s, τ) := by
     simpa using hd.hasFDerivAt.clm_apply (hasFDerivAt_const ((0 : ℝ), (1 : ℝ)) (s, τ))
@@ -129,5 +135,5 @@ lemma fderiv_fst_apply (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
 /-- If `H (·, a)` is constant, the `s`-derivative of `H` vanishes at `τ = a`. -/
 lemma fderiv_fst_apply_eq_zero (hH : ContDiff ℝ ∞ H) {a : ℝ} (h : ∀ s, H (s, a) = H (0, a)) :
     fderiv ℝ H (0, a) (1, 0) = 0 := by
-  rw [← fderiv_fst_apply hH 0 a, show (fun r ↦ H (r, a)) = fun _ ↦ H (0, a) from funext h]
+  rw [← fderiv_fst_apply hH 0 a, funext h]
   simp

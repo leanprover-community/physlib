@@ -56,9 +56,6 @@ lemma chartAt_symm_apply (t₀ : Time) (τ : ℝ) : (chartAt ℝ t₀).symm τ =
 
 lemma extChartAt_apply (t₀ t : Time) : extChartAt 𝓘(ℝ, ℝ) t₀ t = t -ᵥ t₀ := rfl
 
-lemma extChartAt_symm_apply (t₀ : Time) (τ : ℝ) :
-    (extChartAt 𝓘(ℝ, ℝ) t₀).symm τ = τ +ᵥ t₀ := rfl
-
 /-!
 ## B. Smoothness and differentiability of curves
 -/
@@ -76,15 +73,15 @@ lemma continuousAt_of_continuousAt_vadd {X : Type*} [TopologicalSpace X] {γ : T
 lemma contMDiffAt_iff_contDiffAt_vadd (γ : Time → F) (x : Time) (n : ℕ∞ω) :
     ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) n γ x ↔ ContDiffAt ℝ n (fun τ : ℝ ↦ γ (τ +ᵥ x)) 0 := by
   rw [contMDiffAt_iff]
-  simp [Function.comp_def, contDiffWithinAt_univ]
-  exact fun h ↦ continuousAt_of_continuousAt_vadd h.continuousAt
+  simpa [Function.comp_def, contDiffWithinAt_univ] using fun h ↦
+    continuousAt_of_continuousAt_vadd h.continuousAt
 
 /-- A curve into a normed space is differentiable at `x` iff its coordinate curve is at `0`. -/
 lemma mdifferentiableAt_iff_differentiableAt_vadd (γ : Time → F) (x : Time) :
     MDifferentiableAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ x ↔ DifferentiableAt ℝ (fun τ : ℝ ↦ γ (τ +ᵥ x)) 0 := by
   rw [mdifferentiableAt_iff]
-  simp [Function.comp_def, differentiableWithinAt_univ]
-  exact fun h ↦ continuousAt_of_continuousAt_vadd h.continuousAt
+  simpa [Function.comp_def, differentiableWithinAt_univ] using fun h ↦
+    continuousAt_of_continuousAt_vadd h.continuousAt
 
 /-- Shifting the argument of a real function by a constant. -/
 lemma contDiffAt_comp_add_const_iff (g : ℝ → F) (s : ℝ) (n : ℕ∞ω) :

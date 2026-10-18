@@ -36,7 +36,7 @@ there.
 
 @[expose] public section
 
-open Set MeasureTheory intervalIntegral Filter Topology
+open Set MeasureTheory intervalIntegral
 open scoped ContDiff
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -44,15 +44,20 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 ## A. Integration by parts
 -/
 
+/-- The Leibniz expression for a covector `P` paired with a vector `V` is continuous. -/
+lemma continuous_deriv_clm_apply_add {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → E} (hP : ContDiff ℝ ∞ P)
+    (hV : ContDiff ℝ ∞ V) : Continuous fun τ ↦ deriv P τ (V τ) + P τ (deriv V τ) :=
+  ((hP.continuous_deriv (by simp)).clm_apply hV.continuous).add
+    (hP.continuous.clm_apply (hV.continuous_deriv (by simp)))
+
 /-- Integration by parts for a covector `P` paired with a vector `V`. -/
 lemma integral_by_parts_covector {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → E} (hP : ContDiff ℝ ∞ P)
     (hV : ContDiff ℝ ∞ V) (T : ℝ) :
-    ∫ τ in (0 : ℝ)..T, (deriv P τ (V τ) + P τ (deriv V τ)) = P T (V T) - P 0 (V 0) := by
-  refine integral_eq_sub_of_hasDerivAt (fun τ _ ↦
+    ∫ τ in (0 : ℝ)..T, (deriv P τ (V τ) + P τ (deriv V τ)) = P T (V T) - P 0 (V 0) :=
+  integral_eq_sub_of_hasDerivAt (fun τ _ ↦
     (hP.differentiable (by simp) τ).hasDerivAt.clm_apply
-      (hV.differentiable (by simp) τ).hasDerivAt) ?_
-  exact (((hP.continuous_deriv (by simp)).clm_apply hV.continuous).add
-    (hP.continuous.clm_apply (hV.continuous_deriv (by simp)))).intervalIntegrable _ _
+      (hV.differentiable (by simp) τ).hasDerivAt)
+    ((continuous_deriv_clm_apply_add hP hV).intervalIntegrable _ _)
 
 /-!
 ## B. The fundamental lemma
@@ -67,26 +72,22 @@ lemma eq_zero_of_integral_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (
     ∀ τ ∈ U, f τ = 0 := by
   intro τ₀ hτ₀
   have hT : 0 < T := (hUT hτ₀).1.trans (hUT hτ₀).2
-  have hw : ∀ w : E, ∀ τ ∈ U, f τ w = 0 := by
-    intro w
-    have hcw : Continuous fun τ ↦ f τ w := hf.clm_apply continuous_const
-    have hae := IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero hU (μ := volume)
-      (f := fun τ ↦ f τ w) (hcw.locallyIntegrable.locallyIntegrableOn _) (by
-        intro g hg hgc hgs
-        have := h g hg hgc hgs w
-        simp only [map_smul] at this
-        rw [intervalIntegral.integral_of_le hT.le] at this
-        rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := Ioc 0 T)]
-        · exact this
-        · intro x hx
-          have : x ∉ tsupport g := fun hx' ↦ hx (Ioo_subset_Ioc_self (hUT (hgs hx')))
-          simp [image_eq_zero_of_notMem_tsupport this])
-    have hopen : EqOn (fun τ ↦ f τ w) 0 U := by
-      refine Measure.eqOn_open_of_ae_eq (μ := volume) ?_ hU hcw.continuousOn continuousOn_const
-      rw [Filter.EventuallyEq, ae_restrict_iff' hU.measurableSet]
-      filter_upwards [hae] with x hx hxU using by simpa using hx hxU
-    exact fun τ hτ ↦ hopen hτ
-  exact ContinuousLinearMap.ext fun w ↦ hw w τ₀ hτ₀
+  refine ContinuousLinearMap.ext fun w ↦ ?_
+  have hcw : Continuous fun τ ↦ f τ w := hf.clm_apply continuous_const
+  have hae := IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero hU (μ := volume)
+    (f := fun τ ↦ f τ w) (hcw.locallyIntegrable.locallyIntegrableOn _) (by
+      intro g hg hgc hgs
+      have := h g hg hgc hgs w
+      simp only [map_smul] at this
+      rw [intervalIntegral.integral_of_le hT.le] at this
+      rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := Ioc 0 T)]
+      · exact this
+      · intro x hx
+        have : x ∉ tsupport g := fun hx' ↦ hx (Ioo_subset_Ioc_self (hUT (hgs hx')))
+        simp [image_eq_zero_of_notMem_tsupport this])
+  refine Measure.eqOn_open_of_ae_eq (μ := volume) (g := 0) ?_ hU hcw.continuousOn
+    continuousOn_const hτ₀
+  exact (ae_restrict_iff' hU.measurableSet).2 (hae.mono fun x hx hxU ↦ by simpa using hx hxU)
 
 /-- Fundamental lemma of the calculus of variations on `[0, T]`, for covector-valued `f`. -/
 lemma eq_zero_of_integral_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f) {T : ℝ}

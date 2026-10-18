@@ -39,7 +39,7 @@ dt`.
 
 @[expose] public section
 
-open Set MeasureTheory intervalIntegral
+open MeasureTheory
 open scoped Manifold ContDiff
 namespace ClassicalMechanics
 
@@ -68,14 +68,14 @@ end LagrangianSystem
 /-- A Lagrangian in a time coordinate based at `t₀` is smooth. -/
 lemma contDiff_coord (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (t₀ : Time) :
-    ContDiff ℝ ∞ (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) := by
-  exact contMDiff_prod_self_iff.1 (hL.comp
+    ContDiff ℝ ∞ (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) :=
+  contMDiff_prod_self_iff.1 (hL.comp
     (((Time.contMDiff_vadd t₀ ∞).comp contMDiff_fst).prodMk contMDiff_snd))
 
 /-- A variation in a time coordinate based at `t₀` is smooth. -/
 lemma contDiff_coordVariation (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁) :
-    ContDiff ℝ ∞ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) := by
-  exact contMDiff_prod_self_iff.1 (h.toFun.contMDiff.comp
+    ContDiff ℝ ∞ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) :=
+  contMDiff_prod_self_iff.1 (h.toFun.contMDiff.comp
     (contMDiff_fst.prodMk ((Time.contMDiff_vadd t₀ ∞).comp contMDiff_snd)))
 
 /-!
@@ -91,7 +91,7 @@ lemma action_variation (L : Time × E × E → ℝ)
         fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (s, τ) (0, 1)) := by
   rw [LagrangianSystem.action_ofNormedSpace, intervalIntegral.integral_of_le ht,
     ← integral_Icc_eq_integral_Ioc]
-  refine setIntegral_congr_fun measurableSet_Icc fun τ _ ↦ ?_
-  simp only [← fderiv_snd_apply (contDiff_coordVariation h) s τ]
+  exact setIntegral_congr_fun measurableSet_Icc fun τ _ ↦ by
+    simp [← fderiv_snd_apply (contDiff_coordVariation h) s τ]
 
 end ClassicalMechanics

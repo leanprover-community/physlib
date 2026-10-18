@@ -40,7 +40,7 @@ turning the Lagrangian into a function `L (t, q, q̇)` smooth over the chart tar
 
 @[expose] public section
 
-open Set MeasureTheory Filter Topology Metric
+open Topology
 open scoped Manifold ContDiff
 namespace ClassicalMechanics
 
@@ -153,50 +153,42 @@ lemma LagrangianSystem.integrand_eq_of_germ [I.Boundaryless] (S : LagrangianSyst
     S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩) = L (τ, c τ, deriv c τ) := by
   have hc' : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ (fun t : Time ↦ c (t -ᵥ t₀)) (τ +ᵥ t₀) := by
     have : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ c ((τ +ᵥ t₀) -ᵥ t₀) := by
-      rw [vadd_vsub]; exact contMDiffAt_iff_contDiffAt.2 hc
+      rw [vadd_vsub]
+      exact contMDiffAt_iff_contDiffAt.2 hc
     exact this.comp (τ +ᵥ t₀) (Time.contMDiff_vsub t₀ ∞).contMDiffAt
   have hcx : c ((τ +ᵥ t₀) -ᵥ t₀) ∈ (extChartAt I x).target := by
-    rw [vadd_vsub]; exact hN hcN
+    rw [vadd_vsub]
+    exact hN hcN
   rw [S.integrand_eq_coord x t₀ hev hc' hcx, hLN _ hcN]
-  simp only [vadd_vsub]
+  simp
+
+/-- The action integrand of a smooth curve is the chart Lagrangian at times in the chart. -/
+lemma LagrangianSystem.integrand_eq_coord_of_mem_source [I.Boundaryless]
+    (S : LagrangianSystem I M) (x : M) (t₀ : Time) {γ' : Time → M}
+    (hγ' : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ') {τ : ℝ} (h : γ' (τ +ᵥ t₀) ∈ (extChartAt I x).source) :
+    S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩) = S.coord x t₀
+      (τ, extChartAt I x (γ' (τ +ᵥ t₀)),
+        deriv (fun σ : ℝ ↦ extChartAt I x (γ' (σ +ᵥ t₀))) τ) :=
+  S.integrand_eq_coord x t₀ (c := fun t ↦ extChartAt I x (γ' t))
+    ((hγ'.continuous.continuousAt.eventually_mem
+      ((isOpen_extChartAt_source x).mem_nhds h)).mono
+        fun _ ht ↦ ((extChartAt I x).left_inv ht).symm)
+    ((contMDiffAt_extChartAt' (by rwa [extChartAt_source] at h)).comp _ (hγ' _))
+    ((extChartAt I x).map_source h)
 
 /-- The action integrand of a smooth curve is continuous. -/
 lemma LagrangianSystem.continuousAt_integrand [I.Boundaryless]
     (S : LagrangianSystem I M) (t₀ : Time) {γ' : Time → M} (hγ' : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ')
     (τ : ℝ) : ContinuousAt (fun τ : ℝ ↦
       S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩)) τ := by
-  set x : M := γ' (τ +ᵥ t₀)
-  set c : Time → E := fun t ↦ extChartAt I x (γ' t)
-  have hsrc : ∀ᶠ t in 𝓝 (τ +ᵥ t₀), γ' t ∈ (extChartAt I x).source :=
-    hγ'.continuous.continuousAt.eventually_mem
-      ((isOpen_extChartAt_source x).mem_nhds (mem_extChartAt_source x))
-  have hcs : ∀ t, γ' t ∈ (extChartAt I x).source → ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ c t := fun t ht ↦
-    (contMDiffAt_extChartAt' (by rwa [extChartAt_source] at ht)).comp t (hγ' t)
-  have hev : ∀ᶠ τ' in 𝓝 τ, γ' =ᶠ[𝓝 (τ' +ᵥ t₀)] (extChartAt I x).symm ∘ c ∧
-      ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ c (τ' +ᵥ t₀) ∧ c (τ' +ᵥ t₀) ∈ (extChartAt I x).target := by
-    have hvadd : ContinuousAt (fun τ' : ℝ ↦ τ' +ᵥ t₀) τ :=
-      (Time.contMDiff_vadd t₀ ∞).continuous.continuousAt
-    have h2 := hvadd.eventually hsrc.eventually_nhds
-    filter_upwards [h2] with τ' hτ'
-    have h0 : γ' (τ' +ᵥ t₀) ∈ (extChartAt I x).source := hτ'.self_of_nhds
-    refine ⟨?_, hcs _ h0, (extChartAt I x).map_source h0⟩
-    filter_upwards [hτ'] with t' ht'
-    exact ((extChartAt I x).left_inv ht').symm
-  have hint : ∀ᶠ τ' in 𝓝 τ, S (τ' +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ' +ᵥ t₀, (1 : ℝ)⟩) =
-      S.coord x t₀ (τ', c (τ' +ᵥ t₀), deriv (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ') := by
-    filter_upwards [hev] with τ' h using S.integrand_eq_coord x t₀ h.1 h.2.1 h.2.2
+  set x := γ' (τ +ᵥ t₀)
   have h0 : γ' (τ +ᵥ t₀) ∈ (extChartAt I x).source := mem_extChartAt_source x
-  have hg : ContDiffAt ℝ ∞ (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ := contDiffAt_chart_curve x hγ' t₀ h0
-  have hdg : ContDiffAt ℝ ∞ (deriv fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ :=
-    ((hg.fderiv_right (m := ∞) (by simp)).clm_apply contDiffAt_const :
-      ContDiffAt ℝ ∞ (fun σ ↦ fderiv ℝ (fun σ : ℝ ↦ c (σ +ᵥ t₀)) σ 1) τ)
-  have hpt : (τ, c (τ +ᵥ t₀), deriv (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ).2.1 ∈
-      (extChartAt I x).target := (extChartAt I x).map_source h0
-  refine ContinuousAt.congr (f := fun τ' : ℝ ↦ S.coord x t₀
-    (τ', c (τ' +ᵥ t₀), deriv (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ')) ?_ (hint.mono fun _ h ↦ h.symm)
-  exact ContinuousAt.comp_of_eq (g := S.coord x t₀)
-    (f := fun τ' : ℝ ↦ (τ', c (τ' +ᵥ t₀), deriv (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ'))
-    (S.contDiffAt_coord x t₀ hpt).continuousAt
-    (continuousAt_id.prodMk (hg.continuousAt.prodMk hdg.continuousAt)) rfl
+  have hg := contDiffAt_chart_curve x hγ' t₀ h0
+  exact ((S.contDiffAt_coord x t₀ ((extChartAt I x).map_source h0)).continuousAt.comp_of_eq
+    (continuousAt_id.prodMk (hg.continuousAt.prodMk
+      (hg.derivWithin (m := 0) (by simp)).continuousAt)) rfl).congr_of_eventuallyEq
+    ((hγ'.continuous.comp (Time.contMDiff_vadd t₀ ∞).continuous).continuousAt.eventually_mem
+      ((isOpen_extChartAt_source x).mem_nhds h0) |>.mono
+        fun _ h ↦ S.integrand_eq_coord_of_mem_source x t₀ hγ' h)
 
 end ClassicalMechanics
