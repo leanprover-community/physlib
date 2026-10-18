@@ -26,10 +26,10 @@ public import Physlib.QuantumMechanics.Blackbody.PlancksLaw
 ## i. Overview
 
 Wien's displacement law states that the peak of the blackbody spectrum shifts
-inversely with temperature. In wavelength form: if `λ₁` maximizes
-`B(λ, T₁)` and `λ₂` maximizes `B(λ, T₂)`, then
+inversely with temperature. In wavelength form: if `lam₁` maximizes
+`B(lam, T₁)` and `lam₂` maximizes `B(lam, T₂)`, then
 
-    `λ₁ T₁ = λ₂ T₂ = h c / (kB x₅)`,
+    `lam₁ T₁ = lam₂ T₂ = h c / (kB x₅)`,
 
 where `x₅ ≈ 4.96511` is the unique positive solution of the transcendental
 equation `x = 5 (1 - e⁻ˣ)`. In frequency form:
@@ -41,66 +41,48 @@ The two constants differ because the "peak" depends on the parametrization.
 
 ## ii. Key results
 
-- `wienH`: the auxiliary function `h(x) = x - n (1 - e⁻ˣ)` whose positive zeros
-  are the critical points of the Planck profile.
+- `wavePrefactor` / `freqPrefactor`: the physical prefactors `2 (kB T)⁵ / (h⁴ c³)` and
+  `2 (kB T)³ / (h² c²)`.
+- `waveVar` / `freqVar`: the dimensionless variables `h c / (lam kB T)` and `h ν / (kB T)`.
+- `wienProfile`: the dimensionless Planck shape function `f(x) = xⁿ / (eˣ - 1)`.
+- `spectralRadianceWave_eq_profile` / `spectralRadiance_eq_profile`: the physical curves factor as
+  prefactor times `wienProfile`.
+- `wienH`: the auxiliary function `h(x) = x - n (1 - e⁻ˣ)` whose positive zeros are the critical
+  points of the profile.
 - `hasDerivAt_wienH`: its derivative is `1 - n e⁻ˣ`.
-- `wienH_strictMonoOn` / `wienH_strictAntiOn`: monotonicity on either side of
-  `log n`.
+- `wienProfile_crit_iff`: critical points of `xⁿ / (eˣ - 1)` are exactly the solutions of the Wien
+  equation.
+- `wienH_strictMonoOn` / `wienH_strictAntiOn`: monotonicity on either side of `log n`.
 - `wien_exists_root`: existence of a root in `(log n, n)` for `n > 1`.
 - `wien_unique_pos`: uniqueness of the positive root.
-- `wienRoot`: the unique positive root, with `wienRoot_gt_log`, `wienRoot_lt`,
-  `wienRoot_eq`, `wienRoot_pos`, `wienRoot_unique`.
-- `wienConstant5` / `wienConstant3`: the named physical constants `x₅`, `x₃`,
-  with `wienConstant5_mem`, `wienConstant3_mem`, `wienConstant5_pos`,
-  `wienConstant3_pos`, `wienConstant5_ne_wienConstant3`.
-- `wienRoot_five_mem`: `4 < wienRoot 5 < 5` (numerically `4.9651142317…`).
-- `wienRoot_three_mem`: `2 < wienRoot 3 < 3` (numerically `2.8214393721…`).
-- `wienProfile_crit_iff`: critical points of `xⁿ / (eˣ - 1)` are exactly the
-  solutions of the Wien equation.
-- `wienH_neg_on_Ioo` / `wienH_pos_on_Ioi`: sign of the auxiliary function
-  on either side of the root.
-- `wienProfile_deriv_eq`: factored derivative, showing `f'` has the opposite
-  sign of `h`.
-- `wienProfile_strictMonoOn` / `wienProfile_strictAntiOn`: the profile rises
-  on `(0, x*]` and falls on `[x*, ∞)`.
-- `wienProfile_isMaxOn`: the Wien root is the unique global maximizer —
-  the "peak" of the spectrum.
-- `wienProfile_continuousOn`: continuity of the profile on `(0, ∞)`.
-- `wienProfile_tendsto_zero_atTop` / `wienProfile_tendsto_nhdsWithin_zero`:
-  the profile vanishes at `∞` and at `0` (for `n ≥ 2`).
-- `wave_crit_iff` / `freq_crit_iff`: critical points of the Planck curves.
-- `waveVar_tendsto_nhdsWithin_atTop` / `waveVar_tendsto_atTop_nhdsWithin` /
-  `freqVar_tendsto_atTop_atTop` / `freqVar_tendsto_nhdsWithin`: the
-  dimensionless variables at the ends of the physical domain.
-- `spectralRadianceWave_continuousOn` / `spectralRadianceFreq_continuousOn`:
-  continuity of the physical curves on `(0, ∞)`.
-- `spectralRadianceWave_tendsto_zero_atTop` /
-  `spectralRadianceWave_tendsto_nhdsWithin_zero` /
-  `spectralRadiance_tendsto_zero_atTop` /
-  `spectralRadiance_tendsto_nhdsWithin_zero`: the curves vanish at both
-  ends of the physical domain.
-- `spectralRadianceWave_isMaxOn` / `spectralRadianceFreq_isMaxOn`: the
-  critical wavelengths/frequencies are global maxima.
-- `spectralRadianceWave_bddAbove` / `spectralRadianceFreq_bddAbove`:
-  boundedness on `(0, ∞)`.
-- `wien_displacement_wave` / `wien_displacement_freq`: the displacement laws
-  `λ₁ T₁ = λ₂ T₂` and `ν₁ / T₁ = ν₂ / T₂`.
-- `wien_peak_product` / `wien_peak_ratio`: the constant values
-  `λ T = h c / (kB x₅)` and `ν / T = kB x₃ / h`.
-- `wien_roots_differ`: the wavelength and frequency peaks are governed by
-  different constants.
+- `wienRoot`: the unique positive root.
+- `wienConstant5` / `wienConstant3`: the named physical constants `x₅`, `x₃`.
+- `wienRoot_five_mem` / `wienRoot_three_mem`: enclosures `4 < x₅ < 5` and `2 < x₃ < 3`.
+- `wienProfile_deriv_eq`: factored derivative of the profile.
+- `wienProfile_strictMonoOn` / `wienProfile_strictAntiOn`: profile monotonicity.
+- `wienProfile_isMaxOn`: the Wien root is the unique global maximizer of the profile.
+- `wienProfile_continuousOn` / `wienProfile_tendsto_zero_atTop` /
+  `wienProfile_tendsto_nhdsWithin_zero`: profile asymptotics.
+- `wave_crit_iff` / `freq_crit_iff`: critical points of the physical Planck curves.
+- `spectralRadianceWave_continuousOn` / `spectralRadiance_continuousOn`: continuity of physical
+  curves.
+- `spectralRadianceWave_isMaxOn` / `spectralRadiance_isMaxOn`: physical radiation maxima.
+- `spectralRadianceWave_bddAbove` / `spectralRadiance_bddAbove`: boundedness on `(0, ∞)`.
+- `wien_displacement_wave` / `wien_displacement_freq`: displacement laws `lam₁ T₁ = lam₂ T₂` and
+  `ν₁ / T₁ = ν₂ / T₂`.
+- `wien_peak_product` / `wien_peak_ratio`: constant peak values `lam T = h c / (kB x₅)` and
+  `ν / T = kB x₃ / h`.
+- `wien_roots_differ`: the wavelength and frequency peaks are governed by different constants.
 
 ## iii. Table of contents
 
-- A. The Wien auxiliary function and its derivative
-- B. Monotonicity and the unique positive root
-- C. Numerical enclosures for `n = 5` and `n = 3`
-- C'. Named Wien constants
-- D. Critical points of the Planck profile `xⁿ / (eˣ - 1)`
-- D'. Profile behavior: sign, monotonicity, global maximum, asymptotics
-- E. Critical points of the Planck curves
-- E'. Physical curves: continuity, limits, global maxima, boundedness
-- F. Wien's displacement laws
+- A. Reduction of Planck's law to dimensionless form
+- B. Critical points and the Wien auxiliary function
+- C. Monotonicity and the unique positive root
+- D. Numerical bounds and named Wien constants
+- E. Profile behavior: sign, monotonicity, global maximum, asymptotics
+- F. Physical Planck curves: critical points, maxima, limits, boundedness
+- G. Wien's displacement laws
 
 ## iv. References
 
@@ -118,49 +100,163 @@ open Constants
 
 open Set Filter Topology
 
-/-- `(1 : ℝ) < 5`. Repeated throughout the file to avoid `by norm_num` clutter. -/
-lemma five_gt_one : (1 : ℝ) < 5 := by norm_num
+/-!
 
-/-- `(1 : ℝ) < 3`. Repeated throughout the file to avoid `by norm_num` clutter. -/
-lemma three_gt_one : (1 : ℝ) < 3 := by norm_num
+## A. Reduction of Planck's law to dimensionless form
 
-/-- `1 ≤ (5 : ℕ)`. For `wienProfile_crit_iff` applications. -/
-lemma five_ge_one : 1 ≤ (5 : ℕ) := by norm_num
+Planck's spectral radiance curves in wavelength and frequency form decompose
+into temperature-dependent dimensional prefactors and a universal dimensionless
+Planck profile `xⁿ / (eˣ - 1)` (with `n = 5` for wavelength and `n = 3` for frequency)
+expressed in terms of dimensionless variables `x = h c / (lam kB T)` and `x = h ν / (kB T)`.
+-/
 
-/-- `1 ≤ (3 : ℕ)`. For `wienProfile_crit_iff` applications. -/
-lemma three_ge_one : 1 ≤ (3 : ℕ) := by norm_num
+/-- Wavelength prefactor `C(T) = 2 (kB T)⁵ / (h⁴ c³)`. -/
+noncomputable def wavePrefactor (B : BlackBody) (c : SpeedOfLight) : ℝ :=
+  2 * (kB * (B.T : ℝ)) ^ 5 / ((h : ℝ) ^ 4 * (c : ℝ) ^ 3)
 
-/-- `(0 : ℝ) < 5`. -/
-private lemma five_pos : (0 : ℝ) < 5 := lt_trans zero_lt_one five_gt_one
 
-/-- `(0 : ℝ) < 3`. -/
-private lemma three_pos : (0 : ℝ) < 3 := lt_trans zero_lt_one three_gt_one
+/-- Frequency prefactor `D(T) = 2 (kB T)³ / (h² c²)`. -/
+noncomputable def freqPrefactor (B : BlackBody) (c : SpeedOfLight) : ℝ :=
+  2 * (kB * (B.T : ℝ)) ^ 3 / ((h : ℝ) ^ 2 * (c : ℝ) ^ 2)
 
-/-- `(0 : ℝ) ≤ 2.7182818283`. Lower-bound constant for `Real.exp 1`. -/
-private lemma expApprox_nonneg : (0 : ℝ) ≤ 2.7182818283 := by norm_num
+
+/-- Dimensionless wavelength variable `x = h c / (λ kB T)`. -/
+noncomputable def waveVar (B : BlackBody) (c : SpeedOfLight) (lam : ℝ) : ℝ :=
+  (h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ))
+
+
+/-- Dimensionless frequency variable `x = h ν / (kB T)`. -/
+noncomputable def freqVar (B : BlackBody) (ν : ℝ) : ℝ :=
+  (h : ℝ) * ν / (kB * (B.T : ℝ))
+
+
+/-- The wavelength prefactor is positive for positive temperature. -/
+lemma wavePrefactor_pos (B : BlackBody) (c : SpeedOfLight)
+    (hT : 0 < (B.T : ℝ)) : 0 < B.wavePrefactor c := by
+  unfold wavePrefactor
+  apply div_pos
+  · exact mul_pos zero_lt_two (pow_pos (mul_pos kB_pos hT) 5)
+  · exact mul_pos (pow_pos h_pos 4) (pow_pos c.val_pos 3)
+
+
+/-- The frequency prefactor is positive for positive temperature. -/
+lemma freqPrefactor_pos (B : BlackBody) (c : SpeedOfLight)
+    (hT : 0 < (B.T : ℝ)) : 0 < B.freqPrefactor c := by
+  unfold freqPrefactor
+  apply div_pos
+  · exact mul_pos zero_lt_two (pow_pos (mul_pos kB_pos hT) 3)
+  · exact mul_pos (pow_pos h_pos 2) (pow_pos c.val_pos 2)
+
+
+/-- The dimensionless wavelength variable is positive for positive wavelength and temperature. -/
+lemma waveVar_pos (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
+    (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam) : 0 < B.waveVar c lam := by
+  unfold waveVar
+  exact div_pos (mul_pos h_pos c.val_pos) (mul_pos (mul_pos hlam kB_pos) hT)
+
+
+/-- The dimensionless frequency variable is positive for positive frequency and temperature. -/
+lemma freqVar_pos (B : BlackBody) (ν : ℝ)
+    (hT : 0 < (B.T : ℝ)) (hν : 0 < ν) : 0 < B.freqVar ν := by
+  unfold freqVar
+  exact div_pos (mul_pos h_pos hν) (mul_pos kB_pos hT)
+
+
+/-- The Planck shape function `xⁿ / (eˣ - 1)`. -/
+noncomputable def wienProfile (n : ℕ) (x : ℝ) : ℝ :=
+  x ^ n / (Real.exp x - 1)
+
+
+/-- The Planck profile `xⁿ / (eˣ - 1)` vanishes at `x = 0` (no radiation
+  at zero energy). -/
+lemma wienProfile_zero_at_zero (n : ℕ) : wienProfile n 0 = 0 := by
+  unfold wienProfile
+  simp
+
+
+/-- The Planck profile `xⁿ / (eˣ - 1)` is strictly positive for positive `x`
+  (positive radiation energy at finite frequency). -/
+lemma wienProfile_pos (n : ℕ) (x : ℝ) (hx : 0 < x) :
+    0 < wienProfile n x := by
+  unfold wienProfile
+  apply div_pos (pow_pos hx n)
+  linarith [Real.one_lt_exp_iff.mpr hx]
+
+
+/-- The Planck profile `xⁿ / (eˣ - 1)` is non-negative for non-negative `x`. -/
+lemma wienProfile_nonneg (n : ℕ) (x : ℝ) (hx : 0 ≤ x) :
+    0 ≤ wienProfile n x := by
+  rcases hx.eq_or_lt with rfl | hx
+  · simp [wienProfile_zero_at_zero]
+  · exact le_of_lt (wienProfile_pos n x hx)
+
+
+/-- The wavelength curve factors through the `n = 5` profile on `λ > 0`. -/
+lemma spectralRadianceWave_eq_profile (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
+    (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam) :
+    B.spectralRadianceWave c lam
+      = B.wavePrefactor c * wienProfile 5 (B.waveVar c lam) := by
+  unfold spectralRadianceWave wavePrefactor wienProfile waveVar
+  rw [ite_eq_left hlam]
+  have hlam' : lam ≠ 0 := ne_of_gt hlam
+  have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
+  have hc' : (c : ℝ) ≠ 0 := ne_of_gt c.val_pos
+  have hk' : kB ≠ 0 := ne_of_gt kB_pos
+  have hT' : (B.T : ℝ) ≠ 0 := ne_of_gt hT
+  have hE : Real.exp ((h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ))) - 1 ≠ 0 := by
+    have harg : 0 < (h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ)) :=
+      div_pos (mul_pos h_pos c.val_pos) (mul_pos (mul_pos hlam kB_pos) hT)
+    have h1e : 1 < Real.exp ((h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ))) :=
+      Real.one_lt_exp_iff.mpr harg
+    exact ne_of_gt (sub_pos.mpr h1e)
+  field_simp
+
+
+/-- The frequency curve factors through the `n = 3` profile on `ν > 0`. -/
+lemma spectralRadiance_eq_profile (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
+    (hT : 0 < (B.T : ℝ)) (hν : 0 < ν) :
+    B.spectralRadiance c ν = B.freqPrefactor c * wienProfile 3 (B.freqVar ν) := by
+  unfold spectralRadiance freqPrefactor wienProfile freqVar
+  rw [ite_eq_left hν]
+  have hν' : ν ≠ 0 := ne_of_gt hν
+  have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
+  have hc' : (c : ℝ) ≠ 0 := ne_of_gt c.val_pos
+  have hk' : kB ≠ 0 := ne_of_gt kB_pos
+  have hT' : (B.T : ℝ) ≠ 0 := ne_of_gt hT
+  have hE : Real.exp ((h : ℝ) * ν / (kB * (B.T : ℝ))) - 1 ≠ 0 := by
+    have harg : 0 < (h : ℝ) * ν / (kB * (B.T : ℝ)) :=
+      div_pos (mul_pos h_pos hν) (mul_pos kB_pos hT)
+    have h1e : 1 < Real.exp ((h : ℝ) * ν / (kB * (B.T : ℝ))) :=
+      Real.one_lt_exp_iff.mpr harg
+    exact ne_of_gt (sub_pos.mpr h1e)
+  field_simp
+
 
 /-!
 
-## A. The Wien auxiliary function and its derivative
+## B. Critical points and the Wien auxiliary function
 
-Setting `dB/dλ = 0` for the wavelength form (resp. `dB/dν = 0` for the frequency
-form) and writing `x = h c / (λ kB T)` (resp. `x = h ν / (kB T)`) reduces the
-extremum condition to `x = n (1 - e⁻ˣ)` with `n = 5` (resp. `n = 3`).
-We study `h(x) = x - n (1 - e⁻ˣ)`.
+To find the peaks of the radiance curves, we compute the derivative of the
+profile `f(x) = xⁿ / (eˣ - 1)`. Setting `f'(x) = 0` for `x > 0` reduces to the
+Wien transcendental equation `x = n (1 - e⁻ˣ)`. We introduce the Wien auxiliary
+function `h(x) = x - n (1 - e⁻ˣ)` whose positive zeros are the critical points.
 -/
 
 /-- The Wien auxiliary function `h(x) = x - n (1 - e⁻ˣ)`. Its zeros are the
   solutions of the Wien transcendental equation `x = n (1 - e⁻ˣ)`. -/
 noncomputable def wienH (n x : ℝ) : ℝ := x - n * (1 - Real.exp (-x))
 
+
 /-- Zero is always a (trivial) zero of the auxiliary function. -/
 lemma wienH_zero (n : ℝ) : wienH n 0 = 0 := by
   simp [wienH]
+
 
 /-- The auxiliary function is continuous. -/
 lemma wienH_continuous (n : ℝ) : Continuous (wienH n) := by
   unfold wienH
   fun_prop
+
 
 /-- Derivative of the auxiliary function: `h'(x) = 1 - n e⁻ˣ`. -/
 lemma hasDerivAt_wienH (n x : ℝ) : HasDerivAt (wienH n) (1 - n * Real.exp (-x)) x := by
@@ -177,305 +273,6 @@ lemma hasDerivAt_wienH (n x : ℝ) : HasDerivAt (wienH n) (1 - n * Real.exp (-x)
   have heq : (1 : ℝ) - n * (0 - Real.exp (-x) * -1) = 1 - n * Real.exp (-x) := by ring
   exact h5.congr_deriv heq
 
-/-- The derivative is negative exactly below `log n`. -/
-lemma wienH_deriv_neg_iff (n x : ℝ) (hn : 0 < n) :
-    1 - n * Real.exp (-x) < 0 ↔ x < Real.log n := by
-  have hbase : (1 : ℝ) - n * Real.exp (-x) < 0 ↔ 1 < n * Real.exp (-x) := by
-    constructor <;> intro h <;> linarith
-  rw [hbase, Real.exp_neg, ← div_eq_mul_inv, lt_div_iff₀ (Real.exp_pos x), one_mul]
-  conv_lhs => rw [← Real.exp_log hn]
-  rw [StrictMono.lt_iff_lt Real.exp_strictMono]
-
-/-- The derivative is positive exactly above `log n`. -/
-lemma wienH_deriv_pos_iff (n x : ℝ) (hn : 0 < n) :
-    0 < 1 - n * Real.exp (-x) ↔ Real.log n < x := by
-  have hbase : (0 : ℝ) < 1 - n * Real.exp (-x) ↔ n * Real.exp (-x) < 1 := by
-    constructor <;> intro h <;> linarith
-  rw [hbase, Real.exp_neg, ← div_eq_mul_inv, div_lt_iff₀ (Real.exp_pos x), one_mul]
-  conv_lhs => rw [← Real.exp_log hn]
-  rw [StrictMono.lt_iff_lt Real.exp_strictMono]
-
-/-!
-
-## B. Monotonicity and the unique positive root
-
-Since `h'(x) = 1 - n e⁻ˣ` changes sign once (at `x = log n`), `h` strictly
-decreases on `(-∞, log n]` and strictly increases on `[log n, ∞)`. Combined
-with `h(0) = 0`, `h(log n) < 0` and `h(n) > 0`, this yields exactly one
-positive root, located in `(log n, n)`.
--/
-
-/-- `h` is strictly increasing on `[log n, ∞)`. -/
-lemma wienH_strictMonoOn (n : ℝ) (hn : 1 < n) :
-    StrictMonoOn (wienH n) (Ici (Real.log n)) := by
-  have hn0 : 0 < n := lt_trans zero_lt_one hn
-  refine strictMonoOn_of_deriv_pos (convex_Ici _) (wienH_continuous n).continuousOn ?_
-  intro x hx
-  rw [interior_Ici] at hx
-  rw [(hasDerivAt_wienH n x).deriv]
-  exact (wienH_deriv_pos_iff n x hn0).mpr hx
-
-/-- `h` is strictly decreasing on `(-∞, log n]`. -/
-lemma wienH_strictAntiOn (n : ℝ) (hn : 1 < n) :
-    StrictAntiOn (wienH n) (Iic (Real.log n)) := by
-  have hn0 : 0 < n := lt_trans zero_lt_one hn
-  refine strictAntiOn_of_deriv_neg (convex_Iic _) (wienH_continuous n).continuousOn ?_
-  intro x hx
-  rw [interior_Iic] at hx
-  rw [(hasDerivAt_wienH n x).deriv]
-  exact (wienH_deriv_neg_iff n x hn0).mpr hx
-
-/-- `h(log n) < 0` for `n > 1` (from `log n + 1 < n`). -/
-lemma wienH_at_log_neg (n : ℝ) (hn : 1 < n) : wienH n (Real.log n) < 0 := by
-  have hnPos : 0 < n := lt_trans zero_lt_one hn
-  have hn0 : n ≠ 0 := ne_of_gt hnPos
-  have hlog_pos : 0 < Real.log n := Real.log_pos hn
-  have hexp : Real.log n + 1 < Real.exp (Real.log n) :=
-    Real.add_one_lt_exp (ne_of_gt hlog_pos)
-  rw [Real.exp_log hnPos] at hexp
-  have hexpNeg : Real.exp (-Real.log n) = 1 / n := by
-    rw [Real.exp_neg, Real.exp_log hnPos, one_div]
-  have hnn : n * (1 - 1 / n) = n - 1 := by
-    rw [mul_sub, mul_one, mul_one_div, div_self hn0]
-  unfold wienH
-  rw [hexpNeg, hnn]
-  linarith
-
-/-- `h(n) = n e⁻ⁿ > 0` for `n > 1`. -/
-lemma wienH_at_self_pos (n : ℝ) (hn : 1 < n) : 0 < wienH n n := by
-  have hnPos : 0 < n := lt_trans zero_lt_one hn
-  have hpos : 0 < n * Real.exp (-n) := mul_pos hnPos (Real.exp_pos _)
-  have heq : n - n * (1 - Real.exp (-n)) = n * Real.exp (-n) := by ring
-  unfold wienH
-  rw [heq]
-  exact hpos
-
-/-- Existence of a root in `(log n, n)` for `n > 1`, by the intermediate value
-  theorem applied on `[log n, n]`. -/
-lemma wien_exists_root (n : ℝ) (hn : 1 < n) :
-    ∃ r, Real.log n < r ∧ r < n ∧ wienH n r = 0 := by
-  have hnPos : 0 < n := lt_trans zero_lt_one hn
-  have hlog_neg : wienH n (Real.log n) < 0 := wienH_at_log_neg n hn
-  have hself_pos : 0 < wienH n n := wienH_at_self_pos n hn
-  have hlog : Real.log n + 1 < n := by
-    have hexp : Real.log n + 1 < Real.exp (Real.log n) :=
-      Real.add_one_lt_exp (ne_of_gt (Real.log_pos hn))
-    rwa [Real.exp_log hnPos] at hexp
-  have hlt : Real.log n < n := by linarith
-  have hcont : ContinuousOn (wienH n) (Icc (Real.log n) n) :=
-    (wienH_continuous n).continuousOn
-  have hmem : (0 : ℝ) ∈ Ioo (wienH n (Real.log n)) (wienH n n) :=
-    ⟨hlog_neg, hself_pos⟩
-  obtain ⟨r, hrmem, hreq⟩ := intermediate_value_Ioo (le_of_lt hlt) hcont hmem
-  exact ⟨r, hrmem.1, hrmem.2, hreq⟩
-
-/-- Uniqueness of the positive root: any positive zero coincides with a root in
-  `(log n, n)`. On `(0, log n]` the function is strictly below `h(0) = 0`, and
-  on `[log n, ∞)` it is strictly monotone. -/
-lemma wien_unique_pos (n : ℝ) (hn : 1 < n) (x : ℝ) (hx : 0 < x)
-    (hx0 : wienH n x = 0) (r : ℝ) (hr1 : Real.log n < r)
-    (hr0 : wienH n r = 0) :
-    x = r := by
-  rcases le_total x (Real.log n) with hle | hge
-  · have hanti := wienH_strictAntiOn n hn
-    have h0mem : (0 : ℝ) ∈ Iic (Real.log n) :=
-      mem_Iic.mpr (le_trans hx.le hle)
-    have hxmem : x ∈ Iic (Real.log n) := mem_Iic.mpr hle
-    have hlt' : wienH n x < wienH n 0 := hanti h0mem hxmem hx
-    rw [wienH_zero, hx0] at hlt'
-    exact absurd hlt' (lt_irrefl 0)
-  · have hmono := wienH_strictMonoOn n hn
-    have hxmem : x ∈ Ici (Real.log n) := mem_Ici.mpr hge
-    have hrmem : r ∈ Ici (Real.log n) := mem_Ici.mpr hr1.le
-    exact hmono.injOn hxmem hrmem (by rw [hx0, hr0])
-
-/-- The unique positive solution of the Wien equation `x = n (1 - e⁻ˣ)`. -/
-noncomputable def wienRoot (n : ℝ) (hn : 1 < n) : ℝ :=
-  Classical.choose (wien_exists_root n hn)
-
-/-- The Wien root lies above `log n`. -/
-lemma wienRoot_gt_log (n : ℝ) (hn : 1 < n) : Real.log n < wienRoot n hn :=
-  (Classical.choose_spec (wien_exists_root n hn)).1
-
-/-- The Wien root lies below `n`. -/
-lemma wienRoot_lt (n : ℝ) (hn : 1 < n) : wienRoot n hn < n :=
-  (Classical.choose_spec (wien_exists_root n hn)).2.1
-
-/-- The Wien root satisfies the Wien equation. -/
-lemma wienRoot_eq (n : ℝ) (hn : 1 < n) : wienH n (wienRoot n hn) = 0 :=
-  (Classical.choose_spec (wien_exists_root n hn)).2.2
-
-/-- The Wien root is positive. -/
-lemma wienRoot_pos (n : ℝ) (hn : 1 < n) : 0 < wienRoot n hn :=
-  lt_trans (Real.log_pos hn) (wienRoot_gt_log n hn)
-
-/-- Any positive solution of the Wien equation equals the Wien root. -/
-lemma wienRoot_unique (n : ℝ) (hn : 1 < n) (x : ℝ) (hx : 0 < x)
-    (hx0 : wienH n x = 0) : x = wienRoot n hn :=
-  wien_unique_pos n hn x hx hx0 _ (wienRoot_gt_log n hn) (wienRoot_eq n hn)
-
-/-!
-
-## C. Numerical enclosures for `n = 5` and `n = 3`
-
-High-precision numerical evaluation (see `wien_constant.py`) gives
-`x₅ = 4.965114231744276…` and `x₃ = 2.821439372122078…`. Here we verify
-rigorous coarse enclosures inside Lean: `4 < x₅ < 5` and `2 < x₃ < 3`.
-The upper bounds are free from `wienRoot_lt`; the lower bounds follow from
-`h(4) = 5 e⁻⁴ - 1 < 0` (i.e. `5 < e⁴`) and `h(2) = 3 e⁻² - 1 < 0`
-(i.e. `3 < e²`), using `e > 2.718281828`.
--/
-
-/-- Exponential lower bound `5 < e⁴`. -/
-lemma exp_four_gt_five : (5 : ℝ) < Real.exp 4 := by
-  have h1 : (2.7182818283 : ℝ) < Real.exp 1 := Real.exp_one_gt_d9
-  have h2 : Real.exp (4 : ℝ) = (Real.exp 1) ^ 4 := by
-    have h4 : (4 : ℝ) = ((4 : ℕ) : ℝ) * 1 := by norm_num
-    rw [h4, Real.exp_nat_mul]
-  have hle : (2.7182818283 : ℝ) ^ 4 ≤ (Real.exp 1) ^ 4 :=
-    pow_le_pow_left₀ expApprox_nonneg (le_of_lt h1) 4
-  have h54 : (5 : ℝ) < 2.7182818283 ^ 4 := by norm_num
-  rw [h2]
-  linarith
-
-/-- Exponential lower bound `3 < e²`. -/
-lemma exp_two_gt_three : (3 : ℝ) < Real.exp 2 := by
-  have h1 : (2.7182818283 : ℝ) < Real.exp 1 := Real.exp_one_gt_d9
-  have h2 : Real.exp (2 : ℝ) = (Real.exp 1) ^ 2 := by
-    have h4 : (2 : ℝ) = ((2 : ℕ) : ℝ) * 1 := by norm_num
-    rw [h4, Real.exp_nat_mul]
-  have hle : (2.7182818283 : ℝ) ^ 2 ≤ (Real.exp 1) ^ 2 :=
-    pow_le_pow_left₀ expApprox_nonneg (le_of_lt h1) 2
-  have h32 : (3 : ℝ) < 2.7182818283 ^ 2 := by norm_num
-  rw [h2]
-  linarith
-
-/-- `h(4) < 0` for `n = 5`. -/
-lemma wienH_five_at_four : wienH 5 4 < 0 := by
-  have h : Real.exp (-(4 : ℝ)) = 1 / Real.exp 4 := by
-    rw [Real.exp_neg, one_div]
-  have h5 : (5 : ℝ) * Real.exp (-4) < 1 := by
-    rw [h, mul_one_div, div_lt_one (Real.exp_pos 4)]
-    exact exp_four_gt_five
-  unfold wienH
-  linarith
-
-/-- `h(2) < 0` for `n = 3`. -/
-lemma wienH_three_at_two : wienH 3 2 < 0 := by
-  have h : Real.exp (-(2 : ℝ)) = 1 / Real.exp 2 := by
-    rw [Real.exp_neg, one_div]
-  have h3 : (3 : ℝ) * Real.exp (-2) < 1 := by
-    rw [h, mul_one_div, div_lt_one (Real.exp_pos 2)]
-    exact exp_two_gt_three
-  unfold wienH
-  linarith
-
-/-- Lower bound `4 < x₅` by strict monotonicity and `h(4) < 0 = h(x₅)`. -/
-lemma wienRoot_five_gt_four : 4 < wienRoot 5 five_gt_one := by
-  have hr0 : wienH 5 (wienRoot 5 five_gt_one) = 0 := wienRoot_eq 5 _
-  have h4 : wienH 5 4 < 0 := wienH_five_at_four
-  have hmono := (wienH_strictMonoOn 5 five_gt_one).monotoneOn
-  have hlog5 : Real.log 5 < 4 := by
-    have hexp : Real.log 5 + 1 < 5 := by
-      have h := Real.add_one_lt_exp
-        (ne_of_gt (Real.log_pos five_gt_one))
-      rwa [Real.exp_log five_pos] at h
-    linarith
-  have hrIci : wienRoot 5 five_gt_one ∈ Ici (Real.log 5) :=
-    mem_Ici.mpr (le_of_lt (wienRoot_gt_log 5 _))
-  have h4Ici : (4 : ℝ) ∈ Ici (Real.log 5) := mem_Ici.mpr (le_of_lt hlog5)
-  by_contra hcon
-  simp only [not_lt] at hcon
-  have hle := hmono hrIci h4Ici hcon
-  rw [hr0] at hle
-  linarith
-
-/-- Enclosure `4 < x₅ < 5` for the wavelength Wien constant. -/
-theorem wienRoot_five_mem :
-    4 < wienRoot 5 five_gt_one ∧ wienRoot 5 five_gt_one < 5 :=
-  ⟨wienRoot_five_gt_four, wienRoot_lt 5 _⟩
-
-/-- Lower bound `2 < x₃` by strict monotonicity and `h(2) < 0 = h(x₃)`. -/
-lemma wienRoot_three_gt_two : 2 < wienRoot 3 three_gt_one := by
-  have hr0 : wienH 3 (wienRoot 3 three_gt_one) = 0 := wienRoot_eq 3 _
-  have h2 : wienH 3 2 < 0 := wienH_three_at_two
-  have hmono := (wienH_strictMonoOn 3 three_gt_one).monotoneOn
-  have hlog3 : Real.log 3 < 2 := by
-    have hexp : Real.log 3 + 1 < 3 := by
-      have h := Real.add_one_lt_exp
-        (ne_of_gt (Real.log_pos three_gt_one))
-      rwa [Real.exp_log three_pos] at h
-    linarith
-  have hrIci : wienRoot 3 three_gt_one ∈ Ici (Real.log 3) :=
-    mem_Ici.mpr (le_of_lt (wienRoot_gt_log 3 _))
-  have h2Ici : (2 : ℝ) ∈ Ici (Real.log 3) := mem_Ici.mpr (le_of_lt hlog3)
-  by_contra hcon
-  simp only [not_lt] at hcon
-  have hle := hmono hrIci h2Ici hcon
-  rw [hr0] at hle
-  linarith
-
-/-- Enclosure `2 < x₃ < 3` for the frequency Wien constant. -/
-theorem wienRoot_three_mem :
-    2 < wienRoot 3 three_gt_one ∧ wienRoot 3 three_gt_one < 3 :=
-  ⟨wienRoot_three_gt_two, wienRoot_lt 3 _⟩
-
-/-- The wavelength and frequency Wien constants differ (the peak depends on the
-  parametrization). -/
-theorem wien_roots_differ :
-    wienRoot 3 three_gt_one ≠ wienRoot 5 five_gt_one := by
-  have h3 := wienRoot_three_mem
-  have h5 := wienRoot_five_mem
-  intro hcon
-  rw [hcon] at h3
-  linarith
-
-/-!
-
-## C'. Named Wien constants
-
-The two physical constants that appear in Wien's displacement laws,
-packaged as opaque real numbers with their enclosures and characterizations.
--/
-
-/-- The Wien constant for wavelength: the unique positive root of
-  `x = 5(1 - e⁻ˣ)`, numerically `x₅ ≈ 4.9651142317`. -/
-noncomputable def wienConstant5 : ℝ := wienRoot 5 five_gt_one
-
-/-- The Wien constant for frequency: the unique positive root of
-  `x = 3(1 - e⁻ˣ)`, numerically `x₃ ≈ 2.8214393721`. -/
-noncomputable def wienConstant3 : ℝ := wienRoot 3 three_gt_one
-
-/-- `4 < x₅ < 5`. -/
-theorem wienConstant5_mem : 4 < wienConstant5 ∧ wienConstant5 < 5 :=
-  wienRoot_five_mem
-
-/-- `2 < x₃ < 3`. -/
-theorem wienConstant3_mem : 2 < wienConstant3 ∧ wienConstant3 < 3 :=
-  wienRoot_three_mem
-
-/-- `x₅ ≠ x₃` — the wavelength and frequency peaks differ. -/
-theorem wienConstant5_ne_wienConstant3 : wienConstant5 ≠ wienConstant3 := by
-  unfold wienConstant5 wienConstant3
-  exact Ne.symm wien_roots_differ
-
-/-- `x₅ > 0`. -/
-theorem wienConstant5_pos : 0 < wienConstant5 := wienRoot_pos 5 five_gt_one
-
-/-- `x₃ > 0`. -/
-theorem wienConstant3_pos : 0 < wienConstant3 := wienRoot_pos 3 three_gt_one
-
-/-!
-
-## D. Critical points of the Planck profile `xⁿ / (eˣ - 1)`
-
-The shape function governing every parametrization is `f(x) = xⁿ / (eˣ - 1)`.
-Its derivative vanishes exactly on solutions of the Wien equation.
--/
-
-/-- The Planck shape function `xⁿ / (eˣ - 1)`. -/
-noncomputable def wienProfile (n : ℕ) (x : ℝ) : ℝ :=
-  x ^ n / (Real.exp x - 1)
 
 /-- Derivative of the Planck shape function. -/
 lemma hasDerivAt_wienProfile (n : ℕ) (x : ℝ)
@@ -490,26 +287,6 @@ lemma hasDerivAt_wienProfile (n : ℕ) (x : ℝ)
     (Real.hasDerivAt_exp x).sub_const 1
   exact hpow.div hexp he
 
-/-- The Planck profile `xⁿ / (eˣ - 1)` vanishes at `x = 0` (no radiation
-  at zero energy). -/
-lemma wienProfile_zero_at_zero (n : ℕ) : wienProfile n 0 = 0 := by
-  unfold wienProfile
-  simp
-
-/-- The Planck profile `xⁿ / (eˣ - 1)` is strictly positive for positive `x`
-  (positive radiation energy at finite frequency). -/
-lemma wienProfile_pos (n : ℕ) (x : ℝ) (hx : 0 < x) :
-    0 < wienProfile n x := by
-  unfold wienProfile
-  apply div_pos (pow_pos hx n)
-  linarith [Real.one_lt_exp_iff.mpr hx]
-
-/-- The Planck profile `xⁿ / (eˣ - 1)` is non-negative for non-negative `x`. -/
-lemma wienProfile_nonneg (n : ℕ) (x : ℝ) (hx : 0 ≤ x) :
-    0 ≤ wienProfile n x := by
-  rcases hx.eq_or_lt with rfl | hx
-  · simp [wienProfile_zero_at_zero]
-  · exact le_of_lt (wienProfile_pos n x hx)
 
 /-- Critical points of the Planck profile are exactly the solutions of the Wien
   equation `x = n (1 - e⁻ˣ)`. -/
@@ -562,16 +339,330 @@ theorem wienProfile_crit_iff (n : ℕ) (hn : 1 ≤ n) (x : ℝ) (hx : 0 < x) :
   · intro h
     exact Or.inl (hN.mpr (hM.mpr h))
 
+
 /-!
 
-## D'. Profile behavior: sign, monotonicity, global maximum, asymptotics
+## C. Monotonicity and the unique positive root
 
-The derivative of the profile has the opposite sign of the auxiliary
-function (up to positive factors), so `f` strictly increases on
-`(0, x*]` and strictly decreases on `[x*, ∞)`, where `x*` is the Wien
-root. Hence `x*` is the unique global maximizer on `(0, ∞)`. The profile
-also vanishes at both ends: at `0` (for `n ≥ 2`) and at `∞` (the
-exponential dominates the polynomial).
+For `n > 1`, `h'(x) < 0` for `x < log n` and `h'(x) > 0` for `x > log n`.
+The minimum of `h` occurs at `x = log n`, where `h(log n) < 0`.
+Since `h(0) = 0`, `h(x) < 0` for `x ∈ (0, log n]`. For `x ≥ log n`, `h` is
+strictly increasing with `h(log n) < 0` and `h(n) > 0`. By the IVT, there is a
+unique root `x* ∈ (log n, n)`, and no other positive root exists.
+-/
+
+/-- The derivative is negative exactly below `log n`. -/
+lemma wienH_deriv_neg_iff (n x : ℝ) (hn : 0 < n) :
+    1 - n * Real.exp (-x) < 0 ↔ x < Real.log n := by
+  have hbase : (1 : ℝ) - n * Real.exp (-x) < 0 ↔ 1 < n * Real.exp (-x) := by
+    constructor <;> intro h <;> linarith
+  rw [hbase, Real.exp_neg, ← div_eq_mul_inv, lt_div_iff₀ (Real.exp_pos x), one_mul]
+  conv_lhs => rw [← Real.exp_log hn]
+  rw [StrictMono.lt_iff_lt Real.exp_strictMono]
+
+
+/-- The derivative is positive exactly above `log n`. -/
+lemma wienH_deriv_pos_iff (n x : ℝ) (hn : 0 < n) :
+    0 < 1 - n * Real.exp (-x) ↔ Real.log n < x := by
+  have hbase : (0 : ℝ) < 1 - n * Real.exp (-x) ↔ n * Real.exp (-x) < 1 := by
+    constructor <;> intro h <;> linarith
+  rw [hbase, Real.exp_neg, ← div_eq_mul_inv, div_lt_iff₀ (Real.exp_pos x), one_mul]
+  conv_lhs => rw [← Real.exp_log hn]
+  rw [StrictMono.lt_iff_lt Real.exp_strictMono]
+
+
+/-- `h` is strictly increasing on `[log n, ∞)`. -/
+lemma wienH_strictMonoOn (n : ℝ) (hn : 1 < n) :
+    StrictMonoOn (wienH n) (Ici (Real.log n)) := by
+  have hn0 : 0 < n := lt_trans zero_lt_one hn
+  refine strictMonoOn_of_deriv_pos (convex_Ici _) (wienH_continuous n).continuousOn ?_
+  intro x hx
+  rw [interior_Ici] at hx
+  rw [(hasDerivAt_wienH n x).deriv]
+  exact (wienH_deriv_pos_iff n x hn0).mpr hx
+
+
+/-- `h` is strictly decreasing on `(-∞, log n]`. -/
+lemma wienH_strictAntiOn (n : ℝ) (hn : 1 < n) :
+    StrictAntiOn (wienH n) (Iic (Real.log n)) := by
+  have hn0 : 0 < n := lt_trans zero_lt_one hn
+  refine strictAntiOn_of_deriv_neg (convex_Iic _) (wienH_continuous n).continuousOn ?_
+  intro x hx
+  rw [interior_Iic] at hx
+  rw [(hasDerivAt_wienH n x).deriv]
+  exact (wienH_deriv_neg_iff n x hn0).mpr hx
+
+
+/-- `h(log n) < 0` for `n > 1` (from `log n + 1 < n`). -/
+lemma wienH_at_log_neg (n : ℝ) (hn : 1 < n) : wienH n (Real.log n) < 0 := by
+  have hnPos : 0 < n := lt_trans zero_lt_one hn
+  have hn0 : n ≠ 0 := ne_of_gt hnPos
+  have hlog_pos : 0 < Real.log n := Real.log_pos hn
+  have hexp : Real.log n + 1 < Real.exp (Real.log n) :=
+    Real.add_one_lt_exp (ne_of_gt hlog_pos)
+  rw [Real.exp_log hnPos] at hexp
+  have hexpNeg : Real.exp (-Real.log n) = 1 / n := by
+    rw [Real.exp_neg, Real.exp_log hnPos, one_div]
+  have hnn : n * (1 - 1 / n) = n - 1 := by
+    rw [mul_sub, mul_one, mul_one_div, div_self hn0]
+  unfold wienH
+  rw [hexpNeg, hnn]
+  linarith
+
+
+/-- `h(n) = n e⁻ⁿ > 0` for `n > 1`. -/
+lemma wienH_at_self_pos (n : ℝ) (hn : 1 < n) : 0 < wienH n n := by
+  have hnPos : 0 < n := lt_trans zero_lt_one hn
+  have hpos : 0 < n * Real.exp (-n) := mul_pos hnPos (Real.exp_pos _)
+  have heq : n - n * (1 - Real.exp (-n)) = n * Real.exp (-n) := by ring
+  unfold wienH
+  rw [heq]
+  exact hpos
+
+
+/-- Existence of a root in `(log n, n)` for `n > 1`, by the intermediate value
+  theorem applied on `[log n, n]`. -/
+lemma wien_exists_root (n : ℝ) (hn : 1 < n) :
+    ∃ r, Real.log n < r ∧ r < n ∧ wienH n r = 0 := by
+  have hnPos : 0 < n := lt_trans zero_lt_one hn
+  have hlog_neg : wienH n (Real.log n) < 0 := wienH_at_log_neg n hn
+  have hself_pos : 0 < wienH n n := wienH_at_self_pos n hn
+  have hlog : Real.log n + 1 < n := by
+    have hexp : Real.log n + 1 < Real.exp (Real.log n) :=
+      Real.add_one_lt_exp (ne_of_gt (Real.log_pos hn))
+    rwa [Real.exp_log hnPos] at hexp
+  have hlt : Real.log n < n := by linarith
+  have hcont : ContinuousOn (wienH n) (Icc (Real.log n) n) :=
+    (wienH_continuous n).continuousOn
+  have hmem : (0 : ℝ) ∈ Ioo (wienH n (Real.log n)) (wienH n n) :=
+    ⟨hlog_neg, hself_pos⟩
+  obtain ⟨r, hrmem, hreq⟩ := intermediate_value_Ioo (le_of_lt hlt) hcont hmem
+  exact ⟨r, hrmem.1, hrmem.2, hreq⟩
+
+
+/-- Uniqueness of the positive root: any positive zero coincides with a root in
+  `(log n, n)`. On `(0, log n]` the function is strictly below `h(0) = 0`, and
+  on `[log n, ∞)` it is strictly monotone. -/
+lemma wien_unique_pos (n : ℝ) (hn : 1 < n) (x : ℝ) (hx : 0 < x)
+    (hx0 : wienH n x = 0) (r : ℝ) (hr1 : Real.log n < r)
+    (hr0 : wienH n r = 0) :
+    x = r := by
+  rcases le_total x (Real.log n) with hle | hge
+  · have hanti := wienH_strictAntiOn n hn
+    have h0mem : (0 : ℝ) ∈ Iic (Real.log n) :=
+      mem_Iic.mpr (le_trans hx.le hle)
+    have hxmem : x ∈ Iic (Real.log n) := mem_Iic.mpr hle
+    have hlt' : wienH n x < wienH n 0 := hanti h0mem hxmem hx
+    rw [wienH_zero, hx0] at hlt'
+    exact absurd hlt' (lt_irrefl 0)
+  · have hmono := wienH_strictMonoOn n hn
+    have hxmem : x ∈ Ici (Real.log n) := mem_Ici.mpr hge
+    have hrmem : r ∈ Ici (Real.log n) := mem_Ici.mpr hr1.le
+    exact hmono.injOn hxmem hrmem (by rw [hx0, hr0])
+
+
+/-- The unique positive solution of the Wien equation `x = n (1 - e⁻ˣ)`. -/
+noncomputable def wienRoot (n : ℝ) (hn : 1 < n) : ℝ :=
+  Classical.choose (wien_exists_root n hn)
+
+
+/-- The Wien root lies above `log n`. -/
+lemma wienRoot_gt_log (n : ℝ) (hn : 1 < n) : Real.log n < wienRoot n hn :=
+  (Classical.choose_spec (wien_exists_root n hn)).1
+
+
+/-- The Wien root lies below `n`. -/
+lemma wienRoot_lt (n : ℝ) (hn : 1 < n) : wienRoot n hn < n :=
+  (Classical.choose_spec (wien_exists_root n hn)).2.1
+
+
+/-- The Wien root satisfies the Wien equation. -/
+lemma wienRoot_eq (n : ℝ) (hn : 1 < n) : wienH n (wienRoot n hn) = 0 :=
+  (Classical.choose_spec (wien_exists_root n hn)).2.2
+
+
+/-- The Wien root is positive. -/
+lemma wienRoot_pos (n : ℝ) (hn : 1 < n) : 0 < wienRoot n hn :=
+  lt_trans (Real.log_pos hn) (wienRoot_gt_log n hn)
+
+
+/-- Any positive solution of the Wien equation equals the Wien root. -/
+lemma wienRoot_unique (n : ℝ) (hn : 1 < n) (x : ℝ) (hx : 0 < x)
+    (hx0 : wienH n x = 0) : x = wienRoot n hn :=
+  wien_unique_pos n hn x hx hx0 _ (wienRoot_gt_log n hn) (wienRoot_eq n hn)
+
+
+/-- The Wien root is non-zero (it is a positive root of `h(x) = 0`). -/
+lemma wienRoot_ne_zero (n : ℝ) (hn : 1 < n) : wienRoot n hn ≠ 0 :=
+  ne_of_gt (wienRoot_pos n hn)
+
+
+/-- The Wien root is at most `n` (non-strict version of `wienRoot_lt`). -/
+lemma wienRoot_le_n (n : ℝ) (hn : 1 < n) : wienRoot n hn ≤ n :=
+  le_of_lt (wienRoot_lt n hn)
+
+
+/-!
+
+## D. Numerical bounds and named Wien constants
+
+High-precision numerical evaluation (see `wien_constant.py`) gives
+`x₅ = 4.965114231744276…` and `x₃ = 2.821439372122078…`. Here we verify
+rigorous coarse enclosures inside Lean: `4 < x₅ < 5` and `2 < x₃ < 3`.
+The upper bounds are free from `wienRoot_lt`; the lower bounds follow from
+`h(4) = 5 e⁻⁴ - 1 < 0` (i.e. `5 < e⁴`) and `h(2) = 3 e⁻² - 1 < 0`
+(i.e. `3 < e²`), using `e > 2.718281828`.
+We package these as the physical constants `wienConstant5` and `wienConstant3`.
+-/
+
+/-- Exponential lower bound `5 < e⁴`. -/
+lemma exp_four_gt_five : (5 : ℝ) < Real.exp 4 := by
+  have h1 : (2.7182818283 : ℝ) < Real.exp 1 := Real.exp_one_gt_d9
+  have h2 : Real.exp (4 : ℝ) = (Real.exp 1) ^ 4 := by
+    have h4 : (4 : ℝ) = ((4 : ℕ) : ℝ) * 1 := by norm_num
+    rw [h4, Real.exp_nat_mul]
+  have hle : (2.7182818283 : ℝ) ^ 4 ≤ (Real.exp 1) ^ 4 :=
+    pow_le_pow_left₀ (by norm_num) (le_of_lt h1) 4
+  have h54 : (5 : ℝ) < 2.7182818283 ^ 4 := by norm_num
+  rw [h2]
+  linarith
+
+
+/-- Exponential lower bound `3 < e²`. -/
+lemma exp_two_gt_three : (3 : ℝ) < Real.exp 2 := by
+  have h1 : (2.7182818283 : ℝ) < Real.exp 1 := Real.exp_one_gt_d9
+  have h2 : Real.exp (2 : ℝ) = (Real.exp 1) ^ 2 := by
+    have h4 : (2 : ℝ) = ((2 : ℕ) : ℝ) * 1 := by norm_num
+    rw [h4, Real.exp_nat_mul]
+  have hle : (2.7182818283 : ℝ) ^ 2 ≤ (Real.exp 1) ^ 2 :=
+    pow_le_pow_left₀ (by norm_num) (le_of_lt h1) 2
+  have h32 : (3 : ℝ) < 2.7182818283 ^ 2 := by norm_num
+  rw [h2]
+  linarith
+
+
+/-- `h(4) < 0` for `n = 5`. -/
+lemma wienH_five_at_four : wienH 5 4 < 0 := by
+  have h : Real.exp (-(4 : ℝ)) = 1 / Real.exp 4 := by
+    rw [Real.exp_neg, one_div]
+  have h5 : (5 : ℝ) * Real.exp (-4) < 1 := by
+    rw [h, mul_one_div, div_lt_one (Real.exp_pos 4)]
+    exact exp_four_gt_five
+  unfold wienH
+  linarith
+
+
+/-- `h(2) < 0` for `n = 3`. -/
+lemma wienH_three_at_two : wienH 3 2 < 0 := by
+  have h : Real.exp (-(2 : ℝ)) = 1 / Real.exp 2 := by
+    rw [Real.exp_neg, one_div]
+  have h3 : (3 : ℝ) * Real.exp (-2) < 1 := by
+    rw [h, mul_one_div, div_lt_one (Real.exp_pos 2)]
+    exact exp_two_gt_three
+  unfold wienH
+  linarith
+
+
+/-- Lower bound `4 < x₅` by strict monotonicity and `h(4) < 0 = h(x₅)`. -/
+lemma wienRoot_five_gt_four : 4 < wienRoot 5 (by norm_num) := by
+  have hr0 : wienH 5 (wienRoot 5 (by norm_num)) = 0 := wienRoot_eq 5 _
+  have h4 : wienH 5 4 < 0 := wienH_five_at_four
+  have hmono := (wienH_strictMonoOn 5 (by norm_num)).monotoneOn
+  have hlog5 : Real.log 5 < 4 := by
+    have hexp : Real.log 5 + 1 < 5 := by
+      have h := Real.add_one_lt_exp
+        (ne_of_gt (Real.log_pos (by norm_num : (1 : ℝ) < 5)))
+      rwa [Real.exp_log (by norm_num : (0 : ℝ) < 5)] at h
+    linarith
+  have hrIci : wienRoot 5 (by norm_num) ∈ Ici (Real.log 5) :=
+    mem_Ici.mpr (le_of_lt (wienRoot_gt_log 5 _))
+  have h4Ici : (4 : ℝ) ∈ Ici (Real.log 5) := mem_Ici.mpr (le_of_lt hlog5)
+  by_contra hcon
+  simp only [not_lt] at hcon
+  have hle := hmono hrIci h4Ici hcon
+  rw [hr0] at hle
+  linarith
+
+/-- Enclosure `4 < x₅ < 5` for the wavelength Wien constant. -/
+theorem wienRoot_five_mem :
+    4 < wienRoot 5 (by norm_num) ∧ wienRoot 5 (by norm_num) < 5 :=
+  ⟨wienRoot_five_gt_four, wienRoot_lt 5 _⟩
+
+/-- Lower bound `2 < x₃` by strict monotonicity and `h(2) < 0 = h(x₃)`. -/
+lemma wienRoot_three_gt_two : 2 < wienRoot 3 (by norm_num) := by
+  have hr0 : wienH 3 (wienRoot 3 (by norm_num)) = 0 := wienRoot_eq 3 _
+  have h2 : wienH 3 2 < 0 := wienH_three_at_two
+  have hmono := (wienH_strictMonoOn 3 (by norm_num)).monotoneOn
+  have hlog3 : Real.log 3 < 2 := by
+    have hexp : Real.log 3 + 1 < 3 := by
+      have h := Real.add_one_lt_exp
+        (ne_of_gt (Real.log_pos (by norm_num : (1 : ℝ) < 3)))
+      rwa [Real.exp_log (by norm_num : (0 : ℝ) < 3)] at h
+    linarith
+  have hrIci : wienRoot 3 (by norm_num) ∈ Ici (Real.log 3) :=
+    mem_Ici.mpr (le_of_lt (wienRoot_gt_log 3 _))
+  have h2Ici : (2 : ℝ) ∈ Ici (Real.log 3) := mem_Ici.mpr (le_of_lt hlog3)
+  by_contra hcon
+  simp only [not_lt] at hcon
+  have hle := hmono hrIci h2Ici hcon
+  rw [hr0] at hle
+  linarith
+
+/-- Enclosure `2 < x₃ < 3` for the frequency Wien constant. -/
+theorem wienRoot_three_mem :
+    2 < wienRoot 3 (by norm_num) ∧ wienRoot 3 (by norm_num) < 3 :=
+  ⟨wienRoot_three_gt_two, wienRoot_lt 3 _⟩
+
+/-- The wavelength and frequency Wien constants differ (the peak depends on the
+  parametrization). -/
+theorem wien_roots_differ :
+    wienRoot 3 (by norm_num) ≠ wienRoot 5 (by norm_num) := by
+  have h3 := wienRoot_three_mem
+  have h5 := wienRoot_five_mem
+  intro hcon
+  rw [hcon] at h3
+  linarith
+
+/-- The Wien constant for wavelength: the unique positive root of
+  `x = 5(1 - e⁻ˣ)`, numerically `x₅ ≈ 4.9651142317`. -/
+noncomputable def wienConstant5 : ℝ := wienRoot 5 (by norm_num)
+
+/-- The Wien constant for frequency: the unique positive root of
+  `x = 3(1 - e⁻ˣ)`, numerically `x₃ ≈ 2.8214393721`. -/
+noncomputable def wienConstant3 : ℝ := wienRoot 3 (by norm_num)
+
+/-- `4 < x₅ < 5`. -/
+theorem wienConstant5_mem : 4 < wienConstant5 ∧ wienConstant5 < 5 :=
+  wienRoot_five_mem
+
+
+/-- `2 < x₃ < 3`. -/
+theorem wienConstant3_mem : 2 < wienConstant3 ∧ wienConstant3 < 3 :=
+  wienRoot_three_mem
+
+
+/-- `x₅ ≠ x₃` — the wavelength and frequency peaks differ. -/
+theorem wienConstant5_ne_wienConstant3 : wienConstant5 ≠ wienConstant3 := by
+  unfold wienConstant5 wienConstant3
+  exact Ne.symm wien_roots_differ
+
+
+/-- `x₅ > 0`. -/
+theorem wienConstant5_pos : 0 < wienConstant5 := wienRoot_pos 5 (by norm_num)
+
+/-- `x₃ > 0`. -/
+theorem wienConstant3_pos : 0 < wienConstant3 := wienRoot_pos 3 (by norm_num)
+
+/-!
+
+## E. Profile behavior: sign, monotonicity, global maximum, asymptotics
+
+With the unique positive root `x*` in hand, we establish the shape of the
+Planck profile `f(x) = xⁿ / (eˣ - 1)`:
+- `f'(x) > 0` on `(0, x*)` (strictly increasing);
+- `f'(x) < 0` on `(x*, ∞)` (strictly decreasing);
+- `x*` is the unique global maximum on `(0, ∞)`;
+- `f` is continuous on `(0, ∞)` and vanishes at both `0` and `∞`.
 -/
 
 /-- The auxiliary function is negative strictly between `0` and the Wien
@@ -594,6 +685,7 @@ lemma wienH_neg_on_Ioo (n : ℝ) (hn : 1 < n) (x : ℝ) (hx0 : 0 < x)
       hmono hxmem hrmem hxr
     rwa [wienRoot_eq] at hlt
 
+
 /-- The auxiliary function is positive strictly above the Wien root, by
   strict monotonicity on `[log n, ∞)`. -/
 lemma wienH_pos_on_Ioi (n : ℝ) (hn : 1 < n) (x : ℝ)
@@ -606,6 +698,7 @@ lemma wienH_pos_on_Ioi (n : ℝ) (hn : 1 < n) (x : ℝ)
   have hlt : wienH n (wienRoot n hn) < wienH n x := hmono hrmem hxmem hxr
   rwa [wienRoot_eq] at hlt
 
+
 /-- The Planck profile is continuous on `(0, ∞)`. -/
 lemma wienProfile_continuousOn (n : ℕ) :
     ContinuousOn (wienProfile n) (Ioi 0) := by
@@ -614,6 +707,7 @@ lemma wienProfile_continuousOn (n : ℕ) :
     ((Real.continuousOn_exp).sub continuousOn_const) _
   intro x hx
   exact ne_of_gt (sub_pos.mpr (Real.one_lt_exp_iff.mpr hx))
+
 
 /-- Factored form of the profile derivative: the sign of `f'(x)` for `x > 0`
   is the opposite of the sign of the auxiliary function. -/
@@ -630,6 +724,7 @@ lemma wienProfile_deriv_eq (n : ℕ) (hn : 1 ≤ n) (x : ℝ)
   rw [Real.exp_neg]
   field_simp
   ring
+
 
 /-- The Planck profile is strictly increasing on `(0, x*]`, where `x*` is the
   Wien root: there `h < 0`, so `f' > 0`. -/
@@ -651,6 +746,7 @@ lemma wienProfile_strictMonoOn (n : ℕ) (hn : 2 ≤ n) :
     apply div_pos _ (pow_pos (sub_pos.mpr (Real.one_lt_exp_iff.mpr hx0)) 2)
     exact neg_pos.mpr
       (mul_neg_of_pos_of_neg (mul_pos (pow_pos hx0 _) (Real.exp_pos _)) hw)
+
 
 /-- The Planck profile is strictly decreasing on `[x*, ∞)`, where `x*` is the
   Wien root: there `h > 0`, so `f' < 0`. -/
@@ -676,6 +772,7 @@ lemma wienProfile_strictAntiOn (n : ℕ) (hn : 2 ≤ n) :
     exact neg_lt_zero.mpr
       (mul_pos (mul_pos (pow_pos hx0 _) (Real.exp_pos _)) hw)
 
+
 /-- The Planck profile attains its unique global maximum on `(0, ∞)` at the
   Wien root. This is the mathematical core of Wien's displacement law: the
   "peak" of the blackbody spectrum. -/
@@ -696,6 +793,7 @@ theorem wienProfile_isMaxOn (n : ℕ) (hn : 2 ≤ n) :
     have hxmem : x ∈ Ici (wienRoot n hnR) := mem_Ici.mpr hge
     have hrmem : wienRoot n hnR ∈ Ici (wienRoot n hnR) := mem_Ici.mpr le_rfl
     exact hanti.antitoneOn hrmem hxmem hge
+
 
 /-- The Planck profile vanishes at infinity: the exponential in the
   denominator dominates the polynomial numerator. -/
@@ -728,6 +826,7 @@ lemma wienProfile_tendsto_zero_atTop (n : ℕ) :
     simpa using h
   exact squeeze_zero' hnn' hle hlim
 
+
 /-- The Planck profile vanishes at the origin (for `n ≥ 2`) : near `x = 0`,
   `eˣ - 1 ≥ x` gives `f(x) ≤ xⁿ⁻¹ → 0`. -/
 lemma wienProfile_tendsto_nhdsWithin_zero (n : ℕ) (hn : 2 ≤ n) :
@@ -757,99 +856,18 @@ lemma wienProfile_tendsto_nhdsWithin_zero (n : ℕ) (hn : 2 ≤ n) :
     rwa [zero_pow (by omega : n - 1 ≠ 0)] at h
   exact squeeze_zero' hnn' hle hlim
 
+
 /-!
 
-## E. Critical points of the Planck curves
+## F. Physical Planck curves: critical points, maxima, limits, boundedness
 
 For fixed temperature, the wavelength curve is a positive constant multiple of
-the profile `f₅(x)` composed with `x = h c / (λ kB T)`, and the frequency curve
+the profile `f₅(x)` composed with `x = h c / (lam kB T)`, and the frequency curve
 is a positive constant multiple of `f₃(x)` composed with `x = h ν / (kB T)`.
-Since the outer affine factors have nonzero derivative, critical points of the
-physical curves correspond exactly to solutions of the Wien equation.
+Critical points of the physical curves correspond exactly to solutions of the
+Wien equation. The global maximum of the profile transfers to a global maximum
+of the spectral radiance, and the curves are continuous and vanish at both ends.
 -/
-
-/-- Wavelength prefactor `C(T) = 2 (kB T)⁵ / (h⁴ c³)`. -/
-noncomputable def wavePrefactor (B : BlackBody) (c : SpeedOfLight) : ℝ :=
-  2 * (kB * (B.T : ℝ)) ^ 5 / ((h : ℝ) ^ 4 * (c : ℝ) ^ 3)
-
-/-- Frequency prefactor `D(T) = 2 (kB T)³ / (h² c²)`. -/
-noncomputable def freqPrefactor (B : BlackBody) (c : SpeedOfLight) : ℝ :=
-  2 * (kB * (B.T : ℝ)) ^ 3 / ((h : ℝ) ^ 2 * (c : ℝ) ^ 2)
-
-/-- Dimensionless wavelength variable `x = h c / (λ kB T)`. -/
-noncomputable def waveVar (B : BlackBody) (c : SpeedOfLight) (lam : ℝ) : ℝ :=
-  (h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ))
-
-/-- Dimensionless frequency variable `x = h ν / (kB T)`. -/
-noncomputable def freqVar (B : BlackBody) (ν : ℝ) : ℝ :=
-  (h : ℝ) * ν / (kB * (B.T : ℝ))
-
-/-- The wavelength prefactor is positive for positive temperature. -/
-lemma wavePrefactor_pos (B : BlackBody) (c : SpeedOfLight)
-    (hT : 0 < (B.T : ℝ)) : 0 < B.wavePrefactor c := by
-  unfold wavePrefactor
-  apply div_pos
-  · exact mul_pos zero_lt_two (pow_pos (mul_pos kB_pos hT) 5)
-  · exact mul_pos (pow_pos h_pos 4) (pow_pos c.val_pos 3)
-
-/-- The frequency prefactor is positive for positive temperature. -/
-lemma freqPrefactor_pos (B : BlackBody) (c : SpeedOfLight)
-    (hT : 0 < (B.T : ℝ)) : 0 < B.freqPrefactor c := by
-  unfold freqPrefactor
-  apply div_pos
-  · exact mul_pos zero_lt_two (pow_pos (mul_pos kB_pos hT) 3)
-  · exact mul_pos (pow_pos h_pos 2) (pow_pos c.val_pos 2)
-
-/-- The dimensionless wavelength variable is positive for positive wavelength and temperature. -/
-lemma waveVar_pos (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam) : 0 < B.waveVar c lam := by
-  unfold waveVar
-  exact div_pos (mul_pos h_pos c.val_pos) (mul_pos (mul_pos hlam kB_pos) hT)
-
-/-- The dimensionless frequency variable is positive for positive frequency and temperature. -/
-lemma freqVar_pos (B : BlackBody) (ν : ℝ)
-    (hT : 0 < (B.T : ℝ)) (hν : 0 < ν) : 0 < B.freqVar ν := by
-  unfold freqVar
-  exact div_pos (mul_pos h_pos hν) (mul_pos kB_pos hT)
-
-/-- The wavelength curve factors through the `n = 5` profile on `λ > 0`. -/
-lemma spectralRadianceWave_eq_profile (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam) :
-    B.spectralRadianceWave c lam
-      = B.wavePrefactor c * wienProfile 5 (B.waveVar c lam) := by
-  unfold spectralRadianceWave wavePrefactor wienProfile waveVar
-  rw [ite_eq_left hlam]
-  have hlam' : lam ≠ 0 := ne_of_gt hlam
-  have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
-  have hc' : (c : ℝ) ≠ 0 := ne_of_gt c.val_pos
-  have hk' : kB ≠ 0 := ne_of_gt kB_pos
-  have hT' : (B.T : ℝ) ≠ 0 := ne_of_gt hT
-  have hE : Real.exp ((h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ))) - 1 ≠ 0 := by
-    have harg : 0 < (h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ)) :=
-      div_pos (mul_pos h_pos c.val_pos) (mul_pos (mul_pos hlam kB_pos) hT)
-    have h1e : 1 < Real.exp ((h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ))) :=
-      Real.one_lt_exp_iff.mpr harg
-    exact ne_of_gt (sub_pos.mpr h1e)
-  field_simp
-
-/-- The frequency curve factors through the `n = 3` profile on `ν > 0`. -/
-lemma spectralRadiance_eq_profile (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
-    (hT : 0 < (B.T : ℝ)) (hν : 0 < ν) :
-    B.spectralRadiance c ν = B.freqPrefactor c * wienProfile 3 (B.freqVar ν) := by
-  unfold spectralRadiance freqPrefactor wienProfile freqVar
-  rw [ite_eq_left hν]
-  have hν' : ν ≠ 0 := ne_of_gt hν
-  have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
-  have hc' : (c : ℝ) ≠ 0 := ne_of_gt c.val_pos
-  have hk' : kB ≠ 0 := ne_of_gt kB_pos
-  have hT' : (B.T : ℝ) ≠ 0 := ne_of_gt hT
-  have hE : Real.exp ((h : ℝ) * ν / (kB * (B.T : ℝ))) - 1 ≠ 0 := by
-    have harg : 0 < (h : ℝ) * ν / (kB * (B.T : ℝ)) :=
-      div_pos (mul_pos h_pos hν) (mul_pos kB_pos hT)
-    have h1e : 1 < Real.exp ((h : ℝ) * ν / (kB * (B.T : ℝ))) :=
-      Real.one_lt_exp_iff.mpr harg
-    exact ne_of_gt (sub_pos.mpr h1e)
-  field_simp
 
 /-- Derivative of the wavelength curve at `λ > 0`, via the chain rule. -/
 lemma hasDerivAt_wave (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
@@ -925,6 +943,7 @@ lemma hasDerivAt_wave (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
     exact spectralRadianceWave_eq_profile B c y hT hy
   exact hC.congr_of_eventuallyEq heq
 
+
 /-- Critical-point equation for the wavelength curve: `deriv = 0` iff the
   dimensionless variable satisfies the `n = 5` Wien equation. -/
 theorem wave_crit_iff (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
@@ -944,14 +963,15 @@ theorem wave_crit_iff (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
   · intro hzero
     have hmul := (mul_eq_zero.mp hzero).resolve_left hC0
     have hderiv := (mul_eq_zero.mp hmul).resolve_right hK0
-    have hcrit := (wienProfile_crit_iff 5 five_ge_one
+    have hcrit := (wienProfile_crit_iff 5 (by norm_num)
       (B.waveVar c lam) hx).mp hderiv
     simpa using hcrit
   · intro hsol
     have hderiv : deriv (wienProfile 5) (B.waveVar c lam) = 0 :=
-      (wienProfile_crit_iff 5 five_ge_one (B.waveVar c lam) hx).mpr
+      (wienProfile_crit_iff 5 (by norm_num) (B.waveVar c lam) hx).mpr
         (by simpa using hsol)
     rw [hderiv, zero_mul, mul_zero]
+
 
 /-- Derivative of the frequency curve at `ν > 0`, via the chain rule. -/
 lemma hasDerivAt_freq (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
@@ -1014,6 +1034,7 @@ lemma hasDerivAt_freq (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
     exact spectralRadiance_eq_profile B c y hT hy
   exact hC.congr_of_eventuallyEq heq
 
+
 /-- Critical-point equation for the frequency curve: `deriv = 0` iff the
   dimensionless variable satisfies the `n = 3` Wien equation. -/
 theorem freq_crit_iff (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
@@ -1031,25 +1052,15 @@ theorem freq_crit_iff (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
   · intro hzero
     have hmul := (mul_eq_zero.mp hzero).resolve_left hC0
     have hderiv := (mul_eq_zero.mp hmul).resolve_right hK0
-    have hcrit := (wienProfile_crit_iff 3 three_ge_one
+    have hcrit := (wienProfile_crit_iff 3 (by norm_num)
       (B.freqVar ν) hx).mp hderiv
     simpa using hcrit
   · intro hsol
     have hderiv : deriv (wienProfile 3) (B.freqVar ν) = 0 :=
-      (wienProfile_crit_iff 3 three_ge_one (B.freqVar ν) hx).mpr
+      (wienProfile_crit_iff 3 (by norm_num) (B.freqVar ν) hx).mpr
         (by simpa using hsol)
     rw [hderiv, zero_mul, mul_zero]
 
-/-!
-
-## E'. Physical curves: continuity, limits, global maxima, boundedness
-
-The dimensionless variables tend to `0` or `∞` at the ends of the physical
-domain, so the profile asymptotics transfer to the Planck curves by
-composition. The curves are continuous on `(0, ∞)`, vanish at both ends,
-and attain their unique global maximum where the dimensionless variable
-hits the Wien root.
--/
 
 /-- The wavelength variable tends to `0⁺` as `λ → ∞`. -/
 lemma waveVar_tendsto_nhdsWithin_atTop (B : BlackBody) (c : SpeedOfLight)
@@ -1080,6 +1091,7 @@ lemma waveVar_tendsto_nhdsWithin_atTop (B : BlackBody) (c : SpeedOfLight)
     _ hbase hpos
   exact hlim.congr (fun lam => (hfun lam).symm)
 
+
 /-- The wavelength variable tends to `∞` as `λ → 0⁺`. -/
 lemma waveVar_tendsto_atTop_nhdsWithin (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1100,6 +1112,7 @@ lemma waveVar_tendsto_atTop_nhdsWithin (B : BlackBody) (c : SpeedOfLight)
     tendsto_inv_nhdsGT_zero.atTop_mul_const hK
   exact hlim.congr (fun lam => (hfun lam).symm)
 
+
 /-- The frequency variable tends to `∞` as `ν → ∞` (linear with positive slope). -/
 lemma freqVar_tendsto_atTop_atTop (B : BlackBody)
     (hT : 0 < (B.T : ℝ)) :
@@ -1113,6 +1126,7 @@ lemma freqVar_tendsto_atTop_atTop (B : BlackBody)
   have hlim : Tendsto (fun ν : ℝ => ν * ((h : ℝ) / (kB * (B.T : ℝ)))) atTop atTop :=
     tendsto_id.atTop_mul_const hK
   exact hlim.congr (fun ν => (hfun ν).symm)
+
 
 /-- The frequency variable tends to `0⁺` as `ν → 0⁺` (linear with positive slope). -/
 lemma freqVar_tendsto_nhdsWithin (B : BlackBody)
@@ -1134,6 +1148,7 @@ lemma freqVar_tendsto_nhdsWithin (B : BlackBody)
   · exact hlim.congr (fun ν => (hfun ν).symm)
   · filter_upwards [self_mem_nhdsWithin] with ν hν
     exact mem_Ioi.mpr (mul_pos hK hν)
+
 
 /-- The wavelength curve is continuous on `(0, ∞)`. -/
 lemma spectralRadianceWave_continuousOn (B : BlackBody) (c : SpeedOfLight)
@@ -1159,6 +1174,7 @@ lemma spectralRadianceWave_continuousOn (B : BlackBody) (c : SpeedOfLight)
       exact waveVar_pos B c lam hT hlam
   exact hcont.congr heq
 
+
 /-- The frequency curve is continuous on `(0, ∞)`. -/
 lemma spectralRadiance_continuousOn (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1180,6 +1196,7 @@ lemma spectralRadiance_continuousOn (B : BlackBody) (c : SpeedOfLight)
       exact freqVar_pos B ν hT hν
   exact hcont.congr heq
 
+
 /-- The wavelength curve vanishes at infinity: `B(λ, T) → 0` as `λ → ∞`. -/
 lemma spectralRadianceWave_tendsto_zero_atTop (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1194,6 +1211,7 @@ lemma spectralRadianceWave_tendsto_zero_atTop (B : BlackBody) (c : SpeedOfLight)
   have hC := hflim.const_mul (B.wavePrefactor c)
   rw [mul_zero] at hC
   exact hC.congr' heq.symm
+
 
 /-- The wavelength curve vanishes at the origin: `B(λ, T) → 0` as `λ → 0⁺`. -/
 lemma spectralRadianceWave_tendsto_nhdsWithin_zero (B : BlackBody) (c : SpeedOfLight)
@@ -1210,6 +1228,7 @@ lemma spectralRadianceWave_tendsto_nhdsWithin_zero (B : BlackBody) (c : SpeedOfL
   rw [mul_zero] at hC
   exact hC.congr' heq.symm
 
+
 /-- The frequency curve vanishes at infinity: `B(ν, T) → 0` as `ν → ∞`. -/
 lemma spectralRadiance_tendsto_zero_atTop (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1225,6 +1244,7 @@ lemma spectralRadiance_tendsto_zero_atTop (B : BlackBody) (c : SpeedOfLight)
   rw [mul_zero] at hC
   exact hC.congr' heq.symm
 
+
 /-- The frequency curve vanishes at the origin: `B(ν, T) → 0` as `ν → 0⁺`. -/
 lemma spectralRadiance_tendsto_nhdsWithin_zero (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1239,6 +1259,7 @@ lemma spectralRadiance_tendsto_nhdsWithin_zero (B : BlackBody) (c : SpeedOfLight
   have hC := hflim.const_mul (B.freqPrefactor c)
   rw [mul_zero] at hC
   exact hC.congr' heq.symm
+
 
 /-- The wavelength curve attains its unique global maximum on `(0, ∞)` at
   `λ* = h c / (kB T x₅)`: the peak of the blackbody spectrum. -/
@@ -1274,6 +1295,7 @@ theorem spectralRadianceWave_isMaxOn (B : BlackBody) (c : SpeedOfLight)
   rw [e1, e2, hstar]
   exact mul_le_mul_of_nonneg_left hprof' hC
 
+
 /-- The frequency curve attains its unique global maximum on `(0, ∞)` at
   `ν* = kB T x₃ / h`. -/
 theorem spectralRadiance_isMaxOn (B : BlackBody) (c : SpeedOfLight)
@@ -1304,6 +1326,7 @@ theorem spectralRadiance_isMaxOn (B : BlackBody) (c : SpeedOfLight)
   rw [e1, e2, hstar]
   exact mul_le_mul_of_nonneg_left hprof' hC
 
+
 /-- The wavelength curve is bounded above on `(0, ∞)` (by its peak value). -/
 lemma spectralRadianceWave_bddAbove (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1324,6 +1347,7 @@ lemma spectralRadianceWave_bddAbove (B : BlackBody) (c : SpeedOfLight)
     rw [h0]
     exact le_of_lt (spectralRadianceWave_pos B c _ hlamstar hT)
 
+
 /-- The frequency curve is bounded above on `(0, ∞)` (by its peak value). -/
 lemma spectralRadiance_bddAbove (B : BlackBody) (c : SpeedOfLight)
     (hT : 0 < (B.T : ℝ)) :
@@ -1341,14 +1365,18 @@ lemma spectralRadiance_bddAbove (B : BlackBody) (c : SpeedOfLight)
     rw [h0]
     exact le_of_lt (spectralRadiance_pos B c _ hnustar hT)
 
+
 /-!
 
-## F. Wien's displacement laws
+## G. Wien's displacement laws
 
-A critical point in `λ` forces `x = h c / (λ kB T)` to be a positive solution
-of the Wien equation, hence equal to the Wien root by uniqueness. The product
-`λ T` is therefore the same constant `h c / (kB x₅)` at every temperature;
-likewise `ν / T = kB x₃ / h`.
+The main physical theorems:
+1. `wien_displacement_wave`: if `lam₁` maximizes `B(lam, T₁)` and `lam₂` maximizes
+   `B(lam, T₂)`, then `lam₁ T₁ = lam₂ T₂`.
+2. `wien_displacement_freq`: if `ν₁` maximizes `B(ν, T₁)` and `ν₂` maximizes
+   `B(ν, T₂)`, then `ν₁ / T₁ = ν₂ / T₂`.
+3. `wien_peak_product`: `lam T = h c / (kB x₅)`.
+4. `wien_peak_ratio`: `ν / T = kB x₃ / h`.
 -/
 
 /-- Wien's displacement law (wavelength form): critical wavelengths at different
@@ -1370,8 +1398,8 @@ theorem wien_displacement_wave (B₁ B₂ : BlackBody) (c : SpeedOfLight) (lam�
     unfold wienH
     linarith [e₂]
   -- uniqueness forces the dimensionless variables to agree
-  have huniq₁ := wienRoot_unique 5 five_gt_one _ hx₁ hx₁'
-  have huniq₂ := wienRoot_unique 5 five_gt_one _ hx₂ hx₂'
+  have huniq₁ := wienRoot_unique 5 (by norm_num) _ hx₁ hx₁'
+  have huniq₂ := wienRoot_unique 5 (by norm_num) _ hx₂ hx₂'
   have hxx : B₁.waveVar c lam₁ = B₂.waveVar c lam₂ := by
     rw [huniq₁, huniq₂]
   -- hence `lam₁ T₁ = lam₂ T₂`
@@ -1381,6 +1409,7 @@ theorem wien_displacement_wave (B₁ B₂ : BlackBody) (c : SpeedOfLight) (lam�
   unfold waveVar at hxx
   field_simp at hxx ⊢
   linarith [hxx]
+
 
 /-- Wien's displacement law (frequency form): critical frequencies at different
   temperatures satisfy `ν₁ / T₁ = ν₂ / T₂`. -/
@@ -1400,8 +1429,8 @@ theorem wien_displacement_freq (B₁ B₂ : BlackBody) (c : SpeedOfLight) (ν₁
   have hx₂' : wienH 3 (B₂.freqVar ν₂) = 0 := by
     unfold wienH
     linarith [e₂]
-  have huniq₁ := wienRoot_unique 3 three_gt_one _ hx₁ hx₁'
-  have huniq₂ := wienRoot_unique 3 three_gt_one _ hx₂ hx₂'
+  have huniq₁ := wienRoot_unique 3 (by norm_num) _ hx₁ hx₁'
+  have huniq₂ := wienRoot_unique 3 (by norm_num) _ hx₂ hx₂'
   have hxx : B₁.freqVar ν₁ = B₂.freqVar ν₂ := by
     rw [huniq₁, huniq₂]
   have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
@@ -1412,25 +1441,27 @@ theorem wien_displacement_freq (B₁ B₂ : BlackBody) (c : SpeedOfLight) (ν₁
   field_simp at hxx ⊢
   linarith [hxx]
 
-/-- The peak product `λ T` equals `h c / (kB x₅)` (wavelength Wien constant). -/
+
+/-- The peak product `lam T` equals `h c / (kB x₅)` (wavelength Wien constant). -/
 theorem wien_peak_product (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
     (hT : 0 < (B.T : ℝ)) (hlam : 0 < lam)
     (hcrit : deriv (fun lam => B.spectralRadianceWave c lam) lam = 0) :
-    lam * (B.T : ℝ) = (h : ℝ) * (c : ℝ) / (kB * wienRoot 5 five_gt_one) := by
+    lam * (B.T : ℝ) = (h : ℝ) * (c : ℝ) / (kB * wienConstant5) := by
   have hx : 0 < B.waveVar c lam := waveVar_pos B c lam hT hlam
   have e := (wave_crit_iff B c lam hT hlam).mp hcrit
   have hx' : wienH 5 (B.waveVar c lam) = 0 := by
     unfold wienH
     linarith [e]
-  have huniq := wienRoot_unique 5 five_gt_one _ hx hx'
-  have hrpos := wienRoot_pos 5 five_gt_one
+  have huniq := wienRoot_unique 5 (by norm_num) _ hx hx'
+  have hrpos := wienConstant5_pos
   have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
   have hc' : (c : ℝ) ≠ 0 := ne_of_gt c.val_pos
   have hk' : kB ≠ 0 := ne_of_gt kB_pos
   have hT' : (B.T : ℝ) ≠ 0 := ne_of_gt hT
   have hlam' : lam ≠ 0 := ne_of_gt hlam
-  have hr' : wienRoot 5 five_gt_one ≠ 0 := ne_of_gt hrpos
+  have hr' : wienConstant5 ≠ 0 := ne_of_gt hrpos
   unfold waveVar at huniq
+  unfold wienConstant5 at hr' hrpos ⊢
   field_simp at huniq ⊢
   linarith [huniq]
 
@@ -1438,28 +1469,21 @@ theorem wien_peak_product (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
 theorem wien_peak_ratio (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
     (hT : 0 < (B.T : ℝ)) (hν : 0 < ν)
     (hcrit : deriv (fun ν => B.spectralRadiance c ν) ν = 0) :
-    ν / (B.T : ℝ) = kB * wienRoot 3 three_gt_one / (h : ℝ) := by
+    ν / (B.T : ℝ) = kB * wienConstant3 / (h : ℝ) := by
   have hx : 0 < B.freqVar ν := freqVar_pos B ν hT hν
   have e := (freq_crit_iff B c ν hT hν).mp hcrit
   have hx' : wienH 3 (B.freqVar ν) = 0 := by
     unfold wienH
     linarith [e]
-  have huniq := wienRoot_unique 3 three_gt_one _ hx hx'
+  have huniq := wienRoot_unique 3 (by norm_num) _ hx hx'
   have hh' : (h : ℝ) ≠ 0 := ne_of_gt h_pos
   have hk' : kB ≠ 0 := ne_of_gt kB_pos
   have hT' : (B.T : ℝ) ≠ 0 := ne_of_gt hT
   unfold freqVar at huniq
-  have h1 : (h : ℝ) * ν = kB * (B.T : ℝ) * wienRoot 3 three_gt_one := by
+  unfold wienConstant3 at ⊢
+  have h1 : (h : ℝ) * ν = kB * (B.T : ℝ) * wienRoot 3 (by norm_num) := by
     field_simp at huniq; exact huniq
   field_simp
   linarith
-
-/-- The Wien root is non-zero (it is a positive root of `h(x) = 0`). -/
-lemma wienRoot_ne_zero (n : ℝ) (hn : 1 < n) : wienRoot n hn ≠ 0 :=
-  ne_of_gt (wienRoot_pos n hn)
-
-/-- The Wien root is at most `n` (non-strict version of `wienRoot_lt`). -/
-lemma wienRoot_le_n (n : ℝ) (hn : 1 < n) : wienRoot n hn ≤ n :=
-  le_of_lt (wienRoot_lt n hn)
 
 end BlackBody
