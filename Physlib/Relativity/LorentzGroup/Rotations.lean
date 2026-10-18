@@ -23,7 +23,7 @@ namespace LorentzGroup
 def Rotations (d) : Subgroup (LorentzGroup d) where
   carrier := {Λ | Λ.1 (Sum.inl 0) (Sum.inl 0) = 1 ∧ IsProper Λ}
   mul_mem' {Λ₁ Λ₂} h1 h2 := by
-    rw [Set.mem_setOf_eq] at h1 h2 ⊢
+    rw [Set.mem_ofPred_eq] at h1 h2 ⊢
     constructor
     · rw [← toVector_timeComponent]
       rw [toVector_mul]
@@ -40,10 +40,10 @@ def Rotations (d) : Subgroup (LorentzGroup d) where
       rw [h1.1]
     · exact isProper_mul h1.2 h2.2
   one_mem' := by
-    rw [Set.mem_setOf_eq]
+    rw [Set.mem_ofPred_eq]
     constructor <;> simp
   inv_mem' {Λ} h := by
-    rw [Set.mem_setOf_eq] at h ⊢
+    rw [Set.mem_ofPred_eq] at h ⊢
     constructor
     · simp [inv_eq_dual, minkowskiMatrix.dual_apply, h.1]
     · simpa [inv_eq_dual, IsProper] using h.2
