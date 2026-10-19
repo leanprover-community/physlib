@@ -414,6 +414,7 @@ public import Physlib.QuantumMechanics.Operators.Unbounded
 public import Physlib.QuantumMechanics.Operators.Uncertainty
 public import Physlib.QuantumMechanics.PlanckConstant
 public import Physlib.QuantumMechanics.PoschlTeller.Basic
+public import Physlib.QuantumMechanics.PoschlTeller.Scattering
 public import Physlib.QuantumMechanics.QuantumSystem.Basic
 public import Physlib.QuantumMechanics.RectangularBarrier.Basic
 public import Physlib.QuantumMechanics.SpaceDQuantumSystem
