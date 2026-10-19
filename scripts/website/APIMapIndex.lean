@@ -4,7 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Sneiderman
 -/
 /-!
+
 # API map index
+
+Gathers every `API-map.md` in the library into the website's data file `docs/_data/APIMap.yml`.
+
+## i. Overview
 
 This executable gathers every `API-map.md` in the library into a single
 YAML data file, `docs/_data/APIMap.yml`, for the website to render. It follows
@@ -28,6 +33,31 @@ citations closes a claim: the prose since the previous run. The parser below
 reads exactly that shape; lines outside it are ignored rather than raising
 errors. Each claim's `location` is reconstructed from the entries it cites, so
 the data file keeps the `file (names)` form the website already renders.
+
+## ii. Key results
+
+- `APIMapData` is the content of one API map.
+- `claimsOf` splits a content paragraph into its claims.
+- `parseAPIMap` reads one `API-map.md`.
+- `indexYAML` renders the parsed maps as the YAML data file.
+
+## iii. Table of contents
+
+- A. The data of an API map
+- B. Parsing
+- C. Creating the YAML file
+- D. Main function
+
+## iv. References
+
+- `docs/API_MAP_GUIDE.md`, the guide to writing API maps.
+
+-/
+
+/-!
+
+## A. The data of an API map
+
 -/
 
 /-- One entry of the `## Lean References` list: the number it is cited by,
@@ -57,9 +87,11 @@ structure APIMapData where
   declarations : List APIMapReference := []
   references : List String := []
 
+/-- The number of claims of a map that are done. -/
 def APIMapData.doneCount (map : APIMapData) : Nat :=
   (map.requirements.filter (fun requirement => requirement.done)).length
 
+/-- The number of claims of a map. -/
 def APIMapData.totalCount (map : APIMapData) : Nat :=
   map.requirements.length
 
@@ -67,6 +99,7 @@ def APIMapData.totalCount (map : APIMapData) : Nat :=
 def APIMapData.moduleContext (map : APIMapData) : String :=
   ((map.path.parent.getD map.path).toString.replace "/" ".")
 
+/-- The link to a map on GitHub. -/
 def APIMapData.githubLink (map : APIMapData) : String :=
   -- This follows Lean.Name.toGitHubLink in Physlib.Meta.Basic, pointing at
   -- the repository-relative API-map path instead of a declaration.
@@ -84,10 +117,11 @@ def APIMapData.locationOf (map : APIMapData) (requirement : APIMapRequirement) :
 
 /-!
 
-## Parsing
+## B. Parsing
 
 -/
 
+/-- `value` with leading and trailing whitespace removed. -/
 def trim (value : String) : String := value.trimAscii.toString
 
 /-- The text between the first pair of `delimiter`s, and the remainder after
@@ -199,6 +233,7 @@ inductive Section
   | unknown
 deriving BEq
 
+/-- The section a `##` heading opens. -/
 def sectionOf (heading : String) : Section :=
   match heading with
   | "Abstract" | "Abstract (Alpha)" => .abstract
@@ -267,6 +302,7 @@ def parseAPIMap (path : System.FilePath) : IO APIMapData := do
     requirements := contentParagraphs.flatMap (fun (alpha, text) => claimsOf alpha text) }
   return map
 
+/-- The paths of every `API-map.md` under `directory`. -/
 partial def findAPIMaps (directory : System.FilePath) : IO (List System.FilePath) := do
   let mut paths := []
   for entry in ← directory.readDir do
@@ -278,7 +314,7 @@ partial def findAPIMaps (directory : System.FilePath) : IO (List System.FilePath
 
 /-!
 
-## Creating the YAML file
+## C. Creating the YAML file
 
 -/
 
@@ -301,11 +337,13 @@ def yamlScalarOrBlock (key : String) (indent : String) (value : String) : String
     String.join (valueLines.map (fun valueLine =>
       if valueLine == "" then "\n" else s!"\n{indent}  {valueLine}"))
 
+/-- A Lean reference as a YAML list item. -/
 def APIMapReference.toYAML (reference : APIMapReference) : String :=
   s!"      - index: {reference.index}\n" ++
   s!"        file: {yamlQuote reference.file}\n" ++
   yamlStringList "declarations" "        " reference.declarations
 
+/-- A claim of a map as a YAML list item, with its location. -/
 def APIMapData.requirementYAML (map : APIMapData) (requirement : APIMapRequirement) : String :=
   yamlScalarOrBlock "- description" "      " requirement.description ++ "\n" ++
   s!"        done: {requirement.done}\n" ++
@@ -313,6 +351,7 @@ def APIMapData.requirementYAML (map : APIMapData) (requirement : APIMapRequireme
   s!"        citations: [{String.intercalate ", " (requirement.citations.map toString)}]\n" ++
   s!"        alpha: {requirement.alpha}"
 
+/-- A map as a YAML list item. -/
 def APIMapData.toYAML (map : APIMapData) : String :=
   let requirementsPart :=
     if map.requirements.isEmpty then "    requirements: []"
@@ -334,6 +373,7 @@ def APIMapData.toYAML (map : APIMapData) : String :=
   requirementsPart ++ "\n" ++
   declarationsPart
 
+/-- The YAML data file for all the maps: the totals, then each map. -/
 def indexYAML (maps : List APIMapData) : String :=
   let done := maps.foldl (fun count map => count + map.doneCount) 0
   let total := maps.foldl (fun count map => count + map.totalCount) 0
@@ -343,10 +383,11 @@ def indexYAML (maps : List APIMapData) : String :=
 
 /-!
 
-## Main function
+## D. Main function
 
 -/
 
+/-- Prints the YAML data file, and writes it when passed `mkFile`. -/
 def main (args : List String) : IO UInt32 := do
   let mut paths : List System.FilePath := []
   for root in ["Physlib", "PhyslibAlpha", "QuantumInfo"] do
