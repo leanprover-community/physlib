@@ -122,8 +122,7 @@ lemma symbolAction_one_tmul (c : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) (φ
         Module.Dual.transpose (jetEval ∘ₗ TensorProduct.lift
           ((LinearMap.llcomp ℂ V V (SpaceTimeAlgebra ⊗[ℂ] V)).comp
             (TensorProduct.mk ℂ SpaceTimeAlgebra V)) c) φ := by
-  induction c using TensorProduct.induction_on with
-  | zero => simp
+  induction c using TensorProduct.inductionOn with
   | add c₁ c₂ h₁ h₂ =>
     rw [map_add, LinearMap.add_apply, h₁, h₂, map_add, LinearMap.comp_add, map_add,
       LinearMap.add_apply, TensorProduct.tmul_add]
@@ -241,8 +240,7 @@ along `f` is the symbol action of the coefficient precomposed with `f`. -/
 lemma map_transpose_comp_symbolAction (f : V →ₗ[ℂ] W) (y : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ W) :
     (TensorProduct.map LinearMap.id (Module.Dual.transpose f)).comp (symbolAction y)
       = symbolAction (LinearMap.lTensor SpaceTimeAlgebra (LinearMap.lcomp ℂ W f) y) := by
-  induction y using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero, LinearMap.comp_zero]
+  induction y using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, LinearMap.comp_add, ha, hb, map_add, map_add]
   | tmul g T =>
     rw [symbolAction_tmul, ← TensorProduct.map_comp, LinearMap.id_comp,
@@ -255,8 +253,7 @@ lemma map_transpose_comp_symbolAction (f : V →ₗ[ℂ] W) (y : SpaceTimeAlgebr
 lemma symbolAction_comp_map_transpose (f : V →ₗ[ℂ] W) (x : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) :
     (symbolAction x).comp (TensorProduct.map LinearMap.id (Module.Dual.transpose f))
       = symbolAction (LinearMap.lTensor SpaceTimeAlgebra (LinearMap.llcomp ℂ V V W f) x) := by
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero, LinearMap.zero_comp]
+  induction x using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, LinearMap.add_comp, ha, hb, map_add, map_add]
   | tmul g S =>
     rw [symbolAction_tmul, ← TensorProduct.map_comp, LinearMap.comp_id,

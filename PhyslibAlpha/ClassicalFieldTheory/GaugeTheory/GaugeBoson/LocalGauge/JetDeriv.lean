@@ -271,10 +271,7 @@ lemma _root_.GaugeBoson.dual_eq_sum_componentDual
         TensorProduct.mk ℝ Lorentz.CoVector 𝔤 (Lorentz.CoVector.basis μ)) := by
   refine LinearMap.ext fun v => ?_
   obtain ⟨m⟩ := v
-  induction m using TensorProduct.induction_on with
-  | zero =>
-    rw [show (⟨0⟩ : (GaugeBoson 𝔤)) = 0 from rfl]
-    simp
+  induction m using TensorProduct.inductionOn with
   | tmul x a =>
     rw [LinearMap.sum_apply]
     have hx : (⟨x ⊗ₜ[ℝ] a⟩ : (GaugeBoson 𝔤))
@@ -343,8 +340,7 @@ lemma adjoin_iteratedJetDeriv_eq_top :
   rw [← adjoin_ι_eq_top]
   refine Algebra.adjoin_le ?_
   rintro _ ⟨x, rfl⟩
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero]; exact zero_mem _
+  induction x using TensorProduct.inductionOn with
   | add y z hy hz => rw [map_add]; exact add_mem hy hz
   | tmul a ψ =>
     have ha : a ∈ Submodule.span ℝ (Set.range SpaceTimeDerivAlgebraℝ.basisMultiset) := by
@@ -381,14 +377,12 @@ omit [Module.Finite ℝ 𝔤] in
 lemma complexJetDeriv_mul (ν : Fin 1 ⊕ Fin 3) (x y : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra 𝔤)) :
     (complexJetDeriv 𝔤) ν (x * y)
       = (complexJetDeriv 𝔤) ν x * y + x * (complexJetDeriv 𝔤) ν y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ =>
     rw [add_mul, map_add, map_add, h₁, h₂, add_mul, add_mul]
     abel
   | tmul z₁ a₁ =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add y₁ y₂ h₁ h₂ =>
       rw [mul_add, map_add, map_add, h₁, h₂, mul_add, mul_add]
       abel

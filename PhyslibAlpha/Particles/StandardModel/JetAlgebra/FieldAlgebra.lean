@@ -446,8 +446,7 @@ lemma includeGaugeReal_mem_adjoin_generators (x : (LocalGaugeFieldAlgebra GaugeA
   symbols: a pure tensor splits as a complex scalar times the image of its real part. -/
 lemma includeGauge_mem_adjoin_generators (y : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra GaugeAlgebra)) :
     includeGauge y ∈ Algebra.adjoin ℂ generators := by
-  induction y using TensorProduct.induction_on with
-  | zero => exact mem_adjoin_generators_of_eq (map_zero includeGauge).symm (zero_mem _)
+  induction y using TensorProduct.inductionOn with
   | add a b ha hb =>
     exact mem_adjoin_generators_of_eq (map_add includeGauge a b).symm (add_mem ha hb)
   | tmul z x =>
@@ -527,10 +526,7 @@ lemma includeFermionFactor_mul_includeBosonFactor_mul_includeConnection
 lemma tmul_mem_adjoin_generators (w : fieldData.MatterAlgebra)
     (y : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra GaugeAlgebra)) :
     (w ⊗ₜ[ℂ] y : JetAlgebra) ∈ Algebra.adjoin ℂ generators := by
-  induction w using TensorProduct.induction_on with
-  | zero =>
-    exact mem_adjoin_generators_of_eq
-      (TensorProduct.zero_tmul fieldData.MatterAlgebra y).symm (zero_mem _)
+  induction w using TensorProduct.inductionOn with
   | add a b ha hb =>
     exact mem_adjoin_generators_of_eq (TensorProduct.add_tmul a b y).symm (add_mem ha hb)
   | tmul a b =>

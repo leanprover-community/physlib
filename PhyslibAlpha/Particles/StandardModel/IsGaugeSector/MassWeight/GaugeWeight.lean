@@ -138,7 +138,7 @@ lemma rangeGaugeWeight_piece_zero {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3)
   have hr : ∀ r : Fin 4, ¬ ((0 : GaugeWeight) = adjWeight (Sum.inl r)) := by decide
   have hs : ∀ r : Fin 4, ¬ ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inl r))) := by decide
   have hc : ∀ c : Fin 4, ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [hr, if_false, hs, ciSup_const, bot_sup_eq]
+  simp only [hr, ite_false, hs, ciSup_const, bot_sup_eq]
   rfl
 
 /-- **The weight-zero piece of the gauge derivative submodules**: the spans of the

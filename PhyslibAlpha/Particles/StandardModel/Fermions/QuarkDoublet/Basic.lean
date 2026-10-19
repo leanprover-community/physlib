@@ -134,7 +134,7 @@ noncomputable def colourWeakEquiv :
 lemma colourWeakEquiv_tmul (c : EuclideanSpace ℂ (Fin 3)) (w : EuclideanSpace ℂ (Fin 2))
     (p : Fin 3 × Fin 2) :
     colourWeakEquiv (c ⊗ₜ[ℂ] w) p = c.ofLp p.1 * w.ofLp p.2 := by
-  simp [colourWeakEquiv, Function.uncurry, Algebra.algebraMap_eq_smul_one, mul_comm]
+  simp [colourWeakEquiv, Function.uncurry, mul_comm]
 
 /-- Absorbs the jet ring into the combined colour–weak index: a jet of a quark doublet is
 the same thing as a left-handed Weyl spinor tensored with a `SpaceTimeAlgebra`-valued
@@ -253,22 +253,13 @@ lemma jetValLinEquiv_smul (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ]
           ((LinearMap.lsmul SpaceTimeAlgebra
             (EuclideanSpace SpaceTimeAlgebra (Fin 3 × Fin 2)) χ).restrictScalars ℂ)
           (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [smul_add, map_add, ha, hb, map_add, map_add]
   | tmul f x =>
     obtain ⟨v⟩ := x
-    induction v using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : QuarkDoublet) = 0 from rfl, TensorProduct.tmul_zero,
-        smul_zero, map_zero, map_zero]
+    induction v using TensorProduct.inductionOn with
     | tmul vc w =>
-      induction vc using TensorProduct.induction_on with
-      | zero =>
-        rw [show ({ val := (0 : Fermion.LeftHandedWeyl ⊗[ℂ] EuclideanSpace ℂ (Fin 3))
-            ⊗ₜ[ℂ] w } : QuarkDoublet) = 0 from by
-          rw [TensorProduct.zero_tmul]; rfl, TensorProduct.tmul_zero, smul_zero,
-          map_zero, map_zero]
+      induction vc using TensorProduct.inductionOn with
       | tmul ψ c =>
         rw [TensorProduct.smul_tmul', smul_eq_mul,
           show jetValLinEquiv ((χ * f) ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c ⊗ₜ[ℂ] w⟩ : QuarkDoublet))
@@ -334,17 +325,9 @@ lemma repJetGaugeGroupI_ofConstant (g : GaugeGroupI) :
       TensorProduct.map LinearMap.id (repGaugeGroupI g) := by
   ext d x
   obtain ⟨v⟩ := x
-  induction v using TensorProduct.induction_on with
-  | zero => simp [show ({ val := 0 } : QuarkDoublet) = 0 from rfl]
+  induction v using TensorProduct.inductionOn with
   | tmul vc w =>
-      induction vc using TensorProduct.induction_on with
-      | zero =>
-          have h : ({ val := (0 : Fermion.LeftHandedWeyl ⊗[ℂ] EuclideanSpace ℂ (Fin 3))
-              ⊗ₜ[ℂ] w } : QuarkDoublet) = 0 := by
-            rw [TensorProduct.zero_tmul]
-            rfl
-          rw [h]
-          simp
+      induction vc using TensorProduct.inductionOn with
       | tmul psi c =>
           apply jetValLinEquiv.injective
           simp [repJetGaugeGroupI, jetValLinEquiv, repGaugeGroupI, -TensorProduct.congr_symm]
@@ -353,7 +336,7 @@ lemma repJetGaugeGroupI_ofConstant (g : GaugeGroupI) :
                   Module.End SpaceTimeAlgebra (EuclideanSpace SpaceTimeAlgebra (Fin 3 × Fin 2)))
                 = Matrix.toLpLin 2 2 A := fun _ => rfl
           rw [TensorProduct.liftAux_tmul]
-          simp only [LinearMap.compl₂_apply, TensorProduct.mk_apply, LinearMap.smul_apply,
+          simp only [LinearMap.compl₂_apply, TensorProduct.mk_apply,
             LinearMap.restrictScalars_apply, halg, Matrix.toLpLin_toLp]
           rw [← TensorProduct.tmul_smul]
           congr 1

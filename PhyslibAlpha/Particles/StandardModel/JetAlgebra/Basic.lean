@@ -163,8 +163,7 @@ private lemma tensor_includeRight_comm {A B : Type*} [Ring A] [Algebra ℂ A]
     [CommRing B] [Algebra ℂ B] (y : B) (x : A ⊗[ℂ] B) :
     x * Algebra.TensorProduct.includeRight (R := ℂ) (A := A) y
       = Algebra.TensorProduct.includeRight (R := ℂ) (A := A) y * x := by
-  induction x using TensorProduct.induction_on with
-  | zero => rw [zero_mul, mul_zero]
+  induction x using TensorProduct.inductionOn with
   | add a b ha hb => rw [add_mul, mul_add, ha, hb]
   | tmul w g =>
     rw [show (Algebra.TensorProduct.includeRight (R := ℂ) (A := A) y : A ⊗[ℂ] B)

@@ -336,7 +336,7 @@ lemma derivSubmoduleGaugeWeight_piece_rootWeight (n : ℕ) (r : Fin 4) :
       ¬ (GaugeAlgebra.rootWeight a = adjWeight (Sum.inr (Sum.inl b))) := by decide
   have h3 : ∀ a c : Fin 4,
       ¬ (GaugeAlgebra.rootWeight a = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [h1, h2, h3, if_false, iSup_bot, sup_bot_eq]
+  simp only [h1, h2, h3, ite_false, iSup_bot, sup_bot_eq]
   refine le_antisymm (iSup_le fun i => ?_) (le_iSup_of_le r (by simp))
   split_ifs with hi
   · subst hi
@@ -357,7 +357,7 @@ lemma derivSubmoduleGaugeWeight_piece_neg_rootWeight (n : ℕ) (r : Fin 4) :
     decide
   have h3 : ∀ a c : Fin 4,
       ¬ (-(GaugeAlgebra.rootWeight a) = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [h1, h2, h3, if_false, iSup_bot, bot_sup_eq, sup_bot_eq]
+  simp only [h1, h2, h3, ite_false, iSup_bot, bot_sup_eq, sup_bot_eq]
   refine le_antisymm (iSup_le fun i => ?_) (le_iSup_of_le r (by simp))
   split_ifs with hi
   · subst hi
@@ -377,7 +377,7 @@ lemma derivSubmoduleGaugeWeight_piece_zero' (n : ℕ) :
   have h1 : ∀ b : Fin 4, ¬ ((0 : GaugeWeight) = adjWeight (Sum.inl b)) := by decide
   have h2 : ∀ b : Fin 4, ¬ ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inl b))) := by decide
   have h3 : ∀ c : Fin 4, ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [h1, h2, if_false, iSup_bot, bot_sup_eq]
+  simp only [h1, h2, ite_false, iSup_bot, bot_sup_eq]
   exact iSup_congr fun c => ite_eq_left (h3 c)
 
 /-- Every other weight has a trivial piece. -/

@@ -298,22 +298,13 @@ private lemma jetValLinEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3)
     (z : SpaceTimeAlgebra ⊗[ℂ] QuarkDoublet) :
     jetValLinEquiv (jetDeriv μ z)
       = (TensorProduct.map LinearMap.id (pderivColourWeak μ)) (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero]
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f d =>
     obtain ⟨v⟩ := d
-    induction v using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : QuarkDoublet) = 0 from rfl, TensorProduct.tmul_zero,
-        map_zero, map_zero, map_zero]
+    induction v using TensorProduct.inductionOn with
     | tmul vc w =>
-      induction vc using TensorProduct.induction_on with
-      | zero =>
-        rw [show ({ val := (0 : Fermion.LeftHandedWeyl ⊗[ℂ] EuclideanSpace ℂ (Fin 3))
-            ⊗ₜ[ℂ] w } : QuarkDoublet) = 0 from by
-          rw [TensorProduct.zero_tmul]; rfl, TensorProduct.tmul_zero, map_zero,
-          map_zero, map_zero]
+      induction vc using TensorProduct.inductionOn with
       | tmul ψ c =>
         rw [show jetDeriv μ
               (f ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c ⊗ₜ[ℂ] w⟩ : QuarkDoublet))
@@ -367,22 +358,13 @@ private lemma jetValLinEquiv_jetIteratedDeriv (x : Multiset (Fin 1 ⊕ Fin 3))
 private lemma colourWeakValLinEquiv_jetEval (z : SpaceTimeAlgebra ⊗[ℂ] QuarkDoublet) :
     colourWeakValLinEquiv (jetEval z)
       = (TensorProduct.map LinearMap.id ccColourWeak) (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f d =>
     obtain ⟨v⟩ := d
-    induction v using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : QuarkDoublet) = 0 from rfl, TensorProduct.tmul_zero]
-      simp
+    induction v using TensorProduct.inductionOn with
     | tmul vc w =>
-      induction vc using TensorProduct.induction_on with
-      | zero =>
-        rw [show ({ val := (0 : Fermion.LeftHandedWeyl ⊗[ℂ] EuclideanSpace ℂ (Fin 3))
-            ⊗ₜ[ℂ] w } : QuarkDoublet) = 0 from by
-          rw [TensorProduct.zero_tmul]; rfl, TensorProduct.tmul_zero]
-        simp
+      induction vc using TensorProduct.inductionOn with
       | tmul ψ c =>
         rw [jetEval_tmul, map_smul,
           show colourWeakValLinEquiv (⟨ψ ⊗ₜ[ℂ] c ⊗ₜ[ℂ] w⟩ : QuarkDoublet)
@@ -515,22 +497,14 @@ lemma repCoeff_eq (U : JetGaugeGroupI) (x : Multiset (Fin 1 ⊕ Fin 3)) :
     repJetGaugeGroupI_eq_jetGaugeMatrix, LinearEquiv.apply_symm_apply,
     jetOfConstant_apply]
   obtain ⟨v⟩ := d
-  induction v using TensorProduct.induction_on with
-  | zero =>
-    rw [show ({ val := 0 } : QuarkDoublet) = 0 from rfl, TensorProduct.tmul_zero]
-    simp
+  induction v using TensorProduct.inductionOn with
   | add a b ha hb =>
     rw [show ({ val := a + b } : QuarkDoublet) = ⟨a⟩ + ⟨b⟩ from rfl,
       TensorProduct.tmul_add]
     simp only [map_add]
     rw [ha, hb]
   | tmul vc wk =>
-    induction vc using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := (0 : Fermion.LeftHandedWeyl ⊗[ℂ] EuclideanSpace ℂ (Fin 3))
-          ⊗ₜ[ℂ] wk } : QuarkDoublet) = 0 from by
-        rw [TensorProduct.zero_tmul]; rfl, TensorProduct.tmul_zero]
-      simp
+    induction vc using TensorProduct.inductionOn with
     | tmul ψ cv =>
       rw [show jetValLinEquiv
             ((1 : SpaceTimeAlgebra) ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] cv ⊗ₜ[ℂ] wk⟩ : QuarkDoublet))

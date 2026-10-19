@@ -233,8 +233,7 @@ private lemma jetValLinEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3)
     (z : SpaceTimeAlgebra ⊗[ℂ] HiggsVec) :
     jetValLinEquiv (jetDeriv μ z)
       = pderivWeak μ (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f v =>
     rw [jetDeriv_tmul, jetValLinEquiv_tmul, jetValLinEquiv_tmul]
@@ -261,8 +260,7 @@ private lemma jetValLinEquiv_jetIteratedDeriv (x : Multiset (Fin 1 ⊕ Fin 3))
 /-- The base-point evaluation of a Higgs-doublet jet through the weak coordinates. -/
 private lemma jetEval_eq (z : SpaceTimeAlgebra ⊗[ℂ] HiggsVec) :
     jetEval z = ccWeak (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, map_add, ha, hb]
   | tmul f v =>
     rw [jetEval_tmul, jetValLinEquiv_tmul]

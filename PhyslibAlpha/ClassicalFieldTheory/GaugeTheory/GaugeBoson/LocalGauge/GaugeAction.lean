@@ -115,12 +115,7 @@ lemma adjointTransport_mul (U V : GJ) (p : Multiset (Fin 1 ⊕ Fin 3)) :
   refine LinearMap.ext fun v => ?_
   rw [Multiset.sum_linearMap_apply, Multiset.map_map]
   obtain ⟨m⟩ := v
-  induction m using TensorProduct.induction_on with
-  | zero =>
-    rw [show (⟨0⟩ : (GaugeBoson 𝔤)) = 0 from rfl, map_zero]
-    refine (Multiset.sum_eq_zero fun x hx => ?_).symm
-    obtain ⟨r, hr, rfl⟩ := Multiset.mem_map.mp hx
-    simp
+  induction m using TensorProduct.inductionOn with
   | tmul x a =>
     apply (valLinEquiv 𝔤).injective
     rw [adjointTransport_mk_tmul, map_multiset_sum, Multiset.map_map, valLinEquiv_apply,
@@ -148,9 +143,7 @@ lemma dualMap_adjointTransport_componentDual (U : GJ)
       = (componentDual 𝔤) ω (φ ∘ₗ jets.adjointCoeff U p) := by
   refine LinearMap.ext fun v => ?_
   obtain ⟨m⟩ := v
-  induction m using TensorProduct.induction_on with
-  | zero =>
-    rw [show (⟨0⟩ : (GaugeBoson 𝔤)) = 0 from rfl, map_zero, map_zero]
+  induction m using TensorProduct.inductionOn with
   | tmul x a =>
     rw [LinearMap.dualMap_apply, adjointTransport_mk_tmul,
       componentDual_apply_val_tmul, componentDual_apply_val_tmul]
@@ -202,8 +195,7 @@ lemma _root_.GaugeBoson.JetComponentSpace.ext_of_basis
       F (SpaceTimeDerivAlgebraℝ.basisMultiset s ⊗ₜ[ℝ] ψ)
         = G (SpaceTimeDerivAlgebraℝ.basisMultiset s ⊗ₜ[ℝ] ψ)) : F = G := by
   refine LinearMap.ext fun x => ?_
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero]
+  induction x using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb]
   | tmul a ψ =>
     have ha : a ∈ Submodule.span ℝ
@@ -567,8 +559,7 @@ noncomputable def complexRepJetAlgHom (U : GJ) :
 omit [Module.Finite ℝ 𝔤] in
 lemma complexRepJet_apply (U : GJ) (x : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra 𝔤)) :
     complexRepJet jets U x = complexRepJetAlgHom jets U x := by
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero]
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ => rw [map_add, map_add, h₁, h₂]
   | tmul z a => rfl
 
@@ -577,12 +568,10 @@ lemma complexRepJet_apply_mul (U : GJ)
     (x y : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra 𝔤)) :
     complexRepJet jets U (x * y)
       = complexRepJet jets U x * complexRepJet jets U y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ => rw [add_mul, map_add, map_add, h₁, h₂, add_mul]
   | tmul z₁ a₁ =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add y₁ y₂ h₁ h₂ => rw [mul_add, map_add, map_add, h₁, h₂, mul_add]
     | tmul z₂ a₂ =>
       rw [Algebra.TensorProduct.tmul_mul_tmul, complexRepJet_tmul,

@@ -441,14 +441,12 @@ lemma jetDeriv_baseChange_mul (ρ : Fin 1 ⊕ Fin 3) (x y : ℂ ⊗[ℝ] JetAlge
     LinearMap.baseChange ℂ (jetDeriv ρ) (x * y) =
       LinearMap.baseChange ℂ (jetDeriv ρ) x * y +
         x * LinearMap.baseChange ℂ (jetDeriv ρ) y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add a b ha hb =>
     simp only [add_mul, map_add, ha, hb]
     abel
   | tmul c p =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add a b ha hb =>
       simp only [mul_add, map_add, ha, hb]
       abel
@@ -1305,15 +1303,15 @@ lemma tmul_C_eq_smul_one (r : ℝ) :
     smul_tmul', ← one_eq_tmul]
 
 /-- Induction on the jet algebra, stated for `JetAlgebra` itself.  Using
-  `TensorProduct.induction_on` directly leaves the zero, the sum and the pure
-  tensors in the goals carrying the tensor product's structure rather than the
-  jet algebra's, which makes those goals unrewritable. -/
+  `TensorProduct.inductionOn` directly leaves the sum and the pure tensors in
+  the goals carrying the tensor product's structure rather than the jet
+  algebra's, which makes those goals unrewritable. -/
 @[elab_as_elim]
-lemma induction_on {motive : JetAlgebra → Prop} (x : JetAlgebra) (zero : motive 0)
+lemma induction_on {motive : JetAlgebra → Prop} (x : JetAlgebra)
     (tmul : ∀ (a : ℂ ⊗[ℝ] Photon.JetAlgebra) (b : Electron.JetAlgebra),
       motive (a ⊗ⱼ b))
     (add : ∀ x y : JetAlgebra, motive x → motive y → motive (x + y)) : motive x :=
-  TensorProduct.induction_on x zero tmul add
+  TensorProduct.inductionOn x tmul add
 
 /-!
 
@@ -1474,13 +1472,11 @@ lemma jetDeriv_one (ρ : Fin 1 ⊕ Fin 3) : jetDeriv ρ (1 : JetAlgebra) = 0 := 
 lemma jetDeriv_mul (ρ : Fin 1 ⊕ Fin 3) (x y : JetAlgebra) :
     jetDeriv ρ (x * y) = jetDeriv ρ x * y + x * jetDeriv ρ y := by
   induction x using JetAlgebra.induction_on with
-  | zero => simp
   | add a b ha hb =>
     simp only [add_mul, map_add, ha, hb]
     abel
   | tmul p l =>
     induction y using JetAlgebra.induction_on with
-    | zero => simp
     | add a' b' ha' hb' =>
       simp only [mul_add, map_add, ha', hb']
       abel

@@ -545,7 +545,7 @@ lemma adjointDecomposition_piece_rootWeight (hmul : IsMulRep rep)
   have h1 : ∀ a b : Fin 4, (rootWeight a = adjWeight (Sum.inl b)) ↔ b = a := by decide
   have h2 : ∀ a b : Fin 4, ¬ (rootWeight a = adjWeight (Sum.inr (Sum.inl b))) := by decide
   have h3 : ∀ a c : Fin 4, ¬ (rootWeight a = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [h1, h2, h3, if_false, iSup_bot, sup_bot_eq]
+  simp only [h1, h2, h3, ite_false, iSup_bot, sup_bot_eq]
   refine le_antisymm (iSup_le fun b => ?_) (le_iSup_of_le r (by simp))
   split_ifs with hb
   · subst hb
@@ -563,7 +563,7 @@ lemma adjointDecomposition_piece_neg_rootWeight (hmul : IsMulRep rep)
       (-(rootWeight a) = adjWeight (Sum.inr (Sum.inl b))) ↔ b = a := by decide
   have h3 : ∀ a c : Fin 4,
       ¬ (-(rootWeight a) = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [h1, h2, h3, if_false, iSup_bot, bot_sup_eq, sup_bot_eq]
+  simp only [h1, h2, h3, ite_false, iSup_bot, bot_sup_eq, sup_bot_eq]
   refine le_antisymm (iSup_le fun b => ?_) (le_iSup_of_le r (by simp))
   split_ifs with hb
   · subst hb
@@ -581,7 +581,7 @@ lemma adjointDecomposition_piece_zero (hmul : IsMulRep rep)
   have h2 : ∀ b : Fin 4,
       ¬ ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inl b))) := by decide
   have h3 : ∀ c : Fin 4, ((0 : GaugeWeight) = adjWeight (Sum.inr (Sum.inr c))) := by decide
-  simp only [h1, h2, if_false, iSup_bot, bot_sup_eq]
+  simp only [h1, h2, ite_false, iSup_bot, bot_sup_eq]
   exact iSup_congr fun c => ite_eq_left (h3 c)
 
 /-- Every weight outside the nine is absent from the adjoint. -/

@@ -195,15 +195,11 @@ lemma jetValLinEquiv_smul (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ]
           ((LinearMap.lsmul SpaceTimeAlgebra
               (EuclideanSpace SpaceTimeAlgebra (Fin 3)) χ).restrictScalars ℂ)
           (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [smul_add, map_add, ha, hb, map_add, map_add]
   | tmul f x =>
     obtain ⟨v⟩ := x
-    induction v using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : UpSinglet) = 0 from rfl, TensorProduct.tmul_zero,
-        smul_zero, map_zero, map_zero]
+    induction v using TensorProduct.inductionOn with
     | tmul ψ c =>
       rw [TensorProduct.smul_tmul', smul_eq_mul,
         show jetValLinEquiv ((χ * f) ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c⟩ : UpSinglet))
@@ -262,8 +258,7 @@ lemma repJetGaugeGroupI_ofConstant (g : GaugeGroupI) :
       TensorProduct.map LinearMap.id (repGaugeGroupI g) := by
   ext d x
   obtain ⟨v⟩ := x
-  induction v using TensorProduct.induction_on with
-  | zero => simp [show ({ val := 0 } : UpSinglet) = 0 from rfl]
+  induction v using TensorProduct.inductionOn with
   | tmul psi c =>
       apply jetValLinEquiv.injective
       simp [repJetGaugeGroupI, jetValLinEquiv, repGaugeGroupI, -TensorProduct.congr_symm]
@@ -468,8 +463,7 @@ lemma UpSinglet.repGaugeGroupI_gaugeTorusGen_basis (i : Fin 4) (j : Fin 2 × Fin
       Fin.sum_univ_three,
       Matrix.diagonal,
       UpSinglet.valueGaugeWeight, colourWeight, GaugeWeight.coord,
-      expI_inv_eq_star] <;>
-  (try congr 1)
+      expI_inv_eq_star]
 
 /-- The dual action of the gauge torus on the coordinate functionals of
   `UpSinglet`: the weights are negated. -/

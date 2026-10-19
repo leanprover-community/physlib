@@ -266,15 +266,11 @@ private lemma jetValLinEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3)
     (z : SpaceTimeAlgebra ⊗[ℂ] DownSinglet) :
     jetValLinEquiv (jetDeriv μ z)
       = (TensorProduct.map LinearMap.id (pderivColour μ)) (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero]
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f d =>
     obtain ⟨w⟩ := d
-    induction w using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : DownSinglet) = 0 from rfl, TensorProduct.tmul_zero,
-        map_zero, map_zero, map_zero]
+    induction w using TensorProduct.inductionOn with
     | tmul ψ c =>
       rw [show jetDeriv μ (f ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c⟩ : DownSinglet))
           = (pderiv μ f) ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c⟩ : DownSinglet) from rfl,
@@ -312,16 +308,11 @@ private lemma jetValLinEquiv_jetIteratedDeriv (x : Multiset (Fin 1 ⊕ Fin 3))
 private lemma valLinEquiv_jetEval (z : SpaceTimeAlgebra ⊗[ℂ] DownSinglet) :
     valLinEquiv (jetEval z)
       = (TensorProduct.map LinearMap.id ccColour) (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp; rfl
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f d =>
     obtain ⟨w⟩ := d
-    induction w using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : DownSinglet) = 0 from rfl, TensorProduct.tmul_zero]
-      simp
-      rfl
+    induction w using TensorProduct.inductionOn with
     | tmul ψ c =>
       rw [jetEval_tmul, map_smul,
         show valLinEquiv (⟨ψ ⊗ₜ[ℂ] c⟩ : DownSinglet) = ψ ⊗ₜ[ℂ] c from rfl,
@@ -436,11 +427,7 @@ lemma repCoeff_eq (U : JetGaugeGroupI) (x : Multiset (Fin 1 ⊕ Fin 3)) :
     repJetGaugeGroupI_eq_downMatrix, LinearEquiv.apply_symm_apply,
     jetOfConstant_apply]
   obtain ⟨w⟩ := d
-  induction w using TensorProduct.induction_on with
-  | zero =>
-    rw [show ({ val := 0 } : DownSinglet) = 0 from rfl, TensorProduct.tmul_zero]
-    simp
-    rw [show (0 : DownSinglet).val = 0 from rfl, map_zero]
+  induction w using TensorProduct.inductionOn with
   | add a b ha hb =>
     rw [show ({ val := a + b } : DownSinglet) = ⟨a⟩ + ⟨b⟩ from rfl,
       TensorProduct.tmul_add, map_add, map_add, map_add, map_add, ha, hb, map_add,

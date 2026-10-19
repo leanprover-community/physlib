@@ -122,6 +122,6 @@ lemma rightHandedWeyl_rep_fermionicParity :
   simp only [LinearMap.neg_apply, LinearMap.id_coe, id_eq]
   rw [show ((fermionicParity : SL(2, ℂ)) : Matrix (Fin 2) (Fin 2) ℂ) = -1 from rfl]
   fin_cases i <;>
-    simp [Matrix.one_apply, Fin.sum_univ_two]
+    simp [Matrix.one_apply]
 
 end LorentzGroup

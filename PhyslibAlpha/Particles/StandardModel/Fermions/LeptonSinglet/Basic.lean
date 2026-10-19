@@ -279,8 +279,7 @@ commutes with multiplication by scalar jets. -/
 lemma repJetGaugeGroupI_smul (U : JetGaugeGroupI) (χ : SpaceTimeAlgebra)
     (z : SpaceTimeAlgebra ⊗[ℂ] LeptonSinglet) :
     repJetGaugeGroupI U (χ • z) = χ • repJetGaugeGroupI U z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [smul_add, map_add, ha, hb, map_add, smul_add]
   | tmul f ψ =>
     rw [TensorProduct.smul_tmul', smul_eq_mul, repJetGaugeGroupI_tmul,
@@ -337,7 +336,6 @@ lemma LeptonSinglet.repGaugeGroupI_gaugeTorusGen_basis (i : Fin 4) (j : Fin 2) :
     simp [gaugeTorusGen, GaugeGroupI.toU1,
       LeptonSinglet.valueGaugeWeight, GaugeWeight.coord,
       starRingEnd_expI_pow]
-  (try congr 1)
 
 /-- The dual action of the gauge torus on the coordinate functionals of
   `LeptonSinglet`: the weights are negated. -/

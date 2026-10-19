@@ -208,8 +208,7 @@ lemma lTensor_higgsModuleEquiv_repJetGaugeGroupI (U : JetGaugeGroupI) :
   have h1 : ∀ w : SpaceTimeAlgebra ⊗[ℂ] HiggsVec.matterField.V,
       LinearMap.lTensor SpaceTimeAlgebra (fieldData.projBosonField 2 fieldData_boson_massWeight j)
         (LinearMap.lTensor SpaceTimeAlgebra higgsModuleEquiv.toLinearMap w) = w := fun w => by
-    induction w using TensorProduct.induction_on with
-    | zero => rw [map_zero, map_zero]; rfl
+    induction w using TensorProduct.inductionOn with
     | tmul f v => rfl
     | add a b ha hb => rw [map_add, map_add, ha, hb]; rfl
   -- `show` puts the goal in applied form up to defeq, which `simp only` cannot reach here

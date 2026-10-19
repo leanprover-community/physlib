@@ -177,8 +177,7 @@ species-and-generation slot, nothing but the projection applied to the value fac
   factor. -/
 lemma jetEquiv_leptonDoublet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSpace) :
     (jetEquiv z).1 i = LinearMap.lTensor SpaceTimeAlgebra (leptonDoubletProj i) z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul f v => rfl
 
@@ -186,8 +185,7 @@ lemma jetEquiv_leptonDoublet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionS
   factor. -/
 lemma jetEquiv_leptonSinglet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSpace) :
     (jetEquiv z).2.1 i = LinearMap.lTensor SpaceTimeAlgebra (leptonSingletProj i) z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul f v => rfl
 
@@ -195,8 +193,7 @@ lemma jetEquiv_leptonSinglet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionS
   factor. -/
 lemma jetEquiv_quarkDoublet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSpace) :
     (jetEquiv z).2.2.1 i = LinearMap.lTensor SpaceTimeAlgebra (quarkDoubletProj i) z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul f v => rfl
 
@@ -204,8 +201,7 @@ lemma jetEquiv_quarkDoublet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSp
   factor. -/
 lemma jetEquiv_upSinglet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSpace) :
     (jetEquiv z).2.2.2.1 i = LinearMap.lTensor SpaceTimeAlgebra (upSingletProj i) z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul f v => rfl
 
@@ -213,8 +209,7 @@ lemma jetEquiv_upSinglet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSpace
   factor. -/
 lemma jetEquiv_downSinglet (i : Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] FermionSpace) :
     (jetEquiv z).2.2.2.2 i = LinearMap.lTensor SpaceTimeAlgebra (downSingletProj i) z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add x y hx hy => simp [hx, hy]
   | tmul f v => rfl
 

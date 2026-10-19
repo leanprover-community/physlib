@@ -521,9 +521,7 @@ lemma lorentzAction_covDψ (M : SL(2,ℂ)) (e : ℝ) (μ : Fin 1 ⊕ Fin 3)
   congr 1
   all_goals
     refine Finset.sum_congr rfl fun τ _ => Finset.sum_congr rfl fun β' _ => ?_
-    first
-    | rfl
-    | exact congrArg (· • _) (by ring)
+    exact congrArg (· • _) (by ring)
 
 /-!
 

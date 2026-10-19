@@ -768,7 +768,7 @@ lemma basisMultiset_mul (s t : Multiset (Fin 1 ⊕ Fin 3)) :
       (SymmetricAlgebra.equivMvPolynomial Lorentz.CoVector.basis.dualBasis).symm p
       from fun _ => rfl,
     ← map_mul, MvPolynomial.coe_basisMonomials]
-  simp only [MvPolynomial.monomial_mul, mul_one]
+  simp only [MvPolynomial.monomial_mul_monomial, mul_one]
 
 /-- The multiset basis of the real dual derivative slots at the empty multiset is the
   unit. -/

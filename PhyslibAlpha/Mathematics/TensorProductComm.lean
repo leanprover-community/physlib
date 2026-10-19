@@ -49,8 +49,7 @@ lemma lTensor_map_id_comm {k : Type} [CommSemiring k] {W X : Type} [AddCommMonoi
     (t : W ⊗[k] X) :
     (LinearMap.lTensor W f) (TensorProduct.map g LinearMap.id t) =
       TensorProduct.map g LinearMap.id ((LinearMap.lTensor W f) t) := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul x y => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -64,11 +63,9 @@ lemma congr_assoc_map_id_comm {k : Type} [CommSemiring k] {W X Y Z : Type} [AddC
         (TensorProduct.map (TensorProduct.map g LinearMap.id) LinearMap.id t)) =
       TensorProduct.map g LinearMap.id
         ((TensorProduct.congr (LinearEquiv.refl k W) E) (TensorProduct.assoc k W X Y t)) := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul x y =>
-      induction x using TensorProduct.induction_on with
-      | zero => simp
+      induction x using TensorProduct.inductionOn with
       | tmul a b => simp
       | add p q hp hq => simp only [TensorProduct.add_tmul, map_add, hp, hq]
   | add p q hp hq => simp only [map_add, hp, hq]

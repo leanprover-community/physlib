@@ -155,8 +155,7 @@ lemma jetEval_jetOfConstant (v : V) : jetEval (jetOfConstant v) = v := by
   its constant coefficient. -/
 lemma jetEval_smul (f : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] V) :
     jetEval (f • z) = constantCoeff f • jetEval z := by
-  induction z using TensorProduct.induction_on with
-  | zero => rw [smul_zero, map_zero, smul_zero]
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [smul_add, map_add, ha, hb, map_add, smul_add]
   | tmul g v => rw [TensorProduct.smul_tmul', smul_eq_mul, jetEval_tmul, jetEval_tmul, map_mul,
       mul_smul]
@@ -189,8 +188,7 @@ lemma jetProdEquiv_jetOfConstant (v : V) (w : W) :
 lemma jetProdEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] (V × W)) :
     jetProdEquiv (jetDeriv μ z) =
       (jetDeriv μ (jetProdEquiv z).1, jetDeriv μ (jetProdEquiv z).2) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp [Prod.ext_iff]
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rw [jetDeriv_tmul]; rfl
   | add a b ha hb =>
       simp only [map_add, ha, hb, Prod.fst_add, Prod.snd_add, Prod.mk_add_mk]
@@ -210,8 +208,7 @@ lemma jetProdEquiv_jetIteratedDeriv (s : Multiset (Fin 1 ⊕ Fin 3))
   components. -/
 lemma jetProdEquiv_smul (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] (V × W)) :
     jetProdEquiv (χ • z) = (χ • (jetProdEquiv z).1, χ • (jetProdEquiv z).2) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp [Prod.ext_iff]
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rw [TensorProduct.smul_tmul', smul_eq_mul]; rfl
   | add a b ha hb =>
       simp only [smul_add, map_add, ha, hb, Prod.fst_add, Prod.snd_add, Prod.mk_add_mk]
@@ -225,8 +222,7 @@ lemma jetProdEquiv_symm_smul (χ : SpaceTimeAlgebra) (a : SpaceTimeAlgebra ⊗[�
 
 lemma jetEval_prod (z : SpaceTimeAlgebra ⊗[ℂ] (V × W)) :
     jetEval z = (jetEval (jetProdEquiv z).1, jetEval (jetProdEquiv z).2) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp [Prod.ext_iff]
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rw [jetEval_tmul]; rfl
   | add a b ha hb =>
       simp only [map_add, ha, hb, Prod.fst_add, Prod.snd_add, Prod.mk_add_mk]
@@ -263,8 +259,7 @@ lemma jetPiEquiv_jetOfConstant (v : ∀ i, E i) :
 
 lemma jetPiEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] (∀ i, E i)) (i : ι) :
     jetPiEquiv E (jetDeriv μ z) i = jetDeriv μ (jetPiEquiv E z i) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rfl
   | add a b ha hb => simp only [map_add, Pi.add_apply, ha, hb]
 
@@ -281,8 +276,7 @@ lemma jetPiEquiv_jetIteratedDeriv (s : Multiset (Fin 1 ⊕ Fin 3))
   component. -/
 lemma jetPiEquiv_smul (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] (∀ i, E i)) (i : ι) :
     jetPiEquiv E (χ • z) i = χ • (jetPiEquiv E z i) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rw [TensorProduct.smul_tmul', smul_eq_mul]; rfl
   | add a b ha hb => simp only [smul_add, map_add, Pi.add_apply, ha, hb]
 
@@ -293,8 +287,7 @@ lemma jetPiEquiv_symm_smul (χ : SpaceTimeAlgebra) (a : ∀ i, SpaceTimeAlgebra 
 
 lemma jetEval_pi (z : SpaceTimeAlgebra ⊗[ℂ] (∀ i, E i)) (i : ι) :
     jetEval z i = jetEval (jetPiEquiv E z i) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rfl
   | add a b ha hb => simp only [map_add, Pi.add_apply, ha, hb]
 
@@ -305,8 +298,7 @@ lemma jetEval_pi (z : SpaceTimeAlgebra ⊗[ℂ] (∀ i, E i)) (i : ι) :
   linear maps of value spaces. -/
 lemma jetPiEquiv_eq_lTensor_proj (z : SpaceTimeAlgebra ⊗[ℂ] (∀ i, E i)) (i : ι) :
     jetPiEquiv E z i = LinearMap.lTensor SpaceTimeAlgebra (LinearMap.proj i) z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul f p => rfl
   | add a b ha hb => simp only [map_add, Pi.add_apply, ha, hb]
 

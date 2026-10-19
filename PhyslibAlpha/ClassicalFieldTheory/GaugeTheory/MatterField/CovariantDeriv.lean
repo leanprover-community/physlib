@@ -122,8 +122,7 @@ lemma jetEval_rep_of_smul (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ
         (χ • z) = χ • rep U z)
     (U : GJ) (z : SpaceTimeAlgebra ⊗[ℂ] V) :
     jetEval (rep U z) = repCoeff rep U 0 (jetEval z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp only [map_zero]
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f v =>
     rw [show f ⊗ₜ[ℂ] v = f • jetOfConstant v from by
@@ -192,11 +191,9 @@ lemma tensorAction_map_left (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (Φ : B →
     tensorAction act ((TensorProduct.map (Φ.restrictScalars ℝ) LinearMap.id) s)
         ((TensorProduct.map Φ LinearMap.id) t) =
       (TensorProduct.map Φ LinearMap.id) (tensorAction act s t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ => simp [hΦ]
       | add x y hx hy =>
           simp only [map_add]
@@ -208,8 +205,7 @@ lemma tensorAction_one_left (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (c : 𝔤)
     (t : B ⊗[ℂ] V) :
     tensorAction act ((1 : B) ⊗ₜ[ℝ] c) t =
       (TensorProduct.map LinearMap.id (act c)) t := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul b a => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -227,11 +223,9 @@ lemma tensorAction_map_right_antidiagonal (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] 
       tensorAction act ((TensorProduct.map LinearMap.id (Tg p.1)) s)
         ((TensorProduct.map LinearMap.id (Tv p.2)) t)).sum =
       (TensorProduct.map LinearMap.id (Tv x)) (tensorAction act s t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ =>
           simp only [tensorAction_tmul, TensorProduct.map_tmul, LinearMap.id_coe, id_eq]
           rw [hT, Multiset.tmul_sum, Multiset.map_map]
@@ -264,8 +258,7 @@ lemma dualPairEquivC_map_left (Φ : B →ₗ[ℂ] B) (t : B ⊗[ℂ] V)
     (φ : Module.Dual ℂ V) :
     dualPairEquivC ((TensorProduct.map Φ LinearMap.id) t) φ =
       Φ (dualPairEquivC t φ) := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul b w => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -273,8 +266,7 @@ lemma dualPairEquivC_map_right (T : V →ₗ[ℂ] V) (t : B ⊗[ℂ] V)
     (φ : Module.Dual ℂ V) :
     dualPairEquivC ((TensorProduct.map LinearMap.id T) t) φ =
       dualPairEquivC t (T.dualMap φ) := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul b w => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -668,7 +660,7 @@ lemma adjoin_symbols_eq_adjoin_covDerivIter (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ
                 F (List.ofFn L.get + 0) φ) from by
             rw [add_zero, hofFn, hL]; abel]
           refine sub_mem (Algebra.subset_adjoin (Or.inr ⟨L.length, L.get, φ, rfl⟩)) ?_
-          refine SetLike.le_def.mp (Algebra.adjoin_le ?_)
+          refine IsConcreteLE.le_iff.mp (Algebra.adjoin_le ?_)
             (covDerivIter_sub_mem act F L.length L.get 0 φ)
           rintro b (⟨u, μ, ψ, rfl⟩ | ⟨t, χ, htc, rfl⟩)
           · exact Algebra.subset_adjoin (Or.inl ⟨u, μ, ψ, rfl⟩)

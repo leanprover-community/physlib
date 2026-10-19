@@ -97,8 +97,7 @@ lemma jetValLinEquiv_tmul (f : SpaceTimeAlgebra) (v : HiggsVec) :
   jet by a scalar jet multiplies each of its weak components. -/
 lemma jetValLinEquiv_smul (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] HiggsVec) :
     jetValLinEquiv (χ • z) = χ • jetValLinEquiv z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [smul_add, map_add, ha, hb, map_add, smul_add]
   | tmul f v =>
     rw [TensorProduct.smul_tmul', smul_eq_mul, jetValLinEquiv_tmul, jetValLinEquiv_tmul]
@@ -225,7 +224,7 @@ lemma repJetGaugeGroupI_ofConstant (g : GaugeGroupI) :
   rw [show (repGaugeGroupI g v).ofLp = g.toU1 ^ 3 • (g.toSU2.1 *ᵥ v.ofLp) from rfl]
   simp only [jetGaugeMatrix, Matrix.smul_apply, hu, hM, ← map_pow, smul_eq_mul, ← map_mul,
     Pi.smul_apply, Matrix.mulVec_apply_eq_sum, Submonoid.smul_def, smul_eq_mul,
-    Finset.mul_sum, Finset.sum_smul, smul_smul]
+    Finset.mul_sum, Finset.sum_smul]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [mul_smul_comm,
     show (MvPowerSeries.C (((GaugeGroupI.toU1 g : unitary ℂ) : ℂ) ^ 3

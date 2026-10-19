@@ -316,14 +316,12 @@ lemma _root_.TensorProduct.map_derivation_left {A B : Type*} [Ring A] [Algebra �
     TensorProduct.map D LinearMap.id (x * y)
       = TensorProduct.map D LinearMap.id x * y
         + x * TensorProduct.map D LinearMap.id y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ =>
     rw [add_mul, map_add, map_add, h₁, h₂, add_mul, add_mul]
     abel
   | tmul a₁ b₁ =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add y₁ y₂ h₁ h₂ =>
       rw [mul_add, map_add, map_add, h₁, h₂, mul_add, mul_add]
       abel
@@ -340,14 +338,12 @@ lemma _root_.TensorProduct.map_derivation_right {A B : Type*} [Ring A] [Algebra 
     TensorProduct.map LinearMap.id D (x * y)
       = TensorProduct.map LinearMap.id D x * y
         + x * TensorProduct.map LinearMap.id D y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ =>
     rw [add_mul, map_add, map_add, h₁, h₂, add_mul, add_mul]
     abel
   | tmul a₁ b₁ =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add y₁ y₂ h₁ h₂ =>
       rw [mul_add, map_add, map_add, h₁, h₂, mul_add, mul_add]
       abel

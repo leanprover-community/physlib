@@ -77,8 +77,7 @@ lemma JetComponentSpace.massWeightScale_jetDeriv (c : ℝ) (μ : Fin 1 ⊕ Fin 3
     (v : (JetComponentSpace 𝔤)) :
     (JetComponentSpace.massWeightScale 𝔤) c ((JetComponentSpace.jetDeriv 𝔤) μ v)
       = c ^ 2 • (JetComponentSpace.jetDeriv 𝔤) μ ((JetComponentSpace.massWeightScale 𝔤) c v) := by
-  induction v using TensorProduct.induction_on with
-  | zero => simp only [map_zero, smul_zero]
+  induction v using TensorProduct.inductionOn with
   | add x y hx hy => simp only [map_add, hx, hy, smul_add]
   | tmul a φ =>
     rw [JetComponentSpace.jetDeriv_tmul, JetComponentSpace.massWeightScale_tmul, map_mul,

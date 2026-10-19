@@ -97,12 +97,7 @@ lemma lift_mul_tmul (x : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V)
         (TensorProduct.mk ℂ SpaceTimeAlgebra V)) (x * (b ⊗ₜ[ℂ] T)) v
       = b • TensorProduct.lift ((LinearMap.llcomp ℂ V V (SpaceTimeAlgebra ⊗[ℂ] V)).comp
         (TensorProduct.mk ℂ SpaceTimeAlgebra V)) x (T v) := by
-  induction x using TensorProduct.induction_on with
-  | zero =>
-      have h0 : (0 : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) * (b ⊗ₜ[ℂ] T) = 0 := by
-          exact zero_mul (b ⊗ₜ[ℂ] T)
-      rw [h0]
-      simp
+  induction x using TensorProduct.inductionOn with
   | tmul a S =>
       rw [Algebra.TensorProduct.tmul_mul_tmul]
       show (a * b) ⊗ₜ[ℂ] (S * T) v = b • (a ⊗ₜ[ℂ] S (T v))
@@ -128,11 +123,7 @@ lemma rep_lift_of_smul_comm
         (TensorProduct.mk ℂ SpaceTimeAlgebra V)) y v)
       = TensorProduct.lift ((LinearMap.llcomp ℂ V V (SpaceTimeAlgebra ⊗[ℂ] V)).comp
         (TensorProduct.mk ℂ SpaceTimeAlgebra V)) (x * y) v := by
-  induction y using TensorProduct.induction_on with
-  | zero =>
-      have h0 : x * (0 : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) = 0 := by exact mul_zero x
-      rw [h0]
-      simp
+  induction y using TensorProduct.inductionOn with
   | tmul b T =>
       rw [lift_mul_tmul x b T v,
         show TensorProduct.lift ((LinearMap.llcomp ℂ V V (SpaceTimeAlgebra ⊗[ℂ] V)).comp
@@ -177,18 +168,9 @@ lemma symbolAction_mul
         (Module.Dual.transpose T))
     (x y : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) :
     Θ (x * y) = Θ y ∘ₗ Θ x := by
-  induction x using TensorProduct.induction_on with
-  | zero =>
-      have h0 : (0 : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) * y = 0 := by exact zero_mul y
-      rw [h0, map_zero]
-      simp
+  induction x using TensorProduct.inductionOn with
   | tmul a S =>
-      induction y using TensorProduct.induction_on with
-      | zero =>
-          have h0 : (a ⊗ₜ[ℂ] S) * (0 : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V) = 0 := by
-            exact mul_zero (a ⊗ₜ[ℂ] S)
-          rw [h0, map_zero]
-          simp
+      induction y using TensorProduct.inductionOn with
       | tmul b T =>
           rw [Algebra.TensorProduct.tmul_mul_tmul, hΘ, hΘ, hΘ,
             ← TensorProduct.map_comp, ← SpaceTimeDerivAlgebraℂ.jetRingAction_mul,
@@ -214,11 +196,9 @@ lemma lift_congr_leftComm [Module.Free ℂ V] [Module.Finite ℂ V]
         ((TensorProduct.congr (LinearEquiv.refl ℂ SpaceTimeAlgebra) (dualTensorHomEquiv ℂ V W))
           (TensorProduct.leftComm ℂ (Module.Dual ℂ V) SpaceTimeAlgebra W G)) v
       = dualTensorHom ℂ V (SpaceTimeAlgebra ⊗[ℂ] W) G v := by
-  induction G using TensorProduct.induction_on with
-  | zero => simp
+  induction G using TensorProduct.inductionOn with
   | tmul phi z =>
-      induction z using TensorProduct.induction_on with
-      | zero => simp
+      induction z using TensorProduct.inductionOn with
       | tmul g w =>
           rw [TensorProduct.leftComm_tmul, TensorProduct.congr_tmul,
             LinearEquiv.refl_apply]
@@ -277,8 +257,7 @@ lemma tensorEquiv_congr_conjEquiv_smul (χ : SpaceTimeAlgebra) (y : SpaceTimeAlg
       = χ • ((ConjModule.tensorEquiv (k := ℂ) (M := SpaceTimeAlgebra) (N := V)).symm.trans
         (TensorProduct.congr SpaceTimeAlgebra.starConjEquiv (LinearEquiv.refl ℂ (ConjModule V))))
           (conjEquiv (k := ℂ) (M := SpaceTimeAlgebra ⊗[ℂ] V) y) := by
-  induction y using TensorProduct.induction_on with
-  | zero => simp
+  induction y using TensorProduct.inductionOn with
   | tmul g w =>
       rw [TensorProduct.smul_tmul', smul_eq_mul]
       simp only [LinearEquiv.trans_apply, ConjModule.tensorEquiv_symm_conjEquiv_tmul,
@@ -345,8 +324,7 @@ lemma lTensor_conjEquiv_naturality (f : V →ₗ[ℂ] W) (y : SpaceTimeAlgebra �
           (TensorProduct.congr SpaceTimeAlgebra.starConjEquiv (LinearEquiv.refl ℂ (ConjModule W))))
         (conjEquiv (k := ℂ) (M := SpaceTimeAlgebra ⊗[ℂ] W)
             ((LinearMap.lTensor SpaceTimeAlgebra f) y)) := by
-  induction y using TensorProduct.induction_on with
-  | zero => simp
+  induction y using TensorProduct.inductionOn with
   | tmul g v =>
       simp only [LinearEquiv.trans_apply, ConjModule.tensorEquiv_symm_conjEquiv_tmul,
         TensorProduct.congr_tmul, LinearEquiv.refl_apply, SpaceTimeAlgebra.starConjEquiv_apply,
@@ -444,8 +422,7 @@ lemma lift_lTensor_llcomp (f : V →ₗ[ℂ] W) (x : SpaceTimeAlgebra ⊗[ℂ] M
       = LinearMap.lTensor SpaceTimeAlgebra f
         (TensorProduct.lift ((LinearMap.llcomp ℂ V V (SpaceTimeAlgebra ⊗[ℂ] V)).comp
           (TensorProduct.mk ℂ SpaceTimeAlgebra V)) x v) := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | tmul g S => rfl
   | add a b ha hb => simp only [map_add, LinearMap.add_apply, ha, hb]
 
@@ -457,8 +434,7 @@ lemma lift_lTensor_lcomp (f : V →ₗ[ℂ] W) (y : SpaceTimeAlgebra ⊗[ℂ] Mo
         (LinearMap.lTensor SpaceTimeAlgebra (LinearMap.lcomp ℂ W f) y) v
       = TensorProduct.lift ((LinearMap.llcomp ℂ W W (SpaceTimeAlgebra ⊗[ℂ] W)).comp
         (TensorProduct.mk ℂ SpaceTimeAlgebra W)) y (f v) := by
-  induction y using TensorProduct.induction_on with
-  | zero => simp
+  induction y using TensorProduct.inductionOn with
   | tmul g T => rfl
   | add a b ha hb => simp only [map_add, LinearMap.add_apply, ha, hb]
 

@@ -191,8 +191,7 @@ omit [SMulCommClass ℝ B B] [IsScalarTower ℝ B B] in
 lemma dualPairEquiv_map_left (Φ : B →ₗ[ℝ] B) (t : B ⊗[ℝ] 𝔤)
     (φ : Module.Dual ℝ 𝔤) :
     dualPairEquiv ((TensorProduct.map Φ LinearMap.id) t) φ = Φ (dualPairEquiv t φ) := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul b a => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -201,8 +200,7 @@ lemma dualPairEquiv_map_right (T : 𝔤 →ₗ[ℝ] 𝔤)
     (t : B ⊗[ℝ] 𝔤) (φ : Module.Dual ℝ 𝔤) :
     dualPairEquiv ((TensorProduct.map LinearMap.id T) t) φ =
       dualPairEquiv t (T.dualMap φ) := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul b a => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -233,11 +231,9 @@ lemma tensorBracket_map_left (Φ : B →ₗ[ℝ] B)
     tensorBracket ((TensorProduct.map Φ LinearMap.id) s)
         ((TensorProduct.map Φ LinearMap.id) t) =
       (TensorProduct.map Φ LinearMap.id) (tensorBracket s t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ => simp [hΦ]
       | add x y hx hy =>
           simp only [map_add]
@@ -250,11 +246,9 @@ lemma tensorBracket_map_right (T : 𝔤 →ₗ[ℝ] 𝔤)
     tensorBracket ((TensorProduct.map LinearMap.id T) s)
         ((TensorProduct.map LinearMap.id T) t) =
       (TensorProduct.map LinearMap.id T) (tensorBracket s t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ => simp [hT]
       | add x y hx hy =>
           simp only [map_add]
@@ -265,8 +259,7 @@ omit [Module.Finite ℝ 𝔤] in
 lemma tensorBracket_one_right (c : 𝔤) (s : B ⊗[ℝ] 𝔤) :
     tensorBracket s ((1 : B) ⊗ₜ[ℝ] c) =
       -(TensorProduct.map LinearMap.id (LieAlgebra.ad ℝ 𝔤 c)) s := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b a =>
       rw [tensorBracket_tmul, mul_one, ← lie_skew, TensorProduct.tmul_neg]
       simp
@@ -279,8 +272,7 @@ omit [Module.Finite ℝ 𝔤] in
 lemma tensorBracket_one_left (c : 𝔤) (t : B ⊗[ℝ] 𝔤) :
     tensorBracket ((1 : B) ⊗ₜ[ℝ] c) t =
       (TensorProduct.map LinearMap.id (LieAlgebra.ad ℝ 𝔤 c)) t := by
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | tmul b a => simp
   | add x y hx hy => simp [hx, hy]
 
@@ -582,11 +574,9 @@ lemma tensorBracket_map_left_derivation (Δ : B →ₗ[ℝ] B)
     (TensorProduct.map Δ LinearMap.id) (tensorBracket s t) =
       tensorBracket ((TensorProduct.map Δ LinearMap.id) s) t +
       tensorBracket s ((TensorProduct.map Δ LinearMap.id) t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ => simp [hΔ, TensorProduct.add_tmul]
       | add x y hx hy =>
           simp only [map_add, hx, hy]
@@ -618,11 +608,9 @@ lemma tensorBracket_map_right_derivation (T₀ T₁ : 𝔤 →ₗ[ℝ] 𝔤)
       tensorBracket ((TensorProduct.map LinearMap.id T₀) s)
         ((TensorProduct.map LinearMap.id T₁) t) =
       (TensorProduct.map LinearMap.id T₁) (tensorBracket s t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ => simp [hT, TensorProduct.tmul_add]
       | add x y hx hy =>
           simp only [map_add]
@@ -834,11 +822,9 @@ lemma tensorBracket_map_right_antidiagonal
       tensorBracket ((TensorProduct.map LinearMap.id (T p.1)) s)
         ((TensorProduct.map LinearMap.id (T p.2)) t)).sum =
       (TensorProduct.map LinearMap.id (T x)) (tensorBracket s t) := by
-  induction s using TensorProduct.induction_on with
-  | zero => simp
+  induction s using TensorProduct.inductionOn with
   | tmul b₁ a₁ =>
-      induction t using TensorProduct.induction_on with
-      | zero => simp
+      induction t using TensorProduct.inductionOn with
       | tmul b₂ a₂ =>
           simp only [tensorBracket_tmul, TensorProduct.map_tmul, LinearMap.id_coe, id_eq]
           rw [hT, Multiset.tmul_sum, Multiset.map_map]

@@ -220,16 +220,13 @@ lemma jetEquiv_tmul (f : SpaceTimeAlgebra) (s : S) (v : ι → ℂ) :
 omit [Fintype ι] [DecidableEq ι] in
 /-- Induction on the jets of a `V`-valued field through the identification `e`. -/
 lemma induction_on {P : SpaceTimeAlgebra ⊗[ℂ] V → Prop} (z : SpaceTimeAlgebra ⊗[ℂ] V)
-    (zero : P 0)
     (tmul : ∀ (f : SpaceTimeAlgebra) (s : S) (v : ι → ℂ), P (f ⊗ₜ[ℂ] e.symm (s ⊗ₜ[ℂ] v)))
     (add : ∀ a b, P a → P b → P (a + b)) : P z := by
-  induction z using TensorProduct.induction_on with
-  | zero => exact zero
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => exact add a b ha hb
   | tmul f d =>
     obtain ⟨t, rfl⟩ : ∃ t, d = e.symm t := ⟨e d, (e.symm_apply_apply d).symm⟩
-    induction t using TensorProduct.induction_on with
-    | zero => rw [map_zero, TensorProduct.tmul_zero]; exact zero
+    induction t using TensorProduct.inductionOn with
     | add a b ha hb => rw [map_add, TensorProduct.tmul_add]; exact add _ _ ha hb
     | tmul s v => exact tmul f s v
 
@@ -238,7 +235,6 @@ lemma induction_on {P : SpaceTimeAlgebra ⊗[ℂ] V → Prop} (z : SpaceTimeAlge
 lemma jetEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3) (z : SpaceTimeAlgebra ⊗[ℂ] V) :
     jetEquiv e (jetDeriv μ z) = LinearMap.lTensor S (pderivPi μ) (jetEquiv e z) := by
   induction z using induction_on e with
-  | zero => simp
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f s v =>
     rw [jetDeriv_tmul, jetEquiv_tmul, jetEquiv_tmul, LinearMap.lTensor_tmul]
@@ -261,7 +257,6 @@ lemma jetEquiv_jetIteratedDeriv (x : Multiset (Fin 1 ⊕ Fin 3)) (z : SpaceTimeA
 lemma jetEval_eq (z : SpaceTimeAlgebra ⊗[ℂ] V) :
     jetEval z = e.symm (LinearMap.lTensor S ccPi (jetEquiv e z)) := by
   induction z using induction_on e with
-  | zero => simp
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f s v =>
     rw [jetEval_tmul, jetEquiv_tmul, LinearMap.lTensor_tmul,
@@ -276,7 +271,6 @@ lemma jetEquiv_smul (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] V) :
           ((LinearMap.lsmul SpaceTimeAlgebra (ι → SpaceTimeAlgebra) χ).restrictScalars ℂ)
           (jetEquiv e z) := by
   induction z using induction_on e with
-  | zero => simp
   | add a b ha hb => rw [smul_add, map_add, map_add, ha, hb, map_add]
   | tmul f s v =>
     rw [TensorProduct.smul_tmul', jetEquiv_tmul, jetEquiv_tmul, LinearMap.lTensor_tmul]
@@ -460,8 +454,7 @@ lemma repCoeff_eq (U : GJ) (x : Multiset (Fin 1 ⊕ Fin 3)) :
           constantCoeff (SpaceTimeAlgebra.iteratedPDeriv x f)) := by
   refine LinearMap.ext fun d => ?_
   obtain ⟨t, rfl⟩ : ∃ t, d = e.symm t := ⟨e d, (e.symm_apply_apply d).symm⟩
-  induction t using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero]
+  induction t using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, map_add, ha, hb]
   | tmul s v =>
     rw [show GaugeAlgebraRealization.repCoeff (R.repJet e) U x (e.symm (s ⊗ₜ[ℂ] v))
@@ -619,12 +612,10 @@ lemma repJet_ofConstant
     (g : G₀) :
     R.repJet e (jets.ofConstant g) = TensorProduct.map LinearMap.id (R.repGlobal e g) := by
   refine LinearMap.ext fun z => ?_
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul χ v =>
     obtain ⟨t, rfl⟩ := e.symm.surjective v
-    induction t using TensorProduct.induction_on with
-    | zero => simp
+    induction t using TensorProduct.inductionOn with
     | tmul s w =>
       rw [repJet_apply, matEnd_apply, jetEquiv_tmul, jetEnd_tmul, hconst, map_C_mulVec_smul,
         ← jetEquiv_tmul e, LinearEquiv.symm_apply_apply, TensorProduct.map_tmul,
@@ -677,8 +668,7 @@ omit [Module.Free ℂ V] [Module.Finite ℂ V] in
 lemma repAlgebra_comm_repLorentz (c : 𝔤) (Λ : SL(2,ℂ)) (v : V) :
     R.repAlgebra e c (repLorentz e ρ Λ v) = repLorentz e ρ Λ (R.repAlgebra e c v) := by
   obtain ⟨t, rfl⟩ : ∃ t, v = e.symm t := ⟨e v, (e.symm_apply_apply v).symm⟩
-  induction t using TensorProduct.induction_on with
-  | zero => simp
+  induction t using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, map_add, ha, hb, map_add, map_add]
   | tmul s w =>
     rw [repAlgebra_apply, repLorentz_apply_symm_tmul, valEnd_apply_symm_tmul,

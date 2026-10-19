@@ -276,8 +276,7 @@ lemma adjoin_iteratedJetDeriv_eq_top :
         g (SpaceTimeDerivAlgebraℂ.basis s ⊗ₜ[ℂ] w) ∈ Algebra.adjoin ℂ S) →
       ∀ y, g y ∈ Algebra.adjoin ℂ S := by
     intro W _ _ g hg y
-    induction y using TensorProduct.induction_on with
-    | zero => rw [map_zero]; exact zero_mem _
+    induction y using TensorProduct.inductionOn with
     | add y z hy hz => rw [map_add]; exact add_mem hy hz
     | tmul a w =>
       have ha : a ∈ Submodule.span ℂ (Set.range SpaceTimeDerivAlgebraℂ.basis) := by

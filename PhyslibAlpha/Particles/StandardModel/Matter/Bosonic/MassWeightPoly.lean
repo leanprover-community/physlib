@@ -207,8 +207,7 @@ lemma massWeightPoly_ofConjField (w : ℕ) (φ : Module.Dual ℂ (ConjModule M.V
 lemma halfPoly_eval_one {W : Type} [AddCommGroup W] [Module ℂ W] (w : ℕ)
     (k : SpaceTimeDerivAlgebraℂ ⊗[ℂ] W →ₗ[ℂ] BosonicAlgebra M)
     (y : SpaceTimeDerivAlgebraℂ ⊗[ℂ] W) : (halfPoly w k y).eval 1 = k y := by
-  induction y using TensorProduct.induction_on with
-  | zero => rw [map_zero, Polynomial.eval_zero, map_zero]
+  induction y using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, Polynomial.eval_add, ha, hb, map_add]
   | tmul a x =>
     have ha : a ∈ Submodule.span ℂ (Set.range SpaceTimeDerivAlgebraℂ.basis) := by

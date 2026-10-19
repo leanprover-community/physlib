@@ -255,7 +255,8 @@ lemma jetActionMatrix_eq (a : JetGaugeAlgebra) :
   rw [JetGaugeAlgebra.toSU2Matrix, JetGaugeAlgebra.toU1Value]
   refine Matrix.ext fun i j => ?_
   simp only [Matrix.add_apply, Matrix.smul_apply, Matrix.sub_apply, Matrix.one_apply]
-  split_ifs <;> simp [Algebra.smul_def] <;> ring
+  split_ifs <;> simp [Algebra.smul_def]
+  ring
 
 /-- The base-point Taylor coefficients of the jet action matrix are the action matrices
   of the base-point Taylor coefficients. -/
@@ -384,15 +385,11 @@ private lemma jetValLinEquiv_jetDeriv (μ : Fin 1 ⊕ Fin 3)
     (z : SpaceTimeAlgebra ⊗[ℂ] LeptonDoubletV) :
     jetValLinEquiv (jetDeriv μ z)
       = (TensorProduct.map LinearMap.id (pderivWeak μ)) (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero]
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f d =>
     obtain ⟨w⟩ := d
-    induction w using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : LeptonDoubletV) = 0 from rfl, TensorProduct.tmul_zero,
-        map_zero, map_zero, map_zero]
+    induction w using TensorProduct.inductionOn with
     | tmul ψ c =>
       rw [show jetDeriv μ (f ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c⟩ : LeptonDoubletV))
           = (pderiv μ f) ⊗ₜ[ℂ] (⟨ψ ⊗ₜ[ℂ] c⟩ : LeptonDoubletV) from rfl,
@@ -430,16 +427,11 @@ private lemma jetValLinEquiv_jetIteratedDeriv (x : Multiset (Fin 1 ⊕ Fin 3))
 private lemma valLinEquiv_jetEval (z : SpaceTimeAlgebra ⊗[ℂ] LeptonDoubletV) :
     valLinEquiv (jetEval z)
       = (TensorProduct.map LinearMap.id ccWeak) (jetValLinEquiv z) := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp; rfl
+  induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
   | tmul f d =>
     obtain ⟨w⟩ := d
-    induction w using TensorProduct.induction_on with
-    | zero =>
-      rw [show ({ val := 0 } : LeptonDoubletV) = 0 from rfl, TensorProduct.tmul_zero]
-      simp
-      rfl
+    induction w using TensorProduct.inductionOn with
     | tmul ψ c =>
       rw [jetEval_tmul, map_smul,
         show valLinEquiv (⟨ψ ⊗ₜ[ℂ] c⟩ : LeptonDoubletV) = ψ ⊗ₜ[ℂ] c from rfl,
@@ -578,11 +570,7 @@ lemma repCoeff_eq (U : JetGaugeGroupI) (x : Multiset (Fin 1 ⊕ Fin 3)) :
     repJetGaugeGroupI_eq_doubletMatrix, LinearEquiv.apply_symm_apply,
     jetOfConstant_apply]
   obtain ⟨w⟩ := d
-  induction w using TensorProduct.induction_on with
-  | zero =>
-    rw [show ({ val := 0 } : LeptonDoubletV) = 0 from rfl, TensorProduct.tmul_zero]
-    simp
-    rw [show (0 : LeptonDoubletV).val = 0 from rfl, map_zero]
+  induction w using TensorProduct.inductionOn with
   | add a b ha hb =>
     rw [show ({ val := a + b } : LeptonDoubletV) = ⟨a⟩ + ⟨b⟩ from rfl,
       TensorProduct.tmul_add, map_add, map_add, map_add, map_add, ha, hb, map_add,

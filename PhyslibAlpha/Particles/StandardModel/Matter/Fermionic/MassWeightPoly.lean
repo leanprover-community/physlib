@@ -151,8 +151,7 @@ private lemma basisTmul_span_top {W : Type} [AddCommGroup W] [Module ℂ W] :
       SpaceTimeDerivAlgebraℂ.basis p.1 ⊗ₜ[ℂ] p.2) = ⊤ := by
   rw [eq_top_iff]
   rintro y -
-  induction y using TensorProduct.induction_on with
-  | zero => exact Submodule.zero_mem _
+  induction y using TensorProduct.inductionOn with
   | add a b ha hb => exact Submodule.add_mem _ ha hb
   | tmul a x =>
     have ha : a ∈ Submodule.span ℂ (Set.range SpaceTimeDerivAlgebraℂ.basis) := by
@@ -309,8 +308,7 @@ lemma massWeightPoly_ofConjField (w : ℕ) (φ : Module.Dual ℂ (ConjModule M.V
 lemma halfPoly_eval_one {W : Type} [AddCommGroup W] [Module ℂ W] (w : ℕ)
     (k : SpaceTimeDerivAlgebraℂ ⊗[ℂ] W →ₗ[ℂ] FermionicAlgebra M)
     (y : SpaceTimeDerivAlgebraℂ ⊗[ℂ] W) : (halfPoly w k y).eval 1 = k y := by
-  induction y using TensorProduct.induction_on with
-  | zero => rw [map_zero, Polynomial.eval_zero, map_zero]
+  induction y using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, Polynomial.eval_add, ha, hb, map_add]
   | tmul a x =>
     have ha : a ∈ Submodule.span ℂ (Set.range SpaceTimeDerivAlgebraℂ.basis) := by

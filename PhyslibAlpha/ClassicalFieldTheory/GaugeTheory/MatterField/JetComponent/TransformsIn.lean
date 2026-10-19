@@ -119,8 +119,7 @@ lemma jetCoeffAt_apply (x : Multiset (Fin 1 ⊕ Fin 3))
     jetCoeffAt x c v = jetEval (jetIteratedDeriv x (TensorProduct.lift
       ((LinearMap.llcomp ℂ V V (SpaceTimeAlgebra ⊗[ℂ] V)).comp
         (TensorProduct.mk ℂ SpaceTimeAlgebra V)) c v)) := by
-  induction c using TensorProduct.induction_on with
-  | zero => simp
+  induction c using TensorProduct.inductionOn with
   | add c₁ c₂ h₁ h₂ =>
     rw [map_add, LinearMap.add_apply, h₁, h₂, map_add, LinearMap.add_apply, map_add,
       map_add]
@@ -192,13 +191,7 @@ lemma symbolAction_basis_tmul (c : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V)
     symbolAction c (SpaceTimeDerivAlgebraℂ.basis s ⊗ₜ[ℂ] φ)
       = (s.antidiagonal.map fun p =>
           SpaceTimeDerivAlgebraℂ.basis p.2 ⊗ₜ[ℂ] (jetCoeffAt p.1 c).dualMap φ).sum := by
-  induction c using TensorProduct.induction_on with
-  | zero =>
-    rw [map_zero, LinearMap.zero_apply]
-    refine (Multiset.sum_eq_zero fun x hx => ?_).symm
-    obtain ⟨p, _, rfl⟩ := Multiset.mem_map.mp hx
-    rw [map_zero, show (0 : Module.End ℂ V).dualMap φ = 0 from LinearMap.ext fun v => by simp,
-      TensorProduct.tmul_zero]
+  induction c using TensorProduct.inductionOn with
   | add c₁ c₂ h₁ h₂ =>
     rw [map_add, LinearMap.add_apply, h₁, h₂, ← Multiset.sum_map_add]
     refine congrArg Multiset.sum (Multiset.map_congr rfl fun p _ => ?_)

@@ -420,8 +420,7 @@ lemma repCoeff_repConj (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] V
       jetDeriv μ (conjJetEquiv (conjEquiv (k := ℂ) (M := SpaceTimeAlgebra ⊗[ℂ] V) w))
         = conjJetEquiv (conjEquiv (k := ℂ) (M := SpaceTimeAlgebra ⊗[ℂ] V) (jetDeriv μ w)) := by
     intro μ w
-    induction w using TensorProduct.induction_on with
-    | zero => simp
+    induction w using TensorProduct.inductionOn with
     | tmul g u =>
         rw [hE_tmul, jetDeriv_tmul, jetDeriv_tmul, hE_tmul, SpaceTimeAlgebra.pderiv_star]
     | add a b ha hb =>
@@ -442,8 +441,7 @@ lemma repCoeff_repConj (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] V
       jetEval (conjJetEquiv (conjEquiv (k := ℂ) (M := SpaceTimeAlgebra ⊗[ℂ] V) w))
         = conjEquiv (k := ℂ) (M := V) (jetEval w) := by
     intro w
-    induction w using TensorProduct.induction_on with
-    | zero => simp
+    induction w using TensorProduct.inductionOn with
     | tmul g u =>
         rw [hE_tmul, jetEval_tmul, jetEval_tmul, SpaceTimeAlgebra.constantCoeff_star,
           map_smulₛₗ, starRingEnd_apply]

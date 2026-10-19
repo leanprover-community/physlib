@@ -277,7 +277,7 @@ lemma reducesInvariantsTo_span_map_epsilonPairs
 lemma fundMap_epsilonPair₁₂ (T : (Fin 4 → Fin 2) → B) :
     fundMap T epsilonPair₁₂
       = T ![0, 1, 0, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 0, 1, 0] := by
-  simp only [epsilonPair₁₂, map_sum, map_smul, fundMap_basis, sum_fin_four_arrow,
+  simp only [epsilonPair₁₂, sum_fin_four_arrow,
     Fin.sum_univ_two, epsilon]
   simp only [Fin.isValue, cons_val_zero, cons_val_one, zero_ne_one, and_false, ↓reduceIte, and_true,
     sub_self, cons_val, mul_zero, zero_smul, and_self, one_ne_zero, sub_zero, mul_one, add_zero,
@@ -290,7 +290,7 @@ lemma fundMap_epsilonPair₁₂ (T : (Fin 4 → Fin 2) → B) :
 lemma fundMap_epsilonPair₁₃ (T : (Fin 4 → Fin 2) → B) :
     fundMap T epsilonPair₁₃
       = T ![0, 0, 1, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 1, 0, 0] := by
-  simp only [epsilonPair₁₃, map_sum, map_smul, fundMap_basis, sum_fin_four_arrow,
+  simp only [epsilonPair₁₃, sum_fin_four_arrow,
     Fin.sum_univ_two, epsilon]
   simp only [Fin.isValue, cons_val_zero, cons_val, zero_ne_one, and_false, ↓reduceIte, and_true,
     sub_self, cons_val_one, mul_zero, zero_smul, and_self, one_ne_zero, sub_zero, mul_one, add_zero,

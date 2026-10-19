@@ -118,12 +118,10 @@ lemma tprod_apply_mul {k G A B : Type*} [CommSemiring k] [Monoid G]
     (hσ : ∀ (g : G) (x y : B), σ g (x * y) = σ g x * σ g y)
     (g : G) (x y : A ⊗[k] B) :
     (ρ.tprod σ) g (x * y) = (ρ.tprod σ) g x * (ρ.tprod σ) g y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ => rw [add_mul, map_add, map_add, h₁, h₂, add_mul]
   | tmul a₁ b₁ =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add y₁ y₂ h₁ h₂ => rw [mul_add, map_add, map_add, h₁, h₂, mul_add]
     | tmul a₂ b₂ =>
       rw [Algebra.TensorProduct.tmul_mul_tmul,
@@ -381,8 +379,7 @@ lemma liftEquiv_baseChange {R S A B G : Type*} [CommSemiring R] [CommSemiring S]
     (hf : ∀ (g : G) (x : A), f (ρ g x) = σ g (f x)) (g : G) (x : S ⊗[R] A) :
     AlgHom.liftEquiv R S A B f (LinearMap.baseChange S (ρ g) x)
       = σ g (AlgHom.liftEquiv R S A B f x) := by
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero, map_zero]
+  induction x using TensorProduct.inductionOn with
   | add x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
   | tmul z a =>
     rw [LinearMap.baseChange_tmul, AlgHom.liftEquiv_tmul, AlgHom.liftEquiv_tmul,
@@ -412,8 +409,7 @@ lemma baseChange_naturality {R M N G : Type*} [CommSemiring R] (S : Type*) [Comm
     (h : ∀ (g : G) (x : M), f (ρ g x) = σ g (f x)) (g : G) (y : S ⊗[R] M) :
     LinearMap.baseChange S f (baseChange S ρ g y)
       = baseChange S σ g (LinearMap.baseChange S f y) := by
-  induction y using TensorProduct.induction_on with
-  | zero => simp
+  induction y using TensorProduct.inductionOn with
   | add u v hu hv => rw [map_add, map_add, hu, hv, map_add, map_add]
   | tmul s x =>
     rw [LinearMap.baseChange_tmul, baseChange_tmul, baseChange_tmul, LinearMap.baseChange_tmul, h]
@@ -425,8 +421,7 @@ lemma eq_baseChange_of_tmul {R S A G : Type*} [CommSemiring R] [CommSemiring S] 
     (ρ' : Representation S G (S ⊗[R] A))
     (h : ∀ (g : G) (s : S) (x : A), ρ' g (s ⊗ₜ[R] x) = s ⊗ₜ[R] ρ g x) (g : G) (y : S ⊗[R] A) :
     ρ' g y = LinearMap.baseChange S (ρ g) y := by
-  induction y using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero]
+  induction y using TensorProduct.inductionOn with
   | add u v hu hv => rw [map_add, map_add, hu, hv]
   | tmul s x => rw [h, LinearMap.baseChange_tmul]
 

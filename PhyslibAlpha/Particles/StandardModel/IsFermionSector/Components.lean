@@ -492,8 +492,7 @@ lemma repGauge_gaugeTorusGen_dComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
     simp [gaugeTorusGen, GaugeGroupI.toU1, GaugeGroupI.toSU3, su3ExpIOne_inv_coe,
       su3ExpITwo_inv_coe, Fin.sum_univ_three, Matrix.diagonal,
       DownSinglet.valueGaugeWeight, colourWeight, GaugeWeight.coord,
-      expI_inv_eq_star, expI_inv_coe] <;>
-  (try congr 1)
+      expI_inv_eq_star, expI_inv_coe]
 
 /-- The `bard` components carry the down-singlet weight itself. -/
 lemma repGauge_gaugeTorusGen_bardComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -507,8 +506,7 @@ lemma repGauge_gaugeTorusGen_bardComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
     simp [gaugeTorusGen, GaugeGroupI.toU1, GaugeGroupI.toSU3, su3ExpIOne_inv_coe,
       su3ExpITwo_inv_coe, Fin.sum_univ_three, Matrix.diagonal,
       DownSinglet.valueGaugeWeight, colourWeight, GaugeWeight.coord,
-      expI_inv_eq_star, expI_inv_coe, starRingEnd_expI_pow] <;>
-  (try congr 1)
+      expI_inv_eq_star, expI_inv_coe, starRingEnd_expI_pow]
 
 /-- The `u` components carry the negative of the up-singlet weight. -/
 lemma repGauge_gaugeTorusGen_uComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -522,8 +520,7 @@ lemma repGauge_gaugeTorusGen_uComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
     simp [gaugeTorusGen, GaugeGroupI.toU1, GaugeGroupI.toSU3, su3ExpIOne_inv_coe,
       su3ExpITwo_inv_coe, Fin.sum_univ_three, Matrix.diagonal,
       UpSinglet.valueGaugeWeight, colourWeight, GaugeWeight.coord,
-      expI_inv_eq_star, expI_inv_coe, starRingEnd_expI_pow] <;>
-  (try congr 1)
+      expI_inv_eq_star, expI_inv_coe, starRingEnd_expI_pow]
 
 /-- The `baru` components carry the up-singlet weight itself. -/
 lemma repGauge_gaugeTorusGen_baruComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -537,8 +534,7 @@ lemma repGauge_gaugeTorusGen_baruComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
     simp [gaugeTorusGen, GaugeGroupI.toU1, GaugeGroupI.toSU3, su3ExpIOne_inv_coe,
       su3ExpITwo_inv_coe, Fin.sum_univ_three, Matrix.diagonal,
       UpSinglet.valueGaugeWeight, colourWeight, GaugeWeight.coord,
-      expI_inv_eq_star, expI_inv_coe, starRingEnd_expI_pow] <;>
-  (try congr 1)
+      expI_inv_eq_star, expI_inv_coe, starRingEnd_expI_pow]
 
 /-- The `Q` components carry the negative of the quark-doublet weight. -/
 lemma repGauge_gaugeTorusGen_QComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -579,8 +575,7 @@ lemma repGauge_gaugeTorusGen_LComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
   fin_cases t <;> fin_cases w <;>
     simp [gaugeTorusGen, GaugeGroupI.toU1, GaugeGroupI.toSU2, su2ExpI_inv_coe,
       Fin.sum_univ_two, LeptonDoubletV.valueGaugeWeight, isoWeight,
-      GaugeWeight.coord, expI_inv_eq_star, expI_inv_coe] <;>
-  (try congr 1)
+      GaugeWeight.coord, expI_inv_eq_star, expI_inv_coe]
 
 /-- The `barL` components carry the lepton-doublet weight itself. -/
 lemma repGauge_gaugeTorusGen_barLComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -594,8 +589,7 @@ lemma repGauge_gaugeTorusGen_barLComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
     simp [gaugeTorusGen, GaugeGroupI.toU1, GaugeGroupI.toSU2, su2ExpI_inv_coe,
       Fin.sum_univ_two, LeptonDoubletV.valueGaugeWeight, isoWeight,
       GaugeWeight.coord, expI_inv_eq_star, expI_inv_coe,
-      starRingEnd_expI_pow] <;>
-  (try congr 1)
+      starRingEnd_expI_pow]
 
 /-- The `e` components carry the negative of the lepton-singlet weight. -/
 lemma repGauge_gaugeTorusGen_eComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -607,7 +601,6 @@ lemma repGauge_gaugeTorusGen_eComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
   fin_cases t <;>
     simp [gaugeTorusGen, GaugeGroupI.toU1, LeptonSinglet.valueGaugeWeight,
       GaugeWeight.coord, expI_inv_coe]
-  (try congr 1)
 
 /-- The `bare` components carry the lepton-singlet weight itself. -/
 lemma repGauge_gaugeTorusGen_bareComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
@@ -619,7 +612,6 @@ lemma repGauge_gaugeTorusGen_bareComponent (t : Fin 4) (i : Fin 3) {n : ℕ}
   fin_cases t <;>
     simp [gaugeTorusGen, GaugeGroupI.toU1, LeptonSinglet.valueGaugeWeight,
       GaugeWeight.coord, expI_inv_coe, starRingEnd_expI_pow]
-  (try congr 1)
 
 end IsFermionSector
 

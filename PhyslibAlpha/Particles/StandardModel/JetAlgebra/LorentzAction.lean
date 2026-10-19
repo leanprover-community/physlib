@@ -231,8 +231,7 @@ private lemma tprod_deriv_sum {M N : Type} [AddCommGroup M] [Module ℂ M]
           (TensorProduct.map (D a) (LinearMap.id (M := N))
             + TensorProduct.map (LinearMap.id (M := M)) (E a))
             ((ρ.tprod σ) Λ x) := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x y hx hy =>
     rw [map_add, map_add, map_add, hx, hy, ← Finset.sum_add_distrib]
     exact Finset.sum_congr rfl fun a _ => by rw [map_add, smul_add]

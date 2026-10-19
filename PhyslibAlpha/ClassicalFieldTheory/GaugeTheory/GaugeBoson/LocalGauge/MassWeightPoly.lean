@@ -210,8 +210,7 @@ omit [Module.Finite ℝ 𝔤] in
   multiset basis. -/
 lemma jetComponentPoly_eval_one (x : (GaugeBoson.JetComponentSpace 𝔤)) :
     ((jetComponentPoly (𝔤 := 𝔤)) x).eval 1 = ιComplex x := by
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero, Polynomial.eval_zero, map_zero]
+  induction x using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, Polynomial.eval_add, ha, hb, map_add]
   | tmul a φ =>
     have ha : a ∈ Submodule.span ℝ (Set.range SpaceTimeDerivAlgebraℝ.basisMultiset) := by
@@ -252,8 +251,7 @@ omit [Module.Finite ℝ 𝔤] in
   jet algebra: the mass-weight pieces sum back to it. -/
 lemma complexMassWeightPoly_eval_one (y : ℂ ⊗[ℝ] LocalGaugeFieldAlgebra 𝔤) :
     ((complexMassWeightPoly (𝔤 := 𝔤)) y).eval 1 = y := by
-  induction y using TensorProduct.induction_on with
-  | zero => rw [map_zero, Polynomial.eval_zero]
+  induction y using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, Polynomial.eval_add, ha, hb]
   | tmul z x =>
     rw [complexMassWeightPoly_tmul, Polynomial.eval_mul, Polynomial.eval_C,

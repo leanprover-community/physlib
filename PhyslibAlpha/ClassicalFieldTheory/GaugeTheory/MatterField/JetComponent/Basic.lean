@@ -252,8 +252,7 @@ private lemma repLorentzGroup_tprod_mulRight_jetSymbol {W : Type*} [AddCommGroup
   have hrep : ∀ (q : SpaceTimeDerivAlgebraℂ) (f : W),
       (SpaceTimeDerivAlgebraℂ.repLorentzGroup.tprod ρ) Λ (q ⊗ₜ[ℂ] f) =
         (SpaceTimeDerivAlgebraℂ.repLorentzGroup Λ q) ⊗ₜ[ℂ] (ρ Λ f) := fun _ _ => rfl
-  induction w using TensorProduct.induction_on with
-  | zero => simp
+  induction w using TensorProduct.inductionOn with
   | add x y hx hy =>
     rw [map_add, map_add, map_add, hx, hy, ← Finset.sum_add_distrib]
     exact Finset.sum_congr rfl fun a _ => by rw [map_add, smul_add]
@@ -462,8 +461,7 @@ private lemma gradeScale_map_mulRight_basis {W : Type*} [AddCommGroup W] [Module
         (SpaceTimeDerivAlgebraℂ.basis ({μ} : Multiset (Fin 1 ⊕ Fin 3)))) LinearMap.id
         (TensorProduct.map (SpaceTimeDerivAlgebraℂ.gradeScale (c ^ 2)).toLinearMap
           LinearMap.id x) := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp only [map_zero, smul_zero]
+  induction x using TensorProduct.inductionOn with
   | add a b ha hb => simp only [map_add, ha, hb, smul_add]
   | tmul a y =>
     simp only [TensorProduct.map_tmul, LinearMap.mulRight_apply, LinearMap.id_apply,
@@ -583,8 +581,7 @@ lemma JetComponentSpace.fstPiEquiv_symm_single (i : ι)
       = TensorProduct.map LinearMap.id (Module.Dual.transpose (LinearMap.proj i)) z := by
   refine (fstPiEquiv E).injective (funext fun j => ?_)
   rw [LinearEquiv.apply_symm_apply]
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul a φ =>
       rw [TensorProduct.map_tmul, fstPiEquiv_tmul, LinearMap.id_apply]
       by_cases hij : i = j
@@ -608,8 +605,7 @@ lemma JetComponentSpace.sndPiEquiv_symm_single (i : ι)
           (Module.Dual.transpose (ConjModule.map (k := ℂ) (LinearMap.proj i))) z := by
   refine (sndPiEquiv E).injective (funext fun j => ?_)
   rw [LinearEquiv.apply_symm_apply]
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul a φ =>
       rw [TensorProduct.map_tmul, sndPiEquiv_tmul, LinearMap.id_apply]
       by_cases hij : i = j

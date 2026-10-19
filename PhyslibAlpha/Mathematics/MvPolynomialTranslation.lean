@@ -180,6 +180,6 @@ lemma mem_adjoin_range_X_sub_X_of_forall_aeval_add_eq (π : I → I)
   rintro _ ⟨_, ⟨i, hi, rfl⟩, rfl⟩
   refine ⟨i, ?_⟩
   simp only [aeval_X]
-  rw [ite_eq_right (Set.mem_setOf.mp hi)]
+  rw [ite_eq_right (Set.mem_ofPred.mp hi)]
 
 end MvPolynomial

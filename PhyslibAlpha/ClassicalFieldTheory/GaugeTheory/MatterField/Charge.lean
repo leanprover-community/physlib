@@ -91,8 +91,7 @@ lemma chargeRep_tmul (n : ℤ) (U : unitary SpaceTimeAlgebra) (f : SpaceTimeAlge
 lemma chargeRep_smul (n : ℤ) (U : unitary SpaceTimeAlgebra) (χ : SpaceTimeAlgebra)
     (z : SpaceTimeAlgebra ⊗[ℂ] V) :
     chargeRep n V U (χ • z) = χ • chargeRep n V U z := by
-  induction z using TensorProduct.induction_on with
-  | zero => simp
+  induction z using TensorProduct.inductionOn with
   | tmul f v =>
     rw [TensorProduct.smul_tmul', chargeRep_tmul, chargeRep_tmul, TensorProduct.smul_tmul',
       smul_eq_mul, smul_eq_mul, mul_left_comm]

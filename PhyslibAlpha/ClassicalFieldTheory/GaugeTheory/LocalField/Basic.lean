@@ -684,8 +684,7 @@ lemma fermionHom_commute_connectionHom (x : ExteriorAlgebra ℂ T.FermionGenerat
     Commute (d.fermionHom x) (d.connectionHom y) := by
   refine Algebra.commute_of_adjoin_eq_top CliffordAlgebra.adjoin_range_ι d.fermionHom ?_ x
   rintro _ ⟨v, rfl⟩
-  induction y using TensorProduct.induction_on with
-  | zero => simp
+  induction y using TensorProduct.inductionOn with
   | add u w hu hw => rw [map_add]; exact hu.add_right hw
   | tmul z p =>
     rw [connectionHom_tmul]
@@ -700,8 +699,7 @@ lemma bosonHom_commute_connectionHom (x : SymmetricAlgebra ℂ T.BosonGenerators
     Commute (d.bosonHom x) (d.connectionHom y) := by
   refine Algebra.commute_of_adjoin_eq_top SymmetricAlgebra.adjoin_range_ι d.bosonHom ?_ x
   rintro _ ⟨v, rfl⟩
-  induction y using TensorProduct.induction_on with
-  | zero => simp
+  induction y using TensorProduct.inductionOn with
   | add u w hu hw => rw [map_add]; exact hu.add_right hw
   | tmul z p =>
     rw [connectionHom_tmul]
@@ -733,8 +731,7 @@ lemma matterHom_commute_connectionHom
     (x : ExteriorAlgebra ℂ T.FermionGenerators ⊗[ℂ] SymmetricAlgebra ℂ T.BosonGenerators)
     (y : ℂ ⊗[ℝ] SymmetricAlgebra ℝ (GaugeBoson.JetComponentSpace 𝔤)) :
     Commute (d.matterHom x) (d.connectionHom y) := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add u w hu hw => rw [map_add]; exact hu.add_left hw
   | tmul a b =>
     rw [matterHom, Algebra.TensorProduct.lift_tmul]

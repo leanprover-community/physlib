@@ -98,8 +98,7 @@ lemma JetComponentSpace.repLorentzGroup_jetDeriv (Λ : SL(2,ℂ)) (μ : Fin 1 �
     (JetComponentSpace.repLorentzGroup 𝔤) Λ ((JetComponentSpace.jetDeriv 𝔤) μ v) =
       ∑ a, ((Lorentz.SL2C.toLorentzGroup Λ).1 a μ) •
         (JetComponentSpace.jetDeriv 𝔤) a ((JetComponentSpace.repLorentzGroup 𝔤) Λ v) := by
-  induction v using TensorProduct.induction_on with
-  | zero => simp
+  induction v using TensorProduct.inductionOn with
   | add x y hx hy =>
     rw [map_add, map_add, map_add, hx, hy, ← Finset.sum_add_distrib]
     exact Finset.sum_congr rfl fun a _ => by rw [map_add, smul_add]
@@ -231,8 +230,7 @@ noncomputable def complexRepLorentzGroupAlgHom (Λ : SL(2,ℂ)) :
 omit [Module.Finite ℝ 𝔤] in
 lemma complexRepLorentzGroup_apply (Λ : SL(2,ℂ)) (x : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra 𝔤)) :
     (complexRepLorentzGroup 𝔤) Λ x = complexRepLorentzGroupAlgHom 𝔤 Λ x := by
-  induction x using TensorProduct.induction_on with
-  | zero => rw [map_zero, map_zero]
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ => rw [map_add, map_add, h₁, h₂]
   | tmul z a => rfl
 
@@ -240,12 +238,10 @@ omit [Module.Finite ℝ 𝔤] in
 lemma complexRepLorentzGroup_apply_mul (Λ : SL(2,ℂ)) (x y : ℂ ⊗[ℝ] (LocalGaugeFieldAlgebra 𝔤)) :
     (complexRepLorentzGroup 𝔤) Λ (x * y)
       = (complexRepLorentzGroup 𝔤) Λ x * (complexRepLorentzGroup 𝔤) Λ y := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x₁ x₂ h₁ h₂ => rw [add_mul, map_add, map_add, h₁, h₂, add_mul]
   | tmul z₁ a₁ =>
-    induction y using TensorProduct.induction_on with
-    | zero => simp
+    induction y using TensorProduct.inductionOn with
     | add y₁ y₂ h₁ h₂ => rw [mul_add, map_add, map_add, h₁, h₂, mul_add]
     | tmul z₂ a₂ =>
       rw [Algebra.TensorProduct.tmul_mul_tmul, complexRepLorentzGroup_tmul,
@@ -259,8 +255,7 @@ lemma complexRepLorentzGroup_jetDeriv (Λ : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3)
     (complexRepLorentzGroup 𝔤) Λ ((complexJetDeriv 𝔤) μ x) =
       ∑ a, (((Lorentz.SL2C.toLorentzGroup Λ).1 a μ : ℝ) : ℂ) •
         (complexJetDeriv 𝔤) a ((complexRepLorentzGroup 𝔤) Λ x) := by
-  induction x using TensorProduct.induction_on with
-  | zero => simp
+  induction x using TensorProduct.inductionOn with
   | add x y hx hy =>
     rw [map_add, map_add, map_add, hx, hy, ← Finset.sum_add_distrib]
     exact Finset.sum_congr rfl fun a _ => by rw [map_add, smul_add]
@@ -294,9 +289,7 @@ lemma _root_.GaugeBoson.repLorentzGroup_dual_componentDual (Λ : SL(2,ℂ))
       = (GaugeBoson.componentDual 𝔤) (Lorentz.CoVector.sl2Rep.dual Λ ω) φ := by
   refine LinearMap.ext fun v => ?_
   obtain ⟨m⟩ := v
-  induction m using TensorProduct.induction_on with
-  | zero =>
-    rw [show (⟨0⟩ : (GaugeBoson 𝔤)) = 0 from rfl, map_zero, map_zero]
+  induction m using TensorProduct.inductionOn with
   | tmul x a =>
     rw [Representation.dual_apply, Module.Dual.transpose_apply, LinearMap.comp_apply,
       show (GaugeBoson.repLorentzGroup 𝔤) Λ⁻¹ (⟨x ⊗ₜ[ℝ] a⟩ : (GaugeBoson 𝔤))

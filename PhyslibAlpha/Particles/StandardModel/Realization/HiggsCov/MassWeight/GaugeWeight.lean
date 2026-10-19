@@ -337,7 +337,7 @@ lemma derivSubmodule_zero_pow_four_piece_zero :
       = h.barHiggs ![] 0 * h.barHiggs ![] 1 := (h.barH_comm_barH _ _ _ _ _ _).eq
   simp +decide only [GaugeWeightDecomposition.mul_piece_eq_sub',
     h.derivSubmoduleGaugeWeight_supp 0, Finset.iSup_insert, Finset.iSup_singleton,
-    h.derivSubmoduleGaugeWeight_piece_eq, ite_true, if_false, bot_sup_eq, sup_bot_eq,
+    h.derivSubmoduleGaugeWeight_piece_eq, ite_true, ite_false, bot_sup_eq, sup_bot_eq,
     Submodule.bot_mul]
   simp only [Matrix.empty_eq, ciSup_unique, quarticSpan, Submodule.sup_mul,
     Submodule.span_mul_span, Set.singleton_mul_singleton, mul_assoc, hbh, hbh', hhh,
