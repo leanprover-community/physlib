@@ -115,7 +115,7 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (L : Time × E × E → ℝ)
       eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) τ = 0 := by
   have hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) :=
     (Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1
-  refine eq_zero_of_integral_smul_eq_zero
+  refine eq_zero_of_integral_contDiff_smul_eq_zero
     (contDiff_eulerLagrange (contDiff_comp_vadd L hL t₀) hg).continuous ht fun ψ hψ hs w ↦ ?_
   obtain ⟨h, hh⟩ := exists_variation_bump hc.1 hψ hs w
   have hq : (fun σ : ℝ ↦ h.toFun (0, σ +ᵥ t₀)) = fun σ : ℝ ↦ γ (σ +ᵥ t₀) := by

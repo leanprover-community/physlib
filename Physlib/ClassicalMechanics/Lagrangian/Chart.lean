@@ -32,8 +32,8 @@ turning the Lagrangian into a function `L (t, q, q̇)` smooth over the chart tar
   one near a compact set
 - `LagrangianSystem.continuousAt_integrand`: the action integrand is continuous
 - `contDiffAt_extChartAt_comp_vadd`: a chart-read curve is smooth
-- `LagrangianSystem.integrand_eq_of_germ`: the action integrand of a curve that is chart-read
-  near a time
+- `LagrangianSystem.integrand_eq_of_eventuallyEq`: the action integrand of a curve that is
+  chart-read near a time
 
 ## iii. Table of contents
 
@@ -105,8 +105,8 @@ lemma LagrangianSystem.exists_contDiff_chartLagrangian_eq [I.Boundaryless] [Fini
 -/
 
 /-- The tangent map of a curve read in a chart is the chart Lagrangian's input. -/
-private lemma tangentMap_chart_curve [I.Boundaryless] (x : M) {c : Time → E} (t₀ : Time) (s : ℝ)
-    (hc : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ c (s +ᵥ t₀))
+private lemma tangentMap_extChartAt_symm_comp [I.Boundaryless] (x : M) {c : Time → E}
+    (t₀ : Time) (s : ℝ) (hc : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ c (s +ᵥ t₀))
     (hcx : c (s +ᵥ t₀) ∈ (extChartAt I x).target) :
     tangentMap 𝓘(ℝ, ℝ) I ((extChartAt I x).symm ∘ c) ⟨s +ᵥ t₀, (1 : ℝ)⟩ =
       tangentMap 𝓘(ℝ, E) I (extChartAt I x).symm
@@ -141,13 +141,14 @@ lemma LagrangianSystem.integrand_eq_chartLagrangian [I.Boundaryless] (S : Lagran
     S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩) =
       S.chartLagrangian x t₀ (τ, c (τ +ᵥ t₀), deriv (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ) := by
   rw [hev.tangentMap_eq (I := 𝓘(ℝ, ℝ)) (I' := I) (p := ⟨τ +ᵥ t₀, (1 : ℝ)⟩),
-    tangentMap_chart_curve x t₀ τ hc hcx]
+    tangentMap_extChartAt_symm_comp x t₀ τ hc hcx]
   rfl
 
 /-- The action integrand along a curve that is a chart-read curve near `τ` is a Lagrangian `L`
 agreeing with the chart Lagrangian near `c τ`. -/
-lemma LagrangianSystem.integrand_eq_of_germ [I.Boundaryless] (S : LagrangianSystem I M) (x : M)
-    (t₀ : Time) {γ' : Time → M} {c : ℝ → E} {τ : ℝ} {L : ℝ × E × E → ℝ} {N : Set E}
+lemma LagrangianSystem.integrand_eq_of_eventuallyEq [I.Boundaryless]
+    (S : LagrangianSystem I M) (x : M) (t₀ : Time) {γ' : Time → M} {c : ℝ → E} {τ : ℝ}
+    {L : ℝ × E × E → ℝ} {N : Set E}
     (hN : N ⊆ (extChartAt I x).target)
     (hLN : ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = S.chartLagrangian x t₀ p) (hc : ContDiffAt ℝ ∞ c τ)
     (hcN : c τ ∈ N)

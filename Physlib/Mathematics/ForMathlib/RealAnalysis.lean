@@ -21,7 +21,7 @@ Used to localise variational arguments to a window of time.
 - `IsOpen.exists_Icc_subset`
 - `Continuous.eqOn_Icc_of_eqOn_Ioo`
 - `contDiffAt_comp_add_const_iff`
-- `exists_smooth_bounded_unit_deriv`
+- `exists_contDiff_mem_Icc_deriv_zero_eq_one`
 
 ## iii. Table of contents
 
@@ -71,7 +71,7 @@ lemma contDiffAt_comp_add_const_iff {𝕜 E F : Type*} [NontriviallyNormedField 
 -/
 
 /-- A smooth function `σ : ℝ → ℝ` with `σ 0 = 0`, `σ' 0 = 1` and values in `[-ε, ε]`. -/
-lemma exists_smooth_bounded_unit_deriv {ε : ℝ} (hε : 0 < ε) :
+lemma exists_contDiff_mem_Icc_deriv_zero_eq_one {ε : ℝ} (hε : 0 < ε) :
     ∃ σ : ℝ → ℝ, ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧ ∀ s, σ s ∈ Icc (-ε) ε :=
   ⟨fun s ↦ ε * Real.sin (s / ε), by fun_prop, by simp, by simp; field_simp, fun s ↦ by
     constructor <;> nlinarith [Real.neg_one_le_sin (s / ε), Real.sin_le_one (s / ε)]⟩

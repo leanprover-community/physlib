@@ -26,7 +26,7 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 - `contDiff_eulerLagrange`: smoothness of the Euler-Lagrange covector
 - `eulerLagrange_congr`: dependence on the germ of the curve only
 - `eulerLagrange_congr_lagrangian`: dependence on the Lagrangian near the curve only
-- `contDiff_actionIntegrand`: smoothness of the action integrand
+- `contDiff_action_integrand`: smoothness of the action integrand
 - `hasDerivAt_integral_variation`: first variation of the action
 
 ## iii. Table of contents
@@ -119,7 +119,7 @@ private lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff 
   abel
 
 /-- The integrand `L(τ, H, ∂τ H)` of the action is smooth. -/
-lemma contDiff_actionIntegrand {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H) :
+lemma contDiff_action_integrand {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H) :
     ContDiff ℝ ∞ fun p : ℝ × ℝ ↦ L (p.2, H p, fderiv ℝ H p (0, 1)) :=
   hL.comp (contDiff_snd.prodMk (hH.prodMk
     ((hH.fderiv_right (m := ∞) (by simp)).clm_apply contDiff_const)))
@@ -145,7 +145,7 @@ lemma hasDerivAt_integral_variation {L : ℝ × E × E → ℝ} (hL : ContDiff �
   rw [show V 0 = 0 from fderiv_apply_fst_eq_zero (hH.differentiable (by simp) _) h0,
     show V T = 0 from fderiv_apply_fst_eq_zero (hH.differentiable (by simp) _) hT] at hbp
   refine (hasDerivAt_intervalIntegral_of_contDiff
-    ((contDiff_actionIntegrand hL hH).of_le (by simp)) 0 T 0).congr_deriv ?_
+    ((contDiff_action_integrand hL hH).of_le (by simp)) 0 T 0).congr_deriv ?_
   simp_rw [fderiv_integrand_apply hL hH]
   rw [integral_add (((contDiff_eulerLagrange hL hqs).continuous.clm_apply
     hVs.continuous).intervalIntegrable _ _)

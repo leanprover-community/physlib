@@ -21,7 +21,7 @@ subset and `0` near every point outside the open set.
 
 - `IsCompact.exists_cutoff`
 - `contDiff_smul_of_cutoff`
-- `exists_contDiff_eq_nhds`
+- `exists_contDiff_eventuallyEq`
 - `IsCompact.exists_eps_add_smul_mem`
 
 ## iii. Table of contents
@@ -78,7 +78,7 @@ lemma contDiff_smul_of_cutoff {Y F : Type*} [NormedAddCommGroup Y] [NormedSpace 
     simp [hz]
 
 /-- A function smooth on an open set agrees near a compact subset with a globally smooth one. -/
-lemma exists_contDiff_eq_nhds {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+lemma exists_contDiff_eventuallyEq {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
     [FiniteDimensional ℝ X] {f : X → E} {O : Set X} (hO : IsOpen O)
     (hf : ∀ x ∈ O, ContDiffAt ℝ ∞ f x) {C : Set X} (hC : IsCompact C) (hCO : C ⊆ O) :
     ∃ g : X → E, ContDiff ℝ ∞ g ∧ ∀ x ∈ C, g =ᶠ[𝓝 x] f := by

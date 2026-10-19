@@ -14,8 +14,9 @@ Critical points of the action satisfy the Euler-Lagrange equations in every char
 
 ## i. Overview
 
-A critical point is localised to a chart with a cutoff, a flat Lagrangian and a chart-supported
-bump variation, and the flat Euler-Lagrange equations are transported back. The converse is not
+A critical point is localised to a chart with a cutoff, a smooth extension of the chart Lagrangian
+and a chart-supported bump variation, and the Euler-Lagrange equations of the extension are
+transported back. The converse is not
 yet formalised.
 
 ## ii. Key results
@@ -57,7 +58,7 @@ lemma LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint [I.Bound
   have hqO := fun σ (hσ : σ ∈ O) ↦ contDiffAt_extChartAt_comp_vadd x t₀ (hc.1 _) hσ.2
   obtain ⟨δ, hδ, hCO⟩ := hOo.exists_Icc_subset ⟨hτ, hx⟩
   -- smooth `q'` agreeing with `q` near the compact `Icc (τ₀ - δ) (τ₀ + δ)`
-  obtain ⟨q', hq', hq'q⟩ := exists_contDiff_eq_nhds hOo hqO isCompact_Icc hCO
+  obtain ⟨q', hq', hq'q⟩ := exists_contDiff_eventuallyEq hOo hqO isCompact_Icc hCO
   have hKt : q' '' Icc (τ₀ - δ) (τ₀ + δ) ⊆ (extChartAt I x).target := by
     rintro _ ⟨σ, hσ, rfl⟩
     exact (hq'q σ hσ).eq_of_nhds ▸ (extChartAt I x).map_source (hCO hσ).2
@@ -66,7 +67,7 @@ lemma LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint [I.Bound
     S.exists_contDiff_chartLagrangian_eq x t₀ (isCompact_Icc.image hq'.continuous) hKt
   have hτ₀U : τ₀ ∈ Ioo (τ₀ - δ) (τ₀ + δ) := ⟨by linarith, by linarith⟩
   -- criticality kills the weak form of the equation, so the continuous integrand vanishes
-  have hzero := eq_zero_of_integral_smul_eq_zero_of_isOpen
+  have hzero := eq_zero_of_integral_contDiff_smul_eq_zero_of_isOpen
     (contDiff_eulerLagrange hL hq').continuous isOpen_Ioo
     (fun σ hσ ↦ (hCO (Ioo_subset_Icc_self hσ)).1) fun ψ hψ hψs w ↦
     S.integral_eulerLagrange_eq_zero_of_isCriticalPoint x hc (hτ.1.trans hτ.2) hL hNo hNt hLN hq'

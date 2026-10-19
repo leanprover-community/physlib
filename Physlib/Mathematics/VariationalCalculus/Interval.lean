@@ -22,9 +22,9 @@ there.
 ## ii. Key results
 
 - `continuous_deriv_clm_apply_add`
-- `eq_zero_of_integral_smul_eq_zero_of_isOpen`
-- `eq_zero_of_integral_smul_eq_zero`
-- `hasDerivAt_intervalIntegral_of_sub_indep`
+- `eq_zero_of_integral_contDiff_smul_eq_zero_of_isOpen`
+- `eq_zero_of_integral_contDiff_smul_eq_zero`
+- `hasDerivAt_intervalIntegral_of_sub_const`
 
 ## iii. Table of contents
 
@@ -59,7 +59,7 @@ lemma continuous_deriv_clm_apply_add {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → 
 
 /-- Fundamental lemma of the calculus of variations on an open `U ⊆ (0, T)`, for covector-valued
 `f`. -/
-lemma eq_zero_of_integral_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f)
+lemma eq_zero_of_integral_contDiff_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f)
     {T : ℝ} {U : Set ℝ} (hU : IsOpen U) (hUT : U ⊆ Ioo 0 T)
     (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → tsupport ψ ⊆ U →
       ∀ w : E, ∫ τ in (0 : ℝ)..T, f τ (ψ τ • w) = 0) :
@@ -84,13 +84,13 @@ lemma eq_zero_of_integral_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (
   exact (ae_restrict_iff' hU.measurableSet).2 (hae.mono fun x hx hxU ↦ by simpa using hx hxU)
 
 /-- Fundamental lemma of the calculus of variations on `[0, T]`, for covector-valued `f`. -/
-lemma eq_zero_of_integral_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f) {T : ℝ}
+lemma eq_zero_of_integral_contDiff_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f) {T : ℝ}
     (hT : 0 < T)
     (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → tsupport ψ ⊆ Ioo 0 T →
       ∀ w : E, ∫ τ in (0 : ℝ)..T, f τ (ψ τ • w) = 0) :
     ∀ τ ∈ Icc 0 T, f τ = 0 :=
   hf.eqOn_Icc_of_eqOn_Ioo continuous_const hT
-    (eq_zero_of_integral_smul_eq_zero_of_isOpen hf isOpen_Ioo subset_rfl h)
+    (eq_zero_of_integral_contDiff_smul_eq_zero_of_isOpen hf isOpen_Ioo subset_rfl h)
 
 /-!
 ## C. Differentiating integrals
@@ -98,7 +98,7 @@ lemma eq_zero_of_integral_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Conti
 
 /-- If two interval-integrable integrands differ by an `s`-independent function, their integrals
 over `[a, b]` have the same `s`-derivative. -/
-lemma hasDerivAt_intervalIntegral_of_sub_indep {F : Type*} [NormedAddCommGroup F]
+lemma hasDerivAt_intervalIntegral_of_sub_const {F : Type*} [NormedAddCommGroup F]
     [NormedSpace ℝ F] {G Gh : ℝ → ℝ → F} {a b x : ℝ} {f' : F}
     (hG : IntervalIntegrable (G 0) volume a b) (hGh : ∀ s, IntervalIntegrable (Gh s) volume a b)
     (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
