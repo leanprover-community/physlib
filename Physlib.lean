@@ -579,6 +579,7 @@ public import Physlib.SpaceAndTime.SpaceTime.TimeSlice
 public import Physlib.SpaceAndTime.Time.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Physlib.SpaceAndTime.Time.InnerProductSpace
+public import Physlib.SpaceAndTime.Time.ManifoldCurves
 public import Physlib.SpaceAndTime.Time.MatrixDerivatives
 public import Physlib.SpaceAndTime.Time.TimeMan
 public import Physlib.SpaceAndTime.Time.TimeUnit

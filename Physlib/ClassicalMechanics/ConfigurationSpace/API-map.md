@@ -13,13 +13,15 @@ their own, which are to be configuration spaces in this general, system-agnostic
 A configuration space is a smooth manifold without boundary, abstracting over the choice of
 mechanical system {1}{2}, and is shared across the Lagrangian formulation {3}. [1] In global
 generalised coordinates {4}, a curve is smooth if and only if its coordinate curve is, and its
-velocity is the time derivative of the coordinate curve. [TODO] The configuration spaces of the
+velocity is the time derivative of the coordinate curve. [2] The configuration spaces of the
 geometric harmonic oscillator {5} and the simple pendulum {6} are configuration spaces in this
 sense. [TODO]
 
 ## Lean References
 
 1. Physlib/ClassicalMechanics/ConfigurationSpace/Basic.lean — `ConfigurationSpace`
+2. Physlib/SpaceAndTime/Time/ManifoldCurves.lean — `Time.contMDiff_iff_contDiff_vadd`,
+   `Time.tangentMap_eq_deriv_vadd`
 
 ## References
 

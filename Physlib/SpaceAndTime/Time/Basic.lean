@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
 /-!
 # Time
@@ -82,5 +83,30 @@ instance : IsManifold 𝓘(ℝ, ℝ) ω Time := by
   apply isManifold_of_contDiffOn
   rintro _ _ ⟨_, rfl⟩ ⟨_, rfl⟩
   exact contDiff_id.add contDiff_const |>.sub contDiff_const |>.contDiffOn
+
+/-- The chart of `Time` at `t₀` is `t ↦ t -ᵥ t₀`. -/
+@[simp]
+lemma chartAt_apply (t₀ t : Time) : chartAt ℝ t₀ t = t -ᵥ t₀ := rfl
+
+/-- The inverse of the chart of `Time` at `t₀` is `τ ↦ τ +ᵥ t₀`. -/
+@[simp]
+lemma chartAt_symm_apply (t₀ : Time) (τ : ℝ) : (chartAt ℝ t₀).symm τ = τ +ᵥ t₀ := rfl
+
+/-- The extended chart of `Time` at `t₀` is `t ↦ t -ᵥ t₀`. -/
+lemma extChartAt_apply (t₀ t : Time) : extChartAt 𝓘(ℝ, ℝ) t₀ t = t -ᵥ t₀ := rfl
+
+/-- The map `τ ↦ τ +ᵥ t₀` from `ℝ` to `Time` is smooth. -/
+lemma contMDiff_vadd (t₀ : Time) (n : ℕ∞ω) :
+    ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) n (fun τ : ℝ ↦ τ +ᵥ t₀) := by
+  rw [contMDiff_iff]
+  refine ⟨(Homeomorph.vaddConst t₀).continuous, fun x y ↦ ?_⟩
+  simp only [extChartAt_model_space_eq_id, Function.comp_def, extChartAt_apply]
+  simpa [vadd_vsub_assoc] using (contDiff_id.add contDiff_const).contDiffOn
+
+/-- The map `t ↦ t -ᵥ t₀` from `Time` to `ℝ` is smooth. -/
+lemma contMDiff_vsub (t₀ : Time) (n : ℕ∞ω) :
+    ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) n (fun t : Time ↦ t -ᵥ t₀) := by
+  rw [← contMDiffOn_univ]
+  exact (contMDiffOn_chart (x := t₀)).mono (Set.subset_univ _)
 
 end Time
