@@ -114,7 +114,7 @@ private lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff 
   refine (congrArg (· (1, 0)) ((hLd _).hasFDerivAt.comp (0, τ) hφ).fderiv).trans ?_
   simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
     ContinuousLinearMap.coe_snd']
-  rw [← deriv_fderiv_apply_comm (hH.of_le (by simp)) 0 τ, fderiv_apply_zero_prod (hLd _)]
+  rw [← deriv_fderiv_apply_comm (hH.of_le (by simp)).contDiffAt, fderiv_apply_zero_prod (hLd _)]
   simp only [eulerLagrange, canonicalMomentum, sub_apply, deriv_snd_eq_fderiv_apply (hHd _)]
   abel
 

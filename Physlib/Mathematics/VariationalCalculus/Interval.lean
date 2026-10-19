@@ -61,7 +61,7 @@ lemma continuous_deriv_clm_apply_add {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → 
 `f`. -/
 lemma eq_zero_of_integral_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f)
     {T : ℝ} {U : Set ℝ} (hU : IsOpen U) (hUT : U ⊆ Ioo 0 T)
-    (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → HasCompactSupport ψ → tsupport ψ ⊆ U →
+    (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → tsupport ψ ⊆ U →
       ∀ w : E, ∫ τ in (0 : ℝ)..T, f τ (ψ τ • w) = 0) :
     ∀ τ ∈ U, f τ = 0 := by
   intro τ₀ hτ₀
@@ -71,7 +71,7 @@ lemma eq_zero_of_integral_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (
   have hae := IsOpen.ae_eq_zero_of_integral_contDiff_smul_eq_zero hU (μ := volume)
     (f := fun τ ↦ f τ w) (hcw.locallyIntegrable.locallyIntegrableOn _) (by
       intro g hg hgc hgs
-      have := h g hg hgc hgs w
+      have := h g hg hgs w
       simp only [map_smul] at this
       rw [intervalIntegral.integral_of_le hT.le] at this
       rw [← setIntegral_eq_integral_of_forall_compl_eq_zero (s := Ioc 0 T)]
@@ -86,27 +86,28 @@ lemma eq_zero_of_integral_smul_eq_zero_of_isOpen {f : ℝ → E →L[ℝ] ℝ} (
 /-- Fundamental lemma of the calculus of variations on `[0, T]`, for covector-valued `f`. -/
 lemma eq_zero_of_integral_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Continuous f) {T : ℝ}
     (hT : 0 < T)
-    (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → HasCompactSupport ψ → tsupport ψ ⊆ Ioo 0 T →
+    (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → tsupport ψ ⊆ Ioo 0 T →
       ∀ w : E, ∫ τ in (0 : ℝ)..T, f τ (ψ τ • w) = 0) :
     ∀ τ ∈ Icc 0 T, f τ = 0 :=
-  hf.eqOn_Icc_of_eqOn_Ioo hT
+  hf.eqOn_Icc_of_eqOn_Ioo continuous_const hT
     (eq_zero_of_integral_smul_eq_zero_of_isOpen hf isOpen_Ioo subset_rfl h)
 
 /-!
 ## C. Differentiating integrals
 -/
 
-/-- If two continuous integrands differ by an `s`-independent function, their integrals over
-`[a, b]` have the same `s`-derivative. -/
+/-- If two interval-integrable integrands differ by an `s`-independent function, their integrals
+over `[a, b]` have the same `s`-derivative. -/
 lemma hasDerivAt_intervalIntegral_of_sub_indep {F : Type*} [NormedAddCommGroup F]
-    [NormedSpace ℝ F] {G Gh : ℝ → ℝ → F} {a b x : ℝ} {f' : F} (hG : ∀ s, Continuous (G s))
-    (hGh : ∀ s, Continuous (Gh s)) (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
+    [NormedSpace ℝ F] {G Gh : ℝ → ℝ → F} {a b x : ℝ} {f' : F}
+    (hG : IntervalIntegrable (G 0) volume a b) (hGh : ∀ s, IntervalIntegrable (Gh s) volume a b)
+    (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
     (hd : HasDerivAt (fun s ↦ ∫ τ in a..b, Gh s τ) f' x) :
     HasDerivAt (fun s ↦ ∫ τ in a..b, G s τ) f' x := by
   have hA : ∀ s, ∫ τ in a..b, G s τ =
       (∫ τ in a..b, Gh s τ) + ∫ τ in a..b, (G 0 τ - Gh 0 τ) := fun s ↦ by
     rw [← integral_add (f := Gh s) (g := fun τ ↦ G 0 τ - Gh 0 τ)
-      ((hGh s).intervalIntegrable _ _) (((hG 0).sub (hGh 0)).intervalIntegrable _ _)]
+      (hGh s) (hG.sub (hGh 0))]
     exact integral_congr fun τ _ ↦ by simp only [← hkey s τ, add_sub_cancel]
   rw [show (fun s ↦ ∫ τ in a..b, G s τ) = _ from funext hA]
   exact hd.add_const _

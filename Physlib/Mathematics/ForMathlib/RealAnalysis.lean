@@ -45,27 +45,26 @@ open scoped ContDiff
 /-- An open set of reals contains a closed interval around each of its points. -/
 lemma IsOpen.exists_Icc_subset {O : Set ℝ} (hO : IsOpen O) {τ : ℝ} (hτ : τ ∈ O) :
     ∃ δ > 0, Icc (τ - δ) (τ + δ) ⊆ O := by
-  obtain ⟨r, hr, hball⟩ := Metric.isOpen_iff.1 hO τ hτ
-  exact ⟨r / 2, by positivity,
-    Real.closedBall_eq_Icc ▸ (Metric.closedBall_subset_ball (by linarith)).trans hball⟩
+  simpa [Real.closedBall_eq_Icc] using Metric.nhds_basis_closedBall.mem_iff.1 (hO.mem_nhds hτ)
 
-/-- A continuous function vanishing on `(a, b)` vanishes on `[a, b]`. -/
-lemma Continuous.eqOn_Icc_of_eqOn_Ioo {F : Type*} [NormedAddCommGroup F] {f : ℝ → F}
-    (hf : Continuous f) {a b : ℝ} (hab : a < b) (h : ∀ τ ∈ Ioo a b, f τ = 0) :
-    ∀ τ ∈ Icc a b, f τ = 0 :=
-  Set.EqOn.of_subset_closure (s := Ioo a b) (g := fun _ ↦ 0) h hf.continuousOn
-    continuousOn_const Ioo_subset_Icc_self (by rw [closure_Ioo hab.ne])
+/-- Continuous functions agreeing on `(a, b)` agree on `[a, b]`. -/
+lemma Continuous.eqOn_Icc_of_eqOn_Ioo {F : Type*} [TopologicalSpace F] [T2Space F]
+    {f g : ℝ → F} (hf : Continuous f) (hg : Continuous g) {a b : ℝ} (hab : a < b)
+    (h : ∀ τ ∈ Ioo a b, f τ = g τ) : ∀ τ ∈ Icc a b, f τ = g τ :=
+  Set.EqOn.of_subset_closure h hf.continuousOn hg.continuousOn Ioo_subset_Icc_self
+    (by rw [closure_Ioo hab.ne])
 
-/-- Shifting the argument of a real function by a constant. -/
-lemma contDiffAt_comp_add_const_iff {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    (g : ℝ → F) (s : ℝ) (n : ℕ∞ω) :
-    ContDiffAt ℝ n (fun τ ↦ g (τ + s)) 0 ↔ ContDiffAt ℝ n g s := by
+/-- Shifting the argument of a function by a constant. -/
+lemma contDiffAt_comp_add_const_iff {𝕜 E F : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+    (g : E → F) (s x : E) (n : ℕ∞ω) :
+    ContDiffAt 𝕜 n (fun τ ↦ g (τ + s)) x ↔ ContDiffAt 𝕜 n g (x + s) := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have h' : ContDiffAt ℝ n (fun τ ↦ g (τ + s)) ((fun τ : ℝ ↦ τ - s) s) := by simpa using h
+  · have h' : ContDiffAt 𝕜 n (fun τ ↦ g (τ + s)) ((fun τ : E ↦ τ - s) (x + s)) := by
+      simpa using h
     simpa [Function.comp_def] using
-      h'.comp (f := fun τ : ℝ ↦ τ - s) s (contDiffAt_id.sub contDiffAt_const)
-  · have h' : ContDiffAt ℝ n g ((fun τ : ℝ ↦ τ + s) 0) := by simpa using h
-    exact h'.comp (f := fun τ : ℝ ↦ τ + s) 0 (contDiffAt_id.add contDiffAt_const)
+      h'.comp (x + s) (f := fun τ : E ↦ τ - s) (contDiffAt_id.sub contDiffAt_const)
+  · exact ContDiffAt.comp (g := g) x (by simpa using h) (contDiffAt_id.add contDiffAt_const)
 
 /-!
 ## B. Bounded smooth functions

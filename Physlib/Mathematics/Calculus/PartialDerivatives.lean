@@ -22,8 +22,10 @@ commute.
 
 - `fderiv_apply_zero_prod`: splitting of the derivative of `L (τ, q, v)`
 - `deriv_fderiv_apply_comm`: commutation of mixed derivatives of `H (s, τ)`
+- `contDiff_fderiv_partial_x`, `contDiff_fderiv_partial_v`: smoothness of the partials of `L` along
+  a curve
 - `deriv_snd_eq_fderiv_apply`, `deriv_fst_eq_fderiv_apply`: derivatives of the slices of `H`
-- `fderiv_apply_fst_eq_zero`, `fderiv_apply_fst_eq_of_eq_add_smul`: the `s`-derivative of `H` at `τ`
+- `fderiv_apply_fst_eq_zero`, `fderiv_apply_fst_of_eq_add_smul`: the `s`-derivative of `H` at `τ`
 
 ## iii. Table of contents
 
@@ -71,20 +73,20 @@ lemma fderiv_apply_zero_prod {L : ℝ × E × E → F} {τ : ℝ} {x v : E}
   rw [fderiv_partial_x hL, fderiv_partial_v hL]
   simp [← map_add]
 
-private lemma contDiff_fderiv_along {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
+private lemma contDiff_fderiv_along {L : ℝ × E × E → F} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
     (hq : ContDiff ℝ ∞ q) : ContDiff ℝ ∞ fun σ ↦ fderiv ℝ L (σ, q σ, deriv q σ) :=
   (hL.fderiv_right (m := ∞) (by simp)).comp
     (contDiff_id.prodMk (hq.prodMk (contDiff_infty_iff_deriv.1 hq).2))
 
 /-- The `x`-derivative of a smooth Lagrangian along a smooth curve is smooth in time. -/
-lemma contDiff_fderiv_partial_x {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
+lemma contDiff_fderiv_partial_x {L : ℝ × E × E → F} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
     (hq : ContDiff ℝ ∞ q) :
     ContDiff ℝ ∞ fun σ ↦ fderiv ℝ (fun x ↦ L (σ, x, deriv q σ)) (q σ) := by
   simp_rw [fderiv_partial_x (hL.differentiable (by simp) _)]
   exact (contDiff_fderiv_along hL hq).clm_comp contDiff_const
 
 /-- The `v`-derivative of a smooth Lagrangian along a smooth curve is smooth in time. -/
-lemma contDiff_fderiv_partial_v {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
+lemma contDiff_fderiv_partial_v {L : ℝ × E × E → F} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
     (hq : ContDiff ℝ ∞ q) :
     ContDiff ℝ ∞ fun σ ↦ fderiv ℝ (fun v ↦ L (σ, q σ, v)) (deriv q σ) := by
   simp_rw [fderiv_partial_v (hL.differentiable (by simp) _)]
@@ -96,12 +98,12 @@ lemma contDiff_fderiv_partial_v {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ �
 
 variable {H : ℝ × ℝ → F}
 
-/-- Mixed partial derivatives of a `C²` two-parameter family commute. -/
-lemma deriv_fderiv_apply_comm (hH : ContDiff ℝ 2 H) (s τ : ℝ) :
+/-- Mixed partial derivatives of a two-parameter family, `C²` at the point, commute. -/
+lemma deriv_fderiv_apply_comm {s τ : ℝ} (hH : ContDiffAt ℝ 2 H (s, τ)) :
     deriv (fun σ ↦ fderiv ℝ H (s, σ) (1, 0)) τ =
       fderiv ℝ (fun p ↦ fderiv ℝ H p (0, 1)) (s, τ) (1, 0) := by
   have hd : DifferentiableAt ℝ (fderiv ℝ H) (s, τ) :=
-    (hH.fderiv_right (m := 1) (by norm_num)).differentiable one_ne_zero (s, τ)
+    (hH.fderiv_right (m := 1) (by norm_num)).differentiableAt one_ne_zero
   have h1 : HasDerivAt (fun σ : ℝ ↦ (s, σ)) ((0 : ℝ), (1 : ℝ)) τ :=
     (hasDerivAt_const τ s).prodMk (hasDerivAt_id τ)
   have h3 := (hd.hasFDerivAt.comp_hasDerivAt τ h1).clm_apply
@@ -109,7 +111,7 @@ lemma deriv_fderiv_apply_comm (hH : ContDiff ℝ 2 H) (s τ : ℝ) :
   have h4 : HasFDerivAt (fun p : ℝ × ℝ ↦ fderiv ℝ H p (0, 1))
       ((fderiv ℝ (fderiv ℝ H) (s, τ)).flip ((0 : ℝ), (1 : ℝ))) (s, τ) := by
     simpa using hd.hasFDerivAt.clm_apply (hasFDerivAt_const ((0 : ℝ), (1 : ℝ)) (s, τ))
-  have hsymm : IsSymmSndFDerivAt ℝ H (s, τ) := hH.contDiffAt.isSymmSndFDerivAt (by simp)
+  have hsymm : IsSymmSndFDerivAt ℝ H (s, τ) := hH.isSymmSndFDerivAt (by simp)
   rw [h4.fderiv]
   have h5 : deriv (fun σ ↦ fderiv ℝ H (s, σ) (1, 0)) τ = _ := h3.deriv
   rw [h5]
@@ -134,7 +136,7 @@ lemma fderiv_apply_fst_eq_zero {a : ℝ} (hH : DifferentiableAt ℝ H (0, a))
   simp
 
 /-- If `H (s, τ) = c + σ s • v` with `σ' 0 = 1`, the `s`-derivative of `H` at `(0, τ)` is `v`. -/
-lemma fderiv_apply_fst_eq_of_eq_add_smul {τ : ℝ} {c v : F} {σ : ℝ → ℝ}
+lemma fderiv_apply_fst_of_eq_add_smul {τ : ℝ} {c v : F} {σ : ℝ → ℝ}
     (hH : DifferentiableAt ℝ H (0, τ)) (hσ : DifferentiableAt ℝ σ 0) (hσ' : deriv σ 0 = 1)
     (h : ∀ s, H (s, τ) = c + σ s • v) : fderiv ℝ H (0, τ) (1, 0) = v := by
   rw [← deriv_fst_eq_fderiv_apply hH, funext h]

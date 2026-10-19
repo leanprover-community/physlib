@@ -60,9 +60,9 @@ lemma hasDerivAt_action_variation (L : Time × E × E → ℝ)
       (∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀),
         eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) τ
           (fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0))) 0 := by
-  simpa only [action_variation L hL h ht] using
+  simpa only [action_ofNormedSpace_variation L hL h ht] using
     hasDerivAt_integral_variation (L := fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
-      (contDiff_timeCoord L hL t₀) (contDiff_timeCoordVariation h) (t₁ -ᵥ t₀)
+      (contDiff_comp_vadd L hL t₀) (contDiff_variation_comp_vadd h) (t₁ -ᵥ t₀)
       (fun s ↦ by simp [h.apply_left])
       (fun s ↦ by rw [vsub_vadd, h.apply_right, h.apply_right])
 
@@ -89,21 +89,21 @@ private lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E)
 /-- A smooth curve satisfying the Euler-Lagrange equations is a critical point. -/
 lemma isCriticalPoint_of_eulerLagrange (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (ht : 0 < t₁ -ᵥ t₀)
-    (hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀))) (hEuler : ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
+    (hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀))) (hEuler : ∀ τ ∈ Ioo 0 (t₁ -ᵥ t₀),
       eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun τ ↦ γ (τ +ᵥ t₀)) τ = 0) :
     (LagrangianSystem.ofNormedSpace L hL).IsCriticalPoint γ t₀ t₁ := by
   refine ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).2 hg, fun h ↦ ?_⟩
   refine (hasDerivAt_action_variation L hL h ht.le).congr_deriv ?_
   have hq : ContDiff ℝ ∞ (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) :=
-    (contDiff_timeCoordVariation h).comp (contDiff_const.prodMk contDiff_id)
+    (contDiff_variation_comp_vadd h).comp (contDiff_const.prodMk contDiff_id)
   have hEq : ∀ τ ∈ Ioo 0 (t₁ -ᵥ t₀), (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) =ᶠ[𝓝 τ]
       (fun σ ↦ γ (σ +ᵥ t₀)) := by
     intro τ hτ
     filter_upwards [Ioo_mem_nhds hτ.1 hτ.2] with σ hσ
     exact h.apply_zero σ ⟨hσ.1.le, hσ.2.le⟩
-  have hzero := (contDiff_eulerLagrange (contDiff_timeCoord L hL t₀) hq).continuous
-    |>.eqOn_Icc_of_eqOn_Ioo ht fun τ hτ ↦
-      (eulerLagrange_congr (hEq τ hτ)).trans (hEuler τ ⟨hτ.1.le, hτ.2.le⟩)
+  have hzero := (contDiff_eulerLagrange (contDiff_comp_vadd L hL t₀) hq).continuous
+    |>.eqOn_Icc_of_eqOn_Ioo continuous_const ht fun τ hτ ↦
+      (eulerLagrange_congr (hEq τ hτ)).trans (hEuler τ hτ)
   refine (integral_congr (g := fun _ ↦ (0 : ℝ)) fun τ hτ ↦ ?_).trans (by simp)
   rw [uIcc_of_le ht.le] at hτ
   simp [hzero τ hτ]
@@ -116,13 +116,13 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (L : Time × E × E → ℝ)
   have hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) :=
     (Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1
   refine eq_zero_of_integral_smul_eq_zero
-    (contDiff_eulerLagrange (contDiff_timeCoord L hL t₀) hg).continuous ht fun ψ hψ _ hs w ↦ ?_
+    (contDiff_eulerLagrange (contDiff_comp_vadd L hL t₀) hg).continuous ht fun ψ hψ hs w ↦ ?_
   obtain ⟨h, hh⟩ := exists_variation_bump hc.1 hψ hs w
   have hq : (fun σ : ℝ ↦ h.toFun (0, σ +ᵥ t₀)) = fun σ : ℝ ↦ γ (σ +ᵥ t₀) := by
     funext σ; simp [hh]
   have hV : ∀ τ, fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0) = ψ τ • w :=
-    fun τ ↦ fderiv_apply_fst_eq_of_eq_add_smul
-      ((contDiff_timeCoordVariation h).differentiable (by simp) _) (σ := fun r ↦ r)
+    fun τ ↦ fderiv_apply_fst_of_eq_add_smul
+      ((contDiff_variation_comp_vadd h).differentiable (by simp) _) (σ := fun r ↦ r)
       differentiableAt_id (by simp) fun r ↦ hh r τ
   have := (hasDerivAt_action_variation L hL h ht.le).unique (hc.2 h)
   simpa [hq, hV] using this
@@ -136,7 +136,7 @@ lemma isCriticalPoint_ofNormedSpace_iff (L : Time × E × E → ℝ)
         eulerLagrange (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) τ = 0 :=
   ⟨fun hc ↦ ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1,
       eulerLagrange_eq_zero_of_isCriticalPoint L hL ht hc⟩,
-    fun h ↦ isCriticalPoint_of_eulerLagrange L hL ht h.1 h.2⟩
+    fun h ↦ isCriticalPoint_of_eulerLagrange L hL ht h.1 fun τ hτ ↦ h.2 τ (Ioo_subset_Icc_self hτ)⟩
 
 end LagrangianSystem
 

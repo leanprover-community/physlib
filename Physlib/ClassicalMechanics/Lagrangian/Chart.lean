@@ -29,10 +29,9 @@ turning the Lagrangian into a function `L (t, q, q̇)` smooth over the chart tar
 - `LagrangianSystem.integrand_eq_chartLagrangian`: the action integrand in a chart is the chart
   Lagrangian
 - `LagrangianSystem.exists_contDiff_chartLagrangian_eq`: the chart Lagrangian agrees with a smooth
-  one
-  near a compact set
+  one near a compact set
 - `LagrangianSystem.continuousAt_integrand`: the action integrand is continuous
-- `contDiffAt_chart_curve`: a chart-read curve is smooth
+- `contDiffAt_extChartAt_comp_vadd`: a chart-read curve is smooth
 - `LagrangianSystem.integrand_eq_of_germ`: the action integrand of a curve that is chart-read
   near a time
 
@@ -120,14 +119,14 @@ private lemma tangentMap_chart_curve [I.Boundaryless] (x : M) {c : Time → E} (
   rw [h, Time.tangentMap_eq_deriv_vadd]
 
 /-- A chart-read curve is smooth at times at which the curve is in the chart. -/
-lemma contDiffAt_chart_curve (x : M) {γ : Time → M}
-    (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (t₀ : Time) {σ : ℝ}
+lemma contDiffAt_extChartAt_comp_vadd (x : M) {γ : Time → M}
+    (t₀ : Time) {σ : ℝ} (hγ : ContMDiffAt 𝓘(ℝ, ℝ) I ∞ γ (σ +ᵥ t₀))
     (hσ : γ (σ +ᵥ t₀) ∈ (extChartAt I x).source) :
     ContDiffAt ℝ ∞ (fun σ' : ℝ ↦ extChartAt I x (γ (σ' +ᵥ t₀))) σ :=
   contMDiffAt_iff_contDiffAt.1 <| ContMDiffAt.comp (g := extChartAt I x)
     (f := fun σ' : ℝ ↦ γ (σ' +ᵥ t₀)) σ
     (contMDiffAt_extChartAt' (by rwa [extChartAt_source] at hσ))
-    ((hγ _).comp σ (Time.contMDiff_vadd t₀ ∞).contMDiffAt)
+    (hγ.comp σ (Time.contMDiff_vadd t₀ ∞).contMDiffAt)
 
 /-!
 ## C. The action integrand
@@ -187,7 +186,7 @@ lemma LagrangianSystem.continuousAt_integrand [I.Boundaryless]
   -- read `γ'` in the chart at its value at `τ`, where the integrand is the smooth chart Lagrangian
   set x := γ' (τ +ᵥ t₀)
   have h0 : γ' (τ +ᵥ t₀) ∈ (extChartAt I x).source := mem_extChartAt_source x
-  have hg := contDiffAt_chart_curve x hγ' t₀ h0
+  have hg := contDiffAt_extChartAt_comp_vadd x t₀ (hγ' _) h0
   exact ((S.contDiffAt_chartLagrangian x t₀
     ((extChartAt I x).map_source h0)).continuousAt.comp_of_eq
     (continuousAt_id.prodMk (hg.continuousAt.prodMk

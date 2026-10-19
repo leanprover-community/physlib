@@ -23,9 +23,6 @@ The motions of a Lagrangian system are the critical points of its action.
 - `LagrangianSystem` : smooth time-dependent Lagrangians on `TM`.
 - `LagrangianSystem.action` : the action of a curve.
 - `LagrangianSystem.action_eq_intervalIntegral` : the action as an interval integral.
-- `LagrangianSystem.action_eq_zero_of_vsub_nonpos` : the action over an empty interval vanishes.
-- `LagrangianSystem.isCriticalPoint_of_vsub_nonpos` : smooth curves are critical over an empty
-  interval.
 - `LagrangianSystem.IsCriticalPoint` : critical points of the action.
 - `LagrangianSystem.ofNormedSpace` : the Lagrangian system of a smooth `L (t, q, q̇)` on a normed
   space.
@@ -77,21 +74,12 @@ def IsCriticalPoint (γ : Time → M) (t₀ t₁ : Time) : Prop :=
   ContMDiff 𝓘(ℝ, ℝ) I ∞ γ ∧ ∀ h : Variation I γ t₀ t₁,
     HasDerivAt (fun s ↦ S.action (fun t ↦ h.toFun (s, t)) t₀ t₁) 0 0
 
-/-- The action over an empty or one-point interval vanishes. -/
-lemma action_eq_zero_of_vsub_nonpos (h : t₁ -ᵥ t₀ ≤ 0) : S.action γ t₀ t₁ = 0 :=
-  setIntegral_measure_zero _ ((Set.subsingleton_Icc_of_ge h).measure_zero _)
-
 /-- The action as an interval integral over `[0, t₁ -ᵥ t₀]`. -/
 lemma action_eq_intervalIntegral (h : 0 ≤ t₁ -ᵥ t₀) :
     S.action γ t₀ t₁ = ∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀),
       S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ ⟨τ +ᵥ t₀, (1 : ℝ)⟩) := by
   rw [integral_of_le h, ← integral_Icc_eq_integral_Ioc]
   rfl
-
-/-- Every smooth curve is critical over an empty or one-point interval. -/
-lemma isCriticalPoint_of_vsub_nonpos (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (h : t₁ -ᵥ t₀ ≤ 0) :
-    S.IsCriticalPoint γ t₀ t₁ :=
-  ⟨hγ, fun _ ↦ by simp [action_eq_zero_of_vsub_nonpos _ h, hasDerivAt_const]⟩
 
 end LagrangianSystem
 

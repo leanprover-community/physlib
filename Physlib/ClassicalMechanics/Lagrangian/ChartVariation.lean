@@ -222,17 +222,17 @@ private lemma LagrangianSystem.exists_hasDerivAt_action_chart [I.Boundaryless]
   have hflat := hasDerivAt_integral_variation hL hH (t₁ -ᵥ t₀)
     (fun s ↦ by simp [hHc, hψ0]) fun s ↦ by simp only [hHc, hψT, zero_smul, smul_zero, add_zero]
   have hV : ∀ τ, fderiv ℝ Hc (0, τ) (1, 0) = ψ τ • w := fun τ ↦
-    fderiv_apply_fst_eq_of_eq_add_smul (hH.differentiable (by simp) _)
+    fderiv_apply_fst_of_eq_add_smul (hH.differentiable (by simp) _)
       (hσ.differentiable (by simp) 0) hσ'0 fun s ↦ rfl
   rw [show (fun σ' : ℝ ↦ Hc (0, σ')) = q from funext fun σ' ↦ by simp [hHc, hσ0]] at hflat
   simp only [hV] at hflat
   -- the geometric and flat integrands differ by an `s`-independent term
   simp_rw [S.action_eq_intervalIntegral hT.le]
   exact hasDerivAt_intervalIntegral_of_sub_indep
-    (fun s ↦ continuous_iff_continuousAt.2 fun τ ↦ S.continuousAt_integrand t₀
-      (h.toFun.contMDiff.comp (contMDiff_const.prodMk contMDiff_id)) τ)
-    (fun s ↦ (contDiff_actionIntegrand hL hH).continuous.comp
-      (continuous_const.prodMk continuous_id))
+    ((continuous_iff_continuousAt.2 fun τ ↦ S.continuousAt_integrand t₀
+      (h.toFun.contMDiff.comp (contMDiff_const.prodMk contMDiff_id)) τ).intervalIntegrable _ _)
+    (fun s ↦ ((contDiff_actionIntegrand hL hH).continuous.comp
+      (continuous_const.prodMk continuous_id)).intervalIntegrable _ _)
     (fun s τ ↦ S.integrand_sub_eq x hγ hN hLN hCs hqC hsC w hσ0 hH (fun s τ ↦ rfl)
       (fun s τ hτ ↦ hεN τ hτ (σ s) (hσε s)) (fun s t ↦ h.toFun (s, t)) hoff hsymm s τ)
     hflat

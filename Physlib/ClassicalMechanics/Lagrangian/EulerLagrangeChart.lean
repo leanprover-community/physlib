@@ -54,7 +54,7 @@ lemma LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint [I.Bound
   set O : Set ℝ := Ioo 0 (t₁ -ᵥ t₀) ∩ (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) ⁻¹' (extChartAt I x).source
   have hOo : IsOpen O := isOpen_Ioo.inter ((isOpen_extChartAt_source x).preimage
     (hc.1.continuous.comp (Time.contMDiff_vadd t₀ ∞).continuous))
-  have hqO := fun σ (hσ : σ ∈ O) ↦ contDiffAt_chart_curve x hc.1 t₀ hσ.2
+  have hqO := fun σ (hσ : σ ∈ O) ↦ contDiffAt_extChartAt_comp_vadd x t₀ (hc.1 _) hσ.2
   obtain ⟨δ, hδ, hCO⟩ := hOo.exists_Icc_subset ⟨hτ, hx⟩
   -- smooth `q'` agreeing with `q` near the compact `Icc (τ₀ - δ) (τ₀ + δ)`
   obtain ⟨q', hq', hq'q⟩ := exists_contDiff_eq_nhds hOo hqO isCompact_Icc hCO
@@ -68,7 +68,7 @@ lemma LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint [I.Bound
   -- criticality kills the weak form of the equation, so the continuous integrand vanishes
   have hzero := eq_zero_of_integral_smul_eq_zero_of_isOpen
     (contDiff_eulerLagrange hL hq').continuous isOpen_Ioo
-    (fun σ hσ ↦ (hCO (Ioo_subset_Icc_self hσ)).1) fun ψ hψ _ hψs w ↦
+    (fun σ hσ ↦ (hCO (Ioo_subset_Icc_self hσ)).1) fun ψ hψ hψs w ↦
     S.integral_eulerLagrange_eq_zero_of_isCriticalPoint x hc (hτ.1.trans hτ.2) hL hNo hNt hLN hq'
       isCompact_Icc
       (fun τ hτ ↦ (hCO hτ).2) hq'q (fun τ hτ ↦ hKN ⟨τ, hτ, rfl⟩) hψ

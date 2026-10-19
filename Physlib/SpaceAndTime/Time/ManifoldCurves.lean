@@ -21,7 +21,6 @@ The charts of `Time` are translations, so the coordinate curve `τ ↦ γ (τ +�
 ## ii. Key results
 
 - `Time.contMDiff_iff_contDiff_vadd`: a curve is `C^n` iff its coordinate curve is
-- `Time.mdifferentiableAt_vadd_iff`: a curve is differentiable iff its coordinate curve is
 - `Time.mfderiv_eq_deriv_vadd`: the manifold derivative is the derivative of the coordinate curve
 - `Time.tangentMap_eq_deriv_vadd`: the tangent map of a curve in coordinates
 - `Time.contMDiff_vadd`, `Time.contMDiff_vsub`: translations of `Time` are smooth
@@ -98,14 +97,14 @@ lemma contMDiff_iff_contDiff_vadd (γ : Time → F) (t₀ : Time) (n : ℕ∞ω)
     ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, F) n γ ↔ ContDiff ℝ n (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) := by
   rw [contDiff_iff_contDiffAt]
   refine ⟨fun h s ↦ ?_, fun h x ↦ ?_⟩
-  · rw [← contDiffAt_comp_add_const_iff, ← vadd_vadd_comp, ← contMDiffAt_iff_contDiffAt_vadd]
-    exact h _
+  · simpa using (contDiffAt_comp_add_const_iff (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) s 0 n).1
+      (by rw [← vadd_vadd_comp, ← contMDiffAt_iff_contDiffAt_vadd]; exact h _)
   · rw [contMDiffAt_iff_contDiffAt_vadd, ← vsub_vadd x t₀, vadd_vadd_comp]
-    exact (contDiffAt_comp_add_const_iff _ _ _).2 (h _)
+    exact (contDiffAt_comp_add_const_iff _ _ _ _).2 (by simpa using h _)
 
 /-- A curve into a normed space is differentiable at `s +ᵥ t₀` iff its coordinate curve based
 at `t₀` is differentiable at `s`. -/
-lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : ℝ) :
+private lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : ℝ) :
     MDifferentiableAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ (s +ᵥ t₀) ↔
       DifferentiableAt ℝ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s := by
   rw [mdifferentiableAt_iff_differentiableAt_vadd, vadd_vadd_comp]
