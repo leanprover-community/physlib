@@ -136,8 +136,8 @@ lemma momentumOperatorUnbounded_isSymmetric : momentumOperatorUnbounded.IsSymmet
       mul_comm _ (-Complex.I * ↑↑ℏ), mul_assoc]
   rw [MeasureTheory.integral_const_mul, integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable,
     ← MeasureTheory.integral_neg, ← MeasureTheory.integral_const_mul]
-  simp only [starRingEnd_apply, fderiv_star]
-  simp [momentumOperatorSchwartz_apply, mul_assoc]
+  · simp only [starRingEnd_apply, fderiv_star]
+    simp [momentumOperatorSchwartz_apply, mul_assoc]
   · simp only [starRingEnd_apply, fderiv_star]
     exact hint (SchwartzMap.derivCLM ℂ ℂ ψ1) ψ2
   · exact hint ψ1 (SchwartzMap.derivCLM ℂ ℂ ψ2)

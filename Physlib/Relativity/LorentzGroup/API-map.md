@@ -27,7 +27,7 @@ it. A standard introduction is Jaffe {5}.
 
 Every boost is a Lorentz transformation. [4] Every rotation of space is a Lorentz
 transformation. [5] Every member of the restricted Lorentz group is a boost composed with a
-rotation. [TODO]
+rotation. [10]
 
 ### Proper, orthochronous and restricted transformations
 
@@ -51,6 +51,8 @@ orthochronous Lorentz transformations are characterized topologically within the
 7. Physlib/Relativity/LorentzGroup/Proper.lean — `IsProper`
 8. Physlib/Relativity/LorentzGroup/Orthochronous/Basic.lean — `IsOrthochronous`
 9. Physlib/Relativity/LorentzGroup/Restricted/Basic.lean — `restricted`
+10. Physlib/Relativity/LorentzGroup/Restricted/FromBoostRotation.lean — `exists_boost_mul_rotation`,
+   `toBoostRotation`
 
 ## References
 

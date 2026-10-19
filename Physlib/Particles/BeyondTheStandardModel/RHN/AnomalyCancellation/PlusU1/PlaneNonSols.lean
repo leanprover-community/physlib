@@ -195,9 +195,9 @@ lemma isSolution_f9 (f : Fin 11 → ℚ) (hS : (PlusU1 3).IsSolution (∑ i, f i
   have hc := cubeSol S
   rw [hS', hx] at hc
   change cubeTriLin.toCubic _ = _ at hc
-  rw [cubeTriLin.toCubic_add] at hc
-  erw [accCube.map_smul] at hc
-  erw [accCube.map_smul (- 3 * f 9) B₁₀] at hc
+  rw [cubeTriLin.toCubic_add, ← accCube] at hc
+  rw [accCube.map_smul] at hc
+  rw [accCube.map_smul (- 3 * f 9) B₁₀] at hc
   rw [cubeTriLin.map_smul₁, cubeTriLin.map_smul₁, cubeTriLin.map_smul₂, cubeTriLin.map_smul₂,
     cubeTriLin.map_smul₃, cubeTriLin.map_smul₃] at hc
   rw [show accCube B₉ = 9 by with_unfolding_all rfl,

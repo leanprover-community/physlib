@@ -57,7 +57,6 @@ lemma unitTensor_repr_apply {d : ℕ} (c : Color)
       rw [unitTensor_basis_repr,
         show ((realLorentzTensor d).unit Color.up) (1 : ℝ) = Lorentz.preCoContrUnitVal d from
           Lorentz.preCoContrUnit_apply_one]
-      simp only [τ_up_eq_down]
       rw [Lorentz.preCoContrUnitVal_expand_tmul]
       simp only [map_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
         Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul]
@@ -66,7 +65,6 @@ lemma unitTensor_repr_apply {d : ℕ} (c : Color)
       rw [unitTensor_basis_repr,
         show ((realLorentzTensor d).unit Color.down) (1 : ℝ) = Lorentz.preContrCoUnitVal d from
           Lorentz.preContrCoUnit_apply_one]
-      simp only [τ_down_eq_up]
       rw [Lorentz.preContrCoUnitVal_expand_tmul]
       simp only [map_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
         Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul]

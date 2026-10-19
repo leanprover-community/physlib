@@ -553,7 +553,7 @@ lemma aeval_hyperchargeEigen_eigenPoint (X : Fin 4 → ℝ) (k : Fin 6) :
     simp only [hyperchargeEigen, eigenPoint, aRep, Fin.isValue] <;>
     (apply Complex.ext <;>
       simp [Complex.add_re, Complex.add_im, Complex.mul_re,
-        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im] <;> ring)
+        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]; try ring)
 
 open MvPolynomial in
 /-- The complexified slice potential, evaluated at the eigen-point of `repHiggs X`, returns the real
@@ -627,7 +627,7 @@ lemma neutralBilinear_eval_eigenPoint (X : Fin 4 → ℝ) (i : Fin 5) :
     simp only [neutralBilinear, transf, eigenPoint, sliceBilinear, Fin.isValue] <;>
     (apply Complex.ext <;>
       simp [pow_two, Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im, Complex.mul_re,
-        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im] <;> ring)
+        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]; try ring)
 
 open MvPolynomial in
 /-- **The potential on representatives, in the bilinears.** A gauge-invariant polynomial potential,

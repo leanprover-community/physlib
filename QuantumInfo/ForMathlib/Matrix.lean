@@ -726,8 +726,10 @@ lemma PosSemidef.rsmul {n : Type*} [Fintype n] {M : Matrix n n ℂ} (hM : M.PosS
     rw [smul_mulVec, dotProduct_smul]
     positivity
 
-lemma PosDef.Convex {n 𝕜 : Type*} [Fintype n] [RCLike 𝕜] : Convex ℝ (Matrix.PosDef (n := n) (R := 𝕜)) := by
+lemma PosDef.Convex {n 𝕜 : Type*} [Fintype n] [RCLike 𝕜] :
+    Convex ℝ {A : Matrix n n 𝕜 | A.PosDef} := by
   intro A hA B hB a b ha hb hab
+  rw [Set.mem_ofPred_eq] at hA hB ⊢
   rcases ha.lt_or_eq with ha | rfl
   · apply (hA.smul ha).add_posSemidef
     exact hB.posSemidef.smul hb

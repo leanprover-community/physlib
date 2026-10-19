@@ -1,34 +1,55 @@
-# Configuration Space
+# Lagrangian mechanics
 
 ## Abstract (Alpha)
 
-The configuration space of a mechanical system is the manifold of the configurations it can
-instantaneously be in, coordinatised by generalized coordinates. It is the base on which the
-Lagrangian formulation of mechanics is built: a Lagrangian is a function on the tangent bundle of
-positions and velocities, and the Euler–Lagrange equations pick out the physical motions as curves
-in the configuration space. Particular systems, such as the harmonic oscillator and the pendulum,
-have configuration spaces of their own, while this map concerns the general, system-agnostic
-picture, whose positions ultimately live in physical space.
+A Lagrangian system on a smooth manifold of configurations is a smooth function of time and of
+the positions and velocities, that is, a function on time and the tangent bundle of the manifold.
+Its motions are the critical points of the action, the integral of the Lagrangian along a curve,
+under smooth variations of the curve that fix its endpoints. Around this sit the Euler–Lagrange
+equations in charts, Noether's theorem with the conservation laws it gives, the conservation of
+energy for autonomous systems, natural systems built from a Riemannian metric, and Lagrangians
+written in generalised coordinates.
 
 ## Content (Alpha)
 
-A configuration manifold {1} abstracts over the choice of mechanical system, and is shared across
-the Lagrangian formulation. [TODO] Generalized coordinates and the velocity phase space live over
-that shared configuration space, and a Lagrangian is a function on them, which is the input to the
-Euler–Lagrange equations {2}. [TODO] Particular systems, such as the geometric harmonic
-oscillator {3} and the pendulum {4}, have configuration spaces of their own, whose positions
-ultimately live in physical space {5}.
+### Lagrangian systems and the action
+
+A Lagrangian system on a configuration space M {1} is a smooth function L : Time × TM → ℝ of
+time {2} and of the positions and velocities, depending on first derivatives only. [1] A smooth
+variation of a curve γ on [t₀, t₁] is a smooth family of curves starting at γ and fixing γ(t₀)
+and γ(t₁). [2] The action of γ is ∫ L(t, γ, γ̇) dt over [t₀, t₁], and γ is a critical point of
+the action when it is smooth and every variation has zero first variation of the action {3}.
+[3]
+
+### Equations of motion
+
+A smooth curve is a critical point of the action if and only if the Euler–Lagrange equations hold
+in every chart {4}. [TODO] Lagrangians L(q, q̇, t) written in generalised coordinates are
+Lagrangian systems {5}. [TODO]
+
+### Symmetries and conservation laws
+
+Noether's theorem: if an autonomous Lagrangian system admits a one-parameter group of
+diffeomorphisms of M, then its Lagrange equations have a first integral {4}. [TODO] The
+conservation of momentum and of angular momentum follow from Noether's theorem. [TODO] The energy
+of an autonomous Lagrangian system is constant along its motions. [TODO]
+
+### Natural systems
+
+A natural system is one whose Lagrangian is kinetic minus potential energy, the kinetic energy
+coming from a Riemannian metric on M. [TODO]
 
 ## Lean References
 
-*None yet.*
+1. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem`
+2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`
+3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`,
+   `LagrangianSystem.IsCriticalPoint`
 
 ## References
 
-1. Ivo Terek, *Introductory Variational Calculus on Manifolds*, Section 1 (the manifold setting).
-2. Landau and Lifshitz, *Mechanics*, 3rd ed., Chapter 1 (generalized coordinates, the principle of
-   least action and the Lagrangian).
-3. Configuration space of the harmonic oscillator API map —
-   Physlib/ClassicalMechanics/HarmonicOscillator/Geometric/API-map.md
-4. Configuration space for pendulum API map — Physlib/ClassicalMechanics/Pendulum/API-map.md
-5. Space API map — Physlib/SpaceAndTime/Space/API-map.md
+1. Configuration Space API map — Physlib/ClassicalMechanics/ConfigurationSpace/API-map.md
+2. Time API map — Physlib/SpaceAndTime/Time/API-map.md
+3. Ivo Terek, *Introductory Variational Calculus on Manifolds*.
+4. V. I. Arnold, *Mathematical Methods of Classical Mechanics*.
+5. L. D. Landau and E. M. Lifshitz, *Mechanics*.

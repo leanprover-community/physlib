@@ -84,7 +84,8 @@ lemma mul_mem_closedGeneratedByOne {a x y : E}
     intro v hv
     exact subset_closure (JordanAlgebra.mul_mem_generatedByOne a hu hv)
   have hfinal : x * y ∈ closure S := by
-    apply (closure_minimal hleft (hclosed.preimage (NormedJordanAlgebra.continuous_mul_right y))) hx
+    apply (closure_minimal (s := S) (fun u hu => hleft u hu)
+      (hclosed.preimage (NormedJordanAlgebra.continuous_mul_right y))) hx
   show x * y ∈ (closedGeneratedByOne a : Set E)
   rw [closedGeneratedByOne, Submodule.topologicalClosure_coe]
   exact hfinal

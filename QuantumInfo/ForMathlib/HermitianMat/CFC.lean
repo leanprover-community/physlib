@@ -783,9 +783,8 @@ lemma continuousWithinAt_cfc_of_continuousOn {T : Set ℝ} {g : ℝ → ℝ}
       exact fun x hx => le_of_lt ( hδ x ( hB.2 hx ) _ ( hU.2 B hB.1 hx |> Classical.choose_spec |> And.left ) ( hU.2 B hB.1 hx |> Classical.choose_spec |> And.right ) ) |> le_trans <| by norm_num;
     generalize_proofs at *; (
     have h_diff_small : ‖B.cfc g - B.cfc h‖ ≤ Real.sqrt (Fintype.card d) * (ε / (Real.sqrt (Fintype.card d) + 1)) := by
-      apply_rules [ norm_cfc_sub_le_of_sup_le ];
-      · positivity;
-      · exact fun x hx => hx
+      exact norm_cfc_sub_le_of_sup_le subset_rfl (by positivity)
+        fun x hx => by simpa only [Real.norm_eq_abs] using h_diff_small x hx
     generalize_proofs at *; (
     exact h_diff_small.trans_lt ( by rw [ mul_div, div_lt_iff₀ ] <;> nlinarith [ Real.sqrt_nonneg ( Fintype.card d : ℝ ), Real.sq_sqrt ( Nat.cast_nonneg ( Fintype.card d ) ) ] ))));
   rw [ Metric.continuousWithinAt_iff ] at *;

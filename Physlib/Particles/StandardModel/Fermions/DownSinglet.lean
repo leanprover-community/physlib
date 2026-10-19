@@ -263,7 +263,7 @@ their product is one.
 /-- The central `ℤ₆` subgroup acts trivially on `(3, 1)_{-2}`. -/
 lemma gaugeGroup_subgroup_ℤ₆_le_ker_repGaugeGroupI :
     GaugeGroupQuot.subgroup .ℤ₆ ≤ repGaugeGroupI.ker := by
-  simp only [GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, SetLike.le_def,
+  simp only [GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, IsConcreteLE.le_iff,
     MonoidHom.mem_range, gaugeGroupℤ₆Hom_apply, Subtype.exists,
     mem_repGaugeGroupI_ker_iff_eq, forall_exists_index]
   rintro g x hx ⟨rfl⟩

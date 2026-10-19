@@ -78,6 +78,14 @@ lemma electricField_eq {c : SpeedOfLight} (A : ElectromagneticPotential d) :
 
 -/
 
+/-- A scalar-only potential produces the negative spatial gradient as its electric field. -/
+@[simp]
+lemma ofScalarPotential_electricField {d} (c : SpeedOfLight)
+    (φ : Time → Space d → ℝ) :
+    (ofScalarPotential c φ).electricField c = fun t x => - ∇ (φ t) x := by
+  funext t x
+  simp [electricField]
+
 open MeasureTheory Matrix Space InnerProductSpace Time in
 /-- The electric field of the electromagnetic potential created from the electric field
   `E` and the magnetic field `B` is `E`, as long as Gauss's law for magnetism and

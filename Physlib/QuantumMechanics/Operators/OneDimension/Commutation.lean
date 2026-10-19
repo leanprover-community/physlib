@@ -40,7 +40,7 @@ lemma positionOperatorSchwartz_commutation_momentumOperatorSchwartz
     positionOperatorSchwartz_apply_fun]
   have h1 : deriv Complex.ofReal x = 1 := Complex.ofRealCLM.deriv.trans (by simp)
   rw [deriv_fun_mul, h1]
-  ring
+  · ring
   · exact Complex.ofRealCLM.differentiableAt
   · exact ψ.differentiableAt
 

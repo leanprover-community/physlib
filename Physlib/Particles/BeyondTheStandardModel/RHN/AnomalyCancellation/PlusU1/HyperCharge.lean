@@ -58,7 +58,7 @@ variable {n : ℕ}
 set_option backward.isDefEq.respectTransparency false in
 lemma on_quadBiLin (S : (PlusU1 n).Charges) :
     quadBiLin (Y n).val S = accYY S := by
-  erw [familyUniversal_quadBiLin]
+  refine (familyUniversal_quadBiLin (n := n) Y₁.val S).trans ?_
   rw [accYY_decomp]
   simp only [Fin.isValue, Y₁_val, toSpecies_apply, one_mul, mul_neg,
     neg_mul, sub_neg_eq_add, add_left_inj, add_right_inj, mul_eq_mul_right_iff]
@@ -71,9 +71,10 @@ lemma on_quadBiLin_AFL (S : (PlusU1 n).LinSols) : quadBiLin (Y n).val S.val = 0 
 set_option backward.isDefEq.respectTransparency false in
 lemma add_AFL_quad (S : (PlusU1 n).LinSols) (a b : ℚ) :
     accQuad (a • S.val + b • (Y n).val) = a ^ 2 * accQuad S.val := by
-  erw [BiLinearSymm.toHomogeneousQuad_add, quadSol (b • (Y n)).1]
+  have hb : accQuad (b • (Y n).val) = 0 := quadSol (b • (Y n)).1
+  rw [accQuad, BiLinearSymm.toHomogeneousQuad_add, ← accQuad, hb]
   rw [quadBiLin.map_smul₁, quadBiLin.map_smul₂, quadBiLin.swap, on_quadBiLin_AFL]
-  rw [← accQuad, accQuad.map_smul]
+  rw [accQuad.map_smul]
   simp
 
 lemma add_quad (S : (PlusU1 n).QuadSols) (a b : ℚ) :
@@ -90,7 +91,7 @@ lemma addQuad_zero (S : (PlusU1 n).QuadSols) (a : ℚ) : addQuad S a 0 = a • S
 set_option backward.isDefEq.respectTransparency false in
 lemma on_cubeTriLin (S : (PlusU1 n).Charges) :
     cubeTriLin (Y n).val (Y n).val S = 6 * accYY S := by
-  erw [familyUniversal_cubeTriLin']
+  refine (familyUniversal_cubeTriLin' (n := n) Y₁.val Y₁.val S).trans ?_
   rw [accYY_decomp]
   simp only [Fin.isValue, Y₁_val, mul_one, toSpecies_apply, mul_neg,
     neg_mul, neg_neg, mul_zero, zero_mul, add_zero]
@@ -104,7 +105,7 @@ lemma on_cubeTriLin_AFL (S : (PlusU1 n).LinSols) :
 set_option backward.isDefEq.respectTransparency false in
 lemma on_cubeTriLin' (S : (PlusU1 n).Charges) :
     cubeTriLin (Y n).val S S = 6 * accQuad S := by
-  erw [familyUniversal_cubeTriLin]
+  refine (familyUniversal_cubeTriLin (n := n) Y₁.val S S).trans ?_
   rw [accQuad_decomp]
   simp only [Fin.isValue, Y₁_val, mul_one, toSpecies_apply, mul_neg,
     neg_mul, zero_mul, add_zero]
@@ -119,7 +120,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma add_AFL_cube (S : (PlusU1 n).LinSols) (a b : ℚ) :
     accCube (a • S.val + b • (Y n).val) =
     a ^ 2 * (a * accCube S.val + 3 * b * cubeTriLin S.val S.val (Y n).val) := by
-  erw [TriLinearSymm.toCubic_add, cubeSol (b • (Y n)), accCube.map_smul]
+  have hb : accCube (b • (Y n).val) = 0 := cubeSol (b • (Y n))
+  rw [accCube, TriLinearSymm.toCubic_add, ← accCube, hb, accCube.map_smul]
   repeat rw [cubeTriLin.map_smul₁, cubeTriLin.map_smul₂, cubeTriLin.map_smul₃]
   rw [on_cubeTriLin_AFL]
   simp only [HomogeneousCubic, accCube, TriLinearSymm.toCubic_apply,

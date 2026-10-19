@@ -7,6 +7,7 @@ module
 
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
+public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 /-!
 
 # Integrals in Space

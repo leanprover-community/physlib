@@ -20,7 +20,9 @@ right-handed Weyl spinor ψ^{α̇} is likewise an element of a two-dimensional c
 has a two-element basis, and every spinor expands in it. [5][6][7][8] Each carries a representation
 of SL(2, ℂ), the double cover of the restricted Lorentz group {1}, whose matrix in that basis is the
 defining matrix, its conjugate, its inverse transpose or its inverse conjugate transpose as
-appropriate. [9][10][11][12] Weyl fermions are the building blocks of Dirac fermions {2}, and the
+appropriate. [9][10][11][12] Each of these representations is irreducible, and Schur's lemma
+holds for it: an endomorphism commuting with the representation is a scalar multiple of the
+identity. [23][24][25][26] Weyl fermions are the building blocks of Dirac fermions {2}, and the
 two-component formalism follows Dreiner, Haber and Martin {3}.
 
 ### Contractions, metrics and units
@@ -77,7 +79,7 @@ left-handed Weyl fermion to a right-handed one. [TODO]
    `rep_apply_basis`, `rep_apply_basis_repr`
 10. Physlib/Relativity/Fermions/Weyl/RightHanded.lean — `rep`, `rep_apply`, `rep_toMatrix`,
    `rep_apply_basis`, `rep_apply_basis_repr`
-11. Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean — `rep`, `rep_toMatrix`,
+11. Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean — `rep`, `rep_apply`, `rep_toMatrix`,
    `rep_apply_basis`, `rep_apply_basis_repr`
 12. Physlib/Relativity/Fermions/Weyl/DualRightHanded.lean — `rep`, `rep_apply`, `rep_toMatrix`,
    `rep_apply_basis`, `rep_apply_basis_repr`
@@ -114,6 +116,14 @@ left-handed Weyl fermion to a right-handed one. [TODO]
    `dualRightRightToMatrix_ρ`, `dualLeftDualRightToMatrix_ρ`, `leftRightToMatrix_ρ`
 22. Physlib/Relativity/Fermions/Weyl/Duals.lean — `RightHandedWeyl.dualEquiv`,
    `RightHandedWeyl.dualEquiv_equivariant`
+23. Physlib/Relativity/Fermions/Weyl/LeftHanded.lean — `finrank_eq_two`, `eq_zero_of_rep_eq_smul`,
+   `eq_bot_or_eq_top_of_rep_mem`, `end_eq_smul_id_of_commute_rep`
+24. Physlib/Relativity/Fermions/Weyl/RightHanded.lean — `finrank_eq_two`, `eq_zero_of_rep_eq_smul`,
+   `eq_bot_or_eq_top_of_rep_mem`, `end_eq_smul_id_of_commute_rep`
+25. Physlib/Relativity/Fermions/Weyl/DualLeftHanded.lean — `finrank_eq_two`, `eq_zero_of_rep_eq_smul`,
+   `eq_bot_or_eq_top_of_rep_mem`, `end_eq_smul_id_of_commute_rep`
+26. Physlib/Relativity/Fermions/Weyl/DualRightHanded.lean — `finrank_eq_two`, `eq_zero_of_rep_eq_smul`,
+   `eq_bot_or_eq_top_of_rep_mem`, `end_eq_smul_id_of_commute_rep`
 
 ## References
 

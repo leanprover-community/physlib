@@ -406,8 +406,8 @@ lemma zero_of_orthogonal_mk (f : ℝ → ℂ) (hf : MemHS f)
     exact HilbertSpace.mul_gaussian_mem_Lp_one f hf (1/ (2 * Q.ξ^2)) 0 (by simp)
   have h1 : eLpNorm (fun x => f x * Real.exp (- x^2 / (2 * Q.ξ^2))) 2 volume = 0 := by
     rw [← plancherel_theorem]
-    rw [Q.fourierIntegral_zero_of_mem_orthogonal f hf hOrth]
-    simp only [eLpNorm_zero]
+    · rw [Q.fourierIntegral_zero_of_mem_orthogonal f hf hOrth]
+      simp only [eLpNorm_zero]
     · exact memLp_one_iff_integrable.mp hInt
     · /- f x * Real.exp (- x^2 / (2 * ξ^2)) is square-integrable -/
       rw [hf']

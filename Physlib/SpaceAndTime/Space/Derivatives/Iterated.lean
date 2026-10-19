@@ -67,7 +67,7 @@ private lemma iteratedDerivList_contDiff (L : List (Fin d)) {f : Space d → ℝ
     ContDiff ℝ ∞ (L.foldr (fun i g => deriv i g) f) := by
   induction L generalizing f with
   | nil => simpa using hf
-  | cons i L ih => exact (contDiff_apply ℝ ℝ i).comp (Space.deriv_contDiff (n := ∞) (ih hf))
+  | cons i L ih => exact (contDiff_apply ℝ _ i).comp (Space.deriv_contDiff (n := ∞) (ih hf))
 
 private lemma iteratedDerivList_add (L : List (Fin d)) {f g : Space d → ℝ}
     (hf : ContDiff ℝ ∞ f) (hg : ContDiff ℝ ∞ g) :

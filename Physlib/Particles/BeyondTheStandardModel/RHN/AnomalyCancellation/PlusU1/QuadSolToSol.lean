@@ -36,14 +36,14 @@ def α₂ (S : (PlusU1 n).QuadSols) : ℚ := accCube S.val
 
 lemma cube_α₁_α₂_zero (S : (PlusU1 n).QuadSols) (a b : ℚ) (h1 : α₁ S = 0) (h2 : α₂ S = 0) :
     accCube (BL.addQuad S a b).val = 0 := by
-  erw [BL.add_AFL_cube]
+  refine (BL.add_AFL_cube S.1 a b).trans ?_
   simp_all [α₁, α₂]
 
 lemma α₂_AF (S : (PlusU1 n).Sols) : α₂ S.toQuadSols = 0 := S.2
 
 lemma BL_add_α₁_α₂_cube (S : (PlusU1 n).QuadSols) :
     accCube (BL.addQuad S (α₁ S) (α₂ S)).val = 0 := by
-  erw [BL.add_AFL_cube]
+  refine (BL.add_AFL_cube S.1 (α₁ S) (α₂ S)).trans ?_
   simp only [α₁, BL_val, neg_mul, even_two, Even.neg_pow, α₂, mul_eq_zero, ne_eq,
     OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, false_or]
   right
