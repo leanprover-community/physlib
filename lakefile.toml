@@ -128,7 +128,7 @@ srcDir = "scripts/lint/required"
 
 [[lean_exe]]
 name = "api_map_lint"
-srcDir = "scripts/lint/required"
+srcDir = "scripts/alpha/lint/required"
 
 [[lean_exe]]
 name = "stats"
@@ -138,7 +138,7 @@ supportInterpreter = true
 [[lean_exe]]
 name = "api_map_index"
 root = "APIMapIndex"
-srcDir = "scripts/website"
+srcDir = "scripts/alpha/website"
 
 [[lean_exe]]
 name = "local_stats"
