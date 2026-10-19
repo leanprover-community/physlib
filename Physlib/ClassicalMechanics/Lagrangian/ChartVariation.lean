@@ -62,22 +62,17 @@ lemma contMDiff_ite_symm [I.Boundaryless] (x : M) {γ : Time → M} (hγ : ContM
       if p.2 ∈ Z then (extChartAt I x).symm (v p) else γ p.2 := by
   intro p
   by_cases hp : p.2 ∈ Z
-  · have hG : ContMDiffAt (𝓘(ℝ, ℝ).prod 𝓘(ℝ, ℝ)) I ∞ (fun q ↦ (extChartAt I x).symm (v q)) p :=
-      ((contMDiffOn_extChartAt_symm x).contMDiffAt
-        (extChartAt_target_mem_nhds' (hvt p hp))).comp p (hv p hp)
-    refine hG.congr_of_eventuallyEq ?_
-    have h1 : ∀ᶠ q : ℝ × Time in 𝓝 p, γ q.2 ∈ (extChartAt I x).source :=
-      (hγ.continuous.comp continuous_snd).continuousAt.eventually_mem
-        ((isOpen_extChartAt_source x).mem_nhds (hZs _ hp))
-    filter_upwards [h1] with q hq1
-    by_cases hq : q.2 ∈ Z
-    · simp [hq]
-    · simpa [hq, hvγ q hq] using ((extChartAt I x).left_inv hq1).symm
-  · have hev : ∀ᶠ q : ℝ × Time in 𝓝 p, q.2 ∉ Z :=
-      continuous_snd.continuousAt.eventually_mem (hZc.isOpen_compl.mem_nhds hp)
-    refine ((hγ.contMDiffAt (x := p.2)).comp p contMDiff_snd.contMDiffAt).congr_of_eventuallyEq ?_
-    filter_upwards [hev] with q hq
-    simp [hq]
+  · refine (((contMDiffOn_extChartAt_symm x).contMDiffAt
+      (extChartAt_target_mem_nhds' (hvt p hp))).comp p (hv p hp)).congr_of_eventuallyEq ?_
+    filter_upwards [(hγ.continuous.comp continuous_snd).continuousAt.eventually_mem
+      ((isOpen_extChartAt_source x).mem_nhds (hZs _ hp))] with q hq1
+    split_ifs with hq
+    · rfl
+    · simpa [hvγ q hq] using ((extChartAt I x).left_inv hq1).symm
+  · refine ((hγ.contMDiffAt (x := p.2)).comp p contMDiff_snd.contMDiffAt).congr_of_eventuallyEq ?_
+    filter_upwards [continuous_snd.continuousAt.eventually_mem (hZc.isOpen_compl.mem_nhds hp)]
+      with q hq
+    exact ite_eq_right hq
 
 /-!
 ## B. Variations supported in a chart
@@ -128,11 +123,9 @@ lemma exists_variation_chart_bump [I.Boundaryless] {γ : Time → M} {t₀ t₁ 
     by_cases ht : γ t ∈ (extChartAt I x).source
     · simpa [hσ0, hsymm _ _ ht] using (extChartAt I x).left_inv ht
     · exact hnZ _ _ fun hZ ↦ ht (by simpa only [vsub_vadd] using hx _ hZ)
-  refine ⟨⟨⟨F, hF⟩, fun s _ ↦ h0 _, fun s ↦ hnZ _ _ fun h ↦ ?_, fun s ↦ hnZ _ _ fun h ↦ ?_⟩, σ,
-    hσ, hσ0, hσ'0, hσε, fun s τ hτ ↦ hnZ _ _ (by simpa using hτ), fun s τ hτ ↦ ?_⟩
-  · simpa using (hs h).1
-  · exact (hs h).2.false
-  · simpa using hsymm s _ hτ
+  exact ⟨⟨⟨F, hF⟩, fun s _ ↦ h0 _, fun s ↦ hnZ _ _ fun h ↦ by simpa using (hs h).1,
+    fun s ↦ hnZ _ _ fun h ↦ (hs h).2.false⟩, σ, hσ, hσ0, hσ'0, hσε,
+    fun s τ hτ ↦ hnZ _ _ (by simpa using hτ), fun s τ hτ ↦ by simpa using hsymm s _ hτ⟩
 
 /-!
 ## C. First variation in a chart
@@ -197,9 +190,8 @@ lemma LagrangianSystem.integrand_sub_eq [I.Boundaryless] (S : LagrangianSystem I
     have hHev : (fun σ' ↦ Hc (s, σ')) =ᶠ[𝓝 τ] fun σ' ↦ Hc (0, σ') := by
       filter_upwards [hnb] with σ' hσ'
       simp [hHdef, image_eq_zero_of_notMem_tsupport hσ', hσ0]
-    have hH0 : Hc (s, τ) = Hc (0, τ) := hHev.eq_of_nhds
-    rw [tangentMap_eq_of_eventuallyEq (hevs s), tangentMap_eq_of_eventuallyEq (hevs 0), hH0,
-      ← fderiv_snd_apply hH s τ, ← fderiv_snd_apply hH 0 τ, hHev.deriv_eq]
+    rw [tangentMap_eq_of_eventuallyEq (hevs s), tangentMap_eq_of_eventuallyEq (hevs 0),
+      hHev.eq_of_nhds, ← fderiv_snd_apply hH s τ, ← fderiv_snd_apply hH 0 τ, hHev.deriv_eq]
 
 /-- The action as an interval integral over `[0, t₁ -ᵥ t₀]`. -/
 lemma LagrangianSystem.action_eq_intervalIntegral (S : LagrangianSystem I M) (γ : Time → M)
