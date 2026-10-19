@@ -92,6 +92,22 @@ lemma diagEnd_smul (c : K) (A : Module.End K M) (B : Module.End K N) :
   rw [LinearMap.smul_apply, diagEnd_tmul, diagEnd_tmul, LinearMap.smul_apply,
     LinearMap.smul_apply, smul_add, TensorProduct.smul_tmul', TensorProduct.tmul_smul]
 
+/-- The diagonal action is additive in both endomorphisms. -/
+lemma diagEnd_add (A A' : Module.End K M) (B B' : Module.End K N) :
+    diagEnd (A + A') (B + B') = diagEnd A B + diagEnd A' B' := by
+  apply TensorProduct.ext'
+  intro x y
+  simp only [LinearMap.add_apply, diagEnd_tmul, TensorProduct.add_tmul, TensorProduct.tmul_add]
+  abel
+
+/-- The diagonal action respects differences. -/
+lemma diagEnd_sub (A A' : Module.End K M) (B B' : Module.End K N) :
+    diagEnd (A - A') (B - B') = diagEnd A B - diagEnd A' B' := by
+  apply TensorProduct.ext'
+  intro x y
+  simp only [LinearMap.sub_apply, diagEnd_tmul, TensorProduct.sub_tmul, TensorProduct.tmul_sub]
+  abel
+
 end Diagonal
 
 /-! ### A.1. Coordinate vectors indexed by natural numbers

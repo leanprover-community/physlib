@@ -129,6 +129,9 @@ lemma toDualMapAtIndex_toDualMapAtIndex {n : ℕ} {c : Fin n → C}
     rw [toDualMapAtIndex, toDualMapAtIndex,
       metricTensor_congr (by simp [Function.update_self, τ_τ_apply] :
         S.τ (Function.update c i (S.τ (c i)) i) = c i)]
+    -- Why `erw` is needed: The second metric's colour `S.τ (Function.update c i (S.τ (c i)) i)`
+    -- only matches `crossToSlot_permT_right_id` after unfolding `Function.update`.
+    -- It's messy to do anything other than use erw
     erw [crossToSlot_permT_right_id, key, permT_permT]
     exact permT_congr (by funext j; simp) rfl
 

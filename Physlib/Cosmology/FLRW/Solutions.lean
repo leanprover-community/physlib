@@ -22,6 +22,11 @@ curvature of the Milne model and the instability of the Einstein static universe
 items: neither the curvature of the FLRW metric nor a perturbation theory of the Friedmann
 equations is available yet.
 
+The flat power-law solutions are also given as FLRW models: `FLRW.powerLaw` in
+`Physlib.Cosmology.FLRW.SpecificCases.PowerLaw`, `FLRW.radiationDominated` in
+`Physlib.Cosmology.FLRW.SpecificCases.RadiationDominated` and `FLRW.einsteinDeSitter` in
+`Physlib.Cosmology.FLRW.SpecificCases.EinsteinDeSitter`.
+
 Each solution is a scale factor `a : Time → ℝ` given by an explicit function of the time
 coordinate `t.val`. Its time derivative `∂ₜ a` is computed through the bridge
 `deriv_comp_toRealCLE_of_hasDerivAt` from Mathlib's `HasDerivAt` on `ℝ`.

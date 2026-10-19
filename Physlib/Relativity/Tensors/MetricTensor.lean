@@ -77,7 +77,7 @@ lemma contrT_metricTensor_metricTensor {c : C} :
       (unitTensor (S := S) c) := by
   rw [metricTensor, metricTensor, fromConstPair, fromConstPair]
   rw [fromPairT_contr_fromPairT_eq_fromPairTContr]
-  erw [fromPairTContr_metric_metric_eq_permT_unit]
+  rw [fromPairTContr_metric_metric_eq_permT_unit]
   rw [permT_permT]
   rfl
 

@@ -47,7 +47,8 @@ equivalence classes, essentially dropping information about the functions on the
 - `SpaceDHilbertSpaceOn Ω μ` : An abbreviation for the Hilbert space
     `SpaceDHilbertSpace d (μ.restrict Ω)` appropriate for describing the $L^2$-space of complex
     functions on a subset of `Space d`.
-- `subspaceProjection` : The projection of `SpaceDHilbertSpace d μ` onto `SpaceDHilbertSpaceOn Ω μ`.
+- `subspaceProjection` : The continuous linear projection of `SpaceDHilbertSpace d μ` onto
+    `SpaceDHilbertSpaceOn Ω μ`.
 - `subspaceIncl` : The linear isometry including `SpaceDHilbertSpaceOn Ω μ`
     as a sub-Hilbert space of `SpaceDHilbertspace d μ`.
 
@@ -276,9 +277,6 @@ end SpaceDHilbertSpace
 ## B. SpaceDHilbertSpaceOn
 -/
 
-TODO "Upgrade subspaceProjection to a ContinuousLinearMap when Lp.LpToLpOfMeasureLeSMul
-  becomes available."
-
 /-- The L²-space `SpaceDHilbertSpace d (μ.restrict Ω)`.
 
   Elements are equivalence classes of functions which agree `μ`-a.e. on `Ω` and which have
@@ -293,8 +291,12 @@ open SpaceDHilbertSpace
 variable {d : ℕ} (Ω : Set (Space d)) (hΩ : MeasurableSet Ω) (μ : Measure (Space d))
 variable (ψ : SpaceDHilbertSpace d μ) (φ : SpaceDHilbertSpaceOn Ω μ)
 
-/-- The linear map projecting `SpaceDHilbertSpace d μ` onto `SpaceDHilbertSpaceOn Ω μ`. -/
-def subspaceProjection : SpaceDHilbertSpace d μ →ₗ[ℂ] SpaceDHilbertSpaceOn Ω μ where
+/-- The continuous linear map projecting `SpaceDHilbertSpace d μ` onto `SpaceDHilbertSpaceOn Ω μ`.
+
+  As a function it agrees with `Lp.LpToLpOfMeasureLeSMul` for `c = 1` (since `μ.restrict Ω ≤ μ`),
+  the continuous `ℝ`-linear map of Mathlib from `Lp ℂ 2 μ` to `Lp ℂ 2 (μ.restrict Ω)`, from which
+  its continuity is deduced. -/
+def subspaceProjection : SpaceDHilbertSpace d μ →L[ℂ] SpaceDHilbertSpaceOn Ω μ where
   toFun ψ := mk ((memHS_coe ψ).restrict Ω)
   map_add' ψ φ := by
     rw [← mk_add, mk_eq_iff]
@@ -302,6 +304,13 @@ def subspaceProjection : SpaceDHilbertSpace d μ →ₗ[ℂ] SpaceDHilbertSpaceO
   map_smul' c ψ := by
     rw [← mk_const_smul, mk_eq_iff]
     exact (coeFn_smul c ψ).filter_mono ae_restrict_le
+  cont := by
+    have h : μ.restrict Ω ≤ (1 : ENNReal) • μ := by
+      rw [one_smul]
+      exact restrict_le_self
+    refine (Lp.LpToLpOfMeasureLeSMul ENNReal.one_ne_top h).continuous.congr fun ψ ↦ ?_
+    exact ext_iff.mpr ((Lp.coeFn_LpToLpOfMeasureLeSMul ENNReal.one_ne_top h ψ).trans
+      (coeFn_mk ((memHS_coe ψ).restrict Ω)).symm)
 
 variable {μ} in
 lemma subspaceProjection_apply : subspaceProjection Ω μ ψ =ᵐ[μ.restrict Ω] ψ :=

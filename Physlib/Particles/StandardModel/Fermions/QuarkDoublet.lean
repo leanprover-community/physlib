@@ -24,10 +24,6 @@ namespace StandardModel
 
 open TensorProduct
 
-TODO "Add other fermions similar to this file with the names:
- - UpSinglet (3, 1)_{4} (right-handed)
- - LeptonSinglet (1, 1)_{-6} (right-handed)"
-
 /-- The vector space of a quark field in the Standard Model.
   These live in the (3, 2)_{1} representation of the gauge group. -/
 @[ext]

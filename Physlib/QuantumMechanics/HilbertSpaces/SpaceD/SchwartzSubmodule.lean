@@ -156,7 +156,7 @@ open SpaceDHilbertSpace
 abbrev SchwartzSubmoduleOn
     {d : ℕ} (Ω : Set (Space d)) (μ : Measure (Space d) := volume) [μ.HasTemperateGrowth] :
     Submodule ℂ (SpaceDHilbertSpaceOn Ω μ) :=
-  (SchwartzSubmodule d μ).map (subspaceProjection Ω μ)
+  (SchwartzSubmodule d μ).map (subspaceProjection Ω μ).toLinearMap
 
 namespace SchwartzSubmoduleOn
 

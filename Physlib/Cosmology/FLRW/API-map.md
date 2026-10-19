@@ -43,7 +43,10 @@ fluid has zero density and pressure. [4] A model filled with a fluid solves the 
 when both hold on the interval of the model, the curvature parameter being read off the spatial
 geometry. [4] Every such solution satisfies the continuity equation [5] and the closure relation
 of the density parameters. [6] The de Sitter model at all times, and the Milne model after its
-Big Bang, each filled with the empty fluid, solve the Friedmann equations. [17][7]
+Big Bang, each filled with the empty fluid, solve the Friedmann equations. [17][7] The flat
+power-law models, filled with their fluid, solve the Friedmann equations on t > 0 for the matching
+equation of state. [25] The radiation-dominated and Einstein–de Sitter models are the cases n = 1/2
+and n = 2/3, and after their Big Bang they too solve the Friedmann equations. [26][27]
 
 ### Hubble and deceleration parameters
 
@@ -156,6 +159,12 @@ has a Big Bang in the finite past. [23] The de Sitter model, by contrast, is def
    `FLRW.FriedmannSolution.deriv_deriv_scaleFactor_nonpos`, `FLRW.FriedmannSolution.lt_of_mem_I`,
    `FLRW.FriedmannSolution.bddBelow_I`
 24. Physlib/Cosmology/FLRW/DeSitter.lean — `FLRW.not_bddBelow_deSitter_I`
+25. Physlib/Cosmology/FLRW/SpecificCases/PowerLaw.lean — `FLRW.powerLaw`, `CosmicFluid.powerLaw`,
+   `FLRW.friedmannSolution_powerLaw`
+26. Physlib/Cosmology/FLRW/SpecificCases/RadiationDominated.lean — `FLRW.radiationDominated`,
+   `FLRW.friedmannSolution_radiationDominated`
+27. Physlib/Cosmology/FLRW/SpecificCases/EinsteinDeSitter.lean — `FLRW.einsteinDeSitter`,
+   `FLRW.friedmannSolution_einsteinDeSitter`
 
 ## References
 

@@ -61,8 +61,7 @@ lemma exp_transpose_of_mem_algebra (A : lorentzAlgebra) :
       val_inv := minkowskiMatrix.sq,
       inv_val := minkowskiMatrix.sq }
   rw [show -(η * A.1 * η) = η * (-A.1) * η by noncomm_ring]
-  erw [NormedSpace.exp_units_conj P_gl (-A.1)]
-  rfl
+  exact NormedSpace.exp_units_conj P_gl (-A.1)
 
 set_option backward.isDefEq.respectTransparency false in
 /--
@@ -136,7 +135,7 @@ theorem exp_isProper (A : lorentzAlgebra) :
   -- we reindex to Fin 4 to use the faster LinearOrder
   rw [← det_reindex_self e, ← exp_reindex e]
   convert! det_exp_real (reindex e e A.1)
-  erw [trace_reindex e, trace_of_mem_is_zero A, Real.exp_zero]
+  rw [reindex_apply, trace_reindex e, trace_of_mem_is_zero A, Real.exp_zero]
 
 /-- The exponential of an element of the Lorentz algebra is orthochronous. -/
 theorem exp_isOrthochronous (A : lorentzAlgebra) :

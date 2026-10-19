@@ -35,7 +35,7 @@ lemma leftDualLeftUnitVal_expand_tmul : leftDualLeftUnitVal =
     LeftHandedWeyl.basis 0 ⊗ₜ[ℂ] DualLeftHandedWeyl.basis 0 +
       LeftHandedWeyl.basis 1 ⊗ₜ[ℂ] DualLeftHandedWeyl.basis 1 := by
   simp only [leftDualLeftUnitVal, Fin.isValue]
-  erw [leftDualLeftToMatrix_symm_expand_tmul]
+  rw [leftDualLeftToMatrix_symm_expand_tmul]
   simp only [Fin.sum_univ_two, Fin.isValue, one_apply_eq, one_smul, ne_eq, zero_ne_one,
     not_false_eq_true, one_apply_ne, zero_smul, add_zero, one_ne_zero, zero_add]
 
