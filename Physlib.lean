@@ -19,6 +19,7 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
+public import Physlib.ClassicalMechanics.Lagrangian.Chart
 public import Physlib.ClassicalMechanics.Lagrangian.CriticalPoint
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
@@ -162,6 +163,7 @@ public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
+public import Physlib.Mathematics.ForMathlib.TangentMap
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
 public import Physlib.Mathematics.Groups.SO3.Basic
