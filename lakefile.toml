@@ -123,6 +123,10 @@ name = "module_doc_lint"
 srcDir = "scripts/lint/required"
 
 [[lean_exe]]
+name = "api_map_lint"
+srcDir = "scripts/lint/required"
+
+[[lean_exe]]
 name = "stats"
 srcDir = "scripts/website"
 supportInterpreter = true

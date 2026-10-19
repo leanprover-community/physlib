@@ -126,6 +126,9 @@ The linter checks the following things:
 - Each entry in the references section corresponds to at least one citation in the text.
 - Every Lean declaration referenced exists in the corresponding file.
 
+Run it from the repository root with `lake exe api_map_lint` (add `--verbose` to also see notes
+on instance claims and Lean names in the prose). It needs no build of Physlib.
+
 ## The generated site index
 
 `lake exe api_map_index` greates a single YAML data file, `docs/_data/APIMap.yml`, from all `API-map.md` files in the repository. It lists the contents of each API map in a structured format.
