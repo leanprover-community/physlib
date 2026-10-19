@@ -40,7 +40,9 @@ in a basis it is positive-definite exactly when its matrix is.
 
 ## iv. References
 
-There are no known references for the material in this module.
+- `LinearMap.IsPosSemidef` and `LinearMap.IsSymm`, in
+  `Mathlib/LinearAlgebra/SesquilinearForm/Basic.lean`;
+- `Matrix.PosDef`, in `Mathlib/LinearAlgebra/Matrix/PosDef.lean`.
 
 -/
 
