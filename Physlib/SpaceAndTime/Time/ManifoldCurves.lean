@@ -5,8 +5,8 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Mathlib.Analysis.Calculus.Deriv.Shift
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
+public import Physlib.Mathematics.ForMathlib.RealAnalysis
 public import Physlib.SpaceAndTime.Time.Basic
 
 /-!
@@ -20,9 +20,11 @@ The charts of `Time` are translations, so the coordinate curve `τ ↦ γ (τ +�
 
 ## ii. Key results
 
-- `contMDiff_iff_contDiff_vadd`
-- `mfderiv_eq_deriv_vadd`
-- `tangentMap_eq_deriv_vadd`
+- `Time.contMDiff_iff_contDiff_vadd`: a curve is `C^n` iff its coordinate curve is
+- `Time.mdifferentiableAt_vadd_iff`: a curve is differentiable iff its coordinate curve is
+- `Time.mfderiv_eq_deriv_vadd`: the manifold derivative is the derivative of the coordinate curve
+- `Time.tangentMap_eq_deriv_vadd`: the tangent map of a curve in coordinates
+- `Time.contMDiff_vadd`, `Time.contMDiff_vsub`: translations of `Time` are smooth
 
 ## iii. Table of contents
 
@@ -38,7 +40,6 @@ The charts of `Time` are translations, so the coordinate curve `τ ↦ γ (τ +�
 
 @[expose] public section
 
-open Set
 open scoped Manifold ContDiff
 namespace Time
 
@@ -48,12 +49,15 @@ variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 ## A. The charts of `Time`
 -/
 
+/-- The chart of `Time` at `t₀` is `t ↦ t -ᵥ t₀`. -/
 @[simp]
 lemma chartAt_apply (t₀ t : Time) : chartAt ℝ t₀ t = t -ᵥ t₀ := rfl
 
+/-- The inverse of the chart of `Time` at `t₀` is `τ ↦ τ +ᵥ t₀`. -/
 @[simp]
 lemma chartAt_symm_apply (t₀ : Time) (τ : ℝ) : (chartAt ℝ t₀).symm τ = τ +ᵥ t₀ := rfl
 
+/-- The extended chart of `Time` at `t₀` is `t ↦ t -ᵥ t₀`. -/
 lemma extChartAt_apply (t₀ t : Time) : extChartAt 𝓘(ℝ, ℝ) t₀ t = t -ᵥ t₀ := rfl
 
 /-!
@@ -61,8 +65,8 @@ lemma extChartAt_apply (t₀ t : Time) : extChartAt 𝓘(ℝ, ℝ) t₀ t = t -�
 -/
 
 /-- Continuity of the coordinate curve at `0` gives continuity at `x`. -/
-lemma continuousAt_of_continuousAt_vadd {X : Type*} [TopologicalSpace X] {γ : Time → X} {x : Time}
-    (h : ContinuousAt (fun τ : ℝ ↦ γ (τ +ᵥ x)) 0) : ContinuousAt γ x := by
+private lemma continuousAt_of_continuousAt_vadd {X : Type*} [TopologicalSpace X]
+    {γ : Time → X} {x : Time} (h : ContinuousAt (fun τ : ℝ ↦ γ (τ +ᵥ x)) 0) : ContinuousAt γ x := by
   have h' : ContinuousAt (fun τ : ℝ ↦ γ (τ +ᵥ x)) (x -ᵥ x) := by simpa using h
   have hv : ContinuousAt (fun y : Time ↦ y -ᵥ x) x := continuousAt_id.vsub continuousAt_const
   simpa only [Function.comp_def, vsub_vadd] using
@@ -77,24 +81,14 @@ lemma contMDiffAt_iff_contDiffAt_vadd (γ : Time → F) (x : Time) (n : ℕ∞ω
     continuousAt_of_continuousAt_vadd h.continuousAt
 
 /-- A curve into a normed space is differentiable at `x` iff its coordinate curve is at `0`. -/
-lemma mdifferentiableAt_iff_differentiableAt_vadd (γ : Time → F) (x : Time) :
+private lemma mdifferentiableAt_iff_differentiableAt_vadd (γ : Time → F) (x : Time) :
     MDifferentiableAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ x ↔ DifferentiableAt ℝ (fun τ : ℝ ↦ γ (τ +ᵥ x)) 0 := by
   rw [mdifferentiableAt_iff]
   simpa [Function.comp_def, differentiableWithinAt_univ] using fun h ↦
     continuousAt_of_continuousAt_vadd h.continuousAt
 
-/-- Shifting the argument of a real function by a constant. -/
-lemma contDiffAt_comp_add_const_iff (g : ℝ → F) (s : ℝ) (n : ℕ∞ω) :
-    ContDiffAt ℝ n (fun τ ↦ g (τ + s)) 0 ↔ ContDiffAt ℝ n g s := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have h' : ContDiffAt ℝ n (fun τ ↦ g (τ + s)) ((fun τ : ℝ ↦ τ - s) s) := by simpa using h
-    simpa [Function.comp_def] using
-      h'.comp (f := fun τ : ℝ ↦ τ - s) s (contDiffAt_id.sub contDiffAt_const)
-  · have h' : ContDiffAt ℝ n g ((fun τ : ℝ ↦ τ + s) 0) := by simpa using h
-    exact h'.comp (f := fun τ : ℝ ↦ τ + s) 0 (contDiffAt_id.add contDiffAt_const)
-
 /-- Shifting the base instant by `s` shifts the coordinate curve by `s`. -/
-lemma vadd_vadd_comp {X : Type*} (γ : Time → X) (t₀ : Time) (s : ℝ) :
+private lemma vadd_vadd_comp {X : Type*} (γ : Time → X) (t₀ : Time) (s : ℝ) :
     (fun τ : ℝ ↦ γ (τ +ᵥ (s +ᵥ t₀))) = fun τ ↦ (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) (τ + s) := by
   ext τ; simp [add_vadd]
 
@@ -122,7 +116,7 @@ lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : ℝ) :
 -/
 
 /-- A curve read in the extended chart at `x` is its coordinate curve based at `x`. -/
-lemma writtenInExtChartAt_eq (γ : Time → F) (x : Time) :
+private lemma writtenInExtChartAt_eq (γ : Time → F) (x : Time) :
     writtenInExtChartAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) x γ = fun τ : ℝ ↦ γ (τ +ᵥ x) := by
   ext τ; simp [writtenInExtChartAt]
 

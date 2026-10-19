@@ -20,11 +20,11 @@ vanishes along it.
 
 ## ii. Key results
 
-- `ClassicalMechanics.hasDerivAt_action_variation`
-- `ClassicalMechanics.exists_variation_bump`
-- `ClassicalMechanics.isCriticalPoint_of_eulerLagrange`
-- `ClassicalMechanics.eulerLagrange_eq_zero_of_isCriticalPoint`
-- `ClassicalMechanics.LagrangianSystem.isCriticalPoint_ofNormedSpace_iff`
+- `LagrangianSystem.hasDerivAt_action_variation`: first variation of the action
+- `LagrangianSystem.isCriticalPoint_of_eulerLagrange`: Euler-Lagrange equations imply criticality
+- `LagrangianSystem.eulerLagrange_eq_zero_of_isCriticalPoint`: criticality implies the
+  Euler-Lagrange equations
+- `LagrangianSystem.isCriticalPoint_ofNormedSpace_iff`: the two are equivalent
 
 ## iii. Table of contents
 
@@ -46,6 +46,8 @@ namespace ClassicalMechanics
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {γ : Time → E} {t₀ t₁ : Time}
 
+namespace LagrangianSystem
+
 /-!
 ## A. First variation of the action
 -/
@@ -60,7 +62,7 @@ lemma hasDerivAt_action_variation (L : Time × E × E → ℝ)
           (fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0))) 0 := by
   simpa only [action_variation L hL h ht] using
     hasDerivAt_integral_variation (L := fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2))
-      (contDiff_coord L hL t₀) (contDiff_coordVariation h) (t₁ -ᵥ t₀)
+      (contDiff_timeCoord L hL t₀) (contDiff_timeCoordVariation h) (t₁ -ᵥ t₀)
       (fun s ↦ by simp [h.apply_left])
       (fun s ↦ by rw [vsub_vadd, h.apply_right, h.apply_right])
 
@@ -69,8 +71,8 @@ lemma hasDerivAt_action_variation (L : Time × E × E → ℝ)
 -/
 
 /-- A bump function gives a variation fixing the endpoints. -/
-lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ γ) {ψ : ℝ → ℝ} (hψ : ContDiff ℝ ∞ ψ)
-    (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀)) (w : E) :
+private lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ γ) {ψ : ℝ → ℝ}
+    (hψ : ContDiff ℝ ∞ ψ) (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀)) (w : E) :
     ∃ h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁,
       ∀ s τ, h.toFun (s, τ +ᵥ t₀) = γ (τ +ᵥ t₀) + s • (ψ τ • w) := by
   have hψ' : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) ∞ (fun t : Time ↦ ψ (t -ᵥ t₀)) :=
@@ -93,14 +95,14 @@ lemma isCriticalPoint_of_eulerLagrange (L : Time × E × E → ℝ)
   refine ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).2 hg, fun h ↦ ?_⟩
   refine (hasDerivAt_action_variation L hL h ht.le).congr_deriv ?_
   have hq : ContDiff ℝ ∞ (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) :=
-    (contDiff_coordVariation h).comp (contDiff_const.prodMk contDiff_id)
+    (contDiff_timeCoordVariation h).comp (contDiff_const.prodMk contDiff_id)
   have hEq : ∀ τ ∈ Ioo 0 (t₁ -ᵥ t₀), (fun σ ↦ h.toFun (0, σ +ᵥ t₀)) =ᶠ[𝓝 τ]
       (fun σ ↦ γ (σ +ᵥ t₀)) := by
     intro τ hτ
     filter_upwards [Ioo_mem_nhds hτ.1 hτ.2] with σ hσ
     exact h.apply_zero σ ⟨hσ.1.le, hσ.2.le⟩
-  have hzero := eqOn_Icc_of_eqOn_Ioo
-    (contDiff_eulerLagrange (contDiff_coord L hL t₀) hq).continuous ht fun τ hτ ↦
+  have hzero := (contDiff_eulerLagrange (contDiff_timeCoord L hL t₀) hq).continuous
+    |>.eqOn_Icc_of_eqOn_Ioo ht fun τ hτ ↦
       (eulerLagrange_congr (hEq τ hτ)).trans (hEuler τ ⟨hτ.1.le, hτ.2.le⟩)
   refine (integral_congr (g := fun _ ↦ (0 : ℝ)) fun τ hτ ↦ ?_).trans (by simp)
   rw [uIcc_of_le ht.le] at hτ
@@ -114,13 +116,13 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (L : Time × E × E → ℝ)
   have hg : ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) :=
     (Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1
   refine eq_zero_of_integral_smul_eq_zero
-    (contDiff_eulerLagrange (contDiff_coord L hL t₀) hg).continuous ht fun ψ hψ _ hs w ↦ ?_
+    (contDiff_eulerLagrange (contDiff_timeCoord L hL t₀) hg).continuous ht fun ψ hψ _ hs w ↦ ?_
   obtain ⟨h, hh⟩ := exists_variation_bump hc.1 hψ hs w
   have hq : (fun σ : ℝ ↦ h.toFun (0, σ +ᵥ t₀)) = fun σ : ℝ ↦ γ (σ +ᵥ t₀) := by
     funext σ; simp [hh]
   have hV : ∀ τ, fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0) = ψ τ • w := by
     intro τ
-    rw [← fderiv_fst_apply (contDiff_coordVariation h) 0 τ,
+    rw [← deriv_fst_eq_fderiv_apply (contDiff_timeCoordVariation h) 0 τ,
       show (fun r ↦ h.toFun (r, τ +ᵥ t₀)) = fun r ↦ γ (τ +ᵥ t₀) + r • (ψ τ • w) from
         funext fun r ↦ hh r τ]
     simpa using (((hasDerivAt_id (0 : ℝ)).smul_const (ψ τ • w)).const_add (γ (τ +ᵥ t₀))).deriv
@@ -129,7 +131,7 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (L : Time × E × E → ℝ)
 
 /-- A smooth curve on a normed space is a critical point of the action of `L(t, q, q̇)` over
 `[t₀, t₁]` iff it satisfies the Euler-Lagrange equations in coordinates. -/
-lemma LagrangianSystem.isCriticalPoint_ofNormedSpace_iff (L : Time × E × E → ℝ)
+lemma isCriticalPoint_ofNormedSpace_iff (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (ht : 0 < t₁ -ᵥ t₀) :
     (LagrangianSystem.ofNormedSpace L hL).IsCriticalPoint γ t₀ t₁ ↔
       ContDiff ℝ ∞ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) ∧ ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀),
@@ -137,5 +139,7 @@ lemma LagrangianSystem.isCriticalPoint_ofNormedSpace_iff (L : Time × E × E →
   ⟨fun hc ↦ ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1,
       eulerLagrange_eq_zero_of_isCriticalPoint L hL ht hc⟩,
     fun h ↦ isCriticalPoint_of_eulerLagrange L hL ht h.1 h.2⟩
+
+end LagrangianSystem
 
 end ClassicalMechanics

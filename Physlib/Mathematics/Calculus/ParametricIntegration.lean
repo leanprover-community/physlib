@@ -32,19 +32,29 @@ lemma hasFDerivAt_parametric_intervalIntegral_of_contDiff
     HasFDerivAt (fun (x : M) => ∫ (t : ℝ) in 0..1, F x t ∂(volume))
       (∫ (t : ℝ) in 0..1, fderiv ℝ (F · t) x₀ ∂(volume)) x₀ := by
   let F' : M → ℝ → M →L[ℝ] N := fun x t => fderiv ℝ (F · t) x
+  let s (x₀) : Set M := Metric.closedBall x₀ 1
   have hF' : Continuous ↿F' := by fun_prop
-  obtain ⟨a, -, ha⟩ := ((isCompact_closedBall x₀ 1).prod (isCompact_Icc (a := (0 : ℝ)) (b := 1)))
-    |>.exists_isMaxOn (by simp) (continuous_norm.comp hF').continuousOn
+  obtain ⟨a, ha⟩ := IsCompact.exists_isMaxOn (s := s x₀ ×ˢ Set.Icc (0 : ℝ) (1 : ℝ))
+      ((isCompact_closedBall x₀ 1).prod isCompact_Icc)
+      (f := fun (a : M × ℝ) => ‖F' a.1 a.2‖)
+      (by simp [s])
+      (continuous_norm.comp hF').continuousOn
   have hx := hf.differentiable (by simp)
-  apply intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le
-    (Metric.closedBall_mem_nhds x₀ one_pos) (bound := fun _ => ‖F' a.1 a.2‖)
-  · exact .of_forall fun x => Continuous.aestronglyMeasurable (by fun_prop)
-  · exact Continuous.intervalIntegrable (by fun_prop) _ _
-  · exact Continuous.aestronglyMeasurable (by fun_prop)
+  apply intervalIntegral.hasFDerivAt_integral_of_dominated_of_fderiv_le (s := s x₀)
+    (F' := F') (bound := fun t => ‖F' a.1 a.2‖)
+  · exact Metric.closedBall_mem_nhds x₀ one_pos
+  · filter_upwards with x
+    apply Continuous.aestronglyMeasurable
+    fun_prop
+  · apply Continuous.intervalIntegrable
+    fun_prop
+  · apply Continuous.aestronglyMeasurable
+    exact Continuous.uncurry_left x₀ (by fun_prop)
   · filter_upwards with t h x hx
-    exact ha (Set.mk_mem_prod hx (Set.Ioc_subset_Icc_self (by simpa using h)))
+    exact ha.2 (Set.mk_mem_prod hx (Set.Ioc_subset_Icc_self (by simpa using h)))
   · exact intervalIntegrable_const
-  · exact .of_forall fun t _ x _ => DifferentiableAt.hasFDerivAt (by fun_prop)
+  · filter_upwards with t h x hx
+    exact DifferentiableAt.hasFDerivAt (by fun_prop)
 
 lemma fderiv_apply_parameteric_intervalIntegral
     {F : M → ℝ → N} (hf : ContDiff ℝ 1 ↿F) (x₀ : M) (v : M) :
@@ -91,11 +101,10 @@ lemma contDiff_parametric_intervalIntegral_of_contDiff {n : ℕ} {M : Type}
   · exact contDiff_zero.mpr (by fun_prop)
   · exact contDiff_succ_parametric_intervalIntegral_of_contDiff (hf.of_le (by simp))
 
-open Set Topology intervalIntegral
-
+open Set in
 /-- Differentiation under the integral sign for a `C¹` integrand. -/
-lemma hasDerivAt_intervalIntegral_of_contDiff {F : ℝ × ℝ → ℝ} (hF : ContDiff ℝ 1 F)
-    (a b x₀ : ℝ) :
+lemma hasDerivAt_intervalIntegral_of_contDiff [CompleteSpace N] {F : ℝ × ℝ → N}
+    (hF : ContDiff ℝ 1 F) (a b x₀ : ℝ) :
     HasDerivAt (fun x ↦ ∫ t in a..b, F (x, t))
       (∫ t in a..b, fderiv ℝ F (x₀, t) (1, 0)) x₀ := by
   have hK : IsCompact (Icc (x₀ - 1) (x₀ + 1) ×ˢ uIcc a b) := isCompact_Icc.prod isCompact_uIcc
@@ -117,21 +126,3 @@ lemma hasDerivAt_intervalIntegral_of_contDiff {F : ℝ × ℝ → ℝ} (hF : Con
   · refine Filter.Eventually.of_forall fun t _ x _ ↦ ?_
     exact ((hF.differentiable one_ne_zero (x, t)).hasFDerivAt.comp_hasDerivAt x
       ((hasDerivAt_id x).prodMk (hasDerivAt_const x t)))
-
-/-- If two continuous integrands differ by an `s`-independent function, their integrals have the
-same `s`-derivative. -/
-lemma hasDerivAt_integral_of_sub_eq {G Gh : ℝ → ℝ → ℝ} {T a : ℝ} (hG : ∀ s, Continuous (G s))
-    (hGh : ∀ s, Continuous (Gh s)) (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
-    (hd : HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, Gh s τ) a 0) :
-    HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) a 0 := by
-  have hA : ∀ s, ∫ τ in (0 : ℝ)..T, G s τ = (∫ τ in (0 : ℝ)..T, Gh s τ) +
-      ((∫ τ in (0 : ℝ)..T, G 0 τ) - ∫ τ in (0 : ℝ)..T, Gh 0 τ) := fun s ↦ by
-    have h1 : ∫ τ in (0 : ℝ)..T, (G s τ - Gh s τ) = ∫ τ in (0 : ℝ)..T, (G 0 τ - Gh 0 τ) :=
-      intervalIntegral.integral_congr fun τ _ ↦ hkey s τ
-    rw [intervalIntegral.integral_sub ((hG s).intervalIntegrable _ _)
-        ((hGh s).intervalIntegrable _ _),
-      intervalIntegral.integral_sub ((hG 0).intervalIntegrable _ _)
-        ((hGh 0).intervalIntegrable _ _)] at h1
-    linarith
-  rw [show (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) = _ from funext hA]
-  exact hd.add_const _

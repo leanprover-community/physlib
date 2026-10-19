@@ -20,11 +20,8 @@ the bump and the original curve elsewhere.
 
 ## ii. Key results
 
-- `contMDiff_ite_symm`: gluing a chart-valued map with the original curve is smooth
-- `exists_variation_chart_bump`: bump function and vector give a chart-supported variation
-- `LagrangianSystem.integrand_sub_eq`: action integrand differs from the flat one by an
-  `s`-independent amount
-- `LagrangianSystem.exists_hasDerivAt_action_chart`: first variation of the action in a chart
+- `LagrangianSystem.integral_eulerLagrange_eq_zero`: the first variation vanishes at a critical
+  point
 
 ## iii. Table of contents
 
@@ -39,7 +36,7 @@ the bump and the original curve elsewhere.
 
 @[expose] public section
 
-open Set MeasureTheory Topology
+open Set Topology
 open scoped Manifold ContDiff
 namespace ClassicalMechanics
 
@@ -52,8 +49,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [Top
 
 /-- Reading a smooth chart-valued map back in the chart on a closed set of times, and keeping
 `γ` elsewhere, is smooth. -/
-lemma contMDiff_ite_symm [I.Boundaryless] (x : M) {γ : Time → M} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ)
-    {Z : Set Time} [DecidablePred (· ∈ Z)] (hZc : IsClosed Z) {v : ℝ × Time → E}
+private lemma contMDiff_ite_symm [I.Boundaryless] (x : M) {γ : Time → M}
+    (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {Z : Set Time} [DecidablePred (· ∈ Z)]
+    (hZc : IsClosed Z) {v : ℝ × Time → E}
     (hv : ∀ p : ℝ × Time, p.2 ∈ Z → ContMDiffAt (𝓘(ℝ, ℝ).prod 𝓘(ℝ, ℝ)) 𝓘(ℝ, E) ∞ v p)
     (hvt : ∀ p : ℝ × Time, p.2 ∈ Z → v p ∈ (extChartAt I x).target)
     (hvγ : ∀ p : ℝ × Time, p.2 ∉ Z → v p = extChartAt I x (γ p.2))
@@ -101,7 +99,7 @@ private lemma exists_contMDiff_glue [I.Boundaryless] (x : M) {γ : Time → M}
     · simpa [hZ, hΨ0 _ hZ] using ((extChartAt I x).left_inv ht).symm
 
 /-- A bump function and a vector give a variation of a curve supported in a chart. -/
-lemma exists_variation_chart_bump [I.Boundaryless] {γ : Time → M} {t₀ t₁ : Time} (x : M)
+private lemma exists_variation_chart_bump [I.Boundaryless] {γ : Time → M} {t₀ t₁ : Time} (x : M)
     (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {ψ : ℝ → ℝ} (hψ : ContDiff ℝ ∞ ψ)
     (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀))
     (hx : ∀ τ ∈ tsupport ψ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source) (w : E) {N : Set E}
@@ -157,9 +155,9 @@ private lemma LagrangianSystem.integrand_eq_flat [I.Boundaryless] (S : Lagrangia
   simp only [Function.comp, hgq]
   rw [e, ht2, vsub_vadd]
 
-/-- On a chart-supported variation, the geometric action integrand is the flat one on the support
-and the two differ by an `s`-independent amount. -/
-lemma LagrangianSystem.integrand_sub_eq [I.Boundaryless] (S : LagrangianSystem I M) (x : M)
+/-- On a chart-supported variation, the difference of the geometric and flat action integrands is
+independent of `s`. -/
+private lemma LagrangianSystem.integrand_sub_eq [I.Boundaryless] (S : LagrangianSystem I M) (x : M)
     {γ : Time → M} {t₀ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {L : ℝ × E × E → ℝ} {N : Set E}
     (hN : N ⊆ (extChartAt I x).target) (hLN : ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = S.coord x t₀ p)
     {q : ℝ → E} {C : Set ℝ}
@@ -176,13 +174,15 @@ lemma LagrangianSystem.integrand_sub_eq [I.Boundaryless] (S : LagrangianSystem I
       S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I (γs 0) ⟨τ +ᵥ t₀, (1 : ℝ)⟩) -
         L (τ, Hc (0, τ), fderiv ℝ Hc (0, τ) (0, 1)) := by
   by_cases hτ : τ ∈ tsupport ψ
+  -- on the support both integrands are the flat Lagrangian along the flat variation
   · have hon (s' : ℝ) : S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I (γs s') ⟨τ +ᵥ t₀, (1 : ℝ)⟩) =
         L (τ, Hc (s', τ), fderiv ℝ Hc (s', τ) (0, 1)) := by
-      rw [← fderiv_snd_apply hH s' τ]
+      rw [← deriv_snd_eq_fderiv_apply hH s' τ]
       exact S.integrand_eq_flat x hγ hN hLN (hH.comp (contDiff_const.prodMk contDiff_id))
         (hHdef s') (hCs τ (hsC hτ)) (hqC τ (hsC hτ)) (by simpa [hHdef] using hεN s' τ (hsC hτ))
         (hsymm s')
     simp [hon s, hon 0]
+  -- off the support the variation does not move, so both sides are `s`-independent
   · have hnb : ∀ᶠ σ' in 𝓝 τ, σ' ∉ tsupport ψ := (isClosed_tsupport ψ).isOpen_compl.mem_nhds hτ
     have hevs (s' : ℝ) : γs s' =ᶠ[𝓝 (τ +ᵥ t₀)] γ := by
       filter_upwards [eventually_vsub_of_eventually t₀ hnb] with t' ht'
@@ -190,20 +190,15 @@ lemma LagrangianSystem.integrand_sub_eq [I.Boundaryless] (S : LagrangianSystem I
     have hHev : (fun σ' ↦ Hc (s, σ')) =ᶠ[𝓝 τ] fun σ' ↦ Hc (0, σ') := by
       filter_upwards [hnb] with σ' hσ'
       simp [hHdef, image_eq_zero_of_notMem_tsupport hσ', hσ0]
-    rw [tangentMap_eq_of_eventuallyEq (hevs s), tangentMap_eq_of_eventuallyEq (hevs 0),
-      hHev.eq_of_nhds, ← fderiv_snd_apply hH s τ, ← fderiv_snd_apply hH 0 τ, hHev.deriv_eq]
-
-/-- The action as an interval integral over `[0, t₁ -ᵥ t₀]`. -/
-lemma LagrangianSystem.action_eq_intervalIntegral (S : LagrangianSystem I M) (γ : Time → M)
-    {t₀ t₁ : Time} (h : 0 ≤ t₁ -ᵥ t₀) :
-    S.action γ t₀ t₁ = ∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀),
-      S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ ⟨τ +ᵥ t₀, (1 : ℝ)⟩) := by
-  rw [intervalIntegral.integral_of_le h, ← integral_Icc_eq_integral_Ioc]
-  rfl
+    rw [(hevs s).tangentMap_eq (I := 𝓘(ℝ, ℝ)) (I' := I) (1 : ℝ),
+      (hevs 0).tangentMap_eq (I := 𝓘(ℝ, ℝ)) (I' := I) (1 : ℝ),
+      hHev.eq_of_nhds, ← deriv_snd_eq_fderiv_apply hH s τ, ← deriv_snd_eq_fderiv_apply hH 0 τ,
+      hHev.deriv_eq]
 
 /-- A variation supported in a chart has the first variation of the flat Lagrangian. -/
-lemma LagrangianSystem.exists_hasDerivAt_action_chart [I.Boundaryless] (S : LagrangianSystem I M)
-    (x : M) {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (hT : 0 < t₁ -ᵥ t₀)
+private lemma LagrangianSystem.exists_hasDerivAt_action_chart [I.Boundaryless]
+    (S : LagrangianSystem I M) (x : M) {γ : Time → M} {t₀ t₁ : Time}
+    (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (hT : 0 < t₁ -ᵥ t₀)
     {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {N : Set E} (hN : N ⊆ (extChartAt I x).target)
     (hLN : ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = S.coord x t₀ p) {q : ℝ → E} (hq : ContDiff ℝ ∞ q)
     {C : Set ℝ} (hCs : ∀ τ ∈ C, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source)
@@ -217,6 +212,7 @@ lemma LagrangianSystem.exists_hasDerivAt_action_chart [I.Boundaryless] (S : Lagr
     (fun τ hτ ↦ hCs τ (hsC hτ)) w hN hε
     (fun τ hτ r hr ↦ (hqC τ (hsC hτ)).eq_of_nhds ▸ hεN τ (hsC hτ) r hr)
   refine ⟨h, ?_⟩
+  -- `Hc` is the flat variation `q + σ s • (ψ • w)`; its first variation is `hflat`
   set Hc : ℝ × ℝ → E := fun p ↦ q p.2 + σ p.1 • (ψ p.2 • w) with hHc
   have hH : ContDiff ℝ ∞ Hc := by fun_prop
   have hψ0 : ψ 0 = 0 := image_eq_zero_of_notMem_tsupport fun h' ↦ (hs h').1.false
@@ -224,11 +220,12 @@ lemma LagrangianSystem.exists_hasDerivAt_action_chart [I.Boundaryless] (S : Lagr
   have hflat := hasDerivAt_integral_variation hL hH (t₁ -ᵥ t₀)
     (fun s ↦ by simp [hHc, hψ0]) fun s ↦ by simp only [hHc, hψT, zero_smul, smul_zero, add_zero]
   have hV : ∀ τ, fderiv ℝ Hc (0, τ) (1, 0) = ψ τ • w := fun τ ↦ by
-    rw [← fderiv_fst_apply hH 0 τ]
+    rw [← deriv_fst_eq_fderiv_apply hH 0 τ]
     simp [hHc, deriv_smul_const, hσ.differentiable (by simp) 0, hσ'0]
   rw [show (fun σ' : ℝ ↦ Hc (0, σ')) = q from funext fun σ' ↦ by simp [hHc, hσ0]] at hflat
   simp only [hV] at hflat
-  simp_rw [S.action_eq_intervalIntegral _ hT.le]
+  -- the geometric and flat integrands differ by an `s`-independent term
+  simp_rw [S.action_eq_intervalIntegral hT.le]
   exact hasDerivAt_integral_of_sub_eq
     (fun s ↦ continuous_iff_continuousAt.2 fun τ ↦ S.continuousAt_integrand t₀
       (h.toFun.contMDiff.comp (contMDiff_const.prodMk contMDiff_id)) τ)
@@ -249,7 +246,7 @@ lemma LagrangianSystem.integral_eulerLagrange_eq_zero [I.Boundaryless] (S : Lagr
     (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀)) (hsC : tsupport ψ ⊆ C) (w : E) :
     ∫ τ in (0 : ℝ)..(t₁ -ᵥ t₀), eulerLagrange L q τ (ψ τ • w) = 0 := by
   obtain ⟨B, hB⟩ := hψc.exists_bound_of_continuous hψ.continuous
-  obtain ⟨ε, hε, hεN⟩ := exists_eps_add_smul_mem (hC.image hq.continuous) hNo
+  obtain ⟨ε, hε, hεN⟩ := (hC.image hq.continuous).exists_eps_add_smul_mem hNo
     (by rintro _ ⟨τ, hτ, rfl⟩; exact hqN τ hτ) (B * ‖w‖)
   obtain ⟨h, hh⟩ := S.exists_hasDerivAt_action_chart x hc.1 hT hL hN hLN hq hCs hqC hψ hs hsC w hε
     fun τ hτ r hr ↦ hεN _ ⟨τ, hτ, rfl⟩ _ (by rw [norm_smul]; gcongr; exact hB τ) r hr

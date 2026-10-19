@@ -14,7 +14,9 @@ Critical points of the action satisfy the Euler-Lagrange equations in every char
 
 ## i. Overview
 
-The converse is not yet formalised.
+A critical point is localised to a chart with a cutoff, a flat Lagrangian and a chart-supported
+bump variation, and the flat Euler-Lagrange equations are transported back. The converse is not
+yet formalised.
 
 ## ii. Key results
 
@@ -53,7 +55,7 @@ lemma LagrangianSystem.eulerLagrange_coord_of_isCriticalPoint [I.Boundaryless]
   have hOo : IsOpen O := isOpen_Ioo.inter ((isOpen_extChartAt_source x).preimage
     (hc.1.continuous.comp (Time.contMDiff_vadd t₀ ∞).continuous))
   have hqO := fun σ (hσ : σ ∈ O) ↦ contDiffAt_chart_curve x hc.1 t₀ hσ.2
-  obtain ⟨δ, hδ, hCO⟩ := exists_Icc_subset hOo ⟨hτ, hx⟩
+  obtain ⟨δ, hδ, hCO⟩ := hOo.exists_Icc_subset ⟨hτ, hx⟩
   -- smooth `q'` agreeing with `q` near the compact `Icc (τ₀ - δ) (τ₀ + δ)`
   obtain ⟨q', hq', hq'q⟩ := exists_contDiff_eq_nhds hOo hqO isCompact_Icc hCO
   have hKt : q' '' Icc (τ₀ - δ) (τ₀ + δ) ⊆ (extChartAt I x).target := by

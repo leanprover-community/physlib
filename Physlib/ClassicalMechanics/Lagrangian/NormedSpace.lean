@@ -5,7 +5,6 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.Mathematics.Calculus.PartialDerivatives
 public import Physlib.Mathematics.ForMathlib.ContMDiffProd
@@ -24,6 +23,7 @@ dt`.
 ## ii. Key results
 
 - `LagrangianSystem.action_ofNormedSpace`
+- `contDiff_timeCoord`, `contDiff_timeCoordVariation`: smoothness in a time coordinate
 - `action_variation`
 
 ## iii. Table of contents
@@ -43,7 +43,7 @@ open MeasureTheory
 open scoped Manifold ContDiff
 namespace ClassicalMechanics
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {γ : Time → E} {t₀ t₁ : Time}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-!
 ## A. The action in coordinates
@@ -66,14 +66,15 @@ end LagrangianSystem
 -/
 
 /-- A Lagrangian in a time coordinate based at `t₀` is smooth. -/
-lemma contDiff_coord (L : Time × E × E → ℝ)
+lemma contDiff_timeCoord (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (t₀ : Time) :
     ContDiff ℝ ∞ (fun p : ℝ × E × E ↦ L (p.1 +ᵥ t₀, p.2)) :=
   contMDiff_prod_self_iff.1 (hL.comp
     (((Time.contMDiff_vadd t₀ ∞).comp contMDiff_fst).prodMk contMDiff_snd))
 
 /-- A variation in a time coordinate based at `t₀` is smooth. -/
-lemma contDiff_coordVariation (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁) :
+lemma contDiff_timeCoordVariation {γ : Time → E} {t₀ t₁ : Time}
+    (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁) :
     ContDiff ℝ ∞ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) :=
   contMDiff_prod_self_iff.1 (h.toFun.contMDiff.comp
     (contMDiff_fst.prodMk ((Time.contMDiff_vadd t₀ ∞).comp contMDiff_snd)))
@@ -83,7 +84,7 @@ lemma contDiff_coordVariation (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀
 -/
 
 /-- The action along a variation in the time coordinate based at `t₀`. -/
-lemma action_variation (L : Time × E × E → ℝ)
+lemma action_variation {γ : Time → E} {t₀ t₁ : Time} (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L)
     (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁) (ht : 0 ≤ t₁ -ᵥ t₀) (s : ℝ) :
     (LagrangianSystem.ofNormedSpace L hL).action (fun t ↦ h.toFun (s, t)) t₀ t₁ =
@@ -92,6 +93,6 @@ lemma action_variation (L : Time × E × E → ℝ)
   rw [LagrangianSystem.action_ofNormedSpace, intervalIntegral.integral_of_le ht,
     ← integral_Icc_eq_integral_Ioc]
   exact setIntegral_congr_fun measurableSet_Icc fun τ _ ↦ by
-    simp [← fderiv_snd_apply (contDiff_coordVariation h) s τ]
+    simp [← deriv_snd_eq_fderiv_apply (contDiff_timeCoordVariation h) s τ]
 
 end ClassicalMechanics

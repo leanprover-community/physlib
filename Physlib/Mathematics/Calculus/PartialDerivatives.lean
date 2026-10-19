@@ -6,7 +6,7 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
-public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Physlib.Mathematics.ForMathlib.FDerivCurry
 
 /-!
 # Partial derivatives of functions of time, position and velocity
@@ -20,8 +20,9 @@ commute.
 
 ## ii. Key results
 
-- `fderiv_apply_zero_prod`
-- `deriv_fderiv_snd`
+- `fderiv_apply_zero_prod`: splitting of the derivative of `L (τ, q, v)`
+- `deriv_fderiv_snd`: commutation of mixed derivatives of `H (s, τ)`
+- `deriv_snd_eq_fderiv_apply`, `deriv_fst_eq_fderiv_apply`: derivatives of the slices of `H`
 
 ## iii. Table of contents
 
@@ -35,7 +36,6 @@ commute.
 
 @[expose] public section
 
-open Set
 open scoped ContDiff
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -119,21 +119,19 @@ lemma deriv_fderiv_snd (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
   simp [hsymm ((0 : ℝ), (1 : ℝ)) ((1 : ℝ), (0 : ℝ))]
 
 /-- The `τ`-derivative of `H (s, ·)` is the total derivative applied to `(0, 1)`. -/
-lemma fderiv_snd_apply (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
+lemma deriv_snd_eq_fderiv_apply (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
     deriv (fun σ ↦ H (s, σ)) τ = fderiv ℝ H (s, τ) (0, 1) := by
-  have h1 : HasDerivAt (fun σ : ℝ ↦ (s, σ)) ((0 : ℝ), (1 : ℝ)) τ :=
-    (hasDerivAt_const τ s).prodMk (hasDerivAt_id τ)
-  exact ((hH.differentiable (by simp) (s, τ)).hasFDerivAt.comp_hasDerivAt τ h1).deriv
+  rw [← fderiv_apply_one_eq_deriv]
+  exact fderiv_curry_snd H s τ (hH.differentiable (by simp) _) 1
 
 /-- The `s`-derivative of `H (·, τ)` is the total derivative applied to `(1, 0)`. -/
-lemma fderiv_fst_apply (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
+lemma deriv_fst_eq_fderiv_apply (hH : ContDiff ℝ ∞ H) (s τ : ℝ) :
     deriv (fun r ↦ H (r, τ)) s = fderiv ℝ H (s, τ) (1, 0) := by
-  have h1 : HasDerivAt (fun r : ℝ ↦ (r, τ)) ((1 : ℝ), (0 : ℝ)) s :=
-    (hasDerivAt_id s).prodMk (hasDerivAt_const s τ)
-  exact ((hH.differentiable (by simp) (s, τ)).hasFDerivAt.comp_hasDerivAt s h1).deriv
+  rw [← fderiv_apply_one_eq_deriv]
+  exact fderiv_curry_fst H s τ (hH.differentiable (by simp) _) 1
 
 /-- If `H (·, a)` is constant, the `s`-derivative of `H` vanishes at `τ = a`. -/
-lemma fderiv_fst_apply_eq_zero (hH : ContDiff ℝ ∞ H) {a : ℝ} (h : ∀ s, H (s, a) = H (0, a)) :
+lemma fderiv_apply_fst_eq_zero (hH : ContDiff ℝ ∞ H) {a : ℝ} (h : ∀ s, H (s, a) = H (0, a)) :
     fderiv ℝ H (0, a) (1, 0) = 0 := by
-  rw [← fderiv_fst_apply hH 0 a, funext h]
+  rw [← deriv_fst_eq_fderiv_apply hH 0 a, funext h]
   simp

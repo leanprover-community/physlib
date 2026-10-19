@@ -12,7 +12,8 @@ public import Physlib.Mathematics.ForMathlib.RealAnalysis
 /-!
 # Variational calculus on an interval
 
-Integration by parts and the fundamental lemma for covector-valued integrands.
+Integration by parts, the fundamental lemma for covector-valued integrands, and differentiation
+of integrals.
 
 ## i. Overview
 
@@ -22,12 +23,15 @@ there.
 ## ii. Key results
 
 - `integral_by_parts_covector`
+- `eq_zero_of_integral_smul_eq_zero_of_isOpen`
 - `eq_zero_of_integral_smul_eq_zero`
+- `hasDerivAt_integral_of_sub_eq`
 
 ## iii. Table of contents
 
 - A. Integration by parts
 - B. The fundamental lemma
+- C. Differentiating integrals
 
 ## iv. References
 
@@ -95,5 +99,27 @@ lemma eq_zero_of_integral_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Conti
     (h : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → HasCompactSupport ψ → tsupport ψ ⊆ Ioo 0 T →
       ∀ w : E, ∫ τ in (0 : ℝ)..T, f τ (ψ τ • w) = 0) :
     ∀ τ ∈ Icc 0 T, f τ = 0 :=
-  eqOn_Icc_of_eqOn_Ioo hf hT
+  hf.eqOn_Icc_of_eqOn_Ioo hT
     (eq_zero_of_integral_smul_eq_zero_of_isOpen hf isOpen_Ioo subset_rfl h)
+
+/-!
+## C. Differentiating integrals
+-/
+
+/-- If two continuous integrands differ by an `s`-independent function, their integrals have the
+same `s`-derivative. -/
+lemma hasDerivAt_integral_of_sub_eq {G Gh : ℝ → ℝ → ℝ} {T a : ℝ} (hG : ∀ s, Continuous (G s))
+    (hGh : ∀ s, Continuous (Gh s)) (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
+    (hd : HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, Gh s τ) a 0) :
+    HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) a 0 := by
+  have hA : ∀ s, ∫ τ in (0 : ℝ)..T, G s τ = (∫ τ in (0 : ℝ)..T, Gh s τ) +
+      ((∫ τ in (0 : ℝ)..T, G 0 τ) - ∫ τ in (0 : ℝ)..T, Gh 0 τ) := fun s ↦ by
+    have h1 : ∫ τ in (0 : ℝ)..T, (G s τ - Gh s τ) = ∫ τ in (0 : ℝ)..T, (G 0 τ - Gh 0 τ) :=
+      intervalIntegral.integral_congr fun τ _ ↦ hkey s τ
+    rw [intervalIntegral.integral_sub ((hG s).intervalIntegrable _ _)
+        ((hGh s).intervalIntegrable _ _),
+      intervalIntegral.integral_sub ((hG 0).intervalIntegrable _ _)
+        ((hGh 0).intervalIntegrable _ _)] at h1
+    linarith
+  rw [show (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) = _ from funext hA]
+  exact hd.add_const _

@@ -9,6 +9,7 @@ public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.Mathematics.ForMathlib.ContMDiffProd
 public import Physlib.Mathematics.ForMathlib.Cutoff
+public import Physlib.Mathematics.ForMathlib.TangentMap
 public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
@@ -25,7 +26,13 @@ turning the Lagrangian into a function `L (t, q, q̇)` smooth over the chart tar
 
 - `LagrangianSystem.coord`
 - `LagrangianSystem.contDiffAt_coord`
-- `LagrangianSystem.integrand_eq_coord`
+- `LagrangianSystem.integrand_eq_coord`: the action integrand in a chart is the chart Lagrangian
+- `LagrangianSystem.exists_contDiff_coord_eq`: the chart Lagrangian agrees with a smooth one
+  near a compact set
+- `LagrangianSystem.continuousAt_integrand`: the action integrand is continuous
+- `contDiffAt_chart_curve`: a chart-read curve is smooth
+- `LagrangianSystem.integrand_eq_of_germ`: the action integrand of a curve that is chart-read
+  near a time
 
 ## iii. Table of contents
 
@@ -83,7 +90,7 @@ lemma LagrangianSystem.exists_contDiff_coord_eq [I.Boundaryless] [FiniteDimensio
     ∃ (L : ℝ × E × E → ℝ) (N : Set E), IsOpen N ∧ K ⊆ N ∧ N ⊆ (extChartAt I x).target ∧
       ContDiff ℝ ∞ L ∧ ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = S.coord x t₀ p := by
   obtain ⟨χ, N, hχ, hNo, hKN, hNU, hχ1, hχ0⟩ :=
-    exists_cutoff hK (isOpen_extChartAt_target x) hKx
+    hK.exists_cutoff (isOpen_extChartAt_target x) hKx
   refine ⟨fun p ↦ χ p.2.1 * S.coord x t₀ p, N, hNo, hKN, hNU, ?_, fun p hp ↦ ?_⟩
   · exact contDiff_smul_of_cutoff (hχ.comp (contDiff_fst.comp contDiff_snd))
       (W := {p | p.2.1 ∈ (extChartAt I x).target})
@@ -96,7 +103,7 @@ lemma LagrangianSystem.exists_contDiff_coord_eq [I.Boundaryless] [FiniteDimensio
 -/
 
 /-- The tangent map of a curve read in a chart is the chart Lagrangian's input. -/
-lemma tangentMap_chart_curve [I.Boundaryless] (x : M) {c : Time → E} (t₀ : Time) (s : ℝ)
+private lemma tangentMap_chart_curve [I.Boundaryless] (x : M) {c : Time → E} (t₀ : Time) (s : ℝ)
     (hc : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ c (s +ᵥ t₀))
     (hcx : c (s +ᵥ t₀) ∈ (extChartAt I x).target) :
     tangentMap 𝓘(ℝ, ℝ) I ((extChartAt I x).symm ∘ c) ⟨s +ᵥ t₀, (1 : ℝ)⟩ =
@@ -109,7 +116,7 @@ lemma tangentMap_chart_curve [I.Boundaryless] (x : M) {c : Time → E} (t₀ : T
     (hsymm.mdifferentiableAt (by simp)) (hc.mdifferentiableAt (by simp))
   rw [h, Time.tangentMap_eq_deriv_vadd]
 
-/-- A chart-read curve is smooth near times at which the curve is in the chart. -/
+/-- A chart-read curve is smooth at times at which the curve is in the chart. -/
 lemma contDiffAt_chart_curve (x : M) {γ : Time → M}
     (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (t₀ : Time) {σ : ℝ}
     (hσ : γ (σ +ᵥ t₀) ∈ (extChartAt I x).source) :
@@ -123,14 +130,6 @@ lemma contDiffAt_chart_curve (x : M) {γ : Time → M}
 ## C. The action integrand
 -/
 
-/-- The tangent map at a point only depends on the germ of the map. -/
-lemma tangentMap_eq_of_eventuallyEq {f g : Time → M} {t : Time} (hfg : f =ᶠ[𝓝 t] g) (v : ℝ) :
-    tangentMap 𝓘(ℝ, ℝ) I f ⟨t, v⟩ = tangentMap 𝓘(ℝ, ℝ) I g ⟨t, v⟩ := by
-  refine Bundle.TotalSpace.ext hfg.eq_of_nhds ?_
-  simp only [tangentMap]
-  rw [hfg.mfderiv_eq]
-  rfl
-
 /-- Near a chart-read curve the action integrand is the chart Lagrangian. -/
 lemma LagrangianSystem.integrand_eq_coord [I.Boundaryless] (S : LagrangianSystem I M) (x : M)
     (t₀ : Time) {γ' : Time → M} {c : Time → E} {τ : ℝ}
@@ -139,7 +138,7 @@ lemma LagrangianSystem.integrand_eq_coord [I.Boundaryless] (S : LagrangianSystem
     (hcx : c (τ +ᵥ t₀) ∈ (extChartAt I x).target) :
     S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩) =
       S.coord x t₀ (τ, c (τ +ᵥ t₀), deriv (fun σ : ℝ ↦ c (σ +ᵥ t₀)) τ) := by
-  rw [tangentMap_eq_of_eventuallyEq hev, tangentMap_chart_curve x t₀ τ hc hcx]
+  rw [hev.tangentMap_eq (I := 𝓘(ℝ, ℝ)) (I' := I) (1 : ℝ), tangentMap_chart_curve x t₀ τ hc hcx]
   rfl
 
 /-- The action integrand along a curve that is a chart-read curve near `τ` is the flat
@@ -163,7 +162,7 @@ lemma LagrangianSystem.integrand_eq_of_germ [I.Boundaryless] (S : LagrangianSyst
   simp
 
 /-- The action integrand of a smooth curve is the chart Lagrangian at times in the chart. -/
-lemma LagrangianSystem.integrand_eq_coord_of_mem_source [I.Boundaryless]
+private lemma LagrangianSystem.integrand_eq_coord_of_mem_source [I.Boundaryless]
     (S : LagrangianSystem I M) (x : M) (t₀ : Time) {γ' : Time → M}
     (hγ' : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ') {τ : ℝ} (h : γ' (τ +ᵥ t₀) ∈ (extChartAt I x).source) :
     S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩) = S.coord x t₀
@@ -181,6 +180,7 @@ lemma LagrangianSystem.continuousAt_integrand [I.Boundaryless]
     (S : LagrangianSystem I M) (t₀ : Time) {γ' : Time → M} (hγ' : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ')
     (τ : ℝ) : ContinuousAt (fun τ : ℝ ↦
       S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩)) τ := by
+  -- read `γ'` in the chart at its value at `τ`, where the integrand is the smooth chart Lagrangian
   set x := γ' (τ +ᵥ t₀)
   have h0 : γ' (τ +ᵥ t₀) ∈ (extChartAt I x).source := mem_extChartAt_source x
   have hg := contDiffAt_chart_curve x hγ' t₀ h0

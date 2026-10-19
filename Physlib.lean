@@ -158,6 +158,7 @@ public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
 public import Physlib.Mathematics.ForMathlib.RealAnalysis
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
+public import Physlib.Mathematics.ForMathlib.TangentMap
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
 public import Physlib.Mathematics.Groups.SO3.Basic

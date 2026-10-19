@@ -18,8 +18,9 @@ Used to localise variational arguments to a window of time.
 
 ## ii. Key results
 
-- `exists_Icc_subset`
-- `eqOn_Icc_of_eqOn_Ioo`
+- `IsOpen.exists_Icc_subset`
+- `Continuous.eqOn_Icc_of_eqOn_Ioo`
+- `contDiffAt_comp_add_const_iff`
 - `exists_reparam`
 
 ## iii. Table of contents
@@ -42,16 +43,28 @@ open scoped ContDiff
 -/
 
 /-- An open set of reals contains a closed interval around each of its points. -/
-lemma exists_Icc_subset {O : Set ℝ} (hO : IsOpen O) {τ : ℝ} (hτ : τ ∈ O) :
+lemma IsOpen.exists_Icc_subset {O : Set ℝ} (hO : IsOpen O) {τ : ℝ} (hτ : τ ∈ O) :
     ∃ δ > 0, Icc (τ - δ) (τ + δ) ⊆ O := by
   obtain ⟨r, hr, hball⟩ := Metric.isOpen_iff.1 hO τ hτ
   exact ⟨r / 2, by positivity,
     Real.closedBall_eq_Icc ▸ (Metric.closedBall_subset_ball (by linarith)).trans hball⟩
 
 /-- A continuous function vanishing on `(0, T)` vanishes on `[0, T]`. -/
-lemma eqOn_Icc_of_eqOn_Ioo {F : Type*} [NormedAddCommGroup F] {f : ℝ → F} (hf : Continuous f)
-    {T : ℝ} (hT : 0 < T) (h : ∀ τ ∈ Ioo 0 T, f τ = 0) : ∀ τ ∈ Icc 0 T, f τ = 0 :=
+lemma Continuous.eqOn_Icc_of_eqOn_Ioo {F : Type*} [NormedAddCommGroup F] {f : ℝ → F}
+    (hf : Continuous f) {T : ℝ} (hT : 0 < T) (h : ∀ τ ∈ Ioo 0 T, f τ = 0) :
+    ∀ τ ∈ Icc 0 T, f τ = 0 :=
   closure_Ioo hT.ne ▸ Set.EqOn.closure (g := fun _ ↦ 0) h hf continuous_const
+
+/-- Shifting the argument of a real function by a constant. -/
+lemma contDiffAt_comp_add_const_iff {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    (g : ℝ → F) (s : ℝ) (n : ℕ∞ω) :
+    ContDiffAt ℝ n (fun τ ↦ g (τ + s)) 0 ↔ ContDiffAt ℝ n g s := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · have h' : ContDiffAt ℝ n (fun τ ↦ g (τ + s)) ((fun τ : ℝ ↦ τ - s) s) := by simpa using h
+    simpa [Function.comp_def] using
+      h'.comp (f := fun τ : ℝ ↦ τ - s) s (contDiffAt_id.sub contDiffAt_const)
+  · have h' : ContDiffAt ℝ n g ((fun τ : ℝ ↦ τ + s) 0) := by simpa using h
+    exact h'.comp (f := fun τ : ℝ ↦ τ + s) 0 (contDiffAt_id.add contDiffAt_const)
 
 /-!
 ## B. Reparametrisations

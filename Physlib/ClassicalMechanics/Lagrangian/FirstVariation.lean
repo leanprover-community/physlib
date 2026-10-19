@@ -26,7 +26,7 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 - `contDiff_eulerLagrange`: smoothness of the Euler-Lagrange covector
 - `eulerLagrange_congr`: dependence on the germ of the curve only
 - `eulerLagrange_congr_lagrangian`: dependence on the Lagrangian near the curve only
-- `fderiv_integrand_apply`: splitting of the `s`-derivative of the integrand
+- `contDiff_integrand`: smoothness of the action integrand
 - `hasDerivAt_integral_variation`: first variation of the action
 
 ## iii. Table of contents
@@ -56,7 +56,8 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : ℝ × ℝ 
 noncomputable def canonicalMomentum (L : ℝ × E × E → ℝ) (q : ℝ → E) (τ : ℝ) : E →L[ℝ] ℝ :=
   fderiv ℝ (fun v ↦ L (τ, q τ, v)) (deriv q τ)
 
-/-- The Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` of a curve `q`. -/
+/-- The Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` of a curve `q`, for a Lagrangian on
+`ℝ × E × E` (cf. the gradient-valued `eulerLagrangeOp`). -/
 noncomputable def eulerLagrange (L : ℝ × E × E → ℝ) (q : ℝ → E) (τ : ℝ) : E →L[ℝ] ℝ :=
   fderiv ℝ (fun x ↦ L (τ, x, deriv q τ)) (q τ) - deriv (canonicalMomentum L q) τ
 
@@ -96,7 +97,7 @@ lemma eulerLagrange_congr_lagrangian {L L' : ℝ × E × E → ℝ} {q : ℝ →
 
 /-- The `s`-derivative of the integrand of the action splits into the Euler-Lagrange term and
 a total `τ`-derivative. -/
-lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H)
+private lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H)
     (τ : ℝ) :
     fderiv ℝ (fun p : ℝ × ℝ ↦ L (p.2, H p, fderiv ℝ H p (0, 1))) (0, τ) (1, 0) =
       eulerLagrange L (fun σ ↦ H (0, σ)) τ (fderiv ℝ H (0, τ) (1, 0)) +
@@ -112,7 +113,7 @@ lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ 
   simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
     ContinuousLinearMap.coe_snd']
   rw [← deriv_fderiv_snd hH 0 τ, fderiv_apply_zero_prod hLd]
-  simp only [eulerLagrange, canonicalMomentum, sub_apply, fderiv_snd_apply hH 0]
+  simp only [eulerLagrange, canonicalMomentum, sub_apply, deriv_snd_eq_fderiv_apply hH 0]
   abel
 
 /-- The integrand `L(τ, H, ∂τ H)` of the action is smooth. -/
@@ -132,8 +133,8 @@ lemma hasDerivAt_integral_variation {L : ℝ × E × E → ℝ} (hL : ContDiff �
   have hqs : ContDiff ℝ ∞ q := hH.comp (contDiff_const.prodMk contDiff_id)
   have hPvs : ContDiff ℝ ∞ (canonicalMomentum L q) := contDiff_fderiv_partial_v hL hqs
   have hbp := integral_by_parts_covector hPvs hVs T
-  rw [show V 0 = 0 from fderiv_fst_apply_eq_zero hH h0,
-    show V T = 0 from fderiv_fst_apply_eq_zero hH hT] at hbp
+  rw [show V 0 = 0 from fderiv_apply_fst_eq_zero hH h0,
+    show V T = 0 from fderiv_apply_fst_eq_zero hH hT] at hbp
   refine (hasDerivAt_intervalIntegral_of_contDiff
     ((contDiff_integrand hL hH).of_le (by simp)) 0 T 0).congr_deriv ?_
   simp_rw [fderiv_integrand_apply hL hH]

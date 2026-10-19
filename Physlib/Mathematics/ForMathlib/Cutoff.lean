@@ -19,10 +19,10 @@ subset and `0` near every point outside the open set.
 
 ## ii. Key results
 
-- `exists_cutoff`
+- `IsCompact.exists_cutoff`
 - `contDiff_smul_of_cutoff`
 - `exists_contDiff_eq_nhds`
-- `exists_eps_add_smul_mem`
+- `IsCompact.exists_eps_add_smul_mem`
 
 ## iii. Table of contents
 
@@ -46,7 +46,8 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- A smooth cutoff which is `1` on a neighbourhood `N` of a compact set `K` inside an open set `U`
 and vanishes near every point outside `U`. -/
-lemma exists_cutoff {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [FiniteDimensional ℝ X]
+lemma IsCompact.exists_cutoff {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+    [FiniteDimensional ℝ X]
     {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
     ∃ (χ : X → ℝ) (N : Set X), ContDiff ℝ ∞ χ ∧ IsOpen N ∧ K ⊆ N ∧ N ⊆ U ∧
       (∀ y ∈ N, χ y = 1) ∧ ∀ y ∉ U, ∀ᶠ z in 𝓝 y, χ z = 0 := by
@@ -81,7 +82,7 @@ lemma contDiff_smul_of_cutoff {Y F : Type*} [NormedAddCommGroup Y] [NormedSpace 
 lemma exists_contDiff_eq_nhds {f : ℝ → E} {O : Set ℝ} (hO : IsOpen O)
     (hf : ∀ τ ∈ O, ContDiffAt ℝ ∞ f τ) {C : Set ℝ} (hC : IsCompact C) (hCO : C ⊆ O) :
     ∃ g : ℝ → E, ContDiff ℝ ∞ g ∧ ∀ τ ∈ C, g =ᶠ[𝓝 τ] f := by
-  obtain ⟨ρ, N, hρ, hNo, hCN, -, hρ1, hρ0⟩ := exists_cutoff hC hO hCO
+  obtain ⟨ρ, N, hρ, hNo, hCN, -, hρ1, hρ0⟩ := hC.exists_cutoff hO hCO
   exact ⟨fun τ ↦ ρ τ • f τ, contDiff_smul_of_cutoff hρ hρ0 hf, fun τ hτ ↦ by
     filter_upwards [hNo.mem_nhds (hCN hτ)] with q hq
     simp [hρ1 _ hq]⟩
@@ -91,8 +92,8 @@ lemma exists_contDiff_eq_nhds {f : ℝ → E} {O : Set ℝ} (hO : IsOpen O)
 -/
 
 /-- Small multiples of bounded vectors keep a compact subset of an open set inside it. -/
-lemma exists_eps_add_smul_mem {K N : Set E} (hK : IsCompact K) (hN : IsOpen N) (hKN : K ⊆ N)
-    (B : ℝ) :
+lemma IsCompact.exists_eps_add_smul_mem {K N : Set E} (hK : IsCompact K) (hN : IsOpen N)
+    (hKN : K ⊆ N) (B : ℝ) :
     ∃ ε : ℝ, 0 < ε ∧ ∀ y ∈ K, ∀ v : E, ‖v‖ ≤ B → ∀ r : ℝ, r ∈ Icc (-ε) ε → y + r • v ∈ N := by
   obtain ⟨δ, hδ, hδN⟩ := hK.exists_thickening_subset_open hN hKN
   refine ⟨δ / (|B| + 1), by positivity, fun y hy v hv r hr ↦ hδN ?_⟩
