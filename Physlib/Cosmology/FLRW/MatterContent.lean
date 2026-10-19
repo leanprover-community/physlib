@@ -51,10 +51,10 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   equation at all times, `ρ t = ρ t₀ (a t / a t₀)^(-3(1+w))`; `continuityEquation_of_scaling`:
   the converse; `density_scaling_dust`, `density_scaling_radiation`,
   `density_scaling_vacuum`: `ρ ∝ a⁻³`, `ρ ∝ a⁻⁴`, `ρ` constant.
-- `cosmologicalConstantDensity`, `cosmologicalConstantPressure`:
-  `ρ_Λ = Λ c² / (8 π G)`, `p_Λ = - ρ_Λ c²`; `firstOrderFriedmann_iff_lambdaFluid`,
-  `secondOrderFriedmann_iff_lambdaFluid`: the Friedmann equations with `Λ` are the Friedmann
-  equations without `Λ` for the fluid `ρ + ρ_Λ`, `p + p_Λ`;
+- `firstOrderFriedmann_iff_lambdaFluid`, `secondOrderFriedmann_iff_lambdaFluid`: the Friedmann
+  equations with `Λ` are the Friedmann equations without `Λ` for the fluid `ρ + ρ_Λ`, `p + p_Λ`,
+  where `ρ_Λ = Λ c² / (8 π G)` and `p_Λ = - ρ_Λ c²` (`cosmologicalConstantDensity` and
+  `cosmologicalConstantPressure`, defined in `Physlib.Cosmology.FLRW.Basic`);
   `cosmologicalConstantPressure_eq_barotropic`: `p_Λ` is the `w = -1` barotropic pressure.
 
 ## iii. Table of contents
@@ -315,15 +315,11 @@ lemma density_scaling_vacuum {a ρ : Time → ℝ} {c : ℝ} (hc : c ≠ 0) (hd1
 
 ## C. The cosmological constant as a fluid
 
+The density `cosmologicalConstantDensity` and the pressure `cosmologicalConstantPressure` of the
+cosmological constant, and the cosmic fluid `CosmicFluid.addCosmologicalConstant` with the
+cosmological constant folded in, are defined in `Physlib.Cosmology.FLRW.Basic`.
+
 -/
-
-/-- The density `ρ_Λ = Λ c² / (8 π G)` associated with the cosmological constant. -/
-noncomputable def cosmologicalConstantDensity (Λ G c : ℝ) : ℝ :=
-  Λ * c ^ 2 / (8 * π * G)
-
-/-- The pressure `p_Λ = - ρ_Λ c²` associated with the cosmological constant. -/
-noncomputable def cosmologicalConstantPressure (Λ G c : ℝ) : ℝ :=
-  -(cosmologicalConstantDensity Λ G c) * c ^ 2
 
 /-- The first-order Friedmann equation with `Λ` is the first-order Friedmann equation without
   `Λ` for the density `ρ + ρ_Λ`. -/

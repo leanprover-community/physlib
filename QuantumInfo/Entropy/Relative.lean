@@ -200,7 +200,7 @@ private lemma trace_conj_rpow_eq_inner (hα₀ : 0 < α) (hα : α < 1) :
       have h_trace : (σ.M ^ ((1 - α) / 2)).mat * (σ.M ^ ((1 - α) / 2)).mat = (σ.M ^ (1 - α)).mat := by
         have := σ.nonneg;
         rw [ ← HermitianMat.mat_rpow_add this ]
-        ring_nf
+        · ring_nf
         linarith;
       rw [ ← h_trace, Matrix.mul_assoc ];
       rw [ ← Matrix.trace_mul_comm ]
@@ -425,7 +425,7 @@ private lemma sandwichedRelRentropy_nonneg_α_lt_1 (h : σ.M.ker ≤ ρ.M.ker) (
 private lemma sandwichedRelRentropy_nonneg_α_gt_1 (h : σ.M.ker ≤ ρ.M.ker) (hα : α > 1) :
     0 ≤ ((ρ.M.conj (σ.M ^ ((1 - α)/(2 * α)) ).mat) ^ α).trace.log / (α - 1) := by
   grw [← sandwiched_trace_of_gt_1 h hα]
-  positivity
+  repeat positivity
 
 private lemma sandwichedRelRentropy.trace_at_one (ρ σ : MState d) :
     ((ρ.M.conj (σ.M ^ ((1 - (1:ℝ)) / (2 * (1:ℝ)))).mat) ^ (1:ℝ)).trace = 1 := by
@@ -506,8 +506,8 @@ private lemma trace_conj_eq_inner_rpow {ρ σ : MState d} {t : ℝ} (ht : t ≠ 
   have h_inner : ⟪ρ.M, σ.M ^ (2 * t)⟫ = ((ρ.M.mat * (σ.M ^ (2 * t)).mat).trace).re := by
     exact rfl
   simp_all
-  convert congr_arg Complex.re h_cyclic using 1 ; simp [ HermitianMat.conj ] ; ring!;
-  rw [ Matrix.trace_mul_comm ]
+  · convert congr_arg Complex.re h_cyclic using 1 ; · simp [ HermitianMat.conj ] ; ring!;
+    rw [ Matrix.trace_mul_comm ]
 
 -- The weight of eigenvalue i in the inner product decomposition
 private def eigenWeight (ρ σ : MState d) (i : d) : ℝ :=
@@ -572,7 +572,7 @@ set_option backward.isDefEq.respectTransparency false in
 private lemma hasDerivAt_inner_rpow_at_zero (h : σ.M.ker ≤ ρ.M.ker) :
     HasDerivAt (fun u : ℝ => ⟪ρ.M, σ.M ^ u⟫) ⟪ρ.M, σ.M.log⟫ 0 := by
   convert HasDerivAt.congr_of_eventuallyEq ?_ ?_;
-  exact fun u => ∑ i, ( σ.M.H.eigenvalues i ) ^ u * eigenWeight ρ σ i;
+  · exact fun u => ∑ i, ( σ.M.H.eigenvalues i ) ^ u * eigenWeight ρ σ i;
   · have h_deriv : ∀ i, HasDerivAt (fun u : ℝ => (σ.M.H.eigenvalues i) ^ u * eigenWeight ρ σ i) (Real.log (σ.M.H.eigenvalues i) * eigenWeight ρ σ i) 0 := by
       intro i
       rcases (σ.eigenvalue_nonneg i).lt_or_eq' with h_pos | h_zero
@@ -937,7 +937,7 @@ private lemma rpow_slope_tendsto_uniformly (K : ℝ) :
         convert! mul_le_mul_of_nonneg_left ( h_exp_ineq ( h * Real.log x ) ) ( inv_nonneg.mpr h_pos.le ) using 1 <;> norm_num [ Real.rpow_def_of_pos ( show 0 < x from lt_of_lt_of_le δ₁_pos hx.1 ), mul_comm ] ; ring_nf
         · rw [ ← abs_inv, ← abs_mul ] ; ring_nf;
           by_cases hh : h = 0 <;> aesop;
-        · simp [ sq, mul_assoc, mul_comm, mul_left_comm, h_pos.ne' ];
+        simp [ sq, mul_assoc, mul_comm, mul_left_comm, h_pos.ne' ];
       convert! mul_le_mul_of_nonneg_left h_mean_value ( show 0 ≤ x by linarith [ hx.1 ] ) using 1 <;> ring_nf
 
       rw [ show x ^ (1 + h) * h⁻¹ - x * h⁻¹ - x * Real.log x = x * ( -h⁻¹ + ( h⁻¹ * x ^ h - Real.log x ) ) by rw [ Real.rpow_add ( by linarith [ hx.1 ] ), Real.rpow_one ] ; ring ]
@@ -958,7 +958,7 @@ private lemma rpow_slope_tendsto_uniformly (K : ℝ) :
   refine' ⟨ Min.min ( 1 / 2 ) δ₂, lt_min ( by positivity ) δ₂_pos, fun h hh₁ hh₂ x hx => _ ⟩ ; cases lt_or_ge x δ₁ <;> simp_all [ abs_lt ];
   · cases lt_or_eq_of_le hx.1 <;> simp_all [ abs_of_nonneg ];
     · constructor <;> cases abs_cases ( Real.log x ) <;> nlinarith [ hδ₁ x hx.1 hx.2 ‹_› ‹_›, hδ₁ x hx.1 hx.2 ‹_› ‹_› |>.2 h hh₁ hh₂.1.1 hh₂.1.2 ];
-    · by_cases h : 1 + h = 0 <;> simp_all [ division_def ] ; linarith [ Real.log_le_sub_one_of_pos ( show 0 < ε by linarith ) ] ;
+    · by_cases h : 1 + h = 0 <;> simp_all [ division_def ] ; · linarith [ Real.log_le_sub_one_of_pos ( show 0 < ε by linarith ) ] ;
       norm_num [ ← ‹0 = x› ] at * ; aesop;
   · constructor <;> linarith [ hδ₂ x ‹_› hx.2 h hh₁ hh₂.2.1 hh₂.2.2 ]
 
@@ -1973,7 +1973,7 @@ private lemma eigenWeight_eq_zero_iff (ρ x : MState d) (i : d) :
     have h_zero : ρ.M.mat.mulVec (x.M.H.eigenvectorBasis i : d → ℂ) = 0 := by
       exact congr(WithLp.ofLp $h)
     convert congr_arg ( fun v => star ( x.M.H.eigenvectorBasis i : d → ℂ ) ⬝ᵥ v ) h_zero using 1
-    simp [ Matrix.dotProduct_mulVec]
+    · simp [ Matrix.dotProduct_mulVec]
     ring_nf
     simp [ dotProduct ]
   exact congr_arg Complex.re h_zero

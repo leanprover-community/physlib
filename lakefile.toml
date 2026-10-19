@@ -38,6 +38,10 @@ name = "autolabel"
 srcDir = "scripts/github"
 
 [[lean_exe]]
+name = "pr_summary"
+srcDir = "scripts/alpha/github"
+
+[[lean_exe]]
 name = "windows_test"
 srcDir = "scripts/github"
 supportInterpreter = true

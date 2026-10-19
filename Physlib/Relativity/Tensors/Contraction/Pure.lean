@@ -269,7 +269,7 @@ lemma contrPCoeff_update_fst_smul {n : ℕ} [inst : DecidableEq (Fin n)] {c : Fi
     r * contrPCoeff i j hij (p.update i x) := by
   simp only [contrPCoeff, update_same, smul_tmul]
   repeat rw [Pure.update_diff]
-  simp only [tmul_smul, map_smul, smul_eq_mul]
+  · simp only [tmul_smul, map_smul, smul_eq_mul]
   all_goals grind
 
 @[simp]
@@ -280,7 +280,7 @@ lemma contrPCoeff_update_snd_smul {n : ℕ} [inst : DecidableEq (Fin n)] {c : Fi
     r * contrPCoeff i j hij (p.update j x) := by
   simp only [contrPCoeff, update_same, tmul_smul, map_smul]
   repeat rw [Pure.update_diff]
-  simp only [smul_eq_mul]
+  · simp only [smul_eq_mul]
   all_goals grind
 
 lemma contrPCoeff_dropPair {n : ℕ} {c : Fin (n + 1 + 1) → C}

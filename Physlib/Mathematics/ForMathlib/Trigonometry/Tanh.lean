@@ -58,6 +58,29 @@ lemma contDiff_tanh {n : ℕ} : ContDiff ℝ n tanh := by
     rw [tanh_eq_sinh_div_cosh]
   exact hdiv
 
+/-- The derivative of tanh at `x` is `1 - tanh(x)^2` -/
+lemma hasDerivAt_tanh (x : ℝ) : HasDerivAt Real.tanh (1 - Real.tanh x ^ 2) x := by
+  have h := ((contDiff_tanh (n := 1)).differentiable one_ne_zero x).hasDerivAt
+  rwa [deriv_tanh] at h
+
+/-- tanh(x) tends to `1` as `x → ∞` -/
+lemma tendsto_tanh_atTop : Filter.Tendsto Real.tanh Filter.atTop (nhds 1) := by
+  have h : Real.tanh = fun x => (1 - Real.exp (-x) ^ 2) / (1 + Real.exp (-x) ^ 2) := by
+    funext x
+    rw [Real.tanh_eq, Real.exp_neg]
+    have := Real.exp_pos x
+    field_simp
+  have he := Real.tendsto_exp_neg_atTop_nhds_zero
+  rw [h]
+  convert (tendsto_const_nhds.sub (he.pow 2)).div (tendsto_const_nhds.add (he.pow 2))
+    (by norm_num : (1 : ℝ) + 0 ^ 2 ≠ 0) using 2
+  norm_num
+
+/-- tanh(x) tends to `-1` as `x → -∞` -/
+lemma tendsto_tanh_atBot : Filter.Tendsto Real.tanh Filter.atBot (nhds (-1)) := by
+  have h := (tendsto_tanh_atTop.comp Filter.tendsto_neg_atBot_atTop).neg
+  simpa only [Function.comp_apply, Real.tanh_neg, neg_neg] using h
+
 /-- The nth derivative of Tanh(x) is a polynomial of Tanh(x) -/
 lemma iteratedDeriv_tanh_is_polynomial_of_tanh (n : ℕ) : ∃ P : Polynomial ℝ, ∀ x,
     iteratedDeriv n Real.tanh x = P.eval (Real.tanh x) := by

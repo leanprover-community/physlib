@@ -61,5 +61,5 @@ Requirements:
     location: N/A
 
   - description: Prove that every member of the restricted Lorentz group is a combination of a boost and a rotation
-    done: false
-    location: N/A
+    done: true
+    location: Physlib/Relativity/LorentzGroup/Restricted/FromBoostRotation.lean (exists_boost_mul_rotation, toBoostRotation)

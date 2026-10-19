@@ -60,9 +60,11 @@ public import Physlib.Cosmology.Basic
 public import Physlib.Cosmology.FLRW.Age
 public import Physlib.Cosmology.FLRW.Basic
 public import Physlib.Cosmology.FLRW.ConformalTime
+public import Physlib.Cosmology.FLRW.DeSitter
 public import Physlib.Cosmology.FLRW.DensityParameters
 public import Physlib.Cosmology.FLRW.Distances
-public import Physlib.Cosmology.FLRW.Dynamics
+public import Physlib.Cosmology.FLRW.EnergyConditions
+public import Physlib.Cosmology.FLRW.FriedmannSolution
 public import Physlib.Cosmology.FLRW.MatterContent
 public import Physlib.Cosmology.FLRW.ReducedHubble
 public import Physlib.Cosmology.FLRW.Solutions
@@ -269,6 +271,7 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
@@ -515,6 +518,7 @@ public import Physlib.Relativity.Tensors.RealTensor.Vector.Pre.Modules
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Tensorial
 public import Physlib.Relativity.Tensors.RealTensor.Velocity.Basic
+public import Physlib.Relativity.Tensors.RealTensor.Velocity.Deriv
 public import Physlib.Relativity.Tensors.Reindexing
 public import Physlib.Relativity.Tensors.TensorSpecies.Basic
 public import Physlib.Relativity.Tensors.TensorSpecies.DualBasis
