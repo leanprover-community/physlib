@@ -39,16 +39,18 @@ open scoped Manifold ContDiff
 -/
 
 /-- On a product of normed spaces, `C^n` at a point in the manifold sense is the usual one. -/
-lemma contMDiffAt_prod_self_iff {F G K : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup K] [NormedSpace ℝ K]
+lemma contMDiffAt_prod_self_iff {𝕜 F G K : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [NormedAddCommGroup K] [NormedSpace 𝕜 K]
     {f : F × G → K} {n : ℕ∞ω} {p : F × G} :
-    ContMDiffAt (𝓘(ℝ, F).prod 𝓘(ℝ, G)) 𝓘(ℝ, K) n f p ↔ ContDiffAt ℝ n f p := by
+    ContMDiffAt (𝓘(𝕜, F).prod 𝓘(𝕜, G)) 𝓘(𝕜, K) n f p ↔ ContDiffAt 𝕜 n f p := by
   rw [← contMDiffAt_iff_contDiffAt, modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
 
 /-- On a product of normed spaces, `C^n` in the manifold sense is `C^n` in the usual sense. -/
-lemma contMDiff_prod_self_iff {F G K : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    [NormedAddCommGroup G] [NormedSpace ℝ G] [NormedAddCommGroup K] [NormedSpace ℝ K]
+lemma contMDiff_prod_self_iff {𝕜 F G K : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+    [NormedAddCommGroup K] [NormedSpace 𝕜 K]
     {f : F × G → K} {n : ℕ∞ω} :
-    ContMDiff (𝓘(ℝ, F).prod 𝓘(ℝ, G)) 𝓘(ℝ, K) n f ↔ ContDiff ℝ n f :=
+    ContMDiff (𝓘(𝕜, F).prod 𝓘(𝕜, G)) 𝓘(𝕜, K) n f ↔ ContDiff 𝕜 n f :=
   ⟨fun h ↦ contDiff_iff_contDiffAt.2 fun _ ↦ contMDiffAt_prod_self_iff.1 (h _),
     fun h _ ↦ contMDiffAt_prod_self_iff.2 h.contDiffAt⟩

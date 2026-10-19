@@ -56,7 +56,7 @@ lemma hasFDerivAt_parametric_intervalIntegral_of_contDiff
   · filter_upwards with t h x hx
     exact DifferentiableAt.hasFDerivAt (by fun_prop)
 
-lemma fderiv_apply_parameteric_intervalIntegral
+lemma fderiv_apply_parametric_intervalIntegral
     {F : M → ℝ → N} (hf : ContDiff ℝ 1 ↿F) (x₀ : M) (v : M) :
     fderiv ℝ (fun (x : M) => ∫ (t : ℝ) in 0..1, F x t ∂(volume)) x₀ v =
       ∫ (t : ℝ) in 0..1, fderiv ℝ (F · t) x₀ v ∂(volume) := by
@@ -65,7 +65,7 @@ lemma fderiv_apply_parameteric_intervalIntegral
   apply Continuous.intervalIntegrable
   fun_prop
 
-lemma fderiv_parameteric_intervalIntegral
+lemma fderiv_parametric_intervalIntegral
     {F : M → ℝ → N} (hf : ContDiff ℝ 1 ↿F) (x₀ : M) :
     fderiv ℝ (fun (x : M) => ∫ (t : ℝ) in 0..1, F x t ∂(volume)) =
       fun x => ∫ (t : ℝ) in 0..1, fderiv ℝ (F · t) x ∂(volume) := by
@@ -90,7 +90,7 @@ lemma contDiff_succ_parametric_intervalIntegral_of_contDiff {n : ℕ} [FiniteDim
       (contDiff_one_parametric_intervalIntegral_of_contDiff (hf.of_le (by simp))) (by simp), ?_⟩
     simp only [Nat.cast_add, Nat.cast_one, WithTop.add_eq_top, WithTop.natCast_ne_top,
       WithTop.one_ne_top, or_self, IsEmpty.forall_iff, true_and, contDiff_clm_apply_iff,
-      fderiv_apply_parameteric_intervalIntegral (hf.of_le (by simp))]
+      fderiv_apply_parametric_intervalIntegral (hf.of_le (by simp))]
     exact fun y => ih (by fun_prop)
 
 lemma contDiff_parametric_intervalIntegral_of_contDiff {n : ℕ} {M : Type}

@@ -27,6 +27,8 @@ The motions of a Lagrangian system are the critical points of its action.
 - `LagrangianSystem.isCriticalPoint_of_vsub_nonpos` : smooth curves are critical over an empty
   interval.
 - `LagrangianSystem.IsCriticalPoint` : critical points of the action.
+- `LagrangianSystem.ofNormedSpace` : the Lagrangian system of a smooth `L (t, q, q̇)` on a normed
+  space.
 
 ## iii. Table of contents
 

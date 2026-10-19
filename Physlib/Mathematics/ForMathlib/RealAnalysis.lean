@@ -10,7 +10,7 @@ public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 # Real analysis lemmas
 
-Open sets, intervals and reparametrisations of `ℝ`.
+Open sets, intervals and bounded smooth functions of `ℝ`.
 
 ## i. Overview
 
@@ -21,12 +21,12 @@ Used to localise variational arguments to a window of time.
 - `IsOpen.exists_Icc_subset`
 - `Continuous.eqOn_Icc_of_eqOn_Ioo`
 - `contDiffAt_comp_add_const_iff`
-- `exists_reparam`
+- `exists_smooth_bounded_unit_deriv`
 
 ## iii. Table of contents
 
 - A. Intervals
-- B. Reparametrisations
+- B. Bounded smooth functions
 
 ## iv. References
 
@@ -49,11 +49,12 @@ lemma IsOpen.exists_Icc_subset {O : Set ℝ} (hO : IsOpen O) {τ : ℝ} (hτ : �
   exact ⟨r / 2, by positivity,
     Real.closedBall_eq_Icc ▸ (Metric.closedBall_subset_ball (by linarith)).trans hball⟩
 
-/-- A continuous function vanishing on `(0, T)` vanishes on `[0, T]`. -/
+/-- A continuous function vanishing on `(a, b)` vanishes on `[a, b]`. -/
 lemma Continuous.eqOn_Icc_of_eqOn_Ioo {F : Type*} [NormedAddCommGroup F] {f : ℝ → F}
-    (hf : Continuous f) {T : ℝ} (hT : 0 < T) (h : ∀ τ ∈ Ioo 0 T, f τ = 0) :
-    ∀ τ ∈ Icc 0 T, f τ = 0 :=
-  closure_Ioo hT.ne ▸ Set.EqOn.closure (g := fun _ ↦ 0) h hf continuous_const
+    (hf : Continuous f) {a b : ℝ} (hab : a < b) (h : ∀ τ ∈ Ioo a b, f τ = 0) :
+    ∀ τ ∈ Icc a b, f τ = 0 :=
+  Set.EqOn.of_subset_closure (s := Ioo a b) (g := fun _ ↦ 0) h hf.continuousOn
+    continuousOn_const Ioo_subset_Icc_self (by rw [closure_Ioo hab.ne])
 
 /-- Shifting the argument of a real function by a constant. -/
 lemma contDiffAt_comp_add_const_iff {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -67,11 +68,11 @@ lemma contDiffAt_comp_add_const_iff {F : Type*} [NormedAddCommGroup F] [NormedSp
     exact h'.comp (f := fun τ : ℝ ↦ τ + s) 0 (contDiffAt_id.add contDiffAt_const)
 
 /-!
-## B. Reparametrisations
+## B. Bounded smooth functions
 -/
 
-/-- A smooth reparametrisation of `ℝ` with values in `[-ε, ε]` and unit derivative at `0`. -/
-lemma exists_reparam {ε : ℝ} (hε : 0 < ε) :
+/-- A smooth function `σ : ℝ → ℝ` with `σ 0 = 0`, `σ' 0 = 1` and values in `[-ε, ε]`. -/
+lemma exists_smooth_bounded_unit_deriv {ε : ℝ} (hε : 0 < ε) :
     ∃ σ : ℝ → ℝ, ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧ ∀ s, σ s ∈ Icc (-ε) ε :=
   ⟨fun s ↦ ε * Real.sin (s / ε), by fun_prop, by simp, by simp; field_simp, fun s ↦ by
     constructor <;> nlinarith [Real.neg_one_le_sin (s / ε), Real.sin_le_one (s / ε)]⟩

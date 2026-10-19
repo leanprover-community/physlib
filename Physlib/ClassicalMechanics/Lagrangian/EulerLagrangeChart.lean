@@ -20,7 +20,7 @@ yet formalised.
 
 ## ii. Key results
 
-- `LagrangianSystem.eulerLagrange_coord_of_isCriticalPoint`
+- `LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint`
 
 ## iii. Table of contents
 
@@ -45,11 +45,11 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [Top
 -/
 
 /-- A critical point satisfies the Euler-Lagrange equations in every chart containing it. -/
-lemma LagrangianSystem.eulerLagrange_coord_of_isCriticalPoint [I.Boundaryless]
+lemma LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint [I.Boundaryless]
     [FiniteDimensional ℝ E] (S : LagrangianSystem I M) {γ : Time → M} {t₀ t₁ : Time}
     (hc : S.IsCriticalPoint γ t₀ t₁) (x : M) {τ₀ : ℝ} (hτ : τ₀ ∈ Ioo 0 (t₁ -ᵥ t₀))
     (hx : γ (τ₀ +ᵥ t₀) ∈ (extChartAt I x).source) :
-    eulerLagrange (S.coord x t₀) (fun σ : ℝ ↦ extChartAt I x (γ (σ +ᵥ t₀))) τ₀ = 0 := by
+    eulerLagrange (S.chartLagrangian x t₀) (fun σ : ℝ ↦ extChartAt I x (γ (σ +ᵥ t₀))) τ₀ = 0 := by
   -- `O`: open set of times in `(0, T)` where `γ` stays in the chart domain
   set O : Set ℝ := Ioo 0 (t₁ -ᵥ t₀) ∩ (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) ⁻¹' (extChartAt I x).source
   have hOo : IsOpen O := isOpen_Ioo.inter ((isOpen_extChartAt_source x).preimage
@@ -63,14 +63,15 @@ lemma LagrangianSystem.eulerLagrange_coord_of_isCriticalPoint [I.Boundaryless]
     exact (hq'q σ hσ).eq_of_nhds ▸ (extChartAt I x).map_source (hCO hσ).2
   -- smooth global Lagrangian `L` agreeing with the chart one near the image of `q'`
   obtain ⟨L, N, hNo, hKN, hNt, hL, hLN⟩ :=
-    S.exists_contDiff_coord_eq x t₀ (isCompact_Icc.image hq'.continuous) hKt
+    S.exists_contDiff_chartLagrangian_eq x t₀ (isCompact_Icc.image hq'.continuous) hKt
   have hτ₀U : τ₀ ∈ Ioo (τ₀ - δ) (τ₀ + δ) := ⟨by linarith, by linarith⟩
   -- criticality kills the weak form of the equation, so the continuous integrand vanishes
   have hzero := eq_zero_of_integral_smul_eq_zero_of_isOpen
     (contDiff_eulerLagrange hL hq').continuous isOpen_Ioo
-    (fun σ hσ ↦ (hCO (Ioo_subset_Icc_self hσ)).1) fun ψ hψ hψc hψs w ↦
-    S.integral_eulerLagrange_eq_zero x hc (hτ.1.trans hτ.2) hL hNo hNt hLN hq' isCompact_Icc
-      (fun τ hτ ↦ (hCO hτ).2) hq'q (fun τ hτ ↦ hKN ⟨τ, hτ, rfl⟩) hψ hψc
+    (fun σ hσ ↦ (hCO (Ioo_subset_Icc_self hσ)).1) fun ψ hψ _ hψs w ↦
+    S.integral_eulerLagrange_eq_zero_of_isCriticalPoint x hc (hτ.1.trans hτ.2) hL hNo hNt hLN hq'
+      isCompact_Icc
+      (fun τ hτ ↦ (hCO hτ).2) hq'q (fun τ hτ ↦ hKN ⟨τ, hτ, rfl⟩) hψ
       (hψs.trans fun σ hσ ↦ (hCO (Ioo_subset_Icc_self hσ)).1) (hψs.trans Ioo_subset_Icc_self) w
   rw [← eulerLagrange_congr (hq'q τ₀ (Ioo_subset_Icc_self hτ₀U)),
     eulerLagrange_congr_lagrangian hNo

@@ -12,8 +12,7 @@ public import Physlib.Mathematics.ForMathlib.RealAnalysis
 /-!
 # Variational calculus on an interval
 
-Integration by parts, the fundamental lemma for covector-valued integrands, and differentiation
-of integrals.
+The fundamental lemma for covector-valued integrands and differentiation of integrals.
 
 ## i. Overview
 
@@ -22,14 +21,14 @@ there.
 
 ## ii. Key results
 
-- `integral_by_parts_covector`
+- `continuous_deriv_clm_apply_add`
 - `eq_zero_of_integral_smul_eq_zero_of_isOpen`
 - `eq_zero_of_integral_smul_eq_zero`
-- `hasDerivAt_integral_of_sub_eq`
+- `hasDerivAt_intervalIntegral_of_sub_indep`
 
 ## iii. Table of contents
 
-- A. Integration by parts
+- A. The Leibniz expression
 - B. The fundamental lemma
 - C. Differentiating integrals
 
@@ -45,23 +44,14 @@ open scoped ContDiff
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-!
-## A. Integration by parts
+## A. The Leibniz expression
 -/
 
 /-- The Leibniz expression for a covector `P` paired with a vector `V` is continuous. -/
-lemma continuous_deriv_clm_apply_add {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → E} (hP : ContDiff ℝ ∞ P)
-    (hV : ContDiff ℝ ∞ V) : Continuous fun τ ↦ deriv P τ (V τ) + P τ (deriv V τ) :=
-  ((hP.continuous_deriv (by simp)).clm_apply hV.continuous).add
-    (hP.continuous.clm_apply (hV.continuous_deriv (by simp)))
-
-/-- Integration by parts for a covector `P` paired with a vector `V`. -/
-lemma integral_by_parts_covector {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → E} (hP : ContDiff ℝ ∞ P)
-    (hV : ContDiff ℝ ∞ V) (T : ℝ) :
-    ∫ τ in (0 : ℝ)..T, (deriv P τ (V τ) + P τ (deriv V τ)) = P T (V T) - P 0 (V 0) :=
-  integral_eq_sub_of_hasDerivAt (fun τ _ ↦
-    (hP.differentiable (by simp) τ).hasDerivAt.clm_apply
-      (hV.differentiable (by simp) τ).hasDerivAt)
-    ((continuous_deriv_clm_apply_add hP hV).intervalIntegrable _ _)
+lemma continuous_deriv_clm_apply_add {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → E} (hP : ContDiff ℝ 1 P)
+    (hV : ContDiff ℝ 1 V) : Continuous fun τ ↦ deriv P τ (V τ) + P τ (deriv V τ) :=
+  ((hP.continuous_deriv le_rfl).clm_apply hV.continuous).add
+    (hP.continuous.clm_apply (hV.continuous_deriv le_rfl))
 
 /-!
 ## B. The fundamental lemma
@@ -106,20 +96,17 @@ lemma eq_zero_of_integral_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (hf : Conti
 ## C. Differentiating integrals
 -/
 
-/-- If two continuous integrands differ by an `s`-independent function, their integrals have the
-same `s`-derivative. -/
-lemma hasDerivAt_integral_of_sub_eq {G Gh : ℝ → ℝ → ℝ} {T a : ℝ} (hG : ∀ s, Continuous (G s))
+/-- If two continuous integrands differ by an `s`-independent function, their integrals over
+`[a, b]` have the same `s`-derivative. -/
+lemma hasDerivAt_intervalIntegral_of_sub_indep {F : Type*} [NormedAddCommGroup F]
+    [NormedSpace ℝ F] {G Gh : ℝ → ℝ → F} {a b x : ℝ} {f' : F} (hG : ∀ s, Continuous (G s))
     (hGh : ∀ s, Continuous (Gh s)) (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
-    (hd : HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, Gh s τ) a 0) :
-    HasDerivAt (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) a 0 := by
-  have hA : ∀ s, ∫ τ in (0 : ℝ)..T, G s τ = (∫ τ in (0 : ℝ)..T, Gh s τ) +
-      ((∫ τ in (0 : ℝ)..T, G 0 τ) - ∫ τ in (0 : ℝ)..T, Gh 0 τ) := fun s ↦ by
-    have h1 : ∫ τ in (0 : ℝ)..T, (G s τ - Gh s τ) = ∫ τ in (0 : ℝ)..T, (G 0 τ - Gh 0 τ) :=
-      intervalIntegral.integral_congr fun τ _ ↦ hkey s τ
-    rw [intervalIntegral.integral_sub ((hG s).intervalIntegrable _ _)
-        ((hGh s).intervalIntegrable _ _),
-      intervalIntegral.integral_sub ((hG 0).intervalIntegrable _ _)
-        ((hGh 0).intervalIntegrable _ _)] at h1
-    linarith
-  rw [show (fun s ↦ ∫ τ in (0 : ℝ)..T, G s τ) = _ from funext hA]
+    (hd : HasDerivAt (fun s ↦ ∫ τ in a..b, Gh s τ) f' x) :
+    HasDerivAt (fun s ↦ ∫ τ in a..b, G s τ) f' x := by
+  have hA : ∀ s, ∫ τ in a..b, G s τ =
+      (∫ τ in a..b, Gh s τ) + ∫ τ in a..b, (G 0 τ - Gh 0 τ) := fun s ↦ by
+    rw [← integral_add (f := Gh s) (g := fun τ ↦ G 0 τ - Gh 0 τ)
+      ((hGh s).intervalIntegrable _ _) (((hG 0).sub (hGh 0)).intervalIntegrable _ _)]
+    exact integral_congr fun τ _ ↦ by simp only [← hkey s τ, add_sub_cancel]
+  rw [show (fun s ↦ ∫ τ in a..b, G s τ) = _ from funext hA]
   exact hd.add_const _

@@ -120,12 +120,10 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (L : Time × E × E → ℝ)
   obtain ⟨h, hh⟩ := exists_variation_bump hc.1 hψ hs w
   have hq : (fun σ : ℝ ↦ h.toFun (0, σ +ᵥ t₀)) = fun σ : ℝ ↦ γ (σ +ᵥ t₀) := by
     funext σ; simp [hh]
-  have hV : ∀ τ, fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0) = ψ τ • w := by
-    intro τ
-    rw [← deriv_fst_eq_fderiv_apply (contDiff_timeCoordVariation h) 0 τ,
-      show (fun r ↦ h.toFun (r, τ +ᵥ t₀)) = fun r ↦ γ (τ +ᵥ t₀) + r • (ψ τ • w) from
-        funext fun r ↦ hh r τ]
-    simpa using (((hasDerivAt_id (0 : ℝ)).smul_const (ψ τ • w)).const_add (γ (τ +ᵥ t₀))).deriv
+  have hV : ∀ τ, fderiv ℝ (fun p : ℝ × ℝ ↦ h.toFun (p.1, p.2 +ᵥ t₀)) (0, τ) (1, 0) = ψ τ • w :=
+    fun τ ↦ fderiv_apply_fst_eq_of_eq_add_smul
+      ((contDiff_timeCoordVariation h).differentiable (by simp) _) (σ := fun r ↦ r)
+      differentiableAt_id (by simp) fun r ↦ hh r τ
   have := (hasDerivAt_action_variation L hL h ht.le).unique (hc.2 h)
   simpa [hq, hV] using this
 

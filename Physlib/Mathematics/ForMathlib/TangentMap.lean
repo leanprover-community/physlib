@@ -39,12 +39,12 @@ open scoped Manifold
 -/
 
 /-- The tangent map at a point only depends on the germ of the map at that point. -/
-lemma Filter.EventuallyEq.tangentMap_eq {E E' H H' M M' : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup E'] [NormedSpace ℝ E']
-    [TopologicalSpace H] [TopologicalSpace H'] {I : ModelWithCorners ℝ E H}
-    {I' : ModelWithCorners ℝ E' H'} [TopologicalSpace M] [ChartedSpace H M]
-    [TopologicalSpace M'] [ChartedSpace H' M'] {f g : M → M'} {x : M} (h : f =ᶠ[𝓝 x] g)
-    (v : TangentSpace I x) : tangentMap I I' f ⟨x, v⟩ = tangentMap I I' g ⟨x, v⟩ := by
+lemma Filter.EventuallyEq.tangentMap_eq {𝕜 E E' H H' M M' : Type*} [NontriviallyNormedField 𝕜]
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup E'] [NormedSpace 𝕜 E']
+    [TopologicalSpace H] [TopologicalSpace H'] {I : ModelWithCorners 𝕜 E H}
+    {I' : ModelWithCorners 𝕜 E' H'} [TopologicalSpace M] [ChartedSpace H M]
+    [TopologicalSpace M'] [ChartedSpace H' M'] {f g : M → M'} {p : TangentBundle I M}
+    (h : f =ᶠ[𝓝 p.1] g) : tangentMap I I' f p = tangentMap I I' g p := by
   refine Bundle.TotalSpace.ext h.eq_of_nhds ?_
   simp only [tangentMap]
   rw [h.mfderiv_eq]

@@ -22,9 +22,10 @@ dt`.
 
 ## ii. Key results
 
-- `LagrangianSystem.action_ofNormedSpace`
+- `LagrangianSystem.action_ofNormedSpace`: the action is `∫ L (t, γ, γ̇) dt` over a time coordinate
 - `contDiff_timeCoord`, `contDiff_timeCoordVariation`: smoothness in a time coordinate
-- `action_variation`
+- `action_variation`: the action along a variation is an integral of `L` over the coordinate
+  variation field
 
 ## iii. Table of contents
 
@@ -83,7 +84,8 @@ lemma contDiff_timeCoordVariation {γ : Time → E} {t₀ t₁ : Time}
 ## C. The action of a variation
 -/
 
-/-- The action along a variation in the time coordinate based at `t₀`. -/
+/-- The action along the curve `h (s, ·)` of a variation is `∫ L (τ, H, ∂τ H) dτ`, for `H` the
+variation in the time coordinate based at `t₀`. -/
 lemma action_variation {γ : Time → E} {t₀ t₁ : Time} (L : Time × E × E → ℝ)
     (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L)
     (h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁) (ht : 0 ≤ t₁ -ᵥ t₀) (s : ℝ) :
@@ -93,6 +95,7 @@ lemma action_variation {γ : Time → E} {t₀ t₁ : Time} (L : Time × E × E 
   rw [LagrangianSystem.action_ofNormedSpace, intervalIntegral.integral_of_le ht,
     ← integral_Icc_eq_integral_Ioc]
   exact setIntegral_congr_fun measurableSet_Icc fun τ _ ↦ by
-    simp [← deriv_snd_eq_fderiv_apply (contDiff_timeCoordVariation h) s τ]
+    simp [← deriv_snd_eq_fderiv_apply
+      ((contDiff_timeCoordVariation h).differentiable (by simp) (s, τ))]
 
 end ClassicalMechanics

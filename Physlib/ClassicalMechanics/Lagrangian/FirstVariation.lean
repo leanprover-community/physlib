@@ -26,7 +26,7 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 - `contDiff_eulerLagrange`: smoothness of the Euler-Lagrange covector
 - `eulerLagrange_congr`: dependence on the germ of the curve only
 - `eulerLagrange_congr_lagrangian`: dependence on the Lagrangian near the curve only
-- `contDiff_integrand`: smoothness of the action integrand
+- `contDiff_actionIntegrand`: smoothness of the action integrand
 - `hasDerivAt_integral_variation`: first variation of the action
 
 ## iii. Table of contents
@@ -106,20 +106,23 @@ private lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff 
           canonicalMomentum L (fun σ ↦ H (0, σ)) τ
             (deriv (fun σ ↦ fderiv ℝ H (0, σ) (1, 0)) τ)) := by
   have hLd : Differentiable ℝ L := hL.differentiable (by simp)
+  have hHd : Differentiable ℝ H := hH.differentiable (by simp)
   have hφ := (hasFDerivAt_snd (p := ((0 : ℝ), τ))).prodMk
-    ((hH.differentiable (by simp) _).hasFDerivAt.prodMk
-      ((contDiff_fderiv_apply hH (0, 1)).differentiable (by simp) _).hasFDerivAt)
+    ((hHd _).hasFDerivAt.prodMk
+      (((hH.fderiv_right (m := ∞) (by simp)).clm_apply
+        (contDiff_const (c := ((0 : ℝ), (1 : ℝ))))).differentiable (by simp) _).hasFDerivAt)
   refine (congrArg (· (1, 0)) ((hLd _).hasFDerivAt.comp (0, τ) hφ).fderiv).trans ?_
   simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
     ContinuousLinearMap.coe_snd']
-  rw [← deriv_fderiv_snd hH 0 τ, fderiv_apply_zero_prod hLd]
-  simp only [eulerLagrange, canonicalMomentum, sub_apply, deriv_snd_eq_fderiv_apply hH 0]
+  rw [← deriv_fderiv_apply_comm (hH.of_le (by simp)) 0 τ, fderiv_apply_zero_prod (hLd _)]
+  simp only [eulerLagrange, canonicalMomentum, sub_apply, deriv_snd_eq_fderiv_apply (hHd _)]
   abel
 
 /-- The integrand `L(τ, H, ∂τ H)` of the action is smooth. -/
-lemma contDiff_integrand {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H) :
+lemma contDiff_actionIntegrand {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H) :
     ContDiff ℝ ∞ fun p : ℝ × ℝ ↦ L (p.2, H p, fderiv ℝ H p (0, 1)) :=
-  hL.comp (contDiff_snd.prodMk (hH.prodMk (contDiff_fderiv_apply hH (0, 1))))
+  hL.comp (contDiff_snd.prodMk (hH.prodMk
+    ((hH.fderiv_right (m := ∞) (by simp)).clm_apply contDiff_const)))
 
 /-- First variation of `∫ L(τ, H, ∂τ H) dτ` along a variation fixing the endpoints. -/
 lemma hasDerivAt_integral_variation {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H)
@@ -129,18 +132,24 @@ lemma hasDerivAt_integral_variation {L : ℝ × E × E → ℝ} (hL : ContDiff �
   set q : ℝ → E := fun σ ↦ H (0, σ)
   set V : ℝ → E := fun σ ↦ fderiv ℝ H (0, σ) (1, 0)
   have hVs : ContDiff ℝ ∞ V :=
-    (contDiff_fderiv_apply hH (1, 0)).comp (contDiff_const.prodMk contDiff_id)
+    ((hH.fderiv_right (m := ∞) (by simp)).clm_apply contDiff_const).comp
+      (contDiff_const.prodMk contDiff_id)
   have hqs : ContDiff ℝ ∞ q := hH.comp (contDiff_const.prodMk contDiff_id)
   have hPvs : ContDiff ℝ ∞ (canonicalMomentum L q) := contDiff_fderiv_partial_v hL hqs
-  have hbp := integral_by_parts_covector hPvs hVs T
-  rw [show V 0 = 0 from fderiv_apply_fst_eq_zero hH h0,
-    show V T = 0 from fderiv_apply_fst_eq_zero hH hT] at hbp
+  have hP1 : ContDiff ℝ 1 (canonicalMomentum L q) := hPvs.of_le (by simp)
+  have hV1 : ContDiff ℝ 1 V := hVs.of_le (by simp)
+  have hbp := integral_eq_sub_of_hasDerivAt (f := fun τ ↦ canonicalMomentum L q τ (V τ))
+    (fun τ _ ↦ (hP1.differentiable one_ne_zero τ).hasDerivAt.clm_apply
+      (hV1.differentiable one_ne_zero τ).hasDerivAt)
+    ((continuous_deriv_clm_apply_add hP1 hV1).intervalIntegrable 0 T)
+  rw [show V 0 = 0 from fderiv_apply_fst_eq_zero (hH.differentiable (by simp) _) h0,
+    show V T = 0 from fderiv_apply_fst_eq_zero (hH.differentiable (by simp) _) hT] at hbp
   refine (hasDerivAt_intervalIntegral_of_contDiff
-    ((contDiff_integrand hL hH).of_le (by simp)) 0 T 0).congr_deriv ?_
+    ((contDiff_actionIntegrand hL hH).of_le (by simp)) 0 T 0).congr_deriv ?_
   simp_rw [fderiv_integrand_apply hL hH]
   rw [integral_add (((contDiff_eulerLagrange hL hqs).continuous.clm_apply
     hVs.continuous).intervalIntegrable _ _)
-    ((continuous_deriv_clm_apply_add hPvs hVs).intervalIntegrable _ _), hbp]
+    ((continuous_deriv_clm_apply_add hP1 hV1).intervalIntegrable _ _), hbp]
   simp [V]
 
 end ClassicalMechanics

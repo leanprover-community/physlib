@@ -45,7 +45,7 @@ Requirements:
       The API shall prove that a critical point of the action satisfies the Euler-Lagrange
       equations in every chart containing it.
     done: true
-    location: "Physlib/ClassicalMechanics/Lagrangian/EulerLagrangeChart.lean (LagrangianSystem.eulerLagrange_coord_of_isCriticalPoint)"
+    location: "Physlib/ClassicalMechanics/Lagrangian/EulerLagrangeChart.lean (LagrangianSystem.eulerLagrange_chartLagrangian_of_isCriticalPoint)"
 
   - description: >
       The API shall prove that a smooth curve satisfying the Euler-Lagrange equations in every
