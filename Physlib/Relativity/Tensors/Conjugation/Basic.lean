@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Relativity.Tensors.Contraction.CrossToSlot
+public import Physlib.Relativity.Tensors.Contraction.Bilinear
 public import Physlib.Mathematics.Modules.ConjModule
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 
