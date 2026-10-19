@@ -25,7 +25,7 @@ commute.
 - `contDiff_fderiv_partial_snd`, `contDiff_fderiv_partial_thd`: smoothness of the partials of `f`
   along smooth curves
 - `deriv_snd_eq_fderiv_apply`, `deriv_fst_eq_fderiv_apply`: derivatives of the slices of `H`
-- `fderiv_apply_fst_eq_zero`: the `s`-derivative of `H` at `τ`
+- `fderiv_apply_fst_eq_zero`, `fderiv_apply_fst_of_eq_add_smul`: the `s`-derivative of `H` at `τ`
 - `continuous_deriv_clm_apply_add`: continuity of the Leibniz expression of a pairing
 
 ## iii. Table of contents
@@ -147,6 +147,13 @@ lemma fderiv_apply_fst_eq_zero {a : ℝ} (hH : DifferentiableAt ℝ H (0, a))
     (h : ∀ s, H (s, a) = H (0, a)) : fderiv ℝ H (0, a) (1, 0) = 0 := by
   rw [← deriv_fst_eq_fderiv_apply hH, funext h]
   simp
+
+/-- If `H (s, τ) = c + σ s • v` with `σ' 0 = 1`, the `s`-derivative of `H` at `(0, τ)` is `v`. -/
+lemma fderiv_apply_fst_of_eq_add_smul {τ : ℝ} {c v : F} {σ : ℝ → ℝ}
+    (hH : DifferentiableAt ℝ H (0, τ)) (hσ : DifferentiableAt ℝ σ 0) (hσ' : deriv σ 0 = 1)
+    (h : ∀ s, H (s, τ) = c + σ s • v) : fderiv ℝ H (0, τ) (1, 0) = v := by
+  rw [← deriv_fst_eq_fderiv_apply hH, funext h]
+  simp [deriv_smul_const hσ, hσ']
 
 /-!
 ## C. Pairings of curves
