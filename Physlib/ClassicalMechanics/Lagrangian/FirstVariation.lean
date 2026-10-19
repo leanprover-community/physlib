@@ -21,6 +21,7 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 
 ## ii. Key results
 
+- `canonicalMomentum`: the canonical momentum of a curve
 - `eulerLagrange`: the Euler-Lagrange covector of a curve
 - `contDiff_eulerLagrange`: smoothness of the Euler-Lagrange covector
 - `eulerLagrange_congr`: dependence on the germ of the curve only
@@ -30,7 +31,7 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 
 ## iii. Table of contents
 
-- A. The Euler-Lagrange covector
+- A. Canonical momentum and the Euler-Lagrange covector
 - B. First variation
 
 ## iv. References
@@ -48,13 +49,16 @@ namespace ClassicalMechanics
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : ℝ × ℝ → E}
 
 /-!
-## A. The Euler-Lagrange covector
+## A. Canonical momentum and the Euler-Lagrange covector
 -/
+
+/-- The canonical momentum `∂L/∂q̇` of a curve `q`. -/
+noncomputable def canonicalMomentum (L : ℝ × E × E → ℝ) (q : ℝ → E) (τ : ℝ) : E →L[ℝ] ℝ :=
+  fderiv ℝ (fun v ↦ L (τ, q τ, v)) (deriv q τ)
 
 /-- The Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` of a curve `q`. -/
 noncomputable def eulerLagrange (L : ℝ × E × E → ℝ) (q : ℝ → E) (τ : ℝ) : E →L[ℝ] ℝ :=
-  fderiv ℝ (fun x ↦ L (τ, x, deriv q τ)) (q τ) -
-    deriv (fun σ ↦ fderiv ℝ (fun v ↦ L (σ, q σ, v)) (deriv q σ)) τ
+  fderiv ℝ (fun x ↦ L (τ, x, deriv q τ)) (q τ) - deriv (canonicalMomentum L q) τ
 
 /-- The Euler-Lagrange covector of a smooth curve is smooth. -/
 lemma contDiff_eulerLagrange {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
@@ -65,7 +69,7 @@ lemma contDiff_eulerLagrange {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ 
 /-- The Euler-Lagrange covector at `τ` depends only on the germ of the curve at `τ`. -/
 lemma eulerLagrange_congr {L : ℝ × E × E → ℝ} {q g : ℝ → E} {τ : ℝ} (h : q =ᶠ[𝓝 τ] g) :
     eulerLagrange L q τ = eulerLagrange L g τ := by
-  unfold eulerLagrange
+  unfold eulerLagrange canonicalMomentum
   rw [h.deriv_eq, h.eq_of_nhds]
   congr 1
   refine EventuallyEq.deriv_eq ?_
@@ -76,7 +80,7 @@ lemma eulerLagrange_congr {L : ℝ × E × E → ℝ} {q g : ℝ → E} {τ : �
 lemma eulerLagrange_congr_lagrangian {L L' : ℝ × E × E → ℝ} {q : ℝ → E} {τ : ℝ} {N : Set E}
     (hN : IsOpen N) (hq : ∀ᶠ σ in 𝓝 τ, q σ ∈ N) (h : ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = L' p) :
     eulerLagrange L q τ = eulerLagrange L' q τ := by
-  unfold eulerLagrange
+  unfold eulerLagrange canonicalMomentum
   have hτ : q τ ∈ N := hq.self_of_nhds
   have h1 : (fun y ↦ L (τ, y, deriv q τ)) =ᶠ[𝓝 (q τ)] fun y ↦ L' (τ, y, deriv q τ) := by
     filter_upwards [hN.mem_nhds hτ] with y hy using h _ hy
@@ -96,9 +100,9 @@ lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ 
     (τ : ℝ) :
     fderiv ℝ (fun p : ℝ × ℝ ↦ L (p.2, H p, fderiv ℝ H p (0, 1))) (0, τ) (1, 0) =
       eulerLagrange L (fun σ ↦ H (0, σ)) τ (fderiv ℝ H (0, τ) (1, 0)) +
-        (deriv (fun σ ↦ fderiv ℝ (fun v ↦ L (σ, H (0, σ), v)) (deriv (fun σ' ↦ H (0, σ')) σ)) τ
+        (deriv (canonicalMomentum L fun σ ↦ H (0, σ)) τ
             (fderiv ℝ H (0, τ) (1, 0)) +
-          fderiv ℝ (fun v ↦ L (τ, H (0, τ), v)) (deriv (fun σ' ↦ H (0, σ')) τ)
+          canonicalMomentum L (fun σ ↦ H (0, σ)) τ
             (deriv (fun σ ↦ fderiv ℝ H (0, σ) (1, 0)) τ)) := by
   have hLd : Differentiable ℝ L := hL.differentiable (by simp)
   have hφ := (hasFDerivAt_snd (p := ((0 : ℝ), τ))).prodMk
@@ -108,7 +112,7 @@ lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ 
   simp only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
     ContinuousLinearMap.coe_snd']
   rw [← deriv_fderiv_snd hH 0 τ, fderiv_apply_zero_prod hLd]
-  simp only [eulerLagrange, sub_apply, fderiv_snd_apply hH 0]
+  simp only [eulerLagrange, canonicalMomentum, sub_apply, fderiv_snd_apply hH 0]
   abel
 
 /-- The integrand `L(τ, H, ∂τ H)` of the action is smooth. -/
@@ -126,7 +130,7 @@ lemma hasDerivAt_integral_variation {L : ℝ × E × E → ℝ} (hL : ContDiff �
   have hVs : ContDiff ℝ ∞ V :=
     (contDiff_fderiv_apply hH (1, 0)).comp (contDiff_const.prodMk contDiff_id)
   have hqs : ContDiff ℝ ∞ q := hH.comp (contDiff_const.prodMk contDiff_id)
-  have hPvs := contDiff_fderiv_partial_v hL hqs
+  have hPvs : ContDiff ℝ ∞ (canonicalMomentum L q) := contDiff_fderiv_partial_v hL hqs
   have hbp := integral_by_parts_covector hPvs hVs T
   rw [show V 0 = 0 from fderiv_fst_apply_eq_zero hH h0,
     show V T = 0 from fderiv_fst_apply_eq_zero hH hT] at hbp
