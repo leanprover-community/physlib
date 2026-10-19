@@ -5,6 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 /-!
@@ -69,6 +70,9 @@ lemma constantCoeff_iteratedPDeriv_taylorSeries (x₀ : SpaceTime) (f : SpaceTim
     (s : Multiset (Fin 1 ⊕ Fin 3)) :
     constantCoeff (iteratedPDeriv s (taylorSeries x₀ f)) = iteratedDeriv s f x₀ :=
   constantCoeff_iteratedPDeriv_ofDerivValues _ s
+
+TODO "Prove Borel's lemma for spacetime, showing that every formal complex series is the Taylor
+  series at any chosen point of a smooth complex-valued function on real spacetime."
 
 lemma taylorSeries_add (x₀ : SpaceTime) {f g : SpaceTime → ℂ} (hf : ContDiff ℝ ∞ f)
     (hg : ContDiff ℝ ∞ g) :
