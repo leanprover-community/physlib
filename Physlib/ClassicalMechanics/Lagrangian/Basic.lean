@@ -6,7 +6,6 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
 public import Physlib.SpaceAndTime.Time.Basic
 

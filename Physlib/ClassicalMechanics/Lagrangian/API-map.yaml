@@ -76,7 +76,7 @@ Requirements:
       The API shall define Lagrangians `L(q, q̇, t)` in generalised coordinates as Lagrangian
       systems.
     done: true
-    location: "Physlib/ClassicalMechanics/Lagrangian/NormedSpace.lean (LagrangianSystem.ofNormedSpace)"
+    location: "Physlib/ClassicalMechanics/Lagrangian/Basic.lean (LagrangianSystem.ofNormedSpace)"
 
   - description: >
       The API shall derive conservation of momentum and angular momentum from Noether's theorem.

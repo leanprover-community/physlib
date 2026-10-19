@@ -103,7 +103,7 @@ lemma contDiff_parametric_intervalIntegral_of_contDiff {n : ℕ} {M : Type}
 
 open Set in
 /-- Differentiation under the integral sign for a `C¹` integrand. -/
-lemma hasDerivAt_intervalIntegral_of_contDiff [CompleteSpace N] {F : ℝ × ℝ → N}
+lemma hasDerivAt_intervalIntegral_of_contDiff {F : ℝ × ℝ → N}
     (hF : ContDiff ℝ 1 F) (a b x₀ : ℝ) :
     HasDerivAt (fun x ↦ ∫ t in a..b, F (x, t))
       (∫ t in a..b, fderiv ℝ F (x₀, t) (1, 0)) x₀ := by
