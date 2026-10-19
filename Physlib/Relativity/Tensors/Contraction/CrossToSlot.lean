@@ -254,17 +254,17 @@ sesquilinear form (`ConjTensorSpecies.toSesqForm`).
 /-- The bilinear map `t, s ↦ M_{zw} tᶻ sʷ` of a rank-two tensor `M`: `t` of colour `x` contracted
 into the first index of `M`, `s` of colour `y` into the second. The colour conditions default to
 `rfl`. -/
-noncomputable def toLinearMap₂ (x y : C) {a d : C} (M : Tensor S ![a, d])
-    (hx : S.τ x = a := by rfl) (hy : S.τ y = d := by rfl) :
+noncomputable def toLinearMap₂ (x y : C) {cM : Fin 2 → C} (M : Tensor S cM)
+    (hx : S.τ x = cM 0 := by rfl) (hy : S.τ y = cM 1 := by rfl) :
     Tensor S ![x] →ₗ[k] Tensor S ![y] →ₗ[k] k :=
   ((crossToEnd (0 : Fin 1) (0 : Fin 1)
-    (by simp only [Function.update_self]; show S.τ d = y; rw [← hy, S.τ_τ_apply])).comp
+    (by simp only [Function.update_self]; show S.τ (cM 1) = y; rw [← hy, S.τ_τ_apply])).comp
     (crossToSlot (0 : Fin 1) (0 : Fin 2) hx M)).compr₂ toScalar
 
 /-- The components of `toLinearMap₂`: `∑ t_z M_{z w} s_w`, each contracted pair of labels matched
 by `dualIdxEquiv`. -/
-lemma toLinearMap₂_apply [HasContrDualBases S] {x y a d : C} (hx : S.τ x = a)
-    (hy : S.τ y = d) (M : Tensor S ![a, d]) (t : Tensor S ![x]) (s : Tensor S ![y]) :
+lemma toLinearMap₂_apply [HasContrDualBases S] {x y : C} {cM : Fin 2 → C} (hx : S.τ x = cM 0)
+    (hy : S.τ y = cM 1) (M : Tensor S cM) (t : Tensor S ![x]) (s : Tensor S ![y]) :
     toLinearMap₂ x y M hx hy t s =
       ∑ w : basisIdx y, ∑ z : basisIdx x,
         (basis ![x]).repr t (ComponentIdx.single.symm z) *
@@ -287,8 +287,8 @@ lemma toLinearMap₂_apply [HasContrDualBases S] {x y a d : C} (hx : S.τ x = a)
 
 /-- In the bases dual to the slots of `M` (the labels carried across each contraction by
 `dualIdxEquiv`), the matrix of `toLinearMap₂ M` is the component matrix of `M`. -/
-lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y a d : C}
-    (hx : S.τ x = a) (hy : S.τ y = d) (M : Tensor S ![a, d]) :
+lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y : C} {cM : Fin 2 → C}
+    (hx : S.τ x = cM 0) (hy : S.τ y = cM 1) (M : Tensor S cM) :
     LinearMap.toMatrix₂
       ((basis ![x]).reindex (ComponentIdx.single.trans (HasContrDualBases.dualIdxEquiv hx)))
       ((basis ![y]).reindex (ComponentIdx.single.trans (HasContrDualBases.dualIdxEquiv hy)))
