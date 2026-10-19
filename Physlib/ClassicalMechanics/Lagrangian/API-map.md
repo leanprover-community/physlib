@@ -20,6 +20,7 @@ variation of a curve γ on [t₀, t₁] is a smooth family of curves starting at
 and γ(t₁). [2] The action of γ is ∫ L(t, γ, γ̇) dt over [t₀, t₁], and γ is a critical point of
 the action when it is smooth and every variation has zero first variation of the action {3}.
 [3] On a normed space, the action is the integral of L(t, q, q̇) along the coordinate curve. [4]
+In a chart, the Lagrangian is a smooth function L(t, q, q̇) over the chart target. [6]
 
 ### Equations of motion
 
@@ -49,6 +50,8 @@ coming from a Riemannian metric on M. [TODO]
    `LagrangianSystem.action_eq_integral_coord`
 5. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
    `LagrangianSystem.IsCriticalPoint`, `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
+6. Physlib/ClassicalMechanics/Lagrangian/Chart.lean —
+   `LagrangianSystem.contDiffAt_chartLagrangian`
 
 ## References
 
