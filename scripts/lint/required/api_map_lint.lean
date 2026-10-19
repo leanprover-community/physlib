@@ -31,14 +31,9 @@ parts of an API map: its headers, its abstract, its content, and its Lean and te
 before the first section, unreadable reference entries); every other check is a definition on
 `APIMapData`.
 
-The declaration check is deliberately a source-presence check: it needs no Lean environment, so
-this executable imports nothing and builds in seconds. It verifies named declarations and notation
-anchors in the Lean file named by a reference. Claims about anonymous instances are reported as
-requiring a Lean-environment check, not treated as passes.
-
 Run it from the repository root with `lake exe api_map_lint`; pass `--verbose` to also see the
 notes (instance claims and Lean names in the prose), and `--repo <path>` to lint another checkout.
-It exits non-zero on any error.
+It exits non-zero on any error. It does not need a Lean environment built to perform its checks.
 
 ## ii. Key results
 
