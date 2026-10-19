@@ -4,11 +4,14 @@ that a push to the PR updates it instead of leaving a second one. Keep it first.
 
 Thank you for this pull-request (PR). If this is your first PR, welcome to the community!
 
+While you wait for a review, note that *you* can review PRs too; reviewing is not restricted to maintainers. Our [review guidelines](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md) explain what to look for.
+
+Over time, contributions such as reviews, maintenance and documentation are recorded on [contributions.physlib.io](https://contributions.physlib.io).
+
 Four main points:
 - Comment `-awaiting-author` on its own line to remove that label from your PR.
 - Comment `blocked-by-PR` or `-blocked-by-PR` on its own line to add or remove that label, respectively.
-- Reviewing other people's PRs speeds up the review of your own. See [review guidlines here](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md).
-- The first review might take several days to arrive. If in doubt message onn the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366).
+- The first review might take several days to arrive. If in doubt message on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366).
 
 <details>
 <summary><h2>For the author: Please read</h2></summary>
