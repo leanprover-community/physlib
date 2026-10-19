@@ -5,7 +5,6 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.Mathematics.Calculus.PartialDerivatives
 public import Physlib.Mathematics.ForMathlib.ContMDiffProd

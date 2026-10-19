@@ -20,7 +20,9 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.Chart
+public import Physlib.ClassicalMechanics.Lagrangian.ChartVariation
 public import Physlib.ClassicalMechanics.Lagrangian.EulerLagrange
+public import Physlib.ClassicalMechanics.Lagrangian.EulerLagrangeChart
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.ClassicalMechanics.Lagrangian.NormedSpace
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence

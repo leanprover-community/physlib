@@ -21,10 +21,13 @@ subset and `0` near every point outside the open set.
 
 - `IsCompact.exists_cutoff`
 - `contDiff_smul_of_cutoff`
+- `exists_contDiff_eventuallyEq`
+- `IsCompact.exists_eps_add_smul_mem`
 
 ## iii. Table of contents
 
 - A. Cutoff functions
+- B. Small perturbations
 
 ## iv. References
 
@@ -35,6 +38,7 @@ subset and `0` near every point outside the open set.
 
 open Set Topology Metric
 open scoped ContDiff
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-!
 ## A. Cutoff functions
@@ -72,3 +76,33 @@ lemma contDiff_smul_of_cutoff {Y F : Type*} [NormedAddCommGroup Y] [NormedSpace 
   · refine (contDiffAt_const (c := (0 : F))).congr_of_eventuallyEq ?_
     filter_upwards [notMem_tsupport_iff_eventuallyEq.1 hy] with z hz
     simp [hz]
+
+/-- A function smooth on an open set agrees near a compact subset with a globally smooth one. -/
+lemma exists_contDiff_eventuallyEq {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+    [FiniteDimensional ℝ X] {f : X → E} {O : Set X} (hO : IsOpen O)
+    (hf : ∀ x ∈ O, ContDiffAt ℝ ∞ f x) {C : Set X} (hC : IsCompact C) (hCO : C ⊆ O) :
+    ∃ g : X → E, ContDiff ℝ ∞ g ∧ ∀ x ∈ C, g =ᶠ[𝓝 x] f := by
+  obtain ⟨ρ, N, hρ, hNo, hCN, -, hρ1, hρ0⟩ := hC.exists_cutoff hO hCO
+  exact ⟨fun x ↦ ρ x • f x, contDiff_smul_of_cutoff hρ hρ0 hf, fun x hx ↦ by
+    filter_upwards [hNo.mem_nhds (hCN hx)] with q hq
+    simp [hρ1 _ hq]⟩
+
+/-!
+## B. Small perturbations
+-/
+
+/-- Small multiples of bounded vectors keep a compact subset of an open set inside it. -/
+lemma IsCompact.exists_eps_add_smul_mem {K N : Set E} (hK : IsCompact K) (hN : IsOpen N)
+    (hKN : K ⊆ N) (B : ℝ) :
+    ∃ ε : ℝ, 0 < ε ∧ ∀ y ∈ K, ∀ v : E, ‖v‖ ≤ B → ∀ r : ℝ, r ∈ Icc (-ε) ε → y + r • v ∈ N := by
+  obtain ⟨δ, hδ, hδN⟩ := hK.exists_thickening_subset_open hN hKN
+  refine ⟨δ / (|B| + 1), by positivity, fun y hy v hv r hr ↦ hδN ?_⟩
+  rw [mem_thickening_iff]
+  refine ⟨y, hy, ?_⟩
+  rw [dist_eq_norm, add_sub_cancel_left, norm_smul, Real.norm_eq_abs]
+  have hr' : |r| ≤ δ / (|B| + 1) := abs_le.2 ⟨by linarith [hr.1], hr.2⟩
+  have hB : ‖v‖ ≤ |B| := hv.trans (le_abs_self B)
+  calc |r| * ‖v‖ ≤ δ / (|B| + 1) * |B| := by gcongr
+    _ < δ := by
+      rw [div_mul_eq_mul_div, div_lt_iff₀ (by positivity)]
+      nlinarith [abs_nonneg B]

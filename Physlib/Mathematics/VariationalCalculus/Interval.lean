@@ -11,7 +11,7 @@ public import Physlib.Mathematics.ForMathlib.RealAnalysis
 /-!
 # Variational calculus on an interval
 
-The fundamental lemma of the calculus of variations for covector-valued integrands.
+The fundamental lemma for covector-valued integrands and differentiation of integrals.
 
 ## i. Overview
 
@@ -22,10 +22,12 @@ there.
 
 - `eq_zero_of_integral_contDiff_smul_eq_zero_of_isOpen`
 - `eq_zero_of_integral_contDiff_smul_eq_zero`
+- `hasDerivAt_intervalIntegral_of_sub_const`
 
 ## iii. Table of contents
 
 - A. The fundamental lemma
+- B. Differentiating integrals
 
 ## iv. References
 
@@ -76,3 +78,23 @@ lemma eq_zero_of_integral_contDiff_smul_eq_zero {f : ℝ → E →L[ℝ] ℝ} (h
     ∀ τ ∈ Icc 0 T, f τ = 0 :=
   hf.eqOn_Icc_of_eqOn_Ioo continuous_const hT
     (eq_zero_of_integral_contDiff_smul_eq_zero_of_isOpen hf isOpen_Ioo subset_rfl h)
+
+/-!
+## B. Differentiating integrals
+-/
+
+/-- If two interval-integrable integrands differ by an `s`-independent function, their integrals
+over `[a, b]` have the same `s`-derivative. -/
+lemma hasDerivAt_intervalIntegral_of_sub_const {F : Type*} [NormedAddCommGroup F]
+    [NormedSpace ℝ F] {G Gh : ℝ → ℝ → F} {a b x : ℝ} {f' : F}
+    (hG : IntervalIntegrable (G 0) volume a b) (hGh : ∀ s, IntervalIntegrable (Gh s) volume a b)
+    (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
+    (hd : HasDerivAt (fun s ↦ ∫ τ in a..b, Gh s τ) f' x) :
+    HasDerivAt (fun s ↦ ∫ τ in a..b, G s τ) f' x := by
+  have hA : ∀ s, ∫ τ in a..b, G s τ =
+      (∫ τ in a..b, Gh s τ) + ∫ τ in a..b, (G 0 τ - Gh 0 τ) := fun s ↦ by
+    rw [← integral_add (f := Gh s) (g := fun τ ↦ G 0 τ - Gh 0 τ)
+      (hGh s) (hG.sub (hGh 0))]
+    exact integral_congr fun τ _ ↦ by simp only [← hkey s τ, add_sub_cancel]
+  rw [show (fun s ↦ ∫ τ in a..b, G s τ) = _ from funext hA]
+  exact hd.add_const _
