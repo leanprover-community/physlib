@@ -19,7 +19,9 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
+public import Physlib.ClassicalMechanics.Lagrangian.CriticalPoint
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
+public import Physlib.ClassicalMechanics.Lagrangian.NormedSpace
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
@@ -185,6 +187,7 @@ public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint
 public import Physlib.Mathematics.VariationalCalculus.HasVarGradient
+public import Physlib.Mathematics.VariationalCalculus.Interval
 public import Physlib.Mathematics.VariationalCalculus.IsLocalizedfunctionTransform
 public import Physlib.Mathematics.VariationalCalculus.IsTestFunction
 public import Physlib.Meta.AllFilePaths
