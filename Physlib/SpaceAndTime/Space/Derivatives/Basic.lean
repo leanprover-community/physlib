@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Physlib.Mathematics.Distribution.TemperedDistribution
+public import Physlib.Meta.TODO.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
