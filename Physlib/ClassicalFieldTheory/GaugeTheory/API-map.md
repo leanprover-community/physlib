@@ -10,11 +10,11 @@ is `SU(3) × SU(2) × U(1)`.
 
 ## Content (Alpha)
 
-## Geometric formulation
+### Geometric formulation
 
 Geometrically a gauge theory is described in terms of a principal bundle with the gauge group as its fiber, and the gauge field is a connection on this principal bundle. [TODO]
 
-## Local formulation
+### Local formulation
 
 Despite the geometric formulation being global, in practice gauge theories are often described locally. This local formulation is what is commonly used in physics, particularly in the context of electromagnetism and the Standard Model. Here one is much less reliant on certain choices one
 has to make regarding for example the regularity of the fields associated with the principal bundle.
@@ -23,7 +23,7 @@ We first introduce a general concept called *local gauge data*, which abstractly
 all the information needed to describe gauge transformations and gauge fields at a
 single spacetime point.
 
-### Local gauge data
+#### Local gauge data
 
 If one only cares about local gauge transformations, one can ask what data is needed at a point x.
 Let G be the gauge group and 𝔤 its Lie algebra. A local Lagrangian sees a gauge transformation only
@@ -66,7 +66,7 @@ with all of the operations above. It intertwines Ad on 𝔤 and 𝔤', and commu
 Morphisms have identities and compose. [15] A homomorphism of Lie groups induces a morphism of local
 gauge data. [TODO]
 
-### The abelian theory
+#### The abelian theory
 
 In electromagnetism the gauge field is the electromagnetic potential {1}, a Lorentz-vector-valued
 field on spacetime, and its field strength is built from that potential. [2][3] A gauge
@@ -77,12 +77,12 @@ gradient with the Minkowski metric: the bare gradient of a scalar can have nonze
 strength. [6] Gauge transformations compose: the trivial shift is the identity and successive shifts
 add. [7] They commute with the action of the Lorentz group. [8]
 
-### The Standard Model gauge group
+#### The Standard Model gauge group
 
 The Standard Model gauge group {3} is SU(3) × SU(2) × U(1), with its projections onto the three
 factors and a central discrete subgroup of sixth roots of unity. [1]
 
-### The non-abelian theory
+#### The non-abelian theory
 
 A general gauge theory {4} admits an arbitrary Lie group as its structure group. [TODO] Its gauge
 field takes values in the Lie algebra of that group. [TODO] Matter fields carry a gauge-covariant
