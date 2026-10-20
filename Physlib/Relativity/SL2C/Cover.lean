@@ -5,7 +5,7 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
-public import Physlib.Relativity.SL2C.Basic
+public import Physlib.Relativity.SL2C.CayleyKlein
 public import Physlib.Relativity.LorentzGroup.Restricted.FromBoostRotation
 /-!
 # `SL(2, ℂ)` is a double cover of the restricted Lorentz group
@@ -27,9 +27,8 @@ triangular element. The proof follows the boost and rotation decomposition
 
 ## iii. Table of contents
 
-- A. Cayley–Klein parameters
-- B. Rotations
-- C. Boosts and surjectivity
+- A. Rotations
+- B. Boosts and surjectivity
 
 ## iv. References
 
@@ -50,56 +49,7 @@ noncomputable section
 
 /-!
 
-## A. Cayley–Klein parameters
-
--/
-
-/-- The element `!![a, -conj b; b, conj a]` of `SL(2, ℂ)`, given by its Cayley–Klein
-parameters `a b` with `‖a‖² + ‖b‖² = 1`. -/
-def cayleyKlein (a b : ℂ) (h : normSq a + normSq b = 1) : SL(2, ℂ) :=
-  ⟨!![a, -(starRingEnd ℂ b); b, starRingEnd ℂ a], by
-    rw [det_fin_two_of, neg_mul, sub_neg_eq_add, mul_conj, mul_comm _ b, mul_conj]
-    exact_mod_cast h⟩
-
-/-- The rotation matrix of the Cayley–Klein parameters `a b`, the spatial block of
-  `toLorentzGroup (cayleyKlein a b h)`. -/
-def cayleyKleinRotation (a b : ℂ) : Matrix (Fin 3) (Fin 3) ℝ :=
-  !![(a ^ 2 - b ^ 2).re, (a ^ 2 - b ^ 2).im, 2 * (a * starRingEnd ℂ b).re;
-    -(a ^ 2 + b ^ 2).im, (a ^ 2 + b ^ 2).re, -2 * (a * starRingEnd ℂ b).im;
-    -2 * (a * b).re, -2 * (a * b).im, normSq a - normSq b]
-
-/-- The spatial block of the image of a Cayley–Klein element. -/
-lemma toLorentzGroup_cayleyKlein_inr_inr (a b : ℂ) (h : normSq a + normSq b = 1)
-    (i j : Fin 3) : (toLorentzGroup (cayleyKlein a b h)).1 (Sum.inr i) (Sum.inr j) =
-      cayleyKleinRotation a b i j := by
-  apply ofReal_injective
-  rw [toLorentzGroup_eq_trace, trace_pauliSelfAdjoint'_mul_apply]
-  fin_cases i <;> fin_cases j <;>
-    simp [cayleyKlein, cayleyKleinRotation, pauliSelfAdjoint', pauliMatrix, mul_apply,
-      Fin.sum_univ_two] <;>
-    apply Complex.ext <;> simp [sq, normSq_apply] <;> ring
-
-/-- A Cayley–Klein element is unitary. -/
-lemma cayleyKlein_mem_unitaryGroup (a b : ℂ) (h : normSq a + normSq b = 1) :
-    (cayleyKlein a b h).1 ∈ unitaryGroup (Fin 2) ℂ := by
-  have h' : (normSq a : ℂ) + normSq b = 1 := by exact_mod_cast h
-  rw [mem_unitaryGroup_iff]
-  ext i j
-  fin_cases i <;> fin_cases j <;>
-    simp [cayleyKlein, mul_apply, Fin.sum_univ_two, mul_conj, ← h'] <;>
-    ring
-
-/-- The image of a Cayley–Klein element is a rotation. -/
-lemma toLorentzGroup_cayleyKlein_mem_rotations (a b : ℂ) (h : normSq a + normSq b = 1) :
-    toLorentzGroup (cayleyKlein a b h) ∈ LorentzGroup.Rotations 3 := by
-  refine ⟨?_, toLorentzGroup_det_one _⟩
-  rw [toLorentzGroup_inl_inl]
-  simp [cayleyKlein, Complex.sq_norm]
-  linarith
-
-/-!
-
-## B. Rotations
+## A. Rotations
 
 -/
 
@@ -207,7 +157,7 @@ lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
 
 /-!
 
-## C. Boosts and surjectivity
+## B. Boosts and surjectivity
 
 -/
 
