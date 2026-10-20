@@ -65,8 +65,8 @@ def monoclinic := Crystal.ofUnitCell (Fin 3 → ℤ) Unit
 noncomputable def monoclinicVectors (a b c₁ c₃ : ℝ) : Fin 3 → EuclideanSpace ℝ (Fin 3) :=
   ![!₂[a, 0, 0], !₂[0, b, 0], !₂[c₁, 0, c₃]]
 
-/-- The primitive vectors are independent for positive `a`, `b` and `c₃`. -/
-lemma monoclinicVectors_independent {a b c₁ c₃ : ℝ} (ha : 0 < a) (hb : 0 < b) (hc : 0 < c₃) :
+/-- The primitive vectors are independent for nonzero `a`, `b` and `c₃`. -/
+lemma monoclinicVectors_independent {a b c₁ c₃ : ℝ} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c₃ ≠ 0) :
     LinearIndependent ℝ (monoclinicVectors a b c₁ c₃) := by
   rw [Fintype.linearIndependent_iff]
   intro x h j
@@ -74,11 +74,11 @@ lemma monoclinicVectors_independent {a b c₁ c₃ : ℝ} (ha : 0 < a) (hb : 0 <
   have h1 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 1) h
   have h2 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 2) h
   simp [monoclinicVectors, Fin.sum_univ_three] at h0 h1 h2
-  have e2 : x 2 = 0 := h2.resolve_right hc.ne'
-  have e1 : x 1 = 0 := h1.resolve_right hb.ne'
+  have e2 : x 2 = 0 := h2.resolve_right hc
+  have e1 : x 1 = 0 := h1.resolve_right hb
   have e0 : x 0 = 0 := by
     rw [e2, zero_mul, add_zero] at h0
-    exact (mul_eq_zero.mp h0).resolve_right ha.ne'
+    exact (mul_eq_zero.mp h0).resolve_right ha
   fin_cases j <;> assumption
 
 /-- The bonds of the first shells for `a = 3`, `b = 5`, `c = (1, 0, 3)`, up to sign. -/
@@ -102,21 +102,21 @@ noncomputable def baseCentredMonoclinicVectors (a b c₁ c₃ : ℝ) :
     Fin 3 → EuclideanSpace ℝ (Fin 3) :=
   ![!₂[a / 2, -b / 2, 0], !₂[a / 2, b / 2, 0], !₂[c₁, 0, c₃]]
 
-/-- The primitive vectors are independent for positive `a`, `b` and `c₃`. -/
-lemma baseCentredMonoclinicVectors_independent {a b c₁ c₃ : ℝ} (ha : 0 < a) (hb : 0 < b)
-    (hc : 0 < c₃) : LinearIndependent ℝ (baseCentredMonoclinicVectors a b c₁ c₃) := by
+/-- The primitive vectors are independent for nonzero `a`, `b` and `c₃`. -/
+lemma baseCentredMonoclinicVectors_independent {a b c₁ c₃ : ℝ} (ha : a ≠ 0) (hb : b ≠ 0)
+    (hc : c₃ ≠ 0) : LinearIndependent ℝ (baseCentredMonoclinicVectors a b c₁ c₃) := by
   rw [Fintype.linearIndependent_iff]
   intro x h j
   have h0 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 0) h
   have h1 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 1) h
   have h2 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 2) h
   simp [baseCentredMonoclinicVectors, Fin.sum_univ_three] at h0 h1 h2
-  have e2 : x 2 = 0 := h2.resolve_right hc.ne'
+  have e2 : x 2 = 0 := h2.resolve_right hc
   rw [e2, zero_mul, add_zero] at h0
   have e0 : x 0 + x 1 = 0 := (mul_eq_zero.mp (by linear_combination h0 :
-    a / 2 * (x 0 + x 1) = 0)).resolve_left (by positivity)
+    a / 2 * (x 0 + x 1) = 0)).resolve_left (div_ne_zero ha two_ne_zero)
   have e1 : x 1 - x 0 = 0 := (mul_eq_zero.mp (by linear_combination h1 :
-    b / 2 * (x 1 - x 0) = 0)).resolve_left (by positivity)
+    b / 2 * (x 1 - x 0) = 0)).resolve_left (div_ne_zero hb two_ne_zero)
   fin_cases j <;> dsimp <;> linarith
 
 /-- The bonds of the first shells for `a = 4`, `b = 2`, `c = (1, 0, 3)`, up to sign, in the
@@ -140,22 +140,22 @@ def triclinic := Crystal.ofUnitCell (Fin 3 → ℤ) Unit
 noncomputable def triclinicVectors (a b₁ b₂ c₁ c₂ c₃ : ℝ) : Fin 3 → EuclideanSpace ℝ (Fin 3) :=
   ![!₂[a, 0, 0], !₂[b₁, b₂, 0], !₂[c₁, c₂, c₃]]
 
-/-- The primitive vectors are independent for positive `a`, `b₂` and `c₃`. -/
-lemma triclinicVectors_independent {a b₁ b₂ c₁ c₂ c₃ : ℝ} (ha : 0 < a) (hb : 0 < b₂)
-    (hc : 0 < c₃) : LinearIndependent ℝ (triclinicVectors a b₁ b₂ c₁ c₂ c₃) := by
+/-- The primitive vectors are independent for nonzero `a`, `b₂` and `c₃`. -/
+lemma triclinicVectors_independent {a b₁ b₂ c₁ c₂ c₃ : ℝ} (ha : a ≠ 0) (hb : b₂ ≠ 0)
+    (hc : c₃ ≠ 0) : LinearIndependent ℝ (triclinicVectors a b₁ b₂ c₁ c₂ c₃) := by
   rw [Fintype.linearIndependent_iff]
   intro x h j
   have h0 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 0) h
   have h1 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 1) h
   have h2 := congrArg (fun v : EuclideanSpace ℝ (Fin 3) => v 2) h
   simp [triclinicVectors, Fin.sum_univ_three] at h0 h1 h2
-  have e2 : x 2 = 0 := h2.resolve_right hc.ne'
+  have e2 : x 2 = 0 := h2.resolve_right hc
   have e1 : x 1 = 0 := by
     rw [e2, zero_mul, add_zero] at h1
-    exact (mul_eq_zero.mp h1).resolve_right hb.ne'
+    exact (mul_eq_zero.mp h1).resolve_right hb
   have e0 : x 0 = 0 := by
     rw [e1, e2, zero_mul, zero_mul, add_zero, add_zero] at h0
-    exact (mul_eq_zero.mp h0).resolve_right ha.ne'
+    exact (mul_eq_zero.mp h0).resolve_right ha
   fin_cases j <;> assumption
 
 /-- The bonds of the first shells for `(3, 0, 0)`, `(1, 4, 0)`, `(1, 1, 5)`, up to sign. -/
