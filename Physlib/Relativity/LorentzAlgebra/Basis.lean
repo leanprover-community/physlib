@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Prod
-public import Mathlib.Analysis.SpecialFunctions.Artanh
 public import Physlib.Relativity.LorentzAlgebra.Basic
 public import Physlib.Relativity.LorentzGroup.Boosts.Basic
 
@@ -163,28 +162,20 @@ lemma rotationGenerator_trace (i : Fin 3) :
 
 /-! ## C. Rapidity derivatives -/
 
-private lemma gamma_tanh (r : ℝ) : LorentzGroup.γ (Real.tanh r) = Real.cosh r := by
-  simpa only [LorentzGroup.γ, Real.artanh_tanh] using
-    (Real.cosh_artanh ⟨Real.neg_one_lt_tanh r, Real.tanh_lt_one r⟩).symm
-
-private lemma cosh_mul_tanh (r : ℝ) :
-    Real.cosh r * Real.tanh r = Real.sinh r := by
-  rw [Real.tanh_eq_sinh_div_cosh]
-  field_simp [ne_of_gt (Real.cosh_pos r)]
-
 /-- The tangent at zero of the finite boost curve parametrized by rapidity
 is the negative of the named boost generator. -/
 lemma hasDerivAt_boost_tanh_zero (i : Fin 3) :
-    HasDerivAt
-      (fun r : ℝ =>
-        (LorentzGroup.boost i (Real.tanh r) (Real.abs_tanh_lt_one r)).1)
+    HasDerivAt (fun r : ℝ => (LorentzGroup.boost i (Real.tanh r) (Real.abs_tanh_lt_one r)).1)
       (-boostGenerator i) 0 := by
+  have hcosh (r : ℝ) : Real.cosh r * Real.tanh r = Real.sinh r := by
+    rw [Real.tanh_eq_sinh_div_cosh]
+    field_simp [ne_of_gt (Real.cosh_pos r)]
   apply hasDerivAt_pi.mpr
   intro μ
   apply hasDerivAt_pi.mpr
   intro ν
   fin_cases i <;> fin_cases μ <;> fin_cases ν <;>
-    simp [LorentzGroup.boost, boostGenerator, gamma_tanh, cosh_mul_tanh, neg_mul]
+    simp [LorentzGroup.boost, boostGenerator, LorentzGroup.γ_tanh, hcosh, neg_mul]
   all_goals first
     | simpa only [Real.sinh_zero] using Real.hasDerivAt_cosh 0
     | simpa only [Real.cosh_zero] using (Real.hasDerivAt_sinh 0).fun_neg

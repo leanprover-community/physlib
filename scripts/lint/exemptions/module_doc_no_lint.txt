@@ -282,7 +282,6 @@ Physlib/Relativity/LorentzAlgebra/ExponentialMap.lean
 Physlib/Relativity/LorentzGroup/Basic.lean
 Physlib/Relativity/LorentzGroup/Boosts/Apply.lean
 Physlib/Relativity/LorentzGroup/Boosts/Axis.lean
-Physlib/Relativity/LorentzGroup/Boosts/Basic.lean
 Physlib/Relativity/LorentzGroup/Boosts/Generalized.lean
 Physlib/Relativity/LorentzGroup/Orthochronous/Basic.lean
 Physlib/Relativity/LorentzGroup/Proper.lean
