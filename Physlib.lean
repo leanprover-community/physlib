@@ -58,6 +58,7 @@ public import Physlib.CondensedMatter.ManyBody.Basic
 public import Physlib.CondensedMatter.Response.Basic
 public import Physlib.CondensedMatter.Thermoelectric.Basic
 public import Physlib.CondensedMatter.TightBindingChain.Basic
+public import Physlib.CondensedMatter.TightBindingChain.Spectrum
 public import Physlib.CondensedMatter.Topology.Basic
 public import Physlib.Cosmology.Basic
 public import Physlib.Cosmology.FLRW.Age
