@@ -74,39 +74,6 @@ lemma specialOrthogonal_eq_of_apply_two
   ext i j
   fin_cases i <;> fin_cases j <;> simp [hA, h02, h12, h4, h5]
 
-/-- Every unit vector is the image of the third axis under some Cayley–Klein rotation. -/
-lemma exists_cayleyKleinRotation_apply_two (n : Fin 3 → ℝ)
-    (hn : n 0 ^ 2 + n 1 ^ 2 + n 2 ^ 2 = 1) :
-    ∃ a b, ∃ _ : normSq a + normSq b = 1, ∀ i, cayleyKleinRotation a b i 2 = n i := by
-  by_cases h2 : n 2 = -1
-  · have h0 : n 0 = 0 := by nlinarith
-    have h1 : n 1 = 0 := by nlinarith
-    refine ⟨0, 1, by simp, fun i => ?_⟩
-    fin_cases i <;> simp [cayleyKleinRotation, h0, h1, h2]
-  have hpos : 0 < 1 + n 2 := by
-    rcases (show -1 ≤ n 2 by nlinarith).lt_or_eq with h | h
-    · linarith
-    · exact absurd h.symm h2
-  set r := √((1 + n 2) / 2)
-  have hr : r ^ 2 = (1 + n 2) / 2 := Real.sq_sqrt (by positivity)
-  have hr0 : 0 < r := Real.sqrt_pos.mpr (by positivity)
-  have hab : normSq ⟨r, 0⟩ + normSq ⟨n 0 / (2 * r), n 1 / (2 * r)⟩ = 1 := by
-    simp only [normSq_mk]
-    field_simp
-    nlinarith
-  refine ⟨⟨r, 0⟩, ⟨n 0 / (2 * r), n 1 / (2 * r)⟩, hab, fun i => ?_⟩
-  fin_cases i <;> simp [cayleyKleinRotation, normSq_mk]
-  · field_simp
-  · field_simp
-  · field_simp; nlinarith
-
-/-- The rotation part of a Cayley–Klein element. -/
-lemma ofSpecialOrthogonal_symm_cayleyKlein (a b : ℂ) (h : normSq a + normSq b = 1) :
-    (LorentzGroup.ofSpecialOrthogonal.symm
-      ⟨_, toLorentzGroup_cayleyKlein_mem_rotations a b h⟩).1 = cayleyKleinRotation a b := by
-  ext i j
-  exact toLorentzGroup_cayleyKlein_inr_inr a b h i j
-
 /-- Every rotation is the image of a unitary element of `SL(2, ℂ)`. -/
 lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
     ∃ M : SL(2, ℂ), M.1 ∈ unitaryGroup (Fin 2) ℂ ∧ toLorentzGroup M = Λ := by

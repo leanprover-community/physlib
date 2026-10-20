@@ -24,8 +24,12 @@ whose matrix is written explicitly in terms of `a` and `b`.
 - `toLorentzGroup_cayleyKlein_inr_inr` : the spatial block of the image of `cayleyKlein a b h`
   is `cayleyKleinRotation a b`.
 - `cayleyKlein_mem_unitaryGroup` : a Cayley–Klein element is unitary.
+- `exists_cayleyKleinRotation_apply_two` : every unit vector is the image of the third axis
+  under some Cayley–Klein rotation.
 - `toLorentzGroup_cayleyKlein_mem_rotations` : the image of a Cayley–Klein element is a
   rotation.
+- `ofSpecialOrthogonal_symm_cayleyKlein` : the rotation part of a Cayley–Klein element is
+  `cayleyKleinRotation a b`.
 
 ## iii. Table of contents
 
@@ -79,6 +83,32 @@ lemma toLorentzGroup_cayleyKlein_inr_inr (a b : ℂ) (h : normSq a + normSq b = 
       Fin.sum_univ_two] <;>
     apply Complex.ext <;> simp [sq, normSq_apply] <;> ring
 
+/-- Every unit vector is the image of the third axis under some Cayley–Klein rotation. -/
+lemma exists_cayleyKleinRotation_apply_two (n : Fin 3 → ℝ)
+    (hn : n 0 ^ 2 + n 1 ^ 2 + n 2 ^ 2 = 1) :
+    ∃ a b, ∃ _ : normSq a + normSq b = 1, ∀ i, cayleyKleinRotation a b i 2 = n i := by
+  by_cases h2 : n 2 = -1
+  · have h0 : n 0 = 0 := by nlinarith
+    have h1 : n 1 = 0 := by nlinarith
+    refine ⟨0, 1, by simp, fun i => ?_⟩
+    fin_cases i <;> simp [cayleyKleinRotation, h0, h1, h2]
+  have hpos : 0 < 1 + n 2 := by
+    rcases (show -1 ≤ n 2 by nlinarith).lt_or_eq with h | h
+    · linarith
+    · exact absurd h.symm h2
+  set r := √((1 + n 2) / 2)
+  have hr : r ^ 2 = (1 + n 2) / 2 := Real.sq_sqrt (by positivity)
+  have hr0 : 0 < r := Real.sqrt_pos.mpr (by positivity)
+  have hab : normSq ⟨r, 0⟩ + normSq ⟨n 0 / (2 * r), n 1 / (2 * r)⟩ = 1 := by
+    simp only [normSq_mk]
+    field_simp
+    nlinarith
+  refine ⟨⟨r, 0⟩, ⟨n 0 / (2 * r), n 1 / (2 * r)⟩, hab, fun i => ?_⟩
+  fin_cases i <;> simp [cayleyKleinRotation, normSq_mk]
+  · field_simp
+  · field_simp
+  · field_simp; nlinarith
+
 /-!
 
 ## B. Unitarity and rotations
@@ -102,6 +132,13 @@ lemma toLorentzGroup_cayleyKlein_mem_rotations (a b : ℂ) (h : normSq a + normS
   rw [toLorentzGroup_inl_inl]
   simp [cayleyKlein, Complex.sq_norm]
   linarith
+
+/-- The rotation part of a Cayley–Klein element. -/
+lemma ofSpecialOrthogonal_symm_cayleyKlein (a b : ℂ) (h : normSq a + normSq b = 1) :
+    (LorentzGroup.ofSpecialOrthogonal.symm
+      ⟨_, toLorentzGroup_cayleyKlein_mem_rotations a b h⟩).1 = cayleyKleinRotation a b := by
+  ext i j
+  exact toLorentzGroup_cayleyKlein_inr_inr a b h i j
 
 end
 
