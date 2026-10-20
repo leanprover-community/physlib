@@ -202,6 +202,18 @@ lemma conjEquiv_equivariant {c : C} (g : G) (v : V c) :
 We define the conjugation map `conjT` through its action on components, record that it conjugates
 components in place (`componentMap_conjT`), and show it is `conj`-semilinear and additive.
 
+Conventions for the index notation in this file. Indices are written in slot order: in `M_{IJ̄}`,
+`I` is the first slot (Lean slot `0`, colour `c 0`) and `J̄` the second (slot `1`, colour
+`c 1 = bar (c 0)`). As a tensor, `g = g_{IJ̄} dφᴵ ⊗ dφ̄^J̄` takes a holomorphic vector in its first
+slot and an antiholomorphic one in its second: `g(u, v̄) = g_{IJ̄} uᴵ v̄^J̄`. An index of a
+conjugate colour carries a bar or a dot (`Ī`, `α̇`), and conjugation adds a bar to each index,
+removing it from an index that already has one.
+
+For chiral scalar fields `φᴵ`, the basis vectors are the derivatives `e_I = ∂/∂φᴵ`, and their
+conjugates `ē_Ī = ∂/∂φ̄^Ī`. A Kähler metric is `g_{IJ̄} = ∂_I ∂_J̄ K = g(e_I, ē_J̄)`. Holomorphic
+index first is the standard convention, used throughout; it is a choice, since
+`∂_I ∂_J̄ K = ∂_J̄ ∂_I K` (Schwarz's theorem).
+
 -/
 
 /-- Reindex component labels of `bar ∘ c` back to `c`, slotwise via the cast `barIdx_eq`. -/
@@ -238,8 +250,9 @@ lemma conjT_apply {n : ℕ} {c : Fin n → C} (t : S.Tensor c) :
       = star (componentMap c t (S.componentReindex c b)) := by
   simp [conjT_apply, componentMap_ofComponents]
 
-/-- The component matrix of a conjugated rank-two tensor is the entrywise `star` of the original,
-with labels carried over by `barIdx_eq`. -/
+/-- Conjugating a rank-two tensor conjugates each component and bars both indices:
+`(T̄)_{ĪJ̄} = (T_{IJ})*`, where barring a barred index removes the bar. For example, `ψ_α χ_β` goes
+to `ψ̄_α̇ χ̄_β̇`, and a tensor `M_{IJ̄}` goes to `(M̄)_{ĪJ} = (M_{IJ̄})*`. -/
 lemma toMatrix_conjT {cs : Fin 2 → C} (t : S.Tensor cs) :
     toMatrix (S.conjT t) = ((toMatrix t).map star).submatrix
       (Equiv.cast (S.barIdx_eq (cs 0))) (Equiv.cast (S.barIdx_eq (cs 1))) := by
@@ -263,14 +276,14 @@ lemma conjT_basis {n : ℕ} {c : Fin n → C} (i : ComponentIdx (S := S.toTensor
     simp at h
   · simp
 
-/-- Conjugation of a one-slot tensor, at the colour `![bar x]`: `conjT` followed by the identity
-reindexing from `fun i => bar (![x] i)`. -/
+/-- Conjugation of a vector, `vᴵ ↦ v̄^Ī = (vᴵ)*`, landing at the conjugate colour. For example, a
+left-handed Weyl spinor `ψ_α` goes to the right-handed `ψ̄_α̇`. -/
 def conjSingleT (x : C) : S.Tensor ![x] →ₛₗ[starRingEnd k] S.Tensor ![S.bar x] :=
   (permT (S := S.toTensorSpecies) (c := fun i => S.bar ((![x] : Fin 1 → C) i))
     (c1 := ![S.bar x]) id (by simp [IsReindexing])).comp S.conjT
 
-/-- Conjugation sends the basis vector of a label of `x` to the basis vector of the same label,
-read at `bar x` through `barIdx_eq`. -/
+/-- Conjugation sends the basis vector `e_I` to `ē_Ī`, the basis vector of the conjugate colour with
+the same label. -/
 lemma conjSingleT_basis (x : C) (z : basisIdx x) :
     S.conjSingleT x (basis ![x] (ComponentIdx.single.symm z)) =
       basis ![S.bar x] (ComponentIdx.single.symm (cast (S.barIdx_eq x).symm z)) := by
@@ -429,10 +442,12 @@ A metric slot pairs a colour `c` with its conjugate `bar c`. `IsHermitian` is th
 conjugate-transpose, not a bare `g = g.flip`. The condition is fixed here as `IsHermitian`; a
 downstream metric layer instantiates it for a concrete pairing.
 
-For a rank-two tensor `M` whose second colour is the conjugate of its first, identifying the
-labels of the two colours (`barIdx_eq`) makes its component matrix square (`toSquareMatrix`).
-Conjugation swaps the two slots of `M`, `M_{IJ̄} = conj M_{JĪ}`, exactly when this matrix is
-Hermitian.
+A tensor `M_{IJ̄}` with one index and one conjugate index, such as a Kähler metric `g_{IJ̄}`, has
+the matrix of components `(M_{IJ̄})` (`toSquareMatrix`), regarded as a square matrix over the labels
+of `I`. Its entries are the components themselves. Lean needs this step because the labels of a
+colour and of its conjugate are different types, identified by `barIdx_eq`, and Hermiticity,
+positive-definiteness and the inverse are defined only for square matrices. `M` is Hermitian,
+`(M_{IJ̄})* = M_{JĪ}`, exactly when this matrix is.
 
 -/
 
@@ -443,8 +458,12 @@ def IsHermitian {c : C} (g : V c ⊗[k] V (S.bar c) →ₗ[k] k) : Prop :=
   ∀ (x : V c) (y : V (S.bar c)),
     g (x ⊗ₜ[k] y) = star (g (S.conjEquiv.symm y ⊗ₜ[k] S.conjEquiv x))
 
-/-- The component matrix of a rank-two tensor `M` with `bar (c 0) = c 1`, as a square matrix over
-the labels of `c 0`: the labels of `c 1` are identified with those of `c 0` through `barIdx_eq`. -/
+/-- The matrix `(M_{IJ̄})`, with entries unchanged, regarded as a square matrix over the labels of
+`I`. Lean needs this step because the labels of a colour and of its conjugate are different types,
+identified by `barIdx_eq`; only for a square matrix are Hermiticity, positive-definiteness and the
+inverse defined. Convention: the unbarred index is the row and the barred index the column, entry
+`(I, J)` being `M_{IJ̄}`, as physicists write the matrix. For a Kähler metric `g_{IJ̄}` it is the
+usual matrix `(g_{IJ̄})`. -/
 def toSquareMatrix {c : Fin 2 → C} (M : S.Tensor c) (hbar : S.bar (c 0) = c 1 := by rfl) :
     Matrix (basisIdx (c 0)) (basisIdx (c 0)) k :=
   (toMatrix M).reindex (Equiv.refl _) (Equiv.cast (hbar ▸ S.barIdx_eq (c 0)))
@@ -455,8 +474,9 @@ lemma toSquareMatrix_apply {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.T
       toMatrix M i ((Equiv.cast (hbar ▸ S.barIdx_eq (c 0))).symm j) :=
   rfl
 
-/-- Conjugation swaps the two slots of a rank-two tensor `M` with `bar (c 0) = c 1`,
-`M_{IJ̄} = conj M_{JĪ}`, exactly when its square component matrix is Hermitian. -/
+/-- For `M_{IJ̄}`, the conjugate `(M̄)_{ĪJ} = (M_{IJ̄})*` and the swapped tensor `M_{JĪ}` have the
+same index types, a barred index then an ordinary one. They are equal, `(M_{IJ̄})* = M_{JĪ}`,
+exactly when the matrix `(M_{IJ̄})` is Hermitian. A Kähler metric satisfies this. -/
 lemma conjT_eq_permT_swap_iff_toSquareMatrix_isHermitian {c : Fin 2 → C}
     (hbar : S.bar (c 0) = c 1) (M : S.Tensor c) :
     S.conjT M = permT ![1, 0] (IsReindexing.swap_of_eq hbar.symm
@@ -486,19 +506,17 @@ lemma conjT_eq_permT_swap_iff_toSquareMatrix_isHermitian {c : Fin 2 → C}
 
 ## G. Dual bases under conjugation
 
-In a species with dual bases, contracting the basis vector of `c` with label `i` against the basis
-vector of `τ c` with label `j` gives `1` when `j` is the label matched with `i` by
-`contrDualIdxEquiv c`, and `0` otherwise (`IsContrDualMatching`). The colours `bar c` and
-`τ (bar c) = bar (τ c)` have the same labels as `c` and `τ c` (`barIdx_eq`, `bar_tau`), and
-`conj_contrComm` says contraction commutes with conjugation. So the same pairs of labels
-contract to `1` at `bar c` as at `c`: the matching at `bar c` is the matching at `c`.
+A lower index contracts with an upper one, and the bases are dual: `e_α` contracted with `e^β` gives
+`δ_α^β`. This section shows that the conjugate bases are dual in the same way: `ē_α̇` contracted
+with `ē^β̇` gives `δ_α̇^β̇`. For example, for a vector `vᴵ` and a covector `w_I`,
+`(vᴵ w_I)* = v̄^Ī w̄_Ī`: the conjugate contraction pairs the same labels. This follows because
+contraction commutes with conjugation (`conj_contrComm`).
 
 -/
 
 open HasContrDualBases in
-/-- Basis vectors of `bar d` and `τ (bar d)` contract to `1` exactly when their labels, read as
-labels of `d` and `τ d` through `barIdx_eq` and `bar_tau`, are matched by `contrDualIdxEquiv d`,
-and to `0` otherwise. -/
+/-- The conjugate bases are dual: if `e_α` contracted with `e^β` is `δ_α^β`, then `ē_α̇` contracted
+with `ē^β̇` is `δ_α̇^β̇`. -/
 lemma isContrDualMatching_bar [HasContrDualBases S.toTensorSpecies] (d : C) :
     IsContrDualMatching S.toTensorSpecies (S.bar d)
       ((basisIdxCongr (S.bar_tau d)).symm.trans ((Equiv.cast (S.barIdx_eq (S.τ d))).trans
@@ -514,9 +532,8 @@ lemma isContrDualMatching_bar [HasContrDualBases S.toTensorSpecies] (d : C) :
   split_ifs <;> simp
 
 open HasContrDualBases in
-/-- `dualIdxEquiv h` sends a label of `c1` to the label of `c2` whose basis vector it contracts to
-`1` with. Conjugation preserves this pairing: read through `barIdx_eq`, the label of
-`c3 = bar c2` paired with `x` at `bar c1` is the label of `c2` paired with `x` at `c1`. -/
+/-- `dualIdxEquiv` sends a lower label `α` to the upper label `α` it contracts with to `1`.
+Conjugation commutes with this: the dotted label `α̇` pairs with the dotted upper label `α̇`. -/
 lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 c2 c3 : C}
     (h : S.τ c1 = c2) (h' : S.τ (S.bar c1) = c3) (hbar : S.bar c2 = c3) (x : basisIdx c1) :
     dualIdxEquiv h' (cast (S.barIdx_eq c1).symm x) =
@@ -531,33 +548,46 @@ lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 
 
 ## H. The sesquilinear form of a tensor
 
-A rank-two tensor `M` with `bar (c 0) = c 1` defines the sesquilinear form `s, t ↦ M(t, s̄)` on
-one-slot tensors of the dual colour: the bilinear map of `M` (`Tensor.toLinearMap₂`) with its
-arguments swapped and `s` conjugated (`conjSingleT`), so the form is conjugate-linear in its first
-argument, as in Mathlib. Conjugation is all this level adds. Its colour condition is
-`bar (c 0) = c 1`, next to the duality condition `τ x = c 0` of the bilinear map; for a concrete
-species both hold by `rfl` and are filled in, so the form of `M` on tensors of colour `x` is
-written `S.toSesqForm x M`. The matrix of the form in the basis labelled by `c 0` through
-`dualIdxEquiv` is the transposed square component matrix of `M`.
+A tensor `g_{IJ̄}` with one index and one conjugate index, such as a Kähler metric, defines a
+Hermitian form on vectors of one colour. By the slot conventions of §C, `g` takes a holomorphic
+vector `u` in its first slot and an antiholomorphic vector in its second,
+`g(u, v̄) = g_{IJ̄} uᴵ v̄^J̄`. To pair two vectors `s, t` of the same colour, one of them is
+conjugated so that it fits the second slot.
 
-`M` is Hermitian when this form is. For a sesquilinear form Mathlib calls this `LinearMap.IsSymm`,
-`conj (B s t) = B t s`. Mathlib's bridges between forms and matrices identify it with
-`Matrix.IsHermitian` of the square component matrix, and so with conjugation swapping the two slots
-of `M`. Likewise `M` is positive-definite when its form is (`LinearMap.IsPosDef`).
+Convention. We use Mathlib's sesquilinear forms, so that Mathlib's results on Hermitian and
+positive-definite forms apply. A Mathlib form `⟨s, t⟩` is conjugate-linear in its left argument `s`.
+So `s` is the vector that is conjugated: `s̄` goes into the second, barred slot of `g`, and `t` goes
+unchanged into the first slot,
+
+`⟨s, t⟩ = g(t, s̄) = g_{IJ̄} tᴵ s̄^J̄`.
+
+The order of the arguments of `⟨s, t⟩` is thus opposite to the order of the slots of `g`. Physics
+usually writes the form the other way round, `g_{IJ̄} uᴵ v̄^J̄`, conjugate-linear in its right
+argument `v`. This does not change norms or Hermiticity: `⟨t, t⟩ = g_{IJ̄} tᴵ t̄^J̄` is the norm
+squared of the kinetic term `g_{IJ̄} ∂φᴵ ∂φ̄^J̄`. It does change the matrix: on the basis
+`e_I = ∂/∂φᴵ`, `⟨e_I, e_J⟩ = g(e_J, ē_I) = g_{JĪ}`, the transpose of `(g_{IJ̄})`.
+
+`g` is Hermitian, `(g_{IJ̄})* = g_{JĪ}`, exactly when its form is (`LinearMap.IsSymm`,
+`⟨s, t⟩* = ⟨t, s⟩`), and positive-definite, `⟨t, t⟩ > 0` for `t ≠ 0`, exactly when its form is
+(`LinearMap.IsPosDef`). On a concrete species the colour conditions hold by `rfl`, so the form of
+`g` on vectors of colour `x` is written `S.toSesqForm x g`.
 
 -/
 
 open HasContrDualBases
 open scoped Matrix
 
-/-- The sesquilinear form `s, t ↦ M(t, s̄)` of a rank-two tensor `M` with `bar (c 0) = c 1`, on
-one-slot tensors `s, t` of a colour `x` dual to `c 0`. -/
+/-- The Hermitian form `⟨s, t⟩ = M(t, s̄) = M_{IJ̄} tᴵ s̄^J̄` of a tensor `M_{IJ̄}`, on vectors
+`s, t`. Convention: as in Mathlib it is conjugate-linear in its left argument `s`; `s̄` fills the
+second, barred slot of `M` and `t` the first, so the argument order is opposite to the slot order.
+-/
 def toSesqForm (x : C) {c : Fin 2 → C} (M : S.Tensor c) (hbar : S.bar (c 0) = c 1 := by rfl)
     (hx : S.τ x = c 0 := by rfl) : S.Tensor ![x] →ₗ⋆[k] S.Tensor ![x] →ₗ[k] k :=
   (toLinearMap₂ x (S.bar x) M hx (by rw [← hbar, ← hx, S.bar_tau])).flip.comp (S.conjSingleT x)
 
-/-- The matrix of `toSesqForm` in the basis of one-slot tensors labelled by `c 0` (through
-`dualIdxEquiv`) is the transposed square component matrix of `M`. -/
+/-- Since the left argument of the form fills the second slot of `M` (`toSesqForm`),
+`⟨e_I, e_J⟩ = M(e_J, ē_I) = M_{JĪ}`: the matrix of the form is the transpose of `(M_{IJ̄})`. For a
+Kähler metric, `⟨∂_I, ∂_J⟩ = ∂_J ∂_Ī K = g_{JĪ}`. -/
 lemma toMatrix₂_toSesqForm [HasContrDualBases S.toTensorSpecies] {x : C} {c : Fin 2 → C}
     (hbar : S.bar (c 0) = c 1) (hx : S.τ x = c 0) (M : S.Tensor c) :
     LinearMap.toMatrix₂ ((basis ![x]).reindex (ComponentIdx.single.trans (dualIdxEquiv hx)))
@@ -576,8 +606,7 @@ lemma toMatrix₂_toSesqForm [HasContrDualBases S.toTensorSpecies] {x : C} {c : 
     Equiv.symm_trans_apply, conjSingleT_basis, Matrix.transpose_apply, toSquareMatrix_apply]
   exact h
 
-/-- The sesquilinear form of `M` is Hermitian (`LinearMap.IsSymm`) exactly when the square
-component matrix of `M` is. -/
+/-- `⟨s, t⟩* = ⟨t, s⟩` for all `s, t` exactly when `(M_{IJ̄})* = M_{JĪ}`. -/
 lemma isSymm_toSesqForm_iff_toSquareMatrix_isHermitian [HasContrDualBases S.toTensorSpecies]
     {x : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (hx : S.τ x = c 0) (M : S.Tensor c) :
     (S.toSesqForm x M hbar hx).IsSymm ↔ (S.toSquareMatrix M hbar).IsHermitian := by
@@ -585,8 +614,8 @@ lemma isSymm_toSesqForm_iff_toSquareMatrix_isHermitian [HasContrDualBases S.toTe
     ((basis ![x]).reindex (ComponentIdx.single.trans (dualIdxEquiv hx))), toMatrix₂_toSesqForm,
     Matrix.isHermitian_transpose_iff]
 
-/-- The sesquilinear form of `M` is Hermitian (`LinearMap.IsSymm`) exactly when conjugation swaps
-the two slots of `M`, `M_{IJ̄} = conj M_{JĪ}`. -/
+/-- `⟨s, t⟩* = ⟨t, s⟩` for all `s, t` exactly when the conjugate of `M` equals `M` with its two
+indices swapped, `(M_{IJ̄})* = M_{JĪ}`. -/
 lemma isSymm_toSesqForm_iff_conjT_eq_permT [HasContrDualBases S.toTensorSpecies]
     {x : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (hx : S.τ x = c 0) (M : S.Tensor c) :
     (S.toSesqForm x M hbar hx).IsSymm ↔ S.conjT M = permT ![1, 0] (IsReindexing.swap_of_eq hbar.symm
@@ -604,8 +633,9 @@ section PosDef
 
 variable [PartialOrder k]
 
-/-- The sesquilinear form of `M` is positive-definite (`LinearMap.IsPosDef`) exactly when the square
-component matrix of `M` is. -/
+/-- The form is positive-definite, Hermitian with `M_{IJ̄} tᴵ t̄^J̄ > 0` for every `t ≠ 0`, exactly
+when the matrix `(M_{IJ̄})` is. A Kähler metric is positive-definite, which makes kinetic terms
+positive. -/
 lemma isPosDef_toSesqForm_iff_toSquareMatrix_posDef [HasContrDualBases S.toTensorSpecies]
     {x : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (hx : S.τ x = c 0) (M : S.Tensor c) :
     (S.toSesqForm x M hbar hx).IsPosDef ↔ (S.toSquareMatrix M hbar).PosDef := by

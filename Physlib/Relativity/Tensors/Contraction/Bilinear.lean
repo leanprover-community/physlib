@@ -59,9 +59,8 @@ sesquilinear form (`ConjTensorSpecies.toSesqForm`).
 
 -/
 
-/-- The bilinear map `t, s ↦ M_{zw} tᶻ sʷ` of a rank-two tensor `M`: `t` of colour `x` contracted
-into the first index of `M`, `s` of colour `y` into the second. The colour conditions default to
-`rfl`. -/
+/-- The bilinear map `t, s ↦ M_{μν} tᵘ sᵛ` of a rank-two tensor: `t` fills the first index of `M`,
+`s` the second. For the Minkowski metric this is the inner product `η_{μν} tᵘ sᵛ`. -/
 noncomputable def toLinearMap₂ (x y : C) {cM : Fin 2 → C} (M : Tensor S cM)
     (hx : S.τ x = cM 0 := by rfl) (hy : S.τ y = cM 1 := by rfl) :
     Tensor S ![x] →ₗ[k] Tensor S ![y] →ₗ[k] k :=
@@ -69,8 +68,7 @@ noncomputable def toLinearMap₂ (x y : C) {cM : Fin 2 → C} (M : Tensor S cM)
     (by simp only [Function.update_self]; show S.τ (cM 1) = y; rw [← hy, S.τ_τ_apply])).comp
     (crossToSlot (0 : Fin 1) (0 : Fin 2) hx M)).compr₂ toScalar
 
-/-- The components of `toLinearMap₂`: `∑ t_z M_{z w} s_w`, each contracted pair of labels matched
-by `dualIdxEquiv`. -/
+/-- In components, the bilinear map is `∑_{μ,ν} M_{μν} tᵘ sᵛ`. -/
 lemma toLinearMap₂_apply [HasContrDualBases S] {x y : C} {cM : Fin 2 → C} (hx : S.τ x = cM 0)
     (hy : S.τ y = cM 1) (M : Tensor S cM) (t : Tensor S ![x]) (s : Tensor S ![y]) :
     toLinearMap₂ x y M hx hy t s =
@@ -93,8 +91,8 @@ lemma toLinearMap₂_apply [HasContrDualBases S] {x y : C} {cM : Fin 2 → C} (h
     fin_cases j
     rfl
 
-/-- In the bases dual to the slots of `M` (the labels carried across each contraction by
-`dualIdxEquiv`), the matrix of `toLinearMap₂ M` is the component matrix of `M`. -/
+/-- On basis vectors, the bilinear map gives `M(e_μ, e_ν) = M_{μν}`, so its matrix is the component
+matrix `(M_{μν})`. -/
 lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y : C} {cM : Fin 2 → C}
     (hx : S.τ x = cM 0) (hy : S.τ y = cM 1) (M : Tensor S cM) :
     LinearMap.toMatrix₂
