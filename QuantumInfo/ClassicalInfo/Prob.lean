@@ -406,7 +406,7 @@ section negLog
 open ENNReal
 
 /-- Map a probability [0,1] to [0,+∞] with -log p. Special case that 0 maps to +∞ (not 0, as
-  Real.log does). This makes it `Antitone`.
+  Real.log does). This makes it strictly antitone.
 -/
 noncomputable def negLog : Prob → ENNReal :=
   fun p ↦ if p = 0 then ∞ else .ofNNReal ⟨-Real.log p,
@@ -415,23 +415,19 @@ noncomputable def negLog : Prob → ENNReal :=
 --Note that this is an em-dash `—` and not a minus `-`, to make the notation work.
 scoped notation "—log " => negLog
 
---TODO: Upgrade to `StrictAnti`. Even better: bundle negLog as `Prob ≃o ENNRealᵒᵈ`.
 set_option backward.isDefEq.respectTransparency false in
-lemma negLog_Antitone : Antitone negLog := by
-  intro x y h
-  dsimp [negLog]
-  split_ifs with h₁ h₂ h₂
-  · rfl
-  · subst y
-    exfalso
-    change x.1 ≤ 0 at h
-    have : ¬(x.1 = 0) := unitInterval.coe_ne_zero.mpr (by assumption)
-    have : 0 ≤ x.1 := zero_le
-    linarith +splitNe
-  · exact OrderTop.le_top _
-  · rw [ENNReal.coe_le_coe, toReal_le, toReal, neg_le_neg_iff]
-    apply (Real.log_le_log_iff _ _).mpr h
-    <;> exact lt_of_le_of_ne zero_le (unitInterval.coe_ne_zero.mpr (by assumption)).symm
+/-- Smaller probabilities have strictly greater negative logarithms, including at zero. -/
+lemma negLog_strictAnti : StrictAnti negLog := by
+  intro p q hpq
+  have hq : q ≠ 0 := ne_of_gt (zero_le.trans_lt hpq)
+  by_cases hp : p = 0
+  · simp [negLog, hp, hq]
+  · simp only [negLog, ite_eq_right hp, ite_eq_right hq, ENNReal.coe_lt_coe,
+      ← NNReal.coe_lt_coe]
+    exact neg_lt_neg (Real.log_lt_log (zero_lt_coe hp) hpq)
+
+lemma negLog_Antitone : Antitone negLog :=
+  negLog_strictAnti.antitone
 
 @[simp]
 lemma negLog_zero : —log (0 : Prob) = ⊤ := by
@@ -508,6 +504,27 @@ lemma negLog_eq_ofReal_neg_log {p : Prob} (hp : 0 < p) :
   split_ifs with h
   · simp_all
   · exact ENNReal.ofReal_eq_coe_nnreal (neg_nonneg_of_nonpos (Real.log_nonpos p0 p1))
+
+/-- Every extended nonnegative value is the negative logarithm of a probability. -/
+lemma negLog_surjective : Function.Surjective negLog := by
+  intro x
+  by_cases hx : x = ∞
+  · exact ⟨0, negLog_zero.trans hx.symm⟩
+  let p : Prob := ⟨Real.exp (-x.toReal), (Real.exp_pos _).le,
+    Real.exp_le_one_iff.mpr (neg_nonpos.mpr ENNReal.toReal_nonneg)⟩
+  refine ⟨p, ?_⟩
+  rw [← negLog_eq_ofReal_neg_log (p := p) (Real.exp_pos _)]
+  simp only [p, Real.log_exp, neg_neg, ENNReal.ofReal_toReal hx]
+
+/-- The negative logarithm identifies probabilities with extended nonnegative values in reverse
+order, sending zero to infinity and one to zero. -/
+def negLogOrderIso : Prob ≃o ENNRealᵒᵈ :=
+  StrictMono.orderIsoOfSurjective (fun p => OrderDual.toDual (negLog p))
+    negLog_strictAnti negLog_surjective
+
+@[simp]
+lemma negLogOrderIso_apply (p : Prob) : negLogOrderIso p = OrderDual.toDual (negLog p) :=
+  rfl
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
