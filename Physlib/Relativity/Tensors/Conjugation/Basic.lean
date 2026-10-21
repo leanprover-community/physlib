@@ -70,8 +70,6 @@ honest conjugate-transpose.
   forms.
 - `ConjTensorSpecies.isPosDef_toSesqForm_iff_toSquareMatrix_posDef`: `M` is positive-definite, i.e.
   its form is (`LinearMap.IsPosDef`), exactly when its square component matrix is `Matrix.PosDef`.
-- `ConjTensorSpecies.isUnit_det_toSquareMatrix_of_isPosDef`: over a field, the matrix `(M_{IJ̄})`
-  of a positive-definite `M` is invertible.
 
 ## iii. Table of contents
 
@@ -688,26 +686,6 @@ lemma isPosDef_toSesqForm_iff_toSquareMatrix_posDef [HasContrDualBases S.toTenso
     Matrix.PosDef.transpose_iff]
 
 end PosDef
-
-end ConjTensorSpecies
-
-namespace ConjTensorSpecies
-
-open Tensor HasContrDualBases
-
-variable {k : Type} [Field k] [StarRing k] [PartialOrder k] {C : Type} {G : Type} [Group G]
-    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
-    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
-    {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
-    (S : ConjTensorSpecies k C G V basisIdx rep b)
-
-/-- Over a field, the matrix `(M_{IJ̄})` of a positive-definite tensor is invertible. -/
-lemma isUnit_det_toSquareMatrix_of_isPosDef [HasContrDualBases S.toTensorSpecies] {x : C}
-    {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (hx : S.τ x = c 0) {M : S.Tensor c}
-    (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
-    IsUnit (S.toSquareMatrix M hbar).det :=
-  (Matrix.isUnit_iff_isUnit_det _).1
-    ((S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM).isUnit
 
 end ConjTensorSpecies
 end

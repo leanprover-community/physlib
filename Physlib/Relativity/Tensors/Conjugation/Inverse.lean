@@ -22,22 +22,29 @@ The inverse of a Kähler metric `g_{IJ̄}` is the tensor `g^{J̄I}` with two upp
 `g_{IJ̄} g^{J̄K} = δ_I^K`, `g^{J̄I} g_{IK̄} = δ^J̄_K̄`.
 
 Convention: the colours of the inverse are `![τ (c 1), τ (c 0)]`, so in slot order its barred index
-comes first, `g^{J̄I}`. `inverseT` defines it by matrix inversion: the matrix `(g^{J̄I})` is the
-inverse of `(g_{IJ̄})`. It is zero when `(g_{IJ̄})` is not invertible. The inverse of a Hermitian
-`g` is Hermitian (A) and of a positive-definite `g` positive-definite (B). When `(g_{IJ̄})` is
-invertible, the two contraction laws above hold and the inverse is unique (C), and `g` and its
-inverse lower and raise indices (D).
+comes first, `g^{J̄I}`. The usual `g^{IJ̄}` is this tensor with its slots swapped; barred first is
+the order in which `g_{IJ̄} g^{J̄K}` contracts adjacent slots, so the contraction laws need no
+recolouring of the inverse. Upper and lower indices describe the Kähler example; `inverseT` itself
+reverses the slots and dualises both colours. `inverseT` defines it by matrix inversion: the square
+matrix of `g^{J̄I}`, rows indexed by its first slot `J̄`, is the inverse of `(g_{IJ̄})`, both axes
+relabelled through `dualIdxEquiv`. It is zero when `(g_{IJ̄})` is not invertible. The inverse of a
+Hermitian `g` is Hermitian (A) and of a positive-definite `g` positive-definite (B). When
+`(g_{IJ̄})` is invertible, the two contraction laws above hold and the inverse is unique (C), and
+`g` and its inverse lower and raise indices (D).
 
 ## ii. Key results
 
 - `ConjTensorSpecies.inverseT` is the inverse `g^{J̄I}` of a tensor `g_{IJ̄}`.
-- `ConjTensorSpecies.toSquareMatrix_inverseT`: the matrix `(g^{J̄I})` is `(g_{IJ̄})⁻¹`.
+- `ConjTensorSpecies.toSquareMatrix_inverseT`: the square matrix of `g^{J̄I}` is `(g_{IJ̄})⁻¹`, both
+  axes relabelled through `dualIdxEquiv`.
 - `ConjTensorSpecies.isSymm_toSesqForm_inverseT` and
   `ConjTensorSpecies.isPosDef_toSesqForm_inverseT`: the inverse of a Hermitian or positive-definite
   `g` is Hermitian or positive-definite.
 - `ConjTensorSpecies.matMulT_inverseT` and `ConjTensorSpecies.inverseT_matMulT`:
   `g_{IJ̄} g^{J̄K} = δ_I^K` and `g^{J̄I} g_{IK̄} = δ^J̄_K̄`, products in the sense of `matMulT`.
-- `ConjTensorSpecies.eq_inverseT`: the inverse is unique.
+- `ConjTensorSpecies.eq_inverseT_of_matMulT_eq_unitTensor`: the inverse is unique.
+- `ConjTensorSpecies.isUnit_det_toSquareMatrix_of_isPosDef`: over a field, the matrix of a
+  positive-definite `g` is invertible.
 - `ConjTensorSpecies.lowerEquivT`: lowering an index with `g` and raising it with `g^{J̄I}`.
 
 ## iii. Table of contents
@@ -51,7 +58,7 @@ inverse lower and raise indices (D).
 
 ## iv. References
 
-- `Matrix.nonsing_inv`, in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`;
+- `Matrix.inv` and `Matrix.inv_def`, in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`;
 - `Matrix.PosDef.inv`, in `Mathlib/LinearAlgebra/Matrix/PosDef.lean`.
 
 -/
@@ -104,8 +111,9 @@ lemma toMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.Tens
         (dualIdxEquiv (S.τ_τ_apply (c 0))) :=
   toMatrix_fromMatrixT _ _ _
 
-/-- The matrix `(g^{J̄I})` of the inverse is `(g_{IJ̄})⁻¹`, rows and columns relabelled alike.
-When `(g_{IJ̄})` is invertible this gives `∑_I g^{J̄I} g_{IK̄} = δ_{JK}`. -/
+/-- The square matrix of the inverse, rows indexed by its first, barred slot `J̄`, is `(g_{IJ̄})⁻¹`
+with rows and columns relabelled alike. When `(g_{IJ̄})` is invertible this gives
+`∑_I g^{J̄I} g_{IK̄} = δ_{JK}`. -/
 lemma toSquareMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.Tensor c) :
     S.toSquareMatrix (S.inverseT M hbar) (S.bar_tau_of_bar hbar) =
       (S.toSquareMatrix M hbar)⁻¹.submatrix
@@ -143,23 +151,23 @@ lemma isSymm_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0)
 
 /-- The matrix of `g_{IJ̄} t^{J̄K}` is `(g_{IJ̄})` times the matrix of `t`, with the row label `J̄`
 of `t` read as `J`. -/
-lemma toMatrix_matMulT_eq_toSquareMatrix_mul {cs : Fin 2 → C} {e : C}
-    (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs) (t : S.Tensor ![S.τ (cs 1), e]) :
-    toMatrix (matMulT rfl M t) =
+lemma toMatrix_matMulT_eq_toSquareMatrix_mul {cs ds : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
+    (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs) (t : S.Tensor ds) :
+    toMatrix (matMulT h M t) =
       S.toSquareMatrix M hbar * (toMatrix t).submatrix
-        (dualIdxEquiv (rfl : S.τ (cs 1) = S.τ (cs 1)) ∘
-          (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm) (id : basisIdx e → _) := by
-  refine (toMatrix_matMulT rfl M t).trans ?_
+        (dualIdxEquiv h ∘ (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm)
+        (id : basisIdx (ds 1) → _) := by
+  refine (toMatrix_matMulT h M t).trans ?_
   rw [S.toMatrix_eq_submatrix_toSquareMatrix hbar M]
-  exact Matrix.submatrix_id_mul_right _ (t.toMatrix.submatrix (dualIdxEquiv rfl) id) id
+  exact Matrix.submatrix_id_mul_right _ (t.toMatrix.submatrix (dualIdxEquiv h) id) id
     (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0)))
 
 /-- If the matrix `(g_{IJ̄})` is invertible, `t ↦ g_{IJ̄} t^{J̄K}` is injective. -/
-lemma matMulT_right_injective {cs : Fin 2 → C} {c : C} (hbar : S.bar (cs 0) = cs 1)
-    (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det) :
-    Function.Injective (matMulT rfl M (ds := ![S.τ (cs 1), c])) := by
-  intro t t' h
-  have h := congrArg toMatrix h
+lemma matMulT_right_injective {cs ds : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
+    (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det) :
+    Function.Injective (matMulT h M) := by
+  intro t t' htt
+  have h := congrArg toMatrix htt
   rw [S.toMatrix_matMulT_eq_toSquareMatrix_mul hbar,
     S.toMatrix_matMulT_eq_toSquareMatrix_mul hbar] at h
   let := (S.toSquareMatrix M hbar).invertibleOfIsUnitDet hM
@@ -208,6 +216,13 @@ lemma isPosDef_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 
   rw [toSquareMatrix_inverseT]
   exact hM'.inv.submatrix ((Equiv.injective _).comp (Equiv.injective _))
 
+/-- Over a field, the matrix `(M_{IJ̄})` of a positive-definite tensor is invertible. -/
+lemma isUnit_det_toSquareMatrix_of_isPosDef {x : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
+    (hx : S.τ x = c 0) {M : S.Tensor c} (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
+    IsUnit (S.toSquareMatrix M hbar).det :=
+  (Matrix.isUnit_iff_isUnit_det _).1
+    ((S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM).isUnit
+
 end PosDef
 
 end ConjTensorSpecies
@@ -223,8 +238,8 @@ When the matrix `(g_{IJ̄})` is invertible, `g^{J̄I}` is the inverse of `g` und
 (`matMulT_inverseT`, `inverseT_matMulT`), each a product `matMulT` of two rank-two tensors.
 By `toMatrix_matMulT` these are `N N⁻¹ = 1` and `N⁻¹ N = 1` for `N = (g_{IJ̄})`. Since
 multiplication by `g` is injective (`matMulT_right_injective`), `g^{J̄K}` is the only tensor
-satisfying the first law (`eq_inverseT`). The unit tensor `δ` is defined over `RCLike` scalars, so
-this section and D work over `RCLike` scalars.
+satisfying the first law (`eq_inverseT_of_matMulT_eq_unitTensor`). The unit tensor `δ` is defined
+over `RCLike` scalars, so this section and D work over `RCLike` scalars.
 
 -/
 
@@ -246,9 +261,11 @@ lemma matMulT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Te
     matMulT rfl M (S.inverseT M hbar) =
       permT id (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply (cs 0)))
         (unitTensor (S := S.toTensorSpecies) (S.τ (cs 0))) := by
-  refine toMatrix_injective ((S.toMatrix_matMulT_eq_toSquareMatrix_mul hbar M _).trans (Eq.trans ?_
-    (toMatrix_permT_unitTensor (S := S.toTensorSpecies) (σ := id) _ (fun _ => rfl) _).symm))
+  refine toMatrix_injective ((S.toMatrix_matMulT_eq_toSquareMatrix_mul hbar rfl M _).trans
+    (Eq.trans ?_
+      (toMatrix_permT_unitTensor (S := S.toTensorSpecies) (σ := id) _ (fun _ => rfl) _).symm))
   rw [toMatrix_inverseT]
+  dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one]
   ext x y
   -- `submatrix_apply` keys through the `![…]` colour lists only with this option.
   set_option backward.isDefEq.respectTransparency false in
@@ -279,13 +296,14 @@ lemma inverseT_matMulT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Te
 
 /-- The inverse is unique: if `(g_{IJ̄})` is invertible and `g_{IJ̄} t^{J̄K} = δ_I^K`, then `t` is
 the inverse `g^{J̄K}`. -/
-lemma eq_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
-    (hM : IsUnit (S.toSquareMatrix M hbar).det) {t : S.Tensor ![S.τ (cs 1), S.τ (cs 0)]}
+lemma eq_inverseT_of_matMulT_eq_unitTensor {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
+    (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det)
+    {t : S.Tensor ![S.τ (cs 1), S.τ (cs 0)]}
     (ht : matMulT rfl M t =
       permT id (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply (cs 0)))
         (unitTensor (S := S.toTensorSpecies) (S.τ (cs 0)))) :
     t = S.inverseT M hbar :=
-  S.matMulT_right_injective hbar M hM (ht.trans (S.matMulT_inverseT hbar M hM).symm)
+  S.matMulT_right_injective hbar rfl M hM (ht.trans (S.matMulT_inverseT hbar M hM).symm)
 
 /-!
 
@@ -300,26 +318,28 @@ these mutually inverse.
 /-- Lowering slot `i` with `g_{IJ̄}`, as a linear equivalence with inverse raising by `g^{J̄I}`:
 `t^{…I…} ↦ g_{IJ̄} t^{…I…}`, the upper index `I` (colour `τ (cs 0)`) replaced in place by the
 lower index `J̄` (colour `cs 1`). Convention: `t` contracts with the first index of `g`. -/
-def lowerEquivT {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
-    (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det) (i : Fin (nA + 1))
-    (he : c i = S.τ (cs 0)) :
-    S.Tensor c ≃ₗ[k] S.Tensor (Function.update c i (cs 1)) :=
-  crossToSlotEquiv i he ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) rfl M (S.inverseT M hbar)
-    (S.matMulT_inverseT hbar M hM) ((S.inverseT_matMulT hbar M hM).trans (permT_id_self _).symm)
+def lowerEquivT {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1)
+    (hM : IsUnit (S.toSquareMatrix M hbar).det) :
+    {n : ℕ} → {c : Fin n → C} → (i : Fin n) → (he : c i = S.τ (cs 0)) →
+      S.Tensor c ≃ₗ[k] S.Tensor (Function.update c i (cs 1))
+  | 0, _, i, _ => i.elim0
+  | _ + 1, _, i, he =>
+    crossToSlotEquiv i he ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) rfl M (S.inverseT M hbar)
+      (S.matMulT_inverseT hbar M hM) ((S.inverseT_matMulT hbar M hM).trans (permT_id_self _).symm)
 
 @[simp]
-lemma lowerEquivT_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C}
-    (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det)
+lemma lowerEquivT_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
+    (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)
     (i : Fin (nA + 1)) (he : c i = S.τ (cs 0)) (t : S.Tensor c) :
-    S.lowerEquivT hbar M hM i he t =
+    S.lowerEquivT M hbar hM i he t =
       crossToSlot i 0 ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) M t :=
   rfl
 
 @[simp]
-lemma lowerEquivT_symm_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C}
-    (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det)
+lemma lowerEquivT_symm_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
+    (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)
     (i : Fin (nA + 1)) (he : c i = S.τ (cs 0)) (t : S.Tensor (Function.update c i (cs 1))) :
-    (S.lowerEquivT hbar M hM i he).symm t =
+    (S.lowerEquivT M hbar hM i he).symm t =
       crossToSlotInv (S := S.toTensorSpecies) (d := cs 1) i he rfl (S.inverseT M hbar) t :=
   rfl
 
