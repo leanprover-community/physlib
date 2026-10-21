@@ -8,7 +8,7 @@ import Physlib.Meta.TODO.Basic
 import Mathlib.Lean.CoreM
 import Physlib.Meta.Informal.Post
 import Physlib.Meta.Informal.SemiFormal
-import Physlib.Meta.Linters.Sorry
+import Physlib.Meta.Linters.Pseudo
 /-!
 
 # Creates TODO yml file from the TODO items.

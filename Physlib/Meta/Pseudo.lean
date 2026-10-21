@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Linters.Pseudo
 /-!
 
 # Meta results regarding `sorry` and `pseudo` attributions

@@ -6,7 +6,7 @@ Authors: Luis Gabriel C. Bariuan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Linters.Pseudo
 public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv

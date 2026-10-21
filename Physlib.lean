@@ -188,14 +188,14 @@ public import Physlib.Meta.Informal.Basic
 public import Physlib.Meta.Informal.Post
 public import Physlib.Meta.Informal.SemiFormal
 public import Physlib.Meta.Linters.DefsWithUnderscore
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Linters.Pseudo
 public import Physlib.Meta.Notes.Basic
 public import Physlib.Meta.Notes.HTMLNote
 public import Physlib.Meta.Notes.NoteFile
 public import Physlib.Meta.Notes.ToHTML
+public import Physlib.Meta.Pseudo
 public import Physlib.Meta.Remark.Basic
 public import Physlib.Meta.Remark.Properties
-public import Physlib.Meta.Sorry
 public import Physlib.Meta.TODO.Basic
 public import Physlib.Meta.TODO.Global
 public import Physlib.Meta.TransverseTactics
