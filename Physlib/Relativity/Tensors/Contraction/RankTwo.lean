@@ -10,7 +10,7 @@ public import Physlib.Relativity.Tensors.ComponentIdx.Single
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 /-!
 
-# The bilinear map of a rank-two tensor
+# The bilinear map and the product of rank-two tensors
 
 ## i. Overview
 
@@ -18,16 +18,28 @@ A rank-two tensor `M` defines a bilinear map on one-slot tensors by contracting 
 each of its slots, `t, s ↦ M_{zw} tᶻ sʷ`. In the bases dual to the slots of `M` the matrix of this
 map is the component matrix `toMatrix M`.
 
+Two rank-two tensors multiply like matrices. `matMulT h a b` contracts the second index of `a` with
+the first index of `b`, `a_{IJ} b^{JK}`, where `h : S.τ (cs 1) = ds 0` records that the two indices
+are dual. The result carries the colours `![cs 0, ds 1]` of the surviving indices `I` and `K`.
+`crossToEnd`, which contracts at any slots and ranks, gives the same tensor at the colour list
+`Fin.append (cs ∘ (Fin.last 1).succAbove) (ds ∘ (0 : Fin 2).succAbove)`, which equals
+`![cs 0, ds 1]` only propositionally. `matMulT` recolours once, so that statements about products,
+such as `g_{IJ̄} g^{J̄K} = δ_I^K`, need no further cast. In components the product is the matrix
+product, `toMatrix_matMulT`.
+
 ## ii. Key results
 
 - `TensorSpecies.Tensor.toLinearMap₂` : the bilinear map `t, s ↦ M_{zw} tᶻ sʷ` of a rank-two
     tensor, with its component formula `toLinearMap₂_apply`.
 - `TensorSpecies.Tensor.toMatrix₂_toLinearMap₂` : its matrix in the dual bases is the component
     matrix of `M`.
+- `TensorSpecies.Tensor.matMulT` : the product `a_{IJ} b^{JK}` of two rank-two tensors, with
+    `toMatrix_matMulT`, its matrix is the product of the component matrices.
 
 ## iii. Table of contents
 
 - A. Pairing a rank-two tensor with two vectors
+- B. The product of two rank-two tensors
 
 ## iv. References
 
@@ -102,6 +114,51 @@ lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y : C} {cM : Fin 2 →
   ext z w
   rw [LinearMap.toMatrix₂_apply, toLinearMap₂_apply]
   simp [Finsupp.single_apply, -HasContrDualBases.dualIdxEquiv_apply]
+
+/-!
+
+## B. The product of two rank-two tensors
+
+-/
+
+/-- The product `a_{IJ} b^{JK}` of two rank-two tensors: the second index of `a` contracted with
+the first index of `b`, where `h : S.τ (cs 1) = ds 0`. The surviving indices `I` and `K` keep
+their colours, `![cs 0, ds 1]`. -/
+noncomputable def matMulT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) :
+    Tensor S cs →ₗ[k] Tensor S ds →ₗ[k] Tensor S ![cs 0, ds 1] :=
+  (crossToEnd (Fin.last 1) (0 : Fin 2) h).compr₂
+    (permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl))
+
+/-- The product is the cross contraction of the last slot of `a` with the first slot of `b`,
+recoloured to `![cs 0, ds 1]`. -/
+lemma matMulT_apply {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (a : Tensor S cs)
+    (b : Tensor S ds) :
+    matMulT h a b = permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl)
+      (crossToEnd (Fin.last 1) (0 : Fin 2) h a b) :=
+  rfl
+
+/-- Cross contraction of the last slot of `a` with the first slot of `b` is their product,
+recoloured back to the colour list `crossToEnd` produces. -/
+lemma crossToEnd_eq_permT_matMulT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (a : Tensor S cs)
+    (b : Tensor S ds) :
+    crossToEnd (Fin.last 1) (0 : Fin 2) h a b =
+      permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl) (matMulT h a b) := by
+  rw [matMulT_apply, permT_permT]
+  exact (permT_congr_eq_id _ _ _ rfl).symm
+
+/-- The matrix of a product is the product of the matrices, the middle labels matched by
+`HasContrDualBases.dualIdxEquiv`. -/
+lemma toMatrix_matMulT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
+    (a : Tensor S cs) (b : Tensor S ds) :
+    toMatrix (matMulT h a b) =
+      toMatrix a * (toMatrix b).submatrix (HasContrDualBases.dualIdxEquiv h) id := by
+  obtain ⟨c0, c1, rfl⟩ : ∃ c0 c1, cs = ![c0, c1] := ⟨cs 0, cs 1, by funext i; fin_cases i <;> rfl⟩
+  obtain ⟨c2, c3, rfl⟩ : ∃ c2 c3, ds = ![c2, c3] := ⟨ds 0, ds 1, by funext i; fin_cases i <;> rfl⟩
+  ext y0 y3
+  refine (permT_basis_repr_of_id (fun _ => rfl) _ _ _).trans ((congrArg _ ?_).trans
+    ((crossToEnd_pair_basis_repr h a b y0 y3).trans rfl))
+  funext i
+  fin_cases i <;> rfl
 
 end Tensor
 
