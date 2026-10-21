@@ -15,15 +15,15 @@ rev = "v4.35.0"
 
 [[lean_lib]]
 name = "Physlib"
-moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_lib]]
 name = "PhyslibAlpha"
-moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_lib]]
 name = "QuantumInfo"
-moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_exe]]
 name = "get_cache"
