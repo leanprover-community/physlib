@@ -494,11 +494,11 @@ public import Physlib.Relativity.Tensors.Conjugation.Basic
 public import Physlib.Relativity.Tensors.Constructors
 public import Physlib.Relativity.Tensors.Contraction.Basic
 public import Physlib.Relativity.Tensors.Contraction.Basis
-public import Physlib.Relativity.Tensors.Contraction.Bilinear
 public import Physlib.Relativity.Tensors.Contraction.CrossToEnd
 public import Physlib.Relativity.Tensors.Contraction.CrossToSlot
 public import Physlib.Relativity.Tensors.Contraction.Products
 public import Physlib.Relativity.Tensors.Contraction.Pure
+public import Physlib.Relativity.Tensors.Contraction.RankTwo
 public import Physlib.Relativity.Tensors.Contraction.SuccSuccAbove
 public import Physlib.Relativity.Tensors.Contraction.UnitTensorContraction
 public import Physlib.Relativity.Tensors.Dual
