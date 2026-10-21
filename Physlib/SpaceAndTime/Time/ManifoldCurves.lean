@@ -62,7 +62,7 @@ lemma contMDiffAt_iff_contDiffAt_vadd (γ : Time → F) (x : Time) (n : ℕ∞ω
     continuousAt_of_continuousAt_vadd h.continuousAt
 
 /-- A curve into a normed space is differentiable at `x` iff its coordinate curve is at `0`. -/
-private lemma mdifferentiableAt_iff_differentiableAt_vadd (γ : Time → F) (x : Time) :
+lemma mdifferentiableAt_iff_differentiableAt_vadd (γ : Time → F) (x : Time) :
     MDifferentiableAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ x ↔ DifferentiableAt ℝ (fun τ : ℝ ↦ γ (τ +ᵥ x)) 0 := by
   rw [mdifferentiableAt_iff]
   simpa [Function.comp_def, differentiableWithinAt_univ] using fun h ↦
@@ -89,7 +89,7 @@ lemma contMDiff_iff_contDiff_vadd (γ : Time → F) (t₀ : Time) (n : ℕ∞ω)
 
 /-- A curve into a normed space is differentiable at `s +ᵥ t₀` iff its coordinate curve based
 at `t₀` is differentiable at `s`. -/
-private lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : ℝ) :
+lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : ℝ) :
     MDifferentiableAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ (s +ᵥ t₀) ↔
       DifferentiableAt ℝ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s := by
   rw [mdifferentiableAt_iff_differentiableAt_vadd, vadd_vadd_comp]
@@ -100,7 +100,7 @@ private lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : �
 -/
 
 /-- A curve read in the extended chart at `x` is its coordinate curve based at `x`. -/
-private lemma writtenInExtChartAt_eq (γ : Time → F) (x : Time) :
+lemma writtenInExtChartAt_eq_vadd (γ : Time → F) (x : Time) :
     writtenInExtChartAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) x γ = fun τ : ℝ ↦ γ (τ +ᵥ x) := by
   ext τ; simp [writtenInExtChartAt]
 
@@ -109,7 +109,7 @@ equals the ordinary derivative of the coordinate curve at `s`. -/
 lemma mfderiv_eq_deriv_vadd (γ : Time → F) (t₀ : Time) (s : ℝ) :
     mfderiv 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ (s +ᵥ t₀) (1 : ℝ) = deriv (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s := by
   by_cases h : MDifferentiableAt 𝓘(ℝ, ℝ) 𝓘(ℝ, F) γ (s +ᵥ t₀)
-  · simp only [mfderiv, h, ↓reduceIte, writtenInExtChartAt_eq, extChartAt_apply,
+  · simp only [mfderiv, h, ↓reduceIte, writtenInExtChartAt_eq_vadd, extChartAt_apply,
       ModelWithCorners.range_eq_univ, fderivWithin_univ]
     rw [vsub_self]
     change fderiv ℝ (fun τ : ℝ ↦ γ (τ +ᵥ (s +ᵥ t₀))) 0 1 = _
