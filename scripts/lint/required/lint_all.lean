@@ -41,7 +41,7 @@ def main (args : List String) : IO UInt32 := do
   println! todoCheck.stdout
 
   println! "\x1b[36m(5/7) Sorry and pseudo attribute linter \x1b[0m"
-  let sorryPseudoCheck ← IO.Process.output {cmd := "lake", args := #["exe", "sorry_lint"]}
+  let sorryPseudoCheck ← IO.Process.output {cmd := "lake", args := #["exe", "pseudo_lint"]}
   println! sorryPseudoCheck.stdout
   println! sorryPseudoCheck.stderr
 

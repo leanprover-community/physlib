@@ -65,7 +65,7 @@ srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "sorry_lint"
+name = "pseudo_lint"
 srcDir = "scripts/lint/required"
 supportInterpreter = true
 

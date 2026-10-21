@@ -75,7 +75,7 @@ jobs:
 
       - name: sorry and psuedo attribute linter on Physlib and QuantumInfo
         run: |
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint Physlib QuantumInfo"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake exe pseudo_lint Physlib QuantumInfo"
 
       - name: theorem and lemma linter on Physlib and QuantumInfo
         run: |
@@ -127,7 +127,7 @@ jobs:
 
       - name: sorry and psuedo attribute linter on PhyslibAlpha
         if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}
-        run: env LEAN_ABORT_ON_PANIC=1 lake exe sorry_lint PhyslibAlpha
+        run: env LEAN_ABORT_ON_PANIC=1 lake exe pseudo_lint PhyslibAlpha
 
       - name: Check no PhyslibAlpha in Physlib and QuantumInfo
         if: ${{ !cancelled() && steps.alpha_build.outcome == 'success' }}

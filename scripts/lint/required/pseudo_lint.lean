@@ -15,8 +15,8 @@ This script checks that no declaration depends on `sorryAx`, whether or not it i
 the `sorryful` attribute. It also checks that all declarations which depend on
 `Lean.ofReduceBool` are marked with the `pseudo` attribute, and vice versa.
 
-`lake exe sorry_lint` checks `Physlib`, `QuantumInfo` and `PhyslibAlpha`;
-`lake exe sorry_lint Physlib QuantumInfo` checks only the libraries given.
+`lake exe pseudo_lint` checks `Physlib`, `QuantumInfo` and `PhyslibAlpha`;
+`lake exe pseudo_lint Physlib QuantumInfo` checks only the libraries given.
 
 -/
 open Lean
