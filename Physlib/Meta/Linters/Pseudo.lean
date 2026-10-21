@@ -22,38 +22,7 @@ if and only if it has the `sorryful` attribute.
 
 @[expose] public meta section
 
-/-!
-
-## The sorryful environment extension
-
--/
-
 open Lean
-
-/-- The information for stored for a declaration marked with `sorryful`. -/
-structure SorryfulInfo where
-  /-- Name of result. -/
-  name : Name
-  /-- The docstring of the result. -/
-  docstring : String
-  /-- The file name where the note came from. -/
-  fileName : Name
-  /-- The line from where the note came from. -/
-  line : Nat
-
-/-- An environment extension containing the information of declarations
-  which carry the `sorryful` attribute. -/
-initialize sorryfulExtension : SimplePersistentEnvExtension SorryfulInfo (Array SorryfulInfo) ←
-  registerSimplePersistentEnvExtension {
-    name := `sorryfulExtension
-    addEntryFn := fun arr info => arr.push info
-    addImportedFn := fun es => es.foldl (· ++ ·) #[]
-  }
-
-/-- Adds an entry to `sorryfulExtension`. -/
-def addSorryfulEntry {m : Type → Type} [MonadEnv m]
-    (declName : Name) (docString : String) (fileName : Name) (line : Nat) : m Unit :=
-  modifyEnv (sorryfulExtension.addEntry · ⟨declName, docString, fileName, line⟩)
 
 /-!
 
@@ -79,37 +48,6 @@ initialize pseudoExtension : SimplePersistentEnvExtension PseudoInfo (Array Pseu
 def addPseudofulEntry {m : Type → Type} [MonadEnv m]
     (declName : Name) : m Unit :=
   modifyEnv (pseudoExtension.addEntry · ⟨declName⟩)
-
-/-!
-
-## The sorryful attribute
-
--/
-
-/-- The `sorryful` attribute allows declarations to contain the `sorryAx` axiom.
-  In converse, a declaration with the `sorryful` attribute must contain the `sorryAx` axiom. -/
-syntax (name := Sorryful_attr) "sorryful" : attr
-
-/-- Registration of the `sorryful` attribute. -/
-initialize Lean.registerBuiltinAttribute {
-  name := `Sorryful_attr
-  descr := "The `sorryful` attribute allows declarations to contain the `sorryAx` axiom.
-    In converse, a declaration with the `sorryful` attribute must contain the `sorryAx` axiom."
-  add := fun decl stx _attrKind => do
-    let pos := stx.getPos?
-    match pos with
-    | some pos => do
-      let env ← getEnv
-      let fileMap ← getFileMap
-      let filePos := fileMap.toPosition pos
-      let line := filePos.line
-      let modName := env.mainModule
-      let nameSpace := (← getCurrNamespace)
-      let docstring ← Name.getDocString decl
-      addSorryfulEntry decl docstring modName line
-    | none => throwError "Invalid syntax for `note` command"
-  applicationTime := AttributeApplicationTime.beforeElaboration
-}
 
 /-!
 
