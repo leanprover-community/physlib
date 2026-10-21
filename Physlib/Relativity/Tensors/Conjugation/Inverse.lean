@@ -13,7 +13,7 @@ public import Physlib.Relativity.Tensors.Contraction.UnitTensorContraction
 # The inverse of a rank-two tensor
 
 The inverse `g^{J̄I}` of a tensor `g_{IJ̄}` with one index and one conjugate index, such as a Kähler
-metric, and its contraction laws.
+metric, its contraction laws, and the lowering and raising of indices with `g` and `g^{J̄I}`.
 
 ## i. Overview
 
@@ -25,8 +25,8 @@ Convention: the colours of the inverse are `![τ (c 1), τ (c 0)]`, so in slot o
 comes first, `g^{J̄I}`. `inverseT` defines it by matrix inversion: the matrix `(g^{J̄I})` is the
 inverse of `(g_{IJ̄})`. It is zero when `(g_{IJ̄})` is not invertible. The inverse of a Hermitian
 `g` is Hermitian (A) and of a positive-definite `g` positive-definite (B). When `(g_{IJ̄})` is
-invertible, the two contraction laws above hold and the inverse is unique (C). The laws are the
-hypotheses of `crossToSlotEquiv`, so `g` and its inverse lower and raise indices.
+invertible, the two contraction laws above hold and the inverse is unique (C), and `g` and its
+inverse lower and raise indices (D).
 
 ## ii. Key results
 
@@ -38,6 +38,7 @@ hypotheses of `crossToSlotEquiv`, so `g` and its inverse lower and raise indices
 - `ConjTensorSpecies.matMulT_inverseT` and `ConjTensorSpecies.inverseT_matMulT`:
   `g_{IJ̄} g^{J̄K} = δ_I^K` and `g^{J̄I} g_{IK̄} = δ^J̄_K̄`, products in the sense of `matMulT`.
 - `ConjTensorSpecies.eq_inverseT`: the inverse is unique.
+- `ConjTensorSpecies.lowerEquivT`: lowering an index with `g` and raising it with `g^{J̄I}`.
 
 ## iii. Table of contents
 
@@ -46,6 +47,7 @@ hypotheses of `crossToSlotEquiv`, so `g` and its inverse lower and raise indices
   - A.2. Multiplication by `g`
 - B. Positive-definiteness
 - C. The contraction laws
+- D. Lowering and raising indices
 
 ## iv. References
 
@@ -173,9 +175,9 @@ end ConjTensorSpecies
 ## B. Positive-definiteness
 
 Over a field, the matrix `(g_{IJ̄})` of a positive-definite `g`, such as a Kähler metric, is
-invertible (`Matrix.PosDef.isUnit`), so `g` has a true inverse and the contraction laws of C hold
-for it. That inverse is again positive-definite (`isPosDef_toSesqForm_inverseT`):
-`g^{J̄I} t_J̄ t̄_I > 0` for every covector `t ≠ 0`.
+invertible (`isUnit_det_toSquareMatrix_of_isPosDef`), so `g` has a true inverse and the
+contraction laws of C hold for it. That inverse is again positive-definite
+(`isPosDef_toSesqForm_inverseT`): `g^{J̄I} t_J̄ t̄_I > 0` for every covector `t ≠ 0`.
 
 -/
 
@@ -222,7 +224,7 @@ When the matrix `(g_{IJ̄})` is invertible, `g^{J̄I}` is the inverse of `g` und
 By `toMatrix_matMulT` these are `N N⁻¹ = 1` and `N⁻¹ N = 1` for `N = (g_{IJ̄})`. Since
 multiplication by `g` is injective (`matMulT_right_injective`), `g^{J̄K}` is the only tensor
 satisfying the first law (`eq_inverseT`). The unit tensor `δ` is defined over `RCLike` scalars, so
-this section works over `RCLike` scalars.
+this section and D work over `RCLike` scalars.
 
 -/
 
@@ -284,6 +286,42 @@ lemma eq_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor 
         (unitTensor (S := S.toTensorSpecies) (S.τ (cs 0)))) :
     t = S.inverseT M hbar :=
   S.matMulT_right_injective hbar M hM (ht.trans (S.matMulT_inverseT hbar M hM).symm)
+
+/-!
+
+## D. Lowering and raising indices
+
+When the matrix `(g_{IJ̄})` is invertible, contracting an upper index `I` of a tensor with `g`
+lowers it to `J̄`, and contracting with `g^{J̄I}` raises it back. The two contraction laws of C make
+these mutually inverse.
+
+-/
+
+/-- Lowering slot `i` with `g_{IJ̄}`, as a linear equivalence with inverse raising by `g^{J̄I}`:
+`t^{…I…} ↦ g_{IJ̄} t^{…I…}`, the upper index `I` (colour `τ (cs 0)`) replaced in place by the
+lower index `J̄` (colour `cs 1`). Convention: `t` contracts with the first index of `g`. -/
+def lowerEquivT {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
+    (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det) (i : Fin (nA + 1))
+    (he : c i = S.τ (cs 0)) :
+    S.Tensor c ≃ₗ[k] S.Tensor (Function.update c i (cs 1)) :=
+  crossToSlotEquiv i he ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) rfl M (S.inverseT M hbar)
+    (S.matMulT_inverseT hbar M hM) ((S.inverseT_matMulT hbar M hM).trans (permT_id_self _).symm)
+
+@[simp]
+lemma lowerEquivT_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C}
+    (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det)
+    (i : Fin (nA + 1)) (he : c i = S.τ (cs 0)) (t : S.Tensor c) :
+    S.lowerEquivT hbar M hM i he t =
+      crossToSlot i 0 ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) M t :=
+  rfl
+
+@[simp]
+lemma lowerEquivT_symm_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C}
+    (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det)
+    (i : Fin (nA + 1)) (he : c i = S.τ (cs 0)) (t : S.Tensor (Function.update c i (cs 1))) :
+    (S.lowerEquivT hbar M hM i he).symm t =
+      crossToSlotInv (S := S.toTensorSpecies) (d := cs 1) i he rfl (S.inverseT M hbar) t :=
+  rfl
 
 end ConjTensorSpecies
 end
