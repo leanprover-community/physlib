@@ -88,7 +88,8 @@ set_option backward.isDefEq.respectTransparency false in
   at `c`. -/
 lemma matMulT_dual_metricTensor_metricTensor {c : C} :
     matMulT (S.τ_τ_apply c) (metricTensor (S := S) (S.τ c)) (metricTensor (S := S) c) =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair rfl) (unitTensor (S := S) c) := by
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
+        (unitTensor (S := S) c) := by
   rw [matMulT_apply, crossToEnd_two, contrT_dual_metricTensor_metricTensor, permT_permT,
     permT_permT]
   exact permT_congr rfl rfl
@@ -98,7 +99,7 @@ set_option backward.isDefEq.respectTransparency false in
   at `S.τ c`. -/
 lemma matMulT_metricTensor_metricTensor_eq_dual_unit {c : C} :
     matMulT rfl (metricTensor (S := S) c) (metricTensor (S := S) (S.τ c)) =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair (S.τ_τ_apply c))
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply c))
         (unitTensor (S := S) (S.τ c)) := by
   rw [matMulT_apply, crossToEnd_two, contrT_metricTensor_metricTensor_eq_dual_unit, permT_permT,
     permT_permT]

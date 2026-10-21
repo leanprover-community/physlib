@@ -244,7 +244,7 @@ variable {k : Type} [RCLike k] {C : Type} {G : Type} [Group G]
 lemma matMulT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     matMulT rfl M (S.inverseT M hbar) =
-      permT id (IsReindexing.unitTensor_pair (S.τ_τ_apply (cs 0)))
+      permT id (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply (cs 0)))
         (unitTensor (S := S.toTensorSpecies) (S.τ (cs 0))) := by
   refine toMatrix_injective ((S.toMatrix_matMulT_eq_toSquareMatrix_mul hbar M _).trans (Eq.trans ?_
     (toMatrix_permT_unitTensor (S := S.toTensorSpecies) (σ := id) _ (fun _ => rfl) _).symm))
@@ -282,7 +282,7 @@ the inverse `g^{J̄K}`. -/
 lemma eq_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) {t : S.Tensor ![S.τ (cs 1), S.τ (cs 0)]}
     (ht : matMulT rfl M t =
-      permT id (IsReindexing.unitTensor_pair (S.τ_τ_apply (cs 0)))
+      permT id (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply (cs 0)))
         (unitTensor (S := S.toTensorSpecies) (S.τ (cs 0)))) :
     t = S.inverseT M hbar :=
   S.matMulT_right_injective hbar M hM (ht.trans (S.matMulT_inverseT hbar M hM).symm)

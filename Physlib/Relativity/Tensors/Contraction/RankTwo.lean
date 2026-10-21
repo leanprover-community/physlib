@@ -12,6 +12,8 @@ public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 # The bilinear map and the product of rank-two tensors
 
+The bilinear map of a rank-two tensor and the product of two rank-two tensors.
+
 ## i. Overview
 
 A rank-two tensor `M` defines a bilinear map on one-slot tensors by contracting one argument into
@@ -24,8 +26,9 @@ are dual. The result carries the colours `![cs 0, ds 1]` of the surviving indice
 `crossToEnd`, which contracts at any slots and ranks, gives the same tensor at the colour list
 `Fin.append (cs ∘ (Fin.last 1).succAbove) (ds ∘ (0 : Fin 2).succAbove)`, which equals
 `![cs 0, ds 1]` only propositionally. `matMulT` recolours once, so that statements about products,
-such as `g_{IJ̄} g^{J̄K} = δ_I^K`, need no further cast. In components the product is the matrix
-product, `toMatrix_matMulT`.
+such as `g_{IJ̄} g^{J̄K} = δ_I^K`, need no further cast. For a species with contraction-dual bases
+the matrix of the product is the product of the component matrices once the contracted labels of
+`b` are matched to those of `a` by `dualIdxEquiv`, `toMatrix_matMulT`.
 
 ## ii. Key results
 
@@ -34,7 +37,8 @@ product, `toMatrix_matMulT`.
 - `TensorSpecies.Tensor.toMatrix₂_toLinearMap₂` : its matrix in the dual bases is the component
     matrix of `M`.
 - `TensorSpecies.Tensor.matMulT` : the product `a_{IJ} b^{JK}` of two rank-two tensors, with
-    `toMatrix_matMulT`, its matrix is the product of the component matrices.
+    `toMatrix_matMulT`: for contraction-dual bases, its matrix is the product of the component
+    matrices with the contracted labels matched by `dualIdxEquiv`.
 
 ## iii. Table of contents
 
@@ -159,6 +163,12 @@ lemma toMatrix_matMulT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs
     ((crossToEnd_pair_basis_repr h a b y0 y3).trans rfl))
   funext i
   fin_cases i <;> rfl
+
+/-- The product commutes with the action of `G`. -/
+lemma matMulT_equivariant {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (g : G) (a : Tensor S cs)
+    (b : Tensor S ds) :
+    matMulT h (g • a) (g • b) = g • matMulT h a b := by
+  rw [matMulT_apply, matMulT_apply, crossToEnd_equivariant, permT_equivariant]
 
 end Tensor
 

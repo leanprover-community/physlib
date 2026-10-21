@@ -196,10 +196,10 @@ against the other returns the original tensor.
 
 -/
 
-/-- The unit tensor `δ_I^K` at `e` recolored to `![a, e]`, for `τ e = a`: the right-hand side of a
-  collapse hypothesis `matMulT h M M' = δ`, whose product lands at the colors `![a, e]` of `I` and
-  `K`. -/
-lemma IsReindexing.unitTensor_pair {a e : C} (h : S.τ e = a) :
+/-- `unitTensor e` recolored along `h : τ e = a` in its first slot, to `![a, e]`: the right-hand
+  side of a collapse hypothesis `matMulT h M M' = δ`, whose product lands at the colors `![a, e]`
+  of `I` and `K`. -/
+lemma IsReindexing.unitTensor_of_tau_eq {a e : C} (h : S.τ e = a) :
     IsReindexing (![S.τ e, e] : Fin 2 → C) ![a, e] (id : Fin 2 → Fin 2) :=
   IsReindexing.on_id.mpr (fun j => by fin_cases j <;> first | exact h | rfl)
 
@@ -213,7 +213,8 @@ lemma crossToEnd_round_trip_of_unit_slot {nA : ℕ} {c : Fin (nA + 1) → C} {d 
     (i j : Fin (nA + 1)) (hj : j = Fin.last nA)
     (M₁ : Tensor S ![S.τ (c i), d]) (M₂ : Tensor S ![S.τ d, c i])
     (hM : matMulT rfl M₁ M₂ =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair rfl) (unitTensor (S := S) (c i)))
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
+        (unitTensor (S := S) (c i)))
     (t : Tensor S c) :
     crossToEnd j (0 : Fin 2)
         (by subst hj
@@ -263,7 +264,8 @@ private lemma crossToSlot_round_trip_of_unit {nA : ℕ} {c : Fin (nA + 1) → C}
     (i : Fin (nA + 1))
     (M₁ : Tensor S ![S.τ (c i), d]) (M₂ : Tensor S ![S.τ d, c i])
     (hM : matMulT rfl M₁ M₂ =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair rfl) (unitTensor (S := S) (c i)))
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
+        (unitTensor (S := S) (c i)))
     (t : Tensor S c) :
     crossToSlot (S := S) i (0 : Fin 2)
         (by rw [Function.update_self] : S.τ (Function.update c i d i) = S.τ d) M₂
@@ -315,7 +317,7 @@ lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {cs
     (M : Tensor S cs) (M' : Tensor S ds)
     (hM : matMulT hb M M' =
       permT (id : Fin 2 → Fin 2)
-        (IsReindexing.unitTensor_pair ((congrArg S.τ he.symm).trans ha))
+        (IsReindexing.unitTensor_of_tau_eq ((congrArg S.τ he.symm).trans ha))
         (unitTensor (S := S) (ds 1)))
     (t : Tensor S c) :
     crossToSlot (S := S) i (0 : Fin 2)
@@ -348,10 +350,10 @@ variable {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C} (i : Fin (nA 
     (M : Tensor S cs) (M' : Tensor S ds)
     (hMM' : matMulT hb M M' =
       permT (id : Fin 2 → Fin 2)
-        (IsReindexing.unitTensor_pair ((congrArg S.τ he.symm).trans ha))
+        (IsReindexing.unitTensor_of_tau_eq ((congrArg S.τ he.symm).trans ha))
         (unitTensor (S := S) (ds 1)))
     (hM'M : matMulT ((congrArg S.τ he.symm).trans ha) M' M =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair hb)
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq hb)
         (unitTensor (S := S) (cs 1)))
 
 set_option backward.isDefEq.respectTransparency false in
