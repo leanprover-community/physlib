@@ -21,21 +21,25 @@ The inverse of a Kähler metric `g_{IJ̄}` is the tensor `g^{J̄I}` with two upp
 Convention: the colours of the inverse are `![τ (c 1), τ (c 0)]`, so in slot order its barred index
 comes first, `g^{J̄I}`. `inverseT` defines it by matrix inversion: the matrix `(g^{J̄I})` is the
 inverse of `(g_{IJ̄})`. It is zero when `(g_{IJ̄})` is not invertible. The inverse of a Hermitian
-`g` is Hermitian (A).
+`g` is Hermitian (A) and of a positive-definite `g` positive-definite (B).
 
 ## ii. Key results
 
 - `ConjTensorSpecies.inverseT` is the inverse `g^{J̄I}` of a tensor `g_{IJ̄}`.
 - `ConjTensorSpecies.toSquareMatrix_inverseT`: the matrix `(g^{J̄I})` is `(g_{IJ̄})⁻¹`.
-- `ConjTensorSpecies.isSymm_toSesqForm_inverseT`: the inverse of a Hermitian `g` is Hermitian.
+- `ConjTensorSpecies.isSymm_toSesqForm_inverseT` and
+  `ConjTensorSpecies.isPosDef_toSesqForm_inverseT`: the inverse of a Hermitian or positive-definite
+  `g` is Hermitian or positive-definite.
 
 ## iii. Table of contents
 
 - A. The inverse
+- B. Positive-definiteness
 
 ## iv. References
 
-- `Matrix.nonsing_inv`, in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`.
+- `Matrix.nonsing_inv`, in `Mathlib/LinearAlgebra/Matrix/NonsingularInverse.lean`;
+- `Matrix.PosDef.inv`, in `Mathlib/LinearAlgebra/Matrix/PosDef.lean`.
 
 -/
 
@@ -111,6 +115,48 @@ lemma isSymm_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0)
     (S.inverseT M hbar)).2 ?_
   rw [toSquareMatrix_inverseT]
   exact hM'.inv.submatrix _
+
+end ConjTensorSpecies
+
+/-!
+
+## B. Positive-definiteness
+
+Over a field, the matrix `(g_{IJ̄})` of a positive-definite `g`, such as a Kähler metric, is
+invertible (`Matrix.PosDef.isUnit`), so `g` has a true inverse. That inverse is again
+positive-definite (`isPosDef_toSesqForm_inverseT`): `g^{J̄I} t_J̄ t̄_I > 0` for every covector
+`t ≠ 0`.
+
+-/
+
+namespace ConjTensorSpecies
+
+open Tensor HasContrDualBases
+
+variable {k : Type} [Field k] [StarRing k] {C : Type} {G : Type} [Group G]
+    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+    {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
+    (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
+
+section PosDef
+
+variable [PartialOrder k]
+
+/-- The inverse of a positive-definite tensor is positive-definite: `g^{J̄I} t_J̄ t̄_I > 0` for
+every covector `t ≠ 0`. For a Kähler metric and `t_J̄ = (D_J W)*`, this makes the F-term
+`g^{J̄I} (D_J W)* D_I W` of the N = 1 potential non-negative. -/
+lemma isPosDef_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
+    (hx : S.τ x = c 0) (hy : S.τ y = S.τ (c 1)) {M : S.Tensor c}
+    (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
+    (S.toSesqForm y (S.inverseT M hbar) (S.bar_tau_of_bar hbar) hy).IsPosDef := by
+  have hM' := (S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM
+  refine (S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef (S.bar_tau_of_bar hbar) hy
+    (S.inverseT M hbar)).2 ?_
+  rw [toSquareMatrix_inverseT]
+  exact hM'.inv.submatrix ((Equiv.injective _).comp (Equiv.injective _))
+
+end PosDef
 
 end ConjTensorSpecies
 end
