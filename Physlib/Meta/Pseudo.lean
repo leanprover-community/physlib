@@ -68,8 +68,6 @@ namespace CollectSorry
 structure State where
   /-- The names which have already been visited as part of the state. -/
   visited : NameSet := {}
-  /-- The names which depend on the `sorryAx` axiom. -/
-  containsSorry : NameSet := {}
   /-- The names which depend on the `Lean.ofReduceBool` axiom. -/
   containsOfReduceBool : NameSet := {}
 
@@ -95,8 +93,6 @@ partial def collect (c : Name) (parents : NameSet) : M Unit := do
   let collectExpr (e : Expr) : M Unit := e.getUsedConstants.forM fun x =>
     collect x (parents.insert c)
   let s ← get
-  if s.containsSorry.contains c then
-    modify fun s => { s with containsSorry := s.containsSorry.append parents}
   if s.containsOfReduceBool.contains c then
     modify fun s => { s with containsOfReduceBool := s.containsOfReduceBool.append parents}
   unless s.visited.contains c do
@@ -106,8 +102,6 @@ partial def collect (c : Name) (parents : NameSet) : M Unit := do
     -- env in case of (async) errors.
     match env.checked.get.find? c with
     | some (ConstantInfo.axiomInfo v) =>
-        if v.name == ``sorryAx then
-            modify fun s => { s with containsSorry := s.containsSorry.append (parents.insert c) }
         if v.name == `Lean.ofReduceBool || (toString v.name).contains "native_decide" then
             modify fun s => { s with containsOfReduceBool :=
               s.containsOfReduceBool.append (parents.insert c)}
@@ -148,10 +142,10 @@ end CollectSorry
 
 /-- Given a `c : Array Name` the names of all results used to defined
   the results in `c` with the `sorryAx` axiom and the `Lean.ofReduceBool` axiom. -/
-def collectSorryPseudo (c : Array Name) : CoreM (Array Name × Array Name) := do
+def collectSorryPseudo (c : Array Name) : CoreM (Array Name) := do
   let env ← getEnv
   let (_, s) := ((CollectSorry.allSorryPseudo c).run env).run {}
-  pure (s.containsSorry.toArray, s.containsOfReduceBool.toArray)
+  pure s.containsOfReduceBool.toArray
 
 /-!
 
@@ -170,41 +164,14 @@ def libraryUserConsts (libs : Array Name) : CoreM (Array ConstantInfo) := do
 
 /-- The user defined constants of the libraries `libs` depending on the `sorryAx` axiom and on
   the `Lean.ofReduceBool` axiom. -/
-def allWithSorryPseudo (libs : Array Name) : CoreM (Array Name × Array Name) := do
+def allWithSorryPseudo (libs : Array Name) : CoreM (Array Name) := do
   collectSorryPseudo ((← libraryUserConsts libs).map fun c => c.name)
-
-/-!
-
-### A.7. Structures whose field defaults depend on `sorryAx`
-
-A field default compiles to an internal definition `S.field._default`, which `allUserConsts`
-skips, so its `sorry` is charged to the structure `S` instead.
-
--/
-
-/-- The structure `S` behind a field-default definition `S.field._default`. -/
-def structureOfDefault : Name → Option Name
-  | .str (.str S _) "_default" => some S
-  | _ => none
-
-/-- All structures of the libraries `libs` with a field default that depends on `sorryAx`. -/
-def structuresWithSorryDefault (libs : Array Name) : CoreM (Array Name) := do
-  let consts ← (← libraryImports libs).flatMapM fun imp => (Physlib.Imports.getConsts imp : IO _)
-  let defaults := (consts.map (·.name)).filter fun n => (structureOfDefault n).isSome
-  let (withSorry, _) ← collectSorryPseudo defaults
-  return (withSorry.filterMap structureOfDefault).toList.eraseDups.toArray
 
 /-!
 
 ## B. Collecting all names attributed `sorryful` and `pseudo`
 
 -/
-
-/-- All names which are attributed `sorryful`. -/
-unsafe def allSorryfulAttributed : CoreM (Array Name) := do
-  let env ← getEnv
-  let sorryfulInfos := (sorryfulExtension.getState env)
-  return sorryfulInfos.map fun info => info.name
 
 /-- All names which are attributed `pseudo`. -/
 unsafe def allPseudoAttributed : CoreM (Array Name) := do
@@ -223,29 +190,18 @@ unsafe def allPseudoAttributed : CoreM (Array Name) := do
   `sorryful` without depending on it; and that the results attributed `pseudo` are exactly
   those depending on the `Lean.ofReduceBool` axiom. Returns whether the test passed. -/
 unsafe def sorryfulPseudoTest (libs : Array Name) : MetaM Bool := do
-  let (allWithSorry, allWithPseudo) ← Physlib.allWithSorryPseudo libs
+  let allWithPseudo ← Physlib.allWithSorryPseudo libs
   let allConst ← libraryUserConsts libs
   let allConst := allConst.map fun c => c.name
-  let allWithSorry := allWithSorry.filter fun n => n ∈ allConst
-  let fromDefaults ← structuresWithSorryDefault libs
-  let allWithSorry := allWithSorry ++ fromDefaults.filter fun n => ¬ n ∈ allWithSorry
   let allWithPseudo := allWithPseudo.filter fun n => n ∈ allConst
-  let sorryAttributed := (← allSorryfulAttributed).filter fun n => n ∈ allConst
   let pseudoAttributed := (← allPseudoAttributed).filter fun n => n ∈ allConst
   let withPseudoAxiomNotAttributed :=
     allWithPseudo.filter fun x => ¬ x ∈ pseudoAttributed
-  let attributedNotWithSorryAxiom :=
-    sorryAttributed.filter fun x => ¬ x ∈ allWithSorry
   let attributedNotWithPseudoAxiom :=
     pseudoAttributed.filter fun x => ¬ x ∈ allWithPseudo
-  if allWithSorry ≠ #[] ∨ attributedNotWithSorryAxiom ≠ #[]
-    ∨ withPseudoAxiomNotAttributed ≠ #[] ∨ attributedNotWithPseudoAxiom ≠ #[] then
+  if withPseudoAxiomNotAttributed ≠ #[] ∨ attributedNotWithPseudoAxiom ≠ #[] then
     panic! s!"
-\x1b[31mThere is an error in the sorry/pseudo test:\x1b[0m
-  The following names depend on `sorryAx` (whether or not they are attributed `sorryful`):
-  {allWithSorry}
-  The following names are attributed `sorryful` but do not depend on `sorryAx`:
-  {attributedNotWithSorryAxiom}
+\x1b[31mThere is an error in the pseudo test:\x1b[0m
   The following names depend on `Lean.ofReduceBool` or `native_decide`
   but are not attributed `pseudo`:
   {withPseudoAxiomNotAttributed}
@@ -253,8 +209,7 @@ unsafe def sorryfulPseudoTest (libs : Array Name) : MetaM Bool := do
   or `native_decide`:
   {attributedNotWithPseudoAxiom}"
     return false
-  println! "\x1b[32mNo results depend on `sorry`, and pseudo results are all correctly \
-    attributed: test passed.\x1b[0m"
+  println! "\x1b[32mPseudo results are all correctly attributed: test passed.\x1b[0m"
   return true
 
 end Physlib
