@@ -7,13 +7,4 @@
     "files.insertFinalNewline": true,
     "files.trimFinalNewlines": true,
     "files.trimTrailingWhitespace": true,
-    /**
-     The below setting requires the `TODO Highlight` vscode extension.
-     */
-    "todohighlight.keywords": [
-      {
-        "text": "sorryful",
-        "color": "#e1554f",
-        "backgroundColor": ""
-      }]
   }

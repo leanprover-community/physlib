@@ -18,12 +18,6 @@ The attribute `sorryful` adds the declaration to an environment extension
 The linter `noSorry` checks for declarations that contain the `sorryAx` axiom
 if and only if it has the `sorryful` attribute.
 
-## Coloring `sorryful`
-
-It is possible to color the `sorryful` attribute in VSCode.
-This is part of the `.vscode/settings.json` file, but requires the `TODO Highlight` extension
-to be downloaded.
-
 -/
 
 @[expose] public meta section
