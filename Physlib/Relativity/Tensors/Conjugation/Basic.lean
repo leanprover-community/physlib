@@ -544,6 +544,39 @@ lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 
   simp only [basisIdxCongr, ← Equiv.cast_symm, Equiv.symm_trans, Equiv.trans_apply,
     Equiv.cast_apply, cast_cast, cast_eq, Equiv.cast_refl, Equiv.refl_apply]
 
+/-- If `bar a = d`, then `bar (τ d) = τ a`, since `bar` commutes with `τ` and is an involution. -/
+lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
+  (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
+
+open HasContrDualBases in
+/-- Dropping a bar and lowering an index commute on labels. For `bar a = d`, a label `J` of the
+upper index `J̄` (colour `τ d`) becomes a label of the lower index `J` (colour `a`) by two routes,
+and both give the same `J`:
+```
+upper J̄ (τ d)  → drop bar →  upper J (τ a)
+      ↓ lower                      ↓ lower
+lower J̄ (d)    → drop bar →  lower J (a)
+```
+Dropping a bar is the cast along `barIdx_eq`, and lowering is `dualIdxEquiv`. The left-hand side
+goes across the top and down; the right-hand side goes down and across the bottom. -/
+lemma dualIdxEquiv_bar_tau [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {a d : C}
+    (hbar : S.bar a = d) (j : basisIdx (S.τ d)) :
+    dualIdxEquiv (S.τ_τ_apply a)
+        ((Equiv.cast (S.bar_tau_of_bar hbar ▸ S.barIdx_eq (S.τ d))).symm j) =
+      Equiv.cast (hbar ▸ S.barIdx_eq a) ((dualIdxEquiv (rfl : S.τ d = S.τ d)).symm j) := by
+  subst hbar
+  obtain ⟨x, rfl⟩ : ∃ x, dualIdxEquiv (rfl : S.τ (S.bar a) = S.τ (S.bar a))
+      ((Equiv.cast (S.barIdx_eq a)).symm x) = j :=
+    ⟨Equiv.cast (S.barIdx_eq a) ((dualIdxEquiv rfl).symm j), by
+      rw [Equiv.symm_apply_apply, Equiv.apply_symm_apply]⟩
+  rw [Equiv.symm_apply_apply, Equiv.apply_symm_apply,
+    ← dualIdxEquiv_symm (rfl : S.τ a = S.τ a) (S.τ_τ_apply a), Equiv.symm_apply_eq]
+  have h' := S.dualIdxEquiv_bar (rfl : S.τ a = S.τ a) (rfl : S.τ (S.bar a) = S.τ (S.bar a))
+    (S.bar_tau a) x
+  simp only [dualIdxEquiv_apply, basisIdxCongr, Equiv.cast_apply] at h' ⊢
+  rw [Equiv.symm_apply_eq]
+  simpa only [← Equiv.cast_symm, Equiv.cast_apply, cast_cast, cast_eq] using h'
+
 /-!
 
 ## H. The sesquilinear form of a tensor
