@@ -276,7 +276,7 @@ to complex numbers.
 private lemma charpoly_roots_filter_ne_zero_eq_eigenvalues_filter_ne_zero {d : Type*} [Fintype d] [DecidableEq d] (A : Matrix d d ℂ) (hA : A.IsHermitian) :
     A.charpoly.roots.filter (· ≠ 0) = ((Finset.univ.val.map hA.eigenvalues).filter (· ≠ 0)).map RCLike.ofReal := by
   convert congr_arg _ ?_;
-  rw [ multiset_filter_map_ofReal_eq ];
+  · rw [ multiset_filter_map_ofReal_eq ];
   -- Since A is Hermitian, its characteristic polynomial is equal to the product of (X - eigenvalue) over all eigenvalues.
   have h_charpoly : A.charpoly = Multiset.prod (Multiset.map (fun i => Polynomial.X - Polynomial.C (RCLike.ofReal (hA.eigenvalues i))) (Finset.univ.val)) := by
     convert! Matrix.IsHermitian.charpoly_eq hA using 1;

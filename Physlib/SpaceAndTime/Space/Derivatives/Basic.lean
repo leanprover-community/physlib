@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Physlib.Mathematics.Distribution.TemperedDistribution
+public import Physlib.Meta.TODO.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.SpaceAndTime.Space.Module
 public import Mathlib.Geometry.Manifold.MFDeriv.NormedSpace
@@ -103,7 +104,7 @@ open Manifold in
 lemma deriv_eq_mfderiv {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (μ : Fin d) (f : Space d → M) (x : Space d) :
     deriv μ f x = mfderiv 𝓘(ℝ, Space d) 𝓘(ℝ, M) f x (basis μ) := by
-  rw [deriv_eq_fderiv_basis, ← mfderiv_eq_fderiv]
+  rw [deriv_eq_fderiv_basis, mfderiv_eq_fderiv]
   rfl
 
 open Manifold in

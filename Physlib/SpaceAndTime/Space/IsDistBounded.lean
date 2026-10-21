@@ -237,7 +237,7 @@ lemma integrable_space_fderiv_mul {d : ℕ} {f : Space d → ℝ} (hf : IsDistBo
 instance {D1 : Type} [NormedAddCommGroup D1] [MeasurableSpace D1]
     {D2 : Type} [NormedAddCommGroup D2] [MeasurableSpace D2]
     (μ1 : Measure D1) (μ2 : Measure D2)
-    [Measure.HasTemperateGrowth μ1] [Measure.HasTemperateGrowth μ2] [SFinite μ2]
+    [Measure.HasTemperateGrowth μ1] [Measure.HasTemperateGrowth μ2]
     [OpensMeasurableSpace (D1 × D2)] :
     Measure.HasTemperateGrowth (μ1.prod μ2) where
   exists_integrable := by
@@ -324,7 +324,8 @@ lemma integrable_time_space {d : ℕ} {f : Space d → F} (hf : IsDistBounded f)
       exact h1
     | d + 1 =>
     rw [radialAngularMeasure, MeasureTheory.prod_withDensity_right] at h1
-    erw [integrable_withDensity_iff_integrable_smul₀ (by fun_prop)] at h1
+    simp only [ENNReal.ofReal] at h1
+    rw [integrable_withDensity_iff_integrable_smul₀ (by fun_prop)] at h1
     convert! h1 using 1
     funext x
     simp only [Real.norm_eq_abs, one_div]

@@ -151,6 +151,10 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 
 TODO "Add a constructor for LocalGaugeData from a Lie group and its Lie algebra"
 
+TODO "For U(1) and SU(n), prove that taking Taylor series gives a group isomorphism between
+  smooth local gauge transformations modulo agreement of all derivatives at the base point
+  and the corresponding formal gauge-jet group."
+
 /-!
 
 ## B. Simple derived properties

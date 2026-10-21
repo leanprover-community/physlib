@@ -493,10 +493,10 @@ noncomputable def tensorEquivProd {n n2 : ℕ} {c : Fin n → C} {c1 : Fin n2 �
       apply induction_on_basis (t := t1)
       · intro b1
         · apply induction_on_basis (t := t2)
-          intro b2
-          dsimp [P]
-          rw [prodT_basis]
-          simp [f]
+          · intro b2
+            dsimp [P]
+            rw [prodT_basis]
+            simp [f]
           · simp [P]
           · intro r t h
             simp [tmul_smul, P] at *

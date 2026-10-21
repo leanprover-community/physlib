@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2026 Eduardo Nava-Hernandez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Eduardo Nava-Hernandez
+Authors: Eduardo Nava-Hernandez, Samyak Rai
 -/
 module
 
 public import Mathlib.MeasureTheory.Integral.Gamma
+public import Physlib.Optics.Frequency
 public import Physlib.QuantumMechanics.Blackbody.PlancksLaw
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Lemmas
 /-!
@@ -175,35 +176,39 @@ lemma quantizedOscillator_meanEnergy_lt {ε : ℝ} (hε : 0 < ε) {T : Temperatu
 -/
 
 /-- Planck's law is `2 ν² / c²` times the mean energy of the oscillator of spacing `h ν`. -/
-lemma spectralRadiance_eq_meanEnergy (B : BlackBody) (c : SpeedOfLight) {ν : ℝ} (hν : 0 < ν)
-    (hT : 0 < (B.T : ℝ)) :
+lemma spectralRadiance_eq_meanEnergy (B : BlackBody) (c : SpeedOfLight) {ν : Frequency}
+    (hν : 0 < ν.val) (hT : 0 < (B.T : ℝ)) :
     B.spectralRadiance c ν =
-      2 * ν ^ 2 / (c : ℝ) ^ 2 * (quantizedOscillator (h * ν)).meanEnergy B.T := by
-  rw [quantizedOscillator_meanEnergy (mul_pos h_pos hν) hT, spectralRadiance,
+      2 * (ν.val : ℝ) ^ 2 / (c : ℝ) ^ 2
+        * (quantizedOscillator (h * (ν.val : ℝ))).meanEnergy B.T := by
+  have hνr : 0 < (ν.val : ℝ) := NNReal.coe_pos.mpr hν
+  rw [quantizedOscillator_meanEnergy (mul_pos h_pos hνr) hT, spectralRadiance,
     ite_eq_left hν, β_toReal, one_div_mul_eq_div]
   have hc := (pow_pos c.val_pos 2).ne'
-  have he : exp (h * ν / (kB * B.T)) - 1 ≠ 0 :=
-    (sub_pos.mpr (one_lt_exp_iff.mpr (div_pos (mul_pos h_pos hν) (mul_pos kB_pos hT)))).ne'
+  have he : exp (h * (ν.val : ℝ) / (kB * B.T)) - 1 ≠ 0 :=
+    (sub_pos.mpr (one_lt_exp_iff.mpr (div_pos (mul_pos h_pos hνr) (mul_pos kB_pos hT)))).ne'
   field_simp
 
 /-- The Rayleigh–Jeans spectral radiance `2 ν² kB T / c²` of a black body `B`. -/
-noncomputable def rayleighJeans (B : BlackBody) (c : SpeedOfLight) (ν : ℝ) : ℝ :=
-  2 * ν ^ 2 * kB * B.T / (c : ℝ) ^ 2
+noncomputable def rayleighJeans (B : BlackBody) (c : SpeedOfLight) (ν : Frequency) : ℝ :=
+  2 * (ν.val : ℝ) ^ 2 * kB * B.T / (c : ℝ) ^ 2
 
 /-- The Rayleigh–Jeans law is `2 ν² / c²` times the mean energy of the classical oscillator. -/
-lemma rayleighJeans_eq_meanEnergy (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
+lemma rayleighJeans_eq_meanEnergy (B : BlackBody) (c : SpeedOfLight) (ν : Frequency)
     (hT : 0 < (B.T : ℝ)) :
-    B.rayleighJeans c ν = 2 * ν ^ 2 / (c : ℝ) ^ 2 * classicalOscillator.meanEnergy B.T := by
+    B.rayleighJeans c ν
+      = 2 * (ν.val : ℝ) ^ 2 / (c : ℝ) ^ 2 * classicalOscillator.meanEnergy B.T := by
   rw [classicalOscillator_meanEnergy hT, rayleighJeans]
   ring
 
 /-- Planck's law lies strictly below the Rayleigh–Jeans law at every positive frequency and
 every positive temperature. -/
-lemma spectralRadiance_lt_rayleighJeans (B : BlackBody) (c : SpeedOfLight) {ν : ℝ}
-    (hν : 0 < ν) (hT : 0 < (B.T : ℝ)) :
+lemma spectralRadiance_lt_rayleighJeans (B : BlackBody) (c : SpeedOfLight) {ν : Frequency}
+    (hν : 0 < ν.val) (hT : 0 < (B.T : ℝ)) :
     B.spectralRadiance c ν < B.rayleighJeans c ν := by
+  have hνr : 0 < (ν.val : ℝ) := NNReal.coe_pos.mpr hν
   rw [spectralRadiance_eq_meanEnergy B c hν hT, rayleighJeans_eq_meanEnergy B c ν hT]
-  exact mul_lt_mul_of_pos_left (quantizedOscillator_meanEnergy_lt (mul_pos h_pos hν) hT)
+  exact mul_lt_mul_of_pos_left (quantizedOscillator_meanEnergy_lt (mul_pos h_pos hνr) hT)
     (by have := c.val_pos; positivity)
 
 end BlackBody

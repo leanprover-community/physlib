@@ -37,9 +37,10 @@ set_option backward.isDefEq.respectTransparency false in
 lemma add_AFL_quad (S : (PlusU1 n).LinSols) (a b : ℚ) :
     accQuad (a • S.val + b • C.val) =
     a * (a * accQuad S.val + 2 * b * quadBiLin S.val C.val) := by
-  erw [BiLinearSymm.toHomogeneousQuad_add, quadSol (b • C)]
+  have hb : accQuad (b • C.val) = 0 := quadSol (b • C)
+  rw [accQuad, BiLinearSymm.toHomogeneousQuad_add, ← accQuad, hb]
   rw [quadBiLin.map_smul₁, quadBiLin.map_smul₂]
-  erw [accQuad.map_smul]
+  rw [accQuad.map_smul]
   ring
 
 /-- A helper function for what comes later. -/
@@ -52,12 +53,13 @@ lemma α₂_AFQ (S : (PlusU1 n).QuadSols) : α₂ S.1 = 0 := quadSol S
 
 lemma accQuad_α₁_α₂ (S : (PlusU1 n).LinSols) :
     accQuad ((α₁ C S) • S + α₂ S • C.1).val = 0 := by
-  erw [add_AFL_quad, α₁, α₂]
+  refine (add_AFL_quad C S (α₁ C S) (α₂ S)).trans ?_
+  rw [α₁, α₂]
   ring
 
 lemma accQuad_α₁_α₂_zero (S : (PlusU1 n).LinSols) (h1 : α₁ C S = 0)
     (h2 : α₂ S = 0) (a b : ℚ) : accQuad (a • S + b • C.1).val = 0 := by
-  erw [add_AFL_quad]
+  refine (add_AFL_quad C S a b).trans ?_
   simp only [α₁, neg_mul, neg_eq_zero, mul_eq_zero,
     OfNat.ofNat_ne_zero, false_or, α₂, HomogeneousQuadratic, accQuad] at h1 h2
   simp [h1, h2]

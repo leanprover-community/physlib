@@ -8,6 +8,8 @@ module
 public import Physlib.Thermodynamics.Temperature.Basic
 public import Physlib.Relativity.SpeedOfLight
 public import Physlib.QuantumMechanics.PlanckConstant
+public import Physlib.Optics.Frequency
+public import Physlib.Optics.Wavelength
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
@@ -34,16 +36,21 @@ and per unit wavelength `λ`, given by
     `B(λ, T) = 2 h c² / λ⁵ · 1 / (e^{h c / (λ k_B T)} - 1)`
 
 The two forms are related by `B(λ, T) = (c / λ²) B(ν = c/λ, T)`
-(see `spectralRadianceWave_eq_spectralRadiance`).
+(see `spectralRadianceWave_eq_spectralRadiance`), where the frequency `c / λ`
+is given by `Frequency.ofWavelength`. The frequency and wavelength are taken to be
+of the types `Frequency` and `Wavelength` from `Physlib.Optics`, i.e. nonnegative
+quantities carrying the dimensions of inverse time and of length respectively.
 
 ## ii. Key results
 
 - `BlackBody` : Structure representing an idealized black body in thermal equilibrium.
-- `spectralRadiance` : The spectral radiance per unit frequency of blackbody radiation.
+- `spectralRadiance` : The spectral radiance per unit frequency of blackbody radiation,
+  as a function of a `Frequency`.
 - `spectralRadiance_pos` : The spectral radiance is positive for positive frequency and temperature.
 - `spectralRadiance_absZero` : The spectral radiance is 0 at absolute zero.
-- `spectralRadianceWave` : Spectral radiance per unit wavelength.
-- `spectralRadianceWave_eq_spectralRadiance` : Correspondence between the two forms.
+- `spectralRadianceWave` : Spectral radiance per unit wavelength, as a function of a `Wavelength`.
+- `spectralRadianceWave_eq_spectralRadiance` : Correspondence between the two forms,
+  via `Frequency.ofWavelength`.
 - `firstRadiationConstant` / `secondRadiationConstant` : Radiation constants `c₁L` and `c₂`.
 - `spectralRadianceWave_eq_constants` : Planck's law in terms of radiation constants.
 
@@ -92,32 +99,33 @@ open Constants
     and temperature.
 
     Extended by zero outside the physical domain `0 < ν`. -/
-noncomputable def spectralRadiance (B : BlackBody) (c : SpeedOfLight) (ν : ℝ) : ℝ :=
-  if 0 < ν then
-    2 * h * ν ^ 3 / ((c : ℝ) ^ 2 * (Real.exp (h * ν / (kB * (B.T : ℝ))) - 1))
+noncomputable def spectralRadiance (B : BlackBody) (c : SpeedOfLight) (ν : Frequency) : ℝ :=
+  if 0 < ν.val then
+    2 * h * (ν.val : ℝ) ^ 3 / ((c : ℝ) ^ 2 * (Real.exp (h * (ν.val : ℝ) / (kB * (B.T : ℝ))) - 1))
   else 0
 
 /-- The spectral radiance of blackbody radiation is positive for positive frequency
     and positive temperature. -/
-lemma spectralRadiance_pos (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
-    (hν : 0 < ν) (hT : 0 < (B.T : ℝ)) : 0 < B.spectralRadiance c ν := by
+lemma spectralRadiance_pos (B : BlackBody) (c : SpeedOfLight) (ν : Frequency)
+    (hν : 0 < ν.val) (hT : 0 < (B.T : ℝ)) : 0 < B.spectralRadiance c ν := by
+  have hνr : 0 < (ν.val : ℝ) := NNReal.coe_pos.mpr hν
   rw [spectralRadiance, ite_eq_left hν]
   refine div_pos ?numerator ?denominator
-  · exact mul_pos (mul_pos (by norm_num) h_pos) (pow_pos hν 3)
-  · have expo_term : 0 < (h : ℝ) * ν / (kB * (B.T : ℝ)) :=
-      div_pos (mul_pos h_pos hν) (mul_pos kB_pos hT)
+  · exact mul_pos (mul_pos (by norm_num) h_pos) (pow_pos hνr 3)
+  · have expo_term : 0 < h * (ν.val : ℝ) / (kB * (B.T : ℝ)) :=
+      div_pos (mul_pos h_pos hνr) (mul_pos kB_pos hT)
     exact mul_pos (pow_pos c.val_pos 2)
       (sub_pos.mpr (by simpa using Real.exp_strictMono expo_term))
 
 /-- The spectral radiance per unit frequency is non-negative on the physical domain. -/
-lemma spectralRadiance_nonneg (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
-    (hν : 0 < ν) (hT : 0 < (B.T : ℝ)) : 0 ≤ B.spectralRadiance c ν :=
+lemma spectralRadiance_nonneg (B : BlackBody) (c : SpeedOfLight) (ν : Frequency)
+    (hν : 0 < ν.val) (hT : 0 < (B.T : ℝ)) : 0 ≤ B.spectralRadiance c ν :=
   le_of_lt (spectralRadiance_pos B c ν hν hT)
 
 /-- The spectral radiance vanishes at absolute zero temperature. -/
-lemma spectralRadiance_absZero (c : SpeedOfLight) (ν : ℝ) :
+lemma spectralRadiance_absZero (c : SpeedOfLight) (ν : Frequency) :
     spectralRadiance ⟨0⟩ c ν = 0 := by
-  unfold spectralRadiance
+  rw [spectralRadiance]
   split_ifs with hν
   · simp [show ((⟨0⟩ : BlackBody).T : ℝ) = 0 from rfl]
   · rfl
@@ -125,11 +133,11 @@ lemma spectralRadiance_absZero (c : SpeedOfLight) (ν : ℝ) :
 /-- The spectral radiance vanishes at zero frequency. -/
 lemma spectralRadiance_zeroFreq (B : BlackBody) (c : SpeedOfLight) :
     B.spectralRadiance c 0 = 0 := by
-  rw [spectralRadiance, ite_eq_right (lt_irrefl 0)]
+  rw [spectralRadiance, ite_eq_right (not_lt.mpr WithDim.val_zero.le)]
 
 /-- The spectral radiance vanishes when frequency is non-positive. -/
-lemma spectralRadiance_eq_zero_of_nonpos_freq (B : BlackBody) (c : SpeedOfLight) (ν : ℝ)
-    (hν : ν ≤ 0) : B.spectralRadiance c ν = 0 := by
+lemma spectralRadiance_eq_zero_of_nonpos_freq (B : BlackBody) (c : SpeedOfLight) (ν : Frequency)
+    (hν : ν.val ≤ 0) : B.spectralRadiance c ν = 0 := by
   rw [spectralRadiance, ite_eq_right (not_lt.mpr hν)]
 
 /-!
@@ -142,34 +150,36 @@ lemma spectralRadiance_eq_zero_of_nonpos_freq (B : BlackBody) (c : SpeedOfLight)
     `B(λ, T) = 2 h c² / λ⁵ · 1 / (e ^ (h c / (λ kB T)) - 1)`,
 
   extended by zero outside the physical domain `0 < λ`. -/
-noncomputable def spectralRadianceWave (B : BlackBody) (c : SpeedOfLight) (lam : ℝ) : ℝ :=
-  if 0 < lam then
-    2 * h * (c : ℝ) ^ 2 / lam ^ 5 / (Real.exp (h * (c : ℝ) / (lam * kB * (B.T : ℝ))) - 1)
+noncomputable def spectralRadianceWave (B : BlackBody) (c : SpeedOfLight) (lam : Wavelength) : ℝ :=
+  if 0 < lam.val then
+    2 * h * (c : ℝ) ^ 2 / (lam.val : ℝ) ^ 5
+      / (Real.exp (h * (c : ℝ) / ((lam.val : ℝ) * kB * (B.T : ℝ))) - 1)
   else 0
 
 /-- The spectral radiance per unit wavelength is positive for positive wavelength
   and positive temperature. -/
-lemma spectralRadianceWave_pos (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hlam : 0 < lam) (hT : 0 < (B.T : ℝ)) : 0 < B.spectralRadianceWave c lam := by
-  unfold spectralRadianceWave
-  rw [ite_eq_left hlam]
-  have harg : 0 < (h : ℝ) * (c : ℝ) / (lam * kB * (B.T : ℝ)) :=
-    div_pos (mul_pos h_pos c.val_pos) (mul_pos (mul_pos hlam kB_pos) hT)
-  have h1e : 1 < Real.exp (h * (c : ℝ) / (lam * kB * (B.T : ℝ))) := Real.one_lt_exp_iff.mpr harg
-  have hE : 0 < Real.exp (h * (c : ℝ) / (lam * kB * (B.T : ℝ))) - 1 := sub_pos.mpr h1e
-  have hnum : 0 < 2 * (h : ℝ) * (c : ℝ) ^ 2 / lam ^ 5 :=
-    div_pos (mul_pos (mul_pos zero_lt_two h_pos) (pow_pos c.val_pos 2)) (pow_pos hlam 5)
+lemma spectralRadianceWave_pos (B : BlackBody) (c : SpeedOfLight) (lam : Wavelength)
+    (hlam : 0 < lam.val) (hT : 0 < (B.T : ℝ)) : 0 < B.spectralRadianceWave c lam := by
+  have hlamr : 0 < (lam.val : ℝ) := NNReal.coe_pos.mpr hlam
+  rw [spectralRadianceWave, ite_eq_left hlam]
+  have harg : 0 < (h : ℝ) * (c : ℝ) / ((lam.val : ℝ) * kB * (B.T : ℝ)) :=
+    div_pos (mul_pos h_pos c.val_pos) (mul_pos (mul_pos hlamr kB_pos) hT)
+  have h1e : 1 < Real.exp (h * (c : ℝ) / ((lam.val : ℝ) * kB * (B.T : ℝ))) :=
+    Real.one_lt_exp_iff.mpr harg
+  have hE : 0 < Real.exp (h * (c : ℝ) / ((lam.val : ℝ) * kB * (B.T : ℝ))) - 1 := sub_pos.mpr h1e
+  have hnum : 0 < 2 * (h : ℝ) * (c : ℝ) ^ 2 / (lam.val : ℝ) ^ 5 :=
+    div_pos (mul_pos (mul_pos zero_lt_two h_pos) (pow_pos c.val_pos 2)) (pow_pos hlamr 5)
   exact div_pos hnum hE
 
 /-- The spectral radiance per unit wavelength is non-negative on the physical domain. -/
-lemma spectralRadianceWave_nonneg (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hlam : 0 < lam) (hT : 0 < (B.T : ℝ)) : 0 ≤ B.spectralRadianceWave c lam :=
+lemma spectralRadianceWave_nonneg (B : BlackBody) (c : SpeedOfLight) (lam : Wavelength)
+    (hlam : 0 < lam.val) (hT : 0 < (B.T : ℝ)) : 0 ≤ B.spectralRadianceWave c lam :=
   le_of_lt (spectralRadianceWave_pos B c lam hlam hT)
 
 /-- The spectral radiance per unit wavelength vanishes at absolute zero. -/
-lemma spectralRadianceWave_absZero (c : SpeedOfLight) (lam : ℝ) :
+lemma spectralRadianceWave_absZero (c : SpeedOfLight) (lam : Wavelength) :
     spectralRadianceWave ⟨0⟩ c lam = 0 := by
-  unfold spectralRadianceWave
+  rw [spectralRadianceWave]
   split_ifs with hlam
   · simp [show ((⟨0⟩ : BlackBody).T : ℝ) = 0 from rfl]
   · rfl
@@ -177,15 +187,13 @@ lemma spectralRadianceWave_absZero (c : SpeedOfLight) (lam : ℝ) :
 /-- The spectral radiance per unit wavelength vanishes at zero wavelength. -/
 lemma spectralRadianceWave_zeroWave (B : BlackBody) (c : SpeedOfLight) :
     B.spectralRadianceWave c 0 = 0 := by
-  unfold spectralRadianceWave
-  rw [ite_eq_right (lt_irrefl 0)]
+  rw [spectralRadianceWave, ite_eq_right (not_lt.mpr WithDim.val_zero.le)]
 
 /-- The spectral radiance per unit wavelength vanishes when wavelength is
   non-positive. -/
-lemma spectralRadianceWave_eq_zero_of_nonpos_wave (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hlam : lam ≤ 0) : B.spectralRadianceWave c lam = 0 := by
-  unfold spectralRadianceWave
-  rw [ite_eq_right (not_lt.mpr hlam)]
+lemma spectralRadianceWave_eq_zero_of_nonpos_wave (B : BlackBody) (c : SpeedOfLight)
+    (lam : Wavelength) (hlam : lam.val ≤ 0) : B.spectralRadianceWave c lam = 0 := by
+  rw [spectralRadianceWave, ite_eq_right (not_lt.mpr hlam)]
 
 /-!
 ## D. Correspondence between the two forms
@@ -196,14 +204,20 @@ the wavelength form equals `c / λ²` times the frequency form evaluated at
 -/
 
 /-- Correspondence between the wavelength and frequency forms of Planck's law:
-  `B(λ, T) = (c / λ²) B(ν = c / λ, T)`. -/
-lemma spectralRadianceWave_eq_spectralRadiance (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hlam : 0 < lam) (hT : 0 < (B.T : ℝ)) :
-    B.spectralRadianceWave c lam = ((c : ℝ) / lam ^ 2) * B.spectralRadiance c ((c : ℝ) / lam) := by
-  have hclam : 0 < (c : ℝ) / lam := div_pos c.val_pos hlam
+  `B(λ, T) = (c / λ²) B(ν = c / λ, T)`, where the frequency `c / λ` is given by
+  `Frequency.ofWavelength`. -/
+lemma spectralRadianceWave_eq_spectralRadiance (B : BlackBody) (c : SpeedOfLight)
+    (lam : Wavelength) (hlam : 0 < lam.val) (hT : 0 < (B.T : ℝ)) :
+    B.spectralRadianceWave c lam
+      = ((c : ℝ) / (lam.val : ℝ) ^ 2) * B.spectralRadiance c
+          (Frequency.ofWavelength c.toWithDim lam hlam) := by
+  have hclam : 0 < (Frequency.ofWavelength c.toWithDim lam hlam).val :=
+    Frequency.ofWavelength_pos c.toWithDim c.toWithDim_val_pos lam hlam
   unfold spectralRadianceWave spectralRadiance
   rw [ite_eq_left hlam, ite_eq_left hclam]
-  have hexp : (h : ℝ) * ((c : ℝ) / lam) / (kB * (B.T : ℝ)) = h * c / (lam * kB * (B.T : ℝ)) := by
+  simp only [Frequency.ofWavelength_val, NNReal.coe_div, SpeedOfLight.toWithDim_val]
+  have hexp : (h : ℝ) * ((c : ℝ) / (lam.val : ℝ)) / (kB * (B.T : ℝ))
+      = h * (c : ℝ) / ((lam.val : ℝ) * kB * (B.T : ℝ)) := by
     field_simp
   rw [hexp]
   field_simp
@@ -245,14 +259,15 @@ lemma secondRadiationConstant_eq (c : SpeedOfLight) :
 
 /-- Planck's law per unit wavelength in terms of the radiation constants:
   `B(λ, T) = (c₁L / λ⁵) / (e ^ (c₂ / (λ T)) - 1)`. -/
-lemma spectralRadianceWave_eq_constants (B : BlackBody) (c : SpeedOfLight) (lam : ℝ)
-    (hlam : 0 < lam) (hT : 0 < (B.T : ℝ)) :
+lemma spectralRadianceWave_eq_constants (B : BlackBody) (c : SpeedOfLight) (lam : Wavelength)
+    (hlam : 0 < lam.val) (hT : 0 < (B.T : ℝ)) :
     B.spectralRadianceWave c lam
-      = firstRadiationConstant c / lam ^ 5
-        / (Real.exp (secondRadiationConstant c / (lam * (B.T : ℝ))) - 1) := by
+      = firstRadiationConstant c / (lam.val : ℝ) ^ 5
+        / (Real.exp (secondRadiationConstant c / ((lam.val : ℝ) * (B.T : ℝ))) - 1) := by
   unfold spectralRadianceWave firstRadiationConstant secondRadiationConstant
   rw [ite_eq_left hlam]
-  have hexp : (h : ℝ) * (c : ℝ) / kB / (lam * (B.T : ℝ)) = h * c / (lam * kB * (B.T : ℝ)) := by
+  have hexp : (h : ℝ) * (c : ℝ) / kB / ((lam.val : ℝ) * (B.T : ℝ))
+      = h * (c : ℝ) / ((lam.val : ℝ) * kB * (B.T : ℝ)) := by
     field_simp
   rw [hexp]
 

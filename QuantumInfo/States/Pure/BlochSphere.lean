@@ -35,6 +35,8 @@ then builds the solid angle and dot product API on sphere points.
   45–57 (1984). [ref: berry1984]
 -/
 
+@[expose] public section
+
 open Complex Matrix
 
 noncomputable section
@@ -45,11 +47,11 @@ abbrev BlochSphere := Metric.sphere (0 : EuclideanSpace ℝ (Fin 3)) 1
 namespace BlochSphere
 
 /-- The raw Bloch vector for angles (α, θ). Internal helper for `blochPoint`. -/
-private def blochVecRaw (α θ : ℝ) : Fin 3 → ℝ :=
+def blochVecRaw (α θ : ℝ) : Fin 3 → ℝ :=
   ![Real.sin α * Real.cos θ, Real.sin α * Real.sin θ, Real.cos α]
 
 /-- The Bloch vector has unit norm: sin²α(cos²θ + sin²θ) + cos²α = 1. -/
-private lemma blochVecRaw_norm (α θ : ℝ) :
+lemma blochVecRaw_norm (α θ : ℝ) :
     Real.sqrt ((blochVecRaw α θ 0) ^ 2 + (blochVecRaw α θ 1) ^ 2 +
       (blochVecRaw α θ 2) ^ 2) = 1 := by
   have : (blochVecRaw α θ 0) ^ 2 + (blochVecRaw α θ 1) ^ 2 +

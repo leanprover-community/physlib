@@ -107,7 +107,7 @@ lemma centeredGramDefect_ofVec_eq {ψ : T.HilbertSpace} (h : ‖ψ‖ = 1) :
 -/
 
 /-- The unit vectors of minimum uncertainty. -/
-def minUncertainty : Set T.HilbertSpace := Metric.sphere 0 1 ∩ T.defectOf ⁻¹' {0}
+noncomputable def minUncertainty : Set T.HilbertSpace := Metric.sphere 0 1 ∩ T.defectOf ⁻¹' {0}
 
 lemma isCompact_minUncertainty : IsCompact T.minUncertainty :=
   haveI := FiniteDimensional.proper ℂ T.HilbertSpace
@@ -150,7 +150,7 @@ lemma threshold_le_maxCurrent (ht : T.t ≠ 0) : T.threshold ≤ T.maxCurrent :=
 -/
 
 /-- The velocity band `(threshold, maxCurrent]` of forced uncertainty. -/
-def velocityBand : Set ℝ := Set.Ioc T.threshold T.maxCurrent
+noncomputable def velocityBand : Set ℝ := Set.Ioc T.threshold T.maxCurrent
 
 /-- In the velocity band, the uncertainty defect is forced. -/
 lemma defectOf_pos_of_mem_velocityBand {ψ : T.HilbertSpace} (hψ : ‖ψ‖ = 1)

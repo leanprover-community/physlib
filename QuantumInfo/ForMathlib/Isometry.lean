@@ -622,8 +622,7 @@ theorem Matrix.IsDiag.exists_cfc {U : Matrix.unitaryGroup d 𝕜} {M : Matrix d 
   congr; rotate_right
   · exact Matrix.inv_eq_right_inv U.2.1
   · exact Matrix.inv_eq_left_inv U.2.1
-  conv in Nat.cast (e _) =>
-    equals (RCLike.ofReal <| e x) => simp only [map_natCast]
+  simp_rw [← RCLike.ofReal_natCast (K := 𝕜)]
   rw [Matrix.cfc_diagonal]
   congr
   ext i

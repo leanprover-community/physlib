@@ -169,6 +169,6 @@ lemma ofU1Subgroup_smul_sliceR (c : unitary ℂ) (a : Fin 6 → ℝ) :
   rw [sliceR_apply, ofU1Subgroup_smul_sliceHiggs, sliceR_apply]
   congr 1
   simp only [resRotParam, Matrix.cons_val, Fin.isValue]
-  first | rfl | rw [h]
+  rw [h]
 
 end TwoHiggsDoublet

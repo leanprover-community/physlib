@@ -1,0 +1,38 @@
+<!-- physlib-pr-summary -->
+<!-- The marker above is how the `PRMessage` workflow finds this comment again, so
+that a push to the PR updates it instead of leaving a second one. Keep it first. -->
+
+Thank you for this pull-request (PR). If this is your first PR, welcome to the community!
+
+While you wait for a review, note that *you* can review PRs too; reviewing is not restricted to maintainers. Our [review guidelines](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md) explain what to look for.
+
+Over time, contributions such as reviews, maintenance and documentation are recorded on [contributions.physlib.io](https://contributions.physlib.io).
+
+Four main points:
+- Comment `-awaiting-author` on its own line to remove that label from your PR.
+- Comment `blocked-by-PR` or `-blocked-by-PR` on its own line to add or remove that label, respectively.
+- The first review might take several days to arrive. If in doubt message on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366).
+
+<details>
+<summary><h2>For the author: Please read</h2></summary>
+
+Below is what will happen next. Please read carefully if you are not familiar with the process. You may open other PRs while this one is being reviewed, and can stack PRs on top of each other, so don't let these steps slow you down.
+
+1. Some automated checks will be run on your PR. You can see the results of these checks at the buttom of your PR page. If any of these checks fail, you will need to fix the issues before your PR can be merged. You can learn more about these [here](https://github.com/leanprover-community/physlib/blob/master/scripts/README.md), including how to run them locally, which is sometimes quicker than relying on the GitHub Actions. If you have never had a PR merged before, you may have to wait for a reviewer to manually start these checks (this is for security).
+
+2. A reviewer will look at your PR and may ask you to make changes. This may happen a couple of days after you submit your PR, so you may need to be patient. But it should not be longer than that - if it is please bring it to the attention of the community on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366). The level of review will depend on where your PR is submitted. If it is submitted to ./Physlib or ./QuantumInfo, the review will be more thorough than if it is submitted to ./PhyslibAlpha. You can find out more about what the review process is looking for in our [review guidelines](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md). If a reviewer adds an `awaiting-author` label to your PR, address the review comments, then **please remove** that label by adding a comment with `-awaiting-author`. This helps us keep track of reviews.
+
+3. The reviewer will either approve your PR, or request more changes (in which case we return to step 2). Once your PR is approved, it will be merged by a maintainer, this should happen shortly after approval, though you may get more comments at this stage.
+
+Tip: The easiest way to get a fast review is to submit a PR that is small and self-contained, and has clear documentation explaining why things are the way they are in your changes.
+
+If you have any problems or questions, please reach out to the community on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366).
+
+</details>
+
+<details>
+<summary><h2>For reviewers: Summary of your PR</h2></summary>
+
+<!-- PR_SUMMARY -->
+
+</details>

@@ -91,14 +91,11 @@ lemma koszulSignInsert_eq_filter (φ : 𝓕) : (φs : List 𝓕) →
     · simp only [h, ↓reduceIte, decide_true, Bool.not_true]
       rw [koszulSignInsert_eq_filter]
       congr
-      simp
     · simp only [h, ↓reduceIte, decide_false, Bool.not_false]
       dsimp only [Fin.isValue, koszulSignInsert]
       simp only [h, ↓reduceIte]
       rw [koszulSignInsert_eq_filter]
       congr
-      · simp only [decide_not]
-      · simp
 
 lemma koszulSignInsert_eq_cons [Std.Total le] (φ : 𝓕) (φs : List 𝓕) :
     koszulSignInsert q le φ φs = koszulSignInsert q le φ (φ :: φs) := by

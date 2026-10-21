@@ -30,18 +30,17 @@ noncomputable instance (M : Type)
   scaleUnit u1 u2 μ := μ.map (fun m => scaleUnit u1 u2 m)
   scaleUnit_trans u1 u2 u3 μ := by
     rw [Measure.map_map]
-    congr 1
-    funext m
-    simp [scaleUnit_trans]
-    simp [HasDim.scaleUnit_apply]
-    · exact measurable_const_smul (α := M) ↑(u2.dimScale u3 (dim M)).1
-    · exact measurable_const_smul (α := M) ↑(u1.dimScale u2 (dim M)).1
+    · congr 1
+      funext m
+      simp [scaleUnit_trans]
+    · simp [HasDim.scaleUnit_apply]
+      exact measurable_const_smul (α := M) ↑(u2.dimScale u3 (dim M)).1
+    exact measurable_const_smul (α := M) ↑(u1.dimScale u2 (dim M)).1
   scaleUnit_trans' u1 u2 u3 μ := by
     rw [Measure.map_map]
-    congr 1
-    funext m
-    simp [scaleUnit_trans']
-    simp [HasDim.scaleUnit_apply]
+    · congr 1
+      funext m
+      simp [scaleUnit_trans']
     · exact measurable_const_smul (α := M) ↑(u1.dimScale u2 (dim M)).1
     · exact measurable_const_smul (α := M) ↑(u2.dimScale u3 (dim M)).1
   scaleUnit_id u μ := by
@@ -96,8 +95,8 @@ lemma integral_isDimensionallyCorrect (d : Dimension LTMCTDimensionBase) :
       u2.dimScale u1 (dim G * d⁻¹) • ∫ (x : M), f x ∂ μ) := by
       rw [hf]
       congr
-      erw [MeasureTheory.integral_smul]
-      rfl
+      simp only [Pi.smul_apply, NNReal.smul_def]
+      rw [MeasureTheory.integral_smul]
     /- What remains is a simple cancellation of the dimensional scales. -/
     _ = (u1.dimScale u2 (dim G)) • ((u2.dimScale u1 d) •
         u2.dimScale u1 (dim G * d⁻¹) • ∫ (x : M), f x ∂ μ) := by

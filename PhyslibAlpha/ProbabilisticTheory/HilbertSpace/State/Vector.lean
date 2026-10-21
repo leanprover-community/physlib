@@ -8,6 +8,7 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
 

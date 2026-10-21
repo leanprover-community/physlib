@@ -64,6 +64,24 @@ lemma timelike_time_dominates_space {d : ℕ} {v : Vector d}
     exact lt_of_sub_pos h_norm_pos
   exact h
 
+/-- Two timelike vectors have nonzero Minkowski inner product. -/
+lemma minkowskiProduct_ne_zero_of_timeLike {d : ℕ} {u v : Vector d}
+    (hu : causalCharacter u = .timeLike) (hv : causalCharacter v = .timeLike) :
+    ⟪u, v⟫ₘ ≠ 0 := by
+  have hlt : ⟪u.spatialPart, v.spatialPart⟫_ℝ * ⟪u.spatialPart, v.spatialPart⟫_ℝ <
+      (u.timeComponent * v.timeComponent) * (u.timeComponent * v.timeComponent) := by
+    calc
+      _ ≤ ⟪u.spatialPart, u.spatialPart⟫_ℝ * ⟪v.spatialPart, v.spatialPart⟫_ℝ :=
+        real_inner_mul_inner_self_le _ _
+      _ < (u.timeComponent * u.timeComponent) * (v.timeComponent * v.timeComponent) :=
+        mul_lt_mul'' (timelike_time_dominates_space hu) (timelike_time_dominates_space hv)
+          real_inner_self_nonneg real_inner_self_nonneg
+      _ = _ := by ring
+  intro h
+  rw [minkowskiProduct_eq_timeComponent_spatialPart, sub_eq_zero] at h
+  rw [h] at hlt
+  exact lt_irrefl _ hlt
+
 /-- For nonzero timelike vectors, the time component is nonzero -/
 @[simp]
 lemma time_component_ne_zero_of_timelike {d : ℕ} {v : Vector d}
@@ -83,6 +101,31 @@ lemma time_component_ne_zero_of_timelike {d : ℕ} {v : Vector d}
 lemma timelike_time_component_ne_zero {d : ℕ} {v : Vector d}
     (hv : causalCharacter v = .timeLike) :
     timeComponent v ≠ 0 := time_component_ne_zero_of_timelike hv
+
+/-- A nonzero vector orthogonal to a timelike vector has negative Minkowski self-product. -/
+lemma minkowskiProduct_self_neg_of_timeLike_orthogonal {d : ℕ} {u v : Lorentz.Vector d}
+    (hu : causalCharacter u = .timeLike) (hv : v ≠ 0) (horth : ⟪u, v⟫ₘ = 0) :
+    ⟪v, v⟫ₘ < 0 := by
+  have ht := timelike_time_component_ne_zero hu
+  rw [minkowskiProduct_eq_timeComponent_spatialPart, sub_eq_zero] at horth
+  have hs : v.spatialPart ≠ 0 := by
+    intro hsp
+    have htime : v.timeComponent = 0 := by
+      rw [hsp, inner_zero_right] at horth
+      exact (mul_eq_zero.mp horth).resolve_left ht
+    exact hv (eq_zero_of_timeComponent_of_spatialPart htime hsp)
+  have hlt := mul_lt_mul_of_pos_right (timelike_time_dominates_space hu)
+    (real_inner_self_pos.mpr hs)
+  have hcs := real_inner_mul_inner_self_le u.spatialPart v.spatialPart
+  rw [← horth] at hcs
+  rw [minkowskiProduct_eq_timeComponent_spatialPart]
+  apply sub_neg.mpr
+  apply lt_of_mul_lt_mul_left ?_ (mul_self_nonneg u.timeComponent)
+  calc
+    (u.timeComponent * u.timeComponent) * (v.timeComponent * v.timeComponent) =
+        (u.timeComponent * v.timeComponent) * (u.timeComponent * v.timeComponent) := by ring
+    _ ≤ ⟪u.spatialPart, u.spatialPart⟫_ℝ * ⟪v.spatialPart, v.spatialPart⟫_ℝ := hcs
+    _ < (u.timeComponent * u.timeComponent) * ⟪v.spatialPart, v.spatialPart⟫_ℝ := hlt
 
 /-- A vector is timelike if and only if its time component squared is less than
     the sum of its spatial components squared -/

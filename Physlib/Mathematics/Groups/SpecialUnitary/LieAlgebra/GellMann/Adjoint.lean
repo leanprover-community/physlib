@@ -53,13 +53,13 @@ open Matrix
   homomorphism from `SU(n)`. -/
 noncomputable def adjointGellMannBasis {n : ℕ} :
     specialUnitaryGroup (Fin n) ℂ →* Matrix (GellMannIndex n) (GellMannIndex n) ℝ :=
-  (MonoidHomClass.toMonoidHom (LinearMap.toMatrixAlgEquiv gellMannBasis)).comp adjoint
+  (MonoidHom.ofClass (LinearMap.toMatrixAlgEquiv gellMannBasis)).comp adjoint
 
 /-- The entries of the matrix of the adjoint action, `re tr (λ_i g λ_j g†) / 2`. -/
 lemma adjointGellMannBasis_apply {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ)
     (i j : GellMannIndex n) : adjointGellMannBasis g i j =
       ((gellMannMatrices i).1 * (g.1 * (gellMannMatrices j).1 * star g.1)).trace.re / 2 := by
-  rw [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_coe,
+  rw [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_ofClass,
     LinearMap.toMatrixAlgEquiv_apply, gellMannBasis_repr_apply, adjointContr_tmul,
     gellMannBasis_apply, adjoint_val]
 
@@ -69,7 +69,7 @@ lemma adjointGellMannBasis_inv {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
     adjointGellMannBasis g⁻¹ = (adjointGellMannBasis g)ᵀ := by
   ext i j
   rw [transpose_apply, adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.comp_apply,
-    MonoidHom.coe_coe, LinearMap.toMatrixAlgEquiv_apply, LinearMap.toMatrixAlgEquiv_apply,
+    MonoidHom.coe_ofClass, LinearMap.toMatrixAlgEquiv_apply, LinearMap.toMatrixAlgEquiv_apply,
     gellMannBasis_repr_apply, gellMannBasis_repr_apply, gellMannBasis_apply, gellMannBasis_apply,
     ← adjointContr_adjoint g, Representation.self_inv_apply, adjointContr_symm]
 
@@ -97,7 +97,7 @@ lemma toMatrix_adjointℂ_gellMannBasisℂ {n : ℕ} (g : specialUnitaryGroup (F
 lemma adjoint_gellMannMatrices {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) (j : GellMannIndex n) :
     adjoint g (gellMannMatrices j) = ∑ i, adjointGellMannBasis g i j • gellMannMatrices i := by
   conv_lhs => rw [← gellMannBasis.sum_repr (adjoint g (gellMannMatrices j))]
-  simp only [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_coe,
+  simp only [adjointGellMannBasis, MonoidHom.comp_apply, MonoidHom.coe_ofClass,
     LinearMap.toMatrixAlgEquiv_apply, gellMannBasis_apply]
 
 /-- The adjoint action on the coordinates in the Gell-Mann basis is multiplication by the matrix of

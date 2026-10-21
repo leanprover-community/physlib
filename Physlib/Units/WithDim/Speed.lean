@@ -49,10 +49,6 @@ noncomputable def oneKilometerPerHour : DimSpeed := toDimensionful ({SI with
 noncomputable def oneKnot : DimSpeed := toDimensionful ({SI with
   length := LengthUnit.nauticalMiles, time := TimeUnit.hours} : LTMCTUnitChoices) ⟨1⟩
 
-/-- The dimensionful speed of light corresponding to 299792458 meters per second. -/
-noncomputable def speedOfLight : Dimensionful (WithDim (L𝓭 * T𝓭⁻¹) ℝ) :=
-  toDimensionful SI ⟨299792458⟩
-
 /-!
 
 ## Speed in SI units
@@ -61,12 +57,12 @@ noncomputable def speedOfLight : Dimensionful (WithDim (L𝓭 * T𝓭⁻¹) ℝ)
 
 @[simp]
 lemma oneMeterPerSecond_in_SI : oneMeterPerSecond SI = ⟨1⟩ := by
-  simp [oneMeterPerSecond, toDimensionful_apply_apply]
+  simp [oneMeterPerSecond]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma oneMilePerHour_in_SI : oneMilePerHour SI = ⟨0.44704⟩ := by
-  simp [oneMilePerHour, dimScale, LengthUnit.miles, TimeUnit.hours, toDimensionful_apply_apply]
+  simp [oneMilePerHour, dimScale, LengthUnit.miles, TimeUnit.hours]
   ext
   simp [NNReal.coe_ofScientific]
   norm_num [toReal]
@@ -76,7 +72,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma oneKilometerPerHour_in_SI :
     oneKilometerPerHour SI = ⟨5/18⟩ := by
   simp [oneKilometerPerHour, dimScale,
-    LengthUnit.kilometers, TimeUnit.hours, toDimensionful_apply_apply]
+    LengthUnit.kilometers, TimeUnit.hours]
   ext
   simp only [WithDim.smul_val, smul_eq_mul, mul_one, NNReal.coe_mul, coe_rpow, NNReal.coe_div,
     NNReal.coe_ofNat]
@@ -85,15 +81,11 @@ lemma oneKilometerPerHour_in_SI :
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma oneKnot_in_SI : oneKnot SI = ⟨463/900⟩ := by
-  simp [oneKnot, dimScale, LengthUnit.nauticalMiles, TimeUnit.hours, toDimensionful_apply_apply]
+  simp [oneKnot, dimScale, LengthUnit.nauticalMiles, TimeUnit.hours]
   ext
   simp only [WithDim.smul_val, smul_eq_mul, mul_one, NNReal.coe_mul, coe_rpow, NNReal.coe_div,
     NNReal.coe_ofNat]
   norm_num [toReal]
-
-@[simp]
-lemma speedOfLight_in_SI : speedOfLight SI = ⟨299792458⟩ := by
-  simp [speedOfLight, toDimensionful_apply_apply]
 
 /-!
 

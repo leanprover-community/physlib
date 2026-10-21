@@ -200,7 +200,7 @@ lemma time_integral_hasFDerivAt {d : ℕ} (η : 𝓢(Time × Space d, ℝ)) (x�
     apply hasFDerivAt_integral_of_dominated_of_fderiv_le
       (bound := fun t => (k * ‖(ContinuousLinearMap.prod (0 : Space d →L[ℝ] Time)
       (ContinuousLinearMap.id ℝ (Space d)))‖) * ‖(1 + ‖t‖) ^ (rt)‖⁻¹)
-    · exact Filter.univ_mem' (hF (F x₀ 0))
+    · exact Filter.Eventually.of_forall (hF (F x₀ 0))
     · filter_upwards with x
       fun_prop
     · simp [F]
@@ -697,7 +697,7 @@ lemma time_integral_iteratedFDeriv_apply {d : ℕ} (n : ℕ) (η : 𝓢(Time × 
       funext x
       congr
       funext t
-      erw [SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
+      exact SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv.symm
     have h1 := time_integral_hasFDerivAt
       (LineDeriv.iteratedLineDerivOpCLM ℝ _ (fun i => ((0, Fin.tail y i) : Time × Space d)) η) x
     rw [h1.fderiv]
@@ -705,9 +705,8 @@ lemma time_integral_iteratedFDeriv_apply {d : ℕ} (n : ℕ) (η : 𝓢(Time × 
     congr
     funext t
     rw [iteratedFDeriv_succ_apply_left]
-    conv_lhs =>
-      enter [1, 2, t]
-      erw [SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
+    simp only [LineDeriv.iteratedLineDerivOpCLM_apply,
+      SchwartzMap.iteratedLineDerivOp_eq_iteratedFDeriv]
     rw [fderiv_continuousMultilinear_apply_const_apply]
     change (((fderiv ℝ (iteratedFDeriv ℝ n ⇑η ∘ fun x => (t, x)) x) (y 0))
       fun i => (0, Fin.tail y i)) = _

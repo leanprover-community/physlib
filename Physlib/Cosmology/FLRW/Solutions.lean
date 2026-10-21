@@ -15,11 +15,17 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
 This file collects the standard closed-form solutions of the Friedmann equations
 (`FirstOrderFriedmann` and `SecondOrderFriedmann` of `Physlib.Cosmology.FLRW.Basic`) and
-proves that they solve them: the de Sitter solution, the spatially flat power-law
-solutions (radiation-dominated and Einstein-de Sitter), the Milne model, and the equilibrium
-relations of the Einstein static universe. The vanishing of the curvature of the Milne model
-and the instability of the Einstein static universe are still TODO items: neither the curvature
-of the FLRW metric nor a perturbation theory of the Friedmann equations is available yet.
+proves that they solve them: the spatially flat power-law solutions (radiation-dominated
+and Einstein-de Sitter), the Milne model, and the equilibrium relations of the Einstein static
+universe. The de Sitter solution is in `Physlib.Cosmology.FLRW.DeSitter`. The vanishing of the
+curvature of the Milne model and the instability of the Einstein static universe are still TODO
+items: neither the curvature of the FLRW metric nor a perturbation theory of the Friedmann
+equations is available yet.
+
+The flat power-law solutions are also given as FLRW models: `FLRW.powerLaw` in
+`Physlib.Cosmology.FLRW.SpecificCases.PowerLaw`, `FLRW.radiationDominated` in
+`Physlib.Cosmology.FLRW.SpecificCases.RadiationDominated` and `FLRW.einsteinDeSitter` in
+`Physlib.Cosmology.FLRW.SpecificCases.EinsteinDeSitter`.
 
 Each solution is a scale factor `a : Time → ℝ` given by an explicit function of the time
 coordinate `t.val`. Its time derivative `∂ₜ a` is computed through the bridge
@@ -27,14 +33,6 @@ coordinate `t.val`. Its time derivative `∂ₜ a` is computed through the bridg
 
 ## ii. Key results
 
-- `deSitterScaleFactor`: `a(t) = a₀ exp(σ √(Λ/3) c t)` with `σ = ±1`.
-- `deSitterScaleFactor_firstOrderFriedmann`, `deSitterScaleFactor_secondOrderFriedmann`:
-  it solves both Friedmann equations with `ρ = 0`, `p = 0`, `k = 0` and `Λ > 0`.
-- `hubbleConstant_deSitterScaleFactor`: its Hubble parameter is the constant `σ √(Λ/3) c`
-  (for any `σ`, `Λ`, `c`).
-- `decelerationParameter_deSitterScaleFactor`: its deceleration parameter is `q = -1`.
-- `FLRW.deSitter`, `FLRW.friedmannSolution_deSitter`: the de Sitter model, defined at all
-  times, filled with the empty cosmic fluid solves the Friedmann equations.
 - `hubbleConstant_powerLaw`, `decelerationParameter_powerLaw`, `powerLaw_firstOrderFriedmann`,
   `powerLaw_secondOrderFriedmann`: the flat power-law solutions `a = (t / t₀) ^ n`, stated
   inline, have Hubble parameter `n / t` and deceleration parameter `(1 - n) / n`, and solve the
@@ -63,19 +61,14 @@ Bang is at the origin `t.val = 0` of the time chart.
 
 ## iii. Table of contents
 
-- A. The de Sitter solution
-  - A.1. The scale factor and its derivatives
-  - A.2. The Friedmann equations
-  - A.3. The Hubble and deceleration parameters
-  - A.4. The de Sitter solution as a solution of the Friedmann equations
-- B. The spatially flat power-law solutions
-  - B.1. Derivatives of the power-law scale factor
-  - B.2. The Hubble and deceleration parameters
-  - B.3. The radiation-dominated solution
-  - B.4. The Einstein-de Sitter solution
-- C. The Milne solution
-- D. The Einstein static universe
-- E. Remaining TODO items
+- A. The spatially flat power-law solutions
+  - A.1. Derivatives of the power-law scale factor
+  - A.2. The Hubble and deceleration parameters
+  - A.3. The radiation-dominated solution
+  - A.4. The Einstein-de Sitter solution
+- B. The Milne solution
+- C. The Einstein static universe
+- D. Remaining TODO items
 
 -/
 
@@ -87,156 +80,7 @@ open Real Time
 
 /-!
 
-## A. The de Sitter solution
-
--/
-
-/-!
-
-### A.1. The scale factor and its derivatives
-
--/
-
-/-- The de Sitter scale factor `a(t) = a₀ exp(σ √(Λ/3) c t)`, for `σ = ±1`
-  (the expanding branch is `σ = 1`). -/
-noncomputable def deSitterScaleFactor (a₀ σ Λ c : ℝ) : Time → ℝ :=
-  fun t => a₀ * Real.exp (σ * √(Λ / 3) * c * t.val)
-
-lemma deriv_deSitterScaleFactor (a₀ σ Λ c : ℝ) :
-    ∂ₜ (deSitterScaleFactor a₀ σ Λ c) =
-      fun t => a₀ * (σ * √(Λ / 3) * c) * Real.exp (σ * √(Λ / 3) * c * t.val) := by
-  funext t
-  have h : HasDerivAt (fun y : ℝ => a₀ * Real.exp (σ * √(Λ / 3) * c * y))
-      (a₀ * (σ * √(Λ / 3) * c) * Real.exp (σ * √(Λ / 3) * c * t.val)) t.val := by
-    have h := (((hasDerivAt_id t.val).const_mul (σ * √(Λ / 3) * c)).exp).const_mul a₀
-    refine h.congr_deriv ?_
-    simp only [id_eq]
-    ring
-  exact deriv_eq_of_hasDerivAt h
-
-lemma deriv_deriv_deSitterScaleFactor (a₀ σ Λ c : ℝ) :
-    ∂ₜ (∂ₜ (deSitterScaleFactor a₀ σ Λ c)) =
-      fun t => a₀ * (σ * √(Λ / 3) * c) * (σ * √(Λ / 3) * c) *
-        Real.exp (σ * √(Λ / 3) * c * t.val) := by
-  rw [deriv_deSitterScaleFactor]
-  funext t
-  have h : HasDerivAt (fun y : ℝ => a₀ * (σ * √(Λ / 3) * c) * Real.exp (σ * √(Λ / 3) * c * y))
-      (a₀ * (σ * √(Λ / 3) * c) * (σ * √(Λ / 3) * c) * Real.exp (σ * √(Λ / 3) * c * t.val))
-      t.val := by
-    have h := (((hasDerivAt_id t.val).const_mul (σ * √(Λ / 3) * c)).exp).const_mul
-      (a₀ * (σ * √(Λ / 3) * c))
-    refine h.congr_deriv ?_
-    simp only [id_eq]
-    ring
-  exact deriv_eq_of_hasDerivAt h
-
-/-- `σ² (√(Λ/3))² c² = Λ c² / 3` for `σ = ±1` and `0 ≤ Λ`. -/
-lemma sq_deSitterRate {σ Λ c : ℝ} (hΛ : 0 ≤ Λ) (hσ : σ = 1 ∨ σ = -1) :
-    (σ * √(Λ / 3) * c) ^ 2 = Λ * c ^ 2 / 3 := by
-  have hs : √(Λ / 3) ^ 2 = Λ / 3 := Real.sq_sqrt (by linarith)
-  rcases hσ with rfl | rfl <;> linear_combination c ^ 2 * hs
-
-/-!
-
-### A.2. The Friedmann equations
-
--/
-
-/-- The de Sitter scale factor solves the first-order Friedmann equation with `ρ = 0`,
-  `k = 0` and `Λ > 0`. -/
-lemma deSitterScaleFactor_firstOrderFriedmann {a₀ σ Λ G c : ℝ} (hΛ : 0 < Λ)
-    (ha₀ : a₀ ≠ 0) (hσ : σ = 1 ∨ σ = -1) (t : Time) :
-    FirstOrderFriedmann (deSitterScaleFactor a₀ σ Λ c) (fun _ => 0) 0 Λ G c t := by
-  unfold FirstOrderFriedmann
-  rw [deriv_deSitterScaleFactor]
-  simp only [deSitterScaleFactor]
-  have he := Real.exp_ne_zero (σ * √(Λ / 3) * c * t.val)
-  rw [show a₀ * (σ * √(Λ / 3) * c) * Real.exp (σ * √(Λ / 3) * c * t.val) /
-      (a₀ * Real.exp (σ * √(Λ / 3) * c * t.val)) = σ * √(Λ / 3) * c by field_simp,
-    sq_deSitterRate hΛ.le hσ]
-  ring
-
-/-- The de Sitter scale factor solves the second-order Friedmann equation with `ρ = 0`,
-  `p = 0` and `Λ > 0`. -/
-lemma deSitterScaleFactor_secondOrderFriedmann {a₀ σ Λ G c : ℝ} (hΛ : 0 < Λ)
-    (ha₀ : a₀ ≠ 0) (hσ : σ = 1 ∨ σ = -1) (t : Time) :
-    SecondOrderFriedmann (deSitterScaleFactor a₀ σ Λ c) (fun _ => 0) (fun _ => 0) Λ G c t := by
-  unfold SecondOrderFriedmann
-  rw [deriv_deriv_deSitterScaleFactor]
-  simp only [deSitterScaleFactor]
-  have he := Real.exp_ne_zero (σ * √(Λ / 3) * c * t.val)
-  rw [show a₀ * (σ * √(Λ / 3) * c) * (σ * √(Λ / 3) * c) *
-      Real.exp (σ * √(Λ / 3) * c * t.val) / (a₀ * Real.exp (σ * √(Λ / 3) * c * t.val))
-      = (σ * √(Λ / 3) * c) ^ 2 by field_simp,
-    sq_deSitterRate hΛ.le hσ]
-  ring
-
-/-!
-
-### A.3. The Hubble and deceleration parameters
-
--/
-
-/-- The Hubble parameter of the de Sitter solution is the constant `σ √(Λ/3) c`. -/
-lemma hubbleConstant_deSitterScaleFactor {a₀ σ Λ c : ℝ} (ha₀ : a₀ ≠ 0) (t : Time) :
-    hubbleConstant (deSitterScaleFactor a₀ σ Λ c) t = σ * √(Λ / 3) * c := by
-  unfold hubbleConstant
-  rw [deriv_deSitterScaleFactor]
-  simp only [deSitterScaleFactor]
-  have he := Real.exp_ne_zero (σ * √(Λ / 3) * c * t.val)
-  field_simp
-
-/-- The deceleration parameter of the de Sitter solution is `q = -1`. -/
-lemma decelerationParameter_deSitterScaleFactor {a₀ σ Λ c : ℝ} (hΛ : 0 < Λ) (hc : 0 < c)
-    (ha₀ : a₀ ≠ 0) (hσ : σ = 1 ∨ σ = -1) (t : Time) :
-    decelerationParameter (deSitterScaleFactor a₀ σ Λ c) t = -1 := by
-  unfold decelerationParameter
-  rw [deriv_deriv_deSitterScaleFactor, deriv_deSitterScaleFactor]
-  simp only [deSitterScaleFactor]
-  have he := Real.exp_ne_zero (σ * √(Λ / 3) * c * t.val)
-  have hK : σ * √(Λ / 3) * c ≠ 0 := by
-    have hs : 0 < √(Λ / 3) := Real.sqrt_pos.mpr (by linarith)
-    rcases hσ with rfl | rfl
-    · positivity
-    · have : 0 < √(Λ / 3) * c := mul_pos hs hc
-      linarith
-  have hσ0 : σ ≠ 0 := by
-    rcases hσ with rfl | rfl <;> norm_num
-  field_simp
-
-/-!
-
-### A.4. The de Sitter solution as a solution of the Friedmann equations
-
--/
-
-/-- The de Sitter model, defined at all times: the FLRW model with the scale factor
-  `deSitterScaleFactor a₀ σ Λ c`, `a₀ > 0`, and the flat spatial geometry. -/
-noncomputable def _root_.Cosmology.FLRW.deSitter (a₀ σ Λ c : ℝ) (ha₀ : 0 < a₀) : FLRW where
-  I := Set.univ
-  isOpen_I := isOpen_univ
-  ordConnected_I := Set.ordConnected_univ
-  a := deSitterScaleFactor a₀ σ Λ c
-  a_pos _ _ := mul_pos ha₀ (Real.exp_pos _)
-  differentiableOn_a := by
-    unfold deSitterScaleFactor
-    fun_prop
-  differentiableOn_deriv_a := by
-    rw [deriv_deSitterScaleFactor]
-    fun_prop
-  geometry := .Flat
-
-/-- The de Sitter model filled with the empty cosmic fluid solves the Friedmann equations with
-  cosmological constant `Λ > 0`, for `σ = ±1`. -/
-lemma _root_.Cosmology.FLRW.friedmannSolution_deSitter {a₀ σ Λ : ℝ} (G c : ℝ) (hΛ : 0 < Λ)
-    (ha₀ : 0 < a₀) (hσ : σ = 1 ∨ σ = -1) :
-    (FLRW.deSitter a₀ σ Λ c ha₀).FriedmannSolution CosmicFluid.empty Λ G c :=
-  ⟨fun t _ => deSitterScaleFactor_firstOrderFriedmann hΛ ha₀.ne' hσ t,
-    fun t _ => deSitterScaleFactor_secondOrderFriedmann hΛ ha₀.ne' hσ t⟩
-
-/-!
-
-## B. The spatially flat power-law solutions
+## A. The spatially flat power-law solutions
 
 The radiation-dominated and Einstein-de Sitter solutions are both of the form
 `a(t) = (t / t₀) ^ n`; the Hubble parameter is `n / t` and the deceleration parameter
@@ -253,7 +97,7 @@ assumes `0 < t.val`.
 
 /-!
 
-### B.1. Derivatives of the power-law scale factor
+### A.1. Derivatives of the power-law scale factor
 
 -/
 
@@ -291,7 +135,7 @@ lemma deriv_deriv_powerLaw {t₀ : Time} (ht₀ : t₀.val ≠ 0) (n : ℝ) {t :
 
 /-!
 
-### B.2. The Hubble and deceleration parameters
+### A.2. The Hubble and deceleration parameters
 
 -/
 
@@ -348,7 +192,7 @@ lemma powerLaw_secondOrderFriedmann {t₀ : Time} {G c n w : ℝ} (ht₀ : 0 < t
 
 /-!
 
-### B.3. The radiation-dominated solution
+### A.3. The radiation-dominated solution
 
 -/
 
@@ -404,7 +248,7 @@ lemma hubbleConstant_radiationScaleFactor_t₀ {t₀ : Time} (ht₀ : 0 < t₀.v
 
 /-!
 
-### B.4. The Einstein-de Sitter solution
+### A.4. The Einstein-de Sitter solution
 
 -/
 
@@ -460,7 +304,7 @@ lemma hubbleConstant_einsteinDeSitterScaleFactor_t₀ {t₀ : Time} (ht₀ : 0 <
 
 /-!
 
-## C. The Milne solution
+## B. The Milne solution
 
 The Milne universe is the empty (`ρ = 0`, `p = 0`, `Λ = 0`) solution with `k = -1` and
 `a(t) = c t` for `t > 0`. That it is Minkowski space in expanding coordinates (vanishing
@@ -539,7 +383,7 @@ lemma _root_.Cosmology.FLRW.friedmannSolution_milne (G : ℝ) {c : ℝ} (hc : 0 
 
 /-!
 
-## D. The Einstein static universe
+## C. The Einstein static universe
 
 At an instant where `∂ₜ a = ∂ₜ ∂ₜ a = 0`, the two Friedmann equations with dust (`p = 0`)
 force the density `ρ = Λ c² / (4 π G)` (twice the density `Λ c² / (8 π G)` that the
@@ -590,7 +434,7 @@ lemma einsteinStatic_curvature_pos {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : T
 
 /-!
 
-## E. Remaining TODO items
+## D. Remaining TODO items
 
 -/
 

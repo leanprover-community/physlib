@@ -115,7 +115,7 @@ private lemma crossToEnd_prodT_unitTensor {nV : ℕ} {cE : Fin nV → C} {cB : C
   -- transparency; the trailing `permT_permT` needs the full `erw`.
   rw (transparency := .instances) [key, permT_permT]
   rw [prodT_permT_right, permT_permT]
-  erw [permT_permT]
+  refine (permT_permT _ _ _).trans ?_
   apply permT_congr
   · funext i
     simp only [Function.comp_apply, id_eq, Fin.funPredPredAbove]

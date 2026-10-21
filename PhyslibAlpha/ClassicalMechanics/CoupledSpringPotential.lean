@@ -11,6 +11,7 @@ public import Mathlib.LinearAlgebra.QuadraticForm.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Analytic
 public import Mathlib.Analysis.Analytic.IteratedFDeriv
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.Calculus.FDeriv.Pow
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import PhyslibAlpha.Mathematics.PartialDerivativeTest
 /-!

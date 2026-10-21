@@ -7,6 +7,7 @@ module
 
 public import Physlib.SpaceAndTime.Space.Derivatives.Laplacian
 public import Mathlib.MeasureTheory.Integral.CurveIntegral.Poincare
+public import Mathlib.Analysis.Calculus.ParametricIntervalIntegral
 public import Physlib.SpaceAndTime.Space.CrossProduct
 public import Physlib.Mathematics.LeviCivita.Basic
 public import Mathlib.Tactic.Cases
@@ -604,10 +605,10 @@ lemma exists_grad_of_curl_zero (f : Space → EuclideanSpace ℝ (Fin 3)) (hf : 
         fun a => (basis.repr.symm (f a))) a x) y := by rfl
     rw [fderiv_comp _ (by exact
       (InnerProductSpace.toDual ℝ (Space)).differentiable.differentiableAt) (by fun_prop)]
-    erw [(InnerProductSpace.toDual ℝ (Space)).fderiv]
+    rw [(InnerProductSpace.toDual ℝ (Space)).fderiv]
     simp only [ContinuousLinearMap.coe_comp, ContinuousLinearEquiv.coe_coe,
       LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply]
-    erw [InnerProductSpace.toDual_apply_apply]
+    rw [InnerProductSpace.toDual_apply_apply]
     rw [fderiv_fun_comp _ (by fun_prop) (by fun_prop)]
     simp
   have hdω: ∀ a ∈ s, ∀ (x y : Space), ((fderiv ℝ ω a) x) y = ((fderiv ℝ ω a) y) x := by

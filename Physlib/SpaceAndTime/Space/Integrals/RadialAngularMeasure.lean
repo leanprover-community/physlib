@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Mathematics.ForMathlib.Integration.Basic
 public import Physlib.SpaceAndTime.Space.Integrals.Basic
 /-!
 
@@ -97,11 +98,9 @@ instance (d : ℕ) : SFinite (radialAngularMeasure (d := d)) := by
 lemma integral_radialAngularMeasure {d : ℕ} (f : Space d → F) :
     ∫ x, f x ∂radialAngularMeasure = ∫ x, (1 / ‖x‖ ^ (d - 1)) • f x := by
   dsimp [radialAngularMeasure]
-  erw [integral_withDensity_eq_integral_smul (by fun_prop)]
-  congr
-  funext x
-  simp only [one_div]
-  rw [NNReal.smul_def, Real.coe_toNNReal _ (by positivity)]
+  rw [Integration.integral_withDensity_ofReal_eq_integral_smul (by fun_prop)]
+  intro r
+  positivity
 
 lemma lintegral_radialMeasure {d : ℕ} (f : Space d → ENNReal) (hf : Measurable f) :
     ∫⁻ x, f x ∂radialAngularMeasure = ∫⁻ x, ENNReal.ofReal (1 / ‖x‖ ^ (d - 1)) * f x := by
@@ -177,9 +176,8 @@ lemma radialAngularMeasure_real_closedBall (r : ℝ) (hr : 0 < r) :
 lemma integrable_radialAngularMeasure_iff {d : ℕ} {f : Space d → F} :
     Integrable f (radialAngularMeasure (d := d)) ↔
       Integrable (fun x => (1 / ‖x‖ ^ (d - 1)) • f x) volume := by
-  dsimp [radialAngularMeasure]
-  erw [integrable_withDensity_iff_integrable_smul₀ (by fun_prop)]
-  simp only [one_div]
+  refine (integrable_withDensity_iff_integrable_smul₀
+    (f := fun x : Space d => Real.toNNReal (1 / ‖x‖ ^ (d - 1))) (by fun_prop)).trans ?_
   refine integrable_congr ?_
   filter_upwards with x
   rw [Real.toNNReal_of_nonneg (by positivity), NNReal.smul_def, coe_mk]

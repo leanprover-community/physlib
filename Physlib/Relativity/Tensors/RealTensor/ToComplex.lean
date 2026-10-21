@@ -544,7 +544,7 @@ lemma complexify_prod {n m : ℕ}
   all_goals
     rw [ComponentIdx.complexify_apply]
     simp [ComponentIdx.prod]
-    erw [basisIdxCongr_eq_cast]
+    rw [basisIdxCongr_eq_cast]
     simp
 
 /-- The map `toComplex` commutes with prodT. -/

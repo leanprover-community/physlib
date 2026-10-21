@@ -7,6 +7,8 @@ module
 
 public import Mathlib.Analysis.Complex.Polynomial.Basic
 public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
+public import Mathlib.Analysis.Matrix.Normed
+public import Mathlib.Topology.UniformSpace.Matrix
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 
 /-!

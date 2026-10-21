@@ -201,41 +201,66 @@ lemma LTMCTUnitChoices.dimScale_scaleUnit {u1 u2 u : LTMCTUnitChoices}
   simp [dimScale, scaleUnit]
   simp [PositiveRealUnitCore.div_eq_val, toReal]
 
-lemma Dimensionful.of_scaleUnit {M : Type} [CarriesDimension M] {u1 u2 u : LTMCTUnitChoices}
+@[simp]
+lemma LTMCTUnitChoices.dimScaleUnits_scaleUnit {u1 u2 u : LTMCTUnitChoices}
+    (d : Dimension LTMCTDimensionBase) :
+    u.dimScaleUnits (scaleUnit u1 u2 u) d = u1.dimScaleUnits u2 d := by
+  apply Units.ext
+  simp [LTMCTUnitChoices.dimScale_scaleUnit d]
+
+lemma Dimensionful.of_scaleUnit_units {M : Type} [CarriesDimension M] {u1 u2 u : LTMCTUnitChoices}
     (c : Dimensionful M) :
     c.1 (scaleUnit u1 u2 u) =
-    u1.dimScale u2 (dim M) • c.1 (u) := by
-  rw [c.2 u (scaleUnit u1 u2 u), LTMCTUnitChoices.dimScale_scaleUnit]
+    u1.dimScaleUnits u2 (dim M) • c.1 (u) := by
+  rw [c.2 u (scaleUnit u1 u2 u), LTMCTUnitChoices.dimScaleUnits_scaleUnit]
 
-noncomputable instance {M1 : Type} [CarriesDimension M1] : MulUnitDependent M1 where
+noncomputable instance {M1 : Type} [CarriesDimension M1] : UnitDependent M1 where
   scaleUnit u1 u2 m := (toDimensionful u1 m).1 u2
   scaleUnit_trans u1 u2 u3 m := by
-    simp only [toDimensionful_apply_apply]
-    rw [smul_smul, mul_comm, LTMCTUnitChoices.dimScale_transitive]
+    simp only [toDimensionful_apply_apply_units]
+    rw [smul_smul, mul_comm, LTMCTUnitChoices.dimScaleUnits_transitive]
   scaleUnit_trans' u1 u2 u3 m := by
-    simp only [toDimensionful_apply_apply]
-    rw [smul_smul, LTMCTUnitChoices.dimScale_transitive]
+    simp only [toDimensionful_apply_apply_units]
+    rw [smul_smul, LTMCTUnitChoices.dimScaleUnits_transitive]
   scaleUnit_id u m := by
-    simp only [toDimensionful_apply_apply]
-    rw [LTMCTUnitChoices.dimScale_self, one_smul]
-  scaleUnit_mul u1 u2 r m := by
-    simp only [toDimensionful_apply_apply]
-    exact smul_comm (u1.dimScale u2 (dim M1)) r m
+    simp only [toDimensionful_apply_apply_units]
+    rw [LTMCTUnitChoices.dimScaleUnits_self, one_smul]
 
-lemma HasDim.scaleUnit_apply {M : Type} [CarriesDimension M]
+lemma HasDim.scaleUnit_apply_units {M : Type} [CarriesDimension M]
+    (u1 u2 : LTMCTUnitChoices) (m : M) :
+    scaleUnit u1 u2 m = (u1.dimScaleUnits u2 (dim M)) • m :=
+  toDimensionful_apply_apply_units u1 u2 m
+
+/-- The scaling of a type carrying a dimension which also has an action of `ℝ≥0`, phrased with
+  `dimScale` in place of `dimScaleUnits`. -/
+lemma HasDim.scaleUnit_apply {M : Type} [HasDim M] [MulAction ℝ≥0 M]
     (u1 u2 : LTMCTUnitChoices) (m : M) :
     scaleUnit u1 u2 m = (u1.dimScale u2 (dim M)) • m :=
-  toDimensionful_apply_apply u1 u2 m
+  toDimensionful_apply_apply_units u1 u2 m
+
+/-- A type carrying a dimension which also has a `MulAction ℝ≥0` compatible with the scaling by
+  units is `MulUnitDependent`. A type whose elements are strictly positive carries no action of
+  `ℝ≥0` compatible with its magnitude, and so is `UnitDependent` only. -/
+noncomputable instance {M1 : Type} [HasDim M1] [MulAction ℝ≥0 M1] : MulUnitDependent M1 where
+  scaleUnit_mul u1 u2 r m := by
+    simp only [HasDim.scaleUnit_apply_units]
+    exact smul_comm (u1.dimScaleUnits u2 (dim M1)) r m
 
 noncomputable instance {M : Type} [AddCommMonoid M] [Module ℝ M] [HasDim M] :
     LinearUnitDependent M where
-  scaleUnit_add u1 u2 m1 m2 := smul_add (u1.dimScale u2 (dim M)) m1 m2
-  scaleUnit_smul u1 u2 r m := smul_comm (u1.dimScale u2 (dim M)) r m
+  scaleUnit_add u1 u2 m1 m2 := smul_add (u1.dimScaleUnits u2 (dim M)) m1 m2
+  scaleUnit_smul u1 u2 r m := smul_comm (u1.dimScaleUnits u2 (dim M)) r m
 
 noncomputable instance {M : Type} [AddCommMonoid M] [Module ℝ M]
     [HasDim M] [TopologicalSpace M]
     [ContinuousConstSMul ℝ M] : ContinuousLinearUnitDependent M where
-  scaleUnit_cont u1 u2 := continuous_const_smul (u1.dimScale u2 (dim M)).1
+  scaleUnit_cont u1 u2 := by
+    have h : (scaleUnit u1 u2 : M → M) =
+        fun m => ((u1.dimScaleUnits u2 (dim M) : ℝ≥0) : ℝ) • m := by
+      funext m
+      rw [HasDim.scaleUnit_apply_units, Units.smul_def, NNReal.smul_def]
+    rw [h]
+    exact continuous_const_smul _
 
 /-!
 
@@ -461,8 +486,8 @@ lemma DMul.hMul_scaleUnit {M1 M2 M3 : Type} [CarriesDimension M1] [CarriesDimens
     [DMul M1 M2 M3] (m1 : M1) (m2 : M2) (u1 u2 : LTMCTUnitChoices) :
     (scaleUnit u1 u2 m1) * (scaleUnit u1 u2 m2) =
     scaleUnit u1 u2 (m1 * m2) := by
-  simpa only [toDimensionful_apply_apply, LTMCTUnitChoices.dimScale_self, one_smul,
-    HasDim.scaleUnit_apply] using
+  simpa only [CarriesDimension.toDimensionful_apply_apply_units,
+    LTMCTUnitChoices.dimScaleUnits_self, one_smul, HasDim.scaleUnit_apply_units] using
     DMul.mul_dim (M3 := M3) (toDimensionful u1 m1) (toDimensionful u1 m2) u1 u2
 
 /-!

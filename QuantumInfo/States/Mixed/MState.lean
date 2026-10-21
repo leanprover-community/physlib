@@ -16,7 +16,6 @@ public import QuantumInfo.ClassicalInfo.Distribution
 public import QuantumInfo.States.Pure.Braket
 
 public import Mathlib.Logic.Equiv.Basic
-public import Mathlib.Tactic.LinearCombinationPrime
 
 /-!
 Finite dimensional quantum mixed states, ρ.
@@ -627,7 +626,7 @@ theorem spectrum_prod (ρ₁ : MState d₁) (ρ₂ : MState d₂) : ∃(σ : d�
           have h_unitary : Matrix.kroneckerMap (fun x y => x * y) U_A U_B * Matrix.kroneckerMap (fun x y => x * y) (Star.star U_A) (Star.star U_B) = Matrix.kroneckerMap (fun x y => x * y) (U_A * Star.star U_A) (U_B * Star.star U_B) := by
             ext ⟨ i, j ⟩ ⟨ k, l ⟩ ; simp [ Matrix.mul_apply, Matrix.kroneckerMap_apply ]
             ring_nf
-            erw [ Finset.sum_product ]
+            rw [ Fintype.sum_prod_type ]
             simp [ mul_assoc, mul_comm, mul_left_comm, Finset.mul_sum]
             exact Finset.sum_comm.trans ( Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by ring );
           simp_all only [zero_mul, implies_true, mul_zero, mul_one, Matrix.kroneckerMap_one_one]
@@ -638,7 +637,7 @@ theorem spectrum_prod (ρ₁ : MState d₁) (ρ₂ : MState d₂) : ∃(σ : d�
         · ext i j; simp [ Matrix.conjTranspose_apply, Matrix.kroneckerMap_apply ] ;
     obtain ⟨ U, hU₁, hU₂ ⟩ := h_unitary;
     apply Matrix.IsHermitian.eigenvalues_eq_of_unitary_similarity_diagonal;
-    exact hU₁;
+    · exact hU₁;
     convert hU₂ using 1;
     norm_num +zetaDelta at *;
   obtain ⟨ i, j, h ⟩ := h σ; have := congr_fun hσ ( i, j ) ; simp_all [ MState.spectrum ] ;
@@ -752,7 +751,7 @@ lemma pure_eq_pure_iff {d : Type*} [Fintype d] [DecidableEq d] (ψ φ : Ket d) :
     simp_all
     -- Since $\overline{z} \cdot \overline{\varphi_k} \neq 0$, we can divide both sides of the equation by $\overline{z} \cdot \overline{\varphi_k}$.
     have h_div : ψ.vec i * starRingEnd ℂ z = φ.vec i := by
-      exact mul_left_cancel₀ ( show starRingEnd ℂ ( φ.vec k ) ≠ 0 from by simpa [ Complex.ext_iff ] using hk ) ( by linear_combination' h_eq );
+      exact mul_left_cancel₀ ( show starRingEnd ℂ ( φ.vec k ) ≠ 0 from by simpa [ Complex.ext_iff ] using hk ) ( by linear_combination h_eq );
     rw [ ← h_div, mul_left_comm, Complex.mul_conj, Complex.normSq_eq_norm_sq ] ; aesop;
   · cases h
     rename_i h
@@ -797,9 +796,9 @@ lemma pure_separable_imp_IsProd {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂
     refine' ⟨ k, hk, _ ⟩;
     convert MState.eq_of_sum_eq_pure h_pure _ _ _ k _ _;
     rotate_left;
-    exact Finset.univ;
-    use fun x => ( ps x : ℝ );
-    use fun x => MState.prod x.val.1 x.val.2;
+    · exact Finset.univ;
+    · use fun x => ( ps x : ℝ );
+    · use fun x => MState.prod x.val.1 x.val.2;
     all_goals norm_cast;
     · exact fun i a => unitInterval.nonneg (ps i);
     · exact ps.2;
@@ -844,11 +843,11 @@ lemma pure_separable_imp_IsProd {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂
     exact this.mp ( MState.ext h_eq );
   obtain ⟨ z, hz₁, hz₂ ⟩ := h_eq_ket;
   use ⟨ fun i => z * ξ' i, ?_ ⟩, φ';
-  ext ⟨ i, j ⟩ ; simp [ Ket.prod ];
-  convert! congr_fun hz₂ ( i, j ) using 1;
-  exact mul_assoc _ _ _;
+  · ext ⟨ i, j ⟩ ; simp [ Ket.prod ];
+    convert! congr_fun hz₂ ( i, j ) using 1;
+    exact mul_assoc _ _ _;
   simp [ hz₁]
-  exact ξ'.normalized'
+  · exact ξ'.normalized'
 
 /-- A pure state is separable iff the ket is a product state. -/
 theorem pure_separable_iff_IsProd (ψ : Ket (d₁ × d₂)) :
@@ -948,7 +947,7 @@ theorem Ket.IsProd_iff_rank_eq_one {d₁ d₂ : Type*} [Fintype d₁] [Fintype d
         exact ⟨ ∑ j, ψ' j * y j, by ext i; simp [ Matrix.mulVec, dotProduct, mul_comm, mul_left_comm, Finset.mul_sum _ _ _ ] ⟩;
       exact le_trans ( Submodule.finrank_mono h_range ) ( finrank_span_le_card _ ) |> le_trans <| by norm_num;
     cases h_rank.eq_or_lt <;> simp_all [ Matrix.rank, Submodule.eq_bot_iff ];
-    · convert! ‹Module.finrank ℂ ( LinearMap.range ( Matrix.mulVecLin ( Matrix.of fun i j => ξ i * ψ' j ) ) ) = 1› using 3 ; aesop;
+    · convert! ‹Module.finrank ℂ ( LinearMap.range ( Matrix.mulVecLin ( Matrix.of fun i j => ξ i * ψ' j ) ) ) = 1› using 3 ; · aesop;
       · aesop;
       · ext; simp [hξψ'];
     · have := ψ.exists_ne_zero
@@ -1160,7 +1159,7 @@ lemma multiset_spectrum_relabel_eq {d₁ d₂ : Type*} [Fintype d₁] [Decidable
   · rw [ Multiset.count_map, Multiset.count_map ];
     simp [ Subtype.ext_iff ];
     congr! 2;
-  · erw [ Multiset.count_map, Multiset.count_map ];
+  · rw [ Multiset.count_map, Multiset.count_map ];
     congr! 2;
     exact beq_eq_beq.mp rfl
 

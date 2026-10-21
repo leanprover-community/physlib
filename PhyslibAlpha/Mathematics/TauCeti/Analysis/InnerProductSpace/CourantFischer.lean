@@ -38,6 +38,12 @@ form domination and Weyl's perturbation bound.
 * `LinearMap.IsSymmetric.abs_eigenvalue_sub_eigenvalue_le` and
   `LinearMap.IsSymmetric.abs_eigenvalue_sub_eigenvalue_le_norm`:
   Weyl's perturbation inequality.
+* `LinearMap.IsSymmetric.eigenvalue_compression_le` and
+  `LinearMap.IsSymmetric.eigenvalue_le_eigenvalue_compression`:
+  Cauchy interlacing for an operator on a subspace with the same quadratic form, such as the
+  compression `LinearMap.IsSymmetric.compression`.
+* `LinearMap.IsSymmetric.eigenvalue_ascending_le_ritz`: the Hylleraas–Undheim–MacDonald
+  bound, the `k`-th lowest Ritz value bounds the `k`-th lowest eigenvalue from above.
 
 ## iii. Table of contents
 
@@ -47,12 +53,19 @@ form domination and Weyl's perturbation bound.
   - A.3. The Courant–Fischer min-max equality
   - A.4. Sorted-eigenvalue uniqueness and Loewner monotonicity
   - A.5. Weyl's inequality
+  - A.6. Courant–Fischer on subspaces of larger dimension
+  - A.7. Cauchy interlacing and Rayleigh–Ritz bounds
+  - A.8. The orthogonal compression
 
 ## iv. References
 
 * R. A. Horn and C. R. Johnson, *Matrix Analysis*, 2nd ed.,
   Theorems 4.2.6 and 4.3.1.
 * R. Bhatia, *Matrix Analysis*, Corollary III.2.6.
+* E. A. Hylleraas and B. Undheim, *Numerische Berechnung der 2S-Terme von Ortho- und
+  Par-Helium*, Z. Phys. 65 (1930) 759–772, pp. 763–764. [ref: hylleraas_undheim_1930]
+* J. K. L. MacDonald, *Successive Approximations by the Rayleigh-Ritz Variation Method*,
+  Phys. Rev. 43 (1933) 830–833, rule (1) and Corollary 1.1. [ref: macdonald_1933]
 
 Provenance: Ported and adapted from
 [`ForTauCeti/Analysis/InnerProductSpace/CourantFischer.lean`](https://github.com/AIQ-Kitware/aiq-dkps-formalization/blob/main/ForTauCeti/Analysis/InnerProductSpace/CourantFischer.lean)
@@ -500,6 +513,134 @@ lemma eigenvalues_cast {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) {m : ℕ}
     (hm : finrank 𝕜 E = m) (hn : finrank 𝕜 E = n) (hmn : m = n) (i : Fin m) :
     hT.eigenvalues hm i = hT.eigenvalues hn (Fin.cast hmn i) := by
   subst hmn; rfl
+
+/-! ### A.6. Courant–Fischer on subspaces of larger dimension -/
+
+/-- **Courant–Fischer, upper direction, for large subspaces.** On any subspace `W` of dimension
+at least `k + 1` there is a unit vector `x` with `re ⟪T x, x⟫ ≤ λₖ(T)`. -/
+lemma exists_unit_vector_re_inner_le_eigenvalue_of_le
+    (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n) (k : Fin n)
+    (W : Submodule 𝕜 E) (hW : (k : ℕ) + 1 ≤ finrank 𝕜 W) :
+    ∃ x ∈ W, ‖x‖ = 1 ∧ RCLike.re ⟪T x, x⟫_𝕜 ≤ hT.eigenvalues hn k := by
+  set b := hT.eigenvectorBasis hn
+  set U := b.spanIndices ↑(Finset.Ici k) with hU
+  have hUdim : finrank 𝕜 U = n - (k : ℕ) := by
+    rw [hU, b.finrank_spanIndices, Fin.card_Ici]
+  have hk : (k : ℕ) < n := k.2
+  have hinf : W ⊓ U ≠ ⊥ :=
+    Submodule.inf_ne_bot_of_finrank_lt (by omega)
+  obtain ⟨z, hz, hz0⟩ := Submodule.exists_mem_ne_zero_of_ne_bot hinf
+  obtain ⟨hzW, hzU⟩ := Submodule.mem_inf.mp hz
+  have hz0' : ‖z‖ ≠ 0 := norm_ne_zero_iff.mpr hz0
+  set x := ((‖z‖⁻¹ : ℝ) : 𝕜) • z with hx
+  have hnx : ‖x‖ = 1 := by
+    rw [hx, norm_smul, RCLike.norm_ofReal, abs_inv, abs_norm, inv_mul_cancel₀ hz0']
+  refine ⟨x, W.smul_mem _ hzW, hnx, ?_⟩
+  have hxU : x ∈ U := U.smul_mem _ hzU
+  calc RCLike.re ⟪T x, x⟫_𝕜
+      ≤ hT.eigenvalues hn k * ‖x‖ ^ 2 :=
+        hT.re_inner_apply_self_le_of_mem_spanIndices hn
+          (fun _ hik => hT.eigenvalues_antitone hn (by simpa using hik)) hxU
+    _ = hT.eigenvalues hn k := by rw [hnx]; ring
+
+/-! ### A.7. Cauchy interlacing and Rayleigh–Ritz bounds -/
+
+section Interlacing
+
+variable {m : ℕ} {V : Submodule 𝕜 E} {A : V →ₗ[𝕜] V}
+
+/-- **Upper Cauchy interlacing.** If the quadratic form of the symmetric operator `A` on `V`
+agrees with that of `T`, then `μₖ(A) ≤ λₖ(T)` for every `k < m`. -/
+lemma eigenvalue_compression_le
+    (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n)
+    (hA : A.IsSymmetric) (hm : finrank 𝕜 V = m)
+    (hcomp : ∀ y : V, RCLike.re ⟪A y, y⟫_𝕜 = RCLike.re ⟪T y, y⟫_𝕜)
+    (k : Fin m) (hk : (k : ℕ) < n) :
+    hA.eigenvalues hm k ≤ hT.eigenvalues hn ⟨k, hk⟩ := by
+  obtain ⟨W, hWdim, hWlow⟩ := hA.exists_submodule_forall_unit_eigenvalue_le_re_inner hm k
+  obtain ⟨x, hxW, hnx, hx⟩ :=
+    hT.exists_unit_vector_re_inner_le_eigenvalue hn ⟨k, hk⟩ (W.map V.subtype)
+      (by rw [Submodule.finrank_map_subtype_eq, hWdim])
+  obtain ⟨y, hyW, rfl⟩ := Submodule.mem_map.mp hxW
+  have hny : ‖y‖ = 1 := by simpa using hnx
+  calc hA.eigenvalues hm k ≤ RCLike.re ⟪A y, y⟫_𝕜 := hWlow y hyW hny
+    _ = RCLike.re ⟪T y, y⟫_𝕜 := hcomp y
+    _ ≤ hT.eigenvalues hn ⟨k, hk⟩ := hx
+
+/-- **Lower Cauchy interlacing.** If the quadratic form of the symmetric operator `A` on `V`
+agrees with that of `T`, then `λ_{k + (n - m)}(T) ≤ μₖ(A)` for every `k < m`. -/
+lemma eigenvalue_le_eigenvalue_compression
+    (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n)
+    (hA : A.IsSymmetric) (hm : finrank 𝕜 V = m)
+    (hcomp : ∀ y : V, RCLike.re ⟪A y, y⟫_𝕜 = RCLike.re ⟪T y, y⟫_𝕜)
+    (k : Fin m) (hmn : m ≤ n) :
+    hT.eigenvalues hn ⟨k + (n - m), by omega⟩ ≤ hA.eigenvalues hm k := by
+  set j : Fin n := ⟨k + (n - m), by omega⟩ with hj
+  obtain ⟨U, hUdim, hUlow⟩ := hT.exists_submodule_forall_unit_eigenvalue_le_re_inner hn j
+  set W : Submodule 𝕜 V := (U ⊓ V).comap V.subtype with hW
+  have hWdim : (k : ℕ) + 1 ≤ finrank 𝕜 W := by
+    have h1 := Submodule.finrank_sup_add_finrank_inf_eq U V
+    have h2 : finrank 𝕜 ↥(U ⊔ V) ≤ n := hn ▸ Submodule.finrank_le _
+    have h3 : finrank 𝕜 W = finrank 𝕜 ↥(U ⊓ V) :=
+      (Submodule.comapSubtypeEquivOfLe (inf_le_right : U ⊓ V ≤ V)).finrank_eq
+    have h4 : (j : ℕ) = k + (n - m) := rfl
+    have hkm : (k : ℕ) < m := k.2
+    omega
+  obtain ⟨y, hyW, hny, hy⟩ := hA.exists_unit_vector_re_inner_le_eigenvalue_of_le hm k W hWdim
+  have hyU : (y : E) ∈ U := (Submodule.mem_inf.mp (Submodule.mem_comap.mp hyW)).1
+  calc hT.eigenvalues hn j ≤ RCLike.re ⟪T y, y⟫_𝕜 := hUlow _ hyU (by simpa using hny)
+    _ = RCLike.re ⟪A y, y⟫_𝕜 := (hcomp y).symm
+    _ ≤ hA.eigenvalues hm k := hy
+
+/-- **Hylleraas–Undheim–MacDonald.** In ascending order, the `k`-th lowest Ritz value is an upper
+bound for the `k`-th lowest exact eigenvalue: `λ↑ₖ(T) ≤ μ↑ₖ(S)` for every `k < m`. -/
+lemma eigenvalue_ascending_le_ritz
+    (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n)
+    (hA : A.IsSymmetric) (hm : finrank 𝕜 V = m)
+    (hcomp : ∀ y : V, RCLike.re ⟪A y, y⟫_𝕜 = RCLike.re ⟪T y, y⟫_𝕜)
+    (hmn : m ≤ n) (k : ℕ) (hk : k < m) :
+    hT.eigenvalues hn ⟨n - 1 - k, by omega⟩ ≤ hA.eigenvalues hm ⟨m - 1 - k, by omega⟩ := by
+  have h := hT.eigenvalue_le_eigenvalue_compression hn hA hm hcomp ⟨m - 1 - k, by omega⟩ hmn
+  have hidx : (⟨n - 1 - k, by omega⟩ : Fin n) = ⟨(m - 1 - k) + (n - m), by omega⟩ := by
+    ext; simp only; omega
+  rw [hidx]
+  exact h
+
+/-- **Variational ground-state bound.** The lowest Ritz value bounds the lowest exact eigenvalue
+from above. -/
+lemma eigenvalue_min_le_ritz_min
+    (hT : T.IsSymmetric) (hn : finrank 𝕜 E = n)
+    (hA : A.IsSymmetric) (hm : finrank 𝕜 V = m)
+    (hcomp : ∀ y : V, RCLike.re ⟪A y, y⟫_𝕜 = RCLike.re ⟪T y, y⟫_𝕜)
+    (hmn : m ≤ n) (hm0 : 0 < m) :
+    hT.eigenvalues hn ⟨n - 1, by omega⟩ ≤ hA.eigenvalues hm ⟨m - 1, by omega⟩ := by
+  simpa using hT.eigenvalue_ascending_le_ritz hn hA hm hcomp hmn 0 hm0
+
+end Interlacing
+
+/-! ### A.8. The orthogonal compression -/
+
+/-- The compression `P_V ∘ T ∘ ι_V` of `T` to the subspace `V` (the Ritz operator). -/
+noncomputable def compression (_hT : T.IsSymmetric) (V : Submodule 𝕜 E) : V →ₗ[𝕜] V :=
+  (V.orthogonalProjectionOnto : E →ₗ[𝕜] V) ∘ₗ T ∘ₗ V.subtype
+
+/-- The compression has the inner products of `T` against vectors of `V`. -/
+lemma inner_compression_left (hT : T.IsSymmetric) (V : Submodule 𝕜 E) (y z : V) :
+    ⟪hT.compression V y, z⟫_𝕜 = ⟪T y, z⟫_𝕜 := by
+  simp [compression]
+
+/-- The compression of a symmetric operator is symmetric. -/
+lemma compression_isSymmetric (hT : T.IsSymmetric) (V : Submodule 𝕜 E) :
+    (hT.compression V).IsSymmetric := by
+  intro y z
+  rw [inner_compression_left, hT]
+  simp [compression]
+
+/-- The compression has the quadratic form of `T` on `V`, as required by the interlacing
+lemmas. -/
+lemma re_inner_compression (hT : T.IsSymmetric) (V : Submodule 𝕜 E) (y : V) :
+    RCLike.re ⟪hT.compression V y, y⟫_𝕜 = RCLike.re ⟪T y, y⟫_𝕜 := by
+  rw [inner_compression_left]
 
 end LinearMap.IsSymmetric
 

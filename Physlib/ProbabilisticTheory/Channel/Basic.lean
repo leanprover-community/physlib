@@ -28,6 +28,8 @@ which is not expressible using the order-unit structure alone.
   unitality.
 - `UnitalPositiveLinearMap.ofPositiveLinearMap` : bundle a positive linear map after checking
   unitality.
+- `UnitalPositiveLinearMap.id`, `UnitalPositiveLinearMap.comp` : the identity and composition of
+  unital positive linear maps.
 
 ## iii. Table of contents
 
@@ -60,9 +62,12 @@ notation:25 E " →ₚ₁[" R:25 "] " F:0 => UnitalPositiveLinearMap R E F
 
 namespace UnitalPositiveLinearMap
 
-variable {R E F : Type*} [Semiring R]
+section Basic
+
+variable {R E F G : Type*} [Semiring R]
   [AddCommMonoid E] [PartialOrder E] [AddCommMonoid F] [PartialOrder F]
-  [Module R E] [Module R F] [One E] [One F]
+  [AddCommMonoid G] [PartialOrder G] [Module R E] [Module R F] [Module R G]
+  [One E] [One F] [One G]
 
 instance : FunLike (E →ₚ₁[R] F) E F where
   coe f := f.toFun
@@ -93,9 +98,28 @@ lemma toLinearMap_injective : Function.Injective (fun f : E →ₚ₁[R] F => f.
   fun _ _ h ↦ toPositiveLinearMap_injective
     (PositiveLinearMap.toLinearMap_injective h)
 
-end UnitalPositiveLinearMap
+variable (R E) in
+/-- The identity as a unital positive linear map. -/
+def id : E →ₚ₁[R] E where
+  toPositiveLinearMap := PositiveLinearMap.id R E
+  map_one' := rfl
 
-namespace UnitalPositiveLinearMap
+/-- The composition of unital positive linear maps. -/
+def comp (g : F →ₚ₁[R] G) (f : E →ₚ₁[R] F) : E →ₚ₁[R] G where
+  toPositiveLinearMap := g.toPositiveLinearMap.comp f.toPositiveLinearMap
+  map_one' := by simp
+
+@[simp] lemma id_apply (x : E) : UnitalPositiveLinearMap.id R E x = x := rfl
+
+@[simp] lemma comp_apply (g : F →ₚ₁[R] G) (f : E →ₚ₁[R] F) (x : E) : g.comp f x = g (f x) := rfl
+
+@[simp] lemma comp_id (f : E →ₚ₁[R] F) : f.comp (.id R E) = f := rfl
+
+@[simp] lemma id_comp (f : E →ₚ₁[R] F) : (UnitalPositiveLinearMap.id R F).comp f = f := rfl
+
+end Basic
+
+section Construction
 
 variable {R E F : Type*} [Semiring R]
   [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E]
@@ -122,6 +146,8 @@ omit [IsOrderedAddMonoid E] [IsOrderedAddMonoid F] in
 @[simp]
 lemma ofPositiveLinearMap_apply (f : E →ₚ[R] F) (hone : f 1 = 1) (x : E) :
     ofPositiveLinearMap f hone x = f x := rfl
+
+end Construction
 
 end UnitalPositiveLinearMap
 

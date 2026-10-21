@@ -37,8 +37,12 @@ contraction are single sums (`contrT_basis_repr_apply_eq_sum_dual`).
 - `TensorSpecies.HasContrDualBases.contr_basis_eq_ite` : the δ law for `contrDualIdxEquiv`.
 - `TensorSpecies.HasContrDualBases.contrDualIdxEquiv_eq_of_isContrDualMatching` : any matching
     satisfying the δ law is `contrDualIdxEquiv`.
+- `TensorSpecies.HasContrDualBases.dualIdxEquiv` : the equivalence between labels of dual
+    indices.
 - `TensorSpecies.HasContrDualBases.contrDualIdxEquiv_tau` : the matching at `S.τ c` is the
     inverse of the one at `c`, through `S.τ (S.τ c) = c`.
+- `TensorSpecies.HasContrDualBases.dualIdxEquiv_symm` : the inverse of `dualIdxEquiv` from `c1`
+    to `c2` is `dualIdxEquiv` from `c2` to `c1`.
 - `TensorSpecies.HasContrDualBases.contr_tmul_basis_eq_dualBasis` : contracting with a basis vector
     at `S.τ c` is an element of `Module.Basis.dualBasis`.
 
@@ -134,6 +138,15 @@ lemma contrDualIdxEquiv_eq_of_isContrDualMatching [Nontrivial k] {c : C}
     contrDualIdxEquiv S c = e :=
   IsContrDualMatching.unique (contr_basis_eq_ite c) he
 
+/-- The equivalence between labels of dual indices: a label at `c1` carried across the variance
+  dual by `contrDualIdxEquiv`, then along `h`. -/
+noncomputable def dualIdxEquiv {c1 c2 : C} (h : S.τ c1 = c2) : basisIdx c1 ≃ basisIdx c2 :=
+  (contrDualIdxEquiv S c1).symm.trans (basisIdxCongr h)
+
+@[simp]
+lemma dualIdxEquiv_apply {c1 c2 : C} (h : S.τ c1 = c2) (x : basisIdx c1) :
+    dualIdxEquiv h x = basisIdxCongr h ((contrDualIdxEquiv S c1).symm x) := rfl
+
 /-!
 
 ## D. The double dual
@@ -156,6 +169,14 @@ lemma contrDualIdxEquiv_tau [Nontrivial k] (c : C) (x : basisIdx (S.τ (S.τ c))
     contr_basis_eq_ite] at key
   rw [← key, Equiv.trans_apply]
   exact if_congr (by rw [Equiv.eq_symm_apply, eq_comm]) rfl rfl
+
+/-- The inverse of `dualIdxEquiv` from `c1` to `c2` is `dualIdxEquiv` from `c2` to `c1`. -/
+lemma dualIdxEquiv_symm [Nontrivial k] {c1 c2 : C} (h : S.τ c1 = c2) (h' : S.τ c2 = c1) :
+    (dualIdxEquiv h).symm = dualIdxEquiv h' := by
+  subst h
+  ext x
+  rw [Equiv.symm_apply_eq, dualIdxEquiv_apply, dualIdxEquiv_apply, basisIdxCongr_rfl,
+    ← contrDualIdxEquiv_tau, Equiv.apply_symm_apply]
 
 /-!
 

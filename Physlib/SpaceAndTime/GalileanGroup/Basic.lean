@@ -158,7 +158,7 @@ instance : Inhabited (GalileanGroup d) where
 
 /-! ## C. Action on time and space -/
 
-/-- The Galilean action on space at a fixed time. -/
+/-- The Galilean action on space at the time `t`, `x ↦ R x + v t + a`. -/
 noncomputable def actSpace (g : GalileanGroup d) (t : Time) (x : Space d) : Space d :=
   Space.vectorToSpace
     (g.rotation • (x -ᵥ (0 : Space d)) + t.val • g.velocity + g.spaceTranslation)

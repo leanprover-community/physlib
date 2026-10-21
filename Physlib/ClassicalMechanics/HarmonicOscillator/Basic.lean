@@ -750,7 +750,9 @@ lemma equationOfMotion_tfae (xₜ : Time → EuclideanSpace ℝ (Fin 1)) (hx : C
   simp only [List.tfae_cons_of_mem, List.mem_cons_self]
   rw [← gradLagrangian_eq_eulerLagrangeOp, ← equationOfMotion_iff_gradLagrangian_zero]
   simp only [List.tfae_cons_of_mem, List.mem_cons_self]
-  erw [← equationOfMotion_iff_hamiltonEqOp_eq_zero]
+  show List.TFAE [S.EquationOfMotion xₜ,
+    hamiltonEqOp S (fun t => S.toCanonicalMomentum t (xₜ t) (∂ₜ xₜ t)) xₜ = 0]
+  rw [← equationOfMotion_iff_hamiltonEqOp_eq_zero]
   simp only [List.tfae_cons_of_mem, List.mem_cons_self, List.tfae_singleton]
   repeat fun_prop
   simp [toCanonicalMomentum_eq]

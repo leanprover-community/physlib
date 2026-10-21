@@ -7,19 +7,21 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Bounds
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
+public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Gaussians in inner product spaces
+
+Gaussians and their products with real linear exponentials as Schwartz maps.
 
 ## i. Overview
 
 In this module we define Gaussians as Schwartz maps in general inner product spaces.
 
 The most general Gaussian constructed is `exp (-2⁻¹ * ‖B⁻¹ (x - x₀)‖ ^ 2)` (mean `x₀`
-and covariance `BᵀB`) as a Schwartz map `𝓢(E, 𝕜)`, where `B : D ≃L[ℝ] E` is a linear equivalence
+and covariance `BBᵀ`) as a Schwartz map `𝓢(E, 𝕜)`, where `B : D ≃L[ℝ] E` is a linear equivalence
 of inner product spaces. This is accomplished by first constructing the Gaussian
 `exp (-2⁻¹ * ‖x‖ ^ 2)` as a Schwartz map `𝓢(E, ℝ)` using explicit bounds on the derivatives
 of `‖x‖ ^ 2 = innerSL ℝ x x` and limiting properties of the real exponential,
@@ -39,11 +41,14 @@ For some relevant Gaussian integrals see
 - `gaussian₀ 𝕜 B` : Given a linear equivalence `B : D ≃L[ℝ] E` of inner product spaces,
     the Gaussian `exp (-2⁻¹ * ‖B⁻¹ x‖ ^ 2)` centered on the origin as a Schwartz map `𝓢(E, 𝕜)`.
 - `stdGaussian E 𝕜` : The standard Gaussian `exp (-2⁻¹ * ‖x‖ ^ 2)` as a Schwartz map `𝓢(E, 𝕜)`.
+- `exp_mul_gaussian` : Completing the square for multiplication by `exp ⟪v, x⟫`.
+- `gaussianExpMul 𝕜 B x₀ v` : This product as a Schwartz map when `D` and `E` are complete.
 
 ## iii. Table of contents
 
 - A. Standard, real-valued
 - B. General, RCLike-valued
+- C. Multiplication by a real linear exponential
 
 ## iv. References
 
@@ -51,10 +56,6 @@ For some relevant Gaussian integrals see
 -/
 
 @[expose] public section
-
-TODO "Provide functionality for multiplying by exponential functions like `exp ⟪v, x⟫`
-  (which does not have temperate growth) to obtain another Schwartz map (smulLeftExp?)
-  and prove that this is equal to a shifted/rescaled Gaussian with the same covariance."
 
 namespace InnerProductSpace
 
@@ -182,6 +183,41 @@ abbrev gaussian₀ : 𝓢(E, 𝕜) := gaussian 𝕜 B 0
 variable (E) in
 /-- The (unnormalized) `𝕜`-valued standard Gaussian `exp (-2⁻¹ * ‖x‖ ^ 2)` as a Schwartz map. -/
 abbrev stdGaussian : 𝓢(E, 𝕜) := gaussian₀ 𝕜 (ContinuousLinearEquiv.refl ℝ E)
+
+/-!
+## C. Multiplication by a real linear exponential
+
+Completeness is assumed to use the adjoint of `B`. The exponential has a real exponent,
+even when the Gaussian is complex-valued.
+-/
+
+variable [CompleteSpace D] [CompleteSpace E]
+
+/-- Multiplication by a real linear exponential shifts and rescales a general Gaussian. -/
+lemma exp_mul_gaussian (v : E) :
+    (ofReal (rexp (inner ℝ v x)) : 𝕜) * gaussian 𝕜 B x₀ x =
+      (ofReal (rexp (inner ℝ v x₀ + 2⁻¹ * ‖B.toContinuousLinearMap.adjoint v‖ ^ 2)) : 𝕜) *
+        gaussian 𝕜 B (x₀ + B (B.toContinuousLinearMap.adjoint v)) x := by
+  rw [gaussian_apply, gaussian_apply, ← ofReal_mul, ← ofReal_mul, ← exp_add, ← exp_add]
+  congr 2
+  rw [← sub_sub, map_sub B.symm (x - x₀), B.symm_apply_apply, norm_sub_sq_real,
+    adjoint_inner_right, ContinuousLinearEquiv.coe_coe, B.apply_symm_apply,
+    ← real_inner_comm (x - x₀) v, inner_sub_right]
+  ring
+
+/-- The product of `gaussian 𝕜 B x₀` with the real exponential `exp ⟪v, x⟫`, as a Schwartz map.
+It has center `x₀ + B (Bᵀ v)` and the same covariance, with scale factor
+`exp (⟪v, x₀⟫ + 2⁻¹ * ‖Bᵀ v‖ ^ 2)`. -/
+def gaussianExpMul (v : E) : 𝓢(E, 𝕜) :=
+  (ofReal (rexp (inner ℝ v x₀ + 2⁻¹ * ‖B.toContinuousLinearMap.adjoint v‖ ^ 2)) : 𝕜) •
+    gaussian 𝕜 B (x₀ + B (B.toContinuousLinearMap.adjoint v))
+
+/-- Evaluation of the bundled product agrees with pointwise multiplication by the exponential. -/
+@[simp]
+lemma gaussianExpMul_apply (v : E) :
+    gaussianExpMul 𝕜 B x₀ v x = (ofReal (rexp (inner ℝ v x)) : 𝕜) * gaussian 𝕜 B x₀ x := by
+  simpa only [gaussianExpMul, smul_apply, smul_eq_mul] using
+    (exp_mul_gaussian 𝕜 B x₀ x v).symm
 
 end
 

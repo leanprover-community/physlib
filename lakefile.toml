@@ -11,7 +11,7 @@ defaultTargets = ["Physlib", "QuantumInfo"]
 [[require]]
 name = "mathlib"
 git = "https://github.com/leanprover-community/mathlib4.git"
-rev = "v4.34.1"
+rev = "v4.35.0"
 
 [[lean_lib]]
 name = "Physlib"
@@ -36,6 +36,10 @@ srcDir = "scripts/lint/required"
 [[lean_exe]]
 name = "autolabel"
 srcDir = "scripts/github"
+
+[[lean_exe]]
+name = "pr_summary"
+srcDir = "scripts/alpha/github"
 
 [[lean_exe]]
 name = "windows_test"
@@ -123,6 +127,10 @@ name = "module_doc_lint"
 srcDir = "scripts/lint/required"
 
 [[lean_exe]]
+name = "api_map_lint"
+srcDir = "scripts/alpha/lint/required"
+
+[[lean_exe]]
 name = "stats"
 srcDir = "scripts/website"
 supportInterpreter = true
@@ -130,7 +138,7 @@ supportInterpreter = true
 [[lean_exe]]
 name = "api_map_index"
 root = "APIMapIndex"
-srcDir = "scripts/website"
+srcDir = "scripts/alpha/website"
 
 [[lean_exe]]
 name = "local_stats"

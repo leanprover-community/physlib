@@ -168,17 +168,17 @@ lemma dualWeyl_mul_pauliContr_eq_ofGaussianInt :
 lemma leviCivita_mul_pauliDual :
     ({ε4ℂ | μ ν ρ κ ⊗ σ^^^ | τ(κ) α β =
       ε4ℂ | μ ν ρ κ ⊗ σ_^^ | κ α β}ᵀ : Prop) := by
-  conv_lhs =>
-    simp only [leviCivita_eq_ofGaussianInt_prod, toTensor_dualLorentz_eq_ofGaussianInt]
-    rw [prodT_ofGaussianInt_ofGaussianInt, contrT_ofGaussianInt]
-  conv_rhs =>
-    simp only [leviCivita_eq_ofGaussianInt_prod, pauliCo_eq_ofGaussianInt]
-    rw [prodT_ofGaussianInt_ofGaussianInt, contrT_ofGaussianInt]
-  apply (Tensor.basis _).repr.injective
-  ext b
-  rw [ofGaussianInt_basis_repr_apply, permT_basis_repr_symm_apply, ofGaussianInt_basis_repr_apply]
-  apply (Function.Injective.eq_iff GaussianInt.toComplex_injective).mpr
-  decide +revert +kernel
+  have key : ∀ {d : Fin (Nat.succ 0).succ.succ.succ → Color}
+      {c c' : Fin (Nat.succ 0).succ.succ → Color} (hc : c = c')
+      (e : complexLorentzTensor.Tensor d) (t : complexLorentzTensor.Tensor c)
+      (x : complexLorentzTensor.Tensor c') (h : IsReindexing c c' ![0, 1, 2])
+      (hx : x = permT ![0, 1, 2] h t) (h1 h2 h3),
+      contrT 5 3 4 h1 (prodT e x) =
+        permT ![0, 1, 2, 3, 4] h3 (contrT 5 3 4 h2 (prodT e t)) := by
+    rintro d c c' rfl e t x h rfl h1 h2 h3
+    conv_lhs => arg 2; arg 2; rw [permT_congr_eq_id t _ h (by decide)]
+    conv_rhs => rw [permT_congr_eq_id _ _ h3 (by decide)]
+  exact key (by decide) _ _ _ _ pauliDual_eq_pauliCo _ _ _
 
 /-- The three-Pauli identity
 `σ^μ barσ^ν σ^ρ = g^{μν} σ^ρ - g^{μρ} σ^ν + g^{νρ} σ^μ + i ε^{μνρκ} σ_κ`,

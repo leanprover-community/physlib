@@ -308,7 +308,7 @@ lemma supportProj_mul_of_ker_le {A B : HermitianMat d ℂ}
     (hker : A.ker ≤ B.ker) :
     A.supportProj.mat * B.mat = B.mat := by
   contrapose! hker
-  simp_all [SetLike.le_def]
+  simp_all [IsConcreteLE.le_iff]
   -- Since $B$ is not in the kernel of $A$, there exists some $x \in \ker(A)$ such that $Bx \neq 0$.
   obtain ⟨x, hx⟩ : ∃ x : EuclideanSpace ℂ d, A.mat *ᵥ x = 0 ∧ B.mat *ᵥ x ≠ 0 := by
     contrapose! hker
@@ -1264,7 +1264,7 @@ lemma sandwichedRenyiEntropy_conj_unitary (hα : 0 < α) (ρ σ : MState d)
         simp_all [mul_assoc, Finset.sum_mul]
         intro x; rw [Finset.sum_comm]; simp_all [← Finset.mul_sum]
     simp [hk, MState.uConj]
-    constructor <;> intro h <;> simp_all [SetLike.le_def]
+    constructor <;> intro h <;> simp_all [IsConcreteLE.le_iff]
     · exact fun x hx => ⟨x, h hx, rfl⟩
     · intro x hx
       obtain ⟨y, hy, hy'⟩ := h x hx

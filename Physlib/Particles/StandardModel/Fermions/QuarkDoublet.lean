@@ -24,10 +24,6 @@ namespace StandardModel
 
 open TensorProduct
 
-TODO "Add other fermions similar to this file with the names:
- - UpSinglet (3, 1)_{4} (right-handed)
- - LeptonSinglet (1, 1)_{-6} (right-handed)"
-
 /-- The vector space of a quark field in the Standard Model.
   These live in the (3, 2)_{1} representation of the gauge group. -/
 @[ext]
@@ -209,7 +205,7 @@ lemma mem_repGaugeGroupI_ker_iff_eq {g : GaugeGroupI} :
 
 lemma gaugeGroup_subgroup_ℤ₆_le_ker_repGaugeGroupI :
     GaugeGroupQuot.subgroup .ℤ₆ ≤ repGaugeGroupI.ker := by
-  simp only [SetLike.le_def, mem_repGaugeGroupI_ker_iff_eq,
+  simp only [IsConcreteLE.le_iff, mem_repGaugeGroupI_ker_iff_eq,
     GaugeGroupQuot.subgroup, gaugeGroupℤ₆SubGroup, MonoidHom.mem_range,
     gaugeGroupℤ₆Hom_apply, Subtype.exists, exists_and_left, forall_exists_index]
   rintro g x hx ⟨rfl⟩
