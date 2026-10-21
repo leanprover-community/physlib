@@ -30,6 +30,8 @@ the Hamiltonian is Hermitian its eigenvalue is the energy of that eigenstate.
 - `energyEigenstate_linearIndependent` and `energyEigenstate_span` : the energy eigenstates
   are linearly independent and span the Hilbert space.
 - `energyEigenbasis` : the normalized energy eigenstates form an orthonormal basis.
+- `energyEigenbasis_apply` : its `n`-th vector is the normalized energy eigenstate of the `n`-th
+  wavenumber.
 - `hasEigenvalue_hamiltonian_iff` : the eigenvalues of the Hamiltonian are exactly the
   energies `E0 - 2 t cos (k a)`.
 
@@ -55,6 +57,10 @@ variable (T : TightBindingChain)
 
 /-! ## A. The basis of energy eigenstates -/
 
+/-- The Hilbert space of the chain has dimension `N`. -/
+lemma finrank_hilbertSpace : Module.finrank ℂ T.HilbertSpace = T.N := by
+  simpa using Module.finrank_eq_card_basis localizedState.toBasis
+
 /-- The energy eigenstates are linearly independent. -/
 lemma energyEigenstate_linearIndependent :
     LinearIndependent ℂ (fun n : Fin T.N => T.energyEigenstate (T.quantaWaveNumber n)) :=
@@ -65,9 +71,9 @@ lemma energyEigenstate_linearIndependent :
 /-- The energy eigenstates span the Hilbert space. -/
 lemma energyEigenstate_span :
     ⊤ ≤ Submodule.span ℂ (Set.range fun n : Fin T.N =>
-      T.energyEigenstate (T.quantaWaveNumber n)) := by
-  refine le_of_eq (T.energyEigenstate_linearIndependent.span_eq_top_of_card_eq_finrank' ?_).symm
-  simpa using (Module.finrank_eq_card_basis localizedState.toBasis).symm
+      T.energyEigenstate (T.quantaWaveNumber n)) :=
+  le_of_eq (T.energyEigenstate_linearIndependent.span_eq_top_of_card_eq_finrank'
+    (by simp [T.finrank_hilbertSpace])).symm
 
 /-- The normalized energy eigenstates `N ^ (-1/2) • energyEigenstate k` are orthonormal. -/
 lemma energyEigenstate_orthonormal :
@@ -95,7 +101,7 @@ lemma energyEigenstate_orthonormal :
 noncomputable def energyEigenbasis : OrthonormalBasis (Fin T.N) ℂ T.HilbertSpace :=
   OrthonormalBasis.mk T.energyEigenstate_orthonormal
     (le_of_eq (T.energyEigenstate_orthonormal.linearIndependent.span_eq_top_of_card_eq_finrank'
-      (by simpa using (Module.finrank_eq_card_basis localizedState.toBasis).symm)).symm)
+      (by simp [T.finrank_hilbertSpace])).symm)
 
 /-- The `n`-th vector of the basis is the normalized energy eigenstate of the `n`-th
 wavenumber. -/
