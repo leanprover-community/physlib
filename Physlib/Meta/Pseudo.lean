@@ -8,35 +8,29 @@ module
 public import Physlib.Meta.Linters.Pseudo
 /-!
 
-# Meta results regarding `sorry` and `pseudo` attributions
+# Meta results regarding the `pseudo` attribution
 
 ## i. Overview
 
-The purpose of this module is to collect all results which depend on the
-`sorryAx` axiom and the `Lean.ofReduceBool` axiom, and check that there are no results of the
-first kind, attributed `sorryful` or not, and that results of the second kind are correctly
-attributed `pseudo`.
+The purpose of this module is to collect all results which depend on the `Lean.ofReduceBool`
+axiom, and check that they are exactly the results attributed `pseudo`.
 
 ## ii. Key results
 
-- `pseudoTest` : A test, over given libraries, that no result depends on the
-  `sorryAx` axiom (whether or not it is attributed `sorryful`), that no result is attributed
-  `sorryful` without depending on it, and that all results attributed `pseudo` depend on the
-  `Lean.ofReduceBool` axiom and vice versa. A structure counts as depending on `sorryAx`
-  when one of its field defaults does.
+- `pseudoTest` : A test, over given libraries, that the results attributed `pseudo` are exactly
+  those depending on the `Lean.ofReduceBool` axiom.
 
 ## iii. Table of contents
 
-- A. Collectings results depending on `sorryAx` and `Lean.ofReduceBool`
+- A. Collecting results depending on `Lean.ofReduceBool`
   - A.1. The state information to be collected
   - A.2. The monad for collecting names
   - A.3. The collection function
   - A.4. Given an array updating the state with all names depending on axioms
   - A.5. Given an array getting all names depending on axioms
   - A.6. Getting all names depending on axioms from all user defined constants
-  - A.7. Structures whose field defaults depend on `sorryAx`
-- B. Collecting all names attributed `sorryful` and `pseudo`
-- C. Testing for `sorry` and that the `pseudo` attribution is correctly applied
+- B. Collecting all names attributed `pseudo`
+- C. Testing that the `pseudo` attribution is correctly applied
 
 ## iv. References
 
@@ -51,11 +45,11 @@ namespace Physlib
 
 /-!
 
-## A. Collectings results depending on `sorryAx` and `Lean.ofReduceBool`
+## A. Collecting results depending on `Lean.ofReduceBool`
 
 -/
 
-namespace CollectSorry
+namespace CollectOfReduceBool
 
 /-!
 
@@ -64,7 +58,7 @@ namespace CollectSorry
 -/
 
 /-- A structure used for collecting names of results dependent on the
-  `sorryAx` axiom and the `Lean.ofReduceBool` axiom. -/
+  `Lean.ofReduceBool` axiom. -/
 structure State where
   /-- The names which have already been visited as part of the state. -/
   visited : NameSet := {}
@@ -78,7 +72,7 @@ structure State where
 -/
 
 /-- A monad used for collecting names of results dependent on the
-  `sorryAx` axiom and the `Lean.ofReduceBool` axiom. -/
+  `Lean.ofReduceBool` axiom. -/
 abbrev M := ReaderT Environment $ StateM State
 
 /-!
@@ -88,7 +82,7 @@ abbrev M := ReaderT Environment $ StateM State
 -/
 
 /-- Given a `c : Name` updating the monad `M` based on which results which `c` uses
-  depend on the `sorryAx` axiom and the `Lean.ofReduceBool` axiom. -/
+  depend on the `Lean.ofReduceBool` axiom. -/
 partial def collect (c : Name) (parents : NameSet) : M Unit := do
   let collectExpr (e : Expr) : M Unit := e.getUsedConstants.forM fun x =>
     collect x (parents.insert c)
@@ -128,11 +122,11 @@ partial def collect (c : Name) (parents : NameSet) : M Unit := do
 -/
 
 /-- Given a `c : Array Name` updating the monad `M` based on which results
-  depend on the `sorryAx` axiom and the `Lean.ofReduceBool` axiom. -/
-partial def allSorryPseudo (c : Array Name) : M Unit := do
+  depend on the `Lean.ofReduceBool` axiom. -/
+partial def allOfReduceBool (c : Array Name) : M Unit := do
   c.forM fun x => collect x {}
 
-end CollectSorry
+end CollectOfReduceBool
 
 /-!
 
@@ -141,10 +135,10 @@ end CollectSorry
 -/
 
 /-- Given a `c : Array Name` the names of all results used to defined
-  the results in `c` with the `sorryAx` axiom and the `Lean.ofReduceBool` axiom. -/
-def collectSorryPseudo (c : Array Name) : CoreM (Array Name) := do
+  the results in `c` with the `Lean.ofReduceBool` axiom. -/
+def collectOfReduceBool (c : Array Name) : CoreM (Array Name) := do
   let env ← getEnv
-  let (_, s) := ((CollectSorry.allSorryPseudo c).run env).run {}
+  let (_, s) := ((CollectOfReduceBool.allOfReduceBool c).run env).run {}
   pure s.containsOfReduceBool.toArray
 
 /-!
@@ -162,14 +156,14 @@ def libraryImports (libs : Array Name) : IO (Array Import) := libs.flatMapM fun 
 def libraryUserConsts (libs : Array Name) : CoreM (Array ConstantInfo) := do
   (← libraryImports libs).flatMapM Physlib.Imports.getUserConsts
 
-/-- The user defined constants of the libraries `libs` depending on the `sorryAx` axiom and on
-  the `Lean.ofReduceBool` axiom. -/
-def allWithSorryPseudo (libs : Array Name) : CoreM (Array Name) := do
-  collectSorryPseudo ((← libraryUserConsts libs).map fun c => c.name)
+/-- The user defined constants of the libraries `libs` depending on the
+  `Lean.ofReduceBool` axiom. -/
+def allWithOfReduceBool (libs : Array Name) : CoreM (Array Name) := do
+  collectOfReduceBool ((← libraryUserConsts libs).map fun c => c.name)
 
 /-!
 
-## B. Collecting all names attributed `sorryful` and `pseudo`
+## B. Collecting all names attributed `pseudo`
 
 -/
 
@@ -181,16 +175,15 @@ unsafe def allPseudoAttributed : CoreM (Array Name) := do
 
 /-!
 
-## C. Testing for `sorry` and that the `pseudo` attribution is correctly applied
+## C. Testing that the `pseudo` attribution is correctly applied
 
 -/
 
-/-- Checks, over the libraries with root modules `libs`, that no result depends on the
-  `sorryAx` axiom, whether or not it is attributed `sorryful`; that no result is attributed
-  `sorryful` without depending on it; and that the results attributed `pseudo` are exactly
-  those depending on the `Lean.ofReduceBool` axiom. Returns whether the test passed. -/
+/-- Checks, over the libraries with root modules `libs`, that the results attributed `pseudo`
+  are exactly those depending on the `Lean.ofReduceBool` axiom. Returns whether the test
+  passed. -/
 unsafe def pseudoTest (libs : Array Name) : MetaM Bool := do
-  let allWithPseudo ← Physlib.allWithSorryPseudo libs
+  let allWithPseudo ← Physlib.allWithOfReduceBool libs
   let allConst ← libraryUserConsts libs
   let allConst := allConst.map fun c => c.name
   let allWithPseudo := allWithPseudo.filter fun n => n ∈ allConst

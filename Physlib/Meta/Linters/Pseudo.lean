@@ -8,15 +8,30 @@ module
 public meta import Physlib.Meta.Basic
 /-!
 
-# The linter for `sorry` declarations and the sorryful attribute
+# The `pseudo` attribute
 
-This module defines an attribute `sorryful` and a linter `noSorry`.
+The attribute marking declarations which depend on the `Lean.ofReduceBool` axiom.
 
-The attribute `sorryful` adds the declaration to an environment extension
-`sorryfulExtension` which can be used to create TODO entries.
+## i. Overview
 
-The linter `noSorry` checks for declarations that contain the `sorryAx` axiom
-if and only if it has the `sorryful` attribute.
+This module defines the attribute `pseudo`, marking declarations that depend on the
+`Lean.ofReduceBool` axiom, and the environment extension `pseudoExtension` recording them.
+The check that the attribute is correctly applied is `Physlib.pseudoTest` in
+`Physlib.Meta.Pseudo`.
+
+## ii. Key results
+
+- `pseudoExtension` : The environment extension recording the declarations attributed `pseudo`.
+- `Pseudo_attr` : The `pseudo` attribute.
+
+## iii. Table of contents
+
+- A. The `pseudo` environment extension
+- B. The `pseudo` attribute
+
+## iv. References
+
+* None.
 
 -/
 
@@ -26,11 +41,11 @@ open Lean
 
 /-!
 
-## The `pseudo` environment extension
+## A. The `pseudo` environment extension
 
 -/
 
-/-- The information for stored for a declaration marked with `pseudo`. -/
+/-- The information stored for a declaration marked with `pseudo`. -/
 structure PseudoInfo where
   /-- Name of result. -/
   name : Name
@@ -51,7 +66,7 @@ def addPseudofulEntry {m : Type → Type} [MonadEnv m]
 
 /-!
 
-## The pseudo attribute
+## B. The `pseudo` attribute
 
 -/
 
