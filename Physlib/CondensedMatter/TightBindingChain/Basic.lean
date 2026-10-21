@@ -293,6 +293,17 @@ noncomputable def BrillouinZone : Set ℝ := Set.Ico (- Real.pi / T.a) (Real.pi 
 def QuantaWaveNumber : Set ℝ := {x | (∃ n : Fin T.N,
     2 * Real.pi / (T.a * T.N) * ((n : ℝ) - (T.N / 2 : ℕ)) = x)}
 
+/-- The quantized wavenumber `2 π / (a N) * (n - ⌊N/2⌋)` of the index `n`. -/
+noncomputable def quantaWaveNumber (n : Fin T.N) : T.QuantaWaveNumber := ⟨_, n, rfl⟩
+
+/-- Distinct indices give distinct quantized wavenumbers. -/
+lemma quantaWaveNumber_injective : Function.Injective T.quantaWaveNumber := by
+  intro m n h
+  have hc : 2 * Real.pi / (T.a * T.N) ≠ 0 := div_ne_zero (by positivity)
+    (mul_ne_zero T.a_pos.ne' (Nat.cast_ne_zero.2 (NeZero.ne T.N)))
+  have := mul_left_cancel₀ hc (Subtype.ext_iff.1 h)
+  exact Fin.ext (by exact_mod_cast sub_left_inj.1 this)
+
 /-!
 
 ### E.3. Wavenumbers lie in the Brillouin zone
@@ -399,6 +410,27 @@ lemma quantaWaveNumber_exp_add_one (n : Fin T.N) (k : T.QuantaWaveNumber) :
   `∑ n, exp (I * k * n * T.a) • |n⟩`. -/
 noncomputable def energyEigenstate (k : T.QuantaWaveNumber) : T.HilbertSpace :=
   ∑ n : Fin T.N, Complex.exp (Complex.I * k * n * T.a) • |n⟩
+
+/-- An energy eigenstate is not zero. -/
+lemma energyEigenstate_ne_zero (k : T.QuantaWaveNumber) : T.energyEigenstate k ≠ 0 := fun h => by
+  have := congrArg (⟪|0⟩, ·⟫_ℂ) h
+  rw [energyEigenstate, inner_sum, inner_zero_right] at this
+  simp_rw [inner_smul_right, localizedState_orthonormal_eq_ite] at this
+  simp at this
+
+/-- The inner product of an energy eigenstate with itself is `N`. -/
+lemma energyEigenstate_inner_self (k : T.QuantaWaveNumber) :
+    ⟪T.energyEigenstate k, T.energyEigenstate k⟫_ℂ = T.N := by
+  simp only [energyEigenstate, sum_inner]
+  simp_rw [inner_sum, inner_smul_left, inner_smul_right, localizedState_orthonormal_eq_ite]
+  simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+  have h1 (n : Fin T.N) : (starRingEnd ℂ) (Complex.exp (Complex.I * k * n * T.a)) *
+      Complex.exp (Complex.I * k * n * T.a) = 1 := by
+    rw [← Complex.exp_conj, ← Complex.exp_add]
+    simp only [map_mul, Complex.conj_I, Complex.conj_ofReal, Complex.conj_natCast]
+    ring_nf
+    simp
+  simp [h1]
 
 /-!
 
