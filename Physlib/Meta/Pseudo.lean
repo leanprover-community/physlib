@@ -19,7 +19,7 @@ attributed `pseudo`.
 
 ## ii. Key results
 
-- `sorryfulPseudoTest` : A test, over given libraries, that no result depends on the
+- `pseudoTest` : A test, over given libraries, that no result depends on the
   `sorryAx` axiom (whether or not it is attributed `sorryful`), that no result is attributed
   `sorryful` without depending on it, and that all results attributed `pseudo` depend on the
   `Lean.ofReduceBool` axiom and vice versa. A structure counts as depending on `sorryAx`
@@ -189,7 +189,7 @@ unsafe def allPseudoAttributed : CoreM (Array Name) := do
   `sorryAx` axiom, whether or not it is attributed `sorryful`; that no result is attributed
   `sorryful` without depending on it; and that the results attributed `pseudo` are exactly
   those depending on the `Lean.ofReduceBool` axiom. Returns whether the test passed. -/
-unsafe def sorryfulPseudoTest (libs : Array Name) : MetaM Bool := do
+unsafe def pseudoTest (libs : Array Name) : MetaM Bool := do
   let allWithPseudo ← Physlib.allWithSorryPseudo libs
   let allConst ← libraryUserConsts libs
   let allConst := allConst.map fun c => c.name

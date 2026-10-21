@@ -5,15 +5,13 @@ Authors: Joseph Tooby-Smith
 -/
 import Physlib.Meta.Informal.Post
 import Mathlib.Lean.CoreM
-import Physlib.Meta.Linters.Pseudo
 import Physlib.Meta.Pseudo
 /-!
 
-# Script to check for `sorry` and the pseudo attribution
+# Script to check the pseudo attribution
 
-This script checks that no declaration depends on `sorryAx`, whether or not it is marked with
-the `sorryful` attribute. It also checks that all declarations which depend on
-`Lean.ofReduceBool` are marked with the `pseudo` attribute, and vice versa.
+This script checks that all declarations which depend on `Lean.ofReduceBool` are marked
+with the `pseudo` attribute, and vice versa.
 
 `lake exe pseudo_lint` checks `Physlib`, `QuantumInfo` and `PhyslibAlpha`;
 `lake exe pseudo_lint Physlib QuantumInfo` checks only the libraries given.
@@ -32,11 +30,11 @@ unsafe def main (args : List String) : IO UInt32 := do
     unless libraries.contains library do
       IO.eprintln s!"Unknown library `{library}`, expected one of {libraries}."
       return 1
-  println! "Checking for sorry in {", ".intercalate (toCheck.map toString).toList}."
+  println! "Checking the pseudo attribution in {", ".intercalate (toCheck.map toString).toList}."
   let env ← importModules (loadExts := true) (toCheck.map ({ module := · })) {} 0
   let fileName := ""
   let options : Options := {}
   let ctx : Core.Context := {fileName, options, fileMap := default }
   let state := {env}
-  let (passed, _) ← (Lean.Core.CoreM.toIO · ctx state) do (Physlib.sorryfulPseudoTest toCheck).run'
+  let (passed, _) ← (Lean.Core.CoreM.toIO · ctx state) do (Physlib.pseudoTest toCheck).run'
   return if passed then 0 else 1
