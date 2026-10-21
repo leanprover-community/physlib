@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jinzheng Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Philippe Kevorkian, Jinzheng Li
+Authors: Philippe Kevorkian, Jinzheng Li, Scott Hughes
 -/
 module
 
@@ -11,6 +11,8 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 /-!
 
 # Matter content of FLRW cosmology
+
+Continuity and density laws for cosmic fluids.
 
 ## i. Overview
 
@@ -35,6 +37,9 @@ tensor is still a TODO item.
 
 Time derivatives of curves `Time → ℝ` are computed through the bridge
 `Time.hasDerivAt_mk_of_differentiableAt` to Mathlib's `HasDerivAt` on `ℝ`.
+An arbitrary profile `W` of comoving energy divided by `c²` gives density `W(a)/a³`
+and pressure `-c² W′(a)/(3a²)` satisfying continuity under pointwise differentiability,
+with nonzero scale factor and `c`.
 
 ## ii. Key results
 
@@ -47,6 +52,8 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   from the first-order equation and the continuity equation when `∂ₜ a ≠ 0`.
 - `FLRW.FriedmannSolution.continuityEquation`: the continuity equation holds on the interval of
   an FLRW model whose cosmic fluid solves the Friedmann equations.
+- `continuityEquation_of_profile`: a comoving energy profile divided by `c²` gives density
+  and pressure satisfying continuity under pointwise differentiability assumptions.
 - `barotropicPressure`: `p = w ρ c²`; `density_scaling`: under the barotropic continuity
   equation at all times, `ρ t = ρ t₀ (a t / a t₀)^(-3(1+w))`; `continuityEquation_of_scaling`:
   the converse; `density_scaling_dust`, `density_scaling_radiation`,
@@ -65,12 +72,17 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   - A.3. Continuity from the Friedmann equations
   - A.4. The second-order Friedmann equation from continuity
   - A.5. The continuity equation of a solution of the Friedmann equations
+  - A.6. The continuity equation from a comoving profile
 - B. The barotropic equation of state and the density scaling law
   - B.1. The equation of state
   - B.2. The density scaling law
   - B.3. Dust, radiation and vacuum energy
 - C. The cosmological constant as a fluid
 - D. Remaining TODO items
+
+## iv. References
+
+See the references in the FLRW API map, `Physlib/Cosmology/FLRW/API-map.md`.
 
 -/
 
@@ -195,6 +207,36 @@ lemma _root_.Cosmology.FLRW.FriedmannSolution.continuityEquation {U : FLRW} {F :
   continuityEquation_of_friedmann hG (U.a_ne_zero ht) (U.differentiableAt_a ht)
     (U.differentiableAt_deriv_a ht) hdρ
     (Filter.eventually_of_mem (U.isOpen_I.mem_nhds ht) h.firstOrder) (h.secondOrder t ht)
+
+/-!
+
+### A.6. The continuity equation from a comoving profile
+
+-/
+
+/-- A profile `W` of comoving energy divided by `c²` gives density `W(a)/a³` and pressure
+`-c² W′(a)/(3a²)` satisfying continuity at `t`. Only pointwise differentiability and
+nonzero `a t` and `c` are required, without a Friedmann equation or nonzero Hubble factor. -/
+lemma continuityEquation_of_profile {a : Time → ℝ} {W : ℝ → ℝ} {c : ℝ} {t : Time}
+    (ha : DifferentiableAt ℝ a t) (hW : DifferentiableAt ℝ W (a t))
+    (hat : a t ≠ 0) (hc : c ≠ 0) :
+    ContinuityEquation a (fun s => W (a s) / (a s) ^ 3)
+      (fun s => -(c ^ 2) * deriv W (a s) / (3 * (a s) ^ 2)) c t := by
+  have haR := Time.hasDerivAt_mk_of_differentiableAt ha
+  have hWa : HasDerivAt (fun s : ℝ => W (a ⟨s⟩))
+      (deriv W (a t) * Time.deriv a t) t.val :=
+    hW.hasDerivAt.comp t.val haR
+  have hcube : HasDerivAt (fun s : ℝ => (a ⟨s⟩) ^ 3)
+      (3 * (a t) ^ 2 * Time.deriv a t) t.val := by
+    simpa [mul_assoc] using haR.fun_pow 3
+  have hρ : HasDerivAt (fun s : ℝ => W (a ⟨s⟩) / (a ⟨s⟩) ^ 3)
+      ((deriv W (a t) * Time.deriv a t * (a t) ^ 3 -
+        W (a t) * (3 * (a t) ^ 2 * Time.deriv a t)) / ((a t) ^ 3) ^ 2) t.val := by
+    simpa using hWa.fun_div hcube (pow_ne_zero 3 hat)
+  unfold ContinuityEquation hubbleConstant
+  rw [Time.deriv_eq_of_hasDerivAt hρ]
+  field_simp [hat, hc]
+  ring
 
 /-!
 

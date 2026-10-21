@@ -65,6 +65,10 @@ together with the second-order equation; conversely, the second-order equation f
 first-order equation and the continuity equation wherever the scale factor is changing. [11]
 (See Dodelson and Schmidt {4} for the smooth, expanding universe.)
 
+A profile W of comoving energy divided by c² gives density ρ = W(a)/a³ and pressure
+P = −c² W′(a)/(3a²). These satisfy the continuity equation under pointwise differentiability,
+with a and c nonzero, including when the expansion rate vanishes. [11]
+
 Under the barotropic equation of state P = w ρ c², the continuity equation implies the density
 scaling law ρ t = ρ t₀ (a t / a t₀)^(−3(1+w)), and conversely; dust, radiation and vacuum energy
 are special cases. [12] The cosmological constant is itself a fluid, with density
@@ -146,7 +150,7 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `decelerationParameter_eq_one_plus_hubbleConstant`, `deriv_hubbleConstant_eq_neg_sq_mul`,
    `deriv_hubbleConstant_neg_iff`, `exists_deriv_hubbleConstant_neg_iff`
 11. Physlib/Cosmology/FLRW/MatterContent.lean — `ContinuityEquation`,
-   `deriv_firstOrderFriedmann`, `continuityEquation_of_friedmann`,
+   `deriv_firstOrderFriedmann`, `continuityEquation_of_friedmann`, `continuityEquation_of_profile`,
    `secondOrderFriedmann_of_continuityEquation`
 12. Physlib/Cosmology/FLRW/MatterContent.lean — `barotropicPressure`,
    `deriv_of_continuityEquation_barotropic`, `density_scaling`, `continuityEquation_of_scaling`,
