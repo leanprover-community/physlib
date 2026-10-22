@@ -50,7 +50,7 @@ open SchwartzMap
 
 /-- A hydrogen atom is characterized by the number of spatial dimensions `d`,
   the mass `m` and the coefficient `k` for the `1/r` potential. -/
-structure HydrogenAtom extends SpaceDQuantumSystem where
+structure HydrogenAtom (d : ℕ) extends SpaceDQuantumSystem d where
   /-- Coefficient in the Coulomb potential (positive for attractive) -/
   k : ℝ
   coulomb_potential : potential = fun x ↦ -k * ‖x‖⁻¹
@@ -58,7 +58,7 @@ structure HydrogenAtom extends SpaceDQuantumSystem where
 namespace HydrogenAtom
 noncomputable section
 
-variable (H : HydrogenAtom)
+variable {d : ℕ} (H : HydrogenAtom d)
 
 /-!
 ## A. Basic
@@ -81,7 +81,7 @@ lemma potential_AEM : AEMeasurable H.potential := H.potential_AESM.aemeasurable
 
 /-- The hydrogen atom Hamiltonian regularized by `ε ≠ 0` is defined to be
   `𝐇(ε) ≔ (2m)⁻¹𝐩² - k·𝐫(ε)⁻¹`. -/
-def hamiltonianRegCLM (ε : ℝˣ) : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ) :=
+def hamiltonianRegCLM (ε : ℝˣ) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
   (2 * H.m)⁻¹ • (𝐩 ⬝ᵥ 𝐩) - H.k • 𝐫₀ ε (-1)
 
 lemma hamiltonianRegCLM_eq (ε : ℝˣ) :
