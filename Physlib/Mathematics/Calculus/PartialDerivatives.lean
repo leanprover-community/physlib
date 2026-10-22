@@ -58,21 +58,17 @@ variable {X Y Z : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X] [NormedAddCo
 lemma fderiv_partial_snd {f : X × Y × Z → F} {a : X} {y : Y} {z : Z}
     (hf : DifferentiableAt ℝ f (a, y, z)) :
     fderiv ℝ (fun y' ↦ f (a, y', z)) y = (fderiv ℝ f (a, y, z)).comp
-      ((0 : Y →L[ℝ] X).prod ((ContinuousLinearMap.id ℝ Y).prod (0 : Y →L[ℝ] Z))) := by
-  have hy : HasFDerivAt (fun y' : Y ↦ (a, y', z))
-      ((0 : Y →L[ℝ] X).prod ((ContinuousLinearMap.id ℝ Y).prod (0 : Y →L[ℝ] Z))) y :=
-    (hasFDerivAt_const a y).prodMk ((hasFDerivAt_id y).prodMk (hasFDerivAt_const z y))
-  exact (hf.hasFDerivAt.comp y hy).fderiv
+      ((0 : Y →L[ℝ] X).prod ((ContinuousLinearMap.id ℝ Y).prod (0 : Y →L[ℝ] Z))) :=
+  (hf.hasFDerivAt.comp y
+    ((hasFDerivAt_const a y).prodMk ((hasFDerivAt_id y).prodMk (hasFDerivAt_const z y)))).fderiv
 
 /-- The derivative in the last argument of `f` as a restriction of the total derivative. -/
 lemma fderiv_partial_thd {f : X × Y × Z → F} {a : X} {y : Y} {z : Z}
     (hf : DifferentiableAt ℝ f (a, y, z)) :
     fderiv ℝ (fun z' ↦ f (a, y, z')) z = (fderiv ℝ f (a, y, z)).comp
-      ((0 : Z →L[ℝ] X).prod ((0 : Z →L[ℝ] Y).prod (ContinuousLinearMap.id ℝ Z))) := by
-  have hz : HasFDerivAt (fun z' : Z ↦ (a, y, z'))
-      ((0 : Z →L[ℝ] X).prod ((0 : Z →L[ℝ] Y).prod (ContinuousLinearMap.id ℝ Z))) z :=
-    (hasFDerivAt_const a z).prodMk ((hasFDerivAt_const y z).prodMk (hasFDerivAt_id z))
-  exact (hf.hasFDerivAt.comp z hz).fderiv
+      ((0 : Z →L[ℝ] X).prod ((0 : Z →L[ℝ] Y).prod (ContinuousLinearMap.id ℝ Z))) :=
+  (hf.hasFDerivAt.comp z
+    ((hasFDerivAt_const a z).prodMk ((hasFDerivAt_const y z).prodMk (hasFDerivAt_id z)))).fderiv
 
 /-- The total derivative of `f` on `(0, u, w)` splits into its middle and last partials. -/
 lemma fderiv_apply_zero_prod {f : X × Y × Z → F} {a : X} {y : Y} {z : Z}
@@ -124,23 +120,20 @@ lemma deriv_fderiv_apply_comm {s τ : ℝ} (hH : ContDiffAt ℝ 2 H (s, τ)) :
   have h4 : HasFDerivAt (fun p : ℝ × ℝ ↦ fderiv ℝ H p (0, 1))
       ((fderiv ℝ (fderiv ℝ H) (s, τ)).flip ((0 : ℝ), (1 : ℝ))) (s, τ) := by
     simpa using hd.hasFDerivAt.clm_apply (hasFDerivAt_const ((0 : ℝ), (1 : ℝ)) (s, τ))
-  have hsymm : IsSymmSndFDerivAt ℝ H (s, τ) := hH.isSymmSndFDerivAt (by simp)
   rw [h4.fderiv]
   have h5 : deriv (fun σ ↦ fderiv ℝ H (s, σ) (1, 0)) τ = _ := h3.deriv
   rw [h5]
-  simp [hsymm ((0 : ℝ), (1 : ℝ)) ((1 : ℝ), (0 : ℝ))]
+  simp [hH.isSymmSndFDerivAt (by simp) ((0 : ℝ), (1 : ℝ)) ((1 : ℝ), (0 : ℝ))]
 
 /-- The `τ`-derivative of `H (s, ·)` is the total derivative applied to `(0, 1)`. -/
 lemma deriv_snd_eq_fderiv_apply {s τ : ℝ} (hH : DifferentiableAt ℝ H (s, τ)) :
-    deriv (fun σ ↦ H (s, σ)) τ = fderiv ℝ H (s, τ) (0, 1) := by
-  rw [← fderiv_apply_one_eq_deriv]
-  exact fderiv_curry_snd H s τ hH 1
+    deriv (fun σ ↦ H (s, σ)) τ = fderiv ℝ H (s, τ) (0, 1) :=
+  fderiv_curry_snd H s τ hH 1
 
 /-- The `s`-derivative of `H (·, τ)` is the total derivative applied to `(1, 0)`. -/
 lemma deriv_fst_eq_fderiv_apply {s τ : ℝ} (hH : DifferentiableAt ℝ H (s, τ)) :
-    deriv (fun r ↦ H (r, τ)) s = fderiv ℝ H (s, τ) (1, 0) := by
-  rw [← fderiv_apply_one_eq_deriv]
-  exact fderiv_curry_fst H s τ hH 1
+    deriv (fun r ↦ H (r, τ)) s = fderiv ℝ H (s, τ) (1, 0) :=
+  fderiv_curry_fst H s τ hH 1
 
 /-- If `H (·, a)` is constant, the `s`-derivative of `H` vanishes at `τ = a`. -/
 lemma fderiv_apply_fst_eq_zero {a : ℝ} (hH : DifferentiableAt ℝ H (0, a))

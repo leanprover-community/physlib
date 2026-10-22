@@ -131,9 +131,8 @@ lemma eulerLagrange_congr_lagrangian {L L' : ℝ × E × E → ℝ} {q : ℝ →
     (hN : IsOpen N) (hq : ∀ᶠ σ in 𝓝 τ, q σ ∈ N) (h : ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = L' p) :
     eulerLagrange L q τ = eulerLagrange L' q τ := by
   unfold eulerLagrange canonicalMomentum
-  have hτ : q τ ∈ N := hq.self_of_nhds
   have h1 : (fun y ↦ L (τ, y, deriv q τ)) =ᶠ[𝓝 (q τ)] fun y ↦ L' (τ, y, deriv q τ) := by
-    filter_upwards [hN.mem_nhds hτ] with y hy using h _ hy
+    filter_upwards [hN.mem_nhds hq.self_of_nhds] with y hy using h _ hy
   have h2 : (fun σ ↦ fderiv ℝ (fun v ↦ L (σ, q σ, v)) (deriv q σ)) =ᶠ[𝓝 τ]
       fun σ ↦ fderiv ℝ (fun v ↦ L' (σ, q σ, v)) (deriv q σ) := by
     filter_upwards [hq] with σ hσ
