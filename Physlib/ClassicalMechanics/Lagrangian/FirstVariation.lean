@@ -5,14 +5,13 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
+public import Physlib.ClassicalMechanics.EulerLagrange
 public import Physlib.Mathematics.Calculus.ParametricIntegration
-public import Physlib.Mathematics.Calculus.PartialDerivatives
 
 /-!
 # First variation of the action
 
-The Euler-Lagrange covector and the first variation of `∫ L (τ, H, ∂τ H) dτ`.
+The first variation of `∫ L (τ, H, ∂τ H) dτ`.
 
 ## i. Overview
 
@@ -21,18 +20,12 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 
 ## ii. Key results
 
-- `canonicalMomentum`: the canonical momentum of a curve
-- `eulerLagrange`: the Euler-Lagrange covector of a curve
-- `contDiff_eulerLagrange`: smoothness of the Euler-Lagrange covector
-- `eulerLagrange_congr`: dependence on the germ of the curve only
-- `eulerLagrange_congr_lagrangian`: dependence on the Lagrangian near the curve only
 - `contDiff_action_integrand`: smoothness of the action integrand
 - `hasDerivAt_integral_variation`: first variation of the action
 
 ## iii. Table of contents
 
-- A. Canonical momentum and the Euler-Lagrange covector
-- B. First variation
+- A. First variation
 
 ## iv. References
 
@@ -49,51 +42,7 @@ namespace ClassicalMechanics
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : ℝ × ℝ → E}
 
 /-!
-## A. Canonical momentum and the Euler-Lagrange covector
--/
-
-/-- The canonical momentum `∂L/∂q̇` of a curve `q`. -/
-noncomputable def canonicalMomentum (L : ℝ × E × E → ℝ) (q : ℝ → E) (τ : ℝ) : E →L[ℝ] ℝ :=
-  fderiv ℝ (fun v ↦ L (τ, q τ, v)) (deriv q τ)
-
-/-- The Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` of a curve `q`, for a Lagrangian on
-`ℝ × E × E` (cf. the gradient-valued `eulerLagrangeOp`). -/
-noncomputable def eulerLagrange (L : ℝ × E × E → ℝ) (q : ℝ → E) (τ : ℝ) : E →L[ℝ] ℝ :=
-  fderiv ℝ (fun x ↦ L (τ, x, deriv q τ)) (q τ) - deriv (canonicalMomentum L q) τ
-
-/-- The Euler-Lagrange covector of a smooth curve is smooth. -/
-lemma contDiff_eulerLagrange {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) {q : ℝ → E}
-    (hq : ContDiff ℝ ∞ q) : ContDiff ℝ ∞ (eulerLagrange L q) :=
-  (contDiff_fderiv_partial_snd hL contDiff_id hq (contDiff_infty_iff_deriv.1 hq).2).sub
-    (contDiff_infty_iff_deriv.1
-      (contDiff_fderiv_partial_thd hL contDiff_id hq (contDiff_infty_iff_deriv.1 hq).2)).2
-
-/-- The Euler-Lagrange covector at `τ` depends only on the germ of the curve at `τ`. -/
-lemma eulerLagrange_congr {L : ℝ × E × E → ℝ} {q g : ℝ → E} {τ : ℝ} (h : q =ᶠ[𝓝 τ] g) :
-    eulerLagrange L q τ = eulerLagrange L g τ := by
-  unfold eulerLagrange canonicalMomentum
-  rw [h.deriv_eq, h.eq_of_nhds]
-  congr 1
-  refine EventuallyEq.deriv_eq ?_
-  filter_upwards [h.eventuallyEq_nhds] with σ hσ
-  rw [hσ.eq_of_nhds, hσ.deriv_eq]
-
-/-- The Euler-Lagrange covector only depends on the Lagrangian near the curve. -/
-lemma eulerLagrange_congr_lagrangian {L L' : ℝ × E × E → ℝ} {q : ℝ → E} {τ : ℝ} {N : Set E}
-    (hN : IsOpen N) (hq : ∀ᶠ σ in 𝓝 τ, q σ ∈ N) (h : ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = L' p) :
-    eulerLagrange L q τ = eulerLagrange L' q τ := by
-  unfold eulerLagrange canonicalMomentum
-  have hτ : q τ ∈ N := hq.self_of_nhds
-  have h1 : (fun y ↦ L (τ, y, deriv q τ)) =ᶠ[𝓝 (q τ)] fun y ↦ L' (τ, y, deriv q τ) := by
-    filter_upwards [hN.mem_nhds hτ] with y hy using h _ hy
-  have h2 : (fun σ ↦ fderiv ℝ (fun v ↦ L (σ, q σ, v)) (deriv q σ)) =ᶠ[𝓝 τ]
-      fun σ ↦ fderiv ℝ (fun v ↦ L' (σ, q σ, v)) (deriv q σ) := by
-    filter_upwards [hq] with σ hσ
-    exact congrArg (fun f ↦ fderiv ℝ f (deriv q σ)) (funext fun v ↦ h _ hσ)
-  rw [h1.fderiv_eq, h2.deriv_eq]
-
-/-!
-## B. First variation
+## A. First variation
 -/
 
 /-- The `s`-derivative of the integrand of the action splits into the Euler-Lagrange term and
