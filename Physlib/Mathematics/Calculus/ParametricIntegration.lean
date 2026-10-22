@@ -120,9 +120,7 @@ lemma hasDerivAt_intervalIntegral_of_contDiff {F : ℝ × ℝ → N}
   · refine Filter.Eventually.of_forall fun t ht x hx ↦ ?_
     calc ‖fderiv ℝ F (x, t) (1, 0)‖ ≤ ‖fderiv ℝ F (x, t)‖ * ‖((1 : ℝ), (0 : ℝ))‖ :=
           (fderiv ℝ F (x, t)).le_opNorm _
-      _ ≤ C := by
-        have := hC (x, t) ⟨hx, uIoc_subset_uIcc ht⟩
-        simpa using this
-  · refine Filter.Eventually.of_forall fun t _ x _ ↦ ?_
-    exact ((hF.differentiable one_ne_zero (x, t)).hasFDerivAt.comp_hasDerivAt x
-      ((hasDerivAt_id x).prodMk (hasDerivAt_const x t)))
+      _ ≤ C := by simpa using hC (x, t) ⟨hx, uIoc_subset_uIcc ht⟩
+  · exact Filter.Eventually.of_forall fun t _ x _ ↦
+      (hF.differentiable one_ne_zero (x, t)).hasFDerivAt.comp_hasDerivAt x
+        ((hasDerivAt_id x).prodMk (hasDerivAt_const x t))
