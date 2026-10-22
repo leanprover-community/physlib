@@ -111,6 +111,8 @@ and our team of maintainers will review it and iterate with you on feedback unti
 can be merged. Please add references to the `## References` section at the top of the file
 and add them to the .bib file.
 
+Read our [contribution tips](docs/contribution-tips.md) for advice from the Physlib community.
+
 If you're unsure where you would like to contribute, you may find ideas on:
 - our [open issues](https://github.com/leanprover-community/physlib/issues).
 - our [todo list](https://physlib.io/todo)
