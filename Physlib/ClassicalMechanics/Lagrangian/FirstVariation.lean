@@ -21,6 +21,8 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 ## ii. Key results
 
 - `contDiff_action_integrand`: smoothness of the action integrand
+- `fderiv_action_integrand_apply`: first variation of the integrand, the Euler-Lagrange term
+  plus a total `τ`-derivative
 - `hasDerivAt_integral_variation`: first variation of the action
 
 ## iii. Table of contents
@@ -47,8 +49,8 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : ℝ × ℝ 
 
 /-- The `s`-derivative of the integrand of the action splits into the Euler-Lagrange term and
 a total `τ`-derivative. -/
-private lemma fderiv_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L) (hH : ContDiff ℝ ∞ H)
-    (τ : ℝ) :
+lemma fderiv_action_integrand_apply {L : ℝ × E × E → ℝ} (hL : ContDiff ℝ ∞ L)
+    (hH : ContDiff ℝ ∞ H) (τ : ℝ) :
     fderiv ℝ (fun p : ℝ × ℝ ↦ L (p.2, H p, fderiv ℝ H p (0, 1))) (0, τ) (1, 0) =
       eulerLagrange L (fun σ ↦ H (0, σ)) τ (fderiv ℝ H (0, τ) (1, 0)) +
         (deriv (canonicalMomentum L fun σ ↦ H (0, σ)) τ
@@ -97,7 +99,7 @@ lemma hasDerivAt_integral_variation {L : ℝ × E × E → ℝ} (hL : ContDiff �
     show V T = 0 from fderiv_apply_fst_eq_zero (hH.differentiable (by simp) _) hT] at hbp
   refine (hasDerivAt_intervalIntegral_of_contDiff
     ((contDiff_action_integrand hL hH).of_le (by simp)) 0 T 0).congr_deriv ?_
-  simp_rw [fderiv_integrand_apply hL hH]
+  simp_rw [fderiv_action_integrand_apply hL hH]
   rw [integral_add (((contDiff_eulerLagrange hL hqs).continuous.clm_apply
     hVs.continuous).intervalIntegrable _ _)
     ((continuous_deriv_clm_apply_add hP1 hV1).intervalIntegrable _ _), hbp]
