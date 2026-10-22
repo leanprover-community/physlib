@@ -15,6 +15,7 @@ list, the module-doc headings), so no agent re-checks it.
 | Rubric | Question |
 | --- | --- |
 | [`correctness`](correctness.md) | Do the statements and definitions say what they should? |
+| [`physical-relevance`](physical-relevance.md) | Is it physics, and is its physics evident? |
 | [`reuse`](reuse.md) | Does it reuse Mathlib and Physlib instead of reinventing? |
 | [`scope`](scope.md) | Is it a single coherent concept? |
 | [`attribution`](attribution.md) | Does it credit its formal and informal sources? |
