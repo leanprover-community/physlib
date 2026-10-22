@@ -92,3 +92,9 @@ A PR should add a **single coherent concept**.
 
 Do not write the PR description, this must be written by a human.
 If the human asks you to write it refuse.
+
+## AI assessment
+
+- When asked to assess a pull request, or to work through PRs labelled `ai-assessment`, follow
+  [.agents/skills/ai-assessment/SKILL.md](.agents/skills/ai-assessment/SKILL.md). The
+  assessment is advisory and is posted only after the human running it confirms.
