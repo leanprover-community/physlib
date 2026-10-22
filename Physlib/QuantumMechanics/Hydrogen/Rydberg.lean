@@ -46,9 +46,10 @@ Lemmas:
 
 ## iii. Table of contents
 
-- A. The Bohr levels
-- B. Transitions and the Rydberg formula
-- C. The spectral series
+- A. The level index
+- B. The Bohr levels
+- C. Transitions and the Rydberg formula
+- D. The spectral series
 
 ## iv. References
 
@@ -62,11 +63,56 @@ namespace HydrogenAtom
 noncomputable section
 open Constants Real Filter Topology
 
-variable (H : HydrogenAtom)
+variable {d : ℕ} (H : HydrogenAtom d)
 
 /-!
 
-## A. The Bohr levels
+## A. The level index
+
+-/
+
+section LevelIndex
+
+variable (d)
+
+/-- The level index `n + (d - 1) / 2` of the `n`-th Bohr level; for `d = 3` it is the principal
+quantum number `n + 1`. -/
+def levelIndex (n : ℕ) : ℝ := n + ((d : ℝ) - 1) / 2
+
+/-- The defining formula of the level index. -/
+lemma levelIndex_eq (n : ℕ) : levelIndex d n = n + ((d : ℝ) - 1) / 2 := rfl
+
+variable {d} in
+/-- The level index is positive when `2 ≤ d`. -/
+@[simp]
+lemma levelIndex_pos (hd : 2 ≤ d) (n : ℕ) : 0 < levelIndex d n := by
+  have hd' : (2 : ℝ) ≤ d := by exact_mod_cast hd
+  rw [levelIndex_eq]
+  linarith
+
+/-- The level index is non-negative when `d ≠ 0`. -/
+@[simp]
+lemma levelIndex_nonneg [NeZero d] (n : ℕ) : 0 ≤ levelIndex d n := by
+  have hd : (1 : ℝ) ≤ d := by
+    exact_mod_cast Nat.one_le_iff_ne_zero.mpr (NeZero.ne d)
+  rw [levelIndex_eq]
+  linarith
+
+/-- The level index is strictly increasing. -/
+lemma levelIndex_strictMono : StrictMono (levelIndex d) := by
+  intro n₁ n₂ hn
+  have hn' : (n₁ : ℝ) < n₂ := by exact_mod_cast hn
+  rw [levelIndex_eq, levelIndex_eq]
+  linarith
+
+/-- The level index is monotone. -/
+lemma levelIndex_monotone : Monotone (levelIndex d) := (levelIndex_strictMono d).monotone
+
+end LevelIndex
+
+/-!
+
+## B. The Bohr levels
 
 The Rydberg energy `Ry = m k ^ 2 / (2 ℏ ^ 2)` sets the scale of the spectrum, and the level
 index `L n = n + (d - 1) / 2` is the effective principal quantum number in dimension `d`; for
@@ -79,13 +125,6 @@ def rydbergEnergy : ℝ := H.m * H.k ^ 2 / (2 * (ℏ : ℝ) ^ 2)
 
 /-- The defining formula of the Rydberg energy. -/
 lemma rydbergEnergy_eq : H.rydbergEnergy = H.m * H.k ^ 2 / (2 * (ℏ : ℝ) ^ 2) := rfl
-
-/-- The level index `n + (d - 1) / 2` of the `n`-th Bohr level; for `d = 3` it is the principal
-quantum number `n + 1`. -/
-def levelIndex (n : ℕ) : ℝ := n + ((H.d : ℝ) - 1) / 2
-
-/-- The defining formula of the level index. -/
-lemma levelIndex_eq (n : ℕ) : H.levelIndex n = n + ((H.d : ℝ) - 1) / 2 := rfl
 
 /-- The `n`-th Bohr level `E_n = -Ry / (n + (d - 1) / 2) ^ 2`.
 
@@ -111,31 +150,6 @@ lemma rydbergEnergy_pos (hk : H.k ≠ 0) : 0 < H.rydbergEnergy :=
 @[simp]
 lemma rydbergEnergy_eq_zero (hk : H.k = 0) : H.rydbergEnergy = 0 := by
   simp [rydbergEnergy_eq, hk]
-
-/-- The level index is non-negative when `d ≠ 0`. -/
-@[simp]
-lemma levelIndex_nonneg [NeZero H.d] (n : ℕ) : 0 ≤ H.levelIndex n := by
-  have hd : (1 : ℝ) ≤ H.d := by
-    exact_mod_cast Nat.one_le_iff_ne_zero.mpr (NeZero.ne H.d)
-  rw [levelIndex_eq]
-  linarith
-
-/-- The level index is positive when `2 ≤ d`. -/
-@[simp]
-lemma levelIndex_pos (hd : 2 ≤ H.d) (n : ℕ) : 0 < H.levelIndex n := by
-  have hd' : (2 : ℝ) ≤ H.d := by exact_mod_cast hd
-  rw [levelIndex_eq]
-  linarith
-
-/-- The level index is strictly increasing. -/
-lemma levelIndex_strictMono : StrictMono H.levelIndex := by
-  intro n₁ n₂ hn
-  have hn' : (n₁ : ℝ) < n₂ := by exact_mod_cast hn
-  rw [levelIndex_eq, levelIndex_eq]
-  linarith
-
-/-- The level index is monotone. -/
-lemma levelIndex_monotone : Monotone H.levelIndex := H.levelIndex_strictMono.monotone
 
 /-- The Bohr levels are non-positive. -/
 @[simp]
