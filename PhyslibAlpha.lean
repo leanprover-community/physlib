@@ -241,6 +241,7 @@ public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.TensorHighestWei
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.TensorIntertwiner
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.Weights
 public import PhyslibAlpha.Mathematics.SpecialFunctions.Laguerre
+public import PhyslibAlpha.Mathematics.SpecialFunctions.Walsh
 public import PhyslibAlpha.Mathematics.SubalgebraRestriction
 public import PhyslibAlpha.Mathematics.Sublinear
 public import PhyslibAlpha.Mathematics.SymmetricAlgebra
