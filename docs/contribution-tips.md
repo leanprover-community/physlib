@@ -45,27 +45,35 @@ A large project is often easier to develop through a series of small contributio
 
 ## 5. Use structures
 
-It is often best, from the point of view of physics, to bundle definitions into structures. For example, if we were writing the energy of a harmonic oscillator.  For example, out of the following two, the last one is bettter
+It is often best, from the point of view of physics, to represent physical systems using structures. For example, suppose we were writing the energy of a harmonic oscillator. We could write it like this:
+
 ```lean
 namespace HarmonicOscillator
 
-def energy (m k : Real) (x v : Real) : Real := m * v ^ 2 / 2 + k *  x ^ 2 / 2
+/-- The total energy of a harmonic oscillator with mass `m`
+and spring constant `k`, at position `x` and velocity `v`. -/
+def energy (m k : ℝ) (x v : ℝ) : ℝ :=
+  m * v ^ 2 / 2 + k * x ^ 2 / 2
 
-end  HarmonicOscillator
+end HarmonicOscillator
 ```
-or
+
+But the following is usually better. The mass and spring constant are now part of the harmonic oscillator, and we can use that same oscillator in other definitions:
+
 ```lean
+/-- The mass and spring constant of a harmonic oscillator. -/
 structure HarmonicOscillator where
-   m : Real
-   k : Real
+  m : ℝ
+  k : ℝ
 
 namespace HarmonicOscillator
 
-variable (H : HarmonicOscillator)
+/-- The total energy of the harmonic oscillator
+at position `x` and velocity `v`. -/
+def energy (H : HarmonicOscillator) (x v : ℝ) : ℝ :=
+  H.m * v ^ 2 / 2 + H.k * x ^ 2 / 2
 
-def energy (x v : Real) : Real := H.m * v ^ 2 / 2 + H.k * x ^ 2 / 2
-
-end  HarmonicOscillator
+end HarmonicOscillator
 ```
 
 <a id="placement-of-lemmas"></a>
