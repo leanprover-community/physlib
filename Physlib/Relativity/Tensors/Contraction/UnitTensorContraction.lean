@@ -38,6 +38,8 @@ from the `CommRing` `crossToEnd`/`crossToSlot` algebra.
     form, every color propositional.
 - `TensorSpecies.Tensor.crossToSlotEquiv` : raising and lowering a named index against a pair that
     collapses in both orders, as a linear equivalence.
+- `TensorSpecies.Tensor.matMulT_eq_unitTensor_comm` : when the two indices of `M` have the same
+    labels, `M_{μν} M'^{νρ} = δ_μ^ρ` implies `M'^{νρ} M_{ρσ} = δ^ν_σ`.
 
 ## iii. Table of contents
 
@@ -339,7 +341,10 @@ lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {cs
 ## C. Raising and lowering as an equivalence
 
 Both collapse orders are hypotheses here and each is used once: `M · M' = δ` gives one round trip
-by section B, `M' · M = δ` the other through injectivity of the lowering half.
+by section B, `M' · M = δ` the other through injectivity of the lowering half. When the two
+indices of `M` have the same labels, as for a metric or a Kähler metric, the second law follows
+from the first (`matMulT_eq_unitTensor_comm`); a pairing between colours of different dimension
+needs both.
 
 -/
 
@@ -400,6 +405,61 @@ noncomputable def crossToSlotEquiv : Tensor S c ≃ₗ[k] Tensor S (Function.upd
     (crossToSlot_crossToSlotInv i he ha hb M M' hMM' hM'M)
 
 end RoundTripEquiv
+
+open HasContrDualBases in
+/-- The matrix of `δ_μ^ρ` at `e` written at the colours `![a, e]` of a product: the identity
+matrix with its rows relabelled by the dual matching of `τ e = a`. -/
+lemma toMatrix_permT_unitTensor_of_tau_eq [HasContrDualBases S] {a e : C} (h : S.τ e = a) :
+    toMatrix (permT id (IsReindexing.unitTensor_of_tau_eq h) (unitTensor (S := S) e)) =
+      (1 : Matrix (basisIdx e) (basisIdx e) k).submatrix (dualIdxEquiv h).symm id := by
+  refine (toMatrix_permT_unitTensor (S := S) (σ := id) _ (fun _ => rfl) _).trans ?_
+  ext x y
+  simp only [Matrix.submatrix_apply, Matrix.one_apply]
+  refine if_congr ?_ rfl rfl
+  subst h
+  -- The casts along `![τ e, e] 0 = τ e` reduce only with this option.
+  set_option backward.isDefEq.respectTransparency false in
+  simp [dualIdxEquiv, basisIdxCongr]
+
+open HasContrDualBases in
+/-- When the two indices of `M` have the same labels, one collapse law gives the other:
+`M_{μν} M'^{νρ} = δ_μ^ρ` implies `M'^{νρ} M_{ρσ} = δ^ν_σ`. For the metric, `η_{μν} η^{νρ} = δ_μ^ρ`
+gives `η^{νρ} η_{ρσ} = δ^ν_σ`. Without the label equivalence `e` this fails, as for a pairing
+between colours of different dimension: `A B = 1` does not give `B A = 1` for rectangular
+matrices. -/
+lemma matMulT_eq_unitTensor_comm [HasContrDualBases S] {cs ds : Fin 2 → C}
+    (hb : S.τ (cs 1) = ds 0) (ha : S.τ (ds 1) = cs 0) (e : basisIdx (cs 0) ≃ basisIdx (cs 1))
+    (M : Tensor S cs) (M' : Tensor S ds)
+    (h : matMulT hb M M' =
+      permT id (IsReindexing.unitTensor_of_tau_eq ha) (unitTensor (S := S) (ds 1))) :
+    matMulT ha M' M =
+      permT id (IsReindexing.unitTensor_of_tau_eq hb) (unitTensor (S := S) (cs 1)) := by
+  apply toMatrix_injective
+  have h := congrArg toMatrix h
+  rw [toMatrix_matMulT, toMatrix_permT_unitTensor_of_tau_eq] at h
+  rw [toMatrix_matMulT, toMatrix_permT_unitTensor_of_tau_eq]
+  set A := toMatrix M
+  set B := toMatrix M'
+  -- Square the product up over `basisIdx (ds 1)`, so that Mathlib's `A B = 1 ↔ B A = 1` applies.
+  have h1 : A.submatrix (dualIdxEquiv ha) id * B.submatrix (dualIdxEquiv hb) id = 1 := by
+    have h' : (A * B.submatrix (dualIdxEquiv hb) id).submatrix (dualIdxEquiv ha) id =
+        ((1 : Matrix (basisIdx (ds 1)) (basisIdx (ds 1)) k).submatrix
+          (dualIdxEquiv ha).symm id).submatrix (dualIdxEquiv ha) id := by
+      rw [h]
+    rw [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id, Matrix.submatrix_id_id,
+      Matrix.submatrix_submatrix, Equiv.symm_comp_self, Function.comp_id,
+      Matrix.submatrix_id_id] at h'
+    exact h'
+  have h2 := (Matrix.mul_eq_one_comm_of_equiv ((dualIdxEquiv ha).trans e)).1 h1
+  have h3 : (B * A.submatrix (dualIdxEquiv ha) id).submatrix (dualIdxEquiv hb) id = 1 := by
+    rw [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id, Matrix.submatrix_id_id]
+    exact h2
+  have h4 : ((B * A.submatrix (dualIdxEquiv ha) id).submatrix (dualIdxEquiv hb) id).submatrix
+      (dualIdxEquiv hb).symm id = (1 : Matrix _ _ k).submatrix (dualIdxEquiv hb).symm id := by
+    rw [h3]
+  rw [Matrix.submatrix_submatrix, Equiv.self_comp_symm, Function.comp_id,
+    Matrix.submatrix_id_id] at h4
+  exact h4
 
 end Tensor
 
