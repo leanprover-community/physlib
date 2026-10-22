@@ -42,12 +42,9 @@ open MeasureTheory
 open SpaceDHilbertSpace
 
 /-- A single-particle quantum system with Hilbert space `SpaceDHilbertSpace d`,
-  characterized by the number of spatial dimensions `d : ℕ`, particle's mass `m > 0`
-  and potential function `potential : Space d → ℝ`. -/
+  characterized by the particle's mass `m > 0` and potential function `potential : Space d → ℝ`. -/
 @[ext]
-structure SpaceDQuantumSystem where
-  /-- The number of spatial dimensions. -/
-  d : ℕ
+structure SpaceDQuantumSystem (d : ℕ) where
   /-- The mass (positive). -/
   m : ℝ
   hm : 0 < m
