@@ -120,7 +120,6 @@ lemma toSquareMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : 
           (dualIdxEquiv (rfl : S.τ (c 1) = S.τ (c 1))).symm) := by
   rcases subsingleton_or_nontrivial k with hk | hk
   · exact Subsingleton.elim _ _
-  obtain ⟨a, d, rfl⟩ : ∃ a d, c = ![a, d] := ⟨c 0, c 1, by funext i; fin_cases i <;> rfl⟩
   conv_lhs => unfold toSquareMatrix
   rw [toMatrix_inverseT]
   dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one]
@@ -134,11 +133,9 @@ lemma isSymm_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0)
     (hx : S.τ x = c 0) (hy : S.τ y = S.τ (c 1)) {M : S.Tensor c}
     (hM : (S.toSesqForm x M hbar hx).IsSymm) :
     (S.toSesqForm y (S.inverseT M hbar) (S.bar_tau_of_bar hbar) hy).IsSymm := by
-  have hM' := (S.isSymm_toSesqForm_iff_toSquareMatrix_isHermitian hbar hx M).1 hM
-  refine (S.isSymm_toSesqForm_iff_toSquareMatrix_isHermitian (S.bar_tau_of_bar hbar) hy
-    (S.inverseT M hbar)).2 ?_
-  rw [toSquareMatrix_inverseT]
-  exact hM'.inv.submatrix _
+  rw [S.isSymm_toSesqForm_iff_toSquareMatrix_isHermitian (S.bar_tau_of_bar hbar) hy,
+    toSquareMatrix_inverseT]
+  exact ((S.isSymm_toSesqForm_iff_toSquareMatrix_isHermitian hbar hx M).1 hM).inv.submatrix _
 
 /-!
 
@@ -207,11 +204,10 @@ lemma isPosDef_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 
     (hx : S.τ x = c 0) (hy : S.τ y = S.τ (c 1)) {M : S.Tensor c}
     (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
     (S.toSesqForm y (S.inverseT M hbar) (S.bar_tau_of_bar hbar) hy).IsPosDef := by
-  have hM' := (S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM
-  refine (S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef (S.bar_tau_of_bar hbar) hy
-    (S.inverseT M hbar)).2 ?_
-  rw [toSquareMatrix_inverseT]
-  exact hM'.inv.submatrix ((Equiv.injective _).comp (Equiv.injective _))
+  rw [S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef (S.bar_tau_of_bar hbar) hy,
+    toSquareMatrix_inverseT]
+  exact ((S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM).inv.submatrix
+    ((Equiv.injective _).comp (Equiv.injective _))
 
 /-- Over a field, the matrix `(M_{IJ̄})` of a positive-definite tensor is invertible. -/
 lemma isUnit_det_toSquareMatrix_of_isPosDef {x : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
@@ -263,8 +259,6 @@ lemma matMulT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Te
   rw [toMatrix_inverseT]
   dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one]
   ext x y
-  -- `submatrix_apply` keys through the `![…]` colour lists only with this option.
-  set_option backward.isDefEq.respectTransparency false in
   simp only [Matrix.mul_apply, Matrix.submatrix_apply, Function.comp_apply, id_eq,
     Equiv.symm_apply_apply, Equiv.apply_symm_apply]
   rw [← Matrix.mul_apply, Matrix.mul_nonsing_inv _ hM, Matrix.one_apply, Matrix.one_apply]
@@ -276,19 +270,9 @@ lemma matMulT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Te
 lemma inverseT_matMulT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     matMulT (S.τ_τ_apply (cs 0)) (S.inverseT M hbar) M =
-      unitTensor (S := S.toTensorSpecies) (cs 1) := by
-  refine toMatrix_injective ((toMatrix_matMulT _ _ M).trans
-    (Eq.trans ?_ (toMatrix_unitTensor (S := S.toTensorSpecies) (cs 1)).symm))
-  rw [toMatrix_inverseT, S.toMatrix_eq_submatrix_toSquareMatrix hbar M,
-    Matrix.submatrix_submatrix, Function.id_comp, Function.comp_id]
-  dsimp +instances only [Matrix.cons_val_zero, Matrix.cons_val_one]
-  rw [Matrix.submatrix_mul_equiv, Matrix.nonsing_inv_mul _ hM]
-  ext x y
-  simp only [Matrix.submatrix_apply, Function.comp_apply, Matrix.one_apply]
-  refine if_congr ?_ rfl rfl
-  rw [EmbeddingLike.apply_eq_iff_eq]
-  simp only [dualIdxEquiv, Equiv.symm_trans_apply, Equiv.symm_symm]
-  rfl
+      unitTensor (S := S.toTensorSpecies) (cs 1) :=
+  (matMulT_eq_unitTensor_comm rfl _ (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm M _
+    (S.matMulT_inverseT hbar M hM)).trans (permT_id_self _)
 
 /-- The inverse is unique: if `(g_{IJ̄})` is invertible and `g_{IJ̄} t^{J̄K} = δ_I^K`, then `t` is
 the inverse `g^{J̄K}`. -/
