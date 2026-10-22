@@ -553,21 +553,22 @@ lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 
   simp only [basisIdxCongr, ← Equiv.cast_symm, Equiv.symm_trans, Equiv.trans_apply,
     Equiv.cast_apply, cast_cast, cast_eq, Equiv.cast_refl, Equiv.refl_apply]
 
-/-- If `bar a = d`, then `bar (τ d) = τ a`, since `bar` commutes with `τ` and is an involution. -/
+/-- If `d = bar a`, then `bar (τ d) = τ a`: for `a` the colour of a lower index `I`, the
+conjugate of the upper barred index `J̄` is the upper unbarred index `J`. -/
 lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
   (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
 
 open HasContrDualBases in
-/-- Dropping a bar and lowering an index commute on labels. For `bar a = d`, a label `J` of the
-upper index `J̄` (colour `τ d`) becomes a label of the lower index `J` (colour `a`) by two routes,
-and both give the same `J`:
+/-- Removing a bar and lowering an index commute on labels: starting from a label of the upper
+barred index `J̄`, removing the bar and then lowering gives the same label of the lower index `J` as
+lowering and then removing the bar.
 ```
-upper J̄ (τ d)  → drop bar →  upper J (τ a)
-      ↓ lower                      ↓ lower
-lower J̄ (d)    → drop bar →  lower J (a)
+upper J̄ (τ d)  → remove bar →  upper J (τ a)
+      ↓ lower                        ↓ lower
+lower J̄ (d)    → remove bar →  lower J (a)
 ```
-Dropping a bar is the cast along `barIdx_eq`, and lowering is `dualIdxEquiv`. The left-hand side
-goes across the top and down; the right-hand side goes down and across the bottom. -/
+The left-hand side of the statement goes across the top and down, the right-hand side down and
+across the bottom. -/
 lemma dualIdxEquiv_bar_tau [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {a d : C}
     (hbar : S.bar a = d) (j : basisIdx (S.τ d)) :
     dualIdxEquiv (S.τ_τ_apply a)

@@ -121,10 +121,11 @@ lemma crossToSlot_basis_repr_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cM : Fin
             ⇑(Fin.cycleIcc i (Fin.last nA)).symm m))) := by
   rw [crossToSlot_eq_crossToEnd, permT_basis_repr_symm_apply]
 
-/-- Contract slot `i` of a tensor whose color there is `d` against `M'`, then absorb the color cast
-  the two `Function.update`s generate, landing back on `c`. This is the returning half of a
-  raise-then-lower round trip; absorbing the cast here is what keeps the round trip cast-free at
-  both ends. -/
+/-- Raising an index in place with `M'^{νρ}`: contract slot `i` of a tensor, whose colour there is
+  `d`, with the first index of `M'`, so that slot `i` takes the colour of `ρ`; `he` says that colour
+  is the original `c i`, and the result is renamed to `Tensor c`. For the metric this is
+  `t_{…ν…} ↦ η^{νρ} t_{…ν…}`. It is the returning half of a lower-then-raise round trip, and the
+  renaming is what lets that round trip end exactly on `Tensor c`. -/
 noncomputable def crossToSlotInv {nA : ℕ} {c : Fin (nA + 1) → C} {d : C} {ds : Fin 2 → C}
     (i : Fin (nA + 1)) (he : c i = ds 1) (hb : S.τ d = ds 0) (M' : S.Tensor ds) :
     S.Tensor (Function.update c i d) →ₗ[k] S.Tensor c :=

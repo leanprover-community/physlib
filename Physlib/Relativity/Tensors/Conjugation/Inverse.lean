@@ -21,22 +21,20 @@ The inverse of a Kähler metric `g_{IJ̄}` is the tensor `g^{J̄I}` with two upp
 
 `g_{IJ̄} g^{J̄K} = δ_I^K`, `g^{J̄I} g_{IK̄} = δ^J̄_K̄`.
 
-Convention: the colours of the inverse are `![τ (c 1), τ (c 0)]`, so in slot order its barred index
-comes first, `g^{J̄I}`. The usual `g^{IJ̄}` is this tensor with its slots swapped; barred first is
-the order in which `g_{IJ̄} g^{J̄K}` contracts adjacent slots, so the contraction laws need no
-recolouring of the inverse. Upper and lower indices describe the Kähler example; `inverseT` itself
-reverses the slots and dualises both colours. `inverseT` defines it by matrix inversion: the square
-matrix of `g^{J̄I}`, rows indexed by its first slot `J̄`, is the inverse of `(g_{IJ̄})`, both axes
-relabelled through `dualIdxEquiv`. It is zero when `(g_{IJ̄})` is not invertible. The inverse of a
-Hermitian `g` is Hermitian (A) and of a positive-definite `g` positive-definite (B). When
-`(g_{IJ̄})` is invertible, the two contraction laws above hold and the inverse is unique (C), and
-`g` and its inverse lower and raise indices (D).
+Convention: the colours of the inverse are `![τ (c 1), τ (c 0)]`, so its barred index comes first,
+`g^{J̄I}`; the usual `g^{IJ̄}` is the same tensor with its two indices swapped. Barred first is the
+order in which `g_{IJ̄} g^{J̄K}` contracts adjacent indices, so the contraction laws need no
+reordering of the inverse. The matrix `(g^{J̄I})`, row `J` and column `I`, is the inverse of the
+matrix `(g_{IJ̄})`; `inverseT` is defined by this matrix inversion and is zero when `(g_{IJ̄})` is
+not invertible. The inverse of a Hermitian `g` is Hermitian (A) and of a positive-definite `g`
+positive-definite (B). When `(g_{IJ̄})` is invertible, the two contraction laws above hold and the
+inverse is unique (C), and `g` and `g^{J̄I}` lower and raise indices (D).
 
 ## ii. Key results
 
 - `ConjTensorSpecies.inverseT` is the inverse `g^{J̄I}` of a tensor `g_{IJ̄}`.
-- `ConjTensorSpecies.toSquareMatrix_inverseT`: the square matrix of `g^{J̄I}` is `(g_{IJ̄})⁻¹`, both
-  axes relabelled through `dualIdxEquiv`.
+- `ConjTensorSpecies.toSquareMatrix_inverseT`: the matrix `(g^{J̄I})`, row `J` and column `I`, is
+  `(g_{IJ̄})⁻¹`.
 - `ConjTensorSpecies.isSymm_toSesqForm_inverseT` and
   `ConjTensorSpecies.isPosDef_toSesqForm_inverseT`: the inverse of a Hermitian or positive-definite
   `g` is Hermitian or positive-definite.
@@ -101,8 +99,8 @@ def inverseT {c : Fin 2 → C} (M : S.Tensor c) (hbar : S.bar (c 0) = c 1 := by 
       (Equiv.cast (hbar ▸ S.barIdx_eq (c 0)) ∘ (dualIdxEquiv (rfl : S.τ (c 1) = S.τ (c 1))).symm)
       (dualIdxEquiv (S.τ_τ_apply (c 0))))
 
-/-- The components of the inverse: `g^{J̄I}` is entry `(J, I)` of the inverse of the matrix
-`(g_{IJ̄})`, each upper label read as the lower label it contracts with. -/
+/-- The components of the inverse: `g^{J̄I}` is the entry `(J, I)` of `(g_{IJ̄})⁻¹`, the upper
+indices `J̄` and `I` labelled by the lower indices `J` and `I` they contract with. -/
 lemma toMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.Tensor c) :
     toMatrix (S.inverseT M hbar) =
       (S.toSquareMatrix M hbar)⁻¹.submatrix
@@ -111,9 +109,8 @@ lemma toMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.Tens
         (dualIdxEquiv (S.τ_τ_apply (c 0))) :=
   toMatrix_fromMatrixT _ _ _
 
-/-- The square matrix of the inverse, rows indexed by its first, barred slot `J̄`, is `(g_{IJ̄})⁻¹`
-with rows and columns relabelled alike. When `(g_{IJ̄})` is invertible this gives
-`∑_I g^{J̄I} g_{IK̄} = δ_{JK}`. -/
+/-- The matrix `(g^{J̄I})`, row `J` from the first, barred index and column `I` from the second, is
+`(g_{IJ̄})⁻¹`. When `(g_{IJ̄})` is invertible, `∑_I g^{J̄I} g_{IK̄} = δ_{JK}`. -/
 lemma toSquareMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.Tensor c) :
     S.toSquareMatrix (S.inverseT M hbar) (S.bar_tau_of_bar hbar) =
       (S.toSquareMatrix M hbar)⁻¹.submatrix
@@ -149,8 +146,8 @@ lemma isSymm_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0)
 
 -/
 
-/-- The matrix of `g_{IJ̄} t^{J̄K}` is `(g_{IJ̄})` times the matrix of `t`, with the row label `J̄`
-of `t` read as `J`. -/
+/-- The matrix of `g_{IJ̄} t^{J̄K}` is the matrix product `(g_{IJ̄}) (t^{J̄K})`, `∑_J g_{IJ̄}
+t^{J̄K}`, the summed index `J̄` of `t` labelled by `J`. -/
 lemma toMatrix_matMulT_eq_toSquareMatrix_mul {cs ds : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
     (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs) (t : S.Tensor ds) :
     toMatrix (matMulT h M t) =
@@ -235,11 +232,9 @@ When the matrix `(g_{IJ̄})` is invertible, `g^{J̄I}` is the inverse of `g` und
 
 `g_{IJ̄} g^{J̄K} = δ_I^K`, `g^{J̄I} g_{IK̄} = δ^J̄_K̄`
 
-(`matMulT_inverseT`, `inverseT_matMulT`), each a product `matMulT` of two rank-two tensors.
-By `toMatrix_matMulT` these are `N N⁻¹ = 1` and `N⁻¹ N = 1` for `N = (g_{IJ̄})`. Since
-multiplication by `g` is injective (`matMulT_right_injective`), `g^{J̄K}` is the only tensor
-satisfying the first law (`eq_inverseT_of_matMulT_eq_unitTensor`). The unit tensor `δ` is defined
-over `RCLike` scalars, so this section and D work over `RCLike` scalars.
+(`matMulT_inverseT`, `inverseT_matMulT`), and it is the only tensor with the first property
+(`eq_inverseT_of_matMulT_eq_unitTensor`). The unit tensor `δ` is defined over `RCLike` scalars, so
+this section and D are stated over them.
 
 -/
 
@@ -254,8 +249,9 @@ variable {k : Type} [RCLike k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
 
-/-- `g_{IJ̄} g^{J̄K} = δ_I^K`, when the matrix `(g_{IJ̄})` is invertible. The unit tensor at
-`τ (cs 0)` has colours `![τ (τ (cs 0)), τ (cs 0)]`, recoloured here to `![cs 0, τ (cs 0)]`. -/
+/-- `g_{IJ̄} g^{J̄K} = δ_I^K`, when the matrix `(g_{IJ̄})` is invertible. On the right, the unit
+tensor at the colour of `K` has the colour of its first index `I` renamed from `τ (τ (cs 0))` to
+`cs 0` (`IsReindexing.unitTensor_of_tau_eq`). -/
 lemma matMulT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     matMulT rfl M (S.inverseT M hbar) =
@@ -315,9 +311,11 @@ these mutually inverse.
 
 -/
 
-/-- Lowering slot `i` with `g_{IJ̄}`, as a linear equivalence with inverse raising by `g^{J̄I}`:
-`t^{…I…} ↦ g_{IJ̄} t^{…I…}`, the upper index `I` (colour `τ (cs 0)`) replaced in place by the
-lower index `J̄` (colour `cs 1`). Convention: `t` contracts with the first index of `g`. -/
+/-- Lowering an index with `g_{IJ̄}`, `t^{…I…} ↦ g_{IJ̄} t^{…I…} = t_{…J̄…}`, as a linear
+equivalence whose inverse raises it with `g^{J̄I}`, `t_{…J̄…} ↦ g^{J̄I} t_{…J̄…}`. Slot `i` of
+`t` carries the upper index `I` (`he`) and `(g_{IJ̄})` is invertible (`hM`). Convention: `t`
+contracts with the first index of `g`, so for a Kähler metric lowering a holomorphic index gives
+an antiholomorphic one, `t_{J̄} = g_{IJ̄} t^I`. -/
 def lowerEquivT {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     {n : ℕ} → {c : Fin n → C} → (i : Fin n) → (he : c i = S.τ (cs 0)) →
@@ -327,6 +325,7 @@ def lowerEquivT {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1
     crossToSlotEquiv i he ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) rfl M (S.inverseT M hbar)
       (S.matMulT_inverseT hbar M hM) ((S.inverseT_matMulT hbar M hM).trans (permT_id_self _).symm)
 
+/-- Lowering is the contraction `crossToSlot` of slot `i` with the first index of `g`. -/
 @[simp]
 lemma lowerEquivT_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
     (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)
@@ -335,6 +334,7 @@ lemma lowerEquivT_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (
       crossToSlot i 0 ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) M t :=
   rfl
 
+/-- Raising is the contraction `crossToSlotInv` of slot `i` with the first index of `g^{J̄I}`. -/
 @[simp]
 lemma lowerEquivT_symm_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
     (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)

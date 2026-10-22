@@ -192,25 +192,26 @@ lemma crossToEnd_unitTensor {nA : ℕ} {cA : Fin (nA + 1) → C} {c : C}
 
 ## B. Round trips against a matched pair
 
-When two rank-2 tensors collapse to the unit tensor after their shared index is contracted, that
-is when their product `matMulT` is the unit tensor, contracting a slot first against one and then
-against the other returns the original tensor.
+A pair `M_{μν}`, `M'^{νρ}` whose product is the unit tensor, `M_{μν} M'^{νρ} = δ_μ^ρ`, lowers and
+raises an index without loss: contracting an index of `t` with `M` and then with `M'` gives back
+`t`. The metric and its inverse are such a pair, `η_{μν} η^{νρ} = δ_μ^ρ`.
 
 -/
 
-/-- `unitTensor e` recolored along `h : τ e = a` in its first slot, to `![a, e]`: the right-hand
-  side of a collapse hypothesis `matMulT h M M' = δ`, whose product lands at the colors `![a, e]`
-  of `I` and `K`. -/
+/-- The unit tensor `δ_μ^ρ` at a colour `e` has `ρ` of colour `e` and `μ` of the dual colour `τ e`.
+  A product `M_{μν} M'^{νρ}` has `μ` of some colour `a` and `ρ` of colour `e`, and it can equal
+  `δ_μ^ρ` only if `a = τ e`, which is `h`. This lemma lets `δ_μ^ρ` be written at the colours `a`,
+  `e` of the product, so that `M_{μν} M'^{νρ} = δ_μ^ρ` is a statement between tensors of the same
+  colours. -/
 lemma IsReindexing.unitTensor_of_tau_eq {a e : C} (h : S.τ e = a) :
     IsReindexing (![S.τ e, e] : Fin 2 → C) ![a, e] (id : Fin 2 → Fin 2) :=
   IsReindexing.on_id.mpr (fun j => by fin_cases j <;> first | exact h | rfl)
 
-/-- Round trip of two contractions against a matched pair, in result-to-end form. Contracting slot
-  `i` of `t` against `M₁`, then contracting the surviving `M₁`-index (deposited at slot `j`) against
-  `M₂`, returns `t` up to the cycle that moves the round-tripped slot from the end back to `i`,
-  whenever `M₁` and `M₂` collapse to the unit tensor. The last slot is threaded as a variable `j`
-  with `hj : j = last nA` so that a caller can apply it at a propositionally-last slot without a
-  dependent rewrite of the slot index. -/
+/-- Lowering then raising an index returns the tensor, with that index moved to the last slot:
+  `t^{…μ…} M₁_{μν} M₂^{νρ} = t^{……ρ}`, when `M₁_{μν} M₂^{νρ} = δ_μ^ρ`. The index moves because
+  `crossToEnd` places the surviving index of each contraction last. The last slot is a variable
+  `j` with `hj : j = last nA`, so that the lemma applies at a slot that is the last one only up to
+  an equality. -/
 lemma crossToEnd_round_trip_of_unit_slot {nA : ℕ} {c : Fin (nA + 1) → C} {d : C}
     (i j : Fin (nA + 1)) (hj : j = Fin.last nA)
     (M₁ : Tensor S ![S.τ (c i), d]) (M₂ : Tensor S ![S.τ d, c i])
@@ -305,15 +306,16 @@ private lemma crossToSlot_round_trip_of_unit {nA : ℕ} {c : Fin (nA + 1) → C}
     simp [Function.comp_apply, Fin.append_succAbove_const_eq_cycleIcc]
   · rfl
 
-/-- Raising then lowering a named index, with every color threaded propositionally. For a rank-2
-  metric `M : cs` and an inverse `M' : ds` collapsing to the unit tensor (`M · M' = δ`), at any
-  rank and any slot `i`: contracting slot `i` with `M`, then contracting the result with `M'`, is
-  the identity up to the `Function.update` color reindex.
-
-  No color is pinned to a composite. `ha : τ (c i) = cs 0` places the metric's contracted slot,
-  `hb : τ (cs 1) = ds 0` the inverse's, and `he : c i = ds 1` the surviving one. Lowering then
-  raising is this same statement with `M` and `M'` exchanged and the reversed collapse
-  `M' · M = δ`; neither collapse follows from the other here. -/
+/-- Lowering then raising an index in place returns the tensor: for a pair with
+  `M_{μν} M'^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M` and then with `M'` gives back
+  `t`, up to renaming the colour of slot `i` to itself. For the metric,
+  `t^{…μ…} ↦ η_{μν} t^{…μ…} = t_{…ν…} ↦ η^{νρ} t_{…ν…} = t^{…ρ…}`. The equalities `ha`, `hb`, `he`
+  say which index of `M` and of `M'` slot `i` contracts with and which colour survives, so `M`
+  and `M'` enter at whatever colour lists they carry. Raising then lowering is this lemma with
+  the roles of `M` and `M'` exchanged, so it needs the product in the other order,
+  `M'^{νρ} M_{ρσ} = δ^ν_σ`. When the two indices of `M` have the same labels the second law
+  follows from the first (`matMulT_eq_unitTensor_comm`); a pairing between colours of different
+  dimension needs both, so `crossToSlotEquiv` takes both. -/
 lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C}
     (i : Fin (nA + 1)) (he : c i = ds 1) (ha : S.τ (c i) = cs 0) (hb : S.τ (cs 1) = ds 0)
     (M : Tensor S cs) (M' : Tensor S ds)
@@ -363,7 +365,8 @@ variable {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C} (i : Fin (nA 
 
 set_option backward.isDefEq.respectTransparency false in
 include hMM' in
-/-- Lowering undoes raising: `crossToSlot_raise_lower_round_trip` with the color cast absorbed into
+/-- Lowering with `M` and then raising with `M'` is the identity, when `M_{μν} M'^{νρ} = δ_μ^ρ`.
+  This is `crossToSlot_raise_lower_round_trip` with the colour renaming built into
   `crossToSlotInv`. -/
 lemma crossToSlotInv_crossToSlot (t : Tensor S c) :
     crossToSlotInv i he hb M' (crossToSlot i (0 : Fin 2) ha M t) = t := by
@@ -374,10 +377,9 @@ lemma crossToSlotInv_crossToSlot (t : Tensor S c) :
   exact permT_congr_eq_id _ _ _ rfl
 
 include hMM' hM'M in
-/-- Raising undoes lowering. The reversed collapse `M' · M = δ` is the round trip at the color
-  list `Function.update c i (cs 1)` with the pair exchanged, which gives the lowering half a left
-  inverse and hence injectivity; that upgrades `crossToSlotInv_crossToSlot` to a two-sided
-  inverse. -/
+/-- Raising with `M'` and then lowering with `M` is the identity. It uses the reversed product
+  `M'^{νρ} M_{ρσ} = δ^ν_σ`, which makes raising injective; an injective map with a left inverse
+  (`crossToSlotInv_crossToSlot`) has it as a two-sided inverse. -/
 lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i (cs 1))) :
     crossToSlot i (0 : Fin 2) ha M (crossToSlotInv i he hb M' t) = t := by
   have hswap := crossToSlot_raise_lower_round_trip (S := S) (c := Function.update c i (cs 1)) i
@@ -395,10 +397,11 @@ lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i (cs 1))) :
   exact Function.LeftInverse.rightInverse_of_injective
     (crossToSlotInv_crossToSlot i he ha hb M M' hMM') hinj t
 
-/-- Raising and lowering a named index against a mutually inverse pair, as a linear equivalence: the
-  two color assignments `c` and `Function.update c i (cs 1)` carry the same tensors. `M : cs` and
-  `M' : ds` are matched only propositionally and `cs 1` is unrelated to `c i`, so this covers a
-  metric pairing two unrelated colors as well as a metric and its inverse at `S.τ (c i)`. -/
+/-- Lowering an index with `M` and raising it with `M'`, as a linear equivalence between tensors
+  with slot `i` at its original colour and tensors with slot `i` at the colour of the second index
+  of `M`, when `M_{μν} M'^{νρ} = δ_μ^ρ` and `M'^{νρ} M_{ρσ} = δ^ν_σ`. `M` may pair two different
+  colours, so this covers a metric and its inverse, `η_{μν}` and `η^{νρ}`, and also a pairing
+  between two unrelated colours. -/
 noncomputable def crossToSlotEquiv : Tensor S c ≃ₗ[k] Tensor S (Function.update c i (cs 1)) :=
   LinearEquiv.mk (crossToSlot i (0 : Fin 2) ha M) (crossToSlotInv i he hb M').toFun
     (crossToSlotInv_crossToSlot i he ha hb M M' hMM')

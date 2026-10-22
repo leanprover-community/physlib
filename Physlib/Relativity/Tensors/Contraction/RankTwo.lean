@@ -20,15 +20,13 @@ A rank-two tensor `M` defines a bilinear map on one-slot tensors by contracting 
 each of its slots, `t, s ↦ M_{zw} tᶻ sʷ`. In the bases dual to the slots of `M` the matrix of this
 map is the component matrix `toMatrix M`.
 
-Two rank-two tensors multiply like matrices. `matMulT h a b` contracts the second index of `a` with
-the first index of `b`, `a_{IJ} b^{JK}`, where `h : S.τ (cs 1) = ds 0` records that the two indices
-are dual. The result carries the colours `![cs 0, ds 1]` of the surviving indices `I` and `K`.
-`crossToEnd`, which contracts at any slots and ranks, gives the same tensor at the colour list
-`Fin.append (cs ∘ (Fin.last 1).succAbove) (ds ∘ (0 : Fin 2).succAbove)`, which equals
-`![cs 0, ds 1]` only propositionally. `matMulT` recolours once, so that statements about products,
-such as `g_{IJ̄} g^{J̄K} = δ_I^K`, need no further cast. For a species with contraction-dual bases
-the matrix of the product is the product of the component matrices once the contracted labels of
-`b` are matched to those of `a` by `dualIdxEquiv`, `toMatrix_matMulT`.
+Two rank-two tensors multiply like matrices: `matMulT A B` is `A_{μν} B^{νρ}`, the second index of
+`A` contracted with the first index of `B`, the surviving indices `μ` and `ρ` kept in that order.
+For the Minkowski metric, `η_{μν} η^{νρ} = δ_μ^ρ`. The general contraction `crossToEnd` gives the
+same tensor but names the colours of the result by a formula in the two colour lists; `matMulT`
+names them `![cs 0, ds 1]`, so that an equation such as `g_{IJ̄} g^{J̄K} = δ_I^K` can be stated with
+no cast. For a species with contraction-dual bases, the matrix of `A_{μν} B^{νρ}` is the matrix
+product `(A_{μν}) (B^{νρ})`, `∑_ν A_{μν} B^{νρ}` (`toMatrix_matMulT`).
 
 ## ii. Key results
 
@@ -36,9 +34,9 @@ the matrix of the product is the product of the component matrices once the cont
     tensor, with its component formula `toLinearMap₂_apply`.
 - `TensorSpecies.Tensor.toMatrix₂_toLinearMap₂` : its matrix in the dual bases is the component
     matrix of `M`.
-- `TensorSpecies.Tensor.matMulT` : the product `a_{IJ} b^{JK}` of two rank-two tensors, with
-    `toMatrix_matMulT`: for contraction-dual bases, its matrix is the product of the component
-    matrices with the contracted labels matched by `dualIdxEquiv`.
+- `TensorSpecies.Tensor.matMulT` : the product `A_{μν} B^{νρ}` of two rank-two tensors;
+    `toMatrix_matMulT`: for contraction-dual bases its matrix is the matrix product
+    `(A_{μν}) (B^{νρ})`.
 
 ## iii. Table of contents
 
@@ -125,24 +123,26 @@ lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y : C} {cM : Fin 2 →
 
 -/
 
-/-- The product `a_{IJ} b^{JK}` of two rank-two tensors: the second index of `a` contracted with
-the first index of `b`, where `h : S.τ (cs 1) = ds 0`. The surviving indices `I` and `K` keep
-their colours, `![cs 0, ds 1]`. -/
+/-- The product `A_{μν} B^{νρ}` of two rank-two tensors: the second index of `A` contracted with the
+first index of `B`, which `h` says are dual. The result has the surviving indices `μ` of `A` and
+`ρ` of `B`, in that order. For the Minkowski metric, `matMulT` of `η_{μν}` and `η^{νρ}` is
+`η_{μν} η^{νρ}`. -/
 noncomputable def matMulT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) :
     Tensor S cs →ₗ[k] Tensor S ds →ₗ[k] Tensor S ![cs 0, ds 1] :=
   (crossToEnd (Fin.last 1) (0 : Fin 2) h).compr₂
     (permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl))
 
-/-- The product is the cross contraction of the last slot of `a` with the first slot of `b`,
-recoloured to `![cs 0, ds 1]`. -/
+/-- `A_{μν} B^{νρ}` is the cross contraction `crossToEnd` of the last index of `A` with the first
+index of `B`, the colours of the result renamed to those of `μ` and `ρ`. -/
 lemma matMulT_apply {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (a : Tensor S cs)
     (b : Tensor S ds) :
     matMulT h a b = permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl)
       (crossToEnd (Fin.last 1) (0 : Fin 2) h a b) :=
   rfl
 
-/-- Cross contraction of the last slot of `a` with the first slot of `b` is their product,
-recoloured back to the colour list `crossToEnd` produces. -/
+/-- The cross contraction of the last index of `A` with the first index of `B` is `A_{μν} B^{νρ}`,
+the colours of the result renamed to the list `crossToEnd` produces. This is `matMulT_apply` read
+from right to left. -/
 lemma crossToEnd_eq_permT_matMulT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (a : Tensor S cs)
     (b : Tensor S ds) :
     crossToEnd (Fin.last 1) (0 : Fin 2) h a b =
@@ -150,8 +150,8 @@ lemma crossToEnd_eq_permT_matMulT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
   rw [matMulT_apply, permT_permT]
   exact (permT_congr_eq_id _ _ _ rfl).symm
 
-/-- The matrix of a product is the product of the matrices, the middle labels matched by
-`HasContrDualBases.dualIdxEquiv`. -/
+/-- In components the product is the matrix product, `(A B)_μ{}^ρ = ∑_ν A_{μν} B^{νρ}`: the lower
+label `ν` of `A` is summed against the upper label `ν` of `B` it contracts with. -/
 lemma toMatrix_matMulT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
     (a : Tensor S cs) (b : Tensor S ds) :
     toMatrix (matMulT h a b) =
@@ -164,7 +164,8 @@ lemma toMatrix_matMulT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs
   funext i
   fin_cases i <;> rfl
 
-/-- The product commutes with the action of `G`. -/
+/-- Transforming both factors and then multiplying is the same as multiplying and then
+transforming: for a Lorentz transformation `Λ`, `(Λ A)_{μν} (Λ B)^{νρ} = Λ (A_{μν} B^{νρ})`. -/
 lemma matMulT_equivariant {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (g : G) (a : Tensor S cs)
     (b : Tensor S ds) :
     matMulT h (g • a) (g • b) = g • matMulT h a b := by

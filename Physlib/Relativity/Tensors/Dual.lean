@@ -84,8 +84,8 @@ noncomputable def toDualMapAtIndex : {n : ℕ} → {c : Fin n → C} → (i : Fi
 -/
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The metric tensor at `S.τ c` contracted with the metric tensor at `c` is the unit tensor
-  at `c`. -/
+/-- `η^{μν} η_{νρ} = δ^μ_ρ`: the metric at the dual colour times the metric at `c` is the unit
+  tensor at `c`. -/
 lemma matMulT_dual_metricTensor_metricTensor {c : C} :
     matMulT (S.τ_τ_apply c) (metricTensor (S := S) (S.τ c)) (metricTensor (S := S) c) =
       permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
@@ -95,8 +95,8 @@ lemma matMulT_dual_metricTensor_metricTensor {c : C} :
   exact permT_congr rfl rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The metric tensor at `c` contracted with the metric tensor at `S.τ c` is the unit tensor
-  at `S.τ c`. -/
+/-- `η_{μν} η^{νρ} = δ_μ^ρ`: the metric at `c` times the metric at the dual colour is the unit
+  tensor at the dual colour. -/
 lemma matMulT_metricTensor_metricTensor_eq_dual_unit {c : C} :
     matMulT rfl (metricTensor (S := S) c) (metricTensor (S := S) (S.τ c)) =
       permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply c))
