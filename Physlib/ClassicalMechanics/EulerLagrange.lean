@@ -98,6 +98,9 @@ section Covector
 
 open Filter Topology
 
+TODO "Delete `eulerLagrangeOp` and refactor the mechanics modules (harmonic oscillator, damped
+  harmonic oscillator, simple pendulum) to use `eulerLagrange`."
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- The canonical momentum `∂L/∂q̇` of a curve `q`. -/
