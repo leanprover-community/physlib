@@ -415,14 +415,8 @@ matrix with its rows relabelled by the dual matching of `τ e = a`. -/
 lemma toMatrix_permT_unitTensor_of_tau_eq [HasContrDualBases S] {a e : C} (h : S.τ e = a) :
     toMatrix (permT id (IsReindexing.unitTensor_of_tau_eq h) (unitTensor (S := S) e)) =
       (1 : Matrix (basisIdx e) (basisIdx e) k).submatrix (dualIdxEquiv h).symm id := by
-  refine (toMatrix_permT_unitTensor (S := S) (σ := id) _ (fun _ => rfl) _).trans ?_
-  ext x y
-  simp only [Matrix.submatrix_apply, Matrix.one_apply]
-  refine if_congr ?_ rfl rfl
   subst h
-  -- The casts along `![τ e, e] 0 = τ e` reduce only with this option.
-  set_option backward.isDefEq.respectTransparency false in
-  simp [dualIdxEquiv, basisIdxCongr]
+  simpa [dualIdxEquiv, basisIdxCongr] using (toMatrix_unitTensor (S := S) e)
 
 open HasContrDualBases in
 /-- When the two indices of `M` have the same labels, one collapse law gives the other:
@@ -439,30 +433,18 @@ lemma matMulT_eq_unitTensor_comm [HasContrDualBases S] {cs ds : Fin 2 → C}
       permT id (IsReindexing.unitTensor_of_tau_eq hb) (unitTensor (S := S) (cs 1)) := by
   apply toMatrix_injective
   have h := congrArg toMatrix h
-  rw [toMatrix_matMulT, toMatrix_permT_unitTensor_of_tau_eq] at h
-  rw [toMatrix_matMulT, toMatrix_permT_unitTensor_of_tau_eq]
-  set A := toMatrix M
-  set B := toMatrix M'
-  -- Square the product up over `basisIdx (ds 1)`, so that Mathlib's `A B = 1 ↔ B A = 1` applies.
-  have h1 : A.submatrix (dualIdxEquiv ha) id * B.submatrix (dualIdxEquiv hb) id = 1 := by
-    have h' : (A * B.submatrix (dualIdxEquiv hb) id).submatrix (dualIdxEquiv ha) id =
-        ((1 : Matrix (basisIdx (ds 1)) (basisIdx (ds 1)) k).submatrix
-          (dualIdxEquiv ha).symm id).submatrix (dualIdxEquiv ha) id := by
-      rw [h]
-    rw [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id, Matrix.submatrix_id_id,
-      Matrix.submatrix_submatrix, Equiv.symm_comp_self, Function.comp_id,
-      Matrix.submatrix_id_id] at h'
-    exact h'
+  rw [toMatrix_matMulT, toMatrix_permT_unitTensor_of_tau_eq ha] at h
+  rw [toMatrix_matMulT, toMatrix_permT_unitTensor_of_tau_eq hb]
+  dsimp only [Matrix.cons_val_zero, Matrix.cons_val_one] at h ⊢
+  have h1 := congrArg (fun A => A.submatrix (dualIdxEquiv ha) id) h
+  simp only [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id,
+    Matrix.submatrix_id_id, Matrix.submatrix_submatrix, Equiv.symm_comp_self,
+    Function.comp_id] at h1
   have h2 := (Matrix.mul_eq_one_comm_of_equiv ((dualIdxEquiv ha).trans e)).1 h1
-  have h3 : (B * A.submatrix (dualIdxEquiv ha) id).submatrix (dualIdxEquiv hb) id = 1 := by
-    rw [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id, Matrix.submatrix_id_id]
-    exact h2
-  have h4 : ((B * A.submatrix (dualIdxEquiv ha) id).submatrix (dualIdxEquiv hb) id).submatrix
-      (dualIdxEquiv hb).symm id = (1 : Matrix _ _ k).submatrix (dualIdxEquiv hb).symm id := by
-    rw [h3]
-  rw [Matrix.submatrix_submatrix, Equiv.self_comp_symm, Function.comp_id,
-    Matrix.submatrix_id_id] at h4
-  exact h4
+  apply Matrix.submatrix_injective (Equiv.surjective (dualIdxEquiv hb)) Function.surjective_id
+  simpa only [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id,
+    Matrix.submatrix_id_id, Matrix.submatrix_submatrix, Equiv.symm_comp_self,
+    Function.comp_id] using h2
 
 end Tensor
 
