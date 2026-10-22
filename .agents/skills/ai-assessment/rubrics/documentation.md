@@ -1,25 +1,28 @@
 # Documentation
 
-You judge the documentation added. Linters may check presence; you judge usefulness and
-honesty. Uses `request_changes`.
+You assess the documentation added. Linters check presence and the module-doc heading scheme;
+you assess usefulness and honesty.
 
-- Each new substantive file opens with a module docstring saying what material lives there and
-  why.
-- Document public definitions, main theorems, non-obvious abbreviations, and exported
-  instances whose purpose is not clear from the name. Docstrings describe the object or
-  result, not the proof.
-- The "why" is mathematical: what this material is for, what it feeds, what a reader needs to use
-  it. Roadmap targets, layer numbers, PR-process narrative and coordination status with in-flight
-  upstream work do not belong in a module docstring; they date badly and nothing updates them when
-  the roadmap is reorganised. Roadmap attribution belongs in the PR description, where the
-  mandatory `Roadmap:` line records it. Mathematical references stay in the file.
-- Treat overclaiming as a finding even when the theorem is correct: a docstring must not
-  promise more than the statement delivers. Flag documentation that is wrong, stale, or copied
-  without being adapted.
+- Each new file opens with a module docstring in the Physlib format (`AGENTS.md`): a title,
+  a one-line summary, `## i. Overview`, `## ii. Key results`, `## iii. Table of contents`,
+  `## iv. References`, then numbered sections. See
+  `Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean` for an example. Assess whether
+  the overview actually explains what the file is about and why, whether the key results
+  list the results a reader will look for, and whether the table of contents matches the
+  sections. When a PR adds to an existing file, check that these sections are updated.
+- Every definition has a docstring, and important lemmas should have one; every `theorem`
+  (reserved for results well known in the physics literature) must have one. Docstrings
+  describe the object or result, not the proof. For physics, a short informal statement in
+  standard notation (with the usual symbol, e.g. `F = m a`) helps readers recognise it.
+- The "why" is mathematical and physical: what this material is for, what it feeds, what a
+  reader needs to use it. PR-process narrative does not belong in a docstring.
+- Point out overclaiming even when the theorem is correct: a docstring should not promise more
+  than the statement delivers. Point out documentation that is wrong, stale, or copied without
+  being adapted.
 
-## Verdict
+## Score guidance
 
-- `request_changes` for a missing module docstring on a substantive file, an undocumented
-  public definition or main theorem, a docstring about the proof or about the project's process, or one that overclaims or is
-  inaccurate.
-- `approve` when each substantive file and public declaration is documented accurately.
+- 2–3 for a module docstring whose overview or key results do not describe the file, an
+  undocumented definition or important result, a docstring about the proof or process, or one
+  that overclaims or is inaccurate.
+- 5 when each file and public declaration is documented accurately and helpfully.
