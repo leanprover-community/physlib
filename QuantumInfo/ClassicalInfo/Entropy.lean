@@ -91,6 +91,13 @@ def Hₛ (d : ProbDistribution α) : ℝ :=
 theorem Hₛ_nonneg (d : ProbDistribution α) : 0 ≤ Hₛ d :=
   Finset.sum_nonneg fun _ _ ↦ H₁_nonneg _
 
+/-- Shannon entropy is concave under convex mixtures of distributions. -/
+lemma Hₛ_concave (d₁ d₂ : ProbDistribution α) (p : Prob) :
+    p[Hₛ d₁ ↔ Hₛ d₂] ≤ Hₛ (p[d₁ ↔ d₂]) := by
+  change (p : ℝ) * Hₛ d₁ + ((1 - p : Prob) : ℝ) * Hₛ d₂ ≤ _
+  simp only [Hₛ, Finset.mul_sum, ← Finset.sum_add_distrib]
+  exact Finset.sum_le_sum fun i _ ↦ H₁_concave (d₁.prob i) (d₂.prob i) p
+
 /-- Shannon entropy of a distribution is at most ln d. -/
 theorem Hₛ_le_log_d (d : ProbDistribution α) : Hₛ d ≤ Real.log (Fintype.card α) := by
   --Thanks Aristotle
@@ -131,6 +138,4 @@ lemma Hₛ_eq_of_multiset_map_eq (d₁ : ProbDistribution α) (d₂ : ProbDistri
   convert congr_arg (fun m ↦ m.map (fun x ↦ -Real.log x.1 * x.1 ) |> Multiset.sum ) h using 1
   <;> simp [Hₛ, H₁, mul_comm, Real.negMulLog]
 
---TODO:
--- * Shannon entropy is concave under mixing distributions.
--- * Shannon entropy as an expectation value
+--TODO: Shannon entropy as an expectation value
