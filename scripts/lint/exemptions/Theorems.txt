@@ -494,3 +494,4 @@ unitaryForm_of_general
 unitaryForm_of_general_e
 stinespringOp_gram
 stinespringForm_eq
+PhyslibAlpha.Hydrogen.PauliSystem.exists_energyLevel
