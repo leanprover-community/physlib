@@ -25,16 +25,16 @@ open CategoryTheory.MonoidalCategory
 namespace Lorentz
 
 /-- The contra-co unit for complex lorentz vectors. Usually denoted `δⁱᵢ`. -/
-def contrCoUnitVal : ContrℂModule ⊗[ℂ] CoℂModule :=
+def CoℂModule.unitVal : ContrℂModule ⊗[ℂ] CoℂModule :=
   contrCoToMatrix.symm 1
 
-/-- Expansion of `contrCoUnitVal` into basis. -/
-lemma contrCoUnitVal_expand_tmul : contrCoUnitVal =
+/-- Expansion of `CoℂModule.unitVal` into basis. -/
+lemma CoℂModule.unitVal_expand_tmul : CoℂModule.unitVal =
     complexContrBasis (Sum.inl 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inl 0)
     + complexContrBasis (Sum.inr 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 0)
     + complexContrBasis (Sum.inr 1) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 1)
     + complexContrBasis (Sum.inr 2) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 2) := by
-  simp only [contrCoUnitVal, Fin.isValue]
+  simp only [CoℂModule.unitVal, Fin.isValue]
   rw [contrCoToMatrix_symm_expand_tmul]
   simp only [Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
     Finset.sum_singleton, Fin.sum_univ_three, ne_eq, reduceCtorEq, not_false_eq_true, one_apply_ne,
@@ -42,19 +42,19 @@ lemma contrCoUnitVal_expand_tmul : contrCoUnitVal =
     one_ne_zero]
   rfl
 
-lemma contrCoUnitVal_eq_sum_tmul : contrCoUnitVal =
+lemma CoℂModule.unitVal_eq_sum_tmul : CoℂModule.unitVal =
     ∑ i, complexContrBasis i ⊗ₜ[ℂ] complexCoBasis i := by
-  simp [contrCoUnitVal_expand_tmul, Fin.isValue, Fin.sum_univ_three]
+  simp [CoℂModule.unitVal_expand_tmul, Fin.isValue, Fin.sum_univ_three]
   module
 
 /-- The contra-co unit for complex lorentz vectors as a morphism
   `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ complexContr ⊗ complexCo`, manifesting the invariance under
   the `SL(2, ℂ)` action. -/
-def contrCoUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
+def CoℂModule.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     (ContrℂModule.SL2CRep.tprod CoℂModule.SL2CRep) where
   toFun := fun a =>
     let a' : ℂ := a
-    a' • contrCoUnitVal
+    a' • CoℂModule.unitVal
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -62,17 +62,17 @@ def contrCoUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     rfl
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
-    change x • contrCoUnitVal =
-      (TensorProduct.map (ContrℂModule.SL2CRep M) (CoℂModule.SL2CRep M)) (x • contrCoUnitVal)
+    change x • CoℂModule.unitVal =
+      (TensorProduct.map (ContrℂModule.SL2CRep M) (CoℂModule.SL2CRep M)) (x • CoℂModule.unitVal)
     simp only [map_smul]
     apply congrArg
-    simp only [contrCoUnitVal]
+    simp only [CoℂModule.unitVal]
     rw [contrCoToMatrix_ρ_symm]
     apply congrArg
     simp
 
-lemma contrCoUnit_apply_one : contrCoUnit (1 : ℂ) = contrCoUnitVal := by
-  change (1 : ℂ) • contrCoUnitVal = contrCoUnitVal
+lemma CoℂModule.unit_apply_one : CoℂModule.unit (1 : ℂ) = CoℂModule.unitVal := by
+  change (1 : ℂ) • CoℂModule.unitVal = CoℂModule.unitVal
   rw [one_smul]
 
 /-- The co-contra unit for complex lorentz vectors. Usually denoted `δᵢⁱ`. -/
@@ -134,16 +134,16 @@ lemma ContrℂModule.unit_apply_one : ContrℂModule.unit (1 : ℂ) = ContrℂMo
 
 -/
 
-/-- Contraction on the right with `contrCoUnit` does nothing. -/
-lemma contr_contrCoUnit (x : CoℂModule) :
+/-- Contraction on the right with `CoℂModule.unit` does nothing. -/
+lemma CoℂModule.contr_unit (x : CoℂModule) :
     (TensorProduct.lid ℂ _ <|
     CoℂModule.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
-    x ⊗ₜ[ℂ] (contrCoUnit (1 : ℂ))) = x := by
+    x ⊗ₜ[ℂ] (CoℂModule.unit (1 : ℂ))) = x := by
   obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp (Basis.mem_span complexCoBasis x)
   subst hc
   simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, CoℂModule.contr_basis',
-    contrCoUnit_apply_one, contrCoUnitVal_eq_sum_tmul, sum_tmul]
+    CoℂModule.unit_apply_one, CoℂModule.unitVal_eq_sum_tmul, sum_tmul]
 
 /-- Contraction on the right with `ContrℂModule.unit`. -/
 lemma ContrℂModule.contr_unit (x : ContrℂModule) :
@@ -165,18 +165,18 @@ lemma ContrℂModule.contr_unit (x : ContrℂModule) :
 
 open CategoryTheory
 
-lemma contrCoUnit_symm :
-    contrCoUnit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
+lemma CoℂModule.unit_symm :
+    CoℂModule.unit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
       (TensorProduct.comm ℂ _ _ (ContrℂModule.unit (1 : ℂ))) := by
-  rw [contrCoUnit_apply_one, contrCoUnitVal_expand_tmul]
+  rw [CoℂModule.unit_apply_one, CoℂModule.unitVal_expand_tmul]
   rw [ContrℂModule.unit_apply_one, ContrℂModule.unitVal_expand_tmul]
   rfl
 
 lemma ContrℂModule.unit_symm :
     (ContrℂModule.unit (1 : ℂ)) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
-      (TensorProduct.comm ℂ _ _ (contrCoUnit (1 : ℂ))) := by
+      (TensorProduct.comm ℂ _ _ (CoℂModule.unit (1 : ℂ))) := by
   rw [ContrℂModule.unit_apply_one, ContrℂModule.unitVal_expand_tmul]
-  rw [contrCoUnit_apply_one, contrCoUnitVal_expand_tmul]
+  rw [CoℂModule.unit_apply_one, CoℂModule.unitVal_expand_tmul]
   rfl
 
 end Lorentz

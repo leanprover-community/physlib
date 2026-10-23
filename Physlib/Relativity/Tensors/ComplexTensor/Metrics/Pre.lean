@@ -157,14 +157,14 @@ lemma CoℂModule.contr_metric :
       (CoℂModule.contr.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-      (CoℂModule.metric 1) ⊗ₜ[ℂ] (ContrℂModule.metric 1)) = contrCoUnit (1 : ℝ) := by
+      (CoℂModule.metric 1) ⊗ₜ[ℂ] (ContrℂModule.metric 1)) = CoℂModule.unit (1 : ℝ) := by
   rw [CoℂModule.metric_apply_one, ContrℂModule.metric_apply_one]
   rw [CoℂModule.metricVal_expand_tmul, ContrℂModule.metricVal_expand_tmul]
   simp [Fin.isValue, tmul_sub, sub_tmul, map_sub]
   repeat rw [CoℂModule.contr_basis']
   simp [Fin.isValue, ↓reduceIte, one_smul, reduceCtorEq, Sum.inr.injEq, one_ne_zero,
     Fin.reduceEq, zero_ne_one]
-  rw [contrCoUnit_apply_one, contrCoUnitVal_expand_tmul]
+  rw [CoℂModule.unit_apply_one, CoℂModule.unitVal_expand_tmul]
 
 end Lorentz
 end

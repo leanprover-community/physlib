@@ -88,8 +88,8 @@ lemma coContrUnit_eq_fromConstPair : δ' = fromConstPair Lorentz.ContrℂModule.
   rw [Lorentz.ContrℂModule.unit]
   rfl
 
-lemma contrCoUnit_eq_fromConstPair : δ = fromConstPair Lorentz.contrCoUnit := by
-  rw [Lorentz.contrCoUnit]
+lemma contrCoUnit_eq_fromConstPair : δ = fromConstPair Lorentz.CoℂModule.unit := by
+  rw [Lorentz.CoℂModule.unit]
   rfl
 
 lemma dualLeftLeftUnit_eq_fromConstPair : δL' = fromConstPair Fermion.LeftHandedWeyl.unit := by
@@ -120,10 +120,10 @@ lemma coContrUnit_eq_fromPairT : δ' = fromPairT (Lorentz.ContrℂModule.unitVal
   congr 1
   exact Lorentz.ContrℂModule.unit_apply_one
 
-lemma contrCoUnit_eq_fromPairT : δ = fromPairT (Lorentz.contrCoUnitVal) := by
+lemma contrCoUnit_eq_fromPairT : δ = fromPairT (Lorentz.CoℂModule.unitVal) := by
   rw [contrCoUnit_eq_fromConstPair, fromConstPair]
   congr 1
-  exact Lorentz.contrCoUnit_apply_one
+  exact Lorentz.CoℂModule.unit_apply_one
 
 lemma dualLeftLeftUnit_eq_fromPairT : δL' = fromPairT (Fermion.LeftHandedWeyl.unitVal) := by
   rw [dualLeftLeftUnit_eq_fromConstPair, fromConstPair]
@@ -167,7 +167,7 @@ lemma coContrUnit_eq_complexCoBasisFin4_complexContrBasisFin4 : δ' =
 open Lorentz in
 lemma contrCoUnit_eq_complexContrBasis_complexCoBasis : δ =
     ∑ i, fromPairT (complexContrBasis i ⊗ₜ[ℂ] complexCoBasis i) := by
-  rw [contrCoUnit_eq_fromPairT, contrCoUnitVal_expand_tmul]
+  rw [contrCoUnit_eq_fromPairT, CoℂModule.unitVal_expand_tmul]
   rfl
 
 open Lorentz in
