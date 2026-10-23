@@ -531,9 +531,10 @@ lemma energyEigenstate_orthonormal :
 
 /-- The normalized energy eigenstates form an orthonormal basis of the Hilbert space. -/
 noncomputable def energyEigenbasis : OrthonormalBasis (Fin T.N) ℂ T.HilbertSpace :=
-  OrthonormalBasis.mk T.energyEigenstate_orthonormal
-    (le_of_eq (T.energyEigenstate_orthonormal.linearIndependent.span_eq_top_of_card_eq_finrank'
-      (by simp [T.finrank_hilbertSpace])).symm)
+  OrthonormalBasis.mk T.energyEigenstate_orthonormal <| by
+    rw [← Set.smul_set_range, Submodule.span_smul_eq_of_isUnit _ _
+      (Ne.isUnit (by simp [NeZero.ne T.N]))]
+    exact T.energyEigenstate_span
 
 /-- The `n`-th vector of the basis is the normalized energy eigenstate of the `n`-th
 wavenumber. -/
