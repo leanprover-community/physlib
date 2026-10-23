@@ -336,20 +336,22 @@ lemma radialR_zero_sq_div (hν : 0 < ν) :
 
 open QuantumMechanics Constants
 
-/-- The Bohr radius `a = ℏ²/(m k)` of a hydrogen atom. -/
-def bohrRadius (H : HydrogenAtom) : ℝ := (ℏ : ℝ) ^ 2 / (H.m * H.k)
+variable {d : ℕ}
 
-lemma bohrRadius_pos (H : HydrogenAtom) (hk : 0 < H.k) : 0 < bohrRadius H :=
+/-- The Bohr radius `a = ℏ²/(m k)` of a hydrogen atom. -/
+def bohrRadius (H : HydrogenAtom d) : ℝ := (ℏ : ℝ) ^ 2 / (H.m * H.k)
+
+lemma bohrRadius_pos (H : HydrogenAtom d) (hk : 0 < H.k) : 0 < bohrRadius H :=
   div_pos (pow_pos ℏ_pos 2) (mul_pos H.m_pos hk)
 
 /-- The reduced radial function `u_{νl}(r/a)` in physical units. -/
-def radialFun (H : HydrogenAtom) (ν l : ℕ) (r : ℝ) : ℝ := radialU ν l ((bohrRadius H)⁻¹ * r)
+def radialFun (H : HydrogenAtom d) (ν l : ℕ) (r : ℝ) : ℝ := radialU ν l ((bohrRadius H)⁻¹ * r)
 
 /-- **The radial Schrödinger equation of hydrogen in physical units.** For `d = 3` and an
 attractive potential, `u_{νl}(r/a)` solves
 `-ℏ²/(2m) u'' + (ℏ² l(l+1)/(2m r²) - k/r) u = E u` with `E = -Ry/ν²`, the Bohr level
 `H.energyLevel (ν - 1)` of physlib. -/
-lemma radialFun_schrodinger (H : HydrogenAtom) (hd : H.d = 3) (hk : 0 < H.k) (hl : l < ν)
+lemma radialFun_schrodinger (H : HydrogenAtom 3) (hk : 0 < H.k) (hl : l < ν)
     {r : ℝ} (hr : r ≠ 0) :
     -((ℏ : ℝ) ^ 2 / (2 * H.m)) * deriv (deriv (radialFun H ν l)) r +
         ((ℏ : ℝ) ^ 2 * ((l : ℝ) * (l + 1)) / (2 * H.m * r ^ 2) - H.k / r) * radialFun H ν l r =
@@ -364,7 +366,7 @@ lemma radialFun_schrodinger (H : HydrogenAtom) (hd : H.d = 3) (hk : 0 < H.k) (hl
       (deriv (radialU ν l) <| c * ·) from rfl, deriv_comp_mul_left, smul_eq_mul]
   rw [h2, radialU_ode hl (mul_ne_zero hc0 hr),
     show radialFun H ν l r = radialU ν l (c * r) from rfl,
-    HydrogenAtom.energyLevel_eq, HydrogenAtom.levelIndex_eq, HydrogenAtom.rydbergEnergy_eq, hd,
+    HydrogenAtom.energyLevel_eq, HydrogenAtom.levelIndex_eq, HydrogenAtom.rydbergEnergy_eq,
     Nat.cast_sub (show 1 ≤ ν by omega), hc, bohrRadius]
   have hm := H.m_pos.ne'
   have hk0 := hk.ne'
