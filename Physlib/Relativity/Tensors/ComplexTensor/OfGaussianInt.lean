@@ -84,14 +84,14 @@ lemma contr_basis_gaussianInt {c : complexLorentzTensor.Color}
     rw [Fermion.DualLeftHandedWeyl.contr_basis]
     simp
   | Color.upR =>
-    change Fermion.rightDualContraction
+    change Fermion.RightHandedWeyl.contr
       (Fermion.RightHandedWeyl.basis i ⊗ₜ Fermion.DualRightHandedWeyl.basis j) = _
-    rw [Fermion.rightDualContraction_basis]
+    rw [Fermion.RightHandedWeyl.contr_basis]
     simp
   | Color.downR =>
-    change Fermion.rightDualContraction
+    change Fermion.RightHandedWeyl.contr
       (Fermion.RightHandedWeyl.basis i ⊗ₜ Fermion.DualRightHandedWeyl.basis j) = _
-    rw [Fermion.rightDualContraction_basis]
+    rw [Fermion.RightHandedWeyl.contr_basis]
     simp
   | Color.up =>
     change Lorentz.contrCoContraction

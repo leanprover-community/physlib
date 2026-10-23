@@ -360,10 +360,10 @@ lemma DualLeftHandedWeyl.contr_metric :
     zero_ne_one, zero_smul, sub_zero, one_ne_zero, zero_sub, sub_neg_eq_add]
   rw [DualLeftHandedWeyl.unit_apply_one, DualLeftHandedWeyl.unitVal_expand_tmul]
 
-lemma rightDualContraction_apply_metric :
+lemma RightHandedWeyl.contr_metric :
     (TensorProduct.comm ℂ _ _ <|
     (TensorProduct.lid ℂ _).lTensor _ <|
-    (rightDualContraction.toLinearMap.rTensor _).lTensor _ <|
+    (RightHandedWeyl.contr.toLinearMap.rTensor _).lTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
     (RightHandedWeyl.metric 1) ⊗ₜ[ℂ] (DualRightHandedWeyl.metric 1)) =
@@ -374,7 +374,7 @@ lemma rightDualContraction_apply_metric :
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,
     map_smul, comm_tmul]
-  simp only [rightDualContraction_basis]
+  simp only [RightHandedWeyl.contr_basis]
   simp only [Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.mod_succ, Nat.zero_mod, one_ne_zero, ↓reduceIte,
     one_smul, zero_ne_one]
   rw [RightHandedWeyl.unit_apply_one, RightHandedWeyl.unitVal_expand_tmul]
