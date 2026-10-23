@@ -103,10 +103,10 @@ left-handed Weyl fermion to a right-handed one. [TODO]
 17. Physlib/Relativity/Fermions/Weyl/Metric.lean — `leftDualContraction_apply_metric`,
    `dualLeftContraction_apply_metric`, `rightDualContraction_apply_metric`,
    `dualRightContraction_apply_metric`
-18. Physlib/Relativity/Fermions/Weyl/Unit.lean — `leftDualLeftUnit`, `dualLeftLeftUnit`,
-   `rightDualRightUnit`, `dualRightRightUnit`, `contr_dualLeftLeftUnit`,
+18. Physlib/Relativity/Fermions/Weyl/Unit.lean — `leftDualLeftUnit`, `LeftHandedWeyl.unit`,
+   `rightDualRightUnit`, `dualRightRightUnit`, `LeftHandedWeyl.contr_unit`,
    `contr_leftDualLeftUnit`, `contr_dualRightRightUnit`, `contr_rightDualRightUnit`
-19. Physlib/Relativity/Fermions/Weyl/Unit.lean — `dualLeftLeftUnit_symm`,
+19. Physlib/Relativity/Fermions/Weyl/Unit.lean — `LeftHandedWeyl.unit_symm`,
    `leftDualLeftUnit_symm`, `dualRightRightUnit_symm`, `rightDualRightUnit_symm`
 20. Physlib/Relativity/Fermions/Weyl/Duals.lean — `LeftHandedWeyl.dual`,
    `DualLeftHandedWeyl.dual`, `LeftHandedWeyl.dualEquiv`, `LeftHandedWeyl.dual_hom_apply`,

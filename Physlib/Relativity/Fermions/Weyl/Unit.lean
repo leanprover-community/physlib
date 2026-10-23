@@ -69,26 +69,26 @@ lemma leftDualLeftUnit_apply_one :
   simp only [one_smul]
 
 /-- The dual-left-left unit `δₐᵃ` as an element of `(dualLeftHanded ⊗ leftHanded).V`. -/
-def dualLeftLeftUnitVal : (DualLeftHandedWeyl ⊗[ℂ] LeftHandedWeyl) :=
+def LeftHandedWeyl.unitVal : (DualLeftHandedWeyl ⊗[ℂ] LeftHandedWeyl) :=
   dualLeftLeftToMatrix.symm 1
 
-/-- Expansion of `dualLeftLeftUnitVal` into the basis. -/
-lemma dualLeftLeftUnitVal_expand_tmul : dualLeftLeftUnitVal =
+/-- Expansion of `LeftHandedWeyl.unitVal` into the basis. -/
+lemma LeftHandedWeyl.unitVal_expand_tmul : LeftHandedWeyl.unitVal =
     DualLeftHandedWeyl.basis 0 ⊗ₜ[ℂ] LeftHandedWeyl.basis 0 +
       DualLeftHandedWeyl.basis 1 ⊗ₜ[ℂ] LeftHandedWeyl.basis 1 := by
-  simp only [dualLeftLeftUnitVal, Fin.isValue]
+  simp only [LeftHandedWeyl.unitVal, Fin.isValue]
   rw [dualLeftLeftToMatrix_symm_expand_tmul]
   simp only [Fin.sum_univ_two, Fin.isValue, one_apply_eq, one_smul, ne_eq, zero_ne_one,
     not_false_eq_true, one_apply_ne, zero_smul, add_zero, one_ne_zero, zero_add]
 
 /-- The dual-left-left unit `δₐᵃ` as a morphism `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶
   dualLeftHanded ⊗ leftHanded `, manifesting the invariance under the `SL(2,ℂ)` action. -/
-def dualLeftLeftUnit :
+def LeftHandedWeyl.unit :
     (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
       (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep) where
   toFun := fun a =>
       let a' : ℂ := a
-      a' • dualLeftLeftUnitVal
+      a' • LeftHandedWeyl.unitVal
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -96,20 +96,20 @@ def dualLeftLeftUnit :
     rfl
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
-    change x • dualLeftLeftUnitVal =
+    change x • LeftHandedWeyl.unitVal =
       (TensorProduct.map (DualLeftHandedWeyl.rep M) (LeftHandedWeyl.rep M))
-        (x • dualLeftLeftUnitVal)
+        (x • LeftHandedWeyl.unitVal)
     simp only [map_smul]
     apply congrArg
-    simp only [dualLeftLeftUnitVal]
+    simp only [LeftHandedWeyl.unitVal]
     rw [dualLeftLeftToMatrix_ρ_symm]
     apply congrArg
     simp only [mul_one, ← transpose_mul, SpecialLinearGroup.det_coe, isUnit_iff_ne_zero, ne_eq,
       one_ne_zero, not_false_eq_true, mul_nonsing_inv, transpose_one]
 
-/-- Applying the morphism `dualLeftLeftUnit` to `1` returns `dualLeftLeftUnitVal`. -/
-lemma dualLeftLeftUnit_apply_one : dualLeftLeftUnit (1 : ℂ) = dualLeftLeftUnitVal := by
-  change (1 : ℂ) • dualLeftLeftUnitVal = dualLeftLeftUnitVal
+/-- Applying the morphism `LeftHandedWeyl.unit` to `1` returns `LeftHandedWeyl.unitVal`. -/
+lemma LeftHandedWeyl.unit_apply_one : LeftHandedWeyl.unit (1 : ℂ) = LeftHandedWeyl.unitVal := by
+  change (1 : ℂ) • LeftHandedWeyl.unitVal = LeftHandedWeyl.unitVal
   simp only [one_smul]
 
 /-- The right-dual-right unit `δ^{dot a}_{dot a}` as an element of
@@ -215,17 +215,17 @@ lemma dualRightRightUnit_apply_one : dualRightRightUnit (1 : ℂ) = dualRightRig
 
 -/
 
-/-- Contraction on the right with `dualLeftLeftUnit` does nothing. -/
-lemma contr_dualLeftLeftUnit (x : LeftHandedWeyl) :
+/-- Contraction on the right with `LeftHandedWeyl.unit` does nothing. -/
+lemma LeftHandedWeyl.contr_unit (x : LeftHandedWeyl) :
     (TensorProduct.lid ℂ _ <|
     leftDualContraction.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
-    x ⊗ₜ[ℂ] (dualLeftLeftUnit (1 : ℂ))) = x := by
+    x ⊗ₜ[ℂ] (LeftHandedWeyl.unit (1 : ℂ))) = x := by
   obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp
     (Basis.mem_span LeftHandedWeyl.basis x)
   subst hc
   simp [- Fintype.sum_sum_type, smul_tmul, leftDualContraction_basis,
-    dualLeftLeftUnit_apply_one, dualLeftLeftUnitVal_expand_tmul, add_tmul, tmul_add]
+    LeftHandedWeyl.unit_apply_one, LeftHandedWeyl.unitVal_expand_tmul, add_tmul, tmul_add]
 
 /-- Contraction on the right with `leftDualLeftUnit` does nothing. -/
 lemma contr_leftDualLeftUnit (x : DualLeftHandedWeyl) :
@@ -270,17 +270,17 @@ lemma contr_rightDualRightUnit (x : DualRightHandedWeyl) :
 -/
 open CategoryTheory
 
-lemma dualLeftLeftUnit_symm :
-    dualLeftLeftUnit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
+lemma LeftHandedWeyl.unit_symm :
+    LeftHandedWeyl.unit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
     (TensorProduct.comm ℂ _ _ (leftDualLeftUnit (1 : ℂ))) := by
-  rw [dualLeftLeftUnit_apply_one, dualLeftLeftUnitVal_expand_tmul]
+  rw [LeftHandedWeyl.unit_apply_one, LeftHandedWeyl.unitVal_expand_tmul]
   rw [leftDualLeftUnit_apply_one, leftDualLeftUnitVal_expand_tmul]
   rfl
 
 lemma leftDualLeftUnit_symm :
     leftDualLeftUnit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
-      (TensorProduct.comm ℂ _ _ (dualLeftLeftUnit (1 : ℂ))) := by
-  rw [dualLeftLeftUnit_apply_one, dualLeftLeftUnitVal_expand_tmul]
+      (TensorProduct.comm ℂ _ _ (LeftHandedWeyl.unit (1 : ℂ))) := by
+  rw [LeftHandedWeyl.unit_apply_one, LeftHandedWeyl.unitVal_expand_tmul]
   rw [leftDualLeftUnit_apply_one, leftDualLeftUnitVal_expand_tmul]
   rfl
 

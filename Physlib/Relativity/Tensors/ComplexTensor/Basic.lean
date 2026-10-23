@@ -171,7 +171,7 @@ def complexLorentzTensor : TensorSpecies â„‚ complexLorentzTensor.Color SL(2, â„
     | Color.down => Lorentz.coContrContraction
   unit := fun c =>
     match c with
-    | Color.upL => Fermion.dualLeftLeftUnit
+    | Color.upL => Fermion.LeftHandedWeyl.unit
     | Color.downL => Fermion.leftDualLeftUnit
     | Color.upR => Fermion.dualRightRightUnit
     | Color.downR => Fermion.rightDualRightUnit
@@ -187,7 +187,7 @@ def complexLorentzTensor : TensorSpecies â„‚ complexLorentzTensor.Color SL(2, â„
     | Color.down => Lorentz.coContrContraction_tmul_symm
   contr_unit := fun c =>
     match c with
-    | Color.upL => Fermion.contr_dualLeftLeftUnit
+    | Color.upL => Fermion.LeftHandedWeyl.contr_unit
     | Color.downL => Fermion.contr_leftDualLeftUnit
     | Color.upR => Fermion.contr_dualRightRightUnit
     | Color.downR => Fermion.contr_rightDualRightUnit
@@ -195,7 +195,7 @@ def complexLorentzTensor : TensorSpecies â„‚ complexLorentzTensor.Color SL(2, â„
     | Color.down => Lorentz.contr_contrCoUnit
   unit_symm := fun c =>
     match c with
-    | Color.upL => Fermion.dualLeftLeftUnit_symm
+    | Color.upL => Fermion.LeftHandedWeyl.unit_symm
     | Color.downL => Fermion.leftDualLeftUnit_symm
     | Color.upR => Fermion.dualRightRightUnit_symm
     | Color.downR => Fermion.rightDualRightUnit_symm
