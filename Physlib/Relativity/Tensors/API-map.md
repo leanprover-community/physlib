@@ -304,7 +304,7 @@ indices. [62]
 54. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Modules.lean — `ContrℂModule`,
    `CoℂModule`, `ContrℂModule.SL2CRep`, `CoℂModule.SL2CRep`
 55. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Contraction.lean — `ContrℂModule.contr`,
-   `coContrContraction`
+   `CoℂModule.contr`
 56. Physlib/Relativity/Tensors/ComplexTensor/Metrics/Basic.lean — `coMetric`, `contrMetric`,
    `leftMetric`, `rightMetric`, `dualLeftMetric`, `dualRightMetric`,
    `coMetric_eq_ofGaussianInt`, `leftMetric_eq_ofGaussianInt`

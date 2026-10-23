@@ -168,7 +168,7 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.upR => Fermion.RightHandedWeyl.contr
     | Color.downR => Fermion.DualRightHandedWeyl.contr
     | Color.up => Lorentz.ContrℂModule.contr
-    | Color.down => Lorentz.coContrContraction
+    | Color.down => Lorentz.CoℂModule.contr
   unit := fun c =>
     match c with
     | Color.upL => Fermion.LeftHandedWeyl.unit
@@ -184,7 +184,7 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.upR => Fermion.RightHandedWeyl.contr_tmul_symm
     | Color.downR => Fermion.DualRightHandedWeyl.contr_tmul_symm
     | Color.up => Lorentz.ContrℂModule.contr_tmul_symm
-    | Color.down => Lorentz.coContrContraction_tmul_symm
+    | Color.down => Lorentz.CoℂModule.contr_tmul_symm
   contr_unit := fun c =>
     match c with
     | Color.upL => Fermion.LeftHandedWeyl.contr_unit
@@ -222,7 +222,7 @@ instance instWithMetric : complexLorentzTensor.WithMetric where
     | Color.upR => Fermion.RightHandedWeyl.contr_metric
     | Color.downR => Fermion.DualRightHandedWeyl.contr_metric
     | Color.up => Lorentz.ContrℂModule.contr_metric
-    | Color.down => Lorentz.coContrContraction_apply_metric
+    | Color.down => Lorentz.CoℂModule.contr_metric
 
 /-- Complex Lorentz tensor. -/
 syntax (name := complexLorentzTensorSyntax) "ℂT[" term,* "]" : term
@@ -277,7 +277,7 @@ lemma isContrDualMatching_finCongr (c : complexLorentzTensor.Color) :
   cases c <;> refine Eq.trans ?_ (if_congr Fin.ext_iff.symm rfl rfl)
   exacts [Fermion.LeftHandedWeyl.contr_basis x₁ x₂, Fermion.DualLeftHandedWeyl.contr_basis x₁ x₂,
     Fermion.RightHandedWeyl.contr_basis x₁ x₂, Fermion.DualRightHandedWeyl.contr_basis x₁ x₂,
-    Lorentz.ContrℂModule.contr_basis x₁ x₂, Lorentz.coContrContraction_basis x₁ x₂]
+    Lorentz.ContrℂModule.contr_basis x₁ x₂, Lorentz.CoℂModule.contr_basis x₁ x₂]
 
 /-- Complex Lorentz tensors have dual bases under contraction, with the matching
 `finCongr repDim_tau`. -/

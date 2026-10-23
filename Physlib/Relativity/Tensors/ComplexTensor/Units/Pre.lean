@@ -137,12 +137,12 @@ lemma coContrUnit_apply_one : coContrUnit (1 : ℂ) = coContrUnitVal := by
 /-- Contraction on the right with `contrCoUnit` does nothing. -/
 lemma contr_contrCoUnit (x : CoℂModule) :
     (TensorProduct.lid ℂ _ <|
-    coContrContraction.toLinearMap.rTensor _ <|
+    CoℂModule.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
     x ⊗ₜ[ℂ] (contrCoUnit (1 : ℂ))) = x := by
   obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp (Basis.mem_span complexCoBasis x)
   subst hc
-  simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, coContrContraction_basis',
+  simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, CoℂModule.contr_basis',
     contrCoUnit_apply_one, contrCoUnitVal_eq_sum_tmul, sum_tmul]
 
 /-- Contraction on the right with `coContrUnit`. -/

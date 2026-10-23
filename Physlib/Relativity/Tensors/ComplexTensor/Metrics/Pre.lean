@@ -151,17 +151,17 @@ lemma ContrℂModule.contr_metric :
     Sum.inr.injEq, one_ne_zero, Fin.reduceEq, sub_neg_eq_add, zero_ne_one, sub_self]
   rw [coContrUnit_apply_one, coContrUnitVal_expand_tmul]
 
-lemma coContrContraction_apply_metric :
+lemma CoℂModule.contr_metric :
     (TensorProduct.comm ℂ _ _ <|
       (TensorProduct.lid ℂ _).lTensor _ <|
-      (coContrContraction.toLinearMap.rTensor _).lTensor _ <|
+      (CoℂModule.contr.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
       (coMetric 1) ⊗ₜ[ℂ] (contrMetric 1)) = contrCoUnit (1 : ℝ) := by
   rw [coMetric_apply_one, contrMetric_apply_one]
   rw [coMetricVal_expand_tmul, contrMetricVal_expand_tmul]
   simp [Fin.isValue, tmul_sub, sub_tmul, map_sub]
-  repeat rw [coContrContraction_basis']
+  repeat rw [CoℂModule.contr_basis']
   simp [Fin.isValue, ↓reduceIte, one_smul, reduceCtorEq, Sum.inr.injEq, one_ne_zero,
     Fin.reduceEq, zero_ne_one]
   rw [contrCoUnit_apply_one, contrCoUnitVal_expand_tmul]
