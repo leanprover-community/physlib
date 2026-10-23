@@ -139,14 +139,14 @@ lemma LeftHandedWeyl.metric_apply_one :
 -/
 
 /-- The metric `εₐₐ` as an element of `(dualLeftHanded ⊗ dualLeftHanded).V`. -/
-def dualLeftMetricVal : (DualLeftHandedWeyl ⊗[ℂ] DualLeftHandedWeyl) :=
+def DualLeftHandedWeyl.metricVal : (DualLeftHandedWeyl ⊗[ℂ] DualLeftHandedWeyl) :=
   dualLeftdualLeftToMatrix.symm metricRaw
 
-/-- Expansion of `dualLeftMetricVal` into the left basis. -/
-lemma dualLeftMetricVal_expand_tmul : dualLeftMetricVal =
+/-- Expansion of `DualLeftHandedWeyl.metricVal` into the left basis. -/
+lemma DualLeftHandedWeyl.metricVal_expand_tmul : DualLeftHandedWeyl.metricVal =
     DualLeftHandedWeyl.basis 0 ⊗ₜ[ℂ] DualLeftHandedWeyl.basis 1 -
       DualLeftHandedWeyl.basis 1 ⊗ₜ[ℂ] DualLeftHandedWeyl.basis 0 := by
-  simp only [dualLeftMetricVal, Fin.isValue]
+  simp only [DualLeftHandedWeyl.metricVal, Fin.isValue]
   rw [dualLeftdualLeftToMatrix_symm_expand_tmul]
   simp only [metricRaw, of_apply, cons_val', empty_val', cons_val_fin_one, Fin.sum_univ_two,
     Fin.isValue, cons_val_zero, cons_val_one, zero_smul, one_smul, zero_add, add_zero]
@@ -154,11 +154,11 @@ lemma dualLeftMetricVal_expand_tmul : dualLeftMetricVal =
 
 /-- The metric `εₐₐ` as a morphism `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ dualLeftHanded ⊗ dualLeftHanded`,
   making manifest its invariance under the action of `SL(2,ℂ)`. -/
-def dualLeftMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
+def DualLeftHandedWeyl.metric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     (DualLeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep) where
     toFun := fun a =>
       let a' : ℂ := a
-      a' • dualLeftMetricVal
+      a' • DualLeftHandedWeyl.metricVal
     map_add' := fun x y => by
       simp only [add_smul]
     map_smul' := fun m x => by
@@ -166,21 +166,21 @@ def dualLeftMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
       rfl
     isIntertwining' M := by
       refine LinearMap.ext fun x : ℂ => ?_
-      change x • dualLeftMetricVal =
+      change x • DualLeftHandedWeyl.metricVal =
         (TensorProduct.map (DualLeftHandedWeyl.rep M) (DualLeftHandedWeyl.rep M))
-          (x • dualLeftMetricVal)
+          (x • DualLeftHandedWeyl.metricVal)
       simp only [map_smul]
       apply congrArg
-      simp only [dualLeftMetricVal]
+      simp only [DualLeftHandedWeyl.metricVal]
       rw [dualLeftdualLeftToMatrix_ρ_symm]
       apply congrArg
       rw [← metricRaw_comm, mul_assoc]
       simp only [SpecialLinearGroup.det_coe, isUnit_iff_ne_zero, ne_eq, one_ne_zero,
         not_false_eq_true, mul_nonsing_inv, mul_one]
 
-lemma dualLeftMetric_apply_one :
-    dualLeftMetric (1 : ℂ) = dualLeftMetricVal := by
-  change (1 : ℂ) • dualLeftMetricVal = dualLeftMetricVal
+lemma DualLeftHandedWeyl.metric_apply_one :
+    DualLeftHandedWeyl.metric (1 : ℂ) = DualLeftHandedWeyl.metricVal := by
+  change (1 : ℂ) • DualLeftHandedWeyl.metricVal = DualLeftHandedWeyl.metricVal
   simp only [one_smul]
 
 /-!
@@ -311,7 +311,7 @@ lemma dualRightMetric_apply_one :
 
 TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
   LeftHandedWeyl.rep.tprod LeftHandedWeyl.rep` is a scalar multiple of `LeftHandedWeyl.metric`, and
-  likewise for `dualLeftMetric`, `rightMetric` and
+  likewise for `DualLeftHandedWeyl.metric`, `rightMetric` and
   `dualRightMetric`: up to scale, `ε` is the unique `SL(2,ℂ)`-invariant element of
   `LeftHandedWeyl ⊗ LeftHandedWeyl`. Compare `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
 
@@ -327,10 +327,10 @@ lemma leftDualContraction_apply_metric :
       (leftDualContraction.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-      (LeftHandedWeyl.metric 1) ⊗ₜ[ℂ] (dualLeftMetric 1)) =
+      (LeftHandedWeyl.metric 1) ⊗ₜ[ℂ] (DualLeftHandedWeyl.metric 1)) =
       dualLeftLeftUnit (1 : ℂ) := by
-  rw [LeftHandedWeyl.metric_apply_one, dualLeftMetric_apply_one]
-  rw [LeftHandedWeyl.metricVal_expand_tmul', dualLeftMetricVal_expand_tmul]
+  rw [LeftHandedWeyl.metric_apply_one, DualLeftHandedWeyl.metric_apply_one]
+  rw [LeftHandedWeyl.metricVal_expand_tmul', DualLeftHandedWeyl.metricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,
@@ -347,10 +347,10 @@ lemma dualLeftContraction_apply_metric :
     (dualLeftContraction.toLinearMap.rTensor _).lTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-    (dualLeftMetric 1) ⊗ₜ[ℂ] (LeftHandedWeyl.metric 1)) =
+    (DualLeftHandedWeyl.metric 1) ⊗ₜ[ℂ] (LeftHandedWeyl.metric 1)) =
     leftDualLeftUnit (1 : ℂ) := by
-  rw [LeftHandedWeyl.metric_apply_one, dualLeftMetric_apply_one]
-  rw [LeftHandedWeyl.metricVal_expand_tmul', dualLeftMetricVal_expand_tmul]
+  rw [LeftHandedWeyl.metric_apply_one, DualLeftHandedWeyl.metric_apply_one]
+  rw [LeftHandedWeyl.metricVal_expand_tmul', DualLeftHandedWeyl.metricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,
