@@ -142,14 +142,14 @@ lemma ContrℂModule.contr_metric :
       (ContrℂModule.contr.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-      (ContrℂModule.metric 1) ⊗ₜ[ℂ] (CoℂModule.metric 1)) = coContrUnit (1 : ℝ) := by
+      (ContrℂModule.metric 1) ⊗ₜ[ℂ] (CoℂModule.metric 1)) = ContrℂModule.unit (1 : ℝ) := by
   rw [ContrℂModule.metric_apply_one, CoℂModule.metric_apply_one]
   rw [ContrℂModule.metricVal_expand_tmul, CoℂModule.metricVal_expand_tmul]
   simp [Fin.isValue, tmul_sub, sub_tmul, map_sub]
   repeat rw [ContrℂModule.contr_basis']
   simp only [Fin.isValue, ↓reduceIte, one_smul, reduceCtorEq, zero_smul, sub_zero, zero_sub,
     Sum.inr.injEq, one_ne_zero, Fin.reduceEq, sub_neg_eq_add, zero_ne_one, sub_self]
-  rw [coContrUnit_apply_one, coContrUnitVal_expand_tmul]
+  rw [ContrℂModule.unit_apply_one, ContrℂModule.unitVal_expand_tmul]
 
 lemma CoℂModule.contr_metric :
     (TensorProduct.comm ℂ _ _ <|
