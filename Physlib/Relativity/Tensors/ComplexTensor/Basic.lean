@@ -164,7 +164,7 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
   contr := fun c =>
     match c with
     | Color.upL => Fermion.LeftHandedWeyl.contr
-    | Color.downL => Fermion.dualLeftContraction
+    | Color.downL => Fermion.DualLeftHandedWeyl.contr
     | Color.upR => Fermion.rightDualContraction
     | Color.downR => Fermion.dualRightContraction
     | Color.up => Lorentz.contrCoContraction
@@ -180,7 +180,7 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
   contr_tmul_symm := fun c =>
     match c with
     | Color.upL => Fermion.LeftHandedWeyl.contr_tmul_symm
-    | Color.downL => Fermion.dualLeftContraction_tmul_symm
+    | Color.downL => Fermion.DualLeftHandedWeyl.contr_tmul_symm
     | Color.upR => Fermion.rightDualContraction_tmul_symm
     | Color.downR => Fermion.dualRightContraction_tmul_symm
     | Color.up => Lorentz.contrCoContraction_tmul_symm
@@ -218,7 +218,7 @@ instance instWithMetric : complexLorentzTensor.WithMetric where
   contr_metric := fun c =>
     match c with
     | Color.upL => Fermion.LeftHandedWeyl.contr_metric
-    | Color.downL => Fermion.dualLeftContraction_apply_metric
+    | Color.downL => Fermion.DualLeftHandedWeyl.contr_metric
     | Color.upR => Fermion.rightDualContraction_apply_metric
     | Color.downR => Fermion.dualRightContraction_apply_metric
     | Color.up => Lorentz.contrCoContraction_apply_metric
@@ -275,7 +275,7 @@ lemma isContrDualMatching_finCongr (c : complexLorentzTensor.Color) :
     IsContrDualMatching complexLorentzTensor c (finCongr repDim_tau) := by
   intro x₁ x₂
   cases c <;> refine Eq.trans ?_ (if_congr Fin.ext_iff.symm rfl rfl)
-  exacts [Fermion.LeftHandedWeyl.contr_basis x₁ x₂, Fermion.dualLeftContraction_basis x₁ x₂,
+  exacts [Fermion.LeftHandedWeyl.contr_basis x₁ x₂, Fermion.DualLeftHandedWeyl.contr_basis x₁ x₂,
     Fermion.rightDualContraction_basis x₁ x₂, Fermion.dualRightContraction_basis x₁ x₂,
     Lorentz.contrCoContraction_basis x₁ x₂, Lorentz.coContrContraction_basis x₁ x₂]
 

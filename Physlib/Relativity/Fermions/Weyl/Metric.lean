@@ -341,10 +341,10 @@ lemma LeftHandedWeyl.contr_metric :
   rw [add_comm]
   module
 
-lemma dualLeftContraction_apply_metric :
+lemma DualLeftHandedWeyl.contr_metric :
     (TensorProduct.comm ℂ _ _ <|
     (TensorProduct.lid ℂ _).lTensor _ <|
-    (dualLeftContraction.toLinearMap.rTensor _).lTensor _ <|
+    (DualLeftHandedWeyl.contr.toLinearMap.rTensor _).lTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
     (DualLeftHandedWeyl.metric 1) ⊗ₜ[ℂ] (LeftHandedWeyl.metric 1)) =
@@ -355,7 +355,7 @@ lemma dualLeftContraction_apply_metric :
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,
     map_smul, comm_tmul]
-  simp only [dualLeftContraction_basis]
+  simp only [DualLeftHandedWeyl.contr_basis]
   simp only [Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.mod_succ, ↓reduceIte, one_smul, Nat.zero_mod,
     zero_ne_one, zero_smul, sub_zero, one_ne_zero, zero_sub, sub_neg_eq_add]
   rw [DualLeftHandedWeyl.unit_apply_one, DualLeftHandedWeyl.unitVal_expand_tmul]
