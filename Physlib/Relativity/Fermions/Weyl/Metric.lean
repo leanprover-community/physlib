@@ -27,6 +27,12 @@ open Complex
 open TensorProduct
 open CategoryTheory.MonoidalCategory
 
+/-!
+
+## A. The underlying matrix
+
+-/
+
 /-- The raw `2x2` matrix corresponding to the metric for fermions. -/
 def metricRaw : Matrix (Fin 2) (Fin 2) ℂ := !![0, 1; -1, 0]
 
@@ -68,6 +74,12 @@ lemma metricRaw_comm_star (M : SL(2,ℂ)) : metricRaw * M.1.map star = ((M.1)⁻
       eta_fin_two !![M.1 1 1, -M.1 0 1; -M.1 1 0, M.1 0 0]ᴴ]
   rw [eta_fin_two (!![M.1 0 0, M.1 0 1; M.1 1 0, M.1 1 1].map star)]
   simp
+
+/-!
+
+## B. The metric for left-handed Weyl fermions
+
+-/
 
 /-- The metric `εᵃᵃ` as an element of `(leftHanded ⊗ leftHanded).V`. -/
 def leftMetricVal : LeftHandedWeyl ⊗[ℂ] LeftHandedWeyl :=
@@ -117,6 +129,12 @@ lemma leftMetric_apply_one : leftMetric (1 : ℂ) = leftMetricVal := by
   change (1 : ℂ) • leftMetricVal = leftMetricVal
   simp only [one_smul]
 
+/-!
+
+## C. The metric for dual left-handed Weyl fermions
+
+-/
+
 /-- The metric `εₐₐ` as an element of `(dualLeftHanded ⊗ dualLeftHanded).V`. -/
 def dualLeftMetricVal : (DualLeftHandedWeyl ⊗[ℂ] DualLeftHandedWeyl) :=
   dualLeftdualLeftToMatrix.symm metricRaw
@@ -160,6 +178,12 @@ def dualLeftMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
 lemma dualLeftMetric_apply_one : dualLeftMetric (1 : ℂ) = dualLeftMetricVal := by
   change (1 : ℂ) • dualLeftMetricVal = dualLeftMetricVal
   simp only [one_smul]
+
+/-!
+
+## D. The metric for right-handed Weyl fermions
+
+-/
 
 /-- The metric `ε^{dot a}^{dot a}` as an element of `(rightHanded ⊗ rightHanded).V`. -/
 def rightMetricVal : (RightHandedWeyl ⊗[ℂ] RightHandedWeyl) :=
@@ -217,6 +241,12 @@ def rightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
 lemma rightMetric_apply_one : rightMetric (1 : ℂ) = rightMetricVal := by
   change (1 : ℂ) • rightMetricVal = rightMetricVal
   simp only [one_smul]
+
+/-!
+
+## E. The metric for dual right-handed Weyl fermions
+
+-/
 
 /-- The metric `ε_{dot a}_{dot a}` as an element of `(dualRightHanded ⊗ dualRightHanded).V`. -/
 def dualRightMetricVal : DualRightHandedWeyl ⊗[ℂ] DualRightHandedWeyl :=
