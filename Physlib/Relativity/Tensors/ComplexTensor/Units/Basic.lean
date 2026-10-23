@@ -104,7 +104,8 @@ lemma dualRightRightUnit_eq_fromConstPair : δR' = fromConstPair Fermion.dualRig
   rw [Fermion.dualRightRightUnit]
   rfl
 
-lemma rightDualRightUnit_eq_fromConstPair : δR = fromConstPair Fermion.rightDualRightUnit := by
+lemma rightDualRightUnit_eq_fromConstPair :
+    δR = fromConstPair Fermion.rightDualRightUnit := by
   rw [Fermion.rightDualRightUnit]
   rfl
 

@@ -268,11 +268,11 @@ lemma dualRightContraction_basis (i j : Fin 2) :
   refine ite_congr ?h₁ (congrFun rfl) (congrFun rfl)
   exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
 
-TODO "Prove the analogue of `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr` for Weyl
-  fermions: every intertwining map `LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep →
-  Representation.trivial ℂ SL(2,ℂ) ℂ` is a scalar multiple of `leftDualContraction`, and likewise
-  for `dualLeftContraction`, `rightDualContraction` and `dualRightContraction`. This is Schur's
-  lemma for the Weyl representations of `SL(2,ℂ)`, which are irreducible."
+TODO "Prove the analogue of `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr` for Weyl fermions:
+  every intertwining map `LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep → Representation.trivial ℂ
+  SL(2,ℂ) ℂ` is a scalar multiple of `leftDualContraction`, and likewise for
+  `dualLeftContraction`, `rightDualContraction` and `dualRightContraction`. This is
+  Schur's lemma for the Weyl representations of `SL(2,ℂ)`, which are irreducible."
 
 /-!
 

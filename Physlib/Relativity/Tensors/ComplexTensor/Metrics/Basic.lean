@@ -100,7 +100,8 @@ lemma rightMetric_eq_fromConstPair : εR = fromConstPair Fermion.rightMetric := 
 
 lemma dualLeftMetric_eq_fromConstPair : εL' = fromConstPair Fermion.dualLeftMetric := rfl
 
-lemma dualRightMetric_eq_fromConstPair : εR' = fromConstPair Fermion.dualRightMetric := rfl
+lemma dualRightMetric_eq_fromConstPair :
+    εR' = fromConstPair Fermion.dualRightMetric := rfl
 
 /-!
 

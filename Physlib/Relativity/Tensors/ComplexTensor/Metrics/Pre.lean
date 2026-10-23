@@ -60,7 +60,8 @@ def contrMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     isIntertwining' M := by
       refine LinearMap.ext fun x : ℂ => ?_
       change x • contrMetricVal =
-        (TensorProduct.map (ContrℂModule.SL2CRep M) (ContrℂModule.SL2CRep M)) (x • contrMetricVal)
+        (TensorProduct.map (ContrℂModule.SL2CRep M) (ContrℂModule.SL2CRep M))
+          (x • contrMetricVal)
       simp only [map_smul]
       apply congrArg
       simp only [contrMetricVal]
@@ -124,9 +125,9 @@ lemma coMetric_apply_one : coMetric (1 : ℂ) = coMetricVal := by
   simp only [one_smul]
 
 TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
-  ContrℂModule.SL2CRep.tprod ContrℂModule.SL2CRep` is a scalar multiple of `contrMetric`, and
-  likewise for `coMetric`: up to scale, the Minkowski metric is the unique `SL(2,ℂ)`-invariant
-  element of `ContrℂModule ⊗ ContrℂModule`. Compare
+  ContrℂModule.SL2CRep.tprod ContrℂModule.SL2CRep` is a scalar multiple of `contrMetric`,
+  and likewise for `coMetric`: up to scale, the Minkowski metric is the unique
+  `SL(2,ℂ)`-invariant element of `ContrℂModule ⊗ ContrℂModule`. Compare
   `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
 
 /-!

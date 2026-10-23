@@ -98,7 +98,8 @@ lemma leftMetricVal_expand_tmul : leftMetricVal =
 
 lemma leftMetricVal_expand_tmul' : leftMetricVal =
     LeftHandedWeyl.basis 1 ⊗ₜ[ℂ] LeftHandedWeyl.basis 0
-    - LeftHandedWeyl.basis 0 ⊗ₜ[ℂ] LeftHandedWeyl.basis 1 := by rw [leftMetricVal_expand_tmul]; abel
+    - LeftHandedWeyl.basis 0 ⊗ₜ[ℂ] LeftHandedWeyl.basis 1 := by
+  rw [leftMetricVal_expand_tmul]; abel
 
 /-- The metric `εᵃᵃ` as a morphism `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ leftHanded ⊗ leftHanded`,
   making manifest its invariance under the action of `SL(2,ℂ)`. -/
@@ -115,7 +116,8 @@ def leftMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
     change x • leftMetricVal =
-      (TensorProduct.map (LeftHandedWeyl.rep M) (LeftHandedWeyl.rep M)) (x • leftMetricVal)
+      (TensorProduct.map (LeftHandedWeyl.rep M) (LeftHandedWeyl.rep M))
+        (x • leftMetricVal)
     simp only [map_smul]
     apply congrArg
     simp only [leftMetricVal, map_neg, neg_inj]
@@ -125,7 +127,8 @@ def leftMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     simp only [SpecialLinearGroup.det_coe, isUnit_iff_ne_zero, ne_eq, one_ne_zero,
       not_false_eq_true, mul_nonsing_inv, transpose_one, mul_one]
 
-lemma leftMetric_apply_one : leftMetric (1 : ℂ) = leftMetricVal := by
+lemma leftMetric_apply_one :
+    leftMetric (1 : ℂ) = leftMetricVal := by
   change (1 : ℂ) • leftMetricVal = leftMetricVal
   simp only [one_smul]
 
@@ -175,7 +178,8 @@ def dualLeftMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
       simp only [SpecialLinearGroup.det_coe, isUnit_iff_ne_zero, ne_eq, one_ne_zero,
         not_false_eq_true, mul_nonsing_inv, mul_one]
 
-lemma dualLeftMetric_apply_one : dualLeftMetric (1 : ℂ) = dualLeftMetricVal := by
+lemma dualLeftMetric_apply_one :
+    dualLeftMetric (1 : ℂ) = dualLeftMetricVal := by
   change (1 : ℂ) • dualLeftMetricVal = dualLeftMetricVal
   simp only [one_smul]
 
@@ -221,7 +225,8 @@ def rightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
     change x • rightMetricVal =
-      (TensorProduct.map (RightHandedWeyl.rep M) (RightHandedWeyl.rep M)) (x • rightMetricVal)
+      (TensorProduct.map (RightHandedWeyl.rep M) (RightHandedWeyl.rep M))
+        (x • rightMetricVal)
     simp only [map_smul]
     apply congrArg
     simp only [rightMetricVal, map_neg, neg_inj]
@@ -238,7 +243,8 @@ def rightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
       simp
     · rw [← rightRightToMatrix_ρ_symm metricRaw M]
 
-lemma rightMetric_apply_one : rightMetric (1 : ℂ) = rightMetricVal := by
+lemma rightMetric_apply_one :
+    rightMetric (1 : ℂ) = rightMetricVal := by
   change (1 : ℂ) • rightMetricVal = rightMetricVal
   simp only [one_smul]
 
@@ -298,15 +304,16 @@ def dualRightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     · rw [← dualRightDualRightToMatrix_ρ_symm metricRaw M]
       rfl
 
-lemma dualRightMetric_apply_one : dualRightMetric (1 : ℂ) = dualRightMetricVal := by
+lemma dualRightMetric_apply_one :
+    dualRightMetric (1 : ℂ) = dualRightMetricVal := by
   change (1 : ℂ) • dualRightMetricVal = dualRightMetricVal
   simp only [one_smul]
 
 TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
-  LeftHandedWeyl.rep.tprod LeftHandedWeyl.rep` is a scalar multiple of `leftMetric`, and likewise
-  for `dualLeftMetric`, `rightMetric` and `dualRightMetric`: up to scale, `ε` is the unique
-  `SL(2,ℂ)`-invariant element of `LeftHandedWeyl ⊗ LeftHandedWeyl`. Compare
-  `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
+  LeftHandedWeyl.rep.tprod LeftHandedWeyl.rep` is a scalar multiple of `leftMetric`, and
+  likewise for `dualLeftMetric`, `rightMetric` and
+  `dualRightMetric`: up to scale, `ε` is the unique `SL(2,ℂ)`-invariant element of
+  `LeftHandedWeyl ⊗ LeftHandedWeyl`. Compare `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
 
 /-!
 
@@ -320,7 +327,8 @@ lemma leftDualContraction_apply_metric :
       (leftDualContraction.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-      (leftMetric 1) ⊗ₜ[ℂ] (dualLeftMetric 1)) = dualLeftLeftUnit (1 : ℂ) := by
+      (leftMetric 1) ⊗ₜ[ℂ] (dualLeftMetric 1)) =
+      dualLeftLeftUnit (1 : ℂ) := by
   rw [leftMetric_apply_one, dualLeftMetric_apply_one]
   rw [leftMetricVal_expand_tmul', dualLeftMetricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
@@ -339,7 +347,8 @@ lemma dualLeftContraction_apply_metric :
     (dualLeftContraction.toLinearMap.rTensor _).lTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-    (dualLeftMetric 1) ⊗ₜ[ℂ] (leftMetric 1)) = leftDualLeftUnit (1 : ℂ) := by
+    (dualLeftMetric 1) ⊗ₜ[ℂ] (leftMetric 1)) =
+    leftDualLeftUnit (1 : ℂ) := by
   rw [leftMetric_apply_one, dualLeftMetric_apply_one]
   rw [leftMetricVal_expand_tmul', dualLeftMetricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
@@ -357,7 +366,8 @@ lemma rightDualContraction_apply_metric :
     (rightDualContraction.toLinearMap.rTensor _).lTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-    (rightMetric 1) ⊗ₜ[ℂ] (dualRightMetric 1)) = dualRightRightUnit (1 : ℂ) := by
+    (rightMetric 1) ⊗ₜ[ℂ] (dualRightMetric 1)) =
+    dualRightRightUnit (1 : ℂ) := by
   rw [rightMetric_apply_one, dualRightMetric_apply_one]
   rw [rightMetricVal_expand_tmul', dualRightMetricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
@@ -377,7 +387,8 @@ lemma dualRightContraction_apply_metric :
       (dualRightContraction.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-      (dualRightMetric 1) ⊗ₜ[ℂ] (rightMetric 1)) = rightDualRightUnit (1 : ℂ) := by
+      (dualRightMetric 1) ⊗ₜ[ℂ] (rightMetric 1)) =
+      rightDualRightUnit (1 : ℂ) := by
   rw [rightMetric_apply_one, dualRightMetric_apply_one]
   rw [rightMetricVal_expand_tmul', dualRightMetricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,

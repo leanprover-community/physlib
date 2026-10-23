@@ -83,17 +83,21 @@ left-handed Weyl fermion to a right-handed one. [TODO]
    `rep_apply_basis`, `rep_apply_basis_repr`
 12. Physlib/Relativity/Fermions/Weyl/DualRightHanded.lean — `rep`, `rep_apply`, `rep_toMatrix`,
    `rep_apply_basis`, `rep_apply_basis_repr`
-13. Physlib/Relativity/Fermions/Weyl/Contraction.lean — `leftDualBi`, `dualLeftBi`,
-   `rightDualBi`, `dualRightBi`, `leftDualContraction`, `dualLeftContraction`,
-   `rightDualContraction`, `dualRightContraction`
+13. Physlib/Relativity/Fermions/Weyl/Contraction.lean — `leftDualBi`,
+   `dualLeftBi`, `rightDualBi`, `dualRightBi`,
+   `leftDualContraction`, `dualLeftContraction`, `rightDualContraction`,
+   `dualRightContraction`
 14. Physlib/Relativity/Fermions/Weyl/Contraction.lean — `leftDualContraction_basis`,
-   `dualLeftContraction_basis`, `rightDualContraction_basis`, `dualRightContraction_basis`,
-   `leftDualContraction_tmul_symm`, `dualLeftContraction_tmul_symm`,
-   `rightDualContraction_tmul_symm`, `dualRightContraction_tmul_symm`
-15. Physlib/Relativity/Fermions/Weyl/Metric.lean — `metricRaw`, `leftMetric`, `dualLeftMetric`,
-   `rightMetric`, `dualRightMetric`, `leftMetricVal`, `dualLeftMetricVal`, `rightMetricVal`,
-   `dualRightMetricVal`, `leftMetricVal_expand_tmul`, `dualLeftMetricVal_expand_tmul`,
-   `rightMetricVal_expand_tmul`, `dualRightMetricVal_expand_tmul`
+   `dualLeftContraction_basis`, `rightDualContraction_basis`,
+   `dualRightContraction_basis`, `leftDualContraction_tmul_symm`,
+   `dualLeftContraction_tmul_symm`, `rightDualContraction_tmul_symm`,
+   `dualRightContraction_tmul_symm`
+15. Physlib/Relativity/Fermions/Weyl/Metric.lean — `metricRaw`, `leftMetric`,
+   `dualLeftMetric`, `rightMetric`, `dualRightMetric`,
+   `leftMetricVal`, `dualLeftMetricVal`, `rightMetricVal`,
+   `dualRightMetricVal`, `leftMetricVal_expand_tmul`,
+   `dualLeftMetricVal_expand_tmul`, `rightMetricVal_expand_tmul`,
+   `dualRightMetricVal_expand_tmul`
 16. Physlib/Relativity/Fermions/Weyl/Metric.lean — `comm_metricRaw`, `metricRaw_comm`,
    `star_comm_metricRaw`, `metricRaw_comm_star`
 17. Physlib/Relativity/Fermions/Weyl/Metric.lean — `leftDualContraction_apply_metric`,

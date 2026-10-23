@@ -14,13 +14,13 @@ The symplectic form `ε` as a group element, and the identities moving it past a
 ## i. Overview
 
 The Weyl metric `Fermion.metricRaw = !![0, 1; -1, 0]` has determinant one, so it is itself an
-element of `SL(2, ℂ)`, written `Lorentz.SL2C.epsilon`. In that form it is the invariant
-symplectic form, `gᵀ ε g = ε`. Contracting spinor indices needs the single-index version of
-that invariance: a factor of `(g⁻¹)ᵀ`, or of `(g⁻¹)ᴴ`, moved across `ε` becomes a factor of
-`g`, or of its entrywise conjugate, on the other slot. Those are `metricRaw_comm` and
-`metricRaw_comm_star` at `g⁻¹`, read entrywise. Alongside this, `leftMetricVal_rep` states the
-invariance of `εᵃᵃ` as the plain equation on the tensor product, rather than through the
-intertwining property of `leftMetric`.
+element of `SL(2, ℂ)`, written `Lorentz.SL2C.epsilon`. In that form it is the invariant symplectic
+form, `gᵀ ε g = ε`. Contracting spinor indices needs the single-index version of that invariance: a
+factor of `(g⁻¹)ᵀ`, or of `(g⁻¹)ᴴ`, moved across `ε` becomes a factor of `g`, or of its entrywise
+conjugate, on the other slot. Those are `metricRaw_comm` and `metricRaw_comm_star` at `g⁻¹`, read
+entrywise. Alongside this, `leftMetricVal_rep` states the invariance of `εᵃᵃ` as the
+plain equation on the tensor product, rather than through the intertwining property of
+`leftMetric`.
 
 ## ii. Key results
 

@@ -63,7 +63,8 @@ def leftDualLeftUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMa
     apply congrArg
     simp
 
-lemma leftDualLeftUnit_apply_one : leftDualLeftUnit (1 : ℂ) = leftDualLeftUnitVal := by
+lemma leftDualLeftUnit_apply_one :
+    leftDualLeftUnit (1 : ℂ) = leftDualLeftUnitVal := by
   change (1 : ℂ) • leftDualLeftUnitVal = leftDualLeftUnitVal
   simp only [one_smul]
 
@@ -156,7 +157,8 @@ def rightDualRightUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).Intertwining
     rw [@conjTranspose_nonsing_inv]
     simp
 
-lemma rightDualRightUnit_apply_one : rightDualRightUnit (1 : ℂ) = rightDualRightUnitVal := by
+lemma rightDualRightUnit_apply_one :
+    rightDualRightUnit (1 : ℂ) = rightDualRightUnitVal := by
   change (1 : ℂ) • rightDualRightUnitVal = rightDualRightUnitVal
   simp only [one_smul]
 
