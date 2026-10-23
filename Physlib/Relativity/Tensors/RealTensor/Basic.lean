@@ -85,7 +85,7 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     | Color.down => Lorentz.CoMod.contr
   unit := fun c =>
     match c with
-    | Color.up => Lorentz.preCoContrUnit d
+    | Color.up => Lorentz.ContrMod.unit d
     | Color.down => Lorentz.preContrCoUnit d
   contr_tmul_symm := fun c =>
     match c with
@@ -93,11 +93,11 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
     | Color.down => Lorentz.CoMod.contr_tmul_symm
   contr_unit := fun c =>
     match c with
-    | Color.up => Lorentz.contr_preCoContrUnit
+    | Color.up => Lorentz.ContrMod.contr_unit
     | Color.down => Lorentz.contr_preContrCoUnit
   unit_symm := fun c =>
     match c with
-    | Color.up => Lorentz.preCoContrUnit_symm
+    | Color.up => Lorentz.ContrMod.unit_symm
     | Color.down => Lorentz.preContrCoUnit_symm
 
 

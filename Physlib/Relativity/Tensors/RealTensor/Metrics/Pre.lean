@@ -116,7 +116,7 @@ lemma ContrMod.contr_metric {d : ℕ} :
       (TensorProduct.assoc ℝ (ContrMod d) (CoMod d) (CoMod d)).symm.toLinearMap.lTensor
         (ContrMod d) <|
       TensorProduct.assoc ℝ (ContrMod d) (ContrMod d) ((CoMod d) ⊗[ℝ] (CoMod d)) <|
-      (ContrMod.metric d 1) ⊗ₜ[ℝ] (CoMod.metric d 1)) = preCoContrUnit d (1 : ℝ) := by
+      (ContrMod.metric d 1) ⊗ₜ[ℝ] (CoMod.metric d 1)) = ContrMod.unit d (1 : ℝ) := by
   calc _
     _ = (TensorProduct.comm ℝ _ _ <|
       (TensorProduct.lid ℝ _).lTensor _ <|
@@ -145,7 +145,7 @@ lemma ContrMod.contr_metric {d : ℕ} :
         · simp [minkowskiMatrix.η_apply_mul_η_apply_diag, ContrMod.contr_basis]
         · intro b _ hb
           simp [ContrMod.contr_basis, ite_eq_right (Ne.symm hb)]
-  rw [preCoContrUnit_apply_one, preCoContrUnitVal_expand_tmul]
+  rw [ContrMod.unit_apply_one, ContrMod.unitVal_expand_tmul]
   simp [map_sum]
 
 open minkowskiMatrix in
