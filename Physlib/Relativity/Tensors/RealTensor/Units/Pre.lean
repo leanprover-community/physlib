@@ -129,7 +129,7 @@ lemma preCoContrUnit_apply_one {d : ℕ} : (preCoContrUnit d) (1 : ℝ) = preCoC
 
 -/
 
-/-- Contraction on the right with `contrCoUnit` does nothing. -/
+/-- Contraction on the right with `preContrCoUnit` does nothing. -/
 lemma contr_preContrCoUnit {d : ℕ} (x : CoMod d) :
     (TensorProduct.lid ℝ _ <|
     coContrContract.toLinearMap.rTensor _ <|
@@ -163,7 +163,7 @@ lemma contr_preContrCoUnit {d : ℕ} (x : CoMod d) :
   rw [map_sum]
   rfl
 
-/-- Contraction on the right with `coContrUnit`. -/
+/-- Contraction on the right with `preCoContrUnit` does nothing. -/
 lemma contr_preCoContrUnit {d : ℕ} (x : ContrMod d) :
     (TensorProduct.lid ℝ _ <|
     contrCoContract.toLinearMap.rTensor _ <|
