@@ -190,33 +190,33 @@ lemma DualLeftHandedWeyl.metric_apply_one :
 -/
 
 /-- The metric `ε^{dot a}^{dot a}` as an element of `(rightHanded ⊗ rightHanded).V`. -/
-def rightMetricVal : (RightHandedWeyl ⊗[ℂ] RightHandedWeyl) :=
+def RightHandedWeyl.metricVal : (RightHandedWeyl ⊗[ℂ] RightHandedWeyl) :=
   rightRightToMatrix.symm (- metricRaw)
 
-/-- Expansion of `rightMetricVal` into the left basis. -/
-lemma rightMetricVal_expand_tmul : rightMetricVal =
+/-- Expansion of `RightHandedWeyl.metricVal` into the left basis. -/
+lemma RightHandedWeyl.metricVal_expand_tmul : RightHandedWeyl.metricVal =
     - RightHandedWeyl.basis 0 ⊗ₜ[ℂ] RightHandedWeyl.basis 1 +
       RightHandedWeyl.basis 1 ⊗ₜ[ℂ] RightHandedWeyl.basis 0 := by
-  simp only [rightMetricVal, Fin.isValue]
+  simp only [RightHandedWeyl.metricVal, Fin.isValue]
   rw [rightRightToMatrix_symm_expand_tmul]
   simp only [metricRaw, Matrix.neg_apply, of_apply, cons_val', empty_val', cons_val_fin_one,
     Fin.sum_univ_two, Fin.isValue, cons_val_zero, cons_val_one, neg_zero, zero_smul, zero_add,
     neg_neg, one_smul, add_zero, add_left_inj]
   module
 
-lemma rightMetricVal_expand_tmul' : rightMetricVal =
+lemma RightHandedWeyl.metricVal_expand_tmul' : RightHandedWeyl.metricVal =
     RightHandedWeyl.basis 1 ⊗ₜ[ℂ] RightHandedWeyl.basis 0
     - RightHandedWeyl.basis 0 ⊗ₜ[ℂ] RightHandedWeyl.basis 1 := by
-  rw [rightMetricVal_expand_tmul]
+  rw [RightHandedWeyl.metricVal_expand_tmul]
   abel
 
 /-- The metric `ε^{dot a}^{dot a}` as a morphism `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ rightHanded ⊗ rightHanded`,
   making manifest its invariance under the action of `SL(2,ℂ)`. -/
-def rightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
+def RightHandedWeyl.metric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     (RightHandedWeyl.rep.tprod RightHandedWeyl.rep) where
   toFun := fun a =>
     let a' : ℂ := a
-    a' • rightMetricVal
+    a' • RightHandedWeyl.metricVal
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -224,12 +224,12 @@ def rightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     rfl
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
-    change x • rightMetricVal =
+    change x • RightHandedWeyl.metricVal =
       (TensorProduct.map (RightHandedWeyl.rep M) (RightHandedWeyl.rep M))
-        (x • rightMetricVal)
+        (x • RightHandedWeyl.metricVal)
     simp only [map_smul]
     apply congrArg
-    simp only [rightMetricVal, map_neg, neg_inj]
+    simp only [RightHandedWeyl.metricVal, map_neg, neg_inj]
     trans rightRightToMatrix.symm ((M.1).map star * metricRaw * ((M.1).map star)ᵀ)
     · apply congrArg
       rw [star_comm_metricRaw, mul_assoc]
@@ -243,9 +243,9 @@ def rightMetric : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
       simp
     · rw [← rightRightToMatrix_ρ_symm metricRaw M]
 
-lemma rightMetric_apply_one :
-    rightMetric (1 : ℂ) = rightMetricVal := by
-  change (1 : ℂ) • rightMetricVal = rightMetricVal
+lemma RightHandedWeyl.metric_apply_one :
+    RightHandedWeyl.metric (1 : ℂ) = RightHandedWeyl.metricVal := by
+  change (1 : ℂ) • RightHandedWeyl.metricVal = RightHandedWeyl.metricVal
   simp only [one_smul]
 
 /-!
@@ -258,7 +258,7 @@ lemma rightMetric_apply_one :
 def dualRightMetricVal : DualRightHandedWeyl ⊗[ℂ] DualRightHandedWeyl :=
   dualRightDualRightToMatrix.symm (metricRaw)
 
-/-- Expansion of `rightMetricVal` into the left basis. -/
+/-- Expansion of `RightHandedWeyl.metricVal` into the left basis. -/
 lemma dualRightMetricVal_expand_tmul : dualRightMetricVal =
     DualRightHandedWeyl.basis 0 ⊗ₜ[ℂ] DualRightHandedWeyl.basis 1 -
       DualRightHandedWeyl.basis 1 ⊗ₜ[ℂ] DualRightHandedWeyl.basis 0 := by
@@ -311,7 +311,7 @@ lemma dualRightMetric_apply_one :
 
 TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) ℂ →
   LeftHandedWeyl.rep.tprod LeftHandedWeyl.rep` is a scalar multiple of `LeftHandedWeyl.metric`, and
-  likewise for `DualLeftHandedWeyl.metric`, `rightMetric` and
+  likewise for `DualLeftHandedWeyl.metric`, `RightHandedWeyl.metric` and
   `dualRightMetric`: up to scale, `ε` is the unique `SL(2,ℂ)`-invariant element of
   `LeftHandedWeyl ⊗ LeftHandedWeyl`. Compare `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`."
 
@@ -366,10 +366,10 @@ lemma rightDualContraction_apply_metric :
     (rightDualContraction.toLinearMap.rTensor _).lTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-    (rightMetric 1) ⊗ₜ[ℂ] (dualRightMetric 1)) =
+    (RightHandedWeyl.metric 1) ⊗ₜ[ℂ] (dualRightMetric 1)) =
     dualRightRightUnit (1 : ℂ) := by
-  rw [rightMetric_apply_one, dualRightMetric_apply_one]
-  rw [rightMetricVal_expand_tmul', dualRightMetricVal_expand_tmul]
+  rw [RightHandedWeyl.metric_apply_one, dualRightMetric_apply_one]
+  rw [RightHandedWeyl.metricVal_expand_tmul', dualRightMetricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,
@@ -387,10 +387,10 @@ lemma dualRightContraction_apply_metric :
       (dualRightContraction.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
-      (dualRightMetric 1) ⊗ₜ[ℂ] (rightMetric 1)) =
+      (dualRightMetric 1) ⊗ₜ[ℂ] (RightHandedWeyl.metric 1)) =
       rightDualRightUnit (1 : ℂ) := by
-  rw [rightMetric_apply_one, dualRightMetric_apply_one]
-  rw [rightMetricVal_expand_tmul', dualRightMetricVal_expand_tmul]
+  rw [RightHandedWeyl.metric_apply_one, dualRightMetric_apply_one]
+  rw [RightHandedWeyl.metricVal_expand_tmul', dualRightMetricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,

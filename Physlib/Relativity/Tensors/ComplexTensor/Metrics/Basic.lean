@@ -96,7 +96,7 @@ lemma contrMetric_eq_fromConstPair : η = fromConstPair (S := complexLorentzTens
 
 lemma leftMetric_eq_fromConstPair : εL = fromConstPair Fermion.LeftHandedWeyl.metric := rfl
 
-lemma rightMetric_eq_fromConstPair : εR = fromConstPair Fermion.rightMetric := rfl
+lemma rightMetric_eq_fromConstPair : εR = fromConstPair Fermion.RightHandedWeyl.metric := rfl
 
 lemma dualLeftMetric_eq_fromConstPair : εL' = fromConstPair Fermion.DualLeftHandedWeyl.metric := rfl
 
@@ -124,10 +124,10 @@ lemma leftMetric_eq_fromPairT : εL = fromPairT (Fermion.LeftHandedWeyl.metricVa
   congr 1
   exact Fermion.LeftHandedWeyl.metric_apply_one
 
-lemma rightMetric_eq_fromPairT : εR = fromPairT (Fermion.rightMetricVal) := by
+lemma rightMetric_eq_fromPairT : εR = fromPairT (Fermion.RightHandedWeyl.metricVal) := by
   rw [rightMetric_eq_fromConstPair, fromConstPair]
   congr 1
-  exact Fermion.rightMetric_apply_one
+  exact Fermion.RightHandedWeyl.metric_apply_one
 
 lemma dualLeftMetric_eq_fromPairT : εL' = fromPairT (Fermion.DualLeftHandedWeyl.metricVal) := by
   rw [dualLeftMetric_eq_fromConstPair, fromConstPair]
@@ -201,7 +201,7 @@ open Fermion in
 lemma rightMetric_eq_rightHandedWeyl_basis : εR =
     - fromPairT (RightHandedWeyl.basis 0 ⊗ₜ[ℂ] RightHandedWeyl.basis 1)
     + fromPairT (RightHandedWeyl.basis 1 ⊗ₜ[ℂ] RightHandedWeyl.basis 0) := by
-  rw [rightMetric_eq_fromPairT, rightMetricVal_expand_tmul]
+  rw [rightMetric_eq_fromPairT, RightHandedWeyl.metricVal_expand_tmul]
   simp
 
 open Fermion in
