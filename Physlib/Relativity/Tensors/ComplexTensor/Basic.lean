@@ -212,7 +212,7 @@ instance instWithMetric : complexLorentzTensor.WithMetric where
     | Color.upL => Fermion.LeftHandedWeyl.metric
     | Color.downL => Fermion.DualLeftHandedWeyl.metric
     | Color.upR => Fermion.RightHandedWeyl.metric
-    | Color.downR => Fermion.dualRightMetric
+    | Color.downR => Fermion.DualRightHandedWeyl.metric
     | Color.up => Lorentz.contrMetric
     | Color.down => Lorentz.coMetric
   contr_metric := fun c =>
