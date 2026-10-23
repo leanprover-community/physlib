@@ -122,7 +122,7 @@ namespace realLorentzTensor
 instance instWithMetric (d : ℕ) : (realLorentzTensor d).WithMetric where
   metric := fun c =>
     match c with
-    | Color.up => Lorentz.preContrMetric d
+    | Color.up => Lorentz.ContrMod.metric d
     | Color.down => Lorentz.preCoMetric d
   contr_metric := fun c =>
     match c with
