@@ -37,9 +37,11 @@ tensor is still a TODO item.
 
 Time derivatives of curves `Time → ℝ` are computed through the bridge
 `Time.hasDerivAt_mk_of_differentiableAt` to Mathlib's `HasDerivAt` on `ℝ`.
-An arbitrary profile `W` of comoving energy divided by `c²` gives density `W(a)/a³`
-and pressure `-c² W′(a)/(3a²)` satisfying continuity under pointwise differentiability,
-with nonzero scale factor and `c`.
+An arbitrary scale-factor profile `W` of `a³ ρ` gives density `W(a)/a³` and pressure
+`-c² W′(a)/(3a²)` satisfying continuity under pointwise differentiability, with nonzero
+scale factor and `c`. In the normalization of these equations, the physical energy density
+is `c² ρ`: for a fixed comoving cell of coordinate volume `V₀`, its energy is
+`E(t) = c² V₀ W(a(t))` and its physical volume is `V(t) = V₀ a(t)³`.
 
 ## ii. Key results
 
@@ -52,8 +54,8 @@ with nonzero scale factor and `c`.
   from the first-order equation and the continuity equation when `∂ₜ a ≠ 0`.
 - `FLRW.FriedmannSolution.continuityEquation`: the continuity equation holds on the interval of
   an FLRW model whose cosmic fluid solves the Friedmann equations.
-- `continuityEquation_of_profile`: a comoving energy profile divided by `c²` gives density
-  and pressure satisfying continuity under pointwise differentiability assumptions.
+- `continuityEquation_of_profile`: a scale-factor profile of `a³ ρ` gives density and
+  pressure satisfying continuity under pointwise differentiability assumptions.
 - `barotropicPressure`: `p = w ρ c²`; `density_scaling`: under the barotropic continuity
   equation at all times, `ρ t = ρ t₀ (a t / a t₀)^(-3(1+w))`; `continuityEquation_of_scaling`:
   the converse; `density_scaling_dust`, `density_scaling_radiation`,
@@ -214,9 +216,23 @@ lemma _root_.Cosmology.FLRW.FriedmannSolution.continuityEquation {U : FLRW} {F :
 
 -/
 
-/-- A profile `W` of comoving energy divided by `c²` gives density `W(a)/a³` and pressure
-`-c² W′(a)/(3a²)` satisfying continuity at `t`. Only pointwise differentiability and
-nonzero `a t` and `c` are required, without a Friedmann equation or nonzero Hubble factor. -/
+/-- A scale-factor profile `W` of `a³ ρ` gives density `W(a)/a³` and pressure
+`-c² W′(a)/(3a²)` satisfying continuity at `t`.
+
+Here `W : ℝ → ℝ` takes the scale factor as its argument, so `W′` is a derivative with
+respect to that argument, not cosmic time. For the constructed density,
+`W(a(t)) = a(t)³ ρ(t)`. In the normalization of the displayed Friedmann and continuity
+equations, the physical energy density is `c² ρ`. Thus, for positive scale factor and a
+fixed comoving cell of coordinate volume `V₀`, `E(t) = c² V₀ W(a(t))` and
+`V(t) = V₀ a(t)³`; the pressure formula corresponds to `dE = -p dV`.
+
+If the density is given as a scale-factor profile `R`, then `W(x) = x³ R(x)`.
+The density and pressure constructed here can be bundled using the existing `CosmicFluid`
+structure. An arbitrary `CosmicFluid` instead gives `a(t)³ ρ(t)` as a function of time;
+this lemma does not assert that it factors through the scale factor as a single-valued `W`.
+
+Only pointwise differentiability and nonzero `a t` and `c` are required, without a
+Friedmann equation or nonzero Hubble factor. No positivity or energy condition is assumed. -/
 lemma continuityEquation_of_profile {a : Time → ℝ} {W : ℝ → ℝ} {c : ℝ} {t : Time}
     (ha : DifferentiableAt ℝ a t) (hW : DifferentiableAt ℝ W (a t))
     (hat : a t ≠ 0) (hc : c ≠ 0) :
