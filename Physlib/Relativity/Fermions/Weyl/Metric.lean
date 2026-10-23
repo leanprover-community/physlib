@@ -367,7 +367,7 @@ lemma rightDualContraction_apply_metric :
     (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
     TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
     (RightHandedWeyl.metric 1) ⊗ₜ[ℂ] (DualRightHandedWeyl.metric 1)) =
-    dualRightRightUnit (1 : ℂ) := by
+    RightHandedWeyl.unit (1 : ℂ) := by
   rw [RightHandedWeyl.metric_apply_one, DualRightHandedWeyl.metric_apply_one]
   rw [RightHandedWeyl.metricVal_expand_tmul', DualRightHandedWeyl.metricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
@@ -377,7 +377,7 @@ lemma rightDualContraction_apply_metric :
   simp only [rightDualContraction_basis]
   simp only [Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.mod_succ, Nat.zero_mod, one_ne_zero, ↓reduceIte,
     one_smul, zero_ne_one]
-  rw [dualRightRightUnit_apply_one, dualRightRightUnitVal_expand_tmul]
+  rw [RightHandedWeyl.unit_apply_one, RightHandedWeyl.unitVal_expand_tmul]
   rw [add_comm]
   module
 

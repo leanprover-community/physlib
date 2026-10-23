@@ -164,14 +164,14 @@ lemma rightDualRightUnit_apply_one :
 
 /-- The dual-right-right unit `δ_{dot a}^{dot a}` as an element of
   `(rightHanded ⊗ dualRightHanded).V`. -/
-def dualRightRightUnitVal : (DualRightHandedWeyl ⊗[ℂ] RightHandedWeyl) :=
+def RightHandedWeyl.unitVal : (DualRightHandedWeyl ⊗[ℂ] RightHandedWeyl) :=
   dualRightRightToMatrix.symm 1
 
-/-- Expansion of `dualRightRightUnitVal` into the basis. -/
-lemma dualRightRightUnitVal_expand_tmul : dualRightRightUnitVal =
+/-- Expansion of `RightHandedWeyl.unitVal` into the basis. -/
+lemma RightHandedWeyl.unitVal_expand_tmul : RightHandedWeyl.unitVal =
     DualRightHandedWeyl.basis 0 ⊗ₜ[ℂ] RightHandedWeyl.basis 0 +
       DualRightHandedWeyl.basis 1 ⊗ₜ[ℂ] RightHandedWeyl.basis 1 := by
-  simp only [dualRightRightUnitVal, Fin.isValue]
+  simp only [RightHandedWeyl.unitVal, Fin.isValue]
   rw [dualRightRightToMatrix_symm_expand_tmul]
   simp only [Fin.sum_univ_two, Fin.isValue, one_apply_eq, one_smul, ne_eq, zero_ne_one,
     not_false_eq_true, one_apply_ne, zero_smul, add_zero, one_ne_zero, zero_add]
@@ -179,11 +179,11 @@ lemma dualRightRightUnitVal_expand_tmul : dualRightRightUnitVal =
 /-- The dual-right-right unit `δ_{dot a}^{dot a}` as a morphism
   `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ dualRightHanded ⊗ rightHanded`, manifesting
   the invariance under the `SL(2,ℂ)` action. -/
-def dualRightRightUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
+def RightHandedWeyl.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
     (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep) where
   toFun := fun a =>
     let a' : ℂ := a
-    a' • dualRightRightUnitVal
+    a' • RightHandedWeyl.unitVal
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -191,12 +191,12 @@ def dualRightRightUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).Intertwining
     rfl
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
-    change x • dualRightRightUnitVal =
+    change x • RightHandedWeyl.unitVal =
       (TensorProduct.map (DualRightHandedWeyl.rep M) (RightHandedWeyl.rep M))
-        (x • dualRightRightUnitVal)
+        (x • RightHandedWeyl.unitVal)
     simp only [map_smul]
     apply congrArg
-    simp only [dualRightRightUnitVal]
+    simp only [RightHandedWeyl.unitVal]
     rw [dualRightRightToMatrix_ρ_symm]
     apply congrArg
     simp only [mul_one, RCLike.star_def]
@@ -205,8 +205,8 @@ def dualRightRightUnit : (Representation.trivial ℂ SL(2,ℂ) ℂ).Intertwining
     rw [@conjTranspose_nonsing_inv]
     simp
 
-lemma dualRightRightUnit_apply_one : dualRightRightUnit (1 : ℂ) = dualRightRightUnitVal := by
-  change (1 : ℂ) • dualRightRightUnitVal = dualRightRightUnitVal
+lemma RightHandedWeyl.unit_apply_one : RightHandedWeyl.unit (1 : ℂ) = RightHandedWeyl.unitVal := by
+  change (1 : ℂ) • RightHandedWeyl.unitVal = RightHandedWeyl.unitVal
   simp only [one_smul]
 
 /-!
@@ -239,17 +239,17 @@ lemma DualLeftHandedWeyl.contr_unit (x : DualLeftHandedWeyl) :
   simp [- Fintype.sum_sum_type, smul_tmul, dualLeftContraction_basis,
     DualLeftHandedWeyl.unit_apply_one, DualLeftHandedWeyl.unitVal_expand_tmul, add_tmul, tmul_add]
 
-/-- Contraction on the right with `dualRightRightUnit` does nothing. -/
-lemma contr_dualRightRightUnit (x : RightHandedWeyl) :
+/-- Contraction on the right with `RightHandedWeyl.unit` does nothing. -/
+lemma RightHandedWeyl.contr_unit (x : RightHandedWeyl) :
     (TensorProduct.lid ℂ _ <|
     rightDualContraction.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
-    x ⊗ₜ[ℂ] (dualRightRightUnit (1 : ℂ))) = x := by
+    x ⊗ₜ[ℂ] (RightHandedWeyl.unit (1 : ℂ))) = x := by
   obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp
     (Basis.mem_span RightHandedWeyl.basis x)
   subst hc
   simp [- Fintype.sum_sum_type, smul_tmul, rightDualContraction_basis,
-    dualRightRightUnit_apply_one, dualRightRightUnitVal_expand_tmul, add_tmul, tmul_add]
+    RightHandedWeyl.unit_apply_one, RightHandedWeyl.unitVal_expand_tmul, add_tmul, tmul_add]
 
 /-- Contraction on the right with `rightDualRightUnit` does nothing. -/
 lemma contr_rightDualRightUnit (x : DualRightHandedWeyl) :
@@ -284,17 +284,17 @@ lemma DualLeftHandedWeyl.unit_symm :
   rw [DualLeftHandedWeyl.unit_apply_one, DualLeftHandedWeyl.unitVal_expand_tmul]
   rfl
 
-lemma dualRightRightUnit_symm :
-    dualRightRightUnit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
+lemma RightHandedWeyl.unit_symm :
+    RightHandedWeyl.unit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
       (TensorProduct.comm ℂ _ _ (rightDualRightUnit (1 : ℂ))) := by
-  rw [dualRightRightUnit_apply_one, dualRightRightUnitVal_expand_tmul]
+  rw [RightHandedWeyl.unit_apply_one, RightHandedWeyl.unitVal_expand_tmul]
   rw [rightDualRightUnit_apply_one, rightDualRightUnitVal_expand_tmul]
   rfl
 
 lemma rightDualRightUnit_symm :
     rightDualRightUnit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
-      (TensorProduct.comm ℂ _ _ (dualRightRightUnit (1 : ℂ))) := by
-  rw [dualRightRightUnit_apply_one, dualRightRightUnitVal_expand_tmul]
+      (TensorProduct.comm ℂ _ _ (RightHandedWeyl.unit (1 : ℂ))) := by
+  rw [RightHandedWeyl.unit_apply_one, RightHandedWeyl.unitVal_expand_tmul]
   rw [rightDualRightUnit_apply_one, rightDualRightUnitVal_expand_tmul]
   rfl
 
