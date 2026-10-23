@@ -209,7 +209,7 @@ namespace complexLorentzTensor
 instance instWithMetric : complexLorentzTensor.WithMetric where
   metric := fun c =>
     match c with
-    | Color.upL => Fermion.leftMetric
+    | Color.upL => Fermion.LeftHandedWeyl.metric
     | Color.downL => Fermion.dualLeftMetric
     | Color.upR => Fermion.rightMetric
     | Color.downR => Fermion.dualRightMetric
