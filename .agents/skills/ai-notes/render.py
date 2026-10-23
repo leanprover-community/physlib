@@ -37,7 +37,7 @@ MARKER = "<!-- physlib-ai-notes -->"
 META_PREFIX = "<!-- physlib-ai-notes:meta "
 META_RE = re.compile(r"<!-- physlib-ai-notes:meta (\{.*?\}) -->", re.DOTALL)
 
-# The rubrics, in the order they are shown.  Each is `rubrics/<name>.md`.
+# The rubrics, in the order they are shown.  Each is `docs/AINotesRubrics/<name>.md`.
 RUBRICS = [
     "correctness",
     "physical-relevance",
@@ -66,7 +66,7 @@ DISCLAIMER = ("This assessment makes no decisions and is intended to improve you
 # Validation
 
 def validate(obj, rubric):
-    """Check a rubric result against the schema of `rubrics/_common.md`.
+    """Check a rubric result against the schema of `docs/AINotesRubrics/_common.md`.
 
     Returns a normalised copy, or raises `ValueError` saying what is wrong."""
     if not isinstance(obj, dict):
@@ -171,11 +171,14 @@ def render_rubric(result, sha):
 
 
 def rubrics_revision():
-    """The last commit of this repository that changed the skill, if git knows it."""
+    """The last commit of this repository that changed the skill or the rubrics, if git
+    knows it."""
     here = os.path.dirname(os.path.abspath(__file__))
+    rubrics = os.path.join(here, "..", "..", "..", "docs", "AINotesRubrics")
     try:
-        rev = subprocess.run(["git", "log", "-1", "--format=%h", "--", here], cwd=here,
-                             capture_output=True, text=True, check=True).stdout.strip()
+        rev = subprocess.run(["git", "log", "-1", "--format=%h", "--", here, rubrics],
+                             cwd=here, capture_output=True, text=True,
+                             check=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         rev = ""
     return rev or "unknown"
@@ -230,7 +233,7 @@ def render(results, pr, sha, model, date=None, rubrics_rev=None):
         "",
         "---",
         f"<sub>Assessed with {model} on {date}, using the rubrics of "
-        f"`.agents/skills/ai-notes/` at `{rubrics_rev}`. "
+        f"`docs/AINotesRubrics/` at `{rubrics_rev}`. "
         "Comment `ai-notes` on its own line to request a new assessment after further "
         "changes.</sub>",
     ]

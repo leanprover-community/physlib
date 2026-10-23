@@ -110,7 +110,7 @@ To keep track of PRs, reviewers can "claim" PRs and promise to review them withi
 Anyone can ask for an advisory AI assessment of a PR by commenting `ai-notes` on its own
 line, which adds the `ai-notes` label and so queues the PR (`-ai-notes` removes it).
 The assessment scores the PR from 0 to 5 on each of the
-[assessment rubrics](../.agents/skills/ai-notes/rubrics/README.md) (correctness, physical
+[assessment rubrics](AINotesRubrics/README.md) (correctness, physical
 relevance, reuse, scope, attribution, API design, generality, placement, naming, documentation
 and proof quality), with constructive suggestions, in a single comment on the PR.
 
