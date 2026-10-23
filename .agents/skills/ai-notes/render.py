@@ -57,9 +57,9 @@ FINDING_FIELDS = ("file", "line", "observation", "suggestion", "evidence")
 # GitHub refuses comments longer than 65536 characters; leave room for the meta record.
 MAX_COMMENT = 60000
 
-DISCLAIMER = ("This assessment makes no decisions and is intended to improve your PR where "
-              "possible. Scores are from 0 to 5 per rubric; humans make every decision "
-              "about this PR.")
+DISCLAIMER = ("This assessment is provided as a guide on how to make your PR as good as "
+              "possible. However, the final review decision rests with humans, who may "
+              "contradict or go against this assessment; their decision takes priority.")
 
 
 # ------------------------------------------------------------------------------------------
