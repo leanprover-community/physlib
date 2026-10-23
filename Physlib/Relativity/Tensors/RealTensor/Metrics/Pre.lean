@@ -149,17 +149,17 @@ lemma ContrMod.contr_metric {d : ℕ} :
   simp [map_sum]
 
 open minkowskiMatrix in
-lemma coContrContract_apply_metric {d : ℕ} :
+lemma CoMod.contr_metric {d : ℕ} :
     (TensorProduct.comm ℝ _ _ <|
     (TensorProduct.lid ℝ _).lTensor _ <|
-    (coContrContract.toLinearMap.rTensor (ContrMod d)).lTensor (CoMod d) <|
+    (CoMod.contr.toLinearMap.rTensor (ContrMod d)).lTensor (CoMod d) <|
     (TensorProduct.assoc ℝ (CoMod d) (ContrMod d) (ContrMod d)).symm.toLinearMap.lTensor
       (CoMod d) <|
     TensorProduct.assoc ℝ (CoMod d) (CoMod d) ((ContrMod d) ⊗[ℝ] (ContrMod d)) <|
     (preCoMetric d 1) ⊗ₜ[ℝ] (preContrMetric d 1)) = preContrCoUnit d (1 : ℝ) := by
   calc _
     _ = (TensorProduct.comm ℝ _ _ <| (TensorProduct.lid ℝ _).lTensor _ <|
-      (coContrContract.toLinearMap.rTensor (ContrMod d)).lTensor (CoMod d) <|
+      (CoMod.contr.toLinearMap.rTensor (ContrMod d)).lTensor (CoMod d) <|
       (TensorProduct.assoc ℝ (CoMod d) (ContrMod d) (ContrMod d)).symm.toLinearMap.lTensor
         (CoMod d) <|
       TensorProduct.assoc ℝ (CoMod d) (CoMod d) ((ContrMod d) ⊗[ℝ] (ContrMod d)) <|
@@ -172,7 +172,7 @@ lemma coContrContract_apply_metric {d : ℕ} :
         simp_rw [tmul_sum, ← smul_tmul', tmul_smul, smul_smul]
     _ = (TensorProduct.comm ℝ _ _ <| (TensorProduct.lid ℝ _).lTensor _ <|
       ∑ i, ∑ j, (minkowskiMatrix i i * minkowskiMatrix j j) •
-        (coBasis d i ⊗ₜ[ℝ] (coContrContract (coBasis d i ⊗ₜ[ℝ] contrBasis d j)
+        (coBasis d i ⊗ₜ[ℝ] (CoMod.contr (coBasis d i ⊗ₜ[ℝ] contrBasis d j)
           ⊗ₜ[ℝ] contrBasis d j))) := by
         congr
         simp [map_sum, map_smul]
@@ -181,9 +181,9 @@ lemma coContrContract_apply_metric {d : ℕ} :
         congr
         funext x
         rw [Finset.sum_eq_single_of_mem x (Finset.mem_univ x)]
-        · simp [minkowskiMatrix.η_apply_mul_η_apply_diag, coContrContract_basis]
+        · simp [minkowskiMatrix.η_apply_mul_η_apply_diag, CoMod.contr_basis]
         · intro b _ hb
-          simp [coContrContract_basis, ite_eq_right (Ne.symm hb)]
+          simp [CoMod.contr_basis, ite_eq_right (Ne.symm hb)]
   rw [preContrCoUnit_apply_one, preContrCoUnitVal_expand_tmul]
   simp [map_sum]
 

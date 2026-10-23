@@ -243,7 +243,7 @@ indices. [62]
 32. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Basic.lean — `contrBasis`, `coBasis`,
    `contrIsoCo`
 33. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean — `ContrMod.contr`,
-   `coContrContract`, `contrContrContractField`
+   `CoMod.contr`, `contrContrContractField`
 34. Physlib/Relativity/Tensors/RealTensor/Metrics/Pre.lean — `preContrMetric`, `preCoMetric`
 35. Physlib/Relativity/Tensors/RealTensor/Units/Pre.lean — `preContrCoUnit`, `preCoContrUnit`
 36. Physlib/Relativity/Tensors/RealTensor/Metrics/Basic.lean — `coMetric`, `contrMetric`,

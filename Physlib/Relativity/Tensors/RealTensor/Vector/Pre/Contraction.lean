@@ -107,7 +107,7 @@ lemma ContrMod.contr_tmul (ψ : ContrMod d) (φ : CoMod d) :
     covariant Lorentz vector in the
     standard basis (i.e. the dot product).
     In terms of index notation this is the contraction is ψⁱ φᵢ. -/
-def coContrContract : ((CoMod.rep (d := d)).tprod (ContrMod.rep (d := d))).IntertwiningMap
+def CoMod.contr : ((CoMod.rep (d := d)).tprod (ContrMod.rep (d := d))).IntertwiningMap
     (Representation.trivial ℝ (LorentzGroup d) ℝ) where
   toLinearMap := TensorProduct.lift (coModContrModBi d)
   isIntertwining' Λ := by
@@ -118,10 +118,10 @@ def coContrContract : ((CoMod.rep (d := d)).tprod (ContrMod.rep (d := d))).Inter
     simp only [vecMul_one]
     rfl
 
-/-- Notation for `coContrContract` acting on a tmul. -/
-local notation "⟪" φ "," ψ "⟫ₘ" => coContrContract (φ ⊗ₜ ψ)
+/-- Notation for `CoMod.contr` acting on a tmul. -/
+local notation "⟪" φ "," ψ "⟫ₘ" => CoMod.contr (φ ⊗ₜ ψ)
 
-lemma coContrContract_hom_tmul (φ : CoMod d) (ψ : ContrMod d) :
+lemma CoMod.contr_tmul (φ : CoMod d) (ψ : ContrMod d) :
     ⟪φ, ψ⟫ₘ = φ.toFin1dℝ ⬝ᵥ ψ.toFin1dℝ := by
   rfl
 
@@ -132,9 +132,9 @@ lemma coContrContract_hom_tmul (φ : CoMod d) (ψ : ContrMod d) :
 -/
 
 lemma ContrMod.contr_tmul_symm (φ : ContrMod d) (ψ : CoMod d) : ⟪φ, ψ⟫ₘ = ⟪ψ, φ⟫ₘ := by
-  rw [ContrMod.contr_tmul, coContrContract_hom_tmul, dotProduct_comm]
+  rw [ContrMod.contr_tmul, CoMod.contr_tmul, dotProduct_comm]
 
-lemma coContrContract_tmul_symm (φ : CoMod d) (ψ : ContrMod d) : ⟪φ, ψ⟫ₘ = ⟪ψ, φ⟫ₘ := by
+lemma CoMod.contr_tmul_symm (φ : CoMod d) (ψ : ContrMod d) : ⟪φ, ψ⟫ₘ = ⟪ψ, φ⟫ₘ := by
   rw [ContrMod.contr_tmul_symm]
 
 /-!
@@ -164,9 +164,9 @@ lemma contrContrContract_hom_tmul (φ : ContrMod d) (ψ : ContrMod d) :
   rfl
 
 /-- The linear map from CoMod d ⊗ CoMod d to ℝ induced by the homomorphism
-  `Co.toContr` and the contraction `coContrContract`. -/
+  `Co.toContr` and the contraction `CoMod.contr`. -/
 def coCoContract : ((CoMod.rep (d := d)).tprod (CoMod.rep (d := d))).IntertwiningMap
-    (Representation.trivial ℝ (LorentzGroup d) ℝ) := coContrContract.comp
+    (Representation.trivial ℝ (LorentzGroup d) ℝ) := CoMod.contr.comp
     ((Co.toContr d).lTensor (CoMod.rep (d := d)))
 
 /-- Notation for `coCoContract` acting on a tmul. -/
@@ -448,9 +448,9 @@ lemma ContrMod.contr_basis {d : ℕ} (i j : Fin 1 ⊕ Fin d) :
   congr 1
   simp [eq_comm]
 
-lemma coContrContract_basis {d : ℕ} (i j : Fin 1 ⊕ Fin d) :
-    coContrContract (coBasis d i ⊗ₜ[ℝ] contrBasis d j) = if i = j then (1 : ℝ) else 0 := by
-  rw [coContrContract_hom_tmul]
+lemma CoMod.contr_basis {d : ℕ} (i j : Fin 1 ⊕ Fin d) :
+    CoMod.contr (coBasis d i ⊗ₜ[ℝ] contrBasis d j) = if i = j then (1 : ℝ) else 0 := by
+  rw [CoMod.contr_tmul]
   simp only [coBasis_toFin1dℝ, contrBasis_toFin1dℝ, dotProduct_single, mul_one]
   rw [Pi.single_apply]
   congr 1

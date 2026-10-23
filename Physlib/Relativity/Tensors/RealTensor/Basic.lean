@@ -82,7 +82,7 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
   contr := fun c =>
     match c with
     | Color.up => Lorentz.ContrMod.contr
-    | Color.down => Lorentz.coContrContract
+    | Color.down => Lorentz.CoMod.contr
   unit := fun c =>
     match c with
     | Color.up => Lorentz.preCoContrUnit d
@@ -90,7 +90,7 @@ def realLorentzTensor (d : ℕ := 3) : TensorSpecies
   contr_tmul_symm := fun c =>
     match c with
     | Color.up => Lorentz.ContrMod.contr_tmul_symm
-    | Color.down => Lorentz.coContrContract_tmul_symm
+    | Color.down => Lorentz.CoMod.contr_tmul_symm
   contr_unit := fun c =>
     match c with
     | Color.up => Lorentz.contr_preCoContrUnit
@@ -127,7 +127,7 @@ instance instWithMetric (d : ℕ) : (realLorentzTensor d).WithMetric where
   contr_metric := fun c =>
     match c with
     | Color.up => Lorentz.ContrMod.contr_metric
-    | Color.down => Lorentz.coContrContract_apply_metric
+    | Color.down => Lorentz.CoMod.contr_metric
 
 /-- Notation for a real Lorentz tensor. -/
 syntax (name := realLorentzTensorSyntax) "ℝT[" term,* "]" : term
@@ -186,7 +186,7 @@ lemma isContrDualMatching_refl (c : realLorentzTensor.Color) :
   intro x₁ x₂
   cases c
   · exact Lorentz.ContrMod.contr_basis x₁ x₂
-  · exact Lorentz.coContrContract_basis x₁ x₂
+  · exact Lorentz.CoMod.contr_basis x₁ x₂
 
 /-- Real Lorentz tensors have dual bases under contraction, with the identity matching. -/
 instance : HasContrDualBases (realLorentzTensor d) where
