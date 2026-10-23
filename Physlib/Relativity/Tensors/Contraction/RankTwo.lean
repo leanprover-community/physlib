@@ -152,7 +152,8 @@ lemma crossToEnd_eq_permT_contractInnerT {cs ds : Fin 2 → C} (h : S.τ (cs 1) 
   exact (permT_congr_eq_id _ _ _ rfl).symm
 
 /-- In components the product is the matrix product, `(A B)_μ{}^ρ = ∑_ν A_{μν} B^{νρ}`: the lower
-label `ν` of `A` is summed against the upper label `ν` of `B` it contracts with. -/
+label `ν` of `A` is summed against the upper label `ν` of `B` it contracts with. This is
+`toMatrix_crossToEnd_pair` at general colour lists. -/
 lemma toMatrix_contractInnerT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
     (a : Tensor S cs) (b : Tensor S ds) :
     toMatrix (contractInnerT h a b) =
@@ -161,7 +162,7 @@ lemma toMatrix_contractInnerT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S
   obtain ⟨c2, c3, rfl⟩ : ∃ c2 c3, ds = ![c2, c3] := ⟨ds 0, ds 1, by funext i; fin_cases i <;> rfl⟩
   ext y0 y3
   refine (permT_basis_repr_of_id (fun _ => rfl) _ _ _).trans ((congrArg _ ?_).trans
-    ((crossToEnd_pair_basis_repr h a b y0 y3).trans rfl))
+    (congrFun (congrFun (toMatrix_crossToEnd_pair h a b) y0) y3))
   funext i
   fin_cases i <;> rfl
 
