@@ -123,7 +123,7 @@ instance instWithMetric (d : ℕ) : (realLorentzTensor d).WithMetric where
   metric := fun c =>
     match c with
     | Color.up => Lorentz.ContrMod.metric d
-    | Color.down => Lorentz.preCoMetric d
+    | Color.down => Lorentz.CoMod.metric d
   contr_metric := fun c =>
     match c with
     | Color.up => Lorentz.ContrMod.contr_metric

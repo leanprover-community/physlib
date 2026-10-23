@@ -59,7 +59,7 @@ open Tensor
 
 lemma coMetric_eq_fromConstPair {d : ℕ} :
     η' d = fromConstPair (S := realLorentzTensor d) (c1 := .down) (c2 := .down)
-      (Lorentz.preCoMetric d) := by
+      (Lorentz.CoMod.metric d) := by
   rfl
 
 lemma contrMetric_eq_fromConstPair {d : ℕ} :
@@ -69,8 +69,8 @@ lemma contrMetric_eq_fromConstPair {d : ℕ} :
 
 lemma coMetric_eq_fromPairT {d : ℕ} :
     η' d = fromPairT (S := realLorentzTensor d) (c1 := .down) (c2 := .down)
-      (Lorentz.preCoMetricVal d) := by
-  rw [coMetric_eq_fromConstPair, fromConstPair, Lorentz.preCoMetric_apply_one]
+      (Lorentz.CoMod.metricVal d) := by
+  rw [coMetric_eq_fromConstPair, fromConstPair, Lorentz.CoMod.metric_apply_one]
 
 lemma contrMetric_eq_fromPairT {d : ℕ} :
     η d = fromPairT (S := realLorentzTensor d) (c1 := .up) (c2 := .up)
@@ -107,9 +107,9 @@ lemma coMetric_repr_apply_eq_minkowskiMatrix {d : ℕ}
   change (Tensor.basis _).repr
     (metricTensor (S := realLorentzTensor d) Color.down) b = _
   rw [metricTensor_basis_repr,
-    show ((realLorentzTensor d).metric Color.down) (1 : ℝ) = Lorentz.preCoMetricVal d from
-      Lorentz.preCoMetric_apply_one,
-    Lorentz.preCoMetricVal_expand_tmul_minkowskiMatrix]
+    show ((realLorentzTensor d).metric Color.down) (1 : ℝ) = Lorentz.CoMod.metricVal d from
+      Lorentz.CoMod.metric_apply_one,
+    Lorentz.CoMod.metricVal_expand_tmul_minkowskiMatrix]
   simp only [map_sum, Finsupp.coe_finsetSum, Finset.sum_apply, map_smul, Finsupp.coe_smul,
     Pi.smul_apply, Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply,
     smul_eq_mul]

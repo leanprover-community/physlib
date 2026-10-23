@@ -244,7 +244,7 @@ indices. [62]
    `contrIsoCo`
 33. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean — `ContrMod.contr`,
    `CoMod.contr`, `contrContrContractField`
-34. Physlib/Relativity/Tensors/RealTensor/Metrics/Pre.lean — `ContrMod.metric`, `preCoMetric`
+34. Physlib/Relativity/Tensors/RealTensor/Metrics/Pre.lean — `ContrMod.metric`, `CoMod.metric`
 35. Physlib/Relativity/Tensors/RealTensor/Units/Pre.lean — `preContrCoUnit`, `preCoContrUnit`
 36. Physlib/Relativity/Tensors/RealTensor/Metrics/Basic.lean — `coMetric`, `contrMetric`,
    `actionT_coMetric`, `actionT_contrMetric`, `coMetric_repr_apply_eq_minkowskiMatrix`,
