@@ -242,7 +242,7 @@ indices. [62]
    `Module ℝ (CoMod d)`, `ContrMod.rep`, `CoMod.rep`, `ContrMod.stdBasis`, `CoMod.stdBasis`
 32. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Basic.lean — `contrBasis`, `coBasis`,
    `contrIsoCo`
-33. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean — `contrCoContract`,
+33. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean — `ContrMod.contr`,
    `coContrContract`, `contrContrContractField`
 34. Physlib/Relativity/Tensors/RealTensor/Metrics/Pre.lean — `preContrMetric`, `preCoMetric`
 35. Physlib/Relativity/Tensors/RealTensor/Units/Pre.lean — `preContrCoUnit`, `preCoContrUnit`

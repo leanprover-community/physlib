@@ -166,7 +166,7 @@ lemma contr_preContrCoUnit {d : ℕ} (x : CoMod d) :
 /-- Contraction on the right with `preCoContrUnit` does nothing. -/
 lemma contr_preCoContrUnit {d : ℕ} (x : ContrMod d) :
     (TensorProduct.lid ℝ _ <|
-    contrCoContract.toLinearMap.rTensor _ <|
+    ContrMod.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℝ (ContrMod d) (CoMod d) (ContrMod d)).symm <|
     x ⊗ₜ[ℝ] (preCoContrUnit d (1 : ℝ))) = x := by
   have h1 : ((TensorProduct.assoc ℝ (ContrMod d) (CoMod d) (ContrMod d)).symm
@@ -178,19 +178,19 @@ lemma contr_preCoContrUnit {d : ℕ} (x : ContrMod d) :
       Finset.sum_singleton, map_add, map_sum]
     rfl
   rw [h1]
-  have h2 :contrCoContract.toLinearMap.rTensor _ (∑ i, (x ⊗ₜ[ℝ] coBasis d i) ⊗ₜ[ℝ] contrBasis d i)
-      = ∑ i, ((contrCoContract) (x ⊗ₜ[ℝ] coBasis d i)) ⊗ₜ[ℝ] contrBasis d i := by
+  have h2 :ContrMod.contr.toLinearMap.rTensor _ (∑ i, (x ⊗ₜ[ℝ] coBasis d i) ⊗ₜ[ℝ] contrBasis d i)
+      = ∑ i, ((ContrMod.contr) (x ⊗ₜ[ℝ] coBasis d i)) ⊗ₜ[ℝ] contrBasis d i := by
     rw [map_sum]
     rfl
   rw [h2]
   obtain ⟨c, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun ℝ).mp
     (Basis.mem_span (contrBasis d) x)
-  have h3 (i : Fin 1 ⊕ Fin d) : (contrCoContract)
+  have h3 (i : Fin 1 ⊕ Fin d) : (ContrMod.contr)
         ((∑ i : Fin 1 ⊕ Fin d, c i • (contrBasis d) i) ⊗ₜ[ℝ] (coBasis d) i) = c i := by
       simp only [sum_tmul, smul_tmul, tmul_smul, map_sum, map_smul, smul_eq_mul]
       conv_lhs =>
         enter [2, x]
-        rw [contrCoContract_basis]
+        rw [ContrMod.contr_basis]
       simp
   conv_lhs =>
     enter [2, 2, i]
