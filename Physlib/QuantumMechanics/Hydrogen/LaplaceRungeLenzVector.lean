@@ -17,6 +17,8 @@ In this file we define
 
 The main results are
 - The commutators `⁅𝐋ᵢⱼ, 𝐀(ε)ₖ⁆ = iℏ(δᵢₖ𝐀(ε)ⱼ - δⱼₖ𝐀(ε)ᵢ)` in `angularMomentum_commutation_lrl`
+- The cyclic relation `𝐋ᵢⱼ𝐀(ε)ₖ + 𝐋ⱼₖ𝐀(ε)ᵢ + 𝐋ₖᵢ𝐀(ε)ⱼ = 0` (in `d = 3`: `𝐋 · 𝐀(ε) = 0`) in
+  `angularMomentum_cyclic_lrl`, and with `𝐀(ε)` on the left in `lrl_cyclic_angularMomentum`
 - The commutators `⁅𝐀(ε)ᵢ, 𝐀(ε)ⱼ⁆ = (-2iℏm·𝐇(ε) + iℏmkε²·𝐫(ε)⁻³))𝐋ᵢⱼ` in `lrl_commutation_lrl`
 - The commutators `⁅𝐇(ε), 𝐀(ε)ᵢ⁆ = iℏε²(⋯)` in `hamiltonianReg_commutation_lrl`
 - The relation `𝐀(ε)² = 2m 𝐇(ε)(𝐋² + ¼ℏ²(d-1)²) + m²k² + ε²(⋯)` in `lrlOperatorSqr_eq`
@@ -130,6 +132,37 @@ lemma angularMomentum_commutation_lrlSqr (ε : ℝˣ) (i j : Fin H.d) :
 lemma angularMomentumSqr_commutation_lrlSqr (ε : ℝˣ) :
     ⁅𝐋²[H.d], H.lrlOperator ε ⬝ᵥ H.lrlOperator ε⁆ = 0 := by
   simp [angularMomentumOperatorSqr, sum_lie, leibniz_lie]
+
+/-- `𝐋ᵢⱼ𝐀(ε)ₖ + 𝐋ⱼₖ𝐀(ε)ᵢ + 𝐋ₖᵢ𝐀(ε)ⱼ = 0`; in three dimensions this is `𝐋 · 𝐀(ε) = 0`. -/
+lemma angularMomentum_cyclic_lrl (ε : ℝˣ) (i j k : Fin H.d) :
+    𝐋 i j ∘L H.lrlOperator ε k + 𝐋 j k ∘L H.lrlOperator ε i + 𝐋 k i ∘L H.lrlOperator ε j = 0 := by
+  have hxp (a b : Fin H.d) (Z : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ)) :
+      𝐋 a b ∘L ((𝐱[H.d] ⬝ᵥ 𝐩) ∘L Z) = (𝐱 ⬝ᵥ 𝐩) ∘L (𝐋 a b ∘L Z) := by
+    rw [← comp_assoc, ← comp_assoc, comp_eq_comp_add_commute (𝐋 a b),
+      angularMomentum_commutation_positionDotMomentum, add_zero]
+  have hr (a b : Fin H.d) (Z : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ)) :
+      𝐋 a b ∘L (𝐫₀ ε (-1) ∘L Z) = 𝐫₀ ε (-1) ∘L (𝐋 a b ∘L Z) := by
+    rw [← comp_assoc, ← comp_assoc, angularMomentum_comp_radiusRegPow_commute]
+  calc _ = (𝐋 i j ∘L 𝐱 k + 𝐋 j k ∘L 𝐱 i + 𝐋 k i ∘L 𝐱 j) ∘L (𝐩 ⬝ᵥ 𝐩)
+        - (𝐱 ⬝ᵥ 𝐩) ∘L (𝐋 i j ∘L 𝐩 k + 𝐋 j k ∘L 𝐩 i + 𝐋 k i ∘L 𝐩 j)
+        + (2⁻¹ * I * ℏ * (H.d - 1) : ℂ) • (𝐋 i j ∘L 𝐩 k + 𝐋 j k ∘L 𝐩 i + 𝐋 k i ∘L 𝐩 j)
+        - (H.m * H.k) • (𝐫₀ ε (-1) ∘L (𝐋 i j ∘L 𝐱 k + 𝐋 j k ∘L 𝐱 i + 𝐋 k i ∘L 𝐱 j)) := by
+        simp only [H.lrlOperator_eq, comp_sub, comp_add, add_comp, comp_smul, comp_assoc, hxp,
+          hr]
+        module
+    _ = 0 := by
+        rw [angularMomentum_cyclic_position, angularMomentum_cyclic_momentum]
+        simp
+
+/-- `𝐀(ε)ₖ𝐋ᵢⱼ + 𝐀(ε)ᵢ𝐋ⱼₖ + 𝐀(ε)ⱼ𝐋ₖᵢ = 0`; in three dimensions this is `𝐀(ε) · 𝐋 = 0`. -/
+lemma lrl_cyclic_angularMomentum (ε : ℝˣ) (i j k : Fin H.d) :
+    H.lrlOperator ε k ∘L 𝐋 i j + H.lrlOperator ε i ∘L 𝐋 j k + H.lrlOperator ε j ∘L 𝐋 k i = 0 := by
+  have h := H.angularMomentum_cyclic_lrl ε i j k
+  rw [comp_eq_comp_sub_commute (H.lrlOperator ε k), comp_eq_comp_sub_commute (H.lrlOperator ε i),
+    comp_eq_comp_sub_commute (H.lrlOperator ε j), H.angularMomentum_commutation_lrl,
+    H.angularMomentum_commutation_lrl, H.angularMomentum_commutation_lrl,
+    symm k i, symm k j, symm j i]
+  linear_combination (norm := module) h
 
 /-
 

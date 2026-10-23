@@ -51,6 +51,7 @@ Notation:
   - E.1. Angular momentum / position
   - E.2. Angular momentum / momentum
   - E.3. Angular momentum / angular momentum
+  - E.4. Cyclic sums and the dilation operator
 
 ## iv. References
 
@@ -384,6 +385,38 @@ lemma angularMomentumSqr_commutation_angularMomentum : ⁅𝐋²[d], 𝐋 i j⁆
     sum_smul, ← Finset.smul_sum, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   abel_nf
   simp [smul_zero]
+
+/-!
+
+### E.4. Cyclic sums and the dilation operator
+
+The cyclic sums `𝐋ᵢⱼ𝐱ₖ + 𝐋ⱼₖ𝐱ᵢ + 𝐋ₖᵢ𝐱ⱼ` and `𝐋ᵢⱼ𝐩ₖ + 𝐋ⱼₖ𝐩ᵢ + 𝐋ₖᵢ𝐩ⱼ` vanish (in `d = 3` these say
+`𝐋 · 𝐱 = 𝐋 · 𝐩 = 0`), and angular momentum commutes with the dilation operator `𝐱 · 𝐩`.
+
+-/
+
+lemma angularMomentum_cyclic_position :
+    𝐋 i j ∘L 𝐱 k + 𝐋 j k ∘L 𝐱 i + 𝐋 k i ∘L 𝐱 j = 0 := by
+  simp only [angularMomentumCLM, sub_comp, comp_assoc, momentum_comp_position_eq, comp_sub,
+    comp_smul, comp_id]
+  simp only [← comp_assoc]
+  rw [position_comp_commute k i, position_comp_commute k j, position_comp_commute j i,
+    symm k j, symm k i, symm j i]
+  module
+
+lemma angularMomentum_cyclic_momentum :
+    𝐋 i j ∘L 𝐩 k + 𝐋 j k ∘L 𝐩 i + 𝐋 k i ∘L 𝐩 j = 0 := by
+  simp only [angularMomentumCLM, sub_comp, comp_assoc]
+  rw [momentum_comp_commute k j, momentum_comp_commute k i, momentum_comp_commute j i]
+  abel
+
+@[simp]
+lemma angularMomentum_commutation_positionDotMomentum : ⁅𝐋 i j, 𝐱[d] ⬝ᵥ 𝐩⁆ = 0 := by
+  simp only [dotProduct, mul_def, lie_sum, lie_leibniz, angularMomentum_commutation_position,
+    angularMomentum_commutation_momentum, comp_smul, smul_comp, comp_sub, sub_comp]
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, ← Finset.smul_sum,
+    KroneckerDelta.sum_smul]
+  module
 
 end
 end QuantumMechanics
