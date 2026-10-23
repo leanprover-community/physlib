@@ -254,13 +254,13 @@ lemma RightHandedWeyl.contr_unit (x : RightHandedWeyl) :
 /-- Contraction on the right with `DualRightHandedWeyl.unit` does nothing. -/
 lemma DualRightHandedWeyl.contr_unit (x : DualRightHandedWeyl) :
     (TensorProduct.lid ℂ _ <|
-    dualRightContraction.toLinearMap.rTensor _ <|
+    DualRightHandedWeyl.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
     x ⊗ₜ[ℂ] (DualRightHandedWeyl.unit (1 : ℂ))) = x := by
   obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp
     (Basis.mem_span DualRightHandedWeyl.basis x)
   subst hc
-  simp [- Fintype.sum_sum_type, smul_tmul, dualRightContraction_basis,
+  simp [- Fintype.sum_sum_type, smul_tmul, DualRightHandedWeyl.contr_basis,
     DualRightHandedWeyl.unit_apply_one, DualRightHandedWeyl.unitVal_expand_tmul, add_tmul, tmul_add]
 
 /-!
