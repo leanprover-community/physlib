@@ -103,6 +103,8 @@ open scoped Manifold
 TODO "Delete `eulerLagrangeOp` and refactor the mechanics modules (harmonic oscillator, damped
   harmonic oscillator, simple pendulum) to use `eulerLagrange`."
 
+TODO "State `canonicalMomentum` and `eulerLagrange` for curves `Time → E` without the origin `t₀`."
+
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 variable (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (t₀ : Time)
