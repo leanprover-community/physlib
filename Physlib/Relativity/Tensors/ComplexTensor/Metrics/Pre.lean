@@ -136,17 +136,17 @@ TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) �
 
 -/
 
-lemma contrCoContraction_apply_metric :
+lemma ContrℂModule.contr_metric :
     (TensorProduct.comm ℂ _ _ <|
       (TensorProduct.lid ℂ _).lTensor _ <|
-      (contrCoContraction.toLinearMap.rTensor _).lTensor _ <|
+      (ContrℂModule.contr.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
       (contrMetric 1) ⊗ₜ[ℂ] (coMetric 1)) = coContrUnit (1 : ℝ) := by
   rw [contrMetric_apply_one, coMetric_apply_one]
   rw [contrMetricVal_expand_tmul, coMetricVal_expand_tmul]
   simp [Fin.isValue, tmul_sub, sub_tmul, map_sub]
-  repeat rw [contrCoContraction_basis']
+  repeat rw [ContrℂModule.contr_basis']
   simp only [Fin.isValue, ↓reduceIte, one_smul, reduceCtorEq, zero_smul, sub_zero, zero_sub,
     Sum.inr.injEq, one_ne_zero, Fin.reduceEq, sub_neg_eq_add, zero_ne_one, sub_self]
   rw [coContrUnit_apply_one, coContrUnitVal_expand_tmul]

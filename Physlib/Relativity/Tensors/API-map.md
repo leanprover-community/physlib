@@ -303,7 +303,7 @@ indices. [62]
    `complexLorentzTensor.Color`, `repDim`, `basis`, `rep`, `contrPCoeff_basis`
 54. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Modules.lean — `ContrℂModule`,
    `CoℂModule`, `ContrℂModule.SL2CRep`, `CoℂModule.SL2CRep`
-55. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Contraction.lean — `contrCoContraction`,
+55. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Contraction.lean — `ContrℂModule.contr`,
    `coContrContraction`
 56. Physlib/Relativity/Tensors/ComplexTensor/Metrics/Basic.lean — `coMetric`, `contrMetric`,
    `leftMetric`, `rightMetric`, `dualLeftMetric`, `dualRightMetric`,
