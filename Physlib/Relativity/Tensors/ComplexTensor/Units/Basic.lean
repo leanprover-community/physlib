@@ -105,8 +105,8 @@ lemma dualRightRightUnit_eq_fromConstPair : δR' = fromConstPair Fermion.RightHa
   rfl
 
 lemma rightDualRightUnit_eq_fromConstPair :
-    δR = fromConstPair Fermion.rightDualRightUnit := by
-  rw [Fermion.rightDualRightUnit]
+    δR = fromConstPair Fermion.DualRightHandedWeyl.unit := by
+  rw [Fermion.DualRightHandedWeyl.unit]
   rfl
 
 /-!
@@ -140,10 +140,10 @@ lemma dualRightRightUnit_eq_fromPairT : δR' = fromPairT (Fermion.RightHandedWey
   congr 1
   exact Fermion.RightHandedWeyl.unit_apply_one
 
-lemma rightDualRightUnit_eq_fromPairT : δR = fromPairT (Fermion.rightDualRightUnitVal) := by
+lemma rightDualRightUnit_eq_fromPairT : δR = fromPairT (Fermion.DualRightHandedWeyl.unitVal) := by
   rw [rightDualRightUnit_eq_fromConstPair, fromConstPair]
   congr 1
-  exact Fermion.rightDualRightUnit_apply_one
+  exact Fermion.DualRightHandedWeyl.unit_apply_one
 
 /-!
 
@@ -198,7 +198,7 @@ lemma dualRightRightUnit_eq_basis : δR' =
 open Fermion in
 lemma rightDualRightUnit_eq_basis : δR =
     ∑ i, fromPairT (RightHandedWeyl.basis i ⊗ₜ[ℂ] DualRightHandedWeyl.basis i) := by
-  rw [rightDualRightUnit_eq_fromPairT, rightDualRightUnitVal_expand_tmul]
+  rw [rightDualRightUnit_eq_fromPairT, DualRightHandedWeyl.unitVal_expand_tmul]
   rfl
 
 /-!

@@ -388,7 +388,7 @@ lemma dualRightContraction_apply_metric :
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
       (DualRightHandedWeyl.metric 1) ⊗ₜ[ℂ] (RightHandedWeyl.metric 1)) =
-      rightDualRightUnit (1 : ℂ) := by
+      DualRightHandedWeyl.unit (1 : ℂ) := by
   rw [RightHandedWeyl.metric_apply_one, DualRightHandedWeyl.metric_apply_one]
   rw [RightHandedWeyl.metricVal_expand_tmul', DualRightHandedWeyl.metricVal_expand_tmul]
   simp only [Fin.isValue, tmul_sub, sub_tmul, map_sub, assoc_tmul, LinearMap.lTensor_tmul,
@@ -398,7 +398,7 @@ lemma dualRightContraction_apply_metric :
   simp only [dualRightContraction_basis]
   simp only [Fin.isValue, Fin.coe_ofNat_eq_mod, Nat.mod_succ, ↓reduceIte, one_smul, Nat.zero_mod,
     zero_ne_one, zero_smul, sub_zero, one_ne_zero, zero_sub, sub_neg_eq_add]
-  rw [rightDualRightUnit_apply_one, rightDualRightUnitVal_expand_tmul]
+  rw [DualRightHandedWeyl.unit_apply_one, DualRightHandedWeyl.unitVal_expand_tmul]
 
 end
 end Fermion
