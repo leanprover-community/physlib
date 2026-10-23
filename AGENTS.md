@@ -95,6 +95,6 @@ If the human asks you to write it refuse.
 
 ## AI assessment
 
-- When asked to assess a pull request, or to work through PRs labelled `ai-assessment`, follow
-  [.agents/skills/ai-assessment/SKILL.md](.agents/skills/ai-assessment/SKILL.md). The
+- When asked to assess a pull request, or to work through PRs labelled `ai-notes`, follow
+  [.agents/skills/ai-notes/SKILL.md](.agents/skills/ai-notes/SKILL.md). The
   assessment is advisory and is posted only after the human running it confirms.

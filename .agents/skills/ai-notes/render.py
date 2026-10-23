@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Helpers for the `ai-assessment` skill (see SKILL.md next to this file).
+Helpers for the `ai-notes` skill (see SKILL.md next to this file).
 
 The rubric passes of an assessment are run by whatever AI agent the person running the
 skill uses; this script does the deterministic parts, so that the PR comment has the same
@@ -18,8 +18,8 @@ Sample usage:
     $ python3 render.py render results/ --pr 1206 --sha <head sha> --model "<model>" > comment.md
     $ gh api repos/leanprover-community/physlib/issues/comments/<id> --jq .body | python3 render.py meta
 
-The comment starts with the `<!-- physlib-ai-assessment -->` marker, by which the skill finds
-it again to edit it in place, and holds a `<!-- physlib-ai-assessment:meta {...} -->` record
+The comment starts with the `<!-- physlib-ai-notes -->` marker, by which the skill finds
+it again to edit it in place, and holds a `<!-- physlib-ai-notes:meta {...} -->` record
 of the head commit and the scores, by which the skill sees whether it is current. Only the
 standard library is used.
 """
@@ -33,9 +33,9 @@ import subprocess
 import sys
 
 REPO = "leanprover-community/physlib"
-MARKER = "<!-- physlib-ai-assessment -->"
-META_PREFIX = "<!-- physlib-ai-assessment:meta "
-META_RE = re.compile(r"<!-- physlib-ai-assessment:meta (\{.*?\}) -->", re.DOTALL)
+MARKER = "<!-- physlib-ai-notes -->"
+META_PREFIX = "<!-- physlib-ai-notes:meta "
+META_RE = re.compile(r"<!-- physlib-ai-notes:meta (\{.*?\}) -->", re.DOTALL)
 
 # The rubrics, in the order they are shown.  Each is `rubrics/<name>.md`.
 RUBRICS = [
@@ -230,8 +230,8 @@ def render(results, pr, sha, model, date=None, rubrics_rev=None):
         "",
         "---",
         f"<sub>Assessed with {model} on {date}, using the rubrics of "
-        f"`.agents/skills/ai-assessment/` at `{rubrics_rev}`. "
-        "Comment `ai-assessment` on its own line to request a new assessment after further "
+        f"`.agents/skills/ai-notes/` at `{rubrics_rev}`. "
+        "Comment `ai-notes` on its own line to request a new assessment after further "
         "changes.</sub>",
     ]
     meta = {

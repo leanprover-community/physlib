@@ -1,6 +1,6 @@
 ---
-name: ai-assessment
-description: Advisory AI assessment of a Physlib pull request. Scores the PR from 0 to 5 on each review rubric (correctness, physical relevance, reuse, scope, attribution, API design, generality, placement, naming, documentation, proof quality) with constructive suggestions, and posts one comment on the PR after the user confirms. Makes no decisions. Use when asked to assess a PR, to run the ai-assessment skill, or to work through PRs labelled `ai-assessment`.
+name: ai-notes
+description: Advisory AI assessment of a Physlib pull request. Scores the PR from 0 to 5 on each review rubric (correctness, physical relevance, reuse, scope, attribution, API design, generality, placement, naming, documentation, proof quality) with constructive suggestions, and posts one comment on the PR after the user confirms. Makes no decisions. Use when asked to assess a PR, to run the ai-notes skill, or to work through PRs labelled `ai-notes`.
 ---
 
 # AI assessment of a pull request
@@ -10,11 +10,11 @@ rubric a score from 0 to 5 with constructive suggestions, and posts the result a
 comment on the PR. The assessment **makes no decisions and is intended to improve the PR where
 possible**: it never approves, requests changes, blocks, labels as ready, or merges.
 
-PRs are queued for assessment by the `ai-assessment` label, which anyone can add by commenting
-`ai-assessment` on its own line (see `.github/workflows/labels_from_comment.yml`).
+PRs are queued for assessment by the `ai-notes` label, which anyone can add by commenting
+`ai-notes` on its own line (see `.github/workflows/labels_from_comment.yml`).
 
 These instructions are meant for any AI agent. Paths below are relative to the repository
-root; `SKILL_DIR` is `.agents/skills/ai-assessment`. Commands need `git`, `gh` (authenticated)
+root; `SKILL_DIR` is `.agents/skills/ai-notes`. Commands need `git`, `gh` (authenticated)
 and `python3`.
 
 ## Ground rules
@@ -33,7 +33,7 @@ and `python3`.
 - Otherwise list the queue, oldest first, and confirm with the user which PRs to assess:
 
   ```bash
-  gh pr list --repo leanprover-community/physlib --label ai-assessment --state open \
+  gh pr list --repo leanprover-community/physlib --label ai-notes --state open \
     --json number,title,headRefOid,createdAt --jq 'sort_by(.createdAt)'
   ```
 
@@ -42,16 +42,16 @@ Do steps 2–8 for each PR in turn.
 ## 2. Check whether an assessment is current
 
 Find an existing assessment comment, i.e. one whose body starts with
-`<!-- physlib-ai-assessment -->`, and read its meta record:
+`<!-- physlib-ai-notes -->`, and read its meta record:
 
 ```bash
 gh api "repos/leanprover-community/physlib/issues/<N>/comments" --paginate \
-  --jq '.[] | select(.body | startswith("<!-- physlib-ai-assessment -->")) | {id, user: .user.login, body}'
+  --jq '.[] | select(.body | startswith("<!-- physlib-ai-notes -->")) | {id, user: .user.login, body}'
 ```
 
 Pipe the body of the newest such comment into `python3 SKILL_DIR/render.py meta`. If its
 `sha` equals the PR's current `headRefOid`, the assessment is current: tell the user, offer to
-remove the `ai-assessment` label (step 7), and move on. Note the comment `id` if there is one:
+remove the `ai-notes` label (step 7), and move on. Note the comment `id` if there is one:
 step 7 edits that comment rather than adding a second.
 
 ## 3. Fetch the PR, without running it
@@ -130,11 +130,11 @@ suggestion that contradicts another. Ask the user to confirm before posting.
   gh pr comment <N> --repo leanprover-community/physlib --body-file "$WORK/comment-<N>.md"
   ```
 
-- Then, if the PR has the `ai-assessment` label, remove it, so that the queue holds only PRs
+- Then, if the PR has the `ai-notes` label, remove it, so that the queue holds only PRs
   still waiting. Adding the label again re-queues the PR.
 
   ```bash
-  gh pr edit <N> --repo leanprover-community/physlib --remove-label ai-assessment
+  gh pr edit <N> --repo leanprover-community/physlib --remove-label ai-notes
   ```
 
 If the user declines, post nothing and leave the label.

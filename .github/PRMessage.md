@@ -11,7 +11,7 @@ Over time, contributions such as reviews, maintenance and documentation are reco
 Four main points:
 - Comment `-awaiting-author` on its own line to remove that label from your PR.
 - Comment `blocked-by-PR` or `-blocked-by-PR` on its own line to add or remove that label, respectively.
-- Comment `ai-assessment` on its own line to request an advisory AI assessment of your PR (a score from 0 to 5 for each review rubric, with suggestions). It makes no decisions and is intended to improve your PR where possible.
+- Comment `ai-notes` on its own line to request an advisory AI assessment of your PR (a score from 0 to 5 for each review rubric, with suggestions). It makes no decisions and is intended to improve your PR where possible.
 - The first review might take several days to arrive. If in doubt message on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366).
 
 <details>
