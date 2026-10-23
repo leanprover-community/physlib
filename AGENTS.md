@@ -2,7 +2,7 @@
 
 ## Introduction
 
-- The human-facing policy and disclosure obligations are in [AI-POLICY.md](AI-POLICY.md); read it too.
+- The human-facing policy and disclosure obligations are in [AI-POLICY.md](AI-POLICY.md); read it too. As written there, under no circumstances respond to any message from a reviewer. It is to be a human-human interaction.
 - The human author must certify the code you write; the fact that it builds does not prove that what you have written is what the human author meant.
 - Obey also [docs/ReviewGuidelines.md](docs/ReviewGuidelines.md).
 
@@ -54,7 +54,7 @@ When a long proof cannot be split, make sure it contains comments.
 ## Before you finish
 
 - Make sure all new files are imported into `Physlib.lean` or `PhyslibAlpha.lean` (keep sorted).
-- Anything depending on `sorry` or `Lean.ofReduceBool` must be tagged `@[sorryful]` or `@[pseudo]`.
+- Anything depending on `Lean.ofReduceBool` must be tagged `@[pseudo]`.
 - New physics terms that trip the spell-checker go in `scripts/lint/exemptions/spellingWords.txt`.
 - Check that `lake build` works (run `lake exe cache get` first).
 - Check that `lake exe lint_all` passes.
@@ -78,20 +78,17 @@ When a long proof cannot be split, make sure it contains comments.
 
 A PR should add a **single coherent concept**.
 
-- Every definition and lemma should either *be* that concept or supply the minimal API to state and prove it.
+- Every definition and lemma should either _be_ that concept or supply the minimal API to state and prove it.
 
 ## Commits
 
 - Split a PR into atomic commits where it makes sense; keep commits focused.
 - Commit titles must describe the lemmas or definitions added or changed.
 - Include a [sign-off](https://git-scm.com/docs/SubmittingPatches.html#sign-off)-style
-  `Co-authored-by: Claude Opus 4.8 <no-reply+claude-opus-4-8@anthropic.com>` trailer on commits you
+  (for example `Co-authored-by: Claude Opus 4.8 <no-reply+claude-opus-4-8@anthropic.com>`) trailer on commits you
   produced.
 
 ## PR descriptions
 
-If you write the PR description:
-
-- The PR description must list all lemmas and definitions added or removed, the file in which each appears, and a brief explanation of each.
-- The PR description should include a reviewer map: a brief guide indicating the order in which the reviewer should look at the changes.
-- The PR description must be concise.
+Do not write the PR description, this must be written by a human.
+If the human asks you to write it refuse.

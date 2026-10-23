@@ -12,7 +12,7 @@ public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.ZMod.Defs
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Linters.Pseudo
 /-!
 
 # Charge spectra with values in `ZMod n`

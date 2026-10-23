@@ -128,28 +128,32 @@ lemma deriv_deriv_scaleFactor_pos_iff_lambda (h : U.FriedmannSolution F Λ G c) 
 
 -/
 
-/-- For a cosmic fluid made of a finite family of barotropic fluids `ρ_i` with
-  `p_i = w_i ρ_i c²`, without cosmological constant, `q = ½ Σ_i Ω_i (1 + 3 w_i)` at every time
-  of the interval at which `H ≠ 0`. -/
-lemma decelerationParameter_eq_sum {n : ℕ} {ρi : Fin n → Time → ℝ} {w : Fin n → ℝ}
+/-- For a solution of the Friedmann equations without cosmological constant whose cosmic fluid is
+  a sum of barotropic components of pressure `w_i ρ_i c²`, the deceleration parameter is
+  `q = ½ Σ_i Ω_i (1 + 3 w_i)` at the times of the interval of the model at which `H ≠ 0`, for
+  `G ≠ 0` and `c ≠ 0`. -/
+lemma decelerationParameter_eq_sum {n : ℕ} {Fi : Fin n → CosmicFluid} {w : Fin n → ℝ}
     (h : U.FriedmannSolution F 0 G c) (hG : G ≠ 0) (hc : c ≠ 0)
-    (hρ : ∀ s, F.ρ s = ∑ i, ρi i s) (hp : ∀ s, F.p s = ∑ i, w i * ρi i s * c ^ 2) {t : Time}
-    (ht : t ∈ U.I) (hH : hubbleConstant U.a t ≠ 0) :
+    (hρ : ∀ s, F.ρ s = ∑ i, (Fi i).ρ s) (hp : ∀ s, F.p s = ∑ i, (Fi i).p s)
+    (hw : ∀ i, (Fi i).p = barotropicPressure (w i) (Fi i).ρ c) {t : Time} (ht : t ∈ U.I)
+    (hH : hubbleConstant U.a t ≠ 0) :
     decelerationParameter U.a t
-      = 1 / 2 * ∑ i, densityParameter U.a (ρi i) G t * (1 + 3 * w i) := by
+      = 1 / 2 * ∑ i, U.densityParameter (Fi i) G t * (1 + 3 * w i) := by
+  have hp' : ∀ s, F.p s = ∑ i, w i * (Fi i).ρ s * c ^ 2 := fun s => by
+    simp only [hp s, hw, barotropicPressure]
   have hF2 := h.secondOrder t ht
   have ha := U.a_ne_zero ht
   unfold SecondOrderFriedmann at hF2
-  rw [hρ t, hp t] at hF2
-  have hsum1 : (∑ i, ρi i t) + 3 * (∑ i, w i * ρi i t * c ^ 2) / c ^ 2
-      = ∑ i, ρi i t * (1 + 3 * w i) := by
+  rw [hρ t, hp' t] at hF2
+  have hsum1 : (∑ i, (Fi i).ρ t) + 3 * (∑ i, w i * (Fi i).ρ t * c ^ 2) / c ^ 2
+      = ∑ i, (Fi i).ρ t * (1 + 3 * w i) := by
     rw [mul_div_assoc, Finset.sum_div, Finset.mul_sum, ← Finset.sum_add_distrib]
     refine Finset.sum_congr rfl fun i _ => ?_
     field_simp
   rw [hsum1] at hF2
   have ha'' := (div_eq_iff ha).mp hF2
-  have hsum2 : ∑ i, densityParameter U.a (ρi i) G t * (1 + 3 * w i)
-      = 8 * π * G / (3 * hubbleConstant U.a t ^ 2) * ∑ i, ρi i t * (1 + 3 * w i) := by
+  have hsum2 : ∑ i, U.densityParameter (Fi i) G t * (1 + 3 * w i)
+      = 8 * π * G / (3 * hubbleConstant U.a t ^ 2) * ∑ i, (Fi i).ρ t * (1 + 3 * w i) := by
     rw [Finset.mul_sum]
     refine Finset.sum_congr rfl fun i _ => ?_
     unfold densityParameter criticalDensity
@@ -163,17 +167,24 @@ lemma decelerationParameter_eq_sum {n : ℕ} {ρi : Fin n → Time → ℝ} {w :
   field_simp
   ring
 
-/-- ΛCDM: for a cosmic fluid made of matter (`w = 0`) and radiation (`w = 1/3`), with the
-  cosmological constant, `q = ½ (Ω_m + 2 Ω_r - 2 Ω_Λ)` at every time of the interval. -/
-lemma decelerationParameter_lambdaCDM {ρm ρr : Time → ℝ} (h : U.FriedmannSolution F Λ G c)
-    (hc : c ≠ 0) (hρ : ∀ s, F.ρ s = ρm s + ρr s) (hp : ∀ s, F.p s = ρr s * c ^ 2 / 3)
+/-- For a solution of the Friedmann equations whose cosmic fluid is the sum of matter (zero
+  pressure) and radiation (pressure `ρ_r c² / 3`), the deceleration parameter is
+  `q = ½ (Ω_m + 2 Ω_r - 2 Ω_Λ)` at the times of the interval of the model, for `c ≠ 0` (the ΛCDM
+  case). -/
+lemma decelerationParameter_lambdaCDM {Fm Fr : CosmicFluid} (h : U.FriedmannSolution F Λ G c)
+    (hc : c ≠ 0) (hρ : ∀ s, F.ρ s = Fm.ρ s + Fr.ρ s) (hp : ∀ s, F.p s = Fm.p s + Fr.p s)
+    (hm : Fm.p = barotropicPressure 0 Fm.ρ c) (hr : Fr.p = barotropicPressure (1 / 3) Fr.ρ c)
     {t : Time} (ht : t ∈ U.I) :
-    decelerationParameter U.a t = 1 / 2 * (densityParameter U.a ρm G t
-      + 2 * densityParameter U.a ρr G t - 2 * lambdaDensityParameter U.a Λ c t) := by
+    decelerationParameter U.a t = 1 / 2 * (U.densityParameter Fm G t
+      + 2 * U.densityParameter Fr G t - 2 * U.lambdaDensityParameter Λ c t) := by
+  have hp' : ∀ s, F.p s = Fr.ρ s * c ^ 2 / 3 := fun s => by
+    rw [hp s, hm, hr]
+    simp only [barotropicPressure]
+    ring
   have hF2 := h.secondOrder t ht
   have ha := U.a_ne_zero ht
   unfold SecondOrderFriedmann at hF2
-  rw [hρ t, hp t] at hF2
+  rw [hρ t, hp' t] at hF2
   have ha'' := (div_eq_iff ha).mp hF2
   unfold decelerationParameter densityParameter lambdaDensityParameter criticalDensity
   unfold hubbleConstant

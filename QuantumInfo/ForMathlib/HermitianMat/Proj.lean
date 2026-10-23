@@ -54,9 +54,10 @@ noncomputable def projector (S : Submodule 𝕜 (EuclideanSpace 𝕜 n)) : Hermi
     exact h1⟩
 
 lemma projector_add_orthogonal : projector S + projector Sᗮ = 1 := by
-  unfold projector;
-  erw [ Subtype.mk_eq_mk ];
-  ext i j; simp [ LinearMap.toMatrix_apply, Matrix.one_apply ] ;
+  ext i j; rw [mat_add, mat_one, Matrix.add_apply, Matrix.one_apply]
+  simp only [projector, mat_mk, LinearMap.toMatrix_apply]
+  rw [← Finsupp.add_apply, ← LinearEquiv.map_add]
+  simp
 
 lemma projector_nonneg : 0 ≤ projector S := by
   rw [zero_le_iff]

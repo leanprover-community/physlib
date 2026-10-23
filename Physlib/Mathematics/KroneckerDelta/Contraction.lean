@@ -7,6 +7,7 @@ module
 
 public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
+public import Mathlib.Data.Nat.Factorial.BigOperators
 /-!
 
 # Contraction identities for the generalized Kronecker delta
@@ -21,11 +22,16 @@ identities proved in `Physlib.Relativity.Tensors.LeviCivita.Contractions`.
 
 The central fact is that summing a `generalizedKroneckerDelta` over one shared index lowers
 its rank by one and multiplies it by `card α - n` (`generalizedKroneckerDelta_sum_snoc`).
-Iterating that fact, together with the product identity
+Iterating that fact gives the fully-, singly-, and doubly-free contractions over an arbitrary
+finite index type, with the falling product `(card α - m) (card α - m - 1) ⋯` for `m` free pairs
+(`sum_generalizedKroneckerDelta_self_card`, `sum_generalizedKroneckerDelta_cons_card`,
+`sum_generalizedKroneckerDelta_cons₂_card`), and `k!` for the full contraction when the index type
+has `k` elements (`sum_generalizedKroneckerDelta_self_eq_factorial`). Together with the product
+identity
 `generalizedKroneckerDelta μ ν = generalizedKroneckerDelta μ id * generalizedKroneckerDelta ν id`
-(`generalizedKroneckerDelta_mul`), gives the fully-, singly-, and doubly-free
-contractions `sum_generalizedKroneckerDelta_self`, `sum_generalizedKroneckerDelta_cons`, and
-`sum_generalizedKroneckerDelta_cons₂` over `Fin 4`.
+(`generalizedKroneckerDelta_mul`), their `Fin 4` instances `sum_generalizedKroneckerDelta_self`,
+`sum_generalizedKroneckerDelta_cons`, and `sum_generalizedKroneckerDelta_cons₂` give the
+contractions used for the Levi-Civita identities.
 
 The proof of `generalizedKroneckerDelta_sum_snoc` borders the delta matrix with the appended
 index (a Schur-complement reduction) and then applies the ring-general rank-one determinant
@@ -35,6 +41,10 @@ matrix determinant lemma when `det A` is a unit and Kronecker-delta matrices are
 ## ii. Key results
 
 - `generalizedKroneckerDelta_sum_snoc` : summing over one shared index lowers the rank by one.
+- `sum_generalizedKroneckerDelta_self_card`, `sum_generalizedKroneckerDelta_cons_card`,
+  `sum_generalizedKroneckerDelta_cons₂_card` : the fully-, singly-, and doubly-free contractions
+  over any finite index type; `sum_generalizedKroneckerDelta_self_eq_factorial` : the full
+  contraction is `k!` when the type has `k` elements.
 - `sum_generalizedKroneckerDelta_mul_self`, `sum_generalizedKroneckerDelta_mul_cons`,
   `sum_generalizedKroneckerDelta_mul_snoc`, `sum_generalizedKroneckerDelta_mul_cons₂` : the
   fully-, singly-, and doubly-free symbol-level contractions over `Fin 4`.
@@ -210,27 +220,105 @@ private lemma sum_over_snoc {X : Type*} [Fintype X] {M : Type*} [AddCommMonoid M
   rw [← Equiv.sum_comp (Fin.snocEquiv (fun _ => X)) F, Fintype.sum_prod_type, Finset.sum_comm]
   rfl
 
-/-- **Full contraction.** Iterating the snoc contraction over all four indices:
-`∑_f δ^{f}_{f} = 4!`. Here `f` ranges over all maps `Fin 4 → Fin 4`. -/
-lemma sum_generalizedKroneckerDelta_self (k : ℕ) :
-    ∑ h : Fin k → Fin 4, generalizedKroneckerDelta h h
-      = ∏ j ∈ Finset.range k, ((4 : ℤ) - j) := by
+/-- **Full contraction over an arbitrary finite type.** Summing `δ^{h}_{h}` over all `k`-tuples
+`h` of indices gives the falling product `card α · (card α - 1) ⋯ (card α - k + 1)`. -/
+lemma sum_generalizedKroneckerDelta_self_card (k : ℕ) :
+    ∑ h : Fin k → α, generalizedKroneckerDelta h h
+      = ∏ j ∈ Finset.range k, ((Fintype.card α : ℤ) - j) := by
   induction k with
   | zero =>
     rw [Finset.prod_range_zero, Fintype.sum_unique]
     exact Matrix.det_fin_zero
   | succ k ih =>
     rw [sum_over_snoc]
-    have hstep : ∀ h' : Fin k → Fin 4, ∑ c : Fin 4,
+    have hstep : ∀ h' : Fin k → α, ∑ c : α,
         generalizedKroneckerDelta (Fin.snoc h' c) (Fin.snoc h' c)
-          = ((4 : ℤ) - k) * generalizedKroneckerDelta h' h' := by
+          = ((Fintype.card α : ℤ) - k) * generalizedKroneckerDelta h' h' :=
+      fun h' => generalizedKroneckerDelta_sum_snoc h' h'
+    rw [Finset.sum_congr rfl fun h' _ => hstep h', ← Finset.mul_sum, ih,
+      Finset.prod_range_succ]
+    ring
+
+/-- **Single contraction over an arbitrary finite type.** Contracting the last `k` of `k+1`
+index pairs leaves one free pair `σ, τ`, with the falling product
+`(card α - 1) (card α - 2) ⋯`. -/
+lemma sum_generalizedKroneckerDelta_cons_card (σ τ : α) (k : ℕ) :
+    ∑ h : Fin k → α,
+        generalizedKroneckerDelta (Fin.cons σ h) (Fin.cons τ h)
+      = (∏ j ∈ Finset.range k, ((Fintype.card α : ℤ) - 1 - j))
+        * ((kroneckerDelta σ τ : ℕ) : ℤ) := by
+  induction k with
+  | zero =>
+    rw [Finset.prod_range_zero, one_mul, Fintype.sum_unique]
+    exact Matrix.det_fin_one _
+  | succ k ih =>
+    rw [sum_over_snoc]
+    have hstep : ∀ h' : Fin k → α, ∑ c : α,
+        generalizedKroneckerDelta (Fin.cons σ (Fin.snoc h' c)) (Fin.cons τ (Fin.snoc h' c))
+          = ((Fintype.card α : ℤ) - 1 - k)
+            * generalizedKroneckerDelta (Fin.cons σ h') (Fin.cons τ h') := by
       intro h'
-      rw [generalizedKroneckerDelta_sum_snoc h' h', Fintype.card_fin]
+      rw [Finset.sum_congr rfl fun c _ => by
+        rw [Fin.cons_snoc_eq_snoc_cons, Fin.cons_snoc_eq_snoc_cons],
+        generalizedKroneckerDelta_sum_snoc (Fin.cons σ h') (Fin.cons τ h')]
       push_cast
       ring
     rw [Finset.sum_congr rfl fun h' _ => hstep h', ← Finset.mul_sum, ih,
       Finset.prod_range_succ]
     ring
+
+/-- **Double contraction over an arbitrary finite type.** Contracting the last `k` of `k+2`
+index pairs leaves two free pairs, with value a `2×2` generalized Kronecker delta times the
+falling product `(card α - 2) (card α - 3) ⋯`. -/
+lemma sum_generalizedKroneckerDelta_cons₂_card (ρ σ τ ω : α) (k : ℕ) :
+    ∑ h : Fin k → α,
+        generalizedKroneckerDelta (Fin.cons ρ (Fin.cons σ h)) (Fin.cons τ (Fin.cons ω h))
+      = (∏ j ∈ Finset.range k, ((Fintype.card α : ℤ) - 2 - j))
+        * generalizedKroneckerDelta ![ρ, σ] ![τ, ω] := by
+  induction k with
+  | zero =>
+    rw [Finset.prod_range_zero, one_mul, Fintype.sum_unique]
+    have e1 : ∀ d : Fin 0 → α, (Fin.cons ρ (Fin.cons σ d) : Fin 2 → α) = ![ρ, σ] := by
+      intro d; funext i; fin_cases i <;> rfl
+    have e2 : ∀ d : Fin 0 → α, (Fin.cons τ (Fin.cons ω d) : Fin 2 → α) = ![τ, ω] := by
+      intro d; funext i; fin_cases i <;> rfl
+    rw [e1, e2]
+  | succ k ih =>
+    rw [sum_over_snoc]
+    have hstep : ∀ h' : Fin k → α, ∑ c : α,
+        generalizedKroneckerDelta (Fin.cons ρ (Fin.cons σ (Fin.snoc h' c)))
+          (Fin.cons τ (Fin.cons ω (Fin.snoc h' c)))
+          = ((Fintype.card α : ℤ) - 2 - k)
+            * generalizedKroneckerDelta (Fin.cons ρ (Fin.cons σ h'))
+              (Fin.cons τ (Fin.cons ω h')) := by
+      intro h'
+      rw [Finset.sum_congr rfl fun c _ => by
+        rw [Fin.cons_snoc_eq_snoc_cons, Fin.cons_snoc_eq_snoc_cons,
+          Fin.cons_snoc_eq_snoc_cons, Fin.cons_snoc_eq_snoc_cons],
+        generalizedKroneckerDelta_sum_snoc (Fin.cons ρ (Fin.cons σ h'))
+          (Fin.cons τ (Fin.cons ω h'))]
+      push_cast
+      ring
+    rw [Finset.sum_congr rfl fun h' _ => hstep h', ← Finset.mul_sum, ih,
+      Finset.prod_range_succ]
+    ring
+
+/-- When the index type has exactly `k` elements, the full contraction is `k!`. -/
+lemma sum_generalizedKroneckerDelta_self_eq_factorial {k : ℕ} (hk : Fintype.card α = k) :
+    ∑ h : Fin k → α, generalizedKroneckerDelta h h = (k.factorial : ℤ) := by
+  rw [sum_generalizedKroneckerDelta_self_card, hk, ← Nat.descFactorial_self,
+    Nat.descFactorial_eq_prod_range, Nat.cast_prod]
+  refine Finset.prod_congr rfl fun j hj => ?_
+  have := Finset.mem_range.mp hj
+  omega
+
+/-- **Full contraction.** Iterating the snoc contraction over all four indices:
+`∑_f δ^{f}_{f} = 4!`. Here `f` ranges over all maps `Fin 4 → Fin 4`. The `Fin 4` instance of
+`sum_generalizedKroneckerDelta_self_card`. -/
+lemma sum_generalizedKroneckerDelta_self (k : ℕ) :
+    ∑ h : Fin k → Fin 4, generalizedKroneckerDelta h h
+      = ∏ j ∈ Finset.range k, ((4 : ℤ) - j) := by
+  simpa using sum_generalizedKroneckerDelta_self_card (α := Fin 4) k
 
 /-- **Single contraction.** Contracting the last `k` of `k+1` index pairs leaves one free pair
 `σ, τ`, with the factorial factor `(4-1)(4-2)…`. -/
@@ -238,24 +326,7 @@ lemma sum_generalizedKroneckerDelta_cons (σ τ : Fin 4) (k : ℕ) :
     ∑ h : Fin k → Fin 4,
         generalizedKroneckerDelta (Fin.cons σ h) (Fin.cons τ h)
       = (∏ j ∈ Finset.range k, ((3 : ℤ) - j)) * ((kroneckerDelta σ τ : ℕ) : ℤ) := by
-  induction k with
-  | zero =>
-    rw [Finset.prod_range_zero, one_mul, Fintype.sum_unique]
-    exact Matrix.det_fin_one _
-  | succ k ih =>
-    rw [sum_over_snoc]
-    have hstep : ∀ h' : Fin k → Fin 4, ∑ c : Fin 4,
-        generalizedKroneckerDelta (Fin.cons σ (Fin.snoc h' c)) (Fin.cons τ (Fin.snoc h' c))
-          = ((3 : ℤ) - k) * generalizedKroneckerDelta (Fin.cons σ h') (Fin.cons τ h') := by
-      intro h'
-      rw [Finset.sum_congr rfl fun c _ => by
-        rw [Fin.cons_snoc_eq_snoc_cons, Fin.cons_snoc_eq_snoc_cons],
-        generalizedKroneckerDelta_sum_snoc (Fin.cons σ h') (Fin.cons τ h'), Fintype.card_fin]
-      push_cast
-      ring
-    rw [Finset.sum_congr rfl fun h' _ => hstep h', ← Finset.mul_sum, ih,
-      Finset.prod_range_succ]
-    ring
+  simpa using sum_generalizedKroneckerDelta_cons_card σ τ k
 
 /-- **Double contraction.** Contracting the last `k` of `k+2` index pairs leaves two free pairs,
 with value a `2×2` generalized Kronecker delta times the factorial factor. -/
@@ -264,32 +335,7 @@ lemma sum_generalizedKroneckerDelta_cons₂ (ρ σ τ ω : Fin 4) (k : ℕ) :
         generalizedKroneckerDelta (Fin.cons ρ (Fin.cons σ h)) (Fin.cons τ (Fin.cons ω h))
       = (∏ j ∈ Finset.range k, ((2 : ℤ) - j))
         * generalizedKroneckerDelta ![ρ, σ] ![τ, ω] := by
-  induction k with
-  | zero =>
-    rw [Finset.prod_range_zero, one_mul, Fintype.sum_unique]
-    have e1 : ∀ d : Fin 0 → Fin 4, (Fin.cons ρ (Fin.cons σ d) : Fin 2 → Fin 4) = ![ρ, σ] := by
-      intro d; funext i; fin_cases i <;> rfl
-    have e2 : ∀ d : Fin 0 → Fin 4, (Fin.cons τ (Fin.cons ω d) : Fin 2 → Fin 4) = ![τ, ω] := by
-      intro d; funext i; fin_cases i <;> rfl
-    rw [e1, e2]
-  | succ k ih =>
-    rw [sum_over_snoc]
-    have hstep : ∀ h' : Fin k → Fin 4, ∑ c : Fin 4,
-        generalizedKroneckerDelta (Fin.cons ρ (Fin.cons σ (Fin.snoc h' c)))
-          (Fin.cons τ (Fin.cons ω (Fin.snoc h' c)))
-          = ((2 : ℤ) - k) * generalizedKroneckerDelta (Fin.cons ρ (Fin.cons σ h'))
-              (Fin.cons τ (Fin.cons ω h')) := by
-      intro h'
-      rw [Finset.sum_congr rfl fun c _ => by
-        rw [Fin.cons_snoc_eq_snoc_cons, Fin.cons_snoc_eq_snoc_cons,
-          Fin.cons_snoc_eq_snoc_cons, Fin.cons_snoc_eq_snoc_cons],
-        generalizedKroneckerDelta_sum_snoc (Fin.cons ρ (Fin.cons σ h'))
-          (Fin.cons τ (Fin.cons ω h')), Fintype.card_fin]
-      push_cast
-      ring
-    rw [Finset.sum_congr rfl fun h' _ => hstep h', ← Finset.mul_sum, ih,
-      Finset.prod_range_succ]
-    ring
+  simpa using sum_generalizedKroneckerDelta_cons₂_card ρ σ τ ω k
 
 /-- Symbol-level full contraction over `Fin 4 → Fin 4`. -/
 lemma sum_generalizedKroneckerDelta_mul_self :

@@ -122,6 +122,44 @@ lemma ext {x y : U} (h : val x = val y) : x = y := by
   rw [← ofVal_val x, ← ofVal_val y]
   congr
 
+/-- The rescaling of a unit magnitude by a strictly positive real, given as a unit of `ℝ≥0`.
+  This is `scale` at a factor known to be positive, so the `scale` lemmas may be applied to
+  `u • x` after rewriting with `units_smul_eq_scale`. -/
+def unitsSMul (u : ℝ≥0ˣ) (x : U) : U :=
+  scale ((u : ℝ≥0) : ℝ) x (by
+    have hu : ((u : ℝ≥0) : ℝ) ≠ 0 := by simp [Units.ne_zero u]
+    exact lt_of_le_of_ne (by positivity) (Ne.symm hu))
+
+/-- A unit magnitude may be rescaled by a strictly positive real, that is by a unit of `ℝ≥0`.
+  No action of `ℝ≥0` on `U` can be compatible with the magnitude: taking `a > 0` and `b = 0` in
+  `mul_smul` would force `0 • x` to be a fixed point of every rescaling, and no element of `U`
+  is. -/
+instance instMulActionUnitsNNReal : MulAction ℝ≥0ˣ U where
+  smul := unitsSMul
+  one_smul x := by
+    apply ext
+    show val (unitsSMul 1 x) = val x
+    simp [unitsSMul]
+  mul_smul a b x := by
+    apply ext
+    show val (unitsSMul (a * b) x) = val (unitsSMul a (unitsSMul b x))
+    simp only [unitsSMul, scale_val, Units.val_mul, NNReal.coe_mul]
+    ring
+
+/-- A rescaling by a unit of `ℝ≥0` is the rescaling by its underlying positive factor. Rewriting
+  with this makes the `scale` lemmas applicable; `simp` does not see through `HSMul.hSMul` on its
+  own. -/
+lemma units_smul_eq_scale (u : ℝ≥0ˣ) (x : U) :
+    u • x = scale ((u : ℝ≥0) : ℝ) x (by
+      have hu : ((u : ℝ≥0) : ℝ) ≠ 0 := by simp [Units.ne_zero u]
+      exact lt_of_le_of_ne (by positivity) (Ne.symm hu)) := rfl
+
+/-- The magnitude of a rescaling by a unit of `ℝ≥0`. -/
+@[simp]
+lemma val_units_smul (u : ℝ≥0ˣ) (x : U) :
+    val (u • x) = ((u : ℝ≥0) : ℝ) * val x := by
+  rw [units_smul_eq_scale, scale_val]
+
 /-- The ratio of a rescaled unit to the original is the scaling factor. -/
 @[simp]
 lemma scale_div_self (x : U) (r : ℝ) (hr : 0 < r) :

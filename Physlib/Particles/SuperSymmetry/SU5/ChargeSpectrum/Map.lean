@@ -19,7 +19,6 @@ In this module we define a function `map` which takes an additive monoid homomor
 `x.map f : ChargeSpectrum 𝓩1` obtained by mapping the elements of `x` by `f`.
 
 There are various properties which are preserved under this mapping:
-- Anomaly cancellation.
 - The presence of a specific term in the potential.
 - Being complete.
 

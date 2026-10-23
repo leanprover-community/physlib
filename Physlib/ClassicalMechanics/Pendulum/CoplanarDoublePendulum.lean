@@ -5,7 +5,7 @@ Authors: Shlok Vaibhav Singh
 -/
 module
 
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Informal.Basic
 /-!
 # Coplanar Double Pendulum
 ### Tag: LnL_1.5.1
@@ -69,9 +69,13 @@ namespace ClassicalMechanics
 
 namespace CoplanarDoublePendulum
 
-/-- The configuration space of the coplaner double pendulum. -/
-@[sorryful]
-def ConfigurationSpace : Type := sorry
+/-- The configuration space of the coplaner double pendulum.
+
+  Formal type: Type
+  -/
+informal_definition ConfigurationSpace where
+  deps := []
+  tag := "CM-DP-config"
 
 end CoplanarDoublePendulum
 end ClassicalMechanics

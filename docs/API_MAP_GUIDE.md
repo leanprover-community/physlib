@@ -1,160 +1,134 @@
 # Writing good API maps
 
-An `API-map.yaml` file records what an API is meant to contain, what has been
-built, and where each piece lives in the Lean source. It is the human-readable
-contract for an API directory: a reader can see the intended scope, tell done
-work from planned work, and jump straight to the declaration that realizes each
-requirement.
+## What is an API map
+
+In Physlib an API map is a human-readable document which discusses the physics
+in a given area, and links to the corresponding Lean declarations.
+
+It can be thought of as a `Roadmap`, a `Blueprint`, or as a `Wiki`.
+
+## The file format of an API map
+
+An API map is a `.md` file. This allows it to easily be viewed and edited both in VSCode, and on GitHub.
+
+## Structure
+
+The API map should have the following structure:
+- **Title**: A single `# ` heading with the API's name.
+- **Abstract**: A single section titled with either `## Abstract` or `## Abstract (Alpha)`.
+
+  The distinction between `## Abstract` and `## Abstract (Alpha)` is that the latter is used for API maps which have not gone under the stringent review process. Similar to the distinction between Physlib and PhyslibAlpha.
+
+  The abstract should be a single paragraph.
+- **Content**: A section titled `## Content`. This is a discussion of the concepts in a given area, with references to the corresponding Lean declarations.
+- **Content (Alpha)**: A section titled `## Content (Alpha)`. Same as `## Content`, but for API maps which have not gone under the stringent review process. It should extend what is in `## Content`.
+
+  An API map can have both `## Content` and `## Content (Alpha)` sections, or just one.
+
+  Both `## Content` and `## Content (Alpha)` sections can cite Physlib or PhyslibAlpha, the
+  `Alpha` here refers to the less strictly reviewed version of the content, not the content.
+
+- **Lean References**: A section titled `## Lean References` linking concepts discussed in the content sections to their corresponding Lean declarations.
+- **References**: A section titled `## References` linking to external sources, such as papers, textbooks, or websites, that provide additional context or background for the concepts discussed in the API map. This must come directly after **Lean References**.
+
+Some notes:
+- You can have a `## Abstract (Alpha)` with a `## Content` section, although this is advised against.
+
+## Lean citations
+
+The *Content* explains the API in words, as you would
+explain it to a colleague who does not yet know the Lean names; the Lean
+declarations are collected at the end, and the prose points at them with
+numbered citations — `[1]`, `[2]` — in the manner of a paper's bibliography.
+Any part of *Content* which has not yet been formalized in Lean is marked `[TODO]`.
+
+Each citation must come in its own square bracket e.g. `[1][2]` not `[1,2]`.
+The abstract must not contain any citations, whether Lean or literature.
+
+## Literature citations
+
+Literature citations should be cited using curly brackets e.g. `{1}`. This helps distinguish them from Lean citations, which use square brackets. This should include links to other API maps.
+
+No raw link should be included in an API map; all references should be properly cited in the `## References` section using the curly bracket notation. No `[markdown](links)` should appear directly in the content or abstract. This is because these are not easy to parse when looking at raw markdown files.
+
+Each citation must come in its own curly bracket e.g. `{1}{2}` not `{1,2}`.
+
+## Content first style
+
+A content first style should be taken. For example:
+```
+A general gauge theory admits an arbitrary Lie group as its structure group. [TODO] Its
+gauge field takes values in the Lie algebra of that group. [TODO] Matter fields carry a
+gauge-covariant derivative with a defined transformation law. [TODO] The non-abelian field.
+```
+
+Not the following (which is a RoadMap style)
+```
+The general non-abelian theory remains planned. It will allow an arbitrary Lie group as the structure group and define a gauge field valued in its Lie algebra. [TODO] It will also define the gauge-covariant derivative on matter fields and its transformation law, along with the Yang–Mills curvature and its covariant transformation. [TODO] The Yang–Mills action and its field equations, parallel transport and holonomy, and a formulation of gauge fields as connections on principal bundles are also planned. [TODO]
+```
 
 ## When to write one
 
-Write an `API-map.yaml` for any API that groups a coherent body of definitions
+Write an `API-map.md` for any API that groups a coherent body of definitions
 and results, for example `Time`, `Space`, the Lorentz group, or the quantum
 operators. If a directory holds an API worth documenting as a unit, it gets a
 map. Requirements that are planned but not yet formalized still belong in the
-map, marked as not done, so the map doubles as the API's roadmap.
+map, marked `[TODO]`, so the map doubles as the API's roadmap.
 
 ## File location
 
-One `API-map.yaml` sits in the top directory of the API it describes:
+One `API-map.md` sits in the top directory of the API it describes:
 
-    Physlib/SpaceAndTime/Time/API-map.yaml
-    Physlib/Relativity/LorentzGroup/API-map.yaml
-    Physlib/QuantumMechanics/HilbertSpaces/SpaceD/API-map.yaml
+    Physlib/SpaceAndTime/Time/API-map.md
+    Physlib/Relativity/LorentzGroup/API-map.md
+    Physlib/QuantumMechanics/HilbertSpaces/SpaceD/API-map.md
 
-The map's own path is the API's directory; the `location` field of each
-requirement then points at the specific `.lean` files under (or near) it.
+The map's own path is the API's directory; the reference entries at the end
+then point at the specific `.lean` files under (or near) it.
 
-## Schema
+## Writing a reference entry
 
-Every map has these six top-level keys:
+Each entry of `## Lean References` is one file and the declarations in it
+that the citing requirement is about:
 
-- `version`: the schema version, currently `v0.1`.
-- `Title`: the API's name, e.g. `Time`, `"Lorentz Group"`.
-- `Overview`: a short prose description of the API. Use a YAML block scalar
-  (`Overview: |`) for multi-line text.
-- `ParentAPIs`: a list of the APIs this one builds on, each a string naming
-  the API and its directory, e.g. `"Space (Physlib/SpaceAndTime/Space)"`. Use
-  `[]` if there are none.
-- `References`: a list of external references (papers, notes). Use `[]` if
-  there are none.
-- `Requirements`: a list of requirement entries.
-
-Each entry in `Requirements` has exactly three keys:
-
-- `description`: one sentence stating what the API should contain. Present
-  tense for done work ("The API contains..."), "shall" for planned work.
-- `done`: `true` if formalized, `false` if planned.
-- `location`: where the result lives (see below); `N/A` when `done: false`.
-
-Minimal shape:
-
-    version: v0.1
-    Title: Time
-    Overview: |
-        One or more lines describing the API.
-    ParentAPIs:
-      - "Space (Physlib/SpaceAndTime/Space)"
-    References: []
-    Requirements:
-      - description: "The key data structure `Time` is defined."
-        done: true
-        location: "Physlib/SpaceAndTime/Time/Basic.lean (Time)"
-
-## Writing a good `location`
-
-The `location` is the load-bearing field. Its job is to let a reader (and the
-linter) find the exact declarations that realize the requirement. The grammar
-is: one or more file groups, each a file path followed by a parenthesized,
-comma-separated list of names.
-
-    Physlib/SpaceAndTime/Time/InnerProductSpace.lean (AddCommGroup Time, toRealCLM)
+    7. Physlib/SpaceAndTime/Time/Derivatives.lean — `Time.deriv`, `notation ∂ₜ`,
+       `deriv_smul`, `deriv_const`
 
 Rules:
 
-- **Use the exact repo-relative file path**, ending in `.lean`.
-- **List the actual declaration names**, comma-separated, inside `(...)`. Use
-  the names as they appear in the source (`deriv_smul`, `Time.deriv`,
-  `RigidBody.mass`).
+- **Numbered from 1, in order**, with no gaps. Every entry must be cited by
+  some requirement, and every citation must resolve to an entry.
+- **Use the exact repo-relative file path**, ending in `.lean`, followed by an
+  em dash and the declarations.
+- **Each declaration in backticks**, comma-separated. Use the names as they
+  appear in the source (`deriv_smul`, `Time.deriv`, `RigidBody.mass`). An
+  entry may be long; wrap it over several lines, indented, as above.
 - **Instance types** name a class applied to arguments rather than a single
-  declaration: `AddCommGroup Time`, `Module ℝ Time`,
-  `InnerProductSpace ℝ (Space d)`. These are fine and expected; write the type
-  exactly. (The grep-tier linter cannot verify instance types and reports them
-  as needing the Lean environment, rather than passing or failing them, so keep
-  them precise.)
+  declaration: `` `AddCommGroup Time` ``, `` `Module ℝ Time` ``,
+  `` `InnerProductSpace ℝ (Space d)` ``. These are fine and expected; write
+  the type exactly. (The grep-tier linter cannot verify instance types and
+  reports them as needing the Lean environment, rather than passing or failing
+  them, so keep them precise.)
 - **Typed declarations** may include the signature after a colon, e.g.
-  `slice : Space d.succ ≃L[ℝ] ℝ × Space d`. The name before ` : ` is what gets
-  checked, so keep it correct.
-- **Notations** are written with the `notation ` prefix, e.g. `notation ∂ₜ`,
-  `notation 𝐱`. A bare glyph with no spaces (e.g. `⨯ₑ₃`) is also read as a
-  notation.
-
-### Multiple files: the `;` form
-
-When one requirement is realized across several files, separate the file groups
-with a semicolon:
-
-    Physlib/SpaceAndTime/Space/Module.lean (Norm, InnerProductSpace ℝ (Space d)); Physlib/SpaceAndTime/Space/Basic.lean (Dist, MetricSpace)
-
-Each `;`-separated group is `FILE (names...)` on its own. A long list may be
-written as a YAML block scalar to keep lines readable:
-
-    location: |
-      Physlib/QuantumMechanics/Operators/Position.lean (positionCLM, notation 𝐱); Physlib/QuantumMechanics/Operators/Momentum.lean (momentumCLM, notation 𝐩)
-
-### Unimplemented requirements
-
-For a requirement that is planned but not yet formalized, set:
-
-    done: false
-    location: N/A
-
-Do not point `location` at a file that does not yet contain the result. `N/A`
-with `done: false` is the correct way to record scope that is still open.
-
-## YAML quoting pitfall: the colon
-
-A colon-space (`: `) inside an unquoted scalar starts a new YAML mapping and
-breaks the parse. This bites descriptions and locations that contain a colon:
-
-    # BROKEN — the ": " inside the parentheses is read as a key/value split
-    - description: Instance as a Lie group (blocked: needs Cartan's theorem)
-
-Quote the whole value:
-
-    - description: "Instance as a Lie group (blocked: needs Cartan's theorem)"
-
-When in doubt, wrap `description` and `location` values in double quotes. This
-also protects leading special characters and inline `#`. Signatures that
-contain a colon (`slice : Space d.succ ≃L[ℝ] ℝ × Space d`) are safe inside the
-`(...)` of a quoted `location`, but the surrounding value must be quoted.
+  `` `slice : Space d.succ ≃L[ℝ] ℝ × Space d` ``. The name before ` : ` is
+  what gets checked, so keep it correct.
+- **Notations** are written with the `notation ` prefix, e.g.
+  `` `notation ∂ₜ` ``, `` `notation 𝐱` ``. A bare glyph with no spaces (e.g.
+  `` `⨯ₑ₃` ``) is also read as a notation.
+- One file per entry. Two requirements that touch the same file get two
+  entries, each listing the declarations that requirement is about.
 
 ## Run the linter before opening a PR
 
-The linter checks the schema (the six top-level keys and each requirement's
-three keys) and, for every done requirement with a real location, that the named
-file exists and each plain declaration and notation is present in it.
+The linter checks the following things:
+- The correct `# ` and `## ` headings are used.
+- Each Lean citation in the text has a corresponding reference.
+- Each entry in the references section corresponds to at least one citation in the text.
+- Every Lean declaration referenced exists in the corresponding file.
 
-Run it from the repository root, exactly as CI does. The linter needs PyYAML,
-which CI installs with pip before this step; locally, `pip install PyYAML` once
-if you do not have it.
-
-    python scripts/lint/required/api_map_linter.py --repo .
-    python scripts/lint/required/api_map_linter.py --repo . --verbose
-
-A clean run reports every file as `ok` and no `MISSING_FILE` or `MISSING_NAME`
-in the summary. `need_Lean_env` counts instance-type claims grep cannot verify;
-that is expected and not a failure. The linter exits non-zero on any real
-failure (unparsable YAML, missing schema key, missing file, or a named
-declaration that is not in the file it points to). Run it until green before
-opening a PR.
+Run it from the repository root with `lake exe api_map_lint` (add `--verbose` to also see notes
+on instance claims and Lean names in the prose). It needs no build of Physlib.
 
 ## The generated site index
 
-`lake exe api_map_index` gathers every `API-map.yaml` into a single YAML data
-file, `docs/_data/APIMap.yml`, in the same way `TODO_to_yml` builds
-`docs/_data/TODO.yml` for the website's TODO list. The file records each map's
-path, module context, title, overview, parents, references, and requirements,
-with per-map and total completion counts, and the website repository renders
-it. A plain run prints the YAML to standard output; passing `mkFile` writes
-the file.
+`lake exe api_map_index` greates a single YAML data file, `docs/_data/APIMap.yml`, from all `API-map.md` files in the repository. It lists the contents of each API map in a structured format.

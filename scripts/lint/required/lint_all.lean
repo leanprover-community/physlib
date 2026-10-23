@@ -40,15 +40,19 @@ def main (args : List String) : IO UInt32 := do
   let todoCheck ← IO.Process.output {cmd := "lake", args := #["exe", "check_dup_tags"]}
   println! todoCheck.stdout
 
-  println! "\x1b[36m(5/7) Sorry and pseudo attribute linter \x1b[0m"
-  let sorryPseudoCheck ← IO.Process.output {cmd := "lake", args := #["exe", "sorry_lint"]}
-  println! sorryPseudoCheck.stdout
-  println! sorryPseudoCheck.stderr
+  println! "\x1b[36m(5/7) Pseudo attribute linter \x1b[0m"
+  let pseudoCheck ← IO.Process.output {cmd := "lake", args := #["exe", "pseudo_lint"]}
+  println! pseudoCheck.stdout
+  println! pseudoCheck.stderr
 
   println! "\x1b[36m(5/7) Theorem and lemma linter \x1b[0m"
   let theoremCheck ← IO.Process.output {cmd := "lake", args := #["exe", "theorem_lint"]}
   println! theoremCheck.stdout
   println! theoremCheck.stderr
+
+  println! "\x1b[36m(5/7) API map linter \x1b[0m"
+  let apiMapCheck ← IO.Process.output {cmd := "lake", args := #["exe", "api_map_lint"]}
+  println! apiMapCheck.stdout
 
   if ¬ "--fast" ∈ args then
     println! "\x1b[36m(6/7) Lean linter \x1b[0m"

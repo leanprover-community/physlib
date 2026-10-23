@@ -623,22 +623,12 @@ private lemma purify_prep_append_entry (X : Matrix dIn dIn ℂ)
     let append : CPTPMap dIn (dIn × Unit) := CPTPMap.ofEquiv (Equiv.prodPUnit dIn).symm
     (prep ∘ₘ append).map X (a₁, b₁c₁) (a₂, b₂c₂) =
     X a₁ a₂ * ρ₀.m b₁c₁ b₂c₂ := by
-  --TODO Cleanup. The proof tactics aren't too long, but the intermediate state is
-  -- distgusting; probably this can be repackaged as several intermediate simp lemmas
-  -- and generally needs better API.
-  unfold replacement CPTPMap.traceLeft CPTPMap.prod CPTPMap.ofEquiv
-  simp only [id_map, Matrix.traceLeft, Finset.univ_unique, PUnit.default_eq_unit,
-    Finset.sum_singleton, Matrix.kroneckerMap, MState.pure_apply, Equiv.symm_symm]
-  erw [LinearMap.comp_apply, MatrixMap.kron_def]
-  erw [Finset.sum_eq_single a₁]
-  · simp only [Matrix.single]
-    erw [Matrix.of_apply]
-    simp only [Matrix.of_apply]
-    erw [Matrix.of_apply]
-    simp [Matrix.of_apply]
-    ring!
-  · simp +contextual
-  · simp
+  intro ρ₀ zero_prep prep append
+  change MatrixMap.kron (id (dIn := dIn)).map zero_prep.map
+      (X.submatrix (Equiv.prodPUnit dIn) (Equiv.prodPUnit dIn)) (a₁, b₁c₁) (a₂, b₂c₂) = _
+  rw [MatrixMap.kron_def]
+  simp [zero_prep, purify_replacement_single_eq, Matrix.single_apply, ite_and]
+  ring
 
 private lemma purify_conj_entry (X : Matrix dIn dIn ℂ) (U : 𝐔[dIn × dOut × dOut])
       (i j : dIn × dOut × dOut) :

@@ -116,6 +116,19 @@ component because Lake ignores `--toolchain` for verbatim scopes.
 def scopeFor (tc : String) (half : String) : String :=
   s!"physlib-master/{tc}/{half}"
 
+/-- Deletes Lake's local copies of Physlib's revision mappings. Lake saves them
+at `<cache dir>/revisions/Physlib/<rev>.jsonl` whatever the `--scope`, so the same
+path is shared by Physlib and PhyslibAlpha. -/
+def removeRevisionMappings : IO Unit := do
+  let out ← IO.Process.output
+    { cmd := "lake", args := #["env", "printenv", "LAKE_CACHE_DIR"] }
+  let dir := out.stdout.trimAscii.toString
+  if out.exitCode != 0 || dir.isEmpty then return
+  let revs : System.FilePath := dir / "revisions" / "Physlib"
+  if ← revs.pathExists then
+    try IO.FS.removeDirAll revs
+    catch e => say s!"  could not remove {revs}: {e}"
+
 def main (args : List String) : IO UInt32 := do
   if let some bad := args.find? (!knownFlags.contains ·) then
     say s!"Unknown option: {bad} (try --help)"
@@ -156,6 +169,7 @@ def main (args : List String) : IO UInt32 := do
   unless skipAlpha do
     say ""
     say "Fetching PhyslibAlpha's prebuilt files ..."
+    removeRevisionMappings
     unless ← runStreamed "lake" #["cache", "get", s!"--scope={scopeFor tc "alpha"}"]
       #[("LAKE_CONFIG", some configPath)] do
       say "  could not fetch PhyslibAlpha's cache -- continuing anyway."

@@ -184,25 +184,29 @@ lemma exists_continuous_force_not_isDeterministic :
 The force is continuous and the configuration space is finite-dimensional, so by Peano's
 theorem, `NewtonianSystem.hasLocalSolutions_of_continuous_force`, every initial datum has a
 local solution: the failure of determinism is purely one of uniqueness. Pending the proof of
-Peano's theorem in Mathlib, these results are marked `@[sorryful]`.
+Peano's theorem in Mathlib, these results are informal lemmas.
 
 -/
 
 /-- The Norton dome has local solutions from every initial position and velocity. Pending the
-  proof of Peano's theorem in Mathlib. -/
-@[sorryful]
-lemma hasLocalSolutions : S.toNewtonianSystem.HasLocalSolutions :=
-  NewtonianSystem.hasLocalSolutions_of_continuous_force _ S.force_continuous
+  proof of Peano's theorem in Mathlib.
+
+  Formal statement: S.toNewtonianSystem.HasLocalSolutions
+  -/
+informal_lemma hasLocalSolutions where
+  deps := [``NewtonianSystem.hasLocalSolutions_of_continuous_force, ``force_continuous]
+  tag := "CM-ND-domeLocSol"
 
 /-- Norton's claim, sharpened: there is a Newtonian system with a continuous force which has
   local solutions from every initial datum and is not deterministic. Pending the proof of
-  Peano's theorem in Mathlib. -/
-@[sorryful]
-lemma exists_hasLocalSolutions_not_isDeterministic :
-    ∃ N : NewtonianSystem (EuclideanSpace ℝ (Fin 1)),
-      Continuous N.force ∧ N.HasLocalSolutions ∧ ¬ N.IsDeterministic :=
-  ⟨(⟨1, 1, one_pos, one_pos⟩ : NortonDome).toNewtonianSystem, force_continuous _,
-    hasLocalSolutions _, not_isDeterministic _⟩
+  Peano's theorem in Mathlib.
+
+  Formal statement: ∃ N : NewtonianSystem (EuclideanSpace ℝ (Fin 1)),
+    Continuous N.force ∧ N.HasLocalSolutions ∧ ¬ N.IsDeterministic
+  -/
+informal_lemma exists_hasLocalSolutions_not_isDeterministic where
+  deps := [``hasLocalSolutions, ``force_continuous, ``not_isDeterministic]
+  tag := "CM-ND-nortonSharp"
 
 end ClassicalMechanics.NortonDome
 

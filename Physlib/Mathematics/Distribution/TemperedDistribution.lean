@@ -5,7 +5,6 @@ Authors: Kenny Lau, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Meta.TODO.Basic
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.MeasureTheory.Measure.CharacteristicFunction.Basic
 /-!
@@ -35,12 +34,15 @@ In this file we define distributions generally. Properties of distributions dire
 - `Distribution.ofFiniteMeasure` is the scalar distribution associated to a finite measure.
 - `Distribution.ofFiniteMeasure_eq_iff` says that finite measures are determined by their
   associated complex scalar distributions.
+- `Distribution.integralOfBound` integrates a family with an integrable Schwartz seminorm bound.
+- `Distribution.fderivD_integralOfBound_apply` differentiates this integral after evaluation.
 
 ## iii. Table of contents
 
 - A. The definition of a distribution
 - B. Construction of distributions from linear maps
 - C. Derivatives of distributions
+  - C.1. Differentiating integrals of distributions
 - D. Fourier transform of distributions
   - D.1. Bridge to Mathlib tempered distributions
 - E. Specific distributions
@@ -178,6 +180,11 @@ operation instead to the Schwartz maps it acts on.
 Thus the derivative of `u` is the distribution which takes `η` to `⟪u, - η'⟫`
 where `η'` is the derivative of `η`.
 
+The derivative commutes with finite superpositions of sources: for a family `u` and a finite
+index set `s`, the identity `fderivD 𝕜 (∑ i ∈ s, u i) = ∑ i ∈ s, fderivD 𝕜 (u i)` follows from
+`map_sum (fderivD 𝕜) u s`, since `fderivD 𝕜` is a linear map. Integrals of families of
+distributions are treated in the next subsection.
+
 -/
 
 section fderiv
@@ -255,11 +262,82 @@ lemma fderivD_apply [FiniteDimensional ℝ E] (u : E →d[𝕜] F) (η : 𝓢(E,
     fderivD 𝕜 u η v = - u (SchwartzMap.evalCLM (𝕜 := 𝕜) E 𝕜 v (SchwartzMap.fderivCLM 𝕜 E 𝕜 η)) := by
   rfl
 
-TODO "For distributions, prove that the derivative fderivD commutes with
-  integrals and sums. This may require defining the integral of families of distributions
-  although it is expected this will follow from the definition of a distribution."
-
 end fderiv
+
+/-!
+
+### C.1. Differentiating integrals of distributions
+
+Superpositions of generalized sources can be described by integrating families of distributions.
+We construct this weak integral when evaluations are measurable and bounded by an integrable
+coefficient times a fixed finite maximum of Schwartz seminorms. This bound ensures that the
+integral is continuous on the test functions. Distributional differentiation then commutes with
+the integral after evaluation at a test function and a direction.
+
+-/
+
+section integral
+
+open MeasureTheory
+
+variable {𝕜} {A : Type} [MeasurableSpace A] {μ : Measure A}
+  [NormedSpace ℝ E] [NormedSpace 𝕜 F]
+  (u : A → E →d[𝕜] F) (s : Finset (ℕ × ℕ)) (b : A → ℝ) (hb : Integrable b μ)
+  (hmeas : ∀ η : 𝓢(E, 𝕜), AEStronglyMeasurable (fun a => u a η) μ)
+  (hbound : ∀ η : 𝓢(E, 𝕜), ∀ᵐ a ∂μ,
+    ‖u a η‖ ≤ b a * s.sup (schwartzSeminormFamily 𝕜 E 𝕜) η)
+
+include hb hmeas hbound
+
+/-- Evaluations of a distribution family with an integrable seminorm bound are integrable. -/
+lemma integrable_eval_of_bound (η : 𝓢(E, 𝕜)) : Integrable (fun a => u a η) μ :=
+  (hb.mul_const _).mono' (hmeas η) (hbound η)
+
+variable [NormedSpace ℝ F] (hb_nonneg : ∀ᵐ a ∂μ, 0 ≤ b a)
+
+/-- The weak integral of a family of distributions with an integrable Schwartz seminorm bound.
+It acts on a test function by integrating the evaluations of the family. -/
+def integralOfBound : E →d[𝕜] F :=
+  mkCLMtoNormedSpace (fun η => ∫ a, u a η ∂μ)
+    (by
+      intro η ξ
+      simp only [map_add]
+      exact integral_add (integrable_eval_of_bound u s b hb hmeas hbound η)
+        (integrable_eval_of_bound u s b hb hmeas hbound ξ))
+    (by
+      intro c η
+      simp only [map_smul]
+      exact integral_smul c (fun a => u a η))
+    (by
+      refine ⟨s, ∫ a, b a ∂μ, integral_nonneg_of_ae hb_nonneg, fun η => ?_⟩
+      calc
+        ‖∫ a, u a η ∂μ‖ ≤ ∫ a, b a * s.sup (schwartzSeminormFamily 𝕜 E 𝕜) η ∂μ :=
+          norm_integral_le_of_norm_le (hb.mul_const _) (hbound η)
+        _ = (∫ a, b a ∂μ) * s.sup (schwartzSeminormFamily 𝕜 E 𝕜) η :=
+          integral_mul_const _ _)
+
+/-- Evaluation of the weak integral is the integral of the evaluations. -/
+@[simp]
+lemma integralOfBound_apply (η : 𝓢(E, 𝕜)) :
+    integralOfBound u s b hb hmeas hbound hb_nonneg η = ∫ a, u a η ∂μ :=
+  rfl
+
+variable [SMulCommClass ℝ 𝕜 F] [FiniteDimensional ℝ E]
+
+/-- Differentiated evaluations of a family with an integrable seminorm bound are integrable. -/
+lemma integrable_fderivD_eval_of_bound (η : 𝓢(E, 𝕜)) (v : E) :
+    Integrable (fun a => fderivD 𝕜 (u a) η v) μ := by
+  simp only [fderivD_apply]
+  exact (integrable_eval_of_bound u s b hb hmeas hbound _).neg
+
+/-- Distributional differentiation commutes with the weak integral after evaluation at a test
+function and a direction. -/
+lemma fderivD_integralOfBound_apply (η : 𝓢(E, 𝕜)) (v : E) :
+    fderivD 𝕜 (integralOfBound u s b hb hmeas hbound hb_nonneg) η v =
+      ∫ a, fderivD 𝕜 (u a) η v ∂μ := by
+  simp only [fderivD_apply, integralOfBound_apply, integral_neg]
+
+end integral
 
 /-!
 

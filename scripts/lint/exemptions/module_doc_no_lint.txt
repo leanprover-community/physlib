@@ -91,7 +91,6 @@ Physlib/Meta/Informal/Basic.lean
 Physlib/Meta/Informal/Post.lean
 Physlib/Meta/Informal/SemiFormal.lean
 Physlib/Meta/Linters/DefsWithUnderscore.lean
-Physlib/Meta/Linters/Sorry.lean
 Physlib/Meta/Notes/Basic.lean
 Physlib/Meta/Notes/HTMLNote.lean
 Physlib/Meta/Notes/NoteFile.lean
@@ -278,12 +277,10 @@ Physlib/Relativity/Fermions/Weyl/Metric.lean
 Physlib/Relativity/Fermions/Weyl/Two.lean
 Physlib/Relativity/Fermions/Weyl/Unit.lean
 Physlib/Relativity/LorentzAlgebra/Basic.lean
-Physlib/Relativity/LorentzAlgebra/Basis.lean
 Physlib/Relativity/LorentzAlgebra/ExponentialMap.lean
 Physlib/Relativity/LorentzGroup/Basic.lean
 Physlib/Relativity/LorentzGroup/Boosts/Apply.lean
 Physlib/Relativity/LorentzGroup/Boosts/Axis.lean
-Physlib/Relativity/LorentzGroup/Boosts/Basic.lean
 Physlib/Relativity/LorentzGroup/Boosts/Generalized.lean
 Physlib/Relativity/LorentzGroup/Orthochronous/Basic.lean
 Physlib/Relativity/LorentzGroup/Proper.lean

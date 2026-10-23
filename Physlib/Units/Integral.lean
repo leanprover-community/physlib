@@ -95,8 +95,8 @@ lemma integral_isDimensionallyCorrect (d : Dimension LTMCTDimensionBase) :
       u2.dimScale u1 (dim G * d⁻¹) • ∫ (x : M), f x ∂ μ) := by
       rw [hf]
       congr
-      erw [MeasureTheory.integral_smul]
-      rfl
+      simp only [Pi.smul_apply, NNReal.smul_def]
+      rw [MeasureTheory.integral_smul]
     /- What remains is a simple cancellation of the dimensional scales. -/
     _ = (u1.dimScale u2 (dim G)) • ((u2.dimScale u1 d) •
         u2.dimScale u1 (dim G * d⁻¹) • ∫ (x : M), f x ∂ μ) := by

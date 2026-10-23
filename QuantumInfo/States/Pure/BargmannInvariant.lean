@@ -36,6 +36,8 @@ geodesic triangle in projective Hilbert space.
   Sci. A 44, 247–262 (1956). [ref: pancharatnam1956]
 -/
 
+@[expose] public section
+
 open Braket Complex
 
 variable {d : Type*} [Fintype d] [DecidableEq d]

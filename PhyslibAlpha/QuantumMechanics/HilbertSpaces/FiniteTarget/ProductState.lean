@@ -19,6 +19,10 @@ coordinates. An observable acting on one coordinate only sees that coordinate: i
 variance, its covariance with another such observable and their centered Gram defect are those
 of the factor state.
 
+More generally, a family of vectors `v i` on `𝓗[α]`, indexed by a finite type `ι`, has the
+product vector `(⊗ i, v i) k = ∏ i, v i (k i)` on `𝓗[ι → α]`, describing independently prepared
+copies of a system; inner products and norms of product vectors are products.
+
 ## ii. Key results
 
 - `prodVec` : the product vector `ψ ⊗ φ`, of norm `‖ψ‖ ‖φ‖` by `norm_prodVec`.
@@ -29,6 +33,9 @@ of the factor state.
 - `variance_onSndObservable`, `covariance_onSndObservable`,
   `centeredGramDefect_onSndObservable` : the statistics of the second coordinate.
 - `covariance_onFstObservable_onSndObservable` : the two coordinates are uncorrelated.
+- `piProdVec` : the product vector `⊗ i, v i` of a finite family.
+- `inner_piProdVec`, `norm_piProdVec`, `norm_piProdVec_eq_one` : `⟪⊗ v, ⊗ w⟫ = ∏ i, ⟪v i, w i⟫`,
+  `‖⊗ v‖ = ∏ i, ‖v i‖`, and a product of unit vectors is a unit vector.
 
 ## iii. Table of contents
 
@@ -37,6 +44,7 @@ of the factor state.
 - C. Statistics of the first coordinate
 - D. Statistics of the second coordinate
 - E. Different coordinates are uncorrelated
+- F. Product vectors of finite families
 
 ## iv. References
 
@@ -262,6 +270,47 @@ lemma covariance_onFstObservable_onSndObservable (a : Observable (𝓗[α] →L[
   rw [covariance_eq_re_apply_centered_mul, apply_centered_mul_centered_ofVec,
     fluctuation_onFstObservable hψ hφ, fluctuation_onSndObservable hψ hφ, inner_prodVec,
     inner_fluctuation hφ, mul_zero, Complex.zero_re]
+
+/-!
+
+## F. Product vectors of finite families
+
+-/
+
+section piProdVec
+
+variable {ι : Type*} [Fintype ι] [DecidableEq ι]
+
+/-- The product vector `(⊗ i, v i) k = ∏ i, v i (k i)` of a finite family of vectors,
+describing independently prepared copies of a system. -/
+noncomputable def piProdVec (v : ι → 𝓗[α]) : 𝓗[ι → α] :=
+  ⟨WithLp.toLp 2 fun k => ∏ i, (v i).val (k i)⟩
+
+/-- The components of a product vector are the products of the components. -/
+lemma piProdVec_val (v : ι → 𝓗[α]) (k : ι → α) :
+    (piProdVec v).val k = ∏ i, (v i).val (k i) := rfl
+
+/-- `⟪⊗ v, ⊗ w⟫ = ∏ i, ⟪v i, w i⟫`. -/
+lemma inner_piProdVec (v w : ι → 𝓗[α]) :
+    ⟪piProdVec v, piProdVec w⟫_ℂ = ∏ i, ⟪v i, w i⟫_ℂ := by
+  simp only [inner_eq_val, PiLp.inner_apply, RCLike.inner_apply, piProdVec_val, map_prod,
+    ← Finset.prod_mul_distrib]
+  exact (Fintype.prod_sum fun i a => (w i).val a * (starRingEnd ℂ) ((v i).val a)).symm
+
+/-- `‖⊗ v‖ = ∏ i, ‖v i‖`. -/
+lemma norm_piProdVec (v : ι → 𝓗[α]) : ‖piProdVec v‖ = ∏ i, ‖v i‖ := by
+  have h := inner_piProdVec v v
+  simp only [inner_self_eq_norm_sq_to_K] at h
+  norm_cast at h
+  exact (pow_left_inj₀ (norm_nonneg _) (Finset.prod_nonneg fun i _ => norm_nonneg _)
+    two_ne_zero).mp (by rw [h, Finset.prod_pow])
+
+/-- The product of unit vectors is a unit vector. -/
+lemma norm_piProdVec_eq_one {v : ι → 𝓗[α]} (hv : ∀ i, ‖v i‖ = 1) : ‖piProdVec v‖ = 1 := by
+  rw [norm_piProdVec]
+  exact Finset.prod_eq_one fun i _ => hv i
+
+end piProdVec
 
 end FiniteHilbertSpace
 

@@ -6,7 +6,7 @@ Authors: Luis Gabriel C. Bariuan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Linters.Pseudo
 public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
@@ -357,9 +357,6 @@ TODO "Express the Hubble parameter as a function of the scale factor, `H(a)`, an
   redshift, `H(z)`, using `a = 1 / (1 + z)` with the normalization `a₀ = 1`; define the
   reduced Hubble function `E(z) = H(z) / H₀`."
 
-TODO "Prove the change-of-variable relations underlying the age and distance integrals:
-  `∂ₜ a = a * hubbleConstant a`, `dt = − dz / ((1 + z) * H)` and `dχ = c * dz / H`."
-
 /-- The deceleration parameter defined in terms of the scale factor
   as `- (dₜdₜ a) a / (dₜ a)^2`.
 
@@ -445,9 +442,9 @@ structure FriedmannSolution (U : FLRW) (F : CosmicFluid) (Λ G c : ℝ) : Prop w
 
 end FLRW
 
-TODO "State the results on FLRW cosmology (density parameters, reduced Hubble function, exact
-  solutions and dynamical criteria) directly in terms of `FLRW`, `CosmicFluid` and
-  `FLRW.FriedmannSolution`, so that the API is organised around these rather than around
-  separate functions `a`, `ρ` and `p`."
+TODO "State the remaining results on FLRW cosmology (the Hubble and deceleration parameters, the
+  continuity equation and the density scaling laws, and the exact solutions) directly in terms of
+  `FLRW`, `CosmicFluid` and `FLRW.FriedmannSolution`, so that the API is organised around these
+  rather than around separate functions `a`, `ρ` and `p`."
 
 end Cosmology

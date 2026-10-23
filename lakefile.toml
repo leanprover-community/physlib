@@ -15,15 +15,15 @@ rev = "v4.35.0"
 
 [[lean_lib]]
 name = "Physlib"
-moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_lib]]
 name = "PhyslibAlpha"
-moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_lib]]
 name = "QuantumInfo"
-moreLeanArgs = ["-Dwarn.sorry=false", "-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_exe]]
 name = "get_cache"
@@ -65,7 +65,7 @@ srcDir = "scripts/lint/required"
 supportInterpreter = true
 
 [[lean_exe]]
-name = "sorry_lint"
+name = "pseudo_lint"
 srcDir = "scripts/lint/required"
 supportInterpreter = true
 
@@ -127,6 +127,10 @@ name = "module_doc_lint"
 srcDir = "scripts/lint/required"
 
 [[lean_exe]]
+name = "api_map_lint"
+srcDir = "scripts/alpha/lint/required"
+
+[[lean_exe]]
 name = "stats"
 srcDir = "scripts/website"
 supportInterpreter = true
@@ -134,7 +138,7 @@ supportInterpreter = true
 [[lean_exe]]
 name = "api_map_index"
 root = "APIMapIndex"
-srcDir = "scripts/website"
+srcDir = "scripts/alpha/website"
 
 [[lean_exe]]
 name = "local_stats"

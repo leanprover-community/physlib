@@ -15,34 +15,33 @@ public import Physlib.Cosmology.FLRW.MatterContent
 The first-order Friedmann equation of `Physlib.Cosmology.FLRW.Basic`,
 `H² = (8 π G / 3) ρ - k c² / a² + Λ c² / 3`, can be read as a budget for the expansion rate `H`.
 
-The reference quantity is the critical density `ρ_cr = 3 H² / (8 π G)`. It is the mass density
-for which this equation holds with `k = 0` and `Λ = 0`: the density of a spatially flat universe
-without cosmological constant expanding at the rate `H`. It is called critical because, when
-`Λ = 0`, a universe denser than `ρ_cr` is spatially closed (`k > 0`), a less dense one is open
-(`k < 0`), and a universe at exactly `ρ_cr` is flat. It depends on time through `H`.
+The critical density `ρ_cr = 3 H² / (8 π G)` is the density for which this equation holds with
+`k = 0` and `Λ = 0`. When `Λ = 0`, a universe denser than `ρ_cr` is spatially closed (`k > 0`), a
+less dense one is open (`k < 0`), and one at exactly `ρ_cr` is flat.
 
-Each term of the equation is then measured in units of `ρ_cr`, which gives dimensionless
-quantities:
-- the density parameter `Ω = ρ / ρ_cr` of a component of mass density `ρ`;
-- the cosmological-constant density parameter `Ω_Λ = Λ c² / (3 H²)`, which is the density
-  parameter of the uniform density `ρ_Λ = Λ c² / (8 π G)` equivalent to `Λ`;
-- the curvature density parameter `Ω_K = - k c² / (H² a²)`, which is not the density of a fluid
-  but the share of the budget carried by spatial curvature.
+Measuring each term in units of `ρ_cr` gives the density parameter `Ω = ρ / ρ_cr` of a fluid, the
+density parameter `Ω_Λ = Λ c² / (3 H²)` of the cosmological constant and the curvature density
+parameter `Ω_K = - k c² / (H² a²)`. Dividing the Friedmann equation by `H²` gives the closure
+relation `Ω + Ω_Λ + Ω_K = 1`.
 
-Dividing the Friedmann equation by `H²` gives the closure relation `Ω + Ω_Λ + Ω_K = 1`.
+These quantities are defined for an FLRW model. For a solution of the Friedmann equations, the
+closure relation holds at every time of the interval of the model at which `H ≠ 0`.
 
-The reduced Hubble function of the standard cosmological model, built from these parameters, is
-in `Physlib.Cosmology.FLRW.ReducedHubble`, and the age of the universe in
+The reduced Hubble function of the standard cosmological model is in
+`Physlib.Cosmology.FLRW.ReducedHubble`, and the age of the universe in
 `Physlib.Cosmology.FLRW.Age`.
 
 ## ii. Key results
 
-- `criticalDensity`, `densityParameter`, `curvatureDensityParameter`, `lambdaDensityParameter`.
-- `densityParameter_add_lambda_add_curvature`: the closure relation `Ω + Ω_Λ + Ω_K = 1`;
-  `densityParameter_add_curvature`: `Ω + Ω_K = 1` when `Λ = 0`;
-  `FLRW.FriedmannSolution.densityParameter_add_lambda_add_curvature`: the closure relation for
-  an FLRW model whose cosmic fluid solves the Friedmann equations, with `Ω_K` given by its
-  spatial geometry.
+- `FLRW.criticalDensity`, `FLRW.densityParameter`, `FLRW.curvatureDensityParameter`,
+  `FLRW.lambdaDensityParameter`: the critical density and the density parameters of an FLRW
+  model.
+- `FLRW.lambdaDensityParameter_eq_densityParameter`,
+  `FLRW.densityParameter_addCosmologicalConstant`: `Ω_Λ` is the density parameter of the
+  cosmological constant as a fluid.
+- `FLRW.FriedmannSolution.densityParameter_add_lambda_add_curvature`,
+  `FLRW.FriedmannSolution.densityParameter_add_curvature`: the closure relations
+  `Ω + Ω_Λ + Ω_K = 1` and, for `Λ = 0`, `Ω + Ω_K = 1`.
 
 ## iii. Table of contents
 
@@ -53,50 +52,61 @@ in `Physlib.Cosmology.FLRW.ReducedHubble`, and the age of the universe in
 
 @[expose] public section
 
-namespace Cosmology.FLRW.FriedmannEquation
+namespace Cosmology.FLRW
 
-open Real Time
+open Real Time FriedmannEquation
+
+variable (U : FLRW)
 
 /-!
 
 ## A. The critical density and the density parameters
 
+With the convention `x / 0 = 0`, these quantities vanish when `H = 0` or `G = 0`. They have their
+physical meaning at the times at which `H ≠ 0`.
+
 -/
 
-/-- The critical density `ρ_cr = 3 H² / (8 π G)`: the mass density for which the first-order
-  Friedmann equation holds with `k = 0` and `Λ = 0` at the expansion rate `H`, that is, the
-  density of a spatially flat universe without cosmological constant. It is the unit in which
-  the density parameters are measured, and it depends on time through `H`. -/
-noncomputable def criticalDensity (a : Time → ℝ) (G : ℝ) (t : Time) : ℝ :=
-  3 * hubbleConstant a t ^ 2 / (8 * π * G)
+/-- The critical density `ρ_cr = 3 H² / (8 π G)` of an FLRW model at time `t`, where `H` is the
+  Hubble parameter of its scale factor. It is the density of a spatially flat universe without
+  cosmological constant expanding at the rate `H`. -/
+noncomputable def criticalDensity (G : ℝ) (t : Time) : ℝ :=
+  3 * hubbleConstant U.a t ^ 2 / (8 * π * G)
 
-/-- The density parameter `Ω = ρ / ρ_cr`: the mass density `ρ` of a component in units of the
-  critical density. It is dimensionless; without cosmological constant, a total density
-  parameter equal to `1` corresponds to a spatially flat universe
-  (see `densityParameter_add_curvature`). -/
-noncomputable def densityParameter (a ρ : Time → ℝ) (G : ℝ) (t : Time) : ℝ :=
-  ρ t / criticalDensity a G t
+/-- The density parameter `Ω = ρ / ρ_cr` of a cosmic fluid in an FLRW model. -/
+noncomputable def densityParameter (F : CosmicFluid) (G : ℝ) (t : Time) : ℝ :=
+  F.ρ t / U.criticalDensity G t
 
-/-- The curvature density parameter `Ω_K = - k c² / (H² a²)`: the share of the first-order
-  Friedmann equation carried by the spatial curvature `k`, in the same units as the density
-  parameters. It is not the density of a fluid; it is positive for `k < 0`, negative for
-  `k > 0` and zero for a spatially flat universe. -/
-noncomputable def curvatureDensityParameter (a : Time → ℝ) (k c : ℝ) (t : Time) : ℝ :=
-  -k * c ^ 2 / (hubbleConstant a t ^ 2 * a t ^ 2)
+/-- The curvature density parameter `Ω_K = - k c² / (H² a²)` of an FLRW model, where `k` is the
+  curvature parameter of its spatial geometry. When `H`, `a` and `c` are nonzero, it is positive
+  for a saddle geometry, negative for a spherical one and zero for the flat one. -/
+noncomputable def curvatureDensityParameter (c : ℝ) (t : Time) : ℝ :=
+  -U.geometry.curvature * c ^ 2 / (hubbleConstant U.a t ^ 2 * U.a t ^ 2)
 
-/-- The cosmological-constant density parameter `Ω_Λ = Λ c² / (3 H²)`: the share of the
-  first-order Friedmann equation carried by the cosmological constant. It is the density
-  parameter of the uniform density `ρ_Λ = Λ c² / (8 π G)` (see `lambdaDensityParameter_eq`). -/
-noncomputable def lambdaDensityParameter (a : Time → ℝ) (Λ c : ℝ) (t : Time) : ℝ :=
-  Λ * c ^ 2 / (3 * hubbleConstant a t ^ 2)
+/-- The density parameter `Ω_Λ = Λ c² / (3 H²)` of the cosmological constant in an FLRW
+  model. -/
+noncomputable def lambdaDensityParameter (Λ c : ℝ) (t : Time) : ℝ :=
+  Λ * c ^ 2 / (3 * hubbleConstant U.a t ^ 2)
 
-/-- `Ω_Λ` is the density parameter of the fluid `ρ_Λ = Λ c² / (8 π G)`. -/
-lemma lambdaDensityParameter_eq {a : Time → ℝ} {Λ G c : ℝ} {t : Time} (hG : G ≠ 0) :
-    lambdaDensityParameter a Λ c t
-      = densityParameter a (fun _ => cosmologicalConstantDensity Λ G c) G t := by
-  unfold lambdaDensityParameter densityParameter criticalDensity cosmologicalConstantDensity
+/-- For `G ≠ 0`, `Ω_Λ` is the density parameter of the empty fluid with the cosmological constant
+  folded in. -/
+lemma lambdaDensityParameter_eq_densityParameter {Λ G c : ℝ} (hG : G ≠ 0) (t : Time) :
+    U.lambdaDensityParameter Λ c t
+      = U.densityParameter (CosmicFluid.empty.addCosmologicalConstant Λ G c) G t := by
+  simp only [lambdaDensityParameter, densityParameter, criticalDensity, CosmicFluid.empty,
+    CosmicFluid.addCosmologicalConstant, cosmologicalConstantDensity, zero_add]
   have hπ := Real.pi_ne_zero
   field_simp
+
+/-- For `G ≠ 0`, folding the cosmological constant into a cosmic fluid adds `Ω_Λ` to its
+  density parameter. -/
+lemma densityParameter_addCosmologicalConstant (F : CosmicFluid) {Λ G c : ℝ} (hG : G ≠ 0)
+    (t : Time) :
+    U.densityParameter (F.addCosmologicalConstant Λ G c) G t
+      = U.densityParameter F G t + U.lambdaDensityParameter Λ c t := by
+  rw [U.lambdaDensityParameter_eq_densityParameter hG]
+  simp only [densityParameter, CosmicFluid.empty, CosmicFluid.addCosmologicalConstant, zero_add,
+    add_div]
 
 /-!
 
@@ -104,45 +114,39 @@ lemma lambdaDensityParameter_eq {a : Time → ℝ} {Λ G c : ℝ} {t : Time} (hG
 
 -/
 
-/-- The closure relation `Ω + Ω_Λ + Ω_K = 1`, a rearrangement of the first-order Friedmann
-  equation, for `H ≠ 0`. -/
-lemma densityParameter_add_lambda_add_curvature {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time}
-    (ha : a t ≠ 0) (hH : hubbleConstant a t ≠ 0)
-    (hF1 : FirstOrderFriedmann a ρ k Λ G c t) :
-    densityParameter a ρ G t + lambdaDensityParameter a Λ c t
-      + curvatureDensityParameter a k c t = 1 := by
+namespace FriedmannSolution
+
+variable {U} {F : CosmicFluid} {Λ G c : ℝ}
+
+/-- The closure relation `Ω + Ω_Λ + Ω_K = 1` for a solution of the Friedmann equations, at the
+  times of the interval of the model at which `H ≠ 0`. -/
+lemma densityParameter_add_lambda_add_curvature (h : U.FriedmannSolution F Λ G c) {t : Time}
+    (ht : t ∈ U.I) (hH : hubbleConstant U.a t ≠ 0) :
+    U.densityParameter F G t + U.lambdaDensityParameter Λ c t
+      + U.curvatureDensityParameter c t = 1 := by
+  have hF1 := h.firstOrder t ht
   unfold densityParameter lambdaDensityParameter curvatureDensityParameter criticalDensity
   unfold FirstOrderFriedmann at hF1
   unfold hubbleConstant at hH ⊢
   have hπ := Real.pi_ne_zero
-  have key : ρ t / (3 * (∂ₜ a t / a t) ^ 2 / (8 * π * G)) + Λ * c ^ 2 / (3 * (∂ₜ a t / a t) ^ 2)
-      + -k * c ^ 2 / ((∂ₜ a t / a t) ^ 2 * a t ^ 2)
-      = (8 * π * G / 3 * ρ t - k * c ^ 2 / a t ^ 2 + Λ * c ^ 2 / 3) / (∂ₜ a t / a t) ^ 2 := by
+  have ha := U.a_ne_zero ht
+  have key : F.ρ t / (3 * (∂ₜ U.a t / U.a t) ^ 2 / (8 * π * G))
+      + Λ * c ^ 2 / (3 * (∂ₜ U.a t / U.a t) ^ 2)
+      + -U.geometry.curvature * c ^ 2 / ((∂ₜ U.a t / U.a t) ^ 2 * U.a t ^ 2)
+      = (8 * π * G / 3 * F.ρ t - U.geometry.curvature * c ^ 2 / U.a t ^ 2 + Λ * c ^ 2 / 3)
+        / (∂ₜ U.a t / U.a t) ^ 2 := by
     field_simp
     ring
   rw [key, ← hF1, div_self (pow_ne_zero 2 hH)]
 
-/-- The closure relation `Ω + Ω_K = 1` without cosmological constant. -/
-lemma densityParameter_add_curvature {a ρ : Time → ℝ} {k G c : ℝ} {t : Time} (ha : a t ≠ 0)
-    (hH : hubbleConstant a t ≠ 0) (hF1 : FirstOrderFriedmann a ρ k 0 G c t) :
-    densityParameter a ρ G t + curvatureDensityParameter a k c t = 1 := by
-  have h := densityParameter_add_lambda_add_curvature ha hH hF1
-  have h0 : lambdaDensityParameter a 0 c t = 0 := by
-    unfold lambdaDensityParameter
-    ring
-  rw [h0, add_zero] at h
-  exact h
+/-- The closure relation `Ω + Ω_K = 1` for a solution of the Friedmann equations without
+  cosmological constant, at the times of the interval of the model at which `H ≠ 0`. -/
+lemma densityParameter_add_curvature (h : U.FriedmannSolution F 0 G c) {t : Time} (ht : t ∈ U.I)
+    (hH : hubbleConstant U.a t ≠ 0) :
+    U.densityParameter F G t + U.curvatureDensityParameter c t = 1 := by
+  have h1 := h.densityParameter_add_lambda_add_curvature ht hH
+  simpa [lambdaDensityParameter] using h1
 
-/-- If the FLRW model `U` filled with the cosmic fluid `F` solves the Friedmann equations, the
-  closure relation `Ω + Ω_Λ + Ω_K = 1` holds at every time of the interval `U.I` at which
-  `H ≠ 0`, the curvature density parameter `Ω_K` being computed from the curvature parameter of
-  the spatial geometry. -/
-lemma _root_.Cosmology.FLRW.FriedmannSolution.densityParameter_add_lambda_add_curvature
-    {U : FLRW} {F : CosmicFluid} {Λ G c : ℝ} (h : U.FriedmannSolution F Λ G c) {t : Time}
-    (ht : t ∈ U.I) (hH : hubbleConstant U.a t ≠ 0) :
-    densityParameter U.a F.ρ G t + lambdaDensityParameter U.a Λ c t
-      + curvatureDensityParameter U.a U.geometry.curvature c t = 1 :=
-  FLRW.FriedmannEquation.densityParameter_add_lambda_add_curvature (U.a_ne_zero ht) hH
-    (h.firstOrder t ht)
+end FriedmannSolution
 
-end Cosmology.FLRW.FriedmannEquation
+end Cosmology.FLRW

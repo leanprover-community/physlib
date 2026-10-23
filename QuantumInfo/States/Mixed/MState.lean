@@ -626,7 +626,7 @@ theorem spectrum_prod (ρ₁ : MState d₁) (ρ₂ : MState d₂) : ∃(σ : d�
           have h_unitary : Matrix.kroneckerMap (fun x y => x * y) U_A U_B * Matrix.kroneckerMap (fun x y => x * y) (Star.star U_A) (Star.star U_B) = Matrix.kroneckerMap (fun x y => x * y) (U_A * Star.star U_A) (U_B * Star.star U_B) := by
             ext ⟨ i, j ⟩ ⟨ k, l ⟩ ; simp [ Matrix.mul_apply, Matrix.kroneckerMap_apply ]
             ring_nf
-            erw [ Finset.sum_product ]
+            rw [ Fintype.sum_prod_type ]
             simp [ mul_assoc, mul_comm, mul_left_comm, Finset.mul_sum]
             exact Finset.sum_comm.trans ( Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => by ring );
           simp_all only [zero_mul, implies_true, mul_zero, mul_one, Matrix.kroneckerMap_one_one]
@@ -1159,7 +1159,7 @@ lemma multiset_spectrum_relabel_eq {d₁ d₂ : Type*} [Fintype d₁] [Decidable
   · rw [ Multiset.count_map, Multiset.count_map ];
     simp [ Subtype.ext_iff ];
     congr! 2;
-  · erw [ Multiset.count_map, Multiset.count_map ];
+  · rw [ Multiset.count_map, Multiset.count_map ];
     congr! 2;
     exact beq_eq_beq.mp rfl
 

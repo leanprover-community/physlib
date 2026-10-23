@@ -15,17 +15,17 @@ public import Physlib.Mathematics.Distribution.PowMul
 
 ## i. Overview
 
-The main content of this file is defining `Space.normPowerSeries`, a power series which is
-differentiable everywhere, and which tends to the norm in the limit as `n → ∞`.
+The main content of this file is defining `Space.normPowerSeries`, a sequence of smooth
+functions which are differentiable everywhere, and which tend to the norm in the limit as `n → ∞`.
 
-We use properties of this power series to prove various results about distributions involving norms.
+We use properties of this sequence to prove various results about distributions involving norms.
 
 ## ii. Key results
 
-- `normPowerSeries` : A power series which is differentiable everywhere, and in the limit
+- `normPowerSeries` : A sequence of functions which are differentiable everywhere, and in the limit
   as `n → ∞` tends to `‖x‖`.
-- `normPowerSeries_differentiable` : The power series is differentiable everywhere.
-- `normPowerSeries_tendsto` : The power series tends to the norm in the limit as `n → ∞`.
+- `normPowerSeries_differentiable` : Each `normPowerSeries n` is differentiable everywhere.
+- `normPowerSeries_tendsto` : `normPowerSeries n` tends to the norm in the limit as `n → ∞`.
 - `distGrad_distOfFunction_norm_zpow` : The gradient of the distribution defined by a power of the
   norm.
 - `distGrad_distOfFunction_log_norm` : The gradient of the distribution defined by the logarithm
@@ -43,14 +43,14 @@ We use properties of this power series to prove various results about distributi
 
 ## iii. Table of contents
 
-- A. The norm as a power series
-  - A.1. Differentiability of the norm power series
-  - A.2. The limit of the norm power series
-  - A.3. The derivative of the norm power series
-  - A.4. Limits of the derivative of the power series
-  - A.5. The power series is AEStronglyMeasurable
-  - A.6. Bounds on the norm power series
-  - A.7. The `IsDistBounded` property of the norm power series
+- A. The norm as a limit of smooth functions
+  - A.1. Differentiability of the smooth approximation of the norm
+  - A.2. The limit of the smooth approximation of the norm
+  - A.3. The derivative of the smooth approximation of the norm
+  - A.4. Limits of the derivative of the smooth approximation
+  - A.5. The smooth approximation is AEStronglyMeasurable
+  - A.6. Bounds on the smooth approximation of the norm
+  - A.7. The `IsDistBounded` property of the smooth approximation of the norm
   - A.8. Differentiability of functions
   - A.9. Derivatives of functions
   - A.10. Gradients of distributions based on powers
@@ -84,11 +84,11 @@ open MeasureTheory
 
 /-!
 
-## A. The norm as a power series
+## A. The norm as a limit of smooth functions
 
 -/
 
-/-- A power series which is differentiable everywhere, and in the limit
+/-- A sequence of functions which are differentiable everywhere, and in the limit
   as `n → ∞` tends to `‖x‖`. -/
 def normPowerSeries {d} : ℕ → Space d → ℝ := fun n x =>
   √(‖x‖ ^ 2 + 1/(n + 1))
@@ -102,7 +102,7 @@ lemma normPowerSeries_eq_rpow {d} (n : ℕ) :
 
 /-!
 
-### A.1. Differentiability of the norm power series
+### A.1. Differentiability of the smooth approximation of the norm
 
 -/
 
@@ -115,7 +115,7 @@ lemma normPowerSeries_differentiable {d} (n : ℕ) :
 
 /-!
 
-### A.2. The limit of the norm power series
+### A.2. The limit of the smooth approximation of the norm
 
 -/
 open InnerProductSpace
@@ -135,7 +135,7 @@ lemma normPowerSeries_inv_tendsto {d} (x : Space d) (hx : x ≠ 0) :
 
 /-!
 
-### A.3. The derivative of the norm power series
+### A.3. The derivative of the smooth approximation of the norm
 
 -/
 open Space
@@ -158,7 +158,7 @@ lemma fderiv_normPowerSeries {d} (n : ℕ) (x y : Space d) :
 
 /-!
 
-### A.4. Limits of the derivative of the power series
+### A.4. Limits of the derivative of the smooth approximation
 
 -/
 
@@ -182,7 +182,7 @@ lemma fderiv_normPowerSeries_tendsto {d} (x y : Space d) :
 
 /-!
 
-### A.5. The power series is AEStronglyMeasurable
+### A.5. The smooth approximation is AEStronglyMeasurable
 
 -/
 
@@ -193,7 +193,7 @@ lemma normPowerSeries_aestronglyMeasurable {d} (n : ℕ) :
 
 /-!
 
-### A.6. Bounds on the norm power series
+### A.6. Bounds on the smooth approximation of the norm
 
 -/
 
@@ -257,7 +257,7 @@ lemma normPowerSeries_log_le {d} (n : ℕ) (x : Space d) (hx : x ≠ 0) :
 
 /-!
 
-### A.7. The `IsDistBounded` property of the norm power series
+### A.7. The `IsDistBounded` property of the smooth approximation of the norm
 
 -/
 

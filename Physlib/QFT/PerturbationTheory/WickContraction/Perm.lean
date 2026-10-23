@@ -7,7 +7,7 @@ module
 
 public import Physlib.QFT.PerturbationTheory.WickAlgebra.WickTerm
 public import Physlib.QFT.PerturbationTheory.WickContraction.IsFull
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Informal.Basic
 /-!
 
 # Permutations of Wick contractions
@@ -66,20 +66,26 @@ lemma trans (h12 : Perm φsΛ₁ φsΛ₂) (h23 : Perm φsΛ₂ φsΛ₃) :
   exact h12.trans h23
 
 /-- If `Perm φsΛ₁ φsΛ₂` and both contractions are grading-compliant,
-  then if `φsΛ₁` is a full Wick contraction, so is `φsΛ₂`. -/
-@[sorryful]
-lemma isFull_of_isFull (h : Perm φsΛ₁ φsΛ₂)
-    (h₁ : GradingCompliant φs φsΛ₁) (h₂ : GradingCompliant φs φsΛ₂)
-    (hf : IsFull φsΛ₁) : IsFull φsΛ₂ := by
-  sorry
+  then if `φsΛ₁` is a full Wick contraction, so is `φsΛ₂`.
+
+  Formal statement: (h : Perm φsΛ₁ φsΛ₂)
+      (h₁ : GradingCompliant φs φsΛ₁) (h₂ : GradingCompliant φs φsΛ₂)
+      (hf : IsFull φsΛ₁) : IsFull φsΛ₂
+  -/
+informal_lemma isFull_of_isFull where
+  deps := [``Perm, ``GradingCompliant, ``IsFull]
+  tag := "QFT-Wick-permFull"
 
 /-- If `Perm φsΛ₁ φsΛ₂` and both contractions are grading-compliant,
-  then their uncontracted lists are permutations of each other. -/
-@[sorryful]
-lemma perm_uncontractedList (h : Perm φsΛ₁ φsΛ₂)
-    (h₁ : GradingCompliant φs φsΛ₁) (h₂ : GradingCompliant φs φsΛ₂) :
-    [φsΛ₁]ᵘᶜ.Perm [φsΛ₂]ᵘᶜ := by
-  sorry
+  then their uncontracted lists are permutations of each other.
+
+  Formal statement: (h : Perm φsΛ₁ φsΛ₂)
+      (h₁ : GradingCompliant φs φsΛ₁) (h₂ : GradingCompliant φs φsΛ₂) :
+      [φsΛ₁]ᵘᶜ.Perm [φsΛ₂]ᵘᶜ
+  -/
+informal_lemma perm_uncontractedList where
+  deps := [``Perm, ``GradingCompliant, ``uncontractedListGet]
+  tag := "QFT-Wick-permUC"
 
 end Perm
 

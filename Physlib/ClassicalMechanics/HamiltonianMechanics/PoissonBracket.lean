@@ -31,7 +31,9 @@ derivatives on phase space.
 ## ii. Key results
 
 - `poissonBracket` : the Poisson bracket of two phase-space functions.
+- `poissonBracket_eq_of_hasGradientAt` : computes the bracket from known partial gradients.
 - `poissonBracket_antisymm` : the bracket is antisymmetric.
+- `poissonBracket_self` : every observable Poisson-commutes with itself.
 - `poissonBracket_add_left`, `poissonBracket_add_right`, `poissonBracket_const_mul_left`,
   `poissonBracket_const_mul_right` : the bracket is bilinear, that is additive and homogeneous in
   each argument.
@@ -82,6 +84,14 @@ noncomputable def poissonBracket (f g : X → X → ℝ) (p q : X) : ℝ :=
   ⟪gradient (fun q' => f p q') q, gradient (fun p' => g p' q) p⟫_ℝ -
   ⟪gradient (fun p' => f p' q) p, gradient (fun q' => g p q') q⟫_ℝ
 
+/-- The Poisson bracket of two phase-space functions whose partial gradients at `(p, q)` are
+known. -/
+lemma poissonBracket_eq_of_hasGradientAt {f g : X → X → ℝ} {p q fp fq gp gq : X}
+    (hfp : HasGradientAt (fun p' => f p' q) fp p) (hfq : HasGradientAt (fun q' => f p q') fq q)
+    (hgp : HasGradientAt (fun p' => g p' q) gp p) (hgq : HasGradientAt (fun q' => g p q') gq q) :
+    poissonBracket f g p q = ⟪fq, gp⟫_ℝ - ⟪fp, gq⟫_ℝ := by
+  rw [poissonBracket, hfq.gradient, hgp.gradient, hfp.gradient, hgq.gradient]
+
 /-!
 
 ## B. Antisymmetry
@@ -94,6 +104,11 @@ lemma poissonBracket_antisymm (f g : X → X → ℝ) (p q : X) :
   simp only [poissonBracket, neg_sub]
   rw [real_inner_comm (gradient (fun p' => g p' q) p) (gradient (fun q' => f p q') q),
     real_inner_comm (gradient (fun q' => g p q') q) (gradient (fun p' => f p' q) p)]
+
+/-- The Poisson bracket of a phase-space function with itself vanishes. -/
+lemma poissonBracket_self (f : X → X → ℝ) (p q : X) : poissonBracket f f p q = 0 := by
+  have h := poissonBracket_antisymm f f p q
+  linarith
 
 /-!
 

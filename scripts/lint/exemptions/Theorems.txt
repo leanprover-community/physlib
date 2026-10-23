@@ -75,13 +75,7 @@ CPTPMap.εApproximates_self
 CPTPMap.εApproximates_monotone
 CPTPMap.achievesRate_0
 CPTPMap.id_achievesRate_log_dim
-CPTPMap.not_achievesRate_gt_log_dim_in
-CPTPMap.not_achievesRate_gt_log_dim_out
-CPTPMap.bddAbove_achievesRate
 CPTPMap.zero_le_quantumCapacity
-CPTPMap.quantumCapacity_ge_log_dim_in
-CPTPMap.coherentInfo_le_quantumCapacity
-CPTPMap.quantumCapacity_eq_piProd_coherentInfo
 HPMap.funext_hermitian
 HPMap.funext_pos
 HPMap.funext_pos_trace
@@ -430,7 +424,6 @@ MState.fidelity_self_eq_one
 MState.fidelity_eq_traceNorm_sqrt_mul_sqrt
 MState.fidelity_eq_one_iff_self
 MState.fidelity_symm
-MState.fidelity_channel_nondecreasing
 MState.Hermitian
 MState.m_inj
 MState.convex
