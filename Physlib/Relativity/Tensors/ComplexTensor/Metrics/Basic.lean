@@ -85,8 +85,8 @@ open Tensor
 -/
 
 lemma coMetric_eq_fromConstPair : η' = fromConstPair (S := complexLorentzTensor)
-    (c1 := .down) (c2 := .down) Lorentz.coMetric := by
-  rw [Lorentz.coMetric]
+    (c1 := .down) (c2 := .down) Lorentz.CoℂModule.metric := by
+  rw [Lorentz.CoℂModule.metric]
   rfl
 
 lemma contrMetric_eq_fromConstPair : η = fromConstPair (S := complexLorentzTensor)
@@ -109,10 +109,10 @@ lemma dualRightMetric_eq_fromConstPair :
 
 -/
 
-lemma coMetric_eq_fromPairT : η' = fromPairT (Lorentz.coMetricVal) := by
+lemma coMetric_eq_fromPairT : η' = fromPairT (Lorentz.CoℂModule.metricVal) := by
   rw [coMetric_eq_fromConstPair, fromConstPair]
   congr 1
-  exact Lorentz.coMetric_apply_one
+  exact Lorentz.CoℂModule.metric_apply_one
 
 lemma contrMetric_eq_fromPairT : η = fromPairT (Lorentz.ContrℂModule.metricVal) := by
   rw [contrMetric_eq_fromConstPair, fromConstPair]
@@ -151,7 +151,7 @@ lemma coMetric_eq_complexCoBasis : η' =
     - fromPairT (complexCoBasis (Sum.inr 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 0))
     - fromPairT (complexCoBasis (Sum.inr 1) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 1))
     - fromPairT (complexCoBasis (Sum.inr 2) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 2)) := by
-  rw [coMetric_eq_fromPairT, coMetricVal_expand_tmul]
+  rw [coMetric_eq_fromPairT, CoℂModule.metricVal_expand_tmul]
   simp
 
 open Lorentz in
