@@ -21,13 +21,13 @@ open Module Matrix MatrixGroups Complex TensorProduct CategoryTheory.MonoidalCat
 namespace Lorentz
 
 /-- The contra-co unit for complex lorentz vectors. Usually denoted `δⁱᵢ`. -/
-def preContrCoUnitVal (d : ℕ := 3) : ContrMod d ⊗[ℝ] CoMod d :=
+def CoMod.unitVal (d : ℕ := 3) : ContrMod d ⊗[ℝ] CoMod d :=
   contrCoToMatrixRe.symm 1
 
-/-- Expansion of `preContrCoUnitVal` into basis. -/
-lemma preContrCoUnitVal_expand_tmul {d : ℕ} : preContrCoUnitVal d =
+/-- Expansion of `CoMod.unitVal` into basis. -/
+lemma CoMod.unitVal_expand_tmul {d : ℕ} : CoMod.unitVal d =
     ∑ i, contrBasis d i ⊗ₜ[ℝ] coBasis d i := by
-  simp only [preContrCoUnitVal]
+  simp only [CoMod.unitVal]
   rw [contrCoToMatrixRe_symm_expand_tmul]
   simp only [Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
     Finset.sum_singleton, ne_eq, reduceCtorEq, not_false_eq_true, one_apply_ne, zero_smul,
@@ -46,10 +46,10 @@ lemma preContrCoUnitVal_expand_tmul {d : ℕ} : preContrCoUnitVal d =
 /-- The contra-co unit for complex lorentz vectors as a morphism
   `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ complexContr ⊗ complexCo`, manifesting the invariance under
   the `SL(2, ℂ)` action. -/
-def preContrCoUnit (d : ℕ := 3) :
+def CoMod.unit (d : ℕ := 3) :
   (Representation.trivial ℝ (LorentzGroup d) ℝ).IntertwiningMap
     ((ContrMod.rep).tprod (CoMod.rep)) where
-  toFun := fun a => a • preContrCoUnitVal d
+  toFun := fun a => a • CoMod.unitVal d
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -58,17 +58,17 @@ def preContrCoUnit (d : ℕ := 3) :
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℝ => ?_
     simp only [LinearMap.coe_comp, Function.comp_apply]
-    change x • preContrCoUnitVal d =
-      (TensorProduct.map (ContrMod.rep M) (CoMod.rep M)) (x • preContrCoUnitVal d)
+    change x • CoMod.unitVal d =
+      (TensorProduct.map (ContrMod.rep M) (CoMod.rep M)) (x • CoMod.unitVal d)
     simp only [map_smul]
     apply congrArg
-    simp only [preContrCoUnitVal]
+    simp only [CoMod.unitVal]
     rw [contrCoToMatrixRe_ρ_symm]
     apply congrArg
     simp
 
-lemma preContrCoUnit_apply_one {d : ℕ} : (preContrCoUnit d) (1 : ℝ) = preContrCoUnitVal d := by
-  change (1 : ℝ) • preContrCoUnitVal d = preContrCoUnitVal d
+lemma CoMod.unit_apply_one {d : ℕ} : (CoMod.unit d) (1 : ℝ) = CoMod.unitVal d := by
+  change (1 : ℝ) • CoMod.unitVal d = CoMod.unitVal d
   rw [one_smul]
 
 /-- The co-contra unit for complex lorentz vectors. Usually denoted `δᵢⁱ`. -/
@@ -129,16 +129,16 @@ lemma ContrMod.unit_apply_one {d : ℕ} : (ContrMod.unit d) (1 : ℝ) = ContrMod
 
 -/
 
-/-- Contraction on the right with `preContrCoUnit` does nothing. -/
-lemma contr_preContrCoUnit {d : ℕ} (x : CoMod d) :
+/-- Contraction on the right with `CoMod.unit` does nothing. -/
+lemma CoMod.contr_unit {d : ℕ} (x : CoMod d) :
     (TensorProduct.lid ℝ _ <|
     CoMod.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℝ (CoMod d) (ContrMod d) (CoMod d)).symm <|
-    x ⊗ₜ[ℝ] (preContrCoUnit d (1 : ℝ))) = x := by
+    x ⊗ₜ[ℝ] (CoMod.unit d (1 : ℝ))) = x := by
   have h1 : (TensorProduct.assoc ℝ (CoMod d) (ContrMod d) (CoMod d)).symm
-      (x ⊗ₜ[ℝ] (preContrCoUnit d) (1 : ℝ))
+      (x ⊗ₜ[ℝ] (CoMod.unit d) (1 : ℝ))
       = ∑ i, (x ⊗ₜ[ℝ] contrBasis d i) ⊗ₜ[ℝ] coBasis d i := by
-    rw [preContrCoUnit_apply_one, preContrCoUnitVal_expand_tmul]
+    rw [CoMod.unit_apply_one, CoMod.unitVal_expand_tmul]
     simp only [tmul_sum]
     simp only [Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
       Finset.sum_singleton, map_add, map_sum]
@@ -204,17 +204,17 @@ lemma ContrMod.contr_unit {d : ℕ} (x : ContrMod d) :
 
 -/
 
-lemma preContrCoUnit_symm {d : ℕ} :
-    (preContrCoUnit d) (1 : ℝ) = LinearMap.lTensor _ (LinearEquiv.cast (by rfl)).toLinearMap
+lemma CoMod.unit_symm {d : ℕ} :
+    (CoMod.unit d) (1 : ℝ) = LinearMap.lTensor _ (LinearEquiv.cast (by rfl)).toLinearMap
       (TensorProduct.comm ℝ _ _ ((ContrMod.unit d) (1 : ℝ))) := by
-  rw [preContrCoUnit_apply_one, preContrCoUnitVal_expand_tmul]
+  rw [CoMod.unit_apply_one, CoMod.unitVal_expand_tmul]
   rw [ContrMod.unit_apply_one, ContrMod.unitVal_expand_tmul]
   simp
 
 lemma ContrMod.unit_symm {d : ℕ} :
     (ContrMod.unit d) (1 : ℝ) = LinearMap.lTensor _ (LinearEquiv.cast (by simp)).toLinearMap
-    (TensorProduct.comm ℝ _ _ ((preContrCoUnit d) (1 : ℝ))) := by
-  rw [preContrCoUnit_apply_one, preContrCoUnitVal_expand_tmul]
+    (TensorProduct.comm ℝ _ _ ((CoMod.unit d) (1 : ℝ))) := by
+  rw [CoMod.unit_apply_one, CoMod.unitVal_expand_tmul]
   rw [ContrMod.unit_apply_one, ContrMod.unitVal_expand_tmul]
   simp
 

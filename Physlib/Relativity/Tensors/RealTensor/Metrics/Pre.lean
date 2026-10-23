@@ -156,7 +156,7 @@ lemma CoMod.contr_metric {d : ℕ} :
     (TensorProduct.assoc ℝ (CoMod d) (ContrMod d) (ContrMod d)).symm.toLinearMap.lTensor
       (CoMod d) <|
     TensorProduct.assoc ℝ (CoMod d) (CoMod d) ((ContrMod d) ⊗[ℝ] (ContrMod d)) <|
-    (CoMod.metric d 1) ⊗ₜ[ℝ] (ContrMod.metric d 1)) = preContrCoUnit d (1 : ℝ) := by
+    (CoMod.metric d 1) ⊗ₜ[ℝ] (ContrMod.metric d 1)) = CoMod.unit d (1 : ℝ) := by
   calc _
     _ = (TensorProduct.comm ℝ _ _ <| (TensorProduct.lid ℝ _).lTensor _ <|
       (CoMod.contr.toLinearMap.rTensor (ContrMod d)).lTensor (CoMod d) <|
@@ -184,7 +184,7 @@ lemma CoMod.contr_metric {d : ℕ} :
         · simp [minkowskiMatrix.η_apply_mul_η_apply_diag, CoMod.contr_basis]
         · intro b _ hb
           simp [CoMod.contr_basis, ite_eq_right (Ne.symm hb)]
-  rw [preContrCoUnit_apply_one, preContrCoUnitVal_expand_tmul]
+  rw [CoMod.unit_apply_one, CoMod.unitVal_expand_tmul]
   simp [map_sum]
 
 end Lorentz
