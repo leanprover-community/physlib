@@ -99,14 +99,14 @@ open SpaceDHilbertSpace
 /-- Polynomially-bounded Schwartz maps `f` with `‖x‖ ^ (-k) * ‖f x‖ ≤ Cₖ` for all `k ≤ ⌊2 - d/2⌋`
   lie in the domain of the Hamiltonian. For `d ≥ 3` these are all Schwartz maps. -/
 lemma polyBddSchwartzSubmodule_le_hamiltonianOperator_domain :
-    PolyBddSchwartzSubmodule H.d ⌊1 - H.d / 2 - (-1 : ℝ)⌋.toNat ≤
+    PolyBddSchwartzSubmodule d ⌊1 - d / 2 - (-1 : ℝ)⌋.toNat ≤
       H.hamiltonianOperator.domain := by
   intro ψ hψ
   refine Submodule.mem_inf.mpr ⟨?_, ?_⟩
   · rw [SpaceDQuantumSystem.kineticOperator_eq, LinearPMap.smul_domain,
       momentumSqOperator_domain_eq]
     exact PolyBddSchwartzSubmodule.le_SchwartzSubmodule _ _ hψ
-  · have h := radiusPowOperator_domain_ge (d := H.d) (-1) hψ
+  · have h := radiusPowOperator_domain_ge (-1) hψ
     rw [radiusPowOperator, mem_mulOperator_domain_iff] at h
     rw [SpaceDQuantumSystem.potentialOperator_eq, mem_mulOperator_domain_iff]
     refine (h.const_smul (-(H.k : ℂ))).ae_eq (Filter.Eventually.of_forall fun x ↦ ?_)
