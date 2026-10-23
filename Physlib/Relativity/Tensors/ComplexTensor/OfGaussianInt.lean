@@ -74,9 +74,9 @@ lemma contr_basis_gaussianInt {c : complexLorentzTensor.Color}
       = GaussianInt.toComplex (if i.val = j.val then 1 else 0) := by
   match c with
   | Color.upL =>
-    change Fermion.leftDualContraction
+    change Fermion.LeftHandedWeyl.contr
       (Fermion.LeftHandedWeyl.basis i ⊗ₜ Fermion.DualLeftHandedWeyl.basis j) = _
-    rw [Fermion.leftDualContraction_basis]
+    rw [Fermion.LeftHandedWeyl.contr_basis]
     simp
   | Color.downL =>
     change Fermion.dualLeftContraction

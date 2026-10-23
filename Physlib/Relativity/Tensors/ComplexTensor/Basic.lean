@@ -163,7 +163,7 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.down => rfl
   contr := fun c =>
     match c with
-    | Color.upL => Fermion.leftDualContraction
+    | Color.upL => Fermion.LeftHandedWeyl.contr
     | Color.downL => Fermion.dualLeftContraction
     | Color.upR => Fermion.rightDualContraction
     | Color.downR => Fermion.dualRightContraction
@@ -179,7 +179,7 @@ def complexLorentzTensor : TensorSpecies ℂ complexLorentzTensor.Color SL(2, �
     | Color.down => Lorentz.contrCoUnit
   contr_tmul_symm := fun c =>
     match c with
-    | Color.upL => Fermion.leftDualContraction_tmul_symm
+    | Color.upL => Fermion.LeftHandedWeyl.contr_tmul_symm
     | Color.downL => Fermion.dualLeftContraction_tmul_symm
     | Color.upR => Fermion.rightDualContraction_tmul_symm
     | Color.downR => Fermion.dualRightContraction_tmul_symm
@@ -217,7 +217,7 @@ instance instWithMetric : complexLorentzTensor.WithMetric where
     | Color.down => Lorentz.coMetric
   contr_metric := fun c =>
     match c with
-    | Color.upL => Fermion.leftDualContraction_apply_metric
+    | Color.upL => Fermion.LeftHandedWeyl.contr_metric
     | Color.downL => Fermion.dualLeftContraction_apply_metric
     | Color.upR => Fermion.rightDualContraction_apply_metric
     | Color.downR => Fermion.dualRightContraction_apply_metric
@@ -275,7 +275,7 @@ lemma isContrDualMatching_finCongr (c : complexLorentzTensor.Color) :
     IsContrDualMatching complexLorentzTensor c (finCongr repDim_tau) := by
   intro x₁ x₂
   cases c <;> refine Eq.trans ?_ (if_congr Fin.ext_iff.symm rfl rfl)
-  exacts [Fermion.leftDualContraction_basis x₁ x₂, Fermion.dualLeftContraction_basis x₁ x₂,
+  exacts [Fermion.LeftHandedWeyl.contr_basis x₁ x₂, Fermion.dualLeftContraction_basis x₁ x₂,
     Fermion.rightDualContraction_basis x₁ x₂, Fermion.dualRightContraction_basis x₁ x₂,
     Lorentz.contrCoContraction_basis x₁ x₂, Lorentz.coContrContraction_basis x₁ x₂]
 

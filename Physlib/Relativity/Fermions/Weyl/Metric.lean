@@ -321,10 +321,10 @@ TODO "Prove that every intertwining map `Representation.trivial ℂ SL(2,ℂ) �
 
 -/
 
-lemma leftDualContraction_apply_metric :
+lemma LeftHandedWeyl.contr_metric :
     (TensorProduct.comm ℂ _ _ <|
       (TensorProduct.lid ℂ _).lTensor _ <|
-      (leftDualContraction.toLinearMap.rTensor _).lTensor _ <|
+      (LeftHandedWeyl.contr.toLinearMap.rTensor _).lTensor _ <|
       (TensorProduct.assoc ℂ _ _ _).symm.toLinearMap.lTensor _<|
       TensorProduct.assoc ℂ _ _ (_ ⊗[ℂ] _) <|
       (LeftHandedWeyl.metric 1) ⊗ₜ[ℂ] (DualLeftHandedWeyl.metric 1)) =
@@ -335,7 +335,7 @@ lemma leftDualContraction_apply_metric :
     LinearEquiv.coe_coe, assoc_symm_tmul, LinearMap.rTensor_tmul,
     Representation.IntertwiningMap.coe_toLinearMap, LinearEquiv.lTensor_tmul, lid_tmul, tmul_smul,
     map_smul, comm_tmul]
-  simp only [leftDualContraction_basis]
+  simp only [LeftHandedWeyl.contr_basis]
   simp only [Fin.isValue, Fin.val_one, Fin.val_zero, one_ne_zero, ↓reduceIte, one_smul, zero_ne_one]
   rw [LeftHandedWeyl.unit_apply_one, LeftHandedWeyl.unitVal_expand_tmul]
   rw [add_comm]
