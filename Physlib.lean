@@ -52,6 +52,7 @@ public import Physlib.CondensedMatter.BandTheory.Basic
 public import Physlib.CondensedMatter.Basic
 public import Physlib.CondensedMatter.Crystal.Basic
 public import Physlib.CondensedMatter.Crystal.Bonds
+public import Physlib.CondensedMatter.Crystal.Embedding
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
 public import Physlib.CondensedMatter.Crystal.Symmetries
 public import Physlib.CondensedMatter.LatticeModels.Basic
