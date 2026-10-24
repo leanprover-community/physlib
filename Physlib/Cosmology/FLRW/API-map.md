@@ -65,6 +65,16 @@ together with the second-order equation; conversely, the second-order equation f
 first-order equation and the continuity equation wherever the scale factor is changing. [11]
 (See Dodelson and Schmidt {4} for the smooth, expanding universe.)
 
+A scale-factor profile W of a³ρ gives density ρ(t) = W(a(t))/a(t)³ and pressure
+P(t) = −c² W′(a(t))/(3a(t)²), where W′ differentiates with respect to the scale factor.
+In the normalization of these equations, the physical energy density is c²ρ. A fixed
+comoving cell of coordinate volume V₀ has physical volume V₀a³ and energy c²V₀W(a),
+so the pressure formula corresponds to dE = −P dV. If density is specified as a scale-factor
+profile R, then W(x) = x³R(x). The resulting density and pressure fit the existing CosmicFluid
+structure; no factorization of an arbitrary time-dependent fluid through a is asserted.
+The continuity equation holds under pointwise differentiability, with a and c nonzero,
+including when the expansion rate vanishes; positivity and energy conditions are not assumed. [11]
+
 Under the barotropic equation of state P = w ρ c², the continuity equation implies the density
 scaling law ρ t = ρ t₀ (a t / a t₀)^(−3(1+w)), and conversely; dust, radiation and vacuum energy
 are special cases. [12] The cosmological constant is itself a fluid, with density
@@ -146,7 +156,7 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `decelerationParameter_eq_one_plus_hubbleConstant`, `deriv_hubbleConstant_eq_neg_sq_mul`,
    `deriv_hubbleConstant_neg_iff`, `exists_deriv_hubbleConstant_neg_iff`
 11. Physlib/Cosmology/FLRW/MatterContent.lean — `ContinuityEquation`,
-   `deriv_firstOrderFriedmann`, `continuityEquation_of_friedmann`,
+   `deriv_firstOrderFriedmann`, `continuityEquation_of_friedmann`, `continuityEquation_of_profile`,
    `secondOrderFriedmann_of_continuityEquation`
 12. Physlib/Cosmology/FLRW/MatterContent.lean — `barotropicPressure`,
    `deriv_of_continuityEquation_barotropic`, `density_scaling`, `continuityEquation_of_scaling`,
