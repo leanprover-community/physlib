@@ -156,7 +156,7 @@ lemma toState_apply (σ : N.CompatibleStates) (i : R) (a : A i) :
     toState σ (toQuasilocal N i a) = σ.state i a :=
   lift_apply σ i a
 
-/-- **A state of the whole system is the same as `LocalNet.CompatibleStates`.** -/
+/-- A state of the whole system is the same as `LocalNet.CompatibleStates`. -/
 noncomputable def stateEquiv : 𝓢[ℝ, N.Quasilocal] ≃ N.CompatibleStates where
   toFun ω :=
     { state i := comap (toQuasilocalChannel N i) ω
