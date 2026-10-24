@@ -267,7 +267,6 @@ Physlib/Relativity/Causality/Basic.lean
 Physlib/Relativity/Causality/CausallyFollows.lean
 Physlib/Relativity/Causality/LightLike.lean
 Physlib/Relativity/Causality/TimeLike.lean
-Physlib/Relativity/CliffordAlgebra.lean
 Physlib/Relativity/Fermions/Dirac/Basic.lean
 Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean
 Physlib/Relativity/Fermions/Dirac/Slash.lean
