@@ -109,7 +109,7 @@ def dataEquiv (C : Crystal G) (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell) (b : C
   left_inv x := Site.ext (by simp) (by simp)
   right_inv x := Site.ext (by simp) (by simp)
 
-/-- **The symmetry with lattice automorphism `A`, label permutation `σ` and offsets `b`.** -/
+/-- The symmetry with lattice automorphism `A`, label permutation `σ` and offsets `b`. -/
 def ofData (C : Crystal G) (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell) (b : C.UnitCell → G) :
     Symmetry C :=
   ⟨A, { toFun := dataEquiv C A σ b
@@ -133,12 +133,12 @@ def ofData (C : Crystal G) (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell) (b : C.Un
   show A 0 + b i = b i
   rw [map_zero, zero_add]
 
-/-- **Every symmetry is given by its lattice automorphism, label permutation and offsets.** -/
+/-- Every symmetry is given by its lattice automorphism, label permutation and offsets. -/
 lemma eq_ofData (φ : Symmetry C) : φ = ofData C φ.lattice (labelHom C φ) φ.offset := by
   ext x : 1
   exact apply_eq_data φ x
 
-/-- **The product of two symmetries, from their data.**
+/-- The product of two symmetries, from their data.
 `(A, σ, b) * (A', σ', b') = (A + A', σ * σ', A ∘ b' + b ∘ σ')`, where `A + A'` is the composite
 `A ∘ A'`. -/
 lemma ofData_mul (A B : G ≃+ G) (σ τ : Equiv.Perm C.UnitCell) (b b' : C.UnitCell → G) :
@@ -204,7 +204,7 @@ lemma linear_add_mul (A B : G ≃+ G) (σ τ : Equiv.Perm C.UnitCell) :
   rw [ofData_mul]
   simp
 
-/-- **The product of shifts and point operations.** With `A + B` the composite `A ∘ B`,
+/-- The product of shifts and point operations. With `A + B` the composite `A ∘ B`,
 `(c, A, σ) * (c', B, τ) = (c + A ∘ c' ∘ σ⁻¹, A + B, σ * τ)`. -/
 lemma shift_mul_linear_mul (c c' : C.UnitCell → G) (A B : G ≃+ G) (σ τ : Equiv.Perm C.UnitCell) :
     (shift C c * linear C A σ) * (shift C c' * linear C B τ) =
@@ -233,8 +233,8 @@ lemma eq_shift_mul_linear (φ : Symmetry C) :
   rw [shift_mul_linear, h]
   exact eq_ofData φ
 
-/-- **The symmetry group of a crystal is the semidirect product of the shifts of each label with
-the lattice automorphisms and label permutations.** -/
+/-- The symmetry group of a crystal is the semidirect product of the shifts of each label with
+the lattice automorphisms and label permutations. -/
 noncomputable def semidirectEquiv (C : Crystal G) :
     Multiplicative (C.UnitCell → G) ⋊[shiftAction C]
       (Multiplicative (AddAut G) × Equiv.Perm C.UnitCell) ≃* Symmetry C where
