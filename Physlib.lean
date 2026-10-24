@@ -17,6 +17,14 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.KineticEnergy
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.AmplitudePhase
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Basic
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Consistency
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Energy
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.InitialData
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Periodicity
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.SpecialPoints
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Uniqueness
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
