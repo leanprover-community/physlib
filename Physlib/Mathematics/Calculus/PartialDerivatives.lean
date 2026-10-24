@@ -22,8 +22,6 @@ commute.
 
 - `fderiv_apply_zero_prod`: splitting of the derivative of `f (a, y, z)`
 - `deriv_fderiv_apply_comm`: commutation of mixed derivatives of `H (s, τ)`
-- `contDiff_fderiv_partial_snd`, `contDiff_fderiv_partial_thd`: smoothness of the partials of `f`
-  along smooth curves
 - `deriv_snd_eq_fderiv_apply`, `deriv_fst_eq_fderiv_apply`: derivatives of the slices of `H`
 - `fderiv_apply_fst_eq_zero`: the `s`-derivative of `H` at `τ`
 - `continuous_deriv_clm_apply_add`: continuity of the Leibniz expression of a pairing
@@ -77,27 +75,6 @@ lemma fderiv_apply_zero_prod {f : X × Y × Z → F} {a : X} {y : Y} {z : Z}
       fderiv ℝ (fun y' ↦ f (a, y', z)) y u + fderiv ℝ (fun z' ↦ f (a, y, z')) z w := by
   rw [fderiv_partial_snd hf, fderiv_partial_thd hf]
   simp [← map_add]
-
-variable {W : Type*} [NormedAddCommGroup W] [NormedSpace ℝ W] {a : W → X} {b : W → Y} {c : W → Z}
-
-private lemma contDiff_fderiv_comp {f : X × Y × Z → F} (hf : ContDiff ℝ ∞ f)
-    (ha : ContDiff ℝ ∞ a) (hb : ContDiff ℝ ∞ b) (hc : ContDiff ℝ ∞ c) :
-    ContDiff ℝ ∞ fun w ↦ fderiv ℝ f (a w, b w, c w) :=
-  (hf.fderiv_right (m := ∞) (by simp)).comp (ha.prodMk (hb.prodMk hc))
-
-/-- The middle partial derivative of a smooth `f` along smooth curves is smooth. -/
-lemma contDiff_fderiv_partial_snd {f : X × Y × Z → F} (hf : ContDiff ℝ ∞ f)
-    (ha : ContDiff ℝ ∞ a) (hb : ContDiff ℝ ∞ b) (hc : ContDiff ℝ ∞ c) :
-    ContDiff ℝ ∞ fun w ↦ fderiv ℝ (fun y ↦ f (a w, y, c w)) (b w) := by
-  simp_rw [fderiv_partial_snd (hf.differentiable (by simp) _)]
-  exact (contDiff_fderiv_comp hf ha hb hc).clm_comp contDiff_const
-
-/-- The last partial derivative of a smooth `f` along smooth curves is smooth. -/
-lemma contDiff_fderiv_partial_thd {f : X × Y × Z → F} (hf : ContDiff ℝ ∞ f)
-    (ha : ContDiff ℝ ∞ a) (hb : ContDiff ℝ ∞ b) (hc : ContDiff ℝ ∞ c) :
-    ContDiff ℝ ∞ fun w ↦ fderiv ℝ (fun z ↦ f (a w, b w, z)) (c w) := by
-  simp_rw [fderiv_partial_thd (hf.differentiable (by simp) _)]
-  exact (contDiff_fderiv_comp hf ha hb hc).clm_comp contDiff_const
 
 end Triple
 

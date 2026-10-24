@@ -122,12 +122,12 @@ variable {S t₀}
 
 /-- The Euler-Lagrange covector of a smooth curve is smooth. -/
 lemma contDiff_eulerLagrange {q : ℝ → E} (hq : ContDiff ℝ ∞ q) :
-    ContDiff ℝ ∞ (eulerLagrange S t₀ q) :=
-  (contDiff_fderiv_partial_snd (S.contDiff_coord t₀) contDiff_id hq
-    (contDiff_infty_iff_deriv.1 hq).2).sub
-    (contDiff_infty_iff_deriv.1
-      (contDiff_fderiv_partial_thd (S.contDiff_coord t₀) contDiff_id hq
-        (contDiff_infty_iff_deriv.1 hq).2)).2
+    ContDiff ℝ ∞ (eulerLagrange S t₀ q) := by
+  have hL := S.contDiff_coord t₀
+  have hq' := (contDiff_infty_iff_deriv.1 hq).2
+  have hP : ContDiff ℝ ∞ (canonicalMomentum S t₀ q) := by unfold canonicalMomentum; fun_prop
+  unfold eulerLagrange
+  exact ContDiff.sub (by fun_prop) (contDiff_infty_iff_deriv.1 hP).2
 
 /-- The Euler-Lagrange covector at `τ` depends only on the germ of the curve at `τ`. -/
 lemma eulerLagrange_congr {q g : ℝ → E} {τ : ℝ} (h : q =ᶠ[𝓝 τ] g) :

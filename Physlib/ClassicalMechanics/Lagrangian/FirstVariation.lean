@@ -91,9 +91,9 @@ lemma hasDerivAt_integral_variation (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) 
     ((hH.fderiv_right (m := ∞) (by simp)).clm_apply contDiff_const).comp
       (contDiff_const.prodMk contDiff_id)
   have hqs : ContDiff ℝ ∞ q := hH.comp (contDiff_const.prodMk contDiff_id)
-  have hPvs : ContDiff ℝ ∞ (canonicalMomentum S t₀ q) :=
-    contDiff_fderiv_partial_thd (S.contDiff_coord t₀) contDiff_id hqs
-      (contDiff_infty_iff_deriv.1 hqs).2
+  have hL := S.contDiff_coord t₀
+  have hq' := (contDiff_infty_iff_deriv.1 hqs).2
+  have hPvs : ContDiff ℝ ∞ (canonicalMomentum S t₀ q) := by unfold canonicalMomentum; fun_prop
   have hP1 : ContDiff ℝ 1 (canonicalMomentum S t₀ q) := hPvs.of_le (by simp)
   have hV1 : ContDiff ℝ 1 V := hVs.of_le (by simp)
   have hbp := integral_eq_sub_of_hasDerivAt (f := fun τ ↦ canonicalMomentum S t₀ q τ (V τ))
