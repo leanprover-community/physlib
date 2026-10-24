@@ -53,27 +53,6 @@ noncomputable section
 
 -/
 
-/-- A rotation fixing the third axis is a rotation in the plane of the first two. -/
-lemma specialOrthogonal_eq_of_apply_two
-    (A : specialOrthogonalGroup (Fin 3) ℝ) (hA : ∀ i, A.1 i 2 = if i = 2 then 1 else 0) :
-    A.1 = !![A.1 0 0, A.1 0 1, 0; -A.1 0 1, A.1 0 0, 0; 0, 0, 1] := by
-  obtain ⟨h1, hd⟩ := mem_specialOrthogonalGroup_iff.mp A.2
-  have h2 := (Matrix.mem_orthogonalGroup_iff' (A := A.1)).mp h1
-  have e : ∀ i j, (A.1ᵀ * A.1) i j = if i = j then 1 else 0 := fun i j => by
-    rw [h2, one_apply]
-  have h02 := e 0 2; have h12 := e 1 2; have h00 := e 0 0; have h11 := e 1 1
-  have h01 := e 0 1
-  simp only [mul_apply, transpose_apply, Fin.sum_univ_three, hA] at h02 h12 h00 h11 h01
-  rw [det_fin_three] at hd
-  simp only [hA] at hd
-  norm_num at h02 h12 h00 h11 h01 hd
-  have h3 : (A.1 1 1 - A.1 0 0) ^ 2 + (A.1 1 0 + A.1 0 1) ^ 2 = 0 := by
-    simp only [h02, h12] at h00 h11 h01 hd; nlinarith
-  have h4 : A.1 1 1 = A.1 0 0 := by nlinarith
-  have h5 : A.1 1 0 = -A.1 0 1 := by nlinarith
-  ext i j
-  fin_cases i <;> fin_cases j <;> simp [hA, h02, h12, h4, h5]
-
 /-- Every rotation is the image of a unitary element of `SL(2, ℂ)`. -/
 lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
     ∃ M : SL(2, ℂ), M.1 ∈ unitaryGroup (Fin 2) ℂ ∧ toLorentzGroup M = Λ := by
@@ -97,7 +76,7 @@ lemma exists_unitary_toLorentzGroup_eq (Λ : LorentzGroup.Rotations 3) :
     rw [← this]
     change (star B.1 * A.1) i 2 = _
     simp only [mul_apply, star_apply, star_trivial, Fin.sum_univ_three, ← hab']
-  have hC' := specialOrthogonal_eq_of_apply_two C hC
+  have hC' := LorentzGroup.specialOrthogonal_eq_of_apply_two C hC
   have hcs : C.1 0 0 ^ 2 + C.1 0 1 ^ 2 = 1 := by
     have h1 := (Matrix.mem_orthogonalGroup_iff' (A := C.1)).mp
       (mem_specialOrthogonalGroup_iff.mp C.2).1
