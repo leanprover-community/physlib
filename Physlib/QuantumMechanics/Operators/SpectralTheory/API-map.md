@@ -40,6 +40,8 @@ real axis. [6] Every point off the real axis is therefore a point of regularity,
 domain is connected when the operator is bounded above or below. [7] A symmetric operator whose
 defect numbers at i and -i both vanish is essentially self-adjoint. [8] The eigenvalues of a
 symmetric operator are real. [9]
+A symmetric operator with a family of eigenvectors in its domain whose span is dense is
+essentially self-adjoint, every eigenvector lying in the range of T - z off the real axis. [15]
 
 ### Self-adjoint operators
 
@@ -97,6 +99,8 @@ multiplication operator is the essential range of its multiplier. [TODO]
    `isStarProjection`, `univ`
 14. Physlib/QuantumMechanics/Operators/SpectralTheory/SpectralMeasure.lean — `comp_self`,
    `comp_of_disjoint`, `comp_eq_of_inter`, `commute`
+15. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `mem_range_sub_smul_of_apply_eq_smul`,
+   `isEssentiallySelfAdjoint_of_dense_span_eigenvectors`
 
 ## References
 

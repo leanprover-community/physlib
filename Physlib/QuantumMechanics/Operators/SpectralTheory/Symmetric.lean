@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Bornemann, Gregory J. Loges
+Authors: Adam Bornemann, Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
@@ -29,6 +29,8 @@ simply reinterprets the numerical range as a subset of ℝ.
     if and only if it contains a real number.
 - `IsSymmetric.isEssentiallySelfAdjoint_of_defectNumber_eq_zero` : The basic criterion for
     essential self-adjointness: symmetric + densely defined + vanishing defect numbers at `± i`.
+- `IsSymmetric.isEssentiallySelfAdjoint_of_dense_span_eigenvectors` : A symmetric operator with a
+    family of eigenvectors in its domain whose span is dense is essentially self-adjoint.
 
 ## iii. Table of contents
 
@@ -219,6 +221,28 @@ lemma pointSpectrum_real : σᵖ T ⊆ range ofReal := by
     _ = ⟪x, z • x⟫_ℂ := by simp [← toFun_eq_coe, LinearMap.mem_ker.mp hx]
     _ = ↑(‖x‖ ^ 2) * z := by simp [inner_smul_right, mul_comm]
 
+/-- An eigenvector `x` of a symmetric operator `T`, `T x = c • x`, lies in the range of
+  `T - z • 1` for every `z` with nonzero imaginary part. -/
+lemma mem_range_sub_smul_of_apply_eq_smul {x : T.domain} {c z : ℂ} (hx : T x = c • (x : H))
+    (hz : z.im ≠ 0) : (x : H) ∈ (T - z • 1).toFun.range := by
+  by_cases h0 : (x : H) = 0
+  · rw [h0]
+    exact Submodule.zero_mem _
+  have hcz : c - z ≠ 0 := by
+    intro hcz
+    apply hz
+    have h1 := hT x x
+    rw [hx, inner_smul_left, inner_smul_right] at h1
+    rw [← sub_eq_zero.mp hcz]
+    exact conj_eq_iff_im.mp (mul_right_cancel₀ (inner_self_ne_zero.mpr h0) h1)
+  have hxT : (c - z)⁻¹ • (x : H) ∈ T.domain := T.domain.smul_mem _ x.2
+  have hx' : (c - z)⁻¹ • (x : H) ∈ (T - z • 1).domain := by simp [sub_domain, hxT]
+  refine ⟨⟨_, hx'⟩, ?_⟩
+  have h1 : T ⟨(c - z)⁻¹ • (x : H), hxT⟩ = (c - z)⁻¹ • T x := T.map_smul _ x
+  simp only [toFun_eq_coe, sub_apply, h1, hx, smul_smul, smul_domain, one_domain, coe_smul,
+    one_coe, LinearEquiv.coe_coe, Pi.smul_apply, Submodule.topEquiv_apply]
+  rw [mul_comm z, ← sub_smul, ← mul_sub, inv_mul_cancel₀ hcz, one_smul]
+
 /-!
 ## D. Essential self-adjointness
 -/
@@ -244,6 +268,27 @@ lemma isEssentiallySelfAdjoint_of_defectNumber_eq_zero
     rw [hI]
     exact hrange (by norm_num) hneg
   · exact hrange (by norm_num) hpos
+
+/-- A symmetric operator `T` with a family `v` of vectors of its domain which are eigenvectors,
+  `T (v j) = c j • v j` for complex numbers `c j`, and whose span is dense, is essentially
+  self-adjoint. No orthonormality, no nonzero condition and no reality of the `c j` is assumed. -/
+lemma isEssentiallySelfAdjoint_of_dense_span_eigenvectors {ι : Type*} (v : ι → T.domain)
+    (c : ι → ℂ) (hv : ∀ j, T (v j) = c j • (v j : H))
+    (hspan : Dense (Submodule.span ℂ (Set.range fun j ↦ (v j : H)) : Set H)) :
+    T.IsEssentiallySelfAdjoint := by
+  have hbot : (Submodule.span ℂ (Set.range fun j ↦ (v j : H)))ᗮ = ⊥ :=
+    Submodule.topologicalClosure_eq_top_iff.mp
+      (Submodule.dense_iff_topologicalClosure_eq_top.mp hspan)
+  have hdef (z : ℂ) (hz : z.im ≠ 0) : T.defectNumber z = 0 := by
+    have hle : Submodule.span ℂ (Set.range fun j ↦ (v j : H)) ≤ (T - z • 1).toFun.range :=
+      Submodule.span_le.mpr (Set.range_subset_iff.mpr fun j ↦
+        hT.mem_range_sub_smul_of_apply_eq_smul (hv j) hz)
+    have h : Module.rank ℂ ((T - z • 1).toFun.range)ᗮ = 0 :=
+      Submodule.rank_eq_zero.mpr (eq_bot_iff.mpr (hbot ▸ Submodule.orthogonal_le hle))
+    exact h
+  exact hT.isEssentiallySelfAdjoint_of_defectNumber_eq_zero
+    (hspan.mono (Submodule.span_le.mpr (Set.range_subset_iff.mpr fun j ↦ (v j).2)))
+    (hdef I (by simp)) (hdef (-I) (by simp))
 
 end IsSymmetric
 end LinearPMap
