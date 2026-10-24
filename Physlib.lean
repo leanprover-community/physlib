@@ -496,6 +496,7 @@ public import Physlib.Relativity.Tensors.ComponentIdx.Pair
 public import Physlib.Relativity.Tensors.ComponentIdx.Product
 public import Physlib.Relativity.Tensors.ComponentIdx.Single
 public import Physlib.Relativity.Tensors.Conjugation.Basic
+public import Physlib.Relativity.Tensors.Conjugation.Inverse
 public import Physlib.Relativity.Tensors.Constructors
 public import Physlib.Relativity.Tensors.Contraction.Basic
 public import Physlib.Relativity.Tensors.Contraction.Basis
