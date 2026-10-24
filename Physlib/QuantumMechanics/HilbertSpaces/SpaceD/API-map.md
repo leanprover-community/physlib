@@ -25,7 +25,9 @@ given subset of space form a Hilbert space of their own, with an inclusion into 
 and a projection onto it. [5] The elements satisfying homogeneous Dirichlet boundary conditions
 on a subset of space form a subspace. [6] So do the elements satisfying homogeneous Neumann
 boundary conditions [TODO], and those satisfying homogeneous mixed boundary conditions.
-[TODO]
+[TODO] When the measure is finite on compact sets, the Dirichlet subspace is dense exactly when
+the frontier of the subset is null for the measure restricted to the subset, in particular when
+the subset is open. [9]
 
 Operators on these spaces come in two families. Any complex function of position gives a
 multiplication operator with maximal domain [7], and the position operators are such
@@ -47,6 +49,9 @@ The general theory of these operators lives in the operator algebra {2}.
 6. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/DirichletSubmodule.lean — `DirichletSubmoduleOn`
 7. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator`
 8. Physlib/QuantumMechanics/Operators/Position.lean — `positionOperator`
+9. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/DirichletSubmodule.lean —
+   `DirichletSubmoduleOn.dense`, `DirichletSubmoduleOn.dense_of_isOpen`,
+   `DirichletSubmoduleOn.dense_iff`
 
 ## References
 
