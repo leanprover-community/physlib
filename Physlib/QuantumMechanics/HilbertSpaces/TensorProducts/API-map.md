@@ -15,7 +15,9 @@ product. [1] It is commutative, by a linear isometry equivalence exchanging the 
 associative, by a linear isometry equivalence rebracketing three factors. [3] On the algebraic
 tensor product of three spaces this rebracketing is the algebraic one. [4] Whenever either
 factor is finite-dimensional, the complete tensor product is isometrically equivalent to the
-algebraic one. [TODO]
+algebraic one. [TODO] A pair of bounded operators induces a bounded operator between the
+complete tensor products, of norm at most the product of their norms [5]; a pair of isometries
+induces an isometry [6], and a pair of isometric equivalences an isometric equivalence. [7]
 
 The construction extends beyond pairs. An indexed family of Hilbert spaces has a complete tensor
 product [TODO], and a single Hilbert space has complete tensor powers. [TODO] A seed Hilbert
@@ -29,3 +31,9 @@ space has a Fock space built from its tensor powers. [TODO]
 4. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean —
    `CompleteTensorProduct.tIncl₃ₗᵢ`, `CompleteTensorProduct.tIncl₃'ₗᵢ`,
    `CompleteTensorProduct.assoc_tIncl₃ₗᵢ`, `CompleteTensorProduct.assoc_tmul`
+5. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean —
+   `CompleteTensorProduct.mapLₕ`, `CompleteTensorProduct.norm_mapLₕ_le`
+6. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean —
+   `CompleteTensorProduct.mapIsometryₕ`
+7. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean —
+   `CompleteTensorProduct.congrIsometryₕ`
