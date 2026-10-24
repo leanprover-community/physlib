@@ -483,6 +483,7 @@ second_derivative_test
 second_derivative_test_analyticAt
 QuantumMechanics.HarmonicOscillator.loweringCLM_vacuumGaussian
 QuantumMechanics.HarmonicOscillator.hasVacuum_vacuumGaussian
+QuantumMechanics.OntologicalModel.PreparationIndependent.isPsiOntic
 stinespringOp_apply
 complCard
 Ud_orthonormal₁

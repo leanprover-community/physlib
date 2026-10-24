@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2026 brent. All rights reserved.
+Copyright (c) 2026 Brent Yee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: brent
+Authors: Brent Yee
 -/
 module
 
