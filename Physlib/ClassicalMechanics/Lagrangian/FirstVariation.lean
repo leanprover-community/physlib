@@ -15,6 +15,7 @@ The first variation of `∫ L (τ, H, ∂τ H) dτ`.
 
 ## i. Overview
 
+`H (s, τ)` is a smooth family of curves around `H (0, ·)`.
 Along a smooth family fixing the endpoints, the derivative of the action is the integral of the
 Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation field.
 
