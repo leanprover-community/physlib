@@ -318,6 +318,8 @@ public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
+public import Physlib.ProbabilisticTheory.State.FiniteHilbertSpace
+public import Physlib.ProbabilisticTheory.State.HilbertSpace
 public import Physlib.ProbabilisticTheory.State.Local
 public import Physlib.ProbabilisticTheory.State.Metric
 public import Physlib.ProbabilisticTheory.State.Pairing
