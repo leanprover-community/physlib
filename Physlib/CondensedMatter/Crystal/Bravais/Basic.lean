@@ -90,17 +90,12 @@ variable [NormedSpace ℝ E]
 the space. -/
 lemma isSpaceFilling_ofVectors_iff (v : Fin d → E) :
     (ofVectors v).IsSpaceFilling ↔ Submodule.span ℝ (Set.range v) = ⊤ := by
-  have h : Submodule.span ℝ (Set.range (ofVectors v).vector) = Submodule.span ℝ (Set.range v) := by
-    refine le_antisymm (Submodule.span_le.2 ?_) (Submodule.span_le.2 ?_)
-    · rintro _ ⟨n, rfl⟩
-      show ∑ j, n j • v j ∈ Submodule.span ℝ (Set.range v)
-      refine Submodule.sum_mem _ fun j _ => ?_
-      rw [← Int.cast_smul_eq_zsmul ℝ]
-      exact Submodule.smul_mem _ _ (Submodule.subset_span ⟨j, rfl⟩)
-    · rintro _ ⟨j, rfl⟩
-      refine Submodule.subset_span ⟨Pi.single j 1, ?_⟩
-      simp [ofVectors, vectorHom, Pi.single_apply]
-  rw [IsSpaceFilling, h]
+  have hS : AddSubgroup.closure (Set.range (Pi.basisFun ℤ (Fin d))) = ⊤ := by
+    rw [← Submodule.span_int_eq_addSubgroupClosure, (Pi.basisFun ℤ (Fin d)).span_eq]
+    rfl
+  convert (ofVectors v).isSpaceFilling_iff hS using 1
+  rw [← Set.range_comp']
+  simp [ofVectors, vectorHom]
 
 /-- Linearly independent primitive vectors give distinct positions to distinct sites. -/
 lemma position_ofVectors_injective {v : Fin d → E} (hv : LinearIndependent ℝ v) :
