@@ -22,15 +22,11 @@ commute.
 
 - `fderiv_apply_zero_prod`: splitting of the derivative of `f (a, y, z)`
 - `deriv_fderiv_apply_comm`: commutation of mixed derivatives of `H (s, τ)`
-- `deriv_snd_eq_fderiv_apply`, `deriv_fst_eq_fderiv_apply`: derivatives of the slices of `H`
-- `fderiv_apply_fst_eq_zero`: the `s`-derivative of `H` at `τ`
-- `continuous_deriv_clm_apply_add`: continuity of the Leibniz expression of a pairing
 
 ## iii. Table of contents
 
 - A. Functions on a triple product
 - B. Two-parameter families
-- C. Pairings of curves
 
 ## iv. References
 
@@ -39,9 +35,7 @@ commute.
 
 @[expose] public section
 
-open scoped ContDiff
-variable {E F : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [NormedAddCommGroup F]
-  [NormedSpace ℝ F]
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
 /-!
 ## A. Functions on a triple product
@@ -101,29 +95,3 @@ lemma deriv_fderiv_apply_comm {s τ : ℝ} (hH : ContDiffAt ℝ 2 H (s, τ)) :
   have h5 : deriv (fun σ ↦ fderiv ℝ H (s, σ) (1, 0)) τ = _ := h3.deriv
   rw [h5]
   simp [hH.isSymmSndFDerivAt (by simp) ((0 : ℝ), (1 : ℝ)) ((1 : ℝ), (0 : ℝ))]
-
-/-- The `τ`-derivative of `H (s, ·)` is the total derivative applied to `(0, 1)`. -/
-lemma deriv_snd_eq_fderiv_apply {s τ : ℝ} (hH : DifferentiableAt ℝ H (s, τ)) :
-    deriv (fun σ ↦ H (s, σ)) τ = fderiv ℝ H (s, τ) (0, 1) :=
-  fderiv_curry_snd H s τ hH 1
-
-/-- The `s`-derivative of `H (·, τ)` is the total derivative applied to `(1, 0)`. -/
-lemma deriv_fst_eq_fderiv_apply {s τ : ℝ} (hH : DifferentiableAt ℝ H (s, τ)) :
-    deriv (fun r ↦ H (r, τ)) s = fderiv ℝ H (s, τ) (1, 0) :=
-  fderiv_curry_fst H s τ hH 1
-
-/-- If `H (·, a)` is constant, the `s`-derivative of `H` vanishes at `τ = a`. -/
-lemma fderiv_apply_fst_eq_zero {a : ℝ} (hH : DifferentiableAt ℝ H (0, a))
-    (h : ∀ s, H (s, a) = H (0, a)) : fderiv ℝ H (0, a) (1, 0) = 0 := by
-  rw [← deriv_fst_eq_fderiv_apply hH, funext h]
-  simp
-
-/-!
-## C. Pairings of curves
--/
-
-/-- The Leibniz expression for a covector `P` paired with a vector `V` is continuous. -/
-lemma continuous_deriv_clm_apply_add {P : ℝ → E →L[ℝ] ℝ} {V : ℝ → E} (hP : ContDiff ℝ 1 P)
-    (hV : ContDiff ℝ 1 V) : Continuous fun τ ↦ deriv P τ (V τ) + P τ (deriv V τ) :=
-  ((hP.continuous_deriv le_rfl).clm_apply hV.continuous).add
-    (hP.continuous.clm_apply (hV.continuous_deriv le_rfl))
