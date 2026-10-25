@@ -107,13 +107,12 @@ lemma position_ofVectors_injective {v : Fin d → E} (hv : LinearIndependent ℝ
     Function.Injective (ofVectors v).position := by
   intro x y hxy
   rw [position_ofVectors, position_ofVectors] at hxy
-  have hsum : ∑ j, ((x.cell j - y.cell j : ℤ) : ℝ) • v j = 0 := by
-    simp only [Int.cast_smul_eq_zsmul, sub_smul, Finset.sum_sub_distrib]
-    exact sub_eq_zero.2 hxy
   have hcell : x.cell = y.cell := by
     funext j
-    have := Fintype.linearIndependent_iff.1 hv _ hsum j
-    exact_mod_cast sub_eq_zero.1 (by exact_mod_cast this)
+    apply Int.cast_injective (α := ℝ)
+    apply hv.eq_coords_of_eq (f := (Int.cast : ℤ → ℝ) ∘ x.cell)
+      (g := (Int.cast : ℤ → ℝ) ∘ y.cell)
+    simpa only [Function.comp_apply, Int.cast_smul_eq_zsmul] using hxy
   exact Crystal.Site.ext hcell (Subsingleton.elim _ _)
 
 /-- A space-filling embedding of a Bravais lattice with linearly independent primitive vectors
