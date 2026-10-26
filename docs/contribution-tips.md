@@ -80,7 +80,7 @@ end HarmonicOscillator
 
 ## 6. Placement of lemmas
 
-One of the most common review comments on Physlib is the placement of lemmas. As a general rule, every lemma about an object should go directly next to the definition of that object. It is common to see lemmas placed just above where they are needed, which leads to bad API design.
+One of the most common review comments on Physlib is about the placement of lemmas. As a general rule, every lemma about an object should go directly next to its definition. Lemmas are often placed just above where they are needed instead, which hides them from anyone else using the object, so the same facts get proved again.
 
 <a id="little-maths-results"></a>
 
