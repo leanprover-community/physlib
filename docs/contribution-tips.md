@@ -33,7 +33,7 @@ Sometimes the most useful contribution is to improve the definitions and basic l
 
 ## 3. Let API design and formalization inform each other
 
-A rough API map and an early conversation on Zulip can help you work out how to approach an area and they also give others a chance to offer advice or join in. You don’t need to settle the whole design before writing Lean but small examples often reveal difficulties that weren’t obvious on paper, and working through them can suggest a better approach. Let that experience shape the design, and keep the API map up to date as things develop.
+When you're starting work in a new area, it's a good idea to sketch out a rough API map and start a conversation on Zulip. It gives others a chance to share advice or get involved, and you might discover that Physlib already covers some of what you have in mind, just in a different form. If so, plan to prove that your version and the existing one agree, so the two fit together. Don't worry about settling the whole design before you start writing Lean; small examples often uncover things that weren't obvious on paper, and working through them can lead you to a better approach. Let what you learn shape the design as you go, and keep the API map up to date along the way.
 
 <a id="contribute-in-small-coherent-steps"></a>
 
