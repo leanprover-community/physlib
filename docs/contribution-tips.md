@@ -122,7 +122,7 @@ def energy (H : HarmonicOscillator) (x v : Real) : Real :=
 
 ## 11. Generalizing review comments
 
-If a reviewer asks you to change something, have a look for other places where the same comment might apply. They may have only spotted one example, or expected you to make the corresponding changes elsewhere. You shouldn’t need a separate review comment for every occurrence of the same issue. Make this assessment yourself, and check any changes an LLM makes before asking for another review.
+When a reviewer asks for a change, look for other places where the same comment applies. They may have spotted only one example, or expected you to fix the rest yourself. One comment should be enough for every instance of the same issue. Before asking for another review, check every change yourself, including any made with AI.
 
 <a id="author-lists"></a>
 
