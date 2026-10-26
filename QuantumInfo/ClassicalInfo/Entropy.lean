@@ -87,6 +87,13 @@ lemma H₁_concave : ∀ (x y : Prob), ∀ (p : Prob), p[H₁ x ↔ H₁ y] ≤ 
 def Hₛ (d : ProbDistribution α) : ℝ :=
   Finset.sum Finset.univ (fun x ↦ H₁ (d.prob x))
 
+/-- Shannon entropy is the expected negative logarithm of the outcome probability.
+Zero-probability outcomes contribute zero to the expectation. -/
+lemma Hₛ_eq_expect_val (d : ProbDistribution α) :
+    Hₛ d = ProbDistribution.expect_val ⟨fun x ↦ -Real.log (d x), d⟩ := by
+  change (∑ x, Real.negMulLog (d x)) = ∑ x, (d x : ℝ) * (-Real.log (d x))
+  simp only [Real.negMulLog, mul_neg, neg_mul]
+
 /-- Shannon entropy of a distribution is nonnegative. -/
 theorem Hₛ_nonneg (d : ProbDistribution α) : 0 ≤ Hₛ d :=
   Finset.sum_nonneg fun _ _ ↦ H₁_nonneg _
@@ -137,5 +144,3 @@ lemma Hₛ_eq_of_multiset_map_eq (d₁ : ProbDistribution α) (d₂ : ProbDistri
     Hₛ d₁ = Hₛ d₂ := by
   convert congr_arg (fun m ↦ m.map (fun x ↦ -Real.log x.1 * x.1 ) |> Multiset.sum ) h using 1
   <;> simp [Hₛ, H₁, mul_comm, Real.negMulLog]
-
---TODO: Shannon entropy as an expectation value

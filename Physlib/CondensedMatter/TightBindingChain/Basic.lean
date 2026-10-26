@@ -6,6 +6,8 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
+public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.LinearAlgebra.Eigenspace.Basic
 /-!
 
 # The tight binding chain
@@ -29,9 +31,12 @@ with periodic boundary conditions.
 - `BrillouinZone` : The Brillouin zone of the tight binding chain.
 - `QuantaWaveNumber` : The quantized wavenumbers of the energy eigenstates.
 - `energyEigenstate` : The energy eigenstates of the tight binding chain.
+- `energyEigenbasis` : The orthonormal basis of normalized energy eigenstates.
 - `energyEigenvalue` : The energy eigenvalues of the tight binding chain.
 - `hamiltonian_energyEigenstate` : The Hamiltonian acting on an energy eigenstate
   gives the corresponding energy eigenvalue times the energy eigenstate.
+- `hasEigenvalue_hamiltonian_iff` : The eigenvalues of the Hamiltonian are exactly the
+  energy eigenvalues.
 
 ## iii. Table of contents
 
@@ -60,6 +65,7 @@ with periodic boundary conditions.
   - F.2. Orthonormality of the energy eigenstates
   - F.3. The energy eigenvalues
   - F.4. The time-independent Schrodinger equation
+  - F.5. The spectrum of the Hamiltonian
 
 ## iv. References
 
@@ -110,6 +116,11 @@ instance : NeZero T.N := T.N_ne_zero
 /-- The Hilbert space of a `TightBindingchain` is the `N`-dimensional finite dimensional
 Hilbert space. -/
 abbrev HilbertSpace := QuantumMechanics.FiniteHilbertSpace (Fin T.N)
+
+/-- The Hilbert space of the chain has dimension `N`. -/
+lemma finrank_hilbertSpace : Module.finrank ℂ T.HilbertSpace = T.N := by
+  simpa using Module.finrank_eq_card_basis
+    (QuantumMechanics.FiniteHilbertSpace.basisFun (Fin T.N)).toBasis
 
 /-!
 
@@ -293,6 +304,17 @@ noncomputable def BrillouinZone : Set ℝ := Set.Ico (- Real.pi / T.a) (Real.pi 
 def QuantaWaveNumber : Set ℝ := {x | (∃ n : Fin T.N,
     2 * Real.pi / (T.a * T.N) * ((n : ℝ) - (T.N / 2 : ℕ)) = x)}
 
+/-- The quantized wavenumber `2 π / (a N) * (n - ⌊N/2⌋)` of the index `n`. -/
+noncomputable def quantaWaveNumber (n : Fin T.N) : T.QuantaWaveNumber := ⟨_, n, rfl⟩
+
+/-- Distinct indices give distinct quantized wavenumbers. -/
+lemma quantaWaveNumber_injective : Function.Injective T.quantaWaveNumber := by
+  intro m n h
+  have hc : 2 * Real.pi / (T.a * T.N) ≠ 0 := div_ne_zero (by positivity)
+    (mul_ne_zero T.a_pos.ne' (Nat.cast_ne_zero.2 (NeZero.ne T.N)))
+  have := mul_left_cancel₀ hc (Subtype.ext_iff.1 h)
+  exact Fin.ext (by exact_mod_cast sub_left_inj.1 this)
+
 /-!
 
 ### E.3. Wavenumbers lie in the Brillouin zone
@@ -400,6 +422,27 @@ lemma quantaWaveNumber_exp_add_one (n : Fin T.N) (k : T.QuantaWaveNumber) :
 noncomputable def energyEigenstate (k : T.QuantaWaveNumber) : T.HilbertSpace :=
   ∑ n : Fin T.N, Complex.exp (Complex.I * k * n * T.a) • |n⟩
 
+/-- An energy eigenstate is not zero. -/
+lemma energyEigenstate_ne_zero (k : T.QuantaWaveNumber) : T.energyEigenstate k ≠ 0 := fun h => by
+  have := congrArg (⟪|0⟩, ·⟫_ℂ) h
+  rw [energyEigenstate, inner_sum, inner_zero_right] at this
+  simp_rw [inner_smul_right, localizedState_orthonormal_eq_ite] at this
+  simp at this
+
+/-- The inner product of an energy eigenstate with itself is `N`. -/
+lemma energyEigenstate_inner_self (k : T.QuantaWaveNumber) :
+    ⟪T.energyEigenstate k, T.energyEigenstate k⟫_ℂ = T.N := by
+  simp only [energyEigenstate, sum_inner]
+  simp_rw [inner_sum, inner_smul_left, inner_smul_right, localizedState_orthonormal_eq_ite]
+  simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+  have h1 (n : Fin T.N) : (starRingEnd ℂ) (Complex.exp (Complex.I * k * n * T.a)) *
+      Complex.exp (Complex.I * k * n * T.a) = 1 := by
+    rw [← Complex.exp_conj, ← Complex.exp_add]
+    simp only [map_mul, Complex.conj_I, Complex.conj_ofReal, Complex.conj_natCast]
+    ring_nf
+    simp
+  simp [h1]
+
 /-!
 
 ### F.2. Orthonormality of the energy eigenstates
@@ -449,6 +492,57 @@ lemma energyEigenstate_orthogonal :
   simp_rw [inner_sum, inner_smul_left, inner_smul_right, localizedState_orthonormal_eq_ite]
   simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte, hterm]
   rw [Fin.sum_univ_eq_sum_range (ω ^ ·), geom_sum_eq hω_ne_one, hω_pow, sub_self, zero_div]
+
+/-- The energy eigenstates are linearly independent. -/
+lemma energyEigenstate_linearIndependent :
+    LinearIndependent ℂ (fun n : Fin T.N => T.energyEigenstate (T.quantaWaveNumber n)) :=
+  linearIndependent_of_ne_zero_of_inner_eq_zero
+    (fun n => T.energyEigenstate_ne_zero (T.quantaWaveNumber n))
+    (fun _ _ h => T.energyEigenstate_orthogonal (T.quantaWaveNumber_injective.ne h))
+
+/-- The energy eigenstates span the Hilbert space. -/
+lemma energyEigenstate_span :
+    ⊤ ≤ Submodule.span ℂ (Set.range fun n : Fin T.N =>
+      T.energyEigenstate (T.quantaWaveNumber n)) :=
+  le_of_eq (T.energyEigenstate_linearIndependent.span_eq_top_of_card_eq_finrank'
+    (by simp [T.finrank_hilbertSpace])).symm
+
+/-- The normalized energy eigenstates `N ^ (-1/2) • energyEigenstate k` are orthonormal. -/
+lemma energyEigenstate_orthonormal :
+    Orthonormal ℂ (fun n : Fin T.N =>
+      (((Real.sqrt T.N)⁻¹ : ℝ) : ℂ) • T.energyEigenstate (T.quantaWaveNumber n)) := by
+  rw [orthonormal_iff_ite]
+  intro m n
+  rw [inner_smul_left, inner_smul_right]
+  by_cases h : m = n
+  · subst h
+    simp only [↓reduceIte, energyEigenstate_inner_self]
+    have hN : (0 : ℝ) < T.N := Nat.cast_pos.2 (Nat.pos_of_ne_zero (NeZero.ne T.N))
+    have hs : (Real.sqrt T.N : ℂ) ^ 2 = T.N := by
+      rw [← Complex.ofReal_pow, Real.sq_sqrt hN.le, Complex.ofReal_natCast]
+    have hs0 : (Real.sqrt T.N : ℂ) ≠ 0 := by
+      exact_mod_cast (Real.sqrt_pos.2 hN).ne'
+    rw [Complex.conj_ofReal]
+    simp only [Complex.ofReal_inv]
+    rw [← hs]
+    field_simp
+  · simp only [h, ↓reduceIte, T.energyEigenstate_orthogonal (T.quantaWaveNumber_injective.ne h)]
+    simp
+
+/-- The normalized energy eigenstates form an orthonormal basis of the Hilbert space. -/
+noncomputable def energyEigenbasis : OrthonormalBasis (Fin T.N) ℂ T.HilbertSpace :=
+  OrthonormalBasis.mk T.energyEigenstate_orthonormal <| by
+    rw [← Set.smul_set_range, Submodule.span_smul_eq_of_isUnit _ _
+      (Ne.isUnit (by simp [NeZero.ne T.N]))]
+    exact T.energyEigenstate_span
+
+/-- The `n`-th vector of the basis is the normalized energy eigenstate of the `n`-th
+wavenumber. -/
+@[simp]
+lemma energyEigenbasis_apply (n : Fin T.N) :
+    T.energyEigenbasis n =
+      (((Real.sqrt T.N)⁻¹ : ℝ) : ℂ) • T.energyEigenstate (T.quantaWaveNumber n) := by
+  simp [energyEigenbasis]
 
 /-!
 
@@ -509,6 +603,31 @@ lemma hamiltonian_energyEigenstate (k : T.QuantaWaveNumber) :
     Complex.ofReal_sub, Complex.ofReal_mul, Complex.ofReal_ofNat, Complex.ofReal_cos,
       Complex.cos.eq_1]
   ring_nf
+
+/-!
+
+### F.5. The spectrum of the Hamiltonian
+
+-/
+
+/-- The eigenvalues of the Hamiltonian are exactly the energies `E0 - 2 t cos (k a)` of the
+quantized wavenumbers. -/
+lemma hasEigenvalue_hamiltonian_iff (E : ℂ) :
+    Module.End.HasEigenvalue T.hamiltonian E ↔
+      ∃ k : T.QuantaWaveNumber, E = T.energyEigenvalue k := by
+  refine ⟨fun h => ?_, fun ⟨k, hk⟩ => hk ▸ Module.End.hasEigenvalue_of_hasEigenvector
+    ⟨Module.End.mem_eigenspace_iff.2 (T.hamiltonian_energyEigenstate k),
+      T.energyEigenstate_ne_zero k⟩⟩
+  obtain ⟨ψ, hψ, hψ0⟩ := h.exists_hasEigenvector
+  rw [Module.End.mem_eigenspace_iff] at hψ
+  obtain ⟨n, hn⟩ : ∃ n, ⟪T.energyEigenstate (T.quantaWaveNumber n), ψ⟫_ℂ ≠ 0 := by
+    by_contra! h0
+    refine hψ0 (ext_inner_left_basis T.energyEigenbasis.toBasis fun n => ?_)
+    rw [OrthonormalBasis.coe_toBasis, energyEigenbasis_apply, inner_smul_left, h0, mul_zero,
+      inner_zero_right]
+  refine ⟨T.quantaWaveNumber n, mul_right_cancel₀ hn ?_⟩
+  rw [← inner_smul_right, ← hψ, ← hamiltonian_hermitian, hamiltonian_energyEigenstate]
+  exact (inner_smul_left _ _ (T.energyEigenvalue _ : ℂ)).trans (by rw [Complex.conj_ofReal])
 
 end TightBindingChain
 end CondensedMatter

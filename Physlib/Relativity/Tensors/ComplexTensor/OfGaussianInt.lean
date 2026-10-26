@@ -74,34 +74,34 @@ lemma contr_basis_gaussianInt {c : complexLorentzTensor.Color}
       = GaussianInt.toComplex (if i.val = j.val then 1 else 0) := by
   match c with
   | Color.upL =>
-    change Fermion.leftDualContraction
+    change Fermion.LeftHandedWeyl.contr
       (Fermion.LeftHandedWeyl.basis i ⊗ₜ Fermion.DualLeftHandedWeyl.basis j) = _
-    rw [Fermion.leftDualContraction_basis]
+    rw [Fermion.LeftHandedWeyl.contr_basis]
     simp
   | Color.downL =>
-    change Fermion.dualLeftContraction
+    change Fermion.DualLeftHandedWeyl.contr
       (Fermion.DualLeftHandedWeyl.basis i ⊗ₜ Fermion.LeftHandedWeyl.basis j) = _
-    rw [Fermion.dualLeftContraction_basis]
+    rw [Fermion.DualLeftHandedWeyl.contr_basis]
     simp
   | Color.upR =>
-    change Fermion.rightDualContraction
+    change Fermion.RightHandedWeyl.contr
       (Fermion.RightHandedWeyl.basis i ⊗ₜ Fermion.DualRightHandedWeyl.basis j) = _
-    rw [Fermion.rightDualContraction_basis]
+    rw [Fermion.RightHandedWeyl.contr_basis]
     simp
   | Color.downR =>
-    change Fermion.rightDualContraction
+    change Fermion.RightHandedWeyl.contr
       (Fermion.RightHandedWeyl.basis i ⊗ₜ Fermion.DualRightHandedWeyl.basis j) = _
-    rw [Fermion.rightDualContraction_basis]
+    rw [Fermion.RightHandedWeyl.contr_basis]
     simp
   | Color.up =>
-    change Lorentz.contrCoContraction
+    change Lorentz.ContrℂModule.contr
       (Lorentz.complexContrBasisFin4 i ⊗ₜ Lorentz.complexCoBasisFin4 j) = _
-    rw [Lorentz.contrCoContraction_basis]
+    rw [Lorentz.ContrℂModule.contr_basis]
     simp
   | Color.down =>
-    change Lorentz.contrCoContraction
+    change Lorentz.ContrℂModule.contr
       (Lorentz.complexContrBasisFin4 i ⊗ₜ Lorentz.complexCoBasisFin4 j) = _
-    rw [Lorentz.contrCoContraction_basis]
+    rw [Lorentz.ContrℂModule.contr_basis]
     simp
 open TensorSpecies
 open Tensor

@@ -27,6 +27,7 @@ public import QuantumInfo.Entropy.VonNeumann
 public import QuantumInfo.ForMathlib.ComplexLaplaceTransform
 public import QuantumInfo.ForMathlib.ContinuousLinearMap
 public import QuantumInfo.ForMathlib.ContinuousSup
+public import QuantumInfo.ForMathlib.ExchangeRelations
 public import QuantumInfo.ForMathlib.Filter
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.BlockDiagonal
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.GeneralizedPerspectiveFunction

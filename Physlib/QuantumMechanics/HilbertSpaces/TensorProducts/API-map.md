@@ -12,7 +12,8 @@ relating the various ways of bracketing and ordering the factors.
 
 Two Hilbert spaces have a complete tensor product, the completion of their algebraic tensor
 product. [1] It is commutative, by a linear isometry equivalence exchanging the factors [2], and
-associative, by a linear isometry equivalence rebracketing three factors. [3] Whenever either
+associative, by a linear isometry equivalence rebracketing three factors. [3] On the algebraic
+tensor product of three spaces this rebracketing is the algebraic one. [4] Whenever either
 factor is finite-dimensional, the complete tensor product is isometrically equivalent to the
 algebraic one. [TODO]
 
@@ -25,3 +26,6 @@ space has a Fock space built from its tensor powers. [TODO]
 1. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean — `CompleteTensorProduct`
 2. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean — `CompleteTensorProduct.comm`
 3. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean — `CompleteTensorProduct.assoc`
+4. Physlib/QuantumMechanics/HilbertSpaces/TensorProducts/CompleteTensorProduct.lean —
+   `CompleteTensorProduct.tIncl₃ₗᵢ`, `CompleteTensorProduct.tIncl₃'ₗᵢ`,
+   `CompleteTensorProduct.assoc_tIncl₃ₗᵢ`, `CompleteTensorProduct.assoc_tmul`

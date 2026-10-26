@@ -55,17 +55,17 @@ lemma unitTensor_repr_apply {d : ℕ} (c : Color)
   cases c with
   | up =>
       rw [unitTensor_basis_repr,
-        show ((realLorentzTensor d).unit Color.up) (1 : ℝ) = Lorentz.preCoContrUnitVal d from
-          Lorentz.preCoContrUnit_apply_one]
-      rw [Lorentz.preCoContrUnitVal_expand_tmul]
+        show ((realLorentzTensor d).unit Color.up) (1 : ℝ) = Lorentz.ContrMod.unitVal d from
+          Lorentz.ContrMod.unit_apply_one]
+      rw [Lorentz.ContrMod.unitVal_expand_tmul]
       simp only [map_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
         Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul]
       rw [Finset.sum_eq_single (φ 0)] <;> aesop
   | down =>
       rw [unitTensor_basis_repr,
-        show ((realLorentzTensor d).unit Color.down) (1 : ℝ) = Lorentz.preContrCoUnitVal d from
-          Lorentz.preContrCoUnit_apply_one]
-      rw [Lorentz.preContrCoUnitVal_expand_tmul]
+        show ((realLorentzTensor d).unit Color.down) (1 : ℝ) = Lorentz.CoMod.unitVal d from
+          Lorentz.CoMod.unit_apply_one]
+      rw [Lorentz.CoMod.unitVal_expand_tmul]
       simp only [map_sum, Finsupp.coe_finsetSum, Finset.sum_apply,
         Basis.tensorProduct_repr_tmul_apply, Basis.repr_self, Finsupp.single_apply, smul_eq_mul]
       rw [Finset.sum_eq_single (φ 0)] <;> aesop

@@ -32,18 +32,18 @@ open Complex Constants
 open KroneckerDelta
 open ContinuousLinearMap SchwartzMap
 
-variable (H : HydrogenAtom)
+variable {d : ℕ} (H : HydrogenAtom d)
 
 attribute [local instance 100] LieRing.ofAssociativeRing
 
 /-- The (regularized) Laplace-Runge-Lenz vector operator for the `d`-dimensional hydrogen atom,
   `𝐀(ε)ᵢ ≔ ½(𝐩ⱼ𝐋ᵢⱼ + 𝐋ᵢⱼ𝐩ⱼ) - mk·𝐫(ε)⁻¹𝐱ᵢ`. -/
-def lrlOperator (ε : ℝˣ) (i : Fin H.d) : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ) :=
+def lrlOperator (ε : ℝˣ) (i : Fin d) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
   (2 : ℝ)⁻¹ • (𝐩 ⬝ᵥ 𝐋 i + 𝐋 i ⬝ᵥ 𝐩) - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i
 
 /-- `𝐀(ε)ᵢ = 𝐱ᵢ𝐩² - (𝐱ⱼ𝐩ⱼ)𝐩ᵢ + ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
-lemma lrlOperator_eq (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = 𝐱 i ∘L (𝐩 ⬝ᵥ 𝐩)
-    - (𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 i + (2⁻¹ * I * ℏ * (H.d - 1)) • 𝐩 i - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i := by
+lemma lrlOperator_eq (ε : ℝˣ) (i : Fin d) : H.lrlOperator ε i = 𝐱 i ∘L (𝐩 ⬝ᵥ 𝐩)
+    - (𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 i + (2⁻¹ * I * ℏ * (d - 1)) • 𝐩 i - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i := by
   rw [lrlOperator, sub_left_inj] -- mk·r⁻¹x terms match exactly
   calc
     _ = (2 : ℝ)⁻¹ • ∑ j, ((𝐩 j ∘L 𝐱 i) ∘L 𝐩 j + 𝐱 i ∘L 𝐩 j ∘L 𝐩 j
@@ -58,17 +58,17 @@ lemma lrlOperator_eq (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i = 𝐱 i �
         + (I * ℏ) • 𝐩 i - (I * ℏ) • δ[i,j] • 𝐩 j) := by
       simp_rw [sub_sub_sub_comm, sub_sub_eq_add_sub]
     _ = 𝐱 i ∘L (𝐩 ⬝ᵥ 𝐩) - (𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 i
-        + ((2⁻¹ * I * ℏ) • H.d • 𝐩 i - (2⁻¹ * I * ℏ) • 𝐩 i) := by
+        + ((2⁻¹ * I * ℏ) • d • 𝐩 i - (2⁻¹ * I * ℏ) • 𝐩 i) := by
       simp only [add_sub_assoc, Finset.sum_add_distrib, Finset.sum_sub_distrib, ← Finset.smul_sum,
         ← comp_finsetSum, ← finsetSum_comp, sum_smul, smul_add, smul_sub, smul_smul, mul_assoc]
       norm_num
       rfl
-    _ = 𝐱 i ∘L (𝐩 ⬝ᵥ 𝐩) - (𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 i + (2⁻¹ * I * ℏ * (H.d - 1)) • 𝐩 i := by
+    _ = 𝐱 i ∘L (𝐩 ⬝ᵥ 𝐩) - (𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 i + (2⁻¹ * I * ℏ * (d - 1)) • 𝐩 i := by
       simp only [← Nat.cast_smul_eq_nsmul ℂ, smul_smul, ← sub_smul, mul_sub, mul_one]
 
 /-- `𝐀(ε)ᵢ = 𝐋ᵢⱼ𝐩ⱼ + ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
-lemma lrlOperator_eq' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i =
-    𝐋 i ⬝ᵥ 𝐩 + (2⁻¹ * I * ℏ * (H.d - 1)) • 𝐩 i - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i := by
+lemma lrlOperator_eq' (ε : ℝˣ) (i : Fin d) : H.lrlOperator ε i =
+    𝐋 i ⬝ᵥ 𝐩 + (2⁻¹ * I * ℏ * (d - 1)) • 𝐩 i - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i := by
   rw [lrlOperator_eq, sub_left_inj, add_left_inj]
   symm
   trans ∑ j, 𝐱 i ∘L 𝐩 j ∘L 𝐩 j - ∑ j, (𝐱 j ∘L 𝐩 j) ∘L 𝐩 i
@@ -76,8 +76,8 @@ lemma lrlOperator_eq' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i =
   simp [← comp_finsetSum, ← finsetSum_comp, dotProduct, mul_def]
 
 /-- `𝐀(ε)ᵢ = 𝐩ⱼ𝐋ᵢⱼ - ½iℏ(d-1)𝐩ᵢ - mk·𝐫(ε)⁻¹𝐱ᵢ` -/
-lemma lrlOperator_eq'' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i =
-    𝐩 ⬝ᵥ 𝐋 i - (2⁻¹ * I * ℏ * (H.d - 1)) • 𝐩 i - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i := by
+lemma lrlOperator_eq'' (ε : ℝˣ) (i : Fin d) : H.lrlOperator ε i =
+    𝐩 ⬝ᵥ 𝐋 i - (2⁻¹ * I * ℏ * (d - 1)) • 𝐩 i - (H.m * H.k) • 𝐫₀ ε (-1) ∘L 𝐱 i := by
   trans (2 : ℝ) • H.lrlOperator ε i - H.lrlOperator ε i
   · simp [two_smul]
   nth_rw 2 [lrlOperator_eq']
@@ -95,8 +95,8 @@ lemma lrlOperator_eq'' (ε : ℝˣ) (i : Fin H.d) : H.lrlOperator ε i =
 
 /-- A supporting piece of `angularMomentum_commutation_lrl`: how `𝐋ᵢⱼ` commutes with the
 dot-product term `𝐋ₖ⬝ᵥ𝐩` appearing in `H.lrlOperator`'s expanded form (`lrlOperator_eq'`). -/
-lemma angularMomentum_commutation_Ldot_p (i j k : Fin H.d) :
-    ⁅𝐋[H.d] i j, 𝐋 k ⬝ᵥ 𝐩⁆ =
+lemma angularMomentum_commutation_Ldot_p (i j k : Fin d) :
+    ⁅𝐋[d] i j, 𝐋 k ⬝ᵥ 𝐩⁆ =
       (I * ℏ) • (δ[i,k] • (𝐋 j ⬝ᵥ 𝐩) - δ[j,k] • (𝐋 i ⬝ᵥ 𝐩)) := by
   simp only [dotProduct, mul_def, lie_sum, lie_leibniz,
     angularMomentum_commutation_angularMomentum, angularMomentum_commutation_momentum,
@@ -108,10 +108,10 @@ lemma angularMomentum_commutation_Ldot_p (i j k : Fin H.d) :
   module
 
 /-- `⁅𝐋ᵢⱼ, 𝐀(ε)ₖ⁆ = iℏ(δᵢₖ𝐀(ε)ⱼ - δⱼₖ𝐀(ε)ᵢ)` -/
-lemma angularMomentum_commutation_lrl (ε : ℝˣ) (i j k : Fin H.d) : ⁅𝐋 i j, H.lrlOperator ε k⁆ =
+lemma angularMomentum_commutation_lrl (ε : ℝˣ) (i j k : Fin d) : ⁅𝐋 i j, H.lrlOperator ε k⁆ =
     (I * ℏ) • (δ[i,k] • H.lrlOperator ε j - δ[j,k] • H.lrlOperator ε i) := by
   simp_rw [H.lrlOperator_eq']
-  rw [lie_sub, lie_add, angularMomentum_commutation_Ldot_p H i j k, lie_smul,
+  rw [lie_sub, lie_add, angularMomentum_commutation_Ldot_p i j k, lie_smul,
     angularMomentum_commutation_momentum, lie_smul, lie_leibniz,
     angularMomentum_commutation_radiusRegPow, angularMomentum_commutation_position]
   simp only [zero_comp, comp_sub, comp_smul, smul_sub]
@@ -119,7 +119,7 @@ lemma angularMomentum_commutation_lrl (ε : ℝˣ) (i j k : Fin H.d) : ⁅𝐋 i
 
 /-- `⁅𝐋ᵢⱼ, 𝐀(ε)²⁆ = 0` -/
 @[simp]
-lemma angularMomentum_commutation_lrlSqr (ε : ℝˣ) (i j : Fin H.d) :
+lemma angularMomentum_commutation_lrlSqr (ε : ℝˣ) (i j : Fin d) :
     ⁅𝐋 i j, H.lrlOperator ε ⬝ᵥ H.lrlOperator ε⁆ = 0 := by
   simp only [dotProduct, mul_def, lie_sum, lie_leibniz, H.angularMomentum_commutation_lrl,
     comp_smul, comp_sub, smul_comp, sub_comp, ← smul_add, ← Finset.smul_sum, Finset.sum_add_distrib,
@@ -128,7 +128,7 @@ lemma angularMomentum_commutation_lrlSqr (ε : ℝˣ) (i j : Fin H.d) :
 /-- `⁅𝐋², 𝐀(ε)²⁆ = 0` -/
 @[simp]
 lemma angularMomentumSqr_commutation_lrlSqr (ε : ℝˣ) :
-    ⁅𝐋²[H.d], H.lrlOperator ε ⬝ᵥ H.lrlOperator ε⁆ = 0 := by
+    ⁅𝐋²[d], H.lrlOperator ε ⬝ᵥ H.lrlOperator ε⁆ = 0 := by
   simp [angularMomentumOperatorSqr, sum_lie, leibniz_lie]
 
 /-
@@ -282,11 +282,11 @@ private lemma radiusRegInvCompPosition_comm {d : ℕ} (ε : ℝˣ) (i j : Fin d)
   simp [lie_leibniz, leibniz_lie, ← lie_skew (𝐫₀ _ _) (𝐱 _)]
 
 /-- `⁅𝐀(ε)ᵢ, 𝐀(ε)ⱼ⁆ = (-2iℏm·𝐇(ε) + iℏmkε²·𝐫(ε)⁻³)𝐋ᵢⱼ` -/
-lemma lrl_commutation_lrl (ε : ℝˣ) (i j : Fin H.d) :
+lemma lrl_commutation_lrl (ε : ℝˣ) (i j : Fin d) :
     ⁅H.lrlOperator ε i, H.lrlOperator ε j⁆ = ((-2 * I * ℏ * H.m) • H.hamiltonianRegCLM ε
     + (I * ℏ * H.m * H.k * ε.1 ^ 2) • 𝐫₀ ε (-3)) ∘L 𝐋 i j := by
   repeat rw [lrlOperator_eq]
-  let c₁ : ℂ := 2⁻¹ * I * ℏ * (H.d - 1)
+  let c₁ : ℂ := 2⁻¹ * I * ℏ * (d - 1)
   let c₂ : ℂ := H.m * H.k
   trans ⁅𝐱 i ∘L (𝐩 ⬝ᵥ 𝐩), 𝐱 j ∘L (𝐩 ⬝ᵥ 𝐩)⁆ + ⁅(𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 i, (𝐱 ⬝ᵥ 𝐩) ∘L 𝐩 j⁆
       + (c₂ ^ 2) • ⁅𝐫₀ ε (-1) ∘L 𝐱 i, 𝐫₀ ε (-1) ∘L 𝐱 j⁆
@@ -379,11 +379,11 @@ private lemma r_comm_pL_Lp {d : ℕ} (ε : ℝˣ) (i : Fin d) :
         Finset.sum_add_distrib, dotProduct, mul_def]
 
 /-- `⁅𝐇(ε), 𝐀(ε)ᵢ⁆ = iℏk·ε²𝐫(ε)⁻³𝐩ᵢ - 3ℏ²k/2·ε²𝐫(ε)⁻⁵𝐱ᵢ` -/
-lemma hamiltonianReg_commutation_lrl (ε : ℝˣ) (i : Fin H.d) :
+lemma hamiltonianReg_commutation_lrl (ε : ℝˣ) (i : Fin d) :
     ⁅H.hamiltonianRegCLM ε, H.lrlOperator ε i⁆ = (I * ℏ * H.k * ε.1 ^ 2) • 𝐫₀ ε (-3) ∘L 𝐩 i
     - (3 / 2 * ℏ ^ 2 * H.k * ε.1 ^ 2) • 𝐫₀ ε (-5) ∘L 𝐱 i := by
-  trans (-2⁻¹ * H.k) • (⁅𝐩[H.d] ⬝ᵥ 𝐩, 𝐫₀ ε (-1) ∘L 𝐱 i⁆
-      + ⁅𝐫₀[H.d] ε (-1), 𝐩 ⬝ᵥ 𝐋 i + 𝐋 i ⬝ᵥ 𝐩⁆)
+  trans (-2⁻¹ * H.k) • (⁅𝐩[d] ⬝ᵥ 𝐩, 𝐫₀ ε (-1) ∘L 𝐱 i⁆
+      + ⁅𝐫₀[d] ε (-1), 𝐩 ⬝ᵥ 𝐋 i + 𝐋 i ⬝ᵥ 𝐩⁆)
   · have h : H.m * H.k * (H.m⁻¹ * 2⁻¹) = 2⁻¹ * H.k := by grind [H.m_ne_zero]
     simp only [hamiltonianRegCLM_eq, lrlOperator, lie_sub, sub_lie, smul_lie, lie_smul,
       pSqr_comm_pL_Lp]
@@ -517,9 +517,9 @@ set_option backward.isDefEq.respectTransparency false in
   `𝐀(ε)² = 2m·𝐇(ε)(𝐋² + ¼ℏ²(d-1)²) + m²k²(𝟙 - ε²·𝐫(ε)⁻²) - ½(d-1)mkℏ²ε²𝐫(ε)⁻³`. -/
 lemma lrlOperatorSqr_eq (ε : ℝˣ) : H.lrlOperator ε ⬝ᵥ H.lrlOperator ε =
     (2 * H.m) • (H.hamiltonianRegCLM ε) ∘L
-      (𝐋² + (4⁻¹ * ℏ ^ 2 * (H.d - 1) ^ 2 : ℝ) • ContinuousLinearMap.id ℂ 𝓢(Space H.d, ℂ))
-    + (H.m ^ 2 * H.k ^ 2) • (ContinuousLinearMap.id ℂ 𝓢(Space H.d, ℂ) - ε.1 ^ 2 • 𝐫₀ ε (-2))
-    - (2⁻¹ * ℏ^2 * H.m * H.k * (H.d - 1) * ε.1 ^ 2) • 𝐫₀ ε (-3) := by
+      (𝐋² + (4⁻¹ * ℏ ^ 2 * (d - 1) ^ 2 : ℝ) • ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ))
+    + (H.m ^ 2 * H.k ^ 2) • (ContinuousLinearMap.id ℂ 𝓢(Space d, ℂ) - ε.1 ^ 2 • 𝐫₀ ε (-2))
+    - (2⁻¹ * ℏ^2 * H.m * H.k * (d - 1) * ε.1 ^ 2) • 𝐫₀ ε (-3) := by
   simp_rw [dotProduct, mul_def]
   conv_lhs => enter [2, i, 1]; rw [lrlOperator_eq']
   conv_lhs => enter [2, i, 2]; rw [lrlOperator_eq'']

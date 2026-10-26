@@ -19,6 +19,7 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Trajectory
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
+public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
@@ -52,7 +53,9 @@ public import Physlib.CondensedMatter.BandTheory.Basic
 public import Physlib.CondensedMatter.Basic
 public import Physlib.CondensedMatter.Crystal.Basic
 public import Physlib.CondensedMatter.Crystal.Bonds
+public import Physlib.CondensedMatter.Crystal.Embedding
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
+public import Physlib.CondensedMatter.Crystal.Symmetries
 public import Physlib.CondensedMatter.LatticeModels.Basic
 public import Physlib.CondensedMatter.ManyBody.Basic
 public import Physlib.CondensedMatter.Response.Basic
@@ -78,6 +81,7 @@ public import Physlib.Electromagnetism.Basic
 public import Physlib.Electromagnetism.Charge.ChargeUnit
 public import Physlib.Electromagnetism.Current.CircularCoil
 public import Physlib.Electromagnetism.Current.InfiniteWire
+public import Physlib.Electromagnetism.Distributional.Basic
 public import Physlib.Electromagnetism.Dynamics.Basic
 public import Physlib.Electromagnetism.Dynamics.CurrentDensity
 public import Physlib.Electromagnetism.Dynamics.Hamiltonian
@@ -131,6 +135,7 @@ public import Physlib.Mathematics.Calculus.AdjFDeriv
 public import Physlib.Mathematics.Calculus.Divergence
 public import Physlib.Mathematics.Calculus.Gradient
 public import Physlib.Mathematics.Calculus.ParametricIntegration
+public import Physlib.Mathematics.Calculus.PartialDerivatives
 public import Physlib.Mathematics.Calculus.Wirtinger.Basic
 public import Physlib.Mathematics.Calculus.Wirtinger.Coordinate
 public import Physlib.Mathematics.Calculus.Wirtinger.Hessian

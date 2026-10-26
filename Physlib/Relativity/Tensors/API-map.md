@@ -242,10 +242,10 @@ indices. [62]
    `Module ℝ (CoMod d)`, `ContrMod.rep`, `CoMod.rep`, `ContrMod.stdBasis`, `CoMod.stdBasis`
 32. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Basic.lean — `contrBasis`, `coBasis`,
    `contrIsoCo`
-33. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean — `contrCoContract`,
-   `coContrContract`, `contrContrContractField`
-34. Physlib/Relativity/Tensors/RealTensor/Metrics/Pre.lean — `preContrMetric`, `preCoMetric`
-35. Physlib/Relativity/Tensors/RealTensor/Units/Pre.lean — `preContrCoUnit`, `preCoContrUnit`
+33. Physlib/Relativity/Tensors/RealTensor/Vector/Pre/Contraction.lean — `ContrMod.contr`,
+   `CoMod.contr`, `contrContrContractField`
+34. Physlib/Relativity/Tensors/RealTensor/Metrics/Pre.lean — `ContrMod.metric`, `CoMod.metric`
+35. Physlib/Relativity/Tensors/RealTensor/Units/Pre.lean — `CoMod.unit`, `ContrMod.unit`
 36. Physlib/Relativity/Tensors/RealTensor/Metrics/Basic.lean — `coMetric`, `contrMetric`,
    `actionT_coMetric`, `actionT_contrMetric`, `coMetric_repr_apply_eq_minkowskiMatrix`,
    `contrMetric_repr_apply_eq_minkowskiMatrix`, `metricTensor_repr_apply_eq_minkowskiMatrix`,
@@ -303,8 +303,8 @@ indices. [62]
    `complexLorentzTensor.Color`, `repDim`, `basis`, `rep`, `contrPCoeff_basis`
 54. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Modules.lean — `ContrℂModule`,
    `CoℂModule`, `ContrℂModule.SL2CRep`, `CoℂModule.SL2CRep`
-55. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Contraction.lean — `contrCoContraction`,
-   `coContrContraction`
+55. Physlib/Relativity/Tensors/ComplexTensor/Vector/Pre/Contraction.lean — `ContrℂModule.contr`,
+   `CoℂModule.contr`
 56. Physlib/Relativity/Tensors/ComplexTensor/Metrics/Basic.lean — `coMetric`, `contrMetric`,
    `leftMetric`, `rightMetric`, `dualLeftMetric`, `dualRightMetric`,
    `coMetric_eq_ofGaussianInt`, `leftMetric_eq_ofGaussianInt`

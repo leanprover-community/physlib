@@ -14,17 +14,17 @@ The symplectic form `ε` as a group element, and the identities moving it past a
 ## i. Overview
 
 The Weyl metric `Fermion.metricRaw = !![0, 1; -1, 0]` has determinant one, so it is itself an
-element of `SL(2, ℂ)`, written `Lorentz.SL2C.epsilon`. In that form it is the invariant
-symplectic form, `gᵀ ε g = ε`. Contracting spinor indices needs the single-index version of
-that invariance: a factor of `(g⁻¹)ᵀ`, or of `(g⁻¹)ᴴ`, moved across `ε` becomes a factor of
-`g`, or of its entrywise conjugate, on the other slot. Those are `metricRaw_comm` and
-`metricRaw_comm_star` at `g⁻¹`, read entrywise. Alongside this, `leftMetricVal_rep` states the
-invariance of `εᵃᵃ` as the plain equation on the tensor product, rather than through the
-intertwining property of `leftMetric`.
+element of `SL(2, ℂ)`, written `Lorentz.SL2C.epsilon`. In that form it is the invariant symplectic
+form, `gᵀ ε g = ε`. Contracting spinor indices needs the single-index version of that invariance: a
+factor of `(g⁻¹)ᵀ`, or of `(g⁻¹)ᴴ`, moved across `ε` becomes a factor of `g`, or of its entrywise
+conjugate, on the other slot. Those are `metricRaw_comm` and `metricRaw_comm_star` at `g⁻¹`, read
+entrywise. Alongside this, `LeftHandedWeyl.metricVal_rep` states the invariance of `εᵃᵃ` as the
+plain equation on the tensor product, rather than through the intertwining property of
+`LeftHandedWeyl.metric`.
 
 ## ii. Key results
 
-- `Fermion.leftMetricVal_rep` : `εᵃᵃ` is invariant under `SL(2, ℂ)`.
+- `Fermion.LeftHandedWeyl.metricVal_rep` : `εᵃᵃ` is invariant under `SL(2, ℂ)`.
 - `Lorentz.SL2C.epsilon` : the Weyl metric as an element of `SL(2, ℂ)`.
 - `Lorentz.SL2C.transpose_mul_epsilon_mul` : `ε` is the invariant symplectic form.
 - `Lorentz.SL2C.sum_epsilon_mul_inv_transpose`,
@@ -59,11 +59,11 @@ open TensorProduct
 -/
 
 /-- The metric `εᵃᵃ` is invariant under the action of `SL(2,ℂ)`. -/
-lemma leftMetricVal_rep (M : SL(2,ℂ)) :
-    TensorProduct.map (LeftHandedWeyl.rep M) (LeftHandedWeyl.rep M) leftMetricVal =
-      leftMetricVal := by
-  have h := LinearMap.congr_fun (leftMetric.isIntertwining' M) (1 : ℂ)
-  simpa [leftMetric_apply_one, Representation.tprod_apply] using h.symm
+lemma LeftHandedWeyl.metricVal_rep (M : SL(2,ℂ)) :
+    TensorProduct.map (LeftHandedWeyl.rep M) (LeftHandedWeyl.rep M) LeftHandedWeyl.metricVal =
+      LeftHandedWeyl.metricVal := by
+  have h := LinearMap.congr_fun (LeftHandedWeyl.metric.isIntertwining' M) (1 : ℂ)
+  simpa [LeftHandedWeyl.metric_apply_one, Representation.tprod_apply] using h.symm
 
 end
 

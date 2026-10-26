@@ -26,14 +26,14 @@ dual-right-handed fermion `φ_{dot a}`, acted on by `(M⁻¹)^†`.
 
 ## ii. Key results
 
-- `leftDualContraction` : the contraction `ψ^a φ_a`.
-- `dualLeftContraction` : the contraction `φ_a ψ^a`.
-- `rightDualContraction` : the contraction `ψ^{dot a} φ_{dot a}`.
-- `dualRightContraction` : the contraction `φ_{dot a} ψ^{dot a}`.
-- `eq_smul_leftDualContraction` : every invariant pairing of left-handed with dual-left-handed
-  Weyl fermions is a multiple of `leftDualContraction`; likewise
-  `eq_smul_dualLeftContraction`, `eq_smul_rightDualContraction` and
-  `eq_smul_dualRightContraction`.
+- `LeftHandedWeyl.contr` : the contraction `ψ^a φ_a`.
+- `DualLeftHandedWeyl.contr` : the contraction `φ_a ψ^a`.
+- `RightHandedWeyl.contr` : the contraction `ψ^{dot a} φ_{dot a}`.
+- `DualRightHandedWeyl.contr` : the contraction `φ_{dot a} ψ^{dot a}`.
+- `LeftHandedWeyl.eq_smul_contr` : every invariant pairing of left-handed with dual-left-handed
+  Weyl fermions is a multiple of `LeftHandedWeyl.contr`; likewise
+  `DualLeftHandedWeyl.eq_smul_contr`, `RightHandedWeyl.eq_smul_contr` and
+  `DualRightHandedWeyl.eq_smul_contr`.
 
 ## iii. Table of contents
 
@@ -85,8 +85,8 @@ open TensorProduct
 
 -/
 
-/-- The bilinear map `(ψ, φ) ↦ ψ^a φ_a` underlying `leftDualContraction`. -/
-def leftDualBi : LeftHandedWeyl →ₗ[ℂ] DualLeftHandedWeyl →ₗ[ℂ] ℂ where
+/-- The bilinear map `(ψ, φ) ↦ ψ^a φ_a` underlying `LeftHandedWeyl.contr`. -/
+def LeftHandedWeyl.contrBi : LeftHandedWeyl →ₗ[ℂ] DualLeftHandedWeyl →ₗ[ℂ] ℂ where
   toFun ψ := {
     toFun := fun φ => ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ,
     map_add' := by
@@ -110,9 +110,9 @@ def leftDualBi : LeftHandedWeyl →ₗ[ℂ] DualLeftHandedWeyl →ₗ[ℂ] ℂ w
 
 /-- The contraction `ψ^a φ_a` of a left-handed with a dual-left-handed Weyl fermion, the dot
   product of their components, as an intertwining map to the trivial representation. -/
-def leftDualContraction : (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).IntertwiningMap
+def LeftHandedWeyl.contr : (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).IntertwiningMap
     (Representation.trivial ℂ SL(2,ℂ) ℂ) where
-  toLinearMap := TensorProduct.lift leftDualBi
+  toLinearMap := TensorProduct.lift LeftHandedWeyl.contrBi
   isIntertwining' M := TensorProduct.ext' fun ψ φ => by
     change (M.1 *ᵥ ψ.toFin2ℂ) ⬝ᵥ (M.1⁻¹ᵀ *ᵥ φ.toFin2ℂ) = ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ
     rw [dotProduct_mulVec, vecMul_transpose, mulVec_mulVec]
@@ -124,15 +124,15 @@ def leftDualContraction : (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).Inte
 
 -/
 
-lemma leftDualContraction_hom_tmul (ψ : LeftHandedWeyl)
+lemma LeftHandedWeyl.contr_tmul (ψ : LeftHandedWeyl)
     (φ : DualLeftHandedWeyl) :
-    leftDualContraction (ψ ⊗ₜ φ) = ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ := by
+    LeftHandedWeyl.contr (ψ ⊗ₜ φ) = ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ := by
   rfl
 
-lemma leftDualContraction_basis (i j : Fin 2) :
-    leftDualContraction (LeftHandedWeyl.basis i ⊗ₜ DualLeftHandedWeyl.basis j) =
+lemma LeftHandedWeyl.contr_basis (i j : Fin 2) :
+    LeftHandedWeyl.contr (LeftHandedWeyl.basis i ⊗ₜ DualLeftHandedWeyl.basis j) =
       if i.1 = j.1 then (1 : ℂ) else 0 := by
-  rw [leftDualContraction_hom_tmul]
+  rw [LeftHandedWeyl.contr_tmul]
   simp only [LeftHandedWeyl.toFin2ℂ_eq_val, LeftHandedWeyl.basis_val,
     DualLeftHandedWeyl.toFin2ℂ_eq_val, DualLeftHandedWeyl.basis_val, dotProduct_single, mul_one]
   rw [Pi.single_apply]
@@ -141,9 +141,9 @@ lemma leftDualContraction_basis (i j : Fin 2) :
   exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
 
 /-- Contracting with the `j`-th basis vector picks out the `j`-th component of `ψ`. -/
-lemma leftDualContraction_tmul_basis (ψ : LeftHandedWeyl) (j : Fin 2) :
-    leftDualContraction (ψ ⊗ₜ DualLeftHandedWeyl.basis j) = ψ.val j := by
-  rw [leftDualContraction_hom_tmul, DualLeftHandedWeyl.toFin2ℂ_eq_val,
+lemma LeftHandedWeyl.contr_tmul_basis (ψ : LeftHandedWeyl) (j : Fin 2) :
+    LeftHandedWeyl.contr (ψ ⊗ₜ DualLeftHandedWeyl.basis j) = ψ.val j := by
+  rw [LeftHandedWeyl.contr_tmul, DualLeftHandedWeyl.toFin2ℂ_eq_val,
     DualLeftHandedWeyl.basis_val, dotProduct_single, mul_one]
   rfl
 
@@ -153,8 +153,8 @@ lemma leftDualContraction_tmul_basis (ψ : LeftHandedWeyl) (j : Fin 2) :
 
 -/
 
-/-- The bilinear map `(φ, ψ) ↦ φ_a ψ^a` underlying `dualLeftContraction`. -/
-def dualLeftBi : DualLeftHandedWeyl →ₗ[ℂ] LeftHandedWeyl →ₗ[ℂ] ℂ where
+/-- The bilinear map `(φ, ψ) ↦ φ_a ψ^a` underlying `DualLeftHandedWeyl.contr`. -/
+def DualLeftHandedWeyl.contrBi : DualLeftHandedWeyl →ₗ[ℂ] LeftHandedWeyl →ₗ[ℂ] ℂ where
   toFun ψ := {
     toFun := fun φ => ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ,
     map_add' := by
@@ -177,9 +177,9 @@ def dualLeftBi : DualLeftHandedWeyl →ₗ[ℂ] LeftHandedWeyl →ₗ[ℂ] ℂ w
 
 /-- The contraction `φ_a ψ^a` of a dual-left-handed with a left-handed Weyl fermion, the dot
   product of their components, as an intertwining map to the trivial representation. -/
-def dualLeftContraction : (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).IntertwiningMap
+def DualLeftHandedWeyl.contr : (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).IntertwiningMap
     (Representation.trivial ℂ SL(2,ℂ) ℂ) where
-  toLinearMap := TensorProduct.lift dualLeftBi
+  toLinearMap := TensorProduct.lift DualLeftHandedWeyl.contrBi
   isIntertwining' M := TensorProduct.ext' fun φ ψ => by
     change (M.1⁻¹ᵀ *ᵥ φ.toFin2ℂ) ⬝ᵥ (M.1 *ᵥ ψ.toFin2ℂ) = φ.toFin2ℂ ⬝ᵥ ψ.toFin2ℂ
     rw [dotProduct_mulVec, mulVec_transpose, vecMul_vecMul]
@@ -191,14 +191,14 @@ def dualLeftContraction : (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).Inte
 
 -/
 
-lemma dualLeftContraction_hom_tmul (φ : DualLeftHandedWeyl) (ψ : LeftHandedWeyl) :
-    dualLeftContraction (φ ⊗ₜ ψ) = φ.toFin2ℂ ⬝ᵥ ψ.toFin2ℂ := by
+lemma DualLeftHandedWeyl.contr_tmul (φ : DualLeftHandedWeyl) (ψ : LeftHandedWeyl) :
+    DualLeftHandedWeyl.contr (φ ⊗ₜ ψ) = φ.toFin2ℂ ⬝ᵥ ψ.toFin2ℂ := by
   rfl
 
-lemma dualLeftContraction_basis (i j : Fin 2) :
-    dualLeftContraction (DualLeftHandedWeyl.basis i ⊗ₜ LeftHandedWeyl.basis j) =
+lemma DualLeftHandedWeyl.contr_basis (i j : Fin 2) :
+    DualLeftHandedWeyl.contr (DualLeftHandedWeyl.basis i ⊗ₜ LeftHandedWeyl.basis j) =
       if i.1 = j.1 then (1 : ℂ) else 0 := by
-  rw [dualLeftContraction_hom_tmul]
+  rw [DualLeftHandedWeyl.contr_tmul]
   simp only [DualLeftHandedWeyl.toFin2ℂ_eq_val, DualLeftHandedWeyl.basis_val,
     LeftHandedWeyl.toFin2ℂ_eq_val, LeftHandedWeyl.basis_val, dotProduct_single, mul_one]
   rw [Pi.single_apply]
@@ -212,13 +212,13 @@ lemma dualLeftContraction_basis (i j : Fin 2) :
 
 -/
 
-lemma leftDualContraction_tmul_symm (ψ : LeftHandedWeyl) (φ : DualLeftHandedWeyl) :
-    leftDualContraction (ψ ⊗ₜ[ℂ] φ) = dualLeftContraction (φ ⊗ₜ[ℂ] ψ) := by
-  rw [leftDualContraction_hom_tmul, dualLeftContraction_hom_tmul, dotProduct_comm]
+lemma LeftHandedWeyl.contr_tmul_symm (ψ : LeftHandedWeyl) (φ : DualLeftHandedWeyl) :
+    LeftHandedWeyl.contr (ψ ⊗ₜ[ℂ] φ) = DualLeftHandedWeyl.contr (φ ⊗ₜ[ℂ] ψ) := by
+  rw [LeftHandedWeyl.contr_tmul, DualLeftHandedWeyl.contr_tmul, dotProduct_comm]
 
-lemma dualLeftContraction_tmul_symm (φ : DualLeftHandedWeyl) (ψ : LeftHandedWeyl) :
-    dualLeftContraction (φ ⊗ₜ[ℂ] ψ) = leftDualContraction (ψ ⊗ₜ[ℂ] φ) := by
-  rw [leftDualContraction_tmul_symm]
+lemma DualLeftHandedWeyl.contr_tmul_symm (φ : DualLeftHandedWeyl) (ψ : LeftHandedWeyl) :
+    DualLeftHandedWeyl.contr (φ ⊗ₜ[ℂ] ψ) = LeftHandedWeyl.contr (ψ ⊗ₜ[ℂ] φ) := by
+  rw [LeftHandedWeyl.contr_tmul_symm]
 
 /-!
 
@@ -227,17 +227,17 @@ lemma dualLeftContraction_tmul_symm (φ : DualLeftHandedWeyl) (ψ : LeftHandedWe
 -/
 
 /-- The contraction is nondegenerate: if `ψ^a φ_a = 0` for every `φ` then `ψ = 0`. -/
-lemma eq_zero_of_leftDualContraction_tmul_eq_zero (ψ : LeftHandedWeyl)
-    (h : ∀ φ, leftDualContraction (ψ ⊗ₜ φ) = 0) : ψ = 0 :=
+lemma LeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero (ψ : LeftHandedWeyl)
+    (h : ∀ φ, LeftHandedWeyl.contr (ψ ⊗ₜ φ) = 0) : ψ = 0 :=
   LeftHandedWeyl.toFin2ℂEquiv.injective <| funext fun j => by
     rw [map_zero]
-    exact (leftDualContraction_tmul_basis ψ j).symm.trans (h _)
+    exact (LeftHandedWeyl.contr_tmul_basis ψ j).symm.trans (h _)
 
 /-- The contraction is nondegenerate: if `φ_a ψ^a = 0` for every `ψ` then `φ = 0`. -/
-lemma eq_zero_of_dualLeftContraction_tmul_eq_zero (φ : DualLeftHandedWeyl)
-    (h : ∀ ψ, dualLeftContraction (φ ⊗ₜ ψ) = 0) : φ = 0 :=
+lemma DualLeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero (φ : DualLeftHandedWeyl)
+    (h : ∀ ψ, DualLeftHandedWeyl.contr (φ ⊗ₜ ψ) = 0) : φ = 0 :=
   DualLeftHandedWeyl.toFin2ℂEquiv.injective <| funext fun j => by
-    rw [map_zero, Pi.zero_apply, ← h (LeftHandedWeyl.basis j), dualLeftContraction_hom_tmul,
+    rw [map_zero, Pi.zero_apply, ← h (LeftHandedWeyl.basis j), DualLeftHandedWeyl.contr_tmul,
       LeftHandedWeyl.toFin2ℂ_eq_val, LeftHandedWeyl.basis_val, dotProduct_single, mul_one]
 
 /-!
@@ -248,24 +248,24 @@ lemma eq_zero_of_dualLeftContraction_tmul_eq_zero (φ : DualLeftHandedWeyl)
 
 /-- The pairing `(ψ, φ) ↦ ψ^a φ_a` is perfect. It identifies dual-left-handed Weyl fermions with
   the dual of left-handed Weyl fermions, and vice versa. -/
-instance leftDualBi_isPerfPair : leftDualBi.IsPerfPair :=
+instance LeftHandedWeyl.contrBi_isPerfPair : LeftHandedWeyl.contrBi.IsPerfPair :=
   .of_injective
     ((injective_iff_map_eq_zero _).2 fun ψ h =>
-      eq_zero_of_leftDualContraction_tmul_eq_zero ψ fun φ => LinearMap.congr_fun h φ)
+      LeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero ψ fun φ => LinearMap.congr_fun h φ)
     ((injective_iff_map_eq_zero _).2 fun φ h =>
-      eq_zero_of_dualLeftContraction_tmul_eq_zero φ fun ψ => by
-        rw [dualLeftContraction_tmul_symm]
+      DualLeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero φ fun ψ => by
+        rw [DualLeftHandedWeyl.contr_tmul_symm]
         exact LinearMap.congr_fun h ψ)
 
 /-- The pairing `(φ, ψ) ↦ φ_a ψ^a` is perfect. It identifies left-handed Weyl fermions with the
   dual of dual-left-handed Weyl fermions, and vice versa. -/
-instance dualLeftBi_isPerfPair : dualLeftBi.IsPerfPair :=
+instance DualLeftHandedWeyl.contrBi_isPerfPair : DualLeftHandedWeyl.contrBi.IsPerfPair :=
   .of_injective
     ((injective_iff_map_eq_zero _).2 fun φ h =>
-      eq_zero_of_dualLeftContraction_tmul_eq_zero φ fun ψ => LinearMap.congr_fun h ψ)
+      DualLeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero φ fun ψ => LinearMap.congr_fun h ψ)
     ((injective_iff_map_eq_zero _).2 fun ψ h =>
-      eq_zero_of_leftDualContraction_tmul_eq_zero ψ fun φ => by
-        rw [leftDualContraction_tmul_symm]
+      LeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero ψ fun φ => by
+        rw [LeftHandedWeyl.contr_tmul_symm]
         exact LinearMap.congr_fun h φ)
 
 /-!
@@ -275,40 +275,40 @@ instance dualLeftBi_isPerfPair : dualLeftBi.IsPerfPair :=
 -/
 
 /-- Every `SL(2,ℂ)`-invariant pairing of left-handed with dual-left-handed Weyl fermions is a
-  multiple of `leftDualContraction`. -/
-lemma eq_smul_leftDualContraction
+  multiple of `LeftHandedWeyl.contr`. -/
+lemma LeftHandedWeyl.eq_smul_contr
     (B : (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).IntertwiningMap
       (Representation.trivial ℂ SL(2,ℂ) ℂ)) :
-    ∃ z : ℂ, B = z • leftDualContraction := by
+    ∃ z : ℂ, B = z • LeftHandedWeyl.contr := by
   have hinv (C : (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).IntertwiningMap
       (Representation.trivial ℂ SL(2,ℂ) ℂ)) (M : SL(2,ℂ)) (ψ φ) :
       C (LeftHandedWeyl.rep M ψ ⊗ₜ DualLeftHandedWeyl.rep M φ) = C (ψ ⊗ₜ φ) := by
     simpa using Representation.IntertwiningMap.isIntertwining _ _ C M (ψ ⊗ₜ φ)
   obtain ⟨T, hT⟩ : ∃ T : Module.End ℂ LeftHandedWeyl,
-      ∀ ψ φ, B (ψ ⊗ₜ φ) = leftDualContraction (T ψ ⊗ₜ φ) :=
-    ⟨leftDualBi.toPerfPair.symm.toLinearMap ∘ₗ curry B.toLinearMap, fun ψ φ =>
+      ∀ ψ φ, B (ψ ⊗ₜ φ) = LeftHandedWeyl.contr (T ψ ⊗ₜ φ) :=
+    ⟨LeftHandedWeyl.contrBi.toPerfPair.symm.toLinearMap ∘ₗ curry B.toLinearMap, fun ψ φ =>
       (LinearMap.congr_fun
-        (leftDualBi.apply_symm_toPerfPair_self (curry B.toLinearMap ψ)) φ).symm⟩
+        (LeftHandedWeyl.contrBi.apply_symm_toPerfPair_self (curry B.toLinearMap ψ)) φ).symm⟩
   obtain ⟨μ, hμ⟩ := LeftHandedWeyl.end_eq_smul_id_of_commute_rep (T := T) fun M =>
     LinearMap.ext fun ψ => sub_eq_zero.1 <|
-      eq_zero_of_leftDualContraction_tmul_eq_zero _ fun φ => by
+      LeftHandedWeyl.eq_zero_of_contr_tmul_eq_zero _ fun φ => by
         rw [sub_tmul, map_sub, sub_eq_zero, LinearMap.comp_apply, LinearMap.comp_apply, ← hT,
           ← DualLeftHandedWeyl.rep.self_inv_apply M φ, hinv, hT, hinv]
   refine ⟨μ, Representation.IntertwiningMap.ext (TensorProduct.ext' fun ψ φ => ?_)⟩
-  change B (ψ ⊗ₜ φ) = μ • leftDualContraction (ψ ⊗ₜ φ)
+  change B (ψ ⊗ₜ φ) = μ • LeftHandedWeyl.contr (ψ ⊗ₜ φ)
   rw [hT, hμ, LinearMap.smul_apply, LinearMap.id_apply, ← smul_tmul', map_smul]
 
 /-- Every `SL(2,ℂ)`-invariant pairing of dual-left-handed with left-handed Weyl fermions is a
-  multiple of `dualLeftContraction`. -/
-lemma eq_smul_dualLeftContraction
+  multiple of `DualLeftHandedWeyl.contr`. -/
+lemma DualLeftHandedWeyl.eq_smul_contr
     (B : (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).IntertwiningMap
       (Representation.trivial ℂ SL(2,ℂ) ℂ)) :
-    ∃ z : ℂ, B = z • dualLeftContraction := by
-  obtain ⟨z, hz⟩ := eq_smul_leftDualContraction
+    ∃ z : ℂ, B = z • DualLeftHandedWeyl.contr := by
+  obtain ⟨z, hz⟩ := LeftHandedWeyl.eq_smul_contr
     (B.comp (Representation.TensorProduct.comm _ _).toIntertwiningMap)
   refine ⟨z, Representation.IntertwiningMap.ext (TensorProduct.ext' fun φ ψ => ?_)⟩
-  change B (φ ⊗ₜ ψ) = z • dualLeftContraction (φ ⊗ₜ ψ)
-  rw [dualLeftContraction_tmul_symm]
+  change B (φ ⊗ₜ ψ) = z • DualLeftHandedWeyl.contr (φ ⊗ₜ ψ)
+  rw [DualLeftHandedWeyl.contr_tmul_symm]
   exact congr($hz (ψ ⊗ₜ φ))
 
 /-!
@@ -323,8 +323,8 @@ lemma eq_smul_dualLeftContraction
 
 -/
 
-/-- The bilinear map `(ψ, φ) ↦ ψ^{dot a} φ_{dot a}` underlying `rightDualContraction`. -/
-def rightDualBi : RightHandedWeyl →ₗ[ℂ] DualRightHandedWeyl →ₗ[ℂ] ℂ where
+/-- The bilinear map `(ψ, φ) ↦ ψ^{dot a} φ_{dot a}` underlying `RightHandedWeyl.contr`. -/
+def RightHandedWeyl.contrBi : RightHandedWeyl →ₗ[ℂ] DualRightHandedWeyl →ₗ[ℂ] ℂ where
   toFun ψ := {
     toFun := fun φ => ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ,
     map_add' := by
@@ -349,9 +349,9 @@ def rightDualBi : RightHandedWeyl →ₗ[ℂ] DualRightHandedWeyl →ₗ[ℂ] �
 /-- The contraction `ψ^{dot a} φ_{dot a}` of a right-handed with a dual-right-handed Weyl
   fermion, the dot product of their components, as an intertwining map to the trivial
   representation. -/
-def rightDualContraction : (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).IntertwiningMap
+def RightHandedWeyl.contr : (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).IntertwiningMap
     (Representation.trivial ℂ SL(2,ℂ) ℂ) where
-  toLinearMap := TensorProduct.lift rightDualBi
+  toLinearMap := TensorProduct.lift RightHandedWeyl.contrBi
   isIntertwining' M := TensorProduct.ext' fun ψ φ => by
     change (M.1.map star *ᵥ ψ.toFin2ℂ) ⬝ᵥ (M.1⁻¹.conjTranspose *ᵥ φ.toFin2ℂ) =
       ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ
@@ -374,15 +374,15 @@ def rightDualContraction : (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).I
 
 -/
 
-lemma rightDualContraction_hom_tmul (ψ : RightHandedWeyl)
+lemma RightHandedWeyl.contr_tmul (ψ : RightHandedWeyl)
     (φ : DualRightHandedWeyl) :
-    rightDualContraction (ψ ⊗ₜ φ) = ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ := by
+    RightHandedWeyl.contr (ψ ⊗ₜ φ) = ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ := by
   rfl
 
-lemma rightDualContraction_basis (i j : Fin 2) :
-    rightDualContraction (RightHandedWeyl.basis i ⊗ₜ DualRightHandedWeyl.basis j) =
+lemma RightHandedWeyl.contr_basis (i j : Fin 2) :
+    RightHandedWeyl.contr (RightHandedWeyl.basis i ⊗ₜ DualRightHandedWeyl.basis j) =
     if i.1 = j.1 then (1 : ℂ) else 0 := by
-  rw [rightDualContraction_hom_tmul]
+  rw [RightHandedWeyl.contr_tmul]
   simp only [RightHandedWeyl.toFin2ℂ_eq_val, RightHandedWeyl.basis_val,
     DualRightHandedWeyl.toFin2ℂ_eq_val, DualRightHandedWeyl.basis_val, dotProduct_single, mul_one]
   rw [Pi.single_apply]
@@ -391,9 +391,9 @@ lemma rightDualContraction_basis (i j : Fin 2) :
   exact Eq.propIntro (fun a => id (Eq.symm a)) fun a => id (Eq.symm a)
 
 /-- Contracting with the `j`-th basis vector picks out the `j`-th component. -/
-lemma rightDualContraction_tmul_basis (ψ : RightHandedWeyl) (j : Fin 2) :
-    rightDualContraction (ψ ⊗ₜ DualRightHandedWeyl.basis j) = ψ.val j := by
-  rw [rightDualContraction_hom_tmul, DualRightHandedWeyl.toFin2ℂ_eq_val,
+lemma RightHandedWeyl.contr_tmul_basis (ψ : RightHandedWeyl) (j : Fin 2) :
+    RightHandedWeyl.contr (ψ ⊗ₜ DualRightHandedWeyl.basis j) = ψ.val j := by
+  rw [RightHandedWeyl.contr_tmul, DualRightHandedWeyl.toFin2ℂ_eq_val,
     DualRightHandedWeyl.basis_val, dotProduct_single, mul_one]
   rfl
 
@@ -403,8 +403,8 @@ lemma rightDualContraction_tmul_basis (ψ : RightHandedWeyl) (j : Fin 2) :
 
 -/
 
-/-- The bilinear map `(φ, ψ) ↦ φ_{dot a} ψ^{dot a}` underlying `dualRightContraction`. -/
-def dualRightBi : DualRightHandedWeyl →ₗ[ℂ] RightHandedWeyl →ₗ[ℂ] ℂ where
+/-- The bilinear map `(φ, ψ) ↦ φ_{dot a} ψ^{dot a}` underlying `DualRightHandedWeyl.contr`. -/
+def DualRightHandedWeyl.contrBi : DualRightHandedWeyl →ₗ[ℂ] RightHandedWeyl →ₗ[ℂ] ℂ where
   toFun ψ := {
     toFun := fun φ => ψ.toFin2ℂ ⬝ᵥ φ.toFin2ℂ,
     map_add' := by
@@ -428,9 +428,9 @@ def dualRightBi : DualRightHandedWeyl →ₗ[ℂ] RightHandedWeyl →ₗ[ℂ] �
 /-- The contraction `φ_{dot a} ψ^{dot a}` of a dual-right-handed with a right-handed Weyl
   fermion, the dot product of their components, as an intertwining map to the trivial
   representation. -/
-def dualRightContraction : (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).IntertwiningMap
+def DualRightHandedWeyl.contr : (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).IntertwiningMap
     (Representation.trivial ℂ SL(2,ℂ) ℂ) where
-  toLinearMap := TensorProduct.lift dualRightBi
+  toLinearMap := TensorProduct.lift DualRightHandedWeyl.contrBi
   isIntertwining' M := TensorProduct.ext' fun φ ψ => by
     change (M.1⁻¹.conjTranspose *ᵥ φ.toFin2ℂ) ⬝ᵥ (M.1.map star *ᵥ ψ.toFin2ℂ) =
       φ.toFin2ℂ ⬝ᵥ ψ.toFin2ℂ
@@ -453,15 +453,15 @@ def dualRightContraction : (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).I
 
 -/
 
-lemma dualRightContraction_hom_tmul (φ : DualRightHandedWeyl)
+lemma DualRightHandedWeyl.contr_tmul (φ : DualRightHandedWeyl)
     (ψ : RightHandedWeyl) :
-    dualRightContraction (φ ⊗ₜ ψ) = φ.toFin2ℂ ⬝ᵥ ψ.toFin2ℂ := by
+    DualRightHandedWeyl.contr (φ ⊗ₜ ψ) = φ.toFin2ℂ ⬝ᵥ ψ.toFin2ℂ := by
   rfl
 
-lemma dualRightContraction_basis (i j : Fin 2) :
-    dualRightContraction (DualRightHandedWeyl.basis i ⊗ₜ RightHandedWeyl.basis j) =
+lemma DualRightHandedWeyl.contr_basis (i j : Fin 2) :
+    DualRightHandedWeyl.contr (DualRightHandedWeyl.basis i ⊗ₜ RightHandedWeyl.basis j) =
     if i.1 = j.1 then (1 : ℂ) else 0 := by
-  rw [dualRightContraction_hom_tmul]
+  rw [DualRightHandedWeyl.contr_tmul]
   simp only [DualRightHandedWeyl.toFin2ℂ_eq_val, DualRightHandedWeyl.basis_val,
     RightHandedWeyl.toFin2ℂ_eq_val, RightHandedWeyl.basis_val, dotProduct_single, mul_one]
   rw [Pi.single_apply]
@@ -475,13 +475,13 @@ lemma dualRightContraction_basis (i j : Fin 2) :
 
 -/
 
-lemma rightDualContraction_tmul_symm (ψ : RightHandedWeyl) (φ : DualRightHandedWeyl) :
-    rightDualContraction (ψ ⊗ₜ[ℂ] φ) = dualRightContraction (φ ⊗ₜ[ℂ] ψ) := by
-  rw [rightDualContraction_hom_tmul, dualRightContraction_hom_tmul, dotProduct_comm]
+lemma RightHandedWeyl.contr_tmul_symm (ψ : RightHandedWeyl) (φ : DualRightHandedWeyl) :
+    RightHandedWeyl.contr (ψ ⊗ₜ[ℂ] φ) = DualRightHandedWeyl.contr (φ ⊗ₜ[ℂ] ψ) := by
+  rw [RightHandedWeyl.contr_tmul, DualRightHandedWeyl.contr_tmul, dotProduct_comm]
 
-lemma dualRightContraction_tmul_symm (φ : DualRightHandedWeyl) (ψ : RightHandedWeyl) :
-    dualRightContraction (φ ⊗ₜ[ℂ] ψ) = rightDualContraction (ψ ⊗ₜ[ℂ] φ) := by
-  rw [rightDualContraction_tmul_symm]
+lemma DualRightHandedWeyl.contr_tmul_symm (φ : DualRightHandedWeyl) (ψ : RightHandedWeyl) :
+    DualRightHandedWeyl.contr (φ ⊗ₜ[ℂ] ψ) = RightHandedWeyl.contr (ψ ⊗ₜ[ℂ] φ) := by
+  rw [RightHandedWeyl.contr_tmul_symm]
 
 /-!
 
@@ -491,18 +491,18 @@ lemma dualRightContraction_tmul_symm (φ : DualRightHandedWeyl) (ψ : RightHande
 
 /-- The contraction is nondegenerate: if `ψ^{dot a} φ_{dot a} = 0` for every `φ` then
   `ψ = 0`. -/
-lemma eq_zero_of_rightDualContraction_tmul_eq_zero (ψ : RightHandedWeyl)
-    (h : ∀ φ, rightDualContraction (ψ ⊗ₜ φ) = 0) : ψ = 0 :=
+lemma RightHandedWeyl.eq_zero_of_contr_tmul_eq_zero (ψ : RightHandedWeyl)
+    (h : ∀ φ, RightHandedWeyl.contr (ψ ⊗ₜ φ) = 0) : ψ = 0 :=
   RightHandedWeyl.toFin2ℂEquiv.injective <| funext fun j => by
     rw [map_zero]
-    exact (rightDualContraction_tmul_basis ψ j).symm.trans (h _)
+    exact (RightHandedWeyl.contr_tmul_basis ψ j).symm.trans (h _)
 
 /-- The contraction is nondegenerate: if `φ_{dot a} ψ^{dot a} = 0` for every `ψ` then
   `φ = 0`. -/
-lemma eq_zero_of_dualRightContraction_tmul_eq_zero (φ : DualRightHandedWeyl)
-    (h : ∀ ψ, dualRightContraction (φ ⊗ₜ ψ) = 0) : φ = 0 :=
+lemma DualRightHandedWeyl.eq_zero_of_contr_tmul_eq_zero (φ : DualRightHandedWeyl)
+    (h : ∀ ψ, DualRightHandedWeyl.contr (φ ⊗ₜ ψ) = 0) : φ = 0 :=
   DualRightHandedWeyl.toFin2ℂEquiv.injective <| funext fun j => by
-    rw [map_zero, Pi.zero_apply, ← h (RightHandedWeyl.basis j), dualRightContraction_hom_tmul,
+    rw [map_zero, Pi.zero_apply, ← h (RightHandedWeyl.basis j), DualRightHandedWeyl.contr_tmul,
       RightHandedWeyl.toFin2ℂ_eq_val, RightHandedWeyl.basis_val, dotProduct_single, mul_one]
 
 /-!
@@ -513,24 +513,24 @@ lemma eq_zero_of_dualRightContraction_tmul_eq_zero (φ : DualRightHandedWeyl)
 
 /-- The pairing `(ψ, φ) ↦ ψ^{dot a} φ_{dot a}` is perfect. It identifies dual-right-handed Weyl
   fermions with the dual of right-handed Weyl fermions, and vice versa. -/
-instance rightDualBi_isPerfPair : rightDualBi.IsPerfPair :=
+instance RightHandedWeyl.contrBi_isPerfPair : RightHandedWeyl.contrBi.IsPerfPair :=
   .of_injective
     ((injective_iff_map_eq_zero _).2 fun ψ h =>
-      eq_zero_of_rightDualContraction_tmul_eq_zero ψ fun φ => LinearMap.congr_fun h φ)
+      RightHandedWeyl.eq_zero_of_contr_tmul_eq_zero ψ fun φ => LinearMap.congr_fun h φ)
     ((injective_iff_map_eq_zero _).2 fun φ h =>
-      eq_zero_of_dualRightContraction_tmul_eq_zero φ fun ψ => by
-        rw [dualRightContraction_tmul_symm]
+      DualRightHandedWeyl.eq_zero_of_contr_tmul_eq_zero φ fun ψ => by
+        rw [DualRightHandedWeyl.contr_tmul_symm]
         exact LinearMap.congr_fun h ψ)
 
 /-- The pairing `(φ, ψ) ↦ φ_{dot a} ψ^{dot a}` is perfect. It identifies right-handed Weyl
   fermions with the dual of dual-right-handed Weyl fermions, and vice versa. -/
-instance dualRightBi_isPerfPair : dualRightBi.IsPerfPair :=
+instance DualRightHandedWeyl.contrBi_isPerfPair : DualRightHandedWeyl.contrBi.IsPerfPair :=
   .of_injective
     ((injective_iff_map_eq_zero _).2 fun φ h =>
-      eq_zero_of_dualRightContraction_tmul_eq_zero φ fun ψ => LinearMap.congr_fun h ψ)
+      DualRightHandedWeyl.eq_zero_of_contr_tmul_eq_zero φ fun ψ => LinearMap.congr_fun h ψ)
     ((injective_iff_map_eq_zero _).2 fun ψ h =>
-      eq_zero_of_rightDualContraction_tmul_eq_zero ψ fun φ => by
-        rw [rightDualContraction_tmul_symm]
+      RightHandedWeyl.eq_zero_of_contr_tmul_eq_zero ψ fun φ => by
+        rw [RightHandedWeyl.contr_tmul_symm]
         exact LinearMap.congr_fun h φ)
 
 /-!
@@ -542,40 +542,40 @@ The argument is that of A.6.
 -/
 
 /-- Every `SL(2,ℂ)`-invariant pairing of right-handed with dual-right-handed Weyl fermions is a
-  multiple of `rightDualContraction`. -/
-lemma eq_smul_rightDualContraction
+  multiple of `RightHandedWeyl.contr`. -/
+lemma RightHandedWeyl.eq_smul_contr
     (B : (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).IntertwiningMap
       (Representation.trivial ℂ SL(2,ℂ) ℂ)) :
-    ∃ z : ℂ, B = z • rightDualContraction := by
+    ∃ z : ℂ, B = z • RightHandedWeyl.contr := by
   have hinv (C : (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).IntertwiningMap
       (Representation.trivial ℂ SL(2,ℂ) ℂ)) (M : SL(2,ℂ)) (ψ φ) :
       C (RightHandedWeyl.rep M ψ ⊗ₜ DualRightHandedWeyl.rep M φ) = C (ψ ⊗ₜ φ) := by
     simpa using Representation.IntertwiningMap.isIntertwining _ _ C M (ψ ⊗ₜ φ)
   obtain ⟨T, hT⟩ : ∃ T : Module.End ℂ RightHandedWeyl,
-      ∀ ψ φ, B (ψ ⊗ₜ φ) = rightDualContraction (T ψ ⊗ₜ φ) :=
-    ⟨rightDualBi.toPerfPair.symm.toLinearMap ∘ₗ curry B.toLinearMap, fun ψ φ =>
+      ∀ ψ φ, B (ψ ⊗ₜ φ) = RightHandedWeyl.contr (T ψ ⊗ₜ φ) :=
+    ⟨RightHandedWeyl.contrBi.toPerfPair.symm.toLinearMap ∘ₗ curry B.toLinearMap, fun ψ φ =>
       (LinearMap.congr_fun
-        (rightDualBi.apply_symm_toPerfPair_self (curry B.toLinearMap ψ)) φ).symm⟩
+        (RightHandedWeyl.contrBi.apply_symm_toPerfPair_self (curry B.toLinearMap ψ)) φ).symm⟩
   obtain ⟨μ, hμ⟩ := RightHandedWeyl.end_eq_smul_id_of_commute_rep (T := T) fun M =>
     LinearMap.ext fun ψ => sub_eq_zero.1 <|
-      eq_zero_of_rightDualContraction_tmul_eq_zero _ fun φ => by
+      RightHandedWeyl.eq_zero_of_contr_tmul_eq_zero _ fun φ => by
         rw [sub_tmul, map_sub, sub_eq_zero, LinearMap.comp_apply, LinearMap.comp_apply, ← hT,
           ← DualRightHandedWeyl.rep.self_inv_apply M φ, hinv, hT, hinv]
   refine ⟨μ, Representation.IntertwiningMap.ext (TensorProduct.ext' fun ψ φ => ?_)⟩
-  change B (ψ ⊗ₜ φ) = μ • rightDualContraction (ψ ⊗ₜ φ)
+  change B (ψ ⊗ₜ φ) = μ • RightHandedWeyl.contr (ψ ⊗ₜ φ)
   rw [hT, hμ, LinearMap.smul_apply, LinearMap.id_apply, ← smul_tmul', map_smul]
 
 /-- Every `SL(2,ℂ)`-invariant pairing of dual-right-handed with right-handed Weyl fermions is a
-  multiple of `dualRightContraction`. -/
-lemma eq_smul_dualRightContraction
+  multiple of `DualRightHandedWeyl.contr`. -/
+lemma DualRightHandedWeyl.eq_smul_contr
     (B : (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).IntertwiningMap
       (Representation.trivial ℂ SL(2,ℂ) ℂ)) :
-    ∃ z : ℂ, B = z • dualRightContraction := by
-  obtain ⟨z, hz⟩ := eq_smul_rightDualContraction
+    ∃ z : ℂ, B = z • DualRightHandedWeyl.contr := by
+  obtain ⟨z, hz⟩ := RightHandedWeyl.eq_smul_contr
     (B.comp (Representation.TensorProduct.comm _ _).toIntertwiningMap)
   refine ⟨z, Representation.IntertwiningMap.ext (TensorProduct.ext' fun φ ψ => ?_)⟩
-  change B (φ ⊗ₜ ψ) = z • dualRightContraction (φ ⊗ₜ ψ)
-  rw [dualRightContraction_tmul_symm]
+  change B (φ ⊗ₜ ψ) = z • DualRightHandedWeyl.contr (φ ⊗ₜ ψ)
+  rw [DualRightHandedWeyl.contr_tmul_symm]
   exact congr($hz (ψ ⊗ₜ φ))
 
 end

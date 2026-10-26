@@ -42,25 +42,22 @@ open MeasureTheory
 open SpaceDHilbertSpace
 
 /-- A single-particle quantum system with Hilbert space `SpaceDHilbertSpace d`,
-  characterized by the number of spatial dimensions `d : ℕ`, particle's mass `m > 0`
-  and potential function `potential : Space d → ℝ`. -/
+  characterized by the particle's mass `m > 0` and potential function `potential : Space d → ℝ`. -/
 @[ext]
-structure SpaceDQuantumSystem where
-  /-- The number of spatial dimensions. -/
-  d : ℕ
+structure SpaceDQuantumSystem (d : ℕ) where
   /-- The mass (positive). -/
   m : ℝ
   hm : 0 < m
   /-- The potential function. -/
   potential : Space d → ℝ
 
-variable {Q : SpaceDQuantumSystem}
+variable {d : ℕ} {Q : SpaceDQuantumSystem d}
 
 namespace SpaceDQuantumSystem
 noncomputable section
 
-/-- The Hilbert space, `SpaceDHilbertSpace Q.d`. -/
-abbrev HS := SpaceDHilbertSpace Q.d
+/-- The Hilbert space, `SpaceDHilbertSpace d`. -/
+abbrev HS (_ : SpaceDQuantumSystem d) := SpaceDHilbertSpace d
 
 /-!
 ## A. Basic properties
@@ -88,7 +85,7 @@ open LinearPMap
 -/
 
 /-- The kinetic operator `(2m)⁻¹𝐩²` as a continuous linear map on Schwartz space. -/
-def kineticCLM : 𝓢(Space Q.d, ℂ) →L[ℂ] 𝓢(Space Q.d, ℂ) := (2 * Q.m)⁻¹ • (𝐩 ⬝ᵥ 𝐩)
+def kineticCLM : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) := (2 * Q.m)⁻¹ • (𝐩 ⬝ᵥ 𝐩)
 
 lemma kineticCLM_eq : Q.kineticCLM = (2 * Q.m)⁻¹ • (𝐩 ⬝ᵥ 𝐩) := rfl
 
@@ -103,18 +100,18 @@ lemma kineticOperator_eq : Q.kineticOperator = ofReal (2 * Q.m)⁻¹ • momentu
 
 /-- The potential operator as a continuous linear map on Schwartz space,
   where `Q.potential` is a function of temperate growth. -/
-def potentialCLM : 𝓢(Space Q.d, ℂ) →L[ℂ] 𝓢(Space Q.d, ℂ) := smulLeftCLM ℂ (ofReal ∘ Q.potential)
+def potentialCLM : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) := smulLeftCLM ℂ (ofReal ∘ Q.potential)
 
 lemma potentialCLM_eq : Q.potentialCLM = smulLeftCLM ℂ (ofReal ∘ Q.potential) := rfl
 
-lemma potentialCLM_apply (h_HTG : Q.potential.HasTemperateGrowth) (ψ : 𝓢(Space Q.d, ℂ)) :
+lemma potentialCLM_apply (h_HTG : Q.potential.HasTemperateGrowth) (ψ : 𝓢(Space d, ℂ)) :
     Q.potentialCLM ψ = fun x ↦ Q.potential x • ψ x := by
   rw [potentialCLM_eq, smulLeftCLM_apply (by fun_prop)]
   simp
 
 @[simp]
 lemma potentialCLM_apply_apply
-    (h_HTG : Q.potential.HasTemperateGrowth) (ψ : 𝓢(Space Q.d, ℂ)) (x : Space Q.d) :
+    (h_HTG : Q.potential.HasTemperateGrowth) (ψ : 𝓢(Space d, ℂ)) (x : Space d) :
     Q.potentialCLM ψ x = Q.potential x • ψ x := by
   rw [potentialCLM_apply h_HTG]
 
@@ -129,7 +126,7 @@ lemma potentialOperator_isSelfAdjoint (h_AESM : AEStronglyMeasurable Q.potential
   mulOperator_isSelfAdjoint_ofReal (by fun_prop) (by ext; simp)
 
 lemma potentialOperator_domain_ge (h_HTG : Q.potential.HasTemperateGrowth) :
-    SchwartzSubmodule Q.d ≤ Q.potentialOperator.domain :=
+    SchwartzSubmodule d ≤ Q.potentialOperator.domain :=
   mulOperator_domain_ge_of_hasTemperateGrowth (by fun_prop) volume
 
 /-!
@@ -138,7 +135,7 @@ lemma potentialOperator_domain_ge (h_HTG : Q.potential.HasTemperateGrowth) :
 
 /-- The Hamiltonian operator as a continuous linear map on Schwartz space,
   where `Q.potential` is a function of temperate growth. -/
-def hamiltonianCLM : 𝓢(Space Q.d, ℂ) →L[ℂ] 𝓢(Space Q.d, ℂ) := Q.kineticCLM + Q.potentialCLM
+def hamiltonianCLM : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) := Q.kineticCLM + Q.potentialCLM
 
 lemma hamiltonianCLM_eq : Q.hamiltonianCLM = Q.kineticCLM + Q.potentialCLM := rfl
 
