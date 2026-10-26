@@ -20,14 +20,12 @@ A rank-two tensor `M` defines a bilinear map on one-slot tensors by contracting 
 each of its slots, `t, s ↦ M_{zw} tᶻ sʷ`. In the bases dual to the slots of `M` the matrix of this
 map is the component matrix `toMatrix M`.
 
-Two rank-two tensors multiply like matrices: `contractInnerT A B` is `A_{μν} B^{νρ}`, the second
-index of `A` contracted with the first index of `B`, the surviving indices `μ` and `ρ` kept in that
-order. For the Minkowski metric, `η_{μν} η^{νρ} = δ_μ^ρ`. The general contraction `crossToEnd`
-gives the same tensor but names the colours of the result by a formula in the two colour lists;
-`contractInnerT` names them `![cs 0, ds 1]`, so that an equation such as `g_{IJ̄} g^{J̄K} = δ_I^K`
-can be stated with no cast. For a species with contraction-dual bases, the matrix of
-`A_{μν} B^{νρ}` is the matrix product `(A_{μν}) (B^{νρ})`, `∑_ν A_{μν} B^{νρ}`
-(`toMatrix_contractInnerT`).
+`contractInnerT A B` is the tensor `A_{μν} B^{νρ}`, in which the second index of `A` is contracted
+with the first index of `B`. Its indices are `μ` and `ρ`, with colours `![cs 0, ds 1]`. The general
+contraction `crossToEnd` gives the same tensor, but its colours are a composite of the two colour
+lists. With `contractInnerT`, an identity such as `η_{μν} η^{νρ} = δ_μ^ρ` needs no renaming of the
+colours of the product. For contraction-dual bases, the matrix of `A_{μν} B^{νρ}` is the matrix
+product of `(A_{μν})` and `(B^{νρ})` (`toMatrix_contractInnerT`).
 
 ## ii. Key results
 
@@ -35,14 +33,14 @@ can be stated with no cast. For a species with contraction-dual bases, the matri
     tensor, with its component formula `toLinearMap₂_apply`.
 - `TensorSpecies.Tensor.toMatrix₂_toLinearMap₂` : its matrix in the dual bases is the component
     matrix of `M`.
-- `TensorSpecies.Tensor.contractInnerT` : the product `A_{μν} B^{νρ}` of two rank-two tensors;
-    `toMatrix_contractInnerT`: for contraction-dual bases its matrix is the matrix product
-    `(A_{μν}) (B^{νρ})`.
+- `TensorSpecies.Tensor.contractInnerT` : the contraction `A_{μν} B^{νρ}` of two rank-two tensors.
+- `TensorSpecies.Tensor.toMatrix_contractInnerT` : for contraction-dual bases, its matrix is the
+    matrix product.
 
 ## iii. Table of contents
 
 - A. Pairing a rank-two tensor with two vectors
-- B. The product of two rank-two tensors
+- B. Contracting two rank-two tensors
 
 ## iv. References
 
@@ -120,30 +118,27 @@ lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y : C} {cM : Fin 2 →
 
 /-!
 
-## B. The product of two rank-two tensors
+## B. Contracting two rank-two tensors
 
 -/
 
-/-- The product `A_{μν} B^{νρ}` of two rank-two tensors: the second index of `A` contracted with the
-first index of `B`, which `h` says are dual. The result has the surviving indices `μ` of `A` and
-`ρ` of `B`, in that order. For the Minkowski metric, `contractInnerT` of `η_{μν}` and `η^{νρ}` is
-`η_{μν} η^{νρ}`. -/
+/-- The contraction `A_{μν} B^{νρ}` of the second index of `A` with the first index of `B`, whose
+colours are dual by `h`. The result has the indices `μ` and `ρ`, in that order. -/
 noncomputable def contractInnerT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) :
     Tensor S cs →ₗ[k] Tensor S ds →ₗ[k] Tensor S ![cs 0, ds 1] :=
   (crossToEnd (Fin.last 1) (0 : Fin 2) h).compr₂
     (permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl))
 
-/-- `A_{μν} B^{νρ}` is the cross contraction `crossToEnd` of the last index of `A` with the first
-index of `B`, the colours of the result renamed to those of `μ` and `ρ`. -/
+/-- `contractInnerT` is `crossToEnd` of the last index of `A` with the first index of `B`, with the
+colours of the result renamed to `![cs 0, ds 1]`. -/
 lemma contractInnerT_apply {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (a : Tensor S cs)
     (b : Tensor S ds) :
     contractInnerT h a b = permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl)
       (crossToEnd (Fin.last 1) (0 : Fin 2) h a b) :=
   rfl
 
-/-- The cross contraction of the last index of `A` with the first index of `B` is `A_{μν} B^{νρ}`,
-the colours of the result renamed to the list `crossToEnd` produces. This is `contractInnerT_apply`
-read from right to left. -/
+/-- `crossToEnd` of the last index of `A` with the first index of `B` is `contractInnerT` with its
+colours renamed. This is `contractInnerT_apply` read from right to left. -/
 lemma crossToEnd_eq_permT_contractInnerT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
     (a : Tensor S cs) (b : Tensor S ds) :
     crossToEnd (Fin.last 1) (0 : Fin 2) h a b =
@@ -151,9 +146,9 @@ lemma crossToEnd_eq_permT_contractInnerT {cs ds : Fin 2 → C} (h : S.τ (cs 1) 
   rw [contractInnerT_apply, permT_permT]
   exact (permT_congr_eq_id _ _ _ rfl).symm
 
-/-- In components the product is the matrix product, `(A B)_μ{}^ρ = ∑_ν A_{μν} B^{νρ}`: the lower
-label `ν` of `A` is summed against the upper label `ν` of `B` it contracts with. This is
-`toMatrix_crossToEnd_pair` at general colour lists. -/
+/-- The matrix of `A_{μν} B^{νρ}` is the matrix product of `(A_{μν})` and `(B^{νρ})`, with the
+labels of `ν` in `B` matched to those in `A` by `dualIdxEquiv`. This is `toMatrix_crossToEnd_pair`
+at general colour lists. -/
 lemma toMatrix_contractInnerT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
     (a : Tensor S cs) (b : Tensor S ds) :
     toMatrix (contractInnerT h a b) =
@@ -166,8 +161,8 @@ lemma toMatrix_contractInnerT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S
   funext i
   fin_cases i <;> rfl
 
-/-- Transforming both factors and then multiplying is the same as multiplying and then
-transforming: for a Lorentz transformation `Λ`, `(Λ A)_{μν} (Λ B)^{νρ} = Λ (A_{μν} B^{νρ})`. -/
+/-- `contractInnerT` commutes with the action of `G`. For a Lorentz transformation `Λ`,
+`(Λ A)_{μν} (Λ B)^{νρ} = Λ (A_{μν} B^{νρ})`. -/
 lemma contractInnerT_equivariant {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (g : G)
     (a : Tensor S cs) (b : Tensor S ds) :
     contractInnerT h (g • a) (g • b) = g • contractInnerT h a b := by

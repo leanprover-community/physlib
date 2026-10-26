@@ -38,14 +38,15 @@ from the `CommRing` `crossToEnd`/`crossToSlot` algebra.
     form, every color propositional.
 - `TensorSpecies.Tensor.crossToSlotEquiv` : raising and lowering a named index against a pair that
     collapses in both orders, as a linear equivalence.
-- `TensorSpecies.Tensor.contractInnerT_eq_unitTensor_comm` : when the two indices of `M` have the
-    same labels, `M_{μν} M'^{νρ} = δ_μ^ρ` implies `M'^{νρ} M_{ρσ} = δ^ν_σ`.
+- `TensorSpecies.Tensor.contractInnerT_eq_unitTensor_comm` : if the label sets of the two indices
+    of `M` are in bijection, `M_{μν} M'^{νρ} = δ_μ^ρ` implies `M'^{νρ} M_{ρσ} = δ^ν_σ`.
 
 ## iii. Table of contents
 
 - A. The unit tensor as a slot-contraction identity
 - B. Round trips against a matched pair
 - C. Raising and lowering as an equivalence
+- D. One contraction law from the other
 
 ## iv. References
 
@@ -192,26 +193,21 @@ lemma crossToEnd_unitTensor {nA : ℕ} {cA : Fin (nA + 1) → C} {c : C}
 
 ## B. Round trips against a matched pair
 
-A pair `M_{μν}`, `M'^{νρ}` whose product is the unit tensor, `M_{μν} M'^{νρ} = δ_μ^ρ`, lowers and
-raises an index without loss: contracting an index of `t` with `M` and then with `M'` gives back
-`t`. The metric and its inverse are such a pair, `η_{μν} η^{νρ} = δ_μ^ρ`.
+If `M_{μν} M'^{νρ} = δ_μ^ρ`, contracting an index of a tensor `t` with `M` and then with `M'` gives
+back `t`. The metric and its inverse are such a pair.
 
 -/
 
-/-- The unit tensor `δ_μ^ρ` at a colour `e` has `ρ` of colour `e` and `μ` of the dual colour `τ e`.
-  A product `M_{μν} M'^{νρ}` has `μ` of some colour `a` and `ρ` of colour `e`, and it can equal
-  `δ_μ^ρ` only if `a = τ e`, which is `h`. This lemma lets `δ_μ^ρ` be written at the colours `a`,
-  `e` of the product, so that `M_{μν} M'^{νρ} = δ_μ^ρ` is a statement between tensors of the same
-  colours. -/
+/-- If `τ e = a`, the identity is a reindexing from `![τ e, e]` to `![a, e]`, so `permT` renames the
+  colours of `unitTensor e` to `![a, e]`. -/
 lemma IsReindexing.unitTensor_of_tau_eq {a e : C} (h : S.τ e = a) :
     IsReindexing (![S.τ e, e] : Fin 2 → C) ![a, e] (id : Fin 2 → Fin 2) :=
   IsReindexing.on_id.mpr (fun j => by fin_cases j <;> first | exact h | rfl)
 
-/-- Lowering then raising an index returns the tensor, with that index moved to the last slot:
-  `t^{…μ…} M₁_{μν} M₂^{νρ} = t^{……ρ}`, when `M₁_{μν} M₂^{νρ} = δ_μ^ρ`. The index moves because
-  `crossToEnd` places the surviving index of each contraction last. The last slot is a variable
-  `j` with `hj : j = last nA`, so that the lemma applies at a slot that is the last one only up to
-  an equality. -/
+/-- If `M₁_{μν} M₂^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M₁` and then with `M₂` gives
+  back `t` with that slot moved to the end, because `crossToEnd` places the surviving index last.
+  The last slot is a variable `j` with `hj : j = last nA`, so the lemma also applies where `j` is
+  last only up to an equality. -/
 lemma crossToEnd_round_trip_of_unit_slot {nA : ℕ} {c : Fin (nA + 1) → C} {d : C}
     (i j : Fin (nA + 1)) (hj : j = Fin.last nA)
     (M₁ : Tensor S ![S.τ (c i), d]) (M₂ : Tensor S ![S.τ d, c i])
@@ -306,16 +302,9 @@ private lemma crossToSlot_round_trip_of_unit {nA : ℕ} {c : Fin (nA + 1) → C}
     simp [Function.comp_apply, Fin.append_succAbove_const_eq_cycleIcc]
   · rfl
 
-/-- Lowering then raising an index in place returns the tensor: for a pair with
-  `M_{μν} M'^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M` and then with `M'` gives back
-  `t`, up to renaming the colour of slot `i` to itself. For the metric,
-  `t^{…μ…} ↦ η_{μν} t^{…μ…} = t_{…ν…} ↦ η^{νρ} t_{…ν…} = t^{…ρ…}`. The equalities `ha`, `hb`, `he`
-  say which index of `M` and of `M'` slot `i` contracts with and which colour survives, so `M`
-  and `M'` enter at whatever colour lists they carry. Raising then lowering is this lemma with
-  the roles of `M` and `M'` exchanged, so it needs the product in the other order,
-  `M'^{νρ} M_{ρσ} = δ^ν_σ`. When the two indices of `M` have the same labels the second law
-  follows from the first (`contractInnerT_eq_unitTensor_comm`); a pairing between colours of
-  different dimension needs both, so `crossToSlotEquiv` takes both. -/
+/-- If `M_{μν} M'^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M` and then with `M'` gives back
+  `t` in place, up to renaming the colour of slot `i`. The equalities `ha`, `hb` and `he` match
+  slot `i` with the indices of `M` and `M'`, so `M` and `M'` can have any colour lists. -/
 lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C}
     (i : Fin (nA + 1)) (he : c i = ds 1) (ha : S.τ (c i) = cs 0) (hb : S.τ (cs 1) = ds 0)
     (M : Tensor S cs) (M' : Tensor S ds)
@@ -343,10 +332,9 @@ lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {cs
 ## C. Raising and lowering as an equivalence
 
 Both collapse orders are hypotheses here and each is used once: `M · M' = δ` gives one round trip
-by section B, `M' · M = δ` the other through injectivity of the lowering half. When the two
-indices of `M` have the same labels, as for a metric or a Kähler metric, the second law follows
-from the first (`contractInnerT_eq_unitTensor_comm`); a pairing between colours of different
-dimension needs both.
+by section B, `M' · M = δ` the other through injectivity of the lowering half. If the label sets of
+the two indices of `M` are in bijection, as for a metric, the second law follows from the first
+(section D).
 
 -/
 
@@ -365,9 +353,7 @@ variable {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C} (i : Fin (nA 
 
 set_option backward.isDefEq.respectTransparency false in
 include hMM' in
-/-- Lowering with `M` and then raising with `M'` is the identity, when `M_{μν} M'^{νρ} = δ_μ^ρ`.
-  This is `crossToSlot_raise_lower_round_trip` with the colour renaming built into
-  `crossToSlotInv`. -/
+/-- If `M_{μν} M'^{νρ} = δ_μ^ρ`, `crossToSlotInv` with `M'` undoes `crossToSlot` with `M`. -/
 lemma crossToSlotInv_crossToSlot (t : Tensor S c) :
     crossToSlotInv i he hb M' (crossToSlot i (0 : Fin 2) ha M t) = t := by
   simp only [crossToSlotInv, LinearMap.coe_comp, Function.comp_apply]
@@ -377,9 +363,8 @@ lemma crossToSlotInv_crossToSlot (t : Tensor S c) :
   exact permT_congr_eq_id _ _ _ rfl
 
 include hMM' hM'M in
-/-- Raising with `M'` and then lowering with `M` is the identity. It uses the reversed product
-  `M'^{νρ} M_{ρσ} = δ^ν_σ`, which makes raising injective; an injective map with a left inverse
-  (`crossToSlotInv_crossToSlot`) has it as a two-sided inverse. -/
+/-- If also `M'^{νρ} M_{ρσ} = δ^ν_σ`, `crossToSlot` with `M` undoes `crossToSlotInv` with `M'`. The
+  second law makes `crossToSlotInv` injective, so its left inverse is also a right inverse. -/
 lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i (cs 1))) :
     crossToSlot i (0 : Fin 2) ha M (crossToSlotInv i he hb M' t) = t := by
   have hswap := crossToSlot_raise_lower_round_trip (S := S) (c := Function.update c i (cs 1)) i
@@ -397,11 +382,10 @@ lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i (cs 1))) :
   exact Function.LeftInverse.rightInverse_of_injective
     (crossToSlotInv_crossToSlot i he ha hb M M' hMM') hinj t
 
-/-- Lowering an index with `M` and raising it with `M'`, as a linear equivalence between tensors
-  with slot `i` at its original colour and tensors with slot `i` at the colour of the second index
-  of `M`, when `M_{μν} M'^{νρ} = δ_μ^ρ` and `M'^{νρ} M_{ρσ} = δ^ν_σ`. `M` may pair two different
-  colours, so this covers a metric and its inverse, `η_{μν}` and `η^{νρ}`, and also a pairing
-  between two unrelated colours. -/
+/-- The linear equivalence `crossToSlot` with `M`, with inverse `crossToSlotInv` with `M'`, when
+  `M_{μν} M'^{νρ} = δ_μ^ρ` and `M'^{νρ} M_{ρσ} = δ^ν_σ`. Slot `i` has colour `c i` on one side and
+  the colour `cs 1` of the second index of `M` on the other. For the metric this lowers and raises
+  an index with `η_{μν}` and `η^{νρ}`. -/
 noncomputable def crossToSlotEquiv : Tensor S c ≃ₗ[k] Tensor S (Function.update c i (cs 1)) :=
   LinearEquiv.mk (crossToSlot i (0 : Fin 2) ha M) (crossToSlotInv i he hb M').toFun
     (crossToSlotInv_crossToSlot i he ha hb M M' hMM')
@@ -409,9 +393,15 @@ noncomputable def crossToSlotEquiv : Tensor S c ≃ₗ[k] Tensor S (Function.upd
 
 end RoundTripEquiv
 
+/-!
+
+## D. One contraction law from the other
+
+-/
+
 open HasContrDualBases in
-/-- The matrix of `δ_μ^ρ` at `e` written at the colours `![a, e]` of a product: the identity
-matrix with its rows relabelled by the dual matching of `τ e = a`. -/
+/-- The matrix of `unitTensor e`, with its colours renamed to `![a, e]`, is the identity matrix with
+its rows relabelled by `dualIdxEquiv h`. -/
 lemma toMatrix_permT_unitTensor_of_tau_eq [HasContrDualBases S] {a e : C} (h : S.τ e = a) :
     toMatrix (permT id (IsReindexing.unitTensor_of_tau_eq h) (unitTensor (S := S) e)) =
       (1 : Matrix (basisIdx e) (basisIdx e) k).submatrix (dualIdxEquiv h).symm id := by
@@ -419,11 +409,9 @@ lemma toMatrix_permT_unitTensor_of_tau_eq [HasContrDualBases S] {a e : C} (h : S
   simpa [dualIdxEquiv, basisIdxCongr] using (toMatrix_unitTensor (S := S) e)
 
 open HasContrDualBases in
-/-- When the two indices of `M` have the same labels, one collapse law gives the other:
-`M_{μν} M'^{νρ} = δ_μ^ρ` implies `M'^{νρ} M_{ρσ} = δ^ν_σ`. For the metric, `η_{μν} η^{νρ} = δ_μ^ρ`
-gives `η^{νρ} η_{ρσ} = δ^ν_σ`. Without the label equivalence `e` this fails, as for a pairing
-between colours of different dimension: `A B = 1` does not give `B A = 1` for rectangular
-matrices. -/
+/-- If the label sets of the two indices of `M` are in bijection, `M_{μν} M'^{νρ} = δ_μ^ρ` implies
+`M'^{νρ} M_{ρσ} = δ^ν_σ`. Without the bijection `e` this fails, since `A B = 1` does not imply
+`B A = 1` for rectangular matrices. -/
 lemma contractInnerT_eq_unitTensor_comm [HasContrDualBases S] {cs ds : Fin 2 → C}
     (hb : S.τ (cs 1) = ds 0) (ha : S.τ (ds 1) = cs 0) (e : basisIdx (cs 0) ≃ basisIdx (cs 1))
     (M : Tensor S cs) (M' : Tensor S ds)
