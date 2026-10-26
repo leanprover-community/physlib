@@ -149,6 +149,10 @@ variable {k : Type} [CommRing k] [StarRing k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b)
 
+/-- If `bar a = d`, then `bar (τ d) = τ a`. -/
+lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
+  (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
+
 /-!
 
 ## B. The conjugation of vectors
@@ -544,16 +548,10 @@ lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 
   simp only [basisIdxCongr, ← Equiv.cast_symm, Equiv.symm_trans, Equiv.trans_apply,
     Equiv.cast_apply, cast_cast, cast_eq, Equiv.cast_refl, Equiv.refl_apply]
 
-/-- If `d = bar a`, then `bar (τ d) = τ a`. A tensor `g_{IJ̄}` of colours `![a, d]` has inverse
-`g^{J̄I}` of colours `![τ d, τ a]`; this lemma says the second of these is the conjugate of the
-first, so `toSquareMatrix` and `toSesqForm` apply to the inverse. -/
-lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
-  (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
-
 open HasContrDualBases in
-/-- Removing a bar and lowering an index commute on labels: starting from a label of the upper
-barred index `J̄`, removing the bar and then lowering gives the same label of the lower index `J` as
-lowering and then removing the bar.
+/-- Removing a bar and lowering an index commute on labels. From a label of the upper barred index
+`J̄`, removing the bar and then lowering gives the same label of the lower index `J` as lowering and
+then removing the bar.
 ```
 upper J̄ (τ d)  → remove bar →  upper J (τ a)
       ↓ lower                        ↓ lower
@@ -680,11 +678,7 @@ lemma isPosDef_toSesqForm_iff_toSquareMatrix_posDef [HasContrDualBases S.toTenso
 
 end PosDef
 
-end ConjTensorSpecies
-
-namespace ConjTensorSpecies
-
-open Tensor
+section Field
 
 variable {k : Type} [Field k] [StarRing k] [PartialOrder k] {C : Type} {G : Type} [Group G]
     {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
@@ -699,6 +693,8 @@ lemma isUnit_det_toSquareMatrix_of_isPosDef [HasContrDualBases S.toTensorSpecies
     IsUnit (S.toSquareMatrix M hbar).det :=
   (Matrix.isUnit_iff_isUnit_det _).1
     ((S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM).isUnit
+
+end Field
 
 end ConjTensorSpecies
 end

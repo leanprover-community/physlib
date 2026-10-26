@@ -11,30 +11,29 @@ public import Physlib.Relativity.Tensors.Conjugation.Basic
 
 # The inverse of a rank-two tensor
 
-The inverse `g^{J̄I}` of a tensor `g_{IJ̄}` with one index and one conjugate index, such as a Kähler
-metric.
+The inverse `g^{J̄I}` of a tensor `g_{IJ̄}` with one index and one conjugate index, such as a
+Hermitian metric.
 
 ## i. Overview
 
-The inverse of a Kähler metric `g_{IJ̄}` is the tensor `g^{J̄I}` with two upper indices whose
-contraction with `g` is the unit tensor, `g_{IJ̄} g^{J̄K} = δ_I^K`.
+The inverse of a tensor `g_{IJ̄}` is the tensor `g^{J̄I}`, with two upper indices, whose contraction
+with `g` is the unit tensor, `g_{IJ̄} g^{J̄K} = δ_I^K`.
 
-Convention: the colours of the inverse are `![τ (c 1), τ (c 0)]`, so its barred index comes first,
-`g^{J̄I}`; the usual `g^{IJ̄}` is the same tensor with its two indices swapped. Barred first is the
-order in which `g_{IJ̄} g^{J̄K}` contracts adjacent indices, so the contraction laws need no
-reordering of the inverse. The matrix `(g^{J̄I})`, row `J` and column `I`, is the inverse of the
-matrix `(g_{IJ̄})`; `inverseT` is defined by this matrix inversion and is zero when `(g_{IJ̄})` is
-not invertible. The inverse of a Hermitian `g` is Hermitian (A) and of a positive-definite `g`
-positive-definite (B).
+The colours of the inverse are `![τ (c 1), τ (c 0)]`, so its barred index comes first, `g^{J̄I}`.
+The usual `g^{IJ̄}` is the same tensor with its two indices swapped. With the barred index first,
+`g_{IJ̄} g^{J̄K}` contracts adjacent indices, so the contraction laws need no reordering of the
+inverse. The matrix `(g^{J̄I})`, with row `J` and column `I`, is the inverse of the matrix
+`(g_{IJ̄})`. `inverseT` is defined by this matrix inversion and is zero when `(g_{IJ̄})` is not
+invertible. The inverse of a Hermitian `g` is Hermitian (A), and the inverse of a
+positive-definite `g` is positive-definite (B).
 
 ## ii. Key results
 
 - `ConjTensorSpecies.inverseT` is the inverse `g^{J̄I}` of a tensor `g_{IJ̄}`.
-- `ConjTensorSpecies.toSquareMatrix_inverseT`: the matrix `(g^{J̄I})`, row `J` and column `I`, is
-  `(g_{IJ̄})⁻¹`.
+- `ConjTensorSpecies.toSquareMatrix_inverseT` says that the matrix `(g^{J̄I})` is `(g_{IJ̄})⁻¹`.
 - `ConjTensorSpecies.isSymm_toSesqForm_inverseT` and
-  `ConjTensorSpecies.isPosDef_toSesqForm_inverseT`: the inverse of a Hermitian or positive-definite
-  `g` is Hermitian or positive-definite.
+  `ConjTensorSpecies.isPosDef_toSesqForm_inverseT` say that the inverse of a Hermitian or
+  positive-definite `g` is again Hermitian or positive-definite.
 
 ## iii. Table of contents
 
@@ -53,12 +52,6 @@ noncomputable section
 
 open Module TensorSpecies TensorSpecies.Tensor
 
-/-!
-
-## A. The inverse
-
--/
-
 namespace ConjTensorSpecies
 
 open Tensor HasContrDualBases
@@ -70,9 +63,14 @@ variable {k : Type} [CommRing k] [StarRing k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
 
-/-- The inverse `g^{J̄I}` of a tensor `g_{IJ̄}`: the tensor with two upper indices whose matrix
-`(g^{J̄I})`, row `J` and column `I`, is the inverse of the matrix `(g_{IJ̄})`. It is zero when
-`(g_{IJ̄})` is not invertible. -/
+/-!
+
+## A. The inverse
+
+-/
+
+/-- The inverse `g^{J̄I}` of a tensor `g_{IJ̄}`. Its matrix, with row `J` and column `I`, is
+`(g_{IJ̄})⁻¹`, and it is zero when `(g_{IJ̄})` is not invertible. -/
 def inverseT {c : Fin 2 → C} (M : S.Tensor c) (hbar : S.bar (c 0) = c 1 := by rfl) :
     S.Tensor ![S.τ (c 1), S.τ (c 0)] :=
   fromMatrixT (S := S.toTensorSpecies) (S.τ (c 1)) (S.τ (c 0))
@@ -80,8 +78,8 @@ def inverseT {c : Fin 2 → C} (M : S.Tensor c) (hbar : S.bar (c 0) = c 1 := by 
       (Equiv.cast (hbar ▸ S.barIdx_eq (c 0)) ∘ (dualIdxEquiv (rfl : S.τ (c 1) = S.τ (c 1))).symm)
       (dualIdxEquiv (S.τ_τ_apply (c 0))))
 
-/-- The components of the inverse: `g^{J̄I}` is the entry `(J, I)` of `(g_{IJ̄})⁻¹`, the upper
-indices `J̄` and `I` labelled by the lower indices `J` and `I` they contract with. -/
+/-- The component `g^{J̄I}` is the entry `(J, I)` of `(g_{IJ̄})⁻¹`. The upper indices `J̄` and `I`
+are labelled by the lower indices `J` and `I` they contract with. -/
 lemma toMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.Tensor c) :
     toMatrix (S.inverseT M hbar) =
       (S.toSquareMatrix M hbar)⁻¹.submatrix
@@ -108,7 +106,7 @@ lemma toSquareMatrix_inverseT {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : 
     Function.comp_id]
   exact congrArg _ (funext (S.dualIdxEquiv_bar_tau hbar))
 
-/-- The inverse of a Hermitian tensor is Hermitian: if `(g_{IJ̄})* = g_{JĪ}`, then
+/-- The inverse of a Hermitian tensor is Hermitian. If `(g_{IJ̄})* = g_{JĪ}`, then
 `(g^{J̄I})* = g^{ĪJ}`. -/
 lemma isSymm_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
     (hx : S.τ x = c 0) (hy : S.τ y = S.τ (c 1)) {M : S.Tensor c}
@@ -118,36 +116,26 @@ lemma isSymm_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0)
     toSquareMatrix_inverseT]
   exact ((S.isSymm_toSesqForm_iff_toSquareMatrix_isHermitian hbar hx M).1 hM).inv.submatrix _
 
-end ConjTensorSpecies
-
 /-!
 
 ## B. Positive-definiteness
 
-Over a field, the matrix `(g_{IJ̄})` of a positive-definite `g`, such as a Kähler metric, is
-invertible (`isUnit_det_toSquareMatrix_of_isPosDef`), so `g` has a true inverse. That inverse is
-again positive-definite (`isPosDef_toSesqForm_inverseT`): `g^{J̄I} t_J̄ t̄_I > 0` for every
-covector `t ≠ 0`.
+Over a field, the matrix `(g_{IJ̄})` of a positive-definite `g` is invertible
+(`isUnit_det_toSquareMatrix_of_isPosDef`), so `g` has a true inverse. That inverse is again
+positive-definite (`isPosDef_toSesqForm_inverseT`).
 
 -/
 
-namespace ConjTensorSpecies
+section PosDef
 
-open Tensor HasContrDualBases
-
-variable {k : Type} [Field k] [StarRing k] {C : Type} {G : Type} [Group G]
+variable {k : Type} [Field k] [StarRing k] [PartialOrder k] {C : Type} {G : Type} [Group G]
     {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
     {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
 
-section PosDef
-
-variable [PartialOrder k]
-
-/-- The inverse of a positive-definite tensor is positive-definite: `g^{J̄I} t_J̄ t̄_I > 0` for
-every covector `t ≠ 0`. For a Kähler metric and `t_J̄ = (D_J W)*`, this makes the F-term
-`g^{J̄I} (D_J W)* D_I W` of the N = 1 potential non-negative. -/
+/-- The inverse of a positive-definite tensor is positive-definite, so `g^{J̄I} t_J̄ t̄_I > 0` for
+every covector `t ≠ 0`. -/
 lemma isPosDef_toSesqForm_inverseT {x y : C} {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
     (hx : S.τ x = c 0) (hy : S.τ y = S.τ (c 1)) {M : S.Tensor c}
     (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
