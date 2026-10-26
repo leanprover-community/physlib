@@ -86,7 +86,7 @@ One of the most common review comments on Physlib is the placement of lemmas. As
 
 ## 7. Little  maths results
 
-It is common to see small maths results with proofs which are 1-5 lines long placed as lemmas in a Physlib file, if they are used to prove some other result. Please don't do this, while it may seem good to separate proofs into small parts, a random math lemma in the middle of a file about physics effects the readability and flow of that file. It is best to either 1) make the lemma directly about the physics quantities involved, or 2) place its proof directly where it is needed instead of having a separate lemma.
+Please don't put short, single-use maths lemmas in physics files. However tidy it seems, a stray maths result interrupts the progression of physics for the reader. If you need to write one, check whether the fact is already in Mathlib, perhaps as a special case of something more general. If it isn't, but it is genuinely general, state it in a usable form in the relevant mathematics file. If it only makes sense in context, state it in terms of the physical quantities involved, and if it is used just once, inline the proof.
 
 <a id="namespaces"></a>
 
