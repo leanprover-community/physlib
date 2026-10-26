@@ -63,9 +63,7 @@ variable {d : ℕ} {E : Type*} [NormedAddCommGroup E]
 
 /-! ## B. The embedding -/
 
-/-- The embedding of the Bravais lattice of dimension `d` given by `d` primitive vectors: the
-vector of the translation `n` is the integer combination of the primitive vectors with
-coefficients `n j`, and the single site of a cell sits at the origin of the cell. -/
+/-- The embedding of the Bravais lattice of dimension `d` given by `d` primitive vectors. -/
 def ofVectors (v : Fin d → E) : Embedding (bravais d) E where
   vector :=
     { toFun n := ∑ j, n j • v j
