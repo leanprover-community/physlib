@@ -55,7 +55,7 @@ namespace Physlib.CondensedMatter.Crystal
 
 /-- The Bravais lattice of dimension `d`: the translation group is `ℤᵈ` and the unit cell has a
 single site. -/
-abbrev bravais (d : ℕ) : Crystal (Fin d → ℤ) := Crystal.ofUnitCell (Fin d → ℤ) Unit
+def bravais (d : ℕ) : Crystal (Fin d → ℤ) := Crystal.ofUnitCell (Fin d → ℤ) Unit
 
 namespace Embedding
 
@@ -63,24 +63,21 @@ variable {d : ℕ} {E : Type*} [NormedAddCommGroup E]
 
 /-! ## B. The embedding -/
 
-/-- The vector of the translation `n` is the integer combination of the primitive vectors with
-coefficients `n j`. -/
-def vectorHom (v : Fin d → E) : (Fin d → ℤ) →+ E where
-  toFun n := ∑ j, n j • v j
-  map_zero' := by simp
-  map_add' n m := by simp [add_smul, Finset.sum_add_distrib]
-
-/-- The embedding of the Bravais lattice of dimension `d` given by `d` primitive vectors. The
-single site of a cell sits at the origin of the cell. -/
+/-- The embedding of the Bravais lattice of dimension `d` given by `d` primitive vectors: the
+vector of the translation `n` is the integer combination of the primitive vectors with
+coefficients `n j`, and the single site of a cell sits at the origin of the cell. -/
 def ofVectors (v : Fin d → E) : Embedding (bravais d) E where
-  vector := vectorHom v
+  vector :=
+    { toFun n := ∑ j, n j • v j
+      map_zero' := by simp
+      map_add' n m := by simp [add_smul, Finset.sum_add_distrib] }
   basis _ := 0
 
 /-- The position of a site is the integer combination of the primitive vectors given by its
 cell. -/
 lemma position_ofVectors (v : Fin d → E) (x : (bravais d).Site) :
     (ofVectors v).position x = ∑ j, x.cell j • v j := by
-  simp [position, ofVectors, vectorHom]
+  simp [position, ofVectors]
 
 /-! ## C. Spanning and independence -/
 
@@ -95,7 +92,7 @@ lemma isSpaceFilling_ofVectors_iff (v : Fin d → E) :
     rfl
   convert (ofVectors v).isSpaceFilling_iff hS using 1
   rw [← Set.range_comp']
-  simp [ofVectors, vectorHom]
+  simp [ofVectors]
 
 /-- Linearly independent primitive vectors give distinct positions to distinct sites. -/
 lemma position_ofVectors_injective {v : Fin d → E} (hv : LinearIndependent ℝ v) :
@@ -108,7 +105,7 @@ lemma position_ofVectors_injective {v : Fin d → E} (hv : LinearIndependent ℝ
     apply hv.eq_coords_of_eq (f := (Int.cast : ℤ → ℝ) ∘ x.cell)
       (g := (Int.cast : ℤ → ℝ) ∘ y.cell)
     simpa only [Function.comp_apply, Int.cast_smul_eq_zsmul] using hxy
-  exact Crystal.Site.ext hcell (Subsingleton.elim _ _)
+  exact Crystal.Site.ext hcell (Subsingleton.elim (α := Unit) _ _)
 
 /-- A space-filling embedding of a Bravais lattice with linearly independent primitive vectors
 lives in a space of dimension `d`. -/
