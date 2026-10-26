@@ -27,7 +27,7 @@ The best contributions to the project are often those which are the most well-th
 
 ## 2. Build reusable foundations
 
-Sometimes the most useful contribution is to improve the definitions and basic lemmas that other work depends on. Good foundations make later formalizations easier to write, understand, and review. If you keep running into awkward assumptions, repeating arguments, or converting between incompatible definitions, it may be worth discussing the underlying API. Working through those difficulties is valuable in its own right, even if it doesn’t immediately lead to a major physics result.
+At this stage of Physlib, the most useful contribution is to improve the definitions and basic lemmas that other work depends on. Good foundations make later formalizations easier to write, understand, and review. If you keep fighting awkward hypotheses, repeated arguments or mismatched definitions, the API is probably the place to fix it. Working through these difficulties is valuable in its own right, even if it doesn’t immediately lead to a major physics result.
 
 <a id="let-api-design-and-formalization-inform-each-other"></a>
 
