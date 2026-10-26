@@ -84,7 +84,7 @@ One of the most common review comments on Physlib is about the placement of lemm
 
 <a id="little-maths-results"></a>
 
-## 7. Little  maths results
+## 7. Little maths results
 
 Please don't put short, single-use maths lemmas in physics files. However tidy it seems, a stray maths result interrupts the progression of physics for the reader. If you need to write one, check whether the fact is already in Mathlib, perhaps as a special case of something more general. If it isn't, but it is genuinely general, state it in a usable form in the relevant mathematics file. If it only makes sense in context, state it in terms of the physical quantities involved, and if it is used just once, inline the proof.
 
