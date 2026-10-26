@@ -98,7 +98,7 @@ As a general rule each file should contain one namespace. If you are opening and
 
 ## 9. Explain the why in documentation
 
-It's good to think about what someone coming to your code for the first time would need to understand. They may recognize the Lean statement but still wonder what it means physically, why you chose that definition, or which assumptions and conventions are in play. A few sentences explaining those choices can make the code much easier to follow. Where the connection to familiar physics is subtle, a short example or heuristic argument may help. Keep it concise, and make clear where the motivation ends and the formal proof begins.
+It's good to think about what someone coming to your code for the first time would need to understand. They may recognize the Lean statement but still wonder what it means physically, why you chose that definition, or which assumptions and conventions are in play.  A few sentences on these points can make a big difference, and if your code builds on or relates to other parts of Physlib, pointing to them helps readers find their way around. Where the connection to familiar physics is subtle, a short example or heuristic argument may help. Keep it concise, and make clear where the motivation ends and the formal proof begins.
 
 <a id="variable-names-in-doc-strings"></a>
 
