@@ -45,37 +45,37 @@ together with its representations of the gauge group, forms a single structure. 
 
 ## Lean References
 
-1. Physlib/Particles/StandardModel/Basic.lean — `GaugeGroupI`, `toSU3`, `toSU2`, `toU1`, `ext`
-2. Physlib/Particles/StandardModel/Basic.lean — `star_eq`, `star_toSU3`, `star_toSU2`,
+1. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `GaugeGroupI`, `toSU3`, `toSU2`, `toU1`, `ext`
+2. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `star_eq`, `star_toSU3`, `star_toSU2`,
    `star_toU1`
-3. Physlib/Particles/StandardModel/Basic.lean — `ofU1Subgroup`, `ofU1Subgroup_toSU3`,
+3. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `ofU1Subgroup`, `ofU1Subgroup_toSU3`,
    `ofU1Subgroup_toSU2`, `ofU1Subgroup_toU1`
-4. Physlib/Particles/StandardModel/Basic.lean — `gaugeGroupℤ₆UnitaryOfRoot`,
+4. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `gaugeGroupℤ₆UnitaryOfRoot`,
    `gaugeGroupℤ₆SU3OfRoot`, `gaugeGroupℤ₆SU2OfRoot`, `gaugeGroupℤ₆OfRoot`,
    `gaugeGroupℤ₆OfRoot_mem_center`, `gaugeGroupℤ₆Hom`, `gaugeGroupℤ₆SubGroup`,
    `mem_gaugeGroupℤ₆SubGroup_iff`, `gaugeGroupℤ₆SubGroup_le_center`,
    `gaugeGroupℤ₆SubGroup_normal`
-5. Physlib/Particles/StandardModel/Basic.lean — `GaugeGroupℤ₆`, `mk`, `mk_gaugeGroupℤ₆OfRoot`
-6. Physlib/Particles/StandardModel/Basic.lean — `gaugeGroupℤ₂RootToℤ₆Root`,
+5. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `GaugeGroupℤ₆`, `mk`, `mk_gaugeGroupℤ₆OfRoot`
+6. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `gaugeGroupℤ₂RootToℤ₆Root`,
    `gaugeGroupℤ₂OfRoot`, `gaugeGroupℤ₂OfRoot_mem_center`, `gaugeGroupℤ₂Hom`,
    `gaugeGroupℤ₂SubGroup`, `mem_gaugeGroupℤ₂SubGroup_iff`,
    `gaugeGroupℤ₂SubGroup_le_gaugeGroupℤ₆SubGroup`, `gaugeGroupℤ₂SubGroup_le_center`,
    `gaugeGroupℤ₂SubGroup_normal`, `GaugeGroupℤ₂`
-7. Physlib/Particles/StandardModel/Basic.lean — `gaugeGroupℤ₃RootToℤ₆Root`,
+7. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `gaugeGroupℤ₃RootToℤ₆Root`,
    `gaugeGroupℤ₃OfRoot`, `gaugeGroupℤ₃OfRoot_mem_center`, `gaugeGroupℤ₃Hom`,
    `gaugeGroupℤ₃SubGroup`, `mem_gaugeGroupℤ₃SubGroup_iff`,
    `gaugeGroupℤ₃SubGroup_le_gaugeGroupℤ₆SubGroup`, `gaugeGroupℤ₃SubGroup_le_center`,
    `GaugeGroupℤ₃`
-8. Physlib/Particles/StandardModel/Basic.lean — `GaugeGroupQuot`, `GaugeGroup`, `subgroup`,
+8. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `GaugeGroupQuot`, `GaugeGroup`, `subgroup`,
    `subgroup_le_center`, `subgroup_normal`, `subgroup_le_subgroup_ℤ₆`
-9. Physlib/Particles/StandardModel/Basic.lean — `quotientMap`, `quotientMap_I_apply`,
+9. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `quotientMap`, `quotientMap_I_apply`,
    `quotientMap_ℤ₆_gaugeGroupℤ₆OfRoot`, `quotientMap_ℤ₂_gaugeGroupℤ₂OfRoot`,
    `quotientMap_ℤ₃_gaugeGroupℤ₃OfRoot`, `mem_subgroup_iff_quotientMap_eq_one`,
    `quotientMap_eq_iff`
 10. Physlib/Particles/StandardModel/Representations.lean — `repU1Map`, `repU1`,
    `fundamentalSU2`, `repU1_fundamentalSU2_commute`
-11. Physlib/Particles/StandardModel/Basic.lean — `gaugeGroupI_lie`, `gaugeGroup_lie`
-12. Physlib/Particles/StandardModel/Basic.lean — `gaugeBundleI`, `gaugeTransformI`
+11. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `gaugeGroupI_lie`, `gaugeGroup_lie`
+12. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `gaugeBundleI`, `gaugeTransformI`
 
 ## References
 

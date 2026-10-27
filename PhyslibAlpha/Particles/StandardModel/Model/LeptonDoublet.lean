@@ -13,7 +13,7 @@ public import PhyslibAlpha.Particles.StandardModel.Fermions.MatterField
 ## i. Overview
 
 The lepton doublet of the Standard Model is the datum `StandardModel.Model.leptonDoublet`,
-`(.L, .singlet, .fund, -3)`, of `Physlib.Particles.StandardModel.Basic`. The species
+`(.L, .singlet, .fund, -3)`, of `Physlib.Particles.StandardModel.GaugeGroup.Basic`. The species
 `StandardModel.LeptonDoubletV` is its target space, and the species' weak matrix, action
 matrix, Lorentz, global gauge, jet and gauge-algebra actions and matter field are the ones
 the general theory derives from the datum. This file records the identities, all of which

@@ -5,7 +5,7 @@ Authors: Nathaneal Sajan
 -/
 module
 
-public import Physlib.Particles.StandardModel.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Basic
 public import Physlib.Relativity.Fermions.Weyl.LeftHanded
 /-!
 # Lepton doublets

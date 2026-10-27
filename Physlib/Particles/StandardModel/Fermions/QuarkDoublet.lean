@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Particles.StandardModel.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Basic
 public import Physlib.Relativity.Fermions.Weyl.LeftHanded
 /-!
 # The type corresponding to quark doublets

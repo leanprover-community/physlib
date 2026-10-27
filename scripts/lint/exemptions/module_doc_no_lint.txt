@@ -136,12 +136,12 @@ Physlib/Particles/StandardModel/AnomalyCancellation/NoGrav/Basic.lean
 Physlib/Particles/StandardModel/AnomalyCancellation/NoGrav/One/Lemmas.lean
 Physlib/Particles/StandardModel/AnomalyCancellation/NoGrav/One/LinearParameterization.lean
 Physlib/Particles/StandardModel/AnomalyCancellation/Permutations.lean
-Physlib/Particles/StandardModel/Basic.lean
 Physlib/Particles/StandardModel/Fermions/DownSinglet.lean
 Physlib/Particles/StandardModel/Fermions/LeptonDoublet.lean
 Physlib/Particles/StandardModel/Fermions/LeptonSinglet.lean
 Physlib/Particles/StandardModel/Fermions/QuarkDoublet.lean
 Physlib/Particles/StandardModel/Fermions/UpSinglet.lean
+Physlib/Particles/StandardModel/GaugeGroup/Basic.lean
 Physlib/Particles/StandardModel/HiggsBoson/Basic.lean
 Physlib/Particles/StandardModel/HiggsBoson/EffectivePotential.lean
 Physlib/Particles/StandardModel/HiggsBoson/Potential.lean

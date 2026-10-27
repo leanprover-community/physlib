@@ -245,12 +245,12 @@ public import Physlib.Particles.StandardModel.AnomalyCancellation.NoGrav.Basic
 public import Physlib.Particles.StandardModel.AnomalyCancellation.NoGrav.One.Lemmas
 public import Physlib.Particles.StandardModel.AnomalyCancellation.NoGrav.One.LinearParameterization
 public import Physlib.Particles.StandardModel.AnomalyCancellation.Permutations
-public import Physlib.Particles.StandardModel.Basic
 public import Physlib.Particles.StandardModel.Fermions.DownSinglet
 public import Physlib.Particles.StandardModel.Fermions.LeptonDoublet
 public import Physlib.Particles.StandardModel.Fermions.LeptonSinglet
 public import Physlib.Particles.StandardModel.Fermions.QuarkDoublet
 public import Physlib.Particles.StandardModel.Fermions.UpSinglet
+public import Physlib.Particles.StandardModel.GaugeGroup.Basic
 public import Physlib.Particles.StandardModel.HiggsBoson.Basic
 public import Physlib.Particles.StandardModel.HiggsBoson.EffectivePotential
 public import Physlib.Particles.StandardModel.HiggsBoson.Potential

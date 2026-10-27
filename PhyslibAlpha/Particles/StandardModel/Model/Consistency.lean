@@ -13,7 +13,7 @@ public import PhyslibAlpha.Particles.StandardModel.Fermions.QuarkDoublet.GaugeAl
 
 ## i. Overview
 
-The Standard Model of `Physlib.Particles.StandardModel.Basic` is built from its table
+The Standard Model of `Physlib.Particles.StandardModel.GaugeGroup.Basic` is built from its table
 alone. This file checks it against the hand-built formalisation: the local gauge data
 assembled from the factors is the existing `StandardModel.localGaugeData`, and the quark
 row acts by the existing colour–weak matrix of the quark doublet.
