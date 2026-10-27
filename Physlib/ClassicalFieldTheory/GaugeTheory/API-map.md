@@ -129,6 +129,6 @@ principal bundles. [TODO] Progress on this API is tracked in a GitHub issue {5}.
 1. Electromagnetic Potential API map — Physlib/Electromagnetism/Kinematics/API-map.md
 2. Wikipedia, Mathematical descriptions of the electromagnetic field, Gauge freedom,
    https://en.wikipedia.org/wiki/Mathematical_descriptions_of_the_electromagnetic_field#Gauge_freedom
-3. Standard Model gauge group API map — Physlib/Particles/StandardModel/API-map.md
+3. Standard Model gauge group API map — Physlib/Particles/StandardModel/GaugeGroup/API-map.md
 4. Wikipedia, Gauge theory, https://en.wikipedia.org/wiki/Gauge_theory
 5. Physlib GitHub issue #859, https://github.com/leanprover-community/physlib/issues/859

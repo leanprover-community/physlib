@@ -116,7 +116,7 @@ gauge connection over spacetime. [TODO]
 
 ## References
 
-1. Standard Model gauge group API map — Physlib/Particles/StandardModel/API-map.md
+1. Standard Model gauge group API map — Physlib/Particles/StandardModel/GaugeGroup/API-map.md
 2. Two Higgs Doublet Model API map — Physlib/Particles/BeyondTheStandardModel/TwoHDM/API-map.md
 3. Spacetime API map — Physlib/SpaceAndTime/SpaceTime/API-map.md
 4. M. E. Peskin and D. V. Schroeder, *An Introduction to Quantum Field Theory*, Westview Press
