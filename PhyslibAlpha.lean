@@ -437,7 +437,6 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNSAutomorphism
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNSSpectral
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.JordanDecomposition
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.MatrixComposite
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Projection
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.QuantumChannel
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SharpEffect
