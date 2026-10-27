@@ -10,7 +10,7 @@ A collection of tips from the Physlib community.
 4. [Contribute in small coherent steps](#contribute-in-small-coherent-steps)
 5. [Use structures](#use-structures)
 6. [Placement of lemmas](#placement-of-lemmas)
-7. [Little maths results](#little-maths-results)
+7. [Little math results](#little-math-results)
 8. [Namespaces](#namespaces)
 9. [Explain the why in documentation](#explain-the-why-in-documentation)
 10. [Variable names in doc-strings](#variable-names-in-doc-strings)
