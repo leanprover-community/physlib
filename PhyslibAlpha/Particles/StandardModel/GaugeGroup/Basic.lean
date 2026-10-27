@@ -13,8 +13,8 @@ The root of unity `ω = exp (2 π i / 3)`, which both non-abelian factors of the
 
 ## i. Overview
 
-`Physlib.Particles.StandardModel.GaugeGroup.Basic` carries the gauge group `GaugeGroupI` of the Standard
-Model and its discrete quotients. One scalar recurs throughout the structure of its
+`Physlib.Particles.StandardModel.GaugeGroup.Basic` carries the gauge group `GaugeGroupI` of
+the Standard Model and its discrete quotients. One scalar recurs throughout the structure of its
 non-abelian factors: the primitive cube root of unity `ω = exp (2 π i / 3)`. The element
 `ω • 1` generates the centre of `SU(3)`, the cyclic colour permutation has eigenvalues the
 powers of `ω`, and `diag(ω, ω²)` lies in `SU(2)`. Collected here are the facts about `ω` those
