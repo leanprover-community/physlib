@@ -64,6 +64,7 @@ public import Physlib.CondensedMatter.Crystal.BondLength
 public import Physlib.CondensedMatter.Crystal.Bonds
 public import Physlib.CondensedMatter.Crystal.Bravais.Basic
 public import Physlib.CondensedMatter.Crystal.Embedding
+public import Physlib.CondensedMatter.Crystal.Hexagonal
 public import Physlib.CondensedMatter.Crystal.Hypercubic
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
 public import Physlib.CondensedMatter.Crystal.Symmetry.Basic
