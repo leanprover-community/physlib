@@ -198,12 +198,6 @@ back `t`. The metric and its inverse are such a pair.
 
 -/
 
-/-- If `τ e = a`, the identity is a reindexing from `![τ e, e]` to `![a, e]`, so `permT` renames the
-  colours of `unitTensor e` to `![a, e]`. -/
-lemma IsReindexing.unitTensor_of_tau_eq {a e : C} (h : S.τ e = a) :
-    IsReindexing (![S.τ e, e] : Fin 2 → C) ![a, e] (id : Fin 2 → Fin 2) :=
-  IsReindexing.on_id.mpr (fun j => by fin_cases j <;> first | exact h | rfl)
-
 /-- If `M₁_{μν} M₂^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M₁` and then with `M₂` gives
   back `t` with that slot moved to the end, because `crossToEnd` places the surviving index last.
   The last slot is a variable `j` with `hj : j = last nA`, so the lemma also applies where `j` is
@@ -398,15 +392,6 @@ end RoundTripEquiv
 ## D. One contraction law from the other
 
 -/
-
-open HasContrDualBases in
-/-- The matrix of `unitTensor e`, with its colours renamed to `![a, e]`, is the identity matrix with
-its rows relabelled by `dualIdxEquiv h`. -/
-lemma toMatrix_permT_unitTensor_of_tau_eq [HasContrDualBases S] {a e : C} (h : S.τ e = a) :
-    toMatrix (permT id (IsReindexing.unitTensor_of_tau_eq h) (unitTensor (S := S) e)) =
-      (1 : Matrix (basisIdx e) (basisIdx e) k).submatrix (dualIdxEquiv h).symm id := by
-  subst h
-  simpa [dualIdxEquiv, basisIdxCongr] using (toMatrix_unitTensor (S := S) e)
 
 open HasContrDualBases in
 /-- If the label sets of the two indices of `M` are in bijection, `M_{μν} M'^{νρ} = δ_μ^ρ` implies
