@@ -5,6 +5,7 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
+public import Physlib.CondensedMatter.Crystal.BondLength
 public import Physlib.CondensedMatter.Crystal.Embedding
 
 /-!
@@ -34,12 +35,15 @@ differ only in these vectors, so the general facts are proved here once.
   distinct positions to distinct sites.
 - `Crystal.Embedding.finrank_eq_of_ofVectors` : a space-filling embedding with linearly
   independent primitive vectors lives in a space of dimension `d`.
+- `Crystal.Embedding.bondVector_ofVectors` : the vector of a bond is the integer combination of
+  the primitive vectors given by its displacement.
 
 ## iii. Table of contents
 
 - A. The crystal
 - B. The embedding
 - C. Spanning and independence
+- D. Bond vectors
 
 ## iv. References
 
@@ -115,6 +119,15 @@ lemma finrank_eq_of_ofVectors {v : Fin d → E} (hv : LinearIndependent ℝ v)
     (h : (ofVectors v).IsSpaceFilling) : Module.finrank ℝ E = d := by
   have hspan : ⊤ ≤ Submodule.span ℝ (Set.range v) := ((isSpaceFilling_ofVectors_iff v).1 h).ge
   simpa using Module.finrank_eq_card_basis (Module.Basis.mk hv hspan)
+
+/-! ## D. Bond vectors -/
+
+omit [NormedSpace ℝ E] in
+/-- In an embedding by primitive vectors, the vector of a bond is the integer combination of the
+primitive vectors given by its displacement. -/
+lemma bondVector_ofVectors (v : Fin d → E) (b : Bond (bravais d)) :
+    (ofVectors v).bondVector b = ∑ j, b.displacement j • v j := by
+  simp [bondVector, ofVectors]
 
 end Embedding
 
