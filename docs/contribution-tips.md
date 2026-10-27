@@ -13,7 +13,7 @@ A collection of tips from the Physlib community.
 7. [Little math results](#little-math-results)
 8. [Namespaces](#namespaces)
 9. [Explain the why in documentation](#explain-the-why-in-documentation)
-10. [Variable names in doc-strings](#variable-names-in-doc-strings)
+10. [Variable names in docstrings](#variable-names-in-docstrings)
 11. [Generalizing review comments](#generalizing-review-comments)
 12. [Author lists](#author-lists)
 
