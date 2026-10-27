@@ -9,9 +9,9 @@ public import Physlib.SpaceAndTime.SpaceTime.Basic
 public import Mathlib.RingTheory.RootsOfUnity.Complex
 public import Physlib.Meta.Informal.Basic
 /-!
-# The Standard Model
+# The Standard Model Gauge Group
 
-This file defines the basic properties of the standard model in particle physics.
+The standard model gauge group, `SU(3) x SU(2) x U(1)` and its quotients.
 
 ## References
 
