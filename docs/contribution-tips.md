@@ -21,19 +21,19 @@ A collection of tips from the Physlib community.
 
 ## 1. Don't rush
 
-The best contributions to the project are often those which are the most well-thought through, and carefully executed. There is no prize for having the most PRs or getting things into the project as fast as possible. An ode to the cliché: quality matters more than quantity.
+The best contributions to the project are often those which are the most carefully thought through and executed. There is no prize for having the most PRs or getting things into the project as fast as possible. To echo the cliché: quality matters more than quantity.
 
 <a id="build-reusable-foundations"></a>
 
 ## 2. Build reusable foundations
 
-At this stage of Physlib, the most useful contribution is to improve the definitions and basic lemmas that other work depends on. Good foundations make later formalizations easier to write, understand, and review. If you keep fighting awkward hypotheses, repeated arguments or mismatched definitions, the API is probably the place to fix it. Working through these difficulties is valuable in its own right, even if it doesn’t immediately lead to a major physics result.
+At this stage of Physlib, the most useful contribution is to improve the definitions and basic lemmas that other work depends on. Good foundations make later formalizations easier to write, understand, and review. If you keep fighting awkward hypotheses, repeated arguments or mismatched definitions, the API is probably the place to fix it. Working through these difficulties is valuable in its own right, even if it doesn't immediately lead to a major physics result.
 
 <a id="let-api-design-and-formalization-inform-each-other"></a>
 
 ## 3. Let API design and formalization inform each other
 
-When you're starting work in a new area, it's a good idea to sketch out a rough API map and start a conversation on Zulip. It gives others a chance to share advice or get involved, and you might discover that Physlib already covers some of what you have in mind, just in a different form. If so, plan to prove that your version and the existing one agree, so the two fit together. Don't worry about settling the whole design before you start writing Lean; small examples often uncover things that weren't obvious on paper, and working through them can lead you to a better approach. Let what you learn shape the design as you go, and keep the API map up to date along the way.
+When you're starting work in a new area, it's a good idea to sketch out a rough API map and start a conversation on Zulip. It gives others a chance to share advice or get involved, and you might discover that Physlib already covers some of what you have in mind, just in a different form. If so, plan to prove that your version and the existing one agree, so the two fit together. Don't worry about settling the whole design before you start writing Lean; small examples often uncover things that weren't obvious on paper, and working through them can lead you to a better approach. Let what you learn shape the design, and keep the API map up to date along the way.
 
 <a id="contribute-in-small-coherent-steps"></a>
 
@@ -82,17 +82,17 @@ end HarmonicOscillator
 
 One of the most common review comments on Physlib is about the placement of lemmas. As a general rule, every lemma about an object should go directly next to its definition. Lemmas are often placed just above where they are needed instead, which hides them from anyone else using the object, so the same facts get proved again.
 
-<a id="little-maths-results"></a>
+<a id="little-math-results"></a>
 
-## 7. Little maths results
+## 7. Little math results
 
-Please don't put short, single-use maths lemmas in physics files. However tidy it seems, a stray maths result interrupts the progression of physics for the reader. If you need to write one, check whether the fact is already in Mathlib, perhaps as a special case of something more general. If it isn't, but it is genuinely general, state it in a usable form in the relevant mathematics file. If it only makes sense in context, state it in terms of the physical quantities involved, and if it is used just once, inline the proof.
+Please don't put short, single-use math lemmas in physics files. However tidy it seems, a stray math result interrupts the progression of physics for the reader. If you need to write one, check whether the fact is already in Mathlib, perhaps as a special case of something more general. If it isn't, but it is genuinely general, state it in a usable form in the relevant mathematics file. If it only makes sense in context, state it in terms of the physical quantities involved, and if it is used just once, inline the proof.
 
 <a id="namespaces"></a>
 
 ## 8. Namespaces
 
-As a general rule each file should contain one namespace. If you are opening and closing namespaces throughout a file then it is likely that your declarations are in the wrong place. There are exceptions to this rule, but these are rare, and likely do not hold in your case.
+As a general rule each file should contain one namespace. If you are opening and closing namespaces throughout a file, then it is likely that your declarations are in the wrong place. There are exceptions to this rule, but these are rare, and likely do not hold in your case.
 
 <a id="explain-the-why-in-documentation"></a>
 
@@ -100,21 +100,21 @@ As a general rule each file should contain one namespace. If you are opening and
 
 It's good to think about what someone coming to your code for the first time would need to understand. They may recognize the Lean statement but still wonder what it means physically, why you chose that definition, or which assumptions and conventions are in play. A few sentences on these points can make a big difference, and if your code builds on or relates to other parts of Physlib, pointing to them helps readers find their way around. Where the connection to familiar physics is subtle, a short example or heuristic argument may help. Keep it concise, and make clear where the motivation ends and the formal proof begins.
 
-<a id="variable-names-in-doc-strings"></a>
+<a id="variable-names-in-docstrings"></a>
 
-## 10. Variable names in doc-strings
+## 10. Variable names in docstrings
 
-Be careful not to include variable names in doc strings without explanation. For example, avoid:
+Be careful not to include variable names in docstrings without explanation. For example, avoid:
 
 ```lean
 /-- The total energy of `H` -/
-def energy (H : HarmonicOscillator) (x v : Real) : Real :=
+def energy (H : HarmonicOscillator) (x v : ℝ) : ℝ:=
   H.m * v ^ 2 / 2 + H.k * x ^ 2 / 2
 ```
-instead write
+Instead, write
 ```lean
 /-- The total energy of the harmonic oscillator. -/
-def energy (H : HarmonicOscillator) (x v : Real) : Real :=
+def energy (H : HarmonicOscillator) (x v : ℝ) : ℝ :=
   H.m * v ^ 2 / 2 + H.k * x ^ 2 / 2
 ```
 
@@ -128,4 +128,4 @@ When a reviewer asks for a change, look for other places where the same comment 
 
 ## 12. Author lists
 
-The author list on a file is there to help answer “who should I contact if I have questions about this code?” Git and GitHub already tell us who wrote which parts. Hence, if you add your name, consider whether you would be happy to help someone understand the file or work on it, and remember to keep the names in alphabetical order by last name.
+The author list on a file is there to help answer the question "Who should I contact if I have questions about this code?" Git and GitHub already tell us who wrote which parts. Hence, if you add your name, consider whether you would be happy to help someone understand the file or work on it, and remember to keep the names in alphabetical order by last name.
