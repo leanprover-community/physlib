@@ -210,7 +210,7 @@ lemma rightDualRightUnit_eq_basis : δR =
 lemma coContrUnit_eq_basis : δ' =
     ∑ i, Tensor.basis (S := complexLorentzTensor)
       ![Color.down, Color.up] (fun | 0 => i | 1 => i) := by
-  rw [coContrUnit_eq_complexCoVector_basisFin4_complexVector_basisFin4]
+  rw [coContrUnit_eq_complexCoVector_basis_complexVector_basis]
   conv_lhs =>
     enter [2, x]
     change fromPairT ((complexLorentzTensor.basis .down x) ⊗ₜ[ℂ]
@@ -221,7 +221,7 @@ lemma coContrUnit_eq_basis : δ' =
 lemma contrCoUnit_eq_basis : δ =
     ∑ i, Tensor.basis (S := complexLorentzTensor)
       ![Color.up, Color.down] (fun | 0 => i | 1 => i) := by
-  rw [contrCoUnit_eq_complexVector_basisFin4_complexCoVector_basisFin4]
+  rw [contrCoUnit_eq_complexVector_basis_complexCoVector_basis]
   conv_lhs =>
     enter [2, x]
     change fromPairT ((complexLorentzTensor.basis .up x) ⊗ₜ[ℂ]

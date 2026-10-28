@@ -32,6 +32,9 @@ open PauliMatrix
 open TensorSpecies
 open Tensor
 
+TODO "Refector bispinors to define e.g.
+  `bispinorEquiv : ComplexVector ≃ₗ[ℂ] LeftHandedWeyl ⊗[ℂ] RightHandedWeyl`."
+
 /-- A bispinor `pᵃᵃ` created from a lorentz vector `p^μ`. -/
 def contrBispinorUp (p : ℂT[.up]) : ℂT[.upL, .upR] := permT id (IsReindexing.auto)
   {pauliCo | μ α β ⊗ p | μ}ᵀ

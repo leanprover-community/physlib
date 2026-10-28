@@ -45,15 +45,12 @@ set_option backward.isDefEq.respectTransparency false in
   `(Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2`. -/
 def indexEquiv : ComponentIdx (S := complexLorentzTensor) ![.up, .upL, .upR] ≃
     (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 where
-  toFun v := (finSumFinEquiv.symm (v 0 : Fin 4), v 1, v 2)
-  invFun v := fun | 0 => finSumFinEquiv v.1 | 1 => v.2.1 | 2 => v.2.2
+  toFun v := (v 0, v 1, v 2)
+  invFun v := fun | 0 => v.1 | 1 => v.2.1 | 2 => v.2.2
   left_inv v := by
     funext x
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Equiv.apply_symm_apply]
-    fin_cases x
-    <;> rfl
-  right_inv v := by
-    simp
+    fin_cases x <;> rfl
+  right_inv v := rfl
 
 instance tensorial : TensorSpecies.Tensorial complexLorentzTensor
     ![.up, .upL, .upR] (Fin 1 ⊕ Fin 3 → Matrix (Fin 2) (Fin 2) ℂ) where
@@ -79,29 +76,18 @@ lemma toTensor_symm_apply (p : ℂT[.up, .upL, .upR]) :
     Finsupp.equivFunOnFinite <|
     (Tensor.basis (S := complexLorentzTensor) _).repr p) := rfl
 
-lemma toTensor_symm_basis (b : (x : Fin (Nat.succ 0).succ.succ) →
-    Fin (complexLorentzTensor.repDim (![Color.up, Color.upL, Color.upR] x))) :
+lemma toTensor_symm_basis (b : ComponentIdx (S := complexLorentzTensor) ![.up, .upL, .upR]) :
     (toTensor (self := tensorial)).symm (Tensor.basis ![Color.up, Color.upL, Color.upR] b) =
-    fun μ α β => if b 0 = finSumFinEquiv μ ∧ b 1 = α ∧ b 2 = β then 1 else 0 := by
+    fun μ α β => if indexEquiv b = (μ, α, β) then 1 else 0 := by
   rw [toTensor_symm_apply]
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Basis.repr_self, Finsupp.equivFunOnFinite_single,
-    Equiv.curry_apply, Fin.isValue, cons_val_one, cons_val_zero, cons_val]
+    Equiv.curry_apply]
   funext μ α β
   simp only [Equiv.piCongrRight_apply, Equiv.curry_apply, Pi.map_apply, Function.curry_apply,
-    Equiv.piCongrLeft'_apply, Fin.isValue]
+    Equiv.piCongrLeft'_apply]
   rw [Pi.single_apply]
-  congr
-  simp [indexEquiv]
-  constructor
-  · intro h
-    subst h
-    simp
-  · intro h
-    funext x
-    fin_cases x
-    · simp [h.1]
-    · simp [h.2.1]
-    · simp [h.2.2]
+  exact if_congr ⟨fun h => by rw [← h]; rfl,
+    fun h => by rw [← indexEquiv.symm_apply_apply b, h]⟩ rfl rfl
 
 /-!
 
@@ -115,33 +101,25 @@ scoped[PauliMatrix] notation "σ^^^" => toTensor pauliMatrix
 set_option backward.isDefEq.respectTransparency false in
 lemma toTensor_basis_expand : σ^^^ =
     Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (0 : Fin 4) | 1 => (0 : Fin 2) | 2 => (0 : Fin 2))
+      (fun | 0 => (Sum.inl 0 : Fin 1 ⊕ Fin 3) | 1 => (0 : Fin 2) | 2 => (0 : Fin 2))
     + Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (0 : Fin 4) | 1 => (1 : Fin 2) | 2 => (1 : Fin 2))
+      (fun | 0 => (Sum.inl 0 : Fin 1 ⊕ Fin 3) | 1 => (1 : Fin 2) | 2 => (1 : Fin 2))
     + Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (1 : Fin 4) | 1 => (0 : Fin 2) | 2 => (1 : Fin 2))
+      (fun | 0 => (Sum.inr 0 : Fin 1 ⊕ Fin 3) | 1 => (0 : Fin 2) | 2 => (1 : Fin 2))
     + Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (1 : Fin 4) | 1 => (1 : Fin 2) | 2 => (0 : Fin 2))
+      (fun | 0 => (Sum.inr 0 : Fin 1 ⊕ Fin 3) | 1 => (1 : Fin 2) | 2 => (0 : Fin 2))
     - I • Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (2 : Fin 4) | 1 => (0 : Fin 2) | 2 => (1 : Fin 2))
+      (fun | 0 => (Sum.inr 1 : Fin 1 ⊕ Fin 3) | 1 => (0 : Fin 2) | 2 => (1 : Fin 2))
     + I • Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (2 : Fin 4) | 1 => (1 : Fin 2) | 2 => (0 : Fin 2))
+      (fun | 0 => (Sum.inr 1 : Fin 1 ⊕ Fin 3) | 1 => (1 : Fin 2) | 2 => (0 : Fin 2))
     + Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (3 : Fin 4) | 1 => (0 : Fin 2) | 2 => (0 : Fin 2))
+      (fun | 0 => (Sum.inr 2 : Fin 1 ⊕ Fin 3) | 1 => (0 : Fin 2) | 2 => (0 : Fin 2))
     - Tensor.basis ![Color.up, Color.upL, Color.upR]
-      (fun | 0 => (3 : Fin 4) | 1 => (1 : Fin 2) | 2 => (1 : Fin 2)) := by
+      (fun | 0 => (Sum.inr 2 : Fin 1 ⊕ Fin 3) | 1 => (1 : Fin 2) | 2 => (1 : Fin 2)) := by
   apply toTensor (self := tensorial).symm.injective
-  simp [toTensor_symm_basis]
+  simp [toTensor_symm_basis, indexEquiv]
   funext μ α β
-  fin_cases μ <;> fin_cases α <;> fin_cases β
-  all_goals
-    simp
-  all_goals
-    try rw [ite_eq_left (by decide)]
-    try rw [ite_eq_right (by decide)]
-    try rw [ite_eq_right (by decide)]
-    try rw [ite_eq_left (by decide)]
-    simp [pauliMatrix]
+  fin_cases μ <;> fin_cases α <;> fin_cases β <;> simp [pauliMatrix]
 
 open Lorentz in
 lemma toTensor_eq_asConsTensor :
@@ -153,30 +131,26 @@ lemma toTensor_eq_asConsTensor :
   rw [PauliMatrix.asTensor_expand, toTensor_basis_expand]
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, map_sub,
     map_add, _root_.map_smul]
-  rw [show ComplexVector.basis (Sum.inl 0) = ComplexVector.basisFin4 0 by {simp}]
-  rw [show ComplexVector.basis (Sum.inr 0) = ComplexVector.basisFin4 1 by {simp}]
-  rw [show ComplexVector.basis (Sum.inr 1) = ComplexVector.basisFin4 2 by {simp}]
-  rw [show ComplexVector.basis (Sum.inr 2) = ComplexVector.basisFin4 3 by {simp}]
   simp only [fromTripleT_apply_basis]
   rfl
 
 /-- Gaussian integer components of the contravariant Pauli four-vector. -/
-def pauliContrComponent (mu : Fin 4) (a b : Fin 2) : GaussianInt :=
-  if mu.val = 0 ∧ a.val = b.val then ⟨1, 0⟩ else
-  if mu.val = 1 ∧ a.val ≠ b.val then ⟨1, 0⟩ else
-  if mu.val = 2 ∧ a.val = 0 ∧ b.val = 1 then ⟨0, -1⟩ else
-  if mu.val = 2 ∧ a.val = 1 ∧ b.val = 0 then ⟨0, 1⟩ else
-  if mu.val = 3 ∧ a.val = 0 ∧ b.val = 0 then ⟨1, 0⟩ else
-  if mu.val = 3 ∧ a.val = 1 ∧ b.val = 1 then ⟨-1, 0⟩ else 0
+def pauliContrComponent (mu : Fin 1 ⊕ Fin 3) (a b : Fin 2) : GaussianInt :=
+  if mu = Sum.inl 0 ∧ a.val = b.val then ⟨1, 0⟩ else
+  if mu = Sum.inr 0 ∧ a.val ≠ b.val then ⟨1, 0⟩ else
+  if mu = Sum.inr 1 ∧ a.val = 0 ∧ b.val = 1 then ⟨0, -1⟩ else
+  if mu = Sum.inr 1 ∧ a.val = 1 ∧ b.val = 0 then ⟨0, 1⟩ else
+  if mu = Sum.inr 2 ∧ a.val = 0 ∧ b.val = 0 then ⟨1, 0⟩ else
+  if mu = Sum.inr 2 ∧ a.val = 1 ∧ b.val = 1 then ⟨-1, 0⟩ else 0
 
 /-- Gaussian integer components of the contravariant conjugate Pauli four-vector. -/
-def pauliContrDownComponent (mu : Fin 4) (a b : Fin 2) : GaussianInt :=
-  if mu.val = 0 ∧ a.val = b.val then ⟨1, 0⟩ else
-  if mu.val = 1 ∧ a.val ≠ b.val then ⟨-1, 0⟩ else
-  if mu.val = 2 ∧ a.val = 0 ∧ b.val = 1 then ⟨0, 1⟩ else
-  if mu.val = 2 ∧ a.val = 1 ∧ b.val = 0 then ⟨0, -1⟩ else
-  if mu.val = 3 ∧ a.val = 0 ∧ b.val = 0 then ⟨-1, 0⟩ else
-  if mu.val = 3 ∧ a.val = 1 ∧ b.val = 1 then ⟨1, 0⟩ else 0
+def pauliContrDownComponent (mu : Fin 1 ⊕ Fin 3) (a b : Fin 2) : GaussianInt :=
+  if mu = Sum.inl 0 ∧ a.val = b.val then ⟨1, 0⟩ else
+  if mu = Sum.inr 0 ∧ a.val ≠ b.val then ⟨-1, 0⟩ else
+  if mu = Sum.inr 1 ∧ a.val = 0 ∧ b.val = 1 then ⟨0, 1⟩ else
+  if mu = Sum.inr 1 ∧ a.val = 1 ∧ b.val = 0 then ⟨0, -1⟩ else
+  if mu = Sum.inr 2 ∧ a.val = 0 ∧ b.val = 0 then ⟨-1, 0⟩ else
+  if mu = Sum.inr 2 ∧ a.val = 1 ∧ b.val = 1 then ⟨1, 0⟩ else 0
 
 lemma toTensor_eq_ofGaussianInt : σ^^^ = ofGaussianInt (fun b =>
     pauliContrComponent (b 0) (b 1) (b 2)) := by
@@ -199,8 +173,8 @@ lemma toTensor_dualLeft_eq_ofGaussianInt :
     {σ^^^ | μ τ(α) β}ᵀ =
       ofGaussianInt (fun b =>
         ∑ x : Fin 2, pauliContrComponent (b 0) x (b 2) *
-          (if x.val = 0 ∧ (b 1).val = 1 then 1 else
-            if (b 1).val = 0 ∧ x.val = 1 then -1 else 0)) := by
+          (if x.val = 0 ∧ Fin.val (b 1) = 1 then 1 else
+            if Fin.val (b 1) = 0 ∧ x.val = 1 then -1 else 0)) := by
   let M : ℂT[.downL, .downL] := εL'
   conv_lhs =>
     rw [toTensor_eq_ofGaussianInt, toDualMapAtIndex]
@@ -255,8 +229,8 @@ indices. -/
 lemma toTensor_dualLorentzLeft_eq_ofGaussianInt :
     {σ^^^ | τ(μ) τ(α) β}ᵀ = ofGaussianInt (fun b =>
       ∑ x : Fin 2, pauliContrDownComponent (b 0) x (b 2) *
-        (if x.val = 0 ∧ (b 1).val = 1 then 1 else
-          if (b 1).val = 0 ∧ x.val = 1 then -1 else 0)) := by
+        (if x.val = 0 ∧ Fin.val (b 1) = 1 then 1 else
+          if Fin.val (b 1) = 0 ∧ x.val = 1 then -1 else 0)) := by
   rw [toTensor_dualLorentz_eq_ofGaussianInt]
   let M : ℂT[.downL, .downL] := εL'
   conv_lhs =>
