@@ -1,0 +1,53 @@
+/-
+Copyright (c) 2026 Gregory J. Loges. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Gregory J. Loges
+-/
+module
+
+public import Mathlib.Basic.Real.Basic
+/-!
+
+# Wave Vector Space
+
+## i. Overview
+
+In this module we define the type `WaveVectorSpace d` which corresponds
+to the `d`-dimensional real vector space of (angular) wave vectors in `Space d`.
+
+## ii. Key results
+
+## iii. Table of contents
+
+- A. The `WaveVectorSpace` type
+
+## iv. References
+
+-/
+
+@[expose] public section
+
+/-!
+## A. The `WaveVectorSpace` type
+-/
+
+/-- The type `WaveVectorSpace d` is the real vector space which corresponds to `d`-dimensional
+(angular) wave vectors in `Space d` with a given (but arbitrary) choice of inverse length unit.
+
+The default value of `d` is `3`. Thus `WaveVectorSpace = WaveVectorSpace 3`-/
+structure WaveVectorSpace (d : ℕ := 3) where
+  /-- The underlying map `Fin d → ℝ` associated with a vector in `WaveVectorSpace`. -/
+  val : Fin d → ℝ
+
+namespace WaveVectorSpace
+
+variable {d : ℕ} {k k₁ k₂ : WaveVectorSpace d}
+
+lemma eq_of_val (h : k₁.val = k₂.val) : k₁ = k₂ := by
+  cases k₁
+  congr
+
+@[simp]
+lemma val_eq_iff : k₁.val = k₂.val ↔ k₁ = k₂ := ⟨eq_of_val, congrArg val⟩
+
+end WaveVectorSpace
