@@ -13,7 +13,7 @@ public import Physlib.Relativity.Tensors.Contraction.UnitTensorContraction
 # The inverse of a rank-two tensor
 
 The inverse `g^{J̄I}` of a tensor `g_{IJ̄}` with one index and one conjugate index, such as a
-Hermitian metric, and the lowering and raising of indices with `g` and `g^{J̄I}`.
+Hermitian metric, and the linear equivalence that contracts an index with `g`.
 
 ## i. Overview
 
@@ -27,7 +27,8 @@ inverse. The matrix `(g^{J̄I})`, with row `J` and column `I`, is the inverse of
 `(g_{IJ̄})`. `inverseT` is defined by this matrix inversion and is zero when `(g_{IJ̄})` is not
 invertible. The inverse of a Hermitian `g` is Hermitian (A), and the inverse of a
 positive-definite `g` is positive-definite (B). When `(g_{IJ̄})` is invertible, the two contraction
-laws hold and the inverse is unique (C). Then `g` lowers indices and `g^{J̄I}` raises them (D).
+laws hold and the inverse is unique (C). Then contracting an index with `g` is a linear
+equivalence whose inverse contracts with `g^{J̄I}` (D).
 
 ## ii. Key results
 
@@ -39,14 +40,15 @@ laws hold and the inverse is unique (C). Then `g` lowers indices and `g^{J̄I}` 
 - `ConjTensorSpecies.contractInnerT_inverseT` and `ConjTensorSpecies.inverseT_contractInnerT` are
   the contraction laws `g_{IJ̄} g^{J̄K} = δ_I^K` and `g^{J̄I} g_{IK̄} = δ^J̄_K̄`.
 - `ConjTensorSpecies.eq_inverseT_of_contractInnerT_eq_unitTensor` says that the inverse is unique.
-- `ConjTensorSpecies.lowerEquivT` lowers an index with `g` and raises it with `g^{J̄I}`.
+- `ConjTensorSpecies.toConjDualAtIndex` contracts an index with `g`, as a linear equivalence
+  whose inverse contracts with `g^{J̄I}`.
 
 ## iii. Table of contents
 
 - A. The inverse
 - B. Positive-definiteness
 - C. The contraction laws
-- D. Lowering and raising indices
+- D. Changing an index to its conjugate dual
 
 ## iv. References
 
@@ -215,19 +217,20 @@ lemma eq_inverseT_of_contractInnerT_eq_unitTensor {cs : Fin 2 → C} (hbar : S.b
 
 /-!
 
-## D. Lowering and raising indices
+## D. Changing an index to its conjugate dual
 
-When the matrix `(g_{IJ̄})` is invertible, contracting an upper index `I` of a tensor with `g`
-lowers it to `J̄`, and contracting with `g^{J̄I}` raises it back. The two contraction laws of C make
-these mutually inverse.
+When the matrix `(g_{IJ̄})` is invertible, contracting an index `I` of a tensor with `g` changes it
+to its conjugate dual `J̄`, and contracting with `g^{J̄I}` changes it back. The two contraction laws
+of C make these mutually inverse. For a metric `g_{IJ̄}` with lower indices this lowers an index.
+If `g` has upper indices, the same map raises one.
 
 -/
 
-/-- The linear equivalence that lowers the index `I` in slot `i` to `J̄`, sending `t^{…I…}` to
-`g_{IJ̄} t^{…I…}`, when the matrix `(g_{IJ̄})` is invertible. Its inverse raises the index with
-`g^{J̄I}`. By convention slot `i` contracts with the first index of `g`, so an unbarred index is
-lowered to a barred one. -/
-def lowerEquivT {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1)
+/-- The linear equivalence that contracts slot `i` of a tensor with the first index of `M`, when
+the matrix `(M_{IJ̄})` is invertible. Slot `i` changes from `τ (cs 0)` to its conjugate dual
+`cs 1`, and the inverse contracts with `inverseT M`. For a metric `g_{IJ̄}` this lowers an
+unbarred index to a barred one, `t_{J̄} = g_{IJ̄} t^I`. -/
+def toConjDualAtIndex {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     {n : ℕ} → {c : Fin n → C} → (i : Fin n) → (he : c i = S.τ (cs 0)) →
       S.Tensor c ≃ₗ[k] S.Tensor (Function.update c i (cs 1))
@@ -237,21 +240,22 @@ def lowerEquivT {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1
       (S.contractInnerT_inverseT hbar M hM)
       ((S.inverseT_contractInnerT hbar M hM).trans (permT_id_self _).symm)
 
-/-- Lowering is the contraction `crossToSlot` of slot `i` with the first index of `g`. -/
+/-- `toConjDualAtIndex` is the contraction `crossToSlot` of slot `i` with the first index of `M`. -/
 @[simp]
-lemma lowerEquivT_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
+lemma toConjDualAtIndex_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
     (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)
     (i : Fin (nA + 1)) (he : c i = S.τ (cs 0)) (t : S.Tensor c) :
-    S.lowerEquivT M hbar hM i he t =
+    S.toConjDualAtIndex M hbar hM i he t =
       crossToSlot i 0 ((congrArg S.τ he).trans (S.τ_τ_apply (cs 0))) M t :=
   rfl
 
-/-- Raising is the contraction `crossToSlotInv` of slot `i` with the first index of `g^{J̄I}`. -/
+/-- The inverse of `toConjDualAtIndex` is the contraction `crossToSlotInv` of slot `i` with the
+first index of `inverseT M`. -/
 @[simp]
-lemma lowerEquivT_symm_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C} (M : S.Tensor cs)
-    (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)
+lemma toConjDualAtIndex_symm_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cs : Fin 2 → C}
+    (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1) (hM : IsUnit (S.toSquareMatrix M hbar).det)
     (i : Fin (nA + 1)) (he : c i = S.τ (cs 0)) (t : S.Tensor (Function.update c i (cs 1))) :
-    (S.lowerEquivT M hbar hM i he).symm t =
+    (S.toConjDualAtIndex M hbar hM i he).symm t =
       crossToSlotInv (S := S.toTensorSpecies) (d := cs 1) i he rfl (S.inverseT M hbar) t :=
   rfl
 
