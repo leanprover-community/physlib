@@ -21,7 +21,6 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.CriticalPoint
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
-public import Physlib.ClassicalMechanics.Lagrangian.NormedSpace
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva

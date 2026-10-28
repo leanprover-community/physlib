@@ -5,7 +5,7 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Physlib.ClassicalMechanics.Lagrangian.NormedSpace
+public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.Mathematics.VariationalCalculus.Interval
 
 /-!
@@ -15,18 +15,26 @@ Critical points of the action are the solutions of the Euler-Lagrange equations.
 
 ## i. Overview
 
-For `t₀ ≠ t₁`, `γ` is a critical point over `[t₀, t₁]` iff `eulerLagrange S t₀ q = 0`, where
-`q σ = γ (σ +ᵥ t₀)`.
+`γ` is a critical point over `[t₀, t₁]` if it is smooth and every variation has zero first
+variation of the action, which is Hamilton's principle `δS = 0` for variations fixing the
+endpoints. For `t₀ ≠ t₁`, `γ` is a critical point over `[t₀, t₁]` iff the Euler-Lagrange equations
+`eulerLagrange S t₀ q = 0` hold on `[0, t₁ -ᵥ t₀]`, where `q σ = γ (σ +ᵥ t₀)`. This section treats a
+normed space `E` as the configuration space.
 
 ## ii. Key results
 
-- `LagrangianSystem.isCriticalPoint_of_eulerLagrange`: equations imply criticality
+- `LagrangianSystem.IsCriticalPoint`: critical points of the action
+- `LagrangianSystem.isCriticalPoint_of_vsub_nonpos`: every smooth curve is critical over an empty
+  or one-point interval
+- `LagrangianSystem.isCriticalPoint_of_eulerLagrange_eq_zero`: equations imply criticality
 - `LagrangianSystem.eulerLagrange_eq_zero_of_isCriticalPoint`: criticality implies equations
 - `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`: the two are equivalent
 
 ## iii. Table of contents
 
 - A. Critical points
+  - A.1. The definition
+  - A.2. Euler-Lagrange equations
 
 ## iv. References
 
@@ -42,35 +50,43 @@ namespace ClassicalMechanics
 open Set intervalIntegral
 open scoped Manifold ContDiff
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩)
-  {γ : Time → E} {t₀ t₁ : Time}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {M : ConfigurationSpace I}
 
 namespace LagrangianSystem
 
 /-!
 ## A. Critical points
+
+### A.1. The definition
 -/
 
-/-- For smooth `ψ` supported in `(0, t₁ -ᵥ t₀)` and `w : E`, a variation `h` of `γ` with
-`h (s, τ +ᵥ t₀) = γ (τ +ᵥ t₀) + s • ψ τ • w`. -/
-private lemma exists_variation_bump (hγ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ γ) {ψ : ℝ → ℝ}
-    (hψ : ContDiff ℝ ∞ ψ) (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀)) (w : E) :
-    ∃ h : Variation (M := ⟨E⟩) 𝓘(ℝ, E) γ t₀ t₁,
-      ∀ s τ, h.toFun (s, τ +ᵥ t₀) = γ (τ +ᵥ t₀) + s • (ψ τ • w) := by
-  have hψt : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) ∞ (fun t : Time ↦ ψ (t -ᵥ t₀)) :=
-    (Time.contMDiff_iff_contDiff_vadd _ t₀ ∞).2 (by simpa using hψ)
-  have hF : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, ℝ)) 𝓘(ℝ, E) ∞
-      (fun p : ℝ × Time ↦ γ p.2 + p.1 • (ψ (p.2 -ᵥ t₀) • w)) :=
-    (hγ.comp contMDiff_snd).add (contMDiff_fst.smul ((hψt.comp contMDiff_snd).smul contMDiff_const))
-  have h0 : ψ 0 = 0 := image_eq_zero_of_notMem_tsupport fun h ↦ (hs h).1.false
-  have hT : ψ (t₁ -ᵥ t₀) = 0 := image_eq_zero_of_notMem_tsupport fun h ↦ (hs h).2.false
-  refine ⟨⟨⟨fun p ↦ γ p.2 + p.1 • (ψ (p.2 -ᵥ t₀) • w), hF⟩, fun s _ ↦ ?_, fun s ↦ ?_, fun s ↦ ?_⟩,
-    fun s τ ↦ ?_⟩
-  all_goals simp_all [Time.vsub_eq_val]
+section Definition
+
+variable (S : LagrangianSystem I M) {γ : Time → M} {t₀ t₁ : Time}
+
+/-- `γ` is smooth and every variation of `γ` fixing the endpoints has zero first variation of the
+action, i.e. `d/ds S[γ_s]` vanishes at `s = 0` (Hamilton's principle). -/
+def IsCriticalPoint (γ : Time → M) (t₀ t₁ : Time) : Prop :=
+  ContMDiff 𝓘(ℝ, ℝ) I ∞ γ ∧ ∀ h : Variation I γ t₀ t₁,
+    HasDerivAt (fun s ↦ S.action (fun t ↦ h.toFun (s, t)) t₀ t₁) 0 0
+
+/-- Every smooth curve is critical over an empty or one-point interval. -/
+lemma isCriticalPoint_of_vsub_nonpos (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (h : t₁ -ᵥ t₀ ≤ 0) :
+    S.IsCriticalPoint γ t₀ t₁ :=
+  ⟨hγ, fun _ ↦ by simp [action_eq_zero_of_vsub_nonpos _ h, hasDerivAt_const]⟩
+
+end Definition
+
+/-!
+### A.2. Euler-Lagrange equations
+-/
+
+variable (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) {γ : Time → E} {t₀ t₁ : Time}
 
 /-- If `q σ = γ (σ +ᵥ t₀)` is smooth and `eulerLagrange S t₀ q = 0` on `(0, t₁ -ᵥ t₀)`, then `γ`
 is a critical point. -/
-lemma isCriticalPoint_of_eulerLagrange
+lemma isCriticalPoint_of_eulerLagrange_eq_zero
     (hγ : ContDiff ℝ ∞ (fun σ : ℝ ↦ γ (σ +ᵥ t₀))) (hEq : ∀ τ ∈ Ioo 0 (t₁ -ᵥ t₀),
       eulerLagrange S t₀ (fun σ ↦ γ (σ +ᵥ t₀)) τ = 0) : S.IsCriticalPoint γ t₀ t₁ := by
   have hγ' := (Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).2 hγ
@@ -97,11 +113,11 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (ht : t₁ -ᵥ t₀ ≠ 0)
       eulerLagrange S t₀ (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) τ = 0 := by
   rcases ht.lt_or_gt with ht | ht
   · exact fun τ hτ ↦ absurd (hτ.1.trans hτ.2) ht.not_ge
-  refine eq_zero_of_integral_contDiff_smul_eq_zero
+  refine eqOn_Icc_zero_of_integral_contDiff_smul_eq_zero
     (contDiff_eulerLagrange
       ((Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1)).continuous.continuousOn ht
     fun ψ hψ hs w ↦ ?_
-  obtain ⟨h, hh⟩ := exists_variation_bump hc.1 hψ hs w
+  obtain ⟨h, hh⟩ := Variation.exists_bump hc.1 hψ hs w
   have hq : (fun σ : ℝ ↦ h.toFun (0, σ +ᵥ t₀)) = fun σ : ℝ ↦ γ (σ +ᵥ t₀) := by
     funext σ; simp [hh]
   have hV (τ : ℝ) :
@@ -109,7 +125,9 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint (ht : t₁ -ᵥ t₀ ≠ 0)
     rw [← fderiv_curry_fst _ 0 τ (h.contDiff_comp_vadd.differentiable (by simp) _)]
     simpa [Function.curry, hh] using ((hasDerivAt_id (0 : ℝ)).smul_const (ψ τ • w)).deriv
   -- the derivative at `s = 0` is unique, and zero by criticality
-  simpa [hq, hV] using (S.hasDerivAt_action_variation h ht.le).unique (hc.2 h)
+  have hu := (S.hasDerivAt_action_variation h ht.le).unique (hc.2 h)
+  simp only [hq, hV] at hu
+  exact hu
 
 /-- For `t₁ -ᵥ t₀ ≠ 0`, `γ` is a critical point iff `q σ = γ (σ +ᵥ t₀)` is smooth and
 `eulerLagrange S t₀ q = 0` on `[0, t₁ -ᵥ t₀]`. -/
@@ -118,7 +136,8 @@ lemma isCriticalPoint_iff_eulerLagrange (ht : t₁ -ᵥ t₀ ≠ 0) :
       ∀ τ ∈ Icc 0 (t₁ -ᵥ t₀), eulerLagrange S t₀ (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) τ = 0 :=
   ⟨fun hc ↦ ⟨(Time.contMDiff_iff_contDiff_vadd γ t₀ ∞).1 hc.1,
       S.eulerLagrange_eq_zero_of_isCriticalPoint ht hc⟩,
-    fun h ↦ S.isCriticalPoint_of_eulerLagrange h.1 fun τ hτ ↦ h.2 τ (Ioo_subset_Icc_self hτ)⟩
+    fun h ↦ S.isCriticalPoint_of_eulerLagrange_eq_zero h.1 fun τ hτ ↦
+      h.2 τ (Ioo_subset_Icc_self hτ)⟩
 
 end LagrangianSystem
 

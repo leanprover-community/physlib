@@ -15,11 +15,12 @@ The fundamental lemma of variational calculus on `[a, b]`.
 ## i. Overview
 
 A covector-valued `f` continuous on `[a, b]` with zero integral against every smooth `ψ`
-supported in `(a, b)` vanishes.
+supported in `(a, b)` vanishes. This is the step from a stationary action to the Euler-Lagrange
+equations, see `LagrangianSystem.eulerLagrange_eq_zero_of_isCriticalPoint`.
 
 ## ii. Key results
 
-- `eq_zero_of_integral_contDiff_smul_eq_zero`: the fundamental lemma on `[a, b]`
+- `eqOn_Icc_zero_of_integral_contDiff_smul_eq_zero`: the fundamental lemma on `[a, b]`
 
 ## iii. Table of contents
 
@@ -27,7 +28,8 @@ supported in `(a, b)` vanishes.
 
 ## iv. References
 
-* None.
+* V. I. Arnold, Mathematical Methods of Classical Mechanics. [ref: arnold_mechanics]
+* L. D. Landau and E. M. Lifshitz, Mechanics. [ref: landau_mechanics]
 -/
 
 @[expose] public section
@@ -42,7 +44,7 @@ variable {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
 
 /-- If `f : ℝ → V →L[ℝ] ℝ` is continuous on `[a, b]` and `∫ x in a..b, f x (ψ x • v) = 0` for
 every smooth `ψ` supported in `(a, b)` and every `v : V`, then `f = 0` on `[a, b]`. -/
-lemma eq_zero_of_integral_contDiff_smul_eq_zero {f : ℝ → V →L[ℝ] ℝ} {a b : ℝ}
+lemma eqOn_Icc_zero_of_integral_contDiff_smul_eq_zero {f : ℝ → V →L[ℝ] ℝ} {a b : ℝ}
     (hf : ContinuousOn f (Icc a b)) (hab : a < b)
     (hint : ∀ ψ : ℝ → ℝ, ContDiff ℝ ∞ ψ → tsupport ψ ⊆ Ioo a b →
       ∀ v : V, ∫ x in a..b, f x (ψ x • v) = 0) :

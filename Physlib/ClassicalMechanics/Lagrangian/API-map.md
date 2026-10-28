@@ -44,12 +44,11 @@ coming from a Riemannian metric on M. [TODO]
 
 1. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem`
 2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`
-3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`,
-   `LagrangianSystem.IsCriticalPoint`
-4. Physlib/ClassicalMechanics/Lagrangian/NormedSpace.lean —
+3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`
+4. Physlib/ClassicalMechanics/Lagrangian/Basic.lean —
    `LagrangianSystem.action_eq_integral_coord`
 5. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
-   `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
+   `LagrangianSystem.IsCriticalPoint`, `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
 
 ## References
 

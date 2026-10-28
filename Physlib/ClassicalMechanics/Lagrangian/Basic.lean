@@ -8,23 +8,25 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
-public import Physlib.SpaceAndTime.Time.Basic
+public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
 # Lagrangian systems
 
-Lagrangians on `TM` and critical points of the action.
+Lagrangians on `TM` and their action.
 
 ## i. Overview
 
-The motions of a Lagrangian system are the critical points of its action.
+The motions of a Lagrangian system are the critical points of its action, see
+`LagrangianSystem.IsCriticalPoint`.
 
 ## ii. Key results
 
 - `LagrangianSystem` : smooth time-dependent Lagrangians on `TM`.
 - `LagrangianSystem.coord` : `L` in a time coordinate.
 - `LagrangianSystem.action` : the action of a curve.
-- `LagrangianSystem.IsCriticalPoint` : critical points of the action.
+- `LagrangianSystem.action_eq_integral_coord` : the action of a curve in a normed space in
+  coordinates.
 
 ## iii. Table of contents
 
@@ -96,19 +98,18 @@ variable {I M} (S : LagrangianSystem I M) {γ : Time → M} {t₀ t₁ : Time}
 noncomputable def action (γ : Time → M) (t₀ t₁ : Time) : ℝ :=
   ∫ s in Set.Icc 0 (t₁ -ᵥ t₀), S (s +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ ⟨s +ᵥ t₀, (1 : ℝ)⟩)
 
-/-- `γ` is smooth and every variation has zero first variation of the action. -/
-def IsCriticalPoint (γ : Time → M) (t₀ t₁ : Time) : Prop :=
-  ContMDiff 𝓘(ℝ, ℝ) I ∞ γ ∧ ∀ h : Variation I γ t₀ t₁,
-    HasDerivAt (fun s ↦ S.action (fun t ↦ h.toFun (s, t)) t₀ t₁) 0 0
-
 /-- The action over an empty or one-point interval vanishes. -/
 lemma action_eq_zero_of_vsub_nonpos (h : t₁ -ᵥ t₀ ≤ 0) : S.action γ t₀ t₁ = 0 :=
   setIntegral_measure_zero _ ((Set.subsingleton_Icc_of_ge h).measure_zero _)
 
-/-- Every smooth curve is critical over an empty or one-point interval. -/
-lemma isCriticalPoint_of_vsub_nonpos (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (h : t₁ -ᵥ t₀ ≤ 0) :
-    S.IsCriticalPoint γ t₀ t₁ :=
-  ⟨hγ, fun _ ↦ by simp [action_eq_zero_of_vsub_nonpos _ h, hasDerivAt_const]⟩
+/-- The action is the integral over `[0, t₁ -ᵥ t₀]` of `S.coord t₀ (s, q s, q' s)`, where
+`q τ = γ (τ +ᵥ t₀)` and `q' = deriv q`. -/
+lemma action_eq_integral_coord (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (γ : Time → E) (t₀ t₁ : Time) :
+    S.action γ t₀ t₁ = ∫ s in Set.Icc 0 (t₁ -ᵥ t₀),
+      S.coord t₀ (s, γ (s +ᵥ t₀), deriv (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s) := by
+  simp only [action, coord, Time.tangentMap_eq_deriv_vadd]
+  -- `tangentBundleModelSpaceHomeomorph.symm (x, v)` is `⟨x, v⟩` by definition
+  rfl
 
 end LagrangianSystem
 
