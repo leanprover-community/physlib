@@ -170,11 +170,6 @@ name = "find_TODOs"
 srcDir = "scripts/dev"
 
 [[lean_exe]]
-name = "notes"
-srcDir = "scripts/website"
-supportInterpreter = true
-
-[[lean_exe]]
 name = "mathlib_textLint_on_physlib"
 srcDir = "scripts/lint/optional"
 
