@@ -124,6 +124,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.Balls
 public import PhyslibAlpha.CondensedMatter.Crystal.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
 public import PhyslibAlpha.CondensedMatter.Crystal.BrillouinCoordinates
+public import PhyslibAlpha.CondensedMatter.Crystal.Examples.AxisStepWords
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Monoclinic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Orthorhombic
