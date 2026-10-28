@@ -62,17 +62,17 @@ structure Variation (γ : Time → M) (t₀ t₁ : Time) where
   /-- Fixes `γ t₁`. -/
   apply_right : ∀ s, toFun (s, t₁) = γ t₁
 
+namespace Variation
+
 variable {I M} in
 /-- A smooth curve admits the constant variation. -/
-lemma Variation.nonempty {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) :
+lemma nonempty {γ : Time → M} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) :
     Nonempty (Variation I γ t₀ t₁) :=
   ⟨⟨⟨fun p ↦ γ p.2, hγ.comp contMDiff_snd⟩, fun _ _ ↦ rfl, fun _ ↦ rfl, fun _ ↦ rfl⟩⟩
 
 /-!
 ## B. Variations in a normed space
 -/
-
-namespace Variation
 
 /-- `(s, τ) ↦ h (s, τ +ᵥ t₀)` is smooth. -/
 lemma contDiff_comp_vadd {γ : Time → E} {t₀ t₁ : Time}

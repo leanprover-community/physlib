@@ -21,10 +21,10 @@ Euler-Lagrange covector `∂L/∂q - dₜ(∂L/∂q̇)` against the variation fi
 
 ## ii. Key results
 
-- `contDiff_action_integrand`: smoothness of the action integrand
-- `fderiv_action_integrand_apply`: first variation of the integrand, the Euler-Lagrange term
-  plus a total `τ`-derivative
-- `hasDerivAt_integral_variation`: first variation of the action
+- `LagrangianSystem.contDiff_action_integrand`: smoothness of the action integrand
+- `LagrangianSystem.fderiv_action_integrand_apply`: first variation of the integrand, the
+  Euler-Lagrange term plus a total `τ`-derivative
+- `LagrangianSystem.hasDerivAt_integral_variation`: first variation of the action
 - `LagrangianSystem.action_variation_eq_integral`: the action along a variation in coordinates
 - `LagrangianSystem.hasDerivAt_action_variation`: first variation of the action along a variation
 
@@ -46,6 +46,8 @@ open scoped ContDiff Manifold
 namespace ClassicalMechanics
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : ℝ × ℝ → E}
+
+namespace LagrangianSystem
 
 /-!
 ## A. First variation
@@ -122,8 +124,6 @@ lemma hasDerivAt_integral_variation (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) 
 /-!
 ## B. The action along a variation
 -/
-
-namespace LagrangianSystem
 
 /-- The action of `t ↦ h (s, t)` is the integral over `[0, t₁ -ᵥ t₀]` of
 `S.coord t₀ (τ, q τ, q' τ)`, where `q τ = h (s, τ +ᵥ t₀)` and `q' = deriv q`. -/

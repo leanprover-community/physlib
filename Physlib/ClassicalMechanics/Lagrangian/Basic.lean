@@ -108,7 +108,6 @@ lemma action_eq_integral_coord (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (γ :
     S.action γ t₀ t₁ = ∫ s in Set.Icc 0 (t₁ -ᵥ t₀),
       S.coord t₀ (s, γ (s +ᵥ t₀), deriv (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s) := by
   simp only [action, coord, Time.tangentMap_eq_deriv_vadd]
-  -- `tangentBundleModelSpaceHomeomorph.symm (x, v)` is `⟨x, v⟩` by definition
   rfl
 
 end LagrangianSystem
