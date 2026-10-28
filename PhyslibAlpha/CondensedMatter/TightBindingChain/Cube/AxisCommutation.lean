@@ -6,6 +6,7 @@ Authors: Eduardo Nava-Hernandez
 module
 
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Cube.Basic
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Current.MandelstamTamm
 /-!
 
 # Which observables of the open tight binding cube commute
@@ -21,6 +22,8 @@ different axes.
 
 ## ii. Key results
 
+- `bracket_openHamiltonian_position_eq_zero_iff` : on one chain, `⁅H, X⁆ = 0` if and only if
+  `t = 0` or the chain has a single site, so the hypotheses below cannot be dropped.
 - `axisBracket_maxCurrentCubeVectorState_ne_zero` : in the maximal current state, the expectation
   of `⁅H, X⁆` is nonzero on each axis.
 - `bracket_cubePairs_pair_ne_zero` : `H` and `X` of one axis do not commute.
@@ -31,8 +34,9 @@ different axes.
 
 ## iii. Table of contents
 
-- A. The pair of an axis does not commute
-- B. Commuting and axes
+- A. One chain: when `H` and `X` commute
+- B. The pair of an axis does not commute
+- C. Commuting and axes
 
 ## iv. References
 
@@ -51,7 +55,44 @@ variable {Tx Ty Tz : TightBindingChain}
 
 /-!
 
-## A. The pair of an axis does not commute
+## A. One chain: when `H` and `X` commute
+
+-/
+
+/-- Without hopping, or with a single site, the hopping operator is zero. -/
+lemma hopping_eq_zero_of_degenerate (T : TightBindingChain) (h : T.t = 0 ∨ T.N < 2) :
+    T.hopping = 0 := by
+  refine T.localizedState.toBasis.ext fun n => T.ext_localizedState fun m => ?_
+  simp only [OrthonormalBasis.coe_toBasis, LinearMap.zero_apply, inner_zero_right]
+  rw [T.inner_hopping]
+  split_ifs with hc
+  · rcases h with h | h
+    · simp [h]
+    · have := m.isLt
+      have := n.isLt
+      omega
+  · rfl
+
+/-- On one chain, the Hamiltonian and the position commute if and only if there is no hopping or
+only one site. -/
+lemma bracket_openHamiltonian_position_eq_zero_iff (T : TightBindingChain) :
+    ⁅T.openHamiltonianObservable, T.positionObservable⁆ = 0 ↔ T.t = 0 ∨ T.N < 2 := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · by_contra hc
+    push Not at hc
+    have h0 := T.expectation_bracket_maxCurrentState
+    rw [h] at h0
+    exact T.bound_ne_zero hc.1 hc.2 (by simpa using h0.symm)
+  · apply Subtype.ext
+    rw [T.coe_bracket_openHamiltonian_position]
+    refine ContinuousLinearMap.ext fun ψ => ?_
+    change (-(1 / 2) : ℂ) • T.current ψ = 0
+    rw [T.current_eq_hopping, T.hopping_eq_zero_of_degenerate h]
+    simp
+
+/-!
+
+## B. The pair of an axis does not commute
 
 -/
 
@@ -88,7 +129,7 @@ lemma variance_mul_variance_cubePairs_pos (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (h
 
 /-!
 
-## B. Commuting and axes
+## C. Commuting and axes
 
 -/
 
