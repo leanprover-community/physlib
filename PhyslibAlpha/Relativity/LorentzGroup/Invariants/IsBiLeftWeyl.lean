@@ -106,18 +106,18 @@ variable {k k' : complexLorentzTensor.Color}
 
 /-- The components of `g • t` for a tensor with two indices: the matrix of `g` in the colour of
   each index acts on that index. -/
-lemma basis_repr_smul_pair (g : SL(2,ℂ)) (t : ℂT[k, k']) (a : Fin (repDim k))
-    (b : Fin (repDim k')) :
+lemma basis_repr_smul_pair (g : SL(2,ℂ)) (t : ℂT[k, k']) (a : basisIdx k)
+    (b : basisIdx k') :
     (Tensor.basis ![k, k']).repr (g • t)
-        ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k'] j))).symm (a, b))
+        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm (a, b))
       = ∑ x, ∑ y, LinearMap.toMatrix (complexLorentzTensor.basis k)
           (complexLorentzTensor.basis k) (complexLorentzTensor.rep k g) a x *
         LinearMap.toMatrix (complexLorentzTensor.basis k') (complexLorentzTensor.basis k')
           (complexLorentzTensor.rep k' g) b y *
         (Tensor.basis ![k, k']).repr t
-          ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k'] j))).symm (x, y)) := by
+          ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm (x, y)) := by
   rw [basis_repr_smul,
-    ← (piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k'] j))).symm.sum_comp,
+    ← (piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm.sum_comp,
     Fintype.sum_prod_type]
   simp only [Fin.prod_univ_two]
   rfl
@@ -128,17 +128,17 @@ lemma basis_repr_smul_pair (g : SL(2,ℂ)) (t : ℂT[k, k']) (a : Fin (repDim k)
   the dual colours the inverse cancels against the inverse in the matrix of the colour. -/
 lemma basis_repr_pair_eq_neg_swap_of_invariant
     (hk : k = .upL ∨ k = .downL ∨ k = .upR ∨ k = .downR) {t : ℂT[k, k]}
-    (ht : ∀ g : SL(2,ℂ), g • t = t) (a b : Fin (repDim k)) :
+    (ht : ∀ g : SL(2,ℂ), g • t = t) (a b : basisIdx k) :
     (Tensor.basis ![k, k]).repr t
-        ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k] j))).symm (a, b))
+        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k] j)).symm (a, b))
       = - (Tensor.basis ![k, k]).repr t
-        ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k] j))).symm (b, a)) := by
+        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k] j)).symm (b, a)) := by
   have hinv : ∀ g : SL(2,ℂ), (g⁻¹).1⁻¹ = g.1 := fun g => by rw [SL2C.inverse_coe, inv_inv]
   rcases hk with rfl | rfl | rfl | rfl
   all_goals
     have h := fun (g : SL(2,ℂ)) (x y : Fin 2) => congrArg (fun s : type_of% t =>
       (Tensor.basis (S := complexLorentzTensor) _).repr s
-        ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![_, _] j))).symm (x, y))) (ht g)
+        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![_, _] j)).symm (x, y))) (ht g)
     have h1 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 0 0
     have h2 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 1 1
     have h3 := h (SL2C.halfTurn 0)⁻¹ 0 1
@@ -168,7 +168,7 @@ lemma exists_eq_smul_metricTensor_of_invariant
     (metricTensor_invariant (S := complexLorentzTensor) (c := k))
   rcases hk with rfl | rfl | rfl | rfl
   all_goals
-    set e := (piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![_, _] j))).symm
+    set e := (piFinTwoEquiv fun j : Fin 2 => basisIdx (![_, _] j)).symm
     have hm : (Tensor.basis (S := complexLorentzTensor) _).repr (metricTensor _)
         (e ((0 : Fin 2), (1 : Fin 2))) ≠ 0 := by
       first
@@ -282,21 +282,21 @@ section PairComponents
 variable {k k' : complexLorentzTensor.Color} {B : Type*} [AddCommGroup B] [Module ℂ B]
 
 /-- The linear map out of `ℂT[k, k']` sending the basis tensor `e_a ⊗ e_b` to `T a b`. -/
-noncomputable def ofPairComponents (T : Fin (repDim k) → Fin (repDim k') → B) :
+noncomputable def ofPairComponents (T : basisIdx k → basisIdx k' → B) :
     ℂT[k, k'] →ₗ[ℂ] B :=
   (Tensor.basis ![k, k']).constr ℂ fun φ => T (φ 0) (φ 1)
 
 /-- The range of `ofPairComponents T` is the span of the vectors `T a b`. -/
-lemma range_ofPairComponents (T : Fin (repDim k) → Fin (repDim k') → B) :
+lemma range_ofPairComponents (T : basisIdx k → basisIdx k' → B) :
     LinearMap.range (ofPairComponents T)
-      = Submodule.span ℂ (Set.range fun m : Fin (repDim k) × Fin (repDim k') => T m.1 m.2) := by
+      = Submodule.span ℂ (Set.range fun m : basisIdx k × basisIdx k' => T m.1 m.2) := by
   rw [ofPairComponents, Module.Basis.constr_range]
-  exact congrArg _ ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k'] j))).surjective.range_comp
+  exact congrArg _ ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).surjective.range_comp
     fun m => T m.1 m.2)
 
 /-- The image of `ofPairComponents T` lies in every submodule containing the vectors
   `T a b`. -/
-lemma ofPairComponents_mem (T : Fin (repDim k) → Fin (repDim k') → B) {M : Submodule ℂ B}
+lemma ofPairComponents_mem (T : basisIdx k → basisIdx k' → B) {M : Submodule ℂ B}
     (hT : ∀ a b, T a b ∈ M) (t : ℂT[k, k']) : ofPairComponents T t ∈ M := by
   have h : LinearMap.range (ofPairComponents T) ≤ M := by
     rw [range_ofPairComponents, Submodule.span_le]
@@ -307,7 +307,7 @@ lemma ofPairComponents_mem (T : Fin (repDim k) → Fin (repDim k') → B) {M : S
 /-- A linear map applied after `ofPairComponents T` is `ofPairComponents` of its values on the
   components. -/
 lemma map_ofPairComponents {B' : Type*} [AddCommGroup B'] [Module ℂ B'] (σ : B →ₗ[ℂ] B')
-    (T : Fin (repDim k) → Fin (repDim k') → B) (t : ℂT[k, k']) :
+    (T : basisIdx k → basisIdx k' → B) (t : ℂT[k, k']) :
     σ (ofPairComponents T t) = ofPairComponents (fun a b => σ (T a b)) t :=
   LinearMap.congr_fun (show σ ∘ₗ ofPairComponents T = ofPairComponents (fun a b => σ (T a b)) from
     (Tensor.basis (S := complexLorentzTensor) ![k, k']).ext fun φ => by
@@ -315,20 +315,20 @@ lemma map_ofPairComponents {B' : Type*} [AddCommGroup B'] [Module ℂ B'] (σ : 
 
 /-- `ofPairComponents` of a sum of families is the sum of the maps. -/
 lemma ofPairComponents_sum {ι : Type*} (s : Finset ι)
-    (T : ι → Fin (repDim k) → Fin (repDim k') → B) :
+    (T : ι → basisIdx k → basisIdx k' → B) :
     ofPairComponents (fun a b => ∑ i ∈ s, T i a b) = ∑ i ∈ s, ofPairComponents (T i) :=
   (Tensor.basis (S := complexLorentzTensor) ![k, k']).ext fun φ => by
     simp [ofPairComponents, LinearMap.sum_apply]
 
 /-- `ofPairComponents` of a difference of families is the difference of the maps. -/
-lemma ofPairComponents_sub (T T' : Fin (repDim k) → Fin (repDim k') → B) :
+lemma ofPairComponents_sub (T T' : basisIdx k → basisIdx k' → B) :
     ofPairComponents (fun a b => T a b - T' a b) = ofPairComponents T - ofPairComponents T' :=
   (Tensor.basis (S := complexLorentzTensor) ![k, k']).ext fun φ => by simp [ofPairComponents]
 
 /-- `ofPairComponents T` is equivariant when each index of `T a b` is moved by the matrix of `g`
   in its colour, the summed index first in each factor. -/
 lemma isEquivariant_ofPairComponents {repLorentz : Representation ℂ SL(2,ℂ) B}
-    (T : Fin (repDim k) → Fin (repDim k') → B)
+    (T : basisIdx k → basisIdx k' → B)
     (hT : ∀ (g : SL(2,ℂ)) a b, repLorentz g (T a b)
       = ∑ x, ∑ y, (LinearMap.toMatrix (complexLorentzTensor.basis k)
           (complexLorentzTensor.basis k) (complexLorentzTensor.rep k g) x a *
@@ -336,7 +336,7 @@ lemma isEquivariant_ofPairComponents {repLorentz : Representation ℂ SL(2,ℂ) 
           (complexLorentzTensor.rep k' g) y b) • T x y) :
     complexLorentzTensor.IsEquivariant ![k, k'] repLorentz (ofPairComponents T) :=
   isEquivariant_constr _ fun g φ => (hT g (φ 0) (φ 1)).trans <| by
-    rw [← (piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![k, k'] j))).symm.sum_comp,
+    rw [← (piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm.sum_comp,
       Fintype.sum_prod_type]
     simp only [Fin.prod_univ_two]
     rfl
