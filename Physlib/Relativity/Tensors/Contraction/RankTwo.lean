@@ -161,6 +161,24 @@ lemma toMatrix_contractInnerT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S
   funext i
   fin_cases i <;> rfl
 
+/-- If the matrix `(M_{μν})`, made square by the label bijection `e`, is invertible, then
+`t ↦ M_{μν} t^{νρ}` is injective. -/
+lemma contractInnerT_right_injective [HasContrDualBases S] {cs ds : Fin 2 → C}
+    (h : S.τ (cs 1) = ds 0) (e : basisIdx (cs 0) ≃ basisIdx (cs 1)) (M : Tensor S cs)
+    (hM : IsUnit ((toMatrix M).submatrix id e).det) :
+    Function.Injective (contractInnerT h M) := by
+  intro t t' htt
+  let := ((toMatrix M).submatrix id e).invertibleOfIsUnitDet hM
+  have h' : (toMatrix M).submatrix id e *
+        ((toMatrix t).submatrix (HasContrDualBases.dualIdxEquiv h) id).submatrix e id =
+      (toMatrix M).submatrix id e *
+        ((toMatrix t').submatrix (HasContrDualBases.dualIdxEquiv h) id).submatrix e id := by
+    rw [Matrix.submatrix_mul_equiv, Matrix.submatrix_mul_equiv, Matrix.submatrix_id_id,
+      Matrix.submatrix_id_id, ← toMatrix_contractInnerT, ← toMatrix_contractInnerT, htt]
+  exact toMatrix_injective (Matrix.submatrix_injective (Equiv.surjective _) Function.surjective_id
+    (Matrix.submatrix_injective e.surjective Function.surjective_id
+      (Matrix.mul_right_injective_of_invertible _ h')))
+
 /-- `contractInnerT` commutes with the action of `G`. For a Lorentz transformation `Λ`,
 `(Λ A)_{μν} (Λ B)^{νρ} = Λ (A_{μν} B^{νρ})`. -/
 lemma contractInnerT_equivariant {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (g : G)

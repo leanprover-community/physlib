@@ -212,7 +212,7 @@ lemma eq_inverseT_of_contractInnerT_eq_unitTensor {cs : Fin 2 → C} (hbar : S.b
       permT id (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply (cs 0)))
         (unitTensor (S := S.toTensorSpecies) (S.τ (cs 0)))) :
     t = S.inverseT M hbar :=
-  S.contractInnerT_right_injective hbar rfl M hM
+  contractInnerT_right_injective rfl (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm M hM
     (ht.trans (S.contractInnerT_inverseT hbar M hM).symm)
 
 /-!

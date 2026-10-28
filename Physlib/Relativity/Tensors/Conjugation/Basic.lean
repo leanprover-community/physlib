@@ -529,21 +529,6 @@ lemma toMatrix_contractInnerT_eq_toSquareMatrix_mul [HasContrDualBases S.toTenso
   exact Matrix.submatrix_id_mul_right _ (t.toMatrix.submatrix (dualIdxEquiv h) id) id
     (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0)))
 
-/-- If the matrix `(g_{IJ̄})` is invertible, `t ↦ g_{IJ̄} t^{J̄K}` is injective. -/
-lemma contractInnerT_right_injective [HasContrDualBases S.toTensorSpecies] {cs ds : Fin 2 → C}
-    (hbar : S.bar (cs 0) = cs 1) (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs)
-    (hM : IsUnit (S.toSquareMatrix M hbar).det) :
-    Function.Injective (contractInnerT h M) := by
-  intro t t' htt
-  have h := congrArg toMatrix htt
-  rw [S.toMatrix_contractInnerT_eq_toSquareMatrix_mul hbar,
-    S.toMatrix_contractInnerT_eq_toSquareMatrix_mul hbar] at h
-  let := (S.toSquareMatrix M hbar).invertibleOfIsUnitDet hM
-  have h := Matrix.mul_right_injective_of_invertible (S.toSquareMatrix M hbar) h
-  exact toMatrix_injective
-    (Matrix.submatrix_injective ((Equiv.surjective _).comp (Equiv.surjective _))
-      Function.surjective_id h)
-
 /-!
 
 ## G. Dual bases under conjugation
