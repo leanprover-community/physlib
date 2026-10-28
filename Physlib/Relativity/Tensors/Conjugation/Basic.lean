@@ -149,8 +149,7 @@ variable {k : Type} [CommRing k] [StarRing k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b)
 
-/-- If `bar a = d`, then `bar (τ d) = τ a`. So the inverse of a tensor of colours `![a, d]`, which
-has colours `![τ d, τ a]`, again has the conjugate of its first colour as its second. -/
+/-- If `bar a = d`, then `bar (τ d) = τ a`. -/
 lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
   (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
 
@@ -479,44 +478,13 @@ lemma toSquareMatrix_apply {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.T
       toMatrix M i ((Equiv.cast (hbar ▸ S.barIdx_eq (c 0))).symm j) :=
   rfl
 
-/-- `toMatrix M` and `toSquareMatrix M` have the same entries `M_{IJ̄}`; they differ only in whether
-the column is labelled by `J̄` or by `J`. -/
+/-- `toMatrix M` is `toSquareMatrix M` with its columns labelled by `J̄` instead of `J`. -/
 lemma toMatrix_eq_submatrix_toSquareMatrix {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
     (M : S.Tensor c) :
     toMatrix M =
       (S.toSquareMatrix M hbar).submatrix id (Equiv.cast (hbar ▸ S.barIdx_eq (c 0))) :=
   ((Matrix.reindex (Equiv.refl _) (Equiv.cast (hbar ▸ S.barIdx_eq (c 0)))).symm_apply_apply
     (toMatrix M)).symm
-
-open HasContrDualBases in
-/-- The matrix of `g_{IJ̄} t^{J̄K}` is the matrix product `(g_{IJ̄}) (t^{J̄K})`, `∑_J g_{IJ̄}
-t^{J̄K}`, the summed index `J̄` of `t` labelled by `J`. -/
-lemma toMatrix_contractInnerT_eq_toSquareMatrix_mul [HasContrDualBases S.toTensorSpecies]
-    {cs ds : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs)
-    (t : S.Tensor ds) :
-    toMatrix (contractInnerT h M t) =
-      S.toSquareMatrix M hbar * (toMatrix t).submatrix
-        (dualIdxEquiv h ∘ (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm)
-        (id : basisIdx (ds 1) → _) := by
-  refine (toMatrix_contractInnerT h M t).trans ?_
-  rw [S.toMatrix_eq_submatrix_toSquareMatrix hbar M]
-  exact Matrix.submatrix_id_mul_right _ (t.toMatrix.submatrix (dualIdxEquiv h) id) id
-    (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0)))
-
-/-- If the matrix `(g_{IJ̄})` is invertible, `t ↦ g_{IJ̄} t^{J̄K}` is injective. -/
-lemma contractInnerT_right_injective [HasContrDualBases S.toTensorSpecies] {cs ds : Fin 2 → C}
-    (hbar : S.bar (cs 0) = cs 1) (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs)
-    (hM : IsUnit (S.toSquareMatrix M hbar).det) :
-    Function.Injective (contractInnerT h M) := by
-  intro t t' htt
-  have h := congrArg toMatrix htt
-  rw [S.toMatrix_contractInnerT_eq_toSquareMatrix_mul hbar,
-    S.toMatrix_contractInnerT_eq_toSquareMatrix_mul hbar] at h
-  let := (S.toSquareMatrix M hbar).invertibleOfIsUnitDet hM
-  have h := Matrix.mul_right_injective_of_invertible (S.toSquareMatrix M hbar) h
-  exact toMatrix_injective
-    (Matrix.submatrix_injective ((Equiv.surjective _).comp (Equiv.surjective _))
-      Function.surjective_id h)
 
 /-- For `M_{IJ̄}`, the conjugate `(M̄)_{ĪJ} = (M_{IJ̄})*` and the swapped tensor `M_{JĪ}` have the
 same index types, a barred index then an ordinary one. They are equal, `(M_{IJ̄})* = M_{JĪ}`,
@@ -545,6 +513,36 @@ lemma conjT_eq_permT_swap_iff_toSquareMatrix_isHermitian {c : Fin 2 → C}
     simpa [cast_cast] using H (cast (S.barIdx_eq a).symm j) (cast hbb i)
   · intro H i j
     simpa [cast_cast] using H (cast hbb.symm j) (cast (S.barIdx_eq a) i)
+
+open HasContrDualBases in
+/-- The matrix of `g_{IJ̄} t^{J̄K}` is the product of the square matrix `(g_{IJ̄})` and the matrix
+`(t^{J̄K})`, with the rows of `(t^{J̄K})` labelled by `J`. -/
+lemma toMatrix_contractInnerT_eq_toSquareMatrix_mul [HasContrDualBases S.toTensorSpecies]
+    {cs ds : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs)
+    (t : S.Tensor ds) :
+    toMatrix (contractInnerT h M t) =
+      S.toSquareMatrix M hbar * (toMatrix t).submatrix
+        (dualIdxEquiv h ∘ (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm)
+        (id : basisIdx (ds 1) → _) := by
+  refine (toMatrix_contractInnerT h M t).trans ?_
+  rw [S.toMatrix_eq_submatrix_toSquareMatrix hbar M]
+  exact Matrix.submatrix_id_mul_right _ (t.toMatrix.submatrix (dualIdxEquiv h) id) id
+    (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0)))
+
+/-- If the matrix `(g_{IJ̄})` is invertible, `t ↦ g_{IJ̄} t^{J̄K}` is injective. -/
+lemma contractInnerT_right_injective [HasContrDualBases S.toTensorSpecies] {cs ds : Fin 2 → C}
+    (hbar : S.bar (cs 0) = cs 1) (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs)
+    (hM : IsUnit (S.toSquareMatrix M hbar).det) :
+    Function.Injective (contractInnerT h M) := by
+  intro t t' htt
+  have h := congrArg toMatrix htt
+  rw [S.toMatrix_contractInnerT_eq_toSquareMatrix_mul hbar,
+    S.toMatrix_contractInnerT_eq_toSquareMatrix_mul hbar] at h
+  let := (S.toSquareMatrix M hbar).invertibleOfIsUnitDet hM
+  have h := Matrix.mul_right_injective_of_invertible (S.toSquareMatrix M hbar) h
+  exact toMatrix_injective
+    (Matrix.submatrix_injective ((Equiv.surjective _).comp (Equiv.surjective _))
+      Function.surjective_id h)
 
 /-!
 

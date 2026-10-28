@@ -13,14 +13,12 @@ public import Physlib.Relativity.Tensors.Contraction.UnitTensorContraction
 # The inverse of a rank-two tensor
 
 The inverse `g^{J̄I}` of a tensor `g_{IJ̄}` with one index and one conjugate index, such as a
-Hermitian metric, its contraction laws, and the lowering and raising of indices with `g` and
-`g^{J̄I}`.
+Hermitian metric, and the lowering and raising of indices with `g` and `g^{J̄I}`.
 
 ## i. Overview
 
 The inverse of a tensor `g_{IJ̄}` is the tensor `g^{J̄I}`, with two upper indices, for which
-
-`g_{IJ̄} g^{J̄K} = δ_I^K`, `g^{J̄I} g_{IK̄} = δ^J̄_K̄`.
+`g_{IJ̄} g^{J̄K} = δ_I^K` and `g^{J̄I} g_{IK̄} = δ^J̄_K̄`.
 
 The colours of the inverse are `![τ (c 1), τ (c 0)]`, so its barred index comes first, `g^{J̄I}`.
 The usual `g^{IJ̄}` is the same tensor with its two indices swapped. With the barred index first,
@@ -29,7 +27,7 @@ inverse. The matrix `(g^{J̄I})`, with row `J` and column `I`, is the inverse of
 `(g_{IJ̄})`. `inverseT` is defined by this matrix inversion and is zero when `(g_{IJ̄})` is not
 invertible. The inverse of a Hermitian `g` is Hermitian (A), and the inverse of a
 positive-definite `g` is positive-definite (B). When `(g_{IJ̄})` is invertible, the two contraction
-laws above hold and the inverse is unique (C), and `g` and `g^{J̄I}` lower and raise indices (D).
+laws hold and the inverse is unique (C). Then `g` lowers indices and `g^{J̄I}` raises them (D).
 
 ## ii. Key results
 
@@ -161,13 +159,9 @@ end PosDef
 
 ## C. The contraction laws
 
-When the matrix `(g_{IJ̄})` is invertible, `g^{J̄I}` is the inverse of `g` under contraction,
-
-`g_{IJ̄} g^{J̄K} = δ_I^K`, `g^{J̄I} g_{IK̄} = δ^J̄_K̄`
-
-(`contractInnerT_inverseT`, `inverseT_contractInnerT`), and it is the only tensor with the first
-property (`eq_inverseT_of_contractInnerT_eq_unitTensor`). The unit tensor `δ` is defined over
-`RCLike` scalars, so this section and D are stated over them.
+When the matrix `(g_{IJ̄})` is invertible, `g^{J̄I}` satisfies both contraction laws, and it is the
+only tensor that satisfies the first. The unit tensor `δ` is defined over `RCLike` scalars, so
+sections C and D use them.
 
 -/
 
@@ -179,9 +173,8 @@ variable {k : Type} [RCLike k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b) [HasContrDualBases S.toTensorSpecies]
 
-/-- `g_{IJ̄} g^{J̄K} = δ_I^K`, when the matrix `(g_{IJ̄})` is invertible. On the right, the unit
-tensor at the colour of `K` has the colour of its first index `I` renamed from `τ (τ (cs 0))` to
-`cs 0` (`IsReindexing.unitTensor_of_tau_eq`). -/
+/-- If the matrix `(g_{IJ̄})` is invertible, `g_{IJ̄} g^{J̄K} = δ_I^K`. The first colour of the unit
+tensor is renamed from `τ (τ (cs 0))` to `cs 0`. -/
 lemma contractInnerT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     contractInnerT rfl M (S.inverseT M hbar) =
@@ -200,7 +193,7 @@ lemma contractInnerT_inverseT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M
   simp only [dualIdxEquiv_apply, basisIdxCongr, Equiv.cast_apply]
   constructor <;> rintro rfl <;> simp
 
-/-- `g^{J̄I} g_{IK̄} = δ^J̄_K̄`, when the matrix `(g_{IJ̄})` is invertible. -/
+/-- If the matrix `(g_{IJ̄})` is invertible, `g^{J̄I} g_{IK̄} = δ^J̄_K̄`. -/
 lemma inverseT_contractInnerT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M : S.Tensor cs)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     contractInnerT (S.τ_τ_apply (cs 0)) (S.inverseT M hbar) M =
@@ -208,8 +201,8 @@ lemma inverseT_contractInnerT {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (M
   (contractInnerT_eq_unitTensor_comm rfl _ (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm M _
     (S.contractInnerT_inverseT hbar M hM)).trans (permT_id_self _)
 
-/-- The inverse is unique: if `(g_{IJ̄})` is invertible and `g_{IJ̄} t^{J̄K} = δ_I^K`, then `t` is
-the inverse `g^{J̄K}`. -/
+/-- If `(g_{IJ̄})` is invertible and `g_{IJ̄} t^{J̄K} = δ_I^K`, then `t` is the inverse
+`g^{J̄K}`. -/
 lemma eq_inverseT_of_contractInnerT_eq_unitTensor {cs : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1)
     (M : S.Tensor cs) (hM : IsUnit (S.toSquareMatrix M hbar).det)
     {t : S.Tensor ![S.τ (cs 1), S.τ (cs 0)]}
@@ -230,11 +223,10 @@ these mutually inverse.
 
 -/
 
-/-- Lowering an index with `g_{IJ̄}`, `t^{…I…} ↦ g_{IJ̄} t^{…I…} = t_{…J̄…}`, as a linear
-equivalence whose inverse raises it with `g^{J̄I}`, `t_{…J̄…} ↦ g^{J̄I} t_{…J̄…}`. Slot `i` of
-`t` carries the upper index `I` (`he`) and `(g_{IJ̄})` is invertible (`hM`). By convention `t`
-contracts with the first index of `g`, so lowering an unbarred index gives a barred one,
-`t_{J̄} = g_{IJ̄} t^I`. -/
+/-- The linear equivalence that lowers the index `I` in slot `i` to `J̄`, sending `t^{…I…}` to
+`g_{IJ̄} t^{…I…}`, when the matrix `(g_{IJ̄})` is invertible. Its inverse raises the index with
+`g^{J̄I}`. By convention slot `i` contracts with the first index of `g`, so an unbarred index is
+lowered to a barred one. -/
 def lowerEquivT {cs : Fin 2 → C} (M : S.Tensor cs) (hbar : S.bar (cs 0) = cs 1)
     (hM : IsUnit (S.toSquareMatrix M hbar).det) :
     {n : ℕ} → {c : Fin n → C} → (i : Fin n) → (he : c i = S.τ (cs 0)) →
