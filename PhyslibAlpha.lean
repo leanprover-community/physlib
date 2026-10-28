@@ -158,6 +158,7 @@ public import PhyslibAlpha.CondensedMatter.QuasiLocal.InvariantLimit
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.LimitState
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Local
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Symmetry
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Cube.AxisCommutation
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Cube.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Cube.MandelstamTamm
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Cube.VolumetricQuantum
