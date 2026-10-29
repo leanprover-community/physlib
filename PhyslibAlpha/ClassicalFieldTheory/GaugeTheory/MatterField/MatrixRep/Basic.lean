@@ -629,8 +629,8 @@ variable [Module.Free ℂ V] [Module.Finite ℂ V]
 
 /-- **The matter field of a matrix representation**: the target space `V ≃ S ⊗ (ι → ℂ)`
   with the Lorentz action on `S`, the jet gauge action of the matrix representation, and
-  the given mass weight. -/
-noncomputable def matterField (ρ : Representation ℂ SL(2,ℂ) S) (w : ℕ) :
+  the given mass weight and declared statistics. -/
+noncomputable def matterField (ρ : Representation ℂ SL(2,ℂ) S) (w : ℕ) (σ : FieldStatistic) :
     MatterField jets where
   V := V
   repLorentz := repLorentz e ρ
@@ -639,23 +639,27 @@ noncomputable def matterField (ρ : Representation ℂ SL(2,ℂ) S) (w : ℕ) :
   repJet_smul := R.repJet_smul e
   repAlgebra_isInfinitesimalAction := R.isInfinitesimalActionOf e
   massWeight := w
+  statistic := σ
 
-variable (ρ : Representation ℂ SL(2,ℂ) S) (w : ℕ)
-
-@[simp]
-lemma matterField_V : (R.matterField e ρ w).V = V := rfl
+variable (ρ : Representation ℂ SL(2,ℂ) S) (w : ℕ) (σ : FieldStatistic)
 
 @[simp]
-lemma matterField_repLorentz : (R.matterField e ρ w).repLorentz = repLorentz e ρ := rfl
+lemma matterField_V : (R.matterField e ρ w σ).V = V := rfl
 
 @[simp]
-lemma matterField_repJet : (R.matterField e ρ w).repJet = R.repJet e := rfl
+lemma matterField_repLorentz : (R.matterField e ρ w σ).repLorentz = repLorentz e ρ := rfl
 
 @[simp]
-lemma matterField_repAlgebra : (R.matterField e ρ w).repAlgebra = R.repAlgebra e := rfl
+lemma matterField_repJet : (R.matterField e ρ w σ).repJet = R.repJet e := rfl
 
 @[simp]
-lemma matterField_massWeight : (R.matterField e ρ w).massWeight = w := rfl
+lemma matterField_repAlgebra : (R.matterField e ρ w σ).repAlgebra = R.repAlgebra e := rfl
+
+@[simp]
+lemma matterField_massWeight : (R.matterField e ρ w σ).massWeight = w := rfl
+
+@[simp]
+lemma matterField_statistic : (R.matterField e ρ w σ).statistic = σ := rfl
 
 omit [Fintype ι] [DecidableEq ι] [Module.Free ℂ V] [Module.Finite ℂ V] in
 lemma repLorentz_apply_symm_tmul (Λ : SL(2,ℂ)) (s : S) (v : ι → ℂ) :
@@ -677,7 +681,8 @@ lemma repAlgebra_comm_repLorentz (c : 𝔤) (Λ : SL(2,ℂ)) (v : V) :
 /-- The matter field of a matrix representation satisfies `MatterField.GaugeLorentzCompatible`,
   for every matrix representation and Lorentz factor: the two actions live on different
   tensor factors. -/
-lemma matterField_gaugeLorentzCompatible : (R.matterField e ρ w).GaugeLorentzCompatible :=
+lemma matterField_gaugeLorentzCompatible :
+    (R.matterField e ρ w σ).GaugeLorentzCompatible :=
   fun c Λ v => repAlgebra_comm_repLorentz e R ρ c Λ v
 
 /-- The matter field of a matrix representation satisfies `MatterField.PureJetsActTrivially`
@@ -687,7 +692,7 @@ lemma matterField_gaugeLorentzCompatible : (R.matterField e ρ w).GaugeLorentzCo
 lemma matterField_pureJetsActTrivially
     (hmat : ∀ {W : GJ}, jets.eval W = 1 → (R.mat W).map
         (constantCoeff : SpaceTimeAlgebra → ℂ) = 1) :
-    (R.matterField e ρ w).PureJetsActTrivially := by
+    (R.matterField e ρ w σ).PureJetsActTrivially := by
   intro W hW
   show GaugeAlgebraRealization.repCoeff (R.repJet e) W 0 = LinearMap.id
   rw [repCoeff_eq]

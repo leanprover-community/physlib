@@ -11,16 +11,18 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetCompo
 
 ## i. Overview
 
-Two matter fields of a gauge theory with the same mass weight combine into one, valued in
-the product of their value spaces. This is the operation that lets a multiplet be
-described either as one field or as its summands: three generations of a fermion type, or
-the two chiralities of a Dirac field, are the direct sum of their pieces.
+Two matter fields of a gauge theory with the same mass weight and the same declared
+statistics combine into one, valued in the product of their value spaces. This is the
+operation that lets a multiplet be described either as one field or as its summands: three
+generations of a fermion type, or the two chiralities of a Dirac field, are the direct sum
+of their pieces.
 
 Every piece of data acts componentwise. The Lorentz representation and the infinitesimal
 gauge action are `LinearMap.prodMap` of the two; the jet gauge action is the pair of the
 two, read through the identification `jetProdEquiv` of the jets of a product with the
-product of the jets. The mass weight has to be shared: a `MatterField` carries a single
-weight, so the direct sum takes the equality of the two as a hypothesis.
+product of the jets. The direct sum is one `MatterField`, with one mass weight and one
+statistic, so it takes as hypotheses that the two fields have the same mass weight and the
+same statistics.
 
 What has to be proved is the last field of the structure — that the componentwise
 infinitesimal action still generates the componentwise jet action.
@@ -31,7 +33,8 @@ infinitesimal action still generates the componentwise jet action.
 - `MatterField.repAlgebraProd` : the infinitesimal gauge action of a direct sum.
 - `MatterField.repCoeff_repJetProd` : its base-point Taylor coefficients are the pair of
   those of the summands.
-- `MatterField.prod` : the direct sum of two matter fields of the same mass weight.
+- `MatterField.prod` : the direct sum of two matter fields of the same mass weight and
+  statistics.
 - `JetComponentSpace.prodEquiv` : the component space of a direct sum splits.
 
 ## iii. Table of contents
@@ -148,11 +151,11 @@ lemma isInfinitesimalActionOf_repAlgebraProd :
     refine congrArg Multiset.sum (Multiset.map_congr rfl fun p _ => ?_)
     rw [repCoeff_repJetProd, repAlgebraProd_apply, LinearMap.prodMap_comp]
 
-/-- **The direct sum of two matter fields** of the same mass weight: one field valued in
-  `M.V × N.V`, with every action acting componentwise. Fields of different mass weight do
-  not sum — a `MatterField` carries one weight, which is what makes the mass-weight
-  grading of its field algebra well defined. -/
-noncomputable def prod (_h : M.massWeight = N.massWeight) : MatterField jets where
+/-- **The direct sum of two matter fields** of the same mass weight and statistics, one field
+  valued in `M.V × N.V` with every action acting componentwise and with the weight and
+  statistics of `M`. -/
+noncomputable def prod (_h : M.massWeight = N.massWeight) (_hσ : M.statistic = N.statistic) :
+    MatterField jets where
   V := M.V × N.V
   repLorentz := M.repLorentz.prod N.repLorentz
   repJet := repJetProd M N
@@ -162,30 +165,31 @@ noncomputable def prod (_h : M.massWeight = N.massWeight) : MatterField jets whe
       jetProdEquiv_symm_smul]
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf_repAlgebraProd M N
   massWeight := M.massWeight
+  statistic := M.statistic
+
+variable (h : M.massWeight = N.massWeight) (hσ : M.statistic = N.statistic)
 
 @[simp]
-lemma prod_V (h : M.massWeight = N.massWeight) : (prod M N h).V = (M.V × N.V) := rfl
+lemma prod_V : (prod M N h hσ).V = (M.V × N.V) := rfl
 
 @[simp]
-lemma prod_repJet (h : M.massWeight = N.massWeight) :
-    (prod M N h).repJet = repJetProd M N := rfl
+lemma prod_repJet : (prod M N h hσ).repJet = repJetProd M N := rfl
 
 @[simp]
-lemma prod_repAlgebra (h : M.massWeight = N.massWeight) :
-    (prod M N h).repAlgebra = repAlgebraProd M N := rfl
+lemma prod_repAlgebra : (prod M N h hσ).repAlgebra = repAlgebraProd M N := rfl
 
 @[simp]
-lemma prod_repLorentz (h : M.massWeight = N.massWeight) :
-    (prod M N h).repLorentz = M.repLorentz.prod N.repLorentz := rfl
+lemma prod_repLorentz : (prod M N h hσ).repLorentz = M.repLorentz.prod N.repLorentz := rfl
 
 @[simp]
-lemma prod_massWeight (h : M.massWeight = N.massWeight) :
-    (prod M N h).massWeight = M.massWeight := rfl
+lemma prod_massWeight : (prod M N h hσ).massWeight = M.massWeight := rfl
 
 /-- The shared weight, read off the second summand: this is what the hypothesis of `prod`
   buys — the direct sum has one weight, and it is the weight of either summand. -/
-lemma prod_massWeight_right (h : M.massWeight = N.massWeight) :
-    (prod M N h).massWeight = N.massWeight := h
+lemma prod_massWeight_right : (prod M N h hσ).massWeight = N.massWeight := h
+
+@[simp]
+lemma prod_statistic : (prod M N h hσ).statistic = M.statistic := rfl
 
 end Prod
 
@@ -196,12 +200,12 @@ end Prod
 -/
 
 /-- **The component space of a direct sum splits.** The component functions of the direct
-  sum `M.prod N h` are those of `M` together with those of `N`: the dual and the conjugate
+  sum `M.prod N h hσ` are those of `M` together with those of `N`: the dual and the conjugate
   both distribute over the finite product, and the derivative label is untouched. Only the
-  value spaces enter, so the shared mass weight `h` is carried along and not used. -/
+  value spaces enter, so the hypotheses `h` and `hσ` are carried along and not used. -/
 noncomputable def _root_.JetComponentSpace.prodEquiv (M N : MatterField jets)
-    (h : M.massWeight = N.massWeight) :
-    JetComponentSpace (M.prod N h) ≃ₗ[ℂ] JetComponentSpace M × JetComponentSpace N :=
+    (h : M.massWeight = N.massWeight) (hσ : M.statistic = N.statistic) :
+    JetComponentSpace (M.prod N h hσ) ≃ₗ[ℂ] JetComponentSpace M × JetComponentSpace N :=
   (LinearEquiv.prodCongr
       (TensorProduct.congr (LinearEquiv.refl ℂ SpaceTimeDerivAlgebraℂ)
         (Module.dualProdDualEquivDual ℂ M.V N.V).symm)

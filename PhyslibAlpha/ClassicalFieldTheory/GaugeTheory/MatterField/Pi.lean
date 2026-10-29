@@ -11,17 +11,19 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Prod
 
 ## i. Overview
 
-`MatterField.prod` sums two matter fields of the same mass weight. This file does the same
-for a finite family `M : ι → MatterField jets`, producing a single matter field valued in
-`∀ i, (M i).V`. It is the operation that turns the several species of a theory into one
-field: the fifteen fermionic multiplets of the Standard Model become one fermion field,
-carried by `GaugeFieldData.fermionMatterField`.
+`MatterField.prod` sums two matter fields of the same mass weight and statistics. This file
+does the same for a finite family `M : ι → MatterField jets`, producing a single matter
+field valued in `∀ i, (M i).V`. It is the operation that turns the several species of a
+theory into one field: the fifteen fermionic multiplets of the Standard Model become one
+fermion field, carried by `GaugeFieldData.fermionMatterField`.
 
 The binary and indexed versions are the same construction with `LinearMap.prodMap`
 replaced by `LinearMap.piMap` and `jetProdEquiv` by `jetPiEquiv`, so the proofs run in
-parallel; only the diagonal-map algebra used along the way differs. As in the binary case
-the mass weight has to be shared, and is taken as a hypothesis: a `MatterField` carries
-one weight, which is what makes the mass-weight grading of its field algebra well defined.
+parallel; only the diagonal-map algebra used along the way differs. As in the binary case,
+the direct sum is represented by one `MatterField`, which has one mass weight and one
+statistic, so the summands must share both. The caller supplies the common values `w` and
+`σ`, together with proofs that every summand has them, so the direct sum of an empty family
+also has a definite weight and statistics.
 
 Finiteness of `ι` is essential and not merely convenient. `jetPiEquiv` — the
 identification of the jets of the product with the product of the jets, through which the
@@ -38,7 +40,7 @@ value space, a field of `MatterField`, would fail for an infinite family in any 
 - `MatterField.repCoeff_repJetPi` : its base-point Taylor coefficients are the family of
   those of the summands.
 - `MatterField.pi` : the direct sum of a finite family of matter fields of one mass
-  weight.
+  weight and one statistic.
 - `MatterField.jetComponentSpacePiEquiv` : the component space of the direct sum is the
   family of the component spaces of the summands.
 - `MatterField.jetComponentSpacePiEquiv_symm_single` : a summand sits inside it as the
@@ -233,12 +235,12 @@ lemma isInfinitesimalActionOf_repAlgebraPi :
     refine congrArg Multiset.sum (Multiset.map_congr rfl fun p _ => ?_)
     rw [repCoeff_repJetPi, repAlgebraPi_apply, piMap_comp]
 
-/-- **The direct sum of a finite family of matter fields** sharing one mass weight `w`:
-  one field valued in `∀ i, (M i).V`, with every action acting index by index. The shared
-  weight is a hypothesis for the same reason as in the binary case — a `MatterField`
-  carries a single weight — and here it says that the whole family is degenerate in mass
-  dimension, as the fermions of a gauge theory are. -/
-noncomputable def pi (w : ℕ) (_h : ∀ i, (M i).massWeight = w) : MatterField jets where
+/-- **The direct sum of a finite family of matter fields** with common mass weight `w` and
+  common statistics `σ`, given with proofs that every summand has them. It is one field
+  valued in `∀ i, (M i).V`, of weight `w` and statistics `σ`, with every action acting index
+  by index. -/
+noncomputable def pi (w : ℕ) (_h : ∀ i, (M i).massWeight = w) (σ : FieldStatistic)
+    (_hσ : ∀ i, (M i).statistic = σ) : MatterField jets where
   V := ∀ i, (M i).V
   repLorentz := repPi fun i => (M i).repLorentz
   repJet := repJetPi M
@@ -246,26 +248,29 @@ noncomputable def pi (w : ℕ) (_h : ∀ i, (M i).massWeight = w) : MatterField 
   repJet_smul := repJetPi_smul M
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf_repAlgebraPi M
   massWeight := w
+  statistic := σ
 
-lemma pi_V (w : ℕ) (h : ∀ i, (M i).massWeight = w) : (pi M w h).V = ∀ i, (M i).V := rfl
+variable (w : ℕ) (h : ∀ i, (M i).massWeight = w) (σ : FieldStatistic)
+  (hσ : ∀ i, (M i).statistic = σ)
 
-@[simp]
-lemma pi_repJet (w : ℕ) (h : ∀ i, (M i).massWeight = w) :
-    (pi M w h).repJet = repJetPi M := rfl
-
-@[simp]
-lemma pi_repAlgebra (w : ℕ) (h : ∀ i, (M i).massWeight = w) :
-    (pi M w h).repAlgebra = repAlgebraPi M := rfl
+lemma pi_V : (pi M w h σ hσ).V = ∀ i, (M i).V := rfl
 
 @[simp]
-lemma pi_massWeight (w : ℕ) (h : ∀ i, (M i).massWeight = w) :
-    (pi M w h).massWeight = w := rfl
+lemma pi_repJet : (pi M w h σ hσ).repJet = repJetPi M := rfl
+
+@[simp]
+lemma pi_repAlgebra : (pi M w h σ hσ).repAlgebra = repAlgebraPi M := rfl
+
+@[simp]
+lemma pi_massWeight : (pi M w h σ hσ).massWeight = w := rfl
+
+@[simp]
+lemma pi_statistic : (pi M w h σ hσ).statistic = σ := rfl
 
 /-- The Lorentz action of the direct sum is the family of Lorentz actions, acting index by
   index. -/
-lemma pi_repLorentz_apply (w : ℕ) (h : ∀ i, (M i).massWeight = w) (Λ : SL(2,ℂ))
-    (v : ∀ i, (M i).V) (i : ι) :
-    (pi M w h).repLorentz Λ v i = (M i).repLorentz Λ (v i) := rfl
+lemma pi_repLorentz_apply (Λ : SL(2,ℂ)) (v : ∀ i, (M i).V) (i : ι) :
+    (pi M w h σ hσ).repLorentz Λ v i = (M i).repLorentz Λ (v i) := rfl
 
 /-!
 
@@ -281,17 +286,16 @@ direct sum case of `JetComponentSpace.piEquiv`.
 -/
 
 /-- **The component space of a direct sum of matter fields splits.** A component function
-  of `MatterField.pi M w h` is exactly a family, one component function per summand. Both
+  of `MatterField.pi M w h σ hσ` is exactly a family, one component function per summand. Both
   halves split by `JetComponentSpace.fstPiEquiv` and `JetComponentSpace.sndPiEquiv`, and
   the pair of families is reassembled into a family of pairs index by index. -/
-noncomputable def jetComponentSpacePiEquiv (w : ℕ) (h : ∀ i, (M i).massWeight = w) :
-    JetComponentSpace (pi M w h) ≃ₗ[ℂ] ∀ i, JetComponentSpace (M i) :=
+noncomputable def jetComponentSpacePiEquiv :
+    JetComponentSpace (pi M w h σ hσ) ≃ₗ[ℂ] ∀ i, JetComponentSpace (M i) :=
   (LinearEquiv.prodCongr (JetComponentSpace.fstPiEquiv fun i => (M i).V)
       (JetComponentSpace.sndPiEquiv fun i => (M i).V)).trans prodPiEquiv
 
-lemma jetComponentSpacePiEquiv_apply (w : ℕ) (h : ∀ i, (M i).massWeight = w)
-    (x : JetComponentSpace (pi M w h)) (i : ι) :
-    jetComponentSpacePiEquiv M w h x i =
+lemma jetComponentSpacePiEquiv_apply (x : JetComponentSpace (pi M w h σ hσ)) (i : ι) :
+    jetComponentSpacePiEquiv M w h σ hσ x i =
       (JetComponentSpace.fstPiEquiv (fun i => (M i).V) x.1 i,
         JetComponentSpace.sndPiEquiv (fun i => (M i).V) x.2 i) := rfl
 
@@ -300,11 +304,10 @@ lemma jetComponentSpacePiEquiv_apply (w : ℕ) (h : ∀ i, (M i).massWeight = w)
   function of the direct sum, is that function precomposed with the projection onto the
   summand. This is what identifies the splitting with the species inclusions of a direct
   sum of component spaces. -/
-lemma jetComponentSpacePiEquiv_symm_single (w : ℕ) (h : ∀ i, (M i).massWeight = w)
-    (i : ι) (x : JetComponentSpace (M i)) :
-    (jetComponentSpacePiEquiv M w h).symm (Pi.single i x)
+lemma jetComponentSpacePiEquiv_symm_single (i : ι) (x : JetComponentSpace (M i)) :
+    (jetComponentSpacePiEquiv M w h σ hσ).symm (Pi.single i x)
       = JetComponentSpace.comap
-        (LinearMap.proj (φ := fun i => (M i).V) i : (pi M w h).V →ₗ[ℂ] (M i).V) x := by
+        (LinearMap.proj (φ := fun i => (M i).V) i : (pi M w h σ hσ).V →ₗ[ℂ] (M i).V) x := by
   have hfst : (fun j => ((Pi.single i x : ∀ j, JetComponentSpace (M j)) j).1)
       = Pi.single i x.1 :=
     funext fun j =>

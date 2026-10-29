@@ -6,6 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
+public import Physlib.QFT.PerturbationTheory.FieldStatistics.Basic
 /-!
 # Matter fields of a gauge theory
 
@@ -15,21 +16,23 @@ A matter field of a gauge theory is specified by the data a physicist writes dow
 finite-dimensional complex vector space `V` in which the field takes its values, the
 representation of the Lorentz group on `V`, the action of the jets of gauge
 transformations on the jets of the field — which must be *fibrewise*, that is act on the
-values of the field over the identity of spacetime — and the mass weight of the field.
-All of this is relative to a gauge context `jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J`: the jet gauge
-group `GJ` the field's jet action is a representation of, and the global group `G₀`, Lie
+values of the field over the identity of spacetime — the mass weight of the field, and the
+statistics, bosonic or fermionic, that the field is declared to obey. All of this is
+relative to a gauge context `jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J`: the jet gauge group
+`GJ` the field's jet action is a representation of, and the global group `G₀`, Lie
 algebras `𝔤`, `𝔤J` and structure maps that make `GJ` the jets of `G₀` rather than an
 unrelated group. Fixing `jets` rather than `GJ` alone is what lets the global gauge action
 `repConstant` below be taken along the *canonical* inclusion `jets.ofConstant`, instead of
 an arbitrary homomorphism supplied by hand.
 
-`MatterField jets` bundles this data. From it the general theory produces, on the bosonic
-and fermionic algebras of the field, the jet gauge action, the global gauge action, the
-Lorentz action and the mass-weight scaling — in
-`Physlib.Particles.StandardModel.Matter.BosonicAlgebra` and
-`Physlib.Particles.StandardModel.Matter.FermionicAlgebra`, downstream of the component
-space this file's data indexes. A concrete theory therefore only has to supply a
-`MatterField` for each of its fields.
+`MatterField jets` bundles this data. The statistics is declared once, where the field is
+defined, and separately from the Lorentz representation. `GaugeFieldData` requires the
+declaration of each matter field it includes to agree with the collection, fermionic or
+bosonic, to which that field is assigned. From the other data the general theory produces,
+on the bosonic and fermionic algebras of the field, the jet gauge action, the global gauge
+action, the Lorentz action and the mass-weight scaling, in
+`PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.Basic`,
+`PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.Basic` and the files beside them.
 
 ## ii. Key results
 
@@ -62,8 +65,8 @@ open Matrix MatrixGroups TensorProduct
 /-- **A matter field** of a gauge theory over the gauge context `jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J`:
   a finite-dimensional complex target space `V`, the Lorentz representation on `V`, a
   fibrewise action of `GJ` on the jets `SpaceTimeAlgebra ⊗[ℂ] V` of the field, the infinitesimal
-  action of the gauge algebra generating it, and the mass weight of the field (in the units
-  in which a derivative has weight `2`). -/
+  action of the gauge algebra generating it, the mass weight of the field (in the units
+  in which a derivative has weight `2`), and its declared statistics. -/
 structure MatterField {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ 𝔤]
     {GJ : Type} [Group GJ] {𝔤J : Type} [LieRing 𝔤J] [LieAlgebra ℝ 𝔤J]
     (jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J) where
@@ -89,6 +92,11 @@ structure MatterField {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [L
   repAlgebra_isInfinitesimalAction : jets.IsInfinitesimalActionOf repAlgebra repJet
   /-- The mass weight of the field. -/
   massWeight : ℕ
+  /-- The statistics the field is declared to obey, bosonic or fermionic. `GaugeFieldData`
+    requires it to agree with the collection the field is assigned to; the single-field
+    algebras `StandardModel.FermionicAlgebra M` and `StandardModel.BosonicAlgebra M` are
+    defined for every `M`, whatever its declared statistics. -/
+  statistic : FieldStatistic
 
 attribute [instance] MatterField.instAddCommGroup MatterField.instModule
   MatterField.instFree MatterField.instFinite

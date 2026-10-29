@@ -34,6 +34,8 @@ number of generations and its data, and compiles to a `GaugeFieldData`.
 - `SURep`, `Charges` : the charge labels of a row and the charge tuple.
 - `Charges.rep` : the matrix representation named by a charge tuple.
 - `LorentzLabel`, `MatterFieldData` : the Lorentz label and the data of a field.
+- `LorentzLabel.statistic` : the statistics a table row declares for a label, by convention
+  fermionic for a Weyl spinor and bosonic for a scalar.
 - `MatterFieldData.toMatterField`, `toMatterFieldOn` : the matter field of a datum, on the
   tensor-product target space or on any target space presented as one.
 - `FieldData`, `FieldData.toGaugeFieldData` : the field data of a model and its compilation.
@@ -226,7 +228,8 @@ A field of a model is written down as its Lorentz label and its charge tuple, so
 `(.L, .singlet, .fund, -3)` is a left-handed doublet of hypercharge `-3`. The datum
 compiles to a `MatterField` on the target space `S ⊗ (Idx → ℂ)` of the label's Lorentz
 factor and the internal index of the charges, or, through an identification `e`, on any
-target space presented as such a tensor product.
+target space presented as such a tensor product. The label also gives the field its mass
+weight and its declared statistics.
 
 -/
 
@@ -242,11 +245,13 @@ inductive LorentzLabel
 
 namespace LorentzLabel
 
-/-- Whether the label is fermionic. -/
-def isFermion : LorentzLabel → Bool
-  | .L => true
-  | .R => true
-  | .scalar => false
+/-- The statistics a table row declares for a field with the given label, fermionic for a
+  Weyl spinor and bosonic for a scalar. Like `massWeight`, it is a convention of the tables,
+  chosen to match the spin–statistics relation. -/
+def statistic : LorentzLabel → FieldStatistic
+  | .L => .fermionic
+  | .R => .fermionic
+  | .scalar => .bosonic
 
 /-- The Lorentz factor of the target space of a field with the given label. -/
 abbrev Space : LorentzLabel → Type
@@ -359,11 +364,12 @@ lemma basis_apply (a : M.lorentz.basisIndex) (i : M.Idx) :
 
 /-- **The matter field of a datum on a presented target space**: a target space `V`
   identified with the Lorentz factor of the label tensored with the internal index of the
-  charges, transforming in the representation the charges name. -/
+  charges, transforming in the representation the charges name, with the mass weight and
+  statistic its label assigns. -/
 noncomputable def toMatterFieldOn {V : Type} [AddCommGroup V] [Module ℂ V]
     [Module.Free ℂ V] [Module.Finite ℂ V]
     (e : V ≃ₗ[ℂ] M.lorentz.Space ⊗[ℂ] (M.Idx → ℂ)) : MatterField jets :=
-  M.rep.matterField e M.lorentz.rep M.massWeight
+  M.rep.matterField e M.lorentz.rep M.massWeight M.lorentz.statistic
 
 /-- **The matter field of a datum**: the target space is the Lorentz factor of the label
   tensored with the internal index of the charges. -/
@@ -393,6 +399,15 @@ lemma toMatterFieldOn_massWeight : (M.toMatterFieldOn e).massWeight = M.massWeig
 @[simp]
 lemma toMatterField_massWeight : M.toMatterField.massWeight = M.massWeight := rfl
 
+/-- The matter field of a datum on a presented target space has the statistics its Lorentz
+  label assigns. -/
+@[simp]
+lemma toMatterFieldOn_statistic : (M.toMatterFieldOn e).statistic = M.lorentz.statistic := rfl
+
+/-- The matter field of a datum has the statistics its Lorentz label assigns. -/
+@[simp]
+lemma toMatterField_statistic : M.toMatterField.statistic = M.lorentz.statistic := rfl
+
 /-- The target space of the matter field of a datum is the target space of the datum. -/
 @[simp]
 lemma toMatterField_V : M.toMatterField.V = M.V := rfl
@@ -400,7 +415,7 @@ lemma toMatterField_V : M.toMatterField.V = M.V := rfl
 /-- The gauge and Lorentz actions of the matter field of a datum commute. -/
 lemma toMatterFieldOn_gaugeLorentzCompatible :
     (M.toMatterFieldOn e).GaugeLorentzCompatible :=
-  MatrixRep.matterField_gaugeLorentzCompatible _ _ _ _
+  MatrixRep.matterField_gaugeLorentzCompatible _ _ _ _ _
 
 /-- The gauge and Lorentz actions of the matter field of a datum commute. -/
 lemma toMatterField_gaugeLorentzCompatible : M.toMatterField.GaugeLorentzCompatible :=
@@ -429,11 +444,11 @@ abbrev generations (f : Fields) : ℕ := (D f).1
 /-- The matter field data of a field. -/
 abbrev data (f : Fields) : MatterFieldData Γ := (D f).2
 
-/-- The fermionic fields of the model. -/
-abbrev Fermions : Type := {f : Fields // (D.data f).lorentz.isFermion = true}
+/-- The fermionic fields of the model: those whose label assigns fermionic statistics. -/
+abbrev Fermions : Type := {f : Fields // (D.data f).lorentz.statistic = .fermionic}
 
-/-- The bosonic fields of the model. -/
-abbrev Bosons : Type := {f : Fields // (D.data f).lorentz.isFermion = false}
+/-- The bosonic fields of the model: those whose label assigns bosonic statistics. -/
+abbrev Bosons : Type := {f : Fields // (D.data f).lorentz.statistic = .bosonic}
 
 /-- The fermionic species of the model: a fermionic field together with a generation. -/
 abbrev FermionSpecies : Type := Σ f : D.Fermions, Fin (D.generations f.1)
@@ -446,8 +461,10 @@ abbrev BosonSpecies : Type := Σ f : D.Bosons, Fin (D.generations f.1)
 noncomputable def toGaugeFieldData : GaugeFieldData jets where
   FermionSpecies := D.FermionSpecies
   fermion s := (D.data s.1.1).toMatterField
+  fermion_statistic s := s.1.2
   BosonSpecies := D.BosonSpecies
   boson s := (D.data s.1.1).toMatterField
+  boson_statistic s := s.1.2
 
 @[simp]
 lemma toGaugeFieldData_FermionSpecies :
