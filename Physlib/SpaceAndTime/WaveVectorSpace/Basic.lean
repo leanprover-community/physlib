@@ -169,14 +169,13 @@ open scoped RealInnerProductSpace
 instance : Inner ℝ (WaveVectorSpace d) where
   inner k₁ k₂ := ∑ i, k₁ i * k₂ i
 
-@[simp]
-lemma inner_eq : ⟪k₁, k₂⟫ = ∑ i, k₁ i * k₂ i := rfl
+lemma inner_apply : ⟪k₁, k₂⟫ = ∑ i, k₁ i * k₂ i := rfl
 
 instance : InnerProductSpace.Core ℝ (WaveVectorSpace d) where
-  conj_inner_symm _ _ := by simp [mul_comm]
+  conj_inner_symm _ _ := by simp [inner_apply, mul_comm]
   re_inner_nonneg k := Fintype.sum_nonneg fun i ↦ mul_self_nonneg (k i)
-  add_left _ _ _ := by simp [add_mul, Finset.sum_add_distrib]
-  smul_left _ _ _ := by simp [mul_assoc, Finset.mul_sum]
+  add_left _ _ _ := by simp [inner_apply, add_mul, Finset.sum_add_distrib]
+  smul_left _ _ _ := by simp [inner_apply, mul_assoc, Finset.mul_sum]
   definite _ h := by
     apply eq_of_apply
     apply (Fintype.sum_eq_zero_iff_of_nonneg fun i ↦ by simp [mul_self_nonneg]).mp at h
@@ -189,10 +188,10 @@ noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVe
   InnerProductSpace.ofCore instCoreReal.toCore
 
 lemma norm_eq : ‖k‖ = √(∑ i, k i ^ 2) := by
-  simp_rw [norm_eq_sqrt_real_inner, inner_eq, pow_two]
+  simp_rw [norm_eq_sqrt_real_inner, inner_apply, pow_two]
 
 lemma norm_sq_eq : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
-  simp_rw [← real_inner_self_eq_norm_sq, inner_eq, pow_two]
+  simp_rw [← real_inner_self_eq_norm_sq, inner_apply, pow_two]
 
 end InnerProduct
 
