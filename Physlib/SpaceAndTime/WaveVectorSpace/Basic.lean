@@ -20,6 +20,11 @@ In contrast to `Space d`, `WaveVectorSpace d` has a distinguished zero;
 the purpose of this file is to define this zero and the structure of a `Module`
 on `WaveVectorSpace d`, neither of which requires any non-canonical choices.
 
+`WaveVectorSpace d` is implemented as a structure with a field `val : Fin d → ℝ`
+rather than as an `abbrev` of `EuclideanSpace ℝ (Fin d)` or a `def` of a type with value
+`EuclideanSpace ℝ (Fin d)` for the same reasons as for `Space d`;
+see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages of each.
+
 ## ii. Key results
 
 - `WaveVectorSpace d` : the space of wave vectors in `Space d`
@@ -36,13 +41,6 @@ on `WaveVectorSpace d`, neither of which requires any non-canonical choices.
   - B.5. Module over `ℝ`
 
 ## iv. References
-
-## Implementation details
-
-`WaveVectorSpace d` is implemented as a structure with a field `val : Fin d → ℝ`
-rather than as an `abbrev` of `EuclideanSpace ℝ (Fin d)` or a `def` of a type with value
-`EuclideanSpace ℝ (Fin d)` for the same reasons as for `Space d`;
-see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages of each.
 
 -/
 
