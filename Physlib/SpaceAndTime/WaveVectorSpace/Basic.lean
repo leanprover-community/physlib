@@ -207,4 +207,8 @@ def equivEuclideanSpace : WaveVectorSpace d ≃ₗᵢ[ℝ] EuclideanSpace ℝ (F
   invFun v := ⟨v.ofLp⟩
   norm_map' _ := by simp [norm_eq, EuclideanSpace.norm_eq]
 
+@[simp]
+theorem finrank_waveVectorSpace : Module.finrank ℝ (WaveVectorSpace d) = d :=
+  equivEuclideanSpace.toLinearEquiv.finrank_eq ▸ finrank_euclideanSpace_fin
+
 end WaveVectorSpace
