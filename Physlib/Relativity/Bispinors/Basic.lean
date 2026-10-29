@@ -32,7 +32,7 @@ open PauliMatrix
 open TensorSpecies
 open Tensor
 
-TODO "Refector bispinors to define e.g.
+TODO "Refactor bispinors to define e.g.
   `bispinorEquiv : ComplexVector ≃ₗ[ℂ] LeftHandedWeyl ⊗[ℂ] RightHandedWeyl`."
 
 /-- A bispinor `pᵃᵃ` created from a lorentz vector `p^μ`. -/
