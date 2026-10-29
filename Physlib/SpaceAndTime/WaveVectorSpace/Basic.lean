@@ -16,8 +16,9 @@ In this module we define the type `WaveVectorSpace d` corresponding to the `d`-d
 space of (angular) wave vectors in `Space d`.
 
 In contrast to `Space d`, `WaveVectorSpace d` has a distinguished zero;
-the purpose of this file is to define this zero and the structure of a `Module`
-on `WaveVectorSpace d`, neither of which requires any non-canonical choices.
+the purpose of this file is to define this zero, the structure of a `Module`
+on `WaveVectorSpace d`, and the structure of a real `InnerProductSpace` on `WaveVectorSpace d`,
+none of which requires any non-canonical choices.
 
 `WaveVectorSpace d` is implemented as a structure with a field `val : Fin d → ℝ`
 rather than as an `abbrev` of `EuclideanSpace ℝ (Fin d)` or a `def` of a type with value
@@ -28,6 +29,8 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
 
 - `WaveVectorSpace d` : the space of wave vectors in `Space d`
 - `instModuleReal` : `WaveVectorSpace d` is a module over `ℝ`
+- `instInnerProductSpaceReal` : `WaveVectorSpace d` is a real inner product space
+- `equivEuclideanSpace` : the linear isometric equivalence between `WaveVectorSpace d` and `ℝᵈ`
 
 ## iii. Table of contents
 
@@ -39,7 +42,7 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
   - B.4. Additive commutative group
   - B.5. Module over `ℝ`
   - B.6. Inner product space
-    - B.6.1 Linear isometric equivalence with `ℝᵈ`
+    - B.6.1. Linear isometric equivalence with `ℝᵈ`
 
 ## iv. References
 
@@ -194,9 +197,10 @@ lemma norm_sq_eq : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
 end InnerProduct
 
 /-!
-#### B.6.1 Linear isometric equivalence with `ℝᵈ`
+#### B.6.1. Linear isometric equivalence with `ℝᵈ`
 -/
 
+/-- The linear isometric equivalence between `WaveVectorSpace d` and `ℝᵈ`. -/
 def equivEuclideanSpace : WaveVectorSpace d ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin d) where
   toFun k := WithLp.toLp 2 k.val
   map_add' _ _ := WithLp.toLp_add 2 _ _
