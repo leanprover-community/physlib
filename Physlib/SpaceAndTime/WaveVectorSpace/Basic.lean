@@ -20,6 +20,8 @@ to the `d`-dimensional real vector space of (angular) wave vectors in `Space d`.
 ## iii. Table of contents
 
 - A. The `WaveVectorSpace` type
+- B. Instances on `WaveVectorSpace`
+  - B.1. Coercion to functions
 
 ## iv. References
 
@@ -49,5 +51,22 @@ lemma eq_of_val (h : k₁.val = k₂.val) : k₁ = k₂ := by
 
 @[simp]
 lemma val_eq_iff : k₁.val = k₂.val ↔ k₁ = k₂ := ⟨eq_of_val, congrArg val⟩
+
+/-!
+## B. Instances on `WaveVectorSpace`
+-/
+
+/-!
+### B.1. Coercion to functions
+-/
+
+instance : CoeFun (WaveVectorSpace d) (fun _ ↦ Fin d → ℝ) where
+  coe k := k.val
+
+@[ext]
+lemma eq_of_apply (h : ∀ i, k₁ i = k₂ i) : k₁ = k₂ := by
+  apply eq_of_val
+  funext i
+  exact h i
 
 end WaveVectorSpace
