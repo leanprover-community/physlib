@@ -5,8 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Algebra.Module.Defs
-public import Mathlib.Basic.Real.Basic
+public import Mathlib.Analysis.InnerProductSpace.Defs
 /-!
 
 # Wave Vector Space
@@ -39,6 +38,7 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
   - B.3. Zero
   - B.4. Additive commutative group
   - B.5. Module over `ℝ`
+  - B.6. Inner product space
 
 ## iv. References
 
@@ -153,5 +153,39 @@ instance instModuleReal : Module ℝ (WaveVectorSpace d) where
   smul_add _ _ _ := by ext; simp [mul_add]
   add_smul _ _ _ := by ext; simp [add_mul]
   zero_smul _ := by ext; simp
+
+/-!
+### B.6. Inner product space
+-/
+
+section InnerProduct
+
+open scoped RealInnerProductSpace
+
+instance : Inner ℝ (WaveVectorSpace d) where
+  inner k₁ k₂ := ∑ i, k₁ i * k₂ i
+
+@[simp]
+lemma inner_eq : ⟪k₁, k₂⟫ = ∑ i, k₁ i * k₂ i := rfl
+
+instance : InnerProductSpace.Core ℝ (WaveVectorSpace d) where
+  conj_inner_symm _ _ := by simp [mul_comm]
+  re_inner_nonneg k := Fintype.sum_nonneg fun i ↦ mul_self_nonneg (k i)
+  add_left _ _ _ := by simp [add_mul, Finset.sum_add_distrib]
+  smul_left _ _ _ := by simp [mul_assoc, Finset.mul_sum]
+  definite _ h := by
+    apply eq_of_apply
+    apply (Fintype.sum_eq_zero_iff_of_nonneg fun i ↦ by simp [mul_self_nonneg]).mp at h
+    simpa using congrFun h
+
+noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (WaveVectorSpace d) :=
+  instCoreReal.toNormedAddCommGroup
+
+noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVectorSpace d) :=
+  InnerProductSpace.ofCore instCoreReal.toCore
+
+lemma norm_sq_eq_inner : ‖k‖ ^ 2 = ⟪k, k⟫ := InnerProductSpace.norm_sq_eq_re_inner (𝕜 := ℝ) k
+
+end InnerProduct
 
 end WaveVectorSpace
