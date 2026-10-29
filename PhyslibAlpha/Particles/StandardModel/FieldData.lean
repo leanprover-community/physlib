@@ -26,8 +26,9 @@ generation index is an argument of each constructor, so the species type is the
 enumeration itself and carries no further factor. The matter field does not depend on the
 generation, three generations being three copies of one multiplet distinguished only by
 their Yukawa couplings, which are not field data. The bosonic family has the single Higgs
-multiplet. The gauge bosons are not a species: their generator space is fixed by the gauge
-algebra alone, and `GaugeFieldData` supplies it as the connection sector.
+multiplet. The fermions are declared fermionic and the Higgs bosonic, as `GaugeFieldData`
+requires of its two families. The gauge bosons are not a species: their generator space is
+fixed by the gauge algebra alone, and `GaugeFieldData` supplies it as the connection sector.
 
 From the datum the generic theory produces the generator spaces, the local field algebra
 `fieldData.LocalFieldAlgebra`, the transformation data and the realization arrow, with no
@@ -125,6 +126,11 @@ lemma matterField_downSinglet (i : Fin 3) :
 lemma matterField_massWeight (t : FermionType) : (matterField t).massWeight = 3 := by
   cases t <;> rfl
 
+/-- Every Standard Model fermion is declared fermionic, in every generation. -/
+@[simp]
+lemma matterField_statistic (t : FermionType) : (matterField t).statistic = .fermionic := by
+  cases t <;> rfl
+
 /-- Pure gauge jets act trivially on every Standard Model fermion at the base point. -/
 lemma matterField_pureJetsActTrivially (t : FermionType) :
     (matterField t).PureJetsActTrivially := by
@@ -158,8 +164,10 @@ end FermionType
 noncomputable def fieldData : GaugeFieldData localGaugeData where
   FermionSpecies := FermionType
   fermion := FermionType.matterField
+  fermion_statistic := FermionType.matterField_statistic
   BosonSpecies := Unit
   boson := fun _ => HiggsVec.matterField
+  boson_statistic _ := rfl
 
 @[simp]
 lemma fieldData_fermionSpecies : fieldData.FermionSpecies = FermionType := rfl

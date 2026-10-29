@@ -16,10 +16,11 @@ public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.JetAlgebra.Basic
 
 `MatterField jets` bundles the value space of one field of a gauge theory over a gauge
 context `jets`, its Lorentz representation, the fibrewise action of the jets of gauge
-transformations, and its mass weight. The Higgs already carries all four, and this file
-collects them, as `PhyslibAlpha.Particles.StandardModel.Fermions.MatterField` does for the five
-fermion types. Nothing is redefined and no convention is changed: the `2_{3}` jet action
-and its fibrewise-linearity proof are the ones in
+transformations, its mass weight and its declared statistics. The Higgs already carries the
+first four, and this file collects them, declared bosonic, as
+`PhyslibAlpha.Particles.StandardModel.Fermions.MatterField` does for the five fermion types.
+Nothing is redefined and no convention is changed: the `2_{3}` jet action and its
+fibrewise-linearity proof are the ones in
 `PhyslibAlpha.Particles.StandardModel.HiggsBoson.JetAlgebra.Basic`, the Higgs is a Lorentz
 scalar, and mass weight two is the weight already fixed by
 `HiggsJetAlgebra.massWeightScale`.
@@ -58,7 +59,7 @@ namespace HiggsVec
 
 /-- The Higgs field as a matter field of `StandardModel.localGaugeData`, valued in
   `HiggsVec`, in the `2_{3}` representation of the gauge group, a Lorentz scalar, of mass
-  weight two. -/
+  weight two, declared bosonic. -/
 noncomputable def matterField : MatterField localGaugeData where
   V := HiggsVec
   repLorentz := Representation.trivial ℂ SL(2,ℂ) HiggsVec
@@ -67,6 +68,7 @@ noncomputable def matterField : MatterField localGaugeData where
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf
   repJet_smul := repJetGaugeGroupI_smul
   massWeight := 2
+  statistic := .bosonic
 
 @[simp]
 lemma matterField_V : matterField.V = HiggsVec := rfl

@@ -19,7 +19,7 @@ Two matter fields, valued in `V` and `W`, are jointly a single matter field valu
 `V × W`; its fermionic algebra is the **exterior product** of the two individual fermionic
 algebras. That is the content of `FermionicAlgebra.prodEquiv`: an algebra equivalence
 
-`FermionicAlgebra (M.prod N h) ≃ₐ[ℂ] (evenOdd V ᵍ⊗[ℂ] evenOdd W)`
+`FermionicAlgebra (M.prod N h hσ) ≃ₐ[ℂ] (evenOdd V ᵍ⊗[ℂ] evenOdd W)`
 
 onto the graded tensor product of the two algebras with respect to their Fermi-parity
 gradings. The graded — as opposed to ordinary — tensor product is what makes generators of
@@ -96,10 +96,10 @@ abbrev FermionicAlgebra.evenOdd (M : MatterField jets) :
   generator of the first field commute with a generator of the second, whereas fermionic
   generators anticommute across species just as they do within one. -/
 noncomputable def FermionicAlgebra.prodEquiv (M N : MatterField jets)
-    (h : M.massWeight = N.massWeight) :
-    FermionicAlgebra (M.prod N h) ≃ₐ[ℂ]
+    (h : M.massWeight = N.massWeight) (hσ : M.statistic = N.statistic) :
+    FermionicAlgebra (M.prod N h hσ) ≃ₐ[ℂ]
       (FermionicAlgebra.evenOdd M ᵍ⊗[ℂ] FermionicAlgebra.evenOdd N) :=
-  (ExteriorAlgebra.mapEquiv (JetComponentSpace.prodEquiv M N h)).trans <|
+  (ExteriorAlgebra.mapEquiv (JetComponentSpace.prodEquiv M N h hσ)).trans <|
     (CliffordAlgebra.equivOfIsometry
         (Q₁ := (0 : QuadraticForm ℂ (JetComponentSpace M × JetComponentSpace N)))
         (Q₂ := (0 : QuadraticForm ℂ (JetComponentSpace M)).prod

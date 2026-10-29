@@ -103,20 +103,20 @@ abbrev FermionSpace : Type :=
     (Fin 3 → UpSinglet) × (Fin 3 → DownSinglet)
 
 /-- The matter field of three generations of one fermion species: the direct sum of three
-  copies of it, which all carry the same mass weight. -/
+  copies of it, which all carry the same mass weight and the same declared statistic. -/
 noncomputable def generations (M : MatterField localGaugeData) : MatterField localGaugeData :=
-  MatterField.pi (fun _ : Fin 3 => M) M.massWeight fun _ => rfl
+  MatterField.pi (fun _ : Fin 3 => M) M.massWeight (fun _ => rfl) M.statistic fun _ => rfl
 
 /-- **The fermionic matter field of the Standard Model**: the direct sum of three
   generations of each of the five species, in the order in which `FermionSpace` lists them.
   Its value space is `FermionSpace` by definition, and every summand carries mass weight
-  three, which is what lets the direct sums be formed. -/
+  three and is declared fermionic, which is what lets the direct sums be formed. -/
 noncomputable def fermionMatterField : MatterField localGaugeData :=
   (generations LeptonDoubletV.matterField).prod
     ((generations LeptonSinglet.matterField).prod
       ((generations QuarkDoublet.matterField).prod
         ((generations UpSinglet.matterField).prod
-          (generations DownSinglet.matterField) rfl) rfl) rfl) rfl
+          (generations DownSinglet.matterField) rfl rfl) rfl rfl) rfl rfl) rfl rfl
 
 lemma fermionMatterField_V : fermionMatterField.V = FermionSpace := rfl
 
@@ -507,50 +507,52 @@ noncomputable def exteriorProductLeptonDoublet :
           ((generations LeptonSinglet.matterField).prod
           ((generations QuarkDoublet.matterField).prod
           ((generations UpSinglet.matterField).prod
-          (generations DownSinglet.matterField) rfl) rfl) rfl)) :=
+          (generations DownSinglet.matterField) rfl rfl) rfl rfl) rfl rfl)) :=
   FermionicAlgebra.prodEquiv (generations LeptonDoubletV.matterField)
     ((generations LeptonSinglet.matterField).prod
         ((generations QuarkDoublet.matterField).prod
         ((generations UpSinglet.matterField).prod
-        (generations DownSinglet.matterField) rfl) rfl) rfl) rfl
+        (generations DownSinglet.matterField) rfl rfl) rfl rfl) rfl rfl) rfl rfl
 
 /-- The charged-lepton singlets split off the remaining three species. -/
 noncomputable def exteriorProductLeptonSinglet :
     FermionicAlgebra
         ((generations LeptonSinglet.matterField).prod
         ((generations QuarkDoublet.matterField).prod
-        ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField) rfl)
-        rfl) rfl) ≃ₐ[ℂ]
+        ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField) rfl rfl)
+        rfl rfl) rfl rfl) ≃ₐ[ℂ]
       (FermionicAlgebra.evenOdd (generations LeptonSinglet.matterField) ᵍ⊗[ℂ]
         FermionicAlgebra.evenOdd
             ((generations QuarkDoublet.matterField).prod
             ((generations UpSinglet.matterField).prod
-            (generations DownSinglet.matterField) rfl) rfl)) :=
+            (generations DownSinglet.matterField) rfl rfl) rfl rfl)) :=
   FermionicAlgebra.prodEquiv (generations LeptonSinglet.matterField)
     ((generations QuarkDoublet.matterField).prod
         ((generations UpSinglet.matterField).prod
-        (generations DownSinglet.matterField) rfl) rfl) rfl
+        (generations DownSinglet.matterField) rfl rfl) rfl rfl) rfl rfl
 
 /-- The quark doublets split off the two quark singlets. -/
 noncomputable def exteriorProductQuarkDoublet :
     FermionicAlgebra
         ((generations QuarkDoublet.matterField).prod
         ((generations UpSinglet.matterField).prod
-        (generations DownSinglet.matterField) rfl) rfl) ≃ₐ[ℂ]
+        (generations DownSinglet.matterField) rfl rfl) rfl rfl) ≃ₐ[ℂ]
       (FermionicAlgebra.evenOdd (generations QuarkDoublet.matterField) ᵍ⊗[ℂ]
         FermionicAlgebra.evenOdd
-            ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField) rfl)) :=
+            ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField)
+              rfl rfl)) :=
   FermionicAlgebra.prodEquiv (generations QuarkDoublet.matterField)
-    ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField) rfl) rfl
+    ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField) rfl rfl) rfl rfl
 
 /-- The two quark singlets as an exterior product. -/
 noncomputable def exteriorProductUpSinglet :
     FermionicAlgebra
-        ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField) rfl) ≃ₐ[ℂ]
+        ((generations UpSinglet.matterField).prod (generations DownSinglet.matterField)
+          rfl rfl) ≃ₐ[ℂ]
       (FermionicAlgebra.evenOdd (generations UpSinglet.matterField) ᵍ⊗[ℂ]
         FermionicAlgebra.evenOdd (generations DownSinglet.matterField)) :=
   FermionicAlgebra.prodEquiv (generations UpSinglet.matterField)
-    (generations DownSinglet.matterField) rfl
+    (generations DownSinglet.matterField) rfl rfl
 
 /-!
 
