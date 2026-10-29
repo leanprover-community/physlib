@@ -5,7 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.Defs
+public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 
 # Wave Vector Space
@@ -39,6 +39,7 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
   - B.4. Additive commutative group
   - B.5. Module over `ℝ`
   - B.6. Inner product space
+    - B.6.1 Linear isometric equivalence with `ℝᵈ`
 
 ## iv. References
 
@@ -191,5 +192,16 @@ lemma norm_sq_eq : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
   simp_rw [← real_inner_self_eq_norm_sq, inner_eq, pow_two]
 
 end InnerProduct
+
+/-!
+#### B.6.1 Linear isometric equivalence with `ℝᵈ`
+-/
+
+def equivEuclideanSpace : WaveVectorSpace d ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin d) where
+  toFun k := WithLp.toLp 2 k.val
+  map_add' _ _ := WithLp.toLp_add 2 _ _
+  map_smul' _ _ := WithLp.toLp_smul 2 _ _
+  invFun v := ⟨v.ofLp⟩
+  norm_map' _ := by simp [norm_eq, EuclideanSpace.norm_eq]
 
 end WaveVectorSpace
