@@ -20,12 +20,13 @@ sum `MatterField.pi` of the family `T.fermion`, and it is the object a physicist
 "the fermion field" of a theory, as against the fifteen separate multiplets the Standard
 Model is usually presented by.
 
-The one thing the assembly needs beyond the datum is a shared mass weight. A `MatterField`
-carries a single weight — that is what makes the mass-weight grading of its field algebra
-well defined — so the family must be degenerate in mass dimension, and the common weight
+Beyond the datum, the assembly needs a shared mass weight. The construction packages the
+family into one `MatterField`, which has one weight, so the family must be degenerate in mass
+dimension, and the assembled field carries the common mass weight of its entries. That weight
 `w` is taken as an argument together with the proof that every species has it. For the
 Standard Model, and for any theory whose fermions are Weyl spinors, this is no restriction:
-every fermionic species has weight three.
+every fermionic species has weight three. The common statistics comes from the datum itself,
+whose field `fermion_statistic` requires every fermionic species to be declared fermionic.
 
 Assembling the species loses nothing, and this is the content of the lemmas below: each
 species includes into the fermionic matter field as a subrepresentation, of the Lorentz
@@ -82,7 +83,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
   whose fermions are Weyl spinors, is weight three. -/
 noncomputable def fermionMatterField (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
     MatterField jets :=
-  MatterField.pi T.fermion w h
+  MatterField.pi T.fermion w h .fermionic T.fermion_statistic
 
 variable {T}
 
@@ -93,6 +94,11 @@ lemma fermionMatterField_V (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
 @[simp]
 lemma fermionMatterField_massWeight (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
     (T.fermionMatterField w h).massWeight = w := rfl
+
+/-- The fermionic matter field is fermionic, as every fermionic species is declared to be. -/
+@[simp]
+lemma fermionMatterField_statistic (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
+    (T.fermionMatterField w h).statistic = .fermionic := rfl
 
 /-!
 

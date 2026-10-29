@@ -17,7 +17,7 @@ group `G₀` with finite-dimensional real Lie algebra `𝔤`, a jet group `GJ` w
 algebra `𝔤J`, and a local-gauge-data package `jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J` relating them. The
 matter content is a finite family of
 fermionic species and a finite family of bosonic species, each given by an existing
-`MatterField jets`.
+`MatterField jets` whose declared statistic is that of its family.
 
 `GaugeFieldData jets` bundles the matter content over such a context. This file is the
 datum itself and the value spaces it names; everything derived from it lives in the sibling
@@ -47,7 +47,8 @@ invariance is claimed here.
 
 ## ii. Key results
 
-- `GaugeFieldData` : the matter content of a gauge theory over a gauge context.
+- `GaugeFieldData` : the matter content of a gauge theory over a gauge context, split into
+  fermionic and bosonic species in agreement with their declared statistics.
 - `GaugeFieldData.FermionValue`, `GaugeFieldData.BosonValue` : the value space of a
   species.
 - `GaugeFieldData.PureJetsActTrivially`, `GaugeFieldData.GaugeLorentzCompatible` : the two
@@ -91,9 +92,13 @@ different context. `GaugeFieldData` adds only the matter content on top of it.
   `GaugeFieldData.fermionMatterField`.
 
   Nothing is repeated from `MatterField`, whose fields already carry the value space, the
-  Lorentz representation, the local-gauge-data action and the mass weight of a species. Nothing is
-  repeated from the gauge context either, and the gauge bosons are not a species, since
-  their generator space is determined by `𝔤` alone.
+  Lorentz representation, the local-gauge-data action, the mass weight and the declared
+  statistic of a species. The fermionic family supplies the generators of the exterior-algebra
+  factor of the local field algebra `GaugeFieldData.LocalFieldAlgebra`, and the bosonic family
+  those of its symmetric-algebra factor; the fields `fermion_statistic` and `boson_statistic`
+  require every entry of each family to be declared with the corresponding statistics.
+  Nothing is repeated from the gauge context either, and the gauge bosons are not a species,
+  since their generator space is determined by `𝔤` alone.
 
   This is data before a Lagrangian. Collecting representations of the several species does
   not assert that they are jointly consistent. Gauge-Lorentz compatibility, factorization
@@ -108,12 +113,16 @@ structure GaugeFieldData {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤]
   [fintypeFermionSpecies : Fintype FermionSpecies]
   /-- The matter field of each fermionic species. -/
   fermion : FermionSpecies → MatterField jets
+  /-- Every fermionic species is declared fermionic. -/
+  fermion_statistic : ∀ i, (fermion i).statistic = .fermionic
   /-- The index type of the bosonic species. -/
   BosonSpecies : Type
   [decidableEqBosonSpecies : DecidableEq BosonSpecies]
   [fintypeBosonSpecies : Fintype BosonSpecies]
   /-- The matter field of each bosonic species. -/
   boson : BosonSpecies → MatterField jets
+  /-- Every bosonic species is declared bosonic. -/
+  boson_statistic : ∀ j, (boson j).statistic = .bosonic
 
 attribute [instance] GaugeFieldData.decidableEqFermionSpecies
   GaugeFieldData.fintypeFermionSpecies GaugeFieldData.decidableEqBosonSpecies

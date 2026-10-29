@@ -24,12 +24,13 @@ The bosons here are the matter bosons — the scalars. The gauge bosons are not 
 `GaugeFieldData` at all, their generator space being fixed by the gauge algebra alone, so
 they are not part of this assembly.
 
-The one thing the assembly needs beyond the datum is a shared mass weight. A `MatterField`
-carries a single weight — that is what makes the mass-weight grading of its field algebra
-well defined — so the family must be degenerate in mass dimension, and the common weight
-`w` is taken as an argument together with the proof that every species has it. For a
-theory whose scalars are all of the same mass dimension, the Standard Model included, this
-is no restriction: every bosonic species has weight two.
+Beyond the datum, the assembly needs a shared mass weight. The construction packages the
+family into one `MatterField`, which has one weight, so the family must be degenerate in mass
+dimension, and the assembled field carries the common mass weight of its entries. That weight
+`w` is taken as an argument together with the proof that every species has it. For a theory
+whose scalars are all of the same mass dimension, the Standard Model included, this is no
+restriction: every bosonic species has weight two. The common statistics comes from the datum
+itself, whose field `boson_statistic` requires every bosonic species to be declared bosonic.
 
 Assembling the species loses nothing, and this is the content of the lemmas below: each
 species includes into the bosonic matter field as a subrepresentation, of the Lorentz
@@ -86,7 +87,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
   the Higgs doublet, is weight two. -/
 noncomputable def bosonMatterField (w : ℕ) (h : ∀ i, (T.boson i).massWeight = w) :
     MatterField jets :=
-  MatterField.pi T.boson w h
+  MatterField.pi T.boson w h .bosonic T.boson_statistic
 
 variable {T}
 
@@ -97,6 +98,11 @@ lemma bosonMatterField_V (w : ℕ) (h : ∀ i, (T.boson i).massWeight = w) :
 @[simp]
 lemma bosonMatterField_massWeight (w : ℕ) (h : ∀ i, (T.boson i).massWeight = w) :
     (T.bosonMatterField w h).massWeight = w := rfl
+
+/-- The bosonic matter field is bosonic, as every bosonic species is declared to be. -/
+@[simp]
+lemma bosonMatterField_statistic (w : ℕ) (h : ∀ i, (T.boson i).massWeight = w) :
+    (T.bosonMatterField w h).statistic = .bosonic := rfl
 
 /-!
 
