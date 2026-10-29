@@ -184,7 +184,11 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (WaveVectorSp
 noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVectorSpace d) :=
   InnerProductSpace.ofCore instCoreReal.toCore
 
-lemma norm_sq_eq_inner : ‖k‖ ^ 2 = ⟪k, k⟫ := InnerProductSpace.norm_sq_eq_re_inner (𝕜 := ℝ) k
+lemma norm_eq : ‖k‖ = √(∑ i, k i ^ 2) := by
+  simp_rw [norm_eq_sqrt_real_inner, inner_eq, pow_two]
+
+lemma norm_sq_eq : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
+  simp_rw [← real_inner_self_eq_norm_sq, inner_eq, pow_two]
 
 end InnerProduct
 
