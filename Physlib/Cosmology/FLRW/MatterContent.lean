@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Jinzheng Li. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Philippe Kevorkian, Jinzheng Li
+Authors: Philippe Kevorkian, Jinzheng Li, Scott Hughes
 -/
 module
 
@@ -11,6 +11,8 @@ public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 /-!
 
 # Matter content of FLRW cosmology
+
+Continuity and density laws for cosmic fluids.
 
 ## i. Overview
 
@@ -35,6 +37,14 @@ tensor is still a TODO item.
 
 Time derivatives of curves `Time → ℝ` are computed through the bridge
 `Time.hasDerivAt_mk_of_differentiableAt` to Mathlib's `HasDerivAt` on `ℝ`.
+`CosmicFluid.ofComovingProfile a W c` constructs both density and pressure from one
+scale-factor profile `W`, with `W(a(t)) = a(t)³ ρ(t)` at nonzero scale factor. Here `c² ρ`
+is physical energy density, so `W` is energy divided by `c²` per unit reference comoving
+volume. Choosing `W` determines the pressure through `dE = -p dV` and ensures continuity
+under pointwise differentiability and nonzero scale factor and `c`.
+Constant `W` describes dust, `W(x) = K / x` describes radiation, and `W(x) = ρ₀ * x³`
+describes vacuum energy. Sums of these profiles describe mixtures, without requiring a
+single constant barotropic equation-of-state parameter.
 
 ## ii. Key results
 
@@ -47,6 +57,9 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   from the first-order equation and the continuity equation when `∂ₜ a ≠ 0`.
 - `FLRW.FriedmannSolution.continuityEquation`: the continuity equation holds on the interval of
   an FLRW model whose cosmic fluid solves the Friedmann equations.
+- `CosmicFluid.ofComovingProfile`: construct density and pressure from a profile of `a³ ρ`.
+- `continuityEquation_of_profile`, `CosmicFluid.continuityEquation_ofComovingProfile`:
+  the constructed fluid satisfies continuity under pointwise differentiability assumptions.
 - `barotropicPressure`: `p = w ρ c²`; `density_scaling`: under the barotropic continuity
   equation at all times, `ρ t = ρ t₀ (a t / a t₀)^(-3(1+w))`; `continuityEquation_of_scaling`:
   the converse; `density_scaling_dust`, `density_scaling_radiation`,
@@ -65,12 +78,17 @@ Time derivatives of curves `Time → ℝ` are computed through the bridge
   - A.3. Continuity from the Friedmann equations
   - A.4. The second-order Friedmann equation from continuity
   - A.5. The continuity equation of a solution of the Friedmann equations
+  - A.6. The continuity equation from a comoving profile
 - B. The barotropic equation of state and the density scaling law
   - B.1. The equation of state
   - B.2. The density scaling law
   - B.3. Dust, radiation and vacuum energy
 - C. The cosmological constant as a fluid
 - D. Remaining TODO items
+
+## iv. References
+
+See the references in the FLRW API map, `Physlib/Cosmology/FLRW/API-map.md`.
 
 -/
 
@@ -195,6 +213,79 @@ lemma _root_.Cosmology.FLRW.FriedmannSolution.continuityEquation {U : FLRW} {F :
   continuityEquation_of_friedmann hG (U.a_ne_zero ht) (U.differentiableAt_a ht)
     (U.differentiableAt_deriv_a ht) hdρ
     (Filter.eventually_of_mem (U.isOpen_I.mem_nhds ht) h.firstOrder) (h.secondOrder t ht)
+
+/-!
+
+### A.6. The continuity equation from a comoving profile
+
+-/
+
+/-- Construct a cosmic fluid from a scale-factor profile `W` of `a³ ρ`:
+`ρ(t) = W(a(t))/a(t)³` and `p(t) = -c² W′(a(t))/(3a(t)²)`.
+
+`W` takes a scale factor `x`, not cosmic time, as its argument. For positive scale factor,
+a fixed comoving cell of reference volume `V₀` has volume `V = V₀ a³` and physical energy
+`E = c² V₀ W(a)`: `ρ` has the mass-density normalization of the displayed equations.
+The pressure formula expresses `dE = -p dV` by differentiation with respect to scale factor.
+
+This parametrization determines both fluid fields from one function and allows mixtures:
+constant `W` gives dust, `W(x) = K / x` gives radiation, and `W(x) = ρ₀ * x³` gives vacuum
+energy, with sums giving the corresponding mixtures at nonzero scale factor.
+If density is already given as a scale-factor profile `R`, set `W(x) = x³ R(x)`.
+An arbitrary time-dependent fluid is not asserted to factor through the scale factor.
+
+The constructor imposes no regularity or energy condition. Continuity is proved separately
+by `CosmicFluid.continuityEquation_ofComovingProfile` under pointwise hypotheses. -/
+noncomputable def _root_.Cosmology.CosmicFluid.ofComovingProfile
+    (a : Time → ℝ) (W : ℝ → ℝ) (c : ℝ) : CosmicFluid where
+  ρ s := W (a s) / (a s) ^ 3
+  p s := -(c ^ 2) * deriv W (a s) / (3 * (a s) ^ 2)
+
+@[simp]
+lemma _root_.Cosmology.CosmicFluid.ofComovingProfile_ρ
+    (a : Time → ℝ) (W : ℝ → ℝ) (c : ℝ) (t : Time) :
+    (CosmicFluid.ofComovingProfile a W c).ρ t = W (a t) / (a t) ^ 3 := rfl
+
+@[simp]
+lemma _root_.Cosmology.CosmicFluid.ofComovingProfile_p
+    (a : Time → ℝ) (W : ℝ → ℝ) (c : ℝ) (t : Time) :
+    (CosmicFluid.ofComovingProfile a W c).p t =
+      -(c ^ 2) * deriv W (a t) / (3 * (a t) ^ 2) := rfl
+
+/-- The density and pressure defined by a comoving profile satisfy continuity at `t`.
+See `CosmicFluid.ofComovingProfile` for the interpretation and examples of `W`.
+Only pointwise differentiability and nonzero `a t` and `c` are required; no Friedmann
+equation, nonzero expansion rate, positivity or energy condition is assumed. -/
+lemma continuityEquation_of_profile {a : Time → ℝ} {W : ℝ → ℝ} {c : ℝ} {t : Time}
+    (ha : DifferentiableAt ℝ a t) (hW : DifferentiableAt ℝ W (a t))
+    (hat : a t ≠ 0) (hc : c ≠ 0) :
+    ContinuityEquation a (fun s => W (a s) / (a s) ^ 3)
+      (fun s => -(c ^ 2) * deriv W (a s) / (3 * (a s) ^ 2)) c t := by
+  have haR := Time.hasDerivAt_mk_of_differentiableAt ha
+  have hWa : HasDerivAt (fun s : ℝ => W (a ⟨s⟩))
+      (deriv W (a t) * Time.deriv a t) t.val :=
+    hW.hasDerivAt.comp t.val haR
+  have hcube : HasDerivAt (fun s : ℝ => (a ⟨s⟩) ^ 3)
+      (3 * (a t) ^ 2 * Time.deriv a t) t.val := by
+    simpa [mul_assoc] using haR.fun_pow 3
+  have hρ : HasDerivAt (fun s : ℝ => W (a ⟨s⟩) / (a ⟨s⟩) ^ 3)
+      ((deriv W (a t) * Time.deriv a t * (a t) ^ 3 -
+        W (a t) * (3 * (a t) ^ 2 * Time.deriv a t)) / ((a t) ^ 3) ^ 2) t.val := by
+    simpa using hWa.fun_div hcube (pow_ne_zero 3 hat)
+  unfold ContinuityEquation hubbleConstant
+  rw [Time.deriv_eq_of_hasDerivAt hρ]
+  field_simp [hat, hc]
+  ring
+
+/-- The cosmic fluid constructed from `W` satisfies continuity at `t`, including when the
+expansion rate vanishes. Only pointwise differentiability and nonzero `a t` and `c` are required. -/
+lemma _root_.Cosmology.CosmicFluid.continuityEquation_ofComovingProfile
+    {a : Time → ℝ} {W : ℝ → ℝ} {c : ℝ} {t : Time}
+    (ha : DifferentiableAt ℝ a t) (hW : DifferentiableAt ℝ W (a t))
+    (hat : a t ≠ 0) (hc : c ≠ 0) :
+    ContinuityEquation a (CosmicFluid.ofComovingProfile a W c).ρ
+      (CosmicFluid.ofComovingProfile a W c).p c t :=
+  continuityEquation_of_profile ha hW hat hc
 
 /-!
 
