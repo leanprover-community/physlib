@@ -23,6 +23,7 @@ to the `d`-dimensional real vector space of (angular) wave vectors in `Space d`.
 - B. Instances on `WaveVectorSpace`
   - B.1. Coercion to functions
   - B.2. Subsingleton for `d = 0`
+  - B.3. Zero
 
 ## iv. References
 
@@ -76,5 +77,15 @@ lemma eq_of_apply (h : ∀ i, k₁ i = k₂ i) : k₁ = k₂ := by
 
 instance : Subsingleton (WaveVectorSpace 0) where
   allEq _ _ := eq_of_apply fun i ↦ Fin.elim0 i
+
+/-!
+### B.3. Zero
+-/
+
+instance : Zero (WaveVectorSpace d) where
+  zero := ⟨0⟩
+
+@[simp]
+lemma zero_val : (0 : WaveVectorSpace d).val = 0 := rfl
 
 end WaveVectorSpace
