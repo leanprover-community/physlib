@@ -24,6 +24,7 @@ to the `d`-dimensional real vector space of (angular) wave vectors in `Space d`.
   - B.1. Coercion to functions
   - B.2. Subsingleton for `d = 0`
   - B.3. Zero
+  - B.4. Additive commutative group
 
 ## iv. References
 
@@ -87,5 +88,38 @@ instance : Zero (WaveVectorSpace d) where
 
 @[simp]
 lemma zero_val : (0 : WaveVectorSpace d).val = 0 := rfl
+
+/-!
+### B.4. Additive commutative group
+-/
+
+variable (k k₁ k₂)
+
+instance : Add (WaveVectorSpace d) where
+  add k₁ k₂ := ⟨k₁.val + k₂.val⟩
+
+@[simp]
+lemma add_val : (k₁ + k₂).val = k₁.val + k₂.val := rfl
+
+instance : Sub (WaveVectorSpace d) where
+  sub k₁ k₂ := ⟨k₁.val - k₂.val⟩
+
+@[simp]
+lemma sub_val : (k₁ - k₂).val = k₁.val - k₂.val := rfl
+
+instance : Neg (WaveVectorSpace d) where
+  neg k := ⟨-k.val⟩
+
+@[simp]
+lemma neg_val : (-k).val = -k.val := rfl
+
+instance : AddCommGroup (WaveVectorSpace d) where
+  add_assoc _ _ _ := by ext; simp [add_assoc]
+  zero_add _ := by ext; simp
+  add_zero _ := by ext; simp
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+  neg_add_cancel _ := by ext; simp
+  add_comm _ _ := by ext; simp [add_comm]
 
 end WaveVectorSpace
