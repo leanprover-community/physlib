@@ -5,6 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
+public import Mathlib.Algebra.Module.Defs
 public import Mathlib.Basic.Real.Basic
 /-!
 
@@ -25,6 +26,7 @@ to the `d`-dimensional real vector space of (angular) wave vectors in `Space d`.
   - B.2. Subsingleton for `d = 0`
   - B.3. Zero
   - B.4. Additive commutative group
+  - B.5. Module over `ℝ`
 
 ## iv. References
 
@@ -46,7 +48,7 @@ structure WaveVectorSpace (d : ℕ := 3) where
 
 namespace WaveVectorSpace
 
-variable {d : ℕ} {k k₁ k₂ : WaveVectorSpace d}
+variable {d : ℕ} (c : ℝ) {k k₁ k₂ : WaveVectorSpace d}
 
 lemma eq_of_val (h : k₁.val = k₂.val) : k₁ = k₂ := by
   cases k₁
@@ -121,5 +123,23 @@ instance : AddCommGroup (WaveVectorSpace d) where
   zsmul := zsmulRec
   neg_add_cancel _ := by ext; simp
   add_comm _ _ := by ext; simp [add_comm]
+
+/-!
+### B.5. Module over `ℝ`
+-/
+
+instance : SMul ℝ (WaveVectorSpace d) where
+  smul c k := ⟨c • k.val⟩
+
+@[simp]
+lemma smul_val : (c • k).val = c • k.val := rfl
+
+instance instModuleReal : Module ℝ (WaveVectorSpace d) where
+  mul_smul _ _ _ := by ext; simp [mul_assoc]
+  one_smul _ := by ext; simp
+  smul_zero _ := by ext; simp
+  smul_add _ _ _ := by ext; simp [mul_add]
+  add_smul _ _ _ := by ext; simp [add_mul]
+  zero_smul _ := by ext; simp
 
 end WaveVectorSpace
