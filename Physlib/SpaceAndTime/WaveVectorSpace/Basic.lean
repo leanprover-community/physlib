@@ -16,8 +16,9 @@ public import Mathlib.Basic.Real.Basic
 In this module we define the type `WaveVectorSpace d` corresponding to the `d`-dimensional
 space of (angular) wave vectors in `Space d`.
 
-In contrast to `Space d`, `WaveVectorSpace d` has a distinguished zero; the purpose of this file
-is to define this zero and the structure of a `Module` on `WaveVectorSpace d`, neither of which requires any non-canonical choices.
+In contrast to `Space d`, `WaveVectorSpace d` has a distinguished zero;
+the purpose of this file is to define this zero and the structure of a `Module`
+on `WaveVectorSpace d`, neither of which requires any non-canonical choices.
 
 ### Implementation details
 
