@@ -38,6 +38,7 @@ description and is added in other files.
 - `Crystal` : a finitely generated abelian translation group with a finite, nonempty unit cell.
 - `Crystal.ofUnitCell` : the crystal obtained by repeating a labeled unit cell.
 - `Crystal.Site` : a site given by its cell and unit-cell label.
+- `Crystal.Site.ref` : the site with a given label in the reference cell.
 - `Crystal.Species` : a species assignment, one species for each unit-cell label.
 - `Crystal.Site.mem_orbit_iff_label_eq` : the translates of a site are exactly the sites with the
   same label.
@@ -96,6 +97,15 @@ variable {G : Type*} [AddCommGroup G] [AddGroup.FG G]
   /-- The label of this site within its cell. -/
   label : C.UnitCell
 
+/-- The site with label `i` in the reference cell, the cell `0`. -/
+abbrev Site.ref {C : Crystal G} (i : C.UnitCell) : C.Site := ⟨0, i⟩
+
+/-- The reference site lies in the cell `0`. -/
+@[simp] lemma Site.cell_ref {C : Crystal G} (i : C.UnitCell) : (Site.ref i).cell = 0 := rfl
+
+/-- The reference site has the label `i`. -/
+@[simp] lemma Site.label_ref {C : Crystal G} (i : C.UnitCell) : (Site.ref i).label = i := rfl
+
 /-- A site is a pair of its unit-cell label and its cell. -/
 def siteEquiv (C : Crystal G) : C.Site ≃ C.UnitCell × G where
   toFun x := (x.label, x.cell)
@@ -118,7 +128,7 @@ instance (C : Crystal G) [Finite G] : Finite C.Site :=
 /-- Every crystal has a site in its reference cell. -/
 instance (C : Crystal G) : Nonempty C.Site :=
   let ⟨i⟩ := C.nonemptyUnitCell
-  ⟨⟨0, i⟩⟩
+  ⟨(Site.ref i)⟩
 
 /-! ## D. Translation symmetry -/
 

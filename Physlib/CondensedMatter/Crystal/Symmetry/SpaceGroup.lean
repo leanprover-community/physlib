@@ -5,6 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
+public import Mathlib.Algebra.Group.Action.Pointwise.Finset
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
 public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
 
@@ -31,17 +32,16 @@ point group consists of rotations and reflections.
 
 ## ii. Key results
 
-- `PeriodicGraph.spaceGroup`: The crystal symmetries preserving adjacency.
+- `PeriodicGraph.spaceGroup`: The crystal symmetries permuting the bonds, the stabilizer of the
+  bond set.
+- `PeriodicGraph.mem_spaceGroup_iff`: A symmetry belongs to the space group exactly when it
+  preserves adjacency.
 - `PeriodicGraph.pointGroup`: The point operations of the space group.
-- `PeriodicGraph.mem_spaceGroup_iff_preservesBonds`: A crystal symmetry belongs to the space
-  group exactly when it preserves the finite bond set.
-- `PeriodicGraph.spaceGroup_eq_stabilizer`: The space group is the stabilizer of the bond set.
 
 ## iii. Table of contents
 
 - A. Space group and translations
 - B. Point group
-- C. The bond set
 
 ## iv. References
 
@@ -64,19 +64,55 @@ variable {g : PeriodicGraph C} {φ ψ : Symmetry C}
 
 /-! ## A. Space group and translations -/
 
-/-- The subgroup of crystal symmetries preserving adjacency. -/
+/-- A symmetry maps the sites linked by a bond to the sites linked by the image bond, so they are
+adjacent exactly when the image bond is in the graph. -/
+lemma adj_smul_iff {b : Bond C} {x y : C.Site} (h : b.Links x y) :
+    g.toSimpleGraph.Adj (φ x) (φ y) ↔ φ • b ∈ g.bonds :=
+  g.adj_iff_mem_bonds (φ.mapBond_links h)
+
+/-- A symmetry that preserves adjacency maps a bond to a bond of the graph exactly when the bond is
+one. -/
+lemma smul_mem_bonds_iff_of_adj
+    (h : ∀ x y, g.toSimpleGraph.Adj (φ x) (φ y) ↔ g.toSimpleGraph.Adj x y) (b : Bond C) :
+    φ • b ∈ g.bonds ↔ b ∈ g.bonds := by
+  rw [← adj_smul_iff b.links_reference, h, g.adj_iff_mem_bonds b.links_reference]
+
+section BondSet
+
+variable [DecidableEq G] [DecidableEq C.UnitCell]
+
+/-- The subgroup of crystal symmetries that permute the bonds of the graph: the stabilizer of the
+bond set. -/
 noncomputable def spaceGroup (g : PeriodicGraph C) : Subgroup (Symmetry C) :=
-  g.graphAutomorphisms.comap (Symmetry.toPerm C)
+  MulAction.stabilizer (Symmetry C) g.bonds
+
+/-- A symmetry that permutes the bonds preserves adjacency. -/
+lemma adj_iff_of_smul_eq (h : φ • g.bonds = g.bonds) (x y : C.Site) :
+    g.toSimpleGraph.Adj (φ x) (φ y) ↔ g.toSimpleGraph.Adj x y := by
+  have hl : (⟨x.label, y.label, y.cell - x.cell⟩ : Bond C).Links x y :=
+    ⟨rfl, rfl, (add_sub_cancel _ _).symm⟩
+  have hb := Finset.smul_mem_smul_finset_iff (s := g.bonds) φ (b := ⟨x.label, y.label,
+    y.cell - x.cell⟩)
+  rw [h] at hb
+  rw [adj_smul_iff hl, g.adj_iff_mem_bonds hl]
+  exact hb
+
+/-- A symmetry that preserves adjacency permutes the bonds. -/
+lemma smul_eq_of_adj (h : ∀ x y, g.toSimpleGraph.Adj (φ x) (φ y) ↔ g.toSimpleGraph.Adj x y) :
+    φ • g.bonds = g.bonds := by
+  refine Finset.ext fun b => ?_
+  rw [← Finset.inv_smul_mem_iff]
+  refine smul_mem_bonds_iff_of_adj (fun x y => ?_) b
+  simpa using (h (φ⁻¹ x) (φ⁻¹ y)).symm
 
 /-- A crystal symmetry belongs to the space group exactly when it preserves adjacency. -/
 lemma mem_spaceGroup_iff :
-    φ ∈ g.spaceGroup ↔ ∀ x y, g.toSimpleGraph.Adj (φ x) (φ y) ↔ g.toSimpleGraph.Adj x y := by
-  rfl
+    φ ∈ g.spaceGroup ↔ ∀ x y, g.toSimpleGraph.Adj (φ x) (φ y) ↔ g.toSimpleGraph.Adj x y :=
+  ⟨adj_iff_of_smul_eq, smul_eq_of_adj⟩
 
 /-- Every lattice translation belongs to the space group. -/
-lemma translation_mem_spaceGroup (a : G) : Symmetry.translation C a ∈ g.spaceGroup := by
-  intro x y
-  exact g.adj_vadd a x y
+lemma translation_mem_spaceGroup (a : G) : Symmetry.translation C a ∈ g.spaceGroup :=
+  mem_spaceGroup_iff.2 (g.adj_vadd a)
 
 /-- The translation subgroup is contained in the space group. -/
 lemma translations_le_spaceGroup : Symmetry.translations C ≤ g.spaceGroup := by
@@ -94,38 +130,6 @@ element. -/
 lemma mem_pointGroup_iff :
     ψ ∈ g.pointGroup ↔ ∃ φ ∈ g.spaceGroup, Symmetry.pointOp C φ = ψ :=
   Subgroup.mem_map
-
-/-! ## C. The bond set -/
-
-section BondSet
-
-variable [DecidableEq G] [DecidableEq C.UnitCell] [Fintype C.UnitCell]
-
-/-- Every space-group symmetry preserves the reference-cell bonds. -/
-lemma PreservesBonds.of_mem_spaceGroup (hφ : φ ∈ g.spaceGroup) : g.PreservesBonds φ := by
-  intro b hb
-  have hl := b.links_reference
-  have hadj := (g.mem_bonds b).1 hb
-  have hmap := (hφ _ _).2 hadj
-  exact (g.adj_iff_mem_bonds (φ.mapBond_links hl)).1 hmap
-
-/-- A crystal symmetry preserves adjacency exactly when it preserves the reference-cell bonds. -/
-lemma mem_spaceGroup_iff_preservesBonds : φ ∈ g.spaceGroup ↔ g.PreservesBonds φ := by
-  constructor
-  · exact PreservesBonds.of_mem_spaceGroup
-  · intro h
-    rw [mem_spaceGroup_iff]
-    intro x y
-    constructor
-    · intro hxy
-      simpa using h.inv.map_adj hxy
-    · exact h.map_adj
-
-/-- The space group is the stabilizer of the set of reference-cell bonds. -/
-lemma spaceGroup_eq_stabilizer :
-    g.spaceGroup = MulAction.stabilizer (Symmetry C) g.bonds := by
-  ext φ
-  rw [mem_spaceGroup_iff_preservesBonds, preservesBonds_iff_smul_eq, MulAction.mem_stabilizer_iff]
 
 end BondSet
 

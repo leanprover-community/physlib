@@ -42,6 +42,7 @@ symmetries that respect the bonds, the space group, are defined with the periodi
 - `Crystal.Symmetry.apply_eq_components` : a symmetry sends `⟨n, i⟩` to `⟨A n + bᵢ, σ i⟩`.
 - `Crystal.Symmetry.lattice_mul` : the lattice automorphism of a product is the composite.
 - `Crystal.Symmetry.labelHom` : the permutation of the labels by a symmetry, a homomorphism.
+- `Crystal.Symmetry.Offsets` : one lattice vector for each unit-cell label.
 - `Crystal.Symmetry.offset` : the cell in which a symmetry sends the reference site of a label.
 - `Crystal.Symmetry.translations` : the translations, a normal subgroup of the symmetries.
 - `Crystal.Symmetry.mapBond` : the image of a bond under a symmetry, an action on the bonds.
@@ -113,8 +114,8 @@ lemma map_vadd (φ : Symmetry C) (a : G) (x : C.Site) : φ (a +ᵥ x) = φ.latti
 
 /-- A symmetry moves the site `⟨n, i⟩` by the lattice automorphism from the image of `⟨0, i⟩`. -/
 lemma apply_eq (φ : Symmetry C) (n : G) (i : C.UnitCell) :
-    φ ⟨n, i⟩ = ⟨φ.lattice n + (φ ⟨0, i⟩).cell, (φ ⟨0, i⟩).label⟩ := by
-  simpa [Site.vadd_def] using φ.map_vadd n ⟨0, i⟩
+    φ ⟨n, i⟩ = ⟨φ.lattice n + (φ (Site.ref i)).cell, (φ (Site.ref i)).label⟩ := by
+  simpa [Site.vadd_def] using φ.map_vadd n (Site.ref i)
 
 /-- A symmetry as a permutation of the sites. -/
 noncomputable def toEquiv (φ : Symmetry C) : C.Site ≃ C.Site := Equiv.ofBijective φ φ.bijective
@@ -173,14 +174,14 @@ noncomputable def toPerm (C : Crystal G) : Symmetry C →* Equiv.Perm C.Site whe
 
 /-- The label of the image of `⟨n, i⟩` does not depend on the cell `n`. -/
 lemma label_apply (φ : Symmetry C) (n : G) (i : C.UnitCell) :
-    (φ ⟨n, i⟩).label = (φ ⟨0, i⟩).label := by
+    (φ ⟨n, i⟩).label = (φ (Site.ref i)).label := by
   rw [apply_eq φ n i]
 
 /-- A symmetry permutes the labels: it sends `i` to the label of the image of `⟨0, i⟩`. -/
 instance : MulAction (Symmetry C) C.UnitCell where
-  smul φ i := (φ ⟨0, i⟩).label
+  smul φ i := (φ (Site.ref i)).label
   one_smul _ := rfl
-  mul_smul φ ψ i := label_apply φ (ψ ⟨0, i⟩).cell (ψ ⟨0, i⟩).label
+  mul_smul φ ψ i := label_apply φ (ψ (Site.ref i)).cell (ψ (Site.ref i)).label
 
 /-- The permutation of the labels by a symmetry, as a homomorphism. -/
 noncomputable def labelHom (C : Crystal G) : Symmetry C →* Equiv.Perm C.UnitCell :=
@@ -188,13 +189,17 @@ noncomputable def labelHom (C : Crystal G) : Symmetry C →* Equiv.Perm C.UnitCe
 
 /-- The label permutation of a symmetry sends `i` to the label of the image of `⟨0, i⟩`. -/
 lemma labelHom_apply (φ : Symmetry C) (i : C.UnitCell) :
-    labelHom C φ i = (φ ⟨0, i⟩).label := rfl
+    labelHom C φ i = (φ (Site.ref i)).label := rfl
 
 /-! ### A.4. Offsets -/
 
-/-- The offset of a symmetry at the label `i`: the cell in which the image of the reference site
-`⟨0, i⟩` lies, as a lattice vector in `G`. -/
-def offset (φ : Symmetry C) (i : C.UnitCell) : G := (φ ⟨0, i⟩).cell
+/-- One lattice vector for each unit-cell label. Every symmetry has such offsets, and so does every
+shift. -/
+abbrev Offsets (C : Crystal G) := C.UnitCell → G
+
+/-- The offsets of a symmetry: at the label `i` the cell in which the image of the reference site of
+`i` lies, as a lattice vector in `G`. -/
+def offset (φ : Symmetry C) : Offsets C := fun i => (φ (Site.ref i)).cell
 
 /-- A symmetry sends the site `⟨n, i⟩` to the cell `A n + bᵢ` with label `σ i`, where `A` is its
 lattice automorphism, `σ` its label permutation and `bᵢ` its offset at `i`. -/

@@ -73,7 +73,7 @@ variable {G : Type*} [AddCommGroup G] [AddGroup.FG G]
 namespace Symmetry
 
 variable {C : Crystal G} (A B : G ≃+ G) (σ τ : Equiv.Perm C.UnitCell)
-  (b b' : C.UnitCell → G)
+  (b b' : Offsets C)
 
 /-! ## A. The components of a symmetry -/
 
@@ -82,7 +82,7 @@ variable {C : Crystal G} (A B : G ≃+ G) (σ τ : Equiv.Perm C.UnitCell)
 /-- The bijection of the sites `⟨n, i⟩ ↦ ⟨A n + bᵢ, σ i⟩` given by a lattice automorphism `A`, a
 label permutation `σ` and offsets `b`. -/
 def componentsEquiv (C : Crystal G) (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell)
-    (b : C.UnitCell → G) :
+    (b : Offsets C) :
     C.Site ≃ C.Site where
   toFun x := ⟨A x.cell + b x.label, σ x.label⟩
   invFun x := ⟨A.symm (x.cell - b (σ.symm x.label)), σ.symm x.label⟩
@@ -92,7 +92,7 @@ def componentsEquiv (C : Crystal G) (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell)
 /-- The symmetry with lattice automorphism `A`, label permutation `σ` and offsets `b`. It is
 equivariant for `A`, since translating `⟨n, i⟩` by `a` translates its image by `A a`. -/
 def ofComponents (C : Crystal G) (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell)
-    (b : C.UnitCell → G) :
+    (b : Offsets C) :
     Symmetry C :=
   ⟨A, { toFun := componentsEquiv C A σ b
         map_vadd' _ _ := Site.ext (by simp [componentsEquiv, Site.vadd_def, add_assoc]) rfl },
@@ -185,7 +185,7 @@ noncomputable def pointOp (C : Crystal G) : Symmetry C →* Symmetry C where
 
 /-- The shift by `b`: it moves every site with label `i` by the lattice vector `bᵢ` and fixes the
 labels and the lattice. -/
-def shift (C : Crystal G) (b : C.UnitCell → G) : Symmetry C := ofComponents C 0 1 b
+def shift (C : Crystal G) (b : Offsets C) : Symmetry C := ofComponents C 0 1 b
 
 /-- A shift has trivial lattice automorphism. -/
 @[simp] lemma lattice_shift : (shift C b).lattice = 0 := rfl
@@ -270,7 +270,7 @@ lemma pointOp_translation (a : G) : pointOp C (translation C a) = 1 := by
 permutation `σ` send `b` to `A ∘ b ∘ σ⁻¹`. -/
 def shiftAction (C : Crystal G) :
     Multiplicative (AddAut G) × Equiv.Perm C.UnitCell →*
-      MulAut (Multiplicative (C.UnitCell → G)) where
+      MulAut (Multiplicative (Offsets C)) where
   toFun p := (AddEquiv.arrowCongr p.2 (Multiplicative.toAdd p.1)).toMultiplicative
   map_one' := MulEquiv.ext (congrFun rfl)
   map_mul' _ _ := MulEquiv.ext (congrFun rfl)
@@ -278,7 +278,7 @@ def shiftAction (C : Crystal G) :
 /-- The symmetry group of a crystal is isomorphic to the semidirect product of the shifts, `UnitCell
 → G`, by the point operations, `Aut G × Perm UnitCell`, acting through `shiftAction`. -/
 noncomputable def semidirectEquiv (C : Crystal G) :
-    Multiplicative (C.UnitCell → G) ⋊[shiftAction C]
+    Multiplicative (Offsets C) ⋊[shiftAction C]
       (Multiplicative (AddAut G) × Equiv.Perm C.UnitCell) ≃* Symmetry C where
   toFun y := shift C (Multiplicative.toAdd y.left) *
     linear C (Multiplicative.toAdd y.right.1) y.right.2

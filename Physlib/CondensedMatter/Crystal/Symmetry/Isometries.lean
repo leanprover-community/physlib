@@ -85,14 +85,14 @@ lemma translations_le_isometries : Symmetry.translations C ≤ R.isometries := b
 /-! ## B. Distances to the reference cell -/
 
 /-- A site is the lattice translate of the site with the same label in the reference cell. -/
-lemma site_eq_vadd (x : C.Site) : x = x.cell +ᵥ (⟨0, x.label⟩ : C.Site) :=
+lemma site_eq_vadd (x : C.Site) : x = x.cell +ᵥ (Site.ref x.label) :=
   Site.ext (by simp) rfl
 
 /-- A symmetry is an isometry exactly when it preserves the distance from every site `(d, i)` to
 every site `(0, j)` of the reference cell. -/
 lemma mem_isometries_iff_reference : φ ∈ R.isometries ↔ ∀ (i j : C.UnitCell) (d : G),
-    dist (R.position (φ ⟨d, i⟩)) (R.position (φ ⟨0, j⟩)) =
-      dist (R.position ⟨d, i⟩) (R.position ⟨0, j⟩) := by
+    dist (R.position (φ ⟨d, i⟩)) (R.position (φ (Site.ref j))) =
+      dist (R.position ⟨d, i⟩) (R.position (Site.ref j)) := by
   constructor
   · intro h i j d
     exact h _ _
