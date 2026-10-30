@@ -7,3 +7,5 @@ docs/build/.lake/
 # Python bytecode (e.g. from scripts/github/check_golf.py)
 __pycache__/
 *.pyc
+# Personal Claude Code settings
+.claude/settings.local.json
