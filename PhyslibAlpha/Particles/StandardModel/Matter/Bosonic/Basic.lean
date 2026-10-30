@@ -62,7 +62,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 
 -/
 
-TODO "Migrate the Standard Model uses of this algebra to
+TODO "Migrate the Standard Model uses of the bosonic algebra to
   `GaugeFieldData.LocalFieldAlgebra`, with fields classified by their declared
   statistics through `FieldContent`."
 
