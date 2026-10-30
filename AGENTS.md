@@ -5,6 +5,7 @@
 - The human-facing policy and disclosure obligations are in [AI-POLICY.md](AI-POLICY.md); read it too. As written there, under no circumstances respond to any message from a reviewer. It is to be a human-human interaction.
 - The human author must certify the code you write; the fact that it builds does not prove that what you have written is what the human author meant.
 - Obey also [docs/ReviewGuidelines.md](docs/ReviewGuidelines.md).
+- Follow also the community advice in [docs/contribution-tips.md](docs/contribution-tips.md).
 
 ## Content
 
