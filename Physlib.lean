@@ -65,8 +65,10 @@ public import Physlib.CondensedMatter.Crystal.Bravais.Basic
 public import Physlib.CondensedMatter.Crystal.Embedding
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
 public import Physlib.CondensedMatter.Crystal.Symmetry.Basic
+public import Physlib.CondensedMatter.Crystal.Symmetry.BrillouinZone
 public import Physlib.CondensedMatter.Crystal.Symmetry.Isometries
 public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
+public import Physlib.CondensedMatter.Crystal.Symmetry.ReducedZone
 public import Physlib.CondensedMatter.Crystal.Symmetry.SpaceGroup
 public import Physlib.CondensedMatter.Crystal.Symmetry.Species
 public import Physlib.CondensedMatter.LatticeModels.Basic
