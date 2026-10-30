@@ -62,6 +62,10 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 
 -/
 
+TODO "Migrate the Standard Model uses of this algebra to
+  `GaugeFieldData.LocalFieldAlgebra`, with fields classified by their declared
+  statistics through `FieldContent`."
+
 /-- The bosonic algebra of the matter field `M`: the symmetric algebra on the space
   of component functions `∂_s φ_α` and `∂_s φ̄_α`. The symmetric product is the product of
   bosonic fields, its commutativity the Bose statistics. -/

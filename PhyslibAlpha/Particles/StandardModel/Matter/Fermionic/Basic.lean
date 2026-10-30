@@ -62,6 +62,10 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 
 -/
 
+TODO "Migrate the Standard Model uses of this algebra to
+  `GaugeFieldData.LocalFieldAlgebra`, with fields classified by their declared
+  statistics through `FieldContent`."
+
 /-- The fermionic algebra of the matter field `M`: the exterior algebra on the space
   of component functions `∂_s ψ_α` and `∂_s ψ̄_α`. The exterior product is the product of
   fermionic fields, its anticommutativity the Fermi statistics. -/
