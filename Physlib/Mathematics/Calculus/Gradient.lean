@@ -58,6 +58,7 @@ product space. The file is deliberately real: two of its rules (`gradient_const_
 - C. Scalar products and quadratic forms
 - D. The norm
 - E. Coordinate functionals on Euclidean space
+- F. Differentiability
 
 ## iv. References
 
@@ -231,6 +232,31 @@ lemma gradient_comp_coord {ι : Type*} [Fintype ι] [DecidableEq ι] {f : ℝ �
     gradient (fun y : EuclideanSpace ℝ ι => f (y i)) x = f' • EuclideanSpace.single i 1 := by
   exact (hf.comp_hasGradientAt (hasGradientAt_coord i x)).gradient
 
-end
+/-!
+
+## F. Differentiability
+
+Establish differentiability properties for Gradients
+
+-/
+
+/-- The gradient of a `C^(n+1)` function is `C^n`. -/
+lemma ContDiffAt.gradient {g : F → ℝ} {x : F} {n : ℕ∞} (hg : ContDiffAt ℝ (n + 1) g x) :
+    ContDiffAt ℝ n (_root_.gradient g) x :=
+  (toDual ℝ F).symm.toContinuousLinearEquiv.comp_contDiffAt_iff.mpr (hg.fderiv_right le_rfl)
+
+/-- The gradient of a `C²` function is differentiable. -/
+lemma differentiableAt_gradient {g : F → ℝ} {x : F} (hg : ContDiffAt ℝ 2 g x) :
+    DifferentiableAt ℝ (gradient g) x := by
+  change DifferentiableAt ℝ (⇑(toDual ℝ F).symm ∘ fderiv ℝ g) x
+  rw [(toDual ℝ F).symm.comp_differentiableAt_iff]
+  exact (hg.fderiv_right (m := 1) (by norm_num)).differentiableAt one_ne_zero
+
+/-- The derivative of a gradient, paired with `w`, is the second derivative. -/
+lemma inner_fderiv_gradient (g : F → ℝ) (x v w : F) :
+    ⟪fderiv ℝ (gradient g) x v, w⟫_ℝ = fderiv ℝ (fderiv ℝ g) x v w := by
+  change ⟪fderiv ℝ (⇑(toDual ℝ F).symm ∘ fderiv ℝ g) x v, w⟫_ℝ = _
+  rw [(toDual ℝ F).symm.comp_fderiv, ContinuousLinearMap.comp_apply]
+  exact InnerProductSpace.toDual_symm_apply
 
 end

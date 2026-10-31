@@ -247,3 +247,15 @@ lemma fderiv_swap [IsRCLikeNormedField 𝕜] (f : X → Y → Z) (x dx : X) (y d
   · fun_prop
   · exact hf.differentiable (by simp)
   · fun_prop
+
+/-- The derivative of `f` in its first argument is the full derivative of `↿f` along `inl`. -/
+lemma hasFDerivAt_uncurry_fst {f : X → Y → Z} {x : X} {y : Y}
+    (hf : DifferentiableAt 𝕜 ↿f (x, y)) :
+    HasFDerivAt (fun x' => f x' y) ((fderiv 𝕜 ↿f (x, y)).comp (ContinuousLinearMap.inl 𝕜 X Y)) x :=
+  hf.hasFDerivAt.comp (f := fun e => (e, y)) x (hasFDerivAt_prodMk_left x y)
+
+/-- The derivative of `f` in its second argument is the full derivative of `↿f` along `inr`. -/
+lemma hasFDerivAt_uncurry_snd {f : X → Y → Z} {x : X} {y : Y}
+    (hf : DifferentiableAt 𝕜 ↿f (x, y)) :
+    HasFDerivAt (fun y' => f x y') ((fderiv 𝕜 ↿f (x, y)).comp (ContinuousLinearMap.inr 𝕜 X Y)) y :=
+  hf.hasFDerivAt.comp y (hasFDerivAt_prodMk_right x y)

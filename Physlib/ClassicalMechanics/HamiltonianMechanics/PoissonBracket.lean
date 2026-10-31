@@ -6,7 +6,7 @@ Authors: Rithwik Ranganathan
 module
 
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
-public import Physlib.Mathematics.Calculus.Gradient
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.PhaseSpace
 /-!
 
 # The Poisson bracket
@@ -43,6 +43,14 @@ derivatives on phase space.
   a trajectory is the sum of its gradients paired with the trajectory's velocities.
 - `deriv_comp_eq_poissonBracket` : along a solution of Hamilton's equations, the time derivative of
   an observable is its Poisson bracket with the Hamiltonian.
+- `fderiv_partial_comm` : mixed partial derivatives of a `C²` phase-space function commute.
+- `poissonBracket_jacobi` : Poisson brackets satisfy the Jacobi identity.
+- `poissonBracket_position_position`, `poissonBracket_momentum_momentum` : two functions of
+  position alone, or of momentum alone, have vanishing Poisson bracket.
+- `poissonBracket_inner_position_inner_momentum` : the canonical Poisson bracket
+  `{⟪a, q⟫, ⟪b, p⟫} = ⟪a, b⟫` of linear coordinate functionals.
+- `poissonBracket_coord_position_coord_momentum` : on Euclidean space, the canonical Poisson
+  bracket `{qᵢ, pⱼ} = δᵢⱼ`.
 
 ## iii. Table of contents
 
@@ -53,6 +61,12 @@ derivatives on phase space.
 - E. Time evolution along a Hamiltonian flow
   - E.1. The chain rule for a phase-space function along a trajectory
   - E.2. Time evolution as the Poisson bracket with the Hamiltonian
+- F. The Jacobi identity
+  - F.1. Poisson bracket with derivatives falling on `g`
+  - F.2. The Jacobi identity
+- G. The canonical Poisson brackets
+  - G.1. Functions of position alone and of momentum alone
+  - G.2. Coordinate functionals
 
 ## iv. References
 
@@ -68,9 +82,6 @@ open InnerProductSpace Time
 namespace ClassicalMechanics
 
 variable {X} [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X]
-
-TODO "Add the canonical commutation relations for coordinate functionals and the Jacobi identity
-    for `poissonBracket`."
 
 /-!
 
@@ -215,22 +226,14 @@ lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) 
     ∂ₜ (fun t => f (p t) (q t)) t =
       ⟪gradient (fun p' => f p' (q t)) (p t), ∂ₜ p t⟫_ℝ +
       ⟪gradient (fun q' => f (p t) q') (q t), ∂ₜ q t⟫_ℝ := by
-  have h1 : HasFDerivAt (fun p' => f p' (q t))
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp (ContinuousLinearMap.inl ℝ X X)) (p t) :=
-    HasFDerivAt.comp (f := fun e : X => (e, q t)) (p t) hf.hasFDerivAt
-      (hasFDerivAt_prodMk_left (p t) (q t))
-  have h2 : HasFDerivAt (fun q' => f (p t) q')
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp (ContinuousLinearMap.inr ℝ X X)) (q t) :=
-    HasFDerivAt.comp (f := fun e : X => (p t, e)) (q t) hf.hasFDerivAt
-      (hasFDerivAt_prodMk_right (p t) (q t))
   have hF : HasFDerivAt (fun t => f (p t) (q t))
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp ((fderiv ℝ p t).prod (fderiv ℝ q t))) t :=
+      ((fderiv ℝ ↿f (p t, q t)).comp ((fderiv ℝ p t).prod (fderiv ℝ q t))) t :=
     HasFDerivAt.comp (f := fun t => (p t, q t)) t hf.hasFDerivAt
       (hp.hasFDerivAt.prodMk hq.hasFDerivAt)
-  rw [inner_gradient_left, inner_gradient_left, h1.fderiv, h2.fderiv, Time.deriv_eq, hF.fderiv]
+  rw [inner_gradient_left, inner_gradient_left, (hasFDerivAt_uncurry_fst hf).fderiv,
+    (hasFDerivAt_uncurry_snd hf).fderiv, Time.deriv_eq, hF.fderiv]
   simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
     ContinuousLinearMap.inl_apply, ContinuousLinearMap.inr_apply, ← Time.deriv_eq, ← map_add]
-
 /-!
 
 ### E.2. Time evolution as the Poisson bracket with the Hamiltonian
@@ -248,5 +251,135 @@ theorem deriv_comp_eq_poissonBracket (H : Time → X → X → ℝ) (p q : Time 
   rw [deriv_comp_eq_inner_gradient_add f p q t hp hq hf, hq' t, hp' t, inner_neg_right]
   unfold poissonBracket
   ring
+
+/-!
+
+## F. The Jacobi identity
+
+-/
+
+/-!
+
+### F.1. Poisson bracket with derivatives falling on `g`
+
+-/
+
+/-- The Poisson bracket, written with the derivatives falling on `g`. -/
+lemma poissonBracket_eq_fderiv (f g : X → X → ℝ) (p q : X) :
+    poissonBracket f g p q =
+      fderiv ℝ (fun p' => g p' q) p (gradient (fun q' => f p q') q) -
+        fderiv ℝ (fun q' => g p q') q (gradient (fun p' => f p' q) p) := by
+  simp only [poissonBracket, inner_gradient_right, conj_trivial]
+
+/-- The same, for a gradient in a second variable (mixed second derivatives). -/
+lemma inner_fderiv_gradient_param (G : X → X → ℝ) (x y v w : X) :
+    ⟪fderiv ℝ (fun x' => gradient (G x') y) x v, w⟫_ℝ =
+      fderiv ℝ (fun x' => fderiv ℝ (G x') y) x v w := by
+  change ⟪fderiv ℝ (⇑(toDual ℝ X).symm ∘ fun x' => fderiv ℝ (G x') y) x v, w⟫_ℝ = _
+  rw [(toDual ℝ X).symm.comp_fderiv, ContinuousLinearMap.comp_apply]
+  exact InnerProductSpace.toDual_symm_apply
+
+/-!
+
+### F.2. The Jacobi identity
+
+-/
+
+/-- The Jacobi identity for the Poisson bracket. -/
+lemma poissonBracket_jacobi (f₁ f₂ f₃ : X → X → ℝ) (p q : X)
+    (hf₁ : ContDiff ℝ 2 (Function.uncurry f₁))
+    (hf₂ : ContDiff ℝ 2 (Function.uncurry f₂))
+    (hf₃ : ContDiff ℝ 2 (Function.uncurry f₃)) :
+    poissonBracket f₁ (poissonBracket f₂ f₃) p q +
+    poissonBracket f₂ (poissonBracket f₃ f₁) p q +
+    poissonBracket f₃ (poissonBracket f₁ f₂) p q = 0 := by
+  -- 1. Outer brackets only: derivatives fall on the inner bracket.
+  rw [poissonBracket_eq_fderiv f₁ (poissonBracket f₂ f₃),
+    poissonBracket_eq_fderiv f₂ (poissonBracket f₃ f₁),
+    poissonBracket_eq_fderiv f₃ (poissonBracket f₁ f₂)]
+  -- 2. Unfold the inner brackets, then split differences and apply the product rule.
+  simp only [poissonBracket]
+  simp (disch := ((try apply DifferentiableAt.inner ℝ) <;>
+      first
+      | (apply differentiableAt_gradient_fst; assumption)
+      | (apply differentiableAt_gradient_snd; assumption)
+      | (apply differentiableAt_gradient_mixed_fst; assumption)
+      | (apply differentiableAt_gradient_mixed_snd; assumption)))
+    only [fderiv_fun_sub, sub_apply, fderiv_inner_apply ℝ]
+  -- 3. Put every derivative on the left of its inner product,
+  --    then turn derivatives of gradients into second derivatives.
+  simp only [real_inner_comm (fderiv ℝ _ _ _ : X)]
+  simp only [inner_fderiv_gradient, inner_fderiv_gradient_param]
+  -- 4. Mixed partial derivatives commute.
+  simp only [fderiv_partial_comm hf₁ p q, fderiv_partial_comm hf₂ p q,
+    fderiv_partial_comm hf₃ p q]
+  -- 5. Pure second derivatives in one variable are symmetric.
+  have hsymm : ∀ (g : X → ℝ) (x : X), ContDiffAt ℝ 2 g x →
+      ∀ v w, fderiv ℝ (fderiv ℝ g) x v w = fderiv ℝ (fderiv ℝ g) x w v :=
+    fun g x hg => hg.isSymmSndFDerivAt (by simp)
+  have hcp : ∀ f : X → X → ℝ, ContDiff ℝ 2 (Function.uncurry f) →
+      ContDiffAt ℝ 2 (fun p' => f p' q) p :=
+    fun f hf => (hf.comp (contDiff_id.prodMk contDiff_const)).contDiffAt
+  have hcq : ∀ f : X → X → ℝ, ContDiff ℝ 2 (Function.uncurry f) →
+      ContDiffAt ℝ 2 (fun q' => f p q') q :=
+    fun f hf => (hf.comp (contDiff_const.prodMk contDiff_id)).contDiffAt
+  simp only [hsymm _ _ (hcp f₁ hf₁), hsymm _ _ (hcp f₂ hf₂), hsymm _ _ (hcp f₃ hf₃),
+    hsymm _ _ (hcq f₁ hf₁), hsymm _ _ (hcq f₂ hf₂), hsymm _ _ (hcq f₃ hf₃)]
+  ring
+
+/-!
+
+## G. The canonical Poisson brackets
+
+The Poisson-bracket analogue of the canonical commutation relations. On a general inner product
+space the coordinate functionals are the linear functionals `q ↦ ⟪a, q⟫` and `p ↦ ⟪b, p⟫`; on
+`EuclideanSpace ℝ ι` they are the coordinates `q ↦ q i` and `p ↦ p j`. The brackets
+`{qᵢ, qⱼ} = 0` and `{pᵢ, pⱼ} = 0` are instances of the results of G.1.
+
+-/
+
+/-!
+
+### G.1. Functions of position alone and of momentum alone
+
+-/
+
+/-- Two functions of position alone have vanishing Poisson bracket. -/
+lemma poissonBracket_position_position (f g : X → ℝ) (p q : X) :
+    poissonBracket (fun _ q' => f q') (fun _ q' => g q') p q = 0 := by
+  simp only [poissonBracket, gradient_fun_const, inner_zero_left, inner_zero_right, sub_zero]
+
+/-- Two functions of momentum alone have vanishing Poisson bracket. -/
+lemma poissonBracket_momentum_momentum (f g : X → ℝ) (p q : X) :
+    poissonBracket (fun p' _ => f p') (fun p' _ => g p') p q = 0 := by
+  simp only [poissonBracket, gradient_fun_const, inner_zero_left, inner_zero_right, sub_zero]
+
+/-- The Poisson bracket of a function of position with a function of momentum is the inner
+product of their gradients. -/
+lemma poissonBracket_position_momentum (f g : X → ℝ) (p q : X) :
+    poissonBracket (fun _ q' => f q') (fun p' _ => g p') p q =
+      ⟪gradient f q, gradient g p⟫_ℝ := by
+  simp only [poissonBracket, gradient_fun_const, inner_zero_left, sub_zero]
+
+/-!
+
+### G.2. Coordinate functionals
+
+-/
+
+/-- The canonical Poisson bracket of linear coordinate functionals:
+`{⟪a, q⟫, ⟪b, p⟫} = ⟪a, b⟫`. -/
+lemma poissonBracket_inner_position_inner_momentum (a b p q : X) :
+    poissonBracket (fun _ q' => ⟪a, q'⟫_ℝ) (fun p' _ => ⟪b, p'⟫_ℝ) p q = ⟪a, b⟫_ℝ := by
+  rw [poissonBracket_position_momentum, (hasGradientAt_inner_left a q).gradient,
+    (hasGradientAt_inner_left b p).gradient]
+
+/-- On Euclidean space, the canonical Poisson bracket of the coordinates is the Kronecker delta:
+`{qᵢ, pⱼ} = δᵢⱼ`. -/
+lemma poissonBracket_coord_position_coord_momentum {ι : Type*} [Fintype ι] [DecidableEq ι]
+    (i j : ι) (p q : EuclideanSpace ℝ ι) :
+    poissonBracket (fun _ q' => q' i) (fun p' _ => p' j) p q = if i = j then 1 else 0 := by
+  rw [poissonBracket_position_momentum, gradient_coord, gradient_coord]
+  exact orthonormal_iff_ite.mp (EuclideanSpace.orthonormal_single (𝕜 := ℝ)) i j
 
 end ClassicalMechanics
