@@ -6,6 +6,7 @@ Authors: Philippe Kevorkian, Jinzheng Li
 module
 
 public import Physlib.Meta.TODO.Basic
+public import Physlib.SpaceAndTime.ReferenceFrame
 public import Physlib.Cosmology.FLRW.SpecificCases.EinsteinDeSitter
 public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
@@ -24,6 +25,15 @@ with `∂ₜ z = -(1 + z) H`. Combining the two gives `∂ₜ χ = (c / (a(t₀)
 `a(t₀) = 1`, this is the change of variables `dχ = c dz / H` behind the distance integrals in the
 redshift.
 
+We write `a₀ = a(t₀)`, `H₀ = H(t₀)` and `q₀ = q(t₀)`, where `q` is the deceleration parameter.
+At the observation time, `∂ₜ z = - H₀` and, for `H₀ ≠ 0`, `∂ₜ ∂ₜ z = H₀² (2 + q₀)`.
+
+The low-redshift expansions are given through their coefficients. Primes denote time derivatives
+at `t₀`. For `H₀ ≠ 0`, the redshift is invertible as a function of the emission time near `t₀`,
+and a function `f` of the emission time, differentiable near `t₀` with `f'` differentiable at
+`t₀`, has the derivatives `f' / z'` and `(f'' z' - f' z'') / z'³` in `z` at `z = 0`. These
+quotients are computed here for the lookback time.
+
 The proper distance `D = a χ` obeys the Hubble-Lemaître law `∂ₜ D = H D`. The recession velocity
 equals `c` exactly at the Hubble radius `R_H = c / H`.
 
@@ -35,16 +45,26 @@ The particle and event horizons at `t` integrate `c / a` over the times of the i
 model before and after `t`. The particle horizon of the Einstein-de Sitter model
 `FLRW.einsteinDeSitter` is computed.
 
+The lookback time of a source is the time elapsed between the emission of its light at `t` and
+its observation at `t₀`: the duration `t₀ -ᵥ t` given by the affine structure of `Time`. It does
+not depend on the model, and in every reference frame it is the difference `t₀ - t` of the time
+coordinates of the two instants. Its coefficients give `t₀ - t = H₀⁻¹ [z - ½ (2 + q₀) z² + …]`.
+
 ## ii. Key results
 
 - `FLRW.comovingDistance`, `FLRW.deriv_comovingDistance`: `∂ₜ χ = - c / a`.
 - `FLRW.redshift`, `FLRW.deriv_redshift`: `∂ₜ z = -(1 + z) H`.
+- `FLRW.deriv_redshift_self`, `FLRW.deriv_deriv_redshift_self`: `∂ₜ z` and `∂ₜ ∂ₜ z` at the
+  observation time.
 - `FLRW.deriv_comovingDistance_eq_mul_deriv_redshift`: `∂ₜ χ = (c / (a(t₀) H)) ∂ₜ z`.
 - `FLRW.properDistance`, `FLRW.deriv_properDistance`: the Hubble-Lemaître law.
 - `FLRW.hubbleRadius`, `FLRW.deriv_properDistance_eq_iff`: the recession velocity at the Hubble
   radius.
 - `FLRW.transverseComovingDistance` and its three closed forms.
 - `FLRW.particleHorizon`, `FLRW.eventHorizon`, `FLRW.particleHorizon_einsteinDeSitter`.
+- `FLRW.lookbackTime`, `FLRW.lookbackTime_eq_timeEquiv_symm_sub`: the lookback time, the same in
+  every reference frame.
+- `FLRW.lookbackTime_coeff_one`, `FLRW.lookbackTime_coeff_two`: its low-redshift coefficients.
 
 ## iii. Table of contents
 
@@ -53,6 +73,7 @@ model before and after `t`. The particle horizon of the Einstein-de Sitter model
 - C. The proper distance and the Hubble radius
 - D. The transverse comoving distance
 - E. The horizons
+- F. The lookback time
 
 -/
 
@@ -117,6 +138,35 @@ lemma deriv_redshift {t₀ t : Time} (ht : t ∈ U.I) :
   unfold redshift hubbleConstant
   field_simp
   ring
+
+/-- For `t₀` in the interval of the model, `∂ₜ z = - H₀` at the observation time. -/
+lemma deriv_redshift_self {t₀ : Time} (ht₀ : t₀ ∈ U.I) :
+    ∂ₜ (U.redshift t₀) t₀ = -hubbleConstant U.a t₀ := by
+  rw [U.deriv_redshift ht₀, one_add_redshift, div_self (U.a_ne_zero ht₀)]
+  ring
+
+/-- For `t₀` in the interval of the model and `H₀ ≠ 0`, `∂ₜ ∂ₜ z = H₀² (2 + q₀)` at the
+  observation time. -/
+lemma deriv_deriv_redshift_self {t₀ : Time} (ht₀ : t₀ ∈ U.I) (hH : hubbleConstant U.a t₀ ≠ 0) :
+    ∂ₜ (∂ₜ (U.redshift t₀)) t₀
+      = hubbleConstant U.a t₀ ^ 2 * (2 + decelerationParameter U.a t₀) := by
+  obtain ⟨τ₀⟩ := t₀
+  have hS : IsOpen {σ : ℝ | (⟨σ⟩ : Time) ∈ U.I} := U.isOpen_I.preimage toRealCLE.symm.continuous
+  have ha := U.a_ne_zero ht₀
+  have hd : ∂ₜ U.a ⟨τ₀⟩ ≠ 0 := (div_ne_zero_iff.mp hH).1
+  have hA := hasDerivAt_mk_of_differentiableAt (U.differentiableAt_a ht₀)
+  have hA' := hasDerivAt_mk_of_differentiableAt (U.differentiableAt_deriv_a ht₀)
+  -- near the observation time, `∂ₜ z = - a(t₀) ∂ₜ a / a²`
+  have h := ((hA'.const_mul (U.a ⟨τ₀⟩)).fun_div (hA.fun_mul hA) (mul_ne_zero ha ha)).fun_neg
+  refine (deriv_eq_of_hasDerivAt (f := ∂ₜ (U.redshift ⟨τ₀⟩)) (h.congr_of_eventuallyEq
+    (Filter.eventually_of_mem (hS.mem_nhds ht₀) fun σ hσ => ?_))).trans ?_
+  · show ∂ₜ (U.redshift ⟨τ₀⟩) ⟨σ⟩ = _
+    rw [U.deriv_redshift (t := ⟨σ⟩) hσ, one_add_redshift]
+    unfold hubbleConstant
+    field_simp [U.a_ne_zero (t := ⟨σ⟩) hσ]
+  · unfold hubbleConstant decelerationParameter
+    field_simp
+    ring
 
 /-- For `t` in the interval of the model, `∂ₜ a = a H`. -/
 lemma deriv_scaleFactor_eq_mul_hubbleConstant {t : Time} (ht : t ∈ U.I) :
@@ -263,10 +313,51 @@ lemma particleHorizon_einsteinDeSitter {t₀ : Time} {c : ℝ} (ht₀ : 0 < t₀
   norm_num
   ring
 
+/-!
+
+## F. The lookback time
+
+-/
+/-- The lookback time of a source whose light, emitted at `t`, is observed at `t₀`: the time
+  elapsed between the emission and the observation, the duration `t₀ -ᵥ t`. It does not depend
+  on the model. -/
+def lookbackTime (t₀ t : Time) : ℝ := t₀ -ᵥ t
+
+/-- The lookback time does not depend on the reference frame: in any frame, it is the difference
+  of the time coordinates of the observation and of the emission. -/
+lemma lookbackTime_eq_timeEquiv_symm_sub {d : ℕ} (frame : ClassicalMechanics.ReferenceFrame d)
+    (t₀ t : Time) :
+    lookbackTime t₀ t = frame.timeEquiv.symm t₀ - frame.timeEquiv.symm t := by
+  simp [lookbackTime, ClassicalMechanics.ReferenceFrame.timeEquiv]
+
+/-- For `t₀` in the interval of the model, `L' / z' = 1 / H₀` for the lookback time `L`. For
+  `H₀ ≠ 0`, it is the first-order coefficient of `L` in `z`. -/
+lemma lookbackTime_coeff_one {t₀ : Time} (ht₀ : t₀ ∈ U.I) :
+    ∂ₜ (lookbackTime t₀) t₀ / ∂ₜ (U.redshift t₀) t₀ = 1 / hubbleConstant U.a t₀ := by
+  rw [deriv_eq_of_hasDerivAt (f := lookbackTime t₀) ((hasDerivAt_id' t₀.val).const_sub t₀.val),
+    U.deriv_redshift_self ht₀]
+  ring
+
+/-- For `t₀` in the interval of the model, `(L'' z' - L' z'') / z'³ = - (2 + q₀) / H₀` for the
+  lookback time `L`. For `H₀ ≠ 0`, it is the second derivative of `L` in `z` at `z = 0`. -/
+lemma lookbackTime_coeff_two {t₀ : Time} (ht₀ : t₀ ∈ U.I) :
+    (∂ₜ (∂ₜ (lookbackTime t₀)) t₀ * ∂ₜ (U.redshift t₀) t₀
+      - ∂ₜ (lookbackTime t₀) t₀ * ∂ₜ (∂ₜ (U.redshift t₀)) t₀) / ∂ₜ (U.redshift t₀) t₀ ^ 3
+      = -(2 + decelerationParameter U.a t₀) / hubbleConstant U.a t₀ := by
+  have hL : ∂ₜ (lookbackTime t₀) = fun _ => -1 :=
+    funext fun t => deriv_eq_of_hasDerivAt ((hasDerivAt_id' t.val).const_sub t₀.val)
+  rw [hL, Time.deriv_const, U.deriv_redshift_self ht₀]
+  rcases eq_or_ne (hubbleConstant U.a t₀) 0 with hH | hH
+  · simp [hH]
+  · rw [U.deriv_deriv_redshift_self ht₀ hH]
+    field_simp
+    ring
+
 end Cosmology.FLRW
 
-TODO "Define the lookback time `t₀ - t` and prove its model-independent expansion
-  `t₀ - t = H₀⁻¹ [z - ½(2 + q₀) z² + …]` in powers of the redshift."
+TODO "Prove the low-redshift expansion of the lookback time
+  `t₀ - t = H₀⁻¹ [z - ½(2 + q₀) z² + …]` as a Taylor expansion in powers of `z`, with remainder,
+  through the inverse of `t ↦ z(t)` near `t₀`."
 
 TODO "Define the luminosity distance `d_L = (1 + z) r(χ)` and the angular-diameter
   distance `d_A = r(χ) / (1 + z)`."
