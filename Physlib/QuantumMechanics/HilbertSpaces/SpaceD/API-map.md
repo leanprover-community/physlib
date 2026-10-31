@@ -17,8 +17,11 @@ strongly measurable and square-integrable. [2]
 
 Several subspaces carry the extra regularity that differential operators need. The complex
 Schwartz maps on space form a subspace, and a map passes in either direction between a Schwartz
-map and the class it represents. [3] The Sobolev spaces are subspaces too. [TODO] The Fourier
-transform is a unitary map from the Hilbert space to itself. [4]
+map and the class it represents. [3] The Schwartz maps bounded by a constant times each power of
+the distance to the origin, up to a given order, form a smaller subspace. [9] When the measure
+is finite on compact sets, this subspace is dense exactly when space has dimension zero, the
+order is zero, or the measure does not charge the origin. [10] The Sobolev spaces are subspaces
+too. [TODO] The Fourier transform is a unitary map from the Hilbert space to itself. [4]
 
 Restricting attention to a region of space gives further structure. The functions supported in a
 given subset of space form a Hilbert space of their own, with an inclusion into the full space
@@ -47,6 +50,11 @@ The general theory of these operators lives in the operator algebra {2}.
 6. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/DirichletSubmodule.lean — `DirichletSubmoduleOn`
 7. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator`
 8. Physlib/QuantumMechanics/Operators/Position.lean — `positionOperator`
+9. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/PolyBddSchwartzSubmodule.lean —
+   `PolyBddSchwartzMap`, `PolyBddSchwartzSubmodule`
+10. Physlib/QuantumMechanics/HilbertSpaces/SpaceD/PolyBddSchwartzSubmodule.lean —
+   `PolyBddSchwartzSubmodule.dense_of_measure_singleton_zero_eq_zero`,
+   `PolyBddSchwartzSubmodule.dense_iff`
 
 ## References
 
