@@ -32,8 +32,12 @@ The adjoint is antitone and conjugate-linear in non-zero scalars, the sum of two
 restriction of the adjoint of the sum, and likewise for compositions; the adjoint of an unbounded
 operator is again unbounded, and its second adjoint is its closure. [5] A symmetric densely defined
 operator for which T + i and T - i both have the whole space as range is self-adjoint. [6]
-Conjugation by a unitary preserves formal adjoints, dense domains and surjectivity of T - z. [7] The
-standard examples separating the classes of symmetric, essentially self-adjoint and self-adjoint
+Conjugation by a unitary preserves formal adjoints, dense domains and surjectivity of T - z. [7]
+The adjoint of a closable operator is densely defined. [30] An operator is normal when it commutes
+with its adjoint. A closable normal operator is densely defined, the adjoint of a closed normal
+operator is normal, non-zero multiples and the negative of a normal operator are normal, and a
+densely defined normal operator has the same kernel as its adjoint. [31]
+The standard examples separating the classes of symmetric, essentially self-adjoint and self-adjoint
 operators make the distinction between symmetry and self-adjointness visible. [TODO] These
 definitions follow the standard treatments of unbounded operators by Hall {1}, Reed and Simon {2},
 and Schmüdgen {3}. The spectrum, the resolvent, the numerical range and spectral measures of these
@@ -220,6 +224,10 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
    `state_uncertainty_of_centered_commutator`, `state_uncertainty_squared_of_raw_commutator`,
    `state_uncertainty_squared_with_covariance_of_raw_commutator`,
    `state_uncertainty_of_raw_commutator`
+30. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsClosable.adjoint_hasDenseDomain`
+31. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsStarNormal.hasDenseDomain`,
+   `IsStarNormal.adjoint`, `IsStarNormal.smul`, `IsStarNormal.real_smul`, `IsStarNormal.neg`,
+   `IsStarNormal.ker_adjoint_eq_ker`
 
 ## References
 
