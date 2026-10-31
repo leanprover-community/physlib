@@ -27,6 +27,7 @@ namely the number of spatial dimensions, the particle's mass and the potential f
   - B.1. Kinetic energy
   - B.2. Potential energy
   - B.3. Hamiltonian
+- C. Reflectionless systems in one dimension
 
 ## iv. References
 
@@ -146,6 +147,26 @@ lemma hamiltonianOperator_eq : Q.hamiltonianOperator = Q.kineticOperator + Q.pot
   rfl
 
 end
+
+/-!
+## C. Reflectionless systems in one dimension
+-/
+
+open Constants Filter Topology SchwartzMap
+open scoped ComplexConjugate
+
+/-- A system in one dimension is reflectionless if for every wavenumber `k ≠ 0` there is a
+  continuous wavefunction `ψ` which solves the time-independent Schrödinger equation at energy
+  `ℏ² k² / (2 m)` against all Schwartz maps, `∫ ψ̄ (H φ) = E ∫ ψ̄ φ`, and which tends to non-zero
+  multiples of the plane wave `e^{i k x}` both as `x → ∞` and as `x → -∞`. No reflected wave
+  `e^{-i k x}` appears. -/
+def IsReflectionless (Q : SpaceDQuantumSystem 1) : Prop :=
+  ∀ k : ℝ, k ≠ 0 → ∃ ψ : ℝ → ℂ, Continuous ψ ∧
+    (∀ φ : 𝓢(Space 1, ℂ), ∫ x, conj (ψ (x 0)) * Q.hamiltonianCLM φ x =
+      ((ℏ ^ 2 * k ^ 2 / (2 * Q.m) : ℝ) : ℂ) * ∫ x, conj (ψ (x 0)) * φ x) ∧
+    ∃ T T' : ℂ, T ≠ 0 ∧ T' ≠ 0 ∧
+      Tendsto (fun x => ψ x - T * exp (k * x * I)) atTop (𝓝 0) ∧
+      Tendsto (fun x => ψ x - T' * exp (k * x * I)) atBot (𝓝 0)
 
 end
 end SpaceDQuantumSystem

@@ -9,7 +9,9 @@ public import Physlib.QuantumMechanics.Operators.Unbounded
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
 public import Physlib.QuantumMechanics.PlanckConstant
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
+public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 import Mathlib.Analysis.Calculus.FDeriv.Star
+import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 /-!
 
 # Momentum operators
@@ -26,6 +28,10 @@ Definitions:
 - `momentumOperator` : a symmetric unbounded operator acting on the Schwartz submodule
     of the Hilbert space `SpaceDHilbertSpace d`.
 
+Results:
+- `integral_mul_momentumCLM` : integration by parts of `momentumCLM` against a function of
+    temperate growth.
+
 Notation:
 - `𝐩` for `momentumOperator`
 
@@ -33,6 +39,7 @@ Notation:
 
 - A. Momentum vector operator
 - B. Unbounded momentum vector operator
+- C. Integration by parts against functions of temperate growth
 
 ## iv. References
 
@@ -165,6 +172,33 @@ lemma momentumSqOperator_domain_eq : momentumSqOperator.domain = SchwartzSubmodu
   · let := Fin.pos_iff_nonempty.mp hd
     rw [← iInf_const (a := SchwartzSubmodule d) (ι := Fin d)]
     congr
+
+/-!
+
+## C. Integration by parts against functions of temperate growth
+
+-/
+
+/-- For a function `g` of temperate growth and a Schwartz map `ψ`,
+  `∫ g (𝐩ᵢ ψ) = iℏ ∫ (∂ᵢ g) ψ`. -/
+lemma integral_mul_momentumCLM {g : Space d → ℂ} (hg : g.HasTemperateGrowth)
+    (ψ : 𝓢(Space d, ℂ)) :
+    ∫ x, g x * 𝐩 i ψ x = I * ℏ * ∫ x, ∂[i] g x * ψ x := by
+  have hg' : (∂[i] g).HasTemperateGrowth :=
+    (ContinuousLinearMap.apply ℝ ℂ (basis i)).hasTemperateGrowth.comp hg.fderiv
+  have hψ' : ∂[i] ψ = ⇑(SchwartzMap.evalCLM ℂ (Space d) ℂ (basis i)
+      (SchwartzMap.fderivCLM ℂ (Space d) ℂ ψ)) := rfl
+  have hibp : ∫ x, g x * ∂[i] ψ x = -∫ x, ∂[i] g x * ψ x := by
+    have h := integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable
+      (μ := volume) (B := ContinuousLinearMap.mul ℝ ℂ) (f := g) (f' := ∂[i] g) (g := ψ)
+      (g' := ∂[i] ψ) (v := basis i) (hg'.integrable_mul_schwartzMap ψ)
+      (by rw [hψ']; exact hg.integrable_mul_schwartzMap _) (hg.integrable_mul_schwartzMap ψ)
+      (fun x _ => ((hg.1.differentiable (by simp)) x).hasFDerivAt.hasLineDerivAt (basis i))
+      (fun x _ => ψ.differentiableAt.hasFDerivAt.hasLineDerivAt (basis i))
+    simpa using h
+  simp only [momentumCLM_apply]
+  simp_rw [mul_left_comm (g _), integral_const_mul, hibp]
+  ring
 
 end
 end QuantumMechanics
