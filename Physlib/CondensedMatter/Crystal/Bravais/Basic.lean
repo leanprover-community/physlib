@@ -57,6 +57,10 @@ namespace Physlib.CondensedMatter.Crystal
 single site. -/
 def bravais (d : ℕ) : Crystal (Fin d → ℤ) := Crystal.ofUnitCell (Fin d → ℤ) Unit
 
+instance (d : ℕ) : DecidableEq (bravais d).UnitCell := inferInstanceAs (DecidableEq Unit)
+
+instance (d : ℕ) : Unique (bravais d).UnitCell := inferInstanceAs (Unique Unit)
+
 namespace Embedding
 
 variable {d : ℕ} {E : Type*} [NormedAddCommGroup E]
