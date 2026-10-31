@@ -393,6 +393,7 @@ public import Physlib.QuantumMechanics.Blackbody.PlancksLaw
 public import Physlib.QuantumMechanics.FiniteTarget
 public import Physlib.QuantumMechanics.FreeParticle.Basic
 public import Physlib.QuantumMechanics.HarmonicOscillator.Basic
+public import Physlib.QuantumMechanics.HarmonicOscillator.Completeness
 public import Physlib.QuantumMechanics.HarmonicOscillator.Eigenstates
 public import Physlib.QuantumMechanics.HarmonicOscillator.LadderOperators
 public import Physlib.QuantumMechanics.HarmonicOscillator.NumberOperator
