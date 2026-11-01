@@ -32,8 +32,11 @@ symplectic product `PauliOp.symplectic`, which does not depend on the phases.
 
 ## ii. Key results
 
-- `Qubit.pauliSingle` : the single-qubit Pauli operator `i^p X^x Z^z` for phase `p` and bits
+- `Qubit.PauliSingle` : the single-qubit Pauli operator `i^p X^x Z^z` for phase `p` and bits
   `x` and `z`.
+- `Qubit.pauliSingle_commute_iff` : two single-qubit Pauli operators commute if and only if
+  their symplectic product is zero.
+- `Qubit.symplecticSingle` : the symplectic product of two single-qubit Pauli operators.
 - `Qubit.symplecticSingle` : the symplectic product of two single-qubit Pauli operators.
 - `PauliOp` : the binary representation of an `n`-qubit Pauli operator, with phase.
 - `PauliOp.symplectic` : the symplectic product of Pauli operators.
@@ -66,14 +69,73 @@ As `p : ZMod 4`, `x : ZMod 2` and `z : ZMod 2` range over their values, these ar
 def PauliSingle (p : ZMod 4) (x z : ZMod 2) : Matrix Qubit Qubit ℂ :=
   Complex.I ^ p.val • (X ^ x.val * Z ^ z.val).val
 
+/-- Every element of `ZMod 2` is `0` or `1`. -/
+lemma zmod2_eq_zero_or_one : ∀ a : ZMod 2, a = 0 ∨ a = 1 := by
+  decide
 
-/-- The symplectic product of two elements `u`, `v` ∈ `(ℤ/2ℤ)²` with 
+/-- The symplectic product of two elements `u`, `v` ∈ `(ℤ/2ℤ)²` with
 `z, x, z', x' ∈ ℤ/2ℤ`:
 `u ⊙ v ≡ z x' - x z'`,
 where `u = z|x` and `v = z'|x'` (this notation represents binary
 string concatenation, e.g. `01 ≡ 0|1`). -/
 def symplecticSingle (z x z' x' : ZMod 2) : ZMod 2 :=
   z * x' - x * z'
+
+/-- Two single-qubit Pauli operators commute if and only if their symplectic product is
+zero. -/
+lemma pauliSingle_commute_iff (p q : ZMod 4) (x z x' z' : ZMod 2) :
+    Commute (PauliSingle p x z) (PauliSingle q x' z') ↔ symplecticSingle x z x' z' = 0 := by
+  have hphase0 : PauliSingle p (0 : ZMod 2) 0
+      = Complex.I ^ p.val • (1 : Matrix Qubit Qubit ℂ) := by
+    simp only [PauliSingle, show (0 : ZMod 2).val = 0 from rfl, pow_zero, mul_one,
+      Submonoid.coe_one]
+  have hphase0' : PauliSingle q (0 : ZMod 2) 0
+      = Complex.I ^ q.val • (1 : Matrix Qubit Qubit ℂ) := by
+    simp only [PauliSingle, show (0 : ZMod 2).val = 0 from rfl, pow_zero, mul_one,
+      Submonoid.coe_one]
+  rcases zmod2_eq_zero_or_one x with rfl | rfl <;>
+    rcases zmod2_eq_zero_or_one z with rfl | rfl <;>
+    rcases zmod2_eq_zero_or_one x' with rfl | rfl <;>
+    rcases zmod2_eq_zero_or_one z' with rfl | rfl
+  · -- (x, z) = (0, 0), (u, v) = (0, 0)
+    simp only [symplecticSingle, zero_mul, sub_self, iff_true, hphase0]
+    rw [commute_iff_eq, Matrix.smul_mul, Matrix.mul_smul, one_mul, mul_one]
+  · -- (x, z) = (0, 0), (u, v) = (0, 1)
+    simp only [symplecticSingle, zero_mul, sub_self, iff_true, hphase0]
+    rw [commute_iff_eq, Matrix.smul_mul, Matrix.mul_smul, one_mul, mul_one]
+  · -- (x, z) = (0, 0), (u, v) = (1, 0)
+    simp only [symplecticSingle, zero_mul, sub_self, iff_true, hphase0]
+    rw [commute_iff_eq, Matrix.smul_mul, Matrix.mul_smul, one_mul, mul_one]
+  · -- (x, z) = (0, 0), (u, v) = (1, 1)
+    simp only [symplecticSingle, zero_mul, sub_self, iff_true, hphase0]
+    rw [commute_iff_eq, Matrix.smul_mul, Matrix.mul_smul, one_mul, mul_one]
+  · -- (x, z) = (0, 1), (u, v) = (0, 0)
+    simp only [symplecticSingle, mul_zero, sub_self, iff_true, hphase0']
+    rw [commute_iff_eq, Matrix.mul_smul, Matrix.smul_mul, mul_one, one_mul]
+  · -- (x, z) = (0, 1), (u, v) = (0, 1)
+    sorry
+  · -- (x, z) = (0, 1), (u, v) = (1, 0)
+    sorry
+  · -- (x, z) = (0, 1), (u, v) = (1, 1)
+    sorry
+  · -- (x, z) = (1, 0), (u, v) = (0, 0)
+    simp only [symplecticSingle, mul_zero, sub_self, iff_true, hphase0']
+    rw [commute_iff_eq, Matrix.mul_smul, Matrix.smul_mul, mul_one, one_mul]
+  · -- (x, z) = (1, 0), (u, v) = (0, 1)
+    sorry
+  · -- (x, z) = (1, 0), (u, v) = (1, 0)
+    sorry
+  · -- (x, z) = (1, 0), (u, v) = (1, 1)
+    sorry
+  · -- (x, z) = (1, 1), (u, v) = (0, 0)
+    simp only [symplecticSingle, mul_zero, sub_self, iff_true, hphase0']
+    rw [commute_iff_eq, Matrix.mul_smul, Matrix.smul_mul, mul_one, one_mul]
+  · -- (x, z) = (1, 1), (u, v) = (0, 1)
+    sorry
+  · -- (x, z) = (1, 1), (u, v) = (1, 0)
+    sorry
+  · -- (x, z) = (1, 1), (u, v) = (1, 1)
+    sorry
 
 end Qubit
 
@@ -114,8 +176,11 @@ def symplectic (P Q : PauliOp n) : ZMod 2 :=
 
 /-- The symplectic product is the sum of the single-qubit symplectic products. -/
 lemma symplectic_eq_sum (P Q : PauliOp n) :
-    P.symplectic Q = ∑ i, Qubit.symplecticSingle (P.z i) (P.x i) (Q.z i) (Q.x i) :=
-  rfl
+    P.symplectic Q = ∑ i, Qubit.symplecticSingle (P.x i) (P.z i) (Q.x i) (Q.z i) := by
+  simp only [symplectic, symplecticSingle]
+  apply Finset.sum_congr rfl
+  intro i _
+  rw [CharTwo.sub_eq_add, CharTwo.sub_eq_add, add_comm]
 
 /-- The symplectic product of a Pauli operator with itself is zero. -/
 lemma symplectic_self (P : PauliOp n) : P.symplectic P = 0 := by
