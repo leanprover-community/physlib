@@ -7,7 +7,7 @@ module
 
 public import Physlib.CondensedMatter.Crystal.BondLength
 public import Physlib.CondensedMatter.Crystal.Bravais.Basic
-public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Physlib.SpaceAndTime.Space.Module
 
 /-!
 # Hypercubic lattices
@@ -17,7 +17,7 @@ The hypercubic lattice of every dimension, with unit bonds along the coordinate 
 ## i. Overview
 
 The hypercubic lattice is the Bravais lattice of dimension `d` embedded along the coordinate
-axes, with one bond along each axis. Its edges have length one, and each site has `2 d`
+axes in `Space d`, with one bond along each axis. Its edges have length one, and each site has `2 d`
 neighbors. For `d = 1, 2, 3` this is the chain, the square lattice and the simple cubic lattice.
 
 ## ii. Key results
@@ -44,11 +44,11 @@ namespace Physlib.CondensedMatter.Crystal
 
 /-! ## A. Hypercubic lattices -/
 
-/-- The hypercubic lattice of dimension `d` embedded along the coordinate axes, with unit
-spacing. -/
+/-- The hypercubic lattice of dimension `d` embedded along the coordinate axes in `Space d`,
+with unit spacing. -/
 noncomputable def hypercubicEmbedding (d : ℕ) :
-    Embedding (bravais d) (EuclideanSpace ℝ (Fin d)) :=
-  Embedding.ofVectors fun j => EuclideanSpace.single j 1
+    Embedding (bravais d) (Space d) :=
+  Embedding.ofVectors Space.basis
 
 /-- One bond along each coordinate axis. -/
 def hypercubicBonds (d : ℕ) : Finset (Bond (bravais d)) :=
@@ -66,7 +66,8 @@ lemma hypercubicGraph_dist_position (d : ℕ) {x y : (bravais d).Site}
     (by simpa only [hypercubicGraph] using h)
   intro b hb
   obtain ⟨j, -, rfl⟩ := Finset.mem_image.1 hb
-  simp [Embedding.bondVector, hypercubicEmbedding, Embedding.ofVectors, Pi.single_apply]
+  simp [Embedding.bondVector, hypercubicEmbedding, Embedding.ofVectors, Pi.single_apply,
+    Space.basis.orthonormal.1]
 
 /-! ## B. Coordination number -/
 
