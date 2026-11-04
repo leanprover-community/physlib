@@ -68,6 +68,12 @@ when it permutes these bonds.
 
 * F. Göhmann, *Introduction to Solid State Physics*, lecture L3, Section 3.1, for the standard
   description of a crystal. [ref: goehmann_solid_state_2021]
+* D. Tong, *Solid State Physics*, lecture notes, University of Cambridge, Section 2.2, for primitive
+  lattice vectors, Bravais lattices and the lattice with a basis. [ref: tong_solid_state_physics]
+* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), chapter on transitive graphs,
+  for Cayley graphs and their connection sets. [ref: godsil_royle_2001]
+* T. Sunada, *Topological Crystallography*, Springer (2013), for crystal structures as periodic
+  graphs. [ref: sunada_topological_crystallography_2013]
 
 -/
 
@@ -189,9 +195,12 @@ def ofBonds (bonds : Finset (Bond C)) : PeriodicGraph C where
 
 /-- The cell translations of single bond moves: the nonzero displacements of the bonds and their
 negatives. Walking a bond with displacement `v` forwards sends cell `c` to `c + v`, and walking it
-backwards sends `c` to `c - v`. For the square lattice with bond displacements `(1, 0)` and
-`(0, 1)`, the steps are `(±1, 0)` and `(0, ±1)`. With one site per cell, the neighbors of `x` are
-the sites in the cells `x.cell + v` for `v ∈ steps bonds`. -/
+backwards sends `c` to `c - v`. For the hypercubic lattice of dimension `d`, with one bond along
+each axis, the steps are the `2 d` unit vectors `±eᵢ` (`steps_hypercubicBonds`). With one site per
+cell, the neighbors of `x` are the sites in the cells `x.cell + v` for `v ∈ steps bonds`.
+
+The steps form a subset of the translation group that is closed under negation and does not contain
+`0`: this is the connection set of a Cayley graph (see `ofBondsIsoAddCayley`). -/
 def steps (bonds : Finset (Bond C)) : Finset G :=
   (bonds.image Bond.displacement ∪ bonds.image fun b => -b.displacement).erase 0
 
