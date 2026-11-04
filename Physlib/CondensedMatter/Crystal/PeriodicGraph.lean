@@ -74,6 +74,9 @@ when it permutes these bonds.
   for Cayley graphs and their connection sets. [ref: godsil_royle_2001]
 * T. Sunada, *Topological Crystallography*, Springer (2013), for crystal structures as periodic
   graphs. [ref: sunada_topological_crystallography_2013]
+* Wikipedia, *Cayley graph*, for the definition of a Cayley graph of a group with respect to a
+  connection set, with the example of the free group on two generators.
+  [ref: wiki_cayley_graph]
 
 -/
 
