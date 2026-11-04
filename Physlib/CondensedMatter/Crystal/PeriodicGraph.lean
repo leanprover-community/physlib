@@ -70,8 +70,8 @@ when it permutes these bonds.
   description of a crystal. [ref: goehmann_solid_state_2021]
 * D. Tong, *Solid State Physics*, lecture notes, University of Cambridge, Section 2.2, for primitive
   lattice vectors, Bravais lattices and the lattice with a basis. [ref: tong_solid_state_physics]
-* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), chapter on transitive graphs,
-  for Cayley graphs and their connection sets. [ref: godsil_royle_2001]
+* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), Section 3.7, for Cayley
+  graphs and their connection sets. [ref: godsil_royle_2001]
 * T. Sunada, *Topological Crystallography*, Springer (2013), for crystal structures as periodic
   graphs. [ref: sunada_topological_crystallography_2013]
 * Wikipedia, *Cayley graph*, for the definition of a Cayley graph of a group with respect to a
