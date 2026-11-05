@@ -513,6 +513,7 @@ public import Physlib.Relativity.SL2C.CayleyKlein
 public import Physlib.Relativity.SL2C.Cover
 public import Physlib.Relativity.SL2C.SelfAdjoint
 public import Physlib.Relativity.SL2C.ToSpecialOrthogonal
+public import Physlib.Relativity.SL2C.UnitaryToSpecialOrthogonal
 public import Physlib.Relativity.Special.ProperTime
 public import Physlib.Relativity.Special.TwinParadox.Basic
 public import Physlib.Relativity.SpeedOfLight
