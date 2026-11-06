@@ -15,4 +15,5 @@ def test_function_map {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
   [NormedSpace ℝ E] [NormedSpace ℝ E']
   {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
   {Ω : Opens E} {Ω' : Opens E'} (g : E → E') :
-  TestFunction Ω' F ⊤ → TestFunction Ω F ⊤ := by
+  TestFunction Ω' F ⊤ → TestFunction Ω F ⊤ :=
+  fun φ => φ.comp g
