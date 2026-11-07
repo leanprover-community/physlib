@@ -17,40 +17,20 @@ one.
 
 ## i. Overview
 
-An invariant form lowers and raises indices. For Lorentz tensors it is the Minkowski metric,
-`η_μν` in `(ℝ⁴)* ⊗ (ℝ⁴)*`, with inverse `η^μν` in `ℝ⁴ ⊗ ℝ⁴`. It lowers `v_ν = v^μ η_μν`, raises
-`w^ν = w_μ η^μν`, and the two are inverse, `v^μ η_μν η^νρ = v^ρ`.
+For Lorentz tensors the invariant form is the Minkowski metric `η_μν` with inverse `η^μν`. It
+lowers `v_ν = v^μ η_μν`, raises `w^ν = w_μ η^μν`, and the two are inverse,
+`v^μ η_μν η^νρ = v^ρ`.
 
-An invariant form on a kind `κ`, the class `S.HasForm κ`, is a chosen invariant invertible
-bilinear form. It gives an element `form c` of `V c ⊗ V c` at both colors of the kind, written
-`g^μν` at the upper color and `g_μν` at the lower one. It is invariant under the group, and the
-forms at `c` and at `c.dual` are inverse to each other. Not every kind needs a form. The SU(3)
-species has one on the adjoint and none on the triplet, so it has a `HasForm` instance at the
-adjoint only and lowering a triplet index does not typecheck. The form is a choice, since `-η`
-serves as well as `η`. The class stores the inverse, checked by the law `form_inverse`, since over
-a commutative ring `k` a non-degenerate form need not have an inverse.
+The class `S.HasForm κ` is a chosen invariant form on the kind `κ`, `g^μν` at the upper color and
+`g_μν` at the lower one, with the forms at `c` and `c.dual` inverse to each other. Not every kind
+has one, as the SU(3) triplet has none. The inverse is stored, since over a commutative ring a
+non-degenerate form need not have an inverse. Symmetry, as for `η`, and antisymmetry, as for the
+Weyl `ε`, are the optional classes `S.IsSymmetricForm κ` and `S.IsAntisymmetricForm κ`.
 
-Symmetry is an optional property of the chosen form. The class `S.IsSymmetricForm κ` says that
-`g_μν = g_νμ`, as for `η`, and a metric is a symmetric form. The class `S.IsAntisymmetricForm κ`
-says that `g_μν = -g_νμ`, as for the Weyl `ε`, which with two labels gives the Schouten identity.
-Both are stated on the tensor `g`, and `formBilin` carries them to Mathlib's bilinear forms. A form
-on a kind that is a sum of two kinds may be neither, and lowering and raising never ask for either
-property.
-
-`S.toDual c : V c ≃ V c.dual` contracts a vector with the first index of the form at `c.dual`. At
-an upper color it lowers the index, `v^μ ↦ v^μ g_μν`, and at a lower color it raises it,
-`w_μ ↦ w_μ g^μν`. Its inverse is `S.toDual c.dual`, by `rfl`. For a symmetric metric such as `η`
-the first index gives the textbook `v_ν = η_νμ v^μ`. For the antisymmetric `ε` it gives
-`ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`. With `ε^12 = ε_21 = 1` this is minus the convention
-`ψ_α = ε_αβ ψ^β`, so a Weyl species following that convention stores `-ε`.
-
-`S.toDualAt i …` lowers or raises the index at the slot `i` of a tensor and keeps the others, as
-in `T^μν ↦ T^μ_ν` for `i` the second slot. Lowering at several slots composes slot by slot
-(`toDualAt_eq_mapAt`, `Species.mapSlots_mapSlots`), so a lowering and a raising at the same slot
-cancel in any order.
-
-`S.formTensor c` is the form as a tensor on two slots, `η^μν` at `⟨vec, up⟩` and `η_μν` at
-`⟨vec, down⟩`. Lowering an index is contracting it with the form tensor, `T^…_ν… = T^…μ… g_μν`.
+`S.toDual c` contracts a vector with the first index of the form at `c.dual`, lowering an upper
+index and raising a lower one, and `S.toDualAt i` does so at the slot `i` of a tensor. For the
+antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus the convention
+`ψ_α = ε_αβ ψ^β` with `ε^12 = ε_21 = 1`, so a Weyl species following that convention stores `-ε`.
 
 ## ii. Key results
 
