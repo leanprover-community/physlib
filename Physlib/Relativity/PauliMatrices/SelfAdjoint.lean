@@ -117,6 +117,18 @@ lemma trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix (μ ν : Fin 1 ⊕ 
   · simp [mul_comm]
   · simp [eq_zero_of_ne h, minkowskiMatrix.off_diag_zero h]
 
+/-- `σ̄^μ = η_μμ σ^μ` is the adjugate of `σ^μ`. -/
+lemma adjugate_pauliMatrix (μ : Fin 1 ⊕ Fin 3) :
+    adjugate (pauliMatrix μ) = (minkowskiMatrix μ μ : ℂ) • pauliMatrix μ := by
+  rcases μ with μ | μ <;> fin_cases μ <;>
+    simp [adjugate_fin_two, pauliMatrix, minkowskiMatrix.inl_0_inl_0, minkowskiMatrix.inr_i_inr_i]
+
+/-- `σ^μ` is the adjugate of `σ̄^μ = η_μμ σ^μ`. -/
+lemma adjugate_minkowskiMatrix_smul_pauliMatrix (μ : Fin 1 ⊕ Fin 3) :
+    adjugate ((minkowskiMatrix μ μ : ℂ) • pauliMatrix μ) = pauliMatrix μ := by
+  rw [← adjugate_pauliMatrix, adjugate_adjugate']
+  simp
+
 /-- The four real Pauli coefficients of a self-adjoint `2 × 2` matrix. -/
 noncomputable def pauliCoeff
     (A : selfAdjoint (Matrix (Fin 2) (Fin 2) ℂ)) :

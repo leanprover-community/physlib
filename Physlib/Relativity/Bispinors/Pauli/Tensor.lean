@@ -27,6 +27,8 @@ The lowered forms are written with `↓` in index notation, such as `{pauliTenso
 `σT_μ^{αβ̇}`. Lowering contracts the first index of `η` or `ε` (`Species.toDual`), so
 `σT_μ^{αβ̇} = η_μμ σT^{μαβ̇}`. With both Weyl indices lowered, `{pauliTensor | μ ↓α ↓β}ᵀ` is
 `σT^μ_{αβ̇}`: with rows `β̇` and columns `α` it is the matrix `σ̄^μ = η_μμ σ^μ = (1, -σ⃗)`.
+Lowering both indices of a matrix with `ε` gives its adjugate, transposed, and
+`adj σ^μ = σ̄^μ`, so the components of the lowered forms are matrix identities.
 
 One identity is read off from the Pauli matrices, the trace identity `pauliCoDown_trace_pauliCo`,
 `tr(σ̄_μ σ_ν) = 2 η_μν`: its components are the matrix traces of
@@ -123,43 +125,22 @@ lemma pauliTensor_invariant (g : SL(2, ℂ)) : g • pauliTensor = pauliTensor :
 lemma tensorBasis_repr_pauliTensor_down (μ : Π i, Idx (![down, upL, upR] i).kind) :
     (complexLorentz.tensorBasis _).repr {pauliTensor | ↓ν α β}ᵀ μ =
       minkowskiMatrix (μ 0) (μ 0) * pauliMatrix (μ 0) (μ 1) (μ 2) := by
-  have h (a : Fin 1 ⊕ Fin 3) (b c : Fin 2) : ∑ x, (minkowskiMatrix x a : ℂ) * pauliMatrix x b c =
-      minkowskiMatrix a a * pauliMatrix a b c := by
-    rw [Finset.sum_eq_single a (fun x _ hx => by rw [minkowskiMatrix.off_diag_zero hx]; simp)
-      (by simp)]
   tensor_components [Species.tensorBasis_repr_toDualAt, formMatrix_apply,
     tensorBasis_repr_pauliTensor]
-  exact h _ _ _
+  -- Only the diagonal entry `η_μμ` of `η` contributes.
+  exact Fintype.sum_eq_single _ fun x hx => by simp [formEntries, minkowskiMatrix.off_diag_zero hx]
 
-/-- The components of `σT^μ_{αβ̇}`, with both Weyl indices lowered: `η_μμ σT^{μβα}` at the labels
-`(μ, α, β)`. -/
-lemma tensorBasis_repr_pauliTensor_downWeyl
-    (μ : Π i, Idx (![up, downL, downR] i).kind) :
-    (complexLorentz.tensorBasis _).repr {pauliTensor | ν ↓α ↓β}ᵀ μ =
-      minkowskiMatrix (μ 0) (μ 0) * pauliMatrix (μ 0) (μ 2) (μ 1) := by
-  have h (m : Fin 1 ⊕ Fin 3) (a b : Fin 2) : ∑ x, metricRaw x b * ∑ y, metricRaw y a *
-      pauliMatrix m y x = minkowskiMatrix m m * pauliMatrix m b a := by
-    rcases m with m | m <;> fin_cases m <;> fin_cases a <;> fin_cases b <;>
-      simp [Fin.sum_univ_two, metricRaw, pauliMatrix, minkowskiMatrix.inl_0_inl_0,
-        minkowskiMatrix.inr_i_inr_i]
-  tensor_components [Species.tensorBasis_repr_toDualAt, formMatrix_apply,
-    tensorBasis_repr_pauliTensor]
-  exact h _ _ _
-
-/-- The components of `σT_{μαβ̇}`, with all indices lowered: `σT^{μβα}` at the labels
-`(μ, α, β)`. -/
+/-- The components of `σT_{μαβ̇}`, with all indices lowered, are the entries of the adjugate of
+`σ̄^μ = η_μμ σ^μ`, transposed: `σT^{μβα}` at the labels `(μ, α, β)`. -/
 lemma tensorBasis_repr_pauliTensor_downAll
     (μ : Π i, Idx (![down, downL, downR] i).kind) :
     (complexLorentz.tensorBasis _).repr {pauliTensor | ↓ν ↓α ↓β}ᵀ μ =
       pauliMatrix (μ 0) (μ 2) (μ 1) := by
-  have h (m : Fin 1 ⊕ Fin 3) (a b : Fin 2) : ∑ x, metricRaw x b * ∑ y, metricRaw y a *
-      ∑ z, (minkowskiMatrix z m : ℂ) * pauliMatrix z y x = pauliMatrix m b a := by
-    rcases m with m | m <;> fin_cases m <;> fin_cases a <;> fin_cases b <;>
-      simp [Fin.sum_univ_two, Fintype.sum_sum_type, Fin.sum_univ_three, metricRaw, pauliMatrix,
-        minkowskiMatrix.as_diagonal, Matrix.diagonal_apply]
+  -- `↓` unfolds the lowered vector index by `tensorBasis_repr_pauliTensor_down` first.
   tensor_components [Species.tensorBasis_repr_toDualAt, formMatrix_apply,
-    tensorBasis_repr_pauliTensor]
-  exact h _ _ _
+    ↓tensorBasis_repr_pauliTensor_down]
+  exact (sum_metricRaw_mul_sum_metricRaw_mul _ _ _).trans
+    (congrFun₂ (PauliMatrix.adjugate_minkowskiMatrix_smul_pauliMatrix _) _ _)
 
 /-- `σT^μ_{αβ̇} = σT_{ραβ̇} η^ρμ`, raising the vector index of the fully lowered Pauli tensor. -/
 lemma pauliContrDown_eq_pauliCoDown_contr :
@@ -184,10 +165,9 @@ lemma pauliCoDown_trace_pauliCo :
     {pauliTensor | ↓μ ↓α ↓β ⊗ pauliTensor | ↓ν α β = (2 : ℂ) • η' | μ ν}ᵀ := by
   tensor_components [tensorBasis_repr_pauliTensor_downAll, tensorBasis_repr_pauliTensor_down,
     tensorBasis_repr_formTensor_vec .down]
-  -- The components are `tr(σ̄_ν σ_μ)`, written out as a double sum.
-  exact (Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => mul_comm _ _).trans
-    ((Matrix.trace_mul_comm _ _).trans
-      (PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix (φ 0) (φ 1)))
+  -- The components are `tr(σ^μᵀ σ̄^νᵀ) = tr(σ^μ σ̄^ν)`, written out as a double sum.
+  exact (Matrix.trace_transpose_mul _ _).trans
+    (PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix _ _)
 
 /-- The trace identity `tr(σ_μ σ̄_ν) = 2 η_μν`, as `σT_μ^{αβ̇} σT_{ναβ̇} = 2 η_μν`. -/
 lemma pauliCo_trace_pauliCoDown :
