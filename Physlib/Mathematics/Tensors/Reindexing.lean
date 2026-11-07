@@ -15,33 +15,14 @@ transpose `T^μ_ν ↦ T_ν^μ`.
 
 ## i. Overview
 
-A tensor has one slot for each index, and each slot has a color, such as up or down. `T^μ_ν` has
-two slots, the first up and the second down. The transpose `T_ν^μ` has the same components with
-the indices written in the other order. Its first slot is down and its second is up.
+A relabeling `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the slots of a tensor
+that keeps their colors, with the proof `σ.color_eq`. For the transpose `T^μ_ν ↦ T_ν^μ` it swaps
+the slots `0` and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would
+turn an up index into a down one is not a relabeling, since that needs a metric. The labels `ι₁`
+and `ι₂` may be different types, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the product `u^μ v^ν`.
 
-A relabeling `σ` is a permutation of the indices. It says which position each index moves to, and
-it may only move an index together with its color. For the transpose, `σ` swaps the positions `0`
-and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would turn an up
-index into a down one is not a relabeling. That operation is raising or lowering, and it needs a
-metric.
-
-Formally `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the slots, where the
-labels `ι₁` and `ι₂` may be different types, together with the proof
-`σ.color_eq j : c₁ (σ.toEquiv.symm j) = c₂ j` that the new slot `j` has the color of the old slot
-it comes from. For concrete colors the proof is found automatically.
-
-`S.reindex σ : S.Tensor c₁ ≃ₗ[k] S.Tensor c₂` moves each vector to its new slot, so the transpose
-sends `u ⊗ α` to `α ⊗ u` and has components `(Tᵀ)_ν^μ = T^μ_ν`. Nothing is computed. Lean writes
-the color of the new slot differently from the color of the old one, so each vector is retyped
-along `σ.color_eq`, and for concrete colors this retyping is the identity. The name follows
-Mathlib's `PiTensorProduct.reindex`.
-
-Relabelings appear wherever indices are lined up. Index notation relabels `B` in `A^μ_ν + B_ν^μ`
-before adding, so the result is the tensor `(A + Bᵀ)^μ_ν` with the slots in the order of `A`. The
-symmetry `g_μν = g_νμ` compares `g` with its relabeling. The product `u^μ v^ν` of two vectors,
-whose slots are labeled "slot of `u`" and "slot of `v`" (`Fin 1 ⊕ Fin 1`), is relabeled to a
-tensor with slots `0, 1` (`Fin 2`). A relabeling can change the type of the labels as well as
-their order.
+`S.reindex σ` moves each vector of a tensor to its new slot. The name follows Mathlib's
+`PiTensorProduct.reindex`. Index notation uses it to line up indices, as in `A^μ_ν + B_ν^μ`.
 
 ## ii. Key results
 
