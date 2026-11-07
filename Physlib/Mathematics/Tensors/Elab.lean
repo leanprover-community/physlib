@@ -747,25 +747,31 @@ private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) : TacticM Unit :
       insertDelta lhs a slots slot
       regroupContractions
 
-/-- Matches two forms `g` and `g⁻¹`, the factors `gs` left over on one side, with the factors `ds`
-left over on the left side, if `lhs`, or on the right side. A delta `ds = [δ]` is written as the
-contraction of the forms, `g^μν g_νρ = δ^μ_ρ` (`Species.contr_formTensor_formTensor`), trying the
-color of each form. With `ds = []`, a delta is inserted first. -/
+/-- Matches pairs of forms `g` and `g⁻¹`, the factors `gs` left over on one side, with the factors
+`ds` left over on the left side, if `lhs`, or on the right side. A delta `ds = [δ]` is written as
+the contraction of two forms, `g^μν g_νρ = δ^μ_ρ` (`Species.contr_formTensor_formTensor`), trying
+the color of each form whose dual form is also left over. With `ds = []`, a delta is inserted
+first. Each pair cancelled this way, as a lowering `g_μν` against a raising form `g^νρ`, leaves the
+other pairs to the next round of `regroupContractions`. -/
 private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Unit := do
   let fs := gs.filterMap formArgs?
-  unless gs.length == 2 && fs.length == 2 do
-    throwError "tensor_regroup: the factors left over are not two forms"
+  unless 2 ≤ gs.length && gs.length % 2 == 0 && fs.length == gs.length do
+    throwError "tensor_regroup: the factors left over are not pairs of forms"
+  -- Only the colors whose dual form is also left over can cancel, each tried once.
+  let fs ← fs.eraseDups.filterM fun (_, c) => do
+    let cd ← mkAppM ``Tensors.Color.dual #[c]
+    fs.anyM fun (_, c') => isDefEqGoal c' cd
   match ds with
   | [d] =>
     unless (deltaColor? d).isSome do throwError "tensor_regroup: {d} is not a delta"
-    firstSuccess fs m!"" fun (S, c) => do
+    firstSuccess fs m!"tensor_regroup: no two forms left over are inverse" fun (S, c) => do
       let thm ← `((Tensors.Species.contr_formTensor_formTensor (S := $(← exprToSyntax S))
         $(← exprToSyntax c)).symm)
       rewriteSubterm d thm (some lhs)
       regroupContractions
-  | [] => firstSuccess fs m!"" fun (_, c) => do
+  | [] => firstSuccess fs m!"tensor_regroup: no two forms left over are inverse" fun (_, c) => do
       insertDeltaAnywhere lhs (← mkAppM ``Tensors.Color.dual #[c])
-  | _ => throwError "tensor_regroup: more than one factor is left over against two forms"
+  | _ => throwError "tensor_regroup: more than one factor is left over against forms"
 
 /-- Proves `Tensor.contr σ P = Tensor.contr τ Q` for two contractions of the same factors, up to
 deltas and inverse pairs of forms. Each side is flattened to one contraction of a left-nested
