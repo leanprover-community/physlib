@@ -206,14 +206,12 @@ lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ →
   | hadd t t' ht ht' => simp only [map_add, Finsupp.add_apply, ht, ht']
   | h f =>
     rw [reindex_pure, tensorBasis_repr_pure, tensorBasis_repr_pure]
-    refine (Fintype.prod_equiv σ.toEquiv _ _ fun i => ?_).symm
-    -- The old slot `σ.toEquiv.symm (σ.toEquiv i)` is `i` only up to a proof, so it is generalized.
-    have h : ∀ i' (_ : i' = i) (d : Color K) (p : c₁ i' = d) (q : d = c₁ i) (z : basisIdx d.kind),
-        (S.basis (c₁ i)).repr (f i) (cast (congrArg (basisIdx ∘ Color.kind) q) z) =
-          (S.basis d).repr (S.cast p (f i')) z := by
-      rintro _ rfl _ rfl _ _
-      rfl
-    exact h _ (σ.toEquiv.symm_apply_apply i) _ _ (σ.symm.color_eq i) _
+    refine Fintype.prod_equiv σ.toEquiv.symm _ _ fun j => ?_
+    -- The label `y j` is read at the new slot `σ.toEquiv (σ.toEquiv.symm j)`, which is `j` only
+    -- up to a proof.
+    rw [basis_repr_cast]
+    exact congrArg _ (eq_of_heq ((cast_heq _ _).trans
+      ((congr_arg_heq y (σ.toEquiv.apply_symm_apply j)).symm.trans (cast_heq _ _).symm)))
 
 end Species
 
