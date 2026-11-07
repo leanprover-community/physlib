@@ -93,6 +93,13 @@ def symm (σ : ColorEquiv c₁ c₂) : ColorEquiv c₂ c₁ :=
 def trans (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) : ColorEquiv c₁ c₃ :=
   ⟨σ₁.toEquiv.trans σ₂.toEquiv, fun j => (σ₁.color_eq _).trans (σ₂.color_eq j)⟩
 
+/-- The relabeling that swaps the two slots of a tensor on two slots, `![a, b] → ![b, a]`. -/
+def swapTwo (a b : Color K) : ColorEquiv (K := K) ![a, b] ![b, a] := ⟨Equiv.swap 0 1, by
+  intro j; fin_cases j <;> rfl⟩
+
+@[simp]
+lemma toEquiv_swapTwo (a b : Color K) : (swapTwo a b).toEquiv = Equiv.swap 0 1 := rfl
+
 @[simp]
 lemma toEquiv_refl (c₁ : ι₁ → Color K) : (refl c₁).toEquiv = Equiv.refl ι₁ := rfl
 

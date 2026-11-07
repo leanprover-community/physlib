@@ -289,11 +289,9 @@ lemma twoSlotEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
   exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
 /-- Swapping the two slots of a tensor on two slots swaps the factors, `M^μν ↦ M^νμ`. -/
-lemma reindex_twoSlotEquiv {a b : Color K} {σ : ColorEquiv ![a, b] ![b, a]}
-    (hσ : σ.toEquiv = Equiv.swap 0 1) (M : S.V a ⊗[k] S.V b) :
-    S.reindex σ (S.twoSlotEquiv a b M) = S.twoSlotEquiv b a (TensorProduct.comm k _ _ M) := by
-  obtain ⟨e, he⟩ := σ
-  subst hσ
+lemma reindex_twoSlotEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
+    S.reindex (ColorEquiv.swapTwo a b) (S.twoSlotEquiv a b M) =
+      S.twoSlotEquiv b a (TensorProduct.comm k _ _ M) := by
   induction M using TensorProduct.inductionOn with
   | add x y hx hy => simp only [map_add, hx, hy]
   | tmul x y =>

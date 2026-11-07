@@ -287,18 +287,16 @@ lemma tensorBasis_repr_formTensor (c : Color K) [S.HasForm c.kind]
     (S.tensorBasis ![c, c]).repr (S.formTensor c) μ = S.formMatrix c (μ 0) (μ 1) :=
   tensorBasis_repr_twoSlotEquiv _ _ _ μ
 
-/-- A symmetric form is symmetric under the slot swap `σ` as a tensor, `g^μν = g^νμ`. -/
-lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind]
-    {σ : ColorEquiv ![c, c] ![c, c]} (hσ : σ.toEquiv = Equiv.swap 0 1) :
-    S.reindex σ (S.formTensor c) = S.formTensor c := by
-  rw [formTensor, reindex_twoSlotEquiv hσ, form_symm]
+/-- A symmetric form is symmetric under the slot swap as a tensor, `g^μν = g^νμ`. -/
+lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
+    S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = S.formTensor c := by
+  rw [formTensor, reindex_twoSlotEquiv, form_symm]
 
-/-- An antisymmetric form is antisymmetric under the slot swap `σ` as a tensor,
+/-- An antisymmetric form is antisymmetric under the slot swap as a tensor,
 `g^μν = -g^νμ`. -/
-lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    {σ : ColorEquiv ![c, c] ![c, c]} (hσ : σ.toEquiv = Equiv.swap 0 1) :
-    S.reindex σ (S.formTensor c) = -S.formTensor c := by
-  rw [formTensor, reindex_twoSlotEquiv hσ, form_antisymm, map_neg]
+lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
+    S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = -S.formTensor c := by
+  rw [formTensor, reindex_twoSlotEquiv, form_antisymm, map_neg]
 
 /-!
 

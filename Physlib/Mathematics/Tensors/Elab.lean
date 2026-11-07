@@ -818,10 +818,9 @@ private partial def summands (e : Expr) : List Expr :=
 private def flipForm (antisym : Bool) (F : Expr) (k : Nat) : TacticM Unit := do
   let some (S, c) := formArgs? F | throwError "tensor_regroup: internal error, {F} is not a form"
   let (S, c) := (← exprToSyntax S, ← exprToSyntax c)
-  let σ ← `(Tensors.ColorEquiv.mk (Equiv.swap 0 1))
   let thm ← if antisym then
-      `(neg_eq_iff_eq_neg.mp (Tensors.Species.formTensor_antisymm (S := $S) $c (σ := $σ) rfl).symm)
-    else `((Tensors.Species.formTensor_symm (S := $S) $c (σ := $σ) rfl).symm)
+      `(neg_eq_iff_eq_neg.mp (Tensors.Species.formTensor_antisymm (S := $S) $c).symm)
+    else `((Tensors.Species.formTensor_symm (S := $S) $c).symm)
   rewriteSubterm F thm (k := some k)
 
 mutual
