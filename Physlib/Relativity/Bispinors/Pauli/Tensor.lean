@@ -134,11 +134,6 @@ lemma tensorBasis_repr_pauliTensor_downAll
   exact (sum_metricRaw_mul_sum_metricRaw_mul _ _ _).trans
     (congrFun₂ (PauliMatrix.adjugate_minkowskiMatrix_smul_pauliMatrix _) _ _)
 
-/-- `σT^μ_{αβ̇} = σT_{ραβ̇} η^ρμ`, raising the vector index of the fully lowered Pauli tensor. -/
-lemma pauliContrDown_eq_pauliCoDown_contr :
-    {pauliTensor | μ ↓α ↓β = {pauliTensor | ↓ρ ↓α ↓β ⊗ η | ρ μ}ᵀ | α β μ}ᵀ := by
-  tensor_regroup
-
 /-!
 
 ## C. Contraction identities
@@ -175,7 +170,6 @@ lemma pauliContrDown_trace_pauliCo :
     {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ↓ν α β = (2 : ℂ) • δ' | ν μ}ᵀ := by
   have h : {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ↓ν α β =
       {pauliTensor | ↓ρ ↓α ↓β ⊗ pauliTensor | ↓ν α β}ᵀ | ρ ν ⊗ η | ρ μ}ᵀ := by
-    rw [pauliContrDown_eq_pauliCoDown_contr]
     tensor_regroup
   rw [h, pauliCoDown_trace_pauliCo]
   tensor_regroup
@@ -235,16 +229,11 @@ lemma pauliCo_contr_pauliContr :
 
 -/
 
-/-- `σT^{μαβ̇} = σT_ρ^{αβ̇} η^{ρμ}`, raising the lowered vector index again. -/
-lemma pauliTensor_eq_pauliCo_contr : {pauliTensor | μ α β = pauliTensor | ↓ρ α β ⊗ η | ρ μ}ᵀ := by
-  tensor_regroup
-
 /-- The trace identity `tr(σ^μ σ̄^ν) = 2 η^μν`, as `σT^{μαβ̇} σT^ν_{αβ̇} = 2 η^μν`. -/
 lemma pauliContr_trace_pauliContrDown :
     {pauliTensor | μ α β ⊗ pauliTensor | ν ↓α ↓β = (2 : ℂ) • η | μ ν}ᵀ := by
   have h : {pauliTensor | μ α β ⊗ pauliTensor | ν ↓α ↓β =
       {pauliTensor | ν ↓α ↓β ⊗ pauliTensor | ↓ρ α β}ᵀ | ν ρ ⊗ η | ρ μ}ᵀ := by
-    nth_rw 1 [pauliTensor_eq_pauliCo_contr]
     tensor_regroup
   rw [h, pauliContrDown_trace_pauliCo]
   tensor_regroup
