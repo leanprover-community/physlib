@@ -483,7 +483,7 @@ private def leadingProduct (e : Expr) (m n : Nat) : Expr := Id.run do
 
 /-- The products `P` and `Q` of a goal `Tensor.contr σ P = Tensor.contr τ Q`. -/
 private def contractedProducts : TacticM (Expr × Expr) := do
-  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).eq?
+  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).consumeMData.eq?
     | throwError "tensor_regroup: the goal is not an equation"
   let arg? (e : Expr) : Option Expr :=
     let e := e.consumeMData
@@ -601,7 +601,7 @@ contractions and relabelings are linear, so sums, negatives and scalars of `k` m
 The scalar lemmas are given the field `k` of the species, so a group element `Λ • T` stays a
 factor. -/
 private def normalizeSums : TacticM Unit := do
-  let some (ty, _, _) := (← instantiateMVars (← getMainTarget)).eq?
+  let some (ty, _, _) := (← instantiateMVars (← getMainTarget)).consumeMData.eq?
     | throwError "tensor_regroup: the goal is not an equation"
   let k ← exprToSyntax (← whnfR ty).getAppArgs[0]!
   evalTactic (← `(tactic| try simp only [map_add, map_neg, map_sub, map_smul,
@@ -618,7 +618,7 @@ private partial def summands (e : Expr) : List Expr :=
 /-- Proves an equation of two summands with the same sign and the same scalar, by regrouping the
 contractions they multiply. -/
 private partial def regroupSummand : TacticM Unit := do
-  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).eq?
+  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).consumeMData.eq?
     | throwError "tensor_regroup: the goal is not an equation"
   let l := l.consumeMData
   let r := r.consumeMData
@@ -648,7 +648,7 @@ summand that is not the same term on both sides must be a contraction once relab
 absorbed. -/
 elab "tensor_regroup" : tactic => do
   normalizeSums
-  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).eq?
+  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).consumeMData.eq?
     | throwError "tensor_regroup: the goal is not an equation"
   let ls := summands l
   let rs := summands r
@@ -691,25 +691,47 @@ elab "tensor_regroup" : tactic => do
 
 -/
 
+/-- Whether `e` is a slotwise map `S.mapSlots F t` applied to a tensor. -/
+private def isMapSlots (e : Expr) : Bool :=
+  let e := e.consumeMData
+  e.isAppOfArity ``DFunLike.coe 6 && e.appFn!.appArg!.isAppOf ``Tensors.Species.mapSlots
+
 /-- `tensor_slots` proves an equation of two chains of lowerings and raisings of the same tensor,
 such as `{{T | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = T` or `{{T | ↓μ ν}ᵀ | μ ↓ν = {T | μ ↓ν}ᵀ | ↓μ ν}ᵀ`. Each chain
 is one slotwise map (`Species.toDualAt_eq_mapAt`, `Species.mapSlots_mapSlots`), and the two maps
 are compared slot by slot, where `Species.toDual_toDual` cancels a lowering with a raising. A side
 with no lowering or raising is the slotwise identity (`Species.mapSlots_id`). The slots must be
 `Fin n` with a literal `n`. -/
-macro "tensor_slots" : tactic => `(tactic| focus
-  simp only [Tensors.Species.toDualAt_eq_mapAt, Tensors.Species.mapAt,
-    Tensors.Species.mapSlots_mapSlots]
-  first
-    | refine congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext fun x => ?_)
-    | refine (congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext fun x => ?_)).trans
-        (Tensors.Species.mapSlots_id _)
-  fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
-    simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
-      LinearMap.id_apply, Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq,
-      not_false_eq_true, dite_false, Representation.IntertwiningMap.coe_toLinearMap,
-      Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
-      Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual])
+elab "tensor_slots" : tactic => do
+  evalTactic (← `(tactic| simp only [Tensors.Species.toDualAt_eq_mapAt, Tensors.Species.mapAt,
+    Tensors.Species.mapSlots_mapSlots]))
+  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).consumeMData.eq?
+    | throwError "tensor_slots: the goal is not an equation"
+  -- The branch is chosen from the two sides, since a failed unification with a side that is a
+  -- definition, such as a named tensor, unfolds it.
+  match isMapSlots l, isMapSlots r with
+  | true, true => evalTactic (← `(tactic|
+      refine congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_)))
+  | true, false => evalTactic (← `(tactic|
+      refine (congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_)).trans
+        (Tensors.Species.mapSlots_id _)))
+  | false, true => evalTactic (← `(tactic|
+      refine (Tensors.Species.mapSlots_id _).symm.trans
+        (congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_))))
+  | false, false => throwError "tensor_slots: neither side lowers or raises an index"
+  evalTactic (← `(tactic| focus
+    intro x
+    fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
+      simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
+        LinearMap.id_apply, Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq,
+        not_false_eq_true, dite_false, Representation.IntertwiningMap.coe_toLinearMap,
+        Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
+        Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual] <;>
+      -- On a species that is an `abbrev`, `simp` cannot rewrite under `toDual`: the types
+      -- unfold and their instances do not. `rw` checks its motive at default transparency.
+      (repeat rw [Tensors.Species.cast_apply]) <;> (repeat rw [cast_cast]) <;>
+      (repeat rw [cast_eq]) <;> (repeat rw [Tensors.Species.toDual_toDual]) <;>
+      (repeat rw [cast_cast]) <;> rfl))
 
 end Tensors.Notation
 
