@@ -65,7 +65,7 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
   tensors, and `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
 - `Species.smul_eq_self_of_isEmpty` proves that a tensor with no slots is invariant.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
-  components of a pure tensor.
+  components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`.
 - `Species.congrSlots` applies an equivalence of representations at every slot.
 - `Species.mapSlots` applies a linear map at every slot, with `Species.mapSlots_comp` and
@@ -294,6 +294,15 @@ lemma tensorBasis_repr_pure [Fintype ι] (f : Π i, S.V (c i))
     (x : Π i, basisIdx (c i).kind) :
     (S.tensorBasis c).repr (S.pure f) x = ∏ i, (S.basis (c i)).repr (f i) (x i) := by
   simp [tensorBasis, Basis.piTensorProduct_repr_tprod_apply]
+
+/-- Tensors on finitely many slots are a finite-dimensional space. -/
+noncomputable instance [Fintype ι] : Module.Finite k (S.Tensor c) :=
+  .of_basis (S.tensorBasis c)
+
+/-- The dimension of tensors is the product of the dimensions of their slots. -/
+lemma finrank_tensor [StrongRankCondition k] [Fintype ι] [DecidableEq ι] (c : ι → Color K) :
+    Module.finrank k (S.Tensor c) = ∏ i, Fintype.card (basisIdx (c i).kind) := by
+  rw [Module.finrank_eq_card_basis (S.tensorBasis c), Fintype.card_pi]
 
 /-- The components of `g • t`, `(g t)^φ = ∑ ψ, (∏ i, g^{φ i}_{ψ i}) t^ψ`, with one matrix entry of
 `g` per index, in the color of that index. -/
