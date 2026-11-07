@@ -59,12 +59,12 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`.
-- `Species.mapAt` applies a linear map at one slot of a tensor and the identity at the others,
-  with `Species.mapAt_pure`.
+- `Species.mapSlots` applies a linear map at every slot, with `Species.mapSlots_mapSlots` and
+  `Species.mapSlots_id`, and `Species.mapAt` applies one at a single slot and the identity at the
+  others.
 - `Species.congrAt` applies a linear equivalence at one slot of a tensor and the identity at the
   others, with `Species.congrAt_pure`, `Species.congrAt_smul` and `Species.congrAt_symm`, and
-  `Species.congrAt_comm` proves that equivalences at two different slots commute, and
-  `Species.congrAt_eq_mapAt` that `congrAt` is `mapAt` of the underlying map.
+  `Species.congrAt_eq_mapAt` proves that `congrAt` is `mapAt` of the underlying map.
 
 ## iii. Table of contents
 
@@ -300,12 +300,39 @@ lemma congrAt_symm (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x, x �
   | hadd x y hx hy => rw [map_add, map_add, ← hx, ← hy]
 
 variable (S) in
+/-- A linear map `f x` at every slot `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
+`PiTensorProduct.map`. -/
+noncomputable def mapSlots (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : S.Tensor c →ₗ[k] S.Tensor c' :=
+  (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map f ∘ₗ (S.toPiTensor c).toLinearMap
+
+omit [DecidableEq ι] in
+/-- On a pure tensor, `mapSlots` applies `f x` to the vector at each slot `x`. -/
+lemma mapSlots_pure (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) (p : Π x, S.V (c x)) :
+    S.mapSlots f (S.pure p) = S.pure fun x => f x (p x) := by
+  simp only [mapSlots, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+    toPiTensor_pure, PiTensorProduct.map_tprod, toPiTensor_symm_tprod]
+
+omit [DecidableEq ι] in
+/-- Two slotwise maps in sequence are the slotwise map of the composites. -/
+lemma mapSlots_mapSlots {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
+    (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) (t : S.Tensor c) :
+    S.mapSlots g (S.mapSlots f t) = S.mapSlots (fun x => g x ∘ₗ f x) t := by
+  simp only [mapSlots, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+    LinearEquiv.apply_symm_apply, ← LinearMap.comp_apply (PiTensorProduct.map g),
+    ← PiTensorProduct.map_comp]
+
+omit [DecidableEq ι] in
+/-- The slotwise map of the identities is the identity. -/
+lemma mapSlots_id (t : S.Tensor c) : S.mapSlots (fun _ => LinearMap.id) t = t := by
+  simp [mapSlots, PiTensorProduct.map_id]
+
+variable (S) in
 /-- The linear map `f` at the slot `i`, and the identity, moved along `h x`, at every other slot
-`x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. It is Mathlib's `PiTensorProduct.map` at one slot. -/
+`x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
 noncomputable def mapAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c →ₗ[k] S.Tensor c' :=
-  (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map (fun x => if hx : x = i then
-      hx ▸ f else (S.cast (h x hx)).toLinearMap) ∘ₗ (S.toPiTensor c).toLinearMap
+  S.mapSlots
+    (Function.update (fun x => if hx : x = i then 0 else (S.cast (h x hx)).toLinearMap) i f)
 
 /-- On a pure tensor, `mapAt` applies `f` to the vector at `i`, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. The
 result is given by its vectors `q`, `f (p i)` at `i` and `p x` moved along `h x` elsewhere. -/
@@ -313,8 +340,7 @@ lemma mapAt_pure (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠
     (p : Π x, S.V (c x)) (q : Π x, S.V (c' x)) (hqi : q i = f (p i))
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
     S.mapAt i f h (S.pure p) = S.pure q := by
-  simp only [mapAt, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe, toPiTensor_pure,
-    PiTensorProduct.map_tprod, toPiTensor_symm_tprod]
+  rw [mapAt, mapSlots_pure]
   congr 1
   funext x
   by_cases hx : x = i
@@ -332,33 +358,6 @@ lemma congrAt_eq_mapAt (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x,
       mapAt_pure i _ h p q (by simp [q]) (fun x hx => by simp [q, hx])]
   | hsmul r t ht => rw [map_smul, map_smul, ht]
   | hadd x y hx hy => rw [map_add, map_add, hx, hy]
-
-/-- Linear equivalences at two different slots `i` and `j` commute, `f` and `f'` at `i`, `g` and
-`g'` at `j`, when they agree after moving vectors between the intermediate colors `c₁` and `c₂`. -/
-lemma congrAt_comm {c₁ c₂ : ι → Color K} {i j : ι} (hij : i ≠ j)
-    (f : S.V (c i) ≃ₗ[k] S.V (c₁ i)) (h₁ : ∀ x, x ≠ i → c x = c₁ x)
-    (g : S.V (c₁ j) ≃ₗ[k] S.V (c' j)) (h₁' : ∀ x, x ≠ j → c₁ x = c' x)
-    (g' : S.V (c j) ≃ₗ[k] S.V (c₂ j)) (h₂ : ∀ x, x ≠ j → c x = c₂ x)
-    (f' : S.V (c₂ i) ≃ₗ[k] S.V (c' i)) (h₂' : ∀ x, x ≠ i → c₂ x = c' x)
-    (hf : ∀ v, f' (S.cast (h₂ i hij) v) = S.cast (h₁' i hij) (f v))
-    (hg : ∀ v, g (S.cast (h₁ j hij.symm) v) = S.cast (h₂' j hij.symm) (g' v))
-    (t : S.Tensor c) :
-    S.congrAt j g h₁' (S.congrAt i f h₁ t) = S.congrAt i f' h₂' (S.congrAt j g' h₂ t) := by
-  induction t using inductionOn_pure with
-  | h p =>
-    simp only [congrAt, LinearEquiv.trans_apply, toPiTensor_pure, congr_tprod,
-      toPiTensor_symm_tprod]
-    congr 1
-    funext x
-    by_cases hxi : x = i
-    · subst hxi
-      simpa [hij] using (hf (p _)).symm
-    · by_cases hxj : x = j
-      · subst hxj
-        simpa [hxi] using hg (p _)
-      · simp [hxi, hxj]
-  | hsmul r t ht => rw [map_smul, map_smul, ht, map_smul, map_smul]
-  | hadd x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
 
 end
 

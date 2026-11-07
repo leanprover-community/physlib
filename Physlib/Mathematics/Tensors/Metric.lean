@@ -6,6 +6,8 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.Tensors.Contraction
+public import Mathlib.Tactic.Module
+public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 /-!
 
 # Invariant forms, metrics, and lowering and raising indices
@@ -30,8 +32,10 @@ a commutative ring `k` a non-degenerate form need not have an inverse.
 
 Symmetry is an optional property of the chosen form. The class `S.IsSymmetricForm κ` says that
 `g_μν = g_νμ`, as for `η`, and a metric is a symmetric form. The class `S.IsAntisymmetricForm κ`
-says that `g_μν = -g_νμ`, as for the Weyl `ε`. A form on a kind that is a sum of two kinds may be
-neither, and lowering and raising never ask for either property.
+says that `g_μν = -g_νμ`, as for the Weyl `ε`, which with two labels gives the Schouten identity.
+Both are stated on the tensor `g`, and `formBilin` carries them to Mathlib's bilinear forms. A form
+on a kind that is a sum of two kinds may be neither, and lowering and raising never ask for either
+property.
 
 `S.toDual c : V c ≃ V c.dual` contracts a vector with the first index of the form at `c.dual`. At
 an upper color it lowers the index, `v^μ ↦ v^μ g_μν`, and at a lower color it raises it,
@@ -40,52 +44,40 @@ the first index gives the textbook `v_ν = η_νμ v^μ`. For the antisymmetric 
 `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`. With `ε^12 = ε_21 = 1` this is minus the convention
 `ψ_α = ε_αβ ψ^β`, so a Weyl species following that convention stores `-ε`.
 
-`S.toDualAt i a ha hi h` lowers or raises the index at the slot `i` of a tensor and keeps the
-others, as in `T^μν ↦ T^μ_ν` for `i` the second slot. It is `congrAt` of `toDual`. The caller
-names the color `a` of the slot, with `ha : c i = a`, so that the form is found at the kind of `a`.
-Lowering and raising at that slot can then use the same instance without moving it, as in
-`toDualAt_toDualAt`. The caller also states the colors `c'` of the result, such as
-`![⟨vec, up⟩, ⟨vec, down⟩]`. The hypothesis `hi` says that `c'` has the dual color `a.dual` at `i`,
-and `h` that it agrees with the colors `c` of the tensor elsewhere.
+`S.toDualAt i …` lowers or raises the index at the slot `i` of a tensor and keeps the others, as
+in `T^μν ↦ T^μ_ν` for `i` the second slot. Lowering at several slots composes slot by slot
+(`toDualAt_eq_mapAt`, `Species.mapSlots_mapSlots`), so a lowering and a raising at the same slot
+cancel in any order.
 
 `S.formTensor c` is the form as a tensor on two slots, `η^μν` at `⟨vec, up⟩` and `η_μν` at
-`⟨vec, down⟩`. Lowering an index is contracting it with the form tensor, `M^μν g_νρ = M^μ_ρ`.
+`⟨vec, down⟩`. Lowering an index is contracting it with the form tensor, `T^…_ν… = T^…μ… g_μν`.
 
 ## ii. Key results
 
-- `Species.HasForm` is an invariant form on a kind with its inverse, `g_μν` and `g^μν`, and
-  `Species.form` is the form at a color of that kind, with `Species.form_invariant` and
-  `Species.form_inverse`.
-- `Species.formMatrix` gives the components `g_μν` of the form, on which each species states its
-  component lemma.
+- `Species.HasForm` is an invariant form on a kind with its inverse, `g_μν` and `g^μν`, with
+  `Species.form`, `Species.form_invariant` and `Species.form_inverse`.
 - `Species.IsSymmetricForm` and `Species.IsAntisymmetricForm` say that the form is symmetric or
-  antisymmetric, with `Species.form_symm` and `Species.form_antisymm`.
-- `Species.toDual` is `S.V c ≃ S.V c.dual`, lowering an upper index and raising a lower one.
-- `Species.toDual_symm` proves that raising is the inverse of lowering.
-- `Species.toDual_rep` and `Species.toDualAt_smul` prove `(Λv)_ν = Λ(v_ν)`, for a vector and at
-  one index of a tensor.
-- `Species.toDualAt` lowers or raises the index at one slot of a tensor.
-- `Species.toDualAt_toDualAt` proves that raising at a slot undoes lowering there, and
-  `Species.toDualAt_comm` that lowering at two different slots commute.
-- `Species.tensorBasis_repr_toDualAt` gives lowering at a slot in components,
+  antisymmetric, `Species.form_symm` and `Species.form_antisymm`.
+- `Species.formBilin` reads the form as a Mathlib bilinear form, symmetric by
+  `Species.isSymm_formBilin` and alternating by `Species.isAlt_formBilin`.
+- `Species.toDual` lowers an upper index and raises a lower one, and `Species.toDual_toDual` that
+  raising undoes lowering.
+- `Species.formTensor` is the form as a tensor on two slots.
+- `Species.toDualAt` lowers or raises the index at one slot of a tensor, with
+  `Species.toDualAt_toDualAt`, `Species.toDualAt_eq_mapAt` and, in components,
+  `Species.tensorBasis_repr_toDualAt`.
+- `Species.toDualAt_eq_contr` proves that lowering is contracting with the form,
   `T^…_ν… = T^…μ… g_μν`.
-- `Species.toDualAt_twoSlotEquiv` proves that lowering the second index of a tensor on two slots,
-  `M^μν ↦ M^μ_ν`, is `toDual` on the second factor.
-- `Species.toDualAt_eq_contr` proves that lowering at any slot is contracting with the form,
-  `T^…_ν… = T^…μ… g_μν`, and `Species.toDualAt_eq_contr_formTensor` gives the same at the second
-  slot of a tensor on two slots, `M^μν g_νρ = M^μ_ρ`.
-- `Species.formTensor` is the form as a tensor on two slots, and `Species.formTensor_invariant`
-  proves that it is invariant.
-- `Species.tensorBasis_repr_formTensor` gives the components of the form tensor.
-- `Species.formTensor_symm` and `Species.formTensor_antisymm` prove `g^μν = g^νμ` and
-  `g^μν = -g^νμ` as tensors for a symmetric or antisymmetric form.
+- `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
+  antisymmetric form on a kind with two labels.
 
 ## iii. Table of contents
 
 - A. Invariant forms and metrics
 - B. Lowering and raising vectors
-- C. Lowering and raising at one index
-- D. The form as a tensor
+- C. The form as a tensor
+- D. Lowering and raising at one index
+- E. Forms on a kind with two labels
 
 ## iv. References
 
@@ -114,8 +106,7 @@ variable (S : Species k G K basisIdx) in
 /-- A chosen invariant invertible bilinear form on the kind `κ`. At both colors of `κ` it gives an
 invariant element `g` of `V c ⊗ V c`, `g^μν` at the upper color and `g_μν` at the lower one, with
 the two forms inverse to each other. It need not be symmetric, so it covers both `η` and the Weyl
-`ε`. The invariance at the lower color follows from that at the upper one and `formAt_inverse`,
-but a field for both variances cannot state only half. -/
+`ε`. -/
 class HasForm (κ : K) where
   /-- The form at the color `⟨κ, v⟩`, an element of `V ⟨κ, v⟩ ⊗ V ⟨κ, v⟩`. -/
   formAt : (v : Variance) → S.V ⟨κ, v⟩ ⊗[k] S.V ⟨κ, v⟩
@@ -132,14 +123,6 @@ variable {S : Species k G K basisIdx}
 noncomputable def form (c : Color K) [S.HasForm c.kind] : S.V c ⊗[k] S.V c :=
   HasForm.formAt c.variance
 
-variable (S) in
-/-- The components of the form at `c`, `g^μν` at an upper color and `g_μν` at a lower one, its
-coordinates in Mathlib's product basis. Component lemmas of a species are stated on it, so that
-`simp` finds them at a literal color. -/
-noncomputable def formMatrix (c : Color K) [S.HasForm c.kind] :
-    Matrix (basisIdx c.kind) (basisIdx c.kind) k :=
-  fun μ ν => ((S.basis c).tensorProduct (S.basis c)).repr (form c) (μ, ν)
-
 /-- The form is invariant, `Λ g = g` for every `Λ : G`. -/
 lemma form_invariant (c : Color K) [S.HasForm c.kind] (Λ : G) :
     TensorProduct.map (S.rep c Λ) (S.rep c Λ) (form c) = form c :=
@@ -152,27 +135,81 @@ lemma form_inverse (c : Color K) [S.HasForm c.kind] :
   HasForm.formAt_inverse c.variance
 
 variable (S) in
+/-- The form at `c` read as a bilinear form on `V c.dual`, `(u, v) ↦ u_μ g^μν v_ν`, with the first
+argument contracted with the first index of the form. -/
+noncomputable def formBilin (c : Color K) [S.HasForm c.kind] :
+    LinearMap.BilinForm k (S.V c.dual) :=
+  (TensorProduct.curry (S.contr c.dual).toLinearMap).flip ∘ₗ S.toLin (form c)
+
+lemma formBilin_apply (c : Color K) [S.HasForm c.kind] (u v : S.V c.dual) :
+    S.formBilin c u v = S.contr c.dual (v ⊗ₜ S.toLin (form c) u) :=
+  rfl
+
+variable (S) in
+/-- The components of the form at `c`, `g^μν` at an upper color and `g_μν` at a lower one, its
+coordinates in Mathlib's product basis. Component lemmas of a species are stated on it, so that
+`simp` finds them at a literal color. -/
+noncomputable def formMatrix (c : Color K) [S.HasForm c.kind] :
+    Matrix (basisIdx c.kind) (basisIdx c.kind) k :=
+  fun μ ν => ((S.basis c).tensorProduct (S.basis c)).repr (form c) (μ, ν)
+
+/-- The components of the form are Mathlib's matrix of `formBilin c` in the basis of `c.dual`,
+`g^μν = g(e^μ, e^ν)`. -/
+lemma formMatrix_eq_toMatrix (c : Color K) [S.HasForm c.kind] :
+    S.formMatrix c = LinearMap.BilinForm.toMatrix (S.basis c.dual) (S.formBilin c) := by
+  ext μ ν
+  rw [LinearMap.BilinForm.toMatrix_apply, formBilin_apply, contr_tmul_eq_sum_basis]
+  simp only [Module.Basis.repr_self, Finsupp.single_apply, ite_mul, one_mul, zero_mul,
+    Finset.sum_ite_eq, Finset.mem_univ, ite_true]
+  refine ((S.basis_repr_toLin c (d := c) (form c) _ ν).trans ?_).symm
+  simp [Finsupp.single_apply, formMatrix]
+
+variable (S) in
 /-- The form on the kind `κ` is symmetric, `g_μν = g_νμ`, as `η`. A metric is a symmetric form. -/
 class IsSymmetricForm (κ : K) [S.HasForm κ] : Prop where
   /-- Swapping the two indices of the form gives the form. -/
   comm_form : ∀ v, TensorProduct.comm k _ _ (form (S := S) ⟨κ, v⟩) = form ⟨κ, v⟩
 
 variable (S) in
-/-- The form on the kind `κ` is antisymmetric, `g_μν = -g_νμ`, as the Weyl `ε`. Antisymmetric is
-not alternating: when `2 = 0` in `k` the form `[1]` on `k` is antisymmetric with `g(1, 1) = 1`. -/
+/-- The form on the kind `κ` is antisymmetric, `g_μν = -g_νμ`, as the Weyl `ε`. -/
 class IsAntisymmetricForm (κ : K) [S.HasForm κ] : Prop where
   /-- Swapping the two indices of the form gives minus the form. -/
   comm_form : ∀ v, TensorProduct.comm k _ _ (form (S := S) ⟨κ, v⟩) = -form ⟨κ, v⟩
+
+/-- Contracting with the swapped tensor swaps the two arguments, `u_μ z^νμ v_ν = v_ν z^νμ u_μ`. -/
+lemma contr_toLin_comm (c : Color K) (z : S.V c ⊗[k] S.V c) (u v : S.V c.dual) :
+    S.contr c.dual (v ⊗ₜ S.toLin (TensorProduct.comm k _ _ z) u) =
+      S.contr c.dual (u ⊗ₜ S.toLin z v) := by
+  induction z using TensorProduct.inductionOn with
+  | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
+  | tmul x y =>
+    simp only [TensorProduct.comm_tmul, toLin_tmul, tmul_smul, map_smul, smul_eq_mul]
+    exact mul_comm _ _
 
 /-- A symmetric form, `g_μν = g_νμ`. -/
 lemma form_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     TensorProduct.comm k (S.V c) (S.V c) (form c) = form c :=
   IsSymmetricForm.comm_form c.variance
 
+/-- A symmetric form is symmetric as a bilinear form, Mathlib's `LinearMap.BilinForm.IsSymm`. -/
+lemma isSymm_formBilin (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
+    (S.formBilin c).IsSymm :=
+  ⟨fun u v => by rw [formBilin_apply, formBilin_apply, ← contr_toLin_comm, form_symm]⟩
+
 /-- An antisymmetric form, `g_μν = -g_νμ`. -/
 lemma form_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
     TensorProduct.comm k (S.V c) (S.V c) (form c) = -form c :=
   IsAntisymmetricForm.comm_form c.variance
+
+/-- An antisymmetric form is alternating as a bilinear form, `g(u, u) = 0`, Mathlib's
+`LinearMap.IsAlt`. It needs `2 x = 0 → x = 0` in `k`: when `2 = 0` the form `[1]` on `k` is
+antisymmetric with `g(1, 1) = 1`. -/
+lemma isAlt_formBilin (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
+    [NoZeroDivisors k] [CharZero k] : LinearMap.IsAlt (S.formBilin c) := by
+  refine LinearMap.isAlt_iff_eq_neg_flip.mpr (LinearMap.ext₂ fun u v => ?_)
+  rw [LinearMap.neg_apply, LinearMap.neg_apply, LinearMap.flip_apply, formBilin_apply,
+    formBilin_apply, ← contr_toLin_comm, form_antisymm, map_neg, LinearMap.neg_apply, tmul_neg,
+    map_neg]
 
 /-!
 
@@ -194,6 +231,12 @@ lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
 /-- Raising is the inverse of lowering. The inverse of `S.toDual c` is `S.toDual c.dual`. -/
 lemma toDual_symm (c : Color K) [S.HasForm c.kind] : (S.toDual c).symm = S.toDual c.dual := rfl
 
+/-- Raising undoes lowering, `(v_ν)^ν = v^ν`. -/
+@[simp]
+lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :
+    S.toDual c.dual (S.toDual c v) = v :=
+  (S.toDual c).symm_apply_apply v
+
 /-- Lowering and raising commute with the group action, `(Λv)_ν = Λ(v_ν)`. -/
 lemma toDual_rep (c : Color K) [S.HasForm c.kind] (g : G) (v : S.V c) :
     S.toDual c (S.rep c g v) = S.rep c.dual g (S.toDual c v) := by
@@ -208,7 +251,45 @@ lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basis
 
 /-!
 
-## C. Lowering and raising at one index
+## C. The form as a tensor
+
+-/
+
+variable (S) in
+/-- The form at `c` as a tensor with colors `![c, c]`, `g^μν` at an upper color and `g_μν` at a
+lower one. -/
+noncomputable def formTensor (c : Color K) [S.HasForm c.kind] : S.Tensor ![c, c] :=
+  S.twoSlotEquiv c c (form c)
+
+/-- The form is an invariant tensor. Every group element fixes it, as every Lorentz
+transformation fixes the Minkowski metric `η`. -/
+lemma formTensor_invariant (c : Color K) [S.HasForm c.kind] (Λ : G) :
+    Λ • S.formTensor c = S.formTensor c := by
+  rw [formTensor, ← twoSlotEquiv_map_rep, form_invariant]
+
+/-- The components of the form tensor are those of the form, `g_μν` at the pair of labels
+`(μ 0, μ 1)`. -/
+lemma tensorBasis_repr_formTensor (c : Color K) [S.HasForm c.kind]
+    (μ : Π j, basisIdx (![c, c] j).kind) :
+    (S.tensorBasis ![c, c]).repr (S.formTensor c) μ = S.formMatrix c (μ 0) (μ 1) :=
+  tensorBasis_repr_twoSlotEquiv _ _ _ μ
+
+/-- A symmetric form is symmetric under the slot swap `σ` as a tensor, `g^μν = g^νμ`. -/
+lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind]
+    {σ : ColorEquiv ![c, c] ![c, c]} (hσ : σ.toEquiv = Equiv.swap 0 1) :
+    S.reindex σ (S.formTensor c) = S.formTensor c := by
+  rw [formTensor, reindex_twoSlotEquiv hσ, form_symm]
+
+/-- An antisymmetric form is antisymmetric under the slot swap `σ` as a tensor,
+`g^μν = -g^νμ`. -/
+lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
+    {σ : ColorEquiv ![c, c] ![c, c]} (hσ : σ.toEquiv = Equiv.swap 0 1) :
+    S.reindex σ (S.formTensor c) = -S.formTensor c := by
+  rw [formTensor, reindex_twoSlotEquiv hσ, form_antisymm, map_neg]
+
+/-!
+
+## D. Lowering and raising at one index
 
 -/
 
@@ -249,36 +330,13 @@ lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
     (S.cast ha ≪≫ₗ S.toDual a ≪≫ₗ S.cast hi.symm).symm from rfl, ← congrAt_symm]
   exact (S.congrAt i _ h).symm_apply_apply t
 
-/-- Lowering or raising at two different slots commute, `(T_μ)_ν = (T_ν)_μ`. The colors `c₁` and
-`c₂` are those after the first step in either order. On literal slots the hypotheses `h₂` and
-`h₂'` are found automatically, as the index notation finds them. -/
-lemma toDualAt_comm {c c₁ c₂ c' : ι → Color K} {i j : ι} (hij : i ≠ j) (a b : Color K)
-    [S.HasForm a.kind] [S.HasForm b.kind]
-    {ha : c i = a} {hi : c₁ i = a.dual} {h : ∀ x, x ≠ i → c x = c₁ x}
-    {hb : c₁ j = b} {hj : c' j = b.dual} {h' : ∀ x, x ≠ j → c₁ x = c' x}
-    (hb₂ : c j = b) (hj₂ : c₂ j = b.dual) (ha₂ : c₂ i = a) (hi₂ : c' i = a.dual)
-    (h₂ : ∀ x, x ≠ j → c x = c₂ x := by
-      intro x hx; fin_cases x <;> first | rfl | exact absurd rfl hx)
-    (h₂': ∀ x, x ≠ i → c₂ x = c' x := by
-      intro x hx; fin_cases x <;> first | rfl | exact absurd rfl hx) (t : S.Tensor c) :
-    S.toDualAt j b hb hj h' (S.toDualAt i a ha hi h t) =
-      S.toDualAt i a ha₂ hi₂ h₂' (S.toDualAt j b hb₂ hj₂ h₂ t) :=
-  congrAt_comm hij _ _ _ _ _ _ _ _
-    (fun v => by simp only [LinearEquiv.trans_apply, LinearEquiv.cast_apply, cast_cast])
-    (fun v => by simp only [LinearEquiv.trans_apply, LinearEquiv.cast_apply, cast_cast]) t
-
-/-- Lowering or raising the second index of a tensor on two slots, `M^μν ↦ M^μ_ν`, is `toDual` on
-the second factor of `M ∈ V a ⊗ V c`. -/
-lemma toDualAt_twoSlotEquiv (a c : Color K) [S.HasForm c.kind] (M : S.V a ⊗[k] S.V c) :
-    S.toDualAt (c := ![a, c]) (c' := ![a, c.dual]) 1 c rfl rfl
-      (fun x hx => by fin_cases x <;> simp_all) (S.twoSlotEquiv a c M) =
-      S.twoSlotEquiv a c.dual ((S.toDual c).toLinearMap.lTensor _ M) := by
-  induction M using TensorProduct.inductionOn with
-  | add M M' hM hM' => simp only [map_add, hM, hM']
-  | tmul x y =>
-    rw [twoSlotEquiv_tmul, LinearMap.lTensor_tmul, twoSlotEquiv_tmul]
-    exact toDualAt_pure _ _ _ _ _ _ _ rfl
-      (fun x hx => by fin_cases x <;> first | rfl | exact absurd rfl hx)
+/-- Lowering or raising at a slot is `toDual` at that slot, read as a linear map. Chains of
+lowerings and raisings at several slots compose slot by slot through `mapSlots_mapSlots`. -/
+lemma toDualAt_eq_mapAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
+    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
+    S.toDualAt i a ha hi h t =
+      S.mapAt i (S.cast ha ≪≫ₗ S.toDual a ≪≫ₗ S.cast hi.symm).toLinearMap h t :=
+  congrAt_eq_mapAt i _ h t
 
 /-- Lowering or raising the index at the slot `i` in components, `T^…_ν… = T^…μ… g_μν`. The
 labels `φ` of the result are cast to labels of `t`, and the label at `i` is replaced by the summed
@@ -313,44 +371,6 @@ lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a
     have hx := Finset.ne_of_mem_erase hx
     rw [dite_eq_right hx, basis_repr_cast, Function.update_of_ne hx]
 
-/-!
-
-## D. The form as a tensor
-
--/
-
-variable (S) in
-/-- The form at `c` as a tensor with colors `![c, c]`, `g^μν` at an upper color and `g_μν` at a
-lower one. -/
-noncomputable def formTensor (c : Color K) [S.HasForm c.kind] : S.Tensor ![c, c] :=
-  S.twoSlotEquiv c c (form c)
-
-/-- The form is an invariant tensor. Every group element fixes it, as every Lorentz
-transformation fixes the Minkowski metric `η`. -/
-lemma formTensor_invariant (c : Color K) [S.HasForm c.kind] (Λ : G) :
-    Λ • S.formTensor c = S.formTensor c := by
-  rw [formTensor, ← twoSlotEquiv_map_rep, form_invariant]
-
-/-- The components of the form tensor are those of the form, `g_μν` at the pair of labels
-`(μ 0, μ 1)`. -/
-lemma tensorBasis_repr_formTensor (c : Color K) [S.HasForm c.kind]
-    (μ : Π j, basisIdx (![c, c] j).kind) :
-    (S.tensorBasis ![c, c]).repr (S.formTensor c) μ = S.formMatrix c (μ 0) (μ 1) :=
-  tensorBasis_repr_twoSlotEquiv _ _ _ μ
-
-/-- A symmetric form is symmetric under the slot swap `σ` as a tensor, `g^μν = g^νμ`. -/
-lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind]
-    {σ : ColorEquiv ![c, c] ![c, c]} (hσ : σ.toEquiv = Equiv.swap 0 1) :
-    S.formTensor c = S.reindex σ (S.formTensor c) := by
-  rw [formTensor, reindex_twoSlotEquiv hσ, form_symm]
-
-/-- An antisymmetric form is antisymmetric under the slot swap `σ` as a tensor,
-`g^μν = -g^νμ`. -/
-lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    {σ : ColorEquiv ![c, c] ![c, c]} (hσ : σ.toEquiv = Equiv.swap 0 1) :
-    S.formTensor c = S.reindex σ (-S.formTensor c) := by
-  rw [formTensor, ← map_neg, reindex_twoSlotEquiv hσ, map_neg, form_antisymm, neg_neg]
-
 /-- Lowering or raising at the slot `i` is contracting that slot with the first index of the form,
 `T^…_ν… = T^…μ… g_μν`. -/
 lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
@@ -360,16 +380,30 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
   rw [formTensor, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
   rfl
 
-/-- Lowering the second index is contracting it with the form, `M^μν g_νρ = M^μ_ρ` at an upper
-color `c`, along `ColorEquiv.matMul`. It is `toDualAt_eq_contr` for a tensor on two slots, in the
-form of a product of matrices. -/
-lemma toDualAt_eq_contr_formTensor (a c : Color K) [S.HasForm c.kind] (M : S.V a ⊗[k] S.V c) :
-    S.toDualAt (c := ![a, c]) (c' := ![a, c.dual]) 1 c rfl rfl
-      (fun x hx => by fin_cases x <;> simp_all) (S.twoSlotEquiv a c M) =
-      Tensor.contr (ColorEquiv.matMul a c c.dual)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv a c M ⊗ₜ S.formTensor c.dual)) := by
-  rw [toDualAt_twoSlotEquiv, formTensor, Tensor.contr_matMul]
-  rfl
+/-!
+
+## E. Forms on a kind with two labels
+
+-/
+
+/-- The Schouten identity for an antisymmetric form on a kind with two labels, such as the Weyl `ε`:
+`g(u, v) w + g(v, w) u + g(w, u) v = 0`. In two dimensions every alternating form of three vectors
+vanishes. -/
+lemma schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] [NoZeroDivisors k]
+    [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2) (u v w : S.V c.dual) :
+    S.formBilin c u v • w + S.formBilin c v w • u + S.formBilin c w u • v = 0 := by
+  obtain ⟨i, j, hij, huniv⟩ := Finset.card_eq_two.mp (h2 : Finset.univ.card = 2)
+  -- Each vector is `x^i e_i + x^j e_j`, and the form vanishes on `e_i, e_i` and `e_j, e_j`.
+  have hexp (x : S.V c.dual) : x = (S.basis c.dual).repr x i • S.basis c.dual i +
+      (S.basis c.dual).repr x j • S.basis c.dual j := by
+    conv_lhs => rw [← (S.basis c.dual).sum_repr x]
+    rw [huniv, Finset.sum_pair hij]
+  have H := S.isAlt_formBilin c
+  have hji := (LinearMap.IsAlt.neg H (S.basis c.dual i) (S.basis c.dual j)).symm
+  rw [hexp u, hexp v, hexp w]
+  simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
+    LinearMap.IsAlt.self_eq_zero H, hji]
+  module
 
 end Species
 
