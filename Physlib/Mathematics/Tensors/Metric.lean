@@ -8,7 +8,6 @@ module
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 public import Physlib.Mathematics.Tensors.Contraction
-public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.Tactic.LinearCombination
 /-!
 

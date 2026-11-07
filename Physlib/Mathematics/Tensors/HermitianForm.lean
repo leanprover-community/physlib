@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 public import Physlib.Mathematics.Tensors.Conjugation
 public import Physlib.Mathematics.Tensors.Inverse
 /-!
