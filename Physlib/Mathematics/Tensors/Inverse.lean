@@ -95,17 +95,15 @@ lemma toLin_inverse_bijective (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (
 
 /-- Inverting after `g` is the identity, as linear maps. -/
 lemma toLin_inverse_comp (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) :
-    S.toLin (S.inverse g) ∘ₗ S.toLin g = LinearMap.id :=
-  LinearMap.ext fun x => by
-    rw [toLin_inverse g h]
-    exact (LinearEquiv.ofBijective _ h).symm_apply_apply x
+    S.toLin (S.inverse g) ∘ₗ S.toLin g = LinearMap.id := by
+  rw [toLin_inverse g h]
+  exact (LinearEquiv.ofBijective _ h).symm_comp
 
 /-- `g` after inverting is the identity, as linear maps. -/
 lemma comp_toLin_inverse (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) :
-    S.toLin g ∘ₗ S.toLin (S.inverse g) = LinearMap.id :=
-  LinearMap.ext fun x => by
-    rw [toLin_inverse g h]
-    exact (LinearEquiv.ofBijective _ h).apply_symm_apply x
+    S.toLin g ∘ₗ S.toLin (S.inverse g) = LinearMap.id := by
+  rw [toLin_inverse g h]
+  exact (LinearEquiv.ofBijective _ h).comp_symm
 
 /-- `g_μν g^νρ = δ_μ^ρ`, the contraction of `g` with its inverse on the adjacent indices. -/
 lemma contr_mul_inverse (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) :
@@ -131,17 +129,13 @@ lemma inverse_eq_iff (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g
 lemma inverse_eq_left_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
     {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin N ∘ₗ S.toLin g = LinearMap.id) :
     S.inverse g = N :=
-  (inverse_eq_iff g h N).2 <| by
-    rw [← LinearMap.id_comp (LinearEquiv.ofBijective _ h).symm.toLinearMap]
-    exact (LinearEquiv.eq_comp_toLinearMap_symm _ _).2 hN
+  S.toLin.injective <| (LinearMap.cancel_right h.2).1 <| by rw [toLin_inverse_comp g h, hN]
 
 /-- A tensor `N` with `g ∘ N = id`, as linear maps, is the inverse of `g`. -/
 lemma inverse_eq_right_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
     {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin g ∘ₗ S.toLin N = LinearMap.id) :
     S.inverse g = N :=
-  (inverse_eq_iff g h N).2 <| by
-    rw [← LinearMap.comp_id (LinearEquiv.ofBijective _ h).symm.toLinearMap]
-    exact (LinearEquiv.eq_toLinearMap_symm_comp _ _).2 hN
+  S.toLin.injective <| (LinearMap.cancel_left h.1).1 <| by rw [comp_toLin_inverse g h, hN]
 
 /-- A tensor `N` with `g_μν N^νρ = δ_μ^ρ` is the inverse of `g`. -/
 lemma inverse_eq_of_contr_eq_deltaTensor (g : S.V a ⊗[k] S.V b)
@@ -167,10 +161,8 @@ lemma inverse_map_rep (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin 
     S.inverse (TensorProduct.map (S.rep a Λ) (S.rep b Λ) g) =
       TensorProduct.map (S.rep b.dual Λ) (S.rep a.dual Λ) (S.inverse g) := by
   refine inverse_eq_left_inv _ (S.toLin_map_rep_bijective g h Λ) (LinearMap.ext fun x => ?_)
-  simp only [toLin_map_rep, LinearMap.comp_apply]
-  rw [show S.rep b.dual.dual Λ⁻¹ = S.rep b Λ⁻¹ from rfl, Representation.inv_self_apply,
-    ← LinearMap.comp_apply (S.toLin (S.inverse g)), toLin_inverse_comp g h, LinearMap.id_apply,
-    Representation.self_inv_apply, LinearMap.id_apply]
+  simp [toLin_map_rep, Representation.inv_self_apply, Representation.self_inv_apply,
+    ← LinearMap.comp_apply (S.toLin (S.inverse g)), toLin_inverse_comp g h]
 
 /-- The inverse of an invariant tensor is invariant, `Λg = g` implies `Λ(g⁻¹) = g⁻¹`. -/
 lemma inverse_invariant (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) (Λ : G)
