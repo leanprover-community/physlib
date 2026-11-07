@@ -224,12 +224,6 @@ lemma pauliA_pauliB (X : ℂT[upL, upR, upL, upR]) : pauliA (pauliB X) = (2 : �
 lemma pauliTensor_raise_lower : {{pauliTensor | μ ↓α ↓β}ᵀ | μ ↑α ↑β}ᵀ = pauliTensor := by
   tensor_slots
 
-/-- `σT^μ_{αβ̇} ε^{αα'} ε^{β̇β̇'} = σT^{μα'β̇'}`. -/
-lemma pauliContrDown_contr_eps :
-    {pauliTensor | μ ↓α ↓β ⊗ εL | α α' ⊗ εR | β β' = pauliTensor | μ α' β'}ᵀ := by
-  conv_rhs => rw [← pauliTensor_raise_lower]
-  tensor_regroup
-
 /-- The Fierz identity `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`: it is
 `pauliA σT = pauliA (pauliB (εL ⊗ εR)) / 2`. -/
 lemma pauliCo_contr_pauliContr :
@@ -237,7 +231,7 @@ lemma pauliCo_contr_pauliContr :
       (2 : ℂ) • {εL | α α' ⊗ εR | β β'}ᵀ | α α' β β'}ᵀ := by
   rw [map_smul, ← pauliA_pauliB]
   refine congrArg pauliA ?_
-  conv_lhs => rw [← pauliContrDown_contr_eps]
+  rw [← pauliTensor_raise_lower]
   simp only [pauliB, LinearMap.coe_mk, AddHom.coe_mk]
   tensor_regroup
 
