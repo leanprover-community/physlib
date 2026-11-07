@@ -14,22 +14,13 @@ The inverse `g^νμ` of a tensor `g_μν`, defined through the linear map that `
 
 ## i. Overview
 
-A tensor `g` in `V a ⊗ V b` is also a linear map `S.toLin g : V a.dual → V b`, which contracts a
-vector with the first index of `g`, `v^μ ↦ v^μ g_μν` for lower colors `a` and `b`. When this map
-is invertible, its inverse is again a tensor, in `V b.dual ⊗ V a.dual`. That is the inverse
-`S.inverse g`, with components `g^νμ`. Its first index is the dual of the second index of `g`, so
-the inverse of a Hermitian metric `g_{IJ̄}` is `g^{J̄I}`, with its barred index first.
+A tensor `g` in `V a ⊗ V b` is also a linear map `S.toLin g : V a.dual → V b`, `v^μ ↦ v^μ g_μν`.
+When this map is invertible, its inverse is the tensor `S.inverse g` in `V b.dual ⊗ V a.dual`,
+with components `g^νμ`. Otherwise `S.inverse g` is the junk value `0`, so every lemma about it
+assumes that `S.toLin g` is bijective.
 
-When `S.toLin g` is not invertible, `S.inverse g` is `0`, as Mathlib's inverse of a singular matrix
-is. This junk value makes `inverse` a total function and is the inverse of nothing. Every lemma
-about `S.inverse g` assumes that `S.toLin g` is bijective or derives it from its hypotheses.
-
-The inverse satisfies the contraction laws `g_μν g^νρ = δ_μ^ρ` and `g^νμ g_μρ = δ^ν_ρ`, and
-it is the only tensor whose linear map inverts that of `g`, so `(g⁻¹)⁻¹ = g`.
-
-The inverse commutes with the group action, `(Λg)⁻¹ = Λ(g⁻¹)`, so the inverse of an invariant
-tensor is invariant. The inverse of the form at `c` is the form at `c.dual`, so `g^μν` is the
-inverse of `g_μν`.
+The inverse satisfies `g_μν g^νρ = δ_μ^ρ` and `g^νμ g_μρ = δ^ν_ρ`, it is unique, it commutes
+with the group action, and the inverse of the form at `c` is the form at `c.dual`.
 
 ## ii. Key results
 
@@ -37,13 +28,11 @@ inverse of `g_μν`.
   linear map.
 - `Species.contr_mul_inverse` and `Species.contr_inverse_mul` prove `g_μν g^νρ = δ_μ^ρ` and
   `g^νμ g_μρ = δ^ν_ρ`.
-- `Species.inverse_eq_left_inv`, `Species.inverse_eq_right_inv` and
-  `Species.inverse_eq_of_contr_eq_deltaTensor` prove that the inverse is unique, and
-  `Species.inverse_inverse` that `(g⁻¹)⁻¹ = g`.
+- `Species.inverse_eq_iff` characterises the inverse by its linear map, and
+  `Species.inverse_inverse` proves `(g⁻¹)⁻¹ = g`.
 - `Species.inverse_map_rep` proves `(Λg)⁻¹ = Λ(g⁻¹)`, and `Species.inverse_invariant` that the
   inverse of an invariant tensor is invariant.
-- `Species.inverse_form` proves that the inverse of the form at `c` is the form at `c.dual`, and
-  `Species.contr_formTensor_formTensor` that `g^μν g_νρ = δ^μ_ρ`.
+- `Species.inverse_form` proves that the inverse of the form at `c` is the form at `c.dual`.
 
 ## iii. Table of contents
 
@@ -79,9 +68,9 @@ variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K �
 variable (S) in
 open scoped Classical in
 /-- The inverse `g^νμ ∈ V b.dual ⊗ V a.dual` of `g_μν ∈ V a ⊗ V b`, the tensor whose linear map
-inverts that of `g`. When `S.toLin g` is not bijective it is the junk value `0`. Its first index
-is the dual of the second index of `g`, so the inverse of a Hermitian metric `g_{IJ̄}` is `g^{J̄I}`,
-the usual `g^{IJ̄}` with its indices swapped (`TensorProduct.comm`). -/
+inverts that of `g`, and the junk value `0` when `S.toLin g` is not bijective. Its first index is
+the dual of the second index of `g`, so the inverse of a Hermitian metric `g_{IJ̄}` is `g^{J̄I}`,
+the usual `g^{IJ̄}` with its indices swapped. -/
 noncomputable def inverse (g : S.V a ⊗[k] S.V b) : S.V b.dual ⊗[k] S.V a.dual :=
   if h : Function.Bijective (S.toLin g) then
     S.toLin.symm (LinearEquiv.ofBijective _ h).symm.toLinearMap
@@ -132,20 +121,26 @@ lemma contr_inverse_mul (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
       S.deltaTensor b :=
   (Tensor.contr_matMul_eq_deltaTensor_iff (S.inverse g) g).2 (comp_toLin_inverse g h)
 
+/-- `N` is the inverse of `g` exactly when its linear map is the inverse of that of `g`. -/
+lemma inverse_eq_iff (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
+    (N : S.V b.dual ⊗[k] S.V a.dual) :
+    S.inverse g = N ↔ S.toLin N = (LinearEquiv.ofBijective _ h).symm.toLinearMap := by
+  rw [← toLin_inverse g h, S.toLin.injective.eq_iff, eq_comm]
+
 /-- A tensor `N` with `N ∘ g = id`, as linear maps, is the inverse of `g`. -/
 lemma inverse_eq_left_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
     {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin N ∘ₗ S.toLin g = LinearMap.id) :
     S.inverse g = N :=
-  Eq.symm <| S.toLin.injective <| by
-    rw [toLin_inverse g h, ← LinearMap.id_comp (LinearEquiv.ofBijective _ h).symm.toLinearMap]
+  (inverse_eq_iff g h N).2 <| by
+    rw [← LinearMap.id_comp (LinearEquiv.ofBijective _ h).symm.toLinearMap]
     exact (LinearEquiv.eq_comp_toLinearMap_symm _ _).2 hN
 
 /-- A tensor `N` with `g ∘ N = id`, as linear maps, is the inverse of `g`. -/
 lemma inverse_eq_right_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
     {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin g ∘ₗ S.toLin N = LinearMap.id) :
     S.inverse g = N :=
-  Eq.symm <| S.toLin.injective <| by
-    rw [toLin_inverse g h, ← LinearMap.comp_id (LinearEquiv.ofBijective _ h).symm.toLinearMap]
+  (inverse_eq_iff g h N).2 <| by
+    rw [← LinearMap.comp_id (LinearEquiv.ofBijective _ h).symm.toLinearMap]
     exact (LinearEquiv.eq_toLinearMap_symm_comp _ _).2 hN
 
 /-- A tensor `N` with `g_μν N^νρ = δ_μ^ρ` is the inverse of `g`. -/
@@ -172,10 +167,10 @@ lemma inverse_map_rep (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin 
     S.inverse (TensorProduct.map (S.rep a Λ) (S.rep b Λ) g) =
       TensorProduct.map (S.rep b.dual Λ) (S.rep a.dual Λ) (S.inverse g) := by
   refine inverse_eq_left_inv _ (S.toLin_map_rep_bijective g h Λ) (LinearMap.ext fun x => ?_)
-  obtain ⟨y, rfl⟩ : ∃ y, S.rep a.dual Λ y = x := ⟨S.rep a.dual Λ⁻¹ x, by simp⟩
-  rw [LinearMap.comp_apply, S.toLin_map, S.toLin_map (a := b.dual) _ _ (S.inverse g),
+  simp only [toLin_map_rep, LinearMap.comp_apply]
+  rw [show S.rep b.dual.dual Λ⁻¹ = S.rep b Λ⁻¹ from rfl, Representation.inv_self_apply,
     ← LinearMap.comp_apply (S.toLin (S.inverse g)), toLin_inverse_comp g h, LinearMap.id_apply,
-    LinearMap.id_apply]
+    Representation.self_inv_apply, LinearMap.id_apply]
 
 /-- The inverse of an invariant tensor is invariant, `Λg = g` implies `Λ(g⁻¹) = g⁻¹`. -/
 lemma inverse_invariant (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) (Λ : G)
@@ -188,11 +183,6 @@ lemma inverse_invariant (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
 ## D. The inverse of an invariant form
 
 -/
-
-/-- The linear map of the form at `c` is bijective. -/
-lemma toLin_form_bijective (c : Color K) [S.HasForm c.kind] :
-    Function.Bijective (S.toLin (form c)) :=
-  (S.toDual c.dual).bijective
 
 /-- The inverse of the form at `c` is the form at `c.dual`, as `η^μν` is the inverse of
 `η_μν`. -/

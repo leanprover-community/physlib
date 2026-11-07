@@ -267,19 +267,21 @@ lemma delta_invariant (c : Color K) (g : G) :
   rw [show S.rep c g⁻¹ x = S.rep c.dual.dual g⁻¹ x from rfl, S.toLin_map, S.snake c,
     LinearMap.id_apply, LinearMap.id_apply, Representation.self_inv_apply]
 
+/-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
+lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :
+    S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z) =
+      S.rep b g ∘ₗ S.toLin z ∘ₗ S.rep a.dual g⁻¹ :=
+  LinearMap.ext fun x => by
+    rw [LinearMap.comp_apply, LinearMap.comp_apply, ← S.toLin_map, Representation.self_inv_apply]
+
 /-- The linear map of `Λz` is bijective when that of `z` is. -/
 lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
     (h : Function.Bijective (S.toLin z)) (g : G) :
     Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) := by
-  -- The map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, a composite of bijections.
-  have e : ⇑(S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) =
-      S.rep b g ∘ S.toLin z ∘ S.rep a.dual g⁻¹ := by
-    funext x
-    rw [Function.comp_apply, Function.comp_apply, ← S.toLin_map, Representation.self_inv_apply]
   have hrep (c : Color K) (g : G) : Function.Bijective (S.rep c g) :=
     Function.bijective_iff_has_inverse.mpr ⟨S.rep c g⁻¹, Representation.inv_self_apply _ _,
       Representation.self_inv_apply _ _⟩
-  rw [e]
+  rw [toLin_map_rep, LinearMap.coe_comp, LinearMap.coe_comp]
   exact (hrep b g).comp (h.comp (hrep a.dual g⁻¹))
 
 variable {S}

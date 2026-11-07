@@ -135,6 +135,12 @@ lemma form_inverse (c : Color K) [S.HasForm c.kind] :
     S.toLin (form c) ∘ₗ S.toLin (form c.dual) = LinearMap.id :=
   HasForm.formAt_inverse c.variance
 
+/-- The linear map of the form at `c` is bijective. -/
+lemma toLin_form_bijective (c : Color K) [S.HasForm c.kind] :
+    Function.Bijective (S.toLin (form c)) :=
+  Function.bijective_iff_has_inverse.mpr ⟨S.toLin (form c.dual),
+    LinearMap.congr_fun (form_inverse c.dual), LinearMap.congr_fun (form_inverse c)⟩
+
 variable (S) in
 /-- The form at `c` read as a bilinear form on `V c.dual`, `(u, v) ↦ u_μ g^μν v_ν`, with the first
 argument contracted with the first index of the form. -/
