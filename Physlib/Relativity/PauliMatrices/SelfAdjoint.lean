@@ -108,6 +108,15 @@ lemma trace_pauliMatrix_mul_pauliMatrix (μ ν : Fin 1 ⊕ Fin 3) :
     Matrix.trace (pauliMatrix μ * pauliMatrix ν) = ((2 * kroneckerDelta μ ν : ℕ) : ℂ) := by
   fin_cases μ <;> fin_cases ν <;> simp [kroneckerDelta, pauliMatrix] <;> norm_num
 
+/-- The trace identity `tr(σ^μ σ̄^ν) = 2 η^μν`, with `σ̄^ν = η_νν σ^ν = (1, -σ⃗)`. -/
+lemma trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix (μ ν : Fin 1 ⊕ Fin 3) :
+    trace (pauliMatrix μ * ((minkowskiMatrix ν ν : ℂ) • pauliMatrix ν)) =
+      2 * minkowskiMatrix μ ν := by
+  rw [Matrix.mul_smul, trace_smul, trace_pauliMatrix_mul_pauliMatrix, smul_eq_mul]
+  rcases eq_or_ne μ ν with rfl | h
+  · simp [mul_comm]
+  · simp [eq_zero_of_ne h, minkowskiMatrix.off_diag_zero h]
+
 /-- The four real Pauli coefficients of a self-adjoint `2 × 2` matrix. -/
 noncomputable def pauliCoeff
     (A : selfAdjoint (Matrix (Fin 2) (Fin 2) ℂ)) :

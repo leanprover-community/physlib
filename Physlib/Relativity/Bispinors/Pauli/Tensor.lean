@@ -28,12 +28,14 @@ The lowered forms are written with `↓` in index notation, such as `{pauliTenso
 `σT_μ^{αβ̇} = η_μμ σT^{μαβ̇}`. With both Weyl indices lowered, `{pauliTensor | μ ↓α ↓β}ᵀ` is
 `σT^μ_{αβ̇}`: with rows `β̇` and columns `α` it is the matrix `σ̄^μ = η_μμ σ^μ = (1, -σ⃗)`.
 
-One identity is proved in components, the trace identity `pauliCoDown_trace_pauliCo`,
-`tr(σ̄_μ σ_ν) = 2 η_μν`. The others are derived from it at tensor level, by `tensor_regroup` and
-`tensor_slots`. The Fierz identity reads the trace identity as `B ∘ A = 2` for the maps `pauliA`
-and `pauliB` between tensors with a vector index and tensors with two Weyl indices. Both spaces
-have dimension `16`, so `A ∘ B = 2` as well, which is the Fierz identity. The anticommutators
-follow from the trace identities and the Schouten identity of `ε`.
+One identity is read off from the Pauli matrices, the trace identity `pauliCoDown_trace_pauliCo`,
+`tr(σ̄_μ σ_ν) = 2 η_μν`: its components are the matrix traces of
+`PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix`. The others are derived from
+it at tensor level, by `tensor_regroup` and `tensor_slots`. The Fierz identity reads the trace
+identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB` between tensors with a vector index
+and tensors with two Weyl indices. Both spaces have dimension `16`, so `A ∘ B = 2` as well, which
+is the Fierz identity. The anticommutators follow from the trace identities and the Schouten
+identity of `ε`.
 
 ## ii. Key results
 
@@ -172,9 +174,9 @@ lemma pauliContrDown_eq_pauliCoDown_contr :
 
 ## C. Contraction identities
 
-The trace identity `pauliCoDown_trace_pauliCo` is proved in components, from the entries of the
-Pauli matrices. The other identities are derived from it at tensor level: the Fierz identity by
-reading the trace identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB`, and the
+The trace identity `pauliCoDown_trace_pauliCo` is proved in components, from the trace identity
+of the Pauli matrices. The other identities are derived from it at tensor level: the Fierz
+identity by reading the trace identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB`, and the
 anticommutators by the Schouten identity of `ε`.
 
 ### C.1. Traces
@@ -186,10 +188,10 @@ lemma pauliCoDown_trace_pauliCo :
     {pauliTensor | ↓μ ↓α ↓β ⊗ pauliTensor | ↓ν α β = (2 : ℂ) • η' | μ ν}ᵀ := by
   tensor_components [tensorBasis_repr_pauliTensor_downAll, tensorBasis_repr_pauliTensor_down,
     tensorBasis_repr_formTensor_vec .down]
-  generalize φ 0 = m, φ 1 = n
-  rcases m with m | m <;> rcases n with n | n <;> fin_cases m <;> fin_cases n <;>
-    simp [Fin.sum_univ_two, pauliMatrix, minkowskiMatrix.inl_0_inl_0,
-      minkowskiMatrix.inr_i_inr_i, minkowskiMatrix.off_diag_zero] <;> ring_nf
+  -- The components are `tr(σ̄_ν σ_μ)`, written out as a double sum.
+  exact (Finset.sum_congr rfl fun _ _ => Finset.sum_congr rfl fun _ _ => mul_comm _ _).trans
+    ((Matrix.trace_mul_comm _ _).trans
+      (PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix (φ 0) (φ 1)))
 
 /-- The trace identity `tr(σ_μ σ̄_ν) = 2 η_μν`, as `σT_μ^{αβ̇} σT_{ναβ̇} = 2 η_μν`. -/
 lemma pauliCo_trace_pauliCoDown :
