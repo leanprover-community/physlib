@@ -728,12 +728,7 @@ elab "tensor_slots" : tactic => do
         Tensors.Species.slotMapsAt_apply_ne, ne_eq, Fin.reduceEq, not_false_eq_true,
         Representation.IntertwiningMap.coe_toLinearMap,
         Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
-        Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual] <;>
-      -- On a species that is an `abbrev`, `simp` cannot rewrite under `toDual`: the types
-      -- unfold and their instances do not. `rw` checks its motive at default transparency.
-      (repeat rw [Tensors.Species.cast_apply]) <;> (repeat rw [cast_cast]) <;>
-      (repeat rw [cast_eq]) <;> (repeat rw [Tensors.Species.toDual_toDual]) <;>
-      (repeat rw [cast_cast]) <;> rfl))
+        Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual]))
 
 end Tensors.Notation
 

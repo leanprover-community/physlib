@@ -204,7 +204,7 @@ end complexLorentz
 open complexLorentz in
 /-- Complex Lorentz tensors: Weyl spinors and complex Lorentz vectors with the action of
 `SL(2, ℂ)`, on the spaces, representations and bases of `Fermion` and `Lorentz`. -/
-noncomputable abbrev complexLorentz : Species ℂ SL(2, ℂ) Kind Idx where
+noncomputable def complexLorentz : Species ℂ SL(2, ℂ) Kind Idx where
   V := IndexSpace
   rep := indexRep
   basis := indexBasis
@@ -518,7 +518,7 @@ namespace complexLorentz
 
 /-- Swapping the two indices of the form transposes its matrix. -/
 lemma basis_tensorProduct_repr_comm_form (c : Color Kind) (μ ν : Idx c.kind) :
-    ((indexBasis c).tensorProduct (indexBasis c)).repr
+    ((complexLorentz.basis c).tensorProduct (complexLorentz.basis c)).repr
       (TensorProduct.comm ℂ _ _ (Species.form (S := complexLorentz) c)) (μ, ν) =
       formEntries c ν μ := by
   rw [Module.Basis.tensorProduct_repr_comm]
@@ -526,7 +526,8 @@ lemma basis_tensorProduct_repr_comm_form (c : Color Kind) (μ ν : Idx c.kind) :
 
 /-- The Minkowski metric `η` on the vector kind is symmetric. -/
 instance : complexLorentz.IsSymmetricForm vec where
-  comm_form v := ((indexBasis ⟨vec, v⟩).tensorProduct (indexBasis ⟨vec, v⟩)).repr.injective
+  comm_form v := ((complexLorentz.basis ⟨vec, v⟩).tensorProduct
+    (complexLorentz.basis ⟨vec, v⟩)).repr.injective
     (Finsupp.ext fun ⟨μ, ν⟩ => by
       rw [basis_tensorProduct_repr_comm_form]
       change _ = Species.formMatrix complexLorentz _ μ ν
@@ -537,7 +538,7 @@ instance : complexLorentz.IsSymmetricForm vec where
 /-- The form `ε` is antisymmetric at the Weyl colors. -/
 lemma comm_form_weyl (c : Color Kind) (h : c.kind ≠ vec) :
     TensorProduct.comm ℂ _ _ (Species.form (S := complexLorentz) c) = -Species.form c :=
-  ((indexBasis c).tensorProduct (indexBasis c)).repr.injective
+  ((complexLorentz.basis c).tensorProduct (complexLorentz.basis c)).repr.injective
     (Finsupp.ext fun ⟨μ, ν⟩ => by
       rw [basis_tensorProduct_repr_comm_form, map_neg, Finsupp.neg_apply]
       change _ = -Species.formMatrix complexLorentz _ μ ν

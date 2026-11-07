@@ -161,7 +161,7 @@ open realLorentz in
 /-- Real Lorentz tensors in `d + 1` dimensions, on `Vector d` and `CoVector d` with their
 representations and bases. The labels `Fin 1 ⊕ Fin d` put time first. At a concrete color each
 field is the `Vector` or `CoVector` one by `rfl`, as in `(realLorentz d).rep up = Vector.rep`. -/
-noncomputable abbrev realLorentz (d : ℕ) :
+noncomputable def realLorentz (d : ℕ) :
     Species ℝ (LorentzGroup d) Kind (fun _ => Fin 1 ⊕ Fin d) where
   V := IndexSpace d
   rep := IndexSpace.rep d
