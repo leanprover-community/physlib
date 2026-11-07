@@ -46,10 +46,13 @@ their order.
 ## ii. Key results
 
 - `ColorEquiv` is a bijection of slots that keeps their colors, with `refl`, `symm` and `trans`.
-- `Species.reindex` applies a relabeling to tensors, and `Species.reindex_pure` gives it on a pure
+- `Species.permSlots` moves the vectors of a tensor along a bijection of slots, with no colors
+  involved. It is Mathlib's `PiTensorProduct.reindex`.
+- `Species.reindex` applies a relabeling to tensors, `permSlots` followed by `congrSlots` of the
+  moves along the equalities of colors, and `Species.reindex_pure` gives it on a pure tensor.
+- `Species.reindex_trans`, `Species.reindex_refl` and `Species.reindex_symm` prove that relabeling
+  respects composites, the identity and inverses, and `Species.reindex_reindex` is the first on a
   tensor.
-- `Species.reindex_reindex` proves that two relabelings in sequence are their composite, and
-  `Species.reindex_refl` that the identity relabeling does nothing.
 - `Species.reindex` is an equivalence of representations, so relabeling commutes with the group
   action.
 - `Species.tensorBasis_repr_reindex` gives the components of a relabeled tensor,
@@ -109,6 +112,19 @@ def symm (σ : ColorEquiv c₁ c₂) : ColorEquiv c₂ c₁ :=
 def trans (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) : ColorEquiv c₁ c₃ :=
   ⟨σ₁.toEquiv.trans σ₂.toEquiv, fun j => (σ₁.color_eq _).trans (σ₂.color_eq j)⟩
 
+@[simp]
+lemma toEquiv_refl (c₁ : ι₁ → Color K) : (refl c₁).toEquiv = Equiv.refl ι₁ := rfl
+
+@[simp]
+lemma toEquiv_symm (σ : ColorEquiv c₁ c₂) : σ.symm.toEquiv = σ.toEquiv.symm := rfl
+
+@[simp]
+lemma toEquiv_trans (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) :
+    (σ₁.trans σ₂).toEquiv = σ₁.toEquiv.trans σ₂.toEquiv := rfl
+
+@[simp]
+lemma symm_symm (σ : ColorEquiv c₁ c₂) : σ.symm.symm = σ := ColorEquiv.ext (Equiv.symm_symm _)
+
 end ColorEquiv
 
 namespace Species
@@ -125,17 +141,29 @@ variable {ι₁ ι₂ ι₃ : Type}
 -/
 
 variable (S) in
+/-- The bijection `e` of slots applied to tensors, moving the vector of the old slot `i` to the new
+slot `e i`, with the colors `c ∘ e.symm`. It is Mathlib's `PiTensorProduct.reindex`. -/
+noncomputable def permSlots (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
+    (S.tensorRep c).Equiv (S.tensorRep (c ∘ e.symm)) :=
+  equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.reindex k (fun i => S.V (c i)) e ≪≫ₗ
+    (S.toPiTensor (c ∘ e.symm)).symm) fun g f => by
+      simp only [smul_pure, LinearEquiv.trans_apply, toPiTensor_pure,
+        PiTensorProduct.reindex_tprod, toPiTensor_symm_tprod]
+      rfl
+
+/-- On a pure tensor, the new slot `j` holds the vector of the old slot `e.symm j`. -/
+@[simp]
+lemma permSlots_pure (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) (f : Π i, S.V (c i)) :
+    S.permSlots c e (S.pure f) = S.pure fun j => f (e.symm j) := by
+  simp [permSlots, PiTensorProduct.reindex_tprod]
+
+variable (S) in
 /-- The relabeling `σ` applied to tensors, as in the transpose `T^μ_ν ↦ T_ν^μ`. The new slot `j`
-holds the vector of the old slot `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is Mathlib's
-`PiTensorProduct.reindex` followed by `PiTensorProduct.congr` of `LinearEquiv.cast`. -/
+holds the vector of the old slot `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is
+`permSlots` of `σ.toEquiv` followed by `congrSlots` of the moves. -/
 noncomputable def reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
     (S.tensorRep c₁).Equiv (S.tensorRep c₂) :=
-  equivOfPure (S.toPiTensor c₁ ≪≫ₗ PiTensorProduct.reindex k _ σ.toEquiv ≪≫ₗ
-    PiTensorProduct.congr (fun j => (S.cast (σ.color_eq j)).toLinearEquiv) ≪≫ₗ
-    (S.toPiTensor c₂).symm) fun g f => by
-      simp only [smul_pure, LinearEquiv.trans_apply, toPiTensor_pure,
-        PiTensorProduct.reindex_tprod, congr_tprod, toPiTensor_symm_tprod]
-      exact congrArg S.pure (funext fun j => cast_rep _ _ _)
+  (S.permSlots c₁ σ.toEquiv).trans (S.congrSlots fun j => S.cast (σ.color_eq j))
 
 /-- On a pure tensor, the new slot `j` holds the vector of the old slot `σ.toEquiv.symm j`, moved
 along `σ.color_eq j`. -/
@@ -143,7 +171,7 @@ along `σ.color_eq j`. -/
 lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂)
     (f : Π i, S.V (c₁ i)) :
     S.reindex σ (S.pure f) = S.pure fun j => S.cast (σ.color_eq j) (f (σ.toEquiv.symm j)) := by
-  simp [reindex, PiTensorProduct.reindex_tprod, congr_tprod]
+  rw [reindex, Representation.Equiv.trans_apply, permSlots_pure, congrSlots_pure]
 
 /-!
 
@@ -151,21 +179,31 @@ lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 
 -/
 
-/-- Relabeling by the identity does nothing. -/
-lemma reindex_refl {c₁ : ι₁ → Color K} (t : S.Tensor c₁) : S.reindex (ColorEquiv.refl c₁) t = t :=
-  LinearMap.congr_fun (f := (S.reindex (ColorEquiv.refl c₁)).toLinearMap)
-    (ext_pure (g := LinearMap.id) fun f => by
-      rw [Representation.Equiv.coe_toLinearMap, reindex_pure]; rfl) t
+/-- Relabeling by the identity is the identity. -/
+lemma reindex_refl (c₁ : ι₁ → Color K) : S.reindex (ColorEquiv.refl c₁) = .refl _ :=
+  equiv_ext_pure fun f => by rw [reindex_pure]; rfl
 
-/-- Relabeling by `σ₁` and then by `σ₂` is relabeling by `σ₁.trans σ₂`. -/
+/-- Relabeling by `σ₁.trans σ₂` is relabeling by `σ₁` and then by `σ₂`. -/
+lemma reindex_trans {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
+    (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) :
+    S.reindex (σ₁.trans σ₂) = (S.reindex σ₁).trans (S.reindex σ₂) :=
+  equiv_ext_pure fun f => by
+    simp only [Representation.Equiv.trans_apply, reindex_pure, cast_apply, cast_cast]
+    rfl
+
+/-- Relabeling by `σ₁` and then by `σ₂` is relabeling by `σ₁.trans σ₂`, on a tensor. -/
 lemma reindex_reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
     (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) (t : S.Tensor c₁) :
-    S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t :=
-  LinearMap.congr_fun (f := ((S.reindex σ₁).trans (S.reindex σ₂)).toLinearMap)
-    (ext_pure (g := (S.reindex (σ₁.trans σ₂)).toLinearMap) fun f => by
-      simp only [Representation.Equiv.coe_toLinearMap, Representation.Equiv.trans_apply,
-        reindex_pure, cast_apply, cast_cast]
-      rfl) t
+    S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t := by
+  rw [reindex_trans, Representation.Equiv.trans_apply]
+
+/-- The inverse of relabeling by `σ` is relabeling by `σ.symm`. -/
+lemma reindex_symm {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
+    (S.reindex σ).symm = S.reindex σ.symm :=
+  Representation.Equiv.ext <| funext fun t => EquivLike.injective (S.reindex σ) <| by
+    rw [Representation.Equiv.apply_symm_apply, reindex_reindex,
+      show σ.symm.trans σ = .refl c₂ from ColorEquiv.ext (Equiv.symm_trans_self _), reindex_refl]
+    rfl
 
 /-!
 

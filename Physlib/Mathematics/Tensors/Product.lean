@@ -258,7 +258,7 @@ lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Colo
     (σ : ColorEquiv c₁ c₁') (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
     S.tmulEquiv c₁' c₂ (S.reindex σ t₁ ⊗ₜ t₂) =
       S.reindex (σ.sumCongr (.refl c₂)) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) := by
-  rw [reindex_sumCongr_tmulEquiv, reindex_refl]
+  rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
 
 /-- Relabeling the second factor relabels the product. With `tmulEquiv_reindex_left` it moves
 relabelings out of products, the form `tensor_regroup` works in. -/
@@ -266,7 +266,7 @@ lemma tmulEquiv_reindex_right {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color
     (σ : ColorEquiv c₂ c₂') (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
     S.tmulEquiv c₁ c₂' (t₁ ⊗ₜ S.reindex σ t₂) =
       S.reindex ((ColorEquiv.refl c₁).sumCongr σ) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) := by
-  rw [reindex_sumCongr_tmulEquiv, reindex_refl]
+  rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
 
 /-- Swapping the last two factors of a product, `(T ⊗ W) ⊗ U = (T ⊗ U) ⊗ W` after the slots of
 `U` are moved before those of `W` by `ColorEquiv.swapLast`. -/

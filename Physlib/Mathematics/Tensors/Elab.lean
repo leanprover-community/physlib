@@ -449,8 +449,9 @@ macro_rules
         Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq, not_false_eq_true, $ls,*]
       -- The casts of `tensorBasis_repr_reindex` agree once the relabeling and the color lists are
       -- evaluated. The option `+instances` reaches those inside instance arguments.
-      try dsimp +instances only [ColorEquiv.symm, Equiv.symm_symm, Equiv.coe_fn_mk, Sum.elim_inl,
-        Sum.elim_inr, Matrix.cons_val, Function.comp_apply, Tensors.Notation.reduceCast])
+      try dsimp +instances only [ColorEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.coe_fn_mk,
+        Sum.elim_inl, Sum.elim_inr, Matrix.cons_val, Function.comp_apply,
+        Tensors.Notation.reduceCast])
 
 /-!
 

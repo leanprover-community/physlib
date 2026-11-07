@@ -310,7 +310,7 @@ lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] [Invertible (2 : k)] {a : J �
     (hπ : π.toEquiv.trans σ.toEquiv = σ.toEquiv.trans ((Equiv.refl κ).sumCongr (e.sumCongr e)))
     {t : S.Tensor c} (ht : t = S.reindex π (-t)) : contr σ t = 0 := by
   -- After `π`, each pair `j` of `σ` is its pair `e.symm j`, and the free indices are kept.
-  have hs (y) : (π.trans σ).toEquiv.symm y =
+  have hs (y) : π.toEquiv.symm (σ.toEquiv.symm y) =
       σ.toEquiv.symm (((Equiv.refl κ).sumCongr (e.sumCongr e)).symm y) :=
     congrArg (fun f : Equiv _ _ => f.symm y) hπ
   have hσ : contr (π.trans σ) t = contr σ t :=
