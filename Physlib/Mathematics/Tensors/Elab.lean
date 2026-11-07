@@ -714,17 +714,18 @@ elab "tensor_slots" : tactic => do
       refine congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_)))
   | true, false => evalTactic (← `(tactic|
       refine (congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_)).trans
-        (Tensors.Species.mapSlots_id _)))
+        (Tensors.Species.mapSlots_id_apply _)))
   | false, true => evalTactic (← `(tactic|
-      refine (Tensors.Species.mapSlots_id _).symm.trans
+      refine (Tensors.Species.mapSlots_id_apply _).symm.trans
         (congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_))))
   | false, false => throwError "tensor_slots: neither side lowers or raises an index"
   evalTactic (← `(tactic| focus
     intro x
     fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
       simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
-        LinearMap.id_apply, Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq,
-        not_false_eq_true, dite_false, Representation.IntertwiningMap.coe_toLinearMap,
+        LinearMap.id_apply, Tensors.Species.slotMapsAt_apply_self,
+        Tensors.Species.slotMapsAt_apply_ne, ne_eq, Fin.reduceEq, not_false_eq_true,
+        Representation.IntertwiningMap.coe_toLinearMap,
         Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
         Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual] <;>
       -- On a species that is an `abbrev`, `simp` cannot rewrite under `toDual`: the types

@@ -311,7 +311,7 @@ lemma toDualAt_pure {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a
     (hqi : q i = S.cast hi.symm (S.toDual a (S.cast ha (p i))))
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
     S.toDualAt i a ha hi h (S.pure p) = S.pure q :=
-  congrAt_pure i _ h p q hqi hq
+  mapAt_pure i _ h p q hqi hq
 
 /-- Raising at a slot undoes lowering at that slot, `(T^μ_ν)^ν = T^μν`. -/
 lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
