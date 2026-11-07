@@ -6,6 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 
 /-!
 
@@ -37,12 +38,17 @@ has components `z_μ^A`, where `A` labels a basis of `U`, and reads as the map `
   applied to the values.
 - `TensorProduct.pairingToLinearMap_apply` : the value at `x` as `x ⊗ z` with its first two factors
   contracted.
-- `TensorProduct.lTensor_pairingToLinearMap_apply` : the map of `N` on the second factor of `M` as
-  `M ⊗ N` with its middle pair contracted.
+- `Module.Basis.coordPairing`, `Module.Basis.coevaluation` : the coordinate pairing
+  `∑_I (b x)_I (b' y)_I` of two bases with the same labels, and the delta `∑_I b_I ⊗ b'_I`.
+- `Module.Basis.coordPairing_basis_basis` : the two bases are dual for the coordinate pairing, and
+  `Module.Basis.eq_coordPairing` : it is the only such pairing.
+- `Module.Basis.pairingToLinearMap_coordPairing_coevaluation` : the delta read through the
+  coordinate pairing is the identity.
 
 ## iii. Table of contents
 
 - A. Reading a tensor as a linear map
+- B. The coordinate pairing of two bases
 
 ## iv. References
 
@@ -93,16 +99,69 @@ lemma pairingToLinearMap_apply (p : V ⊗[R] W →ₗ[R] R) (z : W ⊗[R] U) (x 
   | tmul w y => rfl
   | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
 
-/-- Applying the map of `N` to the second factor of `M ∈ U' ⊗ V` is `M ⊗ N` with its middle pair
-contracted by `p`, as in `M^{aμ} N_μ^b`. The right side is that contraction built from Mathlib's
-associator `TensorProduct.assoc` and unitor `TensorProduct.lid`, as in
-`pairingToLinearMap_apply`. -/
-lemma lTensor_pairingToLinearMap_apply (p : V ⊗[R] W →ₗ[R] R) (M : U' ⊗[R] V) (N : W ⊗[R] U) :
-    (pairingToLinearMap p N).lTensor U' M = (TensorProduct.lid R U).lTensor U'
-      ((p.rTensor U).lTensor U' ((TensorProduct.assoc R V W U).symm.toLinearMap.lTensor U'
-        (TensorProduct.assoc R U' V (W ⊗[R] U) (M ⊗ₜ N)))) := by
-  induction M using TensorProduct.inductionOn with
-  | add M M' hM hM' => simp only [map_add, add_tmul, hM, hM']
-  | tmul u v => simp [pairingToLinearMap_apply]
-
 end TensorProduct
+
+namespace Module.Basis
+
+open TensorProduct
+
+/-!
+
+## B. The coordinate pairing of two bases
+
+Two modules `M` and `N` with bases `b` and `b'` labelled by the same finite type `ι` pair by
+their coordinates, `(x, y) ↦ ∑_I (b x)_I (b' y)_I` (`coordPairing`), with delta `∑_I b_I ⊗ b'_I`
+(`coevaluation`).
+
+-/
+
+variable {R ι M N : Type*} [CommSemiring R] [Fintype ι] [DecidableEq ι] [AddCommMonoid M]
+    [Module R M] [AddCommMonoid N] [Module R N]
+
+/-- The coordinate pairing `M ⊗ N → R` of two bases with the same labels, Mathlib's
+`Matrix.toLinearMap₂ b b'` of the identity matrix. -/
+noncomputable def coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
+    M ⊗[R] N →ₗ[R] R :=
+  TensorProduct.lift (Matrix.toLinearMap₂ b b' 1)
+
+/-- `b.coordPairing b' (x ⊗ₜ y) = ∑_I (b x)_I (b' y)_I`. -/
+lemma coordPairing_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (y : N) :
+    b.coordPairing b' (x ⊗ₜ[R] y) = ∑ I, b.equivFun x I * b'.equivFun y I := by
+  simp [coordPairing, Matrix.toLinearMap₂_apply, Matrix.one_apply]
+
+/-- `b.coordPairing b' (x ⊗ₜ b' J) = x_J`: pairing with the second basis reads off a coordinate. -/
+lemma coordPairing_tmul_basis (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (J : ι) :
+    b.coordPairing b' (x ⊗ₜ[R] b' J) = b.equivFun x J := by
+  simp [coordPairing_tmul, Module.Basis.equivFun_self]
+
+/-- `b.coordPairing b' (b I ⊗ₜ b' J) = δ_{IJ}`: the two bases are dual. -/
+lemma coordPairing_basis_basis (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I J : ι) :
+    b.coordPairing b' (b I ⊗ₜ[R] b' J) = if I = J then 1 else 0 := by
+  rw [coordPairing_tmul_basis, Module.Basis.equivFun_self]
+
+/-- A pairing for which the two bases are dual is the coordinate pairing. -/
+lemma eq_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (p : M ⊗[R] N →ₗ[R] R)
+    (h : ∀ I J, p (b I ⊗ₜ[R] b' J) = if I = J then 1 else 0) : p = b.coordPairing b' :=
+  (b.tensorProduct b').ext fun IJ => by
+    rw [Module.Basis.tensorProduct_apply, h, coordPairing_basis_basis]
+
+/-- `b.coordPairing b' (x ⊗ₜ y) = b'.coordPairing b (y ⊗ₜ x)`: swapping slots swaps the bases. -/
+lemma coordPairing_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (y : N) :
+    b.coordPairing b' (x ⊗ₜ[R] y) = b'.coordPairing b (y ⊗ₜ[R] x) := by
+  rw [coordPairing_tmul, coordPairing_tmul]
+  exact Finset.sum_congr rfl fun I _ => mul_comm _ _
+
+/-- The delta `∑_I b_I ⊗ b'_I ∈ M ⊗ N` of two bases with the same labels. -/
+noncomputable def coevaluation (b : Module.Basis ι R M) (b' : Module.Basis ι R N) : M ⊗[R] N :=
+  ∑ I, b I ⊗ₜ[R] b' I
+
+/-- The snake law: contracting `x ∈ M` with the first factor of `∑_I b'_I ⊗ b_I` gives `x`. -/
+lemma pairingToLinearMap_coordPairing_coevaluation (b : Module.Basis ι R M)
+    (b' : Module.Basis ι R N) :
+    pairingToLinearMap (b.coordPairing b') (b'.coevaluation b) = LinearMap.id := by
+  refine LinearMap.ext fun x => ?_
+  rw [coevaluation, map_sum, LinearMap.sum_apply]
+  simp only [pairingToLinearMap_tmul, coordPairing_tmul_basis, LinearMap.id_apply]
+  exact b.sum_equivFun x
+
+end Module.Basis

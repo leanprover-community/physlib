@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.Tensors.Tensor
 /-!
 
 # Relabeling the slots of a tensor
@@ -15,33 +15,44 @@ transpose `T^μ_ν ↦ T_ν^μ`.
 
 ## i. Overview
 
-A tensor of a species `S` with colors `c₁ : ι₁ → Color K` has one slot for each label `i : ι₁`.
-A relabeling `σ : ColorEquiv c₁ c₂` from colors `c₁` on `ι₁` to colors `c₂` on `ι₂` is a bijection
-`σ.toEquiv : ι₁ ≃ ι₂` together with the proof `σ.color_eq j : c₁ (σ.toEquiv.symm j) = c₂ j` that
-every new slot `j` has the color of the old slot it comes from. The proof is stated at the new
-labels, so that `c₂ j` reduces for concrete colors. For these the default proof of the structure
-finds it, by `rfl` or by `rfl` on each slot, and rejects a relabeling that changes a color.
+A tensor has one slot for each index, and each slot has a color, such as up or down. `T^μ_ν` has
+two slots, the first up and the second down. The transpose `T_ν^μ` has the same components with
+the indices written in the other order. Its first slot is down and its second is up.
 
-`S.reindex σ : S.Tensor c₁ ≃ₗ[k] S.Tensor c₂` is a linear equivalence between two spaces of
-tensors. The new slot `j` of `S.reindex σ T` holds the vector of the old slot `σ.toEquiv.symm j`,
-moved along `σ.color_eq j` from `S.V (c₁ (σ.toEquiv.symm j))` to `S.V (c₂ j)`. The move changes
-the type and no data. The components move with the slots (`tensorBasis_repr_reindex`).
+A relabeling `σ` is a permutation of the indices. It says which position each index moves to, and
+it may only move an index together with its color. For the transpose, `σ` swaps the positions `0`
+and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would turn an up
+index into a down one is not a relabeling. That operation is raising or lowering, and it needs a
+metric.
 
-For example, a Lorentz upper index has the color `⟨vec, up⟩` with `V ⟨vec, up⟩ = ℝ⁴` and basis
-`e_μ`, and a lower index has the color `⟨vec, down⟩` with `V ⟨vec, down⟩ = (ℝ⁴)*` and basis `e^μ`.
-The colors `c₁ = ![⟨vec, up⟩, ⟨vec, down⟩]` on `Fin 2` give the space `ℝ⁴ ⊗ (ℝ⁴)*`, whose elements
-are `T = T^μ_ν e_μ ⊗ e^ν`. The transpose relabels the slots by `Equiv.swap 0 1`, written
-`.mk (Equiv.swap 0 1) : ColorEquiv c₁ ![⟨vec, down⟩, ⟨vec, up⟩]`. It sends `T` to its transpose
-`Tᵀ = T^μ_ν e^ν ⊗ e_μ` in `(ℝ⁴)* ⊗ ℝ⁴`, whose components are `(Tᵀ)_ν^μ = T^μ_ν`.
+Formally `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the slots, where the
+labels `ι₁` and `ι₂` may be different types, together with the proof
+`σ.color_eq j : c₁ (σ.toEquiv.symm j) = c₂ j` that the new slot `j` has the color of the old slot
+it comes from. For concrete colors the proof is found automatically.
+
+`S.reindex σ : S.Tensor c₁ ≃ₗ[k] S.Tensor c₂` moves each vector to its new slot, so the transpose
+sends `u ⊗ α` to `α ⊗ u` and has components `(Tᵀ)_ν^μ = T^μ_ν`. Nothing is computed. Lean writes
+the color of the new slot differently from the color of the old one, so each vector is retyped
+along `σ.color_eq`, and for concrete colors this retyping is the identity. The name follows
+Mathlib's `PiTensorProduct.reindex`.
+
+Relabelings appear wherever indices are lined up. Index notation relabels `B` in `A^μ_ν + B_ν^μ`
+before adding, so the result is the tensor `(A + Bᵀ)^μ_ν` with the slots in the order of `A`. The
+symmetry `g_μν = g_νμ` compares `g` with its relabeling. The product `u^μ v^ν` of two vectors,
+whose slots are labeled "slot of `u`" and "slot of `v`" (`Fin 1 ⊕ Fin 1`), is relabeled to a
+tensor with slots `0, 1` (`Fin 2`). A relabeling can change the type of the labels as well as
+their order.
 
 ## ii. Key results
 
-- `ColorEquiv` : a bijection of slots that keeps their colors, with `refl`, `symm` and `trans`.
-- `Species.reindex`, `Species.reindex_pure` : a relabeling applied to tensors, and to a pure
+- `ColorEquiv` is a bijection of slots that keeps their colors, with `refl`, `symm` and `trans`.
+- `Species.reindex` applies a relabeling to tensors, and `Species.reindex_pure` gives it on a pure
   tensor.
-- `Species.reindex_reindex` : two relabelings in sequence are their composite.
-- `Species.reindex_smul` : relabeling commutes with the group action.
-- `Species.tensorBasis_repr_reindex` : the components of a relabeled tensor, `(Tᵀ)_ν^μ = T^μ_ν`.
+- `Species.reindex_reindex` proves that two relabelings in sequence are their composite, and
+  `Species.reindex_refl` that the identity relabeling does nothing.
+- `Species.reindex_smul` proves that relabeling commutes with the group action.
+- `Species.tensorBasis_repr_reindex` gives the components of a relabeled tensor,
+  `(Tᵀ)_ν^μ = T^μ_ν`.
 
 ## iii. Table of contents
 
@@ -51,6 +62,8 @@ are `T = T^μ_ν e_μ ⊗ e^ν`. The transpose relabels the slots by `Equiv.swap
 - D. Components
 
 ## iv. References
+
+None.
 
 -/
 
@@ -66,10 +79,10 @@ namespace Tensors
 
 -/
 
-/-- A relabeling of slots that keeps their colors: a bijection of slots, with the proof that each
-new slot has the color of the old slot it comes from. The proof is stated at the new labels `j`,
-so that `c₂ j` reduces at labels such as `inl x` or `0`. For finitely many concrete slots it is
-found by `rfl` or by cases. Two relabelings are equal when their bijections are
+/-- A relabeling of slots that keeps their colors, made of a bijection of slots and the proof that
+each new slot has the color of the old slot it comes from. The proof is stated at the new labels
+`j`, so that `c₂ j` reduces at labels such as `inl x` or `0`. For finitely many concrete slots it
+is found by `rfl` or by cases. Two relabelings are equal when their bijections are
 (`ColorEquiv.ext`). -/
 @[ext]
 structure ColorEquiv {K : Type} {ι₁ ι₂ : Type} (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) where
@@ -117,7 +130,7 @@ holds the vector of the old slot `σ.toEquiv.symm j`, moved along `σ.color_eq j
 noncomputable def reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
     S.Tensor c₁ ≃ₗ[k] S.Tensor c₂ :=
   S.toPiTensor c₁ ≪≫ₗ PiTensorProduct.reindex k _ σ.toEquiv ≪≫ₗ
-    PiTensorProduct.congr (fun j => LinearEquiv.cast (M := S.V) (σ.color_eq j)) ≪≫ₗ
+    PiTensorProduct.congr (fun j => S.cast (σ.color_eq j)) ≪≫ₗ
     (S.toPiTensor c₂).symm
 
 /-- On a pure tensor, the new slot `j` holds the vector of the old slot `σ.toEquiv.symm j`, moved
@@ -125,8 +138,7 @@ along `σ.color_eq j`. -/
 @[simp]
 lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂)
     (f : Π i, S.V (c₁ i)) :
-    S.reindex σ (S.pure f) = S.pure fun j =>
-      LinearEquiv.cast (R := k) (M := S.V) (σ.color_eq j) (f (σ.toEquiv.symm j)) := by
+    S.reindex σ (S.pure f) = S.pure fun j => S.cast (σ.color_eq j) (f (σ.toEquiv.symm j)) := by
   simp [reindex, PiTensorProduct.reindex_tprod, congr_tprod]
 
 /-!
@@ -135,16 +147,20 @@ lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 
 -/
 
+/-- Relabeling by the identity does nothing. -/
+lemma reindex_refl {c₁ : ι₁ → Color K} (t : S.Tensor c₁) : S.reindex (ColorEquiv.refl c₁) t = t :=
+  LinearMap.congr_fun (f := (S.reindex (ColorEquiv.refl c₁)).toLinearMap)
+    (ext_pure (g := LinearMap.id) fun f => by rw [LinearEquiv.coe_coe, reindex_pure]; rfl) t
+
 /-- Relabeling by `σ₁` and then by `σ₂` is relabeling by `σ₁.trans σ₂`. -/
 lemma reindex_reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
     (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) (t : S.Tensor c₁) :
-    S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t := by
-  induction t using inductionOn_pure with
-  | h f =>
-    simp only [reindex_pure, LinearEquiv.cast_apply, cast_cast]
-    rfl
-  | hsmul r t ht => rw [map_smul, map_smul, ht, map_smul]
-  | hadd x y hx hy => rw [map_add, map_add, hx, hy, map_add]
+    S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t :=
+  LinearMap.congr_fun (f := (S.reindex σ₁ ≪≫ₗ S.reindex σ₂).toLinearMap)
+    (ext_pure (g := (S.reindex (σ₁.trans σ₂)).toLinearMap) fun f => by
+      simp only [LinearEquiv.coe_coe, LinearEquiv.trans_apply, reindex_pure,
+        LinearEquiv.cast_apply, cast_cast]
+      rfl) t
 
 /-- Relabeling commutes with the group action, as in `(ΛT)ᵀ = Λ Tᵀ`. -/
 lemma reindex_smul {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) (g : G)
@@ -179,7 +195,7 @@ lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ →
     -- The old slot `σ.toEquiv.symm (σ.toEquiv i)` is `i` only up to a proof, so it is generalized.
     have h : ∀ i' (_ : i' = i) (d : Color K) (p : c₁ i' = d) (q : d = c₁ i) (z : basisIdx d.kind),
         (S.basis (c₁ i)).repr (f i) (cast (congrArg (basisIdx ∘ Color.kind) q) z) =
-          (S.basis d).repr (LinearEquiv.cast (R := k) (M := S.V) p (f i')) z := by
+          (S.basis d).repr (S.cast p (f i')) z := by
       rintro _ rfl _ rfl _ _
       rfl
     exact h _ (σ.toEquiv.symm_apply_apply i) _ _ (σ.symm.color_eq i) _

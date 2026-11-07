@@ -173,7 +173,9 @@ public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
+public import Physlib.Mathematics.ForMathlib.SemilinearMaps
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
+public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
 public import Physlib.Mathematics.Groups.SO3.Basic
@@ -201,10 +203,13 @@ public import Physlib.Mathematics.Tensors.Color
 public import Physlib.Mathematics.Tensors.Conjugation
 public import Physlib.Mathematics.Tensors.Contraction
 public import Physlib.Mathematics.Tensors.Elab
+public import Physlib.Mathematics.Tensors.Inverse
 public import Physlib.Mathematics.Tensors.Metric
 public import Physlib.Mathematics.Tensors.Product
 public import Physlib.Mathematics.Tensors.Reindexing
 public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.Tensors.Tensor
+public import Physlib.Mathematics.Tensors.Tensorial
 public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint

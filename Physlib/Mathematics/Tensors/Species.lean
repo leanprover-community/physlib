@@ -8,97 +8,91 @@ module
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
 public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.LinearAlgebra.Basis.Bilinear
 /-!
 
-# Tensor species and their tensors
+# Tensor species
 
-A species assigns to each color a representation with a basis, the contraction with the dual
-color and the Kronecker delta. Its tensors with colors `c : ι → Color K` form Mathlib's
-`⨂[k] i, V (c i)`, for any slot type `ι`.
+A species assigns to each color a representation with a basis whose coordinate pairing with the
+basis of the dual color is invariant.
 
 ## i. Overview
 
 A species `S : Species k G K basisIdx` assigns to each color `c` a `k`-module `S.V c`, a
-representation `S.rep c` of the group `G` on it, and a basis `S.basis c` labelled by
-`basisIdx c.kind`. It also gives the invariant contraction `S.contr c : V c ⊗ V c.dual → k`, which
-pairs an index with its dual as in `u^μ α_μ`, and the Kronecker delta `S.delta c ∈ V c.dual ⊗ V c`,
-written `δ_μ^ν`. Two laws relate them. The contraction is symmetric, `u^μ α_μ = α_μ u^μ`
-(`contr_tmul_symm`). The delta acts as the identity, `u^μ δ_μ^ν = u^ν` (`snake`). It follows that
-the delta is invariant and that the delta of `c.dual` is the delta of `c` with its factors
-swapped. Since `c.dual.dual = c` holds by `rfl`, no statement needs a cast.
+representation `S.rep c` of `G` and a basis `S.basis c`. The data is indexed by colors, so that
+one definition covers both variances. The contraction `S.contr c : V c ⊗ V c.dual → k` is
+`u^μ α_μ` for `c = ⟨vec, up⟩` and `α_μ u^μ` for `c = ⟨vec, down⟩`.
 
-Indices name slots, as in abstract index notation, so `u^μ α_μ` is `S.contr c (u ⊗ α)` in any
-basis. Components are taken with `tensorBasis`. The bases `S.basis c` and `S.basis c.dual` are not
-related by the laws. The components of `S.delta c` form the identity matrix, and
-`S.contr c (e_μ ⊗ e^ν)` is `1` for `μ = ν` and `0` otherwise, only when the two bases are dual. A
-species does not require this, and a concrete species can prove it.
+The basis of a color `c` is labelled by `basisIdx c.kind`, the values that an index of that kind
+runs over. For Lorentz tensors `basisIdx vec = Fin 1 ⊕ Fin d`, one time label and `d` space
+labels, and the number of labels is the dimension. The labels depend on the kind alone, so an
+index and its dual share them, as `μ` in `v^μ` and `α_μ`. `basisIdx` is a parameter of the
+structure, not a field, so that a conjugate species gives conjugate kinds the same labels
+(`Conjugation.lean`).
 
-The basis labels `basisIdx κ` depend only on the kind `κ` of a color, not on its variance, so an
-index and its dual have the same labels by definition, as `μ` in `v^μ` and `α_μ`. They are a
-parameter, not a field, so that a conjugate species can give a kind and its conjugate the same
-labels by definition. A species is a value, so a new species can
-be built from an old one, for example by restricting the group.
+The space of a lower index is data of the species, not `Module.Dual` of the upper one, so that
+existing types such as `CoVector d` serve as covectors. The one law of a species (`invariant`) says
+that the coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` is invariant,
+which makes `V c.dual` the dual of `V c`.
 
-`S.Tensor c` is a space and `S.pure f` an element of it. The space is `⨂[k] i, V (c i)`. The pure
-tensor of a family `f` of vectors, one per slot, is `⨂ₜ[k] i, f i`, such as `u ⊗ α ⊗ β`. Every
-tensor is a sum of pure tensors. A group element `Λ` acts on every slot by the representation of
-its color. The components `T^μ_ν` of a tensor `T` are its coordinates in the basis
-`e_μ ⊗ e^ν ⊗ …` of Mathlib's `Basis.piTensorProduct`.
-
-For example, Lorentz tensors have one kind `vec`. An upper index has color `⟨vec, up⟩` with
-`V ⟨vec, up⟩ = ℝ⁴` and basis `e_μ`. A lower index has color `⟨vec, down⟩` with
-`V ⟨vec, down⟩ = (ℝ⁴)*` and basis `e^μ`. The colors `![⟨vec, up⟩, ⟨vec, down⟩, ⟨vec, down⟩]` give
-the space `ℝ⁴ ⊗ (ℝ⁴)* ⊗ (ℝ⁴)*` of tensors `T = T^μ_νρ e_μ ⊗ e^ν ⊗ e^ρ`. The pure tensor
-`u ⊗ α ⊗ β` has components `u^μ α_ν β_ρ`. A Lorentz transformation `Λ` acts as
-`(ΛT)^μ_νρ = Λ^μ_σ (Λ⁻¹)^τ_ν (Λ⁻¹)^λ_ρ T^σ_τλ`. Lower indices transform with `Λ⁻¹`, which keeps
-`u^μ α_μ` invariant.
+The contraction `S.contr c` is this pairing, and the delta `S.delta c` is `∑ μ, e^μ ⊗ e_μ` in
+`V c.dual ⊗ V c`. The bases of `c` and `c.dual` are then dual (`contr_basis`), the contraction is
+symmetric (`contr_tmul_symm`), the delta acts as the identity, `u^μ δ_μ^ν = u^ν` (`snake`), and
+both are invariant. Indices name slots, as in abstract index notation, so `u^μ α_μ` is
+`S.contr c (u ⊗ α)`.
 
 ## ii. Key results
 
-- `Species` : the data and laws of a tensor species.
-- `Species.contr_invariant`, `Species.delta_invariant` : `u^μ α_μ` and `δ_μ^ν` are invariant.
-- `Species.delta_eq_comm_delta_dual` : the delta of `c` is the delta of `c.dual`, swapped.
-- `Species.pairingToLinearMap_contr_injective` : a tensor in `V c.dual ⊗ U` is determined by the
-  linear map `V c → U` it defines through the contraction.
-- `Species.Tensor`, `Species.pure`, `Species.inductionOn_pure` : tensors, pure tensors, and
-  induction through pure tensors.
-- `Species.smul_pure` : the group acts on a pure tensor slot by slot.
-- `Species.map_smul_of_pure` : a map of tensors that commutes with the group on pure tensors
-  commutes with it on all tensors.
-- `Species.tensorBasis`, `Species.tensorBasis_repr_pure` : the basis of tensors, and the
-  components of a pure tensor.
-- `Species.contr_tmul_eq_sum_basis` : the contraction of two vectors in components.
+- `Species` is the data and the law of a tensor species.
+- `Species.contr` and `Species.delta` are the contraction `u^μ α_μ` and the delta `δ_μ^ν`, with
+  `Species.contr_basis`, `Species.contr_tmul_symm` and `Species.snake`.
+- `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components, and
+  `Species.ext_contr` proves that the contraction is nondegenerate.
+- `Species.coordPairing_rep_of_contr` gives the law `invariant` from an invariant pairing for
+  which the bases are dual.
+- `Species.contr_invariant` and `Species.delta_invariant` prove that `u^μ α_μ` and `δ_μ^ν` are
+  invariant.
+- `Species.delta_eq_comm_delta_dual` proves that the delta of `c` is the delta of `c.dual` with
+  its factors swapped.
+- `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`, and
+  `Species.toLin_map_rep` proves that it commutes with the group action, `(Λg)(Λv) = Λ(g v)`.
+- `Species.basis_repr_pairingToLinearMap_contr` gives the components of a tensor in
+  `V c.dual ⊗ V d` read as a linear map, and `Species.toLin_comp_toLin_of_mul_eq_one` proves that
+  two such maps are inverse when their matrices are.
+- `Species.cast` moves a vector along an equality of colors, `Species.cast_rep` proves that this
+  commutes with the group action, and `Species.basis_repr_cast` that it keeps components.
+- `Species.contr_cast_tmul_cast` and `Species.contr_cast_tmul_cast_symm` prove that the
+  contraction does not depend on the colors its two vectors are moved to.
 
 ## iii. Table of contents
 
-- A. Species
-- B. Invariance of the contraction, invariance and symmetry of the delta
-- C. Tensors
-- D. The group action
-- E. The basis of tensors
+- A. Species, the contraction and the delta
+- B. Invariance, symmetry of the delta, and tensors of two factors as linear maps
+- C. Components of a tensor of two factors read as a linear map
+- D. Moving a vector along an equality of colors
 
 ## iv. References
+
+None.
 
 -/
 
 @[expose] public section
 
-open TensorProduct PiTensorProduct
+open TensorProduct
 
 namespace Tensors
 
 /-!
 
-## A. Species
+## A. Species, the contraction and the delta
 
 -/
 
-/-- A tensor species: for each color a representation with a basis, the contraction `u^μ α_μ`
-with the dual color, and the Kronecker delta `δ_μ^ν`. The basis labels `basisIdx κ` depend only on
-the kind, so a color and its dual share them. They are a parameter so that a conjugate species can
-give a kind and its conjugate the same labels by definition. -/
+/-- A tensor species, which gives each color a representation with a basis such that the
+coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` with the basis of the dual color is invariant. The basis
+of a color of kind `κ` is labelled by `basisIdx κ`, the values that an index of kind `κ` runs
+over, and a color and its dual share these labels. -/
 structure Species (k : Type) [CommRing k] (G : Type) [Group G] (K : Type)
     (basisIdx : K → Type) [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] where
   /-- The vector space of a color. -/
@@ -111,18 +105,10 @@ structure Species (k : Type) [CommRing k] (G : Type) [Group G] (K : Type)
   rep : (c : Color K) → Representation k G (V c)
   /-- The basis of a color. -/
   basis : (c : Color K) → Module.Basis (basisIdx c.kind) k (V c)
-  /-- The invariant contraction `V c ⊗ V c.dual → k`, `u ⊗ α ↦ u^μ α_μ`. The vector of color `c`
-  is the first factor. -/
-  contr : (c : Color K) →
-    ((rep c).tprod (rep c.dual)).IntertwiningMap (Representation.trivial k G k)
-  /-- The Kronecker delta `δ_μ^ν ∈ V c.dual ⊗ V c`. The factor of the dual color is first. -/
-  delta : (c : Color K) → V c.dual ⊗[k] V c
-  /-- The contraction is symmetric, `u^μ α_μ = α_μ u^μ`. -/
-  contr_tmul_symm : ∀ c (x : V c) (y : V c.dual), contr c (x ⊗ₜ[k] y) = contr c.dual (y ⊗ₜ[k] x)
-  /-- The snake law `u^μ δ_μ^ν = u^ν`: the delta, read as a linear map through the contraction
-  (`pairingToLinearMap`), is the identity. The vector `u` is contracted with the first factor of
-  the delta. -/
-  snake : ∀ c, pairingToLinearMap (contr c).toLinearMap (delta c) = LinearMap.id
+  /-- The coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` is
+  invariant, `(Λu)^μ (Λα)_μ = u^μ α_μ`. -/
+  invariant : ∀ c g x y, (basis c).coordPairing (basis c.dual) (rep c g x ⊗ₜ rep c.dual g y) =
+    (basis c).coordPairing (basis c.dual) (x ⊗ₜ y)
 
 attribute [instance] Species.addCommGroup Species.module
 
@@ -131,9 +117,67 @@ namespace Species
 variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
+/-- The invariant contraction `V c ⊗ V c.dual → k`, `u ⊗ α ↦ u^μ α_μ`, the coordinate pairing of
+the bases. The vector of color `c` is the first factor. -/
+noncomputable def contr (S : Species k G K basisIdx) (c : Color K) :
+    ((S.rep c).tprod (S.rep c.dual)).IntertwiningMap (Representation.trivial k G k) :=
+  ⟨(S.basis c).coordPairing (S.basis c.dual), fun g =>
+    TensorProduct.ext' fun x y => S.invariant c g x y⟩
+
+/-- The Kronecker delta `∑ μ, e^μ ⊗ e_μ ∈ V c.dual ⊗ V c`, with components `δ_μ^ν`. The factor of
+the dual color is first. -/
+noncomputable def delta (S : Species k G K basisIdx) (c : Color K) : S.V c.dual ⊗[k] S.V c :=
+  (S.basis c.dual).coevaluation (S.basis c)
+
+/-- The bases of a color and its dual are dual, `e^μ(e_ν) = δ^μ_ν`. -/
+lemma contr_basis (S : Species k G K basisIdx) (c : Color K) (μ ν : basisIdx c.kind) :
+    S.contr c (S.basis c μ ⊗ₜ S.basis c.dual ν) = if μ = ν then 1 else 0 :=
+  Module.Basis.coordPairing_basis_basis _ _ _ _
+
+/-- The contraction in components, `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ`. -/
+lemma contr_tmul_eq_sum_basis {S : Species k G K basisIdx} (c : Color K) (x : S.V c)
+    (y : S.V c.dual) :
+    S.contr c (x ⊗ₜ y) = ∑ μ, (S.basis c).repr x μ * (S.basis c.dual).repr y μ :=
+  Module.Basis.coordPairing_tmul _ _ x y
+
+/-- The contraction is symmetric, `u^μ α_μ = α_μ u^μ`. -/
+lemma contr_tmul_symm (S : Species k G K basisIdx) (c : Color K) (x : S.V c) (y : S.V c.dual) :
+    S.contr c (x ⊗ₜ[k] y) = S.contr c.dual (y ⊗ₜ[k] x) :=
+  Module.Basis.coordPairing_comm _ _ _ _
+
+/-- Contracting a basis vector `e_μ` with `α` reads off its component `α_μ`. -/
+lemma contr_basis_tmul (S : Species k G K basisIdx) (c : Color K) (μ : basisIdx c.kind)
+    (α : S.V c.dual) : S.contr c (S.basis c μ ⊗ₜ α) = (S.basis c.dual).repr α μ := by
+  rw [contr_tmul_symm]
+  exact Module.Basis.coordPairing_tmul_basis _ _ _ _
+
+/-- The contraction is nondegenerate in its second argument. Two vectors of `c.dual` with the
+same contraction against every vector of `c` are equal. -/
+lemma ext_contr {S : Species k G K basisIdx} {c : Color K} {α α' : S.V c.dual}
+    (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
+  (S.basis c.dual).repr.injective <| Finsupp.ext fun μ => by
+    simpa [contr_basis_tmul] using h (S.basis c μ)
+
+/-- The snake law `u^μ δ_μ^ν = u^ν`: the delta, read as a linear map through the contraction
+(`pairingToLinearMap`), is the identity. The vector `u` is contracted with the first factor of
+the delta. -/
+lemma snake (S : Species k G K basisIdx) (c : Color K) :
+    pairingToLinearMap (S.contr c).toLinearMap (S.delta c) = LinearMap.id :=
+  Module.Basis.pairingToLinearMap_coordPairing_coevaluation _ _
+
+/-- The invariance `Species.invariant`, from an invariant pairing for which the bases are dual. -/
+lemma coordPairing_rep_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommGroup M]
+    [Module k M] [AddCommGroup N] [Module k N] {ρ : Representation k G M}
+    {ρ' : Representation k G N} {b : Module.Basis ι k M} {b' : Module.Basis ι k N}
+    (p : (ρ.tprod ρ').IntertwiningMap (Representation.trivial k G k))
+    (h : ∀ I J, p (b I ⊗ₜ b' J) = if I = J then 1 else 0) (g : G) (x : M) (y : N) :
+    b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y) := by
+  rw [← b.eq_coordPairing b' p.toLinearMap h]
+  simpa using Representation.IntertwiningMap.isIntertwining _ _ p g (x ⊗ₜ y)
+
 /-!
 
-## B. Invariance of the contraction, invariance and symmetry of the delta
+## B. Invariance, symmetry of the delta, and tensors of two factors as linear maps
 
 -/
 
@@ -143,6 +187,12 @@ lemma contr_invariant (S : Species k G K basisIdx) (c : Color K) (g : G) (x : S.
   change S.contr c ((S.rep c).tprod (S.rep c.dual) g (x ⊗ₜ[k] y)) = _
   rw [(S.contr c).isIntertwining]
   simp
+
+/-- Contracting `u` with `Λα` is contracting `Λ⁻¹u` with `α`. -/
+lemma contr_tmul_rep (S : Species k G K basisIdx) (c : Color K) (g : G) (u : S.V c)
+    (α : S.V c.dual) : S.contr c (u ⊗ₜ S.rep c.dual g α) = S.contr c (S.rep c g⁻¹ u ⊗ₜ α) := by
+  conv_lhs => rw [← Representation.self_inv_apply (S.rep c) g u]
+  exact S.contr_invariant c g _ α
 
 /-- A tensor `z ∈ V c.dual ⊗ U` read through the contraction as a linear map `x ↦ z x` from
 `V c` to `U` satisfies `((Λ ⊗ f) z)(Λx) = f (z x)` for every `Λ : G` and linear map `f` on `U`.
@@ -159,8 +209,7 @@ lemma pairingToLinearMap_contr_map_rep (S : Species k G K basisIdx) (c : Color K
   | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz']
 
 /-- A tensor `z ∈ V c.dual ⊗ U` is recovered from its linear map `x ↦ z x` by applying the map
-to the `V c` factor of the delta of `c.dual` with its factors swapped. In bases of `c` and `c.dual`
-that are dual, this reads `z = e^μ ⊗ z(e_μ)`. -/
+to the `V c` factor of the delta of `c.dual` with its factors swapped, `z = e^μ ⊗ z(e_μ)`. -/
 lemma lTensor_pairingToLinearMap_comm_delta_dual (S : Species k G K basisIdx) (c : Color K)
     {U : Type} [AddCommGroup U] [Module k U] (z : S.V c.dual ⊗[k] U) :
     (pairingToLinearMap (S.contr c).toLinearMap z).lTensor (S.V c.dual)
@@ -177,152 +226,143 @@ lemma lTensor_pairingToLinearMap_comm_delta_dual (S : Species k G K basisIdx) (c
         Representation.IntertwiningMap.toLinearMap_apply, tmul_smul, smul_tmul']
       rw [S.contr_tmul_symm c e₁ w]
 
-/-- A tensor `z ∈ V c.dual ⊗ U` is determined by the linear map `x ↦ z x` from `V c` to `U` it
-defines through the contraction. In particular `δ_μ^ν` is the only tensor acting as the
-identity. -/
-lemma pairingToLinearMap_contr_injective (S : Species k G K basisIdx) (c : Color K) {U : Type}
-    [AddCommGroup U] [Module k U] :
-    Function.Injective (pairingToLinearMap (S.contr c).toLinearMap :
-      S.V c.dual ⊗[k] U →ₗ[k] S.V c →ₗ[k] U) := fun z z' h => by
-  rw [← S.lTensor_pairingToLinearMap_comm_delta_dual c z,
-    ← S.lTensor_pairingToLinearMap_comm_delta_dual c z', h]
-
 /-- The delta of `c` is the delta of `c.dual ∈ V c ⊗ V c.dual` with its factors swapped. -/
 lemma delta_eq_comm_delta_dual (S : Species k G K basisIdx) (c : Color K) :
     S.delta c = TensorProduct.comm k _ _ (S.delta c.dual) := by
-  simpa [S.snake c] using (S.lTensor_pairingToLinearMap_comm_delta_dual c (S.delta c)).symm
+  simp only [delta, Module.Basis.coevaluation, map_sum, TensorProduct.comm_tmul]
+
+/-- An element `z` of `V a ⊗ U` as the linear map `V a.dual → U` that contracts a vector with the
+first factor of `z`, as `v^μ ↦ v^μ g_μν` for `g` in `V a ⊗ V b`. Every linear map arises so. -/
+noncomputable def toLin (S : Species k G K basisIdx) {a : Color K} {U : Type} [AddCommGroup U]
+    [Module k U] : S.V a ⊗[k] U ≃ₗ[k] (S.V a.dual →ₗ[k] U) :=
+  -- The inverse sends `f` to `(id ⊗ f) δ`, by the snake law.
+  LinearEquiv.ofLinearMap (pairingToLinearMap (S.contr a.dual).toLinearMap)
+    ((LinearMap.lTensorHom (S.V a.dual.dual)).flip (S.delta a.dual))
+    (LinearMap.ext fun f => by simp [pairingToLinearMap_lTensor, S.snake])
+    (LinearMap.ext fun z => by simpa [S.delta_eq_comm_delta_dual a.dual] using
+      S.lTensor_pairingToLinearMap_comm_delta_dual a.dual z)
 
 /-- The delta is invariant, `Λ δ = δ`. -/
 lemma delta_invariant (S : Species k G K basisIdx) (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
   -- Both act as the identity: `(Λδ)(Λx) = Λx` by the snake law.
-  apply S.pairingToLinearMap_contr_injective c
+  apply (S.toLin (a := c.dual)).injective
+  change pairingToLinearMap (S.contr c).toLinearMap _ = pairingToLinearMap (S.contr c).toLinearMap _
   ext x
   conv_lhs => rw [← Representation.self_inv_apply (S.rep c) g x]
   rw [S.pairingToLinearMap_contr_map_rep, S.snake c, LinearMap.id_apply, LinearMap.id_apply,
     Representation.self_inv_apply]
 
+/-- The linear map of `Λg` sends `Λv` to `Λ(g v)`, as `(Λg)_μν (Λv)^μ = Λ(g_μν v^μ)`. -/
+lemma toLin_map_rep (S : Species k G K basisIdx) {a b : Color K} (g : S.V a ⊗[k] S.V b) (Λ : G)
+    (x : S.V a.dual) :
+    S.toLin (TensorProduct.map (S.rep a Λ) (S.rep b Λ) g) (S.rep a.dual Λ x) =
+      S.rep b Λ (S.toLin g x) :=
+  S.pairingToLinearMap_contr_map_rep a.dual Λ (S.rep b Λ) g x
+
+/-- The linear map of `Λg` is bijective when that of `g` is. -/
+lemma toLin_map_rep_bijective (S : Species k G K basisIdx) {a b : Color K}
+    (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) (Λ : G) :
+    Function.Bijective (S.toLin (TensorProduct.map (S.rep a Λ) (S.rep b Λ) g)) := by
+  -- The map of `Λg` is `Λ ∘ g ∘ Λ⁻¹`, a composite of bijections.
+  have e : ⇑(S.toLin (TensorProduct.map (S.rep a Λ) (S.rep b Λ) g)) =
+      S.rep b Λ ∘ S.toLin g ∘ S.rep a.dual Λ⁻¹ := by
+    funext x
+    simp only [Function.comp_apply, ← S.toLin_map_rep, Representation.self_inv_apply]
+  rw [e]
+  refine (?_ : Function.Bijective (S.rep b Λ)).comp (h.comp ?_)
+  · exact ⟨fun x y hxy => by simpa using congrArg (S.rep b Λ⁻¹) hxy,
+      fun y => ⟨S.rep b Λ⁻¹ y, Representation.self_inv_apply _ _ _⟩⟩
+  · exact ⟨fun x y hxy => by simpa using congrArg (S.rep a.dual Λ) hxy,
+      fun y => ⟨S.rep a.dual Λ y, Representation.inv_self_apply _ _ _⟩⟩
+
 /-!
 
-## C. Tensors
+## C. Components of a tensor of two factors read as a linear map
 
 -/
-
-/-- The space `⨂[k] i, S.V (c i)` of tensors with colors `c` on the slots `ι`. It is a `def`, not
-an `abbrev`, so that the type remembers `S` and instances on `⨂` from elsewhere do not apply. -/
-def Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
-  ⨂[k] i, S.V (c i)
-
-noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Color K} :
-    AddCommGroup (S.Tensor c) :=
-  inferInstanceAs (AddCommGroup (⨂[k] i, S.V (c i)))
-
-noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Color K} :
-    Module k (S.Tensor c) :=
-  inferInstanceAs (Module k (⨂[k] i, S.V (c i)))
-
-variable {ι : Type} {c : ι → Color K}
-
-/-- The identity from `S.Tensor c` to Mathlib's `⨂[k] i, S.V (c i)`, as a linear equivalence.
-Mathlib's constructions on `⨂` are composed with it. -/
-noncomputable def toPiTensor (S : Species k G K basisIdx) (c : ι → Color K) :
-    S.Tensor c ≃ₗ[k] ⨂[k] i, S.V (c i) :=
-  LinearEquiv.refl k _
-
-/-- The pure tensor of a family of vectors, one per slot, such as `u ⊗ α ⊗ β` with components
-`u^μ α_ν β_ρ`. It is Mathlib's `⨂ₜ[k] i, f i`. -/
-noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : S.Tensor c :=
-  (S.toPiTensor c).symm (⨂ₜ[k] i, f i)
 
 variable {S : Species k G K basisIdx}
 
-@[simp]
-lemma toPiTensor_pure (f : Π i, S.V (c i)) : S.toPiTensor c (S.pure f) = ⨂ₜ[k] i, f i := rfl
+/-- A tensor `F = F_μ^ν e^μ ⊗ e_ν` in `V c.dual ⊗ V d`, read through the contraction as a linear
+map, sends `v` to `v^μ F_μ^ν e_ν`. -/
+lemma basis_repr_pairingToLinearMap_contr (c : Color K) {d : Color K}
+    (F : S.V c.dual ⊗[k] S.V d) (v : S.V c) (ν : basisIdx d.kind) :
+    (S.basis d).repr (pairingToLinearMap (S.contr c).toLinearMap F v) ν =
+      ∑ μ, (S.basis c).repr v μ * ((S.basis c.dual).tensorProduct (S.basis d)).repr F (μ, ν) := by
+  induction F using TensorProduct.inductionOn with
+  | add x y hx hy =>
+    simp only [map_add, LinearMap.add_apply, Finsupp.add_apply, hx, hy, mul_add,
+      Finset.sum_add_distrib]
+  | tmul x y =>
+    rw [pairingToLinearMap_tmul, map_smul, Finsupp.smul_apply, smul_eq_mul]
+    change S.contr c (v ⊗ₜ x) * _ = _
+    simp only [contr_tmul_eq_sum_basis, Module.Basis.tensorProduct_repr_tmul_apply, smul_eq_mul,
+      Finset.sum_mul]
+    exact Finset.sum_congr rfl fun _ _ => by ring
 
-@[simp]
-lemma toPiTensor_symm_tprod (f : Π i, S.V (c i)) :
-    (S.toPiTensor c).symm (⨂ₜ[k] i, f i) = S.pure f := rfl
-
-/-- Induction on tensors through pure tensors: every tensor is a sum of pure tensors. -/
-lemma inductionOn_pure {P : S.Tensor c → Prop}
-    (h : ∀ f : Π i, S.V (c i), P (S.pure f)) (hsmul : ∀ (r : k) t, P t → P (r • t))
-    (hadd : ∀ t₁ t₂, P t₁ → P t₂ → P (t₁ + t₂)) (t : S.Tensor c) : P t :=
-  PiTensorProduct.induction_on (motive := P) t (fun r f => hsmul r _ (h f)) hadd
+/-- `toLin F ∘ₗ toLin F'` is the identity when the matrices of components of `F'` and `F` multiply
+to the identity, `F'^μρ F_ρν = δ^μ_ν`. -/
+lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
+    (F' : S.V c.dual ⊗[k] S.V c.dual)
+    (h : Matrix.of (fun μ ν => ((S.basis c.dual).tensorProduct (S.basis c.dual)).repr F' (μ, ν)) *
+      Matrix.of (fun μ ν => ((S.basis c).tensorProduct (S.basis c)).repr F (μ, ν)) = 1) :
+    S.toLin F ∘ₗ S.toLin F' = LinearMap.id := by
+  refine (S.basis c).ext fun μ => (S.basis c).repr.injective (Finsupp.ext fun ν => ?_)
+  have hμν := congrFun (congrFun h μ) ν
+  rw [Matrix.mul_apply, Matrix.one_apply] at hμν
+  change (S.basis c).repr (pairingToLinearMap (S.contr c.dual).toLinearMap F
+    (pairingToLinearMap (S.contr c).toLinearMap F' (S.basis c μ))) ν = _
+  simp only [basis_repr_pairingToLinearMap_contr, Module.Basis.repr_self, Finsupp.single_apply,
+    ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true, LinearMap.id_apply]
+  exact hμν
 
 /-!
 
-## D. The group action
+## D. Moving a vector along an equality of colors
 
 -/
 
-/-- The group acts on every slot by the representation of its color,
-`Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`, through Mathlib's `PiTensorProduct.mapMonoidHom`. -/
-noncomputable instance : DistribMulAction G (S.Tensor c) :=
-  DistribMulAction.compHom (M := Module.End k (S.Tensor c)) _
-    (PiTensorProduct.mapMonoidHom.comp (MonoidHom.pi fun i => S.rep (c i)))
-
-@[simp]
-lemma smul_pure (g : G) (f : Π i, S.V (c i)) :
-    g • S.pure f = S.pure fun i => S.rep (c i) g (f i) :=
-  PiTensorProduct.map_tprod _ _
-
-noncomputable instance : SMulCommClass G k (S.Tensor c) where
-  smul_comm g r t := by
-    change PiTensorProduct.map (fun i => S.rep (c i) g) (r • t) = r • PiTensorProduct.map _ t
-    exact map_smul _ r t
-
-noncomputable instance : SMulCommClass k G (S.Tensor c) := .symm _ _ _
-
-/-- A linear or conjugate-linear map of tensors that commutes with `Λ` on pure tensors commutes
-with `Λ` on all tensors. -/
-lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F : Type}
-    [FunLike F (S.Tensor c) (S.Tensor c')] [SemilinearMapClass F σ (S.Tensor c) (S.Tensor c')]
-    (f : F) (g : G) (h : ∀ p : Π i, S.V (c i), f (g • S.pure p) = g • f (S.pure p))
-    (t : S.Tensor c) : f (g • t) = g • f t := by
-  induction t using inductionOn_pure with
-  | h p => exact h p
-  | hsmul r t ht => rw [smul_comm, map_smulₛₗ, ht, map_smulₛₗ, smul_comm]
-  | hadd x y hx hy => rw [smul_add, map_add, hx, hy, map_add, smul_add]
+variable (S) in
+/-- Moving a vector along an equality of colors `a = a'`, Mathlib's `LinearEquiv.cast`. -/
+protected abbrev cast {a a' : Color K} (p : a = a') : S.V a ≃ₗ[k] S.V a' :=
+  LinearEquiv.cast p
 
 /-- Moving a vector along an equality of colors `a = a'` commutes with the group action. -/
 lemma cast_rep {a a' : Color K} (p : a = a') (g : G) (x : S.V a) :
-    LinearEquiv.cast (R := k) (M := S.V) p (S.rep a g x) =
-      S.rep a' g (LinearEquiv.cast (R := k) (M := S.V) p x) := by
+    S.cast p (S.rep a g x) = S.rep a' g (S.cast p x) := by
   subst p
   rfl
 
-/-!
+/-- Moving a vector along an equality of colors `a = b` keeps its components, with the label cast
+back to a label at `a`. -/
+lemma basis_repr_cast {a b : Color K} (p : a = b) (v : S.V a) (μ : basisIdx b.kind) :
+    (S.basis b).repr (S.cast p v) μ =
+      (S.basis a).repr v (cast (congrArg (basisIdx ∘ Color.kind) p.symm) μ) := by
+  subst p
+  rfl
 
-## E. The basis of tensors
+/-- Moving the vector of a family `f` at the slot `s` depends only on the slot, so it may be read
+at any slot `s'` equal to `s`. -/
+lemma cast_eq_cast_of_eq {ι : Type} {d : ι → Color K} (f : Π s, S.V (d s)) {s s' : ι}
+    (e : s = s') {b : Color K} (p : d s = b) : S.cast p (f s) = S.cast (e ▸ p) (f s') := by
+  subst e
+  rfl
 
--/
+/-- The contraction of two vectors does not depend on the colors they are moved to. -/
+lemma contr_cast_tmul_cast {d e a b : Color K} (x : S.V d) (y : S.V e) (p : d = a)
+    (q : e = a.dual) (p' : d = b) (q' : e = b.dual) :
+    S.contr a (S.cast p x ⊗ₜ S.cast q y) = S.contr b (S.cast p' x ⊗ₜ S.cast q' y) := by
+  subst p p'
+  rfl
 
-/-- The basis `e_μ ⊗ e^ν ⊗ …` of tensors, Mathlib's `Basis.piTensorProduct` of the bases of the
-colors. -/
-noncomputable def tensorBasis (S : Species k G K basisIdx) [Fintype ι] (c : ι → Color K) :
-    Module.Basis (Π i, basisIdx (c i).kind) k (S.Tensor c) :=
-  (Basis.piTensorProduct fun i => S.basis (c i)).map (S.toPiTensor c).symm
-
-/-- A basis tensor is the pure tensor of basis vectors, `e_μ ⊗ e^ν ⊗ …`. -/
-lemma tensorBasis_apply [Fintype ι] (x : Π i, basisIdx (c i).kind) :
-    S.tensorBasis c x = S.pure fun i => S.basis (c i) (x i) := by
-  simp [tensorBasis, Basis.piTensorProduct_apply]
-
-/-- The components of a pure tensor are products, `(u ⊗ α)^μ_ν = u^μ α_ν`. -/
-lemma tensorBasis_repr_pure [Fintype ι] (f : Π i, S.V (c i))
-    (x : Π i, basisIdx (c i).kind) :
-    (S.tensorBasis c).repr (S.pure f) x = ∏ i, (S.basis (c i)).repr (f i) (x i) := by
-  simp [tensorBasis, Basis.piTensorProduct_repr_tprod_apply]
-
-/-- The contraction in components, `∑ μ ν, u^μ α_ν C_μ^ν`, where `C_μ^ν = S.contr c (e_μ ⊗ e^ν)`.
-When the bases of `c` and `c.dual` are dual, `C_μ^ν` is `1` for `μ = ν` and `0` otherwise, and
-the sum has one index. A species does not require this. -/
-lemma contr_tmul_eq_sum_basis (c : Color K) (x : S.V c) (y : S.V c.dual) :
-    S.contr c (x ⊗ₜ y) =
-      ∑ μ, ∑ ν, (S.basis c).repr x μ * (S.basis c.dual).repr y ν *
-        S.contr c (S.basis c μ ⊗ₜ S.basis c.dual ν) := by
-  simpa [Finsupp.sum_fintype, mul_assoc] using (LinearMap.sum_repr_mul_repr_mul (S.basis c)
-    (S.basis c.dual) (B := TensorProduct.curry (S.contr c).toLinearMap) x y).symm
+/-- `contr_tmul_symm` for vectors moved along equalities of colors, `u^μ α_μ = α_μ u^μ`. -/
+lemma contr_cast_tmul_cast_symm {d e a b : Color K} (x : S.V d) (y : S.V e) (p : d = a)
+    (q : e = a.dual) (p' : e = b) (q' : d = b.dual) :
+    S.contr a (S.cast p x ⊗ₜ S.cast q y) = S.contr b (S.cast p' y ⊗ₜ S.cast q' x) := by
+  subst p p'
+  subst q
+  exact S.contr_tmul_symm _ _ _
 
 end Species
 

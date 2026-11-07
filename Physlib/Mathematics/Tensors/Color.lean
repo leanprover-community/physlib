@@ -15,26 +15,27 @@ variance.
 
 ## i. Overview
 
-The color of a tensor slot says which representation the slot carries. It is unrelated to the
-color charge of QCD. A color `⟨κ, v⟩ : Color K` pairs a kind of index `κ : K` with a variance `v`,
-`up` or `down`. For Lorentz tensors there is one kind, `vec`. The index of `v^μ` has color
-`⟨vec, up⟩` and the index of `w_μ` has color `⟨vec, down⟩`. A color is a label, not a space. A
-species (`Species.lean`) assigns a space to each color, `V ⟨vec, up⟩ = ℝ⁴` and
-`V ⟨vec, down⟩ = (ℝ⁴)*`.
+A color is the type of an index, made of a kind `κ : K` and a variance, `up` or `down`. A
+species (`Species.lean`) assigns a vector space to each color. The kind fixes the basis labels,
+and the variance says whether the index is that of a vector (`up`) or a covector (`down`). Lorentz
+tensors have one kind, `vec`. The vector `v^μ` has color `⟨vec, up⟩` with space `ℝ⁴`, and the
+covector `w_μ` has color `⟨vec, down⟩` with space `(ℝ⁴)*`.
 
-The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, with `up.dual = down` and `down.dual = up`. A contraction
-such as `v^μ w_μ` pairs a slot of color `c` with a slot of color `c.dual`.
+The slots of a tensor are labelled by colors, not by spaces, so that matching a slot with its
+dual is a decidable equality of labels, not an equality of types. The dual of `⟨κ, v⟩` is
+`⟨κ, v.dual⟩`, and a contraction such as `v^μ w_μ` pairs a slot of color `c` with a slot of
+color `c.dual`.
 
-A variance stores two booleans, whether it is up and whether it is down, and `dual` swaps them.
-So `v.dual.dual = v` and `c.dual.dual = c` hold by `rfl` for a variable `v` or `c`, and a
-statement that takes a dual twice needs no cast. With an inductive `up | down` the same equation
-needs a case split on `v`.
+`Variance` is two booleans, and `dual` swaps them. Swapping twice gives back the same structure,
+so `c.dual.dual = c` holds by `rfl` for a variable color `c`. `Color K` is a structure, rather
+than the product `K × Variance`, so that `c.dual` works as dot notation.
 
 ## ii. Key results
 
-- `Variance` : the variance of an index, with `Variance.up`, `Variance.down` and `Variance.dual`.
-- `Color` : a kind of index and a variance.
-- `Color.dual` : the dual color, with `Color.dual_dual : c.dual.dual = c` by `rfl`.
+- `Variance` is the variance of an index, with `Variance.up`, `Variance.down` and
+  `Variance.dual`.
+- `Color` is a kind of index and a variance.
+- `Color.dual` is the dual color, and `Color.dual_dual` proves `c.dual.dual = c` by `rfl`.
 
 ## iii. Table of contents
 
@@ -42,6 +43,8 @@ needs a case split on `v`.
 - B. Colors
 
 ## iv. References
+
+None.
 
 -/
 
@@ -55,10 +58,7 @@ namespace Tensors
 
 -/
 
-/-- The variance of an index, up (contravariant, `v^μ`) or down (covariant, `w_μ`). It stores
-whether the index is up and whether it is down, so that `dual` swaps the two fields and
-`v.dual.dual = v` holds by `rfl`. A match on both fields has two impossible cases, closed by
-`ne`. -/
+/-- The variance of an index, up (contravariant, `v^μ`) or down (covariant, `w_μ`). -/
 structure Variance where
   /-- Whether the index is up. -/
   isUp : Bool
@@ -71,13 +71,15 @@ deriving DecidableEq
 namespace Variance
 
 /-- An upper index, as in `v^μ`. -/
-def up : Variance := ⟨true, false, by decide⟩
+@[match_pattern]
+abbrev up : Variance := ⟨true, false, by decide⟩
 
 /-- A lower index, as in `w_μ`. -/
-def down : Variance := ⟨false, true, by decide⟩
+@[match_pattern]
+abbrev down : Variance := ⟨false, true, by decide⟩
 
-/-- The dual variance, which exchanges up and down. It is an `abbrev` because rewriting with the
-species laws needs `c.dual.dual` and `c` to agree when only reducible definitions unfold. -/
+-- An abbrev, since the species laws rewrite with `c.dual.dual = c` at reducible transparency.
+/-- The dual variance, exchanging up and down. -/
 abbrev dual (v : Variance) : Variance := ⟨v.isDown, v.isUp, v.ne.symm⟩
 
 @[simp]
@@ -86,7 +88,7 @@ lemma dual_up : up.dual = down := rfl
 @[simp]
 lemma dual_down : down.dual = up := rfl
 
-/-- Taking the dual twice gives back the variance, by `rfl`. -/
+/-- Taking the dual twice gives back the variance. -/
 lemma dual_dual (v : Variance) : v.dual.dual = v := rfl
 
 end Variance
@@ -97,7 +99,7 @@ end Variance
 
 -/
 
-/-- A color `⟨κ, v⟩`: a kind of index `κ : K` and its variance `v`. -/
+/-- A color `⟨κ, v⟩`, made of a kind of index `κ : K` and its variance `v`. -/
 structure Color (K : Type) where
   /-- The kind of index, such as the Lorentz vector index `vec` or a left-handed Weyl index. -/
   kind : K
@@ -105,16 +107,15 @@ structure Color (K : Type) where
   variance : Variance
 deriving DecidableEq
 
-/-- The dual color: the same kind, the other variance. -/
+/-- The dual color, with the same kind and the other variance. -/
 abbrev Color.dual {K : Type} (c : Color K) : Color K := ⟨c.kind, c.variance.dual⟩
 
-/-- The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, so that `simp` rewrites the dual of `⟨κ, up⟩` to
-`⟨κ, down⟩`. -/
+/-- The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`. -/
 @[simp]
 lemma Color.dual_mk {K : Type} (κ : K) (v : Variance) :
     (⟨κ, v⟩ : Color K).dual = ⟨κ, v.dual⟩ := rfl
 
-/-- Taking the dual twice gives back the color, by `rfl`. -/
+/-- Taking the dual twice gives back the color. -/
 lemma Color.dual_dual {K : Type} (c : Color K) : c.dual.dual = c := rfl
 
 end Tensors
