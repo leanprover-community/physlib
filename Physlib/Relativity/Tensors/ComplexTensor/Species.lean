@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.Tensors.Elab
+public import Physlib.Mathematics.Tensors.Schouten
 public import Physlib.Mathematics.Tensors.Conjugation
 public import Physlib.Relativity.Fermions.Weyl.Metric
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Pre

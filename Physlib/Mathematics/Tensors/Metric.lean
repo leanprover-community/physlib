@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Physlib.Mathematics.ForMathlib.Schouten
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 public import Physlib.Mathematics.Tensors.Contraction

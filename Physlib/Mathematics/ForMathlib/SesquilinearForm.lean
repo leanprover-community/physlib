@@ -30,7 +30,6 @@ in a basis it is positive-definite exactly when its matrix is.
 - `LinearMap.IsPosDef.nondegenerate` : a positive-definite form is nondegenerate.
 - `LinearMap.isPosDef_iff_posDef_toMatrix` : a form is positive-definite exactly when its matrix in
   a basis is.
-- `LinearMap.IsAlt.schouten` : the Schouten identity for an alternating form in two dimensions.
 
 ## iii. Table of contents
 
@@ -38,7 +37,6 @@ in a basis it is positive-definite exactly when its matrix is.
   - A.1. The definition
   - A.2. Consequences over a preorder
   - A.3. The matrix of a positive-definite form
-- B. Alternating forms in two dimensions
 
 ## iv. References
 
@@ -120,29 +118,3 @@ lemma isPosDef_iff_posDef_toMatrix (b : Basis n R M) : B.IsPosDef ↔ (toMatrix�
 end toMatrix
 
 end LinearMap
-
-/-!
-
-## B. Alternating forms in two dimensions
-
--/
-
-namespace LinearMap.IsAlt
-
-variable {R M ι : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Fintype ι]
-  [DecidableEq ι] {B : LinearMap.BilinForm R M}
-
-/-- The Schouten identity, `B(u, v) w + B(v, w) u + B(w, u) v = 0`, for an alternating bilinear
-form on a module with a basis of two vectors. -/
-lemma schouten (hB : LinearMap.IsAlt B) (b : Basis ι R M) (h2 : Fintype.card ι = 2) (u v w : M) :
-    B u v • w + B v w • u + B w u • v = 0 := by
-  obtain ⟨i, j, hij, huniv⟩ := Finset.card_eq_two.mp (h2 : Finset.univ.card = 2)
-  -- Each vector is `x^i e_i + x^j e_j`, and `B` vanishes on `e_i, e_i` and on `e_j, e_j`.
-  have hexp (x : M) : x = b.repr x i • b i + b.repr x j • b j := by
-    conv_lhs => rw [← b.sum_repr x, huniv, Finset.sum_pair hij]
-  rw [hexp u, hexp v, hexp w]
-  simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
-    LinearMap.IsAlt.self_eq_zero hB, (LinearMap.IsAlt.neg hB (b i) (b j)).symm]
-  module
-
-end LinearMap.IsAlt
