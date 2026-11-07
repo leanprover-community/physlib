@@ -150,8 +150,12 @@ lemma eq_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (p : 
 /-- `b.coordPairing b' (x ⊗ₜ y) = b'.coordPairing b (y ⊗ₜ x)`: swapping slots swaps the bases. -/
 lemma coordPairing_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (y : N) :
     b.coordPairing b' (x ⊗ₜ[R] y) = b'.coordPairing b (y ⊗ₜ[R] x) := by
-  rw [coordPairing_tmul, coordPairing_tmul]
-  exact Finset.sum_congr rfl fun I _ => mul_comm _ _
+  simp only [coordPairing_tmul, mul_comm]
+
+/-- `b.coordPairing b' (b I ⊗ₜ y) = y_I`: pairing with the first basis reads off a coordinate. -/
+lemma coordPairing_basis_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I : ι) (y : N) :
+    b.coordPairing b' (b I ⊗ₜ[R] y) = b'.equivFun y I := by
+  rw [coordPairing_comm, coordPairing_tmul_basis]
 
 /-- The delta `∑_I b_I ⊗ b'_I ∈ M ⊗ N` of two bases with the same labels. -/
 noncomputable def coevaluation (b : Module.Basis ι R M) (b' : Module.Basis ι R N) : M ⊗[R] N :=
@@ -177,8 +181,6 @@ lemma lTensor_pairingToLinearMap_coevaluation {U : Type*} [AddCommMonoid U] [Mod
     simp only [coevaluation, map_sum, LinearMap.lTensor_tmul, pairingToLinearMap_tmul,
       TensorProduct.tmul_smul]
     conv_rhs => rw [← b'.sum_repr w, TensorProduct.sum_tmul]
-    exact Finset.sum_congr rfl fun I _ => by
-      rw [coordPairing_comm, coordPairing_tmul_basis, Module.Basis.equivFun_apply,
-        TensorProduct.smul_tmul']
+    simp only [coordPairing_basis_tmul, Module.Basis.equivFun_apply, TensorProduct.smul_tmul']
 
 end Module.Basis
