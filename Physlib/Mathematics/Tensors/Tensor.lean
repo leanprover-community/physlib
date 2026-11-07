@@ -67,9 +67,10 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`.
-- `Species.congrSlots` applies an equivalence of representations at every slot.
 - `Species.mapSlots` applies a linear map at every slot, with `Species.mapSlots_comp` and
-  `Species.mapSlots_id`.
+  `Species.mapSlots_id`, and `Species.mapSlots_smul` proves that it commutes with the group when
+  every slot map does.
+- `Species.congrSlots` applies an equivalence of representations at every slot.
 - `Species.slotMapsAt` is the family of a linear map at one slot and the identity at the others,
   and `Species.mapAt` applies it, with `Species.mapAt_pure`, `Species.mapAt_comp` and
   `Species.mapAt_id`.
@@ -326,23 +327,6 @@ section
 variable {c' : ι → Color K}
 
 variable (S) in
-/-- Equivalences of representations `f x` at every slot `x`, as an equivalence of representations
-of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.congr`. -/
-noncomputable def congrSlots (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
-    (S.tensorRep c).Equiv (S.tensorRep c') :=
-  equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.congr (fun x => (f x).toLinearEquiv) ≪≫ₗ
-    (S.toPiTensor c').symm) fun g p => by
-      simp only [smul_pure, LinearEquiv.trans_apply, toPiTensor_pure, congr_tprod,
-        toPiTensor_symm_tprod]
-      exact congrArg S.pure (funext fun x =>
-        Representation.IntertwiningMap.isIntertwining _ _ (f x).toIntertwiningMap g (p x))
-
-/-- On a pure tensor, `congrSlots` applies `f x` to the vector at each slot `x`. -/
-lemma congrSlots_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
-    S.congrSlots f (S.pure p) = S.pure fun x => f x (p x) := by
-  simp [congrSlots, congr_tprod]
-
-variable (S) in
 /-- A linear map `f x` at every slot `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
 `PiTensorProduct.map`. -/
 noncomputable def mapSlots (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : S.Tensor c →ₗ[k] S.Tensor c' :=
@@ -374,6 +358,27 @@ lemma mapSlots_id : S.mapSlots (c := c) (fun _ => LinearMap.id) = LinearMap.id :
 lemma mapSlots_id_apply (t : S.Tensor c) : S.mapSlots (fun _ => LinearMap.id) t = t :=
   LinearMap.congr_fun mapSlots_id t
 
+/-- Linear maps that commute with the group action at every slot commute with it on tensors,
+`f (Λ T) = Λ f T`. -/
+lemma mapSlots_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
+    (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : S.Tensor c) :
+    S.mapSlots f (g • t) = g • S.mapSlots f t :=
+  map_smul_of_pure _ g (fun p => by simp only [smul_pure, mapSlots_pure, hf]) t
+
+variable (S) in
+/-- Equivalences of representations `f x` at every slot `x`, as an equivalence of representations
+of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.congr`. -/
+noncomputable def congrSlots (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
+    (S.tensorRep c).Equiv (S.tensorRep c') :=
+  equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.congr (fun x => (f x).toLinearEquiv) ≪≫ₗ
+    (S.toPiTensor c').symm) fun g p =>
+      mapSlots_smul (fun x => (f x).toIntertwiningMap.isIntertwining _ _) g (S.pure p)
+
+/-- On a pure tensor, `congrSlots` applies `f x` to the vector at each slot `x`. -/
+lemma congrSlots_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
+    S.congrSlots f (S.pure p) = S.pure fun x => f x (p x) :=
+  mapSlots_pure (fun x => (f x).toLinearMap) p
+
 section
 
 variable [DecidableEq ι]
@@ -402,6 +407,15 @@ lemma eq_slotMapsAt {F : Π x, S.V (c x) →ₗ[k] S.V (c' x)} (i : ι)
     (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x) (hi : F i = f)
     (hne : ∀ x (hx : x ≠ i), F x = (S.cast (h x hx)).toLinearMap) : F = S.slotMapsAt i f h :=
   Function.eq_update_iff.2 ⟨hi, fun x hx => by rw [hne x hx, dite_eq_right hx]⟩
+
+/-- `slotMapsAt i f h` commutes with the group action at every slot when `f` does. -/
+lemma slotMapsAt_rep (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
+    (hf : ∀ g v, f (S.rep (c i) g v) = S.rep (c' i) g (f v)) (x : ι) (g : G) (v : S.V (c x)) :
+    S.slotMapsAt i f h x (S.rep (c x) g v) = S.rep (c' x) g (S.slotMapsAt i f h x v) := by
+  by_cases hx : x = i
+  · subst hx
+    simpa using hf g v
+  · simpa [hx] using cast_rep (h x hx) g v
 
 variable (S) in
 /-- The linear map `f` at the slot `i`, and the identity, moved along `h x`, at every other slot
@@ -450,15 +464,8 @@ noncomputable def congrAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
     (by rw [mapAt_comp, show f.toLinearMap ∘ₗ f.symm.toLinearMap = LinearMap.id from
       LinearMap.ext f.apply_symm_apply, mapAt_id])
     (by rw [mapAt_comp, show f.symm.toLinearMap ∘ₗ f.toLinearMap = LinearMap.id from
-      LinearMap.ext f.symm_apply_apply, mapAt_id])) fun g p => by
-    simp only [LinearEquiv.coe_ofLinearMap, mapAt, smul_pure, mapSlots_pure]
-    refine congrArg S.pure (funext fun x => ?_)
-    by_cases hx : x = i
-    · subst hx
-      simp only [slotMapsAt_apply_self, Representation.IntertwiningMap.coe_toLinearMap]
-      exact Representation.IntertwiningMap.isIntertwining _ _ f.toIntertwiningMap g (p x)
-    · simp only [slotMapsAt_apply_ne _ _ _ hx, Representation.IntertwiningMap.coe_toLinearMap]
-      exact cast_rep _ _ _
+      LinearMap.ext f.symm_apply_apply, mapAt_id])) fun g p =>
+    mapSlots_smul (slotMapsAt_rep i _ h (f.toIntertwiningMap.isIntertwining _ _)) g (S.pure p)
 
 /-- `congrAt` is `mapAt` of the underlying linear map. -/
 lemma congrAt_eq_mapAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
