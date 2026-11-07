@@ -453,6 +453,34 @@ lemma mapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x) :
   rw [mapAt, ← eq_slotMapsAt (F := fun _ => LinearMap.id) i _ h rfl
     fun _ _ => LinearMap.ext fun _ => rfl, mapSlots_id]
 
+/-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. The
+labels `ψ` of `t` away from `i` are the labels `φ` of the result moved along `h`. -/
+lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
+    (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind)
+    (ψ : Π x, basisIdx (c x).kind)
+    (hψ : ∀ x (hx : x ≠ i), ψ x = cast (congrArg (basisIdx ∘ Color.kind) (h x hx).symm) (φ x)) :
+    (S.tensorBasis c').repr (S.mapAt i f h t) φ = ∑ μ : basisIdx (c i).kind,
+      LinearMap.toMatrix (S.basis (c i)) (S.basis (c' i)) f (φ i) μ *
+        (S.tensorBasis c).repr t (Function.update ψ i μ) := by
+  induction t using inductionOn_pure with
+  | hsmul r t ht =>
+    simp only [map_smul, Finsupp.smul_apply, ht, smul_eq_mul, Finset.mul_sum, mul_left_comm r]
+  | hadd t t' ht ht' =>
+    simp only [map_add, Finsupp.add_apply, ht, ht', mul_add, Finset.sum_add_distrib]
+  | h p =>
+    -- Split off the slot `i`, where `f` acts, from the slots where the label is only moved.
+    rw [mapAt, mapSlots_pure, tensorBasis_repr_pure,
+      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i), slotMapsAt_apply_self,
+      ← LinearMap.toMatrix_mulVec_repr (S.basis (c i)) (S.basis (c' i)), Matrix.mulVec, dotProduct,
+      Finset.sum_mul]
+    refine Finset.sum_congr rfl fun μ _ => ?_
+    rw [tensorBasis_repr_pure, ← Finset.mul_prod_erase _ _ (Finset.mem_univ i),
+      Function.update_self, mul_assoc]
+    refine congrArg _ (congrArg _ (Finset.prod_congr rfl fun x hx => ?_))
+    have hx := Finset.ne_of_mem_erase hx
+    rw [slotMapsAt_apply_ne _ _ _ hx, Function.update_of_ne hx, hψ x hx]
+    exact basis_repr_cast _ _ _
+
 variable (S) in
 /-- The equivalence of representations `f` at the slot `i`, and the identity, moved along `h x`,
 at every other slot `x`. On a pure tensor, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. Its linear map is `mapAt`
