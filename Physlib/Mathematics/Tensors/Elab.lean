@@ -750,6 +750,8 @@ private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Boo
   let inForm ← (factors P).flatMapM fun f => do
     let n := ((← literalTensorType? (← inferType f)).map (·.2.2.length)).getD 0
     return List.replicate n (skipForms && (formArgs? f).isSome)
+  -- shortcut: misses a chain of forms that reaches no other factor, as `T^μ_ν g^αβ` against
+  -- `T^μ_ν g^αγ g_γδ g^δβ`; trying the slots of forms after the others would cover it.
   let inForm := if inForm.all id then inForm.map fun _ => false else inForm
   let slotsOfColor ← colors.zipIdx.filterM fun (col, i) =>
     return !inForm.getD i false && (← isDefEqGoal col a)
