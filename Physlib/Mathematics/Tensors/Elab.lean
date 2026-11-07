@@ -441,8 +441,8 @@ macro_rules
       try refine (Species.tensorBasis _ _).repr.injective (Finsupp.ext fun $(mkIdent `φ) => ?_)
       -- `Function.update_of_ne` proves `j ≠ i` for literal slots by `ne_eq` and `Fin.reduceEq`.
       simp only [map_add, map_neg, map_zero, Finsupp.add_apply, Finsupp.neg_apply,
-        Finsupp.zero_apply, Species.Tensor.tensorBasis_repr_contr_unit,
-        Species.Tensor.tensorBasis_repr_contr_unit_sum, Species.tensorBasis_repr_reindex,
+        Finsupp.zero_apply, Species.Tensor.tensorBasis_repr_contr_one_pair,
+        Species.Tensor.tensorBasis_repr_contr_two_pairs, Species.tensorBasis_repr_reindex,
         Species.tensorBasis_repr_tmulEquiv, map_smul, Finsupp.smul_apply, smul_eq_mul,
         Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq, not_false_eq_true, $ls,*]
       -- The casts of `tensorBasis_repr_reindex` agree once the relabeling and the color lists are
@@ -503,7 +503,7 @@ lemmas loop. -/
 private def flattenContractions : TacticM Unit := do
   for _ in [0:10] do
     let before ← instantiateMVars (← getMainTarget)
-    evalTactic (← `(tactic| try simp only [Tensors.Species.Tensor.tmulEquiv_contr,
+    evalTactic (← `(tactic| try simp only [Tensors.Species.Tensor.tmulEquiv_contr_left,
       Tensors.Species.Tensor.tmulEquiv_contr_right, Tensors.Species.Tensor.contr_contr]))
     evalTactic (← `(tactic| try simp only [← Tensors.Species.tmulEquiv_assoc]))
     evalTactic (← `(tactic| try simp only [Tensors.Species.tmulEquiv_reindex_left,
@@ -594,7 +594,7 @@ elab "tensor_regroup" : tactic => do
       -- color variables of the goal although the bijections of slots do not depend on them.
       evalTactic (← `(tactic| set_option synthInstance.maxSize 4096 in
         exact Tensors.Species.Tensor.contr_eq_of_samePair _ _ (of_decide_eq_true rfl)
-          (of_decide_eq_true rfl) (of_decide_eq_true rfl) _))
+          (of_decide_eq_true rfl) _))
       return
     catch e => lastError := e.toMessageData
   throwError "tensor_regroup: no matching of the factors gives two contractions of the same pairs \
@@ -695,9 +695,9 @@ example (f : Fin 2 → Color K) (t : S.Tensor f) : S.Tensor f := {t | μ ν}ᵀ
 #check {T | μ ν ⊗ T | μ ρ}ᵀ
 
 /-- Contracting `ν` and then `ρ` is contracting both at once, `(T U)^μ_ρ W^ρ_τ = T^μ_ν U^ν_ρ W^ρ_τ`,
-by `tmulEquiv_contr` and `contr_contr`. -/
+by `tmulEquiv_contr_left` and `contr_contr`. -/
 example : {{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ U | ν ρ ⊗ W | ρ τ}ᵀ := by
-  rw [Tensor.tmulEquiv_contr, Tensor.contr_contr]
+  rw [Tensor.tmulEquiv_contr_left, Tensor.contr_contr]
   congr 2
   ext x
   fin_cases x <;> rfl

@@ -329,7 +329,7 @@ of dimensions. -/
 example (d : ℕ) : ((realLorentz d).tensorBasis ![]).repr
     {(realLorentz d).formTensor down | μ ν ⊗ (realLorentz d).formTensor up | μ ν}ᵀ
     (fun i => i.elim0) = d + 1 := by
-  rw [Species.Tensor.tensorBasis_repr_contr_unit_sum]
+  rw [Species.Tensor.tensorBasis_repr_contr_two_pairs]
   simp only [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
     tensorBasis_repr_formTensor]
   simp [minkowskiMatrix.as_diagonal, Matrix.diagonal_apply, Fintype.sum_sum_type, add_comm]
@@ -440,7 +440,7 @@ component is `∑ μ, v^μ ω_μ`. -/
 lemma tensorBasis_repr_contr_vector_coVector (d : ℕ) (v : Vector d) (ω : CoVector d) :
     ((realLorentz d).tensorBasis ![]).repr {v | μ ⊗ ω | μ}ᵀ (fun i => i.elim0) =
       ∑ μ, v μ * ω μ := by
-  simp [Species.Tensor.tensorBasis_repr_contr_unit, Species.tensorBasis_repr_reindex,
+  simp [Species.Tensor.tensorBasis_repr_contr_one_pair, Species.tensorBasis_repr_reindex,
     Species.tensorBasis_repr_tmulEquiv, tensorBasis_repr_toTensor_vector,
     tensorBasis_repr_toTensor_coVector]
 

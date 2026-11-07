@@ -357,14 +357,8 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a ha hi h t = Tensor.contr (ColorEquiv.matMulAt i a a.dual ha hi h)
       (S.tmulEquiv c ![a.dual, a.dual] (t ⊗ₜ S.formTensor a.dual)) := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => rw [map_smul, ht, ← smul_tmul', map_smul, map_smul]
-  | hadd t t' ht ht' => rw [map_add, ht, ht', add_tmul, map_add, map_add]
-  | h p =>
-    let q : Π x, S.V (c' x) := fun x => if hx : x = i then 0 else S.cast (h x hx) (p x)
-    rw [toDualAt_pure i a ha hi h p (Function.update q i _) (Function.update_self _ _ _)
-      (fun x hx => by simp [q, hx]), toDual_apply, formTensor,
-      Tensor.contr_matMulAt_pure i a a.dual ha hi h _ p q (fun x hx => by simp [q, hx])]
+  rw [formTensor, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
+  rfl
 
 /-- Lowering the second index is contracting it with the form, `M^μν g_νρ = M^μ_ρ` at an upper
 color `c`, along `ColorEquiv.matMul`. It is `toDualAt_eq_contr` for a tensor on two slots, in the

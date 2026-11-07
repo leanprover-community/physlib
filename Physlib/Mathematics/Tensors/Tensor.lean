@@ -59,16 +59,19 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`.
+- `Species.mapAt` applies a linear map at one slot of a tensor and the identity at the others,
+  with `Species.mapAt_pure`.
 - `Species.congrAt` applies a linear equivalence at one slot of a tensor and the identity at the
   others, with `Species.congrAt_pure`, `Species.congrAt_smul` and `Species.congrAt_symm`, and
-  `Species.congrAt_comm` proves that equivalences at two different slots commute.
+  `Species.congrAt_comm` proves that equivalences at two different slots commute, and
+  `Species.congrAt_eq_mapAt` that `congrAt` is `mapAt` of the underlying map.
 
 ## iii. Table of contents
 
 - A. Tensors
 - B. The group action
 - C. The basis of tensors
-- D. A linear equivalence at one slot
+- D. A linear map at one slot
 
 ## iv. References
 
@@ -232,7 +235,7 @@ lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : S.Tensor 
 
 /-!
 
-## D. A linear equivalence at one slot
+## D. A linear map at one slot
 
 -/
 
@@ -295,6 +298,40 @@ lemma congrAt_symm (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x, x �
     · simp [hx]
   | hsmul r t ht => rw [map_smul, map_smul, ← ht]
   | hadd x y hx hy => rw [map_add, map_add, ← hx, ← hy]
+
+variable (S) in
+/-- The linear map `f` at the slot `i`, and the identity, moved along `h x`, at every other slot
+`x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. It is Mathlib's `PiTensorProduct.map` at one slot. -/
+noncomputable def mapAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
+    (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c →ₗ[k] S.Tensor c' :=
+  (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map (fun x => if hx : x = i then
+      hx ▸ f else (S.cast (h x hx)).toLinearMap) ∘ₗ (S.toPiTensor c).toLinearMap
+
+/-- On a pure tensor, `mapAt` applies `f` to the vector at `i`, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. The
+result is given by its vectors `q`, `f (p i)` at `i` and `p x` moved along `h x` elsewhere. -/
+lemma mapAt_pure (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
+    (p : Π x, S.V (c x)) (q : Π x, S.V (c' x)) (hqi : q i = f (p i))
+    (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
+    S.mapAt i f h (S.pure p) = S.pure q := by
+  simp only [mapAt, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe, toPiTensor_pure,
+    PiTensorProduct.map_tprod, toPiTensor_symm_tprod]
+  congr 1
+  funext x
+  by_cases hx : x = i
+  · subst hx
+    simp [hqi]
+  · simp [hx, hq x hx]
+
+/-- `congrAt` is `mapAt` of the underlying linear map. -/
+lemma congrAt_eq_mapAt (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
+    (t : S.Tensor c) : S.congrAt i f h t = S.mapAt i f.toLinearMap h t := by
+  induction t using inductionOn_pure with
+  | h p =>
+    let q : Π x, S.V (c' x) := fun x => if hx : x = i then hx ▸ f (p i) else S.cast (h x hx) (p x)
+    rw [congrAt_pure i f h p q (by simp [q]) (fun x hx => by simp [q, hx]),
+      mapAt_pure i _ h p q (by simp [q]) (fun x hx => by simp [q, hx])]
+  | hsmul r t ht => rw [map_smul, map_smul, ht]
+  | hadd x y hx hy => rw [map_add, map_add, hx, hy]
 
 /-- Linear equivalences at two different slots `i` and `j` commute, `f` and `f'` at `i`, `g` and
 `g'` at `j`, when they agree after moving vectors between the intermediate colors `c₁` and `c₂`. -/

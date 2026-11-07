@@ -55,8 +55,8 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_eq_comm_delta_dual` and
   `Species.delta_invariant`.
 - `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`, `Species.snake` proves
-  that the delta is the identity, and `Species.toLin_map` that `toLin` commutes with the group
-  action, `(Λz)(Λv) = Λ(z v)`.
+  that the delta is the identity, `Species.toLin_map` that `toLin` commutes with the group
+  action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` that `(id ⊗ f) z = f ∘ z`.
 - `Species.basis_repr_toLin` gives `toLin` in components, and
   `Species.toLin_comp_toLin_of_mul_eq_one` proves that two such maps are inverse when their
   matrices are.
@@ -233,6 +233,13 @@ noncomputable def toLin {a : Color K} {U : Type} [AddCommGroup U] [Module k U] :
 lemma toLin_tmul {a : Color K} {U : Type} [AddCommGroup U] [Module k U] (x : S.V a) (y : U)
     (v : S.V a.dual) : S.toLin (x ⊗ₜ y) v = S.contr a.dual (v ⊗ₜ x) • y :=
   rfl
+
+/-- Applying a linear map `f` to the second factor of `z` composes the linear map of `z` with `f`,
+`(id ⊗ f) z = f ∘ z`. -/
+lemma toLin_lTensor {a : Color K} {U U' : Type} [AddCommGroup U] [Module k U] [AddCommGroup U']
+    [Module k U'] (f : U →ₗ[k] U') (z : S.V a ⊗[k] U) :
+    S.toLin (f.lTensor (S.V a) z) = f ∘ₗ S.toLin z :=
+  pairingToLinearMap_lTensor _ f z
 
 /-- The snake law `u^μ δ_μ^ν = u^ν`, the delta read as a linear map is the identity. -/
 lemma snake (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
