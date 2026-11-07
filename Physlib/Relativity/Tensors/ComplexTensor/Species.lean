@@ -658,7 +658,7 @@ example (g : SL(2, ℂ)) (ψ : LeftHandedWeyl) : Tensorial.rep g ψ = LeftHanded
 example (ψ : LeftHandedWeyl) (μ : Π i, Idx (![upL] i).kind) :
     (complexLorentz.tensorBasis ![upL]).repr (Tensorial.toTensor ψ) μ =
       LeftHandedWeyl.basis.repr ψ (μ 0) := by
-  exact Species.tensorBasis_repr_oneSlotEquiv (S := complexLorentz) upL ψ μ
+  exact Tensorial.tensorBasis_repr_toTensor_ofIndexSpace (S := complexLorentz) upL ψ μ
 
 /-- The components `T^αβ̇` of the tensor of `T` in `LeftHandedWeyl ⊗ RightHandedWeyl` are the
 entries of the matrix `leftRightToMatrix T`. -/
@@ -666,10 +666,7 @@ lemma tensorBasis_repr_toTensor_leftRight (T : LeftHandedWeyl ⊗[ℂ] RightHand
     (μ : Π i, Idx (prodColors ![upL] ![upR] i).kind) :
     (complexLorentz.tensorBasis _).repr (Tensorial.toTensor T) μ =
       leftRightToMatrix T (μ (.inl 0)) (μ (.inr 0)) :=
-  Tensorial.tensorBasis_repr_toTensor_prod (S := complexLorentz) (c₁ := ![upL]) (c₂ := ![upR])
-    LeftHandedWeyl.basis RightHandedWeyl.basis (fun ν => ν 0) (fun ν => ν 0)
-    (Species.tensorBasis_repr_oneSlotEquiv (S := complexLorentz) upL)
-    (Species.tensorBasis_repr_oneSlotEquiv (S := complexLorentz) upR) T μ
+  Tensorial.tensorBasis_repr_toTensor_prod_ofIndexSpace (S := complexLorentz) upL upR T μ
 
 /-- The pairing `ψ^α φ_α` of a spinor with a dual spinor is invariant. -/
 example (g : SL(2, ℂ)) (ψ : LeftHandedWeyl) (φ : DualLeftHandedWeyl) :

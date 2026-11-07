@@ -15,44 +15,33 @@ tensors of a species with given colors, compatibly with the action.
 
 ## i. Overview
 
-A Lorentz vector `v` can be stored as its components `v^μ`, a function `Fin 1 ⊕ Fin 3 → ℝ`, on
-which Mathlib's analysis acts. The same vector is also a tensor with one upper index, an element of
-`S.Tensor c` for a one-slot color list `c`, which is what index notation and contraction act on.
-An instance `Tensorial S c M` relates the two.
+A Lorentz vector `v` can be stored as its components `v^μ`, on which Mathlib's analysis acts, and
+is also a tensor with one upper index, on which index notation acts. An instance
+`Tensorial S c M` relates the two by a Mathlib `Representation.Equiv`
+`toTensor : M → S.Tensor c`, so that `toTensor (Λ v) = Λ • toTensor v`.
 
-The type `M` keeps its own transformation law, the representation `rep`. For a Lorentz vector it is
-`Λ v = Λ *ᵥ v`, matrix times column. The identification `toTensor : M → S.Tensor c` respects the
-action, `toTensor (Λ v) = Λ • toTensor v`, so `v` transforms as a tensor with colors `c`. This is
-the content of the instance. `toTensor` is a Mathlib `Representation.Equiv`, a linear equivalence
-that commutes with the action.
+The action on `M` is the field `rep`, not an instance `SMul G M`, since Mathlib would extend such
+an instance to `M ⊗ N` acting on the left factor only. The species and colors are determined by
+`M`, so an instance belongs on a type that always means one physical object, such as
+`Lorentz.Vector d`.
 
-An instance on the space of one index, such as a Lorentz vector or a Weyl spinor, comes from
-`ofIndexSpace`. An instance on a type equivalent to a tensorial type, compatibly with the actions,
-comes from `ofEquiv`.
-
-The tensor product `M ⊗ N` of two tensorial types is tensorial (`Tensorial.prod`). Its action is
-Mathlib's product representation, `Λ (x ⊗ y) = Λ x ⊗ Λ y`, and `x ⊗ y` is read as the product of
-the tensors of `x` and `y` through `Species.tmulEquiv`. A field strength `F^μν` in
-`Vector ⊗ Vector` is an example.
-
-The action on `M` is the field `rep`, not an instance `SMul G M`. If `M` has an instance
-`SMul G M`, Mathlib gives `M ⊗ N` an instance `SMul G (M ⊗ N)` that acts on the left factor only,
-`Λ • (x ⊗ y) = Λ x ⊗ y`. A diagonal `SMul` instance on `M ⊗ N` would give `Λ • F` two meanings.
-
-The species and colors are determined by `M`, so a type has one tensor structure. An instance
-belongs on a type that always means one physical object, such as `Lorentz.Vector d`, and not on a
-type such as `Matrix (Fin 4) (Fin 4) ℝ` that is used for several.
+Instances come from the space of one index (`ofIndexSpace`), from an equivalent tensorial type
+(`ofEquiv`), and from tensor products (`prod`), as for a field strength in `Vector ⊗ Vector`.
 
 ## ii. Key results
 
 - `Tensorial` : a type whose elements are tensors, compatibly with the action of the group.
 - `Tensorial.toTensor_rep` : `toTensor (Λ m) = Λ • toTensor m`.
-- `Tensorial.ofIndexSpace` : the space of one index is tensorial, with one slot.
+- `Tensorial.ofIndexSpace` : the space of one index is tensorial, with one slot, and
+  `Tensorial.tensorBasis_repr_toTensor_ofIndexSpace` gives its components.
 - `Tensorial.ofEquiv` : a type equivalent to a tensorial type, compatibly with the actions, is
   tensorial with the same colors.
-- `Tensorial.prod` : the tensor product of two tensorial types is tensorial.
+- `Tensorial.prod` : the tensor product of two tensorial types is tensorial, with
+  `Tensorial.rep_tmul` : `Λ (x ⊗ y) = Λ x ⊗ Λ y` and `Tensorial.toTensor_tmul` : the tensor of
+  `x ⊗ y` is the product of the tensors.
 - `Tensorial.tensorBasis_repr_toTensor_prod` : the components of the tensor of `T` in `M ⊗ N` are
-  its coordinates in the product basis.
+  its coordinates in the product basis, and `Tensorial.tensorBasis_repr_toTensor_prod_ofIndexSpace`
+  states it for two spaces of one index.
 
 ## iii. Table of contents
 
@@ -98,7 +87,7 @@ variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K �
 @[simp]
 lemma toTensor_rep [Tensorial S c₁ M] (g : G) (m : M) :
     toTensor (rep g m) = g • toTensor m :=
-  Representation.IntertwiningMap.isIntertwining _ _ (toTensor (M := M)).toIntertwiningMap g m
+  LinearMap.congr_fun ((toTensor (M := M)).isIntertwining' g) m
 
 variable (S) in
 /-- The space `S.V c` of one index as the tensors with the one slot `![c]`, with the action
@@ -106,6 +95,14 @@ variable (S) in
 noncomputable abbrev ofIndexSpace (c : Color K) : Tensorial S ![c] (S.V c) where
   rep := S.rep c
   toTensor := S.oneSlotEquiv c
+
+/-- The components of the tensor of a vector `v` of the space of one index are its components
+`v^μ`. -/
+lemma tensorBasis_repr_toTensor_ofIndexSpace (c : Color K) (v : S.V c)
+    (μ : Π i, basisIdx (![c] i).kind) :
+    (S.tensorBasis ![c]).repr (toTensor (self := ofIndexSpace S c) v) μ =
+      (S.basis c).repr v (μ 0) :=
+  Species.tensorBasis_repr_oneSlotEquiv c v μ
 
 /-- A type `M` with an action `r` and an equivalence `φ` to a tensorial type `N` commuting with
 the actions is tensorial with the colors of `N`. -/
@@ -158,6 +155,21 @@ lemma tensorBasis_repr_toTensor_prod [Fintype ι₁] [Fintype ι₂] [Tensorial 
   | tmul x y =>
     rw [toTensor_tmul, Species.tensorBasis_repr_tmulEquiv, h₁, h₂,
       Module.Basis.tensorProduct_repr_tmul_apply, smul_eq_mul, mul_comm]
+
+section ofIndexSpace
+
+attribute [local instance] ofIndexSpace
+
+/-- The components `T^μν` of the tensor of `T` in `V a ⊗ V b`, each factor the space of one
+index, are the coordinates of `T` in Mathlib's product basis. -/
+lemma tensorBasis_repr_toTensor_prod_ofIndexSpace (a b : Color K) (T : S.V a ⊗[k] S.V b)
+    (μ : Π s, basisIdx (prodColors ![a] ![b] s).kind) :
+    (S.tensorBasis (prodColors ![a] ![b])).repr (toTensor T) μ =
+      ((S.basis a).tensorProduct (S.basis b)).repr T (μ (.inl 0), μ (.inr 0)) :=
+  tensorBasis_repr_toTensor_prod _ _ (fun ν => ν 0) (fun ν => ν 0)
+    (tensorBasis_repr_toTensor_ofIndexSpace a) (tensorBasis_repr_toTensor_ofIndexSpace b) T μ
+
+end ofIndexSpace
 
 end Tensorial
 

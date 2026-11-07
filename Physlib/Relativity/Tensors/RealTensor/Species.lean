@@ -362,7 +362,7 @@ noncomputable instance coVectorTensorial (d : ℕ) :
 /-- The components of the tensor of a vector are its components, `v^μ`. -/
 lemma tensorBasis_repr_toTensor_vector (d : ℕ) (v : Vector d) (μ : Fin 1 → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis ![up]).repr (Tensorial.toTensor v) μ = v (μ 0) :=
-  Species.tensorBasis_repr_oneSlotEquiv (S := realLorentz d) up v μ
+  Tensorial.tensorBasis_repr_toTensor_ofIndexSpace (S := realLorentz d) up v μ
 
 /-- The vector of a tensor `T` with one upper index has the components of `T`, `v^ν = T^ν`. -/
 lemma toTensor_symm_vector_apply (d : ℕ) (T : (realLorentz d).Tensor ![up])
@@ -375,7 +375,7 @@ lemma toTensor_symm_vector_apply (d : ℕ) (T : (realLorentz d).Tensor ![up])
 /-- The components of the tensor of a covector are its components, `ω_μ`. -/
 lemma tensorBasis_repr_toTensor_coVector (d : ℕ) (ω : CoVector d) (μ : Fin 1 → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis ![down]).repr (Tensorial.toTensor ω) μ = ω (μ 0) :=
-  Species.tensorBasis_repr_oneSlotEquiv (S := realLorentz d) down ω μ
+  Tensorial.tensorBasis_repr_toTensor_ofIndexSpace (S := realLorentz d) down ω μ
 
 /-- The tensor of the basis vector `e_μ` is the basis tensor with label `μ`. -/
 lemma toTensor_basis_vector (d : ℕ) (μ : Fin 1 ⊕ Fin d) :
@@ -393,9 +393,7 @@ lemma tensorBasis_repr_toTensor_vector_tmul (d : ℕ) (F : Vector d ⊗[ℝ] Vec
     (μ : Fin 1 ⊕ Fin 1 → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis (prodColors ![up] ![up])).repr (Tensorial.toTensor F) μ =
       (Vector.basis.tensorProduct Vector.basis).repr F (μ (.inl 0), μ (.inr 0)) :=
-  Tensorial.tensorBasis_repr_toTensor_prod (S := realLorentz d) Vector.basis Vector.basis
-    (fun ν => ν 0) (fun ν => ν 0) (tensorBasis_repr_toTensor_vector d)
-    (tensorBasis_repr_toTensor_vector d) F μ
+  Tensorial.tensorBasis_repr_toTensor_prod_ofIndexSpace (S := realLorentz d) up up F μ
 
 /-- The component `F^μν` of `F` in `Vector d ⊗ Vector d`, its coordinate at `(μ, ν)` in Mathlib's
 product basis `e_μ ⊗ e_ν`. -/
@@ -431,9 +429,7 @@ lemma tensorBasis_repr_toTensor_coVector_tmul (d : ℕ) (T : CoVector d ⊗[ℝ]
     (μ : Fin 1 ⊕ Fin 1 → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis (prodColors ![down] ![up])).repr (Tensorial.toTensor T) μ =
       (CoVector.basis.tensorProduct Vector.basis).repr T (μ (.inl 0), μ (.inr 0)) :=
-  Tensorial.tensorBasis_repr_toTensor_prod (S := realLorentz d) CoVector.basis Vector.basis
-    (fun ν => ν 0) (fun ν => ν 0) (tensorBasis_repr_toTensor_coVector d)
-    (tensorBasis_repr_toTensor_vector d) T μ
+  Tensorial.tensorBasis_repr_toTensor_prod_ofIndexSpace (S := realLorentz d) down up T μ
 
 /-- The contraction `v^μ ω_μ` of a vector with a covector, a tensor with no slots whose one
 component is `∑ μ, v^μ ω_μ`. -/
