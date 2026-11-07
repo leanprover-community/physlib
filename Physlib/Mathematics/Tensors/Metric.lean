@@ -7,6 +7,7 @@ module
 
 public import Physlib.Mathematics.Tensors.Contraction
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
+public import Mathlib.Tactic.LinearCombination
 /-!
 
 # Invariant forms, metrics, and lowering and raising indices
@@ -68,7 +69,8 @@ cancel in any order.
 - `Species.toDualAt_eq_contr` proves that lowering is contracting with the form,
   `T^…_ν… = T^…μ… g_μν`.
 - `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
-  antisymmetric form on a kind with two labels.
+  antisymmetric form on a kind with two labels, and `Species.formMatrix_schouten` is the same in
+  components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`.
 
 ## iii. Table of contents
 
@@ -393,6 +395,25 @@ lemma schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] [
   simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
     LinearMap.IsAlt.self_eq_zero H, hji]
   module
+
+/-- The Schouten identity in components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`: `schouten` at
+the basis vectors `e^γ`, `e^ρ` and `e^α'`, read at the label `α`. -/
+lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
+    [NoZeroDivisors k] [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2)
+    (γ ρ α' α : basisIdx c.kind) :
+    S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
+      S.formMatrix c γ α' * (if ρ = α then 1 else 0) -
+        S.formMatrix c ρ α' * (if γ = α then 1 else 0) := by
+  have h := congrArg (fun x => (S.basis c.dual).repr x α)
+    (schouten c h2 (S.basis c.dual γ) (S.basis c.dual ρ) (S.basis c.dual α'))
+  have hg (μ ν : basisIdx c.kind) :
+      S.formBilin c (S.basis c.dual μ) (S.basis c.dual ν) = S.formMatrix c μ ν := by
+    rw [formMatrix_eq_toMatrix, LinearMap.BilinForm.toMatrix_apply]
+  have hm : S.formMatrix c α' γ = -S.formMatrix c γ α' := by
+    rw [← hg, ← hg, ← LinearMap.IsAlt.neg (isAlt_formBilin (S := S) c)]
+  simp only [map_add, map_smul, Finsupp.add_apply, Finsupp.smul_apply, Module.Basis.repr_self,
+    Finsupp.single_apply, smul_eq_mul, map_zero, Finsupp.zero_apply, hg, @eq_comm _ α' α] at h
+  linear_combination h - (if ρ = α then 1 else 0) * hm
 
 end Species
 
