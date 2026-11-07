@@ -199,6 +199,17 @@ partial def colorList? (c : Expr) : MetaM (Option (List Expr)) := do
 def colorsTerm (cs : List Expr) : TermElabM Term := do
   `(![$((← cs.toArray.mapM exprToSyntax)),*])
 
+/-- The slots, the color family `c` and its entries of a tensor type `S.Tensor c` with literal slots
+and colors. -/
+def literalTensorType? (ty : Expr) : MetaM (Option (Slots × Expr × List Expr)) := do
+  let ty ← whnfR (← instantiateMVars ty)
+  unless ty.isAppOf ``Tensors.Species.Tensor do return none
+  let args := ty.getAppArgs
+  let some slots ← Slots.ofType? args[args.size - 2]! | return none
+  let c ← instantiateMVars args[args.size - 1]!
+  let some cs ← colorList? c | return none
+  return (slots, c, cs)
+
 /-!
 
 ### B.2. The steps of an expression
@@ -232,24 +243,55 @@ def Node.toFin (a : Node) : TermElabM Node := do
   if a.slots == .fin n then return a
   return { a with slots := .fin n, tm := ← a.reindex (List.range n) a.colors }
 
-/-- The tensor `T | i₁ i₂ …` with its slots named, lowered at each `↓μ` and raised at each `↑μ`. -/
-def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
-  let mut e ← instantiateMVars (← elabTerm T none)
+/-- The expression on `Fin n` with its slot `i` moved to the dual color by `S.toDualAt`. -/
+def Node.toDualAt (a : Node) (i : Nat) : TermElabM Node := do
+  let colors := a.colors.set i (← mkAppM ``Tensors.Color.dual #[a.colors[i]!])
+  -- The color `col` of the slot is passed explicitly, so the form is found at the kind of `col` and
+  -- every lowering at that kind uses the same instance. The proofs `c i = col` and
+  -- `c' i = col.dual` are `id rfl`, since a bare `rfl` has the type `c' i = c' i`, which `rw`
+  -- matches only after unfolding `![…] i`. Away from `i` the colors agree by cases.
+  let tm ← `(Tensors.Species.toDualAt $(← exprToSyntax a.species) (c' := $(← colorsTerm colors))
+    ($(quote i) : Fin $(quote a.names.length)) $(← exprToSyntax a.colors[i]!) (id rfl) (id rfl)
+    (by intro x hx; fin_cases x <;> first | rfl | exact absurd rfl hx) $a.tm)
+  return { a with colors, tm }
+
+/-- The term `T` and its type, a tensor type. A term that is not a tensor is read as
+`Tensorial.toTensor T` through its `Tensorial` instance. -/
+def tensorOf (T : Term) : TermElabM (Expr × Expr) := do
+  let e ← instantiateMVars (← elabTerm T none)
   if e.hasSyntheticSorry then throwAbortTerm
-  let mut ty ← whnfR (← instantiateMVars (← inferType e))
+  let ty ← whnfR (← instantiateMVars (← inferType e))
   if ty.isMVar then
     throwError "index notation: the type of {T} is not known; give it, as `({T} : S.Tensor ![…])`"
-  unless ty.isAppOf ``Tensors.Species.Tensor do
-    -- Not a tensor: read it through its `Tensorial` instance, if it has one.
-    try
-      e ← withoutErrToSorry do
-        let e ← elabTerm (← `(Tensors.Tensorial.toTensor $(← exprToSyntax e))) none
-        synthesizeSyntheticMVarsNoPostponing
-        instantiateMVars e
-      ty ← whnfR (← instantiateMVars (← inferType e))
-    catch ex =>
-      throwError "index notation: {T} is not a tensor and has no `Tensorial` instance:\n\
-        {ex.toMessageData}"
+  if ty.isAppOf ``Tensors.Species.Tensor then return (e, ty)
+  try
+    let e ← withoutErrToSorry do
+      let e ← elabTerm (← `(Tensors.Tensorial.toTensor $(← exprToSyntax e))) none
+      synthesizeSyntheticMVarsNoPostponing
+      instantiateMVars e
+    return (e, ← whnfR (← instantiateMVars (← inferType e)))
+  catch ex =>
+    throwError "index notation: {T} is not a tensor and has no `Tensorial` instance:\n\
+      {ex.toMessageData}"
+
+/-- The name of the index `i` on a slot of color `col`, and whether it is lowered or raised, after
+checking that its arrow matches the variance of `col`. -/
+def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool) := do
+  let arrow (x : Ident) (up : Bool) : TermElabM (Name × Bool) := do
+    let isUp ← whnfD (← mkAppM ``Tensors.Variance.isUp #[← mkAppM ``Tensors.Color.variance #[col]])
+    unless isUp.isConstOf (if up then ``Bool.true else ``Bool.false) do
+      throwError "index notation: {if up then "↓" else "↑"}{x.getId} needs a visibly \
+        {if up then "upper" else "lower"} index"
+    pure (x.getId, true)
+  match i with
+  | `(tensorIndex| $x:ident) => pure (x.getId, false)
+  | `(tensorIndex| ↓$x:ident) => arrow x true
+  | `(tensorIndex| ↑$x:ident) => arrow x false
+  | _ => throwError "index notation: unsupported index {i}"
+
+/-- The tensor `T | i₁ i₂ …` with its slots named, lowered at each `↓μ` and raised at each `↑μ`. -/
+def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
+  let (e, ty) ← tensorOf T
   let args := ty.getAppArgs
   let some slots ← Slots.ofType? args[args.size - 2]!
     | throwError "index notation: the slots of {T} must be `Fin n` and `⊕`"
@@ -257,37 +299,10 @@ def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
     | throwError "index notation: the colors of {T} must be a literal list"
   unless colors.length = idxs.size do
     throwError "index notation: {T} has {colors.length} slots, {idxs.size} indices given"
-  -- Each index with whether its slot moves to the dual color, after checking the arrow.
-  let kinds ← (idxs.toList.zip colors).mapM fun (i, col) => do
-    let isUp ← whnfD (← mkAppM ``Tensors.Variance.isUp #[← mkAppM ``Tensors.Color.variance #[col]])
-    let check (x : Ident) (up : Bool) (arrow : String) : TermElabM (Name × Bool) := do
-      unless isUp.isConstOf (if up then ``Bool.true else ``Bool.false) do
-        throwError "index notation: {arrow}{x.getId} needs a visibly \
-          {if up then "upper" else "lower"} index"
-      pure (x.getId, true)
-    match i with
-    | `(tensorIndex| $x:ident) => pure (x.getId, false)
-    | `(tensorIndex| ↓$x:ident) => check x true "↓"
-    | `(tensorIndex| ↑$x:ident) => check x false "↑"
-    | _ => throwError "index notation: unsupported index {i}"
-  let mut a : Node := ⟨kinds.map (·.1), colors, slots, ← exprToSyntax e, args[args.size - 3]!⟩
+  let kinds ← (idxs.toList.zip colors).mapM fun (i, col) => indexName i col
+  let a : Node := ⟨kinds.map (·.1), colors, slots, ← exprToSyntax e, args[args.size - 3]!⟩
   if kinds.all (!·.2) then return a
-  a ← a.toFin
-  let n := colors.length
-  for ((_, d), i) in kinds.zipIdx do
-    if d then
-      let colors := a.colors.set i (← mkAppM ``Tensors.Color.dual #[a.colors[i]!])
-      -- The color `col` of the slot is passed explicitly, so the form is found at the kind of
-      -- `col` and every lowering at that kind uses the same instance. The proofs `c i = col` and
-      -- `c' i = col.dual` are `id rfl`, since a bare `rfl` has the type `c' i = c' i`, which
-      -- `rw` matches only after unfolding `![…] i`. Away from `i` the colors agree by cases.
-      let sp ← exprToSyntax a.species
-      let col ← exprToSyntax a.colors[i]!
-      let tm ← `(Tensors.Species.toDualAt $sp (c' := $(← colorsTerm colors))
-        ($(quote i) : Fin $(quote n)) $col (id rfl) (id rfl)
-        (by intro x hx; fin_cases x <;> first | rfl | exact absurd rfl hx) $a.tm)
-      a := { a with colors, tm }
-  return a
+  kinds.zipIdx.foldlM (init := ← a.toFin) fun a ((_, d), i) => if d then a.toDualAt i else pure a
 
 /-- Contracts every repeated name in one `Tensor.contr`, and numbers the free slots in the order
 written. -/
@@ -368,12 +383,7 @@ end
 /-- The tensor of `e` on the slots and colors of the tensor type `target`, its free indices in the
 order written. It is `none` when `target` is not a tensor type with literal slots and colors. -/
 def buildTo (e : Syntax) (target : Expr) : TermElabM (Option Term) := do
-  let target ← whnfR (← instantiateMVars target)
-  unless target.isAppOf ``Tensors.Species.Tensor do return none
-  let args := target.getAppArgs
-  let some slots ← Slots.ofType? args[args.size - 2]! | return none
-  let c ← instantiateMVars args[args.size - 1]!
-  let some cs ← colorList? c | return none
+  let some (slots, c, cs) ← literalTensorType? target | return none
   let u ← uncontracted e
   -- A product with no contraction is already on the slots of its factors.
   let a ← if u.slots == slots && u.names.eraseDups.length == u.names.length then pure u
