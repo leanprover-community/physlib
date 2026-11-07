@@ -33,11 +33,11 @@ Lowering both indices of a matrix with `ε` gives its adjugate, transposed, and
 One identity is read off from the Pauli matrices, the trace identity `pauliCoDown_trace_pauliCo`,
 `tr(σ̄_μ σ_ν) = 2 η_μν`: its components are the matrix traces of
 `PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix`. The others are derived from
-it at tensor level, mostly by `tensor_regroup using` an identity proved before. The Fierz identity
-reads the trace identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB` between tensors with a
-vector index and tensors with two Weyl indices. Both spaces have dimension `16`, so `A ∘ B = 2` as
-well, which is the Fierz identity. The anticommutators follow from the trace identities and the
-Schouten identity of `ε`.
+it at tensor level, mostly by `tensor_regroup using` an identity proved before. Contracting with
+`σ` gives a map `vectorToBispinor` from tensors with a vector index to tensors with two Weyl indices
+and a map `bispinorToVector` back. The trace identity says that going there and back is `2`. Both
+spaces have dimension `16`, so going back and there is `2` as well, which is the Fierz identity.
+The anticommutators follow from the trace identities and the Schouten identity of `ε`.
 
 ## ii. Key results
 
@@ -47,7 +47,8 @@ Schouten identity of `ε`.
 - `complexLorentz.pauliCoDown_trace_pauliCo`, `complexLorentz.pauliContr_trace_pauliContrDown`
   and `complexLorentz.pauliContrDown_trace_pauliContr` : the trace identities
   `tr(σ̄_μ σ_ν) = 2 η_μν` and `tr(σ^μ σ̄^ν) = tr(σ̄^μ σ^ν) = 2 η^μν`.
-- `complexLorentz.pauliA_pauliB` : the maps `pauliA` and `pauliB` are inverse up to `2`.
+- `complexLorentz.vectorToBispinor_bispinorToVector` : the maps `vectorToBispinor` and
+  `bispinorToVector` are inverse up to `2`.
 - `complexLorentz.pauliCo_contr_pauliContr` : the Fierz identity
   `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`.
 - `complexLorentz.pauliContr_mul_pauliContrDown_add` and
@@ -140,7 +141,7 @@ lemma tensorBasis_repr_pauliTensor_downAll
 
 The trace identity `pauliCoDown_trace_pauliCo` is proved in components, from the trace identity
 of the Pauli matrices. The other identities are derived from it at tensor level: the Fierz
-identity by reading the trace identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB`, and the
+identity by reading the trace identity as `bispinorToVector ∘ vectorToBispinor = 2`, and the
 anticommutators by the Schouten identity of `ε`.
 
 ### C.1. Traces
@@ -176,42 +177,47 @@ lemma pauliContrDown_trace_pauliCo :
 
 -/
 
-/-- `p ↦ σT_μ^{αβ̇} p^{μα'β̇'}`, from a tensor with a vector index to one with two Weyl indices. -/
-noncomputable def pauliA : ℂT[up, upL, upR] →ₗ[ℂ] ℂT[upL, upR, upL, upR] where
+/-- `p ↦ σT_μ^{αβ̇} p^{μα'β̇'}`, from a tensor with a vector index to one with two Weyl indices.
+On a vector, with no `α'β̇'`, it is the bispinor `p^{αβ̇}` of `p^μ`. -/
+noncomputable def vectorToBispinor : ℂT[up, upL, upR] →ₗ[ℂ] ℂT[upL, upR, upL, upR] where
   toFun p := {pauliTensor | ↓μ α β ⊗ p | μ α' β'}ᵀ
   map_add' p q := by simp only [tmul_add, map_add]
   map_smul' r p := by simp only [tmul_smul, map_smul, RingHom.id_apply]
 
 /-- `X ↦ σT^μ_{αβ̇} X^{αβ̇α'β̇'}`, from a tensor with two Weyl indices to one with a vector
-index. -/
-noncomputable def pauliB : ℂT[upL, upR, upL, upR] →ₗ[ℂ] ℂT[up, upL, upR] where
+index, the inverse of `vectorToBispinor` up to `2`. -/
+noncomputable def bispinorToVector : ℂT[upL, upR, upL, upR] →ₗ[ℂ] ℂT[up, upL, upR] where
   toFun X := {pauliTensor | μ ↓α ↓β ⊗ X | α β α' β'}ᵀ
   map_add' X Y := by simp only [tmul_add, map_add]
   map_smul' r X := by simp only [tmul_smul, map_smul, RingHom.id_apply]
 
-/-- `pauliB ∘ pauliA = 2`, by the trace identity `σT^μ_{αβ̇} σT_ν^{αβ̇} = 2 δ_ν^μ`. -/
-lemma pauliB_pauliA (p : ℂT[up, upL, upR]) : pauliB (pauliA p) = (2 : ℂ) • p := by
-  simp only [pauliA, pauliB, LinearMap.coe_mk, AddHom.coe_mk]
+/-- `bispinorToVector ∘ vectorToBispinor = 2`, by the trace identity
+`σT^μ_{αβ̇} σT_ν^{αβ̇} = 2 δ_ν^μ`. -/
+lemma bispinorToVector_vectorToBispinor (p : ℂT[up, upL, upR]) :
+    bispinorToVector (vectorToBispinor p) = (2 : ℂ) • p := by
+  simp only [vectorToBispinor, bispinorToVector, LinearMap.coe_mk, AddHom.coe_mk]
   tensor_regroup using pauliContrDown_trace_pauliCo
 
-/-- `pauliA ∘ pauliB = 2`: both spaces have dimension `16`, so the left inverse `pauliB / 2` of
-`pauliA` is a right inverse. -/
-lemma pauliA_pauliB (X : ℂT[upL, upR, upL, upR]) : pauliA (pauliB X) = (2 : ℂ) • X :=
+/-- `vectorToBispinor ∘ bispinorToVector = 2`: both spaces have dimension `16`, so the left inverse
+`bispinorToVector / 2` of `vectorToBispinor` is a right inverse. -/
+lemma vectorToBispinor_bispinorToVector (X : ℂT[upL, upR, upL, upR]) :
+    vectorToBispinor (bispinorToVector X) = (2 : ℂ) • X :=
   LinearMap.comp_apply_eq_smul_of_comp_apply_eq_smul_of_finrank_eq
-    (by rw [Species.finrank_tensor, Species.finrank_tensor]; rfl) two_ne_zero pauliB_pauliA X
+    (by rw [Species.finrank_tensor, Species.finrank_tensor]; rfl) two_ne_zero
+    bispinorToVector_vectorToBispinor X
 
 /-- Raising both Weyl indices of `σT^μ_{αβ̇}` gives `σT^{μαβ̇}`. -/
 lemma pauliTensor_raise_lower : {{pauliTensor | μ ↓α ↓β}ᵀ | μ ↑α ↑β}ᵀ = pauliTensor := by
   tensor_slots
 
 /-- The Fierz identity `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`: it is
-`pauliA σT = pauliA (pauliB (εL ⊗ εR)) / 2`. -/
+`vectorToBispinor σT = vectorToBispinor (bispinorToVector (εL ⊗ εR)) / 2`. -/
 lemma pauliCo_contr_pauliContr :
     {pauliTensor | ↓ν α β ⊗ pauliTensor | ν α' β' =
       (2 : ℂ) • {εL | α α' ⊗ εR | β β'}ᵀ | α α' β β'}ᵀ := by
-  rw [map_smul, ← pauliA_pauliB]
-  refine congrArg pauliA ?_
-  simp only [pauliB, LinearMap.coe_mk, AddHom.coe_mk]
+  rw [map_smul, ← vectorToBispinor_bispinorToVector]
+  refine congrArg vectorToBispinor ?_
+  simp only [bispinorToVector, LinearMap.coe_mk, AddHom.coe_mk]
   tensor_regroup
 
 /-!
