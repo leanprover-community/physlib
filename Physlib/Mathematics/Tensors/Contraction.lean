@@ -75,7 +75,8 @@ since the bases of a color and its dual are dual.
 - `Species.Tensor.contr_matMulAt` proves that contracting the index `i` with the first index of a
   tensor `F` on two slots, along `ColorEquiv.matMulAt`, applies `F` at `i`, and
   `Species.Tensor.contr_deltaTensor` that for the delta this is `T^…μ… δ_μ^ν = T^…ν…`.
-- `Species.Tensor.tensorBasis_repr_contr` gives the components of a contraction.
+- `Species.Tensor.tensorBasis_repr_contr` gives the components of a contraction, from
+  `Species.Tensor.tensorBasis_repr_contrStd` in the standard arrangement of slots.
 - `Species.Tensor.tensorBasis_repr_contr_one_pair` and
   `Species.Tensor.tensorBasis_repr_contr_two_pairs` give the same with one and with two pairs.
 
@@ -195,13 +196,10 @@ def _root_.Tensors.ColorEquiv.noPairs (c : ι₁ → Color K) :
 
 /-- A contraction with no pairs is the identity. Any tensor is thus a contraction, as needed to
 compare it with one. -/
-lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => rw [map_smul, ht]
-  | hadd t t' ht ht' => rw [map_add, ht, ht']
-  | h p =>
+lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t :=
+  DFunLike.congr_fun (intertwiningMap_ext_pure (ψ := .id _) fun p => by
     rw [contr_pure, Finset.univ_eq_empty, Finset.prod_empty, one_smul]
-    exact congrArg S.pure (funext fun x => by simp only [cast_apply]; rfl)
+    exact congrArg S.pure (funext fun x => by simp only [cast_apply]; rfl)) t
 
 /-!
 
@@ -219,14 +217,13 @@ lemma contr_reindex {ι₂ : Type} [Fintype J] {c₂ : ι₂ → Color K} {a : J
 /-- Relabeling the free indices of a contraction is contracting along the composite relabeling. -/
 lemma reindex_contr {κ' : Type} [Fintype J] {c'' : κ' → Color K} {a : J → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c' c'') (t : S.Tensor c) :
-    S.reindex τ (contr σ t) = contr (σ.trans (τ.sumCongr (.refl _))) t := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => rw [map_smul, map_smul, ht, map_smul]
-  | hadd t t' ht ht' => rw [map_add, map_add, ht, ht', map_add]
-  | h p =>
-    rw [contr_pure, map_smul, reindex_pure, contr_pure]
-    congr 1
-    exact congrArg S.pure (funext fun x => by simp only [cast_apply, cast_cast]; rfl)
+    S.reindex τ (contr σ t) = contr (σ.trans (τ.sumCongr (.refl _))) t :=
+  DFunLike.congr_fun (intertwiningMap_ext_pure
+    (φ := (S.reindex τ).toIntertwiningMap.comp (contr σ)) fun p => by
+      rw [Representation.IntertwiningMap.comp_apply, Representation.Equiv.coe_toIntertwiningMap,
+        contr_pure, map_smul, reindex_pure, contr_pure]
+      congr 1
+      exact congrArg S.pure (funext fun x => by simp only [cast_apply, cast_cast]; rfl)) t
 
 /-!
 
@@ -299,23 +296,17 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
     (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
     (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (t : S.Tensor c) :
     contr σ t = contr τ t := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => rw [map_smul, map_smul, ht]
-  | hadd t t' ht ht' => rw [map_add, map_add, ht, ht']
-  | h p =>
-    rw [contr_pure, contr_pure]
-    choose g hg using h₁
-    congr 1
-    · -- The pair `j` of `σ` is the pair `g j` of `τ`, in the same order or swapped.
-      refine Fintype.prod_bijective g ⟨fun j₁ j₂ hj => (hg j₁).left_unique (hj ▸ hg j₂),
-        fun j' => (ColorEquiv.exists_samePair_left hfree (fun j => ⟨g j, hg j⟩) j').imp
-          fun j hj => (hg j).right_unique hj⟩ _ _ fun j => ?_
-      rcases hg j with ⟨h, h'⟩ | ⟨h, h'⟩
-      · rw [cast_apply_congr p h, cast_apply_congr p h']
-        exact contr_cast_tmul_cast _ _ _ _ _ _
-      · rw [cast_apply_congr p h, cast_apply_congr p h']
-        exact contr_cast_tmul_cast_symm _ _ _ _ _ _
-    · exact congrArg S.pure (funext fun x => cast_apply_congr p (hfree x) _)
+  refine DFunLike.congr_fun (intertwiningMap_ext_pure fun p => ?_) t
+  rw [contr_pure, contr_pure]
+  choose g hg using h₁
+  congr 1
+  · -- The pair `j` of `σ` is the pair `g j` of `τ`, in the same order or swapped.
+    refine Fintype.prod_bijective g ⟨fun j₁ j₂ hj => (hg j₁).left_unique (hj ▸ hg j₂),
+      fun j' => (ColorEquiv.exists_samePair_left hfree (fun j => ⟨g j, hg j⟩) j').imp
+        fun j hj => (hg j).right_unique hj⟩ _ _ fun j => ?_
+    rcases hg j with ⟨h, h'⟩ | ⟨h, h'⟩ <;> rw [cast_apply_congr p h, cast_apply_congr p h']
+    exacts [contr_cast_tmul_cast _ _ _ _ _ _, contr_cast_tmul_cast_symm _ _ _ _ _ _]
+  · exact congrArg S.pure (funext fun x => cast_apply_congr p (hfree x) _)
 
 /-!
 
@@ -378,14 +369,11 @@ then `ν` in `T^μ_μ^ν_ν` is contracting both pairs at once. -/
 lemma contr_contr [Fintype J₁] [Fintype J₂] {c₁ : κ₁ → Color K} {a₁ : J₁ → Color K}
     {a₂ : J₂ → Color K} (σ₁ : ColorEquiv c (contrColors c₁ a₁))
     (σ₂ : ColorEquiv c₁ (contrColors c' a₂)) (t : S.Tensor c) :
-    contr σ₂ (contr σ₁ t) = contr (σ₁.chain σ₂) t := by
-  induction t using inductionOn_pure with
-  | h f =>
-    simp only [contr_pure, map_smul, smul_smul, Fintype.prod_sum_type, cast_apply,
-      cast_cast]
-    rfl
-  | hsmul r t ht => rw [map_smul, map_smul, ht, map_smul]
-  | hadd x y hx hy => rw [map_add, map_add, hx, hy, map_add]
+    contr σ₂ (contr σ₁ t) = contr (σ₁.chain σ₂) t :=
+  DFunLike.congr_fun (intertwiningMap_ext_pure (φ := (contr σ₂).comp (contr σ₁)) fun f => by
+    simp only [Representation.IntertwiningMap.comp_apply, contr_pure, map_smul, smul_smul,
+      Fintype.prod_sum_type, cast_apply, cast_cast]
+    rfl) t
 
 /-!
 
@@ -405,18 +393,15 @@ noncomputable def _root_.Tensors.ColorEquiv.tmulRight {c : ι₁ → Color K} {c
 lemma tmulEquiv_contr_left [Fintype J] {a : J → Color K} {d : ι₂ → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (t : S.Tensor c) (u : S.Tensor d) :
     S.tmulEquiv c' d (contr σ t ⊗ₜ u) =
-      contr (σ.tmulRight d) (S.tmulEquiv c d (t ⊗ₜ u)) := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => simp only [map_smul, ← smul_tmul', ht]
-  | hadd x y hx hy => simp only [map_add, add_tmul, hx, hy]
-  | h p =>
-    induction u using inductionOn_pure with
-    | hsmul r u hu => simp only [map_smul, tmul_smul, hu]
-    | hadd x y hx hy => simp only [map_add, tmul_add, hx, hy]
-    | h p' =>
+      contr (σ.tmulRight d) (S.tmulEquiv c d (t ⊗ₜ u)) :=
+  LinearMap.congr_fun (f := (S.tmulEquiv c' d).toLinearMap ∘ₗ (contr σ).toLinearMap.rTensor _)
+    (g := (contr (σ.tmulRight d)).toLinearMap ∘ₗ (S.tmulEquiv c d).toLinearMap)
+    (ext_pure₂ fun p p' => by
+      simp only [LinearMap.comp_apply, LinearMap.rTensor_tmul,
+        Representation.IntertwiningMap.coe_toLinearMap, Representation.Equiv.coe_toIntertwiningMap]
       rw [contr_pure, ← smul_tmul', map_smul, tmulEquiv_pure, tmulEquiv_pure, contr_pure]
       congr 1
-      exact congrArg (PiTensorProduct.tprod k) (funext fun y => by rcases y with x | m <;> rfl)
+      exact congrArg S.pure (funext fun y => by rcases y with x | m <;> rfl)) (t ⊗ₜ u)
 
 /-- The pairs `σ` of `T`, as pairs of `U ⊗ T` for a factor `U` on the left, with colors `d`. The
 indices of `U` are free and come before the free indices of `T`. -/
@@ -430,18 +415,15 @@ noncomputable def _root_.Tensors.ColorEquiv.tmulLeft {c : ι₁ → Color K}
 lemma tmulEquiv_contr_right [Fintype J] {a : J → Color K} {d : ι₂ → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (u : S.Tensor d) (t : S.Tensor c) :
     S.tmulEquiv d c' (u ⊗ₜ contr σ t) =
-      contr (σ.tmulLeft d) (S.tmulEquiv d c (u ⊗ₜ t)) := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => simp only [map_smul, tmul_smul, ht]
-  | hadd x y hx hy => simp only [map_add, tmul_add, hx, hy]
-  | h p =>
-    induction u using inductionOn_pure with
-    | hsmul r u hu => simp only [map_smul, ← smul_tmul', hu]
-    | hadd x y hx hy => simp only [map_add, add_tmul, hx, hy]
-    | h p' =>
+      contr (σ.tmulLeft d) (S.tmulEquiv d c (u ⊗ₜ t)) :=
+  LinearMap.congr_fun (f := (S.tmulEquiv d c').toLinearMap ∘ₗ (contr σ).toLinearMap.lTensor _)
+    (g := (contr (σ.tmulLeft d)).toLinearMap ∘ₗ (S.tmulEquiv d c).toLinearMap)
+    (ext_pure₂ fun p' p => by
+      simp only [LinearMap.comp_apply, LinearMap.lTensor_tmul,
+        Representation.IntertwiningMap.coe_toLinearMap, Representation.Equiv.coe_toIntertwiningMap]
       rw [contr_pure, tmul_smul, map_smul, tmulEquiv_pure, tmulEquiv_pure, contr_pure]
       congr 1
-      exact congrArg (PiTensorProduct.tprod k) (funext fun y => by rcases y with x | m <;> rfl)
+      exact congrArg S.pure (funext fun y => by rcases y with x | m <;> rfl)) (u ⊗ₜ t)
 
 /-!
 
@@ -557,14 +539,13 @@ lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) 
     contr (ColorEquiv.matMulAt i a b ha hi h)
         (S.tmulEquiv c ![a.dual, b] (t ⊗ₜ S.twoSlotEquiv a.dual b F)) =
       S.mapAt i ((S.cast hi.symm).toLinearMap ∘ₗ S.toLin F ∘ₗ (S.cast ha).toLinearMap) h t := by
-  induction t using inductionOn_pure with
-  | hsmul r t ht => rw [← smul_tmul', map_smul, map_smul, ht, map_smul]
-  | hadd t t' ht ht' => rw [add_tmul, map_add, map_add, ht, ht', map_add]
-  | h p =>
-    let q : Π x, S.V (c' x) := fun x => if hx : x = i then 0 else S.cast (h x hx) (p x)
-    rw [contr_matMulAt_pure i a b ha hi h F p q (fun x hx => by simp [q, hx]),
-      mapAt_pure i _ h p (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i)))))
-        (Function.update_self _ _ _) (fun x hx => by simp [q, hx])]
+  refine LinearMap.congr_fun (f := (contr _).toLinearMap ∘ₗ (S.tmulEquiv c ![a.dual, b]).toLinearMap
+    ∘ₗ (TensorProduct.mk k _ _).flip (S.twoSlotEquiv a.dual b F)) (ext_pure fun p => ?_) t
+  -- The vectors of `p` moved along `h` away from `i`. The vector at `i` is replaced below.
+  let q : Π x, S.V (c' x) := fun x => if hx : x = i then 0 else S.cast (h x hx) (p x)
+  exact (contr_matMulAt_pure i a b ha hi h F p q (fun x hx => by simp [q, hx])).trans
+    (mapAt_pure i _ h p (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i)))))
+      (Function.update_self _ _ _) (fun x hx => by simp [q, hx])).symm
 
 /-- Contracting the index `i` with the first index of the delta is the identity,
 `T^…μ… δ_μ^ν = T^…ν…`. -/
@@ -572,16 +553,9 @@ lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) 
     (t : S.Tensor c) :
     contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
       (S.tmulEquiv c ![a.dual, a] (t ⊗ₜ S.deltaTensor a)) = t := by
+  subst ha
   rw [deltaTensor, contr_matMulAt, snake]
-  induction t using inductionOn_pure with
-  | hsmul r t ht => rw [map_smul, ht]
-  | hadd t t' ht ht' => rw [map_add, ht, ht']
-  | h p =>
-    refine mapAt_pure i _ _ p p ?_ fun _ _ => rfl
-    simp only [LinearMap.coe_comp, Function.comp_apply,
-      Representation.IntertwiningMap.coe_toLinearMap, Representation.Equiv.coe_toIntertwiningMap,
-      LinearMap.id_apply, cast_apply, cast_cast]
-    rfl
+  exact LinearMap.congr_fun (mapAt_id i _) t
 
 /-!
 
@@ -589,19 +563,15 @@ lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) 
 
 -/
 
-/-- The components of a contraction, as `(tr T)^ρ = ∑ μ, T^ρμ_μ` for a trace. The labels `μ` run
-over the pairs, and the components of `T` are those of `S.reindex σ T`. -/
-lemma tensorBasis_repr_contr [Fintype κ] [Fintype J] [DecidableEq J]
-    {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (t : S.Tensor c)
-    (φ : Π x, basisIdx (c' x).kind) :
-    (S.tensorBasis c').repr (contr σ t) φ = ∑ μ : Π j, basisIdx (a j).kind,
-      (S.tensorBasis (contrColors c' a)).repr (S.reindex σ t) (Sum.rec φ (Sum.rec μ μ)) := by
-  simp only [contr, Representation.IntertwiningMap.comp_apply,
-    Representation.Equiv.coe_toIntertwiningMap]
-  generalize S.reindex σ t = u
-  induction u using inductionOn_pure with
-  | hsmul r u hu => simp only [map_smul, Finsupp.smul_apply, hu, smul_eq_mul, Finset.mul_sum]
-  | hadd u u' hu hu' => simp only [map_add, Finsupp.add_apply, hu, hu', Finset.sum_add_distrib]
+/-- The components of the contraction in the standard arrangement of slots,
+`(tr T)^ρ = ∑ μ, T^ρμ_μ`. The labels `μ` run over the pairs. -/
+lemma tensorBasis_repr_contrStd [Fintype κ] [Fintype J] [DecidableEq J] (c' : κ → Color K)
+    (a : J → Color K) (t : S.Tensor (contrColors c' a)) (φ : Π x, basisIdx (c' x).kind) :
+    (S.tensorBasis c').repr (contrStd c' a t) φ = ∑ μ : Π j, basisIdx (a j).kind,
+      (S.tensorBasis (contrColors c' a)).repr t (Sum.rec φ (Sum.rec μ μ)) := by
+  induction t using inductionOn_pure with
+  | hsmul r t ht => simp only [map_smul, Finsupp.smul_apply, ht, smul_eq_mul, Finset.mul_sum]
+  | hadd t t' ht ht' => simp only [map_add, Finsupp.add_apply, ht, ht', Finset.sum_add_distrib]
   | h f =>
     -- Each contraction of a pair is a sum over one label, and the product of sums over the
     -- pairs becomes a sum over the families of labels `μ`.
@@ -611,6 +581,15 @@ lemma tensorBasis_repr_contr [Fintype κ] [Fintype J] [DecidableEq J]
     refine Finset.sum_congr rfl fun μ _ => ?_
     simp only [tensorBasis_repr_pure, Fintype.prod_sum_type, Finset.prod_mul_distrib]
     ring
+
+/-- The components of a contraction, as `(tr T)^ρ = ∑ μ, T^ρμ_μ` for a trace. The labels `μ` run
+over the pairs, and the components of `T` are those of `S.reindex σ T`. -/
+lemma tensorBasis_repr_contr [Fintype κ] [Fintype J] [DecidableEq J]
+    {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (t : S.Tensor c)
+    (φ : Π x, basisIdx (c' x).kind) :
+    (S.tensorBasis c').repr (contr σ t) φ = ∑ μ : Π j, basisIdx (a j).kind,
+      (S.tensorBasis (contrColors c' a)).repr (S.reindex σ t) (Sum.rec φ (Sum.rec μ μ)) :=
+  tensorBasis_repr_contrStd c' a _ φ
 
 /-- The components of the contraction of one pair in dual bases, `(tr T)^ρ = ∑ μ, T^ρμ_μ` with a
 single label `μ`. -/
