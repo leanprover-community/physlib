@@ -143,17 +143,16 @@ lemma dotProduct_rep (d : ℕ) (Λ : LorentzGroup d) (v : Vector d) (ω : CoVect
   rw [dotProduct_mulVec, vecMul_transpose, mulVec_mulVec, LorentzGroup.coe_inv,
     LorentzGroup.subtype_inv_mul, one_mulVec]
 
-/-- The coordinate pairing of an index with its dual is Lorentz invariant. -/
+/-- The coordinate pairing of an index with its dual is Lorentz invariant. At a lower index it is
+the pairing at the upper index with its factors swapped (`Species.invariant_of_up`). -/
 lemma coordPairing_rep (d : ℕ) : ∀ (c : Color Kind) (Λ : LorentzGroup d) (x : IndexSpace d c)
     (y : IndexSpace d c.dual),
     (IndexSpace.basis d c).coordPairing (IndexSpace.basis d c.dual)
         (IndexSpace.rep d c Λ x ⊗ₜ IndexSpace.rep d c.dual Λ y) =
-      (IndexSpace.basis d c).coordPairing (IndexSpace.basis d c.dual) (x ⊗ₜ y)
-  | ⟨_, .up⟩, Λ, x, y => (coordPairing_vector_coVector d _ _).trans <|
-    (dotProduct_rep d Λ x y).trans (coordPairing_vector_coVector d x y).symm
-  | ⟨_, .down⟩, Λ, x, y => (Module.Basis.coordPairing_comm _ _ _ _).trans <|
-    (coordPairing_vector_coVector d _ _).trans <| (dotProduct_rep d Λ y x).trans <|
-      (coordPairing_vector_coVector d y x).symm.trans (Module.Basis.coordPairing_comm _ _ _ _)
+      (IndexSpace.basis d c).coordPairing (IndexSpace.basis d c.dual) (x ⊗ₜ y) :=
+  Species.invariant_of_up (basisIdx := fun _ => Fin 1 ⊕ Fin d) _ _ fun _ Λ x y =>
+    (coordPairing_vector_coVector d _ _).trans <|
+      (dotProduct_rep d Λ x y).trans (coordPairing_vector_coVector d x y).symm
 
 end realLorentz
 
@@ -232,26 +231,13 @@ lemma metric_invariant (d : ℕ) (c : Color Kind) (Λ : LorentzGroup d) :
       Matrix.transpose_transpose, ← LorentzGroup.coe_inv,
       LorentzGroup.transpose_mul_minkowskiMatrix_mul_self]
 
-/-- Contracting the metric at `c` with a basis vector of `c.dual` gives `η_νν e_ν`. -/
-lemma toLin_metric_basis (d : ℕ) (c : Color Kind) (ν : Fin 1 ⊕ Fin d) :
-    (realLorentz d).toLin (metric d c) ((realLorentz d).basis c.dual ν) =
-      minkowskiMatrix ν ν • (realLorentz d).basis c ν := by
-  refine ((realLorentz d).basis c).repr.injective (Finsupp.ext fun ρ => ?_)
-  rw [Species.basis_repr_toLin, map_smul]
-  simp only [Module.Basis.repr_self, Finsupp.single_apply, ite_mul, one_mul, zero_mul,
-    Finset.sum_ite_eq, Finset.mem_univ, ite_true, Finsupp.smul_apply, smul_eq_mul, mul_ite, mul_one,
-    mul_zero]
-  refine (basis_tensorProduct_repr_metric d c ν ρ).trans ?_
-  by_cases h : ν = ρ <;> simp [h]
-
-/-- The metrics at a color and at its dual are inverse, `η^μν η_νρ = δ^μ_ρ`: `η` is diagonal with
-`η_μμ² = 1`. -/
+/-- The metrics at a color and at its dual are inverse, `η^μν η_νρ = δ^μ_ρ`, since `η² = 1`. -/
 lemma metric_inverse (d : ℕ) (c : Color Kind) :
     (realLorentz d).toLin (metric d c) ∘ₗ (realLorentz d).toLin (metric d c.dual) =
       LinearMap.id :=
-  ((realLorentz d).basis c).ext fun ν => by
-    rw [LinearMap.comp_apply, toLin_metric_basis d c.dual ν, map_smul, toLin_metric_basis d c ν,
-      smul_smul, minkowskiMatrix.η_apply_mul_η_apply_diag, one_smul, LinearMap.id_apply]
+  Species.toLin_comp_toLin_of_mul_eq_one _ _ <| by
+    simp only [basis_tensorProduct_repr_metric]
+    exact minkowskiMatrix.sq
 
 end realLorentz
 
