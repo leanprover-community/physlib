@@ -963,18 +963,27 @@ private def regroup : TacticM Unit := do
   setGoals [rest.mvarId!]
   evalTactic (← `(tactic| first | with_reducible rfl | abel))
 
+/-- Whether `e` contains a lowering or raising `S.toDualAt`. -/
+private def hasLowering (e : Expr) : Bool :=
+  (e.find? (·.isConstOf ``Tensors.Species.toDualAt)).isSome
+
 /-- The body of `tensor_regroup`: `regroup`, and again after writing lowerings and raisings as
-contractions with the form (`Species.toDualAt_eq_contr`) when it fails. -/
+contractions with the form (`Species.toDualAt_eq_contr`) when it fails and the goal has one. When
+both fail, the first error is reported if it is about the summands or scalars, and the second
+otherwise. -/
 private def regroupWithLowerings : TacticM Unit := do
+  unless hasLowering (← instantiateMVars (← getMainTarget)) do regroup; return
   let s ← saveState
   try regroup catch e =>
     -- Lowerings and raisings are contractions with the form (`Species.toDualAt_eq_contr`). They
     -- are expanded only when needed, since every expanded form is one more factor to match.
     s.restore
-    let before ← instantiateMVars (← getMainTarget)
-    evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
-    if (← instantiateMVars (← getMainTarget)) == before then throw e
-    regroup
+    evalTactic (← `(tactic| simp only [Tensors.Species.toDualAt_eq_contr]))
+    try regroup catch e' =>
+      -- The expansion changes the factors, not the summands or scalars, so an error about those
+      -- reads better before it.
+      let msg ← e.toMessageData.toString
+      throw <| if msg.contains "summand" || msg.contains "scalars" then e else e'
 
 /-!
 
@@ -1159,9 +1168,11 @@ private partial def regroupUsing : List Term → TacticM Unit
       | throwError "tensor_regroup: {e} is not an equation"
     let mut err := m!"tensor_regroup: no factors of either side are contracted as in the left \
       side of {e}"
+    let expands := if hasLowering (← instantiateMVars (← getMainTarget)) || hasLowering A then
+      [false, true] else [false]
     -- The right side is searched by first turning the goal around.
     for flip in [false, true] do
-      for expand in [false, true] do
+      for expand in expands do
         let s ← saveState
         -- A side that is not a contraction has no factors to search.
         let read? ← try
@@ -1500,6 +1511,14 @@ the other side
 #guard_msgs in
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ, .up⟩ | ν σ = M | σ ρ}ᵀ := by
+  tensor_regroup
+
+-- A false goal with lowerings reports the summand as written, not with the lowerings expanded.
+/-- error: tensor_regroup: the summand
+  (S.toDualAt 0 { kind := κ, variance := Variance.up } ⋯ ⋯ ⋯) w
+has no matching summand on the right -/
+#guard_msgs in
+example (w : S.Tensor ![⟨κ, .up⟩]) : {v | ↓μ + w | ↓μ = v | ↓μ + v | ↓μ}ᵀ := by
   tensor_regroup
 
 /-- Summands of opposite signs are matched by swapping an antisymmetric form,
