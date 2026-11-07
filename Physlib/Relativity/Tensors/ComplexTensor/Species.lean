@@ -555,13 +555,9 @@ lemma schouten_downL :
 lemma schouten_downR :
     {εR' | γ ρ ⊗ δR' | α α' = εR' | γ α ⊗ δR' | ρ α' + -{εR' | ρ α ⊗ δR' | γ α'}ᵀ | ρ α γ α'}ᵀ := by
   tensor_components [Species.tensorBasis_repr_formTensor,
-    fun c μ => (Species.tensorBasis_repr_deltaTensor_eq_one (S := complexLorentz) c μ).trans
-      Matrix.one_apply]
+    Species.tensorBasis_repr_deltaTensor_eq_one, Matrix.one_apply]
   rw [← sub_eq_add_neg]
-  refine Eq.trans ?_ (Species.formMatrix_schouten downR (Fintype.card_fin 2) _ _ _ _)
-  -- The delta of `formMatrix_schouten` is `δ^α_α'`, read here as `δ_α'^α`.
-  congr 2
-  exact propext eq_comm
+  exact Species.formMatrix_schouten' downR (Fintype.card_fin 2) _ _ _ _
 
 /-- Swapping the indices of the delta at `c` gives the delta at `c.dual`, as `δ^μ_ν = δ_ν^μ`. -/
 lemma deltaTensor_swap (c : Color Kind) :

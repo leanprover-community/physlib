@@ -54,7 +54,8 @@ antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus th
 - `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
   antisymmetric form on a kind with two labels, `LinearMap.IsAlt.schouten` for `formBilin`, and
   `Species.formMatrix_schouten` is the same in components,
-  `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`.
+  `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`, and `Species.formMatrix_schouten'` with the delta
+  read the other way, `g^γρ δ_α^α' = g^γα δ_ρ^α' - g^ρα δ_γ^α'`.
 
 ## iii. Table of contents
 
@@ -400,6 +401,16 @@ lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFor
     Finsupp.single_apply, smul_eq_mul, map_zero, Finsupp.zero_apply, formBilin_basis,
     @eq_comm _ α' α] at h
   linear_combination h - (if ρ = α then 1 else 0) * formMatrix_antisymm (S := S) c γ α'
+
+/-- The Schouten identity in components with the delta read the other way,
+`g^γρ δ_α^α' = g^γα δ_ρ^α' - g^ρα δ_γ^α'`. -/
+lemma formMatrix_schouten' (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
+    [NoZeroDivisors k] [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2)
+    (γ ρ α α' : basisIdx c.kind) :
+    S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
+      S.formMatrix c γ α * (if ρ = α' then 1 else 0) -
+        S.formMatrix c ρ α * (if γ = α' then 1 else 0) := by
+  simpa only [@eq_comm _ α' α] using formMatrix_schouten c h2 γ ρ α α'
 
 end Species
 
