@@ -28,7 +28,8 @@ given for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on the l
 ## ii. Key results
 
 - `Representation.IntertwiningMap.map_invariant` : an intertwining map sends invariant vectors to
-  invariant vectors.
+  invariant vectors, and `Representation.IntertwiningMap.map_one_invariant` : an intertwining map
+  from the trivial representation picks out an invariant vector.
 - `Representation.Equiv.tensorCongr` : the tensor product of two equivalences of representations.
 
 ## iii. Table of contents
@@ -60,6 +61,13 @@ variable {k G V W U X : Type} [CommRing k] [Monoid G] [AddCommMonoid V] [Module 
 lemma Representation.IntertwiningMap.map_invariant (φ : ρ.IntertwiningMap σ) {v : V} {g : G}
     (hv : ρ g v = v) : σ g (φ v) = φ v := by
   rw [← Representation.IntertwiningMap.isIntertwining, hv]
+
+/-- An intertwining map `φ` from the trivial representation picks out an invariant vector, its
+value `φ 1`, as an invariant form picks out its tensor. -/
+lemma Representation.IntertwiningMap.map_one_invariant
+    (φ : (Representation.trivial k G k).IntertwiningMap ρ) {v : V} (hv : φ 1 = v) (g : G) :
+    ρ g v = v :=
+  hv ▸ φ.map_invariant rfl
 
 /-!
 
