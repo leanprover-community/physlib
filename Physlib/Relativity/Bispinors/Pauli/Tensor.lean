@@ -219,7 +219,6 @@ lemma pauliCo_contr_pauliContr :
       (2 : ℂ) • {εL | α α' ⊗ εR | β β'}ᵀ | α α' β β'}ᵀ := by
   rw [map_smul, ← pauliA_pauliB]
   refine congrArg pauliA ?_
-  rw [← pauliTensor_raise_lower]
   simp only [pauliB, LinearMap.coe_mk, AddHom.coe_mk]
   tensor_regroup
 

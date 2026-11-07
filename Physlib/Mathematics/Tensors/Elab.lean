@@ -736,12 +736,23 @@ private def insertDelta (lhs : Bool) (a : Expr) (slots : Slots) (slot : Nat) : T
 mutual
 
 /-- Inserts a delta of color `a` on the left side, if `lhs`, or on the right side, at each slot of
-the product of color `a` in turn, and proves the goal by `regroupContractions`. -/
-private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) : TacticM Unit := do
+the product of color `a` in turn, and proves the goal by `regroupContractions`. With `skipForms`,
+the slots of forms are left out when another factor has a slot: inserting the delta anywhere along a
+chain of contracted forms gives the same factors, so trying each of their slots only repeats the
+search. -/
+private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Bool := false) :
+    TacticM Unit := do
   let (p, q) ← contractedProducts
-  let some (slots, _, colors) ← literalTensorType? (← inferType (if lhs then p else q))
+  let P := if lhs then p else q
+  let some (slots, _, colors) ← literalTensorType? (← inferType P)
     | throwError "tensor_regroup: the slots or colors of a product are not literal"
-  let slotsOfColor ← colors.zipIdx.filterM fun (col, _) => isDefEqGoal col a
+  -- Whether each slot belongs to a form, from the number of slots of each factor in turn.
+  let inForm ← (factors P).flatMapM fun f => do
+    let n := ((← literalTensorType? (← inferType f)).map (·.2.2.length)).getD 0
+    return List.replicate n (skipForms && (formArgs? f).isSome)
+  let inForm := if inForm.all id then inForm.map fun _ => false else inForm
+  let slotsOfColor ← colors.zipIdx.filterM fun (col, i) =>
+    return !inForm.getD i false && (← isDefEqGoal col a)
   firstSuccess (slotsOfColor.map (·.2)) m!"tensor_regroup: no slot has the color {a} of a delta"
     fun slot => do
       insertDelta lhs a slots slot
@@ -770,7 +781,7 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
       rewriteSubterm d thm (some lhs)
       regroupContractions
   | [] => firstSuccess fs m!"tensor_regroup: no two forms left over are inverse" fun (_, c) => do
-      insertDeltaAnywhere lhs (← mkAppM ``Tensors.Color.dual #[c])
+      insertDeltaAnywhere lhs (← mkAppM ``Tensors.Color.dual #[c]) (skipForms := true)
   | _ => throwError "tensor_regroup: more than one factor is left over against forms"
 
 /-- Proves `Tensor.contr σ P = Tensor.contr τ Q` for two contractions of the same factors, up to
@@ -784,13 +795,18 @@ private partial def regroupContractions : TacticM Unit := do
   let (p, q) ← contractedProducts
   let extraL ← leftover (factors p) (factors q)
   let extraR ← leftover (factors q) (factors p)
+  -- The error reported in place of the count of factors when forms are left over on one side.
+  let mut formErr : Option MessageData := none
   for (lhs, ds, gs) in [(true, extraL, extraR), (false, extraR, extraL)] do
-    try matchFormPair lhs ds gs; return catch _ => pure ()
+    try matchFormPair lhs ds gs; return catch _ =>
+    if 2 ≤ gs.length && gs.all (formArgs? · |>.isSome) then
+      formErr := m!"tensor_regroup: the forms left over on one side do not cancel in inverse pairs \
+        against the other side{indentD (MessageData.joinSep (gs.map toMessageData) "\n")}"
   -- A delta left over on the right is inserted on the left, and conversely.
   match extraL.mapM deltaColor?, extraR.mapM deltaColor? with
   | some _, some (a :: _) => insertDeltaAnywhere true a
   | some (a :: _), some [] => insertDeltaAnywhere false a
-  | _, _ => matchFactors
+  | _, _ => try matchFactors catch e => throwError (formErr.getD e.toMessageData)
 
 end
 
@@ -954,8 +970,9 @@ Beyond regrouping, it uses these identities:
 - a delta on one side with no counterpart on the other is inserted on the other side at a slot of
   its color, `T^…μ… = T^…ν… δ_ν^μ` (`Species.Tensor.contr_deltaTensor`), or, against two forms on
   the other side, written as their contraction, `g^μν g_νρ = δ^μ_ρ`
-  (`Species.contr_formTensor_formTensor`), and two such forms against nothing are matched by
-  inserting a delta first;
+  (`Species.contr_formTensor_formTensor`), and pairs of such forms against nothing, as a lowering
+  `T_…ν… = T^…μ… g_μν` contracted with `g^νρ`, are matched one pair at a time by inserting a delta
+  first;
 - when the signs of two summands differ, one antisymmetric form is swapped, `ε^αβ = -ε^βα`
   (`Species.formTensor_antisymm`), and when the regrouping fails, one symmetric form is swapped,
   `η^μν = η^νμ` (`Species.formTensor_symm`);
@@ -1195,6 +1212,59 @@ example : {v | ↓μ = v | ν ⊗ S.formTensor ⟨κ, .down⟩ | ν μ}ᵀ := by
 
 /-- A form and its inverse are matched by inserting a delta, `v^μ = v^ν g_νρ g^ρμ`. -/
 example : {v | μ = v | ν ⊗ S.formTensor ⟨κ, .down⟩ | ν ρ ⊗ S.formTensor ⟨κ, .up⟩ | ρ μ}ᵀ := by
+  tensor_regroup
+
+/-- A lowering cancels against the inverse form, `M^μ_ν g^νρ = M^μρ`. -/
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
+  tensor_regroup
+
+/-- Two lowerings cancel against two inverse forms, one pair at a time,
+`M_μν g^μρ g^νσ = M^ρσ`. -/
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ, .up⟩ | ν σ = M | ρ σ}ᵀ := by
+  tensor_regroup
+
+/-- The same with the pairs on the right side and on two kinds, `N^ρσ = N_μν g^μρ g'^νσ`. -/
+example (κ' : K) [S.HasForm κ'] (N : S.Tensor ![⟨κ, .up⟩, ⟨κ', .up⟩]) :
+    {N | ρ σ = N | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ', .up⟩ | ν σ}ᵀ := by
+  tensor_regroup
+
+/-- A lowering contracted with the second index of a symmetric form, `M^μ_ν g^ρν = M^μρ`. -/
+example [S.IsSymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
+  tensor_regroup
+
+/-- With an antisymmetric form the first index cancels with no sign, `M^μ_ν ε^νρ = M^μρ`. -/
+example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
+  tensor_regroup
+
+/-- With an antisymmetric form the second index cancels with a sign, `M^μ_ν ε^ρν = -M^μρ`. -/
+example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = -M | μ ρ}ᵀ := by
+  tensor_regroup
+
+-- The sign of an antisymmetric form is not dropped, `M^μ_ν ε^ρν ≠ M^μρ`.
+/-- error: tensor_regroup: the forms left over on one side do not cancel in inverse pairs against
+the other side
+  S.formTensor { kind := κ, variance := Variance.up }.dual
+  S.formTensor { kind := κ, variance := Variance.up } -/
+#guard_msgs in
+example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
+  tensor_regroup
+
+-- Cancelling the pairs does not swap the free indices, `M_μν g^μρ g^νσ ≠ M^σρ`.
+/-- error: tensor_regroup: the forms left over on one side do not cancel in inverse pairs against
+the other side
+  S.formTensor { kind := κ, variance := Variance.up }.dual
+  S.formTensor { kind := κ, variance := Variance.up }.dual
+  S.formTensor { kind := κ, variance := Variance.up }
+  S.formTensor { kind := κ, variance := Variance.up } -/
+#guard_msgs in
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ, .up⟩ | ν σ = M | σ ρ}ᵀ := by
   tensor_regroup
 
 /-- Summands of opposite signs are matched by swapping an antisymmetric form,
