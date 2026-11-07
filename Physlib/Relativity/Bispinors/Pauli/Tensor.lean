@@ -33,11 +33,11 @@ Lowering both indices of a matrix with `ε` gives its adjugate, transposed, and
 One identity is read off from the Pauli matrices, the trace identity `pauliCoDown_trace_pauliCo`,
 `tr(σ̄_μ σ_ν) = 2 η_μν`: its components are the matrix traces of
 `PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix`. The others are derived from
-it at tensor level, by `tensor_regroup` and `tensor_slots`. The Fierz identity reads the trace
-identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB` between tensors with a vector index
-and tensors with two Weyl indices. Both spaces have dimension `16`, so `A ∘ B = 2` as well, which
-is the Fierz identity. The anticommutators follow from the trace identities and the Schouten
-identity of `ε`.
+it at tensor level, mostly by `tensor_regroup using` an identity proved before. The Fierz identity
+reads the trace identity as `B ∘ A = 2` for the maps `pauliA` and `pauliB` between tensors with a
+vector index and tensors with two Weyl indices. Both spaces have dimension `16`, so `A ∘ B = 2` as
+well, which is the Fierz identity. The anticommutators follow from the trace identities and the
+Schouten identity of `ε`.
 
 ## ii. Key results
 
