@@ -57,7 +57,7 @@ value.
 
 For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
 `{S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ`, which is
-`contr_formTensor_formTensor` (section C).
+`contr_formTensor_formTensor` (section D).
 
 ## ii. Key results
 
@@ -67,6 +67,9 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
   or ordered differently, with the same signs and scalars, up to deltas, inverse pairs of forms,
   swaps of symmetric and antisymmetric forms, and lowerings written as contractions.
 - `tensor_slots` : proves an equation of two chains of lowerings and raisings of the same tensor.
+- `Species.schouten_formTensor_deltaTensor` and `Species.schouten_formTensor_deltaTensor_dual` :
+  the Schouten identity of an antisymmetric form on a kind with two labels, for both orientations
+  of the delta.
 
 ## iii. Table of contents
 
@@ -81,7 +84,8 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
   - B.7. Deltas and forms
   - B.8. Sums, signs and scalars
   - B.9. Chains of lowerings and raisings
-- C. Examples
+- C. The Schouten identity
+- D. Examples
 
 ## iv. References
 
@@ -1009,7 +1013,46 @@ end
 
 /-!
 
-## C. Examples
+## C. The Schouten identity
+
+-/
+
+public section
+
+namespace Tensors.Species
+
+variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+    [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
+    (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] [NoZeroDivisors k]
+    [CharZero k]
+
+/-- The Schouten identity for an antisymmetric form on a kind with two labels, such as the Weyl `ε`,
+`g_γρ δ^α_α' = g_γα' δ_ρ^α - g_ρα' δ_γ^α`. -/
+lemma schouten_formTensor_deltaTensor (h2 : Fintype.card (basisIdx c.kind) = 2) :
+    {S.formTensor c | γ ρ ⊗ S.deltaTensor c | α α' =
+      S.formTensor c | γ α' ⊗ S.deltaTensor c.dual | ρ α +
+        -{S.formTensor c | ρ α' ⊗ S.deltaTensor c.dual | γ α}ᵀ | ρ α' γ α}ᵀ := by
+  tensor_components [tensorBasis_repr_formTensor, tensorBasis_repr_deltaTensor_eq_one]
+  rw [← sub_eq_add_neg]
+  exact formMatrix_schouten c h2 _ _ _ _
+
+/-- The Schouten identity with the delta read the other way,
+`g_γρ δ_α^α' = g_γα δ_ρ^α' - g_ρα δ_γ^α'`. -/
+lemma schouten_formTensor_deltaTensor_dual (h2 : Fintype.card (basisIdx c.kind) = 2) :
+    {S.formTensor c | γ ρ ⊗ S.deltaTensor c.dual | α α' =
+      S.formTensor c | γ α ⊗ S.deltaTensor c.dual | ρ α' +
+        -{S.formTensor c | ρ α ⊗ S.deltaTensor c.dual | γ α'}ᵀ | ρ α γ α'}ᵀ := by
+  tensor_components [tensorBasis_repr_formTensor, tensorBasis_repr_deltaTensor_eq_one]
+  rw [← sub_eq_add_neg]
+  exact formMatrix_schouten' c h2 _ _ _ _
+
+end Tensors.Species
+
+end
+
+/-!
+
+## D. Examples
 
 -/
 

@@ -61,7 +61,8 @@ enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_�
 - `complexLorentz.formTensor_upL_antisymm`, `complexLorentz.formTensor_up_symm` : `ε` is
   antisymmetric and `η` symmetric, and `complexLorentz.deltaTensor_swap` : `δ^μ_ν = δ_ν^μ`.
 - `complexLorentz.schouten_downL` and `complexLorentz.schouten_downR` : the Schouten identity of
-  `ε` in index notation, from `Species.formMatrix_schouten`.
+  `ε` in index notation, from `Species.schouten_formTensor_deltaTensor` and
+  `Species.schouten_formTensor_deltaTensor_dual`.
 - `complexLorentz.leftHandedWeylTensorial` and the other instances of section F : Weyl spinors and
   complex vectors as tensors with one slot.
 - `complexLorentz.tensorBasis_repr_toTensor_leftRight` : the components of a tensor in
@@ -544,20 +545,14 @@ lemma formTensor_down_symm : {η' | μ ν = η' | ν μ}ᵀ := by
 
 /-- The Schouten identity for left-handed indices, `ε_γρ δ^α_α' = ε_γα' δ_ρ^α - ε_ρα' δ_γ^α`. -/
 lemma schouten_downL :
-    {εL' | γ ρ ⊗ δL | α α' = εL' | γ α' ⊗ δL' | ρ α + -{εL' | ρ α' ⊗ δL' | γ α}ᵀ | ρ α' γ α}ᵀ := by
-  tensor_components [Species.tensorBasis_repr_formTensor,
-    Species.tensorBasis_repr_deltaTensor_eq_one, Matrix.one_apply]
-  rw [← sub_eq_add_neg]
-  exact Species.formMatrix_schouten downL (Fintype.card_fin 2) _ _ _ _
+    {εL' | γ ρ ⊗ δL | α α' = εL' | γ α' ⊗ δL' | ρ α + -{εL' | ρ α' ⊗ δL' | γ α}ᵀ | ρ α' γ α}ᵀ :=
+  Species.schouten_formTensor_deltaTensor downL (Fintype.card_fin 2)
 
 /-- The Schouten identity for right-handed indices,
 `ε_γ̇ρ̇ δ_α̇^α̇' = ε_γ̇α̇ δ_ρ̇^α̇' - ε_ρ̇α̇ δ_γ̇^α̇'`. -/
 lemma schouten_downR :
-    {εR' | γ ρ ⊗ δR' | α α' = εR' | γ α ⊗ δR' | ρ α' + -{εR' | ρ α ⊗ δR' | γ α'}ᵀ | ρ α γ α'}ᵀ := by
-  tensor_components [Species.tensorBasis_repr_formTensor,
-    Species.tensorBasis_repr_deltaTensor_eq_one, Matrix.one_apply]
-  rw [← sub_eq_add_neg]
-  exact Species.formMatrix_schouten' downR (Fintype.card_fin 2) _ _ _ _
+    {εR' | γ ρ ⊗ δR' | α α' = εR' | γ α ⊗ δR' | ρ α' + -{εR' | ρ α ⊗ δR' | γ α'}ᵀ | ρ α γ α'}ᵀ :=
+  Species.schouten_formTensor_deltaTensor_dual downR (Fintype.card_fin 2)
 
 /-- Swapping the indices of the delta at `c` gives the delta at `c.dual`, as `δ^μ_ν = δ_ν^μ`. -/
 lemma deltaTensor_swap (c : Color Kind) :
