@@ -8,7 +8,7 @@ representation of SL(2, ℂ) induced from its two Weyl factors, and so of the Lo
 its double cover. The gamma endomorphisms act in the chiral basis and satisfy the Clifford relations
 for the Minkowski signature (+,−,−,−); their chirality operator gives complementary left and right
 chiral projectors, and a change of coordinates turns them into the concrete gamma matrices of the
-Dirac representation, which generate the Dirac algebra and realize it as a quotient of the Clifford
+Dirac representation, which generate the Dirac algebra, an algebra isomorphic to the Clifford
 algebra of the Minkowski quadratic form. This is the setting for the Dirac equation, the Dirac
 bilinears and the fermionic terms of the Standard Model Lagrangian.
 
@@ -59,8 +59,8 @@ endomorphisms, and it contains each generator. [10] The Minkowski quadratic form
 algebra map from its Clifford algebra onto the Dirac algebra, and this map is surjective. [11]
 The sixteen products of the gamma matrices with increasing indices lie in the Dirac algebra and are
 linearly independent over ℝ {3}. [17] The Clifford algebra of the Minkowski quadratic form has
-dimension 16 over ℝ. [18] The Dirac algebra has dimension 16 as well. [19] The map is an
-isomorphism, its injectivity resting on dimension theory. [TODO]
+dimension 16 over ℝ. [18] The Dirac algebra has dimension 16 as well. [19] The map from the
+Clifford algebra is therefore injective, hence an isomorphism of algebras. [20]
 
 ### Bilinears and field equations
 
@@ -110,6 +110,8 @@ identifies a fermion with its charge conjugate. [TODO]
    `linearIndependent_γProd`, `linearIndependent_γProd_diracAlgebra`
 18. Physlib/Relativity/CliffordAlgebra.lean — `finrank_cliffordAlgebra_diracForm`
 19. Physlib/Relativity/CliffordAlgebra.lean — `finrank_diracAlgebra`
+20. Physlib/Relativity/CliffordAlgebra.lean — `ofCliffordAlgebra_injective`,
+   `ofCliffordAlgebra_bijective`, `ofCliffordAlgebraEquiv`, `ofCliffordAlgebraEquiv_apply`
 
 ## References
 

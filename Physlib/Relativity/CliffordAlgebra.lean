@@ -32,15 +32,9 @@ to Dirac coordinates, preserving the existing matrix entries.
 - `ofCliffordAlgebra_surjective`: The homomorphism `ofCliffordAlgebra` is surjective
 - `linearIndependent_γProd`: The 16 products `γProd s` are linearly independent over ℝ
 
-## TODO
-
-- Complete the isomorphism by proving injectivity of `ofCliffordAlgebra` (requires dimension theory)
-- Construct the `AlgEquiv` between `CliffordAlgebra diracForm` and `diracAlgebra`
-
 -/
 
 @[expose] public section
-TODO "Prove injectivity of ofCliffordAlgebra and construct the full isomorphism."
 namespace spaceTime
 open Complex Fermion.Dirac
 
@@ -387,6 +381,33 @@ lemma finrank_diracAlgebra : Module.finrank ℝ diracAlgebra = 16 := by
       ofCliffordAlgebra_surjective).trans finrank_cliffordAlgebra_diracForm.le
   -- at least 16, since the 16 products `γProd s` are linearly independent in `diracAlgebra`
   · simpa [Fintype.card_finset] using linearIndependent_γProd_diracAlgebra.fintype_card_le_finrank
+
+/-! ### B.3. Injectivity and the isomorphism -/
+
+/-- The homomorphism `ofCliffordAlgebra` is injective. In other words, every identity between
+polynomial expressions with real coefficients in the gamma matrices follows from their
+anticommutation relations. -/
+lemma ofCliffordAlgebra_injective : Function.Injective ofCliffordAlgebra :=
+  -- a surjective linear map between two spaces of the same finite dimension is injective
+  (LinearMap.injective_iff_surjective_of_finrank_eq_finrank
+    (f := ofCliffordAlgebra.toLinearMap)
+    (finrank_cliffordAlgebra_diracForm.trans finrank_diracAlgebra.symm)).mpr
+    ofCliffordAlgebra_surjective
+
+/-- The homomorphism `ofCliffordAlgebra` is bijective. -/
+lemma ofCliffordAlgebra_bijective : Function.Bijective ofCliffordAlgebra :=
+  ⟨ofCliffordAlgebra_injective, ofCliffordAlgebra_surjective⟩
+
+/-- The isomorphism of real algebras between the Clifford algebra of `diracForm` and
+`diracAlgebra`, given by `ofCliffordAlgebra`. The gamma matrices of the Dirac representation thus
+realize the Clifford algebra of the Minkowski quadratic form. -/
+def ofCliffordAlgebraEquiv : CliffordAlgebra diracForm ≃ₐ[ℝ] diracAlgebra :=
+  AlgEquiv.ofBijective ofCliffordAlgebra ofCliffordAlgebra_bijective
+
+/-- The isomorphism `ofCliffordAlgebraEquiv` acts as `ofCliffordAlgebra`. -/
+@[simp]
+lemma ofCliffordAlgebraEquiv_apply (x : CliffordAlgebra diracForm) :
+    ofCliffordAlgebraEquiv x = ofCliffordAlgebra x := rfl
 
 end γ
 
