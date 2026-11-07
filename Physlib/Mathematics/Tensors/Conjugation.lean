@@ -175,6 +175,12 @@ lemma conjEquiv_cast {b b' : Color K} (p : b = b') (h : c' = b'.bar) (x : S.V b)
   subst p
   rfl
 
+/-- Conjugation keeps the dimension, as `v ↦ v̄` is a conjugate-linear equivalence. -/
+lemma finrank_conj (h : c' = c.bar) : Module.finrank k (S.V c') = Module.finrank k (S.V c) := by
+  rw [Module.finrank, ← rank_eq_of_equiv_equiv (starRingEnd k) (S.conjEquiv h).toAddEquiv
+    (Function.Involutive.bijective fun r => by simp) (fun r m => map_smulₛₗ (S.conjEquiv h) r m),
+    ← Module.finrank]
+
 end
 
 omit [InvolutiveStar K] in
@@ -218,14 +224,12 @@ lemma HasConjugation.isEquivariantConjugation_ofBasis (e : ConjLabels basisIdx)
   let := ofBasis S e
   refine ⟨fun {c _} h g v => ?_⟩
   subst h
-  obtain ⟨κ, ⟨_ | _, _ | _, hv⟩⟩ := c
-  · exact absurd rfl hv
+  obtain ⟨κ, ⟨_ | _, _ | _, hv⟩⟩ := c <;> try exact absurd rfl hv
   · -- A lower color is the dual of `⟨κ, up⟩`, where the law holds.
     exact rep_dual_of_star_contr (c := ⟨κ, .up⟩) (c' := ⟨star κ, .up⟩) _ _
       (fun u α => Module.Basis.star_coordPairing_starEquiv _ _ _ _ _ u α)
       (fun g => Module.Basis.starEquiv_map_of_repr _ _ _ _ _ (rep_basis κ g)) g v
   · exact Module.Basis.starEquiv_map_of_repr _ _ _ _ _ (rep_basis κ g) v
-  · exact absurd rfl hv
 
 /-- The componentwise conjugate of the basis vector `e_μ` is the basis vector `e_{e μ}`. -/
 lemma HasConjugation.ofBasis_conjEquiv_basis (e : ConjLabels basisIdx)
