@@ -27,6 +27,13 @@ namespace Lorentz
 def ComplexVector.metricVal : (ComplexVector ⊗[ℂ] ComplexVector) :=
   contrContrToMatrix.symm ((@minkowskiMatrix 3).map ofRealHom)
 
+/-- The metric `ηᵃᵃ` is invariant under `SL(2,ℂ)`. -/
+lemma ComplexVector.metricVal_invariant (M : SL(2,ℂ)) :
+    TensorProduct.map (ComplexVector.SL2CRep M) (ComplexVector.SL2CRep M)
+      ComplexVector.metricVal = ComplexVector.metricVal := by
+  rw [ComplexVector.metricVal, contrContrToMatrix_ρ_symm,
+    LorentzGroup.toComplex_mul_minkowskiMatrix_mul_transpose]
+
 /-- The expansion of `ComplexVector.metricVal` into basis vectors. -/
 lemma ComplexVector.metricVal_expand_tmul : ComplexVector.metricVal =
     ComplexVector.basis (Sum.inl 0) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inl 0)
@@ -76,6 +83,14 @@ lemma ComplexVector.metric_apply_one : ComplexVector.metric (1 : ℂ) = ComplexV
 /-- The metric `ηᵢᵢ` as an element of `(complexCo ⊗ complexCo).V`. -/
 def ComplexCoVector.metricVal : (ComplexCoVector ⊗[ℂ] ComplexCoVector) :=
   coCoToMatrix.symm ((@minkowskiMatrix 3).map ofRealHom)
+
+/-- The metric `ηᵢᵢ` is invariant under `SL(2,ℂ)`. -/
+lemma ComplexCoVector.metricVal_invariant (M : SL(2,ℂ)) :
+    TensorProduct.map (ComplexCoVector.SL2CRep M) (ComplexCoVector.SL2CRep M)
+      ComplexCoVector.metricVal = ComplexCoVector.metricVal := by
+  rw [ComplexCoVector.metricVal, coCoToMatrix_ρ_symm, LorentzGroup.toComplex_inv]
+  simp only [LorentzGroup.inv_eq_dual, SL2C.toLorentzGroup_apply_coe,
+    LorentzGroup.toComplex_transpose_mul_minkowskiMatrix_mul_self]
 
 /-- The expansion of `ComplexCoVector.metricVal` into basis vectors. -/
 lemma ComplexCoVector.metricVal_expand_tmul : ComplexCoVector.metricVal =
