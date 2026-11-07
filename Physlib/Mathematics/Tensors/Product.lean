@@ -161,17 +161,17 @@ lemma tmulEquiv_assoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c�
     (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) (t₃ : S.Tensor c₃) :
     S.reindex (ColorEquiv.sumAssoc c₁ c₂ c₃)
         (S.tmulEquiv _ _ (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) ⊗ₜ t₃)) =
-      S.tmulEquiv _ _ (t₁ ⊗ₜ S.tmulEquiv c₂ c₃ (t₂ ⊗ₜ t₃)) := by
-  have h := ext_pure₃ (f := (S.reindex (ColorEquiv.sumAssoc c₁ c₂ c₃)).toLinearMap ∘ₗ
-      (S.tmulEquiv _ c₃).toLinearMap ∘ₗ TensorProduct.map (S.tmulEquiv c₁ c₂).toLinearMap .id)
-    (g := (S.tmulEquiv c₁ _).toLinearMap ∘ₗ TensorProduct.map .id (S.tmulEquiv c₂ c₃).toLinearMap ∘ₗ
-      (TensorProduct.assoc k _ _ _).toLinearMap) fun f₁ f₂ f₃ => by
-    simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe, assoc_tmul,
-      LinearMap.id_apply, Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
-    exact congrArg S.pure (funext fun s => by rcases s with _ | _ | _ <;> rfl)
-  simpa only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe, assoc_tmul,
-    LinearMap.id_apply, Representation.Equiv.coe_toLinearMap] using
-    LinearMap.congr_fun h ((t₁ ⊗ₜ t₂) ⊗ₜ t₃)
+      S.tmulEquiv _ _ (t₁ ⊗ₜ S.tmulEquiv c₂ c₃ (t₂ ⊗ₜ t₃)) :=
+  LinearMap.congr_fun (f := (S.reindex (ColorEquiv.sumAssoc c₁ c₂ c₃)).toLinearMap ∘ₗ
+      (S.tmulEquiv _ c₃).toLinearMap ∘ₗ (S.tmulEquiv c₁ c₂).toLinearMap.rTensor _)
+    (g := (S.tmulEquiv c₁ _).toLinearMap ∘ₗ (S.tmulEquiv c₂ c₃).toLinearMap.lTensor _ ∘ₗ
+      (TensorProduct.assoc k _ _ _).toLinearMap)
+    (ext_pure₃ fun f₁ f₂ f₃ => by
+      simp only [LinearMap.comp_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
+        LinearEquiv.coe_coe, assoc_tmul, Representation.Equiv.coe_toLinearMap, tmulEquiv_pure,
+        reindex_pure]
+      exact congrArg S.pure (funext fun s => by rcases s with _ | _ | _ <;> rfl))
+    ((t₁ ⊗ₜ t₂) ⊗ₜ t₃)
 
 /-- The product is symmetric, `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`, after the indices of `U` are moved in
 front by `ColorEquiv.sumComm`. -/
