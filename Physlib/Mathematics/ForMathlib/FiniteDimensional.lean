@@ -47,12 +47,10 @@ variable {K V W : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] [AddComm
 
 /-- Between spaces of equal finite dimension, a left inverse is a right inverse. -/
 lemma LinearMap.comp_eq_id_of_comp_eq_id_of_finrank_eq (h : finrank K V = finrank K W)
-    {f : V →ₗ[K] W} {g : W →ₗ[K] V} (hgf : g ∘ₗ f = LinearMap.id) : f ∘ₗ g = LinearMap.id := by
-  have hinj : Function.Injective f := fun v v' e => by
-    simpa [← LinearMap.comp_apply, hgf] using congrArg g e
-  ext w
-  obtain ⟨v, rfl⟩ := (LinearMap.injective_iff_surjective_of_finrank_eq_finrank h).1 hinj w
-  simp [← LinearMap.comp_apply g f, hgf]
+    {f : V →ₗ[K] W} {g : W →ₗ[K] V} (hgf : g ∘ₗ f = LinearMap.id) : f ∘ₗ g = LinearMap.id :=
+  LinearMap.ext <| Function.LeftInverse.rightInverse_of_surjective (f := g)
+    (LinearMap.congr_fun hgf) <|
+    (LinearMap.injective_iff_surjective_of_finrank_eq_finrank h).1 <| injective_of_comp_eq_id f g hgf
 
 /-- `LinearMap.comp_eq_id_comm` between two spaces of equal finite dimension. -/
 lemma LinearMap.comp_eq_id_comm_of_finrank_eq (h : finrank K V = finrank K W) {f : V →ₗ[K] W}
