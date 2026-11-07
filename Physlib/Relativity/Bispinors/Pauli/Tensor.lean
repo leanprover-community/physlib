@@ -159,11 +159,7 @@ lemma pauliCoDown_trace_pauliCo :
 /-- The trace identity `tr(σ_μ σ̄_ν) = 2 η_μν`, as `σT_μ^{αβ̇} σT_{ναβ̇} = 2 η_μν`. -/
 lemma pauliCo_trace_pauliCoDown :
     {pauliTensor | ↓μ α β ⊗ pauliTensor | ↓ν ↓α ↓β = (2 : ℂ) • η' | μ ν}ᵀ := by
-  have h : {pauliTensor | ↓μ α β ⊗ pauliTensor | ↓ν ↓α ↓β =
-      {pauliTensor | ↓ν ↓α ↓β ⊗ pauliTensor | ↓μ α β}ᵀ | ν μ}ᵀ := by
-    tensor_regroup
-  rw [h, pauliCoDown_trace_pauliCo]
-  tensor_regroup
+  tensor_regroup using pauliCoDown_trace_pauliCo
 
 /-- The mixed trace identity `tr(σ̄^μ σ_ν) = 2 δ^μ_ν`, as `σT^μ_{αβ̇} σT_ν^{αβ̇} = 2 δ^μ_ν`. -/
 lemma pauliContrDown_trace_pauliCo :
@@ -195,12 +191,8 @@ noncomputable def pauliB : ℂT[upL, upR, upL, upR] →ₗ[ℂ] ℂT[up, upL, up
 
 /-- `pauliB ∘ pauliA = 2`, by the trace identity `σT^μ_{αβ̇} σT_ν^{αβ̇} = 2 δ_ν^μ`. -/
 lemma pauliB_pauliA (p : ℂT[up, upL, upR]) : pauliB (pauliA p) = (2 : ℂ) • p := by
-  have h : pauliB (pauliA p) =
-      {{pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ↓ν α β}ᵀ | μ ν ⊗ p | ν α' β'}ᵀ := by
-    simp only [pauliA, pauliB, LinearMap.coe_mk, AddHom.coe_mk]
-    tensor_regroup
-  rw [h, pauliContrDown_trace_pauliCo]
-  tensor_regroup
+  simp only [pauliA, pauliB, LinearMap.coe_mk, AddHom.coe_mk]
+  tensor_regroup using pauliContrDown_trace_pauliCo
 
 /-- `pauliA ∘ pauliB = 2`: both spaces have dimension `16`, so the left inverse `pauliB / 2` of
 `pauliA` is a right inverse. -/
@@ -240,23 +232,14 @@ lemma pauliContr_trace_pauliContrDown :
 /-- The trace identity `tr(σ̄^μ σ^ν) = 2 η^μν`, as `σT^μ_{αβ̇} σT^{ναβ̇} = 2 η^μν`. -/
 lemma pauliContrDown_trace_pauliContr :
     {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ν α β = (2 : ℂ) • η | μ ν}ᵀ := by
-  have h : {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ν α β =
-      {pauliTensor | ν α β ⊗ pauliTensor | μ ↓α ↓β}ᵀ | ν μ}ᵀ := by
-    tensor_regroup
-  rw [h, pauliContr_trace_pauliContrDown]
-  tensor_regroup
+  tensor_regroup using pauliContr_trace_pauliContrDown
 
 /-- `σT^{μρβ̇} σT^{νγδ̇} ε_{δ̇β̇} (ε_{γρ} δ^α_α') = 2 η^μν δ^α_α'`, the trace identity
 `pauliContr_trace_pauliContrDown` with the lowerings written as contractions with `ε`. -/
 lemma pauliContr_pauliContr_eps_epsL_deltaL :
     {pauliTensor | μ r β ⊗ pauliTensor | ν g d ⊗ εR' | d β ⊗
       {εL' | g r ⊗ δL | α α'}ᵀ | g r α α' = (2 : ℂ) • {η | μ ν ⊗ δL | α α'}ᵀ | μ ν α α'}ᵀ := by
-  have h : {pauliTensor | μ r β ⊗ pauliTensor | ν g d ⊗ εR' | d β ⊗
-      {εL' | g r ⊗ δL | α α'}ᵀ | g r α α' =
-      {pauliTensor | μ r β ⊗ pauliTensor | ν ↓r ↓β}ᵀ | μ ν ⊗ δL | α α'}ᵀ := by
-    tensor_regroup
-  rw [h, pauliContr_trace_pauliContrDown]
-  tensor_regroup
+  tensor_regroup using pauliContr_trace_pauliContrDown
 
 /-- The anticommutator `σ^μ σ̄^ν + σ^ν σ̄^μ = 2 η^μν`, as
 `σT^{μαβ̇} σT^ν_{α'β̇} + σT^{ναβ̇} σT^μ_{α'β̇} = 2 η^μν δ^α_α'`. The Schouten identity splits
@@ -272,12 +255,7 @@ lemma pauliContr_mul_pauliContrDown_add :
 lemma pauliContr_pauliContr_eps_epsR_deltaR :
     {pauliTensor | μ g d ⊗ pauliTensor | ν a r ⊗ εL' | g a ⊗
       {εR' | d r ⊗ δR' | β β'}ᵀ | d r β β' = (2 : ℂ) • {η | μ ν ⊗ δR' | β β'}ᵀ | μ ν β β'}ᵀ := by
-  have h : {pauliTensor | μ g d ⊗ pauliTensor | ν a r ⊗ εL' | g a ⊗
-      {εR' | d r ⊗ δR' | β β'}ᵀ | d r β β' =
-      {pauliTensor | μ ↓a ↓r ⊗ pauliTensor | ν a r}ᵀ | μ ν ⊗ δR' | β β'}ᵀ := by
-    tensor_regroup
-  rw [h, pauliContrDown_trace_pauliContr]
-  tensor_regroup
+  tensor_regroup using pauliContrDown_trace_pauliContr
 
 /-- The anticommutator `σ̄^μ σ^ν + σ̄^ν σ^μ = 2 η^μν`, as
 `σT^μ_{αβ̇} σT^{ναβ̇'} + σT^ν_{αβ̇} σT^{μαβ̇'} = 2 η^μν δ_β̇^β̇'`. The Schouten identity splits

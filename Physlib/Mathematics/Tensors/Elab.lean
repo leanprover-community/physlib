@@ -65,7 +65,8 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
 - `tensor_components` : reduces an equation of tensors to an equation of their components.
 - `tensor_regroup` : proves an equation of two sums of contractions of the same factors, grouped
   or ordered differently, with the same signs and scalars, up to deltas, inverse pairs of forms,
-  swaps of symmetric and antisymmetric forms, and lowerings written as contractions.
+  swaps of symmetric and antisymmetric forms, and lowerings written as contractions. With
+  `using e₁, …`, it first rewrites a sub-product of the left side by each identity `eᵢ`.
 - `tensor_slots` : proves an equation of two chains of lowerings and raisings of the same tensor.
 
 ## iii. Table of contents
@@ -81,6 +82,7 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
   - B.7. Deltas and forms
   - B.8. Sums, signs and scalars
   - B.9. Chains of lowerings and raisings
+  - B.10. Rewriting a sub-product by an identity
 - C. Examples
 
 ## iv. References
@@ -624,6 +626,8 @@ private def flattenContractions : TacticM Unit := do
     evalTactic (← `(tactic| try simp only [Tensors.Species.tmulEquiv_reindex_left,
       Tensors.Species.tmulEquiv_reindex_right, Tensors.Species.reindex_reindex,
       Tensors.Species.Tensor.contr_reindex, Tensors.Species.Tensor.reindex_contr]))
+    -- The two sides may become equal, and `simp` then closes the goal.
+    if (← getGoals).isEmpty then return
     if (← instantiateMVars (← getMainTarget)) == before then return
   throwError "tensor_regroup: flattening the products did not stop after ten rounds"
 
@@ -794,6 +798,7 @@ at each slot of its color in turn, since contracting with a delta is a relabelin
 then matched by `matchFactors`. -/
 private partial def regroupContractions : TacticM Unit := do
   flattenContractions
+  if (← getGoals).isEmpty then return
   let (p, q) ← contractedProducts
   let extraL ← leftover (factors p) (factors q)
   let extraR ← leftover (factors q) (factors p)
@@ -958,33 +963,9 @@ private def regroup : TacticM Unit := do
   setGoals [rest.mvarId!]
   evalTactic (← `(tactic| first | with_reducible rfl | abel))
 
-/-- `tensor_regroup` proves an equation of two sums of signed scalar multiples of contractions of
-the same factors, grouped or ordered differently, such as
-`{{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ`. Sums,
-negatives and scalars are first moved out of every product, contraction and relabeling. Each
-summand on the left is then matched with a summand on the right with the same sign and scalar,
-whose contraction is the same up to regrouping (`Species.Tensor.contr_eq_of_samePair`). When a
-factor appears more than once, each way of matching the equal factors is tried in turn, so the
-number of attempts is the product of `k!` over the factors that appear `k` times, and at most 12
-are tried.
-
-Beyond regrouping, it uses these identities:
-- a delta on one side with no counterpart on the other is inserted on the other side at a slot of
-  its color, `T^…μ… = T^…ν… δ_ν^μ` (`Species.Tensor.contr_deltaTensor`), or, against two forms on
-  the other side, written as their contraction, `g^μν g_νρ = δ^μ_ρ`
-  (`Species.contr_formTensor_formTensor`), and pairs of such forms against nothing, as a lowering
-  `T_…ν… = T^…μ… g_μν` contracted with `g^νρ`, are matched one pair at a time by inserting a delta
-  first;
-- when the signs of two summands differ, one antisymmetric form is swapped, `ε^αβ = -ε^βα`
-  (`Species.formTensor_antisymm`), and when the regrouping fails, one symmetric form is swapped,
-  `η^μν = η^νμ` (`Species.formTensor_symm`);
-- when no matching is found, lowerings and raisings are expanded into contractions with the form
-  (`Species.toDualAt_eq_contr`) and the matching is tried again.
-
-A side that is not a contraction, such as a single tensor, is read as a contraction with no pairs
-(`Species.Tensor.contr_noPairs`). The scalars on the two sides must agree up to definitional
-equality, as `2` and `2`. -/
-elab "tensor_regroup" : tactic => do
+/-- The body of `tensor_regroup`: `regroup`, and again after writing lowerings and raisings as
+contractions with the form (`Species.toDualAt_eq_contr`) when it fails. -/
+private def regroupWithLowerings : TacticM Unit := do
   let s ← saveState
   try regroup catch e =>
     -- Lowerings and raisings are contractions with the form (`Species.toDualAt_eq_contr`). They
@@ -1027,6 +1008,216 @@ elab "tensor_slots" : tactic => do
         Representation.IntertwiningMap.coe_toLinearMap,
         Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
         Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual]))
+
+/-!
+
+### B.10. Rewriting a sub-product by an identity
+
+-/
+
+/-- A contraction `Tensor.contr τ P` of a left-nested product `P`, read slot by slot. The slots of
+`P` are numbered in order, the slots of each factor after those of the factors before it. -/
+private structure ReadContraction where
+  /-- The factors of `P`, from left to right. -/
+  factors : List Expr
+  /-- The slot of `P` at which each factor starts. -/
+  offsets : List Nat
+  /-- The slot of `P` of each free index, in order. -/
+  free : List Nat
+  /-- The two slots of `P` of each pair, the first argument of `S.contr` first. -/
+  pairs : List (Nat × Nat)
+
+/-- The elements of a slot type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
+slot order. -/
+private partial def slotElems (ι : Expr) : MetaM (List Expr) := do
+  let ι ← whnfR ι
+  if ι.isAppOfArity ``Fin 1 then
+    let some n ← (evalNat ι.appArg!).run
+      | throwError "tensor_regroup: the slot type {ι} is not literal"
+    (List.range n).mapM fun i => do
+      mkAppM ``Fin.mk #[mkNatLit i, ← mkDecideProof (← mkAppM ``LT.lt #[mkNatLit i, ι.appArg!])]
+  else if let .const ``PUnit [u] := ι then return [mkConst ``PUnit.unit [u]]
+  else if ι.isConstOf ``Empty then return []
+  else if ι.isAppOfArity ``Sum 2 then
+    let (a, b) := (ι.getArg! 0, ι.getArg! 1)
+    return (← (← slotElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
+      (← (← slotElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
+  else throwError "tensor_regroup: the slot type {ι} is not built from `Fin n` and `⊕`"
+
+/-- The number of the slot `x` of the slot type `slots`, after evaluating `x`. -/
+private partial def slotNumber : Slots → Expr → MetaM Nat
+  | .fin _, x => do
+    let some i ← (evalNat (← whnfD (← mkAppM ``Fin.val #[x]))).run
+      | throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
+    return i
+  | .unit, _ => return 0
+  | .sum a b, x => do
+    let x ← whnfD x
+    if x.isAppOfArity ``Sum.inl 3 then slotNumber a x.appArg!
+    else if x.isAppOfArity ``Sum.inr 3 then return a.size + (← slotNumber b x.appArg!)
+    else throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
+
+/-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
+free index and at each slot of each pair. -/
+private def readContraction (e : Expr) : MetaM ReadContraction := do
+  let some P := bundledArg? ``Tensors.Species.Tensor.contr e
+    | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
+  let τ := e.consumeMData.appFn!.appArg!.appArg!
+  let some (slots, _, _) ← literalTensorType? (← inferType P)
+    | throwError "tensor_regroup: the slots or colors of a product are not literal"
+  let fs := factors P
+  let sizes ← fs.mapM fun f => do
+    let some (s, _, _) ← literalTensorType? (← inferType f)
+      | throwError "tensor_regroup: the slots or colors of{indentExpr f}\nare not literal"
+    return s.size
+  -- `τ : ColorEquiv c (contrColors c' a)`, with `c' : κ → Color K` and `a : J → Color K`.
+  let args := (← whnfR (← inferType τ)).getAppArgs
+  let cargs := args[args.size - 1]!.getAppArgs
+  let (κ, J) := (cargs[1]!, cargs[2]!)
+  let JJ ← mkAppM ``Sum #[J, J]
+  let at_ (y : Expr) : MetaM Nat := do
+    slotNumber slots (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensors.ColorEquiv.toEquiv #[τ], y])
+  let free ← (← slotElems κ).mapM fun x => do at_ (← mkAppOptM ``Sum.inl #[κ, JJ, x])
+  let pairs ← (← slotElems J).mapM fun j => do
+    let half (left : Bool) := do
+      at_ (← mkAppOptM ``Sum.inr #[κ, JJ, ← mkAppOptM (if left then ``Sum.inl else ``Sum.inr)
+        #[J, J, j]])
+    return (← half true, ← half false)
+  return ⟨fs, sizes.scanl (· + ·) 0, free, pairs⟩
+
+/-- The ways of sending the slots of `A` to slots of `G`, factor by factor, each factor of `A` to an
+equal factor of `G`, so that every pair of `A` is sent to a pair of `G`. Each way is the list of
+images of the slots of `A`, together with the factors of `G` that are hit. -/
+private def embeddings (A G : ReadContraction) : MetaM (List (List Nat × List Nat)) := do
+  let candidates ← A.factors.mapM fun x =>
+    (List.range G.factors.length).filterM fun j => isDefEqGoal x G.factors[j]!
+  let isPair (p q : Nat) := G.pairs.contains (p, q) || G.pairs.contains (q, p)
+  return (matchings candidates []).filterMap fun target =>
+    let φ := (target.zipIdx).flatMap fun (j, i) =>
+      (List.range (A.offsets[i+1]! - A.offsets[i]!)).map (G.offsets[j]! + ·)
+    if A.pairs.all fun (p, q) => isPair φ[p]! φ[q]! then some (φ, target) else none
+
+/-- The function `x ↦ {x | … ⊗ g | … ⊗ …}ᵀ`, for `x` of the type of `A`, with its free indices
+in the order of `L`, the contraction read as `G`. The factors `g` of `G` not hit by `target` follow
+`x`, and every slot of `G` is named after its free index `fₖ` or its pair `pⱼ`. The slots of `x`
+are named as the free indices of `A` are sent by `φ`. -/
+private def regroupedFun (L A : Expr) (Aread G : ReadContraction) (φ target : List Nat) :
+    TermElabM Expr := do
+  let name (s : Nat) : TSyntax `tensorIndex := Unhygienic.run do
+    let n := match G.free.idxOf? s with
+      | some k => s!"f{k}"
+      | none => s!"p{(G.pairs.findIdx? fun (p, q) => p == s || q == s).getD 0}"
+    `(tensorIndex| $(mkIdent (Name.mkSimple n)):ident)
+  let leaf (T : Expr) (ss : List Nat) : TermElabM (TSyntax `tensorIndexExpr) := do
+    `(tensorIndexExpr| $(← exprToSyntax T):term | $((ss.map name).toArray)*)
+  let rest ← ((List.range G.factors.length).filter (!target.contains ·)).mapM fun j =>
+    leaf G.factors[j]! ((List.range (G.offsets[j+1]! - G.offsets[j]!)).map (G.offsets[j]! + ·))
+  withLocalDeclD `x (← inferType A) fun x => do
+    let rhs ← rest.foldlM (init := ← leaf x (Aread.free.map (φ[·]!))) fun a b =>
+      `(tensorIndexExpr| $a ⊗ $b)
+    -- The equation `{L | f₀ f₁ … = …}ᵀ` relabels its right side to the order of `L`.
+    let eq ← Term.elabType (← `({ $(← leaf L G.free) = $rhs }ᵀ))
+    Term.synthesizeSyntheticMVarsNoPostponing
+    let some (_, _, M) := (← instantiateMVars eq).eq?
+      | throwError "tensor_regroup: internal error, not an equation"
+    mkLambdaFVars #[x] M
+
+/-- Proves the goal `ty` by `tac`, aside from the main goal. -/
+private def proveAside (ty : Expr) (tac : TacticM Unit) : TacticM Expr := do
+  let g ← mkFreshExprMVar ty
+  let gs ← getGoals
+  setGoals [g.mvarId!]
+  try
+    tac
+    unless (← getGoals).isEmpty do throwError "tensor_regroup: internal error, a goal is left"
+  finally setGoals gs
+  instantiateMVars g
+
+/-- The side `A`, flattened to one contraction of a left-nested product, with lowerings and
+raisings first written as contractions with the form if `expand`. -/
+private def flattenTerm (A : Expr) (expand : Bool) : TacticM Expr := do
+  let g ← mkFreshExprMVar (← mkEq A (← mkAppOptM ``Zero.zero #[← inferType A, none]))
+  let gs ← getGoals
+  setGoals [g.mvarId!]
+  try
+    if expand then evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
+    flattenContractions
+    return (← goalEq).2.1
+  finally setGoals gs
+
+/-- The body of `tensor_regroup using e₁, …, eₙ`. For `e₁ : A = B`, the left side of the goal is
+regrouped by `regroupWithLowerings` into a product `M A` of `A` with the factors not in `A`, which
+`congrArg M e₁` rewrites to `M B`, and the remaining identities are used in the same way. Each way
+of finding the factors of `A` among the factors of the goal is tried in turn, first as written and
+then with lowerings and raisings written as contractions with the form. -/
+private partial def regroupUsing : List Term → TacticM Unit
+  | [] => regroupWithLowerings
+  | e :: es => do
+    let h ← instantiateMVars (← Tactic.elabTerm e none)
+    let some (_, A, B) := (← instantiateMVars (← inferType h)).eq?
+      | throwError "tensor_regroup: {e} is not an equation"
+    let mut err := m!"tensor_regroup: no factors of the left side are contracted as in the left \
+      side of {e}"
+    for expand in [false, true] do
+      let s ← saveState
+      if expand then evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
+      flattenContractions
+      let (_, L, _) ← goalEq
+      let G ← readContraction L
+      let Aread ← readContraction (← flattenTerm A expand)
+      for (φ, target) in (← embeddings Aread G).take maxMatchings do
+        let s' ← saveState
+        try
+          -- `L = M A` by regrouping, and `M A = M B` by `congrArg M h`.
+          let M ← regroupedFun L A Aread G φ target
+          let h₁ ← proveAside (← mkEq L (M.beta #[A])) regroupWithLowerings
+          let pf ← mkEqTrans h₁ (← mkCongrArg M h)
+          let (_, _, R) ← goalEq
+          let rest ← mkFreshExprSyntheticOpaqueMVar (← mkEq (M.beta #[B]) R)
+          (← getMainGoal).assign (← mkEqTrans pf rest)
+          replaceMainGoal [rest.mvarId!]
+          regroupUsing es
+          return
+        catch ex => s'.restore; err := ex.toMessageData
+      s.restore
+    throwError err
+
+/-- `tensor_regroup` proves an equation of two sums of signed scalar multiples of contractions of
+the same factors, grouped or ordered differently, such as
+`{{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ`. Sums,
+negatives and scalars are first moved out of every product, contraction and relabeling. Each
+summand on the left is then matched with a summand on the right with the same sign and scalar,
+whose contraction is the same up to regrouping (`Species.Tensor.contr_eq_of_samePair`). When a
+factor appears more than once, each way of matching the equal factors is tried in turn, so the
+number of attempts is the product of `k!` over the factors that appear `k` times, and at most 12
+are tried.
+
+Beyond regrouping, it uses these identities:
+- a delta on one side with no counterpart on the other is inserted on the other side at a slot of
+  its color, `T^…μ… = T^…ν… δ_ν^μ` (`Species.Tensor.contr_deltaTensor`), or, against two forms on
+  the other side, written as their contraction, `g^μν g_νρ = δ^μ_ρ`
+  (`Species.contr_formTensor_formTensor`), and pairs of such forms against nothing, as a lowering
+  `T_…ν… = T^…μ… g_μν` contracted with `g^νρ`, are matched one pair at a time by inserting a delta
+  first;
+- when the signs of two summands differ, one antisymmetric form is swapped, `ε^αβ = -ε^βα`
+  (`Species.formTensor_antisymm`), and when the regrouping fails, one symmetric form is swapped,
+  `η^μν = η^νμ` (`Species.formTensor_symm`);
+- when no matching is found, lowerings and raisings are expanded into contractions with the form
+  (`Species.toDualAt_eq_contr`) and the matching is tried again.
+
+A side that is not a contraction, such as a single tensor, is read as a contraction with no pairs
+(`Species.Tensor.contr_noPairs`). The scalars on the two sides must agree up to definitional
+equality, as `2` and `2`.
+
+`tensor_regroup using e₁, …, eₙ` first rewrites by the equations `eᵢ : Aᵢ = Bᵢ`, in turn. For each,
+the factors of `Aᵢ` are found among the factors of the left side of the goal, contracted along the
+same pairs, and the left side is regrouped as `Aᵢ` times the other factors and rewritten to `Bᵢ`.
+The equations must be closed terms. -/
+syntax (name := tensorRegroup) "tensor_regroup" (" using " term,+)? : tactic
+
+elab_rules : tactic
+  | `(tactic| tensor_regroup) => regroupWithLowerings
+  | `(tactic| tensor_regroup using $es,*) => regroupUsing es.getElems.toList
 
 end Tensors.Notation
 
@@ -1203,6 +1394,35 @@ has no matching summand on the right -/
 #guard_msgs in
 example : {T | μ ν + W | μ ν = U | μ ν + T | μ ν}ᵀ := by
   tensor_regroup
+
+/-- `tensor_regroup using h` finds `T^μ_ν U^ν_ρ` among the factors, rewrites it by `h` and
+regroups, `U^ν_ρ W^ρ_σ T^μ_ν = W^μ_ρ W^ρ_σ`. -/
+example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) :
+    {U | ν ρ ⊗ W | ρ σ ⊗ T | μ ν = W | μ ρ ⊗ W | ρ σ}ᵀ := by
+  tensor_regroup using h
+
+/-- Two identities in turn, `U^ν_ρ W^ρ_σ T^μ_ν = (T U) W = W W = T`. -/
+example (h₁ : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) (h₂ : {W | μ ν ⊗ W | ν ρ = T | μ ρ}ᵀ) :
+    {U | ν ρ ⊗ W | ρ σ ⊗ T | μ ν = T | μ σ}ᵀ := by
+  tensor_regroup using h₁, h₂
+
+/-- The free indices of the identity may be contracted with each other, `T^μ_ν U^ν_μ = W^μ_μ`. -/
+example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {U | ν μ ⊗ T | μ ν = W | μ μ}ᵀ := by
+  tensor_regroup using h
+
+-- The factors `T` and `U` are contracted as `U^ν_ρ T^ρ_μ`, not as `T^μ_ν U^ν_ρ`.
+/-- error: tensor_regroup: no factors of the left side are contracted as in the left side of h -/
+#guard_msgs in
+example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {U | ν ρ ⊗ T | ρ μ = W | ν μ}ᵀ := by
+  tensor_regroup using h
+
+-- After the rewrite the two sides still differ, `W ≠ U`.
+/-- error: tensor_regroup: the factor
+  W
+has no equal factor on the right -/
+#guard_msgs in
+example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {T | μ ν ⊗ U | ν ρ = U | μ ρ}ᵀ := by
+  tensor_regroup using h
 
 section Metric
 
