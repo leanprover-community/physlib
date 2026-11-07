@@ -59,6 +59,8 @@ since the bases of a color and its dual are dual.
 - `ColorEquiv.SamePair` says that two choices of pairs contract the same two slots, and
   `Species.Tensor.contr_eq_of_samePair` proves that two contractions of the same pairs of slots,
   in any order, are equal.
+- `Species.Tensor.contr_noPairs` proves that a contraction with no pairs, along
+  `ColorEquiv.noPairs`, is the identity.
 - `Species.Tensor.contr_eq_zero_of_reindex_eq_neg` and
   `Species.Tensor.contr_tmulEquiv_eq_zero_of_antisymm_symm` prove `A^μν B_μν = 0` for `A`
   antisymmetric and `B` symmetric.
@@ -181,6 +183,25 @@ lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors
           ⊗ₜ S.cast (σ.color_eq (.inr (.inr j))) (f (σ.toEquiv.symm (.inr (.inr j)))))) •
         S.pure (c := c') fun x => S.cast (σ.color_eq (.inl x)) (f (σ.toEquiv.symm (.inl x))) :=
   (congrArg (contrStd c' a) (reindex_pure σ f)).trans (contrStd_pure c' a _)
+
+/-- The relabeling of a contraction with no pairs, where every slot is free and keeps its label. -/
+def _root_.Tensors.ColorEquiv.noPairs (c : ι₁ → Color K) :
+    ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
+  toEquiv.toFun := .inl
+  toEquiv.invFun := Sum.elim id (Sum.elim Empty.elim Empty.elim)
+  toEquiv.left_inv _ := rfl
+  toEquiv.right_inv := by rintro (x | e | e) <;> first | rfl | exact e.elim
+  color_eq := by rintro (x | e | e) <;> first | rfl | exact e.elim
+
+/-- A contraction with no pairs is the identity. Any tensor is thus a contraction, as needed to
+compare it with one. -/
+lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t := by
+  induction t using inductionOn_pure with
+  | hsmul r t ht => rw [map_smul, ht]
+  | hadd t t' ht ht' => rw [map_add, ht, ht']
+  | h p =>
+    rw [contr_pure, Finset.univ_eq_empty, Finset.prod_empty, one_smul]
+    exact congrArg S.pure (funext fun x => by simp only [cast_apply]; rfl)
 
 /-!
 
