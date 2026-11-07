@@ -78,18 +78,9 @@ abbrev up : Variance := ⟨true, false, by decide⟩
 @[match_pattern]
 abbrev down : Variance := ⟨false, true, by decide⟩
 
--- An abbrev, since the species laws rewrite with `c.dual.dual = c` at reducible transparency.
-/-- The dual variance, exchanging up and down. -/
+/-- The dual variance, exchanging up and down. It is an abbrev, since the species laws rewrite with
+`c.dual.dual = c` at reducible transparency. -/
 abbrev dual (v : Variance) : Variance := ⟨v.isDown, v.isUp, v.ne.symm⟩
-
-@[simp]
-lemma dual_up : up.dual = down := rfl
-
-@[simp]
-lemma dual_down : down.dual = up := rfl
-
-/-- Taking the dual twice gives back the variance. -/
-lemma dual_dual (v : Variance) : v.dual.dual = v := rfl
 
 end Variance
 
@@ -109,11 +100,6 @@ deriving DecidableEq
 
 /-- The dual color, with the same kind and the other variance. -/
 abbrev Color.dual {K : Type} (c : Color K) : Color K := ⟨c.kind, c.variance.dual⟩
-
-/-- The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`. -/
-@[simp]
-lemma Color.dual_mk {K : Type} (κ : K) (v : Variance) :
-    (⟨κ, v⟩ : Color K).dual = ⟨κ, v.dual⟩ := rfl
 
 /-- Taking the dual twice gives back the color. -/
 lemma Color.dual_dual {K : Type} (c : Color K) : c.dual.dual = c := rfl
