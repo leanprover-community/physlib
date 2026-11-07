@@ -8,7 +8,6 @@ module
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
 public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.LinearAlgebra.Basis.Bilinear
 /-!
 
 # Tensor species
@@ -327,15 +326,20 @@ lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
 -/
 
 variable (S) in
-/-- Moving a vector along an equality of colors `a = a'`, Mathlib's `LinearEquiv.cast`. -/
-protected abbrev cast {a a' : Color K} (p : a = a') : S.V a ≃ₗ[k] S.V a' :=
-  LinearEquiv.cast p
+/-- Moving a vector along an equality of colors `a = a'`, Mathlib's `LinearEquiv.cast`, as an
+equivalence of representations. -/
+protected def cast {a a' : Color K} (p : a = a') : (S.rep a).Equiv (S.rep a') :=
+  .mk (LinearEquiv.cast p) fun _ => by subst p; rfl
+
+/-- `S.cast p` is Mathlib's `cast` of the vector. -/
+@[simp]
+lemma cast_apply {a a' : Color K} (p : a = a') (x : S.V a) :
+    S.cast p x = cast (congrArg S.V p) x := rfl
 
 /-- Moving a vector along an equality of colors `a = a'` commutes with the group action. -/
 lemma cast_rep {a a' : Color K} (p : a = a') (g : G) (x : S.V a) :
-    S.cast p (S.rep a g x) = S.rep a' g (S.cast p x) := by
-  subst p
-  rfl
+    S.cast p (S.rep a g x) = S.rep a' g (S.cast p x) :=
+  Representation.IntertwiningMap.isIntertwining _ _ (S.cast p).toIntertwiningMap g x
 
 /-- Moving a vector along an equality of colors `a = b` keeps its components, with the label cast
 back to a label at `a`. -/

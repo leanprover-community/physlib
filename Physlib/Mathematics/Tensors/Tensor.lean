@@ -7,6 +7,7 @@ module
 
 public import Physlib.Mathematics.Tensors.Species
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
+public import Physlib.Mathematics.ForMathlib.Representation
 /-!
 
 # Tensors of a species
@@ -55,6 +56,10 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - `Species.smul_pure` proves that the group acts on a pure tensor slot by slot.
 - `Species.map_smul_of_pure` proves that a map of tensors that commutes with the group on pure
   tensors commutes with it on all tensors.
+- `Species.tensorRep` is the action on tensors as a Mathlib representation. Maps of tensors that
+  commute with the group are Mathlib's `Representation.Equiv` and `Representation.IntertwiningMap`
+  of it, built by `Species.equivOfPure` and `Species.intertwiningMapOfPure` from a check on pure
+  tensors, and `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
 - `Species.smul_eq_self_of_isEmpty` proves that a tensor with no slots is invariant.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor.
@@ -62,8 +67,9 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - `Species.mapSlots` applies a linear map at every slot, with `Species.mapSlots_mapSlots` and
   `Species.mapSlots_id`, and `Species.mapAt` applies one at a single slot and the identity at the
   others.
-- `Species.congrAt` applies a linear equivalence at one slot of a tensor and the identity at the
-  others, with `Species.congrAt_pure`, `Species.congrAt_smul` and `Species.congrAt_symm`, and
+- `Species.congrSlots` applies an equivalence of representations at every slot.
+- `Species.congrAt` applies an equivalence of representations at one slot of a tensor and the
+  identity at the others, with `Species.congrAt_pure` and `Species.congrAt_symm`, and
   `Species.congrAt_eq_mapAt` proves that `congrAt` is `mapAt` of the underlying map.
 
 ## iii. Table of contents
@@ -167,6 +173,25 @@ noncomputable instance : SMulCommClass G k (S.Tensor c) where
 
 noncomputable instance : SMulCommClass k G (S.Tensor c) := .symm _ _ _
 
+variable (S) in
+/-- The action of the group on tensors as Mathlib's representation, `Λ ↦ (T ↦ Λ • T)`. Maps of
+tensors that commute with the action are Mathlib's `Representation.Equiv` and
+`Representation.IntertwiningMap` for it. -/
+noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (S.Tensor c) :=
+  Representation.ofDistribMulAction k G (S.Tensor c)
+
+/-- An intertwining map from or to tensors commutes with the actions, `φ (Λ v) = Λ φ v`. -/
+lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
+    (φ : (S.tensorRep c).IntertwiningMap (S.tensorRep c')) (g : G) (t : S.Tensor c) :
+    φ (g • t) = g • φ t :=
+  Representation.IntertwiningMap.isIntertwining _ _ φ g t
+
+/-- An equivalence of representations of tensors commutes with the actions, `φ (Λ T) = Λ φ T`. -/
+lemma equiv_smul {ι' : Type} {c' : ι' → Color K}
+    (φ : (S.tensorRep c).Equiv (S.tensorRep c')) (g : G) (t : S.Tensor c) :
+    φ (g • t) = g • φ t :=
+  intertwiningMap_smul φ.toIntertwiningMap g t
+
 /-- A linear or conjugate-linear map of tensors that commutes with `Λ` on pure tensors commutes
 with `Λ` on all tensors. -/
 lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F : Type}
@@ -177,6 +202,33 @@ lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F :
   | h p => exact h p
   | hsmul r t ht => rw [smul_comm, map_smulₛₗ, ht, map_smulₛₗ, smul_comm]
   | hadd x y hx hy => rw [smul_add, map_add, hx, hy, map_add, smul_add]
+
+variable {ι' : Type} {c' : ι' → Color K} in
+/-- A linear equivalence of tensors that commutes with `Λ` on pure tensors, as an equivalence of
+representations. -/
+noncomputable def equivOfPure (e : S.Tensor c ≃ₗ[k] S.Tensor c')
+    (h : ∀ (g : G) (p : Π i, S.V (c i)), e (g • S.pure p) = g • e (S.pure p)) :
+    (S.tensorRep c).Equiv (S.tensorRep c') :=
+  .mk e fun g => LinearMap.ext fun t => map_smul_of_pure e g (h g) t
+
+variable {ι' : Type} {c' : ι' → Color K} in
+@[simp]
+lemma equivOfPure_apply (e : S.Tensor c ≃ₗ[k] S.Tensor c')
+    (h : ∀ (g : G) (p : Π i, S.V (c i)), e (g • S.pure p) = g • e (S.pure p)) (t : S.Tensor c) :
+    equivOfPure e h t = e t := rfl
+
+variable {ι' : Type} {c' : ι' → Color K} in
+/-- A linear map of tensors that commutes with `Λ` on pure tensors, as an intertwining map. -/
+noncomputable def intertwiningMapOfPure (f : S.Tensor c →ₗ[k] S.Tensor c')
+    (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) :
+    (S.tensorRep c).IntertwiningMap (S.tensorRep c') :=
+  ⟨f, fun g => LinearMap.ext fun t => map_smul_of_pure f g (h g) t⟩
+
+variable {ι' : Type} {c' : ι' → Color K} in
+@[simp]
+lemma intertwiningMapOfPure_apply (f : S.Tensor c →ₗ[k] S.Tensor c')
+    (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) (t : S.Tensor c) :
+    intertwiningMapOfPure f h t = f t := rfl
 
 /-- A tensor with no slots is invariant, `Λ s = s`. -/
 lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : S.Tensor c) : g • t = t := by
@@ -244,22 +296,38 @@ section
 variable [DecidableEq ι] {c' : ι → Color K}
 
 variable (S) in
-/-- The linear equivalence `f` at the slot `i`, and the identity, moved along `h x`, at every other
-slot `x`. On a pure tensor, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
-noncomputable def congrAt (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i))
-    (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c ≃ₗ[k] S.Tensor c' :=
-  S.toPiTensor c ≪≫ₗ PiTensorProduct.congr (fun x => if hx : x = i then
-      hx ▸ f else S.cast (h x hx)) ≪≫ₗ (S.toPiTensor c').symm
+/-- Equivalences of representations `f x` at every slot `x`, as an equivalence of representations
+of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.congr`. -/
+noncomputable def congrSlots (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
+    (S.tensorRep c).Equiv (S.tensorRep c') :=
+  equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.congr (fun x => (f x).toLinearEquiv) ≪≫ₗ
+    (S.toPiTensor c').symm) fun g p => by
+      simp only [smul_pure, LinearEquiv.trans_apply, toPiTensor_pure, congr_tprod,
+        toPiTensor_symm_tprod]
+      exact congrArg S.pure (funext fun x =>
+        Representation.IntertwiningMap.isIntertwining _ _ (f x).toIntertwiningMap g (p x))
+
+omit [DecidableEq ι] in
+/-- On a pure tensor, `congrSlots` applies `f x` to the vector at each slot `x`. -/
+lemma congrSlots_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
+    S.congrSlots f (S.pure p) = S.pure fun x => f x (p x) := by
+  simp [congrSlots, congr_tprod]
+
+variable (S) in
+/-- The equivalence of representations `f` at the slot `i`, and the identity, moved along `h x`,
+at every other slot `x`. On a pure tensor, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
+noncomputable def congrAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
+    (h : ∀ x, x ≠ i → c x = c' x) : (S.tensorRep c).Equiv (S.tensorRep c') :=
+  S.congrSlots fun x => if hx : x = i then hx ▸ f else S.cast (h x hx)
 
 /-- On a pure tensor, `congrAt` applies `f` to the vector at `i`, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`.
 The result is given by its vectors `q`, `f (p i)` at `i` and `p x` moved along `h x` elsewhere. -/
-lemma congrAt_pure (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i))
+lemma congrAt_pure (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
     (h : ∀ x, x ≠ i → c x = c' x) (p : Π x, S.V (c x)) (q : Π x, S.V (c' x))
     (hqi : q i = f (p i))
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
     S.congrAt i f h (S.pure p) = S.pure q := by
-  simp only [congrAt, LinearEquiv.trans_apply, toPiTensor_pure, congr_tprod,
-    toPiTensor_symm_tprod]
+  rw [congrAt, congrSlots_pure]
   congr 1
   funext x
   by_cases hx : x = i
@@ -267,29 +335,16 @@ lemma congrAt_pure (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i))
     simp [hqi]
   · simp [hx, hq x hx]
 
-/-- `congrAt` commutes with the group action when `f` does, `(ΛT)_ν… = Λ(T_ν…)` for lowering
-with an invariant metric. -/
-lemma congrAt_smul (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
-    (hf : ∀ g x, f (S.rep (c i) g x) = S.rep (c' i) g (f x)) (g : G) (t : S.Tensor c) :
-    S.congrAt i f h (g • t) = g • S.congrAt i f h t :=
-  map_smul_of_pure (S.congrAt i f h) g (fun p => by
-    simp only [smul_pure, congrAt, LinearEquiv.trans_apply, toPiTensor_pure, congr_tprod,
-      toPiTensor_symm_tprod]
-    congr 1
-    funext x
-    by_cases hx : x = i
-    · subst hx
-      simp [hf]
-    · simp only [hx, dite_false, cast_rep]) t
-
 /-- The inverse of `congrAt` of `f` is `congrAt` of `f.symm`. -/
-lemma congrAt_symm (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x) :
+lemma congrAt_symm (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
+    (h : ∀ x, x ≠ i → c x = c' x) :
     (S.congrAt i f h).symm = S.congrAt i f.symm (fun x hx => (h x hx).symm) := by
-  refine LinearEquiv.ext fun t => (LinearEquiv.symm_apply_eq _).2 ?_
+  refine Representation.Equiv.ext (funext fun t => ?_)
+  refine (S.congrAt i f h).toLinearEquiv.symm_apply_eq.2 ?_
   induction t using inductionOn_pure with
   | h p =>
-    simp only [congrAt, LinearEquiv.trans_apply, toPiTensor_pure, congr_tprod,
-      toPiTensor_symm_tprod]
+    change _ = S.congrSlots _ (S.congrSlots _ (S.pure p))
+    rw [congrSlots_pure, congrSlots_pure]
     congr 1
     funext x
     by_cases hx : x = i
@@ -349,8 +404,9 @@ lemma mapAt_pure (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠
   · simp [hx, hq x hx]
 
 /-- `congrAt` is `mapAt` of the underlying linear map. -/
-lemma congrAt_eq_mapAt (i : ι) (f : S.V (c i) ≃ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
-    (t : S.Tensor c) : S.congrAt i f h t = S.mapAt i f.toLinearMap h t := by
+lemma congrAt_eq_mapAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
+    (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
+    S.congrAt i f h t = S.mapAt i f.toLinearMap h t := by
   induction t using inductionOn_pure with
   | h p =>
     let q : Π x, S.V (c' x) := fun x => if hx : x = i then hx ▸ f (p i) else S.cast (h x hx) (p x)

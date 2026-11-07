@@ -172,6 +172,7 @@ public import Physlib.Mathematics.ForMathlib.List.InsertionSort
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
+public import Physlib.Mathematics.ForMathlib.Representation
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.SemilinearMaps
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm

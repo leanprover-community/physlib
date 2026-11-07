@@ -105,7 +105,7 @@ variable (S) in
 `S.rep c`. A type that is such a space, such as a Weyl spinor, gets its instance from this. -/
 noncomputable abbrev ofIndexSpace (c : Color K) : Tensorial S ![c] (S.V c) where
   rep := S.rep c
-  toTensor := .mk (S.oneSlotEquiv c) fun g => LinearMap.ext (S.oneSlotEquiv_rep c g)
+  toTensor := S.oneSlotEquiv c
 
 /-- A type `M` with an action `r` and an equivalence `φ` to a tensorial type `N` commuting with
 the actions is tensorial with the colors of `N`. -/
@@ -130,10 +130,7 @@ product action `Λ (x ⊗ y) = Λ x ⊗ Λ y` and `x ⊗ y` read as the product 
 noncomputable instance prod [Tensorial S c₁ M] [Tensorial S c₂ N] :
     Tensorial S (prodColors c₁ c₂) (M ⊗[k] N) where
   rep := (rep (M := M)).tprod (rep (M := N))
-  toTensor := .mk (TensorProduct.congr (toTensor (M := M)).toLinearEquiv
-      (toTensor (M := N)).toLinearEquiv ≪≫ₗ S.tmulEquiv c₁ c₂) fun g => by
-    ext x y
-    simp [Representation.tprod_apply, Species.tmulEquiv_smul]
+  toTensor := ((toTensor (M := M)).tensorCongr (toTensor (M := N))).trans (S.tmulEquiv c₁ c₂)
 
 /-- The group acts on `x ⊗ y` factor by factor, `Λ (x ⊗ y) = Λ x ⊗ Λ y`. -/
 @[simp]

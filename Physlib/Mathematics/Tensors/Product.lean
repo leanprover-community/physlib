@@ -58,10 +58,9 @@ The components of a product are the products of the components, `(T ⊗ U)^μ_ν
 - `Species.tmulEquiv_swapLast` proves `(T ⊗ W) ⊗ U = (T ⊗ U) ⊗ W` up to relabeling.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
 - `Species.oneSlotEquiv` turns a vector of `V c` into a tensor on one slot, and
-  `Species.oneSlotEquiv_rep` proves that it commutes with the group action.
+  it is an equivalence of representations.
 - `Species.twoSlotEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots, and
   `Species.deltaTensor` is the delta `δ_μ^ν`.
-- `Species.twoSlotEquiv_map_rep` proves that `Λ` acts on a tensor on two slots factor by factor.
 - `Species.reindex_twoSlotEquiv` proves that swapping the two slots swaps the factors,
   `M^μν ↦ M^νμ`.
 - `Species.deltaTensor_invariant` proves that the delta tensor is invariant.
@@ -161,9 +160,16 @@ variable (S) in
 `T` sit on the slots `inl i` and those of `U` on the slots `inr j`. It is Mathlib's
 `PiTensorProduct.tmulEquivDep`. -/
 noncomputable def tmulEquiv (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) :
-    S.Tensor c₁ ⊗[k] S.Tensor c₂ ≃ₗ[k] S.Tensor (prodColors c₁ c₂) :=
-  TensorProduct.congr (S.toPiTensor c₁) (S.toPiTensor c₂) ≪≫ₗ
-    tmulEquivDep k (fun s => S.V (prodColors c₁ c₂ s)) ≪≫ₗ (S.toPiTensor _).symm
+    ((S.tensorRep c₁).tprod (S.tensorRep c₂)).Equiv (S.tensorRep (prodColors c₁ c₂)) :=
+  .mk (TensorProduct.congr (S.toPiTensor c₁) (S.toPiTensor c₂) ≪≫ₗ
+    tmulEquivDep k (fun s => S.V (prodColors c₁ c₂ s)) ≪≫ₗ (S.toPiTensor _).symm) fun g =>
+    TensorProduct.ext <| ext_pure fun f₁ => ext_pure fun f₂ => by
+      simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, LinearMap.comp_apply,
+        Representation.tprod_apply, TensorProduct.map_tmul,
+        Representation.ofDistribMulAction_apply_apply, smul_pure, LinearEquiv.coe_coe,
+        LinearEquiv.trans_apply, TensorProduct.congr_tmul, toPiTensor_pure, tmulEquivDep_apply,
+        toPiTensor_symm_tprod]
+      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
 
 /-- The product of the pure tensors `u ⊗ α` and `w` is the pure tensor `u ⊗ α ⊗ w`. The vectors
 `f₁` of the first sit on the slots `inl i` and the vectors `f₂` of the second on the slots
@@ -288,17 +294,9 @@ lemma tmulEquiv_swapLast {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {
 `(Λ^μ_α T^α) (Λ^ρ_β U^β) = Λ^μ_α Λ^ρ_β (T ⊗ U)^αβ`. -/
 lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : G) (t₁ : S.Tensor c₁)
     (t₂ : S.Tensor c₂) :
-    S.tmulEquiv c₁ c₂ ((g • t₁) ⊗ₜ (g • t₂)) = g • S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) := by
-  induction t₁ using inductionOn_pure with
-  | hsmul r t ht => rw [smul_comm, ← smul_tmul', map_smul, ht, ← smul_tmul', map_smul, smul_comm]
-  | hadd t t' ht ht' => simp only [smul_add, add_tmul, map_add, ht, ht']
-  | h f₁ =>
-    induction t₂ using inductionOn_pure with
-    | hsmul r t ht => rw [smul_comm, tmul_smul, map_smul, ht, tmul_smul, map_smul, smul_comm]
-    | hadd t t' ht ht' => simp only [smul_add, tmul_add, map_add, ht, ht']
-    | h f₂ =>
-      rw [smul_pure, smul_pure, tmulEquiv_pure, tmulEquiv_pure, smul_pure]
-      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
+    S.tmulEquiv c₁ c₂ ((g • t₁) ⊗ₜ (g • t₂)) = g • S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) :=
+  Representation.IntertwiningMap.isIntertwining _ _ (S.tmulEquiv c₁ c₂).toIntertwiningMap g
+    (t₁ ⊗ₜ t₂)
 
 /-!
 
@@ -319,20 +317,18 @@ tensor `S.deltaTensor c` is the delta seen this way.
 variable (S) in
 /-- A vector `v` of `V c` as a tensor with the one slot `![c]`, by Mathlib's
 `PiTensorProduct.subsingletonEquiv`. -/
-noncomputable def oneSlotEquiv (c : Color K) : S.V c ≃ₗ[k] S.Tensor ![c] :=
-  (subsingletonEquiv (s := fun i => S.V (![c] i)) 0).symm ≪≫ₗ (S.toPiTensor _).symm
+noncomputable def oneSlotEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c]) :=
+  .mk ((subsingletonEquiv (s := fun i => S.V (![c] i)) 0).symm ≪≫ₗ (S.toPiTensor _).symm)
+    fun g => LinearMap.ext fun v => by
+      change S.pure _ = g • S.pure _
+      rw [smul_pure]
+      exact congrArg S.pure (funext fun i => by fin_cases i; rfl)
 
 /-- The tensor of `v` is the pure tensor with `v` on its one slot. -/
 @[simp]
 lemma oneSlotEquiv_apply (c : Color K) (v : S.V c) :
     S.oneSlotEquiv c v = S.pure (c := ![c]) (Fin.cons v finZeroElim) :=
   congrArg S.pure (funext fun i => by fin_cases i; rfl)
-
-/-- `oneSlotEquiv` commutes with the group action, `Λv ↦ Λ • v`. -/
-lemma oneSlotEquiv_rep (c : Color K) (g : G) (v : S.V c) :
-    S.oneSlotEquiv c (S.rep c g v) = g • S.oneSlotEquiv c v := by
-  rw [oneSlotEquiv_apply, oneSlotEquiv_apply, smul_pure]
-  exact congrArg S.pure (funext fun i => by fin_cases i; rfl)
 
 /-- The tensor of the basis vector `S.basis c (μ 0)` is the basis tensor with label `μ`. -/
 lemma oneSlotEquiv_basis (c : Color K) (μ : Π i, basisIdx (![c] i).kind) :
@@ -344,29 +340,19 @@ variable (S) in
 /-- An element of `V a ⊗ V b` as a tensor with colors `![a, b]`, as the metric `η_μν e^μ ⊗ e^ν`
 is the tensor `η_μν`. Each factor is a one-slot tensor by `oneSlotEquiv`, and the slots
 `Fin 1 ⊕ Fin 1` of their product are relabeled `Fin 2` by `ColorEquiv.ofFinTwo`. -/
-noncomputable def twoSlotEquiv (a b : Color K) : S.V a ⊗[k] S.V b ≃ₗ[k] S.Tensor ![a, b] :=
-  TensorProduct.congr (S.oneSlotEquiv a) (S.oneSlotEquiv b) ≪≫ₗ S.tmulEquiv ![a] ![b] ≪≫ₗ
-    S.reindex (ColorEquiv.ofFinTwo a b).symm
+noncomputable def twoSlotEquiv (a b : Color K) :
+    ((S.rep a).tprod (S.rep b)).Equiv (S.tensorRep ![a, b]) :=
+  ((S.oneSlotEquiv a).tensorCongr (S.oneSlotEquiv b)).trans <|
+    (S.tmulEquiv ![a] ![b]).trans (S.reindex (ColorEquiv.ofFinTwo a b).symm)
 
 /-- The tensor of `x ⊗ₜ y` is the pure tensor with `x` on the slot `0` and `y` on the slot `1`. -/
 @[simp]
 lemma twoSlotEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
     S.twoSlotEquiv a b (x ⊗ₜ y) =
       S.pure (c := ![a, b]) (Fin.cons x (Fin.cons y finZeroElim)) := by
-  simp only [twoSlotEquiv, LinearEquiv.trans_apply, TensorProduct.congr_tmul, oneSlotEquiv_apply,
-    tmulEquiv_pure, reindex_pure]
+  simp only [twoSlotEquiv, Representation.Equiv.trans_apply,
+    Representation.Equiv.tensorCongr_tmul, oneSlotEquiv_apply, tmulEquiv_pure, reindex_pure]
   exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
-
-/-- `twoSlotEquiv` commutes with the group action, which acts on `M ∈ V a ⊗ V b` factor by factor,
-`Λ (x ⊗ y) = Λx ⊗ Λy`. -/
-lemma twoSlotEquiv_map_rep (a b : Color K) (Λ : G) (M : S.V a ⊗[k] S.V b) :
-    S.twoSlotEquiv a b (TensorProduct.map (S.rep a Λ) (S.rep b Λ) M) =
-      Λ • S.twoSlotEquiv a b M := by
-  induction M using TensorProduct.inductionOn with
-  | add x y hx hy => simp only [map_add, smul_add, hx, hy]
-  | tmul x y =>
-    simp only [TensorProduct.map_tmul, twoSlotEquiv_tmul, smul_pure]
-    exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
 /-- Swapping the two slots of a tensor on two slots swaps the factors, `M^μν ↦ M^νμ`. -/
 lemma reindex_twoSlotEquiv {a b : Color K} {σ : ColorEquiv ![a, b] ![b, a]}
@@ -387,8 +373,8 @@ noncomputable def deltaTensor (c : Color K) : S.Tensor ![c.dual, c] :=
   S.twoSlotEquiv c.dual c (S.delta c)
 
 /-- The delta tensor is invariant, `Λ δ = δ`. -/
-lemma deltaTensor_invariant (c : Color K) (Λ : G) : Λ • S.deltaTensor c = S.deltaTensor c := by
-  rw [deltaTensor, ← twoSlotEquiv_map_rep, delta_invariant]
+lemma deltaTensor_invariant (c : Color K) (Λ : G) : Λ • S.deltaTensor c = S.deltaTensor c :=
+  (S.twoSlotEquiv _ c).toIntertwiningMap.map_invariant (S.delta_invariant c Λ)
 
 /-!
 

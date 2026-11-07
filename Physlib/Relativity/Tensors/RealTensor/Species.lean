@@ -470,7 +470,7 @@ lemma tensorBasis_repr_toDualAt_contr_vector_tmul (d : ℕ) (F G : Vector d ⊗[
 lemma contr_vector_coVector_rep (d : ℕ) (Λ : LorentzGroup d) (v : Vector d) (ω : CoVector d) :
     {Tensorial.rep Λ v | μ ⊗ Tensorial.rep Λ ω | μ}ᵀ = {v | μ ⊗ ω | μ}ᵀ := by
   rw [Tensorial.toTensor_rep, Tensorial.toTensor_rep, Species.tmulEquiv_smul,
-    Species.Tensor.contr_smul, Species.smul_eq_self_of_isEmpty]
+    Species.intertwiningMap_smul, Species.smul_eq_self_of_isEmpty]
 
 end realLorentz
 

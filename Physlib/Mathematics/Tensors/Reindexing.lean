@@ -50,7 +50,8 @@ their order.
   tensor.
 - `Species.reindex_reindex` proves that two relabelings in sequence are their composite, and
   `Species.reindex_refl` that the identity relabeling does nothing.
-- `Species.reindex_smul` proves that relabeling commutes with the group action.
+- `Species.reindex` is an equivalence of representations, so relabeling commutes with the group
+  action.
 - `Species.tensorBasis_repr_reindex` gives the components of a relabeled tensor,
   `(Tᵀ)_ν^μ = T^μ_ν`.
 
@@ -128,10 +129,13 @@ variable (S) in
 holds the vector of the old slot `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is Mathlib's
 `PiTensorProduct.reindex` followed by `PiTensorProduct.congr` of `LinearEquiv.cast`. -/
 noncomputable def reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
-    S.Tensor c₁ ≃ₗ[k] S.Tensor c₂ :=
-  S.toPiTensor c₁ ≪≫ₗ PiTensorProduct.reindex k _ σ.toEquiv ≪≫ₗ
-    PiTensorProduct.congr (fun j => S.cast (σ.color_eq j)) ≪≫ₗ
-    (S.toPiTensor c₂).symm
+    (S.tensorRep c₁).Equiv (S.tensorRep c₂) :=
+  equivOfPure (S.toPiTensor c₁ ≪≫ₗ PiTensorProduct.reindex k _ σ.toEquiv ≪≫ₗ
+    PiTensorProduct.congr (fun j => (S.cast (σ.color_eq j)).toLinearEquiv) ≪≫ₗ
+    (S.toPiTensor c₂).symm) fun g f => by
+      simp only [smul_pure, LinearEquiv.trans_apply, toPiTensor_pure,
+        PiTensorProduct.reindex_tprod, congr_tprod, toPiTensor_symm_tprod]
+      exact congrArg S.pure (funext fun j => cast_rep _ _ _)
 
 /-- On a pure tensor, the new slot `j` holds the vector of the old slot `σ.toEquiv.symm j`, moved
 along `σ.color_eq j`. -/
@@ -150,26 +154,18 @@ lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 /-- Relabeling by the identity does nothing. -/
 lemma reindex_refl {c₁ : ι₁ → Color K} (t : S.Tensor c₁) : S.reindex (ColorEquiv.refl c₁) t = t :=
   LinearMap.congr_fun (f := (S.reindex (ColorEquiv.refl c₁)).toLinearMap)
-    (ext_pure (g := LinearMap.id) fun f => by rw [LinearEquiv.coe_coe, reindex_pure]; rfl) t
+    (ext_pure (g := LinearMap.id) fun f => by
+      rw [Representation.Equiv.coe_toLinearMap, reindex_pure]; rfl) t
 
 /-- Relabeling by `σ₁` and then by `σ₂` is relabeling by `σ₁.trans σ₂`. -/
 lemma reindex_reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
     (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) (t : S.Tensor c₁) :
     S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t :=
-  LinearMap.congr_fun (f := (S.reindex σ₁ ≪≫ₗ S.reindex σ₂).toLinearMap)
+  LinearMap.congr_fun (f := ((S.reindex σ₁).trans (S.reindex σ₂)).toLinearMap)
     (ext_pure (g := (S.reindex (σ₁.trans σ₂)).toLinearMap) fun f => by
-      simp only [LinearEquiv.coe_coe, LinearEquiv.trans_apply, reindex_pure,
-        LinearEquiv.cast_apply, cast_cast]
+      simp only [Representation.Equiv.coe_toLinearMap, Representation.Equiv.trans_apply,
+        reindex_pure, cast_apply, cast_cast]
       rfl) t
-
-/-- Relabeling commutes with the group action, as in `(ΛT)ᵀ = Λ Tᵀ`. -/
-lemma reindex_smul {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) (g : G)
-    (t : S.Tensor c₁) : S.reindex σ (g • t) = g • S.reindex σ t :=
-  map_smul_of_pure (S.reindex σ) g (fun f => by
-    simp only [smul_pure, reindex_pure]
-    congr 1
-    funext j
-    exact cast_rep _ _ _) t
 
 /-!
 

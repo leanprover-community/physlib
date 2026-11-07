@@ -6,7 +6,6 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.Tensors.Contraction
-public import Mathlib.Tactic.Module
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 /-!
 
@@ -220,9 +219,11 @@ lemma isAlt_formBilin (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.
 variable (S) in
 /-- The vector `v` of color `c` contracted with the first index of the form at `c.dual`. It lowers
 an upper index, `v^μ ↦ v^μ g_μν`, and raises a lower one, `w_μ ↦ w_μ g^μν`. -/
-noncomputable def toDual (c : Color K) [S.HasForm c.kind] : S.V c ≃ₗ[k] S.V c.dual :=
-  LinearEquiv.ofLinearMap (S.toLin (form c.dual)) (S.toLin (form c)) (form_inverse c.dual)
-    (form_inverse c)
+noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.rep c.dual) :=
+  .mk (LinearEquiv.ofLinearMap (S.toLin (form c.dual)) (S.toLin (form c)) (form_inverse c.dual)
+    (form_inverse c)) fun g => LinearMap.ext fun v => by
+      change S.toLin (form c.dual) _ = S.rep c.dual g (S.toLin (form c.dual) v)
+      rw [← S.toLin_map, form_invariant]
 
 /-- `toDual` contracts `v` with the first index of the form at `c.dual`. -/
 lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
@@ -235,12 +236,7 @@ lemma toDual_symm (c : Color K) [S.HasForm c.kind] : (S.toDual c).symm = S.toDua
 @[simp]
 lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :
     S.toDual c.dual (S.toDual c v) = v :=
-  (S.toDual c).symm_apply_apply v
-
-/-- Lowering and raising commute with the group action, `(Λv)_ν = Λ(v_ν)`. -/
-lemma toDual_rep (c : Color K) [S.HasForm c.kind] (g : G) (v : S.V c) :
-    S.toDual c (S.rep c g v) = S.rep c.dual g (S.toDual c v) := by
-  rw [toDual_apply, toDual_apply, ← S.toLin_map, form_invariant]
+  (S.toDual c).toLinearEquiv.symm_apply_apply v
 
 /-- Lowering or raising a vector in components, `v_ν = v^μ g_μν`. -/
 lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basisIdx c.kind) :
@@ -264,8 +260,8 @@ noncomputable def formTensor (c : Color K) [S.HasForm c.kind] : S.Tensor ![c, c]
 /-- The form is an invariant tensor. Every group element fixes it, as every Lorentz
 transformation fixes the Minkowski metric `η`. -/
 lemma formTensor_invariant (c : Color K) [S.HasForm c.kind] (Λ : G) :
-    Λ • S.formTensor c = S.formTensor c := by
-  rw [formTensor, ← twoSlotEquiv_map_rep, form_invariant]
+    Λ • S.formTensor c = S.formTensor c :=
+  (S.twoSlotEquiv c c).toIntertwiningMap.map_invariant (form_invariant c Λ)
 
 /-- The components of the form tensor are those of the form, `g_μν` at the pair of labels
 `(μ 0, μ 1)`. -/
@@ -302,15 +298,8 @@ at the kind of `a`. The colors `c'` of the result have the dual color at `i` by 
 with `c` elsewhere by `h`. It is `congrAt` of `toDual`. -/
 noncomputable def toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) :
-    S.Tensor c ≃ₗ[k] S.Tensor c' :=
-  S.congrAt i (S.cast ha ≪≫ₗ S.toDual a ≪≫ₗ S.cast hi.symm) h
-
-/-- Lowering or raising at a slot commutes with the group action, `(ΛT)^μ_ν = Λ(T^μ_ν)`. -/
-lemma toDualAt_smul {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
-    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (g : G)
-    (t : S.Tensor c) : S.toDualAt i a ha hi h (g • t) = g • S.toDualAt i a ha hi h t :=
-  congrAt_smul i _ h (fun g x => by simp only [LinearEquiv.trans_apply, toDual_rep, cast_rep])
-    g t
+    (S.tensorRep c).Equiv (S.tensorRep c') :=
+  S.congrAt i (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)) h
 
 /-- On a pure tensor, `toDualAt` applies `toDual` to the vector at `i` and keeps the others. The
 result `q` is explicit, so that for concrete colors `hqi` and `hq` hold by `rfl`. -/
@@ -326,8 +315,8 @@ lemma toDualAt_pure {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a
 lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a.dual hi ha (fun x hx => (h x hx).symm) (S.toDualAt i a ha hi h t) = t := by
-  rw [toDualAt, toDualAt, show S.cast hi ≪≫ₗ S.toDual a.dual ≪≫ₗ S.cast ha.symm =
-    (S.cast ha ≪≫ₗ S.toDual a ≪≫ₗ S.cast hi.symm).symm from rfl, ← congrAt_symm]
+  rw [toDualAt, toDualAt, show ((S.cast hi).trans (S.toDual a.dual)).trans (S.cast ha.symm) =
+    (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).symm from rfl, ← congrAt_symm]
   exact (S.congrAt i _ h).symm_apply_apply t
 
 /-- Lowering or raising at a slot is `toDual` at that slot, read as a linear map. Chains of
@@ -335,7 +324,7 @@ lowerings and raisings at several slots compose slot by slot through `mapSlots_m
 lemma toDualAt_eq_mapAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a ha hi h t =
-      S.mapAt i (S.cast ha ≪≫ₗ S.toDual a ≪≫ₗ S.cast hi.symm).toLinearMap h t :=
+      S.mapAt i (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).toLinearMap h t :=
   congrAt_eq_mapAt i _ h t
 
 /-- Lowering or raising the index at the slot `i` in components, `T^…_ν… = T^…μ… g_μν`. The

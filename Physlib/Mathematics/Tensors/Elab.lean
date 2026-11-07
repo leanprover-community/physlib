@@ -596,7 +596,6 @@ private def regroupContractions : TacticM Unit := do
   throwError "tensor_regroup: no matching of the factors gives two contractions of the same pairs \
     of slots. The last attempt failed with\n{lastError}"
 
-
 /-- Brings both sides of the goal to sums of signed scalar multiples of contractions. Products,
 contractions and relabelings are linear, so sums, negatives and scalars of `k` move out of them.
 The scalar lemmas are given the field `k` of the species, so a group element `Λ • T` stays a
@@ -708,8 +707,9 @@ macro "tensor_slots" : tactic => `(tactic| focus
   fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
     simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
       LinearMap.id_apply, Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq,
-      not_false_eq_true, dite_false, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
-      LinearEquiv.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual])
+      not_false_eq_true, dite_false, Representation.IntertwiningMap.coe_toLinearMap,
+      Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
+      Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual])
 
 end Tensors.Notation
 
@@ -870,15 +870,16 @@ example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ
 #guard_msgs in
 #check {v | ↑μ}ᵀ
 
-/-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [toDualAt_smul]`. -/
-example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [toDualAt_smul]
+/-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [equiv_smul]`. -/
+example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [equiv_smul]
 
 /-- Lowering both indices commutes with the group action, `(Λ M)_μν = Λ (M_μν)`. -/
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓ν}ᵀ = Λ • {M | ↓μ ↓ν}ᵀ := by
-  simp only [toDualAt_smul]
+  simp only [equiv_smul]
 
-/-- A trace commutes with the group action, `(Λ T)^μ_μ = Λ (T^μ_μ)`, by `rw [Tensor.contr_smul]`. -/
-example : {(Λ • T) | μ μ}ᵀ = Λ • {T | μ μ}ᵀ := by rw [Tensor.contr_smul]
+/-- A trace commutes with the group action, `(Λ T)^μ_μ = Λ (T^μ_μ)`, by
+`rw [intertwiningMap_smul]`. -/
+example : {(Λ • T) | μ μ}ᵀ = Λ • {T | μ μ}ᵀ := by rw [intertwiningMap_smul]
 
 /-- `g^μν g_νρ = δ^μ_ρ`, by `contr_formTensor_formTensor`. The relabeling the notation generates
 is `ColorEquiv.matMul`, checked slot by slot. -/
