@@ -5,6 +5,8 @@ Authors: Andrea Pari
 -/
 module
 
+public import Physlib.Mathematics.ForMathlib.SesquilinearForm
+public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 public import Physlib.Mathematics.Tensors.Contraction
 public import Mathlib.LinearAlgebra.Matrix.BilinearForm
 public import Mathlib.Tactic.LinearCombination
@@ -37,7 +39,8 @@ antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus th
 - `Species.HasForm` is an invariant form on a kind with its inverse, `g_μν` and `g^μν`, with
   `Species.form`, `Species.form_invariant` and `Species.form_inverse`.
 - `Species.IsSymmetricForm` and `Species.IsAntisymmetricForm` say that the form is symmetric or
-  antisymmetric, `Species.form_symm` and `Species.form_antisymm`.
+  antisymmetric, `Species.form_symm` and `Species.form_antisymm`, in components
+  `Species.formMatrix_symm` and `Species.formMatrix_antisymm`.
 - `Species.formBilin` reads the form as a Mathlib bilinear form, symmetric by
   `Species.isSymm_formBilin` and alternating by `Species.isAlt_formBilin`.
 - `Species.toDual` lowers an upper index and raises a lower one, and `Species.toDual_toDual` that
@@ -49,8 +52,9 @@ antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus th
 - `Species.toDualAt_eq_contr` proves that lowering is contracting with the form,
   `T^…_ν… = T^…μ… g_μν`.
 - `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
-  antisymmetric form on a kind with two labels, and `Species.formMatrix_schouten` is the same in
-  components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`.
+  antisymmetric form on a kind with two labels, `LinearMap.IsAlt.schouten` for `formBilin`, and
+  `Species.formMatrix_schouten` is the same in components,
+  `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`.
 
 ## iii. Table of contents
 
@@ -151,6 +155,11 @@ lemma formMatrix_eq_toMatrix (c : Color K) [S.HasForm c.kind] :
   refine ((S.basis_repr_toLin c (d := c) (form c) _ ν).trans ?_).symm
   simp [Finsupp.single_apply, formMatrix]
 
+/-- The form on two basis vectors is a component of the form, `g(e^μ, e^ν) = g^μν`. -/
+lemma formBilin_basis (c : Color K) [S.HasForm c.kind] (μ ν : basisIdx c.kind) :
+    S.formBilin c (S.basis c.dual μ) (S.basis c.dual ν) = S.formMatrix c μ ν := by
+  rw [formMatrix_eq_toMatrix, LinearMap.BilinForm.toMatrix_apply]
+
 variable (S) in
 /-- The form on the kind `κ` is symmetric, `g_μν = g_νμ`, as `η`. A metric is a symmetric form. -/
 class IsSymmetricForm (κ : K) [S.HasForm κ] : Prop where
@@ -178,6 +187,11 @@ lemma form_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     TensorProduct.comm k (S.V c) (S.V c) (form c) = form c :=
   IsSymmetricForm.comm_form c.variance
 
+/-- The components of a symmetric form are symmetric, `g^νμ = g^μν`. -/
+lemma formMatrix_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind]
+    (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = S.formMatrix c μ ν := by
+  rw [formMatrix, ← Module.Basis.tensorProduct_repr_comm, form_symm, formMatrix]
+
 /-- A symmetric form is symmetric as a bilinear form, Mathlib's `LinearMap.BilinForm.IsSymm`. -/
 lemma isSymm_formBilin (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     (S.formBilin c).IsSymm :=
@@ -187,6 +201,12 @@ lemma isSymm_formBilin (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kin
 lemma form_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
     TensorProduct.comm k (S.V c) (S.V c) (form c) = -form c :=
   IsAntisymmetricForm.comm_form c.variance
+
+/-- The components of an antisymmetric form are antisymmetric, `g^νμ = -g^μν`. -/
+lemma formMatrix_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
+    (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = -S.formMatrix c μ ν := by
+  rw [formMatrix, ← Module.Basis.tensorProduct_repr_comm, form_antisymm, map_neg,
+    Finsupp.neg_apply, formMatrix]
 
 /-- An antisymmetric form is alternating as a bilinear form, `g(u, u) = 0`, Mathlib's
 `LinearMap.IsAlt`. It needs `2 x = 0 → x = 0` in `k`: when `2 = 0` the form `[1]` on `k` is
@@ -328,25 +348,13 @@ lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a
           · subst hx; rw [hi, ha]
           · rw [h x hx]) (φ x)) i (cast (congrArg (basisIdx ∘ Color.kind) ha.symm) μ)) := by
   subst ha
-  induction t using inductionOn_pure with
-  | hsmul r t ht =>
-    simp only [map_smul, Finsupp.smul_apply, ht, smul_eq_mul, Finset.mul_sum]
-    exact Finset.sum_congr rfl fun _ _ => by ring
-  | hadd t t' ht ht' =>
-    simp only [map_add, Finsupp.add_apply, ht, ht', mul_add, Finset.sum_add_distrib]
-  | h p =>
-    rw [toDualAt_pure i _ rfl hi h p (fun x => if hx : x = i then hx ▸
-        S.cast hi.symm (S.toDual (c i) (p i)) else S.cast (h x hx) (p x))
-        (dite_eq_left rfl) (fun x hx => dite_eq_right hx), tensorBasis_repr_pure,
-      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i), dite_eq_left rfl, basis_repr_cast,
-      basis_repr_toDual, Finset.sum_mul]
-    refine Finset.sum_congr rfl fun μ _ => ?_
-    rw [tensorBasis_repr_pure, ← Finset.mul_prod_erase _ _ (Finset.mem_univ i),
-      Function.update_self, mul_left_comm, mul_assoc]
-    congr 2
-    refine Finset.prod_congr rfl fun x hx => ?_
-    have hx := Finset.ne_of_mem_erase hx
-    rw [dite_eq_right hx, basis_repr_cast, Function.update_of_ne hx]
+  rw [toDualAt_eq_mapAt]
+  refine (tensorBasis_repr_mapAt i _ h t φ _ fun _ _ => rfl).trans
+    (Finset.sum_congr rfl fun μ _ => congrArg (· * _) ?_)
+  rw [LinearMap.toMatrix_apply]
+  change (S.basis (c' i)).repr (S.cast hi.symm (S.toDual (c i) (S.basis (c i) μ))) (φ i) = _
+  rw [basis_repr_cast, basis_repr_toDual]
+  simp [Finsupp.single_apply]
 
 /-- Lowering or raising at the slot `i` is contracting that slot with the first index of the form,
 `T^…_ν… = T^…μ… g_μν`. -/
@@ -368,19 +376,8 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
 vanishes. -/
 lemma schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] [NoZeroDivisors k]
     [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2) (u v w : S.V c.dual) :
-    S.formBilin c u v • w + S.formBilin c v w • u + S.formBilin c w u • v = 0 := by
-  obtain ⟨i, j, hij, huniv⟩ := Finset.card_eq_two.mp (h2 : Finset.univ.card = 2)
-  -- Each vector is `x^i e_i + x^j e_j`, and the form vanishes on `e_i, e_i` and `e_j, e_j`.
-  have hexp (x : S.V c.dual) : x = (S.basis c.dual).repr x i • S.basis c.dual i +
-      (S.basis c.dual).repr x j • S.basis c.dual j := by
-    conv_lhs => rw [← (S.basis c.dual).sum_repr x]
-    rw [huniv, Finset.sum_pair hij]
-  have H := S.isAlt_formBilin c
-  have hji := (LinearMap.IsAlt.neg H (S.basis c.dual i) (S.basis c.dual j)).symm
-  rw [hexp u, hexp v, hexp w]
-  simp only [map_add, map_smul, LinearMap.add_apply, LinearMap.smul_apply, smul_eq_mul,
-    LinearMap.IsAlt.self_eq_zero H, hji]
-  module
+    S.formBilin c u v • w + S.formBilin c v w • u + S.formBilin c w u • v = 0 :=
+  (isAlt_formBilin (S := S) c).schouten (S.basis c.dual) h2 u v w
 
 /-- The Schouten identity in components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`: `schouten` at
 the basis vectors `e^γ`, `e^ρ` and `e^α'`, read at the label `α`. -/
@@ -392,14 +389,10 @@ lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFor
         S.formMatrix c ρ α' * (if γ = α then 1 else 0) := by
   have h := congrArg (fun x => (S.basis c.dual).repr x α)
     (schouten c h2 (S.basis c.dual γ) (S.basis c.dual ρ) (S.basis c.dual α'))
-  have hg (μ ν : basisIdx c.kind) :
-      S.formBilin c (S.basis c.dual μ) (S.basis c.dual ν) = S.formMatrix c μ ν := by
-    rw [formMatrix_eq_toMatrix, LinearMap.BilinForm.toMatrix_apply]
-  have hm : S.formMatrix c α' γ = -S.formMatrix c γ α' := by
-    rw [← hg, ← hg, ← LinearMap.IsAlt.neg (isAlt_formBilin (S := S) c)]
   simp only [map_add, map_smul, Finsupp.add_apply, Finsupp.smul_apply, Module.Basis.repr_self,
-    Finsupp.single_apply, smul_eq_mul, map_zero, Finsupp.zero_apply, hg, @eq_comm _ α' α] at h
-  linear_combination h - (if ρ = α then 1 else 0) * hm
+    Finsupp.single_apply, smul_eq_mul, map_zero, Finsupp.zero_apply, formBilin_basis,
+    @eq_comm _ α' α] at h
+  linear_combination h - (if ρ = α then 1 else 0) * formMatrix_antisymm (S := S) c γ α'
 
 end Species
 
