@@ -162,6 +162,7 @@ public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
 public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Fin
 public import Physlib.Mathematics.ForMathlib.Fin.Involutions
+public import Physlib.Mathematics.ForMathlib.FiniteDimensional
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Physlib.Mathematics.ForMathlib.Integration.Basic
 public import Physlib.Mathematics.ForMathlib.LinearMaps
@@ -468,6 +469,7 @@ public import Physlib.QuantumMechanics.SpaceDQuantumSystem
 public import Physlib.Relativity.Bispinors.Basic
 public import Physlib.Relativity.Bispinors.Pauli.Basic
 public import Physlib.Relativity.Bispinors.Pauli.Relations
+public import Physlib.Relativity.Bispinors.Pauli.Tensor
 public import Physlib.Relativity.Bispinors.Pauli.ToTensor
 public import Physlib.Relativity.Causality.Basic
 public import Physlib.Relativity.Causality.CausallyFollows
