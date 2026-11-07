@@ -59,8 +59,8 @@ endomorphisms, and it contains each generator. [10] The Minkowski quadratic form
 algebra map from its Clifford algebra onto the Dirac algebra, and this map is surjective. [11]
 The sixteen products of the gamma matrices with increasing indices lie in the Dirac algebra and are
 linearly independent over ℝ {3}. [17] The Clifford algebra of the Minkowski quadratic form has
-dimension 16 over ℝ. [18] The map is an isomorphism, its injectivity resting on dimension theory.
-[TODO]
+dimension 16 over ℝ. [18] The Dirac algebra has dimension 16 as well. [19] The map is an
+isomorphism, its injectivity resting on dimension theory. [TODO]
 
 ### Bilinears and field equations
 
@@ -107,8 +107,9 @@ identifies a fermion with its charge conjugate. [TODO]
    `leftChiralProjector_add_rightChiralProjector`
 16. Physlib/Relativity/Fermions/Dirac/Basic.lean — `endEquivMatrix`, `endEquivMatrix_apply`
 17. Physlib/Relativity/CliffordAlgebra.lean — `γProd`, `γProd_mem_diracAlgebra`,
-   `linearIndependent_γProd`
+   `linearIndependent_γProd`, `linearIndependent_γProd_diracAlgebra`
 18. Physlib/Relativity/CliffordAlgebra.lean — `finrank_cliffordAlgebra_diracForm`
+19. Physlib/Relativity/CliffordAlgebra.lean — `finrank_diracAlgebra`
 
 ## References
 
