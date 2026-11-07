@@ -40,7 +40,8 @@ antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus th
   `Species.form`, `Species.form_invariant` and `Species.form_inverse`.
 - `Species.IsSymmetricForm` and `Species.IsAntisymmetricForm` say that the form is symmetric or
   antisymmetric, `Species.form_symm` and `Species.form_antisymm`, in components
-  `Species.formMatrix_symm` and `Species.formMatrix_antisymm`.
+  `Species.formMatrix_symm` and `Species.formMatrix_antisymm`, and `Species.comm_form_eq_smul`
+  gives either from the components of the form.
 - `Species.formBilin` reads the form as a Mathlib bilinear form, symmetric by
   `Species.isSymm_formBilin` and alternating by `Species.isAlt_formBilin`.
 - `Species.toDual` lowers an upper index and raises a lower one, and `Species.toDual_toDual` that
@@ -207,6 +208,15 @@ lemma formMatrix_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFor
     (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = -S.formMatrix c μ ν := by
   rw [formMatrix, ← Module.Basis.tensorProduct_repr_comm, form_antisymm, map_neg,
     Finsupp.neg_apply, formMatrix]
+
+/-- Swapping the two indices of the form scales it by `r` when its components do,
+`g^νμ = r g^μν`. With `r = 1` it gives `IsSymmetricForm`, with `r = -1` `IsAntisymmetricForm`. -/
+lemma comm_form_eq_smul (c : Color K) [S.HasForm c.kind] (r : k)
+    (h : ∀ μ ν, S.formMatrix c ν μ = r * S.formMatrix c μ ν) :
+    TensorProduct.comm k (S.V c) (S.V c) (form c) = r • form c :=
+  ((S.basis c).tensorProduct (S.basis c)).repr.injective <| Finsupp.ext fun ⟨μ, ν⟩ => by
+    rw [Module.Basis.tensorProduct_repr_comm, map_smul, Finsupp.smul_apply, smul_eq_mul]
+    exact h μ ν
 
 /-- An antisymmetric form is alternating as a bilinear form, `g(u, u) = 0`, Mathlib's
 `LinearMap.IsAlt`. It needs `2 x = 0 → x = 0` in `k`: when `2 = 0` the form `[1]` on `k` is
