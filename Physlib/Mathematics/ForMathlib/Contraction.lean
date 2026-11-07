@@ -42,6 +42,8 @@ has components `z_μ^A`, where `A` labels a basis of `U`, and reads as the map `
   `∑_I (b x)_I (b' y)_I` of two bases with the same labels, and the delta `∑_I b_I ⊗ b'_I`.
 - `Module.Basis.coordPairing_basis_basis` : the two bases are dual for the coordinate pairing, and
   `Module.Basis.eq_coordPairing` : it is the only such pairing.
+- `Module.Basis.lTensor_pairingToLinearMap_coevaluation` : a tensor is recovered from its linear
+  map through the delta.
 - `Module.Basis.pairingToLinearMap_coordPairing_coevaluation` : the delta read through the
   coordinate pairing is the identity.
 
@@ -163,5 +165,20 @@ lemma pairingToLinearMap_coordPairing_coevaluation (b : Module.Basis ι R M)
   rw [coevaluation, map_sum, LinearMap.sum_apply]
   simp only [pairingToLinearMap_tmul, coordPairing_tmul_basis, LinearMap.id_apply]
   exact b.sum_equivFun x
+
+/-- The other half of the snake law: a tensor `z ∈ N ⊗ U` is recovered from its linear map
+`x ↦ z x` by applying the map to the `M` factor of `∑_I b'_I ⊗ b_I`, `z = b'_I ⊗ z(b_I)`. -/
+lemma lTensor_pairingToLinearMap_coevaluation {U : Type*} [AddCommMonoid U] [Module R U]
+    (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (z : N ⊗[R] U) :
+    (pairingToLinearMap (b.coordPairing b') z).lTensor N (b'.coevaluation b) = z := by
+  induction z using TensorProduct.inductionOn with
+  | add z₁ z₂ h₁ h₂ => simp only [map_add, LinearMap.lTensor_add, LinearMap.add_apply, h₁, h₂]
+  | tmul w y =>
+    simp only [coevaluation, map_sum, LinearMap.lTensor_tmul, pairingToLinearMap_tmul,
+      TensorProduct.tmul_smul]
+    conv_rhs => rw [← b'.sum_repr w, TensorProduct.sum_tmul]
+    exact Finset.sum_congr rfl fun I _ => by
+      rw [coordPairing_comm, coordPairing_tmul_basis, Module.Basis.equivFun_apply,
+        TensorProduct.smul_tmul']
 
 end Module.Basis

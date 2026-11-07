@@ -189,7 +189,7 @@ noncomputable def toDual (c : Color K) [S.HasForm c.kind] : S.V c ≃ₗ[k] S.V 
 
 /-- `toDual` contracts `v` with the first index of the form at `c.dual`. -/
 lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
-    S.toDual c v = pairingToLinearMap (S.contr c).toLinearMap (form c.dual) v := rfl
+    S.toDual c v = S.toLin (form c.dual) v := rfl
 
 /-- Raising is the inverse of lowering. The inverse of `S.toDual c` is `S.toDual c.dual`. -/
 lemma toDual_symm (c : Color K) [S.HasForm c.kind] : (S.toDual c).symm = S.toDual c.dual := rfl
@@ -197,13 +197,13 @@ lemma toDual_symm (c : Color K) [S.HasForm c.kind] : (S.toDual c).symm = S.toDua
 /-- Lowering and raising commute with the group action, `(Λv)_ν = Λ(v_ν)`. -/
 lemma toDual_rep (c : Color K) [S.HasForm c.kind] (g : G) (v : S.V c) :
     S.toDual c (S.rep c g v) = S.rep c.dual g (S.toDual c v) := by
-  rw [toDual_apply, toDual_apply, ← S.pairingToLinearMap_contr_map_rep c g, form_invariant]
+  rw [toDual_apply, toDual_apply, ← S.toLin_map, form_invariant]
 
 /-- Lowering or raising a vector in components, `v_ν = v^μ g_μν`. -/
 lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basisIdx c.kind) :
     (S.basis c.dual).repr (S.toDual c v) ν = ∑ μ, (S.basis c).repr v μ *
       S.formMatrix c.dual μ ν := by
-  rw [toDual_apply, basis_repr_pairingToLinearMap_contr]
+  rw [toDual_apply, basis_repr_toLin]
   rfl
 
 /-!

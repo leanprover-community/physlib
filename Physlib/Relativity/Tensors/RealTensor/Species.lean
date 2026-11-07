@@ -237,9 +237,7 @@ lemma toLin_metric_basis (d : ℕ) (c : Color Kind) (ν : Fin 1 ⊕ Fin d) :
     (realLorentz d).toLin (metric d c) ((realLorentz d).basis c.dual ν) =
       minkowskiMatrix ν ν • (realLorentz d).basis c ν := by
   refine ((realLorentz d).basis c).repr.injective (Finsupp.ext fun ρ => ?_)
-  change ((realLorentz d).basis c).repr (pairingToLinearMap
-    ((realLorentz d).contr c.dual).toLinearMap (metric d c) _) ρ = _
-  rw [Species.basis_repr_pairingToLinearMap_contr, map_smul]
+  rw [Species.basis_repr_toLin, map_smul]
   simp only [Module.Basis.repr_self, Finsupp.single_apply, ite_mul, one_mul, zero_mul,
     Finset.sum_ite_eq, Finset.mem_univ, ite_true, Finsupp.smul_apply, smul_eq_mul, mul_ite, mul_one,
     mul_zero]

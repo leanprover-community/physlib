@@ -300,11 +300,11 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
       refine Fintype.prod_bijective g ⟨fun j₁ j₂ hj => (hg j₁).left_unique (hj ▸ hg j₂),
         fun j' => (h₂ j').imp fun j hj => (hg j).right_unique hj⟩ _ _ fun j => ?_
       rcases hg j with ⟨h, h'⟩ | ⟨h, h'⟩
-      · rw [cast_eq_cast_of_eq p h, cast_eq_cast_of_eq p h']
+      · rw [cast_apply_congr p h, cast_apply_congr p h']
         exact contr_cast_tmul_cast _ _ _ _ _ _
-      · rw [cast_eq_cast_of_eq p h, cast_eq_cast_of_eq p h']
+      · rw [cast_apply_congr p h, cast_apply_congr p h']
         exact contr_cast_tmul_cast_symm _ _ _ _ _ _
-    · exact congrArg S.pure (funext fun x => cast_eq_cast_of_eq p (hfree x) _)
+    · exact congrArg S.pure (funext fun x => cast_apply_congr p (hfree x) _)
 
 /-- A contraction of a tensor that changes sign under a relabeling `π` of its slots is zero, when
 `π` only permutes the pairs along `e` and keeps the remaining slots. The hypothesis `ht` has the
@@ -479,8 +479,8 @@ lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
       S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
   rw [deltaTensor, contr_matMul, (S.twoSlotEquiv _ _).injective.eq_iff,
     ← (S.toLin (a := x)).injective.eq_iff, toLin, LinearEquiv.coe_ofLinearMap,
-    pairingToLinearMap_lTensor, S.snake x.dual]
-  exact Iff.rfl
+    pairingToLinearMap_lTensor]
+  exact Iff.of_eq (congrArg (_ = ·) (S.snake x.dual))
 
 /-- The relabeling of `T^…μ… F_μ^ν`, which contracts the slot `i` of `T` with the first slot of a
 tensor `F` on two slots and puts the second slot of `F` in the place of `i`. It is
@@ -512,7 +512,7 @@ def _root_.Tensors.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Col
     · simp
 
 /-- On a pure tensor, contracting the slot `i` with the first slot of `F` applies `F`, read as a
-linear map through `S.contr a`, to the vector at `i`. The vectors `q` at the other slots are
+linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other slots are
 those of `p`, moved along `h`. -/
 lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
     (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
@@ -520,25 +520,24 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
     contr (ColorEquiv.matMulAt i a b ha hi h)
         (S.tmulEquiv c ![a.dual, b] (S.pure p ⊗ₜ S.twoSlotEquiv a.dual b F)) =
-      S.pure (Function.update q i
-        (S.cast hi.symm (pairingToLinearMap (S.contr a).toLinearMap F (S.cast ha (p i))))) := by
+      S.pure (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i))))) := by
   induction F using TensorProduct.inductionOn with
   | add F F' hF hF' =>
     simp only [map_add, LinearMap.add_apply, tmul_add, hF, hF']
     rw [pure, pure, pure, MultilinearMap.map_update_add, map_add]
   | tmul x y =>
-    rw [pairingToLinearMap_tmul, map_smul]
+    rw [toLin_tmul, map_smul]
     conv_rhs => rw [pure, MultilinearMap.map_update_smul, map_smul, ← pure]
     rw [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
     congr 2
     funext z
     by_cases hz : z = i
     · subst hz
-      rw [Function.update_self, cast_eq_cast_of_eq _ (show
+      rw [Function.update_self, cast_apply_congr _ (show
         (ColorEquiv.matMulAt z a b ha hi h).toEquiv.symm (.inl z) = .inr 1 by
           simp [ColorEquiv.matMulAt])]
       rfl
-    · rw [Function.update_of_ne hz, cast_eq_cast_of_eq _ (show
+    · rw [Function.update_of_ne hz, cast_apply_congr _ (show
         (ColorEquiv.matMulAt i a b ha hi h).toEquiv.symm (.inl z) = .inl z by
           simp [ColorEquiv.matMulAt, hz]), hq z hz]
 

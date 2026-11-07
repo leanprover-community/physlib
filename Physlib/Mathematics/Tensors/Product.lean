@@ -464,9 +464,10 @@ lemma tensorBasis_repr_deltaTensor_eq_one (c : Color K)
       (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) a b from
     (tensorBasis_repr_deltaTensor c μ).trans (h (μ 0) (μ 1))
   intro a b
-  have h := basis_repr_pairingToLinearMap_contr c (S.delta c) (S.basis c a) b
-  simp only [S.snake, LinearMap.id_apply, Module.Basis.repr_self, Finsupp.single_apply, ite_mul,
-    one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ, ite_true] at h
+  have h := basis_repr_toLin c.dual (S.delta c) (S.basis c a) b
+  rw [S.snake, LinearMap.id_apply, Module.Basis.repr_self] at h
+  simp only [Finsupp.single_apply, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+    ite_true] at h
   rw [Matrix.one_apply, ← h]
 
 end Species

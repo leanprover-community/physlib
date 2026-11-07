@@ -173,7 +173,7 @@ lemma inverse_map_rep (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin 
       TensorProduct.map (S.rep b.dual Λ) (S.rep a.dual Λ) (S.inverse g) := by
   refine inverse_eq_left_inv _ (S.toLin_map_rep_bijective g h Λ) (LinearMap.ext fun x => ?_)
   obtain ⟨y, rfl⟩ : ∃ y, S.rep a.dual Λ y = x := ⟨S.rep a.dual Λ⁻¹ x, by simp⟩
-  rw [LinearMap.comp_apply, S.toLin_map_rep, S.toLin_map_rep (a := b.dual) (S.inverse g),
+  rw [LinearMap.comp_apply, S.toLin_map, S.toLin_map (a := b.dual) _ _ (S.inverse g),
     ← LinearMap.comp_apply (S.toLin (S.inverse g)), toLin_inverse_comp g h, LinearMap.id_apply,
     LinearMap.id_apply]
 
