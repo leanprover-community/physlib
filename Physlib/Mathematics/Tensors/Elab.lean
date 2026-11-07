@@ -63,8 +63,9 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
 
 - `{…}ᵀ` : index notation, elaborated by `elabTensorIndex`.
 - `tensor_components` : reduces an equation of tensors to an equation of their components.
-- `tensor_regroup` : proves an equation of two contractions of the same factors, grouped or
-  ordered differently.
+- `tensor_regroup` : proves an equation of two sums of contractions of the same factors, grouped
+  or ordered differently, with the same signs and scalars.
+- `tensor_slots` : proves an equation of two chains of lowerings and raisings of the same tensor.
 
 ## iii. Table of contents
 
@@ -75,6 +76,7 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
   - B.3. The elaborator
   - B.4. Components
   - B.5. Regrouping contractions
+  - B.6. Chains of lowerings and raisings
 - C. Examples
 
 ## iv. References
@@ -553,18 +555,12 @@ private def arrange (target : List Nat) (equal : Nat → Nat → Bool) : TacticM
       swapFactors q n m (equal labels[m]! labels[m+1]!)
       labels := (labels.set m labels[m+1]!).set (m+1) labels[m]!
 
-/-- `tensor_regroup` proves an equation `Tensor.contr σ P = Tensor.contr τ Q` of two contractions
-of the same factors, grouped or ordered differently, such as
-`{{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ`. It writes each
-side as one contraction of a product, orders the factors of the right side as on the left, and
-checks by evaluation that both sides keep the same slots and contract the same pairs of slots
+/-- Proves `Tensor.contr σ P = Tensor.contr τ Q` for two contractions of the same factors. It writes
+each side as one contraction of a product, orders the factors of the right side as on the left,
+and checks by evaluation that both sides keep the same slots and contract the same pairs of slots
 (`Species.Tensor.contr_eq_of_samePair`). When a factor appears more than once, each way of
-matching the equal factors is tried in turn, so the number of attempts is the product of `k!`
-over the factors that appear `k` times.
-
-Both sides must be contractions once relabelings are absorbed. A scalar multiple or a side with no
-contraction is rejected, and is first brought to that form by hand. -/
-elab "tensor_regroup" : tactic => do
+matching the equal factors is tried in turn. -/
+private def regroupContractions : TacticM Unit := do
   flattenContractions
   let (p, q) ← contractedProducts
   unless isLeftNested p && isLeftNested q do
@@ -599,6 +595,121 @@ elab "tensor_regroup" : tactic => do
     catch e => lastError := e.toMessageData
   throwError "tensor_regroup: no matching of the factors gives two contractions of the same pairs \
     of slots. The last attempt failed with\n{lastError}"
+
+
+/-- Brings both sides of the goal to sums of signed scalar multiples of contractions. Products,
+contractions and relabelings are linear, so sums, negatives and scalars of `k` move out of them.
+The scalar lemmas are given the field `k` of the species, so a group element `Λ • T` stays a
+factor. -/
+private def normalizeSums : TacticM Unit := do
+  let some (ty, _, _) := (← instantiateMVars (← getMainTarget)).eq?
+    | throwError "tensor_regroup: the goal is not an equation"
+  let k ← exprToSyntax (← whnfR ty).getAppArgs[0]!
+  evalTactic (← `(tactic| try simp only [map_add, map_neg, map_sub, map_smul,
+    TensorProduct.tmul_add, TensorProduct.add_tmul, TensorProduct.tmul_neg,
+    TensorProduct.neg_tmul, TensorProduct.tmul_sub, TensorProduct.sub_tmul,
+    TensorProduct.tmul_smul (R' := $k), ← TensorProduct.smul_tmul' (R' := $k), smul_add,
+    smul_neg, smul_smul, neg_neg, neg_add, sub_eq_add_neg]))
+
+/-- The summands of a sum, from left to right. -/
+private partial def summands (e : Expr) : List Expr :=
+  let e := e.consumeMData
+  if e.isAppOfArity ``HAdd.hAdd 6 then summands e.appFn!.appArg! ++ summands e.appArg! else [e]
+
+/-- Proves an equation of two summands with the same sign and the same scalar, by regrouping the
+contractions they multiply. -/
+private partial def regroupSummand : TacticM Unit := do
+  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).eq?
+    | throwError "tensor_regroup: the goal is not an equation"
+  let l := l.consumeMData
+  let r := r.consumeMData
+  if l.isAppOfArity ``Neg.neg 3 && r.isAppOfArity ``Neg.neg 3 then
+    evalTactic (← `(tactic| refine congrArg Neg.neg ?_))
+    regroupSummand
+  else if l.isAppOfArity ``HSMul.hSMul 6 && r.isAppOfArity ``HSMul.hSMul 6 then
+    let a := l.appFn!.appArg!
+    unless ← withNewMCtxDepth (isDefEq a r.appFn!.appArg!) do
+      throwError "tensor_regroup: the scalars {a} and {r.appFn!.appArg!} differ"
+    evalTactic (← `(tactic| refine congrArg (HSMul.hSMul $(← exprToSyntax a)) ?_))
+    regroupSummand
+  else
+    try evalTactic (← `(tactic| with_reducible rfl)) catch _ => regroupContractions
+
+/-- `tensor_regroup` proves an equation of two sums of signed scalar multiples of contractions of
+the same factors, grouped or ordered differently, such as
+`{{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ`. Sums,
+negatives and scalars are first moved out of every product, contraction and relabeling. Each
+summand on the left is then matched with a summand on the right with the same sign and scalar,
+whose contraction is the same up to regrouping (`Species.Tensor.contr_eq_of_samePair`). When a
+factor appears more than once, each way of matching the equal factors is tried in turn, so the
+number of attempts is the product of `k!` over the factors that appear `k` times.
+
+The scalars on the two sides must agree up to definitional equality, as `2` and `2`, and every
+summand that is not the same term on both sides must be a contraction once relabelings are
+absorbed. -/
+elab "tensor_regroup" : tactic => do
+  normalizeSums
+  let some (_, l, r) := (← instantiateMVars (← getMainTarget)).eq?
+    | throwError "tensor_regroup: the goal is not an equation"
+  let ls := summands l
+  let rs := summands r
+  unless ls.length = rs.length do
+    throwError "tensor_regroup: the two sides have different numbers of summands"
+  if ls.length = 1 then
+    regroupSummand
+    return
+  -- Each summand on the left is proved equal to an unused summand on the right in its own goal,
+  -- and the sums then agree up to order.
+  let main ← getMainGoal
+  let mut used : List Nat := []
+  let mut proofs : Array Term := #[]
+  for a in ls do
+    let mut found := false
+    for j in List.range rs.length do
+      if used.contains j then continue
+      let s ← saveState
+      let g ← mkFreshExprMVar (← mkEq a rs[j]!)
+      try
+        setGoals [g.mvarId!]
+        regroupSummand
+        unless (← getGoals).isEmpty do throwError "tensor_regroup: a summand is not closed"
+        used := j :: used
+        proofs := proofs.push (← exprToSyntax (← instantiateMVars g))
+        found := true
+        break
+      catch _ => s.restore
+    unless found do
+      throwError "tensor_regroup: the summand{indentExpr a}\nhas no matching summand on the right"
+  setGoals [main]
+  -- `conv` closes the goal by `rfl` once the summands are rewritten in order.
+  for h in proofs do
+    unless (← getGoals).isEmpty do evalTactic (← `(tactic| conv_lhs => rw [$h:term]))
+  unless (← getGoals).isEmpty do evalTactic (← `(tactic| abel))
+
+/-!
+
+### B.6. Chains of lowerings and raisings
+
+-/
+
+/-- `tensor_slots` proves an equation of two chains of lowerings and raisings of the same tensor,
+such as `{{T | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = T` or `{{T | ↓μ ν}ᵀ | μ ↓ν = {T | μ ↓ν}ᵀ | ↓μ ν}ᵀ`. Each chain
+is one slotwise map (`Species.toDualAt_eq_mapAt`, `Species.mapSlots_mapSlots`), and the two maps
+are compared slot by slot, where `Species.toDual_toDual` cancels a lowering with a raising. A side
+with no lowering or raising is the slotwise identity (`Species.mapSlots_id`). The slots must be
+`Fin n` with a literal `n`. -/
+macro "tensor_slots" : tactic => `(tactic| focus
+  simp only [Tensors.Species.toDualAt_eq_mapAt, Tensors.Species.mapAt,
+    Tensors.Species.mapSlots_mapSlots]
+  first
+    | refine congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext fun x => ?_)
+    | refine (congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext fun x => ?_)).trans
+        (Tensors.Species.mapSlots_id _)
+  fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
+    simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
+      LinearMap.id_apply, Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq,
+      not_false_eq_true, dite_false, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+      LinearEquiv.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual])
 
 end Tensors.Notation
 
@@ -719,12 +830,40 @@ example : {T | μ ν ⊗ T | ν ρ = T | ν ρ ⊗ T | μ ν}ᵀ := by
 example : {T | μ ν ⊗ U | ν ρ ⊗ T | ρ σ ⊗ U | σ μ = U | ν ρ ⊗ T | ρ σ ⊗ U | σ μ ⊗ T | μ ν}ᵀ := by
   tensor_regroup
 
+/-- `tensor_regroup` moves scalars out of the products, `(r T^μ_ν) U^ν_ρ = r (U^ν_ρ T^μ_ν)`. -/
+example : {(r • T) | μ ν ⊗ U | ν ρ = r • {U | ν ρ ⊗ T | μ ν}ᵀ | ρ μ}ᵀ := by
+  tensor_regroup
+
+/-- Negatives, `(-T^μ_ν) U^ν_ρ = -(U^ν_ρ T^μ_ν)`. -/
+example : {-T | μ ν ⊗ U | ν ρ = -{U | ν ρ ⊗ T | μ ν}ᵀ | ρ μ}ᵀ := by
+  tensor_regroup
+
+/-- Sums, matched summand by summand in any order, `T^μ_ν U^ν_ρ - W^μ_ρ = -W^μ_ρ + U^ν_ρ T^μ_ν`. -/
+example : {T | μ ν ⊗ U | ν ρ + -W | μ ρ = -W | μ ρ + U | ν ρ ⊗ T | μ ν}ᵀ := by
+  tensor_regroup
+
+/-- A sum inside a product is distributed, `T^μ_ν (U + W)^ν_ρ = U^ν_ρ T^μ_ν + W^ν_ρ T^μ_ν`. -/
+example : {T | μ ν ⊗ (U | ν ρ + W | ν ρ) = U | ν ρ ⊗ T | μ ν + W | ν ρ ⊗ T | μ ν}ᵀ := by
+  tensor_regroup
+
 section Metric
 
 variable [S.HasForm κ] [S.HasForm c.kind]
 
 /-- Lowering and then raising an index gives the vector back, `(v_μ)^μ = v^μ`. -/
 example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
+
+/-- The same by `tensor_slots`. -/
+example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := by
+  tensor_slots
+
+/-- Lowering both indices and raising them again, `(M_μν)^μν = M^μν`. -/
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = M := by
+  tensor_slots
+
+/-- Lowerings at two slots commute, `(M_μ^ν)_ν = (M^μ_ν)_μ`. -/
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ ↓ν = {M | μ ↓ν}ᵀ | ↓μ ν}ᵀ := by
+  tensor_slots
 
 -- An arrow that does not match the variance of the slot is rejected.
 /-- error: index notation: ↑μ needs a visibly lower index -/
