@@ -9,7 +9,6 @@ public import Physlib.Mathematics.Tensors.Elab
 public import Physlib.Mathematics.Tensors.Conjugation
 public import Physlib.Relativity.Fermions.Weyl.Metric
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Pre
-public import Physlib.Relativity.Tensors.ComplexTensor.Vector.Basic
 public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 /-!
 
@@ -62,6 +61,8 @@ enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_�
   `complexLorentz.tensorBasis_repr_deltaTensor` those of `δ`.
 - `complexLorentz.formTensor_upL_antisymm`, `complexLorentz.formTensor_up_symm` : `ε` is
   antisymmetric and `η` symmetric, and `complexLorentz.deltaTensor_swap` : `δ^μ_ν = δ_ν^μ`.
+- `complexLorentz.schouten_downL` and `complexLorentz.schouten_downR` : the Schouten identity of
+  `ε` in index notation, from `Species.formMatrix_schouten`.
 - `complexLorentz.leftHandedWeylTensorial` and the other instances of section F : Weyl spinors and
   complex vectors as tensors with one slot.
 - `complexLorentz.tensorBasis_repr_toTensor_leftRight` : the components of a tensor in
@@ -582,6 +583,27 @@ lemma formTensor_up_symm : {η | μ ν = η | ν μ}ᵀ := by
 lemma formTensor_down_symm : {η' | μ ν = η' | ν μ}ᵀ := by
   rw [Species.formTensor_symm down ?_]
   exact Equiv.ext (by decide)
+
+/-- The Schouten identity for left-handed indices, `ε_γρ δ^α_α' = ε_γα' δ_ρ^α - ε_ρα' δ_γ^α`. -/
+lemma schouten_downL :
+    {εL' | γ ρ ⊗ δL | α α' = εL' | γ α' ⊗ δL' | ρ α + -{εL' | ρ α' ⊗ δL' | γ α}ᵀ | ρ α' γ α}ᵀ := by
+  tensor_components [Species.tensorBasis_repr_formTensor,
+    fun c μ => (Species.tensorBasis_repr_deltaTensor_eq_one (S := complexLorentz) c μ).trans
+      Matrix.one_apply]
+  rw [← sub_eq_add_neg]
+  exact Species.formMatrix_schouten downL (Fintype.card_fin 2) _ _ _ _
+
+/-- The Schouten identity for right-handed indices,
+`ε_γ̇ρ̇ δ_α̇^α̇' = ε_γ̇α̇ δ_ρ̇^α̇' - ε_ρ̇α̇ δ_γ̇^α̇'`. -/
+lemma schouten_downR :
+    {εR' | γ ρ ⊗ δR' | α α' = εR' | γ α ⊗ δR' | ρ α' + -{εR' | ρ α ⊗ δR' | γ α'}ᵀ | ρ α γ α'}ᵀ := by
+  tensor_components [Species.tensorBasis_repr_formTensor,
+    fun c μ => (Species.tensorBasis_repr_deltaTensor_eq_one (S := complexLorentz) c μ).trans
+      Matrix.one_apply]
+  rw [← sub_eq_add_neg]
+  refine Eq.trans ?_ (Species.formMatrix_schouten downR (Fintype.card_fin 2) _ _ _ _)
+  congr 1
+  split_ifs with h h' h' <;> first | rfl | exact absurd h.symm h' | exact absurd h'.symm h
 
 /-- Swapping the indices of the delta at `c` gives the delta at `c.dual`, as `δ^μ_ν = δ_ν^μ`. -/
 lemma deltaTensor_swap (c : Color Kind) :
