@@ -377,9 +377,7 @@ indices of `U` are free and come after the free indices of `T`. -/
 noncomputable def _root_.Tensors.ColorEquiv.tmulRight {c : ι₁ → Color K} {c' : κ → Color K}
     {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (d : ι₂ → Color K) :
     ColorEquiv (prodColors c d) (contrColors (prodColors c' d) a) :=
-  (σ.sumCongr (.refl d)).trans ((ColorEquiv.sumAssoc _ _ _).trans
-    (((ColorEquiv.refl c').sumCongr (ColorEquiv.sumComm _ _)).trans
-      (ColorEquiv.sumAssoc _ _ _).symm))
+  (σ.sumCongr (.refl d)).trans (ColorEquiv.swapLast c' d _)
 
 /-- Contracting indices of the left factor commutes with the product,
 `(T^μ_μν) U^ρ = (T ⊗ U)^μ_μν^ρ`. -/

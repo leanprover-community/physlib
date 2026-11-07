@@ -14,62 +14,28 @@ The product `T ⊗ U` of two tensors has the indices of `T` followed by those of
 
 ## i. Overview
 
-Let `T = T^μ_ν e_μ ⊗ e^ν` be a Lorentz tensor with colors `c₁ = ![⟨vec, up⟩, ⟨vec, down⟩]` on the
-slots `Fin 2`, and `U = U^ρ e_ρ` a vector with colors `c₂ = ![⟨vec, up⟩]` on the slot `Fin 1`.
-Their product is the element
+Let `T = T^μ_ν e_μ ⊗ e^ν` have colors `c₁` on the slots `Fin 2` and `U = U^ρ e_ρ` colors `c₂` on
+the slot `Fin 1`. Their product `T ⊗ U = T^μ_ν U^ρ e_μ ⊗ e^ν ⊗ e_ρ` has the slots `Fin 2 ⊕ Fin 1`
+with colors `prodColors c₁ c₂`, those of `T` on `inl i` and those of `U` on `inr j`, so no slot
+is renumbered. `S.tmulEquiv c₁ c₂` sends `T ⊗ₜ U` to `T ⊗ U`. It is Mathlib's
+`PiTensorProduct.tmulEquivDep`.
 
-  `T ⊗ U = T^μ_ν U^ρ e_μ ⊗ e^ν ⊗ e_ρ` of the space `ℝ⁴ ⊗ (ℝ⁴)* ⊗ ℝ⁴`.
-
-Its slots are labeled by `Fin 2 ⊕ Fin 1`. The slots `inl 0` and `inl 1` carry the indices `μ` and
-`ν` of `T`, and the slot `inr 0` carries the index `ρ` of `U`. No slot is renumbered, so no
-equality of colors has to be proved.
-
-- `prodColors c₁ c₂ : ι₁ ⊕ ι₂ → Color K` gives the colors of `T ⊗ U`, those of `T` on the slots
-  `inl i` and those of `U` on the slots `inr j`.
-- `S.tmulEquiv c₁ c₂` sends the element `T ⊗ₜ U` of the space `S.Tensor c₁ ⊗ S.Tensor c₂` to the
-  tensor `T ⊗ U` in `S.Tensor (prodColors c₁ c₂)`. It is Mathlib's
-  `PiTensorProduct.tmulEquivDep`. Its inverse splits a tensor on `ι₁ ⊕ ι₂` into its two groups of
-  indices.
-
-The product is associative and symmetric up to a relabeling of slots. For a third tensor `W`,
-`(T ⊗ U) ⊗ W` on `(ι₁ ⊕ ι₂) ⊕ ι₃` and `T ⊗ (U ⊗ W)` on `ι₁ ⊕ (ι₂ ⊕ ι₃)` both have components
-`T^μ_ν U^ρ W^σ`, and they are equal after the relabeling `ColorEquiv.sumAssoc`. A group element
-`Λ`, such as a Lorentz transformation, acts on a product factor by factor, `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
-
-An element `M` of `V a ⊗ V b` is the tensor `S.twoSlotEquiv a b M` with colors `![a, b]`. For
-example, the metric `η_μν e^μ ⊗ e^ν` in `(ℝ⁴)* ⊗ (ℝ⁴)*` is the tensor `η_μν`. The delta tensor
-`S.deltaTensor c` has colors `![c.dual, c]`. It is `δ_μ^ν` for an upper color `c` and `δ^μ_ν` for
-a lower one.
-
-The components of a product are the products of the components, `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`
-(`tensorBasis_repr_tmulEquiv`). The components of `S.twoSlotEquiv a b M` are the coordinates of
-`M` in Mathlib's basis `Basis.tensorProduct` of `V a ⊗ V b` (`tensorBasis_repr_twoSlotEquiv`).
+The product is associative and symmetric up to a relabeling of slots, and the group acts on it
+factor by factor. An element of `V a ⊗ V b`, such as the metric `η_μν e^μ ⊗ e^ν`, is a tensor on
+two slots by `twoSlotEquiv`, and the delta `S.delta c` is the tensor `S.deltaTensor c`. The
+components of a product are the products of the components.
 
 ## ii. Key results
 
 - `prodColors` gives the colors of a product.
-- `ColorEquiv.sumCongr`, `ColorEquiv.sumAssoc`, `ColorEquiv.sumComm`, `ColorEquiv.swapLast` and
-  `ColorEquiv.ofFinTwo` relabel the slots of a product.
 - `Species.tmulEquiv` is the product of two tensors, `T ⊗ₜ U ↦ T ⊗ U`.
 - `Species.tmulEquiv_assoc` and `Species.tmulEquiv_comm` prove `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)` and
   `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`.
-- `Species.reindex_sumCongr_tmulEquiv` proves that relabeling each factor relabels the product,
-  with `Species.tmulEquiv_reindex_left` and `Species.tmulEquiv_reindex_right` for one factor.
-- `Species.tmulEquiv_swapLast` proves `(T ⊗ W) ⊗ U = (T ⊗ U) ⊗ W` up to relabeling.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
-- `Species.oneSlotEquiv` turns a vector of `V c` into a tensor on one slot, and
-  it is an equivalence of representations.
-- `Species.twoSlotEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots, and
-  `Species.deltaTensor` is the delta `δ_μ^ν`.
-- `Species.reindex_twoSlotEquiv` proves that swapping the two slots swaps the factors,
-  `M^μν ↦ M^νμ`.
-- `Species.deltaTensor_invariant` proves that the delta tensor is invariant.
+- `Species.twoSlotEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots.
 - `Species.tensorBasis_repr_tmulEquiv` proves `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`.
-- `Species.tensorBasis_repr_oneSlotEquiv` and `Species.tensorBasis_repr_twoSlotEquiv` give the
-  components of a tensor on one and on two slots.
-- `Species.tensorBasis_repr_deltaTensor` gives the components of the delta tensor.
-- `Species.tensorBasis_repr_deltaTensor_eq_one` proves that in dual bases they form the identity
-  matrix.
+- `Species.tensorBasis_repr_deltaTensor_eq_one` proves that the components of the delta tensor
+  form the identity matrix.
 
 ## iii. Table of contents
 
@@ -98,9 +64,8 @@ namespace Tensors
 -/
 
 /-- The colors of a product `T ⊗ U`, the colors `c₁` of `T` on the slots `inl i` and the colors
-`c₂` of `U` on the slots `inr j`. It equals Mathlib's `Sum.elim c₁ c₂` by `rfl`. It is reducible,
-so that `simp` and `rw` see `prodColors c₁ c₂ (.inl i)` as `c₁ i` and can apply Mathlib's lemmas
-on `PiTensorProduct.tmulEquivDep`. -/
+`c₂` of `U` on the slots `inr j`. It equals Mathlib's `Sum.elim c₁ c₂` by `rfl`, and it is
+reducible so that `prodColors c₁ c₂ (.inl i)` reduces to `c₁ i`. -/
 noncomputable abbrev prodColors {K : Type} {ι₁ ι₂ : Type} (c₁ : ι₁ → Color K)
     (c₂ : ι₂ → Color K) : ι₁ ⊕ ι₂ → Color K :=
   fun s => Sum.rec (motive := fun _ => Color K) c₁ c₂ s
@@ -129,16 +94,10 @@ def sumComm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) :
 
 /-- The slots of `(T ⊗ W) ⊗ U` relabeled as those of `(T ⊗ U) ⊗ W`, swapping the last two
 factors. -/
-def swapLast (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c₃ : ι₃ → Color K) :
+noncomputable def swapLast (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c₃ : ι₃ → Color K) :
     ColorEquiv (prodColors (prodColors c₁ c₃) c₂) (prodColors (prodColors c₁ c₂) c₃) :=
-  ⟨(Equiv.sumAssoc _ _ _).trans ((Equiv.sumCongr (Equiv.refl _) (Equiv.sumComm _ _)).trans
-    (Equiv.sumAssoc _ _ _).symm), by rintro ((_ | _) | _) <;> rfl⟩
-
-/-- The slots `Fin 2` of a tensor `T^μν` relabeled as the slots `Fin 1 ⊕ Fin 1` of a product
-`x^μ ⊗ y^ν`. It is Mathlib's `finSumFinEquiv`, reversed. `Species.twoSlotEquiv` relabels by its
-inverse. -/
-noncomputable def ofFinTwo (a b : Color K) : ColorEquiv ![a, b] (prodColors ![a] ![b]) :=
-  (ColorEquiv.mk (c₂ := ![a, b]) finSumFinEquiv).symm
+  (sumAssoc c₁ c₃ c₂).trans (((refl c₁).sumCongr (sumComm c₃ c₂)).trans
+    (sumAssoc c₁ c₂ c₃).symm)
 
 end ColorEquiv
 
@@ -244,7 +203,7 @@ lemma reindex_sumCongr_tmulEquiv {c₁ : ι₁ → Color K} {c₁' : ι₁' → 
       exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)) _
 
 /-- Relabeling the first factor relabels the product. With `tmulEquiv_reindex_right` it moves
-relabelings out of products, the form `tensor_regroup` works in. -/
+relabelings out of products, the form used by index notation. -/
 lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Color K} {c₂ : ι₂ → Color K}
     (σ : ColorEquiv c₁ c₁') (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
     S.tmulEquiv c₁' c₂ (S.reindex σ t₁ ⊗ₜ t₂) =
@@ -252,7 +211,7 @@ lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Colo
   rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
 
 /-- Relabeling the second factor relabels the product. With `tmulEquiv_reindex_left` it moves
-relabelings out of products, the form `tensor_regroup` works in. -/
+relabelings out of products, the form used by index notation. -/
 lemma tmulEquiv_reindex_right {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₂' : ι₂' → Color K}
     (σ : ColorEquiv c₂ c₂') (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
     S.tmulEquiv c₁ c₂' (t₁ ⊗ₜ S.reindex σ t₂) =
@@ -266,18 +225,9 @@ lemma tmulEquiv_swapLast {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {
     S.reindex (ColorEquiv.swapLast c₁ c₂ c₃)
         (S.tmulEquiv _ c₂ (S.tmulEquiv c₁ c₃ (t₁ ⊗ₜ t₃) ⊗ₜ t₂)) =
       S.tmulEquiv _ c₃ (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) ⊗ₜ t₃) := by
-  have h := ext_pure₃ (f := (S.reindex (ColorEquiv.swapLast c₁ c₂ c₃)).toLinearMap ∘ₗ
-      (S.tmulEquiv _ c₂).toLinearMap ∘ₗ TensorProduct.map (S.tmulEquiv c₁ c₃).toLinearMap .id ∘ₗ
-      (TensorProduct.rightComm k _ _ _).toLinearMap)
-    (g := (S.tmulEquiv _ c₃).toLinearMap ∘ₗ TensorProduct.map (S.tmulEquiv c₁ c₂).toLinearMap .id)
-    fun f₁ f₂ f₃ => by
-      simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe,
-        rightComm_tmul, LinearMap.id_apply, Representation.Equiv.coe_toLinearMap, tmulEquiv_pure,
-        reindex_pure]
-      exact congrArg S.pure (funext fun s => by rcases s with (_ | _) | _ <;> rfl)
-  simpa only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe, rightComm_tmul,
-    LinearMap.id_apply, Representation.Equiv.coe_toLinearMap] using
-    LinearMap.congr_fun h ((t₁ ⊗ₜ t₂) ⊗ₜ t₃)
+  rw [ColorEquiv.swapLast, ← reindex_reindex, ← reindex_reindex, tmulEquiv_assoc,
+    ← tmulEquiv_reindex_right, tmulEquiv_comm, ← reindex_symm, ← tmulEquiv_assoc]
+  exact (S.reindex _).symm_apply_apply _
 
 /-- The product commutes with the group action, `Λ T ⊗ Λ U = Λ (T ⊗ U)`, as in
 `(Λ^μ_α T^α) (Λ^ρ_β U^β) = Λ^μ_α Λ^ρ_β (T ⊗ U)^αβ`. -/
@@ -291,15 +241,9 @@ lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : 
 
 ## D. Tensors on one and two slots
 
-A species gives its objects with two indices, such as the delta `S.delta c`, in Mathlib's binary
-tensor product `V a ⊗ V b`, built from pairs `x ⊗ₜ y`. A tensor with two slots lives in
-`S.Tensor ![a, b]`, the tensor product of a family of spaces, built from vectors assigned to the
-slots `0` and `1`. The two spaces are isomorphic but are different types in Lean, as `ℝ × ℝ` and
-`Fin 2 → ℝ` are. `twoSlotEquiv` identifies them, so that such an object can be used as a tensor,
-for example in index notation, and its components can be read with Mathlib's
-`Basis.tensorProduct`. It is built from the product. Each factor is a tensor on one slot by
-`oneSlotEquiv`, and the slots `Fin 1 ⊕ Fin 1` of their product are relabeled `Fin 2`. The delta
-tensor `S.deltaTensor c` is the delta seen this way.
+A species gives objects with two indices, such as the delta `S.delta c`, in Mathlib's binary
+tensor product `V a ⊗ V b`. `twoSlotEquiv` identifies this space with the tensors `S.Tensor ![a, b]`
+on two slots, so that such an object can be used in index notation.
 
 -/
 
@@ -328,11 +272,12 @@ lemma oneSlotEquiv_basis (c : Color K) (μ : Π i, basisIdx (![c] i).kind) :
 variable (S) in
 /-- An element of `V a ⊗ V b` as a tensor with colors `![a, b]`, as the metric `η_μν e^μ ⊗ e^ν`
 is the tensor `η_μν`. Each factor is a one-slot tensor by `oneSlotEquiv`, and the slots
-`Fin 1 ⊕ Fin 1` of their product are relabeled `Fin 2` by `ColorEquiv.ofFinTwo`. -/
+`Fin 1 ⊕ Fin 1` of their product are relabeled `Fin 2` by Mathlib's `finSumFinEquiv`. -/
 noncomputable def twoSlotEquiv (a b : Color K) :
     ((S.rep a).tprod (S.rep b)).Equiv (S.tensorRep ![a, b]) :=
   ((S.oneSlotEquiv a).tensorCongr (S.oneSlotEquiv b)).trans <|
-    (S.tmulEquiv ![a] ![b]).trans (S.reindex (ColorEquiv.ofFinTwo a b).symm)
+    (S.tmulEquiv ![a] ![b]).trans
+      (S.reindex (ColorEquiv.mk (c₁ := prodColors ![a] ![b]) (c₂ := ![a, b]) finSumFinEquiv))
 
 /-- The tensor of `x ⊗ₜ y` is the pure tensor with `x` on the slot `0` and `y` on the slot `1`. -/
 @[simp]
@@ -369,13 +314,8 @@ lemma deltaTensor_invariant (c : Color K) (Λ : G) : Λ • S.deltaTensor c = S.
 
 ## E. Components
 
-A component of a tensor with colors `c` chooses one basis label `y j` for each slot `j`, and
-`(S.tensorBasis c).repr t y` is the coefficient of `t` on the basis tensor with those labels, as
-`T^μ_ν` for `y = (μ, ν)`. The components of a product are the products of the components of its
-factors, with the labels `y (inl i)` on the slots of the first factor and `y (inr j)` on those of
-the second. The components of a tensor on two slots are the coordinates of the element of
-`V a ⊗ V b` in Mathlib's basis `Basis.tensorProduct`, so they can be computed with Mathlib's lemmas
-on the binary tensor product. For the delta tensor they form the identity matrix.
+The components of a product are the products of the components of its factors. The components
+of a tensor on two slots are the coordinates in Mathlib's basis `Basis.tensorProduct`.
 
 -/
 
