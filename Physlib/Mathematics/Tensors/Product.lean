@@ -203,54 +203,45 @@ lemma tmulEquiv_assoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c�
     S.reindex (ColorEquiv.sumAssoc c₁ c₂ c₃)
         (S.tmulEquiv _ _ (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) ⊗ₜ t₃)) =
       S.tmulEquiv _ _ (t₁ ⊗ₜ S.tmulEquiv c₂ c₃ (t₂ ⊗ₜ t₃)) := by
-  induction t₁ using inductionOn_pure with
-  | hadd t t' ht ht' => simp only [add_tmul, map_add, ht, ht']
-  | hsmul r t ht => simp only [← smul_tmul', map_smul, ht]
-  | h f₁ =>
-    induction t₂ using inductionOn_pure with
-    | hadd t t' ht ht' => simp only [add_tmul, tmul_add, map_add, ht, ht']
-    | hsmul r t ht => simp only [tmul_smul, ← smul_tmul', map_smul, ht]
-    | h f₂ =>
-      induction t₃ using inductionOn_pure with
-      | hadd t t' ht ht' => simp only [tmul_add, map_add, ht, ht']
-      | hsmul r t ht => simp only [tmul_smul, map_smul, ht]
-      | h f₃ =>
-        simp only [tmulEquiv_pure, reindex_pure]
-        exact congrArg S.pure (funext fun s => by rcases s with _ | _ | _ <;> rfl)
+  have h := ext_pure₃ (f := (S.reindex (ColorEquiv.sumAssoc c₁ c₂ c₃)).toLinearMap ∘ₗ
+      (S.tmulEquiv _ c₃).toLinearMap ∘ₗ TensorProduct.map (S.tmulEquiv c₁ c₂).toLinearMap .id)
+    (g := (S.tmulEquiv c₁ _).toLinearMap ∘ₗ TensorProduct.map .id (S.tmulEquiv c₂ c₃).toLinearMap ∘ₗ
+      (TensorProduct.assoc k _ _ _).toLinearMap) fun f₁ f₂ f₃ => by
+    simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe, assoc_tmul,
+      LinearMap.id_apply, Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
+    exact congrArg S.pure (funext fun s => by rcases s with _ | _ | _ <;> rfl)
+  simpa only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe, assoc_tmul,
+    LinearMap.id_apply, Representation.Equiv.coe_toLinearMap] using
+    LinearMap.congr_fun h ((t₁ ⊗ₜ t₂) ⊗ₜ t₃)
 
 /-- The product is symmetric, `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`, after the indices of `U` are moved in
 front by `ColorEquiv.sumComm`. -/
 lemma tmulEquiv_comm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (t₁ : S.Tensor c₁)
     (t₂ : S.Tensor c₂) :
     S.reindex (ColorEquiv.sumComm c₁ c₂) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) =
-      S.tmulEquiv c₂ c₁ (t₂ ⊗ₜ t₁) := by
-  induction t₁ using inductionOn_pure with
-  | hsmul r t ht => simp only [smul_tmul, tmul_smul, map_smul, ht]
-  | hadd t t' ht ht' => simp only [add_tmul, tmul_add, map_add, ht, ht']
-  | h f₁ =>
-    induction t₂ using inductionOn_pure with
-    | hsmul r t ht => simp only [tmul_smul, ← smul_tmul', map_smul, ht]
-    | hadd t t' ht ht' => simp only [tmul_add, add_tmul, map_add, ht, ht']
-    | h f₂ =>
-      rw [tmulEquiv_pure, tmulEquiv_pure, reindex_pure]
-      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
+      S.tmulEquiv c₂ c₁ (t₂ ⊗ₜ t₁) :=
+  LinearMap.congr_fun (f := (S.reindex (ColorEquiv.sumComm c₁ c₂)).toLinearMap ∘ₗ
+      (S.tmulEquiv c₁ c₂).toLinearMap)
+    (g := (S.tmulEquiv c₂ c₁).toLinearMap ∘ₗ (TensorProduct.comm k _ _).toLinearMap)
+    (ext_pure₂ fun f₁ f₂ => by
+      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, comm_tmul,
+        Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
+      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)) _
 
 /-- Relabeling the product along `σ.sumCongr τ` is relabeling its factors along `σ` and `τ`. -/
 lemma reindex_sumCongr_tmulEquiv {c₁ : ι₁ → Color K} {c₁' : ι₁' → Color K}
     {c₂ : ι₂ → Color K} {c₂' : ι₂' → Color K} (σ : ColorEquiv c₁ c₁') (τ : ColorEquiv c₂ c₂')
     (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
     S.reindex (σ.sumCongr τ) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) =
-      S.tmulEquiv c₁' c₂' (S.reindex σ t₁ ⊗ₜ S.reindex τ t₂) := by
-  induction t₁ using inductionOn_pure with
-  | hsmul r t ht => simp only [← smul_tmul', map_smul, ht]
-  | hadd t t' ht ht' => simp only [add_tmul, map_add, ht, ht']
-  | h f₁ =>
-    induction t₂ using inductionOn_pure with
-    | hsmul r t ht => simp only [tmul_smul, map_smul, ht]
-    | hadd t t' ht ht' => simp only [tmul_add, map_add, ht, ht']
-    | h f₂ =>
-      simp only [tmulEquiv_pure, reindex_pure]
-      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
+      S.tmulEquiv c₁' c₂' (S.reindex σ t₁ ⊗ₜ S.reindex τ t₂) :=
+  LinearMap.congr_fun (f := (S.reindex (σ.sumCongr τ)).toLinearMap ∘ₗ
+      (S.tmulEquiv c₁ c₂).toLinearMap)
+    (g := (S.tmulEquiv c₁' c₂').toLinearMap ∘ₗ
+      TensorProduct.map (S.reindex σ).toLinearMap (S.reindex τ).toLinearMap)
+    (ext_pure₂ fun f₁ f₂ => by
+      simp only [LinearMap.comp_apply, TensorProduct.map_tmul,
+        Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
+      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)) _
 
 /-- Relabeling the first factor relabels the product. With `tmulEquiv_reindex_right` it moves
 relabelings out of products, the form `tensor_regroup` works in. -/
@@ -275,20 +266,18 @@ lemma tmulEquiv_swapLast {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {
     S.reindex (ColorEquiv.swapLast c₁ c₂ c₃)
         (S.tmulEquiv _ c₂ (S.tmulEquiv c₁ c₃ (t₁ ⊗ₜ t₃) ⊗ₜ t₂)) =
       S.tmulEquiv _ c₃ (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) ⊗ₜ t₃) := by
-  induction t₁ using inductionOn_pure with
-  | hadd t t' ht ht' => simp only [add_tmul, map_add, ht, ht']
-  | hsmul r t ht => simp only [← smul_tmul', map_smul, ht]
-  | h f₁ =>
-    induction t₂ using inductionOn_pure with
-    | hadd t t' ht ht' => simp only [add_tmul, tmul_add, map_add, ht, ht']
-    | hsmul r t ht => simp only [tmul_smul, ← smul_tmul', map_smul, ht]
-    | h f₂ =>
-      induction t₃ using inductionOn_pure with
-      | hadd t t' ht ht' => simp only [tmul_add, add_tmul, map_add, ht, ht']
-      | hsmul r t ht => simp only [tmul_smul, ← smul_tmul', map_smul, ht]
-      | h f₃ =>
-        simp only [tmulEquiv_pure, reindex_pure]
-        exact congrArg S.pure (funext fun s => by rcases s with (_ | _) | _ <;> rfl)
+  have h := ext_pure₃ (f := (S.reindex (ColorEquiv.swapLast c₁ c₂ c₃)).toLinearMap ∘ₗ
+      (S.tmulEquiv _ c₂).toLinearMap ∘ₗ TensorProduct.map (S.tmulEquiv c₁ c₃).toLinearMap .id ∘ₗ
+      (TensorProduct.rightComm k _ _ _).toLinearMap)
+    (g := (S.tmulEquiv _ c₃).toLinearMap ∘ₗ TensorProduct.map (S.tmulEquiv c₁ c₂).toLinearMap .id)
+    fun f₁ f₂ f₃ => by
+      simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe,
+        rightComm_tmul, LinearMap.id_apply, Representation.Equiv.coe_toLinearMap, tmulEquiv_pure,
+        reindex_pure]
+      exact congrArg S.pure (funext fun s => by rcases s with (_ | _) | _ <;> rfl)
+  simpa only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearEquiv.coe_coe, rightComm_tmul,
+    LinearMap.id_apply, Representation.Equiv.coe_toLinearMap] using
+    LinearMap.congr_fun h ((t₁ ⊗ₜ t₂) ⊗ₜ t₃)
 
 /-- The product commutes with the group action, `Λ T ⊗ Λ U = Λ (T ⊗ U)`, as in
 `(Λ^μ_α T^α) (Λ^ρ_β U^β) = Λ^μ_α Λ^ρ_β (T ⊗ U)^αβ`. -/
@@ -397,19 +386,14 @@ lemma tensorBasis_repr_tmulEquiv [Fintype ι₁] [Fintype ι₂] (c₁ : ι₁ �
     (y : Π s, basisIdx (prodColors c₁ c₂ s).kind) :
     (S.tensorBasis (prodColors c₁ c₂)).repr (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) y =
       (S.tensorBasis c₁).repr t₁ (fun i => y (.inl i)) *
-        (S.tensorBasis c₂).repr t₂ (fun j => y (.inr j)) := by
-  induction t₁ using inductionOn_pure with
-  | hsmul r t ht =>
-    simp only [← smul_tmul', map_smul, Finsupp.smul_apply, ht, smul_eq_mul, mul_assoc]
-  | hadd t t' ht ht' => simp only [add_tmul, map_add, Finsupp.add_apply, ht, ht', add_mul]
-  | h f₁ =>
-    induction t₂ using inductionOn_pure with
-    | hsmul r t ht =>
-      simp only [tmul_smul, map_smul, Finsupp.smul_apply, ht, smul_eq_mul, mul_left_comm]
-    | hadd t t' ht ht' => simp only [tmul_add, map_add, Finsupp.add_apply, ht, ht', mul_add]
-    | h f₂ =>
-      rw [tmulEquiv_pure, tensorBasis_repr_pure, tensorBasis_repr_pure, tensorBasis_repr_pure,
-        Fintype.prod_sum_type]
+        (S.tensorBasis c₂).repr t₂ (fun j => y (.inr j)) :=
+  LinearMap.congr_fun (f := (S.tensorBasis _).coord y ∘ₗ (S.tmulEquiv c₁ c₂).toLinearMap)
+    (g := LinearMap.mul' k k ∘ₗ TensorProduct.map ((S.tensorBasis c₁).coord fun i => y (.inl i))
+      ((S.tensorBasis c₂).coord fun j => y (.inr j))) (ext_pure₂ fun f₁ f₂ => by
+    simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearMap.mul'_apply,
+      Module.Basis.coord_apply, Representation.Equiv.coe_toLinearMap]
+    rw [tmulEquiv_pure, tensorBasis_repr_pure, tensorBasis_repr_pure, tensorBasis_repr_pure,
+      Fintype.prod_sum_type]) _
 
 /-- The components of the tensor of a vector `v` of `V c` are its components `v^μ`. -/
 lemma tensorBasis_repr_oneSlotEquiv (c : Color K) (v : S.V c)
