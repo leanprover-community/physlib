@@ -66,7 +66,7 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
 - `tensor_regroup` : proves an equation of two sums of contractions of the same factors, grouped
   or ordered differently, with the same signs and scalars, up to deltas, inverse pairs of forms,
   swaps of symmetric and antisymmetric forms, and lowerings written as contractions. With
-  `using e₁, …`, it first rewrites a sub-product of the left side by each identity `eᵢ`.
+  `using e₁, …`, it first rewrites a sub-product of either side by each identity `eᵢ`.
 - `tensor_slots` : proves an equation of two chains of lowerings and raisings of the same tensor.
 
 ## iii. Table of contents
@@ -1149,37 +1149,45 @@ private def flattenTerm (A : Expr) (expand : Bool) : TacticM Expr := do
 regrouped by `regroupWithLowerings` into a product `M A` of `A` with the factors not in `A`, which
 `congrArg M e₁` rewrites to `M B`, and the remaining identities are used in the same way. Each way
 of finding the factors of `A` among the factors of the goal is tried in turn, first as written and
-then with lowerings and raisings written as contractions with the form. -/
+then with lowerings and raisings written as contractions with the form, first on the left side of
+the goal and then on the right. -/
 private partial def regroupUsing : List Term → TacticM Unit
   | [] => regroupWithLowerings
   | e :: es => do
     let h ← instantiateMVars (← Tactic.elabTerm e none)
     let some (_, A, B) := (← instantiateMVars (← inferType h)).eq?
       | throwError "tensor_regroup: {e} is not an equation"
-    let mut err := m!"tensor_regroup: no factors of the left side are contracted as in the left \
+    let mut err := m!"tensor_regroup: no factors of either side are contracted as in the left \
       side of {e}"
-    for expand in [false, true] do
-      let s ← saveState
-      if expand then evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
-      flattenContractions
-      let (_, L, _) ← goalEq
-      let G ← readContraction L
-      let Aread ← readContraction (← flattenTerm A expand)
-      for (φ, target) in (← embeddings Aread G).take maxMatchings do
-        let s' ← saveState
-        try
-          -- `L = M A` by regrouping, and `M A = M B` by `congrArg M h`.
-          let M ← regroupedFun L A Aread G φ target
-          let h₁ ← proveAside (← mkEq L (M.beta #[A])) regroupWithLowerings
-          let pf ← mkEqTrans h₁ (← mkCongrArg M h)
-          let (_, _, R) ← goalEq
-          let rest ← mkFreshExprSyntheticOpaqueMVar (← mkEq (M.beta #[B]) R)
-          (← getMainGoal).assign (← mkEqTrans pf rest)
-          replaceMainGoal [rest.mvarId!]
-          regroupUsing es
-          return
-        catch ex => s'.restore; err := ex.toMessageData
-      s.restore
+    -- The right side is searched by first turning the goal around.
+    for flip in [false, true] do
+      for expand in [false, true] do
+        let s ← saveState
+        -- A side that is not a contraction has no factors to search.
+        let read? ← try
+            if flip then replaceMainGoal [← (← getMainGoal).applySymm]
+            if expand then
+              evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
+            flattenContractions
+            let (_, L, _) ← goalEq
+            pure (some (L, ← readContraction L, ← readContraction (← flattenTerm A expand)))
+          catch _ => pure none
+        if let some (L, G, Aread) := read? then
+          for (φ, target) in (← embeddings Aread G).take maxMatchings do
+            let s' ← saveState
+            try
+              -- `L = M A` by regrouping, and `M A = M B` by `congrArg M h`.
+              let M ← regroupedFun L A Aread G φ target
+              let h₁ ← proveAside (← mkEq L (M.beta #[A])) regroupWithLowerings
+              let pf ← mkEqTrans h₁ (← mkCongrArg M h)
+              let (_, _, R) ← goalEq
+              let rest ← mkFreshExprSyntheticOpaqueMVar (← mkEq (M.beta #[B]) R)
+              (← getMainGoal).assign (← mkEqTrans pf rest)
+              replaceMainGoal [rest.mvarId!]
+              regroupUsing es
+              return
+            catch ex => s'.restore; err := ex.toMessageData
+        s.restore
     throwError err
 
 /-- `tensor_regroup` proves an equation of two sums of signed scalar multiples of contractions of
@@ -1210,9 +1218,9 @@ A side that is not a contraction, such as a single tensor, is read as a contract
 equality, as `2` and `2`.
 
 `tensor_regroup using e₁, …, eₙ` first rewrites by the equations `eᵢ : Aᵢ = Bᵢ`, in turn. For each,
-the factors of `Aᵢ` are found among the factors of the left side of the goal, contracted along the
-same pairs, and the left side is regrouped as `Aᵢ` times the other factors and rewritten to `Bᵢ`.
-The equations must be closed terms. -/
+the factors of `Aᵢ` are found among the factors of the left side of the goal, or else of the right
+side, contracted along the same pairs, and that side is regrouped as `Aᵢ` times the other factors
+and rewritten to `Bᵢ`. The equations must be closed terms. -/
 syntax (name := tensorRegroup) "tensor_regroup" (" using " term,+)? : tactic
 
 elab_rules : tactic
@@ -1401,6 +1409,11 @@ example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) :
     {U | ν ρ ⊗ W | ρ σ ⊗ T | μ ν = W | μ ρ ⊗ W | ρ σ}ᵀ := by
   tensor_regroup using h
 
+/-- The identity is found on the right side, `W^μ_ρ W^ρ_σ = U^ν_ρ W^ρ_σ T^μ_ν`. -/
+example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) :
+    {W | μ ρ ⊗ W | ρ σ = U | ν ρ ⊗ W | ρ σ ⊗ T | μ ν}ᵀ := by
+  tensor_regroup using h
+
 /-- Two identities in turn, `U^ν_ρ W^ρ_σ T^μ_ν = (T U) W = W W = T`. -/
 example (h₁ : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) (h₂ : {W | μ ν ⊗ W | ν ρ = T | μ ρ}ᵀ) :
     {U | ν ρ ⊗ W | ρ σ ⊗ T | μ ν = T | μ σ}ᵀ := by
@@ -1411,7 +1424,7 @@ example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {U | ν μ ⊗ T | μ �
   tensor_regroup using h
 
 -- The factors `T` and `U` are contracted as `U^ν_ρ T^ρ_μ`, not as `T^μ_ν U^ν_ρ`.
-/-- error: tensor_regroup: no factors of the left side are contracted as in the left side of h -/
+/-- error: tensor_regroup: no factors of either side are contracted as in the left side of h -/
 #guard_msgs in
 example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {U | ν ρ ⊗ T | ρ μ = W | ν μ}ᵀ := by
   tensor_regroup using h
