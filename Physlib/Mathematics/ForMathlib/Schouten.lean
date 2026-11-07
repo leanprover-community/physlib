@@ -6,7 +6,6 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.LinearAlgebra.SesquilinearForm.Basic
-public import Mathlib.Tactic.Module
 
 /-!
 
