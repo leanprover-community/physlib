@@ -47,8 +47,9 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
   law from its upper colors.
 - `Species.contr` is the contraction `u^μ α_μ`, with `Species.contr_basis`,
   `Species.contr_tmul_symm` and `Species.contr_invariant`.
-- `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components, and
-  `Species.ext_contr` proves that the contraction is nondegenerate.
+- `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components,
+  `Species.contr_basis_tmul` reads off a component, and `Species.ext_contr` proves that the
+  contraction is nondegenerate.
 - `Species.invariant_of_contr` gives the law `invariant` from an invariant pairing for which the
   bases are dual.
 - `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_eq_comm_delta_dual` and
@@ -56,8 +57,8 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`, `Species.snake` proves
   that the delta is the identity, `Species.toLin_map` that `toLin` commutes with the group
   action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` that `(id ⊗ f) z = f ∘ z`.
-- `Species.basis_repr_toLin` gives `toLin` in components, and
-  `Species.toLin_comp_toLin_of_mul_eq_one` proves that two such maps are inverse when their
+- `Species.basis_repr_toLin` gives `toLin` in components, `Species.toMatrix_toLin` its matrix,
+  and `Species.toLin_comp_toLin_of_mul_eq_one` proves that two such maps are inverse when their
   matrices are.
 - `Species.cast` moves a vector along an equality of colors, `Species.cast_rep` proves that this
   commutes with the group action, and `Species.basis_repr_cast` that it keeps components.
@@ -162,17 +163,18 @@ lemma contr_tmul_symm (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ[k] y) = S.contr c.dual (y ⊗ₜ[k] x) :=
   Module.Basis.coordPairing_comm _ _ _ _
 
+/-- Contracting the basis vector `e_μ` with `α` reads off the component `α_μ`. -/
+lemma contr_basis_tmul (c : Color K) (μ : basisIdx c.kind) (α : S.V c.dual) :
+    S.contr c (S.basis c μ ⊗ₜ α) = (S.basis c.dual).repr α μ :=
+  (S.contr_tmul_symm c _ α).trans (Module.Basis.coordPairing_tmul_basis _ _ _ _)
+
 variable {S} in
 /-- The contraction is nondegenerate in its second argument. Two vectors of `c.dual` with the
 same contraction against every vector of `c` are equal. -/
 lemma ext_contr {c : Color K} {α α' : S.V c.dual}
     (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
   (S.basis c.dual).repr.injective <| Finsupp.ext fun μ => by
-    -- Contracting `e_μ` with `α` reads off the component `α_μ`.
-    have hα (β : S.V c.dual) : S.contr c (S.basis c μ ⊗ₜ β) = (S.basis c.dual).repr β μ := by
-      rw [contr_tmul_symm]
-      exact Module.Basis.coordPairing_tmul_basis _ _ _ _
-    simpa [hα] using h (S.basis c μ)
+    simpa [contr_basis_tmul] using h (S.basis c μ)
 
 /-- The contraction is invariant, `(Λu)^μ (Λα)_μ = u^μ α_μ` for every `Λ : G`. -/
 lemma contr_invariant (c : Color K) (g : G) (x : S.V c) (y : S.V c.dual) :
@@ -182,8 +184,7 @@ lemma contr_invariant (c : Color K) (g : G) (x : S.V c) (y : S.V c.dual) :
 /-- Contracting `u` with `Λα` is contracting `Λ⁻¹u` with `α`. -/
 lemma contr_tmul_rep (c : Color K) (g : G) (u : S.V c) (α : S.V c.dual) :
     S.contr c (u ⊗ₜ S.rep c.dual g α) = S.contr c (S.rep c g⁻¹ u ⊗ₜ α) := by
-  conv_lhs => rw [← Representation.self_inv_apply (S.rep c) g u]
-  exact S.contr_invariant c g _ α
+  simpa using S.contr_invariant c g (S.rep c g⁻¹ u) α
 
 omit S in
 /-- The law `invariant`, from an invariant pairing `p` for which the bases are dual. It is how a
@@ -250,11 +251,7 @@ lemma toLin_map (a : Color K) (g : G) {U U' : Type} [AddCommGroup U] [Module k U
     [AddCommGroup U'] [Module k U'] (f : U →ₗ[k] U') (z : S.V a ⊗[k] U) (x : S.V a.dual) :
     S.toLin (TensorProduct.map (S.rep a g) f z) (S.rep a.dual g x) = f (S.toLin z x) := by
   induction z using TensorProduct.inductionOn with
-  | tmul w y =>
-    change pairingToLinearMap (S.contr a.dual).toLinearMap (S.rep a g w ⊗ₜ f y) _ =
-      f (pairingToLinearMap (S.contr a.dual).toLinearMap (w ⊗ₜ y) x)
-    simp only [pairingToLinearMap_tmul, map_smul, Representation.IntertwiningMap.toLinearMap_apply]
-    rw [show S.rep a g w = S.rep a.dual.dual g w from rfl, S.contr_invariant]
+  | tmul w y => simpa using congrArg (· • f y) (S.contr_invariant a.dual g x w)
   | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz']
 
 /-- The delta is invariant, `Λ δ = δ`. -/
@@ -263,9 +260,7 @@ lemma delta_invariant (c : Color K) (g : G) :
   -- Both act as the identity: `(Λδ)(Λx) = Λx` by the snake law.
   apply S.toLin.injective
   ext x
-  conv_lhs => rw [← Representation.self_inv_apply (S.rep c) g x]
-  rw [show S.rep c g⁻¹ x = S.rep c.dual.dual g⁻¹ x from rfl, S.toLin_map, S.snake c,
-    LinearMap.id_apply, LinearMap.id_apply, Representation.self_inv_apply]
+  simpa [snake] using S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
 
 /-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
 lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :
@@ -279,8 +274,7 @@ lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
     (h : Function.Bijective (S.toLin z)) (g : G) :
     Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) := by
   have hrep (c : Color K) (g : G) : Function.Bijective (S.rep c g) :=
-    Function.bijective_iff_has_inverse.mpr ⟨S.rep c g⁻¹, Representation.inv_self_apply _ _,
-      Representation.self_inv_apply _ _⟩
+    (Module.End.isUnit_iff _).1 ((Group.isUnit g).map (S.rep c))
   rw [toLin_map_rep, LinearMap.coe_comp, LinearMap.coe_comp]
   exact (hrep b g).comp (h.comp (hrep a.dual g⁻¹))
 
@@ -296,12 +290,15 @@ lemma basis_repr_toLin (c : Color K) {d : Color K} (z : S.V c ⊗[k] S.V d) (v :
     simp only [map_add, LinearMap.add_apply, Finsupp.add_apply, hx, hy, mul_add,
       Finset.sum_add_distrib]
   | tmul x y =>
-    change (S.basis d).repr (pairingToLinearMap (S.contr c.dual).toLinearMap (x ⊗ₜ y) v) ν = _
-    rw [pairingToLinearMap_tmul, map_smul, Finsupp.smul_apply, smul_eq_mul]
-    change S.contr c.dual (v ⊗ₜ x) * _ = _
-    simp only [contr_tmul_eq_sum_basis, Module.Basis.tensorProduct_repr_tmul_apply, smul_eq_mul,
-      Finset.sum_mul]
-    exact Finset.sum_congr rfl fun _ _ => by ring
+    simp [contr_tmul_eq_sum_basis, Finset.sum_mul, mul_assoc, mul_comm ((S.basis d).repr y ν)]
+
+/-- The matrix of `toLin z` is the transpose of the matrix of components of `z`,
+`(z v)^ν = z_μ^ν v^μ`. -/
+lemma toMatrix_toLin (c : Color K) {d : Color K} (z : S.V c ⊗[k] S.V d) :
+    LinearMap.toMatrix (S.basis c.dual) (S.basis d) (S.toLin z) =
+      (Matrix.of fun μ ν => ((S.basis c).tensorProduct (S.basis d)).repr z (μ, ν)).transpose := by
+  ext ν μ
+  simp [LinearMap.toMatrix_apply, basis_repr_toLin, Finsupp.single_apply]
 
 /-- `toLin F ∘ₗ toLin F'` is the identity when the matrices of components of `F'` and `F` multiply
 to the identity, `F'^μρ F_ρν = δ^μ_ν`. -/
@@ -310,16 +307,9 @@ lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
     (h : Matrix.of (fun μ ν => ((S.basis c.dual).tensorProduct (S.basis c.dual)).repr F' (μ, ν)) *
       Matrix.of (fun μ ν => ((S.basis c).tensorProduct (S.basis c)).repr F (μ, ν)) = 1) :
     S.toLin F ∘ₗ S.toLin F' = LinearMap.id := by
-  refine (S.basis c).ext fun μ => (S.basis c).repr.injective (Finsupp.ext fun ν => ?_)
-  have hμν := congrFun (congrFun h μ) ν
-  rw [Matrix.mul_apply, Matrix.one_apply] at hμν
-  rw [LinearMap.comp_apply, LinearMap.id_apply, basis_repr_toLin, Module.Basis.repr_self,
-    Finsupp.single_apply, ← hμν]
-  refine Finset.sum_congr rfl fun ρ _ => congrArg (· * _) ?_
-  -- The components of `F'` applied to `e_μ` are the row `μ` of its matrix.
-  rw [basis_repr_toLin c.dual F' (S.basis c μ)]
-  erw [Module.Basis.repr_self]
-  simp [Finsupp.single_apply]
+  apply (LinearMap.toMatrix (S.basis c) (S.basis c)).injective
+  rw [LinearMap.toMatrix_comp _ (S.basis c.dual), toMatrix_toLin, toMatrix_toLin c.dual,
+    ← Matrix.transpose_mul, h, Matrix.transpose_one, LinearMap.toMatrix_id]
 
 /-!
 
