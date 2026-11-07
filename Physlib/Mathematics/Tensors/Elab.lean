@@ -1148,6 +1148,38 @@ example : {T | μ ν = T | μ ρ ⊗ S.deltaTensor a.dual | ρ ν}ᵀ := by
 example : {T | μ ν + U | μ ρ ⊗ S.deltaTensor a.dual | ρ ν = U | μ ν + T | μ ν}ᵀ := by
   tensor_regroup
 
+/-- A delta on the left side is inserted on the right, `T^μ_ρ δ^ρ_ν = T^μ_ν`. -/
+example : {T | μ ρ ⊗ S.deltaTensor a.dual | ρ ν = T | μ ν}ᵀ := by
+  tensor_regroup
+
+/-- Three equal factors, matched in one of the `3!` ways,
+`T^μ_ν T^ν_ρ T^ρ_σ = T^ρ_σ T^ν_ρ T^μ_ν`. -/
+example : {T | μ ν ⊗ T | ν ρ ⊗ T | ρ σ = T | ρ σ ⊗ T | ν ρ ⊗ T | μ ν}ᵀ := by
+  tensor_regroup
+
+-- A factor with no counterpart on the other side is named.
+/-- error: tensor_regroup: the factor
+  U
+has no equal factor on the right -/
+#guard_msgs in
+example : {T | μ ν ⊗ U | ν ρ = W | ν ρ ⊗ T | μ ν}ᵀ := by
+  tensor_regroup
+
+-- The same factors contracted along other pairs of slots, `T U W ≠ T W U`, are rejected.
+/-- error: tensor_regroup: the two sides contract different pairs of slots, for each way of
+matching their equal factors -/
+#guard_msgs in
+example : {T | μ ν ⊗ U | ν ρ ⊗ W | ρ σ = T | μ ν ⊗ W | ν ρ ⊗ U | ρ σ}ᵀ := by
+  tensor_regroup
+
+-- A summand with no counterpart on the other side is named.
+/-- error: tensor_regroup: the summand
+  W
+has no matching summand on the right -/
+#guard_msgs in
+example : {T | μ ν + W | μ ν = U | μ ν + T | μ ν}ᵀ := by
+  tensor_regroup
+
 section Metric
 
 variable [S.HasForm κ] [S.HasForm c.kind]
@@ -1177,6 +1209,16 @@ example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
 
 /-- The same by `tensor_slots`. -/
 example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := by
+  tensor_slots
+
+/-- `tensor_slots` with the chain on the right side, `v^μ = (v_μ)^μ`. -/
+example : v = {{v | ↓μ}ᵀ | ↑μ}ᵀ := by
+  tensor_slots
+
+-- An equation with no lowering or raising is rejected.
+/-- error: tensor_slots: neither side lowers or raises an index -/
+#guard_msgs in
+example (w : S.Tensor ![⟨κ, .up⟩]) : v = w := by
   tensor_slots
 
 /-- Lowering both indices and raising them again, `(M_μν)^μν = M^μν`. -/
@@ -1213,6 +1255,10 @@ example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTenso
 
 /-- The same by `tensor_regroup`, which writes the delta as the contraction of the two forms. -/
 example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
+  tensor_regroup
+
+/-- The delta on the left side, `δ^μ_ρ = g^μν g_νρ`. -/
+example : {S.deltaTensor c.dual | μ ρ = S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ}ᵀ := by
   tensor_regroup
 
 end Metric
