@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.PauliMatrices.ToTensor
+public import Physlib.Relativity.Bispinors.Pauli.ToTensor
 public import Physlib.Meta.Informal.Basic
 /-!
 

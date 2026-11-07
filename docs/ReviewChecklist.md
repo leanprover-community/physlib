@@ -27,6 +27,8 @@ when reviewing a PR.
 ## Level 3: Content
 
 - Is a definition or lemma a simple rewrite of a result already in Mathlib or Physlib?
+- Does the PR reuse Physlib's physical constants and units, instead of defining its own or
+  writing out their numerical values?
 - Do the definitions added look generally useful, do they appear in physics, or
   do they allow you to ask interesting questions about a data-structure that exists?
 - Are lemma statements and definition terms easy to read?

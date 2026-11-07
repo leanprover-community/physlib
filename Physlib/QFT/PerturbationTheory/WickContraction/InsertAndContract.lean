@@ -224,7 +224,7 @@ lemma insertAndContract_none_prod_contractions (φ : 𝓕.FieldOp) (φs : List �
   let e1 := Equiv.ofBijective (φsΛ.insertLift i none) (insertLift_none_bijective i)
   let e2 := Equiv.ofBijective (congrLift (insertIdx_length_fin φ φs i).symm)
     ((φsΛ.insertAndContractNat i none).congrLift_bijective ((insertIdx_length_fin φ φs i).symm))
-  erw [← e2.prod_comp]
+  refine (e2.prod_comp f).symm.trans ?_
   rw [← e1.prod_comp]
   rfl
 
@@ -236,7 +236,7 @@ lemma insertAndContract_some_prod_contractions (φ : 𝓕.FieldOp) (φs : List �
     ∏ (a : φsΛ.1), f (congrLift (insertIdx_length_fin φ φs i).symm (insertLift i (some j) a)) := by
   let e2 := Equiv.ofBijective (congrLift (insertIdx_length_fin φ φs i).symm)
     ((φsΛ.insertAndContractNat i (some j)).congrLift_bijective ((insertIdx_length_fin φ φs i).symm))
-  erw [← e2.prod_comp]
+  refine (e2.prod_comp f).symm.trans ?_
   let e1 := Equiv.ofBijective (φsΛ.insertLiftSome i j) (insertLiftSome_bijective i j)
   rw [← e1.prod_comp]
   rw [Fintype.prod_sum_type]

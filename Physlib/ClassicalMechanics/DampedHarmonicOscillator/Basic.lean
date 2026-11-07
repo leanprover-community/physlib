@@ -10,6 +10,8 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
 
 # The damped harmonic oscillator
 
+The equation of motion, energy dissipation, damping regimes and variational formulation.
+
 ## i. Overview
 
 The damped harmonic oscillator is a classical mechanical system consisting of a mass `m`
@@ -43,6 +45,8 @@ In the `Basic` module:
 - `DampedHarmonicOscillator` contains the input data to the problem.
 - `EquationOfMotion` defines the damped oscillator equation `m ẍ + γ ẋ + k x = 0`.
 - `energy_dissipation_rate` computes the rate at which damping removes mechanical energy.
+- `energy_balance` gives the mechanical energy change over a finite time interval.
+- `energy_antitone` shows that mechanical energy is nonincreasing along a solution.
 - `IsUnderdamped`, `IsCriticallyDamped`, and `IsOverdamped` define the three damping
   regimes from the discriminant `γ^2 - 4 * m * k`.
 - `angularFrequency` selects the real frequency parameter from the damping regime.
@@ -198,6 +202,44 @@ lemma energy_not_conserved (xₜ : Time → EuclideanSpace ℝ (Fin 1)) (t : Tim
     ∂ₜ (S.energy xₜ) t < 0 := by
   rw [energy_dissipation_rate S xₜ t h1 hx, neg_mul]
   exact neg_neg_of_pos (mul_pos hγ (real_inner_self_pos.mpr hdx))
+
+/-- The mechanical energy change between two times equals the work done by damping.
+The interval integral is oriented, so the identity holds in either time order. -/
+lemma energy_balance (xₜ : Time → EuclideanSpace ℝ (Fin 1))
+    (hEOM : S.EquationOfMotion xₜ) (hx : ContDiff ℝ ∞ xₜ) (a b : ℝ) :
+    S.energy xₜ ⟨b⟩ - S.energy xₜ ⟨a⟩ =
+      -S.γ * ∫ t in a..b, ‖∂ₜ xₜ ⟨t⟩‖ ^ 2 := by
+  have hd (t : ℝ) : HasDerivAt (fun s : ℝ => S.energy xₜ ⟨s⟩)
+      (-S.γ * ‖∂ₜ xₜ ⟨t⟩‖ ^ 2) t := by
+    convert Time.hasDerivAt_mk_of_differentiableAt
+      (S.energy_differentiable xₜ hx ⟨t⟩) using 1
+    rw [S.energy_dissipation_rate xₜ ⟨t⟩ hEOM hx, real_inner_self_eq_norm_sq]
+  have hc : Continuous (fun t : ℝ => -S.γ * ‖∂ₜ xₜ ⟨t⟩‖ ^ 2) := by
+    have hv := (Time.deriv_contDiff_of_contDiff xₜ hx).continuous
+    exact continuous_const.mul ((hv.comp Time.toRealCLE.symm.continuous).norm.pow 2)
+  rw [← intervalIntegral.integral_const_mul]
+  exact (intervalIntegral.integral_eq_sub_of_hasDerivAt (fun t _ => hd t)
+    (hc.intervalIntegrable a b)).symm
+
+/-- Mechanical energy is nonincreasing along every smooth solution, including zero damping. -/
+lemma energy_antitone (xₜ : Time → EuclideanSpace ℝ (Fin 1))
+    (hEOM : S.EquationOfMotion xₜ) (hx : ContDiff ℝ ∞ xₜ) :
+    Antitone (fun t : ℝ => S.energy xₜ ⟨t⟩) := by
+  apply antitone_of_hasDerivAt_nonpos
+    (f' := fun t => -S.γ * ⟪∂ₜ xₜ ⟨t⟩, ∂ₜ xₜ ⟨t⟩⟫_ℝ)
+  · intro t
+    simpa only [S.energy_dissipation_rate xₜ ⟨t⟩ hEOM hx] using
+      Time.hasDerivAt_mk_of_differentiableAt (S.energy_differentiable xₜ hx ⟨t⟩)
+  · intro t
+    exact mul_nonpos_of_nonpos_of_nonneg (neg_nonpos.mpr S.γ_nonneg)
+      real_inner_self_nonneg
+
+/-- At nonnegative times the mechanical energy is bounded by its initial value. -/
+lemma energy_le_initial (xₜ : Time → EuclideanSpace ℝ (Fin 1))
+    (hEOM : S.EquationOfMotion xₜ) (hx : ContDiff ℝ ∞ xₜ) (t : Time) (ht : 0 ≤ t.val) :
+    S.energy xₜ t ≤ S.energy xₜ 0 := by
+  exact S.energy_antitone xₜ hEOM hx (a := (0 : Time).val) (b := t.val)
+    (by simpa only [Time.zero_val] using ht)
 
 /-!
 ## C. Newton's second law

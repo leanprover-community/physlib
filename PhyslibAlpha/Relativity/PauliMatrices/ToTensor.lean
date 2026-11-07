@@ -5,7 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.PauliMatrices.ToTensor
+public import Physlib.Relativity.Bispinors.Pauli.ToTensor
 /-!
 # The Pauli tensor in components
 
@@ -13,7 +13,7 @@ The basis of `ℂT[.up, .upL, .upR]` indexed by a Lorentz and two spinor indices
 
 ## i. Overview
 
-`Physlib.Relativity.PauliMatrices.ToTensor` carries the Pauli matrices as the tensor
+`Physlib.Relativity.Bispinors.Pauli.ToTensor` carries the Pauli matrices as the tensor
 `σ^^^ : ℂT[.up, .upL, .upR]` and the equivalence `indexEquiv` identifying the component index
 of that tensor with a triple `(μ, α, β)`. Reindexing the tensor basis along `indexEquiv` gives
 `indexBasis`, the basis labelled by such triples, and `toTensor_eq_sum_indexBasis` expands the
@@ -31,7 +31,7 @@ form in which the Pauli tensor enters a component computation.
 
 ## iv. References
 
-The Pauli tensor and `indexEquiv` are in `Physlib.Relativity.PauliMatrices.ToTensor`.
+The Pauli tensor and `indexEquiv` are in `Physlib.Relativity.Bispinors.Pauli.ToTensor`.
 
 -/
 

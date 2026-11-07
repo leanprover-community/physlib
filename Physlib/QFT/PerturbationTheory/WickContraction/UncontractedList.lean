@@ -112,9 +112,8 @@ lemma fin_list_sorted_indexOf_mem :
   intro l hl i hi
   conv_lhs => rw [fin_list_sorted_split l hl i]
   rw [List.idxOf_append_of_notMem]
-  · erw [fin_list_sorted_indexOf_filter_le_mem l hl i hi]
-    simp
-  · simp
+  · simpa using fin_list_sorted_indexOf_filter_le_mem l hl i hi
+  simp
 
 lemma orderedInsert_of_fin_list_sorted :
     (l : List (Fin n)) → (hl : l.Pairwise (· ≤ ·)) → (i : Fin n) →

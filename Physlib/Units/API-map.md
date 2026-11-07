@@ -100,7 +100,7 @@ the positive reals act. [22] A function from unit choices to a dimension-carryin
 dimension when it rescales by the factor of that dimension under every change of unit. [23] The
 functions with this property form a subtype carrying a scalar action. [24] For each fixed unit
 choice, a value of a dimension-carrying type is equivalent to a quantity given in every unit
-system. [25]
+system, and reading that quantity back in the same unit choice returns the value. [25]
 
 A unit-dependent type comes with a transformation of its elements under a change of unit, which
 composes along a chain of unit choices and is trivial on an unchanged choice. [39] Stronger
@@ -166,7 +166,9 @@ of the quantity it measures. The speed of light is such a constant. Its type con
 strictly positive reals, which is why it needs the scaling by a strictly positive factor, and it
 carries the dimension of a length over a time; its value in our world is exactly 299792458
 metres per second. [74][75] Newton's constant, Planck's constant and the Boltzmann constant are
-recorded in the same way. [TODO]
+recorded in the same way. [TODO] There are units in which the speed of light is one. [76] In
+Planck units Newton's constant, the reduced Planck constant and the Boltzmann constant are one
+as well. [TODO]
 
 ### Calculus and dimensional correctness
 
@@ -232,7 +234,8 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `LTMCTUnitChoices.SI_charge`, `LTMCTUnitChoices.SI_temperature`
 17. Physlib/Units/Basic.lean — `LTMCTUnitChoices.SIPrimed`,
    `LTMCTUnitChoices.dimScale_SI_SIPrimed`, `LTMCTUnitChoices.dimScale_SIPrimed_SI`
-18. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale`, `LTMCTUnitChoices.dimScale_apply`
+18. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale`, `LTMCTUnitChoices.dimScale_apply`,
+   `LTMCTUnitChoices.dimScale_L𝓭`, `LTMCTUnitChoices.dimScale_T𝓭`
 19. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale_self`, `LTMCTUnitChoices.dimScale_one`
 20. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale_ne_zero`,
    `LTMCTUnitChoices.dimScale_pos`, `LTMCTUnitChoices.dimScale_transitive`,
@@ -243,7 +246,7 @@ the numerical oscillator, and has its derivative from the generic transport of d
 23. Physlib/Units/Basic.lean — `HasDimension`, `hasDimension_iff`
 24. Physlib/Units/Basic.lean — `Dimensionful`, `Dimensionful.ext`, `Dimensionful.smul_apply`
 25. Physlib/Units/Basic.lean — `CarriesDimension.toDimensionful`,
-   `CarriesDimension.toDimensionful_apply_apply`
+   `CarriesDimension.toDimensionful_apply_apply`, `CarriesDimension.toDimensionful_apply_self`
 26. Physlib/Units/ParametricUnits.lean — `UnitScale`, `UnitScale.ratio_ne_zero`
 27. Physlib/Units/ParametricUnits.lean — `UnitScale.dimScale`, `UnitScale.dimScale_self`,
    `UnitScale.dimScale_one`, `UnitScale.dimScale_transitive`
@@ -355,8 +358,9 @@ the numerical oscillator, and has its derivative from the generic transport of d
    `WithDim.ofPositiveRealUnit_units_smul`, `WithDim.ofPositiveRealUnit_of_scaleUnit`
 74. Physlib/Relativity/SpeedOfLight.lean — `SpeedOfLight`,
    `SpeedOfLight.instPositiveRealUnitCore`, `SpeedOfLight.positiveRealUnitCore_val`
-75. Physlib/Units/Constants.lean — `HasDim SpeedOfLight`, `speedOfLight`,
+75. Physlib/Relativity/SpeedOfLight.lean — `SpeedOfLight.instHasDim`, `speedOfLight`,
    `speedOfLight_in_SI`
+76. Physlib/Units/Constants.lean — `exists_units_constants_eq_one`
 
 ## References
 

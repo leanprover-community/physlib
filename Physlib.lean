@@ -66,6 +66,7 @@ public import Physlib.CondensedMatter.Crystal.Embedding
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
 public import Physlib.CondensedMatter.Crystal.Symmetry.Basic
 public import Physlib.CondensedMatter.Crystal.Symmetry.BrillouinZone
+public import Physlib.CondensedMatter.Crystal.Symmetry.IrreducibleZone
 public import Physlib.CondensedMatter.Crystal.Symmetry.Isometries
 public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
 public import Physlib.CondensedMatter.Crystal.Symmetry.SpaceGroup
@@ -459,6 +460,9 @@ public import Physlib.QuantumMechanics.QuantumSystem.Basic
 public import Physlib.QuantumMechanics.RectangularBarrier.Basic
 public import Physlib.QuantumMechanics.SpaceDQuantumSystem
 public import Physlib.Relativity.Bispinors.Basic
+public import Physlib.Relativity.Bispinors.Pauli.Basic
+public import Physlib.Relativity.Bispinors.Pauli.Relations
+public import Physlib.Relativity.Bispinors.Pauli.ToTensor
 public import Physlib.Relativity.Causality.Basic
 public import Physlib.Relativity.Causality.CausallyFollows
 public import Physlib.Relativity.Causality.LightLike
@@ -491,12 +495,9 @@ public import Physlib.Relativity.LorentzGroup.Restricted.FromBoostRotation
 public import Physlib.Relativity.LorentzGroup.Rotations
 public import Physlib.Relativity.LorentzGroup.ToVector
 public import Physlib.Relativity.MinkowskiMatrix
-public import Physlib.Relativity.PauliMatrices.AsTensor
 public import Physlib.Relativity.PauliMatrices.Basic
 public import Physlib.Relativity.PauliMatrices.CliffordAlgebra
-public import Physlib.Relativity.PauliMatrices.Relations
 public import Physlib.Relativity.PauliMatrices.SelfAdjoint
-public import Physlib.Relativity.PauliMatrices.ToTensor
 public import Physlib.Relativity.SL2C.AxisRotations
 public import Physlib.Relativity.SL2C.Basic
 public import Physlib.Relativity.SL2C.CayleyKlein

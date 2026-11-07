@@ -6,6 +6,7 @@ Authors: Alex Meiburg, Rodolfo Soldati
 module
 
 public import QuantumInfo.ForMathlib.ContinuousLinearMap
+public import QuantumInfo.ForMathlib.ExchangeRelations
 public import QuantumInfo.ForMathlib.HermitianMat
 public import QuantumInfo.ForMathlib.Isometry
 public import QuantumInfo.ForMathlib.LinearEquiv
@@ -499,6 +500,52 @@ lemma Ket.IsPiProd.of_phaseEquiv [Nonempty ι] {ψ ψ' : Ket ((i : ι) → d i)}
     rw [Function.update_of_ne (Finset.ne_of_mem_erase hi)]
 
 end piProd_phase
+
+section piProd_amplitudes
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] {d : ι → Type*} [∀ i, Fintype (d i)]
+
+/-- If the amplitudes of a ket factor as `∏ i, v i (j i)`, then the product of the norms of the
+vectors `v i` equals `1`. -/
+lemma Ket.prod_sqrt_sum_norm_sq_eq_one {ψ : Ket ((i : ι) → d i)} {v : (i : ι) → d i → ℂ}
+    (hv : ∀ j, ψ j = ∏ i, v i (j i)) : ∏ i, √(∑ a, ‖v i a‖ ^ 2) = 1 := by
+  have hsq : (∏ i, √(∑ a, ‖v i a‖ ^ 2)) ^ 2 = 1 := by
+    calc (∏ i, √(∑ a, ‖v i a‖ ^ 2)) ^ 2 = ∏ i, ∑ a, ‖v i a‖ ^ 2 := by
+          rw [← Finset.prod_pow]
+          exact Finset.prod_congr rfl fun i _ ↦ Real.sq_sqrt (by positivity)
+      _ = ∑ j, ‖ψ j‖ ^ 2 := by
+          rw [Fintype.prod_sum (fun i a ↦ ‖v i a‖ ^ 2)]
+          simp [hv, Finset.prod_pow]
+      _ = 1 := ψ.normalized'
+  exact (pow_eq_one_iff_of_nonneg (by positivity) two_ne_zero).mp hsq
+
+/-- A ket is a product state exactly when its amplitudes factor as `∏ i, v i (j i)` for some
+vectors `v i`, which need not have norm `1`. -/
+lemma Ket.isPiProd_iff_exists_prod (ψ : Ket ((i : ι) → d i)) :
+    ψ.IsPiProd ↔ ∃ v : (i : ι) → d i → ℂ, ∀ j, ψ j = ∏ i, v i (j i) := by
+  constructor
+  · rintro ⟨φ, rfl⟩
+    exact ⟨fun i ↦ φ i, Ket.piProd_apply φ⟩
+  · rintro ⟨v, hv⟩
+    obtain ⟨j₀, hj₀⟩ := ψ.exists_ne_zero
+    have hne : ∀ i, ∃ a, v i a ≠ 0 := fun i ↦
+      ⟨j₀ i, Finset.prod_ne_zero_iff.mp (hv j₀ ▸ hj₀) i (Finset.mem_univ i)⟩
+    -- Normalize each `v i`. Their norms multiply to `1`, so the amplitudes are unchanged.
+    refine ⟨fun i ↦ Ket.normalize (v i) (hne i), Ket.ext fun j ↦ ?_⟩
+    rw [Ket.piProd_apply, hv]
+    change _ = ∏ i, v i (j i) / (√(∑ a, ‖v i a‖ ^ 2) : ℂ)
+    rw [Finset.prod_div_distrib, ← Complex.ofReal_prod, Ket.prod_sqrt_sum_norm_sq_eq_one hv,
+      Complex.ofReal_one, div_one]
+
+/-- With at least one party, a ket is a product state exactly when its amplitudes satisfy the
+exchange relations, that is, when all `2 × 2` minors vanish in each flattening of its amplitude
+array that separates one party from the rest. This generalizes `Ket.IsProd_iff_mul_eq_mul`. -/
+lemma Ket.isPiProd_iff_mul_update [Nonempty ι] (ψ : Ket ((i : ι) → d i)) :
+    ψ.IsPiProd ↔ ∀ i (a b : d i) x y, ψ (Function.update x i a) * ψ (Function.update y i b) =
+      ψ (Function.update x i b) * ψ (Function.update y i a) := by
+  rw [Ket.isPiProd_iff_exists_prod]
+  exact exists_prod_iff_mul_update
+
+end piProd_amplitudes
 
 /-! ## Norm bounds -/
 

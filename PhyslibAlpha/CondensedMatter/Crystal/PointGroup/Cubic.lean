@@ -22,8 +22,16 @@ neighbours. For the face-centred cubic lattice, with its twelve neighbours, and 
 cubic lattice, with its eight neighbours, this number is `48`, the order of the full octahedral
 group, the symmetry group of the cube with reflections.
 
+The count is established by reflection. Vectors in three dimensions are written as triples of
+integers, admissibility becomes a Boolean test on a list of such triples, and the number of
+admissible tuples is the length of a list that the kernel computes. The finite type of triples of
+neighbours, `PeriodicGraph.admissibleEquiv`, is kept as the direct formulation; deciding the count
+on it needs far more memory than the reflection, and does not fit on the cubic lattices.
+
 ## ii. Key results
 
+- `PeriodicGraph.card_admissible_eq_length` : the number of admissible tuples is the length of
+  the list of admissible triples.
 - `fcc_card_pointGroup` : the point group of the face-centred cubic lattice has order `48`.
 - `bcc_card_pointGroup` : the point group of the body-centred cubic lattice has order `48`.
 
@@ -31,6 +39,10 @@ group, the symmetry group of the cube with reflections.
 
 - A. Neighbour displacements
 - B. Computing the count
+  - B.1. Admissible tuples as a finite type
+  - B.2. Vectors as triples of integers
+  - B.3. The Boolean test for admissibility
+  - B.4. The count as the length of a list
 - C. The cubic lattices
 
 ## iv. References
@@ -46,8 +58,6 @@ namespace CondensedMatter.Crystal
 namespace PeriodicGraph
 
 /-! ## A. Neighbour displacements -/
-
-/-! ## B. Computing the count -/
 
 variable {n : ℕ}
 
@@ -78,6 +88,10 @@ lemma bonded_ofBonds_unit (bonds : List (Bond (Fin n → ℤ) Unit)) (d : Fin n 
   refine exists_congr fun b => and_congr_right fun _ => or_congr Iff.rfl ?_
   rw [eq_neg_iff_add_eq_zero, eq_comm]
 
+/-! ## B. Computing the count -/
+
+/-! ### B.1. Admissible tuples as a finite type -/
+
 /-- The admissible triples can be counted among triples of neighbour displacements. -/
 def admissibleEquiv (N : Finset (Fin n → ℤ)) :
     {v // Admissible N v} ≃ {w : Fin n → ↥N // Admissible N (fun j => (w j : Fin n → ℤ))} where
@@ -92,10 +106,197 @@ instance (N : Finset (Fin n → ℤ)) (v : Fin n → Fin n → ℤ) : Decidable 
     ⟨fun ⟨h1, h2, h3⟩ => ⟨h1, h2, fun d hd d' hd' h => h3 d hd d' hd' h⟩,
       fun ⟨h1, h2, h3⟩ => ⟨h1, h2, fun _d hd _d' hd' h => h3 hd hd' h⟩⟩
 
+/-! ### B.2. Vectors as triples of integers -/
+
+/-- Integer vectors in three dimensions, as triples of integers. -/
+abbrev Vec3 : Type := ℤ × ℤ × ℤ
+
+/-- A vector in three dimensions as the triple of its components. -/
+def toVec3 (d : Fin 3 → ℤ) : Vec3 := (d 0, d 1, d 2)
+
+/-- The vector in three dimensions with the given components. -/
+def ofVec3 (t : Vec3) : Fin 3 → ℤ := ![t.1, t.2.1, t.2.2]
+
+/-- A function on `Fin 3` is the vector of its three values. -/
+lemma vec3_eq {α : Type*} (v : Fin 3 → α) : ![v 0, v 1, v 2] = v := by
+  funext i
+  fin_cases i <;> rfl
+
+@[simp]
+lemma ofVec3_toVec3 (d : Fin 3 → ℤ) : ofVec3 (toVec3 d) = d := vec3_eq d
+
+@[simp]
+lemma toVec3_ofVec3 (t : Vec3) : toVec3 (ofVec3 t) = t := rfl
+
+lemma toVec3_injective : Function.Injective toVec3 :=
+  Function.LeftInverse.injective ofVec3_toVec3
+
+lemma ofVec3_injective : Function.Injective ofVec3 :=
+  Function.LeftInverse.injective toVec3_ofVec3
+
+/-- The linear map with columns `a`, `b` and `c` applied to `d`, written out in components. -/
+def act3 (a b c d : Vec3) : Vec3 :=
+  (d.1 * a.1 + d.2.1 * b.1 + d.2.2 * c.1,
+    d.1 * a.2.1 + d.2.1 * b.2.1 + d.2.2 * c.2.1,
+    d.1 * a.2.2 + d.2.1 * b.2.2 + d.2.2 * c.2.2)
+
+/-- The linear map determined by a tuple of columns, in components. -/
+lemma toVec3_act (v : Fin 3 → Fin 3 → ℤ) (d : Fin 3 → ℤ) :
+    toVec3 (act v d) = act3 (toVec3 (v 0)) (toVec3 (v 1)) (toVec3 (v 2)) (toVec3 d) := by
+  simp [toVec3, act3, act_apply, Fin.sum_univ_three]
+
+/-! ### B.3. The Boolean test for admissibility
+
+The test is written so that the kernel can evaluate it cheaply: equality of triples is tested
+component by component, and the condition that the map sends neighbours to neighbours is tested
+first, as it is the one that fails for most candidate tuples.
+-/
+
+/-- Equality of two triples of integers, component by component. -/
+def beq3 (a b : Vec3) : Bool := a.1 == b.1 && a.2.1 == b.2.1 && a.2.2 == b.2.2
+
+lemma beq3_iff (a b : Vec3) : beq3 a b = true ↔ a = b := by
+  simp only [beq3, Bool.and_eq_true, beq_iff_eq]
+  constructor
+  · rintro ⟨⟨h1, h2⟩, h3⟩
+    exact Prod.ext h1 (Prod.ext h2 h3)
+  · rintro rfl
+    exact ⟨⟨rfl, rfl⟩, rfl⟩
+
+/-- Membership of a triple of integers in a list of triples. -/
+def mem3 (x : Vec3) (l : List Vec3) : Bool := l.any (beq3 x)
+
+lemma mem3_iff (x : Vec3) (l : List Vec3) : mem3 x l = true ↔ x ∈ l := by
+  simp only [mem3, List.any_eq_true, beq3_iff]
+  constructor
+  · rintro ⟨y, hy, rfl⟩
+    exact hy
+  · exact fun h => ⟨x, h, rfl⟩
+
+/-- Whether the columns `a`, `b` and `c` form an admissible tuple for the neighbour list `l`:
+the map sends neighbours to neighbours, the columns are neighbours, and the map is injective
+on the neighbours. -/
+def admissibleB (l : List Vec3) (a b c : Vec3) : Bool :=
+  l.all (fun d => mem3 (act3 a b c d) l) && mem3 a l && mem3 b l && mem3 c l &&
+    l.all fun d => l.all fun d' => !beq3 (act3 a b c d) (act3 a b c d') || beq3 d d'
+
+/-- The admissible triples of neighbours from the list `l`. -/
+def admissibleTriples (l : List Vec3) : List (Vec3 × Vec3 × Vec3) :=
+  (l ×ˢ l ×ˢ l).filter fun t => admissibleB l t.1 t.2.1 t.2.2
+
+variable {N : Finset (Fin 3 → ℤ)} {l : List Vec3}
+
+/-- Admissibility with respect to the finset `N` is the Boolean test on a list `l` of the same
+vectors. -/
+lemma admissible_iff_admissibleB (hl : ∀ t, t ∈ l ↔ ofVec3 t ∈ N) (v : Fin 3 → Fin 3 → ℤ) :
+    Admissible N v ↔ admissibleB l (toVec3 (v 0)) (toVec3 (v 1)) (toVec3 (v 2)) = true := by
+  have hmem : ∀ d, d ∈ N ↔ mem3 (toVec3 d) l = true := fun d => by
+    rw [mem3_iff, hl, ofVec3_toVec3]
+  have hact := toVec3_act v
+  simp only [admissibleB, Bool.and_eq_true, List.all_eq_true, Bool.or_eq_true,
+    Bool.not_eq_true', Bool.eq_false_iff, ne_eq, beq3_iff]
+  constructor
+  · rintro ⟨h1, h2, h3⟩
+    refine ⟨⟨⟨⟨fun t ht => ?_, (hmem _).mp (h1 0)⟩, (hmem _).mp (h1 1)⟩, (hmem _).mp (h1 2)⟩,
+      fun t ht t' ht' => ?_⟩
+    · have := (hmem _).mp (h2 _ ((hl t).mp ht))
+      rwa [hact, toVec3_ofVec3] at this
+    · by_cases heq : act3 (toVec3 (v 0)) (toVec3 (v 1)) (toVec3 (v 2)) t =
+          act3 (toVec3 (v 0)) (toVec3 (v 1)) (toVec3 (v 2)) t'
+      · right
+        refine ofVec3_injective (h3 (Finset.mem_coe.mpr ((hl t).mp ht))
+          (Finset.mem_coe.mpr ((hl t').mp ht')) (toVec3_injective ?_))
+        rwa [hact, hact, toVec3_ofVec3, toVec3_ofVec3]
+      · exact Or.inl heq
+  · rintro ⟨⟨⟨⟨h2, ha⟩, hb⟩, hc⟩, h3⟩
+    refine ⟨fun j => ?_, fun d hd => ?_, fun d hd d' hd' h => ?_⟩
+    · fin_cases j
+      · exact (hmem _).mpr ha
+      · exact (hmem _).mpr hb
+      · exact (hmem _).mpr hc
+    · rw [hmem, hact]
+      exact h2 _ ((hl _).mpr (by rwa [ofVec3_toVec3]))
+    · rcases h3 (toVec3 d) ((hl _).mpr (by rw [ofVec3_toVec3]; exact Finset.mem_coe.mp hd))
+          (toVec3 d') ((hl _).mpr (by rw [ofVec3_toVec3]; exact Finset.mem_coe.mp hd'))
+        with hne | heq
+      · exact absurd (by rw [← hact, ← hact, h]) hne
+      · exact toVec3_injective heq
+
+lemma mem_admissibleTriples (hl : ∀ t, t ∈ l ↔ ofVec3 t ∈ N) (a b c : Vec3) :
+    (a, b, c) ∈ admissibleTriples l ↔ Admissible N ![ofVec3 a, ofVec3 b, ofVec3 c] := by
+  rw [admissible_iff_admissibleB hl]
+  change _ ↔ admissibleB l (toVec3 (ofVec3 a)) (toVec3 (ofVec3 b)) (toVec3 (ofVec3 c)) = true
+  simp only [admissibleTriples, List.mem_filter, List.mem_product, toVec3_ofVec3]
+  refine ⟨fun h => h.2, fun h => ⟨?_, h⟩⟩
+  simp only [admissibleB, Bool.and_eq_true, mem3_iff] at h
+  exact ⟨h.1.1.1.2, h.1.1.2, h.1.2⟩
+
+/-! ### B.4. The count as the length of a list -/
+
+/-- Admissible tuples correspond to the admissible triples of the neighbour list. -/
+def admissibleTriplesEquiv (hl : ∀ t, t ∈ l ↔ ofVec3 t ∈ N) :
+    {v // Admissible N v} ≃ {t // t ∈ admissibleTriples l} where
+  toFun v := ⟨(toVec3 (v.1 0), toVec3 (v.1 1), toVec3 (v.1 2)), by
+    rw [mem_admissibleTriples hl]
+    simp only [ofVec3_toVec3]
+    rw [vec3_eq]
+    exact v.2⟩
+  invFun t := ⟨![ofVec3 t.1.1, ofVec3 t.1.2.1, ofVec3 t.1.2.2],
+    (mem_admissibleTriples hl _ _ _).mp t.2⟩
+  left_inv v := Subtype.ext (by
+    simp only [ofVec3_toVec3]
+    exact vec3_eq v.1)
+  right_inv t := Subtype.ext rfl
+
+/-- **The number of admissible tuples** is the length of the list of admissible triples of a
+list of the neighbours without repetition. -/
+lemma card_admissible_eq_length (hl : ∀ t, t ∈ l ↔ ofVec3 t ∈ N) (hnd : l.Nodup) :
+    Nat.card {v // Admissible N v} = (admissibleTriples l).length := by
+  have h : (admissibleTriples l).Nodup := (hnd.product (hnd.product hnd)).filter _
+  rw [Nat.card_congr (admissibleTriplesEquiv hl), ← List.toFinset_card_of_nodup h,
+    ← Nat.card_eq_finsetCard]
+  exact Nat.card_congr (Equiv.subtypeEquivRight fun t => List.mem_toFinset.symm)
+
+/-- The neighbour displacements of a bond list on a one-site cell, as a list of triples. -/
+def bondNeighborsList (bonds : List (Bond (Fin 3 → ℤ) Unit)) : List Vec3 :=
+  (((bonds.map Bond.displacement ++ bonds.map fun b => -b.displacement).map toVec3).dedup).erase
+    (toVec3 0)
+
+lemma nodup_bondNeighborsList (bonds : List (Bond (Fin 3 → ℤ) Unit)) :
+    (bondNeighborsList bonds).Nodup :=
+  (List.nodup_dedup _).erase _
+
+lemma mem_bondNeighborsList (bonds : List (Bond (Fin 3 → ℤ) Unit)) (t : Vec3) :
+    t ∈ bondNeighborsList bonds ↔ ofVec3 t ∈ bondNeighbors bonds := by
+  rw [bondNeighborsList, (List.nodup_dedup _).mem_erase_iff, List.mem_dedup, List.mem_map,
+    bondNeighbors, Finset.mem_erase, List.mem_toFinset]
+  constructor
+  · rintro ⟨h0, d, hd, rfl⟩
+    rw [ofVec3_toVec3]
+    exact ⟨fun h => h0 (by rw [h]), hd⟩
+  · rintro ⟨h0, hd⟩
+    exact ⟨fun h => h0 (by rw [h, ofVec3_toVec3]), ofVec3 t, hd, toVec3_ofVec3 t⟩
+
+/-- A list of triples that is a permutation of the computed neighbour list enumerates the
+neighbours. Writing the neighbours out, rather than computing them, keeps the kernel's work on
+literal integers. -/
+lemma mem_iff_of_perm {bonds : List (Bond (Fin 3 → ℤ) Unit)} {l : List Vec3}
+    (h : l.Perm (bondNeighborsList bonds)) (t : Vec3) : t ∈ l ↔ ofVec3 t ∈ bondNeighbors bonds :=
+  h.mem_iff.trans (mem_bondNeighborsList bonds t)
 
 end PeriodicGraph
 
-/-! ## C. The cubic lattices -/
+/-! ## C. The cubic lattices
+
+The neighbour lists are written out, with the neighbours that are not basis vectors first: the
+Boolean test fails on most candidate tuples at the first neighbour that is not a basis vector, as
+the basis vectors are sent to the columns, which are neighbours by construction.
+-/
+
+/-- The twelve neighbours of the face-centred cubic lattice in lattice coordinates. -/
+def fccNeighbors : List PeriodicGraph.Vec3 :=
+  [(1, -1, 0), (0, 1, -1), (-1, 0, 1), (-1, 1, 0), (0, -1, 1), (1, 0, -1),
+    (1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
 
 /-- **The point group of the face-centred cubic lattice has order `48`.** -/
 lemma fcc_card_pointGroup : Nat.card fccGraph.pointGroup = 48 := by
@@ -103,8 +304,13 @@ lemma fcc_card_pointGroup : Nat.card fccGraph.pointGroup = 48 := by
     (PeriodicGraph.bonded_ofBonds_unit fccBonds)).trans ?_
   · intro j
     fin_cases j <;> decide
-  · rw [Nat.card_congr (PeriodicGraph.admissibleEquiv _), Nat.card_eq_fintype_card]
+  · rw [PeriodicGraph.card_admissible_eq_length (PeriodicGraph.mem_iff_of_perm
+      (bonds := fccBonds) (l := fccNeighbors) (by decide +kernel)) (by decide)]
     decide +kernel
+
+/-- The eight neighbours of the body-centred cubic lattice in lattice coordinates. -/
+def bccNeighbors : List PeriodicGraph.Vec3 :=
+  [(1, 1, 1), (-1, -1, -1), (1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
 
 /-- **The point group of the body-centred cubic lattice has order `48`.** -/
 lemma bcc_card_pointGroup : Nat.card bccGraph.pointGroup = 48 := by
@@ -112,7 +318,8 @@ lemma bcc_card_pointGroup : Nat.card bccGraph.pointGroup = 48 := by
     (PeriodicGraph.bonded_ofBonds_unit bccBonds)).trans ?_
   · intro j
     fin_cases j <;> decide
-  · rw [Nat.card_congr (PeriodicGraph.admissibleEquiv _), Nat.card_eq_fintype_card]
+  · rw [PeriodicGraph.card_admissible_eq_length (PeriodicGraph.mem_iff_of_perm
+      (bonds := bccBonds) (l := bccNeighbors) (by decide +kernel)) (by decide)]
     decide +kernel
 
 end CondensedMatter.Crystal

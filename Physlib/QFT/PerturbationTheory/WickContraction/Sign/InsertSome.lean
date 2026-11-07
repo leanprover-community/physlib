@@ -56,8 +56,8 @@ lemma stat_ofFinset_eq_one_of_gradingCompliant (φs : List 𝓕.FieldOp)
 lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp)
     (φsΛ : WickContraction φs.length) (i : Fin φs.length.succ) (i1 i2 : Fin φs.length)
     (j : φsΛ.uncontracted) :
-    (φsΛ ↩Λ φ i (some j)).signFinset (finCongr (insertIdx_length_fin φ φs i).symm
-    (i.succAbove i1)) (finCongr (insertIdx_length_fin φ φs i).symm (i.succAbove i2)) =
+    (φsΛ ↩Λ φ i (some j)).signFinset (Fin.cast (insertIdx_length_fin φ φs i).symm
+    (i.succAbove i1)) (Fin.cast (insertIdx_length_fin φ φs i).symm (i.succAbove i2)) =
     if i.succAbove i1 < i ∧ i < i.succAbove i2 ∧ (i1 < j) then
       Insert.insert (finCongr (insertIdx_length_fin φ φs i).symm i)
       (insertAndContractLiftFinset φ i (φsΛ.signFinset i1 i2))
@@ -91,7 +91,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
           not_false_eq_true]
         simp
     rw [h1]
-    simp only [Nat.succ_eq_add_one, signFinset, finCongr_apply, Finset.mem_filter, Finset.mem_univ,
+    simp only [Nat.succ_eq_add_one, signFinset, Finset.mem_filter, Finset.mem_univ,
       insertAndContract_some_getDual?_self_eq, reduceCtorEq, Option.isSome_some, Option.get_some,
       forall_const, false_or, true_and]
     rw [Fin.lt_def, Fin.lt_def, Fin.lt_def, Fin.lt_def]
@@ -174,7 +174,7 @@ lemma signFinset_insertAndContract_some (φ : 𝓕.FieldOp) (φs : List 𝓕.Fie
           · simp
       rw [h1]
       rw [succAbove_mem_insertAndContractLiftFinset]
-      simp only [Nat.succ_eq_add_one, signFinset, finCongr_apply, Finset.mem_filter,
+      simp only [Nat.succ_eq_add_one, signFinset, Finset.mem_filter,
         Finset.mem_univ, true_and]
       rw [Fin.lt_def, Fin.lt_def, Fin.lt_def, Fin.lt_def]
       simp only [Fin.val_cast, Fin.val_fin_lt]
@@ -242,7 +242,7 @@ lemma sign_insert_some (φ : 𝓕.FieldOp) (φs : List 𝓕.FieldOp) (φsΛ : Wi
   simp only [Nat.succ_eq_add_one, insertAndContract_sndFieldOfContract,
     finCongr_apply, Fin.getElem_fin, Fin.val_cast, insertIdx_getElem_fin,
     insertAndContract_fstFieldOfContract, not_lt, ite_mul, one_mul]
-  erw [signFinset_insertAndContract_some]
+  rw [signFinset_insertAndContract_some]
   split
   · simp only [Nat.succ_eq_add_one, finCongr_apply]
     rw [ofFinset_insert _ _ _ _ (self_not_mem_insertAndContractLiftFinset φ i _),

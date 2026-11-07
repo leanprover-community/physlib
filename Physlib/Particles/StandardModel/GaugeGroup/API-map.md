@@ -16,8 +16,9 @@ of the Higgs sector; the Higgs field builds on this group.
 
 The full gauge group is SU(3) × SU(2) × U(1); it projects onto each of its three factors, and an
 element is determined by its three projections. [1] Its star operation commutes with the three
-projections. [2] A unitary scalar gives a gauge-group element acting on all three factors at
-once, whose projections are known explicitly. [3] The gauge groups are Lie groups. [11][TODO]
+projections. [2] Sending a phase a to the diagonal matrix diag(a, ā) gives a homomorphism from
+U(1) into SU(2). The electromagnetic U(1) embeds in the gauge group as u ↦ (1, diag(ū³, u³), u), fixing a nonzero Higgs vacuum of the form (v, 0). Its projections onto SU(3), SU(2) and U(1) are computed explicitly. [3]
+The gauge groups are Lie groups. [11][TODO]
 The gauge bundle over spacetime and its global sections, the gauge transformations, are built
 from the full gauge group. [12][TODO]
 
@@ -48,8 +49,8 @@ together with its representations of the gauge group, forms a single structure. 
 1. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `GaugeGroupI`, `toSU3`, `toSU2`, `toU1`, `ext`
 2. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `star_eq`, `star_toSU3`, `star_toSU2`,
    `star_toU1`
-3. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `ofU1Subgroup`, `ofU1Subgroup_toSU3`,
-   `ofU1Subgroup_toSU2`, `ofU1Subgroup_toU1`
+3. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `diagSU2`, `diagSU2_coe`, `ofU1Subgroup`,
+   `ofU1Subgroup_toSU3`, `ofU1Subgroup_toSU2`, `ofU1Subgroup_toU1`
 4. Physlib/Particles/StandardModel/GaugeGroup/Basic.lean — `gaugeGroupℤ₆UnitaryOfRoot`,
    `gaugeGroupℤ₆SU3OfRoot`, `gaugeGroupℤ₆SU2OfRoot`, `gaugeGroupℤ₆OfRoot`,
    `gaugeGroupℤ₆OfRoot_mem_center`, `gaugeGroupℤ₆Hom`, `gaugeGroupℤ₆SubGroup`,

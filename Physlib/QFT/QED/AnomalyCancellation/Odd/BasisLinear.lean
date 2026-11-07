@@ -878,7 +878,7 @@ lemma Pa_eq (g g' : Fin n.succ → ℚ) (f f' : Fin n.succ → ℚ) :
 
 lemma basisa_card : Fintype.card ((Fin n.succ) ⊕ (Fin n.succ)) =
     Module.finrank ℚ (PureU1 (2 * n.succ + 1)).LinSols := by
-  erw [BasisLinear.finrank_AnomalyFreeLinear]
+  rw [BasisLinear.finrank_AnomalyFreeLinear]
   simp [Fintype.card_sum, Fintype.card_fin, two_mul]
 
 /-!
@@ -936,7 +936,7 @@ lemma span_basis_swap! {S : (PureU1 (2 * n.succ + 1)).LinSols} (j : Fin n.succ)
   obtain ⟨f', hf'⟩ := (Submodule.mem_span_range_iff_exists_fun ℚ).mp hX
   use g, f'
   change Shifted.planeCharges f' = _ at hf'
-  erw [hf']
+  rw [hf']
   simp only [and_self, and_true, X]
   rw [← add_assoc, ← hS1]
   apply Shifted.swap_as_add at hS

@@ -5,66 +5,93 @@ Authors: Jinzheng Li
 -/
 module
 
-public import Physlib.Units.Basic
 public import Physlib.Relativity.SpeedOfLight
+public import Physlib.QuantumMechanics.PlanckConstant
+public import Physlib.StatisticalMechanics.BoltzmannConstant
 /-!
 
-# The physical constants of our world as dimensionful quantities
+# Physical constants
+
+An index of the physical constants in Physlib, and the format of their files.
 
 ## i. Overview
 
-Here physical constants are represented as fixed dimensionful quantities, separately from the
-choices of units used to express them. This module gives the type of each constant a dimension,
-so that an element of `Dimensionful` of that type records the quantity itself rather than its
-value in one system of units, and then defines the value the constant takes in our world. At
-present it covers the speed of light; Newton's constant, Planck's constant and the Boltzmann
-constant are to follow.
-
-Such a type consists of strictly positive reals, and so receives its action of `ℝ≥0ˣ`, the
-rescaling by a strictly positive factor that a change of units effects, from
-`PositiveRealUnitCore.instMulActionUnitsNNReal`. On it no action of `ℝ≥0` is compatible with the
-magnitude, which is why `CarriesDimension` is stated for the units of `ℝ≥0`; see
-`Physlib/Units/Basic.lean`.
+Each constant has its own file, which this module imports. Use these constants instead of defining
+new ones or writing out their values: a result in any units takes the type, such as
+`c : SpeedOfLight`, and the value in our world is `speedOfLight`. A new constant gets a file in the
+format of section A, an import above, a row in the table below and a checked line in section B.
 
 ## ii. Key results
 
-- `speedOfLight` : the speed of light in our world, `299792458 m s⁻¹`.
+| Constant | Dimension | Value in SI units |
+|---|---|---|
+| `speedOfLight` | `L T⁻¹` | `299792458 m s⁻¹`, exact |
+
+Not yet in this format: `Constants.h`, `Constants.ℏ`, `Constants.kB` and
+`ChargeUnit.elementaryCharge`.
+
+- `exists_units_constants_eq_one` : There are units in which the speed of light is `1`.
 
 ## iii. Table of contents
 
-- A. The speed of light
-  - A.1. The value in our world
+- A. The format of a constant
+- B. Checked values
+- C. Planck units
 
 ## iv. References
 
-* The defining value of the speed of light. [ref: bipm_si_brochure_2019]
+* The defining constants of the SI. [ref: bipm_si_brochure_2019]
+
+## A. The format of a constant
+
+The file of a constant with type `X` and value `x` has these sections, as in
+`Physlib/Relativity/SpeedOfLight.lean`.
+
+| Section | Contents |
+|---|---|
+| A. The type | `structure X` with fields `val : ℝ` and `pos : 0 < val` |
+| B. Instances | `X.instPositiveRealUnitCore`, `Coe X ℝ`, `X.positiveRealUnitCore_val` |
+| C. Positivity | `X.val_pos`, `X.val_nonneg`, `X.val_ne_zero` |
+| D. The dimension | `X.instHasDim` |
+| E. The value in our world | `x : Dimensionful X` and `x_in_SI` |
+| F. Specific to this constant | Optional, for example `One` or other forms of the constant |
+
+The value `x` is `X` in lower camel case, defined by `toDimensionful SI`, and `x_in_SI` is proved by
+`toDimensionful_apply_self`. The docstring of `x` gives the number with its SI unit, followed by
+`exact` or, for a measured constant, the CODATA edition.
+
 -/
 
 @[expose] public section
 
-open Dimension LTMCTUnitChoices CarriesDimension
+open NNReal Dimension LTMCTUnitChoices
 
 /-!
 
-## A. The speed of light
+## B. Checked values
+
+One line for each row of the table, giving the dimension and the value in SI units. Lean checks
+these lines against the definitions; it does not read the table.
 
 -/
 
-/-- The speed of light has the dimension of a length divided by a time. -/
-instance : HasDim SpeedOfLight where
-  d := L𝓭 * T𝓭⁻¹
+example : dim SpeedOfLight = L𝓭 * T𝓭⁻¹ ∧ (speedOfLight SI).val = 299792458 := ⟨rfl, by simp⟩
 
 /-!
 
-### A.1. The value in our world
+## C. Planck units
+
+Planck units are units in which `c`, `ℏ`, `G` and `k_B` are all `1`; so far the lemma below covers
+`c`. Constants with independent dimensions can always be `1` together, while constants with
+dependent dimensions can only if their dimensionless ratios are `1`. So the lemma does not extend
+to every constant: `h` cannot join `ℏ`, and the electron mass cannot join `c`, `ℏ` and `G`.
 
 -/
 
-/-- The speed of light in our world, `299792458 m s⁻¹`, which is exact in SI units. -/
-noncomputable def speedOfLight : Dimensionful SpeedOfLight :=
-  toDimensionful SI ⟨299792458, by norm_num⟩
-
-@[simp]
-lemma speedOfLight_in_SI : speedOfLight SI = ⟨299792458, by norm_num⟩ := by
-  simp [speedOfLight, CarriesDimension.toDimensionful_apply_apply_units,
-    LTMCTUnitChoices.dimScaleUnits_self]
+/-- There are units in which the speed of light is `1`. -/
+lemma exists_units_constants_eq_one : ∃ u : LTMCTUnitChoices, (speedOfLight u).val = 1 := by
+  refine ⟨{SI with length := PositiveRealUnitCore.scale 299792458 LengthUnit.meters}, ?_⟩
+  change ((SI.dimScale _ (L𝓭 * T𝓭⁻¹) : ℝ≥0) : ℝ) * 299792458 = 1
+  simp only [map_mul, map_inv, NNReal.coe_mul, NNReal.coe_inv, dimScale_L𝓭, dimScale_T𝓭]
+  change (1 / (299792458 * 1) : ℝ) * (1 / 1)⁻¹ * 299792458 = 1
+  norm_num

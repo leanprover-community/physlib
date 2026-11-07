@@ -40,7 +40,7 @@ lemma asCharges_eq_castSucc (j : Fin n) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma asCharges_ne_castSucc {k j : Fin n} (h : k ≠ j) :
-    asCharges k ⟨j, by simp⟩= 0 := by
+    asCharges k j.castSucc = 0 := by
   simp [asCharges, Fin.ext_iff]
   grind
 
@@ -93,7 +93,7 @@ def coordinateMap : (PureU1 n.succ).LinSols ≃ₗ[ℚ] Fin n →₀ ℚ where
     rw [Finset.sum_eq_single j]
     · simp only [asCharges, ↓reduceIte, mul_one]
     · intro k _ hkj
-      erw [asCharges_ne_castSucc hkj]
+      rw [asCharges_ne_castSucc hkj]
       exact Rat.mul_zero (S.val k.castSucc)
     · simp
   right_inv f := by
@@ -107,7 +107,7 @@ def coordinateMap : (PureU1 n.succ).LinSols ≃ₗ[ℚ] Fin n →₀ ℚ where
     rw [Finset.sum_eq_single j]
     · simp only [asCharges, ↓reduceIte, mul_one]
     · intro k _ hkj
-      erw [asCharges_ne_castSucc hkj]
+      rw [asCharges_ne_castSucc hkj]
       exact Rat.mul_zero (f k)
     · simp
 

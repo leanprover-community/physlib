@@ -6,7 +6,7 @@ Authors: Robert Sneiderman, Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Basic
-public import Physlib.Relativity.PauliMatrices.AsTensor
+public import Physlib.Relativity.Bispinors.Pauli.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Basic
 /-!
 
@@ -29,6 +29,9 @@ open complexLorentzTensor
 open TensorSpecies
 open Tensor
 open Tensorial
+
+TODO "Remove the constructions in this file, and this file
+  all together. Replace the Pauli matrices in it with `ComplexVector.pauli`."
 
 /-!
 
@@ -122,13 +125,13 @@ lemma toTensor_basis_expand : σ^^^ =
   fin_cases μ <;> fin_cases α <;> fin_cases β <;> simp [pauliMatrix]
 
 open Lorentz in
-lemma toTensor_eq_asConsTensor :
+lemma toTensor_eq_pauli :
     σ^^^ = fromConstTriple (S := complexLorentzTensor)
-      (c1 := Color.up) (c2 := Color.upL) (c3 := Color.upR) PauliMatrix.asConsTensor := by
+      (c1 := Color.up) (c2 := Color.upL) (c3 := Color.upR) ComplexVector.pauli := by
   symm
-  trans fromTripleT PauliMatrix.asTensor
-  · rw [fromConstTriple, congrArg fromTripleT PauliMatrix.asConsTensor_apply_one]
-  rw [PauliMatrix.asTensor_expand, toTensor_basis_expand]
+  trans fromTripleT ComplexVector.pauliVal
+  · rw [fromConstTriple, congrArg fromTripleT ComplexVector.pauli_apply_one]
+  rw [ComplexVector.pauliVal_expand_tmul, toTensor_basis_expand]
   simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, map_sub,
     map_add, _root_.map_smul]
   simp only [fromTripleT_apply_basis]
@@ -265,12 +268,12 @@ lemma toTensor_dualAll_eq_ofGaussianInt :
 
 @[simp]
 lemma smul_eq_self (Λ : SL(2,ℂ)) : Λ • pauliMatrix = pauliMatrix := by
-  rw [smul_eq, toTensor_eq_asConsTensor, actionT_fromConstTriple, ← toTensor_eq_asConsTensor]
+  rw [smul_eq, toTensor_eq_pauli, actionT_fromConstTriple, ← toTensor_eq_pauli]
   simp
 
 @[simp]
 lemma toTensor_smul_eq_self (Λ : SL(2,ℂ)) : Λ • σ^^^ = σ^^^ := by
-  rw [toTensor_eq_asConsTensor]
+  rw [toTensor_eq_pauli]
   simp
 
 /-!

@@ -82,18 +82,35 @@ instance : InvolutiveStar GaugeGroupI where
   star_involutive g := by
     ext1 <;> simp
 
-/-- The inclusion of a U(1) subgroup. -/
-noncomputable def ofU1Subgroup (u1 : unitary ℂ) : GaugeGroupI :=
-  (1,
-  ⟨!![star (u1 ^ 3 : unitary ℂ), 0;0, (u1 ^ 3 : unitary ℂ)], by
-    simp only [SetLike.mem_coe]
-    rw [mem_unitaryGroup_iff']
-    funext i j
-    rw [Matrix.mul_apply]
-    fin_cases i <;> fin_cases j <;> simp [conj_mul'], by
-    simp only [RCLike.star_def, SetLike.mem_coe, MonoidHom.mem_mker, coe_detMonoidHom,
-      det_fin_two_of, conj_mul', mul_zero, sub_zero]
-    simp⟩, u1)
+/-- The diagonal element `diag(a, ā)` of `SU(2)` associated with a phase `a`.
+  These elements form a maximal torus of `SU(2)`. -/
+noncomputable def diagSU2 : unitary ℂ →* specialUnitaryGroup (Fin 2) ℂ where
+  toFun a := ⟨!![(a : ℂ), 0; 0, (star a : ℂ)], by
+    have h1 : (starRingEnd ℂ) (a : ℂ) * (a : ℂ) = 1 := a.2.1
+    have h2 : (a : ℂ) * (starRingEnd ℂ) (a : ℂ) = 1 := a.2.2
+    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff']
+    refine ⟨?_, by simp [det_fin_two_of, h2]⟩
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, h1, h2]⟩
+  map_one' := by
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  map_mul' a b := by
+    ext i j
+    fin_cases i <;> fin_cases j <;> simp [mul_comm]
+
+@[simp]
+lemma diagSU2_coe (a : unitary ℂ) :
+    (diagSU2 a : Matrix (Fin 2) (Fin 2) ℂ) = !![(a : ℂ), 0; 0, (star a : ℂ)] := rfl
+
+/-- The embedding of `U(1)` into the gauge group given by `u ↦ (1, diag(ū³, u³), u)`,
+  trivial on `SU(3)`. This is the electromagnetic `U(1)`, the subgroup left unbroken by a
+  Higgs vacuum of the form `(v, 0)`. -/
+noncomputable def ofU1Subgroup : unitary ℂ →* GaugeGroupI where
+  toFun u1 := (1, diagSU2 (star (u1 ^ 3)), u1)
+  map_one' := by simp
+  map_mul' u1 v1 := by
+    ext1 <;> simp [toSU3, toSU2, toU1, mul_pow]
 
 @[simp]
 lemma ofU1Subgroup_toSU3 (u1 : unitary ℂ) :
@@ -101,19 +118,12 @@ lemma ofU1Subgroup_toSU3 (u1 : unitary ℂ) :
 
 @[simp]
 lemma ofU1Subgroup_toSU2 (u1 : unitary ℂ) :
-    toSU2 (ofU1Subgroup u1) = ⟨!![star (u1 ^ 3 : unitary ℂ), 0;0, (u1 ^ 3 : unitary ℂ)], by
-    simp only [SetLike.mem_coe]
-    rw [mem_unitaryGroup_iff']
-    funext i j
-    rw [Matrix.mul_apply]
-    fin_cases i <;> fin_cases j <;> simp [conj_mul'], by
-    simp only [RCLike.star_def, SetLike.mem_coe, MonoidHom.mem_mker, coe_detMonoidHom,
-      det_fin_two_of, conj_mul', mul_zero, sub_zero]
-    simp⟩ := rfl
+    toSU2 (ofU1Subgroup u1) = diagSU2 (star (u1 ^ 3)) := rfl
 
 @[simp]
 lemma ofU1Subgroup_toU1 (u1 : unitary ℂ) :
     toU1 (ofU1Subgroup u1) = u1 := rfl
+
 end GaugeGroupI
 
 /-!
