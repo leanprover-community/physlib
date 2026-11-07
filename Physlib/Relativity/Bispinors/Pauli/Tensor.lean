@@ -74,7 +74,7 @@ identity of `ε`.
 @[expose] public section
 
 open TensorProduct Fermion Lorentz MatrixGroups
-open PauliMatrix (pauliMatrix pauliBasis pauliSelfAdjoint)
+open PauliMatrix (pauliMatrix)
 
 namespace Tensors.complexLorentz
 
@@ -94,21 +94,13 @@ scoped[Tensors.complexLorentz] notation "σT" => pauliTensor
 /-- The components of `σT^{μαβ̇}` are the entries of the Pauli matrices. -/
 lemma tensorBasis_repr_pauliTensor (μ : Π i, Idx (![up, upL, upR] i).kind) :
     (complexLorentz.tensorBasis _).repr pauliTensor μ = pauliMatrix (μ 0) (μ 1) (μ 2) := by
-  rw [pauliTensor, Species.tensorBasis_repr_reindex, ComplexVector.pauliVal, map_sum, map_sum,
-    Finsupp.finsetSum_apply]
-  simp only [Tensorial.toTensor_tmul, Species.tensorBasis_repr_tmulEquiv,
-    tensorBasis_repr_toTensor_leftRight, LinearEquiv.apply_symm_apply]
-  refine (Finset.sum_congr rfl fun i _ => congrArg (· * _)
-    (Species.tensorBasis_repr_oneSlotEquiv (S := complexLorentz) up _ _)).trans ?_
-  -- The labels are casts along `rfl`, so the identity is stated for plain labels.
-  have h (a : Fin 1 ⊕ Fin 3) (b c : Fin 2) :
-      ∑ i, ComplexVector.basis.repr (ComplexVector.basis i) a * (pauliBasis i).1 b c =
-        pauliMatrix a b c := by
-    rw [Finset.sum_eq_single a (fun i _ hi => by
-        rw [Module.Basis.repr_self, Finsupp.single_eq_of_ne hi.symm, zero_mul]) (by simp),
-      Module.Basis.repr_self, Finsupp.single_eq_same, one_mul]
-    simp [pauliBasis, pauliSelfAdjoint]
-  exact h _ _ _
+  rw [pauliTensor, Species.tensorBasis_repr_reindex]
+  -- The components of `pauliVal` in the product basis `e_μ ⊗ e_α ⊗ e_β̇` are `pauliVal_repr`.
+  exact (Tensorial.tensorBasis_repr_toTensor_prod (S := complexLorentz) (c₁ := ![up])
+    ComplexVector.basis (LeftHandedWeyl.basis.tensorProduct RightHandedWeyl.basis) (· 0)
+    (fun ν => (ν (.inl 0), ν (.inr 0)))
+    (Tensorial.tensorBasis_repr_toTensor_ofIndexSpace (S := complexLorentz) up)
+    tensorBasis_repr_toTensor_leftRight _ _).trans (ComplexVector.pauliVal_repr _ _ _)
 
 /-- `σT^{μαβ̇}` is an invariant tensor of `SL(2, ℂ)`, `g • σT = σT`. -/
 lemma pauliTensor_invariant (g : SL(2, ℂ)) : g • pauliTensor = pauliTensor := by
