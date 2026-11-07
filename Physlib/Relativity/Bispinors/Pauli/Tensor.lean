@@ -210,15 +210,9 @@ lemma pauliB_pauliA (p : ℂT[up, upL, upR]) : pauliB (pauliA p) = (2 : ℂ) •
 
 /-- `pauliA ∘ pauliB = 2`: both spaces have dimension `16`, so the left inverse `pauliB / 2` of
 `pauliA` is a right inverse. -/
-lemma pauliA_pauliB (X : ℂT[upL, upR, upL, upR]) : pauliA (pauliB X) = (2 : ℂ) • X := by
-  have hdim : Module.finrank ℂ ℂT[up, upL, upR] = Module.finrank ℂ ℂT[upL, upR, upL, upR] := by
-    rw [Species.finrank_tensor, Species.finrank_tensor]
-    rfl
-  have h : ((2 : ℂ)⁻¹ • pauliB) ∘ₗ pauliA = LinearMap.id := LinearMap.ext fun p => by
-    simp [pauliB_pauliA]
-  have h' := LinearMap.congr_fun ((LinearMap.comp_eq_id_comm_of_finrank_eq hdim).2 h) X
-  simp only [LinearMap.comp_apply, LinearMap.smul_apply, map_smul, LinearMap.id_apply] at h'
-  exact (inv_smul_eq_iff₀ two_ne_zero).1 h'
+lemma pauliA_pauliB (X : ℂT[upL, upR, upL, upR]) : pauliA (pauliB X) = (2 : ℂ) • X :=
+  LinearMap.comp_apply_eq_smul_of_comp_apply_eq_smul_of_finrank_eq
+    (by rw [Species.finrank_tensor, Species.finrank_tensor]; rfl) two_ne_zero pauliB_pauliA X
 
 /-- Raising both Weyl indices of `σT^μ_{αβ̇}` gives `σT^{μαβ̇}`. -/
 lemma pauliTensor_raise_lower : {{pauliTensor | μ ↓α ↓β}ᵀ | μ ↑α ↑β}ᵀ = pauliTensor := by
