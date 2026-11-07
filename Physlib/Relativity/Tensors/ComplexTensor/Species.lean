@@ -388,12 +388,12 @@ lemma idxBar_idxBar {κ κ' : Kind} (h : κ' = star κ) (h' : κ = star κ') (μ
 /-- Conjugation swaps left- and right-handed indices and fixes vector indices, conjugating the
 components. -/
 noncomputable instance : complexLorentz.HasConjugation :=
-  .ofBasis complexLorentz idxBar idxBar_idxBar
+  .ofBasis complexLorentz ⟨idxBar, idxBar_idxBar⟩
 
 /-- Conjugation commutes with the action of `SL(2, ℂ)`. The right-handed representation is the
 conjugate of the left-handed one, and the vector representation is real. -/
 instance : complexLorentz.IsEquivariantConjugation :=
-  Species.HasConjugation.isEquivariantConjugation_ofBasis idxBar idxBar_idxBar fun κ g => by
+  Species.HasConjugation.isEquivariantConjugation_ofBasis ⟨idxBar, idxBar_idxBar⟩ fun κ g => by
     match κ with
     | left =>
       exact fun μ ν => (RightHandedWeyl.rep_apply_basis_repr g μ ν).trans
@@ -416,7 +416,7 @@ lemma tensorBasis_repr_conj {ι : Type} [Fintype ι] {c c' : ι → Color Kind}
       star ((complexLorentz.tensorBasis c).repr t
         fun i => (idxBar (congrArg Color.kind (h i))).symm (μ i)) :=
   Species.Tensor.tensorBasis_repr_conj_of_basis h _
-    (fun i => Species.HasConjugation.ofBasis_conjEquiv_basis _ _ (h i)) t μ
+    (fun i => Species.HasConjugation.ofBasis_conjEquiv_basis _ (h i)) t μ
 
 end complexLorentz
 

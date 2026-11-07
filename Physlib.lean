@@ -205,6 +205,7 @@ public import Physlib.Mathematics.Tensors.Color
 public import Physlib.Mathematics.Tensors.Conjugation
 public import Physlib.Mathematics.Tensors.Contraction
 public import Physlib.Mathematics.Tensors.Elab
+public import Physlib.Mathematics.Tensors.HermitianForm
 public import Physlib.Mathematics.Tensors.Inverse
 public import Physlib.Mathematics.Tensors.Metric
 public import Physlib.Mathematics.Tensors.Product

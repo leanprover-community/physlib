@@ -6,8 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.ForMathlib.SemilinearMaps
-public import Physlib.Mathematics.ForMathlib.SesquilinearForm
-public import Physlib.Mathematics.Tensors.Inverse
+public import Physlib.Mathematics.Tensors.Contraction
 /-!
 
 # Complex conjugation of tensors
@@ -18,81 +17,34 @@ The conjugate of a tensor conjugates its components and moves each index to the 
 
 Conjugation conjugates the components of a tensor and moves each index to the conjugate kind,
 keeping its variance. A left-handed spinor `ψ_α` becomes a right-handed spinor `ψ̄_α̇`, and a
-vector index is its own conjugate, so `v̄^μ` is again a vector.
+vector index is its own conjugate.
 
-A species declares conjugation in two parts. First, its kind type has an instance of Mathlib's
-`InvolutiveStar`, whose `star` says which kind is conjugate to which, with `star (star κ) = κ`.
-Complex Lorentz lists its kinds and defines `star` by cases.
+The kinds of a species carry Mathlib's `InvolutiveStar`, whose `star` gives the conjugate kind, and
+the conjugate color is `c.bar = ⟨star c.kind, c.variance⟩`. The species gives the conjugation maps
+`S.conjEquiv h : V c ≃ V c'` as data (`Species.HasConjugation`), with the target color given by an
+equation `h : c' = c.bar` that holds by `rfl` at concrete colors. Conjugating twice gives back the
+vector and conjugation preserves the contraction. Commuting with the group action is the separate
+property `Species.IsEquivariantConjugation`.
 
-```lean
-inductive Kind | left | right | vec
-
-instance : InvolutiveStar Kind where
-  star | left => right | right => left | vec => vec
-  star_involutive κ := by cases κ <;> rfl
-```
-
-The conjugate color `c.bar = ⟨star c.kind, c.variance⟩` has the conjugate kind and the same
-variance. Second, the species gives the conjugation maps as data, the class
-`Species.HasConjugation`, with two laws. Conjugating twice gives back the vector, and conjugation
-preserves the contraction, `(u^μ α_μ)* = ū^μ ᾱ_μ`. That it commutes with the group action,
-`(Λv)‾ = Λ v̄`, is a separate property, `Species.IsEquivariantConjugation`, as symmetry is a
-separate property of a form. Conjugation is structure that the species declares, not a consequence
-of its bases, so the library assumes nothing about the basis labels of a kind and of its
-conjugate.
-
-The conjugate `S.conjEquiv h v` of a vector `v` of color `c` is a vector of color `c'`, and
-`S.conjEquiv h` is a conjugate-linear equivalence `V c ≃ V c'`. The target color is given with
-the equation `h : c' = c.bar`, which holds by `rfl` at concrete colors, as in
-`S.conjEquiv rfl v`. The laws are stated in this form, so that conjugating twice gives back the
-vector (`conjEquiv_conjEquiv`) with no cast along `c.bar.bar = c`.
-
-Most species conjugate componentwise, `(v̄)^μ = (v^μ)*`. The constructor
-`Species.HasConjugation.ofBasis` builds the conjugation from the bases of the species and a label
-map from each kind to its conjugate kind. It commutes with the group action when the matrices of
-the group at `c.bar` are the conjugates of those at `c`
-(`HasConjugation.isEquivariantConjugation_ofBasis`), which is needed at the upper colors only.
-The identification of the labels of a kind with those of its conjugate lives in this label map,
-which the species gives, and not in the library. For complex Lorentz both kinds of spinor have the
-labels `Fin 2` and the map is the identity.
-
-The conjugate `Tensor.conj h T` of a tensor `T` applies the conjugation to every slot, with the
-target colors given by `h`, slot by slot. It is conjugate-linear, an involution
-(`Tensor.conj_conj`), commutes with contraction (`Tensor.conj_contr`), and for an equivariant
-conjugation with the group action (`Tensor.conj_smul`). Its components are the conjugates of those
-of `T` when the species conjugates componentwise (`Tensor.tensorBasis_repr_conj_of_basis`).
-
-A tensor `g_{IJ̄}` in `V a ⊗ V b` with `b = a.bar` is read as a sesquilinear form on the vectors
-(`sesqForm`), so that Hermiticity is Mathlib's `LinearMap.IsSymm` and positive-definiteness is
-`LinearMap.IsPosDef` from `ForMathlib.SesquilinearForm`. The inverse `g^{J̄I}` in
-`V b.dual ⊗ V a.dual` is again such a form, with `a.dual = b.dual.bar`
-(`Color.dual_eq_bar_dual`). The inverse of an invertible Hermitian or positive-definite `g_{IJ̄}`
-is again Hermitian or positive-definite, and over a field a positive-definite `g_{IJ̄}` is
-invertible.
+Most species conjugate componentwise, `(v̄)^μ = (v^μ)*`, and get their conjugation from
+`Species.HasConjugation.ofBasis` and a map `ConjLabels` from the labels of each kind to those of
+its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every slot.
 
 ## ii. Key results
 
 - `Color.bar` is the conjugate color, with `Color.bar_bar` and `Color.bar_dual`.
 - `Species.HasConjugation` gives the conjugation of a species with its two laws, and
-  `Species.conjEquiv` is the conjugate of a vector.
+  `Species.conjEquiv` is the conjugate of a vector, with its laws `Species.conjEquiv_conjEquiv`,
+  `Species.star_contr_conjEquiv` and `Species.conjEquiv_rep`.
 - `Species.IsEquivariantConjugation` says that the conjugation commutes with the group action, and
   `Species.rep_dual_of_star_contr` that equivariance at a color gives it at the dual color.
-- `Species.conjEquiv_conjEquiv` proves that conjugating twice gives back the vector,
-  `Species.star_contr` that conjugation preserves the contraction, and `Species.conjEquiv_rep`
-  that an equivariant conjugation commutes with the group action.
-- `Species.HasConjugation.ofBasis` builds a componentwise conjugation from a label map,
+- `Species.HasConjugation.ofBasis` builds a componentwise conjugation from `ConjLabels`, and
   `Species.HasConjugation.isEquivariantConjugation_ofBasis` gives its equivariance from the
-  matrices of the group, and `Species.basis_repr_conjEquiv_of_basis` gives the components of the
-  conjugate.
+  matrices of the group.
 - `Species.Tensor.conj` is the conjugate of a tensor, with `Species.Tensor.conj_conj`,
-  `Species.Tensor.conj_pure`, `Species.Tensor.conj_smul` and `Species.Tensor.conj_contr`.
+  `Species.Tensor.conj_smul` and `Species.Tensor.conj_contr`.
 - `Species.Tensor.tensorBasis_repr_conj_of_basis` proves that the components of the conjugate are
   the conjugates of the components.
-- `Species.sesqForm` reads a tensor `g_{IJ̄}` as the sesquilinear form `x, y ↦ g_{IJ̄} y^I x̄^J̄`.
-- `Species.isSymm_sesqForm_inverse` and `Species.isPosDef_sesqForm_inverse` prove that the inverse
-  of an invertible Hermitian or positive-definite `g_{IJ̄}` is Hermitian or positive-definite.
-- `Species.toLin_injective_of_isPosDef` proves that the linear map of a positive-definite `g_{IJ̄}`
-  is injective, and `Species.toLin_bijective_of_isPosDef` that over a field it is bijective.
 
 ## iii. Table of contents
 
@@ -102,8 +54,6 @@ invertible.
 - D. Conjugation of tensors
   - D.1. The group action and contraction
   - D.2. Components
-- E. Hermitian forms and their inverses
-  - E.1. Positive-definite forms over a field
 
 ## iv. References
 
@@ -148,6 +98,15 @@ lemma Color.dual_eq_bar_dual {a b : Color K} (hb : b = a.bar) : a.dual = b.dual.
 
 -/
 
+/-- A map reading the labels of a kind `κ` as labels of its conjugate kind `κ'`, given with an
+equation `h : κ' = star κ`, that gives back the label when applied twice. -/
+structure ConjLabels (basisIdx : K → Type) where
+  /-- The labels of `κ` read as labels of its conjugate `κ'`. -/
+  equiv {κ κ' : K} (h : κ' = star κ) : basisIdx κ ≃ basisIdx κ'
+  /-- Reading a label as a label of the conjugate kind and back gives the label. -/
+  equiv_equiv {κ κ' : K} (h : κ' = star κ) (h' : κ = star κ') (μ : basisIdx κ) :
+    equiv h' (equiv h μ) = μ
+
 namespace Species
 
 variable {k : Type} [CommRing k] [StarRing k] {G : Type} [Group G] {basisIdx : K → Type}
@@ -156,10 +115,8 @@ variable {k : Type} [CommRing k] [StarRing k] {G : Type} [Group G] {basisIdx : K
 
 variable (S) in
 /-- A conjugation of the species, a conjugate-linear equivalence `v ↦ v̄` from each color `c` to
-its conjugate `c'`. Conjugating twice gives back the vector, and conjugation preserves the
-contraction. The conjugate color is given with an equation `h : c' = c.bar`, so that no law moves
-a vector along `c.bar.bar = c`. Commuting with the group action is the separate property
-`IsEquivariantConjugation`. -/
+its conjugate `c'`, given with an equation `h : c' = c.bar` so that no law moves a vector along
+`c.bar.bar = c`. -/
 class HasConjugation where
   /-- The conjugate of a vector of color `c`, a vector of the conjugate color `c'`. -/
   conj {c c' : Color K} (h : c' = c.bar) : S.V c ≃ₗ⋆[k] S.V c'
@@ -196,7 +153,7 @@ lemma conjEquiv_conjEquiv (h : c' = c.bar) (h' : c = c'.bar) (v : S.V c) :
 
 /-- Conjugation preserves the contraction, `(u^μ α_μ)* = ū^μ ᾱ_μ`, for `u` of color `c` and `α` of
 color `c.dual`. -/
-lemma star_contr (h : c' = c.bar) (u : S.V c) (α : S.V c.dual) :
+lemma star_contr_conjEquiv (h : c' = c.bar) (u : S.V c) (α : S.V c.dual) :
     star (S.contr c (u ⊗ₜ[k] α)) =
       S.contr c' (S.conjEquiv h u ⊗ₜ[k] S.conjEquiv (congrArg Color.dual h) α) :=
   HasConjugation.star_contr_conj h u α
@@ -240,30 +197,25 @@ lemma rep_dual_of_star_contr (f : S.V c ≃ₗ⋆[k] S.V c') (f' : S.V c.dual �
 
 variable (S) in
 /-- The componentwise conjugation, `(v̄)^{e μ} = (v^μ)*`, which sends the basis vector `e_μ` of
-`c` to the basis vector `e_{e μ}` of the conjugate color. The label map `e h` reads a label of a
-kind `κ` as a label of its conjugate `κ'`, given with an equation `h : κ' = star κ`, and reading
-it back gives the label (`e_e`). -/
+`c` to the basis vector `e_{e μ}` of the conjugate color, with the labels read by `e`. -/
 @[instance_reducible]
-noncomputable def HasConjugation.ofBasis
-    (e : ∀ {κ κ' : K}, κ' = star κ → basisIdx κ ≃ basisIdx κ')
-    (e_e : ∀ {κ κ' : K} (h : κ' = star κ) (h' : κ = star κ') (μ : basisIdx κ), e h' (e h μ) = μ) :
+noncomputable def HasConjugation.ofBasis (e : ConjLabels basisIdx) :
     S.HasConjugation where
-  conj h := (S.basis _).starEquiv (S.basis _) (e (congrArg Color.kind h))
-  conj_conj _ _ v := Module.Basis.starEquiv_starEquiv _ _ _ _ (e_e _ _) v
+  conj h := (S.basis _).starEquiv (S.basis _) (e.equiv (congrArg Color.kind h))
+  conj_conj _ _ v := Module.Basis.starEquiv_starEquiv _ _ _ _ (e.equiv_equiv _ _) v
   star_contr_conj _ u α := Module.Basis.star_coordPairing_starEquiv _ _ _ _ _ u α
 
 /-- The componentwise conjugation commutes with the group action when the matrix of each `g : G`
 at `c.bar` is the conjugate of its matrix at `c`, `(Λ̄)^μ_ν = (Λ^μ_ν)*`. The law is needed at the
 upper colors only, since it follows at the lower ones (`rep_dual_of_star_contr`). -/
-lemma HasConjugation.isEquivariantConjugation_ofBasis
-    (e : ∀ {κ κ' : K}, κ' = star κ → basisIdx κ ≃ basisIdx κ')
-    (e_e : ∀ {κ κ' : K} (h : κ' = star κ) (h' : κ = star κ') (μ : basisIdx κ), e h' (e h μ) = μ)
+lemma HasConjugation.isEquivariantConjugation_ofBasis (e : ConjLabels basisIdx)
     (rep_basis : ∀ (κ : K) (g : G) (μ ν : basisIdx κ),
-      (S.basis ⟨star κ, .up⟩).repr (S.rep ⟨star κ, .up⟩ g (S.basis ⟨star κ, .up⟩ (e rfl μ)))
-        (e rfl ν) = star ((S.basis ⟨κ, .up⟩).repr (S.rep ⟨κ, .up⟩ g (S.basis ⟨κ, .up⟩ μ)) ν)) :
-    letI := ofBasis S e e_e
+      (S.basis ⟨star κ, .up⟩).repr
+          (S.rep ⟨star κ, .up⟩ g (S.basis ⟨star κ, .up⟩ (e.equiv rfl μ))) (e.equiv rfl ν) =
+        star ((S.basis ⟨κ, .up⟩).repr (S.rep ⟨κ, .up⟩ g (S.basis ⟨κ, .up⟩ μ)) ν)) :
+    letI := ofBasis S e
     S.IsEquivariantConjugation := by
-  let := ofBasis S e e_e
+  let := ofBasis S e
   refine ⟨fun {c _} h g v => ?_⟩
   subst h
   obtain ⟨κ, ⟨_ | _, _ | _, hv⟩⟩ := c
@@ -276,12 +228,10 @@ lemma HasConjugation.isEquivariantConjugation_ofBasis
   · exact absurd rfl hv
 
 /-- The componentwise conjugate of the basis vector `e_μ` is the basis vector `e_{e μ}`. -/
-lemma HasConjugation.ofBasis_conjEquiv_basis
-    (e : ∀ {κ κ' : K}, κ' = star κ → basisIdx κ ≃ basisIdx κ')
-    (e_e : ∀ {κ κ' : K} (h : κ' = star κ) (h' : κ = star κ') (μ : basisIdx κ), e h' (e h μ) = μ)
+lemma HasConjugation.ofBasis_conjEquiv_basis (e : ConjLabels basisIdx)
     (h : c' = c.bar) (μ : basisIdx c.kind) :
-    letI := ofBasis S e e_e
-    S.conjEquiv h (S.basis c μ) = S.basis c' (e (congrArg Color.kind h) μ) :=
+    letI := ofBasis S e
+    S.conjEquiv h (S.basis c μ) = S.basis c' (e.equiv (congrArg Color.kind h) μ) :=
   Module.Basis.starEquiv_apply_self _ _ _ μ
 
 /-- The components of the conjugate are the conjugates of the components,
@@ -337,25 +287,24 @@ lemma conj_smul [S.IsEquivariantConjugation] (h : ∀ i, c' i = (c i).bar) (g : 
     conj h (g • t) = g • conj h t :=
   map_smul_of_pure (conj h) g (fun f => by simp [conjEquiv_rep]) t
 
-variable {κ J : Type} [Fintype J] {b b' : κ → Color K} {a a' : J → Color K}
+variable {κ J : Type} [Fintype J] {b : κ → Color K} {a : J → Color K}
+
+/-- The pairs `σ` of `T`, as pairs of its conjugate `T̄`, with the same bijection of slots. -/
+def _root_.Tensors.ColorEquiv.barContr {c : ι → Color K} (σ : ColorEquiv c (contrColors b a)) :
+    ColorEquiv (fun i => (c i).bar) (contrColors (fun x => (b x).bar) fun j => (a j).bar) :=
+  ⟨σ.toEquiv, fun j => by rcases j with _ | _ | _ <;> exact congrArg Color.bar (σ.color_eq _)⟩
 
 /-- Conjugating a contraction is contracting the conjugate along the same pairs of slots,
-`(T^ρμ_μ)‾ = T̄^ρμ_μ`. The relabeling `τ` of `T̄` moves the slots as `σ` does (`hτ`). -/
-lemma conj_contr (h : ∀ i, c' i = (c i).bar) (hb : ∀ x, b' x = (b x).bar)
-    (ha : ∀ j, a' j = (a j).bar) (σ : ColorEquiv c (contrColors b a))
-    (τ : ColorEquiv c' (contrColors b' a')) (hτ : τ.toEquiv = σ.toEquiv) (t : S.Tensor c) :
-    conj hb (contr σ t) = contr τ (conj h t) := by
-  obtain rfl : c' = fun i => (c i).bar := funext h
-  obtain rfl : b' = fun x => (b x).bar := funext hb
-  obtain rfl : a' = fun j => (a j).bar := funext ha
-  obtain ⟨τ, hτ'⟩ := τ
-  subst hτ
+`(T^ρμ_μ)‾ = T̄^ρμ_μ`. -/
+lemma conj_contr (σ : ColorEquiv c (contrColors b a)) (t : S.Tensor c) :
+    conj (fun _ => rfl) (contr σ t) = contr σ.barContr (conj (fun _ => rfl) t) := by
   induction t using inductionOn_pure with
   | hsmul r t ht => rw [map_smul, LinearEquiv.map_smulₛₗ, ht, LinearEquiv.map_smulₛₗ, map_smul]
   | hadd x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
   | h f =>
     simp only [contr_pure, conj_pure, LinearEquiv.map_smulₛₗ, starRingEnd_apply, star_prod,
-      star_contr rfl, conjEquiv_cast, cast_conjEquiv]
+      star_contr_conjEquiv rfl, conjEquiv_cast, cast_conjEquiv]
+    rfl
 
 /-!
 
@@ -377,106 +326,6 @@ lemma tensorBasis_repr_conj_of_basis [Fintype ι] (h : ∀ i, c' i = (c i).bar)
   rfl
 
 end Tensor
-
-/-!
-
-## E. Hermitian forms and their inverses
-
--/
-
-variable [S.HasConjugation] {a b : Color K}
-
-variable (S) in
-/-- A tensor `g_{IJ̄}` in `V a ⊗ V b` as the sesquilinear form `x, y ↦ g_{IJ̄} y^I x̄^J̄` on the
-vectors of color `a.dual`. The color `b` is the conjugate of `a` by `hb`, which holds by `rfl` at
-concrete colors. The form is conjugate-linear in its first argument, Mathlib's convention, so it is
-the physicist's `g(y, x) = g_{IJ̄} y^I x̄^J̄` with the arguments swapped. -/
-noncomputable def sesqForm (g : S.V a ⊗[k] S.V b) (hb : b = a.bar) :
-    S.V a.dual →ₗ⋆[k] S.V a.dual →ₗ[k] k :=
-  (((TensorProduct.mk k _ _).compr₂ (S.contr b.dual).toLinearMap).compl₂ (S.toLin g)).comp
-    (S.conjEquiv (congrArg Color.dual hb)).toLinearMap
-
-/-- The form on `x, y` contracts `x̄` with `g y`, where `g y` is the contraction of `g` with `y`. -/
-lemma sesqForm_apply (g : S.V a ⊗[k] S.V b) (hb : b = a.bar) (x y : S.V a.dual) :
-    S.sesqForm g hb x y =
-      S.contr b.dual (S.conjEquiv (congrArg Color.dual hb) x ⊗ₜ S.toLin g y) :=
-  rfl
-
-/-- The form of the inverse on `g x` and `g y` is the conjugate of the form of `g` on `y` and `x`,
-`g^{J̄I} (g y)_J̄ (g x)‾_I = (g_{IJ̄} x^I ȳ^J̄)*`. The inverse `g^{J̄I}` acts on barred
-covectors, so its form is the conjugate of the usual `g^{IJ̄} w_I w̄'_J̄`. -/
-lemma sesqForm_inverse_toLin (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
-    (x y : S.V a.dual) (hb : b = a.bar := by rfl)
-    (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    S.sesqForm (S.inverse g) ha (S.toLin g x) (S.toLin g y) = star (S.sesqForm g hb y x) := by
-  rw [sesqForm_apply, sesqForm_apply, toLin_inverse g h, LinearEquiv.coe_coe,
-    LinearEquiv.ofBijective_symm_apply_apply, ← S.contr_tmul_symm, star_contr ha,
-    conjEquiv_conjEquiv]
-
-/-- The inverse of a Hermitian `g_{IJ̄}` is Hermitian. -/
-lemma isSymm_sesqForm_inverse (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsSymm)
-    (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    (S.sesqForm (S.inverse g) ha).IsSymm := by
-  refine ⟨fun u w => ?_⟩
-  obtain ⟨x, rfl⟩ := h.2 u
-  obtain ⟨y, rfl⟩ := h.2 w
-  rw [sesqForm_inverse_toLin g h _ _ hb ha, sesqForm_inverse_toLin g h _ _ hb ha,
-    starRingEnd_apply, star_star]
-  exact (hg.eq x y).symm
-
-/-- The linear map `y ↦ g y` of a positive-definite `g_{IJ̄}` is injective, since `g y = 0` gives
-`g(y, y) = 0`. -/
-lemma toLin_injective_of_isPosDef [Preorder k] (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (hg : (S.sesqForm g hb).IsPosDef) : Function.Injective (S.toLin g) := by
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  intro y hy
-  by_contra hne
-  simpa [sesqForm_apply, hy] using hg.pos y hne
-
-/-- The inverse of a positive-definite `g_{IJ̄}` with bijective linear map is positive-definite. -/
-lemma isPosDef_sesqForm_inverse_of_bijective [LT k] (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsPosDef)
-    (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    (S.sesqForm (S.inverse g) ha).IsPosDef := by
-  refine ⟨isSymm_sesqForm_inverse g h hg.isSymm ha, fun u hu => ?_⟩
-  obtain ⟨x, rfl⟩ := h.2 u
-  rw [sesqForm_inverse_toLin g h _ _ hb ha, ← starRingEnd_apply, hg.isSymm.eq x x]
-  exact hg.pos x fun hx => hu (by rw [hx, map_zero])
-
-end Species
-
-/-!
-
-### E.1. Positive-definite forms over a field
-
--/
-
-namespace Species
-
-variable {k : Type} [Field k] [StarRing k] [Preorder k] {G : Type} [Group G] {basisIdx : K → Type}
-    [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
-    {S : Species k G K basisIdx} [S.HasConjugation] {a b : Color K}
-
-/-- A positive-definite `g_{IJ̄}` is invertible. Its linear map `y ↦ g y` is bijective. -/
-lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (hg : (S.sesqForm g hb).IsPosDef) : Function.Bijective (S.toLin g) := by
-  -- Surjective since the dimensions agree, through the conjugation `V a.dual ≃ V b.dual`.
-  have hi := toLin_injective_of_isPosDef g hg
-  refine ⟨hi, ?_⟩
-  have : ∀ c, Module.Finite k (S.V c) := fun c => Module.Finite.of_basis (S.basis c)
-  refine (LinearMap.injective_iff_surjective_of_finrank_eq_finrank ?_).1 hi
-  let f : S.V a.dual ≃ₗ⋆[k] S.V b.dual := S.conjEquiv (congrArg Color.dual hb)
-  rw [Module.finrank, rank_eq_of_equiv_equiv (starRingEnd k) f.toAddEquiv
-    (Function.Involutive.bijective fun r => by simp) (fun r m => map_smulₛₗ f r m),
-    ← Module.finrank, Module.finrank_eq_card_basis (S.basis b.dual),
-    Module.finrank_eq_card_basis (S.basis b)]
-
-/-- The inverse of a positive-definite `g_{IJ̄}` is positive-definite. -/
-lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (hg : (S.sesqForm g hb).IsPosDef) (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    (S.sesqForm (S.inverse g) ha).IsPosDef :=
-  isPosDef_sesqForm_inverse_of_bijective g (toLin_bijective_of_isPosDef g hg) hg ha
 
 end Species
 
