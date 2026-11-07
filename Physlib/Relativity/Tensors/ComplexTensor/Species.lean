@@ -603,8 +603,9 @@ lemma schouten_downR :
       Matrix.one_apply]
   rw [← sub_eq_add_neg]
   refine Eq.trans ?_ (Species.formMatrix_schouten downR (Fintype.card_fin 2) _ _ _ _)
-  congr 1
-  split_ifs with h h' h' <;> first | rfl | exact absurd h.symm h' | exact absurd h'.symm h
+  -- The delta of `formMatrix_schouten` is `δ^α_α'`, read here as `δ_α'^α`.
+  congr 2
+  exact propext eq_comm
 
 /-- Swapping the indices of the delta at `c` gives the delta at `c.dual`, as `δ^μ_ν = δ_ν^μ`. -/
 lemma deltaTensor_swap (c : Color Kind) :
