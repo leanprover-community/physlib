@@ -168,6 +168,15 @@ lemma mem_iff {ψ : SpaceDHilbertSpaceOn Ω μ} :
   simp
 
 end SchwartzSubmoduleOn
+
+/-- The class in `SpaceDHilbertSpaceOn Ω μ` of a Schwartz map `f`, obtained by including `f` in
+  `SpaceDHilbertSpace d μ` and projecting onto `Ω`, agrees with `f` `μ.restrict Ω`-almost
+  everywhere. The projection only forgets the values of `f` outside `Ω`. -/
+lemma subspaceProjection_schwartzIncl_coe_ae {d : ℕ} (Ω : Set (Space d)) (μ : Measure (Space d))
+    [μ.HasTemperateGrowth] (f : 𝓢(Space d, ℂ)) :
+    subspaceProjection Ω μ (schwartzIncl μ f) =ᵐ[μ.restrict Ω] f :=
+  (subspaceProjection_apply Ω _).trans ((coeFn_toLp f 2 μ).filter_mono ae_restrict_le)
+
 end SpaceDHilbertSpaceOn
 
 end QuantumMechanics
