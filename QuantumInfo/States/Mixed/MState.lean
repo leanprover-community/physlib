@@ -1345,6 +1345,17 @@ lemma isPiProd_iff_exists_pure_eq_piProd [Nonempty ι] (ψ : Ket ((i : ι) → d
     rw [← pure_piProd φ, ← PhaseEquiv_iff_pure_eq] at h
     exact (Ket.isPiProd_piProd φ).of_phaseEquiv h
 
+/-- A ket up to global phase is a product state if and only if its density matrix is an
+`MState.piProd` of pure states. This also holds when `ι` is empty. -/
+lemma isPiProd_iff_exists_pureQ_eq_piProd (q : KetUpToPhase ((i : ι) → dI i)) :
+    q.IsPiProd ↔ ∃ φ : (i : ι) → Ket (dI i), pureQ q = piProd (fun i ↦ pure (φ i)) := by
+  constructor
+  · rintro ⟨φ, rfl⟩
+    exact ⟨φ, pure_piProd φ⟩
+  · rintro ⟨φ, h⟩
+    refine ⟨φ, pureQ_injective ?_⟩
+    exact h.trans (pure_piProd φ).symm
+
 /-- The n-copy "power" of a mixed state, with the standard basis indexed by pi types. -/
 def npow (ρ : MState d) (n : ℕ) : MState (Fin n → d) :=
   piProd (fun _ ↦ ρ)

@@ -499,6 +499,22 @@ lemma Ket.IsPiProd.of_phaseEquiv [Nonempty ι] {ψ ψ' : Ket ((i : ι) → d i)}
     refine Finset.prod_congr rfl fun i hi ↦ ?_
     rw [Function.update_of_ne (Finset.ne_of_mem_erase hi)]
 
+/-- A ket up to global phase is a product state if its class contains a ket of the form
+`Ket.piProd φ`. If `ι` is empty, every class is a product state. -/
+def KetUpToPhase.IsPiProd (q : KetUpToPhase ((i : ι) → d i)) : Prop :=
+  ∃ φ : (i : ι) → Ket (d i), q = KetUpToPhase.mk (Ket.piProd φ)
+
+/-- With at least one party, the class of a ket is a product state exactly when the ket
+itself is a product state. -/
+@[simp]
+lemma KetUpToPhase.isPiProd_mk [Nonempty ι] (ψ : Ket ((i : ι) → d i)) :
+    (KetUpToPhase.mk ψ).IsPiProd ↔ ψ.IsPiProd := by
+  constructor
+  · rintro ⟨φ, h⟩
+    exact (Ket.isPiProd_piProd φ).of_phaseEquiv (Quotient.exact h)
+  · rintro ⟨φ, rfl⟩
+    exact ⟨φ, rfl⟩
+
 end piProd_phase
 
 section piProd_amplitudes
