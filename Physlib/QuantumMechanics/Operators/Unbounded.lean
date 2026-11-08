@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Bornemann, Gregory J. Loges
+Authors: Adam Bornemann, Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
@@ -58,6 +58,7 @@ Results
     then so is `u A u⁻¹ - z`.
 - `adjoint_compRestricted_le_compRestricted_adjoint` : The inequality `U† ∘ᵣ V† ≤ (V ∘ᵣ U)†`
     when `V` and `V ∘ᵣ U` have dense domain.
+- `IsClosable.adjoint_hasDenseDomain` : The adjoint of a closable operator has dense domain.
 - `IsUnbounded.adjoint` : The adjoint of an unbounded operator is also unbounded.
 - `IsUnbounded.adjoint_closure_eq_adjoint` : An unbounded operator and its closure have
     the same adjoint.
@@ -242,6 +243,37 @@ lemma isClosable_of_exists_dense_formalAdjoint [CompleteSpace H] [CompleteSpace 
   rw [adjoint_graph_eq_graph_adjoint h_adj, adjoint_graph_eq_graph_adjoint h,
     mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
     orthogonal_orthogonal_eq_closure, mem_submodule_iff_mem_submoduleToLp, submoduleToLp_closure]
+
+/-- The adjoint of a closable operator has dense domain, whether or not `U.domain` is dense.
+With `isClosable_of_exists_dense_formalAdjoint`, a densely defined operator is therefore closable
+exactly when its adjoint is densely defined. -/
+lemma IsClosable.adjoint_hasDenseDomain [CompleteSpace H] [CompleteSpace H'] (h : U.IsClosable) :
+    U†.HasDenseDomain := by
+  -- Otherwise some `x ≠ 0` is orthogonal to `U†.domain`; we show that `(0, x)` lies in the graph
+  -- of `U.closure`, which forces `x = 0`.
+  by_contra h_adj
+  obtain ⟨y, hy⟩ := not_forall.mp h_adj
+  have h_ne_bot : U†.domainᗮ = ⊥ → False := by
+    rw [← orthogonal_eq_top_iff, orthogonal_orthogonal_eq_closure]
+    exact fun a ↦ ne_of_mem_of_not_mem' mem_top hy a.symm
+  obtain ⟨x, hx, hx'⟩ := exists_mem_ne_zero_of_ne_bot h_ne_bot
+  apply hx'
+  refine graph_fst_eq_zero_snd U.closure ?_ rfl
+  -- The closure of the graph is its double orthogonal complement. Every pair `(a, b)` with
+  -- `⟪U z, a⟫ = ⟪z, b⟫` for all `z` has `a ∈ U†.domain`, so `⟪a, x⟫ = 0`.
+  rw [← IsClosable.graph_closure_eq_closure_graph h,
+    mem_submodule_closure_iff_mem_submoduleToLp_closure, ← orthogonal_orthogonal_eq_closure,
+    ← mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
+    Submodule.mem_adjoint_iff]
+  intro a b hab
+  rw [Submodule.mem_adjoint_iff] at hab
+  have ha : a ∈ U†.domain := by
+    refine mem_adjoint_domain_of_exists a ⟨b, fun z ↦ ?_⟩
+    have h1 : ⟪U z, a⟫_ℂ - ⟪(z : H), b⟫_ℂ = 0 := hab z (U z) (mem_graph U z)
+    rw [sub_eq_zero] at h1
+    rw [← inner_conj_symm, ← h1, inner_conj_symm]
+  show ⟪b, (0 : H)⟫_ℂ - ⟪a, x⟫_ℂ = 0
+  rw [inner_zero_right, hx a ha, sub_zero]
 
 /-- A zero LinearPMap (any domain) is closable. -/
 lemma isClosable_of_zero (h_zero : ⇑U = 0) : U.IsClosable := by
@@ -665,23 +697,8 @@ lemma IsUnbounded.hasDenseDomain (h : U.IsUnbounded) : U.HasDenseDomain := h.1
 lemma IsUnbounded.isClosable (h : U.IsUnbounded) : U.IsClosable := h.2
 
 lemma IsUnbounded.adjoint [CompleteSpace H] [CompleteSpace H'] (h : U.IsUnbounded) :
-    U†.IsUnbounded := by
-  refine ⟨?_, (adjoint_isClosed h.1).isClosable⟩
-  by_contra h_adj
-  obtain ⟨y, hy⟩ := not_forall.mp h_adj
-  have h_ne_bot : U†.domainᗮ = ⊥ → False := by
-    rw [← orthogonal_eq_top_iff, orthogonal_orthogonal_eq_closure]
-    exact fun a ↦ ne_of_mem_of_not_mem' mem_top hy a.symm
-  obtain ⟨x, hx, hx'⟩ := exists_mem_ne_zero_of_ne_bot h_ne_bot
-  apply hx'
-  refine graph_fst_eq_zero_snd U.closure ?_ rfl
-  rw [← IsClosable.graph_closure_eq_closure_graph h.2,
-    mem_submodule_closure_iff_mem_submoduleToLp_closure, ← orthogonal_orthogonal_eq_closure,
-    ← mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
-    ← adjoint_graph_eq_graph_adjoint h.1, mem_submodule_adjoint_iff_mem_submoduleToLp_orthogonal]
-  rintro ⟨y, Uy⟩ hy
-  simp only [neg_zero, WithLp.prod_inner_apply, inner_zero_right, add_zero]
-  exact hx y (mem_domain_of_mem_graph hy)
+    U†.IsUnbounded :=
+  ⟨h.2.adjoint_hasDenseDomain, (adjoint_isClosed h.1).isClosable⟩
 
 lemma IsUnbounded.closure (h : U.IsUnbounded) : U.closure.IsUnbounded :=
   ⟨h.1.closure, h.2.closureIsClosable⟩
