@@ -5,7 +5,7 @@ Authors: Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Unbounded
+public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
 /-!
 
@@ -55,6 +55,7 @@ through multiplication in the Fourier domain: see `Operators/Derivative.lean`.
   - E.1. Smul & neg
   - E.2. Add & sub
   - E.3. Composition
+  - E.4. Range and lower bound
 - F. Spectrum
 
 ## iv. References
@@ -639,6 +640,42 @@ lemma mulOperator_smul_eq
 
 TODO "`mulOperator_smul_eq` has the strong assumption `(𝓜 μ g).domain = ⊤`. Weaken this assumption
   and/or find other sufficient conditions to ensure the equality `𝓜 μ (f • g) = 𝓜 μ f * 𝓜 μ g`."
+
+/-!
+### E.4. Range and lower bound
+-/
+
+/-- If `f` is `μ`-a.e. strongly measurable and `ε ≤ ‖f x‖` for `μ`-a.e. `x`, with `ε > 0`, then
+  `𝓜 μ f` is onto. A preimage of `φ` is `f⁻¹ • φ`. -/
+lemma mulOperator_range_eq_top {μ : Measure (Space d)} {f : Space d → ℂ}
+    (hf : AEStronglyMeasurable f μ) {ε : ℝ} (hε : 0 < ε) (h : ∀ᵐ x ∂μ, ε ≤ ‖f x‖) :
+    (𝓜 μ f).toFun.range = ⊤ := by
+  have hne : ∀ᵐ x ∂μ, f x ≠ 0 := h.mono fun x hx ↦ norm_pos_iff.mp (hε.trans_le hx)
+  refine LinearMap.range_eq_top.mpr fun φ ↦ ?_
+  have hg : MemHS (fun x ↦ (f x)⁻¹ * φ x) μ := by
+    refine MemLp.of_le_mul (c := ε⁻¹) (memHS_coe φ) (hf.inv₀.mul (Lp.aestronglyMeasurable φ)) ?_
+    filter_upwards [h] with x hx
+    rw [norm_mul, norm_inv]
+    exact mul_le_mul_of_nonneg_right (inv_anti₀ hε hx) (norm_nonneg _)
+  have hdom : mk hg ∈ (𝓜 μ f).domain := by
+    refine mem_mulOperator_domain_iff.mpr <| (memHS_coe φ).ae_eq ?_
+    filter_upwards [coeFn_mk hg, hne] with x h₁ h₂
+    simp [h₁, h₂]
+  refine ⟨⟨mk hg, hdom⟩, ?_⟩
+  rw [toFun_eq_coe, ext_iff]
+  filter_upwards [mulOperator_apply_ae ⟨mk hg, hdom⟩, coeFn_mk hg, hne] with x h₁ h₂ h₃
+  rw [h₁, Pi.smul_apply', h₂, smul_eq_mul, mul_inv_cancel_left₀ h₃]
+
+/-- If `ε ≤ ‖f x‖` for `μ`-a.e. `x`, with `ε > 0`, then `ε` is a lower bound for `𝓜 μ f`, that is
+  `ε * ‖ψ‖ ≤ ‖𝓜 μ f ψ‖` for every `ψ` in its domain. -/
+lemma mulOperator_isLowerBound {μ : Measure (Space d)} {f : Space d → ℂ} {ε : ℝ} (hε : 0 < ε)
+    (h : ∀ᵐ x ∂μ, ε ≤ ‖f x‖) : IsLowerBound (𝓜 μ f) 0 ε := by
+  intro ψ
+  rw [zero_smul, sub_zero]
+  refine (le_inv_mul_iff₀ hε).mp (Lp.norm_le_mul_norm_of_ae_le_mul ?_)
+  filter_upwards [h, mulOperator_apply_ae ψ] with x hx h₁
+  rw [h₁, Pi.smul_apply', norm_smul, ← mul_assoc]
+  exact le_mul_of_one_le_left (norm_nonneg _) ((one_le_inv_mul₀ hε).mpr hx)
 
 /-!
 ## F. Spectrum
