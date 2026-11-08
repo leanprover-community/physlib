@@ -118,7 +118,8 @@ def orthonormBasis : OrthonormalBasis (Fin 2) ℂ HiggsVec :=
 Given a real number `a` we define the Higgs vector corresponding to that real number
 as `(0, √a)`. This has the property that its norm-squared is equal to `a`.
 Following the textbook convention, the non-zero entry sits in the second (lower) component,
-which is the electrically neutral component of the Higgs doublet (see `GaugeGroupI.emU1`).
+which is the electrically neutral component of the Higgs doublet
+(see `GaugeGroupI.electromagnetismU1`).
 
 -/
 
@@ -348,12 +349,12 @@ informal_lemma stability_group where
 
 /-- The electromagnetic `U(1)` acts on a Higgs vector as `diag(u⁶, 1)`: the upper component
   has electric charge `+1` and the lower component is neutral. -/
-lemma emU1_repGaugeGroupI_apply (g : unitary ℂ) (φ : HiggsVec) :
-    repGaugeGroupI (StandardModel.GaugeGroupI.emU1 g) φ =
+lemma electromagnetismU1_repGaugeGroupI_apply (g : unitary ℂ) (φ : HiggsVec) :
+    repGaugeGroupI (StandardModel.GaugeGroupI.electromagnetismU1 g) φ =
     (WithLp.toLp 2 <| !![g.1 ^ 6, 0; 0, 1] *ᵥ φ.ofLp) := by
   have h : (g : ℂ) * (starRingEnd ℂ) g = 1 := g.2.2
-  rw [repGaugeGroupI_apply, GaugeGroupI.emU1_toU1, GaugeGroupI.emU1_toSU2,
-    GaugeGroupI.diagSU2_coe]
+  rw [repGaugeGroupI_apply, GaugeGroupI.electromagnetismU1_toU1,
+    GaugeGroupI.electromagnetismU1_toSU2, GaugeGroupI.diagSU2_coe]
   ext i
   fin_cases i
   · simp [Submonoid.smul_def]
@@ -362,9 +363,9 @@ lemma emU1_repGaugeGroupI_apply (g : unitary ℂ) (φ : HiggsVec) :
 
 /-- The electromagnetic `U(1)` leaves the Higgs vector `ofReal a = (0, √a)` invariant:
   the Higgs vacuum is electrically neutral, so electromagnetism is unbroken. -/
-lemma emU1_repGaugeGroupI_ofReal (g : unitary ℂ) (a : ℝ) :
-    repGaugeGroupI (StandardModel.GaugeGroupI.emU1 g) (ofReal a) = ofReal a := by
-  rw [emU1_repGaugeGroupI_apply]
+lemma electromagnetismU1_repGaugeGroupI_ofReal (g : unitary ℂ) (a : ℝ) :
+    repGaugeGroupI (StandardModel.GaugeGroupI.electromagnetismU1 g) (ofReal a) = ofReal a := by
+  rw [electromagnetismU1_repGaugeGroupI_apply]
   ext i
   fin_cases i <;> simp [ofReal]
 
@@ -410,7 +411,7 @@ lemma repGaugeGroupI_phase_snd (φ : HiggsVec) :
     fin_cases i <;> simp [ofU1Subgroup_repGaugeGroupI_apply]
 
 TODO "Gauge-fix two-Higgs-doublet configurations to the textbook Higgs basis
-  `Φ1 = (0, ‖Φ1‖)`, using `GaugeGroupI.emU1` to remove the remaining phase. Then
+  `Φ1 = (0, ‖Φ1‖)`, using `GaugeGroupI.electromagnetismU1` to remove the remaining phase. Then
   `GaugeGroupI.ofU1Subgroup` and `repGaugeGroupI_phase_snd` are no longer needed and can be
   removed."
 

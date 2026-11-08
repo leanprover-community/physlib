@@ -83,7 +83,7 @@ gauge connection over spacetime. [TODO]
    `repGaugeGroupI_norm`
 6. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `toRealGroupElem`,
    `toRealGroupElem_apply_self`, `exists_repGaugeGroupI_eq_iff_norm_eq`,
-   `emU1_repGaugeGroupI_apply`, `emU1_repGaugeGroupI_ofReal`,
+   `electromagnetismU1_repGaugeGroupI_apply`, `electromagnetismU1_repGaugeGroupI_ofReal`,
    `ofU1Subgroup_repGaugeGroupI_apply`, `repGaugeGroupI_phase_snd`
 7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `stability_group_single`,
    `stability_group`
