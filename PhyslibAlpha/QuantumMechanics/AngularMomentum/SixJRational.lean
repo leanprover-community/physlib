@@ -23,13 +23,22 @@ four square roots is `√C · ∏ᵢ (jᵢ - mᵢ)! (jᵢ + mᵢ)!` with
 `C = Δ(j₁j₂j₃)² Δ(j₁j₅j₆)² Δ(j₄j₂j₆)² Δ(j₄j₅j₃)²` independent of the projections. Hence
 `sixJSym = √C · T` with a rational sum `T = sixJSumQ` (`sixJSym_eq_sqrt_mul_sixJSumQ`).
 
+Therefore `sixJSym ^ 2 = C T²` and `sixJSym · |sixJSym| = C T |T|` are rational (`sixJSqQ`,
+`sixJSgnSqQ`), and the 6j symbol is `sign(q) √|q|` with `q = sixJSgnSqQ`
+(`sixJSym_eq_sign_mul_sqrt`). Section C checks proven identities in the kernel with
+`decide +kernel`.
+
 ## ii. Key results
 
 - `sixJSym_eq_sqrt_mul_sixJSumQ`: `sixJSym = √C · sixJSumQ`.
+- `sixJSqQ`, `cast_sixJSqQ`, `sixJSgnSqQ`, `cast_sixJSgnSqQ`, `sixJSym_eq_sign_mul_sqrt`: the 6j
+  symbols squared, and with their sign, as rational numbers.
 
 ## iii. Table of contents
 
 - A. The 6j symbol as a square root times a rational number
+- B. Rational values of the 6j symbols
+- C. Checks in the kernel
 
 ## iv. References
 
@@ -183,5 +192,93 @@ lemma sixJSym_eq_sqrt_mul_sixJSumQ (j₁ j₂ j₃ j₄ j₅ j₆ : ℕ) :
       Real.sqrt (sixJRadQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) * (sixJSumQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) := by
   rw [sixJSym, sixJSumQ_eq_sum_sixJBox, Rat.cast_sum, Finset.mul_sum]
   exact Finset.sum_congr rfl fun m _ => sixJTerm_eq_sqrt_mul _ _ _ _ _ _ m
+
+/-!
+
+## B. Rational values of the 6j symbols
+
+-/
+
+lemma sixJRadQ_nonneg (j₁ j₂ j₃ j₄ j₅ j₆ : ℕ) : 0 ≤ sixJRadQ j₁ j₂ j₃ j₄ j₅ j₆ := by
+  have t := triangleSqQ_nonneg
+  exact mul_nonneg (mul_nonneg (mul_nonneg (t _ _ _) (t _ _ _)) (t _ _ _)) (t _ _ _)
+
+/-- `sixJSym ^ 2` over `ℚ` (doubled units). -/
+def sixJSqQ (j₁ j₂ j₃ j₄ j₅ j₆ : ℕ) : ℚ :=
+  sixJRadQ j₁ j₂ j₃ j₄ j₅ j₆ * sixJSumQ j₁ j₂ j₃ j₄ j₅ j₆ ^ 2
+
+/-- `sixJSym · |sixJSym|` over `ℚ` (doubled units). -/
+def sixJSgnSqQ (j₁ j₂ j₃ j₄ j₅ j₆ : ℕ) : ℚ :=
+  sixJRadQ j₁ j₂ j₃ j₄ j₅ j₆ * (sixJSumQ j₁ j₂ j₃ j₄ j₅ j₆ * |sixJSumQ j₁ j₂ j₃ j₄ j₅ j₆|)
+
+section Rational
+
+variable (j₁ j₂ j₃ j₄ j₅ j₆ : ℕ)
+
+lemma cast_sixJSqQ : (sixJSqQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) = sixJSym j₁ j₂ j₃ j₄ j₅ j₆ ^ 2 := by
+  have hC : (0 : ℝ) ≤ (sixJRadQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) := by
+    exact_mod_cast sixJRadQ_nonneg j₁ j₂ j₃ j₄ j₅ j₆
+  rw [sixJSym_eq_sqrt_mul_sixJSumQ, mul_pow, Real.sq_sqrt hC, sixJSqQ, Rat.cast_mul, Rat.cast_pow]
+
+lemma cast_sixJSgnSqQ :
+    (sixJSgnSqQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) =
+      sixJSym j₁ j₂ j₃ j₄ j₅ j₆ * |sixJSym j₁ j₂ j₃ j₄ j₅ j₆| := by
+  have hC : (0 : ℝ) ≤ (sixJRadQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) := by
+    exact_mod_cast sixJRadQ_nonneg j₁ j₂ j₃ j₄ j₅ j₆
+  have hs := Real.mul_self_sqrt hC
+  rw [sixJSym_eq_sqrt_mul_sixJSumQ, abs_mul, abs_of_nonneg (Real.sqrt_nonneg _), sixJSgnSqQ]
+  push_cast
+  linear_combination -((sixJSumQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) * |(sixJSumQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ)|) * hs
+
+/-- **The 6j symbol from a rational number.** `sixJSym = sign(q) √|q|` with `q = sixJSgnSqQ`. -/
+lemma sixJSym_eq_sign_mul_sqrt :
+    sixJSym j₁ j₂ j₃ j₄ j₅ j₆ =
+      Real.sign (sixJSgnSqQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ) *
+        Real.sqrt |(sixJSgnSqQ j₁ j₂ j₃ j₄ j₅ j₆ : ℝ)| := by
+  rw [cast_sixJSgnSqQ]
+  set t := sixJSym j₁ j₂ j₃ j₄ j₅ j₆
+  rw [abs_mul, abs_abs, Real.sqrt_mul_self (abs_nonneg t)]
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [Real.sign_of_neg (mul_neg_of_neg_of_pos h (abs_pos.mpr h.ne)), abs_of_neg h]
+    ring
+  · simp [h]
+  · rw [Real.sign_of_pos (mul_pos h (abs_pos.mpr h.ne')), abs_of_pos h, one_mul]
+
+end Rational
+
+/-!
+
+## C. Checks in the kernel
+
+Proven identities, evaluated with `decide +kernel` on small spins (doubled units). A 6j symbol
+costs a triple sum over projections, so only a few values are checked here. Two computed values
+are compared through their difference.
+
+-/
+
+/-- `Σ_{j₁₂} (2j₁₂ + 1)(2j₂₃ + 1) {j₁ j₂ j₁₂; j₃ J j₂₃}² = 1` (`sum_sixJ_mul_sixJ`, diagonal), for
+`j₁ = j₂ = j₃ = J = 1` and all `j₂₃`. -/
+example : ∀ f ∈ ([0, 2, 4] : List ℕ),
+    ∑ e ∈ Finset.range 5, ((e : ℚ) + 1) * ((f : ℚ) + 1) * sixJSqQ 2 2 e 2 2 f = 1 := by
+  decide +kernel
+
+/-- `sixJSym_swap₁₂` on two sextets. -/
+example : sixJSgnSqQ 2 1 3 1 2 2 - sixJSgnSqQ 1 2 3 2 1 2 = 0 ∧
+    sixJSgnSqQ 1 2 1 1 0 1 - sixJSgnSqQ 2 1 1 0 1 1 = 0 := by
+  decide +kernel
+
+/-- `sixJSym_swap₂₃` on two sextets. -/
+example : sixJSgnSqQ 1 3 2 2 2 1 - sixJSgnSqQ 1 2 3 2 1 2 = 0 ∧
+    sixJSgnSqQ 2 1 3 1 2 2 - sixJSgnSqQ 2 3 1 1 2 2 = 0 := by
+  decide +kernel
+
+/-- `sixJSym_flip₁₂` on two sextets. -/
+example : sixJSgnSqQ 1 2 1 2 3 2 - sixJSgnSqQ 2 3 1 1 2 2 = 0 ∧
+    sixJSgnSqQ 0 1 1 2 1 1 - sixJSgnSqQ 2 1 1 0 1 1 = 0 := by
+  decide +kernel
+
+/-- An inadmissible 6j symbol vanishes, and an admissible one stated as a negation. -/
+example : sixJSqQ 1 1 1 1 1 1 = 0 ∧ ¬sixJSqQ 2 2 2 2 2 2 = 0 := by
+  decide +kernel
 
 end PhyslibAlpha.Sl2
