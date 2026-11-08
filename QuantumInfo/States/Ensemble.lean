@@ -335,3 +335,78 @@ theorem spectral_ensemble_mix {ρ : MState d} : mix (↑(spectral_ensemble ρ) :
   convert! (spectral_decomposition_sum ρ.Hermitian) using 1
 
 end Ensemble
+
+section separable
+
+open Ensemble
+
+variable {d₁ d₂ : Type*} [Fintype d₁] [Fintype d₂] [DecidableEq d₁] [DecidableEq d₂]
+
+open scoped Kronecker in
+/-- Every separable bipartite mixed state is a mixture of finitely many
+pure product states. The ensemble is indexed by `Fin n` for some `n > 0`. -/
+lemma MState.IsSeparable.exists_pEnsemble_isProd {ρ : MState (d₁ × d₂)}
+    (hρ : ρ.IsSeparable) :
+    ∃ (n : ℕ) (e : PEnsemble (d₁ × d₂) (Fin n)), 0 < n ∧ mix (toMEnsemble e) = ρ ∧
+      ∀ i, (e.states i).IsProd := by
+  -- Obtain a convex decomposition into product mixed states.
+  obtain ⟨S, p, hdecomp⟩ := hρ
+  -- Spectrally decompose both factors of each product mixed state.
+  let eLeft (s : S) : PEnsemble d₁ d₁ := spectral_ensemble s.val.1
+  let eRight (s : S) : PEnsemble d₂ d₂ := spectral_ensemble s.val.2
+  -- Define the weights of the combined ensemble.
+  let jointWeight : S × d₁ × d₂ → ℝ
+    | ⟨s, a, b⟩ => (p s : ℝ) * ((eLeft s).distr a : ℝ) * ((eRight s).distr b : ℝ)
+  have hjointWeight_nonneg (x : S × d₁ × d₂) : 0 ≤ jointWeight x :=
+    mul_nonneg (mul_nonneg Prob.zero_le_coe Prob.zero_le_coe) Prob.zero_le_coe
+  have hjointWeight_sum : ∑ x, jointWeight x = 1 := by
+    simp only [jointWeight, Fintype.sum_prod_type, ← Finset.mul_sum, ProbDistribution.normalized,
+      mul_one]
+  -- Construct the ensemble of pure product states, indexed by the
+  -- decomposition term and one eigenvector from each factor.
+  let e : PEnsemble (d₁ × d₂) (S × d₁ × d₂) :=
+    ⟨fun ⟨s, a, b⟩ ↦ (eLeft s).states a ⊗ᵠ (eRight s).states b,
+      ProbDistribution.mk' jointWeight hjointWeight_nonneg hjointWeight_sum⟩
+  -- Express the factors as mixtures of pure states.
+  have hLeftDecomp (s : S) :
+      s.val.1.m = ∑ a, ((eLeft s).distr a : ℝ) • (pure ((eLeft s).states a)).m :=
+    (congrArg MState.m (spectral_ensemble_mix (ρ := s.val.1))).symm.trans (mix_of _)
+  have hRightDecomp (s : S) :
+      s.val.2.m = ∑ b, ((eRight s).distr b : ℝ) • (pure ((eRight s).states b)).m :=
+    (congrArg MState.m (spectral_ensemble_mix (ρ := s.val.2))).symm.trans (mix_of _)
+  -- Distribute the Kronecker product over finite sums.
+  have hkronecker_sum (A : d₁ → Matrix d₁ d₁ ℂ) (B : d₂ → Matrix d₂ d₂ ℂ) :
+      (∑ a, A a) ⊗ₖ (∑ b, B b) = ∑ a, ∑ b, A a ⊗ₖ B b := by
+    ext ⟨i₁, i₂⟩ ⟨j₁, j₂⟩
+    simp only [Matrix.kroneckerMap_apply, Matrix.sum_apply, Finset.sum_mul_sum]
+  -- Show that the combined ensemble mixes to the original state.
+  have hmix : mix (toMEnsemble e) = ρ := by
+    apply MState.ext_m
+    -- Rewrite the separable decomposition in terms of ordinary matrices.
+    have hdecomp_mat : ρ.m = ∑ s : S, (p s : ℝ) • (s.val.1.m ⊗ₖ s.val.2.m) := by
+      simpa only [HermitianMat.mat_finset_sum, HermitianMat.mat_smul, HermitianMat.kronecker_mat,
+        mat_M] using congrArg HermitianMat.mat hdecomp
+    rw [hdecomp_mat, mix_of, Fintype.sum_prod_type]
+    refine Finset.sum_congr rfl fun s _ ↦ ?_
+    -- Expand both factors into their spectral ensembles and distribute
+    -- the Kronecker product.
+    rw [Fintype.sum_prod_type, hLeftDecomp, hRightDecomp, hkronecker_sum, Finset.smul_sum]
+    refine Finset.sum_congr rfl fun a _ ↦ ?_
+    rw [Finset.smul_sum]
+    refine Finset.sum_congr rfl fun b _ ↦ ?_
+    -- Identify pure product density matrices and combine the scalar weights.
+    change (jointWeight (s, a, b) : ℝ) • (pure ((eLeft s).states a ⊗ᵠ (eRight s).states b)).m = _
+    simp only [jointWeight, pure_prod_pure, Matrix.smul_kronecker, Matrix.kronecker_smul,
+      smul_smul]
+    congr 1
+    ring
+  -- The product index type is nonempty, so reindex by `Fin n` with `n > 0`.
+  have : Nonempty S := p.nonempty
+  have : Nonempty (d₁ × d₂) := ρ.nonempty
+  let σ := Fintype.equivFin (S × d₁ × d₂)
+  refine ⟨Fintype.card (S × d₁ × d₂), congrPEnsemble σ e, Fintype.card_pos, ?_, fun i ↦ ?_⟩
+  · rw [mix_congrPEnsemble_eq_mix]
+    exact hmix
+  · exact Ket.IsProd_prod _ _
+
+end separable
