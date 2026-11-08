@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import Mathlib.Algebra.Star.Unitary
 
 /-!

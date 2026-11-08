@@ -8,7 +8,7 @@ module
 public import Mathlib.MeasureTheory.Constructions.Pi
 public import Mathlib.MeasureTheory.Integral.Lebesgue.Basic
 public import Mathlib.MeasureTheory.Measure.MutuallySingular
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Finite
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductState

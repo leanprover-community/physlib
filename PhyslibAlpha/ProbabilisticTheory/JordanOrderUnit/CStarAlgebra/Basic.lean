@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.Basic
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Jordan
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 /-!
 

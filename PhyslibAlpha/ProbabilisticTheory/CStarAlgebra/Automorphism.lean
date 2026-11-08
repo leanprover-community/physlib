@@ -8,7 +8,7 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.QuantumChannel
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
 public import Mathlib.Algebra.Star.StarAlgHom
 
