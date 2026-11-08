@@ -39,26 +39,26 @@ Hamiltonian acting on Schwartz maps.
 
 - `scatteringState_comp_hamiltonianCLM` : the scattering state is a generalized eigenvector of the
   Hamiltonian with energy `ℏ² k² / (2 m)`.
-- `tendsto_scatteringWave_mul_exp_atTop`, `tendsto_scatteringWave_mul_exp_atBot` : the
-  scattering wave tends to `∏ₙ (n κ - i k) e^{i k x}` as `x → ∞` and to
-  `∏ₙ (-n κ - i k) e^{i k x}` as `x → -∞`.
+- `tendsto_exp_mul_scatteringState_translateSchwartz_atTop`,
+  `tendsto_exp_mul_scatteringState_translateSchwartz_atBot` : the scattering state approaches a
+  non-zero multiple of the plane wave bra `⟨k|` as test functions are translated to `±∞`.
 - `isReflectionless` : the Pöschl-Teller potential is reflectionless.
 
 ## iii. Table of contents
 
-- A. Polynomials in `tanh (κ x)`
-  - A.1. Derivative, raising operator and Hamiltonian
-  - A.2. The intertwining relation
-  - A.3. The scattering polynomials
-  - A.4. Values at `±1`
-- B. Waves modulated by polynomials in `tanh (κ x)`
-  - B.1. Derivatives and temperate growth
-  - B.2. The Hamiltonian
-  - B.3. Asymptotics
-- C. Scattering states
-  - C.1. The scattering wave
-  - C.2. Scattering states as generalized eigenvectors
-- D. Reflectionlessness
+- A. The scattering state
+  - A.1. The scattering polynomials
+  - A.2. Waves modulated by polynomials in `tanh (κ x)`
+  - A.3. The scattering state as a bra
+- B. Polynomial identities
+  - B.1. The intertwining relation
+  - B.2. Values at `±1`
+- C. The wave equation and asymptotics
+  - C.1. Derivatives
+  - C.2. The Hamiltonian
+  - C.3. Asymptotics
+- D. Scattering states as generalized eigenvectors
+- E. Reflectionlessness
 
 ## iv. References
 
@@ -73,16 +73,17 @@ namespace QuantumMechanics
 namespace PoschlTeller
 
 open Complex Constants Polynomial Filter Topology SchwartzMap MeasureTheory Space
+open SpaceDHilbertSpace
 open scoped ComplexConjugate
 
 variable (Q : PoschlTeller)
 
 /-!
-## A. Polynomials in `tanh (κ x)`
+## A. The scattering state
 -/
 
 /-!
-### A.1. Derivative, raising operator and Hamiltonian
+### A.1. The scattering polynomials
 -/
 
 /-- The derivative acting on the polynomial of a wave `p(tanh (κ x)) e^{i k x}`,
@@ -95,15 +96,71 @@ def polyDeriv (k : ℝ) (p : ℂ[X]) : ℂ[X] :=
   `p(tanh (κ x)) e^{i k x}`. -/
 def polyRaise (k : ℝ) (n : ℕ) (p : ℂ[X]) : ℂ[X] := -Q.polyDeriv k p + C (n * Q.κ : ℂ) * X * p
 
+/-- The polynomial `Pₖ` of the scattering state `Pₖ(tanh (κ x)) e^{i k x}` of the Pöschl-Teller
+  system with family number `n`, obtained by applying the raising operators with
+  `1, …, n` to `1`. -/
+def polyScattering (k : ℝ) : ℕ → ℂ[X]
+  | 0 => 1
+  | n + 1 => Q.polyRaise k (n + 1) (polyScattering k n)
+
+/-!
+### A.2. Waves modulated by polynomials in `tanh (κ x)`
+-/
+
+/-- The wave `x ↦ p(tanh (κ x)) e^{i k x}`. -/
+def waveOfPoly (k : ℝ) (p : ℂ[X]) (x : ℝ) : ℂ :=
+  p.eval (Real.tanh (Q.κ * x) : ℂ) * exp (k * x * I)
+
+/-- The wave `p(tanh (κ x)) e^{i k x}` has temperate growth. -/
+lemma waveOfPoly_hasTemperateGrowth (k : ℝ) (p : ℂ[X]) :
+    (Q.waveOfPoly k p).HasTemperateGrowth := by
+  have ht : (fun x : ℝ => (Real.tanh (Q.κ * x) : ℂ)).HasTemperateGrowth :=
+    Complex.ofRealCLM.hasTemperateGrowth.comp (tanh_const_mul_hasTemperateGrowth Q.κ)
+  have he : (fun x : ℝ => exp (k * x * I)).HasTemperateGrowth := by
+    convert Complex.hasTemperateGrowth_exp_mul_I.comp
+      (k • ContinuousLinearMap.id ℝ ℝ).hasTemperateGrowth using 2 with x
+    simp
+  exact (ht.polynomial_eval p).mul he
+
+/-- The complex conjugate of `p(tanh (κ x)) e^{i k x}`, as a function on `Space 1`, has temperate
+  growth. -/
+lemma conj_waveOfPoly_hasTemperateGrowth (k : ℝ) (p : ℂ[X]) :
+    (fun x : Space 1 => conj (Q.waveOfPoly k p (x 0))).HasTemperateGrowth :=
+  Complex.conjCLE.hasTemperateGrowth.comp
+    ((Q.waveOfPoly_hasTemperateGrowth k p).comp (Space.eval_hasTemperateGrowth 0))
+
+/-!
+### A.3. The scattering state as a bra
+-/
+
+/-- The scattering state with wavenumber `k` as a member of the strong dual of the Schwartz space.
+
+  This is the bra `⟨ψₖ|` of the non-normalizable scattering wave `ψₖ`, that is
+  `φ ↦ ⟨ψₖ, φ⟩ = ∫ ψ̄ₖ φ`. -/
+def scatteringState (k : ℝ) : StrongDual ℂ 𝓢(Space 1, ℂ) :=
+  Function.HasTemperateGrowth.toTemperedDistribution volume
+    (Q.conj_waveOfPoly_hasTemperateGrowth k (Q.polyScattering k Q.N))
+
+/-- The defining property of the scattering state. -/
+lemma scatteringState_apply (k : ℝ) (φ : 𝓢(Space 1, ℂ)) :
+    Q.scatteringState k φ = ∫ x, conj (Q.waveOfPoly k (Q.polyScattering k Q.N) (x 0)) * φ x :=
+  (Function.HasTemperateGrowth.toTemperedDistribution_apply volume
+    (Q.conj_waveOfPoly_hasTemperateGrowth k (Q.polyScattering k Q.N)) φ).trans <| by
+    simp [mul_comm]
+
+/-!
+## B. Polynomial identities
+-/
+
+/-!
+### B.1. The intertwining relation
+-/
+
 /-- The operator `-∂ₓ² - n (n + 1) κ² / cosh² (κ x)` acting on the polynomial of a wave
   `p(tanh (κ x)) e^{i k x}`. This is `2 m / ℏ²` times the Hamiltonian of the Pöschl-Teller system
   with family number `n`. -/
 def polyReducedHamiltonian (k : ℝ) (n : ℕ) (p : ℂ[X]) : ℂ[X] :=
   -Q.polyDeriv k (Q.polyDeriv k p) - C ((Q.κ : ℂ) ^ 2 * n * (n + 1)) * (1 - X ^ 2) * p
-
-/-!
-### A.2. The intertwining relation
--/
 
 /-- The raising operator intertwines the Hamiltonians with family numbers `n` and `n + 1`. -/
 lemma polyReducedHamiltonian_polyRaise (k : ℝ) (n : ℕ) (p : ℂ[X]) :
@@ -126,17 +183,6 @@ lemma polyRaise_C_mul (k : ℝ) (n : ℕ) (c : ℂ) (p : ℂ[X]) :
   simp only [polyRaise, polyDeriv, derivative_mul, derivative_C, zero_mul, zero_add]
   ring
 
-/-!
-### A.3. The scattering polynomials
--/
-
-/-- The polynomial `Pₖ` of the scattering state `Pₖ(tanh (κ x)) e^{i k x}` of the Pöschl-Teller
-  system with family number `n`, obtained by applying the raising operators with
-  `1, …, n` to `1`. -/
-def polyScattering (k : ℝ) : ℕ → ℂ[X]
-  | 0 => 1
-  | n + 1 => Q.polyRaise k (n + 1) (polyScattering k n)
-
 /-- The scattering polynomial with family number `n` is an eigenvector of the reduced Hamiltonian
   with eigenvalue `k²`. -/
 lemma polyReducedHamiltonian_polyScattering (k : ℝ) (n : ℕ) :
@@ -151,7 +197,7 @@ lemma polyReducedHamiltonian_polyScattering (k : ℝ) (n : ℕ) :
   | succ n ih => rw [polyScattering, polyReducedHamiltonian_polyRaise, ih, polyRaise_C_mul]
 
 /-!
-### A.4. Values at `±1`
+### B.2. Values at `±1`
 -/
 
 /-- At `tanh (κ x) = 1` the raising operator acts as multiplication by `n κ - i k`. -/
@@ -212,15 +258,11 @@ lemma polyScattering_eval_neg_one_ne_zero (k : ℝ) (n : ℕ) :
   nlinarith [(Nat.cast_nonneg j : (0 : ℝ) ≤ j)]
 
 /-!
-## B. Waves modulated by polynomials in `tanh (κ x)`
+## C. The wave equation and asymptotics
 -/
 
-/-- The wave `x ↦ p(tanh (κ x)) e^{i k x}`. -/
-def waveOfPoly (k : ℝ) (p : ℂ[X]) (x : ℝ) : ℂ :=
-  p.eval (Real.tanh (Q.κ * x) : ℂ) * exp (k * x * I)
-
 /-!
-### B.1. Derivatives and temperate growth
+### C.1. Derivatives
 -/
 
 /-- The derivative of `p(tanh (κ x)) e^{i k x}` is `(polyDeriv k p)(tanh (κ x)) e^{i k x}`. -/
@@ -237,24 +279,6 @@ lemma hasDerivAt_waveOfPoly (k : ℝ) (p : ℂ[X]) (x : ℝ) :
     eval_one, eval_pow, eval_X]
   push_cast
   ring
-
-/-- The wave `p(tanh (κ x)) e^{i k x}` has temperate growth. -/
-lemma waveOfPoly_hasTemperateGrowth (k : ℝ) (p : ℂ[X]) :
-    (Q.waveOfPoly k p).HasTemperateGrowth := by
-  have ht : (fun x : ℝ => (Real.tanh (Q.κ * x) : ℂ)).HasTemperateGrowth :=
-    Complex.ofRealCLM.hasTemperateGrowth.comp (tanh_const_mul_hasTemperateGrowth Q.κ)
-  have he : (fun x : ℝ => exp (k * x * I)).HasTemperateGrowth := by
-    convert Complex.hasTemperateGrowth_exp_mul_I.comp
-      (k • ContinuousLinearMap.id ℝ ℝ).hasTemperateGrowth using 2 with x
-    simp
-  exact (ht.polynomial_eval p).mul he
-
-/-- The complex conjugate of `p(tanh (κ x)) e^{i k x}`, as a function on `Space 1`, has temperate
-  growth. -/
-lemma conj_waveOfPoly_hasTemperateGrowth (k : ℝ) (p : ℂ[X]) :
-    (fun x : Space 1 => conj (Q.waveOfPoly k p (x 0))).HasTemperateGrowth :=
-  Complex.conjCLE.hasTemperateGrowth.comp
-    ((Q.waveOfPoly_hasTemperateGrowth k p).comp (Space.eval_hasTemperateGrowth 0))
 
 /-- The derivative of the complex conjugate of `p(tanh (κ x)) e^{i k x}` on `Space 1`. -/
 lemma deriv_conj_waveOfPoly (k : ℝ) (p : ℂ[X]) :
@@ -273,7 +297,7 @@ lemma deriv_conj_waveOfPoly (k : ℝ) (p : ℂ[X]) :
   simp [Space.coordCLM_apply, Space.coord]
 
 /-!
-### B.2. The Hamiltonian
+### C.2. The Hamiltonian
 -/
 
 /-- Multiplying the polynomial by a constant multiplies the wave by that constant. -/
@@ -295,7 +319,7 @@ lemma waveOfPoly_polyReducedHamiltonian (k : ℝ) (p : ℂ[X]) (x : Space 1) :
   ring
 
 /-!
-### B.3. Asymptotics
+### C.3. Asymptotics
 -/
 
 /-- Removing the plane wave factor from `p(tanh (κ x)) e^{i k x}` leaves `p(tanh (κ x))`. -/
@@ -322,36 +346,17 @@ lemma tendsto_waveOfPoly_mul_exp_atBot (k : ℝ) (p : ℂ[X]) :
   simpa only [ofReal_tanh, ofReal_mul, Function.comp_def, ofReal_neg, ofReal_one] using h
 
 /-!
-## C. Scattering states
+## D. Scattering states as generalized eigenvectors
 -/
 
-/-!
-### C.1. The scattering wave
--/
-
-/-- The scattering wave of the Pöschl-Teller system with wavenumber `k`,
-  `ψₖ(x) = Pₖ(tanh (κ x)) e^{i k x}`. -/
-def scatteringWave (k : ℝ) : ℝ → ℂ := Q.waveOfPoly k (Q.polyScattering k Q.N)
-
-/-- As `x → ∞`, the scattering wave tends to `∏ₙ (n κ - i k) e^{i k x}`. -/
-lemma tendsto_scatteringWave_mul_exp_atTop (k : ℝ) :
-    Tendsto (fun x => Q.scatteringWave k x * exp (-(k * x * I))) atTop
-      (𝓝 (∏ j ∈ Finset.range Q.N, ((j + 1) * Q.κ - k * I))) := by
-  rw [← polyScattering_eval_one]
-  exact Q.tendsto_waveOfPoly_mul_exp_atTop k _
-
-/-- As `x → -∞`, the scattering wave tends to `∏ₙ (-n κ - i k) e^{i k x}`. -/
-lemma tendsto_scatteringWave_mul_exp_atBot (k : ℝ) :
-    Tendsto (fun x => Q.scatteringWave k x * exp (-(k * x * I))) atBot
-      (𝓝 (∏ j ∈ Finset.range Q.N, (-((j + 1) * Q.κ) - k * I))) := by
-  rw [← polyScattering_eval_neg_one]
-  exact Q.tendsto_waveOfPoly_mul_exp_atBot k _
-
-/-- The scattering wave solves the time-independent Schrödinger equation at energy
-  `ℏ² k² / (2 m)` against all Schwartz maps, `∫ ψ̄ₖ (H φ) = E ∫ ψ̄ₖ φ`. -/
-lemma integral_conj_scatteringWave_mul_hamiltonianCLM (k : ℝ) (φ : 𝓢(Space 1, ℂ)) :
-    ∫ x, conj (Q.scatteringWave k (x 0)) * Q.toSpaceDQuantumSystem.hamiltonianCLM φ x =
-      ((ℏ ^ 2 * k ^ 2 / (2 * Q.m) : ℝ) : ℂ) * ∫ x, conj (Q.scatteringWave k (x 0)) * φ x := by
+/-- The scattering wave `ψₖ = waveOfPoly k (polyScattering k N)` solves the time-independent
+  Schrödinger equation at energy `ℏ² k² / (2 m)` against all Schwartz maps,
+  `∫ ψ̄ₖ (H φ) = E ∫ ψ̄ₖ φ`. -/
+lemma integral_conj_waveOfPoly_polyScattering_mul_hamiltonianCLM (k : ℝ) (φ : 𝓢(Space 1, ℂ)) :
+    ∫ x, conj (Q.waveOfPoly k (Q.polyScattering k Q.N) (x 0)) *
+        Q.toSpaceDQuantumSystem.hamiltonianCLM φ x =
+      ((ℏ ^ 2 * k ^ 2 / (2 * Q.m) : ℝ) : ℂ) *
+        ∫ x, conj (Q.waveOfPoly k (Q.polyScattering k Q.N) (x 0)) * φ x := by
   have hg := Q.conj_waveOfPoly_hasTemperateGrowth k
   set c : ℂ := (((2 * Q.m)⁻¹ : ℝ) : ℂ)
   -- The Schrödinger equation for the conjugate of the scattering wave, pointwise.
@@ -381,8 +386,7 @@ lemma integral_conj_scatteringWave_mul_hamiltonianCLM (k : ℝ) (φ : 𝓢(Space
       _ = _ := by
         rw [integral_const_mul, integral_mul_momentumCLM 0 (hg _), Q.deriv_conj_waveOfPoly,
           integral_mul_momentumCLM 0 (hg _), Q.deriv_conj_waveOfPoly]
-  simp only [scatteringWave, Q.toSpaceDQuantumSystem_hamiltonianCLM_apply, Complex.real_smul,
-    mul_add]
+  simp only [Q.toSpaceDQuantumSystem_hamiltonianCLM_apply, Complex.real_smul, mul_add]
   have hpot := (hg (Q.polyScattering k Q.N)).integrable_mul_schwartzMap (μ := volume)
     (Q.toSpaceDQuantumSystem.potentialCLM φ)
   simp only [Q.toSpaceDQuantumSystem_potentialCLM_apply, Complex.real_smul] at hpot
@@ -398,25 +402,6 @@ lemma integral_conj_scatteringWave_mul_hamiltonianCLM (k : ℝ) (φ : 𝓢(Space
       |>.congr (by filter_upwards with a; ring)
   · exact hpot
 
-/-!
-### C.2. Scattering states as generalized eigenvectors
--/
-
-/-- The scattering state with wavenumber `k` as a member of the strong dual of the Schwartz space.
-
-  This is the bra `⟨ψₖ|` of the non-normalizable scattering wave `ψₖ`, that is
-  `φ ↦ ⟨ψₖ, φ⟩ = ∫ ψ̄ₖ φ`. -/
-def scatteringState (k : ℝ) : StrongDual ℂ 𝓢(Space 1, ℂ) :=
-  Function.HasTemperateGrowth.toTemperedDistribution volume
-    (Q.conj_waveOfPoly_hasTemperateGrowth k (Q.polyScattering k Q.N))
-
-/-- The defining property of the scattering state. -/
-lemma scatteringState_apply (k : ℝ) (φ : 𝓢(Space 1, ℂ)) :
-    Q.scatteringState k φ = ∫ x, conj (Q.scatteringWave k (x 0)) * φ x :=
-  (Function.HasTemperateGrowth.toTemperedDistribution_apply volume
-    (Q.conj_waveOfPoly_hasTemperateGrowth k (Q.polyScattering k Q.N)) φ).trans <| by
-    simp [scatteringWave, mul_comm]
-
 /-- The scattering state `scatteringState k` is a generalized eigenvector of the Hamiltonian with
   energy `ℏ² k² / (2 m)`, in the bra form `⟨ψₖ| H = E ⟨ψₖ|` as functionals on Schwartz space. -/
 lemma scatteringState_comp_hamiltonianCLM (k : ℝ) :
@@ -424,35 +409,102 @@ lemma scatteringState_comp_hamiltonianCLM (k : ℝ) :
       ((ℏ ^ 2 * k ^ 2 / (2 * Q.m) : ℝ) : ℂ) • Q.scatteringState k := by
   ext φ
   simp only [ContinuousLinearMap.comp_apply, _root_.smul_apply, smul_eq_mul,
-    scatteringState_apply, integral_conj_scatteringWave_mul_hamiltonianCLM]
+    scatteringState_apply, integral_conj_waveOfPoly_polyScattering_mul_hamiltonianCLM]
 
 /-!
-## D. Reflectionlessness
+## E. Reflectionlessness
 -/
 
-/-- A function `ψ` approaches the plane wave `T e^{i k x}` if and only if `ψ(x) e^{-i k x}`
-  tends to `T`. -/
-lemma tendsto_sub_mul_exp_iff (l : Filter ℝ) (ψ : ℝ → ℂ) (k : ℝ) (T : ℂ) :
-    Tendsto (fun x => ψ x - T * exp (k * x * I)) l (𝓝 0) ↔
-      Tendsto (fun x => ψ x * exp (-(k * x * I))) l (𝓝 T) := by
-  conv_rhs => rw [tendsto_iff_norm_sub_tendsto_zero]
-  rw [tendsto_zero_iff_norm_tendsto_zero]
-  refine tendsto_congr fun x => ?_
-  have h : ψ x - T * exp (k * x * I) = (ψ x * exp (-(k * x * I)) - T) * exp (k * x * I) := by
-    rw [sub_mul, mul_assoc (ψ x), ← exp_add, neg_add_cancel, exp_zero, mul_one]
-  rw [h, norm_mul, ← ofReal_mul, norm_exp_ofReal_mul_I, mul_one]
+/-- The wave `p(tanh (κ x)) e^{i k x}` is bounded. -/
+lemma exists_norm_waveOfPoly_le (k : ℝ) (p : ℂ[X]) : ∃ M, ∀ x, ‖Q.waveOfPoly k p x‖ ≤ M := by
+  obtain ⟨M, hM⟩ := (isCompact_Icc (a := (-1 : ℝ)) (b := 1)).exists_bound_of_continuousOn
+    (f := fun t : ℝ => p.eval (t : ℂ)) (by fun_prop)
+  refine ⟨M, fun x => ?_⟩
+  rw [waveOfPoly, norm_mul, ← ofReal_mul, norm_exp_ofReal_mul_I, mul_one]
+  exact hM _ ⟨(Real.neg_one_lt_tanh _).le, (Real.tanh_lt_one _).le⟩
 
-/-- The Pöschl-Teller potential is reflectionless: for every wavenumber `k ≠ 0` the scattering wave
-  passes the well with no reflected wave `e^{-i k x}`. -/
+/-- Translating a Schwartz map by `a` shifts the argument of the wave by `a`. -/
+lemma integral_conj_waveOfPoly_mul_translateSchwartz (k a : ℝ) (p : ℂ[X]) (φ : 𝓢(Space 1, ℂ)) :
+    ∫ x, conj (Q.waveOfPoly k p (x 0)) * translateSchwartz (EuclideanSpace.single 0 a) φ x =
+      ∫ x, conj (Q.waveOfPoly k p (x 0 + a)) * φ x := by
+  have h := integral_sub_right_eq_self (μ := volume)
+    (fun x : Space 1 => conj (Q.waveOfPoly k p (x 0 + a)) * φ x) (oneEquiv.symm a)
+  rw [← h]
+  refine integral_congr_ae (Eventually.of_forall fun x => ?_)
+  have hx : (x - oneEquiv.symm a) 0 + a = x 0 := by simp [oneEquiv_symm_apply]
+  simp only [translateSchwartz_single_apply, hx]
+
+/-- If `ψ(x) e^{-i k x}` tends to `c` far along the filter `l`, then translating a test function
+  along `l` pairs it with `c̄ ⟨k|`, up to the phase `e^{-i k a}`. -/
+lemma tendsto_exp_mul_integral_conj_waveOfPoly_mul_translateSchwartz {l : Filter ℝ}
+    [l.IsCountablyGenerated] (k : ℝ) (p : ℂ[X]) (c : ℂ) (φ : 𝓢(Space 1, ℂ))
+    (h : ∀ x, Tendsto (fun a => Q.waveOfPoly k p (x + a) * exp (-(k * (x + a : ℝ) * I))) l (𝓝 c)) :
+    Tendsto (fun a : ℝ => exp (k * a * I) * ∫ x, conj (Q.waveOfPoly k p (x 0)) *
+        translateSchwartz (EuclideanSpace.single 0 a) φ x) l
+      (𝓝 (conj c * momentumState (oneEquiv.symm k) φ)) := by
+  obtain ⟨M, hM⟩ := Q.exists_norm_waveOfPoly_le k p
+  have hcont := (Q.waveOfPoly_hasTemperateGrowth k p).1.continuous
+  simp_rw [integral_conj_waveOfPoly_mul_translateSchwartz, momentumState_oneEquiv_symm_apply,
+    ← integral_const_mul]
+  refine tendsto_integral_filter_of_dominated_convergence (fun x => M * ‖φ x‖) ?_ ?_
+    (φ.integrable.norm.const_mul M) ?_
+  · refine Eventually.of_forall fun a => Continuous.aestronglyMeasurable ?_
+    have : Continuous fun x : Space 1 => Q.waveOfPoly k p (x 0 + a) :=
+      hcont.comp (by fun_prop)
+    exact continuous_const.mul ((Complex.continuous_conj.comp this).mul φ.continuous)
+  · refine Eventually.of_forall fun a => Eventually.of_forall fun x => ?_
+    rw [norm_mul, ← ofReal_mul, norm_exp_ofReal_mul_I, one_mul, norm_mul, Complex.norm_conj]
+    exact mul_le_mul_of_nonneg_right (hM _) (norm_nonneg _)
+  · refine Eventually.of_forall fun x => ?_
+    have hc := ((Complex.continuous_conj.tendsto _).comp (h (x 0))).mul_const
+      (exp (-(k * (x 0 : ℝ) * I)) * φ x)
+    refine hc.congr fun a => ?_
+    have hconj : conj (exp (-(k * (x 0 + a : ℝ) * I))) = exp (k * (x 0 + a : ℝ) * I) := by
+      rw [← Complex.exp_conj]
+      simp
+    have hexp : exp (k * (x 0 + a : ℝ) * I) * exp (-(k * (x 0 : ℝ) * I)) = exp (k * a * I) := by
+      rw [← exp_add]
+      congr 1
+      push_cast
+      ring
+    simp only [Function.comp_apply, map_mul, hconj]
+    linear_combination (conj (Q.waveOfPoly k p (x 0 + a)) * φ x) * hexp
+
+/-- Far to the right the scattering state looks like the bra of the transmitted plane wave:
+  `e^{i k a} ⟨ψₖ|τₐ φ⟩ → conj (∏ₙ (n κ - i k)) ⟨k|φ⟩` as `a → ∞`. -/
+lemma tendsto_exp_mul_scatteringState_translateSchwartz_atTop (k : ℝ) (φ : 𝓢(Space 1, ℂ)) :
+    Tendsto (fun a : ℝ => exp (k * a * I) *
+        Q.scatteringState k (translateSchwartz (EuclideanSpace.single 0 a) φ)) atTop
+      (𝓝 (conj (∏ j ∈ Finset.range Q.N, ((j + 1) * Q.κ - k * I)) *
+        momentumState (oneEquiv.symm k) φ)) := by
+  simp_rw [scatteringState_apply]
+  rw [← polyScattering_eval_one]
+  exact Q.tendsto_exp_mul_integral_conj_waveOfPoly_mul_translateSchwartz k _ _ φ fun x =>
+    (Q.tendsto_waveOfPoly_mul_exp_atTop k _).comp (tendsto_atTop_add_const_left _ x tendsto_id)
+
+/-- Far to the left the scattering state looks like the bra of the same plane wave, with no
+  reflected part: `e^{i k a} ⟨ψₖ|τₐ φ⟩ → conj (∏ₙ (-n κ - i k)) ⟨k|φ⟩` as `a → -∞`. -/
+lemma tendsto_exp_mul_scatteringState_translateSchwartz_atBot (k : ℝ) (φ : 𝓢(Space 1, ℂ)) :
+    Tendsto (fun a : ℝ => exp (k * a * I) *
+        Q.scatteringState k (translateSchwartz (EuclideanSpace.single 0 a) φ)) atBot
+      (𝓝 (conj (∏ j ∈ Finset.range Q.N, (-((j + 1) * Q.κ) - k * I)) *
+        momentumState (oneEquiv.symm k) φ)) := by
+  simp_rw [scatteringState_apply]
+  rw [← polyScattering_eval_neg_one]
+  exact Q.tendsto_exp_mul_integral_conj_waveOfPoly_mul_translateSchwartz k _ _ φ fun x =>
+    (Q.tendsto_waveOfPoly_mul_exp_atBot k _).comp (tendsto_atBot_add_const_left _ x tendsto_id)
+
+/-- The Pöschl-Teller potential is reflectionless: for every wavenumber `k ≠ 0` the scattering
+  state passes the well with no reflected wave `e^{-i k x}`. -/
 lemma isReflectionless : Q.toSpaceDQuantumSystem.IsReflectionless := by
   intro k _
-  refine ⟨Q.scatteringWave k, (Q.waveOfPoly_hasTemperateGrowth k _).1.continuous,
-    Q.integral_conj_scatteringWave_mul_hamiltonianCLM k, _, _,
-    Q.polyScattering_eval_one_ne_zero k Q.N, Q.polyScattering_eval_neg_one_ne_zero k Q.N, ?_, ?_⟩
-  · rw [tendsto_sub_mul_exp_iff]
-    exact Q.tendsto_waveOfPoly_mul_exp_atTop k _
-  · rw [tendsto_sub_mul_exp_iff]
-    exact Q.tendsto_waveOfPoly_mul_exp_atBot k _
+  refine ⟨Q.scatteringState k, Q.scatteringState_comp_hamiltonianCLM k, _, _, ?_, ?_, fun φ =>
+    ⟨Q.tendsto_exp_mul_scatteringState_translateSchwartz_atTop k φ,
+      Q.tendsto_exp_mul_scatteringState_translateSchwartz_atBot k φ⟩⟩
+  · rw [Ne, map_eq_zero, ← polyScattering_eval_one]
+    exact Q.polyScattering_eval_one_ne_zero k Q.N
+  · rw [Ne, map_eq_zero, ← polyScattering_eval_neg_one]
+    exact Q.polyScattering_eval_neg_one_ne_zero k Q.N
 
 end PoschlTeller
 end QuantumMechanics
