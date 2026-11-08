@@ -179,7 +179,7 @@ lemma ofVec_eq_rayState (h : ‖ψ‖ = 1) :
 -/
 
 /-- The vector state of `ψ` is not tracial if a unit vector `φ` is orthogonal to `ψ`. -/
-lemma not_isTracial_ofVec [CompleteSpace H] (hψ : ‖ψ‖ = 1) (hφ : ‖φ‖ = 1)
+lemma not_isTracial_ofVec (hψ : ‖ψ‖ = 1) (hφ : ‖φ‖ = 1)
     (horth : ⟪φ, ψ⟫_ℂ = 0) : ¬ (ofVec hψ).IsTracial := by
   intro h
   have h1 := h (rankOne ℂ ψ φ) (rankOne ℂ φ ψ)
