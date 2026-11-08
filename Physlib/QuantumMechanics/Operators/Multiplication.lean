@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gregory J. Loges
+Authors: Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
@@ -416,6 +416,14 @@ lemma mulOperator_zero (μ : Measure (Space d)) : 𝓜 μ 0 = 0 := by
   · refine (mulOperator_apply_ae ⟨ψ, hψ⟩).trans ?_
     simpa using coeFn_zero.symm
 
+/-- The multiplication operator of the constant function `1` is the identity operator. -/
+@[simp]
+lemma mulOperator_one (μ : Measure (Space d)) : 𝓜 μ 1 = 1 := by
+  ext ψ hψ hψ'
+  · simpa [mem_mulOperator_domain_iff] using memHS_coe ψ
+  · refine (mulOperator_apply_ae ⟨ψ, hψ⟩).trans ?_
+    simp
+
 /-- `μ`-a.e. equal functions give rise to the same multiplication operator. -/
 lemma mulOperator_eq_of_congr_ae {μ : Measure (Space d)} {f g : Space d → ℂ} (h : f =ᵐ[μ] g) :
     𝓜 μ f = 𝓜 μ g := by
@@ -478,6 +486,17 @@ lemma mulOperator_const_smul_eq (μ : Measure (Space d)) (f : Space d → ℂ) {
   refine (eq_of_le_of_domain_eq (mulOperator_const_smul_ge μ f c) ?_).symm
   ext
   simp [mem_mulOperator_domain_iff, memHS_const_smul_iff hc]
+
+/-- Scalar multiplication and `mulOperator` commute for every `c`, `c = 0` included, when
+  `(𝓜 μ f).domain = ⊤`. -/
+lemma mulOperator_const_smul_eq' (μ : Measure (Space d)) (f : Space d → ℂ) (c : ℂ)
+    (h : (𝓜 μ f).domain = ⊤) : 𝓜 μ (c • f) = c • 𝓜 μ f := by
+  refine (eq_of_le_of_domain_eq (mulOperator_const_smul_ge μ f c) ?_).symm
+  rw [smul_domain, h, eq_comm, Submodule.eq_top_iff']
+  intro ψ
+  have hψ : ψ ∈ (𝓜 μ f).domain := h ▸ Submodule.mem_top
+  rw [mem_mulOperator_domain_iff] at *
+  simpa using hψ.const_smul c
 
 /-- Negation and `mulOperator` commute. -/
 @[simp]
@@ -570,6 +589,13 @@ lemma mulOperator_sub_eq' {μ : Measure (Space d)}
     𝓜 μ (f - g) = 𝓜 μ f - 𝓜 μ g := by
   simp only [sub_eq_add_neg, ← mulOperator_neg]
   exact mulOperator_add_eq' hf hg.neg c c' (by simpa) (by simpa)
+
+/-- Multiplication by `f - z`, for a constant `z`, is the operator `𝓜 μ f - z • 1`, with the same
+  domain as `𝓜 μ f`, since multiplication by a constant is defined everywhere. -/
+lemma mulOperator_sub_smul_one (μ : Measure (Space d)) (f : Space d → ℂ) (z : ℂ) :
+    𝓜 μ (f - z • 1) = 𝓜 μ f - z • 1 := by
+  rw [mulOperator_sub_eq f (by simp [mulOperator_const_smul_eq' μ 1 z (by simp)]),
+    mulOperator_const_smul_eq' μ 1 z (by simp), mulOperator_one]
 
 TODO "Add to the sufficient conditions which ensure `𝓜 μ (f ± g) = 𝓜 μ f ± 𝓜 μ g`."
 
