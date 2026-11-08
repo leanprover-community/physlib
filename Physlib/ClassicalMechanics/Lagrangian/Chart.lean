@@ -6,9 +6,9 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
+public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.Mathematics.ForMathlib.Cutoff
-public import Physlib.Mathematics.ForMathlib.TangentMap
 public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
@@ -119,8 +119,13 @@ lemma action_integrand_eq_chartLagrangian [I.Boundaryless]
   have h := tangentMap_comp_at (I := 𝓘(ℝ, ℝ)) (I' := 𝓘(ℝ, E)) (I'' := I) (f := c)
     (g := (extChartAt I x).symm) (⟨τ +ᵥ t₀, (1 : ℝ)⟩ : TangentBundle 𝓘(ℝ, ℝ) Time)
     (hsymm.mdifferentiableAt (by simp)) (hc.mdifferentiableAt (by simp))
-  rw [hev.tangentMap_eq (I := 𝓘(ℝ, ℝ)) (I' := I) (p := ⟨τ +ᵥ t₀, (1 : ℝ)⟩), h,
-    Time.tangentMap_eq_deriv_vadd]
+  have hgerm : tangentMap 𝓘(ℝ, ℝ) I γ' ⟨τ +ᵥ t₀, (1 : ℝ)⟩ =
+      tangentMap 𝓘(ℝ, ℝ) I ((extChartAt I x).symm ∘ c) ⟨τ +ᵥ t₀, (1 : ℝ)⟩ := by
+    refine Bundle.TotalSpace.ext hev.eq_of_nhds ?_
+    simp only [tangentMap]
+    rw [hev.mfderiv_eq]
+    rfl
+  rw [hgerm, h, Time.tangentMap_eq_deriv_vadd]
   rfl
 
 /-- If `γ'` is the chart-read curve `t ↦ (extChartAt I x).symm (c (t -ᵥ t₀))` near `τ +ᵥ t₀` and
