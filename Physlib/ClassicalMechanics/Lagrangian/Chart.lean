@@ -6,8 +6,8 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.PartitionOfUnity
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
+public import Physlib.Mathematics.ForMathlib.Cutoff
 public import Physlib.Mathematics.ForMathlib.TangentMap
 public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
@@ -34,9 +34,8 @@ In a chart `(q, q̇)` are coordinates on the tangent bundle, so the Lagrangian i
 
 ## iii. Table of contents
 
-- A. Smooth cutoffs
-- B. The Lagrangian in a chart
-- C. The action integrand
+- A. The Lagrangian in a chart
+- B. The action integrand
 
 ## iv. References
 
@@ -45,54 +44,17 @@ In a chart `(q, q̇)` are coordinates on the tangent bundle, so the Lagrangian i
 
 @[expose] public section
 
-open Metric Topology
+open Topology
 open scoped Manifold ContDiff
 namespace ClassicalMechanics
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners ℝ E H} {M : ConfigurationSpace I}
 
-/-!
-## A. Smooth cutoffs
--/
-
-/-- A smooth cutoff which is `1` on a neighbourhood `N` of a compact set `K` inside an open set `U`
-and has topological support inside `U`. -/
-private lemma exists_cutoff {X : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
-    [FiniteDimensional ℝ X]
-    {K U : Set X} (hK : IsCompact K) (hU : IsOpen U) (hKU : K ⊆ U) :
-    ∃ (χ : X → ℝ) (N : Set X), ContDiff ℝ ∞ χ ∧ IsOpen N ∧ K ⊆ N ∧ N ⊆ U ∧
-      (∀ y ∈ N, χ y = 1) ∧ tsupport χ ⊆ U := by
-  obtain ⟨δ, hδ, hδU⟩ := hK.exists_cthickening_subset_open hU hKU
-  have hδ2 : cthickening (δ / 2) K ⊆ thickening δ K :=
-    cthickening_subset_thickening' hδ (by linarith) K
-  obtain ⟨χ, hχ, -, hχ0, hχ1⟩ := exists_contDiff_zero_iff_one_iff_of_isClosed (n := ⊤)
-    (isOpen_thickening : IsOpen (thickening δ K)).isClosed_compl
-    (isClosed_cthickening : IsClosed (cthickening (δ / 2) K))
-    (disjoint_compl_left.mono_right hδ2)
-  have hsub : thickening (δ / 2) K ⊆ cthickening (δ / 2) K := thickening_subset_cthickening _ _
-  refine ⟨χ, thickening (δ / 2) K, hχ, isOpen_thickening, self_subset_thickening (by positivity) K,
-    hsub.trans ((cthickening_mono (by linarith) K).trans hδU), fun y hy ↦ (hχ1 _).1 (hsub hy),
-    (closure_minimal (fun y hy ↦ ?_) isClosed_cthickening).trans hδU⟩
-  by_contra h
-  exact hy ((hχ0 _).1 fun h' ↦ h (thickening_subset_cthickening _ _ h'))
-
-/-- `ρ • f` is smooth if `tsupport ρ ⊆ W` and `f` is smooth on `W`. -/
-private lemma contDiff_smul_of_cutoff {Y F : Type*} [NormedAddCommGroup Y] [NormedSpace ℝ Y]
-    [NormedAddCommGroup F] [NormedSpace ℝ F] {ρ : Y → ℝ} (hρ : ContDiff ℝ ∞ ρ) {W : Set Y}
-    (hρ0 : tsupport ρ ⊆ W) {f : Y → F} (hf : ∀ y ∈ W, ContDiffAt ℝ ∞ f y) :
-    ContDiff ℝ ∞ fun y ↦ ρ y • f y := by
-  refine contDiff_iff_contDiffAt.2 fun y ↦ ?_
-  by_cases hy : y ∈ tsupport ρ
-  · exact hρ.contDiffAt.smul (hf y (hρ0 hy))
-  · refine (contDiffAt_const (c := (0 : F))).congr_of_eventuallyEq ?_
-    filter_upwards [notMem_tsupport_iff_eventuallyEq.1 hy] with z hz
-    simp [hz]
-
 namespace LagrangianSystem
 
 /-!
-## B. The Lagrangian in a chart
+## A. The Lagrangian in a chart
 -/
 
 /-- The Lagrangian in the chart `φ = extChartAt I x`, with time coordinate based at `t₀`:
@@ -131,7 +93,7 @@ lemma exists_contDiff_chartLagrangian_eq [I.Boundaryless] [FiniteDimensional ℝ
     ∃ (L : ℝ × E × E → ℝ) (N : Set E), IsOpen N ∧ K ⊆ N ∧ N ⊆ (extChartAt I x).target ∧
       ContDiff ℝ ∞ L ∧ ∀ p : ℝ × E × E, p.2.1 ∈ N → L p = S.chartLagrangian x t₀ p := by
   obtain ⟨χ, N, hχ, hNo, hKN, hNU, hχ1, hχ0⟩ :=
-    exists_cutoff hK (isOpen_extChartAt_target x) hKx
+    hK.exists_cutoff (isOpen_extChartAt_target x) hKx
   refine ⟨fun p ↦ χ p.2.1 * S.chartLagrangian x t₀ p, N, hNo, hKN, hNU, ?_, fun p hp ↦ ?_⟩
   · exact contDiff_smul_of_cutoff (hχ.comp (contDiff_fst.comp contDiff_snd))
       (W := {p | p.2.1 ∈ (extChartAt I x).target})
@@ -141,7 +103,7 @@ lemma exists_contDiff_chartLagrangian_eq [I.Boundaryless] [FiniteDimensional ℝ
   · simp [hχ1 _ hp]
 
 /-!
-## C. The action integrand
+## B. The action integrand
 -/
 
 /-- Near a chart-read curve the action integrand is the chart Lagrangian. -/

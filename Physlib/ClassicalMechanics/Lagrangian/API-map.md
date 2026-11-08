@@ -51,7 +51,7 @@ coming from a Riemannian metric on M. [TODO]
 5. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
    `LagrangianSystem.IsCriticalPoint`, `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
 6. Physlib/ClassicalMechanics/Lagrangian/Chart.lean —
-   `LagrangianSystem.contDiffAt_chartLagrangian`
+   `LagrangianSystem.chartLagrangian`, `LagrangianSystem.contDiffAt_chartLagrangian`
 
 ## References
 
