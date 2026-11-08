@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.Tensors.Elab
+public import Physlib.Mathematics.Tensors.ElabTactics
 public import Physlib.Relativity.Tensors.RealTensor.CoVector.Representation
 public import Physlib.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation

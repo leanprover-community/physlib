@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.Tensors.Elab
+public import Physlib.Mathematics.Tensors.ElabTactics
 
 /-!
 

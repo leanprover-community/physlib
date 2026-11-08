@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.Tensors.Elab
+public import Physlib.Mathematics.Tensors.ElabTactics
 
 /-!
 
@@ -25,15 +25,14 @@ There are no declarations, only examples.
 
 ## iii. Table of contents
 
-- A. Examples
+- A. Products, sums and contractions
+- B. Lowering and raising
+- C. Tensorial types
+- D. Regrouping contractions
+- E. Regrouping with forms
+- F. Chains of lowerings and raisings
 
 ## iv. References
-
--/
-
-/-!
-
-## A. Examples
 
 -/
 
@@ -45,6 +44,13 @@ variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K �
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
     (a c : Color K) (T U W : S.Tensor ![a, a.dual]) (T' : S.Tensor ![a.dual, a])
     (κ : K) (v : S.Tensor ![⟨κ, .up⟩]) (r : k) (Λ : G)
+
+
+/-!
+
+## A. Products, sums and contractions
+
+-/
 
 /-- info: T : S.Tensor ![a, a.dual] -/
 #guard_msgs in
@@ -129,7 +135,90 @@ example : {{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ U 
   ext x
   fin_cases x <;> rfl
 
-/-- The same by `tensor_regroup`, with the other grouping on the right,
+/-!
+
+## B. Lowering and raising
+
+-/
+
+section Metric
+
+variable [S.HasForm κ] [S.HasForm c.kind]
+
+/-- Lowering and then raising an index gives the vector back, `(v_μ)^μ = v^μ`. -/
+example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
+
+-- An arrow that does not match the variance of the slot is rejected.
+/-- error: index notation: ↑μ needs a visibly lower index -/
+#guard_msgs in
+#check {v | ↑μ}ᵀ
+
+/-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [equiv_smul]`. -/
+example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [equiv_smul]
+
+/-- Lowering both indices commutes with the group action, `(Λ M)_μν = Λ (M_μν)`. -/
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓ν}ᵀ = Λ • {M | ↓μ ↓ν}ᵀ := by
+  simp only [equiv_smul]
+
+/-- A trace commutes with the group action, `(Λ T)^μ_μ = Λ (T^μ_μ)`, by
+`rw [intertwiningMap_smul]`. -/
+example : {(Λ • T) | μ μ}ᵀ = Λ • {T | μ μ}ᵀ := by rw [intertwiningMap_smul]
+
+/-- `g^μν g_νρ = δ^μ_ρ`, by `contr_formTensor_formTensor`. The relabeling the notation generates
+is `ColorEquiv.matMul`, checked slot by slot. -/
+example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
+  rw [← contr_formTensor_formTensor]
+  congr 2
+  ext x
+  fin_cases x <;> rfl
+
+end Metric
+
+/-!
+
+## C. Tensorial types
+
+-/
+
+section Tensorial
+
+variable {M : Type} [AddCommGroup M] [Module k M] [Tensorial S ![a, a.dual] M] (m : M)
+
+/-- info: Tensorial.toTensor m : S.Tensor ![a, a.dual] -/
+#guard_msgs in
+#check {m | μ ν}ᵀ
+
+/-- The contraction `m^μ_ν T^ν_ρ` of an element of a tensorial type with a tensor. -/
+noncomputable example : S.Tensor ![a, a.dual] := {m | μ ν ⊗ T | ν ρ}ᵀ
+
+/-- The contraction `m^μ_ν m^ν_ρ` inside `M ⊗ M`, through `Tensorial.prod`. -/
+noncomputable example : S.Tensor ![a, a.dual] := {(m ⊗ₜ[k] m) | μ ν ν ρ}ᵀ
+
+/-- The contraction `m^μ_ν T^ν_ρ` read back as an element of `M`. -/
+noncomputable example : M := {m | μ ν ⊗ T | ν ρ}ᵀ
+
+open TensorProduct in
+/-- A product with no contraction is read back as `m ⊗ₜ m`, with no relabeling. -/
+example : ({m | μ ν ⊗ m | ρ σ}ᵀ : M ⊗[k] M) = m ⊗ₜ m := by
+  rw [← Tensorial.toTensor_tmul, Representation.Equiv.symm_apply_apply]
+
+/-- A tensor on `Fin 2` relabeled onto the slots `Fin 1 ⊕ Fin 1` of a product. -/
+noncomputable example : S.Tensor (prodColors ![a] ![a.dual]) := {T | μ ν}ᵀ
+
+/-- error: index notation: the free index μ has the color a, but its slot is expected to have the
+color a.dual -/
+#guard_msgs in
+example : S.Tensor (prodColors ![a.dual] ![a]) := {T | μ ν}ᵀ
+
+end Tensorial
+
+/-!
+
+## D. Regrouping contractions
+
+-/
+
+/-- By `tensor_regroup`, with the other grouping on the right,
 `(T U)^μ_ρ W^ρ_τ = T^μ_ν (U W)^ν_τ`. -/
 example : {{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ := by
   tensor_regroup
@@ -237,6 +326,12 @@ has no equal factor on the right -/
 example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {T | μ ν ⊗ U | ν ρ = U | μ ρ}ᵀ := by
   tensor_regroup using h
 
+/-!
+
+## E. Regrouping with forms
+
+-/
+
 section Metric
 
 variable [S.HasForm κ] [S.HasForm c.kind]
@@ -322,10 +417,28 @@ example [S.IsSymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ν ⊗ S.formTensor ⟨κ, .down⟩ | ν ρ = M | μ ν ⊗ S.formTensor ⟨κ, .down⟩ | ρ ν}ᵀ := by
   tensor_regroup
 
-/-- Lowering and then raising an index gives the vector back, `(v_μ)^μ = v^μ`. -/
-example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
+/-- `g^μν g_νρ = δ^μ_ρ` by `tensor_regroup`, which writes the delta as the contraction of the two
+forms. -/
+example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
+  tensor_regroup
 
-/-- The same by `tensor_slots`. -/
+/-- The delta on the left side, `δ^μ_ρ = g^μν g_νρ`. -/
+example : {S.deltaTensor c.dual | μ ρ = S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ}ᵀ := by
+  tensor_regroup
+
+end Metric
+
+/-!
+
+## F. Chains of lowerings and raisings
+
+-/
+
+section Metric
+
+variable [S.HasForm κ] [S.HasForm c.kind]
+
+/-- Lowering and then raising by `tensor_slots`, `(v_μ)^μ = v^μ`. -/
 example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := by
   tensor_slots
 
@@ -347,70 +460,6 @@ example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ↓ν}ᵀ |
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ ↓ν = {M | μ ↓ν}ᵀ | ↓μ ν}ᵀ := by
   tensor_slots
 
--- An arrow that does not match the variance of the slot is rejected.
-/-- error: index notation: ↑μ needs a visibly lower index -/
-#guard_msgs in
-#check {v | ↑μ}ᵀ
-
-/-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [equiv_smul]`. -/
-example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [equiv_smul]
-
-/-- Lowering both indices commutes with the group action, `(Λ M)_μν = Λ (M_μν)`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓ν}ᵀ = Λ • {M | ↓μ ↓ν}ᵀ := by
-  simp only [equiv_smul]
-
-/-- A trace commutes with the group action, `(Λ T)^μ_μ = Λ (T^μ_μ)`, by
-`rw [intertwiningMap_smul]`. -/
-example : {(Λ • T) | μ μ}ᵀ = Λ • {T | μ μ}ᵀ := by rw [intertwiningMap_smul]
-
-/-- `g^μν g_νρ = δ^μ_ρ`, by `contr_formTensor_formTensor`. The relabeling the notation generates
-is `ColorEquiv.matMul`, checked slot by slot. -/
-example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
-  rw [← contr_formTensor_formTensor]
-  congr 2
-  ext x
-  fin_cases x <;> rfl
-
-/-- The same by `tensor_regroup`, which writes the delta as the contraction of the two forms. -/
-example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
-  tensor_regroup
-
-/-- The delta on the left side, `δ^μ_ρ = g^μν g_νρ`. -/
-example : {S.deltaTensor c.dual | μ ρ = S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ}ᵀ := by
-  tensor_regroup
-
 end Metric
-
-section Tensorial
-
-variable {M : Type} [AddCommGroup M] [Module k M] [Tensorial S ![a, a.dual] M] (m : M)
-
-/-- info: Tensorial.toTensor m : S.Tensor ![a, a.dual] -/
-#guard_msgs in
-#check {m | μ ν}ᵀ
-
-/-- The contraction `m^μ_ν T^ν_ρ` of an element of a tensorial type with a tensor. -/
-noncomputable example : S.Tensor ![a, a.dual] := {m | μ ν ⊗ T | ν ρ}ᵀ
-
-/-- The contraction `m^μ_ν m^ν_ρ` inside `M ⊗ M`, through `Tensorial.prod`. -/
-noncomputable example : S.Tensor ![a, a.dual] := {(m ⊗ₜ[k] m) | μ ν ν ρ}ᵀ
-
-/-- The contraction `m^μ_ν T^ν_ρ` read back as an element of `M`. -/
-noncomputable example : M := {m | μ ν ⊗ T | ν ρ}ᵀ
-
-open TensorProduct in
-/-- A product with no contraction is read back as `m ⊗ₜ m`, with no relabeling. -/
-example : ({m | μ ν ⊗ m | ρ σ}ᵀ : M ⊗[k] M) = m ⊗ₜ m := by
-  rw [← Tensorial.toTensor_tmul, Representation.Equiv.symm_apply_apply]
-
-/-- A tensor on `Fin 2` relabeled onto the slots `Fin 1 ⊕ Fin 1` of a product. -/
-noncomputable example : S.Tensor (prodColors ![a] ![a.dual]) := {T | μ ν}ᵀ
-
-/-- error: index notation: the free index μ has the color a, but its slot is expected to have the
-color a.dual -/
-#guard_msgs in
-example : S.Tensor (prodColors ![a.dual] ![a]) := {T | μ ν}ᵀ
-
-end Tensorial
 
 end Tensors.Notation

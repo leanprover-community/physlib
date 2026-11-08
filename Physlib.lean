@@ -207,6 +207,7 @@ public import Physlib.Mathematics.Tensors.Conjugation
 public import Physlib.Mathematics.Tensors.Contraction
 public import Physlib.Mathematics.Tensors.Elab
 public import Physlib.Mathematics.Tensors.ElabExamples
+public import Physlib.Mathematics.Tensors.ElabTactics
 public import Physlib.Mathematics.Tensors.HermitianForm
 public import Physlib.Mathematics.Tensors.Inverse
 public import Physlib.Mathematics.Tensors.Metric
