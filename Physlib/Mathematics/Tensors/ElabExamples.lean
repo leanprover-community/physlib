@@ -45,7 +45,6 @@ variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K �
     (a c : Color K) (T U W : S.Tensor ![a, a.dual]) (T' : S.Tensor ![a.dual, a])
     (κ : K) (v : S.Tensor ![⟨κ, .up⟩]) (r : k) (Λ : G)
 
-
 /-!
 
 ## A. Products, sums and contractions
