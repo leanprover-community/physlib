@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
+public import Physlib.ProbabilisticTheory.HilbertSpace.State.VectorFunctional
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 
 /-!
@@ -58,15 +58,6 @@ open scoped InnerProductSpace
 section ofVec
 
 variable {H 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup H] [InnerProductSpace 𝕜 H]
-
-/-- The vector functional associated with `ψ`. -/
-@[simps apply]
-def _root_.PositiveLinearMap.ofVec (ψ : H) : 𝓟[𝕜, H →L[𝕜] H] where
-  toFun x := ⟪ψ, x • ψ⟫_𝕜
-  map_add' x y := by simp [inner_add_right]
-  map_smul' x y := by simp [inner_smul_right]
-  monotone' x y hxy := by
-    simpa [inner_sub_right] using (ContinuousLinearMap.le_def.mp hxy).inner_nonneg_right ψ
 
 /-- The vector state associated with a unit vector. -/
 def UnitalPositiveLinearMap.ofVec {ψ : H} (h : ‖ψ‖ = 1) : 𝓢[𝕜, H →L[𝕜] H] :=

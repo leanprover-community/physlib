@@ -1,13 +1,13 @@
 /-
 Copyright (c) 2026 Tom Ole Diem. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tom Ole Diem
+Authors: Tom Ole Diem, David Gross
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.LinearAlgebra.Projectivization.Basic
-public import Physlib.ProbabilisticTheory.StarAlgebra.State
+public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
+public import Physlib.ProbabilisticTheory.HilbertSpace.State.VectorFunctional
 
 /-!
 # Vector states on a Hilbert space
@@ -63,13 +63,8 @@ namespace UnitalPositiveLinearMap
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] {ψ φ : H}
 
 /-- The vector state of a unit vector `ψ`: the expectation value of `x` is `⟪ψ, x ψ⟫`. -/
-def ofVec (h : ‖ψ‖ = 1) : 𝓢[ℂ, H →L[ℂ] H] where
-  toFun x := ⟪ψ, x ψ⟫_ℂ
-  map_add' x y := by simp [inner_add_right]
-  map_smul' c x := by simp [inner_smul_right]
-  monotone' x y hxy := by
-    simpa [inner_sub_right] using (le_def.mp hxy).inner_nonneg_right ψ
-  map_one' := by simp [h]
+noncomputable def ofVec (h : ‖ψ‖ = 1) : ProbabilisticTheory.HilbertSpace.State H :=
+  { PositiveLinearMap.ofVec ψ with map_one' := by simp [h] }
 
 @[simp]
 lemma ofVec_apply (h : ‖ψ‖ = 1) (x : H →L[ℂ] H) : ofVec h x = ⟪ψ, x ψ⟫_ℂ := rfl
@@ -115,7 +110,7 @@ lemma ofVec_eq_iff (hψ : ‖ψ‖ = 1) (hφ : ‖φ‖ = 1) :
 -/
 
 /-- The state of a ray: the vector state of a unit vector on it. -/
-noncomputable def rayState (p : Projectivization ℂ H) : 𝓢[ℂ, H →L[ℂ] H] :=
+noncomputable def rayState (p : Projectivization ℂ H) : ProbabilisticTheory.HilbertSpace.State H :=
   ofVec (norm_smul_inv_norm (𝕜 := ℂ) p.rep_nonzero)
 
 /-- Normalising proportional vectors gives vectors that differ by a phase. -/

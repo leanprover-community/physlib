@@ -306,6 +306,9 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
+public import Physlib.ProbabilisticTheory.HilbertSpace.State.Vector
+public import Physlib.ProbabilisticTheory.HilbertSpace.State.VectorFunctional
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Sum
@@ -318,8 +321,6 @@ public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
-public import Physlib.ProbabilisticTheory.State.FiniteHilbertSpace
-public import Physlib.ProbabilisticTheory.State.HilbertSpace
 public import Physlib.ProbabilisticTheory.State.Local
 public import Physlib.ProbabilisticTheory.State.Metric
 public import Physlib.ProbabilisticTheory.State.Pairing
