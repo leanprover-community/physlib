@@ -9,45 +9,41 @@ public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.GreenIdentity
 
 /-!
-# The weak eigenvalue equation of the hydrogen bound states
+# The hydrogen bound states are eigenvectors of the adjoint Hamiltonian
 
-Green's identity for a hydrogen bound state and the weak eigenvalue equation.
+The weak eigenvalue equation of the hydrogen bound states and their eigenvalues for the adjoint
+Hamiltonian `H†`.
 
 ## i. Overview
 
 The bound states are not smooth at the nucleus, so they do not lie in the domain of
-`H.hamiltonianOperator` (whose kinetic part is defined on Schwartz maps). To move the
-Hamiltonian from a Schwartz map onto a bound state `ψ`, one works with the regularised bound
-states `ψ_ε(y) = R(√(‖y‖² + ε²)) P(y)` of `GreenIdentity` and lets `ε → 0`.
-
-With Green's identity for the kinetic term (`integral_boundState_mul_sum_deriv_deriv`) and the
-Coulomb term, the Hamiltonian moves from a Schwartz map onto the bound state
-(`integral_boundState_mul_hamiltonian`), which gives the weak eigenvalue equation
-`⟪E ψ, φ⟫ = ⟪ψ, H φ⟫` for all `φ` in the domain of `H` (`inner_boundStateHS_hamiltonianOperator`).
+`H.hamiltonianOperator` (whose kinetic part is defined on Schwartz maps). They satisfy the
+eigenvalue equation weakly, `⟪E ψ, φ⟫ = ⟪ψ, H φ⟫` for all `φ` in the domain of `H`: this follows
+from Green's identity for the regularised bound states `ψ_ε` (`GreenIdentity.lean`) and the limit
+`ε → 0` by dominated convergence. Since `H` is densely defined
+(`HydrogenAtom.hamiltonianOperator_hasDenseDomain`), the weak eigenvalue equation says that the
+bound states are eigenvectors of the adjoint `H†`. When `H` is essentially self-adjoint, `H†` is
+the closure of `H`.
 
 ## ii. Key results
 
-- `laplacian_regBoundState` : the Laplacian of `ψ_ε` away from the origin.
-- `boundState_eq_regG` : the bound state is `ψ_0`.
-- `integral_regBoundState_mul_sum_deriv_deriv` : Green's identity for `ψ_ε`, `ε ≠ 0`.
-- `kineticOperator_apply_of_eq_schwartzEquiv`, `potentialOperator_apply_ae`: the kinetic and
-  potential operators on their domains.
-- `hamiltonianOperator_apply_ae` : on its domain the Hamiltonian is
-  `-ℏ²/(2m) Σᵢ ∂ᵢ∂ᵢ f + V f` almost everywhere, for a Schwartz representative `f`.
-- `exists_abs_laplacian_regBoundState_le` : a bound on `|Δψ_ε|` uniform in `|ε| ≤ 1`.
-- `integral_boundState_mul_sum_deriv_deriv` : Green's identity `∫ ψ Σᵢ ∂ᵢ∂ᵢ f = ∫ (Δψ) f` for a
-  bound state `ψ`, the limit `ε → 0` by dominated convergence
-  (`tendsto_integral_regBoundState_mul_sum_deriv_deriv`,
-  `tendsto_integral_laplacian_regBoundState_mul`).
 - `integral_boundState_mul_hamiltonian` : Green's identity `∫ ψ H f = ∫ (H ψ) f` for a bound state
   `ψ` and a Schwartz map `f`.
 - `inner_boundStateHS_hamiltonianOperator` : the weak eigenvalue equation
   `⟪E ψ, φ⟫ = ⟪ψ, H φ⟫` for `φ` in the domain of the Hamiltonian.
+- `boundStateHS_mem_adjoint_domain`, `adjoint_boundStateHS` : the bound states are eigenvectors of
+  the adjoint `H†` with the Bohr energies.
+- `adjoint_boundStateMapHS` : the same for all sums of bound states of one level.
+- `exists_finrank_eigenvectors_adjoint_three`, `exists_finrank_eigenvectors_adjoint_three_complex` :
+  in three dimensions `E_n` is an eigenvalue of `H†` of (real, and complex) multiplicity at least
+  `(n + 1)²`.
 
 ## iii. Table of contents
 
 - A. Regularised bound states
 - B. The weak eigenvalue equation
+- C. Eigenvectors of the adjoint Hamiltonian
+- D. The whole level
 
 ## iv. References
 
@@ -657,5 +653,129 @@ lemma inner_boundStateHS_hamiltonianOperator (H : HydrogenAtom d) (hd : 2 ≤ d)
   rw [boundState_eigen_of_mem_harmonicSubmodule H hd hk N l hP hy]
   push_cast
   ring
+
+/-!
+
+## C. Eigenvectors of the adjoint Hamiltonian
+
+-/
+
+lemma boundStateHS_mem_adjoint_domain (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l) :
+    boundStateHS H hd hk N l P ∈ H.hamiltonianOperator†.domain :=
+  LinearPMap.mem_adjoint_domain_of_exists _
+    ⟨_, inner_boundStateHS_hamiltonianOperator H hd hk N l hP⟩
+
+/-- The bound state of the level `N + l` is an eigenvector of the adjoint Hamiltonian with
+eigenvalue the Bohr energy `E_{N+l}`. -/
+lemma adjoint_boundStateHS (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l) :
+    H.hamiltonianOperator† ⟨_, boundStateHS_mem_adjoint_domain H hd hk N l hP⟩ =
+      (H.energyLevel (N + l) : ℂ) • boundStateHS H hd hk N l P :=
+  LinearPMap.adjoint_apply_eq H.hamiltonianOperator_hasDenseDomain _
+    (inner_boundStateHS_hamiltonianOperator H hd hk N l hP)
+
+/-!
+
+## D. The whole level
+
+-/
+
+lemma boundStateMap_single (H : HydrogenAtom d) (n : ℕ) (l : Fin (n + 1))
+    (P : harmonicSubmodule d l) :
+    boundStateMap H n (Pi.single l P) =
+      boundState H (n - l) l (toFun (P : MvPolynomial (Fin d) ℝ)) := by
+  funext y
+  simp only [boundStateMap, LinearMap.coe_mk, AddHom.coe_mk, Finset.sum_apply]
+  rw [Finset.sum_eq_single l]
+  · simp
+  · intro b _ hb
+    simp [Pi.single_eq_of_ne hb, boundState, toFun]
+  · simp
+
+lemma boundStateMapHS_single (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k) (n : ℕ)
+    (l : Fin (n + 1)) (P : harmonicSubmodule d l) :
+    boundStateMapHS H hd hk n (Pi.single l P) =
+      boundStateHS H hd hk (n - l) l (P : MvPolynomial (Fin d) ℝ) := by
+  rw [SpaceDHilbertSpace.ext_iff]
+  have h₁ : (boundStateMapHS H hd hk n (Pi.single l P) : SpaceDHilbertSpace d) =ᵐ[volume]
+      fun y => (boundStateMap H n (Pi.single l P) y : ℂ) :=
+    coeFn_mk (memHS_boundStateMap H hd hk n _)
+  have h₂ : (boundStateHS H hd hk (n - l) l (P : MvPolynomial (Fin d) ℝ) :
+      SpaceDHilbertSpace d) =ᵐ[volume]
+      fun y => (boundState H (n - l) l (toFun (P : MvPolynomial (Fin d) ℝ)) y : ℂ) :=
+    coeFn_mk (memHS_boundState H hd hk _ _ _)
+  filter_upwards [h₁, h₂] with y h₁ h₂
+  rw [h₁, h₂, boundStateMap_single]
+
+/-- The weak eigenvalue equation `⟪E_n ψ, φ⟫ = ⟪ψ, H φ⟫` for every sum `ψ` of bound states of
+the level `n` and every `φ` in the domain of the Hamiltonian. -/
+lemma inner_boundStateMapHS_hamiltonianOperator (H : HydrogenAtom d) (hd : 2 ≤ d)
+    (hk : 0 < H.k) (n : ℕ) (Ps : (l : Fin (n + 1)) → harmonicSubmodule d l)
+    (φ : H.hamiltonianOperator.domain) :
+    ⟪(H.energyLevel n : ℂ) • boundStateMapHS H hd hk n Ps, (φ : SpaceDHilbertSpace d)⟫_ℂ =
+      ⟪boundStateMapHS H hd hk n Ps, H.hamiltonianOperator φ⟫_ℂ := by
+  rw [← Finset.univ_sum_single Ps, map_sum, Finset.smul_sum, sum_inner, sum_inner]
+  refine Finset.sum_congr rfl fun l _ => ?_
+  have h := inner_boundStateHS_hamiltonianOperator H hd hk (n - l) l (Ps l).2 φ
+  rw [Nat.sub_add_cancel (Nat.lt_succ_iff.mp l.isLt)] at h
+  rw [boundStateMapHS_single, h]
+
+/-- The sums of bound states of one level lie in the domain of the adjoint Hamiltonian. -/
+lemma boundStateMapHS_mem_adjoint_domain (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (n : ℕ) (Ps : (l : Fin (n + 1)) → harmonicSubmodule d l) :
+    boundStateMapHS H hd hk n Ps ∈ H.hamiltonianOperator†.domain :=
+  LinearPMap.mem_adjoint_domain_of_exists _
+    ⟨_, inner_boundStateMapHS_hamiltonianOperator H hd hk n Ps⟩
+
+/-- Every sum of bound states of the level `n` is an eigenvector of the adjoint Hamiltonian with
+eigenvalue `E_n`. -/
+lemma adjoint_boundStateMapHS (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (n : ℕ) (Ps : (l : Fin (n + 1)) → harmonicSubmodule d l) :
+    H.hamiltonianOperator† ⟨_, boundStateMapHS_mem_adjoint_domain H hd hk n Ps⟩ =
+      (H.energyLevel n : ℂ) • boundStateMapHS H hd hk n Ps :=
+  LinearPMap.adjoint_apply_eq H.hamiltonianOperator_hasDenseDomain _
+    (inner_boundStateMapHS_hamiltonianOperator H hd hk n Ps)
+
+/-- In three dimensions the Bohr energy `E_n` is an eigenvalue of the adjoint Hamiltonian whose
+eigenvectors contain a real subspace of dimension `(n + 1)²`. -/
+lemma exists_finrank_eigenvectors_adjoint_three (H : HydrogenAtom 3)
+    (hk : 0 < H.k) (n : ℕ) :
+    ∃ V : Submodule ℝ (SpaceDHilbertSpace 3), Module.finrank ℝ V = (n + 1) ^ 2 ∧
+      ∀ v ∈ V, ∃ hv : v ∈ H.hamiltonianOperator†.domain,
+        H.hamiltonianOperator† ⟨v, hv⟩ = (H.energyLevel n : ℂ) • v := by
+  refine ⟨LinearMap.range (boundStateMapHS H (by omega) hk n),
+    finrank_range_boundStateMapHS_three H hk n, ?_⟩
+  rintro v ⟨Ps, rfl⟩
+  exact ⟨_, adjoint_boundStateMapHS H _ hk n Ps⟩
+
+/-- In three dimensions the Bohr energy `E_n` is an eigenvalue of the adjoint Hamiltonian of
+(complex) multiplicity at least `(n + 1)²`. -/
+lemma exists_finrank_eigenvectors_adjoint_three_complex (H : HydrogenAtom 3)
+    (hk : 0 < H.k) (n : ℕ) :
+    ∃ V : Submodule ℂ (SpaceDHilbertSpace 3), Module.finrank ℂ V = (n + 1) ^ 2 ∧
+      ∀ v ∈ V, ∃ hv : v ∈ H.hamiltonianOperator†.domain,
+        H.hamiltonianOperator† ⟨v, hv⟩ = (H.energyLevel n : ℂ) • v := by
+  refine ⟨Submodule.span ℂ (Set.range (boundStateMapHS H (by omega) hk n)),
+    finrank_span_range_boundStateMapHS_three H hk n, fun v hv => ?_⟩
+  induction hv using Submodule.span_induction with
+  | mem x hx =>
+    obtain ⟨Ps, rfl⟩ := hx
+    exact ⟨_, adjoint_boundStateMapHS H _ hk n Ps⟩
+  | zero =>
+    refine ⟨zero_mem _, ?_⟩
+    rw [smul_zero]
+    exact LinearPMap.map_zero _
+  | add x y _ _ hx hy =>
+    obtain ⟨hx', ex⟩ := hx
+    obtain ⟨hy', ey⟩ := hy
+    refine ⟨add_mem hx' hy', ?_⟩
+    rw [show (⟨x + y, add_mem hx' hy'⟩ : H.hamiltonianOperator†.domain) = ⟨x, hx'⟩ + ⟨y, hy'⟩
+      from rfl, LinearPMap.map_add, ex, ey, smul_add]
+  | smul c x _ hx =>
+    obtain ⟨hx', ex⟩ := hx
+    refine ⟨Submodule.smul_mem _ c hx', ?_⟩
+    rw [show (⟨c • x, Submodule.smul_mem _ c hx'⟩ : H.hamiltonianOperator†.domain) =
+      c • ⟨x, hx'⟩ from rfl, LinearPMap.map_smul, ex, smul_comm]
 
 end PhyslibAlpha.Hydrogen
