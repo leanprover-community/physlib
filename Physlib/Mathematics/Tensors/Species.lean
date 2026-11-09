@@ -150,7 +150,7 @@ noncomputable def contr (c : Color K) :
   ⟨(S.basis c).coordPairing (S.basis c.dual), fun g =>
     TensorProduct.ext' fun x y => S.invariant c g x y⟩
 
-/-- The bases of a color and its dual are dual, `e^μ(e_ν) = δ^μ_ν`. -/
+/-- The bases of a color and its dual are dual, `e^ν(e_μ) = δ_μ^ν`. -/
 lemma contr_basis (c : Color K) (μ ν : basisIdx c.kind) :
     S.contr c (S.basis c μ ⊗ₜ S.basis c.dual ν) = if μ = ν then 1 else 0 :=
   Module.Basis.coordPairing_basis_basis _ _ _ _
@@ -265,7 +265,7 @@ lemma toLin_map (a : Color K) (g : G) {U U' : Type} [AddCommGroup U] [Module k U
 /-- The delta is invariant, `Λ δ = δ`. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
-  -- Both act as the identity: `(Λδ)(Λx) = Λx` by the snake law.
+  -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `snake`.
   apply S.toLin.injective
   ext x
   simpa [snake] using S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
