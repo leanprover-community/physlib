@@ -148,19 +148,15 @@ statistical mechanics. Results stated with it, such as `Temperature.β`, hold in
 
 namespace Constants
 
-/-- The Boltzmann constant in SI units, `m ^ 2 kg s ^ (-2) K ^ (-1)`, as a positive real number. -/
-noncomputable def kBAx : {p : ℝ | 0 < p} :=
-  ⟨(boltzmannConstant SI).val, (boltzmannConstant SI).pos⟩
-
 /-- The Boltzmann constant as a real number, with its value in SI units. For the Boltzmann
   constant in any units, use `BoltzmannConstant`. -/
-noncomputable def kB : ℝ := kBAx.1
+noncomputable def kB : ℝ := (boltzmannConstant SI).val
 
 /-- The Boltzmann constant is positive. -/
-lemma kB_pos : 0 < kB := kBAx.2
+lemma kB_pos : 0 < kB := (boltzmannConstant SI).pos
 
 /-- The Boltzmann constant is non-negative. -/
-lemma kB_nonneg : 0 ≤ kB := le_of_lt kBAx.2
+lemma kB_nonneg : 0 ≤ kB := le_of_lt kB_pos
 
 /-- The Boltzmann constant is not equal to zero. -/
 lemma kB_ne_zero : kB ≠ 0 := by
