@@ -139,9 +139,9 @@ lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c,
 
 The contraction is not a field of `Species`. It is defined from the bases, as their coordinate
 pairing. The bases of `c` and `c.dual` are then dual by construction, and components need no
-dual-basis matching. Its invariance is the law of the species. `dualEquiv` identifies `V c.dual` with Mathlib's dual
-representation of `V c`, and `invariant_of_contr` builds the law from a pairing known to be
-invariant.
+dual-basis matching. Its invariance is the law of the species. `dualEquiv` identifies `V c.dual`
+with Mathlib's dual representation of `V c`, and `invariant_of_contr` builds the law from a pairing
+known to be invariant.
 
 -/
 
