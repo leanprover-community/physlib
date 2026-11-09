@@ -70,15 +70,15 @@ def traceAddMonoidHom : HermitianMat n α →+ R where
   map_add' := trace_add
 
 @[simp]
-theorem trace_listSum (l : List (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
+lemma trace_listSum (l : List (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
   map_list_sum traceAddMonoidHom l
 
 @[simp]
-theorem trace_multisetSum (l : Multiset (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
+lemma trace_multisetSum (l : Multiset (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
   map_multiset_sum traceAddMonoidHom l
 
 @[simp]
-theorem trace_sum {ι : Type*} (s : Finset ι) (f : ι → HermitianMat n α) :
+lemma trace_sum {ι : Type*} (s : Finset ι) (f : ι → HermitianMat n α) :
     (∑ i ∈ s, f i).trace = ∑ i ∈ s, (f i).trace :=
   map_sum traceAddMonoidHom f s
 
