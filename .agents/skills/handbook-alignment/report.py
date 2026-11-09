@@ -65,7 +65,7 @@ def makeReport(results: list[Result]) -> str:
 
     lines = [
         "<!-- handbook-alignment-report -->",
-        "This check is advisory, human review takes precedence."
+        "This check is advisory, human review takes precedence.",
         "## Handbook alignment check",
         "",
         "| Handbook file | Score | Summary |",
