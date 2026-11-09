@@ -157,6 +157,7 @@ public import Physlib.Mathematics.Calculus.Wirtinger.Hessian
 public import Physlib.Mathematics.Distribution.PowMul
 public import Physlib.Mathematics.Distribution.TemperedDistribution
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
+public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
 public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Fin
@@ -196,6 +197,8 @@ public import Physlib.Mathematics.Modules.CrossProduct
 public import Physlib.Mathematics.Modules.CrossProductMatrix
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
+public import Physlib.Mathematics.Tensors.Color
+public import Physlib.Mathematics.Tensors.Species
 public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint
