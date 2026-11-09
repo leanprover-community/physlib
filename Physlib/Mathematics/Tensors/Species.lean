@@ -33,8 +33,10 @@ a covector is an element of `CoVector d` itself rather than a linear form on `Ve
 make the two spaces dual, and the condition on the species makes them dual representations:
 
 - The contraction `S.contr c : V c ⊗ V c.dual → k` multiplies the components of its two arguments
-  in the bases of `c` and `c.dual` and adds them up, `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ`. The two
-  bases are then dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`, and `V c.dual` is the dual space of `V c`.
+  in the bases of `c` and `c.dual` and adds them up, `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ`. A basis
+  vector has one component equal to `1` and the others `0`, so `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν` and
+  the two bases are dual. Every linear form on `V c` is `u ↦ u^μ α_μ` for exactly one `α`, with
+  `α_μ` its value on `e_μ`, so `V c.dual` is the dual space of `V c` (`isPerfPair_contr`).
 - The condition on a species (`invariant`) says that the contraction is invariant,
   `(Λu)^μ (Λα)_μ = u^μ α_μ`. This makes `V c.dual` the dual representation of `V c`
   (`dualEquiv`).
