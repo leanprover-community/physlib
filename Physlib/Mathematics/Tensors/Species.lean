@@ -32,9 +32,9 @@ Each lower space is given by the species, not built as `Module.Dual` of the uppe
 a covector is an element of `CoVector d` itself rather than a linear form on `Vector d`. The bases
 make the two spaces dual, and the condition on the species makes them dual representations:
 
-- The contraction `S.contr c : V c ⊗ V c.dual → k` is defined from the bases, as
-  `u ⊗ α ↦ ∑ μ, u^μ α_μ`. This makes the two bases dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`, and
-  `V c.dual` the dual space of `V c`.
+- The contraction `S.contr c : V c ⊗ V c.dual → k` multiplies the components of its two arguments
+  in the bases of `c` and `c.dual` and adds them up, `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ`. The two
+  bases are then dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`, and `V c.dual` is the dual space of `V c`.
 - The condition on a species (`invariant`) says that the contraction is invariant,
   `(Λu)^μ (Λα)_μ = u^μ α_μ`. This makes `V c.dual` the dual representation of `V c`
   (`dualEquiv`).
