@@ -243,10 +243,10 @@ def basis : OrthonormalBasis (Fin d) ℝ (WaveVectorSpace d) where
   repr := equivEuclideanSpace
 
 @[simp]
-lemma basis_repr_apply : basis.repr k i = k i := by simp [basis]
+lemma basis_repr_apply : basis.repr k i = k i := rfl
 
 @[simp]
-lemma basis_repr_symm_apply : basis.repr.symm v i = v i := by rfl
+lemma basis_repr_symm_apply : basis.repr.symm v i = v i := rfl
 
 @[simp]
 lemma basis_apply : basis i j = δ[i,j] := by rcases eq_or_ne i j <;> simp_all [basis]
