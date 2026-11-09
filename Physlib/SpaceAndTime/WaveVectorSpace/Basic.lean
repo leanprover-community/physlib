@@ -64,14 +64,15 @@ structure WaveVectorSpace (d : ℕ := 3) where
 
 namespace WaveVectorSpace
 
-variable {d : ℕ} (c : ℝ) {k k₁ k₂ : WaveVectorSpace d}
+variable {d : ℕ}
 
-lemma eq_of_val (h : k₁.val = k₂.val) : k₁ = k₂ := by
+lemma eq_of_val {k₁ k₂ : WaveVectorSpace d} (h : k₁.val = k₂.val) : k₁ = k₂ := by
   cases k₁
   congr
 
 @[simp]
-lemma val_eq_iff : k₁.val = k₂.val ↔ k₁ = k₂ := ⟨eq_of_val, congrArg val⟩
+lemma val_eq_iff {k₁ k₂ : WaveVectorSpace d} : k₁.val = k₂.val ↔ k₁ = k₂ :=
+  ⟨eq_of_val, congrArg val⟩
 
 /-!
 ## B. Instances on `WaveVectorSpace`
@@ -85,7 +86,7 @@ instance : CoeFun (WaveVectorSpace d) (fun _ ↦ Fin d → ℝ) where
   coe k := k.val
 
 @[ext]
-lemma eq_of_apply (h : ∀ i, k₁ i = k₂ i) : k₁ = k₂ := by
+lemma eq_of_apply {k₁ k₂ : WaveVectorSpace d} (h : ∀ i, k₁ i = k₂ i) : k₁ = k₂ := by
   apply eq_of_val
   funext i
   exact h i
@@ -111,7 +112,9 @@ lemma zero_val : (0 : WaveVectorSpace d).val = 0 := rfl
 ### B.4. Additive commutative group
 -/
 
-variable (k k₁ k₂)
+section AddCommGroup
+
+variable (k k₁ k₂ : WaveVectorSpace d)
 
 instance : Add (WaveVectorSpace d) where
   add k₁ k₂ := ⟨k₁.val + k₂.val⟩
@@ -140,6 +143,8 @@ instance : AddCommGroup (WaveVectorSpace d) where
   neg_add_cancel _ := by ext; simp
   add_comm _ _ := by ext; simp [add_comm]
 
+end AddCommGroup
+
 /-!
 ### B.5. Module over `ℝ`
 -/
@@ -148,7 +153,7 @@ instance : SMul ℝ (WaveVectorSpace d) where
   smul c k := ⟨c • k.val⟩
 
 @[simp]
-lemma smul_val : (c • k).val = c • k.val := rfl
+lemma smul_val (c : ℝ) (k : WaveVectorSpace d) : (c • k).val = c • k.val := rfl
 
 instance instModuleReal : Module ℝ (WaveVectorSpace d) where
   mul_smul _ _ _ := by ext; simp [mul_assoc]
@@ -169,7 +174,7 @@ open scoped RealInnerProductSpace
 instance : Inner ℝ (WaveVectorSpace d) where
   inner k₁ k₂ := ∑ i, k₁ i * k₂ i
 
-lemma inner_apply : ⟪k₁, k₂⟫ = ∑ i, k₁ i * k₂ i := rfl
+lemma inner_apply (k₁ k₂ : WaveVectorSpace d) : ⟪k₁, k₂⟫ = ∑ i, k₁ i * k₂ i := rfl
 
 instance : InnerProductSpace.Core ℝ (WaveVectorSpace d) where
   conj_inner_symm _ _ := by simp [inner_apply, mul_comm]
@@ -187,10 +192,10 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (WaveVectorSp
 noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVectorSpace d) :=
   InnerProductSpace.ofCore instCoreReal.toCore
 
-lemma norm_eq : ‖k‖ = √(∑ i, k i ^ 2) := by
+lemma norm_eq (k : WaveVectorSpace d) : ‖k‖ = √(∑ i, k i ^ 2) := by
   simp_rw [norm_eq_sqrt_real_inner, inner_apply, pow_two]
 
-lemma norm_sq_eq : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
+lemma norm_sq_eq (k : WaveVectorSpace d) : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
   simp_rw [← real_inner_self_eq_norm_sq, inner_apply, pow_two]
 
 end InnerProduct
