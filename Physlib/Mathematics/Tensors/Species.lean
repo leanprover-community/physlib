@@ -48,15 +48,13 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
   law from its upper colors.
 - `Species.contr` is the contraction `u^μ α_μ`, with `Species.contr_basis`,
   `Species.contr_tmul_symm` and `Species.contr_invariant`.
-- `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components,
-  `Species.contr_basis_tmul` reads off a component, and `Species.ext_contr` proves that the
-  contraction is nondegenerate.
+- `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components, and
+  `Species.ext_contr` proves that the contraction is nondegenerate.
 - `Species.isPerfPair_contr` : the contraction is a perfect pairing, and `Species.dualEquiv`
   identifies `V c.dual` with the dual representation of `V c`.
 - `Species.invariant_of_contr` gives the law `invariant` from an invariant pairing for which the
   bases are dual.
-- `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_eq_comm_delta_dual` and
-  `Species.delta_invariant`.
+- `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_invariant`.
 - `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`, `Species.snake` proves
   that the delta is the identity, `Species.toLin_map` that `toLin` commutes with the group
   action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` that `(id ⊗ f) z = f ∘ z`.
@@ -166,19 +164,6 @@ lemma contr_tmul_symm (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ[k] y) = S.contr c.dual (y ⊗ₜ[k] x) :=
   Module.Basis.coordPairing_comm _ _ _ _
 
-/-- Contracting the basis vector `e_μ` with `α` reads off the component `α_μ`. -/
-lemma contr_basis_tmul (c : Color K) (μ : basisIdx c.kind) (α : S.V c.dual) :
-    S.contr c (S.basis c μ ⊗ₜ α) = (S.basis c.dual).repr α μ :=
-  (S.contr_tmul_symm c _ α).trans (Module.Basis.coordPairing_tmul_basis _ _ _ _)
-
-variable {S} in
-/-- The contraction is nondegenerate in its second argument. Two vectors of `c.dual` with the
-same contraction against every vector of `c` are equal. -/
-lemma ext_contr {c : Color K} {α α' : S.V c.dual}
-    (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
-  (S.basis c.dual).repr.injective <| Finsupp.ext fun μ => by
-    simpa [contr_basis_tmul] using h (S.basis c μ)
-
 /-- The contraction is a perfect pairing, so `V c.dual` is the dual of `V c`. -/
 instance isPerfPair_contr (c : Color K) :
     (TensorProduct.curry (S.contr c).toLinearMap).IsPerfPair :=
@@ -206,6 +191,13 @@ lemma dualEquiv_apply (c : Color K) (α : S.V c.dual) (u : S.V c) :
     S.dualEquiv c α u = S.contr c (u ⊗ₜ α) :=
   rfl
 
+variable {S} in
+/-- The contraction is nondegenerate in its second argument. Two vectors of `c.dual` with the
+same contraction against every vector of `c` are equal. -/
+lemma ext_contr {c : Color K} {α α' : S.V c.dual}
+    (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
+  (S.dualEquiv c).toLinearEquiv.injective (LinearMap.ext h)
+
 omit S in
 /-- The law `invariant`, from an invariant pairing `p` for which the bases are dual. It is how a
 species is built from a pairing that is known to be invariant. -/
@@ -228,11 +220,6 @@ lemma invariant_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommG
 the dual color is first. -/
 noncomputable def delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
   ∑ μ, S.basis c.dual μ ⊗ₜ S.basis c μ
-
-/-- The delta of `c` is the delta of `c.dual ∈ V c ⊗ V c.dual` with its factors swapped. -/
-lemma delta_eq_comm_delta_dual (c : Color K) :
-    S.delta c = TensorProduct.comm k _ _ (S.delta c.dual) := by
-  simp only [delta, map_sum, TensorProduct.comm_tmul]
 
 /-- An element `z` of `V a ⊗ U` as the linear map `V a.dual → U` that contracts a vector with the
 first factor of `z`. For a lower color `a` and `z = g` in `V a ⊗ V a` it is `v^μ ↦ v^μ g_μν`.
