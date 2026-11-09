@@ -22,8 +22,9 @@ The global Standard Model gauge group {1} acts on them through a representation,
 a U(1) phase times an SU(2) matrix and compatible with the group law. [4] That representation
 preserves inner products and norms. [5] Two Higgs vectors lie in the same gauge orbit exactly when
 they have the same norm. The electromagnetic U(1) leaves the Higgs vacuum (0, v) invariant, and
-one of its elements removes the phase of the first component. [6] A nonzero Higgs vector breaks the gauge group to a subgroup SU(3) × U(1), and the
-subgroup fixing every Higgs vector is SU(3) × ℤ₆. [7][TODO] Pairs of Higgs vectors, with this
+one of its elements removes the phase of the first component. [6] The stability group of a Higgs vector is the gauge group it leaves
+unbroken: for the vacuum (0, √a) it is SU(3) × U(1)_EM, for any other nonzero Higgs vector it is
+a conjugate of this, and the subgroup fixing every Higgs vector is SU(3) × ℤ₆. [7] Pairs of Higgs vectors, with this
 gauge action, are the configurations of the two Higgs doublet model {2}.
 
 ### The Higgs bundle and Higgs fields
@@ -85,8 +86,9 @@ gauge connection over spacetime. [TODO]
    `toRealGroupElem_apply_self`, `exists_repGaugeGroupI_eq_iff_norm_eq`,
    `electromagnetismU1_repGaugeGroupI_apply`, `electromagnetismU1_repGaugeGroupI_ofReal`,
    `exists_electromagnetismU1_fst_eq_norm`
-7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `stability_group_single`,
-   `stability_group`
+7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `stabilityGroup`, `mem_stabilityGroup_iff`,
+   `mem_stabilityGroup_ofReal_iff`, `stabilityGroup_ofReal`, `stabilityGroup_repGaugeGroupI`,
+   `exists_stabilityGroup_eq_conj_colorElectromagnetism`, `mem_iInf_stabilityGroup_iff`
 8. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsBundle`
 9. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsField`, `const`,
    `const_apply`, `toHiggsVec`, `toHiggsVec_smooth`, `const_toHiggsVec_apply`

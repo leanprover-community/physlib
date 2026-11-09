@@ -648,8 +648,6 @@ def GaugeGroup : GaugeGroupQuot → Type
   | .ℤ₃ => GaugeGroupℤ₃
   | .I => GaugeGroupI
 
-TODO "Define the unbroken gauge group using the Higgs field."
-
 noncomputable instance (q : GaugeGroupQuot) : Group (GaugeGroup q) := by
   cases q <;> dsimp [GaugeGroup] <;> infer_instance
 

@@ -40,9 +40,8 @@ central embedding, and its kernel is exactly the chosen subgroup. [9]
 ### Higgs-sector representations and beyond
 
 On the two-dimensional complex space of the Higgs sector {2}, U(1) acts by a representation and
-SU(2) by its fundamental action, and the two commute. [10] Electroweak symmetry breaking by the
-Higgs field leaves an unbroken gauge group. [TODO] The fermionic content of the Standard Model,
-together with its representations of the gauge group, forms a single structure. [TODO]
+SU(2) by its fundamental action, and the two commute. [10] The fermionic content of the Standard
+Model, together with its representations of the gauge group, forms a single structure. [TODO]
 
 ## Lean References
 
