@@ -7,7 +7,9 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
+public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
 # Lagrangian systems

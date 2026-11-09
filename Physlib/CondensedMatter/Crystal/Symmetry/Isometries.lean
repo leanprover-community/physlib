@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.CondensedMatter.Crystal.Embedding
-public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
+public import Physlib.CondensedMatter.Crystal.Symmetry.Basic
 
 /-!
 # Isometries of an embedded crystal

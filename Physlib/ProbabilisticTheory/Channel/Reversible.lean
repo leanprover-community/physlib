@@ -5,8 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Physlib.ProbabilisticTheory.State.Basic
+public import Mathlib.Algebra.Module.Equiv.Defs
 
 /-!
 # Reversible transformations of observables
