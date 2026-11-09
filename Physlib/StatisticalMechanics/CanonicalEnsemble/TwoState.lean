@@ -101,7 +101,7 @@ lemma twoState_meanEnergy_eq (E₀ E₁ : ℝ) (T : Temperature) :
 
 /-- A simplification of the `entropy` of the two-state canonical ensemble.
 
-Since `β 0 = 0`, at `T = 0` the right-hand side evaluates to `kB * Real.log 2`.
+Since `β kB 0 = 0`, at `T = 0` the right-hand side evaluates to `kB * Real.log 2`.
 See `twoState_entropy_eq_T_neq_zero` for the same statement carrying `T ≠ 0`. -/
 lemma twoState_entropy_eq (E₀ E₁ : ℝ) (T : Temperature) :
     (twoState E₀ E₁).thermodynamicEntropy kB T =

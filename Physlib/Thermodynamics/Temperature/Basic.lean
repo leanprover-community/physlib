@@ -56,7 +56,7 @@ instance : Zero Temperature := ⟨⟨0⟩⟩
   cases T₁; cases T₂; cases h; rfl
 
 /-- The inverse temperature defined as `1/(kB * T)` in a given, but arbitrary set of units.
-  This has dimensions equivalent to `Energy`. -/
+  This has the dimension of an inverse energy. -/
 noncomputable def β (T : Temperature) : ℝ≥0 :=
   ⟨1 / ((kB : ℝ) * (T : ℝ)), div_nonneg zero_le_one (mul_nonneg kB.val_nonneg T.val.2)⟩
 

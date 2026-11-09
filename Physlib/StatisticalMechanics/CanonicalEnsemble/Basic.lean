@@ -31,7 +31,7 @@ ambiguities such as the Gibbs paradox.
 We keep both layers:
 
 * Mathematical / raw:
-  - `mathematicalPartitionFunction (T)` : ∫ exp(-β E) dμ
+  - `mathematicalPartitionFunction kB T` : ∫ exp(-β E) dμ
   - `probability` (density w.r.t. `μ`)
   - `differentialEntropy` (can be negative, unit–dependent)
 
@@ -50,9 +50,9 @@ normalization is recovered via the Boltzmann weighted measure.
 
 ## 4. Boltzmann & Probability Measures
 
-* `μBolt T` : Boltzmann (unnormalized) measure `withDensity exp(-β E)`
-* `μProd T` : normalized probability measure (rescaled `μBolt T`)
-* `probability T i` : the density `exp(-β E(i)) / Z_math`
+* `μBolt kB T` : Boltzmann (unnormalized) measure `withDensity exp(-β E)`
+* `μProd kB T` : normalized probability measure (rescaled `μBolt kB T`)
+* `probability kB T i` : the density `exp(-β E(i)) / Z_math`
 * `physicalProbability` : `probability * (phase_space_unit ^ dof)`
 
 ## 5. Energies & Entropies
@@ -82,6 +82,8 @@ mean energies and integrability.
 
 * We work over an arbitrary measurable type `ι`, allowing both finite and continuous models.
 * `β` is accessed through the `Temperature` structure (`T.β kB`, for a Boltzmann constant `kB`).
+* Every quantity that depends on the temperature takes the Boltzmann constant
+  `kB : BoltzmannConstant` before `T`.
 * Most positivity / finiteness conditions are hypotheses on lemmas instead of global axioms,
   enabling reuse in formal derivations of fluctuation and response identities.
 
@@ -368,6 +370,7 @@ lemma mathematicalPartitionFunction_eq_integral (T : Temperature) :
   · fun_prop
   · exact .of_forall fun i => ENNReal.ofReal_lt_top
 
+variable {kB} in
 lemma mathematicalPartitionFunction_add {T : Temperature} :
     (𝓒 + 𝓒1).mathematicalPartitionFunction kB T =
     𝓒.mathematicalPartitionFunction kB T * 𝓒1.mathematicalPartitionFunction kB T := by
@@ -410,8 +413,6 @@ lemma mathematicalPartitionFunction_pos (T : Temperature)
     0 < 𝓒.mathematicalPartitionFunction kB T := by
   simp [mathematicalPartitionFunction]
 
-open NNReal
-
 /-! ## The probability density -/
 
 /-- The probability density function of the canonical ensemble.
@@ -424,6 +425,7 @@ noncomputable def probability (T : Temperature) (i : ι) : ℝ :=
 
 /-! ## The probability measure -/
 
+variable {kB} in
 lemma probability_add {T : Temperature} (i : ι × ι1) :
     (𝓒 + 𝓒1).probability kB T i = 𝓒.probability kB T i.1 * 𝓒1.probability kB T i.2 := by
   simp [probability, mathematicalPartitionFunction_add, mul_add, Real.exp_add, div_mul_div_comm]
@@ -458,6 +460,7 @@ instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)]
 instance {T} : IsFiniteMeasure (𝓒.μProd kB T) :=
   inferInstanceAs (IsFiniteMeasure ((𝓒.μBolt kB T Set.univ)⁻¹ • 𝓒.μBolt kB T))
 
+variable {kB} in
 lemma μProd_add {T : Temperature} [IsFiniteMeasure (𝓒.μBolt kB T)]
     [IsFiniteMeasure (𝓒1.μBolt kB T)] :
     (𝓒 + 𝓒1).μProd kB T = (𝓒.μProd kB T).prod (𝓒1.μProd kB T) := by
@@ -530,6 +533,7 @@ noncomputable def meanSquareEnergy (T : Temperature) : ℝ :=
 noncomputable def energyVariance (T : Temperature) : ℝ :=
   ∫ i, (𝓒.energy i - 𝓒.meanEnergy kB T)^2 ∂ 𝓒.μProd kB T
 
+variable {kB} in
 lemma meanEnergy_add {T : Temperature}
     [IsFiniteMeasure (𝓒1.μBolt kB T)] [IsFiniteMeasure (𝓒.μBolt kB T)]
     [NeZero 𝓒.μ] [NeZero 𝓒1.μ]
@@ -554,7 +558,7 @@ lemma meanEnergy_nsmul (n : ℕ) (T : Temperature)
   | zero => simp [nsmul, meanEnergy]
   | succ n ih =>
     rw [nsmul_succ, meanEnergy_congr,
-      meanEnergy_add kB _ _ h1 (integrable_energy_nsmul kB 𝓒 n T h1), ih]
+      meanEnergy_add _ _ h1 (integrable_energy_nsmul kB 𝓒 n T h1), ih]
     push_cast
     ring
 
