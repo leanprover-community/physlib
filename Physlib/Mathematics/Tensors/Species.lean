@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.LinearAlgebra.Contraction
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
 public import Mathlib.RepresentationTheory.Intertwining
@@ -227,26 +228,21 @@ lemma invariant_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommG
 /-- The Kronecker delta `∑ μ, e^μ ⊗ e_μ ∈ V c.dual ⊗ V c`, with components `δ_μ^ν`. The factor of
 the dual color is first. -/
 noncomputable def delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
-  (S.basis c.dual).coevaluation (S.basis c)
+  ∑ μ, S.basis c.dual μ ⊗ₜ S.basis c μ
 
 /-- The delta of `c` is the delta of `c.dual ∈ V c ⊗ V c.dual` with its factors swapped. -/
 lemma delta_eq_comm_delta_dual (c : Color K) :
     S.delta c = TensorProduct.comm k _ _ (S.delta c.dual) := by
-  simp only [delta, Module.Basis.coevaluation, map_sum, TensorProduct.comm_tmul]
+  simp only [delta, map_sum, TensorProduct.comm_tmul]
 
 /-- An element `z` of `V a ⊗ U` as the linear map `V a.dual → U` that contracts a vector with the
 first factor of `z`. For a lower color `a` and `z = g` in `V a ⊗ V a` it is `v^μ ↦ v^μ g_μν`.
 Every linear map arises so. -/
 noncomputable def toLin {a : Color K} {U : Type} [AddCommGroup U] [Module k U] :
     S.V a ⊗[k] U ≃ₗ[k] (S.V a.dual →ₗ[k] U) :=
-  -- The inverse sends `f` to `(id ⊗ f) δ`. Both composites are the identity, by the two halves of
-  -- the snake law for dual bases.
-  LinearEquiv.ofLinearMap (pairingToLinearMap (S.contr a.dual).toLinearMap)
-    ((LinearMap.lTensorHom (S.V a.dual.dual)).flip (S.delta a.dual))
-    (LinearMap.ext fun f => by
-      simp [pairingToLinearMap_lTensor, delta, contr,
-        Module.Basis.pairingToLinearMap_coordPairing_coevaluation])
-    (LinearMap.ext fun z => Module.Basis.lTensor_pairingToLinearMap_coevaluation _ _ z)
+  -- Mathlib's `dualTensorHomEquivOfBasis`, after reading `V a` as the dual of `V a.dual`.
+  (TensorProduct.congr (S.dualEquiv a.dual).toLinearEquiv (LinearEquiv.refl k U)).trans
+    (dualTensorHomEquivOfBasis (S.basis a.dual))
 
 /-- A pure tensor `x ⊗ y` acts as `v ↦ (v^μ x_μ) y`, contracting `v` with its first factor. -/
 @[simp]
@@ -258,12 +254,14 @@ lemma toLin_tmul {a : Color K} {U : Type} [AddCommGroup U] [Module k U] (x : S.V
 `(id ⊗ f) z = f ∘ z`. -/
 lemma toLin_lTensor {a : Color K} {U U' : Type} [AddCommGroup U] [Module k U] [AddCommGroup U']
     [Module k U'] (f : U →ₗ[k] U') (z : S.V a ⊗[k] U) :
-    S.toLin (f.lTensor (S.V a) z) = f ∘ₗ S.toLin z :=
-  pairingToLinearMap_lTensor _ f z
+    S.toLin (f.lTensor (S.V a) z) = f ∘ₗ S.toLin z := by
+  induction z using TensorProduct.inductionOn with
+  | tmul x y => ext v; simp
+  | add z z' hz hz' => simp only [map_add, hz, hz', LinearMap.comp_add]
 
 /-- The snake law `u^μ δ_μ^ν = u^ν`, the delta read as a linear map is the identity. -/
 lemma snake (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
-  Module.Basis.pairingToLinearMap_coordPairing_coevaluation _ _
+  LinearMap.ext fun v => by simp [delta, contr, Module.Basis.coordPairing_tmul_basis]
 
 /-- `toLin` commutes with the group action, `((Λ ⊗ f) z)(Λx) = f (z x)` for every `Λ : G` and
 linear map `f` on `U`. For `f = Λ` this is the equivariance `(Λz)(Λx) = Λ(z x)`. -/
