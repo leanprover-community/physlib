@@ -5,6 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Physlib.Mathematics.KroneckerDelta.Basic
 /-!
@@ -45,6 +46,7 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
   - B.6. Inner product space
 - C. Linear isometric equivalence with `ℝᵈ`
   - C.1. Standard basis
+  - C.2. Coordinate functions
 
 ## iv. References
 
@@ -259,5 +261,42 @@ lemma basis_inner : inner ℝ (basis i) k = k i := by
 instance : FiniteDimensional ℝ (WaveVectorSpace d) := basis.toBasis.finiteDimensional_of_finite
 
 end Basis
+
+/-!
+### C.2. Coordinate functions
+-/
+
+noncomputable section Coord
+
+open scoped ContDiff
+
+variable {n : ℕ∞ω} (i : Fin d) (k : WaveVectorSpace d)
+
+/-- The standard coordinate functions of `WaveVectorSpace` based on `Fin d`. -/
+def coord : ℝ := inner ℝ k (basis i)
+
+lemma coord_apply : k.coord i = k i := by simp [coord]
+
+/-- The standard coordinate functions of `WaveVectorSpace` based on `Fin d`,
+as a continuous linear map. -/
+def coordCLM : WaveVectorSpace d →L[ℝ] ℝ where
+  toFun := coord i
+  map_add' _ _ := by simp [coord_apply]
+  map_smul' _ _ := by simp [coord_apply]
+  cont := by
+    change Continuous (fun k ↦ inner ℝ k (basis i))
+    fun_prop
+
+lemma coordCLM_apply : coordCLM i k = k.coord i := rfl
+
+@[fun_prop]
+lemma coord_contDiff : ContDiff ℝ n (coord i) := (coordCLM i).contDiff
+
+@[fun_prop]
+lemma val_contDiff : ContDiff ℝ n (val · i) := by
+  convert (coordCLM i).contDiff
+  simp [coordCLM_apply, coord_apply]
+
+end Coord
 
 end WaveVectorSpace
