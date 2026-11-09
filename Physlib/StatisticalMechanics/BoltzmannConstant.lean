@@ -15,14 +15,12 @@ The Boltzmann constant, in the format of `Physlib/Units/Constants.lean`.
 ## i. Overview
 
 The Boltzmann constant, named after Ludwig Boltzmann, has the dimension `M L² T⁻² Θ⁻¹` of an energy
-over a temperature, and its value in SI units is exact. Section F adds the instance of one and its
-form as a real number.
+over a temperature, and its value in SI units is exact. Section F adds the instance of one.
 
 ## ii. Key results
 
 - `BoltzmannConstant` : The Boltzmann constant in a chosen but arbitrary system of units.
 - `boltzmannConstant` : The Boltzmann constant in our world, `1.380649 × 10⁻²³ J K⁻¹`.
-- `Constants.kB` : The Boltzmann constant as a real number.
 
 ## iii. Table of contents
 
@@ -32,8 +30,6 @@ form as a real number.
 - D. The dimension
 - E. The value in our world
 - F. Specific to the Boltzmann constant
-  - F.1. The instance of one
-  - F.2. As a real number
 
 ## iv. References
 
@@ -122,8 +118,6 @@ lemma boltzmannConstant_in_SI : boltzmannConstant SI = ⟨1.380649e-23, by norm_
 
 ## F. Specific to the Boltzmann constant
 
-### F.1. The instance of one
-
 The Boltzmann constant equal to `1`, for units in which it is one.
 
 -/
@@ -136,30 +130,3 @@ instance : One BoltzmannConstant := ⟨1, one_pos⟩
 lemma val_one : (1 : BoltzmannConstant).val = 1 := rfl
 
 end BoltzmannConstant
-
-/-!
-
-### F.2. As a real number
-
-The Boltzmann constant as a real number, with its value in SI units, still used throughout
-statistical mechanics. Results stated with it, such as `Temperature.β`, hold in SI units only.
-
--/
-
-namespace Constants
-
-/-- The Boltzmann constant as a real number, with its value in SI units. For the Boltzmann
-  constant in any units, use `BoltzmannConstant`. -/
-noncomputable def kB : ℝ := (boltzmannConstant SI).val
-
-/-- The Boltzmann constant is positive. -/
-lemma kB_pos : 0 < kB := (boltzmannConstant SI).pos
-
-/-- The Boltzmann constant is non-negative. -/
-lemma kB_nonneg : 0 ≤ kB := le_of_lt kB_pos
-
-/-- The Boltzmann constant is not equal to zero. -/
-lemma kB_ne_zero : kB ≠ 0 := by
-  linarith [kB_pos]
-
-end Constants
