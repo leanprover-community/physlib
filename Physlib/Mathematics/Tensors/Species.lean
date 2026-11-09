@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.LinearAlgebra.Contraction
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
 public import Mathlib.RepresentationTheory.Intertwining
