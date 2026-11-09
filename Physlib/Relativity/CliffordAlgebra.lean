@@ -420,7 +420,7 @@ lemma ofCliffordAlgebra_range_eq_top : ofCliffordAlgebra.range = ⊤ := by
     simp [hy'', hz'']
 
 /-- The homomorphism `ofCliffordAlgebra` is surjective. -/
-theorem ofCliffordAlgebra_surjective : Function.Surjective ofCliffordAlgebra := by
+lemma ofCliffordAlgebra_surjective : Function.Surjective ofCliffordAlgebra := by
   rw [← AlgHom.range_eq_top]
   exact ofCliffordAlgebra_range_eq_top
 
