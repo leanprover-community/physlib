@@ -6,6 +6,7 @@ Authors: Gregory J. Loges
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Physlib.Mathematics.KroneckerDelta.Basic
 /-!
 
 # Wave Vector Space
@@ -42,7 +43,8 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
   - B.4. Additive commutative group
   - B.5. Module over `ℝ`
   - B.6. Inner product space
-    - B.6.1. Linear isometric equivalence with `ℝᵈ`
+- C. Linear isometric equivalence with `ℝᵈ`
+  - C.1. Standard basis
 
 ## iv. References
 
@@ -201,7 +203,7 @@ lemma norm_sq_eq (k : WaveVectorSpace d) : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
 end InnerProduct
 
 /-!
-#### B.6.1. Linear isometric equivalence with `ℝᵈ`
+## C. Linear isometric equivalence with `ℝᵈ`
 -/
 
 /-- The linear isometric equivalence between `WaveVectorSpace d` and `ℝᵈ`. -/
@@ -213,7 +215,49 @@ def equivEuclideanSpace : WaveVectorSpace d ≃ₗᵢ[ℝ] EuclideanSpace ℝ (F
   norm_map' _ := by simp [norm_eq, EuclideanSpace.norm_eq]
 
 @[simp]
+lemma equivEuclideanSpace_apply (k : WaveVectorSpace d) (i : Fin d) :
+    equivEuclideanSpace k i = k i :=
+  rfl
+
+@[simp]
+lemma equivEuclideanSpace_symm_apply (v : EuclideanSpace ℝ (Fin d)) (i : Fin d) :
+    equivEuclideanSpace.symm v i = v i :=
+  rfl
+
+@[simp]
 lemma finrank_waveVectorSpace : Module.finrank ℝ (WaveVectorSpace d) = d :=
   equivEuclideanSpace.toLinearEquiv.finrank_eq ▸ finrank_euclideanSpace_fin
+
+/-!
+### C.1. Standard basis
+-/
+
+section Basis
+
+variable (k : WaveVectorSpace d) (v : EuclideanSpace ℝ (Fin d)) (i j : Fin d)
+
+def basis : OrthonormalBasis (Fin d) ℝ (WaveVectorSpace d) where
+  repr := equivEuclideanSpace
+
+@[simp]
+lemma basis_repr_apply : basis.repr k i = k i := by simp [basis]
+
+@[simp]
+lemma basis_repr_symm_apply : basis.repr.symm v i = v i := by rfl
+
+@[simp]
+lemma basis_apply : basis i j = δ[i,j] := by rcases eq_or_ne i j <;> simp_all [basis]
+
+@[simp high]
+lemma inner_basis : inner ℝ k (basis i) = k i := by
+  simp only [inner_apply, basis_apply, mul_comm, ← nsmul_eq_mul, KroneckerDelta.sum_smul]
+
+@[simp high]
+lemma basis_inner : inner ℝ (basis i) k = k i := by
+  simp only [inner_apply, basis_apply, ← nsmul_eq_mul, KroneckerDelta.sum_smul]
+
+instance : FiniteDimensional ℝ (WaveVectorSpace d) := basis.toBasis.finiteDimensional_of_finite
+
+end Basis
 
 end WaveVectorSpace
