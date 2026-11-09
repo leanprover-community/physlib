@@ -28,9 +28,9 @@ is `Vector d`, the vectors with `1 + d` components, with the action `v^μ ↦ Λ
 standard basis `e_μ`. The space of `⟨vec, down⟩` is `CoVector d`, also with `1 + d` components,
 with the action `w_μ ↦ w_ν (Λ⁻¹)^ν_μ` and the dual basis `e^μ`.
 
-The space of a lower index is given by the species rather than built as `Module.Dual` of the
-upper space, so that a covector is an element of `CoVector d` itself, not a linear form on
-`Vector d`. That the two spaces are dual is the content of the bases and of the one law:
+Each lower space is given by the species, not built as `Module.Dual` of the upper space, so that
+a covector is an element of `CoVector d` itself rather than a linear form on `Vector d`. The bases
+make the two spaces dual, and the law of the species makes them dual representations:
 
 - The contraction `S.contr c : V c ⊗ V c.dual → k` is defined from the bases, as
   `u ⊗ α ↦ ∑ μ, u^μ α_μ`. This makes the two bases dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`, and
