@@ -14,8 +14,9 @@ public import Physlib.Cosmology.FLRW.Basic
 
 The null, weak, strong and dominant energy conditions of a cosmic fluid `F : CosmicFluid`
 (`Physlib.Cosmology.FLRW.Basic`), described by its total energy density `F.ρ` and its pressure
-`F.p`, at one time `t`, `c` being the speed of light, and the implications between them. They are
-used in `Physlib.Cosmology.FLRW.FriedmannSolution` to state the acceleration criterion.
+`F.p`, at one time `t`, `c : SpeedOfLight` being the speed of light, and the implications between
+them. They are used in `Physlib.Cosmology.FLRW.FriedmannSolution` to state the acceleration
+criterion.
 
 ## ii. Key results
 
@@ -49,23 +50,24 @@ namespace CosmicFluid
 
 -/
 
-variable (F : CosmicFluid) (c : ℝ) (t : Time)
+variable (F : CosmicFluid) (c : SpeedOfLight) (t : Time)
 
 /-- The null energy condition at time `t`, `0 ≤ ρ + p / c²`, for the total energy density `ρ`
   and the pressure `p` of the cosmic fluid, `c` being the speed of light. -/
-def NullEnergyCondition : Prop := 0 ≤ F.ρ t + F.p t / c ^ 2
+def NullEnergyCondition : Prop := 0 ≤ F.ρ t + F.p t / (c : ℝ) ^ 2
 
 /-- The weak energy condition at time `t`, `0 ≤ ρ ∧ 0 ≤ ρ + p / c²`, for the total energy density
   `ρ` and the pressure `p` of the cosmic fluid, `c` being the speed of light. -/
-def WeakEnergyCondition : Prop := 0 ≤ F.ρ t ∧ 0 ≤ F.ρ t + F.p t / c ^ 2
+def WeakEnergyCondition : Prop := 0 ≤ F.ρ t ∧ 0 ≤ F.ρ t + F.p t / (c : ℝ) ^ 2
 
 /-- The strong energy condition at time `t`, `0 ≤ ρ + p / c² ∧ 0 ≤ ρ + 3 p / c²`, for the total
   energy density `ρ` and the pressure `p` of the cosmic fluid, `c` being the speed of light. -/
-def StrongEnergyCondition : Prop := 0 ≤ F.ρ t + F.p t / c ^ 2 ∧ 0 ≤ F.ρ t + 3 * F.p t / c ^ 2
+def StrongEnergyCondition : Prop :=
+  0 ≤ F.ρ t + F.p t / (c : ℝ) ^ 2 ∧ 0 ≤ F.ρ t + 3 * F.p t / (c : ℝ) ^ 2
 
 /-- The dominant energy condition at time `t`, `0 ≤ ρ ∧ |p| ≤ ρ c²`, for the total energy density
   `ρ` and the pressure `p` of the cosmic fluid, `c` being the speed of light. -/
-def DominantEnergyCondition : Prop := 0 ≤ F.ρ t ∧ |F.p t| ≤ F.ρ t * c ^ 2
+def DominantEnergyCondition : Prop := 0 ≤ F.ρ t ∧ |F.p t| ≤ F.ρ t * (c : ℝ) ^ 2
 
 /-!
 
@@ -75,14 +77,15 @@ def DominantEnergyCondition : Prop := 0 ≤ F.ρ t ∧ |F.p t| ≤ F.ρ t * c ^ 
 
 variable {F c t}
 
-/-- For `c ≠ 0`, the dominant energy condition implies the weak energy condition. -/
-lemma DominantEnergyCondition.weakEnergyCondition (hc : c ≠ 0)
-    (h : F.DominantEnergyCondition c t) : F.WeakEnergyCondition c t := by
+/-- The dominant energy condition implies the weak energy condition. -/
+lemma DominantEnergyCondition.weakEnergyCondition (h : F.DominantEnergyCondition c t) :
+    F.WeakEnergyCondition c t := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   obtain ⟨h0, h1⟩ := h
-  have hc2 : 0 < c ^ 2 := by positivity
-  have h2 : -(F.ρ t * c ^ 2) ≤ F.p t := (abs_le.mp h1).1
+  have hc2 : 0 < (c : ℝ) ^ 2 := by positivity
+  have h2 : -(F.ρ t * (c : ℝ) ^ 2) ≤ F.p t := (abs_le.mp h1).1
   refine ⟨h0, ?_⟩
-  have : -(F.ρ t) ≤ F.p t / c ^ 2 := by
+  have : -(F.ρ t) ≤ F.p t / (c : ℝ) ^ 2 := by
     rw [le_div_iff₀ hc2]
     linarith
   linarith
