@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
 
@@ -42,6 +43,8 @@ has components `z_μ^A`, where `A` labels a basis of `U`, and reads as the map `
   `∑_I (b x)_I (b' y)_I` of two bases with the same labels, and the delta `∑_I b_I ⊗ b'_I`.
 - `Module.Basis.coordPairing_basis_basis` : the two bases are dual for the coordinate pairing, and
   `Module.Basis.eq_coordPairing` : it is the only such pairing.
+- `Module.Basis.isPerfPair_coordPairing` : the coordinate pairing is a perfect pairing, through
+  `Module.Basis.curry_coordPairing` : it is Mathlib's `toDualEquiv` of the second basis.
 - `Module.Basis.lTensor_pairingToLinearMap_coevaluation` : a tensor is recovered from its linear
   map through the delta.
 - `Module.Basis.pairingToLinearMap_coordPairing_coevaluation` : the delta read through the
@@ -156,6 +159,24 @@ lemma coordPairing_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x 
 lemma coordPairing_basis_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I : ι) (y : N) :
     b.coordPairing b' (b I ⊗ₜ[R] y) = b'.equivFun y I := by
   rw [coordPairing_comm, coordPairing_tmul_basis]
+
+/-- The coordinate pairing, curried, sends `x` to the dual vector `b'.toDual` of the vector with
+the same coordinates in `b'`. -/
+lemma curry_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
+    TensorProduct.curry (b.coordPairing b') =
+      ((b.equiv b' (Equiv.refl ι)).trans b'.toDualEquiv).toLinearMap :=
+  b.ext fun I => b'.ext fun J => by
+    simp [coordPairing_basis_basis, Module.Basis.toDualEquiv_apply, Module.Basis.toDual_apply]
+
+/-- The coordinate pairing of two bases with the same labels is a perfect pairing. -/
+instance isPerfPair_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
+    (TensorProduct.curry (b.coordPairing b')).IsPerfPair where
+  bijective_left := by rw [curry_coordPairing]; exact LinearEquiv.bijective _
+  bijective_right := by
+    have : (TensorProduct.curry (b.coordPairing b')).flip =
+        TensorProduct.curry (b'.coordPairing b) :=
+      LinearMap.ext₂ fun y x => coordPairing_comm b b' x y
+    rw [this, curry_coordPairing]; exact LinearEquiv.bijective _
 
 /-- The delta `∑_I b_I ⊗ b'_I ∈ M ⊗ N` of two bases with the same labels. -/
 noncomputable def coevaluation (b : Module.Basis ι R M) (b' : Module.Basis ι R N) : M ⊗[R] N :=

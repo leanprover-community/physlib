@@ -31,9 +31,9 @@ structure, not a field, so that a conjugate species can give conjugate kinds the
 The space of a lower index is data of the species, not `Module.Dual` of the upper one, so that
 existing types such as `CoVector d` serve as covectors. The one law of a species (`invariant`) says
 that the coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` is invariant,
-which makes `V c.dual` the dual of `V c`. The law is stated at every color, so that lemmas about a
-general color `c` use it directly. At a lower color it is the law at the upper color with the
-factors swapped, and `invariant_of_up` proves it so.
+which makes `V c.dual` the dual of `V c` (`isPerfPair_contr`). The law is stated at every color,
+so that lemmas about a general color `c` use it directly. At a lower color it is the law at the
+upper color with the factors swapped, and `invariant_of_up` proves it so.
 
 The contraction `S.contr c` is this pairing, and the delta `S.delta c` is `∑ μ, e^μ ⊗ e_μ` in
 `V c.dual ⊗ V c`. The bases of `c` and `c.dual` are then dual (`contr_basis`) and the contraction
@@ -51,6 +51,8 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components,
   `Species.contr_basis_tmul` reads off a component, and `Species.ext_contr` proves that the
   contraction is nondegenerate.
+- `Species.isPerfPair_contr` : the contraction is a perfect pairing, so `V c.dual` is the dual of
+  `V c`.
 - `Species.invariant_of_contr` gives the law `invariant` from an invariant pairing for which the
   bases are dual.
 - `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_eq_comm_delta_dual` and
@@ -176,6 +178,11 @@ lemma ext_contr {c : Color K} {α α' : S.V c.dual}
     (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
   (S.basis c.dual).repr.injective <| Finsupp.ext fun μ => by
     simpa [contr_basis_tmul] using h (S.basis c μ)
+
+/-- The contraction is a perfect pairing, so `V c.dual` is the dual of `V c`. -/
+instance isPerfPair_contr (c : Color K) :
+    (TensorProduct.curry (S.contr c).toLinearMap).IsPerfPair :=
+  Module.Basis.isPerfPair_coordPairing _ _
 
 /-- The contraction is invariant, `(Λu)^μ (Λα)_μ = u^μ α_μ` for every `Λ : G`. -/
 lemma contr_invariant (c : Color K) (g : G) (x : S.V c) (y : S.V c.dual) :
