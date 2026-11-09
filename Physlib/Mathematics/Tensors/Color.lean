@@ -37,7 +37,7 @@ rather than the product `K × Variance`, so that `c.dual` works as dot notation.
 
 ## iii. Table of contents
 
-- A. Up and down
+- A. Variance
 - B. Colors
 
 ## iv. References
@@ -52,7 +52,7 @@ namespace Tensors
 
 /-!
 
-## A. Up and down
+## A. Variance
 
 `Variance` is two booleans, and `dual` swaps them. So `c.dual.dual` is `c` by definition, also for
 a variable color `c`, and the spaces `S.V c.dual.dual` and `S.V c` of a species are the same type.
