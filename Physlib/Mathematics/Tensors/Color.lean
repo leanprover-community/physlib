@@ -10,31 +10,30 @@ public import Mathlib.Init
 
 # Colors of tensor slots
 
-A color is a kind of index with a variance, up or down. Its dual has the same kind and the other
-variance.
+A color says what one index of a tensor is: its kind and whether it is up or down.
 
 ## i. Overview
 
-A color is the type of an index, made of a kind `κ : K` and a variance, `up` or `down`. A
-species (`Species.lean`) assigns a vector space to each color. The kind fixes the basis labels,
-and the variance says whether the index is that of a vector (`up`) or a covector (`down`). Lorentz
-tensors have one kind, `vec`. The vector `v^μ` has color `⟨vec, up⟩` and the covector `w_μ` has
-color `⟨vec, down⟩`.
+A color `⟨κ, v⟩` is a kind of index `κ : K` and a variance `v`, `up` or `down`. For Lorentz
+tensors there is one kind, `vec`. The vector index of `v^μ` has color `⟨vec, up⟩` and the
+covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds:
+`left` and `right` for the indices of left- and right-handed Weyl spinors, and `vec`.
 
-The slots of a tensor are labelled by colors, not by spaces, so that matching a slot with its
-dual is a decidable equality of labels, not an equality of types. The dual of `⟨κ, v⟩` is
-`⟨κ, v.dual⟩`, and a contraction such as `v^μ w_μ` pairs a slot of color `c` with a slot of
-color `c.dual`.
+A tensor has one color per slot. A species (`Species.lean`) gives each color a space, and a
+tensor is an element of the tensor product of the spaces of its slots. Slots are labelled by
+colors rather than by spaces, so that checking that two slots can be contracted is an equality of
+labels, decidable, not an equality of types.
 
-`Color K` is a structure, rather than the product `K × Variance`, so that `c.dual` works as dot
-notation.
+The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, the same kind with the other variance. A contraction such
+as `v^μ w_μ` pairs a slot of color `c` with a slot of color `c.dual`. `Color K` is a structure
+rather than the product `K × Variance`, so that `c.dual` works as dot notation.
 
 ## ii. Key results
 
-- `Variance` is the variance of an index, with `Variance.up`, `Variance.down` and
+- `Variance` : the variance of an index, with `Variance.up`, `Variance.down` and
   `Variance.dual`.
-- `Color` is a kind of index and a variance.
-- `Color.dual` is the dual color, and `Color.dual_dual` proves `c.dual.dual = c` by `rfl`.
+- `Color` : a kind of index and a variance.
+- `Color.dual` : the dual color, and `Color.dual_dual` : `c.dual.dual = c` by `rfl`.
 
 ## iii. Table of contents
 

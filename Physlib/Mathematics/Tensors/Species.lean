@@ -12,42 +12,49 @@ public import Mathlib.RepresentationTheory.Intertwining
 
 # Tensor species
 
-A species assigns to each color a representation with a basis whose coordinate pairing with the
-basis of the dual color is invariant.
+A species gives each color of index a space, an action of the symmetry group and a basis. Its
+tensors are built from these.
 
 ## i. Overview
 
-A species `S : Species k G K basisIdx` assigns to each color `c` a `k`-module `S.V c`, a
-representation `S.rep c` of `G` and a basis `S.basis c`. The data is indexed by colors, so that
-one definition covers both variances. The contraction `S.contr c : V c ⊗ V c.dual → k` is
-`u^μ α_μ` for `c = ⟨vec, up⟩` and `α_μ u^μ` for `c = ⟨vec, down⟩`.
+A species `S : Species k G K basisIdx` gives each color `c` a `k`-module `S.V c`, a
+representation `S.rep c` of the group `G` on it, and a basis `S.basis c`. A tensor of `S` with
+slot colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`, with the action of `G` on each
+factor.
 
-The space of a lower index is data of the species, not `Module.Dual` of the upper one, so that
-existing types such as `CoVector d` serve as covectors. The coordinate pairing
-`u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` makes `V c.dual` the dual of `V c`. The
-one law of a species (`invariant`) says that this pairing is invariant, which makes `V c.dual` the
-dual representation (`dualEquiv`).
+For real Lorentz tensors in `1 + d` dimensions, `k = ℝ`, `G` is the Lorentz group, and there is
+one kind `vec`, whose basis labels are `basisIdx vec = Fin 1 ⊕ Fin d`. The space of `⟨vec, up⟩`
+is `Vector d` with the action `v^μ ↦ Λ^μ_ν v^ν` and the standard basis `e_μ`. The space of
+`⟨vec, down⟩` is `CoVector d` with the action `w_μ ↦ w_ν (Λ⁻¹)^ν_μ` and the dual basis `e^μ`.
 
-The contraction `S.contr c` is this pairing. The bases of `c` and `c.dual` are then dual
-(`contr_basis`) and the contraction is symmetric (`contr_tmul_symm`). A repeated index is
-contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ` (`contr_tmul_eq_sum_basis`).
+The space of a lower index is given by the species, as `CoVector d` is, rather than built as
+`Module.Dual` of the upper space. Existing types for covectors and spinors are then the spaces
+of the species. That the two spaces are dual is the content of the bases and of the one law:
+
+- The contraction `S.contr c : V c ⊗ V c.dual → k` is defined from the bases, as
+  `u ⊗ α ↦ ∑ μ, u^μ α_μ`. This makes the two bases dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`, and
+  `V c.dual` the dual space of `V c`.
+- The law of a species (`invariant`) says that the contraction is invariant,
+  `(Λu)^μ (Λα)_μ = u^μ α_μ`. This makes `V c.dual` the dual representation of `V c`
+  (`dualEquiv`).
+
+A repeated index is contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
 ## ii. Key results
 
-- `Species` is the data and the law of a tensor species, and `Species.invariant_of_up` gives the
-  law from its upper colors.
-- `Species.contr` is the contraction `u^μ α_μ`, with `Species.contr_basis`,
-  `Species.contr_tmul_symm` and `Species.contr_invariant`.
-- `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components, and
-  `Species.ext_contr` proves that the contraction is nondegenerate.
-- `Species.isPerfPair_contr` : the contraction is a perfect pairing, and `Species.dualEquiv`
-  identifies `V c.dual` with the dual representation of `V c`.
-- `Species.invariant_of_contr` gives the law `invariant` from an invariant pairing for which the
-  bases are dual.
-- `Species.cast` moves a vector along an equality of colors, `Species.cast_rep` proves that this
-  commutes with the group action, and `Species.basis_repr_cast` that it keeps components.
-- `Species.contr_cast_tmul_cast` and `Species.contr_cast_tmul_cast_symm` prove that the
-  contraction does not depend on the colors its two vectors are moved to.
+- `Species` : the data and the law of a tensor species, and `Species.invariant_of_up` : the law
+  from the upper colors alone.
+- `Species.contr` : the contraction `u^μ α_μ`, with `Species.contr_tmul_eq_sum_basis` : its
+  formula in components, `Species.contr_basis` : the bases are dual, `Species.contr_tmul_symm` :
+  it is symmetric, and `Species.contr_invariant` : it is invariant.
+- `Species.isPerfPair_contr` : the contraction is a perfect pairing, `Species.dualEquiv` :
+  `V c.dual` is the dual representation of `V c`, and `Species.ext_contr` : a vector of
+  `V c.dual` is determined by its contractions.
+- `Species.invariant_of_contr` : the law from a pairing known to be invariant.
+- `Species.cast` : a vector moved along an equality of colors, with `Species.cast_rep`,
+  `Species.basis_repr_cast`, `Species.contr_cast_tmul_cast` and
+  `Species.contr_cast_tmul_cast_symm` : this keeps the action, the components and the
+  contraction.
 
 ## iii. Table of contents
 
@@ -72,10 +79,13 @@ namespace Tensors
 ## A. Species
 
 The basis of a color `c` is labelled by `basisIdx c.kind`, the values that an index of that kind
-runs over, as `Fin 1 ⊕ Fin d` for a Lorentz index. A color and its dual share labels, as `μ` in
-`v^μ` and `α_μ`. `basisIdx` is a parameter, not a field, so that a conjugate species can give
-conjugate kinds the same labels. The law is stated at every color, so that lemmas about a general
-color `c` use it directly. `invariant_of_up` proves it from the upper colors.
+runs over. A color and its dual share labels, as `μ` in `v^μ` and `α_μ`. `basisIdx` is a
+parameter rather than a field, so that species built from one another, such as a species and
+its complex conjugate, have the same labels by definition.
+
+The law is stated at every color, so that lemmas about a general color `c` use it directly. At a
+lower color it is the law at the upper color with the factors swapped, and `invariant_of_up`
+proves it from the upper colors.
 
 -/
 
@@ -125,11 +135,12 @@ lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c,
 
 ## B. The contraction
 
-The contraction is not a field of `Species`. It is defined from the bases, as their coordinate
-pairing. The bases of `c` and `c.dual` are then dual by construction, and components need no
-dual-basis matching. Its invariance is the law of the species. `dualEquiv` identifies `V c.dual`
-with Mathlib's dual representation of `V c`, and `invariant_of_contr` builds the law from a pairing
-known to be invariant.
+The contraction is not a field of `Species`. It is defined from the bases, as
+`u ⊗ α ↦ ∑ μ, u^μ α_μ`, so the bases of `c` and `c.dual` are dual by definition
+(`contr_basis`). Its invariance is the law of the species. It is a perfect pairing in Mathlib's
+sense, and `dualEquiv` identifies `V c.dual` with Mathlib's dual representation of `V c`, so
+Mathlib's results on duals apply. `invariant_of_contr` gives the law when an invariant pairing is
+already known, as for Weyl spinors.
 
 -/
 
@@ -142,7 +153,7 @@ noncomputable def contr (c : Color K) :
   ⟨(S.basis c).coordPairing (S.basis c.dual), fun g =>
     TensorProduct.ext' fun x y => S.invariant c g x y⟩
 
-/-- The bases of a color and its dual are dual, `e^ν(e_μ) = δ_μ^ν`. -/
+/-- The bases of a color and its dual are dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`. -/
 lemma contr_basis (c : Color K) (μ ν : basisIdx c.kind) :
     S.contr c (S.basis c μ ⊗ₜ S.basis c.dual ν) = if μ = ν then 1 else 0 :=
   Module.Basis.coordPairing_basis_basis _ _ _ _
@@ -153,7 +164,8 @@ lemma contr_tmul_eq_sum_basis (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ y) = ∑ μ, (S.basis c).repr x μ * (S.basis c.dual).repr y μ :=
   Module.Basis.coordPairing_tmul _ _ x y
 
-/-- The contraction is symmetric, `u^μ α_μ = α_μ u^μ`. -/
+/-- The contraction is symmetric: `u^μ α_μ` at `c` is `α_μ u^μ` at `c.dual`, with the factors
+swapped. -/
 lemma contr_tmul_symm (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ[k] y) = S.contr c.dual (y ⊗ₜ[k] x) :=
   Module.Basis.coordPairing_comm _ _ _ _
@@ -210,9 +222,11 @@ variable {S}
 
 ## C. Moving a vector along an equality of colors
 
-A relabeling of slots matches colors only through a proof, `c (σ.symm j) = c' j`, not by
-definition. A vector of one color is then read at an equal color through `S.cast`. The lemmas say
-that this keeps the group action, the components and the contraction.
+`S.V a` and `S.V a'` are different types unless `a` and `a'` are equal by definition. The colors
+of two slots are often equal only through a proof: after a relabeling of slots, for example, the
+color of a new slot equals the color of the old slot it came from. A vector is moved between the
+two spaces by `S.cast`, which is the identity on the vector. The lemmas say that this keeps the
+group action, the components and the contraction, so that proofs can remove the casts.
 
 -/
 
@@ -240,8 +254,8 @@ lemma basis_repr_cast {a b : Color K} (p : a = b) (v : S.V a) (μ : basisIdx b.k
   subst p
   rfl
 
-/-- Moving the vector of a family `f` at the slot `s` depends only on the slot, so it may be read
-at any slot `s'` equal to `s`. -/
+/-- For a family `f` of vectors on slots, moving `f s` to the color `b` is moving `f s'`, for any
+slot `s'` equal to `s`. -/
 lemma cast_apply_congr {ι : Type} {d : ι → Color K} (f : Π s, S.V (d s)) {s s' : ι}
     (e : s = s') {b : Color K} (p : d s = b) : S.cast p (f s) = S.cast (e ▸ p) (f s') := by
   subst e

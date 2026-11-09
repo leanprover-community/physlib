@@ -15,25 +15,26 @@ A tensor in `V a ⊗ U` is read as a linear map `V a.dual → U`, and the delta 
 ## i. Overview
 
 A tensor `z` in `V a ⊗ U`, for a color `a` of a species `S` and any module `U`, is read as the
-linear map `S.toLin z : V a.dual → U` that contracts a vector with the first factor of `z`. On a
-pure tensor this is `v ↦ (v · x) y` for `z = x ⊗ y`. Every linear map arises so. `toLin` is
-Mathlib's `dualTensorHomEquivOfBasis`, after `Species.dualEquiv` reads `V a` as the dual of
-`V a.dual`.
+linear map `S.toLin z : V a.dual → U` that contracts its input with the first factor of `z`. On a
+pure tensor `z = x ⊗ y` it is `v ↦ (v^μ x_μ) y`. Every linear map `V a.dual → U` is `toLin z` for
+exactly one `z`. `toLin` is Mathlib's `dualTensorHomEquivOfBasis`, after `Species.dualEquiv`
+reads `V a` as the dual of `V a.dual`.
 
-A metric `g_μν` read this way is the map `v^μ ↦ v^μ g_μν`, and its inverse `g^μν` is the tensor of
-the inverse map (`Species.inverse`, in a later file). The delta `S.delta c = ∑ μ, e^μ ⊗ e_μ` is the
-tensor of the identity map, `u^μ δ_μ^ν = u^ν`, so it is invariant.
+This is how two-index tensors act as maps. A metric `g_μν` is the map `v^μ ↦ v^μ g_μν`, and the
+inverse metric `g^μν` is the tensor of the inverse map. The delta
+`S.delta c = ∑ μ, e^μ ⊗ e_μ` is the tensor of the identity map, `u^μ δ_μ^ν = u^ν`
+(`toLin_delta`). The identity commutes with every group element, so the delta is invariant
+(`delta_invariant`).
 
 ## ii. Key results
 
-- `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`, `Species.toLin_map`
-  proves that it commutes with the group action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor`
-  that `(id ⊗ f) z = f ∘ z`.
-- `Species.delta` is the delta `δ_μ^ν`, `Species.toLin_delta` proves that it is the identity map,
-  and `Species.delta_invariant` that it is invariant.
-- `Species.basis_repr_toLin` gives `toLin` in components, `Species.toMatrix_toLin` its matrix,
-  and `Species.toLin_comp_toLin_of_mul_eq_one` proves that two such maps are inverse when their
-  matrices are.
+- `Species.toLin` : `V a ⊗ U` as the linear maps `V a.dual → U`, with `Species.toLin_map` : it
+  commutes with the group action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` :
+  `(id ⊗ f) z = f ∘ z`.
+- `Species.delta` : the delta `δ_μ^ν`, with `Species.toLin_delta` : it is the identity map, and
+  `Species.delta_invariant` : it is invariant.
+- `Species.basis_repr_toLin` : `toLin` in components, `Species.toMatrix_toLin` : its matrix, and
+  `Species.toLin_comp_toLin_of_mul_eq_one` : two such maps are inverse when their matrices are.
 
 ## iii. Table of contents
 
@@ -128,7 +129,7 @@ noncomputable def delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
 lemma toLin_delta (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
   LinearMap.ext fun v => by simp [delta, contr, Module.Basis.coordPairing_tmul_basis]
 
-/-- The delta is invariant, `Λ δ = δ`. -/
+/-- The delta is invariant: `Λ` acting on both factors gives `Λ δ = δ`. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
   -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `toLin_delta`.
@@ -165,8 +166,8 @@ lemma toMatrix_toLin (c : Color K) {d : Color K} (z : S.V c ⊗[k] S.V d) :
   ext ν μ
   simp [LinearMap.toMatrix_apply, basis_repr_toLin, Finsupp.single_apply]
 
-/-- `toLin F ∘ₗ toLin F'` is the identity when the matrices of components of `F'` and `F` multiply
-to the identity, `F'^μρ F_ρν = δ^μ_ν`. -/
+/-- For a lower color `c`, `toLin F ∘ₗ toLin F'` is the identity when the matrices of components of
+`F'` and `F` multiply to the identity, `F'^μρ F_ρν = δ^μ_ν`. -/
 lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
     (F' : S.V c.dual ⊗[k] S.V c.dual)
     (h : Matrix.of (fun μ ν => ((S.basis c.dual).tensorProduct (S.basis c.dual)).repr F' (μ, ν)) *
