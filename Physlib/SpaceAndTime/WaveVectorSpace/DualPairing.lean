@@ -16,9 +16,9 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 
 Upon selecting an origin for the affine space `Space d`,
 the spaces `Space d` and `WaveVectorSpace d` are dual as real vector spaces.
-There is natural continuous bilinear map `WaveVectorSpace d × Space d → ℝ` which maps
+There is natural continuous bilinear map `WaveVectorSpace d × Space d → ℝ` which sends
 the pair `(k, x)` to `∑ᵢ kⁱxᵢ`. For fixed `k` this gives rise to a functional `Space d →L[ℝ] ℝ`
-which maps `x ↦ k ⬝ᵥ x`, and similarly for fixed `x`.
+mapping `x ↦ k ⬝ᵥ x`, and similarly for fixed `x`.
 
 ## ii. Key results
 
