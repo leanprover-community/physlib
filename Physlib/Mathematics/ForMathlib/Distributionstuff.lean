@@ -6,6 +6,7 @@ Authors: Cameron Lee
 module
 
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Continuous
 
 open Function Set TopologicalSpace UniformSpace
 
@@ -16,16 +17,19 @@ def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
     (h : g.invFun '' Ω' ⊆ ↑Ω) :
-     TestFunction Ω' F ⊤ → TestFunction Ω F ⊤ := fun φ =>
-  {
-  toFun := φ ∘ g
-  contDiff' := φ.contDiff.comp g.contDiff
-  hasCompactSupport' := φ.hasCompactSupport.comp_homeomorph g.toHomeomorph
-  tsupport_subset' := by
-    trans  g.invFun '' Ω'
-    · intro x hx
-      have hx' : g x ∈ tsupport φ :=
-        (Set.ext_iff.mp (tsupport_comp_eq_preimage φ g.toHomeomorph) x).mp hx
-      exact ⟨g x, φ.tsupport_subset hx', by simp⟩
-    · exact h
-  }
+     TestFunction Ω' F ⊤ →L[ℝ] TestFunction Ω F ⊤ where
+    toFun φ := {
+      toFun := φ ∘ g
+      contDiff' := φ.contDiff.comp g.contDiff
+      hasCompactSupport' := φ.hasCompactSupport.comp_homeomorph g.toHomeomorph
+      tsupport_subset' := by
+        trans  g.invFun '' Ω'
+        · intro x hx
+          have hx' : g x ∈ tsupport φ :=
+          (Set.ext_iff.mp (tsupport_comp_eq_preimage φ g.toHomeomorph) x).mp hx
+          exact ⟨g x, φ.tsupport_subset hx', by simp⟩
+        · exact h
+      }
+    map_add' u1 u2 := TestFunction.ext_iff.mpr (congrFun rfl)
+    map_smul' a u1 := TestFunction.ext_iff.mpr (congrFun rfl)
+    cont :=
