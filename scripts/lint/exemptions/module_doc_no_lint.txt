@@ -29,7 +29,6 @@ Physlib/CondensedMatter/Response/Basic.lean
 Physlib/CondensedMatter/Topology/Basic.lean
 Physlib/Cosmology/Basic.lean
 Physlib/Cosmology/FLRW/Basic.lean
-Physlib/Cosmology/FLRW/ConformalTime.lean
 Physlib/Cosmology/FLRW/DensityParameters.lean
 Physlib/Cosmology/FLRW/Distances.lean
 Physlib/Cosmology/FLRW/Dynamics.lean

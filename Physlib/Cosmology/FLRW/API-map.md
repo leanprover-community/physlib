@@ -12,8 +12,9 @@ constant. Around these sit the continuity equation, barotropic equations of stat
 density scaling laws, the cosmological constant as a fluid, exact solutions, the density
 parameters and their closure relation, the reduced Hubble function of the standard cosmological
 model, the age of the universe, the energy conditions of the cosmic fluid with the acceleration
-criterion, eternal expansion together with the Big-Bang bound on the interval of cosmic time, and
-the cosmological distances, the redshift and the horizons.
+criterion, eternal expansion together with the Big-Bang bound on the interval of cosmic time, the
+cosmological distances, the redshift, the horizons and the lookback time, with the coefficients of
+its low-redshift expansion, and conformal time with the Friedmann equations written in it.
 
 ## Content (Alpha)
 
@@ -121,8 +122,32 @@ positive, zero or negative K. The particle and event horizons at t integrate c /
 of the interval before and after t, and the particle horizon of the Einstein–de Sitter model is
 3 c t₀^(2/3) t^(1/3). [29]
 
+The lookback time is the time elapsed between the emission of light at t and its observation at
+t₀. It does not depend on the model, and it is the same in every reference frame. We write H₀
+and q₀ for the Hubble parameter and the deceleration parameter at t₀. At the observation time,
+∂ₜ z = −H₀ and, for H₀ ≠ 0, ∂ₜ ∂ₜ z = H₀² (2 + q₀). With primes for the time derivatives at t₀,
+the quotients f' / z' and (f'' z' − f' z'') / z'³ are, for H₀ ≠ 0, the first and second
+derivatives in z at z = 0 of a function f of the emission time. They are 1 / H₀ and
+−(2 + q₀) / H₀ for the lookback time. [30]
+
 The energy of a photon scales as E ∝ 1 / a along its null geodesic, and the comoving distance is
-the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
+the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO] The lookback time has a
+Taylor expansion in the redshift with these coefficients, through the inverse of t ↦ z(t). [TODO]
+
+### Conformal time
+
+The conformal time of an FLRW model, counted from a time t₁, is η = ∫ dτ / a from t₁ to t. For
+t₁ and t in the interval of the model, ∂ₜ η = 1 / a. For the Einstein–de Sitter model, counted
+from the Big Bang t = 0, it is 3 t₀^(2/3) t^(1/3). The derivative with respect to η of a function
+of cosmic time is defined through the chain rule, f' = a ∂ₜ f, and is consistent with
+∂ₜ f = f' ∂ₜ η. The conformal Hubble factor ℋ = a' / a equals a H. At a time of the interval, the
+first-order Friedmann equation is equivalent to its form in conformal time,
+ℋ² = (8πG/3) ρ a² + (Λc²/3) a² − k c², with k the curvature parameter of the spatial geometry of
+the model. At a time of the interval where the first-order equation holds, the second-order
+Friedmann equation is equivalent to the acceleration equation in conformal time,
+a'' / a = (4πG/3) (ρ − 3 p / c²) a² + (2Λc²/3) a² − k c². [31]
+
+The FLRW metric in conformal time is a(η)² times a static metric. [TODO]
 
 ## Lean References
 
@@ -201,6 +226,14 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `FLRW.transverseComovingDistance_of_curvature_eq_zero`,
    `FLRW.transverseComovingDistance_of_curvature_neg`, `FLRW.particleHorizon`,
    `FLRW.eventHorizon`, `FLRW.particleHorizon_einsteinDeSitter`
+30. Physlib/Cosmology/FLRW/Distances.lean — `FLRW.lookbackTime`,
+   `FLRW.lookbackTime_eq_timeEquiv_symm_sub`, `FLRW.deriv_redshift_self`,
+   `FLRW.deriv_deriv_redshift_self`, `FLRW.lookbackTime_coeff_one`, `FLRW.lookbackTime_coeff_two`
+31. Physlib/Cosmology/FLRW/ConformalTime.lean — `FLRW.conformalTime`, `FLRW.deriv_conformalTime`,
+   `FLRW.conformalTime_einsteinDeSitter`, `FLRW.conformalDeriv`, `FLRW.deriv_eq_conformalDeriv_mul`,
+   `FLRW.conformalHubble`, `FLRW.conformalHubble_eq`, `FLRW.ConformalFirstOrderFriedmann`,
+   `FLRW.ConformalSecondOrderFriedmann`, `FLRW.conformalFirstOrderFriedmann_iff`,
+   `FLRW.conformalDeriv_conformalDeriv`, `FLRW.conformalSecondOrderFriedmann_iff`
 
 ## References
 
