@@ -29,8 +29,8 @@ one law of a species (`invariant`) says that this pairing is invariant, which ma
 dual representation (`dualEquiv`).
 
 The contraction `S.contr c` is this pairing. The bases of `c` and `c.dual` are then dual
-(`contr_basis`) and the contraction is symmetric (`contr_tmul_symm`). Indices name slots, as in
-abstract index notation, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
+(`contr_basis`) and the contraction is symmetric (`contr_tmul_symm`). A repeated index is
+contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ` (`contr_tmul_eq_sum_basis`).
 
 ## ii. Key results
 
