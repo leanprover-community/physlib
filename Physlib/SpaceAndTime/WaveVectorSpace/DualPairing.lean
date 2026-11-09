@@ -5,17 +5,34 @@ Authors: Gregory J. Loges
 -/
 module
 
+public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Space.Module
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 /-!
 
-# Dual pairing of `Space` and `WaveVectorSpace`
+# Duality of `Space` and `WaveVectorSpace`
 
 ## i. Overview
 
+Upon selecting an origin for the affine space `Space d`,
+the spaces `Space d` and `WaveVectorSpace d` are dual as real vector spaces.
+There is natural continuous bilinear map `WaveVectorSpace d × Space d → ℝ` which maps
+the pair `(k, x)` to `∑ᵢ kⁱxᵢ`. For fixed `k` this gives rise to a functional `Space d →L[ℝ] ℝ`
+which maps `x ↦ k ⬝ᵥ x`, and similarly for fixed `x`.
+
 ## ii. Key results
 
+- `Space.dual x` : the functional on `WaveVectorSpace` corresponding to `x : Space d`,
+  bundled as a continuous linear map.
+- `WaveVectorSpace.dual k` : the functional on `Space` corresponding to `k : WaveVectorSpace d`,
+  bundled as a continuous linear map.
+- `pairingCLM` : the dual pairing between `WaveVectorSpace` and `Space`,
+  bundled as a continuous bilinear map.
+
 ## iii. Table of contents
+
+- A. Strong duals
+- B. Bilinear pairing
 
 ## iv. References
 
@@ -23,7 +40,13 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 
 @[expose] public section
 
+TODO "Show how the dual functionals interact with `VAdd (EuclideanSpace ℝ (Fin d)) (Space d)`."
+
 variable {d : ℕ}
+
+/-!
+## A. Strong duals
+-/
 
 /-- The functional on `WaveVectorSpace d` dual to `x`, defined by `k ↦ k ⬝ᵥ x`. -/
 def Space.dual (x : Space d) : StrongDual ℝ (WaveVectorSpace d) where
@@ -40,6 +63,10 @@ def WaveVectorSpace.dual (k : WaveVectorSpace d) : StrongDual ℝ (Space d) wher
   map_smul' _ _ := by simp [dotProduct, mul_left_comm, Finset.mul_sum]
 
 lemma WaveVectorSpace.dual_apply (k : WaveVectorSpace d) (x : Space d) : k.dual x = k ⬝ᵥ x := rfl
+
+/-!
+## B. Bilinear pairing
+-/
 
 /-- The bilinear form `WaveVectorSpace d × Space d → ℝ` given by `k ↦ x ↦ k ⬝ᵥ x`. -/
 def pairingCLM : WaveVectorSpace d →L[ℝ] Space d →L[ℝ] ℝ where
