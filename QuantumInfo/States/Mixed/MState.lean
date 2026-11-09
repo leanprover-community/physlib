@@ -219,7 +219,7 @@ lemma exp_val_le_one {T : HermitianMat d ℂ} (h : T ≤ 1) : ρ.exp_val T ≤ 1
   rwa [inner_one ρ.M, ρ.tr] at hmono
 
 lemma exp_val_prob {T : HermitianMat d ℂ} (h : 0 ≤ T ∧ T ≤ 1) :
-    0 ≤ ρ.exp_val T ∧ ρ.exp_val T ≤ 1 :=
+    ρ.exp_val T ∈ unitInterval :=
   ⟨ρ.exp_val_nonneg h.1, ρ.exp_val_le_one h.2⟩
 
 lemma exp_val_sub (A B : HermitianMat d ℂ) :
