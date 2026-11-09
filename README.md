@@ -222,4 +222,3 @@ and for the latter please use:
     year = "2025"
 }
 ```
-
