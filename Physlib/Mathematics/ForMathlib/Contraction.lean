@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
+public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
@@ -17,7 +17,8 @@ Two bases with the same labels pair two modules by their coordinates.
 ## i. Overview
 
 Two modules `M` and `N` with bases `b` and `b'` labelled by the same finite type `ι` pair by their
-coordinates, `(x, y) ↦ ∑_I (b x)_I (b' y)_I` (`coordPairing`). The two bases are dual for this
+coordinates, `(x, y) ↦ ∑_I (b x)_I (b' y)_I` (`coordPairing`). It is Mathlib's `b'.toDual`, applied
+after the equivalence `b.equiv b'` that sends `b I` to `b' I`. The two bases are dual for this
 pairing, and it is a perfect pairing in Mathlib's sense, so it identifies `N` with the dual of `M`.
 
 For Lorentz tensors take `M = ℝ⁴` the vectors `x^μ` with the standard basis, and `N` the covectors
@@ -29,8 +30,7 @@ For Lorentz tensors take `M = ℝ⁴` the vectors `x^μ` with the standard basis
   the same labels.
 - `Module.Basis.coordPairing_basis_basis` : the two bases are dual for the coordinate pairing, and
   `Module.Basis.eq_coordPairing` : it is the only such pairing.
-- `Module.Basis.isPerfPair_coordPairing` : the coordinate pairing is a perfect pairing, through
-  `Module.Basis.curry_coordPairing` : it is Mathlib's `toDualEquiv` of the second basis.
+- `Module.Basis.isPerfPair_coordPairing` : the coordinate pairing is a perfect pairing.
 
 ## iii. Table of contents
 
@@ -57,21 +57,22 @@ open TensorProduct
 variable {R ι M N : Type*} [CommSemiring R] [Fintype ι] [DecidableEq ι] [AddCommMonoid M]
     [Module R M] [AddCommMonoid N] [Module R N]
 
-/-- The coordinate pairing `M ⊗ N → R` of two bases with the same labels, Mathlib's
-`Matrix.toLinearMap₂ b b'` of the identity matrix. -/
+/-- The coordinate pairing `M ⊗ N → R` of two bases with the same labels. It sends `x ⊗ y` to
+`b'.toDual x' y`, where `x'` is the vector of `N` with the coordinates of `x`. -/
 noncomputable def coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
     M ⊗[R] N →ₗ[R] R :=
-  TensorProduct.lift (Matrix.toLinearMap₂ b b' 1)
-
-/-- `b.coordPairing b' (x ⊗ₜ y) = ∑_I (b x)_I (b' y)_I`. -/
-lemma coordPairing_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (y : N) :
-    b.coordPairing b' (x ⊗ₜ[R] y) = ∑ I, b.equivFun x I * b'.equivFun y I := by
-  simp [coordPairing, Matrix.toLinearMap₂_apply, Matrix.one_apply]
+  TensorProduct.lift (b'.toDual ∘ₗ (b.equiv b' (Equiv.refl ι)).toLinearMap)
 
 /-- Pairing with the second basis reads off a coordinate, `b.coordPairing b' (x ⊗ₜ b' J) = x_J`. -/
 lemma coordPairing_tmul_basis (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (J : ι) :
     b.coordPairing b' (x ⊗ₜ[R] b' J) = b.equivFun x J := by
-  simp [coordPairing_tmul, Module.Basis.equivFun_self]
+  simp [coordPairing, Module.Basis.toDual_eq_repr, Module.Basis.equiv]
+
+/-- `b.coordPairing b' (x ⊗ₜ y) = ∑_I (b x)_I (b' y)_I`. -/
+lemma coordPairing_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (y : N) :
+    b.coordPairing b' (x ⊗ₜ[R] y) = ∑ I, b.equivFun x I * b'.equivFun y I := by
+  conv_lhs => rw [← b'.sum_equivFun y, TensorProduct.tmul_sum, map_sum]
+  simp_rw [TensorProduct.tmul_smul, map_smul, coordPairing_tmul_basis, smul_eq_mul, mul_comm]
 
 /-- The two bases are dual, `b.coordPairing b' (b I ⊗ₜ b' J) = δ_{IJ}`. -/
 lemma coordPairing_basis_basis (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I J : ι) :
@@ -90,27 +91,19 @@ lemma coordPairing_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x 
     b.coordPairing b' (x ⊗ₜ[R] y) = b'.coordPairing b (y ⊗ₜ[R] x) := by
   simp only [coordPairing_tmul, mul_comm]
 
-/-- Pairing with the first basis reads off a coordinate, `b.coordPairing b' (b I ⊗ₜ y) = y_I`. -/
-lemma coordPairing_basis_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I : ι) (y : N) :
-    b.coordPairing b' (b I ⊗ₜ[R] y) = b'.equivFun y I := by
-  rw [coordPairing_comm, coordPairing_tmul_basis]
-
-/-- The coordinate pairing, curried, sends `x` to the dual vector `b'.toDual` of the vector with
-the same coordinates in `b'`. -/
-lemma curry_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
-    TensorProduct.curry (b.coordPairing b') =
-      ((b.equiv b' (Equiv.refl ι)).trans b'.toDualEquiv).toLinearMap :=
-  b.ext fun I => b'.ext fun J => by
-    simp [coordPairing_basis_basis, Module.Basis.toDualEquiv_apply, Module.Basis.toDual_apply]
-
 /-- The coordinate pairing of two bases with the same labels is a perfect pairing. -/
 instance isPerfPair_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
     (TensorProduct.curry (b.coordPairing b')).IsPerfPair where
-  bijective_left := by rw [curry_coordPairing]; exact LinearEquiv.bijective _
+  -- Curried, the pairing is `b'.toDualEquiv` after matching the bases, an equivalence.
+  bijective_left := by
+    rw [show TensorProduct.curry (b.coordPairing b') =
+      ((b.equiv b' (Equiv.refl ι)).trans b'.toDualEquiv).toLinearMap from
+        LinearMap.ext₂ fun _ _ => rfl]
+    exact LinearEquiv.bijective _
   bijective_right := by
-    have : (TensorProduct.curry (b.coordPairing b')).flip =
-        TensorProduct.curry (b'.coordPairing b) :=
-      LinearMap.ext₂ fun y x => coordPairing_comm b b' x y
-    rw [this, curry_coordPairing]; exact LinearEquiv.bijective _
+    rw [show (TensorProduct.curry (b.coordPairing b')).flip =
+      ((b'.equiv b (Equiv.refl ι)).trans b.toDualEquiv).toLinearMap from
+        LinearMap.ext₂ fun y x => (coordPairing_comm b b' x y).trans rfl]
+    exact LinearEquiv.bijective _
 
 end Module.Basis
