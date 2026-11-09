@@ -18,17 +18,16 @@ variance.
 A color is the type of an index, made of a kind `κ : K` and a variance, `up` or `down`. A
 species (`Species.lean`) assigns a vector space to each color. The kind fixes the basis labels,
 and the variance says whether the index is that of a vector (`up`) or a covector (`down`). Lorentz
-tensors have one kind, `vec`. The vector `v^μ` has color `⟨vec, up⟩` with space `ℝ⁴`, and the
-covector `w_μ` has color `⟨vec, down⟩` with space `(ℝ⁴)*`.
+tensors have one kind, `vec`. The vector `v^μ` has color `⟨vec, up⟩` and the covector `w_μ` has
+color `⟨vec, down⟩`.
 
 The slots of a tensor are labelled by colors, not by spaces, so that matching a slot with its
 dual is a decidable equality of labels, not an equality of types. The dual of `⟨κ, v⟩` is
 `⟨κ, v.dual⟩`, and a contraction such as `v^μ w_μ` pairs a slot of color `c` with a slot of
 color `c.dual`.
 
-`Variance` is two booleans, and `dual` swaps them. Swapping twice gives back the same structure,
-so `c.dual.dual = c` holds by `rfl` for a variable color `c`. `Color K` is a structure, rather
-than the product `K × Variance`, so that `c.dual` works as dot notation.
+`Color K` is a structure, rather than the product `K × Variance`, so that `c.dual` works as dot
+notation.
 
 ## ii. Key results
 
@@ -44,7 +43,7 @@ than the product `K × Variance`, so that `c.dual` works as dot notation.
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -55,6 +54,9 @@ namespace Tensors
 /-!
 
 ## A. Up and down
+
+`Variance` is two booleans rather than an inductive with two constructors. `dual` swaps them, so
+`c.dual.dual` is `c` by `rfl` for a variable color `c`. With an inductive this needs a case split.
 
 -/
 
@@ -78,8 +80,8 @@ abbrev up : Variance := ⟨true, false, by decide⟩
 @[match_pattern]
 abbrev down : Variance := ⟨false, true, by decide⟩
 
-/-- The dual variance, exchanging up and down. It is an abbrev, since the species laws rewrite with
-`c.dual.dual = c` at reducible transparency. -/
+/-- The dual variance, exchanging up and down. It is an abbrev, so that `simp` and `rw` see
+`c.dual.dual` as `c`. -/
 abbrev dual (v : Variance) : Variance := ⟨v.isDown, v.isUp, v.ne.symm⟩
 
 end Variance

@@ -22,23 +22,17 @@ representation `S.rep c` of `G` and a basis `S.basis c`. The data is indexed by 
 one definition covers both variances. The contraction `S.contr c : V c ⊗ V c.dual → k` is
 `u^μ α_μ` for `c = ⟨vec, up⟩` and `α_μ u^μ` for `c = ⟨vec, down⟩`.
 
-The basis of a color `c` is labelled by `basisIdx c.kind`, the values that an index of that kind
-runs over. For Lorentz tensors `basisIdx vec = Fin 1 ⊕ Fin d`, one time label and `d` space
-labels, and the number of labels is the dimension. The labels depend on the kind alone, so an
-index and its dual share them, as `μ` in `v^μ` and `α_μ`. `basisIdx` is a parameter of the
-structure, not a field, so that a conjugate species can give conjugate kinds the same labels.
-
 The space of a lower index is data of the species, not `Module.Dual` of the upper one, so that
-existing types such as `CoVector d` serve as covectors. The one law of a species (`invariant`) says
-that the coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` is invariant,
-which makes `V c.dual` the dual of `V c` (`dualEquiv`). The law is stated at every color,
-so that lemmas about a general color `c` use it directly. At a lower color it is the law at the
-upper color with the factors swapped, and `invariant_of_up` proves it so.
+existing types such as `CoVector d` serve as covectors. The coordinate pairing
+`u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` makes `V c.dual` the dual of `V c`. The
+one law of a species (`invariant`) says that this pairing is invariant, which makes `V c.dual` the
+dual representation (`dualEquiv`).
 
 The contraction `S.contr c` is this pairing, and the delta `S.delta c` is `∑ μ, e^μ ⊗ e_μ` in
 `V c.dual ⊗ V c`. The bases of `c` and `c.dual` are then dual (`contr_basis`) and the contraction
-is symmetric (`contr_tmul_symm`). A tensor `z` in `V a ⊗ U` is read as the linear map
-`S.toLin z : V a.dual → U` that contracts a vector with the first factor of `z`, and the delta is
+is symmetric (`contr_tmul_symm`). A tensor `z` in `V a ⊗ U`, for a color `a` and any module `U`,
+is read as the linear map `S.toLin z : V a.dual → U` that contracts a vector with the first factor
+of `z`, and the delta is
 then the identity, `u^μ δ_μ^ν = u^ν` (`snake`). Indices name slots, as in abstract index notation,
 so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
@@ -75,7 +69,7 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -88,6 +82,12 @@ namespace Tensors
 /-!
 
 ## A. Species
+
+The basis of a color `c` is labelled by `basisIdx c.kind`, the values that an index of that kind
+runs over, as `Fin 1 ⊕ Fin d` for a Lorentz index. A color and its dual share labels, as `μ` in
+`v^μ` and `α_μ`. `basisIdx` is a parameter, not a field, so that a conjugate species can give
+conjugate kinds the same labels. The law is stated at every color, so that lemmas about a general
+color `c` use it directly. `invariant_of_up` proves it from the upper colors.
 
 -/
 
@@ -136,6 +136,12 @@ lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c,
 /-!
 
 ## B. The contraction
+
+The contraction is defined as the coordinate pairing of the bases, not stored as data. The bases
+of `c` and `c.dual` are then dual by construction, and components need no dual-basis matching. Its
+invariance is the law of the species. `dualEquiv` identifies `V c.dual` with Mathlib's dual
+representation of `V c`, and `invariant_of_contr` builds the law from a pairing known to be
+invariant.
 
 -/
 
@@ -214,6 +220,12 @@ lemma invariant_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommG
 
 ## C. The delta, and tensors of two factors as linear maps
 
+A tensor in `V a ⊗ U`, for a color `a` and any module `U`, is read as a linear map `V a.dual → U`
+(`toLin`), Mathlib's `dualTensorHomEquivOfBasis`. A metric `g_μν` read this way is the map
+`v^μ ↦ v^μ g_μν`, and its inverse `g^μν` is the tensor of the inverse map (`Species.inverse`, in a
+later file). The delta is the tensor of the identity map (`snake`), so it is invariant
+(`delta_invariant`).
+
 -/
 
 /-- The Kronecker delta `∑ μ, e^μ ⊗ e_μ ∈ V c.dual ⊗ V c`, with components `δ_μ^ν`. The factor of
@@ -284,7 +296,8 @@ lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
 
 variable {S}
 
-/-- `toLin` in components, `(z v)^ν = v^μ z_μ^ν` for `z = z_μ^ν e^μ ⊗ e_ν` in `V c ⊗ V d`. -/
+/-- `toLin` in components. For a lower color `c` and an upper color `d`, `(z v)^ν = v^μ z_μ^ν` for
+`z = z_μ^ν e^μ ⊗ e_ν` in `V c ⊗ V d`. -/
 lemma basis_repr_toLin (c : Color K) {d : Color K} (z : S.V c ⊗[k] S.V d) (v : S.V c.dual)
     (ν : basisIdx d.kind) :
     (S.basis d).repr (S.toLin z v) ν =
@@ -318,6 +331,10 @@ lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
 /-!
 
 ## D. Moving a vector along an equality of colors
+
+A relabeling of slots matches colors only through a proof, `c (σ.symm j) = c' j`, not by
+definition. A vector of one color is then read at an equal color through `S.cast`. The lemmas say
+that this keeps the group action, the components and the contraction.
 
 -/
 
