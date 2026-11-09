@@ -86,6 +86,11 @@ open Complex Fermion.Dirac
 
 noncomputable section diracRepresentation
 
+TODO "Clean up this file. The gamma matrices appear both as `γ0` to `γ3` and as
+  `endEquivMatrix (gamma μ)` with `μ : Fin 1 ⊕ Fin 3`, while `γProd` and `diracForm` are
+  indexed by `Fin 4`: use one family of matrices and one index type. The Dirac matrix
+  representation (section A) could also move to its own file, next to `Fermion.Dirac.gamma`."
+
 /-! ## A. Dirac matrix representation -/
 
 /-! ### A.1. The gamma matrices -/
