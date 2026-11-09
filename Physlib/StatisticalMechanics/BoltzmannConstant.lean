@@ -5,31 +5,134 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Basic.NNReal.Defs
+public import Physlib.Units.Basic
 /-!
 
 # Boltzmann constant
 
-The Boltzmann constant is a constant `kB` of dimension `m² kg s⁻² K⁻¹`, that is
-`Energy/Temperature`. It is named after Ludwig Boltzmann.
+The Boltzmann constant, in the format of `Physlib/Units/Constants.lean`.
 
-In this module give the value of the Boltzmann constant.
+## i. Overview
 
+The Boltzmann constant, named after Ludwig Boltzmann, has the dimension `M L² T⁻² Θ⁻¹` of an energy
+over a temperature, and its value in SI units is exact. Section F adds its form as a real number.
+
+## ii. Key results
+
+- `BoltzmannConstant` : The Boltzmann constant in a chosen but arbitrary system of units.
+- `boltzmannConstant` : The Boltzmann constant in our world, `1.380649 × 10⁻²³ J K⁻¹`.
+- `Constants.kB` : The Boltzmann constant as a real number.
+
+## iii. Table of contents
+
+- A. The type
+- B. Instances
+- C. Positivity
+- D. The dimension
+- E. The value in our world
+- F. Specific to the Boltzmann constant
+
+## iv. References
+
+* The defining value of the Boltzmann constant. [ref: bipm_si_brochure_2019]
 -/
 
 @[expose] public section
 
-open NNReal
+open Dimension LTMCTUnitChoices CarriesDimension
+
+/-!
+
+## A. The type
+
+-/
+
+/-- The Boltzmann constant, in a chosen but arbitrary system of units. -/
+structure BoltzmannConstant where
+  /-- The underlying value of the Boltzmann constant. -/
+  val : ℝ
+  pos : 0 < val
+
+namespace BoltzmannConstant
+
+/-!
+
+## B. Instances
+
+-/
+
+instance instPositiveRealUnitCore : PositiveRealUnitCore BoltzmannConstant where
+  val := BoltzmannConstant.val
+  pos := BoltzmannConstant.pos
+  ofVal := fun r hr => ⟨r, hr⟩
+  val_ofVal := by intros; rfl
+  ofVal_val := by intro x; cases x; rfl
+
+instance : Coe BoltzmannConstant ℝ := ⟨BoltzmannConstant.val⟩
+
+@[simp]
+lemma positiveRealUnitCore_val (kB : BoltzmannConstant) :
+    PositiveRealUnitCore.val kB = kB.val := rfl
+
+/-!
+
+## C. Positivity
+
+-/
+
+@[simp]
+lemma val_pos (kB : BoltzmannConstant) : 0 < (kB : ℝ) := kB.pos
+
+@[simp]
+lemma val_nonneg (kB : BoltzmannConstant) : 0 ≤ (kB : ℝ) := le_of_lt kB.pos
+
+@[simp]
+lemma val_ne_zero (kB : BoltzmannConstant) : (kB : ℝ) ≠ 0 := ne_of_gt kB.pos
+
+/-!
+
+## D. The dimension
+
+-/
+
+/-- The Boltzmann constant has the dimension `M L² T⁻² Θ⁻¹`. -/
+instance instHasDim : HasDim BoltzmannConstant where
+  d := M𝓭 * L𝓭 * L𝓭 * T𝓭⁻¹ * T𝓭⁻¹ * Θ𝓭⁻¹
+
+end BoltzmannConstant
+
+/-!
+
+## E. The value in our world
+
+-/
+
+/-- The Boltzmann constant in our world, `1.380649 × 10⁻²³ J K⁻¹`, exact. -/
+noncomputable def boltzmannConstant : Dimensionful BoltzmannConstant :=
+  toDimensionful SI ⟨1.380649e-23, by norm_num⟩
+
+@[simp]
+lemma boltzmannConstant_in_SI : boltzmannConstant SI = ⟨1.380649e-23, by norm_num⟩ :=
+  toDimensionful_apply_self SI _
+
+/-!
+
+## F. Specific to the Boltzmann constant
+
+The Boltzmann constant as a real number, used throughout statistical mechanics.
+
+-/
 
 namespace Constants
 
 /-- The Boltzmann constant in units of `m ^ 2 kg s ^ (-2) K ^ (-1)`.
   As long as one does not use the underlying value of this quantity,
   then it can be used as Boltzmann's constant in an arbitrary set of units. -/
-def kBAx : {p : ℝ | 0 < p} := ⟨1.380649e-23, by norm_num⟩
+noncomputable def kBAx : {p : ℝ | 0 < p} :=
+  ⟨(boltzmannConstant SI).val, (boltzmannConstant SI).pos⟩
 
 /-- The Boltzmann constant in a given but arbitrary set of units.
-  Boltzman's constant has dimension equivalent to `Energy/Temperature`. -/
+  Boltzmann's constant has dimension equivalent to `Energy/Temperature`. -/
 noncomputable def kB : ℝ := kBAx.1
 
 /-- The Boltzmann constant is positive. -/
