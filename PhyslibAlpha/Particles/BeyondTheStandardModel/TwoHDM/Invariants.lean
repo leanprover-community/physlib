@@ -121,7 +121,7 @@ lemma aeval_cartanSubst_eq {V : EffectivePotential} (hI : IsInvariant V)
     rw [aeval_def, algebraMap_eq, ← MvPolynomial.eval_assoc]
     rfl
   rw [hcomp, eval_cartanSubst, ← hP (cartanRotParam u a), ← gaugeCartan_smul_sliceR,
-    hI (StandardModel.GaugeGroupI.gaugeCartan u), hP a]
+    hI (StandardModel.GaugeGroupI.gaugeCartan (star u)), hP a]
 
 open MvPolynomial in
 /-- The residual `U(1)` rotation of the perpendicular parameter, as a substitution. -/
@@ -148,8 +148,8 @@ lemma aeval_residualSubst_eq {V : EffectivePotential} (hI : IsInvariant V)
   have hcomp : eval a (aeval (residualSubst c) P) = P.eval
       (fun k => eval a (residualSubst c k)) := by
     rw [aeval_def, algebraMap_eq, ← MvPolynomial.eval_assoc]; rfl
-  rw [hcomp, eval_residualSubst, ← hP (resRotParam c a), ← ofU1Subgroup_smul_sliceR,
-    hI (StandardModel.GaugeGroupI.ofU1Subgroup c), hP a]
+  rw [hcomp, eval_residualSubst, ← hP (resRotParam c a), ← electromagnetismU1_smul_sliceR,
+    hI (StandardModel.GaugeGroupI.electromagnetismU1 c), hP a]
 
 /-!
 ## B. Hypercharge eigen-coordinates and charge balancing
@@ -525,7 +525,7 @@ lemma exists_aeval_neutralBilinear {V : EffectivePotential} (hI : IsInvariant V)
 Evaluating at the hypercharge eigen-point of a representative `repHiggs X`, and descending from the
 complex value back to its real part, turns the generation result of part C into the statement that
 the value `V (repHiggs X)` is a polynomial in the five real gauge-invariant bilinears
-`‖Φ1‖², Re⟪⟫, Im⟪⟫, |Φ2₀|², |Φ2₁|²`.
+`‖Φ1‖², Re⟪⟫, Im⟪⟫, |Φ2₁|², |Φ2₀|²`.
 -/
 
 /-- The slice parameters realising `repHiggs X` as a point of the slice family. -/
@@ -604,7 +604,7 @@ lemma realPart_eval (H : MvPolynomial (Fin 5) ℂ) (y : Fin 5 → ℝ) :
       Complex.ofReal_im, mul_zero, sub_zero, hp]
 
 /-- The five real gauge-invariant bilinears, evaluated at `repHiggs X`:
-  `‖Φ1‖², Re⟪⟫, Im⟪⟫, |Φ2₀|², |Φ2₁|²`. -/
+  `‖Φ1‖², Re⟪⟫, Im⟪⟫, |Φ2₁|², |Φ2₀|²`. -/
 def sliceBilinear (X : Fin 4 → ℝ) : Fin 5 → ℝ :=
   ![X 0 ^ 2, X 0 * X 1, X 0 * X 2, X 1 ^ 2 + X 2 ^ 2, X 3 ^ 2]
 
@@ -629,7 +629,7 @@ lemma neutralBilinear_eval_eigenPoint (X : Fin 4 → ℝ) (i : Fin 5) :
 open MvPolynomial in
 /-- **The potential on representatives, in the bilinears.** A gauge-invariant polynomial potential,
   on the representative family, is a polynomial in the five real gauge-invariant bilinears
-  `‖Φ1‖², Re⟪⟫, Im⟪⟫, |Φ2₀|², |Φ2₁|²`. -/
+  `‖Φ1‖², Re⟪⟫, Im⟪⟫, |Φ2₁|², |Φ2₀|²`. -/
 lemma exists_polynomial_repHiggs_sliceBilinear {V : EffectivePotential} {n : ℕ}
     (hI : IsInvariant V) (h : HasMaxMassDimLE V n) :
     ∃ p : MvPolynomial (Fin 5) ℝ, ∀ X : Fin 4 → ℝ, V (repHiggs X) = p.eval (sliceBilinear X) := by

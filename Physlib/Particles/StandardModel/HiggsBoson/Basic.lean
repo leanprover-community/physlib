@@ -38,7 +38,7 @@ In this module we define the Higgs field and prove some basic properties.
     - A.5.1. The rotation matrix to ofReal
     - A.5.2. Members of orbits
   - A.6. The stability group of a Higgs vector
-  - A.7. Gauge action removing phase from second component
+  - A.7. The electromagnetic U(1) and the phase of the first component
   - A.8. To real scalars
 - B. The Higgs bundle
   - B.1. Definition of the Higgs bundle
@@ -343,7 +343,7 @@ informal_lemma stability_group where
 
 /-!
 
-### A.7. Gauge action removing phase from second component
+### A.7. The electromagnetic U(1) and the phase of the first component
 
 -/
 
@@ -369,51 +369,27 @@ lemma electromagnetismU1_repGaugeGroupI_ofReal (g : unitary ℂ) (a : ℝ) :
   ext i
   fin_cases i <;> simp [ofReal]
 
-lemma ofU1Subgroup_repGaugeGroupI_apply (g : unitary ℂ) (φ : HiggsVec) :
-    repGaugeGroupI (StandardModel.GaugeGroupI.ofU1Subgroup g) φ =
-    (WithLp.toLp 2 <| !![1, 0; 0, g.1 ^ 6] *ᵥ φ.ofLp) := by
-  have h : (g : ℂ) * (starRingEnd ℂ) g = 1 := g.2.2
-  rw [repGaugeGroupI_apply, GaugeGroupI.ofU1Subgroup_toU1, GaugeGroupI.ofU1Subgroup_toSU2,
-    GaugeGroupI.diagSU2_coe]
-  ext i
-  fin_cases i
-  · simp [Submonoid.smul_def, ← mul_assoc, ← mul_pow, h]
-  · simp [Submonoid.smul_def]
-    ring
-
-/-- There is a gauge transformation making the second component of a Higgs vector real and
-  non-negative, while fixing first components and vectors of the form `(a, 0)`. It is given by
-  an element of `GaugeGroupI.ofU1Subgroup`. This is used to gauge-fix two-Higgs-doublet
-  configurations to `Φ1 = (‖Φ1‖, 0)`. -/
-lemma repGaugeGroupI_phase_snd (φ : HiggsVec) :
-    ∃ g : StandardModel.GaugeGroupI,
-      (repGaugeGroupI g φ).ofLp 1 = ‖(φ.ofLp 1)‖ ∧
-      (∀ φ1 : HiggsVec, (repGaugeGroupI g φ1).ofLp 0 = φ1.ofLp 0) ∧
-      (∀ a : ℝ, repGaugeGroupI g (!₂[a, 0] : HiggsVec) = (!₂[a, 0] : HiggsVec)) := by
-  let θ := arg (φ 1)
-  refine ⟨StandardModel.GaugeGroupI.ofU1Subgroup ⟨Complex.exp (-I * θ / 6), by
+/-- There is an element of the electromagnetic `U(1)` making the first (charged) component of a
+  Higgs vector real and non-negative. It fixes second components, and so the Higgs vacuum
+  `ofReal a`. This is used to gauge-fix two-Higgs-doublet configurations to
+  `Φ1 = (0, ‖Φ1‖)`. -/
+lemma exists_electromagnetismU1_fst_eq_norm (φ : HiggsVec) :
+    ∃ g : unitary ℂ,
+      (repGaugeGroupI (StandardModel.GaugeGroupI.electromagnetismU1 g) φ).ofLp 0 = ‖φ.ofLp 0‖ := by
+  let θ := arg (φ 0)
+  refine ⟨⟨Complex.exp (-I * θ / 6), by
     simp [Unitary.mem_iff, ← Complex.exp_conj, ← Complex.exp_add, Complex.conj_ofNat]
     ring_nf
-    simp⟩, ?_, ?_, ?_⟩
-  · rw [ofU1Subgroup_repGaugeGroupI_apply]
-    simp only [Fin.isValue, neg_mul, cons_mulVec, cons_dotProduct, one_mul, zero_mul,
-      dotProduct_of_isEmpty, add_zero, zero_add, empty_mulVec, cons_val_one, cons_val_fin_one]
-    rw [show vecHead (vecTail φ.ofLp) = φ.ofLp 1 from rfl]
-    nth_rewrite 1 [← Complex.norm_mul_exp_arg_mul_I (φ.ofLp 1)]
-    rw [← Complex.exp_nat_mul, mul_left_comm, ← Complex.exp_add]
-    simp [θ]
-    ring_nf
-    simp
-  · intro φ
-    simp [ofU1Subgroup_repGaugeGroupI_apply, vecHead]
-  · intro a
-    ext i
-    fin_cases i <;> simp [ofU1Subgroup_repGaugeGroupI_apply]
-
-TODO "Gauge-fix two-Higgs-doublet configurations to the textbook Higgs basis
-  `Φ1 = (0, ‖Φ1‖)`, using `GaugeGroupI.electromagnetismU1` to remove the remaining phase. Then
-  `GaugeGroupI.ofU1Subgroup` and `repGaugeGroupI_phase_snd` are no longer needed and can be
-  removed."
+    simp⟩, ?_⟩
+  rw [electromagnetismU1_repGaugeGroupI_apply]
+  simp only [Fin.isValue, neg_mul, cons_mulVec, cons_dotProduct, zero_mul,
+    dotProduct_of_isEmpty, add_zero, empty_mulVec, cons_val_zero]
+  rw [show vecHead φ.ofLp = φ.ofLp 0 from rfl]
+  nth_rewrite 1 [← Complex.norm_mul_exp_arg_mul_I (φ.ofLp 0)]
+  rw [← Complex.exp_nat_mul, mul_left_comm, ← Complex.exp_add]
+  simp [θ]
+  ring_nf
+  simp
 
 /-!
 
