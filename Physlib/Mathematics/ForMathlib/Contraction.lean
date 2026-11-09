@@ -18,7 +18,7 @@ Two bases with the same labels pair two modules by their coordinates.
 
 Two modules `M` and `N` with bases `b` and `b'` labelled by the same finite type `ι` pair by their
 coordinates, `(x, y) ↦ ∑_I (b x)_I (b' y)_I` (`coordPairing`). The two bases are dual for this
-pairing, and it is a perfect pairing in Mathlib's sense, so `N` is the dual of `M`.
+pairing, and it is a perfect pairing in Mathlib's sense, so it identifies `N` with the dual of `M`.
 
 For Lorentz tensors take `M = ℝ⁴` the vectors `x^μ` with the standard basis, and `N` the covectors
 `w_μ` with the dual basis. The coordinate pairing is the contraction `x^μ w_μ`.

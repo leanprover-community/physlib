@@ -30,17 +30,19 @@ with the action `w_μ ↦ w_ν (Λ⁻¹)^ν_μ` and the dual basis `e^μ`.
 
 Each lower space is given by the species, not built as `Module.Dual` of the upper space, so that
 a covector is an element of `CoVector d` itself rather than a linear form on `Vector d`. The bases
-make the two spaces dual, and the condition on the species makes them dual representations:
+fix the contraction, which identifies `V c.dual` with the dual space of `V c`, and the condition on
+the species makes this identification respect the group action:
 
 - The contraction `S.contr c : V c ⊗ V c.dual → k` multiplies the components of its two arguments
   in the bases of `c` and `c.dual` and adds them up, `S.contr c (u ⊗ α) = ∑ μ, u^μ α_μ`. A basis
   vector has one component equal to `1` and the others `0`, so `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν` and
   the two bases are dual. Every linear form on `V c` is `u ↦ u^μ α_μ` for exactly one `α`, with
-  `α_μ` its value on `e_μ`, so `V c.dual` is the dual space of `V c` (`isPerfPair_contr`).
+  `α_μ` its value on `e_μ`, so the contraction identifies `V c.dual` with the dual space of `V c`
+  (`isPerfPair_contr`).
 - The condition on a species (`invariant`) says that the contraction is invariant,
   `(Λu)^μ (Λα)_μ = u^μ α_μ` for every `Λ : G`. Equivalently `u^μ (Λα)_μ = (Λ⁻¹u)^μ α_μ`
-  (`contr_tmul_rep`), which is how `G` acts on linear forms on `V c`. So `G` acts on `V c.dual` as
-  on the linear forms on `V c`, and `V c.dual` is the dual representation of `V c` (`dualEquiv`).
+  (`contr_tmul_rep`), which is how `G` acts on linear forms on `V c`. So the identification
+  respects the action, and `V c.dual` is the dual representation of `V c` (`dualEquiv`).
 
 A repeated index is contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
@@ -174,7 +176,7 @@ lemma contr_tmul_symm (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ[k] y) = S.contr c.dual (y ⊗ₜ[k] x) :=
   Module.Basis.coordPairing_comm _ _ _ _
 
-/-- The contraction is a perfect pairing, so `V c.dual` is the dual of `V c`. -/
+/-- The contraction is a perfect pairing, so it identifies `V c.dual` with the dual of `V c`. -/
 instance isPerfPair_contr (c : Color K) :
     (TensorProduct.curry (S.contr c).toLinearMap).IsPerfPair :=
   Module.Basis.isPerfPair_coordPairing _ _
