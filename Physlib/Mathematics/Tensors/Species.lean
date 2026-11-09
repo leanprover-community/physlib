@@ -32,9 +32,8 @@ The contraction `S.contr c` is this pairing, and the delta `S.delta c` is `∑ �
 `V c.dual ⊗ V c`. The bases of `c` and `c.dual` are then dual (`contr_basis`) and the contraction
 is symmetric (`contr_tmul_symm`). A tensor `z` in `V a ⊗ U`, for a color `a` and any module `U`,
 is read as the linear map `S.toLin z : V a.dual → U` that contracts a vector with the first factor
-of `z`, and the delta is
-then the identity, `u^μ δ_μ^ν = u^ν` (`snake`). Indices name slots, as in abstract index notation,
-so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
+of `z`, and the delta is then the identity, `u^μ δ_μ^ν = u^ν` (`toLin_delta`). Indices name slots,
+as in abstract index notation, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
 ## ii. Key results
 
@@ -49,9 +48,10 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.invariant_of_contr` gives the law `invariant` from an invariant pairing for which the
   bases are dual.
 - `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_invariant`.
-- `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`, `Species.snake` proves
-  that the delta is the identity, `Species.toLin_map` that `toLin` commutes with the group
-  action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` that `(id ⊗ f) z = f ∘ z`.
+- `Species.toLin` identifies `V a ⊗ U` with the linear maps `V a.dual → U`,
+  `Species.toLin_delta` proves that the delta is the identity, `Species.toLin_map` that `toLin`
+  commutes with the group action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` that
+  `(id ⊗ f) z = f ∘ z`.
 - `Species.basis_repr_toLin` gives `toLin` in components, `Species.toMatrix_toLin` its matrix,
   and `Species.toLin_comp_toLin_of_mul_eq_one` proves that two such maps are inverse when their
   matrices are.
@@ -223,7 +223,7 @@ lemma invariant_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommG
 A tensor in `V a ⊗ U`, for a color `a` and any module `U`, is read as a linear map `V a.dual → U`
 (`toLin`), Mathlib's `dualTensorHomEquivOfBasis`. A metric `g_μν` read this way is the map
 `v^μ ↦ v^μ g_μν`, and its inverse `g^μν` is the tensor of the inverse map (`Species.inverse`, in a
-later file). The delta is the tensor of the identity map (`snake`), so it is invariant
+later file). The delta is the tensor of the identity map (`toLin_delta`), so it is invariant
 (`delta_invariant`).
 
 -/
@@ -257,8 +257,8 @@ lemma toLin_lTensor {a : Color K} {U U' : Type} [AddCommGroup U] [Module k U] [A
   | tmul x y => ext v; simp
   | add z z' hz hz' => simp only [map_add, hz, hz', LinearMap.comp_add]
 
-/-- The snake law `u^μ δ_μ^ν = u^ν`, the delta read as a linear map is the identity. -/
-lemma snake (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
+/-- The delta read as a linear map is the identity, `u^μ δ_μ^ν = u^ν`. -/
+lemma toLin_delta (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
   LinearMap.ext fun v => by simp [delta, contr, Module.Basis.coordPairing_tmul_basis]
 
 /-- `toLin` commutes with the group action, `((Λ ⊗ f) z)(Λx) = f (z x)` for every `Λ : G` and
@@ -273,10 +273,10 @@ lemma toLin_map (a : Color K) (g : G) {U U' : Type} [AddCommGroup U] [Module k U
 /-- The delta is invariant, `Λ δ = δ`. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
-  -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `snake`.
+  -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `toLin_delta`.
   apply S.toLin.injective
   ext x
-  simpa [snake] using S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
+  simpa [toLin_delta] using S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
 
 /-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
 lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :

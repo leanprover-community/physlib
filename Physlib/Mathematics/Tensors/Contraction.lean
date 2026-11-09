@@ -470,7 +470,7 @@ lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
         (S.tmulEquiv _ _ (S.twoSlotEquiv x y X ⊗ₜ S.twoSlotEquiv _ _ Y)) = S.deltaTensor x.dual ↔
       S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
   rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoSlotEquiv _ _)).eq_iff,
-    ← (S.toLin (a := x)).injective.eq_iff, toLin_lTensor, S.snake x.dual]
+    ← (S.toLin (a := x)).injective.eq_iff, toLin_lTensor, S.toLin_delta x.dual]
 
 /-- The relabeling of `T^…μ… F_μ^ν`, which contracts the slot `i` of `T` with the first slot of a
 tensor `F` on two slots and puts the second slot of `F` in the place of `i`. It is
@@ -554,7 +554,7 @@ lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) 
     contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
       (S.tmulEquiv c ![a.dual, a] (t ⊗ₜ S.deltaTensor a)) = t := by
   subst ha
-  rw [deltaTensor, contr_matMulAt, snake]
+  rw [deltaTensor, contr_matMulAt, toLin_delta]
   exact LinearMap.congr_fun (mapAt_id i _) t
 
 /-!
