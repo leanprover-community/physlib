@@ -31,7 +31,7 @@ structure, not a field, so that a conjugate species can give conjugate kinds the
 The space of a lower index is data of the species, not `Module.Dual` of the upper one, so that
 existing types such as `CoVector d` serve as covectors. The one law of a species (`invariant`) says
 that the coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` is invariant,
-which makes `V c.dual` the dual of `V c` (`isPerfPair_contr`). The law is stated at every color,
+which makes `V c.dual` the dual of `V c` (`dualEquiv`). The law is stated at every color,
 so that lemmas about a general color `c` use it directly. At a lower color it is the law at the
 upper color with the factors swapped, and `invariant_of_up` proves it so.
 
@@ -51,8 +51,8 @@ so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.contr_tmul_eq_sum_basis` gives the contraction of two vectors in components,
   `Species.contr_basis_tmul` reads off a component, and `Species.ext_contr` proves that the
   contraction is nondegenerate.
-- `Species.isPerfPair_contr` : the contraction is a perfect pairing, so `V c.dual` is the dual of
-  `V c`.
+- `Species.isPerfPair_contr` : the contraction is a perfect pairing, and `Species.dualEquiv`
+  identifies `V c.dual` with the dual representation of `V c`.
 - `Species.invariant_of_contr` gives the law `invariant` from an invariant pairing for which the
   bases are dual.
 - `Species.delta` is the delta `δ_μ^ν`, with `Species.delta_eq_comm_delta_dual` and
@@ -193,6 +193,18 @@ lemma contr_invariant (c : Color K) (g : G) (x : S.V c) (y : S.V c.dual) :
 lemma contr_tmul_rep (c : Color K) (g : G) (u : S.V c) (α : S.V c.dual) :
     S.contr c (u ⊗ₜ S.rep c.dual g α) = S.contr c (S.rep c g⁻¹ u ⊗ₜ α) := by
   simpa using S.contr_invariant c g (S.rep c g⁻¹ u) α
+
+/-- The space of `c.dual` is the dual representation of the space of `c`, a vector `α` read as the
+linear form `u ↦ u^μ α_μ`. -/
+noncomputable def dualEquiv (c : Color K) : (S.rep c.dual).Equiv (S.rep c).dual :=
+  .mk (TensorProduct.curry (S.contr c).toLinearMap).flip.toPerfPair fun g =>
+    LinearMap.ext fun α => LinearMap.ext fun u => S.contr_tmul_rep c g u α
+
+/-- `dualEquiv c α` is the linear form `u ↦ u^μ α_μ`. -/
+@[simp]
+lemma dualEquiv_apply (c : Color K) (α : S.V c.dual) (u : S.V c) :
+    S.dualEquiv c α u = S.contr c (u ⊗ₜ α) :=
+  rfl
 
 omit S in
 /-- The law `invariant`, from an invariant pairing `p` for which the bases are dual. It is how a
