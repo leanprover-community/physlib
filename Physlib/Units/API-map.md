@@ -235,7 +235,8 @@ the numerical oscillator, and has its derivative from the generic transport of d
 17. Physlib/Units/Basic.lean — `LTMCTUnitChoices.SIPrimed`,
    `LTMCTUnitChoices.dimScale_SI_SIPrimed`, `LTMCTUnitChoices.dimScale_SIPrimed_SI`
 18. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale`, `LTMCTUnitChoices.dimScale_apply`,
-   `LTMCTUnitChoices.dimScale_L𝓭`, `LTMCTUnitChoices.dimScale_T𝓭`
+   `LTMCTUnitChoices.dimScale_L𝓭`, `LTMCTUnitChoices.dimScale_T𝓭`,
+   `LTMCTUnitChoices.dimScale_M𝓭`, `LTMCTUnitChoices.dimScale_Θ𝓭`
 19. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale_self`, `LTMCTUnitChoices.dimScale_one`
 20. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale_ne_zero`,
    `LTMCTUnitChoices.dimScale_pos`, `LTMCTUnitChoices.dimScale_transitive`,
