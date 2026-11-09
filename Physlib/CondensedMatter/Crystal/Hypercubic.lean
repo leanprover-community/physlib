@@ -71,11 +71,12 @@ lemma hypercubicGraph_dist_position (d : ℕ) {x y : (bravais d).Site}
 
 /-! ## B. Coordination number -/
 
-/-- The steps of the hypercubic lattice are the unit vectors along the axes, in both directions. -/
-lemma steps_hypercubicBonds (d : ℕ) :
-    PeriodicGraph.steps (hypercubicBonds d) =
+/-- The connection set of the hypercubic lattice consists of the unit vectors along the axes,
+in both directions. -/
+lemma connectionSet_hypercubicBonds (d : ℕ) :
+    PeriodicGraph.connectionSet (hypercubicBonds d) =
       Finset.univ.image (Pi.single · 1) ∪ Finset.univ.image fun j => -Pi.single j 1 := by
-  rw [PeriodicGraph.steps, Finset.erase_eq_of_notMem]
+  rw [PeriodicGraph.connectionSet, Finset.erase_eq_of_notMem]
   all_goals simp [hypercubicBonds, Finset.image_image, Function.comp_def]
 
 /-- Each site of the hypercubic lattice of dimension `d` has `2 d` neighbors. -/
@@ -83,7 +84,7 @@ lemma hypercubicGraph_degree (d : ℕ) (x : (bravais d).Site) :
     (hypercubicGraph d).toSimpleGraph.degree x = 2 * d := by
   have hinj : Function.Injective fun j : Fin d => (Pi.single j 1 : Fin d → ℤ) := fun j k h => by
     simpa [Pi.single_apply] using congrFun h j
-  rw [hypercubicGraph, PeriodicGraph.degree_ofBonds_of_unique, steps_hypercubicBonds,
+  rw [hypercubicGraph, PeriodicGraph.degree_ofBonds_of_unique, connectionSet_hypercubicBonds,
     Finset.card_union_of_disjoint, Finset.card_image_of_injective _ hinj,
     Finset.card_image_of_injective _ (fun j k h => hinj (neg_injective h))]
   · simp [two_mul]
