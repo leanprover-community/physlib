@@ -140,7 +140,7 @@ lemma gramVector_repHiggs_inr2 (X : Fin 4 → ℝ) :
 lemma exists_smul_eq_repHiggs (φ : TwoHiggsDoublet) :
     ∃ (X : Fin 4 → ℝ) (g : GaugeGroupI), g • φ = repHiggs X := by
   by_cases h : φ.Φ1 = 0
-  · refine ⟨![0, ‖φ.Φ2‖, 0, 0], HiggsVec.toRealGroupElem φ.Φ2, ?_⟩
+  · refine ⟨![0, 0, 0, ‖φ.Φ2‖], HiggsVec.toRealGroupElem φ.Φ2, ?_⟩
     ext1
     · rw [gaugeGroupI_smul_fst, h, map_zero, repHiggs_Φ1]
       ext i
