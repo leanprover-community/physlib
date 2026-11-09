@@ -396,6 +396,17 @@ lemma ker_antitone [DecidableEq n] (hA : 0 ≤ A) : A ≤ B → B.ker ≤ A.ker 
   rw [Matrix.posSemidef_iff_dotProduct_mulVec] at hA
   exact le_antisymm h (hA.right x)
 
+omit [Fintype n] in
+@[simp, gcongr]
+lemma diagonal_le_diagonal [DecidableEq n] {f g : n → ℝ} : diagonal 𝕜 f ≤ diagonal 𝕜 g ↔ f ≤ g := by
+  rw [HermitianMat.le_iff, ← diagonal_sub, diagonal_mat, Matrix.posSemidef_diagonal_iff]
+  simp [Pi.le_def, sub_nonneg]
+
+omit [Fintype n] in
+@[simp]
+lemma diagonal_nonneg [DecidableEq n] {f : n → ℝ} : 0 ≤ diagonal 𝕜 f ↔ 0 ≤ f := by
+  rw [← diagonal_zero, diagonal_le_diagonal]
+
 lemma conj_mono (h : A ≤ B) : A.conj M ≤ B.conj M := by
   have h_conj_pos : (M * (B - A).mat * Mᴴ).PosSemidef :=
     Matrix.PosSemidef.mul_mul_conjTranspose_same h M
