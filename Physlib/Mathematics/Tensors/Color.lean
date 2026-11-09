@@ -10,13 +10,13 @@ public import Mathlib.Init
 
 # Colors of tensor slots
 
-A color says what one index of a tensor is: its kind and whether it is up or down.
+A color gives the kind of an index of a tensor and whether the index is up or down.
 
 ## i. Overview
 
 A color `⟨κ, v⟩` is a kind of index `κ : K` and a variance `v`, `up` or `down`. For Lorentz
 tensors there is one kind, `vec`. The vector index of `v^μ` has color `⟨vec, up⟩` and the
-covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds:
+covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds,
 `left` and `right` for the indices of left- and right-handed Weyl spinors, and `vec`.
 
 A tensor has one color per slot. A species (`Species.lean`) gives each color a space, and a

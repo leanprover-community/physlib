@@ -164,7 +164,7 @@ lemma contr_tmul_eq_sum_basis (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ y) = ∑ μ, (S.basis c).repr x μ * (S.basis c.dual).repr y μ :=
   Module.Basis.coordPairing_tmul _ _ x y
 
-/-- The contraction is symmetric: `u^μ α_μ` at `c` is `α_μ u^μ` at `c.dual`, with the factors
+/-- The contraction is symmetric. `u^μ α_μ` at `c` is `α_μ u^μ` at `c.dual`, with the factors
 swapped. -/
 lemma contr_tmul_symm (c : Color K) (x : S.V c) (y : S.V c.dual) :
     S.contr c (x ⊗ₜ[k] y) = S.contr c.dual (y ⊗ₜ[k] x) :=
@@ -223,7 +223,7 @@ variable {S}
 ## C. Moving a vector along an equality of colors
 
 `S.V a` and `S.V a'` are different types unless `a` and `a'` are equal by definition. The colors
-of two slots are often equal only through a proof: after a relabeling of slots, for example, the
+of two slots are often equal only through a proof. After a relabeling of slots, for example, the
 color of a new slot equals the color of the old slot it came from. A vector is moved between the
 two spaces by `S.cast`, which is the identity on the vector. The lemmas say that this keeps the
 group action, the components and the contraction, so that proofs can remove the casts.

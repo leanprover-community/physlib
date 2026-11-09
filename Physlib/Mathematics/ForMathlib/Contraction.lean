@@ -68,12 +68,12 @@ lemma coordPairing_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x 
     b.coordPairing b' (x ⊗ₜ[R] y) = ∑ I, b.equivFun x I * b'.equivFun y I := by
   simp [coordPairing, Matrix.toLinearMap₂_apply, Matrix.one_apply]
 
-/-- `b.coordPairing b' (x ⊗ₜ b' J) = x_J`: pairing with the second basis reads off a coordinate. -/
+/-- Pairing with the second basis reads off a coordinate, `b.coordPairing b' (x ⊗ₜ b' J) = x_J`. -/
 lemma coordPairing_tmul_basis (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (J : ι) :
     b.coordPairing b' (x ⊗ₜ[R] b' J) = b.equivFun x J := by
   simp [coordPairing_tmul, Module.Basis.equivFun_self]
 
-/-- `b.coordPairing b' (b I ⊗ₜ b' J) = δ_{IJ}`: the two bases are dual. -/
+/-- The two bases are dual, `b.coordPairing b' (b I ⊗ₜ b' J) = δ_{IJ}`. -/
 lemma coordPairing_basis_basis (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I J : ι) :
     b.coordPairing b' (b I ⊗ₜ[R] b' J) = if I = J then 1 else 0 := by
   rw [coordPairing_tmul_basis, Module.Basis.equivFun_self]
@@ -84,12 +84,13 @@ lemma eq_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (p : 
   (b.tensorProduct b').ext fun IJ => by
     rw [Module.Basis.tensorProduct_apply, h, coordPairing_basis_basis]
 
-/-- `b.coordPairing b' (x ⊗ₜ y) = b'.coordPairing b (y ⊗ₜ x)`: swapping slots swaps the bases. -/
+/-- Swapping the factors swaps the bases,
+`b.coordPairing b' (x ⊗ₜ y) = b'.coordPairing b (y ⊗ₜ x)`. -/
 lemma coordPairing_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (x : M) (y : N) :
     b.coordPairing b' (x ⊗ₜ[R] y) = b'.coordPairing b (y ⊗ₜ[R] x) := by
   simp only [coordPairing_tmul, mul_comm]
 
-/-- `b.coordPairing b' (b I ⊗ₜ y) = y_I`: pairing with the first basis reads off a coordinate. -/
+/-- Pairing with the first basis reads off a coordinate, `b.coordPairing b' (b I ⊗ₜ y) = y_I`. -/
 lemma coordPairing_basis_tmul (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (I : ι) (y : N) :
     b.coordPairing b' (b I ⊗ₜ[R] y) = b'.equivFun y I := by
   rw [coordPairing_comm, coordPairing_tmul_basis]

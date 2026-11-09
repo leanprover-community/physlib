@@ -129,7 +129,7 @@ noncomputable def delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
 lemma toLin_delta (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
   LinearMap.ext fun v => by simp [delta, contr, Module.Basis.coordPairing_tmul_basis]
 
-/-- The delta is invariant: `Λ` acting on both factors gives `Λ δ = δ`. -/
+/-- The delta is invariant, `Λ δ = δ`, with `Λ` acting on both factors. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
   -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `toLin_delta`.
