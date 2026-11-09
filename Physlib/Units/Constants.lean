@@ -81,6 +81,11 @@ example : dim SpeedOfLight = L𝓭 * T𝓭⁻¹ ∧ (speedOfLight SI).val = 2997
 example : dim BoltzmannConstant = M𝓭 * L𝓭 * L𝓭 * T𝓭⁻¹ * T𝓭⁻¹ * Θ𝓭⁻¹ ∧
     (boltzmannConstant SI).val = 1.380649e-23 := ⟨rfl, by simp⟩
 
+TODO "Define `SI` from the defining constants, as the SI itself has been defined since 2019: the
+  units in which the caesium frequency, the speed of light, the Planck constant, the elementary
+  charge and the Boltzmann constant take their exact values. The values in our world, such as
+  `speedOfLight` and `boltzmannConstant`, are currently defined the other way round, from `SI`."
+
 /-!
 
 ## C. Planck units
