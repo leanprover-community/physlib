@@ -9,7 +9,6 @@ public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Prod
 public import PhyslibAlpha.Mathematics.ExteriorAlgebra
 public import Mathlib.LinearAlgebra.CliffordAlgebra.Prod
-public import Mathlib.LinearAlgebra.TensorProduct.Prod
 /-!
 # The fermionic algebra of a direct sum
 

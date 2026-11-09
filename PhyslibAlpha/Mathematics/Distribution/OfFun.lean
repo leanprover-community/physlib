@@ -5,9 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.Support
-public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 
 /-!
 

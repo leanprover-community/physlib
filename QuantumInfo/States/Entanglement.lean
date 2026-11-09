@@ -5,10 +5,8 @@ Authors: Leonardo A Lessa
 -/
 module
 
-public import QuantumInfo.States.Pure.Braket
 public import QuantumInfo.States.Ensemble
 public import QuantumInfo.Entropy.VonNeumann
-public import QuantumInfo.ClassicalInfo.Entropy
 
 /-!
 Entanglement measures. (Mixed) convex roof extensions. Definition of product / separable / entangled states

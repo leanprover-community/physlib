@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.LorentzAction
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.GaugeAction
-public import PhyslibAlpha.Relativity.SL2C.Basic
 /-!
 # The gauge-field symbols of the jet algebra and their laws
 

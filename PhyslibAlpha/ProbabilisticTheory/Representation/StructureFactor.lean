@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Bochner.DiscreteGroup
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Uniqueness
-public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Measure
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
 
 /-!

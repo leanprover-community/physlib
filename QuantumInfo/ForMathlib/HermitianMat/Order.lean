@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Trace
-public import Mathlib.Analysis.RCLike.Basic
 
 @[expose] public section
 

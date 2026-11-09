@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.BivariateBasis
 
 /-!

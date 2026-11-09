@@ -8,7 +8,6 @@ module
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 /-!
 
 # Operators on the Hilbert space of a finite target system

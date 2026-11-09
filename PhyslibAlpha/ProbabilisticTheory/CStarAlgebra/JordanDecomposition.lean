@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 
 /-!
 

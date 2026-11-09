@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.SpecialFunctions.SincPropagator.Basic
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Series
-public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Data.Nat.Choose.Cast
 public import Mathlib.Analysis.Calculus.SmoothSeries
 

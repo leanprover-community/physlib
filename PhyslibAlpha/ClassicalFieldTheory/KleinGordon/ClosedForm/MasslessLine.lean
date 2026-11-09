@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedSolution
 public import PhyslibAlpha.Mathematics.Fourier.Inversion
-public import Mathlib.Analysis.Fourier.Inversion
-public import PhyslibAlpha.Mathematics.Distribution.TimeSlice
 
 /-!
 

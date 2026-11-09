@@ -6,7 +6,6 @@ Authors: Kei Tsukamoto, Kento Mori, Hayata Yamasaki
 
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
 public import Mathlib.LinearAlgebra.Matrix.PosDef

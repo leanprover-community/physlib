@@ -5,8 +5,6 @@ Authors: brent
 -/
 module
 
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Vector
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Finite

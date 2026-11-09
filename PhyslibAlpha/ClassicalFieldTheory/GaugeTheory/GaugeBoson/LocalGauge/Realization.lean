@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.FieldStrength
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Basic
 public import PhyslibAlpha.Mathematics.AlgebraRepresentation
 /-!
 # Realizations of the local gauge field algebra

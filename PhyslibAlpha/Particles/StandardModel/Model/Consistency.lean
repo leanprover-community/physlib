@@ -5,8 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.Particles.StandardModel.Fermions.QuarkDoublet.GaugeAlgebraAction
 /-!
 # Consistency of the Standard Model table with the existing formalisation

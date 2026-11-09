@@ -5,7 +5,6 @@ Authors: Philippe Kevorkian, Jinzheng Li
 -/
 module
 
-public import Physlib.Meta.TODO.Basic
 public import Physlib.Cosmology.FLRW.Basic
 public import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 /-!

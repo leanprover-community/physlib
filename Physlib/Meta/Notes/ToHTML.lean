@@ -7,6 +7,8 @@ module
 
 public meta import Physlib.Meta.Notes.HTMLNote
 public import Physlib.Meta.Notes.NoteFile
+public import Physlib.Meta.Notes.Basic
+public meta import Physlib.Meta.Notes.NoteFile
 /-!
 
 ## Turns a declaration into a html note structure.

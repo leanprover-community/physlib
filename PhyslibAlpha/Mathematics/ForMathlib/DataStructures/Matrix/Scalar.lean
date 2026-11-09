@@ -5,7 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Star.SelfAdjoint
 public import Mathlib.Basic.Real.Star
 public import Mathlib.LinearAlgebra.Matrix.ConjTranspose
 /-!

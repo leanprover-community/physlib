@@ -8,8 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.Mathematics.Convex.LpBall
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
-public import Mathlib.Analysis.Normed.Group.Constructions
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!

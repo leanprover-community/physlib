@@ -8,7 +8,6 @@ module
 public import Mathlib.Topology.Algebra.Group.CompactOpen
 public import Mathlib.Topology.MetricSpace.Polish
 import Mathlib.Topology.ContinuousMap.SecondCountableSpace
-import Mathlib.Topology.Metrizable.ContinuousMap
 
 /-!
 # Polish spaces of continuous homomorphisms

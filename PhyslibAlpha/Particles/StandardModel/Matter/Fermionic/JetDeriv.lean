@@ -6,8 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.Basic
-public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import Mathlib.Algebra.TrivSqZeroExt.Basic
 /-!
 # The formal total derivative on the fermionic algebra
 

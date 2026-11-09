@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.SpeedOfLight
-public import Mathlib.Analysis.Real.Sqrt
 /-!
 
 # Free space

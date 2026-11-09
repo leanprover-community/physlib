@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.Calculus.BumpFunction.FiniteDimension
-public import PhyslibAlpha.ClassicalFieldTheory.GreenOperator.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.GreenOperator.CausalPropagator
 
 /-!

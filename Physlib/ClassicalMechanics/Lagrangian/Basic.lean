@@ -8,8 +8,6 @@ module
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
-public import Physlib.SpaceAndTime.Time.ManifoldCurves
-public import Physlib.Meta.TODO.Basic
 
 /-!
 # Lagrangian systems

@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
-public import Mathlib.Algebra.Star.Unitary
 
 /-!
 

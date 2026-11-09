@@ -5,7 +5,6 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.ForMathlib.Matrix
 public import QuantumInfo.ForMathlib.Majorization
 public import QuantumInfo.ForMathlib.HermitianMat.Unitary
 public import QuantumInfo.ForMathlib.Isometry

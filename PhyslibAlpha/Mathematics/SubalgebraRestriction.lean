@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
-public import Mathlib.Algebra.Algebra.Subalgebra.Basic
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 /-!
 # Restricting a polynomial-valued algebra map to a subalgebra

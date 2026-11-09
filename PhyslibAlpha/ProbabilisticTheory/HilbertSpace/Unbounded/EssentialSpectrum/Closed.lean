@@ -6,9 +6,6 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.EssentialSpectrum.Defs
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
-public import Mathlib.Topology.Sequences
-public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 

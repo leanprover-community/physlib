@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.IdealNorm
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Banach
 
 /-!

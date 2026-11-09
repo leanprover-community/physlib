@@ -5,24 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import PhyslibAlpha.Particles.StandardModel.GaugeAlgebra.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
-public import Physlib.Relativity.Tensors.ComplexTensor.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
-public import PhyslibAlpha.Relativity.SL2C.Basic
-public import PhyslibAlpha.Mathematics.Modules.ConjModule
-public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
-public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
-public import Mathlib.RingTheory.MvPowerSeries.Derivative
-public import PhyslibAlpha.Mathematics.MvPolynomialTranslation
-public import Mathlib.Algebra.MvPolynomial.Derivation
-public import Mathlib.Analysis.Normed.Algebra.Exponential
-public import Mathlib.RingTheory.MvPowerSeries.PiTopology
-public import Mathlib.Topology.Instances.Matrix
 public import Mathlib.RingTheory.PowerSeries.Derivative
-public import Mathlib.RingTheory.PowerSeries.Basic
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Matrix
 /-!
 # The jet gauge algebra

@@ -6,7 +6,6 @@ Authors: Philippe Kevorkian, Jinzheng Li
 module
 
 public import Physlib.Cosmology.FLRW.DensityParameters
-public import Mathlib.Topology.Order.IntermediateValue
 /-!
 
 # Solutions of the Friedmann equations: dynamical criteria

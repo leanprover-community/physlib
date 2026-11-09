@@ -7,9 +7,6 @@ module
 
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import Physlib.ProbabilisticTheory.Effect.Sharp
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
-public import Mathlib.Analysis.CStarAlgebra.Basic
-public import Mathlib.Algebra.Module.Torsion.Free
 
 /-!
 

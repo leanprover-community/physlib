@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.IsFermionSector.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
 /-!
 # The gauge weight decomposition of the fermion sector
 

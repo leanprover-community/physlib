@@ -7,9 +7,7 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
-public import PhyslibAlpha.Relativity.SL2C.Basic
 /-!
 # The gauge law on brackets and iterated derivatives
 

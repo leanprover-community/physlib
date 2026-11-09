@@ -7,13 +7,6 @@ module
 
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Basic
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
-public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.TensorProduct.Prod
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 # The jet component space of a matter field
 

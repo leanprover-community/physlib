@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Representation.Covariance.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Postprocessing
-public import Mathlib.Algebra.Group.Action.Prod
 
 /-!
 

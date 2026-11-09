@@ -5,13 +5,11 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Order.Group.Lattice
 public import Mathlib.Algebra.Order.Group.PosPart
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Tactic.Abel
-public import Mathlib.Tactic.GCongr
 
 /-!
 # Vector lattices

@@ -8,7 +8,6 @@ module
 public import Physlib.Thermodynamics.Temperature.Basic
 public import Physlib.Relativity.SpeedOfLight
 public import Physlib.QuantumMechanics.PlanckConstant
-public import Physlib.Optics.Frequency
 public import Physlib.Optics.Wavelength
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 

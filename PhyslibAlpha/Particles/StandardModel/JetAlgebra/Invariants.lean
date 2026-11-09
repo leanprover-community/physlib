@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.LorentzAction
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.GaugeAction
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Symmetrized
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 /-!
 # Gauge invariants of the jet algebra of the Standard Model
 
