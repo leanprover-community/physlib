@@ -4,7 +4,8 @@ Turn the results of a handbook-alignment check into a Markdown report.
 
 Each review writes one JSON file, `<name>.json`, in the format given in `protocol.md`. This
 script reads every such file in a folder and prints a report: a table of scores and summaries,
-followed by the suggested improvements for each handbook file.
+followed by the suggested improvements for each handbook file, each in a collapsible
+`<details>` block.
 
 Usage:
 
@@ -57,7 +58,7 @@ def readJsonOutput(folder: str) -> list[Result]:
 
 def makeReport(results: list[Result]) -> str:
     """The Markdown report: a table of scores and summaries, then the suggested improvements
-    for each handbook file."""
+    for each handbook file in a collapsible `<details>` block."""
 
     def oneLine(text: str) -> str:
         # Collapse new lines and escape `|`, so the text fits in a table cell.
@@ -83,13 +84,18 @@ def makeReport(results: list[Result]) -> str:
         improvements = r.get("improvements") or []
         if r.get("error") or not improvements:
             continue
-        lines += ["", f"### {r['tips']}", ""]
+        # A collapsible block per handbook file. GitHub only renders the Markdown inside
+        # `<details>` when it is separated from the tags by blank lines.
+        count = len(improvements)
+        plural = "suggestion" if count == 1 else "suggestions"
+        lines += ["", "<details>", f"<summary>{r['tips']} ({count} {plural})</summary>", ""]
         for imp in improvements:
             path, line = imp.get("file") or "", imp.get("line") or 0
             where = f"`{path}:{line}`" if path and line else f"`{path}`" if path else "Whole change"
             lines.append(f"- {where}: {oneLine(imp.get('suggestion', ''))}")
             if imp.get("handbook-line"):
                 lines.append(f"  <sub>Handbook: {oneLine(imp['handbook-line'])}</sub>")
+        lines += ["", "</details>"]
     return "\n".join(lines) + "\n"
 
 
