@@ -5,6 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.PositiveLinearMap
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
