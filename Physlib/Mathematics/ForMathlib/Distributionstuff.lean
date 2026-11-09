@@ -11,9 +11,19 @@ open Function Set TopologicalSpace UniformSpace
 
 /-- Given normed spaces `E` and `E'` and a map between them `g : E → E'`, define a map
 between the spaces of test functions `𝓓(Ω, F)` and `𝓓(Ω', F)`. -/
-def test_function_map {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
-  [NormedSpace ℝ E] [NormedSpace ℝ E']
-  {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  {Ω : Opens E} {Ω' : Opens E'} (g : E → E') :
-  TestFunction Ω' F ⊤ → TestFunction Ω F ⊤ :=
-  fun φ => φ.comp g
+def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
+    [NormedSpace ℝ E] [NormedSpace ℝ E']
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
+    (h : g.invFun '' Ω' ⊆ ↑Ω) :
+     TestFunction Ω' F ⊤ → TestFunction Ω F ⊤ := fun φ =>
+  {
+  toFun := φ ∘ g
+  contDiff' := φ.contDiff.comp g.contDiff
+  hasCompactSupport' := φ.hasCompactSupport.comp_homeomorph g.toHomeomorph
+  tsupport_subset' := by
+    trans  g.invFun '' Ω'
+    · sorry
+
+    sorry
+  }
