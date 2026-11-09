@@ -23,7 +23,9 @@ def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
   hasCompactSupport' := φ.hasCompactSupport.comp_homeomorph g.toHomeomorph
   tsupport_subset' := by
     trans  g.invFun '' Ω'
-    · sorry
-
-    sorry
+    · intro x hx
+      have hx' : g x ∈ tsupport φ :=
+        (Set.ext_iff.mp (tsupport_comp_eq_preimage φ g.toHomeomorph) x).mp hx
+      exact ⟨g x, φ.tsupport_subset hx', by simp⟩
+    · exact h
   }
