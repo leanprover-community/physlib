@@ -24,8 +24,9 @@ factor.
 
 For real Lorentz tensors in `1 + d` dimensions, `k = ℝ`, `G` is the Lorentz group, and there is
 one kind `vec`, whose basis labels are `basisIdx vec = Fin 1 ⊕ Fin d`. The space of `⟨vec, up⟩`
-is `Vector d` with the action `v^μ ↦ Λ^μ_ν v^ν` and the standard basis `e_μ`. The space of
-`⟨vec, down⟩` is `CoVector d` with the action `w_μ ↦ w_ν (Λ⁻¹)^ν_μ` and the dual basis `e^μ`.
+is `Vector d`, the vectors with `1 + d` components, with the action `v^μ ↦ Λ^μ_ν v^ν` and the
+standard basis `e_μ`. The space of `⟨vec, down⟩` is `CoVector d`, also with `1 + d` components,
+with the action `w_μ ↦ w_ν (Λ⁻¹)^ν_μ` and the dual basis `e^μ`.
 
 The space of a lower index is given by the species, as `CoVector d` is, rather than built as
 `Module.Dual` of the upper space. Existing types for covectors and spinors are then the spaces
