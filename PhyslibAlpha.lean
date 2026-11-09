@@ -175,6 +175,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.Balls
 public import PhyslibAlpha.CondensedMatter.Crystal.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
 public import PhyslibAlpha.CondensedMatter.Crystal.BrillouinCoordinates
+public import PhyslibAlpha.CondensedMatter.Crystal.Examples.AxisStepWords
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Monoclinic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Orthorhombic
@@ -777,6 +778,7 @@ public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialCompleteness
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialFunctions
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialQuantization
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
+public import PhyslibAlpha.QuantumMechanics.QubitGates
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
 public import PhyslibAlpha.Relativity.Causality.LightCone
 public import PhyslibAlpha.Relativity.Fermions.Dirac.MinimalDimension
