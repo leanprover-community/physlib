@@ -617,6 +617,7 @@ public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.SchwartzAction
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 public import Physlib.StatisticalMechanics.BoltzmannConstant
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Basic
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Finite
