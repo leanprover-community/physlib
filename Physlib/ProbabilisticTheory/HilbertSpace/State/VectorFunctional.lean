@@ -5,7 +5,6 @@ Authors: David Gross
 -/
 module
 
-public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 
 /-!
