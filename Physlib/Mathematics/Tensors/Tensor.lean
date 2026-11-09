@@ -28,7 +28,7 @@ Most tensors are not pure. The metric `η = ∑ μ, η_μμ e^μ ⊗ e^μ` is a 
 a pure tensor itself. Every tensor is such a sum, so a linear map of tensors is fixed by its
 values on pure tensors (`ext_pure`), and a property of all tensors follows from the pure case
 (`inductionOn_pure`). The group action, relabeling, products and contraction are each given by
-their value on pure tensors, and their laws are proved there first. `S.pure f` is Mathlib's
+their value on pure tensors, and their properties are proved there first. `S.pure f` is Mathlib's
 `⨂ₜ[k] i, f i` as an element of `S.Tensor c`.
 
 A group element `Λ` acts on every slot by the representation of its color,

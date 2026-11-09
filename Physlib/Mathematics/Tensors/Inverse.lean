@@ -37,7 +37,7 @@ with the group action, and the inverse of the form at `c` is the form at `c.dual
 ## iii. Table of contents
 
 - A. The inverse
-- B. The contraction laws and uniqueness
+- B. The contraction identities and uniqueness
 - C. The inverse commutes with the group action
 - D. The inverse of an invariant form
 
@@ -89,7 +89,7 @@ lemma toLin_inverse_bijective (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (
 
 /-!
 
-## B. The contraction laws and uniqueness
+## B. The contraction identities and uniqueness
 
 -/
 

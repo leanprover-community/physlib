@@ -30,12 +30,12 @@ with the action `w_μ ↦ w_ν (Λ⁻¹)^ν_μ` and the dual basis `e^μ`.
 
 Each lower space is given by the species, not built as `Module.Dual` of the upper space, so that
 a covector is an element of `CoVector d` itself rather than a linear form on `Vector d`. The bases
-make the two spaces dual, and the law of the species makes them dual representations:
+make the two spaces dual, and the condition on the species makes them dual representations:
 
 - The contraction `S.contr c : V c ⊗ V c.dual → k` is defined from the bases, as
   `u ⊗ α ↦ ∑ μ, u^μ α_μ`. This makes the two bases dual, `S.contr c (e_μ ⊗ e^ν) = δ_μ^ν`, and
   `V c.dual` the dual space of `V c`.
-- The law of a species (`invariant`) says that the contraction is invariant,
+- The condition on a species (`invariant`) says that the contraction is invariant,
   `(Λu)^μ (Λα)_μ = u^μ α_μ`. This makes `V c.dual` the dual representation of `V c`
   (`dualEquiv`).
 
@@ -43,15 +43,15 @@ A repeated index is contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
 ## ii. Key results
 
-- `Species` : the data and the law of a tensor species, and `Species.invariant_of_up` : the law
-  from the upper colors alone.
+- `Species` : the data of a tensor species and the condition on it, and
+  `Species.invariant_of_up` : the condition from the upper colors alone.
 - `Species.contr` : the contraction `u^μ α_μ`, with `Species.contr_tmul_eq_sum_basis` : its
   formula in components, `Species.contr_basis` : the bases are dual, `Species.contr_tmul_symm` :
   it is symmetric, and `Species.contr_invariant` : it is invariant.
 - `Species.isPerfPair_contr` : the contraction is a perfect pairing, `Species.dualEquiv` :
   `V c.dual` is the dual representation of `V c`, and `Species.ext_contr` : a vector of
   `V c.dual` is determined by its contractions.
-- `Species.invariant_of_contr` : the law from a pairing known to be invariant.
+- `Species.invariant_of_contr` : the condition from a pairing known to be invariant.
 - `Species.cast` : a vector moved along an equality of colors, with `Species.cast_rep`,
   `Species.basis_repr_cast`, `Species.contr_cast_tmul_cast` and
   `Species.contr_cast_tmul_cast_symm` : this keeps the action, the components and the
@@ -84,9 +84,9 @@ runs over. A color and its dual share labels, as `μ` in `v^μ` and `α_μ`. `ba
 parameter rather than a field, so that species built from one another, such as a species and
 its complex conjugate, have the same labels by definition.
 
-The law is stated at every color, so that lemmas about a general color `c` use it directly. At a
-lower color it is the law at the upper color with the factors swapped, and `invariant_of_up`
-proves it from the upper colors.
+The condition is stated at every color, so that lemmas about a general color `c` use it directly.
+At a lower color it is the condition at the upper color with the factors swapped, and
+`invariant_of_up` proves it from the upper colors.
 
 -/
 
@@ -118,8 +118,8 @@ namespace Species
 variable {k : Type} [CommRing k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
-/-- The law `invariant` at every color from the law at the upper colors. At a lower color the
-pairing is the pairing at the dual, upper color with its factors swapped. -/
+/-- The condition `invariant` at every color from the condition at the upper colors. At a lower
+color the pairing is the pairing at the dual, upper color with its factors swapped. -/
 lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
     (rep : (c : Color K) → Representation k G (V c))
     (basis : (c : Color K) → Module.Basis (basisIdx c.kind) k (V c))
@@ -138,10 +138,10 @@ lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c,
 
 The contraction is not a field of `Species`. It is defined from the bases, as
 `u ⊗ α ↦ ∑ μ, u^μ α_μ`, so the bases of `c` and `c.dual` are dual by definition
-(`contr_basis`). Its invariance is the law of the species. It is a perfect pairing in Mathlib's
-sense, and `dualEquiv` identifies `V c.dual` with Mathlib's dual representation of `V c`, so
-Mathlib's results on duals apply. `invariant_of_contr` gives the law when an invariant pairing is
-already known, as for Weyl spinors.
+(`contr_basis`). Its invariance is the condition on the species. It is a perfect pairing in
+Mathlib's sense, and `dualEquiv` identifies `V c.dual` with Mathlib's dual representation of
+`V c`, so Mathlib's results on duals apply. `invariant_of_contr` gives the condition when an
+invariant pairing is already known, as for Weyl spinors.
 
 -/
 
@@ -206,8 +206,8 @@ lemma ext_contr {c : Color K} {α α' : S.V c.dual}
   (S.dualEquiv c).toLinearEquiv.injective (LinearMap.ext h)
 
 omit S in
-/-- The law `invariant`, from an invariant pairing `p` for which the bases are dual. It is how a
-species is built from a pairing that is known to be invariant. -/
+/-- The condition `invariant`, from an invariant pairing `p` for which the bases are dual. It is how
+a species is built from a pairing that is known to be invariant. -/
 lemma invariant_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommGroup M]
     [Module k M] [AddCommGroup N] [Module k N] {ρ : Representation k G M}
     {ρ' : Representation k G N} {b : Module.Basis ι k M} {b' : Module.Basis ι k N}

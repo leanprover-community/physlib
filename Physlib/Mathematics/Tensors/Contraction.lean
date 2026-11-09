@@ -12,7 +12,7 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 # Contraction of tensors
 
 The contraction of pairs of indices, an index with its dual in each pair, as in the trace
-`T^ρμ_μ` or the full contraction `T^μν U_μν`, and its laws.
+`T^ρμ_μ` or the full contraction `T^μν U_μν`, and its properties.
 
 ## i. Overview
 
@@ -30,7 +30,7 @@ each pair by `S.contr (a j)`, with the first index of the pair as its first argu
 
 Two tensors are contracted by contracting their product. In the full contraction `T^μν U_μν` the
 product `T ⊗ U` has four slots, which form two pairs and leave no slot, `κ = Empty`. The following
-laws let a contraction of several tensors be computed one step at a time.
+properties let a contraction of several tensors be computed one step at a time.
 - Only the pairs of indices matter. Two contractions of the same pairs of indices are equal, in
   whatever order the pairs are listed and whichever index of a pair comes first.
 - A tensor that changes sign when its pairs are permuted contracts to zero, since its contraction

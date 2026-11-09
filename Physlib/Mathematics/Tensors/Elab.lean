@@ -170,8 +170,8 @@ partial def Slots.ofType? (ι : Expr) : MetaM (Option Slots) := do
   else return none
 
 /-- The bijection from `dom` to `cod` sending the slot `pre[j]` of `dom` to the slot `j` of `cod`.
-The list `pre` names every slot of `dom` once. The inverse laws are proved slot by slot by
-`fin_cases`. -/
+The list `pre` names every slot of `dom` once. Its inverse identities are proved slot by slot
+by `fin_cases`. -/
 def slotEquiv (dom cod : Slots) (pre : List Nat) : TermElabM Term := do
   let toFun ← dom.fn ``Sum.elim (← (List.range dom.size).mapM fun i => cod.elem (pre.idxOf i))
   let invFun ← cod.fn ``Sum.elim (← pre.mapM dom.elem)
