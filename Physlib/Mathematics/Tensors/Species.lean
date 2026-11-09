@@ -38,8 +38,9 @@ make the two spaces dual, and the condition on the species makes them dual repre
   the two bases are dual. Every linear form on `V c` is `u ↦ u^μ α_μ` for exactly one `α`, with
   `α_μ` its value on `e_μ`, so `V c.dual` is the dual space of `V c` (`isPerfPair_contr`).
 - The condition on a species (`invariant`) says that the contraction is invariant,
-  `(Λu)^μ (Λα)_μ = u^μ α_μ`. This makes `V c.dual` the dual representation of `V c`
-  (`dualEquiv`).
+  `(Λu)^μ (Λα)_μ = u^μ α_μ` for every `Λ : G`. Equivalently `u^μ (Λα)_μ = (Λ⁻¹u)^μ α_μ`
+  (`contr_tmul_rep`), which is how `G` acts on linear forms on `V c`. So `G` acts on `V c.dual` as
+  on the linear forms on `V c`, and `V c.dual` is the dual representation of `V c` (`dualEquiv`).
 
 A repeated index is contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 
