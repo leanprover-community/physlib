@@ -107,7 +107,7 @@ lemma le_sup_exp_val {ρ : MState d} (ε : Prob) {S : Set (MState d)}
     (m : HermitianMat d ℂ) (hExp : ρ.exp_val (1 - m) ≤ ε) (hm : 0 ≤ m ∧ m ≤ 1) :
     β_ ε(ρ‖S) ≤ ⨆ σ ∈ S, ⟨_, σ.exp_val_prob hm⟩ := by
   unfold OptimalHypothesisRate
-  apply iInf_le_of_le ⟨m, ⟨hExp, hm⟩⟩ _
+  convert iInf_le_of_le  (α := unitInterval) (ι := { m // ρ.exp_val (1 - m) ≤ ↑ε ∧ 0 ≤ m ∧ m ≤ 1 }) ⟨m, ⟨hExp, hm⟩⟩ ?_
   simp only [le_refl]
 
 lemma le_of_subset (ρ : MState d) (ε : Prob) {S1 S2 : Set (MState d)} (h : S1 ⊆ S2) :
@@ -197,7 +197,7 @@ theorem exists_min (ρ : MState d) (ε : Prob) (S : Set (MState d)):
     linarith
   replace hδ : 0 < δ := by linarith +splitNe
   have hδ_le : δ ≤ 1 := by
-    linarith [ρ.exp_val_le_one T.2.2.2, ε.2]
+    linarith [ρ.exp_val_le_one T.2.2.2, ε.coe_le_one]
 
   have hTr : 0 < ρ.exp_val T := by
     linarith [ε.coe_le_one]
