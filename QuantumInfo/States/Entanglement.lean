@@ -219,6 +219,30 @@ theorem mixed_convex_roof_of_pure (ψ : Ket d) : mixed_convex_roof f (pure ψ) =
       rw [mix_mEnsemble_pure_average (toReal ∘ f) hmix, Function.comp_apply]
     rfl
 
+/-- If `g` vanishes on every state in a pure-state ensemble whose mixture is `ρ`,
+then `convex_roof g ρ = 0`. -/
+lemma convex_roof_eq_zero_of_mix {n : ℕ} (hnpos : 0 < n) (e : PEnsemble d (Fin n))
+    {ρ : MState d} (hmix : mix (toMEnsemble e) = ρ)
+    (hg : ∀ i, g (KetUpToPhase.mk (e.states i)) = 0) :
+    convex_roof g ρ = 0 := by
+  refine le_antisymm (convex_roof_le g ρ ⟨n, hnpos, e, hmix, le_of_eq ?_⟩) zero_le
+  rw [← NNReal.coe_inj]
+  change (∑ i, (e.distr i : ℝ) • (g (KetUpToPhase.mk (e.states i)) : ℝ)) = 0
+  -- The ensemble average vanishes since `g` vanishes on every state in the ensemble.
+  simp [hg]
+
+/-- The convex roof of a function that vanishes on pure product states
+vanishes on every separable state. -/
+lemma convex_roof_eq_zero_of_isSeparable (g : KetUpToPhase (d₁ × d₂) → ℝ≥0)
+    (hg : ∀ (ξ : Ket d₁) (η : Ket d₂), g (KetUpToPhase.mk (ξ ⊗ᵠ η)) = 0)
+    {ρ : MState (d₁ × d₂)} (hρ : ρ.IsSeparable) :
+    convex_roof g ρ = 0 := by
+  obtain ⟨n, e, hnpos, hmix, hprod⟩ := hρ.exists_pEnsemble_isProd
+  refine convex_roof_eq_zero_of_mix g hnpos e hmix fun i ↦ ?_
+  obtain ⟨ξ, η, heq⟩ := hprod i
+  rw [heq]
+  exact hg ξ η
+
 /-- Entanglement of Formation of bipartite systems. It is the convex roof extension of the
 von Neumann entropy of one of the subsystems (here chosen to be the left one, but see `Entropy.Sᵥₙ_of_partial_eq`).
 
@@ -301,3 +325,12 @@ theorem EoF_of_MES : EoF (pure <| Ket.MES d) = Real.log (Finset.card Finset.univ
     rw [MState.uniform, Sᵥₙ_ofClassical ProbDistribution.uniform, Hₛ_uniform, Finset.card_univ]
   simp [traceRight_pure_MES]
   exact h_von_neumann
+
+/-- The entanglement of formation vanishes on separable states. -/
+lemma EoF_eq_zero_of_isSeparable {ρ : MState (d₁ × d₂)} (hρ : ρ.IsSeparable) : EoF ρ = 0 := by
+  unfold EoF
+  refine convex_roof_eq_zero_of_isSeparable _ (fun ξ η ↦ ?_) hρ
+  -- The reduced state of a pure product state is pure, so its entropy is zero.
+  change (⟨Sᵥₙ (pure (ξ ⊗ᵠ η)).traceRight, _⟩ : ℝ≥0) = 0
+  simp only [pure_prod_pure, traceRight_prod_eq, Sᵥₙ_of_pure_zero]
+  rfl
