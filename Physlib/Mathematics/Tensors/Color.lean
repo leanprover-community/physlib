@@ -54,8 +54,8 @@ namespace Tensors
 
 ## A. Up and down
 
-`Variance` is two booleans rather than an inductive with two constructors. `dual` swaps them, so
-`c.dual.dual` is `c` by `rfl` for a variable color `c`. With an inductive this needs a case split.
+`Variance` is two booleans, and `dual` swaps them. So `c.dual.dual` is `c` by definition, also for
+a variable color `c`, and the spaces `S.V c.dual.dual` and `S.V c` of a species are the same type.
 
 -/
 
