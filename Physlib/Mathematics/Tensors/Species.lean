@@ -31,8 +31,9 @@ structure, not a field, so that a conjugate species can give conjugate kinds the
 The space of a lower index is data of the species, not `Module.Dual` of the upper one, so that
 existing types such as `CoVector d` serve as covectors. The one law of a species (`invariant`) says
 that the coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of `c` and `c.dual` is invariant,
-which makes `V c.dual` the dual of `V c`. The law is stated at every color for a uniform interface.
-At a lower color it follows from the upper one, and `invariant_of_up` gives it so.
+which makes `V c.dual` the dual of `V c`. The law is stated at every color, so that lemmas about a
+general color `c` use it directly. At a lower color it is the law at the upper color with the
+factors swapped, and `invariant_of_up` proves it so.
 
 The contraction `S.contr c` is this pairing, and the delta `S.delta c` is `∑ μ, e^μ ⊗ e_μ` in
 `V c.dual ⊗ V c`. The bases of `c` and `c.dual` are then dual (`contr_basis`) and the contraction
