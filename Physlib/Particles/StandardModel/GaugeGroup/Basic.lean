@@ -151,6 +151,28 @@ lemma electromagnetismU1_toU1 (u1 : unitary ℂ) :
 lemma electromagnetismU1_injective : Function.Injective electromagnetismU1 := fun u1 v1 h => by
   simpa using congrArg toU1 h
 
+/-- The embedding of `SU(3) × U(1)_EM` into the gauge group, given by
+  `(h, u) ↦ (h, diag(u³, ū³), u)`. Its image is the gauge group left unbroken by the
+  Higgs vacuum: color and electromagnetism. -/
+noncomputable def colorElectromagnetism :
+    specialUnitaryGroup (Fin 3) ℂ × unitary ℂ →* GaugeGroupI where
+  toFun p := (p.1, diagSU2 (p.2 ^ 3), p.2)
+  map_one' := by simp
+  map_mul' p q := by
+    ext1 <;> simp [toSU3, toSU2, toU1, mul_pow]
+
+@[simp]
+lemma colorElectromagnetism_toSU3 (p : specialUnitaryGroup (Fin 3) ℂ × unitary ℂ) :
+    toSU3 (colorElectromagnetism p) = p.1 := rfl
+
+@[simp]
+lemma colorElectromagnetism_toSU2 (p : specialUnitaryGroup (Fin 3) ℂ × unitary ℂ) :
+    toSU2 (colorElectromagnetism p) = diagSU2 (p.2 ^ 3) := rfl
+
+@[simp]
+lemma colorElectromagnetism_toU1 (p : specialUnitaryGroup (Fin 3) ℂ × unitary ℂ) :
+    toU1 (colorElectromagnetism p) = p.2 := rfl
+
 end GaugeGroupI
 
 /-!
