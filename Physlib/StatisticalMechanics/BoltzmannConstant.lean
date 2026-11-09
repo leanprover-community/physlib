@@ -15,7 +15,8 @@ The Boltzmann constant, in the format of `Physlib/Units/Constants.lean`.
 ## i. Overview
 
 The Boltzmann constant, named after Ludwig Boltzmann, has the dimension `M L² T⁻² Θ⁻¹` of an energy
-over a temperature, and its value in SI units is exact. Section F adds its form as a real number.
+over a temperature, and its value in SI units is exact. Section F adds the instance of one and its
+form as a real number.
 
 ## ii. Key results
 
@@ -31,6 +32,8 @@ over a temperature, and its value in SI units is exact. Section F adds its form 
 - D. The dimension
 - E. The value in our world
 - F. Specific to the Boltzmann constant
+  - F.1. The instance of one
+  - F.2. As a real number
 
 ## iv. References
 
@@ -118,6 +121,25 @@ lemma boltzmannConstant_in_SI : boltzmannConstant SI = ⟨1.380649e-23, by norm_
 /-!
 
 ## F. Specific to the Boltzmann constant
+
+### F.1. The instance of one
+
+The Boltzmann constant equal to `1`, for units in which it is one.
+
+-/
+
+namespace BoltzmannConstant
+
+instance : One BoltzmannConstant := ⟨1, one_pos⟩
+
+@[simp]
+lemma val_one : (1 : BoltzmannConstant).val = 1 := rfl
+
+end BoltzmannConstant
+
+/-!
+
+### F.2. As a real number
 
 The Boltzmann constant as a real number, used throughout statistical mechanics.
 
