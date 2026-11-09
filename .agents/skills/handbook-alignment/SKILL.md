@@ -1,11 +1,11 @@
 ---
 name: handbook-alignment
-description: A check of a pull request or local changes based on how it aligns with the points mentioned in docs/ContributionHandbook/. For each file within the handbook, it scores the changes from 0 - 5 and provides constructive suggestions on how to get a better score.
+description: A check of a PR or local changes based on how it aligns with the points mentioned in docs/ContributionHandbook/. For each file within the handbook, it scores the changes from 0 - 5 and provides constructive suggestions on how to get a better score.
 ---
 
 # Handbook alignment check
 
-Your goal is to measure how aligned changes made either locally or in a PR are to the rules and statements in `docs/ContributionHandbook/`. You, or your agents, will compare the changes with each of the files in `docs/ContributionHandbook/` and score the alignment out of 5, whilst also giving suggested improvements.
+Your goal is to measure how aligned changes made are to the rules and statements in `docs/ContributionHandbook/`. You, or your agents, will compare the changes with each of the files in `docs/ContributionHandbook/` and score the alignment out of 5, whilst also giving suggested improvements.
 
 Importantly: You should not post anything without explicit human confirmation.
 

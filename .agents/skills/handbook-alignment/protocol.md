@@ -6,7 +6,7 @@ This file gives the instructions to AI-agents working on a single file within `d
 
 ## Overview
 
-You have been assigned one file in Physlib's contribution handbook, `docs/ContributionHandbook/`. Physlib is a Lean 4 library for physics built on Mathlib and has two companion libraries `QuantumInfo` and `PhyslibAlpha` in the same repo. Your role is to see how closely the changes made either in a pull request or locally align with the principles and rules given in your specific file of the handbook. There are other agents working on other files.
+You have been assigned one file in Physlib's contribution handbook, `docs/ContributionHandbook/`. Physlib is a Lean 4 library for physics built on Mathlib and has two companion libraries `QuantumInfo` and `PhyslibAlpha` in the same repo. You have been provided with some changes made either through a pull request or locally. Your role is to see how closely these changes align with the principles and rules given in your specific file of the handbook. There are other agents working on other files.
 
 ## Inputs
 
