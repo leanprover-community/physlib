@@ -5,7 +5,7 @@ Authors: Philippe Kevorkian, Jinzheng Li
 -/
 module
 
-public import Physlib.Cosmology.FLRW.MatterContent
+public import Physlib.Cosmology.FLRW.Basic
 /-!
 
 # Density parameters and the closure relation

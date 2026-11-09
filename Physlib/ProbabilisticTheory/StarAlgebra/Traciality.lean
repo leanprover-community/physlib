@@ -5,9 +5,10 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Star.Module
 public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Tactic.LinearCombination
+public import Mathlib.Algebra.Module.LinearMap.Defs
+public import Mathlib.Data.Finset.Attr
 
 /-!
 # Tracial functionals

@@ -6,7 +6,6 @@ Authors: Tomas Skrivan, Joseph Tooby-Smith
 module
 
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
-public import Physlib.Mathematics.Calculus.PartialDerivatives
 public import Physlib.Mathematics.VariationalCalculus.HasVarGradient
 public import Physlib.SpaceAndTime.Time.Derivatives
 /-!

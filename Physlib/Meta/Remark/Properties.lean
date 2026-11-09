@@ -7,6 +7,7 @@ module
 
 public import Physlib.Meta.Remark.Basic
 public meta import Physlib.Meta.Remark.Basic
+public import Lean.Exception
 /-!
 
 ## Underlying structure for remarks

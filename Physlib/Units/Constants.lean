@@ -6,8 +6,6 @@ Authors: Jinzheng Li
 module
 
 public import Physlib.Relativity.SpeedOfLight
-public import Physlib.QuantumMechanics.PlanckConstant
-public import Physlib.StatisticalMechanics.BoltzmannConstant
 /-!
 
 # Physical constants

@@ -5,8 +5,9 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Analysis.Convex.Strict.Extreme
 public import Physlib.ProbabilisticTheory.Effect.Complement
+public import Mathlib.Analysis.Convex.Extreme
+public import Mathlib.Data.EReal.Inv
 
 /-!
 # Sharp effects
