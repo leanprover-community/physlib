@@ -8,9 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.Representation.Koopman
 public import PhyslibAlpha.ProbabilisticTheory.Representation.Orthogonality
 public import PhyslibAlpha.ProbabilisticTheory.Representation.Floquet
-public import Mathlib.MeasureTheory.Measure.Count
-public import Mathlib.MeasureTheory.Function.L2Space
-public import Mathlib.Analysis.Normed.Lp.PiLp
 
 /-!
 

@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
-public import Mathlib.Geometry.Manifold.IsManifold.Basic
 /-!
 # Time
 

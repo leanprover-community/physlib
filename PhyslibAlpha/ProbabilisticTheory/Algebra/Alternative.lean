@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Ring.Defs
 public import Mathlib.Tactic.Abel
 public import Mathlib.Tactic.LinearCombination
 

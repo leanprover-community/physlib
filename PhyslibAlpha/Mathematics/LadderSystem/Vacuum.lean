@@ -6,9 +6,6 @@ Authors: Tom Diem
 module
 
 public import PhyslibAlpha.Mathematics.LadderSystem.Basic
-public import Mathlib.Data.List.Perm.Lattice
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.Lie.Submodule
 /-!
 
 # Vacuum states and creation-operator words

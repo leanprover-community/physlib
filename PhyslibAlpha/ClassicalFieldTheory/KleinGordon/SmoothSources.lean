@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.Solution
 public import PhyslibAlpha.Mathematics.Distribution.OfFun
-public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Basic
 
 /-!
 

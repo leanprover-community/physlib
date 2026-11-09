@@ -10,7 +10,6 @@ public import Physlib.Meta.Linters.Pseudo
 public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
-public import Mathlib.Analysis.Calculus.Deriv.MeanValue
 /-!
 
 # The Friedmann-Lemaître-Robertson-Walker metric

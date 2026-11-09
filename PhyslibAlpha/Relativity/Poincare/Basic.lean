@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.SpaceAndTime.SpaceTime.Basic
-public import Physlib.Relativity.LorentzGroup.Orthochronous.Basic
 
 /-!
 

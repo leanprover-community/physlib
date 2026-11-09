@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.DimensionRaising.SpaceSplit
-public import PhyslibAlpha.Mathematics.MeasureTheory.RadialPlane
-public import PhyslibAlpha.Mathematics.Distribution.TimeSlice
 
 /-!
 

@@ -5,12 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Star.Basic
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Data.Matrix.Basic
 public import Mathlib.LinearAlgebra.Matrix.Hermitian
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Algebra.Star.StarAlgHom
 
 /-!
 

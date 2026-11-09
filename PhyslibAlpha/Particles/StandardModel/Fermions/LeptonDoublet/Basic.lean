@@ -5,15 +5,9 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import PhyslibAlpha.Relativity.Fermions.Weyl.BoostWeight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import PhyslibAlpha.Particles.StandardModel.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.MatrixRep.Table
-public import Physlib.Relativity.Tensors.ComplexTensor.Basic
 /-!
 # Lepton doublets
 

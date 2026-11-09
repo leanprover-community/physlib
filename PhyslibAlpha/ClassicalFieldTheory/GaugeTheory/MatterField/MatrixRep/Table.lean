@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.MatrixRep.Factors
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.Basic
-public import Physlib.Relativity.Fermions.Weyl.LeftHanded
-public import Physlib.Relativity.Fermions.Weyl.RightHanded
 /-!
 # Model tables
 

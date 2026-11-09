@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ClassicalInfo.Distribution
-public import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 public import Mathlib.Analysis.SpecialFunctions.BinaryEntropy
 public import QuantumInfo.ClassicalInfo.ForMathlib.Analysis.SpecialFunctions.Log.NegMulLog
 

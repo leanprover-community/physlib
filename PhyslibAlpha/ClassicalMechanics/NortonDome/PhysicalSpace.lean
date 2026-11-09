@@ -6,7 +6,6 @@ Authors: Zhi Kai Pong
 module
 
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Basic
-public import Physlib.SpaceAndTime.Space.Module
 /-!
 
 # The Norton dome in physical space

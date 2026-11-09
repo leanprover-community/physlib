@@ -5,13 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Order.Filter.Ultrafilter.Defs
-public import Mathlib.Data.Fintype.Pi
-public import Mathlib.Algebra.Order.Interval.Finset.SuccPred
-public import Mathlib.Order.Interval.Finset.Nat
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Topology.Algebra.Order.Group
-public import Mathlib.Analysis.SpecificLimits.Basic
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Invariant
 
 /-!

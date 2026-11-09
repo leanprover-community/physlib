@@ -6,7 +6,6 @@ Authors: Eduardo Nava-Hernandez
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.GNS
-public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Uncertainty
 
 /-!

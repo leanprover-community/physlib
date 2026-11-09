@@ -5,12 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 public import Physlib.Mathematics.Modules.ConjModule
-public import Mathlib.Algebra.Star.Module
-public import Mathlib.LinearAlgebra.Complex.Module
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Star
 /-!
 # Star, derivatives, truncation and the Euler operator on the jet ring

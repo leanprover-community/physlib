@@ -5,11 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.QED.Fields
 public import PhyslibAlpha.Particles.QED.FieldStrength
 public import PhyslibAlpha.Particles.QED.LorentzInvariance
-public import Physlib.Electromagnetism.Kinematics.ElectricField
-public import Physlib.Electromagnetism.Kinematics.MagneticField
 public import Physlib.Electromagnetism.Dynamics.IsExtrema
 /-!
 # Evaluation of the photon jet algebra on a potential

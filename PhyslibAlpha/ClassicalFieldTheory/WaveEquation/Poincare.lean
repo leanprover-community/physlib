@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Basic
 public import PhyslibAlpha.Relativity.Poincare.Fields
-public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 
 /-!
 

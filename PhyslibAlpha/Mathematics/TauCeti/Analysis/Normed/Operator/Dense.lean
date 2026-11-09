@@ -6,7 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.Topology.UniformSpace.UniformConvergence
 
 /-!
 # Extending bounded-operator convergence from dense subsets

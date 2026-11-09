@@ -6,9 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.QuasiLocal.State
-public import Mathlib.Analysis.Complex.Order
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 

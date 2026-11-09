@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Unbounded
-public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 

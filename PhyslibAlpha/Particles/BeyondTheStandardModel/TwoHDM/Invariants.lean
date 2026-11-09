@@ -5,15 +5,12 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.EffectivePotential
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.SwapDoublet
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.GaugeSlice
-public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.OrbitRepresentative
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.ChargeBalance
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Algebra.MvPolynomial.Monad
 public import Mathlib.Algebra.MvPolynomial.Division
-public import Mathlib.RingTheory.MvPolynomial.Tower
 public import Mathlib.Analysis.Real.Pi.Irrational
 /-!
 # The two Higgs doublet potential as a polynomial in the gauge invariants

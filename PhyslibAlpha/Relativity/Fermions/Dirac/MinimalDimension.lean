@@ -5,7 +5,6 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
 public import Physlib.Relativity.Fermions.Dirac.GammaMatrices
 public import PhyslibAlpha.Relativity.PauliMatrices.Anticommuting
 /-!

@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
-public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 
 /-!
 # Commutative C⋆-algebras are classical

@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Postprocessing
-public import PhyslibAlpha.ProbabilisticTheory.State.Metric
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Preparation procedures

@@ -6,7 +6,6 @@ Authors: Eduardo Nava-Hernandez, Samyak Rai
 module
 
 public import Mathlib.MeasureTheory.Integral.Gamma
-public import Physlib.Optics.Frequency
 public import Physlib.QuantumMechanics.Blackbody.PlancksLaw
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Lemmas
 /-!

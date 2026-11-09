@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.CondensedMatter.Crystal.Symmetry
 public import Mathlib.GroupTheory.QuotientGroup.Basic
-public import Mathlib.Algebra.Group.End
 
 /-!
 

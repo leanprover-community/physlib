@@ -6,7 +6,6 @@ Authors: Daniel Leonforte
 module
 
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Degeneracy
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 
 /-!
 # Polynomially bounded functions and integrability on `Space d`

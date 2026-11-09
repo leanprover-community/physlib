@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Representation.Commutant
-public import PhyslibAlpha.ProbabilisticTheory.Representation.VectorMeasure
 public import Mathlib.MeasureTheory.Function.L2Space
 
 /-!

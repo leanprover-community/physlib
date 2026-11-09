@@ -10,7 +10,6 @@ public import PhyslibAlpha.Particles.StandardModel.CovRealization.GaugeHiggsSect
 public import PhyslibAlpha.Particles.StandardModel.CovRealization.MixedSector.Basic
 public import PhyslibAlpha.Particles.StandardModel.CovRealization.YukawaSector.MassDimEight
 public import PhyslibAlpha.Particles.StandardModel.IsFermionSector.MassWeight.MassDimEight
-public import PhyslibAlpha.Particles.StandardModel.IsFermionSector.MassWeight.MassDimLTEight
 public import PhyslibAlpha.Particles.StandardModel.IsGaugeSector.MassWeight.MassDimEight
 public import PhyslibAlpha.Particles.StandardModel.Realization.HiggsCov.MassWeight.MassDimEight
 /-!

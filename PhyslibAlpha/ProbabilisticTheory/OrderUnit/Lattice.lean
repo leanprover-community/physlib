@@ -9,7 +9,6 @@ public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 public import PhyslibAlpha.Mathematics.Order.Freudenthal
 public import PhyslibAlpha.Mathematics.Order.PositiveDual.RieszKantorovich
-public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 
 /-!
 # Lattice-ordered observables

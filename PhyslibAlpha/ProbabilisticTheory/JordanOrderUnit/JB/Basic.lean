@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Observable
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Normed
-public import Mathlib.Analysis.Normed.Module.Basic
 public import Mathlib.Algebra.Ring.IsFormallyReal
 
 /-!

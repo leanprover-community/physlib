@@ -5,9 +5,7 @@ Authors: Philippe Kevorkian, Jinzheng Li
 -/
 module
 
-public import Physlib.Meta.TODO.Basic
 public import Physlib.Cosmology.FLRW.SpecificCases.EinsteinDeSitter
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.FundThmCalculus
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
 /-!
 

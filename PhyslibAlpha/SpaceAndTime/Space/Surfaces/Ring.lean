@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SphericalShell
 public import Physlib.SpaceAndTime.Space.Translations
-public import Mathlib.MeasureTheory.Integral.BoundedContinuousFunction
 /-!
 
 # Ring surface in `Space 3`

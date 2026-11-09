@@ -6,7 +6,6 @@ Authors: Daniel Leonforte
 module
 
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.PolyBounded
-public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 
 /-!
 # The hydrogen bound states in `L²`

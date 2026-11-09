@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.DimensionRaising.Rotation
-public import PhyslibAlpha.Mathematics.Distribution.SchwartzPointwise
 public import PhyslibAlpha.Mathematics.MeasureTheory.RadialPlane
 
 /-!

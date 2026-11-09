@@ -5,13 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.Sl2
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.SimpleRing.Principal
 public import PhyslibAlpha.Mathematics.LadderSystem.Basic

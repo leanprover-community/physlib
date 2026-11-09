@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.HermitianMat.Rpow
-public import QuantumInfo.ForMathlib.Majorization
 
 @[expose] public section
 
