@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Physlib.Mathematics.Tensors.LinearMap
 public import Physlib.Mathematics.Tensors.Reindexing
 /-!
 

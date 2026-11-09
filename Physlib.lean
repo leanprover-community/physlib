@@ -210,6 +210,7 @@ public import Physlib.Mathematics.Tensors.ElabExamples
 public import Physlib.Mathematics.Tensors.ElabTactics
 public import Physlib.Mathematics.Tensors.HermitianForm
 public import Physlib.Mathematics.Tensors.Inverse
+public import Physlib.Mathematics.Tensors.LinearMap
 public import Physlib.Mathematics.Tensors.Metric
 public import Physlib.Mathematics.Tensors.Product
 public import Physlib.Mathematics.Tensors.Reindexing
