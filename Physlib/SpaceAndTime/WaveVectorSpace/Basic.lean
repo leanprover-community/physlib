@@ -238,6 +238,7 @@ section Basis
 
 variable (k : WaveVectorSpace d) (v : EuclideanSpace ℝ (Fin d)) (i j : Fin d)
 
+/-- The standard basis of `WaveVectorSpace d`. -/
 def basis : OrthonormalBasis (Fin d) ℝ (WaveVectorSpace d) where
   repr := equivEuclideanSpace
 
