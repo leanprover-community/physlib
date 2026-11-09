@@ -86,8 +86,7 @@ namespace Tensors
 
 The basis of a color `c` is labelled by `basisIdx c.kind`, the values that an index of that kind
 runs over. A color and its dual share labels, as `μ` in `v^μ` and `α_μ`. `basisIdx` is a
-parameter rather than a field, so that species built from one another, such as a species and
-its complex conjugate, have the same labels by definition.
+parameter of `Species`.
 
 The condition is stated at every color, so that lemmas about a general color `c` use it directly.
 At a lower color it is the condition at the upper color with the factors swapped, and
