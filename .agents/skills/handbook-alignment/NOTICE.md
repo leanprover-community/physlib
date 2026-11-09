@@ -8,4 +8,4 @@ The inspiration for this skill came from the review rubrics of Tau Ceti:
   repository.
 
 They were modified for Physlib, first in
-<https://github.com/leanprover-community/physlib/pull/1934>. There form has however been completely rewritten since then.
+<https://github.com/leanprover-community/physlib/pull/1934>. Their form has however been completely rewritten since then.
