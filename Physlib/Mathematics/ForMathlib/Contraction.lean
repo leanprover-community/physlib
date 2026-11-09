@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dual.Basis
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
 
 /-!
@@ -16,13 +15,16 @@ Two bases with the same labels pair two modules by their coordinates.
 
 ## i. Overview
 
-Two modules `M` and `N` with bases `b` and `b'` labelled by the same finite type `ι` pair by their
-coordinates, `(x, y) ↦ ∑_I (b x)_I (b' y)_I` (`coordPairing`). It is Mathlib's `b'.toDual`, applied
-after the equivalence `b.equiv b'` that sends `b I` to `b' I`. The two bases are dual for this
-pairing, and it is a perfect pairing in Mathlib's sense, so it identifies `N` with the dual of `M`.
+Mathlib pairs a module `M` with its own dual. In physics the space paired with `M` is often a
+type of its own with its own basis, not `Module.Dual M`. Covectors `w_μ`, with the basis `e^μ`,
+pair with vectors `x^μ`, with the basis `e_μ`, as `x^μ w_μ = ∑ μ, x^μ w_μ`. This file gives that
+pairing for any two modules `M` and `N` with bases `b` and `b'` labelled by the same finite type
+`ι`, and shows that it identifies `N` with the dual of `M`, so Mathlib's results on duals apply.
 
-For Lorentz tensors take `M = ℝ⁴` the vectors `x^μ` with the standard basis, and `N` the covectors
-`w_μ` with the dual basis. The coordinate pairing is the contraction `x^μ w_μ`.
+The coordinate pairing `coordPairing` sends `x ⊗ y` to `∑_I (b x)_I (b' y)_I`. It is Mathlib's
+`b'.toDual`, applied after the equivalence `b.equiv b'` that sends `b I` to `b' I`. The two bases
+are dual for it, it is the only pairing for which they are, and it is a perfect pairing in
+Mathlib's sense.
 
 ## ii. Key results
 
