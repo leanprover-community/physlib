@@ -16,8 +16,8 @@ A color gives the kind of an index of a tensor and whether the index is up or do
 
 A color `⟨κ, v⟩` is a kind of index `κ : K` and a variance `v`, `up` or `down`. For Lorentz
 tensors there is one kind, `vec`. The vector index of `v^μ` has color `⟨vec, up⟩` and the
-covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds,
-`left` and `right` for the indices of left- and right-handed Weyl spinors, and `vec`.
+covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds, one
+for each of the two types of Weyl spinor index and one for the vector index.
 
 A tensor has one color per slot. A species (`Species.lean`) gives each color a space, and a
 tensor is an element of the tensor product of the spaces of its slots. Slots are labelled by
@@ -93,7 +93,7 @@ end Variance
 
 /-- A color `⟨κ, v⟩`, made of a kind of index `κ : K` and its variance `v`. -/
 structure Color (K : Type) where
-  /-- The kind of index, such as the Lorentz vector index `vec` or a left-handed Weyl index. -/
+  /-- The kind of index, such as a Lorentz vector index or a left-handed Weyl spinor index. -/
   kind : K
   /-- Whether the index is up or down. -/
   variance : Variance

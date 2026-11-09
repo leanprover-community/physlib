@@ -145,7 +145,7 @@ The contraction is not a field of `Species`. It is defined from the bases, as
 (`contr_basis`). Its invariance is the condition on the species. It is a perfect pairing in
 Mathlib's sense, and `dualEquiv` identifies `V c.dual` with Mathlib's dual representation of
 `V c`, so Mathlib's results on duals apply. `invariant_of_contr` gives the condition when an
-invariant pairing is already known, as for Weyl spinors.
+invariant pairing is already known.
 
 -/
 
@@ -228,10 +228,11 @@ variable {S}
 ## C. Moving a vector along an equality of colors
 
 `S.V a` and `S.V a'` are different types unless `a` and `a'` are equal by definition. The colors
-of two slots are often equal only through a proof. After a relabeling of slots, for example, the
-color of a new slot equals the color of the old slot it came from. A vector is moved between the
-two spaces by `S.cast`, which is the identity on the vector. The lemmas say that this keeps the
-group action, the components and the contraction, so that proofs can remove the casts.
+of two slots are often equal only through a proof. For a family of colors `c : ι → Color K` and
+two slots with `s = s'`, the colors `c s` and `c s'` are equal through that proof. A vector is
+moved between the two spaces by `S.cast`, which is the identity on the vector. The lemmas say that
+this keeps the group action, the components and the contraction, so that proofs can remove the
+casts.
 
 -/
 
