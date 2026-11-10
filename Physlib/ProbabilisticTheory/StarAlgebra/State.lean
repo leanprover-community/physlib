@@ -5,6 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
+public import Mathlib.Analysis.CStarAlgebra.GelfandNaimarkSegal
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Mathlib.Analysis.SpecialFunctions.Bernstein
@@ -47,6 +48,8 @@ observables. A unital positive map restricts to a channel between the observable
 - `UnitalPositiveLinearMap.ofObservables` : extend observable expectations to a complex state.
 - `UnitalPositiveLinearMap.observablesEquiv` : complex states and real states of the observables
   correspond.
+- `UnitalPositiveLinearMap.apply_eq_apply_mul_mul_of_apply_eq_one` : a state certain of a
+  projection `P` only sees the compression `P A P`.
 - `UnitalPositiveLinearMap.restrictObservables` : a unital positive map restricted to a channel
   between observables.
 
@@ -168,6 +171,24 @@ noncomputable def observablesEquiv [StarOrderedRing 𝒜] : 𝓢[ℂ, 𝒜] ≃ 
     intro x
     apply Complex.ofReal_injective
     rw [coe_onObservables_apply, ofObservables_apply]
+
+/-- A state certain of a projection `P` only sees the compression `P A P` of an operator. -/
+lemma apply_eq_apply_mul_mul_of_apply_eq_one [StarOrderedRing 𝒜] [IsScalarTower ℂ 𝒜 𝒜]
+    (ω : 𝓢[ℂ, 𝒜]) {P : 𝒜} (hP : IsStarProjection P) (hω : ω P = 1) (A : 𝒜) :
+    ω A = ω (P * A * P) := by
+  have hq : IsStarProjection (1 - P) := hP.one_sub
+  have hq0 : ω (1 - P) = 0 := by rw [map_sub, map_one, hω, sub_self]
+  -- Cauchy–Schwarz: the projection `1 - P` has probability zero, so it kills every product.
+  have hzero (B : 𝒜) : ω ((1 - P) * B) = 0 ∧ ω (B * (1 - P)) = 0 := by
+    generalize 1 - P = q at hq hq0 ⊢
+    exact ⟨by simpa [hq.isSelfAdjoint.star_eq, hq.isIdempotentElem.eq, hq0] using
+        PositiveLinearMap.norm_map_star_mul_sq_le ω q B,
+      by simpa [hq.isSelfAdjoint.star_eq, hq.isIdempotentElem.eq, hq0] using
+        PositiveLinearMap.norm_map_star_mul_sq_le ω (star B) q⟩
+  have h1 := (hzero A).1
+  have h2 := (hzero (P * A)).2
+  simp only [sub_mul, one_mul, mul_sub, mul_one, map_sub, sub_eq_zero] at h1 h2
+  rw [h1, h2]
 
 /-!
 
