@@ -5,13 +5,14 @@ Authors: Cameron Lee
 -/
 module
 
+public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Continuous
 
 open Function Set TopologicalSpace UniformSpace
 
 /-- Given normed spaces `E` and `E'` and a map between them `g : E → E'`, define a map
-between the spaces of test functions `𝓓(Ω, F)` and `𝓓(Ω', F)`. -/
+between the spaces of test functions `𝓓(Ω', F)` and `𝓓(Ω, F)`. -/
 noncomputable def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
     [NormedSpace ℝ E] [NormedSpace ℝ E']
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
@@ -86,3 +87,17 @@ noncomputable def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGr
     exact TestFunction.ofSupportedInCLM ℝ hL ∘L P
   · ext x
     rfl
+
+/--Having defined a CLM between test functions, we now define a map between spaces of
+distributions `𝓓'(Ω, F)` and `𝓓'(Ω', F)`. -/
+noncomputable def DistributionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
+    [NormedSpace ℝ E] [NormedSpace ℝ E']
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
+    (h : g.invFun '' Ω' ⊆ ↑Ω) :
+    Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ := {
+    toFun f := f ∘ testFunctionMap g h
+    map_add' := by sorry
+    map_smul' := by sorry
+    cont := by sorry
+    }
