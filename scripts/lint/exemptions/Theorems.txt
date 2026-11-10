@@ -67,6 +67,8 @@ MicroHamiltonian.β_eq_deriv_S_U
 adiabatic_relation_log
 adiabatic_relation_UaUbVaVb
 UnitSystem.ext
+UnitalPositiveLinearMap.robertson_schrodinger
+UnitalPositiveLinearMap.robertson
 
 [QuantumInfo]
 CPTPMap.emulates_self
