@@ -234,7 +234,7 @@ lemma metric_invariant (d : ℕ) (c : Color Kind) (Λ : LorentzGroup d) :
 lemma metric_inverse (d : ℕ) (c : Color Kind) :
     (realLorentz d).toLin (metric d c) ∘ₗ (realLorentz d).toLin (metric d c.dual) =
       LinearMap.id :=
-  Species.toLin_comp_toLin_of_mul_eq_one _ _ <| by
+  Module.Basis.coordTensorHomEquiv_comp_of_mul_eq_one _ _ _ _ <| by
     simp only [basis_tensorProduct_repr_metric]
     exact minkowskiMatrix.sq
 

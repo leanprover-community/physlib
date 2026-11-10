@@ -7,7 +7,7 @@ module
 
 public import Physlib.Mathematics.ForMathlib.Schouten
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
-public import Physlib.Mathematics.Tensors.Contraction
+public import Physlib.Mathematics.Tensors.LinearMap
 public import Mathlib.Tactic.LinearCombination
 /-!
 
@@ -153,7 +153,8 @@ lemma formMatrix_eq_toMatrix (c : Color K) [S.HasForm c.kind] :
   rw [LinearMap.BilinForm.toMatrix_apply, formBilin_apply, contr_tmul_eq_sum_basis]
   simp only [Module.Basis.repr_self, Finsupp.single_apply, ite_mul, one_mul, zero_mul,
     Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-  refine ((S.basis_repr_toLin c (d := c) (form c) _ ν).trans ?_).symm
+  refine ((Module.Basis.repr_coordTensorHomEquiv (S.basis c) (S.basis c.dual) (S.basis c) (form c)
+    _ ν).trans ?_).symm
   simp [Finsupp.single_apply, formMatrix]
 
 /-- The form on two basis vectors is a component of the form, `g(e^μ, e^ν) = g^μν`. -/
@@ -180,7 +181,8 @@ lemma contr_toLin_comm (c : Color K) (z : S.V c ⊗[k] S.V c) (u v : S.V c.dual)
   induction z using TensorProduct.inductionOn with
   | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
   | tmul x y =>
-    simp only [TensorProduct.comm_tmul, toLin_tmul, tmul_smul, map_smul, smul_eq_mul]
+    simp only [TensorProduct.comm_tmul, Module.Basis.coordTensorHomEquiv_tmul, tmul_smul, map_smul,
+      smul_eq_mul]
     exact mul_comm _ _
 
 /-- A symmetric form, `g_μν = g_νμ`. -/
@@ -240,8 +242,9 @@ lowers an upper index, `v^μ ↦ g_νμ v^μ`, and raises a lower one, `w_μ ↦
 noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.rep c.dual) :=
   .mk (LinearEquiv.ofLinearMap (S.toLin (TensorProduct.comm k _ _ (form c.dual)))
     (S.toLin (TensorProduct.comm k _ _ (form c)))
-    (toLin_comm_comp_toLin_comm _ _ (form_inverse c))
-    (toLin_comm_comp_toLin_comm _ _ (form_inverse c.dual))) fun g => LinearMap.ext fun v => by
+    (Module.Basis.coordTensorHomEquiv_comm_comp_comm _ _ _ _ (form_inverse c))
+    (Module.Basis.coordTensorHomEquiv_comm_comp_comm _ _ _ _ (form_inverse c.dual)))
+    fun g => LinearMap.ext fun v => by
       change S.toLin (TensorProduct.comm k _ _ (form c.dual)) _ =
         S.rep c.dual g (S.toLin (TensorProduct.comm k _ _ (form c.dual)) v)
       rw [← S.toLin_map c.dual g, TensorProduct.map_comm, form_invariant]
@@ -263,7 +266,7 @@ lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :
 lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basisIdx c.kind) :
     (S.basis c.dual).repr (S.toDual c v) ν = ∑ μ, (S.basis c).repr v μ *
       S.formMatrix c.dual ν μ := by
-  rw [toDual_apply, basis_repr_toLin]
+  rw [toDual_apply, Module.Basis.repr_coordTensorHomEquiv]
   simp [formMatrix, Module.Basis.tensorProduct_repr_comm]
 
 /-!

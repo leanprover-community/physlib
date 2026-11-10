@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.Tensors.LinearMap
 public import Physlib.Mathematics.Tensors.Reindexing
 /-!
 
@@ -23,8 +22,7 @@ is renumbered. `S.tmulEquiv c₁ c₂` sends `T ⊗ₜ U` to `T ⊗ U`. It is Ma
 
 The product is associative and symmetric up to a relabeling of slots, and the group acts on it
 factor by factor. An element of `V a ⊗ V b`, such as the metric `η_μν e^μ ⊗ e^ν`, is a tensor on
-two slots by `twoSlotEquiv`, and the delta `S.delta c` is the tensor `S.deltaTensor c`. The
-components of a product are the products of the components.
+two slots by `twoSlotEquiv`. The components of a product are the products of the components.
 
 ## ii. Key results
 
@@ -35,8 +33,6 @@ components of a product are the products of the components.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
 - `Species.twoSlotEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots.
 - `Species.tensorBasis_repr_tmulEquiv` proves `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`.
-- `Species.tensorBasis_repr_deltaTensor_eq_one` proves that the components of the delta tensor
-  form the identity matrix.
 
 ## iii. Table of contents
 
@@ -242,7 +238,7 @@ lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : 
 
 ## D. Tensors on one and two slots
 
-A species gives objects with two indices, such as the delta `S.delta c`, in Mathlib's binary
+A species gives objects with two indices, such as a metric `η_μν`, in Mathlib's binary
 tensor product `V a ⊗ V b`. `twoSlotEquiv` identifies this space with the tensors `S.Tensor ![a, b]`
 on two slots, so that such an object can be used in index notation.
 
@@ -299,16 +295,6 @@ lemma reindex_twoSlotEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
     simp only [twoSlotEquiv_tmul, reindex_pure, TensorProduct.comm_tmul]
     exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
-variable (S) in
-/-- The delta `S.delta c` as a tensor with colors `![c.dual, c]`. It is `δ_μ^ν` for an upper
-color `c` and `δ^μ_ν` for a lower one. -/
-noncomputable def deltaTensor (c : Color K) : S.Tensor ![c.dual, c] :=
-  S.twoSlotEquiv c.dual c (S.delta c)
-
-/-- The delta tensor is invariant, `Λ δ = δ`. -/
-lemma deltaTensor_invariant (c : Color K) (Λ : G) : Λ • S.deltaTensor c = S.deltaTensor c :=
-  (S.twoSlotEquiv _ c).toIntertwiningMap.map_invariant (S.delta_invariant c Λ)
-
 /-!
 
 ## E. Components
@@ -354,30 +340,6 @@ lemma tensorBasis_repr_twoSlotEquiv (a b : Color K) (M : S.V a ⊗[k] S.V b)
     -- `y 0` is a label at `a` only after unfolding `![a, b] 0`, so `rw` and `simp` cannot use
     -- Mathlib's lemma, and `exact` checks it up to unfolding.
     exact ((Module.Basis.tensorProduct_repr_tmul_apply _ _ _ _ _ _).trans (smul_eq_mul _ _)).symm
-
-/-- The components of the delta tensor are the coordinates of `S.delta c` in Mathlib's product
-basis, at the pair of labels `(μ 0, μ 1)`. -/
-lemma tensorBasis_repr_deltaTensor (c : Color K) (μ : Π j, basisIdx (![c.dual, c] j).kind) :
-    (S.tensorBasis ![c.dual, c]).repr (S.deltaTensor c) μ =
-      ((S.basis c.dual).tensorProduct (S.basis c)).repr (S.delta c) (μ 0, μ 1) :=
-  tensorBasis_repr_twoSlotEquiv _ _ _ μ
-
-/-- The components of the delta tensor form the identity matrix, `δ_μ^ν = 1` for `μ = ν` and `0`
-otherwise. -/
-lemma tensorBasis_repr_deltaTensor_eq_one (c : Color K)
-    (μ : Π j, basisIdx (![c.dual, c] j).kind) :
-    (S.tensorBasis ![c.dual, c]).repr (S.deltaTensor c) μ =
-      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) (μ 0) (μ 1) := by
-  -- The labels `μ 0` and `μ 1` are labels at `c` only after unfolding, so they are generalized.
-  suffices h : ∀ a b, ((S.basis c.dual).tensorProduct (S.basis c)).repr (S.delta c) (a, b) =
-      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) a b from
-    (tensorBasis_repr_deltaTensor c μ).trans (h (μ 0) (μ 1))
-  intro a b
-  have h := basis_repr_toLin c.dual (S.delta c) (S.basis c a) b
-  rw [S.toLin_delta, LinearMap.id_apply, Module.Basis.repr_self] at h
-  simp only [Finsupp.single_apply, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
-    ite_true] at h
-  rw [Matrix.one_apply, ← h]
 
 end Species
 

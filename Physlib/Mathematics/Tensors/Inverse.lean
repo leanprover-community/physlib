@@ -196,7 +196,8 @@ lemma reindex_contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
         (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual))) =
       S.deltaTensor c := by
   rw [contr_formTensor_formTensor, deltaTensor, reindex_twoSlotEquiv,
-    show TensorProduct.comm k _ _ (S.delta c.dual) = S.delta c from S.comm_delta c.dual]
+    show TensorProduct.comm k _ _ (S.delta c.dual) = S.delta c from
+      Module.Basis.comm_coordDelta _ _]
   rfl
 
 end Species

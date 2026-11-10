@@ -41,10 +41,6 @@ properties let a contraction of several tensors be computed one step at a time.
 - A factor that takes no part in a contraction can be multiplied before or after it,
   `(T^μ_μν) U^ρ = (T ⊗ U)^μ_μν^ρ`.
 
-For tensors on two slots, the contraction `M^μ_ν N^ν_ρ` of the inner indices is the product of
-matrices. Contracting an index of any tensor with the first index of a tensor `F` on two slots
-applies `F`, read as a linear map, at that index, and for the delta this is the identity.
-
 The components of a contraction are sums of components of the tensor, `(tr T)^ρ = ∑ μ, T^ρμ_μ`,
 since the bases of a color and its dual are dual.
 
@@ -69,12 +65,6 @@ since the bases of a color and its dual are dual.
 - `Species.Tensor.tmulEquiv_contr_left` and `Species.Tensor.tmulEquiv_contr_right` prove that
   contracting a factor commutes with the product, along `ColorEquiv.tmulRight` and
   `ColorEquiv.tmulLeft`.
-- `Species.Tensor.contr_matMul` gives the contraction `M^μ_ν N^ν_ρ` of two tensors on two slots,
-  and `Species.Tensor.contr_matMul_eq_deltaTensor_iff` proves that it is the delta exactly when
-  their linear maps compose to the identity.
-- `Species.Tensor.contr_matMulAt` proves that contracting the index `i` with the first index of a
-  tensor `F` on two slots, along `ColorEquiv.matMulAt`, applies `F` at `i`, and
-  `Species.Tensor.contr_deltaTensor` that for the delta this is `T^…μ… δ_μ^ν = T^…ν…`.
 - `Species.Tensor.tensorBasis_repr_contr` gives the components of a contraction, from
   `Species.Tensor.tensorBasis_repr_contrStd` in the standard arrangement of slots.
 - `Species.Tensor.tensorBasis_repr_contr_one_pair` and
@@ -89,8 +79,7 @@ since the bases of a color and its dual are dual.
   - B.3. Symmetric against antisymmetric
   - B.4. Two contractions are one
   - B.5. Products with a tensor that is not contracted
-- C. Products with a tensor on two slots
-- D. Components
+- C. Components
 
 ## iv. References
 
@@ -427,150 +416,7 @@ lemma tmulEquiv_contr_right [Fintype J] {a : J → Color K} {d : ι₂ → Color
 
 /-!
 
-## C. Products with a tensor on two slots
-
--/
-
-/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two slots that contracts the
-second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
-`0` and `1`. -/
-def _root_.Tensors.ColorEquiv.matMul (a c b : Color K) :
-    ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) where
-  toEquiv.toFun
-    | .inl 0 => .inl 0 | .inl 1 => .inr (.inl ()) | .inr 0 => .inr (.inr ()) | .inr 1 => .inl 1
-  toEquiv.invFun
-    | .inl 0 => .inl 0 | .inl 1 => .inr 1 | .inr (.inl ()) => .inl 1 | .inr (.inr ()) => .inr 0
-  toEquiv.left_inv := by decide
-  toEquiv.right_inv := by decide
-
-/-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two slots is `M` with its second factor mapped
-by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
-lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual ⊗[k] S.V b) :
-    contr (ColorEquiv.matMul a c b)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv a c M ⊗ₜ S.twoSlotEquiv _ b N)) =
-      S.twoSlotEquiv a b ((S.toLin N).lTensor _ M) := by
-  induction M using TensorProduct.inductionOn with
-  | add M M' hM hM' => simp only [map_add, add_tmul, hM, hM']
-  | tmul m₁ m₂ =>
-  induction N using TensorProduct.inductionOn with
-  | add N N' hN hN' =>
-    simp only [map_add, tmul_add, LinearMap.lTensor_add, LinearMap.add_apply, hN, hN']
-  | tmul n₁ n₂ =>
-    simp only [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique,
-      LinearMap.lTensor_tmul, toLin_tmul, tmul_smul, map_smul]
-    congr 2
-    funext j
-    fin_cases j <;> rfl
-
-/-- Two tensors on two slots contract to the delta, `X_μν Y^νρ = δ_μ^ρ`, exactly when their linear
-maps compose to the identity, `Y ∘ X = id`. -/
-lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
-    (Y : S.V y.dual ⊗[k] S.V x.dual) :
-    contr (ColorEquiv.matMul x y x.dual)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv x y X ⊗ₜ S.twoSlotEquiv _ _ Y)) = S.deltaTensor x.dual ↔
-      S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
-  rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoSlotEquiv _ _)).eq_iff,
-    ← (S.toLin (a := x)).injective.eq_iff, toLin_lTensor, S.toLin_delta x.dual]
-
-/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the slot `i` of `T` with the first slot of a
-tensor `F` on two slots and puts the second slot of `F` in the place of `i`. It is
-`ColorEquiv.matMul` at any slot of a tensor on any slots. -/
-def _root_.Tensors.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
-    (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
-    ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
-  toEquiv :=
-    { toFun := Sum.elim (fun x => if x = i then .inr (.inl ()) else .inl x)
-        (fun j => if j = 0 then .inr (.inr ()) else .inl i)
-      invFun := Sum.elim (fun x => if x = i then .inr 1 else .inl x)
-        (Sum.elim (fun _ => .inl i) fun _ => .inr 0)
-      left_inv := by
-        rintro (x | j)
-        · by_cases hx : x = i <;> simp [hx]
-        · fin_cases j <;> simp
-      right_inv := by
-        rintro (x | (⟨⟩ | ⟨⟩))
-        · by_cases hx : x = i <;> simp [hx]
-        · simp
-        · simp }
-  color_eq := by
-    rintro (x | (⟨⟩ | ⟨⟩))
-    · by_cases hx : x = i
-      · subst hx
-        simp [hi]
-      · simp [hx, h x hx]
-    · simp [ha]
-    · simp
-
-/-- On a pure tensor, contracting the slot `i` with the first slot of `F` applies `F`, read as a
-linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other slots are
-those of `p`, moved along `h`. -/
-lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
-    (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
-    (p : Π x, S.V (c x)) (q : Π x, S.V (c' x))
-    (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
-    contr (ColorEquiv.matMulAt i a b ha hi h)
-        (S.tmulEquiv c ![a.dual, b] (S.pure p ⊗ₜ S.twoSlotEquiv a.dual b F)) =
-      S.pure (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i))))) := by
-  induction F using TensorProduct.inductionOn with
-  | add F F' hF hF' =>
-    simp only [map_add, LinearMap.add_apply, tmul_add, hF, hF']
-    rw [pure, pure, pure, MultilinearMap.map_update_add, map_add]
-  | tmul x y =>
-    rw [toLin_tmul, map_smul]
-    conv_rhs => rw [pure, MultilinearMap.map_update_smul, map_smul, ← pure]
-    rw [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
-    congr 2
-    funext z
-    by_cases hz : z = i
-    · subst hz
-      rw [Function.update_self, cast_apply_congr _ (show
-        (ColorEquiv.matMulAt z a b ha hi h).toEquiv.symm (.inl z) = .inr 1 by
-          simp [ColorEquiv.matMulAt])]
-      rfl
-    · rw [Function.update_of_ne hz, cast_apply_congr _ (show
-        (ColorEquiv.matMulAt i a b ha hi h).toEquiv.symm (.inl z) = .inl z by
-          simp [ColorEquiv.matMulAt, hz]), hq z hz]
-
-/-- Contracting the index `i` of `t` with the first index of a tensor `F` on two slots applies `F`,
-read as a linear map by `Species.toLin`, at `i`, as in `T^…μ… F_μ^ν`. -/
-lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
-    (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
-    (t : S.Tensor c) :
-    contr (ColorEquiv.matMulAt i a b ha hi h)
-        (S.tmulEquiv c ![a.dual, b] (t ⊗ₜ S.twoSlotEquiv a.dual b F)) =
-      S.mapAt i ((S.cast hi.symm).toLinearMap ∘ₗ S.toLin F ∘ₗ (S.cast ha).toLinearMap) h t := by
-  refine LinearMap.congr_fun (f := (contr _).toLinearMap ∘ₗ (S.tmulEquiv c ![a.dual, b]).toLinearMap
-    ∘ₗ (TensorProduct.mk k _ _).flip (S.twoSlotEquiv a.dual b F)) (ext_pure fun p => ?_) t
-  -- The vectors of `p` moved along `h` away from `i`. The vector at `i` is replaced below.
-  let q : Π x, S.V (c' x) := fun x => if hx : x = i then 0 else S.cast (h x hx) (p x)
-  exact (contr_matMulAt_pure i a b ha hi h F p q (fun x hx => by simp [q, hx])).trans
-    (mapAt_pure i _ h p (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i)))))
-      (Function.update_self _ _ _) (fun x hx => by simp [q, hx])).symm
-
-/-- Contracting the index `i` with the first index of the delta is the identity,
-`T^…μ… δ_μ^ν = T^…ν…`. -/
-lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K) (ha : c i = a)
-    (t : S.Tensor c) :
-    contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
-      (S.tmulEquiv c ![a.dual, a] (t ⊗ₜ S.deltaTensor a)) = t := by
-  subst ha
-  rw [deltaTensor, contr_matMulAt, toLin_delta]
-  exact LinearMap.congr_fun (mapAt_id i _) t
-
-/-- Contracting the index `i` with the second index of the delta is the identity,
-`δ^ν_μ T^…μ… = T^…ν…`. -/
-lemma contr_deltaTensor_swap [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K)
-    (ha : c i = a) (t : S.Tensor c) :
-    contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
-      (S.tmulEquiv c ![a.dual, a]
-        (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a a.dual) (S.deltaTensor a.dual))) = t := by
-  rw [deltaTensor, reindex_twoSlotEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
-    from S.comm_delta a.dual]
-  exact contr_deltaTensor i a ha t
-
-/-!
-
-## D. Components
+## C. Components
 
 -/
 

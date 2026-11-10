@@ -5,43 +5,57 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
-public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.ForMathlib.CoordTensorHom
+public import Physlib.Mathematics.Tensors.Contraction
 /-!
 
 # Tensors of two factors as linear maps
 
-A tensor in `V a ⊗ U` is read as a linear map `V a.dual → U`, and the delta is the identity map.
+A tensor in `V a ⊗ U` is read as a linear map `V a.dual → U`. The delta is the identity map, and
+contracting an index with a tensor of two factors applies its linear map.
 
 ## i. Overview
 
 A tensor `z` in `V a ⊗ U`, for a color `a` of a species `S` and any module `U`, is read as the
 linear map `S.toLin z : V a.dual → U` that contracts its input with the first factor of `z`. On a
 pure tensor `z = x ⊗ y` it is `v ↦ (v^μ x_μ) y`. Every linear map `V a.dual → U` is `toLin z` for
-exactly one `z`. `toLin` is Mathlib's `dualTensorHomEquivOfBasis`, after `Species.dualEquiv`
-reads `V a` as the dual of `V a.dual`.
+exactly one `z`. `toLin` is `Module.Basis.coordTensorHomEquiv` for the bases of `a` and `a.dual`,
+which is Mathlib's `dualTensorHomEquivOfBasis` once the contraction identifies `V a` with the dual
+of `V a.dual`. The results that need only the bases, such as the matrix of `toLin z`, are stated
+there.
 
 This is how two-index tensors act as maps. A metric `g_μν` is the map `v^μ ↦ v^μ g_μν`, and the
-inverse metric `g^μν` is the tensor of the inverse map. The delta
-`S.delta c = ∑ μ, e^μ ⊗ e_μ` is the tensor of the identity map, `u^μ δ_μ^ν = u^ν`
-(`toLin_delta`). The identity commutes with every group element, so the delta is invariant
-(`delta_invariant`).
+inverse metric `g^μν` is the tensor of the inverse map. The map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`.
+
+The delta `S.delta c = ∑ μ, e^μ ⊗ e_μ` is the tensor of the identity map, `u^μ δ_μ^ν = u^ν`. The
+identity commutes with every group element, so the delta is invariant. `S.deltaTensor c` is the
+delta as a tensor on two slots, and its components form the identity matrix.
+
+Contracting the inner indices of two tensors on two slots, `M^μ_ν N^ν_ρ`, applies the linear map
+of `N` to the second factor of `M`, and the result is the delta exactly when the two linear maps
+are inverse. More generally, contracting an index of any tensor with the first index of a tensor
+`F` on two slots applies the linear map of `F` at that index, and for the delta this is the
+identity.
 
 ## ii. Key results
 
 - `Species.toLin` : `V a ⊗ U` as the linear maps `V a.dual → U`, with `Species.toLin_map` : it
-  commutes with the group action, `(Λz)(Λv) = Λ(z v)`, and `Species.toLin_lTensor` :
-  `(id ⊗ f) z = f ∘ z`.
-- `Species.delta` : the delta `δ_μ^ν`, with `Species.toLin_delta` : it is the identity map, and
-  `Species.delta_invariant` : it is invariant.
-- `Species.basis_repr_toLin` : `toLin` in components, `Species.toMatrix_toLin` : its matrix, and
-  `Species.toLin_comp_toLin_of_mul_eq_one` : two such maps are inverse when their matrices are.
+  commutes with the group action, `(Λz)(Λv) = Λ(z v)`.
+- `Species.delta` : the delta `δ_μ^ν`, with `Species.delta_invariant` : it is invariant.
+- `Species.deltaTensor` : the delta as a tensor on two slots, with
+  `Species.tensorBasis_repr_deltaTensor_eq_one` : its components form the identity matrix.
+- `Species.Tensor.contr_matMul` : the contraction `M^μ_ν N^ν_ρ`, and
+  `Species.Tensor.contr_matMul_eq_deltaTensor_iff` : it is the delta exactly when the linear maps
+  of `M` and `N` are inverse.
+- `Species.Tensor.contr_matMulAt` : contracting the index `i` with the first index of `F` applies
+  `F` at `i`, and `Species.Tensor.contr_deltaTensor` : for the delta this is
+  `T^…μ… δ_μ^ν = T^…ν…`.
 
 ## iii. Table of contents
 
 - A. Tensors of two factors as linear maps
 - B. The delta
-- C. Components
+- C. Products with a tensor on two slots
 
 ## iv. References
 
@@ -69,26 +83,15 @@ variable {k : Type} [CommRing k] {G : Type} [Group G] {K : Type} {basisIdx : K �
 /-- An element `z` of `V a ⊗ U` as the linear map `V a.dual → U` that contracts a vector with the
 first factor of `z`. For a lower color `a` and `z = g` in `V a ⊗ V a` it is `v^μ ↦ v^μ g_μν`.
 Every linear map arises so. -/
-noncomputable def toLin {a : Color K} {U : Type} [AddCommGroup U] [Module k U] :
+noncomputable abbrev toLin {a : Color K} {U : Type} [AddCommGroup U] [Module k U] :
     S.V a ⊗[k] U ≃ₗ[k] (S.V a.dual →ₗ[k] U) :=
-  -- Mathlib's `dualTensorHomEquivOfBasis`, after reading `V a` as the dual of `V a.dual`.
-  (TensorProduct.congr (S.dualEquiv a.dual).toLinearEquiv (LinearEquiv.refl k U)).trans
-    (dualTensorHomEquivOfBasis (S.basis a.dual))
+  (S.basis a).coordTensorHomEquiv (S.basis a.dual)
 
-/-- A pure tensor `x ⊗ y` acts as `v ↦ (v^μ x_μ) y`, contracting `v` with its first factor. -/
+/-- The coordinate pairing of the bases of `c` and `c.dual` is the contraction. -/
 @[simp]
-lemma toLin_tmul {a : Color K} {U : Type} [AddCommGroup U] [Module k U] (x : S.V a) (y : U)
-    (v : S.V a.dual) : S.toLin (x ⊗ₜ y) v = S.contr a.dual (v ⊗ₜ x) • y :=
+lemma coordPairing_basis (c : Color K) {x : S.V c} {y : S.V c.dual} :
+    (S.basis c).coordPairing (S.basis c.dual) (x ⊗ₜ y) = S.contr c (x ⊗ₜ y) :=
   rfl
-
-/-- Applying a linear map `f` to the second factor of `z` composes the linear map of `z` with `f`,
-`(id ⊗ f) z = f ∘ z`. -/
-lemma toLin_lTensor {a : Color K} {U U' : Type} [AddCommGroup U] [Module k U] [AddCommGroup U']
-    [Module k U'] (f : U →ₗ[k] U') (z : S.V a ⊗[k] U) :
-    S.toLin (f.lTensor (S.V a) z) = f ∘ₗ S.toLin z := by
-  induction z using TensorProduct.inductionOn with
-  | tmul x y => ext v; simp
-  | add z z' hz hz' => simp only [map_add, hz, hz', LinearMap.comp_add]
 
 /-- `toLin` commutes with the group action, `((Λ ⊗ f) z)(Λx) = f (z x)` for every `Λ : G` and
 linear map `f` on `U`. For `f = Λ` this is the equivariance `(Λz)(Λx) = Λ(z x)`. -/
@@ -96,7 +99,10 @@ lemma toLin_map (a : Color K) (g : G) {U U' : Type} [AddCommGroup U] [Module k U
     [AddCommGroup U'] [Module k U'] (f : U →ₗ[k] U') (z : S.V a ⊗[k] U) (x : S.V a.dual) :
     S.toLin (TensorProduct.map (S.rep a g) f z) (S.rep a.dual g x) = f (S.toLin z x) := by
   induction z using TensorProduct.inductionOn with
-  | tmul w y => simpa using congrArg (· • f y) (S.contr_invariant a.dual g x w)
+  | tmul w y =>
+    rw [TensorProduct.map_tmul, Module.Basis.coordTensorHomEquiv_tmul,
+      Module.Basis.coordTensorHomEquiv_tmul, map_smul]
+    exact congrArg (· • f y) (S.contr_invariant a.dual g x w)
   | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz']
 
 /-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
@@ -123,88 +129,207 @@ lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
 
 /-- The Kronecker delta `∑ μ, e^μ ⊗ e_μ ∈ V c.dual ⊗ V c`, with components `δ_μ^ν`. The factor of
 the dual color is first. -/
-noncomputable def delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
-  ∑ μ, S.basis c.dual μ ⊗ₜ S.basis c μ
-
-/-- The delta read as a linear map is the identity, `u^μ δ_μ^ν = u^ν`. -/
-lemma toLin_delta (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
-  LinearMap.ext fun v => by simp [delta, contr, Module.Basis.coordPairing_tmul_basis]
-
-/-- Swapping the factors of the delta at `c` gives the delta at `c.dual`, `δ_μ^ν = δ^ν_μ`. -/
-lemma comm_delta (c : Color K) : TensorProduct.comm k _ _ (S.delta c) = S.delta c.dual := by
-  simp only [delta, map_sum, TensorProduct.comm_tmul]
+noncomputable abbrev delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
+  (S.basis c.dual).coordDelta (S.basis c)
 
 /-- The delta is invariant, `Λ δ = δ`, with `Λ` acting on both factors. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
-  -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `toLin_delta`.
+  -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `coordTensorHomEquiv_coordDelta`.
   apply S.toLin.injective
   ext x
-  simpa [toLin_delta] using S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
-
-/-!
-
-## C. Components
-
--/
+  simpa [Module.Basis.coordTensorHomEquiv_coordDelta] using
+    S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
 
 variable {S}
 
-/-- `toLin` in components. For a lower color `c` and an upper color `d`, `(z v)^ν = v^μ z_μ^ν` for
-`z = z_μ^ν e^μ ⊗ e_ν` in `V c ⊗ V d`. -/
-lemma basis_repr_toLin (c : Color K) {d : Color K} (z : S.V c ⊗[k] S.V d) (v : S.V c.dual)
-    (ν : basisIdx d.kind) :
-    (S.basis d).repr (S.toLin z v) ν =
-      ∑ μ, (S.basis c.dual).repr v μ * ((S.basis c).tensorProduct (S.basis d)).repr z (μ, ν) := by
-  induction z using TensorProduct.inductionOn with
-  | add x y hx hy =>
-    simp only [map_add, LinearMap.add_apply, Finsupp.add_apply, hx, hy, mul_add,
-      Finset.sum_add_distrib]
+variable (S) in
+/-- The delta `S.delta c` as a tensor with colors `![c.dual, c]`. It is `δ_μ^ν` for an upper
+color `c` and `δ^μ_ν` for a lower one. -/
+noncomputable def deltaTensor (c : Color K) : S.Tensor ![c.dual, c] :=
+  S.twoSlotEquiv c.dual c (S.delta c)
+
+/-- The delta tensor is invariant, `Λ δ = δ`. -/
+lemma deltaTensor_invariant (c : Color K) (Λ : G) : Λ • S.deltaTensor c = S.deltaTensor c :=
+  (S.twoSlotEquiv _ c).toIntertwiningMap.map_invariant (S.delta_invariant c Λ)
+
+/-- The components of the delta tensor are the coordinates of `S.delta c` in Mathlib's product
+basis, at the pair of labels `(μ 0, μ 1)`. -/
+lemma tensorBasis_repr_deltaTensor (c : Color K) (μ : Π j, basisIdx (![c.dual, c] j).kind) :
+    (S.tensorBasis ![c.dual, c]).repr (S.deltaTensor c) μ =
+      ((S.basis c.dual).tensorProduct (S.basis c)).repr (S.delta c) (μ 0, μ 1) :=
+  tensorBasis_repr_twoSlotEquiv _ _ _ μ
+
+/-- The components of the delta tensor form the identity matrix, `δ_μ^ν = 1` for `μ = ν` and `0`
+otherwise. -/
+lemma tensorBasis_repr_deltaTensor_eq_one (c : Color K)
+    (μ : Π j, basisIdx (![c.dual, c] j).kind) :
+    (S.tensorBasis ![c.dual, c]).repr (S.deltaTensor c) μ =
+      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) (μ 0) (μ 1) := by
+  -- The labels `μ 0` and `μ 1` are labels at `c` only after unfolding, so they are generalized.
+  suffices h : ∀ a b, ((S.basis c.dual).tensorProduct (S.basis c)).repr (S.delta c) (a, b) =
+      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) a b from
+    (tensorBasis_repr_deltaTensor c μ).trans (h (μ 0) (μ 1))
+  intro a b
+  have h := Module.Basis.repr_coordTensorHomEquiv (S.basis c.dual) (S.basis c) (S.basis c)
+    (S.delta c) (S.basis c a) b
+  rw [Module.Basis.coordTensorHomEquiv_coordDelta, LinearMap.id_apply, Module.Basis.repr_self] at h
+  simp only [Finsupp.single_apply, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
+    ite_true] at h
+  rw [Matrix.one_apply, ← h]
+
+namespace Tensor
+
+open TensorProduct PiTensorProduct
+
+variable {ι₁ κ : Type} {c : ι₁ → Color K} {c' : κ → Color K}
+
+/-!
+
+## C. Products with a tensor on two slots
+
+-/
+
+/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two slots that contracts the
+second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
+`0` and `1`. -/
+def _root_.Tensors.ColorEquiv.matMul (a c b : Color K) :
+    ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) where
+  toEquiv.toFun
+    | .inl 0 => .inl 0 | .inl 1 => .inr (.inl ()) | .inr 0 => .inr (.inr ()) | .inr 1 => .inl 1
+  toEquiv.invFun
+    | .inl 0 => .inl 0 | .inl 1 => .inr 1 | .inr (.inl ()) => .inl 1 | .inr (.inr ()) => .inr 0
+  toEquiv.left_inv := by decide
+  toEquiv.right_inv := by decide
+
+/-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two slots is `M` with its second factor mapped
+by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
+lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual ⊗[k] S.V b) :
+    contr (ColorEquiv.matMul a c b)
+        (S.tmulEquiv _ _ (S.twoSlotEquiv a c M ⊗ₜ S.twoSlotEquiv _ b N)) =
+      S.twoSlotEquiv a b ((S.toLin N).lTensor _ M) := by
+  induction M using TensorProduct.inductionOn with
+  | add M M' hM hM' => simp only [map_add, add_tmul, hM, hM']
+  | tmul m₁ m₂ =>
+  induction N using TensorProduct.inductionOn with
+  | add N N' hN hN' =>
+    simp only [map_add, tmul_add, LinearMap.lTensor_add, LinearMap.add_apply, hN, hN']
+  | tmul n₁ n₂ =>
+    simp only [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique,
+      LinearMap.lTensor_tmul, Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, tmul_smul,
+      map_smul]
+    congr 2
+    funext j
+    fin_cases j <;> rfl
+
+/-- Two tensors on two slots contract to the delta, `X_μν Y^νρ = δ_μ^ρ`, exactly when their linear
+maps compose to the identity, `Y ∘ X = id`. -/
+lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
+    (Y : S.V y.dual ⊗[k] S.V x.dual) :
+    contr (ColorEquiv.matMul x y x.dual)
+        (S.tmulEquiv _ _ (S.twoSlotEquiv x y X ⊗ₜ S.twoSlotEquiv _ _ Y)) = S.deltaTensor x.dual ↔
+      S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
+  rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoSlotEquiv _ _)).eq_iff,
+    ← (S.toLin (a := x)).injective.eq_iff, Module.Basis.coordTensorHomEquiv_lTensor,
+    Module.Basis.coordTensorHomEquiv_coordDelta]
+
+/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the slot `i` of `T` with the first slot of a
+tensor `F` on two slots and puts the second slot of `F` in the place of `i`. It is
+`ColorEquiv.matMul` at any slot of a tensor on any slots. -/
+def _root_.Tensors.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
+    (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
+    ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
+  toEquiv :=
+    { toFun := Sum.elim (fun x => if x = i then .inr (.inl ()) else .inl x)
+        (fun j => if j = 0 then .inr (.inr ()) else .inl i)
+      invFun := Sum.elim (fun x => if x = i then .inr 1 else .inl x)
+        (Sum.elim (fun _ => .inl i) fun _ => .inr 0)
+      left_inv := by
+        rintro (x | j)
+        · by_cases hx : x = i <;> simp [hx]
+        · fin_cases j <;> simp
+      right_inv := by
+        rintro (x | (⟨⟩ | ⟨⟩))
+        · by_cases hx : x = i <;> simp [hx]
+        · simp
+        · simp }
+  color_eq := by
+    rintro (x | (⟨⟩ | ⟨⟩))
+    · by_cases hx : x = i
+      · subst hx
+        simp [hi]
+      · simp [hx, h x hx]
+    · simp [ha]
+    · simp
+
+/-- On a pure tensor, contracting the slot `i` with the first slot of `F` applies `F`, read as a
+linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other slots are
+those of `p`, moved along `h`. -/
+lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
+    (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
+    (p : Π x, S.V (c x)) (q : Π x, S.V (c' x))
+    (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
+    contr (ColorEquiv.matMulAt i a b ha hi h)
+        (S.tmulEquiv c ![a.dual, b] (S.pure p ⊗ₜ S.twoSlotEquiv a.dual b F)) =
+      S.pure (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i))))) := by
+  induction F using TensorProduct.inductionOn with
+  | add F F' hF hF' =>
+    simp only [map_add, LinearMap.add_apply, tmul_add, hF, hF']
+    rw [pure, pure, pure, MultilinearMap.map_update_add, map_add]
   | tmul x y =>
-    simp [contr_tmul_eq_sum_basis, Finset.sum_mul, mul_assoc, mul_comm ((S.basis d).repr y ν)]
+    rw [Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, map_smul]
+    conv_rhs => rw [pure, MultilinearMap.map_update_smul, map_smul, ← pure]
+    rw [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
+    congr 2
+    funext z
+    by_cases hz : z = i
+    · subst hz
+      rw [Function.update_self, cast_apply_congr _ (show
+        (ColorEquiv.matMulAt z a b ha hi h).toEquiv.symm (.inl z) = .inr 1 by
+          simp [ColorEquiv.matMulAt])]
+      rfl
+    · rw [Function.update_of_ne hz, cast_apply_congr _ (show
+        (ColorEquiv.matMulAt i a b ha hi h).toEquiv.symm (.inl z) = .inl z by
+          simp [ColorEquiv.matMulAt, hz]), hq z hz]
 
-/-- The matrix of `toLin z` is the transpose of the matrix of components of `z`,
-`(z v)^ν = z_μ^ν v^μ`. -/
-lemma toMatrix_toLin (c : Color K) {d : Color K} (z : S.V c ⊗[k] S.V d) :
-    LinearMap.toMatrix (S.basis c.dual) (S.basis d) (S.toLin z) =
-      (Matrix.of fun μ ν => ((S.basis c).tensorProduct (S.basis d)).repr z (μ, ν)).transpose := by
-  ext ν μ
-  simp [LinearMap.toMatrix_apply, basis_repr_toLin, Finsupp.single_apply]
+/-- Contracting the index `i` of `t` with the first index of a tensor `F` on two slots applies `F`,
+read as a linear map by `Species.toLin`, at `i`, as in `T^…μ… F_μ^ν`. -/
+lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
+    (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
+    (t : S.Tensor c) :
+    contr (ColorEquiv.matMulAt i a b ha hi h)
+        (S.tmulEquiv c ![a.dual, b] (t ⊗ₜ S.twoSlotEquiv a.dual b F)) =
+      S.mapAt i ((S.cast hi.symm).toLinearMap ∘ₗ S.toLin F ∘ₗ (S.cast ha).toLinearMap) h t := by
+  refine LinearMap.congr_fun (f := (contr _).toLinearMap ∘ₗ (S.tmulEquiv c ![a.dual, b]).toLinearMap
+    ∘ₗ (TensorProduct.mk k _ _).flip (S.twoSlotEquiv a.dual b F)) (ext_pure fun p => ?_) t
+  -- The vectors of `p` moved along `h` away from `i`. The vector at `i` is replaced below.
+  let q : Π x, S.V (c' x) := fun x => if hx : x = i then 0 else S.cast (h x hx) (p x)
+  exact (contr_matMulAt_pure i a b ha hi h F p q (fun x hx => by simp [q, hx])).trans
+    (mapAt_pure i _ h p (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i)))))
+      (Function.update_self _ _ _) (fun x hx => by simp [q, hx])).symm
 
-/-- For a lower color `c`, `toLin F ∘ₗ toLin F'` is the identity when the matrices of components of
-`F'` and `F` multiply to the identity, `F'^μρ F_ρν = δ^μ_ν`. -/
-lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
-    (F' : S.V c.dual ⊗[k] S.V c.dual)
-    (h : Matrix.of (fun μ ν => ((S.basis c.dual).tensorProduct (S.basis c.dual)).repr F' (μ, ν)) *
-      Matrix.of (fun μ ν => ((S.basis c).tensorProduct (S.basis c)).repr F (μ, ν)) = 1) :
-    S.toLin F ∘ₗ S.toLin F' = LinearMap.id := by
-  apply (LinearMap.toMatrix (S.basis c) (S.basis c)).injective
-  rw [LinearMap.toMatrix_comp _ (S.basis c.dual), toMatrix_toLin, toMatrix_toLin c.dual,
-    ← Matrix.transpose_mul, h, Matrix.transpose_one, LinearMap.toMatrix_id]
+/-- Contracting the index `i` with the first index of the delta is the identity,
+`T^…μ… δ_μ^ν = T^…ν…`. -/
+lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K) (ha : c i = a)
+    (t : S.Tensor c) :
+    contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
+      (S.tmulEquiv c ![a.dual, a] (t ⊗ₜ S.deltaTensor a)) = t := by
+  subst ha
+  rw [deltaTensor, contr_matMulAt, Module.Basis.coordTensorHomEquiv_coordDelta]
+  exact LinearMap.congr_fun (mapAt_id i _) t
 
-/-- `toLin` of the swapped tensor reads `z` along its second index, `v^μ ↦ z_νμ v^μ`, so its matrix
-is the matrix of components of `z`. -/
-lemma toMatrix_toLin_comm (c : Color K) {d : Color K} (z : S.V d ⊗[k] S.V c) :
-    LinearMap.toMatrix (S.basis c.dual) (S.basis d) (S.toLin (TensorProduct.comm k _ _ z)) =
-      Matrix.of fun ν μ => ((S.basis d).tensorProduct (S.basis c)).repr z (ν, μ) := by
-  rw [toMatrix_toLin]
-  ext ν μ
-  simp [Module.Basis.tensorProduct_repr_comm]
+/-- Contracting the index `i` with the second index of the delta is the identity,
+`δ^ν_μ T^…μ… = T^…ν…`. -/
+lemma contr_deltaTensor_swap [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K)
+    (ha : c i = a) (t : S.Tensor c) :
+    contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
+      (S.tmulEquiv c ![a.dual, a]
+        (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a a.dual) (S.deltaTensor a.dual))) = t := by
+  rw [deltaTensor, reindex_twoSlotEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
+    from Module.Basis.comm_coordDelta _ _]
+  exact contr_deltaTensor i a ha t
 
-/-- Swapping the indices of `F` and `F'` swaps the order of composition, `F F' = 1` read along the
-second indices from `F' F = 1` read along the first. -/
-lemma toLin_comm_comp_toLin_comm {c : Color K} (F : S.V c ⊗[k] S.V c)
-    (F' : S.V c.dual ⊗[k] S.V c.dual) (h : S.toLin F' ∘ₗ S.toLin F = LinearMap.id) :
-    S.toLin (TensorProduct.comm k _ _ F) ∘ₗ S.toLin (TensorProduct.comm k _ _ F') =
-      LinearMap.id := by
-  have h := congrArg (LinearMap.toMatrix (S.basis c.dual) (S.basis c.dual)) h
-  rw [LinearMap.toMatrix_comp _ (S.basis c), toMatrix_toLin, toMatrix_toLin c.dual,
-    ← Matrix.transpose_mul, LinearMap.toMatrix_id, ← Matrix.transpose_one,
-    Matrix.transpose_inj] at h
-  apply (LinearMap.toMatrix (S.basis c) (S.basis c)).injective
-  rw [LinearMap.toMatrix_comp _ (S.basis c.dual), toMatrix_toLin_comm, toMatrix_toLin_comm c.dual,
-    LinearMap.toMatrix_id]
-  exact h
+end Tensor
 
 end Species
 

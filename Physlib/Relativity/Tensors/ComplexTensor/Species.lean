@@ -321,7 +321,7 @@ lemma formEntries_dual_mul : ∀ c : Color Kind,
 /-- The forms at `c` and at `c.dual` are inverse to each other, since their matrices are. -/
 lemma form_inverse (c : Color Kind) :
     complexLorentz.toLin (form c) ∘ₗ complexLorentz.toLin (form c.dual) = LinearMap.id :=
-  Species.toLin_comp_toLin_of_mul_eq_one _ _ <| by
+  Module.Basis.coordTensorHomEquiv_comp_of_mul_eq_one _ _ _ _ <| by
     simpa only [basis_tensorProduct_repr_form] using formEntries_dual_mul c
 
 end complexLorentz
