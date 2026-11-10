@@ -1,7 +1,7 @@
 # Scope of Physlib and PhyslibAlpha
 
 Scope is about whether a result fits into the project. This is vital,
-and it is of high priority that all the results in the following are followed.
+and it is of high priority that all the results below are followed.
 
 <a id="area-recognition"></a>
 
