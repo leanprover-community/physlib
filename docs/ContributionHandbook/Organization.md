@@ -11,7 +11,7 @@ easy to read as possible.
 One of the best ways to organize an area in physics is to define a `structure` which is the basic object of study in that area. Examples of this throughout Physlib include:
 - `ElectromagneticPotential` for electromagnetism
 - `FLRW` and `CosmicFluid` in cosmology
-- `CanonicalEnsemble` for statistical
+- `CanonicalEnsemble` for statistical mechanics
 
 <a id="file-organization"></a>
 
