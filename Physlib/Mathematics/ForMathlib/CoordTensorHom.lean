@@ -102,6 +102,11 @@ lemma comm_coordDelta (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
     TensorProduct.comm R M N (b.coordDelta b') = b'.coordDelta b := by
   simp only [coordDelta, map_sum, TensorProduct.comm_tmul]
 
+/-- The components of the delta form the identity matrix. -/
+lemma tensorProduct_repr_coordDelta (b : Module.Basis ι R M) (b' : Module.Basis ι R N)
+    (I J : ι) : (b.tensorProduct b').repr (b.coordDelta b') (I, J) = if I = J then 1 else 0 := by
+  simp [coordDelta, Finsupp.single_apply]
+
 /-- `coordTensorHomEquiv` in components, `(z v)_J = ∑ I, v_I z_{IJ}`. -/
 lemma repr_coordTensorHomEquiv {κ N' : Type*} [AddCommGroup N'] [Module R N']
     (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (d : Module.Basis κ R N')
@@ -109,11 +114,8 @@ lemma repr_coordTensorHomEquiv {κ N' : Type*} [AddCommGroup N'] [Module R N']
     d.repr (b.coordTensorHomEquiv b' z v) J =
       ∑ I, b'.repr v I * (b.tensorProduct d).repr z (I, J) := by
   induction z using TensorProduct.inductionOn with
-  | add x y hx hy =>
-    simp only [map_add, LinearMap.add_apply, Finsupp.add_apply, hx, hy, mul_add,
-      Finset.sum_add_distrib]
-  | tmul x y =>
-    simp [coordPairing_tmul, Finset.sum_mul, mul_assoc, mul_comm (d.repr y J)]
+  | add x y hx hy => simp [hx, hy, mul_add, Finset.sum_add_distrib]
+  | tmul x y => simp [coordPairing_tmul, Finset.sum_mul, mul_assoc, mul_comm (d.repr y J)]
 
 /-- The matrix of `coordTensorHomEquiv z` is the transpose of the matrix of components of `z`. -/
 lemma toMatrix_coordTensorHomEquiv {κ N' : Type*} [Fintype κ] [AddCommGroup N'] [Module R N']
@@ -134,17 +136,6 @@ lemma coordTensorHomEquiv_comp_of_mul_eq_one (b : Module.Basis ι R M) (b' : Mod
   rw [LinearMap.toMatrix_comp _ b', toMatrix_coordTensorHomEquiv, toMatrix_coordTensorHomEquiv,
     ← Matrix.transpose_mul, h, Matrix.transpose_one, LinearMap.toMatrix_id]
 
-/-- Read along its second factor, a tensor of `N' ⊗ M` has the matrix of its components,
-`(comm z) v = ∑ I, z_{JI} v_I`. -/
-lemma toMatrix_coordTensorHomEquiv_comm {κ N' : Type*} [Fintype κ] [AddCommGroup N']
-    [Module R N'] (b : Module.Basis ι R M) (b' : Module.Basis ι R N)
-    (d : Module.Basis κ R N') (z : N' ⊗[R] M) :
-    LinearMap.toMatrix b' d (b.coordTensorHomEquiv b' (TensorProduct.comm R N' M z)) =
-      Matrix.of fun J I => (d.tensorProduct b).repr z (J, I) := by
-  rw [toMatrix_coordTensorHomEquiv]
-  ext J I
-  simp [Module.Basis.tensorProduct_repr_comm]
-
 /-- Swapping the factors of `F` and `F'` swaps the order of composition, `F F' = 1` read along the
 second factors from `F' F = 1` read along the first. -/
 lemma coordTensorHomEquiv_comm_comp_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N)
@@ -152,13 +143,11 @@ lemma coordTensorHomEquiv_comm_comp_comm (b : Module.Basis ι R M) (b' : Module.
     (h : b'.coordTensorHomEquiv b F' ∘ₗ b.coordTensorHomEquiv b' F = LinearMap.id) :
     b.coordTensorHomEquiv b' (TensorProduct.comm R M M F) ∘ₗ
       b'.coordTensorHomEquiv b (TensorProduct.comm R N N F') = LinearMap.id := by
+  -- The matrices of `comm F'` and `comm F` are the transposes of those in `h`.
+  refine coordTensorHomEquiv_comp_of_mul_eq_one b b' _ _ ?_
   have h := congrArg (LinearMap.toMatrix b' b') h
   rw [LinearMap.toMatrix_comp _ b, toMatrix_coordTensorHomEquiv, toMatrix_coordTensorHomEquiv,
-    ← Matrix.transpose_mul, LinearMap.toMatrix_id, ← Matrix.transpose_one,
-    Matrix.transpose_inj] at h
-  apply (LinearMap.toMatrix b b).injective
-  rw [LinearMap.toMatrix_comp _ b', toMatrix_coordTensorHomEquiv_comm,
-    toMatrix_coordTensorHomEquiv_comm, LinearMap.toMatrix_id]
-  exact h
+    LinearMap.toMatrix_id] at h
+  convert h using 2 <;> ext <;> simp [tensorProduct_repr_comm]
 
 end Module.Basis

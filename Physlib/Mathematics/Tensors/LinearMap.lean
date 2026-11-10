@@ -100,9 +100,7 @@ lemma toLin_map (a : Color K) (g : G) {U U' : Type} [AddCommGroup U] [Module k U
     S.toLin (TensorProduct.map (S.rep a g) f z) (S.rep a.dual g x) = f (S.toLin z x) := by
   induction z using TensorProduct.inductionOn with
   | tmul w y =>
-    rw [TensorProduct.map_tmul, Module.Basis.coordTensorHomEquiv_tmul,
-      Module.Basis.coordTensorHomEquiv_tmul, map_smul]
-    exact congrArg (· • f y) (S.contr_invariant a.dual g x w)
+    exact (congrArg (· • f y) (S.contr_invariant a.dual g x w)).trans (map_smul f _ y).symm
   | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz']
 
 /-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
@@ -116,10 +114,8 @@ lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :
 lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
     (h : Function.Bijective (S.toLin z)) (g : G) :
     Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) := by
-  have hrep (c : Color K) (g : G) : Function.Bijective (S.rep c g) :=
-    (Module.End.isUnit_iff _).1 ((Group.isUnit g).map (S.rep c))
   rw [toLin_map_rep, LinearMap.coe_comp, LinearMap.coe_comp]
-  exact (hrep b g).comp (h.comp (hrep a.dual g⁻¹))
+  exact ((S.rep b).apply_bijective g).comp (h.comp ((S.rep a.dual).apply_bijective g⁻¹))
 
 /-!
 
@@ -165,18 +161,9 @@ otherwise. -/
 lemma tensorBasis_repr_deltaTensor_eq_one (c : Color K)
     (μ : Π j, basisIdx (![c.dual, c] j).kind) :
     (S.tensorBasis ![c.dual, c]).repr (S.deltaTensor c) μ =
-      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) (μ 0) (μ 1) := by
-  -- The labels `μ 0` and `μ 1` are labels at `c` only after unfolding, so they are generalized.
-  suffices h : ∀ a b, ((S.basis c.dual).tensorProduct (S.basis c)).repr (S.delta c) (a, b) =
-      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) a b from
-    (tensorBasis_repr_deltaTensor c μ).trans (h (μ 0) (μ 1))
-  intro a b
-  have h := Module.Basis.repr_coordTensorHomEquiv (S.basis c.dual) (S.basis c) (S.basis c)
-    (S.delta c) (S.basis c a) b
-  rw [Module.Basis.coordTensorHomEquiv_coordDelta, LinearMap.id_apply, Module.Basis.repr_self] at h
-  simp only [Finsupp.single_apply, ite_mul, one_mul, zero_mul, Finset.sum_ite_eq, Finset.mem_univ,
-    ite_true] at h
-  rw [Matrix.one_apply, ← h]
+      (1 : Matrix (basisIdx c.kind) (basisIdx c.kind) k) (μ 0) (μ 1) :=
+  (tensorBasis_repr_deltaTensor c μ).trans
+    ((Module.Basis.tensorProduct_repr_coordDelta _ _ _ _).trans Matrix.one_apply.symm)
 
 namespace Tensor
 
