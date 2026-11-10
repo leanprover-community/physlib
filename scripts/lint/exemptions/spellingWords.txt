@@ -1554,6 +1554,7 @@ lemma
 lemmas
 length
 lengthunit
+lenz
 leonardo
 lepton
 less
@@ -2352,6 +2353,7 @@ rows
 rudolph
 rule
 run
+runge
 runs
 s
 saddle

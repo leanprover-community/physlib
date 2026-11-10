@@ -33,6 +33,7 @@ central-force system away from the centre of force, so `L²` and `L_z` are conse
 - `CentralForce.angularMomentum` : the angular momentum `L = q × p`.
 - `CentralForce.angularMomentumSq`, `CentralForce.angularMomentumZ` : `L²` and `L_z`.
 - `CentralForce.angularMomentumSq_eq` : Lagrange's identity for `L²`.
+- `CentralForce.momentum_cross_angularMomentum` : the triple product `p × L = ⟪p, p⟫ q - ⟪q, p⟫ p`.
 - `CentralForce.poissonBracket_angularMomentumSq_angularMomentumZ` : `{L², L_z} = 0`.
 - `CentralForce.poissonBracket_angularMomentumSq_hamiltonian`,
   `CentralForce.poissonBracket_angularMomentumZ_hamiltonian` : `L²` and `L_z` Poisson-commute with
@@ -43,6 +44,7 @@ central-force system away from the centre of force, so `L²` and `L_z` are conse
 - A. The angular momentum
   - A.1. The squared magnitude and the z-component
   - A.2. Smoothness
+  - A.3. Orthogonality to the position and the momentum
 - B. Gradients
 - C. Poisson brackets
   - C.1. The squared magnitude and the z-component are in involution
@@ -144,6 +146,35 @@ lemma contDiff_angularMomentumZ : ContDiff ℝ ∞ (Function.uncurry angularMome
     funext fun x => angularMomentum_apply_two x.1 x.2
   rw [h]
   fun_prop
+
+/-!
+
+### A.3. Orthogonality to the position and the momentum
+
+-/
+
+/-- The angular momentum `q × p` is orthogonal to the position `q`. -/
+lemma inner_position_angularMomentum (p q : EuclideanSpace ℝ (Fin 3)) :
+    ⟪q, angularMomentum p q⟫_ℝ = 0 := by
+  simp only [PiLp.inner_apply, Fin.sum_univ_three, RCLike.inner_apply, conj_trivial,
+    angularMomentum_apply_zero, angularMomentum_apply_one, angularMomentum_apply_two]
+  ring
+
+/-- The angular momentum `q × p` is orthogonal to the momentum `p`. -/
+lemma inner_momentum_angularMomentum (p q : EuclideanSpace ℝ (Fin 3)) :
+    ⟪p, angularMomentum p q⟫_ℝ = 0 := by
+  simp only [PiLp.inner_apply, Fin.sum_univ_three, RCLike.inner_apply, conj_trivial,
+    angularMomentum_apply_zero, angularMomentum_apply_one, angularMomentum_apply_two]
+  ring
+
+/-- The vector triple product `p × (q × p) = ⟪p, p⟫ q - ⟪q, p⟫ p`. -/
+lemma momentum_cross_angularMomentum (p q : EuclideanSpace ℝ (Fin 3)) :
+    WithLp.toLp 2 (p.ofLp ⨯₃ (angularMomentum p q).ofLp) = ⟪p, p⟫_ℝ • q - ⟪q, p⟫_ℝ • p := by
+  ext i
+  fin_cases i <;>
+  · simp [cross_apply, angularMomentum, PiLp.inner_apply, Fin.sum_univ_three,
+      EuclideanSpace.norm_sq_eq]
+    ring
 
 /-!
 

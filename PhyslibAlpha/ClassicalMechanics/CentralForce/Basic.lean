@@ -5,6 +5,8 @@ Authors: Rithwik Ranganathan
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Inv
+public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Physlib.Mathematics.Calculus.Gradient
 /-!
 
@@ -39,6 +41,8 @@ the position. The latter is what makes the angular momentum a conserved quantity
 - `CentralForce.hamiltonian` : the Hamiltonian.
 - `CentralForce.hasGradientAt_hamiltonian_momentum`,
   `CentralForce.hasGradientAt_hamiltonian_position` : its partial gradients.
+- `CentralForce.hasGradientAt_hamiltonian_position_of_eqOn_kepler` : the position gradient for the
+  Kepler potential.
 - `CentralForce.contDiffOn_hamiltonian` : it is smooth away from the centre of force.
 
 ## iii. Table of contents
@@ -123,6 +127,23 @@ lemma hasGradientAt_hamiltonian_position (p : EuclideanSpace ℝ (Fin 3))
   convert (hasGradientAt_const q ((1 / (2 * S.m)) * ⟪p, p⟫_ℝ)).add
     (hV.comp_hasGradientAt (hasGradientAt_norm hq)) using 1
   rw [zero_add, smul_smul, div_eq_mul_inv]
+
+/-- For the Kepler potential `V r = -k / r`, the position gradient of the Hamiltonian away from the
+centre of force is `(k / ‖q‖ ^ 3) • q`, the negative of the inverse-square force. -/
+lemma hasGradientAt_hamiltonian_position_of_eqOn_kepler {k : ℝ}
+    (hV : Set.EqOn S.V (fun r => -k / r) (Set.Ioi 0)) (p : EuclideanSpace ℝ (Fin 3))
+    {q : EuclideanSpace ℝ (Fin 3)} (hq : q ≠ 0) :
+    HasGradientAt (fun q' => S.hamiltonian p q') ((k / ‖q‖ ^ 3) • q) q := by
+  have hr : 0 < ‖q‖ := norm_pos_iff.mpr hq
+  have hK : HasDerivAt (fun r : ℝ => -k / r) (k / ‖q‖ ^ 2) ‖q‖ := by
+    convert (hasDerivAt_inv hr.ne').const_mul (-k) using 1
+    · simp only [div_eq_mul_inv]
+    · ring
+  have hd : deriv S.V ‖q‖ = k / ‖q‖ ^ 2 :=
+    ((hV.eventuallyEq_of_mem (Ioi_mem_nhds hr)).deriv_eq).trans hK.deriv
+  convert S.hasGradientAt_hamiltonian_position p hq using 2
+  rw [hd]
+  field_simp
 
 /-!
 

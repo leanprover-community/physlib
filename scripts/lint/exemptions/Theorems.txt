@@ -495,3 +495,4 @@ unitaryForm_of_general_e
 stinespringOp_gram
 stinespringForm_eq
 PhyslibAlpha.Hydrogen.PauliSystem.exists_energyLevel
+ClassicalMechanics.CentralForce.poissonBracket_inner_rungeLenz_hamiltonian
