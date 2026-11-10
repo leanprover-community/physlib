@@ -10,9 +10,9 @@ public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import Physlib.ProbabilisticTheory.Effect.Sharp
 
 /-!
-# Sharp effects of a C⋆-algebra
+# Projections of a C⋆-algebra
 
-The sharp effects of a C⋆-algebra are exactly its projections.
+The projections of a C⋆-algebra are exactly its sharp effects.
 
 ## i. Overview
 
@@ -62,14 +62,6 @@ lemma coe_toEffect {P : 𝒜} (hP : IsStarProjection P) :
 end IsStarProjection
 
 /-! ## B. Sharp effects are projections -/
-
-/-- An injective linear map preserves and reflects extreme points. -/
-lemma LinearMap.mem_extremePoints_image_iff {E F : Type*} [AddCommGroup E] [Module ℝ E]
-    [AddCommGroup F] [Module ℝ F] {f : E →ₗ[ℝ] F} (hf : Function.Injective f) {s : Set E}
-    {x : E} : f x ∈ extremePoints ℝ (f '' s) ↔ x ∈ extremePoints ℝ s := by
-  have h (a b : E) : f '' openSegment ℝ a b = openSegment ℝ (f a) (f b) :=
-    image_openSegment ℝ f.toAffineMap a b
-  simp only [mem_extremePoints_iff_left, hf.mem_set_image, forall_mem_image, ← h, hf.eq_iff]
 
 namespace ProbabilisticTheory.Effect
 

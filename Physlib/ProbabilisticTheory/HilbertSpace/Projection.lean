@@ -5,13 +5,13 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.CStarAlgebra.Effect
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Projection
 public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
 
 /-!
-# Effects of subspaces
+# Projections onto subspaces
 
-A subspace of a Hilbert space is a sharp yes-no measurement.
+The orthogonal projection onto a subspace of a Hilbert space is a sharp yes-no measurement.
 
 ## i. Overview
 
@@ -29,7 +29,7 @@ is sharp. It is not a mixture of two other effects.
 
 ## iii. Table of contents
 
-- A. The effect of a subspace
+- A. The projection of a subspace as an effect
 
 ## iv. References
 
@@ -44,7 +44,7 @@ namespace Submodule
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
 
-/-! ## A. The effect of a subspace -/
+/-! ## A. The projection of a subspace as an effect -/
 
 /-- The effect of a subspace `K`: the orthogonal projection onto `K`. -/
 noncomputable def toEffect (K : Submodule ℂ H) [K.HasOrthogonalProjection] :
