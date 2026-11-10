@@ -70,12 +70,12 @@ variable (U : FLRW)
 
 /-- The line-of-sight comoving distance `χ = c ∫_t^{t₀} dτ / a(τ)` of a source emitting at `t`
   and observed at `t₀`. -/
-noncomputable def comovingDistance (c : ℝ) (t t₀ : Time) : ℝ :=
-  c * ∫ τ in t.val..t₀.val, 1 / U.a ⟨τ⟩
+noncomputable def comovingDistance (c : SpeedOfLight) (t t₀ : Time) : ℝ :=
+  (c : ℝ) * ∫ τ in t.val..t₀.val, 1 / U.a ⟨τ⟩
 
 /-- For `t` and `t₀` in the interval of the model, `∂ₜ χ = - c / a`. -/
-lemma deriv_comovingDistance {c : ℝ} {t₀ t : Time} (ht₀ : t₀ ∈ U.I) (ht : t ∈ U.I) :
-    ∂ₜ (fun s => U.comovingDistance c s t₀) t = -c / U.a t := by
+lemma deriv_comovingDistance {c : SpeedOfLight} {t₀ t : Time} (ht₀ : t₀ ∈ U.I) (ht : t ∈ U.I) :
+    ∂ₜ (fun s => U.comovingDistance c s t₀) t = -(c : ℝ) / U.a t := by
   obtain ⟨τ⟩ := t
   have hS : IsOpen {σ : ℝ | (⟨σ⟩ : Time) ∈ U.I} := U.isOpen_I.preimage toRealCLE.symm.continuous
   have hf : ContinuousOn (fun σ : ℝ => 1 / U.a ⟨σ⟩) {σ : ℝ | (⟨σ⟩ : Time) ∈ U.I} :=
@@ -87,7 +87,7 @@ lemma deriv_comovingDistance {c : ℝ} {t₀ t : Time} (ht₀ : t₀ ∈ U.I) (h
   have h : HasDerivAt (fun σ : ℝ => ∫ x in σ..t₀.val, 1 / U.a ⟨x⟩) (-(1 / U.a ⟨τ⟩)) τ :=
     intervalIntegral.integral_hasDerivAt_left ((hf.mono hsub).intervalIntegrable)
       (hf.stronglyMeasurableAtFilter hS τ ht) (hf.continuousAt (hS.mem_nhds ht))
-  refine deriv_eq_of_hasDerivAt ((h.const_mul c).congr_deriv ?_)
+  refine deriv_eq_of_hasDerivAt ((h.const_mul (c : ℝ)).congr_deriv ?_)
   ring
 
 /-!
@@ -126,10 +126,10 @@ lemma deriv_scaleFactor_eq_mul_hubbleConstant {t : Time} (ht : t ∈ U.I) :
 /-- For `t` and `t₀` in the interval of the model with `H(t) ≠ 0`,
   `∂ₜ χ = (c / (a(t₀) H)) ∂ₜ z`. For `a(t₀) = 1`, this is the change of variables
   `dχ = c dz / H`. -/
-lemma deriv_comovingDistance_eq_mul_deriv_redshift {c : ℝ} {t₀ t : Time} (ht₀ : t₀ ∈ U.I)
-    (ht : t ∈ U.I) (hH : hubbleConstant U.a t ≠ 0) :
+lemma deriv_comovingDistance_eq_mul_deriv_redshift {c : SpeedOfLight} {t₀ t : Time}
+    (ht₀ : t₀ ∈ U.I) (ht : t ∈ U.I) (hH : hubbleConstant U.a t ≠ 0) :
     ∂ₜ (fun s => U.comovingDistance c s t₀) t
-      = c / (U.a t₀ * hubbleConstant U.a t) * ∂ₜ (U.redshift t₀) t := by
+      = (c : ℝ) / (U.a t₀ * hubbleConstant U.a t) * ∂ₜ (U.redshift t₀) t := by
   rw [U.deriv_comovingDistance ht₀ ht, U.deriv_redshift ht, one_add_redshift]
   have ha := U.a_ne_zero ht
   have ha₀ := U.a_ne_zero ht₀
@@ -155,13 +155,14 @@ lemma deriv_properDistance {χ : ℝ} {t : Time} (ht : t ∈ U.I) :
   field_simp
 
 /-- The Hubble radius `R_H = c / H`. -/
-noncomputable def hubbleRadius (c : ℝ) (t : Time) : ℝ := c / hubbleConstant U.a t
+noncomputable def hubbleRadius (c : SpeedOfLight) (t : Time) : ℝ :=
+  (c : ℝ) / hubbleConstant U.a t
 
 /-- For `t` in the interval of the model with `H(t) ≠ 0`, the recession velocity `∂ₜ D` equals
   `c` exactly at the Hubble radius. -/
-lemma deriv_properDistance_eq_iff {χ c : ℝ} {t : Time} (ht : t ∈ U.I)
+lemma deriv_properDistance_eq_iff {χ : ℝ} {c : SpeedOfLight} {t : Time} (ht : t ∈ U.I)
     (hH : hubbleConstant U.a t ≠ 0) :
-    ∂ₜ (U.properDistance χ) t = c ↔ U.properDistance χ t = U.hubbleRadius c t := by
+    ∂ₜ (U.properDistance χ) t = (c : ℝ) ↔ U.properDistance χ t = U.hubbleRadius c t := by
   rw [U.deriv_properDistance ht, hubbleRadius, eq_div_iff hH]
   constructor <;> intro h <;> linarith [h]
 
@@ -230,25 +231,25 @@ lemma transverseComovingDistance_of_curvature_neg (hK : U.geometry.curvature < 0
 /-- The particle horizon at `t`, the integral of `c / a` over the times of the interval of the
   model before `t`. It is a Lebesgue integral, equal to `0` when the integrand is not
   integrable. -/
-noncomputable def particleHorizon (c : ℝ) (t : Time) : ℝ :=
-  c * ∫ τ in {τ : ℝ | (⟨τ⟩ : Time) ∈ U.I ∧ τ < t.val}, 1 / U.a ⟨τ⟩
+noncomputable def particleHorizon (c : SpeedOfLight) (t : Time) : ℝ :=
+  (c : ℝ) * ∫ τ in {τ : ℝ | (⟨τ⟩ : Time) ∈ U.I ∧ τ < t.val}, 1 / U.a ⟨τ⟩
 
 /-- The event horizon at `t`, the integral of `c / a` over the times of the interval of the
   model after `t`. It is a Lebesgue integral, equal to `0` when the integrand is not
   integrable. -/
-noncomputable def eventHorizon (c : ℝ) (t : Time) : ℝ :=
-  c * ∫ τ in {τ : ℝ | (⟨τ⟩ : Time) ∈ U.I ∧ t.val < τ}, 1 / U.a ⟨τ⟩
+noncomputable def eventHorizon (c : SpeedOfLight) (t : Time) : ℝ :=
+  (c : ℝ) * ∫ τ in {τ : ℝ | (⟨τ⟩ : Time) ∈ U.I ∧ t.val < τ}, 1 / U.a ⟨τ⟩
 
 /-- The particle horizon of the Einstein-de Sitter model at `t > 0` is `3 c t₀^(2/3) t^(1/3)`. -/
-lemma particleHorizon_einsteinDeSitter {t₀ : Time} {c : ℝ} (ht₀ : 0 < t₀.val) {t : Time}
-    (ht : 0 < t.val) :
+lemma particleHorizon_einsteinDeSitter {t₀ : Time} {c : SpeedOfLight} (ht₀ : 0 < t₀.val)
+    {t : Time} (ht : 0 < t.val) :
     (einsteinDeSitter t₀ ht₀).particleHorizon c t
-      = 3 * c * t₀.val ^ (2 / 3 : ℝ) * t.val ^ (1 / 3 : ℝ) := by
+      = 3 * (c : ℝ) * t₀.val ^ (2 / 3 : ℝ) * t.val ^ (1 / 3 : ℝ) := by
   have hset : {τ : ℝ | (⟨τ⟩ : Time) ∈ (einsteinDeSitter t₀ ht₀).I ∧ τ < t.val}
       = Set.Ioo 0 t.val := rfl
   rw [particleHorizon, hset, ← MeasureTheory.integral_Ioc_eq_integral_Ioo,
     ← intervalIntegral.integral_of_le ht.le]
-  show c * ∫ τ in (0 : ℝ)..t.val, 1 / (τ / t₀.val) ^ (2 / 3 : ℝ) = _
+  show (c : ℝ) * ∫ τ in (0 : ℝ)..t.val, 1 / (τ / t₀.val) ^ (2 / 3 : ℝ) = _
   have hcongr : Set.EqOn (fun τ : ℝ => 1 / (τ / t₀.val) ^ (2 / 3 : ℝ))
       (fun τ : ℝ => t₀.val ^ (2 / 3 : ℝ) * τ ^ (-(2 / 3) : ℝ)) (Set.uIcc 0 t.val) := by
     intro τ hτ

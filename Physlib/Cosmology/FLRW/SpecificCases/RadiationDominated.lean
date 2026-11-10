@@ -60,9 +60,9 @@ lemma FLRW.radiationDominated_a {t₀ : Time} (ht₀ : 0 < t₀.val) :
   `n = 1/2`, that is `3 / (32 π G t²)`, and pressure `ρ c² / 3`, solves the Friedmann equations
   without cosmological constant on its interval. -/
 lemma FLRW.friedmannSolution_radiationDominated {t₀ : Time} (ht₀ : 0 < t₀.val)
-    {G c : ℝ} (hG : 0 < G) (hc : 0 < c) :
+    {G : ℝ} {c : SpeedOfLight} (hG : 0 < G) :
     (FLRW.radiationDominated t₀ ht₀).FriedmannSolution
       (CosmicFluid.powerLaw (1 / 2) (1 / 3) G c) 0 G c :=
-  FLRW.friedmannSolution_powerLaw ht₀ hG hc (by norm_num) (by norm_num)
+  FLRW.friedmannSolution_powerLaw ht₀ hG (by norm_num) (by norm_num)
 
 end Cosmology

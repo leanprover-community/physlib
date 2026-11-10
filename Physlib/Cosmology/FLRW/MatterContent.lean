@@ -94,8 +94,8 @@ open scoped Topology
 
 /-- The continuity equation of the cosmic fluid at the instant `t`:
   `∂ₜ ρ + 3 H (ρ + p / c²) = 0`, with `H = hubbleConstant a`. -/
-def ContinuityEquation (a ρ p : Time → ℝ) (c : ℝ) (t : Time) : Prop :=
-  ∂ₜ ρ t + 3 * hubbleConstant a t * (ρ t + p t / c ^ 2) = 0
+def ContinuityEquation (a ρ p : Time → ℝ) (c : SpeedOfLight) (t : Time) : Prop :=
+  ∂ₜ ρ t + 3 * hubbleConstant a t * (ρ t + p t / (c : ℝ) ^ 2) = 0
 
 /-!
 
@@ -105,19 +105,19 @@ def ContinuityEquation (a ρ p : Time → ℝ) (c : ℝ) (t : Time) : Prop :=
 
 /-- Differentiating the first-order Friedmann equation, assumed at all times near `t`, at `t`:
   `2 H (a''/a - H²) = (8 π G / 3) ρ' + 2 k c² H / a²`. -/
-lemma deriv_firstOrderFriedmann {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time} (ha : a t ≠ 0)
-    (hd1 : DifferentiableAt ℝ a t) (hd2 : DifferentiableAt ℝ (∂ₜ a) t)
+lemma deriv_firstOrderFriedmann {a ρ : Time → ℝ} {k Λ G : ℝ} {c : SpeedOfLight} {t : Time}
+    (ha : a t ≠ 0) (hd1 : DifferentiableAt ℝ a t) (hd2 : DifferentiableAt ℝ (∂ₜ a) t)
     (hdρ : DifferentiableAt ℝ ρ t) (hF1 : ∀ᶠ s in 𝓝 t, FirstOrderFriedmann a ρ k Λ G c s) :
     2 * (∂ₜ a t / a t) * (∂ₜ (∂ₜ a) t / a t - (∂ₜ a t / a t) ^ 2)
-      = 8 * π * G / 3 * ∂ₜ ρ t + 2 * k * c ^ 2 * (∂ₜ a t / a t) / (a t) ^ 2 := by
+      = 8 * π * G / 3 * ∂ₜ ρ t + 2 * k * (c : ℝ) ^ 2 * (∂ₜ a t / a t) / (a t) ^ 2 := by
   obtain ⟨τ⟩ := t
   have hA := hasDerivAt_mk_of_differentiableAt hd1
   have hA' := hasDerivAt_mk_of_differentiableAt hd2
   have hR := hasDerivAt_mk_of_differentiableAt hdρ
   have hL := (hA'.div hA ha).pow 2
   have hRd := ((hR.const_mul (8 * π * G / 3)).sub
-    ((hasDerivAt_const τ (k * c ^ 2)).div (hA.pow 2) (pow_ne_zero 2 ha))).add_const
-    (Λ * c ^ 2 / 3)
+    ((hasDerivAt_const τ (k * (c : ℝ) ^ 2)).div (hA.pow 2) (pow_ne_zero 2 ha))).add_const
+    (Λ * (c : ℝ) ^ 2 / 3)
   have hF1' : ∀ᶠ σ in 𝓝 τ, FirstOrderFriedmann a ρ k Λ G c ⟨σ⟩ :=
     (toRealCLE.symm.continuous.tendsto τ).eventually hF1
   have hu := hL.unique (hRd.congr_of_eventuallyEq hF1')
@@ -135,8 +135,8 @@ lemma deriv_firstOrderFriedmann {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time
 /-- The continuity equation follows from the first-order Friedmann equation, assumed at all
   times near `t`, and the second-order Friedmann equation at `t`; `a` must be twice
   differentiable and `ρ` differentiable at `t`. -/
-lemma continuityEquation_of_friedmann {a ρ p : Time → ℝ} {k Λ G c : ℝ} {t : Time}
-    (hG : G ≠ 0) (ha : a t ≠ 0) (hd1 : DifferentiableAt ℝ a t)
+lemma continuityEquation_of_friedmann {a ρ p : Time → ℝ} {k Λ G : ℝ} {c : SpeedOfLight}
+    {t : Time} (hG : G ≠ 0) (ha : a t ≠ 0) (hd1 : DifferentiableAt ℝ a t)
     (hd2 : DifferentiableAt ℝ (∂ₜ a) t)
     (hdρ : DifferentiableAt ℝ ρ t) (hF1 : ∀ᶠ s in 𝓝 t, FirstOrderFriedmann a ρ k Λ G c s)
     (hF2 : SecondOrderFriedmann a ρ p Λ G c t) :
@@ -160,8 +160,8 @@ lemma continuityEquation_of_friedmann {a ρ p : Time → ℝ} {k Λ G c : ℝ} {
   equation, assumed at all times near `t`, and the continuity equation at `t`, provided
   `∂ₜ a t ≠ 0`. Together with `continuityEquation_of_friedmann`, the three equations are not
   independent. -/
-lemma secondOrderFriedmann_of_continuityEquation {a ρ p : Time → ℝ} {k Λ G c : ℝ}
-    {t : Time} (ha : a t ≠ 0) (ha' : ∂ₜ a t ≠ 0) (hd1 : DifferentiableAt ℝ a t)
+lemma secondOrderFriedmann_of_continuityEquation {a ρ p : Time → ℝ} {k Λ G : ℝ}
+    {c : SpeedOfLight} {t : Time} (ha : a t ≠ 0) (ha' : ∂ₜ a t ≠ 0) (hd1 : DifferentiableAt ℝ a t)
     (hd2 : DifferentiableAt ℝ (∂ₜ a) t) (hdρ : DifferentiableAt ℝ ρ t)
     (hF1 : ∀ᶠ s in 𝓝 t, FirstOrderFriedmann a ρ k Λ G c s)
     (hC : ContinuityEquation a ρ p c t) :
@@ -188,8 +188,8 @@ lemma secondOrderFriedmann_of_continuityEquation {a ρ p : Time → ℝ} {k Λ G
   differentiable: it is obtained from the two Friedmann equations through
   `continuityEquation_of_friedmann`. -/
 lemma _root_.Cosmology.FLRW.FriedmannSolution.continuityEquation {U : FLRW} {F : CosmicFluid}
-    {Λ G c : ℝ} (h : U.FriedmannSolution F Λ G c) (hG : G ≠ 0) {t : Time} (ht : t ∈ U.I)
-    (hdρ : DifferentiableAt ℝ F.ρ t) :
+    {Λ G : ℝ} {c : SpeedOfLight} (h : U.FriedmannSolution F Λ G c) (hG : G ≠ 0) {t : Time}
+    (ht : t ∈ U.I) (hdρ : DifferentiableAt ℝ F.ρ t) :
     ContinuityEquation U.a F.ρ F.p c t :=
   continuityEquation_of_friedmann hG (U.a_ne_zero ht) (U.differentiableAt_a ht)
     (U.differentiableAt_deriv_a ht) hdρ
@@ -208,15 +208,16 @@ lemma _root_.Cosmology.FLRW.FriedmannSolution.continuityEquation {U : FLRW} {F :
 -/
 
 /-- The barotropic pressure `p = w ρ c²` with constant equation-of-state parameter `w`. -/
-noncomputable def barotropicPressure (w : ℝ) (ρ : Time → ℝ) (c : ℝ) : Time → ℝ :=
-  fun t => w * ρ t * c ^ 2
+noncomputable def barotropicPressure (w : ℝ) (ρ : Time → ℝ) (c : SpeedOfLight) : Time → ℝ :=
+  fun t => w * ρ t * (c : ℝ) ^ 2
 
 /-- Under the barotropic continuity equation, `∂ₜ ρ = -3 (1 + w) H ρ`. -/
-lemma deriv_of_continuityEquation_barotropic {a ρ : Time → ℝ} {w c : ℝ} {t : Time} (hc : c ≠ 0)
-    (hC : ContinuityEquation a ρ (barotropicPressure w ρ c) c t) :
+lemma deriv_of_continuityEquation_barotropic {a ρ : Time → ℝ} {w : ℝ} {c : SpeedOfLight}
+    {t : Time} (hC : ContinuityEquation a ρ (barotropicPressure w ρ c) c t) :
     ∂ₜ ρ t = -3 * (1 + w) * hubbleConstant a t * ρ t := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   unfold ContinuityEquation barotropicPressure at hC
-  have h : w * ρ t * c ^ 2 / c ^ 2 = w * ρ t := by
+  have h : w * ρ t * (c : ℝ) ^ 2 / (c : ℝ) ^ 2 = w * ρ t := by
     field_simp
   rw [h] at hC
   linear_combination hC
@@ -230,7 +231,7 @@ lemma deriv_of_continuityEquation_barotropic {a ρ : Time → ℝ} {w c : ℝ} {
 /-- The density scaling law: under the barotropic continuity equation at all times, with `a`
   and `ρ` differentiable and `a > 0`, `ρ t = ρ t₀ (a t / a t₀)^(-3(1+w))`. The proof shows that
   `ρ a^(3(1+w))` has zero derivative along the time chart. -/
-lemma density_scaling {a ρ : Time → ℝ} {w c : ℝ} (hc : c ≠ 0) (hd1 : Differentiable ℝ a)
+lemma density_scaling {a ρ : Time → ℝ} {w : ℝ} {c : SpeedOfLight} (hd1 : Differentiable ℝ a)
     (hdρ : Differentiable ℝ ρ) (hapos : ∀ s, 0 < a s)
     (hC : ∀ s, ContinuityEquation a ρ (barotropicPressure w ρ c) c s) (t t₀ : Time) :
     ρ t = ρ t₀ * (a t / a t₀) ^ (-(3 * (1 + w))) := by
@@ -240,7 +241,7 @@ lemma density_scaling {a ρ : Time → ℝ} {w c : ℝ} (hc : c ≠ 0) (hd1 : Di
     have hR := hasDerivAt_mk_of_differentiableAt (hdρ ⟨τ⟩)
     have hP := hA.rpow_const (p := 3 * (1 + w)) (Or.inl (hapos ⟨τ⟩).ne')
     refine (hR.mul hP).congr_deriv ?_
-    rw [deriv_of_continuityEquation_barotropic hc (hC ⟨τ⟩), Real.rpow_sub_one (hapos ⟨τ⟩).ne']
+    rw [deriv_of_continuityEquation_barotropic (hC ⟨τ⟩), Real.rpow_sub_one (hapos ⟨τ⟩).ne']
     unfold hubbleConstant
     field_simp
     ring
@@ -259,10 +260,11 @@ lemma density_scaling {a ρ : Time → ℝ} {w c : ℝ} (hc : c ≠ 0) (hd1 : Di
 
 /-- Conversely, `ρ = ρ₀ (a / a₀)^(-3(1+w))` satisfies the barotropic continuity equation at
   all times, for `a` differentiable and positive. -/
-lemma continuityEquation_of_scaling {a : Time → ℝ} {w c ρ₀ a₀ : ℝ} (hc : c ≠ 0) (ha₀ : a₀ ≠ 0)
-    (hd1 : Differentiable ℝ a) (hapos : ∀ s, 0 < a s) (t : Time) :
+lemma continuityEquation_of_scaling {a : Time → ℝ} {w : ℝ} {c : SpeedOfLight} {ρ₀ a₀ : ℝ}
+    (ha₀ : a₀ ≠ 0) (hd1 : Differentiable ℝ a) (hapos : ∀ s, 0 < a s) (t : Time) :
     ContinuityEquation a (fun s => ρ₀ * (a s / a₀) ^ (-(3 * (1 + w))))
       (barotropicPressure w (fun s => ρ₀ * (a s / a₀) ^ (-(3 * (1 + w)))) c) c t := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   obtain ⟨τ⟩ := t
   have hA := hasDerivAt_mk_of_differentiableAt (hd1 ⟨τ⟩)
   have hx : a ⟨τ⟩ / a₀ ≠ 0 := div_ne_zero (hapos ⟨τ⟩).ne' ha₀
@@ -283,31 +285,31 @@ lemma continuityEquation_of_scaling {a : Time → ℝ} {w c ρ₀ a₀ : ℝ} (h
 -/
 
 /-- Dust, `w = 0`: `ρ ∝ a⁻³`. -/
-lemma density_scaling_dust {a ρ : Time → ℝ} {c : ℝ} (hc : c ≠ 0) (hd1 : Differentiable ℝ a)
+lemma density_scaling_dust {a ρ : Time → ℝ} {c : SpeedOfLight} (hd1 : Differentiable ℝ a)
     (hdρ : Differentiable ℝ ρ) (hapos : ∀ s, 0 < a s)
     (hC : ∀ s, ContinuityEquation a ρ (barotropicPressure 0 ρ c) c s) (t t₀ : Time) :
     ρ t = ρ t₀ * (a t₀ / a t) ^ 3 := by
-  rw [density_scaling hc hd1 hdρ hapos hC t t₀]
+  rw [density_scaling hd1 hdρ hapos hC t t₀]
   have hx : 0 < a t / a t₀ := div_pos (hapos t) (hapos t₀)
   rw [show -(3 * (1 + (0 : ℝ))) = -((3 : ℕ) : ℝ) by norm_num, Real.rpow_neg hx.le,
     Real.rpow_natCast, ← inv_pow, inv_div]
 
 /-- Radiation, `w = 1/3`: `ρ ∝ a⁻⁴`. -/
-lemma density_scaling_radiation {a ρ : Time → ℝ} {c : ℝ} (hc : c ≠ 0) (hd1 : Differentiable ℝ a)
+lemma density_scaling_radiation {a ρ : Time → ℝ} {c : SpeedOfLight} (hd1 : Differentiable ℝ a)
     (hdρ : Differentiable ℝ ρ) (hapos : ∀ s, 0 < a s)
     (hC : ∀ s, ContinuityEquation a ρ (barotropicPressure (1 / 3) ρ c) c s) (t t₀ : Time) :
     ρ t = ρ t₀ * (a t₀ / a t) ^ 4 := by
-  rw [density_scaling hc hd1 hdρ hapos hC t t₀]
+  rw [density_scaling hd1 hdρ hapos hC t t₀]
   have hx : 0 < a t / a t₀ := div_pos (hapos t) (hapos t₀)
   rw [show -(3 * (1 + (1 / 3 : ℝ))) = -((4 : ℕ) : ℝ) by norm_num, Real.rpow_neg hx.le,
     Real.rpow_natCast, ← inv_pow, inv_div]
 
 /-- Vacuum energy, `w = -1`: `ρ` is constant. -/
-lemma density_scaling_vacuum {a ρ : Time → ℝ} {c : ℝ} (hc : c ≠ 0) (hd1 : Differentiable ℝ a)
+lemma density_scaling_vacuum {a ρ : Time → ℝ} {c : SpeedOfLight} (hd1 : Differentiable ℝ a)
     (hdρ : Differentiable ℝ ρ) (hapos : ∀ s, 0 < a s)
     (hC : ∀ s, ContinuityEquation a ρ (barotropicPressure (-1) ρ c) c s) (t t₀ : Time) :
     ρ t = ρ t₀ := by
-  rw [density_scaling hc hd1 hdρ hapos hC t t₀,
+  rw [density_scaling hd1 hdρ hapos hC t t₀,
     show -(3 * (1 + (-1 : ℝ))) = 0 by norm_num, Real.rpow_zero, mul_one]
 
 /-!
@@ -322,36 +324,39 @@ cosmological constant folded in, are defined in `Physlib.Cosmology.FLRW.Basic`.
 
 /-- The first-order Friedmann equation with `Λ` is the first-order Friedmann equation without
   `Λ` for the density `ρ + ρ_Λ`. -/
-lemma firstOrderFriedmann_iff_lambdaFluid {a ρ : Time → ℝ} {k Λ G c : ℝ} {t : Time}
-    (hG : G ≠ 0) :
+lemma firstOrderFriedmann_iff_lambdaFluid {a ρ : Time → ℝ} {k Λ G : ℝ} {c : SpeedOfLight}
+    {t : Time} (hG : G ≠ 0) :
     FirstOrderFriedmann a ρ k Λ G c t ↔
       FirstOrderFriedmann a (fun s => ρ s + cosmologicalConstantDensity Λ G c) k 0 G c t := by
   unfold FirstOrderFriedmann cosmologicalConstantDensity
   have hπ := Real.pi_ne_zero
-  have key : 8 * π * G / 3 * ρ t - k * c ^ 2 / a t ^ 2 + Λ * c ^ 2 / 3
-      = 8 * π * G / 3 * (ρ t + Λ * c ^ 2 / (8 * π * G)) - k * c ^ 2 / a t ^ 2 + 0 * c ^ 2 / 3 := by
+  have key : 8 * π * G / 3 * ρ t - k * (c : ℝ) ^ 2 / a t ^ 2 + Λ * (c : ℝ) ^ 2 / 3
+      = 8 * π * G / 3 * (ρ t + Λ * (c : ℝ) ^ 2 / (8 * π * G)) - k * (c : ℝ) ^ 2 / a t ^ 2
+        + 0 * (c : ℝ) ^ 2 / 3 := by
     field_simp
     ring
   rw [key]
 
 /-- The second-order Friedmann equation with `Λ` is the second-order Friedmann equation
   without `Λ` for the density `ρ + ρ_Λ` and the pressure `p + p_Λ`. -/
-lemma secondOrderFriedmann_iff_lambdaFluid {a ρ p : Time → ℝ} {Λ G c : ℝ} {t : Time}
-    (hG : G ≠ 0) (hc : c ≠ 0) :
+lemma secondOrderFriedmann_iff_lambdaFluid {a ρ p : Time → ℝ} {Λ G : ℝ} {c : SpeedOfLight}
+    {t : Time} (hG : G ≠ 0) :
     SecondOrderFriedmann a ρ p Λ G c t ↔
       SecondOrderFriedmann a (fun s => ρ s + cosmologicalConstantDensity Λ G c)
         (fun s => p s + cosmologicalConstantPressure Λ G c) 0 G c t := by
+  have hc : (c : ℝ) ≠ 0 := c.val_ne_zero
   unfold SecondOrderFriedmann cosmologicalConstantPressure cosmologicalConstantDensity
   have hπ := Real.pi_ne_zero
-  have key : -(4 * π * G / 3) * (ρ t + 3 * p t / c ^ 2) + Λ * c ^ 2 / 3
-      = -(4 * π * G / 3) * (ρ t + Λ * c ^ 2 / (8 * π * G)
-        + 3 * (p t + -(Λ * c ^ 2 / (8 * π * G)) * c ^ 2) / c ^ 2) + 0 * c ^ 2 / 3 := by
+  have key : -(4 * π * G / 3) * (ρ t + 3 * p t / (c : ℝ) ^ 2) + Λ * (c : ℝ) ^ 2 / 3
+      = -(4 * π * G / 3) * (ρ t + Λ * (c : ℝ) ^ 2 / (8 * π * G)
+        + 3 * (p t + -(Λ * (c : ℝ) ^ 2 / (8 * π * G)) * (c : ℝ) ^ 2) / (c : ℝ) ^ 2)
+        + 0 * (c : ℝ) ^ 2 / 3 := by
     field_simp
     ring
   rw [key]
 
 /-- `p_Λ` is the barotropic pressure of `ρ_Λ` with `w = -1`. -/
-lemma cosmologicalConstantPressure_eq_barotropic (Λ G c : ℝ) (t : Time) :
+lemma cosmologicalConstantPressure_eq_barotropic (Λ G : ℝ) (c : SpeedOfLight) (t : Time) :
     cosmologicalConstantPressure Λ G c
       = barotropicPressure (-1) (fun _ => cosmologicalConstantDensity Λ G c) c t := by
   unfold cosmologicalConstantPressure barotropicPressure
