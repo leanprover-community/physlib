@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 public import Physlib.Mathematics.Tensors.Species
 /-!
 
@@ -129,6 +130,10 @@ noncomputable def delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
 lemma toLin_delta (c : Color K) : S.toLin (S.delta c) = LinearMap.id :=
   LinearMap.ext fun v => by simp [delta, contr, Module.Basis.coordPairing_tmul_basis]
 
+/-- Swapping the factors of the delta at `c` gives the delta at `c.dual`, `δ_μ^ν = δ^ν_μ`. -/
+lemma comm_delta (c : Color K) : TensorProduct.comm k _ _ (S.delta c) = S.delta c.dual := by
+  simp only [delta, map_sum, TensorProduct.comm_tmul]
+
 /-- The delta is invariant, `Λ δ = δ`, with `Λ` acting on both factors. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
@@ -176,6 +181,30 @@ lemma toLin_comp_toLin_of_mul_eq_one {c : Color K} (F : S.V c ⊗[k] S.V c)
   apply (LinearMap.toMatrix (S.basis c) (S.basis c)).injective
   rw [LinearMap.toMatrix_comp _ (S.basis c.dual), toMatrix_toLin, toMatrix_toLin c.dual,
     ← Matrix.transpose_mul, h, Matrix.transpose_one, LinearMap.toMatrix_id]
+
+/-- `toLin` of the swapped tensor reads `z` along its second index, `v^μ ↦ z_νμ v^μ`, so its matrix
+is the matrix of components of `z`. -/
+lemma toMatrix_toLin_comm (c : Color K) {d : Color K} (z : S.V d ⊗[k] S.V c) :
+    LinearMap.toMatrix (S.basis c.dual) (S.basis d) (S.toLin (TensorProduct.comm k _ _ z)) =
+      Matrix.of fun ν μ => ((S.basis d).tensorProduct (S.basis c)).repr z (ν, μ) := by
+  rw [toMatrix_toLin]
+  ext ν μ
+  simp [Module.Basis.tensorProduct_repr_comm]
+
+/-- Swapping the indices of `F` and `F'` swaps the order of composition, `F F' = 1` read along the
+second indices from `F' F = 1` read along the first. -/
+lemma toLin_comm_comp_toLin_comm {c : Color K} (F : S.V c ⊗[k] S.V c)
+    (F' : S.V c.dual ⊗[k] S.V c.dual) (h : S.toLin F' ∘ₗ S.toLin F = LinearMap.id) :
+    S.toLin (TensorProduct.comm k _ _ F) ∘ₗ S.toLin (TensorProduct.comm k _ _ F') =
+      LinearMap.id := by
+  have h := congrArg (LinearMap.toMatrix (S.basis c.dual) (S.basis c.dual)) h
+  rw [LinearMap.toMatrix_comp _ (S.basis c), toMatrix_toLin, toMatrix_toLin c.dual,
+    ← Matrix.transpose_mul, LinearMap.toMatrix_id, ← Matrix.transpose_one,
+    Matrix.transpose_inj] at h
+  apply (LinearMap.toMatrix (S.basis c) (S.basis c)).injective
+  rw [LinearMap.toMatrix_comp _ (S.basis c.dual), toMatrix_toLin_comm, toMatrix_toLin_comm c.dual,
+    LinearMap.toMatrix_id]
+  exact h
 
 end Species
 

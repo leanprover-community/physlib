@@ -7,7 +7,6 @@ module
 
 public import Physlib.Mathematics.ForMathlib.Schouten
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
-public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 public import Physlib.Mathematics.Tensors.Contraction
 public import Mathlib.Tactic.LinearCombination
 /-!
@@ -236,17 +235,20 @@ lemma isAlt_formBilin (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.
 -/
 
 variable (S) in
-/-- The vector `v` of color `c` contracted with the first index of the form at `c.dual`. It lowers
-an upper index, `v^μ ↦ v^μ g_μν`, and raises a lower one, `w_μ ↦ w_μ g^μν`. -/
+/-- The vector `v` of color `c` contracted with the second index of the form at `c.dual`. It
+lowers an upper index, `v^μ ↦ g_νμ v^μ`, and raises a lower one, `w_μ ↦ g^νμ w_μ`. -/
 noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.rep c.dual) :=
-  .mk (LinearEquiv.ofLinearMap (S.toLin (form c.dual)) (S.toLin (form c)) (form_inverse c.dual)
-    (form_inverse c)) fun g => LinearMap.ext fun v => by
-      change S.toLin (form c.dual) _ = S.rep c.dual g (S.toLin (form c.dual) v)
-      rw [← S.toLin_map, form_invariant]
+  .mk (LinearEquiv.ofLinearMap (S.toLin (TensorProduct.comm k _ _ (form c.dual)))
+    (S.toLin (TensorProduct.comm k _ _ (form c)))
+    (toLin_comm_comp_toLin_comm _ _ (form_inverse c))
+    (toLin_comm_comp_toLin_comm _ _ (form_inverse c.dual))) fun g => LinearMap.ext fun v => by
+      change S.toLin (TensorProduct.comm k _ _ (form c.dual)) _ =
+        S.rep c.dual g (S.toLin (TensorProduct.comm k _ _ (form c.dual)) v)
+      rw [← S.toLin_map c.dual g, TensorProduct.map_comm, form_invariant]
 
-/-- `toDual` contracts `v` with the first index of the form at `c.dual`. -/
+/-- `toDual` contracts `v` with the second index of the form at `c.dual`. -/
 lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
-    S.toDual c v = S.toLin (form c.dual) v := rfl
+    S.toDual c v = S.toLin (TensorProduct.comm k _ _ (form c.dual)) v := rfl
 
 /-- Raising is the inverse of lowering. The inverse of `S.toDual c` is `S.toDual c.dual`. -/
 lemma toDual_symm (c : Color K) [S.HasForm c.kind] : (S.toDual c).symm = S.toDual c.dual := rfl
@@ -257,12 +259,12 @@ lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :
     S.toDual c.dual (S.toDual c v) = v :=
   (S.toDual c).toLinearEquiv.symm_apply_apply v
 
-/-- Lowering or raising a vector in components, `v_ν = v^μ g_μν`. -/
+/-- Lowering or raising a vector in components, `v_ν = g_νμ v^μ`. -/
 lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basisIdx c.kind) :
     (S.basis c.dual).repr (S.toDual c v) ν = ∑ μ, (S.basis c).repr v μ *
-      S.formMatrix c.dual μ ν := by
+      S.formMatrix c.dual ν μ := by
   rw [toDual_apply, basis_repr_toLin]
-  rfl
+  simp [formMatrix, Module.Basis.tensorProduct_repr_comm]
 
 /-!
 
@@ -344,14 +346,14 @@ lemma toDualAt_eq_mapAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
       S.mapAt i (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).toLinearMap h t :=
   congrAt_eq_mapAt i _ h t
 
-/-- Lowering or raising the index at the slot `i` in components, `T^…_ν… = T^…μ… g_μν`. The
+/-- Lowering or raising the index at the slot `i` in components, `T^…_ν… = g_νμ T^…μ…`. The
 labels `φ` of the result are cast to labels of `t`, and the label at `i` is replaced by the summed
 `μ`. For concrete colors the casts are along `rfl`. -/
 lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a : Color K)
     (ha : c i = a) [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x)
     (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind) :
     (S.tensorBasis c').repr (S.toDualAt i a ha hi h t) φ =
-      ∑ μ, S.formMatrix a.dual μ (cast (congrArg (basisIdx ∘ Color.kind) hi) (φ i)) *
+      ∑ μ, S.formMatrix a.dual (cast (congrArg (basisIdx ∘ Color.kind) hi) (φ i)) μ *
         (S.tensorBasis c).repr t (Function.update (fun x => cast (by
           by_cases hx : x = i
           · subst hx; rw [hi, ha]
@@ -365,13 +367,14 @@ lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a
   rw [basis_repr_cast, basis_repr_toDual]
   simp [Finsupp.single_apply]
 
-/-- Lowering or raising at the slot `i` is contracting that slot with the first index of the form,
-`T^…_ν… = T^…μ… g_μν`. -/
+/-- Lowering or raising at the slot `i` is contracting that slot with the second index of the
+form, `T^…_ν… = g_νμ T^…μ…`. -/
 lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a ha hi h t = Tensor.contr (ColorEquiv.matMulAt i a a.dual ha hi h)
-      (S.tmulEquiv c ![a.dual, a.dual] (t ⊗ₜ S.formTensor a.dual)) := by
-  rw [formTensor, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
+      (S.tmulEquiv c ![a.dual, a.dual]
+        (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a.dual a.dual) (S.formTensor a.dual))) := by
+  rw [formTensor, reindex_twoSlotEquiv, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
   rfl
 
 /-!

@@ -190,6 +190,15 @@ lemma contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
   rw [formTensor, formTensor, ← inverse_form c]
   exact contr_mul_inverse _ (toLin_form_bijective c)
 
+/-- `g^μν g_νρ = δ_ρ^μ` at an upper color `c`, with the delta read with its slots swapped. -/
+lemma reindex_contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
+    S.reindex (ColorEquiv.swapTwo c c.dual) (Tensor.contr (ColorEquiv.matMul c c c.dual)
+        (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual))) =
+      S.deltaTensor c := by
+  rw [contr_formTensor_formTensor, deltaTensor, reindex_twoSlotEquiv,
+    show TensorProduct.comm k _ _ (S.delta c.dual) = S.delta c from S.comm_delta c.dual]
+  rfl
+
 end Species
 
 end Tensors

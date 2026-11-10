@@ -557,6 +557,17 @@ lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) 
   rw [deltaTensor, contr_matMulAt, toLin_delta]
   exact LinearMap.congr_fun (mapAt_id i _) t
 
+/-- Contracting the index `i` with the second index of the delta is the identity,
+`δ^ν_μ T^…μ… = T^…ν…`. -/
+lemma contr_deltaTensor_swap [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K)
+    (ha : c i = a) (t : S.Tensor c) :
+    contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
+      (S.tmulEquiv c ![a.dual, a]
+        (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a a.dual) (S.deltaTensor a.dual))) = t := by
+  rw [deltaTensor, reindex_twoSlotEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
+    from S.comm_delta a.dual]
+  exact contr_deltaTensor i a ha t
+
 /-!
 
 ## D. Components

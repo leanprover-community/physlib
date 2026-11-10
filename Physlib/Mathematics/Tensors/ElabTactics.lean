@@ -346,22 +346,112 @@ private def formArgs? (x : Expr) : Option (Expr × Expr) :=
     some (args[args.size - 3]!, args[args.size - 2]!)
   else none
 
+/-- A contraction `Tensor.contr τ P` of a left-nested product `P`, read slot by slot. The slots of
+`P` are numbered in order, the slots of each factor after those of the factors before it. -/
+private structure ReadContraction where
+  /-- The factors of `P`, from left to right. -/
+  factors : List Expr
+  /-- The slot of `P` at which each factor starts. -/
+  offsets : List Nat
+  /-- The slot of `P` of each free index, in order. -/
+  free : List Nat
+  /-- The two slots of `P` of each pair, the first argument of `S.contr` first. -/
+  pairs : List (Nat × Nat)
+
+/-- The elements of a slot type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
+slot order. -/
+private partial def slotElems (ι : Expr) : MetaM (List Expr) := do
+  let ι ← whnfR ι
+  if ι.isAppOfArity ``Fin 1 then
+    let some n ← (evalNat ι.appArg!).run
+      | throwError "tensor_regroup: the slot type {ι} is not literal"
+    (List.range n).mapM fun i => do
+      mkAppM ``Fin.mk #[mkNatLit i, ← mkDecideProof (← mkAppM ``LT.lt #[mkNatLit i, ι.appArg!])]
+  else if let .const ``PUnit [u] := ι then return [mkConst ``PUnit.unit [u]]
+  else if ι.isConstOf ``Empty then return []
+  else if ι.isAppOfArity ``Sum 2 then
+    let (a, b) := (ι.getArg! 0, ι.getArg! 1)
+    return (← (← slotElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
+      (← (← slotElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
+  else throwError "tensor_regroup: the slot type {ι} is not built from `Fin n` and `⊕`"
+
+/-- The number of the slot `x` of the slot type `slots`, after evaluating `x`. -/
+private partial def slotNumber : Slots → Expr → MetaM Nat
+  | .fin _, x => do
+    let some i ← (evalNat (← whnfD (← mkAppM ``Fin.val #[x]))).run
+      | throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
+    return i
+  | .unit, _ => return 0
+  | .sum a b, x => do
+    let x ← whnfD x
+    if x.isAppOfArity ``Sum.inl 3 then slotNumber a x.appArg!
+    else if x.isAppOfArity ``Sum.inr 3 then return a.size + (← slotNumber b x.appArg!)
+    else throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
+
+/-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
+free index and at each slot of each pair. -/
+private def readContraction (e : Expr) : MetaM ReadContraction := do
+  let some P := bundledArg? ``Tensors.Species.Tensor.contr e
+    | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
+  let τ := e.consumeMData.appFn!.appArg!.appArg!
+  let some (slots, _, _) ← literalTensorType? (← inferType P)
+    | throwError "tensor_regroup: the slots or colors of a product are not literal"
+  let fs := factors P
+  let sizes ← fs.mapM fun f => do
+    let some (s, _, _) ← literalTensorType? (← inferType f)
+      | throwError "tensor_regroup: the slots or colors of{indentExpr f}\nare not literal"
+    return s.size
+  -- `τ : ColorEquiv c (contrColors c' a)`, with `c' : κ → Color K` and `a : J → Color K`.
+  let args := (← whnfR (← inferType τ)).getAppArgs
+  let cargs := args[args.size - 1]!.getAppArgs
+  let (κ, J) := (cargs[1]!, cargs[2]!)
+  let JJ ← mkAppM ``Sum #[J, J]
+  let at_ (y : Expr) : MetaM Nat := do
+    slotNumber slots (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensors.ColorEquiv.toEquiv #[τ], y])
+  let free ← (← slotElems κ).mapM fun x => do at_ (← mkAppOptM ``Sum.inl #[κ, JJ, x])
+  let pairs ← (← slotElems J).mapM fun j => do
+    let half (left : Bool) := do
+      at_ (← mkAppOptM ``Sum.inr #[κ, JJ, ← mkAppOptM (if left then ``Sum.inl else ``Sum.inr)
+        #[J, J, j]])
+    return (← half true, ← half false)
+  return ⟨fs, sizes.scanl (· + ·) 0, free, pairs⟩
+
+/-- The ways to insert a delta against the side `e` of the goal, a contraction: `false` for
+`T^…μ… δ_μ^ν` and `true` for `δ^ν_μ T^…μ…`. A form or a delta of `e` whose first slot is contracted
+with another factor cancels against a delta inserted the first way, and one whose second slot is,
+the second way. Both are returned when no form or delta is contracted with another factor. -/
+private def deltaOrientations (e : Expr) : MetaM (List Bool) := do
+  let rc ← readContraction e
+  let isFormOrDelta := rc.factors.map fun f => (formArgs? f).isSome || (deltaColor? f).isSome
+  let factorOf (s : Nat) : Nat := (rc.offsets.findIdx? (s < ·)).getD 1 - 1
+  let side (s t : Nat) : Option Bool :=
+    let (i, j) := (factorOf s, factorOf t)
+    if isFormOrDelta.getD i false && !isFormOrDelta.getD j false then
+      some (s - rc.offsets[i]! == 1)
+    else none
+  let found := (rc.pairs.filterMap fun (s, t) => (side s t).orElse fun _ => side t s).eraseDups
+  return if found.isEmpty then [false, true] else found
+
 /-- Inserts a delta of color `a` at the slot `slot` of the product of the left side of the goal,
-if `lhs`, or of the right side, by `T^…μ… = T^…ν… δ_ν^μ` (`Species.Tensor.contr_deltaTensor`). -/
-private def insertDelta (lhs : Bool) (a : Expr) (slots : Slots) (slot : Nat) : TacticM Unit := do
+if `lhs`, or of the right side, by `Species.Tensor.contr_deltaTensor`. With `second`, uses
+`Species.Tensor.contr_deltaTensor_swap` instead, inserting a delta of color `a.dual`. -/
+private def insertDelta (lhs : Bool) (a : Expr) (slots : Slots) (slot : Nat) (second : Bool) :
+    TacticM Unit := do
   let (p, q) ← contractedProducts
   let P := if lhs then p else q
-  let thm ← `((Tensors.Species.Tensor.contr_deltaTensor
+  let lem := mkIdent <| if second then ``Tensors.Species.Tensor.contr_deltaTensor_swap
+    else ``Tensors.Species.Tensor.contr_deltaTensor
+  let thm ← `(($lem
     ($(← slots.elem slot) : $(← slots.type)) $(← exprToSyntax a) rfl $(← exprToSyntax P)).symm)
   rewriteSubterm P thm (some lhs)
 
 mutual
 
-/-- Inserts a delta of color `a` on the left side, if `lhs`, or on the right side, at each slot of
-the product of color `a` in turn, and proves the goal by `regroupContractions`. With `skipForms`,
-the slots of forms are left out when another factor has a slot: inserting the delta anywhere along a
-chain of contracted forms gives the same factors, so trying each of their slots only repeats the
-search. -/
+/-- Inserts a delta of color `a` on the left side, if `lhs`, or on the right side, trying slots of
+color `a` for its first index and `a.dual` for its second index, and proves the goal by
+`regroupContractions`. With `skipForms`, the slots of forms are left out when another factor has a
+slot: inserting the delta anywhere along a chain of contracted forms gives the same factors, so
+trying each of their slots only repeats the search. -/
 private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Bool := false) :
     TacticM Unit := do
   let (p, q) ← contractedProducts
@@ -375,11 +465,18 @@ private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Boo
   -- shortcut: misses a chain of forms that reaches no other factor, as `T^μ_ν g^αβ` against
   -- `T^μ_ν g^αγ g_γδ g^δβ`; trying the slots of forms after the others would cover it.
   let inForm := if inForm.all id then inForm.map fun _ => false else inForm
-  let slotsOfColor ← colors.zipIdx.filterM fun (col, i) =>
-    return !inForm.getD i false && (← isDefEqGoal col a)
-  firstSuccess (slotsOfColor.map (·.2)) m!"tensor_regroup: no slot has the color {a} of a delta"
-    fun slot => do
-      insertDelta lhs a slots slot
+  let (_, l, r) ← goalEq
+  let orientations ← deltaOrientations (if lhs then r else l)
+  let tries ← orientations.flatMapM fun second => do
+    -- The swapped identity inserts `deltaTensor b.dual` at a slot of color `b`.
+    -- To insert the requested `deltaTensor a`, that slot must therefore have color `a.dual`.
+    let b ← if second then mkAppM ``Tensors.Color.dual #[a] else pure a
+    let slotsOfColor ← colors.zipIdx.filterM fun (col, i) =>
+      return !inForm.getD i false && (← isDefEqGoal col b)
+    return slotsOfColor.map fun (_, i) => (i, second, b)
+  firstSuccess tries m!"tensor_regroup: no slot has the color {a} of a delta"
+    fun (slot, second, b) => do
+      insertDelta lhs b slots slot second
       regroupContractions
 
 /-- Matches pairs of forms `g` and `g⁻¹`, the factors `gs` left over on one side, with the factors
@@ -399,9 +496,18 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
   match ds with
   | [d] =>
     unless (deltaColor? d).isSome do throwError "tensor_regroup: {d} is not a delta"
-    firstSuccess fs m!"tensor_regroup: no two forms left over are inverse" fun (S, c) => do
-      let thm ← `((Tensors.Species.contr_formTensor_formTensor (S := $(← exprToSyntax S))
-        $(← exprToSyntax c)).symm)
+    -- The delta is `g^μν g_νρ` read with its slots in order, when the slot of the delta and the
+    -- slot of the forms contracted with other factors agree, or swapped.
+    let (_, l, r) ← goalEq
+    let swaps := match ← deltaOrientations (if lhs then l else r),
+        ← deltaOrientations (if lhs then r else l) with
+      | [x], [y] => [x != y]
+      | _, _ => [false, true]
+    let tries := swaps.flatMap fun sw => fs.map (·, sw)
+    firstSuccess tries m!"tensor_regroup: no two forms left over are inverse" fun ((S, c), sw) => do
+      let lem := mkIdent <| if sw then ``Tensors.Species.reindex_contr_formTensor_formTensor
+        else ``Tensors.Species.contr_formTensor_formTensor
+      let thm ← `(($lem (S := $(← exprToSyntax S)) $(← exprToSyntax c)).symm)
       rewriteSubterm d thm (some lhs)
       regroupContractions
   | [] => firstSuccess fs m!"tensor_regroup: no two forms left over are inverse" fun (_, c) => do
@@ -468,7 +574,8 @@ private def flipForm (antisym : Bool) (F : Expr) (k : Nat) : TacticM Unit := do
   let thm ← if antisym then
       `(neg_eq_iff_eq_neg.mp (Tensors.Species.formTensor_antisymm (S := $S) $c).symm)
     else `((Tensors.Species.formTensor_symm (S := $S) $c).symm)
-  rewriteSubterm F thm (k := some k)
+  -- A form with no instance of the symmetry fails here, instead of logging an error.
+  Term.withoutErrToSorry <| rewriteSubterm F thm (k := some k)
 
 mutual
 
@@ -641,76 +748,6 @@ elab "tensor_slots" : tactic => do
 ## G. Rewriting a sub-product by an identity
 
 -/
-
-/-- A contraction `Tensor.contr τ P` of a left-nested product `P`, read slot by slot. The slots of
-`P` are numbered in order, the slots of each factor after those of the factors before it. -/
-private structure ReadContraction where
-  /-- The factors of `P`, from left to right. -/
-  factors : List Expr
-  /-- The slot of `P` at which each factor starts. -/
-  offsets : List Nat
-  /-- The slot of `P` of each free index, in order. -/
-  free : List Nat
-  /-- The two slots of `P` of each pair, the first argument of `S.contr` first. -/
-  pairs : List (Nat × Nat)
-
-/-- The elements of a slot type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
-slot order. -/
-private partial def slotElems (ι : Expr) : MetaM (List Expr) := do
-  let ι ← whnfR ι
-  if ι.isAppOfArity ``Fin 1 then
-    let some n ← (evalNat ι.appArg!).run
-      | throwError "tensor_regroup: the slot type {ι} is not literal"
-    (List.range n).mapM fun i => do
-      mkAppM ``Fin.mk #[mkNatLit i, ← mkDecideProof (← mkAppM ``LT.lt #[mkNatLit i, ι.appArg!])]
-  else if let .const ``PUnit [u] := ι then return [mkConst ``PUnit.unit [u]]
-  else if ι.isConstOf ``Empty then return []
-  else if ι.isAppOfArity ``Sum 2 then
-    let (a, b) := (ι.getArg! 0, ι.getArg! 1)
-    return (← (← slotElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
-      (← (← slotElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
-  else throwError "tensor_regroup: the slot type {ι} is not built from `Fin n` and `⊕`"
-
-/-- The number of the slot `x` of the slot type `slots`, after evaluating `x`. -/
-private partial def slotNumber : Slots → Expr → MetaM Nat
-  | .fin _, x => do
-    let some i ← (evalNat (← whnfD (← mkAppM ``Fin.val #[x]))).run
-      | throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
-    return i
-  | .unit, _ => return 0
-  | .sum a b, x => do
-    let x ← whnfD x
-    if x.isAppOfArity ``Sum.inl 3 then slotNumber a x.appArg!
-    else if x.isAppOfArity ``Sum.inr 3 then return a.size + (← slotNumber b x.appArg!)
-    else throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
-
-/-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
-free index and at each slot of each pair. -/
-private def readContraction (e : Expr) : MetaM ReadContraction := do
-  let some P := bundledArg? ``Tensors.Species.Tensor.contr e
-    | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
-  let τ := e.consumeMData.appFn!.appArg!.appArg!
-  let some (slots, _, _) ← literalTensorType? (← inferType P)
-    | throwError "tensor_regroup: the slots or colors of a product are not literal"
-  let fs := factors P
-  let sizes ← fs.mapM fun f => do
-    let some (s, _, _) ← literalTensorType? (← inferType f)
-      | throwError "tensor_regroup: the slots or colors of{indentExpr f}\nare not literal"
-    return s.size
-  -- `τ : ColorEquiv c (contrColors c' a)`, with `c' : κ → Color K` and `a : J → Color K`.
-  let args := (← whnfR (← inferType τ)).getAppArgs
-  let cargs := args[args.size - 1]!.getAppArgs
-  let (κ, J) := (cargs[1]!, cargs[2]!)
-  let JJ ← mkAppM ``Sum #[J, J]
-  let at_ (y : Expr) : MetaM Nat := do
-    slotNumber slots (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensors.ColorEquiv.toEquiv #[τ], y])
-  let free ← (← slotElems κ).mapM fun x => do at_ (← mkAppOptM ``Sum.inl #[κ, JJ, x])
-  let pairs ← (← slotElems J).mapM fun j => do
-    let half (left : Bool) := do
-      at_ (← mkAppOptM ``Sum.inr #[κ, JJ, ← mkAppOptM (if left then ``Sum.inl else ``Sum.inr)
-        #[J, J, j]])
-    return (← half true, ← half false)
-  return ⟨fs, sizes.scanl (· + ·) 0, free, pairs⟩
 
 /-- The ways of sending the slots of `A` to slots of `G`, factor by factor, each factor of `A` to an
 equal factor of `G`, so that every pair of `A` is sent to a pair of `G`. Each way is the list of

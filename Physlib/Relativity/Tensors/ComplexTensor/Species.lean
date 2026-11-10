@@ -35,9 +35,9 @@ representation is real, so this conjugation commutes with `SL(2, ℂ)`
 
 The invariant form is `ε` at the Weyl colors and `η` at the vector colors. The form `ε` is
 antisymmetric and `η` symmetric (`IsAntisymmetricForm`, `IsSymmetricForm`). The form
-`ε^αβ` has the matrix `!![0, -1; 1, 0]` and `ε_αβ` the matrix `!![0, 1; -1, 0]`. Lowering contracts
-the first index of the form, `ψ_β = ψ^α ε_αβ`. This is Wess and Bagger's `ψ_α = ε_αβ ψ^β`, where
-`ε_12 = -1` and `ε^12 = 1`, because their forms are the negatives of `εL'` and `εL`. The
+`ε^αβ` has the matrix `!![0, 1; -1, 0]` and `ε_αβ` the matrix `!![0, -1; 1, 0]`, so `ε^12 = 1` and
+`ε_12 = -1`. Lowering contracts the second index of the form, `ψ_α = ε_αβ ψ^β`, as in Wess and
+Bagger. The
 forms are written `εL`, `εL'`, `εR`, `εR'`, `η` and `η'`, and the deltas `δL`, `δL'`, `δR`, `δR'`,
 `δ` and `δ'`. Their components are stated through `tensorBasis`, and the antisymmetry
 of `ε` and the symmetry of `η` are stated in index notation.
@@ -245,12 +245,13 @@ end complexLorentz
 
 namespace complexLorentz
 
-/-- The invariant form at a color: `ε` at the Weyl colors and `η` at the vector colors. -/
+/-- The invariant form at a color: `ε` at the Weyl colors and `η` at the vector colors. At the Weyl
+colors it is the negative of the metric of the Weyl representation, so that `ε^12 = 1`. -/
 noncomputable def form : (c : Color Kind) → complexLorentz.V c ⊗[ℂ] complexLorentz.V c
-  | ⟨left, .up⟩ => LeftHandedWeyl.metricVal
-  | ⟨left, .down⟩ => DualLeftHandedWeyl.metricVal
-  | ⟨right, .up⟩ => RightHandedWeyl.metricVal
-  | ⟨right, .down⟩ => DualRightHandedWeyl.metricVal
+  | ⟨left, .up⟩ => -LeftHandedWeyl.metricVal
+  | ⟨left, .down⟩ => -DualLeftHandedWeyl.metricVal
+  | ⟨right, .up⟩ => -RightHandedWeyl.metricVal
+  | ⟨right, .down⟩ => -DualRightHandedWeyl.metricVal
   | ⟨vec, .up⟩ => ComplexVector.metricVal
   | ⟨vec, .down⟩ => ComplexCoVector.metricVal
 
@@ -258,22 +259,24 @@ noncomputable def form : (c : Color Kind) → complexLorentz.V c ⊗[ℂ] comple
 the trivial representation. -/
 lemma form_invariant : ∀ (c : Color Kind) (g : SL(2, ℂ)),
     TensorProduct.map (complexLorentz.rep c g) (complexLorentz.rep c g) (form c) = form c
-  | ⟨left, .up⟩ => LeftHandedWeyl.metric.map_one_invariant LeftHandedWeyl.metric_apply_one
-  | ⟨left, .down⟩ =>
-    DualLeftHandedWeyl.metric.map_one_invariant DualLeftHandedWeyl.metric_apply_one
-  | ⟨right, .up⟩ => RightHandedWeyl.metric.map_one_invariant RightHandedWeyl.metric_apply_one
-  | ⟨right, .down⟩ =>
-    DualRightHandedWeyl.metric.map_one_invariant DualRightHandedWeyl.metric_apply_one
+  | ⟨left, .up⟩ => fun g => (map_neg _ _).trans <| congrArg Neg.neg <|
+    LeftHandedWeyl.metric.map_one_invariant LeftHandedWeyl.metric_apply_one g
+  | ⟨left, .down⟩ => fun g => (map_neg _ _).trans <| congrArg Neg.neg <|
+    DualLeftHandedWeyl.metric.map_one_invariant DualLeftHandedWeyl.metric_apply_one g
+  | ⟨right, .up⟩ => fun g => (map_neg _ _).trans <| congrArg Neg.neg <|
+    RightHandedWeyl.metric.map_one_invariant RightHandedWeyl.metric_apply_one g
+  | ⟨right, .down⟩ => fun g => (map_neg _ _).trans <| congrArg Neg.neg <|
+    DualRightHandedWeyl.metric.map_one_invariant DualRightHandedWeyl.metric_apply_one g
   | ⟨vec, .up⟩ => ComplexVector.metric.map_one_invariant ComplexVector.metric_apply_one
   | ⟨vec, .down⟩ => ComplexCoVector.metric.map_one_invariant ComplexCoVector.metric_apply_one
 
-/-- The entries of the form at each color, `ε^αβ = !![0, -1; 1, 0]` at the upper Weyl colors,
-`ε_αβ = !![0, 1; -1, 0]` at the lower ones, and `η` at the vector colors. -/
+/-- The entries of the form at each color, `ε^αβ = !![0, 1; -1, 0]` at the upper Weyl colors,
+`ε_αβ = !![0, -1; 1, 0]` at the lower ones, and `η` at the vector colors. -/
 noncomputable def formEntries : (c : Color Kind) → Idx c.kind → Idx c.kind → ℂ
-  | ⟨left, .up⟩ => -metricRaw
-  | ⟨left, .down⟩ => metricRaw
-  | ⟨right, .up⟩ => -metricRaw
-  | ⟨right, .down⟩ => metricRaw
+  | ⟨left, .up⟩ => metricRaw
+  | ⟨left, .down⟩ => -metricRaw
+  | ⟨right, .up⟩ => metricRaw
+  | ⟨right, .down⟩ => -metricRaw
   | ⟨vec, _⟩ => fun μ ν => minkowskiMatrix μ ν
 
 /-- The coordinates of the form in Mathlib's product basis are `formEntries`: each form is defined
@@ -281,23 +284,35 @@ by its matrix. -/
 lemma basis_tensorProduct_repr_form : ∀ (c : Color Kind) (μ ν : Idx c.kind),
     ((complexLorentz.basis c).tensorProduct (complexLorentz.basis c)).repr (form c) (μ, ν) =
       formEntries c μ ν
-  | ⟨left, .up⟩, μ, ν => congrFun (congrFun (leftLeftToMatrix.apply_symm_apply (-metricRaw)) μ) ν
-  | ⟨left, .down⟩, μ, ν =>
-    congrFun (congrFun (dualLeftdualLeftToMatrix.apply_symm_apply metricRaw) μ) ν
-  | ⟨right, .up⟩, μ, ν => congrFun (congrFun (rightRightToMatrix.apply_symm_apply (-metricRaw)) μ) ν
-  | ⟨right, .down⟩, μ, ν =>
-    congrFun (congrFun (dualRightDualRightToMatrix.apply_symm_apply metricRaw) μ) ν
+  | ⟨left, .up⟩, μ, ν => (DFunLike.congr_fun (map_neg _ (LeftHandedWeyl.metricVal :
+      complexLorentz.V ⟨left, .up⟩ ⊗[ℂ] complexLorentz.V ⟨left, .up⟩)) (μ, ν)).trans <|
+    neg_eq_iff_eq_neg.mpr
+      (congrFun (congrFun (leftLeftToMatrix.apply_symm_apply (-metricRaw)) μ) ν)
+  | ⟨left, .down⟩, μ, ν => (DFunLike.congr_fun (map_neg _ (DualLeftHandedWeyl.metricVal :
+      complexLorentz.V ⟨left, .down⟩ ⊗[ℂ] complexLorentz.V ⟨left, .down⟩)) (μ, ν)).trans <|
+    neg_eq_iff_eq_neg.mpr
+      ((congrFun (congrFun (dualLeftdualLeftToMatrix.apply_symm_apply metricRaw) μ) ν).trans
+        (neg_neg _).symm)
+  | ⟨right, .up⟩, μ, ν => (DFunLike.congr_fun (map_neg _ (RightHandedWeyl.metricVal :
+      complexLorentz.V ⟨right, .up⟩ ⊗[ℂ] complexLorentz.V ⟨right, .up⟩)) (μ, ν)).trans <|
+    neg_eq_iff_eq_neg.mpr
+      (congrFun (congrFun (rightRightToMatrix.apply_symm_apply (-metricRaw)) μ) ν)
+  | ⟨right, .down⟩, μ, ν => (DFunLike.congr_fun (map_neg _ (DualRightHandedWeyl.metricVal :
+      complexLorentz.V ⟨right, .down⟩ ⊗[ℂ] complexLorentz.V ⟨right, .down⟩)) (μ, ν)).trans <|
+    neg_eq_iff_eq_neg.mpr
+      ((congrFun (congrFun (dualRightDualRightToMatrix.apply_symm_apply metricRaw) μ) ν).trans
+        (neg_neg _).symm)
   | ⟨vec, .up⟩, μ, ν => congrFun (congrFun (contrContrToMatrix.apply_symm_apply
       ((@minkowskiMatrix 3).map Complex.ofRealHom)) μ) ν
   | ⟨vec, .down⟩, μ, ν => congrFun (congrFun (coCoToMatrix.apply_symm_apply
       ((@minkowskiMatrix 3).map Complex.ofRealHom)) μ) ν
 
-/-- The matrices of the forms at `c.dual` and at `c` are inverse, `ε (-ε) = 1` and `η η = 1`. -/
+/-- The matrices of the forms at `c.dual` and at `c` are inverse, `(-ε) ε = 1` and `η η = 1`. -/
 lemma formEntries_dual_mul : ∀ c : Color Kind,
     Matrix.of (formEntries c.dual) * Matrix.of (formEntries c) = 1
-  | ⟨left, .up⟩ | ⟨right, .up⟩ => show metricRaw * -metricRaw = 1 by
+  | ⟨left, .up⟩ | ⟨right, .up⟩ => show -metricRaw * metricRaw = 1 by
     simpa [metricRaw] using Matrix.one_fin_two.symm
-  | ⟨left, .down⟩ | ⟨right, .down⟩ => show -metricRaw * metricRaw = 1 by
+  | ⟨left, .down⟩ | ⟨right, .down⟩ => show metricRaw * -metricRaw = 1 by
     simpa [metricRaw] using Matrix.one_fin_two.symm
   | ⟨vec, _⟩ => show (@minkowskiMatrix 3).map Complex.ofRealHom *
       (@minkowskiMatrix 3).map Complex.ofRealHom = 1 by
@@ -433,24 +448,24 @@ lemma tensorBasis_repr_formTensor (c : Color Kind) (μ : Π i, Idx (![c, c] i).k
       formEntries c (μ 0) (μ 1) :=
   (Species.tensorBasis_repr_formTensor c μ).trans (formMatrix_apply c _ _)
 
-/-- The components of `ε^αβ` are the matrix `!![0, -1; 1, 0]`. -/
+/-- The components of `ε^αβ` are the matrix `!![0, 1; -1, 0]`. -/
 lemma tensorBasis_repr_formTensor_upL (μ : Π i, Idx (![upL, upL] i).kind) :
-    (complexLorentz.tensorBasis ![upL, upL]).repr εL μ = (-metricRaw) (μ 0) (μ 1) :=
+    (complexLorentz.tensorBasis ![upL, upL]).repr εL μ = metricRaw (μ 0) (μ 1) :=
   tensorBasis_repr_formTensor upL μ
 
-/-- The components of `ε_αβ` are the matrix `!![0, 1; -1, 0]`. -/
+/-- The components of `ε_αβ` are the matrix `!![0, -1; 1, 0]`. -/
 lemma tensorBasis_repr_formTensor_downL (μ : Π i, Idx (![downL, downL] i).kind) :
-    (complexLorentz.tensorBasis ![downL, downL]).repr εL' μ = metricRaw (μ 0) (μ 1) :=
+    (complexLorentz.tensorBasis ![downL, downL]).repr εL' μ = (-metricRaw) (μ 0) (μ 1) :=
   tensorBasis_repr_formTensor downL μ
 
-/-- The components of `ε^α̇β̇` are the matrix `!![0, -1; 1, 0]`. -/
+/-- The components of `ε^α̇β̇` are the matrix `!![0, 1; -1, 0]`. -/
 lemma tensorBasis_repr_formTensor_upR (μ : Π i, Idx (![upR, upR] i).kind) :
-    (complexLorentz.tensorBasis ![upR, upR]).repr εR μ = (-metricRaw) (μ 0) (μ 1) :=
+    (complexLorentz.tensorBasis ![upR, upR]).repr εR μ = metricRaw (μ 0) (μ 1) :=
   tensorBasis_repr_formTensor upR μ
 
-/-- The components of `ε_α̇β̇` are the matrix `!![0, 1; -1, 0]`. -/
+/-- The components of `ε_α̇β̇` are the matrix `!![0, -1; 1, 0]`. -/
 lemma tensorBasis_repr_formTensor_downR (μ : Π i, Idx (![downR, downR] i).kind) :
-    (complexLorentz.tensorBasis ![downR, downR]).repr εR' μ = metricRaw (μ 0) (μ 1) :=
+    (complexLorentz.tensorBasis ![downR, downR]).repr εR' μ = (-metricRaw) (μ 0) (μ 1) :=
   tensorBasis_repr_formTensor downR μ
 
 /-- The components of `η^μν` and `η_μν` are the Minkowski matrix `diag(1, -1, -1, -1)`. -/
@@ -543,16 +558,20 @@ lemma formTensor_up_symm : {η | μ ν = η | ν μ}ᵀ := by
 lemma formTensor_down_symm : {η' | μ ν = η' | ν μ}ᵀ := by
   tensor_regroup
 
-/-- The Schouten identity for left-handed indices, `ε_γρ δ^α_α' = ε_γα' δ_ρ^α - ε_ρα' δ_γ^α`. -/
+/-- The Schouten identity for left-handed indices, `ε_γρ δ^α_α' = ε_α'ρ δ_γ^α - ε_α'γ δ_ρ^α`. The
+free lower index `α'` is the first index of each `ε`, the one that lowering contracts. -/
 lemma schouten_downL :
-    {εL' | γ ρ ⊗ δL | α α' = εL' | γ α' ⊗ δL' | ρ α + -{εL' | ρ α' ⊗ δL' | γ α}ᵀ | ρ α' γ α}ᵀ :=
-  Species.schouten_formTensor_deltaTensor downL (Fintype.card_fin 2)
+    {εL' | γ ρ ⊗ δL | α α' = εL' | α' ρ ⊗ δL' | γ α + -{εL' | α' γ ⊗ δL' | ρ α}ᵀ | α' γ ρ α}ᵀ := by
+  tensor_regroup using Species.schouten_formTensor_deltaTensor (S := complexLorentz) downL
+    (Fintype.card_fin 2)
 
 /-- The Schouten identity for right-handed indices,
-`ε_γ̇ρ̇ δ_α̇^α̇' = ε_γ̇α̇ δ_ρ̇^α̇' - ε_ρ̇α̇ δ_γ̇^α̇'`. -/
+`ε_γ̇ρ̇ δ_α̇^α̇' = ε_α̇ρ̇ δ_γ̇^α̇' - ε_α̇γ̇ δ_ρ̇^α̇'`. The free lower index `α̇` is the first
+index of each `ε`. -/
 lemma schouten_downR :
-    {εR' | γ ρ ⊗ δR' | α α' = εR' | γ α ⊗ δR' | ρ α' + -{εR' | ρ α ⊗ δR' | γ α'}ᵀ | ρ α γ α'}ᵀ :=
-  Species.schouten_formTensor_deltaTensor_dual downR (Fintype.card_fin 2)
+    {εR' | γ ρ ⊗ δR' | α α' = εR' | α ρ ⊗ δR' | γ α' + -{εR' | α γ ⊗ δR' | ρ α'}ᵀ | α γ ρ α'}ᵀ := by
+  tensor_regroup using Species.schouten_formTensor_deltaTensor_dual (S := complexLorentz) downR
+    (Fintype.card_fin 2)
 
 /-- Swapping the indices of the delta at `c` gives the delta at `c.dual`, as `δ^μ_ν = δ_ν^μ`. -/
 lemma deltaTensor_swap (c : Color Kind) :
@@ -643,7 +662,7 @@ example (c : Color Kind) : {complexLorentz.formTensor c | α β ⊗
 lemma tensorBasis_repr_formTensor_upL_tmul_upR
     (μ : Π i, Idx (![upL, upL, upR, upR] i).kind) :
     (complexLorentz.tensorBasis _).repr {εL | α β ⊗ εR | α' β'}ᵀ μ =
-      (-metricRaw) (μ 0) (μ 1) * (-metricRaw) (μ 2) (μ 3) := by
+      metricRaw (μ 0) (μ 1) * metricRaw (μ 2) (μ 3) := by
   rw [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
     tensorBasis_repr_formTensor_upL, tensorBasis_repr_formTensor_upR]
   rfl
@@ -654,7 +673,7 @@ example : (complexLorentz.tensorBasis _).repr {εL | α β ⊗ εL' | β γ}ᵀ
   rw [Species.Tensor.tensorBasis_repr_contr_one_pair]
   simp only [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
     tensorBasis_repr_formTensor_upL, tensorBasis_repr_formTensor downL]
-  change ∑ β : Fin 2, (-metricRaw) 0 β * metricRaw β 0 = 1
+  change ∑ β : Fin 2, metricRaw 0 β * (-metricRaw) β 0 = 1
   simp [metricRaw, Fin.sum_univ_two]
 
 /-- The conjugate of `ε^αβ` is `ε^α̇β̇`. The conjugate lands on `![upR, upR]` directly. -/
@@ -662,7 +681,7 @@ example : Species.Tensor.conj (fun i => by fin_cases i <;> rfl) εL = εR := by
   refine (complexLorentz.tensorBasis _).repr.injective (Finsupp.ext fun μ => ?_)
   rw [tensorBasis_repr_conj, tensorBasis_repr_formTensor_upL, tensorBasis_repr_formTensor_upR]
   -- The labels are `idxBar` along `rfl` of `μ 0` and `μ 1`, the identity.
-  have h (a b : Fin 2) : star ((-metricRaw) a b) = (-metricRaw) a b := by
+  have h (a b : Fin 2) : star (metricRaw a b) = metricRaw a b := by
     fin_cases a <;> fin_cases b <;> simp [metricRaw]
   exact h _ _
 

@@ -262,6 +262,14 @@ tensor, read as a contraction with no pairs. -/
 example : {T | μ ν = T | μ ρ ⊗ S.deltaTensor a.dual | ρ ν}ᵀ := by
   tensor_regroup
 
+/-- A delta contracted at its second slot must be inserted at a slot of the dual color. -/
+example : {T | μ ν = T | μ ρ ⊗ S.deltaTensor a | ν ρ}ᵀ := by
+  tensor_regroup
+
+/-- Matching a delta at its second slot also works when the delta is on the left. -/
+example : {T | μ ρ ⊗ S.deltaTensor a | ν ρ = T | μ ν}ᵀ := by
+  tensor_regroup
+
 /-- A delta inside a sum, `T^μ_ν + U^μ_ρ δ^ρ_ν = U^μ_ν + T^μ_ν`. -/
 example : {T | μ ν + U | μ ρ ⊗ S.deltaTensor a.dual | ρ ν = U | μ ν + T | μ ν}ᵀ := by
   tensor_regroup
@@ -342,53 +350,53 @@ section Metric
 
 variable [S.HasForm κ] [S.HasForm c.kind]
 
-/-- A lowering is a contraction with the form, `v_μ = v^ν g_νμ`. -/
-example : {v | ↓μ = v | ν ⊗ S.formTensor ⟨κ, .down⟩ | ν μ}ᵀ := by
+/-- A lowering is a contraction with the form, `v_μ = g_μν v^ν`. -/
+example : {v | ↓μ = S.formTensor ⟨κ, .down⟩ | μ ν ⊗ v | ν}ᵀ := by
   tensor_regroup
 
 /-- A form and its inverse are matched by inserting a delta, `v^μ = v^ν g_νρ g^ρμ`. -/
 example : {v | μ = v | ν ⊗ S.formTensor ⟨κ, .down⟩ | ν ρ ⊗ S.formTensor ⟨κ, .up⟩ | ρ μ}ᵀ := by
   tensor_regroup
 
-/-- A lowering cancels against the inverse form, `M^μ_ν g^νρ = M^μρ`. -/
+/-- A lowering cancels against the inverse form, `g^ρν M^μ_ν = M^μρ`. -/
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
-    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
-  tensor_regroup
-
-/-- Two lowerings cancel against two inverse forms, one pair at a time,
-`M_μν g^μρ g^νσ = M^ρσ`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
-    {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ, .up⟩ | ν σ = M | ρ σ}ᵀ := by
-  tensor_regroup
-
-/-- The same with the pairs on the right side and on two kinds, `N^ρσ = N_μν g^μρ g'^νσ`. -/
-example (κ' : K) [S.HasForm κ'] (N : S.Tensor ![⟨κ, .up⟩, ⟨κ', .up⟩]) :
-    {N | ρ σ = N | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ', .up⟩ | ν σ}ᵀ := by
-  tensor_regroup
-
-/-- A lowering contracted with the second index of a symmetric form, `M^μ_ν g^ρν = M^μρ`. -/
-example [S.IsSymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
   tensor_regroup
 
-/-- With an antisymmetric form the first index cancels with no sign, `M^μ_ν ε^νρ = M^μρ`. -/
-example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+/-- Two lowerings cancel against two inverse forms, one pair at a time,
+`g^ρμ g^σν M_μν = M^ρσ`. -/
+example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ μ ⊗ S.formTensor ⟨κ, .up⟩ | σ ν = M | ρ σ}ᵀ := by
+  tensor_regroup
+
+/-- The same with the pairs on the right side and on two kinds, `N^ρσ = g^ρμ g'^σν N_μν`. -/
+example (κ' : K) [S.HasForm κ'] (N : S.Tensor ![⟨κ, .up⟩, ⟨κ', .up⟩]) :
+    {N | ρ σ = N | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ μ ⊗ S.formTensor ⟨κ', .up⟩ | σ ν}ᵀ := by
+  tensor_regroup
+
+/-- A lowering contracted with the first index of a symmetric form, `g^νρ M^μ_ν = M^μρ`. -/
+example [S.IsSymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
   tensor_regroup
 
-/-- With an antisymmetric form the second index cancels with a sign, `M^μ_ν ε^ρν = -M^μρ`. -/
+/-- With an antisymmetric form the second index cancels with no sign, `ε^ρν M^μ_ν = M^μρ`. -/
 example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
-    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = -M | μ ρ}ᵀ := by
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
   tensor_regroup
 
--- The sign of an antisymmetric form is not dropped, `M^μ_ν ε^ρν ≠ M^μρ`.
+/-- With an antisymmetric form the first index cancels with a sign, `ε^νρ M^μ_ν = -M^μρ`. -/
+example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = -M | μ ρ}ᵀ := by
+  tensor_regroup
+
+-- The sign of an antisymmetric form is not dropped, `ε^νρ M^μ_ν ≠ M^μρ`.
 /-- error: tensor_regroup: the forms left over on one side do not cancel in inverse pairs against
 the other side
   S.formTensor { kind := κ, variance := Variance.up }.dual
   S.formTensor { kind := κ, variance := Variance.up } -/
 #guard_msgs in
 example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
-    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
+    {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
   tensor_regroup
 
 -- Cancelling the pairs does not swap the free indices, `M_μν g^μρ g^νσ ≠ M^σρ`.

@@ -75,10 +75,10 @@ lemma metricRaw_comm_star (M : SL(2,ℂ)) : metricRaw * M.1.map star = ((M.1)⁻
   rw [eta_fin_two (!![M.1 0 0, M.1 0 1; M.1 1 0, M.1 1 1].map star)]
   simp
 
-/-- Lowering both indices of a `2 × 2` matrix with the metric gives its adjugate, transposed:
-`∑ x y, ε_{xb} ε_{ya} M^{yx} = (adj M)_{ba}`, the components of `ε Mᵀ εᵀ = adj M`. -/
+/-- Lowering both indices of a `2 × 2` matrix with the metric `ε_ab = -metricRaw a b` gives its
+adjugate, transposed: `∑ x y, ε_{bx} ε_{ay} M^{yx} = (adj M)_{ba}`. -/
 lemma sum_metricRaw_mul_sum_metricRaw_mul (M : Matrix (Fin 2) (Fin 2) ℂ) (a b : Fin 2) :
-    ∑ x, metricRaw x b * ∑ y, metricRaw y a * M y x = adjugate M b a := by
+    ∑ x, (-metricRaw) b x * ∑ y, (-metricRaw) a y * M y x = adjugate M b a := by
   fin_cases a <;> fin_cases b <;> simp [Fin.sum_univ_two, metricRaw, adjugate_fin_two]
 
 /-!
