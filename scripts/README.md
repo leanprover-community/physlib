@@ -141,19 +141,25 @@ or OpenAI's Codex), checks the result, and opens a PR from your fork, which it c
 none. The PR's title comes from a fixed template, and its description holds only the model and the
 prompt. The docstring at the top of the script is its specification, step by step.
 
+The tasks are skills, in `.agents/skills/<task>/SKILL.md`: the text of a skill is the prompt given
+to the agent. `scripts/worker/physlibAlpha_worker.toml` lists which skills are tasks of the
+worker, with the title of each task's PR, and names the default task. To add or change a task,
+change those files; the worker reads them from upstream master.
+
 It needs `git`, `gh` (logged in), `elan`, and `claude` or `codex` (logged in). Run it with `uv`,
 without installing anything:
 
 ```
-uv run https://raw.githubusercontent.com/leanprover-community/physlib/master/scripts/worker/physlibAlpha_worker.py tidy
+uv run https://raw.githubusercontent.com/leanprover-community/physlib/master/scripts/worker/physlibAlpha_worker.py
 ```
 
 or install it as the `physlibAlpha-worker` command:
 
 ```
 uv tool install "git+https://github.com/leanprover-community/physlib#subdirectory=scripts/worker"
-physlibAlpha-worker tidy                                    # tidy a file picked at random
-physlibAlpha-worker tidy --file PhyslibAlpha/Foo/Bar.lean   # tidy this file
-physlibAlpha-worker custom "<task>"                         # run a task of your own
-physlibAlpha-worker tidy --agent codex                      # choose the agent (and --model, --effort)
+physlibAlpha-worker                          # run the default task
+physlibAlpha-worker tidy                     # run the task `tidy`
+physlibAlpha-worker custom "<task>"          # run a task of your own
+physlibAlpha-worker tidy --agent codex       # choose the agent (and --model, --effort)
+physlibAlpha-worker tidy --tasks-from .      # read the tasks from this checkout, to test them
 ```

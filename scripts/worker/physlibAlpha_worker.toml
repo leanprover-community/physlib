@@ -1,0 +1,16 @@
+# The tasks of physlibAlpha-worker (scripts/worker/physlibAlpha_worker.py).
+#
+# Each task is the skill in .agents/skills/<task>/SKILL.md, whose text after its frontmatter is the
+# prompt given to the agent. Only the skills listed here are tasks of the worker, and the worker
+# reads this file and the skills from upstream master (or from a checkout, with --tasks-from).
+
+# The task run when none is named.
+default = "halo-expander"
+
+# For each task, the title of its PR. It is written here, by a human, never by the AI.
+
+[tasks.halo-expander]
+title = "feat(PhyslibAlpha): add a definition expanding PhyslibAlpha"
+
+[tasks.tidy]
+title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"

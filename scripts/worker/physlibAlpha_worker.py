@@ -12,7 +12,21 @@ or as the backend of a more sophisticated engine.
 
 ## The tasks
 
--- tidy: This picks a single PhyslibAlpha file, and cleans it up.
+-- Each task is a skill in Physlib, `.agents/skills/<task>/SKILL.md`: the text after its
+   frontmatter is the prompt given to the agent. Only the skills listed in
+   `scripts/worker/physlibAlpha_worker.toml` are tasks of the worker. That file also gives each
+   task's PR title, and which task is the default, for example:
+
+       default = "halo-expander"
+
+       [tasks.halo-expander]
+       title = "feat(PhyslibAlpha): add a definition expanding PhyslibAlpha"
+
+       [tasks.tidy]
+       title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"
+
+   The tasks are read from upstream master (step 4), or, with `--tasks-from <path>`, from the
+   Physlib checkout at <path>, to test changes to them.
 -- custom "<input>": This runs the a custom task on PhyslibAlpha.
 
 ## How it works
@@ -50,18 +64,25 @@ or as the backend of a more sophisticated engine.
      Physlib, gh names the fork `origin` and adds Physlib as a second remote, `upstream`, which
      the next step branches from:
      `gh repo clone <fork> <save-location>/physlib`
-4. Create a branch based on upstream/master.
-   - The branch is called `physlibAlpha-worker/<task>-<time>`, where `<task>` is `tidy` or
-     `custom`, and `<time>` is when the run started, in UTC, as `YYYYMMDD-HHMMSS`; for example
-     `physlibAlpha-worker/tidy-20261110-143005`. The prefix marks the branches the worker made
-     on the fork, and the time makes every name new, so a run never collides with an earlier
-     one. Below we call this <branch>.
+4. Determine the task, and create a branch for it based on upstream/master.
    - Fetch the latest master from Physlib:
      `git -C <save-location>/physlib fetch upstream master`
    - Throw away anything an earlier run left in the clone. `clean` without `-x` keeps the files
      git ignores, so the `.lake` build cache survives:
      `git -C <save-location>/physlib reset --hard`
      `git -C <save-location>/physlib clean -fd`
+   - Read the config, and the skill of each task it lists, from upstream master, or from
+     <path> with `--tasks-from <path>`:
+     `git -C <save-location>/physlib show upstream/master:scripts/worker/physlibAlpha_worker.toml`
+     `git -C <save-location>/physlib show upstream/master:.agents/skills/<task>/SKILL.md`
+   - The task, <task>, is the one the user names, otherwise the config's `default`. It must be
+     `custom`, or be listed in the config and have a skill; otherwise stop, and tell the user
+     which tasks there are.
+   - The branch is called `physlibAlpha-worker/<task>-<time>`, where `<time>` is when the run
+     started, in UTC, as `YYYYMMDD-HHMMSS`; for example
+     `physlibAlpha-worker/tidy-20261110-143005`. The prefix marks the branches the worker made
+     on the fork, and the time makes every name new, so a run never collides with an earlier
+     one. Below we call this <branch>.
    - Create the branch from upstream/master and switch to it. The worker later pushes it with
      `git push origin <branch>`, naming the fork explicitly, so it never goes to Physlib:
      `git -C <save-location>/physlib switch --create <branch> upstream/master`
@@ -105,17 +126,8 @@ or as the backend of a more sophisticated engine.
      changed. This fetches Mathlib's prebuilt files and Physlib's own, PhyslibAlpha's included:
      `lake exe get_cache`
      (run in `<save-location>/physlib`, as are all commands below.)
-   - Choose what the task works on. Below we call this <target>.
-     - `tidy`: the file the user gives with `--file`, otherwise one picked at random from the
-       files that `PhyslibAlpha.lean` imports, leaving out files over 400 lines (so the PR
-       stays reviewable) and files an open PR already changes. This lists those files:
-       `gh pr list -R leanprover-community/physlib --state open --limit 300 --json files --jq '.[].files[].path'`
-     - `custom`: the user's input; there is no single file.
-   - Write the prompt. It starts with the task:
-     - `tidy`: tidy <target> to the standard of AGENTS.md and docs/ReviewGuidelines.md, without
-       changing the name or statement of any declaration, removing one, or changing what a
-       definition computes;
-     - `custom`: the user's input, word for word.
+   - Write the prompt, <prompt>: the text of the task's skill after its frontmatter; for
+     `custom`, the user's input, word for word.
    - Add the task's permissions to <agent-command>. Edits are allowed inside the clone, and
      the only commands allowed are builds, the linters and read-only git:
      - `claude`:
@@ -131,19 +143,18 @@ or as the backend of a more sophisticated engine.
      <commit-message>. If it failed, stop; the clone is left as it is, for the user to look at.
    - Check the change, without relying on what the agent reports:
      - Which files changed. If none did, tell the user the agent's final message and go to
-       step 8:
-       `git status --porcelain`
-     - `tidy` only: no file other than <target> changed, apart from
-       `scripts/lint/exemptions/Theorems.txt` and `scripts/lint/exemptions/spellingWords.txt`;
-       and no declaration in <target> was removed or had its statement changed (`theorem` to
-       `lemma` is allowed), compared with upstream/master using the declaration parser in
+       step 8. `--untracked-files=all` lists each new file, even inside a new folder:
+       `git status --porcelain --untracked-files=all`
+     - Only files in `PhyslibAlpha/`, `PhyslibAlpha.lean`, `scripts/lint/exemptions/Theorems.txt`
+       and `scripts/lint/exemptions/spellingWords.txt` changed, and none was deleted.
+     - No declaration in an existing file was removed or had its statement changed (`theorem`
+       to `lemma` is allowed), compared with upstream/master using the declaration parser in
        `scripts/github/check_golf.py`.
      - No `sorry`, `admit`, `axiom` or `native_decide` was added.
-     - It builds: for `tidy`, just <target>'s module, such as `PhyslibAlpha.Foo.Bar`; for
-       `custom`, all of PhyslibAlpha:
-       `lake build <module>`
+     - PhyslibAlpha builds:
        `lake build PhyslibAlpha`
-     - The PhyslibAlpha linters that AGENTS.md lists pass:
+     - The PhyslibAlpha linters that AGENTS.md lists pass (`alphaFileImports` also checks that
+       `PhyslibAlpha.lean` imports any new file):
        `lake exe module_doc_lint`
        `./scripts/lint/required/alpha/alphaPythonLinters.sh`
        `lake exe runPhyslibAlphaLinters`
@@ -158,8 +169,7 @@ or as the backend of a more sophisticated engine.
    - Push the branch to the fork:
      `git push origin <branch>`
    - Make the title, <title>:
-     - `tidy`: `refactor(PhyslibAlpha): tidy <module>`, for example
-       `refactor(PhyslibAlpha): tidy PhyslibAlpha.Foo.Bar`;
+     - a task from the config: its `title` there;
      - `custom`: `PhyslibAlpha: ` followed by the first line of the user's input, cut to 72
        characters.
    - Make the description, <body>: the model, then the prompt exactly as sent, in a code block:
@@ -186,7 +196,7 @@ or as the backend of a more sophisticated engine.
      user can look at what the agent did; step 4 of the next run throws it away.
    - Keep the `.lake` build cache and the logs. Do not delete the branch on the fork: the PR
      needs it.
-   - Tell the user what happened: the task and <target>, the agent and model, the cost if the
+   - Tell the user what happened: the task, the agent and model, the cost if the
      agent reports one (for `claude`, `total_cost_usd` in its last event), the log file, and
      <pr-url> from step 7.
 
@@ -196,6 +206,11 @@ From the root of a Physlib checkout, run the file directly with Python (3.11 or 
 uses only Python's standard library):
 
     python3 scripts/worker/physlibAlpha_worker.py tidy
+
+To test changes to the tasks or the config before they reach master, read them from your
+checkout instead:
+
+    python3 scripts/worker/physlibAlpha_worker.py tidy --tasks-from .
 
 A local run does everything a real one does, including opening a PR on
 `leanprover-community/physlib`.
@@ -208,11 +223,11 @@ import argparse
 import importlib.util
 import json
 import os
-import random
 import re
 import subprocess
 import sys
 import time
+import tomllib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -222,6 +237,7 @@ UPSTREAM = "leanprover-community/physlib"
 BASE_BRANCH = "master"
 LIBRARY = "PhyslibAlpha"
 NAME = "physlibAlpha-worker"
+CONFIG = "scripts/worker/physlibAlpha_worker.toml"
 
 
 # =============================================================================
@@ -358,15 +374,77 @@ def ensure_clone(save: Path, fork: str) -> Path:
 
 
 # =============================================================================
-# 4. Create a branch based on upstream/master
+# 4. Determine the task, and create a branch for it based on upstream/master
 # =============================================================================
+
+
+@dataclass
+class Task:
+    name: str
+    prompt: str  # <prompt>
+    title: str  # <title>
+
+
+def update_clone(clone: Path) -> None:
+    git(clone, "fetch", "upstream", BASE_BRANCH)
+    git(clone, "reset", "--hard")
+    git(clone, "clean", "-fd")
+
+
+def read_task_file(clone: Path, tasks_from: Path | None, path: str) -> str | None:
+    """`path` from upstream master, or from the checkout `tasks_from`; None if it does not exist."""
+    if tasks_from is not None:
+        local = tasks_from / path
+        return local.read_text() if local.is_file() else None
+    result = run(["git", "-C", str(clone), "show", f"upstream/{BASE_BRANCH}:{path}"], capture=True, check=False)
+    return result.stdout if result.returncode == 0 else None
+
+
+def skill_path(name: str) -> str:
+    return f".agents/skills/{name}/SKILL.md"
+
+
+def skill_prompt(skill: str) -> str:
+    """The text of a SKILL.md after its frontmatter (the lines between the first two `---`)."""
+    lines = skill.splitlines()
+    if lines and lines[0].strip() == "---":
+        end = next((i for i, line in enumerate(lines[1:], 1) if line.strip() == "---"), 0)
+        lines = lines[end + 1 :]
+    return "\n".join(lines).strip()
+
+
+def custom_title(user_input: str) -> str:
+    first_line = user_input.strip().splitlines()[0] if user_input.strip() else ""
+    return f"{LIBRARY}: {first_line[:72]}"
+
+
+def determine_task(clone: Path, tasks_from: Path | None, requested: str | None, user_input: str | None) -> Task:
+    """The task the user names, or the config's default; `custom`, or one listed with a skill."""
+    config_text = read_task_file(clone, tasks_from, CONFIG)
+    if config_text is None:
+        raise WorkerError(f"there is no {CONFIG} in {tasks_from or 'upstream master'}")
+    try:
+        config = tomllib.loads(config_text)
+    except tomllib.TOMLDecodeError as error:
+        raise WorkerError(f"{CONFIG} is not valid TOML: {error}") from None
+    listed = config.get("tasks", {})
+    skills = {name: read_task_file(clone, tasks_from, skill_path(name)) for name in listed}
+    name = requested or str(config.get("default", ""))
+    if name == "custom":
+        if not user_input:
+            raise WorkerError('the custom task needs its input: custom "<input>"')
+        return Task("custom", user_input, custom_title(user_input))
+    if user_input:
+        raise WorkerError(f"only the custom task takes an input, not {name}")
+    skill = skills.get(name)
+    if skill is None or "title" not in listed[name]:
+        available = ["custom", *sorted(n for n in listed if skills[n] is not None and "title" in listed[n])]
+        raise WorkerError(f"there is no task {name!r}; the tasks are: {', '.join(available)}")
+    return Task(name, skill_prompt(skill), listed[name]["title"])
 
 
 def create_branch(clone: Path, task: str, started: str) -> str:
     branch = f"{NAME}/{task}-{started}"
-    git(clone, "fetch", "upstream", BASE_BRANCH)
-    git(clone, "reset", "--hard")
-    git(clone, "clean", "-fd")
     git(clone, "switch", "--create", branch, f"upstream/{BASE_BRANCH}")
     return branch
 
@@ -443,8 +521,6 @@ def choose_agent(requested: str | None, model: str | None, effort: str) -> Agent
 # 6. Running the task
 # =============================================================================
 
-MAX_LINES = 400
-
 CLAUDE_PERMISSIONS = [
     "--permission-mode", "acceptEdits",
     "--allowedTools", "Read", "Edit", "Write", "Glob", "Grep",
@@ -460,8 +536,9 @@ CLAUDE_PERMISSIONS = [
 ]
 CODEX_PERMISSIONS = ["--sandbox", "workspace-write"]
 
-# Besides <target>, a tidy may change these two lists.
-TIDY_EXTRA_FILES = (
+# The files a task may change, besides those in PhyslibAlpha/.
+ALSO_ALLOWED = (
+    f"{LIBRARY}.lean",
     "scripts/lint/exemptions/Theorems.txt",
     "scripts/lint/exemptions/spellingWords.txt",
 )
@@ -473,51 +550,6 @@ LINTERS = [
     ["lake", "exe", "alphaFileImports"],
     ["lake", "exe", "noAlphaImports"],
 ]
-
-
-def module_of(path: str) -> str:
-    return path.removesuffix(".lean").replace("/", ".")
-
-
-def library_files(clone: Path) -> list[str]:
-    """The files that PhyslibAlpha.lean imports."""
-    imports = (clone / f"{LIBRARY}.lean").read_text()
-    modules = set(re.findall(rf"^(?:public )?import ({LIBRARY}\.\S+)", imports, re.M))
-    return sorted(module.replace(".", "/") + ".lean" for module in modules)
-
-
-def files_in_open_prs() -> set[str]:
-    paths = output(
-        ["gh", "pr", "list", "-R", UPSTREAM, "--state", "open", "--limit", "300", "--json", "files",
-         "--jq", ".[].files[].path"]
-    )
-    return set(paths.split())
-
-
-def choose_target(clone: Path, task: str, file: str | None, user_input: str | None) -> str:
-    """<target>: the file to tidy, or the user's input for a custom task."""
-    if task == "custom":
-        assert user_input is not None
-        return user_input
-    files = library_files(clone)
-    if file:
-        if file not in files:
-            raise WorkerError(f"{file} is not a file that {LIBRARY}.lean imports")
-        return file
-    busy = files_in_open_prs()
-    candidates = [p for p in files if p not in busy and len((clone / p).read_text().splitlines()) <= MAX_LINES]
-    if not candidates:
-        raise WorkerError("no file to tidy: every candidate is over 400 lines or changed by an open PR")
-    return random.choice(candidates)
-
-
-def write_prompt(task: str, target: str) -> str:
-    if task == "custom":
-        return target
-    return (
-        f"Tidy {target} to the standard of AGENTS.md and docs/ReviewGuidelines.md, without changing the "
-        "name or statement of any declaration, removing one, or changing what a definition computes."
-    )
 
 
 def with_permissions(agent: Agent) -> list[str]:
@@ -590,10 +622,11 @@ def run_agent(clone: Path, agent: Agent, prompt: str, log: Path) -> AgentRun:
     return AgentRun(proc.returncode == 0 and ok, message, cost)
 
 
-def changed_files(clone: Path) -> list[str]:
-    status = run(["git", "status", "--porcelain"], cwd=clone, capture=True).stdout
+def changed_files(clone: Path) -> list[tuple[str, str]]:
+    """Each changed file as (status, path); `??` marks a new file, and a `D` a deleted one."""
+    status = run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=clone, capture=True).stdout
     # Each line is two status letters, a space and the path (`old -> new` for a rename).
-    return [line[3:].split(" -> ")[-1].strip('"') for line in status.splitlines()]
+    return [(line[:2], line[3:].split(" -> ")[-1].strip('"')) for line in status.splitlines()]
 
 
 def at_upstream(clone: Path, path: str) -> str:
@@ -614,13 +647,13 @@ def load_check_golf(clone: Path) -> ModuleType:
     return module
 
 
-def statement_problems(clone: Path, target: str) -> list[str]:
-    """Declarations of <target> removed, or with a changed statement; `theorem` to `lemma` is allowed."""
+def statement_problems(clone: Path, path: str) -> list[str]:
+    """Declarations of `path` removed, or with a changed statement; `theorem` to `lemma` is allowed."""
     check_golf = load_check_golf(clone)
-    before_src = at_upstream(clone, target)
-    after_src = (clone / target).read_text() if (clone / target).exists() else ""
+    before_src = at_upstream(clone, path)
+    after_src = (clone / path).read_text() if (clone / path).exists() else ""
     before, after = check_golf.parse_decls(before_src), check_golf.parse_decls(after_src)
-    report = check_golf.compare_file(target, before_src, after_src)
+    report = check_golf.compare_file(path, before_src, after_src)
 
     def statement(sig: str) -> str:
         return re.sub(r"\btheorem\b", "lemma", sig, count=1)
@@ -646,20 +679,25 @@ def escape_hatch_problems(clone: Path, changed: list[str]) -> list[str]:
     return problems
 
 
-def check_change(clone: Path, task: str, target: str) -> bool:
+def check_change(clone: Path) -> bool:
     """Check the change without relying on what the agent reports. False when nothing changed."""
-    changed = changed_files(clone)
-    if not changed:
+    entries = changed_files(clone)
+    if not entries:
         return False
+    changed = [path for _, path in entries]
     info("changed: " + ", ".join(changed))
     problems = []
-    if task == "tidy":
-        problems += [f"changed a file other than {target}: {p}" for p in changed if p not in (target, *TIDY_EXTRA_FILES)]
-        problems += statement_problems(clone, target)
+    for status, path in entries:
+        if "D" in status or "R" in status:
+            problems.append(f"deleted or renamed: {path}")
+        elif not (path.startswith(f"{LIBRARY}/") or path in ALSO_ALLOWED):
+            problems.append(f"changed a file outside {LIBRARY}: {path}")
+        elif status != "??" and path.endswith(".lean"):
+            problems += statement_problems(clone, path)
     problems += escape_hatch_problems(clone, changed)
     if problems:
         raise WorkerError("the change failed its checks:\n" + "\n".join(problems))
-    run(["lake", "build", module_of(target) if task == "tidy" else LIBRARY], cwd=clone)
+    run(["lake", "build", LIBRARY], cwd=clone)
     for linter in LINTERS:
         run(linter, cwd=clone)
     return True
@@ -677,13 +715,6 @@ def commit(clone: Path, message: str, co_author_line: str) -> None:
 
 def push(clone: Path, branch: str) -> None:
     git(clone, "push", "origin", branch)
-
-
-def pr_title(task: str, target: str) -> str:
-    if task == "tidy":
-        return f"refactor({LIBRARY}): tidy {module_of(target)}"
-    first_line = target.strip().splitlines()[0] if target.strip() else ""
-    return f"{LIBRARY}: {first_line[:72]}"
 
 
 def pr_body(agent: Agent, prompt: str) -> str:
@@ -714,9 +745,8 @@ def clean_up(clone: Path, branch: str) -> None:
     git(clone, "branch", "-D", branch)
 
 
-def report(task: str, target: str, agent: Agent, cost: float | None, log: Path, pr_url: str | None) -> None:
+def report(task: str, agent: Agent, cost: float | None, log: Path, pr_url: str | None) -> None:
     info(f"task: {task}")
-    info(f"target: {target}")
     info(f"agent: {agent.name}, model: {agent.model}")
     if cost is not None:
         info(f"cost: ${cost:.2f}")
@@ -730,7 +760,6 @@ def report(task: str, target: str, agent: Agent, cost: float | None, log: Path, 
 
 
 def work(args: argparse.Namespace) -> int:
-    task = args.task
     started = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
 
     step("1. Determine the save location")
@@ -743,50 +772,54 @@ def work(args: argparse.Namespace) -> int:
     step("3. Determine if a clone already exists, and if not make one")
     clone = ensure_clone(save, fork)
 
-    step("4. Create a branch based on upstream/master")
-    branch = create_branch(clone, task, started)
+    step("4. Determine the task, and create a branch for it based on upstream/master")
+    update_clone(clone)
+    tasks_from = Path(args.tasks_from).expanduser().resolve() if args.tasks_from else None
+    task = determine_task(clone, tasks_from, args.task, args.input)
+    info(f"task: {task.name}" + (f" (from {tasks_from})" if tasks_from else ""))
+    branch = create_branch(clone, task.name, started)
 
     step("5. Finding the model to run the code on")
     agent = choose_agent(args.agent, args.model, args.effort)
 
     step("6. Running the task")
     run(["lake", "exe", "get_cache"], cwd=clone)
-    target = choose_target(clone, task, getattr(args, "file", None), getattr(args, "input", None))
-    info(f"target: {target}")
-    prompt = write_prompt(task, target)
-    log = save / "logs" / f"{started}-{task}.jsonl"
-    result = run_agent(clone, agent, prompt, log)
+    log = save / "logs" / f"{started}-{task.name}.jsonl"
+    result = run_agent(clone, agent, task.prompt, log)
     if not result.ok:
         raise WorkerError(f"the agent did not finish successfully; see {log}. The clone {clone} is left as it is")
-    changed = check_change(clone, task, target)
+    changed = check_change(clone)
 
     pr_url = None
     if changed:
         step("7. Creating the PR")
         commit(clone, result.message, agent.co_author)
         push(clone, branch)
-        pr_url = open_pr(clone, login, branch, pr_title(task, target), pr_body(agent, prompt))
+        pr_url = open_pr(clone, login, branch, task.title, pr_body(agent, task.prompt))
     else:
         info("nothing changed; the agent's final message was:")
         info(result.message)
 
     step("8. Clean up")
     clean_up(clone, branch)
-    report(task, target, agent, result.cost_usd, log, pr_url)
+    report(task.name, agent, result.cost_usd, log, pr_url)
     return 0
 
 
 def parser() -> argparse.ArgumentParser:
     top = argparse.ArgumentParser(prog=NAME, description="Run one task on PhyslibAlpha with an AI agent, and open a PR.")
-    tasks = top.add_subparsers(dest="task", required=True)
-    tidy = tasks.add_parser("tidy", help="pick a single PhyslibAlpha file, and clean it up")
-    tidy.add_argument("--file", help="the file to tidy, e.g. PhyslibAlpha/Foo/Bar.lean (default: one picked at random)")
-    custom = tasks.add_parser("custom", help="run a custom task on PhyslibAlpha")
-    custom.add_argument("input", help="the task, given to the agent word for word")
-    for sub in (tidy, custom):
-        sub.add_argument("--agent", choices=AGENTS, help="claude or codex (default: claude, then codex if it fails)")
-        sub.add_argument("--model", help="a full model ID; needs --agent (default: claude-opus-5-5 / gpt-6.1-sol)")
-        sub.add_argument("--effort", choices=EFFORTS, default=DEFAULT_EFFORT, help="default: high")
+    top.add_argument(
+        "task", nargs="?",
+        help=f"a task listed in {CONFIG}, or `custom` (default: the default task listed there)",
+    )
+    top.add_argument("input", nargs="?", help="for `custom` only: the task, given to the agent word for word")
+    top.add_argument("--agent", choices=AGENTS, help="claude or codex (default: claude, then codex if it fails)")
+    top.add_argument("--model", help="a full model ID; needs --agent (default: claude-opus-5-5 / gpt-6.1-sol)")
+    top.add_argument("--effort", choices=EFFORTS, default=DEFAULT_EFFORT, help="default: high")
+    top.add_argument(
+        "--tasks-from", metavar="PATH",
+        help="read the tasks from the Physlib checkout at PATH instead of upstream master, to test them",
+    )
     return top
 
 
