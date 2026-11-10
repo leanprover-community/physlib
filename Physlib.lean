@@ -313,6 +313,7 @@ public import Physlib.ProbabilisticTheory.LocalNet.QuasilocalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.StarAlgebra.Commutator
 public import Physlib.ProbabilisticTheory.StarAlgebra.State
 public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.State.Basic
