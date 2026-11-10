@@ -157,9 +157,9 @@ or install it as the `physlibAlpha-worker` command:
 
 ```
 uv tool install "git+https://github.com/leanprover-community/physlib#subdirectory=scripts/worker"
-physlibAlpha-worker                          # run the default task
-physlibAlpha-worker tidy                     # run the task `tidy`
-physlibAlpha-worker custom "<task>"          # run a task of your own
-physlibAlpha-worker tidy --agent codex       # choose the agent (and --model, --effort)
-physlibAlpha-worker tidy --tasks-from .      # read the tasks from this checkout, to test them
+physlibAlpha-worker                                           # run the default task
+physlibAlpha-worker alpha-align-with-handbook                 # run the task `alpha-align-with-handbook`
+physlibAlpha-worker custom "<task>"                           # run a task of your own
+physlibAlpha-worker alpha-align-with-handbook --agent codex   # choose the agent (and --model, --effort)
+physlibAlpha-worker alpha-align-with-handbook --tasks-from .  # read the tasks from this checkout, to test them
 ```

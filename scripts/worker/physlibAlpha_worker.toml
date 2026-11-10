@@ -5,12 +5,12 @@
 # reads this file and the skills from upstream master (or from a checkout, with --tasks-from).
 
 # The task run when none is named.
-default = "halo-expander"
+default = "alpha-next-step"
 
 # For each task, the title of its PR. It is written here, by a human, never by the AI.
 
-[tasks.halo-expander]
+[tasks.alpha-next-step]
 title = "feat(PhyslibAlpha): add a definition expanding PhyslibAlpha"
 
-[tasks.tidy]
+[tasks.alpha-align-with-handbook]
 title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"

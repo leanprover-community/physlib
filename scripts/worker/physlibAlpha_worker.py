@@ -17,12 +17,12 @@ or as the backend of a more sophisticated engine.
    `scripts/worker/physlibAlpha_worker.toml` are tasks of the worker. That file also gives each
    task's PR title, and which task is the default, for example:
 
-       default = "halo-expander"
+       default = "alpha-next-step"
 
-       [tasks.halo-expander]
+       [tasks.alpha-next-step]
        title = "feat(PhyslibAlpha): add a definition expanding PhyslibAlpha"
 
-       [tasks.tidy]
+       [tasks.alpha-align-with-handbook]
        title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"
 
    The tasks are read from upstream master (step 4), or, with `--tasks-from <path>`, from the
@@ -80,9 +80,9 @@ or as the backend of a more sophisticated engine.
      which tasks there are.
    - The branch is called `physlibAlpha-worker/<task>-<time>`, where `<time>` is when the run
      started, in UTC, as `YYYYMMDD-HHMMSS`; for example
-     `physlibAlpha-worker/tidy-20261110-143005`. The prefix marks the branches the worker made
-     on the fork, and the time makes every name new, so a run never collides with an earlier
-     one. Below we call this <branch>.
+     `physlibAlpha-worker/alpha-align-with-handbook-20261110-143005`. The prefix marks the
+     branches the worker made on the fork, and the time makes every name new, so a run never
+     collides with an earlier one. Below we call this <branch>.
    - Create the branch from upstream/master and switch to it. The worker later pushes it with
      `git push origin <branch>`, naming the fork explicitly, so it never goes to Physlib:
      `git -C <save-location>/physlib switch --create <branch> upstream/master`
@@ -99,7 +99,8 @@ or as the backend of a more sophisticated engine.
    Output, used by the later steps:
    - <agent-command>: the command that starts the agent on a task, without the prompt (sent on
      its standard input) or the task's permissions (added by the step that runs the task).
-   - <co-author>: the name credited in the commit, as AGENTS.md asks, made from the model ID;
+   - <co-author>: the name credited in the commit the worker makes (step 7), as AGENTS.md asks,
+     made from the model ID;
      for `claude-opus-5-5`:
      `Co-authored-by: Claude Opus 5.5 <no-reply+claude-opus-5-5@anthropic.com>`
      For `codex` it names the model ID; the email address is still to be decided.
@@ -129,27 +130,33 @@ or as the backend of a more sophisticated engine.
    - Write the prompt, <prompt>: the text of the task's skill after its frontmatter; for
      `custom`, the user's input, word for word.
    - Add the task's permissions to <agent-command>. Edits are allowed inside the clone, and
-     the only commands allowed are builds, the linters and read-only git:
+     the only commands allowed are builds, the checks that AGENTS.md lists under "Before you
+     finish", read-only git, and committing on <branch>:
      - `claude`:
-       `--permission-mode acceptEdits --allowedTools Read Edit Write Glob Grep "Bash(lake build:*)" "Bash(lake env lean:*)" "Bash(lake exe module_doc_lint:*)" "Bash(lake exe runPhyslibAlphaLinters:*)" "Bash(./scripts/lint/required/alpha/alphaPythonLinters.sh:*)" "Bash(git diff:*)" "Bash(git status:*)" "Bash(git log:*)" "Bash(git show:*)"`
+       `--permission-mode acceptEdits --allowedTools Read Edit Write Glob Grep "Bash(lake build:*)" "Bash(lake env lean:*)" "Bash(lake exe cache get:*)" "Bash(lake exe lint_all:*)" "Bash(lake exe theorem_lint:*)" "Bash(lake exe forMathlib_lint:*)" "Bash(./scripts/lint/required/lint-style.sh:*)" "Bash(lake exe module_doc_lint:*)" "Bash(lake exe auxillary_script_test:*)" "Bash(lake exe runPhyslibAlphaLinters:*)" "Bash(lake exe noAlphaImports:*)" "Bash(lake exe alphaFileImports:*)" "Bash(./scripts/lint/required/alpha/alphaPythonLinters.sh:*)" "Bash(git diff:*)" "Bash(git status:*)" "Bash(git log:*)" "Bash(git show:*)" "Bash(git add:*)" "Bash(git commit:*)"`
      - `codex` has no list of allowed commands; its sandbox lets it edit and run commands in
-       the clone only:
+       the clone only. It may keep `.git` read-only, so that Codex cannot commit; step 7 then
+       commits its change:
        `--sandbox workspace-write`
    - Run <agent-command> with the permissions, sending the prompt on its standard input. Show
      the user its progress, and save every line it prints to
      `<save-location>/logs/<time>-<task>.jsonl`.
    - Check the agent finished: it must exit with 0, and its last event must report success
-     (for `claude`, `"type": "result"` with `"is_error": false`). Its final message is
-     <commit-message>. If it failed, stop; the clone is left as it is, for the user to look at.
-   - Check the change, without relying on what the agent reports:
-     - Which files changed. If none did, tell the user the agent's final message and go to
-       step 8. `--untracked-files=all` lists each new file, even inside a new folder:
-       `git status --porcelain --untracked-files=all`
-     - Only files in `PhyslibAlpha/`, `PhyslibAlpha.lean`, `scripts/lint/exemptions/Theorems.txt`
-       and `scripts/lint/exemptions/spellingWords.txt` changed, and none was deleted.
-     - No declaration in an existing file was removed or had its statement changed (`theorem`
-       to `lemma` is allowed), compared with upstream/master using the declaration parser in
-       `scripts/github/check_golf.py`.
+     (for `claude`, `"type": "result"` with `"is_error": false`). If it failed, stop; the clone
+     is left as it is, for the user to look at.
+   - Check the change, without relying on what the agent reports. The change is everything
+     that differs from upstream/master, whether the agent committed it or not:
+     - The agent stayed on <branch>, and only added commits to it. The first prints <branch>;
+       the second fails if upstream/master is not an ancestor of what is checked out:
+       `git branch --show-current`
+       `git merge-base --is-ancestor upstream/master HEAD`
+     - Which files changed. The first lists the files changed since upstream/master, in commits
+       or not, with a rename listed as a deletion and an addition; the second lists the new
+       files not yet added. If none changed, tell the user the agent's final message and go to
+       step 8:
+       `git diff --name-status --no-renames upstream/master`
+       `git ls-files --others --exclude-standard`
+     - Only files in `PhyslibAlpha/` and `PhyslibAlpha.lean` changed, and none was deleted.
      - No `sorry`, `admit`, `axiom` or `native_decide` was added.
      - PhyslibAlpha builds:
        `lake build PhyslibAlpha`
@@ -163,7 +170,9 @@ or as the backend of a more sophisticated engine.
      If any check fails, stop and say which; the clone is left as it is.
 7. Creating the PR. Nothing in the PR is written by the AI: its title comes from a fixed
    template, and its description holds only the model and the prompt.
-   - Commit the change, with <commit-message> followed by a blank line and <co-author>:
+   - Commit what the agent left uncommitted, if anything (the first prints nothing if there is
+     none), with <title> (below) followed by a blank line and <co-author>:
+     `git status --porcelain`
      `git add --all`
      `git commit --file -`
    - Push the branch to the fork:
@@ -205,12 +214,12 @@ or as the backend of a more sophisticated engine.
 From the root of a Physlib checkout, run the file directly with Python (3.11 or later; the script
 uses only Python's standard library):
 
-    python3 scripts/worker/physlibAlpha_worker.py tidy
+    python3 scripts/worker/physlibAlpha_worker.py alpha-align-with-handbook
 
 To test changes to the tasks or the config before they reach master, read them from your
 checkout instead:
 
-    python3 scripts/worker/physlibAlpha_worker.py tidy --tasks-from .
+    python3 scripts/worker/physlibAlpha_worker.py alpha-align-with-handbook --tasks-from .
 
 A local run does everything a real one does, including opening a PR on
 `leanprover-community/physlib`.
@@ -220,7 +229,6 @@ A local run does everything a real one does, including opening a PR on
 from __future__ import annotations
 
 import argparse
-import importlib.util
 import json
 import os
 import re
@@ -231,7 +239,6 @@ import tomllib
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
-from types import ModuleType
 
 UPSTREAM = "leanprover-community/physlib"
 BASE_BRANCH = "master"
@@ -526,22 +533,29 @@ CLAUDE_PERMISSIONS = [
     "--allowedTools", "Read", "Edit", "Write", "Glob", "Grep",
     "Bash(lake build:*)",
     "Bash(lake env lean:*)",
+    # The checks AGENTS.md lists under "Before you finish".
+    "Bash(lake exe cache get:*)",
+    "Bash(lake exe lint_all:*)",
+    "Bash(lake exe theorem_lint:*)",
+    "Bash(lake exe forMathlib_lint:*)",
+    "Bash(./scripts/lint/required/lint-style.sh:*)",
     "Bash(lake exe module_doc_lint:*)",
+    "Bash(lake exe auxillary_script_test:*)",
     "Bash(lake exe runPhyslibAlphaLinters:*)",
+    "Bash(lake exe noAlphaImports:*)",
+    "Bash(lake exe alphaFileImports:*)",
     "Bash(./scripts/lint/required/alpha/alphaPythonLinters.sh:*)",
     "Bash(git diff:*)",
     "Bash(git status:*)",
     "Bash(git log:*)",
     "Bash(git show:*)",
+    "Bash(git add:*)",
+    "Bash(git commit:*)",
 ]
 CODEX_PERMISSIONS = ["--sandbox", "workspace-write"]
 
 # The files a task may change, besides those in PhyslibAlpha/.
-ALSO_ALLOWED = (
-    f"{LIBRARY}.lean",
-    "scripts/lint/exemptions/Theorems.txt",
-    "scripts/lint/exemptions/spellingWords.txt",
-)
+ALSO_ALLOWED = (f"{LIBRARY}.lean",)
 ESCAPE_HATCHES = re.compile(r"\b(sorry|admit|axiom|native_decide)\b")
 LINTERS = [
     ["lake", "exe", "module_doc_lint"],
@@ -562,7 +576,7 @@ def with_permissions(agent: Agent) -> list[str]:
 @dataclass
 class AgentRun:
     ok: bool
-    message: str  # <commit-message>
+    message: str  # the agent's final message
     cost_usd: float | None
 
 
@@ -622,49 +636,38 @@ def run_agent(clone: Path, agent: Agent, prompt: str, log: Path) -> AgentRun:
     return AgentRun(proc.returncode == 0 and ok, message, cost)
 
 
+def check_branch(clone: Path, branch: str) -> list[str]:
+    """Problems if the agent left <branch>, or rewrote it rather than adding commits."""
+    problems = []
+    current = run(["git", "branch", "--show-current"], cwd=clone, capture=True).stdout.strip()
+    if current != branch:
+        problems.append(f"the agent left the branch {branch} (now on {current or 'a detached HEAD'})")
+    ancestor = run(
+        ["git", "merge-base", "--is-ancestor", f"upstream/{BASE_BRANCH}", "HEAD"], cwd=clone, check=False
+    )
+    if ancestor.returncode != 0:
+        problems.append(f"upstream/{BASE_BRANCH} is no longer an ancestor of the branch")
+    return problems
+
+
 def changed_files(clone: Path) -> list[tuple[str, str]]:
-    """Each changed file as (status, path); `??` marks a new file, and a `D` a deleted one."""
-    status = run(["git", "status", "--porcelain", "--untracked-files=all"], cwd=clone, capture=True).stdout
-    # Each line is two status letters, a space and the path (`old -> new` for a rename).
-    return [(line[:2], line[3:].split(" -> ")[-1].strip('"')) for line in status.splitlines()]
+    """Each file changed since upstream/master, committed or not, as (status, path).
+
+    The status is git's letter: `A` added, `M` modified, `D` deleted; a rename is a `D` and an `A`.
+    """
+    diff = run(
+        ["git", "diff", "--name-status", "--no-renames", f"upstream/{BASE_BRANCH}"], cwd=clone, capture=True
+    ).stdout
+    new = run(["git", "ls-files", "--others", "--exclude-standard"], cwd=clone, capture=True).stdout
+    # Each line of the diff is the status letter, a tab and the path.
+    entries = [tuple(line.split("\t", 1)) for line in diff.splitlines()]
+    return [(status, path) for status, path in entries] + [("A", path) for path in new.splitlines()]
 
 
 def at_upstream(clone: Path, path: str) -> str:
     """`path` as it is on upstream/master; empty if it is new."""
     result = run(["git", "show", f"upstream/{BASE_BRANCH}:{path}"], cwd=clone, capture=True, check=False, quiet=True)
     return result.stdout if result.returncode == 0 else ""
-
-
-def load_check_golf(clone: Path) -> ModuleType:
-    """Physlib's declaration parser, scripts/github/check_golf.py."""
-    source = clone / "scripts" / "github" / "check_golf.py"
-    spec = importlib.util.spec_from_file_location("check_golf", source)
-    if spec is None or spec.loader is None:
-        raise WorkerError(f"cannot load {source}")
-    module = importlib.util.module_from_spec(spec)
-    sys.modules["check_golf"] = module  # its dataclasses look themselves up here
-    spec.loader.exec_module(module)
-    return module
-
-
-def statement_problems(clone: Path, path: str) -> list[str]:
-    """Declarations of `path` removed, or with a changed statement; `theorem` to `lemma` is allowed."""
-    check_golf = load_check_golf(clone)
-    before_src = at_upstream(clone, path)
-    after_src = (clone / path).read_text() if (clone / path).exists() else ""
-    before, after = check_golf.parse_decls(before_src), check_golf.parse_decls(after_src)
-    report = check_golf.compare_file(path, before_src, after_src)
-
-    def statement(sig: str) -> str:
-        return re.sub(r"\btheorem\b", "lemma", sig, count=1)
-
-    problems = [f"removed: {name}" for name in report.removed]
-    problems += [
-        f"statement changed: {name}"
-        for name in report.statement_changed
-        if statement(before[name].signature_masked) != statement(after[name].signature_masked)
-    ]
-    return problems
 
 
 def escape_hatch_problems(clone: Path, changed: list[str]) -> list[str]:
@@ -679,21 +682,21 @@ def escape_hatch_problems(clone: Path, changed: list[str]) -> list[str]:
     return problems
 
 
-def check_change(clone: Path) -> bool:
+def check_change(clone: Path, branch: str) -> bool:
     """Check the change without relying on what the agent reports. False when nothing changed."""
+    problems = check_branch(clone, branch)
+    if problems:
+        raise WorkerError("the change failed its checks:\n" + "\n".join(problems))
     entries = changed_files(clone)
     if not entries:
         return False
     changed = [path for _, path in entries]
     info("changed: " + ", ".join(changed))
-    problems = []
     for status, path in entries:
-        if "D" in status or "R" in status:
+        if status == "D":
             problems.append(f"deleted or renamed: {path}")
         elif not (path.startswith(f"{LIBRARY}/") or path in ALSO_ALLOWED):
             problems.append(f"changed a file outside {LIBRARY}: {path}")
-        elif status != "??" and path.endswith(".lean"):
-            problems += statement_problems(clone, path)
     problems += escape_hatch_problems(clone, changed)
     if problems:
         raise WorkerError("the change failed its checks:\n" + "\n".join(problems))
@@ -708,9 +711,12 @@ def check_change(clone: Path) -> bool:
 # =============================================================================
 
 
-def commit(clone: Path, message: str, co_author_line: str) -> None:
+def commit_leftovers(clone: Path, title: str, co_author_line: str) -> None:
+    """Commit what the agent left uncommitted, if anything, with <title> and <co-author>."""
+    if not run(["git", "status", "--porcelain"], cwd=clone, capture=True).stdout.strip():
+        return
     git(clone, "add", "--all")
-    run(["git", "-C", str(clone), "commit", "--file", "-"], stdin_text=f"{message}\n\n{co_author_line}\n")
+    run(["git", "-C", str(clone), "commit", "--file", "-"], stdin_text=f"{title}\n\n{co_author_line}\n")
 
 
 def push(clone: Path, branch: str) -> None:
@@ -788,12 +794,12 @@ def work(args: argparse.Namespace) -> int:
     result = run_agent(clone, agent, task.prompt, log)
     if not result.ok:
         raise WorkerError(f"the agent did not finish successfully; see {log}. The clone {clone} is left as it is")
-    changed = check_change(clone)
+    changed = check_change(clone, branch)
 
     pr_url = None
     if changed:
         step("7. Creating the PR")
-        commit(clone, result.message, agent.co_author)
+        commit_leftovers(clone, task.title, agent.co_author)
         push(clone, branch)
         pr_url = open_pr(clone, login, branch, task.title, pr_body(agent, task.prompt))
     else:
