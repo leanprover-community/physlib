@@ -88,7 +88,7 @@ lemma sub_smul_one_mul_self (g : Observable S) (a : ℝ) :
   simp only [selfAdjoint.val_mul, AddSubgroupClass.coe_sub, selfAdjoint.val_smul,
     selfAdjoint.val_one, MulMemClass.coe_mul, SetLike.val_smul_of_tower, OneMemClass.coe_one,
     Pi.mul_apply, Pi.sub_apply, Pi.smul_apply, Pi.one_apply, Complex.real_smul, mul_one,
-    AddSubgroup.coe_add, AddMemClass.coe_add, Pi.add_apply, Complex.ofReal_mul,
+    AddMemClass.coe_add, Pi.add_apply, Complex.ofReal_mul,
     Complex.ofReal_ofNat, Complex.ofReal_pow]
   ring
 
