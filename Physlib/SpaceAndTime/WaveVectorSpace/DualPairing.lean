@@ -26,7 +26,7 @@ mapping `x ↦ k ⬝ᵥ x`, and similarly for fixed `x`.
   bundled as a continuous linear map.
 - `WaveVectorSpace.dual k` : the functional on `Space` corresponding to `k : WaveVectorSpace d`,
   bundled as a continuous linear map.
-- `pairingCLM` : the dual pairing between `WaveVectorSpace` and `Space`,
+- `WaveVectorSpace.pairingCLM` : the dual pairing between `WaveVectorSpace` and `Space`,
   bundled as a continuous bilinear map.
 
 ## iii. Table of contents
@@ -48,21 +48,27 @@ variable {d : ℕ}
 ## A. Strong duals
 -/
 
+namespace Space
+
 /-- The functional on `WaveVectorSpace d` dual to `x`, defined by `k ↦ k ⬝ᵥ x`. -/
-def Space.dual (x : Space d) : StrongDual ℝ (WaveVectorSpace d) where
+def dual (x : Space d) : StrongDual ℝ (WaveVectorSpace d) where
   toFun k := k ⬝ᵥ x
   map_add' _ _ := by simp
   map_smul' _ _ := by simp
 
-lemma Space.dual_apply (x : Space d) (k : WaveVectorSpace d) : x.dual k = k ⬝ᵥ x := rfl
+lemma dual_apply (x : Space d) (k : WaveVectorSpace d) : x.dual k = k ⬝ᵥ x := rfl
+
+end Space
+
+namespace WaveVectorSpace
 
 /-- The functional on `Space d` dual to `k`, defined by `x ↦ k ⬝ᵥ x`. -/
-def WaveVectorSpace.dual (k : WaveVectorSpace d) : StrongDual ℝ (Space d) where
+def dual (k : WaveVectorSpace d) : StrongDual ℝ (Space d) where
   toFun x := k ⬝ᵥ x
   map_add' _ _ := by simp
   map_smul' _ _ := by simp [dotProduct, mul_left_comm, Finset.mul_sum]
 
-lemma WaveVectorSpace.dual_apply (k : WaveVectorSpace d) (x : Space d) : k.dual x = k ⬝ᵥ x := rfl
+lemma dual_apply (k : WaveVectorSpace d) (x : Space d) : k.dual x = k ⬝ᵥ x := rfl
 
 /-!
 ## B. Bilinear pairing
@@ -71,8 +77,8 @@ lemma WaveVectorSpace.dual_apply (k : WaveVectorSpace d) (x : Space d) : k.dual 
 /-- The bilinear form `WaveVectorSpace d × Space d → ℝ` given by `k ↦ x ↦ k ⬝ᵥ x`. -/
 def pairingCLM : WaveVectorSpace d →L[ℝ] Space d →L[ℝ] ℝ where
   toFun k := k.dual
-  map_add' _ _ := by ext; simp [WaveVectorSpace.dual_apply]
-  map_smul' _ _ := by ext; simp [WaveVectorSpace.dual_apply, dotProduct, mul_assoc, Finset.mul_sum]
+  map_add' _ _ := by ext; simp [dual_apply]
+  map_smul' _ _ := by ext; simp [dual_apply, dotProduct, mul_assoc, Finset.mul_sum]
   cont := by
     refine continuous_clm_apply.mpr fun x ↦ ?_
     change Continuous x.dual
@@ -81,3 +87,5 @@ def pairingCLM : WaveVectorSpace d →L[ℝ] Space d →L[ℝ] ℝ where
 lemma pairingCLM_apply_eq_dual (k : WaveVectorSpace d) : pairingCLM k = k.dual := rfl
 
 lemma pairingCLM_flip_apply_eq_dual (x : Space d) : pairingCLM.flip x = x.dual := rfl
+
+end WaveVectorSpace
