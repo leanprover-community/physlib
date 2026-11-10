@@ -309,6 +309,7 @@ public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
 public import Physlib.ProbabilisticTheory.HilbertSpace.Effect
+public import Physlib.ProbabilisticTheory.HilbertSpace.VectorState
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Sum
