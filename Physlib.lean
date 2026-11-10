@@ -296,6 +296,7 @@ public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Effect
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
