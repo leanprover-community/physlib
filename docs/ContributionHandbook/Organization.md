@@ -23,7 +23,7 @@ It is best to organize files around a single definition. An example of such a de
 
 ## 3. Name files after what they define
 
-Every file should be maded after the key definition contained within them. Examples include
+Every file should be named after the key definition contained within them. Examples include
 `Reversible.lean` and `GibbsState.lean`. The exception is the `Basic.lean` file, which contains
 the basic results or key data structure for the given area corresponding to the name of the
 overarching directory.
