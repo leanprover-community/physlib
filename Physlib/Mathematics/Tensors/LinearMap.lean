@@ -6,6 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.ForMathlib.CoordTensorHom
+public import Mathlib.RepresentationTheory.Invariants
 public import Physlib.Mathematics.Tensors.Contraction
 /-!
 
@@ -25,7 +26,9 @@ of `V a.dual`. The results that need only the bases, such as the matrix of `toLi
 there.
 
 This is how two-index tensors act as maps. A metric `g_μν` is the map `v^μ ↦ v^μ g_μν`, and the
-inverse metric `g^μν` is the tensor of the inverse map. The map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`.
+inverse metric `g^μν` is the tensor of the inverse map. The map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, so `z` is
+invariant exactly when its linear map commutes with the group action. This is Mathlib's
+`Representation.mem_linHom_invariants_iff_isIntertwining`, read through `toLin`.
 
 The delta `S.delta c = ∑ μ, e^μ ⊗ e_μ` is the tensor of the identity map, `u^μ δ_μ^ν = u^ν`. The
 identity commutes with every group element, so the delta is invariant. `S.deltaTensor c` is the
@@ -39,8 +42,9 @@ identity.
 
 ## ii. Key results
 
-- `Species.toLin` : `V a ⊗ U` as the linear maps `V a.dual → U`, with `Species.toLin_map` : it
-  commutes with the group action, `(Λz)(Λv) = Λ(z v)`.
+- `Species.toLin` : `V a ⊗ U` as the linear maps `V a.dual → U`, with `Species.toLin_map_rep` :
+  the linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, and `Species.isIntertwiningMap_toLin_iff` : `z` is
+  invariant exactly when its linear map commutes with the group action.
 - `Species.delta` : the delta `δ_μ^ν`, with `Species.delta_invariant` : it is invariant.
 - `Species.deltaTensor` : the delta as a tensor on two slots, with
   `Species.tensorBasis_repr_deltaTensor_eq_one` : its components form the identity matrix.
@@ -93,22 +97,21 @@ lemma coordPairing_basis (c : Color K) {x : S.V c} {y : S.V c.dual} :
     (S.basis c).coordPairing (S.basis c.dual) (x ⊗ₜ y) = S.contr c (x ⊗ₜ y) :=
   rfl
 
-/-- `toLin` commutes with the group action, `((Λ ⊗ f) z)(Λx) = f (z x)` for every `Λ : G` and
-linear map `f` on `U`. For `f = Λ` this is the equivariance `(Λz)(Λx) = Λ(z x)`. -/
-lemma toLin_map (a : Color K) (g : G) {U U' : Type} [AddCommGroup U] [Module k U]
-    [AddCommGroup U'] [Module k U'] (f : U →ₗ[k] U') (z : S.V a ⊗[k] U) (x : S.V a.dual) :
-    S.toLin (TensorProduct.map (S.rep a g) f z) (S.rep a.dual g x) = f (S.toLin z x) := by
-  induction z using TensorProduct.inductionOn with
-  | tmul w y =>
-    exact (congrArg (· • f y) (S.contr_invariant a.dual g x w)).trans (map_smul f _ y).symm
-  | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz']
+/-- The coordinate pairing of the bases of `c.dual` and `c` is the contraction at `c.dual`. -/
+@[simp]
+lemma coordPairing_basis_dual (c : Color K) {x : S.V c.dual} {y : S.V c} :
+    (S.basis c.dual).coordPairing (S.basis c) (x ⊗ₜ y) = S.contr c.dual (x ⊗ₜ y) :=
+  rfl
 
 /-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
 lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :
     S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z) =
       S.rep b g ∘ₗ S.toLin z ∘ₗ S.rep a.dual g⁻¹ :=
   LinearMap.ext fun x => by
-    rw [LinearMap.comp_apply, LinearMap.comp_apply, ← S.toLin_map, Representation.self_inv_apply]
+    induction z using TensorProduct.inductionOn with
+    | tmul w y =>
+      simpa using congrArg (· • S.rep b g y) (S.contr_invariant a.dual g (S.rep a.dual g⁻¹ x) w)
+    | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz', LinearMap.comp_apply]
 
 /-- The linear map of `Λz` is bijective when that of `z` is. -/
 lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
@@ -116,6 +119,13 @@ lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
     Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) := by
   rw [toLin_map_rep, LinearMap.coe_comp, LinearMap.coe_comp]
   exact ((S.rep b).apply_bijective g).comp (h.comp ((S.rep a.dual).apply_bijective g⁻¹))
+
+/-- A tensor is invariant exactly when its linear map commutes with the group action. -/
+lemma isIntertwiningMap_toLin_iff {a b : Color K} (z : S.V a ⊗[k] S.V b) :
+    (S.rep a.dual).IsIntertwiningMap (S.rep b) (S.toLin z) ↔
+      ∀ g, TensorProduct.map (S.rep a g) (S.rep b g) z = z := by
+  rw [← Representation.mem_linHom_invariants_iff_isIntertwining]
+  exact forall_congr' fun g => by rw [← toLin_map_rep, S.toLin.injective.eq_iff]
 
 /-!
 
@@ -131,11 +141,10 @@ noncomputable abbrev delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
 /-- The delta is invariant, `Λ δ = δ`, with `Λ` acting on both factors. -/
 lemma delta_invariant (c : Color K) (g : G) :
     TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
-  -- `(Λδ)(Λx) = Λ(δx)` by `toLin_map`, and `δx = x` by `coordTensorHomEquiv_coordDelta`.
-  apply S.toLin.injective
-  ext x
-  simpa [Module.Basis.coordTensorHomEquiv_coordDelta] using
-    S.toLin_map c.dual g (S.rep c g) (S.delta c) (S.rep c g⁻¹ x)
+  -- The linear map of the delta is the identity, which commutes with the action.
+  refine (S.isIntertwiningMap_toLin_iff (S.delta c)).1 ?_ g
+  rw [Module.Basis.coordTensorHomEquiv_coordDelta]
+  exact ⟨fun _ _ => rfl⟩
 
 variable {S}
 

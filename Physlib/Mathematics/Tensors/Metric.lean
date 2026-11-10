@@ -8,7 +8,6 @@ module
 public import Physlib.Mathematics.ForMathlib.Schouten
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 public import Physlib.Mathematics.Tensors.LinearMap
-public import Mathlib.Tactic.LinearCombination
 /-!
 
 # Invariant forms, metrics, and lowering and raising indices
@@ -244,10 +243,9 @@ noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.r
     (S.toLin (TensorProduct.comm k _ _ (form c)))
     (Module.Basis.coordTensorHomEquiv_comm_comp_comm _ _ _ _ (form_inverse c))
     (Module.Basis.coordTensorHomEquiv_comm_comp_comm _ _ _ _ (form_inverse c.dual)))
-    fun g => LinearMap.ext fun v => by
-      change S.toLin (TensorProduct.comm k _ _ (form c.dual)) _ =
-        S.rep c.dual g (S.toLin (TensorProduct.comm k _ _ (form c.dual)) v)
-      rw [← S.toLin_map c.dual g, TensorProduct.map_comm, form_invariant]
+    fun g => LinearMap.ext <|
+      ((S.isIntertwiningMap_toLin_iff (a := c.dual) (b := c.dual) _).2 fun g => by
+        rw [TensorProduct.map_comm, form_invariant]).isIntertwining g
 
 /-- `toDual` contracts `v` with the second index of the form at `c.dual`. -/
 lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
