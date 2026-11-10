@@ -315,6 +315,7 @@ public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
 public import Physlib.ProbabilisticTheory.StarAlgebra.Commutator
 public import Physlib.ProbabilisticTheory.StarAlgebra.State
+public import Physlib.ProbabilisticTheory.StarAlgebra.Statistics
 public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
