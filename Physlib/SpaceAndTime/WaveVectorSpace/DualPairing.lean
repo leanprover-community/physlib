@@ -70,7 +70,7 @@ lemma WaveVectorSpace.dual_apply (k : WaveVectorSpace d) (x : Space d) : k.dual 
 
 /-- The bilinear form `WaveVectorSpace d × Space d → ℝ` given by `k ↦ x ↦ k ⬝ᵥ x`. -/
 def pairingCLM : WaveVectorSpace d →L[ℝ] Space d →L[ℝ] ℝ where
-  toFun x := x.dual
+  toFun k := k.dual
   map_add' _ _ := by ext; simp [WaveVectorSpace.dual_apply]
   map_smul' _ _ := by ext; simp [WaveVectorSpace.dual_apply, dotProduct, mul_assoc, Finset.mul_sum]
   cont := by
