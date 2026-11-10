@@ -296,8 +296,8 @@ public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
-public import Physlib.ProbabilisticTheory.CStarAlgebra.Effect
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Projection
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
@@ -308,7 +308,7 @@ public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
-public import Physlib.ProbabilisticTheory.HilbertSpace.Effect
+public import Physlib.ProbabilisticTheory.HilbertSpace.Projection
 public import Physlib.ProbabilisticTheory.HilbertSpace.VectorState
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic

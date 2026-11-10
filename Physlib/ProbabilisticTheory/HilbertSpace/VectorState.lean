@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.LinearAlgebra.Projectivization.Basic
-public import Physlib.ProbabilisticTheory.HilbertSpace.Effect
+public import Physlib.ProbabilisticTheory.HilbertSpace.Projection
 public import Physlib.ProbabilisticTheory.State.Convex
 
 /-!
