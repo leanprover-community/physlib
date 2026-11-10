@@ -11,6 +11,8 @@ The scripts are grouped by purpose:
 - `website/` : scripts which generate the data and pages for the Physlib website.
 - `github/` : scripts run by GitHub workflows and bots.
 - `dev/` : tools for local development and maintenance.
+- `worker/` : `physlibAlpha-worker`, which runs one task on PhyslibAlpha with an AI agent and opens
+  a PR, see [Running tasks on PhyslibAlpha with the worker](#running-tasks-on-physlibalpha-with-the-worker).
 
 # Linting Physlib
 
@@ -131,3 +133,27 @@ This linter may need running a number of times.
   module documentation of `scripts/alpha/github/pr_summary.lean` lists what that misses, and gives
   examples to run on recent PRs. Its tests are `#guard_msgs` commands in its source, so
   `lake build pr_summary` runs them.
+
+# Running tasks on PhyslibAlpha with the worker
+
+`scripts/worker/physlibAlpha_worker.py` runs one task on PhyslibAlpha with an AI agent (Claude Code,
+or OpenAI's Codex), checks the result, and opens a PR from your fork, which it creates if you have
+none. The PR's title comes from a fixed template, and its description holds only the model and the
+prompt. The docstring at the top of the script is its specification, step by step.
+
+It needs `git`, `gh` (logged in), `elan`, and `claude` or `codex` (logged in). Run it with `uv`,
+without installing anything:
+
+```
+uv run https://raw.githubusercontent.com/leanprover-community/physlib/master/scripts/worker/physlibAlpha_worker.py tidy
+```
+
+or install it as the `physlibAlpha-worker` command:
+
+```
+uv tool install "git+https://github.com/leanprover-community/physlib#subdirectory=scripts/worker"
+physlibAlpha-worker tidy                                    # tidy a file picked at random
+physlibAlpha-worker tidy --file PhyslibAlpha/Foo/Bar.lean   # tidy this file
+physlibAlpha-worker custom "<task>"                         # run a task of your own
+physlibAlpha-worker tidy --agent codex                      # choose the agent (and --model, --effort)
+```
