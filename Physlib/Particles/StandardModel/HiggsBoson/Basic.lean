@@ -341,15 +341,15 @@ lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
   have hs : (Real.sqrt a : ℂ) ≠ 0 := by simp [Real.sqrt_ne_zero'.mpr ha]
   constructor
   · intro h
-    have h0 := congrArg (fun φ : HiggsVec => φ.ofLp 0) h
-    have h1 := congrArg (fun φ : HiggsVec => φ.ofLp 1) h
-    simp only [Fin.isValue, ofReal, repGaugeGroupI_apply, ← hu, ← hM, Submonoid.smul_def,
-      WithLp.toLp_smul, PiLp.smul_apply, mulVec, dotProduct, Fin.sum_univ_two, cons_val_zero,
-      mul_zero, cons_val_one, cons_val_fin_one, zero_add, smul_eq_mul, mul_eq_zero,
-      ofReal_eq_zero] at h0 h1
     have hu0 : (u : ℂ) ≠ 0 := left_ne_zero_of_mul_eq_one hw
-    have h01 : M 0 1 = 0 := by simpa [hu0, Real.sqrt_ne_zero'.mpr ha] using h0
-    -- `u * M 1 1 = 1`, so `M 1 1 = ū`
+    -- the first component of `g (0, √a) = (0, √a)` is `u * M 0 1 * √a = 0`
+    have h01 : M 0 1 = 0 := by
+      simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
+        Fin.sum_univ_two, ← hM, ← hu, hu0, hs] using congrArg (fun φ : HiggsVec => φ.ofLp 0) h
+    -- the second component is `u * M 1 1 * √a = √a`, so `M 1 1 = ū`
+    have h1 : (u : ℂ) * (M 1 1 * Real.sqrt a) = Real.sqrt a := by
+      simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
+        Fin.sum_univ_two, ← hM, ← hu] using congrArg (fun φ : HiggsVec => φ.ofLp 1) h
     have h11 : M 1 1 = conj (u : ℂ) := by
       have h1' : (u : ℂ) * M 1 1 = 1 := mul_right_cancel₀ hs (by linear_combination h1)
       rw [← one_mul (M 1 1), ← hw', mul_assoc, h1', mul_one]
@@ -358,12 +358,9 @@ lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
     ext i
     fin_cases i
     · simp [repGaugeGroupI_apply, h, ofReal, Submonoid.smul_def, ← hu]
-    · simp only [ofReal, repGaugeGroupI_apply, ← hu, h, GaugeGroupI.diagSU2_coe, RCLike.star_def,
-        mulVec_cons, Nat.succ_eq_add_one, Nat.reduceAdd, zero_smul, coe_smul, mulVec_empty,
-        add_zero, zero_add, Submonoid.smul_def, WithLp.toLp_smul, Fin.mk_one, Fin.isValue,
-        PiLp.smul_apply, Function.comp_apply, cons_val_one, cons_val_fin_one, tail_cons,
-        head_cons, real_smul, smul_eq_mul]
-      linear_combination (Real.sqrt a : ℂ) * hw
+    · have h1 : (u : ℂ) * (Real.sqrt a * conj (u : ℂ)) = Real.sqrt a := by
+        linear_combination (Real.sqrt a : ℂ) * hw
+      simpa [repGaugeGroupI_apply, h, ofReal, Submonoid.smul_def, ← hu] using h1
 
 /-- The Higgs vacuum breaks electroweak symmetry down to color and electromagnetism: the
   stability group of the non-zero Higgs vector `ofReal a = (0, √a)` is the subgroup
@@ -426,9 +423,7 @@ lemma mem_iInf_stabilizer_iff (g : GaugeGroupI) :
     have hα : ((α : ℂˣ) : ℂ) * conj ((α : ℂˣ) : ℂ) = 1 := (gaugeGroupℤ₆UnitaryOfRoot α).2.2
     rw [repGaugeGroupI_apply, h2, h1, gaugeGroupℤ₆SU2OfRoot_eq_mul_id]
     ext i
-    simp only [RCLike.star_def, smul_mulVec, one_mulVec, Pi.smul_apply, smul_eq_mul,
-      Submonoid.smul_def, SubmonoidClass.coe_pow, gaugeGroupℤ₆UnitaryOfRoot_coe]
-    rw [← mul_assoc, ← mul_pow, hα, one_pow, one_mul]
+    simp [Submonoid.smul_def, smul_mulVec, ← mul_assoc, ← mul_pow, hα]
 
 /-!
 
