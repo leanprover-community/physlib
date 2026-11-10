@@ -111,6 +111,11 @@ private def wrapSides (tac : String) (p : Expr → Bool) (h : Term) : TacticM Un
 /-- Whether `a` and `b` are definitionally equal, without assigning metavariables of the goal. -/
 private def isDefEqGoal (a b : Expr) : MetaM Bool := withNewMCtxDepth (isDefEq a b)
 
+/-- Whether the factors `a` and `b` are equal up to instances, as in `rw`, so that a named tensor
+is never unfolded into the contraction that defines it. -/
+private def isEqFactor (a b : Expr) : MetaM Bool :=
+  withNewMCtxDepth (withTransparency .instances (isDefEq a b))
+
 /-- Runs `f x` for each `x` of `xs` in turn, each from the current state, and returns the result of
 the first that succeeds. When every one fails it throws the last error, and `err` when `xs` is
 empty. -/
@@ -294,7 +299,7 @@ private def matchFactors : TacticM Unit := do
   let qs := factors q
   unless ps.length = qs.length do
     throwError "tensor_regroup: the two sides have different numbers of factors"
-  let candidates ← ps.mapM fun x => (List.range qs.length).filterM fun j => isDefEqGoal x qs[j]!
+  let candidates ← ps.mapM fun x => (List.range qs.length).filterM fun j => isEqFactor x qs[j]!
   if let some (x, _) := (ps.zip candidates).find? (·.2.isEmpty) then
     throwError "tensor_regroup: the factor{indentExpr x}\nhas no equal factor on the right"
   let targets := matchings candidates []
@@ -324,7 +329,7 @@ private def matchFactors : TacticM Unit := do
 private def leftover (xs ys : List Expr) : MetaM (List Expr) := do
   let mut rest := xs
   for y in ys do
-    if let some i ← (List.range rest.length).findM? fun i => isDefEqGoal rest[i]! y then
+    if let some i ← (List.range rest.length).findM? fun i => isEqFactor rest[i]! y then
       rest := rest.eraseIdx i
   return rest
 
@@ -712,7 +717,7 @@ equal factor of `G`, so that every pair of `A` is sent to a pair of `G`. Each wa
 images of the slots of `A`, together with the factors of `G` that are hit. -/
 private def embeddings (A G : ReadContraction) : MetaM (List (List Nat × List Nat)) := do
   let candidates ← A.factors.mapM fun x =>
-    (List.range G.factors.length).filterM fun j => isDefEqGoal x G.factors[j]!
+    (List.range G.factors.length).filterM fun j => isEqFactor x G.factors[j]!
   let isPair (p q : Nat) := G.pairs.contains (p, q) || G.pairs.contains (q, p)
   return (matchings candidates []).filterMap fun target =>
     let φ := (target.zipIdx).flatMap fun (j, i) =>
@@ -777,7 +782,7 @@ then with lowerings and raisings written as contractions with the form, first on
 the goal and then on the right. -/
 private partial def regroupUsing : List Term → TacticM Unit
   | [] => regroupWithLowerings
-  | e :: es => do
+  | e :: es => withMainContext do
     let h ← instantiateMVars (← Tactic.elabTerm e none)
     let some (_, A, B) := (← instantiateMVars (← inferType h)).eq?
       | throwError "tensor_regroup: {e} is not an equation"
@@ -846,7 +851,7 @@ equality, as `2` and `2`.
 `tensor_regroup using e₁, …, eₙ` first rewrites by the equations `eᵢ : Aᵢ = Bᵢ`, in turn. For each,
 the factors of `Aᵢ` are found among the factors of the left side of the goal, or else of the right
 side, contracted along the same pairs, and that side is regrouped as `Aᵢ` times the other factors
-and rewritten to `Bᵢ`. The equations must be closed terms. -/
+and rewritten to `Bᵢ`. -/
 syntax (name := tensorRegroup) "tensor_regroup" (" using " term,+)? : tactic
 
 elab_rules : tactic
