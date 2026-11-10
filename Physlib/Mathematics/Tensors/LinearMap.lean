@@ -75,7 +75,7 @@ namespace Tensors
 
 namespace Species
 
-variable {k : Type} [CommRing k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
+variable {k : Type} [Field k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] (S : Species k G K basisIdx)
 
 /-!

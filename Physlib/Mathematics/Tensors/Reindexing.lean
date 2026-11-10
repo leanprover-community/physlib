@@ -117,7 +117,7 @@ end ColorEquiv
 
 namespace Species
 
-variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
 
 variable {ι₁ ι₂ ι₃ : Type}

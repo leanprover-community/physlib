@@ -20,8 +20,7 @@ vectors (`sesqForm`), so that Hermiticity is Mathlib's `LinearMap.IsSymm` and
 positive-definiteness is `LinearMap.IsPosDef` from `ForMathlib.SesquilinearForm`. The inverse
 `g^{J̄I}` in `V b.dual ⊗ V a.dual` is again such a form, since `a.dual = b.dual.bar`
 (`Color.dual_eq_bar_dual`). The inverse of an invertible Hermitian or positive-definite `g_{IJ̄}`
-is again Hermitian or positive-definite, and over a field a positive-definite `g_{IJ̄}` is
-invertible.
+is again Hermitian or positive-definite, and a positive-definite `g_{IJ̄}` is invertible.
 
 ## ii. Key results
 
@@ -29,12 +28,12 @@ invertible.
 - `Species.isSymm_sesqForm_inverse` and `Species.isPosDef_sesqForm_inverse` prove that the inverse
   of an invertible Hermitian or positive-definite `g_{IJ̄}` is Hermitian or positive-definite.
 - `Species.toLin_injective_of_isPosDef` proves that the linear map of a positive-definite `g_{IJ̄}`
-  is injective, and `Species.toLin_bijective_of_isPosDef` that over a field it is bijective.
+  is injective, and `Species.toLin_bijective_of_isPosDef` that it is bijective.
 
 ## iii. Table of contents
 
 - A. Hermitian forms and their inverses
-- B. Positive-definite forms over a field
+- B. Positive-definite forms are invertible
 
 ## iv. References
 
@@ -50,7 +49,7 @@ namespace Tensors
 
 namespace Species
 
-variable {K : Type} [InvolutiveStar K] {k : Type} [CommRing k] [StarRing k] {G : Type} [Group G]
+variable {K : Type} [InvolutiveStar K] {k : Type} [Field k] [StarRing k] {G : Type} [Group G]
     {basisIdx : K → Type} [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
     {S : Species k G K basisIdx} [S.HasConjugation] {a b : Color K}
 
@@ -122,7 +121,7 @@ end Species
 
 /-!
 
-## B. Positive-definite forms over a field
+## B. Positive-definite forms are invertible
 
 -/
 
@@ -138,7 +137,6 @@ lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
     (hg : (S.sesqForm g hb).IsPosDef) : Function.Bijective (S.toLin g) := by
   -- Surjective since the dimensions agree, through the conjugation `V a.dual ≃ V b.dual`.
   have hi := toLin_injective_of_isPosDef g hg
-  have : ∀ c, Module.Finite k (S.V c) := fun c => Module.Finite.of_basis (S.basis c)
   refine ⟨hi, (LinearMap.injective_iff_surjective_of_finrank_eq_finrank ?_).1 hi⟩
   rw [← finrank_conj (congrArg Color.dual hb), Module.finrank_eq_card_basis (S.basis b.dual),
     Module.finrank_eq_card_basis (S.basis b)]

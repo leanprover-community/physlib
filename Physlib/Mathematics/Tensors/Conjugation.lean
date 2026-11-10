@@ -109,7 +109,7 @@ structure ConjLabels (basisIdx : K → Type) where
 
 namespace Species
 
-variable {k : Type} [CommRing k] [StarRing k] {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [Field k] [StarRing k] {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
     {S : Species k G K basisIdx} {c c' : Color K}
 

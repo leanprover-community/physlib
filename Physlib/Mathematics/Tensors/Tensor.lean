@@ -98,7 +98,7 @@ namespace Tensors
 
 namespace Species
 
-variable {k : Type} [CommRing k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
 /-!
@@ -301,7 +301,7 @@ noncomputable instance [Fintype ι] : Module.Finite k (S.Tensor c) :=
   .of_basis (S.tensorBasis c)
 
 /-- The dimension of tensors is the product of the dimensions of their slots. -/
-lemma finrank_tensor [StrongRankCondition k] [Fintype ι] [DecidableEq ι] (c : ι → Color K) :
+lemma finrank_tensor [Fintype ι] [DecidableEq ι] (c : ι → Color K) :
     Module.finrank k (S.Tensor c) = ∏ i, Fintype.card (basisIdx (c i).kind) := by
   rw [Module.finrank_eq_card_basis (S.tensorBasis c), Fintype.card_pi]
 

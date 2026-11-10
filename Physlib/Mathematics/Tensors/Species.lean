@@ -98,7 +98,7 @@ At a lower color it is the condition at the upper color with the factors swapped
 coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` with the basis of the dual color is invariant. The basis
 of a color of kind `κ` is labelled by `basisIdx κ`, the values that an index of kind `κ` runs
 over, and a color and its dual share these labels. -/
-structure Species (k : Type) [CommRing k] (G : Type) [Group G] (K : Type)
+structure Species (k : Type) [Field k] (G : Type) [Group G] (K : Type)
     (basisIdx : K → Type) [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] where
   /-- The vector space of a color. -/
   V : Color K → Type
@@ -119,7 +119,7 @@ attribute [instance] Species.addCommGroup Species.module
 
 namespace Species
 
-variable {k : Type} [CommRing k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
+variable {k : Type} [Field k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
 /-- The condition `invariant` at every color from the condition at the upper colors. At a lower
@@ -135,6 +135,11 @@ lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c,
   | ⟨κ, .up⟩, g, x, y => h κ g x y
   | ⟨κ, .down⟩, g, x, y => (Module.Basis.coordPairing_comm _ _ _ _).trans <|
       (h κ g y x).trans (Module.Basis.coordPairing_comm _ _ _ _)
+
+/-- The space of each color is finite-dimensional, since it has a finite basis. -/
+instance finiteDimensional (S : Species k G K basisIdx) (c : Color K) :
+    FiniteDimensional k (S.V c) :=
+  Module.Finite.of_basis (S.basis c)
 
 /-!
 
