@@ -6,8 +6,8 @@ Authors: Luis Gabriel C. Bariuan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
-public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Time.Derivatives
+public import Physlib.Relativity.SpeedOfLight
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 
@@ -157,16 +157,18 @@ structure CosmicFluid where
 def CosmicFluid.empty : CosmicFluid := ⟨fun _ => 0, fun _ => 0⟩
 
 /-- The density `ρ_Λ = Λ c² / (8 π G)` associated with the cosmological constant. -/
-noncomputable def FLRW.FriedmannEquation.cosmologicalConstantDensity (Λ G c : ℝ) : ℝ :=
-  Λ * c ^ 2 / (8 * Real.pi * G)
+noncomputable def FLRW.FriedmannEquation.cosmologicalConstantDensity (Λ G : ℝ)
+    (c : SpeedOfLight) : ℝ :=
+  Λ * (c : ℝ) ^ 2 / (8 * Real.pi * G)
 
 /-- The pressure `p_Λ = - ρ_Λ c²` associated with the cosmological constant. -/
-noncomputable def FLRW.FriedmannEquation.cosmologicalConstantPressure (Λ G c : ℝ) : ℝ :=
-  -(FLRW.FriedmannEquation.cosmologicalConstantDensity Λ G c) * c ^ 2
+noncomputable def FLRW.FriedmannEquation.cosmologicalConstantPressure (Λ G : ℝ)
+    (c : SpeedOfLight) : ℝ :=
+  -(FLRW.FriedmannEquation.cosmologicalConstantDensity Λ G c) * (c : ℝ) ^ 2
 
 /-- The cosmic fluid `F` with the cosmological constant folded in as a fluid. -/
-noncomputable def CosmicFluid.addCosmologicalConstant (F : CosmicFluid) (Λ G c : ℝ) :
-    CosmicFluid :=
+noncomputable def CosmicFluid.addCosmologicalConstant (F : CosmicFluid) (Λ G : ℝ)
+    (c : SpeedOfLight) : CosmicFluid :=
   ⟨fun s => F.ρ s + FLRW.FriedmannEquation.cosmologicalConstantDensity Λ G c,
     fun s => F.p s + FLRW.FriedmannEquation.cosmologicalConstantPressure Λ G c⟩
 
@@ -297,7 +299,7 @@ The first-order Friedmann equation.
 - `k : ℝ` is the spatial curvature parameter.
 - `Λ : ℝ` is the cosmological constant.
 - `G : ℝ` is Newton's constant.
-- `c : ℝ` is the speed of light. It may be set to 1 for convenience.
+- `c : SpeedOfLight` is the speed of light; take `c = 1` for units in which it is one.
 
 Note: We will leave `c` explicit for generality and accounting purposes.
 
@@ -305,9 +307,9 @@ At time `t` the equation reads:
 `(a'(t) / a(t))^2 = (8πG/3) ρ(t) − k c^2 / a(t)^2 + Λ c^2 / 3`.
 
 -/
-def FirstOrderFriedmann (a ρ : Time → ℝ) (k Λ G c : ℝ) (t : Time) : Prop :=
+def FirstOrderFriedmann (a ρ : Time → ℝ) (k Λ G : ℝ) (c : SpeedOfLight) (t : Time) : Prop :=
     ((∂ₜ a t / a t)^2
-      = ((8 * Real.pi * G) / 3) * ρ t - k * c^2 / (a t)^2 + Λ * c ^2/ 3)
+      = ((8 * Real.pi * G) / 3) * ρ t - k * (c : ℝ) ^ 2 / (a t)^2 + Λ * (c : ℝ) ^ 2 / 3)
 
 /--
 The second-order Friedmann equation.
@@ -320,7 +322,7 @@ related to describing congruences of geodesics in general relativity.
 - `w` is the equation of state. We will introduce this later.
 - `Λ : ℝ` is the cosmological constant.
 - `G : ℝ` is Newton's constant.
-- `c : ℝ` is the speed of light. It may be set to 1 for convenience.
+- `c : SpeedOfLight` is the speed of light; take `c = 1` for units in which it is one.
 
 Note: We will leave `c` explicit for generality and accounting purposes.
 
@@ -328,8 +330,9 @@ At time `t` the equation reads:
 `(a''(t) / a (t)) = - (4πG/3) * (ρ(t) + 3 * p(t) / c^2) + Λ * c^2 / 3`.
 
 -/
-def SecondOrderFriedmann (a ρ p : Time → ℝ) (Λ G c : ℝ) (t : Time) : Prop :=
-    ∂ₜ (∂ₜ a) t / a t = - (4 * Real.pi * G / 3) * (ρ t + 3 * p t / c^2) + Λ * c^2 / 3
+def SecondOrderFriedmann (a ρ p : Time → ℝ) (Λ G : ℝ) (c : SpeedOfLight) (t : Time) : Prop :=
+    ∂ₜ (∂ₜ a) t / a t
+      = - (4 * Real.pi * G / 3) * (ρ t + 3 * p t / (c : ℝ) ^ 2) + Λ * (c : ℝ) ^ 2 / 3
 
 /-- The hubble constant defined in terms of the scale factor
   as `(dₜ a) / a`.
@@ -432,7 +435,7 @@ open FriedmannEquation
   `U.I`, the curvature parameter being the one of the spatial geometry. The continuity equation
   of the fluid is not part of it: it follows from the two Friedmann equations
   (`FLRW.FriedmannSolution.continuityEquation` in `Physlib.Cosmology.FLRW.MatterContent`). -/
-structure FriedmannSolution (U : FLRW) (F : CosmicFluid) (Λ G c : ℝ) : Prop where
+structure FriedmannSolution (U : FLRW) (F : CosmicFluid) (Λ G : ℝ) (c : SpeedOfLight) : Prop where
   /-- The first-order Friedmann equation holds on `U.I`. -/
   firstOrder : ∀ t ∈ U.I, FirstOrderFriedmann U.a F.ρ U.geometry.curvature Λ G c t
   /-- The second-order Friedmann equation holds on `U.I`. -/
