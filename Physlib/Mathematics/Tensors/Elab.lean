@@ -33,6 +33,8 @@ names are bound only inside the braces. Each construct is an operation of the sp
 - `↓μ` lowers an upper index and `↑μ` raises a lower one, by `S.toDualAt`, so `{v | ↓ν}ᵀ` is
   `v_ν = v^μ g_μν`. This needs an instance `S.HasForm` at the kind of the slot, and a visible
   variance, as in `⟨κ, .up⟩`.
+- `τ(μ)` flips the variance of an index by `S.toDualAt` whichever way it points, so it needs no
+  visible variance.
 - A term `m : M` with an instance `Tensorial S c M`, such as a Lorentz vector, is read as
   `Tensorial.toTensor m`.
 - Scalars, group elements and negatives are ordinary terms in front of `|`, as in `r • T | μ ν`,
@@ -96,6 +98,9 @@ syntax ident : tensorIndex
 syntax "↓" ident : tensorIndex
 /-- A named lower index raised with the invariant form, as `α^μ` from `α_μ`. -/
 syntax "↑" ident : tensorIndex
+/-- A named index whose variance is flipped with the invariant form, lowered if upper and raised if
+lower. -/
+syntax "τ(" ident ")" : tensorIndex
 
 /-- A tensor expression in index notation. -/
 declare_syntax_cat tensorIndexExpr
@@ -266,8 +271,8 @@ def tensorOf (T : Term) : TermElabM (Expr × Expr) := do
     throwError "index notation: {T} is not a tensor and has no `Tensorial` instance:\n\
       {ex.toMessageData}"
 
-/-- The name of the index `i` on a slot of color `col`, and whether it is lowered or raised, after
-checking that its arrow matches the variance of `col`. -/
+/-- The name of the index `i` on a slot of color `col`, and whether its variance is flipped, after
+checking that an arrow matches the variance of `col`. -/
 def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool) := do
   let arrow (x : Ident) (up : Bool) : TermElabM (Name × Bool) := do
     let isUp ← whnfD (← mkAppM ``Tensors.Variance.isUp #[← mkAppM ``Tensors.Color.variance #[col]])
@@ -279,9 +284,11 @@ def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool)
   | `(tensorIndex| $x:ident) => pure (x.getId, false)
   | `(tensorIndex| ↓$x:ident) => arrow x true
   | `(tensorIndex| ↑$x:ident) => arrow x false
+  | `(tensorIndex| τ($x:ident)) => pure (x.getId, true)
   | _ => throwError "index notation: unsupported index {i}"
 
-/-- The tensor `T | i₁ i₂ …` with its slots named, lowered at each `↓μ` and raised at each `↑μ`. -/
+/-- The tensor `T | i₁ i₂ …` with its slots named, lowered at each `↓μ`, raised at each `↑μ`
+and flipped at each `τ(μ)`. -/
 def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
   let (e, ty) ← tensorOf T
   let args := ty.getAppArgs

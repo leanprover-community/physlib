@@ -152,6 +152,13 @@ example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
 #guard_msgs in
 #check {v | ↑μ}ᵀ
 
+/-- `τ` lowers an upper index, as `↓` does. -/
+example : {v | τ(μ)}ᵀ = {v | ↓μ}ᵀ := rfl
+
+/-- `τ` needs no visible variance, so it flips an index of any color, `(w_μ)^μ = w^μ`. -/
+example (w : S.Tensor ![c]) : {{w | τ(μ)}ᵀ | τ(μ)}ᵀ = w := by
+  tensor_slots
+
 /-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [equiv_smul]`. -/
 example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [equiv_smul]
 
