@@ -72,6 +72,13 @@ lemma coe_dirac_apply [IsBounded S] (x : X) (f : Observable S) :
     (dirac x f : ℂ) = ((f : S) : X → ℂ) x :=
   UnitalPositiveLinearMap.coe_onObservables_apply (eval x) f
 
+/-- Evaluation is multiplicative. -/
+lemma dirac_mul [IsBounded S] (x : X) (f g : Observable S) :
+    dirac x (f * g) = dirac x f * dirac x g := by
+  apply Complex.ofReal_injective
+  simp only [coe_dirac_apply, Complex.ofReal_mul, selfAdjoint.val_mul, MulMemClass.coe_mul,
+    Pi.mul_apply]
+
 /-! ## B. Vanishing variance -/
 
 /-- Squares of classical observables are nonnegative. -/
@@ -83,14 +90,8 @@ lemma mul_self_nonneg (g : Observable S) : 0 ≤ g * g := by
 /-- Expansion of the square of an observable shifted by a constant. -/
 lemma sub_smul_one_mul_self (g : Observable S) (a : ℝ) :
     (g - a • 1) * (g - a • 1) = g * g - (2 * a) • g + (a ^ 2) • 1 := by
-  refine Subtype.ext (Subtype.ext (funext ?_))
-  intro x
-  simp only [selfAdjoint.val_mul, AddSubgroupClass.coe_sub, selfAdjoint.val_smul,
-    selfAdjoint.val_one, MulMemClass.coe_mul, SetLike.val_smul_of_tower, OneMemClass.coe_one,
-    Pi.mul_apply, Pi.sub_apply, Pi.smul_apply, Pi.one_apply, Complex.real_smul, mul_one,
-    AddMemClass.coe_add, Pi.add_apply, Complex.ofReal_mul,
-    Complex.ofReal_ofNat, Complex.ofReal_pow]
-  ring
+  simp only [sub_mul, mul_sub, smul_mul_assoc, mul_smul_comm, one_mul, mul_one]
+  module
 
 /-- The square of the mean does not exceed the mean of the square. -/
 lemma sq_apply_le_apply_mul_self [IsBounded S] (ω : 𝓢[ℝ, Observable S]) (g : Observable S) :
@@ -103,12 +104,9 @@ lemma sq_apply_le_apply_mul_self [IsBounded S] (ω : 𝓢[ℝ, Observable S]) (g
 /-- Every observable has zero variance in a Dirac state. -/
 lemma dirac_sub_mul_self_eq_zero [IsBounded S] (x : X) (f : Observable S) :
     dirac x ((f - dirac x f • 1) * (f - dirac x f • 1)) = 0 := by
-  apply Complex.ofReal_injective
-  rw [coe_dirac_apply, Complex.ofReal_zero]
-  simp only [selfAdjoint.val_mul, AddSubgroupClass.coe_sub, selfAdjoint.val_smul,
-    selfAdjoint.val_one, MulMemClass.coe_mul, SetLike.val_smul_of_tower, OneMemClass.coe_one,
-    Pi.mul_apply, Pi.sub_apply, Pi.smul_apply, Pi.one_apply, Complex.real_smul, mul_one]
-  rw [← coe_dirac_apply x f, sub_self, zero_mul]
+  rw [sub_smul_one_mul_self, map_add, map_sub, map_smul, map_smul, map_one, dirac_mul, smul_eq_mul,
+    smul_eq_mul, mul_one]
+  ring
 
 /-- Vanishing squared deviations from the values at `x` characterize `dirac x`. -/
 lemma eq_dirac_of_forall_apply_sub_mul_self_eq_zero [IsBounded S] (ω : 𝓢[ℝ, Observable S])

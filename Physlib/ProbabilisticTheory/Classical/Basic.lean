@@ -112,6 +112,14 @@ instance instPosSMulMono : PosSMulMono ℝ (Observable S) where
     change r • ((f : S) : X → ℂ) ≤ r • ((g : S) : X → ℂ)
     exact smul_le_smul_of_nonneg_left hfg hr
 
+/-- Real scalars pull out of products on the left. -/
+instance instIsScalarTower : IsScalarTower ℝ (Observable S) (Observable S) :=
+  ⟨fun r f g ↦ Subtype.ext (smul_mul_assoc r (f : S) g)⟩
+
+/-- Real scalars pull out of products on the right. -/
+instance instSMulCommClass : SMulCommClass ℝ (Observable S) (Observable S) :=
+  ⟨fun r f g ↦ Subtype.ext (mul_smul_comm r (f : S) g).symm⟩
+
 /-- Order bounds by the unit are uniform bounds on the absolute values. -/
 lemma mem_Icc_smul_one_iff {f : Observable S} {r : ℝ} :
     -(r • 1) ≤ f ∧ f ≤ r • 1 ↔ ∀ x, ‖((f : S) : X → ℂ) x‖ ≤ r := by
