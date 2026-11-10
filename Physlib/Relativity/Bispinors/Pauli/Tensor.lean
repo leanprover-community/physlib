@@ -23,10 +23,11 @@ colors: the numbers that the literature writes `σ^μ_{αβ̇}` sit here at uppe
 the tensor of `ComplexVector.pauliVal` in `ComplexVector ⊗ (LeftHandedWeyl ⊗ RightHandedWeyl)`,
 so it is invariant under `SL(2, ℂ)` because `ComplexVector.pauli` is an intertwining map.
 
-The lowered forms are written with `↓` in index notation, such as `{pauliTensor | ↓μ α β}ᵀ` for
-`σT_μ^{αβ̇}`. Lowering contracts the first index of `η` or `ε` (`Species.toDual`), so
-`σT_μ^{αβ̇} = η_μμ σT^{μαβ̇}`. With both Weyl indices lowered, `{pauliTensor | μ ↓α ↓β}ᵀ` is
-`σT^μ_{αβ̇}`: with rows `β̇` and columns `α` it is the matrix `σ̄^μ = η_μμ σ^μ = (1, -σ⃗)`.
+The lowered forms are written with `τ` in index notation, such as `{pauliTensor | τ(μ) α β}ᵀ` for
+`σT_μ^{αβ̇}`. Lowering contracts the second index of `η` or `ε` (`Species.toDual`), so
+`σT_μ^{αβ̇} = η_μν σT^{ναβ̇} = η_μμ σT^{μαβ̇}`. With both Weyl indices lowered,
+`{pauliTensor | μ τ(α) τ(β)}ᵀ` is `σT^μ_{αβ̇}`: with rows `β̇` and columns `α` it is the matrix
+`σ̄^μ = η_μμ σ^μ = (1, -σ⃗)`.
 Lowering both indices of a matrix with `ε` gives its adjugate, transposed, and
 `adj σ^μ = σ̄^μ`, so the components of the lowered forms are matrix identities.
 
@@ -116,7 +117,7 @@ lemma pauliTensor_invariant (g : SL(2, ℂ)) : g • pauliTensor = pauliTensor :
 
 /-- The components of `σT_μ^{αβ̇} = η_μμ σT^{μαβ̇}`. -/
 lemma tensorBasis_repr_pauliTensor_down (μ : Π i, Idx (![down, upL, upR] i).kind) :
-    (complexLorentz.tensorBasis _).repr {pauliTensor | ↓ν α β}ᵀ μ =
+    (complexLorentz.tensorBasis _).repr {pauliTensor | τ(ν) α β}ᵀ μ =
       minkowskiMatrix (μ 0) (μ 0) * pauliMatrix (μ 0) (μ 1) (μ 2) := by
   tensor_components [Species.tensorBasis_repr_toDualAt, formMatrix_apply,
     tensorBasis_repr_pauliTensor]
@@ -128,7 +129,7 @@ lemma tensorBasis_repr_pauliTensor_down (μ : Π i, Idx (![down, upL, upR] i).ki
 `σ̄^μ = η_μμ σ^μ`, transposed: `σT^{μβα}` at the labels `(μ, α, β)`. -/
 lemma tensorBasis_repr_pauliTensor_downAll
     (μ : Π i, Idx (![down, downL, downR] i).kind) :
-    (complexLorentz.tensorBasis _).repr {pauliTensor | ↓ν ↓α ↓β}ᵀ μ =
+    (complexLorentz.tensorBasis _).repr {pauliTensor | τ(ν) τ(α) τ(β)}ᵀ μ =
       pauliMatrix (μ 0) (μ 2) (μ 1) := by
   -- `↓` unfolds the lowered vector index by `tensorBasis_repr_pauliTensor_down` first.
   tensor_components [Species.tensorBasis_repr_toDualAt, formMatrix_apply,
@@ -151,7 +152,7 @@ anticommutators by the Schouten identity of `ε`.
 
 /-- The trace identity `tr(σ̄_μ σ_ν) = 2 η_μν`, as `σT_{μαβ̇} σT_ν^{αβ̇} = 2 η_μν`. -/
 lemma pauliCoDown_trace_pauliCo :
-    {pauliTensor | ↓μ ↓α ↓β ⊗ pauliTensor | ↓ν α β = (2 : ℂ) • η' | μ ν}ᵀ := by
+    {pauliTensor | τ(μ) τ(α) τ(β) ⊗ pauliTensor | τ(ν) α β = (2 : ℂ) • η' | μ ν}ᵀ := by
   tensor_components [tensorBasis_repr_pauliTensor_downAll, tensorBasis_repr_pauliTensor_down,
     tensorBasis_repr_formTensor_vec .down]
   -- The components are `tr(σ^μᵀ σ̄^νᵀ) = tr(σ^μ σ̄^ν)`, written out as a double sum.
@@ -160,14 +161,14 @@ lemma pauliCoDown_trace_pauliCo :
 
 /-- The trace identity `tr(σ_μ σ̄_ν) = 2 η_μν`, as `σT_μ^{αβ̇} σT_{ναβ̇} = 2 η_μν`. -/
 lemma pauliCo_trace_pauliCoDown :
-    {pauliTensor | ↓μ α β ⊗ pauliTensor | ↓ν ↓α ↓β = (2 : ℂ) • η' | μ ν}ᵀ := by
+    {pauliTensor | τ(μ) α β ⊗ pauliTensor | τ(ν) τ(α) τ(β) = (2 : ℂ) • η' | μ ν}ᵀ := by
   tensor_regroup using pauliCoDown_trace_pauliCo
 
 /-- The mixed trace identity `tr(σ̄^μ σ_ν) = 2 δ^μ_ν`, as `σT^μ_{αβ̇} σT_ν^{αβ̇} = 2 δ^μ_ν`. -/
 lemma pauliContrDown_trace_pauliCo :
-    {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ↓ν α β = (2 : ℂ) • δ' | ν μ}ᵀ := by
-  have h : {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ↓ν α β =
-      {pauliTensor | ↓ρ ↓α ↓β ⊗ pauliTensor | ↓ν α β}ᵀ | ρ ν ⊗ η | μ ρ}ᵀ := by
+    {pauliTensor | μ τ(α) τ(β) ⊗ pauliTensor | τ(ν) α β = (2 : ℂ) • δ' | ν μ}ᵀ := by
+  have h : {pauliTensor | μ τ(α) τ(β) ⊗ pauliTensor | τ(ν) α β =
+      {pauliTensor | τ(ρ) τ(α) τ(β) ⊗ pauliTensor | τ(ν) α β}ᵀ | ρ ν ⊗ η | μ ρ}ᵀ := by
     tensor_regroup
   rw [h, pauliCoDown_trace_pauliCo]
   tensor_regroup
@@ -181,14 +182,14 @@ lemma pauliContrDown_trace_pauliCo :
 /-- `p ↦ σT_μ^{αβ̇} p^{μα'β̇'}`, from a tensor with a vector index to one with two Weyl indices.
 On a vector, with no `α'β̇'`, it is the bispinor `p^{αβ̇}` of `p^μ`. -/
 noncomputable def vectorToBispinor : ℂT[up, upL, upR] →ₗ[ℂ] ℂT[upL, upR, upL, upR] where
-  toFun p := {pauliTensor | ↓μ α β ⊗ p | μ α' β'}ᵀ
+  toFun p := {pauliTensor | τ(μ) α β ⊗ p | μ α' β'}ᵀ
   map_add' p q := by simp only [tmul_add, map_add]
   map_smul' r p := by simp only [tmul_smul, map_smul, RingHom.id_apply]
 
 /-- `X ↦ σT^μ_{αβ̇} X^{αβ̇α'β̇'}`, from a tensor with two Weyl indices to one with a vector
 index, the inverse of `vectorToBispinor` up to `2`. -/
 noncomputable def bispinorToVector : ℂT[upL, upR, upL, upR] →ₗ[ℂ] ℂT[up, upL, upR] where
-  toFun X := {pauliTensor | μ ↓α ↓β ⊗ X | α β α' β'}ᵀ
+  toFun X := {pauliTensor | μ τ(α) τ(β) ⊗ X | α β α' β'}ᵀ
   map_add' X Y := by simp only [tmul_add, map_add]
   map_smul' r X := by simp only [tmul_smul, map_smul, RingHom.id_apply]
 
@@ -208,13 +209,13 @@ lemma vectorToBispinor_bispinorToVector (X : ℂT[upL, upR, upL, upR]) :
     bispinorToVector_vectorToBispinor X
 
 /-- Raising both Weyl indices of `σT^μ_{αβ̇}` gives `σT^{μαβ̇}`. -/
-lemma pauliTensor_raise_lower : {{pauliTensor | μ ↓α ↓β}ᵀ | μ ↑α ↑β}ᵀ = pauliTensor := by
+lemma pauliTensor_raise_lower : {{pauliTensor | μ τ(α) τ(β)}ᵀ | μ τ(α) τ(β)}ᵀ = pauliTensor := by
   tensor_slots
 
 /-- The Fierz identity `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`: it is
 `vectorToBispinor σT = vectorToBispinor (bispinorToVector (εL ⊗ εR)) / 2`. -/
 lemma pauliCo_contr_pauliContr :
-    {pauliTensor | ↓ν α β ⊗ pauliTensor | ν α' β' =
+    {pauliTensor | τ(ν) α β ⊗ pauliTensor | ν α' β' =
       (2 : ℂ) • {εL | α α' ⊗ εR | β β'}ᵀ | α α' β β'}ᵀ := by
   rw [map_smul, ← vectorToBispinor_bispinorToVector]
   refine congrArg vectorToBispinor ?_
@@ -230,16 +231,16 @@ lemma pauliCo_contr_pauliContr :
 
 /-- The trace identity `tr(σ^μ σ̄^ν) = 2 η^μν`, as `σT^{μαβ̇} σT^ν_{αβ̇} = 2 η^μν`. -/
 lemma pauliContr_trace_pauliContrDown :
-    {pauliTensor | μ α β ⊗ pauliTensor | ν ↓α ↓β = (2 : ℂ) • η | μ ν}ᵀ := by
-  have h : {pauliTensor | μ α β ⊗ pauliTensor | ν ↓α ↓β =
-      {pauliTensor | ν ↓α ↓β ⊗ pauliTensor | ↓ρ α β}ᵀ | ν ρ ⊗ η | μ ρ}ᵀ := by
+    {pauliTensor | μ α β ⊗ pauliTensor | ν τ(α) τ(β) = (2 : ℂ) • η | μ ν}ᵀ := by
+  have h : {pauliTensor | μ α β ⊗ pauliTensor | ν τ(α) τ(β) =
+      {pauliTensor | ν τ(α) τ(β) ⊗ pauliTensor | τ(ρ) α β}ᵀ | ν ρ ⊗ η | μ ρ}ᵀ := by
     tensor_regroup
   rw [h, pauliContrDown_trace_pauliCo]
   tensor_regroup
 
 /-- The trace identity `tr(σ̄^μ σ^ν) = 2 η^μν`, as `σT^μ_{αβ̇} σT^{ναβ̇} = 2 η^μν`. -/
 lemma pauliContrDown_trace_pauliContr :
-    {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ν α β = (2 : ℂ) • η | μ ν}ᵀ := by
+    {pauliTensor | μ τ(α) τ(β) ⊗ pauliTensor | ν α β = (2 : ℂ) • η | μ ν}ᵀ := by
   tensor_regroup using pauliContr_trace_pauliContrDown
 
 /-- `σT^{μρβ̇} σT^{νγδ̇} ε_{β̇δ̇} (ε_{ργ} δ^α_α') = 2 η^μν δ^α_α'`, the trace identity
@@ -253,7 +254,8 @@ lemma pauliContr_pauliContr_eps_epsL_deltaL :
 `σT^{μαβ̇} σT^ν_{α'β̇} + σT^{ναβ̇} σT^μ_{α'β̇} = 2 η^μν δ^α_α'`. The Schouten identity splits
 `ε_ργ δ^α_α'` in `pauliContr_pauliContr_eps_epsL_deltaL` into the two terms. -/
 lemma pauliContr_mul_pauliContrDown_add :
-    {pauliTensor | μ α β ⊗ pauliTensor | ν ↓α' ↓β + pauliTensor | ν α β ⊗ pauliTensor | μ ↓α' ↓β =
+    {pauliTensor | μ α β ⊗ pauliTensor | ν τ(α') τ(β) +
+      pauliTensor | ν α β ⊗ pauliTensor | μ τ(α') τ(β) =
       (2 : ℂ) • {η | μ ν ⊗ δL | α α'}ᵀ | μ ν α α'}ᵀ := by
   rw [← pauliContr_pauliContr_eps_epsL_deltaL, schouten_downL]
   tensor_regroup
@@ -269,7 +271,8 @@ lemma pauliContr_pauliContr_eps_epsR_deltaR :
 `σT^μ_{αβ̇} σT^{ναβ̇'} + σT^ν_{αβ̇} σT^{μαβ̇'} = 2 η^μν δ_β̇^β̇'`. The Schouten identity splits
 `ε_ρ̇δ̇ δ_β̇^β̇'` in `pauliContr_pauliContr_eps_epsR_deltaR` into the two terms. -/
 lemma pauliContrDown_pauliContr_mul_add :
-    {pauliTensor | μ ↓α ↓β ⊗ pauliTensor | ν α β' + pauliTensor | ν ↓α ↓β ⊗ pauliTensor | μ α β' =
+    {pauliTensor | μ τ(α) τ(β) ⊗ pauliTensor | ν α β' +
+      pauliTensor | ν τ(α) τ(β) ⊗ pauliTensor | μ α β' =
       (2 : ℂ) • {η | μ ν ⊗ δR' | β β'}ᵀ | μ ν β β'}ᵀ := by
   rw [← pauliContr_pauliContr_eps_epsR_deltaR, schouten_downR]
   tensor_regroup
