@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 /-!
 
@@ -23,7 +24,7 @@ In this module we define the Higgs field and prove some basic properties.
   This vector space is equipped with an action of the global gauge group of the Standard Model.
 - `HiggsBundle`: The trivial vector bundle over `SpaceTime` with fiber `HiggsVec`.
 - `HiggsField`: The type of smooth sections of the `HiggsBundle`, i.e., the type of Higgs fields.
-- `stabilityGroup_ofReal`: The stability group of the Higgs vacuum `(0, √a)`, i.e. the gauge
+- `stabilizer_ofReal`: The stability group of the Higgs vacuum `(0, √a)`, i.e. the gauge
   group left unbroken by it, is `SU(3) × U(1)_EM`.
 
 ## iii. Table of contents
@@ -319,33 +320,20 @@ lemma exists_repGaugeGroupI_eq_iff_norm_eq (φ : HiggsVec) (ψ : HiggsVec) :
 
 ### A.6. The stability group of a Higgs vector
 
-The stability group of a Higgs vector `φ` is the subgroup of `GaugeGroupI` fixing `φ`, i.e. the
-gauge group left unbroken when the Higgs field takes the value `φ`. For the vacuum
-`ofReal a = (0, √a)` with `a > 0` it is `SU(3) × U(1)_EM`, and for any other non-zero Higgs
-vector it is a conjugate of this subgroup. The subgroup fixing every Higgs vector is `SU(3) × ℤ₆`.
+The stability group of a Higgs vector `φ` is the subgroup `repGaugeGroupI.stabilizer φ` of
+`GaugeGroupI` fixing `φ`, i.e. the gauge group left unbroken when the Higgs field takes the
+value `φ`. For the vacuum `ofReal a = (0, √a)` with `a > 0` it is `SU(3) × U(1)_EM`, and for
+any other non-zero Higgs vector it is a conjugate of this subgroup. The subgroup fixing every
+Higgs vector is `SU(3) × ℤ₆`.
 
 -/
 
-/-- The stability group of a Higgs vector `φ`: the subgroup of gauge transformations fixing `φ`.
-  This is the gauge group left unbroken when the Higgs field takes the value `φ`. -/
-def stabilityGroup (φ : HiggsVec) : Subgroup GaugeGroupI where
-  carrier := {g | repGaugeGroupI g φ = φ}
-  mul_mem' {g h} hg hh := by
-    change repGaugeGroupI (g * h) φ = φ
-    rw [repGaugeGroupI_mul_apply, hh, hg]
-  one_mem' := by simp
-  inv_mem' {g} hg := (repGaugeGroupI_inv_apply_eq_iff g φ φ).mpr hg.symm
-
-@[simp]
-lemma mem_stabilityGroup_iff (φ : HiggsVec) (g : GaugeGroupI) :
-    g ∈ stabilityGroup φ ↔ repGaugeGroupI g φ = φ := Iff.rfl
-
 /-- A gauge transformation fixes the non-zero Higgs vector `ofReal a = (0, √a)` if and only if
   its `SU(2)` part is `diag(u³, ū³)`, where `u` is its `U(1)` part. -/
-lemma mem_stabilityGroup_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
-    g ∈ stabilityGroup (ofReal a) ↔
+lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
+    g ∈ repGaugeGroupI.stabilizer (ofReal a) ↔
     GaugeGroupI.toSU2 g = GaugeGroupI.diagSU2 (GaugeGroupI.toU1 g ^ 3) := by
-  rw [mem_stabilityGroup_iff]
+  rw [Representation.mem_stabilizer]
   set M := (GaugeGroupI.toSU2 g : Matrix (Fin 2) (Fin 2) ℂ) with hM
   set u := GaugeGroupI.toU1 g ^ 3 with hu
   have hw : (u : ℂ) * conj (u : ℂ) = 1 := u.2.2
@@ -372,48 +360,36 @@ lemma mem_stabilityGroup_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
 /-- The Higgs vacuum breaks electroweak symmetry down to color and electromagnetism: the
   stability group of the non-zero Higgs vector `ofReal a = (0, √a)` is the subgroup
   `SU(3) × U(1)_EM` of `GaugeGroupI`, with elements `(h, diag(u³, ū³), u)`. -/
-theorem stabilityGroup_ofReal {a : ℝ} (ha : 0 < a) :
-    stabilityGroup (ofReal a) = GaugeGroupI.colorElectromagnetism.range := by
+theorem stabilizer_ofReal {a : ℝ} (ha : 0 < a) :
+    repGaugeGroupI.stabilizer (ofReal a) = GaugeGroupI.colorElectromagnetism.range := by
   ext g
-  rw [mem_stabilityGroup_ofReal_iff ha, MonoidHom.mem_range]
+  rw [mem_stabilizer_ofReal_iff ha, MonoidHom.mem_range]
   constructor
   · intro h
     exact ⟨(GaugeGroupI.toSU3 g, GaugeGroupI.toU1 g), by ext1 <;> simp [h]⟩
   · rintro ⟨p, rfl⟩
     simp
 
-open Pointwise in
-/-- The stability group of a gauge-transformed Higgs vector `g φ` is the conjugate by `g` of the
-  stability group of `φ`. -/
-lemma stabilityGroup_repGaugeGroupI (g : GaugeGroupI) (φ : HiggsVec) :
-    stabilityGroup (repGaugeGroupI g φ) = MulAut.conj g • stabilityGroup φ := by
-  ext h
-  rw [Subgroup.mem_pointwise_smul_iff_inv_smul_mem, mem_stabilityGroup_iff,
-    mem_stabilityGroup_iff, ← map_inv, MulAut.smul_def, MulAut.conj_apply,
-    repGaugeGroupI_mul_apply, repGaugeGroupI_mul_apply, repGaugeGroupI_inv_apply_eq_iff,
-    inv_inv]
-
-open Pointwise in
 /-- The stability group of any non-zero Higgs vector is conjugate to `SU(3) × U(1)_EM`. -/
-lemma exists_stabilityGroup_eq_conj_colorElectromagnetism (φ : HiggsVec) (hφ : φ ≠ 0) :
-    ∃ g : GaugeGroupI,
-      stabilityGroup φ = MulAut.conj g • GaugeGroupI.colorElectromagnetism.range := by
+lemma exists_stabilizer_eq_conj_colorElectromagnetism (φ : HiggsVec) (hφ : φ ≠ 0) :
+    ∃ g : GaugeGroupI, repGaugeGroupI.stabilizer φ =
+      GaugeGroupI.colorElectromagnetism.range.map (MulAut.conj g) := by
   refine ⟨(toRealGroupElem φ)⁻¹, ?_⟩
-  rw [← stabilityGroup_ofReal (pow_pos (norm_pos_iff.mpr hφ) 2), ← stabilityGroup_repGaugeGroupI]
+  rw [← stabilizer_ofReal (pow_pos (norm_pos_iff.mpr hφ) 2), ← Representation.stabilizer_conj]
   congr 1
   rw [eq_comm, repGaugeGroupI_inv_apply_eq_iff, toRealGroupElem_apply_self]
 
 /-- The gauge transformations fixing every Higgs vector are those of the form
   `(h, α⁻³ I₂, α)` with `h ∈ SU(3)` arbitrary and `α` a sixth root of unity, i.e. the subgroup
   `SU(3) × ℤ₆` of `GaugeGroupI`. -/
-lemma mem_iInf_stabilityGroup_iff (g : GaugeGroupI) :
-    g ∈ ⨅ φ, stabilityGroup φ ↔
+lemma mem_iInf_stabilizer_iff (g : GaugeGroupI) :
+    g ∈ ⨅ φ, repGaugeGroupI.stabilizer φ ↔
     ∃ α : rootsOfUnity 6 ℂ, GaugeGroupI.toSU2 g = gaugeGroupℤ₆SU2OfRoot α ∧
       GaugeGroupI.toU1 g = gaugeGroupℤ₆UnitaryOfRoot α := by
-  simp only [Subgroup.mem_iInf, mem_stabilityGroup_iff]
+  simp only [Subgroup.mem_iInf, Representation.mem_stabilizer]
   constructor
   · intro hφ
-    have h2 := (mem_stabilityGroup_ofReal_iff one_pos g).mp (hφ (ofReal 1))
+    have h2 := (mem_stabilizer_ofReal_iff one_pos g).mp (hφ (ofReal 1))
     set w := GaugeGroupI.toU1 g ^ 3 with hw_def
     have hw : (w : ℂ) * conj (w : ℂ) = 1 := w.2.2
     -- acting on `(1, 0)` gives `w² = 1`, i.e. `u⁶ = 1`

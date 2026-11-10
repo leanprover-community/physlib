@@ -36,7 +36,7 @@ Matrix.det_exp
 Matrix.det_exp_real
 SM.SMNoGrav.One.accGravSatisfied
 StandardModel.HiggsField.Potential.isMinOn_iff_field_of_𝓵_pos
-StandardModel.HiggsVec.stabilityGroup_ofReal
+StandardModel.HiggsVec.stabilizer_ofReal
 FieldSpecification.WickAlgebra.static_wick_theorem
 FieldSpecification.wicks_theorem
 FieldSpecification.WickAlgebra.wicks_theorem_normal_order

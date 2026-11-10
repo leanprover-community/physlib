@@ -86,9 +86,9 @@ gauge connection over spacetime. [TODO]
    `toRealGroupElem_apply_self`, `exists_repGaugeGroupI_eq_iff_norm_eq`,
    `electromagnetismU1_repGaugeGroupI_apply`, `electromagnetismU1_repGaugeGroupI_ofReal`,
    `exists_electromagnetismU1_fst_eq_norm`
-7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `stabilityGroup`, `mem_stabilityGroup_iff`,
-   `mem_stabilityGroup_ofReal_iff`, `stabilityGroup_ofReal`, `stabilityGroup_repGaugeGroupI`,
-   `exists_stabilityGroup_eq_conj_colorElectromagnetism`, `mem_iInf_stabilityGroup_iff`
+7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `mem_stabilizer_ofReal_iff`,
+   `stabilizer_ofReal`, `exists_stabilizer_eq_conj_colorElectromagnetism`,
+   `mem_iInf_stabilizer_iff`
 8. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsBundle`
 9. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsField`, `const`,
    `const_apply`, `toHiggsVec`, `toHiggsVec_smooth`, `const_toHiggsVec_apply`
