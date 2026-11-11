@@ -22,20 +22,30 @@ action. A measurement is a channel out of the classical system, so its covarianc
 symmetry action `ρ` on the physical system, is just covariance of that channel.
 
 Post-processing a measurement is composing its channel with a classical channel, so covariance is
-preserved by covariant post-processing. In particular the marginals of a covariant joint
-measurement, for the diagonal action on a product of outcome spaces, are covariant.
+preserved by covariant post-processing. In particular, relabeling the outcomes along an
+equivariant map preserves covariance, and the marginals of a covariant joint measurement, for the
+diagonal action on a product of outcome spaces, are covariant.
 
 ## ii. Key results
 
 - `BoundedMeasurable.inducedAction` : the action of `G` on the classical system of `Ω`.
+- `BoundedMeasurable.comap_isCovariant` : relabeling along an equivariant map is covariant.
 - `Measurement.IsCovariant` : covariance of a measurement.
 - `Measurement.IsCovariant.comp` : covariant post-processing preserves covariance.
+- `Measurement.IsCovariant.mapOutcome` : equivariant relabeling preserves covariance.
 - `Measurement.IsCovariant.marginal` : marginals of a covariant joint measurement are covariant.
 
 ## iii. Table of contents
 
 - A. The induced action on the classical system
+  - A.1. The relabeling channels
+  - A.2. The induced action
+  - A.3. The diagonal action on a product of outcome spaces
+  - A.4. Relabeling along an equivariant map
 - B. Covariant measurements
+  - B.1. The definition of covariance
+  - B.2. Covariant post-processing
+  - B.3. Marginals of a covariant joint measurement
 
 ## iv. References
 
@@ -45,22 +55,21 @@ measurement, for the diagonal action on a product of outcome spaces, are covaria
 
 @[expose] public section
 
-namespace ProbabilisticTheory
-
 /-! ## A. The induced action on the classical system -/
-
-end ProbabilisticTheory
 
 namespace BoundedMeasurable
 open ProbabilisticTheory
 
 variable {G Ω : Type*} [Group G] [MeasurableSpace Ω] [MulAction G Ω] [MeasurableAction G Ω]
 
+/-! ### A.1. The relabeling channels -/
+
 /-- The channel on the classical system that relabels outcomes by `σ`:
 `f ↦ (x ↦ f (σ⁻¹ • x))`. -/
 def inducedChannel (σ : G) : Channel (BoundedMeasurable Ω) (BoundedMeasurable Ω) :=
   comap (σ⁻¹ • ·) (MeasurableAction.measurable_smul σ⁻¹)
 
+/-- The relabeling channel evaluates an observable at the relabeled outcome. -/
 @[simp]
 lemma inducedChannel_apply (σ : G) (f : BoundedMeasurable Ω) (x : Ω) :
     inducedChannel σ f x = f (σ⁻¹ • x) := rfl
@@ -69,10 +78,11 @@ lemma inducedChannel_apply (σ : G) (f : BoundedMeasurable Ω) (x : Ω) :
 order-automorphism. -/
 lemma isOrderAutomorphism_inducedChannel (σ : G) :
     IsOrderAutomorphism (inducedChannel (Ω := Ω) σ) :=
-  ⟨inducedChannel σ⁻¹, UnitalPositiveLinearMap.ext fun f => BoundedMeasurable.ext fun x => by
-      simp [UnitalPositiveLinearMap.comp_apply],
-    UnitalPositiveLinearMap.ext fun f => BoundedMeasurable.ext fun x => by
+  ⟨inducedChannel σ⁻¹, by
+    constructor <;> exact UnitalPositiveLinearMap.ext fun f => BoundedMeasurable.ext fun x => by
       simp [UnitalPositiveLinearMap.comp_apply]⟩
+
+/-! ### A.2. The induced action -/
 
 /-- The action of `G` on the classical system of `Ω` induced by its action on the outcomes. -/
 noncomputable def inducedAction : G →* Symmetry (BoundedMeasurable Ω) where
@@ -81,9 +91,12 @@ noncomputable def inducedAction : G →* Symmetry (BoundedMeasurable Ω) where
   map_mul' σ τ := Symmetry.ext fun f => BoundedMeasurable.ext fun x => by
     simp [UnitalPositiveLinearMap.comp_apply, mul_smul]
 
+/-- The channel underlying the induced action of `σ` is the relabeling channel of `σ`. -/
 @[simp]
 lemma inducedAction_val (σ : G) :
     (inducedAction σ : Symmetry (BoundedMeasurable Ω)).1 = inducedChannel σ := rfl
+
+/-! ### A.3. The diagonal action on a product of outcome spaces -/
 
 variable {Ω' : Type*} [MeasurableSpace Ω'] [MulAction G Ω'] [MeasurableAction G Ω']
 
@@ -91,6 +104,8 @@ variable {Ω' : Type*} [MeasurableSpace Ω'] [MulAction G Ω'] [MeasurableAction
 instance : MeasurableAction G (Ω × Ω') :=
   ⟨fun σ => ((MeasurableAction.measurable_smul σ).comp measurable_fst).prodMk
     ((MeasurableAction.measurable_smul σ).comp measurable_snd)⟩
+
+/-! ### A.4. Relabeling along an equivariant map -/
 
 /-- Relabeling along an equivariant measurable map is a covariant classical channel. -/
 lemma comap_isCovariant (g : Ω' → Ω) (hg : Measurable g)
@@ -101,10 +116,9 @@ lemma comap_isCovariant (g : Ω' → Ω) (hg : Measurable g)
 
 end BoundedMeasurable
 
-namespace ProbabilisticTheory
-
-
 /-! ## B. Covariant measurements -/
+
+namespace ProbabilisticTheory
 
 namespace Measurement
 
@@ -113,10 +127,14 @@ open BoundedMeasurable
 variable {G Ω Ω' E : Type*} [Group G] [MeasurableSpace Ω] [MulAction G Ω] [MeasurableAction G Ω]
   [MeasurableSpace Ω'] [MulAction G Ω'] [MeasurableAction G Ω'] [OrderUnitSpace E]
 
+/-! ### B.1. The definition of covariance -/
+
 /-- A measurement is covariant for an action on its outcomes, matched to the symmetry action `ρ`
 on the system, when its channel intertwines the two actions. -/
 def IsCovariant (ρ : G →* Symmetry E) (M : Measurement Ω E) : Prop :=
   M.toChannel.IsCovariant inducedAction ρ
+
+/-! ### B.2. Covariant post-processing -/
 
 /-- Post-processing a covariant measurement by a covariant classical channel gives a covariant
 channel. -/
@@ -132,6 +150,8 @@ lemma IsCovariant.mapOutcome {ρ : G →* Symmetry E} {N : Measurement Ω' E} (h
     (g : Ω' → Ω) (hg : Measurable g) (hequiv : ∀ (σ : G) x, g (σ • x) = σ • g x) :
     (N.mapOutcome g hg).IsCovariant ρ :=
   hN.comp (comap_isCovariant g hg hequiv)
+
+/-! ### B.3. Marginals of a covariant joint measurement -/
 
 /-- The first marginal of a covariant joint measurement, for the diagonal action on the product
 of outcome spaces, is covariant. -/
