@@ -30,6 +30,8 @@ public import Physlib.ClassicalMechanics.Lagrangian.CriticalPoint
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
+public import Physlib.ClassicalMechanics.Observables.Basic
+public import Physlib.ClassicalMechanics.Observables.Dirac
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
 public import Physlib.ClassicalMechanics.Pendulum.CoplanarDoublePendulum
 public import Physlib.ClassicalMechanics.Pendulum.MiscellaneousPendulumPivotMotions
@@ -301,8 +303,6 @@ public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
-public import Physlib.ProbabilisticTheory.Classical.Basic
-public import Physlib.ProbabilisticTheory.Classical.Dirac
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex

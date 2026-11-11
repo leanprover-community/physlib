@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.Classical.Basic
+public import Physlib.ClassicalMechanics.Observables.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 
 /-!
