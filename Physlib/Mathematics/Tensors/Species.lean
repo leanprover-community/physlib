@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.RCLike.Basic
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
+public import Mathlib.RepresentationTheory.Intertwining
 /-!
 
 # Tensor species
