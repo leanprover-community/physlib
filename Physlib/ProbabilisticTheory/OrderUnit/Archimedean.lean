@@ -28,6 +28,9 @@ afterwards, to upgrade this from a seminorm to a genuine norm.
 
 ## ii. Key results
 
+- `ProbabilisticTheory.instArchimedeanOrderUnitSpace` : the observables of a probabilistic theory
+  form an Archimedean order-unit space.
+- `ProbabilisticTheory.of` : an Archimedean order-unit space regarded as a probabilistic theory.
 - `ArchimedeanOrderUnitSpace.orderUnitNorm_eq_zero_iff` : the order-unit norm separates points.
 - `ArchimedeanOrderUnitSpace.closedIciTopology` : the positive cone is closed in the order-unit-norm
   topology.
@@ -70,6 +73,19 @@ instance instArchimedeanOrderUnitSpaceReal : ArchimedeanOrderUnitSpace ℝ where
     have := hA (A / 2) (by positivity [lt_of_not_ge h])
     rw [smul_eq_mul, mul_one] at this
     linarith
+
+/-- The observables stored in a probabilistic theory form an Archimedean order-unit space. -/
+instance instArchimedeanOrderUnitSpace (P : ProbabilisticTheory) :
+    ArchimedeanOrderUnitSpace P.Observables where
+  le_zero_of_forall_pos_smul_one_le := P.le_zero_of_forall_pos_smul_one_le'
+
+/-- Bundle an existing Archimedean order-unit space as a probabilistic theory. -/
+abbrev of (E : Type*) [ArchimedeanOrderUnitSpace E] : ProbabilisticTheory where
+  Observables := E
+  one_nonneg' := OrderUnitSpace.one_nonneg
+  exists_nsmul_one_le' := OrderUnitSpace.exists_nsmul_one_le
+  le_zero_of_forall_pos_smul_one_le' :=
+    ArchimedeanOrderUnitSpace.le_zero_of_forall_pos_smul_one_le
 
 namespace ArchimedeanOrderUnitSpace
 
