@@ -70,12 +70,15 @@ when it permutes these bonds.
   description of a crystal. [ref: goehmann_solid_state_2021]
 * D. Tong, *Solid State Physics*, lecture notes, University of Cambridge, Section 2.2, for primitive
   lattice vectors, Bravais lattices and the lattice with a basis. [ref: tong_solid_state_physics]
-* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), Section 3.1 (p. 47), for Cayley
-  graphs and their connection sets. [ref: godsil_royle_2001]
+* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), Section 1.5, for circulant graphs
+  with a connection set, and Section 3.1, for the Cayley graph `X(G, C)` of a group `G` with
+  respect to an inverse-closed subset `C` of `G` without the identity. [ref: godsil_royle_2001]
 * T. Sunada, *Topological Crystallography*, Springer (2013), for crystal structures as periodic
   graphs. [ref: sunada_topological_crystallography_2013]
-* Wikipedia, *Cayley graph*, for the definition of a Cayley graph of a group with respect to a
-  connection set, with the example of the free group on two generators.
+* E. W. Weisstein, *Connection Set*, MathWorld, for the name connection set: a subset of a group
+  used to define a Cayley graph. [ref: mathworld_connection_set]
+* Wikipedia, *Cayley graph*, for the convention that the generating set is symmetric and does not
+  contain the identity, with the example of the free group on two generators.
   [ref: wiki_cayley_graph]
 
 -/
@@ -204,7 +207,7 @@ bond along each axis, the connection set consists of the `2 d` unit vectors `±e
 the cells `x.cell + v` for `v ∈ connectionSet bonds`.
 
 The connection set is a subset of the translation group that is closed under negation and does not
-contain `0`, defining the Cayley graph (Godsil & Royle 2001, Section 3.1, p. 47; see
+contain `0`, defining the Cayley graph (see Godsil & Royle 2001, Sections 1.5 and 3.1, and
 `ofBondsIsoAddCayley`). -/
 def connectionSet (bonds : Finset (Bond C)) : Finset G :=
   (bonds.image Bond.displacement ∪ bonds.image fun b => -b.displacement).erase 0
