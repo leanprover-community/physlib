@@ -209,9 +209,11 @@ $$
 
 namespace Fourier_0_1
 
+/-- Notation for the Fourier transform `fourierIntegral 0 1`. -/
 scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
   fourier := fourierIntegral 0 1
 
+/-- Notation for the inverse Fourier transform `fourierIntegralInv 0 1`. -/
 scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 0 1
 
@@ -229,9 +231,11 @@ $$
 
 namespace Fourier_1_n1
 
+/-- Notation for the Fourier transform `fourierIntegral 1 (-1)`. -/
 scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
   fourier := fourierIntegral 1 (-1)
 
+/-- Notation for the inverse Fourier transform `fourierIntegralInv 1 (-1)`. -/
 scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 1 (-1)
 
