@@ -118,8 +118,8 @@ lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
   -- Surjective since the dimensions agree, through the conjugation `V a.dual ≃ V b.dual`.
   have hi := toLin_injective_of_isPosDef g hg
   refine ⟨hi, (LinearMap.injective_iff_surjective_of_finrank_eq_finrank ?_).1 hi⟩
-  rw [(S.conjEquiv (congrArg Color.dual hb)).finrank_eqₛₗ, Module.finrank_eq_card_basis (S.basis b.dual),
-    Module.finrank_eq_card_basis (S.basis b)]
+  rw [(S.conjEquiv (congrArg Color.dual hb)).finrank_eqₛₗ,
+    Module.finrank_eq_card_basis (S.basis b.dual), Module.finrank_eq_card_basis (S.basis b)]
 
 /-- The inverse of a positive-definite `g_{IJ̄}` is positive-definite. -/
 lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
