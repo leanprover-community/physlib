@@ -13,8 +13,8 @@ public import Mathlib.LinearAlgebra.Dimension.Free
 
 # Matrices of `PiTensorProduct.map` and dimension of `PiTensorProduct`
 
-The matrix of a family of linear maps in the product basis of a `PiTensorProduct`, and the
-dimension of a `PiTensorProduct`.
+The matrix of a family of linear maps in the product basis of a `PiTensorProduct`, the dimension
+of a `PiTensorProduct`, and `PiTensorProduct.map` on an empty index type.
 
 ## i. Overview
 
@@ -26,16 +26,20 @@ its entry at `(φ, ψ)` is the product of the entries at `(φ i, ψ i)`. Mathlib
 The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`, as
 `Module.finrank_tensorProduct` for two factors.
 
+With no indices, `⨂[R] i, M i` is `R` and `PiTensorProduct.map f` is the identity.
+
 ## ii. Key results
 
 - `PiTensorProduct.toMatrix_map_apply` : the matrix of `PiTensorProduct.map f` in the product
   bases is the product of the matrices of the `f i`.
 - `Module.finrank_piTensorProduct` : the dimension of `⨂[R] i, M i` is `∏ i, finrank R (M i)`.
+- `PiTensorProduct.map_eq_id_of_isEmpty` : with no indices, `PiTensorProduct.map f` is the identity.
 
 ## iii. Table of contents
 
 - A. Matrices in the product basis
 - B. Dimension
+- C. Empty index types
 
 ## iv. References
 
@@ -83,3 +87,16 @@ lemma Module.finrank_piTensorProduct [CommRing R] [StrongRankCondition R] [Finty
   rw [Module.finrank_eq_card_basis (Basis.piTensorProduct fun i => Module.Free.chooseBasis R (M i)),
     Fintype.card_pi]
   simp [Module.finrank_eq_card_chooseBasisIndex]
+
+/-!
+
+## C. Empty index types
+
+-/
+
+/-- With no indices, `PiTensorProduct.map f` is the identity. -/
+lemma PiTensorProduct.map_eq_id_of_isEmpty [CommSemiring R] [∀ i, AddCommMonoid (M i)]
+    [∀ i, Module R (M i)] [IsEmpty ι] (f : Π i, M i →ₗ[R] M i) :
+    PiTensorProduct.map f = LinearMap.id := by
+  ext x
+  simp [Subsingleton.elim (fun i => f i (x i)) x]

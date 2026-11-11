@@ -13,7 +13,8 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 # Tensor products of representations and invariant vectors
 
 Tensor products of equivalences of representations, the tensor product of a family of
-representations, and invariant vectors under an intertwining map.
+representations, invariant vectors under an intertwining map, and maps of representations given
+by actions.
 
 ## i. Overview
 
@@ -40,12 +41,16 @@ A family of representations `ρ i` on `M i` gives the representation `piTprod ρ
   `Representation.IsIntertwiningMap.piTensorMap` : `PiTensorProduct.map` of intertwining maps is
   intertwining, and `Representation.Equiv.piTensorCongr` : the tensor product of a family of
   equivalences of representations.
+- `Representation.IntertwiningMap.map_smul_ofDistribMulAction` and
+  `Representation.Equiv.map_smul_ofDistribMulAction` : maps of representations given by actions
+  commute with the actions, `φ (g • v) = g • φ v`.
 
 ## iii. Table of contents
 
 - A. Invariant vectors
 - B. Tensor products of equivalences
 - C. Tensor products of families
+- D. Representations given by actions
 
 ## iv. References
 
@@ -149,5 +154,33 @@ lemma Representation.Equiv.piTensorCongr_tprod {ρ : Π i, Representation k G (M
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
     Representation.Equiv.piTensorCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
+
+end
+
+/-!
+
+## D. Representations given by actions
+
+-/
+
+section
+
+variable [DistribMulAction G V] [SMulCommClass G k V] [DistribMulAction G W] [SMulCommClass G k W]
+
+/-- An intertwining map of representations given by actions commutes with the actions,
+`φ (g • v) = g • φ v`. -/
+lemma Representation.IntertwiningMap.map_smul_ofDistribMulAction
+    (φ : (Representation.ofDistribMulAction k G V).IntertwiningMap
+      (Representation.ofDistribMulAction k G W)) (g : G) (v : V) :
+    φ (g • v) = g • φ v :=
+  Representation.IntertwiningMap.isIntertwining _ _ φ g v
+
+/-- An equivalence of representations given by actions commutes with the actions,
+`φ (g • v) = g • φ v`. -/
+lemma Representation.Equiv.map_smul_ofDistribMulAction
+    (φ : (Representation.ofDistribMulAction k G V).Equiv
+      (Representation.ofDistribMulAction k G W)) (g : G) (v : V) :
+    φ (g • v) = g • φ v :=
+  φ.toIntertwiningMap.map_smul_ofDistribMulAction g v
 
 end

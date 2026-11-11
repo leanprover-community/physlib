@@ -63,7 +63,8 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
   commute with the group are Mathlib's `Representation.Equiv` and `Representation.IntertwiningMap`
   of it, built by `Species.equivOfPure` and `Species.intertwiningMapOfPure` from a check on pure
   tensors, and `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
-- `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant.
+- `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant, from
+  `PiTensorProduct.map_eq_id_of_isEmpty`.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors, from
   `Module.finrank_piTensorProduct`.
@@ -192,13 +193,13 @@ noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor
 lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
     (φ : (S.tensorRep c).IntertwiningMap (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
-  Representation.IntertwiningMap.isIntertwining _ _ φ g t
+  φ.map_smul_ofDistribMulAction g t
 
 /-- An equivalence of representations of tensors commutes with the actions, `φ (Λ T) = Λ φ T`. -/
 lemma equiv_smul {ι' : Type} {c' : ι' → Color K}
     (φ : (S.tensorRep c).Equiv (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
-  intertwiningMap_smul φ.toIntertwiningMap g t
+  φ.map_smul_ofDistribMulAction g t
 
 /-- A linear or conjugate-linear map of tensors that commutes with `Λ` on pure tensors commutes
 with `Λ` on all tensors. -/
@@ -247,11 +248,8 @@ lemma equiv_ext_pure {W : Type} [AddCommGroup W] [Module k W] {ρ : Representati
     funext <| LinearMap.congr_fun (ext_pure (f := φ.toLinearMap) (g := ψ.toLinearMap) h)
 
 /-- A tensor with no indices is invariant, `Λ s = s`. -/
-lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = t := by
-  induction t using inductionOn_pure with
-  | h f => rw [smul_pure]; exact congrArg _ (funext isEmptyElim)
-  | hsmul r t ht => rw [smul_comm, ht]
-  | hadd t t' ht ht' => rw [smul_add, ht, ht']
+lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = t :=
+  LinearMap.congr_fun (PiTensorProduct.map_eq_id_of_isEmpty _) t
 
 /-!
 
@@ -314,15 +312,14 @@ noncomputable def mapIndices (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : Tensor
 
 /-- On a pure tensor, `mapIndices` applies `f x` to the vector at each index `x`. -/
 lemma mapIndices_pure (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) (p : Π x, S.V (c x)) :
-    S.mapIndices f (S.pure p) = S.pure fun x => f x (p x) := by
-  simp only [mapIndices, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
-    toPiTensor_pure, PiTensorProduct.map_tprod, toPiTensor_symm_tprod]
+    S.mapIndices f (S.pure p) = S.pure fun x => f x (p x) :=
+  PiTensorProduct.map_tprod _ _
 
 /-- Two index-wise maps in sequence are the index-wise map of the composites. -/
 lemma mapIndices_comp {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
     (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) :
     S.mapIndices g ∘ₗ S.mapIndices f = S.mapIndices fun x => g x ∘ₗ f x :=
-  ext_pure fun p => by simp only [LinearMap.comp_apply, mapIndices_pure]
+  (PiTensorProduct.map_comp g f).symm
 
 /-- Two index-wise maps in sequence are the index-wise map of the composites, on a tensor. -/
 lemma mapIndices_mapIndices {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
@@ -332,7 +329,7 @@ lemma mapIndices_mapIndices {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k
 
 /-- The index-wise map of the identities is the identity. -/
 lemma mapIndices_id : S.mapIndices (c := c) (fun _ => LinearMap.id) = LinearMap.id :=
-  ext_pure fun p => mapIndices_pure _ p
+  PiTensorProduct.map_id
 
 /-- The index-wise map of the identities is the identity, on a tensor. -/
 lemma mapIndices_id_apply (t : Tensor S c) : S.mapIndices (fun _ => LinearMap.id) t = t :=
