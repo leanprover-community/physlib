@@ -406,7 +406,9 @@ def buildFor (e : Syntax) (expectedType? : Option Expr) : TermElabM Term := do
   let ty ← instantiateMVars ty
   if ty.getAppFn.isMVar || ty.isSort then return (← build e).tm
   if (← whnfR ty).isAppOf ``Tensor.Species.Tensor then
-    return (← buildTo e ty).getD (← build e).tm
+    match ← buildTo e ty with
+    | some tm => return tm
+    | none => return (← build e).tm
   -- For a `Tensorial` type, the tensor type is the codomain of `toTensor`.
   let M ← exprToSyntax ty
   let s ← saveState

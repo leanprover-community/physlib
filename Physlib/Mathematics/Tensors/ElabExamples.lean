@@ -301,9 +301,18 @@ example : {T | μ ν ⊗ U | ν ρ ⊗ W | ρ σ = T | μ ν ⊗ W | ν ρ ⊗ U
 -- A summand with no counterpart on the other side is named.
 /-- error: tensor_regroup: the summand
   W
-has no matching summand on the right -/
+has no matching summand on the right. Against the last one tried:
+  tensor_regroup: the factor
+    W
+  has no equal factor on the right -/
 #guard_msgs in
 example : {T | μ ν + W | μ ν = U | μ ν + T | μ ν}ᵀ := by
+  tensor_regroup
+
+-- A goal that is not an equation of tensors is rejected.
+/-- error: tensor_regroup: the goal is not an equation of tensors -/
+#guard_msgs in
+example (x y : k) : x = y := by
   tensor_regroup
 
 /-- `tensor_regroup using h` finds `T^μ_ν U^ν_ρ` among the factors, rewrites it by `h` and
@@ -414,7 +423,10 @@ example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
 -- A false goal with lowerings reports the summand as written, not with the lowerings expanded.
 /-- error: tensor_regroup: the summand
   (S.toDualAt 0 { kind := κ, variance := Variance.up } ⋯ ⋯ ⋯) w
-has no matching summand on the right -/
+has no matching summand on the right. Against the last one tried:
+  tensor_regroup: the factor
+    (S.toDualAt 0 { kind := κ, variance := Variance.up } ⋯ ⋯ ⋯) w
+  has no equal factor on the right -/
 #guard_msgs in
 example (w : S.Tensor ![⟨κ, .up⟩]) : {v | ↓μ + w | ↓μ = v | ↓μ + v | ↓μ}ᵀ := by
   tensor_regroup

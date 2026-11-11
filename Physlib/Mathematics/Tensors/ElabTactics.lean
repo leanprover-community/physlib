@@ -96,6 +96,24 @@ private def goalEq (tac : String := "tensor_regroup") : TacticM (Expr × Expr ×
     | throwError "{tac}: the goal is not an equation"
   return (ty, l.consumeMData, r.consumeMData)
 
+/-- The field `k` of the tensors of the goal of `tensor_regroup`, an equation in `S.Tensor c`. -/
+private def goalField : TacticM Expr := do
+  let (ty, _, _) ← goalEq
+  let_expr Tensor.Species.Tensor k _ _ _ _ _ _ _ _ _ _ := (← whnfR ty)
+    | throwError "tensor_regroup: the goal is not an equation of tensors"
+  return k
+
+/-- The tag of the errors of `tensor_regroup` about the summands or scalars of the goal. -/
+private def summandErrorTag : Name := `Tensor.Notation.summandError
+
+/-- Throws the error `msg`, tagged by `summandErrorTag`. -/
+private def throwSummandError {α : Type} (msg : MessageData) : TacticM α :=
+  throwError (MessageData.tagged summandErrorTag msg)
+
+/-- Whether `e` is an error thrown by `throwSummandError`. -/
+private def isSummandError (e : Exception) : Bool :=
+  e.toMessageData.hasTag (· == summandErrorTag)
+
 /-- The argument `x` of `F x`, for a bundled map `F` whose head is the constant `f`, such as
 `Tensor.contr σ` for `f = Tensor.contr`. -/
 private def bundledArg? (f : Name) (e : Expr) : Option Expr :=
@@ -552,8 +570,7 @@ contractions and relabelings are linear, so sums, negatives and scalars of `k` m
 The scalar lemmas are given the field `k` of the species, so a group element `Λ • T` stays a
 factor. -/
 private def normalizeSums : TacticM Unit := do
-  let (ty, _, _) ← goalEq
-  let k ← exprToSyntax (← whnfR ty).getAppArgs[0]!
+  let k ← exprToSyntax (← goalField)
   evalTactic (← `(tactic| try simp only [map_add, map_neg, map_sub, map_smul,
     TensorProduct.tmul_add, TensorProduct.add_tmul, TensorProduct.tmul_neg,
     TensorProduct.neg_tmul, TensorProduct.tmul_sub, TensorProduct.sub_tmul,
@@ -595,7 +612,7 @@ private partial def regroupSummand (flipped : Bool := false) : TacticM Unit := d
   else if l.isAppOfArity ``HSMul.hSMul 6 && r.isAppOfArity ``HSMul.hSMul 6 then
     let a := l.appFn!.appArg!
     unless ← isDefEqGoal a r.appFn!.appArg! do
-      throwError "tensor_regroup: the scalars {a} and {r.appFn!.appArg!} differ"
+      throwSummandError m!"tensor_regroup: the scalars {a} and {r.appFn!.appArg!} differ"
     evalTactic (← `(tactic| refine congrArg (HSMul.hSMul $(← exprToSyntax a)) ?_))
     regroupSummand flipped
   else
@@ -653,8 +670,9 @@ private def matchSummand (ty a : Expr) (rs : List Expr) (used : List Nat) :
       regroupSummand
       unless (← getGoals).isEmpty do throwError "tensor_regroup: a summand is not closed"
       return (j, ← instantiateMVars g)
-  catch _ =>
-    throwError "tensor_regroup: the summand{indentExpr a}\nhas no matching summand on the right"
+  catch e =>
+    throwSummandError m!"tensor_regroup: the summand{indentExpr a}\nhas no matching summand on \
+      the right. Against the last one tried:{indentD e.toMessageData}"
 
 /-- The body of `tensor_regroup`: moves sums, negatives and scalars out, then proves the equation
 summand by summand. -/
@@ -666,7 +684,7 @@ private def regroup : TacticM Unit := do
   let ls := summands l
   let rs := summands r
   unless ls.length = rs.length do
-    throwError "tensor_regroup: the two sides have different numbers of summands"
+    throwSummandError m!"tensor_regroup: the two sides have different numbers of summands"
   if ls.length = 1 then
     regroupSummand
     return
@@ -694,8 +712,8 @@ private def hasLowering (e : Expr) : Bool :=
 
 /-- The body of `tensor_regroup`: `regroup`, and again after writing lowerings and raisings as
 contractions with the form (`Species.toDualAt_eq_contr`) when it fails and the goal has one. When
-both fail, the first error is reported if it is about the summands or scalars, and the second
-otherwise. -/
+both fail, the first error is reported if it is about the summands or scalars
+(`isSummandError`), and the second otherwise. -/
 private def regroupWithLowerings : TacticM Unit := do
   unless hasLowering (← instantiateMVars (← getMainTarget)) do regroup; return
   let s ← saveState
@@ -707,8 +725,7 @@ private def regroupWithLowerings : TacticM Unit := do
     try regroup catch e' =>
       -- The expansion changes the factors, not the summands or scalars, so an error about those
       -- reads better before it.
-      let msg ← e.toMessageData.toString
-      throw <| if msg.contains "summand" || msg.contains "scalars" then e else e'
+      throw <| if isSummandError e then e else e'
 
 /-!
 
@@ -893,7 +910,9 @@ syntax (name := tensorRegroup) "tensor_regroup" (" using " term,+)? : tactic
 
 elab_rules : tactic
   | `(tactic| tensor_regroup) => regroupWithLowerings
-  | `(tactic| tensor_regroup using $es,*) => regroupUsing es.getElems.toList
+  | `(tactic| tensor_regroup using $es,*) => do
+    discard goalField
+    regroupUsing es.getElems.toList
 
 end Tensor.Notation
 
