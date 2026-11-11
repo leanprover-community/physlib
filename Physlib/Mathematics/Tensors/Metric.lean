@@ -180,8 +180,9 @@ lemma form_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
 
 /-- The components of a symmetric form are symmetric, `g^νμ = g^μν`. -/
 lemma formMatrix_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind]
-    (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = S.formMatrix c μ ν := by
-  rw [formMatrix, ← Module.Basis.tensorProduct_repr_comm, form_symm, formMatrix]
+    (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = S.formMatrix c μ ν :=
+  (((S.basis c).comm_eq_smul_iff _ 1).1 ((form_symm c).trans (one_smul k _).symm) μ ν).trans
+    (one_mul _)
 
 /-- A symmetric form is symmetric as a bilinear form, Mathlib's `LinearMap.BilinForm.IsSymm`. -/
 lemma isSymm_formBilin (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
@@ -195,18 +196,16 @@ lemma form_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.ki
 
 /-- The components of an antisymmetric form are antisymmetric, `g^νμ = -g^μν`. -/
 lemma formMatrix_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = -S.formMatrix c μ ν := by
-  rw [formMatrix, ← Module.Basis.tensorProduct_repr_comm, form_antisymm, map_neg,
-    Finsupp.neg_apply, formMatrix]
+    (μ ν : basisIdx c.kind) : S.formMatrix c ν μ = -S.formMatrix c μ ν :=
+  (((S.basis c).comm_eq_smul_iff _ (-1)).1
+    ((form_antisymm c).trans (neg_one_smul k _).symm) μ ν).trans (neg_one_mul _)
 
 /-- Swapping the two indices of the form scales it by `r` when its components do,
 `g^νμ = r g^μν`. With `r = 1` it gives `IsSymmetricForm`, with `r = -1` `IsAntisymmetricForm`. -/
 lemma comm_form_eq_smul (c : Color K) [S.HasForm c.kind] (r : k)
     (h : ∀ μ ν, S.formMatrix c ν μ = r * S.formMatrix c μ ν) :
     TensorProduct.comm k (S.V c) (S.V c) (form c) = r • form c :=
-  ((S.basis c).tensorProduct (S.basis c)).repr.injective <| Finsupp.ext fun ⟨μ, ν⟩ => by
-    rw [Module.Basis.tensorProduct_repr_comm, map_smul, Finsupp.smul_apply, smul_eq_mul]
-    exact h μ ν
+  ((S.basis c).comm_eq_smul_iff _ r).2 h
 
 /-- An antisymmetric form is alternating as a bilinear form, `g(u, u) = 0`, Mathlib's
 `LinearMap.IsAlt`. It uses that `k` has characteristic zero. -/
