@@ -5,7 +5,8 @@ description: Help a newcomer contribute an API map for PhyslibAlpha physics, sup
 
 # Contribute an Alpha API map
 
-Help the contributor make a useful documentation change they can understand.
+Help the contributor make a useful documentation change to an 
+API-map that they can understand.
 They can supply a physics topic or issue, or ask you to choose a first contribution.
 For an action request, carry the work through editing and checking; only stop at
 options if that is what they requested. This workflow supports the API-map work in
@@ -27,7 +28,7 @@ fail, report overlap as unknown. Improve the map already covering the topic; cre
 one only for a coherent API that lacks a map, in the location the guide specifies.
 Alpha headings denote review status, so a map outside `PhyslibAlpha/` may document
 Alpha code. Preserve a requested proof or Lean API task instead of redirecting it
-into this documentation workflow.
+into this documentation workflow. Your headings should be `Alpha`
 
 Choose a concrete improvement: explain a convention, cover an existing result,
 correct a claim, or supply a missing map. Read the relevant declarations and their
@@ -40,7 +41,8 @@ Explain the physics for a colleague who does not know the Lean names. Include th
 domain, assumptions, and conventions. Inspect full declaration types before citing
 them. Distinguish definitions, proved results, informal declarations, and planned
 material. Mark unformalized claims `[TODO]`, including statements only recorded as
-informal declarations; split sentences mixing proved and unproved claims.
+informal declarations; split sentences mixing proved and unproved claims. Look 
+at other examples.
 
 Follow the guide's Alpha sections, `[1]` Lean citations, `{1}` literature citations,
 and exact file/declaration reference entries. Use actual sources for added physics
@@ -50,7 +52,8 @@ Use the checkout's `lean-toolchain` and `lake-manifest.json`. Inspect installed
 versions with `elan toolchain list`; install the pinned toolchain if needed, following
 the official Lean installation link in the getting-started guide from `CONTRIBUTING.md`.
 Honor offline or no-install constraints. Do not change dependency versions to bypass
-an error. This Markdown task needs no Physlib or Alpha build and no full cache download.
+an error. This Markdown task needs no Physlib or 
+PhyslibAlpha build and no full cache download.
 
 Run `lake exe api_map_lint --verbose` before and after the edit. Fix new diagnostics
 and rerun the check. The linter checks format and reference presence, not the meaning
