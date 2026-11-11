@@ -46,7 +46,6 @@ QuantumMechanics.OneDimension.HarmonicOscillator.eigenfunction_completeness
 LinearPMap.numericalRange_convex
 LinearPMap.inner_map_polarization'
 spaceTime.γ_anticomm
-spaceTime.γ.ofCliffordAlgebra_surjective
 Fermion.Dirac.gammaMatrix_anticomm
 Fermion.Dirac.gamma_anticomm
 lorentzAlgebra.exp_mem_lorentzGroup
