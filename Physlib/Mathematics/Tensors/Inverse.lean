@@ -43,7 +43,7 @@ with the group action, and the inverse of the form at `c` is the form at `c.dual
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -161,8 +161,8 @@ lemma inverse_invariant (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
 lemma inverse_form (c : Color K) [S.HasForm c.kind] : S.inverse (form c) = form c.dual :=
   inverse_eq_left_inv _ (toLin_form_bijective c) (form_inverse c.dual)
 
-/-- `g^μν g_νρ = δ^μ_ρ` at an upper color `c`. The second index of the form at `c` contracted
-with the first index of the form at `c.dual` is the delta. -/
+/-- `g^μν g_νρ = δ^μ_ρ` at an upper color `c`, the delta at `c.dual`. The second index of the form
+at `c` contracted with the first index of the form at `c.dual` is the delta. -/
 lemma contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
     Tensor.contr (ColorEquiv.matMul c c c.dual)
         (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual)) =

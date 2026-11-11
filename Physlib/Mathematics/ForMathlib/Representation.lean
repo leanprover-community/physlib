@@ -39,13 +39,15 @@ given for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on the l
 
 ## iv. References
 
+There are no known references for the material in this module.
+
 -/
 
 @[expose] public section
 
 open TensorProduct
 
-variable {k G V W U X : Type} [CommRing k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V W U X : Type*} [CommRing k] [Monoid G] [AddCommMonoid V] [Module k V]
   [AddCommMonoid W] [Module k W] [AddCommMonoid U] [Module k U] [AddCommMonoid X] [Module k X]
   {ρ : Representation k G V} {σ : Representation k G W} {τ : Representation k G U}
   {π : Representation k G X}

@@ -9,7 +9,7 @@ public import Physlib.Mathematics.ForMathlib.SemilinearMaps
 public import Physlib.Mathematics.Tensors.Contraction
 /-!
 
-# Complex conjugation of tensors
+# Conjugation of tensors
 
 The conjugate of a tensor conjugates its components and moves each index to the conjugate color.
 
@@ -57,7 +57,7 @@ its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every inde
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 

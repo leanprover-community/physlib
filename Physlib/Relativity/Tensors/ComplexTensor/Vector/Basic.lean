@@ -269,7 +269,7 @@ lemma inclCoRealLorentz_ρ (M : SL(2, ℂ)) (v : CoMod 3) :
 lemma coordPairing_complexVector_coVector (ψ : ComplexVector) (φ : ComplexCoVector) :
     ComplexVector.basis.coordPairing ComplexCoVector.basis (ψ ⊗ₜ φ) =
       ψ.toFin13ℂ ⬝ᵥ φ.toFin13ℂ := by
-  simp [Module.Basis.coordPairing_tmul, dotProduct]
+  rw [Module.Basis.coordPairing_tmul]
   rfl
 
 /-- The pairing `ψⁱ φᵢ` of a vector and a covector is invariant under `SL(2, ℂ)`. -/

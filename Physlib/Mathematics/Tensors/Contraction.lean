@@ -17,15 +17,15 @@ The contraction of pairs of indices, an index with its dual in each pair, as in 
 ## i. Overview
 
 A contraction pairs indices of dual colors and sums over their common label, as in the trace
-`(tr T)^ρ = T^ρμ_μ` of a Lorentz tensor `T^ρμ_ν` on the indices `Fin 3`. On a pure tensor
+`(tr T)^ρ = T^ρμ_μ` of a Lorentz tensor `T^ρμ_ν` on the index type `Fin 3`. On a pure tensor
 `u ⊗ v ⊗ α` the trace is `(v^μ α_μ) u`, where `v^μ α_μ` is the species contraction `S.contr`.
 
-The pairs to contract are chosen by a relabeling `σ : ColorEquiv c (contrColors c' a)` of the
+The pairs to contract are chosen by a reindexing `σ : ColorEquiv c (contrColors c' a)` of the
 indices. It sends each free index to an index `inl x`, of color `c' x`, and the two indices of a
 pair `j` to the indices `inr (inl j)` and `inr (inr j)`, of colors `a j` and `(a j).dual`. For the
 trace, `σ` sends `0 ↦ inl 0`, `1 ↦ inr (inl ())` and `2 ↦ inr (inr ())`, and the index notation
 `{T | ρ μ μ}ᵀ` builds it from the repeated name. Since `σ` keeps colors, the two indices of each
-pair are dual without a separate hypothesis. `Tensor.contr σ` relabels by `σ` and then contracts
+pair are dual without a separate hypothesis. `Tensor.contr σ` reindexes by `σ` and then contracts
 each pair by `S.contr (a j)`, with the first index of the pair as its first argument.
 
 Two tensors are contracted by contracting their product. In the full contraction `T^μν U_μν` the
@@ -50,8 +50,8 @@ since the bases of a color and its dual are dual.
   colors `contrColors` of the free indices and the pairs.
 - `Species.Tensor.contr_pure` gives the contraction of a pure tensor.
 - `Species.Tensor.contr` is an intertwining map, so it commutes with the group action.
-- `Species.Tensor.contr_reindex` and `Species.Tensor.reindex_contr` absorb a relabeling of the
-  indices before or after a contraction.
+- `Species.Tensor.contr_reindex` and `Species.Tensor.reindex_contr` absorb a reindexing before
+  or after a contraction.
 - `ColorEquiv.SamePair` says that two choices of pairs contract the same two indices, and
   `Species.Tensor.contr_eq_of_samePair` proves that two contractions of the same pairs of indices,
   in any order, are equal.
@@ -75,7 +75,7 @@ since the bases of a color and its dual are dual.
 - A. Choices of pairs of indices
 - B. Contraction in the standard arrangement of indices
 - C. Contraction of chosen pairs of indices
-  - C.1. Relabeling the indices
+  - C.1. Reindexing
   - C.2. Contractions of the same pairs of indices
   - C.3. Symmetric against antisymmetric
   - C.4. Two contractions are one
@@ -84,7 +84,7 @@ since the bases of a color and its dual are dual.
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -111,7 +111,7 @@ namespace ColorEquiv
 
 variable {K : Type} {ι₁ ι₂ κ κ₁ J J' J₁ J₂ : Type}
 
-/-- The relabeling of a contraction with no pairs, where every index is free and stays in place. -/
+/-- The reindexing of a contraction with no pairs, where every index is free and stays in place. -/
 def noPairs (c : ι₁ → Color K) :
     ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
   toEquiv.toFun := .inl
@@ -222,7 +222,7 @@ namespace Tensor
 /-- The contraction of a tensor in the standard arrangement `κ ⊕ (J ⊕ J)`. For each pair `j` the
 index `inr (inl j)` is contracted with the index `inr (inr j)` by `S.contr (a j)`, with the index
 `inr (inl j)` as its first argument. The indices `inl x` are the free indices, with the colors
-`c`. It is the body of `Tensor.contr`. -/
+`c`. -/
 noncomputable def contrStd [Fintype J] (c : κ → Color K) (a : J → Color K) :
     (S.tensorRep (contrColors c a)).IntertwiningMap (S.tensorRep c) :=
   -- The pairs are split into their first halves, of colors `a`, and their second halves, of the
@@ -278,8 +278,7 @@ lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors
         S.pure (c := c') fun x => S.cast (σ.color_eq (.inl x)) (f (σ.toEquiv.symm (.inl x))) :=
   (congrArg (contrStd c' a) (reindex_pure σ f)).trans (contrStd_pure c' a _)
 
-/-- A contraction with no pairs is the identity. Any tensor is thus a contraction, as needed to
-compare it with one. -/
+/-- A contraction with no pairs is the identity. -/
 lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t :=
   DFunLike.congr_fun (intertwiningMap_ext_pure (ψ := .id _) fun p => by
     rw [contr_pure, Finset.univ_eq_empty, Finset.prod_empty, one_smul]
@@ -287,19 +286,19 @@ lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t :=
 
 /-!
 
-### C.1. Relabeling the indices
+### C.1. Reindexing
 
 -/
 
-/-- Relabeling the indices and then contracting is contracting along the composite relabeling. -/
-lemma contr_reindex {ι₂ : Type} [Fintype J] {c₂ : ι₂ → Color K} {a : J → Color K}
+/-- Reindexing and then contracting is contracting along the composite reindexing. -/
+lemma contr_reindex [Fintype J] {c₂ : ι₂ → Color K} {a : J → Color K}
     (σ : ColorEquiv c₂ (contrColors c' a)) (τ : ColorEquiv c c₂) (t : S.Tensor c) :
     contr σ (S.reindex τ t) = contr (τ.trans σ) t := by
   simp only [contr, Representation.IntertwiningMap.comp_apply,
     Representation.Equiv.coe_toIntertwiningMap, reindex_reindex]
 
-/-- Relabeling the free indices of a contraction is contracting along the composite relabeling. -/
-lemma reindex_contr {κ' : Type} [Fintype J] {c'' : κ' → Color K} {a : J → Color K}
+/-- Reindexing the free indices of a contraction is contracting along the composite reindexing. -/
+lemma reindex_contr [Fintype J] {c'' : κ' → Color K} {a : J → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c' c'') (t : S.Tensor c) :
     S.reindex τ (contr σ t) = contr (σ.trans (τ.sumCongr (.refl _))) t :=
   DFunLike.congr_fun (intertwiningMap_ext_pure
@@ -316,8 +315,7 @@ lemma reindex_contr {κ' : Type} [Fintype J] {c'' : κ' → Color K} {a : J → 
 -/
 
 /-- Two contractions are equal when they keep the same free indices in the same order and contract
-the same pairs of indices, in any order and with either index of a pair first. On literal indices
-the hypotheses are checked by evaluation. -/
+the same pairs of indices, in any order and with either index of a pair first. -/
 lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J' → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a'))
     (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
@@ -341,9 +339,9 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
 
 -/
 
-/-- A contraction of a tensor that changes sign under a relabeling `π` of its indices is zero, when
-`π` only permutes the pairs along `e` and keeps the free indices. The hypothesis `ht` has the
-form of the index notation `{T | μ ν = -T | ν μ}ᵀ`. -/
+/-- A contraction of a tensor that changes sign under a reindexing `π` is zero, when `π` only
+permutes the pairs along `e` and keeps the free indices. The hypothesis `ht` has the form of the
+index notation `{T | μ ν = -T | ν μ}ᵀ`. -/
 lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] {a : J → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (π : ColorEquiv c c) (e : J ≃ J)
     (hπ : π.toEquiv.trans σ.toEquiv = σ.toEquiv.trans ((Equiv.refl κ).sumCongr (e.sumCongr e)))
@@ -435,7 +433,7 @@ lemma tmulEquiv_contr_right [Fintype J] {a : J → Color K} {d : ι₂ → Color
 -/
 
 /-- The components of the contraction in the standard arrangement of indices,
-`(tr T)^ρ = ∑ μ, T^ρμ_μ`. The labels `μ` run over the pairs. -/
+`(tr T)^ρ = ∑ μ, T^ρμ_μ`, with one label `μ j` per pair `j`. -/
 lemma tensorBasis_repr_contrStd [Fintype κ] [Fintype J] [DecidableEq J] (c' : κ → Color K)
     (a : J → Color K) (t : S.Tensor (contrColors c' a)) (φ : Π x, basisIdx (c' x).kind) :
     (S.tensorBasis c').repr (contrStd c' a t) φ = ∑ μ : Π j, basisIdx (a j).kind,
@@ -453,8 +451,8 @@ lemma tensorBasis_repr_contrStd [Fintype κ] [Fintype J] [DecidableEq J] (c' : �
     simp only [tensorBasis_repr_pure, Fintype.prod_sum_type, Finset.prod_mul_distrib]
     ring
 
-/-- The components of a contraction, as `(tr T)^ρ = ∑ μ, T^ρμ_μ` for a trace. The labels `μ` run
-over the pairs, and the components of `T` are those of `S.reindex σ T`. -/
+/-- The components of a contraction, as `(tr T)^ρ = ∑ μ, T^ρμ_μ` for a trace, with one label `μ j`
+per pair `j`. The components of `T` are those of `S.reindex σ T`. -/
 lemma tensorBasis_repr_contr [Fintype κ] [Fintype J] [DecidableEq J]
     {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (t : S.Tensor c)
     (φ : Π x, basisIdx (c' x).kind) :
@@ -462,8 +460,8 @@ lemma tensorBasis_repr_contr [Fintype κ] [Fintype J] [DecidableEq J]
       (S.tensorBasis (contrColors c' a)).repr (S.reindex σ t) (Sum.rec φ (Sum.rec μ μ)) :=
   tensorBasis_repr_contrStd c' a _ φ
 
-/-- The components of the contraction of one pair in dual bases, `(tr T)^ρ = ∑ μ, T^ρμ_μ` with a
-single label `μ`. -/
+/-- The components of the contraction of one pair, `(tr T)^ρ = ∑ μ, T^ρμ_μ` with a single label
+`μ`. -/
 lemma tensorBasis_repr_contr_one_pair [Fintype κ] {a : Unit → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind) :
     (S.tensorBasis c').repr (contr σ t) φ = ∑ μ : basisIdx (a ()).kind,
@@ -472,8 +470,8 @@ lemma tensorBasis_repr_contr_one_pair [Fintype κ] {a : Unit → Color K}
   rw [tensorBasis_repr_contr]
   exact Fintype.sum_equiv (Equiv.funUnique Unit (basisIdx (a ()).kind)) _ _ fun _ => rfl
 
-/-- The components of the contraction of two pairs in dual bases, `(tr T)^ρ = ∑ μ ν, T^ρμν_μν`
-with one label per pair. -/
+/-- The components of the contraction of two pairs, `(tr T)^ρ = ∑ μ ν, T^ρμν_μν`, with one label
+per pair. -/
 lemma tensorBasis_repr_contr_two_pairs [Fintype κ] {a : Unit ⊕ Unit → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind) :
     (S.tensorBasis c').repr (contr σ t) φ =

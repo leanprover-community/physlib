@@ -23,21 +23,29 @@ colors: the numbers that the literature writes `σ^μ_{αβ̇}` sit here at uppe
 the tensor of `ComplexVector.pauliVal` in `ComplexVector ⊗ (LeftHandedWeyl ⊗ RightHandedWeyl)`,
 so it is invariant under `SL(2, ℂ)` because `ComplexVector.pauli` is an intertwining map.
 
+The conventions are those of Dreiner, Haber and Martin: `η = diag(1, -1, -1, -1)`, and `ε^12 = 1`,
+`ε_12 = -1` (`complexLorentz.formEntries`).
+
 The lowered forms are written with `τ` in index notation, such as `{pauliTensor | τ(μ) α β}ᵀ` for
 `σT_μ^{αβ̇}`. Lowering contracts the second index of `η` or `ε` (`Species.toDual`), so
 `σT_μ^{αβ̇} = η_μν σT^{ναβ̇} = η_μμ σT^{μαβ̇}`. With both Weyl indices lowered,
 `{pauliTensor | μ τ(α) τ(β)}ᵀ` is `σT^μ_{αβ̇}`: with rows `β̇` and columns `α` it is the matrix
-`σ̄^μ = η_μμ σ^μ = (1, -σ⃗)`.
-Lowering both indices of a matrix with `ε` gives its adjugate, transposed, and
-`adj σ^μ = σ̄^μ`, so the components of the lowered forms are matrix identities.
+`σ̄^μ = η_μμ σ^μ = (1, -σ⃗)`. Lowering both indices of a matrix with `ε` gives its adjugate,
+transposed, and `adj σ^μ = σ̄^μ`, so the components of the lowered forms are matrix identities.
 
 One identity is read off from the Pauli matrices, the trace identity `pauliCoDown_trace_pauliCo`,
 `tr(σ̄_μ σ_ν) = 2 η_μν`: its components are the matrix traces of
 `PauliMatrix.trace_pauliMatrix_mul_minkowskiMatrix_smul_pauliMatrix`. The others are derived from
-it at tensor level, mostly by `tensor_regroup using` an identity proved before. Contracting with
+it at tensor level, mostly by `tensor_regroup using` an identity proved before. The trace
+identities `pauliCoDown_trace_pauliCo` and `pauliCo_trace_pauliCoDown` reproduce
+`PauliMatrix.pauliCoDown_trace_pauliCo` and `PauliMatrix.pauliCo_trace_pauliCoDown` with proofs at
+tensor level. Contracting with
 `σ` gives a map `vectorToBispinor` from tensors with a vector index to tensors with two Weyl indices
 and a map `bispinorToVector` back. The trace identity says that going there and back is `2`. Both
-spaces have dimension `16`, so going back and there is `2` as well, which is the Fierz identity.
+spaces have dimension `16`, so going back and there is `2` as well, which is the Fierz identity
+`σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`. An upper Weyl index of `σT` is a lower one in the
+literature, so this is `σ^μ_{αβ̇} σ_{μα'β̇'} = 2 ε_{αα'} ε_{β̇β̇'}`, where the sign of each `ε`
+changes and the two signs cancel.
 The anticommutators follow from the trace identities and the Schouten identity of `ε`.
 
 ## ii. Key results
@@ -45,9 +53,13 @@ The anticommutators follow from the trace identities and the Schouten identity o
 - `complexLorentz.pauliTensor` : the Pauli matrices as a tensor `σT^{μαβ̇}`.
 - `complexLorentz.tensorBasis_repr_pauliTensor` : its components are the Pauli matrices.
 - `complexLorentz.pauliTensor_invariant` : `σ` is an invariant tensor of `SL(2, ℂ)`.
-- `complexLorentz.pauliCoDown_trace_pauliCo`, `complexLorentz.pauliContr_trace_pauliContrDown`
-  and `complexLorentz.pauliContrDown_trace_pauliContr` : the trace identities
-  `tr(σ̄_μ σ_ν) = 2 η_μν` and `tr(σ^μ σ̄^ν) = tr(σ̄^μ σ^ν) = 2 η^μν`.
+- `complexLorentz.tensorBasis_repr_pauliTensor_down` and
+  `complexLorentz.tensorBasis_repr_pauliTensor_downAll` : the components of the lowered forms.
+- `complexLorentz.pauliCoDown_trace_pauliCo`, `complexLorentz.pauliCo_trace_pauliCoDown`,
+  `complexLorentz.pauliContr_trace_pauliContrDown` and
+  `complexLorentz.pauliContrDown_trace_pauliContr` : the trace identities
+  `tr(σ̄_μ σ_ν) = tr(σ_μ σ̄_ν) = 2 η_μν` and `tr(σ^μ σ̄^ν) = tr(σ̄^μ σ^ν) = 2 η^μν`, and
+  `complexLorentz.pauliContrDown_trace_pauliCo` : the mixed trace `tr(σ̄^μ σ_ν) = 2 δ^μ_ν`.
 - `complexLorentz.vectorToBispinor_bispinorToVector` : the maps `vectorToBispinor` and
   `bispinorToVector` are inverse up to `2`.
 - `complexLorentz.pauliCo_contr_pauliContr` : the Fierz identity
@@ -125,8 +137,9 @@ lemma tensorBasis_repr_pauliTensor_down (μ : Π i, Idx (![down, upL, upR] i).ki
   exact Fintype.sum_eq_single _ fun x hx => by
     simp [formEntries, minkowskiMatrix.off_diag_zero (Ne.symm hx)]
 
-/-- The components of `σT_{μαβ̇}`, with all indices lowered, are the entries of the adjugate of
-`σ̄^μ = η_μμ σ^μ`, transposed: `σT^{μβα}` at the labels `(μ, α, β)`. -/
+/-- The components of `σT_{μαβ̇}`, with all three indices lowered, are the entries of `σ^μ` at the
+row `β̇` and the column `α`. Lowering `μ` gives `σ̄^μ = η_μμ σ^μ`, and lowering both Weyl indices
+takes it to its adjugate, transposed, with `adj σ̄^μ = σ^μ`. -/
 lemma tensorBasis_repr_pauliTensor_downAll
     (μ : Π i, Idx (![down, downL, downR] i).kind) :
     (complexLorentz.tensorBasis _).repr {pauliTensor | τ(ν) τ(α) τ(β)}ᵀ μ =
@@ -222,6 +235,9 @@ lemma pauliCo_contr_pauliContr :
 /-!
 
 ### C.3. The anticommutators
+
+A matrix product contracts the column of the first factor with the row of the second, so
+`(σ^μ σ̄^ν)_{αα'}` is `σT^{μαβ̇} σT^ν_{α'β̇}`, summed over `β̇`.
 
 -/
 

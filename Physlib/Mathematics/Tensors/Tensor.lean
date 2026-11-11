@@ -19,15 +19,14 @@ index type `ι`, and the group acts on them index by index.
 
 A tensor of a species `S` has one index `i` for each `i : ι`, and the index `i` has the color `c i`.
 The tensors with colors `c : ι → Color K` form the space `S.Tensor c`, which is Mathlib's
-`⨂[k] i, V (c i)`. The index type `ι` can be any type, so later files take `Fin n`, sums or options
-for it without renumbering.
+`⨂[k] i, V (c i)`. The index type `ι` can be any type, such as `Fin n` or a sum `ι₁ ⊕ ι₂`.
 
 A pure tensor takes one vector at each index, such as `u ⊗ α ⊗ β` with `u` in `V (c 0)`, `α` in
 `V (c 1)` and `β` in `V (c 2)`. Its components are products, `(u ⊗ α ⊗ β)^μ_νρ = u^μ α_ν β_ρ`.
 Most tensors are not pure. The metric `η = ∑ μ, η_μμ e^μ ⊗ e^μ` is a sum of pure tensors but not
 a pure tensor itself. Every tensor is such a sum, so a linear map of tensors is fixed by its
 values on pure tensors (`ext_pure`), and a property of all tensors follows from the pure case
-(`inductionOn_pure`). The group action, relabeling, products and contraction are each given by
+(`inductionOn_pure`). The group action, reindexing, products and contraction are each given by
 their value on pure tensors, and their properties are proved there first. `S.pure f` is Mathlib's
 `⨂ₜ[k] i, f i` as an element of `S.Tensor c`.
 
@@ -86,7 +85,7 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -424,8 +423,8 @@ noncomputable def mapAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c →ₗ[k] S.Tensor c' :=
   S.mapIndices (S.indexMapsAt i f h)
 
-/-- On a pure tensor, `mapAt` applies `f` to the vector at `i`, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. The
-result is given by its vectors `q`, `f (p i)` at `i` and `p x` moved along `h x` elsewhere. -/
+/-- On a pure tensor, `mapAt` applies `f` to the vector at `i` and keeps the others,
+`u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
 lemma mapAt_pure (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
     (p : Π x, S.V (c x)) (q : Π x, S.V (c' x)) (hqi : q i = f (p i))
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
@@ -453,8 +452,7 @@ lemma mapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x) :
   rw [mapAt, ← eq_indexMapsAt (F := fun _ => LinearMap.id) i _ h rfl
     fun _ _ => LinearMap.ext fun _ => rfl, mapIndices_id]
 
-/-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. The
-labels `ψ` of `t` away from `i` are the labels `φ` of the result moved along `h`. -/
+/-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. -/
 lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind)
     (ψ : Π x, basisIdx (c x).kind)

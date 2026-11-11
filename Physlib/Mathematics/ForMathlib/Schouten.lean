@@ -30,6 +30,8 @@ For an alternating bilinear form `B` on a module with a basis of two vectors,
 
 ## iv. References
 
+There are no known references for the material in this module.
+
 -/
 
 @[expose] public section

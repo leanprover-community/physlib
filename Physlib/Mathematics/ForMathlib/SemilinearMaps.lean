@@ -46,7 +46,7 @@ factors along the same labels conjugates the coordinate pairing of two bases.
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 

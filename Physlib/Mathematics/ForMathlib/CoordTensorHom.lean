@@ -64,8 +64,7 @@ variable {R ι M N U U' : Type*} [CommRing R] [Fintype ι] [DecidableEq ι] [Add
     [Module R U']
 
 /-- `M ⊗ U` as the linear maps `N → U`, reading `M` as the dual of `N` through the coordinate
-pairing. It sends `x ⊗ y` to `v ↦ b'.coordPairing b (v ⊗ x) • y`. It is Mathlib's
-`dualTensorHomEquivOfBasis`, after the coordinate pairing identifies `M` with the dual of `N`. -/
+pairing. It sends `x ⊗ y` to `v ↦ b'.coordPairing b (v ⊗ x) • y`. -/
 noncomputable def coordTensorHomEquiv (b : Module.Basis ι R M) (b' : Module.Basis ι R N) :
     M ⊗[R] U ≃ₗ[R] (N →ₗ[R] U) :=
   (TensorProduct.congr (TensorProduct.curry (b'.coordPairing b)).flip.toPerfPair

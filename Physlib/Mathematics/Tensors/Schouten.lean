@@ -33,6 +33,8 @@ notation for both orientations of the delta.
 
 ## iv. References
 
+There are no known references for the material in this module.
+
 -/
 
 @[expose] public section
@@ -67,6 +69,11 @@ lemma schouten_formTensor_deltaTensor_dual (h2 : Fintype.card (basisIdx c.kind) 
         -{S.formTensor c | ρ α ⊗ S.deltaTensor c.dual | γ α'}ᵀ | ρ α γ α'}ᵀ := by
   tensor_components [tensorBasis_repr_formTensor, tensorBasis_repr_deltaTensor_eq_one]
   rw [← sub_eq_add_neg]
-  exact formMatrix_schouten' c h2 _ _ _ _
+  -- `formMatrix_schouten` with the two labels of the delta swapped.
+  have h (γ ρ α α' : basisIdx c.kind) : S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
+      S.formMatrix c γ α * (if ρ = α' then 1 else 0) -
+        S.formMatrix c ρ α * (if γ = α' then 1 else 0) := by
+    simpa only [@eq_comm _ α' α] using formMatrix_schouten c h2 γ ρ α α'
+  exact h _ _ _ _
 
 end Tensor.Species

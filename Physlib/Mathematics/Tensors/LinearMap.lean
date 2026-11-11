@@ -84,7 +84,7 @@ namespace ColorEquiv
 
 variable {K ι₁ : Type}
 
-/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
+/-- The reindexing of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
 second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
 `0` and `1`. -/
 def matMul (a c b : Color K) :
@@ -96,7 +96,7 @@ def matMul (a c b : Color K) :
   toEquiv.left_inv := by decide
   toEquiv.right_inv := by decide
 
-/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the index `i` of `T` with the first index of a
+/-- The reindexing of `T^…μ… F_μ^ν`, which contracts the index `i` of `T` with the first index of a
 tensor `F` on two indices and puts the second index of `F` in the place of `i`. It is
 `matMul` at any index of a tensor on any index type. -/
 def matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
@@ -180,6 +180,18 @@ lemma isIntertwiningMap_toLin_iff {a b : Color K} (z : S.V a ⊗[k] S.V b) :
       ∀ g, TensorProduct.map (S.rep a g) (S.rep b g) z = z := by
   rw [← Representation.mem_linHom_invariants_iff_isIntertwining]
   exact forall_congr' fun g => by rw [← toLin_map_rep, S.toLin.injective.eq_iff]
+
+variable {S} in
+/-- Contracting with the swapped tensor swaps the two arguments, `u_μ z^νμ v_ν = v_ν z^νμ u_μ`. -/
+lemma contr_toLin_comm (c : Color K) (z : S.V c ⊗[k] S.V c) (u v : S.V c.dual) :
+    S.contr c.dual (v ⊗ₜ S.toLin (TensorProduct.comm k _ _ z) u) =
+      S.contr c.dual (u ⊗ₜ S.toLin z v) := by
+  induction z using TensorProduct.inductionOn with
+  | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
+  | tmul x y =>
+    simp only [TensorProduct.comm_tmul, Module.Basis.coordTensorHomEquiv_tmul, tmul_smul, map_smul,
+      smul_eq_mul]
+    exact mul_comm _ _
 
 /-!
 

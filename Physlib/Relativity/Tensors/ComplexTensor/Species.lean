@@ -18,11 +18,12 @@ forms `ε` and `η`.
 
 ## i. Overview
 
-Complex Lorentz tensors have three kinds of index, the left-handed kind `left`, as in `ψ_α`, and
-the right-handed kind `right`, as in `ψ̄_α̇`, with basis labels `Fin 2`, and the vector kind `vec`,
-with labels `Fin 1 ⊕ Fin 3`. Conjugation `star` swaps `left` and `right` and fixes `vec`. With
-the two variances this gives six colors, `upL`, `downL`, `upR`, `downR`, `up` and `down`. Under
-`open scoped Tensor.complexLorentz`, `ℂT[upL, downR]` is the space of the tensors `T^α_β̇`.
+Complex Lorentz tensors have three kinds of index. The left-handed kind `left`, as in `ψ_α`, and
+the right-handed kind `right`, as in `ψ̄_α̇`, have the labels `Fin 2`. The vector kind `vec`, as in
+`v^μ`, has the labels `Fin 1 ⊕ Fin 3`, so the space dimension is fixed at `d = 3`. Conjugation
+`star` swaps `left` and `right` and fixes `vec`. With the two variances this gives six colors,
+`upL`, `downL`, `upR`, `downR`, `up` and `down`. Under `open scoped Tensor.complexLorentz`,
+`ℂT[upL, downR]` is the space of the tensors `T^α_β̇`.
 
 The species is built on `Fermion.LeftHandedWeyl`, `Fermion.RightHandedWeyl`, their duals,
 `Lorentz.ComplexVector` and `Lorentz.ComplexCoVector`, with their representations and bases. An
@@ -34,13 +35,12 @@ representation is real, so this conjugation commutes with `SL(2, ℂ)`
 (`IsEquivariantConjugation`).
 
 The invariant form is `ε` at the Weyl colors and `η` at the vector colors. The form `ε` is
-antisymmetric and `η` symmetric (`IsAntisymmetricForm`, `IsSymmetricForm`). The form
-`ε^αβ` has the matrix `!![0, 1; -1, 0]` and `ε_αβ` the matrix `!![0, -1; 1, 0]`, so `ε^12 = 1` and
+antisymmetric and `η` symmetric (`IsAntisymmetricForm`, `IsSymmetricForm`). The form `ε^αβ` has
+the matrix `!![0, 1; -1, 0]` and `ε_αβ` the matrix `!![0, -1; 1, 0]`, so `ε^12 = 1` and
 `ε_12 = -1`. Lowering contracts the second index of the form, `ψ_α = ε_αβ ψ^β`, as in Wess and
-Bagger. The
-forms are written `εL`, `εL'`, `εR`, `εR'`, `η` and `η'`, and the deltas `δL`, `δL'`, `δR`, `δR'`,
-`δ` and `δ'`. Their components are stated through `tensorBasis`, and the antisymmetry
-of `ε` and the symmetry of `η` are stated in index notation.
+Bagger. The forms are written `εL`, `εL'`, `εR`, `εR'`, `η` and `η'`, and the deltas `δL`, `δL'`,
+`δR`, `δR'`, `δ` and `δ'`. Their components are stated through `tensorBasis`, and the
+antisymmetry of `ε` and the symmetry of `η` are stated in index notation.
 
 These spaces are tensors with one index (`Tensorial`), so a spinor `ψ : LeftHandedWeyl`
 enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_α`.

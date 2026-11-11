@@ -54,8 +54,7 @@ Martin.
 - `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
   antisymmetric form on a kind with two labels, `LinearMap.IsAlt.schouten` for `formBilin`, and
   `Species.formMatrix_schouten` is the same in components,
-  `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`, and `Species.formMatrix_schouten'` with the delta
-  read the other way, `g^γρ δ_α^α' = g^γα δ_ρ^α' - g^ρα δ_γ^α'`.
+  `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`.
 
 ## iii. Table of contents
 
@@ -67,7 +66,7 @@ Martin.
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -173,17 +172,6 @@ variable (S) in
 class IsAntisymmetricForm (κ : K) [S.HasForm κ] : Prop where
   /-- Swapping the two indices of the form gives minus the form. -/
   comm_form : ∀ v, TensorProduct.comm k _ _ (form (S := S) ⟨κ, v⟩) = -form ⟨κ, v⟩
-
-/-- Contracting with the swapped tensor swaps the two arguments, `u_μ z^νμ v_ν = v_ν z^νμ u_μ`. -/
-lemma contr_toLin_comm (c : Color K) (z : S.V c ⊗[k] S.V c) (u v : S.V c.dual) :
-    S.contr c.dual (v ⊗ₜ S.toLin (TensorProduct.comm k _ _ z) u) =
-      S.contr c.dual (u ⊗ₜ S.toLin z v) := by
-  induction z using TensorProduct.inductionOn with
-  | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
-  | tmul x y =>
-    simp only [TensorProduct.comm_tmul, Module.Basis.coordTensorHomEquiv_tmul, tmul_smul, map_smul,
-      smul_eq_mul]
-    exact mul_comm _ _
 
 /-- A symmetric form, `g_μν = g_νμ`. -/
 lemma form_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
@@ -392,15 +380,6 @@ lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFor
     Finsupp.single_apply, smul_eq_mul, map_zero, Finsupp.zero_apply, formBilin_basis,
     @eq_comm _ α' α] at h
   linear_combination h - (if ρ = α then 1 else 0) * formMatrix_antisymm (S := S) c γ α'
-
-/-- The Schouten identity in components with the delta read the other way,
-`g^γρ δ_α^α' = g^γα δ_ρ^α' - g^ρα δ_γ^α'`. -/
-lemma formMatrix_schouten' (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    (h2 : Fintype.card (basisIdx c.kind) = 2) (γ ρ α α' : basisIdx c.kind) :
-    S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
-      S.formMatrix c γ α * (if ρ = α' then 1 else 0) -
-        S.formMatrix c ρ α * (if γ = α' then 1 else 0) := by
-  simpa only [@eq_comm _ α' α] using formMatrix_schouten c h2 γ ρ α α'
 
 end Species
 

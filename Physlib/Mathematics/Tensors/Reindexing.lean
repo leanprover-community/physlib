@@ -8,18 +8,18 @@ module
 public import Physlib.Mathematics.Tensors.Tensor
 /-!
 
-# Relabeling the indices of a tensor
+# Reindexing tensors
 
 A bijection of the indices of a tensor that keeps their colors, and its action on tensors, as in the
 transpose `T^μ_ν ↦ T_ν^μ`.
 
 ## i. Overview
 
-A relabeling `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the indices of a tensor
+A reindexing `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the indices of a tensor
 that keeps their colors, with the proof `σ.color_eq`. For the transpose `T^μ_ν ↦ T_ν^μ` it swaps
 the indices `0` and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would
-turn an up index into a down one is not a relabeling, since that needs a metric. The labels `ι₁`
-and `ι₂` may be different types, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the product `u^μ v^ν`.
+turn an up index into a down one is not a reindexing, since that needs a metric. The index types
+`ι₁` and `ι₂` may be different, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the product `u^μ v^ν`.
 
 `S.reindex σ` moves each vector of a tensor to its new index. The name follows Mathlib's
 `PiTensorProduct.reindex`. Index notation uses it to line up indices, as in `A^μ_ν + B_ν^μ`.
@@ -29,26 +29,26 @@ and `ι₂` may be different types, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the pro
 - `ColorEquiv` is a bijection of indices that keeps their colors, with `refl`, `symm` and `trans`.
 - `Species.permIndices` moves the vectors of a tensor along a bijection of indices, with no colors
   involved. It is Mathlib's `PiTensorProduct.reindex`.
-- `Species.reindex` applies a relabeling to tensors, `permIndices` followed by `congrIndices` of the
+- `Species.reindex` applies a reindexing to tensors, `permIndices` followed by `congrIndices` of the
   moves along the equalities of colors, and `Species.reindex_pure` gives it on a pure tensor.
-- `Species.reindex_trans`, `Species.reindex_refl` and `Species.reindex_symm` prove that relabeling
+- `Species.reindex_trans`, `Species.reindex_refl` and `Species.reindex_symm` prove that reindexing
   respects composites, the identity and inverses, and `Species.reindex_reindex` is the first on a
   tensor.
-- `Species.reindex` is an equivalence of representations, so relabeling commutes with the group
+- `Species.reindex` is an equivalence of representations, so reindexing commutes with the group
   action.
-- `Species.tensorBasis_repr_reindex` gives the components of a relabeled tensor,
+- `Species.tensorBasis_repr_reindex` gives the components of a reindexed tensor,
   `(Tᵀ)_ν^μ = T^μ_ν`.
 
 ## iii. Table of contents
 
-- A. Relabelings that keep colors
-- B. Relabeling tensors
+- A. Reindexings that keep colors
+- B. Reindexing tensors
 - C. Composition and equivariance
 - D. Components
 
 ## iv. References
 
-None.
+There are no known references for the material in this module.
 
 -/
 
@@ -60,14 +60,14 @@ namespace Tensor
 
 /-!
 
-## A. Relabelings that keep colors
+## A. Reindexings that keep colors
 
 -/
 
-/-- A relabeling of indices that keeps their colors, made of a bijection of indices and the proof
+/-- A reindexing that keeps the colors of the indices, made of a bijection of indices and the proof
 that each new index has the color of the old index it comes from. The proof is stated at the new
 indices `j`, so that `c₂ j` reduces at indices such as `inl x` or `0`. For finitely many concrete
-indices it is found by `rfl` or by cases. Two relabelings are equal when their bijections are
+indices it is found by `rfl` or by cases. Two reindexings are equal when their bijections are
 (`ColorEquiv.ext`). -/
 @[ext]
 structure ColorEquiv {K : Type} {ι₁ ι₂ : Type} (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) where
@@ -82,18 +82,18 @@ namespace ColorEquiv
 variable {K : Type} {ι₁ ι₂ ι₃ : Type} {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K}
     {c₃ : ι₃ → Color K}
 
-/-- The identity relabeling, where every index stays in place. -/
+/-- The identity reindexing, where every index stays in place. -/
 def refl (c₁ : ι₁ → Color K) : ColorEquiv c₁ c₁ := ⟨Equiv.refl ι₁, fun _ => rfl⟩
 
-/-- The inverse relabeling, where every index returns to its old position. -/
+/-- The inverse reindexing, where every index returns to its old position. -/
 def symm (σ : ColorEquiv c₁ c₂) : ColorEquiv c₂ c₁ :=
   ⟨σ.toEquiv.symm, fun i => by simpa using (σ.color_eq (σ.toEquiv i)).symm⟩
 
-/-- The relabeling `σ₁` followed by `σ₂`. -/
+/-- The reindexing `σ₁` followed by `σ₂`. -/
 def trans (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) : ColorEquiv c₁ c₃ :=
   ⟨σ₁.toEquiv.trans σ₂.toEquiv, fun j => (σ₁.color_eq _).trans (σ₂.color_eq j)⟩
 
-/-- The relabeling that swaps the two indices of a tensor on two indices, `![a, b] → ![b, a]`. -/
+/-- The reindexing that swaps the two indices of a tensor on two indices, `![a, b] → ![b, a]`. -/
 def swapTwo (a b : Color K) : ColorEquiv (K := K) ![a, b] ![b, a] := ⟨Equiv.swap 0 1, by
   intro j; fin_cases j <;> rfl⟩
 
@@ -124,7 +124,7 @@ variable {ι₁ ι₂ ι₃ : Type}
 
 /-!
 
-## B. Relabeling tensors
+## B. Reindexing tensors
 
 -/
 
@@ -146,7 +146,7 @@ lemma permIndices_pure (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) (f : Π i, 
   simp [permIndices, PiTensorProduct.reindex_tprod]
 
 variable (S) in
-/-- The relabeling `σ` applied to tensors, as in the transpose `T^μ_ν ↦ T_ν^μ`. The new index `j`
+/-- The reindexing `σ` applied to tensors, as in the transpose `T^μ_ν ↦ T_ν^μ`. The new index `j`
 holds the vector of the old index `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is
 `permIndices` of `σ.toEquiv` followed by `congrIndices` of the moves. -/
 noncomputable def reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
@@ -167,11 +167,11 @@ lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 
 -/
 
-/-- Relabeling by the identity is the identity. -/
+/-- Reindexing by the identity is the identity. -/
 lemma reindex_refl (c₁ : ι₁ → Color K) : S.reindex (ColorEquiv.refl c₁) = .refl _ :=
   equiv_ext_pure fun f => by rw [reindex_pure]; rfl
 
-/-- Relabeling by `σ₁.trans σ₂` is relabeling by `σ₁` and then by `σ₂`. -/
+/-- Reindexing by `σ₁.trans σ₂` is reindexing by `σ₁` and then by `σ₂`. -/
 lemma reindex_trans {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
     (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) :
     S.reindex (σ₁.trans σ₂) = (S.reindex σ₁).trans (S.reindex σ₂) :=
@@ -179,13 +179,13 @@ lemma reindex_trans {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ 
     simp only [Representation.Equiv.trans_apply, reindex_pure, cast_apply, cast_cast]
     rfl
 
-/-- Relabeling by `σ₁` and then by `σ₂` is relabeling by `σ₁.trans σ₂`, on a tensor. -/
+/-- Reindexing by `σ₁` and then by `σ₂` is reindexing by `σ₁.trans σ₂`, on a tensor. -/
 lemma reindex_reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
     (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) (t : S.Tensor c₁) :
     S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t := by
   rw [reindex_trans, Representation.Equiv.trans_apply]
 
-/-- The inverse of relabeling by `σ` is relabeling by `σ.symm`. -/
+/-- The inverse of reindexing by `σ` is reindexing by `σ.symm`. -/
 lemma reindex_symm {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
     (S.reindex σ).symm = S.reindex σ.symm :=
   Representation.Equiv.ext <| funext fun t => EquivLike.injective (S.reindex σ) <| by
@@ -199,7 +199,7 @@ lemma reindex_symm {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 
 -/
 
-/-- The components of a relabeled tensor are those of the tensor, as in `(Tᵀ)_ν^μ = T^μ_ν`. The
+/-- The components of a reindexed tensor are those of the tensor, as in `(Tᵀ)_ν^μ = T^μ_ν`. The
 old index `i` takes the label `y (σ.toEquiv i)` of its new index, cast along the equality of their
 colors. For concrete colors and labels the cast is between equal types, and `rfl` removes it. -/
 lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ → Color K}

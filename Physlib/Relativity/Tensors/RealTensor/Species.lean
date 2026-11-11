@@ -18,15 +18,15 @@ Real Lorentz tensors in `d + 1` dimensions as a species, with the Minkowski metr
 ## i. Overview
 
 Real Lorentz tensors have one kind of index, the vector index `vec`. An upper index has the color
-`⟨vec, up⟩` and a lower index the color `⟨vec, down⟩`. A color is a label. The species assigns to
-it a space: `V ⟨vec, up⟩ = Lorentz.Vector d`, the contravariant vectors `v^μ` with basis `e_μ`,
-and `V ⟨vec, down⟩ = Lorentz.CoVector d`, the covariant vectors `w_μ` with basis `e^μ`. Both are
-functions `Fin 1 ⊕ Fin d → ℝ` with Mathlib's analysis, so `V ⟨vec, up⟩ = ℝ⁴` for `d = 3`. The
-labels `μ` run over `Fin 1 ⊕ Fin d`, with `Sum.inl 0` the time direction and `Sum.inr i` the space
-directions. A Lorentz transformation `Λ : LorentzGroup d` acts on an upper index by
-`(Λv)^μ = Λ^μ_ν v^ν` and on a lower index by `(Λw)_μ = (Λ⁻¹)^ν_μ w_ν`. The two colors are named
-`realLorentz.up` and `realLorentz.down`, and `ℝT[d, up, down]` is the space of the tensors
-`T^μ_ν`, under `open scoped Tensor.realLorentz`.
+`⟨vec, up⟩` and a lower index the color `⟨vec, down⟩`. A color is the kind and variance of an
+index. The species assigns to it a space: `V ⟨vec, up⟩ = Lorentz.Vector d`, the contravariant
+vectors `v^μ` with basis `e_μ`, and `V ⟨vec, down⟩ = Lorentz.CoVector d`, the covariant vectors
+`w_μ` with basis `e^μ`. Both are functions `Fin 1 ⊕ Fin d → ℝ` with Mathlib's analysis, so
+`V ⟨vec, up⟩ = ℝ⁴` for `d = 3`. The labels `μ` run over `Fin 1 ⊕ Fin d`, with `Sum.inl 0` the
+time direction and `Sum.inr i` the space directions. A Lorentz transformation
+`Λ : LorentzGroup d` acts on an upper index by `(Λv)^μ = Λ^μ_ν v^ν` and on a lower index by
+`(Λw)_μ = (Λ⁻¹)^ν_μ w_ν`. The two colors are named `realLorentz.up` and `realLorentz.down`, and
+`ℝT[d, up, down]` is the space of the tensors `T^μ_ν`, under `open scoped Tensor.realLorentz`.
 
 The contraction `u^μ w_μ` is the coordinate pairing `∑ μ, u^μ w_μ` of the two bases and the
 delta is `δ_μ^ν = ∑ μ, e^μ ⊗ e_μ`. The one physical input is that the pairing is Lorentz invariant
@@ -78,6 +78,8 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
 - D. Lorentz vectors and covectors as tensors
 
 ## iv. References
+
+There are no known references for the material in this module.
 
 -/
 
@@ -331,8 +333,6 @@ end realLorentz
 
 namespace realLorentz
 
-open Matrix
-
 /-- A Lorentz vector `v^μ` is a tensor with one upper index, the space of the index. The Lorentz
 group acts by `Vector.rep`, `Λ v = Λ *ᵥ v`. -/
 noncomputable instance vectorTensorial (d : ℕ) : Tensorial (realLorentz d) ![up] (Vector d) :=
@@ -376,10 +376,12 @@ noncomputable def _root_.Lorentz.Vector.tensorComponent {d : ℕ} (μ ν : Fin 1
     Vector d ⊗[ℝ] Vector d →ₗ[ℝ] ℝ :=
   Finsupp.lapply (μ, ν) ∘ₗ (Vector.basis.tensorProduct Vector.basis).repr.toLinearMap
 
+/-- The component `F^μν` is the coordinate of `F` at `(μ, ν)` in Mathlib's product basis. -/
 lemma _root_.Lorentz.Vector.tensorComponent_apply {d : ℕ} (μ ν : Fin 1 ⊕ Fin d)
     (F : Vector d ⊗[ℝ] Vector d) :
     Vector.tensorComponent μ ν F = (Vector.basis.tensorProduct Vector.basis).repr F (μ, ν) := rfl
 
+/-- The components of `v ⊗ w` are the products of components, `(v ⊗ w)^μν = v^μ w^ν`. -/
 @[simp]
 lemma _root_.Lorentz.Vector.tensorComponent_tmul {d : ℕ} (μ ν : Fin 1 ⊕ Fin d) (v w : Vector d) :
     Vector.tensorComponent μ ν (v ⊗ₜ w) = v μ * w ν := by

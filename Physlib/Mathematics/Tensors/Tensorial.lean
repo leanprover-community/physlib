@@ -50,6 +50,8 @@ Instances come from the space of one index (`ofIndexSpace`), from an equivalent 
 
 ## iv. References
 
+There are no known references for the material in this module.
+
 -/
 
 @[expose] public section
