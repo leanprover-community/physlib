@@ -6,7 +6,6 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.Tensors.Species
-public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 public import Physlib.Mathematics.ForMathlib.Representation
 /-!
 

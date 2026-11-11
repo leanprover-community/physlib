@@ -6,7 +6,6 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.ForMathlib.CoordTensorHom
-public import Mathlib.RepresentationTheory.Invariants
 public import Physlib.Mathematics.Tensors.Contraction
 /-!
 

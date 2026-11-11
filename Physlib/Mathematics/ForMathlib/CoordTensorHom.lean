@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.RepresentationTheory.Invariants
 public import Physlib.Mathematics.ForMathlib.Contraction

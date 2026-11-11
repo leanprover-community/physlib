@@ -208,7 +208,7 @@ lemma star_coordPairing_starEquiv [Fintype ι] [DecidableEq ι] [Fintype ι'] [D
 /-- Let conjugate-linear maps `f` of `M` and `f'` of `N` conjugate the coordinate pairing of `b₁`
 and `b₂` into that of `b₁'` and `b₂'`, both invariant. If `f` commutes with the group action, so
 does `f'`. -/
-lemma map_rep_of_star_coordPairing [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
+lemma map_rep_of_star_coordPairing [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
     {N N' G : Type*} [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] [Group G]
     {ρ₁ : Representation R G M} {ρ₂ : Representation R G N} {ρ₁' : Representation R G M'}
     {ρ₂' : Representation R G N'} {b₁ : Basis ι R M} {b₂ : Basis ι R N} {b₁' : Basis ι' R M'}

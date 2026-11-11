@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Dimension.Free
 public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
