@@ -8,6 +8,7 @@ module
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
 public import Physlib.Relativity.Tensors.RealTensor.CoVector.Representation
 public import Mathlib.RepresentationTheory.Intertwining
+public import Physlib.Mathematics.ForMathlib.Contraction
 /-!
 
 # Contraction of Real Lorentz Vectors and Covectors
@@ -107,6 +108,12 @@ lemma CoVector.contract_basis_right (ψ : CoVector d) (μ : Fin 1 ⊕ Fin d) :
 lemma Vector.contract_eq_coVector_contract (φ : Vector d) (ψ : CoVector d) :
     Vector.contract (φ ⊗ₜ ψ) = CoVector.contract (ψ ⊗ₜ φ) := by
   simp_rw [Vector.contract_tmul, CoVector.contract_tmul, mul_comm]
+
+/-- The contraction `φ^μ ψ_μ` is the coordinate pairing of `Vector.basis` and `CoVector.basis`. -/
+lemma Vector.coordPairing_basis_tmul (φ : Vector d) (ψ : CoVector d) :
+    Vector.basis.coordPairing CoVector.basis (φ ⊗ₜ ψ) = Vector.contract (φ ⊗ₜ ψ) := by
+  simp [Module.Basis.coordPairing_tmul, Vector.basis_repr_apply, CoVector.basis_repr_apply,
+    Vector.contract_tmul]
 
 lemma Vector.contract_rep (Λ : LorentzGroup d) (φ : Vector d) (ψ : CoVector d) :
     Vector.contract ((Vector.rep Λ φ) ⊗ₜ (CoVector.rep Λ ψ)) = Vector.contract (φ ⊗ₜ ψ) := by

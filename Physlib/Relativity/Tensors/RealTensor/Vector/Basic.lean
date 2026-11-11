@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Geometry.Manifold.IsManifold.Basic
+public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 /-!
 
 # Lorentz Vectors
@@ -323,6 +324,34 @@ lemma sum_inl_inr_basis_eq_zero_iff {d : ℕ} (f₀ : ℝ) (f : Fin d → ℝ) :
     = ∑ μ, f' μ • basis μ := by simp [f']
   rw [h1, sum_basis_eq_zero_iff]
   simp [f']
+
+/-- The component `F^μν` of `F` in `Vector d ⊗ Vector d`, its coordinate at `(μ, ν)` in Mathlib's
+product basis `e_μ ⊗ e_ν`. -/
+def tensorComponent {d : ℕ} (μ ν : Fin 1 ⊕ Fin d) : Vector d ⊗[ℝ] Vector d →ₗ[ℝ] ℝ :=
+  Finsupp.lapply (μ, ν) ∘ₗ (basis.tensorProduct basis).repr.toLinearMap
+
+/-- The component `F^μν` is the coordinate of `F` at `(μ, ν)` in Mathlib's product basis. -/
+lemma tensorComponent_apply {d : ℕ} (μ ν : Fin 1 ⊕ Fin d) (F : Vector d ⊗[ℝ] Vector d) :
+    tensorComponent μ ν F = (basis.tensorProduct basis).repr F (μ, ν) := rfl
+
+/-- The components of `v ⊗ w` are the products of components, `(v ⊗ w)^μν = v^μ w^ν`. -/
+@[simp]
+lemma tensorComponent_tmul {d : ℕ} (μ ν : Fin 1 ⊕ Fin d) (v w : Vector d) :
+    tensorComponent μ ν (v ⊗ₜ w) = v μ * w ν := by
+  simp [tensorComponent_apply, Module.Basis.tensorProduct_repr_tmul_apply, basis_repr_apply,
+    mul_comm]
+
+/-- Two elements of `Vector d ⊗ Vector d` with the same components are equal. -/
+lemma tensorComponent_ext {d : ℕ} {F G : Vector d ⊗[ℝ] Vector d}
+    (h : ∀ μ ν, tensorComponent μ ν F = tensorComponent μ ν G) : F = G :=
+  (basis.tensorProduct basis).ext_elem fun μν => h μν.1 μν.2
+
+/-- An element of `Vector d ⊗ Vector d` is the sum `F^μν e_μ ⊗ e_ν` of its components. -/
+lemma eq_sum_tensorComponent {d : ℕ} (F : Vector d ⊗[ℝ] Vector d) :
+    F = ∑ μ, ∑ ν, tensorComponent μ ν F • basis μ ⊗ₜ[ℝ] basis ν := by
+  conv_lhs => rw [← (basis.tensorProductToMatrix basis).symm_apply_apply F,
+    Module.Basis.tensorProductToMatrix_symm_apply]
+  rfl
 
 /-!
 

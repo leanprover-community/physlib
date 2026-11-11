@@ -28,6 +28,8 @@ and `b₁.tensorProductToMatrix b₂` is the linear equivalence `v ↦ X`. The m
   `∑ i j, X i j • b₁ i ⊗ b₂ j`.
 - `Module.Basis.tensorProductToMatrix_tmul` : the coefficient matrix of `x ⊗ y` is the outer
   product of the coordinates.
+- `Module.Basis.tensorProductToMatrix_symm_diagonal` : the tensor with the diagonal coefficient
+  matrix `diagonal D` is `∑ i, D i • b i ⊗ b i`.
 - `Module.Basis.tensorProductToMatrix_map` : the coefficient matrix of `f ⊗ g` applied to `v`.
 - `Module.Basis.tensorProductToMatrix_symm_map` : `f ⊗ g` applied to the tensor with coefficient
   matrix `X`.
@@ -99,6 +101,11 @@ lemma tensorProductToMatrix_symm_apply (X : Matrix ι κ R) :
   rw [LinearEquiv.symm_apply_eq]
   ext i j
   simp [Finsupp.single_apply, Finset.sum_apply]
+
+/-- The tensor with the diagonal coefficient matrix `diagonal D` is `∑ i, D i • b i ⊗ b i`. -/
+lemma tensorProductToMatrix_symm_diagonal (D : ι → R) :
+    (b₁.tensorProductToMatrix b₁).symm (diagonal D) = ∑ i, D i • (b₁ i ⊗ₜ[R] b₁ i) := by
+  simp [tensorProductToMatrix_symm_apply, diagonal_apply, ite_smul]
 
 /-- `f ⊗ g` sends the tensor with coefficient matrix `X` to the one with coefficient matrix
 `A * X * Bᵀ`. -/

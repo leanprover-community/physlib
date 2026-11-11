@@ -6,9 +6,10 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.Tensors.ElabTactics
-public import Physlib.Relativity.Tensors.RealTensor.CoVector.Representation
+public import Physlib.Relativity.Tensors.RealTensor.Representation.Contraction
 public import Physlib.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
+import Mathlib.LinearAlgebra.Matrix.IsDiag
 /-!
 
 # The species of real Lorentz tensors
@@ -66,7 +67,6 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
   contraction `η_μν v^μ w^ν`.
 - `realLorentz.basis_repr_toDual` and `realLorentz.tensorBasis_repr_toDualAt` : lowering or raising
   an index multiplies its component by `η_νν`.
-- `Lorentz.Vector.tensorComponent` : the component `F^μν` of `F` in `Vector d ⊗ Vector d`.
 - `realLorentz.tensorBasis_repr_toDualAt_contr_vector_tmul` : the contraction `F_μν G^μν` in
   components.
 
@@ -130,20 +130,6 @@ noncomputable abbrev IndexSpace.basis (d : ℕ) :
   | ⟨_, .up⟩ => Vector.basis
   | ⟨_, .down⟩ => CoVector.basis
 
-/-- The coordinate pairing of `Vector.basis` and `CoVector.basis` is `v^μ ω_μ = v ⬝ᵥ ω`. -/
-lemma coordPairing_vector_coVector (d : ℕ) (v : Vector d) (ω : CoVector d) :
-    Vector.basis.coordPairing CoVector.basis (v ⊗ₜ ω) = (v : Fin 1 ⊕ Fin d → ℝ) ⬝ᵥ ω := by
-  simp [Module.Basis.coordPairing_tmul, Vector.basis_repr_apply, CoVector.basis_repr_apply,
-    dotProduct]
-
-/-- The pairing `v^μ ω_μ` of a vector and a covector is Lorentz invariant,
-`(Λ v) ⬝ᵥ ((Λ⁻¹)ᵀ ω) = v ⬝ᵥ ω`. -/
-lemma dotProduct_rep (d : ℕ) (Λ : LorentzGroup d) (v : Vector d) (ω : CoVector d) :
-    (Vector.rep Λ v : Fin 1 ⊕ Fin d → ℝ) ⬝ᵥ CoVector.rep Λ ω = v ⬝ᵥ ω := by
-  change (Λ.1 *ᵥ v) ⬝ᵥ ((Λ⁻¹).1ᵀ *ᵥ ω) = _
-  rw [dotProduct_mulVec, vecMul_transpose, mulVec_mulVec, LorentzGroup.coe_inv,
-    LorentzGroup.subtype_inv_mul, one_mulVec]
-
 /-- The coordinate pairing of an index with its dual is Lorentz invariant. At a lower index it is
 the pairing at the upper index with its factors swapped (`Species.invariant_of_up`). -/
 lemma coordPairing_rep (d : ℕ) : ∀ (c : Color Kind) (Λ : LorentzGroup d) (x : IndexSpace d c)
@@ -152,8 +138,8 @@ lemma coordPairing_rep (d : ℕ) : ∀ (c : Color Kind) (Λ : LorentzGroup d) (x
         (IndexSpace.rep d c Λ x ⊗ₜ IndexSpace.rep d c.dual Λ y) =
       (IndexSpace.basis d c).coordPairing (IndexSpace.basis d c.dual) (x ⊗ₜ y) :=
   Species.invariant_of_up (basisIdx := fun _ => Fin 1 ⊕ Fin d) _ _ fun _ Λ x y =>
-    (coordPairing_vector_coVector d _ _).trans <|
-      (dotProduct_rep d Λ x y).trans (coordPairing_vector_coVector d x y).symm
+    (Vector.coordPairing_basis_tmul _ _).trans <|
+      (Vector.contract_rep Λ x y).trans (Vector.coordPairing_basis_tmul x y).symm
 
 end realLorentz
 
@@ -204,13 +190,14 @@ noncomputable def metric (d : ℕ) (c : Color Kind) : (realLorentz d).V c ⊗[�
 lemma basis_tensorProduct_repr_metric (d : ℕ) (c : Color Kind) (μ ν : Fin 1 ⊕ Fin d) :
     (((realLorentz d).basis c).tensorProduct ((realLorentz d).basis c)).repr (metric d c) (μ, ν) =
       minkowskiMatrix μ ν := by
-  rw [metric, map_sum, Finsupp.finsetSum_apply, Finset.sum_eq_single μ
-    (fun x _ hx => by simp [Module.Basis.tensorProduct_repr_tmul_apply, Finsupp.single_apply, hx])
-    (by simp)]
-  by_cases h : μ = ν
-  · subst h
-    simp [Module.Basis.tensorProduct_repr_tmul_apply]
-  · simp [Module.Basis.tensorProduct_repr_tmul_apply, h]
+  let b := (realLorentz d).basis c
+  have h : metric d c = (b.tensorProductToMatrix b).symm minkowskiMatrix := by
+    rw [← (show Matrix.IsDiag (@minkowskiMatrix d) by
+      rw [minkowskiMatrix.as_diagonal]; exact Matrix.isDiag_diagonal _).diagonal_diag,
+      Module.Basis.tensorProductToMatrix_symm_diagonal]
+    rfl
+  rw [h]
+  exact congrFun₂ ((b.tensorProductToMatrix b).apply_symm_apply minkowskiMatrix) μ ν
 
 /-- The metric is Lorentz invariant, `Λ η Λᵀ = η` at an upper color and `Λ⁻¹ᵀ η Λ⁻¹ = η` at a
 lower one. -/
@@ -369,36 +356,6 @@ lemma tensorBasis_repr_toTensor_vector_tmul (d : ℕ) (F : Vector d ⊗[ℝ] Vec
     ((realLorentz d).tensorBasis (prodColors ![up] ![up])).repr (Tensorial.toTensor F) μ =
       (Vector.basis.tensorProduct Vector.basis).repr F (μ (.inl 0), μ (.inr 0)) :=
   Tensorial.tensorBasis_repr_toTensor_prod_ofIndexSpace (S := realLorentz d) up up F μ
-
-/-- The component `F^μν` of `F` in `Vector d ⊗ Vector d`, its coordinate at `(μ, ν)` in Mathlib's
-product basis `e_μ ⊗ e_ν`. -/
-noncomputable def _root_.Lorentz.Vector.tensorComponent {d : ℕ} (μ ν : Fin 1 ⊕ Fin d) :
-    Vector d ⊗[ℝ] Vector d →ₗ[ℝ] ℝ :=
-  Finsupp.lapply (μ, ν) ∘ₗ (Vector.basis.tensorProduct Vector.basis).repr.toLinearMap
-
-/-- The component `F^μν` is the coordinate of `F` at `(μ, ν)` in Mathlib's product basis. -/
-lemma _root_.Lorentz.Vector.tensorComponent_apply {d : ℕ} (μ ν : Fin 1 ⊕ Fin d)
-    (F : Vector d ⊗[ℝ] Vector d) :
-    Vector.tensorComponent μ ν F = (Vector.basis.tensorProduct Vector.basis).repr F (μ, ν) := rfl
-
-/-- The components of `v ⊗ w` are the products of components, `(v ⊗ w)^μν = v^μ w^ν`. -/
-@[simp]
-lemma _root_.Lorentz.Vector.tensorComponent_tmul {d : ℕ} (μ ν : Fin 1 ⊕ Fin d) (v w : Vector d) :
-    Vector.tensorComponent μ ν (v ⊗ₜ w) = v μ * w ν := by
-  simp [Vector.tensorComponent_apply, Module.Basis.tensorProduct_repr_tmul_apply,
-    Vector.basis_repr_apply, mul_comm]
-
-/-- Two elements of `Vector d ⊗ Vector d` with the same components are equal. -/
-lemma _root_.Lorentz.Vector.tensorComponent_ext {d : ℕ} {F G : Vector d ⊗[ℝ] Vector d}
-    (h : ∀ μ ν, Vector.tensorComponent μ ν F = Vector.tensorComponent μ ν G) : F = G :=
-  (Vector.basis.tensorProduct Vector.basis).repr.injective (Finsupp.ext fun μν => h μν.1 μν.2)
-
-/-- An element of `Vector d ⊗ Vector d` is the sum `F^μν e_μ ⊗ e_ν` of its components. -/
-lemma _root_.Lorentz.Vector.eq_sum_tensorComponent {d : ℕ} (F : Vector d ⊗[ℝ] Vector d) :
-    F = ∑ μ, ∑ ν, Vector.tensorComponent μ ν F • Vector.basis μ ⊗ₜ[ℝ] Vector.basis ν := by
-  simp only [Vector.tensorComponent_apply, ← Fintype.sum_prod_type']
-  exact ((Vector.basis.tensorProduct Vector.basis).sum_repr _).symm.trans
-    (Finset.sum_congr rfl fun _ _ => by rw [Module.Basis.tensorProduct_apply])
 
 /-- The components `T_μ^ν` of the tensor of `T` in `CoVector d ⊗ Vector d` are its coordinates in
 Mathlib's product basis `Basis.tensorProduct`. -/
