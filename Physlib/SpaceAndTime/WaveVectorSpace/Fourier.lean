@@ -17,6 +17,9 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 
 ## iii. Table of contents
 
+- A. Fourier integrals
+  - A.1. Two-parameter definitions
+  - A.2. Basic properties
 ## iv. References
 
 -/
@@ -35,6 +38,10 @@ open MeasureTheory VectorFourier
 open scoped Real
 
 variable (a b : ℝ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+
+/-!
+### A.1. Two-parameter definitions
+-/
 
 /-- The additive character `fun r ↦ exp (b * r * I)` from `ℝ` to the unit circle in `ℂ`. -/
 noncomputable def physChar : AddChar ℝ Circle where
@@ -78,5 +85,44 @@ lemma physFourierInv_eq (g : WaveVectorSpace d → E) :
       = √(|b| / (2 * π) ^ (1 + a))
         • fourierIntegral (physChar b) volume pairingCLM.toLinearMap₁₂ g :=
   rfl
+
+/-!
+### A.2. Basic properties
+-/
+
+lemma physFourier_congr_ae {f₁ f₂ : Space d → E} (hf : f₁ =ᵐ[volume] f₂) :
+    physFourier a b f₁ = physFourier a b f₂ := by
+  rw [physFourier_eq, physFourier_eq, fourierIntegral_congr_ae _ _ _ hf]
+
+lemma physFourierInv_congr_ae {g₁ g₂ : WaveVectorSpace d → E} (hg : g₁ =ᵐ[volume] g₂) :
+    physFourierInv a b g₁ = physFourierInv a b g₂ := by
+  rw [physFourierInv_eq, physFourierInv_eq, fourierIntegral_congr_ae _ _ _ hg]
+
+lemma physFourier_const_smul (f : Space d → E) (c : ℂ) :
+    physFourier a b (c • f) = c • physFourier a b f := by
+  simp only [physFourier_eq, fourierIntegral_const_smul, smul_comm c]
+
+lemma physFourierInv_const_smul (f : WaveVectorSpace d → E) (c : ℂ) :
+    physFourierInv a b (c • f) = c • physFourierInv a b f := by
+  simp only [physFourierInv_eq, fourierIntegral_const_smul, smul_comm c]
+
+lemma physFourier_add {f₁ f₂ : Space d → E} (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) :
+    physFourier a b (f₁ + f₂) = physFourier a b f₁ + physFourier a b f₂ := by
+  repeat rw [physFourier_eq]
+  rw [← smul_add, fourierIntegral_add physChar_continuous pairingCLM.flip.continuous₂.neg hf₁ hf₂]
+
+lemma physFourierInv_add
+    {g₁ g₂ : WaveVectorSpace d → E} (hg₁ : Integrable g₁) (hg₂ : Integrable g₂) :
+    physFourierInv a b (g₁ + g₂) = physFourierInv a b g₁ + physFourierInv a b g₂ := by
+  repeat rw [physFourierInv_eq]
+  rw [← smul_add, fourierIntegral_add physChar_continuous pairingCLM.continuous₂ hg₁ hg₂]
+
+lemma physFourier_continuous {f : Space d → E} (hf : Integrable f) :
+    Continuous (physFourier a b f) :=
+  (fourierIntegral_continuous physChar_continuous pairingCLM.flip.continuous₂.neg hf).const_smul _
+
+lemma physFourierInv_continuous {g : WaveVectorSpace d → E} (hg : Integrable g) :
+    Continuous (physFourierInv a b g) :=
+  (fourierIntegral_continuous physChar_continuous pairingCLM.continuous₂ hg).const_smul _
 
 end WaveVectorSpace
