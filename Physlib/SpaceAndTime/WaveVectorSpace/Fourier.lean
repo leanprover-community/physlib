@@ -193,7 +193,7 @@ end FourierIntegral
 ## B. Fourier instances for different conventions
 -/
 
-section Conventions
+noncomputable section Conventions
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
@@ -209,10 +209,10 @@ $$
 
 namespace Fourier_0_1
 
-noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
+scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
   fourier := fourierIntegral 0 1
 
-noncomputable scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
+scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 0 1
 
 end Fourier_0_1
@@ -229,10 +229,10 @@ $$
 
 namespace Fourier_1_n1
 
-noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
+scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
   fourier := fourierIntegral 1 (-1)
 
-noncomputable scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
+scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 1 (-1)
 
 end Fourier_1_n1
