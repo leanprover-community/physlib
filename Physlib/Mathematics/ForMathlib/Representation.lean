@@ -44,6 +44,8 @@ intertwining.
   intertwining, `Representation.Equiv.piTensorCongr` : the tensor product of a family of
   equivalences of representations, and `Representation.IsIntertwiningMap.contrPairs` : the
   contraction of invariantly paired factors is intertwining.
+- `Representation.map_piTprod_of_tprod` : a semilinear map that commutes with `piTprod ρ` on pure
+  tensors commutes with it on all tensors.
 - `Representation.IntertwiningMap.map_smul_ofDistribMulAction` and
   `Representation.Equiv.map_smul_ofDistribMulAction` : maps of representations given by actions
   commute with the actions, `φ (g • v) = g • φ v`.
@@ -157,6 +159,16 @@ lemma Representation.Equiv.piTensorCongr_tprod {ρ : Π i, Representation k G (M
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
     Representation.Equiv.piTensorCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
+
+/-- A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors commutes
+with it on all tensors. -/
+lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Representation k G (M i)}
+    (f : (⨂[k] i, M i) →ₛₗ[φ] U) (g : G)
+    (h : ∀ m : Π i, M i, f (Representation.piTprod ρ g (⨂ₜ[k] i, m i)) = τ g (f (⨂ₜ[k] i, m i)))
+    (t : ⨂[k] i, M i) : f (Representation.piTprod ρ g t) = τ g (f t) := by
+  induction t using PiTensorProduct.induction_on with
+  | smul_tprod r m => rw [map_smul, map_smulₛₗ, h, map_smulₛₗ, map_smul]
+  | add x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
 
 /-- `PiTensorProduct.contrPairs p` intertwines `piTprod ρ` and `piTprod` of the kept factors when
 every pairing `p j` is invariant. -/

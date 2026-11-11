@@ -33,7 +33,7 @@ pure tensors, and their properties are proved there first. `S.pure f` is Mathlib
 A group element `Λ` acts on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). This is the representation
 `Representation.piTprod` on `⨂[k] i, V (c i)`. A map that commutes with `Λ` on pure tensors
-commutes with it on all tensors (`map_smul_of_pure`).
+commutes with it on all tensors (`map_smul_of_pure`, from `Representation.map_piTprod_of_tprod`).
 
 The components `T^μ_νρ` of a tensor `T` are its coordinates in the basis `e_μ ⊗ e^ν ⊗ e^ρ`
 (`tensorBasis`), which is Mathlib's `Basis.piTensorProduct`. Each basis tensor is a pure tensor of
@@ -206,11 +206,9 @@ with `Λ` on all tensors. -/
 lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F : Type}
     [FunLike F (Tensor S c) (Tensor S c')] [SemilinearMapClass F σ (Tensor S c) (Tensor S c')]
     (f : F) (g : G) (h : ∀ p : Π i, S.V (c i), f (g • S.pure p) = g • f (S.pure p))
-    (t : Tensor S c) : f (g • t) = g • f t := by
-  induction t using inductionOn_pure with
-  | h p => exact h p
-  | hsmul r t ht => rw [smul_comm, map_smulₛₗ, ht, map_smulₛₗ, smul_comm]
-  | hadd x y hx hy => rw [smul_add, map_add, hx, hy, map_add, smul_add]
+    (t : Tensor S c) : f (g • t) = g • f t :=
+  Representation.map_piTprod_of_tprod (τ := Representation.piTprod fun i => S.rep (c' i))
+    (f : Tensor S c →ₛₗ[σ] Tensor S c') g h t
 
 variable {ι' : Type} {c' : ι' → Color K} in
 /-- A linear equivalence of tensors that commutes with `Λ` on pure tensors, as an equivalence of
