@@ -12,3 +12,5 @@ Your goal is to put `X` into PhyslibAlpha whilst:
 2. Ensuring that you fit it nicely with existing API within the project, and that nothing is redefined, and that the physics context is clear.
 
 Make sure that your result aligns with `./docs/ContributionHandbook`.
+
+Do not edit any API-map.md.
