@@ -183,9 +183,9 @@ lemma coordPairing_rep : ∀ (c : Color Kind) (g : SL(2, ℂ)) (x : IndexSpace c
     (indexBasis c).coordPairing (indexBasis c.dual) (indexRep c g x ⊗ₜ indexRep c.dual g y) =
       (indexBasis c).coordPairing (indexBasis c.dual) (x ⊗ₜ y) :=
   Species.invariant_of_up indexRep indexBasis fun
-    | left => Species.invariant_of_contr LeftHandedWeyl.contr fun μ ν =>
+    | left => Module.Basis.coordPairing_invariant LeftHandedWeyl.contr fun μ ν =>
       (LeftHandedWeyl.contr_basis μ ν).trans (if_congr Fin.ext_iff.symm rfl rfl)
-    | right => Species.invariant_of_contr RightHandedWeyl.contr fun μ ν =>
+    | right => Module.Basis.coordPairing_invariant RightHandedWeyl.contr fun μ ν =>
       (RightHandedWeyl.contr_basis μ ν).trans (if_congr Fin.ext_iff.symm rfl rfl)
     | vec => fun g x y => (coordPairing_complexVector_coVector _ _).trans <|
       (dotProduct_SL2CRep g x y).trans (coordPairing_complexVector_coVector x y).symm
