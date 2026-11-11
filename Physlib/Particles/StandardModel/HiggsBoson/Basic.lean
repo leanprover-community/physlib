@@ -342,11 +342,9 @@ lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
   constructor
   · intro h
     have hu0 : (u : ℂ) ≠ 0 := left_ne_zero_of_mul_eq_one hw
-    -- the first component of `g (0, √a) = (0, √a)` is `u * M 0 1 * √a = 0`
     have h01 : M 0 1 = 0 := by
       simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
         Fin.sum_univ_two, ← hM, ← hu, hu0, hs] using congrArg (fun φ : HiggsVec => φ.ofLp 0) h
-    -- the second component is `u * M 1 1 * √a = √a`, so `M 1 1 = ū`
     have h1 : (u : ℂ) * (M 1 1 * Real.sqrt a) = Real.sqrt a := by
       simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
         Fin.sum_univ_two, ← hM, ← hu] using congrArg (fun φ : HiggsVec => φ.ofLp 1) h
@@ -399,14 +397,12 @@ lemma mem_iInf_stabilizer_iff (g : GaugeGroupI) :
     have h2 := (mem_stabilizer_ofReal_iff one_pos g).mp (hφ (ofReal 1))
     set w := GaugeGroupI.toU1 g ^ 3 with hw_def
     have hw : (w : ℂ) * conj (w : ℂ) = 1 := w.2.2
-    -- acting on `(1, 0)` gives `w² = 1`, i.e. `u⁶ = 1`
     have hw2 : (w : ℂ) ^ 2 = 1 := by
       have := congrArg (fun φ : HiggsVec => φ.ofLp 0) (hφ !₂[1, 0])
       simpa [repGaugeGroupI_apply, h2, Submonoid.smul_def, ← hw_def, sq] using this
     have h6 : (GaugeGroupI.toU1 g : ℂ) ^ 6 = 1 := by
       rw [← hw2]
       simp [hw_def, ← pow_mul]
-    -- `w = ū³` since `w² = 1`
     have hcw : conj (w : ℂ) = w := by linear_combination (w : ℂ) * hw - conj (w : ℂ) * hw2
     have hu3 : star (GaugeGroupI.toU1 g : ℂ) ^ 3 = w := by
       rw [← hcw, hw_def]

@@ -111,12 +111,10 @@ lemma eq_diagSU2_of_apply_zero_one_eq_zero {M : specialUnitaryGroup (Fin 2) ℂ}
   have hw : (w : ℂ) * conj (w : ℂ) = 1 := w.2.2
   have hM := M.2
   rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff'] at hM
-  -- the `(0, 1)` entry of `M† M = 1` forces `M 1 0 = 0`
   have h10 : (M : Matrix (Fin 2) (Fin 2) ℂ) 1 0 = 0 := by
     have := congrArg (fun A => A 0 1) hM.1
     simpa [Matrix.mul_apply, Fin.sum_univ_two, h01, h11, left_ne_zero_of_mul_eq_one hw]
       using this
-  -- the determinant forces `M 0 0 = w`
   have h00 : (M : Matrix (Fin 2) (Fin 2) ℂ) 0 0 = w := by
     have hd := hM.2
     rw [det_fin_two, h01, h10, h11] at hd
