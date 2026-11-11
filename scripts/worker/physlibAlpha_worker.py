@@ -7,7 +7,7 @@ r"""
 # physlibAlpha-worker
 
 This script allows the automation of tasks in PhyslibAlpha, making it easy for people
-to donate tokens in a useful and responsable way. This script can be used independently,
+to donate tokens in a useful and responsible way. This script can be used independently,
 or as the backend of a more sophisticated engine.
 
 ## The tasks
