@@ -181,18 +181,6 @@ lemma isIntertwiningMap_toLin_iff {a b : Color K} (z : S.V a ⊗[k] S.V b) :
   rw [← Representation.mem_linHom_invariants_iff_isIntertwining]
   exact forall_congr' fun g => by rw [← toLin_map_rep, S.toLin.injective.eq_iff]
 
-variable {S} in
-/-- Contracting with the swapped tensor swaps the two arguments, `u_μ z^νμ v_ν = v_ν z^νμ u_μ`. -/
-lemma contr_toLin_comm (c : Color K) (z : S.V c ⊗[k] S.V c) (u v : S.V c.dual) :
-    S.contr c.dual (v ⊗ₜ S.toLin (TensorProduct.comm k _ _ z) u) =
-      S.contr c.dual (u ⊗ₜ S.toLin z v) := by
-  induction z using TensorProduct.inductionOn with
-  | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
-  | tmul x y =>
-    simp only [TensorProduct.comm_tmul, Module.Basis.coordTensorHomEquiv_tmul, tmul_smul, map_smul,
-      smul_eq_mul]
-    exact mul_comm _ _
-
 /-!
 
 ## C. The delta

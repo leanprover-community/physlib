@@ -6,6 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.LinearAlgebra.Contraction
+public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 
@@ -27,6 +28,10 @@ The delta `∑ I, b I ⊗ b' I` of the two bases is the tensor of the identity m
 linear map of `z` is the transpose of the matrix of components of `z`, so two tensors give inverse
 maps when their matrices of components are inverse.
 
+A tensor `z` of `M ⊗ M` gives the bilinear form `(u, v) ↦ ⟨v, z u⟩` on `N`. Swapping the factors
+of `z` swaps its arguments, so the form is symmetric when `z` is and alternating when `z` is
+antisymmetric.
+
 ## ii. Key results
 
 - `Module.Basis.coordTensorHomEquiv` : a tensor of `M ⊗ U` as a linear map `N → U`.
@@ -36,10 +41,14 @@ maps when their matrices of components are inverse.
   the matrix of components.
 - `Module.Basis.coordTensorHomEquiv_comp_of_mul_eq_one` : two tensors give inverse maps when their
   matrices of components are inverse.
+- `Module.Basis.isSymm_coordTensorHomEquiv_of_comm_eq` and
+  `Module.Basis.isAlt_coordTensorHomEquiv_of_comm_eq_neg` : the bilinear form `(u, v) ↦ ⟨v, z u⟩`
+  is symmetric when `comm z = z` and alternating when `comm z = -z`.
 
 ## iii. Table of contents
 
 - A. Tensors as linear maps through the coordinate pairing
+- B. The bilinear form of a tensor
 
 ## iv. References
 
@@ -148,5 +157,46 @@ lemma coordTensorHomEquiv_comm_comp_comm (b : Module.Basis ι R M) (b' : Module.
   rw [LinearMap.toMatrix_comp _ b, toMatrix_coordTensorHomEquiv, toMatrix_coordTensorHomEquiv,
     LinearMap.toMatrix_id] at h
   convert h using 2 <;> ext <;> simp [tensorProduct_repr_comm]
+
+/-!
+
+## B. The bilinear form of a tensor
+
+-/
+
+/-- Swapping the factors of `z` swaps the arguments of `(u, v) ↦ ⟨v, z u⟩`. -/
+lemma coordPairing_coordTensorHomEquiv_comm (b : Module.Basis ι R M) (b' : Module.Basis ι R N)
+    (z : M ⊗[R] M) (u v : N) :
+    b'.coordPairing b (v ⊗ₜ b.coordTensorHomEquiv b' (TensorProduct.comm R M M z) u) =
+      b'.coordPairing b (u ⊗ₜ b.coordTensorHomEquiv b' z v) := by
+  induction z using TensorProduct.inductionOn with
+  | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, tmul_add, hz, hz']
+  | tmul x y =>
+    simp only [TensorProduct.comm_tmul, coordTensorHomEquiv_tmul, tmul_smul, map_smul,
+      smul_eq_mul]
+    exact mul_comm _ _
+
+/-- The bilinear form `(u, v) ↦ ⟨v, z u⟩` is symmetric when `comm z = z`. -/
+lemma isSymm_coordTensorHomEquiv_of_comm_eq (b : Module.Basis ι R M) (b' : Module.Basis ι R N)
+    {z : M ⊗[R] M} (hz : TensorProduct.comm R M M z = z) :
+    LinearMap.BilinForm.IsSymm
+      ((TensorProduct.curry (b'.coordPairing b)).flip ∘ₗ b.coordTensorHomEquiv b' z) :=
+  ⟨fun u v => by
+    change _ = b'.coordPairing b (u ⊗ₜ b.coordTensorHomEquiv b' z v)
+    rw [← coordPairing_coordTensorHomEquiv_comm, hz]
+    rfl⟩
+
+/-- The bilinear form `(u, v) ↦ ⟨v, z u⟩` is alternating when `comm z = -z`, over a ring of
+characteristic zero. -/
+lemma isAlt_coordTensorHomEquiv_of_comm_eq_neg [NoZeroDivisors R] [CharZero R]
+    (b : Module.Basis ι R M) (b' : Module.Basis ι R N) {z : M ⊗[R] M}
+    (hz : TensorProduct.comm R M M z = -z) :
+    LinearMap.IsAlt ((TensorProduct.curry (b'.coordPairing b)).flip ∘ₗ
+      b.coordTensorHomEquiv b' z) := by
+  refine LinearMap.isAlt_iff_eq_neg_flip.mpr (LinearMap.ext₂ fun u v => ?_)
+  change b'.coordPairing b (v ⊗ₜ b.coordTensorHomEquiv b' z u) =
+    -b'.coordPairing b (u ⊗ₜ b.coordTensorHomEquiv b' z v)
+  rw [← coordPairing_coordTensorHomEquiv_comm, hz, map_neg, LinearMap.neg_apply, tmul_neg,
+    map_neg]
 
 end Module.Basis

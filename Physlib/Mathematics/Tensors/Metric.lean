@@ -186,7 +186,7 @@ lemma formMatrix_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind
 /-- A symmetric form is symmetric as a bilinear form, Mathlib's `LinearMap.BilinForm.IsSymm`. -/
 lemma isSymm_formBilin (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     (S.formBilin c).IsSymm :=
-  ⟨fun u v => by rw [formBilin_apply, formBilin_apply, ← contr_toLin_comm, form_symm]⟩
+  (S.basis c).isSymm_coordTensorHomEquiv_of_comm_eq (S.basis c.dual) (form_symm c)
 
 /-- An antisymmetric form, `g_μν = -g_νμ`. -/
 lemma form_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
@@ -211,11 +211,8 @@ lemma comm_form_eq_smul (c : Color K) [S.HasForm c.kind] (r : k)
 /-- An antisymmetric form is alternating as a bilinear form, `g(u, u) = 0`, Mathlib's
 `LinearMap.IsAlt`. It uses that `k` has characteristic zero. -/
 lemma isAlt_formBilin (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
-    LinearMap.IsAlt (S.formBilin c) := by
-  refine LinearMap.isAlt_iff_eq_neg_flip.mpr (LinearMap.ext₂ fun u v => ?_)
-  rw [LinearMap.neg_apply, LinearMap.neg_apply, LinearMap.flip_apply, formBilin_apply,
-    formBilin_apply, ← contr_toLin_comm, form_antisymm, map_neg, LinearMap.neg_apply, tmul_neg,
-    map_neg]
+    LinearMap.IsAlt (S.formBilin c) :=
+  (S.basis c).isAlt_coordTensorHomEquiv_of_comm_eq_neg (S.basis c.dual) (form_antisymm c)
 
 /-!
 
