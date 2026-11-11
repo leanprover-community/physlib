@@ -307,8 +307,6 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
-public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
-public import Physlib.ProbabilisticTheory.HilbertSpace.Projection
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Sum
@@ -418,6 +416,8 @@ public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Gaussians
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PlaneWaves
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PositionStates
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.SchwartzSubmodule
+public import Physlib.QuantumMechanics.HilbertSpaces.Operators.Basic
+public import Physlib.QuantumMechanics.HilbertSpaces.Operators.Projection
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.DirichletSubmodule
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Fourier

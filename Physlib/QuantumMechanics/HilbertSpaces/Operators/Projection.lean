@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Projection
-public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
+public import Physlib.QuantumMechanics.HilbertSpaces.Operators.Basic
 
 /-!
 # Projections onto subspaces
