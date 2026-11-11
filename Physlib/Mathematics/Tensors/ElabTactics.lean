@@ -867,8 +867,8 @@ negatives and scalars are first moved out of every product, contraction and rein
 summand on the left is then matched with a summand on the right with the same sign and scalar,
 whose contraction is the same up to regrouping (`Species.Tensor.contr_eq_of_samePair`). When a
 factor appears more than once, each way of matching the equal factors is tried in turn, so the
-number of attempts is the product of `k!` over the factors that appear `k` times, and at most
-`maxMatchings` are tried.
+number of attempts is the product of `k!` over the factors that appear `k` times, and at most 12
+are tried (`maxMatchings`).
 
 Beyond regrouping, it uses these identities:
 - a delta on one side with no counterpart on the other is inserted on the other side at an index of
