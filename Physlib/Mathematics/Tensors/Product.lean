@@ -118,14 +118,14 @@ variable (S) in
 noncomputable def tmulEquiv (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) :
     ((S.tensorRep c₁).tprod (S.tensorRep c₂)).Equiv (S.tensorRep (prodColors c₁ c₂)) :=
   .mk (TensorProduct.congr (S.toPiTensor c₁) (S.toPiTensor c₂) ≪≫ₗ
-    tmulEquivDep k (fun s => S.V (prodColors c₁ c₂ s)) ≪≫ₗ (S.toPiTensor _).symm) fun g =>
-    TensorProduct.ext <| ext_pure fun f₁ => ext_pure fun f₂ => by
-      simp only [LinearMap.compr₂ₛₗ_apply, TensorProduct.mk_apply, LinearMap.comp_apply,
-        Representation.tprod_apply, TensorProduct.map_tmul,
-        Representation.ofDistribMulAction_apply_apply, smul_pure, LinearEquiv.coe_coe,
-        LinearEquiv.trans_apply, TensorProduct.congr_tmul, toPiTensor_pure, tmulEquivDep_apply,
-        toPiTensor_symm_tprod]
-      exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
+    tmulEquivDep k (fun s => S.V (prodColors c₁ c₂ s)) ≪≫ₗ (S.toPiTensor _).symm) fun g => by
+    ext f₁ f₂
+    simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars, LinearMap.comp_apply, Representation.tprod_apply,
+      TensorProduct.map_tmul, Representation.ofDistribMulAction_apply_apply, smul_pure,
+      LinearEquiv.coe_coe, LinearEquiv.trans_apply, TensorProduct.congr_tmul, toPiTensor_pure,
+      tmulEquivDep_apply, toPiTensor_symm_tprod]
+    exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
 
 /-- The product of the pure tensors of the vectors `f₁` and `f₂` is the pure tensor with the vectors
 `f₁` at the indices `inl i` and the vectors `f₂` at the indices `inr j`. -/
@@ -162,10 +162,12 @@ lemma tmulEquiv_assoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c�
       (S.tmulEquiv _ c₃).toLinearMap ∘ₗ (S.tmulEquiv c₁ c₂).toLinearMap.rTensor _)
     (g := (S.tmulEquiv c₁ _).toLinearMap ∘ₗ (S.tmulEquiv c₂ c₃).toLinearMap.lTensor _ ∘ₗ
       (TensorProduct.assoc k _ _ _).toLinearMap)
-    (ext_pure₃ fun f₁ f₂ f₃ => by
-      simp only [LinearMap.comp_apply, LinearMap.rTensor_tmul, LinearMap.lTensor_tmul,
-        LinearEquiv.coe_coe, assoc_tmul, Representation.Equiv.coe_toLinearMap, tmulEquiv_pure,
-        reindex_pure]
+    (by
+      ext f₁ f₂ f₃
+      simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+        LinearMap.coe_restrictScalars, LinearMap.comp_apply, LinearMap.rTensor_tmul,
+        LinearMap.lTensor_tmul, LinearEquiv.coe_coe, assoc_tmul,
+        Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
       exact congrArg S.pure (funext fun s => by rcases s with _ | _ | _ <;> rfl))
     ((t₁ ⊗ₜ t₂) ⊗ₜ t₃)
 
@@ -178,8 +180,10 @@ lemma tmulEquiv_comm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (t₁
   LinearMap.congr_fun (f := (S.reindex (ColorEquiv.sumComm c₁ c₂)).toLinearMap ∘ₗ
       (S.tmulEquiv c₁ c₂).toLinearMap)
     (g := (S.tmulEquiv c₂ c₁).toLinearMap ∘ₗ (TensorProduct.comm k _ _).toLinearMap)
-    (ext_pure₂ fun f₁ f₂ => by
-      simp only [LinearMap.comp_apply, LinearEquiv.coe_coe, comm_tmul,
+    (by
+      ext f₁ f₂
+      simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+        LinearMap.coe_restrictScalars, LinearMap.comp_apply, LinearEquiv.coe_coe, comm_tmul,
         Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
       exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)) _
 
@@ -193,8 +197,10 @@ lemma reindex_sumCongr_tmulEquiv {c₁ : ι₁ → Color K} {c₁' : ι₁' → 
       (S.tmulEquiv c₁ c₂).toLinearMap)
     (g := (S.tmulEquiv c₁' c₂').toLinearMap ∘ₗ
       TensorProduct.map (S.reindex σ).toLinearMap (S.reindex τ).toLinearMap)
-    (ext_pure₂ fun f₁ f₂ => by
-      simp only [LinearMap.comp_apply, TensorProduct.map_tmul,
+    (by
+      ext f₁ f₂
+      simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+        LinearMap.coe_restrictScalars, LinearMap.comp_apply, TensorProduct.map_tmul,
         Representation.Equiv.coe_toLinearMap, tmulEquiv_pure, reindex_pure]
       exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)) _
 
@@ -313,9 +319,11 @@ lemma tensorBasis_repr_tmulEquiv [Fintype ι₁] [Fintype ι₂] (c₁ : ι₁ �
         (S.tensorBasis c₂).repr t₂ (fun j => y (.inr j)) :=
   LinearMap.congr_fun (f := (S.tensorBasis _).coord y ∘ₗ (S.tmulEquiv c₁ c₂).toLinearMap)
     (g := LinearMap.mul' k k ∘ₗ TensorProduct.map ((S.tensorBasis c₁).coord fun i => y (.inl i))
-      ((S.tensorBasis c₂).coord fun j => y (.inr j))) (ext_pure₂ fun f₁ f₂ => by
-    simp only [LinearMap.comp_apply, TensorProduct.map_tmul, LinearMap.mul'_apply,
-      Module.Basis.coord_apply, Representation.Equiv.coe_toLinearMap]
+      ((S.tensorBasis c₂).coord fun j => y (.inr j))) (by
+    ext f₁ f₂
+    simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+      LinearMap.coe_restrictScalars, LinearMap.comp_apply, TensorProduct.map_tmul,
+      LinearMap.mul'_apply, Module.Basis.coord_apply, Representation.Equiv.coe_toLinearMap]
     rw [tmulEquiv_pure, tensorBasis_repr_pure, tensorBasis_repr_pure, tensorBasis_repr_pure,
       Fintype.prod_sum_type]) _
 

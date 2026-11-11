@@ -51,10 +51,10 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 
 - `Tensor` and `Species.pure` are the tensors and the pure tensors, and
   `Species.inductionOn_pure` is induction through pure tensors.
-- `Species.ext_pure` proves that linear maps of tensors that agree on pure tensors are equal,
-  `Species.ext_pure₂` and `Species.ext_pure₃` do the same for maps out of products of two and
-  three spaces of tensors, and `Species.equiv_ext_pure` and `Species.intertwiningMap_ext_pure` for
-  maps of representations.
+- `Species.ext_pure` proves that linear maps of tensors that agree on pure tensors are equal. It is
+  an `ext` lemma, so `ext p q` also reduces maps out of products `Tensor S c ⊗ Tensor S c₂`, and
+  intertwining maps, to pure tensors. `Species.equiv_ext_pure` does the same for equivalences of
+  representations.
 - `Species.smul_pure` proves that the group acts on a pure tensor index by index.
 - `Species.map_smul_of_pure` proves that a map of tensors that commutes with the group on pure
   tensors commutes with it on all tensors.
@@ -149,26 +149,10 @@ lemma inductionOn_pure {P : Tensor S c → Prop}
   PiTensorProduct.induction_on (motive := P) t (fun r f => hsmul r _ (h f)) hadd
 
 /-- Two linear maps out of tensors are equal when they agree on pure tensors. -/
+@[ext]
 lemma ext_pure {E : Type} [AddCommGroup E] [Module k E] {f g : Tensor S c →ₗ[k] E}
     (h : ∀ p : Π i, S.V (c i), f (S.pure p) = g (S.pure p)) : f = g :=
   PiTensorProduct.ext (MultilinearMap.ext h)
-
-/-- Two linear maps out of `Tensor S c ⊗ Tensor S c₂` are equal when they agree on the products
-`S.pure p ⊗ₜ S.pure q` of pure tensors. -/
-lemma ext_pure₂ {ι₂ : Type} {c₂ : ι₂ → Color K} {E : Type} [AddCommGroup E] [Module k E]
-    {f g : Tensor S c ⊗[k] Tensor S c₂ →ₗ[k] E}
-    (h : ∀ (p : Π i, S.V (c i)) (q : Π j, S.V (c₂ j)),
-      f (S.pure p ⊗ₜ S.pure q) = g (S.pure p ⊗ₜ S.pure q)) : f = g :=
-  TensorProduct.ext <| ext_pure fun p => ext_pure fun q => h p q
-
-/-- Two linear maps out of `(Tensor S c ⊗ Tensor S c₂) ⊗ Tensor S c₃` are equal when they agree
-on the products `(S.pure p ⊗ₜ S.pure q) ⊗ₜ S.pure r` of pure tensors. -/
-lemma ext_pure₃ {ι₂ ι₃ : Type} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K} {E : Type}
-    [AddCommGroup E] [Module k E] {f g : (Tensor S c ⊗[k] Tensor S c₂) ⊗[k] Tensor S c₃ →ₗ[k] E}
-    (h : ∀ (p : Π i, S.V (c i)) (q : Π j, S.V (c₂ j)) (r : Π l, S.V (c₃ l)),
-      f ((S.pure p ⊗ₜ S.pure q) ⊗ₜ S.pure r) = g ((S.pure p ⊗ₜ S.pure q) ⊗ₜ S.pure r)) :
-    f = g :=
-  TensorProduct.ext <| ext_pure₂ fun p q => ext_pure fun r => h p q r
 
 /-!
 
@@ -258,12 +242,6 @@ lemma equiv_ext_pure {W : Type} [AddCommGroup W] [Module k W] {ρ : Representati
     φ = ψ :=
   Representation.Equiv.ext <|
     funext <| LinearMap.congr_fun (ext_pure (f := φ.toLinearMap) (g := ψ.toLinearMap) h)
-
-/-- Two intertwining maps out of tensors are equal when they agree on pure tensors. -/
-lemma intertwiningMap_ext_pure {W : Type} [AddCommGroup W] [Module k W]
-    {ρ : Representation k G W} {φ ψ : (S.tensorRep c).IntertwiningMap ρ}
-    (h : ∀ p : Π i, S.V (c i), φ (S.pure p) = ψ (S.pure p)) : φ = ψ :=
-  Representation.IntertwiningMap.ext (ext_pure h)
 
 /-- A tensor with no indices is invariant, `Λ s = s`. -/
 lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = t := by

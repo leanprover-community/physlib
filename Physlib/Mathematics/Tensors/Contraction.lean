@@ -278,7 +278,9 @@ lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors
 
 /-- A contraction with no pairs is the identity. -/
 lemma contr_noPairs (t : Tensor S c) : contr (ColorEquiv.noPairs c) t = t :=
-  DFunLike.congr_fun (intertwiningMap_ext_pure (ψ := .id _) fun p => by
+  DFunLike.congr_fun (g := Representation.IntertwiningMap.id _) (by
+    ext p
+    simp only [Representation.IntertwiningMap.coe_toLinearMap]
     rw [contr_pure, Finset.univ_eq_empty, Finset.prod_empty, one_smul]
     exact congrArg S.pure (funext fun x => by simp only [cast_apply]; rfl)) t
 
@@ -299,12 +301,13 @@ lemma contr_reindex [Fintype J] {c₂ : ι₂ → Color K} {a : J → Color K}
 lemma reindex_contr [Fintype J] {c'' : κ' → Color K} {a : J → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c' c'') (t : Tensor S c) :
     S.reindex τ (contr σ t) = contr (σ.trans (τ.sumCongr (.refl _))) t :=
-  DFunLike.congr_fun (intertwiningMap_ext_pure
-    (φ := (S.reindex τ).toIntertwiningMap.comp (contr σ)) fun p => by
-      rw [Representation.IntertwiningMap.comp_apply, Representation.Equiv.coe_toIntertwiningMap,
-        contr_pure, map_smul, reindex_pure, contr_pure]
-      congr 1
-      exact congrArg S.pure (funext fun x => by simp only [cast_apply, cast_cast]; rfl)) t
+  DFunLike.congr_fun (f := (S.reindex τ).toIntertwiningMap.comp (contr σ)) (by
+    ext p
+    simp only [Representation.IntertwiningMap.coe_toLinearMap]
+    rw [Representation.IntertwiningMap.comp_apply, Representation.Equiv.coe_toIntertwiningMap,
+      contr_pure, map_smul, reindex_pure, contr_pure]
+    congr 1
+    exact congrArg S.pure (funext fun x => by simp only [cast_apply, cast_cast]; rfl)) t
 
 /-!
 
@@ -319,7 +322,9 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
     (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
     (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (t : Tensor S c) :
     contr σ t = contr τ t := by
-  refine DFunLike.congr_fun (intertwiningMap_ext_pure fun p => ?_) t
+  refine DFunLike.congr_fun (f := contr σ) (g := contr τ) ?_ t
+  ext p
+  simp only [Representation.IntertwiningMap.coe_toLinearMap]
   rw [contr_pure, contr_pure]
   choose g hg using h₁
   congr 1
@@ -383,8 +388,10 @@ lemma contr_contr [Fintype J₁] [Fintype J₂] {c₁ : κ₁ → Color K} {a₁
     {a₂ : J₂ → Color K} (σ₁ : ColorEquiv c (contrColors c₁ a₁))
     (σ₂ : ColorEquiv c₁ (contrColors c' a₂)) (t : Tensor S c) :
     contr σ₂ (contr σ₁ t) = contr (σ₁.chain σ₂) t :=
-  DFunLike.congr_fun (intertwiningMap_ext_pure (φ := (contr σ₂).comp (contr σ₁)) fun f => by
-    simp only [Representation.IntertwiningMap.comp_apply, contr_pure, map_smul, smul_smul,
+  DFunLike.congr_fun (f := (contr σ₂).comp (contr σ₁)) (by
+    ext f
+    simp only [Representation.IntertwiningMap.coe_toLinearMap,
+      Representation.IntertwiningMap.comp_apply, contr_pure, map_smul, smul_smul,
       Fintype.prod_sum_type, cast_apply, cast_cast]
     rfl) t
 
@@ -402,8 +409,10 @@ lemma tmulEquiv_contr_left [Fintype J] {a : J → Color K} {d : ι₂ → Color 
       contr (σ.tmulRight d) (S.tmulEquiv c d (t ⊗ₜ u)) :=
   LinearMap.congr_fun (f := (S.tmulEquiv c' d).toLinearMap ∘ₗ (contr σ).toLinearMap.rTensor _)
     (g := (contr (σ.tmulRight d)).toLinearMap ∘ₗ (S.tmulEquiv c d).toLinearMap)
-    (ext_pure₂ fun p p' => by
-      simp only [LinearMap.comp_apply, LinearMap.rTensor_tmul,
+    (by
+      ext p p'
+      simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+        LinearMap.coe_restrictScalars, LinearMap.comp_apply, LinearMap.rTensor_tmul,
         Representation.IntertwiningMap.coe_toLinearMap, Representation.Equiv.coe_toIntertwiningMap]
       rw [contr_pure, ← smul_tmul', map_smul, tmulEquiv_pure, tmulEquiv_pure, contr_pure]
       congr 1
@@ -417,8 +426,10 @@ lemma tmulEquiv_contr_right [Fintype J] {a : J → Color K} {d : ι₂ → Color
       contr (σ.tmulLeft d) (S.tmulEquiv d c (u ⊗ₜ t)) :=
   LinearMap.congr_fun (f := (S.tmulEquiv d c').toLinearMap ∘ₗ (contr σ).toLinearMap.lTensor _)
     (g := (contr (σ.tmulLeft d)).toLinearMap ∘ₗ (S.tmulEquiv d c).toLinearMap)
-    (ext_pure₂ fun p' p => by
-      simp only [LinearMap.comp_apply, LinearMap.lTensor_tmul,
+    (by
+      ext p' p
+      simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
+        LinearMap.coe_restrictScalars, LinearMap.comp_apply, LinearMap.lTensor_tmul,
         Representation.IntertwiningMap.coe_toLinearMap, Representation.Equiv.coe_toIntertwiningMap]
       rw [contr_pure, tmul_smul, map_smul, tmulEquiv_pure, tmulEquiv_pure, contr_pure]
       congr 1
