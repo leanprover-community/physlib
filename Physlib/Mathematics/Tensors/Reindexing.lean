@@ -56,7 +56,7 @@ None.
 
 open TensorProduct PiTensorProduct
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -222,4 +222,4 @@ lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ →
 
 end Species
 
-end Tensors
+end Tensor

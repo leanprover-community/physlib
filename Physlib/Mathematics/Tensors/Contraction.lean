@@ -91,7 +91,7 @@ None.
 
 open TensorProduct PiTensorProduct
 
-namespace Tensors
+namespace Tensor
 
 namespace Species
 
@@ -111,7 +111,7 @@ namespace Tensor
 /-- The colors of the standard arrangement `κ ⊕ (J ⊕ J)` of slots. The free index `inl x` has
 the color `c x`, and the two slots `inr (inl j)` and `inr (inr j)` of the pair `j` have the colors
 `a j` and `(a j).dual`. -/
-noncomputable abbrev _root_.Tensors.contrColors {K κ J : Type} (c : κ → Color K) (a : J → Color K) :
+noncomputable abbrev _root_.Tensor.contrColors {K κ J : Type} (c : κ → Color K) (a : J → Color K) :
     κ ⊕ (J ⊕ J) → Color K :=
   prodColors c (prodColors a fun j => (a j).dual)
 
@@ -175,7 +175,7 @@ lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors
   (congrArg (contrStd c' a) (reindex_pure σ f)).trans (contrStd_pure c' a _)
 
 /-- The relabeling of a contraction with no pairs, where every slot is free and keeps its label. -/
-def _root_.Tensors.ColorEquiv.noPairs (c : ι₁ → Color K) :
+def _root_.Tensor.ColorEquiv.noPairs (c : ι₁ → Color K) :
     ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
   toEquiv.toFun := .inl
   toEquiv.invFun := Sum.elim id (Sum.elim Empty.elim Empty.elim)
@@ -221,7 +221,7 @@ lemma reindex_contr {κ' : Type} [Fintype J] {c'' : κ' → Color K} {a : J → 
 -/
 
 /-- The pair `j` of `σ` and the pair `j'` of `τ` contract the same two slots, in either order. -/
-def _root_.Tensors.ColorEquiv.SamePair {a : J → Color K} {a' : J' → Color K}
+def _root_.Tensor.ColorEquiv.SamePair {a : J → Color K} {a' : J' → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
     (j' : J') : Prop :=
   (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inl j')) ∧
@@ -236,7 +236,7 @@ instance [DecidableEq ι₁] {a : J → Color K} {a' : J' → Color K}
   infer_instance
 
 /-- A pair of `τ` is the same pair as at most one pair of `σ`. -/
-lemma _root_.Tensors.ColorEquiv.SamePair.left_unique {a : J → Color K} {a' : J' → Color K}
+lemma _root_.Tensor.ColorEquiv.SamePair.left_unique {a : J → Color K} {a' : J' → Color K}
     {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j₁ j₂ : J}
     {j' : J'} (h₁ : σ.SamePair τ j₁ j') (h₂ : σ.SamePair τ j₂ j') : j₁ = j₂ := by
   have hσ := σ.toEquiv.symm.injective
@@ -247,7 +247,7 @@ lemma _root_.Tensors.ColorEquiv.SamePair.left_unique {a : J → Color K} {a' : J
   · simpa using hσ (h₁.trans h₂.symm)
 
 /-- A pair of `σ` is the same pair as at most one pair of `τ`. -/
-lemma _root_.Tensors.ColorEquiv.SamePair.right_unique {a : J → Color K} {a' : J' → Color K}
+lemma _root_.Tensor.ColorEquiv.SamePair.right_unique {a : J → Color K} {a' : J' → Color K}
     {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j : J}
     {j₁ j₂ : J'} (h₁ : σ.SamePair τ j j₁) (h₂ : σ.SamePair τ j j₂) : j₁ = j₂ := by
   have hτ := τ.toEquiv.symm.injective
@@ -256,7 +256,7 @@ lemma _root_.Tensors.ColorEquiv.SamePair.right_unique {a : J → Color K} {a' : 
 
 /-- When `σ` and `τ` keep the same free indices and every pair of `σ` is a pair of `τ`, every pair
 of `τ` is a pair of `σ`. The slots of a pair of `τ` are not free, so they lie in a pair of `σ`. -/
-lemma _root_.Tensors.ColorEquiv.exists_samePair_left {a : J → Color K} {a' : J' → Color K}
+lemma _root_.Tensor.ColorEquiv.exists_samePair_left {a : J → Color K} {a' : J' → Color K}
     {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')}
     (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
     (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (j' : J') : ∃ j, σ.SamePair τ j j' := by
@@ -345,7 +345,7 @@ lemma contr_tmulEquiv_eq_zero_of_antisymm_symm [Fintype J]
 
 /-- The pairs of two contractions in sequence, `σ₁` and then `σ₂`, as one choice of pairs
 `J₁ ⊕ J₂`, the pairs `J₁` of `σ₁` followed by the pairs `J₂` of `σ₂`. -/
-noncomputable def _root_.Tensors.ColorEquiv.chain {c : ι₁ → Color K} {c₁ : κ₁ → Color K}
+noncomputable def _root_.Tensor.ColorEquiv.chain {c : ι₁ → Color K} {c₁ : κ₁ → Color K}
     {c' : κ → Color K} {a₁ : J₁ → Color K} {a₂ : J₂ → Color K}
     (σ₁ : ColorEquiv c (contrColors c₁ a₁)) (σ₂ : ColorEquiv c₁ (contrColors c' a₂)) :
     ColorEquiv c (contrColors c' (prodColors a₁ a₂)) :=
@@ -372,7 +372,7 @@ lemma contr_contr [Fintype J₁] [Fintype J₂] {c₁ : κ₁ → Color K} {a₁
 
 /-- The pairs `σ` of `T`, as pairs of `T ⊗ U` for a factor `U` on the right, with colors `d`. The
 indices of `U` are free and come after the free indices of `T`. -/
-noncomputable def _root_.Tensors.ColorEquiv.tmulRight {c : ι₁ → Color K} {c' : κ → Color K}
+noncomputable def _root_.Tensor.ColorEquiv.tmulRight {c : ι₁ → Color K} {c' : κ → Color K}
     {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (d : ι₂ → Color K) :
     ColorEquiv (prodColors c d) (contrColors (prodColors c' d) a) :=
   (σ.sumCongr (.refl d)).trans (ColorEquiv.swapLast c' d _)
@@ -394,7 +394,7 @@ lemma tmulEquiv_contr_left [Fintype J] {a : J → Color K} {d : ι₂ → Color 
 
 /-- The pairs `σ` of `T`, as pairs of `U ⊗ T` for a factor `U` on the left, with colors `d`. The
 indices of `U` are free and come before the free indices of `T`. -/
-noncomputable def _root_.Tensors.ColorEquiv.tmulLeft {c : ι₁ → Color K}
+noncomputable def _root_.Tensor.ColorEquiv.tmulLeft {c : ι₁ → Color K}
     {c' : κ → Color K} {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (d : ι₂ → Color K) :
     ColorEquiv (prodColors d c) (contrColors (prodColors d c') a) :=
   ((ColorEquiv.refl d).sumCongr σ).trans (ColorEquiv.sumAssoc _ _ _).symm
@@ -475,4 +475,4 @@ end Tensor
 
 end Species
 
-end Tensors
+end Tensor

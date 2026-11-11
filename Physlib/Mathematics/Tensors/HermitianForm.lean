@@ -46,7 +46,7 @@ None.
 open TensorProduct
 open scoped ComplexOrder
 
-namespace Tensors
+namespace Tensor
 
 namespace Species
 
@@ -150,4 +150,4 @@ lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
 
 end Species
 
-end Tensors
+end Tensor

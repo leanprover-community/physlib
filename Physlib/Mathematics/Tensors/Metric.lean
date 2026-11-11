@@ -74,7 +74,7 @@ None.
 
 open TensorProduct PiTensorProduct
 
-namespace Tensors
+namespace Tensor
 
 namespace Species
 
@@ -416,4 +416,4 @@ lemma formMatrix_schouten' (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFo
 
 end Species
 
-end Tensors
+end Tensor

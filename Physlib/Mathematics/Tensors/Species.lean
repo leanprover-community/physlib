@@ -79,7 +79,7 @@ There are no known references for the material in this module.
 
 open TensorProduct
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -291,4 +291,4 @@ lemma contr_cast_tmul_cast_symm {d e a b : Color K} (x : S.V d) (y : S.V e) (p :
 
 end Species
 
-end Tensors
+end Tensor

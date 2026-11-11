@@ -71,7 +71,7 @@ There are no known references for the material in this module.
 
 open TensorProduct
 
-namespace Tensors
+namespace Tensor
 
 namespace Species
 
@@ -189,7 +189,7 @@ variable {ι₁ κ : Type} {c : ι₁ → Color K} {c' : κ → Color K}
 /-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two slots that contracts the
 second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
 `0` and `1`. -/
-def _root_.Tensors.ColorEquiv.matMul (a c b : Color K) :
+def _root_.Tensor.ColorEquiv.matMul (a c b : Color K) :
     ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) where
   toEquiv.toFun
     | .inl 0 => .inl 0 | .inl 1 => .inr (.inl ()) | .inr 0 => .inr (.inr ()) | .inr 1 => .inl 1
@@ -232,7 +232,7 @@ lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
 /-- The relabeling of `T^…μ… F_μ^ν`, which contracts the slot `i` of `T` with the first slot of a
 tensor `F` on two slots and puts the second slot of `F` in the place of `i`. It is
 `ColorEquiv.matMul` at any slot of a tensor on any slots. -/
-def _root_.Tensors.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
+def _root_.Tensor.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
     (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
     ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
   toEquiv :=
@@ -329,4 +329,4 @@ end Tensor
 
 end Species
 
-end Tensors
+end Tensor

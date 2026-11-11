@@ -48,7 +48,7 @@ There are no known references for the material in this module.
 
 @[expose] public section
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -105,4 +105,4 @@ abbrev Color.dual {K : Type} (c : Color K) : Color K := ⟨c.kind, c.variance.du
 /-- Taking the dual twice gives back the color. -/
 lemma Color.dual_dual {K : Type} (c : Color K) : c.dual.dual = c := rfl
 
-end Tensors
+end Tensor

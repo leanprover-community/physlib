@@ -94,7 +94,7 @@ None.
 
 open TensorProduct PiTensorProduct
 
-namespace Tensors
+namespace Tensor
 
 namespace Species
 
@@ -512,4 +512,4 @@ end
 
 end Species
 
-end Tensors
+end Tensor

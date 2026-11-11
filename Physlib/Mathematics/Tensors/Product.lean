@@ -52,7 +52,7 @@ None.
 
 open TensorProduct PiTensorProduct
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -343,4 +343,4 @@ lemma tensorBasis_repr_twoSlotEquiv (a b : Color K) (M : S.V a ⊗[k] S.V b)
 
 end Species
 
-end Tensors
+end Tensor

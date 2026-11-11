@@ -78,7 +78,7 @@ The anticommutators follow from the trace identities and the Schouten identity o
 open TensorProduct Fermion Lorentz MatrixGroups
 open PauliMatrix (pauliMatrix)
 
-namespace Tensors.complexLorentz
+namespace Tensor.complexLorentz
 
 /-!
 
@@ -91,7 +91,7 @@ namespace Tensors.complexLorentz
 noncomputable def pauliTensor : ℂT[up, upL, upR] := {ComplexVector.pauliVal | μ α β}ᵀ
 
 /-- `σT` is the Pauli tensor `pauliTensor`, to be distinguished from the Pauli matrices `σ`. -/
-scoped[Tensors.complexLorentz] notation "σT" => pauliTensor
+scoped[Tensor.complexLorentz] notation "σT" => pauliTensor
 
 /-- The components of `σT^{μαβ̇}` are the entries of the Pauli matrices. -/
 lemma tensorBasis_repr_pauliTensor (μ : Π i, Idx (![up, upL, upR] i).kind) :
@@ -277,4 +277,4 @@ lemma pauliContrDown_pauliContr_mul_add :
   rw [← pauliContr_pauliContr_eps_epsR_deltaR, schouten_downR]
   tensor_regroup
 
-end Tensors.complexLorentz
+end Tensor.complexLorentz

@@ -26,7 +26,7 @@ labels `μ` run over `Fin 1 ⊕ Fin d`, with `Sum.inl 0` the time direction and 
 directions. A Lorentz transformation `Λ : LorentzGroup d` acts on an upper index by
 `(Λv)^μ = Λ^μ_ν v^ν` and on a lower index by `(Λw)_μ = (Λ⁻¹)^ν_μ w_ν`. The two colors are named
 `realLorentz.up` and `realLorentz.down`, and `ℝT[d, up, down]` is the space of the tensors
-`T^μ_ν`, under `open scoped Tensors.realLorentz`.
+`T^μ_ν`, under `open scoped Tensor.realLorentz`.
 
 The contraction `u^μ w_μ` is the coordinate pairing `∑ μ, u^μ w_μ` of the two bases and the
 delta is `δ_μ^ν = ∑ μ, e^μ ⊗ e_μ`. The one physical input is that the pairing is Lorentz invariant
@@ -85,7 +85,7 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
 
 open TensorProduct Lorentz Matrix
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -176,12 +176,12 @@ abbrev down : Color Kind := ⟨.vec, .down⟩
 
 /-- The real Lorentz tensors in `d + 1` dimensions with the colors listed, as `ℝT[d, up, down]` for
 `T^μ_ν`. The colors are read in the namespace `realLorentz`. The notation is active under
-`open scoped Tensors.realLorentz`. -/
+`open scoped Tensor.realLorentz`. -/
 scoped syntax (name := realLorentzSyntax) "ℝT[" term,+ "]" : term
 
 macro_rules (kind := realLorentzSyntax)
-  | `(ℝT[$d]) => `((Tensors.realLorentz $d).Tensor ![])
-  | `(ℝT[$d, $cs,*]) => `((Tensors.realLorentz $d).Tensor (open Tensors.realLorentz in ![$cs,*]))
+  | `(ℝT[$d]) => `((Tensor.realLorentz $d).Tensor ![])
+  | `(ℝT[$d, $cs,*]) => `((Tensor.realLorentz $d).Tensor (open Tensor.realLorentz in ![$cs,*]))
 
 end realLorentz
 
@@ -455,4 +455,4 @@ lemma contr_vector_coVector_rep (d : ℕ) (Λ : LorentzGroup d) (v : Vector d) (
 
 end realLorentz
 
-end Tensors
+end Tensor

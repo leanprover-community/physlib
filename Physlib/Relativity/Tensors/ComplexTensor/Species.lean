@@ -22,7 +22,7 @@ Complex Lorentz tensors have three kinds of index, the left-handed kind `left`, 
 the right-handed kind `right`, as in `ψ̄_α̇`, with basis labels `Fin 2`, and the vector kind `vec`,
 with labels `Fin 1 ⊕ Fin 3`. Conjugation `star` swaps `left` and `right` and fixes `vec`. With
 the two variances this gives six colors, `upL`, `downL`, `upR`, `downR`, `up` and `down`. Under
-`open scoped Tensors.complexLorentz`, `ℂT[upL, downR]` is the space of the tensors `T^α_β̇`.
+`open scoped Tensor.complexLorentz`, `ℂT[upL, downR]` is the space of the tensors `T^α_β̇`.
 
 The species is built on `Fermion.LeftHandedWeyl`, `Fermion.RightHandedWeyl`, their duals,
 `Lorentz.ComplexVector` and `Lorentz.ComplexCoVector`, with their representations and bases. An
@@ -88,7 +88,7 @@ enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_�
 
 open TensorProduct Fermion Lorentz MatrixGroups
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -226,11 +226,11 @@ example : upL.bar = upR ∧ downR.bar = downL ∧ up.bar = up := ⟨rfl, rfl, rf
 
 /-- The complex Lorentz tensors with the colors listed, as `ℂT[upL, downR]` for `T^α_β̇`. The colors
 are read in the namespace `complexLorentz`. The notation is active under
-`open scoped Tensors.complexLorentz`. -/
+`open scoped Tensor.complexLorentz`. -/
 scoped syntax (name := complexLorentzSyntax) "ℂT[" term,* "]" : term
 
 macro_rules (kind := complexLorentzSyntax)
-  | `(ℂT[$cs,*]) => `(Tensors.complexLorentz.Tensor (open Tensors.complexLorentz in ![$cs,*]))
+  | `(ℂT[$cs,*]) => `(Tensor.complexLorentz.Tensor (open Tensor.complexLorentz in ![$cs,*]))
 
 /-- `ℂT[upL, downR]` is the space of tensors `T^α_β̇`. -/
 example : ℂT[upL, downR] = complexLorentz.Tensor ![upL, downR] := rfl
@@ -335,40 +335,40 @@ noncomputable instance (κ : complexLorentz.Kind) : complexLorentz.HasForm κ wh
 namespace complexLorentz
 
 /-- The form `ε^αβ` on two upper left-handed indices. -/
-scoped notation "εL" => Species.formTensor Tensors.complexLorentz Tensors.complexLorentz.upL
+scoped notation "εL" => Species.formTensor Tensor.complexLorentz Tensor.complexLorentz.upL
 
 /-- The form `ε_αβ` on two lower left-handed indices. -/
-scoped notation "εL'" => Species.formTensor Tensors.complexLorentz Tensors.complexLorentz.downL
+scoped notation "εL'" => Species.formTensor Tensor.complexLorentz Tensor.complexLorentz.downL
 
 /-- The form `ε^α̇β̇` on two upper right-handed indices. -/
-scoped notation "εR" => Species.formTensor Tensors.complexLorentz Tensors.complexLorentz.upR
+scoped notation "εR" => Species.formTensor Tensor.complexLorentz Tensor.complexLorentz.upR
 
 /-- The form `ε_α̇β̇` on two lower right-handed indices. -/
-scoped notation "εR'" => Species.formTensor Tensors.complexLorentz Tensors.complexLorentz.downR
+scoped notation "εR'" => Species.formTensor Tensor.complexLorentz Tensor.complexLorentz.downR
 
 /-- The metric `η^μν` on two upper vector indices. -/
-scoped notation "η" => Species.formTensor Tensors.complexLorentz Tensors.complexLorentz.up
+scoped notation "η" => Species.formTensor Tensor.complexLorentz Tensor.complexLorentz.up
 
 /-- The metric `η_μν` on two lower vector indices. -/
-scoped notation "η'" => Species.formTensor Tensors.complexLorentz Tensors.complexLorentz.down
+scoped notation "η'" => Species.formTensor Tensor.complexLorentz Tensor.complexLorentz.down
 
 /-- The delta `δ^μ_ν`, on the colors `![up, down]`. -/
-scoped notation "δ" => Species.deltaTensor Tensors.complexLorentz Tensors.complexLorentz.down
+scoped notation "δ" => Species.deltaTensor Tensor.complexLorentz Tensor.complexLorentz.down
 
 /-- The delta `δ_μ^ν`, on the colors `![down, up]`. -/
-scoped notation "δ'" => Species.deltaTensor Tensors.complexLorentz Tensors.complexLorentz.up
+scoped notation "δ'" => Species.deltaTensor Tensor.complexLorentz Tensor.complexLorentz.up
 
 /-- The delta `δ^α_β`, on the colors `![upL, downL]`. -/
-scoped notation "δL" => Species.deltaTensor Tensors.complexLorentz Tensors.complexLorentz.downL
+scoped notation "δL" => Species.deltaTensor Tensor.complexLorentz Tensor.complexLorentz.downL
 
 /-- The delta `δ_α^β`, on the colors `![downL, upL]`. -/
-scoped notation "δL'" => Species.deltaTensor Tensors.complexLorentz Tensors.complexLorentz.upL
+scoped notation "δL'" => Species.deltaTensor Tensor.complexLorentz Tensor.complexLorentz.upL
 
 /-- The delta `δ^α̇_β̇`, on the colors `![upR, downR]`. -/
-scoped notation "δR" => Species.deltaTensor Tensors.complexLorentz Tensors.complexLorentz.downR
+scoped notation "δR" => Species.deltaTensor Tensor.complexLorentz Tensor.complexLorentz.downR
 
 /-- The delta `δ_α̇^β̇`, on the colors `![downR, upR]`. -/
-scoped notation "δR'" => Species.deltaTensor Tensors.complexLorentz Tensors.complexLorentz.upR
+scoped notation "δR'" => Species.deltaTensor Tensor.complexLorentz Tensor.complexLorentz.upR
 
 end complexLorentz
 
@@ -687,4 +687,4 @@ example : Species.Tensor.conj (fun i => by fin_cases i <;> rfl) εL = εR := by
 
 end complexLorentz
 
-end Tensors
+end Tensor

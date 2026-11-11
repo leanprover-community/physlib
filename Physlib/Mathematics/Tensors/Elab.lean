@@ -82,7 +82,7 @@ public meta section
 
 open Lean Meta Elab Term
 
-namespace Tensors.Notation
+namespace Tensor.Notation
 
 /-!
 
@@ -187,7 +187,7 @@ def slotEquiv (dom cod : Slots) (pre : List Nat) : TermElabM Term := do
 
 /-- The entries of a literal color family `![a, b, …]`, or of `prodColors` of literal families. -/
 partial def colorList? (c : Expr) : MetaM (Option (List Expr)) := do
-  if c.isAppOfArity ``Tensors.prodColors 5 then
+  if c.isAppOfArity ``Tensor.prodColors 5 then
     return (· ++ ·) <$> (← colorList? (c.getArg! 3)) <*> (← colorList? (c.getArg! 4))
   let (cs, _, tail) ← Matrix.matchVecConsPrefix (mkNatLit 0) c
   return if tail.isAppOfArity ``Matrix.vecEmpty 1 then some cs else none
@@ -200,7 +200,7 @@ def colorsTerm (cs : List Expr) : TermElabM Term := do
 and colors. -/
 def literalTensorType? (ty : Expr) : MetaM (Option (Slots × Expr × List Expr)) := do
   let ty ← whnfR (← instantiateMVars ty)
-  unless ty.isAppOf ``Tensors.Species.Tensor do return none
+  unless ty.isAppOf ``Tensor.Species.Tensor do return none
   let args := ty.getAppArgs
   let some slots ← Slots.ofType? args[args.size - 2]! | return none
   let c ← instantiateMVars args[args.size - 1]!
@@ -230,8 +230,8 @@ structure Node where
 /-- The tensor of `a` relabeled onto `Fin pre.length` with the colors `cs`, its slot `pre[j]`
 becoming the slot `j`. -/
 def Node.reindex (a : Node) (pre : List Nat) (cs : List Expr) : TermElabM Term := do
-  `(Tensors.Species.reindex $(← exprToSyntax a.species)
-    (Tensors.ColorEquiv.mk (c₂ := $(← colorsTerm cs)) $(← slotEquiv a.slots (.fin pre.length) pre))
+  `(Tensor.Species.reindex $(← exprToSyntax a.species)
+    (Tensor.ColorEquiv.mk (c₂ := $(← colorsTerm cs)) $(← slotEquiv a.slots (.fin pre.length) pre))
     $a.tm)
 
 /-- The expression relabeled to `Fin n`, its slots numbered in order. -/
@@ -242,12 +242,12 @@ def Node.toFin (a : Node) : TermElabM Node := do
 
 /-- The expression on `Fin n` with its slot `i` moved to the dual color by `S.toDualAt`. -/
 def Node.toDualAt (a : Node) (i : Nat) : TermElabM Node := do
-  let colors := a.colors.set i (← mkAppM ``Tensors.Color.dual #[a.colors[i]!])
+  let colors := a.colors.set i (← mkAppM ``Tensor.Color.dual #[a.colors[i]!])
   -- The color `col` of the slot is passed explicitly, so the form is found at the kind of `col` and
   -- every lowering at that kind uses the same instance. The proofs `c i = col` and
   -- `c' i = col.dual` are `id rfl`, since a bare `rfl` has the type `c' i = c' i`, which `rw`
   -- matches only after unfolding `![…] i`. Away from `i` the colors agree by cases.
-  let tm ← `(Tensors.Species.toDualAt $(← exprToSyntax a.species) (c' := $(← colorsTerm colors))
+  let tm ← `(Tensor.Species.toDualAt $(← exprToSyntax a.species) (c' := $(← colorsTerm colors))
     ($(quote i) : Fin $(quote a.names.length)) $(← exprToSyntax a.colors[i]!) (id rfl) (id rfl)
     (by intro x hx; fin_cases x <;> first | rfl | exact absurd rfl hx) $a.tm)
   return { a with colors, tm }
@@ -260,10 +260,10 @@ def tensorOf (T : Term) : TermElabM (Expr × Expr) := do
   let ty ← whnfR (← instantiateMVars (← inferType e))
   if ty.isMVar then
     throwError "index notation: the type of {T} is not known; give it, as `({T} : S.Tensor ![…])`"
-  if ty.isAppOf ``Tensors.Species.Tensor then return (e, ty)
+  if ty.isAppOf ``Tensor.Species.Tensor then return (e, ty)
   try
     let e ← withoutErrToSorry do
-      let e ← elabTerm (← `(Tensors.Tensorial.toTensor $(← exprToSyntax e))) none
+      let e ← elabTerm (← `(Tensor.Tensorial.toTensor $(← exprToSyntax e))) none
       synthesizeSyntheticMVarsNoPostponing
       instantiateMVars e
     return (e, ← whnfR (← instantiateMVars (← inferType e)))
@@ -275,7 +275,7 @@ def tensorOf (T : Term) : TermElabM (Expr × Expr) := do
 checking that an arrow matches the variance of `col`. -/
 def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool) := do
   let arrow (x : Ident) (up : Bool) : TermElabM (Name × Bool) := do
-    let isUp ← whnfD (← mkAppM ``Tensors.Variance.isUp #[← mkAppM ``Tensors.Color.variance #[col]])
+    let isUp ← whnfD (← mkAppM ``Tensor.Variance.isUp #[← mkAppM ``Tensor.Color.variance #[col]])
     unless isUp.isConstOf (if up then ``Bool.true else ``Bool.false) do
       throwError "index notation: {if up then "↓" else "↑"}{x.getId} needs a visibly \
         {if up then "upper" else "lower"} index"
@@ -314,7 +314,7 @@ def contract (a : Node) : TermElabM Node := do
     | [_] => free := free ++ [i]
     | [(_, i₁), (_, i₂)] =>
       if i == i₁ then
-        unless ← isDefEq a.colors[i₂]! (← mkAppM ``Tensors.Color.dual #[a.colors[i₁]!]) do
+        unless ← isDefEq a.colors[i₂]! (← mkAppM ``Tensor.Color.dual #[a.colors[i₁]!]) do
           throwError "index notation: {nm} joins the colors {a.colors[i₁]!} and \
             {a.colors[i₂]!}, which are not dual"
         pairs := pairs ++ [(i₁, i₂)]
@@ -328,10 +328,10 @@ def contract (a : Node) : TermElabM Node := do
   -- slot to `inr (inr j)`.
   let σ ← slotEquiv a.slots (.sum (.fin m) (.sum J J))
     (free ++ pairs.map (·.1) ++ pairs.map (·.2))
-  let pairColors ← J.fn ``Tensors.prodColors (← pairs.mapM fun (i, _) => exprToSyntax a.colors[i]!)
-  let tm ← `(Tensors.Species.Tensor.contr (S := $(← exprToSyntax a.species))
-    (Tensors.ColorEquiv.mk
-      (c₂ := Tensors.contrColors $(← colorsTerm (free.map (a.colors[·]!))) $pairColors) $σ)
+  let pairColors ← J.fn ``Tensor.prodColors (← pairs.mapM fun (i, _) => exprToSyntax a.colors[i]!)
+  let tm ← `(Tensor.Species.Tensor.contr (S := $(← exprToSyntax a.species))
+    (Tensor.ColorEquiv.mk
+      (c₂ := Tensor.contrColors $(← colorsTerm (free.map (a.colors[·]!))) $pairColors) $σ)
     $a.tm)
   return ⟨free.map (a.names[·]!), free.map (a.colors[·]!), .fin m, tm, a.species⟩
 
@@ -363,7 +363,7 @@ partial def uncontracted (stx : Syntax) : TermElabM Node := do
   | `(tensorIndexExpr| $a:tensorIndexExpr ⊗ $b:tensorIndexExpr) => do
     let a ← uncontracted a
     let b ← uncontracted b
-    let tm ← `(Tensors.Species.tmulEquiv $(← exprToSyntax a.species) _ _
+    let tm ← `(Tensor.Species.tmulEquiv $(← exprToSyntax a.species) _ _
       (TensorProduct.tmul _ $a.tm $b.tm))
     return ⟨a.names ++ b.names, a.colors ++ b.colors, .sum a.slots b.slots, tm, a.species⟩
   | `(tensorIndexExpr| ($a:tensorIndexExpr)) => build a
@@ -394,8 +394,8 @@ def buildTo (e : Syntax) (target : Expr) : TermElabM (Option Term) := do
       throwError "index notation: the free index {a.names[i]!} has the color {col}, but its slot \
         is expected to have the color {cs[i]!}"
   if a.slots == slots then return a.tm
-  `(Tensors.Species.reindex $(← exprToSyntax a.species)
-    (Tensors.ColorEquiv.mk (c₂ := $(← exprToSyntax c))
+  `(Tensor.Species.reindex $(← exprToSyntax a.species)
+    (Tensor.ColorEquiv.mk (c₂ := $(← exprToSyntax c))
       $(← slotEquiv a.slots slots (List.range slots.size))) $a.tm)
 
 /-- The term of `e` for the expected type. It is relabeled onto the slots of a tensor type, and read
@@ -404,19 +404,19 @@ def buildFor (e : Syntax) (expectedType? : Option Expr) : TermElabM Term := do
   let some ty := expectedType? | return (← build e).tm
   let ty ← instantiateMVars ty
   if ty.getAppFn.isMVar || ty.isSort then return (← build e).tm
-  if (← whnfR ty).isAppOf ``Tensors.Species.Tensor then
+  if (← whnfR ty).isAppOf ``Tensor.Species.Tensor then
     return (← buildTo e ty).getD (← build e).tm
   -- For a `Tensorial` type, the tensor type is the codomain of `toTensor`.
   let M ← exprToSyntax ty
   let s ← saveState
   let some tensorTy ← try withoutErrToSorry do
-      let f ← elabTerm (← `(fun m : $M => Tensors.Tensorial.toTensor m)) none
+      let f ← elabTerm (← `(fun m : $M => Tensor.Tensorial.toTensor m)) none
       synthesizeSyntheticMVarsNoPostponing
       pure (some (← inferType (← instantiateMVars f)).bindingBody!)
     catch _ => s.restore; pure none
     | return (← build e).tm
   let some tm ← buildTo e tensorTy | return (← build e).tm
-  `((Tensors.Tensorial.toTensor (M := $M)).symm $tm)
+  `((Tensor.Tensorial.toTensor (M := $M)).symm $tm)
 
 /-- Elaborates index notation. An equation is allowed only at the top, possibly in parentheses. -/
 @[term_elab tensorIndexSyntax] def elabTensorIndex : TermElab := fun stx expectedType? => do
@@ -428,6 +428,6 @@ def buildFor (e : Syntax) (expectedType? : Option Expr) : TermElabM Term := do
   | `({ $e:tensorIndexExpr }ᵀ) => elabTerm (← buildFor e expectedType?) expectedType?
   | _ => throwUnsupportedSyntax
 
-end Tensors.Notation
+end Tensor.Notation
 
 end

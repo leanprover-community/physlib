@@ -36,7 +36,7 @@ There are no declarations, only examples.
 
 -/
 
-namespace Tensors.Notation
+namespace Tensor.Notation
 
 open Species
 
@@ -476,4 +476,4 @@ example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ
 
 end Metric
 
-end Tensors.Notation
+end Tensor.Notation

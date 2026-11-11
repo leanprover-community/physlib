@@ -51,7 +51,7 @@ None.
 
 open TensorProduct
 
-namespace Tensors
+namespace Tensor
 
 namespace Species
 
@@ -202,4 +202,4 @@ lemma reindex_contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
 
 end Species
 
-end Tensors
+end Tensor

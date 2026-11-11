@@ -45,7 +45,7 @@ public meta section
 
 open Lean Meta Elab Term
 
-namespace Tensors.Notation
+namespace Tensor.Notation
 
 /-!
 
@@ -80,7 +80,7 @@ macro_rules
       -- evaluated. The option `+instances` reaches those inside instance arguments.
       try dsimp +instances only [ColorEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.coe_fn_mk,
         Sum.elim_inl, Sum.elim_inr, Matrix.cons_val, Function.comp_apply,
-        Tensors.Notation.reduceCast])
+        Tensor.Notation.reduceCast])
 
 /-!
 
@@ -198,7 +198,7 @@ private def rewriteSubterm (x : Expr) (thm : Term) (lhs : Option Bool := none)
 
 /-- The two factors `T` and `U` of a product `S.tmulEquiv c₁ c₂ (T ⊗ₜ U)`. -/
 private def productFactors? (e : Expr) : Option (Expr × Expr) := do
-  let x := (← bundledArg? ``Tensors.Species.tmulEquiv e).consumeMData
+  let x := (← bundledArg? ``Tensor.Species.tmulEquiv e).consumeMData
   if x.isAppOf ``TensorProduct.tmul then some (x.appFn!.appArg!, x.appArg!) else none
 
 /-- The factors of a product, from left to right. -/
@@ -223,9 +223,9 @@ private partial def isLeftNested (e : Expr) : Bool :=
 /-- The products `P` and `Q` of a goal `Tensor.contr σ P = Tensor.contr τ Q`. -/
 private def contractedProducts : TacticM (Expr × Expr) := do
   let (_, l, r) ← goalEq
-  let some p := bundledArg? ``Tensors.Species.Tensor.contr l
+  let some p := bundledArg? ``Tensor.Species.Tensor.contr l
     | throwError "tensor_regroup: the left side is not a contraction"
-  let some q := bundledArg? ``Tensors.Species.Tensor.contr r
+  let some q := bundledArg? ``Tensor.Species.Tensor.contr r
     | throwError "tensor_regroup: the right side is not a contraction"
   return (p, q)
 
@@ -234,16 +234,16 @@ goal no longer changes, at most ten times. A side that is not a contraction is r
 pairs (`Species.Tensor.contr_noPairs`). The three steps run separately, since together their lemmas
 loop. -/
 private def flattenContractions : TacticM Unit := do
-  wrapSides "tensor_regroup" (bundledArg? ``Tensors.Species.Tensor.contr · |>.isSome)
-    (← `(Tensors.Species.Tensor.contr_noPairs _))
+  wrapSides "tensor_regroup" (bundledArg? ``Tensor.Species.Tensor.contr · |>.isSome)
+    (← `(Tensor.Species.Tensor.contr_noPairs _))
   for _ in [0:10] do
     let before ← instantiateMVars (← getMainTarget)
-    evalTactic (← `(tactic| try simp only [Tensors.Species.Tensor.tmulEquiv_contr_left,
-      Tensors.Species.Tensor.tmulEquiv_contr_right, Tensors.Species.Tensor.contr_contr]))
-    evalTactic (← `(tactic| try simp only [← Tensors.Species.tmulEquiv_assoc]))
-    evalTactic (← `(tactic| try simp only [Tensors.Species.tmulEquiv_reindex_left,
-      Tensors.Species.tmulEquiv_reindex_right, Tensors.Species.reindex_reindex,
-      Tensors.Species.Tensor.contr_reindex, Tensors.Species.Tensor.reindex_contr]))
+    evalTactic (← `(tactic| try simp only [Tensor.Species.Tensor.tmulEquiv_contr_left,
+      Tensor.Species.Tensor.tmulEquiv_contr_right, Tensor.Species.Tensor.contr_contr]))
+    evalTactic (← `(tactic| try simp only [← Tensor.Species.tmulEquiv_assoc]))
+    evalTactic (← `(tactic| try simp only [Tensor.Species.tmulEquiv_reindex_left,
+      Tensor.Species.tmulEquiv_reindex_right, Tensor.Species.reindex_reindex,
+      Tensor.Species.Tensor.contr_reindex, Tensor.Species.Tensor.reindex_contr]))
     -- The two sides may become equal, and `simp` then closes the goal.
     if (← getGoals).isEmpty then return
     if (← instantiateMVars (← getMainTarget)) == before then return
@@ -255,14 +255,14 @@ the contraction. -/
 private def swapFactors (q : Expr) (n m : Nat) : TacticM Unit := do
   let fs := factors q
   let thm ← if m = 0 then
-      `((Tensors.Species.tmulEquiv_comm _ _ $(← exprToSyntax fs[1]!)
+      `((Tensor.Species.tmulEquiv_comm _ _ $(← exprToSyntax fs[1]!)
         $(← exprToSyntax fs[0]!)).symm)
     else
-      `((Tensors.Species.tmulEquiv_swapLast $(← exprToSyntax (leadingProduct q n m))
+      `((Tensor.Species.tmulEquiv_swapLast $(← exprToSyntax (leadingProduct q n m))
         $(← exprToSyntax fs[m]!) $(← exprToSyntax fs[m+1]!)).symm)
   rewriteSubterm (leadingProduct q n (m + 2)) thm (some false)
-  evalTactic (← `(tactic| conv_rhs => simp only [Tensors.Species.tmulEquiv_reindex_left,
-    Tensors.Species.reindex_reindex, Tensors.Species.Tensor.contr_reindex]))
+  evalTactic (← `(tactic| conv_rhs => simp only [Tensor.Species.tmulEquiv_reindex_left,
+    Tensor.Species.reindex_reindex, Tensor.Species.Tensor.contr_reindex]))
 
 /-- The ways to match each factor on the left with a different factor on the right, given for
 each factor on the left the factors on the right equal to it. The matching in order comes first. -/
@@ -313,7 +313,7 @@ private def matchFactors : TacticM Unit := do
     -- checks are run by `of_decide_eq_true rfl` rather than `decide`, which rejects the free
     -- color variables of the goal although the bijections of slots do not depend on them.
     try evalTactic (← `(tactic| set_option synthInstance.maxSize 4096 in
-      exact Tensors.Species.Tensor.contr_eq_of_samePair _ _ (of_decide_eq_true rfl)
+      exact Tensor.Species.Tensor.contr_eq_of_samePair _ _ (of_decide_eq_true rfl)
         (of_decide_eq_true rfl) _))
     catch _ => throwError "tensor_regroup: the two sides contract different pairs of slots, for \
       {tried} of matching their equal factors"
@@ -336,12 +336,12 @@ private def leftover (xs ys : List Expr) : MetaM (List Expr) := do
 /-- The color `a` of a delta `S.deltaTensor a`. -/
 private def deltaColor? (x : Expr) : Option Expr :=
   let x := x.consumeMData
-  if x.isAppOf ``Tensors.Species.deltaTensor then some x.appArg! else none
+  if x.isAppOf ``Tensor.Species.deltaTensor then some x.appArg! else none
 
 /-- The species `S` and the color `c` of a form `S.formTensor c`. -/
 private def formArgs? (x : Expr) : Option (Expr × Expr) :=
   let x := x.consumeMData
-  if x.isAppOf ``Tensors.Species.formTensor then
+  if x.isAppOf ``Tensor.Species.formTensor then
     let args := x.getAppArgs
     some (args[args.size - 3]!, args[args.size - 2]!)
   else none
@@ -391,7 +391,7 @@ private partial def slotNumber : Slots → Expr → MetaM Nat
 /-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
 free index and at each slot of each pair. -/
 private def readContraction (e : Expr) : MetaM ReadContraction := do
-  let some P := bundledArg? ``Tensors.Species.Tensor.contr e
+  let some P := bundledArg? ``Tensor.Species.Tensor.contr e
     | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
   let τ := e.consumeMData.appFn!.appArg!.appArg!
   let some (slots, _, _) ← literalTensorType? (← inferType P)
@@ -407,7 +407,7 @@ private def readContraction (e : Expr) : MetaM ReadContraction := do
   let (κ, J) := (cargs[1]!, cargs[2]!)
   let JJ ← mkAppM ``Sum #[J, J]
   let at_ (y : Expr) : MetaM Nat := do
-    slotNumber slots (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensors.ColorEquiv.toEquiv #[τ], y])
+    slotNumber slots (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensor.ColorEquiv.toEquiv #[τ], y])
   let free ← (← slotElems κ).mapM fun x => do at_ (← mkAppOptM ``Sum.inl #[κ, JJ, x])
   let pairs ← (← slotElems J).mapM fun j => do
     let half (left : Bool) := do
@@ -439,8 +439,8 @@ private def insertDelta (lhs : Bool) (a : Expr) (slots : Slots) (slot : Nat) (se
     TacticM Unit := do
   let (p, q) ← contractedProducts
   let P := if lhs then p else q
-  let lem := mkIdent <| if second then ``Tensors.Species.Tensor.contr_deltaTensor_swap
-    else ``Tensors.Species.Tensor.contr_deltaTensor
+  let lem := mkIdent <| if second then ``Tensor.Species.Tensor.contr_deltaTensor_swap
+    else ``Tensor.Species.Tensor.contr_deltaTensor
   let thm ← `(($lem
     ($(← slots.elem slot) : $(← slots.type)) $(← exprToSyntax a) rfl $(← exprToSyntax P)).symm)
   rewriteSubterm P thm (some lhs)
@@ -470,7 +470,7 @@ private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Boo
   let tries ← orientations.flatMapM fun second => do
     -- The swapped identity inserts `deltaTensor b.dual` at a slot of color `b`.
     -- To insert the requested `deltaTensor a`, that slot must therefore have color `a.dual`.
-    let b ← if second then mkAppM ``Tensors.Color.dual #[a] else pure a
+    let b ← if second then mkAppM ``Tensor.Color.dual #[a] else pure a
     let slotsOfColor ← colors.zipIdx.filterM fun (col, i) =>
       return !inForm.getD i false && (← isDefEqGoal col b)
     return slotsOfColor.map fun (_, i) => (i, second, b)
@@ -491,7 +491,7 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
     throwError "tensor_regroup: the factors left over are not pairs of forms"
   -- Only the colors whose dual form is also left over can cancel, each tried once.
   let fs ← fs.eraseDups.filterM fun (_, c) => do
-    let cd ← mkAppM ``Tensors.Color.dual #[c]
+    let cd ← mkAppM ``Tensor.Color.dual #[c]
     fs.anyM fun (_, c') => isDefEqGoal c' cd
   match ds with
   | [d] =>
@@ -505,13 +505,13 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
       | _, _ => [false, true]
     let tries := swaps.flatMap fun sw => fs.map (·, sw)
     firstSuccess tries m!"tensor_regroup: no two forms left over are inverse" fun ((S, c), sw) => do
-      let lem := mkIdent <| if sw then ``Tensors.Species.reindex_contr_formTensor_formTensor
-        else ``Tensors.Species.contr_formTensor_formTensor
+      let lem := mkIdent <| if sw then ``Tensor.Species.reindex_contr_formTensor_formTensor
+        else ``Tensor.Species.contr_formTensor_formTensor
       let thm ← `(($lem (S := $(← exprToSyntax S)) $(← exprToSyntax c)).symm)
       rewriteSubterm d thm (some lhs)
       regroupContractions
   | [] => firstSuccess fs m!"tensor_regroup: no two forms left over are inverse" fun (_, c) => do
-      insertDeltaAnywhere lhs (← mkAppM ``Tensors.Color.dual #[c]) (skipForms := true)
+      insertDeltaAnywhere lhs (← mkAppM ``Tensor.Color.dual #[c]) (skipForms := true)
   | _ => throwError "tensor_regroup: more than one factor is left over against forms"
 
 /-- Proves `Tensor.contr σ P = Tensor.contr τ Q` for two contractions of the same factors, up to
@@ -572,8 +572,8 @@ private def flipForm (antisym : Bool) (F : Expr) (k : Nat) : TacticM Unit := do
   let some (S, c) := formArgs? F | throwError "tensor_regroup: internal error, {F} is not a form"
   let (S, c) := (← exprToSyntax S, ← exprToSyntax c)
   let thm ← if antisym then
-      `(neg_eq_iff_eq_neg.mp (Tensors.Species.formTensor_antisymm (S := $S) $c).symm)
-    else `((Tensors.Species.formTensor_symm (S := $S) $c).symm)
+      `(neg_eq_iff_eq_neg.mp (Tensor.Species.formTensor_antisymm (S := $S) $c).symm)
+    else `((Tensor.Species.formTensor_symm (S := $S) $c).symm)
   -- A form with no instance of the symmetry fails here, instead of logging an error.
   Term.withoutErrToSorry <| rewriteSubterm F thm (k := some k)
 
@@ -690,7 +690,7 @@ private def regroup : TacticM Unit := do
 
 /-- Whether `e` contains a lowering or raising `S.toDualAt`. -/
 private def hasLowering (e : Expr) : Bool :=
-  (e.find? (·.isConstOf ``Tensors.Species.toDualAt)).isSome
+  (e.find? (·.isConstOf ``Tensor.Species.toDualAt)).isSome
 
 /-- The body of `tensor_regroup`: `regroup`, and again after writing lowerings and raisings as
 contractions with the form (`Species.toDualAt_eq_contr`) when it fails and the goal has one. When
@@ -703,7 +703,7 @@ private def regroupWithLowerings : TacticM Unit := do
     -- Lowerings and raisings are contractions with the form (`Species.toDualAt_eq_contr`). They
     -- are expanded only when needed, since every expanded form is one more factor to match.
     s.restore
-    evalTactic (← `(tactic| simp only [Tensors.Species.toDualAt_eq_contr]))
+    evalTactic (← `(tactic| simp only [Tensor.Species.toDualAt_eq_contr]))
     try regroup catch e' =>
       -- The expansion changes the factors, not the summands or scalars, so an error about those
       -- reads better before it.
@@ -723,25 +723,25 @@ are compared slot by slot, where `Species.toDual_toDual` cancels a lowering with
 with no lowering or raising is the slotwise identity (`Species.mapSlots_id`). The slots must be
 `Fin n` with a literal `n`. -/
 elab "tensor_slots" : tactic => do
-  evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_mapAt, Tensors.Species.mapAt,
-    Tensors.Species.mapSlots_mapSlots]))
-  let isMapSlots (e : Expr) := (bundledArg? ``Tensors.Species.mapSlots e).isSome
+  evalTactic (← `(tactic| try simp only [Tensor.Species.toDualAt_eq_mapAt, Tensor.Species.mapAt,
+    Tensor.Species.mapSlots_mapSlots]))
+  let isMapSlots (e : Expr) := (bundledArg? ``Tensor.Species.mapSlots e).isSome
   let (_, l, r) ← goalEq "tensor_slots"
   unless isMapSlots l || isMapSlots r do
     throwError "tensor_slots: neither side lowers or raises an index"
   -- Each side is checked before it is unified, since a failed unification with a side that is a
   -- definition, such as a named tensor, unfolds it.
-  wrapSides "tensor_slots" isMapSlots (← `(Tensors.Species.mapSlots_id_apply _))
+  wrapSides "tensor_slots" isMapSlots (← `(Tensor.Species.mapSlots_id_apply _))
   evalTactic (← `(tactic| focus
-    refine congrArg (fun F => Tensors.Species.mapSlots _ F _) (funext ?_)
+    refine congrArg (fun F => Tensor.Species.mapSlots _ F _) (funext ?_)
     intro x
     fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
       simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
-        LinearMap.id_apply, Tensors.Species.slotMapsAt_apply_self,
-        Tensors.Species.slotMapsAt_apply_ne, ne_eq, Fin.reduceEq, not_false_eq_true,
+        LinearMap.id_apply, Tensor.Species.slotMapsAt_apply_self,
+        Tensor.Species.slotMapsAt_apply_ne, ne_eq, Fin.reduceEq, not_false_eq_true,
         Representation.IntertwiningMap.coe_toLinearMap,
         Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
-        Tensors.Species.cast_apply, cast_cast, cast_eq, Tensors.Species.toDual_toDual]))
+        Tensor.Species.cast_apply, cast_cast, cast_eq, Tensor.Species.toDual_toDual]))
 
 /-!
 
@@ -806,7 +806,7 @@ private def flattenTerm (A : Expr) (expand : Bool) : TacticM Expr := do
   let gs ← getGoals
   setGoals [g.mvarId!]
   try
-    if expand then evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
+    if expand then evalTactic (← `(tactic| try simp only [Tensor.Species.toDualAt_eq_contr]))
     flattenContractions
     return (← goalEq).2.1
   finally setGoals gs
@@ -835,7 +835,7 @@ private partial def regroupUsing : List Term → TacticM Unit
         let read? ← try
             if flip then replaceMainGoal [← (← getMainGoal).applySymm]
             if expand then
-              evalTactic (← `(tactic| try simp only [Tensors.Species.toDualAt_eq_contr]))
+              evalTactic (← `(tactic| try simp only [Tensor.Species.toDualAt_eq_contr]))
             flattenContractions
             let (_, L, _) ← goalEq
             pure (some (L, ← readContraction L, ← readContraction (← flattenTerm A expand)))
@@ -895,6 +895,6 @@ elab_rules : tactic
   | `(tactic| tensor_regroup) => regroupWithLowerings
   | `(tactic| tensor_regroup using $es,*) => regroupUsing es.getElems.toList
 
-end Tensors.Notation
+end Tensor.Notation
 
 end

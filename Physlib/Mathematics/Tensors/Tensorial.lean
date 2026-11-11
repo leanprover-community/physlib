@@ -56,7 +56,7 @@ Instances come from the space of one index (`ofIndexSpace`), from an equivalent 
 
 open TensorProduct
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -173,4 +173,4 @@ end ofIndexSpace
 
 end Tensorial
 
-end Tensors
+end Tensor

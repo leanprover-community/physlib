@@ -65,7 +65,7 @@ None.
 
 open TensorProduct PiTensorProduct
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -294,7 +294,7 @@ lemma conj_smul [S.IsEquivariantConjugation] (h : ∀ i, c' i = (c i).bar) (g : 
 variable {κ J : Type} [Fintype J] {b : κ → Color K} {a : J → Color K}
 
 /-- The pairs `σ` of `T`, as pairs of its conjugate `T̄`, with the same bijection of slots. -/
-def _root_.Tensors.ColorEquiv.barContr {c : ι → Color K} (σ : ColorEquiv c (contrColors b a)) :
+def _root_.Tensor.ColorEquiv.barContr {c : ι → Color K} (σ : ColorEquiv c (contrColors b a)) :
     ColorEquiv (fun i => (c i).bar) (contrColors (fun x => (b x).bar) fun j => (a j).bar) :=
   ⟨σ.toEquiv, fun j => by rcases j with _ | _ | _ <;> exact congrArg Color.bar (σ.color_eq _)⟩
 
@@ -333,4 +333,4 @@ end Tensor
 
 end Species
 
-end Tensors
+end Tensor

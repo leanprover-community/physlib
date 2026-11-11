@@ -43,7 +43,7 @@ notation for both orientations of the delta.
 
 -/
 
-namespace Tensors.Species
+namespace Tensor.Species
 
 variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
@@ -69,4 +69,4 @@ lemma schouten_formTensor_deltaTensor_dual (h2 : Fintype.card (basisIdx c.kind) 
   rw [← sub_eq_add_neg]
   exact formMatrix_schouten' c h2 _ _ _ _
 
-end Tensors.Species
+end Tensor.Species
