@@ -27,7 +27,8 @@ the matrix of `toLin z` and its equivariance, are stated there.
 
 This is how two-index tensors act as maps. A metric `g_μν` is the map `v^μ ↦ v^μ g_μν`, and the
 inverse metric `g^μν` is the tensor of the inverse map. The map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, so `z` is
-invariant exactly when its linear map commutes with the group action. This is Mathlib's
+invariant exactly when its linear map commutes with the group action
+(`Module.Basis.coordTensorHomEquiv_map_rep`). This is Mathlib's
 `Representation.mem_linHom_invariants_iff_isIntertwining`, read through `toLin`.
 
 The delta `S.delta c = ∑ μ, e^μ ⊗ e_μ` is the tensor of the identity map, `u^μ δ_μ^ν = u^ν`. The
@@ -42,9 +43,9 @@ identity.
 
 ## ii. Key results
 
-- `Species.toLin` : `V a ⊗ U` as the linear maps `V a.dual → U`, with `Species.toLin_map_rep` :
-  the linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, and `Species.isIntertwiningMap_toLin_iff` : `z` is
-  invariant exactly when its linear map commutes with the group action.
+- `Species.toLin` : `V a ⊗ U` as the linear maps `V a.dual → U`, with
+  `Species.isIntertwiningMap_toLin_iff` : `z` is invariant exactly when its linear map commutes
+  with the group action.
 - `Species.delta` : the delta `δ_μ^ν`, with `Species.delta_invariant` : it is invariant.
 - `Species.deltaTensor` : the delta as a tensor on two indices, with
   `Species.tensorBasis_repr_deltaTensor_eq_one` : its components form the identity matrix.
@@ -156,19 +157,6 @@ lemma coordPairing_basis (c : Color K) {x : S.V c} {y : S.V c.dual} :
 lemma coordPairing_basis_dual (c : Color K) {x : S.V c.dual} {y : S.V c} :
     (S.basis c.dual).coordPairing (S.basis c) (x ⊗ₜ y) = S.contr c.dual (x ⊗ₜ y) :=
   rfl
-
-/-- The linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`. -/
-lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :
-    S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z) =
-      S.rep b g ∘ₗ S.toLin z ∘ₗ S.rep a.dual g⁻¹ :=
-  Module.Basis.coordTensorHomEquiv_map_rep (S.invariant a) _ z g
-
-/-- The linear map of `Λz` is bijective when that of `z` is. -/
-lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
-    (h : Function.Bijective (S.toLin z)) (g : G) :
-    Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) :=
-  Module.Basis.bijective_coordTensorHomEquiv_map_rep (S.invariant a)
-    ((S.rep b).apply_bijective g) h g
 
 /-- A tensor is invariant exactly when its linear map commutes with the group action. -/
 lemma isIntertwiningMap_toLin_iff {a b : Color K} (z : S.V a ⊗[k] S.V b) :

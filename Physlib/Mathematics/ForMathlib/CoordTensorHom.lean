@@ -37,6 +37,11 @@ When the coordinate pairing is invariant under representations of a group, the l
 `Λz` is `Λ ∘ z ∘ Λ⁻¹`, so `z` is invariant exactly when its linear map is an intertwining map,
 and the delta is invariant.
 
+A tensor `z` of `M ⊗ P` whose linear map `N → P` is bijective has an inverse, the tensor of
+`Q ⊗ N` whose linear map `P → N` inverts it, for bases `d` of `P` and `d'` of `Q`. The inverse is
+unique, involutive, and commutes with the group action. When the linear map of `z` is not
+bijective the inverse is the junk value `0`, so every lemma about it assumes bijectivity.
+
 ## ii. Key results
 
 - `Module.Basis.coordTensorHomEquiv` : a tensor of `M ⊗ U` as a linear map `N → U`.
@@ -53,12 +58,19 @@ and the delta is invariant.
   `f ∘ z ∘ Λ⁻¹`, and `Module.Basis.isIntertwiningMap_coordTensorHomEquiv_iff` : `z` is invariant
   exactly when its linear map is an intertwining map.
 - `Module.Basis.coordDelta_invariant` : the delta is invariant.
+- `Module.Basis.coordInverse` : the inverse of a tensor, with
+  `Module.Basis.coordTensorHomEquiv_coordInverse_comp` and
+  `Module.Basis.comp_coordTensorHomEquiv_coordInverse` : it is a left and a right inverse,
+  `Module.Basis.coordInverse_eq_of_comp_eq_id` : it is unique,
+  `Module.Basis.coordInverse_coordInverse` : `(z⁻¹)⁻¹ = z`, and
+  `Module.Basis.coordInverse_map_rep` : `(Λz)⁻¹ = Λ(z⁻¹)`.
 
 ## iii. Table of contents
 
 - A. Tensors as linear maps through the coordinate pairing
 - B. The bilinear form of a tensor
 - C. Equivariance
+- D. The inverse
 
 ## iv. References
 
@@ -261,6 +273,95 @@ lemma coordDelta_invariant
     TensorProduct.map (ρ g) (ρ' g) (b.coordDelta b') = b.coordDelta b' :=
   (isIntertwiningMap_coordTensorHomEquiv_iff hρ _).1
     (by rw [coordTensorHomEquiv_coordDelta]; exact ⟨fun _ _ => rfl⟩) g
+
+end
+
+/-!
+
+## D. The inverse
+
+A tensor `z` of `M ⊗ P` is a linear map `N → P`. Its inverse is the tensor of `Q ⊗ N` whose linear
+map `P → N` inverts it, read through the bases `d` of `P` and `d'` of `Q`.
+
+-/
+
+section
+
+variable {κ P Q : Type*} [Fintype κ] [DecidableEq κ] [AddCommGroup P] [Module R P]
+  [AddCommGroup Q] [Module R Q] (b : Module.Basis ι R M) (b' : Module.Basis ι R N)
+  (d : Module.Basis κ R P) (d' : Module.Basis κ R Q)
+
+open scoped Classical in
+/-- The inverse of `z : M ⊗ P`, the tensor of `Q ⊗ N` whose linear map `P → N` inverts that of `z`,
+and the junk value `0` when the linear map of `z` is not bijective. -/
+noncomputable def coordInverse (z : M ⊗[R] P) : Q ⊗[R] N :=
+  if h : Function.Bijective (b.coordTensorHomEquiv b' z) then
+    (d'.coordTensorHomEquiv d).symm (LinearEquiv.ofBijective _ h).symm.toLinearMap
+  else 0
+
+variable {b b' d d'}
+
+/-- The linear map of the inverse is the inverse of the linear map. -/
+lemma coordTensorHomEquiv_coordInverse {z : M ⊗[R] P}
+    (h : Function.Bijective (b.coordTensorHomEquiv b' z)) :
+    d'.coordTensorHomEquiv d (b.coordInverse b' d d' z) =
+      (LinearEquiv.ofBijective _ h).symm.toLinearMap := by
+  simp [coordInverse, h]
+
+/-- The linear map of the inverse is bijective. -/
+lemma bijective_coordTensorHomEquiv_coordInverse {z : M ⊗[R] P}
+    (h : Function.Bijective (b.coordTensorHomEquiv b' z)) :
+    Function.Bijective (d'.coordTensorHomEquiv d (b.coordInverse b' d d' z)) := by
+  rw [coordTensorHomEquiv_coordInverse h]
+  exact (LinearEquiv.ofBijective _ h).symm.bijective
+
+/-- The inverse is a left inverse, as linear maps. -/
+lemma coordTensorHomEquiv_coordInverse_comp {z : M ⊗[R] P}
+    (h : Function.Bijective (b.coordTensorHomEquiv b' z)) :
+    d'.coordTensorHomEquiv d (b.coordInverse b' d d' z) ∘ₗ b.coordTensorHomEquiv b' z =
+      LinearMap.id := by
+  rw [coordTensorHomEquiv_coordInverse h]
+  exact (LinearEquiv.ofBijective _ h).symm_comp
+
+/-- The inverse is a right inverse, as linear maps. -/
+lemma comp_coordTensorHomEquiv_coordInverse {z : M ⊗[R] P}
+    (h : Function.Bijective (b.coordTensorHomEquiv b' z)) :
+    b.coordTensorHomEquiv b' z ∘ₗ d'.coordTensorHomEquiv d (b.coordInverse b' d d' z) =
+      LinearMap.id := by
+  rw [coordTensorHomEquiv_coordInverse h]
+  exact (LinearEquiv.ofBijective _ h).comp_symm
+
+/-- A tensor `w` whose linear map is a left inverse of that of `z` is the inverse of `z`. -/
+lemma coordInverse_eq_of_comp_eq_id {z : M ⊗[R] P}
+    (h : Function.Bijective (b.coordTensorHomEquiv b' z)) {w : Q ⊗[R] N}
+    (hw : d'.coordTensorHomEquiv d w ∘ₗ b.coordTensorHomEquiv b' z = LinearMap.id) :
+    b.coordInverse b' d d' z = w :=
+  (d'.coordTensorHomEquiv d).injective <| (LinearMap.cancel_right h.2).1 <| by
+    rw [coordTensorHomEquiv_coordInverse_comp h, hw]
+
+/-- The inverse of the inverse is the tensor itself. -/
+lemma coordInverse_coordInverse {z : M ⊗[R] P}
+    (h : Function.Bijective (b.coordTensorHomEquiv b' z)) :
+    d'.coordInverse d b' b (b.coordInverse b' d d' z) = z :=
+  coordInverse_eq_of_comp_eq_id (bijective_coordTensorHomEquiv_coordInverse h)
+    (comp_coordTensorHomEquiv_coordInverse h)
+
+/-- The inverse commutes with the group action, `(Λz)⁻¹ = Λ(z⁻¹)`, when the coordinate pairings of
+`b` and `b'` and of `d` and `d'` are invariant. -/
+lemma coordInverse_map_rep {G : Type*} [Group G] {ρ : Representation R G M}
+    {ρ' : Representation R G N} {σ : Representation R G P} {σ' : Representation R G Q}
+    (hρ : ∀ g x y, b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y))
+    (hσ : ∀ g x y, d.coordPairing d' (σ g x ⊗ₜ σ' g y) = d.coordPairing d' (x ⊗ₜ y))
+    {z : M ⊗[R] P} (h : Function.Bijective (b.coordTensorHomEquiv b' z)) (g : G) :
+    b.coordInverse b' d d' (TensorProduct.map (ρ g) (σ g) z) =
+      TensorProduct.map (σ' g) (ρ' g) (b.coordInverse b' d d' z) := by
+  have hσ' : ∀ g x y, d'.coordPairing d (σ' g x ⊗ₜ σ g y) = d'.coordPairing d (x ⊗ₜ y) :=
+    fun g x y => by rw [coordPairing_comm, hσ, coordPairing_comm]
+  refine coordInverse_eq_of_comp_eq_id
+    (bijective_coordTensorHomEquiv_map_rep hρ (σ.apply_bijective g) h g) (LinearMap.ext fun x => ?_)
+  simp [coordTensorHomEquiv_map_rep hρ, coordTensorHomEquiv_map_rep hσ',
+    Representation.inv_self_apply, Representation.self_inv_apply,
+    ← LinearMap.comp_apply (d'.coordTensorHomEquiv d _), coordTensorHomEquiv_coordInverse_comp h]
 
 end
 
