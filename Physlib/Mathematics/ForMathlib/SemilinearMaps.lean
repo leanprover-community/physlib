@@ -205,9 +205,9 @@ lemma star_coordPairing_starEquiv [Fintype ι] [DecidableEq ι] [Fintype ι'] [D
   simp only [star_sum, star_mul']
   exact Fintype.sum_equiv e _ _ fun μ => by simp
 
-/-- Let conjugate-linear maps `f` of `M` and `f'` of `N` conjugate the coordinate pairing of `b₁` and
-`b₂` into that of `b₁'` and `b₂'`, both invariant. If `f` commutes with the group action, so does
-`f'`. -/
+/-- Let conjugate-linear maps `f` of `M` and `f'` of `N` conjugate the coordinate pairing of `b₁`
+and `b₂` into that of `b₁'` and `b₂'`, both invariant. If `f` commutes with the group action, so
+does `f'`. -/
 lemma map_rep_of_star_coordPairing [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
     {N N' G : Type*} [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] [Group G]
     {ρ₁ : Representation R G M} {ρ₂ : Representation R G N} {ρ₁' : Representation R G M'}
