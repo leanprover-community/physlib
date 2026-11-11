@@ -21,8 +21,10 @@ for each of the two types of Weyl spinor index and one for the vector index.
 
 A tensor has one color per index. A species (`Species.lean`) gives each color a space, and a
 tensor is an element of the tensor product of the spaces of its indices. Each index has a color
-rather than a space, so that checking that two indices can be contracted is an equality of
-colors, which is decidable, not an equality of types.
+rather than a space, so that whether two indices can be contracted is an equation of colors,
+`c j = (c i).dual`, which Lean checks by computation when the colors are known. When two colors
+are equal only through a proof, vectors are moved between their spaces by `S.cast`
+(`Species.lean`, §C).
 
 The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, the same kind with the other variance. A contraction such
 as `v^μ w_μ` pairs an index of color `c` with an index of color `c.dual`. `Color K` is a structure
