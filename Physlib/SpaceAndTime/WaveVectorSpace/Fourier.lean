@@ -35,8 +35,8 @@ These are implemented as rescaled/dilated versions of `VectorFourier.fourierInte
 and most results require that the input function be integrable.
 
 Results which hold for all `a` and `b` should be written in terms of `fourierIntegral a b`.
-To select a particular convention, include the line `open scoped Fourier_[a]_[b]`
-(*e.g.* `open scoped Fourier_1_n1` for $(a,b) = (1,-1)$) and use the notation `𝓕` and `𝓕⁻`.
+To select a particular convention, include the line `open scoped Fourier[a][b]`
+(*e.g.* `open scoped Fourier1n1` for $(a,b) = (1,-1)$) and use the notation `𝓕` and `𝓕⁻`.
 If a common convention is missing it can be added below in section B.
 
 ## ii. Key results
@@ -207,7 +207,7 @@ f(x) := \frac{1}{\sqrt{2\pi}} \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x
 $$
 -/
 
-namespace Fourier_0_1
+namespace Fourier01
 
 /-- Notation for the Fourier transform `fourierIntegral 0 1`. -/
 scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
@@ -217,7 +217,7 @@ scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) whe
 scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 0 1
 
-end Fourier_0_1
+end Fourier01
 
 /-!
 ### B.2. `(a, b) = (1, -1)`
@@ -229,7 +229,7 @@ f(x) := \frac{1}{2\pi} \int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mat
 $$
 -/
 
-namespace Fourier_1_n1
+namespace Fourier1n1
 
 /-- Notation for the Fourier transform `fourierIntegral 1 (-1)`. -/
 scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
@@ -239,7 +239,7 @@ scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) whe
 scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 1 (-1)
 
-end Fourier_1_n1
+end Fourier1n1
 
 end Conventions
 
