@@ -193,7 +193,8 @@ noncomputable def coordToDual (b : Module.Basis ι R M) (b' : Module.Basis ι R 
     M ≃ₗ[R] N :=
   .ofLinearMap (b'.coordTensorHomEquiv b (TensorProduct.comm R N N F'))
     (b.coordTensorHomEquiv b' (TensorProduct.comm R M M F))
-    (coordTensorHomEquiv_comm_comp_comm b' b F' F h) (coordTensorHomEquiv_comm_comp_comm b b' F F' h')
+    (coordTensorHomEquiv_comm_comp_comm b' b F' F h)
+    (coordTensorHomEquiv_comm_comp_comm b b' F F' h')
 
 /-- `coordToDual` in components, `v_ν = F'_νμ v^μ`. -/
 lemma repr_coordToDual (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (F : M ⊗[R] M)
