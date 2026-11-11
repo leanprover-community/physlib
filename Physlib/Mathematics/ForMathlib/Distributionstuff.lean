@@ -7,7 +7,9 @@ module
 
 public import Mathlib.Analysis.Distribution.Distribution
 public import Mathlib.Analysis.Distribution.TestFunction
+public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 public import Mathlib.Topology.Continuous
+
 
 open Function Set TopologicalSpace UniformSpace
 
@@ -95,9 +97,5 @@ noncomputable def DistributionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGr
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
     (h : g.invFun '' Ω' ⊆ ↑Ω) :
-    Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ := {
-    toFun f := f ∘ testFunctionMap g h
-    map_add' := by sorry
-    map_smul' := by sorry
-    cont := by sorry
-    }
+    Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ :=
+    (testFunctionMap (F := ℝ) g h).precompCompactConvergenceCLM F
