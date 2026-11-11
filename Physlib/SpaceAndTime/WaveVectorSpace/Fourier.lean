@@ -32,12 +32,12 @@ f(x) :=
 $$
 
 These are implemented as rescaled/dilated versions of `VectorFourier.fourierIntegral`
-and most results require that `f : Space d → E` or `g : WaveVectorSpace d → E` be integrable.
+and most results require that input function be integrable.
 
-General results which hold for any `a` and `b` should be written in terms of `physFourier a b`.
-For results which require particular values for `a` and `b` there are dedicated namespaces
-`Fourier_a_b` (*e.g.* `Fourier_1_n1` for $(a,b) = (1,-1)$); include `open scoped Fourier_a_b`
-(*e.g.* `open scoped Fourier_1_n1`) and use the notation `𝓕` and `𝓕⁻`.
+Results which hold for all `a` and `b` should be written in terms of `physFourier a b`.
+To select a particular convention, include the line `open scoped Fourier_[a]_[b]`
+(*e.g.* `open scoped Fourier_1_n1` for $(a,b) = (1,-1)$) and use the notation `𝓕` and `𝓕⁻`.
+If a common convention is missing it can be added below in section B.
 
 ## ii. Key results
 
