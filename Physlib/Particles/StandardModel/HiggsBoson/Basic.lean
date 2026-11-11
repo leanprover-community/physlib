@@ -5,7 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
+public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 /-!
 
@@ -23,6 +24,8 @@ In this module we define the Higgs field and prove some basic properties.
   This vector space is equipped with an action of the global gauge group of the Standard Model.
 - `HiggsBundle`: The trivial vector bundle over `SpaceTime` with fiber `HiggsVec`.
 - `HiggsField`: The type of smooth sections of the `HiggsBundle`, i.e., the type of Higgs fields.
+- `stabilizer_ofReal`: The stability group of the Higgs vacuum `(0, √a)`, i.e. the gauge
+  group left unbroken by it, is `SU(3) × U(1)_EM`.
 
 ## iii. Table of contents
 
@@ -317,29 +320,106 @@ lemma exists_repGaugeGroupI_eq_iff_norm_eq (φ : HiggsVec) (ψ : HiggsVec) :
 
 ### A.6. The stability group of a Higgs vector
 
-We find the stability group of a Higgs vector, and the stability group of the set of
-all Higgs vectors.
-
-The items in this section are marked as `informal_lemma` as they are not yet formalized.
+The stability group of a Higgs vector `φ` is the subgroup `repGaugeGroupI.stabilizer φ` of
+`GaugeGroupI` fixing `φ`, i.e. the gauge group left unbroken when the Higgs field takes the
+value `φ`. For the vacuum `ofReal a = (0, √a)` with `a > 0` it is `SU(3) × U(1)_EM`, and for
+any other non-zero Higgs vector it is a conjugate of this subgroup. The subgroup fixing every
+Higgs vector is `SU(3) × ℤ₆`.
 
 -/
 
-/-- The Higgs boson breaks electroweak symmetry down to the electromagnetic force, i.e., the
-stability group of `repGaugeGroupI` on `![0, Complex.ofReal ‖φ‖]`, for non-zero `‖φ‖`, is the
-`SU(3) × U(1)` subgroup of `gaugeGroup := SU(3) × SU(2) × U(1)` with the embedding given by
-`(g, e^{i θ}) ↦ (g, diag (e ^ {3 * i θ}, e ^ {- 3 * i θ}), e^{i θ})`.
--/
-informal_lemma stability_group_single where
-  deps := [``StandardModel.HiggsVec]
-  tag := "6V2MD"
+/-- A gauge transformation fixes the non-zero Higgs vector `ofReal a = (0, √a)` if and only if
+  its `SU(2)` part is `diag(u³, ū³)`, where `u` is its `U(1)` part. -/
+lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
+    g ∈ repGaugeGroupI.stabilizer (ofReal a) ↔
+    GaugeGroupI.toSU2 g = GaugeGroupI.diagSU2 (GaugeGroupI.toU1 g ^ 3) := by
+  rw [Representation.mem_stabilizer]
+  set M := (GaugeGroupI.toSU2 g : Matrix (Fin 2) (Fin 2) ℂ) with hM
+  set u := GaugeGroupI.toU1 g ^ 3 with hu
+  have hw : (u : ℂ) * conj (u : ℂ) = 1 := u.2.2
+  have hw' : conj (u : ℂ) * (u : ℂ) = 1 := u.2.1
+  have hs : (Real.sqrt a : ℂ) ≠ 0 := by simp [Real.sqrt_ne_zero'.mpr ha]
+  constructor
+  · intro h
+    have hu0 : (u : ℂ) ≠ 0 := left_ne_zero_of_mul_eq_one hw
+    have h01 : M 0 1 = 0 := by
+      simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
+        Fin.sum_univ_two, ← hM, ← hu, hu0, hs] using congrArg (fun φ : HiggsVec => φ.ofLp 0) h
+    have h1 : (u : ℂ) * (M 1 1 * Real.sqrt a) = Real.sqrt a := by
+      simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
+        Fin.sum_univ_two, ← hM, ← hu] using congrArg (fun φ : HiggsVec => φ.ofLp 1) h
+    have h11 : M 1 1 = conj (u : ℂ) := by
+      have h1' : (u : ℂ) * M 1 1 = 1 := mul_right_cancel₀ hs (by linear_combination h1)
+      rw [← one_mul (M 1 1), ← hw', mul_assoc, h1', mul_one]
+    exact GaugeGroupI.eq_diagSU2_of_apply_zero_one_eq_zero h01 h11
+  · intro h
+    ext i
+    fin_cases i
+    · simp [repGaugeGroupI_apply, h, ofReal, Submonoid.smul_def, ← hu]
+    · have h1 : (u : ℂ) * (Real.sqrt a * conj (u : ℂ)) = Real.sqrt a := by
+        linear_combination (Real.sqrt a : ℂ) * hw
+      simpa [repGaugeGroupI_apply, h, ofReal, Submonoid.smul_def, ← hu] using h1
 
-/-- The subgroup of `gaugeGroup := SU(3) × SU(2) × U(1)` which preserves every `HiggsVec` by the
-action of `StandardModel.HiggsVec.repGaugeGroupI` is given by `SU(3) × ℤ₆` where `ℤ₆` is the
-subgroup of `SU(2) × U(1)` with elements `(α^(-3) * I₂, α)` where `α` is a sixth root of unity.
--/
-informal_lemma stability_group where
-  deps := [``HiggsVec]
-  tag := "6V2MO"
+/-- The Higgs vacuum breaks electroweak symmetry down to color and electromagnetism: the
+  stability group of the non-zero Higgs vector `ofReal a = (0, √a)` is the subgroup
+  `SU(3) × U(1)_EM` of `GaugeGroupI`, with elements `(h, diag(u³, ū³), u)`. -/
+theorem stabilizer_ofReal {a : ℝ} (ha : 0 < a) :
+    repGaugeGroupI.stabilizer (ofReal a) = UnbrokenGaugeGroupI.incl.range := by
+  ext g
+  rw [mem_stabilizer_ofReal_iff ha, MonoidHom.mem_range]
+  constructor
+  · intro h
+    exact ⟨(GaugeGroupI.toSU3 g, GaugeGroupI.toU1 g), by ext1 <;> simp [h]⟩
+  · rintro ⟨p, rfl⟩
+    simp
+
+/-- The stability group of any non-zero Higgs vector is conjugate to `SU(3) × U(1)_EM`. -/
+lemma exists_stabilizer_eq_conj_unbrokenGaugeGroupI (φ : HiggsVec) (hφ : φ ≠ 0) :
+    ∃ g : GaugeGroupI, repGaugeGroupI.stabilizer φ =
+      UnbrokenGaugeGroupI.incl.range.map (MulAut.conj g) := by
+  refine ⟨(toRealGroupElem φ)⁻¹, ?_⟩
+  rw [← stabilizer_ofReal (pow_pos (norm_pos_iff.mpr hφ) 2), ← Representation.stabilizer_conj]
+  congr 1
+  rw [eq_comm, repGaugeGroupI_inv_apply_eq_iff, toRealGroupElem_apply_self]
+
+/-- The gauge transformations fixing every Higgs vector are those of the form
+  `(h, α⁻³ I₂, α)` with `h ∈ SU(3)` arbitrary and `α` a sixth root of unity, i.e. the subgroup
+  `SU(3) × ℤ₆` of `GaugeGroupI`. Here `ℤ₆` sits inside `SU(2) × U(1)`: it is the image there of
+  the central `ℤ₆` used for `GaugeGroupℤ₆`, whose elements also carry the `SU(3)` part `α² I₃`,
+  so this subgroup contains the central `ℤ₆`. -/
+lemma mem_iInf_stabilizer_iff (g : GaugeGroupI) :
+    g ∈ ⨅ φ, repGaugeGroupI.stabilizer φ ↔
+    ∃ α : rootsOfUnity 6 ℂ, GaugeGroupI.toSU2 g = gaugeGroupℤ₆SU2OfRoot α ∧
+      GaugeGroupI.toU1 g = gaugeGroupℤ₆UnitaryOfRoot α := by
+  simp only [Subgroup.mem_iInf, Representation.mem_stabilizer]
+  constructor
+  · intro hφ
+    have h2 := (mem_stabilizer_ofReal_iff one_pos g).mp (hφ (ofReal 1))
+    set w := GaugeGroupI.toU1 g ^ 3 with hw_def
+    have hw : (w : ℂ) * conj (w : ℂ) = 1 := w.2.2
+    have hw2 : (w : ℂ) ^ 2 = 1 := by
+      have := congrArg (fun φ : HiggsVec => φ.ofLp 0) (hφ !₂[1, 0])
+      simpa [repGaugeGroupI_apply, h2, Submonoid.smul_def, ← hw_def, sq] using this
+    have h6 : (GaugeGroupI.toU1 g : ℂ) ^ 6 = 1 := by
+      rw [← hw2]
+      simp [hw_def, ← pow_mul]
+    have hcw : conj (w : ℂ) = w := by linear_combination (w : ℂ) * hw - conj (w : ℂ) * hw2
+    have hu3 : star (GaugeGroupI.toU1 g : ℂ) ^ 3 = w := by
+      rw [← hcw, hw_def]
+      simp
+    refine ⟨rootsOfUnity.mkOfPowEq _ h6, ?_, ?_⟩
+    · apply Subtype.ext
+      rw [h2, gaugeGroupℤ₆SU2OfRoot_eq_mul_id, GaugeGroupI.diagSU2_coe,
+        rootsOfUnity.coe_mkOfPowEq, hu3]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [hcw]
+    · ext
+      simp
+  · rintro ⟨α, h2, h1⟩ φ
+    have hα : ((α : ℂˣ) : ℂ) * conj ((α : ℂˣ) : ℂ) = 1 := (gaugeGroupℤ₆UnitaryOfRoot α).2.2
+    rw [repGaugeGroupI_apply, h2, h1, gaugeGroupℤ₆SU2OfRoot_eq_mul_id]
+    ext i
+    simp [Submonoid.smul_def, smul_mulVec, ← mul_assoc, ← mul_pow, hα]
 
 /-!
 
