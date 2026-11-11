@@ -51,10 +51,9 @@ Martin.
   `Species.tensorBasis_repr_toDualAt`.
 - `Species.toDualAt_eq_contr` proves that lowering is contracting with the form,
   `T^…_ν… = g_νμ T^…μ…`.
-- `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
-  antisymmetric form on a kind with two labels, `LinearMap.IsAlt.schouten` for `formBilin`, and
-  `Species.formMatrix_schouten` is the same in components,
-  `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`.
+- `Species.formMatrix_schouten` is the Schouten identity for an antisymmetric form on a kind with
+  two labels in components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`,
+  `LinearMap.IsAlt.schouten_basis` for `formBilin`.
 
 ## iii. Table of contents
 
@@ -355,27 +354,15 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
 
 -/
 
-/-- The Schouten identity for an antisymmetric form on a kind with two labels, such as the Weyl `ε`:
-`g(u, v) w + g(v, w) u + g(w, u) v = 0`. In two dimensions every alternating form of three vectors
-vanishes. -/
-lemma schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    (h2 : Fintype.card (basisIdx c.kind) = 2) (u v w : S.V c.dual) :
-    S.formBilin c u v • w + S.formBilin c v w • u + S.formBilin c w u • v = 0 :=
-  (isAlt_formBilin (S := S) c).schouten (S.basis c.dual) h2 u v w
-
-/-- The Schouten identity in components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`: `schouten` at
-the basis vectors `e^γ`, `e^ρ` and `e^α'`, read at the label `α`. -/
+/-- The Schouten identity in components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`, for an
+antisymmetric form on a kind with two labels, such as the Weyl `ε`. -/
 lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
     (h2 : Fintype.card (basisIdx c.kind) = 2) (γ ρ α' α : basisIdx c.kind) :
     S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
       S.formMatrix c γ α' * (if ρ = α then 1 else 0) -
         S.formMatrix c ρ α' * (if γ = α then 1 else 0) := by
-  have h := congrArg (fun x => (S.basis c.dual).repr x α)
-    (schouten c h2 (S.basis c.dual γ) (S.basis c.dual ρ) (S.basis c.dual α'))
-  simp only [map_add, map_smul, Finsupp.add_apply, Finsupp.smul_apply, Module.Basis.repr_self,
-    Finsupp.single_apply, smul_eq_mul, map_zero, Finsupp.zero_apply, formBilin_basis,
-    @eq_comm _ α' α] at h
-  linear_combination h - (if ρ = α then 1 else 0) * formMatrix_antisymm (S := S) c γ α'
+  simpa only [formBilin_basis] using
+    (isAlt_formBilin (S := S) c).schouten_basis (S.basis c.dual) h2 γ ρ α' α
 
 end Species
 
