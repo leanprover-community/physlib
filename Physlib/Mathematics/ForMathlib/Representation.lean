@@ -6,13 +6,14 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.RepresentationTheory.Intertwining
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 
 /-!
 
-# Equivalences of representations and invariant vectors
+# Tensor products of representations and invariant vectors
 
-The tensor product of two equivalences of representations, and invariant vectors under an
-intertwining map.
+Tensor products of equivalences of representations, the tensor product of a family of
+representations, and invariant vectors under an intertwining map.
 
 ## i. Overview
 
@@ -25,17 +26,26 @@ Mathlib has the tensor product of two intertwining maps, `IntertwiningMap.tensor
 given for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on the linear equivalence
 `TensorProduct.congr`.
 
+A family of representations `ρ i` on `M i` gives the representation `piTprod ρ` on
+`⨂[k] i, M i`, `g ↦ ⨂ i, ρ i g`, on Mathlib's `PiTensorProduct.map`. Maps `f i` that intertwine
+`ρ i` and `σ i` give `PiTensorProduct.map f`, which intertwines `piTprod ρ` and `piTprod σ`.
+
 ## ii. Key results
 
 - `Representation.IntertwiningMap.map_invariant` : an intertwining map sends invariant vectors to
   invariant vectors, and `Representation.IntertwiningMap.map_one_invariant` : an intertwining map
   from the trivial representation picks out an invariant vector.
 - `Representation.Equiv.tensorCongr` : the tensor product of two equivalences of representations.
+- `Representation.piTprod` : the tensor product of a family of representations, with
+  `Representation.IsIntertwiningMap.piTensorMap` : `PiTensorProduct.map` of intertwining maps is
+  intertwining, and `Representation.Equiv.piTensorCongr` : the tensor product of a family of
+  equivalences of representations.
 
 ## iii. Table of contents
 
 - A. Invariant vectors
 - B. Tensor products of equivalences
+- C. Tensor products of families
 
 ## iv. References
 
@@ -47,7 +57,7 @@ There are no known references for the material in this module.
 
 open TensorProduct
 
-variable {k G V W U X : Type*} [CommRing k] [Monoid G] [AddCommMonoid V] [Module k V]
+variable {k G V W U X : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
   [AddCommMonoid W] [Module k W] [AddCommMonoid U] [Module k U] [AddCommMonoid X] [Module k X]
   {ρ : Representation k G V} {σ : Representation k G W} {τ : Representation k G U}
   {π : Representation k G X}
@@ -87,3 +97,57 @@ noncomputable def Representation.Equiv.tensorCongr (φ : ρ.Equiv σ) (ψ : τ.E
 @[simp]
 lemma Representation.Equiv.tensorCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π) (v : V) (u : U) :
     φ.tensorCongr ψ (v ⊗ₜ u) = φ v ⊗ₜ ψ u := rfl
+
+/-!
+
+## C. Tensor products of families
+
+-/
+
+section
+
+variable {ι : Type*} {M N : ι → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)]
+  [∀ i, AddCommMonoid (N i)] [∀ i, Module k (N i)]
+
+/-- The tensor product of a family of representations, `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`. It is
+the n-ary `Representation.tprod`. -/
+noncomputable def Representation.piTprod (ρ : Π i, Representation k G (M i)) :
+    Representation k G (⨂[k] i, M i) :=
+  PiTensorProduct.mapMonoidHom.comp (MonoidHom.pi ρ)
+
+lemma Representation.piTprod_apply (ρ : Π i, Representation k G (M i)) (g : G) :
+    Representation.piTprod ρ g = PiTensorProduct.map fun i => ρ i g := rfl
+
+@[simp]
+lemma Representation.piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G) (m : Π i, M i) :
+    Representation.piTprod ρ g (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, ρ i g (m i) :=
+  PiTensorProduct.map_tprod _ _
+
+/-- `PiTensorProduct.map f` intertwines `piTprod ρ` and `piTprod σ` when every `f i` intertwines
+`ρ i` and `σ i`. -/
+lemma Representation.IsIntertwiningMap.piTensorMap {ρ : Π i, Representation k G (M i)}
+    {σ : Π i, Representation k G (N i)} {f : Π i, M i →ₗ[k] N i}
+    (hf : ∀ i, (ρ i).IsIntertwiningMap (σ i) (f i)) :
+    (Representation.piTprod ρ).IsIntertwiningMap (Representation.piTprod σ)
+      (PiTensorProduct.map f) where
+  isIntertwining g v := by
+    rw [Representation.piTprod_apply, Representation.piTprod_apply, ← LinearMap.comp_apply,
+      ← PiTensorProduct.map_comp, ← LinearMap.comp_apply, ← PiTensorProduct.map_comp]
+    exact congr(PiTensorProduct.map $(funext fun i => LinearMap.ext ((hf i).isIntertwining g)) v)
+
+/-- The tensor product of a family of equivalences of representations, `⨂ i, v i ↦ ⨂ i, φ i (v i)`.
+It is Mathlib's `PiTensorProduct.congr` with the actions `piTprod ρ` and `piTprod σ`. -/
+noncomputable def Representation.Equiv.piTensorCongr {ρ : Π i, Representation k G (M i)}
+    {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) :
+    (Representation.piTprod ρ).Equiv (Representation.piTprod σ) :=
+  .mk (PiTensorProduct.congr fun i => (φ i).toLinearEquiv) fun g => LinearMap.ext
+    ((Representation.IsIntertwiningMap.piTensorMap fun i =>
+      ⟨(φ i).toIntertwiningMap.isIntertwining⟩).isIntertwining g)
+
+@[simp]
+lemma Representation.Equiv.piTensorCongr_tprod {ρ : Π i, Representation k G (M i)}
+    {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
+    Representation.Equiv.piTensorCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
+  PiTensorProduct.congr_tprod _ _
+
+end

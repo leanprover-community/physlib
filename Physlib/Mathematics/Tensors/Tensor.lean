@@ -31,7 +31,8 @@ pure tensors, and their properties are proved there first. `S.pure f` is Mathlib
 `⨂ₜ[k] i, f i` as an element of `Tensor S c`.
 
 A group element `Λ` acts on every index by the representation of its color,
-`Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). A map that commutes with `Λ` on pure tensors
+`Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). This is the representation
+`Representation.piTprod` on `⨂[k] i, V (c i)`. A map that commutes with `Λ` on pure tensors
 commutes with it on all tensors (`map_smul_of_pure`).
 
 The components `T^μ_νρ` of a tensor `T` are its coordinates in the basis `e_μ ⊗ e^ν ⊗ e^ρ`
@@ -69,7 +70,8 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 - `Species.mapIndices` applies a linear map at every index, with `Species.mapIndices_comp` and
   `Species.mapIndices_id`, and `Species.mapIndices_smul` proves that it commutes with the group when
   every index map does.
-- `Species.congrIndices` applies an equivalence of representations at every index.
+- `Species.congrIndices` applies an equivalence of representations at every index. It is
+  `Representation.Equiv.piTensorCongr`.
 - `Species.indexMapsAt` is the family of a linear map at one index and the identity at the others,
   and `Species.mapAt` applies it, with `Species.mapAt_pure`, `Species.mapAt_comp` and
   `Species.mapAt_id`.
@@ -161,20 +163,19 @@ lemma ext_pure {E : Type} [AddCommGroup E] [Module k E] {f g : Tensor S c →ₗ
 -/
 
 /-- The group acts on every index by the representation of its color,
-`Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`. -/
+`Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`. It is `Representation.piTprod` of the representations of the
+colors. -/
 noncomputable instance : DistribMulAction G (Tensor S c) :=
   DistribMulAction.compHom (M := Module.End k (Tensor S c)) _
-    (PiTensorProduct.mapMonoidHom.comp (MonoidHom.pi fun i => S.rep (c i)))
+    (Representation.piTprod fun i => S.rep (c i))
 
 @[simp]
 lemma smul_pure (g : G) (f : Π i, S.V (c i)) :
     g • S.pure f = S.pure fun i => S.rep (c i) g (f i) :=
-  PiTensorProduct.map_tprod _ _
+  Representation.piTprod_tprod _ _ _
 
 noncomputable instance : SMulCommClass G k (Tensor S c) where
-  smul_comm g r t := by
-    change PiTensorProduct.map (fun i => S.rep (c i) g) (r • t) = r • PiTensorProduct.map _ t
-    exact map_smul _ r t
+  smul_comm g r t := map_smul (Representation.piTprod (fun i => S.rep (c i)) g) r t
 
 noncomputable instance : SMulCommClass k G (Tensor S c) := .symm _ _ _
 
@@ -340,21 +341,19 @@ lemma mapIndices_id_apply (t : Tensor S c) : S.mapIndices (fun _ => LinearMap.id
 lemma mapIndices_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
     (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : Tensor S c) :
     S.mapIndices f (g • t) = g • S.mapIndices f t :=
-  map_smul_of_pure _ g (fun p => by simp only [smul_pure, mapIndices_pure, hf]) t
+  (Representation.IsIntertwiningMap.piTensorMap fun x => ⟨hf x⟩).isIntertwining g t
 
 variable (S) in
 /-- Equivalences of representations `f x` at every index `x`, as an equivalence of representations
-of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.congr`. -/
+of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is `Representation.Equiv.piTensorCongr`. -/
 noncomputable def congrIndices (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
     (S.tensorRep c).Equiv (S.tensorRep c') :=
-  equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.congr (fun x => (f x).toLinearEquiv) ≪≫ₗ
-    (S.toPiTensor c').symm) fun g p =>
-      mapIndices_smul (fun x => (f x).toIntertwiningMap.isIntertwining _ _) g (S.pure p)
+  Representation.Equiv.piTensorCongr f
 
 /-- On a pure tensor, `congrIndices` applies `f x` to the vector at each index `x`. -/
 lemma congrIndices_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
     S.congrIndices f (S.pure p) = S.pure fun x => f x (p x) :=
-  mapIndices_pure (fun x => (f x).toLinearMap) p
+  Representation.Equiv.piTensorCongr_tprod f p
 
 section
 
