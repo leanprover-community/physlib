@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Physlib.Mathematics.ForMathlib.Contraction
 
@@ -29,6 +30,9 @@ coordinates of a vector in `b` and reads them in `b'`, the coordinate at `μ` mo
 conjugate-linear map that sends each `b μ` to `b' (e μ)` is this equivalence. Conjugating both
 factors along the same labels conjugates the coordinate pairing of two bases.
 
+A semilinear equivalence keeps the finite rank, so a module and its conjugate have the same
+dimension.
+
 ## ii. Key results
 
 - `PiTensorProduct.mapₛₗ` applies a family of semilinear maps to a tensor product, and
@@ -38,11 +42,13 @@ factors along the same labels conjugates the coordinate pairing of two bases.
   `b' (e μ)`.
 - `Module.Basis.star_coordPairing_starEquiv` proves that conjugating both factors conjugates the
   coordinate pairing.
+- `LinearEquiv.finrank_eqₛₗ` : a semilinear equivalence keeps the finite rank.
 
 ## iii. Table of contents
 
 - A. Semilinear maps of tensor products
 - B. Conjugating the coordinates of a basis
+- C. The rank under a semilinear equivalence
 
 ## iv. References
 
@@ -184,3 +190,22 @@ lemma star_coordPairing_starEquiv [Fintype ι] [DecidableEq ι] [Fintype ι'] [D
   exact Fintype.sum_equiv e _ _ fun μ => by simp
 
 end Module.Basis
+
+/-!
+
+## C. The rank under a semilinear equivalence
+
+-/
+
+namespace LinearEquiv
+
+variable {R M M' : Type*} [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M']
+  [Module R M'] {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+
+/-- A semilinear equivalence keeps the finite rank, as `v ↦ v̄` does. -/
+lemma finrank_eqₛₗ (f : M ≃ₛₗ[σ] M') : Module.finrank R M = Module.finrank R M' := by
+  simpa [Module.finrank] using congr(Cardinal.toNat $(lift_rank_eq_of_equiv_equiv σ f.toAddEquiv
+    (Function.bijective_iff_has_inverse.mpr ⟨σ', fun _ => RingHomInvPair.comp_apply_eq,
+      fun _ => RingHomInvPair.comp_apply_eq₂⟩) (map_smulₛₗ f)))
+
+end LinearEquiv

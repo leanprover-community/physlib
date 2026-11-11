@@ -178,12 +178,6 @@ lemma conjEquiv_cast {b b' : Color K} (p : b = b') (h : c' = b'.bar) (x : S.V b)
   subst p
   rfl
 
-/-- Conjugation keeps the dimension, as `v ↦ v̄` is a conjugate-linear equivalence. -/
-lemma finrank_conj (h : c' = c.bar) : Module.finrank k (S.V c') = Module.finrank k (S.V c) := by
-  rw [Module.finrank, ← rank_eq_of_equiv_equiv (starRingEnd k) (S.conjEquiv h).toAddEquiv
-    (Function.Involutive.bijective fun r => by simp) (fun r m => map_smulₛₗ (S.conjEquiv h) r m),
-    ← Module.finrank]
-
 end
 
 omit [InvolutiveStar K] in
