@@ -5,10 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.Channels.Bundled
 public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 
 /-! # Positive Operator-Valued Measures
 

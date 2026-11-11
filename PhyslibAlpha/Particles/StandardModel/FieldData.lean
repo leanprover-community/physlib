@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.MatterField
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.MatterField
 /-!
 # The field data of the Standard Model

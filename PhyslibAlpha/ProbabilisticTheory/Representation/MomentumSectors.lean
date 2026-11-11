@@ -5,10 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Range
-public import Mathlib.LinearAlgebra.Span.Basic
 public import Mathlib.LinearAlgebra.Quotient.Basic
-public import Mathlib.Algebra.Group.Hom.Defs
 
 /-!
 

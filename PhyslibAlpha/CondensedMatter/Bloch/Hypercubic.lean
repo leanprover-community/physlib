@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.CondensedMatter.Bloch.PointSymmetry
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Hypercubic
-public import Mathlib.Data.Fin.Tuple.Sort
-public import Mathlib.Algebra.Order.Round
 
 /-!
 

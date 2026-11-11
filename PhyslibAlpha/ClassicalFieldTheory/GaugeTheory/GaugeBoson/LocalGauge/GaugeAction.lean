@@ -9,7 +9,6 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGaug
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.AdjointCoeff
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.MaurerCartan
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import PhyslibAlpha.Mathematics.MultisetAntidiagonal
 
 /-!
 # The gauge action on the gauge-boson jet algebra

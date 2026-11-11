@@ -6,29 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.ForMathlib.Tactic.Commutes.Attribute
-public import Mathlib.Algebra.BigOperators.Group.List.Basic
-public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Algebra.BigOperators.Ring.List
-public import Mathlib.Algebra.Group.Action.Defs
-public import Mathlib.Algebra.Group.Center
-public import Mathlib.Algebra.Group.Commute.Basic
-public import Mathlib.Algebra.Group.Commute.Hom
-public import Mathlib.Algebra.Group.Commute.Units
-public import Mathlib.Algebra.Group.Invertible.Basic
-public import Mathlib.Algebra.Group.Opposite
-public import Mathlib.Algebra.Group.Pi.Lemmas
-public import Mathlib.Algebra.Group.Prod
-public import Mathlib.Algebra.GroupWithZero.Commute
-public import Mathlib.Algebra.GroupWithZero.Semiconj
-public import Mathlib.Algebra.Polynomial.Basic
-public import Mathlib.Algebra.Ring.Commute
-public import Mathlib.Algebra.Ring.Nat
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.Data.Int.Cast.Lemmas
-public import Mathlib.Data.Matrix.Basic
-public import Mathlib.Data.Nat.Cast.Commute
-public import Mathlib.Data.Rat.Cast.Defs
-public import Mathlib.GroupTheory.GroupAction.Ring
 public import Mathlib.LinearAlgebra.Matrix.ZPow
 
 /-!

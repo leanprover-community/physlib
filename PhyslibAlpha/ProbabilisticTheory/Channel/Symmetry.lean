@@ -6,9 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
-public import Mathlib.Algebra.Group.Action.Hom
-public import Mathlib.Basic.Real.Basic
 
 /-!
 

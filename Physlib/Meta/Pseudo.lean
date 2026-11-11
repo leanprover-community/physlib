@@ -6,6 +6,9 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Meta.Linters.Pseudo
+public import Lean.Data.NameMap.Basic
+public meta import Physlib.Meta.Linters.Pseudo
+public meta import Physlib.Meta.Basic
 /-!
 
 # Meta results regarding the `pseudo` attribution

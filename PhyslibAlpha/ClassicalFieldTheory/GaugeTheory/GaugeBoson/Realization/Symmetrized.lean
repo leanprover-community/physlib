@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.FieldStrength
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Truncation
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Dimension.Free
 /-!
 # The symmetrized derivatives of a gauge field and the classification of invariants
 

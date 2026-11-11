@@ -6,10 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Separation
-public import Physlib.ProbabilisticTheory.OrderUnit.Cone
 public import PhyslibAlpha.Mathematics.Convex.DominatedCone
 public import Mathlib.Geometry.Convex.Cone.TensorProduct
-public import Mathlib.LinearAlgebra.TensorProduct.Associator
 
 /-!
 # Composite systems

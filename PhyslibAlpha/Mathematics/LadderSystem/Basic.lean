@@ -7,8 +7,6 @@ module
 
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Tactic.NoncommRing
-public import Mathlib.LinearAlgebra.Matrix.StdBasis
-public import Mathlib.Data.Matrix.Basis
 public import Physlib.Mathematics.KroneckerDelta.Basic
 /-!
 

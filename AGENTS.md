@@ -6,6 +6,12 @@
 - The human author must certify the code you write; the fact that it builds does not prove that what you have written is what the human author meant.
 - Obey also [docs/ReviewGuidelines.md](docs/ReviewGuidelines.md).
 
+## Helping a new contributor
+
+For a newcomer seeking an API-map contribution about Physlib or PhyslibAlpha physics, use
+`.agents/skills/physlib-alpha-api-map/SKILL.md`. It takes a physics topic or issue
+through an edited, checked map. Preserve any other explicitly requested task.
+
 ## Content
 
 - Use `lemma`, not `theorem`, unless the result is well known in the physics literature. Every

@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.Basic
-public import PhyslibAlpha.Relativity.IsLorentzDeriv
 /-!
 # The formal total derivative on the bosonic algebra
 

@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
-public import PhyslibAlpha.ProbabilisticTheory.Measurement.EffectValuedMeasure
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Pushforward
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!

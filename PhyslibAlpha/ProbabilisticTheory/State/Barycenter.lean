@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.StateSpace
 public import Mathlib.MeasureTheory.Measure.DiracProba
-public import Mathlib.MeasureTheory.Integral.Bochner.SumMeasure
 
 /-!
 # Barycenters of random states

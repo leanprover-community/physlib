@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.Multiplier
-public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.FreeEvolution
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedKernel.Tempered
 public import PhyslibAlpha.Mathematics.Distribution.TimeSliceFourier
 public import PhyslibAlpha.Mathematics.SpecialFunctions.SincPropagator.Resolvent

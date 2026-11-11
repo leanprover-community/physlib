@@ -6,9 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.Basic
-public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.JetDeriv
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.JetDeriv
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.JetDeriv
 /-!
 # The total derivative on the jet algebra of the Standard Model
 

@@ -175,6 +175,7 @@ public import PhyslibAlpha.CondensedMatter.Crystal.Balls
 public import PhyslibAlpha.CondensedMatter.Crystal.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
 public import PhyslibAlpha.CondensedMatter.Crystal.BrillouinCoordinates
+public import PhyslibAlpha.CondensedMatter.Crystal.Examples.AxisStepWords
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Monoclinic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Orthorhombic
@@ -521,7 +522,6 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNSAutomorphism
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNSSpectral
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.JordanDecomposition
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.MatrixComposite
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Projection
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.QuantumChannel
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SharpEffect
@@ -744,6 +744,7 @@ public import PhyslibAlpha.ProbabilisticTheory.Weight.Continuous
 public import PhyslibAlpha.ProbabilisticTheory.Weight.Extension
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Addition
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Basic
+public import PhyslibAlpha.QuantumMechanics.AngularMomentum.ClebschGordanCircuit
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.ClebschGordanCoefficients
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.ClebschGordanFormula
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.CouplingSchemes
@@ -771,12 +772,14 @@ public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Degeneracy
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Eigenfunctions
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.FineStructure
+public import PhyslibAlpha.QuantumMechanics.Hydrogen.GreenIdentity
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.PauliSpectrum
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.PolyBounded
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialCompleteness
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialFunctions
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialQuantization
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
+public import PhyslibAlpha.QuantumMechanics.QubitGates
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
 public import PhyslibAlpha.Relativity.Causality.LightCone
 public import PhyslibAlpha.Relativity.Fermions.Dirac.MinimalDimension

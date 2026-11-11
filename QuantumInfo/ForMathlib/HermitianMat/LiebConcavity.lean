@@ -141,17 +141,7 @@ private lemma trace_conj_rpow_continuous {s p : ℝ} (hs : 0 ≤ s) (hp : 0 ≤ 
     (H : HermitianMat d ℂ) :
     Continuous (fun σ : HermitianMat d ℂ ↦
       ((H.conj (σ ^ s).mat) ^ p).trace) := by
-  have h_rpow_cont : Continuous (fun σ : HermitianMat d ℂ => σ ^ s) :=
-    rpow_const_continuous hs
-  have h_conj_cont : Continuous (fun σ : HermitianMat d ℂ => (σ ^ s).mat) :=
-    Continuous.subtype_val h_rpow_cont
-  have h_trace_cont : Continuous (fun σ : HermitianMat d ℂ => σ.trace) := by
-    simp [HermitianMat.trace]; fun_prop
-  have h_comp_cont : Continuous (fun σ : Matrix d d ℂ => ((conj σ H) ^ p).trace) := by
-    have h_conj_cont : Continuous (fun σ : Matrix d d ℂ => conj σ H) :=
-      continuous_conj H
-    exact h_trace_cont.comp (rpow_const_continuous hp |>.comp h_conj_cont)
-  exact h_comp_cont.comp h_conj_cont
+  fun_prop
 
 /-! ### Density and continuity lemmas for PD/PSD extension -/
 

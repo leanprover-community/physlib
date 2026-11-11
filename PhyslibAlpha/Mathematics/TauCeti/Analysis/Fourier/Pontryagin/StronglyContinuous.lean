@@ -12,6 +12,7 @@ import PhyslibAlpha.Mathematics.TauCeti.MeasureTheory.Measure.Regular
 import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.Integrated.Algebra
 import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.Pontryagin.Continuity
 import Mathlib.MeasureTheory.Measure.Haar.Unique
+public import Mathlib.MeasureTheory.Measure.Haar.Basic
 
 /-!
 # Matrix coefficients of strongly continuous unitary representations

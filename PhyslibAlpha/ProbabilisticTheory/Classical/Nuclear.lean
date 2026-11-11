@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Bidual
 public import PhyslibAlpha.ProbabilisticTheory.Classical.NamiokaPhelps
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 

@@ -5,7 +5,7 @@ Authors: Philippe Kevorkian, Jinzheng Li
 -/
 module
 
-public import Physlib.Cosmology.FLRW.MatterContent
+public import Physlib.Cosmology.FLRW.Basic
 /-!
 
 # Density parameters and the closure relation
@@ -78,19 +78,20 @@ noncomputable def densityParameter (F : CosmicFluid) (G : ℝ) (t : Time) : ℝ 
   F.ρ t / U.criticalDensity G t
 
 /-- The curvature density parameter `Ω_K = - k c² / (H² a²)` of an FLRW model, where `k` is the
-  curvature parameter of its spatial geometry. When `H`, `a` and `c` are nonzero, it is positive
-  for a saddle geometry, negative for a spherical one and zero for the flat one. -/
-noncomputable def curvatureDensityParameter (c : ℝ) (t : Time) : ℝ :=
-  -U.geometry.curvature * c ^ 2 / (hubbleConstant U.a t ^ 2 * U.a t ^ 2)
+  curvature parameter of its spatial geometry. When `H` and `a` are nonzero, it is positive for a
+  saddle geometry, negative for a spherical one and zero for the flat one. -/
+noncomputable def curvatureDensityParameter (c : SpeedOfLight) (t : Time) : ℝ :=
+  -U.geometry.curvature * (c : ℝ) ^ 2 / (hubbleConstant U.a t ^ 2 * U.a t ^ 2)
 
 /-- The density parameter `Ω_Λ = Λ c² / (3 H²)` of the cosmological constant in an FLRW
   model. -/
-noncomputable def lambdaDensityParameter (Λ c : ℝ) (t : Time) : ℝ :=
-  Λ * c ^ 2 / (3 * hubbleConstant U.a t ^ 2)
+noncomputable def lambdaDensityParameter (Λ : ℝ) (c : SpeedOfLight) (t : Time) : ℝ :=
+  Λ * (c : ℝ) ^ 2 / (3 * hubbleConstant U.a t ^ 2)
 
 /-- For `G ≠ 0`, `Ω_Λ` is the density parameter of the empty fluid with the cosmological constant
   folded in. -/
-lemma lambdaDensityParameter_eq_densityParameter {Λ G c : ℝ} (hG : G ≠ 0) (t : Time) :
+lemma lambdaDensityParameter_eq_densityParameter {Λ G : ℝ} {c : SpeedOfLight} (hG : G ≠ 0)
+    (t : Time) :
     U.lambdaDensityParameter Λ c t
       = U.densityParameter (CosmicFluid.empty.addCosmologicalConstant Λ G c) G t := by
   simp only [lambdaDensityParameter, densityParameter, criticalDensity, CosmicFluid.empty,
@@ -100,8 +101,8 @@ lemma lambdaDensityParameter_eq_densityParameter {Λ G c : ℝ} (hG : G ≠ 0) (
 
 /-- For `G ≠ 0`, folding the cosmological constant into a cosmic fluid adds `Ω_Λ` to its
   density parameter. -/
-lemma densityParameter_addCosmologicalConstant (F : CosmicFluid) {Λ G c : ℝ} (hG : G ≠ 0)
-    (t : Time) :
+lemma densityParameter_addCosmologicalConstant (F : CosmicFluid) {Λ G : ℝ} {c : SpeedOfLight}
+    (hG : G ≠ 0) (t : Time) :
     U.densityParameter (F.addCosmologicalConstant Λ G c) G t
       = U.densityParameter F G t + U.lambdaDensityParameter Λ c t := by
   rw [U.lambdaDensityParameter_eq_densityParameter hG]
@@ -116,7 +117,7 @@ lemma densityParameter_addCosmologicalConstant (F : CosmicFluid) {Λ G c : ℝ} 
 
 namespace FriedmannSolution
 
-variable {U} {F : CosmicFluid} {Λ G c : ℝ}
+variable {U} {F : CosmicFluid} {Λ G : ℝ} {c : SpeedOfLight}
 
 /-- The closure relation `Ω + Ω_Λ + Ω_K = 1` for a solution of the Friedmann equations, at the
   times of the interval of the model at which `H ≠ 0`. -/
@@ -131,10 +132,10 @@ lemma densityParameter_add_lambda_add_curvature (h : U.FriedmannSolution F Λ G 
   have hπ := Real.pi_ne_zero
   have ha := U.a_ne_zero ht
   have key : F.ρ t / (3 * (∂ₜ U.a t / U.a t) ^ 2 / (8 * π * G))
-      + Λ * c ^ 2 / (3 * (∂ₜ U.a t / U.a t) ^ 2)
-      + -U.geometry.curvature * c ^ 2 / ((∂ₜ U.a t / U.a t) ^ 2 * U.a t ^ 2)
-      = (8 * π * G / 3 * F.ρ t - U.geometry.curvature * c ^ 2 / U.a t ^ 2 + Λ * c ^ 2 / 3)
-        / (∂ₜ U.a t / U.a t) ^ 2 := by
+      + Λ * (c : ℝ) ^ 2 / (3 * (∂ₜ U.a t / U.a t) ^ 2)
+      + -U.geometry.curvature * (c : ℝ) ^ 2 / ((∂ₜ U.a t / U.a t) ^ 2 * U.a t ^ 2)
+      = (8 * π * G / 3 * F.ρ t - U.geometry.curvature * (c : ℝ) ^ 2 / U.a t ^ 2
+        + Λ * (c : ℝ) ^ 2 / 3) / (∂ₜ U.a t / U.a t) ^ 2 := by
     field_simp
     ring
   rw [key, ← hF1, div_self (pow_ne_zero 2 hH)]

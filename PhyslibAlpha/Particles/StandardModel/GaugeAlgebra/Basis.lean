@@ -6,11 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.GaugeAlgebra.Basic
-public import Physlib.Relativity.PauliMatrices.Basic
-public import Mathlib.LinearAlgebra.Basis.Basic
-public import Mathlib.LinearAlgebra.Basis.Prod
-public import Mathlib.Analysis.Real.Sqrt
-public import Mathlib.Algebra.BigOperators.Fin
 /-!
 # The standard basis of the gauge algebra
 

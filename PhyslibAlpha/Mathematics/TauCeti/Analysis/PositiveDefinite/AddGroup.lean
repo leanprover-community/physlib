@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Continuity
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Function.Closure
-public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Function.Kernel
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Limits
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Normalize
 

@@ -5,8 +5,6 @@ Authors: Daniel Leonforte
 -/
 module
 
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Finsupp.VectorSpace
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.CommutingActions
 public import PhyslibAlpha.Mathematics.RepresentationTheory.Sl2.TensorHighestWeight
 

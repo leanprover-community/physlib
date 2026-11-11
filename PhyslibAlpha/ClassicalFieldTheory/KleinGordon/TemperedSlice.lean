@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.FinitePropagation
-public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedSolution
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.Smoothness
 
 /-!

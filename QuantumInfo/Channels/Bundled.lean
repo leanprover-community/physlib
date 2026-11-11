@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.Channels.Unbundled
-public import QuantumInfo.States.Mixed.MState
 
 public import Mathlib.Topology.Order.Hom.Basic
 

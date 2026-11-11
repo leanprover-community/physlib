@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.IsGaugeSector.Basic
 public import PhyslibAlpha.Particles.StandardModel.GaugeAlgebra.RootDecomposition
-public import PhyslibAlpha.Particles.StandardModel.GaugeAlgebra.Basis
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
 /-!
 # The gauge weight decomposition of the gauge sector
 

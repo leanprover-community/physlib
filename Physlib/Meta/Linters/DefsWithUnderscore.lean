@@ -7,6 +7,10 @@ module
 
 public import Physlib.Meta.Informal.Basic
 public meta import Batteries.Tactic.Lint
+public import Batteries.Tactic.Lint.Basic
+public import Lean.Expr
+import Lean.PrettyPrinter.Formatter
+import Lean.PrettyPrinter.Parenthesizer
 /-!
 
 # Physlib exemptions for the `defsWithUnderscore` linter

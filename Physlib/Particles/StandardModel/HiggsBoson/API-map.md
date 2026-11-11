@@ -21,9 +21,10 @@ They correspond to four real scalar coordinates. [3]
 The global Standard Model gauge group {1} acts on them through a representation, given explicitly as
 a U(1) phase times an SU(2) matrix and compatible with the group law. [4] That representation
 preserves inner products and norms. [5] Two Higgs vectors lie in the same gauge orbit exactly when
-they have the same norm, and a gauge transformation can remove the phase of the second
-component. [6] A nonzero Higgs vector breaks the gauge group to a subgroup SU(3) × U(1), and the
-subgroup fixing every Higgs vector is SU(3) × ℤ₆. [7][TODO] Pairs of Higgs vectors, with this
+they have the same norm. The electromagnetic U(1) leaves the Higgs vacuum (0, v) invariant, and
+one of its elements removes the phase of the first component. [6] The stability group of a Higgs vector is the gauge group it leaves
+unbroken: for the vacuum (0, √a) it is SU(3) × U(1)_EM, for any other nonzero Higgs vector it is
+a conjugate of this, and the subgroup fixing every Higgs vector is SU(3) × ℤ₆. [7] Pairs of Higgs vectors, with this
 gauge action, are the configurations of the two Higgs doublet model {2}.
 
 ### The Higgs bundle and Higgs fields
@@ -83,9 +84,11 @@ gauge connection over spacetime. [TODO]
    `repGaugeGroupI_norm`
 6. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `toRealGroupElem`,
    `toRealGroupElem_apply_self`, `exists_repGaugeGroupI_eq_iff_norm_eq`,
-   `ofU1Subgroup_repGaugeGroupI_apply`, `repGaugeGroupI_phase_snd`
-7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `stability_group_single`,
-   `stability_group`
+   `electromagnetismU1_repGaugeGroupI_apply`, `electromagnetismU1_repGaugeGroupI_ofReal`,
+   `exists_electromagnetismU1_fst_eq_norm`
+7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `mem_stabilizer_ofReal_iff`,
+   `stabilizer_ofReal`, `exists_stabilizer_eq_conj_unbrokenGaugeGroupI`,
+   `mem_iInf_stabilizer_iff`
 8. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsBundle`
 9. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsField`, `const`,
    `const_apply`, `toHiggsVec`, `toHiggsVec_smooth`, `const_toHiggsVec_apply`

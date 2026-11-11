@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.Integrated.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Topology.Algebra.StarSubalgebra
 import Mathlib.Analysis.CStarAlgebra.Fuglede
 
 /-!

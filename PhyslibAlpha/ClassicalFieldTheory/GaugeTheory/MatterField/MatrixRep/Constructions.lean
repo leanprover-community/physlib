@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.MatrixRep.Basic
-public import Mathlib.LinearAlgebra.Matrix.Kronecker
 /-!
 # Constructions of matrix representations
 

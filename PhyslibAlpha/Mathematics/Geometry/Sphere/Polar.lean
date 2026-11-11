@@ -5,11 +5,9 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 public import Mathlib.Analysis.SpecialFunctions.Pow.Integral
 public import Physlib.SpaceAndTime.Space.Norm.Basic
 public import Physlib.SpaceAndTime.Space.Slice
-public import Physlib.SpaceAndTime.Space.Integrals.Basic
 /-!
 # Polar coordinates on balls of space
 

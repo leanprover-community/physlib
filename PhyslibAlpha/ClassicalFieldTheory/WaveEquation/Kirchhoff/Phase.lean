@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Setting
-public import Mathlib.Analysis.Complex.Exponential
 
 /-!
 # Fourier properties of wave propagation

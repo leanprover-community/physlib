@@ -6,7 +6,6 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
-public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 

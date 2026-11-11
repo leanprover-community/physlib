@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import PhyslibAlpha.Relativity.SL2C.Basic
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
 public import PhyslibAlpha.Mathematics.MultisetAntidiagonal
 /-!

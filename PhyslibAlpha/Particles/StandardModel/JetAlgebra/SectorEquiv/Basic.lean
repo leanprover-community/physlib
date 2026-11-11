@@ -8,12 +8,6 @@ module
 public import PhyslibAlpha.Particles.StandardModel.FieldData
 public import PhyslibAlpha.Particles.StandardModel.Fermions.JetAlgebra.Basic
 public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.JetAlgebra.Algebra
-public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.JetAlgebra.Basic
-public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.JetDeriv
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.JetDeriv
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.GaugeField
-public import PhyslibAlpha.Mathematics.ExteriorAlgebra
-public import PhyslibAlpha.Mathematics.SymmetricAlgebra
 /-!
 # The sector algebras of the Standard Model inside its local field algebra
 

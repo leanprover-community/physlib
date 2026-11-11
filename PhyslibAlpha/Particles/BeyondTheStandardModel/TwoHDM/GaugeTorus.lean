@@ -9,7 +9,7 @@ public import Physlib.Particles.BeyondTheStandardModel.TwoHDM.GramMatrix
 /-!
 # The gauge torus acting on Higgs vectors
 
-The SU(2) Cartan element diag(a, ā), which with ofU1Subgroup realises the gauge torus.
+The SU(2) Cartan element diag(a, ā), which with the electromagnetic U(1) realises the gauge torus.
 
 ## i. Overview
 
@@ -17,7 +17,7 @@ The maximal torus of the gauge group acting on a Higgs doublet is the group of d
 rotations `diag(a, b)` of the two components. We realise it using
 
 * the `SU(2)` Cartan element `diag(a, ā)` (constructed here as `gaugeCartan`), and
-* the existing `ofU1Subgroup`, whose action is `diag(1, μ)`.
+* the electromagnetic `U(1)` `electromagnetismU1`, whose action is `diag(μ, 1)`.
 
 Together these realise an arbitrary diagonal phase `diag(a, b)`, which is the symmetry underlying
 the charge-balancing ("Condition A") of the effective potential on the orbit representatives.

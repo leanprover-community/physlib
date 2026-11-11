@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.GroupTheory.GroupAction.Basic
 public import Mathlib.GroupTheory.Finiteness
 
 /-!

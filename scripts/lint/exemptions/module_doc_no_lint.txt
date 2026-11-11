@@ -270,7 +270,6 @@ Physlib/Relativity/Causality/Basic.lean
 Physlib/Relativity/Causality/CausallyFollows.lean
 Physlib/Relativity/Causality/LightLike.lean
 Physlib/Relativity/Causality/TimeLike.lean
-Physlib/Relativity/CliffordAlgebra.lean
 Physlib/Relativity/Fermions/Dirac/Basic.lean
 Physlib/Relativity/Fermions/Dirac/GammaMatrices.lean
 Physlib/Relativity/Fermions/Dirac/Slash.lean
@@ -370,7 +369,6 @@ Physlib/SpaceAndTime/Time/Basic.lean
 Physlib/SpaceAndTime/Time/MatrixDerivatives.lean
 Physlib/SpaceAndTime/Time/TimeMan.lean
 Physlib/SpaceAndTime/Time/TimeUnit.lean
-Physlib/StatisticalMechanics/BoltzmannConstant.lean
 Physlib/StatisticalMechanics/CanonicalEnsemble/Basic.lean
 Physlib/StatisticalMechanics/CanonicalEnsemble/Finite.lean
 Physlib/StatisticalMechanics/CanonicalEnsemble/Lemmas.lean

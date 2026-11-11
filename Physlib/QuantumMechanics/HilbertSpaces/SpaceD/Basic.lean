@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Mathlib.Analysis.InnerProductSpace.Dual
 public import Physlib.SpaceAndTime.Space.Module
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Hilbert spaces for quantum mechanics on `Space d`

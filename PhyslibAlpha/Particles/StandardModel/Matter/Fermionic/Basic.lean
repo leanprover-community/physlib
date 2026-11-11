@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.GaugeAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 /-!
 # The fermionic algebra of a matter field
 

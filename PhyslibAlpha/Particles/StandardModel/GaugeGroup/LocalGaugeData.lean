@@ -5,8 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Truncation
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.MaurerCartan.Basic
 public import PhyslibAlpha.Particles.StandardModel.Basic
 /-!

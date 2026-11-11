@@ -6,10 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.ProbabilisticTheory.Effect.Sharp
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import PhyslibAlpha.ProbabilisticTheory.State.Convex
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
-public import Mathlib.Topology.UnitInterval
 
 /-!
 # Finite classical systems

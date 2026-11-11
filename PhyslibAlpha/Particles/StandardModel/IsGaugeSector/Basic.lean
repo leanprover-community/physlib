@@ -5,10 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.GaugeAlgebra.Basic
 public import PhyslibAlpha.Particles.StandardModel.GaugeAlgebra.Basis
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import Mathlib.Algebra.Polynomial.AlgebraMap
 /-!
 # The gauge sector
 

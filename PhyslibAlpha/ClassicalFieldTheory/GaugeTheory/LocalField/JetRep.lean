@@ -6,12 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.Jet
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.TensorProduct.Prod
-public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 public import PhyslibAlpha.Mathematics.Modules.ConjModule
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
 public import PhyslibAlpha.Relativity.SL2C.AxisRotations

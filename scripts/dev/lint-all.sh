@@ -15,4 +15,4 @@ lake exe runLinter Physlib
 
 echo "Run shake"
 
-lake exe shake Physlib
+lake shake --add-public --keep-implied --keep-prefix Physlib

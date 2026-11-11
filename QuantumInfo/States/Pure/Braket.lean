@@ -5,13 +5,8 @@ Authors: Alex Meiburg, Rodolfo Soldati
 -/
 module
 
-public import QuantumInfo.ForMathlib.ContinuousLinearMap
 public import QuantumInfo.ForMathlib.ExchangeRelations
 public import QuantumInfo.ForMathlib.HermitianMat
-public import QuantumInfo.ForMathlib.Isometry
-public import QuantumInfo.ForMathlib.LinearEquiv
-public import QuantumInfo.ForMathlib.Matrix
-public import QuantumInfo.ForMathlib.Misc
 
 /-!
 Finite dimensional quantum pure states, bra and kets. Mixed states are `MState` in that file.

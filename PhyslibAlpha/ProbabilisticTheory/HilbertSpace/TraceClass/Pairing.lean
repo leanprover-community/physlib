@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.TraceAlgebra
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Banach
 
 /-!
 
