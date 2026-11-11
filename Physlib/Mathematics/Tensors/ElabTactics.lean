@@ -15,7 +15,7 @@ Tactics that prove equations of tensors written in the index notation `{…}ᵀ`
 ## i. Overview
 
 Three tactics prove equations written in index notation. `tensor_components` works on the
-components, `tensor_regroup` on the contractions and `tensor_slots` on the lowerings and raisings.
+components, `tensor_regroup` on the contractions and `tensor_indices` on the lowerings and raisings.
 Examples are in `Physlib.Mathematics.Tensors.ElabExamples`.
 
 ## ii. Key results
@@ -25,7 +25,7 @@ Examples are in `Physlib.Mathematics.Tensors.ElabExamples`.
   or ordered differently, with the same signs and scalars, up to deltas, inverse pairs of forms,
   swaps of symmetric and antisymmetric forms, and lowerings written as contractions. With
   `using e₁, …`, it first rewrites a sub-product of either side by each identity `eᵢ`.
-- `tensor_slots` : proves an equation of two chains of lowerings and raisings of the same tensor.
+- `tensor_indices` : proves an equation of two chains of lowerings and raisings of the same tensor.
 
 ## iii. Table of contents
 
@@ -360,7 +360,7 @@ private structure ReadContraction where
 
 /-- The elements of a slot type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
 slot order. -/
-private partial def slotElems (ι : Expr) : MetaM (List Expr) := do
+private partial def indexElems (ι : Expr) : MetaM (List Expr) := do
   let ι ← whnfR ι
   if ι.isAppOfArity ``Fin 1 then
     let some n ← (evalNat ι.appArg!).run
@@ -371,12 +371,12 @@ private partial def slotElems (ι : Expr) : MetaM (List Expr) := do
   else if ι.isConstOf ``Empty then return []
   else if ι.isAppOfArity ``Sum 2 then
     let (a, b) := (ι.getArg! 0, ι.getArg! 1)
-    return (← (← slotElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
-      (← (← slotElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
+    return (← (← indexElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
+      (← (← indexElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
   else throwError "tensor_regroup: the slot type {ι} is not built from `Fin n` and `⊕`"
 
 /-- The number of the slot `x` of the slot type `slots`, after evaluating `x`. -/
-private partial def slotNumber : Slots → Expr → MetaM Nat
+private partial def indexNumber : Indices → Expr → MetaM Nat
   | .fin _, x => do
     let some i ← (evalNat (← whnfD (← mkAppM ``Fin.val #[x]))).run
       | throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
@@ -384,8 +384,8 @@ private partial def slotNumber : Slots → Expr → MetaM Nat
   | .unit, _ => return 0
   | .sum a b, x => do
     let x ← whnfD x
-    if x.isAppOfArity ``Sum.inl 3 then slotNumber a x.appArg!
-    else if x.isAppOfArity ``Sum.inr 3 then return a.size + (← slotNumber b x.appArg!)
+    if x.isAppOfArity ``Sum.inl 3 then indexNumber a x.appArg!
+    else if x.isAppOfArity ``Sum.inr 3 then return a.size + (← indexNumber b x.appArg!)
     else throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
 
 /-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
@@ -394,7 +394,7 @@ private def readContraction (e : Expr) : MetaM ReadContraction := do
   let some P := bundledArg? ``Tensor.Species.Tensor.contr e
     | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
   let τ := e.consumeMData.appFn!.appArg!.appArg!
-  let some (slots, _, _) ← literalTensorType? (← inferType P)
+  let some (indices, _, _) ← literalTensorType? (← inferType P)
     | throwError "tensor_regroup: the slots or colors of a product are not literal"
   let fs := factors P
   let sizes ← fs.mapM fun f => do
@@ -407,9 +407,9 @@ private def readContraction (e : Expr) : MetaM ReadContraction := do
   let (κ, J) := (cargs[1]!, cargs[2]!)
   let JJ ← mkAppM ``Sum #[J, J]
   let at_ (y : Expr) : MetaM Nat := do
-    slotNumber slots (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensor.ColorEquiv.toEquiv #[τ], y])
-  let free ← (← slotElems κ).mapM fun x => do at_ (← mkAppOptM ``Sum.inl #[κ, JJ, x])
-  let pairs ← (← slotElems J).mapM fun j => do
+    indexNumber indices (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensor.ColorEquiv.toEquiv #[τ], y])
+  let free ← (← indexElems κ).mapM fun x => do at_ (← mkAppOptM ``Sum.inl #[κ, JJ, x])
+  let pairs ← (← indexElems J).mapM fun j => do
     let half (left : Bool) := do
       at_ (← mkAppOptM ``Sum.inr #[κ, JJ, ← mkAppOptM (if left then ``Sum.inl else ``Sum.inr)
         #[J, J, j]])
@@ -435,14 +435,14 @@ private def deltaOrientations (e : Expr) : MetaM (List Bool) := do
 /-- Inserts a delta of color `a` at the slot `slot` of the product of the left side of the goal,
 if `lhs`, or of the right side, by `Species.Tensor.contr_deltaTensor`. With `second`, uses
 `Species.Tensor.contr_deltaTensor_swap` instead, inserting a delta of color `a.dual`. -/
-private def insertDelta (lhs : Bool) (a : Expr) (slots : Slots) (slot : Nat) (second : Bool) :
+private def insertDelta (lhs : Bool) (a : Expr) (indices : Indices) (index : Nat) (second : Bool) :
     TacticM Unit := do
   let (p, q) ← contractedProducts
   let P := if lhs then p else q
   let lem := mkIdent <| if second then ``Tensor.Species.Tensor.contr_deltaTensor_swap
     else ``Tensor.Species.Tensor.contr_deltaTensor
   let thm ← `(($lem
-    ($(← slots.elem slot) : $(← slots.type)) $(← exprToSyntax a) rfl $(← exprToSyntax P)).symm)
+    ($(← indices.elem index) : $(← indices.type)) $(← exprToSyntax a) rfl $(← exprToSyntax P)).symm)
   rewriteSubterm P thm (some lhs)
 
 mutual
@@ -456,7 +456,7 @@ private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Boo
     TacticM Unit := do
   let (p, q) ← contractedProducts
   let P := if lhs then p else q
-  let some (slots, _, colors) ← literalTensorType? (← inferType P)
+  let some (indices, _, colors) ← literalTensorType? (← inferType P)
     | throwError "tensor_regroup: the slots or colors of a product are not literal"
   -- Whether each slot belongs to a form, from the number of slots of each factor in turn.
   let inForm ← (factors P).flatMapM fun f => do
@@ -471,12 +471,12 @@ private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Boo
     -- The swapped identity inserts `deltaTensor b.dual` at a slot of color `b`.
     -- To insert the requested `deltaTensor a`, that slot must therefore have color `a.dual`.
     let b ← if second then mkAppM ``Tensor.Color.dual #[a] else pure a
-    let slotsOfColor ← colors.zipIdx.filterM fun (col, i) =>
+    let indicesOfColor ← colors.zipIdx.filterM fun (col, i) =>
       return !inForm.getD i false && (← isDefEqGoal col b)
-    return slotsOfColor.map fun (_, i) => (i, second, b)
+    return indicesOfColor.map fun (_, i) => (i, second, b)
   firstSuccess tries m!"tensor_regroup: no slot has the color {a} of a delta"
-    fun (slot, second, b) => do
-      insertDelta lhs b slots slot second
+    fun (index, second, b) => do
+      insertDelta lhs b indices index second
       regroupContractions
 
 /-- Matches pairs of forms `g` and `g⁻¹`, the factors `gs` left over on one side, with the factors
@@ -716,29 +716,29 @@ private def regroupWithLowerings : TacticM Unit := do
 
 -/
 
-/-- `tensor_slots` proves an equation of two chains of lowerings and raisings of the same tensor,
+/-- `tensor_indices` proves an equation of two chains of lowerings and raisings of the same tensor,
 such as `{{T | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = T` or `{{T | ↓μ ν}ᵀ | μ ↓ν = {T | μ ↓ν}ᵀ | ↓μ ν}ᵀ`. Each chain
-is one slotwise map (`Species.toDualAt_eq_mapAt`, `Species.mapSlots_mapSlots`), and the two maps
+is one slotwise map (`Species.toDualAt_eq_mapAt`, `Species.mapIndices_mapIndices`), and the two maps
 are compared slot by slot, where `Species.toDual_toDual` cancels a lowering with a raising. A side
-with no lowering or raising is the slotwise identity (`Species.mapSlots_id`). The slots must be
+with no lowering or raising is the slotwise identity (`Species.mapIndices_id`). The slots must be
 `Fin n` with a literal `n`. -/
-elab "tensor_slots" : tactic => do
+elab "tensor_indices" : tactic => do
   evalTactic (← `(tactic| try simp only [Tensor.Species.toDualAt_eq_mapAt, Tensor.Species.mapAt,
-    Tensor.Species.mapSlots_mapSlots]))
-  let isMapSlots (e : Expr) := (bundledArg? ``Tensor.Species.mapSlots e).isSome
-  let (_, l, r) ← goalEq "tensor_slots"
-  unless isMapSlots l || isMapSlots r do
-    throwError "tensor_slots: neither side lowers or raises an index"
+    Tensor.Species.mapIndices_mapIndices]))
+  let isMapIndices (e : Expr) := (bundledArg? ``Tensor.Species.mapIndices e).isSome
+  let (_, l, r) ← goalEq "tensor_indices"
+  unless isMapIndices l || isMapIndices r do
+    throwError "tensor_indices: neither side lowers or raises an index"
   -- Each side is checked before it is unified, since a failed unification with a side that is a
   -- definition, such as a named tensor, unfolds it.
-  wrapSides "tensor_slots" isMapSlots (← `(Tensor.Species.mapSlots_id_apply _))
+  wrapSides "tensor_indices" isMapIndices (← `(Tensor.Species.mapIndices_id_apply _))
   evalTactic (← `(tactic| focus
-    refine congrArg (fun F => Tensor.Species.mapSlots _ F _) (funext ?_)
+    refine congrArg (fun F => Tensor.Species.mapIndices _ F _) (funext ?_)
     intro x
     fin_cases x <;> refine LinearMap.ext fun v => ?_ <;>
       simp only [Fin.zero_eta, Fin.isValue, Fin.mk_one, Fin.reduceFinMk, LinearMap.comp_apply,
-        LinearMap.id_apply, Tensor.Species.slotMapsAt_apply_self,
-        Tensor.Species.slotMapsAt_apply_ne, ne_eq, Fin.reduceEq, not_false_eq_true,
+        LinearMap.id_apply, Tensor.Species.indexMapsAt_apply_self,
+        Tensor.Species.indexMapsAt_apply_ne, ne_eq, Fin.reduceEq, not_false_eq_true,
         Representation.IntertwiningMap.coe_toLinearMap,
         Representation.Equiv.coe_toIntertwiningMap, Representation.Equiv.trans_apply,
         Tensor.Species.cast_apply, cast_cast, cast_eq, Tensor.Species.toDual_toDual]))

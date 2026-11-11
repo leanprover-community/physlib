@@ -269,7 +269,7 @@ lemma formMatrix_apply (d : ℕ) (c : Color Kind) (μ ν : Fin 1 ⊕ Fin d) :
 
 /-- The components of the metric are the Minkowski matrix `diag(1, -1, …, -1)`: at the labels
 `![α, β]` they are `η^αβ` at an upper color and `η_αβ` at a lower one. The labels are any
-`μ : Fin 2 → Fin 1 ⊕ Fin d`, as in `Species.tensorBasis_repr_twoSlotEquiv`. -/
+`μ : Fin 2 → Fin 1 ⊕ Fin d`, as in `Species.tensorBasis_repr_twoIndexEquiv`. -/
 lemma tensorBasis_repr_formTensor (d : ℕ) (c : Color Kind) (μ : Fin 2 → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis ![c, c]).repr ((realLorentz d).formTensor c) μ =
       minkowskiMatrix (μ 0) (μ 1) := by
@@ -365,12 +365,12 @@ lemma tensorBasis_repr_toTensor_coVector (d : ℕ) (ω : CoVector d) (μ : Fin 1
 /-- The tensor of the basis vector `e_μ` is the basis tensor with label `μ`. -/
 lemma toTensor_basis_vector (d : ℕ) (μ : Fin 1 ⊕ Fin d) :
     Tensorial.toTensor (Vector.basis μ) = (realLorentz d).tensorBasis ![up] fun _ => μ :=
-  Species.oneSlotEquiv_basis (S := realLorentz d) up fun _ => μ
+  Species.oneIndexEquiv_basis (S := realLorentz d) up fun _ => μ
 
 /-- The tensor of the basis covector `e^μ` is the basis tensor with label `μ`. -/
 lemma toTensor_basis_coVector (d : ℕ) (μ : Fin 1 ⊕ Fin d) :
     Tensorial.toTensor (CoVector.basis μ) = (realLorentz d).tensorBasis ![down] fun _ => μ :=
-  Species.oneSlotEquiv_basis (S := realLorentz d) down fun _ => μ
+  Species.oneIndexEquiv_basis (S := realLorentz d) down fun _ => μ
 
 /-- The components `F^μν` of the tensor of `F` in `Vector d ⊗ Vector d` are its coordinates in
 Mathlib's product basis `Basis.tensorProduct`. -/

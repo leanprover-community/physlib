@@ -108,14 +108,14 @@ lemma comp_toLin_inverse (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toL
 /-- `g_μν g^νρ = δ_μ^ρ`, the contraction of `g` with its inverse on the adjacent indices. -/
 lemma contr_mul_inverse (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) :
     Tensor.contr (ColorEquiv.matMul a b a.dual)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv a b g ⊗ₜ S.twoSlotEquiv _ _ (S.inverse g))) =
+        (S.tmulEquiv _ _ (S.twoIndexEquiv a b g ⊗ₜ S.twoIndexEquiv _ _ (S.inverse g))) =
       S.deltaTensor a.dual :=
   (Tensor.contr_matMul_eq_deltaTensor_iff g (S.inverse g)).2 (toLin_inverse_comp g h)
 
 /-- `g^νμ g_μρ = δ^ν_ρ`, the contraction of the inverse with `g` on the adjacent indices. -/
 lemma contr_inverse_mul (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) :
     Tensor.contr (ColorEquiv.matMul b.dual a.dual b)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv _ _ (S.inverse g) ⊗ₜ S.twoSlotEquiv a b g)) =
+        (S.tmulEquiv _ _ (S.twoIndexEquiv _ _ (S.inverse g) ⊗ₜ S.twoIndexEquiv a b g)) =
       S.deltaTensor b :=
   (Tensor.contr_matMul_eq_deltaTensor_iff (S.inverse g) g).2 (comp_toLin_inverse g h)
 
@@ -141,7 +141,7 @@ lemma inverse_eq_right_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.t
 lemma inverse_eq_of_contr_eq_deltaTensor (g : S.V a ⊗[k] S.V b)
     (h : Function.Bijective (S.toLin g)) {N : S.V b.dual ⊗[k] S.V a.dual}
     (hN : Tensor.contr (ColorEquiv.matMul a b a.dual)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv a b g ⊗ₜ S.twoSlotEquiv _ _ N)) =
+        (S.tmulEquiv _ _ (S.twoIndexEquiv a b g ⊗ₜ S.twoIndexEquiv _ _ N)) =
       S.deltaTensor a.dual) : S.inverse g = N :=
   inverse_eq_left_inv g h ((Tensor.contr_matMul_eq_deltaTensor_iff g N).1 hN)
 
@@ -195,7 +195,7 @@ lemma reindex_contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c.dual) (Tensor.contr (ColorEquiv.matMul c c c.dual)
         (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual))) =
       S.deltaTensor c := by
-  rw [contr_formTensor_formTensor, deltaTensor, reindex_twoSlotEquiv,
+  rw [contr_formTensor_formTensor, deltaTensor, reindex_twoIndexEquiv,
     show TensorProduct.comm k _ _ (S.delta c.dual) = S.delta c from
       Module.Basis.comm_coordDelta _ _]
   rfl

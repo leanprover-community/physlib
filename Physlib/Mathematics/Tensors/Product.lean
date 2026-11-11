@@ -22,7 +22,7 @@ is renumbered. `S.tmulEquiv c₁ c₂` sends `T ⊗ₜ U` to `T ⊗ U`. It is Ma
 
 The product is associative and symmetric up to a relabeling of slots, and the group acts on it
 factor by factor. An element of `V a ⊗ V b`, such as the metric `η_μν e^μ ⊗ e^ν`, is a tensor on
-two slots by `twoSlotEquiv`. The components of a product are the products of the components.
+two slots by `twoIndexEquiv`. The components of a product are the products of the components.
 
 ## ii. Key results
 
@@ -31,7 +31,7 @@ two slots by `twoSlotEquiv`. The components of a product are the products of the
 - `Species.tmulEquiv_assoc` and `Species.tmulEquiv_comm` prove `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)` and
   `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
-- `Species.twoSlotEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots.
+- `Species.twoIndexEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots.
 - `Species.tensorBasis_repr_tmulEquiv` proves `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`.
 
 ## iii. Table of contents
@@ -239,15 +239,15 @@ lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : 
 ## D. Tensors on one and two slots
 
 A species gives objects with two indices, such as a metric `η_μν`, in Mathlib's binary
-tensor product `V a ⊗ V b`. `twoSlotEquiv` identifies this space with the tensors `S.Tensor ![a, b]`
-on two slots, so that such an object can be used in index notation.
+tensor product `V a ⊗ V b`. `twoIndexEquiv` identifies this space with the tensors
+`S.Tensor ![a, b]` on two slots, so that such an object can be used in index notation.
 
 -/
 
 variable (S) in
 /-- A vector `v` of `V c` as a tensor with the one slot `![c]`, by Mathlib's
 `PiTensorProduct.subsingletonEquiv`. -/
-noncomputable def oneSlotEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c]) :=
+noncomputable def oneIndexEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c]) :=
   .mk ((subsingletonEquiv (s := fun i => S.V (![c] i)) 0).symm ≪≫ₗ (S.toPiTensor _).symm)
     fun g => LinearMap.ext fun v => by
       change S.pure _ = g • S.pure _
@@ -256,43 +256,43 @@ noncomputable def oneSlotEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c]
 
 /-- The tensor of `v` is the pure tensor with `v` on its one slot. -/
 @[simp]
-lemma oneSlotEquiv_apply (c : Color K) (v : S.V c) :
-    S.oneSlotEquiv c v = S.pure (c := ![c]) (Fin.cons v finZeroElim) :=
+lemma oneIndexEquiv_apply (c : Color K) (v : S.V c) :
+    S.oneIndexEquiv c v = S.pure (c := ![c]) (Fin.cons v finZeroElim) :=
   congrArg S.pure (funext fun i => by fin_cases i; rfl)
 
 /-- The tensor of the basis vector `S.basis c (μ 0)` is the basis tensor with label `μ`. -/
-lemma oneSlotEquiv_basis (c : Color K) (μ : Π i, basisIdx (![c] i).kind) :
-    S.oneSlotEquiv c (S.basis c (μ 0)) = S.tensorBasis ![c] μ := by
-  rw [oneSlotEquiv_apply, tensorBasis_apply]
+lemma oneIndexEquiv_basis (c : Color K) (μ : Π i, basisIdx (![c] i).kind) :
+    S.oneIndexEquiv c (S.basis c (μ 0)) = S.tensorBasis ![c] μ := by
+  rw [oneIndexEquiv_apply, tensorBasis_apply]
   exact congrArg S.pure (funext fun j => by fin_cases j; rfl)
 
 variable (S) in
 /-- An element of `V a ⊗ V b` as a tensor with colors `![a, b]`, as the metric `η_μν e^μ ⊗ e^ν`
-is the tensor `η_μν`. Each factor is a one-slot tensor by `oneSlotEquiv`, and the slots
+is the tensor `η_μν`. Each factor is a one-slot tensor by `oneIndexEquiv`, and the slots
 `Fin 1 ⊕ Fin 1` of their product are relabeled `Fin 2` by Mathlib's `finSumFinEquiv`. -/
-noncomputable def twoSlotEquiv (a b : Color K) :
+noncomputable def twoIndexEquiv (a b : Color K) :
     ((S.rep a).tprod (S.rep b)).Equiv (S.tensorRep ![a, b]) :=
-  ((S.oneSlotEquiv a).tensorCongr (S.oneSlotEquiv b)).trans <|
+  ((S.oneIndexEquiv a).tensorCongr (S.oneIndexEquiv b)).trans <|
     (S.tmulEquiv ![a] ![b]).trans
       (S.reindex (ColorEquiv.mk (c₁ := prodColors ![a] ![b]) (c₂ := ![a, b]) finSumFinEquiv))
 
 /-- The tensor of `x ⊗ₜ y` is the pure tensor with `x` on the slot `0` and `y` on the slot `1`. -/
 @[simp]
-lemma twoSlotEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
-    S.twoSlotEquiv a b (x ⊗ₜ y) =
+lemma twoIndexEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
+    S.twoIndexEquiv a b (x ⊗ₜ y) =
       S.pure (c := ![a, b]) (Fin.cons x (Fin.cons y finZeroElim)) := by
-  simp only [twoSlotEquiv, Representation.Equiv.trans_apply,
-    Representation.Equiv.tensorCongr_tmul, oneSlotEquiv_apply, tmulEquiv_pure, reindex_pure]
+  simp only [twoIndexEquiv, Representation.Equiv.trans_apply,
+    Representation.Equiv.tensorCongr_tmul, oneIndexEquiv_apply, tmulEquiv_pure, reindex_pure]
   exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
 /-- Swapping the two slots of a tensor on two slots swaps the factors, `M^μν ↦ M^νμ`. -/
-lemma reindex_twoSlotEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
-    S.reindex (ColorEquiv.swapTwo a b) (S.twoSlotEquiv a b M) =
-      S.twoSlotEquiv b a (TensorProduct.comm k _ _ M) := by
+lemma reindex_twoIndexEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
+    S.reindex (ColorEquiv.swapTwo a b) (S.twoIndexEquiv a b M) =
+      S.twoIndexEquiv b a (TensorProduct.comm k _ _ M) := by
   induction M using TensorProduct.inductionOn with
   | add x y hx hy => simp only [map_add, hx, hy]
   | tmul x y =>
-    simp only [twoSlotEquiv_tmul, reindex_pure, TensorProduct.comm_tmul]
+    simp only [twoIndexEquiv_tmul, reindex_pure, TensorProduct.comm_tmul]
     exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
 /-!
@@ -321,22 +321,22 @@ lemma tensorBasis_repr_tmulEquiv [Fintype ι₁] [Fintype ι₂] (c₁ : ι₁ �
       Fintype.prod_sum_type]) _
 
 /-- The components of the tensor of a vector `v` of `V c` are its components `v^μ`. -/
-lemma tensorBasis_repr_oneSlotEquiv (c : Color K) (v : S.V c)
+lemma tensorBasis_repr_oneIndexEquiv (c : Color K) (v : S.V c)
     (μ : Π i, basisIdx (![c] i).kind) :
-    (S.tensorBasis ![c]).repr (S.oneSlotEquiv c v) μ = (S.basis c).repr v (μ 0) := by
-  rw [oneSlotEquiv_apply, tensorBasis_repr_pure, Fin.prod_univ_one]
+    (S.tensorBasis ![c]).repr (S.oneIndexEquiv c v) μ = (S.basis c).repr v (μ 0) := by
+  rw [oneIndexEquiv_apply, tensorBasis_repr_pure, Fin.prod_univ_one]
   rfl
 
 /-- The components of the tensor of `M` in `V a ⊗ V b` are the coordinates of `M` in Mathlib's
 product basis `Basis.tensorProduct`. -/
-lemma tensorBasis_repr_twoSlotEquiv (a b : Color K) (M : S.V a ⊗[k] S.V b)
+lemma tensorBasis_repr_twoIndexEquiv (a b : Color K) (M : S.V a ⊗[k] S.V b)
     (y : Π j, basisIdx (![a, b] j).kind) :
-    (S.tensorBasis ![a, b]).repr (S.twoSlotEquiv a b M) y =
+    (S.tensorBasis ![a, b]).repr (S.twoIndexEquiv a b M) y =
       ((S.basis a).tensorProduct (S.basis b)).repr M (y 0, y 1) := by
   induction M using TensorProduct.inductionOn with
   | add M M' hM hM' => simp only [map_add, Finsupp.add_apply, hM, hM']
   | tmul x x' =>
-    rw [twoSlotEquiv_tmul, tensorBasis_repr_pure, Fin.prod_univ_two, mul_comm]
+    rw [twoIndexEquiv_tmul, tensorBasis_repr_pure, Fin.prod_univ_two, mul_comm]
     -- `y 0` is a label at `a` only after unfolding `![a, b] 0`, so `rw` and `simp` cannot use
     -- Mathlib's lemma, and `exact` checks it up to unfolding.
     exact ((Module.Basis.tensorProduct_repr_tmul_apply _ _ _ _ _ _).trans (smul_eq_mul _ _)).symm

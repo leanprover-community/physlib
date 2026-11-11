@@ -67,11 +67,11 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`.
-- `Species.mapSlots` applies a linear map at every slot, with `Species.mapSlots_comp` and
-  `Species.mapSlots_id`, and `Species.mapSlots_smul` proves that it commutes with the group when
+- `Species.mapIndices` applies a linear map at every slot, with `Species.mapIndices_comp` and
+  `Species.mapIndices_id`, and `Species.mapIndices_smul` proves that it commutes with the group when
   every slot map does.
-- `Species.congrSlots` applies an equivalence of representations at every slot.
-- `Species.slotMapsAt` is the family of a linear map at one slot and the identity at the others,
+- `Species.congrIndices` applies an equivalence of representations at every slot.
+- `Species.indexMapsAt` is the family of a linear map at one slot and the identity at the others,
   and `Species.mapAt` applies it, with `Species.mapAt_pure`, `Species.mapAt_comp` and
   `Species.mapAt_id`.
 - `Species.congrAt` is `mapAt` of an equivalence of representations, as an equivalence of
@@ -329,55 +329,55 @@ variable {c' : ι → Color K}
 variable (S) in
 /-- A linear map `f x` at every slot `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
 `PiTensorProduct.map`. -/
-noncomputable def mapSlots (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : S.Tensor c →ₗ[k] S.Tensor c' :=
+noncomputable def mapIndices (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : S.Tensor c →ₗ[k] S.Tensor c' :=
   (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map f ∘ₗ (S.toPiTensor c).toLinearMap
 
-/-- On a pure tensor, `mapSlots` applies `f x` to the vector at each slot `x`. -/
-lemma mapSlots_pure (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) (p : Π x, S.V (c x)) :
-    S.mapSlots f (S.pure p) = S.pure fun x => f x (p x) := by
-  simp only [mapSlots, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
+/-- On a pure tensor, `mapIndices` applies `f x` to the vector at each slot `x`. -/
+lemma mapIndices_pure (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) (p : Π x, S.V (c x)) :
+    S.mapIndices f (S.pure p) = S.pure fun x => f x (p x) := by
+  simp only [mapIndices, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
     toPiTensor_pure, PiTensorProduct.map_tprod, toPiTensor_symm_tprod]
 
 /-- Two slotwise maps in sequence are the slotwise map of the composites. -/
-lemma mapSlots_comp {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
+lemma mapIndices_comp {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
     (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) :
-    S.mapSlots g ∘ₗ S.mapSlots f = S.mapSlots fun x => g x ∘ₗ f x :=
-  ext_pure fun p => by simp only [LinearMap.comp_apply, mapSlots_pure]
+    S.mapIndices g ∘ₗ S.mapIndices f = S.mapIndices fun x => g x ∘ₗ f x :=
+  ext_pure fun p => by simp only [LinearMap.comp_apply, mapIndices_pure]
 
 /-- Two slotwise maps in sequence are the slotwise map of the composites, on a tensor. -/
-lemma mapSlots_mapSlots {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
+lemma mapIndices_mapIndices {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
     (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) (t : S.Tensor c) :
-    S.mapSlots g (S.mapSlots f t) = S.mapSlots (fun x => g x ∘ₗ f x) t :=
-  LinearMap.congr_fun (mapSlots_comp f g) t
+    S.mapIndices g (S.mapIndices f t) = S.mapIndices (fun x => g x ∘ₗ f x) t :=
+  LinearMap.congr_fun (mapIndices_comp f g) t
 
 /-- The slotwise map of the identities is the identity. -/
-lemma mapSlots_id : S.mapSlots (c := c) (fun _ => LinearMap.id) = LinearMap.id :=
-  ext_pure fun p => mapSlots_pure _ p
+lemma mapIndices_id : S.mapIndices (c := c) (fun _ => LinearMap.id) = LinearMap.id :=
+  ext_pure fun p => mapIndices_pure _ p
 
 /-- The slotwise map of the identities is the identity, on a tensor. -/
-lemma mapSlots_id_apply (t : S.Tensor c) : S.mapSlots (fun _ => LinearMap.id) t = t :=
-  LinearMap.congr_fun mapSlots_id t
+lemma mapIndices_id_apply (t : S.Tensor c) : S.mapIndices (fun _ => LinearMap.id) t = t :=
+  LinearMap.congr_fun mapIndices_id t
 
 /-- Linear maps that commute with the group action at every slot commute with it on tensors,
 `f (Λ T) = Λ f T`. -/
-lemma mapSlots_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
+lemma mapIndices_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
     (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : S.Tensor c) :
-    S.mapSlots f (g • t) = g • S.mapSlots f t :=
-  map_smul_of_pure _ g (fun p => by simp only [smul_pure, mapSlots_pure, hf]) t
+    S.mapIndices f (g • t) = g • S.mapIndices f t :=
+  map_smul_of_pure _ g (fun p => by simp only [smul_pure, mapIndices_pure, hf]) t
 
 variable (S) in
 /-- Equivalences of representations `f x` at every slot `x`, as an equivalence of representations
 of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.congr`. -/
-noncomputable def congrSlots (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
+noncomputable def congrIndices (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
     (S.tensorRep c).Equiv (S.tensorRep c') :=
   equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.congr (fun x => (f x).toLinearEquiv) ≪≫ₗ
     (S.toPiTensor c').symm) fun g p =>
-      mapSlots_smul (fun x => (f x).toIntertwiningMap.isIntertwining _ _) g (S.pure p)
+      mapIndices_smul (fun x => (f x).toIntertwiningMap.isIntertwining _ _) g (S.pure p)
 
-/-- On a pure tensor, `congrSlots` applies `f x` to the vector at each slot `x`. -/
-lemma congrSlots_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
-    S.congrSlots f (S.pure p) = S.pure fun x => f x (p x) :=
-  mapSlots_pure (fun x => (f x).toLinearMap) p
+/-- On a pure tensor, `congrIndices` applies `f x` to the vector at each slot `x`. -/
+lemma congrIndices_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
+    S.congrIndices f (S.pure p) = S.pure fun x => f x (p x) :=
+  mapIndices_pure (fun x => (f x).toLinearMap) p
 
 section
 
@@ -386,32 +386,32 @@ variable [DecidableEq ι]
 variable (S) in
 /-- The family of linear maps with `f` at the slot `i` and the identity, moved along `h x`, at
 every other slot `x`. `mapAt` applies it slot by slot. -/
-noncomputable def slotMapsAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
+noncomputable def indexMapsAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : Π x, S.V (c x) →ₗ[k] S.V (c' x) :=
   Function.update (fun x => if hx : x = i then 0 else (S.cast (h x hx)).toLinearMap) i f
 
 @[simp]
-lemma slotMapsAt_apply_self (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
-    (h : ∀ x, x ≠ i → c x = c' x) : S.slotMapsAt i f h i = f :=
+lemma indexMapsAt_apply_self (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
+    (h : ∀ x, x ≠ i → c x = c' x) : S.indexMapsAt i f h i = f :=
   Function.update_self _ _ _
 
 @[simp]
-lemma slotMapsAt_apply_ne (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
+lemma indexMapsAt_apply_ne (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) {x : ι} (hx : x ≠ i) :
-    S.slotMapsAt i f h x = (S.cast (h x hx)).toLinearMap := by
-  rw [slotMapsAt, Function.update_of_ne hx, dite_eq_right hx]
+    S.indexMapsAt i f h x = (S.cast (h x hx)).toLinearMap := by
+  rw [indexMapsAt, Function.update_of_ne hx, dite_eq_right hx]
 
 /-- A family with `f` at the slot `i` and the moves along `h x` at the other slots is
-`slotMapsAt i f h`. -/
-lemma eq_slotMapsAt {F : Π x, S.V (c x) →ₗ[k] S.V (c' x)} (i : ι)
+`indexMapsAt i f h`. -/
+lemma eq_indexMapsAt {F : Π x, S.V (c x) →ₗ[k] S.V (c' x)} (i : ι)
     (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x) (hi : F i = f)
-    (hne : ∀ x (hx : x ≠ i), F x = (S.cast (h x hx)).toLinearMap) : F = S.slotMapsAt i f h :=
+    (hne : ∀ x (hx : x ≠ i), F x = (S.cast (h x hx)).toLinearMap) : F = S.indexMapsAt i f h :=
   Function.eq_update_iff.2 ⟨hi, fun x hx => by rw [hne x hx, dite_eq_right hx]⟩
 
-/-- `slotMapsAt i f h` commutes with the group action at every slot when `f` does. -/
-lemma slotMapsAt_rep (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
+/-- `indexMapsAt i f h` commutes with the group action at every slot when `f` does. -/
+lemma indexMapsAt_rep (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
     (hf : ∀ g v, f (S.rep (c i) g v) = S.rep (c' i) g (f v)) (x : ι) (g : G) (v : S.V (c x)) :
-    S.slotMapsAt i f h x (S.rep (c x) g v) = S.rep (c' x) g (S.slotMapsAt i f h x v) := by
+    S.indexMapsAt i f h x (S.rep (c x) g v) = S.rep (c' x) g (S.indexMapsAt i f h x v) := by
   by_cases hx : x = i
   · subst hx
     simpa using hf g v
@@ -422,7 +422,7 @@ variable (S) in
 `x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
 noncomputable def mapAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c →ₗ[k] S.Tensor c' :=
-  S.mapSlots (S.slotMapsAt i f h)
+  S.mapIndices (S.indexMapsAt i f h)
 
 /-- On a pure tensor, `mapAt` applies `f` to the vector at `i`, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. The
 result is given by its vectors `q`, `f (p i)` at `i` and `p x` moved along `h x` elsewhere. -/
@@ -430,12 +430,12 @@ lemma mapAt_pure (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠
     (p : Π x, S.V (c x)) (q : Π x, S.V (c' x)) (hqi : q i = f (p i))
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
     S.mapAt i f h (S.pure p) = S.pure q := by
-  rw [mapAt, mapSlots_pure]
+  rw [mapAt, mapIndices_pure]
   refine congrArg S.pure (funext fun x => ?_)
   by_cases hx : x = i
   · subst hx
-    rw [slotMapsAt_apply_self, hqi]
-  · rw [slotMapsAt_apply_ne _ _ _ hx, hq x hx]
+    rw [indexMapsAt_apply_self, hqi]
+  · rw [indexMapsAt_apply_ne _ _ _ hx, hq x hx]
     rfl
 
 /-- `mapAt` of `f` and then of `g` at the same slot is `mapAt` of `g ∘ₗ f`. -/
@@ -443,15 +443,15 @@ lemma mapAt_comp {c'' : ι → Color K} (i : ι) (f : S.V (c i) →ₗ[k] S.V (c
     (g : S.V (c' i) →ₗ[k] S.V (c'' i)) (h : ∀ x, x ≠ i → c x = c' x)
     (h' : ∀ x, x ≠ i → c' x = c'' x) :
     S.mapAt i g h' ∘ₗ S.mapAt i f h = S.mapAt i (g ∘ₗ f) fun x hx => (h x hx).trans (h' x hx) := by
-  rw [mapAt, mapAt, mapAt, mapSlots_comp]
-  refine congrArg _ (eq_slotMapsAt i _ _ (by simp) fun x hx => LinearMap.ext fun v => ?_)
+  rw [mapAt, mapAt, mapAt, mapIndices_comp]
+  refine congrArg _ (eq_indexMapsAt i _ _ (by simp) fun x hx => LinearMap.ext fun v => ?_)
   simp [hx]
 
 /-- `mapAt` of the identity is the identity. -/
 lemma mapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x) :
     S.mapAt i LinearMap.id h = LinearMap.id := by
-  rw [mapAt, ← eq_slotMapsAt (F := fun _ => LinearMap.id) i _ h rfl
-    fun _ _ => LinearMap.ext fun _ => rfl, mapSlots_id]
+  rw [mapAt, ← eq_indexMapsAt (F := fun _ => LinearMap.id) i _ h rfl
+    fun _ _ => LinearMap.ext fun _ => rfl, mapIndices_id]
 
 /-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. The
 labels `ψ` of `t` away from `i` are the labels `φ` of the result moved along `h`. -/
@@ -469,8 +469,8 @@ lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V 
     simp only [map_add, Finsupp.add_apply, ht, ht', mul_add, Finset.sum_add_distrib]
   | h p =>
     -- Split off the slot `i`, where `f` acts, from the slots where the label is only moved.
-    rw [mapAt, mapSlots_pure, tensorBasis_repr_pure,
-      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i), slotMapsAt_apply_self,
+    rw [mapAt, mapIndices_pure, tensorBasis_repr_pure,
+      ← Finset.mul_prod_erase _ _ (Finset.mem_univ i), indexMapsAt_apply_self,
       ← LinearMap.toMatrix_mulVec_repr (S.basis (c i)) (S.basis (c' i)), Matrix.mulVec, dotProduct,
       Finset.sum_mul]
     refine Finset.sum_congr rfl fun μ _ => ?_
@@ -478,7 +478,7 @@ lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V 
       Function.update_self, mul_assoc]
     refine congrArg _ (congrArg _ (Finset.prod_congr rfl fun x hx => ?_))
     have hx := Finset.ne_of_mem_erase hx
-    rw [slotMapsAt_apply_ne _ _ _ hx, Function.update_of_ne hx, hψ x hx]
+    rw [indexMapsAt_apply_ne _ _ _ hx, Function.update_of_ne hx, hψ x hx]
     exact basis_repr_cast _ _ _
 
 variable (S) in
@@ -493,7 +493,7 @@ noncomputable def congrAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
       LinearMap.ext f.apply_symm_apply, mapAt_id])
     (by rw [mapAt_comp, show f.symm.toLinearMap ∘ₗ f.toLinearMap = LinearMap.id from
       LinearMap.ext f.symm_apply_apply, mapAt_id])) fun g p =>
-    mapSlots_smul (slotMapsAt_rep i _ h (f.toIntertwiningMap.isIntertwining _ _)) g (S.pure p)
+    mapIndices_smul (indexMapsAt_rep i _ h (f.toIntertwiningMap.isIntertwining _ _)) g (S.pure p)
 
 /-- `congrAt` is `mapAt` of the underlying linear map. -/
 lemma congrAt_eq_mapAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))

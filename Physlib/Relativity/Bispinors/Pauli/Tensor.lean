@@ -210,7 +210,7 @@ lemma vectorToBispinor_bispinorToVector (X : ℂT[upL, upR, upL, upR]) :
 
 /-- Raising both Weyl indices of `σT^μ_{αβ̇}` gives `σT^{μαβ̇}`. -/
 lemma pauliTensor_raise_lower : {{pauliTensor | μ τ(α) τ(β)}ᵀ | μ τ(α) τ(β)}ᵀ = pauliTensor := by
-  tensor_slots
+  tensor_indices
 
 /-- The Fierz identity `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`: it is
 `vectorToBispinor σT = vectorToBispinor (bispinorToVector (εL ⊗ εR)) / 2`. -/

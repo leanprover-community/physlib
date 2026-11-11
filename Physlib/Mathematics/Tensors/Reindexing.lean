@@ -27,9 +27,9 @@ and `ι₂` may be different types, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the pro
 ## ii. Key results
 
 - `ColorEquiv` is a bijection of slots that keeps their colors, with `refl`, `symm` and `trans`.
-- `Species.permSlots` moves the vectors of a tensor along a bijection of slots, with no colors
+- `Species.permIndices` moves the vectors of a tensor along a bijection of slots, with no colors
   involved. It is Mathlib's `PiTensorProduct.reindex`.
-- `Species.reindex` applies a relabeling to tensors, `permSlots` followed by `congrSlots` of the
+- `Species.reindex` applies a relabeling to tensors, `permIndices` followed by `congrIndices` of the
   moves along the equalities of colors, and `Species.reindex_pure` gives it on a pure tensor.
 - `Species.reindex_trans`, `Species.reindex_refl` and `Species.reindex_symm` prove that relabeling
   respects composites, the identity and inverses, and `Species.reindex_reindex` is the first on a
@@ -131,7 +131,7 @@ variable {ι₁ ι₂ ι₃ : Type}
 variable (S) in
 /-- The bijection `e` of slots applied to tensors, moving the vector of the old slot `i` to the new
 slot `e i`, with the colors `c ∘ e.symm`. It is Mathlib's `PiTensorProduct.reindex`. -/
-noncomputable def permSlots (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
+noncomputable def permIndices (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
     (S.tensorRep c).Equiv (S.tensorRep (c ∘ e.symm)) :=
   equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.reindex k (fun i => S.V (c i)) e ≪≫ₗ
     (S.toPiTensor (c ∘ e.symm)).symm) fun g f => by
@@ -141,17 +141,17 @@ noncomputable def permSlots (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
 
 /-- On a pure tensor, the new slot `j` holds the vector of the old slot `e.symm j`. -/
 @[simp]
-lemma permSlots_pure (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) (f : Π i, S.V (c i)) :
-    S.permSlots c e (S.pure f) = S.pure fun j => f (e.symm j) := by
-  simp [permSlots, PiTensorProduct.reindex_tprod]
+lemma permIndices_pure (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) (f : Π i, S.V (c i)) :
+    S.permIndices c e (S.pure f) = S.pure fun j => f (e.symm j) := by
+  simp [permIndices, PiTensorProduct.reindex_tprod]
 
 variable (S) in
 /-- The relabeling `σ` applied to tensors, as in the transpose `T^μ_ν ↦ T_ν^μ`. The new slot `j`
 holds the vector of the old slot `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is
-`permSlots` of `σ.toEquiv` followed by `congrSlots` of the moves. -/
+`permIndices` of `σ.toEquiv` followed by `congrIndices` of the moves. -/
 noncomputable def reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
     (S.tensorRep c₁).Equiv (S.tensorRep c₂) :=
-  (S.permSlots c₁ σ.toEquiv).trans (S.congrSlots fun j => S.cast (σ.color_eq j))
+  (S.permIndices c₁ σ.toEquiv).trans (S.congrIndices fun j => S.cast (σ.color_eq j))
 
 /-- On a pure tensor, the new slot `j` holds the vector of the old slot `σ.toEquiv.symm j`, moved
 along `σ.color_eq j`. -/
@@ -159,7 +159,7 @@ along `σ.color_eq j`. -/
 lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂)
     (f : Π i, S.V (c₁ i)) :
     S.reindex σ (S.pure f) = S.pure fun j => S.cast (σ.color_eq j) (f (σ.toEquiv.symm j)) := by
-  rw [reindex, Representation.Equiv.trans_apply, permSlots_pure, congrSlots_pure]
+  rw [reindex, Representation.Equiv.trans_apply, permIndices_pure, congrIndices_pure]
 
 /-!
 

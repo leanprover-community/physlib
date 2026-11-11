@@ -152,18 +152,18 @@ variable (S) in
 /-- The delta `S.delta c` as a tensor with colors `![c.dual, c]`. It is `δ_μ^ν` for an upper
 color `c` and `δ^μ_ν` for a lower one. -/
 noncomputable def deltaTensor (c : Color K) : S.Tensor ![c.dual, c] :=
-  S.twoSlotEquiv c.dual c (S.delta c)
+  S.twoIndexEquiv c.dual c (S.delta c)
 
 /-- The delta tensor is invariant, `Λ δ = δ`. -/
 lemma deltaTensor_invariant (c : Color K) (Λ : G) : Λ • S.deltaTensor c = S.deltaTensor c :=
-  (S.twoSlotEquiv _ c).toIntertwiningMap.map_invariant (S.delta_invariant c Λ)
+  (S.twoIndexEquiv _ c).toIntertwiningMap.map_invariant (S.delta_invariant c Λ)
 
 /-- The components of the delta tensor are the coordinates of `S.delta c` in Mathlib's product
 basis, at the pair of labels `(μ 0, μ 1)`. -/
 lemma tensorBasis_repr_deltaTensor (c : Color K) (μ : Π j, basisIdx (![c.dual, c] j).kind) :
     (S.tensorBasis ![c.dual, c]).repr (S.deltaTensor c) μ =
       ((S.basis c.dual).tensorProduct (S.basis c)).repr (S.delta c) (μ 0, μ 1) :=
-  tensorBasis_repr_twoSlotEquiv _ _ _ μ
+  tensorBasis_repr_twoIndexEquiv _ _ _ μ
 
 /-- The components of the delta tensor form the identity matrix, `δ_μ^ν = 1` for `μ = ν` and `0`
 otherwise. -/
@@ -202,8 +202,8 @@ def _root_.Tensor.ColorEquiv.matMul (a c b : Color K) :
 by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
 lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual ⊗[k] S.V b) :
     contr (ColorEquiv.matMul a c b)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv a c M ⊗ₜ S.twoSlotEquiv _ b N)) =
-      S.twoSlotEquiv a b ((S.toLin N).lTensor _ M) := by
+        (S.tmulEquiv _ _ (S.twoIndexEquiv a c M ⊗ₜ S.twoIndexEquiv _ b N)) =
+      S.twoIndexEquiv a b ((S.toLin N).lTensor _ M) := by
   induction M using TensorProduct.inductionOn with
   | add M M' hM hM' => simp only [map_add, add_tmul, hM, hM']
   | tmul m₁ m₂ =>
@@ -211,7 +211,7 @@ lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual �
   | add N N' hN hN' =>
     simp only [map_add, tmul_add, LinearMap.lTensor_add, LinearMap.add_apply, hN, hN']
   | tmul n₁ n₂ =>
-    simp only [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique,
+    simp only [twoIndexEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique,
       LinearMap.lTensor_tmul, Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, tmul_smul,
       map_smul]
     congr 2
@@ -223,9 +223,9 @@ maps compose to the identity, `Y ∘ X = id`. -/
 lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
     (Y : S.V y.dual ⊗[k] S.V x.dual) :
     contr (ColorEquiv.matMul x y x.dual)
-        (S.tmulEquiv _ _ (S.twoSlotEquiv x y X ⊗ₜ S.twoSlotEquiv _ _ Y)) = S.deltaTensor x.dual ↔
+        (S.tmulEquiv _ _ (S.twoIndexEquiv x y X ⊗ₜ S.twoIndexEquiv _ _ Y)) = S.deltaTensor x.dual ↔
       S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
-  rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoSlotEquiv _ _)).eq_iff,
+  rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoIndexEquiv _ _)).eq_iff,
     ← (S.toLin (a := x)).injective.eq_iff, Module.Basis.coordTensorHomEquiv_lTensor,
     Module.Basis.coordTensorHomEquiv_coordDelta]
 
@@ -266,7 +266,7 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
     (p : Π x, S.V (c x)) (q : Π x, S.V (c' x))
     (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
     contr (ColorEquiv.matMulAt i a b ha hi h)
-        (S.tmulEquiv c ![a.dual, b] (S.pure p ⊗ₜ S.twoSlotEquiv a.dual b F)) =
+        (S.tmulEquiv c ![a.dual, b] (S.pure p ⊗ₜ S.twoIndexEquiv a.dual b F)) =
       S.pure (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i))))) := by
   induction F using TensorProduct.inductionOn with
   | add F F' hF hF' =>
@@ -275,7 +275,7 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
   | tmul x y =>
     rw [Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, map_smul]
     conv_rhs => rw [pure, MultilinearMap.map_update_smul, map_smul, ← pure]
-    rw [twoSlotEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
+    rw [twoIndexEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
     congr 2
     funext z
     by_cases hz : z = i
@@ -294,10 +294,10 @@ lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) 
     (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
     (t : S.Tensor c) :
     contr (ColorEquiv.matMulAt i a b ha hi h)
-        (S.tmulEquiv c ![a.dual, b] (t ⊗ₜ S.twoSlotEquiv a.dual b F)) =
+        (S.tmulEquiv c ![a.dual, b] (t ⊗ₜ S.twoIndexEquiv a.dual b F)) =
       S.mapAt i ((S.cast hi.symm).toLinearMap ∘ₗ S.toLin F ∘ₗ (S.cast ha).toLinearMap) h t := by
   refine LinearMap.congr_fun (f := (contr _).toLinearMap ∘ₗ (S.tmulEquiv c ![a.dual, b]).toLinearMap
-    ∘ₗ (TensorProduct.mk k _ _).flip (S.twoSlotEquiv a.dual b F)) (ext_pure fun p => ?_) t
+    ∘ₗ (TensorProduct.mk k _ _).flip (S.twoIndexEquiv a.dual b F)) (ext_pure fun p => ?_) t
   -- The vectors of `p` moved along `h` away from `i`. The vector at `i` is replaced below.
   let q : Π x, S.V (c' x) := fun x => if hx : x = i then 0 else S.cast (h x hx) (p x)
   exact (contr_matMulAt_pure i a b ha hi h F p q (fun x hx => by simp [q, hx])).trans
@@ -321,7 +321,7 @@ lemma contr_deltaTensor_swap [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι
     contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
       (S.tmulEquiv c ![a.dual, a]
         (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a a.dual) (S.deltaTensor a.dual))) = t := by
-  rw [deltaTensor, reindex_twoSlotEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
+  rw [deltaTensor, reindex_twoIndexEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
     from Module.Basis.comm_coordDelta _ _]
   exact contr_deltaTensor i a ha t
 

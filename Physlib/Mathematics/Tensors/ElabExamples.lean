@@ -12,7 +12,7 @@ public import Physlib.Mathematics.Tensors.ElabTactics
 # Examples of index notation
 
 Examples and tests of the index notation `{…}ᵀ` and of the tactics `tensor_components`,
-`tensor_regroup` and `tensor_slots`.
+`tensor_regroup` and `tensor_indices`.
 
 ## i. Overview
 
@@ -157,7 +157,7 @@ example : {v | τ(μ)}ᵀ = {v | ↓μ}ᵀ := rfl
 
 /-- `τ` needs no visible variance, so it flips an index of any color, `(w_μ)^μ = w^μ`. -/
 example (w : S.Tensor ![c]) : {{w | τ(μ)}ᵀ | τ(μ)}ᵀ = w := by
-  tensor_slots
+  tensor_indices
 
 /-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [equiv_smul]`. -/
 example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [equiv_smul]
@@ -452,27 +452,27 @@ section Metric
 
 variable [S.HasForm κ] [S.HasForm c.kind]
 
-/-- Lowering and then raising by `tensor_slots`, `(v_μ)^μ = v^μ`. -/
+/-- Lowering and then raising by `tensor_indices`, `(v_μ)^μ = v^μ`. -/
 example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := by
-  tensor_slots
+  tensor_indices
 
-/-- `tensor_slots` with the chain on the right side, `v^μ = (v_μ)^μ`. -/
+/-- `tensor_indices` with the chain on the right side, `v^μ = (v_μ)^μ`. -/
 example : v = {{v | ↓μ}ᵀ | ↑μ}ᵀ := by
-  tensor_slots
+  tensor_indices
 
 -- An equation with no lowering or raising is rejected.
-/-- error: tensor_slots: neither side lowers or raises an index -/
+/-- error: tensor_indices: neither side lowers or raises an index -/
 #guard_msgs in
 example (w : S.Tensor ![⟨κ, .up⟩]) : v = w := by
-  tensor_slots
+  tensor_indices
 
 /-- Lowering both indices and raising them again, `(M_μν)^μν = M^μν`. -/
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = M := by
-  tensor_slots
+  tensor_indices
 
 /-- Lowerings at two slots commute, `(M_μ^ν)_ν = (M^μ_ν)_μ`. -/
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ ↓ν = {M | μ ↓ν}ᵀ | ↓μ ν}ᵀ := by
-  tensor_slots
+  tensor_indices
 
 end Metric
 

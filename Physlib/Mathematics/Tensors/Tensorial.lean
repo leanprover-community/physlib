@@ -94,7 +94,7 @@ variable (S) in
 `S.rep c`. A type that is such a space, such as a Weyl spinor, gets its instance from this. -/
 noncomputable abbrev ofIndexSpace (c : Color K) : Tensorial S ![c] (S.V c) where
   rep := S.rep c
-  toTensor := S.oneSlotEquiv c
+  toTensor := S.oneIndexEquiv c
 
 /-- The components of the tensor of a vector `v` of the space of one index are its components
 `v^μ`. -/
@@ -102,7 +102,7 @@ lemma tensorBasis_repr_toTensor_ofIndexSpace (c : Color K) (v : S.V c)
     (μ : Π i, basisIdx (![c] i).kind) :
     (S.tensorBasis ![c]).repr (toTensor (self := ofIndexSpace S c) v) μ =
       (S.basis c).repr v (μ 0) :=
-  Species.tensorBasis_repr_oneSlotEquiv c v μ
+  Species.tensorBasis_repr_oneIndexEquiv c v μ
 
 /-- A type `M` with an action `r` and an equivalence `φ` to a tensorial type `N` commuting with
 the actions is tensorial with the colors of `N`. -/

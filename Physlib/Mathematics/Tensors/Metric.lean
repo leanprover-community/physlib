@@ -276,31 +276,31 @@ variable (S) in
 /-- The form at `c` as a tensor with colors `![c, c]`, `g^μν` at an upper color and `g_μν` at a
 lower one. -/
 noncomputable def formTensor (c : Color K) [S.HasForm c.kind] : S.Tensor ![c, c] :=
-  S.twoSlotEquiv c c (form c)
+  S.twoIndexEquiv c c (form c)
 
 /-- The form is an invariant tensor. Every group element fixes it, as every Lorentz
 transformation fixes the Minkowski metric `η`. -/
 lemma formTensor_invariant (c : Color K) [S.HasForm c.kind] (Λ : G) :
     Λ • S.formTensor c = S.formTensor c :=
-  (S.twoSlotEquiv c c).toIntertwiningMap.map_invariant (form_invariant c Λ)
+  (S.twoIndexEquiv c c).toIntertwiningMap.map_invariant (form_invariant c Λ)
 
 /-- The components of the form tensor are those of the form, `g_μν` at the pair of labels
 `(μ 0, μ 1)`. -/
 lemma tensorBasis_repr_formTensor (c : Color K) [S.HasForm c.kind]
     (μ : Π j, basisIdx (![c, c] j).kind) :
     (S.tensorBasis ![c, c]).repr (S.formTensor c) μ = S.formMatrix c (μ 0) (μ 1) :=
-  tensorBasis_repr_twoSlotEquiv _ _ _ μ
+  tensorBasis_repr_twoIndexEquiv _ _ _ μ
 
 /-- A symmetric form is symmetric under the slot swap as a tensor, `g^μν = g^νμ`. -/
 lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = S.formTensor c := by
-  rw [formTensor, reindex_twoSlotEquiv, form_symm]
+  rw [formTensor, reindex_twoIndexEquiv, form_symm]
 
 /-- An antisymmetric form is antisymmetric under the slot swap as a tensor,
 `g^μν = -g^νμ`. -/
 lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = -S.formTensor c := by
-  rw [formTensor, reindex_twoSlotEquiv, form_antisymm, map_neg]
+  rw [formTensor, reindex_twoIndexEquiv, form_antisymm, map_neg]
 
 /-!
 
@@ -339,7 +339,7 @@ lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
   exact (S.congrAt i _ h).symm_apply_apply t
 
 /-- Lowering or raising at a slot is `toDual` at that slot, read as a linear map. Chains of
-lowerings and raisings at several slots compose slot by slot through `mapSlots_mapSlots`. -/
+lowerings and raisings at several slots compose slot by slot through `mapIndices_mapIndices`. -/
 lemma toDualAt_eq_mapAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a ha hi h t =
@@ -374,7 +374,7 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
     S.toDualAt i a ha hi h t = Tensor.contr (ColorEquiv.matMulAt i a a.dual ha hi h)
       (S.tmulEquiv c ![a.dual, a.dual]
         (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a.dual a.dual) (S.formTensor a.dual))) := by
-  rw [formTensor, reindex_twoSlotEquiv, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
+  rw [formTensor, reindex_twoIndexEquiv, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
   rfl
 
 /-!
