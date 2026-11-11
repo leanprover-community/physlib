@@ -25,14 +25,20 @@ or as the backend of a more sophisticated engine.
        [tasks.alpha-align-with-handbook]
        title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"
 
-   The tasks are read from upstream master (step 7), or, with `--tasks-from <path>`, from the
-   Physlib checkout at <path>, to test changes to them.
+       [tasks.alpha-add]
+       title = "feat(PhyslibAlpha): add a given result to PhyslibAlpha"
+       input = true
+
+   A task with `input = true` must be given an input, `<task> "<input>"`, which is put before
+   the skill's text in the prompt, as the input `X`; other tasks take none. The tasks are read
+   from upstream master (step 8), or, with `--tasks-from <path>`, from the Physlib checkout at
+   <path>, to test changes to them.
 -- custom "<input>": This runs the a custom task on PhyslibAlpha.
 
 ## How it works
 
-The file is in numbered sections, which the worker runs one after the other (section 5 only
-defines the agents that the later steps use):
+The file is in numbered sections, which the worker runs one after the other (sections 5 and 7
+only define the agents and tasks that the later steps use):
 
 1. Determine the save location.
 2. Determine if a fork exists and if not create one.
@@ -40,10 +46,12 @@ defines the agents that the later steps use):
 4. Create a new branch based on upstream/master.
 5. Infrastructure for Agents.
 6. Finding the model to run the code on.
-7. Determine the task.
-8. Running the task.
-9. Creating the PR.
-10. Clean up.
+7. Infrastructure for Tasks.
+8. Reading the task.
+9. Running the task.
+10. Safety checks.
+11. Creating the PR.
+12. Clean up.
 
 ## Locally testing
 
@@ -137,6 +145,14 @@ def run(
 def output(cmd: list[str], cwd: Path | None = None) -> str:
     """Run `cmd` and return its standard output."""
     return run(cmd, cwd=cwd, capture=True).stdout.strip()
+
+
+def fenced(text: str) -> str:
+    """`text` in a Markdown code block, fenced with more backticks than any run of them inside it."""
+    fence = "```"
+    while fence in text:
+        fence += "`"
+    return f"{fence}\n{text}\n{fence}"
 
 ###################
 # 1. Determine the save location
@@ -412,7 +428,7 @@ class Task:
 
 
 ###################
-# 7. Reading the task
+# 8. Reading the task
 ###################
 # Returns `Task` using physlibAlpha_worker.toml within the clone, in the
 # upstream/master branch, unless otherwise specfied.
@@ -441,22 +457,31 @@ def determine_task(clone: Path, tasks_from: Path | None, requested: str | None, 
     except tomllib.TOMLDecodeError as error:
         raise WorkerError(f"{CONFIG} is not valid TOML: {error}") from None
     name = requested or str(config.get("default", ""))
-    if user_input:
-        raise WorkerError(f"only the custom task takes an input, not {name}")
-    titles = {n: task["title"] for n, task in config.get("tasks", {}).items() if "title" in task}
+    listed = config.get("tasks", {})
+    titles = {n: task["title"] for n, task in listed.items() if "title" in task}
     skills = {n: read(f".agents/skills/{n}/SKILL.md") for n in titles}
     skill = skills.get(name)
     if skill is None:
         available = ["custom", *sorted(n for n, s in skills.items() if s is not None)]
         raise WorkerError(f"there is no task {name!r}; the tasks are: {', '.join(available)}")
-    # The prompt is the skill after its frontmatter, which sits between the first two `---`.
+    # A task takes an input exactly when the config says `input = true` for it.
+    takes_input = listed[name].get("input") is True
+    if takes_input and not user_input:
+        raise WorkerError(f'the task {name} needs its input: {name} "<input>"')
+    if user_input and not takes_input:
+        raise WorkerError(f"the task {name} takes no input")
+    # The prompt is the input, if any, then the skill after its frontmatter, which sits between
+    # the first two `---`.
     if skill.startswith("---"):
         skill = skill.split("---", 2)[-1]
-    return Task(name, skill.strip(), titles[name])
+    prompt = skill.strip()
+    if user_input:
+        prompt = f"The input `X`:\n\n{fenced(user_input)}\n\n{prompt}"
+    return Task(name, prompt, titles[name])
 
 
 ###################
-# 8. Running the task
+# 9. Running the task
 ###################
 # Running the task
 
@@ -479,7 +504,62 @@ def run_task(save: Path, task: Task, agent: Agent, started: str) -> tuple[AgentR
 
 
 ###################
-# 9. Creating the PR
+# 10. Safety checks
+###################
+# This does safety checks on a PR to make sure it is valid.
+
+def safety_checks(clone: Path, branch: str) -> None:
+    """Check the agent's change without relying on what it reports; raise WorkerError if it fails.
+
+    The change is everything that differs from upstream/master, whether committed or not.
+    """
+    upstream = f"upstream/{BASE_BRANCH}"
+    problems = []
+    # The agent stayed on <branch>, and only added commits to it.
+    current = output(["git", "branch", "--show-current"], cwd=clone)
+    if current != branch:
+        problems.append(f"the agent left the branch {branch} (now on {current or 'a detached HEAD'})")
+    if run(["git", "merge-base", "--is-ancestor", upstream, "HEAD"], cwd=clone, check=False).returncode != 0:
+        problems.append(f"{upstream} is no longer an ancestor of the branch")
+    # The changed files, as (status, path). Each line of the diff is git's status letter (`A`
+    # added, `M` modified, `D` deleted; a rename is a `D` and an `A`), a tab and the path; the
+    # files not yet added are new.
+    diff = output(["git", "diff", "--name-status", "--no-renames", upstream], cwd=clone)
+    new = output(["git", "ls-files", "--others", "--exclude-standard"], cwd=clone)
+    changed = [line.split("\t", 1) for line in diff.splitlines()] + [["A", path] for path in new.splitlines()]
+    escape_hatches = re.compile(r"\b(sorry|admit|axiom|native_decide)\b")
+    for status, path in changed:
+        # Only files in PhyslibAlpha/ and PhyslibAlpha.lean changed, and none was deleted.
+        if status == "D":
+            problems.append(f"deleted or renamed: {path}")
+            continue
+        if not (path.startswith(f"{LIBRARY}/") or path == f"{LIBRARY}.lean"):
+            problems.append(f"changed a file outside {LIBRARY}: {path}")
+        # No sorry, admit, axiom or native_decide was added.
+        if path.endswith(".lean") and (clone / path).is_file():
+            before = run(["git", "show", f"{upstream}:{path}"], cwd=clone, capture=True, check=False, quiet=True)
+            added = len(escape_hatches.findall((clone / path).read_text())) - len(
+                escape_hatches.findall(before.stdout if before.returncode == 0 else "")
+            )
+            if added > 0:
+                problems.append(f"{path}: {added} new use(s) of sorry, admit, axiom or native_decide")
+    if problems:
+        raise WorkerError("the change failed its checks:\n" + "\n".join(problems))
+    # PhyslibAlpha builds, and the PhyslibAlpha linters that AGENTS.md lists pass
+    # (`alphaFileImports` also checks that PhyslibAlpha.lean imports any new file).
+    run(["lake", "build", LIBRARY], cwd=clone)
+    for linter in [
+        ["lake", "exe", "module_doc_lint"],
+        ["./scripts/lint/required/alpha/alphaPythonLinters.sh"],
+        ["lake", "exe", "runPhyslibAlphaLinters"],
+        ["lake", "exe", "alphaFileImports"],
+        ["lake", "exe", "noAlphaImports"],
+    ]:
+        run(linter, cwd=clone)
+
+
+###################
+# 11. Creating the PR
 ###################
 # Opens the PR
 
@@ -494,7 +574,7 @@ def open_pr(save: Path, fork: str, branch: str, task: Task, agent: Agent) -> str
     body = (
         f"Made by {NAME}.\n\n"
         f"Model: {agent.model} ({agent.name}, effort {agent.effort})\n\n"
-        f"Prompt:\n\n```\n{task.prompt}\n```\n"
+        f"Prompt:\n\n{fenced(task.prompt)}\n"
     )
     result = run(
         ["gh", "pr", "create", "--repo", UPSTREAM, "--base", BASE_BRANCH, "--head", f"{login}:{branch}",
@@ -505,7 +585,7 @@ def open_pr(save: Path, fork: str, branch: str, task: Task, agent: Agent) -> str
 
 
 ###################
-# 10. Clean up
+# 12. Clean up
 ###################
 # Cleaning up the code
 
@@ -525,7 +605,7 @@ def clean_up(
 
 
 ###################
-# 11. The whole run, and the command line
+# 13. The whole run, and the command line
 ###################
 
 
@@ -550,19 +630,22 @@ def work(args: argparse.Namespace) -> int:
     step("6. Finding the model to run the code on")
     agent = choose_agent(args.agent, args.model, args.effort)
 
-    step("7. Determine the task")
+    step("8. Reading the task")
     task = determine_task(save / "physlib", tasks_from, args.task, args.input)
     info(f"task: {task.name}" + (f" (from {tasks_from})" if tasks_from else ""))
 
-    step("8. Running the task")
+    step("9. Running the task")
     result, log, changed = run_task(save, task, agent, started)
 
     pr_url = None
     if changed:
-        step("9. Creating the PR")
+        step("10. Safety checks")
+        safety_checks(save / "physlib", branch)
+
+        step("11. Creating the PR")
         pr_url = open_pr(save, fork, branch, task, agent)
 
-    step("10. Clean up")
+    step("12. Clean up")
     clean_up(save, branch, task, agent, result, log, pr_url)
     return 0
 
@@ -574,7 +657,11 @@ def parser() -> argparse.ArgumentParser:
         "task", nargs="?",
         help=f"a task listed in {CONFIG}, or `custom` (default: the default task listed there)",
     )
-    top.add_argument("input", nargs="?", help="for `custom` only: the task, given to the agent word for word")
+    top.add_argument(
+        "input", nargs="?",
+        help="for `custom`, the task itself, word for word; for a task with `input = true` in "
+        f"{CONFIG}, the input `X` it works on",
+    )
     top.add_argument("--agent", choices=AGENTS, help="claude or codex (default: claude, then codex if it fails)")
     top.add_argument("--model", help="a full model ID; needs --agent (default: claude-opus-5-5 / gpt-6.1-sol)")
     top.add_argument("--effort", choices=EFFORTS, default=DEFAULT_EFFORT, help="default: high")
