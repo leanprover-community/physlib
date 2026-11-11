@@ -65,7 +65,8 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
   tensors, and `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
 - `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
-  components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors.
+  components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors, from
+  `Module.finrank_piTensorProduct`.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`, from the matrix of
   `PiTensorProduct.map` in `PiTensorProduct.toMatrix_map_apply`.
 - `Species.mapIndices` applies a linear map at every index, with `Species.mapIndices_comp` and
@@ -280,9 +281,10 @@ noncomputable instance [Fintype ι] : Module.Finite k (Tensor S c) :=
   .of_basis (S.tensorBasis c)
 
 /-- The dimension of tensors is the product of the dimensions of their indices. -/
-lemma finrank_tensor [Fintype ι] [DecidableEq ι] (c : ι → Color K) :
-    Module.finrank k (Tensor S c) = ∏ i, Fintype.card (basisIdx (c i).kind) := by
-  rw [Module.finrank_eq_card_basis (S.tensorBasis c), Fintype.card_pi]
+lemma finrank_tensor [Fintype ι] (c : ι → Color K) :
+    Module.finrank k (Tensor S c) = ∏ i, Fintype.card (basisIdx (c i).kind) :=
+  Module.finrank_piTensorProduct.trans
+    (Finset.prod_congr rfl fun i _ => Module.finrank_eq_card_basis (S.basis (c i)))
 
 /-- The components of `g • t`, `(g t)^φ = ∑ ψ, (∏ i, g^{φ i}_{ψ i}) t^ψ`, with one matrix entry of
 `g` per index, in the color of that index. -/
