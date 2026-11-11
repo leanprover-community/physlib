@@ -448,26 +448,6 @@ lemma tensorBasis_repr_formTensor (c : Color Kind) (μ : Π i, Idx (![c, c] i).k
       formEntries c (μ 0) (μ 1) :=
   (Species.tensorBasis_repr_formTensor c μ).trans (formMatrix_apply c _ _)
 
-/-- The components of `ε^αβ` are the matrix `!![0, 1; -1, 0]`. -/
-lemma tensorBasis_repr_formTensor_upL (μ : Π i, Idx (![upL, upL] i).kind) :
-    (complexLorentz.tensorBasis ![upL, upL]).repr εL μ = metricRaw (μ 0) (μ 1) :=
-  tensorBasis_repr_formTensor upL μ
-
-/-- The components of `ε_αβ` are the matrix `!![0, -1; 1, 0]`. -/
-lemma tensorBasis_repr_formTensor_downL (μ : Π i, Idx (![downL, downL] i).kind) :
-    (complexLorentz.tensorBasis ![downL, downL]).repr εL' μ = (-metricRaw) (μ 0) (μ 1) :=
-  tensorBasis_repr_formTensor downL μ
-
-/-- The components of `ε^α̇β̇` are the matrix `!![0, 1; -1, 0]`. -/
-lemma tensorBasis_repr_formTensor_upR (μ : Π i, Idx (![upR, upR] i).kind) :
-    (complexLorentz.tensorBasis ![upR, upR]).repr εR μ = metricRaw (μ 0) (μ 1) :=
-  tensorBasis_repr_formTensor upR μ
-
-/-- The components of `ε_α̇β̇` are the matrix `!![0, -1; 1, 0]`. -/
-lemma tensorBasis_repr_formTensor_downR (μ : Π i, Idx (![downR, downR] i).kind) :
-    (complexLorentz.tensorBasis ![downR, downR]).repr εR' μ = (-metricRaw) (μ 0) (μ 1) :=
-  tensorBasis_repr_formTensor downR μ
-
 /-- The components of `η^μν` and `η_μν` are the Minkowski matrix `diag(1, -1, -1, -1)`. -/
 lemma tensorBasis_repr_formTensor_vec (v : Variance)
     (μ : Π i, Idx (![⟨vec, v⟩, ⟨vec, v⟩] i : Color Kind).kind) :
@@ -664,7 +644,7 @@ lemma tensorBasis_repr_formTensor_upL_tmul_upR
     (complexLorentz.tensorBasis _).repr {εL | α β ⊗ εR | α' β'}ᵀ μ =
       metricRaw (μ 0) (μ 1) * metricRaw (μ 2) (μ 3) := by
   rw [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
-    tensorBasis_repr_formTensor_upL, tensorBasis_repr_formTensor_upR]
+    tensorBasis_repr_formTensor upL, tensorBasis_repr_formTensor upR]
   rfl
 
 /-- `(ε^αβ ε_βγ)` at `α = γ = 0` is `1`, from the components of `εL` and `εL'`. -/
@@ -672,14 +652,14 @@ example : (complexLorentz.tensorBasis _).repr {εL | α β ⊗ εL' | β γ}ᵀ
     (Fin.cons (0 : Fin 2) (Fin.cons (0 : Fin 2) fun i => i.elim0)) = 1 := by
   rw [Species.Tensor.tensorBasis_repr_contr_one_pair]
   simp only [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
-    tensorBasis_repr_formTensor_upL, tensorBasis_repr_formTensor downL]
+    tensorBasis_repr_formTensor upL, tensorBasis_repr_formTensor downL]
   change ∑ β : Fin 2, metricRaw 0 β * (-metricRaw) β 0 = 1
   simp [metricRaw, Fin.sum_univ_two]
 
 /-- The conjugate of `ε^αβ` is `ε^α̇β̇`. The conjugate lands on `![upR, upR]` directly. -/
 example : Species.Tensor.conj (fun i => by fin_cases i <;> rfl) εL = εR := by
   refine (complexLorentz.tensorBasis _).repr.injective (Finsupp.ext fun μ => ?_)
-  rw [tensorBasis_repr_conj, tensorBasis_repr_formTensor_upL, tensorBasis_repr_formTensor_upR]
+  rw [tensorBasis_repr_conj, tensorBasis_repr_formTensor upL, tensorBasis_repr_formTensor upR]
   -- The labels are `idxBar` along `rfl` of `μ 0` and `μ 1`, the identity.
   have h (a b : Fin 2) : star (metricRaw a b) = metricRaw a b := by
     fin_cases a <;> fin_cases b <;> simp [metricRaw]

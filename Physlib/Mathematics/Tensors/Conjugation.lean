@@ -32,7 +32,7 @@ its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every inde
 
 ## ii. Key results
 
-- `Color.bar` is the conjugate color, with `Color.bar_bar` and `Color.bar_dual`.
+- `Color.bar` is the conjugate color, with `Color.bar_bar`.
 - `Species.HasConjugation` gives the conjugation of a species with its two conditions, and
   `Species.conjEquiv` is the conjugate of a vector, with its properties
   `Species.conjEquiv_conjEquiv`, `Species.star_contr_conjEquiv` and `Species.conjEquiv_rep`.
@@ -82,9 +82,6 @@ abbrev Color.bar (c : Color K) : Color K := ⟨star c.kind, c.variance⟩
 /-- Conjugating twice gives back the color. -/
 lemma Color.bar_bar (c : Color K) : c.bar.bar = c := by
   simp [Color.bar]
-
-/-- Conjugation commutes with duality, by `rfl`. -/
-lemma Color.bar_dual (c : Color K) : c.dual.bar = c.bar.dual := rfl
 
 /-- If `b` is the conjugate of `a`, then `a.dual` is the conjugate of `b.dual`. This is the color
 equation of the inverse of a form in `V a ⊗ V b`. -/

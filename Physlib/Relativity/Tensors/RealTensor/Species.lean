@@ -55,7 +55,7 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
 - `realLorentz.tensorBasis_repr_toTensor_vector` and
   `realLorentz.tensorBasis_repr_toTensor_coVector` : the components of the tensor of a vector or a
   covector are its components, and `realLorentz.toTensor_symm_vector_apply` : the converse for a
-  vector. `realLorentz.toTensor_basis_vector` : a basis vector is a basis tensor.
+  vector.
 - `realLorentz.tensorBasis_repr_toTensor_vector_tmul` and
   `realLorentz.tensorBasis_repr_toTensor_coVector_tmul` : the components of the tensor of an
   element of `Vector d ⊗ Vector d` or `CoVector d ⊗ Vector d` are its coordinates in the product
@@ -361,16 +361,6 @@ lemma toTensor_symm_vector_apply (d : ℕ) (T : (realLorentz d).Tensor ![up])
 lemma tensorBasis_repr_toTensor_coVector (d : ℕ) (ω : CoVector d) (μ : Fin 1 → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis ![down]).repr (Tensorial.toTensor ω) μ = ω (μ 0) :=
   Tensorial.tensorBasis_repr_toTensor_ofIndexSpace (S := realLorentz d) down ω μ
-
-/-- The tensor of the basis vector `e_μ` is the basis tensor with label `μ`. -/
-lemma toTensor_basis_vector (d : ℕ) (μ : Fin 1 ⊕ Fin d) :
-    Tensorial.toTensor (Vector.basis μ) = (realLorentz d).tensorBasis ![up] fun _ => μ :=
-  Species.oneIndexEquiv_basis (S := realLorentz d) up fun _ => μ
-
-/-- The tensor of the basis covector `e^μ` is the basis tensor with label `μ`. -/
-lemma toTensor_basis_coVector (d : ℕ) (μ : Fin 1 ⊕ Fin d) :
-    Tensorial.toTensor (CoVector.basis μ) = (realLorentz d).tensorBasis ![down] fun _ => μ :=
-  Species.oneIndexEquiv_basis (S := realLorentz d) down fun _ => μ
 
 /-- The components `F^μν` of the tensor of `F` in `Vector d ⊗ Vector d` are its coordinates in
 Mathlib's product basis `Basis.tensorProduct`. -/

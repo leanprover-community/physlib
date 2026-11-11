@@ -21,8 +21,8 @@ between two spaces `V` and `W` of the same finite dimension: `g ∘ f = id` on `
 
 ## ii. Key results
 
-- `LinearMap.comp_eq_id_comm_of_finrank_eq` : `f ∘ g = id ↔ g ∘ f = id` between spaces of equal
-  finite dimension.
+- `LinearMap.comp_eq_id_of_comp_eq_id_of_finrank_eq` : `g ∘ f = id` gives `f ∘ g = id` between
+  spaces of equal finite dimension.
 - `LinearMap.comp_apply_eq_smul_of_comp_apply_eq_smul_of_finrank_eq` : the same up to a nonzero
   scalar, `g (f v) = c • v` for all `v` gives `f (g w) = c • w` for all `w`.
 
@@ -53,12 +53,6 @@ lemma LinearMap.comp_eq_id_of_comp_eq_id_of_finrank_eq (h : finrank K V = finran
   LinearMap.ext <| Function.LeftInverse.rightInverse_of_surjective (f := g)
     (LinearMap.congr_fun hgf) <| (LinearMap.injective_iff_surjective_of_finrank_eq_finrank h).1 <|
       injective_of_comp_eq_id f g hgf
-
-/-- `LinearMap.comp_eq_id_comm` between two spaces of equal finite dimension. -/
-lemma LinearMap.comp_eq_id_comm_of_finrank_eq (h : finrank K V = finrank K W) {f : V →ₗ[K] W}
-    {g : W →ₗ[K] V} : f ∘ₗ g = LinearMap.id ↔ g ∘ₗ f = LinearMap.id :=
-  ⟨LinearMap.comp_eq_id_of_comp_eq_id_of_finrank_eq h.symm,
-    LinearMap.comp_eq_id_of_comp_eq_id_of_finrank_eq h⟩
 
 section Field
 

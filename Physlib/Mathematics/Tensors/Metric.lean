@@ -251,9 +251,6 @@ noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.r
 lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
     S.toDual c v = S.toLin (TensorProduct.comm k _ _ (form c.dual)) v := rfl
 
-/-- Raising is the inverse of lowering. The inverse of `S.toDual c` is `S.toDual c.dual`. -/
-lemma toDual_symm (c : Color K) [S.HasForm c.kind] : (S.toDual c).symm = S.toDual c.dual := rfl
-
 /-- Raising undoes lowering, `(v_ν)^ν = v^ν`. -/
 @[simp]
 lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :
@@ -320,16 +317,6 @@ noncomputable def toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : 
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) :
     (S.tensorRep c).Equiv (S.tensorRep c') :=
   S.congrAt i (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)) h
-
-/-- On a pure tensor, `toDualAt` applies `toDual` to the vector at `i` and keeps the others. The
-result `q` is explicit, so that for concrete colors `hqi` and `hq` hold by `rfl`. -/
-lemma toDualAt_pure {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
-    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x)
-    (p : Π x, S.V (c x)) (q : Π x, S.V (c' x))
-    (hqi : q i = S.cast hi.symm (S.toDual a (S.cast ha (p i))))
-    (hq : ∀ x (hx : x ≠ i), q x = S.cast (h x hx) (p x)) :
-    S.toDualAt i a ha hi h (S.pure p) = S.pure q :=
-  mapAt_pure i _ h p q hqi hq
 
 /-- Raising at an index undoes lowering at that index, `(T^μ_ν)^ν = T^μν`. -/
 lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)

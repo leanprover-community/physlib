@@ -28,7 +28,7 @@ with the group action, and the inverse of the form at `c` is the form at `c.dual
   linear map.
 - `Species.contr_mul_inverse` and `Species.contr_inverse_mul` prove `g_μν g^νρ = δ_μ^ρ` and
   `g^νμ g_μρ = δ^ν_ρ`.
-- `Species.inverse_eq_iff` characterises the inverse by its linear map, and
+- `Species.inverse_eq_left_inv` characterises the inverse as a left inverse, and
   `Species.inverse_inverse` proves `(g⁻¹)⁻¹ = g`.
 - `Species.inverse_map_rep` proves `(Λg)⁻¹ = Λ(g⁻¹)`, and `Species.inverse_invariant` that the
   inverse of an invariant tensor is invariant.
@@ -119,31 +119,11 @@ lemma contr_inverse_mul (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
       S.deltaTensor b :=
   (Tensor.contr_matMul_eq_deltaTensor_iff (S.inverse g) g).2 (comp_toLin_inverse g h)
 
-/-- `N` is the inverse of `g` exactly when its linear map is the inverse of that of `g`. -/
-lemma inverse_eq_iff (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
-    (N : S.V b.dual ⊗[k] S.V a.dual) :
-    S.inverse g = N ↔ S.toLin N = (LinearEquiv.ofBijective _ h).symm.toLinearMap := by
-  rw [← toLin_inverse g h, S.toLin.injective.eq_iff, eq_comm]
-
 /-- A tensor `N` with `N ∘ g = id`, as linear maps, is the inverse of `g`. -/
 lemma inverse_eq_left_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
     {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin N ∘ₗ S.toLin g = LinearMap.id) :
     S.inverse g = N :=
   S.toLin.injective <| (LinearMap.cancel_right h.2).1 <| by rw [toLin_inverse_comp g h, hN]
-
-/-- A tensor `N` with `g ∘ N = id`, as linear maps, is the inverse of `g`. -/
-lemma inverse_eq_right_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
-    {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin g ∘ₗ S.toLin N = LinearMap.id) :
-    S.inverse g = N :=
-  S.toLin.injective <| (LinearMap.cancel_left h.1).1 <| by rw [comp_toLin_inverse g h, hN]
-
-/-- A tensor `N` with `g_μν N^νρ = δ_μ^ρ` is the inverse of `g`. -/
-lemma inverse_eq_of_contr_eq_deltaTensor (g : S.V a ⊗[k] S.V b)
-    (h : Function.Bijective (S.toLin g)) {N : S.V b.dual ⊗[k] S.V a.dual}
-    (hN : Tensor.contr (ColorEquiv.matMul a b a.dual)
-        (S.tmulEquiv _ _ (S.twoIndexEquiv a b g ⊗ₜ S.twoIndexEquiv _ _ N)) =
-      S.deltaTensor a.dual) : S.inverse g = N :=
-  inverse_eq_left_inv g h ((Tensor.contr_matMul_eq_deltaTensor_iff g N).1 hN)
 
 /-- The inverse of the inverse is the tensor itself, `(g⁻¹)⁻¹ = g`. -/
 lemma inverse_inverse (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g)) :
