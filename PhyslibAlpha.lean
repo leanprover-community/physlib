@@ -234,6 +234,7 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Width
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.TemperedDistributional.WireJunction
+public import PhyslibAlpha.LatticeQFT.GaugeTheory.Basic
 public import PhyslibAlpha.Mathematics.AlgebraGeneration
 public import PhyslibAlpha.Mathematics.AlgebraRepresentation
 public import PhyslibAlpha.Mathematics.Analysis.LocalOperator
