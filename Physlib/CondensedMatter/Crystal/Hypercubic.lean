@@ -35,6 +35,9 @@ neighbors. For `d = 1, 2, 3` this is the chain, the square lattice and the simpl
 ## iv. References
 
 * N. Ashcroft & N. D. Mermin, Solid State Physics, Chapter 4.
+* E. W. Weisstein, *Grid Graph*, MathWorld, for the grid graph, the Cartesian product of path
+  graphs, of which the hypercubic lattice is the infinite analogue.
+  [ref: mathworld_grid_graph]
 
 -/
 
