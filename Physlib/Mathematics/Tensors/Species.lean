@@ -95,10 +95,10 @@ At a lower color it is the condition at the upper color with the factors swapped
 
 -/
 
-/-- A tensor species, which gives each color a representation with a basis such that the
-coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` with the basis of the dual color is invariant. The basis
-of a color of kind `κ` is labelled by `basisIdx κ`, the values that an index of kind `κ` runs
-over, and a color and its dual share these labels. -/
+/-- A tensor species gives each color `c` a space `V c`, a representation `rep c` of `G` on it and
+a basis `basis c` labelled by `basisIdx c.kind`, so that a color and its dual share labels. Its one
+condition, `invariant`, says that the coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` of the bases of
+`c` and `c.dual` is invariant. -/
 structure Species (k : Type) [RCLike k] (G : Type) [Group G] (K : Type)
     (basisIdx : K → Type) [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] where
   /-- The vector space of a color. -/
