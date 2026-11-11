@@ -559,7 +559,7 @@ lemma formTensor_down_symm : {η' | μ ν = η' | ν μ}ᵀ := by
   tensor_regroup
 
 /-- The Schouten identity for left-handed indices, `ε_γρ δ^α_α' = ε_α'ρ δ_γ^α - ε_α'γ δ_ρ^α`. The
-free lower index `α'` is the first index of each `ε`, the one that lowering contracts. -/
+free lower index `α'` is the first index of each `ε`. -/
 lemma schouten_downL :
     {εL' | γ ρ ⊗ δL | α α' = εL' | α' ρ ⊗ δL' | γ α + -{εL' | α' γ ⊗ δL' | ρ α}ᵀ | α' γ ρ α}ᵀ := by
   tensor_regroup using Species.schouten_formTensor_deltaTensor (S := complexLorentz) downL

@@ -18,7 +18,7 @@ one.
 ## i. Overview
 
 For Lorentz tensors the invariant form is the Minkowski metric `η_μν` with inverse `η^μν`. It
-lowers `v_ν = v^μ η_μν`, raises `w^ν = w_μ η^μν`, and the two are inverse,
+lowers `v_ν = η_νμ v^μ`, raises `w^ν = η^νμ w_μ`, and the two are inverse,
 `v^μ η_μν η^νρ = v^ρ`.
 
 The class `S.HasForm κ` is a chosen invariant form on the kind `κ`, `g^μν` at the upper color and
@@ -27,10 +27,11 @@ has one, as the SU(3) triplet has none. The inverse is stored with the form. Sym
 `η`, and antisymmetry, as for the Weyl `ε`, are the optional classes `S.IsSymmetricForm κ` and
 `S.IsAntisymmetricForm κ`.
 
-`S.toDual c` contracts a vector with the first index of the form at `c.dual`, lowering an upper
-index and raising a lower one, and `S.toDualAt i` does so at the index `i` of a tensor. For the
-antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus the convention
-`ψ_α = ε_αβ ψ^β` with `ε^12 = ε_21 = 1`, so a Weyl species following that convention stores `-ε`.
+`S.toDual c` contracts a vector with the second index of the form at `c.dual`, lowering an upper
+index, `v_ν = g_νμ v^μ`, and raising a lower one, `w^ν = g^νμ w_μ`, and `S.toDualAt i` does so at
+the index `i` of a tensor. For the antisymmetric `ε`, where the order of the indices matters,
+lowering gives `ψ_α = ε_αβ ψ^β`, the convention of Wess and Bagger and of Dreiner, Haber and
+Martin.
 
 ## ii. Key results
 
@@ -49,7 +50,7 @@ antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus th
   `Species.toDualAt_toDualAt`, `Species.toDualAt_eq_mapAt` and, in components,
   `Species.tensorBasis_repr_toDualAt`.
 - `Species.toDualAt_eq_contr` proves that lowering is contracting with the form,
-  `T^…_ν… = T^…μ… g_μν`.
+  `T^…_ν… = g_νμ T^…μ…`.
 - `Species.schouten` is the Schouten identity `g(u, v) w + g(v, w) u + g(w, u) v = 0` for an
   antisymmetric form on a kind with two labels, `LinearMap.IsAlt.schouten` for `formBilin`, and
   `Species.formMatrix_schouten` is the same in components,
