@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.Calculus.ContDiff.Basic
 public import Mathlib.Analysis.InnerProductSpace.PiL2
+public import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 public import Physlib.Mathematics.KroneckerDelta.Basic
 /-!
 
@@ -44,6 +45,7 @@ see `Physlib.SpaceAndTime.Space.Basic` for a discussion of the (dis)advantages o
   - B.4. Additive commutative group
   - B.5. Module over `ℝ`
   - B.6. Inner product space
+  - B.7. Measurable space
 - C. Linear isometric equivalence with `ℝᵈ`
   - C.1. Standard basis
   - C.2. Coordinate functions
@@ -203,6 +205,14 @@ lemma norm_sq_eq (k : WaveVectorSpace d) : ‖k‖ ^ 2 = ∑ i, k i ^ 2 := by
   simp_rw [← real_inner_self_eq_norm_sq, inner_apply, pow_two]
 
 end InnerProduct
+
+/-!
+### B.7. Measurable space
+-/
+
+noncomputable instance : MeasurableSpace (WaveVectorSpace d) := borel (WaveVectorSpace d)
+
+instance : BorelSpace (WaveVectorSpace d) := ⟨rfl⟩
 
 /-!
 ## C. Linear isometric equivalence with `ℝᵈ`
