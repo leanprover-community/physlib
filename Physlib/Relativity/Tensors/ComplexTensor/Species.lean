@@ -310,10 +310,8 @@ lemma basis_tensorProduct_repr_form : ∀ (c : Color Kind) (μ ν : Idx c.kind),
 /-- The matrices of the forms at `c.dual` and at `c` are inverse, `(-ε) ε = 1` and `η η = 1`. -/
 lemma formEntries_dual_mul : ∀ c : Color Kind,
     Matrix.of (formEntries c.dual) * Matrix.of (formEntries c) = 1
-  | ⟨left, .up⟩ | ⟨right, .up⟩ => show -metricRaw * metricRaw = 1 by
-    simpa [metricRaw] using Matrix.one_fin_two.symm
-  | ⟨left, .down⟩ | ⟨right, .down⟩ => show metricRaw * -metricRaw = 1 by
-    simpa [metricRaw] using Matrix.one_fin_two.symm
+  | ⟨left, .up⟩ | ⟨right, .up⟩ => neg_metricRaw_mul_metricRaw
+  | ⟨left, .down⟩ | ⟨right, .down⟩ => metricRaw_mul_neg_metricRaw
   | ⟨vec, _⟩ => show (@minkowskiMatrix 3).map Complex.ofRealHom *
       (@minkowskiMatrix 3).map Complex.ofRealHom = 1 by
     rw [← Matrix.map_mul, minkowskiMatrix.sq, Matrix.map_one _ (map_zero _) (map_one _)]
@@ -496,7 +494,8 @@ instance : complexLorentz.IsSymmetricForm vec where
 lemma formEntries_antisymm : ∀ c : Color Kind, c.kind ≠ vec → ∀ μ ν,
     formEntries c ν μ = -1 * formEntries c μ ν
   | ⟨left, .up⟩, _ | ⟨left, .down⟩, _ | ⟨right, .up⟩, _ | ⟨right, .down⟩, _ => fun μ ν => by
-    fin_cases μ <;> fin_cases ν <;> simp [formEntries, metricRaw]
+    have h : metricRaw ν μ = -metricRaw μ ν := congrFun₂ transpose_metricRaw μ ν
+    simp [formEntries, h]
   | ⟨vec, _⟩, h => absurd rfl h
 
 /-- The form `ε` is antisymmetric at the Weyl colors. -/

@@ -36,6 +36,19 @@ open CategoryTheory.MonoidalCategory
 /-- The raw `2x2` matrix corresponding to the metric for fermions. -/
 def metricRaw : Matrix (Fin 2) (Fin 2) ℂ := !![0, 1; -1, 0]
 
+/-- The metric is antisymmetric, `εᵀ = -ε`. -/
+lemma transpose_metricRaw : metricRawᵀ = -metricRaw := by
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [metricRaw]
+
+/-- The metric with its indices raised is the inverse of the metric, `(-ε) ε = 1`. -/
+lemma neg_metricRaw_mul_metricRaw : -metricRaw * metricRaw = 1 := by
+  simpa [metricRaw] using Matrix.one_fin_two.symm
+
+/-- The metric is the inverse of its negative, `ε (-ε) = 1`. -/
+lemma metricRaw_mul_neg_metricRaw : metricRaw * -metricRaw = 1 := by
+  simpa [metricRaw] using Matrix.one_fin_two.symm
+
 /-- Multiplying an element of `SL(2, ℂ)` on the left with the metric `𝓔` is equivalent
   to multiplying the inverse-transpose of that element on the right with the metric. -/
 lemma comm_metricRaw (M : SL(2,ℂ)) : M.1 * metricRaw = metricRaw * (M.1⁻¹)ᵀ := by
