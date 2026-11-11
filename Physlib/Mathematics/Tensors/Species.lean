@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.Analysis.RCLike.Basic
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
 public import Mathlib.RepresentationTheory.Intertwining
@@ -17,10 +18,10 @@ tensors are built from these.
 
 ## i. Overview
 
-A species `S : Species k G K basisIdx` gives each color `c` a `k`-module `S.V c`, a
-representation `S.rep c` of the group `G` on it, and a basis `S.basis c`. A tensor of `S` with
-slot colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`, with the action of `G` on each
-factor.
+A species `S : Species k G K basisIdx` over `k = ℝ` or `ℂ` (`RCLike k`) gives each color `c` a
+`k`-vector space `S.V c`, a representation `S.rep c` of the group `G` on it, and a basis
+`S.basis c`. A tensor of `S` with index colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`,
+with the action of `G` on each factor.
 
 For real Lorentz tensors in `1 + d` dimensions, `k = ℝ`, `G` is the Lorentz group, and there is
 one kind `vec`, whose basis labels are `basisIdx vec = Fin 1 ⊕ Fin d`. The space of `⟨vec, up⟩`
@@ -78,7 +79,7 @@ There are no known references for the material in this module.
 
 open TensorProduct
 
-namespace Tensors
+namespace Tensor
 
 /-!
 
@@ -98,7 +99,7 @@ At a lower color it is the condition at the upper color with the factors swapped
 coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` with the basis of the dual color is invariant. The basis
 of a color of kind `κ` is labelled by `basisIdx κ`, the values that an index of kind `κ` runs
 over, and a color and its dual share these labels. -/
-structure Species (k : Type) [CommRing k] (G : Type) [Group G] (K : Type)
+structure Species (k : Type) [RCLike k] (G : Type) [Group G] (K : Type)
     (basisIdx : K → Type) [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] where
   /-- The vector space of a color. -/
   V : Color K → Type
@@ -119,7 +120,7 @@ attribute [instance] Species.addCommGroup Species.module
 
 namespace Species
 
-variable {k : Type} [CommRing k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
 /-- The condition `invariant` at every color from the condition at the upper colors. At a lower
@@ -135,6 +136,11 @@ lemma invariant_of_up {V : Color K → Type} [∀ c, AddCommGroup (V c)] [∀ c,
   | ⟨κ, .up⟩, g, x, y => h κ g x y
   | ⟨κ, .down⟩, g, x, y => (Module.Basis.coordPairing_comm _ _ _ _).trans <|
       (h κ g y x).trans (Module.Basis.coordPairing_comm _ _ _ _)
+
+/-- The space of each color is finite-dimensional, since it has a finite basis. -/
+instance finiteDimensional (S : Species k G K basisIdx) (c : Color K) :
+    FiniteDimensional k (S.V c) :=
+  Module.Finite.of_basis (S.basis c)
 
 /-!
 
@@ -228,8 +234,8 @@ variable {S}
 ## C. Moving a vector along an equality of colors
 
 `S.V a` and `S.V a'` are different types unless `a` and `a'` are equal by definition. The colors
-of two slots are often equal only through a proof. For a family of colors `c : ι → Color K` and
-two slots with `s = s'`, the colors `c s` and `c s'` are equal through that proof. A vector is
+of two indices are often equal only through a proof. For a family of colors `c : ι → Color K` and
+two indices with `s = s'`, the colors `c s` and `c s'` are equal through that proof. A vector is
 moved between the two spaces by `S.cast`, which is the identity on the vector. The lemmas say that
 this keeps the group action, the components and the contraction, so that proofs can remove the
 casts.
@@ -260,8 +266,8 @@ lemma basis_repr_cast {a b : Color K} (p : a = b) (v : S.V a) (μ : basisIdx b.k
   subst p
   rfl
 
-/-- For a family `f` of vectors on slots, moving `f s` to the color `b` is moving `f s'`, for any
-slot `s'` equal to `s`. -/
+/-- For a family `f` of vectors on indices, moving `f s` to the color `b` is moving `f s'`, for
+any index `s'` equal to `s`. -/
 lemma cast_apply_congr {ι : Type} {d : ι → Color K} (f : Π s, S.V (d s)) {s s' : ι}
     (e : s = s') {b : Color K} (p : d s = b) : S.cast p (f s) = S.cast (e ▸ p) (f s') := by
   subst e
@@ -285,4 +291,4 @@ lemma contr_cast_tmul_cast_symm {d e a b : Color K} (x : S.V d) (y : S.V e) (p :
 
 end Species
 
-end Tensors
+end Tensor
