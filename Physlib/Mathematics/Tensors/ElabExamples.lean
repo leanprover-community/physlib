@@ -34,6 +34,8 @@ There are no declarations, only examples.
 
 ## iv. References
 
+There are no known references for the material in this module.
+
 -/
 
 namespace Tensor.Notation
@@ -176,15 +178,13 @@ example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓
 `rw [intertwiningMap_smul]`. -/
 example : {(Λ • T) | μ μ}ᵀ = Λ • {T | μ μ}ᵀ := by rw [intertwiningMap_smul]
 
-/-- `g^μν g_νρ = δ^μ_ρ`, by `contr_formTensor_formTensor`. The relabeling the notation generates
+/-- `g^μν g_νρ = δ^μ_ρ`, by `contr_formTensor_formTensor`. The reindexing the notation generates
 is `ColorEquiv.matMul`, checked index by index. -/
 example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
   rw [← contr_formTensor_formTensor]
   congr 2
   ext x
   fin_cases x <;> rfl
-
-end Metric
 
 /-!
 
@@ -210,11 +210,11 @@ noncomputable example : S.Tensor ![a, a.dual] := {(m ⊗ₜ[k] m) | μ ν ν ρ}
 noncomputable example : M := {m | μ ν ⊗ T | ν ρ}ᵀ
 
 open TensorProduct in
-/-- A product with no contraction is read back as `m ⊗ₜ m`, with no relabeling. -/
+/-- A product with no contraction is read back as `m ⊗ₜ m`, with no reindexing. -/
 example : ({m | μ ν ⊗ m | ρ σ}ᵀ : M ⊗[k] M) = m ⊗ₜ m := by
   rw [← Tensorial.toTensor_tmul, Representation.Equiv.symm_apply_apply]
 
-/-- A tensor on `Fin 2` relabeled onto the indices `Fin 1 ⊕ Fin 1` of a product. -/
+/-- A tensor on `Fin 2` reindexed onto the indices `Fin 1 ⊕ Fin 1` of a product. -/
 noncomputable example : S.Tensor (prodColors ![a] ![a.dual]) := {T | μ ν}ᵀ
 
 /-- error: index notation: the free index μ has the color a, but the expected index has the color
@@ -278,10 +278,6 @@ example : {T | μ ρ ⊗ S.deltaTensor a | ν ρ = T | μ ν}ᵀ := by
 
 /-- A delta inside a sum, `T^μ_ν + U^μ_ρ δ^ρ_ν = U^μ_ν + T^μ_ν`. -/
 example : {T | μ ν + U | μ ρ ⊗ S.deltaTensor a.dual | ρ ν = U | μ ν + T | μ ν}ᵀ := by
-  tensor_regroup
-
-/-- A delta on the left side is inserted on the right, `T^μ_ρ δ^ρ_ν = T^μ_ν`. -/
-example : {T | μ ρ ⊗ S.deltaTensor a.dual | ρ ν = T | μ ν}ᵀ := by
   tensor_regroup
 
 /-- Three equal factors, matched in one of the `3!` ways,
@@ -360,10 +356,6 @@ example (h : {T | μ ν ⊗ U | ν ρ = W | μ ρ}ᵀ) : {T | μ ν ⊗ U | ν �
 ## E. Regrouping with forms
 
 -/
-
-section Metric
-
-variable [S.HasForm κ] [S.HasForm c.kind]
 
 /-- A lowering is a contraction with the form, `v_μ = g_μν v^ν`. -/
 example : {v | ↓μ = S.formTensor ⟨κ, .down⟩ | μ ν ⊗ v | ν}ᵀ := by
@@ -458,17 +450,11 @@ example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTenso
 example : {S.deltaTensor c.dual | μ ρ = S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ}ᵀ := by
   tensor_regroup
 
-end Metric
-
 /-!
 
 ## F. Chains of lowerings and raisings
 
 -/
-
-section Metric
-
-variable [S.HasForm κ] [S.HasForm c.kind]
 
 /-- Lowering and then raising by `tensor_indices`, `(v_μ)^μ = v^μ`. -/
 example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := by

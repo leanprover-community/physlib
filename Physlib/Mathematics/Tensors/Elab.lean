@@ -24,11 +24,11 @@ names are bound only inside the braces. Each construct is an operation of the sp
 
 - `A ⊗ B` is `S.tmulEquiv _ _ (A ⊗ₜ B)`.
 - A name written twice in a product is contracted. All pairs of the product are contracted in one
-  `Tensor.contr σ`, with the relabeling `σ` generated from the names. The two indices of a pair must
+  `Tensor.contr σ`, with the reindexing `σ` generated from the names. The two indices of a pair must
   have dual colors, and the first one written is the first argument of `S.contr`.
 - The free indices are numbered `0, 1, …` in the order written. The result is a tensor on `Fin m`
   with a literal color list `![…]`.
-- `A + B` and `A = B` relabel `B` by `S.reindex` when its names come in another order. Each name
+- `A + B` and `A = B` reindex `B` by `S.reindex` when its names come in another order. Each name
   must have the same color on both sides.
 - `↓μ` lowers an upper index and `↑μ` raises a lower one, by `S.toDualAt`, so `{v | ↓ν}ᵀ` is
   `v_ν = v^μ g_μν`. This needs an instance `S.HasForm` at the kind of the index, and a visible
@@ -75,6 +75,8 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
   - B.3. The elaborator
 
 ## iv. References
+
+There are no known references for the material in this module.
 
 -/
 
@@ -257,7 +259,7 @@ structure Node where
   /-- The species. -/
   species : Expr
 
-/-- The tensor of `a` relabeled onto `Fin pre.length` with the colors `cs`, its index `pre[j]`
+/-- The tensor of `a` reindexed onto `Fin pre.length` with the colors `cs`, its index `pre[j]`
 becoming the index `j`. -/
 def Node.reindex (a : Node) (pre : List Nat) (cs : List Expr) : TermElabM Term := do
   `(Tensor.Species.reindex $(← exprToSyntax a.species)
@@ -265,7 +267,7 @@ def Node.reindex (a : Node) (pre : List Nat) (cs : List Expr) : TermElabM Term :
       $(← indexEquiv a.indices (.fin pre.length) pre))
     $a.tm)
 
-/-- The expression relabeled to `Fin n`, its indices numbered in order. -/
+/-- The expression reindexed to `Fin n`, its indices numbered in order. -/
 def Node.toFin (a : Node) : TermElabM Node := do
   let n := a.names.length
   if a.indices == .fin n then return a
@@ -368,7 +370,7 @@ def contract (a : Node) : TermElabM Node := do
     $a.tm)
   return ⟨free.map (a.names[·]!), free.map (a.colors[·]!), .fin m, tm, a.species⟩
 
-/-- The right side relabeled to the order of the left side's names, after checking that each name
+/-- The right side reindexed to the order of the left side's names, after checking that each name
 has the same color on both sides. -/
 def reorder (l r : Node) : TermElabM Term := do
   unless l.names.length == r.names.length && l.names.all (r.names.contains ·) do
@@ -431,7 +433,7 @@ def buildTo (e : Syntax) (target : Expr) : TermElabM (Option Term) := do
     (Tensor.ColorEquiv.mk (c₂ := $(← exprToSyntax c))
       $(← indexEquiv a.indices indices (List.range indices.size))) $a.tm)
 
-/-- The term of `e` for the expected type. It is relabeled onto the indices of a tensor type, and
+/-- The term of `e` for the expected type. It is reindexed onto the indices of a tensor type, and
 read back by `Tensorial.toTensor.symm` for a `Tensorial` type. -/
 def buildFor (e : Syntax) (expectedType? : Option Expr) : TermElabM Term := do
   let some ty := expectedType? | return (← build e).tm

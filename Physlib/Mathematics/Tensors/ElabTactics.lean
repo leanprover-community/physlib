@@ -39,6 +39,8 @@ Examples are in `Physlib.Mathematics.Tensors.ElabExamples`.
 
 ## iv. References
 
+There are no known references for the material in this module.
+
 -/
 
 public meta section
@@ -59,7 +61,7 @@ dsimproc_decl reduceCast (cast _ _) := fun e => do
   if ← withReducible (isDefEq α β) then return .done a else return .continue
 
 /-- `tensor_components [l₁, …]` reduces an equation of tensors to its components at a label `φ`,
-using the component lemmas `lᵢ` as well. It unfolds products, relabelings, sums, negatives, zeros,
+using the component lemmas `lᵢ` as well. It unfolds products, reindexings, sums, negatives, zeros,
 scalar multiples and contractions of one or two pairs. For more pairs, pass
 `Species.Tensor.tensorBasis_repr_contr`. It evaluates the `Function.update` at a literal index that
 `tensorBasis_repr_toDualAt` produces, and removes the casts on labels once their types agree. On a
@@ -76,7 +78,7 @@ macro_rules
         Species.Tensor.tensorBasis_repr_contr_two_pairs, Species.tensorBasis_repr_reindex,
         Species.tensorBasis_repr_tmulEquiv, map_smul, Finsupp.smul_apply, smul_eq_mul,
         Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq, not_false_eq_true, $ls,*]
-      -- The casts of `tensorBasis_repr_reindex` agree once the relabeling and the color lists are
+      -- The casts of `tensorBasis_repr_reindex` agree once the reindexing and the color lists are
       -- evaluated. The option `+instances` reaches those inside instance arguments.
       try dsimp +instances only [ColorEquiv.toEquiv_symm, Equiv.symm_symm, Equiv.coe_fn_mk,
         Sum.elim_inl, Sum.elim_inr, Matrix.cons_val, Function.comp_apply,
@@ -139,11 +141,10 @@ the first that succeeds. When every one fails it throws the last error, and `err
 empty. -/
 private def firstSuccess {α β : Type} (xs : List α) (err : MessageData) (f : α → TacticM β) :
     TacticM β := do
-  let s ← saveState
   let mut err := err
   for x in xs do
     try return ← f x
-    catch e => s.restore; err := e.toMessageData
+    catch e => err := e.toMessageData
   throwError err
 
 /-- The number of trailing arguments of `e` that are the tensors it is built from: the argument of
@@ -268,7 +269,7 @@ private def flattenContractions : TacticM Unit := do
   throwError "tensor_regroup: flattening the products did not stop after ten rounds"
 
 /-- Swaps the factors `m` and `m + 1` of the product `q`, of `n` factors, on the right side of the
-goal, by `Species.tmulEquiv_comm` or `Species.tmulEquiv_swapLast`, and absorbs the relabeling into
+goal, by `Species.tmulEquiv_comm` or `Species.tmulEquiv_swapLast`, and absorbs the reindexing into
 the contraction. -/
 private def swapFactors (q : Expr) (n m : Nat) : TacticM Unit := do
   let fs := factors q
@@ -522,7 +523,7 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
 deltas and inverse pairs of forms. Each side is flattened to one contraction of a left-nested
 product. Two forms on one side with a delta or nothing left over on the other are matched by
 `matchFormPair`. A delta on one side with no counterpart on the other is inserted on the other side
-at each index of its color in turn, since contracting with a delta is a relabeling. The factors are
+at each index of its color in turn, since contracting with a delta is a reindexing. The factors are
 then matched by `matchFactors`. -/
 private partial def regroupContractions : TacticM Unit := do
   flattenContractions
@@ -534,6 +535,7 @@ private partial def regroupContractions : TacticM Unit := do
   let mut formErr : Option MessageData := none
   for (lhs, ds, gs) in [(true, extraL, extraR), (false, extraR, extraL)] do
     try matchFormPair lhs ds gs; return catch _ =>
+    -- When the forms do not cancel, the rest of the loop body records why.
     if 2 ≤ gs.length && gs.all (formArgs? · |>.isSome) then
       formErr := m!"tensor_regroup: the forms left over on one side do not cancel in inverse pairs \
         against the other side{indentD (MessageData.joinSep (gs.map toMessageData) "\n")}"
@@ -552,7 +554,7 @@ end
 -/
 
 /-- Brings both sides of the goal to sums of signed scalar multiples of contractions. Products,
-contractions and relabelings are linear, so sums, negatives and scalars of `k` move out of them.
+contractions and reindexings are linear, so sums, negatives and scalars of `k` move out of them.
 The scalar lemmas are given the field `k` of the species, so a group element `Λ • T` stays a
 factor. -/
 private def normalizeSums : TacticM Unit := do
@@ -603,12 +605,11 @@ private partial def regroupSummand (flipped : Bool := false) : TacticM Unit := d
     regroupSummand flipped
   else
     try evalTactic (← `(tactic| with_reducible rfl)) catch _ =>
-    let s ← saveState
+    -- When `rfl` fails, the rest of the block regroups.
     try regroupContractions catch e =>
       if flipped then throw e
       -- The two sides may differ by the swap of a symmetric form.
-      s.restore
-      try flipOneForm false catch _ => s.restore; throw e
+      try flipOneForm false catch _ => throw e
 
 /-- Tries each form among the tensor leaves of the goal for `flipForm antisym`, then moves a new
 sign out and regroups. A form of the other symmetry fails at `flipForm`. -/
@@ -619,6 +620,7 @@ private partial def flipOneForm (antisym : Bool) : TacticM Unit := do
   let mut lastError : MessageData := m!"tensor_regroup: no form to swap"
   for F in (leaves.filter (formArgs? · |>.isSome)).eraseDups do
     for k in (List.range leaves.length).filter (leaves[·]! == F) do
+      -- Undoes a swap whose regrouping failed in the previous round.
       s.restore
       try flipForm antisym F k catch _ => break
       try
@@ -684,7 +686,7 @@ private def regroup : TacticM Unit := do
     used := j :: used
     proofs := proofs.push pf
   -- The summands are replaced by congruence, not by `rw`: a summand can occur inside another one,
-  -- as `T` inside its relabeling.
+  -- as `T` inside its reindexing.
   let (pf, _) ← sumCongr l proofs.toList
   let some (_, _, l') := (← inferType pf).eq? | throwError "tensor_regroup: internal error"
   let rest ← mkFreshExprMVar (← mkEq l' r)
@@ -702,11 +704,9 @@ both fail, the first error is reported if it is about the summands or scalars
 (`isSummandError`), and the second otherwise. -/
 private def regroupWithLowerings : TacticM Unit := do
   unless hasLowering (← instantiateMVars (← getMainTarget)) do regroup; return
-  let s ← saveState
   try regroup catch e =>
     -- Lowerings and raisings are contractions with the form (`Species.toDualAt_eq_contr`). They
     -- are expanded only when needed, since every expanded form is one more factor to match.
-    s.restore
     evalTactic (← `(tactic| simp only [Tensor.Species.toDualAt_eq_contr]))
     try regroup catch e' =>
       -- The expansion changes the factors, not the summands or scalars, so an error about those
@@ -784,7 +784,7 @@ private def regroupedFun (L A : Expr) (Aread G : ReadContraction) (φ target : L
   withLocalDeclD `x (← inferType A) fun x => do
     let rhs ← rest.foldlM (init := ← leaf x (Aread.free.map (φ[·]!))) fun a b =>
       `(tensorIndexExpr| $a ⊗ $b)
-    -- The equation `{L | f₀ f₁ … = …}ᵀ` relabels its right side to the order of `L`.
+    -- The equation `{L | f₀ f₁ … = …}ᵀ` reindexes its right side to the order of `L`.
     let eq ← Term.elabType (← `({ $(← leaf L G.free) = $rhs }ᵀ))
     Term.synthesizeSyntheticMVarsNoPostponing
     let some (_, _, M) := (← instantiateMVars eq).eq?
@@ -845,7 +845,6 @@ private partial def regroupUsing : List Term → TacticM Unit
           catch _ => pure none
         if let some (L, G, Aread) := read? then
           for (φ, target) in (← embeddings Aread G).take maxMatchings do
-            let s' ← saveState
             try
               -- `L = M A` by regrouping, and `M A = M B` by `congrArg M h`.
               let M ← regroupedFun L A Aread G φ target
@@ -857,19 +856,19 @@ private partial def regroupUsing : List Term → TacticM Unit
               replaceMainGoal [rest.mvarId!]
               regroupUsing es
               return
-            catch ex => s'.restore; err := ex.toMessageData
+            catch ex => err := ex.toMessageData
         s.restore
     throwError err
 
 /-- `tensor_regroup` proves an equation of two sums of signed scalar multiples of contractions of
 the same factors, grouped or ordered differently, such as
 `{{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ`. Sums,
-negatives and scalars are first moved out of every product, contraction and relabeling. Each
+negatives and scalars are first moved out of every product, contraction and reindexing. Each
 summand on the left is then matched with a summand on the right with the same sign and scalar,
 whose contraction is the same up to regrouping (`Species.Tensor.contr_eq_of_samePair`). When a
 factor appears more than once, each way of matching the equal factors is tried in turn, so the
-number of attempts is the product of `k!` over the factors that appear `k` times, and at most 12
-are tried.
+number of attempts is the product of `k!` over the factors that appear `k` times, and at most
+`maxMatchings` are tried.
 
 Beyond regrouping, it uses these identities:
 - a delta on one side with no counterpart on the other is inserted on the other side at an index of
