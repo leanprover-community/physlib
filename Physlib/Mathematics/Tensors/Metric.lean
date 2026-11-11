@@ -29,7 +29,8 @@ has one, as the SU(3) triplet has none. The inverse is stored with the form. Sym
 
 `S.toDual c` contracts a vector with the second index of the form at `c.dual`, lowering an upper
 index, `v_ν = g_νμ v^μ`, and raising a lower one, `w^ν = g^νμ w_μ`, and `S.toDualAt i` does so at
-the index `i` of a tensor. For the antisymmetric `ε`, where the order of the indices matters,
+the index `i` of a tensor. `S.toDual c` is `Module.Basis.coordToDual` for the bases of `c` and
+`c.dual`. For the antisymmetric `ε`, where the order of the indices matters,
 lowering gives `ψ_α = ε_αβ ψ^β`, the convention of Wess and Bagger and of Dreiner, Haber and
 Martin.
 
@@ -222,10 +223,7 @@ variable (S) in
 /-- The vector `v` of color `c` contracted with the second index of the form at `c.dual`. It
 lowers an upper index, `v^μ ↦ g_νμ v^μ`, and raises a lower one, `w_μ ↦ g^νμ w_μ`. -/
 noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.rep c.dual) :=
-  .mk (LinearEquiv.ofLinearMap (S.toLin (TensorProduct.comm k _ _ (form c.dual)))
-    (S.toLin (TensorProduct.comm k _ _ (form c)))
-    (Module.Basis.coordTensorHomEquiv_comm_comp_comm _ _ _ _ (form_inverse c))
-    (Module.Basis.coordTensorHomEquiv_comm_comp_comm _ _ _ _ (form_inverse c.dual)))
+  .mk ((S.basis c).coordToDual (S.basis c.dual) _ _ (form_inverse c) (form_inverse c.dual))
     fun g => LinearMap.ext <|
       ((S.isIntertwiningMap_toLin_iff (a := c.dual) (b := c.dual) _).2 fun g => by
         rw [TensorProduct.map_comm, form_invariant]).isIntertwining g
@@ -243,9 +241,8 @@ lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :
 /-- Lowering or raising a vector in components, `v_ν = g_νμ v^μ`. -/
 lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basisIdx c.kind) :
     (S.basis c.dual).repr (S.toDual c v) ν = ∑ μ, (S.basis c).repr v μ *
-      S.formMatrix c.dual ν μ := by
-  rw [toDual_apply, Module.Basis.repr_coordTensorHomEquiv]
-  simp [formMatrix, Module.Basis.tensorProduct_repr_comm]
+      S.formMatrix c.dual ν μ :=
+  Module.Basis.repr_coordToDual _ _ _ _ (form_inverse c) (form_inverse c.dual) v ν
 
 /-!
 

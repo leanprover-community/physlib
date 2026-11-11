@@ -27,7 +27,8 @@ Mathlib reads a tensor of `Module.Dual R N ⊗ U` as a linear map `N → U`
 
 The delta `∑ I, b I ⊗ b' I` of the two bases is the tensor of the identity map. The matrix of the
 linear map of `z` is the transpose of the matrix of components of `z`, so two tensors give inverse
-maps when their matrices of components are inverse.
+maps when their matrices of components are inverse. Contracting with the second factor of a tensor
+`F'` of `N ⊗ N` with such an inverse is then an equivalence `M ≃ N`, as a metric lowers an index.
 
 A tensor `z` of `M ⊗ M` gives the bilinear form `(u, v) ↦ ⟨v, z u⟩` on `N`. Swapping the factors
 of `z` swaps its arguments, so the form is symmetric when `z` is and alternating when `z` is
@@ -51,6 +52,8 @@ bijective the inverse is the junk value `0`, so every lemma about it assumes bij
   the matrix of components.
 - `Module.Basis.coordTensorHomEquiv_comp_of_mul_eq_one` : two tensors give inverse maps when their
   matrices of components are inverse.
+- `Module.Basis.coordToDual` : the equivalence `M ≃ N` that contracts with the second factor of a
+  tensor `F'` with inverse `F`, and `Module.Basis.repr_coordToDual` : it in components.
 - `Module.Basis.isSymm_coordTensorHomEquiv_of_comm_eq` and
   `Module.Basis.isAlt_coordTensorHomEquiv_of_comm_eq_neg` : the bilinear form `(u, v) ↦ ⟨v, z u⟩`
   is symmetric when `comm z = z` and alternating when `comm z = -z`.
@@ -179,6 +182,29 @@ lemma coordTensorHomEquiv_comm_comp_comm (b : Module.Basis ι R M) (b' : Module.
   rw [LinearMap.toMatrix_comp _ b, toMatrix_coordTensorHomEquiv, toMatrix_coordTensorHomEquiv,
     LinearMap.toMatrix_id] at h
   convert h using 2 <;> ext <;> simp [tensorProduct_repr_comm]
+
+/-- The equivalence `M ≃ N` that contracts a vector with the second factor of `F'`, when the linear
+maps of `F` and `F'` are inverse. Its inverse contracts with the second factor of `F`. For a metric
+`F' = g_μν` it is `v^μ ↦ g_νμ v^μ`. -/
+noncomputable def coordToDual (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (F : M ⊗[R] M)
+    (F' : N ⊗[R] N)
+    (h : b.coordTensorHomEquiv b' F ∘ₗ b'.coordTensorHomEquiv b F' = LinearMap.id)
+    (h' : b'.coordTensorHomEquiv b F' ∘ₗ b.coordTensorHomEquiv b' F = LinearMap.id) :
+    M ≃ₗ[R] N :=
+  .ofLinearMap (b'.coordTensorHomEquiv b (TensorProduct.comm R N N F'))
+    (b.coordTensorHomEquiv b' (TensorProduct.comm R M M F))
+    (coordTensorHomEquiv_comm_comp_comm b' b F' F h) (coordTensorHomEquiv_comm_comp_comm b b' F F' h')
+
+/-- `coordToDual` in components, `v_ν = F'_νμ v^μ`. -/
+lemma repr_coordToDual (b : Module.Basis ι R M) (b' : Module.Basis ι R N) (F : M ⊗[R] M)
+    (F' : N ⊗[R] N)
+    (h : b.coordTensorHomEquiv b' F ∘ₗ b'.coordTensorHomEquiv b F' = LinearMap.id)
+    (h' : b'.coordTensorHomEquiv b F' ∘ₗ b.coordTensorHomEquiv b' F = LinearMap.id) (v : M)
+    (ν : ι) :
+    b'.repr (coordToDual b b' F F' h h' v) ν =
+      ∑ μ, b.repr v μ * (b'.tensorProduct b').repr F' (ν, μ) := by
+  change b'.repr (b'.coordTensorHomEquiv b (TensorProduct.comm R N N F') v) ν = _
+  simp [repr_coordTensorHomEquiv, tensorProduct_repr_comm]
 
 /-!
 
