@@ -44,12 +44,13 @@ None.
 @[expose] public section
 
 open TensorProduct
+open scoped ComplexOrder
 
 namespace Tensors
 
 namespace Species
 
-variable {K : Type} [InvolutiveStar K] {k : Type} [Field k] [StarRing k] {G : Type} [Group G]
+variable {K : Type} [InvolutiveStar K] {k : Type} [RCLike k] {G : Type} [Group G]
     {basisIdx : K → Type} [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
     {S : Species k G K basisIdx} [S.HasConjugation] {a b : Color K}
 
@@ -100,7 +101,7 @@ lemma isSymm_sesqForm_inverse (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
 
 /-- The linear map `y ↦ g y` of a positive-definite `g_{IJ̄}` is injective, since `g y = 0` gives
 `g(y, y) = 0`. -/
-lemma toLin_injective_of_isPosDef [Preorder k] (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
+lemma toLin_injective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
     (hg : (S.sesqForm g hb).IsPosDef) : Function.Injective (S.toLin g) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
   intro y hy
@@ -108,7 +109,7 @@ lemma toLin_injective_of_isPosDef [Preorder k] (g : S.V a ⊗[k] S.V b) {hb : b 
   simpa [sesqForm_apply, hy] using hg.pos y hne
 
 /-- The inverse of a positive-definite `g_{IJ̄}` with bijective linear map is positive-definite. -/
-lemma isPosDef_sesqForm_inverse_of_bijective [LT k] (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
+lemma isPosDef_sesqForm_inverse_of_bijective (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
     (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsPosDef)
     (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
     (S.sesqForm (S.inverse g) ha).IsPosDef := by
@@ -127,7 +128,7 @@ end Species
 
 namespace Species
 
-variable {K : Type} [InvolutiveStar K] {k : Type} [Field k] [StarRing k] [Preorder k] {G : Type}
+variable {K : Type} [InvolutiveStar K] {k : Type} [RCLike k] {G : Type}
     [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
     {S : Species k G K basisIdx} [S.HasConjugation] {a b : Color K}

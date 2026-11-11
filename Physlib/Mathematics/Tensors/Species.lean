@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.Analysis.RCLike.Basic
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.Tensors.Color
 public import Mathlib.RepresentationTheory.Intertwining
@@ -17,10 +18,10 @@ tensors are built from these.
 
 ## i. Overview
 
-A species `S : Species k G K basisIdx` gives each color `c` a `k`-module `S.V c`, a
-representation `S.rep c` of the group `G` on it, and a basis `S.basis c`. A tensor of `S` with
-slot colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`, with the action of `G` on each
-factor.
+A species `S : Species k G K basisIdx` over `k = ℝ` or `ℂ` (`RCLike k`) gives each color `c` a
+`k`-vector space `S.V c`, a representation `S.rep c` of the group `G` on it, and a basis
+`S.basis c`. A tensor of `S` with slot colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`, with
+the action of `G` on each factor.
 
 For real Lorentz tensors in `1 + d` dimensions, `k = ℝ`, `G` is the Lorentz group, and there is
 one kind `vec`, whose basis labels are `basisIdx vec = Fin 1 ⊕ Fin d`. The space of `⟨vec, up⟩`
@@ -98,7 +99,7 @@ At a lower color it is the condition at the upper color with the factors swapped
 coordinate pairing `u ⊗ α ↦ ∑ μ, u^μ α_μ` with the basis of the dual color is invariant. The basis
 of a color of kind `κ` is labelled by `basisIdx κ`, the values that an index of kind `κ` runs
 over, and a color and its dual share these labels. -/
-structure Species (k : Type) [Field k] (G : Type) [Group G] (K : Type)
+structure Species (k : Type) [RCLike k] (G : Type) [Group G] (K : Type)
     (basisIdx : K → Type) [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] where
   /-- The vector space of a color. -/
   V : Color K → Type
@@ -119,7 +120,7 @@ attribute [instance] Species.addCommGroup Species.module
 
 namespace Species
 
-variable {k : Type} [Field k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
 /-- The condition `invariant` at every color from the condition at the upper colors. At a lower

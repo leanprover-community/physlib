@@ -95,7 +95,7 @@ namespace Tensors
 
 namespace Species
 
-variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
 
 variable {ι₁ ι₂ κ κ' κ₁ J J' J₁ J₂ : Type}
@@ -306,7 +306,7 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
 /-- A contraction of a tensor that changes sign under a relabeling `π` of its slots is zero, when
 `π` only permutes the pairs along `e` and keeps the free indices. The hypothesis `ht` has the
 form of the index notation `{T | μ ν = -T | ν μ}ᵀ`. -/
-lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] [Invertible (2 : k)] {a : J → Color K}
+lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] {a : J → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (π : ColorEquiv c c) (e : J ≃ J)
     (hπ : π.toEquiv.trans σ.toEquiv = σ.toEquiv.trans ((Equiv.refl κ).sumCongr (e.sumCongr e)))
     {t : S.Tensor c} (ht : t = S.reindex π (-t)) : contr σ t = 0 := by
@@ -320,13 +320,13 @@ lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] [Invertible (2 : k)] {a : J �
   have h : contr σ t + contr σ t = 0 := by
     conv_lhs => enter [1]; rw [ht]
     rw [contr_reindex, map_neg, hσ, neg_add_cancel]
-  rw [← one_smul k (contr σ t), ← invOf_mul_self (2 : k), mul_smul, two_smul, h, smul_zero]
+  exact (smul_eq_zero.1 ((two_smul k _).trans h)).resolve_left two_ne_zero
 
 /-- `A^μν B_μν = 0` for `A` antisymmetric and `B` symmetric. The contraction of `A ⊗ B` is zero
 when `π₁` reverses the sign of `A`, `π₂` fixes `B`, and together they only permute the pairs. The
 hypotheses have the form of the index notation, `{A | μ ν = -A | ν μ}ᵀ` and
 `{B | μ ν = B | ν μ}ᵀ`. -/
-lemma contr_tmulEquiv_eq_zero_of_antisymm_symm [Fintype J] [Invertible (2 : k)]
+lemma contr_tmulEquiv_eq_zero_of_antisymm_symm [Fintype J]
     {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {a : J → Color K}
     (σ : ColorEquiv (prodColors c₁ c₂) (contrColors c' a)) (π₁ : ColorEquiv c₁ c₁)
     (π₂ : ColorEquiv c₂ c₂) (e : J ≃ J)

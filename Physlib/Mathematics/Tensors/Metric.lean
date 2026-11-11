@@ -23,9 +23,9 @@ lowers `v_ν = v^μ η_μν`, raises `w^ν = w_μ η^μν`, and the two are inve
 
 The class `S.HasForm κ` is a chosen invariant form on the kind `κ`, `g^μν` at the upper color and
 `g_μν` at the lower one, with the forms at `c` and `c.dual` inverse to each other. Not every kind
-has one, as the SU(3) triplet has none. The inverse is stored, since over a commutative ring a
-non-degenerate form need not have an inverse. Symmetry, as for `η`, and antisymmetry, as for the
-Weyl `ε`, are the optional classes `S.IsSymmetricForm κ` and `S.IsAntisymmetricForm κ`.
+has one, as the SU(3) triplet has none. The inverse is stored with the form. Symmetry, as for
+`η`, and antisymmetry, as for the Weyl `ε`, are the optional classes `S.IsSymmetricForm κ` and
+`S.IsAntisymmetricForm κ`.
 
 `S.toDual c` contracts a vector with the first index of the form at `c.dual`, lowering an upper
 index and raising a lower one, and `S.toDualAt i` does so at the slot `i` of a tensor. For the
@@ -78,7 +78,7 @@ namespace Tensors
 
 namespace Species
 
-variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
 /-!
@@ -220,10 +220,9 @@ lemma comm_form_eq_smul (c : Color K) [S.HasForm c.kind] (r : k)
     exact h μ ν
 
 /-- An antisymmetric form is alternating as a bilinear form, `g(u, u) = 0`, Mathlib's
-`LinearMap.IsAlt`. It needs `2 x = 0 → x = 0` in `k`: when `2 = 0` the form `[1]` on `k` is
-antisymmetric with `g(1, 1) = 1`. -/
-lemma isAlt_formBilin (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    [NoZeroDivisors k] [CharZero k] : LinearMap.IsAlt (S.formBilin c) := by
+`LinearMap.IsAlt`. It uses that `k` has characteristic zero. -/
+lemma isAlt_formBilin (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
+    LinearMap.IsAlt (S.formBilin c) := by
   refine LinearMap.isAlt_iff_eq_neg_flip.mpr (LinearMap.ext₂ fun u v => ?_)
   rw [LinearMap.neg_apply, LinearMap.neg_apply, LinearMap.flip_apply, formBilin_apply,
     formBilin_apply, ← contr_toLin_comm, form_antisymm, map_neg, LinearMap.neg_apply, tmul_neg,
@@ -387,16 +386,15 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
 /-- The Schouten identity for an antisymmetric form on a kind with two labels, such as the Weyl `ε`:
 `g(u, v) w + g(v, w) u + g(w, u) v = 0`. In two dimensions every alternating form of three vectors
 vanishes. -/
-lemma schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] [NoZeroDivisors k]
-    [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2) (u v w : S.V c.dual) :
+lemma schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
+    (h2 : Fintype.card (basisIdx c.kind) = 2) (u v w : S.V c.dual) :
     S.formBilin c u v • w + S.formBilin c v w • u + S.formBilin c w u • v = 0 :=
   (isAlt_formBilin (S := S) c).schouten (S.basis c.dual) h2 u v w
 
 /-- The Schouten identity in components, `g^γρ δ^α_α' = g^γα' δ^α_ρ - g^ρα' δ^α_γ`: `schouten` at
 the basis vectors `e^γ`, `e^ρ` and `e^α'`, read at the label `α`. -/
 lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    [NoZeroDivisors k] [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2)
-    (γ ρ α' α : basisIdx c.kind) :
+    (h2 : Fintype.card (basisIdx c.kind) = 2) (γ ρ α' α : basisIdx c.kind) :
     S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
       S.formMatrix c γ α' * (if ρ = α then 1 else 0) -
         S.formMatrix c ρ α' * (if γ = α then 1 else 0) := by
@@ -410,8 +408,7 @@ lemma formMatrix_schouten (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFor
 /-- The Schouten identity in components with the delta read the other way,
 `g^γρ δ_α^α' = g^γα δ_ρ^α' - g^ρα δ_γ^α'`. -/
 lemma formMatrix_schouten' (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
-    [NoZeroDivisors k] [CharZero k] (h2 : Fintype.card (basisIdx c.kind) = 2)
-    (γ ρ α α' : basisIdx c.kind) :
+    (h2 : Fintype.card (basisIdx c.kind) = 2) (γ ρ α α' : basisIdx c.kind) :
     S.formMatrix c γ ρ * (if α = α' then 1 else 0) =
       S.formMatrix c γ α * (if ρ = α' then 1 else 0) -
         S.formMatrix c ρ α * (if γ = α' then 1 else 0) := by

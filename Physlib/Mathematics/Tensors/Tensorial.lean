@@ -66,7 +66,7 @@ namespace Tensors
 
 /-- A type `M` whose elements are the tensors of `S` with colors `c`. `M` has its own action of
 the group, `rep`, and `toTensor` identifies `M` with `S.Tensor c` compatibly with it. -/
-class Tensorial {k : outParam Type} [Field k] {G : outParam Type} [Group G] {K : outParam Type}
+class Tensorial {k : outParam Type} [RCLike k] {G : outParam Type} [Group G] {K : outParam Type}
     {basisIdx : outParam (K → Type)} [∀ κ, Fintype (basisIdx κ)]
     [∀ κ, DecidableEq (basisIdx κ)] (S : outParam (Species k G K basisIdx)) {ι : outParam Type}
     (c : outParam (ι → Color K)) (M : Type) [AddCommMonoid M] [Module k M] where
@@ -77,7 +77,7 @@ class Tensorial {k : outParam Type} [Field k] {G : outParam Type} [Group G] {K :
 
 namespace Tensorial
 
-variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
     {ι₁ ι₂ : Type} {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {M N : Type} [AddCommMonoid M]
     [Module k M] [AddCommMonoid N] [Module k N]

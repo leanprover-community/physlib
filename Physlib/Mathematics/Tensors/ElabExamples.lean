@@ -40,7 +40,7 @@ namespace Tensors.Notation
 
 open Species
 
-variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
     (a c : Color K) (T U W : S.Tensor ![a, a.dual]) (T' : S.Tensor ![a.dual, a])
     (κ : K) (v : S.Tensor ![⟨κ, .up⟩]) (r : k) (Λ : G)

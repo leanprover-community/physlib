@@ -45,10 +45,9 @@ notation for both orientations of the delta.
 
 namespace Tensors.Species
 
-variable {k : Type} [Field k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
+variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
-    (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] [NoZeroDivisors k]
-    [CharZero k]
+    (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind]
 
 /-- The Schouten identity for an antisymmetric form on a kind with two labels, such as the Weyl `ε`,
 `g_γρ δ^α_α' = g_γα' δ_ρ^α - g_ρα' δ_γ^α`. -/
