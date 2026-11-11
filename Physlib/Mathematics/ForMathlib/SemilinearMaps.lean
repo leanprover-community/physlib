@@ -27,7 +27,9 @@ A basis `b` of `M`, a basis `b'` of `M'` and an equivalence `e` of their labels 
 conjugate-linear equivalence `Module.Basis.starEquiv b b' e : M ≃ₗ⋆[R] M'`. It conjugates the
 coordinates of a vector in `b` and reads them in `b'`, the coordinate at `μ` moving to `e μ`. A
 conjugate-linear map that sends each `b μ` to `b' (e μ)` is this equivalence. Conjugating both
-factors along the same labels conjugates the coordinate pairing of two bases.
+factors along the same labels conjugates the coordinate pairing of two bases. When conjugate-linear
+maps of the two factors conjugate one invariant coordinate pairing into another, the map of the
+second factor commutes with the group action when the map of the first does.
 
 A semilinear equivalence keeps the finite rank, so a module and its conjugate have the same
 dimension.
@@ -35,12 +37,15 @@ dimension.
 ## ii. Key results
 
 - `PiTensorProduct.mapₛₗ` applies a family of semilinear maps to a tensor product, and
-  `PiTensorProduct.congrₛₗ` a family of semilinear equivalences.
+  `PiTensorProduct.congrₛₗ` a family of semilinear equivalences, with
+  `PiTensorProduct.congrₛₗ_congrₛₗ` : maps that undo the `f i` undo `congrₛₗ f`.
 - `Module.Basis.starEquiv` conjugates the coordinates of `b` and reads them in `b'`, and
   `Module.Basis.eq_starEquiv` proves that it is the only conjugate-linear map sending `b μ` to
   `b' (e μ)`.
 - `Module.Basis.star_coordPairing_starEquiv` proves that conjugating both factors conjugates the
-  coordinate pairing.
+  coordinate pairing, and `Module.Basis.map_rep_of_star_coordPairing` that a conjugation of
+  invariant coordinate pairings commutes with the group action on the second factor when it does
+  on the first.
 - `LinearEquiv.finrank_eqₛₗ` : a semilinear equivalence keeps the finite rank.
 
 ## iii. Table of contents
@@ -116,6 +121,18 @@ lemma congrₛₗ_tprod {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInv
     congrₛₗ f (tprod R x) = tprod R fun i => f i (x i) :=
   mapₛₗ_tprod _ x
 
+/-- Applying `congrₛₗ f` and then `congrₛₗ g`, for maps `g i` that undo the `f i`, gives back the
+tensor. -/
+lemma congrₛₗ_congrₛₗ {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    (f : Π i, s i ≃ₛₗ[σ] t i) (g : Π i, t i ≃ₛₗ[σ'] s i) (h : ∀ i x, g i (f i x) = x)
+    (x : ⨂[R] i, s i) : congrₛₗ g (congrₛₗ f x) = x := by
+  induction x using PiTensorProduct.induction_on with
+  | smul_tprod r x =>
+    rw [LinearEquiv.map_smulₛₗ, LinearEquiv.map_smulₛₗ, congrₛₗ_tprod, congrₛₗ_tprod,
+      RingHomInvPair.comp_apply_eq]
+    simp only [h]
+  | add x y hx hy => rw [map_add, map_add, hx, hy]
+
 end PiTensorProduct
 
 /-!
@@ -187,6 +204,31 @@ lemma star_coordPairing_starEquiv [Fintype ι] [DecidableEq ι] [Fintype ι'] [D
   rw [coordPairing_tmul, coordPairing_tmul]
   simp only [star_sum, star_mul']
   exact Fintype.sum_equiv e _ _ fun μ => by simp
+
+/-- Let conjugate-linear maps `f` of `M` and `f'` of `N` conjugate the coordinate pairing of `b₁` and
+`b₂` into that of `b₁'` and `b₂'`, both invariant. If `f` commutes with the group action, so does
+`f'`. -/
+lemma map_rep_of_star_coordPairing [Fintype ι] [DecidableEq ι] [Fintype ι'] [DecidableEq ι']
+    {N N' G : Type*} [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N'] [Group G]
+    {ρ₁ : Representation R G M} {ρ₂ : Representation R G N} {ρ₁' : Representation R G M'}
+    {ρ₂' : Representation R G N'} {b₁ : Basis ι R M} {b₂ : Basis ι R N} {b₁' : Basis ι' R M'}
+    {b₂' : Basis ι' R N'}
+    (h : ∀ g x y, b₁.coordPairing b₂ (ρ₁ g x ⊗ₜ ρ₂ g y) = b₁.coordPairing b₂ (x ⊗ₜ y))
+    (h' : ∀ g x y, b₁'.coordPairing b₂' (ρ₁' g x ⊗ₜ ρ₂' g y) = b₁'.coordPairing b₂' (x ⊗ₜ y))
+    (f : M ≃ₗ⋆[R] M') (f' : N ≃ₗ⋆[R] N')
+    (hf' : ∀ u α, star (b₁.coordPairing b₂ (u ⊗ₜ α)) = b₁'.coordPairing b₂' (f u ⊗ₜ f' α))
+    (hf : ∀ g v, f (ρ₁ g v) = ρ₁' g (f v)) (g : G) (α : N) :
+    f' (ρ₂ g α) = ρ₂' g (f' α) := by
+  have hr (u : M) (α : N) : b₁.coordPairing b₂ (u ⊗ₜ ρ₂ g α) =
+      b₁.coordPairing b₂ (ρ₁ g⁻¹ u ⊗ₜ α) := by
+    simpa using h g (ρ₁ g⁻¹ u) α
+  have hr' (u : M') (α : N') : b₁'.coordPairing b₂' (u ⊗ₜ ρ₂' g α) =
+      b₁'.coordPairing b₂' (ρ₁' g⁻¹ u ⊗ₜ α) := by
+    simpa using h' g (ρ₁' g⁻¹ u) α
+  refine (isPerfPair_coordPairing b₁' b₂').bijective_right.1 (LinearMap.ext fun u' => ?_)
+  obtain ⟨u, rfl⟩ := f.surjective u'
+  change b₁'.coordPairing b₂' (f u ⊗ₜ f' (ρ₂ g α)) = b₁'.coordPairing b₂' (f u ⊗ₜ ρ₂' g (f' α))
+  rw [← hf', hr, hf', hf, hr']
 
 end Module.Basis
 

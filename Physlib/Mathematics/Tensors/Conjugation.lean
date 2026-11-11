@@ -188,9 +188,7 @@ lemma rep_dual_of_star_contr (f : S.V c ≃ₗ⋆[k] S.V c') (f' : S.V c.dual �
     (hf' : ∀ u α, star (S.contr c (u ⊗ₜ α)) = S.contr c' (f u ⊗ₜ f' α))
     (hf : ∀ g v, f (S.rep c g v) = S.rep c' g (f v)) (g : G) (α : S.V c.dual) :
     f' (S.rep c.dual g α) = S.rep c'.dual g (f' α) :=
-  ext_contr fun u' => by
-    obtain ⟨u, rfl⟩ := f.surjective u'
-    rw [← hf', contr_tmul_rep, contr_tmul_rep, ← hf, hf']
+  Module.Basis.map_rep_of_star_coordPairing (S.invariant c) (S.invariant c') f f' hf' hf g α
 
 /-!
 
@@ -272,11 +270,8 @@ lemma conj_pure (h : ∀ i, c' i = (c i).bar) (f : Π i, S.V (c i)) :
 
 /-- Conjugating twice gives back the tensor. -/
 lemma conj_conj (h : ∀ i, c' i = (c i).bar) (h' : ∀ i, c i = (c' i).bar) (t : Tensor S c) :
-    conj h' (conj h t) = t := by
-  induction t using inductionOn_pure with
-  | h f => simp
-  | hsmul r t ht => rw [LinearEquiv.map_smulₛₗ, LinearEquiv.map_smulₛₗ, ht, starRingEnd_self_apply]
-  | hadd x y hx hy => rw [map_add, map_add, hx, hy]
+    conj h' (conj h t) = t :=
+  PiTensorProduct.congrₛₗ_congrₛₗ _ _ (fun i => conjEquiv_conjEquiv (h i) (h' i)) t
 
 /-!
 
