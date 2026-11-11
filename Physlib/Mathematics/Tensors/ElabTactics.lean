@@ -117,8 +117,8 @@ private def isSummandError (e : Exception) : Bool :=
 /-- The argument `x` of `F x`, for a bundled map `F` whose head is the constant `f`, such as
 `Tensor.contr σ` for `f = Tensor.contr`. -/
 private def bundledArg? (f : Name) (e : Expr) : Option Expr :=
-  let e := e.consumeMData
-  if e.isAppOfArity ``DFunLike.coe 6 && e.appFn!.appArg!.isAppOf f then some e.appArg! else none
+  let_expr DFunLike.coe _ _ _ _ F x := e | none
+  if F.isAppOf f then some x else none
 
 /-- Writes each side `x` of the goal on which `p` fails as `F x`, by the term `h : F x = x`. -/
 private def wrapSides (tac : String) (p : Expr → Bool) (h : Term) : TacticM Unit := do
@@ -353,16 +353,13 @@ private def leftover (xs ys : List Expr) : MetaM (List Expr) := do
 
 /-- The color `a` of a delta `S.deltaTensor a`. -/
 private def deltaColor? (x : Expr) : Option Expr :=
-  let x := x.consumeMData
-  if x.isAppOf ``Tensor.Species.deltaTensor then some x.appArg! else none
+  let_expr Tensor.Species.deltaTensor _ _ _ _ _ _ _ _ _ a := x | none
+  some a
 
 /-- The species `S` and the color `c` of a form `S.formTensor c`. -/
 private def formArgs? (x : Expr) : Option (Expr × Expr) :=
-  let x := x.consumeMData
-  if x.isAppOf ``Tensor.Species.formTensor then
-    let args := x.getAppArgs
-    some (args[args.size - 3]!, args[args.size - 2]!)
-  else none
+  let_expr Tensor.Species.formTensor _ _ _ _ _ _ _ _ S c _ := x | none
+  some (S, c)
 
 /-- A contraction `Tensor.contr τ P` of a left-nested product `P`, read index by index. The indices
 of `P` are numbered in order, the indices of each factor after those of the factors before it. -/
@@ -376,22 +373,12 @@ private structure ReadContraction where
   /-- The two indices of `P` of each pair, the first argument of `S.contr` first. -/
   pairs : List (Nat × Nat)
 
-/-- The elements of an index type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
-index order. -/
-private partial def indexElems (ι : Expr) : MetaM (List Expr) := do
-  let ι ← whnfR ι
-  if ι.isAppOfArity ``Fin 1 then
-    let some n ← (evalNat ι.appArg!).run
-      | throwError "tensor_regroup: the index type {ι} is not literal"
-    (List.range n).mapM fun i => do
-      mkAppM ``Fin.mk #[mkNatLit i, ← mkDecideProof (← mkAppM ``LT.lt #[mkNatLit i, ι.appArg!])]
-  else if let .const ``PUnit [u] := ι then return [mkConst ``PUnit.unit [u]]
-  else if ι.isConstOf ``Empty then return []
-  else if ι.isAppOfArity ``Sum 2 then
-    let (a, b) := (ι.getArg! 0, ι.getArg! 1)
-    return (← (← indexElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
-      (← (← indexElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
-  else throwError "tensor_regroup: the index type {ι} is not built from `Fin n` and `⊕`"
+/-- The elements of the index type `ι`, in index order (`Indices.elems`). -/
+private def indexElems (ι : Expr) : MetaM (List Expr) := do
+  let some indices ← Indices.ofType? ι
+    | throwError "tensor_regroup: the index type {ι} is not built from `Fin n` with a literal `n`, \
+        `Unit`, `Empty` and `⊕`"
+  indices.elems
 
 /-- The number of the index `x` of the index type `indices`, after evaluating `x`. -/
 private partial def indexNumber : Indices → Expr → MetaM Nat
@@ -400,6 +387,7 @@ private partial def indexNumber : Indices → Expr → MetaM Nat
       | throwError "tensor_regroup: internal error, the index {x} does not evaluate"
     return i
   | .unit, _ => return 0
+  | .empty, x => throwError "tensor_regroup: internal error, the index {x} does not evaluate"
   | .sum a b, x => do
     let x ← whnfD x
     if x.isAppOfArity ``Sum.inl 3 then indexNumber a x.appArg!
@@ -409,9 +397,11 @@ private partial def indexNumber : Indices → Expr → MetaM Nat
 /-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
 free index and at each index of each pair. -/
 private def readContraction (e : Expr) : MetaM ReadContraction := do
-  let some P := bundledArg? ``Tensor.Species.Tensor.contr e
-    | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
-  let τ := e.consumeMData.appFn!.appArg!.appArg!
+  -- `e` is `Tensor.contr τ P`, with `τ : ColorEquiv c (contrColors c' a)`, `c' : κ → Color K` and
+  -- `a : J → Color K`.
+  let notContr := m!"tensor_regroup: the side{indentExpr e}\nis not a contraction"
+  let_expr DFunLike.coe _ _ _ _ F P := e | throwError notContr
+  let_expr Tensor.Species.Tensor.contr _ _ _ _ _ _ _ _ _ _ κ J _ _ _ _ τ := F | throwError notContr
   let some (indices, _, _) ← literalTensorType? (← inferType P)
     | throwError "tensor_regroup: the indices or colors of a product are not literal"
   let fs := factors P
@@ -419,10 +409,6 @@ private def readContraction (e : Expr) : MetaM ReadContraction := do
     let some (s, _, _) ← literalTensorType? (← inferType f)
       | throwError "tensor_regroup: the indices or colors of{indentExpr f}\nare not literal"
     return s.size
-  -- `τ : ColorEquiv c (contrColors c' a)`, with `c' : κ → Color K` and `a : J → Color K`.
-  let args := (← whnfR (← inferType τ)).getAppArgs
-  let cargs := args[args.size - 1]!.getAppArgs
-  let (κ, J) := (cargs[1]!, cargs[2]!)
   let JJ ← mkAppM ``Sum #[J, J]
   let at_ (y : Expr) : MetaM Nat := do
     indexNumber indices (← mkAppM ``Equiv.invFun #[← mkAppM ``Tensor.ColorEquiv.toEquiv #[τ], y])

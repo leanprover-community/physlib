@@ -126,12 +126,15 @@ syntax (name := tensorIndexSyntax) "{" tensorIndexExpr "}ᵀ" : term
 
 -/
 
-/-- An index type built from `Fin n`, `Unit` and `⊕`. Its indices are numbered `0, 1, …` in order.
--/ inductive Indices where
+/-- An index type built from `Fin n`, `Unit`, `Empty` and `⊕`. Its indices are numbered `0, 1, …` in
+order. -/
+inductive Indices where
   /-- `Fin n`. -/
   | fin (n : Nat)
   /-- `Unit`. -/
   | unit
+  /-- `Empty`. -/
+  | empty
   /-- `a ⊕ b`. -/
   | sum (a b : Indices)
 deriving BEq
@@ -140,39 +143,61 @@ deriving BEq
 def Indices.size : Indices → Nat
   | .fin n => n
   | .unit => 1
+  | .empty => 0
   | .sum a b => a.size + b.size
 
 /-- The index type as a term. -/
 def Indices.type : Indices → TermElabM Term
   | .fin n => `(Fin $(quote n))
   | .unit => `(Unit)
+  | .empty => `(Empty)
   | .sum a b => do `($(← a.type) ⊕ $(← b.type))
+
+/-- The index type as an expression. -/
+def Indices.toExpr : Indices → Expr
+  | .fin n => mkApp (mkConst ``Fin) (mkNatLit n)
+  | .unit => mkConst ``Unit
+  | .empty => mkConst ``Empty
+  | .sum a b => mkApp2 (mkConst ``Sum [.zero, .zero]) a.toExpr b.toExpr
 
 /-- The index `i` as a term. -/
 def Indices.elem : Indices → Nat → TermElabM Term
   | .fin n, i => `(($(quote i) : Fin $(quote n)))
   | .unit, _ => `(())
+  | .empty, _ => throwError "index notation: internal error, `Empty` has no index"
   | .sum a b, i =>
     if i < a.size then do `(Sum.inl $(← a.elem i)) else do `(Sum.inr $(← b.elem (i - a.size)))
 
+/-- The indices `0, 1, …` in order, as elements of the index type `toExpr`. -/
+def Indices.elems : Indices → MetaM (List Expr)
+  | .fin n => (List.range n).mapM fun i => do
+    mkAppM ``Fin.mk #[mkNatLit i, ← mkDecideProof (← mkAppM ``LT.lt #[mkNatLit i, mkNatLit n])]
+  | .unit => return [mkConst ``Unit.unit]
+  | .empty => return []
+  | .sum a b => do
+    let inj (f : Name) := mkApp3 (mkConst f [.zero, .zero]) a.toExpr b.toExpr
+    return (← a.elems).map (inj ``Sum.inl) ++ (← b.elems).map (inj ``Sum.inr)
+
 /-- The function on an index type taking the values `vs` in index order, built from vector literals
-on `Fin n`, constants on `Unit` and `comb` on `⊕`. -/
+on `Fin n`, constants on `Unit`, `Empty.elim` on `Empty` and `comb` on `⊕`. -/
 def Indices.fn (comb : Name) : Indices → List Term → TermElabM Term
   | .fin _, vs => `(![$(vs.toArray),*])
   | .unit, vs => `(fun _ : Unit => $(vs[0]!))
+  | .empty, _ => `(Empty.elim)
   | .sum a b, vs => do
     `($(mkIdent comb) $(← a.fn comb (vs.take a.size)) $(← b.fn comb (vs.drop a.size)))
 
-/-- The index type of a type built from `Fin n` and `⊕` with a literal `n`. -/
+/-- The index type of a type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`. -/
 partial def Indices.ofType? (ι : Expr) : MetaM (Option Indices) := do
-  let ι ← whnfR ι
-  if ι.isAppOfArity ``Fin 1 then
-    return (← (evalNat ι.appArg!).run).map .fin
-  else if ι.isAppOfArity ``Sum 2 then
-    let some a ← Indices.ofType? (ι.getArg! 0) | return none
-    let some b ← Indices.ofType? (ι.getArg! 1) | return none
+  match_expr (← whnfR ι) with
+  | Fin n => return (← (evalNat n).run).map .fin
+  | Sum a b =>
+    let some a ← Indices.ofType? a | return none
+    let some b ← Indices.ofType? b | return none
     return some (.sum a b)
-  else return none
+  | PUnit => return some .unit
+  | Empty => return some .empty
+  | _ => return none
 
 /-- The bijection from `dom` to `cod` sending the index `pre[j]` of `dom` to the index `j` of `cod`.
 The list `pre` names every index of `dom` once. Its inverse identities are proved index by index
@@ -187,23 +212,28 @@ def indexEquiv (dom cod : Indices) (pre : List Nat) : TermElabM Term := do
 
 /-- The entries of a literal color family `![a, b, …]`, or of `prodColors` of literal families. -/
 partial def colorList? (c : Expr) : MetaM (Option (List Expr)) := do
-  if c.isAppOfArity ``Tensor.prodColors 5 then
-    return (· ++ ·) <$> (← colorList? (c.getArg! 3)) <*> (← colorList? (c.getArg! 4))
-  let (cs, _, tail) ← Matrix.matchVecConsPrefix (mkNatLit 0) c
-  return if tail.isAppOfArity ``Matrix.vecEmpty 1 then some cs else none
+  match_expr c with
+  | Tensor.prodColors _ _ _ c₁ c₂ => return (· ++ ·) <$> (← colorList? c₁) <*> (← colorList? c₂)
+  | _ =>
+    let (cs, _, tail) ← Matrix.matchVecConsPrefix (mkNatLit 0) c
+    return if tail.isAppOfArity ``Matrix.vecEmpty 1 then some cs else none
 
 /-- The literal color family `![a, b, …]`. -/
 def colorsTerm (cs : List Expr) : TermElabM Term := do
   `(![$((← cs.toArray.mapM exprToSyntax)),*])
 
+/-- The species `S`, the index type `ι` and the color family `c` of a tensor type
+`S.Tensor (ι := ι) c`. -/
+def tensorTypeArgs? (ty : Expr) : Option (Expr × Expr × Expr) :=
+  let_expr Tensor.Species.Tensor _ _ _ _ _ _ _ _ S ι c := ty | none
+  some (S, ι, c)
+
 /-- The index type, the color family `c` and its entries of a tensor type `S.Tensor c` with literal
 indices and colors. -/
 def literalTensorType? (ty : Expr) : MetaM (Option (Indices × Expr × List Expr)) := do
-  let ty ← whnfR (← instantiateMVars ty)
-  unless ty.isAppOf ``Tensor.Species.Tensor do return none
-  let args := ty.getAppArgs
-  let some indices ← Indices.ofType? args[args.size - 2]! | return none
-  let c ← instantiateMVars args[args.size - 1]!
+  let some (_, ι, c) := tensorTypeArgs? (← whnfR (← instantiateMVars ty)) | return none
+  let some indices ← Indices.ofType? ι | return none
+  let c ← instantiateMVars c
   let some cs ← colorList? c | return none
   return (indices, c, cs)
 
@@ -292,15 +322,17 @@ def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool)
 and flipped at each `τ(μ)`. -/
 def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
   let (e, ty) ← tensorOf T
-  let args := ty.getAppArgs
-  let some indices ← Indices.ofType? args[args.size - 2]!
-    | throwError "index notation: the index type of {T} must be built from `Fin n` and `⊕`"
-  let some colors ← colorList? args[args.size - 1]!
+  let some (S, ι, c) := tensorTypeArgs? ty
+    | throwError "index notation: internal error, the type of {T} is not a tensor type"
+  let some indices ← Indices.ofType? ι
+    | throwError "index notation: the index type {ι} of {T} must be built from `Fin n` with a \
+        literal `n`, `Unit`, `Empty` and `⊕`"
+  let some colors ← colorList? c
     | throwError "index notation: the colors of {T} must be a literal list"
   unless colors.length = idxs.size do
     throwError "index notation: {T} has {colors.length} indices, but {idxs.size} names are given"
   let kinds ← (idxs.toList.zip colors).mapM fun (i, col) => indexName i col
-  let a : Node := ⟨kinds.map (·.1), colors, indices, ← exprToSyntax e, args[args.size - 3]!⟩
+  let a : Node := ⟨kinds.map (·.1), colors, indices, ← exprToSyntax e, S⟩
   if kinds.all (!·.2) then return a
   kinds.zipIdx.foldlM (init := ← a.toFin) fun a ((_, d), i) => if d then a.toDualAt i else pure a
 

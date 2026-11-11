@@ -121,6 +121,12 @@ example : {(T | μ μ) ⊗ U | μ ρ}ᵀ = {{T | μ μ}ᵀ | ⊗ U | μ ρ}ᵀ :
 #guard_msgs in
 example (f : Fin 2 → Color K) (t : S.Tensor f) : S.Tensor f := {t | μ ν}ᵀ
 
+-- A tensor whose index type is not literal is rejected.
+/-- error: index notation: the index type Fin n of t must be built from `Fin n` with a literal `n`,
+`Unit`, `Empty` and `⊕` -/
+#guard_msgs (whitespace := lax) in
+example (n : ℕ) (f : Fin n → Color K) (t : S.Tensor f) : S.Tensor f := {t | μ}ᵀ
+
 -- A pair of indices whose colors are not dual is rejected.
 /-- error: index notation: μ joins the colors a and a, which are not dual -/
 #guard_msgs in
