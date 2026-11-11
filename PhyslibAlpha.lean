@@ -46,6 +46,7 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.SectorRea
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.TransformsIn
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.AdjointCoeff
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Basic
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.CompactMatrixGroup
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Factor
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.MatrixJets
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.MaurerCartan
