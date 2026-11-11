@@ -174,6 +174,7 @@ public import Physlib.Mathematics.ForMathlib.List.InsertionSort
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
+public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 public import Physlib.Mathematics.ForMathlib.Representation
 public import Physlib.Mathematics.ForMathlib.Schouten
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation

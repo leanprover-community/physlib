@@ -6,7 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Physlib.Mathematics.Tensors.Species
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basis
+public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 public import Physlib.Mathematics.ForMathlib.Representation
 /-!
 
@@ -66,7 +66,8 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 - `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors.
-- `Species.tensorBasis_repr_smul` gives the components of `g • t`.
+- `Species.tensorBasis_repr_smul` gives the components of `g • t`, from the matrix of
+  `PiTensorProduct.map` in `PiTensorProduct.toMatrix_map_apply`.
 - `Species.mapIndices` applies a linear map at every index, with `Species.mapIndices_comp` and
   `Species.mapIndices_id`, and `Species.mapIndices_smul` proves that it commutes with the group when
   every index map does.
@@ -289,10 +290,9 @@ lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : Tensor S 
     (φ : Π i, basisIdx (c i).kind) :
     (S.tensorBasis c).repr (g • t) φ = ∑ ψ, (∏ i, LinearMap.toMatrix (S.basis (c i))
       (S.basis (c i)) (S.rep (c i) g) (φ i) (ψ i)) * (S.tensorBasis c).repr t ψ := by
-  conv_lhs => rw [← (S.tensorBasis c).sum_repr t, Finset.smul_sum]
-  simp_rw [smul_comm g, map_sum, map_smul, Finsupp.coe_finsetSum, Finset.sum_apply,
-    Finsupp.smul_apply, tensorBasis_apply, smul_pure, tensorBasis_repr_pure,
-    LinearMap.toMatrix_apply, smul_eq_mul, mul_comm]
+  simp_rw [← PiTensorProduct.toMatrix_map_apply]
+  exact congrFun (LinearMap.toMatrix_mulVec_repr (Basis.piTensorProduct fun i => S.basis (c i)) _
+    (Representation.piTprod (fun i => S.rep (c i)) g) t).symm φ
 
 /-!
 
