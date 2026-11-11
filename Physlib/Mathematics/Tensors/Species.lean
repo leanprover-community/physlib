@@ -57,7 +57,6 @@ A repeated index is contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.isPerfPair_contr` : the contraction is a perfect pairing, `Species.dualEquiv` :
   `V c.dual` is the dual representation of `V c`, and `Species.ext_contr` : a vector of
   `V c.dual` is determined by its contractions.
-- `Species.invariant_of_contr` : the condition from a pairing known to be invariant.
 - `Species.cast` : a vector moved along an equality of colors, with `Species.cast_rep`,
   `Species.basis_repr_cast`, `Species.contr_cast_tmul_cast` and
   `Species.contr_cast_tmul_cast_symm` : this keeps the action, the components and the
@@ -150,8 +149,8 @@ The contraction is not a field of `Species`. It is defined from the bases, as
 `u ⊗ α ↦ ∑ μ, u^μ α_μ`, so the bases of `c` and `c.dual` are dual by definition
 (`contr_basis`). Its invariance is the condition on the species. It is a perfect pairing in
 Mathlib's sense, and `dualEquiv` identifies `V c.dual` with Mathlib's dual representation of
-`V c`, so Mathlib's results on duals apply. `invariant_of_contr` gives the condition when an
-invariant pairing is already known.
+`V c`, so Mathlib's results on duals apply. When an invariant pairing for which the bases are
+dual is already known, `Module.Basis.coordPairing_invariant` gives the condition.
 
 -/
 
@@ -214,18 +213,6 @@ same contraction against every vector of `c` are equal. -/
 lemma ext_contr {c : Color K} {α α' : S.V c.dual}
     (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
   (S.dualEquiv c).toLinearEquiv.injective (LinearMap.ext h)
-
-omit S in
-/-- The condition `invariant`, from an invariant pairing `p` for which the bases are dual. It is how
-a species is built from a pairing that is known to be invariant. -/
-lemma invariant_of_contr {ι M N : Type} [Fintype ι] [DecidableEq ι] [AddCommGroup M]
-    [Module k M] [AddCommGroup N] [Module k N] {ρ : Representation k G M}
-    {ρ' : Representation k G N} {b : Module.Basis ι k M} {b' : Module.Basis ι k N}
-    (p : (ρ.tprod ρ').IntertwiningMap (Representation.trivial k G k))
-    (h : ∀ I J, p (b I ⊗ₜ b' J) = if I = J then 1 else 0) (g : G) (x : M) (y : N) :
-    b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y) := by
-  rw [← b.eq_coordPairing b' p.toLinearMap h]
-  simpa using Representation.IntertwiningMap.isIntertwining _ _ p g (x ⊗ₜ y)
 
 variable {S}
 
