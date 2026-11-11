@@ -20,8 +20,8 @@ tensors are built from these.
 
 A species `S : Species k G K basisIdx` over `k = ℝ` or `ℂ` (`RCLike k`) gives each color `c` a
 `k`-vector space `S.V c`, a representation `S.rep c` of the group `G` on it, and a basis
-`S.basis c`. A tensor of `S` with index colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`, with
-the action of `G` on each factor.
+`S.basis c`. A tensor of `S` with index colors `c₁, …, cₙ` is an element of `V c₁ ⊗ ⋯ ⊗ V cₙ`,
+with the action of `G` on each factor.
 
 For real Lorentz tensors in `1 + d` dimensions, `k = ℝ`, `G` is the Lorentz group, and there is
 one kind `vec`, whose basis labels are `basisIdx vec = Fin 1 ⊕ Fin d`. The space of `⟨vec, up⟩`
@@ -266,8 +266,8 @@ lemma basis_repr_cast {a b : Color K} (p : a = b) (v : S.V a) (μ : basisIdx b.k
   subst p
   rfl
 
-/-- For a family `f` of vectors on indices, moving `f s` to the color `b` is moving `f s'`, for any
-index `s'` equal to `s`. -/
+/-- For a family `f` of vectors on indices, moving `f s` to the color `b` is moving `f s'`, for
+any index `s'` equal to `s`. -/
 lemma cast_apply_congr {ι : Type} {d : ι → Color K} (f : Π s, S.V (d s)) {s s' : ι}
     (e : s = s') {b : Color K} (p : d s = b) : S.cast p (f s) = S.cast (e ▸ p) (f s') := by
   subst e

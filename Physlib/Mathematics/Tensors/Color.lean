@@ -20,9 +20,9 @@ covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors ha
 for each of the two types of Weyl spinor index and one for the vector index.
 
 A tensor has one color per index. A species (`Species.lean`) gives each color a space, and a
-tensor is an element of the tensor product of the spaces of its indices. Indices carry colors
-rather than spaces, so that checking that two indices can be contracted is an equality of colors,
-decidable, not an equality of types.
+tensor is an element of the tensor product of the spaces of its indices. Each index has a color
+rather than a space, so that checking that two indices can be contracted is an equality of
+colors, which is decidable, not an equality of types.
 
 The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, the same kind with the other variance. A contraction such
 as `v^μ w_μ` pairs an index of color `c` with an index of color `c.dual`. `Color K` is a structure
