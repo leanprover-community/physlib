@@ -81,7 +81,8 @@ scales whose zero is offset from absolute zero, and they convert to absolute sca
    `PositiveRealUnitCore.scale_scale`
 13. Physlib/Thermodynamics/Temperature/TemperatureUnits.lean — `kelvin`, `nanokelvin`,
    `microkelvin`, `millikelvin`, `absoluteFahrenheit`
-14. Physlib/StatisticalMechanics/BoltzmannConstant.lean — `kB`, `kB_pos`
+14. Physlib/StatisticalMechanics/BoltzmannConstant.lean — `BoltzmannConstant`,
+   `BoltzmannConstant.val_pos`
 
 ## References
 

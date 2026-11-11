@@ -5,12 +5,10 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
 public import PhyslibAlpha.Relativity.Tensors.RealTensor.CoVector.Representation
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
-public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra.Basic
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra.Action
 /-!
 # Derivative algebras
@@ -70,7 +68,7 @@ namespace SpaceTimeDerivAlgebraℂ
   rather than through `SymmetricAlgebra.equivMvPolynomial`. -/
 lemma basis_apply_symmetricAlgebra (s : Multiset (Fin 1 ⊕ Fin 3)) :
     basis s =
-      Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (Multiset.toFinsupp s) := by
+      Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (Multiset.toFinsupp s) := by
   rw [basis, Module.Basis.reindex_apply, Equiv.symm_symm]
   rfl
 
@@ -95,18 +93,18 @@ lemma basis_nil :
 /-- The derivative of an element in `SpaceTimeDerivAlgebraℂ` taking e.g.
   `∂_s` to `∂_μ ∂_s`. -/
 noncomputable def deriv (μ : Fin 1 ⊕ Fin 3) : SpaceTimeDerivAlgebraℂ →ₗ[ℂ] SpaceTimeDerivAlgebraℂ :=
-  Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.constr ℂ fun m =>
-    Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (m + Finsupp.single μ 1)
+  Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.constr ℂ fun m =>
+    Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (m + Finsupp.single μ 1)
 
 lemma deriv_basis (μ : Fin 1 ⊕ Fin 3) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
-    deriv μ (Lorentz.complexCoBasis.dualBasis.symmetricAlgebra m) =
-      Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (m + Finsupp.single μ 1) := by
+    deriv μ (Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra m) =
+      Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (m + Finsupp.single μ 1) := by
   rw [deriv, Module.Basis.constr_basis]
 
 lemma deriv_comm_apply (μ ν : Fin 1 ⊕ Fin 3) (x : SpaceTimeDerivAlgebraℂ) :
     deriv μ (deriv ν x) = deriv ν (deriv μ x) := by
   have h : (deriv μ) ∘ₗ (deriv ν) = (deriv ν) ∘ₗ (deriv μ) := by
-    refine Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.ext fun m => ?_
+    refine Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.ext fun m => ?_
     simp only [LinearMap.coe_comp, Function.comp_apply, deriv_basis]
     rw [add_assoc, add_assoc, add_comm (Finsupp.single ν 1)]
   exact LinearMap.congr_fun h x
@@ -159,25 +157,26 @@ instance : RightCommutative
 
 /-- The evaluation map taking a function `f : SpaceTimeAlgebra` to `∂_μ f`. -/
 noncomputable def eval : SpaceTimeDerivAlgebraℂ →ₗ[ℂ] SpaceTimeAlgebra →ₗ[ℂ] ℂ :=
-  Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.constr ℂ fun m =>
+  Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.constr ℂ fun m =>
     (∏ μ, (m μ)! : ℕ) • MvPowerSeries.coeff m
 
 
 @[simp]
 lemma eval_basis (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) (f : SpaceTimeAlgebra) :
-    eval (Lorentz.complexCoBasis.dualBasis.symmetricAlgebra m) f =
+    eval (Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra m) f =
       (∏ μ, (m μ)! : ℕ) • MvPowerSeries.coeff m f := by
   rw [eval, Module.Basis.constr_basis]
   rfl
 
 lemma eval_monomial (p : SpaceTimeDerivAlgebraℂ) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
     eval p (MvPowerSeries.monomial m 1) =
-      ((∏ μ, (m μ)! : ℕ) : ℂ) * Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.repr p m := by
+      ((∏ μ, (m μ)! : ℕ) : ℂ) *
+        Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.repr p m := by
   classical
   rw [eval, Module.Basis.constr_apply, Finsupp.sum, LinearMap.sum_apply]
   simp only [LinearMap.smul_apply, MvPowerSeries.coeff_monomial]
   rw [Finset.sum_eq_single m]
-  · by_cases hm : m ∈ (Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.repr p).support
+  · by_cases hm : m ∈ (Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.repr p).support
     · simp [mul_comm]
     · rw [Finsupp.notMem_support_iff.mp hm]
       simp
@@ -189,7 +188,7 @@ lemma eval_monomial (p : SpaceTimeDerivAlgebraℂ) (m : (Fin 1 ⊕ Fin 3) →₀
 
 lemma eval_injective {p q : SpaceTimeDerivAlgebraℂ}
     (h : ∀ f, eval p f = eval q f) : p = q := by
-  refine Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.ext_elem fun m => ?_
+  refine Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.ext_elem fun m => ?_
   have hf := h (MvPowerSeries.monomial m 1)
   rw [eval_monomial, eval_monomial] at hf
   have hfac : ((∏ μ, (m μ)! : ℕ) : ℂ) ≠ 0 := by
@@ -203,7 +202,7 @@ lemma eval_deriv (ν : Fin 1 ⊕ Fin 3) (p : SpaceTimeDerivAlgebraℂ) (f : Spac
     eval (deriv ν p) f = eval p (MvPowerSeries.pderiv ν f) := by
   have h : (eval.flip f) ∘ₗ deriv ν =
       eval.flip (MvPowerSeries.pderiv ν f) := by
-    refine Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.ext fun m => ?_
+    refine Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.ext fun m => ?_
     simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.flip_apply,
       deriv_basis, eval_basis, MvPowerSeries.coeff_pderiv]
     have hfac : (∏ ρ, (((m + Finsupp.single ν 1) : (Fin 1 ⊕ Fin 3) →₀ ℕ) ρ)!) =
@@ -259,23 +258,23 @@ lemma eval_basis_eq_constantCoeff_iteratedPDeriv (s : Multiset (Fin 1 ⊕ Fin 3)
   expanded out explicitly. -/
 noncomputable def jetRingAction (χ : SpaceTimeAlgebra) :
     SpaceTimeDerivAlgebraℂ →ₗ[ℂ] SpaceTimeDerivAlgebraℂ :=
-  Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.constr ℂ fun m =>
+  Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.constr ℂ fun m =>
     ∑ p ∈ Finset.antidiagonal m,
       ((∏ μ, (m μ).descFactorial (p.1 μ) : ℕ) : ℂ) • MvPowerSeries.coeff p.1 χ •
-        Lorentz.complexCoBasis.dualBasis.symmetricAlgebra p.2
+        Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra p.2
 
 lemma jetRingAction_basis (χ : SpaceTimeAlgebra) (m : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
-    jetRingAction χ (Lorentz.complexCoBasis.dualBasis.symmetricAlgebra m) =
+    jetRingAction χ (Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra m) =
       ∑ p ∈ Finset.antidiagonal m,
         ((∏ μ, (m μ).descFactorial (p.1 μ) : ℕ) : ℂ) • MvPowerSeries.coeff p.1 χ •
-          Lorentz.complexCoBasis.dualBasis.symmetricAlgebra p.2 := by
+          Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra p.2 := by
   rw [jetRingAction, Module.Basis.constr_basis]
 
 lemma eval_jetRingAction (χ f : SpaceTimeAlgebra) (p : SpaceTimeDerivAlgebraℂ) :
     eval (jetRingAction χ p) f = eval p (χ * f) := by
   classical
   have h : (eval.flip f) ∘ₗ jetRingAction χ = eval.flip (χ * f) := by
-    refine Lorentz.complexCoBasis.dualBasis.symmetricAlgebra.ext fun m => ?_
+    refine Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra.ext fun m => ?_
     simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.flip_apply]
     rw [jetRingAction, Module.Basis.constr_basis]
     simp only [map_sum, map_smul, LinearMap.sum_apply, LinearMap.smul_apply,
@@ -389,13 +388,13 @@ lemma jetRingAction_comm (χ ψ : SpaceTimeAlgebra) (a : SpaceTimeDerivAlgebra�
 lemma jetRingAction_apply_one (χ : SpaceTimeAlgebra) :
     jetRingAction χ (1 : SpaceTimeDerivAlgebraℂ) =
       MvPowerSeries.constantCoeff χ • 1 := by
-  have h0 : Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (0 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
+  have h0 : Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (0 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
       1 := by
     rw [show (0 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
         Multiset.toFinsupp ({} : Multiset (Fin 1 ⊕ Fin 3)) by simp,
       ← basis_apply_symmetricAlgebra, basis_nil]
   rw [show (1 : SpaceTimeDerivAlgebraℂ) =
-      Lorentz.complexCoBasis.dualBasis.symmetricAlgebra 0 from h0.symm,
+      Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra 0 from h0.symm,
     jetRingAction, Module.Basis.constr_basis, Finsupp.antidiagonal_zero, Finset.sum_singleton]
   simp
 
@@ -404,27 +403,27 @@ lemma jetRingAction_apply_one (χ : SpaceTimeAlgebra) :
   first-derivative symbol, and its first derivative feeds the zeroth-order
   symbol. -/
 lemma jetRingAction_apply_ι (χ : SpaceTimeAlgebra) (μ : Fin 1 ⊕ Fin 3) :
-    jetRingAction χ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-        (Lorentz.complexCoBasis.dualBasis μ)) =
+    jetRingAction χ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+        (Lorentz.ComplexCoVector.basis.dualBasis μ)) =
       MvPowerSeries.constantCoeff χ •
-        SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-          (Lorentz.complexCoBasis.dualBasis μ) +
+        SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+          (Lorentz.ComplexCoVector.basis.dualBasis μ) +
         MvPowerSeries.coeff (Finsupp.single μ 1) χ • 1 := by
   classical
-  have h0 : Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (0 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
+  have h0 : Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (0 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
       1 := by
     rw [show (0 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
         Multiset.toFinsupp ({} : Multiset (Fin 1 ⊕ Fin 3)) by simp,
       ← basis_apply_symmetricAlgebra, basis_nil]
-  have hs : Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (Finsupp.single μ 1) =
-      SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-        (Lorentz.complexCoBasis.dualBasis μ) := by
+  have hs : Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (Finsupp.single μ 1) =
+      SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+        (Lorentz.ComplexCoVector.basis.dualBasis μ) := by
     rw [show (Finsupp.single μ 1 : (Fin 1 ⊕ Fin 3) →₀ ℕ) =
         Multiset.toFinsupp ({μ} : Multiset (Fin 1 ⊕ Fin 3)) by simp,
       ← basis_apply_symmetricAlgebra, basis_singleton]
-  rw [show SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-      (Lorentz.complexCoBasis.dualBasis μ) =
-      Lorentz.complexCoBasis.dualBasis.symmetricAlgebra (Finsupp.single μ 1) from hs.symm,
+  rw [show SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+      (Lorentz.ComplexCoVector.basis.dualBasis μ) =
+      Lorentz.ComplexCoVector.basis.dualBasis.symmetricAlgebra (Finsupp.single μ 1) from hs.symm,
     jetRingAction, Module.Basis.constr_basis, Finsupp.antidiagonal_single,
     show Finset.antidiagonal (1 : ℕ) = {(0, 1), (1, 0)} by decide, Finset.map_insert,
     Finset.map_singleton, Finset.sum_insert (by simp [Finsupp.single_eq_zero]),
@@ -463,22 +462,22 @@ open Matrix MatrixGroups
   symbols, extending the dual covector representation multiplicatively. -/
 noncomputable def repLorentzGroup : Representation ℂ SL(2,ℂ) SpaceTimeDerivAlgebraℂ where
   toFun Λ := (SymmetricAlgebra.lift
-    (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual Λ)).toLinearMap
+    (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual Λ)).toLinearMap
   map_one' := by
     suffices h : SymmetricAlgebra.lift
-        (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual 1) =
-        AlgHom.id ℂ (SymmetricAlgebra ℂ (Module.Dual ℂ Lorentz.CoℂModule)) by
+        (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual 1) =
+        AlgHom.id ℂ (SymmetricAlgebra ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)) by
       rw [h]; rfl
     refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x => ?_)
     simp
     rfl
   map_mul' Λ1 Λ2 := by
     suffices h : SymmetricAlgebra.lift
-        (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual (Λ1 * Λ2)) =
+        (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual (Λ1 * Λ2)) =
         (SymmetricAlgebra.lift
-          (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual Λ1)).comp
+          (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual Λ1)).comp
         (SymmetricAlgebra.lift
-          (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual Λ2)) by
+          (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual Λ2)) by
       rw [h]; rfl
     refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x => ?_)
     simp [map_mul, Module.End.mul_apply]
@@ -493,10 +492,10 @@ lemma repLorentzGroup_apply_mul (Λ : SL(2,ℂ)) (a b : SpaceTimeDerivAlgebraℂ
 
 /-- The Lorentz action on a generator. -/
 @[simp]
-lemma repLorentzGroup_apply_ι (Λ : SL(2,ℂ)) (x : Module.Dual ℂ Lorentz.CoℂModule) :
-    repLorentzGroup Λ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule) x) =
-      SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-        (Lorentz.CoℂModule.SL2CRep.dual Λ x) := by
+lemma repLorentzGroup_apply_ι (Λ : SL(2,ℂ)) (x : Module.Dual ℂ Lorentz.ComplexCoVector) :
+    repLorentzGroup Λ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector) x) =
+      SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+        (Lorentz.ComplexCoVector.SL2CRep.dual Λ x) := by
   simp [repLorentzGroup]
 
 /-- The Lorentz action on a derivative: the derivative symbol transforms as a
@@ -504,14 +503,14 @@ lemma repLorentzGroup_apply_ι (Λ : SL(2,ℂ)) (x : Module.Dual ℂ Lorentz.Co�
   covector representation. -/
 lemma repLorentzGroup_deriv (Λ : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (a : SpaceTimeDerivAlgebraℂ) :
     repLorentzGroup Λ (deriv μ a) =
-      ∑ ν, (Lorentz.CoℂModule.SL2CRep.dual Λ (Lorentz.complexCoBasis.dualBasis μ))
-        (Lorentz.complexCoBasis ν) • deriv ν (repLorentzGroup Λ a) := by
+      ∑ ν, (Lorentz.ComplexCoVector.SL2CRep.dual Λ (Lorentz.ComplexCoVector.basis.dualBasis μ))
+        (Lorentz.ComplexCoVector.basis ν) • deriv ν (repLorentzGroup Λ a) := by
   have hb : repLorentzGroup Λ (basis ({μ} : Multiset (Fin 1 ⊕ Fin 3))) =
-      ∑ ν, (Lorentz.CoℂModule.SL2CRep.dual Λ (Lorentz.complexCoBasis.dualBasis μ))
-        (Lorentz.complexCoBasis ν) • basis ({ν} : Multiset (Fin 1 ⊕ Fin 3)) := by
+      ∑ ν, (Lorentz.ComplexCoVector.SL2CRep.dual Λ (Lorentz.ComplexCoVector.basis.dualBasis μ))
+        (Lorentz.ComplexCoVector.basis ν) • basis ({ν} : Multiset (Fin 1 ⊕ Fin 3)) := by
     rw [basis_singleton, repLorentzGroup_apply_ι]
-    conv_lhs => rw [← Lorentz.complexCoBasis.dualBasis.sum_repr
-      (Lorentz.CoℂModule.SL2CRep.dual Λ (Lorentz.complexCoBasis.dualBasis μ))]
+    conv_lhs => rw [← Lorentz.ComplexCoVector.basis.dualBasis.sum_repr
+      (Lorentz.ComplexCoVector.SL2CRep.dual Λ (Lorentz.ComplexCoVector.basis.dualBasis μ))]
     rw [map_sum]
     refine Finset.sum_congr rfl fun ν _ => ?_
     rw [map_smul, Module.Basis.dualBasis_repr, basis_singleton]
@@ -527,7 +526,7 @@ lemma repLorentzGroup_basis_singleton (Λ : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) :
       ∑ ν, (((Lorentz.SL2C.toLorentzGroup Λ).1 ν μ : ℝ) : ℂ) •
         basis ({ν} : Multiset (Fin 1 ⊕ Fin 3)) := by
   rw [basis_singleton, repLorentzGroup_apply_ι,
-    Lorentz.CoℂModule.SL2CRep_dual_dualBasis, map_sum]
+    Lorentz.ComplexCoVector.SL2CRep_dual_dualBasis, map_sum]
   refine Finset.sum_congr rfl fun ν _ => ?_
   rw [map_smul, basis_singleton]
 
@@ -566,12 +565,12 @@ lemma repLorentzGroup_basis_ofFn (Λ : SL(2,ℂ)) {n : ℕ} (l : Fin n → (Fin 
   algebra map multiplying each generator by `t`, hence each degree-`n` monomial
   by `t ^ n`. -/
 noncomputable def gradeScale (t : ℂ) : SpaceTimeDerivAlgebraℂ →ₐ[ℂ] SpaceTimeDerivAlgebraℂ :=
-  SymmetricAlgebra.lift (t • SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule))
+  SymmetricAlgebra.lift (t • SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector))
 
 @[simp]
-lemma gradeScale_ι (t : ℂ) (x : Module.Dual ℂ Lorentz.CoℂModule) :
-    gradeScale t (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule) x) =
-      t • SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule) x := by
+lemma gradeScale_ι (t : ℂ) (x : Module.Dual ℂ Lorentz.ComplexCoVector) :
+    gradeScale t (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector) x) =
+      t • SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector) x := by
   rw [gradeScale, SymmetricAlgebra.lift_ι_apply]
   rfl
 
@@ -592,9 +591,9 @@ lemma gradeScale_basis (t : ℂ) (s : Multiset (Fin 1 ⊕ Fin 3)) :
 lemma gradeScale_repLorentzGroup (t : ℂ) (Λ : SL(2,ℂ)) (a : SpaceTimeDerivAlgebraℂ) :
     gradeScale t (repLorentzGroup Λ a) = repLorentzGroup Λ (gradeScale t a) := by
   have h : (gradeScale t).comp (SymmetricAlgebra.lift
-      (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual Λ)) =
+      (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual Λ)) =
       (SymmetricAlgebra.lift
-        (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.CoℂModule.SL2CRep.dual Λ)).comp
+        (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual Λ)).comp
         (gradeScale t) := by
     refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x => ?_)
     simp
@@ -644,8 +643,8 @@ lemma eval_algebraMap_gradePoly (t : ℂ) (a : SpaceTimeDerivAlgebraℂ) :
 lemma gradePoly_eval_one (a : SpaceTimeDerivAlgebraℂ) : (gradePoly a).eval 1 = a := by
   have h := eval_algebraMap_gradePoly 1 a
   rw [map_one] at h
-  rw [h, gradeScale, show (1 : ℂ) • SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-    = SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule) from one_smul _ _,
+  rw [h, gradeScale, show (1 : ℂ) • SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+    = SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector) from one_smul _ _,
     SymmetricAlgebra.lift_ι, AlgHom.id_apply]
 
 end SpaceTimeDerivAlgebraℂ

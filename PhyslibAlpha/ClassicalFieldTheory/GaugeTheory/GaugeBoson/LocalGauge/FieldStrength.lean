@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Symmetrized
-public import PhyslibAlpha.Mathematics.ForMathlib.Fin
 public import Mathlib.RingTheory.Flat.Basic
 /-!
 # The field strength in the local gauge field algebra

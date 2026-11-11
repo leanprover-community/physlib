@@ -5,10 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Basic
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.GeneralProduct
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.IdealNorm
-public import Mathlib.Analysis.Normed.Group.Seminorm
 public import Mathlib.Analysis.Normed.Group.Completeness
 
 /-!

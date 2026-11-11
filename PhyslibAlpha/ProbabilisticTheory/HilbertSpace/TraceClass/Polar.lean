@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Basic
 public import Mathlib.Analysis.Normed.Operator.Extend
-public import Mathlib.Analysis.InnerProductSpace.Projection.Basic
 
 /-!
 

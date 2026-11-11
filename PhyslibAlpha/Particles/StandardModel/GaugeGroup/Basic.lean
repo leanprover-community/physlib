@@ -5,7 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Particles.StandardModel.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Basic
 /-!
 # A primitive cube root of unity
 
@@ -13,8 +13,8 @@ The root of unity `ω = exp (2 π i / 3)`, which both non-abelian factors of the
 
 ## i. Overview
 
-`Physlib.Particles.StandardModel.Basic` carries the gauge group `GaugeGroupI` of the Standard
-Model and its discrete quotients. One scalar recurs throughout the structure of its
+`Physlib.Particles.StandardModel.GaugeGroup.Basic` carries the gauge group `GaugeGroupI` of
+the Standard Model and its discrete quotients. One scalar recurs throughout the structure of its
 non-abelian factors: the primitive cube root of unity `ω = exp (2 π i / 3)`. The element
 `ω • 1` generates the centre of `SU(3)`, the cyclic colour permutation has eigenvalues the
 powers of `ω`, and `diag(ω, ω²)` lies in `SU(2)`. Collected here are the facts about `ω` those
@@ -36,7 +36,7 @@ and of modulus one, and that its powers only see the exponent modulo three.
 
 ## iv. References
 
-The gauge group and its quotients are in `Physlib.Particles.StandardModel.Basic`.
+The gauge group and its quotients are in `Physlib.Particles.StandardModel.GaugeGroup.Basic`.
 
 -/
 

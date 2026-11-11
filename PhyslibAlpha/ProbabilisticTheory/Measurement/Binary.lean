@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Finite
-public import Mathlib.MeasureTheory.MeasurableSpace.Instances
 
 /-!
 # Binary measurements

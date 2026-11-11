@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Classical.BauerSimplex
 public import PhyslibAlpha.ProbabilisticTheory.Classical.BoundedMeasurable
 public import PhyslibAlpha.ProbabilisticTheory.Classical.FiniteSystem

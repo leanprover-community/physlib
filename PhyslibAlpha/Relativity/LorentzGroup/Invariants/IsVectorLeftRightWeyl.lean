@@ -439,15 +439,12 @@ set_option backward.isDefEq.respectTransparency false in
   dual left-handed and a dual right-handed Weyl index. -/
 def dualIndexEquiv : ComponentIdx (S := complexLorentzTensor) ![.up, .downR, .downL] ≃
     (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 where
-  toFun v := (finSumFinEquiv.symm (v 0 : Fin 4), v 2, v 1)
-  invFun v := fun | 0 => finSumFinEquiv v.1 | 1 => v.2.2 | 2 => v.2.1
+  toFun v := (v 0, v 2, v 1)
+  invFun v := fun | 0 => v.1 | 1 => v.2.2 | 2 => v.2.1
   left_inv v := by
     funext x
-    simp only [Nat.succ_eq_add_one, Nat.reduceAdd, Fin.isValue, Equiv.apply_symm_apply]
-    fin_cases x
-    <;> rfl
-  right_inv v := by
-    simp
+    fin_cases x <;> rfl
+  right_inv v := rfl
 
 /-- The linear map out of `ℂT[.up, .downR, .downL]` sending `e_μ ⊗ e_α' ⊗ e_α` to
   `T (μ, α, α')`. -/

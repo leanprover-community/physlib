@@ -83,11 +83,11 @@ lemma eq_zero_of_invariant_leftRight {k k' : complexLorentzTensor.Color}
     (hk : (k = .upL ∧ k' = .upR) ∨ (k = .downL ∧ k' = .downR)) {t : ℂT[k, k']}
     (ht : ∀ g : SL(2,ℂ), g • t = t) : t = 0 := by
   have hinv : ∀ g : SL(2,ℂ), (g⁻¹).1⁻¹ = g.1 := fun g => by rw [SL2C.inverse_coe, inv_inv]
+  have h := fun (g : SL(2,ℂ)) (x : basisIdx k) (y : basisIdx k') => congrArg (fun s : ℂT[k, k'] =>
+    (Tensor.basis (S := complexLorentzTensor) _).repr s
+      ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm (x, y))) (ht g)
   rcases hk with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
   all_goals
-    have h := fun (g : SL(2,ℂ)) (x y : Fin 2) => congrArg (fun s : type_of% t =>
-      (Tensor.basis (S := complexLorentzTensor) _).repr s
-        ((piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![_, _] j))).symm (x, y))) (ht g)
     have h1 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 0 0
     have h2 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 1 1
     have h3 := h (SL2C.halfTurn 2)⁻¹ 0 1
@@ -101,7 +101,7 @@ lemma eq_zero_of_invariant_leftRight {k k' : complexLorentzTensor.Color}
     apply (Tensor.basis (S := complexLorentzTensor) _).repr.injective
     ext φ
     obtain ⟨⟨a, b⟩, rfl⟩ :=
-      (piFinTwoEquiv fun j : Fin 2 => Fin (repDim (![_, _] j))).symm.surjective φ
+      (piFinTwoEquiv fun j : Fin 2 => basisIdx (![_, _] j)).symm.surjective φ
     revert a b
     change ∀ a b : Fin 2, _
     simp only [Fin.forall_fin_two, map_zero, Finsupp.coe_zero, Pi.zero_apply]

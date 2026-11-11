@@ -6,10 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Analysis.Complex.Basic
 
 /-!
 

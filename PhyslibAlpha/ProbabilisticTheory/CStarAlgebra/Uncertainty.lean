@@ -10,7 +10,6 @@ public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNS
 public import Mathlib.Analysis.InnerProductSpace.GramMatrix
 public import Mathlib.Analysis.Matrix.Order
-public import Mathlib.Analysis.Matrix.PosDef
 
 /-!
 

@@ -6,15 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.UnitaryInfra.SesquilinearForm
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.RCLike.ContinuousMap
-public import Mathlib.Topology.Instances.RealVectorSpace
-public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
-public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Analysis.InnerProductSpace.StarOrder
-public import Mathlib.MeasureTheory.Integral.Bochner.ContinuousLinearMap
 
 /-!
 

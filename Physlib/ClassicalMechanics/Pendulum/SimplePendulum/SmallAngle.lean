@@ -5,7 +5,9 @@ Authors: Aadarsh Agarwal
 -/
 module
 
-public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Energy
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Periodicity
+public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Uniqueness
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Basic
 /-!
 
@@ -443,7 +445,7 @@ lemma smallAngleTrajectory_periodic (IC : HarmonicOscillator.InitialConditions) 
 lemma smallAngleTrajectory_energy (IC : HarmonicOscillator.InitialConditions) :
     S.toHarmonicOscillator.energy (S.smallAngleTrajectory IC) =
       fun _ => 1 / 2 * (S.inertia * ‖IC.v₀‖ ^ 2 + S.m * S.g * S.ℓ * ‖IC.x₀‖ ^ 2) :=
-  HarmonicOscillator.InitialConditions.trajectory_energy S.toHarmonicOscillator IC
+  HarmonicOscillator.trajectory_energy S.toHarmonicOscillator IC
 
 /-!
 

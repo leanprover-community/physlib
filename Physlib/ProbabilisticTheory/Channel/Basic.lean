@@ -117,6 +117,15 @@ def comp (g : F →ₚ₁[R] G) (f : E →ₚ₁[R] F) : E →ₚ₁[R] G where
 
 @[simp] lemma id_comp (f : E →ₚ₁[R] F) : (UnitalPositiveLinearMap.id R F).comp f = f := rfl
 
+/-- Unital positive linear maps from a space to itself form a monoid under composition, with the
+identity as unit. -/
+instance : Monoid (E →ₚ₁[R] E) where
+  mul f g := f.comp g
+  one := .id R E
+  mul_assoc _ _ _ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
+
 end Basic
 
 section Construction

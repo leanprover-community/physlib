@@ -5,7 +5,6 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.LinearAlgebra.Matrix.Kronecker
 public import Mathlib.Analysis.InnerProductSpace.Spectrum
 
 @[expose] public section

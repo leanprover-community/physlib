@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.Channel
-public import PhyslibAlpha.ProbabilisticTheory.Measurement.Pushforward
 
 /-!
 # Measurements

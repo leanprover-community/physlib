@@ -6,8 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.Channels.Bundled
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 public import Physlib.Meta.Informal.Basic
 @[expose] public section
 

@@ -5,9 +5,9 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Units.Constants
-public import Physlib.Units.WithDim.Speed
-public import Physlib.Units.FDeriv
+public import Physlib.Relativity.SpeedOfLight
+public import Physlib.Units.FDeriv  -- shake: keep (used in `example` only)
+public import Physlib.Units.WithDim.Speed  -- shake: keep (used in `example` only)
 /-!
 
 # Examples of units in Physlib

@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Binary
-public import PhyslibAlpha.Mathematics.Probability.Kernel.Factorization
 public import PhyslibAlpha.ProbabilisticTheory.State.Preparation
-public import Mathlib.MeasureTheory.Function.AEEqOfIntegral
 public import Mathlib.Probability.Independence.Basic
 public import Mathlib.Probability.Kernel.CompProdEqIff
 

@@ -7,11 +7,8 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
-public import Mathlib.Analysis.Convex.Strict.Extreme
-public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # The qubit, in Bloch-vector coordinates

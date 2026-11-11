@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Quadratic.Order
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Conditioning
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.SqrtUniqueness
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Operation

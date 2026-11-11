@@ -6,8 +6,6 @@ Authors: Eduardo Nava-Hernandez
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.CovarianceForm
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
-public import Mathlib.Analysis.Matrix.Order
 
 /-!
 # Covariances do not decrease under unital maps

@@ -149,6 +149,10 @@ variable {k : Type} [CommRing k] [StarRing k] {C : Type} {G : Type} [Group G]
     {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
     (S : ConjTensorSpecies k C G V basisIdx rep b)
 
+/-- If `bar a = d`, then `bar (τ d) = τ a`. -/
+lemma bar_tau_of_bar {a d : C} (hbar : S.bar a = d) : S.bar (S.τ d) = S.τ a :=
+  (S.bar_tau d).trans (congrArg S.τ ((congrArg S.bar hbar).symm.trans (S.bar_involution a)))
+
 /-!
 
 ## B. The conjugation of vectors
@@ -474,6 +478,14 @@ lemma toSquareMatrix_apply {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (M : S.T
       toMatrix M i ((Equiv.cast (hbar ▸ S.barIdx_eq (c 0))).symm j) :=
   rfl
 
+/-- `toMatrix M` is `toSquareMatrix M` with its columns labelled by `J̄` instead of `J`. -/
+lemma toMatrix_eq_submatrix_toSquareMatrix {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1)
+    (M : S.Tensor c) :
+    toMatrix M =
+      (S.toSquareMatrix M hbar).submatrix id (Equiv.cast (hbar ▸ S.barIdx_eq (c 0))) :=
+  ((Matrix.reindex (Equiv.refl _) (Equiv.cast (hbar ▸ S.barIdx_eq (c 0)))).symm_apply_apply
+    (toMatrix M)).symm
+
 /-- For `M_{IJ̄}`, the conjugate `(M̄)_{ĪJ} = (M_{IJ̄})*` and the swapped tensor `M_{JĪ}` have the
 same index types, a barred index then an ordinary one. They are equal, `(M_{IJ̄})* = M_{JĪ}`,
 exactly when the matrix `(M_{IJ̄})` is Hermitian. A Kähler metric satisfies this. -/
@@ -501,6 +513,21 @@ lemma conjT_eq_permT_swap_iff_toSquareMatrix_isHermitian {c : Fin 2 → C}
     simpa [cast_cast] using H (cast (S.barIdx_eq a).symm j) (cast hbb i)
   · intro H i j
     simpa [cast_cast] using H (cast hbb.symm j) (cast (S.barIdx_eq a) i)
+
+open HasContrDualBases in
+/-- The matrix of `g_{IJ̄} t^{J̄K}` is the product of the square matrix `(g_{IJ̄})` and the matrix
+`(t^{J̄K})`, with the rows of `(t^{J̄K})` labelled by `J`. -/
+lemma toMatrix_contractInnerT_eq_toSquareMatrix_mul [HasContrDualBases S.toTensorSpecies]
+    {cs ds : Fin 2 → C} (hbar : S.bar (cs 0) = cs 1) (h : S.τ (cs 1) = ds 0) (M : S.Tensor cs)
+    (t : S.Tensor ds) :
+    toMatrix (contractInnerT h M t) =
+      S.toSquareMatrix M hbar * (toMatrix t).submatrix
+        (dualIdxEquiv h ∘ (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0))).symm)
+        (id : basisIdx (ds 1) → _) := by
+  refine (toMatrix_contractInnerT h M t).trans ?_
+  rw [S.toMatrix_eq_submatrix_toSquareMatrix hbar M]
+  exact Matrix.submatrix_id_mul_right _ (t.toMatrix.submatrix (dualIdxEquiv h) id) id
+    (Equiv.cast (hbar ▸ S.barIdx_eq (cs 0)))
 
 /-!
 
@@ -543,6 +570,35 @@ lemma dualIdxEquiv_bar [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {c1 
     contrDualIdxEquiv_eq_of_isContrDualMatching (S.isContrDualMatching_bar c1)]
   simp only [basisIdxCongr, ← Equiv.cast_symm, Equiv.symm_trans, Equiv.trans_apply,
     Equiv.cast_apply, cast_cast, cast_eq, Equiv.cast_refl, Equiv.refl_apply]
+
+open HasContrDualBases in
+/-- Removing a bar and lowering an index commute on labels. From a label of the upper barred index
+`J̄`, removing the bar and then lowering gives the same label of the lower index `J` as lowering and
+then removing the bar.
+```
+upper J̄ (τ d)  → remove bar →  upper J (τ a)
+      ↓ lower                        ↓ lower
+lower J̄ (d)    → remove bar →  lower J (a)
+```
+The left-hand side of the statement goes across the top and down, the right-hand side down and
+across the bottom. -/
+lemma dualIdxEquiv_bar_tau [Nontrivial k] [HasContrDualBases S.toTensorSpecies] {a d : C}
+    (hbar : S.bar a = d) (j : basisIdx (S.τ d)) :
+    dualIdxEquiv (S.τ_τ_apply a)
+        ((Equiv.cast (S.bar_tau_of_bar hbar ▸ S.barIdx_eq (S.τ d))).symm j) =
+      Equiv.cast (hbar ▸ S.barIdx_eq a) ((dualIdxEquiv (rfl : S.τ d = S.τ d)).symm j) := by
+  subst hbar
+  obtain ⟨x, rfl⟩ : ∃ x, dualIdxEquiv (rfl : S.τ (S.bar a) = S.τ (S.bar a))
+      ((Equiv.cast (S.barIdx_eq a)).symm x) = j :=
+    ⟨Equiv.cast (S.barIdx_eq a) ((dualIdxEquiv rfl).symm j), by
+      rw [Equiv.symm_apply_apply, Equiv.apply_symm_apply]⟩
+  rw [Equiv.symm_apply_apply, Equiv.apply_symm_apply,
+    ← dualIdxEquiv_symm (rfl : S.τ a = S.τ a) (S.τ_τ_apply a), Equiv.symm_apply_eq]
+  have h' := S.dualIdxEquiv_bar (rfl : S.τ a = S.τ a) (rfl : S.τ (S.bar a) = S.τ (S.bar a))
+    (S.bar_tau a) x
+  simp only [dualIdxEquiv_apply, basisIdxCongr, Equiv.cast_apply] at h' ⊢
+  rw [Equiv.symm_apply_eq]
+  simpa only [← Equiv.cast_symm, Equiv.cast_apply, cast_cast, cast_eq] using h'
 
 /-!
 
@@ -644,6 +700,24 @@ lemma isPosDef_toSesqForm_iff_toSquareMatrix_posDef [HasContrDualBases S.toTenso
     Matrix.PosDef.transpose_iff]
 
 end PosDef
+
+section Field
+
+variable {k : Type} [Field k] [StarRing k] [PartialOrder k] {C : Type} {G : Type} [Group G]
+    {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+    {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+    {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
+    (S : ConjTensorSpecies k C G V basisIdx rep b)
+
+/-- Over a field, the matrix `(M_{IJ̄})` of a positive-definite tensor is invertible. -/
+lemma isUnit_det_toSquareMatrix_of_isPosDef [HasContrDualBases S.toTensorSpecies] {x : C}
+    {c : Fin 2 → C} (hbar : S.bar (c 0) = c 1) (hx : S.τ x = c 0) {M : S.Tensor c}
+    (hM : (S.toSesqForm x M hbar hx).IsPosDef) :
+    IsUnit (S.toSquareMatrix M hbar).det :=
+  (Matrix.isUnit_iff_isUnit_det _).1
+    ((S.isPosDef_toSesqForm_iff_toSquareMatrix_posDef hbar hx M).1 hM).isUnit
+
+end Field
 
 end ConjTensorSpecies
 end

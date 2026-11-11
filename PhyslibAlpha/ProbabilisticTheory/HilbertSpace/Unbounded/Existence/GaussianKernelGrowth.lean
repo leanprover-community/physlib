@@ -6,10 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Existence.GardingVectors
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 public import Mathlib.RingTheory.Polynomial.Hermite.Gaussian
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Mathlib.Topology.Algebra.Polynomial
 public import Mathlib.MeasureTheory.Function.L2Space
 

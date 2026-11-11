@@ -5,10 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Physlib.QuantumMechanics.Operators.Position
-public import Physlib.SpaceAndTime.Space.Module
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Position states

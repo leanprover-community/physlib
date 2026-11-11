@@ -7,10 +7,7 @@ module
 
 public import PhyslibAlpha.Relativity.LightConeDeriv
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
-public import PhyslibAlpha.Relativity.MinkowskiMatrix
-public import PhyslibAlpha.Relativity.PauliMatrices.SelfAdjoint
 public import PhyslibAlpha.Relativity.SL2C.AxisRotations
-public import PhyslibAlpha.Relativity.SL2C.Basic
 /-!
 # Invariant coefficient tensors on spacetime indices
 

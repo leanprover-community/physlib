@@ -7,13 +7,6 @@ module
 
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Basic
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
-public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Contraction
-public import Mathlib.LinearAlgebra.TensorProduct.Prod
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 /-!
 # The jet component space of a matter field
 
@@ -201,11 +194,11 @@ lemma JetComponentSpace.jetDeriv_eq_ι (μ : Fin 1 ⊕ Fin 3) :
     JetComponentSpace.jetDeriv (M := M) μ
       = LinearMap.prodMap
         (TensorProduct.map
-          (LinearMap.mulRight ℂ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-            (Lorentz.complexCoBasis.dualBasis μ))) LinearMap.id)
+          (LinearMap.mulRight ℂ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+            (Lorentz.ComplexCoVector.basis.dualBasis μ))) LinearMap.id)
         (TensorProduct.map
-          (LinearMap.mulRight ℂ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.CoℂModule)
-            (Lorentz.complexCoBasis.dualBasis μ))) LinearMap.id) := by
+          (LinearMap.mulRight ℂ (SymmetricAlgebra.ι ℂ (Module.Dual ℂ Lorentz.ComplexCoVector)
+            (Lorentz.ComplexCoVector.basis.dualBasis μ))) LinearMap.id) := by
   rw [JetComponentSpace.jetDeriv, SpaceTimeDerivAlgebraℂ.basis_singleton]
 
 @[simp]
@@ -246,7 +239,7 @@ private lemma repLorentzGroup_tprod_mulRight_jetSymbol {W : Type*} [AddCommGroup
       ∑ a, (((Lorentz.SL2C.toLorentzGroup Λ).1 a μ : ℝ) : ℂ) •
         SpaceTimeDerivAlgebraℂ.basis ({a} : Multiset (Fin 1 ⊕ Fin 3)) := by
     rw [SpaceTimeDerivAlgebraℂ.basis_singleton, SpaceTimeDerivAlgebraℂ.repLorentzGroup_apply_ι,
-      Lorentz.CoℂModule.SL2CRep_dual_dualBasis, map_sum]
+      Lorentz.ComplexCoVector.SL2CRep_dual_dualBasis, map_sum]
     exact Finset.sum_congr rfl fun a _ => by
       rw [map_smul, SpaceTimeDerivAlgebraℂ.basis_singleton]
   have hrep : ∀ (q : SpaceTimeDerivAlgebraℂ) (f : W),

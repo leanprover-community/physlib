@@ -5,9 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.DownSinglet.GaugeAlgebraAction
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonDoublet.GaugeAlgebraAction
 public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonSinglet.GaugeAlgebraAction
 public import PhyslibAlpha.Particles.StandardModel.Fermions.QuarkDoublet.GaugeAlgebraAction
@@ -19,11 +17,11 @@ public import PhyslibAlpha.Particles.StandardModel.Fermions.UpSinglet.GaugeAlgeb
 
 `MatterField jets` bundles the value space of one field of a gauge theory over a gauge
 context `jets`, its Lorentz representation, the fibrewise action of the jets of gauge
-transformations on the jets of the field, and its mass weight. The five Standard Model
-fermion types already carry all four, and this file collects them. Nothing is redefined
-and no convention is changed. The chirality, the gauge representation, the hypercharge
-normalization `6Y` and the fibrewise-linearity proof are the ones already in the species
-files.
+transformations on the jets of the field, its mass weight and its declared statistics. The
+five Standard Model fermion types already carry the first four, and this file collects
+them, each declared fermionic. Nothing is redefined and no convention is changed. The
+chirality, the gauge representation, the hypercharge normalization `6Y` and the
+fibrewise-linearity proof are the ones already in the species files.
 
 There is one adapter per fermion type, not per type and generation, since `FermionSpace`
 carries `Fin 3` copies of each type and a matter field describes one multiplet.
@@ -92,6 +90,7 @@ noncomputable def matterField : MatterField localGaugeData where
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf
   repJet_smul := repJetGaugeGroupI_smul
   massWeight := 3
+  statistic := .fermionic
 -/
 
 @[simp]
@@ -137,6 +136,7 @@ noncomputable def matterField : MatterField localGaugeData where
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf
   repJet_smul := repJetGaugeGroupI_smul
   massWeight := 3
+  statistic := .fermionic
 
 @[simp]
 lemma matterField_V : matterField.V = LeptonSinglet := rfl
@@ -183,6 +183,7 @@ noncomputable def matterField : MatterField localGaugeData where
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf
   repJet_smul := repJetGaugeGroupI_smul
   massWeight := 3
+  statistic := .fermionic
 
 @[simp]
 lemma matterField_V : matterField.V = QuarkDoublet := rfl
@@ -227,6 +228,7 @@ noncomputable def matterField : MatterField localGaugeData where
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf
   repJet_smul := repJetGaugeGroupI_smul
   massWeight := 3
+  statistic := .fermionic
 
 @[simp]
 lemma matterField_V : matterField.V = UpSinglet := rfl
@@ -271,6 +273,7 @@ noncomputable def matterField : MatterField localGaugeData where
   repAlgebra_isInfinitesimalAction := isInfinitesimalActionOf
   repJet_smul := repJetGaugeGroupI_smul
   massWeight := 3
+  statistic := .fermionic
 
 @[simp]
 lemma matterField_V : matterField.V = DownSinglet := rfl

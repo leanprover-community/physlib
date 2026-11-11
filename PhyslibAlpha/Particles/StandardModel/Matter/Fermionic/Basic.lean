@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.GaugeAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
 /-!
 # The fermionic algebra of a matter field
 
@@ -61,6 +60,10 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 ## A. The fermionic algebra
 
 -/
+
+TODO "Migrate the Standard Model uses of the fermionic algebra to
+  `GaugeFieldData.LocalFieldAlgebra`, with fields classified by their declared
+  statistics through `FieldContent`."
 
 /-- The fermionic algebra of the matter field `M`: the exterior algebra on the space
   of component functions `∂_s ψ_α` and `∂_s ψ̄_α`. The exterior product is the product of

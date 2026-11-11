@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Electromagnetism.TemperedDistributional.Dynamics.IsExtrema
-public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 
 /-!
 

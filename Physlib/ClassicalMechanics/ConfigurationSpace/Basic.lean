@@ -6,6 +6,7 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Geometry.Manifold.IsManifold.InteriorBoundary
+public import Physlib.Meta.TODO.Basic
 
 /-!
 # Configuration spaces
@@ -56,5 +57,9 @@ instance : CoeSort (ConfigurationSpace I) (Type _) := ⟨ConfigurationSpace.carr
 
 attribute [instance] ConfigurationSpace.topologicalSpace ConfigurationSpace.chartedSpace
   ConfigurationSpace.isManifold ConfigurationSpace.boundarylessManifold
+
+TODO "Add a constructor for ConfigurationSpace for a point particle in `d`-dimensions."
+
+TODO "Define (in a suitable file)`PhaseSpace` from a configuration space."
 
 end ClassicalMechanics

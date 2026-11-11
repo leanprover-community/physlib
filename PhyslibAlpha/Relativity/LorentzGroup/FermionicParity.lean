@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Relativity.SL2C.Basic
 public import Physlib.Relativity.Fermions.Weyl.RightHanded
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Pre.Basic
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
 /-!
 
 # Fermionic parity
@@ -106,10 +106,10 @@ makes it measure the parity of the number of spinor indices.
 
 /-- Fermionic parity acts trivially on complex covariant Lorentz vectors, since it projects to
   the identity Lorentz transformation. -/
-lemma coℂModule_SL2CRep_fermionicParity :
-    Lorentz.CoℂModule.SL2CRep fermionicParity = LinearMap.id := by
+lemma complexCoVector_SL2CRep_fermionicParity :
+    Lorentz.ComplexCoVector.SL2CRep fermionicParity = LinearMap.id := by
   ext v
-  rw [Lorentz.CoℂModule.SL2CRep_val]
+  rw [Lorentz.ComplexCoVector.SL2CRep_val]
   show ((LorentzGroup.toComplex (Lorentz.SL2C.toLorentzGroup fermionicParity))⁻¹ᵀ *ᵥ v.val) _ = _
   rw [toLorentzGroup_fermionicParity]
   simp

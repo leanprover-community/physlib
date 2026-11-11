@@ -4,14 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
-public import PhyslibAlpha.Particles.StandardModel.Fermions.DownSinglet.GaugeAlgebraAction
-public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonDoublet.GaugeAlgebraAction
-public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonSinglet.GaugeAlgebraAction
-public import PhyslibAlpha.Particles.StandardModel.Fermions.QuarkDoublet.GaugeAlgebraAction
-public import PhyslibAlpha.Particles.StandardModel.Fermions.UpSinglet.GaugeAlgebraAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Symmetrized
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.GaugeAlgebraAction
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.TransformsIn
 /-!
 # The algebra valued Standard model

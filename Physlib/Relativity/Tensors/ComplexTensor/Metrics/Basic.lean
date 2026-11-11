@@ -85,13 +85,13 @@ open Tensor
 -/
 
 lemma coMetric_eq_fromConstPair : η' = fromConstPair (S := complexLorentzTensor)
-    (c1 := .down) (c2 := .down) Lorentz.CoℂModule.metric := by
-  rw [Lorentz.CoℂModule.metric]
+    (c1 := .down) (c2 := .down) Lorentz.ComplexCoVector.metric := by
+  rw [Lorentz.ComplexCoVector.metric]
   rfl
 
 lemma contrMetric_eq_fromConstPair : η = fromConstPair (S := complexLorentzTensor)
-    (c1 := .up) (c2 := .up) Lorentz.ContrℂModule.metric := by
-  rw [Lorentz.ContrℂModule.metric]
+    (c1 := .up) (c2 := .up) Lorentz.ComplexVector.metric := by
+  rw [Lorentz.ComplexVector.metric]
   rfl
 
 lemma leftMetric_eq_fromConstPair : εL = fromConstPair Fermion.LeftHandedWeyl.metric := rfl
@@ -109,15 +109,15 @@ lemma dualRightMetric_eq_fromConstPair :
 
 -/
 
-lemma coMetric_eq_fromPairT : η' = fromPairT (Lorentz.CoℂModule.metricVal) := by
+lemma coMetric_eq_fromPairT : η' = fromPairT (Lorentz.ComplexCoVector.metricVal) := by
   rw [coMetric_eq_fromConstPair, fromConstPair]
   congr 1
-  exact Lorentz.CoℂModule.metric_apply_one
+  exact Lorentz.ComplexCoVector.metric_apply_one
 
-lemma contrMetric_eq_fromPairT : η = fromPairT (Lorentz.ContrℂModule.metricVal) := by
+lemma contrMetric_eq_fromPairT : η = fromPairT (Lorentz.ComplexVector.metricVal) := by
   rw [contrMetric_eq_fromConstPair, fromConstPair]
   congr 1
-  exact Lorentz.ContrℂModule.metric_apply_one
+  exact Lorentz.ComplexVector.metric_apply_one
 
 lemma leftMetric_eq_fromPairT : εL = fromPairT (Fermion.LeftHandedWeyl.metricVal) := by
   rw [leftMetric_eq_fromConstPair, fromConstPair]
@@ -141,46 +141,46 @@ lemma dualRightMetric_eq_fromPairT : εR' = fromPairT (Fermion.DualRightHandedWe
 
 /-!
 
-### complexCoBasis etc.
+### ComplexCoVector.basis etc.
 
 -/
 
 open Lorentz in
-lemma coMetric_eq_complexCoBasis : η' =
-    fromPairT (complexCoBasis (Sum.inl 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inl 0))
-    - fromPairT (complexCoBasis (Sum.inr 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 0))
-    - fromPairT (complexCoBasis (Sum.inr 1) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 1))
-    - fromPairT (complexCoBasis (Sum.inr 2) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 2)) := by
-  rw [coMetric_eq_fromPairT, CoℂModule.metricVal_expand_tmul]
+lemma coMetric_eq_complexCoVector_basis : η' =
+    fromPairT (ComplexCoVector.basis (Sum.inl 0) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inl 0))
+    - fromPairT (ComplexCoVector.basis (Sum.inr 0) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inr 0))
+    - fromPairT (ComplexCoVector.basis (Sum.inr 1) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inr 1))
+    - fromPairT (ComplexCoVector.basis (Sum.inr 2) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inr 2)) := by
+  rw [coMetric_eq_fromPairT, ComplexCoVector.metricVal_expand_tmul]
   simp
 
 open Lorentz in
-lemma coMetric_eq_complexCoBasisFin4 : η' =
-    fromPairT (complexCoBasisFin4 0 ⊗ₜ[ℂ] complexCoBasisFin4 0)
-    - fromPairT (complexCoBasisFin4 1 ⊗ₜ[ℂ] complexCoBasisFin4 1)
-    - fromPairT (complexCoBasisFin4 2 ⊗ₜ[ℂ] complexCoBasisFin4 2)
-    - fromPairT (complexCoBasisFin4 3 ⊗ₜ[ℂ] complexCoBasisFin4 3) := by
-  rw [coMetric_eq_complexCoBasis]
-  simp [complexCoBasisFin4]
+lemma coMetric_eq_complexCoVector_basisFin4 : η' =
+    fromPairT (ComplexCoVector.basisFin4 0 ⊗ₜ[ℂ] ComplexCoVector.basisFin4 0)
+    - fromPairT (ComplexCoVector.basisFin4 1 ⊗ₜ[ℂ] ComplexCoVector.basisFin4 1)
+    - fromPairT (ComplexCoVector.basisFin4 2 ⊗ₜ[ℂ] ComplexCoVector.basisFin4 2)
+    - fromPairT (ComplexCoVector.basisFin4 3 ⊗ₜ[ℂ] ComplexCoVector.basisFin4 3) := by
+  rw [coMetric_eq_complexCoVector_basis]
+  simp [ComplexCoVector.basisFin4]
   rfl
 
 open Lorentz in
-lemma contrMetric_eq_complexContrBasis : η =
-    fromPairT (complexContrBasis (Sum.inl 0) ⊗ₜ[ℂ] complexContrBasis (Sum.inl 0))
-    - fromPairT (complexContrBasis (Sum.inr 0) ⊗ₜ[ℂ] complexContrBasis (Sum.inr 0))
-    - fromPairT (complexContrBasis (Sum.inr 1) ⊗ₜ[ℂ] complexContrBasis (Sum.inr 1))
-    - fromPairT (complexContrBasis (Sum.inr 2) ⊗ₜ[ℂ] complexContrBasis (Sum.inr 2)) := by
-  rw [contrMetric_eq_fromPairT, ContrℂModule.metricVal_expand_tmul]
+lemma contrMetric_eq_complexVector_basis : η =
+    fromPairT (ComplexVector.basis (Sum.inl 0) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inl 0))
+    - fromPairT (ComplexVector.basis (Sum.inr 0) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inr 0))
+    - fromPairT (ComplexVector.basis (Sum.inr 1) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inr 1))
+    - fromPairT (ComplexVector.basis (Sum.inr 2) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inr 2)) := by
+  rw [contrMetric_eq_fromPairT, ComplexVector.metricVal_expand_tmul]
   simp
 
 open Lorentz in
-lemma contrMetric_eq_complexContrBasisFin4 : η =
-    fromPairT (complexContrBasisFin4 0 ⊗ₜ[ℂ] complexContrBasisFin4 0)
-    - fromPairT (complexContrBasisFin4 1 ⊗ₜ[ℂ] complexContrBasisFin4 1)
-    - fromPairT (complexContrBasisFin4 2 ⊗ₜ[ℂ] complexContrBasisFin4 2)
-    - fromPairT (complexContrBasisFin4 3 ⊗ₜ[ℂ] complexContrBasisFin4 3) := by
-  rw [contrMetric_eq_complexContrBasis]
-  simp [complexContrBasisFin4]
+lemma contrMetric_eq_complexVector_basisFin4 : η =
+    fromPairT (ComplexVector.basisFin4 0 ⊗ₜ[ℂ] ComplexVector.basisFin4 0)
+    - fromPairT (ComplexVector.basisFin4 1 ⊗ₜ[ℂ] ComplexVector.basisFin4 1)
+    - fromPairT (ComplexVector.basisFin4 2 ⊗ₜ[ℂ] ComplexVector.basisFin4 2)
+    - fromPairT (ComplexVector.basisFin4 3 ⊗ₜ[ℂ] ComplexVector.basisFin4 3) := by
+  rw [contrMetric_eq_complexVector_basis]
+  simp [ComplexVector.basisFin4]
   rfl
 
 open Fermion in
@@ -220,14 +220,14 @@ lemma dualRightMetric_eq_dualRightHandedWeyl_basis : εR' =
 open Lorentz in
 lemma coMetric_eq_basis : η' =
     (Tensor.basis (S := complexLorentzTensor) ![Color.down, Color.down]
-      (fun | 0 => (0 : Fin 4) | 1 => (0 : Fin 4)))
+      (fun | 0 => (Sum.inl 0 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inl 0 : Fin 1 ⊕ Fin 3)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.down, Color.down]
-      (fun | 0 => (1 : Fin 4) | 1 => (1 : Fin 4)))
+      (fun | 0 => (Sum.inr 0 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inr 0 : Fin 1 ⊕ Fin 3)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.down, Color.down]
-      (fun | 0 => (2 : Fin 4) | 1 => (2 : Fin 4)))
+      (fun | 0 => (Sum.inr 1 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inr 1 : Fin 1 ⊕ Fin 3)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.down, Color.down]
-      (fun | 0 => (3 : Fin 4) | 1 => (3 : Fin 4))) := by
-  rw [coMetric_eq_complexCoBasisFin4]
+      (fun | 0 => (Sum.inr 2 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inr 2 : Fin 1 ⊕ Fin 3))) := by
+  rw [coMetric_eq_complexCoVector_basis]
   conv_lhs =>
     enter [2]
     change fromPairT ((complexLorentzTensor.basis .down _) ⊗ₜ[ℂ]
@@ -253,14 +253,14 @@ lemma coMetric_eq_basis : η' =
 open Lorentz in
 lemma contrMetric_eq_basis : η =
     (Tensor.basis (S := complexLorentzTensor) ![Color.up, Color.up]
-      (fun | 0 => (0 : Fin 4) | 1 => (0 : Fin 4)))
+      (fun | 0 => (Sum.inl 0 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inl 0 : Fin 1 ⊕ Fin 3)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.up, Color.up]
-      (fun | 0 => (1 : Fin 4) | 1 => (1 : Fin 4)))
+      (fun | 0 => (Sum.inr 0 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inr 0 : Fin 1 ⊕ Fin 3)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.up, Color.up]
-      (fun | 0 => (2 : Fin 4) | 1 => (2 : Fin 4)))
+      (fun | 0 => (Sum.inr 1 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inr 1 : Fin 1 ⊕ Fin 3)))
     - (Tensor.basis (S := complexLorentzTensor) ![Color.up, Color.up]
-      (fun | 0 => (3 : Fin 4) | 1 => (3 : Fin 4))) := by
-  rw [contrMetric_eq_complexContrBasisFin4]
+      (fun | 0 => (Sum.inr 2 : Fin 1 ⊕ Fin 3) | 1 => (Sum.inr 2 : Fin 1 ⊕ Fin 3))) := by
+  rw [contrMetric_eq_complexVector_basis]
   conv_lhs =>
     enter [2]
     change fromPairT ((complexLorentzTensor.basis .up _) ⊗ₜ[ℂ]
@@ -367,7 +367,7 @@ lemma dualRightMetric_eq_basis : εR' =
 
 set_option backward.isDefEq.respectTransparency false in
 lemma coMetric_eq_ofGaussianInt : η' = ofGaussianInt fun f =>
-    if f 0 = Fin.cast (by rfl) (0 : Fin 4) ∧ f 1 = Fin.cast (by rfl) (0 : Fin 4) then 1 else
+    if f 0 = (Sum.inl 0 : Fin 1 ⊕ Fin 3) ∧ f 1 = (Sum.inl 0 : Fin 1 ⊕ Fin 3) then 1 else
     if f 0 = f 1 then - 1 else 0 := by
   rw [coMetric_eq_basis]
   conv_lhs =>
@@ -379,7 +379,7 @@ lemma coMetric_eq_ofGaussianInt : η' = ofGaussianInt fun f =>
 
 set_option backward.isDefEq.respectTransparency false in
 lemma contrMetric_eq_ofGaussianInt : η = ofGaussianInt fun f =>
-    if f 0 = Fin.cast (by rfl) (0 : Fin 4) ∧ f 1 = Fin.cast (by rfl) (0 : Fin 4) then 1 else
+    if f 0 = (Sum.inl 0 : Fin 1 ⊕ Fin 3) ∧ f 1 = (Sum.inl 0 : Fin 1 ⊕ Fin 3) then 1 else
     if f 0 = f 1 then - 1 else 0 := by
   rw [contrMetric_eq_basis]
   conv_lhs =>
@@ -389,10 +389,10 @@ lemma contrMetric_eq_ofGaussianInt : η = ofGaussianInt fun f =>
   congr
   with_unfolding_all decide
 
-lemma leftMetric_eq_ofGaussianInt : εL = ofGaussianInt fun f =>
-    if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then - 1 else
-    if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then
-      1 else 0 := by
+lemma leftMetric_eq_ofGaussianInt : εL =
+    ofGaussianInt (c := ![Color.upL, Color.upL]) fun f =>
+    if f = (fun | 0 => (0 : Fin 2) | 1 => (1 : Fin 2)) then - 1 else
+    if f = (fun | 0 => (1 : Fin 2) | 1 => (0 : Fin 2)) then 1 else 0 := by
   rw [leftMetric_eq_basis]
   conv_lhs =>
     rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
@@ -400,10 +400,10 @@ lemma leftMetric_eq_ofGaussianInt : εL = ofGaussianInt fun f =>
   congr
   with_unfolding_all decide
 
-lemma dualLeftMetric_eq_ofGaussianInt : εL' = ofGaussianInt fun f =>
-    if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then 1 else
-    if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then
-      - 1 else 0 := by
+lemma dualLeftMetric_eq_ofGaussianInt : εL' =
+    ofGaussianInt (c := ![Color.downL, Color.downL]) fun f =>
+    if f = (fun | 0 => (0 : Fin 2) | 1 => (1 : Fin 2)) then 1 else
+    if f = (fun | 0 => (1 : Fin 2) | 1 => (0 : Fin 2)) then - 1 else 0 := by
   rw [dualLeftMetric_eq_basis]
   conv_lhs =>
     rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
@@ -411,9 +411,10 @@ lemma dualLeftMetric_eq_ofGaussianInt : εL' = ofGaussianInt fun f =>
   congr
   with_unfolding_all decide
 
-lemma rightMetric_eq_ofGaussianInt : εR = ofGaussianInt fun f =>
-    if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then - 1 else
-    if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then 1 else 0 := by
+lemma rightMetric_eq_ofGaussianInt : εR =
+    ofGaussianInt (c := ![Color.upR, Color.upR]) fun f =>
+    if f = (fun | 0 => (0 : Fin 2) | 1 => (1 : Fin 2)) then - 1 else
+    if f = (fun | 0 => (1 : Fin 2) | 1 => (0 : Fin 2)) then 1 else 0 := by
   rw [rightMetric_eq_basis]
   conv_lhs =>
     rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]
@@ -421,10 +422,10 @@ lemma rightMetric_eq_ofGaussianInt : εR = ofGaussianInt fun f =>
   congr
   with_unfolding_all decide
 
-lemma dualRightMetric_eq_ofGaussianInt : εR' = ofGaussianInt fun f =>
-    if f 0 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 1 = Fin.cast (by rfl) (1 : Fin 2) then 1 else
-    if f 1 = Fin.cast (by rfl) (0 : Fin 2) ∧ f 0 = Fin.cast (by rfl) (1 : Fin 2) then
-      - 1 else 0 := by
+lemma dualRightMetric_eq_ofGaussianInt : εR' =
+    ofGaussianInt (c := ![Color.downR, Color.downR]) fun f =>
+    if f = (fun | 0 => (0 : Fin 2) | 1 => (1 : Fin 2)) then 1 else
+    if f = (fun | 0 => (1 : Fin 2) | 1 => (0 : Fin 2)) then - 1 else 0 := by
   rw [dualRightMetric_eq_basis]
   conv_lhs =>
     rw [basis_eq_ofGaussianInt, basis_eq_ofGaussianInt]

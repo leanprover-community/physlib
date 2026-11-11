@@ -47,10 +47,11 @@ Notation:
 - C. Special cases in low dimensions
 - D. Hilbert-space angular momentum operator
   - D.1. Angular momentum squared on the Hilbert space
-- E. Commutation relations
+- E. Algebraic relations
   - E.1. Angular momentum / position
   - E.2. Angular momentum / momentum
   - E.3. Angular momentum / angular momentum
+  - E.4. Angular momentum / dilation operator
 
 ## iv. References
 
@@ -290,7 +291,7 @@ lemma angularMomentumSqOperator_isUnbounded : (angularMomentumSqOperator (d := d
     angularMomentumSqOperator_hasDenseDomain
 
 /-!
-## E. Commutation relations
+## E. Algebraic relations
 -/
 
 open Complex KroneckerDelta Bracket ContinuousLinearMap
@@ -329,6 +330,18 @@ lemma angularMomentumSqr_commutation_radiusRegPow : ⁅𝐋²[d], 𝐫₀[d] ε 
 lemma angularMomentumSqr_comp_radiusRegPow_commute : 𝐋² ∘L 𝐫₀[d] ε s = 𝐫₀ ε s ∘L 𝐋² := by
   rw [comp_eq_comp_add_commute, angularMomentumSqr_commutation_radiusRegPow, add_zero]
 
+/-- `𝐋ᵢⱼ𝐱ₖ + 𝐋ⱼₖ𝐱ᵢ + 𝐋ₖᵢ𝐱ⱼ = 0`; in three dimensions this is `𝐋 · 𝐱 = 0`.
+  The identity is trivial unless `i`, `j`, `k` are pairwise distinct, so it has no content in
+  fewer than three dimensions. -/
+lemma angularMomentum_cyclic_position :
+    𝐋 i j ∘L 𝐱 k + 𝐋 j k ∘L 𝐱 i + 𝐋 k i ∘L 𝐱 j = 0 := by
+  simp only [angularMomentumCLM, sub_comp, comp_assoc, momentum_comp_position_eq, comp_sub,
+    comp_smul, comp_id]
+  simp only [← comp_assoc]
+  rw [position_comp_commute k i, position_comp_commute k j, position_comp_commute j i,
+    symm k j, symm k i, symm j i]
+  module
+
 /-!
 
 ### E.2. Angular momentum / momentum
@@ -358,6 +371,15 @@ lemma momentumSqr_comp_angularMomentum_commute : (𝐩 ⬝ᵥ 𝐩) ∘L 𝐋 i 
 lemma angularMomentumSqr_commutation_momentumSqr : ⁅𝐋²[d], 𝐩[d] ⬝ᵥ 𝐩⁆ = 0 := by
   simp [angularMomentumOperatorSqr, sum_lie, leibniz_lie]
 
+/-- `𝐋ᵢⱼ𝐩ₖ + 𝐋ⱼₖ𝐩ᵢ + 𝐋ₖᵢ𝐩ⱼ = 0`; in three dimensions this is `𝐋 · 𝐩 = 0`.
+  The identity is trivial unless `i`, `j`, `k` are pairwise distinct, so it has no content in
+  fewer than three dimensions. -/
+lemma angularMomentum_cyclic_momentum :
+    𝐋 i j ∘L 𝐩 k + 𝐋 j k ∘L 𝐩 i + 𝐋 k i ∘L 𝐩 j = 0 := by
+  simp only [angularMomentumCLM, sub_comp, comp_assoc]
+  rw [momentum_comp_commute k j, momentum_comp_commute k i, momentum_comp_commute j i]
+  abel
+
 /-!
 
 ### E.3. Angular momentum / angular momentum
@@ -368,13 +390,9 @@ lemma angularMomentum_commutation_angularMomentum : ⁅𝐋 i j, 𝐋 k l⁆ =
     (I * ℏ) • (δ[i,k] • 𝐋 j l - δ[i,l] • 𝐋 j k - δ[j,k] • 𝐋 i l + δ[j,l] • 𝐋 i k) := by
   nth_rw 2 [angularMomentumCLM]
   simp only [angularMomentum_commutation_position, angularMomentum_commutation_momentum,
-    lie_sub, lie_leibniz, comp_smul, smul_comp, comp_sub, sub_comp, ← smul_add, ← smul_sub]
-  dsimp [angularMomentumCLM]
-  ext
-  simp only [nsmul_eq_mul, smul_apply, sub_apply, add_apply, mul_apply_eq_comp, comp_apply,
-    natCast_apply, positionCLM_apply, momentumCLM_apply, neg_mul, mul_neg, smul_neg,
-    sub_neg_eq_add, smul_eq_mul, smul_add]
-  ring
+    lie_sub, lie_leibniz, comp_smul, smul_comp, comp_sub, sub_comp]
+  simp only [angularMomentumCLM, smul_sub]
+  module
 
 @[simp]
 lemma angularMomentumSqr_commutation_angularMomentum : ⁅𝐋²[d], 𝐋 i j⁆ = 0 := by
@@ -384,6 +402,22 @@ lemma angularMomentumSqr_commutation_angularMomentum : ⁅𝐋²[d], 𝐋 i j⁆
     sum_smul, ← Finset.smul_sum, Finset.sum_add_distrib, Finset.sum_sub_distrib]
   abel_nf
   simp [smul_zero]
+
+/-!
+
+### E.4. Angular momentum / dilation operator
+
+Angular momentum commutes with the dilation operator `𝐱 · 𝐩`.
+
+-/
+
+@[simp]
+lemma angularMomentum_commutation_positionDotMomentum : ⁅𝐋 i j, 𝐱[d] ⬝ᵥ 𝐩⁆ = 0 := by
+  simp only [dotProduct, mul_def, lie_sum, lie_leibniz, angularMomentum_commutation_position,
+    angularMomentum_commutation_momentum, comp_smul, smul_comp, comp_sub, sub_comp]
+  simp only [Finset.sum_add_distrib, Finset.sum_sub_distrib, ← Finset.smul_sum,
+    KroneckerDelta.sum_smul]
+  module
 
 end
 end QuantumMechanics

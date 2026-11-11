@@ -5,8 +5,6 @@ Authors: Rithwik Ranganathan
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.LinearAlgebra.LinearIndependent.Basic
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 /-!
 

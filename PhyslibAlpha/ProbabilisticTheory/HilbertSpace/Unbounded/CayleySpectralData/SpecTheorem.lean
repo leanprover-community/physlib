@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.CayleySpectralData.Basic
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SelfAdjointSpectralTheorem
 
 /-!
 

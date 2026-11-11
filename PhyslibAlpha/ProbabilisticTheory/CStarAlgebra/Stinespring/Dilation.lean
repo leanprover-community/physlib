@@ -6,10 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Stinespring.Kernel
-public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 public import Mathlib.Analysis.InnerProductSpace.Completion
-public import Mathlib.Topology.Algebra.LinearMapCompletion
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Basic
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
 /-!

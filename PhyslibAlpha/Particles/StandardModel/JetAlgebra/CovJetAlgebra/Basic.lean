@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
-public import PhyslibAlpha.Mathematics.AlgebraRepresentation
 public import PhyslibAlpha.Particles.StandardModel.Realization.CovStandardModel
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.Realization
 /-!
@@ -282,7 +281,7 @@ include h in
   tower to a tower of the same shape at a rotated value index, and it is multiplicative. -/
 lemma repGlobal_mem_covAlgebra (g : GaugeGroupI) {x : B} (hx : x ∈ h.covAlgebra) :
     repGlobal repJet g x ∈ h.covAlgebra :=
-  h.mapsTo_covAlgebra (h.repGlobal_one g) (h.gaugeRealization.gauge_mul _)
+  h.mapsTo_covAlgebra (h.repGlobal_one g) (h.gaugeRealization.repJet_mul _)
     (h.covGenerators_induction
     (fun l μ ν φ => by
       rw [h.repGlobal_covF]; exact h.covF_mem_covAlgebra _ _ _ _)

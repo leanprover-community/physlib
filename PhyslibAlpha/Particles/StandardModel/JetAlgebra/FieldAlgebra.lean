@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.Generators
-public import PhyslibAlpha.Particles.StandardModel.Fermions.JetAlgebra.Species
 /-!
 # The field algebra of the Standard Model is everything
 

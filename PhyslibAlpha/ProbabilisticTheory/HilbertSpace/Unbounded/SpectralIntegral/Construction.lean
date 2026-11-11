@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SelfAdjointSpectralTheorem
-public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.SignedMeasure
-public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 /-!
 

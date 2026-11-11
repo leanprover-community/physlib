@@ -10,11 +10,7 @@ public import Physlib.Electromagnetism.Dynamics.KineticTerm
 public import PhyslibAlpha.Relativity.SL2C.Basic
 public import PhyslibAlpha.Mathematics.MultisetAntidiagonal
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-public import Mathlib.LinearAlgebra.Finsupp.LSum
-public import Mathlib.Data.Multiset.Antidiagonal
-public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.Algebra.MvPolynomial.Derivation
-public import Mathlib.Algebra.TrivSqZeroExt.Basic
 /-!
 # The jet algebras of quantum electrodynamics
 

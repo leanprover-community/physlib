@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
-public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.CovJetAlgebra.Basic
 public import PhyslibAlpha.Particles.StandardModel.Realization.HiggsCov.Basic
-public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.CovJetAlgebra.Higgs
 public import PhyslibAlpha.Particles.StandardModel.IsGaugeSector.MassWeight.Basic
 public import PhyslibAlpha.Particles.StandardModel.IsFermionSector.MassWeight.Basic
 /-!

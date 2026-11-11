@@ -105,8 +105,8 @@ lemma quotContraction_eqTimeOnly {φs : List 𝓕.FieldOp} {φsΛ : WickContract
   rw [eqTimeOnly_iff_forall_finset]
   intro a
   simp only [Fin.getElem_fin]
-  erw [subContraction_uncontractedList_get, subContraction_uncontractedList_get]
-  simp only [quotContraction_fstFieldOfContract_uncontractedListEmd, Fin.getElem_fin,
+  rw [subContraction_uncontractedList_get, subContraction_uncontractedList_get]
+  simp only [quotContraction_fstFieldOfContract_uncontractedListEmd,
     quotContraction_sndFieldOfContract_uncontractedListEmd]
   rw [eqTimeOnly_iff_forall_finset] at h
   apply h
@@ -390,7 +390,7 @@ lemma subContraction_eqTimeContractSet_not_empty_of_haveEqTime
     {φs : List 𝓕.FieldOp} (φsΛ : WickContraction φs.length) (h : HaveEqTime φsΛ) :
     φsΛ.subContraction (eqTimeContractSet φsΛ) (eqTimeContractSet_subset φsΛ) ≠ empty := by
   simp only [ne_eq]
-  erw [Subtype.ext_iff]
+  refine mt (congrArg Subtype.val) ?_
   simp only [subContraction, empty]
   rw [Finset.eq_empty_iff_forall_notMem]
   simp only [HaveEqTime, Fin.getElem_fin, exists_and_left, exists_prop] at h
@@ -407,8 +407,8 @@ lemma quotContraction_eqTimeContractSet_not_haveEqTime {φs : List 𝓕.FieldOp}
   rw [haveEqTime_iff_finset]
   simp only [Fin.getElem_fin, not_exists, not_and]
   intro a ha
-  erw [subContraction_uncontractedList_get, subContraction_uncontractedList_get]
-  simp only [quotContraction_fstFieldOfContract_uncontractedListEmd, Fin.getElem_fin,
+  rw [subContraction_uncontractedList_get, subContraction_uncontractedList_get]
+  simp only [quotContraction_fstFieldOfContract_uncontractedListEmd,
     quotContraction_sndFieldOfContract_uncontractedListEmd]
   simp only [quotContraction, Finset.mem_filter, Finset.mem_univ, true_and] at ha
   have hn' : Finset.map uncontractedListEmd a ∉
@@ -494,7 +494,7 @@ lemma sum_haveEqTime (φs : List 𝓕.FieldOp)
   ∑ (φssucΛ : {φssucΛ : WickContraction [φsΛ.1]ᵘᶜ.length // ¬ HaveEqTime φssucΛ}),
     f (join φsΛ.1 φssucΛ.1) := by
   rw [← (hasEqTimeEquiv φs).symm.sum_comp]
-  erw [Finset.sum_sigma]
+  rw [Fintype.sum_sigma]
   rfl
 
 end

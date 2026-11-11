@@ -121,17 +121,15 @@ lemma crossToSlot_basis_repr_apply {nA : ℕ} {c : Fin (nA + 1) → C} {cM : Fin
             ⇑(Fin.cycleIcc i (Fin.last nA)).symm m))) := by
   rw [crossToSlot_eq_crossToEnd, permT_basis_repr_symm_apply]
 
-/-- Contract slot `i` of a tensor whose color there is `d` against `M'`, then absorb the color cast
-  the two `Function.update`s generate, landing back on `c`. This is the returning half of a
-  raise-then-lower round trip; absorbing the cast here is what keeps the round trip cast-free at
-  both ends. -/
-noncomputable def crossToSlotInv {nA : ℕ} {c : Fin (nA + 1) → C} {b d e : C} (i : Fin (nA + 1))
-    (he : c i = e) (hb : S.τ d = b) (M' : S.Tensor ![b, e]) :
+/-- `crossToSlot` of slot `i` with the first index of `M'`, followed by renaming slot `i` back to
+  its original colour `c i` (`he`). -/
+noncomputable def crossToSlotInv {nA : ℕ} {c : Fin (nA + 1) → C} {d : C} {ds : Fin 2 → C}
+    (i : Fin (nA + 1)) (he : c i = ds 1) (hb : S.τ d = ds 0) (M' : S.Tensor ds) :
     S.Tensor (Function.update c i d) →ₗ[k] S.Tensor c :=
   permT (id : Fin (nA + 1) → Fin (nA + 1))
       (IsReindexing.on_id_symm (IsReindexing.update_update_of_eq (d := d) i he)) ∘ₗ
     crossToSlot i (0 : Fin 2)
-      (by rw [Function.update_self]; exact hb : S.τ (Function.update c i d i) = b) M'
+      (by rw [Function.update_self]; exact hb : S.τ (Function.update c i d i) = ds 0) M'
 
 /-- An identity reindexing of the rank-2 tensor becomes the corresponding identity reindexing of
   the contracted output: the `crossToSlot`-level case of `crossToEnd_permT_right` where the rank-2

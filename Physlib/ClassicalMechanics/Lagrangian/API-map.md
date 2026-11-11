@@ -19,13 +19,14 @@ time {2} and of the positions and velocities, depending on first derivatives onl
 variation of a curve γ on [t₀, t₁] is a smooth family of curves starting at γ and fixing γ(t₀)
 and γ(t₁). [2] The action of γ is ∫ L(t, γ, γ̇) dt over [t₀, t₁], and γ is a critical point of
 the action when it is smooth and every variation has zero first variation of the action {3}.
-[3]
+[3] On a normed space, the action is the integral of L(t, q, q̇) along the coordinate curve. [4]
 
 ### Equations of motion
 
-A smooth curve is a critical point of the action if and only if the Euler–Lagrange equations hold
-in every chart {4}. [TODO] Lagrangians L(q, q̇, t) written in generalised coordinates are
-Lagrangian systems {5}. [TODO]
+On a normed space, a smooth curve is a critical point of the action over [t₀, t₁] with
+t₀ ≠ t₁ if and only if the Euler–Lagrange equations hold. [5] A smooth curve is a critical point
+of the action if and only if the Euler–Lagrange equations hold in every chart {4}. [TODO]
+Lagrangians L(q, q̇, t) written in generalised coordinates are Lagrangian systems {5}. [TODO]
 
 ### Symmetries and conservation laws
 
@@ -43,8 +44,11 @@ coming from a Riemannian metric on M. [TODO]
 
 1. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem`
 2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`
-3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`,
-   `LagrangianSystem.IsCriticalPoint`
+3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`
+4. Physlib/ClassicalMechanics/Lagrangian/Basic.lean —
+   `LagrangianSystem.action_eq_integral_coord`
+5. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
+   `LagrangianSystem.IsCriticalPoint`, `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
 
 ## References
 

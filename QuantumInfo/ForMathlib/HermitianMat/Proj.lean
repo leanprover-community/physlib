@@ -7,9 +7,7 @@ module
 
 public import QuantumInfo.ForMathlib.HermitianMat.CFC
 
-public import Mathlib.Analysis.CStarAlgebra.Classes
 public import Mathlib.Analysis.InnerProductSpace.Positive
-public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.PosPart.Basic
 
 /-!
 

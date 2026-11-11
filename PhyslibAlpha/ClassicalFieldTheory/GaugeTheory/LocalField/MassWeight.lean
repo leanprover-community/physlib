@@ -5,8 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.GaugeAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.LorentzAction
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.TransformsIn
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.MassDim
 /-!

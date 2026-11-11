@@ -376,7 +376,7 @@ noncomputable def bosonGeneratorsEquiv (w : ℕ) (h : ∀ i, (T.boson i).massWei
     T.BosonGenerators ≃ₗ[ℂ] JetComponentSpace (T.bosonMatterField w h) :=
   (DirectSum.linearEquivFunOnFintype ℂ T.BosonSpecies
       fun i => JetComponentSpace (T.boson i)).trans
-    (MatterField.jetComponentSpacePiEquiv T.boson w h).symm
+    (MatterField.jetComponentSpacePiEquiv T.boson w h .bosonic T.boson_statistic).symm
 
 /-!
 
@@ -399,7 +399,7 @@ lemma bosonGeneratorsEquiv_inclBoson (w : ℕ) (h : ∀ i, (T.boson i).massWeigh
       fun i => JetComponentSpace (T.boson i)) (T.inclBoson i x) = Pi.single i x :=
     DirectSum.linearEquivFunOnFintype_lof
       (M := fun i => JetComponentSpace (T.boson i)) ℂ i x
-  show (MatterField.jetComponentSpacePiEquiv T.boson w h).symm
+  show (MatterField.jetComponentSpacePiEquiv T.boson w h .bosonic T.boson_statistic).symm
       ((DirectSum.linearEquivFunOnFintype ℂ T.BosonSpecies
         fun i => JetComponentSpace (T.boson i)) (T.inclBoson i x)) = _
   rw [hlof, MatterField.jetComponentSpacePiEquiv_symm_single]

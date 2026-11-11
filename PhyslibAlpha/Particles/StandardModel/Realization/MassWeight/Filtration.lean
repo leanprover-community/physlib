@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.CovRealization.MassWeight.Filtration
-public import PhyslibAlpha.Particles.StandardModel.Realization.CovStandardModel
 /-!
 # The mass-weight filtration of the jet Standard Model
 

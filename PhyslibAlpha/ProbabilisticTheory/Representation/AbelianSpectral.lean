@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.JointSpectral.Basic
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.DualEval
-public import Mathlib.Topology.Algebra.PontryaginDual
 
 /-!
 

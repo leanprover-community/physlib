@@ -5,9 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.SelfAdjoint
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 
 /-!

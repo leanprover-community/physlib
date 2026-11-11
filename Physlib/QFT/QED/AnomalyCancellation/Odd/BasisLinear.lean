@@ -682,13 +682,14 @@ lemma P_P_P!_accCube (g : Fin n → ℚ) (j : Fin n) :
       (Shifted.basisAsCharges j)
     = (Unshifted.planeCharges g (oddShiftFst j))^2 - (g j)^2 := by
   simp only [accCubeTriLinSymm, TriLinearSymm.mk₃_toFun_apply_apply]
-  erw [sum_oddShift, Shifted.basis_on_oddShiftZero]
+  refine (sum_oddShift _).trans ?_
+  rw [Shifted.basis_on_oddShiftZero]
   simp only [mul_zero, Function.comp_apply, zero_add]
   rw [Fintype.sum_eq_single j, Shifted.basis_on_oddShiftFst_self, Shifted.basis_on_oddShiftSnd_self]
   · rw [← oddSnd_eq_oddShiftSnd, Unshifted.planeCharges_oddSnd]
     ring
   · intro k hkj
-    erw [Shifted.basis_on_oddShiftFst_other hkj.symm, Shifted.basis_on_oddShiftSnd_other hkj.symm]
+    rw [Shifted.basis_on_oddShiftFst_other hkj.symm, Shifted.basis_on_oddShiftSnd_other hkj.symm]
     simp only [mul_zero, add_zero]
 
 /-!
@@ -877,7 +878,7 @@ lemma Pa_eq (g g' : Fin n.succ → ℚ) (f f' : Fin n.succ → ℚ) :
 
 lemma basisa_card : Fintype.card ((Fin n.succ) ⊕ (Fin n.succ)) =
     Module.finrank ℚ (PureU1 (2 * n.succ + 1)).LinSols := by
-  erw [BasisLinear.finrank_AnomalyFreeLinear]
+  rw [BasisLinear.finrank_AnomalyFreeLinear]
   simp [Fintype.card_sum, Fintype.card_fin, two_mul]
 
 /-!
@@ -935,7 +936,7 @@ lemma span_basis_swap! {S : (PureU1 (2 * n.succ + 1)).LinSols} (j : Fin n.succ)
   obtain ⟨f', hf'⟩ := (Submodule.mem_span_range_iff_exists_fun ℚ).mp hX
   use g, f'
   change Shifted.planeCharges f' = _ at hf'
-  erw [hf']
+  rw [hf']
   simp only [and_self, and_true, X]
   rw [← add_assoc, ← hS1]
   apply Shifted.swap_as_add at hS

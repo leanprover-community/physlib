@@ -6,16 +6,9 @@ Authors: Philippe Kevorkian
 module
 
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
-public import Mathlib.LinearAlgebra.BilinearMap
-public import Mathlib.LinearAlgebra.Dual.Defs
-public import Mathlib.Algebra.Lie.Basic
 public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Topology.Algebra.Module.FiniteDimension
-public import Mathlib.Analysis.Calculus.FDeriv.CompCLM
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.MeanValue
 /-!
 
 # Souriau's moment map on a symplectic vector space

@@ -6,13 +6,9 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Relativity.LorentzGroup.Boosts.Axis
-public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.RingTheory.GradedAlgebra.Basic
-public import Mathlib.Algebra.DirectSum.Internal
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-public import Mathlib.RingTheory.TensorProduct.Basic
 public import PhyslibAlpha.Relativity.SL2C.Basic
 /-!
 # Class IsLorentzDeriv

@@ -10,9 +10,6 @@ public import PhyslibAlpha.Particles.StandardModel.Fermions.UpSinglet.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.QuarkDoublet.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonDoublet.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonSinglet.Basic
-public import PhyslibAlpha.Mathematics.Modules.ConjModule
-public import PhyslibAlpha.Relativity.IsLorentzDeriv
-public import Mathlib.Algebra.Polynomial.AlgebraMap
 /-!
 # The fermion sector
 

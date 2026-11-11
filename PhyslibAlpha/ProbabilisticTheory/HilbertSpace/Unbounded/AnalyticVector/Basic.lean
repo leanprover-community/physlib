@@ -5,18 +5,11 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.QuantumMechanics.Operators.Unbounded
-public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
-public import Mathlib.Analysis.Calculus.Deriv.Pow
-public import Mathlib.Analysis.Calculus.Deriv.Mul
 public import Mathlib.Analysis.Calculus.Deriv.Linear
 public import Mathlib.Analysis.Calculus.SmoothSeries
-public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.SpecificLimits.Normed
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.Order.Filter.AtTopBot.Ring
 
 /-!
 

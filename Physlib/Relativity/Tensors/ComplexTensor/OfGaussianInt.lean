@@ -30,7 +30,7 @@ open TensorSpecies
 open Tensor
 
 /-- A complex Lorentz tensor from a map
-  `(Π j, Fin (complexLorentzTensor.repDim (c j))) → GaussianInt`. All complex Lorentz tensors
+  `(Π j, complexLorentzTensor.basisIdx (c j)) → GaussianInt`. All complex Lorentz tensors
   with Gaussian integer coefficients with respect to the basis are of this form. -/
 noncomputable def ofGaussianInt {n : ℕ} {c : Fin n → complexLorentzTensor.Color} :
     ((ComponentIdx (S := complexLorentzTensor) c) → GaussianInt) →ₛₗ[GaussianInt.toComplex]
@@ -64,45 +64,17 @@ lemma basis_eq_ofGaussianInt {n : ℕ} {c : Fin n → complexLorentzTensor.Color
   rw [Basis.repr_self, ofGaussianInt_basis_repr_apply, Finsupp.single_apply]
   split <;> simp
 
-set_option backward.isDefEq.respectTransparency false in
 lemma contr_basis_gaussianInt {c : complexLorentzTensor.Color}
-    (i : Fin (complexLorentzTensor.repDim c))
-    (j : Fin (complexLorentzTensor.repDim (complexLorentzTensor.τ c))) :
+    (i : complexLorentzTensor.basisIdx c)
+    (j : complexLorentzTensor.basisIdx (complexLorentzTensor.τ c)) :
       ((complexLorentzTensor.contr c)
       (complexLorentzTensor.basis c i ⊗ₜ
       complexLorentzTensor.basis (complexLorentzTensor.τ c) j))
-      = GaussianInt.toComplex (if i.val = j.val then 1 else 0) := by
-  match c with
-  | Color.upL =>
-    change Fermion.LeftHandedWeyl.contr
-      (Fermion.LeftHandedWeyl.basis i ⊗ₜ Fermion.DualLeftHandedWeyl.basis j) = _
-    rw [Fermion.LeftHandedWeyl.contr_basis]
-    simp
-  | Color.downL =>
-    change Fermion.DualLeftHandedWeyl.contr
-      (Fermion.DualLeftHandedWeyl.basis i ⊗ₜ Fermion.LeftHandedWeyl.basis j) = _
-    rw [Fermion.DualLeftHandedWeyl.contr_basis]
-    simp
-  | Color.upR =>
-    change Fermion.RightHandedWeyl.contr
-      (Fermion.RightHandedWeyl.basis i ⊗ₜ Fermion.DualRightHandedWeyl.basis j) = _
-    rw [Fermion.RightHandedWeyl.contr_basis]
-    simp
-  | Color.downR =>
-    change Fermion.RightHandedWeyl.contr
-      (Fermion.RightHandedWeyl.basis i ⊗ₜ Fermion.DualRightHandedWeyl.basis j) = _
-    rw [Fermion.RightHandedWeyl.contr_basis]
-    simp
-  | Color.up =>
-    change Lorentz.ContrℂModule.contr
-      (Lorentz.complexContrBasisFin4 i ⊗ₜ Lorentz.complexCoBasisFin4 j) = _
-    rw [Lorentz.ContrℂModule.contr_basis]
-    simp
-  | Color.down =>
-    change Lorentz.ContrℂModule.contr
-      (Lorentz.complexContrBasisFin4 i ⊗ₜ Lorentz.complexCoBasisFin4 j) = _
-    rw [Lorentz.ContrℂModule.contr_basis]
-    simp
+      = GaussianInt.toComplex (if i = basisIdxTauEquiv c j then 1 else 0) := by
+  refine (HasContrDualBases.contr_basis_eq_ite (S := complexLorentzTensor) c i j).trans ?_
+  rw [contrDualIdxEquiv_eq_basisIdxTauEquiv]
+  split <;> simp
+
 open TensorSpecies
 open Tensor
 
@@ -124,7 +96,8 @@ lemma contrT_ofGaussianInt_eq_sum_dropPairSection {n : ℕ}
     (f : (ComponentIdx c) → GaussianInt) :
   (contrT n i j h (ofGaussianInt f)) = ((ofGaussianInt (fun b =>
     (∑ x : ComponentIdx.DropPairSection b,
-      f x.1 * if (x.1 i).1 = (x.1 j).1 then 1 else 0)))) := by
+      f x.1 * if x.1 i = basisIdxTauEquiv (c i) (basisIdxCongr h.2.symm (x.1 j))
+        then 1 else 0)))) := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [contrT_basis_repr_apply]
@@ -132,21 +105,20 @@ lemma contrT_ofGaussianInt_eq_sum_dropPairSection {n : ℕ}
     enter [2, x]
     rw [contr_basis_gaussianInt]
     simp only [Nat.succ_eq_add_one, Finset.univ_eq_attach,
-    ofGaussianInt_basis_repr_apply, Fin.val_cast, mul_one,
+    ofGaussianInt_basis_repr_apply, mul_one,
     mul_zero, Function.comp_apply]
     rw [← GaussianInt.toComplex.map_mul]
   rw [← map_sum GaussianInt.toComplex]
   rw [ofGaussianInt_basis_repr_apply]
-  simp [basisIdxCongr_eq_cast]
 
 open ComponentIdx
 lemma contrT_ofGaussianInt {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTensor.Color}
     {i j : Fin (n + 1 + 1)} {h : i ≠ j ∧ complexLorentzTensor.τ (c i) = c j }
     (f : (ComponentIdx c) → GaussianInt) :
   (contrT n i j h (ofGaussianInt f)) = ((ofGaussianInt (fun b =>
-    (∑ x : Fin (complexLorentzTensor.repDim (c i)),
-      f (DropPairSection.ofFinEquiv h.1 b (x, Fin.cast (by
-        simp [← h.2, complexLorentzTensor.repDim_tau]) x)))))) := by
+    (∑ x : complexLorentzTensor.basisIdx (c i),
+      f (DropPairSection.ofFinEquiv h.1 b
+        (x, basisIdxCongr h.2 ((basisIdxTauEquiv (c i)).symm x))))))) := by
   rw [contrT_ofGaussianInt_eq_sum_dropPairSection]
   congr
   funext b
@@ -154,15 +126,16 @@ lemma contrT_ofGaussianInt {n : ℕ} {c : Fin (n + 1 + 1) → complexLorentzTens
   rw [Fintype.sum_prod_type]
   congr
   funext x
-  rw [Finset.sum_eq_single (Fin.cast (by simp [← h.2, repDim_tau]) x)]
+  rw [Finset.sum_eq_single (basisIdxCongr h.2 ((basisIdxTauEquiv (c i)).symm x))]
   · simp
   · intro y _ hy
     rw [ite_eq_right]
     · simp
     · simp only [DropPairSection.ofFinEquiv_apply_fst, DropPairSection.ofFinEquiv_apply_snd]
-      rw [@Fin.ne_iff_vne] at hy
-      simp only [Fin.val_cast, ne_eq] at hy
-      exact fun a => hy ((Eq.symm a))
+      intro hxy
+      apply hy
+      rw [hxy]
+      simp
   · simp
 
 lemma permT_ofGaussianInt {n m : ℕ} {c : Fin n → complexLorentzTensor.Color}
@@ -170,13 +143,10 @@ lemma permT_ofGaussianInt {n m : ℕ} {c : Fin n → complexLorentzTensor.Color}
     {σ : Fin m → Fin n} (h : IsReindexing c c1 σ)
     (f : ComponentIdx c → GaussianInt) :
     (permT σ h ((ofGaussianInt f))) =
-    ((ofGaussianInt (fun b => f (fun i => Fin.cast (by simp [IsReindexing.inv_perserve_color])
-      (b (h.inv σ i)))))) := by
+    ((ofGaussianInt (fun b => f (fun i => basisIdxCongr
+      (IsReindexing.inv_perserve_color h i) (b (h.inv σ i)))))) := by
   apply (Tensor.basis _).repr.injective
   ext b
   simp only [permT_basis_repr_symm_apply, ofGaussianInt_basis_repr_apply]
-  congr
-  ext i
-  simp [basisIdxCongr_eq_cast]
 
 end complexLorentzTensor

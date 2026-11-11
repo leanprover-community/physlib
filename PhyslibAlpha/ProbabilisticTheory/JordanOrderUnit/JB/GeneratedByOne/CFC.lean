@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.Spectrum
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
-public import Mathlib.Topology.ContinuousMap.Compact
-public import Mathlib.Analysis.Normed.Operator.Extend
 
 /-!
 

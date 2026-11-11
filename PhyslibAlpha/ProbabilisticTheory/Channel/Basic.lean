@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 
 /-!

@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Instances
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Interaction
 public import PhyslibAlpha.ProbabilisticTheory.QuasiLocal.Limit
-public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 

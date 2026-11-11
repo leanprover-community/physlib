@@ -98,15 +98,15 @@ section Coefficients
 
 variable {n : ℕ}
 
-/-- The component indices of a tensor with `n` contravariant indices, relabelled by
+/-- The component indices of a tensor with `n` contravariant indices, which are labelled by
   `Fin 1 ⊕ Fin 3` in each slot. -/
 def vectorIdx (n : ℕ) :
     ComponentIdx (S := complexLorentzTensor) (fun _ : Fin n => Color.up)
       ≃ (Fin n → Fin 1 ⊕ Fin 3) :=
-  Equiv.piCongrRight fun _ => (finSumFinEquiv (m := 1) (n := 3)).symm
+  Equiv.refl _
 
 lemma vectorIdx_symm_apply (d : Fin n → Fin 1 ⊕ Fin 3) (i : Fin n) :
-    (vectorIdx n).symm d i = finSumFinEquiv (m := 1) (n := 3) (d i) := rfl
+    (vectorIdx n).symm d i = d i := rfl
 
 /-- The components of a tensor with `n` contravariant indices, as a coefficient tensor. -/
 noncomputable def coeffEquiv (n : ℕ) :
@@ -285,24 +285,16 @@ lemma isLorentzCovariant_ofComponents_iff {repLorentz : Representation ℂ SL(2,
     IsLorentzCovariant n B repLorentz (ofComponents T) ↔
       ∀ (g : SL(2,ℂ)) l, repLorentz g (T l) = ∑ a : Fin n → Fin 1 ⊕ Fin 3,
         (∏ i, (((SL2C.toLorentzGroup g).1 (a i) (l i) : ℝ) : ℂ)) • T a := by
-  have hmat (g : SL(2,ℂ)) (a l : Fin n → Fin 1 ⊕ Fin 3) :
-      ∏ i, LinearMap.toMatrix (complexLorentzTensor.basis Color.up)
-        (complexLorentzTensor.basis Color.up) (complexLorentzTensor.rep Color.up g)
-        ((vectorIdx n).symm a i) ((vectorIdx n).symm l i)
-      = ∏ i, (((SL2C.toLorentzGroup g).1 (a i) (l i) : ℝ) : ℂ) :=
-    Finset.prod_congr rfl fun i _ => by
-      rw [vectorIdx_symm_apply, vectorIdx_symm_apply]
-      exact toMatrix_rep_up_apply g (a i) (l i)
   constructor
   · intro hf g l
     have h := hf.equivariant g (Tensor.basis _ ((vectorIdx n).symm l))
     rw [smul_basis_eq_sum, ← (vectorIdx n).symm.sum_comp, map_sum] at h
-    simpa [ofComponents, hmat] using h.symm
+    simpa [ofComponents, vectorIdx, LorentzGroup.toComplex] using h.symm
   · intro hT
     refine isEquivariant_constr _ fun g φ => ?_
     obtain ⟨l, rfl⟩ := (vectorIdx n).symm.surjective φ
     rw [Equiv.apply_symm_apply, hT, ← (vectorIdx n).symm.sum_comp]
-    simp only [Equiv.apply_symm_apply, hmat]
+    simp [vectorIdx, LorentzGroup.toComplex]
 
 end Components
 

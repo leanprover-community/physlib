@@ -76,30 +76,25 @@ lemma toMatrix_rep_downR (g : SL(2,ℂ)) :
       (complexLorentzTensor.rep .downR g) = (g.1⁻¹)ᴴ :=
   Fermion.DualRightHandedWeyl.rep_toMatrix g
 
-/-- The matrix of `g` on the contravariant vector colour is the Lorentz matrix of `g`, with
-  the vector indices relabelled by `finSumFinEquiv`. -/
+/-- The matrix of `g` on the contravariant vector colour is the Lorentz matrix of `g`. -/
 lemma toMatrix_rep_up_apply (g : SL(2,ℂ)) (μ ν : Fin 1 ⊕ Fin 3) :
     LinearMap.toMatrix (complexLorentzTensor.basis .up) (complexLorentzTensor.basis .up)
-      (complexLorentzTensor.rep .up g) (finSumFinEquiv μ) (finSumFinEquiv ν)
+      (complexLorentzTensor.rep .up g) μ ν
       = (((SL2C.toLorentzGroup g).1 μ ν : ℝ) : ℂ) := by
-  change LinearMap.toMatrix (complexContrBasis.reindex finSumFinEquiv)
-    (complexContrBasis.reindex finSumFinEquiv) (ContrℂModule.SL2CRep g) _ _ = _
-  rw [LinearMap.toMatrix_apply, Module.Basis.reindex_apply, Module.Basis.repr_reindex_apply,
-    Equiv.symm_apply_apply, Equiv.symm_apply_apply, ← LinearMap.toMatrix_apply,
-    complexContrBasis_ρ_apply]
+  change LinearMap.toMatrix ComplexVector.basis ComplexVector.basis
+    (ComplexVector.SL2CRep g) μ ν = _
+  rw [ComplexVector.basis_ρ_apply]
   rfl
 
 /-- The matrix of `g` on the covariant vector colour is the transpose of the inverse of the
-  Lorentz matrix of `g`, with the vector indices relabelled by `finSumFinEquiv`. -/
+  Lorentz matrix of `g`. -/
 lemma toMatrix_rep_down_apply (g : SL(2,ℂ)) (μ ν : Fin 1 ⊕ Fin 3) :
     LinearMap.toMatrix (complexLorentzTensor.basis .down) (complexLorentzTensor.basis .down)
-      (complexLorentzTensor.rep .down g) (finSumFinEquiv μ) (finSumFinEquiv ν)
+      (complexLorentzTensor.rep .down g) μ ν
       = (((SL2C.toLorentzGroup g)⁻¹.1 ν μ : ℝ) : ℂ) := by
-  change LinearMap.toMatrix (complexCoBasis.reindex finSumFinEquiv)
-    (complexCoBasis.reindex finSumFinEquiv) (CoℂModule.SL2CRep g) _ _ = _
-  rw [LinearMap.toMatrix_apply, Module.Basis.reindex_apply, Module.Basis.repr_reindex_apply,
-    Equiv.symm_apply_apply, Equiv.symm_apply_apply, ← LinearMap.toMatrix_apply,
-    complexCoBasis_ρ_apply, Matrix.transpose_apply, LorentzGroup.toComplex_inv]
+  change LinearMap.toMatrix ComplexCoVector.basis ComplexCoVector.basis
+    (ComplexCoVector.SL2CRep g) μ ν = _
+  rw [ComplexCoVector.basis_ρ_apply, Matrix.transpose_apply, LorentzGroup.toComplex_inv]
   rfl
 
 /-- The inverse of `g†` is the dagger of the inverse of `g`. -/
@@ -144,9 +139,7 @@ lemma isDaggerCompatible_of_weyl {k : complexLorentzTensor.Color}
   transpose of that of `g`, and it is real. -/
 lemma isDaggerCompatible_up : IsDaggerCompatible .up := by
   intro g
-  ext i j
-  obtain ⟨μ, rfl⟩ := (finSumFinEquiv (m := 1) (n := 3)).surjective i
-  obtain ⟨ν, rfl⟩ := (finSumFinEquiv (m := 1) (n := 3)).surjective j
+  ext μ ν
   rw [Matrix.conjTranspose_apply, toMatrix_rep_up_apply, toMatrix_rep_up_apply,
     toLorentzGroup_dagger, Matrix.transpose_apply, Complex.star_def, Complex.conj_ofReal]
 
@@ -154,9 +147,7 @@ lemma isDaggerCompatible_up : IsDaggerCompatible .up := by
   transpose of that of `g`, and it is real. -/
 lemma isDaggerCompatible_down : IsDaggerCompatible .down := by
   intro g
-  ext i j
-  obtain ⟨μ, rfl⟩ := (finSumFinEquiv (m := 1) (n := 3)).surjective i
-  obtain ⟨ν, rfl⟩ := (finSumFinEquiv (m := 1) (n := 3)).surjective j
+  ext μ ν
   rw [Matrix.conjTranspose_apply, toMatrix_rep_down_apply, toMatrix_rep_down_apply, ← map_inv,
     inv_dagger, toLorentzGroup_dagger, map_inv, Matrix.transpose_apply, Complex.star_def,
     Complex.conj_ofReal]

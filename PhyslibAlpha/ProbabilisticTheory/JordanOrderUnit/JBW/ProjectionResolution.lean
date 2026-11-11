@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JBW.Basic
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.ProjectionResolution
-public import PhyslibAlpha.ProbabilisticTheory.Measurement.BornRule
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.BoundedScalarization
 
 /-!

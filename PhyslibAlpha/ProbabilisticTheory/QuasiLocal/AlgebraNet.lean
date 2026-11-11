@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Algebra.Colimit.DirectLimit
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Order.Directed
 public import Mathlib.Analysis.Complex.Basic
 
 /-!

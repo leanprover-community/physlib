@@ -5,7 +5,6 @@ Authors: Rithwik Ranganathan
 -/
 module
 
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Physlib.Mathematics.Calculus.Gradient
 /-!
 

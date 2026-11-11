@@ -5,12 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import PhyslibAlpha.ProbabilisticTheory.State.Separation
 public import PhyslibAlpha.Mathematics.Analysis.Normed.HolderDual
-public import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
-public import Mathlib.Analysis.Normed.Operator.Basic
-public import Mathlib.LinearAlgebra.Basis.Defs
 
 /-!
 # Order-unit spaces built from a normed vector space

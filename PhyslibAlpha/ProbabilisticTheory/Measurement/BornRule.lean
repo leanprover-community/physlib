@@ -8,8 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Pushforward
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-public import Mathlib.Topology.Order.MonotoneConvergence
 
 /-!
 # The Born rule for effect-valued measures

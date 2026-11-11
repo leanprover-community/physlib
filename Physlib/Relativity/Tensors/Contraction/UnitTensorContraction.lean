@@ -5,7 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
-public import Physlib.Relativity.Tensors.Contraction.CrossToSlot
+public import Physlib.Relativity.Tensors.Contraction.RankTwo
 public import Physlib.Relativity.Tensors.UnitTensor
 public import Physlib.Relativity.Tensors.Evaluation
 /-!
@@ -38,12 +38,15 @@ from the `CommRing` `crossToEnd`/`crossToSlot` algebra.
     form, every color propositional.
 - `TensorSpecies.Tensor.crossToSlotEquiv` : raising and lowering a named index against a pair that
     collapses in both orders, as a linear equivalence.
+- `TensorSpecies.Tensor.contractInnerT_eq_unitTensor_comm` : if the label sets of the two indices
+    of `M` are in bijection, `M_{μν} M'^{νρ} = δ_μ^ρ` implies `M'^{νρ} M_{ρσ} = δ^ν_σ`.
 
 ## iii. Table of contents
 
 - A. The unit tensor as a slot-contraction identity
 - B. Round trips against a matched pair
 - C. Raising and lowering as an equivalence
+- D. One contraction law from the other
 
 ## iv. References
 
@@ -190,34 +193,20 @@ lemma crossToEnd_unitTensor {nA : ℕ} {cA : Fin (nA + 1) → C} {c : C}
 
 ## B. Round trips against a matched pair
 
-When two rank-2 tensors collapse to the unit tensor after their shared index is contracted,
-contracting a slot first against one and then against the other returns the original tensor.
+If `M_{μν} M'^{νρ} = δ_μ^ρ`, contracting an index of a tensor `t` with `M` and then with `M'` gives
+back `t`. The metric and its inverse are such a pair.
 
 -/
 
-/-- The color list `crossToEnd` produces from a matched rank-2 pair `M : ![a, d]`, `M' : ![b, e]` is
-  the color list `![S.τ e, e]` of `unitTensor e`, via the identity slot map: the reindexing carried
-  by the collapse hypothesis `M · M' = δ` of the round trips below. Only the surviving colors `a`
-  and `e` enter, and `a` equals `S.τ e` only propositionally, so a pair whose colors match
-  propositionally enters with no transport. -/
-lemma IsReindexing.unitTensor_pair {a b d e : C} (h : S.τ e = a) :
-    IsReindexing (![S.τ e, e] : Fin 2 → C)
-      (Fin.append ((![a, d] : Fin 2 → C) ∘ (Fin.last 1).succAbove)
-        ((![b, e] : Fin 2 → C) ∘ (0 : Fin 2).succAbove))
-      (id : Fin 2 → Fin 2) :=
-  IsReindexing.on_id.mpr (fun j => by fin_cases j <;> first | exact h | rfl)
-
-/-- Round trip of two contractions against a matched pair, in result-to-end form. Contracting slot
-  `i` of `t` against `M₁`, then contracting the surviving `M₁`-index (deposited at slot `j`) against
-  `M₂`, returns `t` up to the cycle that moves the round-tripped slot from the end back to `i`,
-  whenever `M₁` and `M₂` collapse to the unit tensor. The last slot is threaded as a variable `j`
-  with `hj : j = last nA` so that a caller can apply it at a propositionally-last slot without a
-  dependent rewrite of the slot index. -/
+/-- If `M₁_{μν} M₂^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M₁` and then with `M₂` gives
+  back `t` with that slot moved to the end, because `crossToEnd` places the surviving index last.
+  The last slot is a variable `j` with `hj : j = last nA`, so the lemma also applies where `j` is
+  last only up to an equality. -/
 lemma crossToEnd_round_trip_of_unit_slot {nA : ℕ} {c : Fin (nA + 1) → C} {d : C}
     (i j : Fin (nA + 1)) (hj : j = Fin.last nA)
     (M₁ : Tensor S ![S.τ (c i), d]) (M₂ : Tensor S ![S.τ d, c i])
-    (hM : crossToEnd (Fin.last 1) (0 : Fin 2) rfl M₁ M₂ =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair rfl)
+    (hM : contractInnerT rfl M₁ M₂ =
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
         (unitTensor (S := S) (c i)))
     (t : Tensor S c) :
     crossToEnd j (0 : Fin 2)
@@ -239,8 +228,12 @@ lemma crossToEnd_round_trip_of_unit_slot {nA : ℕ} {c : Fin (nA + 1) → C} {d 
               simp [Fin.append_right, Fin.succAbove_zero]⟩)
         t := by
   subst hj
-  rw [crossToEnd_assoc_rankTwo i rfl rfl t M₁ M₂]
-  rw [hM]
+  have hM' : crossToEnd (Fin.last 1) (0 : Fin 2) rfl M₁ M₂ =
+      permT (id : Fin 2 → Fin 2) (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl)
+        (unitTensor (S := S) (c i)) :=
+    (crossToEnd_eq_permT_contractInnerT _ M₁ M₂).trans
+      (by rw [hM]; exact (permT_permT ..).trans (permT_congr rfl rfl))
+  rw [crossToEnd_assoc_rankTwo i rfl rfl t M₁ M₂, hM']
   rw [crossToEnd_permT_right i (0 : Fin 2)
     (id : Fin 2 → Fin 2) (fun x : Fin 1 => x)
     (IsReindexing.on_id.mpr (fun i => by fin_cases i <;> rfl)) rfl]
@@ -263,8 +256,8 @@ set_option backward.isDefEq.respectTransparency false in
 private lemma crossToSlot_round_trip_of_unit {nA : ℕ} {c : Fin (nA + 1) → C} {d : C}
     (i : Fin (nA + 1))
     (M₁ : Tensor S ![S.τ (c i), d]) (M₂ : Tensor S ![S.τ d, c i])
-    (hM : crossToEnd (Fin.last 1) (0 : Fin 2) rfl M₁ M₂ =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair rfl)
+    (hM : contractInnerT rfl M₁ M₂ =
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
         (unitTensor (S := S) (c i)))
     (t : Tensor S c) :
     crossToSlot (S := S) i (0 : Fin 2)
@@ -303,28 +296,26 @@ private lemma crossToSlot_round_trip_of_unit {nA : ℕ} {c : Fin (nA + 1) → C}
     simp [Function.comp_apply, Fin.append_succAbove_const_eq_cycleIcc]
   · rfl
 
-/-- Raising then lowering a named index, with every color threaded propositionally. For a rank-2
-  metric `M : ![a, d]` and an inverse `M' : ![b, e]` collapsing to the unit tensor (`M · M' = δ`),
-  at any rank and any slot `i`: contracting slot `i` with `M`, then contracting the result with
-  `M'`, is the identity up to the `Function.update` color reindex.
-
-  No color is pinned to a composite. `ha : τ (c i) = a` places the metric's contracted slot,
-  `hb : τ d = b` the inverse's, and `he : c i = e` the surviving one, so a caller whose metric and
-  inverse sit at literal colors supplies them directly, with no transporting `permT` on either
-  factor. Lowering then raising is this same statement with `M` and `M'` exchanged and the reversed
-  collapse `M' · M = δ`; neither collapse follows from the other here. -/
-lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {a b d e : C}
-    (i : Fin (nA + 1)) (he : c i = e) (ha : S.τ (c i) = a) (hb : S.τ d = b)
-    (M : Tensor S ![a, d]) (M' : Tensor S ![b, e])
-    (hM : crossToEnd (Fin.last 1) (0 : Fin 2) hb M M' =
+/-- If `M_{μν} M'^{νρ} = δ_μ^ρ`, contracting slot `i` of `t` with `M` and then with `M'` gives back
+  `t` in place, up to renaming the colour of slot `i`. The equalities `ha`, `hb` and `he` match
+  slot `i` with the indices of `M` and `M'`, so `M` and `M'` can have any colour lists. -/
+lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C}
+    (i : Fin (nA + 1)) (he : c i = ds 1) (ha : S.τ (c i) = cs 0) (hb : S.τ (cs 1) = ds 0)
+    (M : Tensor S cs) (M' : Tensor S ds)
+    (hM : contractInnerT hb M M' =
       permT (id : Fin 2 → Fin 2)
-        (IsReindexing.unitTensor_pair ((congrArg S.τ he.symm).trans ha))
-        (unitTensor (S := S) e))
+        (IsReindexing.unitTensor_of_tau_eq ((congrArg S.τ he.symm).trans ha))
+        (unitTensor (S := S) (ds 1)))
     (t : Tensor S c) :
     crossToSlot (S := S) i (0 : Fin 2)
-        (by rw [Function.update_self]; exact hb : S.τ (Function.update c i d i) = b) M'
+        (by rw [Function.update_self]; exact hb : S.τ (Function.update c i (cs 1) i) = ds 0) M'
         (crossToSlot (S := S) i (0 : Fin 2) ha M t) =
       permT (id : Fin (nA + 1) → Fin (nA + 1)) (IsReindexing.update_update_of_eq i he) t := by
+  obtain ⟨a, d, rfl⟩ : ∃ a d, cs = ![a, d] := ⟨cs 0, cs 1, by funext j; fin_cases j <;> rfl⟩
+  obtain ⟨b, e, rfl⟩ : ∃ b e, ds = ![b, e] := ⟨ds 0, ds 1, by funext j; fin_cases j <;> rfl⟩
+  change c i = e at he
+  change S.τ (c i) = a at ha
+  change S.τ d = b at hb
   subst ha
   subst hb
   subst he
@@ -335,47 +326,48 @@ lemma crossToSlot_raise_lower_round_trip {nA : ℕ} {c : Fin (nA + 1) → C} {a 
 ## C. Raising and lowering as an equivalence
 
 Both collapse orders are hypotheses here and each is used once: `M · M' = δ` gives one round trip
-by section B, `M' · M = δ` the other through injectivity of the lowering half.
+by section B, `M' · M = δ` the other through injectivity of the lowering half. If the label sets of
+the two indices of `M` are in bijection, as for a metric, the second law follows from the first
+(section D).
 
 -/
 
 section RoundTripEquiv
 
-variable {nA : ℕ} {c : Fin (nA + 1) → C} {a b d e : C} (i : Fin (nA + 1))
-    (he : c i = e) (ha : S.τ (c i) = a) (hb : S.τ d = b)
-    (M : Tensor S ![a, d]) (M' : Tensor S ![b, e])
-    (hMM' : crossToEnd (Fin.last 1) (0 : Fin 2) hb M M' =
+variable {nA : ℕ} {c : Fin (nA + 1) → C} {cs ds : Fin 2 → C} (i : Fin (nA + 1))
+    (he : c i = ds 1) (ha : S.τ (c i) = cs 0) (hb : S.τ (cs 1) = ds 0)
+    (M : Tensor S cs) (M' : Tensor S ds)
+    (hMM' : contractInnerT hb M M' =
       permT (id : Fin 2 → Fin 2)
-        (IsReindexing.unitTensor_pair ((congrArg S.τ he.symm).trans ha))
-        (unitTensor (S := S) e))
-    (hM'M : crossToEnd (Fin.last 1) (0 : Fin 2) ((congrArg S.τ he.symm).trans ha) M' M =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair hb) (unitTensor (S := S) d))
+        (IsReindexing.unitTensor_of_tau_eq ((congrArg S.τ he.symm).trans ha))
+        (unitTensor (S := S) (ds 1)))
+    (hM'M : contractInnerT ((congrArg S.τ he.symm).trans ha) M' M =
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq hb)
+        (unitTensor (S := S) (cs 1)))
 
 set_option backward.isDefEq.respectTransparency false in
 include hMM' in
-/-- Lowering undoes raising: `crossToSlot_raise_lower_round_trip` with the color cast absorbed into
-  `crossToSlotInv`. -/
+/-- If `M_{μν} M'^{νρ} = δ_μ^ρ`, `crossToSlotInv` with `M'` undoes `crossToSlot` with `M`. -/
 lemma crossToSlotInv_crossToSlot (t : Tensor S c) :
     crossToSlotInv i he hb M' (crossToSlot i (0 : Fin 2) ha M t) = t := by
   simp only [crossToSlotInv, LinearMap.coe_comp, Function.comp_apply]
-  -- Unfolding `crossToSlotInv` leaves the inner slot proof at the clean color `b` where the goal
-  -- wants the composite `![b, e] 0`, so `rw` cannot key on the round trip; `erw` matches.
+  -- Unfolding `crossToSlotInv` leaves the inner slot proof in a different form from the one in
+  -- the round trip, so `rw` cannot key on it; `erw` matches.
   erw [crossToSlot_raise_lower_round_trip i he ha hb M M' hMM' t, permT_permT]
   exact permT_congr_eq_id _ _ _ rfl
 
 include hMM' hM'M in
-/-- Raising undoes lowering. The reversed collapse `M' · M = δ` is the round trip at the color
-  list `Function.update c i d` with the pair exchanged, which gives the lowering half a left
-  inverse and hence injectivity; that upgrades `crossToSlotInv_crossToSlot` to a two-sided
-  inverse. -/
-lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i d)) :
+/-- If also `M'^{νρ} M_{ρσ} = δ^ν_σ`, `crossToSlot` with `M` undoes `crossToSlotInv` with `M'`. The
+  second law makes `crossToSlotInv` injective, so its left inverse is also a right inverse. -/
+lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i (cs 1))) :
     crossToSlot i (0 : Fin 2) ha M (crossToSlotInv i he hb M' t) = t := by
-  have hswap := crossToSlot_raise_lower_round_trip (S := S) (c := Function.update c i d) i
-    (by simp : Function.update c i d i = d)
-    (by rw [Function.update_self]; exact hb : S.τ (Function.update c i d i) = b)
+  have hswap := crossToSlot_raise_lower_round_trip (S := S) (c := Function.update c i (cs 1)) i
+    (by simp : Function.update c i (cs 1) i = cs 1)
+    (by rw [Function.update_self]; exact hb : S.τ (Function.update c i (cs 1) i) = ds 0)
     ((congrArg S.τ he.symm).trans ha) M' M hM'M
   have hgi : Function.Injective (crossToSlot (S := S) i (0 : Fin 2)
-      (show S.τ (Function.update c i d i) = b by rw [Function.update_self]; exact hb) M') := by
+      (show S.τ (Function.update c i (cs 1) i) = ds 0 by rw [Function.update_self]; exact hb)
+        M') := by
     intro x y hxy
     exact permT_injective _ (by rw [← hswap x, ← hswap y, hxy])
   have hinj : Function.Injective (crossToSlotInv (S := S) i he hb M') := by
@@ -384,16 +376,48 @@ lemma crossToSlot_crossToSlotInv (t : Tensor S (Function.update c i d)) :
   exact Function.LeftInverse.rightInverse_of_injective
     (crossToSlotInv_crossToSlot i he ha hb M M' hMM') hinj t
 
-/-- Raising and lowering a named index against a mutually inverse pair, as a linear equivalence: the
-  two color assignments `c` and `Function.update c i d` carry the same tensors. `M` and `M'` are
-  matched only propositionally and `d` is unrelated to `c i`, so this covers a metric pairing two
-  unrelated colors as well as a metric and its inverse at `S.τ (c i)`. -/
-noncomputable def crossToSlotEquiv : Tensor S c ≃ₗ[k] Tensor S (Function.update c i d) :=
+/-- The linear equivalence `crossToSlot` with `M`, with inverse `crossToSlotInv` with `M'`, when
+  `M_{μν} M'^{νρ} = δ_μ^ρ` and `M'^{νρ} M_{ρσ} = δ^ν_σ`. Slot `i` has colour `c i` on one side and
+  the colour `cs 1` of the second index of `M` on the other. For the metric this lowers and raises
+  an index with `η_{μν}` and `η^{νρ}`. -/
+noncomputable def crossToSlotEquiv : Tensor S c ≃ₗ[k] Tensor S (Function.update c i (cs 1)) :=
   LinearEquiv.mk (crossToSlot i (0 : Fin 2) ha M) (crossToSlotInv i he hb M').toFun
     (crossToSlotInv_crossToSlot i he ha hb M M' hMM')
     (crossToSlot_crossToSlotInv i he ha hb M M' hMM' hM'M)
 
 end RoundTripEquiv
+
+/-!
+
+## D. One contraction law from the other
+
+-/
+
+open HasContrDualBases in
+/-- If the label sets of the two indices of `M` are in bijection, `M_{μν} M'^{νρ} = δ_μ^ρ` implies
+`M'^{νρ} M_{ρσ} = δ^ν_σ`. Without the bijection `e` this fails, since `A B = 1` does not imply
+`B A = 1` for rectangular matrices. -/
+lemma contractInnerT_eq_unitTensor_comm [HasContrDualBases S] {cs ds : Fin 2 → C}
+    (hb : S.τ (cs 1) = ds 0) (ha : S.τ (ds 1) = cs 0) (e : basisIdx (cs 0) ≃ basisIdx (cs 1))
+    (M : Tensor S cs) (M' : Tensor S ds)
+    (h : contractInnerT hb M M' =
+      permT id (IsReindexing.unitTensor_of_tau_eq ha) (unitTensor (S := S) (ds 1))) :
+    contractInnerT ha M' M =
+      permT id (IsReindexing.unitTensor_of_tau_eq hb) (unitTensor (S := S) (cs 1)) := by
+  apply toMatrix_injective
+  have h := congrArg toMatrix h
+  rw [toMatrix_contractInnerT, toMatrix_permT_unitTensor_of_tau_eq ha] at h
+  rw [toMatrix_contractInnerT, toMatrix_permT_unitTensor_of_tau_eq hb]
+  dsimp only [Matrix.cons_val_zero, Matrix.cons_val_one] at h ⊢
+  have h1 := congrArg (fun A => A.submatrix (dualIdxEquiv ha) id) h
+  simp only [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id,
+    Matrix.submatrix_id_id, Matrix.submatrix_submatrix, Equiv.symm_comp_self,
+    Function.comp_id] at h1
+  have h2 := (Matrix.mul_eq_one_comm_of_equiv ((dualIdxEquiv ha).trans e)).1 h1
+  apply Matrix.submatrix_injective (Equiv.surjective (dualIdxEquiv hb)) Function.surjective_id
+  simpa only [Matrix.submatrix_mul _ _ _ id _ Function.bijective_id,
+    Matrix.submatrix_id_id, Matrix.submatrix_submatrix, Equiv.symm_comp_self,
+    Function.comp_id] using h2
 
 end Tensor
 

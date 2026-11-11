@@ -15,7 +15,7 @@ Every 2HDM gauge orbit meets a four-parameter family whose Gram vector is polyno
 
 Every gauge orbit of the two Higgs doublet model meets the four–real–parameter family
 
-`repHiggs X = ⟨(X₀, 0), (X₁ + i X₂, X₃)⟩`.
+`repHiggs X = ⟨(0, X₀), (X₃, X₁ + i X₂)⟩`.
 
 The crucial feature of this family (compared with the normalised representatives of
 `gaugeGroupI_exists_fst_eq_snd_eq`) is that it is a *polynomial* family: the Gram vector of
@@ -63,17 +63,17 @@ open ComplexConjugate
 -/
 
 /-- A four–real–parameter polynomial family of representatives for the gauge orbits: the first
-  doublet is `(X₀, 0)` and the second is `(X₁ + i X₂, X₃)`. -/
+  doublet is `(0, X₀)` and the second is `(X₃, X₁ + i X₂)`. -/
 def repHiggs (X : Fin 4 → ℝ) : TwoHiggsDoublet where
-  Φ1 := !₂[(X 0 : ℂ), 0]
-  Φ2 := !₂[(X 1 : ℂ) + Complex.I * (X 2 : ℂ), (X 3 : ℂ)]
+  Φ1 := !₂[0, (X 0 : ℂ)]
+  Φ2 := !₂[(X 3 : ℂ), (X 1 : ℂ) + Complex.I * (X 2 : ℂ)]
 
 @[simp]
-lemma repHiggs_Φ1 (X : Fin 4 → ℝ) : (repHiggs X).Φ1 = !₂[(X 0 : ℂ), 0] := rfl
+lemma repHiggs_Φ1 (X : Fin 4 → ℝ) : (repHiggs X).Φ1 = !₂[0, (X 0 : ℂ)] := rfl
 
 @[simp]
 lemma repHiggs_Φ2 (X : Fin 4 → ℝ) :
-    (repHiggs X).Φ2 = !₂[(X 1 : ℂ) + Complex.I * (X 2 : ℂ), (X 3 : ℂ)] := rfl
+    (repHiggs X).Φ2 = !₂[(X 3 : ℂ), (X 1 : ℂ) + Complex.I * (X 2 : ℂ)] := rfl
 
 lemma normSq_repHiggs_Φ1 (X : Fin 4 → ℝ) : ‖(repHiggs X).Φ1‖ ^ 2 = X 0 ^ 2 := by
   rw [repHiggs_Φ1, PiLp.norm_sq_eq_of_L2, Fin.sum_univ_two]
@@ -159,9 +159,9 @@ lemma exists_smul_eq_repHiggs (φ : TwoHiggsDoublet) :
     · rw [gaugeGroupI_smul_snd, h2, repHiggs_Φ2]
       ext i
       fin_cases i
+      · simp [Complex.ofReal_div]
       · show ⟪φ.Φ1, φ.Φ2⟫_ℂ / ↑‖φ.Φ1‖ =
           ↑(⟪φ.Φ1, φ.Φ2⟫_ℂ / ↑‖φ.Φ1‖).re + Complex.I * ↑(⟪φ.Φ1, φ.Φ2⟫_ℂ / ↑‖φ.Φ1‖).im
         rw [mul_comm Complex.I, Complex.re_add_im]
-      · simp [Complex.ofReal_div]
 
 end TwoHiggsDoublet

@@ -10,11 +10,6 @@ public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.InnerProductSpace.l2Space
 public import Mathlib.Analysis.InnerProductSpace.Trace
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
-public import Mathlib.LinearAlgebra.Dimension.Finite
-public import Mathlib.LinearAlgebra.Trace
-public import Mathlib.LinearAlgebra.Projection
-public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Idempotent
 
 /-!
 

@@ -6,12 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional
-public import Mathlib.LinearAlgebra.AffineSpace.Independent
 public import Mathlib.Analysis.Convex.Strict.Extreme
-public import Mathlib.Analysis.Convex.Combination
-public import Mathlib.LinearAlgebra.StdBasis
 public import Mathlib.Algebra.BigOperators.Field
-public import Mathlib.Topology.UnitInterval
 
 /-!
 # Simplices

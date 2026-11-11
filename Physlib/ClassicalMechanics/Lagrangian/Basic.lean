@@ -7,27 +7,34 @@ module
 
 public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
-public import Physlib.SpaceAndTime.Time.Basic
+public import Mathlib.Geometry.Manifold.Algebra.Monoid
+public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
+public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
 # Lagrangian systems
 
-Lagrangians on `TM` and critical points of the action.
+Lagrangians on `TM` and their action.
 
 ## i. Overview
 
-The motions of a Lagrangian system are the critical points of its action.
+The motions of a Lagrangian system are the critical points of its action, see
+`LagrangianSystem.IsCriticalPoint`.
 
 ## ii. Key results
 
 - `LagrangianSystem` : smooth time-dependent Lagrangians on `TM`.
+- `LagrangianSystem.coord` : `L` in a time coordinate.
 - `LagrangianSystem.action` : the action of a curve.
-- `LagrangianSystem.IsCriticalPoint` : critical points of the action.
+- `LagrangianSystem.action_eq_integral_coord` : the action of a curve in a normed space in
+  coordinates.
 
 ## iii. Table of contents
 
 - A. Lagrangian systems
+  - A.1. Basic instances
+  - A.2. The coordinate form
+  - A.3. The action
 
 ## iv. References
 
@@ -50,9 +57,34 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [Top
 -/
 
 /-- A smooth time-dependent Lagrangian on `TM`, depending on first-order derivatives only. -/
-abbrev LagrangianSystem := C^∞⟮𝓘(ℝ, ℝ).prod I.tangent, Time × TangentBundle I M; ℝ⟯
+@[ext] structure LagrangianSystem where
+  /-- `L(t, q, q̇)`. -/
+  toFun : Time × TangentBundle I M → ℝ
+  /-- `L` is smooth. -/
+  contMDiff : ContMDiff (𝓘(ℝ, ℝ).prod I.tangent) 𝓘(ℝ, ℝ) ∞ toFun
 
 namespace LagrangianSystem
+
+/-!
+
+### A.1. Basic instances
+
+-/
+
+instance : FunLike (LagrangianSystem I M) (Time × TangentBundle I M) ℝ where
+  coe := toFun
+  coe_injective _ _ h := LagrangianSystem.ext h
+
+TODO "Define the instance of a module on `LagrangianSystem I M`."
+
+TODO "Add a constructor for `LagrangianSystem I M` from a point particle configuration space and
+  a potential."
+
+/-!
+
+### A.2. The coordinate form
+
+-/
 
 /-- The Lagrangian system on a normed space `E` given by a smooth `L(t, q, q̇)`. -/
 def ofNormedSpace (L : Time × E × E → ℝ)
@@ -61,25 +93,49 @@ def ofNormedSpace (L : Time × E × E → ℝ)
   ⟨fun p ↦ L (p.1, p.2.1, p.2.2), hL.comp (contMDiff_fst.prodMk
     (contMDiff_tangentBundleModelSpaceHomeomorph.comp contMDiff_snd))⟩
 
+/-- `L` in the time coordinate `τ ↦ τ +ᵥ t₀`. -/
+noncomputable def coord (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (t₀ : Time) (p : ℝ × E × E) : ℝ :=
+  S (p.1 +ᵥ t₀, (tangentBundleModelSpaceHomeomorph 𝓘(ℝ, E)).symm p.2)
+
+/-- `S.coord t₀` is smooth. -/
+lemma contDiff_coord (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (t₀ : Time) :
+    ContDiff ℝ ∞ (S.coord t₀) := by
+  have hs : ContMDiff 𝓘(ℝ, E × E) (𝓘(ℝ, E)).tangent ∞
+      (fun p : E × E ↦ (tangentBundleModelSpaceHomeomorph 𝓘(ℝ, E)).symm p) :=
+    contMDiff_tangentBundleModelSpaceHomeomorph_symm
+  have h : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ (S.coord t₀) :=
+    S.contMDiff.comp (((Time.contMDiff_vadd t₀ ∞).comp contMDiff_fst).prodMk
+      (hs.comp contMDiff_snd))
+  rwa [← modelWithCornersSelf_prod (𝕜 := ℝ) (E := ℝ) (F := E × E),
+    chartedSpaceSelf_prod (H := ℝ) (H' := E × E), contMDiff_iff_contDiff] at h
+
+@[simp] lemma coord_ofNormedSpace (L : Time × E × E → ℝ)
+    (hL : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L) (t₀ : Time) (p : ℝ × E × E) :
+    (ofNormedSpace L hL).coord t₀ p = L (p.1 +ᵥ t₀, p.2) := rfl
+
 variable {I M} (S : LagrangianSystem I M) {γ : Time → M} {t₀ t₁ : Time}
+
+/-!
+
+### A.3. The action
+
+-/
 
 /-- The action `∫ L(t, γ, γ̇) dt` over `[t₀, t₁]`. -/
 noncomputable def action (γ : Time → M) (t₀ t₁ : Time) : ℝ :=
   ∫ s in Set.Icc 0 (t₁ -ᵥ t₀), S (s +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ ⟨s +ᵥ t₀, (1 : ℝ)⟩)
 
-/-- `γ` is smooth and every variation has zero first variation of the action. -/
-def IsCriticalPoint (γ : Time → M) (t₀ t₁ : Time) : Prop :=
-  ContMDiff 𝓘(ℝ, ℝ) I ∞ γ ∧ ∀ h : Variation I γ t₀ t₁,
-    HasDerivAt (fun s ↦ S.action (fun t ↦ h.toFun (s, t)) t₀ t₁) 0 0
-
 /-- The action over an empty or one-point interval vanishes. -/
 lemma action_eq_zero_of_vsub_nonpos (h : t₁ -ᵥ t₀ ≤ 0) : S.action γ t₀ t₁ = 0 :=
   setIntegral_measure_zero _ ((Set.subsingleton_Icc_of_ge h).measure_zero _)
 
-/-- Every smooth curve is critical over an empty or one-point interval. -/
-lemma isCriticalPoint_of_vsub_nonpos (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) (h : t₁ -ᵥ t₀ ≤ 0) :
-    S.IsCriticalPoint γ t₀ t₁ :=
-  ⟨hγ, fun _ ↦ by simp [action_eq_zero_of_vsub_nonpos _ h, hasDerivAt_const]⟩
+/-- The action is the integral over `[0, t₁ -ᵥ t₀]` of `S.coord t₀ (s, q s, q' s)`, where
+`q τ = γ (τ +ᵥ t₀)` and `q' = deriv q`. -/
+lemma action_eq_integral_coord (S : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (γ : Time → E) (t₀ t₁ : Time) :
+    S.action γ t₀ t₁ = ∫ s in Set.Icc 0 (t₁ -ᵥ t₀),
+      S.coord t₀ (s, γ (s +ᵥ t₀), deriv (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s) := by
+  simp only [action, coord, Time.tangentMap_eq_deriv_vadd]
+  rfl
 
 end LagrangianSystem
 

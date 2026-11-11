@@ -96,7 +96,7 @@ lemma toSelfAdjointMap_apply_pauliBasis'_inl (M : SL(2, ℂ)) :
     ofReal_div, ofReal_add, ofReal_pow, ofReal_ofNat, mul_one, smul_zero, smul_empty, smul_neg,
     ofReal_neg, ofReal_mul, neg_add_rev, neg_neg, of_add_of, add_cons, head_cons, add_zero,
     tail_cons, zero_add, empty_add_empty, ofReal_sub]
-  conv => lhs; erw [← eta_fin_two 1, mul_one]
+  conv => lhs; rw [← one_fin_two, mul_one]
   conv => lhs; lhs; rw [eta_fin_two M.1]
   conv => lhs; rhs; rw [eta_fin_two M.1ᴴ]
   simp only [Fin.isValue, conjTranspose_apply, RCLike.star_def, cons_mul, Nat.succ_eq_add_one,
@@ -127,12 +127,12 @@ def toMatrix : SL(2, ℂ) →* Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) ℝ wh
   map_one' := by
     simp only [toSelfAdjointMap, SpecialLinearGroup.coe_one, one_mul, conjTranspose_one,
       mul_one, Subtype.coe_eta]
-    erw [LinearMap.toMatrix_one]
+    exact LinearMap.toMatrix_one _
   map_mul' M N := by
     rw [← LinearMap.toMatrix_mul]
     apply congrArg
     ext1 x
-    erw [Module.End.mul_apply]
+    rw [Module.End.mul_apply]
     simp only [toSelfAdjointMap_apply, SpecialLinearGroup.coe_mul, conjTranspose_mul,
       Subtype.mk.injEq]
     ext1

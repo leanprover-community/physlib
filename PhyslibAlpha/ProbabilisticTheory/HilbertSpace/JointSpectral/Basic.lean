@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.StarHomSpec.Functional
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.StarHomSpec.Commutant
-public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-public import Mathlib.Topology.Algebra.StarSubalgebra
 
 /-!
 

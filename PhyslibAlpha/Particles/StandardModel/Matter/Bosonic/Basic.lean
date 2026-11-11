@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.GaugeAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import PhyslibAlpha.Mathematics.SymmetricAlgebra
 /-!
 # The bosonic algebra of a matter field
 
@@ -61,6 +60,10 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 ## A. The bosonic algebra
 
 -/
+
+TODO "Migrate the Standard Model uses of the bosonic algebra to
+  `GaugeFieldData.LocalFieldAlgebra`, with fields classified by their declared
+  statistics through `FieldContent`."
 
 /-- The bosonic algebra of the matter field `M`: the symmetric algebra on the space
   of component functions `∂_s φ_α` and `∂_s φ̄_α`. The symmetric product is the product of

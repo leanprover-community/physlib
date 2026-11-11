@@ -139,7 +139,7 @@ theorem entropy_A_eq_entropy_Z (T : ℝ) (hT : T ≠ 0)
       (by simp)
   dsimp [entropyS, entropySβ, internalU, partitionZT]
   unfold helmholtzA
-  erw [deriv_mul]
+  rw [deriv_fun_mul]
   rw [deriv_neg'', neg_mul, one_mul, neg_add_rev, neg_neg, mul_neg, add_comm]
   congr 1
   simp_rw [partitionZT]
@@ -189,9 +189,9 @@ theorem β_eq_deriv_S_U {β : ℝ}
 
   --Main goal
   simp only [mul_neg]
-  erw [deriv.neg', deriv_add, deriv.neg']
+  rw [deriv.fun_neg', deriv_fun_add, deriv.fun_neg']
   dsimp
-  erw [deriv_mul]
+  rw [deriv_fun_mul]
   simp only [deriv_id'', one_mul, neg_add_rev, add_neg_cancel_comm_assoc, neg_div_neg_eq]
   exact (mul_div_cancel_right₀ β hderiv).symm
   --Discharge those side-goals

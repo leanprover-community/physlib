@@ -5,10 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
-public import Mathlib.Algebra.Order.Group.PosPart
-public import Mathlib.Algebra.Order.Module.Defs
 
 /-!
 # Bounded measurable functions

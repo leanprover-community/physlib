@@ -373,7 +373,7 @@ noncomputable def fermionGeneratorsEquiv (w : ℕ) (h : ∀ i, (T.fermion i).mas
     T.FermionGenerators ≃ₗ[ℂ] JetComponentSpace (T.fermionMatterField w h) :=
   (DirectSum.linearEquivFunOnFintype ℂ T.FermionSpecies
       fun i => JetComponentSpace (T.fermion i)).trans
-    (MatterField.jetComponentSpacePiEquiv T.fermion w h).symm
+    (MatterField.jetComponentSpacePiEquiv T.fermion w h .fermionic T.fermion_statistic).symm
 
 /-!
 
@@ -396,7 +396,7 @@ lemma fermionGeneratorsEquiv_inclFermion (w : ℕ) (h : ∀ i, (T.fermion i).mas
       fun i => JetComponentSpace (T.fermion i)) (T.inclFermion i x) = Pi.single i x :=
     DirectSum.linearEquivFunOnFintype_lof
       (M := fun i => JetComponentSpace (T.fermion i)) ℂ i x
-  show (MatterField.jetComponentSpacePiEquiv T.fermion w h).symm
+  show (MatterField.jetComponentSpacePiEquiv T.fermion w h .fermionic T.fermion_statistic).symm
       ((DirectSum.linearEquivFunOnFintype ℂ T.FermionSpecies
         fun i => JetComponentSpace (T.fermion i)) (T.inclFermion i x)) = _
   rw [hlof, MatterField.jetComponentSpacePiEquiv_symm_single]

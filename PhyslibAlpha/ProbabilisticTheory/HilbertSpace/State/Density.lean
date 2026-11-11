@@ -6,7 +6,6 @@ Authors: David Gross
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Trace
-public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 
 /-!
 

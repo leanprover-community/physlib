@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.UnitaryInfra.SpectralMeasure
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SpectralIntegral.SpecTheorem
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Cayley.Certificate
-public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 
 /-!

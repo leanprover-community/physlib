@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Examples.Square
 public import PhyslibAlpha.ProbabilisticTheory.Classical.Compatibility
 

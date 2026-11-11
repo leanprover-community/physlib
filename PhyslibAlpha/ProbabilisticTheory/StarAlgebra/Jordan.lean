@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Algebra.Jordan.Basic
-public import Mathlib.Tactic.NoncommRing
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
 
 /-!

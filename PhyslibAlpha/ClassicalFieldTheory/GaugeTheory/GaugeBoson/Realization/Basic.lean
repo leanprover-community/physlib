@@ -60,7 +60,8 @@ covector index and that each derivative slot transforms as a covector.
   algebra map out of the jet algebra.
 - `GaugeAlgebraRealization.id` : the jet algebra realized in itself.
 - `GaugeAlgebraRealization.A` : the gauge-field symbols of a realization, images of the jet
-  algebra's symbols, with the laws `lorentz_apply`, `gauge_apply_deriv` and `gauge_mul`.
+  algebra's symbols, with the laws `lorentz_apply` and `gauge_apply_deriv`; product preservation
+  is given by `GaugeAlgebraRealization.repJet_mul`.
 
 ## ii. Key results
 
@@ -73,8 +74,8 @@ covector index and that each derivative slot transforms as a covector.
   Leibniz convolution of the dual adjoint Taylor coefficients of `U⁻¹` against lower symbols (the
   multiset antidiagonal carrying the multinomial coefficients), plus the base-point value of the
   `s`-th derivative of the Maurer–Cartan form of `U⁻¹`
-- `gauge_mul` : the gauge action preserves products: gauge transformations act on the algebra of
-  local expressions as algebra homomorphisms
+- `GaugeAlgebraRealization.repJet_mul` : the gauge action preserves products: gauge
+  transformations act on the algebra of local expressions as algebra homomorphisms
 
 ## iii. Table of contents
 
@@ -218,14 +219,5 @@ lemma gauge_apply_deriv (U : GJ) (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 �
   refine key.trans ?_
   rw [map_add, map_multiset_sum, Multiset.map_map, AlgHom.commutes]
   rfl
-
-include h in
-omit [Module.Finite ℝ 𝔤] in
-/-- The gauge action preserves products: gauge transformations act on the algebra of local
-  expressions as algebra homomorphisms. -/
-lemma gauge_mul (U : GJ) (b₁ b₂ : B) : repJet U (b₁ * b₂) = repJet U b₁ * repJet U b₂ :=
-  h.repJet_mul U b₁ b₂
-
-TODO "(2026-09-10, lines 177-182) This lemma can be removed."
 
 end GaugeAlgebraRealization

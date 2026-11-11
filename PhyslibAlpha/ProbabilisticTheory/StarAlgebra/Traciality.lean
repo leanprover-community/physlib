@@ -5,15 +5,13 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.LinearAlgebra.Complex.Module
 public import PhyslibAlpha.ProbabilisticTheory.State.WeightEquivalence
 
 /-!
 
 # Tracial states and weights
 
-Tracial weights, tracial states and tracial complex-linear functionals.
+Tracial weights and tracial states.
 
 ## i. Overview
 
@@ -24,14 +22,11 @@ equivalent to `f (a b) = f (b a)`. A finite tracial weight gives a tracial state
 
 - `UnitalPositiveLinearMap.IsTracial` : tracial states.
 - `Weight.IsTracial` : tracial weights.
-- `LinearMap.isTracial_iff_star_mul_self_eq_mul_star_self` : a complex functional is tracial iff `f
-  (a⋆ a) = f (a a⋆)`.
 
 ## iii. Table of contents
 
 - A. Tracial weights
 - B. Tracial states
-- C. Tracial complex-linear functionals
 
 ## iv. References
 
@@ -92,41 +87,3 @@ lemma isTracial (hw : w.IsState) (ht : w.IsTracial) :
 end Weight.IsState
 
 end ProbabilisticTheory
-
-/-! ## C. Tracial complex-linear functionals -/
-
-namespace LinearMap
-open ProbabilisticTheory
-
-variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℂ A]
-  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
-
-/-- A complex-linear functional is tracial when it is invariant under cyclic permutations. -/
-def IsTracial (f : A →ₗ[ℂ] ℂ) : Prop :=
-  ∀ x y : A, f (x * y) = f (y * x)
-
-/-- Equality on `x†x` and `xx†` characterizes tracial complex-linear functionals. -/
-lemma isTracial_iff_star_mul_self_eq_mul_star_self (f : A →ₗ[ℂ] ℂ) :
-    f.IsTracial ↔ ∀ x : A, f (star x * x) = f (x * star x) := by
-  constructor
-  · intro ht x
-    exact ht (star x) x
-  · intro h x y
-    have hplus := h (x + star y)
-    have hI := h (x + Complex.I • star y)
-    have hx := h x
-    have hy := h (star y)
-    simp only [star_add, star_star, star_smul, Complex.star_def, Complex.conj_I, map_add,
-      map_smul, mul_add, add_mul, smul_mul_assoc, mul_smul_comm] at hplus hI
-    simp at hI
-    simp only [star_star] at hy
-    have hp : f (y * x) + f (star x * star y) = f (star y * star x) + f (x * y) := by
-      linear_combination hplus - hx - hy
-    have hq : -Complex.I • f (y * x) + Complex.I • f (star x * star y) =
-        Complex.I • f (star y * star x) - Complex.I • f (x * y) := by
-      linear_combination (norm := (ring_nf; simp [Complex.I_sq, hy])) hI - hx - hy
-    linear_combination (norm := (ring_nf; simp [Complex.I_sq]; try ring))
-      (-Complex.I / 2) * hq - (1 / 2) * hp
-
-end LinearMap
-

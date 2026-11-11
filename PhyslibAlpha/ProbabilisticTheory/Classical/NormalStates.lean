@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.BoundedMeasurable
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import PhyslibAlpha.ProbabilisticTheory.Classical.LatticeObservables
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.BornRule
 

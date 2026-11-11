@@ -10,7 +10,9 @@ public import Physlib.Relativity.Tensors.ComponentIdx.Single
 public import Mathlib.LinearAlgebra.Matrix.SesquilinearForm
 /-!
 
-# The bilinear map of a rank-two tensor
+# The bilinear map and the product of rank-two tensors
+
+The bilinear map of a rank-two tensor and the product of two rank-two tensors.
 
 ## i. Overview
 
@@ -18,16 +20,27 @@ A rank-two tensor `M` defines a bilinear map on one-slot tensors by contracting 
 each of its slots, `t, s ↦ M_{zw} tᶻ sʷ`. In the bases dual to the slots of `M` the matrix of this
 map is the component matrix `toMatrix M`.
 
+`contractInnerT A B` is the tensor `A_{μν} B^{νρ}`, in which the second index of `A` is contracted
+with the first index of `B`. Its indices are `μ` and `ρ`, with colours `![cs 0, ds 1]`. The general
+contraction `crossToEnd` gives the same tensor, but its colours are a composite of the two colour
+lists. With `contractInnerT`, an identity such as `η_{μν} η^{νρ} = δ_μ^ρ` needs no renaming of the
+colours of the product. For contraction-dual bases, the matrix of `A_{μν} B^{νρ}` is the matrix
+product of `(A_{μν})` and `(B^{νρ})` (`toMatrix_contractInnerT`).
+
 ## ii. Key results
 
 - `TensorSpecies.Tensor.toLinearMap₂` : the bilinear map `t, s ↦ M_{zw} tᶻ sʷ` of a rank-two
     tensor, with its component formula `toLinearMap₂_apply`.
 - `TensorSpecies.Tensor.toMatrix₂_toLinearMap₂` : its matrix in the dual bases is the component
     matrix of `M`.
+- `TensorSpecies.Tensor.contractInnerT` : the contraction `A_{μν} B^{νρ}` of two rank-two tensors.
+- `TensorSpecies.Tensor.toMatrix_contractInnerT` : for contraction-dual bases, its matrix is the
+    matrix product.
 
 ## iii. Table of contents
 
 - A. Pairing a rank-two tensor with two vectors
+- B. Contracting two rank-two tensors
 
 ## iv. References
 
@@ -102,6 +115,76 @@ lemma toMatrix₂_toLinearMap₂ [HasContrDualBases S] {x y : C} {cM : Fin 2 →
   ext z w
   rw [LinearMap.toMatrix₂_apply, toLinearMap₂_apply]
   simp [Finsupp.single_apply, -HasContrDualBases.dualIdxEquiv_apply]
+
+/-!
+
+## B. Contracting two rank-two tensors
+
+-/
+
+/-- The contraction `A_{μν} B^{νρ}` of the second index of `A` with the first index of `B`, whose
+colours are dual by `h`. The result has the indices `μ` and `ρ`, in that order. -/
+noncomputable def contractInnerT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) :
+    Tensor S cs →ₗ[k] Tensor S ds →ₗ[k] Tensor S ![cs 0, ds 1] :=
+  (crossToEnd (Fin.last 1) (0 : Fin 2) h).compr₂
+    (permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl))
+
+/-- `contractInnerT` is `crossToEnd` of the last index of `A` with the first index of `B`, with the
+colours of the result renamed to `![cs 0, ds 1]`. -/
+lemma contractInnerT_apply {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (a : Tensor S cs)
+    (b : Tensor S ds) :
+    contractInnerT h a b = permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl)
+      (crossToEnd (Fin.last 1) (0 : Fin 2) h a b) :=
+  rfl
+
+/-- `crossToEnd` of the last index of `A` with the first index of `B` is `contractInnerT` with its
+colours renamed. This is `contractInnerT_apply` read from right to left. -/
+lemma crossToEnd_eq_permT_contractInnerT {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
+    (a : Tensor S cs) (b : Tensor S ds) :
+    crossToEnd (Fin.last 1) (0 : Fin 2) h a b =
+      permT id (IsReindexing.on_id.mpr fun j => by fin_cases j <;> rfl) (contractInnerT h a b) := by
+  rw [contractInnerT_apply, permT_permT]
+  exact (permT_congr_eq_id _ _ _ rfl).symm
+
+/-- The matrix of `A_{μν} B^{νρ}` is the matrix product of `(A_{μν})` and `(B^{νρ})`, with the
+labels of `ν` in `B` matched to those in `A` by `dualIdxEquiv`. This is `toMatrix_crossToEnd_pair`
+at general colour lists. -/
+lemma toMatrix_contractInnerT [HasContrDualBases S] {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0)
+    (a : Tensor S cs) (b : Tensor S ds) :
+    toMatrix (contractInnerT h a b) =
+      toMatrix a * (toMatrix b).submatrix (HasContrDualBases.dualIdxEquiv h) id := by
+  obtain ⟨c0, c1, rfl⟩ : ∃ c0 c1, cs = ![c0, c1] := ⟨cs 0, cs 1, by funext i; fin_cases i <;> rfl⟩
+  obtain ⟨c2, c3, rfl⟩ : ∃ c2 c3, ds = ![c2, c3] := ⟨ds 0, ds 1, by funext i; fin_cases i <;> rfl⟩
+  ext y0 y3
+  refine (permT_basis_repr_of_id (fun _ => rfl) _ _ _).trans ((congrArg _ ?_).trans
+    (congrFun (congrFun (toMatrix_crossToEnd_pair h a b) y0) y3))
+  funext i
+  fin_cases i <;> rfl
+
+/-- If the matrix `(M_{μν})`, made square by the label bijection `e`, is invertible, then
+`t ↦ M_{μν} t^{νρ}` is injective. -/
+lemma contractInnerT_right_injective [HasContrDualBases S] {cs ds : Fin 2 → C}
+    (h : S.τ (cs 1) = ds 0) (e : basisIdx (cs 0) ≃ basisIdx (cs 1)) (M : Tensor S cs)
+    (hM : IsUnit ((toMatrix M).submatrix id e).det) :
+    Function.Injective (contractInnerT h M) := by
+  intro t t' htt
+  let := ((toMatrix M).submatrix id e).invertibleOfIsUnitDet hM
+  have h' : (toMatrix M).submatrix id e *
+        ((toMatrix t).submatrix (HasContrDualBases.dualIdxEquiv h) id).submatrix e id =
+      (toMatrix M).submatrix id e *
+        ((toMatrix t').submatrix (HasContrDualBases.dualIdxEquiv h) id).submatrix e id := by
+    rw [Matrix.submatrix_mul_equiv, Matrix.submatrix_mul_equiv, Matrix.submatrix_id_id,
+      Matrix.submatrix_id_id, ← toMatrix_contractInnerT, ← toMatrix_contractInnerT, htt]
+  exact toMatrix_injective (Matrix.submatrix_injective (Equiv.surjective _) Function.surjective_id
+    (Matrix.submatrix_injective e.surjective Function.surjective_id
+      (Matrix.mul_right_injective_of_invertible _ h')))
+
+/-- `contractInnerT` commutes with the action of `G`. For a Lorentz transformation `Λ`,
+`(Λ A)_{μν} (Λ B)^{νρ} = Λ (A_{μν} B^{νρ})`. -/
+lemma contractInnerT_equivariant {cs ds : Fin 2 → C} (h : S.τ (cs 1) = ds 0) (g : G)
+    (a : Tensor S cs) (b : Tensor S ds) :
+    contractInnerT h (g • a) (g • b) = g • contractInnerT h a b := by
+  rw [contractInnerT_apply, contractInnerT_apply, crossToEnd_equivariant, permT_equivariant]
 
 end Tensor
 

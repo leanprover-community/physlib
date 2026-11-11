@@ -16,7 +16,7 @@ Two bosonic matter fields, valued in `V` and `W`, are jointly a single matter fi
 in `V × W`; its bosonic algebra is the **tensor product** of the two individual bosonic
 algebras. That is the content of `BosonicAlgebra.prodEquiv`: an algebra equivalence
 
-`BosonicAlgebra (M.prod N h) ≃ₐ[ℂ] BosonicAlgebra M ⊗[ℂ] BosonicAlgebra N`.
+`BosonicAlgebra (M.prod N h hσ) ≃ₐ[ℂ] BosonicAlgebra M ⊗[ℂ] BosonicAlgebra N`.
 
 Unlike the fermionic analogue `FermionicAlgebra.prodEquiv`, the *ordinary* tensor product
 suffices: bosonic generators of different species commute, so no grading is needed.
@@ -63,9 +63,9 @@ namespace StandardModel
   rather than the graded — tensor product is correct here: bosonic generators commute
   across species just as they do within one. -/
 noncomputable def BosonicAlgebra.prodEquiv (M N : MatterField jets)
-    (h : M.massWeight = N.massWeight) :
-    BosonicAlgebra (M.prod N h) ≃ₐ[ℂ] BosonicAlgebra M ⊗[ℂ] BosonicAlgebra N :=
-  (SymmetricAlgebra.congr (JetComponentSpace.prodEquiv M N h)).trans
+    (h : M.massWeight = N.massWeight) (hσ : M.statistic = N.statistic) :
+    BosonicAlgebra (M.prod N h hσ) ≃ₐ[ℂ] BosonicAlgebra M ⊗[ℂ] BosonicAlgebra N :=
+  (SymmetricAlgebra.congr (JetComponentSpace.prodEquiv M N h hσ)).trans
     SymmetricAlgebra.prodEquiv
 
 end StandardModel

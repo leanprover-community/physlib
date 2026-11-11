@@ -5,11 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.States.Pure.Braket
-public import QuantumInfo.Channels.Bundled
 public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.ClassicalInfo.Entropy
 public import Mathlib.Data.Multiset.Functor
 

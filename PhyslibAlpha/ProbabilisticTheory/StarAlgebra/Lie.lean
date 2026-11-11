@@ -5,9 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.LinearAlgebra.Complex.Module
-public import Mathlib.Tactic.NoncommRing
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Jordan
 
 /-!

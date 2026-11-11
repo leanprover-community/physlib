@@ -91,6 +91,12 @@ lemma 𝓵_neg : P.neg.𝓵 = - P.𝓵 := by rfl
 lemma toFun_zero (x : SpaceTime) : P.toFun 0 x = 0 := by
   simp [toFun]
 
+/-- The Higgs potential is gauge invariant: at a spacetime point `x`, it takes the same value on
+  two Higgs fields whose values at `x` are related by an element of the gauge group. -/
+lemma toFun_eq_of_repGaugeGroupI (g : GaugeGroupI) (φ ψ : HiggsField) (x : SpaceTime)
+    (h : ψ x = HiggsVec.repGaugeGroupI g (φ x)) : P.toFun ψ x = P.toFun φ x := by
+  simp [toFun, h, HiggsVec.repGaugeGroupI_norm]
+
 lemma complete_square (h : P.𝓵 ≠ 0) (φ : HiggsField) (x : SpaceTime) :
     P.toFun φ x = P.𝓵 * (‖φ‖_H^2 x - P.μ2 / (2 * P.𝓵)) ^ 2 - P.μ2 ^ 2 / (4 * P.𝓵) := by
   simp only [toFun]

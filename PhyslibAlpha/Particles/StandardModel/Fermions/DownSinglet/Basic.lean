@@ -6,18 +6,10 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Physlib.Particles.StandardModel.Fermions.DownSinglet
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import PhyslibAlpha.Relativity.Fermions.Weyl.BoostWeight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.GaugeAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.GaugeAction
-public import Physlib.Relativity.Tensors.ComplexTensor.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.RingTheory.TensorProduct.Maps
 /-!
 # Down-type singlets
 

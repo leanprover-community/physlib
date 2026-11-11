@@ -7,9 +7,7 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Basic
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
-public import PhyslibAlpha.Relativity.SL2C.Basic
 /-!
 # The gauge law on brackets and iterated derivatives
 
@@ -307,8 +305,8 @@ set_option maxHeartbeats 1000000 in
   the adjoint-transported commutator, two cross terms linear in the field (the
   bracket against `c` acting on the dual index through `ad`), and the constant
   commutator of the two Maurer–Cartan shifts. Uses that the gauge action is by
-  algebra homomorphisms (`gauge_mul`) and that the base-point adjoint transport is a
-  morphism of Lie algebras. -/
+  algebra homomorphisms (`GaugeAlgebraRealization.repJet_mul`) and that the base-point adjoint
+  transport is a morphism of Lie algebras. -/
 lemma repGauge_commutator
     (U : GJ) (μ ν : Fin 1 ⊕ Fin 3) (φ : Module.Dual ℝ 𝔤) :
     repGauge U (commutator h.A μ ν φ) =
@@ -362,7 +360,7 @@ lemma repGauge_commutator
   have hπt : dualPairEquiv t = h.A 0 ν := by
     rw [ht]; exact dualPairEquiv.apply_symm_apply _
   have hΦmul : ∀ b₁ b₂ : B, Φ (b₁ * b₂) = Φ b₁ * Φ b₂ := fun b₁ b₂ =>
-    h.gauge_mul U b₁ b₂
+    h.repJet_mul U b₁ b₂
   clear_value Φ T₀ cμ cν s t
   -- the tensor-level transformation of the bracket
   have htensor : (TensorProduct.map Φ LinearMap.id) (tensorBracket s t) =
@@ -671,7 +669,7 @@ lemma repGauge_bracketFam
       + algebraMap ℂ B (φ ⁅cf, cg⁆) := by
   set Φ : B →ₗ[ℝ] B := (repGauge U).restrictScalars ℝ with hΦdef
   have hΦmul : ∀ b₁ b₂ : B, Φ (b₁ * b₂) = Φ b₁ * Φ b₂ := fun b₁ b₂ =>
-    h.gauge_mul U b₁ b₂
+    h.repJet_mul U b₁ b₂
   set s : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm f with hs
   set t : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm g with ht
   set s' : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm f' with hs'

@@ -5,12 +5,9 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.LinearAlgebra.LinearPMap
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Mathlib.Analysis.InnerProductSpace.Adjoint
 public import Mathlib.Analysis.Calculus.Deriv.Add
 public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Algebra.Star.Unitary
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 
 /-!

@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Dual.Basis
 /-!
 # Dual representations on a dual basis
 

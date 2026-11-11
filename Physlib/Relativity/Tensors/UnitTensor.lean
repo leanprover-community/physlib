@@ -193,6 +193,21 @@ lemma toMatrix_unitTensor [HasContrDualBases S] (c : C) :
   ext x y
   exact unitTensor_basis_repr_eq_ite c (ComponentIdx.pair.symm (x, y))
 
+/-- If `τ e = a`, the identity is a reindexing from `![τ e, e]` to `![a, e]`, so `permT` renames the
+  colours of `unitTensor e` to `![a, e]`. -/
+lemma IsReindexing.unitTensor_of_tau_eq {a e : C} (h : S.τ e = a) :
+    IsReindexing (![S.τ e, e] : Fin 2 → C) ![a, e] (id : Fin 2 → Fin 2) :=
+  IsReindexing.on_id.mpr (fun j => by fin_cases j <;> first | exact h | rfl)
+
+open HasContrDualBases in
+/-- The matrix of `unitTensor e`, with its colours renamed to `![a, e]`, is the identity matrix with
+its rows relabelled by `dualIdxEquiv h`. -/
+lemma toMatrix_permT_unitTensor_of_tau_eq [HasContrDualBases S] {a e : C} (h : S.τ e = a) :
+    toMatrix (permT id (IsReindexing.unitTensor_of_tau_eq h) (unitTensor (S := S) e)) =
+      (1 : Matrix (basisIdx e) (basisIdx e) k).submatrix (dualIdxEquiv h).symm id := by
+  subst h
+  simpa [dualIdxEquiv, basisIdxCongr] using (toMatrix_unitTensor (S := S) e)
+
 end Tensor
 
 end TensorSpecies

@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.UnitInterval
 

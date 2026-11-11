@@ -5,10 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.Fermions.JetAlgebra.Basic
-public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.JetAlgebra.Algebra
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.Mathematics.AlgebraRepresentation
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.SectorEquiv.Basic
 /-!

@@ -84,24 +84,25 @@ noncomputable def toDualMapAtIndex : {n : ℕ} → {c : Fin n → C} → (i : Fi
 -/
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The metric tensor at `S.τ c` contracted with the metric tensor at `c` is the unit tensor
-  at `c`. -/
-lemma crossToEnd_dual_metricTensor_metricTensor {c : C} :
-    crossToEnd (Fin.last 1) (0 : Fin 2) (S.τ_τ_apply c) (metricTensor (S := S) (S.τ c))
-        (metricTensor (S := S) c) =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair rfl) (unitTensor (S := S) c) := by
-  rw [crossToEnd_two, contrT_dual_metricTensor_metricTensor, permT_permT]
+/-- The metric at `τ c` contracted with the metric at `c` is the unit tensor at `c`,
+  `η^{μν} η_{νρ} = δ^μ_ρ`. -/
+lemma contractInnerT_dual_metricTensor_metricTensor {c : C} :
+    contractInnerT (S.τ_τ_apply c) (metricTensor (S := S) (S.τ c)) (metricTensor (S := S) c) =
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq rfl)
+        (unitTensor (S := S) c) := by
+  rw [contractInnerT_apply, crossToEnd_two, contrT_dual_metricTensor_metricTensor, permT_permT,
+    permT_permT]
   exact permT_congr rfl rfl
 
 set_option backward.isDefEq.respectTransparency false in
-/-- The metric tensor at `c` contracted with the metric tensor at `S.τ c` is the unit tensor
-  at `S.τ c`. -/
-lemma crossToEnd_metricTensor_metricTensor_eq_dual_unit {c : C} :
-    crossToEnd (Fin.last 1) (0 : Fin 2) rfl (metricTensor (S := S) c)
-        (metricTensor (S := S) (S.τ c)) =
-      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_pair (S.τ_τ_apply c))
+/-- The metric at `c` contracted with the metric at `τ c` is the unit tensor at `τ c`,
+  `η_{μν} η^{νρ} = δ_μ^ρ`. -/
+lemma contractInnerT_metricTensor_metricTensor_eq_dual_unit {c : C} :
+    contractInnerT rfl (metricTensor (S := S) c) (metricTensor (S := S) (S.τ c)) =
+      permT (id : Fin 2 → Fin 2) (IsReindexing.unitTensor_of_tau_eq (S.τ_τ_apply c))
         (unitTensor (S := S) (S.τ c)) := by
-  rw [crossToEnd_two, contrT_metricTensor_metricTensor_eq_dual_unit, permT_permT]
+  rw [contractInnerT_apply, crossToEnd_two, contrT_metricTensor_metricTensor_eq_dual_unit,
+    permT_permT, permT_permT]
   exact permT_congr (by decide) rfl
 
 /-!
@@ -124,7 +125,7 @@ lemma toDualMapAtIndex_toDualMapAtIndex {n : ℕ} {c : Fin n → C}
     have key := crossToSlot_raise_lower_round_trip (S := S) i (he := rfl) (ha := rfl)
       (hb := S.τ_τ_apply (c i)) (M := metricTensor (S := S) (S.τ (c i)))
       (M' := metricTensor (S := S) (c i))
-      (hM := crossToEnd_dual_metricTensor_metricTensor) (t := t)
+      (hM := contractInnerT_dual_metricTensor_metricTensor) (t := t)
     -- The second dualisation reads its metric at the composite color the first one left behind.
     rw [toDualMapAtIndex, toDualMapAtIndex,
       metricTensor_congr (by simp [Function.update_self, τ_τ_apply] :
@@ -155,8 +156,9 @@ lemma fromDualMapAtIndex_toDualMapAtIndex {n : ℕ} {c : Fin n → C} (i : Fin n
   cases n with
   | zero => exact i.elim0
   | succ nA =>
-    exact crossToSlotInv_crossToSlot i rfl rfl (S.τ_τ_apply (c i)) _ _
-      crossToEnd_dual_metricTensor_metricTensor t
+    exact crossToSlotInv_crossToSlot i rfl rfl (S.τ_τ_apply (c i))
+      (metricTensor (S := S) (S.τ (c i))) (metricTensor (S := S) (c i))
+      contractInnerT_dual_metricTensor_metricTensor t
 
 @[simp]
 lemma toDualMapAtIndex_fromDualMapAtIndex {n : ℕ} {c : Fin n → C} (i : Fin n)
@@ -165,8 +167,10 @@ lemma toDualMapAtIndex_fromDualMapAtIndex {n : ℕ} {c : Fin n → C} (i : Fin n
   cases n with
   | zero => exact i.elim0
   | succ nA =>
-    exact crossToSlot_crossToSlotInv i rfl rfl (S.τ_τ_apply (c i)) _ _
-      crossToEnd_dual_metricTensor_metricTensor crossToEnd_metricTensor_metricTensor_eq_dual_unit t
+    exact crossToSlot_crossToSlotInv i rfl rfl (S.τ_τ_apply (c i))
+      (metricTensor (S := S) (S.τ (c i))) (metricTensor (S := S) (c i))
+      contractInnerT_dual_metricTensor_metricTensor
+      contractInnerT_metricTensor_metricTensor_eq_dual_unit t
 
 /-!
 
@@ -198,8 +202,8 @@ noncomputable def toDualAtIndex : {n : ℕ} → {c : Fin n → C} → (i : Fin n
   | 0, _, i => i.elim0
   | _ + 1, c, i =>
     crossToSlotEquiv i rfl rfl (S.τ_τ_apply (c i)) (metricTensor (S := S) (S.τ (c i)))
-      (metricTensor (S := S) (c i)) crossToEnd_dual_metricTensor_metricTensor
-      crossToEnd_metricTensor_metricTensor_eq_dual_unit
+      (metricTensor (S := S) (c i)) contractInnerT_dual_metricTensor_metricTensor
+      contractInnerT_metricTensor_metricTensor_eq_dual_unit
 
 @[simp]
 lemma toDualAtIndex_apply {n : ℕ} {c : Fin n → C} (i : Fin n) (t : S.Tensor c) :

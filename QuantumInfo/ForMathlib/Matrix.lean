@@ -5,17 +5,9 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Spectrum.Quasispectrum
 public import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
-public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.Matrix.Order
-public import Mathlib.Analysis.SpecialFunctions.Bernstein
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Mathlib.LinearAlgebra.Matrix.IsDiag
-public import Mathlib.Tactic.Bound
-public import Mathlib.Tactic.NormNum.GCD
 
 public import QuantumInfo.ForMathlib.Misc
 

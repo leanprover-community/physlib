@@ -6,8 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.Fermions.JetAlgebra.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 /-!
 # Species compatibility inside the fermionic target space
 

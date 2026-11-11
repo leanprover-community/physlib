@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialFunctions
 public import Mathlib.Analysis.Calculus.SmoothSeries
-public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
 
@@ -40,10 +39,10 @@ power series and `c_0 ≠ 0` (`radialSeries`). Then:
 
 Together this is `radial_quantization`: normalisability forces `E = -1/ν²`.
 
-What is assumed: the power series ansatz, i.e. that the solution regular at the origin is
-`ρ^(l+1) e^(-κρ)` times an entire function. That every solution regular at the origin has this
-form, and that the second, singular solution is excluded by the boundary condition at `ρ = 0`,
-is not formalised here.
+What is assumed here: the power series ansatz, i.e. that the solution regular at the origin is
+`ρ^(l+1) e^(-κρ)` times an entire function. That every solution with `u(ρ) → 0` as `ρ → 0⁺` has
+this form is `radial_regular_solution` in `RadialCompleteness`, which also states the
+quantisation without the ansatz (`radial_quantization_of_tendsto`).
 
 ## ii. Key results
 

@@ -5,9 +5,7 @@ Authors: David Gross
 -/
 module
 
-public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Algebra.Star.Module
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 
 /-!

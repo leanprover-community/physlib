@@ -6,7 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.ComplexTensor.Matrix.Pre
-public import Physlib.Relativity.Tensors.ComplexTensor.Vector.Pre.Contraction
+public import Physlib.Relativity.Tensors.ComplexTensor.Vector.Contraction
 /-!
 
 # Unit for complex Lorentz vectors
@@ -25,16 +25,16 @@ open CategoryTheory.MonoidalCategory
 namespace Lorentz
 
 /-- The contra-co unit for complex lorentz vectors. Usually denoted `δⁱᵢ`. -/
-def CoℂModule.unitVal : ContrℂModule ⊗[ℂ] CoℂModule :=
+def ComplexCoVector.unitVal : ComplexVector ⊗[ℂ] ComplexCoVector :=
   contrCoToMatrix.symm 1
 
-/-- Expansion of `CoℂModule.unitVal` into basis. -/
-lemma CoℂModule.unitVal_expand_tmul : CoℂModule.unitVal =
-    complexContrBasis (Sum.inl 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inl 0)
-    + complexContrBasis (Sum.inr 0) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 0)
-    + complexContrBasis (Sum.inr 1) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 1)
-    + complexContrBasis (Sum.inr 2) ⊗ₜ[ℂ] complexCoBasis (Sum.inr 2) := by
-  simp only [CoℂModule.unitVal, Fin.isValue]
+/-- Expansion of `ComplexCoVector.unitVal` into basis. -/
+lemma ComplexCoVector.unitVal_expand_tmul : ComplexCoVector.unitVal =
+    ComplexVector.basis (Sum.inl 0) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inl 0)
+    + ComplexVector.basis (Sum.inr 0) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inr 0)
+    + ComplexVector.basis (Sum.inr 1) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inr 1)
+    + ComplexVector.basis (Sum.inr 2) ⊗ₜ[ℂ] ComplexCoVector.basis (Sum.inr 2) := by
+  simp only [ComplexCoVector.unitVal, Fin.isValue]
   rw [contrCoToMatrix_symm_expand_tmul]
   simp only [Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
     Finset.sum_singleton, Fin.sum_univ_three, ne_eq, reduceCtorEq, not_false_eq_true, one_apply_ne,
@@ -42,19 +42,19 @@ lemma CoℂModule.unitVal_expand_tmul : CoℂModule.unitVal =
     one_ne_zero]
   rfl
 
-lemma CoℂModule.unitVal_eq_sum_tmul : CoℂModule.unitVal =
-    ∑ i, complexContrBasis i ⊗ₜ[ℂ] complexCoBasis i := by
-  simp [CoℂModule.unitVal_expand_tmul, Fin.isValue, Fin.sum_univ_three]
+lemma ComplexCoVector.unitVal_eq_sum_tmul : ComplexCoVector.unitVal =
+    ∑ i, ComplexVector.basis i ⊗ₜ[ℂ] ComplexCoVector.basis i := by
+  simp [ComplexCoVector.unitVal_expand_tmul, Fin.isValue, Fin.sum_univ_three]
   module
 
 /-- The contra-co unit for complex lorentz vectors as a morphism
   `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ complexContr ⊗ complexCo`, manifesting the invariance under
   the `SL(2, ℂ)` action. -/
-def CoℂModule.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-    (ContrℂModule.SL2CRep.tprod CoℂModule.SL2CRep) where
+def ComplexCoVector.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
+    (ComplexVector.SL2CRep.tprod ComplexCoVector.SL2CRep) where
   toFun := fun a =>
     let a' : ℂ := a
-    a' • CoℂModule.unitVal
+    a' • ComplexCoVector.unitVal
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -62,30 +62,31 @@ def CoℂModule.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMa
     rfl
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
-    change x • CoℂModule.unitVal =
-      (TensorProduct.map (ContrℂModule.SL2CRep M) (CoℂModule.SL2CRep M)) (x • CoℂModule.unitVal)
+    change x • ComplexCoVector.unitVal =
+      (TensorProduct.map (ComplexVector.SL2CRep M) (ComplexCoVector.SL2CRep M))
+        (x • ComplexCoVector.unitVal)
     simp only [map_smul]
     apply congrArg
-    simp only [CoℂModule.unitVal]
+    simp only [ComplexCoVector.unitVal]
     rw [contrCoToMatrix_ρ_symm]
     apply congrArg
     simp
 
-lemma CoℂModule.unit_apply_one : CoℂModule.unit (1 : ℂ) = CoℂModule.unitVal := by
-  change (1 : ℂ) • CoℂModule.unitVal = CoℂModule.unitVal
+lemma ComplexCoVector.unit_apply_one : ComplexCoVector.unit (1 : ℂ) = ComplexCoVector.unitVal := by
+  change (1 : ℂ) • ComplexCoVector.unitVal = ComplexCoVector.unitVal
   rw [one_smul]
 
 /-- The co-contra unit for complex lorentz vectors. Usually denoted `δᵢⁱ`. -/
-def ContrℂModule.unitVal : CoℂModule ⊗[ℂ] ContrℂModule :=
+def ComplexVector.unitVal : ComplexCoVector ⊗[ℂ] ComplexVector :=
   coContrToMatrix.symm 1
 
-/-- Expansion of `ContrℂModule.unitVal` into basis. -/
-lemma ContrℂModule.unitVal_expand_tmul : ContrℂModule.unitVal =
-    complexCoBasis (Sum.inl 0) ⊗ₜ[ℂ] complexContrBasis (Sum.inl 0)
-    + complexCoBasis (Sum.inr 0) ⊗ₜ[ℂ] complexContrBasis (Sum.inr 0)
-    + complexCoBasis (Sum.inr 1) ⊗ₜ[ℂ] complexContrBasis (Sum.inr 1)
-    + complexCoBasis (Sum.inr 2) ⊗ₜ[ℂ] complexContrBasis (Sum.inr 2) := by
-  simp only [ContrℂModule.unitVal, Fin.isValue]
+/-- Expansion of `ComplexVector.unitVal` into basis. -/
+lemma ComplexVector.unitVal_expand_tmul : ComplexVector.unitVal =
+    ComplexCoVector.basis (Sum.inl 0) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inl 0)
+    + ComplexCoVector.basis (Sum.inr 0) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inr 0)
+    + ComplexCoVector.basis (Sum.inr 1) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inr 1)
+    + ComplexCoVector.basis (Sum.inr 2) ⊗ₜ[ℂ] ComplexVector.basis (Sum.inr 2) := by
+  simp only [ComplexVector.unitVal, Fin.isValue]
   rw [coContrToMatrix_symm_expand_tmul]
   simp only [Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
     Finset.sum_singleton, Fin.sum_univ_three, ne_eq, reduceCtorEq, not_false_eq_true, one_apply_ne,
@@ -93,19 +94,19 @@ lemma ContrℂModule.unitVal_expand_tmul : ContrℂModule.unitVal =
     one_ne_zero]
   rfl
 
-lemma ContrℂModule.unitVal_eq_sum_tmul : ContrℂModule.unitVal =
-    ∑ i, complexCoBasis i ⊗ₜ[ℂ] complexContrBasis i := by
-  simp [ContrℂModule.unitVal_expand_tmul, Fin.isValue, Fin.sum_univ_three]
+lemma ComplexVector.unitVal_eq_sum_tmul : ComplexVector.unitVal =
+    ∑ i, ComplexCoVector.basis i ⊗ₜ[ℂ] ComplexVector.basis i := by
+  simp [ComplexVector.unitVal_expand_tmul, Fin.isValue, Fin.sum_univ_three]
   module
 
 /-- The co-contra unit for complex lorentz vectors as a morphism
   `𝟙_ (Rep ℂ SL(2,ℂ)) ⟶ complexCo ⊗ complexContr`, manifesting the invariance under
   the `SL(2, ℂ)` action. -/
-def ContrℂModule.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-    (CoℂModule.SL2CRep.tprod ContrℂModule.SL2CRep) where
+def ComplexVector.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
+    (ComplexCoVector.SL2CRep.tprod ComplexVector.SL2CRep) where
   toFun := fun a =>
     let a' : ℂ := a
-    a' • ContrℂModule.unitVal
+    a' • ComplexVector.unitVal
   map_add' := fun x y => by
     simp only [add_smul]
   map_smul' := fun m x => by
@@ -113,19 +114,20 @@ def ContrℂModule.unit : (Representation.trivial ℂ SL(2,ℂ) ℂ).Intertwinin
     rfl
   isIntertwining' M := by
     refine LinearMap.ext fun x : ℂ => ?_
-    change x • ContrℂModule.unitVal =
-      (TensorProduct.map (CoℂModule.SL2CRep M) (ContrℂModule.SL2CRep M)) (x • ContrℂModule.unitVal)
+    change x • ComplexVector.unitVal =
+      (TensorProduct.map (ComplexCoVector.SL2CRep M) (ComplexVector.SL2CRep M))
+        (x • ComplexVector.unitVal)
     simp only [map_smul]
     apply congrArg
-    simp only [ContrℂModule.unitVal]
+    simp only [ComplexVector.unitVal]
     rw [coContrToMatrix_ρ_symm]
     apply congrArg
     symm
     refine transpose_eq_one.mp ?h.h.h.a
     simp
 
-lemma ContrℂModule.unit_apply_one : ContrℂModule.unit (1 : ℂ) = ContrℂModule.unitVal := by
-  change (1 : ℂ) • ContrℂModule.unitVal = ContrℂModule.unitVal
+lemma ComplexVector.unit_apply_one : ComplexVector.unit (1 : ℂ) = ComplexVector.unitVal := by
+  change (1 : ℂ) • ComplexVector.unitVal = ComplexVector.unitVal
   rw [one_smul]
 
 /-!
@@ -134,28 +136,29 @@ lemma ContrℂModule.unit_apply_one : ContrℂModule.unit (1 : ℂ) = ContrℂMo
 
 -/
 
-/-- Contraction on the right with `CoℂModule.unit` does nothing. -/
-lemma CoℂModule.contr_unit (x : CoℂModule) :
+/-- Contraction on the right with `ComplexCoVector.unit` does nothing. -/
+lemma ComplexCoVector.contr_unit (x : ComplexCoVector) :
     (TensorProduct.lid ℂ _ <|
-    CoℂModule.contr.toLinearMap.rTensor _ <|
+    ComplexCoVector.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
-    x ⊗ₜ[ℂ] (CoℂModule.unit (1 : ℂ))) = x := by
-  obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp (Basis.mem_span complexCoBasis x)
+    x ⊗ₜ[ℂ] (ComplexCoVector.unit (1 : ℂ))) = x := by
+  obtain ⟨c, hc⟩ :=
+    (Submodule.mem_span_range_iff_exists_fun ℂ).mp (Basis.mem_span ComplexCoVector.basis x)
   subst hc
-  simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, CoℂModule.contr_basis',
-    CoℂModule.unit_apply_one, CoℂModule.unitVal_eq_sum_tmul, sum_tmul]
+  simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, ComplexCoVector.contr_basis',
+    ComplexCoVector.unit_apply_one, ComplexCoVector.unitVal_eq_sum_tmul, sum_tmul]
 
-/-- Contraction on the right with `ContrℂModule.unit`. -/
-lemma ContrℂModule.contr_unit (x : ContrℂModule) :
+/-- Contraction on the right with `ComplexVector.unit`. -/
+lemma ComplexVector.contr_unit (x : ComplexVector) :
     (TensorProduct.lid ℂ _ <|
-    ContrℂModule.contr.toLinearMap.rTensor _ <|
+    ComplexVector.contr.toLinearMap.rTensor _ <|
     (TensorProduct.assoc ℂ _ _ _).symm <|
-    x ⊗ₜ[ℂ] (ContrℂModule.unit (1 : ℂ))) = x := by
+    x ⊗ₜ[ℂ] (ComplexVector.unit (1 : ℂ))) = x := by
   obtain ⟨c, hc⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).mp
-    (Basis.mem_span complexContrBasis x)
+    (Basis.mem_span ComplexVector.basis x)
   subst hc
-  simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, ContrℂModule.contr_basis',
-    ContrℂModule.unit_apply_one, ContrℂModule.unitVal_eq_sum_tmul, sum_tmul]
+  simp [- Fintype.sum_sum_type, map_sum, tmul_sum, smul_tmul, ComplexVector.contr_basis',
+    ComplexVector.unit_apply_one, ComplexVector.unitVal_eq_sum_tmul, sum_tmul]
 
 /-!
 
@@ -165,18 +168,18 @@ lemma ContrℂModule.contr_unit (x : ContrℂModule) :
 
 open CategoryTheory
 
-lemma CoℂModule.unit_symm :
-    CoℂModule.unit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
-      (TensorProduct.comm ℂ _ _ (ContrℂModule.unit (1 : ℂ))) := by
-  rw [CoℂModule.unit_apply_one, CoℂModule.unitVal_expand_tmul]
-  rw [ContrℂModule.unit_apply_one, ContrℂModule.unitVal_expand_tmul]
+lemma ComplexCoVector.unit_symm :
+    ComplexCoVector.unit (1 : ℂ) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
+      (TensorProduct.comm ℂ _ _ (ComplexVector.unit (1 : ℂ))) := by
+  rw [ComplexCoVector.unit_apply_one, ComplexCoVector.unitVal_expand_tmul]
+  rw [ComplexVector.unit_apply_one, ComplexVector.unitVal_expand_tmul]
   rfl
 
-lemma ContrℂModule.unit_symm :
-    (ContrℂModule.unit (1 : ℂ)) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
-      (TensorProduct.comm ℂ _ _ (CoℂModule.unit (1 : ℂ))) := by
-  rw [ContrℂModule.unit_apply_one, ContrℂModule.unitVal_expand_tmul]
-  rw [CoℂModule.unit_apply_one, CoℂModule.unitVal_expand_tmul]
+lemma ComplexVector.unit_symm :
+    (ComplexVector.unit (1 : ℂ)) = LinearMap.lTensor _ (LinearEquiv.refl _ _).toLinearMap
+      (TensorProduct.comm ℂ _ _ (ComplexCoVector.unit (1 : ℂ))) := by
+  rw [ComplexVector.unit_apply_one, ComplexVector.unitVal_expand_tmul]
+  rw [ComplexCoVector.unit_apply_one, ComplexCoVector.unitVal_expand_tmul]
   rfl
 
 end Lorentz

@@ -5,13 +5,10 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Compatibility
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Bidual
 public import PhyslibAlpha.Mathematics.Order.PositiveDual.Majorant
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Interpolation
-public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Analysis.Normed.Module.FiniteDimension
 
 /-!
 # Classical theories are those without incompatibility

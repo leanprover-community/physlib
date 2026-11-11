@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.GaugeAction
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.LorentzAction
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.TransformsIn
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.Basic
 /-!
 # The field symbols of the local field algebra and their transformation laws
 

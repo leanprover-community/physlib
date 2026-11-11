@@ -7,9 +7,7 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Basic
-public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
 public import PhyslibAlpha.Mathematics.SymmetricAlgebra
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
 # The local gauge field algebra of a gauge theory
