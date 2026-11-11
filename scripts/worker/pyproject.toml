@@ -1,31 +1,19 @@
 # physlibAlpha-worker
 #
-# The role of this file
-# ---------------------
-# This file is read only by
+# This is the stanard config file for a python script which describes how to build it,
+# its meta data etc.
+#
+# In our case it is used by
 #   uv tool install "git+https://github.com/leanprover-community/physlib#subdirectory=scripts/worker"
-# That command clones the repository, goes to scripts/worker, and looks for a file with exactly this
-# name (the Python packaging standard, PEP 517/518/621, fixes it). Each table below tells it one thing:
-#   [build-system]        which tool turns this folder into an installable package (hatchling);
-#   [project]             the package's name, the Python it needs and its dependencies (none);
-#   [project.scripts]     to create a command `physlibAlpha-worker` on your PATH that calls `main()`
-#                         in physlibAlpha_worker.py;
-#   [tool.hatch...]       that the package contains only physlibAlpha_worker.py.
-#
-# Updates: uv records the git URL, not a version. `uv tool upgrade physlibAlpha-worker` fetches the
-# latest commit of master and reinstalls if it has changed. `version` below plays no part in this,
-# so it need not be bumped when the script changes. Nothing upgrades automatically; the user runs
-# that command.
-#
-# The other way to run the worker, `uv run <url of physlibAlpha_worker.py>`, does not read this file
-# at all. It takes the Python version and dependencies from the `# /// script` block at the top of
-# the script (PEP 723), and runs whatever is on master at that moment.
-#
+# uv is a all-in-one Python package and project manager, and uses the pyproject.toml.
+# It allows people to easily download working versions of python packages from GitHub.
 
+# Says which tool (Hatchling) packages this project up so pip/uv can install it.
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
+# Package metadata: name, version, summary, supported Python versions, and runtime dependencies (none).
 [project]
 name = "physlibAlpha-worker"
 version = "0.1.0"
@@ -33,8 +21,10 @@ description = "Run one task on PhyslibAlpha with an AI agent, and open a PR"
 requires-python = ">=3.11"
 dependencies = []
 
+# Installs a `physlibAlpha-worker` command that calls `main()` in `physlibAlpha_worker.py`.
 [project.scripts]
 physlibAlpha-worker = "physlibAlpha_worker:main"
 
+# When packaging the project for installation, include only `physlibAlpha_worker.py`.
 [tool.hatch.build.targets.wheel]
 only-include = ["physlibAlpha_worker.py"]
