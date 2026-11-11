@@ -431,7 +431,7 @@ class Task:
 # 8. Reading the task
 ###################
 # Returns `Task` using physlibAlpha_worker.toml within the clone, in the
-# upstream/master branch, unless otherwise specfied.
+# upstream/master branch, unless otherwise specified.
 
 def determine_task(clone: Path, tasks_from: Path | None, requested: str | None, user_input: str | None) -> Task:
     """The task the user names, or the config's default; `custom`, or one listed with a skill."""
