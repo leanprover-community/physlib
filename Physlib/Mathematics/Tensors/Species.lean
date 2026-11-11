@@ -54,9 +54,9 @@ A repeated index is contracted, so `u^μ α_μ` is `S.contr c (u ⊗ α)`.
 - `Species.contr` : the contraction `u^μ α_μ`, with `Species.contr_tmul_eq_sum_basis` : its
   formula in components, `Species.contr_basis` : the bases are dual, `Species.contr_tmul_symm` :
   it is symmetric, and `Species.contr_invariant` : it is invariant.
-- `Species.isPerfPair_contr` : the contraction is a perfect pairing, `Species.dualEquiv` :
-  `V c.dual` is the dual representation of `V c`, and `Species.ext_contr` : a vector of
-  `V c.dual` is determined by its contractions.
+- `Species.isPerfPair_contr` : the contraction is a perfect pairing, `Species.ext_contr` : a
+  vector of `V c.dual` is determined by its contractions, and `Species.dualEquiv` : `V c.dual` is
+  the dual representation of `V c`.
 - `Species.cast` : a vector moved along an equality of colors, with `Species.cast_rep`,
   `Species.basis_repr_cast`, `Species.contr_cast_tmul_cast` and
   `Species.contr_cast_tmul_cast_symm` : this keeps the action, the components and the
@@ -185,6 +185,14 @@ instance isPerfPair_contr (c : Color K) :
     (TensorProduct.curry (S.contr c).toLinearMap).IsPerfPair :=
   Module.Basis.isPerfPair_coordPairing _ _
 
+variable {S} in
+/-- The contraction is nondegenerate in its second argument. Two vectors of `c.dual` with the
+same contraction against every vector of `c` are equal. -/
+lemma ext_contr {c : Color K} {α α' : S.V c.dual}
+    (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
+  (LinearMap.IsPerfPair.bijective_right
+    (p := TensorProduct.curry (S.contr c).toLinearMap)).injective (LinearMap.ext h)
+
 /-- The contraction is invariant, `(Λu)^μ (Λα)_μ = u^μ α_μ` for every `Λ : G`. -/
 lemma contr_invariant (c : Color K) (g : G) (x : S.V c) (y : S.V c.dual) :
     S.contr c (S.rep c g x ⊗ₜ[k] S.rep c.dual g y) = S.contr c (x ⊗ₜ[k] y) :=
@@ -206,13 +214,6 @@ noncomputable def dualEquiv (c : Color K) : (S.rep c.dual).Equiv (S.rep c).dual 
 lemma dualEquiv_apply (c : Color K) (α : S.V c.dual) (u : S.V c) :
     S.dualEquiv c α u = S.contr c (u ⊗ₜ α) :=
   rfl
-
-variable {S} in
-/-- The contraction is nondegenerate in its second argument. Two vectors of `c.dual` with the
-same contraction against every vector of `c` are equal. -/
-lemma ext_contr {c : Color K} {α α' : S.V c.dual}
-    (h : ∀ u, S.contr c (u ⊗ₜ α) = S.contr c (u ⊗ₜ α')) : α = α' :=
-  (S.dualEquiv c).toLinearEquiv.injective (LinearMap.ext h)
 
 variable {S}
 
