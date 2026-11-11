@@ -181,7 +181,7 @@ lemma reindex_trans {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ 
 
 /-- Reindexing by `σ₁` and then by `σ₂` is reindexing by `σ₁.trans σ₂`, on a tensor. -/
 lemma reindex_reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
-    (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) (t : S.Tensor c₁) :
+    (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) (t : Tensor S c₁) :
     S.reindex σ₂ (S.reindex σ₁ t) = S.reindex (σ₁.trans σ₂) t := by
   rw [reindex_trans, Representation.Equiv.trans_apply]
 
@@ -203,7 +203,7 @@ lemma reindex_symm {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 old index `i` takes the label `y (σ.toEquiv i)` of its new index, cast along the equality of their
 colors. For concrete colors and labels the cast is between equal types, and `rfl` removes it. -/
 lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ → Color K}
-    {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) (t : S.Tensor c₁)
+    {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) (t : Tensor S c₁)
     (y : Π j, basisIdx (c₂ j).kind) :
     (S.tensorBasis c₂).repr (S.reindex σ t) y =
       (S.tensorBasis c₁).repr t fun i =>

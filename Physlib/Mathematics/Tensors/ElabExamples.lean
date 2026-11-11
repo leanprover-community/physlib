@@ -44,8 +44,8 @@ open Species
 
 variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
-    (a c : Color K) (T U W : S.Tensor ![a, a.dual]) (T' : S.Tensor ![a.dual, a])
-    (κ : K) (v : S.Tensor ![⟨κ, .up⟩]) (r : k) (Λ : G)
+    (a c : Color K) (T U W : Tensor S ![a, a.dual]) (T' : Tensor S ![a.dual, a])
+    (κ : K) (v : Tensor S ![⟨κ, .up⟩]) (r : k) (Λ : G)
 
 /-!
 
@@ -53,12 +53,12 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 
 -/
 
-/-- info: T : S.Tensor ![a, a.dual] -/
+/-- info: T : Tensor S ![a, a.dual] -/
 #guard_msgs in
 #check {T | μ ν}ᵀ
 
 /-- The matrix product `T^μ_ν U^ν_ρ`. -/
-noncomputable example : S.Tensor ![a, a.dual] := {T | μ ν ⊗ U | ν ρ}ᵀ
+noncomputable example : Tensor S ![a, a.dual] := {T | μ ν ⊗ U | ν ρ}ᵀ
 
 /-- A product given as one term, with the colors `prodColors ![a, a.dual] ![a, a.dual]`, is the
 product in the notation. -/
@@ -66,7 +66,7 @@ example : {S.tmulEquiv _ _ (T ⊗ₜ U) | μ ν ν ρ = T | μ ν ⊗ U | ν ρ}
 
 /-- An equation with a tensor `s` with no indices, `T^μ_μ = s`. The space after the bar keeps
 Mathlib's absolute value `|x|` from reading it. -/
-example (s : S.Tensor (![] : Fin 0 → Color K)) : {T | μ μ = s | }ᵀ ↔ {T | μ μ}ᵀ = s := Iff.rfl
+example (s : Tensor S (![] : Fin 0 → Color K)) : {T | μ μ = s | }ᵀ ↔ {T | μ μ}ᵀ = s := Iff.rfl
 
 /-- An equation in parentheses is the same equation. -/
 example : {(T | μ ν = U | μ ν)}ᵀ ↔ {T | μ ν = U | μ ν}ᵀ := Iff.rfl
@@ -75,11 +75,11 @@ example : {(T | μ ν = U | μ ν)}ᵀ ↔ {T | μ ν = U | μ ν}ᵀ := Iff.rfl
 example : Prop := {T | μ ν = T' | ν μ}ᵀ
 
 /-- The trace of a product of four matrices, `T^μ_ν U^ν_ρ T^ρ_σ U^σ_μ`. -/
-noncomputable example : S.Tensor (![] : Fin 0 → Color K) :=
+noncomputable example : Tensor S (![] : Fin 0 → Color K) :=
   {T | μ ν ⊗ U | ν ρ ⊗ T | ρ σ ⊗ U | σ μ}ᵀ
 
 /-- The trace of a product of five matrices, `T^μ_ν U^ν_ρ W^ρ_σ T^σ_τ U^τ_μ`. -/
-noncomputable example : S.Tensor (![] : Fin 0 → Color K) :=
+noncomputable example : Tensor S (![] : Fin 0 → Color K) :=
   {T | μ ν ⊗ U | ν ρ ⊗ W | ρ σ ⊗ T | σ τ ⊗ U | τ μ}ᵀ
 
 /-- Sums, negatives and scalar multiples, `-T^μ_ν + r U^μ_ν`. -/
@@ -105,7 +105,7 @@ failed to synthesize instance of type class
 #check {r | μ}ᵀ
 
 -- A term whose type is not known, such as a bare numeral, is rejected.
-/-- error: index notation: the type of 0 is not known; give it, as `(0 : S.Tensor ![…])` -/
+/-- error: index notation: the type of 0 is not known; give it, as `(0 : Tensor S ![…])` -/
 #guard_msgs in
 #check {0 | μ ν}ᵀ
 
@@ -121,13 +121,13 @@ example : {(T | μ μ) ⊗ U | μ ρ}ᵀ = {{T | μ μ}ᵀ | ⊗ U | μ ρ}ᵀ :
 -- A tensor whose colors are not a literal list is rejected.
 /-- error: index notation: the colors of t must be a literal list -/
 #guard_msgs in
-example (f : Fin 2 → Color K) (t : S.Tensor f) : S.Tensor f := {t | μ ν}ᵀ
+example (f : Fin 2 → Color K) (t : Tensor S f) : Tensor S f := {t | μ ν}ᵀ
 
 -- A tensor whose index type is not literal is rejected.
 /-- error: index notation: the index type Fin n of t must be built from `Fin n` with a literal `n`,
 `Unit`, `Empty` and `⊕` -/
 #guard_msgs (whitespace := lax) in
-example (n : ℕ) (f : Fin n → Color K) (t : S.Tensor f) : S.Tensor f := {t | μ}ᵀ
+example (n : ℕ) (f : Fin n → Color K) (t : Tensor S f) : Tensor S f := {t | μ}ᵀ
 
 -- A pair of indices whose colors are not dual is rejected.
 /-- error: index notation: μ joins the colors a and a, which are not dual -/
@@ -164,14 +164,14 @@ example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
 example : {v | τ(μ)}ᵀ = {v | ↓μ}ᵀ := rfl
 
 /-- `τ` needs no visible variance, so it flips an index of any color, `(w_μ)^μ = w^μ`. -/
-example (w : S.Tensor ![c]) : {{w | τ(μ)}ᵀ | τ(μ)}ᵀ = w := by
+example (w : Tensor S ![c]) : {{w | τ(μ)}ᵀ | τ(μ)}ᵀ = w := by
   tensor_indices
 
 /-- Lowering commutes with the group action, `(Λ v)_μ = Λ (v_μ)`, by `rw [equiv_smul]`. -/
 example : {(Λ • v) | ↓μ}ᵀ = Λ • {v | ↓μ}ᵀ := by rw [equiv_smul]
 
 /-- Lowering both indices commutes with the group action, `(Λ M)_μν = Λ (M_μν)`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓ν}ᵀ = Λ • {M | ↓μ ↓ν}ᵀ := by
+example (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓ν}ᵀ = Λ • {M | ↓μ ↓ν}ᵀ := by
   simp only [equiv_smul]
 
 /-- A trace commutes with the group action, `(Λ T)^μ_μ = Λ (T^μ_μ)`, by
@@ -196,15 +196,15 @@ section Tensorial
 
 variable {M : Type} [AddCommGroup M] [Module k M] [Tensorial S ![a, a.dual] M] (m : M)
 
-/-- info: Tensorial.toTensor m : S.Tensor ![a, a.dual] -/
+/-- info: Tensorial.toTensor m : Tensor S ![a, a.dual] -/
 #guard_msgs in
 #check {m | μ ν}ᵀ
 
 /-- The contraction `m^μ_ν T^ν_ρ` of an element of a tensorial type with a tensor. -/
-noncomputable example : S.Tensor ![a, a.dual] := {m | μ ν ⊗ T | ν ρ}ᵀ
+noncomputable example : Tensor S ![a, a.dual] := {m | μ ν ⊗ T | ν ρ}ᵀ
 
 /-- The contraction `m^μ_ν m^ν_ρ` inside `M ⊗ M`, through `Tensorial.prod`. -/
-noncomputable example : S.Tensor ![a, a.dual] := {(m ⊗ₜ[k] m) | μ ν ν ρ}ᵀ
+noncomputable example : Tensor S ![a, a.dual] := {(m ⊗ₜ[k] m) | μ ν ν ρ}ᵀ
 
 /-- The contraction `m^μ_ν T^ν_ρ` read back as an element of `M`. -/
 noncomputable example : M := {m | μ ν ⊗ T | ν ρ}ᵀ
@@ -215,12 +215,12 @@ example : ({m | μ ν ⊗ m | ρ σ}ᵀ : M ⊗[k] M) = m ⊗ₜ m := by
   rw [← Tensorial.toTensor_tmul, Representation.Equiv.symm_apply_apply]
 
 /-- A tensor on `Fin 2` reindexed onto the indices `Fin 1 ⊕ Fin 1` of a product. -/
-noncomputable example : S.Tensor (prodColors ![a] ![a.dual]) := {T | μ ν}ᵀ
+noncomputable example : Tensor S (prodColors ![a] ![a.dual]) := {T | μ ν}ᵀ
 
 /-- error: index notation: the free index μ has the color a, but the expected index has the color
 a.dual -/
 #guard_msgs in
-example : S.Tensor (prodColors ![a.dual] ![a]) := {T | μ ν}ᵀ
+example : Tensor S (prodColors ![a.dual] ![a]) := {T | μ ν}ᵀ
 
 end Tensorial
 
@@ -366,33 +366,33 @@ example : {v | μ = v | ν ⊗ S.formTensor ⟨κ, .down⟩ | ν ρ ⊗ S.formTe
   tensor_regroup
 
 /-- A lowering cancels against the inverse form, `g^ρν M^μ_ν = M^μρ`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
   tensor_regroup
 
 /-- Two lowerings cancel against two inverse forms, one pair at a time,
 `g^ρμ g^σν M_μν = M^ρσ`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ μ ⊗ S.formTensor ⟨κ, .up⟩ | σ ν = M | ρ σ}ᵀ := by
   tensor_regroup
 
 /-- The same with the pairs on the right side and on two kinds, `N^ρσ = g^ρμ g'^σν N_μν`. -/
-example (κ' : K) [S.HasForm κ'] (N : S.Tensor ![⟨κ, .up⟩, ⟨κ', .up⟩]) :
+example (κ' : K) [S.HasForm κ'] (N : Tensor S ![⟨κ, .up⟩, ⟨κ', .up⟩]) :
     {N | ρ σ = N | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ μ ⊗ S.formTensor ⟨κ', .up⟩ | σ ν}ᵀ := by
   tensor_regroup
 
 /-- A lowering contracted with the first index of a symmetric form, `g^νρ M^μ_ν = M^μρ`. -/
-example [S.IsSymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example [S.IsSymmetricForm κ] (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
   tensor_regroup
 
 /-- With an antisymmetric form the second index cancels with no sign, `ε^ρν M^μ_ν = M^μρ`. -/
-example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example [S.IsAntisymmetricForm κ] (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ρ ν = M | μ ρ}ᵀ := by
   tensor_regroup
 
 /-- With an antisymmetric form the first index cancels with a sign, `ε^νρ M^μ_ν = -M^μρ`. -/
-example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example [S.IsAntisymmetricForm κ] (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = -M | μ ρ}ᵀ := by
   tensor_regroup
 
@@ -402,7 +402,7 @@ the other side
   S.formTensor { kind := κ, variance := Variance.up }.dual
   S.formTensor { kind := κ, variance := Variance.up } -/
 #guard_msgs in
-example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example [S.IsAntisymmetricForm κ] (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | ν ρ = M | μ ρ}ᵀ := by
   tensor_regroup
 
@@ -414,7 +414,7 @@ the other side
   S.formTensor { kind := κ, variance := Variance.up }
   S.formTensor { kind := κ, variance := Variance.up } -/
 #guard_msgs in
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | ↓μ ↓ν ⊗ S.formTensor ⟨κ, .up⟩ | μ ρ ⊗ S.formTensor ⟨κ, .up⟩ | ν σ = M | σ ρ}ᵀ := by
   tensor_regroup
 
@@ -426,18 +426,18 @@ has no matching summand on the right. Against the last one tried:
     (S.toDualAt 0 { kind := κ, variance := Variance.up } ⋯ ⋯ ⋯) w
   has no equal factor on the right -/
 #guard_msgs in
-example (w : S.Tensor ![⟨κ, .up⟩]) : {v | ↓μ + w | ↓μ = v | ↓μ + v | ↓μ}ᵀ := by
+example (w : Tensor S ![⟨κ, .up⟩]) : {v | ↓μ + w | ↓μ = v | ↓μ + v | ↓μ}ᵀ := by
   tensor_regroup
 
 /-- Summands of opposite signs are matched by swapping an antisymmetric form,
 `M^μν g_νρ = -(g_ρν M^μν)`. -/
-example [S.IsAntisymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example [S.IsAntisymmetricForm κ] (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ν ⊗ S.formTensor ⟨κ, .down⟩ | ν ρ =
       -{S.formTensor ⟨κ, .down⟩ | ρ ν ⊗ M | μ ν}ᵀ | ρ μ}ᵀ := by
   tensor_regroup
 
 /-- A symmetric form is swapped when the regrouping fails, `M^μν g_νρ = M^μν g_ρν`. -/
-example [S.IsSymmetricForm κ] (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
+example [S.IsSymmetricForm κ] (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) :
     {M | μ ν ⊗ S.formTensor ⟨κ, .down⟩ | ν ρ = M | μ ν ⊗ S.formTensor ⟨κ, .down⟩ | ρ ν}ᵀ := by
   tensor_regroup
 
@@ -467,15 +467,15 @@ example : v = {{v | ↓μ}ᵀ | ↑μ}ᵀ := by
 -- An equation with no lowering or raising is rejected.
 /-- error: tensor_indices: neither side lowers or raises an index -/
 #guard_msgs in
-example (w : S.Tensor ![⟨κ, .up⟩]) : v = w := by
+example (w : Tensor S ![⟨κ, .up⟩]) : v = w := by
   tensor_indices
 
 /-- Lowering both indices and raising them again, `(M_μν)^μν = M^μν`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = M := by
+example (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = M := by
   tensor_indices
 
 /-- Lowerings at two indices commute, `(M_μ^ν)_ν = (M^μ_ν)_μ`. -/
-example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ ↓ν = {M | μ ↓ν}ᵀ | ↓μ ν}ᵀ := by
+example (M : Tensor S ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ ↓ν = {M | μ ↓ν}ᵀ | ↓μ ν}ᵀ := by
   tensor_indices
 
 end Metric

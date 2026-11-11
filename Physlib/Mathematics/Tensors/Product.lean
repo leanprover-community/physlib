@@ -154,7 +154,7 @@ lemma tmulEquiv_symm_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K)
 /-- The product is associative, `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)`, after the indices of the left side
 are regrouped by `ColorEquiv.sumAssoc`. -/
 lemma tmulEquiv_assoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c₃ : ι₃ → Color K)
-    (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) (t₃ : S.Tensor c₃) :
+    (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) (t₃ : Tensor S c₃) :
     S.reindex (ColorEquiv.sumAssoc c₁ c₂ c₃)
         (S.tmulEquiv _ _ (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) ⊗ₜ t₃)) =
       S.tmulEquiv _ _ (t₁ ⊗ₜ S.tmulEquiv c₂ c₃ (t₂ ⊗ₜ t₃)) :=
@@ -171,8 +171,8 @@ lemma tmulEquiv_assoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c�
 
 /-- The product is symmetric, `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`, after the indices of `U` are moved in
 front by `ColorEquiv.sumComm`. -/
-lemma tmulEquiv_comm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (t₁ : S.Tensor c₁)
-    (t₂ : S.Tensor c₂) :
+lemma tmulEquiv_comm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (t₁ : Tensor S c₁)
+    (t₂ : Tensor S c₂) :
     S.reindex (ColorEquiv.sumComm c₁ c₂) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) =
       S.tmulEquiv c₂ c₁ (t₂ ⊗ₜ t₁) :=
   LinearMap.congr_fun (f := (S.reindex (ColorEquiv.sumComm c₁ c₂)).toLinearMap ∘ₗ
@@ -186,7 +186,7 @@ lemma tmulEquiv_comm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (t₁
 /-- Reindexing the product along `σ.sumCongr τ` is reindexing its factors along `σ` and `τ`. -/
 lemma reindex_sumCongr_tmulEquiv {c₁ : ι₁ → Color K} {c₁' : ι₁' → Color K}
     {c₂ : ι₂ → Color K} {c₂' : ι₂' → Color K} (σ : ColorEquiv c₁ c₁') (τ : ColorEquiv c₂ c₂')
-    (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
+    (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) :
     S.reindex (σ.sumCongr τ) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) =
       S.tmulEquiv c₁' c₂' (S.reindex σ t₁ ⊗ₜ S.reindex τ t₂) :=
   LinearMap.congr_fun (f := (S.reindex (σ.sumCongr τ)).toLinearMap ∘ₗ
@@ -201,7 +201,7 @@ lemma reindex_sumCongr_tmulEquiv {c₁ : ι₁ → Color K} {c₁' : ι₁' → 
 /-- Reindexing the first factor reindexes the product. With `tmulEquiv_reindex_right` it moves
 reindexings out of products, the form used by index notation. -/
 lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Color K} {c₂ : ι₂ → Color K}
-    (σ : ColorEquiv c₁ c₁') (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
+    (σ : ColorEquiv c₁ c₁') (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) :
     S.tmulEquiv c₁' c₂ (S.reindex σ t₁ ⊗ₜ t₂) =
       S.reindex (σ.sumCongr (.refl c₂)) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) := by
   rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
@@ -209,7 +209,7 @@ lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Colo
 /-- Reindexing the second factor reindexes the product. With `tmulEquiv_reindex_left` it moves
 reindexings out of products, the form used by index notation. -/
 lemma tmulEquiv_reindex_right {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₂' : ι₂' → Color K}
-    (σ : ColorEquiv c₂ c₂') (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) :
+    (σ : ColorEquiv c₂ c₂') (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) :
     S.tmulEquiv c₁ c₂' (t₁ ⊗ₜ S.reindex σ t₂) =
       S.reindex ((ColorEquiv.refl c₁).sumCongr σ) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) := by
   rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
@@ -217,7 +217,7 @@ lemma tmulEquiv_reindex_right {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color
 /-- Swapping the last two factors of a product, `(T ⊗ W) ⊗ U = (T ⊗ U) ⊗ W` after the indices of
 `U` are moved before those of `W` by `ColorEquiv.swapLast`. -/
 lemma tmulEquiv_swapLast {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
-    (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) (t₃ : S.Tensor c₃) :
+    (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) (t₃ : Tensor S c₃) :
     S.reindex (ColorEquiv.swapLast c₁ c₂ c₃)
         (S.tmulEquiv _ c₂ (S.tmulEquiv c₁ c₃ (t₁ ⊗ₜ t₃) ⊗ₜ t₂)) =
       S.tmulEquiv _ c₃ (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) ⊗ₜ t₃) := by
@@ -227,8 +227,8 @@ lemma tmulEquiv_swapLast {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {
 
 /-- The product commutes with the group action, `Λ T ⊗ Λ U = Λ (T ⊗ U)`, as in
 `(Λ^μ_α T^α) (Λ^ρ_β U^β) = Λ^μ_α Λ^ρ_β (T ⊗ U)^αβ`. -/
-lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : G) (t₁ : S.Tensor c₁)
-    (t₂ : S.Tensor c₂) :
+lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : G) (t₁ : Tensor S c₁)
+    (t₂ : Tensor S c₂) :
     S.tmulEquiv c₁ c₂ ((g • t₁) ⊗ₜ (g • t₂)) = g • S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂) :=
   Representation.IntertwiningMap.isIntertwining _ _ (S.tmulEquiv c₁ c₂).toIntertwiningMap g
     (t₁ ⊗ₜ t₂)
@@ -239,7 +239,7 @@ lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : 
 
 A species gives objects with two indices, such as a metric `η_μν`, in Mathlib's binary
 tensor product `V a ⊗ V b`. `twoIndexEquiv` identifies this space with the tensors
-`S.Tensor ![a, b]` on two indices, so that such an object can be used in index notation.
+`Tensor S ![a, b]` on two indices, so that such an object can be used in index notation.
 
 -/
 
@@ -306,7 +306,7 @@ of a tensor on two indices are the coordinates in Mathlib's basis `Basis.tensorP
 /-- The components of a product are the products of the components, `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`.
 The labels `y (inl i)` are those of `T` and the labels `y (inr j)` those of `U`. -/
 lemma tensorBasis_repr_tmulEquiv [Fintype ι₁] [Fintype ι₂] (c₁ : ι₁ → Color K)
-    (c₂ : ι₂ → Color K) (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂)
+    (c₂ : ι₂ → Color K) (t₁ : Tensor S c₁) (t₂ : Tensor S c₂)
     (y : Π s, basisIdx (prodColors c₁ c₂ s).kind) :
     (S.tensorBasis (prodColors c₁ c₂)).repr (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) y =
       (S.tensorBasis c₁).repr t₁ (fun i => y (.inl i)) *

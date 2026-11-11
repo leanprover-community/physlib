@@ -261,7 +261,7 @@ lemma basis_repr_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) (ν : basis
 variable (S) in
 /-- The form at `c` as a tensor with colors `![c, c]`, `g^μν` at an upper color and `g_μν` at a
 lower one. -/
-noncomputable def formTensor (c : Color K) [S.HasForm c.kind] : S.Tensor ![c, c] :=
+noncomputable def formTensor (c : Color K) [S.HasForm c.kind] : Tensor S ![c, c] :=
   S.twoIndexEquiv c c (form c)
 
 /-- The form is an invariant tensor. Every group element fixes it, as every Lorentz
@@ -308,7 +308,7 @@ noncomputable def toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : 
 
 /-- Raising at an index undoes lowering at that index, `(T^μ_ν)^ν = T^μν`. -/
 lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
-    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
+    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) :
     S.toDualAt i a.dual hi ha (fun x hx => (h x hx).symm) (S.toDualAt i a ha hi h t) = t := by
   rw [toDualAt, toDualAt, show ((S.cast hi).trans (S.toDual a.dual)).trans (S.cast ha.symm) =
     (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).symm from rfl, ← congrAt_symm]
@@ -317,7 +317,7 @@ lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
 /-- Lowering or raising at an index is `toDual` at that index, read as a linear map. Chains of
 lowerings and raisings at several indices compose index by index through `mapIndices_mapIndices`. -/
 lemma toDualAt_eq_mapAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
-    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
+    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) :
     S.toDualAt i a ha hi h t =
       S.mapAt i (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).toLinearMap h t :=
   congrAt_eq_mapAt i _ h t
@@ -327,7 +327,7 @@ labels `φ` of the result are cast to labels of `t`, and the label at `i` is rep
 `μ`. For concrete colors the casts are along `rfl`. -/
 lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a : Color K)
     (ha : c i = a) [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x)
-    (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind) :
+    (t : Tensor S c) (φ : Π x, basisIdx (c' x).kind) :
     (S.tensorBasis c').repr (S.toDualAt i a ha hi h t) φ =
       ∑ μ, S.formMatrix a.dual (cast (congrArg (basisIdx ∘ Color.kind) hi) (φ i)) μ *
         (S.tensorBasis c).repr t (Function.update (fun x => cast (by
@@ -346,7 +346,7 @@ lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a
 /-- Lowering or raising at the index `i` is contracting that index with the second index of the
 form, `T^…_ν… = g_νμ T^…μ…`. -/
 lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
-    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
+    [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) :
     S.toDualAt i a ha hi h t = Tensor.contr (ColorEquiv.matMulAt i a a.dual ha hi h)
       (S.tmulEquiv c ![a.dual, a.dual]
         (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a.dual a.dual) (S.formTensor a.dual))) := by

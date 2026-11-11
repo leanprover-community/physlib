@@ -48,11 +48,11 @@ identity.
 - `Species.delta` : the delta `δ_μ^ν`, with `Species.delta_invariant` : it is invariant.
 - `Species.deltaTensor` : the delta as a tensor on two indices, with
   `Species.tensorBasis_repr_deltaTensor_eq_one` : its components form the identity matrix.
-- `Species.Tensor.contr_matMul` : the contraction `M^μ_ν N^ν_ρ`, and
-  `Species.Tensor.contr_matMul_eq_deltaTensor_iff` : it is the delta exactly when the linear maps
+- `Tensor.contr_matMul` : the contraction `M^μ_ν N^ν_ρ`, and
+  `Tensor.contr_matMul_eq_deltaTensor_iff` : it is the delta exactly when the linear maps
   of `M` and `N` are inverse.
-- `Species.Tensor.contr_matMulAt` : contracting the index `i` with the first index of `F` applies
-  `F` at `i`, and `Species.Tensor.contr_deltaTensor` : for the delta this is
+- `Tensor.contr_matMulAt` : contracting the index `i` with the first index of `F` applies
+  `F` at `i`, and `Tensor.contr_deltaTensor` : for the delta this is
   `T^…μ… δ_μ^ν = T^…ν…`.
 
 ## iii. Table of contents
@@ -127,10 +127,10 @@ def matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
 
 end ColorEquiv
 
-namespace Species
-
 variable {k : Type} [RCLike k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] (S : Species k G K basisIdx)
+
+namespace Species
 
 /-!
 
@@ -217,7 +217,7 @@ variable {S}
 variable (S) in
 /-- The delta `S.delta c` as a tensor with colors `![c.dual, c]`. It is `δ_μ^ν` for an upper
 color `c` and `δ^μ_ν` for a lower one. -/
-noncomputable def deltaTensor (c : Color K) : S.Tensor ![c.dual, c] :=
+noncomputable def deltaTensor (c : Color K) : Tensor S ![c.dual, c] :=
   S.twoIndexEquiv c.dual c (S.delta c)
 
 /-- The delta tensor is invariant, `Λ δ = δ`. -/
@@ -240,9 +240,11 @@ lemma tensorBasis_repr_deltaTensor_eq_one (c : Color K)
   (tensorBasis_repr_deltaTensor c μ).trans
     ((Module.Basis.tensorProduct_repr_coordDelta _ _ _ _).trans Matrix.one_apply.symm)
 
-namespace Tensor
+end Species
 
-open TensorProduct PiTensorProduct
+open Species PiTensorProduct
+
+variable {S}
 
 variable {ι₁ κ : Type} {c : ι₁ → Color K} {c' : κ → Color K}
 
@@ -296,10 +298,10 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
   induction F using TensorProduct.inductionOn with
   | add F F' hF hF' =>
     simp only [map_add, LinearMap.add_apply, tmul_add, hF, hF']
-    rw [pure, pure, pure, MultilinearMap.map_update_add, map_add]
+    rw [Species.pure, Species.pure, Species.pure, MultilinearMap.map_update_add, map_add]
   | tmul x y =>
     rw [Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, map_smul]
-    conv_rhs => rw [pure, MultilinearMap.map_update_smul, map_smul, ← pure]
+    conv_rhs => rw [Species.pure, MultilinearMap.map_update_smul, map_smul, ← Species.pure]
     rw [twoIndexEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
     congr 2
     funext z
@@ -317,7 +319,7 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
 `F`, read as a linear map by `Species.toLin`, at `i`, as in `T^…μ… F_μ^ν`. -/
 lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
     (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
-    (t : S.Tensor c) :
+    (t : Tensor S c) :
     contr (ColorEquiv.matMulAt i a b ha hi h)
         (S.tmulEquiv c ![a.dual, b] (t ⊗ₜ S.twoIndexEquiv a.dual b F)) =
       S.mapAt i ((S.cast hi.symm).toLinearMap ∘ₗ S.toLin F ∘ₗ (S.cast ha).toLinearMap) h t := by
@@ -332,7 +334,7 @@ lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) 
 /-- Contracting the index `i` with the first index of the delta is the identity,
 `T^…μ… δ_μ^ν = T^…ν…`. -/
 lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K) (ha : c i = a)
-    (t : S.Tensor c) :
+    (t : Tensor S c) :
     contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
       (S.tmulEquiv c ![a.dual, a] (t ⊗ₜ S.deltaTensor a)) = t := by
   subst ha
@@ -342,16 +344,12 @@ lemma contr_deltaTensor [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) 
 /-- Contracting the index `i` with the second index of the delta is the identity,
 `δ^ν_μ T^…μ… = T^…ν…`. -/
 lemma contr_deltaTensor_swap [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι₁) (a : Color K)
-    (ha : c i = a) (t : S.Tensor c) :
+    (ha : c i = a) (t : Tensor S c) :
     contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
       (S.tmulEquiv c ![a.dual, a]
         (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a a.dual) (S.deltaTensor a.dual))) = t := by
   rw [deltaTensor, reindex_twoIndexEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
     from Module.Basis.comm_coordDelta _ _]
   exact contr_deltaTensor i a ha t
-
-end Tensor
-
-end Species
 
 end Tensor

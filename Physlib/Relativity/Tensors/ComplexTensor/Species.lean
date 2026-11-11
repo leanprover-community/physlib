@@ -230,10 +230,10 @@ are read in the namespace `complexLorentz`. The notation is active under
 scoped syntax (name := complexLorentzSyntax) "ℂT[" term,* "]" : term
 
 macro_rules (kind := complexLorentzSyntax)
-  | `(ℂT[$cs,*]) => `(Tensor.complexLorentz.Tensor (open Tensor.complexLorentz in ![$cs,*]))
+  | `(ℂT[$cs,*]) => `(Tensor Tensor.complexLorentz (open Tensor.complexLorentz in ![$cs,*]))
 
 /-- `ℂT[upL, downR]` is the space of tensors `T^α_β̇`. -/
-example : ℂT[upL, downR] = complexLorentz.Tensor ![upL, downR] := rfl
+example : ℂT[upL, downR] = Tensor complexLorentz ![upL, downR] := rfl
 
 end complexLorentz
 
@@ -418,11 +418,11 @@ instance : complexLorentz.IsEquivariantConjugation :=
 /-- The components of the conjugate of a tensor are the conjugates of its components, at the same
 labels read through `idxBar`. -/
 lemma tensorBasis_repr_conj {ι : Type} [Fintype ι] {c c' : ι → Color Kind}
-    (h : ∀ i, c' i = (c i).bar) (t : complexLorentz.Tensor c) (μ : Π i, Idx (c' i).kind) :
-    (complexLorentz.tensorBasis c').repr (Species.Tensor.conj h t) μ =
+    (h : ∀ i, c' i = (c i).bar) (t : Tensor complexLorentz c) (μ : Π i, Idx (c' i).kind) :
+    (complexLorentz.tensorBasis c').repr (Tensor.conj h t) μ =
       star ((complexLorentz.tensorBasis c).repr t
         fun i => (idxBar (congrArg Color.kind (h i))).symm (μ i)) :=
-  Species.Tensor.tensorBasis_repr_conj_of_basis h _
+  Tensor.tensorBasis_repr_conj_of_basis h _
     (fun i => Species.HasConjugation.ofBasis_conjEquiv_basis _ (h i)) t μ
 
 end complexLorentz
@@ -650,14 +650,14 @@ lemma tensorBasis_repr_formTensor_upL_tmul_upR
 /-- `(ε^αβ ε_βγ)` at `α = γ = 0` is `1`, from the components of `εL` and `εL'`. -/
 example : (complexLorentz.tensorBasis _).repr {εL | α β ⊗ εL' | β γ}ᵀ
     (Fin.cons (0 : Fin 2) (Fin.cons (0 : Fin 2) fun i => i.elim0)) = 1 := by
-  rw [Species.Tensor.tensorBasis_repr_contr_one_pair]
+  rw [Tensor.tensorBasis_repr_contr_one_pair]
   simp only [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
     tensorBasis_repr_formTensor upL, tensorBasis_repr_formTensor downL]
   change ∑ β : Fin 2, metricRaw 0 β * (-metricRaw) β 0 = 1
   simp [metricRaw, Fin.sum_univ_two]
 
 /-- The conjugate of `ε^αβ` is `ε^α̇β̇`. The conjugate lands on `![upR, upR]` directly. -/
-example : Species.Tensor.conj (fun i => by fin_cases i <;> rfl) εL = εR := by
+example : Tensor.conj (fun i => by fin_cases i <;> rfl) εL = εR := by
   refine (complexLorentz.tensorBasis _).repr.injective (Finsupp.ext fun μ => ?_)
   rw [tensorBasis_repr_conj, tensorBasis_repr_formTensor upL, tensorBasis_repr_formTensor upR]
   -- The labels are `idxBar` along `rfl` of `μ 0` and `μ 1`, the identity.

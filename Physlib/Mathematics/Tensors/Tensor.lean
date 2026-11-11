@@ -18,7 +18,7 @@ index type `ι`, and the group acts on them index by index.
 ## i. Overview
 
 A tensor of a species `S` has one index `i` for each `i : ι`, and the index `i` has the color `c i`.
-The tensors with colors `c : ι → Color K` form the space `S.Tensor c`, which is Mathlib's
+The tensors with colors `c : ι → Color K` form the space `Tensor S c`, which is Mathlib's
 `⨂[k] i, V (c i)`. The index type `ι` can be any type, such as `Fin n` or a sum `ι₁ ⊕ ι₂`.
 
 A pure tensor takes one vector at each index, such as `u ⊗ α ⊗ β` with `u` in `V (c 0)`, `α` in
@@ -28,7 +28,7 @@ a pure tensor itself. Every tensor is such a sum, so a linear map of tensors is 
 values on pure tensors (`ext_pure`), and a property of all tensors follows from the pure case
 (`inductionOn_pure`). Maps of tensors, starting with the group action, are given by their value on
 pure tensors, and their properties are proved there first. `S.pure f` is Mathlib's
-`⨂ₜ[k] i, f i` as an element of `S.Tensor c`.
+`⨂ₜ[k] i, f i` as an element of `Tensor S c`.
 
 A group element `Λ` acts on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). A map that commutes with `Λ` on pure tensors
@@ -49,7 +49,7 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 
 ## ii. Key results
 
-- `Species.Tensor` and `Species.pure` are the tensors and the pure tensors, and
+- `Tensor` and `Species.pure` are the tensors and the pure tensors, and
   `Species.inductionOn_pure` is induction through pure tensors.
 - `Species.ext_pure` proves that linear maps of tensors that agree on pure tensors are equal,
   `Species.ext_pure₂` and `Species.ext_pure₃` do the same for maps out of products of two and
@@ -107,30 +107,30 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 -/
 
 /-- The space `⨂[k] i, S.V (c i)` of tensors with colors `c` on the indices `ι`. It is a `def`, not
-an `abbrev`, so that the type `S.Tensor c` keeps the species and the colors instead of unfolding to
+an `abbrev`, so that the type `Tensor S c` keeps the species and the colors instead of unfolding to
 `⨂[k] i, S.V (c i)`. -/
-def Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
+def _root_.Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
   ⨂[k] i, S.V (c i)
 
 noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Color K} :
-    AddCommGroup (S.Tensor c) :=
+    AddCommGroup (Tensor S c) :=
   inferInstanceAs (AddCommGroup (⨂[k] i, S.V (c i)))
 
 noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Color K} :
-    Module k (S.Tensor c) :=
+    Module k (Tensor S c) :=
   inferInstanceAs (Module k (⨂[k] i, S.V (c i)))
 
 variable {ι : Type} {c : ι → Color K}
 
-/-- The identity from `S.Tensor c` to Mathlib's `⨂[k] i, S.V (c i)`, as a linear equivalence.
+/-- The identity from `Tensor S c` to Mathlib's `⨂[k] i, S.V (c i)`, as a linear equivalence.
 Mathlib's constructions on `⨂` are composed with it. -/
 noncomputable def toPiTensor (S : Species k G K basisIdx) (c : ι → Color K) :
-    S.Tensor c ≃ₗ[k] ⨂[k] i, S.V (c i) :=
+    Tensor S c ≃ₗ[k] ⨂[k] i, S.V (c i) :=
   LinearEquiv.refl k _
 
 /-- The pure tensor of a family of vectors, one per index, such as `u ⊗ α ⊗ β` with components
 `u^μ α_ν β_ρ`. It is Mathlib's `⨂ₜ[k] i, f i`. -/
-noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : S.Tensor c :=
+noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : Tensor S c :=
   (S.toPiTensor c).symm (⨂ₜ[k] i, f i)
 
 variable {S : Species k G K basisIdx}
@@ -143,28 +143,28 @@ lemma toPiTensor_symm_tprod (f : Π i, S.V (c i)) :
     (S.toPiTensor c).symm (⨂ₜ[k] i, f i) = S.pure f := rfl
 
 /-- Induction on tensors through pure tensors: every tensor is a sum of pure tensors. -/
-lemma inductionOn_pure {P : S.Tensor c → Prop}
+lemma inductionOn_pure {P : Tensor S c → Prop}
     (h : ∀ f : Π i, S.V (c i), P (S.pure f)) (hsmul : ∀ (r : k) t, P t → P (r • t))
-    (hadd : ∀ t₁ t₂, P t₁ → P t₂ → P (t₁ + t₂)) (t : S.Tensor c) : P t :=
+    (hadd : ∀ t₁ t₂, P t₁ → P t₂ → P (t₁ + t₂)) (t : Tensor S c) : P t :=
   PiTensorProduct.induction_on (motive := P) t (fun r f => hsmul r _ (h f)) hadd
 
 /-- Two linear maps out of tensors are equal when they agree on pure tensors. -/
-lemma ext_pure {E : Type} [AddCommGroup E] [Module k E] {f g : S.Tensor c →ₗ[k] E}
+lemma ext_pure {E : Type} [AddCommGroup E] [Module k E] {f g : Tensor S c →ₗ[k] E}
     (h : ∀ p : Π i, S.V (c i), f (S.pure p) = g (S.pure p)) : f = g :=
   PiTensorProduct.ext (MultilinearMap.ext h)
 
-/-- Two linear maps out of `S.Tensor c ⊗ S.Tensor c₂` are equal when they agree on the products
+/-- Two linear maps out of `Tensor S c ⊗ Tensor S c₂` are equal when they agree on the products
 `S.pure p ⊗ₜ S.pure q` of pure tensors. -/
 lemma ext_pure₂ {ι₂ : Type} {c₂ : ι₂ → Color K} {E : Type} [AddCommGroup E] [Module k E]
-    {f g : S.Tensor c ⊗[k] S.Tensor c₂ →ₗ[k] E}
+    {f g : Tensor S c ⊗[k] Tensor S c₂ →ₗ[k] E}
     (h : ∀ (p : Π i, S.V (c i)) (q : Π j, S.V (c₂ j)),
       f (S.pure p ⊗ₜ S.pure q) = g (S.pure p ⊗ₜ S.pure q)) : f = g :=
   TensorProduct.ext <| ext_pure fun p => ext_pure fun q => h p q
 
-/-- Two linear maps out of `(S.Tensor c ⊗ S.Tensor c₂) ⊗ S.Tensor c₃` are equal when they agree
+/-- Two linear maps out of `(Tensor S c ⊗ Tensor S c₂) ⊗ Tensor S c₃` are equal when they agree
 on the products `(S.pure p ⊗ₜ S.pure q) ⊗ₜ S.pure r` of pure tensors. -/
 lemma ext_pure₃ {ι₂ ι₃ : Type} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K} {E : Type}
-    [AddCommGroup E] [Module k E] {f g : (S.Tensor c ⊗[k] S.Tensor c₂) ⊗[k] S.Tensor c₃ →ₗ[k] E}
+    [AddCommGroup E] [Module k E] {f g : (Tensor S c ⊗[k] Tensor S c₂) ⊗[k] Tensor S c₃ →ₗ[k] E}
     (h : ∀ (p : Π i, S.V (c i)) (q : Π j, S.V (c₂ j)) (r : Π l, S.V (c₃ l)),
       f ((S.pure p ⊗ₜ S.pure q) ⊗ₜ S.pure r) = g ((S.pure p ⊗ₜ S.pure q) ⊗ₜ S.pure r)) :
     f = g :=
@@ -178,8 +178,8 @@ lemma ext_pure₃ {ι₂ ι₃ : Type} {c₂ : ι₂ → Color K} {c₃ : ι₃ 
 
 /-- The group acts on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`. -/
-noncomputable instance : DistribMulAction G (S.Tensor c) :=
-  DistribMulAction.compHom (M := Module.End k (S.Tensor c)) _
+noncomputable instance : DistribMulAction G (Tensor S c) :=
+  DistribMulAction.compHom (M := Module.End k (Tensor S c)) _
     (PiTensorProduct.mapMonoidHom.comp (MonoidHom.pi fun i => S.rep (c i)))
 
 @[simp]
@@ -187,38 +187,38 @@ lemma smul_pure (g : G) (f : Π i, S.V (c i)) :
     g • S.pure f = S.pure fun i => S.rep (c i) g (f i) :=
   PiTensorProduct.map_tprod _ _
 
-noncomputable instance : SMulCommClass G k (S.Tensor c) where
+noncomputable instance : SMulCommClass G k (Tensor S c) where
   smul_comm g r t := by
     change PiTensorProduct.map (fun i => S.rep (c i) g) (r • t) = r • PiTensorProduct.map _ t
     exact map_smul _ r t
 
-noncomputable instance : SMulCommClass k G (S.Tensor c) := .symm _ _ _
+noncomputable instance : SMulCommClass k G (Tensor S c) := .symm _ _ _
 
 variable (S) in
 /-- The action of the group on tensors as Mathlib's representation, `Λ ↦ (T ↦ Λ • T)`. Maps of
 tensors that commute with the action are Mathlib's `Representation.Equiv` and
 `Representation.IntertwiningMap` for it. -/
-noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (S.Tensor c) :=
-  Representation.ofDistribMulAction k G (S.Tensor c)
+noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor S c) :=
+  Representation.ofDistribMulAction k G (Tensor S c)
 
 /-- An intertwining map from or to tensors commutes with the actions, `φ (Λ v) = Λ φ v`. -/
 lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
-    (φ : (S.tensorRep c).IntertwiningMap (S.tensorRep c')) (g : G) (t : S.Tensor c) :
+    (φ : (S.tensorRep c).IntertwiningMap (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
   Representation.IntertwiningMap.isIntertwining _ _ φ g t
 
 /-- An equivalence of representations of tensors commutes with the actions, `φ (Λ T) = Λ φ T`. -/
 lemma equiv_smul {ι' : Type} {c' : ι' → Color K}
-    (φ : (S.tensorRep c).Equiv (S.tensorRep c')) (g : G) (t : S.Tensor c) :
+    (φ : (S.tensorRep c).Equiv (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
   intertwiningMap_smul φ.toIntertwiningMap g t
 
 /-- A linear or conjugate-linear map of tensors that commutes with `Λ` on pure tensors commutes
 with `Λ` on all tensors. -/
 lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F : Type}
-    [FunLike F (S.Tensor c) (S.Tensor c')] [SemilinearMapClass F σ (S.Tensor c) (S.Tensor c')]
+    [FunLike F (Tensor S c) (Tensor S c')] [SemilinearMapClass F σ (Tensor S c) (Tensor S c')]
     (f : F) (g : G) (h : ∀ p : Π i, S.V (c i), f (g • S.pure p) = g • f (S.pure p))
-    (t : S.Tensor c) : f (g • t) = g • f t := by
+    (t : Tensor S c) : f (g • t) = g • f t := by
   induction t using inductionOn_pure with
   | h p => exact h p
   | hsmul r t ht => rw [smul_comm, map_smulₛₗ, ht, map_smulₛₗ, smul_comm]
@@ -227,28 +227,28 @@ lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F :
 variable {ι' : Type} {c' : ι' → Color K} in
 /-- A linear equivalence of tensors that commutes with `Λ` on pure tensors, as an equivalence of
 representations. -/
-noncomputable def equivOfPure (e : S.Tensor c ≃ₗ[k] S.Tensor c')
+noncomputable def equivOfPure (e : Tensor S c ≃ₗ[k] Tensor S c')
     (h : ∀ (g : G) (p : Π i, S.V (c i)), e (g • S.pure p) = g • e (S.pure p)) :
     (S.tensorRep c).Equiv (S.tensorRep c') :=
   .mk e fun g => LinearMap.ext fun t => map_smul_of_pure e g (h g) t
 
 variable {ι' : Type} {c' : ι' → Color K} in
 @[simp]
-lemma equivOfPure_apply (e : S.Tensor c ≃ₗ[k] S.Tensor c')
-    (h : ∀ (g : G) (p : Π i, S.V (c i)), e (g • S.pure p) = g • e (S.pure p)) (t : S.Tensor c) :
+lemma equivOfPure_apply (e : Tensor S c ≃ₗ[k] Tensor S c')
+    (h : ∀ (g : G) (p : Π i, S.V (c i)), e (g • S.pure p) = g • e (S.pure p)) (t : Tensor S c) :
     equivOfPure e h t = e t := rfl
 
 variable {ι' : Type} {c' : ι' → Color K} in
 /-- A linear map of tensors that commutes with `Λ` on pure tensors, as an intertwining map. -/
-noncomputable def intertwiningMapOfPure (f : S.Tensor c →ₗ[k] S.Tensor c')
+noncomputable def intertwiningMapOfPure (f : Tensor S c →ₗ[k] Tensor S c')
     (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) :
     (S.tensorRep c).IntertwiningMap (S.tensorRep c') :=
   ⟨f, fun g => LinearMap.ext fun t => map_smul_of_pure f g (h g) t⟩
 
 variable {ι' : Type} {c' : ι' → Color K} in
 @[simp]
-lemma intertwiningMapOfPure_apply (f : S.Tensor c →ₗ[k] S.Tensor c')
-    (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) (t : S.Tensor c) :
+lemma intertwiningMapOfPure_apply (f : Tensor S c →ₗ[k] Tensor S c')
+    (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) (t : Tensor S c) :
     intertwiningMapOfPure f h t = f t := rfl
 
 /-- Two equivalences of representations out of tensors are equal when they agree on pure
@@ -266,7 +266,7 @@ lemma intertwiningMap_ext_pure {W : Type} [AddCommGroup W] [Module k W]
   Representation.IntertwiningMap.ext (ext_pure h)
 
 /-- A tensor with no indices is invariant, `Λ s = s`. -/
-lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : S.Tensor c) : g • t = t := by
+lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = t := by
   induction t using inductionOn_pure with
   | h f => rw [smul_pure]; exact congrArg _ (funext isEmptyElim)
   | hsmul r t ht => rw [smul_comm, ht]
@@ -281,7 +281,7 @@ lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : S.Tensor c) : g • t = 
 /-- The basis `e_μ ⊗ e^ν ⊗ …` of tensors, Mathlib's `Basis.piTensorProduct` of the bases of the
 colors. -/
 noncomputable def tensorBasis (S : Species k G K basisIdx) [Fintype ι] (c : ι → Color K) :
-    Module.Basis (Π i, basisIdx (c i).kind) k (S.Tensor c) :=
+    Module.Basis (Π i, basisIdx (c i).kind) k (Tensor S c) :=
   (Basis.piTensorProduct fun i => S.basis (c i)).map (S.toPiTensor c).symm
 
 /-- A basis tensor is the pure tensor of basis vectors, `e_μ ⊗ e^ν ⊗ …`. -/
@@ -296,17 +296,17 @@ lemma tensorBasis_repr_pure [Fintype ι] (f : Π i, S.V (c i))
   simp [tensorBasis, Basis.piTensorProduct_repr_tprod_apply]
 
 /-- Tensors on finitely many indices are a finite-dimensional space. -/
-noncomputable instance [Fintype ι] : Module.Finite k (S.Tensor c) :=
+noncomputable instance [Fintype ι] : Module.Finite k (Tensor S c) :=
   .of_basis (S.tensorBasis c)
 
 /-- The dimension of tensors is the product of the dimensions of their indices. -/
 lemma finrank_tensor [Fintype ι] [DecidableEq ι] (c : ι → Color K) :
-    Module.finrank k (S.Tensor c) = ∏ i, Fintype.card (basisIdx (c i).kind) := by
+    Module.finrank k (Tensor S c) = ∏ i, Fintype.card (basisIdx (c i).kind) := by
   rw [Module.finrank_eq_card_basis (S.tensorBasis c), Fintype.card_pi]
 
 /-- The components of `g • t`, `(g t)^φ = ∑ ψ, (∏ i, g^{φ i}_{ψ i}) t^ψ`, with one matrix entry of
 `g` per index, in the color of that index. -/
-lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : S.Tensor c)
+lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : Tensor S c)
     (φ : Π i, basisIdx (c i).kind) :
     (S.tensorBasis c).repr (g • t) φ = ∑ ψ, (∏ i, LinearMap.toMatrix (S.basis (c i))
       (S.basis (c i)) (S.rep (c i) g) (φ i) (ψ i)) * (S.tensorBasis c).repr t ψ := by
@@ -328,7 +328,7 @@ variable {c' : ι → Color K}
 variable (S) in
 /-- A linear map `f x` at every index `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
 `PiTensorProduct.map`. -/
-noncomputable def mapIndices (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : S.Tensor c →ₗ[k] S.Tensor c' :=
+noncomputable def mapIndices (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : Tensor S c →ₗ[k] Tensor S c' :=
   (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map f ∘ₗ (S.toPiTensor c).toLinearMap
 
 /-- On a pure tensor, `mapIndices` applies `f x` to the vector at each index `x`. -/
@@ -345,7 +345,7 @@ lemma mapIndices_comp {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V 
 
 /-- Two index-wise maps in sequence are the index-wise map of the composites, on a tensor. -/
 lemma mapIndices_mapIndices {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
-    (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) (t : S.Tensor c) :
+    (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) (t : Tensor S c) :
     S.mapIndices g (S.mapIndices f t) = S.mapIndices (fun x => g x ∘ₗ f x) t :=
   LinearMap.congr_fun (mapIndices_comp f g) t
 
@@ -354,13 +354,13 @@ lemma mapIndices_id : S.mapIndices (c := c) (fun _ => LinearMap.id) = LinearMap.
   ext_pure fun p => mapIndices_pure _ p
 
 /-- The index-wise map of the identities is the identity, on a tensor. -/
-lemma mapIndices_id_apply (t : S.Tensor c) : S.mapIndices (fun _ => LinearMap.id) t = t :=
+lemma mapIndices_id_apply (t : Tensor S c) : S.mapIndices (fun _ => LinearMap.id) t = t :=
   LinearMap.congr_fun mapIndices_id t
 
 /-- Linear maps that commute with the group action at every index commute with it on tensors,
 `f (Λ T) = Λ f T`. -/
 lemma mapIndices_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
-    (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : S.Tensor c) :
+    (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : Tensor S c) :
     S.mapIndices f (g • t) = g • S.mapIndices f t :=
   map_smul_of_pure _ g (fun p => by simp only [smul_pure, mapIndices_pure, hf]) t
 
@@ -420,7 +420,7 @@ variable (S) in
 /-- The linear map `f` at the index `i`, and the identity, moved along `h x`, at every other index
 `x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
 noncomputable def mapAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
-    (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c →ₗ[k] S.Tensor c' :=
+    (h : ∀ x, x ≠ i → c x = c' x) : Tensor S c →ₗ[k] Tensor S c' :=
   S.mapIndices (S.indexMapsAt i f h)
 
 /-- On a pure tensor, `mapAt` applies `f` to the vector at `i` and keeps the others,
@@ -454,7 +454,7 @@ lemma mapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x) :
 
 /-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. -/
 lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
-    (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) (φ : Π x, basisIdx (c' x).kind)
+    (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) (φ : Π x, basisIdx (c' x).kind)
     (ψ : Π x, basisIdx (c x).kind)
     (hψ : ∀ x (hx : x ≠ i), ψ x = cast (congrArg (basisIdx ∘ Color.kind) (h x hx).symm) (φ x)) :
     (S.tensorBasis c').repr (S.mapAt i f h t) φ = ∑ μ : basisIdx (c i).kind,
@@ -495,7 +495,7 @@ noncomputable def congrAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
 
 /-- `congrAt` is `mapAt` of the underlying linear map. -/
 lemma congrAt_eq_mapAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
+    (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) :
     S.congrAt i f h t = S.mapAt i f.toLinearMap h t := rfl
 
 /-- The inverse of `congrAt` of `f` is `congrAt` of `f.symm`. -/

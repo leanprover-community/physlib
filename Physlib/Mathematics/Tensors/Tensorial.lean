@@ -18,7 +18,7 @@ tensors of a species with given colors, compatibly with the action.
 A Lorentz vector `v` can be stored as its components `v^μ`, on which Mathlib's analysis acts, and
 is also a tensor with one upper index, on which index notation acts. An instance
 `Tensorial S c M` relates the two by a Mathlib `Representation.Equiv`
-`toTensor : M → S.Tensor c`, so that `toTensor (Λ v) = Λ • toTensor v`.
+`toTensor : M → Tensor S c`, so that `toTensor (Λ v) = Λ • toTensor v`.
 
 The action on `M` is the field `rep`, not an instance `SMul G M`, since Mathlib would extend such
 an instance to `M ⊗ N` acting on the left factor only. The species and colors are determined by
@@ -67,7 +67,7 @@ namespace Tensor
 -/
 
 /-- A type `M` whose elements are the tensors of `S` with colors `c`. `M` has its own action of
-the group, `rep`, and `toTensor` identifies `M` with `S.Tensor c` compatibly with it. -/
+the group, `rep`, and `toTensor` identifies `M` with `Tensor S c` compatibly with it. -/
 class Tensorial {k : outParam Type} [RCLike k] {G : outParam Type} [Group G] {K : outParam Type}
     {basisIdx : outParam (K → Type)} [∀ κ, Fintype (basisIdx κ)]
     [∀ κ, DecidableEq (basisIdx κ)] (S : outParam (Species k G K basisIdx)) {ι : outParam Type}
@@ -75,7 +75,7 @@ class Tensorial {k : outParam Type} [RCLike k] {G : outParam Type} [Group G] {K 
   /-- The action of the group on `M`, such as `Λ v = Λ *ᵥ v` on Lorentz vectors. -/
   rep : Representation k G M
   /-- The elements of `M` as tensors, compatibly with the action. -/
-  toTensor : rep.Equiv (Representation.ofDistribMulAction k G (S.Tensor c))
+  toTensor : rep.Equiv (Representation.ofDistribMulAction k G (Tensor S c))
 
 namespace Tensorial
 

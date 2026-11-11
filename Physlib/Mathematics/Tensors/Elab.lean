@@ -17,9 +17,9 @@ Tensor expressions with named indices, such as `{T | μ ν ⊗ U | ν ρ}ᵀ` fo
 
 A tensor `T` of a species `S` with colors `![c₀, …, cₙ₋₁]` is written `T | μ₀ … μₙ₋₁`, one name
 per index. The heights of the indices are not written, since the colors fix them. A real Lorentz
-tensor `T : S.Tensor ![⟨vec, up⟩, ⟨vec, down⟩]`, with components `T^μ_ν`, is written `T | μ ν`.
+tensor `T : Tensor S ![⟨vec, up⟩, ⟨vec, down⟩]`, with components `T^μ_ν`, is written `T | μ ν`.
 
-An expression `{…}ᵀ` is a tensor in `S.Tensor ![…]`, or a proposition if it is an equation. The
+An expression `{…}ᵀ` is a tensor in `Tensor S ![…]`, or a proposition if it is an equation. The
 names are bound only inside the braces. Each construct is an operation of the species.
 
 - `A ⊗ B` is `S.tmulEquiv _ _ (A ⊗ₜ B)`.
@@ -225,12 +225,12 @@ def colorsTerm (cs : List Expr) : TermElabM Term := do
   `(![$((← cs.toArray.mapM exprToSyntax)),*])
 
 /-- The species `S`, the index type `ι` and the color family `c` of a tensor type
-`S.Tensor (ι := ι) c`. -/
+`Tensor S (ι := ι) c`. -/
 def tensorTypeArgs? (ty : Expr) : Option (Expr × Expr × Expr) :=
-  let_expr Tensor.Species.Tensor _ _ _ _ _ _ _ _ S ι c := ty | none
+  let_expr Tensor _ _ _ _ _ _ _ _ S ι c := ty | none
   some (S, ι, c)
 
-/-- The index type, the color family `c` and its entries of a tensor type `S.Tensor c` with literal
+/-- The index type, the color family `c` and its entries of a tensor type `Tensor S c` with literal
 indices and colors. -/
 def literalTensorType? (ty : Expr) : MetaM (Option (Indices × Expr × List Expr)) := do
   let some (_, ι, c) := tensorTypeArgs? (← whnfR (← instantiateMVars ty)) | return none
@@ -292,8 +292,8 @@ def tensorOf (T : Term) : TermElabM (Expr × Expr) := do
   if e.hasSyntheticSorry then throwAbortTerm
   let ty ← whnfR (← instantiateMVars (← inferType e))
   if ty.isMVar then
-    throwError "index notation: the type of {T} is not known; give it, as `({T} : S.Tensor ![…])`"
-  if ty.isAppOf ``Tensor.Species.Tensor then return (e, ty)
+    throwError "index notation: the type of {T} is not known; give it, as `({T} : Tensor S ![…])`"
+  if ty.isAppOf ``Tensor then return (e, ty)
   try
     let e ← withoutErrToSorry do
       let e ← elabTerm (← `(Tensor.Tensorial.toTensor $(← exprToSyntax e))) none
@@ -364,7 +364,7 @@ def contract (a : Node) : TermElabM Node := do
   let σ ← indexEquiv a.indices (.sum (.fin m) (.sum J J))
     (free ++ pairs.map (·.1) ++ pairs.map (·.2))
   let pairColors ← J.fn ``Tensor.prodColors (← pairs.mapM fun (i, _) => exprToSyntax a.colors[i]!)
-  let tm ← `(Tensor.Species.Tensor.contr (S := $(← exprToSyntax a.species))
+  let tm ← `(Tensor.contr (S := $(← exprToSyntax a.species))
     (Tensor.ColorEquiv.mk
       (c₂ := Tensor.contrColors $(← colorsTerm (free.map (a.colors[·]!))) $pairColors) $σ)
     $a.tm)
@@ -439,7 +439,7 @@ def buildFor (e : Syntax) (expectedType? : Option Expr) : TermElabM Term := do
   let some ty := expectedType? | return (← build e).tm
   let ty ← instantiateMVars ty
   if ty.getAppFn.isMVar || ty.isSort then return (← build e).tm
-  if (← whnfR ty).isAppOf ``Tensor.Species.Tensor then
+  if (← whnfR ty).isAppOf ``Tensor then
     match ← buildTo e ty with
     | some tm => return tm
     | none => return (← build e).tm

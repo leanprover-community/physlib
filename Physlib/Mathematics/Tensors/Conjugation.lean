@@ -41,9 +41,9 @@ its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every inde
 - `Species.HasConjugation.ofBasis` builds a componentwise conjugation from `ConjLabels`, and
   `Species.HasConjugation.isEquivariantConjugation_ofBasis` gives its equivariance from the
   matrices of the group.
-- `Species.Tensor.conj` is the conjugate of a tensor, with `Species.Tensor.conj_conj`,
-  `Species.Tensor.conj_smul` and `Species.Tensor.conj_contr`.
-- `Species.Tensor.tensorBasis_repr_conj_of_basis` proves that the components of the conjugate are
+- `Tensor.conj` is the conjugate of a tensor, with `Tensor.conj_conj`,
+  `Tensor.conj_smul` and `Tensor.conj_contr`.
+- `Tensor.tensorBasis_repr_conj_of_basis` proves that the components of the conjugate are
   the conjugates of the components.
 
 ## iii. Table of contents
@@ -110,11 +110,11 @@ structure ConjLabels (basisIdx : K → Type) where
   equiv_equiv {κ κ' : K} (h : κ' = star κ) (h' : κ = star κ') (μ : basisIdx κ) :
     equiv h' (equiv h μ) = μ
 
-namespace Species
-
 variable {k : Type} [RCLike k] {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
     {S : Species k G K basisIdx} {c c' : Color K}
+
+namespace Species
 
 variable (S) in
 /-- A conjugation of the species, a conjugate-linear equivalence `v ↦ v̄` from each color `c` to
@@ -257,14 +257,16 @@ lemma basis_repr_conjEquiv_of_basis [S.HasConjugation] (h : c' = c.bar)
 
 -/
 
-namespace Tensor
+end Species
+
+open Species
 
 variable [S.HasConjugation] {ι : Type} {c c' : ι → Color K}
 
 /-- The conjugate `T̄` of a tensor `T`, with every index conjugated and moved to the conjugate
 color. The colors `c'` of the result are the conjugates of `c` by `h`. For concrete colors `h` holds
 by `rfl` index by index, `fun i => by fin_cases i <;> rfl`. It is conjugate-linear. -/
-noncomputable def conj (h : ∀ i, c' i = (c i).bar) : S.Tensor c ≃ₗ⋆[k] S.Tensor c' :=
+noncomputable def conj (h : ∀ i, c' i = (c i).bar) : Tensor S c ≃ₗ⋆[k] Tensor S c' :=
   (S.toPiTensor c).trans <| (PiTensorProduct.congrₛₗ fun i => S.conjEquiv (h i)).trans
     (S.toPiTensor c').symm
 
@@ -275,7 +277,7 @@ lemma conj_pure (h : ∀ i, c' i = (c i).bar) (f : Π i, S.V (c i)) :
   congrₛₗ_tprod _ f
 
 /-- Conjugating twice gives back the tensor. -/
-lemma conj_conj (h : ∀ i, c' i = (c i).bar) (h' : ∀ i, c i = (c' i).bar) (t : S.Tensor c) :
+lemma conj_conj (h : ∀ i, c' i = (c i).bar) (h' : ∀ i, c i = (c' i).bar) (t : Tensor S c) :
     conj h' (conj h t) = t := by
   induction t using inductionOn_pure with
   | h f => simp
@@ -290,7 +292,7 @@ lemma conj_conj (h : ∀ i, c' i = (c i).bar) (h' : ∀ i, c i = (c' i).bar) (t 
 
 /-- Conjugation commutes with the action `Λ` of `g : G`, `(ΛT)‾ = Λ T̄`. -/
 lemma conj_smul [S.IsEquivariantConjugation] (h : ∀ i, c' i = (c i).bar) (g : G)
-    (t : S.Tensor c) :
+    (t : Tensor S c) :
     conj h (g • t) = g • conj h t :=
   map_smul_of_pure (conj h) g (fun f => by simp [conjEquiv_rep]) t
 
@@ -298,7 +300,7 @@ variable {κ J : Type} [Fintype J] {b : κ → Color K} {a : J → Color K}
 
 /-- Conjugating a contraction is contracting the conjugate along the same pairs of indices,
 `(T^ρμ_μ)‾ = T̄^ρμ_μ`. -/
-lemma conj_contr (σ : ColorEquiv c (contrColors b a)) (t : S.Tensor c) :
+lemma conj_contr (σ : ColorEquiv c (contrColors b a)) (t : Tensor S c) :
     conj (fun _ => rfl) (contr σ t) = contr σ.barContr (conj (fun _ => rfl) t) := by
   induction t using inductionOn_pure with
   | hsmul r t ht => rw [map_smul, LinearEquiv.map_smulₛₗ, ht, LinearEquiv.map_smulₛₗ, map_smul]
@@ -319,16 +321,12 @@ lemma conj_contr (σ : ColorEquiv c (contrColors b a)) (t : S.Tensor c) :
 the basis vector `e_{e i μ}`. -/
 lemma tensorBasis_repr_conj_of_basis [Fintype ι] (h : ∀ i, c' i = (c i).bar)
     (e : ∀ i, basisIdx (c i).kind ≃ basisIdx (c' i).kind)
-    (he : ∀ i μ, S.conjEquiv (h i) (S.basis (c i) μ) = S.basis (c' i) (e i μ)) (t : S.Tensor c)
+    (he : ∀ i μ, S.conjEquiv (h i) (S.basis (c i) μ) = S.basis (c' i) (e i μ)) (t : Tensor S c)
     (μ : Π i, basisIdx (c' i).kind) :
     (S.tensorBasis c').repr (conj h t) μ =
       star ((S.tensorBasis c).repr t fun i => (e i).symm (μ i)) := by
   rw [Module.Basis.eq_starEquiv (S.tensorBasis c) (S.tensorBasis c') (Equiv.piCongrRight e)
     (conj h) (fun ν => by simp [tensorBasis_apply, he]) t, Module.Basis.repr_starEquiv]
   rfl
-
-end Tensor
-
-end Species
 
 end Tensor

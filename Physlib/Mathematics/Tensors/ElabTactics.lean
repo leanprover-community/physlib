@@ -63,7 +63,7 @@ dsimproc_decl reduceCast (cast _ _) := fun e => do
 /-- `tensor_components [l₁, …]` reduces an equation of tensors to its components at a label `φ`,
 using the component lemmas `lᵢ` as well. It unfolds products, reindexings, sums, negatives, zeros,
 scalar multiples and contractions of one or two pairs. For more pairs, pass
-`Species.Tensor.tensorBasis_repr_contr`. It evaluates the `Function.update` at a literal index that
+`Tensor.tensorBasis_repr_contr`. It evaluates the `Function.update` at a literal index that
 `tensorBasis_repr_toDualAt` produces, and removes the casts on labels once their types agree. On a
 goal that is already a component the first step is skipped. -/
 syntax (name := tensorComponents) "tensor_components" " [" Lean.Parser.Tactic.simpArg,* "]" :
@@ -74,8 +74,8 @@ macro_rules
       try refine (Species.tensorBasis _ _).repr.injective (Finsupp.ext fun $(mkIdent `φ) => ?_)
       -- `Function.update_of_ne` proves `j ≠ i` for literal indices by `ne_eq` and `Fin.reduceEq`.
       simp only [map_add, map_neg, map_zero, Finsupp.add_apply, Finsupp.neg_apply,
-        Finsupp.zero_apply, Species.Tensor.tensorBasis_repr_contr_one_pair,
-        Species.Tensor.tensorBasis_repr_contr_two_pairs, Species.tensorBasis_repr_reindex,
+        Finsupp.zero_apply, Tensor.tensorBasis_repr_contr_one_pair,
+        Tensor.tensorBasis_repr_contr_two_pairs, Species.tensorBasis_repr_reindex,
         Species.tensorBasis_repr_tmulEquiv, map_smul, Finsupp.smul_apply, smul_eq_mul,
         Function.update_self, Function.update_of_ne, ne_eq, Fin.reduceEq, not_false_eq_true, $ls,*]
       -- The casts of `tensorBasis_repr_reindex` agree once the reindexing and the color lists are
@@ -98,10 +98,10 @@ private def goalEq (tac : String := "tensor_regroup") : TacticM (Expr × Expr ×
     | throwError "{tac}: the goal is not an equation"
   return (ty, l.consumeMData, r.consumeMData)
 
-/-- The field `k` of the tensors of the goal of `tensor_regroup`, an equation in `S.Tensor c`. -/
+/-- The field `k` of the tensors of the goal of `tensor_regroup`, an equation in `Tensor S c`. -/
 private def goalField : TacticM Expr := do
   let (ty, _, _) ← goalEq
-  let_expr Tensor.Species.Tensor k _ _ _ _ _ _ _ _ _ _ := (← whnfR ty)
+  let_expr Tensor k _ _ _ _ _ _ _ _ _ _ := (← whnfR ty)
     | throwError "tensor_regroup: the goal is not an equation of tensors"
   return k
 
@@ -242,27 +242,27 @@ private partial def isLeftNested (e : Expr) : Bool :=
 /-- The products `P` and `Q` of a goal `Tensor.contr σ P = Tensor.contr τ Q`. -/
 private def contractedProducts : TacticM (Expr × Expr) := do
   let (_, l, r) ← goalEq
-  let some p := bundledArg? ``Tensor.Species.Tensor.contr l
+  let some p := bundledArg? ``Tensor.contr l
     | throwError "tensor_regroup: the left side is not a contraction"
-  let some q := bundledArg? ``Tensor.Species.Tensor.contr r
+  let some q := bundledArg? ``Tensor.contr r
     | throwError "tensor_regroup: the right side is not a contraction"
   return (p, q)
 
 /-- Writes both sides of the goal as one contraction of a left-nested product, repeating until the
 goal no longer changes, at most ten times. A side that is not a contraction is read as one with no
-pairs (`Species.Tensor.contr_noPairs`). The three steps run separately, since together their lemmas
+pairs (`Tensor.contr_noPairs`). The three steps run separately, since together their lemmas
 loop. -/
 private def flattenContractions : TacticM Unit := do
-  wrapSides "tensor_regroup" (bundledArg? ``Tensor.Species.Tensor.contr · |>.isSome)
-    (← `(Tensor.Species.Tensor.contr_noPairs _))
+  wrapSides "tensor_regroup" (bundledArg? ``Tensor.contr · |>.isSome)
+    (← `(Tensor.contr_noPairs _))
   for _ in [0:10] do
     let before ← instantiateMVars (← getMainTarget)
-    evalTactic (← `(tactic| try simp only [Tensor.Species.Tensor.tmulEquiv_contr_left,
-      Tensor.Species.Tensor.tmulEquiv_contr_right, Tensor.Species.Tensor.contr_contr]))
+    evalTactic (← `(tactic| try simp only [Tensor.tmulEquiv_contr_left,
+      Tensor.tmulEquiv_contr_right, Tensor.contr_contr]))
     evalTactic (← `(tactic| try simp only [← Tensor.Species.tmulEquiv_assoc]))
     evalTactic (← `(tactic| try simp only [Tensor.Species.tmulEquiv_reindex_left,
       Tensor.Species.tmulEquiv_reindex_right, Tensor.Species.reindex_reindex,
-      Tensor.Species.Tensor.contr_reindex, Tensor.Species.Tensor.reindex_contr]))
+      Tensor.contr_reindex, Tensor.reindex_contr]))
     -- The two sides may become equal, and `simp` then closes the goal.
     if (← getGoals).isEmpty then return
     if (← instantiateMVars (← getMainTarget)) == before then return
@@ -281,7 +281,7 @@ private def swapFactors (q : Expr) (n m : Nat) : TacticM Unit := do
         $(← exprToSyntax fs[m]!) $(← exprToSyntax fs[m+1]!)).symm)
   rewriteSubterm (leadingProduct q n (m + 2)) thm (some false)
   evalTactic (← `(tactic| conv_rhs => simp only [Tensor.Species.tmulEquiv_reindex_left,
-    Tensor.Species.reindex_reindex, Tensor.Species.Tensor.contr_reindex]))
+    Tensor.Species.reindex_reindex, Tensor.contr_reindex]))
 
 /-- The ways to match each factor on the left with a different factor on the right, given for
 each factor on the left the factors on the right equal to it. The matching in order comes first. -/
@@ -308,7 +308,7 @@ private def maxMatchings : Nat := 12
 /-- Proves `Tensor.contr σ P = Tensor.contr τ Q` for two flattened contractions of the same
 factors. It orders the factors of the right side as on the left, and checks by evaluation that both
 sides keep the same indices and contract the same pairs of indices
-(`Species.Tensor.contr_eq_of_samePair`). When a factor appears more than once, each way of
+(`Tensor.contr_eq_of_samePair`). When a factor appears more than once, each way of
 matching the equal factors is tried in turn, at most `maxMatchings` of them. -/
 private def matchFactors : TacticM Unit := do
   let (p, q) ← contractedProducts
@@ -332,7 +332,7 @@ private def matchFactors : TacticM Unit := do
     -- checks are run by `of_decide_eq_true rfl` rather than `decide`, which rejects the free
     -- color variables of the goal although the bijections of indices do not depend on them.
     try evalTactic (← `(tactic| set_option synthInstance.maxSize 4096 in
-      exact Tensor.Species.Tensor.contr_eq_of_samePair _ _ (of_decide_eq_true rfl)
+      exact Tensor.contr_eq_of_samePair _ _ (of_decide_eq_true rfl)
         (of_decide_eq_true rfl) _))
     catch _ => throwError "tensor_regroup: the two sides contract different pairs of indices, for \
       {tried} of matching their equal factors"
@@ -402,7 +402,7 @@ private def readContraction (e : Expr) : MetaM ReadContraction := do
   -- `a : J → Color K`.
   let notContr := m!"tensor_regroup: the side{indentExpr e}\nis not a contraction"
   let_expr DFunLike.coe _ _ _ _ F P := e | throwError notContr
-  let_expr Tensor.Species.Tensor.contr _ _ _ _ _ _ _ _ _ _ κ J _ _ _ _ τ := F | throwError notContr
+  let_expr Tensor.contr _ _ _ _ _ _ _ _ _ _ κ J _ _ _ _ τ := F | throwError notContr
   let some (indices, _, _) ← literalTensorType? (← inferType P)
     | throwError "tensor_regroup: the indices or colors of a product are not literal"
   let fs := factors P
@@ -438,14 +438,14 @@ private def deltaOrientations (e : Expr) : MetaM (List Bool) := do
   return if found.isEmpty then [false, true] else found
 
 /-- Inserts a delta of color `a` at the index `index` of the product of the left side of the goal,
-if `lhs`, or of the right side, by `Species.Tensor.contr_deltaTensor`. With `second`, uses
-`Species.Tensor.contr_deltaTensor_swap` instead, inserting a delta of color `a.dual`. -/
+if `lhs`, or of the right side, by `Tensor.contr_deltaTensor`. With `second`, uses
+`Tensor.contr_deltaTensor_swap` instead, inserting a delta of color `a.dual`. -/
 private def insertDelta (lhs : Bool) (a : Expr) (indices : Indices) (index : Nat) (second : Bool) :
     TacticM Unit := do
   let (p, q) ← contractedProducts
   let P := if lhs then p else q
-  let lem := mkIdent <| if second then ``Tensor.Species.Tensor.contr_deltaTensor_swap
-    else ``Tensor.Species.Tensor.contr_deltaTensor
+  let lem := mkIdent <| if second then ``Tensor.contr_deltaTensor_swap
+    else ``Tensor.contr_deltaTensor
   let thm ← `(($lem
     ($(← indices.elem index) : $(← indices.type)) $(← exprToSyntax a) rfl $(← exprToSyntax P)).symm)
   rewriteSubterm P thm (some lhs)
@@ -652,7 +652,7 @@ private def matchSummand (ty a : Expr) (rs : List Expr) (used : List Nat) :
   let js := (List.range rs.length).filter (!used.contains ·)
   try
     firstSuccess js m!"" fun j => do
-      -- The type of the tensors is taken from the goal, where it is `S.Tensor c`.
+      -- The type of the tensors is taken from the goal, where it is `Tensor S c`.
       let g ← mkFreshExprMVar (mkApp3 (.const ``Eq [← getLevel ty]) ty a rs[j]!)
       setGoals [g.mvarId!]
       regroupSummand
@@ -865,14 +865,14 @@ the same factors, grouped or ordered differently, such as
 `{{T | μ ν ⊗ U | ν ρ}ᵀ | μ ρ ⊗ W | ρ τ = T | μ ν ⊗ {U | ν ρ ⊗ W | ρ τ}ᵀ | ν τ}ᵀ`. Sums,
 negatives and scalars are first moved out of every product, contraction and reindexing. Each
 summand on the left is then matched with a summand on the right with the same sign and scalar,
-whose contraction is the same up to regrouping (`Species.Tensor.contr_eq_of_samePair`). When a
+whose contraction is the same up to regrouping (`Tensor.contr_eq_of_samePair`). When a
 factor appears more than once, each way of matching the equal factors is tried in turn, so the
 number of attempts is the product of `k!` over the factors that appear `k` times, and at most 12
 are tried (`maxMatchings`).
 
 Beyond regrouping, it uses these identities:
 - a delta on one side with no counterpart on the other is inserted on the other side at an index of
-  its color, `T^…μ… = T^…ν… δ_ν^μ` (`Species.Tensor.contr_deltaTensor`), or, against two forms on
+  its color, `T^…μ… = T^…ν… δ_ν^μ` (`Tensor.contr_deltaTensor`), or, against two forms on
   the other side, written as their contraction, `g^μν g_νρ = δ^μ_ρ`
   (`Species.contr_formTensor_formTensor`), and pairs of such forms against nothing, as a lowering
   `T_…ν… = T^…μ… g_μν` contracted with `g^νρ`, are matched one pair at a time by inserting a delta
@@ -884,7 +884,7 @@ Beyond regrouping, it uses these identities:
   (`Species.toDualAt_eq_contr`) and the matching is tried again.
 
 A side that is not a contraction, such as a single tensor, is read as a contraction with no pairs
-(`Species.Tensor.contr_noPairs`). The scalars on the two sides must agree up to definitional
+(`Tensor.contr_noPairs`). The scalars on the two sides must agree up to definitional
 equality, as `2` and `2`.
 
 `tensor_regroup using e₁, …, eₙ` first rewrites by the equations `eᵢ : Aᵢ = Bᵢ`, in turn. For each,

@@ -182,8 +182,8 @@ abbrev down : Color Kind := ⟨.vec, .down⟩
 scoped syntax (name := realLorentzSyntax) "ℝT[" term,+ "]" : term
 
 macro_rules (kind := realLorentzSyntax)
-  | `(ℝT[$d]) => `((Tensor.realLorentz $d).Tensor ![])
-  | `(ℝT[$d, $cs,*]) => `((Tensor.realLorentz $d).Tensor (open Tensor.realLorentz in ![$cs,*]))
+  | `(ℝT[$d]) => `(Tensor (Tensor.realLorentz $d) ![])
+  | `(ℝT[$d, $cs,*]) => `(Tensor (Tensor.realLorentz $d) (open Tensor.realLorentz in ![$cs,*]))
 
 end realLorentz
 
@@ -297,7 +297,7 @@ lemma basis_repr_toDual (d : ℕ) (c : Color Kind) (v : (realLorentz d).V c)
 Minkowski metric is diagonal. -/
 lemma tensorBasis_repr_toDualAt (d : ℕ) {ι : Type} [Fintype ι] [DecidableEq ι]
     {c c' : ι → Color Kind} (i : ι) (a : Color Kind) (ha : c i = a) (hi : c' i = a.dual)
-    (h : ∀ x, x ≠ i → c x = c' x) (t : (realLorentz d).Tensor c) (φ : ι → Fin 1 ⊕ Fin d) :
+    (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor (realLorentz d) c) (φ : ι → Fin 1 ⊕ Fin d) :
     ((realLorentz d).tensorBasis c').repr ((realLorentz d).toDualAt i a ha hi h t) φ =
       minkowskiMatrix (φ i) (φ i) * ((realLorentz d).tensorBasis c).repr t φ := by
   subst ha
@@ -316,13 +316,13 @@ of dimensions. -/
 example (d : ℕ) : ((realLorentz d).tensorBasis ![]).repr
     {(realLorentz d).formTensor down | μ ν ⊗ (realLorentz d).formTensor up | μ ν}ᵀ
     (fun i => i.elim0) = d + 1 := by
-  rw [Species.Tensor.tensorBasis_repr_contr_two_pairs]
+  rw [Tensor.tensorBasis_repr_contr_two_pairs]
   simp only [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
     tensorBasis_repr_formTensor]
   simp [minkowskiMatrix.as_diagonal, Matrix.diagonal_apply, Fintype.sum_sum_type, add_comm]
 
 /-- `ℝT[3, up, down]` is the space of tensors `T^μ_ν` in four dimensions. -/
-example : ℝT[3, up, down] = (realLorentz 3).Tensor ![up, down] := rfl
+example : ℝT[3, up, down] = Tensor (realLorentz 3) ![up, down] := rfl
 end realLorentz
 
 /-!
@@ -350,7 +350,7 @@ lemma tensorBasis_repr_toTensor_vector (d : ℕ) (v : Vector d) (μ : Fin 1 → 
   Tensorial.tensorBasis_repr_toTensor_ofIndexSpace (S := realLorentz d) up v μ
 
 /-- The vector of a tensor `T` with one upper index has the components of `T`, `v^ν = T^ν`. -/
-lemma toTensor_symm_vector_apply (d : ℕ) (T : (realLorentz d).Tensor ![up])
+lemma toTensor_symm_vector_apply (d : ℕ) (T : Tensor (realLorentz d) ![up])
     (ν : Fin 1 ⊕ Fin d) :
     (Tensorial.toTensor (M := Vector d)).symm T ν =
       ((realLorentz d).tensorBasis ![up]).repr T fun _ => ν := by
@@ -413,7 +413,7 @@ component is `∑ μ, v^μ ω_μ`. -/
 lemma tensorBasis_repr_contr_vector_coVector (d : ℕ) (v : Vector d) (ω : CoVector d) :
     ((realLorentz d).tensorBasis ![]).repr {v | μ ⊗ ω | μ}ᵀ (fun i => i.elim0) =
       ∑ μ, v μ * ω μ := by
-  simp [Species.Tensor.tensorBasis_repr_contr_one_pair, Species.tensorBasis_repr_reindex,
+  simp [Tensor.tensorBasis_repr_contr_one_pair, Species.tensorBasis_repr_reindex,
     Species.tensorBasis_repr_tmulEquiv, tensorBasis_repr_toTensor_vector,
     tensorBasis_repr_toTensor_coVector]
 
