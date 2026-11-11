@@ -26,6 +26,11 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 
 ## iv. References
 
+The parametrization in terms of `a b : ℝ` follows that given here:
+
+* Weisstein, Eric W. "Fourier Transform." From MathWorld--A Wolfram Resource.
+  [ref: mathworld_fourier_transform]
+
 -/
 
 @[expose] public section
