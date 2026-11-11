@@ -28,7 +28,7 @@ property `Species.IsEquivariantConjugation`.
 
 Most species conjugate componentwise, `(v̄)^μ = (v^μ)*`, and get their conjugation from
 `Species.HasConjugation.ofBasis` and a map `ConjLabels` from the labels of each kind to those of
-its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every slot.
+its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every index.
 
 ## ii. Key results
 
@@ -258,9 +258,9 @@ namespace Tensor
 
 variable [S.HasConjugation] {ι : Type} {c c' : ι → Color K}
 
-/-- The conjugate `T̄` of a tensor `T`, with every slot conjugated and moved to the conjugate color.
-The colors `c'` of the result are the conjugates of `c` by `h`. For concrete colors `h` holds by
-`rfl` slot by slot, `fun i => by fin_cases i <;> rfl`. It is conjugate-linear. -/
+/-- The conjugate `T̄` of a tensor `T`, with every index conjugated and moved to the conjugate
+color. The colors `c'` of the result are the conjugates of `c` by `h`. For concrete colors `h` holds
+by `rfl` index by index, `fun i => by fin_cases i <;> rfl`. It is conjugate-linear. -/
 noncomputable def conj (h : ∀ i, c' i = (c i).bar) : S.Tensor c ≃ₗ⋆[k] S.Tensor c' :=
   (S.toPiTensor c).trans <| (PiTensorProduct.congrₛₗ fun i => S.conjEquiv (h i)).trans
     (S.toPiTensor c').symm
@@ -293,12 +293,12 @@ lemma conj_smul [S.IsEquivariantConjugation] (h : ∀ i, c' i = (c i).bar) (g : 
 
 variable {κ J : Type} [Fintype J] {b : κ → Color K} {a : J → Color K}
 
-/-- The pairs `σ` of `T`, as pairs of its conjugate `T̄`, with the same bijection of slots. -/
+/-- The pairs `σ` of `T`, as pairs of its conjugate `T̄`, with the same bijection of indices. -/
 def _root_.Tensor.ColorEquiv.barContr {c : ι → Color K} (σ : ColorEquiv c (contrColors b a)) :
     ColorEquiv (fun i => (c i).bar) (contrColors (fun x => (b x).bar) fun j => (a j).bar) :=
   ⟨σ.toEquiv, fun j => by rcases j with _ | _ | _ <;> exact congrArg Color.bar (σ.color_eq _)⟩
 
-/-- Conjugating a contraction is contracting the conjugate along the same pairs of slots,
+/-- Conjugating a contraction is contracting the conjugate along the same pairs of indices,
 `(T^ρμ_μ)‾ = T̄^ρμ_μ`. -/
 lemma conj_contr (σ : ColorEquiv c (contrColors b a)) (t : S.Tensor c) :
     conj (fun _ => rfl) (contr σ t) = contr σ.barContr (conj (fun _ => rfl) t) := by
@@ -317,7 +317,7 @@ lemma conj_contr (σ : ColorEquiv c (contrColors b a)) (t : S.Tensor c) :
 -/
 
 /-- The components of the conjugate are the conjugates of the components,
-`(T̄)^μν = (T^{e⁻¹ μ, e⁻¹ ν})*`, when conjugation sends each basis vector `e_μ` at the slot `i` to
+`(T̄)^μν = (T^{e⁻¹ μ, e⁻¹ ν})*`, when conjugation sends each basis vector `e_μ` at the index `i` to
 the basis vector `e_{e i μ}`. -/
 lemma tensorBasis_repr_conj_of_basis [Fintype ι] (h : ∀ i, c' i = (c i).bar)
     (e : ∀ i, basisIdx (c i).kind ≃ basisIdx (c' i).kind)

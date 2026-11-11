@@ -8,7 +8,7 @@ module
 public import Physlib.Mathematics.Tensors.Metric
 /-!
 
-# The inverse of a tensor on two slots
+# The inverse of a tensor on two indices
 
 The inverse `g^νμ` of a tensor `g_μν`, defined through the linear map that `g` defines.
 
@@ -181,8 +181,8 @@ lemma inverse_invariant (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
 lemma inverse_form (c : Color K) [S.HasForm c.kind] : S.inverse (form c) = form c.dual :=
   inverse_eq_left_inv _ (toLin_form_bijective c) (form_inverse c.dual)
 
-/-- `g^μν g_νρ = δ^μ_ρ` at an upper color `c`. The second slot of the form at `c` contracted
-with the first slot of the form at `c.dual` is the delta. -/
+/-- `g^μν g_νρ = δ^μ_ρ` at an upper color `c`. The second index of the form at `c` contracted
+with the first index of the form at `c.dual` is the delta. -/
 lemma contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
     Tensor.contr (ColorEquiv.matMul c c c.dual)
         (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual)) =
@@ -190,7 +190,7 @@ lemma contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
   rw [formTensor, formTensor, ← inverse_form c]
   exact contr_mul_inverse _ (toLin_form_bijective c)
 
-/-- `g^μν g_νρ = δ_ρ^μ` at an upper color `c`, with the delta read with its slots swapped. -/
+/-- `g^μν g_νρ = δ_ρ^μ` at an upper color `c`, with the delta read with its indices swapped. -/
 lemma reindex_contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c.dual) (Tensor.contr (ColorEquiv.matMul c c c.dual)
         (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual))) =

@@ -17,20 +17,20 @@ The contraction of pairs of indices, an index with its dual in each pair, as in 
 ## i. Overview
 
 A contraction pairs indices of dual colors and sums over their common label, as in the trace
-`(tr T)^ρ = T^ρμ_μ` of a Lorentz tensor `T^ρμ_ν` on the slots `Fin 3`. On a pure tensor
+`(tr T)^ρ = T^ρμ_μ` of a Lorentz tensor `T^ρμ_ν` on the indices `Fin 3`. On a pure tensor
 `u ⊗ v ⊗ α` the trace is `(v^μ α_μ) u`, where `v^μ α_μ` is the species contraction `S.contr`.
 
 The pairs to contract are chosen by a relabeling `σ : ColorEquiv c (contrColors c' a)` of the
-slots. It sends each free index to a slot `inl x`, of color `c' x`, and the two indices of a pair
-`j` to the slots `inr (inl j)` and `inr (inr j)`, of colors `a j` and `(a j).dual`. For the trace,
-`σ` sends `0 ↦ inl 0`, `1 ↦ inr (inl ())` and `2 ↦ inr (inr ())`, and the index notation
+indices. It sends each free index to an index `inl x`, of color `c' x`, and the two indices of a
+pair `j` to the indices `inr (inl j)` and `inr (inr j)`, of colors `a j` and `(a j).dual`. For the
+trace, `σ` sends `0 ↦ inl 0`, `1 ↦ inr (inl ())` and `2 ↦ inr (inr ())`, and the index notation
 `{T | ρ μ μ}ᵀ` builds it from the repeated name. Since `σ` keeps colors, the two indices of each
 pair are dual without a separate hypothesis. `Tensor.contr σ` relabels by `σ` and then contracts
 each pair by `S.contr (a j)`, with the first index of the pair as its first argument.
 
 Two tensors are contracted by contracting their product. In the full contraction `T^μν U_μν` the
-product `T ⊗ U` has four slots, which form two pairs and leave no slot, `κ = Empty`. The following
-properties let a contraction of several tensors be computed one step at a time.
+product `T ⊗ U` has four indices, which form two pairs and leave no index, `κ = Empty`. The
+following properties let a contraction of several tensors be computed one step at a time.
 - Only the pairs of indices matter. Two contractions of the same pairs of indices are equal, in
   whatever order the pairs are listed and whichever index of a pair comes first.
 - A tensor that changes sign when its pairs are permuted contracts to zero, since its contraction
@@ -51,9 +51,9 @@ since the bases of a color and its dual are dual.
 - `Species.Tensor.contr_pure` gives the contraction of a pure tensor.
 - `Species.Tensor.contr` is an intertwining map, so it commutes with the group action.
 - `Species.Tensor.contr_reindex` and `Species.Tensor.reindex_contr` absorb a relabeling of the
-  slots before or after a contraction.
-- `ColorEquiv.SamePair` says that two choices of pairs contract the same two slots, and
-  `Species.Tensor.contr_eq_of_samePair` proves that two contractions of the same pairs of slots,
+  indices before or after a contraction.
+- `ColorEquiv.SamePair` says that two choices of pairs contract the same two indices, and
+  `Species.Tensor.contr_eq_of_samePair` proves that two contractions of the same pairs of indices,
   in any order, are equal.
 - `Species.Tensor.contr_noPairs` proves that a contraction with no pairs, along
   `ColorEquiv.noPairs`, is the identity.
@@ -66,15 +66,15 @@ since the bases of a color and its dual are dual.
   contracting a factor commutes with the product, along `ColorEquiv.tmulRight` and
   `ColorEquiv.tmulLeft`.
 - `Species.Tensor.tensorBasis_repr_contr` gives the components of a contraction, from
-  `Species.Tensor.tensorBasis_repr_contrStd` in the standard arrangement of slots.
+  `Species.Tensor.tensorBasis_repr_contrStd` in the standard arrangement of indices.
 - `Species.Tensor.tensorBasis_repr_contr_one_pair` and
   `Species.Tensor.tensorBasis_repr_contr_two_pairs` give the same with one and with two pairs.
 
 ## iii. Table of contents
 
-- A. Contraction in the standard arrangement of slots
+- A. Contraction in the standard arrangement of indices
 - B. Contraction of chosen pairs of indices
-  - B.1. Relabeling the slots
+  - B.1. Relabeling the indices
   - B.2. Contractions of the same pairs of indices
   - B.3. Symmetric against antisymmetric
   - B.4. Two contractions are one
@@ -104,20 +104,20 @@ namespace Tensor
 
 /-!
 
-## A. Contraction in the standard arrangement of slots
+## A. Contraction in the standard arrangement of indices
 
 -/
 
-/-- The colors of the standard arrangement `κ ⊕ (J ⊕ J)` of slots. The free index `inl x` has
-the color `c x`, and the two slots `inr (inl j)` and `inr (inr j)` of the pair `j` have the colors
+/-- The colors of the standard arrangement `κ ⊕ (J ⊕ J)` of indices. The free index `inl x` has
+the color `c x`, and the two indices `inr (inl j)` and `inr (inr j)` of the pair `j` have the colors
 `a j` and `(a j).dual`. -/
 noncomputable abbrev _root_.Tensor.contrColors {K κ J : Type} (c : κ → Color K) (a : J → Color K) :
     κ ⊕ (J ⊕ J) → Color K :=
   prodColors c (prodColors a fun j => (a j).dual)
 
 /-- The contraction of a tensor in the standard arrangement `κ ⊕ (J ⊕ J)`. For each pair `j` the
-slot `inr (inl j)` is contracted with the slot `inr (inr j)` by `S.contr (a j)`, with the slot
-`inr (inl j)` as its first argument. The slots `inl x` are the free indices, with the colors
+index `inr (inl j)` is contracted with the index `inr (inr j)` by `S.contr (a j)`, with the index
+`inr (inl j)` as its first argument. The indices `inl x` are the free indices, with the colors
 `c`. It is the body of `Tensor.contr`. -/
 noncomputable def contrStd [Fintype J] (c : κ → Color K) (a : J → Color K) :
     (S.tensorRep (contrColors c a)).IntertwiningMap (S.tensorRep c) :=
@@ -152,9 +152,9 @@ lemma contrStd_pure [Fintype J] (c : κ → Color K) (a : J → Color K)
 -/
 
 /-- The contraction of the pairs of indices chosen by `σ`, as in `T^ρμ_ν ↦ T^ρμ_μ`. It is
-`S.reindex σ` followed by `Tensor.contrStd c' a`. For each pair `j` the slot
-`σ.toEquiv.symm (inr (inl j))`, of color `a j`, is contracted with the slot
-`σ.toEquiv.symm (inr (inr j))`, of color `(a j).dual`. The slots `σ.toEquiv.symm (inl x)` are the
+`S.reindex σ` followed by `Tensor.contrStd c' a`. For each pair `j` the index
+`σ.toEquiv.symm (inr (inl j))`, of color `a j`, is contracted with the index
+`σ.toEquiv.symm (inr (inr j))`, of color `(a j).dual`. The indices `σ.toEquiv.symm (inl x)` are the
 free indices, with the colors `c'`. -/
 noncomputable def contr [Fintype J] {c : ι₁ → Color K} {c' : κ → Color K}
     {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) :
@@ -164,7 +164,7 @@ noncomputable def contr [Fintype J] {c : ι₁ → Color K} {c' : κ → Color K
 variable {c : ι₁ → Color K} {c' : κ → Color K}
 
 /-- On a pure tensor the contraction multiplies the remaining vectors by the contraction of the
-two vectors of each pair. Each vector is moved along `σ.color_eq` to the color of its slot in the
+two vectors of each pair. Each vector is moved along `σ.color_eq` to the color of its index in the
 standard arrangement. -/
 lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors c' a))
     (f : Π x, S.V (c x)) :
@@ -174,7 +174,7 @@ lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors
         S.pure (c := c') fun x => S.cast (σ.color_eq (.inl x)) (f (σ.toEquiv.symm (.inl x))) :=
   (congrArg (contrStd c' a) (reindex_pure σ f)).trans (contrStd_pure c' a _)
 
-/-- The relabeling of a contraction with no pairs, where every slot is free and keeps its label. -/
+/-- The relabeling of a contraction with no pairs, where every index is free and stays in place. -/
 def _root_.Tensor.ColorEquiv.noPairs (c : ι₁ → Color K) :
     ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
   toEquiv.toFun := .inl
@@ -192,11 +192,11 @@ lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t :=
 
 /-!
 
-### B.1. Relabeling the slots
+### B.1. Relabeling the indices
 
 -/
 
-/-- Relabeling the slots and then contracting is contracting along the composite relabeling. -/
+/-- Relabeling the indices and then contracting is contracting along the composite relabeling. -/
 lemma contr_reindex {ι₂ : Type} [Fintype J] {c₂ : ι₂ → Color K} {a : J → Color K}
     (σ : ColorEquiv c₂ (contrColors c' a)) (τ : ColorEquiv c c₂) (t : S.Tensor c) :
     contr σ (S.reindex τ t) = contr (τ.trans σ) t := by
@@ -220,7 +220,7 @@ lemma reindex_contr {κ' : Type} [Fintype J] {c'' : κ' → Color K} {a : J → 
 
 -/
 
-/-- The pair `j` of `σ` and the pair `j'` of `τ` contract the same two slots, in either order. -/
+/-- The pair `j` of `σ` and the pair `j'` of `τ` contract the same two indices, in either order. -/
 def _root_.Tensor.ColorEquiv.SamePair {a : J → Color K} {a' : J' → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
     (j' : J') : Prop :=
@@ -255,7 +255,7 @@ lemma _root_.Tensor.ColorEquiv.SamePair.right_unique {a : J → Color K} {a' : J
     simpa using hτ (h₁.symm.trans h₂)
 
 /-- When `σ` and `τ` keep the same free indices and every pair of `σ` is a pair of `τ`, every pair
-of `τ` is a pair of `σ`. The slots of a pair of `τ` are not free, so they lie in a pair of `σ`. -/
+of `τ` is a pair of `σ`. The indices of a pair of `τ` are not free, so they lie in a pair of `σ`. -/
 lemma _root_.Tensor.ColorEquiv.exists_samePair_left {a : J → Color K} {a' : J' → Color K}
     {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')}
     (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
@@ -278,7 +278,7 @@ lemma _root_.Tensor.ColorEquiv.exists_samePair_left {a : J → Color K} {a' : J'
       exact ⟨j, .inr h⟩
 
 /-- Two contractions are equal when they keep the same free indices in the same order and contract
-the same pairs of indices, in any order and with either index of a pair first. On literal slots
+the same pairs of indices, in any order and with either index of a pair first. On literal indices
 the hypotheses are checked by evaluation. -/
 lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J' → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a'))
@@ -303,7 +303,7 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
 
 -/
 
-/-- A contraction of a tensor that changes sign under a relabeling `π` of its slots is zero, when
+/-- A contraction of a tensor that changes sign under a relabeling `π` of its indices is zero, when
 `π` only permutes the pairs along `e` and keeps the free indices. The hypothesis `ht` has the
 form of the index notation `{T | μ ν = -T | ν μ}ᵀ`. -/
 lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] {a : J → Color K}
@@ -420,7 +420,7 @@ lemma tmulEquiv_contr_right [Fintype J] {a : J → Color K} {d : ι₂ → Color
 
 -/
 
-/-- The components of the contraction in the standard arrangement of slots,
+/-- The components of the contraction in the standard arrangement of indices,
 `(tr T)^ρ = ∑ μ, T^ρμ_μ`. The labels `μ` run over the pairs. -/
 lemma tensorBasis_repr_contrStd [Fintype κ] [Fintype J] [DecidableEq J] (c' : κ → Color K)
     (a : J → Color K) (t : S.Tensor (contrColors c' a)) (φ : Π x, basisIdx (c' x).kind) :

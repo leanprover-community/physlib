@@ -16,7 +16,7 @@ Tensor expressions with named indices, such as `{T | μ ν ⊗ U | ν ρ}ᵀ` fo
 ## i. Overview
 
 A tensor `T` of a species `S` with colors `![c₀, …, cₙ₋₁]` is written `T | μ₀ … μₙ₋₁`, one name
-per slot. The heights of the indices are not written, since the colors fix them. A real Lorentz
+per index. The heights of the indices are not written, since the colors fix them. A real Lorentz
 tensor `T : S.Tensor ![⟨vec, up⟩, ⟨vec, down⟩]`, with components `T^μ_ν`, is written `T | μ ν`.
 
 An expression `{…}ᵀ` is a tensor in `S.Tensor ![…]`, or a proposition if it is an equation. The
@@ -24,14 +24,14 @@ names are bound only inside the braces. Each construct is an operation of the sp
 
 - `A ⊗ B` is `S.tmulEquiv _ _ (A ⊗ₜ B)`.
 - A name written twice in a product is contracted. All pairs of the product are contracted in one
-  `Tensor.contr σ`, with the relabeling `σ` generated from the names. The two slots of a pair must
+  `Tensor.contr σ`, with the relabeling `σ` generated from the names. The two indices of a pair must
   have dual colors, and the first one written is the first argument of `S.contr`.
 - The free indices are numbered `0, 1, …` in the order written. The result is a tensor on `Fin m`
   with a literal color list `![…]`.
 - `A + B` and `A = B` relabel `B` by `S.reindex` when its names come in another order. Each name
   must have the same color on both sides.
 - `↓μ` lowers an upper index and `↑μ` raises a lower one, by `S.toDualAt`, so `{v | ↓ν}ᵀ` is
-  `v_ν = v^μ g_μν`. This needs an instance `S.HasForm` at the kind of the slot, and a visible
+  `v_ν = v^μ g_μν`. This needs an instance `S.HasForm` at the kind of the index, and a visible
   variance, as in `⟨κ, .up⟩`.
 - `τ(μ)` flips the variance of an index by `S.toDualAt` whichever way it points, so it needs no
   visible variance.
@@ -45,16 +45,16 @@ Parentheses, each side of a sum and a nested `{…}ᵀ` are contracted before th
 product, so the names they contract are free again outside. Thus `{(T | μ μ) ⊗ U | μ ρ}ᵀ` is
 `(T^λ_λ) U^μ_ρ`. Within one product a name appears at most twice.
 
-When the expected type is known, the result is fitted to it. On a tensor type with other slots,
-such as `Fin 1 ⊕ Fin 1` for `Fin 2`, the free indices are placed on those slots in the order
+When the expected type is known, the result is fitted to it. On a tensor type with another index
+type, such as `Fin 1 ⊕ Fin 1` for `Fin 2`, the free indices are placed on its indices in the order
 written. On a type `M` with an instance `Tensorial S c M`, the result is read back by
 `Tensorial.toTensor.symm`. So `({v | ↓μ}ᵀ : CoVector d)` is the covector `v_μ`, and
 `({x | μ ⊗ y | ν}ᵀ : Vector d ⊗ Vector d)` is `x ⊗ₜ y`.
 
-Every tensor needs literal slots and colors. Its slot type is built from `Fin n` and `⊕` with a
+Every tensor needs literal indices and colors. Its index type is built from `Fin n` and `⊕` with a
 literal `n`, and its colors are a literal list `![a, b, …]` or `prodColors` of such lists. General
 lemmas over a variable color family are therefore stated without the notation. A tensor `s` with
-no slots is written `s |` with a space after the bar, since Mathlib reads `|x|` as an absolute
+no indices is written `s |` with a space after the bar, since Mathlib reads `|x|` as an absolute
 value.
 
 For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
@@ -70,7 +70,7 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
 
 - A. Syntax
 - B. Elaboration
-  - B.1. Slot types
+  - B.1. Index types
   - B.2. The steps of an expression
   - B.3. The elaborator
 
@@ -104,7 +104,7 @@ syntax "τ(" ident ")" : tensorIndex
 
 /-- A tensor expression in index notation. -/
 declare_syntax_cat tensorIndexExpr
-/-- A tensor with a name on each slot. -/
+/-- A tensor with a name on each index. -/
 syntax term "|" (ppSpace tensorIndex)* : tensorIndexExpr
 /-- An equation. -/
 syntax:40 tensorIndexExpr "=" tensorIndexExpr:41 : tensorIndexExpr
@@ -122,12 +122,12 @@ syntax (name := tensorIndexSyntax) "{" tensorIndexExpr "}ᵀ" : term
 
 ## B. Elaboration
 
-### B.1. Slot types
+### B.1. Index types
 
 -/
 
-/-- A slot type built from `Fin n`, `Unit` and `⊕`. Its slots are numbered `0, 1, …` in order. -/
-inductive Indices where
+/-- An index type built from `Fin n`, `Unit` and `⊕`. Its indices are numbered `0, 1, …` in order.
+-/ inductive Indices where
   /-- `Fin n`. -/
   | fin (n : Nat)
   /-- `Unit`. -/
@@ -136,34 +136,34 @@ inductive Indices where
   | sum (a b : Indices)
 deriving BEq
 
-/-- The number of slots. -/
+/-- The number of indices. -/
 def Indices.size : Indices → Nat
   | .fin n => n
   | .unit => 1
   | .sum a b => a.size + b.size
 
-/-- The slot type as a term. -/
+/-- The index type as a term. -/
 def Indices.type : Indices → TermElabM Term
   | .fin n => `(Fin $(quote n))
   | .unit => `(Unit)
   | .sum a b => do `($(← a.type) ⊕ $(← b.type))
 
-/-- The slot number `i` as a term. -/
+/-- The index `i` as a term. -/
 def Indices.elem : Indices → Nat → TermElabM Term
   | .fin n, i => `(($(quote i) : Fin $(quote n)))
   | .unit, _ => `(())
   | .sum a b, i =>
     if i < a.size then do `(Sum.inl $(← a.elem i)) else do `(Sum.inr $(← b.elem (i - a.size)))
 
-/-- The function on a slot type taking the values `vs` in slot order, built from vector literals on
-`Fin n`, constants on `Unit` and `comb` on `⊕`. -/
+/-- The function on an index type taking the values `vs` in index order, built from vector literals
+on `Fin n`, constants on `Unit` and `comb` on `⊕`. -/
 def Indices.fn (comb : Name) : Indices → List Term → TermElabM Term
   | .fin _, vs => `(![$(vs.toArray),*])
   | .unit, vs => `(fun _ : Unit => $(vs[0]!))
   | .sum a b, vs => do
     `($(mkIdent comb) $(← a.fn comb (vs.take a.size)) $(← b.fn comb (vs.drop a.size)))
 
-/-- The slot type of a type built from `Fin n` and `⊕` with a literal `n`. -/
+/-- The index type of a type built from `Fin n` and `⊕` with a literal `n`. -/
 partial def Indices.ofType? (ι : Expr) : MetaM (Option Indices) := do
   let ι ← whnfR ι
   if ι.isAppOfArity ``Fin 1 then
@@ -174,13 +174,13 @@ partial def Indices.ofType? (ι : Expr) : MetaM (Option Indices) := do
     return some (.sum a b)
   else return none
 
-/-- The bijection from `dom` to `cod` sending the slot `pre[j]` of `dom` to the slot `j` of `cod`.
-The list `pre` names every slot of `dom` once. Its inverse identities are proved slot by slot
+/-- The bijection from `dom` to `cod` sending the index `pre[j]` of `dom` to the index `j` of `cod`.
+The list `pre` names every index of `dom` once. Its inverse identities are proved index by index
 by `fin_cases`. -/
 def indexEquiv (dom cod : Indices) (pre : List Nat) : TermElabM Term := do
   let toFun ← dom.fn ``Sum.elim (← (List.range dom.size).mapM fun i => cod.elem (pre.idxOf i))
   let invFun ← cod.fn ``Sum.elim (← pre.mapM dom.elem)
-  -- `decide` would need a `DecidableEq` instance on the whole slot type, which exceeds the
+  -- `decide` would need a `DecidableEq` instance on the whole index type, which exceeds the
   -- instance size limit from four contracted pairs on.
   `((Equiv.mk $toFun $invFun (by intro x; fin_cases x <;> rfl)
       (by intro x; fin_cases x <;> rfl) : $(← dom.type) ≃ $(← cod.type)))
@@ -196,8 +196,8 @@ partial def colorList? (c : Expr) : MetaM (Option (List Expr)) := do
 def colorsTerm (cs : List Expr) : TermElabM Term := do
   `(![$((← cs.toArray.mapM exprToSyntax)),*])
 
-/-- The slots, the color family `c` and its entries of a tensor type `S.Tensor c` with literal slots
-and colors. -/
+/-- The index type, the color family `c` and its entries of a tensor type `S.Tensor c` with literal
+indices and colors. -/
 def literalTensorType? (ty : Expr) : MetaM (Option (Indices × Expr × List Expr)) := do
   let ty ← whnfR (← instantiateMVars ty)
   unless ty.isAppOf ``Tensor.Species.Tensor do return none
@@ -213,39 +213,39 @@ def literalTensorType? (ty : Expr) : MetaM (Option (Indices × Expr × List Expr
 
 -/
 
-/-- A partly elaborated expression, with the name and color of each slot, its slot type, its tensor
-and its species. -/
+/-- A partly elaborated expression, with the name and color of each index, its index type, its
+tensor and its species. -/
 structure Node where
-  /-- The index name of each slot. -/
+  /-- The name of each index. -/
   names : List Name
-  /-- The color of each slot. -/
+  /-- The color of each index. -/
   colors : List Expr
-  /-- The slot type. -/
+  /-- The index type. -/
   indices : Indices
   /-- The tensor. -/
   tm : Term
   /-- The species. -/
   species : Expr
 
-/-- The tensor of `a` relabeled onto `Fin pre.length` with the colors `cs`, its slot `pre[j]`
-becoming the slot `j`. -/
+/-- The tensor of `a` relabeled onto `Fin pre.length` with the colors `cs`, its index `pre[j]`
+becoming the index `j`. -/
 def Node.reindex (a : Node) (pre : List Nat) (cs : List Expr) : TermElabM Term := do
   `(Tensor.Species.reindex $(← exprToSyntax a.species)
     (Tensor.ColorEquiv.mk (c₂ := $(← colorsTerm cs))
       $(← indexEquiv a.indices (.fin pre.length) pre))
     $a.tm)
 
-/-- The expression relabeled to `Fin n`, its slots numbered in order. -/
+/-- The expression relabeled to `Fin n`, its indices numbered in order. -/
 def Node.toFin (a : Node) : TermElabM Node := do
   let n := a.names.length
   if a.indices == .fin n then return a
   return { a with indices := .fin n, tm := ← a.reindex (List.range n) a.colors }
 
-/-- The expression on `Fin n` with its slot `i` moved to the dual color by `S.toDualAt`. -/
+/-- The expression on `Fin n` with its index `i` moved to the dual color by `S.toDualAt`. -/
 def Node.toDualAt (a : Node) (i : Nat) : TermElabM Node := do
   let colors := a.colors.set i (← mkAppM ``Tensor.Color.dual #[a.colors[i]!])
-  -- The color `col` of the slot is passed explicitly, so the form is found at the kind of `col` and
-  -- every lowering at that kind uses the same instance. The proofs `c i = col` and
+  -- The color `col` of the index is passed explicitly, so the form is found at the kind of `col`
+  -- and every lowering at that kind uses the same instance. The proofs `c i = col` and
   -- `c' i = col.dual` are `id rfl`, since a bare `rfl` has the type `c' i = c' i`, which `rw`
   -- matches only after unfolding `![…] i`. Away from `i` the colors agree by cases.
   let tm ← `(Tensor.Species.toDualAt $(← exprToSyntax a.species) (c' := $(← colorsTerm colors))
@@ -272,7 +272,7 @@ def tensorOf (T : Term) : TermElabM (Expr × Expr) := do
     throwError "index notation: {T} is not a tensor and has no `Tensorial` instance:\n\
       {ex.toMessageData}"
 
-/-- The name of the index `i` on a slot of color `col`, and whether its variance is flipped, after
+/-- The name of the written index `i`, of color `col`, and whether its variance is flipped, after
 checking that an arrow matches the variance of `col`. -/
 def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool) := do
   let arrow (x : Ident) (up : Bool) : TermElabM (Name × Bool) := do
@@ -288,23 +288,23 @@ def indexName (i : TSyntax `tensorIndex) (col : Expr) : TermElabM (Name × Bool)
   | `(tensorIndex| τ($x:ident)) => pure (x.getId, true)
   | _ => throwError "index notation: unsupported index {i}"
 
-/-- The tensor `T | i₁ i₂ …` with its slots named, lowered at each `↓μ`, raised at each `↑μ`
+/-- The tensor `T | i₁ i₂ …` with its indices named, lowered at each `↓μ`, raised at each `↑μ`
 and flipped at each `τ(μ)`. -/
 def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
   let (e, ty) ← tensorOf T
   let args := ty.getAppArgs
   let some indices ← Indices.ofType? args[args.size - 2]!
-    | throwError "index notation: the slots of {T} must be `Fin n` and `⊕`"
+    | throwError "index notation: the index type of {T} must be built from `Fin n` and `⊕`"
   let some colors ← colorList? args[args.size - 1]!
     | throwError "index notation: the colors of {T} must be a literal list"
   unless colors.length = idxs.size do
-    throwError "index notation: {T} has {colors.length} slots, {idxs.size} indices given"
+    throwError "index notation: {T} has {colors.length} indices, but {idxs.size} names are given"
   let kinds ← (idxs.toList.zip colors).mapM fun (i, col) => indexName i col
   let a : Node := ⟨kinds.map (·.1), colors, indices, ← exprToSyntax e, args[args.size - 3]!⟩
   if kinds.all (!·.2) then return a
   kinds.zipIdx.foldlM (init := ← a.toFin) fun a ((_, d), i) => if d then a.toDualAt i else pure a
 
-/-- Contracts every repeated name in one `Tensor.contr`, and numbers the free slots in the order
+/-- Contracts every repeated name in one `Tensor.contr`, and numbers the free indices in the order
 written. -/
 def contract (a : Node) : TermElabM Node := do
   let idx := a.names.zipIdx
@@ -325,8 +325,8 @@ def contract (a : Node) : TermElabM Node := do
   -- The pairs are labeled by `Unit` for one pair, as in `ColorEquiv.matMul`, and by
   -- `(… ⊕ Unit) ⊕ Unit` for more, as `ColorEquiv.chain` combines two contractions in sequence.
   let J := (List.range (pairs.length - 1)).foldl (fun J _ => Indices.sum J .unit) .unit
-  -- The free slots go to `inl k`, the first slot of the pair `j` to `inr (inl j)` and its second
-  -- slot to `inr (inr j)`.
+  -- The free indices go to `inl k`, the first index of the pair `j` to `inr (inl j)` and its second
+  -- index to `inr (inr j)`.
   let σ ← indexEquiv a.indices (.sum (.fin m) (.sum J J))
     (free ++ pairs.map (·.1) ++ pairs.map (·.2))
   let pairColors ← J.fn ``Tensor.prodColors (← pairs.mapM fun (i, _) => exprToSyntax a.colors[i]!)
@@ -380,27 +380,27 @@ partial def build (stx : Syntax) : TermElabM Node := do contract (← uncontract
 
 end
 
-/-- The tensor of `e` on the slots and colors of the tensor type `target`, its free indices in the
-order written. It is `none` when `target` is not a tensor type with literal slots and colors. -/
+/-- The tensor of `e` on the indices and colors of the tensor type `target`, its free indices in the
+order written. It is `none` when `target` is not a tensor type with literal indices and colors. -/
 def buildTo (e : Syntax) (target : Expr) : TermElabM (Option Term) := do
   let some (indices, c, cs) ← literalTensorType? target | return none
   let u ← uncontracted e
-  -- A product with no contraction is already on the slots of its factors.
+  -- A product with no contraction is already on the indices of its factors.
   let a ← if u.indices == indices && u.names.eraseDups.length == u.names.length then pure u
     else contract u
   unless cs.length == a.colors.length do
-    throwError "index notation: {a.colors.length} free indices, but {cs.length} slots expected"
+    throwError "index notation: {a.colors.length} free indices, but {cs.length} indices expected"
   for (col, i) in a.colors.zipIdx do
     unless ← isDefEq col cs[i]! do
-      throwError "index notation: the free index {a.names[i]!} has the color {col}, but its slot \
-        is expected to have the color {cs[i]!}"
+      throwError "index notation: the free index {a.names[i]!} has the color {col}, but the \
+        expected index has the color {cs[i]!}"
   if a.indices == indices then return a.tm
   `(Tensor.Species.reindex $(← exprToSyntax a.species)
     (Tensor.ColorEquiv.mk (c₂ := $(← exprToSyntax c))
       $(← indexEquiv a.indices indices (List.range indices.size))) $a.tm)
 
-/-- The term of `e` for the expected type. It is relabeled onto the slots of a tensor type, and read
-back by `Tensorial.toTensor.symm` for a `Tensorial` type. -/
+/-- The term of `e` for the expected type. It is relabeled onto the indices of a tensor type, and
+read back by `Tensorial.toTensor.symm` for a `Tensorial` type. -/
 def buildFor (e : Syntax) (expectedType? : Option Expr) : TermElabM Term := do
   let some ty := expectedType? | return (← build e).tm
   let ty ← instantiateMVars ty

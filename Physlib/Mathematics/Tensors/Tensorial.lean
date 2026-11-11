@@ -32,8 +32,8 @@ Instances come from the space of one index (`ofIndexSpace`), from an equivalent 
 
 - `Tensorial` : a type whose elements are tensors, compatibly with the action of the group.
 - `Tensorial.toTensor_rep` : `toTensor (Λ m) = Λ • toTensor m`.
-- `Tensorial.ofIndexSpace` : the space of one index is tensorial, with one slot, and
-  `Tensorial.tensorBasis_repr_toTensor_ofIndexSpace` gives its components.
+- `Tensorial.ofIndexSpace` : the space of one index is tensorial, as the tensors with that index,
+  and `Tensorial.tensorBasis_repr_toTensor_ofIndexSpace` gives its components.
 - `Tensorial.ofEquiv` : a type equivalent to a tensorial type, compatibly with the actions, is
   tensorial with the same colors.
 - `Tensorial.prod` : the tensor product of two tensorial types is tensorial, with
@@ -90,7 +90,7 @@ lemma toTensor_rep [Tensorial S c₁ M] (g : G) (m : M) :
   LinearMap.congr_fun ((toTensor (M := M)).isIntertwining' g) m
 
 variable (S) in
-/-- The space `S.V c` of one index as the tensors with the one slot `![c]`, with the action
+/-- The space `S.V c` of one index as the tensors with the one index `![c]`, with the action
 `S.rep c`. A type that is such a space, such as a Weyl spinor, gets its instance from this. -/
 noncomputable abbrev ofIndexSpace (c : Color K) : Tensorial S ![c] (S.V c) where
   rep := S.rep c
@@ -121,7 +121,7 @@ lemma toTensor_ofEquiv [Tensorial S c₁ N] {r : Representation k G M}
 
 -/
 
-/-- The tensor product `M ⊗ N` of two tensorial types is tensorial on the slots of both, with the
+/-- The tensor product `M ⊗ N` of two tensorial types is tensorial on the indices of both, with the
 product action `Λ (x ⊗ y) = Λ x ⊗ Λ y` and `x ⊗ y` read as the product of the tensors of `x` and
 `y`. -/
 noncomputable instance prod [Tensorial S c₁ M] [Tensorial S c₂ N] :

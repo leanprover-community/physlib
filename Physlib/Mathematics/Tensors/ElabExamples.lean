@@ -62,7 +62,7 @@ noncomputable example : S.Tensor ![a, a.dual] := {T | μ ν ⊗ U | ν ρ}ᵀ
 product in the notation. -/
 example : {S.tmulEquiv _ _ (T ⊗ₜ U) | μ ν ν ρ = T | μ ν ⊗ U | ν ρ}ᵀ := rfl
 
-/-- An equation with a tensor `s` with no slots, `T^μ_μ = s`. The space after the bar keeps
+/-- An equation with a tensor `s` with no indices, `T^μ_μ = s`. The space after the bar keeps
 Mathlib's absolute value `|x|` from reading it. -/
 example (s : S.Tensor (![] : Fin 0 → Color K)) : {T | μ μ = s | }ᵀ ↔ {T | μ μ}ᵀ = s := Iff.rfl
 
@@ -121,7 +121,7 @@ example : {(T | μ μ) ⊗ U | μ ρ}ᵀ = {{T | μ μ}ᵀ | ⊗ U | μ ρ}ᵀ :
 #guard_msgs in
 example (f : Fin 2 → Color K) (t : S.Tensor f) : S.Tensor f := {t | μ ν}ᵀ
 
--- A pair of slots whose colors are not dual is rejected.
+-- A pair of indices whose colors are not dual is rejected.
 /-- error: index notation: μ joins the colors a and a, which are not dual -/
 #guard_msgs in
 #check {T | μ ν ⊗ T | μ ρ}ᵀ
@@ -147,7 +147,7 @@ variable [S.HasForm κ] [S.HasForm c.kind]
 /-- Lowering and then raising an index gives the vector back, `(v_μ)^μ = v^μ`. -/
 example : {{v | ↓μ}ᵀ | ↑μ}ᵀ = v := toDualAt_toDualAt _ _ _ _ _ _
 
--- An arrow that does not match the variance of the slot is rejected.
+-- An arrow that does not match the variance of the index is rejected.
 /-- error: index notation: ↑μ needs a visibly lower index -/
 #guard_msgs in
 #check {v | ↑μ}ᵀ
@@ -171,7 +171,7 @@ example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {(Λ • M) | ↓μ ↓
 example : {(Λ • T) | μ μ}ᵀ = Λ • {T | μ μ}ᵀ := by rw [intertwiningMap_smul]
 
 /-- `g^μν g_νρ = δ^μ_ρ`, by `contr_formTensor_formTensor`. The relabeling the notation generates
-is `ColorEquiv.matMul`, checked slot by slot. -/
+is `ColorEquiv.matMul`, checked index by index. -/
 example : {S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ := by
   rw [← contr_formTensor_formTensor]
   congr 2
@@ -208,11 +208,11 @@ open TensorProduct in
 example : ({m | μ ν ⊗ m | ρ σ}ᵀ : M ⊗[k] M) = m ⊗ₜ m := by
   rw [← Tensorial.toTensor_tmul, Representation.Equiv.symm_apply_apply]
 
-/-- A tensor on `Fin 2` relabeled onto the slots `Fin 1 ⊕ Fin 1` of a product. -/
+/-- A tensor on `Fin 2` relabeled onto the indices `Fin 1 ⊕ Fin 1` of a product. -/
 noncomputable example : S.Tensor (prodColors ![a] ![a.dual]) := {T | μ ν}ᵀ
 
-/-- error: index notation: the free index μ has the color a, but its slot is expected to have the
-color a.dual -/
+/-- error: index notation: the free index μ has the color a, but the expected index has the color
+a.dual -/
 #guard_msgs in
 example : S.Tensor (prodColors ![a.dual] ![a]) := {T | μ ν}ᵀ
 
@@ -262,11 +262,11 @@ tensor, read as a contraction with no pairs. -/
 example : {T | μ ν = T | μ ρ ⊗ S.deltaTensor a.dual | ρ ν}ᵀ := by
   tensor_regroup
 
-/-- A delta contracted at its second slot must be inserted at a slot of the dual color. -/
+/-- A delta contracted at its second index must be inserted at an index of the dual color. -/
 example : {T | μ ν = T | μ ρ ⊗ S.deltaTensor a | ν ρ}ᵀ := by
   tensor_regroup
 
-/-- Matching a delta at its second slot also works when the delta is on the left. -/
+/-- Matching a delta at its second index also works when the delta is on the left. -/
 example : {T | μ ρ ⊗ S.deltaTensor a | ν ρ = T | μ ν}ᵀ := by
   tensor_regroup
 
@@ -291,8 +291,8 @@ has no equal factor on the right -/
 example : {T | μ ν ⊗ U | ν ρ = W | ν ρ ⊗ T | μ ν}ᵀ := by
   tensor_regroup
 
--- The same factors contracted along other pairs of slots, `T U W ≠ T W U`, are rejected.
-/-- error: tensor_regroup: the two sides contract different pairs of slots, for each way of
+-- The same factors contracted along other pairs of indices, `T U W ≠ T W U`, are rejected.
+/-- error: tensor_regroup: the two sides contract different pairs of indices, for each way of
 matching their equal factors -/
 #guard_msgs in
 example : {T | μ ν ⊗ U | ν ρ ⊗ W | ρ σ = T | μ ν ⊗ W | ν ρ ⊗ U | ρ σ}ᵀ := by
@@ -470,7 +470,7 @@ example (w : S.Tensor ![⟨κ, .up⟩]) : v = w := by
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = M := by
   tensor_indices
 
-/-- Lowerings at two slots commute, `(M_μ^ν)_ν = (M^μ_ν)_μ`. -/
+/-- Lowerings at two indices commute, `(M_μ^ν)_ν = (M^μ_ν)_μ`. -/
 example (M : S.Tensor ![⟨κ, .up⟩, ⟨κ, .up⟩]) : {{M | ↓μ ν}ᵀ | μ ↓ν = {M | μ ↓ν}ᵀ | ↓μ ν}ᵀ := by
   tensor_indices
 

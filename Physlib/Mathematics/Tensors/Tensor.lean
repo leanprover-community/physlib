@@ -13,16 +13,16 @@ public import Physlib.Mathematics.ForMathlib.Representation
 # Tensors of a species
 
 The tensors of a species with colors `c : ι → Color K` form Mathlib's `⨂[k] i, V (c i)`, for any
-slot type `ι`, and the group acts on them slot by slot.
+index type `ι`, and the group acts on them index by index.
 
 ## i. Overview
 
-A tensor of a species `S` has one slot for each label `i : ι`, and slot `i` has the color `c i`.
+A tensor of a species `S` has one index `i` for each `i : ι`, and the index `i` has the color `c i`.
 The tensors with colors `c : ι → Color K` form the space `S.Tensor c`, which is Mathlib's
-`⨂[k] i, V (c i)`. The slots `ι` can be any type, so later files label slots by `Fin n`, sums or
-options without renumbering.
+`⨂[k] i, V (c i)`. The index type `ι` can be any type, so later files take `Fin n`, sums or options
+for it without renumbering.
 
-A pure tensor takes one vector in each slot, such as `u ⊗ α ⊗ β` with `u` in `V (c 0)`, `α` in
+A pure tensor takes one vector at each index, such as `u ⊗ α ⊗ β` with `u` in `V (c 0)`, `α` in
 `V (c 1)` and `β` in `V (c 2)`. Its components are products, `(u ⊗ α ⊗ β)^μ_νρ = u^μ α_ν β_ρ`.
 Most tensors are not pure. The metric `η = ∑ μ, η_μμ e^μ ⊗ e^μ` is a sum of pure tensors but not
 a pure tensor itself. Every tensor is such a sum, so a linear map of tensors is fixed by its
@@ -31,7 +31,7 @@ values on pure tensors (`ext_pure`), and a property of all tensors follows from 
 their value on pure tensors, and their properties are proved there first. `S.pure f` is Mathlib's
 `⨂ₜ[k] i, f i` as an element of `S.Tensor c`.
 
-A group element `Λ` acts on every slot by the representation of its color,
+A group element `Λ` acts on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). A map that commutes with `Λ` on pure tensors
 commutes with it on all tensors (`map_smul_of_pure`).
 
@@ -45,7 +45,7 @@ as `(ΛT)^μ_νρ = Λ^μ_σ (Λ⁻¹)^τ_ν (Λ⁻¹)^λ_ρ T^σ_τλ` (`tensor
 transform with `Λ⁻¹`, which keeps `u^μ α_μ` invariant.
 
 A linear equivalence `f` from the space of one color to that of another acts on tensors through a
-single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the other slots,
+single index. `S.congrAt i f` applies `f` at the index `i` and the identity at the other indices,
 `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`, as lowering one index of a tensor does.
 
 ## ii. Key results
@@ -56,22 +56,22 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
   `Species.ext_pure₂` and `Species.ext_pure₃` do the same for maps out of products of two and
   three spaces of tensors, and `Species.equiv_ext_pure` and `Species.intertwiningMap_ext_pure` for
   maps of representations.
-- `Species.smul_pure` proves that the group acts on a pure tensor slot by slot.
+- `Species.smul_pure` proves that the group acts on a pure tensor index by index.
 - `Species.map_smul_of_pure` proves that a map of tensors that commutes with the group on pure
   tensors commutes with it on all tensors.
 - `Species.tensorRep` is the action on tensors as a Mathlib representation. Maps of tensors that
   commute with the group are Mathlib's `Representation.Equiv` and `Representation.IntertwiningMap`
   of it, built by `Species.equivOfPure` and `Species.intertwiningMapOfPure` from a check on pure
   tensors, and `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
-- `Species.smul_eq_self_of_isEmpty` proves that a tensor with no slots is invariant.
+- `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
   components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors.
 - `Species.tensorBasis_repr_smul` gives the components of `g • t`.
-- `Species.mapIndices` applies a linear map at every slot, with `Species.mapIndices_comp` and
+- `Species.mapIndices` applies a linear map at every index, with `Species.mapIndices_comp` and
   `Species.mapIndices_id`, and `Species.mapIndices_smul` proves that it commutes with the group when
-  every slot map does.
-- `Species.congrIndices` applies an equivalence of representations at every slot.
-- `Species.indexMapsAt` is the family of a linear map at one slot and the identity at the others,
+  every index map does.
+- `Species.congrIndices` applies an equivalence of representations at every index.
+- `Species.indexMapsAt` is the family of a linear map at one index and the identity at the others,
   and `Species.mapAt` applies it, with `Species.mapAt_pure`, `Species.mapAt_comp` and
   `Species.mapAt_id`.
 - `Species.congrAt` is `mapAt` of an equivalence of representations, as an equivalence of
@@ -82,7 +82,7 @@ single slot. `S.congrAt i f` applies `f` at the slot `i` and the identity at the
 - A. Tensors
 - B. The group action
 - C. The basis of tensors
-- D. Linear maps at the slots
+- D. Linear maps at the indices
 
 ## iv. References
 
@@ -107,7 +107,7 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 
 -/
 
-/-- The space `⨂[k] i, S.V (c i)` of tensors with colors `c` on the slots `ι`. It is a `def`, not
+/-- The space `⨂[k] i, S.V (c i)` of tensors with colors `c` on the indices `ι`. It is a `def`, not
 an `abbrev`, so that the type `S.Tensor c` keeps the species and the colors, which index notation
 reads off the type of a tensor. -/
 def Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
@@ -129,7 +129,7 @@ noncomputable def toPiTensor (S : Species k G K basisIdx) (c : ι → Color K) :
     S.Tensor c ≃ₗ[k] ⨂[k] i, S.V (c i) :=
   LinearEquiv.refl k _
 
-/-- The pure tensor of a family of vectors, one per slot, such as `u ⊗ α ⊗ β` with components
+/-- The pure tensor of a family of vectors, one per index, such as `u ⊗ α ⊗ β` with components
 `u^μ α_ν β_ρ`. It is Mathlib's `⨂ₜ[k] i, f i`. -/
 noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : S.Tensor c :=
   (S.toPiTensor c).symm (⨂ₜ[k] i, f i)
@@ -177,7 +177,7 @@ lemma ext_pure₃ {ι₂ ι₃ : Type} {c₂ : ι₂ → Color K} {c₃ : ι₃ 
 
 -/
 
-/-- The group acts on every slot by the representation of its color,
+/-- The group acts on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`. -/
 noncomputable instance : DistribMulAction G (S.Tensor c) :=
   DistribMulAction.compHom (M := Module.End k (S.Tensor c)) _
@@ -266,7 +266,7 @@ lemma intertwiningMap_ext_pure {W : Type} [AddCommGroup W] [Module k W]
     (h : ∀ p : Π i, S.V (c i), φ (S.pure p) = ψ (S.pure p)) : φ = ψ :=
   Representation.IntertwiningMap.ext (ext_pure h)
 
-/-- A tensor with no slots is invariant, `Λ s = s`. -/
+/-- A tensor with no indices is invariant, `Λ s = s`. -/
 lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : S.Tensor c) : g • t = t := by
   induction t using inductionOn_pure with
   | h f => rw [smul_pure]; exact congrArg _ (funext isEmptyElim)
@@ -296,11 +296,11 @@ lemma tensorBasis_repr_pure [Fintype ι] (f : Π i, S.V (c i))
     (S.tensorBasis c).repr (S.pure f) x = ∏ i, (S.basis (c i)).repr (f i) (x i) := by
   simp [tensorBasis, Basis.piTensorProduct_repr_tprod_apply]
 
-/-- Tensors on finitely many slots are a finite-dimensional space. -/
+/-- Tensors on finitely many indices are a finite-dimensional space. -/
 noncomputable instance [Fintype ι] : Module.Finite k (S.Tensor c) :=
   .of_basis (S.tensorBasis c)
 
-/-- The dimension of tensors is the product of the dimensions of their slots. -/
+/-- The dimension of tensors is the product of the dimensions of their indices. -/
 lemma finrank_tensor [Fintype ι] [DecidableEq ι] (c : ι → Color K) :
     Module.finrank k (S.Tensor c) = ∏ i, Fintype.card (basisIdx (c i).kind) := by
   rw [Module.finrank_eq_card_basis (S.tensorBasis c), Fintype.card_pi]
@@ -318,7 +318,7 @@ lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : S.Tensor 
 
 /-!
 
-## D. Linear maps at the slots
+## D. Linear maps at the indices
 
 -/
 
@@ -327,38 +327,38 @@ section
 variable {c' : ι → Color K}
 
 variable (S) in
-/-- A linear map `f x` at every slot `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
+/-- A linear map `f x` at every index `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
 `PiTensorProduct.map`. -/
 noncomputable def mapIndices (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : S.Tensor c →ₗ[k] S.Tensor c' :=
   (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map f ∘ₗ (S.toPiTensor c).toLinearMap
 
-/-- On a pure tensor, `mapIndices` applies `f x` to the vector at each slot `x`. -/
+/-- On a pure tensor, `mapIndices` applies `f x` to the vector at each index `x`. -/
 lemma mapIndices_pure (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) (p : Π x, S.V (c x)) :
     S.mapIndices f (S.pure p) = S.pure fun x => f x (p x) := by
   simp only [mapIndices, LinearMap.coe_comp, Function.comp_apply, LinearEquiv.coe_coe,
     toPiTensor_pure, PiTensorProduct.map_tprod, toPiTensor_symm_tprod]
 
-/-- Two slotwise maps in sequence are the slotwise map of the composites. -/
+/-- Two index-wise maps in sequence are the index-wise map of the composites. -/
 lemma mapIndices_comp {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
     (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) :
     S.mapIndices g ∘ₗ S.mapIndices f = S.mapIndices fun x => g x ∘ₗ f x :=
   ext_pure fun p => by simp only [LinearMap.comp_apply, mapIndices_pure]
 
-/-- Two slotwise maps in sequence are the slotwise map of the composites, on a tensor. -/
+/-- Two index-wise maps in sequence are the index-wise map of the composites, on a tensor. -/
 lemma mapIndices_mapIndices {c'' : ι → Color K} (f : Π x, S.V (c x) →ₗ[k] S.V (c' x))
     (g : Π x, S.V (c' x) →ₗ[k] S.V (c'' x)) (t : S.Tensor c) :
     S.mapIndices g (S.mapIndices f t) = S.mapIndices (fun x => g x ∘ₗ f x) t :=
   LinearMap.congr_fun (mapIndices_comp f g) t
 
-/-- The slotwise map of the identities is the identity. -/
+/-- The index-wise map of the identities is the identity. -/
 lemma mapIndices_id : S.mapIndices (c := c) (fun _ => LinearMap.id) = LinearMap.id :=
   ext_pure fun p => mapIndices_pure _ p
 
-/-- The slotwise map of the identities is the identity, on a tensor. -/
+/-- The index-wise map of the identities is the identity, on a tensor. -/
 lemma mapIndices_id_apply (t : S.Tensor c) : S.mapIndices (fun _ => LinearMap.id) t = t :=
   LinearMap.congr_fun mapIndices_id t
 
-/-- Linear maps that commute with the group action at every slot commute with it on tensors,
+/-- Linear maps that commute with the group action at every index commute with it on tensors,
 `f (Λ T) = Λ f T`. -/
 lemma mapIndices_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
     (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : S.Tensor c) :
@@ -366,7 +366,7 @@ lemma mapIndices_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
   map_smul_of_pure _ g (fun p => by simp only [smul_pure, mapIndices_pure, hf]) t
 
 variable (S) in
-/-- Equivalences of representations `f x` at every slot `x`, as an equivalence of representations
+/-- Equivalences of representations `f x` at every index `x`, as an equivalence of representations
 of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.congr`. -/
 noncomputable def congrIndices (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
     (S.tensorRep c).Equiv (S.tensorRep c') :=
@@ -374,7 +374,7 @@ noncomputable def congrIndices (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
     (S.toPiTensor c').symm) fun g p =>
       mapIndices_smul (fun x => (f x).toIntertwiningMap.isIntertwining _ _) g (S.pure p)
 
-/-- On a pure tensor, `congrIndices` applies `f x` to the vector at each slot `x`. -/
+/-- On a pure tensor, `congrIndices` applies `f x` to the vector at each index `x`. -/
 lemma congrIndices_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
     S.congrIndices f (S.pure p) = S.pure fun x => f x (p x) :=
   mapIndices_pure (fun x => (f x).toLinearMap) p
@@ -384,8 +384,8 @@ section
 variable [DecidableEq ι]
 
 variable (S) in
-/-- The family of linear maps with `f` at the slot `i` and the identity, moved along `h x`, at
-every other slot `x`. `mapAt` applies it slot by slot. -/
+/-- The family of linear maps with `f` at the index `i` and the identity, moved along `h x`, at
+every other index `x`. `mapAt` applies it index by index. -/
 noncomputable def indexMapsAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : Π x, S.V (c x) →ₗ[k] S.V (c' x) :=
   Function.update (fun x => if hx : x = i then 0 else (S.cast (h x hx)).toLinearMap) i f
@@ -401,14 +401,14 @@ lemma indexMapsAt_apply_ne (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     S.indexMapsAt i f h x = (S.cast (h x hx)).toLinearMap := by
   rw [indexMapsAt, Function.update_of_ne hx, dite_eq_right hx]
 
-/-- A family with `f` at the slot `i` and the moves along `h x` at the other slots is
+/-- A family with `f` at the index `i` and the moves along `h x` at the other indices is
 `indexMapsAt i f h`. -/
 lemma eq_indexMapsAt {F : Π x, S.V (c x) →ₗ[k] S.V (c' x)} (i : ι)
     (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x) (hi : F i = f)
     (hne : ∀ x (hx : x ≠ i), F x = (S.cast (h x hx)).toLinearMap) : F = S.indexMapsAt i f h :=
   Function.eq_update_iff.2 ⟨hi, fun x hx => by rw [hne x hx, dite_eq_right hx]⟩
 
-/-- `indexMapsAt i f h` commutes with the group action at every slot when `f` does. -/
+/-- `indexMapsAt i f h` commutes with the group action at every index when `f` does. -/
 lemma indexMapsAt_rep (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠ i → c x = c' x)
     (hf : ∀ g v, f (S.rep (c i) g v) = S.rep (c' i) g (f v)) (x : ι) (g : G) (v : S.V (c x)) :
     S.indexMapsAt i f h x (S.rep (c x) g v) = S.rep (c' x) g (S.indexMapsAt i f h x v) := by
@@ -418,7 +418,7 @@ lemma indexMapsAt_rep (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, 
   · simpa [hx] using cast_rep (h x hx) g v
 
 variable (S) in
-/-- The linear map `f` at the slot `i`, and the identity, moved along `h x`, at every other slot
+/-- The linear map `f` at the index `i`, and the identity, moved along `h x`, at every other index
 `x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
 noncomputable def mapAt (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : S.Tensor c →ₗ[k] S.Tensor c' :=
@@ -438,7 +438,7 @@ lemma mapAt_pure (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i)) (h : ∀ x, x ≠
   · rw [indexMapsAt_apply_ne _ _ _ hx, hq x hx]
     rfl
 
-/-- `mapAt` of `f` and then of `g` at the same slot is `mapAt` of `g ∘ₗ f`. -/
+/-- `mapAt` of `f` and then of `g` at the same index is `mapAt` of `g ∘ₗ f`. -/
 lemma mapAt_comp {c'' : ι → Color K} (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (g : S.V (c' i) →ₗ[k] S.V (c'' i)) (h : ∀ x, x ≠ i → c x = c' x)
     (h' : ∀ x, x ≠ i → c' x = c'' x) :
@@ -468,7 +468,7 @@ lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V 
   | hadd t t' ht ht' =>
     simp only [map_add, Finsupp.add_apply, ht, ht', mul_add, Finset.sum_add_distrib]
   | h p =>
-    -- Split off the slot `i`, where `f` acts, from the slots where the label is only moved.
+    -- Split off the index `i`, where `f` acts, from the indices where the label is only moved.
     rw [mapAt, mapIndices_pure, tensorBasis_repr_pure,
       ← Finset.mul_prod_erase _ _ (Finset.mem_univ i), indexMapsAt_apply_self,
       ← LinearMap.toMatrix_mulVec_repr (S.basis (c i)) (S.basis (c' i)), Matrix.mulVec, dotProduct,
@@ -482,8 +482,8 @@ lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V 
     exact basis_repr_cast _ _ _
 
 variable (S) in
-/-- The equivalence of representations `f` at the slot `i`, and the identity, moved along `h x`,
-at every other slot `x`. On a pure tensor, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. Its linear map is `mapAt`
+/-- The equivalence of representations `f` at the index `i`, and the identity, moved along `h x`,
+at every other index `x`. On a pure tensor, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. Its linear map is `mapAt`
 of `f`. -/
 noncomputable def congrAt (i : ι) (f : (S.rep (c i)).Equiv (S.rep (c' i)))
     (h : ∀ x, x ≠ i → c x = c' x) : (S.tensorRep c).Equiv (S.tensorRep c') :=

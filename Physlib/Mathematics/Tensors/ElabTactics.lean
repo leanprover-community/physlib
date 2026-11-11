@@ -61,7 +61,7 @@ dsimproc_decl reduceCast (cast _ _) := fun e => do
 /-- `tensor_components [l₁, …]` reduces an equation of tensors to its components at a label `φ`,
 using the component lemmas `lᵢ` as well. It unfolds products, relabelings, sums, negatives, zeros,
 scalar multiples and contractions of one or two pairs. For more pairs, pass
-`Species.Tensor.tensorBasis_repr_contr`. It evaluates the `Function.update` at a literal slot that
+`Species.Tensor.tensorBasis_repr_contr`. It evaluates the `Function.update` at a literal index that
 `tensorBasis_repr_toDualAt` produces, and removes the casts on labels once their types agree. On a
 goal that is already a component the first step is skipped. -/
 syntax (name := tensorComponents) "tensor_components" " [" Lean.Parser.Tactic.simpArg,* "]" :
@@ -70,7 +70,7 @@ syntax (name := tensorComponents) "tensor_components" " [" Lean.Parser.Tactic.si
 macro_rules
   | `(tactic| tensor_components [$ls,*]) => `(tactic| focus
       try refine (Species.tensorBasis _ _).repr.injective (Finsupp.ext fun $(mkIdent `φ) => ?_)
-      -- `Function.update_of_ne` proves `j ≠ i` for literal slots by `ne_eq` and `Fin.reduceEq`.
+      -- `Function.update_of_ne` proves `j ≠ i` for literal indices by `ne_eq` and `Fin.reduceEq`.
       simp only [map_add, map_neg, map_zero, Finsupp.add_apply, Finsupp.neg_apply,
         Finsupp.zero_apply, Species.Tensor.tensorBasis_repr_contr_one_pair,
         Species.Tensor.tensorBasis_repr_contr_two_pairs, Species.tensorBasis_repr_reindex,
@@ -288,7 +288,7 @@ private def maxMatchings : Nat := 12
 
 /-- Proves `Tensor.contr σ P = Tensor.contr τ Q` for two flattened contractions of the same
 factors. It orders the factors of the right side as on the left, and checks by evaluation that both
-sides keep the same slots and contract the same pairs of slots
+sides keep the same indices and contract the same pairs of indices
 (`Species.Tensor.contr_eq_of_samePair`). When a factor appears more than once, each way of
 matching the equal factors is tried in turn, at most `maxMatchings` of them. -/
 private def matchFactors : TacticM Unit := do
@@ -309,13 +309,13 @@ private def matchFactors : TacticM Unit := do
     m!"the first {maxMatchings} of the {targets.length} ways"
   firstSuccess (targets.take maxMatchings) m!"" fun target => do
     arrange target
-    -- The slots are a nested sum, whose `DecidableEq` instance exceeds the default size. The
+    -- The indices are a nested sum, whose `DecidableEq` instance exceeds the default size. The
     -- checks are run by `of_decide_eq_true rfl` rather than `decide`, which rejects the free
-    -- color variables of the goal although the bijections of slots do not depend on them.
+    -- color variables of the goal although the bijections of indices do not depend on them.
     try evalTactic (← `(tactic| set_option synthInstance.maxSize 4096 in
       exact Tensor.Species.Tensor.contr_eq_of_samePair _ _ (of_decide_eq_true rfl)
         (of_decide_eq_true rfl) _))
-    catch _ => throwError "tensor_regroup: the two sides contract different pairs of slots, for \
+    catch _ => throwError "tensor_regroup: the two sides contract different pairs of indices, for \
       {tried} of matching their equal factors"
 
 /-!
@@ -346,25 +346,25 @@ private def formArgs? (x : Expr) : Option (Expr × Expr) :=
     some (args[args.size - 3]!, args[args.size - 2]!)
   else none
 
-/-- A contraction `Tensor.contr τ P` of a left-nested product `P`, read slot by slot. The slots of
-`P` are numbered in order, the slots of each factor after those of the factors before it. -/
+/-- A contraction `Tensor.contr τ P` of a left-nested product `P`, read index by index. The indices
+of `P` are numbered in order, the indices of each factor after those of the factors before it. -/
 private structure ReadContraction where
   /-- The factors of `P`, from left to right. -/
   factors : List Expr
-  /-- The slot of `P` at which each factor starts. -/
+  /-- The index of `P` at which each factor starts. -/
   offsets : List Nat
-  /-- The slot of `P` of each free index, in order. -/
+  /-- The index of `P` of each free index, in order. -/
   free : List Nat
-  /-- The two slots of `P` of each pair, the first argument of `S.contr` first. -/
+  /-- The two indices of `P` of each pair, the first argument of `S.contr` first. -/
   pairs : List (Nat × Nat)
 
-/-- The elements of a slot type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
-slot order. -/
+/-- The elements of an index type built from `Fin n` with a literal `n`, `Unit`, `Empty` and `⊕`, in
+index order. -/
 private partial def indexElems (ι : Expr) : MetaM (List Expr) := do
   let ι ← whnfR ι
   if ι.isAppOfArity ``Fin 1 then
     let some n ← (evalNat ι.appArg!).run
-      | throwError "tensor_regroup: the slot type {ι} is not literal"
+      | throwError "tensor_regroup: the index type {ι} is not literal"
     (List.range n).mapM fun i => do
       mkAppM ``Fin.mk #[mkNatLit i, ← mkDecideProof (← mkAppM ``LT.lt #[mkNatLit i, ι.appArg!])]
   else if let .const ``PUnit [u] := ι then return [mkConst ``PUnit.unit [u]]
@@ -373,33 +373,33 @@ private partial def indexElems (ι : Expr) : MetaM (List Expr) := do
     let (a, b) := (ι.getArg! 0, ι.getArg! 1)
     return (← (← indexElems a).mapM fun x => mkAppOptM ``Sum.inl #[a, b, x]) ++
       (← (← indexElems b).mapM fun x => mkAppOptM ``Sum.inr #[a, b, x])
-  else throwError "tensor_regroup: the slot type {ι} is not built from `Fin n` and `⊕`"
+  else throwError "tensor_regroup: the index type {ι} is not built from `Fin n` and `⊕`"
 
-/-- The number of the slot `x` of the slot type `slots`, after evaluating `x`. -/
+/-- The number of the index `x` of the index type `indices`, after evaluating `x`. -/
 private partial def indexNumber : Indices → Expr → MetaM Nat
   | .fin _, x => do
     let some i ← (evalNat (← whnfD (← mkAppM ``Fin.val #[x]))).run
-      | throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
+      | throwError "tensor_regroup: internal error, the index {x} does not evaluate"
     return i
   | .unit, _ => return 0
   | .sum a b, x => do
     let x ← whnfD x
     if x.isAppOfArity ``Sum.inl 3 then indexNumber a x.appArg!
     else if x.isAppOfArity ``Sum.inr 3 then return a.size + (← indexNumber b x.appArg!)
-    else throwError "tensor_regroup: internal error, the slot {x} does not evaluate"
+    else throwError "tensor_regroup: internal error, the index {x} does not evaluate"
 
 /-- Reads a contraction `Tensor.contr τ P` of a left-nested product `P`, evaluating `τ` at each
-free index and at each slot of each pair. -/
+free index and at each index of each pair. -/
 private def readContraction (e : Expr) : MetaM ReadContraction := do
   let some P := bundledArg? ``Tensor.Species.Tensor.contr e
     | throwError "tensor_regroup: the side{indentExpr e}\nis not a contraction"
   let τ := e.consumeMData.appFn!.appArg!.appArg!
   let some (indices, _, _) ← literalTensorType? (← inferType P)
-    | throwError "tensor_regroup: the slots or colors of a product are not literal"
+    | throwError "tensor_regroup: the indices or colors of a product are not literal"
   let fs := factors P
   let sizes ← fs.mapM fun f => do
     let some (s, _, _) ← literalTensorType? (← inferType f)
-      | throwError "tensor_regroup: the slots or colors of{indentExpr f}\nare not literal"
+      | throwError "tensor_regroup: the indices or colors of{indentExpr f}\nare not literal"
     return s.size
   -- `τ : ColorEquiv c (contrColors c' a)`, with `c' : κ → Color K` and `a : J → Color K`.
   let args := (← whnfR (← inferType τ)).getAppArgs
@@ -417,8 +417,8 @@ private def readContraction (e : Expr) : MetaM ReadContraction := do
   return ⟨fs, sizes.scanl (· + ·) 0, free, pairs⟩
 
 /-- The ways to insert a delta against the side `e` of the goal, a contraction: `false` for
-`T^…μ… δ_μ^ν` and `true` for `δ^ν_μ T^…μ…`. A form or a delta of `e` whose first slot is contracted
-with another factor cancels against a delta inserted the first way, and one whose second slot is,
+`T^…μ… δ_μ^ν` and `true` for `δ^ν_μ T^…μ…`. A form or a delta of `e` whose first index is contracted
+with another factor cancels against a delta inserted the first way, and one whose second index is,
 the second way. Both are returned when no form or delta is contracted with another factor. -/
 private def deltaOrientations (e : Expr) : MetaM (List Bool) := do
   let rc ← readContraction e
@@ -432,7 +432,7 @@ private def deltaOrientations (e : Expr) : MetaM (List Bool) := do
   let found := (rc.pairs.filterMap fun (s, t) => (side s t).orElse fun _ => side t s).eraseDups
   return if found.isEmpty then [false, true] else found
 
-/-- Inserts a delta of color `a` at the slot `slot` of the product of the left side of the goal,
+/-- Inserts a delta of color `a` at the index `index` of the product of the left side of the goal,
 if `lhs`, or of the right side, by `Species.Tensor.contr_deltaTensor`. With `second`, uses
 `Species.Tensor.contr_deltaTensor_swap` instead, inserting a delta of color `a.dual`. -/
 private def insertDelta (lhs : Bool) (a : Expr) (indices : Indices) (index : Nat) (second : Bool) :
@@ -447,34 +447,34 @@ private def insertDelta (lhs : Bool) (a : Expr) (indices : Indices) (index : Nat
 
 mutual
 
-/-- Inserts a delta of color `a` on the left side, if `lhs`, or on the right side, trying slots of
+/-- Inserts a delta of color `a` on the left side, if `lhs`, or on the right side, trying indices of
 color `a` for its first index and `a.dual` for its second index, and proves the goal by
-`regroupContractions`. With `skipForms`, the slots of forms are left out when another factor has a
-slot: inserting the delta anywhere along a chain of contracted forms gives the same factors, so
-trying each of their slots only repeats the search. -/
+`regroupContractions`. With `skipForms`, the indices of forms are left out when another factor has
+an index: inserting the delta anywhere along a chain of contracted forms gives the same factors, so
+trying each of their indices only repeats the search. -/
 private partial def insertDeltaAnywhere (lhs : Bool) (a : Expr) (skipForms : Bool := false) :
     TacticM Unit := do
   let (p, q) ← contractedProducts
   let P := if lhs then p else q
   let some (indices, _, colors) ← literalTensorType? (← inferType P)
-    | throwError "tensor_regroup: the slots or colors of a product are not literal"
-  -- Whether each slot belongs to a form, from the number of slots of each factor in turn.
+    | throwError "tensor_regroup: the indices or colors of a product are not literal"
+  -- Whether each index belongs to a form, from the number of indices of each factor in turn.
   let inForm ← (factors P).flatMapM fun f => do
     let n := ((← literalTensorType? (← inferType f)).map (·.2.2.length)).getD 0
     return List.replicate n (skipForms && (formArgs? f).isSome)
   -- shortcut: misses a chain of forms that reaches no other factor, as `T^μ_ν g^αβ` against
-  -- `T^μ_ν g^αγ g_γδ g^δβ`; trying the slots of forms after the others would cover it.
+  -- `T^μ_ν g^αγ g_γδ g^δβ`; trying the indices of forms after the others would cover it.
   let inForm := if inForm.all id then inForm.map fun _ => false else inForm
   let (_, l, r) ← goalEq
   let orientations ← deltaOrientations (if lhs then r else l)
   let tries ← orientations.flatMapM fun second => do
-    -- The swapped identity inserts `deltaTensor b.dual` at a slot of color `b`.
-    -- To insert the requested `deltaTensor a`, that slot must therefore have color `a.dual`.
+    -- The swapped identity inserts `deltaTensor b.dual` at an index of color `b`.
+    -- To insert the requested `deltaTensor a`, that index must therefore have color `a.dual`.
     let b ← if second then mkAppM ``Tensor.Color.dual #[a] else pure a
     let indicesOfColor ← colors.zipIdx.filterM fun (col, i) =>
       return !inForm.getD i false && (← isDefEqGoal col b)
     return indicesOfColor.map fun (_, i) => (i, second, b)
-  firstSuccess tries m!"tensor_regroup: no slot has the color {a} of a delta"
+  firstSuccess tries m!"tensor_regroup: no index has the color {a} of a delta"
     fun (index, second, b) => do
       insertDelta lhs b indices index second
       regroupContractions
@@ -496,8 +496,8 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
   match ds with
   | [d] =>
     unless (deltaColor? d).isSome do throwError "tensor_regroup: {d} is not a delta"
-    -- The delta is `g^μν g_νρ` read with its slots in order, when the slot of the delta and the
-    -- slot of the forms contracted with other factors agree, or swapped.
+    -- The delta is `g^μν g_νρ` read with its indices in order, when the index of the delta and the
+    -- index of the forms contracted with other factors agree, or swapped.
     let (_, l, r) ← goalEq
     let swaps := match ← deltaOrientations (if lhs then l else r),
         ← deltaOrientations (if lhs then r else l) with
@@ -518,7 +518,7 @@ private partial def matchFormPair (lhs : Bool) (ds gs : List Expr) : TacticM Uni
 deltas and inverse pairs of forms. Each side is flattened to one contraction of a left-nested
 product. Two forms on one side with a delta or nothing left over on the other are matched by
 `matchFormPair`. A delta on one side with no counterpart on the other is inserted on the other side
-at each slot of its color in turn, since contracting with a delta is a relabeling. The factors are
+at each index of its color in turn, since contracting with a delta is a relabeling. The factors are
 then matched by `matchFactors`. -/
 private partial def regroupContractions : TacticM Unit := do
   flattenContractions
@@ -718,10 +718,10 @@ private def regroupWithLowerings : TacticM Unit := do
 
 /-- `tensor_indices` proves an equation of two chains of lowerings and raisings of the same tensor,
 such as `{{T | ↓μ ↓ν}ᵀ | ↑μ ↑ν}ᵀ = T` or `{{T | ↓μ ν}ᵀ | μ ↓ν = {T | μ ↓ν}ᵀ | ↓μ ν}ᵀ`. Each chain
-is one slotwise map (`Species.toDualAt_eq_mapAt`, `Species.mapIndices_mapIndices`), and the two maps
-are compared slot by slot, where `Species.toDual_toDual` cancels a lowering with a raising. A side
-with no lowering or raising is the slotwise identity (`Species.mapIndices_id`). The slots must be
-`Fin n` with a literal `n`. -/
+is one index-wise map (`Species.toDualAt_eq_mapAt`, `Species.mapIndices_mapIndices`), and the two
+maps are compared index by index, where `Species.toDual_toDual` cancels a lowering with a raising. A
+side with no lowering or raising is the index-wise identity (`Species.mapIndices_id`). The indices
+must be `Fin n` with a literal `n`. -/
 elab "tensor_indices" : tactic => do
   evalTactic (← `(tactic| try simp only [Tensor.Species.toDualAt_eq_mapAt, Tensor.Species.mapAt,
     Tensor.Species.mapIndices_mapIndices]))
@@ -749,9 +749,9 @@ elab "tensor_indices" : tactic => do
 
 -/
 
-/-- The ways of sending the slots of `A` to slots of `G`, factor by factor, each factor of `A` to an
-equal factor of `G`, so that every pair of `A` is sent to a pair of `G`. Each way is the list of
-images of the slots of `A`, together with the factors of `G` that are hit. -/
+/-- The ways of sending the indices of `A` to indices of `G`, factor by factor, each factor of `A`
+to an equal factor of `G`, so that every pair of `A` is sent to a pair of `G`. Each way is the list
+of images of the indices of `A`, together with the factors of `G` that are hit. -/
 private def embeddings (A G : ReadContraction) : MetaM (List (List Nat × List Nat)) := do
   let candidates ← A.factors.mapM fun x =>
     (List.range G.factors.length).filterM fun j => isEqFactor x G.factors[j]!
@@ -763,7 +763,7 @@ private def embeddings (A G : ReadContraction) : MetaM (List (List Nat × List N
 
 /-- The function `x ↦ {x | … ⊗ g | … ⊗ …}ᵀ`, for `x` of the type of `A`, with its free indices
 in the order of `L`, the contraction read as `G`. The factors `g` of `G` not hit by `target` follow
-`x`, and every slot of `G` is named after its free index `fₖ` or its pair `pⱼ`. The slots of `x`
+`x`, and every index of `G` is named after its free index `fₖ` or its pair `pⱼ`. The indices of `x`
 are named as the free indices of `A` are sent by `φ`. -/
 private def regroupedFun (L A : Expr) (Aread G : ReadContraction) (φ target : List Nat) :
     TermElabM Expr := do
@@ -869,7 +869,7 @@ number of attempts is the product of `k!` over the factors that appear `k` times
 are tried.
 
 Beyond regrouping, it uses these identities:
-- a delta on one side with no counterpart on the other is inserted on the other side at a slot of
+- a delta on one side with no counterpart on the other is inserted on the other side at an index of
   its color, `T^…μ… = T^…ν… δ_ν^μ` (`Species.Tensor.contr_deltaTensor`), or, against two forms on
   the other side, written as their contraction, `g^μν g_νρ = δ^μ_ρ`
   (`Species.contr_formTensor_formTensor`), and pairs of such forms against nothing, as a lowering

@@ -14,15 +14,15 @@ The product `T ⊗ U` of two tensors has the indices of `T` followed by those of
 
 ## i. Overview
 
-Let `T = T^μ_ν e_μ ⊗ e^ν` have colors `c₁` on the slots `Fin 2` and `U = U^ρ e_ρ` colors `c₂` on
-the slot `Fin 1`. Their product `T ⊗ U = T^μ_ν U^ρ e_μ ⊗ e^ν ⊗ e_ρ` has the slots `Fin 2 ⊕ Fin 1`
-with colors `prodColors c₁ c₂`, those of `T` on `inl i` and those of `U` on `inr j`, so no slot
+Let `T = T^μ_ν e_μ ⊗ e^ν` have colors `c₁` on the indices `Fin 2` and `U = U^ρ e_ρ` colors `c₂` on
+the index `Fin 1`. Their product `T ⊗ U = T^μ_ν U^ρ e_μ ⊗ e^ν ⊗ e_ρ` has the indices `Fin 2 ⊕ Fin 1`
+with colors `prodColors c₁ c₂`, those of `T` on `inl i` and those of `U` on `inr j`, so no index
 is renumbered. `S.tmulEquiv c₁ c₂` sends `T ⊗ₜ U` to `T ⊗ U`. It is Mathlib's
 `PiTensorProduct.tmulEquivDep`.
 
-The product is associative and symmetric up to a relabeling of slots, and the group acts on it
+The product is associative and symmetric up to a relabeling of indices, and the group acts on it
 factor by factor. An element of `V a ⊗ V b`, such as the metric `η_μν e^μ ⊗ e^ν`, is a tensor on
-two slots by `twoIndexEquiv`. The components of a product are the products of the components.
+two indices by `twoIndexEquiv`. The components of a product are the products of the components.
 
 ## ii. Key results
 
@@ -31,7 +31,7 @@ two slots by `twoIndexEquiv`. The components of a product are the products of th
 - `Species.tmulEquiv_assoc` and `Species.tmulEquiv_comm` prove `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)` and
   `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
-- `Species.twoIndexEquiv` turns an element of `V a ⊗ V b` into a tensor on two slots.
+- `Species.twoIndexEquiv` turns an element of `V a ⊗ V b` into a tensor on two indices.
 - `Species.tensorBasis_repr_tmulEquiv` proves `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`.
 
 ## iii. Table of contents
@@ -39,7 +39,7 @@ two slots by `twoIndexEquiv`. The components of a product are the products of th
 - A. The colors and relabelings of a product
 - B. The product
 - C. Associativity, symmetry and equivariance
-- D. Tensors on one and two slots
+- D. Tensors on one and two indices
 - E. Components
 
 ## iv. References
@@ -60,8 +60,8 @@ namespace Tensor
 
 -/
 
-/-- The colors of a product `T ⊗ U`, the colors `c₁` of `T` on the slots `inl i` and the colors
-`c₂` of `U` on the slots `inr j`. It equals Mathlib's `Sum.elim c₁ c₂` by `rfl`, and it is
+/-- The colors of a product `T ⊗ U`, the colors `c₁` of `T` on the indices `inl i` and the colors
+`c₂` of `U` on the indices `inr j`. It equals Mathlib's `Sum.elim c₁ c₂` by `rfl`, and it is
 reducible so that `prodColors c₁ c₂ (.inl i)` reduces to `c₁ i`. -/
 noncomputable abbrev prodColors {K : Type} {ι₁ ι₂ : Type} (c₁ : ι₁ → Color K)
     (c₂ : ι₂ → Color K) : ι₁ ⊕ ι₂ → Color K :=
@@ -71,25 +71,25 @@ namespace ColorEquiv
 
 variable {K : Type} {ι₁ ι₂ ι₃ ι₁' ι₂' : Type}
 
-/-- The relabeling `σ` of the slots of `T` and `τ` of the slots of `U`, as a relabeling of the
-slots of `T ⊗ U`. It is Mathlib's `Equiv.sumCongr`. -/
+/-- The relabeling `σ` of the indices of `T` and `τ` of the indices of `U`, as a relabeling of the
+indices of `T ⊗ U`. It is Mathlib's `Equiv.sumCongr`. -/
 def sumCongr {c₁ : ι₁ → Color K} {c₁' : ι₁' → Color K} {c₂ : ι₂ → Color K}
     {c₂' : ι₂' → Color K} (σ : ColorEquiv c₁ c₁') (τ : ColorEquiv c₂ c₂') :
     ColorEquiv (prodColors c₁ c₂) (prodColors c₁' c₂') :=
   ⟨Equiv.sumCongr σ.toEquiv τ.toEquiv, by rintro (j | j); exacts [σ.color_eq j, τ.color_eq j]⟩
 
-/-- The slots of `(T ⊗ U) ⊗ W` relabeled as those of `T ⊗ (U ⊗ W)`. It is Mathlib's
+/-- The indices of `(T ⊗ U) ⊗ W` relabeled as those of `T ⊗ (U ⊗ W)`. It is Mathlib's
 `Equiv.sumAssoc`. -/
 def sumAssoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c₃ : ι₃ → Color K) :
     ColorEquiv (prodColors (prodColors c₁ c₂) c₃) (prodColors c₁ (prodColors c₂ c₃)) :=
   ⟨Equiv.sumAssoc ι₁ ι₂ ι₃, by rintro (_ | _ | _) <;> rfl⟩
 
-/-- The slots of `T ⊗ U` relabeled as those of `U ⊗ T`. It is Mathlib's `Equiv.sumComm`. -/
+/-- The indices of `T ⊗ U` relabeled as those of `U ⊗ T`. It is Mathlib's `Equiv.sumComm`. -/
 def sumComm (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) :
     ColorEquiv (prodColors c₁ c₂) (prodColors c₂ c₁) :=
   ⟨Equiv.sumComm ι₁ ι₂, by rintro (_ | _) <;> rfl⟩
 
-/-- The slots of `(T ⊗ W) ⊗ U` relabeled as those of `(T ⊗ U) ⊗ W`, swapping the last two
+/-- The indices of `(T ⊗ W) ⊗ U` relabeled as those of `(T ⊗ U) ⊗ W`, swapping the last two
 factors. -/
 noncomputable def swapLast (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c₃ : ι₃ → Color K) :
     ColorEquiv (prodColors (prodColors c₁ c₃) c₂) (prodColors (prodColors c₁ c₂) c₃) :=
@@ -113,7 +113,7 @@ variable {ι₁ ι₂ ι₃ ι₁' ι₂' : Type}
 
 variable (S) in
 /-- The product of tensors, `T ⊗ₜ U ↦ T ⊗ U` with `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`. The indices of
-`T` sit on the slots `inl i` and those of `U` on the slots `inr j`. It is Mathlib's
+`T` sit on the indices `inl i` and those of `U` on the indices `inr j`. It is Mathlib's
 `PiTensorProduct.tmulEquivDep`. -/
 noncomputable def tmulEquiv (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) :
     ((S.tensorRep c₁).tprod (S.tensorRep c₂)).Equiv (S.tensorRep (prodColors c₁ c₂)) :=
@@ -128,7 +128,7 @@ noncomputable def tmulEquiv (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K
       exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
 
 /-- The product of the pure tensors `u ⊗ α` and `w` is the pure tensor `u ⊗ α ⊗ w`. The vectors
-`f₁` of the first sit on the slots `inl i` and the vectors `f₂` of the second on the slots
+`f₁` of the first sit on the indices `inl i` and the vectors `f₂` of the second on the indices
 `inr j`. -/
 @[simp]
 lemma tmulEquiv_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (f₁ : Π i, S.V (c₁ i))
@@ -138,7 +138,7 @@ lemma tmulEquiv_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (f₁
   simp [tmulEquiv, tmulEquivDep_apply]
 
 /-- The inverse of the product splits a pure tensor into the pure tensors of its two groups of
-slots, `u ⊗ α ⊗ w ↦ (u ⊗ α) ⊗ₜ w`. -/
+indices, `u ⊗ α ⊗ w ↦ (u ⊗ α) ⊗ₜ w`. -/
 @[simp]
 lemma tmulEquiv_symm_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K)
     (f : Π s, S.V (prodColors c₁ c₂ s)) :
@@ -152,7 +152,7 @@ lemma tmulEquiv_symm_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K)
 
 -/
 
-/-- The product is associative, `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)`, after the slots of the left side
+/-- The product is associative, `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)`, after the indices of the left side
 are regrouped by `ColorEquiv.sumAssoc`. -/
 lemma tmulEquiv_assoc (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (c₃ : ι₃ → Color K)
     (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) (t₃ : S.Tensor c₃) :
@@ -215,7 +215,7 @@ lemma tmulEquiv_reindex_right {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color
       S.reindex ((ColorEquiv.refl c₁).sumCongr σ) (S.tmulEquiv c₁ c₂ (t₁ ⊗ₜ t₂)) := by
   rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
 
-/-- Swapping the last two factors of a product, `(T ⊗ W) ⊗ U = (T ⊗ U) ⊗ W` after the slots of
+/-- Swapping the last two factors of a product, `(T ⊗ W) ⊗ U = (T ⊗ U) ⊗ W` after the indices of
 `U` are moved before those of `W` by `ColorEquiv.swapLast`. -/
 lemma tmulEquiv_swapLast {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₃ : ι₃ → Color K}
     (t₁ : S.Tensor c₁) (t₂ : S.Tensor c₂) (t₃ : S.Tensor c₃) :
@@ -236,16 +236,16 @@ lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : 
 
 /-!
 
-## D. Tensors on one and two slots
+## D. Tensors on one and two indices
 
 A species gives objects with two indices, such as a metric `η_μν`, in Mathlib's binary
 tensor product `V a ⊗ V b`. `twoIndexEquiv` identifies this space with the tensors
-`S.Tensor ![a, b]` on two slots, so that such an object can be used in index notation.
+`S.Tensor ![a, b]` on two indices, so that such an object can be used in index notation.
 
 -/
 
 variable (S) in
-/-- A vector `v` of `V c` as a tensor with the one slot `![c]`, by Mathlib's
+/-- A vector `v` of `V c` as a tensor with the one index `![c]`, by Mathlib's
 `PiTensorProduct.subsingletonEquiv`. -/
 noncomputable def oneIndexEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c]) :=
   .mk ((subsingletonEquiv (s := fun i => S.V (![c] i)) 0).symm ≪≫ₗ (S.toPiTensor _).symm)
@@ -254,7 +254,7 @@ noncomputable def oneIndexEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c
       rw [smul_pure]
       exact congrArg S.pure (funext fun i => by fin_cases i; rfl)
 
-/-- The tensor of `v` is the pure tensor with `v` on its one slot. -/
+/-- The tensor of `v` is the pure tensor with `v` on its one index. -/
 @[simp]
 lemma oneIndexEquiv_apply (c : Color K) (v : S.V c) :
     S.oneIndexEquiv c v = S.pure (c := ![c]) (Fin.cons v finZeroElim) :=
@@ -268,7 +268,7 @@ lemma oneIndexEquiv_basis (c : Color K) (μ : Π i, basisIdx (![c] i).kind) :
 
 variable (S) in
 /-- An element of `V a ⊗ V b` as a tensor with colors `![a, b]`, as the metric `η_μν e^μ ⊗ e^ν`
-is the tensor `η_μν`. Each factor is a one-slot tensor by `oneIndexEquiv`, and the slots
+is the tensor `η_μν`. Each factor is a one-index tensor by `oneIndexEquiv`, and the indices
 `Fin 1 ⊕ Fin 1` of their product are relabeled `Fin 2` by Mathlib's `finSumFinEquiv`. -/
 noncomputable def twoIndexEquiv (a b : Color K) :
     ((S.rep a).tprod (S.rep b)).Equiv (S.tensorRep ![a, b]) :=
@@ -276,7 +276,7 @@ noncomputable def twoIndexEquiv (a b : Color K) :
     (S.tmulEquiv ![a] ![b]).trans
       (S.reindex (ColorEquiv.mk (c₁ := prodColors ![a] ![b]) (c₂ := ![a, b]) finSumFinEquiv))
 
-/-- The tensor of `x ⊗ₜ y` is the pure tensor with `x` on the slot `0` and `y` on the slot `1`. -/
+/-- The tensor of `x ⊗ₜ y` is the pure tensor with `x` on the index `0` and `y` on the index `1`. -/
 @[simp]
 lemma twoIndexEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
     S.twoIndexEquiv a b (x ⊗ₜ y) =
@@ -285,7 +285,7 @@ lemma twoIndexEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
     Representation.Equiv.tensorCongr_tmul, oneIndexEquiv_apply, tmulEquiv_pure, reindex_pure]
   exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
-/-- Swapping the two slots of a tensor on two slots swaps the factors, `M^μν ↦ M^νμ`. -/
+/-- Swapping the two indices of a tensor on two indices swaps the factors, `M^μν ↦ M^νμ`. -/
 lemma reindex_twoIndexEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
     S.reindex (ColorEquiv.swapTwo a b) (S.twoIndexEquiv a b M) =
       S.twoIndexEquiv b a (TensorProduct.comm k _ _ M) := by
@@ -300,7 +300,7 @@ lemma reindex_twoIndexEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
 ## E. Components
 
 The components of a product are the products of the components of its factors. The components
-of a tensor on two slots are the coordinates in Mathlib's basis `Basis.tensorProduct`.
+of a tensor on two indices are the coordinates in Mathlib's basis `Basis.tensorProduct`.
 
 -/
 

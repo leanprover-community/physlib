@@ -291,7 +291,7 @@ lemma basis_repr_toDual (d : ℕ) (c : Color Kind) (v : (realLorentz d).V c)
   simp [Species.basis_repr_toDual c v ν, formMatrix_apply,
     minkowskiMatrix.as_diagonal, Matrix.diagonal_apply, mul_comm]
 
-/-- Lowering or raising the index at the slot `i` in components, `T^…_ν… = η_νν T^…ν…`: the
+/-- Lowering or raising the index `i` in components, `T^…_ν… = η_νν T^…ν…`: the
 Minkowski metric is diagonal. -/
 lemma tensorBasis_repr_toDualAt (d : ℕ) {ι : Type} [Fintype ι] [DecidableEq ι]
     {c c' : ι → Color Kind} (i : ι) (a : Color Kind) (ha : c i = a) (hi : c' i = a.dual)
@@ -416,7 +416,7 @@ lemma tensorBasis_repr_toTensor_coVector_tmul (d : ℕ) (T : CoVector d ⊗[ℝ]
       (CoVector.basis.tensorProduct Vector.basis).repr T (μ (.inl 0), μ (.inr 0)) :=
   Tensorial.tensorBasis_repr_toTensor_prod_ofIndexSpace (S := realLorentz d) down up T μ
 
-/-- The contraction `v^μ ω_μ` of a vector with a covector, a tensor with no slots whose one
+/-- The contraction `v^μ ω_μ` of a vector with a covector, a tensor with no indices whose one
 component is `∑ μ, v^μ ω_μ`. -/
 lemma tensorBasis_repr_contr_vector_coVector (d : ℕ) (v : Vector d) (ω : CoVector d) :
     ((realLorentz d).tensorBasis ![]).repr {v | μ ⊗ ω | μ}ᵀ (fun i => i.elim0) =
@@ -426,7 +426,7 @@ lemma tensorBasis_repr_contr_vector_coVector (d : ℕ) (v : Vector d) (ω : CoVe
     tensorBasis_repr_toTensor_coVector]
 
 open scoped Lorentz.Vector in
-/-- The Minkowski product is the contraction `η_μν v^μ w^ν`, a tensor with no slots whose one
+/-- The Minkowski product is the contraction `η_μν v^μ w^ν`, a tensor with no indices whose one
 component is `⟪v, w⟫ₘ`. -/
 lemma tensorBasis_repr_formTensor_contr_vector (d : ℕ) (v w : Vector d) :
     ((realLorentz d).tensorBasis ![]).repr

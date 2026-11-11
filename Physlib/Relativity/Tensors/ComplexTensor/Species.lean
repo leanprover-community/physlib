@@ -42,7 +42,7 @@ forms are written `εL`, `εL'`, `εR`, `εR'`, `η` and `η'`, and the deltas `
 `δ` and `δ'`. Their components are stated through `tensorBasis`, and the antisymmetry
 of `ε` and the symmetry of `η` are stated in index notation.
 
-These spaces are tensors with one slot (`Tensorial`), so a spinor `ψ : LeftHandedWeyl`
+These spaces are tensors with one index (`Tensorial`), so a spinor `ψ : LeftHandedWeyl`
 enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_α`.
 
 ## ii. Key results
@@ -64,7 +64,7 @@ enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_�
   `ε` in index notation, from `Species.schouten_formTensor_deltaTensor` and
   `Species.schouten_formTensor_deltaTensor_dual`.
 - `complexLorentz.leftHandedWeylTensorial` and the other instances of section F : Weyl spinors and
-  complex vectors as tensors with one slot.
+  complex vectors as tensors with one index.
 - `complexLorentz.tensorBasis_repr_toTensor_leftRight` : the components of a tensor in
   `LeftHandedWeyl ⊗ RightHandedWeyl` are the entries of `leftRightToMatrix`.
 
@@ -441,7 +441,7 @@ lemma formMatrix_apply (c : Color Kind) (μ ν : Idx c.kind) :
   basis_tensorProduct_repr_form c μ ν
 
 /-- The components of the form tensor at any color are `formEntries`, at the pair of labels
-`(μ 0, μ 1)`. The labels `μ` form a dependent family, since the basis labels of a slot depend on
+`(μ 0, μ 1)`. The labels `μ` form a dependent family, since the basis labels of an index depend on
 its color. -/
 lemma tensorBasis_repr_formTensor (c : Color Kind) (μ : Π i, Idx (![c, c] i).kind) :
     (complexLorentz.tensorBasis ![c, c]).repr (complexLorentz.formTensor c) μ =

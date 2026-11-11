@@ -8,26 +8,26 @@ module
 public import Physlib.Mathematics.Tensors.Tensor
 /-!
 
-# Relabeling the slots of a tensor
+# Relabeling the indices of a tensor
 
-A bijection of the slots of a tensor that keeps their colors, and its action on tensors, as in the
+A bijection of the indices of a tensor that keeps their colors, and its action on tensors, as in the
 transpose `T^μ_ν ↦ T_ν^μ`.
 
 ## i. Overview
 
-A relabeling `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the slots of a tensor
+A relabeling `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the indices of a tensor
 that keeps their colors, with the proof `σ.color_eq`. For the transpose `T^μ_ν ↦ T_ν^μ` it swaps
-the slots `0` and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would
+the indices `0` and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would
 turn an up index into a down one is not a relabeling, since that needs a metric. The labels `ι₁`
 and `ι₂` may be different types, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the product `u^μ v^ν`.
 
-`S.reindex σ` moves each vector of a tensor to its new slot. The name follows Mathlib's
+`S.reindex σ` moves each vector of a tensor to its new index. The name follows Mathlib's
 `PiTensorProduct.reindex`. Index notation uses it to line up indices, as in `A^μ_ν + B_ν^μ`.
 
 ## ii. Key results
 
-- `ColorEquiv` is a bijection of slots that keeps their colors, with `refl`, `symm` and `trans`.
-- `Species.permIndices` moves the vectors of a tensor along a bijection of slots, with no colors
+- `ColorEquiv` is a bijection of indices that keeps their colors, with `refl`, `symm` and `trans`.
+- `Species.permIndices` moves the vectors of a tensor along a bijection of indices, with no colors
   involved. It is Mathlib's `PiTensorProduct.reindex`.
 - `Species.reindex` applies a relabeling to tensors, `permIndices` followed by `congrIndices` of the
   moves along the equalities of colors, and `Species.reindex_pure` gives it on a pure tensor.
@@ -64,16 +64,16 @@ namespace Tensor
 
 -/
 
-/-- A relabeling of slots that keeps their colors, made of a bijection of slots and the proof that
-each new slot has the color of the old slot it comes from. The proof is stated at the new labels
-`j`, so that `c₂ j` reduces at labels such as `inl x` or `0`. For finitely many concrete slots it
-is found by `rfl` or by cases. Two relabelings are equal when their bijections are
+/-- A relabeling of indices that keeps their colors, made of a bijection of indices and the proof
+that each new index has the color of the old index it comes from. The proof is stated at the new
+indices `j`, so that `c₂ j` reduces at indices such as `inl x` or `0`. For finitely many concrete
+indices it is found by `rfl` or by cases. Two relabelings are equal when their bijections are
 (`ColorEquiv.ext`). -/
 @[ext]
 structure ColorEquiv {K : Type} {ι₁ ι₂ : Type} (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) where
-  /-- The bijection of slots, old slot `i` to new slot `toEquiv i`. -/
+  /-- The bijection of indices, old index `i` to new index `toEquiv i`. -/
   toEquiv : ι₁ ≃ ι₂
-  /-- The new slot `j` has the color of the old slot `toEquiv.symm j`. -/
+  /-- The new index `j` has the color of the old index `toEquiv.symm j`. -/
   color_eq : ∀ j, c₁ (toEquiv.symm j) = c₂ j := by
     first | exact fun _ => rfl | (intro j; fin_cases j <;> rfl)
 
@@ -82,10 +82,10 @@ namespace ColorEquiv
 variable {K : Type} {ι₁ ι₂ ι₃ : Type} {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K}
     {c₃ : ι₃ → Color K}
 
-/-- The identity relabeling, where every slot keeps its label. -/
+/-- The identity relabeling, where every index stays in place. -/
 def refl (c₁ : ι₁ → Color K) : ColorEquiv c₁ c₁ := ⟨Equiv.refl ι₁, fun _ => rfl⟩
 
-/-- The inverse relabeling, where every slot gets back its old label. -/
+/-- The inverse relabeling, where every index returns to its old position. -/
 def symm (σ : ColorEquiv c₁ c₂) : ColorEquiv c₂ c₁ :=
   ⟨σ.toEquiv.symm, fun i => by simpa using (σ.color_eq (σ.toEquiv i)).symm⟩
 
@@ -93,7 +93,7 @@ def symm (σ : ColorEquiv c₁ c₂) : ColorEquiv c₂ c₁ :=
 def trans (σ₁ : ColorEquiv c₁ c₂) (σ₂ : ColorEquiv c₂ c₃) : ColorEquiv c₁ c₃ :=
   ⟨σ₁.toEquiv.trans σ₂.toEquiv, fun j => (σ₁.color_eq _).trans (σ₂.color_eq j)⟩
 
-/-- The relabeling that swaps the two slots of a tensor on two slots, `![a, b] → ![b, a]`. -/
+/-- The relabeling that swaps the two indices of a tensor on two indices, `![a, b] → ![b, a]`. -/
 def swapTwo (a b : Color K) : ColorEquiv (K := K) ![a, b] ![b, a] := ⟨Equiv.swap 0 1, by
   intro j; fin_cases j <;> rfl⟩
 
@@ -129,8 +129,8 @@ variable {ι₁ ι₂ ι₃ : Type}
 -/
 
 variable (S) in
-/-- The bijection `e` of slots applied to tensors, moving the vector of the old slot `i` to the new
-slot `e i`, with the colors `c ∘ e.symm`. It is Mathlib's `PiTensorProduct.reindex`. -/
+/-- The bijection `e` of indices applied to tensors, moving the vector of the old index `i` to the
+new index `e i`, with the colors `c ∘ e.symm`. It is Mathlib's `PiTensorProduct.reindex`. -/
 noncomputable def permIndices (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
     (S.tensorRep c).Equiv (S.tensorRep (c ∘ e.symm)) :=
   equivOfPure (S.toPiTensor c ≪≫ₗ PiTensorProduct.reindex k (fun i => S.V (c i)) e ≪≫ₗ
@@ -139,21 +139,21 @@ noncomputable def permIndices (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
         PiTensorProduct.reindex_tprod, toPiTensor_symm_tprod]
       rfl
 
-/-- On a pure tensor, the new slot `j` holds the vector of the old slot `e.symm j`. -/
+/-- On a pure tensor, the new index `j` holds the vector of the old index `e.symm j`. -/
 @[simp]
 lemma permIndices_pure (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) (f : Π i, S.V (c i)) :
     S.permIndices c e (S.pure f) = S.pure fun j => f (e.symm j) := by
   simp [permIndices, PiTensorProduct.reindex_tprod]
 
 variable (S) in
-/-- The relabeling `σ` applied to tensors, as in the transpose `T^μ_ν ↦ T_ν^μ`. The new slot `j`
-holds the vector of the old slot `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is
+/-- The relabeling `σ` applied to tensors, as in the transpose `T^μ_ν ↦ T_ν^μ`. The new index `j`
+holds the vector of the old index `σ.toEquiv.symm j`, moved along `σ.color_eq j`. It is
 `permIndices` of `σ.toEquiv` followed by `congrIndices` of the moves. -/
 noncomputable def reindex {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) :
     (S.tensorRep c₁).Equiv (S.tensorRep c₂) :=
   (S.permIndices c₁ σ.toEquiv).trans (S.congrIndices fun j => S.cast (σ.color_eq j))
 
-/-- On a pure tensor, the new slot `j` holds the vector of the old slot `σ.toEquiv.symm j`, moved
+/-- On a pure tensor, the new index `j` holds the vector of the old index `σ.toEquiv.symm j`, moved
 along `σ.color_eq j`. -/
 @[simp]
 lemma reindex_pure {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂)
@@ -200,7 +200,7 @@ lemma reindex_symm {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} (σ : C
 -/
 
 /-- The components of a relabeled tensor are those of the tensor, as in `(Tᵀ)_ν^μ = T^μ_ν`. The
-old slot `i` takes the label `y (σ.toEquiv i)` of its new slot, cast along the equality of their
+old index `i` takes the label `y (σ.toEquiv i)` of its new index, cast along the equality of their
 colors. For concrete colors and labels the cast is between equal types, and `rfl` removes it. -/
 lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ → Color K}
     {c₂ : ι₂ → Color K} (σ : ColorEquiv c₁ c₂) (t : S.Tensor c₁)
@@ -214,7 +214,7 @@ lemma tensorBasis_repr_reindex [Fintype ι₁] [Fintype ι₂] {c₁ : ι₁ →
   | h f =>
     rw [reindex_pure, tensorBasis_repr_pure, tensorBasis_repr_pure]
     refine Fintype.prod_equiv σ.toEquiv.symm _ _ fun j => ?_
-    -- The label `y j` is read at the new slot `σ.toEquiv (σ.toEquiv.symm j)`, which is `j` only
+    -- The label `y j` is read at the new index `σ.toEquiv (σ.toEquiv.symm j)`, which is `j` only
     -- up to a proof.
     rw [basis_repr_cast]
     exact congrArg _ (eq_of_heq ((cast_heq _ _).trans

@@ -8,7 +8,7 @@ module
 public import Mathlib.Init
 /-!
 
-# Colors of tensor slots
+# Colors of tensor indices
 
 A color gives the kind of an index of a tensor and whether the index is up or down.
 
@@ -19,13 +19,13 @@ tensors there is one kind, `vec`. The vector index of `v^μ` has color `⟨vec, 
 covector index of `w_μ` has color `⟨vec, down⟩`. Complex Lorentz tensors have three kinds, one
 for each of the two types of Weyl spinor index and one for the vector index.
 
-A tensor has one color per slot. A species (`Species.lean`) gives each color a space, and a
-tensor is an element of the tensor product of the spaces of its slots. Slots are labelled by
-colors rather than by spaces, so that checking that two slots can be contracted is an equality of
-labels, decidable, not an equality of types.
+A tensor has one color per index. A species (`Species.lean`) gives each color a space, and a
+tensor is an element of the tensor product of the spaces of its indices. Indices carry colors
+rather than spaces, so that checking that two indices can be contracted is an equality of colors,
+decidable, not an equality of types.
 
 The dual of `⟨κ, v⟩` is `⟨κ, v.dual⟩`, the same kind with the other variance. A contraction such
-as `v^μ w_μ` pairs a slot of color `c` with a slot of color `c.dual`. `Color K` is a structure
+as `v^μ w_μ` pairs an index of color `c` with an index of color `c.dual`. `Color K` is a structure
 rather than the product `K × Variance`, so that `c.dual` works as dot notation.
 
 ## ii. Key results

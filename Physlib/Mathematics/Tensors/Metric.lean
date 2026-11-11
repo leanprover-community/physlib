@@ -28,7 +28,7 @@ has one, as the SU(3) triplet has none. The inverse is stored with the form. Sym
 `S.IsAntisymmetricForm κ`.
 
 `S.toDual c` contracts a vector with the first index of the form at `c.dual`, lowering an upper
-index and raising a lower one, and `S.toDualAt i` does so at the slot `i` of a tensor. For the
+index and raising a lower one, and `S.toDualAt i` does so at the index `i` of a tensor. For the
 antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus the convention
 `ψ_α = ε_αβ ψ^β` with `ε^12 = ε_21 = 1`, so a Weyl species following that convention stores `-ε`.
 
@@ -44,8 +44,8 @@ antisymmetric `ε` this gives `ψ_β = ψ^α ε_αβ = -ε_βα ψ^α`, minus th
   `Species.isSymm_formBilin` and alternating by `Species.isAlt_formBilin`.
 - `Species.toDual` lowers an upper index and raises a lower one, and `Species.toDual_toDual` that
   raising undoes lowering.
-- `Species.formTensor` is the form as a tensor on two slots.
-- `Species.toDualAt` lowers or raises the index at one slot of a tensor, with
+- `Species.formTensor` is the form as a tensor on two indices.
+- `Species.toDualAt` lowers or raises one index of a tensor, with
   `Species.toDualAt_toDualAt`, `Species.toDualAt_eq_mapAt` and, in components,
   `Species.tensorBasis_repr_toDualAt`.
 - `Species.toDualAt_eq_contr` proves that lowering is contracting with the form,
@@ -291,12 +291,12 @@ lemma tensorBasis_repr_formTensor (c : Color K) [S.HasForm c.kind]
     (S.tensorBasis ![c, c]).repr (S.formTensor c) μ = S.formMatrix c (μ 0) (μ 1) :=
   tensorBasis_repr_twoIndexEquiv _ _ _ μ
 
-/-- A symmetric form is symmetric under the slot swap as a tensor, `g^μν = g^νμ`. -/
+/-- A symmetric form is symmetric under the index swap as a tensor, `g^μν = g^νμ`. -/
 lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = S.formTensor c := by
   rw [formTensor, reindex_twoIndexEquiv, form_symm]
 
-/-- An antisymmetric form is antisymmetric under the slot swap as a tensor,
+/-- An antisymmetric form is antisymmetric under the index swap as a tensor,
 `g^μν = -g^νμ`. -/
 lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = -S.formTensor c := by
@@ -311,9 +311,9 @@ lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricFor
 variable {ι : Type} [DecidableEq ι]
 
 variable (S) in
-/-- `S.toDual` at the slot `i` of a tensor and the identity at the other slots, as in
-`T^μν ↦ T^μ_ν` for `i` the second slot. The slot has the color `a` by `ha`, and the form is the one
-at the kind of `a`. The colors `c'` of the result have the dual color at `i` by `hi` and agree
+/-- `S.toDual` at the index `i` of a tensor and the identity at the other indices, as in
+`T^μν ↦ T^μ_ν` for `i` the second index. The index has the color `a` by `ha`, and the form is the
+one at the kind of `a`. The colors `c'` of the result have the dual color at `i` by `hi` and agree
 with `c` elsewhere by `h`. It is `congrAt` of `toDual`. -/
 noncomputable def toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) :
@@ -330,7 +330,7 @@ lemma toDualAt_pure {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a
     S.toDualAt i a ha hi h (S.pure p) = S.pure q :=
   mapAt_pure i _ h p q hqi hq
 
-/-- Raising at a slot undoes lowering at that slot, `(T^μ_ν)^ν = T^μν`. -/
+/-- Raising at an index undoes lowering at that index, `(T^μ_ν)^ν = T^μν`. -/
 lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a.dual hi ha (fun x hx => (h x hx).symm) (S.toDualAt i a ha hi h t) = t := by
@@ -338,15 +338,15 @@ lemma toDualAt_toDualAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
     (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).symm from rfl, ← congrAt_symm]
   exact (S.congrAt i _ h).symm_apply_apply t
 
-/-- Lowering or raising at a slot is `toDual` at that slot, read as a linear map. Chains of
-lowerings and raisings at several slots compose slot by slot through `mapIndices_mapIndices`. -/
+/-- Lowering or raising at an index is `toDual` at that index, read as a linear map. Chains of
+lowerings and raisings at several indices compose index by index through `mapIndices_mapIndices`. -/
 lemma toDualAt_eq_mapAt {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :
     S.toDualAt i a ha hi h t =
       S.mapAt i (((S.cast ha).trans (S.toDual a)).trans (S.cast hi.symm)).toLinearMap h t :=
   congrAt_eq_mapAt i _ h t
 
-/-- Lowering or raising the index at the slot `i` in components, `T^…_ν… = g_νμ T^…μ…`. The
+/-- Lowering or raising the index `i` in components, `T^…_ν… = g_νμ T^…μ…`. The
 labels `φ` of the result are cast to labels of `t`, and the label at `i` is replaced by the summed
 `μ`. For concrete colors the casts are along `rfl`. -/
 lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a : Color K)
@@ -367,7 +367,7 @@ lemma tensorBasis_repr_toDualAt [Fintype ι] {c c' : ι → Color K} (i : ι) (a
   rw [basis_repr_cast, basis_repr_toDual]
   simp [Finsupp.single_apply]
 
-/-- Lowering or raising at the slot `i` is contracting that slot with the second index of the
+/-- Lowering or raising at the index `i` is contracting that index with the second index of the
 form, `T^…_ν… = g_νμ T^…μ…`. -/
 lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i = a)
     [S.HasForm a.kind] (hi : c' i = a.dual) (h : ∀ x, x ≠ i → c x = c' x) (t : S.Tensor c) :

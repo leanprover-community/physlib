@@ -32,12 +32,12 @@ invariant exactly when its linear map commutes with the group action. This is Ma
 
 The delta `S.delta c = ∑ μ, e^μ ⊗ e_μ` is the tensor of the identity map, `u^μ δ_μ^ν = u^ν`. The
 identity commutes with every group element, so the delta is invariant. `S.deltaTensor c` is the
-delta as a tensor on two slots, and its components form the identity matrix.
+delta as a tensor on two indices, and its components form the identity matrix.
 
-Contracting the inner indices of two tensors on two slots, `M^μ_ν N^ν_ρ`, applies the linear map
+Contracting the inner indices of two tensors on two indices, `M^μ_ν N^ν_ρ`, applies the linear map
 of `N` to the second factor of `M`, and the result is the delta exactly when the two linear maps
 are inverse. More generally, contracting an index of any tensor with the first index of a tensor
-`F` on two slots applies the linear map of `F` at that index, and for the delta this is the
+`F` on two indices applies the linear map of `F` at that index, and for the delta this is the
 identity.
 
 ## ii. Key results
@@ -46,7 +46,7 @@ identity.
   the linear map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, and `Species.isIntertwiningMap_toLin_iff` : `z` is
   invariant exactly when its linear map commutes with the group action.
 - `Species.delta` : the delta `δ_μ^ν`, with `Species.delta_invariant` : it is invariant.
-- `Species.deltaTensor` : the delta as a tensor on two slots, with
+- `Species.deltaTensor` : the delta as a tensor on two indices, with
   `Species.tensorBasis_repr_deltaTensor_eq_one` : its components form the identity matrix.
 - `Species.Tensor.contr_matMul` : the contraction `M^μ_ν N^ν_ρ`, and
   `Species.Tensor.contr_matMul_eq_deltaTensor_iff` : it is the delta exactly when the linear maps
@@ -59,7 +59,7 @@ identity.
 
 - A. Tensors of two factors as linear maps
 - B. The delta
-- C. Products with a tensor on two slots
+- C. Products with a tensor on two indices
 
 ## iv. References
 
@@ -182,11 +182,11 @@ variable {ι₁ κ : Type} {c : ι₁ → Color K} {c' : κ → Color K}
 
 /-!
 
-## C. Products with a tensor on two slots
+## C. Products with a tensor on two indices
 
 -/
 
-/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two slots that contracts the
+/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
 second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
 `0` and `1`. -/
 def _root_.Tensor.ColorEquiv.matMul (a c b : Color K) :
@@ -198,7 +198,7 @@ def _root_.Tensor.ColorEquiv.matMul (a c b : Color K) :
   toEquiv.left_inv := by decide
   toEquiv.right_inv := by decide
 
-/-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two slots is `M` with its second factor mapped
+/-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two indices is `M` with its second factor mapped
 by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
 lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual ⊗[k] S.V b) :
     contr (ColorEquiv.matMul a c b)
@@ -218,7 +218,7 @@ lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual �
     funext j
     fin_cases j <;> rfl
 
-/-- Two tensors on two slots contract to the delta, `X_μν Y^νρ = δ_μ^ρ`, exactly when their linear
+/-- Two tensors on two indices contract to the delta, `X_μν Y^νρ = δ_μ^ρ`, exactly when their linear
 maps compose to the identity, `Y ∘ X = id`. -/
 lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
     (Y : S.V y.dual ⊗[k] S.V x.dual) :
@@ -229,9 +229,9 @@ lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
     ← (S.toLin (a := x)).injective.eq_iff, Module.Basis.coordTensorHomEquiv_lTensor,
     Module.Basis.coordTensorHomEquiv_coordDelta]
 
-/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the slot `i` of `T` with the first slot of a
-tensor `F` on two slots and puts the second slot of `F` in the place of `i`. It is
-`ColorEquiv.matMul` at any slot of a tensor on any slots. -/
+/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the index `i` of `T` with the first index of a
+tensor `F` on two indices and puts the second index of `F` in the place of `i`. It is
+`ColorEquiv.matMul` at any index of a tensor on any index type. -/
 def _root_.Tensor.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
     (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
     ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
@@ -258,8 +258,8 @@ def _root_.Tensor.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Colo
     · simp [ha]
     · simp
 
-/-- On a pure tensor, contracting the slot `i` with the first slot of `F` applies `F`, read as a
-linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other slots are
+/-- On a pure tensor, contracting the index `i` with the first index of `F` applies `F`, read as a
+linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other indices are
 those of `p`, moved along `h`. -/
 lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
     (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
@@ -288,8 +288,8 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
         (ColorEquiv.matMulAt i a b ha hi h).toEquiv.symm (.inl z) = .inl z by
           simp [ColorEquiv.matMulAt, hz]), hq z hz]
 
-/-- Contracting the index `i` of `t` with the first index of a tensor `F` on two slots applies `F`,
-read as a linear map by `Species.toLin`, at `i`, as in `T^…μ… F_μ^ν`. -/
+/-- Contracting the index `i` of `t` with the first index of a tensor `F` on two indices applies
+`F`, read as a linear map by `Species.toLin`, at `i`, as in `T^…μ… F_μ^ν`. -/
 lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) (a b : Color K)
     (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) (F : S.V a.dual ⊗[k] S.V b)
     (t : S.Tensor c) :
