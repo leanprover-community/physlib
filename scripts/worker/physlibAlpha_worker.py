@@ -51,7 +51,8 @@ only define the agents and tasks that the later steps use):
 9. Running the task.
 10. Safety checks.
 11. Creating the PR.
-12. Clean up.
+12. Handbook alignment report.
+13. Clean up.
 
 ## Locally testing
 
@@ -80,7 +81,8 @@ import subprocess
 import sys
 import time
 import tomllib
-from dataclasses import dataclass
+from collections.abc import Callable
+from dataclasses import dataclass, replace
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -263,6 +265,7 @@ class Agent:
     model: str
     effort: str
     command: list[str]  # <agent-command>, with the task's permissions
+    review_command: Callable[[Path], list[str]]  # <agent-command> for a review, writing only in a folder
     co_author: str  # <co-author>
 
     def narrate(self, event: dict) -> None:
@@ -355,6 +358,31 @@ CLAUDE_PERMISSIONS = [
     "Bash(git add:*)",
     "Bash(git commit:*)",
 ]
+
+
+def claude_review_permissions(work: Path) -> list[str]:
+    """For running the skill handbook-alignment: reading, subagents, writing only in `work`, and
+    the commands the skill uses, none of which builds or posts."""
+    # A rule's absolute path starts `//`, and is in POSIX form: on Windows, `C:\x` is `/c/x`. An
+    # `Edit` rule covers every tool that writes files, and redirecting a command's output.
+    path = work.as_posix()
+    if re.match(r"[A-Za-z]:/", path):
+        path = f"/{path[0].lower()}{path[2:]}"
+    return [
+        "--allowedTools", "Read", "Glob", "Grep", "Agent", f"Edit(/{path}/**)",
+        "Bash(mkdir:*)",
+        "Bash(git fetch:*)",
+        "Bash(git worktree:*)",
+        "Bash(git diff:*)",
+        "Bash(git log:*)",
+        "Bash(git show:*)",
+        "Bash(git ls-files:*)",
+        "Bash(git merge-base:*)",
+        "Bash(gh pr view:*)",
+        "Bash(gh pr diff:*)",
+        "Bash(python3 .agents/skills/handbook-alignment/report.py:*)",
+    ]
+
 def claude_agent(model: str | None, effort: str) -> Agent:
     """Claude Code as the agent, once it is checked to be installed and logged in."""
     run(["claude", "--version"], capture=True)
@@ -369,10 +397,7 @@ def claude_agent(model: str | None, effort: str) -> Agent:
     info(f"tokens will be spent by {status.get('email') or 'this account'}, through {pays}")
 
     model = model or DEFAULT_MODELS["claude"]
-    command = [
-        "claude", "-p", "--model", model, "--effort", effort, "--output-format", "stream-json", "--verbose",
-        *CLAUDE_PERMISSIONS,
-    ]
+    base = ["claude", "-p", "--model", model, "--effort", effort, "--output-format", "stream-json", "--verbose"]
     # <co-author>: `claude-opus-5-5` gives
     # `Co-authored-by: Claude Opus 5.5 <no-reply+claude-opus-5-5@anthropic.com>`.
     match = re.fullmatch(r"claude-([a-z]+)-(\d+)(?:-(\d+))?", model)
@@ -381,11 +406,21 @@ def claude_agent(model: str | None, effort: str) -> Agent:
         co_author = f"Co-authored-by: Claude {match[1].title()} {version} <no-reply+{model}@anthropic.com>"
     else:
         co_author = f"Co-authored-by: {model}"
-    return Agent("claude", model, effort, command, co_author)
+    return Agent(
+        "claude", model, effort, [*base, *CLAUDE_PERMISSIONS],
+        lambda work: [*base, *claude_review_permissions(work)], co_author,
+    )
 
 # Codex
 
 CODEX_PERMISSIONS = ["--sandbox", "workspace-write"]
+
+
+def codex_review_permissions(work: Path) -> list[str]:
+    """For running the skill handbook-alignment: writing in the clone and in `work`, with the
+    network, which the skill's `git fetch` and `gh` need."""
+    return ["--sandbox", "workspace-write", "--add-dir", str(work), "-c", "sandbox_workspace_write.network_access=true"]
+
 
 def codex_agent(model: str | None, effort: str) -> Agent:
     """Codex as the agent, once it is checked to be installed and logged in."""
@@ -393,9 +428,13 @@ def codex_agent(model: str | None, effort: str) -> Agent:
     info(output(["codex", "login", "status"]))
 
     model = model or DEFAULT_MODELS["codex"]
-    command = ["codex", "exec", "--json", "--model", model, "-c", f'model_reasoning_effort="{effort}"', *CODEX_PERMISSIONS, "-"]
+    base = ["codex", "exec", "--json", "--model", model, "-c", f'model_reasoning_effort="{effort}"']
     # <co-author>: the email address for models other than Claude is still to be decided.
-    return Agent("codex", model, effort, command, f"Co-authored-by: {model}")
+    return Agent(
+        "codex", model, effort, [*base, *CODEX_PERMISSIONS, "-"],
+        lambda work: [*base, *codex_review_permissions(work), "-"],
+        f"Co-authored-by: {model}",
+    )
 
 # Choosing the model
 def choose_agent(requested: str | None, model: str | None, effort: str) -> Agent:
@@ -585,7 +624,39 @@ def open_pr(save: Path, fork: str, branch: str, task: Task, agent: Agent) -> str
 
 
 ###################
-# 12. Clean up
+# 12. Handbook alignment report
+###################
+# Runs the skill `.agents/skills/handbook-alignment` on the PR, in its non-interactive mode, and
+# posts the report it makes as a comment on the PR.
+def handbook_alignment(save: Path, tasks_from: Path | None, pr_url: str, agent: Agent, started: str) -> str | None:
+    """Run the skill handbook-alignment on the PR, and post its report there; return the
+    comment's URL, or None if no report was posted."""
+    clone = save / "physlib"
+    folder = save / "reviews" / started
+    try:
+        skill = ((tasks_from or clone) / ".agents/skills/handbook-alignment/SKILL.md").read_text()
+        if skill.startswith("---"):
+            skill = skill.split("---", 2)[-1]  # the text after the frontmatter
+        folder.mkdir(parents=True)
+        request = f"#{pr_url.rstrip('/').split('/')[-1]} non-interactive {folder}"
+        reviewer = replace(agent, command=agent.review_command(folder))
+        result = reviewer.run(clone, f"{skill.strip()}\n\nThe request: {request}\n", folder / "review.jsonl")
+        report_file = folder / "report.md"
+        if not (result.ok and report_file.is_file()):
+            raise WorkerError(f"the skill made no report; its final message was:\n{result.message}")
+        report = report_file.read_text().rstrip()
+        report += f"\n\n<sub>Made by {NAME}, with {agent.model} ({agent.name}, effort {agent.effort}).</sub>\n"
+        posted = run(["gh", "pr", "comment", pr_url, "--body-file", "-"], capture=True, stdin_text=report)
+    except (WorkerError, OSError) as error:
+        info(f"no handbook alignment report was posted: {error}")
+        return None
+    url = posted.stdout.strip().splitlines()[-1]
+    info(f"report: {url}" + (f" (cost: ${result.cost_usd:.2f})" if result.cost_usd is not None else ""))
+    return url
+
+
+###################
+# 13. Clean up
 ###################
 # Cleaning up the code
 
@@ -605,7 +676,7 @@ def clean_up(
 
 
 ###################
-# 13. The whole run, and the command line
+# 14. The whole run, and the command line
 ###################
 
 
@@ -645,7 +716,10 @@ def work(args: argparse.Namespace) -> int:
         step("11. Creating the PR")
         pr_url = open_pr(save, fork, branch, task, agent)
 
-    step("12. Clean up")
+        step("12. Handbook alignment report")
+        handbook_alignment(save, tasks_from, pr_url, agent, started)
+
+    step("13. Clean up")
     clean_up(save, branch, task, agent, result, log, pr_url)
     return 0
 
