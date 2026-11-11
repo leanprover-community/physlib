@@ -233,12 +233,12 @@ variable {S}
 
 ## C. Moving a vector along an equality of colors
 
-`S.V a` and `S.V a'` are different types unless `a` and `a'` are equal by definition. The colors
-of two indices are often equal only through a proof. For a family of colors `c : ι → Color K` and
-two indices with `s = s'`, the colors `c s` and `c s'` are equal through that proof. A vector is
-moved between the two spaces by `S.cast`, which is the identity on the vector. The lemmas say that
-this keeps the group action, the components and the contraction, so that proofs can remove the
-casts.
+When two colors are equal by computation, as `c.dual.dual` and `c`, their spaces are the same
+type. When they are equal only through a proof `p : a = a'`, Lean cannot use a vector of `S.V a`
+where one of `S.V a'` is expected. This happens for a hypothesis such as `c i = a`, and for the
+colors `c s` and `c s'` of two indices with `s = s'`. `S.cast p` moves the vector from `S.V a` to
+`S.V a'` without changing it. The lemmas below say that `S.cast` keeps the group action, the
+components and the contraction, so that proofs can remove it.
 
 -/
 
