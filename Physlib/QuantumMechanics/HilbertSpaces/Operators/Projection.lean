@@ -33,7 +33,6 @@ is sharp. It is not a mixture of two other effects.
 
 ## iv. References
 
-- [ref: hall2013quantum]
 -/
 
 @[expose] public section
