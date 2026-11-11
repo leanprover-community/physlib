@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Contraction
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
+public import Mathlib.RepresentationTheory.Invariants
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.TensorProductMatrix
 
@@ -32,6 +33,10 @@ A tensor `z` of `M ⊗ M` gives the bilinear form `(u, v) ↦ ⟨v, z u⟩` on `
 of `z` swaps its arguments, so the form is symmetric when `z` is and alternating when `z` is
 antisymmetric.
 
+When the coordinate pairing is invariant under representations of a group, the linear map of
+`Λz` is `Λ ∘ z ∘ Λ⁻¹`, so `z` is invariant exactly when its linear map is an intertwining map,
+and the delta is invariant.
+
 ## ii. Key results
 
 - `Module.Basis.coordTensorHomEquiv` : a tensor of `M ⊗ U` as a linear map `N → U`.
@@ -44,11 +49,16 @@ antisymmetric.
 - `Module.Basis.isSymm_coordTensorHomEquiv_of_comm_eq` and
   `Module.Basis.isAlt_coordTensorHomEquiv_of_comm_eq_neg` : the bilinear form `(u, v) ↦ ⟨v, z u⟩`
   is symmetric when `comm z = z` and alternating when `comm z = -z`.
+- `Module.Basis.coordTensorHomEquiv_map_rep` : the linear map of `(Λ ⊗ f) z` is
+  `f ∘ z ∘ Λ⁻¹`, and `Module.Basis.isIntertwiningMap_coordTensorHomEquiv_iff` : `z` is invariant
+  exactly when its linear map is an intertwining map.
+- `Module.Basis.coordDelta_invariant` : the delta is invariant.
 
 ## iii. Table of contents
 
 - A. Tensors as linear maps through the coordinate pairing
 - B. The bilinear form of a tensor
+- C. Equivariance
 
 ## iv. References
 
@@ -198,5 +208,60 @@ lemma isAlt_coordTensorHomEquiv_of_comm_eq_neg [NoZeroDivisors R] [CharZero R]
     -b'.coordPairing b (u ⊗ₜ b.coordTensorHomEquiv b' z v)
   rw [← coordPairing_coordTensorHomEquiv_comm, hz, map_neg, LinearMap.neg_apply, tmul_neg,
     map_neg]
+
+/-!
+
+## C. Equivariance
+
+When the coordinate pairing of `b` and `b'` is invariant under representations `ρ` on `M` and `ρ'`
+on `N`, the group acts on a tensor of `M ⊗ U` as `Λ ∘ z ∘ Λ⁻¹` on its linear map.
+
+-/
+
+section
+
+variable {G : Type*} [Group G] {ρ : Representation R G M} {ρ' : Representation R G N}
+  {b : Module.Basis ι R M} {b' : Module.Basis ι R N}
+
+/-- The linear map of `(Λ ⊗ f) z` is `f ∘ z ∘ Λ⁻¹` when the coordinate pairing is invariant. -/
+lemma coordTensorHomEquiv_map_rep
+    (hρ : ∀ g x y, b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y))
+    (f : U →ₗ[R] U') (z : M ⊗[R] U) (g : G) :
+    b.coordTensorHomEquiv b' (TensorProduct.map (ρ g) f z) =
+      f ∘ₗ b.coordTensorHomEquiv b' z ∘ₗ ρ' g⁻¹ := by
+  induction z using TensorProduct.inductionOn with
+  | add z z' hz hz' => simp only [map_add, hz, hz', LinearMap.add_comp, LinearMap.comp_add]
+  | tmul x y =>
+    ext v
+    simpa [coordPairing_comm b' b] using
+      congrArg (· • f y) (hρ g x (ρ' g⁻¹ v))
+
+/-- The linear map of `(Λ ⊗ f) z` is bijective when those of `f` and `z` are. -/
+lemma bijective_coordTensorHomEquiv_map_rep
+    (hρ : ∀ g x y, b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y))
+    {f : U →ₗ[R] U'} (hf : Function.Bijective f) {z : M ⊗[R] U}
+    (hz : Function.Bijective (b.coordTensorHomEquiv b' z)) (g : G) :
+    Function.Bijective (b.coordTensorHomEquiv b' (TensorProduct.map (ρ g) f z)) := by
+  rw [coordTensorHomEquiv_map_rep hρ, LinearMap.coe_comp, LinearMap.coe_comp]
+  exact hf.comp (hz.comp (ρ'.apply_bijective g⁻¹))
+
+/-- A tensor is invariant exactly when its linear map is an intertwining map. -/
+lemma isIntertwiningMap_coordTensorHomEquiv_iff
+    (hρ : ∀ g x y, b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y))
+    {σ : Representation R G U} (z : M ⊗[R] U) :
+    ρ'.IsIntertwiningMap σ (b.coordTensorHomEquiv b' z) ↔
+      ∀ g, TensorProduct.map (ρ g) (σ g) z = z := by
+  rw [← Representation.mem_linHom_invariants_iff_isIntertwining]
+  exact forall_congr' fun g => by
+    rw [← (b.coordTensorHomEquiv b').injective.eq_iff, coordTensorHomEquiv_map_rep hρ]
+
+/-- The delta is invariant when the coordinate pairing is. -/
+lemma coordDelta_invariant
+    (hρ : ∀ g x y, b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y)) (g : G) :
+    TensorProduct.map (ρ g) (ρ' g) (b.coordDelta b') = b.coordDelta b' :=
+  (isIntertwiningMap_coordTensorHomEquiv_iff hρ _).1
+    (by rw [coordTensorHomEquiv_coordDelta]; exact ⟨fun _ _ => rfl⟩) g
+
+end
 
 end Module.Basis

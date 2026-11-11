@@ -22,8 +22,8 @@ linear map `S.toLin z : V a.dual → U` that contracts its input with the first 
 pure tensor `z = x ⊗ y` it is `v ↦ (v^μ x_μ) y`. Every linear map `V a.dual → U` is `toLin z` for
 exactly one `z`. `toLin` is `Module.Basis.coordTensorHomEquiv` for the bases of `a` and `a.dual`,
 which is Mathlib's `dualTensorHomEquivOfBasis` once the contraction identifies `V a` with the dual
-of `V a.dual`. The results that need only the bases, such as the matrix of `toLin z`, are stated
-there.
+of `V a.dual`. The results that need only the bases and the invariance of the contraction, such as
+the matrix of `toLin z` and its equivariance, are stated there.
 
 This is how two-index tensors act as maps. A metric `g_μν` is the map `v^μ ↦ v^μ g_μν`, and the
 inverse metric `g^μν` is the tensor of the inverse map. The map of `Λz` is `Λ ∘ z ∘ Λ⁻¹`, so `z` is
@@ -161,25 +161,20 @@ lemma coordPairing_basis_dual (c : Color K) {x : S.V c.dual} {y : S.V c} :
 lemma toLin_map_rep {a b : Color K} (z : S.V a ⊗[k] S.V b) (g : G) :
     S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z) =
       S.rep b g ∘ₗ S.toLin z ∘ₗ S.rep a.dual g⁻¹ :=
-  LinearMap.ext fun x => by
-    induction z using TensorProduct.inductionOn with
-    | tmul w y =>
-      simpa using congrArg (· • S.rep b g y) (S.contr_invariant a.dual g (S.rep a.dual g⁻¹ x) w)
-    | add z z' hz hz' => simp only [map_add, LinearMap.add_apply, hz, hz', LinearMap.comp_apply]
+  Module.Basis.coordTensorHomEquiv_map_rep (S.invariant a) _ z g
 
 /-- The linear map of `Λz` is bijective when that of `z` is. -/
 lemma toLin_map_rep_bijective {a b : Color K} (z : S.V a ⊗[k] S.V b)
     (h : Function.Bijective (S.toLin z)) (g : G) :
-    Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) := by
-  rw [toLin_map_rep, LinearMap.coe_comp, LinearMap.coe_comp]
-  exact ((S.rep b).apply_bijective g).comp (h.comp ((S.rep a.dual).apply_bijective g⁻¹))
+    Function.Bijective (S.toLin (TensorProduct.map (S.rep a g) (S.rep b g) z)) :=
+  Module.Basis.bijective_coordTensorHomEquiv_map_rep (S.invariant a)
+    ((S.rep b).apply_bijective g) h g
 
 /-- A tensor is invariant exactly when its linear map commutes with the group action. -/
 lemma isIntertwiningMap_toLin_iff {a b : Color K} (z : S.V a ⊗[k] S.V b) :
     (S.rep a.dual).IsIntertwiningMap (S.rep b) (S.toLin z) ↔
-      ∀ g, TensorProduct.map (S.rep a g) (S.rep b g) z = z := by
-  rw [← Representation.mem_linHom_invariants_iff_isIntertwining]
-  exact forall_congr' fun g => by rw [← toLin_map_rep, S.toLin.injective.eq_iff]
+      ∀ g, TensorProduct.map (S.rep a g) (S.rep b g) z = z :=
+  Module.Basis.isIntertwiningMap_coordTensorHomEquiv_iff (S.invariant a) z
 
 /-!
 
@@ -194,11 +189,8 @@ noncomputable abbrev delta (c : Color K) : S.V c.dual ⊗[k] S.V c :=
 
 /-- The delta is invariant, `Λ δ = δ`, with `Λ` acting on both factors. -/
 lemma delta_invariant (c : Color K) (g : G) :
-    TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c := by
-  -- The linear map of the delta is the identity, which commutes with the action.
-  refine (S.isIntertwiningMap_toLin_iff (S.delta c)).1 ?_ g
-  rw [Module.Basis.coordTensorHomEquiv_coordDelta]
-  exact ⟨fun _ _ => rfl⟩
+    TensorProduct.map (S.rep c.dual g) (S.rep c g) (S.delta c) = S.delta c :=
+  Module.Basis.coordDelta_invariant (S.invariant c.dual) g
 
 variable {S}
 
