@@ -70,9 +70,12 @@ when it permutes these bonds.
   description of a crystal. [ref: goehmann_solid_state_2021]
 * D. Tong, *Solid State Physics*, lecture notes, University of Cambridge, Section 2.2, for primitive
   lattice vectors, Bravais lattices and the lattice with a basis. [ref: tong_solid_state_physics]
-* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), Section 1.5, for circulant graphs
-  with a connection set, and Section 3.1, for the Cayley graph `X(G, C)` of a group `G` with
-  respect to an inverse-closed subset `C` of `G` without the identity. [ref: godsil_royle_2001]
+* C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), for circulant graphs with a
+  connection set (Section 1.5) and for the Cayley graph `X(G, C)` of a group `G` with respect to an
+  inverse-closed subset `C` of `G` without the identity (Section 3.1). The section numbers are
+  taken from the class notes below, not from the book itself. [ref: godsil_royle_2001]
+* B. Gardner, *Algebraic Graph Theory, class notes on Godsil and Royle*, East Tennessee State
+  University, for the section numbers above. [ref: gardner_algebraic_graph_theory_notes]
 * T. Sunada, *Topological Crystallography*, Springer (2013), for crystal structures as periodic
   graphs. [ref: sunada_topological_crystallography_2013]
 * E. W. Weisstein, *Connection Set*, MathWorld, for the name connection set: a subset of a group
