@@ -203,7 +203,7 @@ f(x) := \frac{1}{\sqrt{2\pi}}\int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x}
 $$
 -/
 
-namespace Fourier_0_p1
+namespace Fourier_0_1
 
 noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
   fourier := physFourier 0 1
@@ -211,7 +211,7 @@ noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpac
 noncomputable scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := physFourierInv 0 1
 
-end Fourier_0_p1
+end Fourier_0_1
 
 /-!
 ### B.2. `(a, b) = (1, -1)`
@@ -223,7 +223,7 @@ f(x) := \frac{1}{2\pi}\int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\math
 $$
 -/
 
-namespace Fourier_p1_n1
+namespace Fourier_1_n1
 
 noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
   fourier := physFourier 1 (-1)
@@ -231,7 +231,7 @@ noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpac
 noncomputable scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := physFourierInv 1 (-1)
 
-end Fourier_p1_n1
+end Fourier_1_n1
 
 end Conventions
 
