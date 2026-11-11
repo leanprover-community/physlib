@@ -13,7 +13,40 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 
 ## i. Overview
 
+The purpose of this module is to provide a means to work with Fourier transforms in a way
+that is both dimensionally consistent and flexible enough to allow various conventions.
+
+The two main definitions are `physFourier a b : (Space d → E) → WaveVectorSpace d → E`
+and `physFourierInv a b : (WaveVectorSpace d → E) → Space d → E` which amount to the following
+integral transformations depending on two parameters `a b : ℝ`:
+
+$$
+\tilde{f}(k) :=
+  \sqrt{\frac{|b|}{(2\pi)^{1-a}}}
+  \int f(x)\,\mathrm{e}^{\mathrm{i}bk\cdot x} \,\mathrm{d}^dx
+\;,\qquad
+f(x) :=
+  \sqrt{\frac{|b|}{(2\pi)^{1+a}}}
+  \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}bk\cdot x} \,\mathrm{d}^dk
+\;.
+$$
+
+These are implemented as rescaled/dilated versions of `VectorFourier.fourierIntegral`
+and most results require that `f : Space d → E` or `g : WaveVectorSpace d → E` be integrable.
+
+General results which hold for any `a` and `b` should be written in terms of `physFourier a b`.
+For results which require particular values for `a` and `b` there are dedicated namespaces
+`Fourier_a_b` (*e.g.* `Fourier_1_n1` for $(a,b) = (1,-1)$); include `open scoped Fourier_a_b`
+(*e.g.* `open scoped Fourier_1_n1`) and use the notation `𝓕` and `𝓕⁻`.
+
 ## ii. Key results
+
+- `physFourier a b` : the Fourier integral with real parameters `a` and `b`,
+  corresponding to a choice of convention, which maps a function `f : Space d → E`
+  to its Fourier transform of type `WaveVectorSpace d → E`.
+- `physFourierInv a b` : the inverse Fourier integral with real parameters `a` and `b`,
+  corresponding to a choice of convention, which maps a function `g : WaveVectorSpace d → E`
+  to its Fourier transform of type `Space d → E`.
 
 ## iii. Table of contents
 
