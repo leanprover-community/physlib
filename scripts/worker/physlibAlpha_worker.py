@@ -256,18 +256,22 @@ class WorkerError(Exception):
     """A failure the worker reports and stops on."""
 
 
+# Whether to color the output: only on a terminal, and not when NO_COLOR is set.
 _COLOR = sys.stdout.isatty() and not os.environ.get("NO_COLOR")
 
 
 def _paint(code: str, text: str) -> str:
+    """`text` in the terminal style `code` (e.g. "2" for dim), when coloring is on."""
     return f"\033[{code}m{text}\033[0m" if _COLOR else text
 
 
 def step(title: str) -> None:
+    """Print the heading of a step of the run, e.g. `==> 1. Determine the save location`."""
     print("\n" + _paint("1;36", f"==> {title}"), flush=True)
 
 
 def info(text: str) -> None:
+    """Print `text` under the current step, each line indented."""
     for line in text.splitlines() or [""]:
         print(f"    {line}", flush=True)
 
@@ -299,6 +303,7 @@ def output(cmd: list[str], cwd: Path | None = None) -> str:
 
 
 def git(clone: Path, *args: str) -> None:
+    """Run `git <args>` in `clone`, echoing it; raise WorkerError when it fails."""
     run(["git", "-C", str(clone), *args])
 
 
