@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Mathlib.Analysis.Distribution.Distribution
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
 /-!
@@ -113,6 +114,16 @@ lemma timeSliceLinearEquiv_symm_apply {d : ℕ} {M : Type} [AddCommGroup M] [Mod
 
 -/
 open Distribution SchwartzMap
+
+/-- The time slice of an ordinary distribution on `SpaceTime d` to form a distribution
+  on `Time × Space d`. -/
+noncomputable def oDistTimeSlice {F} [NormedAddCommGroup F] [NormedSpace ℝ F] :
+    Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ →L[ℝ]
+    Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ where
+  toFun f := sorry
+  map_add' := by sorry
+  map_smul' := by sorry
+
 
 /-- The time slice of a distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
