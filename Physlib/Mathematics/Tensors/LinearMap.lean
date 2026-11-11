@@ -57,9 +57,10 @@ identity.
 
 ## iii. Table of contents
 
-- A. Tensors of two factors as linear maps
-- B. The delta
-- C. Products with a tensor on two indices
+- A. Choices of pairs for products with a tensor on two indices
+- B. Tensors of two factors as linear maps
+- C. The delta
+- D. Products with a tensor on two indices
 
 ## iv. References
 
@@ -73,6 +74,59 @@ open TensorProduct
 
 namespace Tensor
 
+/-!
+
+## A. Choices of pairs for products with a tensor on two indices
+
+-/
+
+namespace ColorEquiv
+
+variable {K ι₁ : Type}
+
+/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
+second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
+`0` and `1`. -/
+def matMul (a c b : Color K) :
+    ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) where
+  toEquiv.toFun
+    | .inl 0 => .inl 0 | .inl 1 => .inr (.inl ()) | .inr 0 => .inr (.inr ()) | .inr 1 => .inl 1
+  toEquiv.invFun
+    | .inl 0 => .inl 0 | .inl 1 => .inr 1 | .inr (.inl ()) => .inl 1 | .inr (.inr ()) => .inr 0
+  toEquiv.left_inv := by decide
+  toEquiv.right_inv := by decide
+
+/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the index `i` of `T` with the first index of a
+tensor `F` on two indices and puts the second index of `F` in the place of `i`. It is
+`matMul` at any index of a tensor on any index type. -/
+def matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
+    (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
+    ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
+  toEquiv :=
+    { toFun := Sum.elim (fun x => if x = i then .inr (.inl ()) else .inl x)
+        (fun j => if j = 0 then .inr (.inr ()) else .inl i)
+      invFun := Sum.elim (fun x => if x = i then .inr 1 else .inl x)
+        (Sum.elim (fun _ => .inl i) fun _ => .inr 0)
+      left_inv := by
+        rintro (x | j)
+        · by_cases hx : x = i <;> simp [hx]
+        · fin_cases j <;> simp
+      right_inv := by
+        rintro (x | (⟨⟩ | ⟨⟩))
+        · by_cases hx : x = i <;> simp [hx]
+        · simp
+        · simp }
+  color_eq := by
+    rintro (x | (⟨⟩ | ⟨⟩))
+    · by_cases hx : x = i
+      · subst hx
+        simp [hi]
+      · simp [hx, h x hx]
+    · simp [ha]
+    · simp
+
+end ColorEquiv
+
 namespace Species
 
 variable {k : Type} [RCLike k] {G : Type} [Group G] {K : Type} {basisIdx : K → Type}
@@ -80,7 +134,7 @@ variable {k : Type} [RCLike k] {G : Type} [Group G] {K : Type} {basisIdx : K →
 
 /-!
 
-## A. Tensors of two factors as linear maps
+## B. Tensors of two factors as linear maps
 
 -/
 
@@ -129,7 +183,7 @@ lemma isIntertwiningMap_toLin_iff {a b : Color K} (z : S.V a ⊗[k] S.V b) :
 
 /-!
 
-## B. The delta
+## C. The delta
 
 -/
 
@@ -182,21 +236,9 @@ variable {ι₁ κ : Type} {c : ι₁ → Color K} {c' : κ → Color K}
 
 /-!
 
-## C. Products with a tensor on two indices
+## D. Products with a tensor on two indices
 
 -/
-
-/-- The relabeling of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
-second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
-`0` and `1`. -/
-def _root_.Tensor.ColorEquiv.matMul (a c b : Color K) :
-    ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) where
-  toEquiv.toFun
-    | .inl 0 => .inl 0 | .inl 1 => .inr (.inl ()) | .inr 0 => .inr (.inr ()) | .inr 1 => .inl 1
-  toEquiv.invFun
-    | .inl 0 => .inl 0 | .inl 1 => .inr 1 | .inr (.inl ()) => .inl 1 | .inr (.inr ()) => .inr 0
-  toEquiv.left_inv := by decide
-  toEquiv.right_inv := by decide
 
 /-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two indices is `M` with its second factor mapped
 by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
@@ -228,35 +270,6 @@ lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
   rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoIndexEquiv _ _)).eq_iff,
     ← (S.toLin (a := x)).injective.eq_iff, Module.Basis.coordTensorHomEquiv_lTensor,
     Module.Basis.coordTensorHomEquiv_coordDelta]
-
-/-- The relabeling of `T^…μ… F_μ^ν`, which contracts the index `i` of `T` with the first index of a
-tensor `F` on two indices and puts the second index of `F` in the place of `i`. It is
-`ColorEquiv.matMul` at any index of a tensor on any index type. -/
-def _root_.Tensor.ColorEquiv.matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
-    (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
-    ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
-  toEquiv :=
-    { toFun := Sum.elim (fun x => if x = i then .inr (.inl ()) else .inl x)
-        (fun j => if j = 0 then .inr (.inr ()) else .inl i)
-      invFun := Sum.elim (fun x => if x = i then .inr 1 else .inl x)
-        (Sum.elim (fun _ => .inl i) fun _ => .inr 0)
-      left_inv := by
-        rintro (x | j)
-        · by_cases hx : x = i <;> simp [hx]
-        · fin_cases j <;> simp
-      right_inv := by
-        rintro (x | (⟨⟩ | ⟨⟩))
-        · by_cases hx : x = i <;> simp [hx]
-        · simp
-        · simp }
-  color_eq := by
-    rintro (x | (⟨⟩ | ⟨⟩))
-    · by_cases hx : x = i
-      · subst hx
-        simp [hi]
-      · simp [hx, h x hx]
-    · simp [ha]
-    · simp
 
 /-- On a pure tensor, contracting the index `i` with the first index of `F` applies `F`, read as a
 linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other indices are

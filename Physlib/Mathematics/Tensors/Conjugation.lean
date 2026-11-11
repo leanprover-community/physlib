@@ -89,6 +89,12 @@ lemma Color.dual_eq_bar_dual {a b : Color K} (hb : b = a.bar) : a.dual = b.dual.
   subst hb
   simp [Color.bar]
 
+/-- The pairs `σ` of `T`, as pairs of its conjugate `T̄`, with the same bijection of indices. -/
+def ColorEquiv.barContr {ι κ J : Type} {c : ι → Color K} {b : κ → Color K} {a : J → Color K}
+    (σ : ColorEquiv c (contrColors b a)) :
+    ColorEquiv (fun i => (c i).bar) (contrColors (fun x => (b x).bar) fun j => (a j).bar) :=
+  ⟨σ.toEquiv, fun j => by rcases j with _ | _ | _ <;> exact congrArg Color.bar (σ.color_eq _)⟩
+
 /-!
 
 ## B. Species with a conjugation
@@ -289,11 +295,6 @@ lemma conj_smul [S.IsEquivariantConjugation] (h : ∀ i, c' i = (c i).bar) (g : 
   map_smul_of_pure (conj h) g (fun f => by simp [conjEquiv_rep]) t
 
 variable {κ J : Type} [Fintype J] {b : κ → Color K} {a : J → Color K}
-
-/-- The pairs `σ` of `T`, as pairs of its conjugate `T̄`, with the same bijection of indices. -/
-def _root_.Tensor.ColorEquiv.barContr {c : ι → Color K} (σ : ColorEquiv c (contrColors b a)) :
-    ColorEquiv (fun i => (c i).bar) (contrColors (fun x => (b x).bar) fun j => (a j).bar) :=
-  ⟨σ.toEquiv, fun j => by rcases j with _ | _ | _ <;> exact congrArg Color.bar (σ.color_eq _)⟩
 
 /-- Conjugating a contraction is contracting the conjugate along the same pairs of indices,
 `(T^ρμ_μ)‾ = T̄^ρμ_μ`. -/

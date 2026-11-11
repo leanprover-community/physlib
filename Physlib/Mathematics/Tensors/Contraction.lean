@@ -72,14 +72,15 @@ since the bases of a color and its dual are dual.
 
 ## iii. Table of contents
 
-- A. Contraction in the standard arrangement of indices
-- B. Contraction of chosen pairs of indices
-  - B.1. Relabeling the indices
-  - B.2. Contractions of the same pairs of indices
-  - B.3. Symmetric against antisymmetric
-  - B.4. Two contractions are one
-  - B.5. Products with a tensor that is not contracted
-- C. Components
+- A. Choices of pairs of indices
+- B. Contraction in the standard arrangement of indices
+- C. Contraction of chosen pairs of indices
+  - C.1. Relabeling the indices
+  - C.2. Contractions of the same pairs of indices
+  - C.3. Symmetric against antisymmetric
+  - C.4. Two contractions are one
+  - C.5. Products with a tensor that is not contracted
+- D. Components
 
 ## iv. References
 
@@ -93,6 +94,116 @@ open TensorProduct PiTensorProduct
 
 namespace Tensor
 
+/-!
+
+## A. Choices of pairs of indices
+
+-/
+
+/-- The colors of the standard arrangement `κ ⊕ (J ⊕ J)` of indices. The free index `inl x` has
+the color `c x`, and the two indices `inr (inl j)` and `inr (inr j)` of the pair `j` have the colors
+`a j` and `(a j).dual`. -/
+noncomputable abbrev contrColors {K κ J : Type} (c : κ → Color K) (a : J → Color K) :
+    κ ⊕ (J ⊕ J) → Color K :=
+  prodColors c (prodColors a fun j => (a j).dual)
+
+namespace ColorEquiv
+
+variable {K : Type} {ι₁ ι₂ κ κ₁ J J' J₁ J₂ : Type}
+
+/-- The relabeling of a contraction with no pairs, where every index is free and stays in place. -/
+def noPairs (c : ι₁ → Color K) :
+    ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
+  toEquiv.toFun := .inl
+  toEquiv.invFun := Sum.elim id (Sum.elim Empty.elim Empty.elim)
+  toEquiv.left_inv _ := rfl
+  toEquiv.right_inv := by rintro (x | e | e) <;> first | rfl | exact e.elim
+  color_eq := by rintro (x | e | e) <;> first | rfl | exact e.elim
+
+variable {c : ι₁ → Color K} {c' : κ → Color K}
+
+/-- The pair `j` of `σ` and the pair `j'` of `τ` contract the same two indices, in either order. -/
+def SamePair {a : J → Color K} {a' : J' → Color K}
+    (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
+    (j' : J') : Prop :=
+  (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inl j')) ∧
+      σ.toEquiv.symm (.inr (.inr j)) = τ.toEquiv.symm (.inr (.inr j'))) ∨
+    (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inr j')) ∧
+      σ.toEquiv.symm (.inr (.inr j)) = τ.toEquiv.symm (.inr (.inl j')))
+
+instance [DecidableEq ι₁] {a : J → Color K} {a' : J' → Color K}
+    (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
+    (j' : J') : Decidable (σ.SamePair τ j j') := by
+  unfold SamePair
+  infer_instance
+
+/-- A pair of `τ` is the same pair as at most one pair of `σ`. -/
+lemma SamePair.left_unique {a : J → Color K} {a' : J' → Color K}
+    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j₁ j₂ : J}
+    {j' : J'} (h₁ : σ.SamePair τ j₁ j') (h₂ : σ.SamePair τ j₂ j') : j₁ = j₂ := by
+  have hσ := σ.toEquiv.symm.injective
+  rcases h₁ with ⟨h₁, h₁'⟩ | ⟨h₁, h₁'⟩ <;> rcases h₂ with ⟨h₂, h₂'⟩ | ⟨h₂, h₂'⟩
+  · simpa using hσ (h₁.trans h₂.symm)
+  · simpa using hσ (h₁'.trans h₂.symm)
+  · simpa using hσ (h₁.trans h₂'.symm)
+  · simpa using hσ (h₁.trans h₂.symm)
+
+/-- A pair of `σ` is the same pair as at most one pair of `τ`. -/
+lemma SamePair.right_unique {a : J → Color K} {a' : J' → Color K}
+    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j : J}
+    {j₁ j₂ : J'} (h₁ : σ.SamePair τ j j₁) (h₂ : σ.SamePair τ j j₂) : j₁ = j₂ := by
+  have hτ := τ.toEquiv.symm.injective
+  rcases h₁ with ⟨h₁, -⟩ | ⟨h₁, -⟩ <;> rcases h₂ with ⟨h₂, -⟩ | ⟨h₂, -⟩ <;>
+    simpa using hτ (h₁.symm.trans h₂)
+
+/-- When `σ` and `τ` keep the same free indices and every pair of `σ` is a pair of `τ`, every pair
+of `τ` is a pair of `σ`. The indices of a pair of `τ` are not free, so they lie in a pair of `σ`. -/
+lemma exists_samePair_left {a : J → Color K} {a' : J' → Color K}
+    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')}
+    (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
+    (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (j' : J') : ∃ j, σ.SamePair τ j j' := by
+  have hτ := τ.toEquiv.symm.injective
+  rcases hs : σ.toEquiv (τ.toEquiv.symm (.inr (.inl j'))) with x | j | j <;>
+    rw [← Equiv.eq_symm_apply] at hs
+  · rw [hfree] at hs
+    have := hτ hs
+    simp at this
+  · obtain ⟨j'', h | h⟩ := h₁ j
+    · obtain rfl : j'' = j' := by simpa using hτ (h.1.symm.trans hs.symm)
+      exact ⟨j, .inl h⟩
+    · have := hτ (h.1.symm.trans hs.symm)
+      simp at this
+  · obtain ⟨j'', h | h⟩ := h₁ j
+    · have := hτ (h.2.symm.trans hs.symm)
+      simp at this
+    · obtain rfl : j'' = j' := by simpa using hτ (h.2.symm.trans hs.symm)
+      exact ⟨j, .inr h⟩
+
+/-- The pairs of two contractions in sequence, `σ₁` and then `σ₂`, as one choice of pairs
+`J₁ ⊕ J₂`, the pairs `J₁` of `σ₁` followed by the pairs `J₂` of `σ₂`. -/
+noncomputable def chain {c₁ : κ₁ → Color K} {a₁ : J₁ → Color K} {a₂ : J₂ → Color K}
+    (σ₁ : ColorEquiv c (contrColors c₁ a₁)) (σ₂ : ColorEquiv c₁ (contrColors c' a₂)) :
+    ColorEquiv c (contrColors c' (prodColors a₁ a₂)) :=
+  σ₁.trans ((σ₂.sumCongr (.refl _)).trans ⟨(Equiv.sumAssoc _ _ _).trans
+    (Equiv.sumCongr (Equiv.refl _) ((Equiv.sumComm _ _).trans (Equiv.sumSumSumComm _ _ _ _))),
+    by rintro (_ | (_ | _) | (_ | _)) <;> rfl⟩)
+
+/-- The pairs `σ` of `T`, as pairs of `T ⊗ U` for a factor `U` on the right, with colors `d`. The
+indices of `U` are free and come after the free indices of `T`. -/
+noncomputable def tmulRight {a : J → Color K} (σ : ColorEquiv c (contrColors c' a))
+    (d : ι₂ → Color K) :
+    ColorEquiv (prodColors c d) (contrColors (prodColors c' d) a) :=
+  (σ.sumCongr (.refl d)).trans (swapLast c' d _)
+
+/-- The pairs `σ` of `T`, as pairs of `U ⊗ T` for a factor `U` on the left, with colors `d`. The
+indices of `U` are free and come before the free indices of `T`. -/
+noncomputable def tmulLeft {a : J → Color K} (σ : ColorEquiv c (contrColors c' a))
+    (d : ι₂ → Color K) :
+    ColorEquiv (prodColors d c) (contrColors (prodColors d c') a) :=
+  ((refl d).sumCongr σ).trans (sumAssoc _ _ _).symm
+
+end ColorEquiv
+
 namespace Species
 
 variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
@@ -104,16 +215,9 @@ namespace Tensor
 
 /-!
 
-## A. Contraction in the standard arrangement of indices
+## B. Contraction in the standard arrangement of indices
 
 -/
-
-/-- The colors of the standard arrangement `κ ⊕ (J ⊕ J)` of indices. The free index `inl x` has
-the color `c x`, and the two indices `inr (inl j)` and `inr (inr j)` of the pair `j` have the colors
-`a j` and `(a j).dual`. -/
-noncomputable abbrev _root_.Tensor.contrColors {K κ J : Type} (c : κ → Color K) (a : J → Color K) :
-    κ ⊕ (J ⊕ J) → Color K :=
-  prodColors c (prodColors a fun j => (a j).dual)
 
 /-- The contraction of a tensor in the standard arrangement `κ ⊕ (J ⊕ J)`. For each pair `j` the
 index `inr (inl j)` is contracted with the index `inr (inr j)` by `S.contr (a j)`, with the index
@@ -147,7 +251,7 @@ lemma contrStd_pure [Fintype J] (c : κ → Color K) (a : J → Color K)
 
 /-!
 
-## B. Contraction of chosen pairs of indices
+## C. Contraction of chosen pairs of indices
 
 -/
 
@@ -174,15 +278,6 @@ lemma contr_pure [Fintype J] {a : J → Color K} (σ : ColorEquiv c (contrColors
         S.pure (c := c') fun x => S.cast (σ.color_eq (.inl x)) (f (σ.toEquiv.symm (.inl x))) :=
   (congrArg (contrStd c' a) (reindex_pure σ f)).trans (contrStd_pure c' a _)
 
-/-- The relabeling of a contraction with no pairs, where every index is free and stays in place. -/
-def _root_.Tensor.ColorEquiv.noPairs (c : ι₁ → Color K) :
-    ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
-  toEquiv.toFun := .inl
-  toEquiv.invFun := Sum.elim id (Sum.elim Empty.elim Empty.elim)
-  toEquiv.left_inv _ := rfl
-  toEquiv.right_inv := by rintro (x | e | e) <;> first | rfl | exact e.elim
-  color_eq := by rintro (x | e | e) <;> first | rfl | exact e.elim
-
 /-- A contraction with no pairs is the identity. Any tensor is thus a contraction, as needed to
 compare it with one. -/
 lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t :=
@@ -192,7 +287,7 @@ lemma contr_noPairs (t : S.Tensor c) : contr (ColorEquiv.noPairs c) t = t :=
 
 /-!
 
-### B.1. Relabeling the indices
+### C.1. Relabeling the indices
 
 -/
 
@@ -216,66 +311,9 @@ lemma reindex_contr {κ' : Type} [Fintype J] {c'' : κ' → Color K} {a : J → 
 
 /-!
 
-### B.2. Contractions of the same pairs of indices
+### C.2. Contractions of the same pairs of indices
 
 -/
-
-/-- The pair `j` of `σ` and the pair `j'` of `τ` contract the same two indices, in either order. -/
-def _root_.Tensor.ColorEquiv.SamePair {a : J → Color K} {a' : J' → Color K}
-    (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
-    (j' : J') : Prop :=
-  (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inl j')) ∧
-      σ.toEquiv.symm (.inr (.inr j)) = τ.toEquiv.symm (.inr (.inr j'))) ∨
-    (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inr j')) ∧
-      σ.toEquiv.symm (.inr (.inr j)) = τ.toEquiv.symm (.inr (.inl j')))
-
-instance [DecidableEq ι₁] {a : J → Color K} {a' : J' → Color K}
-    (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
-    (j' : J') : Decidable (σ.SamePair τ j j') := by
-  unfold ColorEquiv.SamePair
-  infer_instance
-
-/-- A pair of `τ` is the same pair as at most one pair of `σ`. -/
-lemma _root_.Tensor.ColorEquiv.SamePair.left_unique {a : J → Color K} {a' : J' → Color K}
-    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j₁ j₂ : J}
-    {j' : J'} (h₁ : σ.SamePair τ j₁ j') (h₂ : σ.SamePair τ j₂ j') : j₁ = j₂ := by
-  have hσ := σ.toEquiv.symm.injective
-  rcases h₁ with ⟨h₁, h₁'⟩ | ⟨h₁, h₁'⟩ <;> rcases h₂ with ⟨h₂, h₂'⟩ | ⟨h₂, h₂'⟩
-  · simpa using hσ (h₁.trans h₂.symm)
-  · simpa using hσ (h₁'.trans h₂.symm)
-  · simpa using hσ (h₁.trans h₂'.symm)
-  · simpa using hσ (h₁.trans h₂.symm)
-
-/-- A pair of `σ` is the same pair as at most one pair of `τ`. -/
-lemma _root_.Tensor.ColorEquiv.SamePair.right_unique {a : J → Color K} {a' : J' → Color K}
-    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j : J}
-    {j₁ j₂ : J'} (h₁ : σ.SamePair τ j j₁) (h₂ : σ.SamePair τ j j₂) : j₁ = j₂ := by
-  have hτ := τ.toEquiv.symm.injective
-  rcases h₁ with ⟨h₁, -⟩ | ⟨h₁, -⟩ <;> rcases h₂ with ⟨h₂, -⟩ | ⟨h₂, -⟩ <;>
-    simpa using hτ (h₁.symm.trans h₂)
-
-/-- When `σ` and `τ` keep the same free indices and every pair of `σ` is a pair of `τ`, every pair
-of `τ` is a pair of `σ`. The indices of a pair of `τ` are not free, so they lie in a pair of `σ`. -/
-lemma _root_.Tensor.ColorEquiv.exists_samePair_left {a : J → Color K} {a' : J' → Color K}
-    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')}
-    (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
-    (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (j' : J') : ∃ j, σ.SamePair τ j j' := by
-  have hτ := τ.toEquiv.symm.injective
-  rcases hs : σ.toEquiv (τ.toEquiv.symm (.inr (.inl j'))) with x | j | j <;>
-    rw [← Equiv.eq_symm_apply] at hs
-  · rw [hfree] at hs
-    have := hτ hs
-    simp at this
-  · obtain ⟨j'', h | h⟩ := h₁ j
-    · obtain rfl : j'' = j' := by simpa using hτ (h.1.symm.trans hs.symm)
-      exact ⟨j, .inl h⟩
-    · have := hτ (h.1.symm.trans hs.symm)
-      simp at this
-  · obtain ⟨j'', h | h⟩ := h₁ j
-    · have := hτ (h.2.symm.trans hs.symm)
-      simp at this
-    · obtain rfl : j'' = j' := by simpa using hτ (h.2.symm.trans hs.symm)
-      exact ⟨j, .inr h⟩
 
 /-- Two contractions are equal when they keep the same free indices in the same order and contract
 the same pairs of indices, in any order and with either index of a pair first. On literal indices
@@ -299,7 +337,7 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
 
 /-!
 
-### B.3. Symmetric against antisymmetric
+### C.3. Symmetric against antisymmetric
 
 -/
 
@@ -339,19 +377,9 @@ lemma contr_tmulEquiv_eq_zero_of_antisymm_symm [Fintype J]
 
 /-!
 
-### B.4. Two contractions are one
+### C.4. Two contractions are one
 
 -/
-
-/-- The pairs of two contractions in sequence, `σ₁` and then `σ₂`, as one choice of pairs
-`J₁ ⊕ J₂`, the pairs `J₁` of `σ₁` followed by the pairs `J₂` of `σ₂`. -/
-noncomputable def _root_.Tensor.ColorEquiv.chain {c : ι₁ → Color K} {c₁ : κ₁ → Color K}
-    {c' : κ → Color K} {a₁ : J₁ → Color K} {a₂ : J₂ → Color K}
-    (σ₁ : ColorEquiv c (contrColors c₁ a₁)) (σ₂ : ColorEquiv c₁ (contrColors c' a₂)) :
-    ColorEquiv c (contrColors c' (prodColors a₁ a₂)) :=
-  σ₁.trans ((σ₂.sumCongr (.refl _)).trans ⟨(Equiv.sumAssoc _ _ _).trans
-    (Equiv.sumCongr (Equiv.refl _) ((Equiv.sumComm _ _).trans (Equiv.sumSumSumComm _ _ _ _))),
-    by rintro (_ | (_ | _) | (_ | _)) <;> rfl⟩)
 
 /-- Two contractions in sequence are one contraction, along `σ₁.chain σ₂`. Contracting `μ` and
 then `ν` in `T^μ_μ^ν_ν` is contracting both pairs at once. -/
@@ -366,16 +394,9 @@ lemma contr_contr [Fintype J₁] [Fintype J₂] {c₁ : κ₁ → Color K} {a₁
 
 /-!
 
-### B.5. Products with a tensor that is not contracted
+### C.5. Products with a tensor that is not contracted
 
 -/
-
-/-- The pairs `σ` of `T`, as pairs of `T ⊗ U` for a factor `U` on the right, with colors `d`. The
-indices of `U` are free and come after the free indices of `T`. -/
-noncomputable def _root_.Tensor.ColorEquiv.tmulRight {c : ι₁ → Color K} {c' : κ → Color K}
-    {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (d : ι₂ → Color K) :
-    ColorEquiv (prodColors c d) (contrColors (prodColors c' d) a) :=
-  (σ.sumCongr (.refl d)).trans (ColorEquiv.swapLast c' d _)
 
 /-- Contracting indices of the left factor commutes with the product,
 `(T^μ_μν) U^ρ = (T ⊗ U)^μ_μν^ρ`. -/
@@ -391,13 +412,6 @@ lemma tmulEquiv_contr_left [Fintype J] {a : J → Color K} {d : ι₂ → Color 
       rw [contr_pure, ← smul_tmul', map_smul, tmulEquiv_pure, tmulEquiv_pure, contr_pure]
       congr 1
       exact congrArg S.pure (funext fun y => by rcases y with x | m <;> rfl)) (t ⊗ₜ u)
-
-/-- The pairs `σ` of `T`, as pairs of `U ⊗ T` for a factor `U` on the left, with colors `d`. The
-indices of `U` are free and come before the free indices of `T`. -/
-noncomputable def _root_.Tensor.ColorEquiv.tmulLeft {c : ι₁ → Color K}
-    {c' : κ → Color K} {a : J → Color K} (σ : ColorEquiv c (contrColors c' a)) (d : ι₂ → Color K) :
-    ColorEquiv (prodColors d c) (contrColors (prodColors d c') a) :=
-  ((ColorEquiv.refl d).sumCongr σ).trans (ColorEquiv.sumAssoc _ _ _).symm
 
 /-- Contracting indices of the right factor commutes with the product,
 `U^ρ (T^μ_μν) = (U ⊗ T)^ρμ_μν`. -/
@@ -416,7 +430,7 @@ lemma tmulEquiv_contr_right [Fintype J] {a : J → Color K} {d : ι₂ → Color
 
 /-!
 
-## C. Components
+## D. Components
 
 -/
 
