@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
 public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 /-!
@@ -364,7 +364,7 @@ lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
   stability group of the non-zero Higgs vector `ofReal a = (0, √a)` is the subgroup
   `SU(3) × U(1)_EM` of `GaugeGroupI`, with elements `(h, diag(u³, ū³), u)`. -/
 theorem stabilizer_ofReal {a : ℝ} (ha : 0 < a) :
-    repGaugeGroupI.stabilizer (ofReal a) = GaugeGroupI.colorElectromagnetism.range := by
+    repGaugeGroupI.stabilizer (ofReal a) = UnbrokenGaugeGroupI.incl.range := by
   ext g
   rw [mem_stabilizer_ofReal_iff ha, MonoidHom.mem_range]
   constructor
@@ -374,9 +374,9 @@ theorem stabilizer_ofReal {a : ℝ} (ha : 0 < a) :
     simp
 
 /-- The stability group of any non-zero Higgs vector is conjugate to `SU(3) × U(1)_EM`. -/
-lemma exists_stabilizer_eq_conj_colorElectromagnetism (φ : HiggsVec) (hφ : φ ≠ 0) :
+lemma exists_stabilizer_eq_conj_unbrokenGaugeGroupI (φ : HiggsVec) (hφ : φ ≠ 0) :
     ∃ g : GaugeGroupI, repGaugeGroupI.stabilizer φ =
-      GaugeGroupI.colorElectromagnetism.range.map (MulAut.conj g) := by
+      UnbrokenGaugeGroupI.incl.range.map (MulAut.conj g) := by
   refine ⟨(toRealGroupElem φ)⁻¹, ?_⟩
   rw [← stabilizer_ofReal (pow_pos (norm_pos_iff.mpr hφ) 2), ← Representation.stabilizer_conj]
   congr 1

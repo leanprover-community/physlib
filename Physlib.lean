@@ -265,6 +265,7 @@ public import Physlib.Particles.StandardModel.Fermions.LeptonSinglet
 public import Physlib.Particles.StandardModel.Fermions.QuarkDoublet
 public import Physlib.Particles.StandardModel.Fermions.UpSinglet
 public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
 public import Physlib.Particles.StandardModel.HiggsBoson.Basic
 public import Physlib.Particles.StandardModel.HiggsBoson.EffectivePotential
 public import Physlib.Particles.StandardModel.HiggsBoson.Potential

@@ -87,7 +87,7 @@ gauge connection over spacetime. [TODO]
    `electromagnetismU1_repGaugeGroupI_apply`, `electromagnetismU1_repGaugeGroupI_ofReal`,
    `exists_electromagnetismU1_fst_eq_norm`
 7. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `mem_stabilizer_ofReal_iff`,
-   `stabilizer_ofReal`, `exists_stabilizer_eq_conj_colorElectromagnetism`,
+   `stabilizer_ofReal`, `exists_stabilizer_eq_conj_unbrokenGaugeGroupI`,
    `mem_iInf_stabilizer_iff`
 8. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsBundle`
 9. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `HiggsField`, `const`,
