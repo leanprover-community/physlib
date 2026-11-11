@@ -80,24 +80,28 @@ lemma sesqForm_apply (g : S.V a ⊗[k] S.V b) (hb : b = a.bar) (x y : S.V a.dual
 `g^{J̄I} (g y)_J̄ (g x)‾_I = (g_{IJ̄} x^I ȳ^J̄)*`. The inverse `g^{J̄I}` acts on barred
 covectors, so its form is the conjugate of the usual `g^{IJ̄} w_I w̄'_J̄`. -/
 lemma sesqForm_inverse_toLin (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
-    (x y : S.V a.dual) (hb : b = a.bar := by rfl)
-    (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    S.sesqForm (S.inverse g) ha (S.toLin g x) (S.toLin g y) = star (S.sesqForm g hb y x) := by
+    (hb : b = a.bar) (x y : S.V a.dual) :
+    S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb) (S.toLin g x) (S.toLin g y) =
+      star (S.sesqForm g hb y x) := by
   rw [sesqForm_apply, sesqForm_apply, toLin_inverse g h, LinearEquiv.coe_coe,
-    LinearEquiv.ofBijective_symm_apply_apply, ← S.contr_tmul_symm, star_contr_conjEquiv ha,
-    conjEquiv_conjEquiv]
+    LinearEquiv.ofBijective_symm_apply_apply, ← S.contr_tmul_symm,
+    star_contr_conjEquiv (Color.dual_eq_bar_dual hb), conjEquiv_conjEquiv]
 
 /-- The inverse of a Hermitian `g_{IJ̄}` is Hermitian. -/
-lemma isSymm_sesqForm_inverse (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsSymm)
-    (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    (S.sesqForm (S.inverse g) ha).IsSymm := by
+lemma isSymm_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
+    (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsSymm) :
+    (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsSymm := by
   refine ⟨fun u w => ?_⟩
   obtain ⟨x, rfl⟩ := h.2 u
   obtain ⟨y, rfl⟩ := h.2 w
-  rw [sesqForm_inverse_toLin g h _ _ hb ha, sesqForm_inverse_toLin g h _ _ hb ha,
-    starRingEnd_apply, star_star]
+  rw [sesqForm_inverse_toLin g h hb, sesqForm_inverse_toLin g h hb, starRingEnd_apply, star_star]
   exact (hg.eq x y).symm
+
+/-!
+
+## B. Positive-definite forms are invertible
+
+-/
 
 /-- The linear map `y ↦ g y` of a positive-definite `g_{IJ̄}` is injective, since `g y = 0` gives
 `g(y, y) = 0`. -/
@@ -107,31 +111,6 @@ lemma toLin_injective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
   intro y hy
   by_contra hne
   simpa [sesqForm_apply, hy] using hg.pos y hne
-
-/-- The inverse of a positive-definite `g_{IJ̄}` with bijective linear map is positive-definite. -/
-lemma isPosDef_sesqForm_inverse_of_bijective (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsPosDef)
-    (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    (S.sesqForm (S.inverse g) ha).IsPosDef := by
-  refine ⟨isSymm_sesqForm_inverse g h hg.isSymm ha, fun u hu => ?_⟩
-  obtain ⟨x, rfl⟩ := h.2 u
-  rw [sesqForm_inverse_toLin g h _ _ hb ha, ← starRingEnd_apply, hg.isSymm.eq x x]
-  exact hg.pos x fun hx => hu (by rw [hx, map_zero])
-
-end Species
-
-/-!
-
-## B. Positive-definite forms are invertible
-
--/
-
-namespace Species
-
-variable {K : Type} [InvolutiveStar K] {k : Type} [RCLike k] {G : Type}
-    [Group G] {basisIdx : K → Type}
-    [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
-    {S : Species k G K basisIdx} [S.HasConjugation] {a b : Color K}
 
 /-- A positive-definite `g_{IJ̄}` is invertible. Its linear map `y ↦ g y` is bijective. -/
 lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
@@ -143,10 +122,14 @@ lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
     Module.finrank_eq_card_basis (S.basis b)]
 
 /-- The inverse of a positive-definite `g_{IJ̄}` is positive-definite. -/
-lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
-    (hg : (S.sesqForm g hb).IsPosDef) (ha : a.dual = b.dual.bar := Color.dual_eq_bar_dual hb) :
-    (S.sesqForm (S.inverse g) ha).IsPosDef :=
-  isPosDef_sesqForm_inverse_of_bijective g (toLin_bijective_of_isPosDef g hg) hg ha
+lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
+    (hg : (S.sesqForm g hb).IsPosDef) :
+    (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsPosDef := by
+  have h := toLin_bijective_of_isPosDef g hg
+  refine ⟨isSymm_sesqForm_inverse g hb h hg.isSymm, fun u hu => ?_⟩
+  obtain ⟨x, rfl⟩ := h.2 u
+  rw [sesqForm_inverse_toLin g h hb, ← starRingEnd_apply, hg.isSymm.eq x x]
+  exact hg.pos x fun hx => hu (by rw [hx, map_zero])
 
 end Species
 
