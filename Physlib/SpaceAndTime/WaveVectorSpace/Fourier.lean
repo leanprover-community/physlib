@@ -20,6 +20,10 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 - A. Fourier integrals
   - A.1. Two-parameter definitions
   - A.2. Basic properties
+- B. Fourier instances for different conventions
+  - B.1. `(a, b) = (0, 1)`
+  - B.2. `(a, b) = (1, -1)`
+
 ## iv. References
 
 -/
@@ -33,6 +37,8 @@ namespace WaveVectorSpace
 /-!
 ## A. Fourier integrals
 -/
+
+section PhysFourier
 
 open MeasureTheory VectorFourier
 open scoped Real
@@ -124,5 +130,57 @@ lemma physFourier_continuous {f : Space d → E} (hf : Integrable f) :
 lemma physFourierInv_continuous {g : WaveVectorSpace d → E} (hg : Integrable g) :
     Continuous (physFourierInv a b g) :=
   (fourierIntegral_continuous physChar_continuous pairingCLM.continuous₂ hg).const_smul _
+
+end PhysFourier
+
+/-!
+## B. Fourier instances for different conventions
+-/
+
+section Conventions
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
+
+/-!
+### B.1. `(a, b) = (0, 1)`
+
+$$
+\tilde{f}(k) := \frac{1}{\sqrt{2\pi}}\int f(x)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}x
+\;,\qquad
+f(x) := \frac{1}{\sqrt{2\pi}}\int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}k
+$$
+-/
+
+namespace Fourier_0_p1
+
+noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
+  fourier := physFourier 0 1
+
+noncomputable scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
+  fourierInv := physFourierInv 0 1
+
+end Fourier_0_p1
+
+/-!
+### B.2. `(a, b) = (1, -1)`
+
+$$
+\tilde{f}(k) := \int f(x)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}x
+\;,\qquad
+f(x) := \frac{1}{2\pi}\int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}k
+$$
+-/
+
+namespace Fourier_p1_n1
+
+noncomputable scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
+  fourier := physFourier 1 (-1)
+
+noncomputable scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
+  fourierInv := physFourierInv 1 (-1)
+
+end Fourier_p1_n1
+
+end Conventions
 
 end WaveVectorSpace
