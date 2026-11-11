@@ -145,7 +145,7 @@ def output(cmd: list[str], cwd: Path | None = None) -> str:
 # and where the task will end up running. In the below we call this
 # <save-location>.
 def save_location() -> Path:
-    # - If the envroiment varaible `PHYSLIBALPHA_WORKER_HOME` is set, we use that.
+    # - If the environment variable `PHYSLIBALPHA_WORKER_HOME` is set, we use that.
     if home := os.environ.get("PHYSLIBALPHA_WORKER_HOME"):
         return Path(home).expanduser()
     # - If working on windows, `%LOCALAPPDATA%\physlibAlpha-worker`
