@@ -8,7 +8,6 @@ module
 public import Physlib.Mathematics.Tensors.ElabTactics
 public import Physlib.Relativity.Tensors.RealTensor.Representation.Contraction
 public import Physlib.Relativity.Tensors.RealTensor.Vector.MinkowskiProduct
-public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
 import Mathlib.LinearAlgebra.Matrix.IsDiag
 /-!
 

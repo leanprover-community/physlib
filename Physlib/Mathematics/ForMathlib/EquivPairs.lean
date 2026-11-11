@@ -6,7 +6,6 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.Logic.Equiv.Defs
-public import Mathlib.Logic.Function.Basic
 
 /-!
 

@@ -5,7 +5,6 @@ Authors: Andrea Pari
 -/
 module
 
-public import Mathlib.LinearAlgebra.Dimension.Finrank
 public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Physlib.Mathematics.ForMathlib.Contraction
 
