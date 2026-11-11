@@ -7,7 +7,6 @@ module
 
 public import Physlib.Mathematics.ForMathlib.EquivPairs
 public import Physlib.Mathematics.Tensors.Product
-public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 /-!
 
 # Contraction of tensors
@@ -161,23 +160,16 @@ open Species
 /-- The contraction of a tensor in the standard arrangement `κ ⊕ (J ⊕ J)`. For each pair `j` the
 index `inr (inl j)` is contracted with the index `inr (inr j)` by `S.contr (a j)`, with the index
 `inr (inl j)` as its first argument. The indices `inl x` are the free indices, with the colors
-`c`. -/
+`c`. It is `PiTensorProduct.contrPairs` of the contractions `S.contr (a j)`. -/
 noncomputable def contrStd [Fintype J] (c : κ → Color K) (a : J → Color K) :
     (S.tensorRep (contrColors c a)).IntertwiningMap (S.tensorRep c) :=
-  -- The pairs are split into their first halves, of colors `a`, and their second halves, of the
-  -- dual colors. Each vector of a second half is read as a linear form on the first half through
-  -- `S.contr`, and the halves are paired by Mathlib's `PiTensorProduct.dualDistrib`.
-  intertwiningMapOfPure ((TensorProduct.rid k _).toLinearMap ∘ₗ
-    (lift ((PiTensorProduct.dualDistrib ∘ₗ
-      PiTensorProduct.map (fun j => (curry (S.contr (a j)).toLinearMap).flip) ∘ₗ
-      (S.toPiTensor _).toLinearMap).flip ∘ₗ (S.toPiTensor a).toLinearMap) ∘ₗ
-      (S.tmulEquiv a _).symm.toLinearMap).lTensor _ ∘ₗ
-    (S.tmulEquiv c _).symm.toLinearMap) fun g f => by
-    simp only [smul_pure, LinearMap.comp_apply, LinearEquiv.coe_coe,
-      Representation.Equiv.coe_toLinearMap, tmulEquiv_symm_pure, LinearMap.lTensor_tmul,
-      lift.tmul, LinearMap.flip_apply, toPiTensor_pure, PiTensorProduct.map_tprod,
-      PiTensorProduct.dualDistrib_apply, TensorProduct.rid_tmul, smul_comm g, smul_pure]
-    exact congrArg (· • _) (Finset.prod_congr rfl fun j _ => S.contr_invariant (a j) g _ _)
+  ⟨(S.toPiTensor c).symm.toLinearMap ∘ₗ
+    PiTensorProduct.contrPairs (M := fun i => S.V (contrColors c a i))
+      (fun j => (S.contr (a j)).toLinearMap) ∘ₗ (S.toPiTensor _).toLinearMap,
+    fun g => LinearMap.ext fun t =>
+      congrArg (S.toPiTensor c).symm ((Representation.IsIntertwiningMap.contrPairs
+        (ρ := fun i => S.rep (contrColors c a i)) fun j => S.contr_invariant (a j)).isIntertwining
+          g t)⟩
 
 /-- On a pure tensor the contraction multiplies the remaining vectors by the contraction of the
 two vectors of each pair, as in `u ⊗ v ⊗ α ↦ (v^μ α_μ) u`. -/
@@ -185,8 +177,8 @@ lemma contrStd_pure [Fintype J] (c : κ → Color K) (a : J → Color K)
     (f : Π x, S.V (contrColors c a x)) :
     contrStd c a (S.pure f) =
       (∏ j, S.contr (a j) (f (.inr (.inl j)) ⊗ₜ f (.inr (.inr j)))) •
-        S.pure (c := c) fun x => f (.inl x) := by
-  simp [contrStd, PiTensorProduct.map_tprod, PiTensorProduct.dualDistrib_apply]
+        S.pure (c := c) fun x => f (.inl x) :=
+  PiTensorProduct.contrPairs_tprod _ f
 
 /-!
 

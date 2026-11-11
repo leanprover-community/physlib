@@ -6,7 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.RepresentationTheory.Intertwining
-public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
+public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 
 /-!
 
@@ -30,6 +30,8 @@ given for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on the l
 A family of representations `ρ i` on `M i` gives the representation `piTprod ρ` on
 `⨂[k] i, M i`, `g ↦ ⨂ i, ρ i g`, on Mathlib's `PiTensorProduct.map`. Maps `f i` that intertwine
 `ρ i` and `σ i` give `PiTensorProduct.map f`, which intertwines `piTprod ρ` and `piTprod σ`.
+Contracting pairs of factors by invariant pairings, `PiTensorProduct.contrPairs`, is also
+intertwining.
 
 ## ii. Key results
 
@@ -39,8 +41,9 @@ A family of representations `ρ i` on `M i` gives the representation `piTprod ρ
 - `Representation.Equiv.tensorCongr` : the tensor product of two equivalences of representations.
 - `Representation.piTprod` : the tensor product of a family of representations, with
   `Representation.IsIntertwiningMap.piTensorMap` : `PiTensorProduct.map` of intertwining maps is
-  intertwining, and `Representation.Equiv.piTensorCongr` : the tensor product of a family of
-  equivalences of representations.
+  intertwining, `Representation.Equiv.piTensorCongr` : the tensor product of a family of
+  equivalences of representations, and `Representation.IsIntertwiningMap.contrPairs` : the
+  contraction of invariantly paired factors is intertwining.
 - `Representation.IntertwiningMap.map_smul_ofDistribMulAction` and
   `Representation.Equiv.map_smul_ofDistribMulAction` : maps of representations given by actions
   commute with the actions, `φ (g • v) = g • φ v`.
@@ -154,6 +157,22 @@ lemma Representation.Equiv.piTensorCongr_tprod {ρ : Π i, Representation k G (M
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
     Representation.Equiv.piTensorCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
+
+/-- `PiTensorProduct.contrPairs p` intertwines `piTprod ρ` and `piTprod` of the kept factors when
+every pairing `p j` is invariant. -/
+lemma Representation.IsIntertwiningMap.contrPairs {κ J : Type*} [Fintype J]
+    {M : κ ⊕ (J ⊕ J) → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)]
+    {ρ : Π i, Representation k G (M i)}
+    {p : Π j, M (.inr (.inl j)) ⊗[k] M (.inr (.inr j)) →ₗ[k] k}
+    (hp : ∀ j g x y, p j (ρ _ g x ⊗ₜ ρ _ g y) = p j (x ⊗ₜ y)) :
+    (Representation.piTprod ρ).IsIntertwiningMap (Representation.piTprod fun x => ρ (.inl x))
+      (PiTensorProduct.contrPairs p) where
+  isIntertwining g v := by
+    induction v using PiTensorProduct.induction_on with
+    | smul_tprod r f =>
+      simp only [map_smul, Representation.piTprod_tprod, PiTensorProduct.contrPairs_tprod, hp,
+        smul_comm r]
+    | add x y hx hy => simp only [map_add, hx, hy]
 
 end
 
