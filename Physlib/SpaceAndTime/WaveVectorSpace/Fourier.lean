@@ -32,7 +32,7 @@ f(x) :=
 $$
 
 These are implemented as rescaled/dilated versions of `VectorFourier.fourierIntegral`
-and most results require that input function be integrable.
+and most results require that the input function be integrable.
 
 Results which hold for all `a` and `b` should be written in terms of `fourierIntegral a b`.
 To select a particular convention, include the line `open scoped Fourier_[a]_[b]`
@@ -201,9 +201,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 ### B.1. `(a, b) = (0, 1)`
 
 $$
-\tilde{f}(k) := \frac{1}{\sqrt{2\pi}}\int f(x)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}x
+\tilde{f}(k) := \frac{1}{\sqrt{2\pi}} \int f(x)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}x
 \;,\qquad
-f(x) := \frac{1}{\sqrt{2\pi}}\int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}k
+f(x) := \frac{1}{\sqrt{2\pi}} \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}k
 $$
 -/
 
@@ -223,7 +223,7 @@ end Fourier_0_1
 $$
 \tilde{f}(k) := \int f(x)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}x
 \;,\qquad
-f(x) := \frac{1}{2\pi}\int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}k
+f(x) := \frac{1}{2\pi} \int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}k
 $$
 -/
 
