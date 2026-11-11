@@ -6,6 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.LinearAlgebra.PerfectPairing.Basic
+public import Mathlib.RepresentationTheory.Intertwining
 
 /-!
 
@@ -24,7 +25,8 @@ pairing for any two modules `M` and `N` with bases `b` and `b'` labelled by the 
 The coordinate pairing `coordPairing` sends `x ⊗ y` to `∑_I (b x)_I (b' y)_I`. It is Mathlib's
 `b'.toDual`, applied after the equivalence `b.equiv b'` that sends `b I` to `b' I`. The two bases
 are dual for it, it is the only pairing for which they are, and it is a perfect pairing in
-Mathlib's sense.
+Mathlib's sense. When the two modules carry representations and some invariant pairing makes the
+bases dual, the coordinate pairing is that pairing, so it is invariant.
 
 ## ii. Key results
 
@@ -33,10 +35,13 @@ Mathlib's sense.
 - `Module.Basis.coordPairing_basis_basis` : the two bases are dual for the coordinate pairing, and
   `Module.Basis.eq_coordPairing` : it is the only such pairing.
 - `Module.Basis.isPerfPair_coordPairing` : the coordinate pairing is a perfect pairing.
+- `Module.Basis.coordPairing_invariant` : the coordinate pairing is invariant when an invariant
+  pairing makes the bases dual.
 
 ## iii. Table of contents
 
 - A. The coordinate pairing of two bases
+- B. Invariance of the coordinate pairing
 
 ## iv. References
 
@@ -107,5 +112,21 @@ instance isPerfPair_coordPairing (b : Module.Basis ι R M) (b' : Module.Basis ι
       ((b'.equiv b (Equiv.refl ι)).trans b.toDualEquiv).toLinearMap from
         LinearMap.ext₂ fun y x => (coordPairing_comm b b' x y).trans rfl]
     exact LinearEquiv.bijective _
+
+/-!
+
+## B. Invariance of the coordinate pairing
+
+-/
+
+/-- The coordinate pairing is invariant when an invariant pairing `p` makes the bases dual, since
+then `p` is the coordinate pairing. -/
+lemma coordPairing_invariant {G : Type*} [Monoid G] {ρ : Representation R G M}
+    {ρ' : Representation R G N} {b : Module.Basis ι R M} {b' : Module.Basis ι R N}
+    (p : (ρ.tprod ρ').IntertwiningMap (Representation.trivial R G R))
+    (h : ∀ I J, p (b I ⊗ₜ b' J) = if I = J then 1 else 0) (g : G) (x : M) (y : N) :
+    b.coordPairing b' (ρ g x ⊗ₜ ρ' g y) = b.coordPairing b' (x ⊗ₜ y) := by
+  rw [← b.eq_coordPairing b' p.toLinearMap h]
+  simpa using Representation.IntertwiningMap.isIntertwining _ _ p g (x ⊗ₜ y)
 
 end Module.Basis
