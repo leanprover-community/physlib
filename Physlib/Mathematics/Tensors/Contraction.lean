@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Physlib.Mathematics.ForMathlib.EquivPairs
 public import Physlib.Mathematics.Tensors.Product
 public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 /-!
@@ -52,9 +53,8 @@ since the bases of a color and its dual are dual.
 - `Tensor.contr` is an intertwining map, so it commutes with the group action.
 - `Tensor.contr_reindex` and `Tensor.reindex_contr` absorb a reindexing before
   or after a contraction.
-- `ColorEquiv.SamePair` says that two choices of pairs contract the same two indices, and
-  `Tensor.contr_eq_of_samePair` proves that two contractions of the same pairs of indices,
-  in any order, are equal.
+- `Tensor.contr_eq_of_samePair` proves that two contractions of the same pairs of indices, in any
+  order, are equal, the pairs matched by `Equiv.SamePair`.
 - `Tensor.contr_noPairs` proves that a contraction with no pairs, along
   `ColorEquiv.noPairs`, is the identity.
 - `Tensor.contr_eq_zero_of_reindex_eq_neg` and
@@ -111,73 +111,14 @@ namespace ColorEquiv
 
 variable {K : Type} {ι₁ ι₂ κ κ₁ J J' J₁ J₂ : Type}
 
-/-- The reindexing of a contraction with no pairs, where every index is free and stays in place. -/
+/-- The reindexing of a contraction with no pairs, where every index is free and stays in place.
+It is the inverse of Mathlib's `Equiv.sumEmpty`. -/
 def noPairs (c : ι₁ → Color K) :
     ColorEquiv c (contrColors c (Empty.elim : Empty → Color K)) where
-  toEquiv.toFun := .inl
-  toEquiv.invFun := Sum.elim id (Sum.elim Empty.elim Empty.elim)
-  toEquiv.left_inv _ := rfl
-  toEquiv.right_inv := by rintro (x | e | e) <;> first | rfl | exact e.elim
+  toEquiv := (Equiv.sumEmpty ι₁ (Empty ⊕ Empty)).symm
   color_eq := by rintro (x | e | e) <;> first | rfl | exact e.elim
 
 variable {c : ι₁ → Color K} {c' : κ → Color K}
-
-/-- The pair `j` of `σ` and the pair `j'` of `τ` contract the same two indices, in either order. -/
-def SamePair {a : J → Color K} {a' : J' → Color K}
-    (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
-    (j' : J') : Prop :=
-  (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inl j')) ∧
-      σ.toEquiv.symm (.inr (.inr j)) = τ.toEquiv.symm (.inr (.inr j'))) ∨
-    (σ.toEquiv.symm (.inr (.inl j)) = τ.toEquiv.symm (.inr (.inr j')) ∧
-      σ.toEquiv.symm (.inr (.inr j)) = τ.toEquiv.symm (.inr (.inl j')))
-
-instance [DecidableEq ι₁] {a : J → Color K} {a' : J' → Color K}
-    (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a')) (j : J)
-    (j' : J') : Decidable (σ.SamePair τ j j') := by
-  unfold SamePair
-  infer_instance
-
-/-- A pair of `τ` is the same pair as at most one pair of `σ`. -/
-lemma SamePair.left_unique {a : J → Color K} {a' : J' → Color K}
-    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j₁ j₂ : J}
-    {j' : J'} (h₁ : σ.SamePair τ j₁ j') (h₂ : σ.SamePair τ j₂ j') : j₁ = j₂ := by
-  have hσ := σ.toEquiv.symm.injective
-  rcases h₁ with ⟨h₁, h₁'⟩ | ⟨h₁, h₁'⟩ <;> rcases h₂ with ⟨h₂, h₂'⟩ | ⟨h₂, h₂'⟩
-  · simpa using hσ (h₁.trans h₂.symm)
-  · simpa using hσ (h₁'.trans h₂.symm)
-  · simpa using hσ (h₁.trans h₂'.symm)
-  · simpa using hσ (h₁.trans h₂.symm)
-
-/-- A pair of `σ` is the same pair as at most one pair of `τ`. -/
-lemma SamePair.right_unique {a : J → Color K} {a' : J' → Color K}
-    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')} {j : J}
-    {j₁ j₂ : J'} (h₁ : σ.SamePair τ j j₁) (h₂ : σ.SamePair τ j j₂) : j₁ = j₂ := by
-  have hτ := τ.toEquiv.symm.injective
-  rcases h₁ with ⟨h₁, -⟩ | ⟨h₁, -⟩ <;> rcases h₂ with ⟨h₂, -⟩ | ⟨h₂, -⟩ <;>
-    simpa using hτ (h₁.symm.trans h₂)
-
-/-- When `σ` and `τ` keep the same free indices and every pair of `σ` is a pair of `τ`, every pair
-of `τ` is a pair of `σ`. The indices of a pair of `τ` are not free, so they lie in a pair of `σ`. -/
-lemma exists_samePair_left {a : J → Color K} {a' : J' → Color K}
-    {σ : ColorEquiv c (contrColors c' a)} {τ : ColorEquiv c (contrColors c' a')}
-    (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
-    (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (j' : J') : ∃ j, σ.SamePair τ j j' := by
-  have hτ := τ.toEquiv.symm.injective
-  rcases hs : σ.toEquiv (τ.toEquiv.symm (.inr (.inl j'))) with x | j | j <;>
-    rw [← Equiv.eq_symm_apply] at hs
-  · rw [hfree] at hs
-    have := hτ hs
-    simp at this
-  · obtain ⟨j'', h | h⟩ := h₁ j
-    · obtain rfl : j'' = j' := by simpa using hτ (h.1.symm.trans hs.symm)
-      exact ⟨j, .inl h⟩
-    · have := hτ (h.1.symm.trans hs.symm)
-      simp at this
-  · obtain ⟨j'', h | h⟩ := h₁ j
-    · have := hτ (h.2.symm.trans hs.symm)
-      simp at this
-    · obtain rfl : j'' = j' := by simpa using hτ (h.2.symm.trans hs.symm)
-      exact ⟨j, .inr h⟩
 
 /-- The pairs of two contractions in sequence, `σ₁` and then `σ₂`, as one choice of pairs
 `J₁ ⊕ J₂`, the pairs `J₁` of `σ₁` followed by the pairs `J₂` of `σ₂`. -/
@@ -320,7 +261,7 @@ the same pairs of indices, in any order and with either index of a pair first. -
 lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J' → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (τ : ColorEquiv c (contrColors c' a'))
     (hfree : ∀ x, σ.toEquiv.symm (.inl x) = τ.toEquiv.symm (.inl x))
-    (h₁ : ∀ j, ∃ j', σ.SamePair τ j j') (t : Tensor S c) :
+    (h₁ : ∀ j, ∃ j', σ.toEquiv.SamePair τ.toEquiv j j') (t : Tensor S c) :
     contr σ t = contr τ t := by
   refine DFunLike.congr_fun (f := contr σ) (g := contr τ) ?_ t
   ext p
@@ -329,9 +270,7 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
   choose g hg using h₁
   congr 1
   · -- The pair `j` of `σ` is the pair `g j` of `τ`, in the same order or swapped.
-    refine Fintype.prod_bijective g ⟨fun j₁ j₂ hj => (hg j₁).left_unique (hj ▸ hg j₂),
-      fun j' => (ColorEquiv.exists_samePair_left hfree (fun j => ⟨g j, hg j⟩) j').imp
-        fun j hj => (hg j).right_unique hj⟩ _ _ fun j => ?_
+    refine Fintype.prod_bijective g (Equiv.SamePair.bijective hfree hg) _ _ fun j => ?_
     rcases hg j with ⟨h, h'⟩ | ⟨h, h'⟩ <;> rw [cast_apply_congr p h, cast_apply_congr p h']
     exacts [contr_cast_tmul_cast _ _ _ _ _ _, contr_cast_tmul_cast_symm _ _ _ _ _ _]
   · exact congrArg S.pure (funext fun x => cast_apply_congr p (hfree x) _)
