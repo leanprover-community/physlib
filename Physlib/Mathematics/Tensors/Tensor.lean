@@ -37,8 +37,9 @@ inverse (D.4). Reindexing uses the map at every index, and contracting an index 
 two indices, `T^…μ… F_μ^ν`, is a map at that index.
 
 Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
-and commuting with the group (B.2), are proved once here, and not again for each operation. The components of a tensor are its coordinates in the product basis (C), and a map at
-one index acts on the components through that index alone, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…` (D.3).
+and commuting with the group (B.2), are proved once here, and not again for each operation. The
+components of a tensor are its coordinates in the product basis (C), and a map at one index acts on
+the components through that index alone, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…` (D.3).
 
 ## ii. Key results
 
