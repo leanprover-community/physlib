@@ -38,7 +38,8 @@ site has eight neighbors.
 
 ## iv. References
 
-* N. Ashcroft & N. D. Mermin, Solid State Physics, Chapter 4.
+* F. Göhmann, *Introduction to Solid State Physics*, lecture L3, Section 3.1, for the standard
+  description of a crystal as translated copies of a unit cell. [ref: goehmann_solid_state_2021]
 
 -/
 
