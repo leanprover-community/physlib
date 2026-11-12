@@ -61,8 +61,8 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
   tensors commutes with it on all tensors.
 - `Species.tensorRep` is the action on tensors as a Mathlib representation. Maps of tensors that
   commute with the group are Mathlib's `Representation.Equiv` and `Representation.IntertwiningMap`
-  of it, built by `Species.equivOfPure` and `Species.intertwiningMapOfPure` from a check on pure
-  tensors, and `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
+  of it. `Species.equivOfPure` builds an equivalence from a check on pure tensors, and
+  `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
 - `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant, from
   `PiTensorProduct.map_eq_id_of_isEmpty`.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
@@ -210,19 +210,6 @@ variable {ι' : Type} {c' : ι' → Color K} in
 lemma equivOfPure_apply (e : Tensor S c ≃ₗ[k] Tensor S c')
     (h : ∀ (g : G) (p : Π i, S.V (c i)), e (g • S.pure p) = g • e (S.pure p)) (t : Tensor S c) :
     equivOfPure e h t = e t := rfl
-
-variable {ι' : Type} {c' : ι' → Color K} in
-/-- A linear map of tensors that commutes with `Λ` on pure tensors, as an intertwining map. -/
-noncomputable def intertwiningMapOfPure (f : Tensor S c →ₗ[k] Tensor S c')
-    (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) :
-    (S.tensorRep c).IntertwiningMap (S.tensorRep c') :=
-  ⟨f, fun g => LinearMap.ext fun t => map_smul_of_pure f g (h g) t⟩
-
-variable {ι' : Type} {c' : ι' → Color K} in
-@[simp]
-lemma intertwiningMapOfPure_apply (f : Tensor S c →ₗ[k] Tensor S c')
-    (h : ∀ (g : G) (p : Π i, S.V (c i)), f (g • S.pure p) = g • f (S.pure p)) (t : Tensor S c) :
-    intertwiningMapOfPure f h t = f t := rfl
 
 /-- Two equivalences of representations out of tensors are equal when they agree on pure
 tensors. -/
