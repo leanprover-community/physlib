@@ -17,72 +17,33 @@ index type `ι`, and the group acts on them index by index.
 
 ## i. Overview
 
-A tensor of a species `S` has one index `i` for each `i : ι`, and the index `i` has the color `c i`.
-The tensors with colors `c : ι → Color K` form the space `Tensor S c`, which is Mathlib's
-`⨂[k] i, V (c i)`. The index type `ι` can be any type, such as `Fin n` or a sum `ι₁ ⊕ ι₂`.
+The tensors of a species `S` with colors `c : ι → Color K` form the space `Tensor S c`, which is
+Mathlib's `⨂[k] i, S.V (c i)`. The index type `ι` is any type, such as `Fin n`. The product of
+tensors on the indices `ι₁` and `ι₂` lives on `ι₁ ⊕ ι₂`, so the indices of each factor keep their
+names. The colors of the product are those of the factors, with no renumbering into `Fin (n + m)`.
 
-A pure tensor takes one vector at each index, such as `u ⊗ α ⊗ β` with `u` in `V (c 0)`, `α` in
-`V (c 1)` and `β` in `V (c 2)`. Its components are products, `(u ⊗ α ⊗ β)^μ_νρ = u^μ α_ν β_ρ`.
-Most tensors are not pure. The metric `η = ∑ μ, η_μμ e^μ ⊗ e^μ` is a sum of pure tensors but not
-a pure tensor itself. Every tensor is a linear combination of pure tensors, so a linear map of
-tensors is fixed by its values on pure tensors (`ext_pure`), and a property of all tensors follows
-from the pure case (`inductionOn_pure`). Maps of tensors, starting with the group action, are
-given by their value on pure tensors, and their properties are proved there first. `S.pure f` is
-Mathlib's `⨂ₜ[k] i, f i` as an element of `Tensor S c`.
+A group element acts on a tensor at every index, by the representation of its color. A linear map
+at one index changes that index and keeps the others, as lowering an index with a metric does.
+Both are linear maps fixed by their values on pure tensors, which take one vector at each index, so
+their properties are proved on pure tensors. The components of a tensor are its coordinates in the
+product basis.
 
-A group element `Λ` acts on every index by the representation of its color,
-`Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). This is the representation `S.tensorRep c`,
-`Representation.piTprod` on `⨂[k] i, V (c i)`, written `Λ • T` under `open scoped Tensor`. A map
-that commutes with `Λ` on pure tensors commutes with it on all tensors (`map_smul_of_pure`, from
-`Representation.map_piTprod_of_tprod`).
-
-The components `T^μ_νρ` of a tensor `T` are its coordinates in the basis `e_μ ⊗ e^ν ⊗ e^ρ`
-(`tensorBasis`), which is Mathlib's `Basis.piTensorProduct`. Each basis tensor is a pure tensor of
-basis vectors.
-
-For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, down⟩, ⟨vec, down⟩]` give the space
-`Vector 3 ⊗ CoVector 3 ⊗ CoVector 3` of tensors `T = T^μ_νρ e_μ ⊗ e^ν ⊗ e^ρ`. A Lorentz
-transformation `Λ` acts as
-`(ΛT)^μ_νρ = Λ^μ_σ (Λ⁻¹)^τ_ν (Λ⁻¹)^λ_ρ T^σ_τλ` (`tensorBasis_repr_smul`). Lower indices
-transform with `Λ⁻¹`, which keeps `u^μ α_μ` invariant.
-
-A linear equivalence `f` from the space of one color to that of another acts on tensors through a
-single index. `S.congrAt i f` applies `f` at the index `i` and the identity at the other indices,
-`u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`.
+For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
+and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`. A Lorentz
+transformation acts as `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`. Lowering the second index with the metric,
+`T^μ_ν = η_νρ T^μρ`, is a linear map at the index `1` that changes its color to `⟨vec, down⟩`.
 
 ## ii. Key results
 
-- `Tensor` and `Species.pure` are the tensors and the pure tensors, and
-  `Species.inductionOn_pure` is induction through pure tensors.
-- `Species.ext_pure` proves that linear maps of tensors that agree on pure tensors are equal. It is
-  an `ext` lemma, so `ext p q` also reduces maps out of products `Tensor S c ⊗ Tensor S c₂`, and
-  intertwining maps, to pure tensors. `Species.equiv_ext_pure` does the same for equivalences of
-  representations.
-- `Species.smul_pure` proves that the group acts on a pure tensor index by index.
-- `Species.map_smul_of_pure` proves that a map of tensors that commutes with the group on pure
-  tensors commutes with it on all tensors.
-- `Species.tensorRep` is the action on tensors as a Mathlib representation, and
-  `Species.distribMulAction` is the scoped instance for `Λ • T`. Maps of tensors that
-  commute with the group are Mathlib's `Representation.Equiv` and `Representation.IntertwiningMap`
-  of it. `Species.equivOfPure` builds an equivalence from a check on pure tensors, and
-  `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
-- `Species.smul_eq_self_of_isEmpty` proves that a tensor with no indices is invariant, from
-  `PiTensorProduct.map_eq_id_of_isEmpty`.
-- `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_pure` gives the
-  components of a pure tensor. `Species.finrank_tensor` gives the dimension of tensors, from
-  `Module.finrank_piTensorProduct`.
-- `Species.tensorBasis_repr_smul` gives the components of `g • t`, from the matrix of
-  `PiTensorProduct.map` in `PiTensorProduct.toMatrix_map_apply`.
-- `Species.mapIndices` applies a linear map at every index, with `Species.mapIndices_comp` and
-  `Species.mapIndices_id`, and `Species.mapIndices_smul` proves that it commutes with the group when
-  every index map does.
-- `Species.congrIndices` applies an equivalence of representations at every index. It is
-  `Representation.Equiv.piTensorCongr`.
-- `Species.indexMapsAt` is the family of a linear map at one index and the identity at the others,
-  and `Species.mapAt` applies it, with `Species.mapAt_pure`, `Species.mapAt_comp` and
-  `Species.mapAt_id`.
-- `Species.congrAt` is `mapAt` of an equivalence of representations, as an equivalence of
-  representations, with `Species.congrAt_symm`.
+- `Tensor` is the space of tensors, and `Species.pure` is a pure tensor.
+- `Species.ext_pure` proves that linear maps of tensors that agree on pure tensors are equal.
+- `Species.tensorRep` is the group action on tensors, and `Species.smul_pure` gives it on a pure
+  tensor.
+- `Species.map_smul_of_pure` proves that a map that commutes with the group on pure tensors
+  commutes with it on all tensors.
+- `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_smul` gives the
+  components of `Λ • T`.
+- `Species.mapAt` and `Species.congrAt` apply a map at one index.
 
 ## iii. Table of contents
 
@@ -93,7 +54,7 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 
@@ -111,6 +72,13 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 /-!
 
 ## A. Tensors
+
+`Tensor S c` is `⨂[k] i, S.V (c i)`. A pure tensor `S.pure f` takes one vector `f i` at each
+index, as `u ⊗ α`. Most tensors are not pure, but every tensor is a linear combination of pure
+tensors. So a linear map of tensors is fixed by its values on pure tensors (`ext_pure`), and a
+property of all tensors follows from the pure case (`inductionOn_pure`). `ext_pure` is an `ext`
+lemma, so `ext p q` also reduces maps out of products `Tensor S c ⊗ Tensor S c₂`, and
+intertwining maps, to pure tensors.
 
 -/
 
@@ -153,6 +121,17 @@ lemma ext_pure {E : Type*} [AddCommMonoid E] [Module k E] {f g : Tensor S c →�
 /-!
 
 ## B. The group action
+
+A group element `Λ` acts on every index by the representation of its color,
+`Λ (u ⊗ α) = Λu ⊗ Λα` (`smul_pure`). This is the representation `S.tensorRep c`,
+`Representation.piTprod` on `⨂[k] i, S.V (c i)`. It is written `Λ • T` under
+`open scoped Tensor`.
+
+Maps of tensors that commute with the group are Mathlib's `Representation.Equiv` and
+`Representation.IntertwiningMap` for `tensorRep`, and `equiv_smul` and `intertwiningMap_smul` give
+`φ (Λ • T) = Λ • φ T`. A map that commutes with `Λ` on pure tensors commutes with it on all tensors
+(`map_smul_of_pure`), and `equivOfPure` builds an equivalence of representations from that check.
+A tensor with no indices is invariant (`smul_eq_self_of_isEmpty`).
 
 -/
 
@@ -246,6 +225,15 @@ lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = 
 
 ## C. The basis of tensors
 
+The components `T^μ_ν` of a tensor are its coordinates in the basis `e_μ ⊗ e^ν` (`tensorBasis`),
+Mathlib's `Basis.piTensorProduct` of the bases of the colors. Each basis tensor is a pure tensor of
+basis vectors, and the components of a pure tensor are products, `(u ⊗ α)^μ_ν = u^μ α_ν`
+(`tensorBasis_repr_pure`). The dimension is the product of the dimensions (`finrank_tensor`).
+
+The components of `Λ • T` take one matrix of `Λ` per index (`tensorBasis_repr_smul`), as in
+`(ΛT)^μ_ν = Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ`. Lower indices transform with `Λ⁻¹`, which keeps `u^μ α_μ`
+invariant.
+
 -/
 
 /-- The basis `e_μ ⊗ e^ν ⊗ …` of tensors, Mathlib's `Basis.piTensorProduct` of the bases of the
@@ -289,6 +277,18 @@ lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : Tensor S 
 /-!
 
 ## D. Linear maps at the indices
+
+`mapIndices f` applies a linear map `f x` at every index `x`, `u ⊗ α ↦ f₀ u ⊗ f₁ α`. It is
+Mathlib's `PiTensorProduct.map`, and it commutes with the group when every `f x` does
+(`mapIndices_smul`). `congrIndices` is the same for equivalences of representations.
+
+`mapAt i f h` applies `f` at the single index `i` and keeps the others, `u ⊗ α ↦ u ⊗ f α`. The map
+`f` may change the color at `i`, so the colors `c'` of the result differ from `c` there, and
+`h : ∀ x, x ≠ i → c x = c' x` says they agree elsewhere. The vectors at the other indices are
+moved along `h` by `S.cast`. `indexMapsAt` is this family of maps, `congrAt` is `mapAt` of an
+equivalence of representations, and `tensorBasis_repr_mapAt` gives the components,
+`(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`. Lowering an index with a metric is `congrAt` of the map
+`v^μ ↦ η_νμ v^μ`, in `Metric.lean`.
 
 -/
 
