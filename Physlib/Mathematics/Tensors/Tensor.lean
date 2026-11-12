@@ -51,8 +51,14 @@ transformation acts as `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`. Lowering the ind
 
 - A. Tensors
 - B. The group action
+  - B.1. The action on tensors
+  - B.2. Maps that commute with the group
 - C. The basis of tensors
 - D. Linear maps at the indices
+  - D.1. A linear map at every index
+  - D.2. A linear map at one index
+  - D.3. Components
+  - D.4. An equivalence of representations at one index
 
 ## iv. References
 
@@ -128,23 +134,12 @@ lemma ext_pure {E : Type*} [AddCommMonoid E] [Module k E] {f g : Tensor S c →�
 
 ## B. The group action
 
+### B.1. The action on tensors
+
 A group element `Λ` acts on every index by the representation of its color,
 `Λ (u ⊗ α) = Λu ⊗ Λα` (`smul_pure`). This is the representation `S.tensorRep c`,
 `Representation.piTprod` on `⨂[k] i, S.V (c i)`. It is written `Λ • T` under
 `open scoped Tensor`.
-
-A map `φ` of tensors commutes with the group when `φ (Λ • T) = Λ • φ T`, as reindexing, products,
-contraction, lowering and raising do. Such maps are Mathlib's `Representation.IntertwiningMap` for
-`tensorRep`, or `Representation.Equiv` when they are invertible, so they compose and send invariant
-tensors to invariant tensors. For example, lowering the index `ν` of `T^μν` is an equivalence
-`(S.tensorRep c).Equiv (S.tensorRep c')` from the colors `c = ![⟨vec, up⟩, ⟨vec, up⟩]` to
-`c' = ![⟨vec, up⟩, ⟨vec, down⟩]`. The contraction `T^μ_ν ↦ T^μ_μ` is an intertwining map to the
-tensors with no indices, and it has no inverse.
-
-The commutation is checked on pure tensors only, where `Λ` acts on each vector. `map_smul_of_pure`
-extends the check to all tensors, and `equivOfPure` turns a linear equivalence with this check into
-an equivalence of representations. `equiv_smul` and `intertwiningMap_smul` state the commutation
-with `•`. A tensor with no indices, a scalar, is invariant (`smul_eq_self_of_isEmpty`).
 
 -/
 
@@ -188,6 +183,25 @@ lemma smulCommClass' : SMulCommClass k G (Tensor S c) :=
   .symm _ _ _
 
 scoped[Tensor] attribute [instance] Tensor.Species.smulCommClass'
+
+/-!
+
+### B.2. Maps that commute with the group
+
+A map `φ` of tensors commutes with the group when `φ (Λ • T) = Λ • φ T`, as reindexing, products,
+contraction, lowering and raising do. Such maps are Mathlib's `Representation.IntertwiningMap` for
+`tensorRep`, or `Representation.Equiv` when they are invertible, so they compose and send invariant
+tensors to invariant tensors. For example, lowering the index `ν` of `T^μν` is an equivalence
+`(S.tensorRep c).Equiv (S.tensorRep c')` from the colors `c = ![⟨vec, up⟩, ⟨vec, up⟩]` to
+`c' = ![⟨vec, up⟩, ⟨vec, down⟩]`. The contraction `T^μ_ν ↦ T^μ_μ` is an intertwining map to the
+tensors with no indices, and it has no inverse.
+
+The commutation is checked on pure tensors only, where `Λ` acts on each vector. `map_smul_of_pure`
+extends the check to all tensors, and `equivOfPure` turns a linear equivalence with this check into
+an equivalence of representations. `equiv_smul` and `intertwiningMap_smul` state the commutation
+with `•`. A tensor with no indices, a scalar, is invariant (`smul_eq_self_of_isEmpty`).
+
+-/
 
 /-- An intertwining map from or to tensors commutes with the actions, `φ (Λ v) = Λ φ v`. -/
 lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
@@ -296,23 +310,15 @@ lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : Tensor S 
 
 Many operations change one index of a tensor and keep the others, such as contracting the index
 with a tensor on two indices, `T^…μ… F_μ^ν`, and lowering or raising it with a metric,
-`T^μν ↦ T^μ_ν`. `mapAt i f h` applies any linear map `f` at the index `i`, `u ⊗ v ↦ u ⊗ f v`.
-`congrAt i f h` applies an equivalence of representations `f` in the same way, and the result is
-again an equivalence of representations, so it commutes with the group and has an inverse.
-Contracting with `F` is `mapAt` of `F` read as a linear map (`contr_matMulAt`), and lowering is
-`congrAt` of the map `v^μ ↦ η_νμ v^μ`.
+`T^μν ↦ T^μ_ν`. They are linear maps at one index (D.2), built from linear maps at every index
+(D.1). When the map at the index is an equivalence of representations, so is the map of tensors
+(D.4).
 
-The map `f` may change the color at `i`, as lowering turns `⟨vec, up⟩` into `⟨vec, down⟩`. So the
-result has other colors `c'`, and `h : ∀ x, x ≠ i → c x = c' x` says that they agree with `c` at
-the other indices. There the vectors are moved along `h` by `S.cast`.
+### D.1. A linear map at every index
 
-In components, `mapAt` acts on the one index, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`
-(`tensorBasis_repr_mapAt`).
-
-`mapAt` is built from `mapIndices f`, which applies a linear map `f x` at every index `x`,
-`u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.map`, and it commutes with the group when
-every `f x` does (`mapIndices_smul`). `congrIndices` is the same for equivalences of
-representations, and `indexMapsAt i f h` is the family with `f` at `i` and `S.cast` elsewhere.
+`mapIndices f` applies a linear map `f x` at every index `x`, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is
+Mathlib's `PiTensorProduct.map`, and it commutes with the group when every `f x` does
+(`mapIndices_smul`). `congrIndices` is the same for equivalences of representations.
 
 -/
 
@@ -369,6 +375,19 @@ noncomputable def congrIndices (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
 lemma congrIndices_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
     S.congrIndices f (S.pure p) = S.pure fun x => f x (p x) :=
   Representation.Equiv.piTensorCongr_tprod f p
+
+/-!
+
+### D.2. A linear map at one index
+
+`mapAt i f h` applies a linear map `f` at the index `i` and keeps the others, `u ⊗ v ↦ u ⊗ f v`.
+The map `f` may change the color at `i`, as lowering turns `⟨vec, up⟩` into `⟨vec, down⟩`. So the
+result has other colors `c'`, and `h : ∀ x, x ≠ i → c x = c' x` says that they agree with `c` at
+the other indices. There the vectors are moved along `h` by `S.cast`. `indexMapsAt i f h` is the
+family with `f` at `i` and `S.cast` elsewhere, and `mapAt` is `mapIndices` of it. Contracting with
+a tensor `F` on two indices is `mapAt` of `F` read as a linear map (`contr_matMulAt`).
+
+-/
 
 section
 
@@ -444,6 +463,15 @@ lemma mapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x) :
   rw [mapAt, ← eq_indexMapsAt (F := fun _ => LinearMap.id) i _ h rfl
     fun _ _ => LinearMap.ext fun _ => rfl, mapIndices_id]
 
+/-!
+
+### D.3. Components
+
+In components, `mapAt` acts on the one index, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`
+(`tensorBasis_repr_mapAt`).
+
+-/
+
 /-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. -/
 lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) (φ : Π x, basisIdx (c' x).kind)
@@ -470,6 +498,17 @@ lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V 
     have hx := Finset.ne_of_mem_erase hx
     rw [indexMapsAt_apply_ne _ _ _ hx, Function.update_of_ne hx, hψ x hx]
     exact basis_repr_cast _ _ _
+
+/-!
+
+### D.4. An equivalence of representations at one index
+
+`congrAt i f h` applies an equivalence of representations `f` at the index `i`, as `mapAt` does.
+The result is again an equivalence of representations, so it commutes with the group and has an
+inverse, `congrAt` of `f.symm` (`congrAt_symm`). Lowering with a metric is `congrAt` of the map
+`v^μ ↦ η_νμ v^μ`, and raising is its inverse.
+
+-/
 
 variable (S) in
 /-- The equivalence of representations `f` at the index `i`, and the identity, moved along `h x`,
