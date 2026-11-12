@@ -36,7 +36,7 @@ transformation acts as `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`. Lowering the ind
 ## ii. Key results
 
 - `Tensor` is the space of tensors, and `Species.pure` is a pure tensor.
-- `Species.ext_pure` proves that linear maps of tensors that agree on pure tensors are equal.
+- `Species.ext_pure` proves that linear maps out of tensors that agree on pure tensors are equal.
 - `Species.tensorRep` is the group action on tensors, and `Species.smul_pure` gives it on a pure
   tensor.
 - `Species.map_smul_of_pure` proves that a map that commutes with the group on pure tensors
@@ -76,8 +76,9 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 `Tensor S c` is `⨂[k] i, S.V (c i)`. A pure tensor `S.pure f` is given by a family `f` of vectors,
 one vector `f i` in `S.V (c i)` at each index `i`, as `u ⊗ α` with the vector `u` at an up index
 and the covector `α` at a down index. Most tensors are not pure, but every tensor is a linear
-combination of pure tensors. So a linear map of tensors is fixed by its values on pure tensors
-(`ext_pure`), and a property of all tensors follows from the pure case (`inductionOn_pure`).
+combination of pure tensors. So a linear map out of tensors, to any space, is fixed by its values
+on pure tensors (`ext_pure`), and a property of all tensors follows from the pure case
+(`inductionOn_pure`).
 `ext_pure` is an `ext` lemma, so the tactic `ext` applies it, together with Mathlib's `ext` lemma
 for intertwining maps. An equality of two intertwining maps out of tensors becomes an equality of
 their values on `S.pure p`, for any family of vectors `p`.
