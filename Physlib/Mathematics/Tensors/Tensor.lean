@@ -137,11 +137,12 @@ contraction, lowering and raising do. Such maps are Mathlib's `Representation.In
 tensors to invariant tensors. For example, lowering the index `ν` of `T^μν` is an equivalence
 `(S.tensorRep c).Equiv (S.tensorRep c')` from the colors `c = ![⟨vec, up⟩, ⟨vec, up⟩]` to
 `c' = ![⟨vec, up⟩, ⟨vec, down⟩]`. The contraction `T^μ_ν ↦ T^μ_μ` is an intertwining map to the
-tensors with no indices, and it has no inverse. The commutation is checked on pure tensors only, where `Λ` acts on
-each vector. `map_smul_of_pure` extends the check to all tensors, and `equivOfPure` turns a linear
-equivalence with this check into an equivalence of representations. `equiv_smul` and
-`intertwiningMap_smul` state the commutation with `•`. A tensor with no indices, a scalar, is
-invariant (`smul_eq_self_of_isEmpty`).
+tensors with no indices, and it has no inverse.
+
+The commutation is checked on pure tensors only, where `Λ` acts on each vector. `map_smul_of_pure`
+extends the check to all tensors, and `equivOfPure` turns a linear equivalence with this check into
+an equivalence of representations. `equiv_smul` and `intertwiningMap_smul` state the commutation
+with `•`. A tensor with no indices, a scalar, is invariant (`smul_eq_self_of_isEmpty`).
 
 -/
 
