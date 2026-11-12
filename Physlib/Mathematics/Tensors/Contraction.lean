@@ -23,9 +23,8 @@ A contraction pairs indices of dual colors and sums over their common label, as 
 The pairs to contract are chosen by a reindexing `σ : ColorEquiv c (contrColors c' a)` of the
 indices. It sends each free index to an index `inl x`, of color `c' x`, and the two indices of a
 pair `j` to the indices `inr (inl j)` and `inr (inr j)`, of colors `a j` and `(a j).dual`. For the
-trace, `σ` sends `0 ↦ inl 0`, `1 ↦ inr (inl ())` and `2 ↦ inr (inr ())`, and the index notation
-`{T | ρ μ μ}ᵀ` builds it from the repeated name. Since `σ` keeps colors, the two indices of each
-pair are dual without a separate hypothesis. `Tensor.contr σ` reindexes by `σ` and then contracts
+trace, `σ` sends `0 ↦ inl 0`, `1 ↦ inr (inl ())` and `2 ↦ inr (inr ())`. Since `σ` keeps colors,
+the two indices of each pair are dual without a separate hypothesis. `Tensor.contr σ` reindexes by `σ` and then contracts
 each pair by `S.contr (a j)`, with the first index of the pair as its first argument.
 
 Two tensors are contracted by contracting their product. In the full contraction `T^μν U_μν` the
@@ -271,8 +270,8 @@ lemma contr_eq_of_samePair [Fintype J] [Fintype J'] {a : J → Color K} {a' : J'
 -/
 
 /-- A contraction of a tensor that changes sign under a reindexing `π` is zero, when `π` only
-permutes the pairs along `e` and keeps the free indices. The hypothesis `ht` has the form of the
-index notation `{T | μ ν = -T | ν μ}ᵀ`. -/
+permutes the pairs along `e` and keeps the free indices. The hypothesis `ht` says `T^μν = -T^νμ`,
+for `π` the swap. -/
 lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] {a : J → Color K}
     (σ : ColorEquiv c (contrColors c' a)) (π : ColorEquiv c c) (e : J ≃ J)
     (hπ : π.toEquiv.trans σ.toEquiv = σ.toEquiv.trans ((Equiv.refl κ).sumCongr (e.sumCongr e)))
@@ -291,8 +290,7 @@ lemma contr_eq_zero_of_reindex_eq_neg [Fintype J] {a : J → Color K}
 
 /-- `A^μν B_μν = 0` for `A` antisymmetric and `B` symmetric. The contraction of `A ⊗ B` is zero
 when `π₁` reverses the sign of `A`, `π₂` fixes `B`, and together they only permute the pairs. The
-hypotheses have the form of the index notation, `{A | μ ν = -A | ν μ}ᵀ` and
-`{B | μ ν = B | ν μ}ᵀ`. -/
+hypotheses say `A^μν = -A^νμ` and `B_μν = B_νμ`, for `π₁` and `π₂` the swaps. -/
 lemma contr_tmulEquiv_eq_zero_of_antisymm_symm [Fintype J]
     {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {a : J → Color K}
     (σ : ColorEquiv (prodColors c₁ c₂) (contrColors c' a)) (π₁ : ColorEquiv c₁ c₁)

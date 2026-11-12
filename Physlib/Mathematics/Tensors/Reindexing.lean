@@ -17,12 +17,13 @@ transpose `T^μ_ν ↦ T_ν^μ`.
 
 A reindexing `σ : ColorEquiv c₁ c₂` is a bijection `σ.toEquiv : ι₁ ≃ ι₂` of the indices of a tensor
 that keeps their colors, with the proof `σ.color_eq`. For the transpose `T^μ_ν ↦ T_ν^μ` it swaps
-the indices `0` and `1`, and the colors `![up, down]` become `![down, up]`. A permutation that would
-turn an up index into a down one is not a reindexing, since that needs a metric. The index types
+the indices `0` and `1`, and the colors `![⟨vec, up⟩, ⟨vec, down⟩]` become
+`![⟨vec, down⟩, ⟨vec, up⟩]`. A permutation that would turn an up index into a down one is not a
+reindexing, since that needs a metric. The index types
 `ι₁` and `ι₂` may be different, as `Fin 1 ⊕ Fin 1` and `Fin 2` for the product `u^μ v^ν`.
 
 `S.reindex σ` moves each vector of a tensor to its new index. The name follows Mathlib's
-`PiTensorProduct.reindex`. Index notation uses it to line up indices, as in `A^μ_ν + B_ν^μ`.
+`PiTensorProduct.reindex`. It lines up the indices of two tensors, as in `A^μ_ν + B_ν^μ`.
 
 ## ii. Key results
 
@@ -130,7 +131,8 @@ variable {ι₁ ι₂ ι₃ : Type}
 
 variable (S) in
 /-- The bijection `e` of indices applied to tensors, moving the vector of the old index `i` to the
-new index `e i`, with the colors `c ∘ e.symm`. It is `Representation.Equiv.piTensorReindex`. -/
+new index `e i`, with the colors `c ∘ e.symm`. It is `Representation.Equiv.piTensorReindex`, typed
+on `Tensor S (c ∘ e.symm)` so that it composes with other maps of tensors. -/
 noncomputable def permIndices (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
     (S.tensorRep c).Equiv (S.tensorRep (c ∘ e.symm)) :=
   Representation.Equiv.piTensorReindex (fun i => S.rep (c i)) e
