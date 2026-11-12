@@ -17,8 +17,8 @@ The product `T ⊗ U` of two tensors has the indices of `T` followed by those of
 Let `T = T^μ_ν e_μ ⊗ e^ν` have colors `c₁` on the indices `Fin 2` and `U = U^ρ e_ρ` have colors
 `c₂` on the index `Fin 1`. Their product `T ⊗ U = T^μ_ν U^ρ e_μ ⊗ e^ν ⊗ e_ρ` has the indices
 `Fin 2 ⊕ Fin 1` with colors `prodColors c₁ c₂`, those of `T` on `inl i` and those of `U` on
-`inr j`, so no index is renumbered. `S.tmulEquiv c₁ c₂` sends `T ⊗ₜ U` to `T ⊗ U`. It is Mathlib's
-`PiTensorProduct.tmulEquivDep` transported along `toPiTensor`.
+`inr j`, so no index is renumbered. `S.tmulEquiv c₁ c₂` sends `T ⊗ₜ U` to `T ⊗ U`. It is
+`Representation.Equiv.piTprodSum`, on Mathlib's `PiTensorProduct.tmulEquivDep`.
 
 The product is associative and symmetric up to a reindexing, and the group acts on it
 factor by factor. An element of `V a ⊗ V b`, such as the metric `η_μν e^μ ⊗ e^ν`, is a tensor on
@@ -113,19 +113,11 @@ variable {ι₁ ι₂ ι₃ ι₁' ι₂' : Type}
 
 variable (S) in
 /-- The product of tensors, `T ⊗ₜ U ↦ T ⊗ U` with `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`. The indices of
-`T` become the indices `inl i` and those of `U` the indices `inr j`. It is Mathlib's
-`PiTensorProduct.tmulEquivDep` transported along `toPiTensor`. -/
+`T` become the indices `inl i` and those of `U` the indices `inr j`. It is
+`Representation.Equiv.piTprodSum`. -/
 noncomputable def tmulEquiv (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) :
     ((S.tensorRep c₁).tprod (S.tensorRep c₂)).Equiv (S.tensorRep (prodColors c₁ c₂)) :=
-  .mk (TensorProduct.congr (S.toPiTensor c₁) (S.toPiTensor c₂) ≪≫ₗ
-    tmulEquivDep k (fun s => S.V (prodColors c₁ c₂ s)) ≪≫ₗ (S.toPiTensor _).symm) fun g => by
-    ext f₁ f₂
-    simp only [TensorProduct.AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-      LinearMap.coe_restrictScalars, LinearMap.comp_apply, Representation.tprod_apply,
-      TensorProduct.map_tmul, Representation.ofDistribMulAction_apply_apply, smul_pure,
-      LinearEquiv.coe_coe, LinearEquiv.trans_apply, TensorProduct.congr_tmul, toPiTensor_pure,
-      tmulEquivDep_apply, toPiTensor_symm_tprod]
-    exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)
+  Representation.Equiv.piTprodSum fun s => S.rep (prodColors c₁ c₂ s)
 
 /-- The product of the pure tensors of the vectors `f₁` and `f₂` is the pure tensor with the vectors
 `f₁` at the indices `inl i` and the vectors `f₂` at the indices `inr j`. -/
@@ -133,8 +125,8 @@ noncomputable def tmulEquiv (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K
 lemma tmulEquiv_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (f₁ : Π i, S.V (c₁ i))
     (f₂ : Π j, S.V (c₂ j)) :
     S.tmulEquiv c₁ c₂ (S.pure f₁ ⊗ₜ S.pure f₂) =
-      S.pure fun s => Sum.rec (motive := fun s => S.V (prodColors c₁ c₂ s)) f₁ f₂ s := by
-  simp [tmulEquiv, tmulEquivDep_apply]
+      S.pure fun s => Sum.rec (motive := fun s => S.V (prodColors c₁ c₂ s)) f₁ f₂ s :=
+  Representation.Equiv.piTprodSum_tmul (fun s => S.rep (prodColors c₁ c₂ s)) f₁ f₂
 
 /-- The inverse of the product splits a pure tensor into the pure tensor of its vectors at the
 indices `inl i` and the pure tensor of its vectors at the indices `inr j`. -/
@@ -142,8 +134,8 @@ indices `inl i` and the pure tensor of its vectors at the indices `inr j`. -/
 lemma tmulEquiv_symm_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K)
     (f : Π s, S.V (prodColors c₁ c₂ s)) :
     (S.tmulEquiv c₁ c₂).symm (S.pure f) =
-      S.pure (c := c₁) (fun i => f (.inl i)) ⊗ₜ S.pure (c := c₂) fun j => f (.inr j) := by
-  simp [tmulEquiv, tmulEquivDep_symm_apply]
+      S.pure (c := c₁) (fun i => f (.inl i)) ⊗ₜ S.pure (c := c₂) fun j => f (.inr j) :=
+  tmulEquivDep_symm_apply _ _ f
 
 /-!
 
@@ -250,14 +242,10 @@ tensor product `V a ⊗ V b`. `twoIndexEquiv` identifies this space with the ten
 -/
 
 variable (S) in
-/-- A vector `v` of `V c` as a tensor with the one index `![c]`, by Mathlib's
-`PiTensorProduct.subsingletonEquiv`. -/
+/-- A vector `v` of `V c` as a tensor with the one index `![c]`. It is
+`Representation.Equiv.piTprodOfSubsingleton`. -/
 noncomputable def oneIndexEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c]) :=
-  .mk ((subsingletonEquiv (s := fun i => S.V (![c] i)) 0).symm ≪≫ₗ (S.toPiTensor _).symm)
-    fun g => LinearMap.ext fun v => by
-      change S.pure _ = g • S.pure _
-      rw [smul_pure]
-      exact congrArg S.pure (funext fun i => by fin_cases i; rfl)
+  Representation.Equiv.piTprodOfSubsingleton (fun i => S.rep (![c] i)) 0
 
 /-- The tensor of `v` is the pure tensor with `v` on its one index. -/
 @[simp]

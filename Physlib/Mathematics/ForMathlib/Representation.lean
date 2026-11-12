@@ -30,8 +30,10 @@ given for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on the l
 A family of representations `ρ i` on `M i` gives the representation `piTprod ρ` on
 `⨂[k] i, M i`, `g ↦ ⨂ i, ρ i g`, on Mathlib's `PiTensorProduct.map`. Maps `f i` that intertwine
 `ρ i` and `σ i` give `PiTensorProduct.map f`, which intertwines `piTprod ρ` and `piTprod σ`.
-Reindexing the factors along `e : ι ≃ ι'`, Mathlib's `PiTensorProduct.reindex`, is an
-equivalence of representations.
+Three of Mathlib's linear equivalences of `⨂` are equivalences of representations:
+`PiTensorProduct.reindex` along `e : ι ≃ ι'`, `PiTensorProduct.tmulEquivDep`, which splits a
+family over `ι₁ ⊕ ι₂` into its two halves, and `PiTensorProduct.subsingletonEquiv`, for a family
+over a subsingleton index type.
 Contracting pairs of factors by invariant pairings, `PiTensorProduct.contrPairs`, is also
 intertwining.
 
@@ -45,8 +47,10 @@ intertwining.
   `Representation.IsIntertwiningMap.piTensorMap` : `PiTensorProduct.map` of intertwining maps is
   intertwining, `Representation.Equiv.piTensorCongr` : the tensor product of a family of
   equivalences of representations, `Representation.Equiv.piTensorReindex` : reindexing the factors,
-  and `Representation.IsIntertwiningMap.contrPairs` : the
-  contraction of invariantly paired factors is intertwining.
+  `Representation.Equiv.piTprodSum` : the product of the two halves of a family over `ι₁ ⊕ ι₂`,
+  `Representation.Equiv.piTprodOfSubsingleton` : a family over a subsingleton index type, and
+  `Representation.IsIntertwiningMap.contrPairs` : the contraction of invariantly paired factors is
+  intertwining.
 - `Representation.map_piTprod_of_tprod` : a semilinear map that commutes with `piTprod ρ` on pure
   tensors commutes with it on all tensors.
 - `Representation.IntertwiningMap.map_smul_ofDistribMulAction` and
@@ -177,6 +181,42 @@ lemma Representation.Equiv.piTensorReindex_tprod {ι' : Type*} (ρ : Π i, Repre
     (e : ι ≃ ι') (m : Π i, M i) :
     Representation.Equiv.piTensorReindex ρ e (⨂ₜ[k] i, m i) = ⨂ₜ[k] j, m (e.symm j) :=
   PiTensorProduct.reindex_tprod _ _
+
+/-- The tensor product of the two halves of a family of representations indexed by `ι₁ ⊕ ι₂`,
+`(⨂ i, v i) ⊗ (⨂ j, w j) ↦ ⨂ s, Sum.rec v w s`. It is Mathlib's `PiTensorProduct.tmulEquivDep`
+with the actions. -/
+noncomputable def Representation.Equiv.piTprodSum {ι₁ ι₂ : Type*} {M : ι₁ ⊕ ι₂ → Type*}
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)] (ρ : Π i, Representation k G (M i)) :
+    ((Representation.piTprod fun i => ρ (.inl i)).tprod
+      (Representation.piTprod fun j => ρ (.inr j))).Equiv (Representation.piTprod ρ) :=
+  .mk (PiTensorProduct.tmulEquivDep k M) fun g => by
+    ext f₁ f₂
+    simp only [Representation.tprod_apply, LinearMap.compMultilinearMap_apply,
+      TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
+      TensorProduct.curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+      TensorProduct.map_tmul, Representation.piTprod_tprod, PiTensorProduct.tmulEquivDep_apply]
+    exact congrArg (PiTensorProduct.tprod k) (funext fun s => by rcases s with _ | _ <;> rfl)
+
+@[simp]
+lemma Representation.Equiv.piTprodSum_tmul {ι₁ ι₂ : Type*} {M : ι₁ ⊕ ι₂ → Type*}
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)] (ρ : Π i, Representation k G (M i))
+    (f₁ : Π i, M (.inl i)) (f₂ : Π j, M (.inr j)) :
+    Representation.Equiv.piTprodSum ρ ((⨂ₜ[k] i, f₁ i) ⊗ₜ (⨂ₜ[k] j, f₂ j)) =
+      ⨂ₜ[k] s, Sum.rec f₁ f₂ s :=
+  PiTensorProduct.tmulEquivDep_apply k M f₁ f₂
+
+/-- A representation `ρ i₀` as the tensor product of a family `ρ` over a subsingleton index type,
+`v ↦ ⨂ i, v`. It is Mathlib's `PiTensorProduct.subsingletonEquiv` with the actions. -/
+noncomputable def Representation.Equiv.piTprodOfSubsingleton [Subsingleton ι]
+    (ρ : Π i, Representation k G (M i)) (i₀ : ι) :
+    (ρ i₀).Equiv (Representation.piTprod ρ) :=
+  .mk (PiTensorProduct.subsingletonEquiv i₀).symm fun g => LinearMap.ext fun v => by
+    simp only [LinearMap.comp_apply, LinearEquiv.coe_coe,
+      PiTensorProduct.subsingletonEquiv_symm_apply, Representation.piTprod_tprod]
+    congr 1
+    ext i
+    obtain rfl := Subsingleton.elim i i₀
+    simp
 
 /-- A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors commutes
 with it on all tensors. -/
