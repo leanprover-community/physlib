@@ -101,8 +101,9 @@ noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Colo
 
 variable {ι : Type} {c : ι → Color K}
 
-/-- The pure tensor of a family of vectors, one per index, such as `u ⊗ α ⊗ β` with components
-`u^μ α_ν β_ρ`. It is Mathlib's `⨂ₜ[k] i, f i`. -/
+/-- The pure tensor `⨂ₜ i, f i` of a family `f` of vectors, with `f i` in `S.V (c i)` at each
+index `i`, such as `u ⊗ α` with the components `u^μ α_ν`. Not every tensor is pure, but every
+tensor is a linear combination of pure tensors. -/
 noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : Tensor S c :=
   ⨂ₜ[k] i, f i
 
