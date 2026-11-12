@@ -29,7 +29,7 @@ reindexing, since that needs a metric. The index types
 
 - `ColorEquiv` is a bijection of indices that keeps their colors, with `refl`, `symm` and `trans`.
 - `Species.permIndices` moves the vectors of a tensor along a bijection of indices, with no colors
-  involved. It is `Representation.Equiv.piTensorReindex`, on Mathlib's `PiTensorProduct.reindex`.
+  involved. It is `Representation.Equiv.piTprodReindex`, on Mathlib's `PiTensorProduct.reindex`.
 - `Species.reindex` applies a reindexing to tensors, `permIndices` followed by `congrIndices` of the
   moves along the equalities of colors, and `Species.reindex_pure` gives it on a pure tensor.
 - `Species.reindex_trans`, `Species.reindex_refl` and `Species.reindex_symm` prove that reindexing
@@ -131,11 +131,11 @@ variable {ι₁ ι₂ ι₃ : Type}
 
 variable (S) in
 /-- The bijection `e` of indices applied to tensors, moving the vector of the old index `i` to the
-new index `e i`, with the colors `c ∘ e.symm`. It is `Representation.Equiv.piTensorReindex`, typed
+new index `e i`, with the colors `c ∘ e.symm`. It is `Representation.Equiv.piTprodReindex`, typed
 on `Tensor S (c ∘ e.symm)` so that it composes with other maps of tensors. -/
 noncomputable def permIndices (c : ι₁ → Color K) (e : ι₁ ≃ ι₂) :
     (S.tensorRep c).Equiv (S.tensorRep (c ∘ e.symm)) :=
-  Representation.Equiv.piTensorReindex (fun i => S.rep (c i)) e
+  Representation.Equiv.piTprodReindex (fun i => S.rep (c i)) e
 
 /-- On a pure tensor, the new index `j` holds the vector of the old index `e.symm j`. -/
 @[simp]

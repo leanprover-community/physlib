@@ -367,19 +367,19 @@ lemma mapIndices_id_apply (t : Tensor S c) : S.mapIndices (fun _ => LinearMap.id
 lemma mapIndices_smul {f : Π x, S.V (c x) →ₗ[k] S.V (c' x)}
     (hf : ∀ x g v, f x (S.rep (c x) g v) = S.rep (c' x) g (f x v)) (g : G) (t : Tensor S c) :
     S.mapIndices f (g • t) = g • S.mapIndices f t :=
-  (Representation.IsIntertwiningMap.piTensorMap fun x => ⟨hf x⟩).isIntertwining g t
+  (Representation.IsIntertwiningMap.piTprodMap fun x => ⟨hf x⟩).isIntertwining g t
 
 variable (S) in
 /-- Equivalences of representations `f x` at every index `x`, as an equivalence of representations
-of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is `Representation.Equiv.piTensorCongr`. -/
+of tensors, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is `Representation.Equiv.piTprodCongr`. -/
 noncomputable def congrIndices (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) :
     (S.tensorRep c).Equiv (S.tensorRep c') :=
-  Representation.Equiv.piTensorCongr f
+  Representation.Equiv.piTprodCongr f
 
 /-- On a pure tensor, `congrIndices` applies `f x` to the vector at each index `x`. -/
 lemma congrIndices_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x, S.V (c x)) :
     S.congrIndices f (S.pure p) = S.pure fun x => f x (p x) :=
-  Representation.Equiv.piTensorCongr_tprod f p
+  Representation.Equiv.piTprodCongr_tprod f p
 
 /-!
 

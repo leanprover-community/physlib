@@ -44,9 +44,9 @@ intertwining.
   from the trivial representation picks out an invariant vector.
 - `Representation.Equiv.tensorCongr` : the tensor product of two equivalences of representations.
 - `Representation.piTprod` : the tensor product of a family of representations, with
-  `Representation.IsIntertwiningMap.piTensorMap` : `PiTensorProduct.map` of intertwining maps is
-  intertwining, `Representation.Equiv.piTensorCongr` : the tensor product of a family of
-  equivalences of representations, `Representation.Equiv.piTensorReindex` : reindexing the factors,
+  `Representation.IsIntertwiningMap.piTprodMap` : `PiTensorProduct.map` of intertwining maps is
+  intertwining, `Representation.Equiv.piTprodCongr` : the tensor product of a family of
+  equivalences of representations, `Representation.Equiv.piTprodReindex` : reindexing the factors,
   `Representation.Equiv.piTprodSum` : the product of the two halves of a family over `ι₁ ⊕ ι₂`,
   `Representation.Equiv.piTprodOfSubsingleton` : a family over a subsingleton index type, and
   `Representation.IsIntertwiningMap.contrPairs` : the contraction of invariantly paired factors is
@@ -142,7 +142,7 @@ lemma Representation.piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G)
 
 /-- `PiTensorProduct.map f` intertwines `piTprod ρ` and `piTprod σ` when every `f i` intertwines
 `ρ i` and `σ i`. -/
-lemma Representation.IsIntertwiningMap.piTensorMap {ρ : Π i, Representation k G (M i)}
+lemma Representation.IsIntertwiningMap.piTprodMap {ρ : Π i, Representation k G (M i)}
     {σ : Π i, Representation k G (N i)} {f : Π i, M i →ₗ[k] N i}
     (hf : ∀ i, (ρ i).IsIntertwiningMap (σ i) (f i)) :
     (Representation.piTprod ρ).IsIntertwiningMap (Representation.piTprod σ)
@@ -154,32 +154,32 @@ lemma Representation.IsIntertwiningMap.piTensorMap {ρ : Π i, Representation k 
 
 /-- The tensor product of a family of equivalences of representations, `⨂ i, v i ↦ ⨂ i, φ i (v i)`.
 It is Mathlib's `PiTensorProduct.congr` with the actions `piTprod ρ` and `piTprod σ`. -/
-noncomputable def Representation.Equiv.piTensorCongr {ρ : Π i, Representation k G (M i)}
+noncomputable def Representation.Equiv.piTprodCongr {ρ : Π i, Representation k G (M i)}
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) :
     (Representation.piTprod ρ).Equiv (Representation.piTprod σ) :=
   .mk (PiTensorProduct.congr fun i => (φ i).toLinearEquiv) fun g => LinearMap.ext
-    ((Representation.IsIntertwiningMap.piTensorMap fun i =>
+    ((Representation.IsIntertwiningMap.piTprodMap fun i =>
       ⟨(φ i).toIntertwiningMap.isIntertwining⟩).isIntertwining g)
 
 @[simp]
-lemma Representation.Equiv.piTensorCongr_tprod {ρ : Π i, Representation k G (M i)}
+lemma Representation.Equiv.piTprodCongr_tprod {ρ : Π i, Representation k G (M i)}
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
-    Representation.Equiv.piTensorCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
+    Representation.Equiv.piTprodCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
 
 /-- Reindexing the factors of a tensor product of representations along `e : ι ≃ ι'`,
 `⨂ i, v i ↦ ⨂ j, v (e.symm j)`. It is Mathlib's `PiTensorProduct.reindex` with the actions
 `piTprod ρ` and `piTprod (ρ ∘ e.symm)`. -/
-noncomputable def Representation.Equiv.piTensorReindex {ι' : Type*}
+noncomputable def Representation.Equiv.piTprodReindex {ι' : Type*}
     (ρ : Π i, Representation k G (M i)) (e : ι ≃ ι') :
     (Representation.piTprod ρ).Equiv (Representation.piTprod fun j => ρ (e.symm j)) :=
   .mk (PiTensorProduct.reindex k M e) fun g => PiTensorProduct.ext <| MultilinearMap.ext fun m => by
     simp [PiTensorProduct.reindex_tprod]
 
 @[simp]
-lemma Representation.Equiv.piTensorReindex_tprod {ι' : Type*} (ρ : Π i, Representation k G (M i))
+lemma Representation.Equiv.piTprodReindex_tprod {ι' : Type*} (ρ : Π i, Representation k G (M i))
     (e : ι ≃ ι') (m : Π i, M i) :
-    Representation.Equiv.piTensorReindex ρ e (⨂ₜ[k] i, m i) = ⨂ₜ[k] j, m (e.symm j) :=
+    Representation.Equiv.piTprodReindex ρ e (⨂ₜ[k] i, m i) = ⨂ₜ[k] j, m (e.symm j) :=
   PiTensorProduct.reindex_tprod _ _
 
 /-- The tensor product of the two halves of a family of representations indexed by `ι₁ ⊕ ι₂`,
