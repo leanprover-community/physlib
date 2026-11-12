@@ -135,6 +135,12 @@ lemma tmulEquiv_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (f₁
 
 ## C. Associativity, symmetry and equivariance
 
+Each law is an equality of two maps out of a tensor product of spaces of tensors, such as
+`(Tensor S c₁ ⊗ Tensor S c₂) ⊗ Tensor S c₃` for associativity. The tactic `ext` reduces it to pure
+tensors in every factor, through Mathlib's `ext` lemma for `⊗` and `ext_pure`. For associativity,
+`ext f₁ f₂ f₃` leaves the equality on `(S.pure f₁ ⊗ₜ S.pure f₂) ⊗ₜ S.pure f₃`, with one family of
+vectors `fᵢ` for each factor.
+
 -/
 
 /-- The product is associative, `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)`, after the indices of the left side

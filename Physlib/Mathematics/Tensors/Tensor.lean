@@ -78,11 +78,9 @@ one vector `f i` in `S.V (c i)` at each index `i`, as `u ⊗ α` with the vector
 and the covector `α` at a down index. Most tensors are not pure, but every tensor is a linear
 combination of pure tensors. So a linear map of tensors is fixed by its values on pure tensors
 (`ext_pure`), and a property of all tensors follows from the pure case (`inductionOn_pure`).
-`ext_pure` is an `ext` lemma, so the tactic `ext` applies it, together with Mathlib's `ext` lemmas
-for `⊗` and for intertwining maps. An equation of two maps out of a product
-`Tensor S c ⊗ Tensor S c₂` becomes an equation of their values on `S.pure p ⊗ₜ S.pure q`, for any
-family of vectors `p` on the indices of the first factor and `q` on those of the second. An
-equation of two intertwining maps out of tensors becomes one on `S.pure p`, for any family `p`.
+`ext_pure` is an `ext` lemma, so the tactic `ext` applies it, together with Mathlib's `ext` lemma
+for intertwining maps. An equality of two intertwining maps out of tensors becomes an equality of
+their values on `S.pure p`, for any family of vectors `p`.
 
 -/
 
