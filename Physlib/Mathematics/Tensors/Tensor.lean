@@ -24,16 +24,20 @@ type, such as `Fin n`. The product of tensors on the indices `ι₁` and `ι₂`
 the indices of each factor keep their names. The colors of the product are those of the factors,
 with no renumbering into `Fin (n + m)`.
 
-A group element acts on a tensor at every index, by the representation of its color. A linear map
-at one index changes that index and keeps the others, as lowering or raising an index with a metric
-does. Both are linear maps fixed by their values on pure tensors, which take one vector at each
-index, so their properties are proved on pure tensors. The components of a tensor are its
-coordinates in the product basis.
-
 For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
-and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`. A Lorentz
-transformation acts as `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`. Lowering the index `ν` with the metric,
-`T^μ_ν = η_νρ T^μρ`, is a linear map at that one index, which changes its color to `⟨vec, down⟩`.
+and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`.
+
+The operations on tensors in the rest of the library are built from two kinds of linear map defined
+here. A map at every index acts on each index, as a Lorentz transformation does,
+`(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the representation of the color of each index. A map at one index
+changes that index and keeps the others, as lowering the index `ν` with the metric does,
+`T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩`. Reindexing, raising an index and
+contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, are also built from these maps,
+and so is the tactic `tensor_indices`.
+
+Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
+and commuting with the group, are proved once on pure tensors here, and not again for each
+operation. The components of a tensor are its coordinates in the product basis.
 
 ## ii. Key results
 
