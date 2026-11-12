@@ -17,27 +17,26 @@ index type `ι`, and the group acts on them index by index.
 
 ## i. Overview
 
-A tensor `T : Tensor S c` lies in Mathlib's space `⨂[k] i, S.V (c i)` (A), and its type also fixes
-how each index transforms, by the representation `S.rep (c i)` of the color of that index. Mathlib's
+A tensor `T : Tensor S c` lies in Mathlib's space `⨂[k] i, S.V (c i)`, and its type also fixes how
+each index transforms, by the representation `S.rep (c i)` of the color of that index. Mathlib's
 `⨂` is only a vector space, with no rule for how its factors transform. The index type `ι` is any
 type, such as `Fin n`. The product of tensors on the indices `ι₁` and `ι₂` lives on `ι₁ ⊕ ι₂`, so
 the indices of each factor keep their names. The colors of the product are those of the factors,
 with no renumbering into `Fin (n + m)`.
 
 For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
-and for two vectors `u` and `v` the pure tensor `u ⊗ v` (A) has the components `u^μ v^ν` (C).
+and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`.
 
 The operations on tensors in the rest of the library are built from two kinds of linear map defined
 here. A map at every index (D.1) acts on each index, as a Lorentz transformation does,
-`(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the representation of the color of each index (B.1). A map at one
-index (D.2) changes that index and keeps the others, as lowering the index `ν` with the metric
-does, `T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩` (D.4). Reindexing, raising an
-index and contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, are also built from
-these maps, and so is the tactic `tensor_indices`.
+`(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the representation of the color of each index. A map at one index
+(D.2) changes that index and keeps the others, as lowering the index `ν` with the metric does,
+`T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩`. Reindexing, raising an index and
+contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, are also built from these maps.
 
-Each map is fixed by its values on pure tensors such as `u ⊗ v` (A). So its laws, such as
-composition and commuting with the group (B.2), are proved once on pure tensors here, and not again
-for each operation. The components of a tensor are its coordinates in the product basis (C).
+Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
+and commuting with the group (B.2), are proved once on pure tensors here, and not again for each
+operation. The components of a tensor are its coordinates in the product basis (C).
 
 ## ii. Key results
 
