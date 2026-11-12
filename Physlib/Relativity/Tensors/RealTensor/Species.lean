@@ -78,7 +78,7 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

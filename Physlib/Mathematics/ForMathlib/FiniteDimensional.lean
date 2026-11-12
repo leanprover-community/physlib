@@ -32,7 +32,7 @@ between two spaces `V` and `W` of the same finite dimension: `g ∘ f = id` on `
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

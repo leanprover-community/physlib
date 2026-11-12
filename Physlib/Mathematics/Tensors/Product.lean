@@ -47,7 +47,7 @@ two indices by `twoIndexEquiv`. The components of a product are the products of 
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

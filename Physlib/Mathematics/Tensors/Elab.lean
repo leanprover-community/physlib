@@ -78,7 +78,7 @@ For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

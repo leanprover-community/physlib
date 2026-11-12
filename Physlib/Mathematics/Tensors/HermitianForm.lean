@@ -38,7 +38,7 @@ is again Hermitian or positive-definite, and a positive-definite `g_{IJ̄}` is i
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

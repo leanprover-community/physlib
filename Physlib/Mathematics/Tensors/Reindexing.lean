@@ -49,7 +49,7 @@ reindexing, since that needs a metric. The index types
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

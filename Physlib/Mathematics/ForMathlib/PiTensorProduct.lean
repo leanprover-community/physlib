@@ -51,7 +51,7 @@ On the index type `κ ⊕ (J ⊕ J)`, a family of pairings `p j` of the factors 
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

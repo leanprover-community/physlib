@@ -39,7 +39,7 @@ Examples are in `Physlib.Mathematics.Tensors.ElabExamples`.
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

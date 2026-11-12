@@ -59,7 +59,7 @@ its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every inde
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

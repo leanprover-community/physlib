@@ -43,7 +43,7 @@ with the group action, and the inverse of the form at `c` is the form at `c.dual
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

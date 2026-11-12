@@ -40,7 +40,7 @@ matching of pairs is a bijection `J → J'`.
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

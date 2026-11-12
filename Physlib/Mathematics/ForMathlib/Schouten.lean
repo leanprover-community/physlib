@@ -33,7 +33,7 @@ Read at a label on three basis vectors, it relates the entries of the matrix of 
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 

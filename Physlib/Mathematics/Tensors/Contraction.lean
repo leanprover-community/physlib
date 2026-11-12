@@ -83,7 +83,7 @@ since the bases of a color and its dual are dual.
 
 ## iv. References
 
-There are no known references for the material in this module.
+* None.
 
 -/
 
