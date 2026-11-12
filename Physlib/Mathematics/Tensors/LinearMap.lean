@@ -299,8 +299,9 @@ lemma contr_deltaTensor_swap [DecidableEq ι₁] {c : ι₁ → Color K} (i : ι
     contr (ColorEquiv.matMulAt i a a ha ha fun _ _ => rfl)
       (S.tmulEquiv c ![a.dual, a]
         (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a a.dual) (S.deltaTensor a.dual))) = t := by
-  rw [deltaTensor, reindex_swapTwo_twoIndexEquiv, show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a
-    from Module.Basis.comm_coordDelta _ _]
+  rw [deltaTensor, reindex_swapTwo_twoIndexEquiv,
+    show TensorProduct.comm k _ _ (S.delta a.dual) = S.delta a from
+      Module.Basis.comm_coordDelta _ _]
   exact contr_deltaTensor i a ha t
 
 end Tensor

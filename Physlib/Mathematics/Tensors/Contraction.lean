@@ -24,8 +24,9 @@ The pairs to contract are chosen by a reindexing `σ : ColorEquiv c (contrColors
 indices. It sends each free index to an index `inl x`, of color `c' x`, and the two indices of a
 pair `j` to the indices `inr (inl j)` and `inr (inr j)`, of colors `a j` and `(a j).dual`. For the
 trace, `σ` sends `0 ↦ inl 0`, `1 ↦ inr (inl ())` and `2 ↦ inr (inr ())`. Since `σ` keeps colors,
-the two indices of each pair are dual without a separate hypothesis. `Tensor.contr σ` reindexes by `σ` and then contracts
-each pair by `S.contr (a j)`, with the first index of the pair as its first argument.
+the two indices of each pair are dual without a separate hypothesis. `Tensor.contr σ` reindexes by
+`σ` and then contracts each pair by `S.contr (a j)`, with the first index of the pair as its first
+argument.
 
 Two tensors are contracted by contracting their product. In the full contraction `T^μν U_μν` the
 product `T ⊗ U` has four indices, which form two pairs and leave no index, `κ = Empty`. The
