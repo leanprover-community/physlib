@@ -19,6 +19,8 @@ A tensor `T` of a species `S` with colors `![c₀, …, cₙ₋₁]` is written 
 per index. The heights of the indices are not written, since the colors fix them. A real Lorentz
 tensor `T : Tensor S ![⟨vec, up⟩, ⟨vec, down⟩]`, with components `T^μ_ν`, is written `T | μ ν`.
 
+The notation is scoped: it is active inside the namespace `Tensor` and under
+`open scoped Tensor`, so that it does not meet the notation of `Physlib.Relativity.Tensors.Elab`.
 An expression `{…}ᵀ` is a tensor in `Tensor S ![…]`, or a proposition if it is an equation. The
 names are bound only inside the braces. Each construct is an operation of the species.
 
@@ -30,11 +32,11 @@ names are bound only inside the braces. Each construct is an operation of the sp
   with a literal color list `![…]`.
 - `A + B` and `A = B` reindex `B` by `S.reindex` when its names come in another order. Each name
   must have the same color on both sides.
-- `↓μ` lowers an upper index and `↑μ` raises a lower one, by `S.toDualAt`, so `{v | ↓ν}ᵀ` is
-  `v_ν = v^μ g_μν`. This needs an instance `S.HasForm` at the kind of the index, and a visible
-  variance, as in `⟨κ, .up⟩`.
-- `τ(μ)` flips the variance of an index by `S.toDualAt` whichever way it points, so it needs no
-  visible variance.
+- `τ(μ)` moves an index to the dual color by `S.toDualAt`, which contracts it with the second
+  index of the form, so `{v | τ(ν)}ᵀ` is `v_ν = g_νμ v^μ`. This needs an instance `S.HasForm` at
+  the kind of the index.
+- `↓μ` and `↑μ` are `τ(μ)` with a check of the direction: `↓μ` is an error unless the index is
+  upper, and `↑μ` unless it is lower. They need a visible variance, as in `⟨κ, .up⟩`.
 - A term `m : M` with an instance `Tensorial S c M`, such as a Lorentz vector, is read as
   `Tensorial.toTensor m`.
 - Scalars, group elements and negatives are ordinary terms in front of `|`, as in `r • T | μ ν`,
@@ -58,8 +60,8 @@ no indices is written `s |` with a space after the bar, since Mathlib reads `|x|
 value.
 
 For an upper color `c`, the inverse forms `g^μν g_νρ = δ^μ_ρ` are written
-`{S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ`, which is
-`contr_formTensor_formTensor`. Examples of the notation are in
+`{S.formTensor c | μ ν ⊗ S.formTensor c.dual | ν ρ = S.deltaTensor c.dual | μ ρ}ᵀ`, which
+`tensor_regroup` proves from `contr_formTensor_formTensor`. Examples of the notation are in
 `Physlib.Mathematics.Tensors.ElabExamples`.
 
 ## ii. Key results
@@ -117,8 +119,16 @@ syntax:65 tensorIndexExpr "+" tensorIndexExpr:66 : tensorIndexExpr
 /-- Parentheses. -/
 syntax "(" tensorIndexExpr ")" : tensorIndexExpr
 
-/-- Index notation. -/
-syntax (name := tensorIndexSyntax) "{" tensorIndexExpr "}ᵀ" : term
+end Tensor.Notation
+
+namespace Tensor
+
+/-- Index notation, active under `open scoped Tensor`. -/
+scoped syntax (name := tensorIndexSyntax) "{" tensorIndexExpr "}ᵀ" : term
+
+end Tensor
+
+namespace Tensor.Notation
 
 /-!
 
