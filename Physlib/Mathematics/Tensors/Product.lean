@@ -31,7 +31,9 @@ two indices by `twoIndexEquiv`. The components of a product are the products of 
 - `Species.tmulEquiv_assoc` and `Species.tmulEquiv_comm` prove `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)` and
   `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
-- `Species.twoIndexEquiv` turns an element of `V a ⊗ V b` into a tensor on two indices.
+- `Species.twoIndexEquiv` turns an element of `V a ⊗ V b` into a tensor on two indices, and
+  `Species.mapAt_one_twoIndexEquiv` proves that a linear map at its index `1` acts on the second
+  factor.
 - `Species.tensorBasis_repr_tmulEquiv` proves `(T ⊗ U)^μ_ν^ρ = T^μ_ν U^ρ`.
 
 ## iii. Table of contents
@@ -287,6 +289,21 @@ lemma reindex_twoIndexEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
   | tmul x y =>
     simp only [twoIndexEquiv_tmul, reindex_pure, TensorProduct.comm_tmul]
     exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
+
+/-- A linear map `f` at the index `1` of the tensor of `M` in `V a ⊗ V c` is `f` on the second
+factor of `M`, `M^μν ↦ M^μρ f_ρ^ν`. -/
+lemma mapAt_one_twoIndexEquiv (a c b : Color K) (f : S.V c →ₗ[k] S.V b) (M : S.V a ⊗[k] S.V c)
+    (h : ∀ x, x ≠ (1 : Fin 2) → (![a, c] : Fin 2 → Color K) x = (![a, b] : Fin 2 → Color K) x) :
+    S.mapAt (c := ![a, c]) (c' := ![a, b]) 1 f h (S.twoIndexEquiv a c M) =
+      S.twoIndexEquiv a b (f.lTensor _ M) := by
+  induction M using TensorProduct.inductionOn with
+  | add M M' hM hM' => simp only [map_add, hM, hM']
+  | tmul m₁ m₂ =>
+    rw [twoIndexEquiv_tmul, LinearMap.lTensor_tmul, twoIndexEquiv_tmul]
+    refine mapAt_pure (c := ![a, c]) (c' := ![a, b]) 1 f h _ _ rfl fun x hx => ?_
+    fin_cases x
+    · rfl
+    · exact absurd rfl hx
 
 /-!
 

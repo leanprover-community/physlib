@@ -48,7 +48,7 @@ identity.
 - `Species.delta` : the delta `δ_μ^ν`, with `Species.delta_invariant` : it is invariant.
 - `Species.deltaTensor` : the delta as a tensor on two indices, with
   `Species.tensorBasis_repr_deltaTensor_eq_one` : its components form the identity matrix.
-- `Tensor.contr_matMul` : the contraction `M^μ_ν N^ν_ρ`, and
+- `Tensor.contr_matMul` : the contraction `M^μ_ν N^ν_ρ`, the case `i = 1` of `contr_matMulAt`, and
   `Tensor.contr_matMul_eq_deltaTensor_iff` : it is the delta exactly when the linear maps
   of `M` and `N` are inverse.
 - `Tensor.contr_matMulAt` : contracting the index `i` with the first index of `F` applies
@@ -84,21 +84,8 @@ namespace ColorEquiv
 
 variable {K ι₁ : Type}
 
-/-- The reindexing of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
-second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
-`0` and `1`. -/
-def matMul (a c b : Color K) :
-    ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) where
-  toEquiv.toFun
-    | .inl 0 => .inl 0 | .inl 1 => .inr (.inl ()) | .inr 0 => .inr (.inr ()) | .inr 1 => .inl 1
-  toEquiv.invFun
-    | .inl 0 => .inl 0 | .inl 1 => .inr 1 | .inr (.inl ()) => .inl 1 | .inr (.inr ()) => .inr 0
-  toEquiv.left_inv := by decide
-  toEquiv.right_inv := by decide
-
 /-- The reindexing of `T^…μ… F_μ^ν`, which contracts the index `i` of `T` with the first index of a
-tensor `F` on two indices and puts the second index of `F` in the place of `i`. It is
-`matMul` at any index of a tensor on any index type. -/
+tensor `F` on two indices and puts the second index of `F` in the place of `i`. -/
 def matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
     (a b : Color K) (ha : c i = a) (hi : c' i = b) (h : ∀ x, x ≠ i → c x = c' x) :
     ColorEquiv (prodColors c ![a.dual, b]) (contrColors c' fun _ : Unit => a) where
@@ -124,6 +111,13 @@ def matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁)
       · simp [hx, h x hx]
     · simp [ha]
     · simp
+
+/-- The reindexing of the product `M^μ_ν N^ν_ρ` of two tensors on two indices that contracts the
+second index of `M`, of color `c`, with the first index of `N`. The free indices `μ` and `ρ` are
+`0` and `1`. It is `matMulAt` at the index `1`. -/
+def matMul (a c b : Color K) :
+    ColorEquiv (prodColors ![a, c] ![c.dual, b]) (contrColors ![a, b] fun _ : Unit => c) :=
+  matMulAt (c := ![a, c]) (c' := ![a, b]) 1 c b rfl rfl fun x hx => by fin_cases x <;> simp_all
 
 end ColorEquiv
 
@@ -221,37 +215,6 @@ variable {ι₁ κ : Type} {c : ι₁ → Color K} {c' : κ → Color K}
 
 -/
 
-/-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two indices is `M` with its second factor mapped
-by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
-lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual ⊗[k] S.V b) :
-    contr (ColorEquiv.matMul a c b)
-        (S.tmulEquiv _ _ (S.twoIndexEquiv a c M ⊗ₜ S.twoIndexEquiv _ b N)) =
-      S.twoIndexEquiv a b ((S.toLin N).lTensor _ M) := by
-  induction M using TensorProduct.inductionOn with
-  | add M M' hM hM' => simp only [map_add, add_tmul, hM, hM']
-  | tmul m₁ m₂ =>
-  induction N using TensorProduct.inductionOn with
-  | add N N' hN hN' =>
-    simp only [map_add, tmul_add, LinearMap.lTensor_add, LinearMap.add_apply, hN, hN']
-  | tmul n₁ n₂ =>
-    simp only [twoIndexEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique,
-      LinearMap.lTensor_tmul, Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, tmul_smul,
-      map_smul]
-    congr 2
-    funext j
-    fin_cases j <;> rfl
-
-/-- Two tensors on two indices contract to the delta, `X_μν Y^νρ = δ_μ^ρ`, exactly when their linear
-maps compose to the identity, `Y ∘ X = id`. -/
-lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
-    (Y : S.V y.dual ⊗[k] S.V x.dual) :
-    contr (ColorEquiv.matMul x y x.dual)
-        (S.tmulEquiv _ _ (S.twoIndexEquiv x y X ⊗ₜ S.twoIndexEquiv _ _ Y)) = S.deltaTensor x.dual ↔
-      S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
-  rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoIndexEquiv _ _)).eq_iff,
-    ← (S.toLin (a := x)).injective.eq_iff, Module.Basis.coordTensorHomEquiv_lTensor,
-    Module.Basis.coordTensorHomEquiv_coordDelta]
-
 /-- On a pure tensor, contracting the index `i` with the first index of `F` applies `F`, read as a
 linear map by `Species.toLin`, to the vector at `i`. The vectors `q` at the other indices are
 those of `p`, moved along `h`. -/
@@ -297,6 +260,27 @@ lemma contr_matMulAt [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι₁) 
   exact (contr_matMulAt_pure i a b ha hi h F p q (fun x hx => by simp [q, hx])).trans
     (mapAt_pure i _ h p (Function.update q i (S.cast hi.symm (S.toLin F (S.cast ha (p i)))))
       (Function.update_self _ _ _) (fun x hx => by simp [q, hx])).symm
+
+/-- The contraction `M^μ_ν N^ν_ρ` of two tensors on two indices is `M` with its second factor mapped
+by `S.toLin N`, the linear map `v_ν ↦ v_ν N^ν_ρ`. -/
+lemma contr_matMul (a c b : Color K) (M : S.V a ⊗[k] S.V c) (N : S.V c.dual ⊗[k] S.V b) :
+    contr (ColorEquiv.matMul a c b)
+        (S.tmulEquiv _ _ (S.twoIndexEquiv a c M ⊗ₜ S.twoIndexEquiv _ b N)) =
+      S.twoIndexEquiv a b ((S.toLin N).lTensor _ M) :=
+  (contr_matMulAt (S := S) (c := ![a, c]) (c' := ![a, b]) 1 c b rfl rfl
+    (fun x hx => by fin_cases x <;> simp_all) N (S.twoIndexEquiv a c M)).trans
+    (mapAt_one_twoIndexEquiv a c b (S.toLin N) M _)
+
+/-- Two tensors on two indices contract to the delta, `X_μν Y^νρ = δ_μ^ρ`, exactly when their linear
+maps compose to the identity, `Y ∘ X = id`. -/
+lemma contr_matMul_eq_deltaTensor_iff {x y : Color K} (X : S.V x ⊗[k] S.V y)
+    (Y : S.V y.dual ⊗[k] S.V x.dual) :
+    contr (ColorEquiv.matMul x y x.dual)
+        (S.tmulEquiv _ _ (S.twoIndexEquiv x y X ⊗ₜ S.twoIndexEquiv _ _ Y)) = S.deltaTensor x.dual ↔
+      S.toLin Y ∘ₗ S.toLin X = LinearMap.id := by
+  rw [deltaTensor, contr_matMul, (EquivLike.injective (S.twoIndexEquiv _ _)).eq_iff,
+    ← (S.toLin (a := x)).injective.eq_iff, Module.Basis.coordTensorHomEquiv_lTensor,
+    Module.Basis.coordTensorHomEquiv_coordDelta]
 
 /-- Contracting the index `i` with the first index of the delta is the identity,
 `T^…μ… δ_μ^ν = T^…ν…`. -/
