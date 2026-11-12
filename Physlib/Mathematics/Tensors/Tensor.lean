@@ -279,8 +279,9 @@ lemma finrank_tensor [Fintype ι] (c : ι → Color K) :
   Module.finrank_piTensorProduct.trans
     (Finset.prod_congr rfl fun i _ => Module.finrank_eq_card_basis (S.basis (c i)))
 
-/-- The components of `g • t`, `(g t)^φ = ∑ ψ, (∏ i, g^{φ i}_{ψ i}) t^ψ`, with one matrix entry of
-`g` per index, in the color of that index. -/
+/-- The components of `g • t`, `(g t)^φ = ∑ ψ, (∏ i, M_i (φ i) (ψ i)) t^ψ`, where `M_i` is the
+matrix of `g` in the color of the index `i`. For the colors `![⟨vec, up⟩, ⟨vec, down⟩]` this is
+`(ΛT)^μ_ν = Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ`. -/
 lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : Tensor S c)
     (φ : Π i, basisIdx (c i).kind) :
     (S.tensorBasis c).repr (g • t) φ = ∑ ψ, (∏ i, LinearMap.toMatrix (S.basis (c i))
