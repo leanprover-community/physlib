@@ -12,8 +12,8 @@ public import Physlib.Mathematics.ForMathlib.Representation
 
 # Tensors of a species
 
-The tensors of a species with colors `c : ι → Color K` form Mathlib's `⨂[k] i, V (c i)`, for any
-index type `ι`, and the group acts on them index by index.
+The tensors of a species `S` with colors `c : ι → Color K`, on Mathlib's `⨂[k] i, S.V (c i)` for
+any index type `ι`, and the group action on them index by index.
 
 ## i. Overview
 
@@ -32,13 +32,12 @@ here. A map at every index (D.1) acts on each index, as a Lorentz transformation
 `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the representation of the color of each index. A map at one index
 (D.2) changes that index and keeps the others, as lowering the index `ν` with the metric does,
 `T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩`. Since the metric is invertible and
-commutes with the group, lowering is an equivalence of representations, with raising as its inverse
-(D.4). Reindexing and contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, are also
-built from these maps.
+invariant under the group, lowering is an equivalence of representations, with raising as its
+inverse (D.4). Reindexing uses the map at every index, and contracting an index with a tensor on
+two indices, `T^…μ… F_μ^ν`, is a map at that index.
 
 Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
-and commuting with the group (B.2), are proved once on pure tensors here, and not again for each
-operation. The components of a tensor are its coordinates in the product basis (C), and a map at
+and commuting with the group (B.2), are proved once here, and not again for each operation. The components of a tensor are its coordinates in the product basis (C), and a map at
 one index acts on the components through that index alone, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…` (D.3).
 
 ## ii. Key results
@@ -92,10 +91,9 @@ one vector `f i` in `S.V (c i)` at each index `i`, as `u ⊗ α` with the vector
 and the covector `α` at a down index. Most tensors are not pure, but every tensor is a linear
 combination of pure tensors. So a linear map out of tensors, to any space, is fixed by its values
 on pure tensors (`ext_pure`), and a property of all tensors follows from the pure case
-(`inductionOn_pure`).
-`ext_pure` is an `ext` lemma, so the tactic `ext` applies it, together with Mathlib's `ext` lemma
-for intertwining maps. An equality of two intertwining maps out of tensors becomes an equality of
-their values on `S.pure p`, for any family of vectors `p`.
+(`inductionOn_pure`). `ext_pure` is an `ext` lemma, so the tactic `ext` applies it, together with
+Mathlib's `ext` lemma for intertwining maps. An equality of two intertwining maps out of tensors
+becomes an equality of their values on `S.pure p`, for any family of vectors `p`.
 
 -/
 
@@ -209,7 +207,7 @@ with `•`. A tensor with no indices, a scalar, is invariant (`smul_eq_self_of_i
 
 -/
 
-/-- An intertwining map from or to tensors commutes with the actions, `φ (Λ v) = Λ φ v`. -/
+/-- An intertwining map between tensors commutes with the actions, `φ (Λ T) = Λ φ T`. -/
 lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
     (φ : (S.tensorRep c).IntertwiningMap (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
@@ -478,7 +476,7 @@ In components, `mapAt` acts on the one index, `(f T)^…ν… = ∑ μ, f^ν_μ 
 
 -/
 
-/-- `mapAt` in components, `(f t)^…ν… = ∑ μ, f^ν_μ t^…μ…`, with `f^ν_μ` the matrix of `f`. -/
+/-- `mapAt` in components, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`, with `f^ν_μ` the matrix of `f`. -/
 lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) (φ : Π x, basisIdx (c' x).kind)
     (ψ : Π x, basisIdx (c x).kind)
