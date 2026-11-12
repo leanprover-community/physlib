@@ -228,10 +228,6 @@ noncomputable def toDual (c : Color K) [S.HasForm c.kind] : (S.rep c).Equiv (S.r
       ((S.isIntertwiningMap_toLin_iff (a := c.dual) (b := c.dual) _).2 fun g => by
         rw [TensorProduct.map_comm, form_invariant]).isIntertwining g
 
-/-- `toDual` contracts `v` with the second index of the form at `c.dual`. -/
-lemma toDual_apply (c : Color K) [S.HasForm c.kind] (v : S.V c) :
-    S.toDual c v = S.toLin (TensorProduct.comm k _ _ (form c.dual)) v := rfl
-
 /-- Raising undoes lowering, `(v_ν)^ν = v^ν`. -/
 @[simp]
 lemma toDual_toDual (c : Color K) [S.HasForm c.kind] (v : S.V c) :

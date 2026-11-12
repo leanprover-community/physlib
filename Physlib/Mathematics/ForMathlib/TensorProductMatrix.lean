@@ -31,8 +31,6 @@ and `b₁.tensorProductToMatrix b₂` is the linear equivalence `v ↦ X`. The m
 - `Module.Basis.tensorProductToMatrix_symm_diagonal` : the tensor with the diagonal coefficient
   matrix `diagonal D` is `∑ i, D i • b i ⊗ b i`.
 - `Module.Basis.tensorProductToMatrix_map` : the coefficient matrix of `f ⊗ g` applied to `v`.
-- `Module.Basis.tensorProductToMatrix_symm_map` : `f ⊗ g` applied to the tensor with coefficient
-  matrix `X`.
 - `Module.Basis.tensorProduct_repr_comm` : swapping the factors of a tensor transposes its
   coefficients.
 - `Module.Basis.comm_eq_smul_iff` : swapping the factors scales a tensor of `M ⊗ M` by `r` exactly
@@ -106,13 +104,6 @@ lemma tensorProductToMatrix_symm_apply (X : Matrix ι κ R) :
 lemma tensorProductToMatrix_symm_diagonal (D : ι → R) :
     (b₁.tensorProductToMatrix b₁).symm (diagonal D) = ∑ i, D i • (b₁ i ⊗ₜ[R] b₁ i) := by
   simp [tensorProductToMatrix_symm_apply, diagonal_apply, ite_smul]
-
-/-- `f ⊗ g` sends the tensor with coefficient matrix `X` to the one with coefficient matrix
-`A * X * Bᵀ`. -/
-lemma tensorProductToMatrix_symm_map (f : M →ₗ[R] M) (g : N →ₗ[R] N) (X : Matrix ι κ R) :
-    TensorProduct.map f g ((b₁.tensorProductToMatrix b₂).symm X) =
-      (b₁.tensorProductToMatrix b₂).symm (toMatrix b₁ b₁ f * X * (toMatrix b₂ b₂ g)ᵀ) := by
-  rw [LinearEquiv.eq_symm_apply, tensorProductToMatrix_map, LinearEquiv.apply_symm_apply]
 
 end Action
 

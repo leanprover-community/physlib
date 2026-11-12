@@ -34,7 +34,7 @@ delta is `δ_μ^ν = ∑ μ, e^μ ⊗ e_μ`. The one physical input is that the 
 with the matrix `diag(1, -1, …, -1)` at both colors.
 
 So the general results apply. For example `η^μν η_νρ = δ^μ_ρ` is
-`Species.contr_formTensor_formTensor` at `up`, and lowering an index, `v^μ ↦ v_ν = v^μ η_μν`, is
+`Species.contr_formTensor_formTensor` at `up`, and lowering an index, `v^μ ↦ v_ν = η_νμ v^μ`, is
 `(realLorentz d).toDual up`.
 
 The Lorentz vectors and covectors, the spaces of the two colors, are tensors with one upper index
@@ -49,7 +49,7 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
 - `realLorentz.metric` and the instances `(realLorentz d).HasForm κ` and
   `(realLorentz d).IsSymmetricForm κ` : the Minkowski metric `η`.
 - `realLorentz.tensorBasis_repr_formTensor` : the components of `η^μν` and `η_μν` are the
-  Minkowski matrix, and `realLorentz.tensorBasis_repr_deltaTensor` : those of `δ` the identity.
+  Minkowski matrix.
 - `realLorentz.vectorTensorial` and `realLorentz.coVectorTensorial` : Lorentz vectors and
   covectors as tensors, with the actions `Lorentz.Vector.rep` and `Lorentz.CoVector.rep`.
 - `realLorentz.tensorBasis_repr_toTensor_vector` and
@@ -73,7 +73,7 @@ and one lower index respectively (`Tensorial`). A vector transforms by `Λ *ᵥ 
 
 - A. The species
 - B. The Minkowski metric
-- C. Dual bases and components of the metric and the delta
+- C. Components of the metric
 - D. Lorentz vectors and covectors as tensors
 
 ## iv. References
@@ -218,7 +218,7 @@ lemma metric_invariant (d : ℕ) (c : Color Kind) (Λ : LorentzGroup d) :
       Matrix.transpose_transpose, ← LorentzGroup.coe_inv,
       LorentzGroup.transpose_mul_minkowskiMatrix_mul_self]
 
-/-- The metrics at a color and at its dual are inverse, `η^μν η_νρ = δ^μ_ρ`, since `η² = 1`. -/
+/-- The metrics at a color and at its dual are inverse, `η^μν η_νρ = δ^μ_ρ`. -/
 lemma metric_inverse (d : ℕ) (c : Color Kind) :
     (realLorentz d).toLin (metric d c) ∘ₗ (realLorentz d).toLin (metric d c.dual) =
       LinearMap.id :=
@@ -243,7 +243,7 @@ instance (d : ℕ) (κ : realLorentz.Kind) : (realLorentz d).IsSymmetricForm κ 
 
 /-!
 
-## C. Dual bases and components of the metric and the delta
+## C. Components of the metric
 
 -/
 
@@ -262,13 +262,6 @@ lemma tensorBasis_repr_formTensor (d : ℕ) (c : Color Kind) (μ : Fin 2 → Fin
     ((realLorentz d).tensorBasis ![c, c]).repr ((realLorentz d).formTensor c) μ =
       minkowskiMatrix (μ 0) (μ 1) := by
   rw [Species.tensorBasis_repr_formTensor, formMatrix_apply]
-
-/-- The components of the delta are those of the identity matrix, `δ^μ_ν = 1` for `μ = ν` and `0`
-otherwise, at both colors. -/
-lemma tensorBasis_repr_deltaTensor (d : ℕ) (c : Color Kind) (μ : Fin 2 → Fin 1 ⊕ Fin d) :
-    ((realLorentz d).tensorBasis ![c.dual, c]).repr ((realLorentz d).deltaTensor c) μ =
-      (1 : Matrix (Fin 1 ⊕ Fin d) (Fin 1 ⊕ Fin d) ℝ) (μ 0) (μ 1) := by
-  rw [Species.tensorBasis_repr_deltaTensor_eq_one]
 
 /-- Lowering or raising a vector in components, `v_ν = η_νν v^ν`: the Minkowski metric is
 diagonal. -/
@@ -389,10 +382,10 @@ lemma tensorBasis_repr_formTensor_contr_vector (d : ℕ) (v w : Vector d) :
 lowered, is `∑ η_μμ η_νν F^μν G^μν` in components. -/
 lemma tensorBasis_repr_toDualAt_contr_vector_tmul (d : ℕ) (F G : Vector d ⊗[ℝ] Vector d) :
     ((realLorentz d).tensorBasis ![]).repr {F | ↓μ ↓ν ⊗ G | μ ν}ᵀ (fun i => i.elim0) =
-      ∑ μ, ∑ ν, minkowskiMatrix μ μ * minkowskiMatrix ν ν * Vector.tensorComponent μ ν F *
-        Vector.tensorComponent μ ν G := by
-  tensor_components [tensorBasis_repr_toDualAt, tensorBasis_repr_toTensor_vector_tmul,
-    ← Vector.tensorComponent_apply]
+      ∑ μ, ∑ ν, minkowskiMatrix μ μ * minkowskiMatrix ν ν *
+        (Vector.basis.tensorProduct Vector.basis).repr F (μ, ν) *
+          (Vector.basis.tensorProduct Vector.basis).repr G (μ, ν) := by
+  tensor_components [tensorBasis_repr_toDualAt, tensorBasis_repr_toTensor_vector_tmul]
   exact Finset.sum_congr rfl fun μ _ => Finset.sum_congr rfl fun ν _ => by ring
 
 /-- The pairing `v^μ ω_μ` of a vector with a covector is Lorentz invariant. -/
