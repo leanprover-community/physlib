@@ -30,6 +30,8 @@ given for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on the l
 A family of representations `ρ i` on `M i` gives the representation `piTprod ρ` on
 `⨂[k] i, M i`, `g ↦ ⨂ i, ρ i g`, on Mathlib's `PiTensorProduct.map`. Maps `f i` that intertwine
 `ρ i` and `σ i` give `PiTensorProduct.map f`, which intertwines `piTprod ρ` and `piTprod σ`.
+Reindexing the factors along `e : ι ≃ ι'`, Mathlib's `PiTensorProduct.reindex`, is an
+equivalence of representations.
 Contracting pairs of factors by invariant pairings, `PiTensorProduct.contrPairs`, is also
 intertwining.
 
@@ -42,7 +44,8 @@ intertwining.
 - `Representation.piTprod` : the tensor product of a family of representations, with
   `Representation.IsIntertwiningMap.piTensorMap` : `PiTensorProduct.map` of intertwining maps is
   intertwining, `Representation.Equiv.piTensorCongr` : the tensor product of a family of
-  equivalences of representations, and `Representation.IsIntertwiningMap.contrPairs` : the
+  equivalences of representations, `Representation.Equiv.piTensorReindex` : reindexing the factors,
+  and `Representation.IsIntertwiningMap.contrPairs` : the
   contraction of invariantly paired factors is intertwining.
 - `Representation.map_piTprod_of_tprod` : a semilinear map that commutes with `piTprod ρ` on pure
   tensors commutes with it on all tensors.
@@ -159,6 +162,21 @@ lemma Representation.Equiv.piTensorCongr_tprod {ρ : Π i, Representation k G (M
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
     Representation.Equiv.piTensorCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
+
+/-- Reindexing the factors of a tensor product of representations along `e : ι ≃ ι'`,
+`⨂ i, v i ↦ ⨂ j, v (e.symm j)`. It is Mathlib's `PiTensorProduct.reindex` with the actions
+`piTprod ρ` and `piTprod (ρ ∘ e.symm)`. -/
+noncomputable def Representation.Equiv.piTensorReindex {ι' : Type*}
+    (ρ : Π i, Representation k G (M i)) (e : ι ≃ ι') :
+    (Representation.piTprod ρ).Equiv (Representation.piTprod fun j => ρ (e.symm j)) :=
+  .mk (PiTensorProduct.reindex k M e) fun g => PiTensorProduct.ext <| MultilinearMap.ext fun m => by
+    simp [PiTensorProduct.reindex_tprod]
+
+@[simp]
+lemma Representation.Equiv.piTensorReindex_tprod {ι' : Type*} (ρ : Π i, Representation k G (M i))
+    (e : ι ≃ ι') (m : Π i, M i) :
+    Representation.Equiv.piTensorReindex ρ e (⨂ₜ[k] i, m i) = ⨂ₜ[k] j, m (e.symm j) :=
+  PiTensorProduct.reindex_tprod _ _
 
 /-- A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors commutes
 with it on all tensors. -/
