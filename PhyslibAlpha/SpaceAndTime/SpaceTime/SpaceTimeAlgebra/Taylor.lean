@@ -17,7 +17,8 @@ whose first derivatives vanish is the constant jet of its value. These are the t
 that make the jets of a matrix gauge group a faithful package of local gauge data, in the
 sense of `LocalGaugeData.Faithful`. Conversely every family of base-point Taylor data is
 realized by a jet, `ofDerivValues`, and entrywise by a matrix of jets, `taylorMatrix`: this
-is the Taylor completeness half of `LocalGaugeData.Free`.
+is the Taylor completeness half of `LocalGaugeData.Free`. In the other direction,
+`derivValueMatrix` reads off the base-point Taylor data of a matrix of jets.
 
 ## ii. Key results
 
@@ -26,10 +27,12 @@ is the Taylor completeness half of `LocalGaugeData.Free`.
 - `SpaceTimeAlgebra.ofDerivValues` :
   Taylor completeness.
 - `SpaceTimeAlgebra.taylorMatrix` : Taylor completeness for matrices of jets.
+- `SpaceTimeAlgebra.derivValueMatrix` : the base-point Taylor data of a matrix of jets.
 
 ## iii. Table of contents
 
 - A. Taylor completeness
+- B. Base-point derivatives of matrices of jets
 
 ## iv. References
 
@@ -88,5 +91,55 @@ lemma map_constantCoeff_iteratedPDeriv_taylorMatrix {κ : Type}
     (taylorMatrix M).map (fun f => constantCoeff (iteratedPDeriv s f)) = M s := by
   ext i j
   rw [Matrix.map_apply, taylorMatrix_apply, constantCoeff_iteratedPDeriv_ofDerivValues]
+
+/-!
+
+## B. Base-point derivatives of matrices of jets
+
+-/
+
+section DerivValueMatrix
+
+variable {κ : Type}
+
+/-- The base-point values of the iterated derivatives of a matrix of jets along a multiset
+  of directions, taken entrywise. These are the Taylor coefficients up to the factorial
+  factor, matching `SpaceTimeAlgebra.ofDerivValues`. -/
+noncomputable def derivValueMatrix (s : Multiset (Fin 1 ⊕ Fin 3))
+    (A : Matrix κ κ SpaceTimeAlgebra) : Matrix κ κ ℂ :=
+  A.map fun f => constantCoeff (iteratedPDeriv s f)
+
+lemma derivValueMatrix_cons (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3))
+    (A : Matrix κ κ SpaceTimeAlgebra) :
+    derivValueMatrix (μ ::ₘ s) A = derivValueMatrix s (A.map (pderiv μ)) := by
+  ext i j
+  simp [derivValueMatrix]
+
+lemma derivValueMatrix_add (s : Multiset (Fin 1 ⊕ Fin 3)) (A B : Matrix κ κ SpaceTimeAlgebra) :
+    derivValueMatrix s (A + B) = derivValueMatrix s A + derivValueMatrix s B := by
+  ext i j
+  simp [derivValueMatrix, iteratedPDeriv_add]
+
+lemma derivValueMatrix_real_smul (s : Multiset (Fin 1 ⊕ Fin 3)) (r : ℝ)
+    (A : Matrix κ κ SpaceTimeAlgebra) :
+    derivValueMatrix s (r • A) = r • derivValueMatrix s A := by
+  ext i j
+  simp only [derivValueMatrix, Matrix.map_apply, Matrix.smul_apply]
+  rw [← algebraMap_smul ℂ r, iteratedPDeriv_smul, MvPowerSeries.constantCoeff_smul,
+    algebraMap_smul]
+
+@[simp]
+lemma derivValueMatrix_zero_right (s : Multiset (Fin 1 ⊕ Fin 3)) :
+    derivValueMatrix s (0 : Matrix κ κ SpaceTimeAlgebra) = 0 := by
+  ext i j
+  simp [derivValueMatrix]
+
+variable [Fintype κ] [DecidableEq κ]
+
+@[simp]
+lemma derivValueMatrix_zero (A : Matrix κ κ SpaceTimeAlgebra) :
+    derivValueMatrix 0 A = (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix A := rfl
+
+end DerivValueMatrix
 
 end SpaceTimeAlgebra

@@ -25,6 +25,10 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.Boson
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionGenerators
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionMatterField
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionModule
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.Basic
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.GaugeJetGroup
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.JetLieAlgebra
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.LocalGaugeData
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalCovField.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalCovField.GaugeSector
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalCovField.GaugeSectorRealization
@@ -263,6 +267,8 @@ public import PhyslibAlpha.Mathematics.Distribution.TimeSliceFourier
 public import PhyslibAlpha.Mathematics.Distribution.TimeSliceSmooth
 public import PhyslibAlpha.Mathematics.Distribution.Translation
 public import PhyslibAlpha.Mathematics.ExteriorAlgebra
+public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.LieProductFormula
+public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.MatrixLieAlgebra
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.Scalar
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
 public import PhyslibAlpha.Mathematics.Fourier.Integral
