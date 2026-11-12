@@ -213,16 +213,14 @@ lemma bispinorToVector_vectorToBispinor (p : ℂT[up, upL, upR]) :
   simp only [vectorToBispinor, bispinorToVector, LinearMap.coe_mk, AddHom.coe_mk]
   tensor_regroup using pauliContrDown_trace_pauliCo
 
-/-- `vectorToBispinor ∘ bispinorToVector = 2`: both spaces have dimension `16`, so the left inverse
-`bispinorToVector / 2` of `vectorToBispinor` is a right inverse. -/
+/-- `vectorToBispinor ∘ bispinorToVector = 2`. -/
 lemma vectorToBispinor_bispinorToVector (X : ℂT[upL, upR, upL, upR]) :
     vectorToBispinor (bispinorToVector X) = (2 : ℂ) • X :=
   LinearMap.comp_apply_eq_smul_of_comp_apply_eq_smul_of_finrank_eq
     (by rw [Species.finrank_tensor, Species.finrank_tensor]; rfl) two_ne_zero
     bispinorToVector_vectorToBispinor X
 
-/-- The Fierz identity `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`: it is
-`vectorToBispinor σT = vectorToBispinor (bispinorToVector (εL ⊗ εR)) / 2`. -/
+/-- The Fierz identity `σT_ν^{αβ̇} σT^{να'β̇'} = 2 ε^{αα'} ε^{β̇β̇'}`. -/
 lemma pauliCo_contr_pauliContr :
     {pauliTensor | τ(ν) α β ⊗ pauliTensor | ν α' β' =
       (2 : ℂ) • {εL | α α' ⊗ εR | β β'}ᵀ | α α' β β'}ᵀ := by

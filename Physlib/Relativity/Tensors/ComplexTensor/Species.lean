@@ -56,8 +56,7 @@ enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_�
   conjugates of the components.
 - `complexLorentz.formMatrix_apply` : the components `Species.formMatrix` of the form at any color
   are `complexLorentz.formEntries`, for lowering in components.
-- `complexLorentz.tensorBasis_repr_formTensor` : the components of `ε` and `η` at any color, and
-  `complexLorentz.tensorBasis_repr_deltaTensor` those of `δ`.
+- `complexLorentz.tensorBasis_repr_formTensor` : the components of `ε` and `η` at any color.
 - `complexLorentz.formTensor_upL_antisymm`, `complexLorentz.formTensor_up_symm` : `ε` is
   antisymmetric and `η` symmetric, and `complexLorentz.deltaTensor_swap` : `δ^μ_ν = δ_ν^μ`.
 - `complexLorentz.schouten_downL` and `complexLorentz.schouten_downR` : the Schouten identity of
@@ -73,7 +72,7 @@ enters index notation directly, as in `{ψ | α ⊗ φ | α}ᵀ` for `ψ^α φ_�
 - A. The species
 - B. The invariant forms
 - C. Conjugation
-- D. Components of the forms and the deltas
+- D. Components of the forms
 - E. Symmetry of the forms
 - F. Weyl spinors and complex vectors as tensors
 - G. Examples
@@ -255,8 +254,7 @@ noncomputable def form : (c : Color Kind) → complexLorentz.V c ⊗[ℂ] comple
   | ⟨vec, .up⟩ => ComplexVector.metricVal
   | ⟨vec, .down⟩ => ComplexCoVector.metricVal
 
-/-- The forms are invariant under `SL(2, ℂ)`, each the value at `1` of an intertwining map from
-the trivial representation. -/
+/-- The forms are invariant under `SL(2, ℂ)`. -/
 lemma form_invariant : ∀ (c : Color Kind) (g : SL(2, ℂ)),
     TensorProduct.map (complexLorentz.rep c g) (complexLorentz.rep c g) (form c) = form c
   | ⟨left, .up⟩ => fun g => (map_neg _ _).trans <| congrArg Neg.neg <|
@@ -316,7 +314,7 @@ lemma formEntries_dual_mul : ∀ c : Color Kind,
       (@minkowskiMatrix 3).map Complex.ofRealHom = 1 by
     rw [← Matrix.map_mul, minkowskiMatrix.sq, Matrix.map_one _ (map_zero _) (map_one _)]
 
-/-- The forms at `c` and at `c.dual` are inverse to each other, since their matrices are. -/
+/-- The forms at `c` and at `c.dual` are inverse to each other. -/
 lemma form_inverse (c : Color Kind) :
     complexLorentz.toLin (form c) ∘ₗ complexLorentz.toLin (form c.dual) = LinearMap.id :=
   Module.Basis.coordTensorHomEquiv_comp_of_mul_eq_one _ _ _ _ <| by
@@ -427,7 +425,7 @@ end complexLorentz
 
 /-!
 
-## D. Components of the forms and the deltas
+## D. Components of the forms
 
 -/
 
@@ -452,14 +450,6 @@ lemma tensorBasis_repr_formTensor_vec (v : Variance)
     (complexLorentz.tensorBasis ![⟨vec, v⟩, ⟨vec, v⟩]).repr (complexLorentz.formTensor ⟨vec, v⟩)
       μ = minkowskiMatrix (μ 0) (μ 1) :=
   tensorBasis_repr_formTensor ⟨vec, v⟩ μ
-
-/-- The components of the delta are those of the identity matrix, `δ^μ_ν = 1` for `μ = ν` and `0`
-otherwise, at every color. -/
-lemma tensorBasis_repr_deltaTensor (c : Color Kind)
-    (μ : Π i, Idx (![c.dual, c] i).kind) :
-    (complexLorentz.tensorBasis ![c.dual, c]).repr (complexLorentz.deltaTensor c) μ =
-      (1 : Matrix (Idx c.kind) (Idx c.kind) ℂ) (μ 0) (μ 1) := by
-  rw [Species.tensorBasis_repr_deltaTensor_eq_one]
 
 /-- `η^00 = 1` and `η^11 = -1`: the signature is mostly minus. -/
 example : (complexLorentz.tensorBasis ![up, up]).repr η
@@ -638,8 +628,7 @@ example (c : Color Kind) : {complexLorentz.formTensor c | α β ⊗
   tensor_regroup
 
 /-- The components of `ε^αβ ⊗ ε^α̇β̇` are the products of the components of `εL` and `εR`. -/
-lemma tensorBasis_repr_formTensor_upL_tmul_upR
-    (μ : Π i, Idx (![upL, upL, upR, upR] i).kind) :
+example (μ : Π i, Idx (![upL, upL, upR, upR] i).kind) :
     (complexLorentz.tensorBasis _).repr {εL | α β ⊗ εR | α' β'}ᵀ μ =
       metricRaw (μ 0) (μ 1) * metricRaw (μ 2) (μ 3) := by
   rw [Species.tensorBasis_repr_reindex, Species.tensorBasis_repr_tmulEquiv,
