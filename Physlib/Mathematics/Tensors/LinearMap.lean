@@ -265,10 +265,10 @@ lemma contr_matMulAt_pure [DecidableEq ι₁] {c c' : ι₁ → Color K} (i : ι
   induction F using TensorProduct.inductionOn with
   | add F F' hF hF' =>
     simp only [map_add, LinearMap.add_apply, tmul_add, hF, hF']
-    rw [Species.pure, Species.pure, Species.pure, MultilinearMap.map_update_add, map_add]
+    exact ((PiTensorProduct.tprod k).map_update_add q i _ _).symm
   | tmul x y =>
     rw [Module.Basis.coordTensorHomEquiv_tmul, coordPairing_basis, map_smul]
-    conv_rhs => rw [Species.pure, MultilinearMap.map_update_smul, map_smul, ← Species.pure]
+    conv_rhs => rw [Species.pure, MultilinearMap.map_update_smul, ← Species.pure]
     rw [twoIndexEquiv_tmul, tmulEquiv_pure, contr_pure, Fintype.prod_unique]
     congr 2
     funext z

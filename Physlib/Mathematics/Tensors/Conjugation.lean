@@ -259,8 +259,7 @@ variable [S.HasConjugation] {ι : Type} {c c' : ι → Color K}
 color. The colors `c'` of the result are the conjugates of `c` by `h`. For concrete colors `h` holds
 by `rfl` index by index, `fun i => by fin_cases i <;> rfl`. It is conjugate-linear. -/
 noncomputable def conj (h : ∀ i, c' i = (c i).bar) : Tensor S c ≃ₗ⋆[k] Tensor S c' :=
-  (S.toPiTensor c).trans <| (PiTensorProduct.congrₛₗ fun i => S.conjEquiv (h i)).trans
-    (S.toPiTensor c').symm
+  PiTensorProduct.congrₛₗ fun i => S.conjEquiv (h i)
 
 /-- The conjugate of a pure tensor conjugates each factor, `(u ⊗ α)‾ = ū ⊗ ᾱ`. -/
 @[simp]

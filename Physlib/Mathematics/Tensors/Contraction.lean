@@ -163,13 +163,10 @@ index `inr (inl j)` is contracted with the index `inr (inr j)` by `S.contr (a j)
 `c`. It is `PiTensorProduct.contrPairs` of the contractions `S.contr (a j)`. -/
 noncomputable def contrStd [Fintype J] (c : κ → Color K) (a : J → Color K) :
     (S.tensorRep (contrColors c a)).IntertwiningMap (S.tensorRep c) :=
-  ⟨(S.toPiTensor c).symm.toLinearMap ∘ₗ
-    PiTensorProduct.contrPairs (M := fun i => S.V (contrColors c a i))
-      (fun j => (S.contr (a j)).toLinearMap) ∘ₗ (S.toPiTensor _).toLinearMap,
-    fun g => LinearMap.ext fun t =>
-      congrArg (S.toPiTensor c).symm ((Representation.IsIntertwiningMap.contrPairs
-        (ρ := fun i => S.rep (contrColors c a i)) fun j => S.contr_invariant (a j)).isIntertwining
-          g t)⟩
+  ⟨PiTensorProduct.contrPairs (M := fun i => S.V (contrColors c a i))
+      (fun j => (S.contr (a j)).toLinearMap),
+    fun g => LinearMap.ext <| (Representation.IsIntertwiningMap.contrPairs
+      (ρ := fun i => S.rep (contrColors c a i)) fun j => S.contr_invariant (a j)).isIntertwining g⟩
 
 /-- On a pure tensor the contraction multiplies the remaining vectors by the contraction of the
 two vectors of each pair, as in `u ⊗ v ⊗ α ↦ (v^μ α_μ) u`. -/

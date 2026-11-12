@@ -112,7 +112,7 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 
 /-- The space `⨂[k] i, S.V (c i)` of tensors with colors `c` on the indices `ι`. It is a `def`, not
 an `abbrev`, so that the type `Tensor S c` keeps the species and the colors instead of unfolding to
-`⨂[k] i, S.V (c i)`. -/
+`⨂[k] i, S.V (c i)`. Mathlib's constructions on `⨂` apply to it by definitional unfolding. -/
 def _root_.Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
   ⨂[k] i, S.V (c i)
 
@@ -126,25 +126,12 @@ noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Colo
 
 variable {ι : Type} {c : ι → Color K}
 
-/-- The identity from `Tensor S c` to Mathlib's `⨂[k] i, S.V (c i)`, as a linear equivalence.
-Mathlib's constructions on `⨂` are composed with it. -/
-noncomputable def toPiTensor (S : Species k G K basisIdx) (c : ι → Color K) :
-    Tensor S c ≃ₗ[k] ⨂[k] i, S.V (c i) :=
-  LinearEquiv.refl k _
-
 /-- The pure tensor of a family of vectors, one per index, such as `u ⊗ α ⊗ β` with components
 `u^μ α_ν β_ρ`. It is Mathlib's `⨂ₜ[k] i, f i`. -/
 noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : Tensor S c :=
-  (S.toPiTensor c).symm (⨂ₜ[k] i, f i)
+  ⨂ₜ[k] i, f i
 
 variable {S : Species k G K basisIdx}
-
-@[simp]
-lemma toPiTensor_pure (f : Π i, S.V (c i)) : S.toPiTensor c (S.pure f) = ⨂ₜ[k] i, f i := rfl
-
-@[simp]
-lemma toPiTensor_symm_tprod (f : Π i, S.V (c i)) :
-    (S.toPiTensor c).symm (⨂ₜ[k] i, f i) = S.pure f := rfl
 
 /-- Induction on tensors through pure tensors: every tensor is a sum of pure tensors. -/
 lemma inductionOn_pure {P : Tensor S c → Prop}
@@ -258,18 +245,18 @@ lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = 
 colors. -/
 noncomputable def tensorBasis (S : Species k G K basisIdx) [Fintype ι] (c : ι → Color K) :
     Module.Basis (Π i, basisIdx (c i).kind) k (Tensor S c) :=
-  (Basis.piTensorProduct fun i => S.basis (c i)).map (S.toPiTensor c).symm
+  Basis.piTensorProduct fun i => S.basis (c i)
 
 /-- A basis tensor is the pure tensor of basis vectors, `e_μ ⊗ e^ν ⊗ …`. -/
 lemma tensorBasis_apply [Fintype ι] (x : Π i, basisIdx (c i).kind) :
-    S.tensorBasis c x = S.pure fun i => S.basis (c i) (x i) := by
-  simp [tensorBasis, Basis.piTensorProduct_apply]
+    S.tensorBasis c x = S.pure fun i => S.basis (c i) (x i) :=
+  Basis.piTensorProduct_apply _ _
 
 /-- The components of a pure tensor are products, `(u ⊗ α)^μ_ν = u^μ α_ν`. -/
 lemma tensorBasis_repr_pure [Fintype ι] (f : Π i, S.V (c i))
     (x : Π i, basisIdx (c i).kind) :
-    (S.tensorBasis c).repr (S.pure f) x = ∏ i, (S.basis (c i)).repr (f i) (x i) := by
-  simp [tensorBasis, Basis.piTensorProduct_repr_tprod_apply]
+    (S.tensorBasis c).repr (S.pure f) x = ∏ i, (S.basis (c i)).repr (f i) (x i) :=
+  Basis.piTensorProduct_repr_tprod_apply _ _ _
 
 /-- Tensors on finitely many indices are a finite-dimensional space. -/
 noncomputable instance [Fintype ι] : Module.Finite k (Tensor S c) :=
@@ -305,7 +292,7 @@ variable (S) in
 /-- A linear map `f x` at every index `x`, as in `u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's
 `PiTensorProduct.map`. -/
 noncomputable def mapIndices (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) : Tensor S c →ₗ[k] Tensor S c' :=
-  (S.toPiTensor c').symm.toLinearMap ∘ₗ PiTensorProduct.map f ∘ₗ (S.toPiTensor c).toLinearMap
+  PiTensorProduct.map f
 
 /-- On a pure tensor, `mapIndices` applies `f x` to the vector at each index `x`. -/
 lemma mapIndices_pure (f : Π x, S.V (c x) →ₗ[k] S.V (c' x)) (p : Π x, S.V (c x)) :
