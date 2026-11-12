@@ -6,18 +6,46 @@ Authors: Cameron Lee
 module
 
 public import Mathlib.Analysis.Distribution.Distribution
-public import Mathlib.Analysis.Distribution.TestFunction
-public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
-public import Mathlib.Topology.Continuous
+/-!
+
+# DistributionCLM
+
+## i. Overview
+
+In this module, we define continuous linear maps between spaces of distributions. We first define
+a continuous linear map between spaces of test functions via the pullback of a test function
+`TestFunction Ω' F ⊤` along a linear equivalence`g : E ≃L[ℝ] E'`. We then use this to define a map
+between spaces of distributions `Distribution Ω F ⊤` and `Distribution Ω' F ⊤` by precomposition.
+
+## ii. Key results
+
+- `pullback` : A continuous linear map between spaces of test functions `𝓓(Ω', F)` and `𝓓(Ω, F)`.
+- `DistributionMap` : A continuous linear map between spaces of distributions `𝓓'(Ω, F)` and
+    `𝓓'(Ω', F)`.
+
+### iii. Table of contents
+
+- A. Continuous linear maps
+
+## iv. References
+
+* None.
+-/
 
 @[expose] public section
 
+namespace DistributionCLM
 
 open Function Set TopologicalSpace UniformSpace
 
-/-- Given normed spaces `E` and `E'` and a map between them `g : E → E'`, define a map
-between the spaces of test functions `𝓓(Ω', F)` and `𝓓(Ω, F)`. -/
-noncomputable def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
+/-!
+## A. Continuous linear maps
+-/
+
+/-- Given normed spaces `E` and `E'` and open subsets `Ω ⊆ E` and `Ω' ⊆ E'` and a map between
+them `g : E → E'`, define a continuous linear map between the spaces of test functions
+`𝓓(Ω', F)` and `𝓓(Ω, F)`. -/
+noncomputable def pullback {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
     [NormedSpace ℝ E] [NormedSpace ℝ E']
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
@@ -92,12 +120,12 @@ noncomputable def testFunctionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGr
   · ext x
     rfl
 
-/--Having defined a CLM between test functions, we now define a map between spaces of
-distributions `𝓓'(Ω, F)` and `𝓓'(Ω', F)`. -/
+/--Having defined a CLM between test functions, we now define a continuous linear map between spaces
+of distributions `𝓓'(Ω, F)` and `𝓓'(Ω', F)`. -/
 noncomputable def DistributionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
     [NormedSpace ℝ E] [NormedSpace ℝ E']
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
     (h : g.invFun '' Ω' ⊆ ↑Ω) :
     Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ :=
-    (testFunctionMap (F := ℝ) g h).precompCompactConvergenceCLM F
+    (pullback (F := ℝ) g h).precompCompactConvergenceCLM F
