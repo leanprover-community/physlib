@@ -22,7 +22,7 @@ positive-definite matrices (`Matrix.PosDef`), but no positive-definite sesquilin
 extending `LinearMap.IsSymm`. For a form `M →ₗ⋆[R] M →ₗ[R] R` symmetry is Hermiticity,
 `star (B x y) = B y x`. A positive-definite form is positive-semidefinite and nondegenerate, and
 in a basis it is positive-definite exactly when its matrix is. Symmetry and positive-definiteness
-transfer along a surjective or bijective linear map that turns one form into the conjugate of the
+transfer along a surjective linear map that turns one form into the conjugate of the
 other, as for the inverse of a Hermitian metric.
 
 ## ii. Key results
@@ -31,7 +31,7 @@ other, as for the inverse of a Hermitian metric.
 - `LinearMap.IsPosDef.isPosSemidef` : a positive-definite form is positive-semidefinite.
 - `LinearMap.IsPosDef.nondegenerate` : a positive-definite form is nondegenerate.
 - `LinearMap.IsSymm.of_comp_star` and `LinearMap.IsPosDef.of_comp_star` : a form `B'` with
-  `B' (A x) (A y) = star (B y x)` for a surjective or bijective `A` is symmetric or
+  `B' (A x) (A y) = star (B y x)` for a surjective `A` is symmetric or
   positive-definite when `B` is.
 - `LinearMap.isPosDef_iff_posDef_toMatrix` : a form is positive-definite exactly when its matrix in
   a basis is.
@@ -122,12 +122,12 @@ lemma IsSymm.of_comp_star (hA : Function.Surjective A) (hB : B.IsSymm)
   rw [h, h, starRingEnd_apply, star_star]
   exact (hB.eq x y).symm
 
-/-- If `B' (A x) (A y) = star (B y x)` for a bijective `A`, then `B'` is positive-definite when `B`
+/-- If `B' (A x) (A y) = star (B y x)` for a surjective `A`, then `B'` is positive-definite when `B`
 is. -/
-lemma IsPosDef.of_comp_star [LT R] (hA : Function.Bijective A) (hB : B.IsPosDef)
+lemma IsPosDef.of_comp_star [LT R] (hA : Function.Surjective A) (hB : B.IsPosDef)
     (h : ∀ x y, B' (A x) (A y) = star (B y x)) : B'.IsPosDef := by
-  refine ⟨hB.isSymm.of_comp_star hA.2 h, fun u hu => ?_⟩
-  obtain ⟨x, rfl⟩ := hA.2 u
+  refine ⟨hB.isSymm.of_comp_star hA h, fun u hu => ?_⟩
+  obtain ⟨x, rfl⟩ := hA u
   rw [h, ← starRingEnd_apply, hB.isSymm.eq x x]
   exact hB.pos x fun hx => hu (by rw [hx, map_zero])
 

@@ -120,7 +120,7 @@ lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
     (hg : (S.sesqForm g hb).IsPosDef) :
     (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsPosDef :=
   have h := toLin_bijective_of_isPosDef g hg
-  hg.of_comp_star h (sesqForm_inverse_toLin g h hb)
+  hg.of_comp_star h.2 (sesqForm_inverse_toLin g h hb)
 
 end Species
 
