@@ -134,7 +134,10 @@ A group element `Λ` acts on every index by the representation of its color,
 A map `φ` of tensors commutes with the group when `φ (Λ • T) = Λ • φ T`, as reindexing, products,
 contraction, lowering and raising do. Such maps are Mathlib's `Representation.IntertwiningMap` for
 `tensorRep`, or `Representation.Equiv` when they are invertible, so they compose and send invariant
-tensors to invariant tensors. The commutation is checked on pure tensors only, where `Λ` acts on
+tensors to invariant tensors. For example, lowering the index `ν` of `T^μν` is an equivalence
+`(S.tensorRep c).Equiv (S.tensorRep c')` from the colors `c = ![⟨vec, up⟩, ⟨vec, up⟩]` to
+`c' = ![⟨vec, up⟩, ⟨vec, down⟩]`. The contraction `T^μ_ν ↦ T^μ_μ` is an intertwining map to the
+tensors with no indices, and it has no inverse. The commutation is checked on pure tensors only, where `Λ` acts on
 each vector. `map_smul_of_pure` extends the check to all tensors, and `equivOfPure` turns a linear
 equivalence with this check into an equivalence of representations. `equiv_smul` and
 `intertwiningMap_smul` state the commutation with `•`. A tensor with no indices, a scalar, is
