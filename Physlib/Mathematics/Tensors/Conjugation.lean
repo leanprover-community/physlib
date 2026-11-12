@@ -35,8 +35,9 @@ its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every inde
 - `Color.bar` is the conjugate color, with `Color.bar_bar`.
 - `Species.HasConjugation` gives the conjugation of a species with its two conditions, and
   `Species.conjEquiv` is the conjugate of a vector, with its properties
-  `Species.conjEquiv_conjEquiv`, `Species.star_contr_conjEquiv` and `Species.conjEquiv_rep`.
-- `Species.IsEquivariantConjugation` says that the conjugation commutes with the group action.
+  `Species.conjEquiv_conjEquiv` and `Species.star_contr_conjEquiv`.
+- `Species.IsEquivariantConjugation` says that the conjugation commutes with the group action,
+  `Species.conjEquiv_rep`.
 - `Species.HasConjugation.ofBasis` builds a componentwise conjugation from `ConjLabels`, and
   `Species.HasConjugation.isEquivariantConjugation_ofBasis` gives its equivariance from the
   matrices of the group.
@@ -196,9 +197,8 @@ noncomputable def HasConjugation.ofBasis (e : ConjLabels basisIdx) :
   star_contr_conj _ u α := Module.Basis.star_coordPairing_starEquiv _ _ _ _ _ u α
 
 /-- The componentwise conjugation commutes with the group action when the matrix of each `g : G`
-at `c.bar` is the conjugate of its matrix at `c`, `(Λ̄)^μ_ν = (Λ^μ_ν)*`. The hypothesis is needed at
-the upper colors only, since it follows at the lower ones
-(`Module.Basis.map_rep_of_star_coordPairing`). -/
+at `c.bar` is the conjugate of its matrix at `c`, `(Λ̄)^μ_ν = (Λ^μ_ν)*`. The hypothesis is at the
+upper colors only. -/
 lemma HasConjugation.isEquivariantConjugation_ofBasis (e : ConjLabels basisIdx)
     (rep_basis : ∀ (κ : K) (g : G) (μ ν : basisIdx κ),
       (S.basis ⟨star κ, .up⟩).repr
@@ -234,15 +234,15 @@ lemma basis_repr_conjEquiv_of_basis [S.HasConjugation] (h : c' = c.bar)
     (S.basis c').repr (S.conjEquiv h v) μ = star ((S.basis c).repr v (e.symm μ)) := by
   rw [Module.Basis.eq_starEquiv _ _ e (S.conjEquiv h) he v, Module.Basis.repr_starEquiv]
 
+end Species
+
+open Species
+
 /-!
 
 ## D. Conjugation of tensors
 
 -/
-
-end Species
-
-open Species
 
 variable [S.HasConjugation] {ι : Type} {c c' : ι → Color K}
 
