@@ -75,11 +75,11 @@ variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K →
 
 `Tensor S c` is `⨂[k] i, S.V (c i)`. A pure tensor `S.pure f` is given by a family `f` of vectors,
 one vector `f i` in `S.V (c i)` at each index `i`, as `u ⊗ α` with the vector `u` at an up index
-and the covector `α` at a down index. Most tensors are not pure, but every tensor is a linear combination of pure
-tensors. So a linear map of tensors is fixed by its values on pure tensors (`ext_pure`), and a
-property of all tensors follows from the pure case (`inductionOn_pure`). `ext_pure` is an `ext`
-lemma, so `ext p q` also reduces maps out of products `Tensor S c ⊗ Tensor S c₂`, and
-intertwining maps, to pure tensors.
+and the covector `α` at a down index. Most tensors are not pure, but every tensor is a linear
+combination of pure tensors. So a linear map of tensors is fixed by its values on pure tensors
+(`ext_pure`), and a property of all tensors follows from the pure case (`inductionOn_pure`).
+`ext_pure` is an `ext` lemma, so `ext p q` also reduces maps out of products
+`Tensor S c ⊗ Tensor S c₂`, and intertwining maps, to pure tensors.
 
 -/
 
