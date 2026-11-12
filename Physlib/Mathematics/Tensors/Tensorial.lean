@@ -71,7 +71,7 @@ the group, `rep`, and `toTensor` identifies `M` with `Tensor S c` compatibly wit
 class Tensorial {k : outParam Type} [RCLike k] {G : outParam Type} [Group G] {K : outParam Type}
     {basisIdx : outParam (K → Type)} [∀ κ, Fintype (basisIdx κ)]
     [∀ κ, DecidableEq (basisIdx κ)] (S : outParam (Species k G K basisIdx)) {ι : outParam Type}
-    (c : outParam (ι → Color K)) (M : Type) [AddCommMonoid M] [Module k M] where
+    (c : outParam (ι → Color K)) (M : Type*) [AddCommMonoid M] [Module k M] where
   /-- The action of the group on `M`, such as `Λ v = Λ *ᵥ v` on Lorentz vectors. -/
   rep : Representation k G M
   /-- The elements of `M` as tensors, compatibly with the action. -/
@@ -81,7 +81,7 @@ namespace Tensorial
 
 variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)] {S : Species k G K basisIdx}
-    {ι₁ ι₂ : Type} {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {M N : Type} [AddCommMonoid M]
+    {ι₁ ι₂ : Type} {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {M N : Type*} [AddCommMonoid M]
     [Module k M] [AddCommMonoid N] [Module k N]
 
 /-- Transforming `m` and then reading it as a tensor is transforming the tensor,
