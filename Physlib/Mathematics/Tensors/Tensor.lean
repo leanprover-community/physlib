@@ -26,9 +26,9 @@ A pure tensor takes one vector at each index, such as `u ⊗ α ⊗ β` with `u`
 Most tensors are not pure. The metric `η = ∑ μ, η_μμ e^μ ⊗ e^μ` is a sum of pure tensors but not
 a pure tensor itself. Every tensor is a linear combination of pure tensors, so a linear map of
 tensors is fixed by its values on pure tensors (`ext_pure`), and a property of all tensors follows
-from the pure case (`inductionOn_pure`). Maps of tensors, starting with the group action, are given by their value on
-pure tensors, and their properties are proved there first. `S.pure f` is Mathlib's
-`⨂ₜ[k] i, f i` as an element of `Tensor S c`.
+from the pure case (`inductionOn_pure`). Maps of tensors, starting with the group action, are
+given by their value on pure tensors, and their properties are proved there first. `S.pure f` is
+Mathlib's `⨂ₜ[k] i, f i` as an element of `Tensor S c`.
 
 A group element `Λ` acts on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). This is the representation `S.tensorRep c`,

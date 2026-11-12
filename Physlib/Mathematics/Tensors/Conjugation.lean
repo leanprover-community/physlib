@@ -18,8 +18,8 @@ index to the conjugate color.
 
 Conjugation applies a conjugate-linear map of the species at every index of a tensor and moves the
 index to the conjugate kind, keeping its variance. When these maps send the basis of each color to
-the basis of its conjugate, it conjugates the components. A left-handed spinor `ψ_α` becomes a right-handed spinor `ψ̄_α̇`, and a
-vector index is its own conjugate.
+the basis of its conjugate, it conjugates the components. A left-handed spinor `ψ_α` becomes a
+right-handed spinor `ψ̄_α̇`, and a vector index is its own conjugate.
 
 The kinds of a species carry Mathlib's `InvolutiveStar`, whose `star` gives the conjugate kind, and
 the conjugate color is `c.bar = ⟨star c.kind, c.variance⟩`. The species gives the conjugation maps
