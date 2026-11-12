@@ -6,9 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.JetDeriv
-public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.LorentzAction
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.LorentzAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.LorentzAction
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.SectorEquiv.Structure
 /-!
 # The Lorentz action on the jet algebra of the Standard Model

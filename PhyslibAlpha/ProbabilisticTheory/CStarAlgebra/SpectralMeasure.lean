@@ -6,12 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SharpEffect
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Binary
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Topology.Algebra.Indicator
 
 /-!
 

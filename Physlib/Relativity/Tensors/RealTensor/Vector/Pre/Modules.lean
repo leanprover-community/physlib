@@ -8,7 +8,6 @@ module
 public import Physlib.Relativity.PauliMatrices.SelfAdjoint
 public import Mathlib.RepresentationTheory.Basic
 public import Physlib.Relativity.LorentzGroup.Basic
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 /-!
 
 ## Modules associated with Real Lorentz vectors

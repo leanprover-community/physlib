@@ -165,10 +165,11 @@ therefore recorded as a quantity given in every unit system rather than placed a
 of the quantity it measures. The speed of light is such a constant. Its type consists of
 strictly positive reals, which is why it needs the scaling by a strictly positive factor, and it
 carries the dimension of a length over a time; its value in our world is exactly 299792458
-metres per second. [74][75] Newton's constant, Planck's constant and the Boltzmann constant are
-recorded in the same way. [TODO] There are units in which the speed of light is one. [76] In
-Planck units Newton's constant, the reduced Planck constant and the Boltzmann constant are one
-as well. [TODO]
+metres per second. [74][75] The Boltzmann constant is recorded in the same way, with the dimension
+of an energy over a temperature and an exact value in our world. [77] Newton's constant and
+Planck's constant are to be recorded in the same way. [TODO] There are units in which the speed
+of light and the Boltzmann constant are both one. [76] In Planck units Newton's constant and the
+reduced Planck constant are one as well. [TODO]
 
 ### Calculus and dimensional correctness
 
@@ -235,7 +236,8 @@ the numerical oscillator, and has its derivative from the generic transport of d
 17. Physlib/Units/Basic.lean — `LTMCTUnitChoices.SIPrimed`,
    `LTMCTUnitChoices.dimScale_SI_SIPrimed`, `LTMCTUnitChoices.dimScale_SIPrimed_SI`
 18. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale`, `LTMCTUnitChoices.dimScale_apply`,
-   `LTMCTUnitChoices.dimScale_L𝓭`, `LTMCTUnitChoices.dimScale_T𝓭`
+   `LTMCTUnitChoices.dimScale_L𝓭`, `LTMCTUnitChoices.dimScale_T𝓭`,
+   `LTMCTUnitChoices.dimScale_M𝓭`, `LTMCTUnitChoices.dimScale_Θ𝓭`
 19. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale_self`, `LTMCTUnitChoices.dimScale_one`
 20. Physlib/Units/Basic.lean — `LTMCTUnitChoices.dimScale_ne_zero`,
    `LTMCTUnitChoices.dimScale_pos`, `LTMCTUnitChoices.dimScale_transitive`,
@@ -361,6 +363,8 @@ the numerical oscillator, and has its derivative from the generic transport of d
 75. Physlib/Relativity/SpeedOfLight.lean — `SpeedOfLight.instHasDim`, `speedOfLight`,
    `speedOfLight_in_SI`
 76. Physlib/Units/Constants.lean — `exists_units_constants_eq_one`
+77. Physlib/StatisticalMechanics/BoltzmannConstant.lean — `BoltzmannConstant`,
+   `BoltzmannConstant.instHasDim`, `boltzmannConstant`, `boltzmannConstant_in_SI`
 
 ## References
 

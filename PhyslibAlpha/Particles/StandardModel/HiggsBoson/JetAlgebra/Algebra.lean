@@ -6,10 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.MatterField
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.JetDeriv
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.LorentzAction
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.GaugeAction
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.MassDim
 /-!
 # The jet algebra of the Higgs field
 

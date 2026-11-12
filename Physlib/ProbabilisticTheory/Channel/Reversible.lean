@@ -5,8 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Module.Equiv.Basic
 public import Physlib.ProbabilisticTheory.State.Basic
+public import Mathlib.Algebra.Module.Equiv.Defs
 
 /-!
 # Reversible transformations of observables
@@ -60,18 +60,18 @@ namespace ProbabilisticTheory
 
 /-- A reversible transformation between observable spaces: a linear bijection that preserves and
 reflects the order and preserves the order unit. Both it and its inverse are channels. -/
-structure Reversible (E F : Type*) [OrderUnitSpace E] [OrderUnitSpace F]
-    extends E ≃ₗ[ℝ] F where
+structure Reversible (P Q : ProbabilisticTheory)
+    extends P.Observables ≃ₗ[ℝ] Q.Observables where
   /-- The equivalence preserves and reflects the order. -/
-  map_le_map_iff' : ∀ {x y : E}, toLinearEquiv x ≤ toLinearEquiv y ↔ x ≤ y
+  map_le_map_iff' : ∀ {x y : P.Observables}, toLinearEquiv x ≤ toLinearEquiv y ↔ x ≤ y
   /-- The order unit is preserved. -/
   map_one' : toLinearEquiv 1 = 1
 
 namespace Reversible
 
-variable {G E F H : Type*} [Group G] [OrderUnitSpace E] [OrderUnitSpace F] [OrderUnitSpace H]
+variable {G : Type*} [Group G] {P Q R : ProbabilisticTheory}
 
-instance : FunLike (Reversible E F) E F where
+instance : FunLike (Reversible P Q) P.Observables Q.Observables where
   coe e := e.toLinearEquiv
   coe_injective e f h := by
     obtain ⟨e, _, _⟩ := e
@@ -80,25 +80,25 @@ instance : FunLike (Reversible E F) E F where
     rfl
 
 @[ext]
-lemma ext {e f : Reversible E F} (h : ∀ x, e x = f x) : e = f := DFunLike.ext _ _ h
+lemma ext {e f : Reversible P Q} (h : ∀ x, e x = f x) : e = f := DFunLike.ext _ _ h
 
 /-! ### A.2. Group structure -/
 
 /-- The identity reversible transformation. -/
-def refl (E : Type*) [OrderUnitSpace E] : Reversible E E where
-  toLinearEquiv := .refl ℝ E
+def refl (P : ProbabilisticTheory) : Reversible P P where
+  toLinearEquiv := .refl ℝ P.Observables
   map_le_map_iff' := Iff.rfl
   map_one' := rfl
 
 /-- The inverse of a reversible transformation. -/
-def symm (e : Reversible E F) : Reversible F E where
+def symm (e : Reversible P Q) : Reversible Q P where
   toLinearEquiv := e.toLinearEquiv.symm
   map_le_map_iff' {x y} := by
     simpa using (e.map_le_map_iff' (x := e.toLinearEquiv.symm x) (y := e.toLinearEquiv.symm y)).symm
   map_one' := e.toLinearEquiv.symm_apply_eq.2 e.map_one'.symm
 
 /-- Composition of reversible transformations, applying `e₁` before `e₂`. -/
-def trans (e₁ : Reversible E F) (e₂ : Reversible F H) : Reversible E H where
+def trans (e₁ : Reversible P Q) (e₂ : Reversible Q R) : Reversible P R where
   toLinearEquiv := e₁.toLinearEquiv.trans e₂.toLinearEquiv
   map_le_map_iff' {x y} :=
     (e₂.map_le_map_iff' (x := e₁ x) (y := e₁ y)).trans e₁.map_le_map_iff'
@@ -106,84 +106,84 @@ def trans (e₁ : Reversible E F) (e₂ : Reversible F H) : Reversible E H where
     change e₂ (e₁ 1) = 1
     rw [show e₁ 1 = 1 from e₁.map_one', show e₂ 1 = 1 from e₂.map_one']
 
-@[simp] lemma refl_apply (x : E) : refl E x = x := rfl
+@[simp] lemma refl_apply (x : P.Observables) : refl P x = x := rfl
 
-@[simp] lemma symm_apply_apply (e : Reversible E F) (x : E) : e.symm (e x) = x :=
+@[simp] lemma symm_apply_apply (e : Reversible P Q) (x : P.Observables) : e.symm (e x) = x :=
   e.toLinearEquiv.symm_apply_apply x
 
-@[simp] lemma apply_symm_apply (e : Reversible E F) (y : F) : e (e.symm y) = y :=
+@[simp] lemma apply_symm_apply (e : Reversible P Q) (y : Q.Observables) : e (e.symm y) = y :=
   e.toLinearEquiv.apply_symm_apply y
 
-@[simp] lemma trans_apply (e₁ : Reversible E F) (e₂ : Reversible F H) (x : E) :
+@[simp] lemma trans_apply (e₁ : Reversible P Q) (e₂ : Reversible Q R) (x : P.Observables) :
     e₁.trans e₂ x = e₂ (e₁ x) := rfl
 
 /-- Reversible transformations of a single space form a group under composition. -/
-instance automorphismGroup : Group (Reversible E E) where
+instance automorphismGroup : Group (Reversible P P) where
   mul f g := g.trans f
-  one := refl E
+  one := refl P
   inv := symm
   mul_assoc _ _ _ := by ext; rfl
   one_mul _ := by ext; rfl
   mul_one _ := by ext; rfl
   inv_mul_cancel f := by ext x; exact f.symm_apply_apply x
 
-@[simp] lemma mul_apply (f g : Reversible E E) (x : E) : (f * g) x = f (g x) := rfl
+@[simp] lemma mul_apply (f g : Reversible P P) (x : P.Observables) : (f * g) x = f (g x) := rfl
 
-@[simp] lemma one_apply (x : E) : (1 : Reversible E E) x = x := rfl
+@[simp] lemma one_apply (x : P.Observables) : (1 : Reversible P P) x = x := rfl
 
-@[simp] lemma inv_apply (f : Reversible E E) (x : E) : f⁻¹ x = f.symm x := rfl
+@[simp] lemma inv_apply (f : Reversible P P) (x : P.Observables) : f⁻¹ x = f.symm x := rfl
 
 /-! ### A.3. As channels -/
 
 /-- A reversible transformation regarded as a channel. -/
-def toChannel (e : Reversible E F) : E →ₚ₁[ℝ] F :=
+def toChannel (e : Reversible P Q) : Channel P Q :=
   .ofLinearMap e.toLinearEquiv.toLinearMap
     (by intro x hx; simpa using (e.map_le_map_iff' (x := 0) (y := x)).2 hx) e.map_one'
 
-@[simp] lemma toChannel_apply (e : Reversible E F) (x : E) : e.toChannel x = e x := rfl
+@[simp] lemma toChannel_apply (e : Reversible P Q) (x : P.Observables) : e.toChannel x = e x := rfl
 
 /-- Regarding reversible transformations as channels is a homomorphism of monoids. -/
-def toChannelHom : Reversible E E →* (E →ₚ₁[ℝ] E) where
+def toChannelHom : Reversible P P →* Channel P P where
   toFun := toChannel
   map_one' := rfl
   map_mul' _ _ := rfl
 
-@[simp] lemma toChannelHom_apply (e : Reversible E E) (x : E) : toChannelHom e x = e x := rfl
+@[simp] lemma toChannelHom_apply (e : Reversible P P) (x : P.Observables) :
+    toChannelHom e x = e x := rfl
 
 /-! ## B. Action on states -/
 
 /-- The action on states induced by the inverse of a reversible transformation. -/
-instance instMulActionState : MulAction (Reversible E E) (𝓢[ℝ, E]) where
-  smul φ ω := UnitalPositiveLinearMap.comap (toChannelHom φ⁻¹) ω
+instance instMulActionState : MulAction (Reversible P P) (𝓢[ℝ, P.Observables]) where
+  smul φ ω := Channel.comap (toChannelHom φ⁻¹) ω
   one_smul _ := by ext; rfl
   mul_smul _ _ _ := by ext; rfl
 
-lemma smul_state_apply (φ : Reversible E E) (ω : 𝓢[ℝ, E]) (x : E) :
+lemma smul_state_apply (φ : Reversible P P) (ω : 𝓢[ℝ, P.Observables]) (x : P.Observables) :
     (φ • ω) x = ω (φ.symm x) := rfl
 
 /-! ## C. Transport of group actions -/
 
-variable (ρ : G →* Reversible E E) (e : Reversible E F)
-
 /-! ### C.1. Conjugation -/
 
-/-- Conjugation by a reversible transformation transports automorphisms from `E` to `F`. -/
-def conj : Reversible E E →* Reversible F F where
+/-- Conjugation transports reversible dynamics between observable spaces. -/
+def conj (e : Reversible P Q) : Reversible P P →* Reversible Q Q where
   toFun φ := e.symm.trans (φ.trans e)
   map_one' := by ext y; exact e.apply_symm_apply y
   map_mul' φ ψ := by ext y; simp
 
 /-! ### C.2. Transported actions -/
 
-/-- Transport a group action from `E` to `F` along a reversible transformation. -/
-def transport : G →* Reversible F F := e.conj.comp ρ
+/-- Transport a group action between observable spaces along a reversible transformation. -/
+def transport (ρ : G →* Reversible P P) (e : Reversible P Q) :
+    G →* Reversible Q Q := e.conj.comp ρ
 
 end Reversible
 
 /-! ## D. Invariant states -/
 
 /-- A state is invariant if it is fixed by every transformation of the group action. -/
-def IsInvariant {G E : Type*} [Group G] [OrderUnitSpace E] (ρ : G →* Reversible E E)
-    (ω : 𝓢[ℝ, E]) : Prop := ∀ g, ρ g • ω = ω
+def IsInvariant {G : Type*} [Group G] {P : ProbabilisticTheory} (ρ : G →* Reversible P P)
+    (ω : 𝓢[ℝ, P.Observables]) : Prop := ∀ g, ρ g • ω = ω
 
 end ProbabilisticTheory

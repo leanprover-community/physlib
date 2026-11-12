@@ -6,13 +6,9 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 
-public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
-public import Mathlib.RingTheory.TensorProduct.Basic
 public import Mathlib.LinearAlgebra.TensorProduct.Prod
 public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Dimension.Free
 /-!
 # `V`-valued jets
 

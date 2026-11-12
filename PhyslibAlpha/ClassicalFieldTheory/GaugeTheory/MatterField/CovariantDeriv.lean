@@ -5,11 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.GaugeLaw
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.Jet
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.TransformsAdjoint
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Dimension.Free
 /-!
 # Gauge tensors in a general representation
 

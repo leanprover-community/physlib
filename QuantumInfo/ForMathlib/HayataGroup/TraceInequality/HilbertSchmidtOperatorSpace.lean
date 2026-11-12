@@ -5,15 +5,10 @@ Authors: Kei Tsukamoto, Kento Mori, Hayata Yamasaki
 -/
 module
 
-public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.LownerHeinzTheorem
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.GeneralizedPerspectiveFunction
 
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 public import Mathlib.Analysis.InnerProductSpace.Trace
-public import Mathlib.Analysis.Normed.Lp.PiLp
 public import Mathlib.LinearAlgebra.Complex.FiniteDimensional
-public import Mathlib.LinearAlgebra.Matrix.ToLin
-public import Mathlib.Topology.Algebra.Module.FiniteDimension
 
 @[expose] public section
 

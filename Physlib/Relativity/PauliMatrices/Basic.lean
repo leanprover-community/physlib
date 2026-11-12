@@ -5,10 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.LinearAlgebra.Matrix.Trace
-public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Mathlib.LinearAlgebra.CrossProduct
+public import Physlib.Mathematics.LeviCivita.Basic
 /-!
 
 ## Pauli matrices
@@ -277,6 +275,23 @@ lemma vectorMatrix_commutator (a b : Fin 3 → ℝ) :
     Nat.succ_eq_add_one, Nat.reduceAdd, cons_val_zero, ofReal_sub, ofReal_mul, cons_val_one,
     cons_val, smul_add]
   module
+
+set_option backward.isDefEq.respectTransparency false in
+/-- Pauli matrices satisfy `[σᵢ, σⱼ] = 2i ∑ₖ εᵢⱼₖ σₖ`, with the right-handed Levi-Civita symbol
+`ε₀₁₂ = 1` and the indices `0, 1, 2` labelling `x, y, z`. This is the index form of
+`vectorMatrix_commutator`, obtained at the basis vectors `a = eᵢ`, `b = eⱼ`. -/
+lemma pauliMatrix_commutator (i j : Fin 3) :
+    pauliMatrix (Sum.inr i) * pauliMatrix (Sum.inr j) -
+      pauliMatrix (Sum.inr j) * pauliMatrix (Sum.inr i) =
+        (2 * I) • ∑ k : Fin 3, (leviCivitaSymbol ![i, j, k] : ℂ) • pauliMatrix (Sum.inr k) := by
+  have hv (l : Fin 3) : vectorMatrix (Pi.single l 1) = pauliMatrix (Sum.inr l) := by
+    simp [vectorMatrix, Pi.single_apply]
+  have hc (k : Fin 3) :
+      (Pi.single i (1 : ℝ) ⨯₃ Pi.single j 1) k = leviCivitaSymbol ![i, j, k] := by
+    simp only [leviCivitaSymbol_eq_det, Matrix.det_fin_three]
+    fin_cases i <;> fin_cases j <;> fin_cases k <;> simp [cross_apply, kroneckerDelta]
+  rw [← hv i, ← hv j, vectorMatrix_commutator]
+  simp [vectorMatrix, hc]
 
 /-- Product formula for Pauli vectors:
 `(a · σ)(b · σ) = (a · b) I + i (a × b) · σ`. -/

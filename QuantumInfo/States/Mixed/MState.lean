@@ -5,17 +5,10 @@ Authors: Alex Meiburg, Leonardo A. Lessa
 -/
 module
 
-public import QuantumInfo.ForMathlib.ContinuousLinearMap
-public import QuantumInfo.ForMathlib.HermitianMat
-public import QuantumInfo.ForMathlib.Isometry
-public import QuantumInfo.ForMathlib.LinearEquiv
 public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
-public import QuantumInfo.ForMathlib.Matrix
-public import QuantumInfo.ForMathlib.Misc
 public import QuantumInfo.ClassicalInfo.Distribution
 public import QuantumInfo.States.Pure.Braket
 
-public import Mathlib.Logic.Equiv.Basic
 
 /-!
 Finite dimensional quantum mixed states, ρ.
@@ -219,7 +212,7 @@ lemma exp_val_le_one {T : HermitianMat d ℂ} (h : T ≤ 1) : ρ.exp_val T ≤ 1
   rwa [inner_one ρ.M, ρ.tr] at hmono
 
 lemma exp_val_prob {T : HermitianMat d ℂ} (h : 0 ≤ T ∧ T ≤ 1) :
-    0 ≤ ρ.exp_val T ∧ ρ.exp_val T ≤ 1 :=
+    ρ.exp_val T ∈ unitInterval :=
   ⟨ρ.exp_val_nonneg h.1, ρ.exp_val_le_one h.2⟩
 
 lemma exp_val_sub (A B : HermitianMat d ℂ) :
@@ -1344,6 +1337,17 @@ lemma isPiProd_iff_exists_pure_eq_piProd [Nonempty ι] (ψ : Ket ((i : ι) → d
   · rintro ⟨φ, h⟩
     rw [← pure_piProd φ, ← PhaseEquiv_iff_pure_eq] at h
     exact (Ket.isPiProd_piProd φ).of_phaseEquiv h
+
+/-- A ket up to global phase is a product state if and only if its density matrix is an
+`MState.piProd` of pure states. This also holds when `ι` is empty. -/
+lemma isPiProd_iff_exists_pureQ_eq_piProd (q : KetUpToPhase ((i : ι) → dI i)) :
+    q.IsPiProd ↔ ∃ φ : (i : ι) → Ket (dI i), pureQ q = piProd (fun i ↦ pure (φ i)) := by
+  constructor
+  · rintro ⟨φ, rfl⟩
+    exact ⟨φ, pure_piProd φ⟩
+  · rintro ⟨φ, h⟩
+    refine ⟨φ, pureQ_injective ?_⟩
+    exact h.trans (pure_piProd φ).symm
 
 /-- The n-copy "power" of a mixed state, with the standard basis indexed by pi types. -/
 def npow (ρ : MState d) (n : ℕ) : MState (Fin n → d) :=

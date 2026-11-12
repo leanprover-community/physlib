@@ -218,6 +218,34 @@ lemma potentialEnergy_eq (x : EuclideanSpace ℝ (Fin 1)) :
 
 lemma energy_eq (xₜ : Time → EuclideanSpace ℝ (Fin 1)) :
     energy S xₜ = fun t => kineticEnergy S xₜ t + potentialEnergy S (xₜ t) := by rfl
+
+/-- Mechanical energy is the mass-weighted velocity square plus the spring-weighted
+position square, divided by two. -/
+lemma energy_eq_norm_sq (x : Time → EuclideanSpace ℝ (Fin 1)) (t : Time) :
+    S.energy x t = (S.m * ‖∂ₜ x t‖ ^ 2 + S.k * ‖x t‖ ^ 2) / 2 := by
+  simp only [energy, kineticEnergy, potentialEnergy, smul_eq_mul,
+    real_inner_self_eq_norm_sq]
+  ring
+
+/-- Mechanical energy is nonnegative for every trajectory. -/
+lemma energy_nonneg (x : Time → EuclideanSpace ℝ (Fin 1)) (t : Time) :
+    0 ≤ S.energy x t := by
+  rw [S.energy_eq_norm_sq]
+  exact div_nonneg (add_nonneg (mul_nonneg S.m_pos.le (sq_nonneg _))
+    (mul_nonneg S.k_pos.le (sq_nonneg _))) (by norm_num)
+
+/-- Potential energy controls the square of the displacement. -/
+lemma position_sq_le_energy (x : Time → EuclideanSpace ℝ (Fin 1)) (t : Time) :
+    S.k * ‖x t‖ ^ 2 ≤ 2 * S.energy x t := by
+  rw [S.energy_eq_norm_sq]
+  nlinarith [mul_nonneg S.m_pos.le (sq_nonneg ‖∂ₜ x t‖)]
+
+/-- Kinetic energy controls the square of the velocity. -/
+lemma velocity_sq_le_energy (x : Time → EuclideanSpace ℝ (Fin 1)) (t : Time) :
+    S.m * ‖∂ₜ x t‖ ^ 2 ≤ 2 * S.energy x t := by
+  rw [S.energy_eq_norm_sq]
+  nlinarith [mul_nonneg S.k_pos.le (sq_nonneg ‖x t‖)]
+
 /-!
 
 ### C.3. Differentiability of the energies

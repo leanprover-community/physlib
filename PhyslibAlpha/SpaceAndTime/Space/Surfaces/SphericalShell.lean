@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 public import Physlib.SpaceAndTime.Space.ConstantSliceDist
 public import Physlib.SpaceAndTime.Space.Norm.Basic
-public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 /-!
 
 # Spherical surfaces on Space

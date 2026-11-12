@@ -6,7 +6,6 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.EssentialSpectrum.Defs
-public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 
 /-!
 

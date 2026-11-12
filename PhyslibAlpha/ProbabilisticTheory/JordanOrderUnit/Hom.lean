@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Algebra.Jordan.Basic
 public import Mathlib.Basic.Real.Basic
-public import Mathlib.Algebra.Module.LinearMap.Basic
 
 /-!
 

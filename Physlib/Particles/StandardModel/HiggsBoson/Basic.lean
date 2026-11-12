@@ -5,7 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
+public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
 /-!
 
@@ -23,6 +24,8 @@ In this module we define the Higgs field and prove some basic properties.
   This vector space is equipped with an action of the global gauge group of the Standard Model.
 - `HiggsBundle`: The trivial vector bundle over `SpaceTime` with fiber `HiggsVec`.
 - `HiggsField`: The type of smooth sections of the `HiggsBundle`, i.e., the type of Higgs fields.
+- `stabilizer_ofReal`: The stability group of the Higgs vacuum `(0, √a)`, i.e. the gauge
+  group left unbroken by it, is `SU(3) × U(1)_EM`.
 
 ## iii. Table of contents
 
@@ -38,7 +41,7 @@ In this module we define the Higgs field and prove some basic properties.
     - A.5.1. The rotation matrix to ofReal
     - A.5.2. Members of orbits
   - A.6. The stability group of a Higgs vector
-  - A.7. Gauge action removing phase from second component
+  - A.7. The electromagnetic U(1) and the phase of the first component
   - A.8. To real scalars
 - B. The Higgs bundle
   - B.1. Definition of the Higgs bundle
@@ -116,14 +119,17 @@ def orthonormBasis : OrthonormalBasis (Fin 2) ℂ HiggsVec :=
 ### A.3. Generating Higgs vectors from real numbers
 
 Given a real number `a` we define the Higgs vector corresponding to that real number
-as `(√a, 0)`. This has the property that it's norm is equal to `a`.
+as `(0, √a)`. This has the property that its norm-squared is equal to `a`.
+Following the textbook convention, the non-zero entry sits in the second (lower) component,
+which is the electrically neutral component of the Higgs doublet
+(see `GaugeGroupI.electromagnetismU1`).
 
 -/
 
-/-- Generating a Higgs vector from a real number, such that the norm-squared of that Higgs vector
-  is the given real number. -/
+/-- Generating a Higgs vector `(0, √a)` from a real number `a`, such that the norm-squared of
+  that Higgs vector is `a`. -/
 def ofReal (a : ℝ) : HiggsVec :=
-  !₂[Real.sqrt a, 0]
+  !₂[0, Real.sqrt a]
 
 @[simp]
 lemma ofReal_normSq {a : ℝ} (ha : 0 ≤ a) : ‖ofReal a‖ ^ 2 = a := by
@@ -145,7 +151,8 @@ The gauge group of the Standard Model acts on `HiggsVec` by matrix multiplicatio
 
 /-- The representation of the gauge group `GaugeGroupI` on `HiggsVec`: the `SU(2)`
   factor acts by matrix multiplication, and the `U(1)` factor by scalar
-  multiplication with its third power. -/
+  multiplication with its third power. Hypercharges are normalised as `6Y`, so the
+  power `3` corresponds to the textbook hypercharge `Y = 1/2`. -/
 def repGaugeGroupI : Representation ℂ GaugeGroupI HiggsVec where
   toFun g :=
     { toFun φ := WithLp.toLp 2 <| g.toU1 ^ 3 • (g.toSU2.1 *ᵥ φ.ofLp)
@@ -157,6 +164,10 @@ def repGaugeGroupI : Representation ℂ GaugeGroupI HiggsVec where
   map_mul' g₁ g₂ := by
     ext φ
     simp [Module.End.mul_apply, smul_smul, mulVec_mulVec, mul_pow, mul_comm]
+
+TODO "When the hypercharge coupling `g′` is introduced, fix its normalisation relative to the
+  integer charges `6Y` used here (e.g. the power `3` in `repGaugeGroupI`), so that it agrees with
+  the textbook coupling `g′` for the hypercharges `Y`."
 
 lemma repGaugeGroupI_apply (g : StandardModel.GaugeGroupI) (φ : HiggsVec) :
     repGaugeGroupI g φ = (WithLp.toLp 2 <| g.toU1 ^ 3 • (g.toSU2.1 *ᵥ φ.ofLp)) := rfl
@@ -228,15 +239,15 @@ corresponding `ofReal` Higgs vector.
 
 -/
 
-/-- Given a Higgs vector, a rotation matrix which puts the second component of the
-  vector to zero, and the first component to a real -/
+/-- Given a Higgs vector, a rotation matrix which puts the first component of the
+  vector to zero, and the second component to a non-negative real. -/
 def toRealGroupElem (φ : HiggsVec) : GaugeGroupI :=
   if hφ : φ = 0 then 1 else by
   have h0' : (‖φ‖ ^ 2 : ℂ) = φ 0 * (starRingEnd ℂ) (φ 0) + φ 1 * (starRingEnd ℂ) (φ 1) := by
     rw [← ofReal_pow, ← @real_inner_self_eq_norm_sq]
     simp only [Fin.isValue, mul_conj, PiLp.inner_apply, Complex.inner, ofReal_re,
       Fin.sum_univ_two, ofReal_add]
-  refine ⟨1, ⟨!![conj (φ 0) / ‖φ‖, conj (φ 1) / ‖φ‖; -φ 1 /‖φ‖, φ 0 /‖φ‖;], ?_, ?_⟩, 1⟩
+  refine ⟨1, ⟨!![φ 1 / ‖φ‖, -φ 0 / ‖φ‖; conj (φ 0) / ‖φ‖, conj (φ 1) / ‖φ‖;], ?_, ?_⟩, 1⟩
   /- Member of the unitary group. -/
   · simp only [Fin.isValue, SetLike.mem_coe]
     rw [mem_unitaryGroup_iff']
@@ -251,7 +262,7 @@ def toRealGroupElem (φ : HiggsVec) : GaugeGroupI :=
       field_simp
       rw [h0']
       ring
-  /- Determinant equals zero. -/
+  /- Determinant equals one. -/
   · have h1 : (‖φ‖ : ℂ) ≠ 0 := ofReal_inj.mp.mt (norm_ne_zero_iff.mpr hφ)
     simp [det_fin_two]
     field_simp
@@ -277,10 +288,10 @@ lemma toRealGroupElem_apply_self (φ : HiggsVec) :
   fin_cases i
   · simp [ofReal, vecHead, vecTail]
     field_simp
-    rw [h0']
     ring
   · simp [ofReal, vecHead, vecTail]
     field_simp
+    rw [h0']
     ring
 
 /-!
@@ -309,73 +320,156 @@ lemma exists_repGaugeGroupI_eq_iff_norm_eq (φ : HiggsVec) (ψ : HiggsVec) :
 
 ### A.6. The stability group of a Higgs vector
 
-We find the stability group of a Higgs vector, and the stability group of the set of
-all Higgs vectors.
-
-The items in this section are marked as `informal_lemma` as they are not yet formalized.
+The stability group of a Higgs vector `φ` is the subgroup `repGaugeGroupI.stabilizer φ` of
+`GaugeGroupI` fixing `φ`, i.e. the gauge group left unbroken when the Higgs field takes the
+value `φ`. For the vacuum `ofReal a = (0, √a)` with `a > 0` it is `SU(3) × U(1)_EM`, and for
+any other non-zero Higgs vector it is a conjugate of this subgroup. The subgroup fixing every
+Higgs vector is `SU(3) × ℤ₆`.
 
 -/
 
-/-- The Higgs boson breaks electroweak symmetry down to the electromagnetic force, i.e., the
-stability group of `repGaugeGroupI` on `![0, Complex.ofReal ‖φ‖]`, for non-zero `‖φ‖`, is the
-`SU(3) × U(1)` subgroup of `gaugeGroup := SU(3) × SU(2) × U(1)` with the embedding given by
-`(g, e^{i θ}) ↦ (g, diag (e ^ {3 * i θ}, e ^ {- 3 * i θ}), e^{i θ})`.
--/
-informal_lemma stability_group_single where
-  deps := [``StandardModel.HiggsVec]
-  tag := "6V2MD"
+/-- A gauge transformation fixes the non-zero Higgs vector `ofReal a = (0, √a)` if and only if
+  its `SU(2)` part is `diag(u³, ū³)`, where `u` is its `U(1)` part. -/
+lemma mem_stabilizer_ofReal_iff {a : ℝ} (ha : 0 < a) (g : GaugeGroupI) :
+    g ∈ repGaugeGroupI.stabilizer (ofReal a) ↔
+    GaugeGroupI.toSU2 g = GaugeGroupI.diagSU2 (GaugeGroupI.toU1 g ^ 3) := by
+  rw [Representation.mem_stabilizer]
+  set M := (GaugeGroupI.toSU2 g : Matrix (Fin 2) (Fin 2) ℂ) with hM
+  set u := GaugeGroupI.toU1 g ^ 3 with hu
+  have hw : (u : ℂ) * conj (u : ℂ) = 1 := u.2.2
+  have hw' : conj (u : ℂ) * (u : ℂ) = 1 := u.2.1
+  have hs : (Real.sqrt a : ℂ) ≠ 0 := by simp [Real.sqrt_ne_zero'.mpr ha]
+  constructor
+  · intro h
+    have hu0 : (u : ℂ) ≠ 0 := left_ne_zero_of_mul_eq_one hw
+    have h01 : M 0 1 = 0 := by
+      simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
+        Fin.sum_univ_two, ← hM, ← hu, hu0, hs] using congrArg (fun φ : HiggsVec => φ.ofLp 0) h
+    have h1 : (u : ℂ) * (M 1 1 * Real.sqrt a) = Real.sqrt a := by
+      simpa [repGaugeGroupI_apply, ofReal, Submonoid.smul_def, mulVec, dotProduct,
+        Fin.sum_univ_two, ← hM, ← hu] using congrArg (fun φ : HiggsVec => φ.ofLp 1) h
+    have h11 : M 1 1 = conj (u : ℂ) := by
+      have h1' : (u : ℂ) * M 1 1 = 1 := mul_right_cancel₀ hs (by linear_combination h1)
+      rw [← one_mul (M 1 1), ← hw', mul_assoc, h1', mul_one]
+    exact GaugeGroupI.eq_diagSU2_of_apply_zero_one_eq_zero h01 h11
+  · intro h
+    ext i
+    fin_cases i
+    · simp [repGaugeGroupI_apply, h, ofReal, Submonoid.smul_def, ← hu]
+    · have h1 : (u : ℂ) * (Real.sqrt a * conj (u : ℂ)) = Real.sqrt a := by
+        linear_combination (Real.sqrt a : ℂ) * hw
+      simpa [repGaugeGroupI_apply, h, ofReal, Submonoid.smul_def, ← hu] using h1
 
-/-- The subgroup of `gaugeGroup := SU(3) × SU(2) × U(1)` which preserves every `HiggsVec` by the
-action of `StandardModel.HiggsVec.repGaugeGroupI` is given by `SU(3) × ℤ₆` where `ℤ₆` is the
-subgroup of `SU(2) × U(1)` with elements `(α^(-3) * I₂, α)` where `α` is a sixth root of unity.
--/
-informal_lemma stability_group where
-  deps := [``HiggsVec]
-  tag := "6V2MO"
+/-- The Higgs vacuum breaks electroweak symmetry down to color and electromagnetism: the
+  stability group of the non-zero Higgs vector `ofReal a = (0, √a)` is the subgroup
+  `SU(3) × U(1)_EM` of `GaugeGroupI`, with elements `(h, diag(u³, ū³), u)`. -/
+theorem stabilizer_ofReal {a : ℝ} (ha : 0 < a) :
+    repGaugeGroupI.stabilizer (ofReal a) = UnbrokenGaugeGroupI.incl.range := by
+  ext g
+  rw [mem_stabilizer_ofReal_iff ha, MonoidHom.mem_range]
+  constructor
+  · intro h
+    exact ⟨(GaugeGroupI.toSU3 g, GaugeGroupI.toU1 g), by ext1 <;> simp [h]⟩
+  · rintro ⟨p, rfl⟩
+    simp
+
+/-- The stability group of any non-zero Higgs vector is conjugate to `SU(3) × U(1)_EM`. -/
+lemma exists_stabilizer_eq_conj_unbrokenGaugeGroupI (φ : HiggsVec) (hφ : φ ≠ 0) :
+    ∃ g : GaugeGroupI, repGaugeGroupI.stabilizer φ =
+      UnbrokenGaugeGroupI.incl.range.map (MulAut.conj g) := by
+  refine ⟨(toRealGroupElem φ)⁻¹, ?_⟩
+  rw [← stabilizer_ofReal (pow_pos (norm_pos_iff.mpr hφ) 2), ← Representation.stabilizer_conj]
+  congr 1
+  rw [eq_comm, repGaugeGroupI_inv_apply_eq_iff, toRealGroupElem_apply_self]
+
+/-- The gauge transformations fixing every Higgs vector are those of the form
+  `(h, α⁻³ I₂, α)` with `h ∈ SU(3)` arbitrary and `α` a sixth root of unity, i.e. the subgroup
+  `SU(3) × ℤ₆` of `GaugeGroupI`. Here `ℤ₆` sits inside `SU(2) × U(1)`: it is the image there of
+  the central `ℤ₆` used for `GaugeGroupℤ₆`, whose elements also carry the `SU(3)` part `α² I₃`,
+  so this subgroup contains the central `ℤ₆`. -/
+lemma mem_iInf_stabilizer_iff (g : GaugeGroupI) :
+    g ∈ ⨅ φ, repGaugeGroupI.stabilizer φ ↔
+    ∃ α : rootsOfUnity 6 ℂ, GaugeGroupI.toSU2 g = gaugeGroupℤ₆SU2OfRoot α ∧
+      GaugeGroupI.toU1 g = gaugeGroupℤ₆UnitaryOfRoot α := by
+  simp only [Subgroup.mem_iInf, Representation.mem_stabilizer]
+  constructor
+  · intro hφ
+    have h2 := (mem_stabilizer_ofReal_iff one_pos g).mp (hφ (ofReal 1))
+    set w := GaugeGroupI.toU1 g ^ 3 with hw_def
+    have hw : (w : ℂ) * conj (w : ℂ) = 1 := w.2.2
+    have hw2 : (w : ℂ) ^ 2 = 1 := by
+      have := congrArg (fun φ : HiggsVec => φ.ofLp 0) (hφ !₂[1, 0])
+      simpa [repGaugeGroupI_apply, h2, Submonoid.smul_def, ← hw_def, sq] using this
+    have h6 : (GaugeGroupI.toU1 g : ℂ) ^ 6 = 1 := by
+      rw [← hw2]
+      simp [hw_def, ← pow_mul]
+    have hcw : conj (w : ℂ) = w := by linear_combination (w : ℂ) * hw - conj (w : ℂ) * hw2
+    have hu3 : star (GaugeGroupI.toU1 g : ℂ) ^ 3 = w := by
+      rw [← hcw, hw_def]
+      simp
+    refine ⟨rootsOfUnity.mkOfPowEq _ h6, ?_, ?_⟩
+    · apply Subtype.ext
+      rw [h2, gaugeGroupℤ₆SU2OfRoot_eq_mul_id, GaugeGroupI.diagSU2_coe,
+        rootsOfUnity.coe_mkOfPowEq, hu3]
+      ext i j
+      fin_cases i <;> fin_cases j <;> simp [hcw]
+    · ext
+      simp
+  · rintro ⟨α, h2, h1⟩ φ
+    have hα : ((α : ℂˣ) : ℂ) * conj ((α : ℂˣ) : ℂ) = 1 := (gaugeGroupℤ₆UnitaryOfRoot α).2.2
+    rw [repGaugeGroupI_apply, h2, h1, gaugeGroupℤ₆SU2OfRoot_eq_mul_id]
+    ext i
+    simp [Submonoid.smul_def, smul_mulVec, ← mul_assoc, ← mul_pow, hα]
 
 /-!
 
-### A.7. Gauge action removing phase from second component
+### A.7. The electromagnetic U(1) and the phase of the first component
 
 -/
 
-lemma ofU1Subgroup_repGaugeGroupI_apply (g : unitary ℂ) (φ : HiggsVec) :
-    repGaugeGroupI (StandardModel.GaugeGroupI.ofU1Subgroup g) φ =
-    (WithLp.toLp 2 <| !![1, 0; 0, g.1 ^ 6] *ᵥ φ.ofLp) := by
+/-- The electromagnetic `U(1)` acts on a Higgs vector as `diag(u⁶, 1)`: the upper component
+  has electric charge `+1` and the lower component is neutral. -/
+lemma electromagnetismU1_repGaugeGroupI_apply (g : unitary ℂ) (φ : HiggsVec) :
+    repGaugeGroupI (StandardModel.GaugeGroupI.electromagnetismU1 g) φ =
+    (WithLp.toLp 2 <| !![g.1 ^ 6, 0; 0, 1] *ᵥ φ.ofLp) := by
   have h : (g : ℂ) * (starRingEnd ℂ) g = 1 := g.2.2
-  rw [repGaugeGroupI_apply, GaugeGroupI.ofU1Subgroup_toU1, GaugeGroupI.ofU1Subgroup_toSU2,
-    GaugeGroupI.diagSU2_coe]
+  rw [repGaugeGroupI_apply, GaugeGroupI.electromagnetismU1_toU1,
+    GaugeGroupI.electromagnetismU1_toSU2, GaugeGroupI.diagSU2_coe]
   ext i
   fin_cases i
-  · simp [Submonoid.smul_def, ← mul_assoc, ← mul_pow, h]
   · simp [Submonoid.smul_def]
     ring
+  · simp [Submonoid.smul_def, ← mul_assoc, ← mul_pow, h]
 
-lemma repGaugeGroupI_phase_snd (φ : HiggsVec) :
-    ∃ g : StandardModel.GaugeGroupI,
-      (repGaugeGroupI g φ).ofLp 1 = ‖(φ.ofLp 1)‖ ∧
-      (∀ φ1 : HiggsVec, (repGaugeGroupI g φ1).ofLp 0 = φ1.ofLp 0) ∧
-      (∀ a : ℝ, repGaugeGroupI g (!₂[a, 0] : HiggsVec) = (!₂[a, 0] : HiggsVec)) := by
-  let θ := arg (φ 1)
-  refine ⟨StandardModel.GaugeGroupI.ofU1Subgroup ⟨Complex.exp (-I * θ / 6), by
+/-- The electromagnetic `U(1)` leaves the Higgs vector `ofReal a = (0, √a)` invariant:
+  the Higgs vacuum is electrically neutral, so electromagnetism is unbroken. -/
+lemma electromagnetismU1_repGaugeGroupI_ofReal (g : unitary ℂ) (a : ℝ) :
+    repGaugeGroupI (StandardModel.GaugeGroupI.electromagnetismU1 g) (ofReal a) = ofReal a := by
+  rw [electromagnetismU1_repGaugeGroupI_apply]
+  ext i
+  fin_cases i <;> simp [ofReal]
+
+/-- There is an element of the electromagnetic `U(1)` making the first (charged) component of a
+  Higgs vector real and non-negative. It fixes second components, and so the Higgs vacuum
+  `ofReal a`. This is used to gauge-fix two-Higgs-doublet configurations to
+  `Φ1 = (0, ‖Φ1‖)`. -/
+lemma exists_electromagnetismU1_fst_eq_norm (φ : HiggsVec) :
+    ∃ g : unitary ℂ,
+      (repGaugeGroupI (StandardModel.GaugeGroupI.electromagnetismU1 g) φ).ofLp 0 = ‖φ.ofLp 0‖ := by
+  let θ := arg (φ 0)
+  refine ⟨⟨Complex.exp (-I * θ / 6), by
     simp [Unitary.mem_iff, ← Complex.exp_conj, ← Complex.exp_add, Complex.conj_ofNat]
     ring_nf
-    simp⟩, ?_, ?_, ?_⟩
-  · rw [ofU1Subgroup_repGaugeGroupI_apply]
-    simp only [Fin.isValue, neg_mul, cons_mulVec, cons_dotProduct, one_mul, zero_mul,
-      dotProduct_of_isEmpty, add_zero, zero_add, empty_mulVec, cons_val_one, cons_val_fin_one]
-    rw [show vecHead (vecTail φ.ofLp) = φ.ofLp 1 from rfl]
-    nth_rewrite 1 [← Complex.norm_mul_exp_arg_mul_I (φ.ofLp 1)]
-    rw [← Complex.exp_nat_mul, mul_left_comm, ← Complex.exp_add]
-    simp [θ]
-    ring_nf
-    simp
-  · intro φ
-    simp [ofU1Subgroup_repGaugeGroupI_apply, vecHead]
-  · intro a
-    ext i
-    fin_cases i <;> simp [ofU1Subgroup_repGaugeGroupI_apply]
-
+    simp⟩, ?_⟩
+  rw [electromagnetismU1_repGaugeGroupI_apply]
+  simp only [Fin.isValue, neg_mul, cons_mulVec, cons_dotProduct, zero_mul,
+    dotProduct_of_isEmpty, add_zero, empty_mulVec, cons_val_zero]
+  rw [show vecHead φ.ofLp = φ.ofLp 0 from rfl]
+  nth_rewrite 1 [← Complex.norm_mul_exp_arg_mul_I (φ.ofLp 0)]
+  rw [← Complex.exp_nat_mul, mul_left_comm, ← Complex.exp_add]
+  simp [θ]
+  ring_nf
+  simp
 
 /-!
 
@@ -401,12 +495,12 @@ lemma toRealScalars_smul_real (a : ℝ) (φ : HiggsVec) :
     toRealScalars (a • φ) = a • toRealScalars φ := map_smul toRealScalars a φ
 
 lemma ofReal_toRealScalars (a : ℝ) :
-    toRealScalars (ofReal a) = !₄[Real.sqrt a, 0, 0, 0] := by
+    toRealScalars (ofReal a) = !₄[0, 0, Real.sqrt a, 0] := by
   funext i
   fin_cases i <;> simp [ofReal, toRealScalars]
 
 lemma ofReal_toRealScalars_norm (φ : HiggsVec) :
-    toRealScalars (ofReal (‖φ‖ ^ 2)) = !₄[‖φ‖, 0, 0, 0] := by
+    toRealScalars (ofReal (‖φ‖ ^ 2)) = !₄[0, 0, ‖φ‖, 0] := by
   rw [ofReal_toRealScalars, Real.sqrt_sq (norm_nonneg φ)]
 
 end HiggsVec

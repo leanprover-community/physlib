@@ -7,9 +7,7 @@ module
 
 public import Mathlib.Analysis.Convex.Cone.Extension
 public import Mathlib.Topology.ContinuousMap.Lattice
-public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.Topology.ContinuousMap.Ordered
 
 /-!
 # Positive functionals are integrals

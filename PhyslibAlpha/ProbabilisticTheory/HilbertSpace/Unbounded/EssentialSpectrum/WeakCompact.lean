@@ -6,9 +6,7 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Analysis.InnerProductSpace.Orthonormal
 public import Mathlib.Analysis.Normed.Operator.Compact.Basic
-public import Mathlib.Topology.Sequences
 
 /-!
 

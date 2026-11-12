@@ -64,13 +64,6 @@ public import Physlib.CondensedMatter.Crystal.Bonds
 public import Physlib.CondensedMatter.Crystal.Bravais.Basic
 public import Physlib.CondensedMatter.Crystal.Embedding
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
-public import Physlib.CondensedMatter.Crystal.Symmetry.Basic
-public import Physlib.CondensedMatter.Crystal.Symmetry.BrillouinZone
-public import Physlib.CondensedMatter.Crystal.Symmetry.IrreducibleZone
-public import Physlib.CondensedMatter.Crystal.Symmetry.Isometries
-public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
-public import Physlib.CondensedMatter.Crystal.Symmetry.SpaceGroup
-public import Physlib.CondensedMatter.Crystal.Symmetry.Species
 public import Physlib.CondensedMatter.LatticeModels.Basic
 public import Physlib.CondensedMatter.ManyBody.Basic
 public import Physlib.CondensedMatter.Response.Basic
@@ -290,6 +283,7 @@ public import Physlib.Particles.StandardModel.Fermions.LeptonSinglet
 public import Physlib.Particles.StandardModel.Fermions.QuarkDoublet
 public import Physlib.Particles.StandardModel.Fermions.UpSinglet
 public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
 public import Physlib.Particles.StandardModel.HiggsBoson.Basic
 public import Physlib.Particles.StandardModel.HiggsBoson.EffectivePotential
 public import Physlib.Particles.StandardModel.HiggsBoson.Potential
@@ -321,8 +315,11 @@ public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
+public import Physlib.ProbabilisticTheory.Basic
+public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
+public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
@@ -330,10 +327,14 @@ public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
+public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
+public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Sum
 public import Physlib.ProbabilisticTheory.LocalNet.QuasilocalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.StarAlgebra.State
+public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
@@ -646,6 +647,7 @@ public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.SchwartzAction
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 public import Physlib.StatisticalMechanics.BoltzmannConstant
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Basic
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Finite

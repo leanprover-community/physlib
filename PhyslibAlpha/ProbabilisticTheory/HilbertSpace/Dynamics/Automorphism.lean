@@ -11,7 +11,6 @@ public import Mathlib.Analysis.Normed.Operator.ContinuousAlgEquiv
 public import Mathlib.Analysis.CStarAlgebra.Hom
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
-public import Mathlib.Algebra.Lie.OfAssociative
 
 /-!
 

@@ -8,10 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Log.Base
 
 public import QuantumInfo.Entropy.VonNeumann
-public import QuantumInfo.Channels.Bundled
-public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.States.Mixed.Fidelity
 
 /-!

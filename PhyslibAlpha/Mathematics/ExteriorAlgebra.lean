@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basic
-public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.RepresentationTheory.Basic
 /-!
 # Derivations and representations on the exterior algebra

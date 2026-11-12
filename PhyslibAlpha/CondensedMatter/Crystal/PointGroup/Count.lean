@@ -7,10 +7,8 @@ module
 
 public import PhyslibAlpha.CondensedMatter.Crystal.PointGroup.Basic
 public import Mathlib.RingTheory.Noetherian.Orzech
-public import Mathlib.RingTheory.Noetherian.Basic
 public import Mathlib.RingTheory.PrincipalIdealDomain
 public import Mathlib.Algebra.EuclideanDomain.Int
-public import Mathlib.LinearAlgebra.LinearIndependent.Defs
 
 /-!
 

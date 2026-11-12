@@ -5,12 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Log.Basic
 public import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
-public import Mathlib.Basic.NNReal.Basic
-public import Mathlib.Data.EReal.Basic
-public import Mathlib.Tactic.Finiteness
-public import Mathlib.Topology.UnitInterval
 public import Mathlib.Analysis.Convex.Basic
 
 /-! # Probabilities
@@ -33,7 +28,7 @@ open Classical
 /-- `Prob` is a real number in the interval [0,1]. Similar to NNReal in many definitions, but this
   allows other nice things more 'safely' such as convex combination. -/
 @[reducible]
-def Prob := { p : ℝ // 0 ≤ p ∧ p ≤ 1 }
+def Prob : Type _ := unitInterval
 
 namespace Prob
 
@@ -41,17 +36,6 @@ instance : Coe Prob ℝ := ⟨Subtype.val⟩
 
 instance canLift : CanLift ℝ Prob Subtype.val fun r => 0 ≤ r ∧ r ≤ 1 :=
   Subtype.canLift _
-
-instance instZero : Zero Prob :=
-  ⟨0, by simp⟩
-
-instance instOne : One Prob :=
-  ⟨1, by simp⟩
-
-instance instMul : Mul Prob :=
-  ⟨fun x y ↦ ⟨x.1 * y.1,
-    ⟨mul_nonneg x.2.1 y.2.1,
-      (mul_le_of_le_one_left y.2.1 x.2.2).trans y.2.2⟩⟩⟩
 
 @[simp, norm_cast]
 lemma coe_zero : (0 : Prob).val = 0 :=
@@ -73,46 +57,41 @@ lemma coe_inf (x y : Prob) : (x ⊓ y).val = x.val ⊓ y.val :=
 lemma coe_sup (x y : Prob) : (x ⊔ y).val = x.val ⊔ y.val :=
   rfl
 
-instance instCommMonoidWithZero : CommMonoidWithZero Prob where
-  mul_assoc := by intros; ext; simp [mul_assoc]
-  one_mul := by intros; ext; simp
-  mul_one := by intros; ext; simp
-  mul_comm := by intros; ext; simp [mul_comm]
-  mul_zero := by intros; ext; simp
-  zero_mul := by intros; ext; simp
-
-instance instDenselyOrdered : DenselyOrdered Prob :=
-  show DenselyOrdered (Set.Icc 0 1) from Set.instDenselyOrdered
-
-instance instCompleteLinearOrder : CompleteLinearOrder Prob :=
-  instCompleteLinearOrderElemIccOfFactLe
-
 instance instInhabited : Inhabited Prob where
   default := 0
 
-set_option backward.isDefEq.respectTransparency false in
-instance : LinearOrderedCommMonoidWithZero Prob where
-  mul_lt_mul_of_pos_left := by
-    intros a ha b h hb
-    rw [← Subtype.coe_lt_coe]
-    exact mul_lt_mul_of_pos_left hb ha
-  isBot_zero a := a.2.1
+/-- Override `ordConnectedSubsetConditionallyCompleteLinearOrder` (activated by `instInhabited`)
+so that `ConditionallyCompleteLinearOrder Prob` agrees definitionally with
+`CompleteLinearOrder Prob`.
 
-@[simp]
+This seems fixed in Mathlib master. -/
+instance (priority := high) instConditionallyCompleteLinearOrder :
+    ConditionallyCompleteLinearOrder Prob :=
+  CompleteLinearOrder.toConditionallyCompleteLinearOrderBot.toConditionallyCompleteLinearOrder
+
+@[simp, bound]
 lemma zero_le_coe {p : Prob} : 0 ≤ (p : ℝ) :=
   p.2.1
 
-@[simp]
+@[simp, bound]
 lemma coe_le_one {p : Prob} : (p : ℝ) ≤ 1 :=
   p.2.2
 
-@[simp]
+@[simp, bound]
 lemma zero_le {p : Prob} : 0 ≤ p :=
   zero_le_coe
 
-@[simp]
+@[simp, bound]
 lemma le_one {p : Prob} : p ≤ 1 :=
   coe_le_one
+
+@[bound_forward]
+lemma mem_unitInterval_bounds {x : ℝ} (h : x ∈ unitInterval) : 0 ≤ x ∧ x ≤ 1 :=
+  h
+
+@[aesop safe apply (rule_sets := [Bound])]
+lemma mem_unitInterval_of_le {x : ℝ} (h₀ : 0 ≤ x) (h₁ : x ≤ 1) : x ∈ unitInterval :=
+  ⟨h₀, h₁⟩
 
 @[ext] protected lemma ext {n m : Prob} : (n : ℝ) = (m : ℝ) → n = m :=
   Subtype.ext
@@ -186,9 +165,6 @@ lemma one_minus_inv (p : Prob) : 1 - (1 - p) = p := by
   ext
   simp
 
-instance : OrderTopology Prob :=
-  orderTopology_of_ordConnected (ht := Set.ordConnected_Icc)
-
 set_option backward.isDefEq.respectTransparency false in
 @[simp, norm_cast]
 lemma coe_iInf {ι : Type*} [Nonempty ι] (f : ι → Prob) : ↑(⨅ t, f t) = (⨅ t, f t : ℝ) := by
@@ -196,9 +172,6 @@ lemma coe_iInf {ι : Type*} [Nonempty ι] (f : ι → Prob) : ↑(⨅ t, f t) = 
   · fun_prop
   · exact fun _ _ ↦ id
   · exact OrderBot.bddBelow _
-
-instance : Nontrivial Prob where
-  exists_pair_ne := ⟨0, 1, by simp [← Prob.ne_iff]⟩
 
 @[simp]
 lemma top_eq_one : (⊤ : Prob) = 1 := by
@@ -215,8 +188,8 @@ lemma toNNReal_Continuous : Continuous Prob.toNNReal := by
 
 @[simp]
 lemma mul_eq_one_iff (p q : Prob) : p * q = 1 ↔ p = 1 ∧ q = 1 := by
-  cases p
-  cases q
+  obtain ⟨p, hp0, hp1⟩ := p
+  obtain ⟨q, hq0, hq1⟩ := q
   refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
   simp [Prob.ext_iff] at h ⊢
   constructor <;> nlinarith

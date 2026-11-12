@@ -14,19 +14,20 @@ public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Taylor
 
 ## i. Overview
 
-`U(1)` and `SU(n)` present their local gauge data in the same way: the gauge jets are
-unitary matrices of jets, the Lie algebra jets are hermitian matrices of jets, evaluation is
-the entrywise constant coefficient, constants embed entrywise, the derivative and the
-coordinates act entrywise, the adjoint action is conjugation `U a U†` and the Maurer–Cartan
-form is `i (∂_μ U) U†`. Every law of `LocalGaugeData` then follows from matrix identities
-over the jet ring.
+Matrix gauge groups present their local gauge data in the same way: the gauge jets are
+invertible matrices of jets, the Lie algebra jets are matrices of jets, evaluation is the
+entrywise constant coefficient, constants embed entrywise, the derivative and the
+coordinates act entrywise, the adjoint action is conjugation `U a U⁻¹` and the
+Maurer–Cartan form is `i (∂_μ U) U⁻¹`. Every law of `LocalGaugeData` then follows from
+matrix identities over the jet ring. For `U(1)` and `SU(n)` the gauge jets are unitary, so
+`U⁻¹ = U†`, and the Lie algebra jets are hermitian.
 
 `MatrixJets` records such a presentation: injective maps of the four carriers into matrices,
 and what each structure map is in matrices. From it, `MatrixJets.toLocalGaugeData` proves
 the laws once, `MatrixJets.faithful` shows the package is faithful, `MatrixJets.free`
 reduces its freeness to three conditions on the carriers, and `MatrixJets.suFactor` is its
-canonical `SU`-type factor. The concrete packages `u1` and
-`su n` are instances.
+canonical `SU`-type factor when the presentation is unitary. The concrete packages `u1`,
+`su n` and the local gauge data of a `GlobalGaugeGroup` are instances.
 
 ## ii. Key results
 
@@ -69,7 +70,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
   group and its Lie algebra of jets embed into `κ × κ` matrices, and every structure map of
   the local gauge data is what it is for matrices: the entrywise constant coefficient,
   inclusion of constants, derivative and coordinate multiplication, conjugation for the
-  adjoint actions and `i (∂_μ U) U†` for the Maurer–Cartan form. -/
+  adjoint actions and `i (∂_μ U) U⁻¹` for the Maurer–Cartan form. -/
 structure MatrixJets (κ : Type) [Fintype κ] [DecidableEq κ] (G₀ : Type) [Group G₀]
     (𝔤 : Type) [LieRing 𝔤] [LieAlgebra ℝ 𝔤] (GJ : Type) [Group GJ]
     (𝔤J : Type) [LieRing 𝔤J] [LieAlgebra ℝ 𝔤J] where
@@ -79,8 +80,6 @@ structure MatrixJets (κ : Type) [Fintype κ] [DecidableEq κ] (G₀ : Type) [Gr
   /-- The matrix of jets of a gauge jet. -/
   toMatJ : GJ →* Matrix κ κ SpaceTimeAlgebra
   toMatJ_injective : Function.Injective toMatJ
-  toMatJ_mul_star : ∀ U, toMatJ U * star (toMatJ U) = 1
-  star_toMatJ_mul : ∀ U, star (toMatJ U) * toMatJ U = 1
   /-- The matrix of a Lie algebra element. -/
   lie₀ : 𝔤 →ₗ[ℝ] Matrix κ κ ℂ
   lie₀_injective : Function.Injective lie₀
@@ -109,18 +108,26 @@ structure MatrixJets (κ : Type) [Fintype κ] [DecidableEq κ] (G₀ : Type) [Gr
   lieJ_coord : ∀ μ a, lieJ (coord μ a) = (X μ : SpaceTimeAlgebra) • lieJ a
   /-- The adjoint action of the jet group on the jet Lie algebra. -/
   adjoint : Representation ℝ GJ 𝔤J
-  lieJ_adjoint : ∀ U a, lieJ (adjoint U a) = toMatJ U * lieJ a * star (toMatJ U)
+  lieJ_adjoint : ∀ U a, lieJ (adjoint U a) = toMatJ U * lieJ a * toMatJ U⁻¹
   /-- The adjoint representation of the value group on its Lie algebra. -/
   adjointValue : Representation ℝ G₀ 𝔤
-  lie₀_adjointValue : ∀ g a, lie₀ (adjointValue g a) = toMat₀ g * lie₀ a * star (toMat₀ g)
+  lie₀_adjointValue : ∀ g a, lie₀ (adjointValue g a) = toMat₀ g * lie₀ a * toMat₀ g⁻¹
   /-- The Maurer–Cartan form `i (∂_μ U) U⁻¹` of a gauge jet. -/
   maurerCartan : GJ → (Fin 1 ⊕ Fin 3) → 𝔤J
   lieJ_maurerCartan : ∀ U μ, lieJ (maurerCartan U μ)
-    = Complex.I • ((toMatJ U).map (pderiv μ) * star (toMatJ U))
+    = Complex.I • ((toMatJ U).map (pderiv μ) * toMatJ U⁻¹)
 
 namespace MatrixJets
 
 variable {κ : Type} [Fintype κ] [DecidableEq κ] (M : MatrixJets κ G₀ 𝔤 GJ 𝔤J)
+
+@[simp]
+lemma toMatJ_mul_inv (U : GJ) : M.toMatJ U * M.toMatJ U⁻¹ = 1 := by
+  rw [← map_mul, mul_inv_cancel, map_one]
+
+@[simp]
+lemma toMatJ_inv_mul (U : GJ) : M.toMatJ U⁻¹ * M.toMatJ U = 1 := by
+  rw [← map_mul, inv_mul_cancel, map_one]
 
 /-!
 
@@ -203,13 +210,13 @@ lemma coord_lie (μ : Fin 1 ⊕ Fin 3) (a b : 𝔤J) : ⁅M.coord μ a, b⁆ = M
   simp only [Matrix.smul_mul, Matrix.mul_smul, smul_sub, smul_comm
       (X μ : SpaceTimeAlgebra) Complex.I]
 
-/-- Conjugation by a unitary matrix respects products. -/
+/-- Conjugation by an invertible matrix respects products. -/
 lemma conj_mul_conj (U : GJ) (A B : Matrix κ κ SpaceTimeAlgebra) :
-    (M.toMatJ U * A * star (M.toMatJ U)) * (M.toMatJ U * B * star (M.toMatJ U))
-      = M.toMatJ U * (A * B) * star (M.toMatJ U) := by
+    (M.toMatJ U * A * M.toMatJ U⁻¹) * (M.toMatJ U * B * M.toMatJ U⁻¹)
+      = M.toMatJ U * (A * B) * M.toMatJ U⁻¹ := by
   simp only [mul_assoc]
-  rw [show star (M.toMatJ U) * (M.toMatJ U * (B * star (M.toMatJ U))) = B * star (M.toMatJ U)
-    from by rw [← mul_assoc, M.star_toMatJ_mul, one_mul]]
+  rw [show M.toMatJ U⁻¹ * (M.toMatJ U * (B * M.toMatJ U⁻¹)) = B * M.toMatJ U⁻¹
+    from by rw [← mul_assoc, M.toMatJ_inv_mul, one_mul]]
 
 lemma adjoint_lie (U : GJ) (x y : 𝔤J) :
     M.adjoint U ⁅x, y⁆ = ⁅M.adjoint U x, M.adjoint U y⁆ := by
@@ -221,8 +228,8 @@ lemma adjoint_lie (U : GJ) (x y : 𝔤J) :
 lemma evalLie_adjoint (U : GJ) (x : 𝔤J) :
     M.evalLie (M.adjoint U x) = M.adjointValue (M.eval U) (M.evalLie x) := by
   refine M.lie₀_injective ?_
-  rw [M.lie₀_evalLie, M.lieJ_adjoint, M.lie₀_adjointValue, M.toMat₀_eval, M.lie₀_evalLie,
-    map_mul, map_mul, SpaceTimeAlgebra.mapMatrix_constantCoeff_star]
+  rw [M.lie₀_evalLie, M.lieJ_adjoint, M.lie₀_adjointValue, ← map_inv M.eval U, M.toMat₀_eval,
+    M.toMat₀_eval, M.lie₀_evalLie, map_mul, map_mul]
 
 lemma maurerCartan_ofConstant (g : G₀) (μ : Fin 1 ⊕ Fin 3) :
     M.maurerCartan (M.ofConstant g) μ = 0 := by
@@ -235,27 +242,26 @@ lemma maurerCartan_cocycle (U V : GJ) (μ : Fin 1 ⊕ Fin 3) :
     M.maurerCartan (U * V) μ = M.maurerCartan U μ + M.adjoint U (M.maurerCartan V μ) := by
   refine M.lieJ_injective ?_
   rw [map_add, M.lieJ_maurerCartan, M.lieJ_maurerCartan, M.lieJ_adjoint, M.lieJ_maurerCartan,
-    map_mul, SpaceTimeAlgebra.matrix_map_pderiv_mul, star_mul, add_mul, smul_add, mul_smul_comm,
+    mul_inv_rev, map_mul, map_mul,
+    SpaceTimeAlgebra.map_pderiv_mul_mul_mul μ (M.toMatJ_mul_inv V), smul_add, mul_smul_comm,
     smul_mul_assoc]
-  congr 1
-  · rw [mul_assoc, ← mul_assoc (M.toMatJ V), M.toMatJ_mul_star, one_mul]
-  · simp only [mul_assoc]
 
 lemma maurerCartan_structure (U : GJ) (μ ν : Fin 1 ⊕ Fin 3) :
     M.deriv μ (M.maurerCartan U ν) - M.deriv ν (M.maurerCartan U μ)
       + ⁅M.maurerCartan U μ, M.maurerCartan U ν⁆ = 0 := by
   set A := M.toMatJ U with hA
-  have hU : A * star A = 1 := M.toMatJ_mul_star U
-  have hU' : star A * A = 1 := M.star_toMatJ_mul U
-  have key : (A.map (pderiv ν) * star A).map (pderiv μ) -
-        (A.map (pderiv μ) * star A).map (pderiv ν) =
-      A.map (pderiv μ) * star A * (A.map (pderiv ν) * star A) -
-        A.map (pderiv ν) * star A * (A.map (pderiv μ) * star A) := by
+  set B := M.toMatJ U⁻¹ with hB
+  have hU : A * B = 1 := M.toMatJ_mul_inv U
+  have hU' : B * A = 1 := M.toMatJ_inv_mul U
+  have key : (A.map (pderiv ν) * B).map (pderiv μ) -
+        (A.map (pderiv μ) * B).map (pderiv ν) =
+      A.map (pderiv μ) * B * (A.map (pderiv ν) * B) -
+        A.map (pderiv ν) * B * (A.map (pderiv μ) * B) := by
     rw [SpaceTimeAlgebra.matrix_map_pderiv_mul, SpaceTimeAlgebra.matrix_map_pderiv_mul,
       show (A.map (pderiv ν)).map (pderiv μ) = (A.map (pderiv μ)).map (pderiv ν)
         from Matrix.ext fun _ _ => SpaceTimeAlgebra.pderiv_comm μ ν _,
-      SpaceTimeAlgebra.map_pderiv_star_of_unitary μ hU hU',
-          SpaceTimeAlgebra.map_pderiv_star_of_unitary ν hU hU']
+      SpaceTimeAlgebra.map_pderiv_of_mul_eq_one μ hU hU',
+      SpaceTimeAlgebra.map_pderiv_of_mul_eq_one ν hU hU']
     simp only [mul_neg, ← mul_assoc]
     abel
   have hcancel : ∀ P Q : Matrix κ κ SpaceTimeAlgebra, (P - Q) + (-P - -Q) = 0 :=
@@ -264,23 +270,24 @@ lemma maurerCartan_structure (U : GJ) (μ ν : Fin 1 ⊕ Fin 3) :
   rw [map_add, map_sub, M.lieJ_deriv, M.lieJ_deriv, M.lieJ_bracket, M.lieJ_maurerCartan,
     M.lieJ_maurerCartan, map_zero, SpaceTimeAlgebra.map_pderiv_smul,
         SpaceTimeAlgebra.map_pderiv_smul, ← smul_sub,
-    ← hA, key]
+    ← hA, ← hB, key]
   simp only [smul_mul_smul_comm, Complex.I_mul_I, neg_one_smul, ← smul_add, hcancel, smul_zero]
 
 lemma deriv_adjoint (U : GJ) (μ : Fin 1 ⊕ Fin 3) (x : 𝔤J) :
     M.deriv μ (M.adjoint U x) = M.adjoint U (M.deriv μ x)
       - ⁅M.maurerCartan U μ, M.adjoint U x⁆ := by
   set V := M.toMatJ U with hV
-  have hVV : star V * V = 1 := M.star_toMatJ_mul U
-  have hq : (star V).map (pderiv μ) = -(star V * V.map (pderiv μ) * star V) :=
-    SpaceTimeAlgebra.map_pderiv_star_of_unitary μ (M.toMatJ_mul_star U) hVV
+  set W := M.toMatJ U⁻¹ with hW
+  have hVV : W * V = 1 := M.toMatJ_inv_mul U
+  have hq : W.map (pderiv μ) = -(W * V.map (pderiv μ) * W) :=
+    SpaceTimeAlgebra.map_pderiv_of_mul_eq_one μ (M.toMatJ_mul_inv U) hVV
   refine M.lieJ_injective ?_
   rw [map_sub, M.lieJ_deriv, M.lieJ_adjoint, M.lieJ_adjoint, M.lieJ_bracket,
     M.lieJ_maurerCartan, M.lieJ_adjoint, M.lieJ_deriv, SpaceTimeAlgebra.matrix_map_pderiv_mul,
     SpaceTimeAlgebra.matrix_map_pderiv_mul, hq]
   simp only [smul_mul_assoc, mul_smul_comm, ← smul_sub, smul_smul, Complex.I_mul_I,
     neg_one_smul, sub_neg_eq_add, add_mul, mul_neg, ← mul_assoc]
-  rw [mul_assoc (V.map (pderiv μ)) (star V) V, hVV, mul_one]
+  rw [mul_assoc (V.map (pderiv μ)) W V, hVV, mul_one]
   abel
 
 /-- Evaluation of Lie algebra jets, as a morphism of Lie algebras. -/
@@ -374,16 +381,15 @@ lemma faithful : M.toLocalGaugeData.Faithful where
     rw [M.lie₀_evalLie_iteratedDeriv, M.lie₀_evalLie_iteratedDeriv] at hs
     simpa only [Matrix.map_apply] using congrArg (fun A => A i j) hs
   eq_ofConstant_of_maurerCartan_eq_zero {U} h := by
-    have hU : M.toMatJ U * star (M.toMatJ U) = 1 := M.toMatJ_mul_star U
     have hd : ∀ μ, (M.toMatJ U).map (pderiv μ) = 0 := fun μ => by
-      have h1 : Complex.I • ((M.toMatJ U).map (pderiv μ) * star (M.toMatJ U)) = 0 := by
+      have h1 : Complex.I • ((M.toMatJ U).map (pderiv μ) * M.toMatJ U⁻¹) = 0 := by
         rw [← M.lieJ_maurerCartan, show M.maurerCartan U μ = 0 from congrFun h μ, map_zero]
-      have h2 : (M.toMatJ U).map (pderiv μ) * star (M.toMatJ U) = 0 := by
+      have h2 : (M.toMatJ U).map (pderiv μ) * M.toMatJ U⁻¹ = 0 := by
         have := congrArg (fun A => (-Complex.I) • A) h1
         simpa [smul_smul, Complex.I_mul_I] using this
       calc (M.toMatJ U).map (pderiv μ)
-          = (M.toMatJ U).map (pderiv μ) * (star (M.toMatJ U) * M.toMatJ U) := by
-            rw [M.star_toMatJ_mul, mul_one]
+          = (M.toMatJ U).map (pderiv μ) * (M.toMatJ U⁻¹ * M.toMatJ U) := by
+            rw [M.toMatJ_inv_mul, mul_one]
         _ = 0 := by rw [← mul_assoc, h2, zero_mul]
     refine M.toMatJ_injective (Matrix.ext fun i j => ?_)
     rw [toLocalGaugeData_ofConstant, toLocalGaugeData_eval, M.toMatJ_ofConstant, M.toMat₀_eval,
@@ -397,17 +403,18 @@ lemma faithful : M.toLocalGaugeData.Faithful where
 
 -/
 
-/-- **The canonical `SU`-type factor** of a package presented by matrices: the matrices of
-  jets themselves. -/
-noncomputable def suFactor : SUFactor M.toLocalGaugeData κ where
+/-- **The canonical `SU`-type factor** of a package presented by unitary matrices, those
+  whose inverse is the conjugate transpose: the matrices of jets themselves. -/
+noncomputable def suFactor (hstar : ∀ U, star (M.toMatJ U) = M.toMatJ U⁻¹) :
+    SUFactor M.toLocalGaugeData κ where
   u := M.toMatJ
-  u_unitary := M.star_toMatJ_mul
+  u_unitary U := by rw [hstar, M.toMatJ_inv_mul]
   φ := M.lie₀
   φJ := M.lieJ
   φJ_ofConstantLie a := M.lieJ_ofConstantLie a
   φJ_cc_foldl p a := (M.lie₀_evalLie_iteratedDeriv p a).symm
-  φJ_maurerCartan U μ := M.lieJ_maurerCartan U μ
-  φJ_adjoint U c := M.lieJ_adjoint U (M.ofConstantLie c)
+  φJ_maurerCartan U μ := by rw [hstar]; exact M.lieJ_maurerCartan U μ
+  φJ_adjoint U c := by rw [hstar]; exact M.lieJ_adjoint U (M.ofConstantLie c)
 
 /-!
 
@@ -422,11 +429,11 @@ hold for matrices of jets.
 -/
 
 /-- The radial component of the Maurer–Cartan form, in matrices:
-  `∑_μ x_μ · i (∂_μ U) U†`. -/
+  `∑_μ x_μ · i (∂_μ U) U⁻¹`. -/
 lemma lieJ_radial (U : GJ) :
     M.lieJ (M.toLocalGaugeData.radial U) =
       ∑ μ, (X μ : SpaceTimeAlgebra) •
-          (Complex.I • ((M.toMatJ U).map (pderiv μ) * star (M.toMatJ U))) := by
+          (Complex.I • ((M.toMatJ U).map (pderiv μ) * M.toMatJ U⁻¹)) := by
   simp only [radial, map_sum, toLocalGaugeData_mulCoord, toLocalGaugeData_maurerCartan,
     M.lieJ_coord, M.lieJ_maurerCartan]
 
@@ -473,7 +480,9 @@ lemma free
     have hVu := SpaceTimeAlgebra.eulerTransport_mul_star hRstar hR0 hV0 hEV
     obtain ⟨U, rfl⟩ := hlift ρ V hV0 hVu hEV
     refine ⟨⟨U, (M.mem_truncationKer_zero_iff U).2 hV0⟩, M.lieJ_injective ?_⟩
-    rw [M.lieJ_radial]
+    have hinv : M.toMatJ U⁻¹ = star (M.toMatJ U) := by
+      rw [← mul_one (M.toMatJ U⁻¹), ← hVu, ← mul_assoc, M.toMatJ_inv_mul, one_mul]
+    rw [M.lieJ_radial, hinv]
     exact SpaceTimeAlgebra.sum_X_smul_mcMatrix_of_eulerTransport hVu hEV
 
 end MatrixJets

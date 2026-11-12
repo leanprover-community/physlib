@@ -5,7 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.TransformsIn
 public import PhyslibAlpha.Particles.StandardModel.Realization.MassWeight.Filtration
 /-!
 # The jet algebra of the Standard Model is a Standard Model

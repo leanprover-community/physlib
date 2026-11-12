@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.Basic
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.MonotoneComplete
 public import PhyslibAlpha.ProbabilisticTheory.State.NormalEquivalence
 

@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.RetardedKernel.BoundaryValue
 public import PhyslibAlpha.Mathematics.Fourier.Marginal
-public import PhyslibAlpha.Mathematics.Fourier.SchwartzDecay
-public import PhyslibAlpha.Mathematics.SpecialFunctions.SincPropagator.Resolvent
 
 /-!
 

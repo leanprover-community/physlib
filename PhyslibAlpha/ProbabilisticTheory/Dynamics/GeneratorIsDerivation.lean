@@ -10,7 +10,6 @@ public import PhyslibAlpha.ProbabilisticTheory.Dynamics.Generator
 public import Mathlib.Analysis.Calculus.Deriv.Comp
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Mathlib.Analysis.Calculus.FDeriv.Bilinear
-public import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 

@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.FiniteSystem
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
 
 /-!
 

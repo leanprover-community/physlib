@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 module
 
 public meta import Lean.Elab.Command
+import Lean.Exception
 /-!
 
 ## Underlying structure for remarks

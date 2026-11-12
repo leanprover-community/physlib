@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 
 /-!
 # Normal channels

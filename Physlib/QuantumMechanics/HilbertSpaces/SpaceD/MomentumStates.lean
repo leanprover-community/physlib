@@ -5,10 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Physlib.QuantumMechanics.Operators.Momentum
-public import Physlib.SpaceAndTime.Space.Module
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Momentum states

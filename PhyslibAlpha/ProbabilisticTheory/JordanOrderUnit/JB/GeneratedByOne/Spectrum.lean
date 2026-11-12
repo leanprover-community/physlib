@@ -5,10 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.Closed
-public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.Inherited
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.PosInvertibility
-public import Mathlib.Analysis.Normed.Algebra.Spectrum
 public import Mathlib.Analysis.Polynomial.Factorization
 
 /-!

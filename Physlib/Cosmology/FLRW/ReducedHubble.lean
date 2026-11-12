@@ -113,7 +113,7 @@ namespace Cosmology.FLRW.FriedmannSolution
 
 open Real Time FriedmannEquation
 
-variable {U : FLRW} {F Fm Fr : CosmicFluid} {Λ G c : ℝ}
+variable {U : FLRW} {F Fm Fr : CosmicFluid} {Λ G : ℝ} {c : SpeedOfLight}
 
 /-- For a solution of the Friedmann equations whose density is that of matter plus that of
   radiation, take two times `t` and `t₀` of the interval of the model with `H(t₀) ≠ 0` at which

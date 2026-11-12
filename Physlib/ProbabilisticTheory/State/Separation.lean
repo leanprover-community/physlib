@@ -7,7 +7,6 @@ module
 
 public import Physlib.ProbabilisticTheory.State.Metric
 public import Mathlib.Analysis.Convex.Cone.Dual
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
 # Separation by states

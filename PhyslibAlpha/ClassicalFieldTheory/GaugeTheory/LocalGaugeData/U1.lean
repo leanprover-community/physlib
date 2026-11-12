@@ -235,12 +235,6 @@ noncomputable def u1MatrixJets : MatrixJets (Fin 1) U1 U1Algebra JetU1 JetU1Alge
   toMatJ := (Matrix.scalar (Fin 1) : SpaceTimeAlgebra →+* _).toMonoidHom.comp
       (unitary SpaceTimeAlgebra).subtype
   toMatJ_injective _ _ h := Subtype.ext (Matrix.scalar_inj.mp h)
-  toMatJ_mul_star u := by
-    show Matrix.scalar (Fin 1) u.1 * star (Matrix.scalar (Fin 1) u.1) = 1
-    rw [Matrix.star_scalar, ← map_mul, Unitary.mul_star_self_of_mem u.2, map_one]
-  star_toMatJ_mul u := by
-    show star (Matrix.scalar (Fin 1) u.1) * Matrix.scalar (Fin 1) u.1 = 1
-    rw [Matrix.star_scalar, ← map_mul, Unitary.star_mul_self_of_mem u.2, map_one]
   lie₀ := Matrix.scalarSelfAdjoint
   lie₀_injective _ _ h := Subtype.ext (Matrix.scalar_inj.mp h)
   lie₀_bracket a b := by
@@ -271,14 +265,22 @@ noncomputable def u1MatrixJets : MatrixJets (Fin 1) U1 U1Algebra JetU1 JetU1Alge
         Matrix.scalar (Fin 1) a.1
     rw [← smul_eq_mul, Matrix.scalar_smul]
   adjoint := Representation.trivial ℝ JetU1 JetU1Algebra
-  lieJ_adjoint u a := Matrix.scalar_eq_conj (Unitary.mul_star_self_of_mem u.2) a.1
+  lieJ_adjoint u a := by
+    show Matrix.scalar (Fin 1) a.1 = Matrix.scalar (Fin 1) u.1 * Matrix.scalar (Fin 1) a.1 *
+      Matrix.scalar (Fin 1) (star u.1)
+    rw [← Matrix.star_scalar]
+    exact Matrix.scalar_eq_conj (Unitary.mul_star_self_of_mem u.2) a.1
   adjointValue := Representation.trivial ℝ U1 U1Algebra
-  lie₀_adjointValue u a := Matrix.scalar_eq_conj (Unitary.mul_star_self_of_mem u.2) a.1
+  lie₀_adjointValue u a := by
+    show Matrix.scalar (Fin 1) a.1 = Matrix.scalar (Fin 1) u.1 * Matrix.scalar (Fin 1) a.1 *
+      Matrix.scalar (Fin 1) (star u.1)
+    rw [← Matrix.star_scalar]
+    exact Matrix.scalar_eq_conj (Unitary.mul_star_self_of_mem u.2) a.1
   maurerCartan := JetU1.mc
   lieJ_maurerCartan u μ := by
     show Matrix.scalar (Fin 1) (Complex.I • (pderiv μ u.1 * star u.1))
-      = Complex.I • ((Matrix.scalar (Fin 1) u.1).map (pderiv μ) * star (Matrix.scalar (Fin 1) u.1))
-    rw [Matrix.scalar_smul, map_mul, Matrix.star_scalar, Matrix.map_scalar _ (map_zero _)]
+      = Complex.I • ((Matrix.scalar (Fin 1) u.1).map (pderiv μ) * Matrix.scalar (Fin 1) (star u.1))
+    rw [Matrix.scalar_smul, map_mul, Matrix.map_scalar _ (map_zero _)]
 
 /-- **The local gauge data of `U(1)`**: unitary jets, self-adjoint scalar jets with
   vanishing bracket and trivial adjoint action, and the Maurer–Cartan form

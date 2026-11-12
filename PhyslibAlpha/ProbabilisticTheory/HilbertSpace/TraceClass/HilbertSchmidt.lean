@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Basic
-public import Mathlib.Analysis.MeanInequalities
 
 /-!
 

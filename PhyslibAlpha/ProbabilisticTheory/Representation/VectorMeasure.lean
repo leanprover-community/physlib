@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Representation.AbelianSpectral
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Uniqueness
-public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Measure
 
 /-!
 

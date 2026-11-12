@@ -7,8 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Constructions.HaarToSphere
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
-public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
 
 /-!

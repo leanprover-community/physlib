@@ -6,7 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.RepresentationTheory.Continuous.Basic
 public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.Subrepresentation
 
 /-!

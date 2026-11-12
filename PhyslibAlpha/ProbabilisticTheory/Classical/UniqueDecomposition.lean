@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.EnsembleRefinement
-public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 

@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.Mathematics.Calculus.IteratedFDerivBounds
-public import Mathlib.Analysis.Calculus.ContDiff.Bounds
-public import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!

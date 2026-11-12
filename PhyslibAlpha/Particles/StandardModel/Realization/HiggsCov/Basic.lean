@@ -6,20 +6,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Mathematics.HomogeneousGenerators
-public import Physlib.Particles.StandardModel.HiggsBoson.Basic
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.CovJetAlgebra.Higgs
-public import PhyslibAlpha.Relativity.IsLorentzDeriv
 public import PhyslibAlpha.Relativity.LightConeDeriv
-public import PhyslibAlpha.Relativity.SL2C.AxisRotations
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.JetDeriv
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.LorentzAction
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.GaugeAction
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.MassDim
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.RingTheory.TensorProduct.Maps
 public import Mathlib.RepresentationTheory.Invariants
 /-!
 # The algebra valued Higgs boson

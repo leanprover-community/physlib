@@ -6,9 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.DimensionRaising.Retarded
-public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.DimensionRaising.Rotation
-public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.GreenOperators
-public import Mathlib.Analysis.InnerProductSpace.ProdL2
 
 /-!
 

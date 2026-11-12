@@ -5,8 +5,6 @@ Authors: Robert Sneiderman
 -/
 module
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.SphericalShell
-public import Physlib.SpaceAndTime.Space.Integrals.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 /-!
 
 # Solid sphere surfaces in `Space d`

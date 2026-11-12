@@ -31,7 +31,7 @@ ambiguities such as the Gibbs paradox.
 We keep both layers:
 
 * Mathematical / raw:
-  - `mathematicalPartitionFunction (T)` : ∫ exp(-β E) dμ
+  - `mathematicalPartitionFunction kB T` : ∫ exp(-β E) dμ
   - `probability` (density w.r.t. `μ`)
   - `differentialEntropy` (can be negative, unit–dependent)
 
@@ -50,9 +50,9 @@ normalization is recovered via the Boltzmann weighted measure.
 
 ## 4. Boltzmann & Probability Measures
 
-* `μBolt T` : Boltzmann (unnormalized) measure `withDensity exp(-β E)`
-* `μProd T` : normalized probability measure (rescaled `μBolt T`)
-* `probability T i` : the density `exp(-β E(i)) / Z_math`
+* `μBolt kB T` : Boltzmann (unnormalized) measure `withDensity exp(-β E)`
+* `μProd kB T` : normalized probability measure (rescaled `μBolt kB T`)
+* `probability kB T i` : the density `exp(-β E(i)) / Z_math`
 * `physicalProbability` : `probability * (phase_space_unit ^ dof)`
 
 ## 5. Energies & Entropies
@@ -81,7 +81,9 @@ mean energies and integrability.
 ## 7. Notational & Implementation Notes
 
 * We work over an arbitrary measurable type `ι`, allowing both finite and continuous models.
-* `β` is accessed through the `Temperature` structure (`T.β`).
+* `β` is accessed through the `Temperature` structure (`T.β kB`, for a Boltzmann constant `kB`).
+* Every quantity that depends on the temperature takes the Boltzmann constant
+  `kB : BoltzmannConstant` before `T`.
 * Most positivity / finiteness conditions are hypotheses on lemmas instead of global axioms,
   enabling reuse in formal derivations of fluctuation and response identities.
 
@@ -131,7 +133,8 @@ namespace CanonicalEnsemble
 open Real Temperature
 
 variable {ι ι1 : Type} [MeasurableSpace ι]
-  [MeasurableSpace ι1] (𝓒 : CanonicalEnsemble ι) (𝓒1 : CanonicalEnsemble ι1)
+  [MeasurableSpace ι1] (kB : BoltzmannConstant) (𝓒 : CanonicalEnsemble ι)
+  (𝓒1 : CanonicalEnsemble ι1)
 
 instance : SigmaFinite 𝓒.μ := 𝓒.μ_sigmaFinite
 
@@ -291,15 +294,15 @@ instance [NeZero 𝓒.μ] (n : ℕ) : NeZero (nsmul n 𝓒).μ := by
 
 /-- The Boltzmann measure on the space of microstates. -/
 noncomputable def μBolt (T : Temperature) : MeasureTheory.Measure ι :=
-  𝓒.μ.withDensity (fun i => ENNReal.ofReal (exp (- T.β * 𝓒.energy i)))
+  𝓒.μ.withDensity (fun i => ENNReal.ofReal (exp (- T.β kB * 𝓒.energy i)))
 
-instance (T : Temperature) : SigmaFinite (𝓒.μBolt T) :=
+instance (T : Temperature) : SigmaFinite (𝓒.μBolt kB T) :=
   inferInstanceAs
-    (SigmaFinite (𝓒.μ.withDensity (fun i => ENNReal.ofReal (exp (- β T * 𝓒.energy i)))))
+    (SigmaFinite (𝓒.μ.withDensity (fun i => ENNReal.ofReal (exp (- β kB T * 𝓒.energy i)))))
 
 @[simp]
 lemma μBolt_add (T : Temperature) :
-    (𝓒 + 𝓒1).μBolt T = (𝓒.μBolt T).prod (𝓒1.μBolt T) := by
+    (𝓒 + 𝓒1).μBolt kB T = (𝓒.μBolt kB T).prod (𝓒1.μBolt kB T) := by
   simp_rw [μBolt, μ_add]
   rw [MeasureTheory.prod_withDensity]
   · congr with i
@@ -308,8 +311,8 @@ lemma μBolt_add (T : Temperature) :
   · fun_prop
   · fun_prop
 
-lemma μBolt_congr (e : ι1 ≃ᵐ ι) (T : Temperature) : (𝓒.congr e).μBolt T =
-    (𝓒.μBolt T).map e.symm := by
+lemma μBolt_congr (e : ι1 ≃ᵐ ι) (T : Temperature) : (𝓒.congr e).μBolt kB T =
+    (𝓒.μBolt kB T).map e.symm := by
   simp [congr, μBolt]
   refine Measure.ext_of_lintegral _ fun φ hφ ↦ ?_
   rw [lintegral_withDensity_eq_lintegral_mul₀, lintegral_map, lintegral_map,
@@ -319,32 +322,32 @@ lemma μBolt_congr (e : ι1 ≃ᵐ ι) (T : Temperature) : (𝓒.congr e).μBolt
   all_goals fun_prop
 
 lemma μBolt_nsmul [SigmaFinite 𝓒.μ] (n : ℕ) (T : Temperature) :
-    (nsmul n 𝓒).μBolt T = MeasureTheory.Measure.pi fun _ => (𝓒.μBolt T) := by
+    (nsmul n 𝓒).μBolt kB T = MeasureTheory.Measure.pi fun _ => (𝓒.μBolt kB T) := by
   induction n with
   | zero =>
     simp [nsmul, μBolt]
     exact congrArg Measure.pi (Subsingleton.elim _ _)
   | succ n ih =>
     rw [nsmul_succ, μBolt_congr, μBolt_add, ih]
-    exact ((measurePreserving_piFinSuccAbove (fun _ => 𝓒.μBolt T) 0).symm _).map_eq
+    exact ((measurePreserving_piFinSuccAbove (fun _ => 𝓒.μBolt kB T) 0).symm _).map_eq
 
 lemma μBolt_ne_zero_of_μ_ne_zero (T : Temperature) (h : 𝓒.μ ≠ 0) :
-    𝓒.μBolt T ≠ 0 := by
-  have hm : AEMeasurable (fun i => ENNReal.ofReal (exp (- T.β * 𝓒.energy i))) 𝓒.μ := by fun_prop
+    𝓒.μBolt kB T ≠ 0 := by
+  have hm : AEMeasurable (fun i => ENNReal.ofReal (exp (- T.β kB * 𝓒.energy i))) 𝓒.μ := by fun_prop
   rw [μBolt, ne_eq, withDensity_eq_zero_iff hm, Filter.EventuallyEq, ae_iff]
   simpa [ENNReal.ofReal_eq_zero, exp_pos] using h
 
-instance (T : Temperature) [NeZero 𝓒.μ] : NeZero (𝓒.μBolt T) := by
+instance (T : Temperature) [NeZero 𝓒.μ] : NeZero (𝓒.μBolt kB T) := by
   refine { out := ?_ }
-  apply μBolt_ne_zero_of_μ_ne_zero
+  apply μBolt_ne_zero_of_μ_ne_zero kB
   exact Ne.symm (NeZero.ne' 𝓒.μ)
 
-instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [IsFiniteMeasure (𝓒1.μBolt T)] :
-    IsFiniteMeasure ((𝓒 + 𝓒1).μBolt T) := by
+instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [IsFiniteMeasure (𝓒1.μBolt kB T)] :
+    IsFiniteMeasure ((𝓒 + 𝓒1).μBolt kB T) := by
   simp only [μBolt_add]; infer_instance
 
-instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] (n : ℕ) :
-    IsFiniteMeasure ((nsmul n 𝓒).μBolt T) := by
+instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] (n : ℕ) :
+    IsFiniteMeasure ((nsmul n 𝓒).μBolt kB T) := by
   simp [μBolt_nsmul]; infer_instance
 
 /-!
@@ -356,37 +359,40 @@ instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] (n : ℕ) :
 /-- The mathematical partition function, defined as the integral of the Boltzmann factor.
 This quantity may have physical dimensions. See `CanonicalEnsemble.partitionFunction` for
 the dimensionless physical version. -/
-noncomputable def mathematicalPartitionFunction (T : Temperature) : ℝ := (𝓒.μBolt T).real Set.univ
+noncomputable def mathematicalPartitionFunction (T : Temperature) : ℝ :=
+  (𝓒.μBolt kB T).real Set.univ
 
 lemma mathematicalPartitionFunction_eq_integral (T : Temperature) :
-    mathematicalPartitionFunction 𝓒 T = ∫ i, exp (- T.β * 𝓒.energy i) ∂𝓒.μ := by
+    mathematicalPartitionFunction kB 𝓒 T = ∫ i, exp (- T.β kB * 𝓒.energy i) ∂𝓒.μ := by
   rw [mathematicalPartitionFunction, measureReal_def, μBolt, withDensity_apply _ .univ,
     setLIntegral_univ, ← integral_toReal]
   · simp [ENNReal.toReal_ofReal, exp_nonneg]
   · fun_prop
   · exact .of_forall fun i => ENNReal.ofReal_lt_top
 
+variable {kB} in
 lemma mathematicalPartitionFunction_add {T : Temperature} :
-    (𝓒 + 𝓒1).mathematicalPartitionFunction T =
-    𝓒.mathematicalPartitionFunction T * 𝓒1.mathematicalPartitionFunction T := by
+    (𝓒 + 𝓒1).mathematicalPartitionFunction kB T =
+    𝓒.mathematicalPartitionFunction kB T * 𝓒1.mathematicalPartitionFunction kB T := by
   simp_rw [mathematicalPartitionFunction, μBolt_add]
   rw [← measureReal_prod_prod, Set.univ_prod_univ]
 
 @[simp]
 lemma mathematicalPartitionFunction_congr (e : ι1 ≃ᵐ ι) (T : Temperature) :
-    (𝓒.congr e).mathematicalPartitionFunction T = 𝓒.mathematicalPartitionFunction T := by
+    (𝓒.congr e).mathematicalPartitionFunction kB T = 𝓒.mathematicalPartitionFunction kB T := by
   simp [mathematicalPartitionFunction, μBolt_congr, measureReal_def, MeasurableEquiv.map_apply]
 
 /-- The `mathematicalPartitionFunction_nsmul` function of `n` copies of a canonical ensemble. -/
 lemma mathematicalPartitionFunction_nsmul (n : ℕ) (T : Temperature) :
-    (nsmul n 𝓒).mathematicalPartitionFunction T = (𝓒.mathematicalPartitionFunction T) ^ n := by
+    (nsmul n 𝓒).mathematicalPartitionFunction kB T =
+      (𝓒.mathematicalPartitionFunction kB T) ^ n := by
   simp [mathematicalPartitionFunction, μBolt_nsmul, measureReal_def, Measure.pi_univ]
 
 lemma mathematicalPartitionFunction_nonneg (T : Temperature) :
-    0 ≤ 𝓒.mathematicalPartitionFunction T := measureReal_nonneg
+    0 ≤ 𝓒.mathematicalPartitionFunction kB T := measureReal_nonneg
 
-lemma mathematicalPartitionFunction_eq_zero_iff (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] :
-    mathematicalPartitionFunction 𝓒 T = 0 ↔ 𝓒.μ = 0 := by
+lemma mathematicalPartitionFunction_eq_zero_iff (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] :
+    mathematicalPartitionFunction kB 𝓒 T = 0 ↔ 𝓒.μ = 0 := by
   rw [mathematicalPartitionFunction, measureReal_def, ENNReal.toReal_eq_zero_iff]
   simp only [measure_ne_top, or_false]
   rw [μBolt, MeasureTheory.withDensity_apply_eq_zero']
@@ -396,18 +402,16 @@ lemma mathematicalPartitionFunction_eq_zero_iff (T : Temperature) [IsFiniteMeasu
 open NNReal
 
 lemma mathematicalPartitionFunction_comp_ofβ_apply (β : ℝ≥0) :
-    𝓒.mathematicalPartitionFunction (ofβ β) =
+    𝓒.mathematicalPartitionFunction kB (ofβ kB β) =
     (𝓒.μ.withDensity (fun i => ENNReal.ofReal (exp (- β * 𝓒.energy i)))).real Set.univ := by
   simp only [mathematicalPartitionFunction, μBolt, β_ofβ, neg_mul]
 
 /-- The partition function is strictly positive provided the underlying
 measure is non-zero and the Boltzmann measure is finite. -/
 lemma mathematicalPartitionFunction_pos (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] :
-    0 < 𝓒.mathematicalPartitionFunction T := by
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] :
+    0 < 𝓒.mathematicalPartitionFunction kB T := by
   simp [mathematicalPartitionFunction]
-
-open NNReal Constants
 
 /-! ## The probability density -/
 
@@ -417,65 +421,68 @@ underlying measure `𝓒.μ` and is not necessarily less than or equal to 1. In 
 case of a finite ensemble with the counting measure, this value corresponds to the
 probability of the microstate. -/
 noncomputable def probability (T : Temperature) (i : ι) : ℝ :=
-  (exp (- T.β * 𝓒.energy i)) / 𝓒.mathematicalPartitionFunction T
+  (exp (- T.β kB * 𝓒.energy i)) / 𝓒.mathematicalPartitionFunction kB T
 
 /-! ## The probability measure -/
 
+variable {kB} in
 lemma probability_add {T : Temperature} (i : ι × ι1) :
-    (𝓒 + 𝓒1).probability T i = 𝓒.probability T i.1 * 𝓒1.probability T i.2 := by
+    (𝓒 + 𝓒1).probability kB T i = 𝓒.probability kB T i.1 * 𝓒1.probability kB T i.2 := by
   simp [probability, mathematicalPartitionFunction_add, mul_add, Real.exp_add, div_mul_div_comm]
 
 @[simp]
 lemma probability_congr (e : ι1 ≃ᵐ ι) (T : Temperature) (i : ι1) :
-    (𝓒.congr e).probability T i = 𝓒.probability T (e i) := by
+    (𝓒.congr e).probability kB T i = 𝓒.probability kB T (e i) := by
   simp [probability]
 
 lemma probability_nsmul (n : ℕ) (T : Temperature) (f : Fin n → ι) :
-    (nsmul n 𝓒).probability T f = ∏ i, 𝓒.probability T (f i) := by
+    (nsmul n 𝓒).probability kB T f = ∏ i, 𝓒.probability kB T (f i) := by
   induction n with
   | zero => simp [probability, mathematicalPartitionFunction_nsmul]
   | succ n ih =>
     rw [nsmul_succ, probability_congr, probability_add]
     simp only [MeasurableEquiv.piFinSuccAbove_apply, Fin.insertNthEquiv_zero,
       Fin.consEquiv_symm_apply, ih]
-    exact (Fin.prod_univ_succAbove (fun i => 𝓒.probability T (f i)) 0).symm
+    exact (Fin.prod_univ_succAbove (fun i => 𝓒.probability kB T (f i)) 0).symm
 
 /-- The probability measure associated with the Boltzmann distribution of a
   canonical ensemble. -/
 noncomputable def μProd (T : Temperature) : MeasureTheory.Measure ι :=
-  (𝓒.μBolt T Set.univ)⁻¹ • 𝓒.μBolt T
+  (𝓒.μBolt kB T Set.univ)⁻¹ • 𝓒.μBolt kB T
 
-instance (T : Temperature) : SigmaFinite (𝓒.μProd T) :=
-  inferInstanceAs (SigmaFinite ((𝓒.μBolt T Set.univ)⁻¹ • 𝓒.μBolt T))
+instance (T : Temperature) : SigmaFinite (𝓒.μProd kB T) :=
+  inferInstanceAs (SigmaFinite ((𝓒.μBolt kB T Set.univ)⁻¹ • 𝓒.μBolt kB T))
 
-instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)]
-  [NeZero 𝓒.μ] : IsProbabilityMeasure (𝓒.μProd T) := inferInstanceAs <|
-  IsProbabilityMeasure ((𝓒.μBolt T Set.univ)⁻¹ • 𝓒.μBolt T)
+instance (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)]
+  [NeZero 𝓒.μ] : IsProbabilityMeasure (𝓒.μProd kB T) := inferInstanceAs <|
+  IsProbabilityMeasure ((𝓒.μBolt kB T Set.univ)⁻¹ • 𝓒.μBolt kB T)
 
-instance {T} : IsFiniteMeasure (𝓒.μProd T) :=
-  inferInstanceAs (IsFiniteMeasure ((𝓒.μBolt T Set.univ)⁻¹ • 𝓒.μBolt T))
+instance {T} : IsFiniteMeasure (𝓒.μProd kB T) :=
+  inferInstanceAs (IsFiniteMeasure ((𝓒.μBolt kB T Set.univ)⁻¹ • 𝓒.μBolt kB T))
 
-lemma μProd_add {T : Temperature} [IsFiniteMeasure (𝓒.μBolt T)]
-    [IsFiniteMeasure (𝓒1.μBolt T)] : (𝓒 + 𝓒1).μProd T = (𝓒.μProd T).prod (𝓒1.μProd T) := by
+variable {kB} in
+lemma μProd_add {T : Temperature} [IsFiniteMeasure (𝓒.μBolt kB T)]
+    [IsFiniteMeasure (𝓒1.μBolt kB T)] :
+    (𝓒 + 𝓒1).μProd kB T = (𝓒.μProd kB T).prod (𝓒1.μProd kB T) := by
   rw [μProd, μProd, μProd, μBolt_add, Measure.prod_smul_left, Measure.prod_smul_right, smul_smul]
   congr 1
   rw [← ENNReal.mul_inv (.inr (measure_ne_top _ _)) (.inl (measure_ne_top _ _)),
     ← Measure.prod_prod, Set.univ_prod_univ]
 
 lemma μProd_congr (e : ι1 ≃ᵐ ι) (T : Temperature) :
-    (𝓒.congr e).μProd T = (𝓒.μProd T).map e.symm := by
+    (𝓒.congr e).μProd kB T = (𝓒.μProd kB T).map e.symm := by
   rw [μProd, μProd, μBolt_congr, Measure.map_smul, MeasurableEquiv.map_apply, Set.preimage_univ]
   exact e.symm.measurable.aemeasurable
 
-lemma μProd_nsmul (n : ℕ) (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] :
-    (nsmul n 𝓒).μProd T = MeasureTheory.Measure.pi fun _ => 𝓒.μProd T := by
+lemma μProd_nsmul (n : ℕ) (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] :
+    (nsmul n 𝓒).μProd kB T = MeasureTheory.Measure.pi fun _ => 𝓒.μProd kB T := by
   induction n with
   | zero =>
     simp [nsmul, μProd, μBolt]
     exact congrArg Measure.pi (Subsingleton.elim _ _)
   | succ n ih =>
     rw [nsmul_succ, μProd_congr, μProd_add, ih]
-    exact ((measurePreserving_piFinSuccAbove (fun _ => 𝓒.μProd T) 0).symm _).map_eq
+    exact ((measurePreserving_piFinSuccAbove (fun _ => 𝓒.μProd kB T) 0).symm _).map_eq
 
 /-!
 
@@ -484,30 +491,30 @@ lemma μProd_nsmul (n : ℕ) (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)]
 -/
 
 @[fun_prop]
-lemma integrable_energy_add (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)]
-    [IsFiniteMeasure (𝓒1.μBolt T)]
-    (h : Integrable 𝓒.energy (𝓒.μProd T)) (h1 : Integrable 𝓒1.energy (𝓒1.μProd T)) :
-    Integrable (𝓒 + 𝓒1).energy ((𝓒 + 𝓒1).μProd T) := by
+lemma integrable_energy_add (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)]
+    [IsFiniteMeasure (𝓒1.μBolt kB T)]
+    (h : Integrable 𝓒.energy (𝓒.μProd kB T)) (h1 : Integrable 𝓒1.energy (𝓒1.μProd kB T)) :
+    Integrable (𝓒 + 𝓒1).energy ((𝓒 + 𝓒1).μProd kB T) := by
   rw [μProd_add]
   exact (h.comp_fst _).fun_add (h1.comp_snd _)
 
 @[fun_prop]
 lemma integrable_energy_congr (T : Temperature) (e : ι1 ≃ᵐ ι)
-    (h : Integrable 𝓒.energy (𝓒.μProd T)) :
-    Integrable (𝓒.congr e).energy ((𝓒.congr e).μProd T) := by
+    (h : Integrable 𝓒.energy (𝓒.μProd kB T)) :
+    Integrable (𝓒.congr e).energy ((𝓒.congr e).μProd kB T) := by
   rw [μProd_congr]
   exact (integrable_map_equiv e.symm _).mpr (by simpa only [congr_energy_comp_symmm] using h)
 
 @[fun_prop]
 lemma integrable_energy_nsmul (n : ℕ) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)]
-    (h : Integrable 𝓒.energy (𝓒.μProd T)) :
-    Integrable (nsmul n 𝓒).energy ((nsmul n 𝓒).μProd T) := by
+    [IsFiniteMeasure (𝓒.μBolt kB T)]
+    (h : Integrable 𝓒.energy (𝓒.μProd kB T)) :
+    Integrable (nsmul n 𝓒).energy ((nsmul n 𝓒).μProd kB T) := by
   induction n with
   | zero => simp [nsmul]
   | succ n ih =>
     rw [nsmul_succ]
-    exact integrable_energy_congr _ _ _ (integrable_energy_add _ _ _ h ih)
+    exact integrable_energy_congr kB _ _ _ (integrable_energy_add kB _ _ _ h ih)
 
 /-!
 
@@ -516,41 +523,42 @@ lemma integrable_energy_nsmul (n : ℕ) (T : Temperature)
 -/
 
 /-- The mean energy of the canonical ensemble at temperature `T`. -/
-noncomputable def meanEnergy (T : Temperature) : ℝ := ∫ i, 𝓒.energy i ∂𝓒.μProd T
+noncomputable def meanEnergy (T : Temperature) : ℝ := ∫ i, 𝓒.energy i ∂𝓒.μProd kB T
 
 /-- The mean square energy ⟨E²⟩ of the canonical ensemble at temperature T. -/
 noncomputable def meanSquareEnergy (T : Temperature) : ℝ :=
-  ∫ i, (𝓒.energy i)^2 ∂ 𝓒.μProd T
+  ∫ i, (𝓒.energy i)^2 ∂ 𝓒.μProd kB T
 
 /-- Energy variance at temperature `T`. -/
 noncomputable def energyVariance (T : Temperature) : ℝ :=
-  ∫ i, (𝓒.energy i - 𝓒.meanEnergy T)^2 ∂ 𝓒.μProd T
+  ∫ i, (𝓒.energy i - 𝓒.meanEnergy kB T)^2 ∂ 𝓒.μProd kB T
 
+variable {kB} in
 lemma meanEnergy_add {T : Temperature}
-    [IsFiniteMeasure (𝓒1.μBolt T)] [IsFiniteMeasure (𝓒.μBolt T)]
+    [IsFiniteMeasure (𝓒1.μBolt kB T)] [IsFiniteMeasure (𝓒.μBolt kB T)]
     [NeZero 𝓒.μ] [NeZero 𝓒1.μ]
-    (h1 : Integrable 𝓒.energy (𝓒.μProd T))
-    (h2 : Integrable 𝓒1.energy (𝓒1.μProd T)) :
-    (𝓒 + 𝓒1).meanEnergy T = 𝓒.meanEnergy T + 𝓒1.meanEnergy T := by
-  have hI := integrable_energy_add 𝓒 𝓒1 T h1 h2
+    (h1 : Integrable 𝓒.energy (𝓒.μProd kB T))
+    (h2 : Integrable 𝓒1.energy (𝓒1.μProd kB T)) :
+    (𝓒 + 𝓒1).meanEnergy kB T = 𝓒.meanEnergy kB T + 𝓒1.meanEnergy kB T := by
+  have hI := integrable_energy_add kB 𝓒 𝓒1 T h1 h2
   rw [μProd_add] at hI
   rw [meanEnergy, μProd_add, integral_prod _ hI]
   simp [integral_add (integrable_const _) h2, integral_add h1 (integrable_const _), meanEnergy]
 
 lemma meanEnergy_congr (e : ι1 ≃ᵐ ι) (T : Temperature) :
-    (𝓒.congr e).meanEnergy T = 𝓒.meanEnergy T := by
+    (𝓒.congr e).meanEnergy kB T = 𝓒.meanEnergy kB T := by
   simp only [meanEnergy, μProd_congr]
   exact MeasurePreserving.integral_comp' ⟨e.measurable, e.map_map_symm⟩ 𝓒.energy
 
 lemma meanEnergy_nsmul (n : ℕ) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ]
-    (h1 : Integrable 𝓒.energy (𝓒.μProd T)) :
-    (nsmul n 𝓒).meanEnergy T = n * 𝓒.meanEnergy T := by
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ]
+    (h1 : Integrable 𝓒.energy (𝓒.μProd kB T)) :
+    (nsmul n 𝓒).meanEnergy kB T = n * 𝓒.meanEnergy kB T := by
   induction n with
   | zero => simp [nsmul, meanEnergy]
   | succ n ih =>
     rw [nsmul_succ, meanEnergy_congr,
-      meanEnergy_add _ _ h1 (integrable_energy_nsmul 𝓒 n T h1), ih]
+      meanEnergy_add _ _ h1 (integrable_energy_nsmul kB 𝓒 n T h1), ih]
     push_cast
     ring
 
@@ -564,36 +572,36 @@ lemma meanEnergy_nsmul (n : ℕ) (T : Temperature)
 is not absolute but depends on the choice of units for the measure. It can be negative.
 See `thermodynamicEntropy` for the absolute physical quantity. -/
 noncomputable def differentialEntropy (T : Temperature) : ℝ :=
-  - kB * ∫ i, log (probability 𝓒 T i) ∂𝓒.μProd T
+  - (kB : ℝ) * ∫ i, log (probability kB 𝓒 T i) ∂𝓒.μProd kB T
 
 /-- Probabilities are non-negative, assuming a positive partition function. -/
 -- `unusedArguments` (newly flagged under v4.32.0): the finiteness / non-zero
 -- instances are part of the intended interface but not needed by this proof.
 @[nolint unusedArguments]
 lemma probability_nonneg
-    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] (i : ι) :
-    0 ≤ 𝓒.probability T i :=
-  div_nonneg (exp_nonneg _) (𝓒.mathematicalPartitionFunction_nonneg T)
+    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] (i : ι) :
+    0 ≤ 𝓒.probability kB T i :=
+  div_nonneg (exp_nonneg _) (𝓒.mathematicalPartitionFunction_nonneg kB T)
 
 /-- Probabilities are strictly positive. -/
 lemma probability_pos
-    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] (i : ι) :
-    0 < 𝓒.probability T i :=
-  div_pos (exp_pos _) (𝓒.mathematicalPartitionFunction_pos T)
+    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] (i : ι) :
+    0 < 𝓒.probability kB T i :=
+  div_pos (exp_pos _) (𝓒.mathematicalPartitionFunction_pos kB T)
 
 /-- General entropy non-negativity under a pointwise upper bound `probability ≤ 1`.
 This assumption holds automatically in the finite/counting case (since sums bound each term),
 but can fail in general (continuous) settings; hence we separate it as a hypothesis.
 Finite case: see `CanonicalEnsemble.entropy_nonneg` in `Finite`. -/
 lemma differentialEntropy_nonneg_of_prob_le_one
-    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ]
-    (hInt : Integrable (fun i => Real.log (𝓒.probability T i)) (𝓒.μProd T))
-    (hP_le_one : ∀ i, 𝓒.probability T i ≤ 1) :
-    0 ≤ 𝓒.differentialEntropy T := by
+    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ]
+    (hInt : Integrable (fun i => Real.log (𝓒.probability kB T i)) (𝓒.μProd kB T))
+    (hP_le_one : ∀ i, 𝓒.probability kB T i ≤ 1) :
+    0 ≤ 𝓒.differentialEntropy kB T := by
   rw [differentialEntropy]
-  refine mul_nonneg_of_nonpos_of_nonpos (neg_nonpos.mpr kB_nonneg) ?_
+  refine mul_nonneg_of_nonpos_of_nonpos (neg_nonpos.mpr kB.val_nonneg) ?_
   simpa using integral_mono_ae hInt (integrable_const 0) (Filter.Eventually.of_forall fun i =>
-    Real.log_nonpos (𝓒.probability_nonneg T i) (hP_le_one i))
+    Real.log_nonpos (𝓒.probability_nonneg kB T i) (hP_le_one i))
 
 /-!
 
@@ -603,121 +611,119 @@ These are the dimensionless physical quantities derived from the mathematical de
 by incorporating the phase space volume `𝓒.phaseSpaceUnit ^ 𝓒.dof`.
 -/
 
-open Constants
-
 /-- The dimensionless thermodynamic partition function, `Z = Z_math / h^dof`. -/
 noncomputable def partitionFunction (T : Temperature) : ℝ :=
-  𝓒.mathematicalPartitionFunction T / (𝓒.phaseSpaceunit ^ 𝓒.dof)
+  𝓒.mathematicalPartitionFunction kB T / (𝓒.phaseSpaceunit ^ 𝓒.dof)
 
 @[simp]
 lemma partitionFunction_def (𝓒 : CanonicalEnsemble ι) (T : Temperature) :
-    𝓒.partitionFunction T =
-      𝓒.mathematicalPartitionFunction T / (𝓒.phaseSpaceunit ^ 𝓒.dof) := rfl
+    𝓒.partitionFunction kB T =
+      𝓒.mathematicalPartitionFunction kB T / (𝓒.phaseSpaceunit ^ 𝓒.dof) := rfl
 
 lemma partitionFunction_pos
     (𝓒 : CanonicalEnsemble ι) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] :
-    0 < 𝓒.partitionFunction T :=
-  div_pos (𝓒.mathematicalPartitionFunction_pos T) (pow_pos 𝓒.hPos _)
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] :
+    0 < 𝓒.partitionFunction kB T :=
+  div_pos (𝓒.mathematicalPartitionFunction_pos kB T) (pow_pos 𝓒.hPos _)
 
 lemma partitionFunction_congr
     (𝓒 : CanonicalEnsemble ι) (e : ι1 ≃ᵐ ι) (T : Temperature) :
-    (𝓒.congr e).partitionFunction T = 𝓒.partitionFunction T := by
+    (𝓒.congr e).partitionFunction kB T = 𝓒.partitionFunction kB T := by
   simp [partitionFunction]
 
 lemma partitionFunction_add
     (𝓒 : CanonicalEnsemble ι) (𝓒1 : CanonicalEnsemble ι1)
     (T : Temperature)
     (h : 𝓒.phaseSpaceunit = 𝓒1.phaseSpaceunit) :
-    (𝓒 + 𝓒1).partitionFunction T
-      = 𝓒.partitionFunction T * 𝓒1.partitionFunction T := by
+    (𝓒 + 𝓒1).partitionFunction kB T
+      = 𝓒.partitionFunction kB T * 𝓒1.partitionFunction kB T := by
   simp [partitionFunction, mathematicalPartitionFunction_add, h, pow_add, div_mul_div_comm]
 
 lemma partitionFunction_nsmul
     (𝓒 : CanonicalEnsemble ι) (n : ℕ) (T : Temperature) :
-    (nsmul n 𝓒).partitionFunction T
-      = (𝓒.partitionFunction T) ^ n := by
+    (nsmul n 𝓒).partitionFunction kB T
+      = (𝓒.partitionFunction kB T) ^ n := by
   simp [partitionFunction, mathematicalPartitionFunction_nsmul, pow_mul', div_pow]
 
 lemma partitionFunction_dof_zero
     (𝓒 : CanonicalEnsemble ι) (T : Temperature) (h : 𝓒.dof = 0) :
-    𝓒.partitionFunction T = 𝓒.mathematicalPartitionFunction T := by
+    𝓒.partitionFunction kB T = 𝓒.mathematicalPartitionFunction kB T := by
   simp [partitionFunction, h]
 
 lemma partitionFunction_phase_space_unit_one
     (𝓒 : CanonicalEnsemble ι) (T : Temperature) (h : 𝓒.phaseSpaceunit = 1) :
-    𝓒.partitionFunction T = 𝓒.mathematicalPartitionFunction T := by
+    𝓒.partitionFunction kB T = 𝓒.mathematicalPartitionFunction kB T := by
   simp [partitionFunction, h]
 
 lemma log_partitionFunction
     (𝓒 : CanonicalEnsemble ι) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] :
-    Real.log (𝓒.partitionFunction T)
-      = Real.log (𝓒.mathematicalPartitionFunction T)
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] :
+    Real.log (𝓒.partitionFunction kB T)
+      = Real.log (𝓒.mathematicalPartitionFunction kB T)
         - (𝓒.dof : ℝ) * Real.log 𝓒.phaseSpaceunit := by
-  rw [partitionFunction, Real.log_div (𝓒.mathematicalPartitionFunction_pos T).ne'
+  rw [partitionFunction, Real.log_div (𝓒.mathematicalPartitionFunction_pos kB T).ne'
     (pow_pos 𝓒.hPos _).ne', Real.log_pow]
 
 /-- A rewriting form convenient under a coercion to a temperature obtained from an inverse
 temperature. -/
 lemma log_partitionFunction_ofβ
     (𝓒 : CanonicalEnsemble ι) (β : ℝ≥0)
-    [IsFiniteMeasure (𝓒.μBolt (ofβ β))] [NeZero 𝓒.μ] :
-    Real.log (𝓒.partitionFunction (ofβ β))
-      = Real.log (𝓒.mathematicalPartitionFunction (ofβ β))
+    [IsFiniteMeasure (𝓒.μBolt kB (ofβ kB β))] [NeZero 𝓒.μ] :
+    Real.log (𝓒.partitionFunction kB (ofβ kB β))
+      = Real.log (𝓒.mathematicalPartitionFunction kB (ofβ kB β))
         - (𝓒.dof : ℝ) * Real.log 𝓒.phaseSpaceunit :=
-  log_partitionFunction (𝓒:=𝓒) (T:=ofβ β)
+  log_partitionFunction kB (𝓒:=𝓒) (T:=ofβ kB β)
 
 /-- The logarithm of the mathematical partition function as an integral. -/
 lemma log_mathematicalPartitionFunction_eq
     (𝓒 : CanonicalEnsemble ι) (T : Temperature) :
-    Real.log (𝓒.mathematicalPartitionFunction T)
-      = Real.log (∫ i, Real.exp (- T.β * 𝓒.energy i) ∂ 𝓒.μ) := by
+    Real.log (𝓒.mathematicalPartitionFunction kB T)
+      = Real.log (∫ i, Real.exp (- T.β kB * 𝓒.energy i) ∂ 𝓒.μ) := by
   simp [mathematicalPartitionFunction_eq_integral]
 
 /-- The Helmholtz free energy, `F = -k_B T log(Z)`. This is the central
 quantity from which other thermodynamic properties are derived. -/
 noncomputable def helmholtzFreeEnergy (T : Temperature) : ℝ :=
-  - kB * T.val * Real.log (𝓒.partitionFunction T)
+  - (kB : ℝ) * T.val * Real.log (𝓒.partitionFunction kB T)
 
 @[simp]
 lemma helmholtzFreeEnergy_def
     (𝓒 : CanonicalEnsemble ι) (T : Temperature) :
-    𝓒.helmholtzFreeEnergy T = - kB * T.val * Real.log (𝓒.partitionFunction T) := rfl
+    𝓒.helmholtzFreeEnergy kB T = - (kB : ℝ) * T.val * Real.log (𝓒.partitionFunction kB T) := rfl
 
 lemma helmholtzFreeEnergy_congr
     (𝓒 : CanonicalEnsemble ι) (e : ι1 ≃ᵐ ι) (T : Temperature) :
-    (𝓒.congr e).helmholtzFreeEnergy T = 𝓒.helmholtzFreeEnergy T := by
+    (𝓒.congr e).helmholtzFreeEnergy kB T = 𝓒.helmholtzFreeEnergy kB T := by
   simp [helmholtzFreeEnergy]
 
 lemma helmholtzFreeEnergy_dof_zero
     (𝓒 : CanonicalEnsemble ι) (T : Temperature) (h : 𝓒.dof = 0) :
-    𝓒.helmholtzFreeEnergy T
-      = -kB * T.val * Real.log (𝓒.mathematicalPartitionFunction T) := by
+    𝓒.helmholtzFreeEnergy kB T
+      = -(kB : ℝ) * T.val * Real.log (𝓒.mathematicalPartitionFunction kB T) := by
   simp [helmholtzFreeEnergy, partitionFunction, h]
 
 lemma helmholtzFreeEnergy_phase_space_unit_one
     (𝓒 : CanonicalEnsemble ι) (T : Temperature) (h : 𝓒.phaseSpaceunit = 1) :
-    𝓒.helmholtzFreeEnergy T
-      = -kB * T.val * Real.log (𝓒.mathematicalPartitionFunction T) := by
+    𝓒.helmholtzFreeEnergy kB T
+      = -(kB : ℝ) * T.val * Real.log (𝓒.mathematicalPartitionFunction kB T) := by
   simp [helmholtzFreeEnergy, partitionFunction, h]
 
 lemma helmholtzFreeEnergy_add
     (𝓒 : CanonicalEnsemble ι) (𝓒1 : CanonicalEnsemble ι1) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [IsFiniteMeasure (𝓒1.μBolt T)]
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [IsFiniteMeasure (𝓒1.μBolt kB T)]
     [NeZero 𝓒.μ] [NeZero 𝓒1.μ]
     (h : 𝓒.phaseSpaceunit = 𝓒1.phaseSpaceunit) :
-    (𝓒 + 𝓒1).helmholtzFreeEnergy T
-      = 𝓒.helmholtzFreeEnergy T + 𝓒1.helmholtzFreeEnergy T := by
+    (𝓒 + 𝓒1).helmholtzFreeEnergy kB T
+      = 𝓒.helmholtzFreeEnergy kB T + 𝓒1.helmholtzFreeEnergy kB T := by
   simp only [helmholtzFreeEnergy]
-  rw [partitionFunction_add _ _ _ h,
-    Real.log_mul (partitionFunction_pos 𝓒 T).ne' (partitionFunction_pos 𝓒1 T).ne']
+  rw [partitionFunction_add kB _ _ _ h,
+    Real.log_mul (partitionFunction_pos kB 𝓒 T).ne' (partitionFunction_pos kB 𝓒1 T).ne']
   ring
 
 lemma helmholtzFreeEnergy_nsmul
     (𝓒 : CanonicalEnsemble ι) (n : ℕ) (T : Temperature) :
-    (nsmul n 𝓒).helmholtzFreeEnergy T
-      = n * 𝓒.helmholtzFreeEnergy T := by
+    (nsmul n 𝓒).helmholtzFreeEnergy kB T
+      = n * 𝓒.helmholtzFreeEnergy kB T := by
   simp only [helmholtzFreeEnergy, partitionFunction_nsmul, Real.log_pow]
   ring
 
@@ -725,72 +731,72 @@ lemma helmholtzFreeEnergy_nsmul
 measure, obtained by dividing the phase space measure by the fundamental unit `h^dof`, making the
 probability density `ρ_phys = ρ_math * h^dof` dimensionless. -/
 noncomputable def physicalProbability (T : Temperature) (i : ι) : ℝ :=
-  𝓒.probability T i * (𝓒.phaseSpaceunit ^ 𝓒.dof)
+  𝓒.probability kB T i * (𝓒.phaseSpaceunit ^ 𝓒.dof)
 
 @[simp]
 lemma physicalProbability_def (T : Temperature) (i : ι) :
-    𝓒.physicalProbability T i
-      = 𝓒.probability T i * (𝓒.phaseSpaceunit ^ 𝓒.dof) := rfl
+    𝓒.physicalProbability kB T i
+      = 𝓒.probability kB T i * (𝓒.phaseSpaceunit ^ 𝓒.dof) := rfl
 
 lemma physicalProbability_measurable (T : Temperature) :
-    Measurable (𝓒.physicalProbability T) := by
+    Measurable (𝓒.physicalProbability kB T) := by
   unfold physicalProbability probability
   fun_prop
 
 lemma physicalProbability_nonneg
-    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] (i : ι) :
-    0 ≤ 𝓒.physicalProbability T i :=
-  mul_nonneg (𝓒.probability_nonneg T i) (pow_nonneg 𝓒.hPos.le _)
+    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] (i : ι) :
+    0 ≤ 𝓒.physicalProbability kB T i :=
+  mul_nonneg (𝓒.probability_nonneg kB T i) (pow_nonneg 𝓒.hPos.le _)
 
 lemma physicalProbability_pos
-    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] (i : ι) :
-    0 < 𝓒.physicalProbability T i :=
-  mul_pos (𝓒.probability_pos T i) (pow_pos 𝓒.hPos _)
+    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] (i : ι) :
+    0 < 𝓒.physicalProbability kB T i :=
+  mul_pos (𝓒.probability_pos kB T i) (pow_pos 𝓒.hPos _)
 
 lemma log_physicalProbability
-    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] (i : ι) :
-    Real.log (𝓒.physicalProbability T i)
-      = Real.log (𝓒.probability T i) + (𝓒.dof : ℝ) * Real.log 𝓒.phaseSpaceunit := by
-  rw [physicalProbability, Real.log_mul (𝓒.probability_pos T i).ne' (pow_pos 𝓒.hPos _).ne',
+    (T : Temperature) [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] (i : ι) :
+    Real.log (𝓒.physicalProbability kB T i)
+      = Real.log (𝓒.probability kB T i) + (𝓒.dof : ℝ) * Real.log 𝓒.phaseSpaceunit := by
+  rw [physicalProbability, Real.log_mul (𝓒.probability_pos kB T i).ne' (pow_pos 𝓒.hPos _).ne',
     Real.log_pow]
 
 lemma integral_probability
     (𝓒 : CanonicalEnsemble ι) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] :
-    (∫ i, 𝓒.probability T i ∂ 𝓒.μ) = 1 := by
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] :
+    (∫ i, 𝓒.probability kB T i ∂ 𝓒.μ) = 1 := by
   simp only [probability, div_eq_mul_inv, integral_mul_const,
     ← mathematicalPartitionFunction_eq_integral]
-  exact mul_inv_cancel₀ (𝓒.mathematicalPartitionFunction_pos T).ne'
+  exact mul_inv_cancel₀ (𝓒.mathematicalPartitionFunction_pos kB T).ne'
 
 /-- Normalization of the dimensionless physical probability density over the base measure. -/
 lemma integral_physicalProbability_base
     (𝓒 : CanonicalEnsemble ι) (T : Temperature)
-    [IsFiniteMeasure (𝓒.μBolt T)] [NeZero 𝓒.μ] :
-    (∫ i, 𝓒.physicalProbability T i ∂ 𝓒.μ)
+    [IsFiniteMeasure (𝓒.μBolt kB T)] [NeZero 𝓒.μ] :
+    (∫ i, 𝓒.physicalProbability kB T i ∂ 𝓒.μ)
       = 𝓒.phaseSpaceunit ^ 𝓒.dof := by
   simp [physicalProbability, integral_mul_const, integral_probability]
 
 lemma physicalProbability_dof_zero
     (T : Temperature) (h : 𝓒.dof = 0) (i : ι) :
-    𝓒.physicalProbability T i = 𝓒.probability T i := by
+    𝓒.physicalProbability kB T i = 𝓒.probability kB T i := by
   simp [physicalProbability, h]
 
 lemma physicalProbability_phase_space_unit_one
     (T : Temperature) (h : 𝓒.phaseSpaceunit = 1) (i : ι) :
-    𝓒.physicalProbability T i = 𝓒.probability T i := by
+    𝓒.physicalProbability kB T i = 𝓒.probability kB T i := by
   simp [physicalProbability, h]
 
 lemma physicalProbability_congr (e : ι1 ≃ᵐ ι) (T : Temperature) (i : ι1) :
-    (𝓒.congr e).physicalProbability T i
-      = 𝓒.physicalProbability T (e i) := by
+    (𝓒.congr e).physicalProbability kB T i
+      = 𝓒.physicalProbability kB T (e i) := by
   simp [physicalProbability, probability]
 
 lemma physicalProbability_add
     {ι1} [MeasurableSpace ι1]
     (𝓒1 : CanonicalEnsemble ι1) (T : Temperature) (i : ι × ι1)
     (h : 𝓒.phaseSpaceunit = 𝓒1.phaseSpaceunit) :
-    (𝓒 + 𝓒1).physicalProbability T i
-      = 𝓒.physicalProbability T i.1 * 𝓒1.physicalProbability T i.2 := by
+    (𝓒 + 𝓒1).physicalProbability kB T i
+      = 𝓒.physicalProbability kB T i.1 * 𝓒1.physicalProbability kB T i.2 := by
   simp [physicalProbability, probability_add, phase_space_unit_add, dof_add, h, pow_add,
     mul_mul_mul_comm]
 
@@ -798,10 +804,11 @@ lemma physicalProbability_add
 the Gibbs-Shannon entropy of the dimensionless physical probability distribution.
 This corresponds to Landau & Lifshitz, Statistical Physics, §7, Eq. 7.12. -/
 noncomputable def thermodynamicEntropy (T : Temperature) : ℝ :=
-  -kB * ∫ i, Real.log (𝓒.physicalProbability T i) ∂(𝓒.μProd T)
+  -(kB : ℝ) * ∫ i, Real.log (𝓒.physicalProbability kB T i) ∂(𝓒.μProd kB T)
 
 @[simp]
 lemma thermodynamicEntropy_def (T : Temperature) :
-    𝓒.thermodynamicEntropy T = -kB * ∫ i, Real.log (𝓒.physicalProbability T i) ∂ 𝓒.μProd T := rfl
+    𝓒.thermodynamicEntropy kB T =
+      -(kB : ℝ) * ∫ i, Real.log (𝓒.physicalProbability kB T i) ∂ 𝓒.μProd kB T := rfl
 
 end CanonicalEnsemble
