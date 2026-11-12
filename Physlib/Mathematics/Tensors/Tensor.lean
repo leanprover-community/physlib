@@ -161,6 +161,8 @@ noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor
 noncomputable abbrev distribMulAction : DistribMulAction G (Tensor S c) :=
   DistribMulAction.compHom (M := Module.End k (Tensor S c)) _ (S.tensorRep c)
 
+-- Priority 1100, above the default 1000, so that `Λ • T` is the action on each index and not the
+-- scalar action that Mathlib gives `Circle` and `ℂˣ` on every `ℂ`-module. The same for `smul`.
 scoped[Tensor] attribute [instance 1100] Tensor.Species.distribMulAction
 
 /-- The scalar multiplication of `distribMulAction`, found before any scalar action of Mathlib. -/
