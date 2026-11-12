@@ -23,10 +23,10 @@ tensors on the indices `ι₁` and `ι₂` lives on `ι₁ ⊕ ι₂`, so the in
 names. The colors of the product are those of the factors, with no renumbering into `Fin (n + m)`.
 
 A group element acts on a tensor at every index, by the representation of its color. A linear map
-at one index changes that index and keeps the others, as lowering an index with a metric does.
-Both are linear maps fixed by their values on pure tensors, which take one vector at each index, so
-their properties are proved on pure tensors. The components of a tensor are its coordinates in the
-product basis.
+at one index changes that index and keeps the others, as lowering or raising an index with a metric
+does. Both are linear maps fixed by their values on pure tensors, which take one vector at each
+index, so their properties are proved on pure tensors. The components of a tensor are its
+coordinates in the product basis.
 
 For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
 and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`. A Lorentz
@@ -131,11 +131,14 @@ A group element `Λ` acts on every index by the representation of its color,
 `Representation.piTprod` on `⨂[k] i, S.V (c i)`. It is written `Λ • T` under
 `open scoped Tensor`.
 
-Maps of tensors that commute with the group are Mathlib's `Representation.Equiv` and
-`Representation.IntertwiningMap` for `tensorRep`, and `equiv_smul` and `intertwiningMap_smul` give
-`φ (Λ • T) = Λ • φ T`. A map that commutes with `Λ` on pure tensors commutes with it on all tensors
-(`map_smul_of_pure`), and `equivOfPure` builds an equivalence of representations from that check.
-A tensor with no indices is invariant (`smul_eq_self_of_isEmpty`).
+A map `φ` of tensors commutes with the group when `φ (Λ • T) = Λ • φ T`, as reindexing, products,
+contraction, lowering and raising do. Such maps are Mathlib's `Representation.IntertwiningMap` for
+`tensorRep`, or `Representation.Equiv` when they are invertible, so they compose and send invariant
+tensors to invariant tensors. The commutation is checked on pure tensors only, where `Λ` acts on
+each vector. `map_smul_of_pure` extends the check to all tensors, and `equivOfPure` turns a linear
+equivalence with this check into an equivalence of representations. `equiv_smul` and
+`intertwiningMap_smul` state the commutation with `•`. A tensor with no indices, a scalar, is
+invariant (`smul_eq_self_of_isEmpty`).
 
 -/
 
