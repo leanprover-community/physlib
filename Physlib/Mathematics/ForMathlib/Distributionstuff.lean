@@ -10,6 +10,8 @@ public import Mathlib.Analysis.Distribution.TestFunction
 public import Mathlib.Topology.Algebra.Module.Spaces.CompactConvergenceCLM
 public import Mathlib.Topology.Continuous
 
+@[expose] public section
+
 
 open Function Set TopologicalSpace UniformSpace
 
