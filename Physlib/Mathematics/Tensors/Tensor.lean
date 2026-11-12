@@ -24,9 +24,9 @@ The tensors with colors `c : ι → Color K` form the space `Tensor S c`, which 
 A pure tensor takes one vector at each index, such as `u ⊗ α ⊗ β` with `u` in `V (c 0)`, `α` in
 `V (c 1)` and `β` in `V (c 2)`. Its components are products, `(u ⊗ α ⊗ β)^μ_νρ = u^μ α_ν β_ρ`.
 Most tensors are not pure. The metric `η = ∑ μ, η_μμ e^μ ⊗ e^μ` is a sum of pure tensors but not
-a pure tensor itself. Every tensor is such a sum, so a linear map of tensors is fixed by its
-values on pure tensors (`ext_pure`), and a property of all tensors follows from the pure case
-(`inductionOn_pure`). Maps of tensors, starting with the group action, are given by their value on
+a pure tensor itself. Every tensor is a linear combination of pure tensors, so a linear map of
+tensors is fixed by its values on pure tensors (`ext_pure`), and a property of all tensors follows
+from the pure case (`inductionOn_pure`). Maps of tensors, starting with the group action, are given by their value on
 pure tensors, and their properties are proved there first. `S.pure f` is Mathlib's
 `⨂ₜ[k] i, f i` as an element of `Tensor S c`.
 
@@ -137,7 +137,8 @@ noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.V (c i)) : Tens
 
 variable {S : Species k G K basisIdx}
 
-/-- Induction on tensors through pure tensors: every tensor is a sum of pure tensors. -/
+/-- Induction on tensors through pure tensors: every tensor is a linear combination of pure
+tensors. -/
 lemma inductionOn_pure {P : Tensor S c → Prop}
     (h : ∀ f : Π i, S.V (c i), P (S.pure f)) (hsmul : ∀ (r : k) t, P t → P (r • t))
     (hadd : ∀ t₁ t₂, P t₁ → P t₂ → P (t₁ + t₂)) (t : Tensor S c) : P t :=

@@ -338,7 +338,7 @@ def leaf (T : Term) (idxs : Array (TSyntax `tensorIndex)) : TermElabM Node := do
     | throwError "index notation: internal error, the type of {T} is not a tensor type"
   let some indices ← Indices.ofType? ι
     | throwError "index notation: the index type {ι} of {T} must be built from `Fin n` with a \
-        literal `n`, `Unit`, `Empty` and `⊕`"
+        literal `n` and `⊕`"
   let some colors ← colorList? c
     | throwError "index notation: the colors of {T} must be a literal list"
   unless colors.length = idxs.size do

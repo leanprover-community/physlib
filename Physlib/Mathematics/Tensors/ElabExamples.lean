@@ -124,8 +124,8 @@ example : {(T | μ μ) ⊗ U | μ ρ}ᵀ = {{T | μ μ}ᵀ | ⊗ U | μ ρ}ᵀ :
 example (f : Fin 2 → Color K) (t : Tensor S f) : Tensor S f := {t | μ ν}ᵀ
 
 -- A tensor whose index type is not literal is rejected.
-/-- error: index notation: the index type Fin n of t must be built from `Fin n` with a literal `n`,
-`Unit`, `Empty` and `⊕` -/
+/-- error: index notation: the index type Fin n of t must be built from `Fin n` with a literal `n`
+and `⊕` -/
 #guard_msgs (whitespace := lax) in
 example (n : ℕ) (f : Fin n → Color K) (t : Tensor S f) : Tensor S f := {t | μ}ᵀ
 

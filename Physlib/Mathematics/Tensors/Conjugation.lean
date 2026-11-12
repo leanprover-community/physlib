@@ -11,12 +11,14 @@ public import Physlib.Mathematics.Tensors.Contraction
 
 # Conjugation of tensors
 
-The conjugate of a tensor conjugates its components and moves each index to the conjugate color.
+The conjugate of a tensor applies the conjugation of the species at every index, which moves the
+index to the conjugate color.
 
 ## i. Overview
 
-Conjugation conjugates the components of a tensor and moves each index to the conjugate kind,
-keeping its variance. A left-handed spinor `ψ_α` becomes a right-handed spinor `ψ̄_α̇`, and a
+Conjugation applies a conjugate-linear map of the species at every index of a tensor and moves the
+index to the conjugate kind, keeping its variance. When these maps send the basis of each color to
+the basis of its conjugate, it conjugates the components. A left-handed spinor `ψ_α` becomes a right-handed spinor `ψ̄_α̇`, and a
 vector index is its own conjugate.
 
 The kinds of a species carry Mathlib's `InvolutiveStar`, whose `star` gives the conjugate kind, and
