@@ -48,9 +48,10 @@ namespace Physlib.CondensedMatter.Crystal
 
 /-! ## A. Triangular lattice -/
 
-/-- The triangular lattice embedded with unit primitive vectors at sixty degrees. -/
-noncomputable def triangularEmbedding : Embedding (bravais 2) (EuclideanSpace ℝ (Fin 2)) :=
-  Embedding.ofVectors ![!₂[1, 0], !₂[1 / 2, Real.sqrt 3 / 2]]
+/-- The triangular lattice embedded in `Space 2` with unit primitive vectors at sixty degrees. -/
+noncomputable def triangularEmbedding : Embedding (bravais 2) (Space 2) :=
+  Embedding.ofVectors
+    ![Space.basis 0, (1 / 2 : ℝ) • Space.basis 0 + (Real.sqrt 3 / 2) • Space.basis 1]
 
 /-- Three bonds generate the six neighbors of the triangular lattice. -/
 def triangularBonds : Finset (Bond (bravais 2)) :=
@@ -70,8 +71,8 @@ lemma triangularGraph_dist_position {x y : (bravais 2).Site}
   intro b hb
   simp only [triangularBonds, Finset.mem_insert, Finset.mem_singleton] at hb
   rcases hb with rfl | rfl | rfl <;>
-    simp [triangularEmbedding, Embedding.bondVector_ofVectors, Fin.sum_univ_two,
-      EuclideanSpace.norm_eq] <;>
+    simp [triangularEmbedding, Embedding.bondVector_ofVectors, Fin.sum_univ_two, Space.norm_eq,
+      Space.add_apply, Space.smul_apply, Space.basis_apply] <;>
     linear_combination (1 / 4 : ℝ) * h3
 
 /-- Each site of the triangular lattice has six neighbors. -/
@@ -83,9 +84,10 @@ lemma triangularGraph_degree (x : (bravais 2).Site) :
 /-! ## B. Primitive hexagonal lattice -/
 
 /-- The primitive hexagonal lattice with in-plane length `a` and layer spacing `c`. -/
-noncomputable def hexagonalEmbedding (a c : ℝ) :
-    Embedding (bravais 3) (EuclideanSpace ℝ (Fin 3)) :=
-  Embedding.ofVectors ![!₂[a, 0, 0], !₂[a / 2, a * Real.sqrt 3 / 2, 0], !₂[0, 0, c]]
+noncomputable def hexagonalEmbedding (a c : ℝ) : Embedding (bravais 3) (Space 3) :=
+  Embedding.ofVectors
+    ![a • Space.basis 0, (a / 2) • Space.basis 0 + (a * Real.sqrt 3 / 2) • Space.basis 1,
+      c • Space.basis 2]
 
 /-- Three bonds in the plane and one along the stacking axis generate the eight neighbors. -/
 def hexagonalBonds : Finset (Bond (bravais 3)) :=
@@ -105,8 +107,8 @@ lemma hexagonalBonds_norm {a c : ℝ} (ha : 0 ≤ a) (hc : 0 ≤ c) :
   intro b hb
   simp only [hexagonalBonds, Finset.mem_insert, Finset.mem_singleton] at hb
   rcases hb with rfl | rfl | rfl | rfl <;>
-    simp [hexagonalEmbedding, Embedding.bondVector_ofVectors, Fin.sum_univ_three,
-      EuclideanSpace.norm_eq]
+    simp [hexagonalEmbedding, Embedding.bondVector_ofVectors, Fin.sum_univ_three, Space.norm_eq,
+      Space.add_apply, Space.smul_apply, Space.basis_apply]
   all_goals
     first
     | (left; exact Real.sqrt_sq ha)
