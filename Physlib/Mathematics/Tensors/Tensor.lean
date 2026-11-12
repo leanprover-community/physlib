@@ -85,9 +85,9 @@ their values on `S.pure p`, for any family of vectors `p`.
 
 -/
 
-/-- The space `⨂[k] i, S.V (c i)` of tensors with colors `c` on the indices `ι`. It is a `def`, not
-an `abbrev`, so that the type `Tensor S c` keeps the species and the colors instead of unfolding to
-`⨂[k] i, S.V (c i)`. Mathlib's constructions on `⨂` apply to it by definitional unfolding. -/
+/-- The tensors with colors `c : ι → Color K`, the space `⨂[k] i, S.V (c i)`. It is a `def`, not an
+`abbrev`, so that goals show `Tensor S c` instead of the product. Mathlib's results on `⨂` still
+apply to it, since Lean unfolds the definition. -/
 def _root_.Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
   ⨂[k] i, S.V (c i)
 
