@@ -36,8 +36,7 @@ its conjugate. The conjugate `Tensor.conj h T` of a tensor conjugates every inde
 - `Species.HasConjugation` gives the conjugation of a species with its two conditions, and
   `Species.conjEquiv` is the conjugate of a vector, with its properties
   `Species.conjEquiv_conjEquiv`, `Species.star_contr_conjEquiv` and `Species.conjEquiv_rep`.
-- `Species.IsEquivariantConjugation` says that the conjugation commutes with the group action, and
-  `Species.rep_dual_of_star_contr` that equivariance at a color gives it at the dual color.
+- `Species.IsEquivariantConjugation` says that the conjugation commutes with the group action.
 - `Species.HasConjugation.ofBasis` builds a componentwise conjugation from `ConjLabels`, and
   `Species.HasConjugation.isEquivariantConjugation_ofBasis` gives its equivariance from the
   matrices of the group.
@@ -180,16 +179,6 @@ lemma conjEquiv_cast {b b' : Color K} (p : b = b') (h : c' = b'.bar) (x : S.V b)
 
 end
 
-omit [InvolutiveStar K] in
-/-- If conjugate-linear maps `f` at `c` and `f'` at `c.dual` preserve the contraction and `f`
-commutes with the group action, then so does `f'`. Equivariance at a dual color follows from
-equivariance at the color. -/
-lemma rep_dual_of_star_contr (f : S.V c ≃ₗ⋆[k] S.V c') (f' : S.V c.dual ≃ₗ⋆[k] S.V c'.dual)
-    (hf' : ∀ u α, star (S.contr c (u ⊗ₜ α)) = S.contr c' (f u ⊗ₜ f' α))
-    (hf : ∀ g v, f (S.rep c g v) = S.rep c' g (f v)) (g : G) (α : S.V c.dual) :
-    f' (S.rep c.dual g α) = S.rep c'.dual g (f' α) :=
-  Module.Basis.map_rep_of_star_coordPairing (S.invariant c) (S.invariant c') f f' hf' hf g α
-
 /-!
 
 ## C. Componentwise conjugation
@@ -208,7 +197,8 @@ noncomputable def HasConjugation.ofBasis (e : ConjLabels basisIdx) :
 
 /-- The componentwise conjugation commutes with the group action when the matrix of each `g : G`
 at `c.bar` is the conjugate of its matrix at `c`, `(Λ̄)^μ_ν = (Λ^μ_ν)*`. The hypothesis is needed at
-the upper colors only, since it follows at the lower ones (`rep_dual_of_star_contr`). -/
+the upper colors only, since it follows at the lower ones
+(`Module.Basis.map_rep_of_star_coordPairing`). -/
 lemma HasConjugation.isEquivariantConjugation_ofBasis (e : ConjLabels basisIdx)
     (rep_basis : ∀ (κ : K) (g : G) (μ ν : basisIdx κ),
       (S.basis ⟨star κ, .up⟩).repr
@@ -221,7 +211,8 @@ lemma HasConjugation.isEquivariantConjugation_ofBasis (e : ConjLabels basisIdx)
   subst h
   obtain ⟨κ, ⟨_ | _, _ | _, hv⟩⟩ := c <;> try exact absurd rfl hv
   · -- A lower color is the dual of `⟨κ, up⟩`, where `rep_basis` gives equivariance.
-    exact rep_dual_of_star_contr (c := ⟨κ, .up⟩) (c' := ⟨star κ, .up⟩) _ _
+    exact Module.Basis.map_rep_of_star_coordPairing (S.invariant ⟨κ, .up⟩)
+      (S.invariant ⟨star κ, .up⟩) _ _
       (fun u α => Module.Basis.star_coordPairing_starEquiv _ _ _ _ _ u α)
       (fun g => Module.Basis.starEquiv_map_of_repr _ _ _ _ _ (rep_basis κ g)) g v
   · exact Module.Basis.starEquiv_map_of_repr _ _ _ _ _ (rep_basis κ g) v
