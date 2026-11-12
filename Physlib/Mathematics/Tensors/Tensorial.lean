@@ -16,7 +16,7 @@ tensors of a species with given colors, compatibly with the action.
 ## i. Overview
 
 A Lorentz vector `v` can be stored as its components `v^μ`, on which Mathlib's analysis acts, and
-is also a tensor with one upper index, on which index notation acts. An instance
+is also a tensor with one upper index, on which contraction and reindexing act. An instance
 `Tensorial S c M` relates the two by a Mathlib `Representation.Equiv`
 `toTensor : M → Tensor S c`, so that `toTensor (Λ v) = Λ • toTensor v`.
 
@@ -73,7 +73,7 @@ class Tensorial {k : outParam Type} [RCLike k] {G : outParam Type} [Group G] {K 
   /-- The action of the group on `M`, such as `Λ v = Λ *ᵥ v` on Lorentz vectors. -/
   rep : Representation k G M
   /-- The elements of `M` as tensors, compatibly with the action. -/
-  toTensor : rep.Equiv (Representation.ofDistribMulAction k G (Tensor S c))
+  toTensor : rep.Equiv (S.tensorRep c)
 
 namespace Tensorial
 
