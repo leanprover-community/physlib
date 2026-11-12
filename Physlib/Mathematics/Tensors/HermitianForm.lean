@@ -100,14 +100,12 @@ lemma isSymm_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
 
 -/
 
-/-- The linear map `y ↦ g y` of a positive-definite `g_{IJ̄}` is injective, since `g y = 0` gives
-`g(y, y) = 0`. -/
+/-- The linear map `y ↦ g y` of a positive-definite `g_{IJ̄}` is injective, since the form is
+nondegenerate. -/
 lemma toLin_injective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
     (hg : (S.sesqForm g hb).IsPosDef) : Function.Injective (S.toLin g) := by
   rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
-  intro y hy
-  by_contra hne
-  simpa [sesqForm_apply, hy] using hg.pos y hne
+  exact fun y hy => hg.nondegenerate.2 y fun x => by simp [sesqForm_apply, hy]
 
 /-- A positive-definite `g_{IJ̄}` is invertible. Its linear map `y ↦ g y` is bijective. -/
 lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
