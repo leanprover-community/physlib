@@ -79,9 +79,10 @@ and the covector `α` at a down index. Most tensors are not pure, but every tens
 combination of pure tensors. So a linear map of tensors is fixed by its values on pure tensors
 (`ext_pure`), and a property of all tensors follows from the pure case (`inductionOn_pure`).
 `ext_pure` is an `ext` lemma, so the tactic `ext` applies it, together with Mathlib's `ext` lemmas
-for `⊗` and for intertwining maps. For two maps out of a product `Tensor S c ⊗ Tensor S c₂`,
-`ext p q` leaves the goal on `S.pure p ⊗ₜ S.pure q`. For two intertwining maps out of tensors,
-`ext p` leaves the goal on `S.pure p`.
+for `⊗` and for intertwining maps. An equation of two maps out of a product
+`Tensor S c ⊗ Tensor S c₂` becomes an equation of their values on `S.pure p ⊗ₜ S.pure q`, for any
+family of vectors `p` on the indices of the first factor and `q` on those of the second. An
+equation of two intertwining maps out of tensors becomes one on `S.pure p`, for any family `p`.
 
 -/
 
