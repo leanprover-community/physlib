@@ -68,8 +68,6 @@ when it permutes these bonds.
 
 * F. Göhmann, *Introduction to Solid State Physics*, lecture L3, Section 3.1, for the standard
   description of a crystal. [ref: goehmann_solid_state_2021]
-* D. Tong, *Solid State Physics*, lecture notes, University of Cambridge, Section 2.2, for primitive
-  lattice vectors, Bravais lattices and the lattice with a basis. [ref: tong_solid_state_physics]
 * C. Godsil, G. Royle, *Algebraic Graph Theory*, Springer (2001), for circulant graphs with a
   connection set (Section 1.5) and for the Cayley graph `X(G, C)` of a group `G` with respect to an
   inverse-closed subset `C` of `G` without the identity (Section 3.1). The section numbers are
@@ -210,8 +208,8 @@ bond along each axis, the connection set consists of the `2 d` unit vectors `±e
 the cells `x.cell + v` for `v ∈ connectionSet bonds`.
 
 The connection set is a subset of the translation group that is closed under negation and does not
-contain `0`, defining the Cayley graph (see Godsil & Royle 2001, Sections 1.5 and 3.1, and
-`ofBondsIsoAddCayley`). -/
+contain `0`, defining the Cayley graph (see the East Tennessee State University class notes on
+Godsil and Royle, Sections 1.5 and 3.1, and `ofBondsIsoAddCayley`). -/
 def connectionSet (bonds : Finset (Bond C)) : Finset G :=
   (bonds.image Bond.displacement ∪ bonds.image fun b => -b.displacement).erase 0
 
