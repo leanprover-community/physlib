@@ -5,6 +5,7 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
 public import Physlib.Mathematics.Tensors.Species
 public import Physlib.Mathematics.ForMathlib.Representation
 /-!
@@ -141,7 +142,7 @@ lemma inductionOn_pure {P : Tensor S c → Prop}
 
 /-- Two linear maps out of tensors are equal when they agree on pure tensors. -/
 @[ext]
-lemma ext_pure {E : Type} [AddCommGroup E] [Module k E] {f g : Tensor S c →ₗ[k] E}
+lemma ext_pure {E : Type*} [AddCommMonoid E] [Module k E] {f g : Tensor S c →ₗ[k] E}
     (h : ∀ p : Π i, S.V (c i), f (S.pure p) = g (S.pure p)) : f = g :=
   PiTensorProduct.ext (MultilinearMap.ext h)
 
@@ -225,7 +226,7 @@ lemma intertwiningMapOfPure_apply (f : Tensor S c →ₗ[k] Tensor S c')
 
 /-- Two equivalences of representations out of tensors are equal when they agree on pure
 tensors. -/
-lemma equiv_ext_pure {W : Type} [AddCommGroup W] [Module k W] {ρ : Representation k G W}
+lemma equiv_ext_pure {W : Type*} [AddCommMonoid W] [Module k W] {ρ : Representation k G W}
     {φ ψ : (S.tensorRep c).Equiv ρ} (h : ∀ p : Π i, S.V (c i), φ (S.pure p) = ψ (S.pure p)) :
     φ = ψ :=
   Representation.Equiv.ext <|
@@ -258,9 +259,10 @@ lemma tensorBasis_repr_pure [Fintype ι] (f : Π i, S.V (c i))
     (S.tensorBasis c).repr (S.pure f) x = ∏ i, (S.basis (c i)).repr (f i) (x i) :=
   Basis.piTensorProduct_repr_tprod_apply _ _ _
 
-/-- Tensors on finitely many indices are a finite-dimensional space. -/
-noncomputable instance [Fintype ι] : Module.Finite k (Tensor S c) :=
-  .of_basis (S.tensorBasis c)
+/-- Tensors on finitely many indices are a finite-dimensional space, from Mathlib's
+`PiTensorProduct.finite`. -/
+instance [Finite ι] : Module.Finite k (Tensor S c) :=
+  inferInstanceAs (Module.Finite k (⨂[k] i, S.V (c i)))
 
 /-- The dimension of tensors is the product of the dimensions of their indices. -/
 lemma finrank_tensor [Fintype ι] (c : ι → Color K) :
