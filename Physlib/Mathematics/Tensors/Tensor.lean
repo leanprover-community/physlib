@@ -156,9 +156,8 @@ colors. Maps of tensors that commute with the action are Mathlib's `Representati
 noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor S c) :=
   Representation.piTprod fun i => S.rep (c i)
 
-/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`. The instance is scoped to
-`Tensor`, and has high priority there, since Mathlib gives some groups, such as `Circle` and `ℂˣ`,
-a scalar action on every `ℂ`-module. -/
+/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`, available under
+`open scoped Tensor`, where it takes priority over Mathlib's scalar actions. -/
 noncomputable abbrev distribMulAction : DistribMulAction G (Tensor S c) :=
   DistribMulAction.compHom (M := Module.End k (Tensor S c)) _ (S.tensorRep c)
 
