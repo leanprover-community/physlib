@@ -31,17 +31,19 @@ pure tensors, and their properties are proved there first. `S.pure f` is Mathlib
 `⨂ₜ[k] i, f i` as an element of `Tensor S c`.
 
 A group element `Λ` acts on every index by the representation of its color,
-`Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). This is the representation
-`Representation.piTprod` on `⨂[k] i, V (c i)`. A map that commutes with `Λ` on pure tensors
-commutes with it on all tensors (`map_smul_of_pure`, from `Representation.map_piTprod_of_tprod`).
+`Λ (u ⊗ α ⊗ β) = Λu ⊗ Λα ⊗ Λβ` (`smul_pure`). This is the representation `S.tensorRep c`,
+`Representation.piTprod` on `⨂[k] i, V (c i)`, written `Λ • T` under `open scoped Tensor`. A map
+that commutes with `Λ` on pure tensors commutes with it on all tensors (`map_smul_of_pure`, from
+`Representation.map_piTprod_of_tprod`).
 
 The components `T^μ_νρ` of a tensor `T` are its coordinates in the basis `e_μ ⊗ e^ν ⊗ e^ρ`
 (`tensorBasis`), which is Mathlib's `Basis.piTensorProduct`. Each basis tensor is a pure tensor of
 basis vectors.
 
 For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, down⟩, ⟨vec, down⟩]` give the space
-`ℝ⁴ ⊗ (ℝ⁴)* ⊗ (ℝ⁴)*` of tensors `T = T^μ_νρ e_μ ⊗ e^ν ⊗ e^ρ`. A Lorentz transformation `Λ` acts
-as `(ΛT)^μ_νρ = Λ^μ_σ (Λ⁻¹)^τ_ν (Λ⁻¹)^λ_ρ T^σ_τλ` (`tensorBasis_repr_smul`). Lower indices
+`Vector 3 ⊗ CoVector 3 ⊗ CoVector 3` of tensors `T = T^μ_νρ e_μ ⊗ e^ν ⊗ e^ρ`. A Lorentz
+transformation `Λ` acts as
+`(ΛT)^μ_νρ = Λ^μ_σ (Λ⁻¹)^τ_ν (Λ⁻¹)^λ_ρ T^σ_τλ` (`tensorBasis_repr_smul`). Lower indices
 transform with `Λ⁻¹`, which keeps `u^μ α_μ` invariant.
 
 A linear equivalence `f` from the space of one color to that of another acts on tensors through a
@@ -59,7 +61,8 @@ single index. `S.congrAt i f` applies `f` at the index `i` and the identity at t
 - `Species.smul_pure` proves that the group acts on a pure tensor index by index.
 - `Species.map_smul_of_pure` proves that a map of tensors that commutes with the group on pure
   tensors commutes with it on all tensors.
-- `Species.tensorRep` is the action on tensors as a Mathlib representation. Maps of tensors that
+- `Species.tensorRep` is the action on tensors as a Mathlib representation, and
+  `Species.distribMulAction` is the scoped instance for `Λ • T`. Maps of tensors that
   commute with the group are Mathlib's `Representation.Equiv` and `Representation.IntertwiningMap`
   of it. `Species.equivOfPure` builds an equivalence from a check on pure tensors, and
   `Species.equiv_smul` and `Species.intertwiningMap_smul` give `φ (g • t) = g • φ t`.
@@ -152,29 +155,44 @@ lemma ext_pure {E : Type*} [AddCommMonoid E] [Module k E] {f g : Tensor S c →�
 
 -/
 
-/-- The group acts on every index by the representation of its color,
+variable (S) in
+/-- The action of the group on tensors, on every index by the representation of its color,
 `Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`. It is `Representation.piTprod` of the representations of the
-colors. -/
-noncomputable instance : DistribMulAction G (Tensor S c) :=
-  DistribMulAction.compHom (M := Module.End k (Tensor S c)) _
-    (Representation.piTprod fun i => S.rep (c i))
+colors. Maps of tensors that commute with the action are Mathlib's `Representation.Equiv` and
+`Representation.IntertwiningMap` for it. -/
+noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor S c) :=
+  Representation.piTprod fun i => S.rep (c i)
+
+/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`. The instance is scoped to
+`Tensor`, and has high priority there, since Mathlib gives some groups, such as `Circle` and `ℂˣ`,
+a scalar action on every `ℂ`-module. -/
+noncomputable abbrev distribMulAction : DistribMulAction G (Tensor S c) :=
+  DistribMulAction.compHom (M := Module.End k (Tensor S c)) _ (S.tensorRep c)
+
+scoped[Tensor] attribute [instance 1100] Tensor.Species.distribMulAction
+
+/-- The scalar multiplication of `distribMulAction`, found before any scalar action of Mathlib. -/
+noncomputable abbrev smul : SMul G (Tensor S c) := distribMulAction.toSMul
+
+scoped[Tensor] attribute [instance 1100] Tensor.Species.smul
 
 @[simp]
 lemma smul_pure (g : G) (f : Π i, S.V (c i)) :
     g • S.pure f = S.pure fun i => S.rep (c i) g (f i) :=
   Representation.piTprod_tprod _ _ _
 
-noncomputable instance : SMulCommClass G k (Tensor S c) where
-  smul_comm g r t := map_smul (Representation.piTprod (fun i => S.rep (c i)) g) r t
+/-- The action of the group commutes with the scalars. -/
+lemma smulCommClass : SMulCommClass G k (Tensor S c) where
+  smul_comm g r t := map_smul (S.tensorRep c g) r t
 
-noncomputable instance : SMulCommClass k G (Tensor S c) := .symm _ _ _
+scoped[Tensor] attribute [instance] Tensor.Species.smulCommClass
 
-variable (S) in
-/-- The action of the group on tensors as Mathlib's representation, `Λ ↦ (T ↦ Λ • T)`. Maps of
-tensors that commute with the action are Mathlib's `Representation.Equiv` and
-`Representation.IntertwiningMap` for it. -/
-noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor S c) :=
-  Representation.ofDistribMulAction k G (Tensor S c)
+/-- The scalars commute with the action of the group. -/
+lemma smulCommClass' : SMulCommClass k G (Tensor S c) :=
+  haveI := smulCommClass (S := S) (c := c)
+  .symm _ _ _
+
+scoped[Tensor] attribute [instance] Tensor.Species.smulCommClass'
 
 /-- An intertwining map from or to tensors commutes with the actions, `φ (Λ v) = Λ φ v`. -/
 lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
