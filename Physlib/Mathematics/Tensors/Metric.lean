@@ -272,13 +272,13 @@ lemma tensorBasis_repr_formTensor (c : Color K) [S.HasForm c.kind]
 /-- A symmetric form is symmetric under the index swap as a tensor, `g^μν = g^νμ`. -/
 lemma formTensor_symm (c : Color K) [S.HasForm c.kind] [S.IsSymmetricForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = S.formTensor c := by
-  rw [formTensor, reindex_twoIndexEquiv, form_symm]
+  rw [formTensor, reindex_swapTwo_twoIndexEquiv, form_symm]
 
 /-- An antisymmetric form is antisymmetric under the index swap as a tensor,
 `g^μν = -g^νμ`. -/
 lemma formTensor_antisymm (c : Color K) [S.HasForm c.kind] [S.IsAntisymmetricForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c) (S.formTensor c) = -S.formTensor c := by
-  rw [formTensor, reindex_twoIndexEquiv, form_antisymm, map_neg]
+  rw [formTensor, reindex_swapTwo_twoIndexEquiv, form_antisymm, map_neg]
 
 /-!
 
@@ -342,7 +342,7 @@ lemma toDualAt_eq_contr {c c' : ι → Color K} (i : ι) (a : Color K) (ha : c i
     S.toDualAt i a ha hi h t = Tensor.contr (ColorEquiv.matMulAt i a a.dual ha hi h)
       (S.tmulEquiv c ![a.dual, a.dual]
         (t ⊗ₜ S.reindex (ColorEquiv.swapTwo a.dual a.dual) (S.formTensor a.dual))) := by
-  rw [formTensor, reindex_twoIndexEquiv, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
+  rw [formTensor, reindex_swapTwo_twoIndexEquiv, Tensor.contr_matMulAt, toDualAt, congrAt_eq_mapAt]
   rfl
 
 /-!

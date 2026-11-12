@@ -29,7 +29,7 @@ with the group action, and the inverse of the form at `c` is the form at `c.dual
   linear map.
 - `Species.contr_mul_inverse` and `Species.contr_inverse_mul` prove `g_μν g^νρ = δ_μ^ρ` and
   `g^νμ g_μρ = δ^ν_ρ`.
-- `Species.inverse_eq_left_inv` characterises the inverse as a left inverse.
+- `Species.inverse_eq_of_comp_eq_id` characterises the inverse as a left inverse.
 - `Species.inverse_map_rep` proves `(Λg)⁻¹ = Λ(g⁻¹)`, and `Species.inverse_invariant` that the
   inverse of an invariant tensor is invariant.
 - `Species.inverse_form` proves that the inverse of the form at `c` is the form at `c.dual`.
@@ -101,7 +101,7 @@ lemma contr_inverse_mul (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
     (Module.Basis.comp_coordTensorHomEquiv_coordInverse h)
 
 /-- A tensor `N` with `N ∘ g = id`, as linear maps, is the inverse of `g`. -/
-lemma inverse_eq_left_inv (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
+lemma inverse_eq_of_comp_eq_id (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLin g))
     {N : S.V b.dual ⊗[k] S.V a.dual} (hN : S.toLin N ∘ₗ S.toLin g = LinearMap.id) :
     S.inverse g = N :=
   Module.Basis.coordInverse_eq_of_comp_eq_id h hN
@@ -133,7 +133,7 @@ lemma inverse_invariant (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S.toLi
 /-- The inverse of the form at `c` is the form at `c.dual`, as `η^μν` is the inverse of
 `η_μν`. -/
 lemma inverse_form (c : Color K) [S.HasForm c.kind] : S.inverse (form c) = form c.dual :=
-  inverse_eq_left_inv _ (toLin_form_bijective c) (form_inverse c.dual)
+  inverse_eq_of_comp_eq_id _ (toLin_form_bijective c) (form_inverse c.dual)
 
 /-- `g^μν g_νρ = δ^μ_ρ` at an upper color `c`, the delta at `c.dual`. The second index of the form
 at `c` contracted with the first index of the form at `c.dual` is the delta. -/
@@ -149,7 +149,7 @@ lemma reindex_contr_formTensor_formTensor (c : Color K) [S.HasForm c.kind] :
     S.reindex (ColorEquiv.swapTwo c c.dual) (Tensor.contr (ColorEquiv.matMul c c c.dual)
         (S.tmulEquiv _ _ (S.formTensor c ⊗ₜ S.formTensor c.dual))) =
       S.deltaTensor c := by
-  rw [contr_formTensor_formTensor, deltaTensor, reindex_twoIndexEquiv,
+  rw [contr_formTensor_formTensor, deltaTensor, reindex_swapTwo_twoIndexEquiv,
     show TensorProduct.comm k _ _ (S.delta c.dual) = S.delta c from
       Module.Basis.comm_coordDelta _ _]
   rfl

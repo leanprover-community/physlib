@@ -31,6 +31,7 @@ two indices by `twoIndexEquiv`. The components of a product are the products of 
 - `Species.tmulEquiv_assoc` and `Species.tmulEquiv_comm` prove `(T ⊗ U) ⊗ W = T ⊗ (U ⊗ W)` and
   `(T ⊗ U)^μρ = (U ⊗ T)^ρμ`.
 - `Species.tmulEquiv_smul` proves `Λ T ⊗ Λ U = Λ (T ⊗ U)`.
+- `Species.oneIndexEquiv` turns a vector of `V c` into a tensor on one index.
 - `Species.twoIndexEquiv` turns an element of `V a ⊗ V b` into a tensor on two indices, and
   `Species.mapAt_one_twoIndexEquiv` proves that a linear map at its index `1` acts on the second
   factor.
@@ -130,15 +131,6 @@ lemma tmulEquiv_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (f₁
       S.pure fun s => Sum.rec (motive := fun s => S.V (prodColors c₁ c₂ s)) f₁ f₂ s :=
   Representation.Equiv.piTprodSum_tmul (fun s => S.rep (prodColors c₁ c₂ s)) f₁ f₂
 
-/-- The inverse of the product splits a pure tensor into the pure tensor of its vectors at the
-indices `inl i` and the pure tensor of its vectors at the indices `inr j`. -/
-@[simp]
-lemma tmulEquiv_symm_pure (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K)
-    (f : Π s, S.V (prodColors c₁ c₂ s)) :
-    (S.tmulEquiv c₁ c₂).symm (S.pure f) =
-      S.pure (c := c₁) (fun i => f (.inl i)) ⊗ₜ S.pure (c := c₂) fun j => f (.inr j) :=
-  tmulEquivDep_symm_apply _ _ f
-
 /-!
 
 ## C. Associativity, symmetry and equivariance
@@ -199,7 +191,7 @@ lemma reindex_sumCongr_tmulEquiv {c₁ : ι₁ → Color K} {c₁' : ι₁' → 
       exact congrArg S.pure (funext fun s => by rcases s with _ | _ <;> rfl)) _
 
 /-- Reindexing the first factor reindexes the product. With `tmulEquiv_reindex_right` it moves
-reindexings out of products, the form used by index notation. -/
+reindexings out of products. -/
 lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Color K} {c₂ : ι₂ → Color K}
     (σ : ColorEquiv c₁ c₁') (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) :
     S.tmulEquiv c₁' c₂ (S.reindex σ t₁ ⊗ₜ t₂) =
@@ -207,7 +199,7 @@ lemma tmulEquiv_reindex_left {c₁ : ι₁ → Color K} {c₁' : ι₁' → Colo
   rw [reindex_sumCongr_tmulEquiv, reindex_refl, Representation.Equiv.refl_apply]
 
 /-- Reindexing the second factor reindexes the product. With `tmulEquiv_reindex_left` it moves
-reindexings out of products, the form used by index notation. -/
+reindexings out of products. -/
 lemma tmulEquiv_reindex_right {c₁ : ι₁ → Color K} {c₂ : ι₂ → Color K} {c₂' : ι₂' → Color K}
     (σ : ColorEquiv c₂ c₂') (t₁ : Tensor S c₁) (t₂ : Tensor S c₂) :
     S.tmulEquiv c₁ c₂' (t₁ ⊗ₜ S.reindex σ t₂) =
@@ -239,7 +231,7 @@ lemma tmulEquiv_smul (c₁ : ι₁ → Color K) (c₂ : ι₂ → Color K) (g : 
 
 A species gives objects with two indices, such as a metric `η_μν`, in Mathlib's binary
 tensor product `V a ⊗ V b`. `twoIndexEquiv` identifies this space with the tensors
-`Tensor S ![a, b]` on two indices, so that such an object can be used in index notation.
+`Tensor S ![a, b]` on two indices, so that such an object can be contracted with other tensors.
 
 -/
 
@@ -254,12 +246,6 @@ noncomputable def oneIndexEquiv (c : Color K) : (S.rep c).Equiv (S.tensorRep ![c
 lemma oneIndexEquiv_apply (c : Color K) (v : S.V c) :
     S.oneIndexEquiv c v = S.pure (c := ![c]) (Fin.cons v finZeroElim) :=
   congrArg S.pure (funext fun i => by fin_cases i; rfl)
-
-/-- The tensor of the basis vector `S.basis c (μ 0)` is the basis tensor with label `μ`. -/
-lemma oneIndexEquiv_basis (c : Color K) (μ : Π i, basisIdx (![c] i).kind) :
-    S.oneIndexEquiv c (S.basis c (μ 0)) = S.tensorBasis ![c] μ := by
-  rw [oneIndexEquiv_apply, tensorBasis_apply]
-  exact congrArg S.pure (funext fun j => by fin_cases j; rfl)
 
 variable (S) in
 /-- An element of `V a ⊗ V b` as a tensor with colors `![a, b]`, as the metric `η_μν e^μ ⊗ e^ν`
@@ -281,7 +267,7 @@ lemma twoIndexEquiv_tmul (a b : Color K) (x : S.V a) (y : S.V b) :
   exact congrArg S.pure (funext fun j => by fin_cases j <;> rfl)
 
 /-- Swapping the two indices of a tensor on two indices swaps the factors, `M^μν ↦ M^νμ`. -/
-lemma reindex_twoIndexEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
+lemma reindex_swapTwo_twoIndexEquiv {a b : Color K} (M : S.V a ⊗[k] S.V b) :
     S.reindex (ColorEquiv.swapTwo a b) (S.twoIndexEquiv a b M) =
       S.twoIndexEquiv b a (TensorProduct.comm k _ _ M) := by
   induction M using TensorProduct.inductionOn with
