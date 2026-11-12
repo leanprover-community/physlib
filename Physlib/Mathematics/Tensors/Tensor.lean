@@ -193,8 +193,8 @@ contraction, lowering and raising do. Such maps are Mathlib's `Representation.In
 `tensorRep`, or `Representation.Equiv` when they are invertible, so they compose and send invariant
 tensors to invariant tensors. For example, lowering the index `ν` of `T^μν` is an equivalence
 `(S.tensorRep c).Equiv (S.tensorRep c')` from the colors `c = ![⟨vec, up⟩, ⟨vec, up⟩]` to
-`c' = ![⟨vec, up⟩, ⟨vec, down⟩]`. The contraction `T^μ_ν ↦ T^μ_μ` is an intertwining map to the
-tensors with no indices, and it has no inverse.
+`c' = ![⟨vec, up⟩, ⟨vec, down⟩]`, built by `congrAt` (D.4). The contraction `T^μ_ν ↦ T^μ_μ` is an
+intertwining map to the tensors with no indices, and it has no inverse.
 
 The commutation is checked on pure tensors only, where `Λ` acts on each vector. `map_smul_of_pure`
 extends the check to all tensors, and `equivOfPure` turns a linear equivalence with this check into
@@ -505,7 +505,8 @@ lemma tensorBasis_repr_mapAt [Fintype ι] (i : ι) (f : S.V (c i) →ₗ[k] S.V 
 
 `congrAt i f h` applies an equivalence of representations `f` at the index `i`, as `mapAt` does.
 The result is again an equivalence of representations, so it commutes with the group and has an
-inverse, `congrAt` of `f.symm` (`congrAt_symm`). Lowering with a metric is `congrAt` of the map
+inverse, `congrAt` of `f.symm` (`congrAt_symm`). It is built by `equivOfPure` (B.2), with the
+check on pure tensors from `mapIndices_smul`. Lowering with a metric is `congrAt` of the map
 `v^μ ↦ η_νμ v^μ`, and raising is its inverse.
 
 -/
