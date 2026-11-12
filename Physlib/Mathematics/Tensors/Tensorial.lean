@@ -25,8 +25,8 @@ an instance to `M ⊗ N` acting on the left factor only. The species and colors 
 `M`, so an instance belongs on a type that always means one physical object, such as
 `Lorentz.Vector d`.
 
-Instances come from the space of one index (`ofIndexSpace`), from an equivalent tensorial type
-(`ofEquiv`), and from tensor products (`prod`), as for a field strength in `Vector ⊗ Vector`.
+Instances come from the space of one index (`ofIndexSpace`) and from tensor products (`prod`), as
+for a field strength in `Vector ⊗ Vector`.
 
 ## ii. Key results
 
@@ -34,8 +34,6 @@ Instances come from the space of one index (`ofIndexSpace`), from an equivalent 
 - `Tensorial.toTensor_rep` : `toTensor (Λ m) = Λ • toTensor m`.
 - `Tensorial.ofIndexSpace` : the space of one index is tensorial, as the tensors with that index,
   and `Tensorial.tensorBasis_repr_toTensor_ofIndexSpace` gives its components.
-- `Tensorial.ofEquiv` : a type equivalent to a tensorial type, compatibly with the actions, is
-  tensorial with the same colors.
 - `Tensorial.prod` : the tensor product of two tensorial types is tensorial, with
   `Tensorial.rep_tmul` : `Λ (x ⊗ y) = Λ x ⊗ Λ y` and `Tensorial.toTensor_tmul` : the tensor of
   `x ⊗ y` is the product of the tensors.
@@ -105,17 +103,6 @@ lemma tensorBasis_repr_toTensor_ofIndexSpace (c : Color K) (v : S.V c)
     (S.tensorBasis ![c]).repr (toTensor (self := ofIndexSpace S c) v) μ =
       (S.basis c).repr v (μ 0) :=
   Species.tensorBasis_repr_oneIndexEquiv c v μ
-
-/-- A type `M` with an action `r` and an equivalence `φ` to a tensorial type `N` commuting with
-the actions is tensorial with the colors of `N`. -/
-noncomputable abbrev ofEquiv [Tensorial S c₁ N] {r : Representation k G M}
-    (φ : r.Equiv (rep (M := N))) : Tensorial S c₁ M where
-  rep := r
-  toTensor := φ.trans (toTensor (M := N))
-
-/-- The tensor of `m` is the tensor of `φ m`. -/
-lemma toTensor_ofEquiv [Tensorial S c₁ N] {r : Representation k G M}
-    (φ : r.Equiv (rep (M := N))) (m : M) : toTensor (self := ofEquiv φ) m = toTensor (φ m) := rfl
 
 /-!
 
