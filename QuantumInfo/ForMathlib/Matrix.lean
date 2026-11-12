@@ -1532,6 +1532,15 @@ lemma trace_piProd [CommSemiring R] :
   symm
   simp [trace, piProd, Fintype.prod_sum]
 
+/-- Multiplication of `piProd` tensor products is entrywise: the tensor product of products is
+the product of the tensor products. -/
+lemma piProd_mul [CommSemiring R] (A B : ∀ i, Matrix (d i) (d i) R) :
+    piProd (fun i ↦ A i * B i) = piProd A * piProd B := by
+  ext j k
+  simp only [piProd, Matrix.of_apply, Matrix.mul_apply]
+  rw [Fintype.prod_sum]
+  exact Finset.sum_congr rfl fun p _ ↦ Finset.prod_mul_distrib
+
 open ComplexOrder MatrixOrder in
 lemma PosSemidef.piProd [RCLike R] (hA : ∀ i, (A i).PosSemidef) :
     (piProd A).PosSemidef := by

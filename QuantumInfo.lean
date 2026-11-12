@@ -77,6 +77,7 @@ public import QuantumInfo.Operators.Unitary
 public import QuantumInfo.ResourceTheory.FreeState
 public import QuantumInfo.ResourceTheory.HypothesisTesting
 public import QuantumInfo.ResourceTheory.SteinsLemma
+public import QuantumInfo.StabilizerFormalism.PauliGroups
 public import QuantumInfo.States.Ensemble
 public import QuantumInfo.States.Entanglement
 public import QuantumInfo.States.Mixed.Fidelity
