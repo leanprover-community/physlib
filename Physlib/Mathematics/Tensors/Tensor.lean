@@ -31,12 +31,15 @@ The operations on tensors in the rest of the library are built from two kinds of
 here. A map at every index (D.1) acts on each index, as a Lorentz transformation does,
 `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the representation of the color of each index. A map at one index
 (D.2) changes that index and keeps the others, as lowering the index `ν` with the metric does,
-`T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩`. Reindexing, raising an index and
-contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, are also built from these maps.
+`T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩`. Since the metric is invertible and
+commutes with the group, lowering is an equivalence of representations, with raising as its inverse
+(D.4). Reindexing and contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, are also
+built from these maps.
 
 Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
 and commuting with the group (B.2), are proved once on pure tensors here, and not again for each
-operation. The components of a tensor are its coordinates in the product basis (C).
+operation. The components of a tensor are its coordinates in the product basis (C), and a map at
+one index acts on the components through that index alone, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…` (D.3).
 
 ## ii. Key results
 
