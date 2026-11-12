@@ -27,6 +27,8 @@ In a chart `(q, q̇)` are coordinates on the tangent bundle, so the Lagrangian i
 - `LagrangianSystem.contDiffAt_chartLagrangian`: it is smooth over the chart target
 - `LagrangianSystem.exists_contDiff_chartLagrangian_eq`: it agrees with a smooth `L` near a
   compact set
+- `LagrangianSystem.exists_lagrangianSystem_coord_eq`: it agrees with the coordinate form of a
+  Lagrangian system on `E` near a compact set
 - `LagrangianSystem.action_integrand_eq_chartLagrangian`: the action integrand in a chart is `L`
 - `LagrangianSystem.action_integrand_eq_of_eventuallyEq`: the same for a curve chart-read near a
   time
@@ -101,6 +103,24 @@ lemma exists_contDiff_chartLagrangian_eq [I.Boundaryless] [FiniteDimensional ℝ
         (Set.preimage_mono hχ0))
       fun p hp ↦ S.contDiffAt_chartLagrangian x t₀ hp
   · simp [hχ1 _ hp]
+
+/-- Near a compact set of positions, the chart Lagrangian agrees with the coordinate form of a
+Lagrangian system on the whole normed space. The Euler-Lagrange equations are stated for such
+systems, so this lets them be applied in a chart, see
+`eulerLagrange_eq_zero_of_isCriticalPoint_chart`. -/
+lemma exists_lagrangianSystem_coord_eq [I.Boundaryless] [FiniteDimensional ℝ E]
+    (S : LagrangianSystem I M) (x : M) (t₀ : Time) {K : Set E} (hK : IsCompact K)
+    (hKx : K ⊆ (extChartAt I x).target) :
+    ∃ (S' : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩) (N : Set E), IsOpen N ∧ K ⊆ N ∧
+      N ⊆ (extChartAt I x).target ∧
+      ∀ p : ℝ × E × E, p.2.1 ∈ N → S'.coord t₀ p = S.chartLagrangian x t₀ p := by
+  obtain ⟨L, N, hNo, hKN, hNt, hL, hLN⟩ := S.exists_contDiff_chartLagrangian_eq x t₀ hK hKx
+  refine ⟨ofNormedSpace (fun p ↦ L (p.1 -ᵥ t₀, p.2)) ?_, N, hNo, hKN, hNt,
+    fun p hp ↦ by simpa using hLN p hp⟩
+  have h : ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, E × E)) 𝓘(ℝ, ℝ) ∞ L := by
+    rwa [← modelWithCornersSelf_prod (𝕜 := ℝ) (E := ℝ) (F := E × E),
+      chartedSpaceSelf_prod (H := ℝ) (H' := E × E), contMDiff_iff_contDiff]
+  exact h.comp (((Time.contMDiff_vsub t₀ ∞).comp contMDiff_fst).prodMk contMDiff_snd)
 
 /-!
 ## B. The action integrand

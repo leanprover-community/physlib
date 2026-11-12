@@ -28,6 +28,7 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.Chart
 public import Physlib.ClassicalMechanics.Lagrangian.CriticalPoint
+public import Physlib.ClassicalMechanics.Lagrangian.EulerLagrangeChart
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
 public import Physlib.ClassicalMechanics.Mass.MassUnit
