@@ -21,13 +21,18 @@ positive-definite matrices (`Matrix.PosDef`), but no positive-definite sesquilin
 `LinearMap.IsPosDef` fills this gap with the shape of `LinearMap.IsPosSemidef`: a structure
 extending `LinearMap.IsSymm`. For a form `M →ₗ⋆[R] M →ₗ[R] R` symmetry is Hermiticity,
 `star (B x y) = B y x`. A positive-definite form is positive-semidefinite and nondegenerate, and
-in a basis it is positive-definite exactly when its matrix is.
+in a basis it is positive-definite exactly when its matrix is. Symmetry and positive-definiteness
+transfer along a surjective or bijective linear map that turns one form into the conjugate of the
+other, as for the inverse of a Hermitian metric.
 
 ## ii. Key results
 
 - `LinearMap.IsPosDef` : a sesquilinear form is symmetric and `0 < B x x` for `x ≠ 0`.
 - `LinearMap.IsPosDef.isPosSemidef` : a positive-definite form is positive-semidefinite.
 - `LinearMap.IsPosDef.nondegenerate` : a positive-definite form is nondegenerate.
+- `LinearMap.IsSymm.of_comp_star` and `LinearMap.IsPosDef.of_comp_star` : a form `B'` with
+  `B' (A x) (A y) = star (B y x)` for a surjective or bijective `A` is symmetric or
+  positive-definite when `B` is.
 - `LinearMap.isPosDef_iff_posDef_toMatrix` : a form is positive-definite exactly when its matrix in
   a basis is.
 
@@ -36,7 +41,8 @@ in a basis it is positive-definite exactly when its matrix is.
 - A. Positive-definite sesquilinear forms
   - A.1. The definition
   - A.2. Consequences over a preorder
-  - A.3. The matrix of a positive-definite form
+  - A.3. Transport along a linear map
+  - A.4. The matrix of a positive-definite form
 
 ## iv. References
 
@@ -97,7 +103,39 @@ end IsPosDef
 
 /-!
 
-### A.3. The matrix of a positive-definite form
+### A.3. Transport along a linear map
+
+-/
+
+section comp
+
+variable {R M N : Type*} [CommSemiring R] [StarRing R] [AddCommMonoid M] [Module R M]
+  [AddCommMonoid N] [Module R N] {B : M →ₗ⋆[R] M →ₗ[R] R} {B' : N →ₗ⋆[R] N →ₗ[R] R}
+  {A : M →ₗ[R] N}
+
+/-- If `B' (A x) (A y) = star (B y x)` for a surjective `A`, then `B'` is symmetric when `B` is. -/
+lemma IsSymm.of_comp_star (hA : Function.Surjective A) (hB : B.IsSymm)
+    (h : ∀ x y, B' (A x) (A y) = star (B y x)) : B'.IsSymm := by
+  refine ⟨fun u w => ?_⟩
+  obtain ⟨x, rfl⟩ := hA u
+  obtain ⟨y, rfl⟩ := hA w
+  rw [h, h, starRingEnd_apply, star_star]
+  exact (hB.eq x y).symm
+
+/-- If `B' (A x) (A y) = star (B y x)` for a bijective `A`, then `B'` is positive-definite when `B`
+is. -/
+lemma IsPosDef.of_comp_star [LT R] (hA : Function.Bijective A) (hB : B.IsPosDef)
+    (h : ∀ x y, B' (A x) (A y) = star (B y x)) : B'.IsPosDef := by
+  refine ⟨hB.isSymm.of_comp_star hA.2 h, fun u hu => ?_⟩
+  obtain ⟨x, rfl⟩ := hA.2 u
+  rw [h, ← starRingEnd_apply, hB.isSymm.eq x x]
+  exact hB.pos x fun hx => hu (by rw [hx, map_zero])
+
+end comp
+
+/-!
+
+### A.4. The matrix of a positive-definite form
 
 -/
 

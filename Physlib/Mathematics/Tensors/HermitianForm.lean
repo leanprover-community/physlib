@@ -26,7 +26,8 @@ is again Hermitian or positive-definite, and a positive-definite `g_{IJ̄}` is i
 
 - `Species.sesqForm` reads a tensor `g_{IJ̄}` as the sesquilinear form `x, y ↦ g_{IJ̄} y^I x̄^J̄`.
 - `Species.isSymm_sesqForm_inverse` and `Species.isPosDef_sesqForm_inverse` prove that the inverse
-  of an invertible Hermitian or positive-definite `g_{IJ̄}` is Hermitian or positive-definite.
+  of an invertible Hermitian or positive-definite `g_{IJ̄}` is Hermitian or positive-definite, from
+  `LinearMap.IsSymm.of_comp_star` and `LinearMap.IsPosDef.of_comp_star`.
 - `Species.toLin_injective_of_isPosDef` proves that the linear map of a positive-definite `g_{IJ̄}`
   is injective, and `Species.toLin_bijective_of_isPosDef` that it is bijective.
 
@@ -90,12 +91,8 @@ lemma sesqForm_inverse_toLin (g : S.V a ⊗[k] S.V b) (h : Function.Bijective (S
 /-- The inverse of a Hermitian `g_{IJ̄}` is Hermitian. -/
 lemma isSymm_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
     (h : Function.Bijective (S.toLin g)) (hg : (S.sesqForm g hb).IsSymm) :
-    (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsSymm := by
-  refine ⟨fun u w => ?_⟩
-  obtain ⟨x, rfl⟩ := h.2 u
-  obtain ⟨y, rfl⟩ := h.2 w
-  rw [sesqForm_inverse_toLin g h hb, sesqForm_inverse_toLin g h hb, starRingEnd_apply, star_star]
-  exact (hg.eq x y).symm
+    (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsSymm :=
+  hg.of_comp_star h.2 (sesqForm_inverse_toLin g h hb)
 
 /-!
 
@@ -124,12 +121,9 @@ lemma toLin_bijective_of_isPosDef (g : S.V a ⊗[k] S.V b) {hb : b = a.bar}
 /-- The inverse of a positive-definite `g_{IJ̄}` is positive-definite. -/
 lemma isPosDef_sesqForm_inverse (g : S.V a ⊗[k] S.V b) (hb : b = a.bar)
     (hg : (S.sesqForm g hb).IsPosDef) :
-    (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsPosDef := by
+    (S.sesqForm (S.inverse g) (Color.dual_eq_bar_dual hb)).IsPosDef :=
   have h := toLin_bijective_of_isPosDef g hg
-  refine ⟨isSymm_sesqForm_inverse g hb h hg.isSymm, fun u hu => ?_⟩
-  obtain ⟨x, rfl⟩ := h.2 u
-  rw [sesqForm_inverse_toLin g h hb, ← starRingEnd_apply, hg.isSymm.eq x x]
-  exact hg.pos x fun hx => hu (by rw [hx, map_zero])
+  hg.of_comp_star h (sesqForm_inverse_toLin g h hb)
 
 end Species
 
