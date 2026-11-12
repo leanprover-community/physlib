@@ -294,17 +294,25 @@ lemma tensorBasis_repr_smul [Fintype ι] [DecidableEq ι] (g : G) (t : Tensor S 
 
 ## D. Linear maps at the indices
 
-`mapIndices f` applies a linear map `f x` at every index `x`, `u ⊗ α ↦ f₀ u ⊗ f₁ α`. It is
-Mathlib's `PiTensorProduct.map`, and it commutes with the group when every `f x` does
-(`mapIndices_smul`). `congrIndices` is the same for equivalences of representations.
+Many operations change one index of a tensor and keep the others, such as contracting the index
+with a tensor on two indices, `T^…μ… F_μ^ν`, and lowering or raising it with a metric,
+`T^μν ↦ T^μ_ν`. `mapAt i f h` applies any linear map `f` at the index `i`, `u ⊗ v ↦ u ⊗ f v`.
+`congrAt i f h` applies an equivalence of representations `f` in the same way, and the result is
+again an equivalence of representations, so it commutes with the group and has an inverse.
+Contracting with `F` is `mapAt` of `F` read as a linear map (`contr_matMulAt`), and lowering is
+`congrAt` of the map `v^μ ↦ η_νμ v^μ`.
 
-`mapAt i f h` applies `f` at the single index `i` and keeps the others, `u ⊗ α ↦ u ⊗ f α`. The map
-`f` may change the color at `i`, so the colors `c'` of the result differ from `c` there, and
-`h : ∀ x, x ≠ i → c x = c' x` says they agree elsewhere. The vectors at the other indices are
-moved along `h` by `S.cast`. `indexMapsAt` is this family of maps, `congrAt` is `mapAt` of an
-equivalence of representations, and `tensorBasis_repr_mapAt` gives the components,
-`(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`. Lowering an index with a metric is `congrAt` of the map
-`v^μ ↦ η_νμ v^μ`, in `Metric.lean`.
+The map `f` may change the color at `i`, as lowering turns `⟨vec, up⟩` into `⟨vec, down⟩`. So the
+result has other colors `c'`, and `h : ∀ x, x ≠ i → c x = c' x` says that they agree with `c` at
+the other indices. There the vectors are moved along `h` by `S.cast`.
+
+In components, `mapAt` acts on the one index, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`
+(`tensorBasis_repr_mapAt`).
+
+`mapAt` is built from `mapIndices f`, which applies a linear map `f x` at every index `x`,
+`u ⊗ v ↦ f₀ u ⊗ f₁ v`. It is Mathlib's `PiTensorProduct.map`, and it commutes with the group when
+every `f x` does (`mapIndices_smul`). `congrIndices` is the same for equivalences of
+representations, and `indexMapsAt i f h` is the family with `f` at `i` and `S.cast` elsewhere.
 
 -/
 
