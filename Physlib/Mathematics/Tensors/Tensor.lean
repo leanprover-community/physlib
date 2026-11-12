@@ -30,8 +30,8 @@ product basis.
 
 For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
 and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`. A Lorentz
-transformation acts as `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`. Lowering the second index with the metric,
-`T^μ_ν = η_νρ T^μρ`, is a linear map at the index `1` that changes its color to `⟨vec, down⟩`.
+transformation acts as `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`. Lowering the index `ν` with the metric,
+`T^μ_ν = η_νρ T^μρ`, is a linear map at that one index, which changes its color to `⟨vec, down⟩`.
 
 ## ii. Key results
 
