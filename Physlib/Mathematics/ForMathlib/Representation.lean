@@ -34,11 +34,12 @@ on `V`, by the linear map `ρ g`. A map of representations from `ρ` to `σ` on 
 commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible. It sends an
 invariant vector, `ρ g v = v`, to an invariant vector `φ v` (A).
 
-For example, let `G` be the Lorentz group. It acts on the vectors `V` by `ρ Λ = Λ`, and on the
-covectors `W` by `σ Λ = (Λ⁻¹)ᵀ`, so that `α_μ v^μ` is invariant. The map `φ` is lowering an index
-with the metric, `φ v = η v`, from vectors to covectors. The two routes in the square give
-`φ (ρ Λ v) = η (Λ v)` and `σ Λ (φ v) = (Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the
-defining property of a Lorentz transformation.
+For example, let `G` be the Lorentz group, and let `Λ` be the matrix of a Lorentz transformation
+`g`. Then `g` acts on the vectors `V` by `ρ g = Λ`, and on the covectors `W` by `σ g = (Λ⁻¹)ᵀ`, so
+that `α_μ v^μ` is invariant. The map `φ` is lowering an index with the metric, `φ v = η v`, from
+vectors to covectors. The two routes in the square give `φ (ρ g v) = η (Λ v)` and
+`σ g (φ v) = (Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the defining property of a Lorentz
+transformation.
 
 A tensor with several indices has one representation for each index, a family `ρ i` of
 representations of `G` on spaces `M i`. For `T^μ_ν` the family is `Λ` on the vectors at the up index
@@ -53,7 +54,7 @@ representations (C).
 
 In the same way, the Lorentz tensors `T^μ_νρ` lie in `V ⊗ V* ⊗ V*`, with `Λ` on the vectors `V` and
 `(Λ⁻¹)ᵀ` on the covectors `V*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping them as
-`V ⊗ (V* ⊗ V*)`, and contracting `V` with the first `V*`, `T^μ_μρ`, all commute with `Λ`. So each
+`V ⊗ (V* ⊗ V*)`, and contracting `V` with the first `V*`, `T^μ_μρ`, all commute with `g`. So each
 one sends an invariant tensor to an invariant tensor, and a tensor built from invariant ones by
 these maps is invariant with no further proof.
 
