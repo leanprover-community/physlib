@@ -19,10 +19,12 @@ family, and adds the contraction of its factors in pairs.
 ## i. Overview
 
 A tensor with several indices lies in the tensor product `⨂[R] i, M i` of a family of spaces, one
-space `M i` for each index `i`. Mathlib proves several facts about the tensor product of two
-spaces, `M ⊗ N`, that it does not prove for a family. This file proves them for a family: the
-matrix of a map applied at every index (A), the dimension (B), and the case with no indices (C). It
-also defines contraction, which pairs indices and removes them (D).
+space `M i` for each index `i`. Here `R` is the scalars, `ℝ` or `ℂ` in physics, and any commutative
+semiring in the results below, with a commutative ring for the dimension (B). Mathlib proves several
+facts about the tensor product of two spaces, `M ⊗ N`, that it does not prove for a family. This
+file proves them for a family: the matrix of a map applied at every index (A), the dimension (B),
+and the case with no indices (C). It also defines contraction, which pairs indices and removes them
+(D).
 
 For example, `T^μ_ν` has `4 · 4 = 16` components, so its space has dimension `16`. A Lorentz
 transformation acts on it index by index, by `Λ` at the up index and by `(Λ⁻¹)ᵀ` at the down index.
