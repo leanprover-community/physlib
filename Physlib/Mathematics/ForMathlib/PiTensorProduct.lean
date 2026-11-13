@@ -135,17 +135,21 @@ lemma PiTensorProduct.map_eq_id_of_isEmpty [CommSemiring R] [∀ i, AddCommMonoi
 ## D. Contraction of pairs of factors
 
 Contraction pairs some indices of a tensor, turns each pair into a scalar, and keeps the other
-indices. To say which indices are paired, the index type is `κ ⊕ (J ⊕ J)`. An index of `κ ⊕ (J ⊕ J)`
-is tagged by Mathlib's `Sum.inl` or `Sum.inr`, for the left or the right side of `⊕`. An index
-`inl x`, for `x` in `κ`, is kept. Each `j` in `J` is a pair, with first index `inr (inl j)` and
-second index `inr (inr j)`. A pairing `p j` turns the two vectors of the pair `j` into a scalar. On
-a pure tensor, `contrPairs p` keeps the vectors at the kept indices and multiplies them by the
-product of the pairings (`contrPairs_tprod`). A tensor with its indices in another order is first
-reordered into this form.
+indices. The index type `κ ⊕ (J ⊕ J)` says which indices are paired, with Mathlib's tags `Sum.inl`
+and `Sum.inr` for the left and the right side of `⊕`. The indices `inl x`, for `x` in `κ`, are kept.
+Each `j` in `J` is a pair, with first index `inr (inl j)` and second index `inr (inr j)`, contracted
+by the pairing `p j`. On a pure tensor, `contrPairs p` multiplies the kept vectors by the product of
+the pairings (`contrPairs_tprod`). The nesting follows the construction. Mathlib's
+`PiTensorProduct.tmulEquivDep` splits a tensor product over `A ⊕ B` into the tensor product over `A`
+times the tensor product over `B`. Splitting at the outer `⊕` separates the kept factors from the
+paired ones. Splitting at the inner `⊕` separates the first factor of each pair from the second, so
+that `p j` can contract them. A tensor whose indices are in another order is first reordered into
+this form.
 
-For example, `T^μ_μρ` has three indices, up `μ`, down `μ` and down `ρ`. Its kept index is `ρ`, so
-`κ` has one element. Its one pair is up `μ` with down `μ`, so `J` has one element. The pairing is
-`α_μ u^μ`, and on a pure tensor the contraction is `u ⊗ α ⊗ β ↦ (α_μ u^μ) β`.
+For example, the Ricci tensor `R_μν = R^ρ_μρν` pairs the first and third indices and keeps the
+second and fourth, so its indices are reordered first. On a pure tensor it is
+`u ⊗ α ⊗ β ⊗ γ ↦ (β_ρ u^ρ) α ⊗ γ`. The Ricci scalar `R = R^μν_μν` has two pairs and no kept index,
+so the result is the scalar `(α_μ u^μ) (β_ν v^ν)` on `u ⊗ v ⊗ α ⊗ β`.
 
 -/
 
