@@ -6,11 +6,13 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Shift
+public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
+public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Physlib.SpaceAndTime.Time.Basic
 
 /-!
-# Curves in normed spaces over `Time`
+# Curves over `Time`
 
 A curve `Time → F` is smooth, or has a given derivative, iff its coordinate curve does.
 
@@ -22,6 +24,7 @@ The charts of `Time` are translations, so the coordinate curve `τ ↦ γ (τ +�
 
 - `Time.contMDiff_iff_contDiff_vadd`: a curve is `C^n` iff its coordinate curve is
 - `Time.mfderiv_eq_deriv_vadd`: the manifold derivative is the derivative of the coordinate curve
+- `Time.contDiffAt_extChartAt_comp_vadd`: a curve read in a chart is smooth where it lies in it
 - `Time.tangentMap_eq_deriv_vadd`: the tangent map of a curve in coordinates
 
 ## iii. Table of contents
@@ -94,6 +97,17 @@ lemma mdifferentiableAt_vadd_iff (γ : Time → F) (t₀ : Time) (s : ℝ) :
       DifferentiableAt ℝ (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s := by
   rw [mdifferentiableAt_iff_differentiableAt_vadd, vadd_vadd_comp]
   exact (differentiableAt_comp_add_const (f := fun σ : ℝ ↦ γ (σ +ᵥ t₀))).trans (by rw [zero_add])
+
+/-- A curve in a manifold read in a chart is smooth at times at which it lies in the chart. -/
+lemma contDiffAt_extChartAt_comp_vadd {E H M : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [TopologicalSpace H] {I : ModelWithCorners ℝ E H} [TopologicalSpace M] [ChartedSpace H M]
+    [IsManifold I ∞ M] (x : M) {γ : Time → M} (t₀ : Time) {σ : ℝ}
+    (hγ : ContMDiffAt 𝓘(ℝ, ℝ) I ∞ γ (σ +ᵥ t₀)) (hσ : γ (σ +ᵥ t₀) ∈ (extChartAt I x).source) :
+    ContDiffAt ℝ ∞ (fun σ' : ℝ ↦ extChartAt I x (γ (σ' +ᵥ t₀))) σ :=
+  contMDiffAt_iff_contDiffAt.1 <| ContMDiffAt.comp (g := extChartAt I x)
+    (f := fun σ' : ℝ ↦ γ (σ' +ᵥ t₀)) σ
+    (contMDiffAt_extChartAt' (by rwa [extChartAt_source] at hσ))
+    (hγ.comp σ (contMDiff_vadd t₀ ∞).contMDiffAt)
 
 /-!
 ## B. Derivatives of curves

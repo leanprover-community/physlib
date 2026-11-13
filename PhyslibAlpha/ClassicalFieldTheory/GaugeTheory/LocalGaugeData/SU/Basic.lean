@@ -290,8 +290,6 @@ noncomputable def suMatrixJets (n : ℕ) :
   toMat₀_injective _ _ h := Subtype.ext h
   toMatJ := (specialUnitaryGroup (Fin n) SpaceTimeAlgebra).subtype
   toMatJ_injective _ _ h := Subtype.ext h
-  toMatJ_mul_star := JetSU.val_mul_star
-  star_toMatJ_mul := JetSU.star_mul_val
   lie₀ := (SUAlgebraOver.submodule ℂ n).subtype
   lie₀_injective _ _ h := Subtype.ext h
   lie₀_bracket _ _ := rfl
@@ -336,7 +334,8 @@ variable {n : ℕ}
 @[simp] lemma su_maurerCartan : (su n).maurerCartan = JetSUAlgebra.mc := rfl
 
 /-- The canonical `SU(n)` factor of the local gauge data of `SU(n)`. -/
-noncomputable def suFactor (n : ℕ) : SUFactor (su n) (Fin n) := (suMatrixJets n).suFactor
+noncomputable def suFactor (n : ℕ) : SUFactor (su n) (Fin n) :=
+  (suMatrixJets n).suFactor fun _ => rfl
 
 /-- The local gauge data of `SU(n)` is faithful. -/
 instance instFaithfulSU : (su n).Faithful := (suMatrixJets n).faithful

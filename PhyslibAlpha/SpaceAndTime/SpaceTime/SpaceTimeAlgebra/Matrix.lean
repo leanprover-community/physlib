@@ -30,6 +30,10 @@ fundamental solution.
 - `exists_matrix_eulerTransport` : the Euler (radial) transport of a jet matrix `R` vanishing at the
   base point: a fundamental solution of the radial system `E U = R U` based at the identity, built
   order-by-order by the Euler recursion
+- `map_pderiv_conj_of_mul_eq_one` : the derivative of the conjugate of a matrix of jets by an
+  invertible matrix of jets, in terms of its Maurer–Cartan matrix
+- `unitsEval`, `unitsOfConstant` : evaluation at the base point and the inclusion of constants,
+  for invertible matrices
 
 ## iii. Table of contents
 
@@ -38,6 +42,7 @@ fundamental solution.
 - C. Unitarity and determinant of the Euler transport
 - D. The Leibniz rule at the base point for matrices of power series
 - E. Conjugation, scalars and derivatives of matrices of jets
+- F. Invertible matrices of jets
 
 ## iv. References
 
@@ -450,21 +455,64 @@ lemma map_pderiv_sub (μ : Fin 1 ⊕ Fin 3) (M N : Matrix κ κ SpaceTimeAlgebra
   ext i j : 1
   simp only [Matrix.map_apply, Matrix.sub_apply, map_sub]
 
+/-- The entrywise derivative of the inverse `V` of a matrix of jets `U`, through the
+  differentiated relation `U V = 1`: `∂_μ V = −V (∂_μ U) V`. -/
+lemma map_pderiv_of_mul_eq_one [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
+    {U V : Matrix κ κ SpaceTimeAlgebra} (hUV : U * V = 1) (hVU : V * U = 1) :
+    V.map (pderiv μ) = -(V * U.map (pderiv μ) * V) := by
+  have h1 : U * V.map (pderiv μ) = -(U.map (pderiv μ) * V) :=
+    eq_neg_of_add_eq_zero_right (by
+      rw [← SpaceTimeAlgebra.matrix_map_pderiv_mul, hUV]
+      exact Matrix.ext fun i j => by
+        simp [Matrix.map_apply, Matrix.one_apply, apply_ite (pderiv μ)])
+  calc V.map (pderiv μ)
+      = V * U * V.map (pderiv μ) := by rw [hVU, one_mul]
+    _ = -(V * U.map (pderiv μ) * V) := by
+        rw [mul_assoc, h1, mul_neg, ← mul_assoc]
+
 /-- The entrywise derivative of the conjugate transpose of a unitary matrix, through the
   differentiated unitarity relation. -/
 lemma map_pderiv_star_of_unitary [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
     {U : Matrix κ κ SpaceTimeAlgebra}
     (hU : U * star U = 1) (hU' : star U * U = 1) :
-    (star U).map (pderiv μ) = -(star U * U.map (pderiv μ) * star U) := by
-  have h1 : U * (star U).map (pderiv μ) = -(U.map (pderiv μ) * star U) :=
-    eq_neg_of_add_eq_zero_right (by
-      rw [← SpaceTimeAlgebra.matrix_map_pderiv_mul, hU]
-      exact Matrix.ext fun i j => by
-        simp [Matrix.map_apply, Matrix.one_apply, apply_ite (pderiv μ)])
-  calc (star U).map (pderiv μ)
-      = star U * U * (star U).map (pderiv μ) := by rw [hU', one_mul]
-    _ = -(star U * U.map (pderiv μ) * star U) := by
-        rw [mul_assoc, h1, mul_neg, ← mul_assoc]
+    (star U).map (pderiv μ) = -(star U * U.map (pderiv μ) * star U) :=
+  map_pderiv_of_mul_eq_one μ hU hU'
+
+/-- The derivative of the conjugate `V A U` of a matrix of jets by an invertible matrix of
+  jets `U` with inverse `V`, in terms of the Maurer–Cartan matrix `ω = (∂_μ U) V`:
+  `∂_μ (V A U) = V (∂_μ A − (ω A − A ω)) U`. -/
+lemma map_pderiv_conj_of_mul_eq_one [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
+    {U V : Matrix κ κ SpaceTimeAlgebra} (hUV : U * V = 1) (hVU : V * U = 1)
+    (A : Matrix κ κ SpaceTimeAlgebra) :
+    (V * A * U).map (pderiv μ) = V * (A.map (pderiv μ) -
+      (U.map (pderiv μ) * V * A - A * (U.map (pderiv μ) * V))) * U := by
+  rw [matrix_map_pderiv_mul, matrix_map_pderiv_mul, map_pderiv_of_mul_eq_one μ hUV hVU]
+  simp only [mul_sub, sub_mul, add_mul, neg_mul, mul_assoc, hVU, mul_one]
+  abel
+
+/-- The cocycle law of Maurer–Cartan matrices: for invertible matrices of jets `U₁`, `U₂`
+  with inverses `V₁`, `V₂`, `∂_μ (U₁ U₂) (V₂ V₁) = (∂_μ U₁) V₁ + U₁ ((∂_μ U₂) V₂) V₁`. -/
+lemma map_pderiv_mul_mul_mul [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
+    {U₁ U₂ V₁ V₂ : Matrix κ κ SpaceTimeAlgebra} (h : U₂ * V₂ = 1) :
+    (U₁ * U₂).map (pderiv μ) * (V₂ * V₁) =
+      U₁.map (pderiv μ) * V₁ + U₁ * (U₂.map (pderiv μ) * V₂) * V₁ := by
+  rw [matrix_map_pderiv_mul, add_mul]
+  congr 1
+  · rw [mul_assoc, ← mul_assoc U₂, h, one_mul]
+  · simp only [mul_assoc]
+
+/-- The derivative of a commutator of matrices of jets. -/
+lemma map_pderiv_commutator [Fintype κ] (μ : Fin 1 ⊕ Fin 3) (A B : Matrix κ κ SpaceTimeAlgebra) :
+    (A * B - B * A).map (pderiv μ) = (A.map (pderiv μ) * B - B * A.map (pderiv μ))
+      + (A * B.map (pderiv μ) - B.map (pderiv μ) * A) := by
+  rw [map_pderiv_sub, matrix_map_pderiv_mul, matrix_map_pderiv_mul]
+  abel
+
+/-- A constant matrix of jets has vanishing derivatives. -/
+lemma map_pderiv_mapMatrix_C [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
+    (A : Matrix κ κ ℂ) : ((C : ℂ →+* SpaceTimeAlgebra).mapMatrix A).map (pderiv μ) = 0 := by
+  ext i j
+  simp [RingHom.mapMatrix_apply, Matrix.map_apply, pderiv_C]
 
 /-- The Maurer–Cartan matrix `i (∂_μ U) U†` of a unitary matrix of jets is hermitian. -/
 lemma star_mcMatrix [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
@@ -476,5 +524,38 @@ lemma star_mcMatrix [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
     ← mul_assoc, hU, one_mul]
 
 end MatrixIdentities
+
+/-!
+
+## F. Invertible matrices of jets
+
+-/
+
+section Units
+
+variable {κ : Type} [Fintype κ] [DecidableEq κ]
+
+/-- Evaluation of an invertible matrix of jets at the base point, entrywise. -/
+noncomputable def unitsEval : (Matrix κ κ SpaceTimeAlgebra)ˣ →* (Matrix κ κ ℂ)ˣ :=
+  Units.map (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix.toMonoidHom
+
+@[simp]
+lemma unitsEval_val (U : (Matrix κ κ SpaceTimeAlgebra)ˣ) :
+    (unitsEval U : Matrix κ κ ℂ) = (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix U := rfl
+
+/-- An invertible matrix as a constant invertible matrix of jets, entrywise. -/
+noncomputable def unitsOfConstant : (Matrix κ κ ℂ)ˣ →* (Matrix κ κ SpaceTimeAlgebra)ˣ :=
+  Units.map (C : ℂ →+* SpaceTimeAlgebra).mapMatrix.toMonoidHom
+
+@[simp]
+lemma unitsOfConstant_val (g : (Matrix κ κ ℂ)ˣ) :
+    (unitsOfConstant g : Matrix κ κ SpaceTimeAlgebra) =
+      (C : ℂ →+* SpaceTimeAlgebra).mapMatrix g := rfl
+
+lemma unitsEval_unitsOfConstant (g : (Matrix κ κ ℂ)ˣ) : unitsEval (unitsOfConstant g) = g := by
+  ext i j
+  simp [RingHom.mapMatrix_apply, Matrix.map_apply, constantCoeff_C]
+
+end Units
 
 end SpaceTimeAlgebra
