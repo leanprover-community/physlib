@@ -136,7 +136,7 @@ example, raising both indices undoes the lowering.
 
 -/
 
-/-- The tensor product of two equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, Mathlib's
+/-- The tensor product of two equivalences of representations, `v ⊗ u ↦ φ v ⊗ ψ u`, Mathlib's
 `TensorProduct.congr` with the actions `ρ ⊗ τ` and `σ ⊗ π`. -/
 noncomputable def Representation.Equiv.tensorCongr (φ : ρ.Equiv σ) (ψ : τ.Equiv π) :
     (ρ.tprod τ).Equiv (σ.tprod π) :=
