@@ -18,6 +18,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 
 - A. Derivatives of functions on `WaveVectorSpace d`
   - A.1. Constant functions
+  - A.2. Addition and subtraction
 
 ## iv. References
 
@@ -56,5 +57,25 @@ lemma deriv_const
     ∂[i] (fun _ : WaveVectorSpace d ↦ m) = 0 := by
   ext
   simp [deriv_eq]
+
+/-!
+### A.2. Addition and subtraction
+-/
+
+section AddSub
+
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M]
+  (i : Fin d) {f₁ f₂ : WaveVectorSpace d → M} {k : WaveVectorSpace d}
+  (hf₁ : DifferentiableAt ℝ f₁ k) (hf₂ : DifferentiableAt ℝ f₂ k)
+
+include hf₁ hf₂
+
+@[to_fun deriv_fun_add]
+lemma deriv_add : ∂[i] (f₁ + f₂) k = ∂[i] f₁ k + ∂[i] f₂ k := by simp [deriv_eq, fderiv_add hf₁ hf₂]
+
+@[to_fun deriv_fun_sub]
+lemma deriv_sub : ∂[i] (f₁ - f₂) k = ∂[i] f₁ k - ∂[i] f₂ k := by simp [deriv_eq, fderiv_sub hf₁ hf₂]
+
+end AddSub
 
 end WaveVectorSpace
