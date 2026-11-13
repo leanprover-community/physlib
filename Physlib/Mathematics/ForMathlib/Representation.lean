@@ -19,7 +19,9 @@ Mathlib's linear maps of such products into maps of representations.
 
 A representation `ρ` of a group or monoid `G` on a space `V` says how each element `g` of `G` acts
 on `V`, by the linear map `ρ g`. A map of representations from `ρ` to `σ` on `W` is a linear map
-`φ : V → W` that commutes with the group, `φ ∘ ρ g = σ g ∘ φ` for every `g`, so that the square
+`φ : V → W` that commutes with the group, `φ ∘ ρ g = σ g ∘ φ` for every `g`, where `∘` applies the
+right-hand map first. So transforming and then mapping is the same as mapping and then transforming,
+and the square
 
 ```
         ρ g
@@ -37,9 +39,9 @@ invariant vector, `ρ g v = v`, to an invariant vector `φ v` (A).
 For example, let `G` be the Lorentz group, and let `Λ` be the matrix of a Lorentz transformation
 `g`. Then `g` acts on the vectors `V` by `ρ g = Λ`, and on the covectors `W` by `σ g = (Λ⁻¹)ᵀ`, so
 that `α_μ v^μ` is invariant. The map `φ` is lowering an index with the metric, `φ v = η v`, from
-vectors to covectors. The two routes in the square give `φ (ρ g v) = η (Λ v)` and
-`σ g (φ v) = (Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the defining property of a Lorentz
-transformation.
+vectors to covectors. Composing maps is multiplying their matrices, so the two routes in the square
+are `φ ∘ ρ g = η Λ` and `σ g ∘ φ = (Λ⁻¹)ᵀ η`. They agree because `Λᵀ η Λ = η`, the defining
+property of a Lorentz transformation.
 
 A tensor with several indices has one representation for each index, a family `ρ i` of
 representations of `G` on spaces `M i`. For `T^μ_ν` the family is `Λ` on the vectors at the up index
