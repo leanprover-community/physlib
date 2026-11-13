@@ -34,6 +34,12 @@ on `V`, by the linear map `ρ g`. A map of representations from `ρ` to `σ` on 
 commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible. It sends an
 invariant vector, `ρ g v = v`, to an invariant vector `φ v` (A).
 
+For example, a Lorentz transformation `Λ` acts on vectors by `Λ` and on covectors by `(Λ⁻¹)ᵀ`, so
+that `α_μ v^μ` is invariant. Lowering an index with the metric, `φ v = η v`, is a map of
+representations from vectors to covectors. The two routes in the square give `η (Λ v)` and
+`(Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the defining property of a Lorentz
+transformation.
+
 Mathlib has the representation `ρ.tprod τ` on the tensor product of two representations, and the
 tensor product `IntertwiningMap.tensor` of two intertwining maps. It has no representation on the
 tensor product `⨂[k] i, M i` of a family, which is where a tensor with several indices lies. So
@@ -41,11 +47,11 @@ Mathlib's linear maps of `⨂`, such as `PiTensorProduct.reindex`, are not maps 
 This file defines that representation, `piTprod ρ`, and proves that Mathlib's linear maps of `⨂`
 commute with it, so that they become maps of representations (C).
 
-For example, a representation `ρ` on `V` and its dual `ρ*` on `V*` give the representation on
-`V ⊗ V* ⊗ V*` of the family `ρ`, `ρ*`, `ρ*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping
-them as `V ⊗ (V* ⊗ V*)`, and contracting `V` with the first `V*` to leave `V*` all commute with the
-group. So each one sends an invariant vector to an invariant vector, and a tensor built from
-invariant ones by these maps is invariant with no further proof.
+In the same way, the Lorentz tensors `T^μ_νρ` lie in `V ⊗ V* ⊗ V*`, with `Λ` on the vectors `V` and
+`(Λ⁻¹)ᵀ` on the covectors `V*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping them as
+`V ⊗ (V* ⊗ V*)`, and contracting `V` with the first `V*`, `T^μ_μρ`, all commute with `Λ`. So each
+one sends an invariant tensor to an invariant tensor, and a tensor built from invariant ones by
+these maps is invariant with no further proof.
 
 ## ii. Key results
 
@@ -90,15 +96,10 @@ variable {k G V W U X : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Mo
 
 ## A. Invariant vectors
 
-An intertwining map `φ` from `ρ` to `σ` satisfies `φ ∘ ρ g = σ g ∘ φ`. For example, a Lorentz
-transformation `Λ` acts on vectors by `Λ` and on covectors by `(Λ⁻¹)ᵀ`, so that `α_μ v^μ` is
-invariant. Lowering an index with the metric, `φ v = η v`, is an intertwining map between them. The
-two routes in the square give `η (Λ v)` and `(Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the
-defining property of a Lorentz transformation.
-
-An intertwining map sends invariant vectors to invariant vectors. If `ρ g v = v`, then
-`σ g (φ v) = φ (ρ g v) = φ v` (`map_invariant`). An intertwining map from the trivial
-representation on `k` picks out the invariant vector `φ 1` (`map_one_invariant`).
+An intertwining map `φ` from `ρ` to `σ` satisfies `φ ∘ ρ g = σ g ∘ φ`, so it sends invariant
+vectors to invariant vectors. If `ρ g v = v`, then `σ g (φ v) = φ (ρ g v) = φ v`
+(`map_invariant`). An intertwining map from the trivial representation on `k` picks out the
+invariant vector `φ 1` (`map_one_invariant`).
 
 -/
 
