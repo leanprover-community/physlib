@@ -463,6 +463,9 @@ Qubit.Y_Z_anticomm
 Qubit.Z_X_anticomm
 
 [PhyslibAlpha]
+ClassicalMechanics.HohmannTransfer.exists_hohmann_transfer
+ClassicalMechanics.HohmannOptimality.global_two_impulse_newton_lower_bound
+ClassicalMechanics.HohmannOptimality.h1_global_two_impulse_minimum
 ClassicalFieldTheory.Local.isCritical_iff_eulerLagrange_zero
 Electromagnetism.ThreeDimension.continuityEquation
 Electromagnetism.TempDistElectromagneticPotential.continuityEquation
