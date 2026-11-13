@@ -141,10 +141,15 @@ lemma Representation.Equiv.tensorCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π
 
 ### C.1. The representation on a tensor product of a family
 
-`piTprod ρ` is the representation `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`, through Mathlib's
-`PiTensorProduct.map`. It is the n-ary `Representation.tprod`. A semilinear map out of
-`⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors `⨂ₜ i, m i` commutes with it on all
-tensors (`map_piTprod_of_tprod`), since pure tensors span `⨂ i, M i`.
+Given how the group acts at each index, by the family `ρ`, the representation `piTprod ρ` acts on
+the whole tensor by transforming every index by its own rule, `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`.
+For `T^μ_ν`, with `Λ` at the up index and `(Λ⁻¹)ᵀ` at the down index, it is
+`T^μ_ν ↦ Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ`, and on a pure tensor `u ⊗ α ↦ Λu ⊗ (Λ⁻¹)ᵀ α` (`piTprod_tprod`).
+It is Mathlib's `Representation.tprod` on `V ⊗ W` for a family of factors, through
+`PiTensorProduct.map`.
+
+A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors `⨂ₜ i, m i`
+commutes with it on all tensors (`map_piTprod_of_tprod`), since pure tensors span `⨂ i, M i`.
 
 -/
 
@@ -181,9 +186,10 @@ lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Represent
 
 ### C.2. Maps of representations
 
-The following of Mathlib's linear maps of `⨂` commute with `piTprod`, so they are maps of
-representations. Each acts index by index, or pairs indices in an invariant way, as the examples on
-Lorentz tensors show:
+Not all linear maps out of `⨂` commute with the group action `piTprod`. Keeping only the
+component `T^00` of `T^μν` does not, since a boost mixes `T^00` with the other components. The
+following do, so they are maps of representations. Each acts index by index, or pairs indices in an
+invariant way, as the examples on Lorentz tensors show:
 - `piTprodMap` applies a map at every index, such as lowering every index, `T^μν ↦ T_μν`. It
   commutes with the group when each of the maps does, and `piTprodCongr` is the same for
   equivalences of representations.
