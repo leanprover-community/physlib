@@ -256,7 +256,8 @@ theorem deriv_comp_eq_poissonBracket (H : Time → X → X → ℝ) (p q : Time 
 ## F. Canonical coordinate relations
 
 For Euclidean phase space, position and momentum coordinates satisfy
-`{qᵢ, pⱼ} = δᵢⱼ`, while brackets between two position coordinates or two momentum coordinates vanish.
+`{qᵢ, pⱼ} = δᵢⱼ`, while brackets between two position coordinates or two momentum coordinates
+vanish.
 The argument order remains momentum first, position second, as in `poissonBracket`.
 
 -/
