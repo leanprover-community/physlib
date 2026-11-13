@@ -64,9 +64,14 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [Top
 abbrev PhaseSpace :=
   Bundle.TotalSpace (E →L[ℝ] ℝ) (fun q : Q ↦ TangentSpace I q →L[ℝ] Bundle.Trivial Q ℝ q)
 
+end NormedSpace
+
 namespace PhaseSpace
 
-variable {I Q}
+section NormedSpace
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
+  {I : ModelWithCorners ℝ E H} {Q : ConfigurationSpace I}
 
 /-- The configuration of a phase-space state. -/
 abbrev position (s : PhaseSpace I Q) : Q := s.proj
@@ -116,7 +121,7 @@ private lemma momentum_inCoordinates (q₀ : E) (s : PhaseSpace 𝓘(ℝ, E) ⟨
 
 /-- Global covector-position coordinates on the phase space of a real normed space. -/
 noncomputable def normedSpaceDiffeomorph :
-    PhaseSpace 𝓘(ℝ, E) ⟨E⟩ ≃ₘ⟮(𝓘(ℝ, E)).prod 𝓘(ℝ, E →L[ℝ] ℝ),
+    PhaseSpace 𝓘(ℝ, E) ⟨E⟩ ≃ₘ^∞ ⟮(𝓘(ℝ, E)).prod 𝓘(ℝ, E →L[ℝ] ℝ),
       𝓘(ℝ, (E →L[ℝ] ℝ) × E)⟯ (E →L[ℝ] ℝ) × E where
   toFun s := (s.momentum.comp (NormedSpace.fromTangentSpace s.position).symm.toContinuousLinearMap,
     s.position)
@@ -150,17 +155,15 @@ lemma normedSpaceDiffeomorph_symm_apply (p : E →L[ℝ] ℝ) (q : E) :
     (normedSpaceDiffeomorph E).symm (p, q) =
       mk q (p.comp (NormedSpace.fromTangentSpace q).toContinuousLinearMap) := rfl
 
-end PhaseSpace
-
 end NormedSpace
 
-namespace PhaseSpace
+section InnerProductSpace
 
 variable (E : Type*) [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
 
 /-- Global momentum-vector-position coordinates, using the real Hilbert-space Riesz map. -/
 noncomputable def innerProductSpaceDiffeomorph :
-    PhaseSpace 𝓘(ℝ, E) ⟨E⟩ ≃ₘ⟮(𝓘(ℝ, E)).prod 𝓘(ℝ, E →L[ℝ] ℝ),
+    PhaseSpace 𝓘(ℝ, E) ⟨E⟩ ≃ₘ^∞ ⟮(𝓘(ℝ, E)).prod 𝓘(ℝ, E →L[ℝ] ℝ),
       𝓘(ℝ, E × E)⟯ E × E :=
   (normedSpaceDiffeomorph E).trans
     (((InnerProductSpace.toDual ℝ E).symm.toContinuousLinearEquiv.prodCongr
@@ -172,6 +175,8 @@ lemma innerProductSpaceDiffeomorph_symm_apply (p q : E) :
     (innerProductSpaceDiffeomorph E).symm (p, q) =
       mk q ((InnerProductSpace.toDual ℝ E p).comp
         (NormedSpace.fromTangentSpace q).toContinuousLinearMap) := rfl
+
+end InnerProductSpace
 
 end PhaseSpace
 
