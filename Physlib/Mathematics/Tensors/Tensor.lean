@@ -212,13 +212,13 @@ with `•`. A tensor with no indices, a scalar, is invariant (`smul_eq_self_of_i
 lemma intertwiningMap_smul {ι' : Type} {c' : ι' → Color K}
     (φ : (S.tensorRep c).IntertwiningMap (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
-  φ.map_smul_ofDistribMulAction g t
+  Representation.IntertwiningMap.isIntertwining _ _ φ g t
 
 /-- An equivalence of representations of tensors commutes with the actions, `φ (Λ T) = Λ φ T`. -/
 lemma equiv_smul {ι' : Type} {c' : ι' → Color K}
     (φ : (S.tensorRep c).Equiv (S.tensorRep c')) (g : G) (t : Tensor S c) :
     φ (g • t) = g • φ t :=
-  φ.map_smul_ofDistribMulAction g t
+  Representation.IntertwiningMap.isIntertwining _ _ φ.toIntertwiningMap g t
 
 /-- A linear or conjugate-linear map of tensors that commutes with `Λ` on pure tensors commutes
 with `Λ` on all tensors. -/
