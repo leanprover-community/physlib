@@ -35,9 +35,10 @@ These are implemented as rescaled/dilated versions of `VectorFourier.fourierInte
 and most results require that the input function be integrable.
 
 Results which hold for all `a` and `b` should be written in terms of `fourierIntegral a b`.
-To select a particular convention, include the line `open scoped Fourier[a][b]`
-(*e.g.* `open scoped Fourier1n1` for $(a,b) = (1,-1)$) and use the notation `𝓕` and `𝓕⁻`.
-If a common convention is missing it can be added below in section B.
+Opening the `FourierTransform` namespace allows one to use the notation `𝓕` and `𝓕⁻`
+with default values $(a,b) = (0,1)$; to use this notation with a different convention include
+the line `open scoped FourierTransform[a][b]` (*e.g.* `open scoped FourierTransform1n1`
+for $(a,b) = (1,-1)$). If a common convention is missing it can be added below in section B.
 
 ## ii. Key results
 
@@ -53,8 +54,8 @@ If a common convention is missing it can be added below in section B.
 - A. Fourier integrals
   - A.1. Two-parameter definitions
   - A.2. Basic properties
-- B. Fourier instances for different conventions
-  - B.1. `(a, b) = (0, 1)`
+- B. Fourier instances
+  - B.1. `(a, b) = (0, 1)` (default)
   - B.2. `(a, b) = (1, -1)`
 
 ## iv. References
@@ -189,16 +190,22 @@ lemma fourierIntegralInv_continuous {g : WaveVectorSpace d → E} (hg : Integrab
 
 end FourierIntegral
 
+end WaveVectorSpace
+
 /-!
-## B. Fourier instances for different conventions
+## B. Fourier instances
 -/
 
-noncomputable section Conventions
+namespace FourierTransform
+
+noncomputable section FourierInstances
+
+open WaveVectorSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
-### B.1. `(a, b) = (0, 1)`
+### B.1. `(a, b) = (0, 1)` (default)
 
 $$
 \tilde{f}(k) := \frac{1}{\sqrt{2\pi}} \int f(x)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}x
@@ -206,8 +213,6 @@ $$
 f(x) := \frac{1}{\sqrt{2\pi}} \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}k
 $$
 -/
-
-namespace Fourier01
 
 /-- Notation for the Fourier transform `fourierIntegral 0 1`. -/
 scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
@@ -217,7 +222,6 @@ scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) whe
 scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 0 1
 
-end Fourier01
 
 /-!
 ### B.2. `(a, b) = (1, -1)`
@@ -229,7 +233,7 @@ f(x) := \frac{1}{2\pi} \int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mat
 $$
 -/
 
-namespace Fourier1n1
+namespace FourierTransform1n1
 
 /-- Notation for the Fourier transform `fourierIntegral 1 (-1)`. -/
 scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) where
@@ -239,8 +243,8 @@ scoped instance : FourierTransform (Space d → E) (WaveVectorSpace d → E) whe
 scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) where
   fourierInv := fourierIntegralInv 1 (-1)
 
-end Fourier1n1
+end FourierTransform1n1
 
-end Conventions
+end FourierInstances
 
-end WaveVectorSpace
+end FourierTransform
