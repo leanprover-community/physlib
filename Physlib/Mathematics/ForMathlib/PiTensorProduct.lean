@@ -13,25 +13,22 @@ public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 
 # Matrices of `PiTensorProduct.map`, dimension and contraction of `PiTensorProduct`
 
-The matrix of a family of linear maps in the product basis of a `PiTensorProduct`, the dimension
-of a `PiTensorProduct`, `PiTensorProduct.map` on an empty index type, and the contraction of pairs
-of factors.
+This file extends Mathlib's results on the tensor product of two spaces to the tensor product of a
+family, and adds the contraction of its factors in pairs.
 
 ## i. Overview
 
-`PiTensorProduct.map f` applies `f i` at every index `i`. In the product bases
-`Basis.piTensorProduct b`, its matrix is the n-ary Kronecker product of the matrices of the `f i`:
-its entry at `(φ, ψ)` is the product of the entries at `(φ i, ψ i)`. Mathlib has the binary case,
-`TensorProduct.toMatrix_map`.
+A tensor with several indices lies in the tensor product `⨂[R] i, M i` of a family of spaces, one
+space `M i` for each index `i`. Mathlib proves several facts about the tensor product of two
+spaces, `M ⊗ N`, that it does not prove for a family. This file proves them for a family: the
+matrix of a map applied at every index (A), the dimension (B), and the case with no indices (C). It
+also defines contraction, which pairs indices and removes them (D).
 
-The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`, as
-`Module.finrank_tensorProduct` for two factors.
-
-With no indices, `⨂[R] i, M i` is `R` and `PiTensorProduct.map f` is the identity.
-
-On the index type `κ ⊕ (J ⊕ J)`, a family of pairings `p j` of the factors at `inr (inl j)` and
-`inr (inr j)` contracts `⨂[R] i, M i` to the tensor product of the factors at `inl x`, as a trace
-`T^ρμ_μ` pairs an upper and a lower index.
+For example, a Lorentz transformation acts on `T^μ_ν` by `Λ` at the up index and `(Λ⁻¹)ᵀ` at the
+down index. Its matrix on the `16` components is the product of the two, with entries
+`Λ^μ_σ (Λ⁻¹)^τ_ν`. The space of `T^μ_ν` has dimension `4 · 4 = 16`. A tensor with no indices is a
+number, which no transformation changes. The trace `T^μ_μρ` contracts the first two indices and
+keeps `ρ`.
 
 ## ii. Key results
 
@@ -65,6 +62,12 @@ variable {ι R : Type*} {M N : ι → Type*}
 
 ## A. Matrices in the product basis
 
+`PiTensorProduct.map f` applies the map `f i` at every index `i`. In the product bases
+`Basis.piTensorProduct b`, its matrix entry at `(φ, ψ)` is the product over `i` of the entries of
+the matrix of `f i` at `(φ i, ψ i)`. This is the Kronecker product of the matrices, for a family.
+For example, the entry of the Lorentz transformation of `T^μ_ν` at `((μ, ν), (σ, τ))` is
+`Λ^μ_σ (Λ⁻¹)^τ_ν`. Mathlib has two factors, `TensorProduct.toMatrix_map`.
+
 -/
 
 /-- The matrix of `PiTensorProduct.map f` in the product bases is the n-ary Kronecker product of
@@ -84,6 +87,10 @@ lemma PiTensorProduct.toMatrix_map_apply [CommSemiring R] [∀ i, AddCommMonoid 
 
 ## B. Dimension
 
+The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`. For example, `T^μ_νρ`
+in four dimensions has `4 · 4 · 4 = 64` components. Mathlib has two factors,
+`Module.finrank_tensorProduct`.
+
 -/
 
 /-- The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`. -/
@@ -100,6 +107,10 @@ lemma Module.finrank_piTensorProduct [CommRing R] [StrongRankCondition R] [Finty
 
 ## C. Empty index types
 
+With no indices, `⨂[R] i, M i` is the numbers `R`, Mathlib's `PiTensorProduct.isEmptyEquiv`, and a
+map applied at every index applies nothing, so it is the identity. For example, a scalar is
+unchanged by every Lorentz transformation.
+
 -/
 
 /-- With no indices, `PiTensorProduct.map f` is the identity. -/
@@ -112,6 +123,13 @@ lemma PiTensorProduct.map_eq_id_of_isEmpty [CommSemiring R] [∀ i, AddCommMonoi
 /-!
 
 ## D. Contraction of pairs of factors
+
+The indices are arranged as `κ ⊕ (J ⊕ J)`. The indices `inl x`, for `x` in `κ`, are kept. Each `j`
+in `J` is a pair of indices, `inr (inl j)` and `inr (inr j)`, contracted by a pairing `p j` to a
+number. On a pure tensor, `contrPairs p` multiplies the kept vectors by the pairings of the pairs.
+For example, the trace `T^μ_μρ` has `κ` the index `ρ` and one pair `j`, the up index `μ` and the
+down index `μ`, with the pairing `α_μ v^μ`. Any arrangement of indices is put in this form by
+reindexing.
 
 -/
 
