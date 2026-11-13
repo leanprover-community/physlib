@@ -72,9 +72,7 @@ these maps is invariant with no further proof.
 - B. Tensor products of equivalences
 - C. Tensor products of families
   - C.1. The representation on a tensor product of a family
-  - C.2. Mathlib's equivalences of tensor products
-  - C.3. Commuting on pure tensors
-  - C.4. Contraction of pairs of factors
+  - C.2. Maps of representations
 - D. Representations given by actions
 
 ## iv. References
@@ -143,9 +141,9 @@ lemma Representation.Equiv.tensorCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π
 ### C.1. The representation on a tensor product of a family
 
 `piTprod ρ` is the representation `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`, through Mathlib's
-`PiTensorProduct.map`. It is the n-ary `Representation.tprod`. When every `f i` intertwines `ρ i`
-and `σ i`, `PiTensorProduct.map f` intertwines `piTprod ρ` and `piTprod σ` (`piTprodMap`), and
-`piTprodCongr` is the same for equivalences of representations.
+`PiTensorProduct.map`. It is the n-ary `Representation.tprod`. A semilinear map out of
+`⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors `⨂ₜ i, m i` commutes with it on all
+tensors (`map_piTprod_of_tprod`), since pure tensors span `⨂ i, M i`.
 
 -/
 
@@ -167,6 +165,32 @@ lemma Representation.piTprod_apply (ρ : Π i, Representation k G (M i)) (g : G)
 lemma Representation.piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G) (m : Π i, M i) :
     Representation.piTprod ρ g (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, ρ i g (m i) :=
   PiTensorProduct.map_tprod _ _
+
+/-- A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors commutes
+with it on all tensors. -/
+lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Representation k G (M i)}
+    (f : (⨂[k] i, M i) →ₛₗ[φ] U) (g : G)
+    (h : ∀ m : Π i, M i, f (Representation.piTprod ρ g (⨂ₜ[k] i, m i)) = τ g (f (⨂ₜ[k] i, m i)))
+    (t : ⨂[k] i, M i) : f (Representation.piTprod ρ g t) = τ g (f t) := by
+  induction t using PiTensorProduct.induction_on with
+  | smul_tprod r m => rw [map_smul, map_smulₛₗ, h, map_smulₛₗ, map_smul]
+  | add x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
+
+/-!
+
+### C.2. Maps of representations
+
+Mathlib's linear maps of `⨂` commute with `piTprod`, so they are maps of representations. When
+every `f i` intertwines `ρ i` and `σ i`, `PiTensorProduct.map f` intertwines `piTprod ρ` and
+`piTprod σ` (`piTprodMap`), and `piTprodCongr` is the same for equivalences of representations.
+`piTprodReindex` reindexes the factors along `e : ι ≃ ι'`, `⨂ i, v i ↦ ⨂ j, v (e.symm j)`.
+`piTprodSum` joins the tensor products of the two halves of a family over `ι₁ ⊕ ι₂`, and
+`piTprodOfSubsingleton` identifies `ρ i₀` with the tensor product of a family over a subsingleton
+index type. The contraction `PiTensorProduct.contrPairs p` of the factors of a family over
+`κ ⊕ (J ⊕ J)` in pairs, by the pairings `p j`, intertwines `piTprod ρ` and `piTprod` of the kept
+factors when every pairing is invariant.
+
+-/
 
 /-- `PiTensorProduct.map f` intertwines `piTprod ρ` and `piTprod σ` when every `f i` intertwines
 `ρ i` and `σ i`. -/
@@ -194,18 +218,6 @@ lemma Representation.Equiv.piTprodCongr_tprod {ρ : Π i, Representation k G (M 
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
     Representation.Equiv.piTprodCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
-
-/-!
-
-### C.2. Mathlib's equivalences of tensor products
-
-Three of Mathlib's linear equivalences of `⨂` commute with `piTprod`, so they are equivalences of
-representations. `piTprodReindex` reindexes the factors along `e : ι ≃ ι'`,
-`⨂ i, v i ↦ ⨂ j, v (e.symm j)`. `piTprodSum` joins the tensor products of the two halves of a
-family over `ι₁ ⊕ ι₂`. `piTprodOfSubsingleton` identifies `ρ i₀` with the tensor product of a
-family over a subsingleton index type.
-
--/
 
 /-- Reindexing the factors of a tensor product of representations along `e : ι ≃ ι'`,
 `⨂ i, v i ↦ ⨂ j, v (e.symm j)`. It is Mathlib's `PiTensorProduct.reindex` with the actions
@@ -257,35 +269,6 @@ noncomputable def Representation.Equiv.piTprodOfSubsingleton [Subsingleton ι]
     ext i
     obtain rfl := Subsingleton.elim i i₀
     simp
-
-/-!
-
-### C.3. Commuting on pure tensors
-
-A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors `⨂ₜ i, m i`
-commutes with it on all tensors (`map_piTprod_of_tprod`), since pure tensors span `⨂ i, M i`.
-
--/
-
-/-- A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors commutes
-with it on all tensors. -/
-lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Representation k G (M i)}
-    (f : (⨂[k] i, M i) →ₛₗ[φ] U) (g : G)
-    (h : ∀ m : Π i, M i, f (Representation.piTprod ρ g (⨂ₜ[k] i, m i)) = τ g (f (⨂ₜ[k] i, m i)))
-    (t : ⨂[k] i, M i) : f (Representation.piTprod ρ g t) = τ g (f t) := by
-  induction t using PiTensorProduct.induction_on with
-  | smul_tprod r m => rw [map_smul, map_smulₛₗ, h, map_smulₛₗ, map_smul]
-  | add x y hx hy => rw [map_add, map_add, hx, hy, map_add, map_add]
-
-/-!
-
-### C.4. Contraction of pairs of factors
-
-`PiTensorProduct.contrPairs p` contracts the factors of a family over `κ ⊕ (J ⊕ J)` in pairs, by
-the pairings `p j`, and keeps the factors over `κ`. When every pairing is invariant, the
-contraction intertwines `piTprod ρ` and `piTprod` of the kept factors.
-
--/
 
 /-- `PiTensorProduct.contrPairs p` intertwines `piTprod ρ` and `piTprod` of the kept factors when
 every pairing `p j` is invariant. -/
