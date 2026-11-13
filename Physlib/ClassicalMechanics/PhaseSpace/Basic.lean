@@ -170,9 +170,11 @@ lemma position_ofNormedSpace (p : E →L[ℝ] ℝ) (q : E) :
 
 /-- The constructed momentum covector acts on tangent vectors through their normed-space
 coordinates. -/
+-- Fix the coercion's tangent-space index at `q` to keep the statement in simp normal form.
 @[simp]
 lemma momentum_ofNormedSpace_apply (p : E →L[ℝ] ℝ) (q : E) (v : TangentSpace 𝓘(ℝ, E) q) :
-    (ofNormedSpace p q).momentum v = p (NormedSpace.fromTangentSpace q v) := rfl
+    DFunLike.coe (F := TangentSpace 𝓘(ℝ, E) q →L[ℝ] ℝ) (ofNormedSpace p q).momentum v =
+      p (NormedSpace.fromTangentSpace q v) := rfl
 
 end NormedSpace
 
@@ -210,7 +212,8 @@ lemma position_ofInnerProductSpace (p q : E) :
 /-- The momentum covector associated to `p` acts by taking the inner product with `p`. -/
 @[simp]
 lemma momentum_ofInnerProductSpace_apply (p q : E) (v : TangentSpace 𝓘(ℝ, E) q) :
-    (ofInnerProductSpace p q).momentum v = inner ℝ p (NormedSpace.fromTangentSpace q v) := by
+    DFunLike.coe (F := TangentSpace 𝓘(ℝ, E) q →L[ℝ] ℝ) (ofInnerProductSpace p q).momentum v =
+      inner ℝ p (NormedSpace.fromTangentSpace q v) := by
   change (InnerProductSpace.toDual ℝ E p) (NormedSpace.fromTangentSpace q v) = _
   exact InnerProductSpace.toDual_apply_apply
 
