@@ -463,6 +463,7 @@ Qubit.Y_Z_anticomm
 Qubit.Z_X_anticomm
 
 [PhyslibAlpha]
+ClassicalMechanics.LagrangeThreeBody.exists_nondegenerate_lagrange_orbit
 ClassicalFieldTheory.Local.isCritical_iff_eulerLagrange_zero
 Electromagnetism.ThreeDimension.continuityEquation
 Electromagnetism.TempDistElectromagneticPotential.continuityEquation
