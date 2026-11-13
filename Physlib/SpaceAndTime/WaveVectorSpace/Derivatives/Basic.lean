@@ -16,6 +16,9 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 
 ## iii. Table of contents
 
+- A. Derivatives of functions on `WaveVectorSpace d`
+  - A.1. Constant functions
+
 ## iv. References
 
 -/
@@ -42,5 +45,16 @@ lemma deriv_eq {M : Type*} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
     (i : Fin d) (f : WaveVectorSpace d → M) (k : WaveVectorSpace d) :
     ∂[i] f k = fderiv ℝ f k (basis i) :=
   rfl
+
+/-!
+### A.1. Constant functions
+-/
+
+@[simp]
+lemma deriv_const
+    {M : Type*} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M] (i : Fin d) (m : M) :
+    ∂[i] (fun _ : WaveVectorSpace d ↦ m) = 0 := by
+  ext
+  simp [deriv_eq]
 
 end WaveVectorSpace
