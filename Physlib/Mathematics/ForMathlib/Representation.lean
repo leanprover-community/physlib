@@ -45,14 +45,13 @@ property of a Lorentz transformation.
 
 A tensor with several indices has one representation for each index, a family `ρ i` of
 representations of `G` on spaces `M i`. For `T^μ_ν` the family is `Λ` on the vectors at the up index
-and `(Λ⁻¹)ᵀ` on the covectors at the down index. The tensor lies in the tensor product
-`⨂[k] i, M i` of the family. Mathlib has the representation `ρ.tprod τ` on the tensor product of
-two representations, and the tensor product `IntertwiningMap.tensor` of two intertwining maps, but
-no representation on the tensor product of a family. So Mathlib's linear maps of `⨂`, such as
-`PiTensorProduct.reindex`, are not maps of representations.
-This file defines that representation, `piTprod ρ`, and proves that applying maps at the factors,
-reordering, grouping and contracting factors commute with it, so that they are maps of
-representations (C).
+and `(Λ⁻¹)ᵀ` on the covectors at the down index. The tensor lies in the tensor product `⨂[k] i, M i`
+of the family. Mathlib has the representation `ρ.tprod τ` on the tensor product of two
+representations, and the tensor product `IntertwiningMap.tensor` of two intertwining maps, but no
+representation on the tensor product of a family. So Mathlib's linear maps of `⨂`, such as
+`PiTensorProduct.reindex`, are not stated as maps of representations. This file defines that
+representation, `piTprod ρ`, and proves that applying maps at the factors, reordering, grouping and
+contracting factors commute with it, so that they are maps of representations (C).
 
 In the same way, the Lorentz tensors `T^μ_νρ` lie in `V ⊗ V* ⊗ V*`, with `Λ` on the vectors `V` and
 `(Λ⁻¹)ᵀ` on the covectors `V*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping them as
@@ -62,6 +61,7 @@ these maps is invariant with no further proof.
 
 ## ii. Key results
 
+- `Representation.Equiv.tensorCongr` : the tensor product of two equivalences of representations.
 - `Representation.piTprod` : the representation on `⨂[k] i, M i` of a family of representations.
 - `Representation.IsIntertwiningMap.piTprodMap` and `Representation.Equiv.piTprodCongr` :
   `PiTensorProduct.map` and `PiTensorProduct.congr` of maps of representations.

@@ -27,14 +27,13 @@ with no renumbering into `Fin (n + m)`.
 For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
 and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`.
 
-The operations on tensors in the rest of the library are built from two kinds of linear map defined
-here. A map at every index (D.1) acts on each index, as a Lorentz transformation does,
-`(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the representation of the color of each index. A map at one index
-(D.2) changes that index and keeps the others, as lowering the index `ν` with the metric does,
-`T^μ_ν = η_νρ T^μρ`, which changes its color to `⟨vec, down⟩`. Since the metric is invertible and
-invariant under the group, lowering is an equivalence of representations, with raising as its
-inverse (D.4). Reindexing uses the map at every index, and contracting an index with a tensor on
-two indices, `T^…μ… F_μ^ν`, is a map at that index.
+Many operations on tensors are built from two kinds of linear map defined here. A map at every index
+(D.1) acts on each index, as a Lorentz transformation does, `(ΛT)^μν = Λ^μ_σ Λ^ν_τ T^στ`, by the
+representation of the color of each index. A map at one index (D.2) changes that index and keeps the
+others, as lowering the index `ν` with the metric does, `T^μ_ν = η_νρ T^μρ`, which changes its color
+to `⟨vec, down⟩`. Since the metric is invertible and invariant under the group, lowering is an
+equivalence of representations, with raising as its inverse (D.4). Reindexing uses the map at every
+index, and contracting an index with a tensor on two indices, `T^…μ… F_μ^ν`, is a map at that index.
 
 Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
 and commuting with the group (B.2), are proved once here, and not again for each operation. The
@@ -99,8 +98,8 @@ becomes an equality of their values on `S.pure p`, for any family of vectors `p`
 -/
 
 /-- The tensors with colors `c : ι → Color K`, the space `⨂[k] i, S.V (c i)`. It is a `def`, not an
-`abbrev`, so that goals show `Tensor S c` instead of the product. Mathlib's results on `⨂` still
-apply to it, since Lean unfolds the definition. -/
+`abbrev`, so that goals show `Tensor S c` instead of the product. Mathlib's results on `⨂` apply to
+it by unfolding, and its instances are copied from `⨂`. -/
 def _root_.Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
   ⨂[k] i, S.V (c i)
 
@@ -142,15 +141,14 @@ lemma ext_pure {E : Type*} [AddCommMonoid E] [Module k E] {f g : Tensor S c →�
 ### B.1. The action on tensors
 
 A group element `Λ` acts on every index by the representation of its color,
-`Λ (u ⊗ α) = Λu ⊗ Λα` (`smul_pure`). This is the representation `S.tensorRep c`,
-`Representation.piTprod` on `⨂[k] i, S.V (c i)`. It is written `Λ • T` under
-`open scoped Tensor`.
+`Λ • (u ⊗ α) = Λu ⊗ (Λ⁻¹)ᵀα` (`smul_pure`). This is the representation `S.tensorRep c`,
+`Representation.piTprod` on `⨂[k] i, S.V (c i)`. It is written `Λ • T` under `open scoped Tensor`.
 
 -/
 
 variable (S) in
 /-- The action of the group on tensors, on every index by the representation of its color,
-`Λ (u ⊗ α ⊗ …) = Λu ⊗ Λα ⊗ …`. It is `Representation.piTprod` of the representations of the
+`Λ • (u ⊗ α ⊗ …) = Λu ⊗ (Λ⁻¹)ᵀα ⊗ …`. It is `Representation.piTprod` of the representations of the
 colors. Maps of tensors that commute with the action are Mathlib's `Representation.Equiv` and
 `Representation.IntertwiningMap` for it. -/
 noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor S c) :=
@@ -171,6 +169,7 @@ noncomputable abbrev smul : SMul G (Tensor S c) := distribMulAction.toSMul
 
 scoped[Tensor] attribute [instance 1100] Tensor.Species.smul
 
+/-- On a pure tensor the group acts on each vector by the representation of its color. -/
 @[simp]
 lemma smul_pure (g : G) (f : Π i, S.V (c i)) :
     g • S.pure f = S.pure fun i => S.rep (c i) g (f i) :=
@@ -385,12 +384,12 @@ lemma congrIndices_pure (f : Π x, (S.rep (c x)).Equiv (S.rep (c' x))) (p : Π x
 
 ### D.2. A linear map at one index
 
-`mapAt i f h` applies a linear map `f` at the index `i` and keeps the others, `u ⊗ v ↦ u ⊗ f v`.
-The map `f` may change the color at `i`, as lowering turns `⟨vec, up⟩` into `⟨vec, down⟩`. So the
-result has other colors `c'`, and `h : ∀ x, x ≠ i → c x = c' x` says that they agree with `c` at
-the other indices. There the vectors are moved along `h` by `S.cast`. `indexMapsAt i f h` is the
-family with `f` at `i` and `S.cast` elsewhere, and `mapAt` is `mapIndices` of it. Contracting with
-a tensor `F` on two indices is `mapAt` of `F` read as a linear map (`contr_matMulAt`).
+`mapAt i f h` applies a linear map `f` at the index `i` and keeps the others, `u ⊗ v ↦ u ⊗ f v`. The
+map `f` may change the color at `i`, as lowering turns `⟨vec, up⟩` into `⟨vec, down⟩`. So the result
+has other colors `c'`, and `h : ∀ x, x ≠ i → c x = c' x` says that they agree with `c` at the other
+indices. There the vectors are moved along `h` by `S.cast`. `indexMapsAt i f h` is the family with
+`f` at `i` and `S.cast` elsewhere, and `mapAt` is `mapIndices` of it. Contracting with a tensor `F`
+on two indices is `mapAt` of `F` read as a linear map.
 
 -/
 
