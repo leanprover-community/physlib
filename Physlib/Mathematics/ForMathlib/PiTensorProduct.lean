@@ -134,12 +134,18 @@ lemma PiTensorProduct.map_eq_id_of_isEmpty [CommSemiring R] [∀ i, AddCommMonoi
 
 ## D. Contraction of pairs of factors
 
-The indices are arranged as `κ ⊕ (J ⊕ J)`. The indices `inl x`, for `x` in `κ`, are kept. Each `j`
-in `J` is a pair of indices, `inr (inl j)` and `inr (inr j)`, contracted by a pairing `p j` to a
-scalar. On a pure tensor, `contrPairs p` multiplies the kept vectors by the pairings of the pairs.
-For example, the trace `T^μ_μρ` has `κ` the index `ρ` and one pair `j`, the up index `μ` and the
-down index `μ`, with the pairing `α_μ v^μ`. Any arrangement of indices is put in this form by
-reindexing.
+Contraction pairs some indices of a tensor, turns each pair into a scalar, and keeps the other
+indices. To say which indices are paired, the index type is `κ ⊕ (J ⊕ J)`. An index of `κ ⊕ (J ⊕ J)`
+is tagged by Mathlib's `Sum.inl` or `Sum.inr`, for the left or the right side of `⊕`. An index
+`inl x`, for `x` in `κ`, is kept. Each `j` in `J` is a pair, with first index `inr (inl j)` and
+second index `inr (inr j)`. A pairing `p j` turns the two vectors of the pair `j` into a scalar. On
+a pure tensor, `contrPairs p` keeps the vectors at the kept indices and multiplies them by the
+product of the pairings (`contrPairs_tprod`). A tensor with its indices in another order is first
+reordered into this form.
+
+For example, `T^μ_μρ` has three indices, up `μ`, down `μ` and down `ρ`. Its kept index is `ρ`, so
+`κ` has one element. Its one pair is up `μ` with down `μ`, so `J` has one element. The pairing is
+`α_μ u^μ`, and on a pure tensor the contraction is `u ⊗ α ⊗ β ↦ (α_μ u^μ) β`.
 
 -/
 
