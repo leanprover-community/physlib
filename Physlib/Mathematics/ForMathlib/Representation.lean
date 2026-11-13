@@ -96,8 +96,9 @@ invariant. Lowering an index with the metric, `φ v = η v`, is an intertwining 
 two routes in the square give `η (Λ v)` and `(Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the
 defining property of a Lorentz transformation.
 
-So if `ρ g v = v`, then `σ g (φ v) = φ (ρ g v) = φ v`, and `φ v` is invariant (`map_invariant`). An intertwining map from
-the trivial representation on `k` picks out the invariant vector `φ 1` (`map_one_invariant`).
+An intertwining map sends invariant vectors to invariant vectors. If `ρ g v = v`, then
+`σ g (φ v) = φ (ρ g v) = φ v` (`map_invariant`). An intertwining map from the trivial
+representation on `k` picks out the invariant vector `φ 1` (`map_one_invariant`).
 
 -/
 
