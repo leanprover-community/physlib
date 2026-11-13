@@ -17,10 +17,22 @@ Mathlib's linear maps of such products into maps of representations.
 
 ## i. Overview
 
-A representation `ρ` of a group `G` on a space `V` says how each `g` acts on `V`. A map of
-representations from `ρ` to `σ` on `W` is a linear map `φ : V → W` that commutes with the group,
-`φ (ρ g v) = σ g (φ v)`. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is
-invertible. It sends an invariant vector, `ρ g v = v`, to an invariant vector (A).
+A representation `ρ` of a group or monoid `G` on a space `V` says how each element `g` of `G` acts
+on `V`, by the linear map `ρ g`. A map of representations from `ρ` to `σ` on `W` is a linear map
+`φ : V → W` that commutes with the group, `φ ∘ ρ g = σ g ∘ φ` for every `g`, so that the square
+
+```
+        ρ g
+    V ──────► V
+    │         │
+  φ │         │ φ
+    ▼         ▼
+    W ──────► W
+        σ g
+```
+
+commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible. It sends an
+invariant vector, `ρ g v = v`, to an invariant vector `φ v` (A).
 
 Mathlib has the representation `ρ.tprod τ` on the tensor product of two representations, and the
 tensor product `IntertwiningMap.tensor` of two intertwining maps. It has no representation on the
@@ -78,8 +90,8 @@ variable {k G V W U X : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Mo
 
 ## A. Invariant vectors
 
-An intertwining map `φ` from `ρ` to `σ` satisfies `φ (ρ g v) = σ g (φ v)`, so it sends an
-invariant vector, `ρ g v = v`, to an invariant vector (`map_invariant`). An intertwining map from
+An intertwining map `φ` from `ρ` to `σ` satisfies `φ ∘ ρ g = σ g ∘ φ`. So if `ρ g v = v`, then
+`σ g (φ v) = φ (ρ g v) = φ v`, and `φ v` is invariant (`map_invariant`). An intertwining map from
 the trivial representation on `k` picks out the invariant vector `φ 1` (`map_one_invariant`).
 
 -/
