@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Chengyuan AI Lab. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chengyuan AI Lab
+Authors: Qianli Ma
 -/
 module
 
