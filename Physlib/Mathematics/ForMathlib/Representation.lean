@@ -315,8 +315,18 @@ end
 
 ## D. Representations given by actions
 
-A representation can be given by an action, `Representation.ofDistribMulAction k G V`, with
-`ρ g v = g • v`. Maps of such representations commute with the actions, `φ (g • v) = g • φ v`.
+Mathlib writes a representation in two forms. A `Representation` `ρ` gives the linear map `ρ g` of
+each element `g`. The notation `g • v`, a Mathlib `DistribMulAction`, is the same linear map
+attached to the type of `v`, so that Lean finds it without `ρ` being named.
+`Representation.ofDistribMulAction k G V` is the representation of such an action,
+`ρ g v = g • v`. For example, `ρ g v` and `g • v` both stand for `Λ v`, the vector `v` transformed
+by the matrix `Λ` of a Lorentz transformation `g`.
+
+Tensors are written with the notation, `g • T`, defined as the representation applied to `T`. Maps
+of representations are stated with `ρ`, `φ (ρ g v) = σ g (φ v)`. `map_smul_ofDistribMulAction`
+restates this with the notation, `φ (g • v) = g • φ v`. For example, lowering an index gives
+`lower (g • T) = g • lower T`, so boosting and then lowering is the same as lowering and then
+boosting.
 
 -/
 
