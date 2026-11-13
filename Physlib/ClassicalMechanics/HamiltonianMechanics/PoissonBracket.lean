@@ -43,6 +43,7 @@ derivatives on phase space.
   a trajectory is the sum of its gradients paired with the trajectory's velocities.
 - `deriv_comp_eq_poissonBracket` : along a solution of Hamilton's equations, the time derivative of
   an observable is its Poisson bracket with the Hamiltonian.
+- `hasDerivAt_comp_eq_poissonBracket` gives the same identity at a single real time.
 
 ## iii. Table of contents
 
@@ -207,6 +208,21 @@ lemma poissonBracket_mul_right (f g₁ g₂ : X → X → ℝ) (p q : X)
 
 -/
 
+private lemma fderiv_uncurry_apply (f : X → X → ℝ) {p q : X}
+    (hf : DifferentiableAt ℝ (Function.uncurry f) (p, q)) (dp dq : X) :
+    fderiv ℝ (Function.uncurry f) (p, q) (dp, dq) =
+      ⟪gradient (fun p' => f p' q) p, dp⟫_ℝ + ⟪gradient (fun q' => f p q') q, dq⟫_ℝ := by
+  have h1 : HasFDerivAt (fun p' => f p' q)
+      ((fderiv ℝ (Function.uncurry f) (p, q)).comp (ContinuousLinearMap.inl ℝ X X)) p :=
+    HasFDerivAt.comp (f := fun e : X => (e, q)) p hf.hasFDerivAt
+      (hasFDerivAt_prodMk_left p q)
+  have h2 : HasFDerivAt (fun q' => f p q')
+      ((fderiv ℝ (Function.uncurry f) (p, q)).comp (ContinuousLinearMap.inr ℝ X X)) q :=
+    HasFDerivAt.comp (f := fun e : X => (p, e)) q hf.hasFDerivAt
+      (hasFDerivAt_prodMk_right p q)
+  rw [inner_gradient_left, inner_gradient_left, h1.fderiv, h2.fderiv]
+  simp [ContinuousLinearMap.comp_apply, ← map_add]
+
 /-- The time derivative of a phase-space function `f` composed with trajectories `p q : Time → X`
 is the sum of the gradients of `f` paired with the velocities `∂ₜ p` and `∂ₜ q`. -/
 lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) (t : Time)
@@ -215,21 +231,12 @@ lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) 
     ∂ₜ (fun t => f (p t) (q t)) t =
       ⟪gradient (fun p' => f p' (q t)) (p t), ∂ₜ p t⟫_ℝ +
       ⟪gradient (fun q' => f (p t) q') (q t), ∂ₜ q t⟫_ℝ := by
-  have h1 : HasFDerivAt (fun p' => f p' (q t))
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp (ContinuousLinearMap.inl ℝ X X)) (p t) :=
-    HasFDerivAt.comp (f := fun e : X => (e, q t)) (p t) hf.hasFDerivAt
-      (hasFDerivAt_prodMk_left (p t) (q t))
-  have h2 : HasFDerivAt (fun q' => f (p t) q')
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp (ContinuousLinearMap.inr ℝ X X)) (q t) :=
-    HasFDerivAt.comp (f := fun e : X => (p t, e)) (q t) hf.hasFDerivAt
-      (hasFDerivAt_prodMk_right (p t) (q t))
   have hF : HasFDerivAt (fun t => f (p t) (q t))
       ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp ((fderiv ℝ p t).prod (fderiv ℝ q t))) t :=
     HasFDerivAt.comp (f := fun t => (p t, q t)) t hf.hasFDerivAt
       (hp.hasFDerivAt.prodMk hq.hasFDerivAt)
-  rw [inner_gradient_left, inner_gradient_left, h1.fderiv, h2.fderiv, Time.deriv_eq, hF.fderiv]
-  simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
-    ContinuousLinearMap.inl_apply, ContinuousLinearMap.inr_apply, ← Time.deriv_eq, ← map_add]
+  rw [Time.deriv_eq, hF.fderiv]
+  exact fderiv_uncurry_apply f hf _ _
 
 /-!
 
@@ -248,5 +255,20 @@ theorem deriv_comp_eq_poissonBracket (H : Time → X → X → ℝ) (p q : Time 
   rw [deriv_comp_eq_inner_gradient_add f p q t hp hq hf, hq' t, hp' t, inner_neg_right]
   unfold poissonBracket
   ring
+
+/-- The Poisson bracket gives the derivative of an observable at a real time where the
+position and momentum derivatives satisfy Hamilton's equations. -/
+lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X} {t : ℝ}
+    (hp : HasDerivAt p (-gradient (fun p' => H (p t) p') (q t)) t)
+    (hq : HasDerivAt q (gradient (fun q' => H q' (q t)) (p t)) t)
+    (hf : DifferentiableAt ℝ (Function.uncurry f) (p t, q t)) :
+    HasDerivAt (fun s => f (p s) (q s)) (poissonBracket f H (p t) (q t)) t := by
+  have hpq : HasDerivAt (fun s => (p s, q s))
+      (-gradient (fun q' => H (p t) q') (q t), gradient (fun p' => H p' (q t)) (p t)) t :=
+    by simpa [ContinuousLinearMap.prod_apply] using
+      (hp.hasFDerivAt.prodMk hq.hasFDerivAt).hasDerivAt
+  have hd := hf.hasFDerivAt.comp_hasDerivAt t hpq
+  rw [fderiv_uncurry_apply f hf, inner_neg_right, neg_add_eq_sub, ← poissonBracket] at hd
+  exact hd
 
 end ClassicalMechanics
