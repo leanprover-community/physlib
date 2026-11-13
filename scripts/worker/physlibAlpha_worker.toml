@@ -5,18 +5,18 @@
 # reads this file and the skills from upstream master (or from a checkout, with --tasks-from).
 
 # The task run when none is named.
-default = "alpha-next-step"
+default = "physlibalpha-next-step"
 
 # For each task, the title of its PR. It is written here, by a human, never by the AI.
 # A task with `input = true` must be given an input, `<task> "<input>"`, which the worker puts
 # before the skill's text in the prompt, as the input `X`.
 
-[tasks.alpha-next-step]
+[tasks.physlibalpha-next-step]
 title = "feat(PhyslibAlpha): add a definition expanding PhyslibAlpha"
 
-[tasks.alpha-align-with-handbook]
+[tasks.physlibalpha-align-with-handbook]
 title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"
 
-[tasks.alpha-add]
+[tasks.physlibalpha-add]
 title = "feat(PhyslibAlpha): add a given result to PhyslibAlpha"
 input = true

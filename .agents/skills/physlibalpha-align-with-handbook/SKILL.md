@@ -1,5 +1,5 @@
 ---
-name: alpha-align-with-handbook
+name: physlibalpha-align-with-handbook
 description: Pick a single PhyslibAlpha file, and clean it up to the standard of AGENTS.md without changing what it says. A task of physlibAlpha-worker.
 ---
 

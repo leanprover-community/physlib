@@ -1,5 +1,5 @@
 ---
-name: alpha-add
+name: physlibalpha-add
 description: Add a given result to PhyslibAlpha whilst merging it
   with the rest of the library.
 ---

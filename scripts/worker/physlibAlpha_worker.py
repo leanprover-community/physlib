@@ -17,15 +17,15 @@ or as the backend of a more sophisticated engine.
    `scripts/worker/physlibAlpha_worker.toml` are tasks of the worker. That file also gives each
    task's PR title, and which task is the default, for example:
 
-       default = "alpha-next-step"
+       default = "physlibalpha-next-step"
 
-       [tasks.alpha-next-step]
+       [tasks.physlibalpha-next-step]
        title = "feat(PhyslibAlpha): add a definition expanding PhyslibAlpha"
 
-       [tasks.alpha-align-with-handbook]
+       [tasks.physlibalpha-align-with-handbook]
        title = "refactor(PhyslibAlpha): tidy a PhyslibAlpha file"
 
-       [tasks.alpha-add]
+       [tasks.physlibalpha-add]
        title = "feat(PhyslibAlpha): add a given result to PhyslibAlpha"
        input = true
 
@@ -59,12 +59,12 @@ only define the agents and tasks that the later steps use):
 From the root of a Physlib checkout, run the file directly with Python (3.11 or later; the script
 uses only Python's standard library):
 
-    python3 scripts/worker/physlibAlpha_worker.py alpha-align-with-handbook
+    python3 scripts/worker/physlibAlpha_worker.py physlibalpha-align-with-handbook
 
 To test changes to the tasks or the config before they reach master, read them from your
 checkout instead:
 
-    python3 scripts/worker/physlibAlpha_worker.py alpha-align-with-handbook --tasks-from .
+    python3 scripts/worker/physlibAlpha_worker.py physlibalpha-align-with-handbook --tasks-from .
 
 A local run does everything a real one does, including opening a PR on
 `leanprover-community/physlib`.

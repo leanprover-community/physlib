@@ -1,5 +1,5 @@
 ---
-name: alpha-next-step
+name: physlibalpha-next-step
 description: Add one definition to PhyslibAlpha that expands what is already there to more of physics, in a new file, with results about it. A task of physlibAlpha-worker.
 ---
 
