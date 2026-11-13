@@ -12,8 +12,8 @@ public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 
 # Tensor products of representations and invariant vectors
 
-The representation on the tensor product of a family of representations, the maps of
-representations between such products, and invariant vectors under intertwining maps.
+This file gives the representation on the tensor product of a family of representations, and makes
+Mathlib's linear maps of such products into maps of representations.
 
 ## i. Overview
 
@@ -26,14 +26,8 @@ Mathlib has the representation `ρ.tprod τ` on the tensor product of two repres
 tensor product `IntertwiningMap.tensor` of two intertwining maps. It has no representation on the
 tensor product `⨂[k] i, M i` of a family, which is where a tensor with several indices lies. So
 Mathlib's linear maps of `⨂`, such as `PiTensorProduct.reindex`, are not maps of representations.
-This file adds:
-- the representation `piTprod ρ` on `⨂[k] i, M i`, `g ↦ ⨂ i, ρ i g` (C.1),
-- `PiTensorProduct.map`, `congr`, `reindex`, `tmulEquivDep` and `subsingletonEquiv` as maps of
-  representations for it (C.1, C.2),
-- the check that a map commutes with `piTprod` on pure tensors only (C.3),
-- the contraction of pairs of factors as a map of representations (C.4),
-- the tensor product of two equivalences of representations, next to Mathlib's for intertwining
-  maps (B).
+This file defines that representation, `piTprod ρ`, and proves that Mathlib's linear maps of `⨂`
+commute with it, so that they become maps of representations (C).
 
 For example, a representation `ρ` on `V` and its dual `ρ*` on `V*` give the representation on
 `V ⊗ V* ⊗ V*` of the family `ρ`, `ρ*`, `ρ*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping
