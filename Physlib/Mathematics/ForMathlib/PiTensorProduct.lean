@@ -24,9 +24,11 @@ spaces, `M ⊗ N`, that it does not prove for a family. This file proves them fo
 matrix of a map applied at every index (A), the dimension (B), and the case with no indices (C). It
 also defines contraction, which pairs indices and removes them (D).
 
-For example, a Lorentz transformation acts on `T^μ_ν` by `Λ` at the up index and `(Λ⁻¹)ᵀ` at the
-down index. Its matrix on the `16` components is the product of the two, with entries
-`Λ^μ_σ (Λ⁻¹)^τ_ν`. The space of `T^μ_ν` has dimension `4 · 4 = 16`. A tensor with no indices is a
+For example, `T^μ_ν` has `4 · 4 = 16` components, so its space has dimension `16`. A Lorentz
+transformation acts on it index by index, by `Λ` at the up index and by `(Λ⁻¹)ᵀ` at the down index.
+On the `16` components it is one `16 × 16` matrix, the Kronecker product `Λ ⊗ (Λ⁻¹)ᵀ`, whose entry
+at `((μ, ν), (σ, τ))` is `Λ^μ_σ (Λ⁻¹)^τ_ν`. This gives the textbook formula
+`T^μ_ν ↦ Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ` from the action index by index. A tensor with no indices is a
 number, which no transformation changes. The trace `T^μ_μρ` contracts the first two indices and
 keeps `ρ`.
 
@@ -62,11 +64,16 @@ variable {ι R : Type*} {M N : ι → Type*}
 
 ## A. Matrices in the product basis
 
-`PiTensorProduct.map f` applies the map `f i` at every index `i`. In the product bases
-`Basis.piTensorProduct b`, its matrix entry at `(φ, ψ)` is the product over `i` of the entries of
-the matrix of `f i` at `(φ i, ψ i)`. This is the Kronecker product of the matrices, for a family.
-For example, the entry of the Lorentz transformation of `T^μ_ν` at `((μ, ν), (σ, τ))` is
-`Λ^μ_σ (Λ⁻¹)^τ_ν`. Mathlib has two factors, `TensorProduct.toMatrix_map`.
+`PiTensorProduct.map f` applies the map `f i` at every index `i`. It is defined without bases, so
+its definition does not give its matrix. In the product bases `Basis.piTensorProduct b`, its matrix
+is the Kronecker product of the matrices of the `f i`, whose entry at `(φ, ψ)` is the product over
+`i` of the entries of the matrix of `f i` at `(φ i, ψ i)`. So the large matrix on the whole tensor
+product is fixed by one small matrix per index. Mathlib proves this for the tensor product of two
+spaces, `TensorProduct.toMatrix_map`, and this section proves it for a family.
+
+For example, a Lorentz transformation of `T^μ_ν` is `map` of `Λ` and `(Λ⁻¹)ᵀ`. Its entry at
+`((μ, ν), (σ, τ))` is `Λ^μ_σ (Λ⁻¹)^τ_ν`, so the components transform as
+`T^μ_ν ↦ Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ`.
 
 -/
 
@@ -88,8 +95,8 @@ lemma PiTensorProduct.toMatrix_map_apply [CommSemiring R] [∀ i, AddCommMonoid 
 ## B. Dimension
 
 The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`. For example, `T^μ_νρ`
-in four dimensions has `4 · 4 · 4 = 64` components. Mathlib has two factors,
-`Module.finrank_tensorProduct`.
+in four dimensions has `4 · 4 · 4 = 64` components. Mathlib proves this for the tensor product of
+two spaces, `Module.finrank_tensorProduct`, and this section proves it for a family.
 
 -/
 
