@@ -125,8 +125,15 @@ lemma Representation.IntertwiningMap.map_one_invariant
 
 ## B. Tensor products of equivalences
 
-Mathlib has the tensor product `IntertwiningMap.tensor` of two intertwining maps. `tensorCongr` is
-the same for equivalences of representations, `v ⊗ w ↦ φ v ⊗ ψ w`, on `TensorProduct.congr`.
+Let `φ` be a map of representations from `ρ` on `V` to `σ` on `W`, and `ψ` one from `τ` on `U` to
+`π` on `X`. Their tensor product applies each map to its own factor, `v ⊗ u ↦ φ v ⊗ ψ u`, from
+`V ⊗ U` to `W ⊗ X`. It commutes with the group because each factor does. For example, if `φ` and `ψ`
+both lower an index with the metric, their tensor product lowers both indices, `T^μν ↦ T_μν`.
+
+Mathlib has this tensor product for intertwining maps, `IntertwiningMap.tensor`, and for invertible
+linear maps, `TensorProduct.congr`, but not for equivalences of representations. `tensorCongr` gives
+it, so the tensor product of two invertible maps of representations is again invertible. In the
+example, raising both indices undoes the lowering.
 
 -/
 
