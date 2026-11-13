@@ -90,8 +90,13 @@ variable {k G V W U X : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Mo
 
 ## A. Invariant vectors
 
-An intertwining map `φ` from `ρ` to `σ` satisfies `φ ∘ ρ g = σ g ∘ φ`. So if `ρ g v = v`, then
-`σ g (φ v) = φ (ρ g v) = φ v`, and `φ v` is invariant (`map_invariant`). An intertwining map from
+An intertwining map `φ` from `ρ` to `σ` satisfies `φ ∘ ρ g = σ g ∘ φ`. For example, a Lorentz
+transformation `Λ` acts on vectors by `Λ` and on covectors by `(Λ⁻¹)ᵀ`, so that `α_μ v^μ` is
+invariant. Lowering an index with the metric, `φ v = η v`, is an intertwining map between them. The
+two routes in the square give `η (Λ v)` and `(Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the
+defining property of a Lorentz transformation.
+
+So if `ρ g v = v`, then `σ g (φ v) = φ (ρ g v) = φ v`, and `φ v` is invariant (`map_invariant`). An intertwining map from
 the trivial representation on `k` picks out the invariant vector `φ 1` (`map_one_invariant`).
 
 -/
