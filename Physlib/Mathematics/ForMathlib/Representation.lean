@@ -34,16 +34,19 @@ on `V`, by the linear map `ρ g`. A map of representations from `ρ` to `σ` on 
 commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible. It sends an
 invariant vector, `ρ g v = v`, to an invariant vector `φ v` (A).
 
-For example, a Lorentz transformation `Λ` acts on vectors by `Λ` and on covectors by `(Λ⁻¹)ᵀ`, so
-that `α_μ v^μ` is invariant. Lowering an index with the metric, `φ v = η v`, is a map of
-representations from vectors to covectors. The two routes in the square give `η (Λ v)` and
-`(Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the defining property of a Lorentz
-transformation.
+For example, let `G` be the Lorentz group. It acts on the vectors `V` by `ρ Λ = Λ`, and on the
+covectors `W` by `σ Λ = (Λ⁻¹)ᵀ`, so that `α_μ v^μ` is invariant. The map `φ` is lowering an index
+with the metric, `φ v = η v`, from vectors to covectors. The two routes in the square give
+`φ (ρ Λ v) = η (Λ v)` and `σ Λ (φ v) = (Λ⁻¹)ᵀ (η v)`, which agree because `Λᵀ η Λ = η`, the
+defining property of a Lorentz transformation.
 
-Mathlib has the representation `ρ.tprod τ` on the tensor product of two representations, and the
-tensor product `IntertwiningMap.tensor` of two intertwining maps. It has no representation on the
-tensor product `⨂[k] i, M i` of a family, which is where a tensor with several indices lies. So
-Mathlib's linear maps of `⨂`, such as `PiTensorProduct.reindex`, are not maps of representations.
+A tensor with several indices has one representation for each index, a family `ρ i` of
+representations of `G` on spaces `M i`. For `T^μ_ν` the family is `Λ` on the vectors at the up index
+and `(Λ⁻¹)ᵀ` on the covectors at the down index. The tensor lies in the tensor product
+`⨂[k] i, M i` of the family. Mathlib has the representation `ρ.tprod τ` on the tensor product of
+two representations, and the tensor product `IntertwiningMap.tensor` of two intertwining maps, but
+no representation on the tensor product of a family. So Mathlib's linear maps of `⨂`, such as
+`PiTensorProduct.reindex`, are not maps of representations.
 This file defines that representation, `piTprod ρ`, and proves that applying maps at the factors,
 reordering, grouping and contracting factors commute with it, so that they are maps of
 representations (C).
