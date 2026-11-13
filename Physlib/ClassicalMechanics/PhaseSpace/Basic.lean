@@ -23,6 +23,8 @@ continuous linear maps from the tangent bundle to the trivial real line bundle.
 For a normed configuration space, the phase space has global coordinates `(p, q)` with
 `p` in the continuous dual. On a real Hilbert space, the Riesz identification represents
 momentum by a vector, matching the momentum-first convention of Hamilton's equations.
+The constructors `PhaseSpace.ofNormedSpace` and `PhaseSpace.ofInnerProductSpace` build
+states directly from these momentum-position coordinates.
 
 ## ii. Key results
 
@@ -155,6 +157,23 @@ lemma normedSpaceDiffeomorph_symm_apply (p : E →L[ℝ] ℝ) (q : E) :
     (normedSpaceDiffeomorph E).symm (p, q) =
       mk q (p.comp (NormedSpace.fromTangentSpace q).toContinuousLinearMap) := rfl
 
+variable {E}
+
+/-- The phase-space state on a normed space with momentum covector `p` and position `q`.
+The argument order agrees with the momentum-position coordinates of Hamilton's equations. -/
+def ofNormedSpace (p : E →L[ℝ] ℝ) (q : E) : PhaseSpace 𝓘(ℝ, E) ⟨E⟩ :=
+  (normedSpaceDiffeomorph E).symm (p, q)
+
+@[simp]
+lemma position_ofNormedSpace (p : E →L[ℝ] ℝ) (q : E) :
+    (ofNormedSpace p q).position = q := rfl
+
+/-- The constructed momentum covector acts on tangent vectors through their normed-space
+coordinates. -/
+@[simp]
+lemma momentum_ofNormedSpace_apply (p : E →L[ℝ] ℝ) (q : E) (v : TangentSpace 𝓘(ℝ, E) q) :
+    (ofNormedSpace p q).momentum v = p (NormedSpace.fromTangentSpace q v) := rfl
+
 end NormedSpace
 
 section InnerProductSpace
@@ -175,6 +194,25 @@ lemma innerProductSpaceDiffeomorph_symm_apply (p q : E) :
     (innerProductSpaceDiffeomorph E).symm (p, q) =
       mk q ((InnerProductSpace.toDual ℝ E p).comp
         (NormedSpace.fromTangentSpace q).toContinuousLinearMap) := rfl
+
+variable {E}
+
+/-- The phase-space state on a real Hilbert space with momentum vector `p` and position `q`.
+The Riesz map turns `p` into a momentum covector, with the same argument order as Hamilton's
+equations. -/
+def ofInnerProductSpace (p q : E) : PhaseSpace 𝓘(ℝ, E) ⟨E⟩ :=
+  (innerProductSpaceDiffeomorph E).symm (p, q)
+
+@[simp]
+lemma position_ofInnerProductSpace (p q : E) :
+    (ofInnerProductSpace p q).position = q := rfl
+
+/-- The momentum covector associated to `p` acts by taking the inner product with `p`. -/
+@[simp]
+lemma momentum_ofInnerProductSpace_apply (p q : E) (v : TangentSpace 𝓘(ℝ, E) q) :
+    (ofInnerProductSpace p q).momentum v = inner ℝ p (NormedSpace.fromTangentSpace q v) := by
+  change (InnerProductSpace.toDual ℝ E p) (NormedSpace.fromTangentSpace q v) = _
+  exact InnerProductSpace.toDual_apply_apply
 
 end InnerProductSpace
 
