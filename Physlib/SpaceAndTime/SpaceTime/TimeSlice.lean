@@ -5,7 +5,6 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Analysis.Distribution.Distribution
 public import Physlib.Mathematics.ForMathlib.DistributionCLM
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
@@ -117,7 +116,7 @@ lemma timeSliceLinearEquiv_symm_apply {d : ℕ} {M : Type} [AddCommGroup M] [Mod
 open Distribution SchwartzMap
 open DistributionCLM
 
-/-- The time slice of an ordinary distribution on `SpaceTime d` to form a distribution
+/-- The time slice of a distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
 noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
  (c : SpeedOfLight := 1) :
@@ -125,7 +124,7 @@ noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
     Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ :=
   DistributionMap (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
 
-/-- The time slice of a distribution on `SpaceTime d` to form a distribution
+/-- The time slice of a tempered distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
 noncomputable def tempDistTimeSlice {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight := 1) :
