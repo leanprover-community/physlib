@@ -44,8 +44,9 @@ Mathlib has the representation `ρ.tprod τ` on the tensor product of two repres
 tensor product `IntertwiningMap.tensor` of two intertwining maps. It has no representation on the
 tensor product `⨂[k] i, M i` of a family, which is where a tensor with several indices lies. So
 Mathlib's linear maps of `⨂`, such as `PiTensorProduct.reindex`, are not maps of representations.
-This file defines that representation, `piTprod ρ`, and proves that Mathlib's linear maps of `⨂`
-commute with it, so that they become maps of representations (C).
+This file defines that representation, `piTprod ρ`, and proves that applying maps at the factors,
+reordering, grouping and contracting factors commute with it, so that they are maps of
+representations (C).
 
 In the same way, the Lorentz tensors `T^μ_νρ` lie in `V ⊗ V* ⊗ V*`, with `Λ` on the vectors `V` and
 `(Λ⁻¹)ᵀ` on the covectors `V*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping them as
@@ -180,15 +181,18 @@ lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Represent
 
 ### C.2. Maps of representations
 
-Mathlib's linear maps of `⨂` commute with `piTprod`, so they are maps of representations. When
-every `f i` intertwines `ρ i` and `σ i`, `PiTensorProduct.map f` intertwines `piTprod ρ` and
-`piTprod σ` (`piTprodMap`), and `piTprodCongr` is the same for equivalences of representations.
-`piTprodReindex` reindexes the factors along `e : ι ≃ ι'`, `⨂ i, v i ↦ ⨂ j, v (e.symm j)`.
-`piTprodSum` joins the tensor products of the two halves of a family over `ι₁ ⊕ ι₂`, and
-`piTprodOfSubsingleton` identifies `ρ i₀` with the tensor product of a family over a subsingleton
-index type. The contraction `PiTensorProduct.contrPairs p` of the factors of a family over
-`κ ⊕ (J ⊕ J)` in pairs, by the pairings `p j`, intertwines `piTprod ρ` and `piTprod` of the kept
-factors when every pairing is invariant.
+The following of Mathlib's linear maps of `⨂` commute with `piTprod`, so they are maps of
+representations. Each acts index by index, or pairs indices in an invariant way, as the examples on
+Lorentz tensors show:
+- `piTprodMap` applies a map at every index, such as lowering every index, `T^μν ↦ T_μν`. It
+  commutes with the group when each of the maps does, and `piTprodCongr` is the same for
+  equivalences of representations.
+- `piTprodReindex` reorders the indices along `e : ι ≃ ι'`, as `T^μ_νρ ↦ T_ν^μ_ρ`.
+- `piTprodSum` joins two tensors into one, `T^μ_ν` and `U^ρ` into `T^μ_ν U^ρ`, with the indices of
+  the first over `ι₁` and those of the second over `ι₂`.
+- `piTprodOfSubsingleton` identifies a tensor with one index with its vector, `v^μ` with `v`.
+- `IsIntertwiningMap.contrPairs` contracts indices in pairs, as in `T^μ_μρ`, when every pairing,
+  such as `α_μ v^μ`, is invariant.
 
 -/
 
