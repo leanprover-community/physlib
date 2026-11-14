@@ -7,6 +7,7 @@ module
 
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
 public import Physlib.Mathematics.Calculus.Gradient
+public import Physlib.Mathematics.KroneckerDelta.Basic
 /-!
 
 # The Poisson bracket
@@ -66,7 +67,7 @@ derivatives on phase space.
 
 @[expose] public section
 
-open InnerProductSpace Time
+open InnerProductSpace KroneckerDelta Time
 
 namespace ClassicalMechanics
 
@@ -267,9 +268,9 @@ delta. -/
 @[simp]
 lemma poissonBracket_position_momentum {ι : Type*} [Fintype ι] [DecidableEq ι] (i j : ι)
     (p q : EuclideanSpace ℝ ι) :
-    poissonBracket (fun _ q => q i) (fun p _ => p j) p q = if i = j then 1 else 0 := by
+    poissonBracket (fun _ q => q i) (fun p _ => p j) p q = δ[i,j] := by
   simp [poissonBracket, gradient_coord, gradient_fun_const, EuclideanSpace.inner_single_left,
-    PiLp.single_apply, eq_comm]
+    PiLp.single_apply, kroneckerDelta, eq_comm]
 
 /-- The Poisson bracket of two position coordinates vanishes. -/
 @[simp]
