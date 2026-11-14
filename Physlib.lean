@@ -297,6 +297,7 @@ public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
 public import Physlib.ProbabilisticTheory.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Projection
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
@@ -306,6 +307,9 @@ public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import Physlib.ProbabilisticTheory.HilbertSpace.Basic
+public import Physlib.ProbabilisticTheory.HilbertSpace.Projection
+public import Physlib.ProbabilisticTheory.HilbertSpace.VectorState
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Sum
@@ -313,8 +317,11 @@ public import Physlib.ProbabilisticTheory.LocalNet.QuasilocalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.StarAlgebra.Commutator
 public import Physlib.ProbabilisticTheory.StarAlgebra.State
+public import Physlib.ProbabilisticTheory.StarAlgebra.Statistics
 public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
+public import Physlib.ProbabilisticTheory.StarAlgebra.Uncertainty
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
