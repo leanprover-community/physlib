@@ -43,12 +43,20 @@ operators belong to spectral theory {4}.
 
 A complex function on space {5} gives a multiplication operator on the Hilbert space on space {6},
 defined on its maximal domain, the vectors whose product with the function is still
-square-integrable; for an almost everywhere strongly measurable multiplier the operator is densely
-defined. [8] For a bounded multiplier the domain is the whole
-space, and for a multiplier of temperate growth it contains the Schwartz maps. [9] The adjoint of a
-multiplication operator is multiplication by the conjugate function, so a real multiplier gives a
-self-adjoint operator; multiplication operators are closed and unbounded. [10] They behave
-predictably under scalar multiples, sums and composition. [11]
+square-integrable. For an almost everywhere strongly measurable multiplier the operator is densely
+defined, and for a σ-finite measure two multipliers, one of them almost everywhere strongly
+measurable, give the same operator exactly when they agree almost everywhere. [8] For a bounded
+multiplier the domain is the whole space, and for a multiplier of temperate growth it contains the
+Schwartz maps. The domain of multiplication by f lies in the domain of multiplication by any
+measurable g with |g| ≤ a|f| + b almost everywhere, for real constants a and b. [9]
+The adjoint of a multiplication operator is multiplication by the conjugate function, so a real
+multiplier gives a self-adjoint operator; multiplication operators are closed and unbounded. [10]
+Scaling the multiplier by a non-zero constant scales the operator by the same constant. The
+operator of f + g extends the sum of the operators of f and g, and the two are equal exactly when
+the domain of multiplication by f + g lies in the domain of multiplication by g, as happens when g
+is measurable and |g| ≤ a|f + g| + b almost everywhere, in particular when g is bounded. The same
+is true of f - g, and of the product fg, whose operator extends the composition of the two
+operators. [11]
 
 ### Position and momentum
 
@@ -135,15 +143,19 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
    `mem_unitaryConj_domain_iff`, `unitaryConj_apply`, `IsFormalAdjoint.unitaryConj`,
    `HasDenseDomain.unitaryConj_dense_domain`, `unitaryConj_sub_smul_surjective`
 8. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator`, `notation 𝓜`,
-   `mem_mulOperator_domain_iff`, `mulOperator_apply_ae`, `mulOperator_hasDenseDomain`
+   `mem_mulOperator_domain_iff`, `mulOperator_apply_ae`, `mulOperator_hasDenseDomain`,
+   `mulOperator_eq_iff_ae_eq`
 9. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_domain_eq_top`,
    `mulOperator_domain_antitone`, `mulOperator_conj_domain`,
-   `mulOperator_domain_ge_of_hasTemperateGrowth`
+   `mulOperator_domain_ge_of_hasTemperateGrowth`, `mulOperator_domain_le_of_norm_le`
 10. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_adjoint_eq_conj`,
    `mulOperator_isSelfAdjoint_ofReal`, `mulOperator_isClosable`, `mulOperator_isUnbounded`,
    `mulOperator_isClosed`
 11. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_const_smul_eq`,
-   `mulOperator_add_ge`, `mulOperator_add_eq`, `mulOperator_sub_ge`, `mulOperator_smul_ge`
+   `mulOperator_add_ge`, `mulOperator_add_eq_iff_domain_le`, `mulOperator_add_eq`,
+   `mulOperator_add_eq_of_norm_le`, `mulOperator_sub_ge`, `mulOperator_sub_eq_iff_domain_le`,
+   `mulOperator_sub_eq_of_norm_le`, `mulOperator_smul_ge`, `mulOperator_smul_eq_iff_domain_le`,
+   `mulOperator_smul_eq_of_norm_le`
 12. Physlib/QuantumMechanics/Operators/Position.lean — `positionCLM`, `notation 𝐱`,
    `positionCLM_apply`, `positionSqCLM_eq`, `positionOperator`, `notation 𝓧`,
    `positionOperator_hasDenseDomain`, `positionOperator_isSelfAdjoint`,
