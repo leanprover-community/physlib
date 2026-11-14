@@ -28,16 +28,17 @@ condition includes convergence of mollified two-point functions away from zero,
 not merely local integrability of a possibly nonexistent limit.
 
 The source bundles both clustering and ergodicity. We retain this convention without
-asserting equivalence between them. Real reflection positivity and polynomial clustering
-are supplied separately, as in the source. OS4 uses exponentials without a factor of `i`,
-whereas the characteristic functional in OS0–OS3 includes that factor.
+asserting equivalence between them. Polynomial clustering is supplied separately, as in
+the source. Clustering uses the characteristic functional on real tests. Ergodicity and
+polynomial clustering use exponentials without a factor of `i`, whereas the characteristic
+functional in OS0–OS3 and clustering includes that factor.
 This numbering differs from the distributional Osterwalder–Schrader axioms E0–E4.
 
 ## ii. Key results
 
 * `SatisfiesAxioms`: the bundled Glimm–Jaffe conditions from `SatisfiesAllOS` in `OSforGFF`.
 * `TwoPointIntegrable`: the explicit mollifier-limit condition at the OS1 endpoint.
-* `OS3ReflectionPositivityReal` and `OS4PolynomialClustering`: separate source variants.
+* `OS4PolynomialClustering`: the separate polynomial clustering condition from the source.
 
 ## iii. Table of contents
 
@@ -100,14 +101,6 @@ def OS3ReflectionPositivity (μ : ProbabilityMeasure (FieldConfiguration d)) : P
   ∀ (n : ℕ) (f : Fin n → PositiveTimeTestFunction d) (c : Fin n → ℂ),
     0 ≤ (∑ i, ∑ j, starRingEnd ℂ (c i) * c j *
       generatingFunctional μ ((f i).val - reflectedConjugate (f j).val)).re
-
-/-- The separate real-test, real-coefficient formulation of reflection positivity.
-No equivalence with complex reflection positivity is asserted here. -/
-def OS3ReflectionPositivityReal (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
-  ∀ (n : ℕ) (f : Fin n → 𝓢(EuclideanSpacetime d, ℝ)),
-    (∀ i, tsupport (f i) ⊆ {x | 0 < x timeIndex}) → ∀ c : Fin n → ℝ,
-      0 ≤ ∑ i, ∑ j, c i * c j * (generatingFunctionalReal μ
-        (f i - SchwartzMap.compCLMOfContinuousLinearEquiv ℝ timeReflection (f j))).re
 
 /-! ## C. Clustering and ergodicity -/
 
