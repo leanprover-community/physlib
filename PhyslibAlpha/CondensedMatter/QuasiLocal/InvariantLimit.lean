@@ -56,7 +56,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory ProbabilisticTheory.QuasiLocal Filter
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuasiLocal Filter
 
 variable {S : Type*} [DecidableEq S] {Γ : Type*} [Group Γ] [DecidableEq Γ] [MulAction Γ S]
 variable {Ω₀ : Type*} [Fintype Ω₀] [DecidableEq Ω₀]

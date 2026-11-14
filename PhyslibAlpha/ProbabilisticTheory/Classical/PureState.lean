@@ -54,7 +54,7 @@ every pure state is nonnegative.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -220,4 +220,4 @@ end PureState
 
 end Archimedean
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

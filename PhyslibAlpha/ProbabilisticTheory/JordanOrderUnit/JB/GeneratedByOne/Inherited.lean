@@ -40,7 +40,7 @@ Archimedean order-unit space.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JBAlgebra
 
@@ -170,4 +170,4 @@ end Ordered
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

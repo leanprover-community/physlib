@@ -43,7 +43,7 @@ same value, by passing to their common refinement. The integral is linear and po
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace EffectValuedMeasure
 
@@ -338,4 +338,4 @@ lemma simpleIntegral_nonneg (μ : EffectValuedMeasure Ω E) {c : ι → ℝ} (hc
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

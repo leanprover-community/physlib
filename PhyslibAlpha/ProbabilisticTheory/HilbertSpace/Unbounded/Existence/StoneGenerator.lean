@@ -39,7 +39,7 @@ generator and are dense. By Nelson's theorem the candidate generator is essentia
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -96,4 +96,4 @@ end
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

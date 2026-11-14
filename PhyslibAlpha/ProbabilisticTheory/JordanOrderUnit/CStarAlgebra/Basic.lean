@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.Basic
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Jordan
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 /-!
 
@@ -44,13 +44,13 @@ The instances are scoped to `JB`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 /-! ## A. C⋆ order compatibility -/
 
@@ -190,4 +190,4 @@ lemma jordanOrthogonal_iff {p q : selfAdjoint A} :
 
 end JB
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

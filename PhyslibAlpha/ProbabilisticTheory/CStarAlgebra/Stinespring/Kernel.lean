@@ -44,7 +44,7 @@ operator `V : H → K` with `J a = V⋆ π(a) V`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder CStarAlgebra
 open ContinuousLinearMap
@@ -307,4 +307,4 @@ end StinespringWitness
 
 end
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

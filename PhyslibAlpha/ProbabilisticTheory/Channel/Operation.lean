@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 
@@ -42,7 +42,7 @@ to `1` is an instrument.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {E : Type*} [OrderUnitSpace E]
 
@@ -172,4 +172,4 @@ lemma coe_outcomeEffect (op : Operation E) : (outcomeEffect op : E) = op 1 := rf
 
 end Operation
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

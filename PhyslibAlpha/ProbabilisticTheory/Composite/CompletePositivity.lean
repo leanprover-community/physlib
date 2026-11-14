@@ -51,7 +51,7 @@ for a classical output any positive map works.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open TensorProduct
 
@@ -128,4 +128,4 @@ lemma map_mem_of_isClassical_right {F : Type*} [ArchimedeanOrderUnitSpace F] (hF
 
 end CompositeCone
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

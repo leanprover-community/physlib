@@ -50,7 +50,7 @@ measure equals this integral, which identifies its domain with the vectors of fi
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
@@ -1248,4 +1248,4 @@ end SelfAdjointSpectralTheorem
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

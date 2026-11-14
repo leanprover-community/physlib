@@ -46,7 +46,7 @@ diagonal in every basis, with the diagonal sum symmetric in the two factors.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -529,6 +529,6 @@ lemma tsum_norm_sq_mul_right_le_of_selfAdjoint {S A : H →L[ℂ] H}
 
 end HilbertSchmidt
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

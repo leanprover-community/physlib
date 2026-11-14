@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.OrderUnit.Basic
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Basic
 public import PhyslibAlpha.Mathematics.Order.PositiveDual.Basic
 
 /-!
@@ -39,7 +39,7 @@ functional that vanishes on the unit vanishes everywhere.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace OrderUnitSpace
 
@@ -62,4 +62,4 @@ lemma _root_.PositiveLinearMap.eq_zero_of_map_one_eq_zero {E : Type*} [OrderUnit
     {ψ : E →ₚ[ℝ] ℝ} (h : ψ 1 = 0) : ψ = 0 :=
   PositiveLinearMap.eq_zero_of_map_eq_zero OrderUnitSpace.isOrderUnit_one h
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

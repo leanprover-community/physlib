@@ -36,13 +36,13 @@ a`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 /-! ## A. Commuting observables -/
 
@@ -69,4 +69,4 @@ lemma isJordanCompatible_of_commute {a b : selfAdjoint A}
 
 end JB
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -38,7 +38,7 @@ normalized weight linearly gives a state. These are inverse to each other.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ENNReal
 
@@ -131,4 +131,4 @@ noncomputable def stateEquiv : {w : Weight E // w.IsState} ≃ 𝓢[ℝ, E] wher
 
 end Weight
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

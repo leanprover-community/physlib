@@ -46,8 +46,8 @@ the centre of the chain, `⟨X⟩ = a (N - 1) / 2`, at the centre of the band, `
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory
 open InnerProductSpace UnitalPositiveLinearMap
 variable (T : TightBindingChain)
 

@@ -44,7 +44,7 @@ which gives completeness.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace Topology Filter
 open Filter
@@ -412,6 +412,6 @@ noncomputable instance instCompleteSpace : CompleteSpace (TraceClass H) := by
 
 end TraceClass
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

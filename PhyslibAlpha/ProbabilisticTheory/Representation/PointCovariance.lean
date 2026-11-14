@@ -52,7 +52,7 @@ sector of total momenta in `p • S`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder InnerProductSpace
@@ -235,6 +235,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

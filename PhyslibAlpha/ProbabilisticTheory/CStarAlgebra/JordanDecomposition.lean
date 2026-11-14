@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 /-!
 
@@ -41,7 +41,7 @@ functional calculus; here they are positive observables.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -98,4 +98,4 @@ lemma posPart_negPart_unique (a : Observable A) (b c : PositiveObservable A)
 
 end Observable
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

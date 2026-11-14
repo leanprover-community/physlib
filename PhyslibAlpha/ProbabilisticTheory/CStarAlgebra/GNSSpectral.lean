@@ -47,7 +47,7 @@ observable `a` has momentum distribution `μ_a`, the finite measure with
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory
 open scoped ComplexOrder InnerProductSpace
@@ -97,7 +97,8 @@ omit [MeasurableSpace (PontryaginDual (Multiplicative G))] in
 /-- The cyclic vector of an invariant state has momentum zero: its spectral measure is carried
 by the trivial character. -/
 lemma gnsCyclicVector_mem_sector :
-    ω.gnsCyclicVector ∈ ProbabilisticTheory.Representation.sector (toEnd (gnsUnitaryRep hα))
+    ω.gnsCyclicVector ∈ PhyslibAlpha.ProbabilisticTheory.Representation.sector
+      (toEnd (gnsUnitaryRep hα))
       (fun g => (((1 : PontryaginDual (Multiplicative G)) g : Circle) : ℂ)) := by
   intro g
   rw [toEnd_apply]
@@ -114,6 +115,6 @@ lemma projection_one_gnsCyclicVector [Countable G] :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

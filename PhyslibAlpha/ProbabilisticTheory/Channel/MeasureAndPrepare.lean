@@ -43,7 +43,7 @@ over the finite outcome type avoids hard-coding a particular classical system.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {E₁ E₂ : Type*} [OrderUnitSpace E₁] [OrderUnitSpace E₂]
 
@@ -60,4 +60,4 @@ def IsMeasureAndPrepare (Φ : Channel E₂ E₁) : Prop :=
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

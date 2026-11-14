@@ -41,7 +41,7 @@ The Jordan identity says that `L_a` and `L_{a²}` commute.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -435,4 +435,4 @@ end Linear
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

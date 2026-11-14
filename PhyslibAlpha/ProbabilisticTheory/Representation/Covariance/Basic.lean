@@ -40,7 +40,7 @@ bijections, and a channel is covariant when it intertwines two symmetry actions.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Pointwise
 
@@ -141,4 +141,4 @@ lemma UnitalPositiveLinearMap.IsCovariant.comp {ρ₁ : G →* Symmetry E₁} {�
 
 end CovariantChannel
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

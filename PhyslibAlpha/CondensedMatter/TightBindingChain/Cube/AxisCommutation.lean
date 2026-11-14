@@ -48,8 +48,8 @@ different axes.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped selfAdjoint
-open ProbabilisticTheory UnitalPositiveLinearMap
+open scoped _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory UnitalPositiveLinearMap
 
 variable {Tx Ty Tz : TightBindingChain}
 

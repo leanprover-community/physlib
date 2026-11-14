@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Basic
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Archimedean
 public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 
 /-!
@@ -40,7 +40,7 @@ carries the canonical norm without changing the structures on `E` itself.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ArchimedeanOrderUnitSpace
 
@@ -144,4 +144,4 @@ lemma orderUnitNorm_map_le (φ : Channel E F) (x : E) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

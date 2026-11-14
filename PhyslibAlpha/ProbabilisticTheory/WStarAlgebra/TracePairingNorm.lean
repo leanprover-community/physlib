@@ -43,7 +43,7 @@ trace pairing is an isometry.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -243,4 +243,4 @@ lemma tracePairingLinearIsometry_norm (A : H →L[ℂ] H) :
 
 end TraceClass
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -36,7 +36,7 @@ of the quadratic representation: `{a, b, a} = U_a b`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -134,4 +134,4 @@ lemma jordanTriple_smul_middle (r : ℝ) (a b c : E) :
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

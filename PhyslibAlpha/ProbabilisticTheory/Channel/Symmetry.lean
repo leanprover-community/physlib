@@ -43,7 +43,7 @@ dynamics.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {E : Type*} [OrderUnitSpace E]
 
@@ -239,4 +239,4 @@ lemma stateEvolution_add (α : OneParameterAutomorphismGroup E) (s t : ℝ) (ω 
 
 end OneParameterAutomorphismGroup
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

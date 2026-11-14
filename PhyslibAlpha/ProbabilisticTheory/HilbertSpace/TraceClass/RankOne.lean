@@ -37,7 +37,7 @@ the normalization of vector states.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -103,4 +103,4 @@ lemma traceNorm_rankOne_self (x : H) :
   rw [hdiag]
   exact h.tsum_eq
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
