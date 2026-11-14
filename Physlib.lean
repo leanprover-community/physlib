@@ -297,6 +297,7 @@ public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
 public import Physlib.ProbabilisticTheory.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Projection
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
@@ -415,6 +416,8 @@ public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.Gaussians
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PlaneWaves
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.PositionStates
 public import Physlib.QuantumMechanics.HilbertSpaces.OneDimension.SchwartzSubmodule
+public import Physlib.QuantumMechanics.HilbertSpaces.Operators.Basic
+public import Physlib.QuantumMechanics.HilbertSpaces.Operators.Projection
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Basic
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.DirichletSubmodule
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.Fourier
