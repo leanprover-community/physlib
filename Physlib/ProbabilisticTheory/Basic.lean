@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Basic.Real.Basic
+public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 
 /-!
 # Probabilistic theories
@@ -17,17 +17,19 @@ A probabilistic theory is described by its ordered real observables and a certai
 
 The observables of a physical system form an ordered real vector space. Positive observables are
 those whose measured values are never negative. The certain outcome `1` bounds every observable
-up to a multiple and sets the scale of the theory. The order is Archimedean, so no observable is
-infinitesimally positive and the certain outcome defines a genuine norm.
+up to a multiple and sets the scale for measurement outcomes. The order is Archimedean, so no
+observable is infinitesimally positive and the certain outcome defines a genuine norm.
 
 ## ii. Key results
 
 - `ProbabilisticTheory` : ordered real observables with a certain outcome and an Archimedean
   order.
+- `ProbabilisticTheory.real` : real-valued outcomes with unit 1.
 
 ## iii. Table of contents
 
 - A. Observable space and certain outcome
+- B. The real numbers
 
 ## iv. References
 
@@ -64,3 +66,14 @@ structure ProbabilisticTheory where
 attribute [instance] ProbabilisticTheory.addCommGroup ProbabilisticTheory.partialOrder
   ProbabilisticTheory.module ProbabilisticTheory.isOrderedAddMonoid
   ProbabilisticTheory.posSMulMono ProbabilisticTheory.one
+
+/-! ## B. The real numbers -/
+
+/-- The real numbers with their usual order and unit 1. -/
+abbrev ProbabilisticTheory.real : ProbabilisticTheory where
+  Observables := ℝ
+  one_nonneg' := zero_le_one
+  exists_nsmul_one_le' A := by
+    obtain ⟨n, hn⟩ := exists_nat_ge A
+    exact ⟨n, by simpa using hn⟩
+  le_zero_of_forall_pos_smul_one_le' A hA := le_of_forall_pos_le_add (by simpa using hA)

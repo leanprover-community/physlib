@@ -37,8 +37,8 @@ state restricts to a compatible family of subsystem states.
 - `LocalNet.restrict`: precomposition with the observable inclusion map.
 - `LocalNet.CompatibleStates`: a compatible family of states on the subsystems.
 - `LocalNet.CompatibleStates.compat_apply`: compatible states agree on included observables.
-- `LocalNet.Quasilocal.toState`: the quasilocal state defined by a compatible family.
-- `LocalNet.Quasilocal.stateEquiv`: quasilocal states correspond to compatible local states.
+- `LocalNet.toState`: the quasilocal state defined by a compatible family.
+- `LocalNet.stateEquiv`: quasilocal states correspond to compatible local states.
 
 ## iii. Table of contents
 
@@ -52,34 +52,32 @@ state restricts to a compatible family of subsystem states.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+open ProbabilisticTheory
 
-open UnitalPositiveLinearMap
+namespace ProbabilisticTheory.LocalNet
 
-variable {R : Type*} [Preorder R] {A : R → Type*} [∀ X, OrderUnitSpace (A X)]
+variable {R : Type*} [Preorder R]
+  {A : R → ProbabilisticTheory} {N : LocalNet R A} {X Y Z : R}
 
 /-! ## A. Restriction of states -/
 
-namespace LocalNet
-
-variable (N : LocalNet R A) {X Y Z : R}
-
 /-- Restrict a state of `Y` to `X` by pulling it back along the observable inclusion channel. -/
-def restrict (h : X ≤ Y) (ω : 𝓢[ℝ, A Y]) : 𝓢[ℝ, A X] := comap (N.incl h) ω
+def restrict (N : LocalNet R A) (h : X ≤ Y) (ω : (A Y).State) : (A X).State := ω.comap (N.incl h)
 
 /-- Restriction evaluates an observable through its inclusion into the larger subsystem. -/
 @[simp]
-lemma restrict_apply (h : X ≤ Y) (ω : 𝓢[ℝ, A Y]) (a : A X) :
+lemma restrict_apply (N : LocalNet R A) (h : X ≤ Y) (ω : (A Y).State) (a : (A X).Observables) :
     N.restrict h ω a = ω (N.incl h a) := rfl
 
 /-- Restriction to the same subsystem is the identity. -/
 @[simp]
-lemma restrict_refl (ω : 𝓢[ℝ, A X]) : N.restrict (le_refl X) ω = ω := by
+lemma restrict_refl (N : LocalNet R A) (ω : (A X).State) : N.restrict (le_refl X) ω = ω := by
   ext a
   exact congrArg ω (N.incl_refl_apply _ a)
 
 /-- Successive restrictions agree with direct restriction. -/
-lemma restrict_restrict (h₁ : X ≤ Y) (h₂ : Y ≤ Z) (h₃ : X ≤ Z) (ω : 𝓢[ℝ, A Z]) :
+lemma restrict_restrict (N : LocalNet R A) (h₁ : X ≤ Y) (h₂ : Y ≤ Z) (h₃ : X ≤ Z)
+    (ω : (A Z).State) :
     N.restrict h₁ (N.restrict h₂ ω) = N.restrict h₃ ω := by
   ext a
   exact congrArg ω (N.incl_trans_apply h₁ h₂ h₃ a).symm
@@ -97,20 +95,14 @@ correlations and entanglement.
 @[ext]
 structure CompatibleStates (N : LocalNet R A) where
   /-- The state of the subsystem `X`. -/
-  state : ∀ X, 𝓢[ℝ, A X]
+  state : ∀ X, (A X).State
   /-- The state of `X` is the restriction of the state of any larger subsystem `Y`. -/
   compat : ∀ {X Y : R} (h : X ≤ Y), N.restrict h (state Y) = state X
 
 /-- An observable has the same expectation in every subsystem containing it. -/
 lemma CompatibleStates.compat_apply {N : LocalNet R A} (ω : N.CompatibleStates)
-    {X Y : R} (h : X ≤ Y) (a : A X) :
+    {X Y : R} (h : X ≤ Y) (a : (A X).Observables) :
     ω.state Y (N.incl h a) = ω.state X a := DFunLike.congr_fun (ω.compat h) a
-
-end LocalNet
-
-namespace LocalNet.Quasilocal
-
-variable {N : LocalNet R A}
 
 /-- Decidable equality used internally by the direct-limit construction. -/
 noncomputable local instance : DecidableEq R := Classical.decEq R
@@ -125,7 +117,7 @@ representative in its subsystem; compatibility makes the result independent of t
 /-- The expectation functional of `LocalNet.CompatibleStates` on the whole system. -/
 noncomputable def lift (σ : N.CompatibleStates) : N.Quasilocal →ₗ[ℝ] ℝ := by
   unfold Quasilocal
-  refine Module.DirectLimit.lift ℝ R A N.inclLin ?_ ?_
+  refine Module.DirectLimit.lift ℝ R (fun X => (A X).Observables) N.inclLin ?_ ?_
   · intro i
     exact (σ.state i).toLinearMap
   · intro i j hij x
@@ -133,16 +125,18 @@ noncomputable def lift (σ : N.CompatibleStates) : N.Quasilocal →ₗ[ℝ] ℝ 
 
 /-- The expectation functional of `LocalNet.CompatibleStates` evaluates a quasilocal observable
 in any subsystem representing it. -/
-lemma lift_apply (σ : N.CompatibleStates) (i : R) (a : A i) :
+lemma lift_apply (σ : N.CompatibleStates) (i : R) (a : (A i).Observables) :
     lift σ (toQuasilocal N i a) = σ.state i a := by
   unfold lift toQuasilocal
-  exact Module.DirectLimit.lift_of _ _ a
+  exact Module.DirectLimit.lift_of (G := fun X => (A X).Observables) (f := N.inclLin) _ _ a
 
-variable [IsDirectedOrder R] [Nonempty R]
+section GlobalStates
+
+variable [IsDirectedOrder R] [Nonempty R] [N.IsOrderEmbedding]
 
 /-- The state of the whole system defined by `LocalNet.CompatibleStates`. -/
-noncomputable def toState (σ : N.CompatibleStates) : 𝓢[ℝ, N.Quasilocal] := by
-  refine ofLinearMap (lift σ) ?_ ?_
+noncomputable def toState (σ : N.CompatibleStates) : N.quasilocalTheory.State := by
+  refine Channel.ofLinearMap (lift σ) ?_ ?_
   · intro x hx
     obtain ⟨i, a, ha, rfl⟩ := nonneg_iff.1 hx
     rw [lift_apply]
@@ -152,14 +146,14 @@ noncomputable def toState (σ : N.CompatibleStates) : 𝓢[ℝ, N.Quasilocal] :=
     exact map_one _
 
 /-- On a quasilocal observable represented in the subsystem `i`, `toState σ` is the state of `i`. -/
-lemma toState_apply (σ : N.CompatibleStates) (i : R) (a : A i) :
+lemma toState_apply (σ : N.CompatibleStates) (i : R) (a : (A i).Observables) :
     toState σ (toQuasilocal N i a) = σ.state i a :=
   lift_apply σ i a
 
 /-- A state of the whole system is the same as `LocalNet.CompatibleStates`. -/
-noncomputable def stateEquiv : 𝓢[ℝ, N.Quasilocal] ≃ N.CompatibleStates where
+noncomputable def stateEquiv : N.quasilocalTheory.State ≃ N.CompatibleStates where
   toFun ω :=
-    { state i := comap (toQuasilocalChannel N i) ω
+    { state i := ω.comap (toQuasilocalChannel N i)
       compat h := by
         ext a
         exact congrArg ω (toQuasilocal_incl h a) }
@@ -172,6 +166,6 @@ noncomputable def stateEquiv : 𝓢[ℝ, N.Quasilocal] ≃ N.CompatibleStates wh
     ext i a
     exact toState_apply σ i a
 
-end LocalNet.Quasilocal
+end GlobalStates
 
-end ProbabilisticTheory
+end ProbabilisticTheory.LocalNet

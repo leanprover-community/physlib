@@ -36,11 +36,9 @@ actually run is itself a legitimate measurement.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace ProbabilisticTheory.Effect
 
-variable {E : Type*} [OrderUnitSpace E]
-
-namespace Effect
+variable {P : ProbabilisticTheory}
 
 /-!
 
@@ -49,18 +47,16 @@ namespace Effect
 -/
 
 /-- The effect interval is convex. -/
-lemma convex : Convex ℝ (Effect E) := convex_Icc 0 1
+lemma convex : Convex ℝ P.Effect := convex_Icc 0 1
 
 /-- Randomize between two effects with probability `t` of testing the first. -/
-def mix (e f : Effect E) (t : unitInterval) : Effect E :=
-  ⟨(t : ℝ) • (e : E) + (1 - (t : ℝ)) • (f : E),
+def mix (e f : P.Effect) (t : unitInterval) : P.Effect :=
+  ⟨(t : ℝ) • (e : P.Observables) + (1 - (t : ℝ)) • (f : P.Observables),
     convex e.2 f.2 t.2.1 (sub_nonneg.mpr t.2.2) (by ring)⟩
 
 /-- Evaluation of a mixture is the pointwise convex combination. -/
 @[simp]
-lemma coe_mix (e f : Effect E) (t : unitInterval) :
-    ((mix e f t : Effect E) : E) = (t : ℝ) • (e : E) + (1 - (t : ℝ)) • (f : E) := rfl
+lemma coe_mix (e f : P.Effect) (t : unitInterval) :
+    ((mix e f t : P.Effect) : P.Observables) = (t : ℝ) • e.1 + (1 - (t : ℝ)) • f.1 := rfl
 
-end Effect
-
-end ProbabilisticTheory
+end ProbabilisticTheory.Effect
