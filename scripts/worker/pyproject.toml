@@ -1,0 +1,30 @@
+# physlibAlpha-worker
+#
+# This is the standard config file for a python script which describes how to build it,
+# its meta data etc.
+#
+# In our case it is used by
+#   uv tool install "git+https://github.com/leanprover-community/physlib#subdirectory=scripts/worker"
+# uv is a all-in-one Python package and project manager, and uses the pyproject.toml.
+# It allows people to easily download working versions of python packages from GitHub.
+
+# Says which tool (Hatchling) packages this project up so pip/uv can install it.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+# Package metadata: name, version, summary, supported Python versions, and runtime dependencies (none).
+[project]
+name = "physlibAlpha-worker"
+version = "0.1.0"
+description = "Run one task on PhyslibAlpha with an AI agent, and open a PR"
+requires-python = ">=3.11"
+dependencies = []
+
+# Installs a `physlibAlpha-worker` command that calls `main()` in `physlibAlpha_worker.py`.
+[project.scripts]
+physlibAlpha-worker = "physlibAlpha_worker:main"
+
+# When packaging the project for installation, include only `physlibAlpha_worker.py`.
+[tool.hatch.build.targets.wheel]
+only-include = ["physlibAlpha_worker.py"]
