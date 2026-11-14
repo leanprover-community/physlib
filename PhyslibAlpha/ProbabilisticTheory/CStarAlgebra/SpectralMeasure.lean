@@ -43,7 +43,7 @@ take the value `x`?", whose probability of `true` is `μ_{ω,a}({x})`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory CompactlySupportedContinuousMap
 open scoped CompactlySupported ComplexOrder
@@ -334,4 +334,4 @@ lemma eigenMeasurement_true (ω : 𝓢[ℂ, A]) (a : Observable A)
   simp only [eigenIndicator_apply]
   exact integral_indicator_one (measurableSet_singleton x)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

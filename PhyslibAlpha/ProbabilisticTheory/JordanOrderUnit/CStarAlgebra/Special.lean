@@ -42,9 +42,9 @@ of a C⋆-algebra is special.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
-open scoped JB selfAdjoint
+open scoped JB _root_.selfAdjoint
 
 /-!
 
@@ -125,4 +125,4 @@ lemma isSpecial_selfAdjoint : JBAlgebra.IsSpecial (selfAdjoint A) :=
 
 end JB
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

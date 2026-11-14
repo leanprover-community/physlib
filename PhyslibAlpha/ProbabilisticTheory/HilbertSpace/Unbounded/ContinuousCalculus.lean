@@ -41,7 +41,7 @@ of an integral can be controlled by the spectrum of the integrand.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder InnerProductSpace
@@ -133,6 +133,6 @@ end WOTSpectralMeasure
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

@@ -38,7 +38,7 @@ under the Jordan product containing it. For a single observable it is the span o
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -210,4 +210,4 @@ lemma generatedBySet_singleton_eq_generatedByOne (a : E) :
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

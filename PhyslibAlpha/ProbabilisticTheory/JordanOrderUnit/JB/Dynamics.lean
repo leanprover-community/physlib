@@ -43,7 +43,7 @@ one-parameter family of Jordan automorphisms is a Jordan derivation.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -117,4 +117,4 @@ lemma isDerivation_of_isAutomorphismFamily {α : ℝ → E → E}
 
 end NormedJordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

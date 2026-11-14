@@ -41,7 +41,7 @@ For a Jordan projection `p` with positive quadratic representation `U_p`, and a 
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open JordanAlgebra
 open scoped JordanAlgebra
@@ -126,4 +126,4 @@ lemma IsJordanProjection.conditionOfQuadraticPositive_apply {p : E}
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

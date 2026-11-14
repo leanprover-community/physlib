@@ -49,7 +49,7 @@ translation-invariant classical lattice models alike.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology WeakDual
 open scoped ComplexOrder CStarAlgebra InnerProductSpace Matrix
@@ -206,6 +206,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

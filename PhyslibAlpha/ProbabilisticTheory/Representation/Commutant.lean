@@ -51,7 +51,7 @@ the subspace of vectors of crystal momentum `χ`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology WeakDual
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -260,7 +260,8 @@ variable [Countable G]
 /-- A vector of momentum `χ` is carried by the single character `χ`: its spectral measure is
 concentrated at `χ`. -/
 lemma ae_eq_of_mem_sector (χ : PontryaginDual (Multiplicative G)) {v : H}
-    (hv : v ∈ ProbabilisticTheory.Representation.sector (toEnd π) (fun g => ((χ g : Circle) : ℂ))) :
+    (hv : v ∈ PhyslibAlpha.ProbabilisticTheory.Representation.sector (toEnd π)
+      (fun g => ((χ g : Circle) : ℂ))) :
     ∀ᵐ χ' ∂vectorMeasure π v, χ' = χ := by
   have : Countable (Multiplicative G) := inferInstanceAs (Countable G)
   set ν := vectorMeasure π v
@@ -327,7 +328,8 @@ lemma ae_eq_of_mem_sector (χ : PontryaginDual (Multiplicative G)) {v : H}
 
 /-- **A vector of momentum `χ` lies in the range of the spectral projection of `χ`.** -/
 lemma projection_singleton_eq_self_of_mem_sector (χ : PontryaginDual (Multiplicative G)) {v : H}
-    (hv : v ∈ ProbabilisticTheory.Representation.sector (toEnd π) (fun g => ((χ g : Circle) : ℂ))) :
+    (hv : v ∈ PhyslibAlpha.ProbabilisticTheory.Representation.sector (toEnd π)
+      (fun g => ((χ g : Circle) : ℂ))) :
     projection π {χ} v = v := by
   have hsing : MeasurableSet ({χ} : Set (PontryaginDual (Multiplicative G))) :=
     measurableSet_singleton χ
@@ -369,7 +371,8 @@ definite momentum**: its range is the subspace of vectors on which the group act
 character. -/
 lemma range_projection_singleton (χ : PontryaginDual (Multiplicative G)) :
     LinearMap.range (projection π {χ} : H →L[ℂ] H).toLinearMap =
-      ProbabilisticTheory.Representation.sector (toEnd π) (fun g => ((χ g : Circle) : ℂ)) := by
+      PhyslibAlpha.ProbabilisticTheory.Representation.sector (toEnd π)
+        (fun g => ((χ g : Circle) : ℂ)) := by
   ext v
   constructor
   · rintro ⟨w, rfl⟩ g
@@ -384,6 +387,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

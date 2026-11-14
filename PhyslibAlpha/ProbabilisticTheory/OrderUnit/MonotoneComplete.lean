@@ -37,7 +37,7 @@ least upper bound.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Monotone-complete orders -/
 
@@ -86,4 +86,4 @@ lemma isLUB_rangeSup (x : ℕ → E) (hx : Monotone x)
 
 end MonotoneCompleteOrder
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

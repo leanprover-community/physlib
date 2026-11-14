@@ -46,7 +46,7 @@ is a Bauer simplex exactly when ensembles refine and the pure states are closed.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -87,4 +87,4 @@ lemma isBauerSimplexStateSpace_iff : IsBauerSimplexStateSpace E ↔
   ⟨fun h => ⟨h.1.ensemblesRefine, h.2⟩,
     fun ⟨hE, hP⟩ => ⟨(isSimplexStateSpace_iff_ensemblesRefine_of_isClosed hP).2 hE, hP⟩⟩
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

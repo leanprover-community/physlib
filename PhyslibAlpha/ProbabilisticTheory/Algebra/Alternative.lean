@@ -42,7 +42,7 @@ algebras satisfy the flexible law and the left Moufang identity.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -201,4 +201,4 @@ lemma left_bumping (x y z : A) : associator x y (z * x) = x * associator y z x :
 
 end IsAlternative
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

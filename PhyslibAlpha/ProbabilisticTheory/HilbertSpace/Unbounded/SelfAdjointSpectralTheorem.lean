@@ -49,7 +49,7 @@ the domain of `T` is the set of vectors with `∫ λ² dμₓ < ∞`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Topology InnerProductSpace Function
 open MeasureTheory Set
@@ -309,6 +309,6 @@ end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

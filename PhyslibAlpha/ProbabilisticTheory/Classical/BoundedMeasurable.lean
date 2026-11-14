@@ -41,7 +41,7 @@ observables are even a lattice. For a mechanical system, `Ω` is its phase space
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -49,10 +49,10 @@ namespace ProbabilisticTheory
 
 -/
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 
@@ -74,7 +74,7 @@ instance : OrderUnitLattice (BoundedMeasurable Ω) :=
 end BoundedMeasurable
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 variable {Ω : Type*} [MeasurableSpace Ω]
 

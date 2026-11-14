@@ -52,7 +52,7 @@ observables is classical exactly when its ensembles refine.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory ArchimedeanOrderUnitSpace Set StateSpace
 
@@ -157,4 +157,4 @@ lemma isSimplexStateSpace_iff_ensemblesRefine : IsSimplexStateSpace E ↔ Ensemb
   ⟨IsSimplexStateSpace.ensemblesRefine, fun hE ω =>
     hE.hasUniquePureDecomposition (PureState.hasPureDecomposition_of_separable ω)⟩
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

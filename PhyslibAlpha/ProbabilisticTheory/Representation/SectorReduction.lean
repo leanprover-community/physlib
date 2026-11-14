@@ -53,7 +53,7 @@ generator `H` of an unbounded dynamics, `T` is the unitary group `e^{itH}`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder InnerProductSpace
@@ -232,6 +232,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

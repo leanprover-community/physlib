@@ -48,7 +48,7 @@ probability measures on its outcomes.
 @[expose] public section
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open UnitalPositiveLinearMap
 
@@ -83,7 +83,7 @@ lemma isPure_eval (x : Ω) : (eval x).IsPure :=
 end BoundedMeasurable
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open UnitalPositiveLinearMap MeasureTheory Filter Topology
 

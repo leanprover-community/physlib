@@ -36,7 +36,7 @@ fundamental formula.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -71,4 +71,4 @@ lemma quadRepPositiveLinearMap_fundamental (a b : E) :
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

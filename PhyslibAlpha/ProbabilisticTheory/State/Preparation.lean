@@ -51,7 +51,7 @@ prepared state.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory ProbabilityTheory Filter Topology
 
@@ -275,4 +275,4 @@ lemma forgetfulOutcome_isPostprocessing (p : Preparation E X) (M : Measurement Î
 
 end Preparation
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

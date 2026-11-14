@@ -44,7 +44,7 @@ differentiable at `0`, and then the derivative at time `t` is `i T exp(i t T) x`
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set
 open scoped Topology InnerProductSpace Function
@@ -306,6 +306,6 @@ end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

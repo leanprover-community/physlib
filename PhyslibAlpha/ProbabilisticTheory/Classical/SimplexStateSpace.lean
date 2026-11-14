@@ -55,7 +55,7 @@ and this identification respects the order.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -226,4 +226,4 @@ lemma le_of_toPositive_le {μ θ : Measure (PureState E)} [μ.Regular] [θ.Regul
 
 end Simplex
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -36,7 +36,7 @@ Jordan product.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -84,4 +84,4 @@ lemma mul_mem_generatedByOne (a : E) {x y : E} (hx : x ∈ generatedByOne a)
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

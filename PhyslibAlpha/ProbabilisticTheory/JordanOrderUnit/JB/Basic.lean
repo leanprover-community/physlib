@@ -56,7 +56,7 @@ in one class, and `JBAlgebra` adds completeness and the JB axioms.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Normed Jordan algebras -/
 
@@ -284,4 +284,4 @@ end Ordered
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
