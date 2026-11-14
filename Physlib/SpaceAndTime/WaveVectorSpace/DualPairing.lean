@@ -6,8 +6,8 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.Meta.TODO.Basic
-public import Physlib.SpaceAndTime.Space.Module
-public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
+public import Physlib.SpaceAndTime.Space.Derivatives.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.Derivatives.Basic
 /-!
 
 # Duality of `Space` and `WaveVectorSpace`
@@ -33,6 +33,7 @@ mapping `x ↦ k ⬝ᵥ x`, and similarly for fixed `x`.
 
 - A. Strong duals
 - B. Bilinear pairing
+- C. Derivatives
 
 ## iv. References
 
@@ -87,5 +88,31 @@ def pairingCLM : WaveVectorSpace d →L[ℝ] Space d →L[ℝ] ℝ where
 lemma pairingCLM_apply_eq_dual (k : WaveVectorSpace d) : pairingCLM k = k.dual := rfl
 
 lemma pairingCLM_flip_apply_eq_dual (x : Space d) : pairingCLM.flip x = x.dual := rfl
+
+/-!
+## C. Derivatives
+-/
+
+@[simp]
+lemma deriv_pairingCLM (i : Fin d) (k : WaveVectorSpace d) (x : Space d) :
+    ∂[i] (pairingCLM k) x = k i := by
+  simp [Space.deriv_eq, pairingCLM_apply_eq_dual, dual_apply, dotProduct, Space.basis_apply]
+
+@[simp]
+lemma deriv_pairingCLM_flip (i : Fin d) (x : Space d) (k : WaveVectorSpace d) :
+    ∂[i] (pairingCLM.flip x) k = x i := by
+  simp [deriv_eq, pairingCLM_flip_apply_eq_dual, Space.dual_apply, dotProduct, basis_apply,
+    ← nsmul_eq_mul]
+
+/-- The derivative of the functional `x ↦ k ⬝ᵥ x` with respect to `xⁱ` is `kᵢ`. -/
+@[simp]
+lemma deriv_dual (i : Fin d) (k : WaveVectorSpace d) (x : Space d) : ∂[i] k.dual x = k i :=
+  deriv_pairingCLM i k x
+
+/-- The derivative of the functional `k ↦ k ⬝ᵥ x` with respect to `kᵢ` is `xⁱ`. -/
+@[simp]
+lemma _root_.Space.deriv_dual (i : Fin d) (x : Space d) (k : WaveVectorSpace d) :
+    ∂[i] x.dual k = x i :=
+  deriv_pairingCLM_flip i x k
 
 end WaveVectorSpace
