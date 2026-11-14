@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Tooby-Smith
+Authors: Philippe Kevorkian, Joseph Tooby-Smith
 -/
 module
 
@@ -580,6 +580,26 @@ lemma direction_unit_sq_sum {d} (s : Direction d) :
     ∑ i : Fin d, (s.unit i) ^ 2 = 1 := by
   rw [← norm_sq_eq, s.norm]
   simp
+
+/-- Every direction of three-dimensional space is sent to `basis 2`, the unit vector of the third
+  axis, by a rotation, that is, a linear isometry of determinant one. -/
+lemma exists_rotation_apply_unit_eq_basis_two (s : Direction) :
+    ∃ R : Space ≃ₗᵢ[ℝ] Space, LinearMap.det R.toLinearMap = 1 ∧ R s.unit = basis 2 := by
+  by_cases hs : s.unit = basis 2
+  · exact ⟨LinearIsometryEquiv.refl ℝ Space, by simp, by simp [hs]⟩
+  -- Two reflections: one exchanging `s.unit` and `basis 2`, one fixing `basis 2`.
+  have hv : s.unit - basis 2 ≠ 0 := sub_ne_zero.mpr hs
+  have h0 : basis (d := 3) 0 ≠ 0 := (basis (d := 3)).orthonormal.ne_zero 0
+  refine ⟨(ℝ ∙ (s.unit - basis 2))ᗮ.reflection.trans (ℝ ∙ basis (d := 3) 0)ᗮ.reflection, ?_, ?_⟩
+  · rw [LinearIsometryEquiv.toLinearEquiv_trans, LinearEquiv.coe_trans, LinearMap.det_comp,
+      Submodule.det_reflection, Submodule.det_reflection, Submodule.orthogonal_orthogonal,
+      Submodule.orthogonal_orthogonal, finrank_span_singleton hv, finrank_span_singleton h0]
+    norm_num
+  · rw [LinearIsometryEquiv.trans_apply,
+      Submodule.reflection_sub (s.norm.trans ((basis (d := 3)).norm_eq_one 2).symm)]
+    apply Submodule.reflection_mem_subspace_eq_self
+    rw [Submodule.mem_orthogonal_singleton_iff_inner_right]
+    exact basis.orthonormal.2 (show (0 : Fin 3) ≠ 2 by decide)
 
 /-!
 

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2025 Zhi Kai Pong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Zhi Kai Pong
+Authors: Philippe Kevorkian, Zhi Kai Pong
 -/
 module
 
@@ -15,12 +15,20 @@ public import Physlib.SpaceAndTime.Space.Derivatives.Laplacian
 
 In this module we define the wave equation in `d`-dimensional Euclidean space,
 and prove that plane waves are solutions to the wave equation.
-By a plne wave we mean a function of the form `f(t, x) = f₀(⟪x, s⟫_ℝ - c * t)` where
+By a plane wave we mean a function of the form `f(t, x) = f₀(⟪x, s⟫_ℝ - c * t)` where
 `s` is a direction vector and `c` is the propagation speed.
+
+The wave equation singles out no direction of space. A linear isometry of space is a rotation,
+possibly combined with the reflection of one axis. A field twice continuously differentiable in
+space, composed with such an isometry, solves the wave equation exactly when the field itself
+does. A plane wave travelling in one direction is a plane wave travelling in another direction,
+composed with an isometry.
 
 ## ii. Key results
 
 - `WaveEquation`: The general form of the wave equation where `c` is the propagation speed.
+- `forall_waveEquation_comp_linearIsometryEquiv_iff`: The wave equation is invariant under
+  linear isometries of space acting on positions.
 - `planeWave`: A vector-valued plane wave travelling in the direction of `s` with
   propagation speed `c`.
 - `planeWave_waveEquation`: The plane wave satisfies the wave equation.
@@ -28,9 +36,10 @@ By a plne wave we mean a function of the form `f(t, x) = f₀(⟪x, s⟫_ℝ - c
 ## iii. Table of contents
 
 - A. The wave equation
+  - A.1. Invariance under linear isometries of space
 - B. Plane wave solutions
   - B.1. Definition of a plane wave
-  - B.2. Differentiablity conditions
+  - B.2. Differentiability conditions
   - B.3. Time derivatives of plane waves
   - B.4. Space derivatives of plane waves
   - B.5. Laplacian of plane waves
@@ -63,6 +72,36 @@ def WaveEquation {d} (f : Time → Space d → EuclideanSpace ℝ (Fin d))
 
 /-!
 
+### A.1. Invariance under linear isometries of space
+
+-/
+
+/-- Let `R` be a linear isometry of space, such as a rotation. If the derivative of each component
+  of `f t` is differentiable at `R x`, then `f` composed with `R` satisfies the wave equation at
+  `(t, x)` exactly when `f` satisfies it at `(t, R x)`. -/
+lemma waveEquation_comp_linearIsometryEquiv_iff {d : ℕ}
+    (f : Time → Space d → EuclideanSpace ℝ (Fin d)) (R : Space d ≃ₗᵢ[ℝ] Space d) (t : Time)
+    (x : Space d) (c : ℝ) (hf : ∀ i, DifferentiableAt ℝ (fderiv ℝ (fun y => f t y i)) (R x)) :
+    WaveEquation (fun t y => f t (R y)) t x c ↔ WaveEquation f t (R x) c := by
+  rw [WaveEquation, WaveEquation, laplacianVec_comp_linearIsometryEquiv (f t) R x hf]
+
+/-- The wave equation is invariant when a linear isometry of space, such as a rotation, acts on
+  positions. For `f` twice continuously differentiable in space, `f` composed with a linear
+  isometry `R` is a solution everywhere exactly when `f` is. -/
+theorem forall_waveEquation_comp_linearIsometryEquiv_iff {d : ℕ}
+    (f : Time → Space d → EuclideanSpace ℝ (Fin d)) (R : Space d ≃ₗᵢ[ℝ] Space d) (c : ℝ)
+    (hf : ∀ t, ContDiff ℝ 2 (f t)) :
+    (∀ t x, WaveEquation (fun t y => f t (R y)) t x c) ↔ ∀ t x, WaveEquation f t x c := by
+  have hd (t : Time) (i : Fin d) (z : Space d) :
+      DifferentiableAt ℝ (fderiv ℝ (fun y => f t y i)) z :=
+    ((contDiff_euclidean.mp (hf t) i).fderiv_right (m := 1) le_rfl).differentiable one_ne_zero z
+  refine ⟨fun h t z => ?_, fun h t x =>
+    (waveEquation_comp_linearIsometryEquiv_iff f R t x c (hd t · _)).mpr (h t (R x))⟩
+  simpa using (waveEquation_comp_linearIsometryEquiv_iff f R t (R.symm z) c (hd t · _)).mp
+    (h t (R.symm z))
+
+/-!
+
 ## B. Plane wave solutions
 
 -/
@@ -82,9 +121,18 @@ lemma planeWave_eq {d f₀ c x} {s : Direction d} :
     planeWave f₀ c s t x = f₀ (⟪x, s.unit⟫_ℝ - c * t) :=
   rfl
 
+/-- A plane wave seen in rotated or reflected axes is again a plane wave. If the linear isometry
+  `R` sends the direction `s` to the direction `e`, the plane wave travelling along `s` is the
+  plane wave with the same profile `f₀` and speed `c` travelling along `e`, composed with `R`. -/
+lemma planeWave_eq_comp_linearIsometryEquiv {d : ℕ} (f₀ : ℝ → EuclideanSpace ℝ (Fin d)) (c : ℝ)
+    {s e : Direction d} (R : Space d ≃ₗᵢ[ℝ] Space d) (h : R s.unit = e.unit) :
+    planeWave f₀ c s = fun t x => planeWave f₀ c e t (R x) := by
+  funext t x
+  rw [planeWave_eq, planeWave_eq, ← h, LinearIsometryEquiv.inner_map_map]
+
 /-!
 
-### B.2. Differentiablity conditions
+### B.2. Differentiability conditions
 
 -/
 

@@ -12,6 +12,13 @@ public import Physlib.ClassicalMechanics.WaveEquation.Basic
 
 Time-harmonic waves.
 
+Any direction of three-dimensional space can be rotated to `basis 2`
+(`Space.exists_rotation_apply_unit_eq_basis_two`). With `planeWave_eq_comp_linearIsometryEquiv`,
+a single plane wave can therefore be taken to travel along `basis 2`, the direction of propagation
+of `transverseHarmonicPlaneWave`, whose wave vector is a multiple of `EuclideanSpace.single 2 1`.
+The rotation acts on positions only, so the values of the wave, and with them its polarization,
+are not rotated.
+
 Note TODO `EGU3E` may require considerable effort to be made rigorous and may heavily depend on
 the status of Fourier theory in Mathlib.
 
@@ -38,8 +45,9 @@ noncomputable def harmonicWave (a g : ℝ → Space d → ℝ) (ω : WaveVector 
     Time → Space d → ℝ :=
     fun t r => a (ω k) r * Real.cos (ω k * t - g (ω k) r)
 
-TODO "Show that the wave equation is invariant under rotations and any direction `s`
-    can be rotated to `EuclideanSpace.single 2 1` if only one wave is concerned."
+TODO "Show that the wave equation is invariant when a rotation acts on the values of the field
+    as well as on positions, and that such a rotation takes a transverse plane wave, polarization
+    included, to one travelling along `basis 2`, as `transverseHarmonicPlaneWave` does."
 open InnerProductSpace
 set_option linter.unusedVariables false in
 /-- Transverse monochromatic time-harmonic plane wave where the direction of propagation
