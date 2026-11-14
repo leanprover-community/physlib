@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Bornemann, Gregory J. Loges
+Authors: Adam Bornemann, Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
@@ -17,12 +17,12 @@ public import Physlib.Meta.TODO.Basic
 The appropriate mathematical objects for discussing operators in non-relativistic quantum mechanics
 are partially-defined linear map (`LinearPMap`) between complex Hilbert spaces, `H →ₗ.[ℂ] H'`.
 An import class of operators in NRQM are those which are both densely defined and closable,
-which we refer to as _unbounded_. When `H = H'` operators may also be symmetric, self-adjoint or
-essentially self-adjoint (closure is self-adjoint).
+which we refer to as _unbounded_. When `H = H'` operators may also be symmetric, self-adjoint,
+essentially self-adjoint (closure is self-adjoint) or normal (commutes with its adjoint).
 
 In this module we collect results on how the properties `HasDenseDomain`, `IsUnbounded`,
-`IsSymmetric`, `IsSelfAdjoint` and `IsEssentiallySelfAdjoint` interact with the basic algebraic
-operations, closure, adjoints, unitary conjugation and each other.
+`IsSymmetric`, `IsSelfAdjoint`, `IsEssentiallySelfAdjoint` and `IsStarNormal` interact with the
+basic algebraic operations, closure, adjoints, unitary conjugation and each other.
 
 ### Notes
 
@@ -58,12 +58,17 @@ Results
     then so is `u A u⁻¹ - z`.
 - `adjoint_compRestricted_le_compRestricted_adjoint` : The inequality `U† ∘ᵣ V† ≤ (V ∘ᵣ U)†`
     when `V` and `V ∘ᵣ U` have dense domain.
+- `IsClosable.adjoint_hasDenseDomain` : The adjoint of a closable operator has dense domain.
 - `IsUnbounded.adjoint` : The adjoint of an unbounded operator is also unbounded.
 - `IsUnbounded.adjoint_closure_eq_adjoint` : An unbounded operator and its closure have
     the same adjoint.
 - `IsUnbounded.adjoint_adjoint_eq_closure` : An unbounded operator `U` satisfies `U†† = U.closure`.
 - `IsEssentiallySelfAdjoint.unique_self_adjoint_extension` : The closure of an essentially
     self-adjoint unbounded operator is its unique self-adjoint extension.
+- `IsStarNormal.hasDenseDomain` : A closable normal operator has dense domain.
+- `IsStarNormal.adjoint` : The adjoint of a closed normal operator is normal.
+- `IsStarNormal.ker_adjoint_eq_ker` : A densely defined normal operator and its adjoint have
+    the same kernel.
 
 ## iii. Table of contents
 
@@ -79,6 +84,7 @@ Results
   - C.2. Symmetric operators
   - C.3. Self-adjoint operators
   - C.4. Essentially self-adjoint operators
+  - C.5. Normal operators
 
 ## iv. References
 
@@ -89,9 +95,6 @@ Results
 
 TODO "Prove that `IsStarNormal (T : H →ₗ.[ℂ] H)` is equivalent
   to `T.domain = T†.domain` and `‖T x‖ = ‖T† x‖` for all `x ∈ T.domain`."
-
-TODO "Prove basic properties of `IsStarNormal (T : H →ₗ.[ℂ] H)`,
-  paralleling those for `IsSelfAdjoint (T : H →ₗ.[ℂ] H)`."
 
 @[expose] public section
 
@@ -242,6 +245,37 @@ lemma isClosable_of_exists_dense_formalAdjoint [CompleteSpace H] [CompleteSpace 
   rw [adjoint_graph_eq_graph_adjoint h_adj, adjoint_graph_eq_graph_adjoint h,
     mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
     orthogonal_orthogonal_eq_closure, mem_submodule_iff_mem_submoduleToLp, submoduleToLp_closure]
+
+/-- The adjoint of a closable operator has dense domain, whether or not `U.domain` is dense.
+With `isClosable_of_exists_dense_formalAdjoint`, a densely defined operator is therefore closable
+exactly when its adjoint is densely defined. -/
+lemma IsClosable.adjoint_hasDenseDomain [CompleteSpace H] [CompleteSpace H'] (h : U.IsClosable) :
+    U†.HasDenseDomain := by
+  -- Otherwise some `x ≠ 0` is orthogonal to `U†.domain`; we show that `(0, x)` lies in the graph
+  -- of `U.closure`, which forces `x = 0`.
+  by_contra h_adj
+  obtain ⟨y, hy⟩ := not_forall.mp h_adj
+  have h_ne_bot : U†.domainᗮ = ⊥ → False := by
+    rw [← orthogonal_eq_top_iff, orthogonal_orthogonal_eq_closure]
+    exact fun a ↦ ne_of_mem_of_not_mem' mem_top hy a.symm
+  obtain ⟨x, hx, hx'⟩ := exists_mem_ne_zero_of_ne_bot h_ne_bot
+  apply hx'
+  refine graph_fst_eq_zero_snd U.closure ?_ rfl
+  -- The closure of the graph is its double orthogonal complement. Every pair `(a, b)` with
+  -- `⟪U z, a⟫ = ⟪z, b⟫` for all `z` has `a ∈ U†.domain`, so `⟪a, x⟫ = 0`.
+  rw [← IsClosable.graph_closure_eq_closure_graph h,
+    mem_submodule_closure_iff_mem_submoduleToLp_closure, ← orthogonal_orthogonal_eq_closure,
+    ← mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
+    Submodule.mem_adjoint_iff]
+  intro a b hab
+  rw [Submodule.mem_adjoint_iff] at hab
+  have ha : a ∈ U†.domain := by
+    refine mem_adjoint_domain_of_exists a ⟨b, fun z ↦ ?_⟩
+    have h1 : ⟪U z, a⟫_ℂ - ⟪(z : H), b⟫_ℂ = 0 := hab z (U z) (mem_graph U z)
+    rw [sub_eq_zero] at h1
+    rw [← inner_conj_symm, ← h1, inner_conj_symm]
+  show ⟪b, (0 : H)⟫_ℂ - ⟪a, x⟫_ℂ = 0
+  rw [inner_zero_right, hx a ha, sub_zero]
 
 /-- A zero LinearPMap (any domain) is closable. -/
 lemma isClosable_of_zero (h_zero : ⇑U = 0) : U.IsClosable := by
@@ -665,23 +699,8 @@ lemma IsUnbounded.hasDenseDomain (h : U.IsUnbounded) : U.HasDenseDomain := h.1
 lemma IsUnbounded.isClosable (h : U.IsUnbounded) : U.IsClosable := h.2
 
 lemma IsUnbounded.adjoint [CompleteSpace H] [CompleteSpace H'] (h : U.IsUnbounded) :
-    U†.IsUnbounded := by
-  refine ⟨?_, (adjoint_isClosed h.1).isClosable⟩
-  by_contra h_adj
-  obtain ⟨y, hy⟩ := not_forall.mp h_adj
-  have h_ne_bot : U†.domainᗮ = ⊥ → False := by
-    rw [← orthogonal_eq_top_iff, orthogonal_orthogonal_eq_closure]
-    exact fun a ↦ ne_of_mem_of_not_mem' mem_top hy a.symm
-  obtain ⟨x, hx, hx'⟩ := exists_mem_ne_zero_of_ne_bot h_ne_bot
-  apply hx'
-  refine graph_fst_eq_zero_snd U.closure ?_ rfl
-  rw [← IsClosable.graph_closure_eq_closure_graph h.2,
-    mem_submodule_closure_iff_mem_submoduleToLp_closure, ← orthogonal_orthogonal_eq_closure,
-    ← mem_submodule_adjoint_adjoint_iff_mem_submoduleToLp_orthogonal_orthogonal,
-    ← adjoint_graph_eq_graph_adjoint h.1, mem_submodule_adjoint_iff_mem_submoduleToLp_orthogonal]
-  rintro ⟨y, Uy⟩ hy
-  simp only [neg_zero, WithLp.prod_inner_apply, inner_zero_right, add_zero]
-  exact hx y (mem_domain_of_mem_graph hy)
+    U†.IsUnbounded :=
+  ⟨h.2.adjoint_hasDenseDomain, (adjoint_isClosed h.1).isClosable⟩
 
 lemma IsUnbounded.closure (h : U.IsUnbounded) : U.closure.IsUnbounded :=
   ⟨h.1.closure, h.2.closureIsClosable⟩
@@ -995,5 +1014,125 @@ lemma IsEssentiallySelfAdjoint.real_smul [CompleteSpace H]
 lemma IsEssentiallySelfAdjoint.neg [CompleteSpace H] (h : T.IsEssentiallySelfAdjoint) :
     (-T).IsEssentiallySelfAdjoint :=
   neg_eq_neg_one_smul T ▸ h.smul (by norm_num) (by norm_num)
+
+/-!
+### C.5. Normal operators
+
+An operator `T` is normal when it commutes with its adjoint, `T† * T = T * T†`. Self-adjoint
+operators, which represent observables, are normal (`IsSelfAdjoint.isStarNormal`), and so are
+unitary operators and multiplication by a complex function, for instance the multiplication
+operator of a complex potential that models absorption.
+
+Unlike `IsSelfAdjoint T`, the condition `IsStarNormal T` implies neither that `T` is closed nor
+that its domain is dense. For instance, the identity map restricted to a dense proper subspace
+commutes with its adjoint, the identity on `H`, but is not closed. The results below therefore
+assume, where needed, that `T` is closed, closable or densely defined.
+-/
+
+/-- A closable normal operator has dense domain. See also `IsSelfAdjoint.dense_domain`, which needs
+no closability assumption. -/
+lemma IsStarNormal.hasDenseDomain [CompleteSpace H] (h : IsStarNormal T) (hT : T.IsClosable) :
+    T.HasDenseDomain := by
+  -- If `T.domain` is not dense then `T†` is zero, and normality gives `T†.domain ≤ T.domain`.
+  -- Since `T` is closable, `T†.domain` is dense, and so is `T.domain`.
+  by_contra hd
+  have hdom : (T† * T).domain = (T * T†).domain :=
+    congrArg LinearPMap.domain (isStarNormal_def.mp h)
+  have hle : T†.domain ≤ T.domain := by
+    intro y hy
+    have hy' : y ∈ (T * T†).domain := by
+      rw [mul_def, mem_compRestricted_domain_iff]
+      refine ⟨hy, ?_⟩
+      rw [adjoint_apply_of_not_dense hd]
+      exact zero_mem _
+    rw [← hdom, mul_def] at hy'
+    exact compRestricted_domain_le T† T hy'
+  exact hd (hT.adjoint_hasDenseDomain.mono hle)
+
+/-- The adjoint of a closed normal operator is normal. A closed normal operator has dense domain
+(`IsStarNormal.hasDenseDomain`), so `T†† = T`, and the normality of `T†` is the relation
+`T† * T = T * T†` read from right to left. -/
+lemma IsStarNormal.adjoint [CompleteSpace H] (h : IsStarNormal T) (hT : T.IsClosed) :
+    IsStarNormal T† := by
+  have hTT : T†† = T :=
+    (IsUnbounded.isClosed_iff ⟨IsStarNormal.hasDenseDomain h hT.isClosable, hT.isClosable⟩).mp hT
+  rw [isStarNormal_def, hTT]
+  exact (isStarNormal_def.mp h).symm
+
+/-- A non-zero complex multiple of a normal operator is normal. The condition `c ≠ 0` is needed
+unless `T` is defined on all of `H`. Indeed `0 • T` is zero on `T.domain` and its adjoint is zero
+on `H`, so `(0 • T)† * (0 • T)` has domain `T.domain` while `(0 • T) * (0 • T)†` has domain `H`. -/
+@[aesop safe apply]
+lemma IsStarNormal.smul [CompleteSpace H] (h : IsStarNormal T) {c : ℂ} (hc : c ≠ 0) :
+    IsStarNormal (c • T) := by
+  have h' := isStarNormal_def.mp h
+  rw [mul_def, mul_def] at h'
+  rw [isStarNormal_def, adjoint_smul T hc, mul_def, mul_def, smul_compRestricted,
+    smul_compRestricted, compRestricted_smul hc, compRestricted_smul ((map_ne_zero _).mpr hc),
+    smul_smul, smul_smul, mul_comm (conj c), h']
+
+/-- A non-zero real multiple of a normal operator is normal. -/
+@[aesop safe apply]
+lemma IsStarNormal.real_smul [CompleteSpace H] (h : IsStarNormal T) {r : ℝ} (hr : r ≠ 0) :
+    IsStarNormal (r • T) :=
+  smul h (ofReal_ne_zero.mpr hr)
+
+/-- The negative of a normal operator is normal. -/
+@[aesop safe apply]
+lemma IsStarNormal.neg [CompleteSpace H] (h : IsStarNormal T) : IsStarNormal (-T) :=
+  neg_eq_neg_one_smul T ▸ smul h (by norm_num)
+
+/-- For a normal operator `T` with dense domain, `‖T x‖ = ‖T† x‖` for every `x` in the domain of
+`T† * T`, that is every `x ∈ T.domain` with `T x ∈ T†.domain`. Normality puts such an `x` in
+`T†.domain` too, and in the statement `y` is `x` viewed as an element of `T†.domain`. This is the
+unbounded analogue of one direction of `ContinuousLinearMap.isStarNormal_iff_norm_eq_adjoint`. -/
+lemma IsStarNormal.norm_eq_of_mem_adjoint_mul_domain [CompleteSpace H] (h : IsStarNormal T)
+    (hdense : T.HasDenseDomain) (x : T.domain) (y : T†.domain) (hxy : (x : H) = y)
+    (hx : T x ∈ T†.domain) : ‖T x‖ = ‖T† y‖ := by
+  have hdom := congrArg LinearPMap.domain (isStarNormal_def.mp h)
+  have hx' : (x : H) ∈ (T† * T).domain := mem_compRestricted_domain_iff.mpr ⟨x.2, hx⟩
+  have hy' : (y : H) ∈ (T * T†).domain := by
+    rw [← hxy, ← hdom]
+    exact hx'
+  obtain ⟨_, hy⟩ := mem_compRestricted_domain_iff.mp hy'
+  have hle := (isStarNormal_def.mp h).le
+  have heq : T† ⟨T x, hx⟩ = T ⟨T† y, hy⟩ := @hle.2 ⟨x, hx'⟩ ⟨y, hy'⟩ hxy
+  -- `‖T x‖ ^ 2 = ⟪T† T x, x⟫ = ⟪T T† x, x⟫ = ‖T† x‖ ^ 2`
+  rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), norm_eq_sqrt_re_inner (𝕜 := ℂ)]
+  congr 2
+  calc ⟪T x, T x⟫_ℂ = ⟪T† ⟨T x, hx⟩, x⟫_ℂ := (adjoint_isFormalAdjoint hdense ⟨T x, hx⟩ x).symm
+    _ = ⟪T ⟨T† y, hy⟩, y⟫_ℂ := by rw [heq, hxy]
+    _ = ⟪T† y, T† y⟫_ℂ := by
+      rw [← inner_conj_symm, ← adjoint_isFormalAdjoint hdense y ⟨T† y, hy⟩, inner_conj_symm]
+
+/-- A densely defined normal operator and its adjoint have the same kernel, so `x ∈ T.domain` with
+`T x = 0` exactly when `x ∈ T†.domain` with `T† x = 0`. Normality is needed. The lowering
+operator `a` of the harmonic oscillator, with `a a† - a† a = 1`, annihilates the ground state
+while its adjoint `a†` does not. This is the unbounded analogue of
+`ContinuousLinearMap.IsStarNormal.ker_adjoint_eq_ker`. -/
+lemma IsStarNormal.ker_adjoint_eq_ker [CompleteSpace H] (h : IsStarNormal T)
+    (hdense : T.HasDenseDomain) : T†.ker = T.ker := by
+  -- In both directions `T x = 0` or `T† x = 0` puts `x` in the domain of `T† * T = T * T†`, and
+  -- `IsStarNormal.norm_eq_of_mem_adjoint_mul_domain` concludes.
+  have hdom := congrArg LinearPMap.domain (isStarNormal_def.mp h)
+  ext x
+  rw [mem_ker_iff, mem_ker_iff]
+  constructor
+  · rintro ⟨y, rfl, hy⟩
+    have hy' : (y : H) ∈ (T† * T).domain := by
+      rw [hdom, mul_def, mem_compRestricted_domain_iff]
+      exact ⟨y.2, (hy ▸ zero_mem _ : T† y ∈ T.domain)⟩
+    obtain ⟨hyT, hTy⟩ := mem_compRestricted_domain_iff.mp hy'
+    refine ⟨⟨y, hyT⟩, rfl, norm_eq_zero.mp ?_⟩
+    rw [IsStarNormal.norm_eq_of_mem_adjoint_mul_domain h hdense ⟨y, hyT⟩ y rfl hTy, hy, norm_zero]
+  · rintro ⟨y, rfl, hy⟩
+    have hTy : T y ∈ T†.domain := hy ▸ zero_mem _
+    have hy' : (y : H) ∈ (T * T†).domain := by
+      rw [← hdom]
+      exact mem_compRestricted_domain_iff.mpr ⟨y.2, hTy⟩
+    have hyA := compRestricted_domain_le T T† hy'
+    refine ⟨⟨y, hyA⟩, rfl, norm_eq_zero.mp ?_⟩
+    rw [← IsStarNormal.norm_eq_of_mem_adjoint_mul_domain h hdense y ⟨y, hyA⟩ rfl hTy, hy,
+      norm_zero]
 
 end LinearPMap

@@ -26,12 +26,17 @@ densely defined and closable. [1] It is symmetric when the inner-product pairing
 domain, which happens exactly when the pairing of each vector with its own image is real. [2]
 Symmetry is stable under sums, powers and closures, and a self-adjoint operator is symmetric and
 closed. [3] An operator is essentially self-adjoint when its closure is self-adjoint; such an
-operator is unbounded, and its closure is its only self-adjoint extension. [4]
+operator is unbounded, and its closure is its only self-adjoint extension. [4] An operator is
+normal when it commutes with its adjoint. A closable normal operator is densely defined, the
+adjoint of a closed normal operator is normal, and non-zero multiples and the negative of a normal
+operator are normal. For a densely defined normal operator T, the vectors T x and T† x have the
+same norm for every x in the domain of T† T, so T and T† have the same kernel. [30]
 
 The adjoint is antitone and conjugate-linear in non-zero scalars, the sum of two adjoints is a
-restriction of the adjoint of the sum, and likewise for compositions; the adjoint of an unbounded
-operator is again unbounded, and its second adjoint is its closure. [5] A symmetric densely defined
-operator for which T + i and T - i both have the whole space as range is self-adjoint. [6]
+restriction of the adjoint of the sum, and likewise for compositions; the adjoint of a closable
+operator is densely defined, so the adjoint of an unbounded operator is again unbounded, and its
+second adjoint is its closure. [5] A symmetric densely defined operator for which T + i and T - i
+both have the whole space as range is self-adjoint. [6]
 Conjugation by a unitary preserves formal adjoints, dense domains and surjectivity of T - z. [7] The
 standard examples separating the classes of symmetric, essentially self-adjoint and self-adjoint
 operators make the distinction between symmetry and self-adjointness visible. [TODO] These
@@ -127,8 +132,9 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
    `IsEssentiallySelfAdjoint.unique_self_adjoint_extension`
 5. Physlib/QuantumMechanics/Operators/Unbounded.lean — `adjoint_smul`, `adjoint_neg`,
    `adjoint_antitone`, `adjoint_add_le_add_adjoint`,
-   `adjoint_compRestricted_le_compRestricted_adjoint`, `IsUnbounded.adjoint`,
-   `IsUnbounded.adjoint_closure_eq_adjoint`, `IsUnbounded.adjoint_adjoint_eq_closure`
+   `adjoint_compRestricted_le_compRestricted_adjoint`, `IsClosable.adjoint_hasDenseDomain`,
+   `IsUnbounded.adjoint`, `IsUnbounded.adjoint_closure_eq_adjoint`,
+   `IsUnbounded.adjoint_adjoint_eq_closure`
 6. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsSymmetric.isSelfAdjoint_of_range_eq_top`,
    `IsSymmetric.isSelfAdjoint_iff`, `IsSymmetric.isEssentiallySelfAdjoint_iff`
 7. Physlib/QuantumMechanics/Operators/Unbounded.lean — `unitaryConj`,
@@ -220,6 +226,9 @@ Hall {1}. The uncertainty bounds go back to Robertson {9} and Schrödinger {10}.
    `state_uncertainty_of_centered_commutator`, `state_uncertainty_squared_of_raw_commutator`,
    `state_uncertainty_squared_with_covariance_of_raw_commutator`,
    `state_uncertainty_of_raw_commutator`
+30. Physlib/QuantumMechanics/Operators/Unbounded.lean — `IsStarNormal.hasDenseDomain`,
+   `IsStarNormal.adjoint`, `IsStarNormal.smul`, `IsStarNormal.real_smul`, `IsStarNormal.neg`,
+   `IsStarNormal.norm_eq_of_mem_adjoint_mul_domain`, `IsStarNormal.ker_adjoint_eq_ker`
 
 ## References
 
