@@ -46,8 +46,8 @@ Both are the single statement `⟨J⟩² ≤ 4 Var H · Var X`, that is `mandels
 
 @[expose] public section
 
-open scoped ComplexOrder InnerProductSpace selfAdjoint
-open ProbabilisticTheory
+open scoped ComplexOrder InnerProductSpace _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory
 open ContinuousLinearMap UnitalPositiveLinearMap
 
 namespace CondensedMatter

@@ -66,7 +66,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open scoped Matrix ComplexOrder
 
 variable {n : Type*} [Fintype n] [DecidableEq n]

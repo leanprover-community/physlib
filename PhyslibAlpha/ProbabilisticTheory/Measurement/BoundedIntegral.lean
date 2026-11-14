@@ -50,7 +50,7 @@ on simple functions.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace EffectValuedMeasure
 
@@ -674,4 +674,4 @@ end Definition
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

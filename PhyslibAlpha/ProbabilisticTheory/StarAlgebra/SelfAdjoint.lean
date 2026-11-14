@@ -40,7 +40,7 @@ Mathlib describes self-adjointness by the predicate `IsSelfAdjoint`, the additiv
 @[expose] public section
 
 namespace selfAdjoint
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Membership in the self-adjoint part -/
 
@@ -109,7 +109,7 @@ end selfAdjoint
 
 /-! ## D. Self-adjoint complex numbers -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ComplexOrder
 
@@ -123,4 +123,4 @@ noncomputable def _root_.Complex.selfAdjointUPLM : selfAdjoint ℂ →ₚ₁[ℝ
     change Complex.selfAdjointEquiv (1 : selfAdjoint ℂ) = 1
     simp
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

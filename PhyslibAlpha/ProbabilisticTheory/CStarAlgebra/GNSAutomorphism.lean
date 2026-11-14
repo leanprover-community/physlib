@@ -47,7 +47,7 @@ translation-invariant state, this gives a unitary representation of the group on
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 open Complex ContinuousLinearMap UniformSpace Completion
@@ -234,6 +234,6 @@ end Group
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

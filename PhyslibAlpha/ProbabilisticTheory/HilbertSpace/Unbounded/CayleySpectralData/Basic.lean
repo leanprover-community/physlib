@@ -45,7 +45,7 @@ measure on `ℝ`, the candidate spectral measure of `T`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -845,6 +845,6 @@ lemma cayleyMap_cayleyRealSpectralMeasure
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

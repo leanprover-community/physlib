@@ -51,7 +51,7 @@ namespace CondensedMatter
 
 namespace Crystal
 
-open ProbabilisticTheory ProbabilisticTheory.QuasiLocal QuasiLocal Filter
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuasiLocal QuasiLocal Filter
 
 variable {d : ℕ} {F : Type*} [Fintype F] [DecidableEq F]
 variable (Ω₀ : Type*) [Fintype Ω₀] [DecidableEq Ω₀]

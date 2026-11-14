@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Mathematics.Order.PositiveDual.Interpolation
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Archimedean
 public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
@@ -43,7 +43,7 @@ exact interpolants exist. Then the observables have the Riesz decomposition.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Closed order intervals -/
 
@@ -78,10 +78,10 @@ end ArchimedeanOrderUnitSpace
 
 /-! ## B. Exact interpolants -/
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace HasLatticeDualCone
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open scoped ArchimedeanOrderUnitSpace
 open Filter Topology ArchimedeanOrderUnitSpace
@@ -185,7 +185,7 @@ lemma exists_interpolant [CompleteSpace F] [NeZero n] [NeZero m] :
 
 end HasLatticeDualCone
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 
 open scoped ArchimedeanOrderUnitSpace in
@@ -200,4 +200,4 @@ lemma _root_.HasLatticeDualCone.hasRieszDecomposition {F : Type*} [ArchimedeanOr
   simp only [Fin.forall_fin_two, Matrix.cons_val_zero, Matrix.cons_val_one] at hlo hhi
   exact ⟨c, ⟨hlo.1, hhi.2⟩, sub_nonneg.2 hhi.1, sub_le_comm.1 hlo.2⟩
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -38,7 +38,7 @@ restricts to a real state on its observables, the expectation-value functional.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Observables -/
 
@@ -91,4 +91,4 @@ example (s : 𝓢[ℝ, E]) (h1 : IsSelfAdjoint (1 : E)) : s ((⟨1, h1⟩ : Obse
 
 end OrderUnit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

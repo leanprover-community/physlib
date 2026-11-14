@@ -39,7 +39,7 @@ real vector space.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. The Leibniz rule -/
 
@@ -73,4 +73,4 @@ lemma IsDerivation.smul [SMulCommClass ℝ E E] [IsScalarTower ℝ E E] (c : ℝ
   intro a b
   simp only [LinearMap.smul_apply, h a b, smul_add, smul_mul_assoc, mul_smul_comm]
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

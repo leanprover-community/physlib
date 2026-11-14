@@ -50,7 +50,7 @@ replaced by an arbitrary ⋆-homomorphism, so that it applies to commuting famil
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -924,6 +924,6 @@ end StarHomScalar
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

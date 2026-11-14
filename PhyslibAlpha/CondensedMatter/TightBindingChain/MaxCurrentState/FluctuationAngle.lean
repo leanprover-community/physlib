@@ -46,7 +46,7 @@ dimensional quantum of the chain, and it fixes the angle.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open ProbabilisticTheory UnitalPositiveLinearMap
+open PhyslibAlpha.ProbabilisticTheory UnitalPositiveLinearMap
 
 variable (T : TightBindingChain)
 

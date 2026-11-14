@@ -7,6 +7,7 @@ module
 
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
 public import Physlib.Mathematics.Calculus.Gradient
+public import Physlib.Mathematics.KroneckerDelta.Basic
 /-!
 
 # The Poisson bracket
@@ -34,6 +35,8 @@ derivatives on phase space.
 - `poissonBracket_eq_of_hasGradientAt` : computes the bracket from known partial gradients.
 - `poissonBracket_antisymm` : the bracket is antisymmetric.
 - `poissonBracket_self` : every observable Poisson-commutes with itself.
+- `poissonBracket_position_momentum`, `poissonBracket_position_position`,
+  `poissonBracket_momentum_momentum` : the canonical bracket relations for Euclidean coordinates.
 - `poissonBracket_add_left`, `poissonBracket_add_right`, `poissonBracket_const_mul_left`,
   `poissonBracket_const_mul_right` : the bracket is bilinear, that is additive and homogeneous in
   each argument.
@@ -54,6 +57,7 @@ derivatives on phase space.
 - E. Time evolution along a Hamiltonian flow
   - E.1. The chain rule for a phase-space function along a trajectory
   - E.2. Time evolution as the Poisson bracket with the Hamiltonian
+- F. Canonical coordinate relations
 
 ## iv. References
 
@@ -64,14 +68,13 @@ derivatives on phase space.
 
 @[expose] public section
 
-open InnerProductSpace Time
+open InnerProductSpace KroneckerDelta Time
 
 namespace ClassicalMechanics
 
 variable {X} [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X]
 
-TODO "Add the canonical commutation relations for coordinate functionals and the Jacobi identity
-    for `poissonBracket`."
+TODO "Add the Jacobi identity for `poissonBracket`."
 
 /-!
 
@@ -262,5 +265,39 @@ lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X
   rw [hbr, ← inner_gradient_left, ← inner_gradient_left, inner_neg_right,
     neg_add_eq_sub, ← poissonBracket] at hd
   exact hd
+
+/-!
+
+## F. Canonical coordinate relations
+
+For Euclidean phase space, position and momentum coordinates satisfy
+`{qᵢ, pⱼ} = δᵢⱼ`, while brackets between two position coordinates or two momentum coordinates
+vanish.
+The argument order remains momentum first, position second, as in `poissonBracket`.
+
+-/
+
+/-- The Poisson bracket of a position coordinate with a momentum coordinate is the Kronecker
+delta. -/
+@[simp]
+lemma poissonBracket_position_momentum {ι : Type*} [Fintype ι] [DecidableEq ι] (i j : ι)
+    (p q : EuclideanSpace ℝ ι) :
+    poissonBracket (fun _ q => q i) (fun p _ => p j) p q = δ[i,j] := by
+  simp [poissonBracket, gradient_coord, gradient_fun_const, EuclideanSpace.inner_single_left,
+    PiLp.single_apply, kroneckerDelta, eq_comm]
+
+/-- The Poisson bracket of two position coordinates vanishes. -/
+@[simp]
+lemma poissonBracket_position_position {ι : Type*} [Fintype ι] (i j : ι)
+    (p q : EuclideanSpace ℝ ι) :
+    poissonBracket (fun _ q => q i) (fun _ q => q j) p q = 0 := by
+  simp [poissonBracket, gradient_fun_const]
+
+/-- The Poisson bracket of two momentum coordinates vanishes. -/
+@[simp]
+lemma poissonBracket_momentum_momentum {ι : Type*} [Fintype ι] (i j : ι)
+    (p q : EuclideanSpace ℝ ι) :
+    poissonBracket (fun p _ => p i) (fun p _ => p j) p q = 0 := by
+  simp [poissonBracket, gradient_fun_const]
 
 end ClassicalMechanics

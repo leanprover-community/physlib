@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Restrict
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 /-!
 
@@ -40,7 +40,7 @@ order-unit spaces of observables.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped CStarAlgebra
 
@@ -100,4 +100,4 @@ end Observables
 
 end QuantumChannel
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

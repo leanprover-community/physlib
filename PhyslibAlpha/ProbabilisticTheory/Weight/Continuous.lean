@@ -40,7 +40,7 @@ is a continuous linear functional on the observables with the order-unit norm.
 
 
 namespace PositiveLinearMap
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open ArchimedeanOrderUnitSpace
 
 variable {E : Type*} [ArchimedeanOrderUnitSpace E]
@@ -89,7 +89,7 @@ end PositiveLinearMap
 
 -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ArchimedeanOrderUnitSpace
 
@@ -110,4 +110,4 @@ lemma toOrderUnitContinuousLinearMap_apply_of_nonneg {w : Weight E} (hw : w.IsFi
 
 end Weight.IsFinite
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -43,8 +43,8 @@ every state, pure or mixed: no state moves faster. The maximal current state rea
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory
 open InnerProductSpace UnitalPositiveLinearMap
 variable (T : TightBindingChain)
 

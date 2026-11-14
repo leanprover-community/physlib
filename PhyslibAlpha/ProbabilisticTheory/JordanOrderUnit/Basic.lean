@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Algebra.Jordan.Basic
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Archimedean
 
 /-!
 
@@ -39,7 +39,7 @@ the operator picture `⟪ψ, a² ψ⟫ = ‖a ψ‖² ≥ 0`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. The compatibility class -/
 
@@ -67,4 +67,4 @@ lemma sq_nonneg (a : E) : 0 ≤ a * a := mul_self_nonneg a
 
 end IsJordanOrderUnit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

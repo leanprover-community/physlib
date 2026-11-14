@@ -45,9 +45,9 @@ traces against `ρ`, and the state of a rank-one projection `|ψ⟩⟨ψ|` is th
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
-open scoped ComplexOrder InnerProductSpace selfAdjoint
+open scoped ComplexOrder InnerProductSpace _root_.selfAdjoint
 open ContinuousLinearMap
 
 namespace UnitalPositiveLinearMap
@@ -117,4 +117,4 @@ lemma ofDensity_rankOne {ψ : H} (h : ‖ψ‖ = 1) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

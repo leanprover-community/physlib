@@ -46,6 +46,7 @@ public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.ReleasedFromRes
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.SmallAngle
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Solution
 public import Physlib.ClassicalMechanics.Pendulum.SlidingPendulum
+public import Physlib.ClassicalMechanics.PhaseSpace.Basic
 public import Physlib.ClassicalMechanics.PointParticle.Basic
 public import Physlib.ClassicalMechanics.PointParticle.NewtonianSystem.Basic
 public import Physlib.ClassicalMechanics.RigidBody.AngularMomentum
@@ -624,6 +625,7 @@ public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.SchwartzAction
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.Derivatives.Basic
 public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 public import Physlib.SpaceAndTime.WaveVectorSpace.Fourier
 public import Physlib.StatisticalMechanics.BoltzmannConstant

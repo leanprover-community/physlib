@@ -36,7 +36,7 @@ most the norm.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JBAlgebra
 
@@ -78,4 +78,4 @@ end ClosedGeneratedByOne
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

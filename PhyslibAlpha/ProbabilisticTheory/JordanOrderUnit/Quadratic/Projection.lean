@@ -41,7 +41,7 @@ For a Jordan projection `p` every observable splits into the Peirce components w
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -323,4 +323,4 @@ lemma quadRep_add_sub_quadRep [SMulCommClass ℝ E E] (p x : E) :
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

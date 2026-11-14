@@ -5,8 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
-public import Physlib.ProbabilisticTheory.Effect.Sharp
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
 
 /-!
 
@@ -23,8 +23,8 @@ y₁ + s y₂`, conjugating by `1 - p` kills both `y₁` and `y₂`, so by the C
 ## ii. Key results
 
 - `IsIdempotentElem.isSharp` : idempotent effects are sharp.
-- `ProbabilisticTheory.eq_of_mem_openSegment_of_isIdempotentElem` : the algebraic heart of the
-  proof, stated on bare elements.
+- `PhyslibAlpha.ProbabilisticTheory.eq_of_mem_openSegment_of_isIdempotentElem` : the algebraic
+  heart of the proof, stated on bare elements.
 
 ## iii. Table of contents
 
@@ -39,7 +39,7 @@ y₁ + s y₂`, conjugating by `1 - p` kills both `y₁` and `y₂`, so by the C
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -166,4 +166,4 @@ lemma _root_.IsIdempotentElem.isSharp {e : Effect (selfAdjoint A)}
   exact eq_of_mem_openSegment_of_isIdempotentElem e.2.1 e.2.2 h hx₁.1 hx₁.2 hx₂.1 hx₂.2 ht hs hts
     heq
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

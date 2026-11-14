@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Cone
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 
 /-!
@@ -41,7 +41,7 @@ a weight that is finite and normalized.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ENNReal NNReal
 
@@ -148,4 +148,4 @@ end OrderUnitSpace
 
 end Weight
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

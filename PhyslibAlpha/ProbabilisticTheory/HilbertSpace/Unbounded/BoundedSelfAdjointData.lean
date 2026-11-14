@@ -42,7 +42,7 @@ measure on `ℝ` that reconstructs the operator.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -158,6 +158,6 @@ lemma exists_boundedSelfAdjointSpectralSupport
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

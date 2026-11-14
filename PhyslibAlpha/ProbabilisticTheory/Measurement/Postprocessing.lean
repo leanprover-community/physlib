@@ -44,7 +44,7 @@ Born law of `M` is the Born law of `N` composed with the kernel.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace Measurement
 
@@ -149,4 +149,4 @@ lemma probabilityLaw_mapOutcome (N : Measurement Ω' E) (f : Ω' → Ω) (hf : M
 
 end Measurement
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

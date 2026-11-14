@@ -42,7 +42,7 @@ form it carries the Lorentz cone. Only the algebraic structure is built here.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -180,4 +180,4 @@ end SpinFactor
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
