@@ -24,6 +24,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
   - A.4. Powers
   - A.5. Components / coordinate functions
   - A.6. Norm-squared
+  - A.7. Inner product
 
 ## iv. References
 
@@ -145,5 +146,55 @@ lemma norm_sq_differentiable : Differentiable ℝ (fun k : WaveVectorSpace d ↦
 
 lemma deriv_norm_sq (i : Fin d) (k : WaveVectorSpace d) : ∂[i] (fun k ↦ ‖k‖ ^ 2) k = 2 * k i := by
   simp [deriv_eq]
+
+/-!
+### A.7. Inner product
+-/
+
+section InnerProduct
+
+open scoped RealInnerProductSpace
+
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M]
+  {f g : M → WaveVectorSpace d} (i : Fin d) (k k₁ k₂ : WaveVectorSpace d)
+
+@[fun_prop]
+lemma inner_differentiable : Differentiable ℝ (fun k : WaveVectorSpace d ↦ ⟪k, k⟫) :=
+  differentiable_id.inner ℝ differentiable_id
+
+@[fun_prop]
+lemma inner_differentiableAt : DifferentiableAt ℝ (fun k ↦ ⟪k, k⟫) k := inner_differentiable k
+
+@[fun_prop]
+lemma inner_apply_differentiable (hf : Differentiable ℝ f) (hg : Differentiable ℝ g) :
+    Differentiable ℝ (fun m : M ↦ ⟪f m, g m⟫) :=
+  hf.inner ℝ hg
+
+@[fun_prop]
+lemma inner_apply_differentiableAt
+    {m : M} (hf : DifferentiableAt ℝ f m) (hg : DifferentiableAt ℝ g m) :
+    DifferentiableAt ℝ (fun m : M ↦ ⟪f m, g m⟫) m :=
+  hf.inner ℝ hg
+
+@[fun_prop]
+lemma inner_contDiff {n : WithTop ℕ∞} : ContDiff ℝ n (fun k : WaveVectorSpace d ↦ ⟪k, k⟫) :=
+  contDiff_id.inner ℝ contDiff_id
+
+@[fun_prop]
+lemma inner_apply_contDiff {n : WithTop ℕ∞} (hf : ContDiff ℝ n f) (hg : ContDiff ℝ n g) :
+    ContDiff ℝ n (fun m : M ↦ ⟪f m, g m⟫) :=
+  hf.inner ℝ hg
+
+lemma deriv_inner_self : ∂[i] (fun k ↦ ⟪k, k⟫) k = 2 * k i := by simp [deriv_norm_sq]
+
+@[simp]
+lemma deriv_inner_left : ∂[i] (fun k ↦ ⟪k, k₂⟫) k₁ = k₂ i := by
+  simp [deriv_eq, fderiv_inner_apply ℝ]
+
+@[simp]
+lemma deriv_inner_right : ∂[i] (fun k ↦ ⟪k₁, k⟫) k₂ = k₁ i := by
+  simp [deriv_eq, fderiv_inner_apply ℝ]
+
+end InnerProduct
 
 end WaveVectorSpace
