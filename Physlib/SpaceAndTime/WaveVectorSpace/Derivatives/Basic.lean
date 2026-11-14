@@ -22,6 +22,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
   - A.2. Addition and subtraction
   - A.3. Scalar multiplication
   - A.4. Powers
+  - A.5. Components / coordinate functions
 
 ## iv. References
 
@@ -114,5 +115,23 @@ lemma deriv_pow {𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℝ 𝔸] (i
     {f : WaveVectorSpace d → 𝔸} {k : WaveVectorSpace d} (n : ℕ) (hf : DifferentiableAt ℝ f k) :
     ∂[i] (f ^ n) k = (n • f k ^ (n - 1)) • ∂[i] f k := by
   simp [deriv_eq, fderiv_pow n hf]
+
+/-!
+### A.5. Components / coordinate functions
+-/
+
+section Coord
+
+variable (i j : Fin d) (k : WaveVectorSpace d)
+
+@[simp]
+lemma deriv_coord : ∂[i] (coord j) k = δ[i,j] := by
+  change ∂[i] (coordCLM j) k = δ[i,j]
+  simp [deriv_eq, ContinuousLinearMap.fderiv, coordCLM_apply, coord_apply]
+
+@[simp]
+lemma deriv_component : ∂[i] (fun k ↦ k j) k = δ[i,j] := by simp [← coord_apply]
+
+end Coord
 
 end WaveVectorSpace
