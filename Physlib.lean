@@ -155,6 +155,7 @@ public import Physlib.Mathematics.ForMathlib.ComplexLinear
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.Cutoff
 public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
+public import Physlib.Mathematics.ForMathlib.DistributionCLM
 public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Fin
 public import Physlib.Mathematics.ForMathlib.Fin.Involutions

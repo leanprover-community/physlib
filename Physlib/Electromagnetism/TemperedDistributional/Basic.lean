@@ -73,7 +73,7 @@ attribute [-simp] Nat.succ_eq_add_one
 /-- The creation of an electromagnetic potential from a scalar potential. -/
 noncomputable def ofScalarPotential {d} (c : SpeedOfLight) :
     ((Time × Space d) →d[ℝ] ℝ) →ₗ[ℝ] TempDistElectromagneticPotential d where
-  toFun φ := Lorentz.Vector.ofTemporalComponent ∘L (distTimeSlice c).symm (((1 : ℝ) / c.val) • φ)
+  toFun φ := Lorentz.Vector.ofTemporalComponent ∘L (tempDistTimeSlice c).symm (((1 : ℝ) / c.val) • φ)
   map_add' φ₁ φ₂ := by
     ext ε
     simp
@@ -118,7 +118,7 @@ lemma ofStaticScalarPotentialFunction_eq_zero_of_not_isDistBounded {d}
 noncomputable def ofVectorPotential {d} (c : SpeedOfLight) :
     ((Time × Space d) →d[ℝ] EuclideanSpace ℝ (Fin d)) →ₗ[ℝ]
     TempDistElectromagneticPotential d where
-  toFun A := (distTimeSlice c).symm (Lorentz.Vector.ofSpatialComponent ∘L A)
+  toFun A := (tempDistTimeSlice c).symm (Lorentz.Vector.ofSpatialComponent ∘L A)
   map_add' A₁ A₂ := by
     ext ε
     simp
