@@ -208,21 +208,6 @@ lemma poissonBracket_mul_right (f g₁ g₂ : X → X → ℝ) (p q : X)
 
 -/
 
-private lemma fderiv_uncurry_apply (f : X → X → ℝ) {p q : X}
-    (hf : DifferentiableAt ℝ (Function.uncurry f) (p, q)) (dp dq : X) :
-    fderiv ℝ (Function.uncurry f) (p, q) (dp, dq) =
-      ⟪gradient (fun p' => f p' q) p, dp⟫_ℝ + ⟪gradient (fun q' => f p q') q, dq⟫_ℝ := by
-  have h1 : HasFDerivAt (fun p' => f p' q)
-      ((fderiv ℝ (Function.uncurry f) (p, q)).comp (ContinuousLinearMap.inl ℝ X X)) p :=
-    HasFDerivAt.comp (f := fun e : X => (e, q)) p hf.hasFDerivAt
-      (hasFDerivAt_prodMk_left p q)
-  have h2 : HasFDerivAt (fun q' => f p q')
-      ((fderiv ℝ (Function.uncurry f) (p, q)).comp (ContinuousLinearMap.inr ℝ X X)) q :=
-    HasFDerivAt.comp (f := fun e : X => (p, e)) q hf.hasFDerivAt
-      (hasFDerivAt_prodMk_right p q)
-  rw [inner_gradient_left, inner_gradient_left, h1.fderiv, h2.fderiv]
-  simp [ContinuousLinearMap.comp_apply, ← map_add]
-
 /-- The time derivative of a phase-space function `f` composed with trajectories `p q : Time → X`
 is the sum of the gradients of `f` paired with the velocities `∂ₜ p` and `∂ₜ q`. -/
 lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) (t : Time)
@@ -236,7 +221,10 @@ lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) 
     HasFDerivAt.comp (f := fun t => (p t, q t)) t hf.hasFDerivAt
       (hp.hasFDerivAt.prodMk hq.hasFDerivAt)
   rw [Time.deriv_eq, hF.fderiv]
-  exact fderiv_uncurry_apply f hf _ _
+  have hchain := fderiv_uncurry f (p t, q t) (∂ₜ p t, ∂ₜ q t) hf
+  change (fderiv ℝ (Function.uncurry f) (p t, q t)) _ = _ at hchain
+  simpa only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
+    ← Time.deriv_eq, inner_gradient_left] using hchain
 
 /-!
 
@@ -268,7 +256,11 @@ lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X
     by simpa [ContinuousLinearMap.prod_apply] using
       (hp.hasFDerivAt.prodMk hq.hasFDerivAt).hasDerivAt
   have hd := hf.hasFDerivAt.comp_hasDerivAt t hpq
-  rw [fderiv_uncurry_apply f hf, inner_neg_right, neg_add_eq_sub, ← poissonBracket] at hd
+  have hbr := fderiv_uncurry f (p t, q t)
+    (-gradient (fun q' => H (p t) q') (q t), gradient (fun p' => H p' (q t)) (p t)) hf
+  change (fderiv ℝ (Function.uncurry f) (p t, q t)) _ = _ at hbr
+  rw [hbr, ← inner_gradient_left, ← inner_gradient_left, inner_neg_right,
+    neg_add_eq_sub, ← poissonBracket] at hd
   exact hd
 
 end ClassicalMechanics
