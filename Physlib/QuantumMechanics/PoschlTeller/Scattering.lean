@@ -5,7 +5,6 @@ Authors: Emil Kubanychbek
 -/
 module
 
-public import Mathlib.Analysis.Distribution.TemperedDistribution
 public import Physlib.QuantumMechanics.PoschlTeller.Basic
 /-!
 
