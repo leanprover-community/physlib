@@ -14,7 +14,12 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 
 ## i. Overview
 
+In this module we define derivatives for functions on `WaveVectorSpace`.
+
 ## ii. Key results
+
+- `deriv i` : The derivative of a function `f : WaveVectorSpace d → M`
+  in the direction of the `i`ᵗʰ basis vector, denoted by `∂[i] f`.
 
 ## iii. Table of contents
 
@@ -99,6 +104,7 @@ lemma deriv_neg (i : Fin d) (f : WaveVectorSpace d → M) : ∂[i] (-f) = -∂[i
   ext
   simp [deriv_eq, fderiv_neg]
 
+/-- The product rule for functions on `WaveVectorSpace`. -/
 @[to_fun deriv_fun_smul]
 lemma deriv_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 M]
     (i : Fin d) {c : WaveVectorSpace d → 𝕜} {f : WaveVectorSpace d → M} {k : WaveVectorSpace d}
@@ -119,6 +125,7 @@ end SMul
 ### A.4. Powers
 -/
 
+/-- The power rule for functions on `WaveVectorSpace`. -/
 @[to_fun deriv_fun_pow]
 lemma deriv_pow {𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℝ 𝔸] (i : Fin d)
     {f : WaveVectorSpace d → 𝔸} {k : WaveVectorSpace d} (n : ℕ) (hf : DifferentiableAt ℝ f k) :
@@ -221,10 +228,12 @@ lemma deriv_pairingCLM_flip (i : Fin d) (x : Space d) (k : WaveVectorSpace d) :
   simp [deriv_eq, pairingCLM_flip_apply_eq_dual, Space.dual_apply, dotProduct, basis_apply,
     ← nsmul_eq_mul]
 
+/-- The derivative of the functional `x ↦ k ⬝ᵥ x` with respect to `xⁱ` is `kᵢ`. -/
 @[simp]
 lemma deriv_dual (i : Fin d) (k : WaveVectorSpace d) (x : Space d) : ∂[i] k.dual x = k i :=
   deriv_pairingCLM i k x
 
+/-- The derivative of the functional `k ↦ k ⬝ᵥ x` with respect to `kᵢ` is `xᵢ`. -/
 @[simp]
 lemma _root_.Space.deriv_dual (i : Fin d) (x : Space d) (k : WaveVectorSpace d) :
     ∂[i] x.dual k = x i :=
