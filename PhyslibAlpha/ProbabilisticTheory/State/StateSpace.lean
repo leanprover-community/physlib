@@ -52,7 +52,7 @@ On `𝓢[ℝ, E]` itself the states carry the finer state metric.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ArchimedeanOrderUnitSpace MeasureTheory Filter Topology
 
@@ -212,4 +212,4 @@ lemma isPure_iff_mem_extremePoints (ω : stateSpace E) :
 
 end StateSpace
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

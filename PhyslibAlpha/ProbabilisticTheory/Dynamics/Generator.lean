@@ -37,7 +37,7 @@ it exists.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
@@ -55,4 +55,4 @@ lemma IsGenerator.unique {α : ℝ → E → E} {D₁ D₂ : E → E} (h₁ : Is
     (h₂ : IsGenerator α D₂) : D₁ = D₂ :=
   funext fun a => (h₁ a).unique (h₂ a)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

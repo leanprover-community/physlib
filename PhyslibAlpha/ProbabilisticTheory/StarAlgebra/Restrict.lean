@@ -38,7 +38,7 @@ complex state becomes a real one.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Restriction to submodules -/
 
@@ -72,12 +72,12 @@ def UnitalPositiveLinearMap.restrict (f : E₁ →ₚ₁[R] E₂) {F₁ : Submod
 
 end Restrict
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 /-! ## B. Positive maps on self-adjoint elements -/
 
 section SelfAdjoint
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 variable {A₁ A₂ : Type*}
 
@@ -92,7 +92,7 @@ variable
     [StarModule ℂ A₁] [StarModule ℂ A₂]
     [StarOrderedRing A₂]
 
-open selfAdjoint
+open _root_.selfAdjoint
 
 /-- A positive linear map induces a positive real-linear map on self-adjoint elements. -/
 noncomputable def restrictSA (f : A₁ →ₚ[ℂ] A₂) : selfAdjoint A₁ →ₚ[ℝ] selfAdjoint A₂ :=
@@ -131,7 +131,7 @@ end SelfAdjoint
 
 /-! ## C. Unital positive maps on self-adjoint elements -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 section SelfAdjoint
 
@@ -147,7 +147,7 @@ variable
     [StarModule ℂ A₁] [StarModule ℂ A₂]
     [StarOrderedRing A₂]
 
-open selfAdjoint
+open _root_.selfAdjoint
 
 variable (f : A₁ →ₚ₁[ℂ] A₂)
 
@@ -185,4 +185,4 @@ end UnitalPositiveLinearMap
 
 end SelfAdjoint
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

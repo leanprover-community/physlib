@@ -53,7 +53,7 @@ are made once for every net.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuasiLocal
 
@@ -141,4 +141,4 @@ end AlgebraNet
 
 end QuasiLocal
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

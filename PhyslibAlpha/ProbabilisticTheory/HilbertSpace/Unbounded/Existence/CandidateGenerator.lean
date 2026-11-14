@@ -42,7 +42,7 @@ derivative. It is a symmetric operator.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -191,4 +191,4 @@ lemma stoneCandidateGenerator_isSymmetric :
 end
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

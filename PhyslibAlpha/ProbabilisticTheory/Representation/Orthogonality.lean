@@ -46,7 +46,7 @@ nontrivial character of `Ĝ` for `g ≠ 0`, so by translation invariance
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 
@@ -150,6 +150,6 @@ end Haar
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

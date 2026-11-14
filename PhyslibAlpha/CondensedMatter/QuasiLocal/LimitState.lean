@@ -52,7 +52,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory ProbabilisticTheory.QuasiLocal Filter
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuasiLocal Filter
 
 /-! ## A. Local boundedness of the net of operators -/
 

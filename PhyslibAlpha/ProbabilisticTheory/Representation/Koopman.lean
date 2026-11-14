@@ -48,7 +48,7 @@ quantum systems.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set
 open scoped ComplexOrder InnerProductSpace
@@ -169,8 +169,8 @@ functions in `L²(μ)`.   -/
 lemma range_projection_one_koopman :
     LinearMap.range (projection (koopman (E := E) μ T hT)
         {(1 : PontryaginDual (Multiplicative G))} : Lp E 2 μ →L[ℂ] Lp E 2 μ).toLinearMap =
-      ProbabilisticTheory.Representation.sector (toEnd (koopman (E := E) μ T hT)) (fun _ =>
-        (1 : ℂ)) := by
+      PhyslibAlpha.ProbabilisticTheory.Representation.sector
+        (toEnd (koopman (E := E) μ T hT)) (fun _ => (1 : ℂ)) := by
   simpa using range_projection_singleton (koopman (E := E) μ T hT) (1 : PontryaginDual
     (Multiplicative G))
 
@@ -180,6 +180,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

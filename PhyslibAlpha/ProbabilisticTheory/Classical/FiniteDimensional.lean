@@ -47,7 +47,7 @@ finitely many of them, and by the Krein–Milman theorem they span the state spa
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -183,4 +183,4 @@ lemma isSimplexStateSpace_of_affineEquiv_stdSimplexSet {ι : Type*} [Fintype ι]
     IsSimplexStateSpace E :=
   PureState.isSimplexStateSpace_of_isSimplex (isSimplex_of_affineEquiv_stdSimplexSet e he)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -50,7 +50,7 @@ kernel.
 @[expose] public section
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open UnitalPositiveLinearMap MeasureTheory ProbabilityTheory
 

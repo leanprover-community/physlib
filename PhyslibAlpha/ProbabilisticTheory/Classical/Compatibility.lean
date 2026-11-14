@@ -63,7 +63,7 @@ observables are complete, these give joint effects exactly.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped NNReal
 
@@ -93,10 +93,10 @@ lemma _root_.HasRieszDecomposition.jointlyMeasurable
 
 end Archimedean
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace Bidual
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open scoped NNReal
 variable {E : Type*} [OrderUnitSpace E]
 
@@ -459,7 +459,7 @@ lemma hasRieszDecomposition : HasRieszDecomposition (Bidual E) := by
 
 end Bidual
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped NNReal
 variable {E : Type*} [OrderUnitSpace E]
@@ -536,4 +536,4 @@ lemma isClassical_iff_jointlyMeasurable :
 
 end Complete
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -40,8 +40,8 @@ for `N = 2` and `N = 3`. From four sites on it is strictly larger than one.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory
 open InnerProductSpace UnitalPositiveLinearMap
 variable (T : TightBindingChain)
 

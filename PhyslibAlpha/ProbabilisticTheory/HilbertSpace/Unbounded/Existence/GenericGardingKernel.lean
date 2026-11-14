@@ -41,7 +41,7 @@ the Gårding vector is differentiable at `0`, with derivative the Gårding vecto
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -144,4 +144,4 @@ end
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

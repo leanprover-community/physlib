@@ -38,7 +38,7 @@ derivative `i T (U s ψ)`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -170,4 +170,4 @@ lemma stoneCandidateGenerator_hasDerivAt (ψ : stoneCandidateDomain (U := U) hUm
 end
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -58,7 +58,7 @@ into a sum of momentum sectors; that needs analysis and is a separate matter.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace Representation
 
@@ -199,4 +199,4 @@ lemma IsEquivariant.fiberMap_comp_sectorToFiber (hT : IsEquivariant β β' T) (�
 
 end Representation
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

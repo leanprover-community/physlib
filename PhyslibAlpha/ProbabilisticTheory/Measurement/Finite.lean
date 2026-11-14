@@ -45,7 +45,7 @@ system is Archimedean.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open BoundedMeasurable UnitalPositiveLinearMap
 
@@ -53,10 +53,10 @@ variable {Ω E : Type*} [MeasurableSpace Ω] [Fintype Ω] [MeasurableSingletonCl
 
 /-! ## A. Observables of a finite classical system -/
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open BoundedMeasurable UnitalPositiveLinearMap
 variable {Ω E : Type*} [MeasurableSpace Ω] [Fintype Ω] [MeasurableSingletonClass Ω]
 
@@ -74,7 +74,7 @@ lemma sum_indicator_singleton :
 
 end BoundedMeasurable
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open BoundedMeasurable UnitalPositiveLinearMap
 variable {Ω E : Type*} [MeasurableSpace Ω] [Fintype Ω] [MeasurableSingletonClass Ω]
@@ -180,4 +180,4 @@ lemma ext_of_singleton {M N : Measurement Ω E}
 
 end Measurement
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

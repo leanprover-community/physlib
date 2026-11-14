@@ -52,7 +52,7 @@ have at least half the dimension: the fluctuation vectors satisfy many linear re
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 open ContinuousLinearMap
@@ -160,4 +160,4 @@ lemma card_le_two_mul_finrank_ker_gram_fluctuation [Fintype ι] [DecidableEq ι]
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -41,7 +41,7 @@ The complex conjugate `ConjSpace X` of a complex normed space, with twisted scal
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexConjugate
 
@@ -137,4 +137,4 @@ instance instCompleteSpace [CompleteSpace X] : CompleteSpace (ConjSpace X) := â€
 
 end ConjSpace
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

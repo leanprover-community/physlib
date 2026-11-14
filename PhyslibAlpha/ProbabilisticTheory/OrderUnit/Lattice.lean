@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Archimedean
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.PositiveDual
 public import PhyslibAlpha.Mathematics.Order.Freudenthal
 public import PhyslibAlpha.Mathematics.Order.PositiveDual.RieszKantorovich
@@ -42,7 +42,7 @@ two pieces, one below each summand, and every observable is close to a step func
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -66,4 +66,4 @@ lemma map_sup_of_map_inf {ω : E →ₚ[ℝ] ℝ} (h : ∀ f g, ω (f ⊓ g) = m
 
 end OrderUnitLattice
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
