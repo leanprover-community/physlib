@@ -86,6 +86,10 @@ variable (S : CentralForce)
 @[simp]
 lemma m_ne_zero : S.m ≠ 0 := S.m_pos.ne'
 
+/-- The potential is differentiable at every positive radius. -/
+lemma hasDerivAt_V {r : ℝ} (hr : 0 < r) : HasDerivAt S.V (deriv S.V r) r :=
+  ((S.contDiffOn_V.differentiableOn (by simp)).differentiableAt (Ioi_mem_nhds hr)).hasDerivAt
+
 /-!
 
 ## B. The Hamiltonian
@@ -116,12 +120,9 @@ system is `V'(‖q‖) q / ‖q‖`, which is parallel to the position. -/
 lemma hasGradientAt_hamiltonian_position (p : EuclideanSpace ℝ (Fin 3))
     {q : EuclideanSpace ℝ (Fin 3)} (hq : q ≠ 0) :
     HasGradientAt (fun q' => S.hamiltonian p q') ((deriv S.V ‖q‖ / ‖q‖) • q) q := by
-  have hV : HasDerivAt S.V (deriv S.V ‖q‖) ‖q‖ :=
-    ((S.contDiffOn_V.differentiableOn (by simp)).differentiableAt
-      (Ioi_mem_nhds (norm_pos_iff.mpr hq))).hasDerivAt
   show HasGradientAt (fun q' => (1 / (2 * S.m)) * ⟪p, p⟫_ℝ + S.V ‖q'‖) _ q
   convert (hasGradientAt_const q ((1 / (2 * S.m)) * ⟪p, p⟫_ℝ)).add
-    (hV.comp_hasGradientAt (hasGradientAt_norm hq)) using 1
+    ((S.hasDerivAt_V (norm_pos_iff.mpr hq)).comp_hasGradientAt (hasGradientAt_norm hq)) using 1
   rw [zero_add, smul_smul, div_eq_mul_inv]
 
 /-!
