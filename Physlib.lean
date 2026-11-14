@@ -1,5 +1,4 @@
 module
-
 public import Physlib.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Basic
 public import Physlib.ClassicalFieldTheory.Local.Variation
 public import Physlib.ClassicalMechanics.Basic
@@ -297,8 +296,12 @@ public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
 public import Physlib.ProbabilisticTheory.Basic
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
 public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.State
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.Channel.Basic
+public import Physlib.ProbabilisticTheory.Channel.Convex
 public import Physlib.ProbabilisticTheory.Channel.Covariant
 public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
@@ -306,6 +309,7 @@ public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
+public import Physlib.ProbabilisticTheory.Effect.Pairing
 public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
 public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
@@ -314,8 +318,7 @@ public import Physlib.ProbabilisticTheory.LocalNet.QuasilocalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
-public import Physlib.ProbabilisticTheory.StarAlgebra.State
-public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
+public import Physlib.ProbabilisticTheory.OrderUnit.ConeExtension
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
@@ -323,9 +326,11 @@ public import Physlib.ProbabilisticTheory.State.Local
 public import Physlib.ProbabilisticTheory.State.Metric
 public import Physlib.ProbabilisticTheory.State.Pairing
 public import Physlib.ProbabilisticTheory.State.Separation
-public import Physlib.ProbabilisticTheory.State.WeightEquivalence
+public import Physlib.ProbabilisticTheory.State.Symmetry
+public import Physlib.ProbabilisticTheory.State.Weight
 public import Physlib.ProbabilisticTheory.Weight.Basic
 public import Physlib.ProbabilisticTheory.Weight.Extension
+public import Physlib.ProbabilisticTheory.Weight.State
 public import Physlib.QFT.AnomalyCancellation.Basic
 public import Physlib.QFT.AnomalyCancellation.GroupActions
 public import Physlib.QFT.PerturbationTheory.CreateAnnihilate

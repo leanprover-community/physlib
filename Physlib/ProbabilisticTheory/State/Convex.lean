@@ -6,8 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.ProbabilisticTheory.State.Basic
-public import Mathlib.Analysis.Convex.Extreme
-public import Mathlib.Topology.UnitInterval
+public import Physlib.ProbabilisticTheory.Channel.Convex
 
 /-!
 # Convex state spaces
@@ -22,12 +21,12 @@ two others, an extreme point of that convex set. A mixed state is one that is a 
 
 ## ii. Key results
 
-- `UnitalPositiveLinearMap.mix` : randomize between two states with a given probability.
-- `UnitalPositiveLinearMap.stateSpace_convex` : the state space is convex in the algebraic dual.
-- `UnitalPositiveLinearMap.IsPure` : pure states are extreme points of the state space.
-- `UnitalPositiveLinearMap.isPure_iff_forall_mix_eq` : a pure state admits only trivial
+- `ProbabilisticTheory.State.mix` : randomize between two states with a given probability.
+- `ProbabilisticTheory.State.stateSpace_convex` : the state space is convex in the algebraic dual.
+- `ProbabilisticTheory.State.IsPure` : pure states are extreme points of the state space.
+- `ProbabilisticTheory.State.isPure_iff_forall_mix_eq` : a pure state admits only trivial
   genuine mixtures.
-- `UnitalPositiveLinearMap.isMixed_iff_exists_mem_openSegment` : mixed states lie between
+- `ProbabilisticTheory.State.isMixed_iff_exists_mem_openSegment` : mixed states lie between
   two other states.
 
 ## iii. Table of contents
@@ -44,9 +43,9 @@ two others, an extreme point of that convex set. A mixed state is one that is a 
 
 open ProbabilisticTheory unitInterval
 
-namespace UnitalPositiveLinearMap
+namespace ProbabilisticTheory.State
 
-variable {E : Type*} [OrderUnitSpace E]
+variable {P : ProbabilisticTheory}
 
 /-!
 
@@ -56,26 +55,21 @@ variable {E : Type*} [OrderUnitSpace E]
 
 /-- Randomize between two states with probability `t` of choosing the first, so
 `t • ω + σ t • φ` with `σ t = 1 - t`. -/
-def mix (ω φ : 𝓢[ℝ, E]) (t : unitInterval) : 𝓢[ℝ, E] :=
-  .ofPositiveLinearMap (toNNReal t • ω + toNNReal (σ t) • φ)
-    (by simp [NNReal.smul_def])
+abbrev mix (ω φ : P.State) (t : unitInterval) : P.State := Channel.mix ω φ t
 
 /-- Evaluation of a mixture is the pointwise convex combination. -/
 @[simp]
-lemma mix_apply (ω φ : 𝓢[ℝ, E]) (t : unitInterval) (A : E) :
-    mix ω φ t A = (t : ℝ) * ω A + (1 - (t : ℝ)) * φ A := by
-  simp [mix, NNReal.smul_def]
+lemma mix_apply (ω φ : P.State) (t : unitInterval) (A : P.Observables) :
+    mix ω φ t A = (t : ℝ) * ω A + (1 - (t : ℝ)) * φ A := rfl
 
 /-- The underlying linear map of a mixture is the corresponding combination of linear maps. -/
-lemma toLinearMap_mix (ω φ : 𝓢[ℝ, E]) (t : unitInterval) :
-    (mix ω φ t).toLinearMap = (t : ℝ) • ω.toLinearMap + (1 - (t : ℝ)) • φ.toLinearMap := by
-  ext A
-  simp
+lemma toLinearMap_mix (ω φ : P.State) (t : unitInterval) :
+    (mix ω φ t).toLinearMap = (t : ℝ) • ω.toLinearMap + (1 - (t : ℝ)) • φ.toLinearMap :=
+  Channel.toLinearMap_mix ω φ t
 
 /-- Swapping the two states swaps the weights: `σ` is the symmetry of the interval. -/
-lemma mix_symm (ω φ : 𝓢[ℝ, E]) (t : unitInterval) : mix ω φ t = mix φ ω (σ t) := by
-  ext A
-  simp [mix_apply, add_comm]
+lemma mix_symm (ω φ : P.State) (t : unitInterval) : mix ω φ t = mix φ ω (σ t) :=
+  Channel.mix_symm ω φ t
 
 /-!
 
@@ -84,15 +78,12 @@ lemma mix_symm (ω φ : 𝓢[ℝ, E]) (t : unitInterval) : mix ω φ t = mix φ 
 -/
 
 /-- States embedded into the algebraic dual. -/
-def stateSpace : Set (E →ₗ[ℝ] ℝ) :=
-  Set.range fun ω : 𝓢[ℝ, E] => ω.toLinearMap
+abbrev stateSpace : Set (P.Observables →ₗ[ℝ] ℝ) :=
+  Channel.channelSpace (P := P) (Q := real)
 
 /-- The state space is convex in the algebraic dual. -/
-lemma stateSpace_convex : Convex ℝ (stateSpace (E := E)) := by
-  rw [convex_iff_segment_subset]
-  rintro _ ⟨ω, rfl⟩ _ ⟨φ, rfl⟩ x hx
-  obtain ⟨t, ht, rfl⟩ := (by rwa [segment_symm, segment_eq_image] at hx)
-  exact ⟨mix ω φ ⟨t, ht⟩, by simpa only [add_comm] using toLinearMap_mix ω φ ⟨t, ht⟩⟩
+lemma stateSpace_convex : Convex ℝ (stateSpace (P := P)) :=
+  Channel.channelSpace_convex
 
 /-!
 
@@ -101,37 +92,35 @@ lemma stateSpace_convex : Convex ℝ (stateSpace (E := E)) := by
 -/
 
 /-- A state is pure when it is an extreme point of the state space. -/
-def IsPure (ω : 𝓢[ℝ, E]) : Prop := ω.toLinearMap ∈ stateSpace.extremePoints ℝ
+def IsPure (ω : P.State) : Prop := ω.toLinearMap ∈ stateSpace.extremePoints ℝ
 
 /-- A state is mixed when it isn't pure. -/
-def IsMixed (ω : 𝓢[ℝ, E]) : Prop := ¬ ω.IsPure
+def IsMixed (ω : P.State) : Prop := ¬ ω.IsPure
 
 /-- A state is pure exactly when any open segment containing it has both endpoints equal to it. -/
-lemma isPure_iff_forall_mem_openSegment {ω : 𝓢[ℝ, E]} :
-    ω.IsPure ↔ ∀ φ ψ : 𝓢[ℝ, E],
+lemma isPure_iff_forall_mem_openSegment {ω : P.State} :
+    ω.IsPure ↔ ∀ φ ψ : P.State,
       ω.toLinearMap ∈ openSegment ℝ φ.toLinearMap ψ.toLinearMap → φ = ω ∧ ψ = ω := by
-  simp only [IsPure, mem_extremePoints, stateSpace, Set.forall_mem_range,
-    toLinearMap_injective.eq_iff, Set.mem_range_self, true_and]
+  simp only [IsPure, mem_extremePoints, stateSpace, Channel.channelSpace,
+    Set.forall_mem_range, Function.comp_apply, Channel.toLinearMap_injective.eq_iff]
+  exact and_iff_right ⟨ω, rfl⟩
 
 /-- A state is mixed exactly when it lies in an open segment with a different endpoint. -/
-lemma isMixed_iff_exists_mem_openSegment {ω : 𝓢[ℝ, E]} :
-    ω.IsMixed ↔ ∃ φ ψ : 𝓢[ℝ, E],
+lemma isMixed_iff_exists_mem_openSegment {ω : P.State} :
+    ω.IsMixed ↔ ∃ φ ψ : P.State,
       ω.toLinearMap ∈ openSegment ℝ φ.toLinearMap ψ.toLinearMap ∧ (φ ≠ ω ∨ ψ ≠ ω) := by
   simp [IsMixed, isPure_iff_forall_mem_openSegment, imp_iff_not_or]
 
 /-- Open segments between states consist exactly of their genuine mixtures. -/
-lemma mem_openSegment_iff_exists_mix (ω φ ψ : 𝓢[ℝ, E]) :
+lemma mem_openSegment_iff_exists_mix (ω φ ψ : P.State) :
     ω.toLinearMap ∈ openSegment ℝ φ.toLinearMap ψ.toLinearMap ↔
-      ∃ t : unitInterval, 0 < t ∧ t < 1 ∧ mix φ ψ t = ω := by
-  rw [openSegment_symm, openSegment_eq_image]
-  simp only [Set.mem_image, Set.mem_Ioo, Subtype.exists,
-    ← toLinearMap_injective.eq_iff, toLinearMap_mix, add_comm]
-  aesop (add safe forward le_of_lt)
+      ∃ t : unitInterval, 0 < t ∧ t < 1 ∧ mix φ ψ t = ω :=
+  Channel.mem_openSegment_iff_exists_mix ω φ ψ
 
 /-- A state is pure exactly when every genuine binary mixture producing it is trivial. -/
-lemma isPure_iff_forall_mix_eq {ω : 𝓢[ℝ, E]} :
+lemma isPure_iff_forall_mix_eq {ω : P.State} :
     ω.IsPure ↔ ∀ φ ψ t, 0 < t → t < 1 → mix φ ψ t = ω → φ = ω ∧ ψ = ω := by
   simp only [isPure_iff_forall_mem_openSegment, mem_openSegment_iff_exists_mix,
     forall_exists_index, and_imp]
 
-end UnitalPositiveLinearMap
+end ProbabilisticTheory.State

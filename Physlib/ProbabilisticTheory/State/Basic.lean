@@ -6,27 +6,25 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.ProbabilisticTheory.Channel.Basic
-public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 
 /-!
 # States
 
 ## i. Overview
 
-A state assigns each observable its expectation value: a positive linear functional
-(`0 ≤ A ⟹ 0 ≤ ω A`), normalized so the certain outcome reads `ω 1 = 1`. In quantum mechanics,
-`ω A = tr(ρA)` for a density matrix `ρ`.
+A state assigns each observable its expectation value. It is a channel into the real numbers:
+positive (`0 ≤ A ⟹ 0 ≤ ω A`) and normalized so the certain outcome reads `ω 1 = 1`. In quantum
+mechanics, `ω A = tr(ρA)` for a density matrix `ρ`.
 
 ## ii. Key results
 
-- `𝓢[𝕜, A]` : states on an ordered `𝕜`-vector space with a distinguished unit.
-- `UnitalPositiveLinearMap.comap` : the state on the input of a channel that evaluates an
-  observable by first sending it through the channel.
-- `Channel.comap` : the same pullback of states along a channel between probabilistic theories.
+- `ProbabilisticTheory.State` : normalized real expectation functionals on observables.
+- `ProbabilisticTheory.State.comap` : pull back a state by evaluating observables through a
+  channel.
 
 ## iii. Table of contents
 
-- A. Notation for positive functionals and states
+- A. States
 - B. Transporting states along channels
 
 ## iv. References
@@ -37,15 +35,32 @@ A state assigns each observable its expectation value: a positive linear functio
 
 /-!
 
-## A. Notation for positive functionals and states
+## A. States
 
 -/
 
-/-- Positive linear functionals on an ordered `𝕜`-vector space. -/
-notation " 𝓟[" 𝕜 ", " A "] " => A →ₚ[𝕜] 𝕜
+/-- States assign normalized real expectation values to observables. -/
+abbrev ProbabilisticTheory.State (P : ProbabilisticTheory) := Channel P .real
 
-/-- States on an ordered `𝕜`-vector space with a distinguished unit. -/
-notation " 𝓢[" 𝕜 ", " A "] " => A →ₚ₁[𝕜] 𝕜
+namespace ProbabilisticTheory.State
+
+variable {P Q : ProbabilisticTheory}
+
+-- Keep ℝ explicit in state evaluation and projections so tactics index their types consistently.
+instance : FunLike P.State P.Observables ℝ :=
+  inferInstanceAs (FunLike (Channel P .real) P.Observables ℝ)
+
+/-- The real positive functional underlying a state. -/
+abbrev toPositiveLinearMap (ω : P.State) : P.Observables →ₚ[ℝ] ℝ :=
+  Channel.toPositiveLinearMap ω
+
+/-- The real linear functional underlying a state. -/
+abbrev toLinearMap (ω : P.State) : P.Observables →ₗ[ℝ] ℝ :=
+  ω.toPositiveLinearMap.toLinearMap
+
+@[simp]
+lemma toPositiveLinearMap_apply (ω : P.State) (A : P.Observables) :
+    ω.toPositiveLinearMap A = ω A := rfl
 
 /-!
 
@@ -53,34 +68,11 @@ notation " 𝓢[" 𝕜 ", " A "] " => A →ₚ₁[𝕜] 𝕜
 
 -/
 
-open ProbabilisticTheory
-
-namespace UnitalPositiveLinearMap
-
-variable {E F : Type*} [OrderUnitSpace E] [OrderUnitSpace F]
-
-/-- The state on `E` that evaluates an observable by first sending it through a channel `f` and
-then evaluating the state `ω` on the result. -/
-def comap (f : E →ₚ₁[ℝ] F) (ω : 𝓢[ℝ, F]) : 𝓢[ℝ, E] where
-  toPositiveLinearMap := ω.toPositiveLinearMap.comp f.toPositiveLinearMap
-  map_one' := (congrArg ω f.map_one').trans ω.map_one'
-
-@[simp]
-lemma comap_apply (f : E →ₚ₁[ℝ] F) (ω : 𝓢[ℝ, F]) (x : E) : comap f ω x = ω (f x) := rfl
-
-end UnitalPositiveLinearMap
-
-namespace Channel
-
-variable {P Q : ProbabilisticTheory}
-
 /-- Pull back a state by applying the channel before evaluating each observable. -/
-def comap (f : Channel P Q) (ω : 𝓢[ℝ, Q.Observables]) : 𝓢[ℝ, P.Observables] where
-  toPositiveLinearMap := ω.toPositiveLinearMap.comp f.toPositiveLinearMap
-  map_one' := (congrArg ω f.map_one').trans ω.map_one'
+def comap (ω : Q.State) (f : Channel P Q) : P.State := ω.comp f
 
 @[simp]
-lemma comap_apply (f : Channel P Q) (ω : 𝓢[ℝ, Q.Observables]) (x : P.Observables) :
-    comap f ω x = ω (f x) := rfl
+lemma comap_apply (ω : Q.State) (f : Channel P Q) (x : P.Observables) :
+    ω.comap f x = ω (f x) := rfl
 
-end Channel
+end ProbabilisticTheory.State

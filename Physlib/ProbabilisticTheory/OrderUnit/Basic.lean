@@ -14,7 +14,7 @@ public import Physlib.ProbabilisticTheory.Basic
 ## i. Overview
 
 Order-unit spaces capture the basic structure needed for a probabilistic theory: observables,
-positivity, effects, states and probabilities. They do this without assuming that the theory is
+positivity, effects, states and probabilities. They do this without assuming that the system is
 classical or quantum, or that observables have any particular algebraic structure.
 
 In quantum mechanics, the standard example is the real vector space of self-adjoint matrices,
@@ -23,13 +23,13 @@ space, its order, and this distinguished unit gives the abstract order-unit sett
 
 ## ii. Key results
 
-- `OrderUnitSpace.exists_two_sided_bound` : every observable sits between `-(n • 1)` and `n • 1`,
-  for some `n`.
-- `OrderUnitSpace.exists_eq_sub_nonneg` : every observable is a difference of two positive
+- `ProbabilisticTheory.exists_two_sided_bound` : every observable sits between `-(n • 1)` and
+  `n • 1`, for some `n`.
+- `ProbabilisticTheory.exists_eq_sub_nonneg` : every observable is a difference of two positive
   observables.
-- `OrderUnitSpace.exists_real_shift_nonneg` : enough copies of the order unit shift any element
+- `ProbabilisticTheory.exists_real_shift_nonneg` : enough copies of the order unit shift any element
   into the positive cone.
-- `OrderedVectorSpace.nonneg_add_eq_zero` : the positive cone meets its negation only at `0`.
+- `ProbabilisticTheory.nonneg_add_eq_zero` : the positive cone meets its negation only at `0`.
 
 ## iii. Table of contents
 
@@ -50,27 +50,14 @@ namespace ProbabilisticTheory
 
 -/
 
-/-- An ordered real vector space. -/
-class OrderedVectorSpace (E : Type*) extends AddCommGroup E, PartialOrder E, Module ℝ E,
-    IsOrderedAddMonoid E, PosSMulMono ℝ E
+variable {P : ProbabilisticTheory}
 
-/-- An ordered real vector space whose distinguished element `1` is an order unit: it is
-nonnegative, and every element is bounded above by a natural multiple of it. No multiplication is
-assumed. -/
-class OrderUnitSpace (E : Type*) extends OrderedVectorSpace E, One E where
-  /-- The distinguished unit is nonnegative. -/
-  one_nonneg : 0 ≤ (1 : E)
-  /-- Every element is bounded above by a natural multiple of the order unit. -/
-  exists_nsmul_one_le : ∀ B : E, ∃ n : ℕ, B ≤ n • (1 : E)
+/-- The certain outcome is nonnegative. -/
+lemma one_nonneg : 0 ≤ (1 : P.Observables) := P.one_nonneg'
 
-/-- The observables stored in a probabilistic theory form an order-unit space. -/
-instance instOrderUnitSpace (P : ProbabilisticTheory) : OrderUnitSpace P.Observables where
-  one_nonneg := P.one_nonneg'
-  exists_nsmul_one_le := P.exists_nsmul_one_le'
-
-namespace OrderUnitSpace
-
-variable {E : Type*} [OrderUnitSpace E]
+/-- Every observable is bounded above by a natural multiple of the certain outcome. -/
+lemma exists_nsmul_one_le (B : P.Observables) : ∃ n : ℕ, B ≤ n • (1 : P.Observables) :=
+  P.exists_nsmul_one_le' B
 
 /-!
 
@@ -79,38 +66,33 @@ variable {E : Type*} [OrderUnitSpace E]
 -/
 
 /-- Every element is bounded on both sides by a natural multiple of the order unit. -/
-lemma exists_two_sided_bound (A : E) : ∃ n : ℕ, -(n • (1 : E)) ≤ A ∧ A ≤ n • (1 : E) := by
+lemma exists_two_sided_bound (A : P.Observables) :
+    ∃ n : ℕ, -(n • (1 : P.Observables)) ≤ A ∧ A ≤ n • (1 : P.Observables) := by
   obtain ⟨n, hn⟩ := exists_nsmul_one_le A
   obtain ⟨m, hm⟩ := exists_nsmul_one_le (-A)
   refine ⟨max n m, ?_, hn.trans (nsmul_le_nsmul_left one_nonneg (le_max_left n m))⟩
   exact neg_le_of_neg_le <| hm.trans (nsmul_le_nsmul_left one_nonneg (le_max_right n m))
 
 /-- Every element is a difference of two positive elements. -/
-lemma exists_eq_sub_nonneg (A : E) : ∃ Ap An : E, 0 ≤ Ap ∧ 0 ≤ An ∧ A = Ap - An := by
+lemma exists_eq_sub_nonneg (A : P.Observables) :
+    ∃ Ap An : P.Observables, 0 ≤ Ap ∧ 0 ≤ An ∧ A = Ap - An := by
   obtain ⟨n, hn⟩ := exists_nsmul_one_le (-A)
-  refine ⟨A + n • (1 : E), n • (1 : E), ?_, nsmul_nonneg one_nonneg n, ?_⟩
+  refine ⟨A + n • (1 : P.Observables), n • (1 : P.Observables), ?_, nsmul_nonneg one_nonneg n, ?_⟩
   · exact neg_le_iff_add_nonneg'.mp hn
-  · exact (add_sub_cancel_right A (n • (1 : E))).symm
+  · exact (add_sub_cancel_right A (n • (1 : P.Observables))).symm
 
 /-- Every element becomes nonnegative after adding enough copies of the order unit: the positive
 cone reaches everywhere, once you're allowed to shift by the unit. -/
-lemma exists_real_shift_nonneg (A : E) : ∃ r : ℝ, 0 ≤ r • (1 : E) + A := by
+lemma exists_real_shift_nonneg (A : P.Observables) : ∃ r : ℝ, 0 ≤ r • (1 : P.Observables) + A := by
   obtain ⟨n, hn⟩ := exists_nsmul_one_le (-A)
   use n
   rw [← sub_neg_eq_add, sub_nonneg]
   exact_mod_cast hn
 
-end OrderUnitSpace
-
-namespace OrderedVectorSpace
-
-variable {E : Type*} [OrderedVectorSpace E]
-
 /-- A nonnegative vector that adds with another nonnegative vector to `0` is itself `0`: the
 positive cone meets its negation only at `0`. -/
-lemma nonneg_add_eq_zero {A B : E} (hA : 0 ≤ A) (hB : 0 ≤ B) (hAB : A + B = 0) : A = 0 :=
+lemma nonneg_add_eq_zero {A B : P.Observables} (hA : 0 ≤ A) (hB : 0 ≤ B) (hAB : A + B = 0) :
+    A = 0 :=
   le_antisymm (hAB ▸ le_add_of_nonneg_right hB) hA
-
-end OrderedVectorSpace
 
 end ProbabilisticTheory

@@ -20,21 +20,19 @@ reversible transformations is covariant, or intertwining, if
 
 `Φ ∘ ρ g = σ g ∘ Φ` for every group element `g`.
 
-Covariance preserves invariant states under pullback. A reversible transformation is covariant
+A reversible transformation is covariant
 exactly when the target action is the transport of the source action. Together with the reversible
 transformations, this gives a common framework for symmetries and dynamics of observable spaces.
 
 ## ii. Key results
 
-- `IsIntertwining`: Covariance of a channel under two group actions.
-- `IsIntertwining.comap_isInvariant`: Pullback of invariant states along covariant channels.
-- `Reversible.isIntertwining_iff_eq_transport`: Characterization of the transported action.
+- `Channel.IsIntertwining`: Covariance of a channel under two group actions.
+- `Channel.isIntertwining_iff_eq_transport`: Characterization of the transported action.
 
 ## iii. Table of contents
 
 - A. Covariant channels
   - A.1. Definition and closure properties
-  - A.2. Invariant states
 - B. Covariance of transport
 
 ## iv. References
@@ -43,67 +41,46 @@ transformations, this gives a common framework for symmetries and dynamics of ob
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+open ProbabilisticTheory ProbabilisticTheory.Reversible
+
+namespace Channel
 
 variable {G : Type*} [Group G] {P Q : ProbabilisticTheory}
-  (ρ : G →* Reversible P P) (σ : G →* Reversible Q Q)
+  {ρ : G →* Reversible P P} {σ : G →* Reversible Q Q}
 
 /-! ## A. Covariant channels -/
 
 /-! ### A.1. Definition and closure properties -/
 
 /-- A channel intertwines two group actions if it commutes with their transformations. -/
-def IsIntertwining (Φ : Channel P Q) : Prop := ∀ g x, Φ (ρ g x) = σ g (Φ x)
+def IsIntertwining (Φ : Channel P Q) (ρ : G →* Reversible P P)
+    (σ : G →* Reversible Q Q) : Prop := ∀ g x, Φ (ρ g x) = σ g (Φ x)
 
 /-- The identity channel intertwines a group action with itself. -/
-lemma isIntertwining_id : IsIntertwining ρ ρ (Channel.id P) := by
+lemma isIntertwining_id (ρ : G →* Reversible P P) : (Channel.id P).IsIntertwining ρ ρ := by
   intro _ _
   rfl
 
-namespace IsIntertwining
-
-variable {ρ σ}
-
 /-- The composition of intertwining channels also intertwines the group actions. -/
-lemma comp {R : ProbabilisticTheory} {τ : G →* Reversible R R}
-    {Φ : Channel P Q} {Ψ : Channel Q R} (hΦ : IsIntertwining ρ σ Φ)
-    (hΨ : IsIntertwining σ τ Ψ) : IsIntertwining ρ τ (Ψ.comp Φ) := by
+lemma IsIntertwining.comp {R : ProbabilisticTheory} {τ : G →* Reversible R R}
+    {Φ : Channel P Q} {Ψ : Channel Q R} (hΦ : Φ.IsIntertwining ρ σ)
+    (hΨ : Ψ.IsIntertwining σ τ) : (Ψ.comp Φ).IsIntertwining ρ τ := by
   intro g x
   simp [hΦ g x, hΨ g (Φ x)]
 
-/-! ### A.2. Invariant states -/
-
-/-- Pulling back an invariant state along an intertwining channel preserves invariance. -/
-lemma comap_isInvariant {Φ : Channel P Q} (h : IsIntertwining ρ σ Φ)
-    {ω : 𝓢[ℝ, Q.Observables]} (hω : IsInvariant σ ω) :
-    IsInvariant ρ (Channel.comap Φ ω) := by
-  intro g
-  ext x
-  have h1 := h g⁻¹ x
-  have h2 := DFunLike.congr_fun (hω g) (Φ x)
-  simp only [map_inv, Reversible.inv_apply] at h1
-  change ω (Φ ((ρ g).symm x)) = ω (Φ x)
-  rw [h1]
-  exact h2
-
-end IsIntertwining
-
 /-! ## B. Covariance of transport -/
 
-namespace Reversible
-
-variable (e : Reversible P Q)
-
 /-- A reversible transformation intertwines an action with its transport. -/
-lemma isIntertwining_transport :
-    IsIntertwining ρ (e.transport ρ) e.toChannel := by
+lemma isIntertwining_transport (ρ : G →* Reversible P P) (e : Reversible P Q) :
+    e.toChannel.IsIntertwining ρ (e.transport ρ) := by
   intro g x
   simp [transport, conj]
 
 /-- A reversible transformation intertwines two actions exactly when the target action
 is the transport of the source action. -/
-lemma isIntertwining_iff_eq_transport :
-    IsIntertwining ρ σ e.toChannel ↔ σ = e.transport ρ := by
+lemma isIntertwining_iff_eq_transport (ρ : G →* Reversible P P)
+    (σ : G →* Reversible Q Q) (e : Reversible P Q) :
+    e.toChannel.IsIntertwining ρ σ ↔ σ = e.transport ρ := by
   constructor
   · intro h
     ext g y
@@ -111,8 +88,6 @@ lemma isIntertwining_iff_eq_transport :
     simp only [toChannel_apply, apply_symm_apply] at this
     simp [transport, conj, this]
   · rintro rfl
-    exact e.isIntertwining_transport ρ
+    exact isIntertwining_transport ρ e
 
-end Reversible
-
-end ProbabilisticTheory
+end Channel

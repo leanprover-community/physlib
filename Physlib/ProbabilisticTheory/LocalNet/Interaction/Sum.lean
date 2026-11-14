@@ -47,17 +47,12 @@ in neither region.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+open ProbabilisticTheory MeasureTheory
 
-open MeasureTheory
-open scoped ArchimedeanOrderUnitSpace
+namespace ProbabilisticTheory.Interaction
 
-variable {R : Type*} [Preorder R] {A : R → Type*} [∀ X, ArchimedeanOrderUnitSpace (A X)]
-  {N : LocalNet R A} {ι : Type*}
-
-namespace Interaction
-
-variable (Φ : Interaction N ι)
+variable {R : Type*} [Preorder R] {A : R → ProbabilisticTheory}
+  {N : LocalNet R A} {ι : Type*} (Φ : Interaction N ι)
 
 /-- The norm of a term cannot increase when included into another region. -/
 lemma norm_termIn_le (Λ : R) (i : ι) : ‖Φ.termIn Λ i‖ ≤ ‖Φ.term i‖ := by
@@ -65,19 +60,21 @@ lemma norm_termIn_le (Λ : R) (i : ι) : ‖Φ.termIn Λ i‖ ≤ ‖Φ.term i�
   · simpa [termIn, h] using (N.incl h).norm_apply_le (Φ.term i)
   · simp [termIn, h]
 
+section Integration
+
 variable [MeasurableSpace ι] (μ : Measure ι)
 
 /-! ## A. Integration over a region -/
 
 /-- The observable in `Λ` obtained by integrating the interaction terms supported there. -/
-noncomputable def sumIn (Λ : R) : A Λ := ∫ i, Φ.termIn Λ i ∂μ
+noncomputable def sumIn (Λ : R) : (A Λ).Observables := ∫ i, Φ.termIn Λ i ∂μ
 
 /-- The norm of the integral is bounded by the integral of the norms. -/
 lemma norm_sumIn_le (Λ : R) : ‖Φ.sumIn μ Λ‖ ≤ ∫ i, ‖Φ.termIn Λ i‖ ∂μ :=
   norm_integral_le_integral_norm _
 
 /-- Integration preserves addition of interaction terms with the same supports. -/
-lemma sumIn_add (s : ι → R) (t t' : ∀ i, A (s i)) {Λ : R}
+lemma sumIn_add (s : ι → R) (t t' : ∀ i, (A (s i)).Observables) {Λ : R}
     (h : Integrable ((⟨s, t⟩ : Interaction N ι).termIn Λ) μ)
     (h' : Integrable ((⟨s, t'⟩ : Interaction N ι).termIn Λ) μ) :
     (⟨s, t + t'⟩ : Interaction N ι).sumIn μ Λ =
@@ -86,7 +83,7 @@ lemma sumIn_add (s : ι → R) (t t' : ∀ i, A (s i)) {Λ : R}
   exact integral_add h h'
 
 /-- Integration preserves scalar multiplication of interaction terms. -/
-lemma sumIn_smul (s : ι → R) (c : ℝ) (t : ∀ i, A (s i)) (Λ : R) :
+lemma sumIn_smul (s : ι → R) (c : ℝ) (t : ∀ i, (A (s i)).Observables) (Λ : R) :
     (⟨s, c • t⟩ : Interaction N ι).sumIn μ Λ =
       c • (⟨s, t⟩ : Interaction N ι).sumIn μ Λ := by
   simp only [sumIn, termIn_smul s c t Λ]
@@ -94,7 +91,7 @@ lemma sumIn_smul (s : ι → R) (c : ℝ) (t : ∀ i, A (s i)) (Λ : R) :
 
 section Complete
 
-variable [∀ X, CompleteSpace (A X)]
+variable [∀ X, CompleteSpace (A X).Observables]
 
 /-- Integrating the terms supported in `Λ` in a larger region `Λ'` agrees with including
 the integral over `Λ` into `Λ'`. -/
@@ -102,13 +99,13 @@ lemma setIntegral_labelsIn {Λ Λ' : R} (h : Λ ≤ Λ') (hS : MeasurableSet (Φ
     (h1 : Integrable (Φ.termIn Λ) μ) :
     ∫ i in Φ.labelsIn Λ, Φ.termIn Λ' i ∂μ = N.incl h (Φ.sumIn μ Λ) := by
   have e := (N.incl h).toContinuousLinearMap.integral_comp_comm h1
-  simp only [UnitalPositiveLinearMap.toContinuousLinearMap_apply, Φ.incl_termIn h] at e
+  simp only [Channel.toContinuousLinearMap_apply, Φ.incl_termIn h] at e
   rwa [integral_indicator hS] at e
 
 /-! ## B. Nested regions -/
 
 /-- The contribution in `Λ'` from terms not supported in `Λ`. -/
-noncomputable def coupling (Λ Λ' : R) : A Λ' :=
+noncomputable def coupling (Λ Λ' : R) : (A Λ').Observables :=
   ∫ i in (Φ.labelsIn Λ)ᶜ, Φ.termIn Λ' i ∂μ
 
 /-- The observable in a larger region is the included observable of the smaller region
@@ -122,7 +119,7 @@ lemma sumIn_split {Λ Λ' : R} (h : Λ ≤ Λ') (hS : MeasurableSet (Φ.labelsIn
 /-! ## C. Disjoint regions -/
 
 /-- The contribution in `Λ` from terms supported in neither `Λ₁` nor `Λ₂`. -/
-noncomputable def crossingIn (Λ₁ Λ₂ Λ : R) : A Λ :=
+noncomputable def crossingIn (Λ₁ Λ₂ Λ : R) : (A Λ).Observables :=
   ∫ i in (Φ.labelsIn Λ₁ ∪ Φ.labelsIn Λ₂)ᶜ, Φ.termIn Λ i ∂μ
 
 /-- For regions with disjoint sets of supported terms, the observable in a common larger
@@ -140,6 +137,8 @@ lemma sumIn_disjoint {Λ₁ Λ₂ Λ : R} (h₁ : Λ₁ ≤ Λ) (h₂ : Λ₂ �
 
 /-! ## D. Discrete interactions -/
 
+section Discrete
+
 variable [MeasurableSingletonClass ι]
 
 /-- With finitely many labels, integration against the counting measure is a finite sum. -/
@@ -154,8 +153,10 @@ lemma sumIn_count_tsum [Countable ι] {Λ : R}
     Φ.sumIn Measure.count Λ = ∑' i, Φ.termIn Λ i := by
   simp [sumIn, integral_countable h]
 
+end Discrete
+
 end Complete
 
-end Interaction
+end Integration
 
-end ProbabilisticTheory
+end ProbabilisticTheory.Interaction
