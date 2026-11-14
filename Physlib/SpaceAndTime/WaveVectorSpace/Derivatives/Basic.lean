@@ -6,7 +6,8 @@ Authors: Gregory J. Loges
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Calculus
-public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
+public import Physlib.SpaceAndTime.Space.Derivatives.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 /-!
 
 # Derivatives on `WaveVectorSpace`
@@ -25,6 +26,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
   - A.5. Components / coordinate functions
   - A.6. Norm-squared
   - A.7. Inner product
+  - A.8. Dual pairing / functionals
 
 ## iv. References
 
@@ -196,5 +198,29 @@ lemma deriv_inner_right : ∂[i] (fun k ↦ ⟪k₁, k⟫) k₂ = k₁ i := by
   simp [deriv_eq, fderiv_inner_apply ℝ]
 
 end InnerProduct
+
+/-!
+### A.8. Dual pairing / functionals
+-/
+
+@[simp]
+lemma deriv_pairingCLM (i : Fin d) (k : WaveVectorSpace d) (x : Space d) :
+    ∂[i] (pairingCLM k) x = k i := by
+  simp [Space.deriv_eq, pairingCLM_apply_eq_dual, dual_apply, dotProduct, Space.basis_apply]
+
+@[simp]
+lemma deriv_pairingCLM_flip (i : Fin d) (x : Space d) (k : WaveVectorSpace d) :
+    ∂[i] (pairingCLM.flip x) k = x i := by
+  simp [deriv_eq, pairingCLM_flip_apply_eq_dual, Space.dual_apply, dotProduct, basis_apply,
+    ← nsmul_eq_mul]
+
+@[simp]
+lemma deriv_dual (i : Fin d) (k : WaveVectorSpace d) (x : Space d) : ∂[i] k.dual x = k i :=
+  deriv_pairingCLM i k x
+
+@[simp]
+lemma _root_.Space.deriv_dual (i : Fin d) (x : Space d) (k : WaveVectorSpace d) :
+    ∂[i] x.dual k = x i :=
+  deriv_pairingCLM_flip i x k
 
 end WaveVectorSpace
