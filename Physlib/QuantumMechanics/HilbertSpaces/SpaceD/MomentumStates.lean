@@ -68,6 +68,22 @@ def momentumState (p : Space d) : StrongDual ℂ 𝓢(Space d, ℂ) :=
 lemma momentumState_apply (p : Space d) (ψ : 𝓢(Space d, ℂ)) :
     momentumState p ψ = 𝓕 ψ ((2 * π)⁻¹ • p) := rfl
 
+open MeasureTheory Space Complex in
+/-- In one dimension the momentum state with wavenumber `k` pairs `ψ` with the plane wave
+  `exp (I k x)`. -/
+lemma momentumState_oneEquiv_symm_apply (k : ℝ) (ψ : 𝓢(Space 1, ℂ)) :
+    momentumState (oneEquiv.symm k) ψ = ∫ x : Space 1, exp (-(k * (x 0 : ℝ) * I)) * ψ x := by
+  rw [momentumState_apply, SchwartzMap.fourier_coe, Real.fourier_eq]
+  refine integral_congr_ae (Filter.Eventually.of_forall fun x => ?_)
+  have hi : inner ℝ x ((2 * π)⁻¹ • oneEquiv.symm k) = (2 * π)⁻¹ * (x 0 * k) := by
+    rw [inner_smul_right, Space.inner_eq_sum]
+    simp [oneEquiv_symm_apply]
+  simp only [Circle.smul_def, smul_eq_mul, Real.fourierChar_apply, hi]
+  congr 2
+  push_cast
+  have := Real.pi_ne_zero
+  field_simp
+
 /-- Two Schwartz maps are equal if they are equal on all momentum states. -/
 lemma eq_of_eq_momentumState {ψ φ : 𝓢(Space d, ℂ)}
     (h : ∀ p, momentumState p ψ = momentumState p φ) : ψ = φ :=

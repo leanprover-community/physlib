@@ -5,8 +5,10 @@ Authors: Gregory J. Loges
 -/
 module
 
+public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.MomentumStates
 public import Physlib.QuantumMechanics.Operators.Momentum
 public import Physlib.QuantumMechanics.Operators.Multiplication
+public import Physlib.SpaceAndTime.Space.Translations
 /-!
 
 # Single-particle quantum system on `Space d`
@@ -27,6 +29,7 @@ namely the number of spatial dimensions, the particle's mass and the potential f
   - B.1. Kinetic energy
   - B.2. Potential energy
   - B.3. Hamiltonian
+- C. Reflectionless systems in one dimension
 
 ## iv. References
 
@@ -146,6 +149,29 @@ lemma hamiltonianOperator_eq : Q.hamiltonianOperator = Q.kineticOperator + Q.pot
   rfl
 
 end
+
+/-!
+## C. Reflectionless systems in one dimension
+-/
+
+open Constants Filter Topology SchwartzMap Space SpaceDHilbertSpace
+
+/-- A system in one dimension is reflectionless if for every wavenumber `k ≠ 0` there is a
+  generalized eigenvector `⟨Ψ|` of the Hamiltonian in the strong dual of the Schwartz space, with
+  energy `ℏ² k² / (2 m)`, which looks like a non-zero multiple of the plane wave bra `⟨k|` at both
+  ends. Far away is probed by translating a test function by `a`:
+  `e^{i k a} ⟨Ψ|τₐ φ⟩ → T ⟨k|φ⟩` as `a → ∞`, and likewise with `T'` as `a → -∞`. A reflected wave
+  `e^{-i k x}` would add a term oscillating like `e^{2 i k a}`, so the limits would not exist. -/
+def IsReflectionless (Q : SpaceDQuantumSystem 1) : Prop :=
+  ∀ k : ℝ, k ≠ 0 → ∃ Ψ : StrongDual ℂ 𝓢(Space 1, ℂ),
+    Ψ ∘L Q.hamiltonianCLM = ((ℏ ^ 2 * k ^ 2 / (2 * Q.m) : ℝ) : ℂ) • Ψ ∧
+    ∃ T T' : ℂ, T ≠ 0 ∧ T' ≠ 0 ∧ ∀ φ : 𝓢(Space 1, ℂ),
+      Tendsto (fun a : ℝ => exp (k * a * I) *
+        Ψ (translateSchwartz (EuclideanSpace.single 0 a) φ)) atTop
+        (𝓝 (T * momentumState (oneEquiv.symm k) φ)) ∧
+      Tendsto (fun a : ℝ => exp (k * a * I) *
+        Ψ (translateSchwartz (EuclideanSpace.single 0 a) φ)) atBot
+        (𝓝 (T' * momentumState (oneEquiv.symm k) φ))
 
 end
 end SpaceDQuantumSystem
