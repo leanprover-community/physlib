@@ -1,10 +1,11 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gregory J. Loges
+Authors: Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
+public import Physlib.QuantumMechanics.Operators.StateObservables.IsEigenvector
 public import Physlib.QuantumMechanics.Operators.Unbounded
 /-!
 
@@ -44,7 +45,7 @@ Definitions (corresponding to an operator `T : H →ₗ.[ℂ] H`)
     has a continuous (equivalently, bounded) inverse with domain all of `H`.
 - `LinearPMap.spectrum` (`σ`) : The complement of the resolvent set.
 - `LinearPMap.pointSpectrum` (`σᵖ`) : The set of complex numbers `z` for which `T - z • 1`
-    fails to be invertible.
+    is not injective, that is, the eigenvalues of `T`.
 - `LinearPMap.residualSpectrum` (`σʳ`) : The set of complex numbers `z` for which `T - z • 1`
     has a continuous (equivalently, bounded) inverse with domain not all of `H`.
 - `LinearPMap.continuousSpectrum` (`σᶜ`) : The set of complex numbers `z` for which
@@ -327,6 +328,13 @@ lemma IsClosed.defectNumber_eq_zero_iff [CompleteSpace H]
     T.defectNumber z = 0 ↔ (T - z • 1).toFun.range = ⊤ := by
   have := hT.sub_range_isClosed hz -- needed for HasOrthogonalProjection
   exact rank_eq_zero.trans orthogonal_eq_bot_iff
+
+/-- The defect number of `T` at `z` vanishes if and only if the range of `T - z • 1` is dense. -/
+lemma defectNumber_eq_zero_iff_dense [CompleteSpace H] {T : H →ₗ.[ℂ] H} {z : ℂ} :
+    T.defectNumber z = 0 ↔ Dense ((T - z • 1).toFun.range : Set H) := by
+  rw [defectNumber_eq, Submodule.dense_iff_topologicalClosure_eq_top,
+    Submodule.topologicalClosure_eq_top_iff, ← deficiencySubspace_coe]
+  exact Submodule.rank_eq_zero
 
 /-- `T` and `T.closure` have the same defect number at points in their regularity domain. -/
 lemma defectNumber_closure [CompleteSpace H]
@@ -735,6 +743,23 @@ lemma pointSpectrum_eq (T : H →ₗ.[ℂ] H) : σᵖ T = {z | (T - z • 1).toF
 
 lemma mem_pointSpectrum_iff {T : H →ₗ.[ℂ] H} {z : ℂ} : z ∈ σᵖ T ↔ (T - z • 1).toFun.ker ≠ ⊥ :=
   Iff.rfl
+
+/-- If `x` is an eigenvector of `T` with eigenvalue `c`, then `c` lies in the point spectrum
+  of `T`. -/
+lemma IsEigenvector.mem_pointSpectrum {T : H →ₗ.[ℂ] H} {x : T.domain} {c : ℂ}
+    (hx : T.IsEigenvector x c) : c ∈ σᵖ T := by
+  refine (Submodule.ne_bot_iff _).mpr ⟨⟨x, by simp [sub_domain]⟩, ?_, fun h ↦ hx.ne_zero ?_⟩
+  · simp [toFun_eq_coe, sub_apply, smul_apply, hx.apply_eq]
+  · simpa using congrArg Subtype.val h
+
+/-- If `T x = c • x` and `c ≠ z`, then `x` lies in the range of `T - z • 1`. -/
+lemma mem_range_sub_smul_of_apply_eq_smul_of_ne {T : H →ₗ.[ℂ] H} {x : T.domain} {c z : ℂ}
+    (hx : T x = c • (x : H)) (hcz : c ≠ z) : (x : H) ∈ (T - z • 1).toFun.range := by
+  -- `T - z • 1` sends `x` to `(c - z) • x`, and `c - z` is invertible.
+  have hmem : (c - z) • (x : H) ∈ (T - z • 1).toFun.range :=
+    ⟨⟨x, by simp [sub_domain]⟩, by simp [toFun_eq_coe, sub_apply, smul_apply, hx, sub_smul]⟩
+  simpa [smul_smul, inv_mul_cancel₀ (sub_ne_zero.mpr hcz)] using
+    Submodule.smul_mem _ (c - z)⁻¹ hmem
 
 lemma pointSpectrum_subset_spectrum (T : H →ₗ.[ℂ] H) : σᵖ T ⊆ σ T :=
   fun _ h ↦ mem_spectrum_iff.mpr (Or.inl h)

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Bornemann, Gregory J. Loges
+Authors: Adam Bornemann, Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
@@ -20,6 +20,10 @@ to discuss its upper/lower bounds. To facilitate this, we define `LinearPMap.rea
 as the projection of `LinearPMap.numericalRange` onto the real axis. For symmetric operators this
 simply reinterprets the numerical range as a subset of ℝ.
 
+A Hamiltonian must be self-adjoint for the time evolution it generates to be unitary. It is often
+first defined on a convenient dense domain, where it is only symmetric. Section D gives criteria
+for such an operator to be essentially self-adjoint, that is, to have a self-adjoint closure.
+
 ## ii. Key results
 
 - `realNumericalRange` (`Θᵣₑ`) : The projection of the numerical range onto the real axis.
@@ -29,6 +33,8 @@ simply reinterprets the numerical range as a subset of ℝ.
     if and only if it contains a real number.
 - `IsSymmetric.isEssentiallySelfAdjoint_of_defectNumber_eq_zero` : The basic criterion for
     essential self-adjointness: symmetric + densely defined + vanishing defect numbers at `± i`.
+- `IsSymmetric.isEssentiallySelfAdjoint_of_dense_span_eigenvectors` : A symmetric operator whose
+    eigenvectors span a dense subspace is essentially self-adjoint.
 
 ## iii. Table of contents
 
@@ -219,6 +225,16 @@ lemma pointSpectrum_real : σᵖ T ⊆ range ofReal := by
     _ = ⟪x, z • x⟫_ℂ := by simp [← toFun_eq_coe, LinearMap.mem_ker.mp hx]
     _ = ↑(‖x‖ ^ 2) * z := by simp [inner_smul_right, mul_comm]
 
+/-- If `T` is symmetric and `T x = c • x`, then `x` lies in the range of `T - z • 1` for every `z`
+  with non-zero imaginary part. -/
+lemma mem_range_sub_smul_of_apply_eq_smul_of_im_ne_zero {x : T.domain} {c z : ℂ}
+    (hx : T x = c • (x : H)) (hz : z.im ≠ 0) : (x : H) ∈ (T - z • 1).toFun.range := by
+  by_cases h0 : (x : H) = 0
+  · simp [h0]
+  -- `c` is an eigenvalue of the symmetric operator `T`, so it is real, while `z` is not real.
+  obtain ⟨r, hr⟩ := hT.pointSpectrum_real (IsEigenvector.mem_pointSpectrum ⟨hx, h0⟩)
+  exact mem_range_sub_smul_of_apply_eq_smul_of_ne hx fun h ↦ hz (by rw [← h, ← hr, ofReal_im])
+
 /-!
 ## D. Essential self-adjointness
 -/
@@ -244,6 +260,23 @@ lemma isEssentiallySelfAdjoint_of_defectNumber_eq_zero
     rw [hI]
     exact hrange (by norm_num) hneg
   · exact hrange (by norm_num) hpos
+
+/-- A symmetric operator `T` is essentially self-adjoint if a family of vectors `v j` of its
+  domain, with `T (v j) = c j • v j`, spans a dense subspace. The `v j` need not be orthonormal,
+  and some of them may be zero. In quantum mechanics this applies to a Hamiltonian whose domain
+  contains a complete set of its eigenstates, as for the harmonic oscillator. -/
+lemma isEssentiallySelfAdjoint_of_dense_span_eigenvectors {ι : Type*} (v : ι → T.domain)
+    {c : ι → ℂ} (hv : ∀ j, T (v j) = c j • (v j : H))
+    (hspan : Dense (Submodule.span ℂ (Set.range fun j ↦ (v j : H)) : Set H)) :
+    T.IsEssentiallySelfAdjoint := by
+  -- Off the real axis, the range of `T - z • 1` contains every `v j`, hence their dense span.
+  have hdef (z : ℂ) (hz : z.im ≠ 0) : T.defectNumber z = 0 :=
+    defectNumber_eq_zero_iff_dense.mpr <| hspan.mono <| Submodule.span_le.mpr <|
+      Set.range_subset_iff.mpr fun j ↦
+        hT.mem_range_sub_smul_of_apply_eq_smul_of_im_ne_zero (hv j) hz
+  exact hT.isEssentiallySelfAdjoint_of_defectNumber_eq_zero
+    (hspan.mono (Submodule.span_le.mpr (Set.range_subset_iff.mpr fun j ↦ (v j).2)))
+    (hdef I (by simp)) (hdef (-I) (by simp))
 
 end IsSymmetric
 end LinearPMap

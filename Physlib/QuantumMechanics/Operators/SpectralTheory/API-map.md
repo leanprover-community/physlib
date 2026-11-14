@@ -19,7 +19,8 @@ number. The algebraic theory of the operators themselves lives in the operator a
 A complex number z lies in the resolvent set of an operator T {1} when T - z has a bounded inverse,
 the resolvent; the resolvent set is open, and for a closed operator it is exactly the set of z for
 which T - z is a bijection from the domain onto the space. [1] The spectrum is the complement of the
-resolvent set; it is closed, and splits into the point, residual and continuous spectra. [2]
+resolvent set; it is closed, and for a closed operator it is the union of the point, residual and
+continuous spectra. The point spectrum is the set of eigenvalues. [2]
 Resolvents satisfy the two resolvent identities, relating resolvents at two points and of two
 operators. [3] The treatment follows the standard references of Hall {2}, Reed and Simon {3}, and
 Schmüdgen {4}.
@@ -28,18 +29,20 @@ Schmüdgen {4}.
 
 A point z is a point of regularity when T - z is bounded below. The regularity domain is open, the
 deficiency subspace at z is the orthogonal complement of the range of T - z, and its dimension is
-the defect number; for a closable operator it is constant on each connected component of the
-regularity domain. [4] The numerical range is the set of values of the pairing of a unit vector with
-its image; it is convex by the Toeplitz-Hausdorff theorem, and the exterior of its closure consists
-of points of regularity. [5]
+the defect number, which vanishes exactly when this range is dense; for a closable operator the
+defect number is constant on each connected component of the regularity domain. [4] The numerical
+range is the set of values of the pairing of a unit vector with its image; it is convex by the
+Toeplitz-Hausdorff theorem, and the exterior of its closure consists of points of regularity. [5]
 
 ### Symmetric operators
 
 The numerical range of a symmetric operator is real, and so is described by its projection to the
 real axis. [6] Every point off the real axis is therefore a point of regularity, and the regularity
-domain is connected when the operator is bounded above or below. [7] A symmetric operator whose
-defect numbers at i and -i both vanish is essentially self-adjoint. [8] The eigenvalues of a
-symmetric operator are real. [9]
+domain is connected when the operator is bounded above or below. [7] The eigenvalues of a
+symmetric operator are real. [8] A densely defined symmetric operator whose defect numbers at i
+and -i both vanish is essentially self-adjoint. This is the case when its eigenvectors span a
+dense subspace, since for z off the real axis the range of T - z contains every eigenvector, and
+is therefore dense. [9]
 
 ### Self-adjoint operators
 
@@ -69,13 +72,14 @@ multiplication operator is the essential range of its multiplier. [TODO]
    `IsClosed.resolventSet_eq`, `IsClosed.resolventSet_eq'`
 2. Physlib/QuantumMechanics/Operators/SpectralTheory/Basic.lean — `spectrum`, `notation σ`,
    `spectrum_isClosed`, `spectrum_eq_univ`, `pointSpectrum`, `residualSpectrum`,
-   `continuousSpectrum`, `IsClosed.spectrum_eq`, `pointSpectrum_inter_residualSpectrum`
+   `continuousSpectrum`, `IsClosed.spectrum_eq`, `pointSpectrum_inter_residualSpectrum`,
+   `IsEigenvector.mem_pointSpectrum`
 3. Physlib/QuantumMechanics/Operators/SpectralTheory/Basic.lean — `resolvent_sub`,
    `resolvent_sub'`
 4. Physlib/QuantumMechanics/Operators/SpectralTheory/Basic.lean — `regularityDomain`,
    `regularityDomain_isOpen`, `regularityDomain_closure`, `deficiencySubspace`, `defectNumber`,
-   `IsClosed.defectNumber_eq_zero_iff`, `IsClosable.defectNumber_const`,
-   `IsClosable.closure_range_sub_eq_range_closure_sub`
+   `IsClosed.defectNumber_eq_zero_iff`, `defectNumber_eq_zero_iff_dense`,
+   `IsClosable.defectNumber_const`, `IsClosable.closure_range_sub_eq_range_closure_sub`
 5. Physlib/QuantumMechanics/Operators/SpectralTheory/Basic.lean — `numericalRange`,
    `notation Θ`, `mem_numericalRange`, `numericalRange_sub_const`, `numericalRange_convex`,
    `compl_closure_numericalRange_subset_regularityDomain`
@@ -86,8 +90,10 @@ multiplication operator is the essential range of its multiplier. [TODO]
    `compl_ofReal_subset_regularityDomain`, `Iio_subset_regularityDomain`,
    `Ioi_subset_regularityDomain`, `regularityDomain_isConnected_iff`,
    `regularityDomain_isConnected_of_bddBelow`, `regularityDomain_isConnected_of_bddAbove`
-8. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `isEssentiallySelfAdjoint_of_defectNumber_eq_zero`
-9. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `pointSpectrum_real`
+8. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `pointSpectrum_real`
+9. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `isEssentiallySelfAdjoint_of_defectNumber_eq_zero`,
+   `mem_range_sub_smul_of_apply_eq_smul_of_im_ne_zero`,
+   `isEssentiallySelfAdjoint_of_dense_span_eigenvectors`
 10. Physlib/QuantumMechanics/Operators/SpectralTheory/SelfAdjoint.lean — `resolventSet_eq_regularityDomain`,
    `mem_resolventSet_of_im_ne_zero`, `sub_smul_surjective`, `mem_resolventSet_of_range_eq_top`
 11. Physlib/QuantumMechanics/Operators/SpectralTheory/SelfAdjoint.lean — `spectrum_real`,
