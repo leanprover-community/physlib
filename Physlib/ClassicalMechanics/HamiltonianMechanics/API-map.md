@@ -15,12 +15,12 @@ provide examples, alongside a symplectic vector-space formulation of moment maps
 
 A configuration space Q is a smooth manifold without boundary {1}. [1] For finite-dimensional Q,
 its canonical Hamiltonian phase space is the cotangent bundle T*Q: a state consists of a
-configuration q and a momentum covector at q. [TODO] This space carries a canonical symplectic form,
+configuration q and a momentum covector at q. [16] This space carries a canonical symplectic form,
 independently of the choice of Hamiltonian {6}. [TODO] In the coordinate formulation on a complete
 real inner-product space X, states are pairs (p, q) in X × X, and observables are real-valued
 functions f(p, q), with momentum first. [2] Identifying the cotangent phase space of a Euclidean
 configuration space with this coordinate representation uses the inner product to represent
-covectors as momentum vectors. [TODO]
+covectors as momentum vectors. [17]
 
 ### Hamiltonians and Hamiltonian trajectories
 
@@ -129,6 +129,10 @@ the momentum p = m v. [TODO]
 15. PhyslibAlpha/ClassicalMechanics/CentralForce/AngularMomentum.lean — `angularMomentum`,
     `angularMomentumSq`, `angularMomentumZ`, `poissonBracket_angularMomentumSq_angularMomentumZ`,
     `poissonBracket_angularMomentumSq_hamiltonian`, `poissonBracket_angularMomentumZ_hamiltonian`
+16. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace`, `PhaseSpace.position`,
+    `PhaseSpace.momentum`, `PhaseSpace.contMDiff_position`, `PhaseSpace.contMDiff_zeroMomentum`
+17. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace.normedSpaceDiffeomorph`,
+    `PhaseSpace.innerProductSpaceDiffeomorph`
 
 ## References
 
