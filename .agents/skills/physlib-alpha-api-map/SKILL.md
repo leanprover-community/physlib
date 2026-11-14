@@ -1,71 +1,75 @@
 ---
 name: physlib-alpha-api-map
-description: Help a newcomer contribute an API map for physics, supporting Physlib issue 1891. Take an issue, physics topic, or request to get started through an edited map, checked references, and a reviewable diff.
+description: Help a newcomer with expertise in an area of physics write a new API map for that area, or improve an existing one, through a conversation that ends in a reviewable diff and a short summary of what changed. Use it only when someone says they want to write or improve an API map.
 ---
 
-# Contribute an Alpha API map
+# Write or improve an API map
 
-Help the contributor make a useful documentation change to an 
-API-map that they can understand.
-They can supply a physics topic or issue, or ask you to choose a first contribution.
-For an action request, carry the work through editing and checking; only stop at
-options if that is what they requested. This workflow supports the API-map work in
-[#1891](https://github.com/leanprover-community/physlib/issues/1891); a single map
-improvement does not close the whole issue.
+Help a newcomer who has expertise in an area of physics write an API map for that area, or improve the map that already exists. They start by naming an area of physics. At the end they get a complete diff to review and a short summary of what has been done.
 
-## Choose the change
+## Ground rules
 
-Read `AGENTS.md`, `AI-POLICY.md`, `docs/ReviewGuidelines.md`, the files in
-`docs/ContributionHandbook/`, and `docs/API_MAP_GUIDE.md` for current conventions.
-Reuse the user's checkout or clone Physlib if needed; preserve existing edits.
-Read the chosen issue's current comments, assignments, and linked PRs. Public web
-access is sufficient if GitHub CLI is unavailable; no login is needed to edit locally.
+- Work as a conversation. As you go through each step, show the newcomer what has changed and ask whether it looks good or whether there is anything they would change.
+- Keep everything on the newcomer's machine. Do not push, open a PR or post anything. The newcomer writes the PR description.
+- Do not build Physlib or download the full cache.
+- Do not change dependency versions to get around an error.
 
-Use the contributor's topic, or choose a small Alpha area if selection is delegated.
-Search maps across Physlib, QuantumInfo, and PhyslibAlpha for the concept and its
-declarations. Check matching open PRs before settling on a file. If remote checks
-fail, report overlap as unknown. Improve the map already covering the topic; create
-one only for a coherent API that lacks a map, in the location the guide specifies.
-Alpha headings denote review status, so a map outside `PhyslibAlpha/` may document
-Alpha code. Preserve a requested proof or Lean API task instead of redirecting it
-into this documentation workflow. Your headings should be `Alpha`
+## Step 1: Choose the topic
 
-Choose a concrete improvement: explain a convention, cover an existing result,
-correct a claim, or supply a missing map. Read the relevant declarations and their
-dependencies before writing. Ask only when a missing physics decision would change
-what the contribution means; do not require the newcomer to select Lean declarations.
+Find a topic that corresponds to something coherent within the project and suits an API map.
 
-## Edit and verify
+A topic suits a map if it has a key data structure: you could imagine writing a structure and then writing definitions and lemmas about it.
 
-Explain the physics for a colleague who does not know the Lean names. Include the
-domain, assumptions, and conventions. Inspect full declaration types before citing
-them. Distinguish definitions, proved results, informal declarations, and planned
-material. Mark unformalized claims `[TODO]`, including statements only recorded as
-informal declarations; split sentences mixing proved and unproved claims. Look 
-at other examples.
+If the area is broad, look for those key data structures and suggest a few topics for the newcomer to choose from. If there is already code for the area, in Physlib or in PhyslibAlpha, the file directories should indicate this structure, and topics tend to be data structures rather than definitions. If there is no code yet, think carefully about possible options, and give the newcomer examples from areas already in Physlib, such as the electromagnetic potential for electromagnetism.
 
-Follow the guide's Alpha sections, `[1]` Lean citations, `{1}` literature citations,
-and exact file/declaration reference entries. Use actual sources for added physics
-claims. Do not invent bibliographic details or place citations in the abstract.
+Then search the repository for an existing map on the topic. You do not need to check open PRs. If a map exists, improve it. If not, write a new one.
 
-Use the checkout's `lean-toolchain` and `lake-manifest.json`. Inspect installed
-versions with `elan toolchain list`; install the pinned toolchain if needed, following
-the official Lean installation link in the getting-started guide from `CONTRIBUTING.md`.
-Honor offline or no-install constraints. Do not change dependency versions to bypass
-an error. This Markdown task needs no Physlib or 
-PhyslibAlpha build and no full cache download.
+## Step 2: Frame the map
 
-Run `lake exe api_map_lint --verbose` before and after the edit. Fix new diagnostics
-and rerun the check. The linter checks format and reference presence, not the meaning
-of a claim: compare the final prose with the Lean types yourself. Resolve ambiguous
-notation or instances with `#check` or `#synth` in the pinned environment when needed.
-Inspect the diff, run `git diff --check`, and apply relevant Markdown/spelling checks
-from CI. Include new files when reviewing the diff. Report unavailable checks and
-actual diagnostics; do not label an unrun check as passing.
+Settle the key data structure and the important results the map should include.
 
-## Hand back a reviewable contribution
+The data structure should already be determined by this point. If there is Lean code in the area, tell the newcomer what is there and what would fit this map. If the area is completely new, ask the newcomer which results are important, then suggest more, along the lines of "if we have this, we may also want this".
 
-Show the changed map and explain the improvement, supporting declarations and
-sources, remaining `[TODO]` material, and actual check results. The human verifies
-the physics and bibliography and writes the PR description under `AI-POLICY.md` and
-`AGENTS.md`. Give them review evidence rather than generating that description.
+## Step 3: Write the abstract
+
+Write an abstract that gives a reader an overview of the area.
+
+Ask the newcomer for a two-sentence summary of the area in purely physics terms: what the core definition is, where it leads, and why it is important. Turn that into something more like an abstract. Check that it makes sense, is easy to read and gives an overview of the area.
+
+## Step 4: Lay out the structure
+
+Agree the sections of the map with the newcomer.
+
+Follow `docs/API_MAP_GUIDE.md`. Start with the definition of the key data structure, then cover what you can do with it, the questions you can ask, and the definitions built from it. Be guided by what the newcomer thinks is important in this area: suggest directions and a structure that might work, and let the newcomer confirm it or say no.
+
+## Step 5: Check completeness and readability
+
+Make sure the map has everything you want in it, and that it is readable and coherent.
+
+Check it against the important results agreed in Step 2. Ask the newcomer whether it makes sense, and get them to confirm that it works.
+
+## Step 6: Add references
+
+Include the important references for this area.
+
+Ask the newcomer whether there are important references in this area that should be mentioned and cited. The newcomer must supply them. Format them and put them in the right place in the map.
+
+## Step 7: Match to the Lean declarations
+
+Check that the map matches the Lean code.
+
+For each result in the map, do a quick check and say yes or no: does it match its declaration? Mark any result not yet in the Lean code with the square-bracket `[TODO]` marker from `docs/API_MAP_GUIDE.md`, as existing maps do.
+
+## Step 8: Run the final checks
+
+Make sure the map is within the style. Run the API map linter:
+
+```bash
+lake exe api_map_lint --verbose
+```
+
+Fix any problems it reports.
+
+## Step 9: Hand back the diff
+
+Show the newcomer the complete diff and a very short summary of what has been done, something quick to read. The newcomer reviews it and writes the PR description.
