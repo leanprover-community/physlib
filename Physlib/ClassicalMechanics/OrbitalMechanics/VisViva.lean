@@ -25,7 +25,12 @@ gravitational parameter. It also relates the speed to the positive angular rate.
 
 ## iii. Table of contents
 
-- A. Circular orbit speed
+- A. System parameters and orbital radius
+  - A.1. System parameters
+  - A.2. Orbital radius
+- B. Circular orbit speed
+  - B.1. Speed from the vis-viva equation
+  - B.2. Relation to the angular rate
 
 ## iv. References
 
@@ -37,7 +42,9 @@ gravitational parameter. It also relates the speed to the positive angular rate.
 namespace ClassicalMechanics
 
 /-!
-## A. Circular orbit speed
+## A. System parameters and orbital radius
+
+### A.1. System parameters
 -/
 
 /-- System parameters for the vis-viva equation in circular orbital mechanics. -/
@@ -51,10 +58,20 @@ structure VisViva where
 
 namespace VisViva
 
+/-!
+### A.2. Orbital radius
+-/
+
 /-- Configuration space for orbital mechanics, defining the orbital radius. -/
 structure ConfigurationSpace where
   /-- Orbital radius. -/
   r : ℝ
+
+/-!
+## B. Circular orbit speed
+
+### B.1. Speed from the vis-viva equation
+-/
 
 /-- The orbital speed required for a circular orbit at radius `r`. -/
 noncomputable def speedCircular (sys : VisViva) (cfg : ConfigurationSpace) : ℝ :=
@@ -65,6 +82,10 @@ lemma speedCircular_sq (sys : VisViva) (cfg : ConfigurationSpace) (hr : 0 < cfg.
     (hM : 0 < sys.M) :
     (speedCircular sys cfg)^2 = sys.G * sys.M / cfg.r :=
   Real.sq_sqrt (by positivity)
+
+/-!
+### B.2. Relation to the angular rate
+-/
 
 /-- The circular speed equals the orbital radius times the positive circular angular rate. -/
 lemma speedCircular_eq_radius_mul_angularRate (sys : VisViva) (cfg : ConfigurationSpace)
