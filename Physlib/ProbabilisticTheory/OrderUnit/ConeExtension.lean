@@ -14,17 +14,8 @@ Values on positive observables determine a real-linear functional on all observa
 
 ## i. Overview
 
-A weight assigns values only to positive observables. To evaluate a finite weight on an
-arbitrary observable, first regard its values as real numbers and then extend by subtraction.
-
-The order-unit property writes every observable as `p - q` with `p` and `q` positive.
-For an additive map `f` that respects nonnegative real scaling, set the value at `p - q`
-to `f p - f q`. Additivity makes this value independent of the decomposition. Swapping
-`p` and `q` handles negation, so nonnegative homogeneity gives full real linearity.
-No positivity or normalization assumption on `f` is needed for this construction.
-
-`Weight.IsFinite.toLinearMap` applies this construction to finite weights in
-`Weight/Extension.lean`. Agreement on the positive cone uniquely determines the extension.
+Every observable is a difference of two positive observables. Sending a difference `p - q`
+to `f p - f q` defines a real-linear map independent of the chosen decomposition.
 
 ## ii. Key results
 
