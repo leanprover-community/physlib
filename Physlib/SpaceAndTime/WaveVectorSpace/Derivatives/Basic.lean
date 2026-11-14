@@ -5,6 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
+public import Mathlib.Analysis.Calculus.FDeriv.Mul
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 /-!
 
@@ -19,6 +20,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 - A. Derivatives of functions on `WaveVectorSpace d`
   - A.1. Constant functions
   - A.2. Addition and subtraction
+  - A.3. Scalar multiplication
 
 ## iv. References
 
@@ -77,5 +79,29 @@ lemma deriv_add : ∂[i] (f₁ + f₂) k = ∂[i] f₁ k + ∂[i] f₂ k := by s
 lemma deriv_sub : ∂[i] (f₁ - f₂) k = ∂[i] f₁ k - ∂[i] f₂ k := by simp [deriv_eq, fderiv_sub hf₁ hf₂]
 
 end AddSub
+
+/-!
+### A.3. Scalar multiplication
+-/
+
+section SMul
+
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M]
+
+@[to_fun deriv_fun_smul]
+lemma deriv_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 M]
+    (i : Fin d) {c : WaveVectorSpace d → 𝕜} {f : WaveVectorSpace d → M} {k : WaveVectorSpace d}
+    (hc : DifferentiableAt ℝ c k) (hf : DifferentiableAt ℝ f k) :
+    ∂[i] (c • f) k = c k • ∂[i] f k + ∂[i] c k • f k := by
+  simp [deriv_eq, fderiv_smul hc hf]
+
+@[to_fun deriv_fun_const_smul]
+lemma deriv_const_smul
+    {R : Type*} [Semiring R] [Module R M] [SMulCommClass ℝ R M] [ContinuousConstSMul R M] (c : R)
+    (i : Fin d) {f : WaveVectorSpace d → M} {k : WaveVectorSpace d} (hf : DifferentiableAt ℝ f k) :
+    ∂[i] (c • f) k = c • ∂[i] f k := by
+  simp [deriv_eq, fderiv_const_smul hf]
+
+end SMul
 
 end WaveVectorSpace
