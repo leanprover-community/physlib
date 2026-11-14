@@ -5,7 +5,6 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 public import Physlib.SpaceAndTime.WaveVectorSpace.Derivatives.Basic
 /-!
