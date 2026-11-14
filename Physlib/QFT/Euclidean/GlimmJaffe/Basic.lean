@@ -38,7 +38,7 @@ so it does not change the pointwise `Star` instance on Schwartz functions.
 * `FieldConfiguration`: real tempered distributions with the cylinder sigma algebra.
 * `generatingFunctional` and `generatingFunctionalReal`: characteristic functionals.
 * `reflectedConjugate`: conjugation combined with Euclidean time reflection.
-* `smearedTwoPointFunction`: the two-point function at a specified mollifier scale.
+* `SmearedTwoPointFunction`: the two-point function smeared with an arbitrary normalized bump.
 
 ## iii. Table of contents
 
@@ -51,7 +51,7 @@ so it does not change the pointwise `Star` instance on Schwartz functions.
 * Glimm and Jaffe, *Quantum Physics*. [ref: glimm1987quantum]
 * Cherkis et al., *OSforGFF*, `Spacetime/Basic.lean`,
   `Spacetime/PositiveTimeTestFunction.lean`, `Spacetime/TimeTranslation.lean`,
-  and `Schwinger/TwoPoint.lean`. [ref: osforgff]
+  `Schwinger/Defs.lean`, and `Schwinger/TwoPoint.lean`. [ref: osforgff]
 -/
 
 @[expose] public section
@@ -171,26 +171,47 @@ def timeTranslation (s : ℝ) (ω : FieldConfiguration d) : FieldConfiguration d
 /-! ## C. Smeared two-point functions -/
 
 omit [Fact (2 ≤ d)] in
-/-- Standard bump with outer radius `1 / (n + 1)` and half that inner radius. -/
-def standardMollifier (n : ℕ) : ContDiffBump (0 : EuclideanSpacetime d) where
-  rIn := 1 / (2 * (n + 1 : ℕ))
-  rOut := 1 / (n + 1 : ℕ)
+/-- The real `n`-point Schwinger function, the expectation of the product of field evaluations. -/
+def SchwingerFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d)) (n : ℕ)
+    (f : Fin n → 𝓢(EuclideanSpacetime d, ℝ)) : ℝ :=
+  ∫ ω, (∏ i, ω (f i)) ∂dμ_config.toMeasure
+
+omit [Fact (2 ≤ d)] in
+/-- The real two-point Schwinger function evaluated on two Schwartz tests. -/
+def SchwingerFunction₂ (dμ_config : ProbabilityMeasure (FieldConfiguration d))
+    (f g : 𝓢(EuclideanSpacetime d, ℝ)) : ℝ :=
+  SchwingerFunction dμ_config 2 ![f, g]
+
+omit [Fact (2 ≤ d)] in
+/-- Convert a smooth bump centered at zero to a real Schwartz test with integral one. -/
+def bumpToSchwartz (φ : ContDiffBump (0 : EuclideanSpacetime d)) :
+    𝓢(EuclideanSpacetime d, ℝ) :=
+  (φ.hasCompactSupport_normed (μ := volume)).toSchwartzMap φ.contDiff_normed
+
+omit [Fact (2 ≤ d)] in
+/-- Translate a real Schwartz test by `a`, with value `f (x - a)` at `x`. -/
+def translateSchwartz (f : 𝓢(EuclideanSpacetime d, ℝ)) (a : EuclideanSpacetime d) :
+    𝓢(EuclideanSpacetime d, ℝ) :=
+  SchwartzMap.compSubConstCLM ℝ a f
+
+omit [Fact (2 ≤ d)] in
+/-- The two-point Schwinger function smeared at `x` and zero with an arbitrary normalized bump.
+This follows `SmearedTwoPointFunction` in `OSforGFF`, with the bump supplied independently
+of the standard sequence used in the OS1 endpoint condition. -/
+def SmearedTwoPointFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d))
+    (φ : ContDiffBump (0 : EuclideanSpacetime d)) (x : EuclideanSpacetime d) : ℝ :=
+  SchwingerFunction₂ dμ_config
+    (translateSchwartz (bumpToSchwartz φ) x)
+    (bumpToSchwartz φ)
+
+omit [Fact (2 ≤ d)] in
+/-- The standard bump sequence from `OSforGFF`, with outer radius `1 / n` for nonzero `n`. -/
+def standardBumpSequence (n : ℕ) (hn : n ≠ 0) : ContDiffBump (0 : EuclideanSpacetime d) where
+  rIn := 1 / (2 * n)
+  rOut := 1 / n
   rIn_pos := by positivity
   rIn_lt_rOut := by
-    have hn : (0 : ℝ) < (n + 1 : ℕ) := by positivity
-    exact one_div_lt_one_div_of_lt hn (by linarith)
-
-omit [Fact (2 ≤ d)] in
-/-- The normalized standard mollifier as a real Schwartz test, with integral one. -/
-def mollifierTest (n : ℕ) : 𝓢(EuclideanSpacetime d, ℝ) :=
-  ((standardMollifier (d := d) n).hasCompactSupport_normed (μ := volume)).toSchwartzMap
-    (standardMollifier n).contDiff_normed
-
-omit [Fact (2 ≤ d)] in
-/-- The second moment smeared at zero and at `x` with normalized mollifiers of scale `n`. -/
-def smearedTwoPointFunction (μ : ProbabilityMeasure (FieldConfiguration d))
-    (n : ℕ) (x : EuclideanSpacetime d) : ℝ :=
-  ∫ ω, ω (SchwartzMap.compSubConstCLM ℝ x (mollifierTest n)) * ω (mollifierTest n)
-    ∂μ.toMeasure
+    have hn' : (0 : ℝ) < n := Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)
+    exact one_div_lt_one_div_of_lt hn' (by linarith)
 
 end GlimmJaffe

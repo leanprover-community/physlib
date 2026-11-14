@@ -74,7 +74,9 @@ def OS0Analyticity (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
 separation to a locally integrable function. No limit is required at coincidence. -/
 def TwoPointIntegrable (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
   ∃ K : EuclideanSpacetime d → ℝ, LocallyIntegrable K volume ∧
-    ∀ x, x ≠ 0 → Tendsto (fun n => smearedTwoPointFunction μ n x) atTop (𝓝 (K x))
+    ∀ x, x ≠ 0 → Tendsto (fun n =>
+      SmearedTwoPointFunction μ (standardBumpSequence (n + 1) (Nat.succ_ne_zero n)) x)
+      atTop (𝓝 (K x))
 
 /-- OS1: exponential growth controlled by the integrals of `‖f‖` and `‖f‖^p`,
 for some `1 ≤ p ≤ 2`, with the additional two-point condition when `p = 2`. -/
