@@ -17,8 +17,8 @@ The measure and generating-functional formulation of the Euclidean field axioms.
 
 We port the predicates in `OSforGFF/OS/Axioms.lean`: analyticity (OS0), regularity
 (OS1), full Euclidean invariance (OS2), complex reflection positivity (OS3), and
-clustering and ergodicity (OS4). These are assumptions on a probability measure on
-real tempered distributions; no existence or reconstruction theorem is asserted.
+ergodicity (OS4). These are assumptions on a probability measure on real tempered distributions;
+no existence or reconstruction theorem is asserted.
 
 The source conventions are retained: `d` is the total dimension and `2 ≤ d`;
 positive-time tests have topological support in the open positive-time half-space;
@@ -27,24 +27,21 @@ nonnegativity of the real part of the reflected quadratic form. The `p = 2`
 condition includes convergence of mollified two-point functions away from zero,
 not merely local integrability of a possibly nonexistent limit.
 
-The source bundles both clustering and ergodicity. We retain this convention without
-asserting equivalence between them. Polynomial clustering is supplied separately, as in
-the source. Clustering uses the characteristic functional on real tests. Ergodicity and
-polynomial clustering use exponentials without a factor of `i`, whereas the characteristic
-functional in OS0–OS3 and clustering includes that factor.
+OS4 uses exponentials without a factor of `i`, whereas the characteristic functional
+in OS0–OS3 includes that factor.
 This numbering differs from the distributional Osterwalder–Schrader axioms E0–E4.
 
 ## ii. Key results
 
-* `GlimmJaffeAxioms`: the bundled Glimm–Jaffe conditions from `SatisfiesAllOS` in `OSforGFF`.
+* `GlimmJaffeAxioms`: the five Glimm–Jaffe conditions OS0–OS4, with ergodicity as OS4.
 * `TwoPointIntegrable`: the explicit mollifier-limit condition at the OS1 endpoint.
-* `OS4PolynomialClustering`: the separate polynomial clustering condition from the source.
+* `OS4Ergodicity`: convergence of centered time averages in mean square.
 
 ## iii. Table of contents
 
 - A. Analyticity and regularity
 - B. Euclidean invariance and reflection positivity
-- C. Clustering and ergodicity
+- C. Ergodicity
 - D. Bundled axioms
 
 ## iv. References
@@ -102,15 +99,7 @@ def OS3ReflectionPositivity (μ : ProbabilityMeasure (FieldConfiguration d)) : P
     0 ≤ (∑ i, ∑ j, starRingEnd ℂ (c i) * c j *
       generatingFunctional μ ((f i).val - reflectedConjugate (f j).val)).re
 
-/-! ## C. Clustering and ergodicity -/
-
-/-- OS4 clustering for real tests: the characteristic functional factorizes as
-their Euclidean separation tends to infinity, uniformly over translation directions. -/
-def OS4Clustering (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
-  ∀ (f g : 𝓢(EuclideanSpacetime d, ℝ)) (ε : ℝ), 0 < ε →
-    ∃ R : ℝ, 0 < R ∧ ∀ a : EuclideanSpacetime d, R < ‖a‖ →
-      ‖generatingFunctionalReal μ (f + SchwartzMap.compSubConstCLM ℝ a g) -
-        generatingFunctionalReal μ f * generatingFunctionalReal μ g‖ < ε
+/-! ## C. Ergodicity -/
 
 /-- OS4 ergodicity: centered time averages of finite linear combinations of
 `exp(⟨ω, f⟩)` converge to zero in mean square. This retains the source's integral
@@ -123,19 +112,9 @@ def OS4Ergodicity (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
         (A (timeTranslation s ω) - ∫ ω', A ω' ∂μ.toMeasure)‖ ^ 2 ∂μ.toMeasure)
       atTop (𝓝 0)
 
-/-- Polynomial clustering at exponent `α > 0`, supplied separately from the bundled
-axioms. The correlations here use `exp(⟨ω, f⟩)`, without the characteristic factor `i`. -/
-def OS4PolynomialClustering (μ : ProbabilityMeasure (FieldConfiguration d))
-    (α : ℝ) (_hα : 0 < α) : Prop :=
-  ∀ f g : 𝓢(EuclideanSpacetime d, ℂ), ∃ c : ℝ, 0 ≤ c ∧ ∀ s : ℝ, 0 ≤ s →
-    ‖(∫ ω, Complex.exp (pairing ω f + pairing (timeTranslation s ω) g) ∂μ.toMeasure) -
-      (∫ ω, Complex.exp (pairing ω f) ∂μ.toMeasure) *
-        (∫ ω, Complex.exp (pairing ω g) ∂μ.toMeasure)‖ ≤ c * (1 + s) ^ (-α)
-
 /-! ## D. Bundled axioms -/
 
-/-- The Glimm–Jaffe conditions bundled as in `SatisfiesAllOS` in `OSforGFF`.
-Clustering and ergodicity are both required; polynomial clustering is separate. -/
+/-- The Glimm–Jaffe axioms OS0–OS4, with ergodicity as the OS4 condition. -/
 structure GlimmJaffeAxioms (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop where
   /-- OS0: entire dependence on finite families of complex tests. -/
   analytic : OS0Analyticity μ
@@ -145,8 +124,6 @@ structure GlimmJaffeAxioms (μ : ProbabilityMeasure (FieldConfiguration d)) : Pr
   euclideanInvariant : OS2EuclideanInvariance μ
   /-- OS3: reflection positivity for complex positive-time tests and coefficients. -/
   reflectionPositive : OS3ReflectionPositivity μ
-  /-- OS4: clustering under arbitrary large Euclidean translations. -/
-  clustering : OS4Clustering μ
   /-- OS4: mean-square ergodicity under time translation. -/
   ergodic : OS4Ergodicity μ
 

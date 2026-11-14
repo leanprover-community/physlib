@@ -1,7 +1,6 @@
 boundedness
 analyticity
 Cherkis
-clustering
 cylinder
 ergodicity
 functionals
