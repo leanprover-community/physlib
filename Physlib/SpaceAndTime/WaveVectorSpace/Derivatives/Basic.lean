@@ -129,9 +129,11 @@ section Coord
 variable (i j : Fin d) (k : WaveVectorSpace d)
 
 @[simp]
-lemma deriv_coord : ∂[i] (coord j) k = δ[i,j] := by
-  change ∂[i] (coordCLM j) k = δ[i,j]
+lemma deriv_coordCLM : ∂[i] (coordCLM j) k = δ[i,j] := by
   simp [deriv_eq, ContinuousLinearMap.fderiv, coordCLM_apply, coord_apply]
+
+@[simp]
+lemma deriv_coord : ∂[i] (coord j) k = δ[i,j] := deriv_coordCLM i j k
 
 @[simp]
 lemma deriv_component : ∂[i] (fun k ↦ k j) k = δ[i,j] := by simp [← coord_apply]
