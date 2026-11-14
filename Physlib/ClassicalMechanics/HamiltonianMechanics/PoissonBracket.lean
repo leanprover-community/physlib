@@ -46,6 +46,7 @@ derivatives on phase space.
   a trajectory is the sum of its gradients paired with the trajectory's velocities.
 - `deriv_comp_eq_poissonBracket` : along a solution of Hamilton's equations, the time derivative of
   an observable is its Poisson bracket with the Hamiltonian.
+- `hasDerivAt_comp_eq_poissonBracket` gives the same identity at a single real time.
 
 ## iii. Table of contents
 
@@ -218,21 +219,15 @@ lemma deriv_comp_eq_inner_gradient_add (f : X → X → ℝ) (p q : Time → X) 
     ∂ₜ (fun t => f (p t) (q t)) t =
       ⟪gradient (fun p' => f p' (q t)) (p t), ∂ₜ p t⟫_ℝ +
       ⟪gradient (fun q' => f (p t) q') (q t), ∂ₜ q t⟫_ℝ := by
-  have h1 : HasFDerivAt (fun p' => f p' (q t))
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp (ContinuousLinearMap.inl ℝ X X)) (p t) :=
-    HasFDerivAt.comp (f := fun e : X => (e, q t)) (p t) hf.hasFDerivAt
-      (hasFDerivAt_prodMk_left (p t) (q t))
-  have h2 : HasFDerivAt (fun q' => f (p t) q')
-      ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp (ContinuousLinearMap.inr ℝ X X)) (q t) :=
-    HasFDerivAt.comp (f := fun e : X => (p t, e)) (q t) hf.hasFDerivAt
-      (hasFDerivAt_prodMk_right (p t) (q t))
   have hF : HasFDerivAt (fun t => f (p t) (q t))
       ((fderiv ℝ (Function.uncurry f) (p t, q t)).comp ((fderiv ℝ p t).prod (fderiv ℝ q t))) t :=
     HasFDerivAt.comp (f := fun t => (p t, q t)) t hf.hasFDerivAt
       (hp.hasFDerivAt.prodMk hq.hasFDerivAt)
-  rw [inner_gradient_left, inner_gradient_left, h1.fderiv, h2.fderiv, Time.deriv_eq, hF.fderiv]
-  simp [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
-    ContinuousLinearMap.inl_apply, ContinuousLinearMap.inr_apply, ← Time.deriv_eq, ← map_add]
+  rw [Time.deriv_eq, hF.fderiv]
+  have hchain := fderiv_uncurry f (p t, q t) (∂ₜ p t, ∂ₜ q t) hf
+  change (fderiv ℝ (Function.uncurry f) (p t, q t)) _ = _ at hchain
+  simpa only [ContinuousLinearMap.comp_apply, ContinuousLinearMap.prod_apply,
+    ← Time.deriv_eq, inner_gradient_left] using hchain
 
 /-!
 
@@ -251,6 +246,25 @@ theorem deriv_comp_eq_poissonBracket (H : Time → X → X → ℝ) (p q : Time 
   rw [deriv_comp_eq_inner_gradient_add f p q t hp hq hf, hq' t, hp' t, inner_neg_right]
   unfold poissonBracket
   ring
+
+/-- The Poisson bracket gives the derivative of an observable at a real time where the
+position and momentum derivatives satisfy Hamilton's equations. -/
+lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X} {t : ℝ}
+    (hp : HasDerivAt p (-gradient (fun p' => H (p t) p') (q t)) t)
+    (hq : HasDerivAt q (gradient (fun q' => H q' (q t)) (p t)) t)
+    (hf : DifferentiableAt ℝ (Function.uncurry f) (p t, q t)) :
+    HasDerivAt (fun s => f (p s) (q s)) (poissonBracket f H (p t) (q t)) t := by
+  have hpq : HasDerivAt (fun s => (p s, q s))
+      (-gradient (fun q' => H (p t) q') (q t), gradient (fun p' => H p' (q t)) (p t)) t :=
+    by simpa [ContinuousLinearMap.prod_apply] using
+      (hp.hasFDerivAt.prodMk hq.hasFDerivAt).hasDerivAt
+  have hd := hf.hasFDerivAt.comp_hasDerivAt t hpq
+  have hbr := fderiv_uncurry f (p t, q t)
+    (-gradient (fun q' => H (p t) q') (q t), gradient (fun p' => H p' (q t)) (p t)) hf
+  change (fderiv ℝ (Function.uncurry f) (p t, q t)) _ = _ at hbr
+  rw [hbr, ← inner_gradient_left, ← inner_gradient_left, inner_neg_right,
+    neg_add_eq_sub, ← poissonBracket] at hd
+  exact hd
 
 /-!
 
