@@ -5,7 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Mul
+public import Mathlib.Analysis.Calculus.FDeriv.Pow
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 /-!
 
@@ -21,6 +21,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
   - A.1. Constant functions
   - A.2. Addition and subtraction
   - A.3. Scalar multiplication
+  - A.4. Powers
 
 ## iv. References
 
@@ -103,5 +104,15 @@ lemma deriv_const_smul
   simp [deriv_eq, fderiv_const_smul hf]
 
 end SMul
+
+/-!
+### A.4. Powers
+-/
+
+@[to_fun deriv_fun_pow]
+lemma deriv_pow {𝔸 : Type*} [NormedCommRing 𝔸] [NormedAlgebra ℝ 𝔸] (i : Fin d)
+    {f : WaveVectorSpace d → 𝔸} {k : WaveVectorSpace d} (n : ℕ) (hf : DifferentiableAt ℝ f k) :
+    ∂[i] (f ^ n) k = (n • f k ^ (n - 1)) • ∂[i] f k := by
+  simp [deriv_eq, fderiv_pow n hf]
 
 end WaveVectorSpace
