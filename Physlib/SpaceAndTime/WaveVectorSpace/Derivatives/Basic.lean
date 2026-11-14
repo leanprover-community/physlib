@@ -21,7 +21,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 - A. Derivatives of functions on `WaveVectorSpace d`
   - A.1. Constant functions
   - A.2. Addition and subtraction
-  - A.3. Scalar multiplication
+  - A.3. Negation / scalar multiplication
   - A.4. Powers
   - A.5. Components / coordinate functions
   - A.6. Norm-squared
@@ -87,12 +87,17 @@ lemma deriv_sub : ∂[i] (f₁ - f₂) k = ∂[i] f₁ k - ∂[i] f₂ k := by s
 end AddSub
 
 /-!
-### A.3. Scalar multiplication
+### A.3. Negation / scalar multiplication
 -/
 
 section SMul
 
 variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M]
+
+@[to_fun deriv_fun_neg]
+lemma deriv_neg (i : Fin d) (f : WaveVectorSpace d → M) : ∂[i] (-f) = -∂[i] f := by
+  ext
+  simp [deriv_eq, fderiv_neg]
 
 @[to_fun deriv_fun_smul]
 lemma deriv_smul {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 M]
