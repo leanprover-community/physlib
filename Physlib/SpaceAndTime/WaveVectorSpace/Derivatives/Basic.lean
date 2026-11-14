@@ -5,7 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Analysis.Calculus.FDeriv.Pow
+public import Mathlib.Analysis.InnerProductSpace.Calculus
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 /-!
 
@@ -23,6 +23,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
   - A.3. Scalar multiplication
   - A.4. Powers
   - A.5. Components / coordinate functions
+  - A.6. Norm-squared
 
 ## iv. References
 
@@ -133,5 +134,16 @@ lemma deriv_coord : ∂[i] (coord j) k = δ[i,j] := by
 lemma deriv_component : ∂[i] (fun k ↦ k j) k = δ[i,j] := by simp [← coord_apply]
 
 end Coord
+
+/-!
+### A.6. Norm-squared
+-/
+
+@[fun_prop]
+lemma norm_sq_differentiable : Differentiable ℝ (fun k : WaveVectorSpace d ↦ ‖k‖ ^ 2) :=
+  (contDiff_norm_sq ℝ).differentiable one_ne_zero
+
+lemma deriv_norm_sq (i : Fin d) (k : WaveVectorSpace d) : ∂[i] (fun k ↦ ‖k‖ ^ 2) k = 2 * k i := by
+  simp [deriv_eq]
 
 end WaveVectorSpace
