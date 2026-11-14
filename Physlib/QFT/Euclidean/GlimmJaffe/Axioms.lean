@@ -36,7 +36,7 @@ This numbering differs from the distributional Osterwalder–Schrader axioms E0�
 
 ## ii. Key results
 
-* `SatisfiesAxioms`: the bundled Glimm–Jaffe conditions from `SatisfiesAllOS` in `OSforGFF`.
+* `GlimmJaffeAxioms`: the bundled Glimm–Jaffe conditions from `SatisfiesAllOS` in `OSforGFF`.
 * `TwoPointIntegrable`: the explicit mollifier-limit condition at the OS1 endpoint.
 * `OS4PolynomialClustering`: the separate polynomial clustering condition from the source.
 
@@ -136,7 +136,7 @@ def OS4PolynomialClustering (μ : ProbabilityMeasure (FieldConfiguration d))
 
 /-- The Glimm–Jaffe conditions bundled as in `SatisfiesAllOS` in `OSforGFF`.
 Clustering and ergodicity are both required; polynomial clustering is separate. -/
-structure SatisfiesAxioms (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop where
+structure GlimmJaffeAxioms (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop where
   /-- OS0: entire dependence on finite families of complex tests. -/
   analytic : OS0Analyticity μ
   /-- OS1: the exponential bound and endpoint two-point condition. -/
