@@ -15,8 +15,13 @@ Finite weights extend to real-linear functionals on all observables.
 
 ## i. Overview
 
-Take the real value of a finite weight on positive observables, then use the common linear
-extension from the positive cone.
+A finite weight has a nonnegative real value on every positive observable. These values
+form an `ℝ≥0`-linear map on the positive cone. Extending by differences gives a real-linear
+functional on all observables: its value at `p - q` is `(w p).toReal - (w q).toReal`.
+
+The decomposition argument is proved in `OrderUnit/ConeExtension.lean`. This file applies
+it to weights. `Weight/State.lean` then uses positivity and normalization to construct
+states from finite normalized weights.
 
 ## ii. Key results
 

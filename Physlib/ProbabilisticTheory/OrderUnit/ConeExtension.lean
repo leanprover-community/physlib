@@ -10,21 +10,33 @@ public import Physlib.ProbabilisticTheory.OrderUnit.Cone
 /-!
 # Linear extension from positive observables
 
-An additive homogeneous map on positive observables extends to their real span.
+Values on positive observables determine a real-linear functional on all observables.
 
 ## i. Overview
 
-Every observable is a difference of two positive observables. Sending a difference `p - q`
-to `f p - f q` defines a real-linear map independent of the chosen decomposition.
+A weight assigns values only to positive observables. To evaluate a finite weight on an
+arbitrary observable, first regard its values as real numbers and then extend by subtraction.
+
+The order-unit property writes every observable as `p - q` with `p` and `q` positive.
+For an additive map `f` that respects nonnegative real scaling, set the value at `p - q`
+to `f p - f q`. Additivity makes this value independent of the decomposition. Swapping
+`p` and `q` handles negation, so nonnegative homogeneity gives full real linearity.
+No positivity or normalization assumption on `f` is needed for this construction.
+
+`Weight.IsFinite.toLinearMap` applies this construction to finite weights in
+`Weight/Extension.lean`. Agreement on the positive cone uniquely determines the extension.
 
 ## ii. Key results
 
 - `PosCone.extend` : extend a real-valued map from positive observables.
 - `PosCone.extend_coe` : agreement on the positive cone.
+- `PosCone.extend_unique` : uniqueness among real-linear functionals with those values.
 
 ## iii. Table of contents
 
-- A. Extension from the positive cone
+- A. Independence of the positive decomposition
+- B. Linearity of the extension
+- C. Agreement and uniqueness
 
 ## iv. References
 
@@ -35,7 +47,7 @@ to `f p - f q` defines a real-linear map independent of the chosen decomposition
 open ProbabilisticTheory
 open scoped NNReal
 
-/-! ## A. Extension from the positive cone -/
+/-! ## A. Independence of the positive decomposition -/
 
 namespace ProbabilisticTheory.PosCone
 
@@ -61,27 +73,44 @@ lemma extendFun_eq {A : P.Observables} {p q : PosCone P} (h : (p : P.Observables
     extendFun f A = f p - f q :=
   map_sub_eq_map_sub f ((exists_sub A).choose_spec.choose_spec.trans h.symm)
 
-/-- The `ℝ`-linear extension of an `ℝ≥0`-linear map on an order unit space's positive cone. -/
+/-! ## B. Linearity of the extension -/
+
+lemma extendFun_add (A B : P.Observables) :
+    extendFun f (A + B) = extendFun f A + extendFun f B := by
+  obtain ⟨p, q, rfl⟩ := exists_sub A
+  obtain ⟨p', q', rfl⟩ := exists_sub B
+  rw [extendFun_eq f rfl, extendFun_eq f rfl,
+    extendFun_eq f (p := p + p') (q := q + q') (by simp only [Submodule.coe_add]; abel),
+    map_add, map_add]
+  ring
+
+lemma extendFun_neg (A : P.Observables) : extendFun f (-A) = -extendFun f A := by
+  obtain ⟨p, q, rfl⟩ := exists_sub A
+  rw [extendFun_eq f rfl, extendFun_eq f (p := q) (q := p) (by abel)]
+  ring
+
+lemma extendFun_nnreal_smul (t : ℝ≥0) (A : P.Observables) :
+    extendFun f ((t : ℝ) • A) = (t : ℝ) • extendFun f A := by
+  obtain ⟨p, q, rfl⟩ := exists_sub A
+  rw [extendFun_eq f rfl,
+    extendFun_eq f (p := t • p) (q := t • q) (by simp [smul_sub]), map_smul, map_smul]
+  simp [NNReal.smul_def, mul_sub]
+
+lemma extendFun_smul (t : ℝ) (A : P.Observables) :
+    extendFun f (t • A) = t • extendFun f A := by
+  rcases le_total 0 t with ht | ht
+  · exact extendFun_nnreal_smul f ⟨t, ht⟩ A
+  · have h := extendFun_nnreal_smul f ⟨-t, neg_nonneg.mpr ht⟩ A
+    change extendFun f ((-t) • A) = (-t) • extendFun f A at h
+    simpa only [neg_smul, extendFun_neg, neg_inj] using h
+
+/-- Extend values on positive observables by `f (p - q) = f p - f q`. -/
 noncomputable def extend : P.Observables →ₗ[ℝ] ℝ where
   toFun := extendFun f
-  map_add' A B := by
-    obtain ⟨p, q, rfl⟩ := exists_sub A
-    obtain ⟨p', q', rfl⟩ := exists_sub B
-    rw [extendFun_eq f rfl, extendFun_eq f rfl,
-      extendFun_eq f (p := p + p') (q := q + q') (by simp only [Submodule.coe_add]; abel),
-      map_add, map_add]
-    ring
-  map_smul' t A := by
-    obtain ⟨p, q, rfl⟩ := exists_sub A
-    rw [extendFun_eq f rfl, RingHom.id_apply, smul_eq_mul]
-    rcases le_total 0 t with ht | ht
-    · lift t to ℝ≥0 using ht
-      rw [extendFun_eq f (p := t • p) (q := t • q) (by simp [smul_sub]), map_smul, map_smul]
-      simp [NNReal.smul_def, mul_sub]
-    · lift -t to ℝ≥0 using neg_nonneg.mpr ht with s hs
-      rw [extendFun_eq f (p := s • q) (q := s • p) (by simp only [coe_nnreal_smul, hs]; module),
-        map_smul, map_smul, NNReal.smul_def, NNReal.smul_def, smul_eq_mul, smul_eq_mul, hs]
-      ring
+  map_add' := extendFun_add f
+  map_smul' := extendFun_smul f
+
+/-! ## C. Agreement and uniqueness -/
 
 @[simp]
 lemma extend_apply {p q : PosCone P} : extend f ((p : P.Observables) - q) = f p - f q :=
@@ -90,5 +119,12 @@ lemma extend_apply {p q : PosCone P} : extend f ((p : P.Observables) - q) = f p 
 @[simp]
 lemma extend_coe (p : PosCone P) : extend f (p : P.Observables) = f p := by
   simpa using extend_apply f (p := p) (q := 0)
+
+/-- Agreement on positive observables determines the real-linear extension. -/
+lemma extend_unique (g : P.Observables →ₗ[ℝ] ℝ)
+    (h : ∀ p : PosCone P, g (p : P.Observables) = f p) : g = extend f := by
+  ext A
+  obtain ⟨p, q, rfl⟩ := exists_sub A
+  rw [map_sub, h p, h q, extend_apply]
 
 end ProbabilisticTheory.PosCone
