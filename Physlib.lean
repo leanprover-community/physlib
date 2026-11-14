@@ -327,6 +327,8 @@ public import Physlib.ProbabilisticTheory.Weight.Basic
 public import Physlib.ProbabilisticTheory.Weight.Extension
 public import Physlib.QFT.AnomalyCancellation.Basic
 public import Physlib.QFT.AnomalyCancellation.GroupActions
+public import Physlib.QFT.Euclidean.GlimmJaffe.Axioms
+public import Physlib.QFT.Euclidean.GlimmJaffe.Basic
 public import Physlib.QFT.PerturbationTheory.CreateAnnihilate
 public import Physlib.QFT.PerturbationTheory.FeynmanDiagrams.Basic
 public import Physlib.QFT.PerturbationTheory.FieldOpFreeAlgebra.Basic
