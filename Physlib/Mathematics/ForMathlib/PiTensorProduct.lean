@@ -7,6 +7,7 @@ module
 
 public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Dimension.Free
+public import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 public import Mathlib.LinearAlgebra.PiTensorProduct.Dual
 
 /-!
@@ -19,12 +20,12 @@ family, and adds the contraction of its factors in pairs.
 ## i. Overview
 
 A tensor with several indices lies in the tensor product `⨂[R] i, M i` of a family of spaces, one
-space `M i` for each index `i`. Here `R` is the scalars, `ℝ` or `ℂ` in physics, and any commutative
-semiring in the results below, with a commutative ring in which dimension is well defined, such as a
-field, for the dimension (B). Mathlib proves several facts about the tensor product of two spaces,
-`M ⊗ N`, that it does not prove for a family. This file proves them for a family: the matrix of a
-map applied at every index (A) and the dimension (B). It also treats the case with no indices (C),
-and defines contraction, which pairs indices and removes them (D).
+space `M i` for each index `i`. Here `R` is the scalars, `ℝ` or `ℂ` in physics. The results hold for
+any commutative semiring, except the dimension (B), which needs a commutative ring. Mathlib proves
+several facts about the tensor product of two spaces, `M ⊗ N`, that it does not prove for a family.
+This file proves them for a family: the matrix of a map applied at every index (A) and the
+dimension (B). It also treats the case with no indices (C), and defines contraction, which pairs
+indices and removes them (D).
 
 For example, `T^μ_ν` has `4 · 4 = 16` components, so its space has dimension `16`. A Lorentz
 transformation acts on it index by index, by `Λ` at the up index and by `(Λ⁻¹)ᵀ` at the down index.
@@ -103,11 +104,12 @@ two spaces, `Module.finrank_tensorProduct`, and this section proves it for a fam
 -/
 
 /-- The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`. -/
-lemma Module.finrank_piTensorProduct [CommRing R] [StrongRankCondition R] [Fintype ι]
+lemma Module.finrank_piTensorProduct [CommRing R] [Fintype ι]
     [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.Free R (M i)]
     [∀ i, Module.Finite R (M i)] :
     Module.finrank R (⨂[R] i, M i) = ∏ i, Module.finrank R (M i) := by
   classical
+  nontriviality R
   rw [Module.finrank_eq_card_basis (Basis.piTensorProduct fun i => Module.Free.chooseBasis R (M i)),
     Fintype.card_pi]
   simp [Module.finrank_eq_card_chooseBasisIndex]
