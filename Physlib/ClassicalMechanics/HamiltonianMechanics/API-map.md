@@ -25,7 +25,7 @@ covectors as momentum vectors. [17]
 ### Hamiltonians and Hamiltonian trajectories
 
 A Hamiltonian system consists of a phase space and a smooth real-valued Hamiltonian, possibly
-time-dependent and defined on an open domain. [TODO] The phase space describes kinematics; choosing the
+time-dependent and defined on an open domain. [18] The phase space describes kinematics; choosing the
 Hamiltonian specifies dynamics through the symplectic form {2}{6}. [TODO] In coordinates, curves
 p(t) and q(t) satisfy Hamilton's equations q̇ = ∇ₚH and ṗ = −∇qH exactly when the Hamilton
 equation operator vanishes. [3] The symplectic definition of Hamiltonian trajectories agrees with
@@ -88,6 +88,7 @@ Hamiltonians, with Hamiltonian, Newtonian and variational descriptions agreeing 
 trajectories. The pendulum is expressed using a real lift of its angle. [12][13]
 
 Three-dimensional central-force systems have Hamiltonians smooth away from the centre. [14]
+They define Hamiltonian systems on this domain. [19]
 Their angular-momentum observables L² and Lz Poisson-commute with each other and with the
 Hamiltonian away from the centre. [15] Their functional independence on a suitable open dense
 domain gives central-force Liouville integrability. [TODO]
@@ -133,6 +134,9 @@ the momentum p = m v. [TODO]
     `PhaseSpace.momentum`, `PhaseSpace.contMDiff_position`, `PhaseSpace.contMDiff_zeroMomentum`
 17. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace.normedSpaceDiffeomorph`,
     `PhaseSpace.innerProductSpaceDiffeomorph`
+18. Physlib/ClassicalMechanics/HamiltonianMechanics/Basic.lean — `HamiltonianSystem`,
+    `HamiltonianSystem.ofNormedSpace`, `HamiltonianSystem.ofInnerProductSpace`
+19. PhyslibAlpha/ClassicalMechanics/CentralForce/Basic.lean — `CentralForce.toHamiltonianSystem`
 
 ## References
 
