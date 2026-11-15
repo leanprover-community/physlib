@@ -25,6 +25,10 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.Boson
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionGenerators
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionMatterField
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeFieldData.FermionModule
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.Basic
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.GaugeJetGroup
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.JetLieAlgebra
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.LocalGaugeData
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalCovField.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalCovField.GaugeSector
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalCovField.GaugeSectorRealization
@@ -141,11 +145,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.Local.TotalDivergenceEquivalence
 public import PhyslibAlpha.ClassicalFieldTheory.Local.Variation
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Basic
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Phase
-public import PhyslibAlpha.Mathematics.Geometry.Sphere.Polar
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Propagator
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Setting
-public import PhyslibAlpha.Mathematics.Geometry.Sphere.Fourier
-public import PhyslibAlpha.Mathematics.Geometry.Sphere.Profile
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.SphericalMean
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Poincare
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.AngularMomentum
@@ -164,6 +165,8 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.PhysicalSpace
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.PosPartPow
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
+public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.LagrangeEquilateral
+public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.NewtonianGravity
 public import PhyslibAlpha.CondensedMatter.Bloch.Algebraic
 public import PhyslibAlpha.CondensedMatter.Bloch.FiniteBloch
 public import PhyslibAlpha.CondensedMatter.Bloch.Hypercubic
@@ -263,6 +266,8 @@ public import PhyslibAlpha.Mathematics.Distribution.TimeSliceFourier
 public import PhyslibAlpha.Mathematics.Distribution.TimeSliceSmooth
 public import PhyslibAlpha.Mathematics.Distribution.Translation
 public import PhyslibAlpha.Mathematics.ExteriorAlgebra
+public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.LieProductFormula
+public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.MatrixLieAlgebra
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.Scalar
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
 public import PhyslibAlpha.Mathematics.Fourier.Integral
@@ -271,6 +276,9 @@ public import PhyslibAlpha.Mathematics.Fourier.LinearChange
 public import PhyslibAlpha.Mathematics.Fourier.Marginal
 public import PhyslibAlpha.Mathematics.Fourier.SchwartzDecay
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
+public import PhyslibAlpha.Mathematics.Geometry.Sphere.Fourier
+public import PhyslibAlpha.Mathematics.Geometry.Sphere.Polar
+public import PhyslibAlpha.Mathematics.Geometry.Sphere.Profile
 public import PhyslibAlpha.Mathematics.HomogeneousGenerators
 public import PhyslibAlpha.Mathematics.InvariantReduction
 public import PhyslibAlpha.Mathematics.LadderSystem.Basic
@@ -522,6 +530,7 @@ public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNSAutomorphism
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.GNSSpectral
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.JordanDecomposition
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.MatrixComposite
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Projection
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.QuantumChannel
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SharpEffect
@@ -557,6 +566,11 @@ public import PhyslibAlpha.ProbabilisticTheory.Dynamics.Generator
 public import PhyslibAlpha.ProbabilisticTheory.Dynamics.GeneratorIsDerivation
 public import PhyslibAlpha.ProbabilisticTheory.Dynamics.OneParameterGroup
 public import PhyslibAlpha.ProbabilisticTheory.Effect.Basic
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Convex
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Interval
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Metric
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Sharp
 public import PhyslibAlpha.ProbabilisticTheory.Examples.GBit
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.ProbabilisticTheory.Examples.Qubit
@@ -681,7 +695,10 @@ public import PhyslibAlpha.ProbabilisticTheory.Measurement.Instrument
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Integral
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Postprocessing
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Pushforward
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Archimedean
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Basic
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Bidual
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Cone
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Interpolation
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Lattice
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.MonotoneComplete
@@ -706,7 +723,6 @@ public import PhyslibAlpha.ProbabilisticTheory.Representation.Schur
 public import PhyslibAlpha.ProbabilisticTheory.Representation.SectorReduction
 public import PhyslibAlpha.ProbabilisticTheory.Representation.StructureFactor
 public import PhyslibAlpha.ProbabilisticTheory.Representation.VectorMeasure
-public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.ComplexExtension
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.CovarianceForm
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.CovarianceFormUnitalMap
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.GNS
@@ -780,6 +796,7 @@ public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialFunctions
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.RadialQuantization
 public import PhyslibAlpha.QuantumMechanics.QuantumHarmonicOscillator
 public import PhyslibAlpha.QuantumMechanics.QubitGates
+public import PhyslibAlpha.QuantumMechanics.RectangularBarrier.ProbabilityCurrent
 public import PhyslibAlpha.QuantumMechanics.StinespringDilation
 public import PhyslibAlpha.Relativity.Causality.LightCone
 public import PhyslibAlpha.Relativity.Fermions.Dirac.MinimalDimension

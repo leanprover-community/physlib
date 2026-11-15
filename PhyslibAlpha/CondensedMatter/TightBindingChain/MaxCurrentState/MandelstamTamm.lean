@@ -37,8 +37,8 @@ attained together, exactly for `N = 2` and `N = 3`, and both are missed from fou
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint QuantumMechanics.FiniteHilbertSpace
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint QuantumMechanics.FiniteHilbertSpace
+open PhyslibAlpha.ProbabilisticTheory
 open QuantumMechanics FiniteHilbertSpace UnitalPositiveLinearMap
 variable (T : TightBindingChain)
 

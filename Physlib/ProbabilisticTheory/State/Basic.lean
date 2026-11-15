@@ -22,6 +22,7 @@ A state assigns each observable its expectation value: a positive linear functio
 - `𝓢[𝕜, A]` : states on an ordered `𝕜`-vector space with a distinguished unit.
 - `UnitalPositiveLinearMap.comap` : the state on the input of a channel that evaluates an
   observable by first sending it through the channel.
+- `Channel.comap` : the same pullback of states along a channel between probabilistic theories.
 
 ## iii. Table of contents
 
@@ -68,3 +69,18 @@ def comap (f : E →ₚ₁[ℝ] F) (ω : 𝓢[ℝ, F]) : 𝓢[ℝ, E] where
 lemma comap_apply (f : E →ₚ₁[ℝ] F) (ω : 𝓢[ℝ, F]) (x : E) : comap f ω x = ω (f x) := rfl
 
 end UnitalPositiveLinearMap
+
+namespace Channel
+
+variable {P Q : ProbabilisticTheory}
+
+/-- Pull back a state by applying the channel before evaluating each observable. -/
+def comap (f : Channel P Q) (ω : 𝓢[ℝ, Q.Observables]) : 𝓢[ℝ, P.Observables] where
+  toPositiveLinearMap := ω.toPositiveLinearMap.comp f.toPositiveLinearMap
+  map_one' := (congrArg ω f.map_one').trans ω.map_one'
+
+@[simp]
+lemma comap_apply (f : Channel P Q) (ω : 𝓢[ℝ, Q.Observables]) (x : P.Observables) :
+    comap f ω x = ω (f x) := rfl
+
+end Channel

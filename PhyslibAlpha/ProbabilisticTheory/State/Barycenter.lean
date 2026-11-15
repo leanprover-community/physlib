@@ -36,7 +36,7 @@ form a state again, the barycenter of `μ`. It is the state that the random proc
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -84,4 +84,4 @@ lemma barycenter_apply (μ : ProbabilityMeasure (stateSpace E)) (A : E) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

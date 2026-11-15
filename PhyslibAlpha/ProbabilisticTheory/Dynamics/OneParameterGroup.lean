@@ -34,7 +34,7 @@ stated for an arbitrary type `E`; preservation of structure and continuity are s
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. The group law -/
 
@@ -67,4 +67,4 @@ lemma bijective (t : ℝ) : Function.Bijective (α t) :=
 
 end IsOneParameterGroup
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

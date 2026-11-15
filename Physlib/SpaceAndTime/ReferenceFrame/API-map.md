@@ -33,7 +33,9 @@ A frame is inertial when its origin moves with constant velocity and its axes ar
 every time, both measured against the affine structure that space itself supplies. [5] This is a
 restriction on the observer rather than on whatever is being observed. An inertial frame's origin
 has a definite constant velocity. [6] Over any elapsed time the origin is displaced by that
-elapsed time multiplied by this velocity. [TODO] An inertial frame conserves its coordinate
+elapsed time multiplied by this velocity. This velocity is uniquely determined by the displacement
+law, and the origin has an affine trajectory through its position at the frame's time origin. [15]
+An inertial frame conserves its coordinate
 metric, and typeclass inference knows this. [7]
 
 The relative motion of two inertial frames is the boost, rotation and translation carrying one to
@@ -89,6 +91,8 @@ measures, as the time derivative of the coordinate components. [TODO]
    `inner_euclidean_if_orthonormal`
 14. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.timeOrigin`,
    `ReferenceFrame.timeEquiv`
+15. Physlib/SpaceAndTime/ReferenceFrame.lean — `IsInertial.origin_vsub_eq`,
+   `IsInertial.velocity_eq_of_origin_vsub_eq`, `IsInertial.origin_eq`
 
 ## References
 

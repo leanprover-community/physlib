@@ -42,7 +42,7 @@ operator is an absolutely convergent sum whose value does not depend on the basi
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
@@ -133,6 +133,6 @@ lemma trace_eq_of_hilbertBasis {T : H →L[ℂ] H} (hT : IsTraceClass T) {w : Se
     trace T hT = ∑' i : w, ⟪b i, T (b i)⟫_ℂ :=
   trace_eq_of_hilbertBasis_unconditional hT b
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

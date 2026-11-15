@@ -50,7 +50,7 @@ noncomputable section
 
 namespace CondensedMatter
 
-open ProbabilisticTheory ProbabilisticTheory.QuantumMechanics
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuantumMechanics
 open MeasureTheory Set
 open scoped ComplexOrder InnerProductSpace
 

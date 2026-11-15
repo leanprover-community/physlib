@@ -38,7 +38,7 @@ is differentiable at `0`, and the derivative is then `i T x`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Filter
 open scoped Topology InnerProductSpace Function
@@ -148,4 +148,4 @@ end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

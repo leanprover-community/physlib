@@ -41,7 +41,7 @@ the product are used.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [Mul E]
 
@@ -67,4 +67,4 @@ lemma IsGenerator.isDerivation_of_isAutomorphismFamily
   rw [heq] at hcomp
   exact hcomp.unique (hD (a * b)) |>.symm
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

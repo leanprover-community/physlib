@@ -25,10 +25,11 @@ qubit is not classical.
 
 ## ii. Key results
 
-- `ProbabilisticTheory.Qubit` : the qubit in Bloch coordinates.
-- `ProbabilisticTheory.Qubit.stateEquiv` : the states are the Bloch ball.
-- `ProbabilisticTheory.Qubit.isPure_purePoint` : unit Bloch vectors give pure states.
-- `ProbabilisticTheory.Qubit.not_isSimplex_stateSpace` : the state space is not a simplex.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit` : the qubit in Bloch coordinates.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit.stateEquiv` : the states are the Bloch ball.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit.isPure_purePoint` : unit Bloch vectors give pure states.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit.not_isSimplex_stateSpace` : the state space is not
+  a simplex.
 
 ## iii. Table of contents
 
@@ -46,7 +47,7 @@ qubit is not classical.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -141,4 +142,4 @@ lemma not_isSimplex_stateSpace :
 
 end Qubit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

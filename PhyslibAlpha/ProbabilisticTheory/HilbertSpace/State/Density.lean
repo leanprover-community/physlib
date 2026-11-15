@@ -34,7 +34,7 @@ linear-algebra trace, so this applies to finite-dimensional Hilbert spaces.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ComplexOrder ContinuousLinearMap
 
@@ -61,4 +61,4 @@ lemma ofDensity_apply {ρ : H →L[ℂ] H} (hpos : 0 ≤ ρ)
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

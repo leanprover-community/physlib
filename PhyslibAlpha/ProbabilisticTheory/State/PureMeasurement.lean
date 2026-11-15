@@ -62,7 +62,7 @@ trivial, with every expectation value almost surely independent of the roll.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory ProbabilityTheory UnitalPositiveLinearMap
 
@@ -267,4 +267,4 @@ lemma isMixed_iff_exists_sideInfo (hω : ω.IsNormal) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

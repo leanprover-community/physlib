@@ -40,7 +40,7 @@ uses only the Jordan identity, through the inner derivations `[L_a, L_b]` and th
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -1017,4 +1017,4 @@ lemma quadRep_fundamental_jpow (a : E) (m n k : ℕ) :
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

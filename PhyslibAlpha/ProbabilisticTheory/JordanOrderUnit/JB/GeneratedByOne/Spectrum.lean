@@ -45,7 +45,7 @@ Banach algebra `C(a)`. It is a compact subset of `ℝ`, and polynomials map spec
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -434,4 +434,4 @@ end
 
 end NormedJordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

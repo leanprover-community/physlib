@@ -40,13 +40,13 @@ negative parts are Jordan orthogonal.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JB
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 open scoped JB
 
 /-! ## A. Positivity via the Jordan square -/
@@ -97,4 +97,4 @@ lemma jordanOrthogonal_posPart_negPart (a : selfAdjoint A) :
 
 end JB
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
