@@ -10,8 +10,6 @@ module
 -- their private transitive imports through Schwartz space do not expose the instances.
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
-public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Physlib.SpaceAndTime.Space.EuclideanGroup.AffineGroup
@@ -141,7 +139,9 @@ lemma euclideanAction_apply (g : EuclideanGroup (d + 1)) (f : 𝓢(TimeAndSpace 
     ((EuclideanGroup.toAffineIsometryHom g⁻¹).map_vadd 0
       (TimeAndSpace.euclideanCoordinates x)).symm
 
-/-- Complex conjugation after time reflection: `f ↦ (x ↦ conj (f (Θ x)))`. -/
+/-- Complex conjugation after time reflection: `f ↦ (x ↦ conj (f (Θ x)))`.
+The dimension restriction retains the source's domain of at least two total dimensions. -/
+@[nolint unusedArguments]
 def reflectedConjugate [Fact (1 ≤ d)] (f : 𝓢(TimeAndSpace d, ℂ)) :
     𝓢(TimeAndSpace d, ℂ) :=
   SchwartzMap.postcompCLM Complex.conjCLE.toContinuousLinearMap
@@ -162,12 +162,16 @@ lemma reflectedConjugate_involutive [Fact (1 ≤ d)] (f : 𝓢(TimeAndSpace d, �
     TimeAndSpace.timeReflection_involutive]
 
 /-- Complex Schwartz functions whose topological support lies strictly at positive time.
-This retains the support convention of `OSforGFF`. -/
+This retains the support convention of `OSforGFF` and its domain of at least
+two total dimensions. -/
+@[nolint unusedArguments]
 abbrev PositiveTimeTestFunction (d : ℕ) [Fact (1 ≤ d)] :=
   {f : 𝓢(TimeAndSpace d, ℂ) | tsupport f ⊆ {x | 0 < x.1}}
 
 /-- Time translation of a field by duality: `(T_s ω)(f) = ω((t, x) ↦ f(t - s, x))`.
-The corresponding source convention on test functions is `T_s f(t, x) = f(t + s, x)`. -/
+The corresponding source convention on test functions is `T_s f(t, x) = f(t + s, x)`.
+The dimension restriction retains the source's domain of at least two total dimensions. -/
+@[nolint unusedArguments]
 def timeTranslation [Fact (1 ≤ d)] (s : ℝ) (ω : FieldConfiguration d) :
     FieldConfiguration d :=
   ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))

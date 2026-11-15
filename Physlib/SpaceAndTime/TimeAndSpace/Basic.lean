@@ -154,7 +154,6 @@ lemma timeReflection_apply (tx : TimeAndSpace d) :
     timeReflection tx = (-tx.1, tx.2) := rfl
 
 /-- Applying time reflection twice returns the original spacetime point. -/
-@[simp]
 lemma timeReflection_involutive (tx : TimeAndSpace d) :
     timeReflection (timeReflection tx) = tx := by
   simp only [timeReflection_apply, neg_neg]
