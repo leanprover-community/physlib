@@ -61,7 +61,7 @@ these maps is invariant with no further proof.
 
 ## ii. Key results
 
-- `Representation.Equiv.tensorCongr` : the tensor product of two equivalences of representations.
+- `Representation.Equiv.tprodCongr` : the tensor product of two equivalences of representations.
 - `Representation.piTprod` : the representation on `⨂[k] i, M i` of a family of representations.
 - `Representation.IsIntertwiningMap.piTprodMap` and `Representation.Equiv.piTprodCongr` :
   `PiTensorProduct.map` and `PiTensorProduct.congr` of maps of representations.
@@ -130,7 +130,7 @@ Let `φ` be a map of representations from `ρ` on `V` to `σ` on `W`, and `ψ` o
 both lower an index with the metric, their tensor product lowers both indices, `T^μν ↦ T_μν`.
 
 Mathlib has this tensor product for intertwining maps, `IntertwiningMap.tensor`, and for invertible
-linear maps, `TensorProduct.congr`, but not for equivalences of representations. `tensorCongr` gives
+linear maps, `TensorProduct.congr`, but not for equivalences of representations. `tprodCongr` gives
 it, so the tensor product of two invertible maps of representations is again invertible. In the
 example, raising both indices undoes the lowering.
 
@@ -138,14 +138,14 @@ example, raising both indices undoes the lowering.
 
 /-- The tensor product of two equivalences of representations, `v ⊗ u ↦ φ v ⊗ ψ u`, Mathlib's
 `TensorProduct.congr` with the actions `ρ ⊗ τ` and `σ ⊗ π`. -/
-noncomputable def Representation.Equiv.tensorCongr (φ : ρ.Equiv σ) (ψ : τ.Equiv π) :
+noncomputable def Representation.Equiv.tprodCongr (φ : ρ.Equiv σ) (ψ : τ.Equiv π) :
     (ρ.tprod τ).Equiv (σ.tprod π) :=
   .mk (TensorProduct.congr φ.toLinearEquiv ψ.toLinearEquiv)
     (φ.toIntertwiningMap.tensor ψ.toIntertwiningMap).isIntertwining'
 
 @[simp]
-lemma Representation.Equiv.tensorCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π) (v : V) (u : U) :
-    φ.tensorCongr ψ (v ⊗ₜ u) = φ v ⊗ₜ ψ u := rfl
+lemma Representation.Equiv.tprodCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π) (v : V) (u : U) :
+    φ.tprodCongr ψ (v ⊗ₜ u) = φ v ⊗ₜ ψ u := rfl
 
 /-!
 
