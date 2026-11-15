@@ -111,9 +111,9 @@ noncomputable instance {S : Tensor.Species k G K basisIdx} {ι : Type} {c : ι �
 
 namespace Tensor
 
-namespace Species
-
 variable {ι : Type} {c : ι → Color K}
+
+namespace Species
 
 /-- The pure tensor `⨂ₜ i, f i` of a family `f` of vectors, with `f i` in `S.V (c i)` at each
 index `i`, such as `u ⊗ α` with the components `u^μ α_ν`. Not every tensor is pure, but every
@@ -156,39 +156,40 @@ colors. Maps of tensors that commute with the action are Mathlib's `Representati
 noncomputable abbrev tensorRep (c : ι → Color K) : Representation k G (Tensor S c) :=
   Representation.piTprod fun i => S.rep (c i)
 
-/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`, available under
-`open scoped Tensor`, where it takes priority over Mathlib's scalar actions. -/
-noncomputable abbrev distribMulAction : DistribMulAction G (Tensor S c) :=
-  DistribMulAction.compHom (M := Module.End k (Tensor S c)) _ (S.tensorRep c)
+end Species
+
+variable {S : Species k G K basisIdx}
 
 -- A `Circle` element `z` is a complex number, and Mathlib lets it act on every complex vector space
--- as multiplication by `z`. Priority 1100, above the default 1000, makes `z • T` the action of the
--- species instead. The same for `smul`.
-scoped[Tensor] attribute [instance 1100] Tensor.Species.distribMulAction
+-- as multiplication by `z`. So the instances below are scoped to `Tensor`, and the two actions have
+-- priority 1100, above the default 1000. Under `open scoped Tensor`, `z • T` is then the action of
+-- the species.
+
+/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`, available under
+`open scoped Tensor`, where it takes priority over Mathlib's scalar actions. -/
+noncomputable scoped instance (priority := 1100) distribMulAction :
+    DistribMulAction G (Tensor S c) :=
+  DistribMulAction.compHom (M := Module.End k (Tensor S c)) _ (S.tensorRep c)
 
 /-- The scalar multiplication of `distribMulAction`, found before any scalar action of Mathlib. -/
-noncomputable abbrev smul : SMul G (Tensor S c) := distribMulAction.toSMul
+noncomputable scoped instance (priority := 1100) smul : SMul G (Tensor S c) :=
+  distribMulAction.toSMul
 
-scoped[Tensor] attribute [instance 1100] Tensor.Species.smul
+/-- The action of the group commutes with the scalars. -/
+scoped instance smulCommClass : SMulCommClass G k (Tensor S c) where
+  smul_comm g r t := map_smul (S.tensorRep c g) r t
+
+/-- The scalars commute with the action of the group. -/
+scoped instance smulCommClass' : SMulCommClass k G (Tensor S c) :=
+  .symm _ _ _
+
+namespace Species
 
 /-- On a pure tensor the group acts on each vector by the representation of its color. -/
 @[simp]
 lemma smul_pure (g : G) (f : Π i, S.V (c i)) :
     g • S.pure f = S.pure fun i => S.rep (c i) g (f i) :=
   Representation.piTprod_tprod _ _ _
-
-/-- The action of the group commutes with the scalars. -/
-lemma smulCommClass : SMulCommClass G k (Tensor S c) where
-  smul_comm g r t := map_smul (S.tensorRep c g) r t
-
-scoped[Tensor] attribute [instance] Tensor.Species.smulCommClass
-
-/-- The scalars commute with the action of the group. -/
-lemma smulCommClass' : SMulCommClass k G (Tensor S c) :=
-  haveI := smulCommClass (S := S) (c := c)
-  .symm _ _ _
-
-scoped[Tensor] attribute [instance] Tensor.Species.smulCommClass'
 
 /-!
 
