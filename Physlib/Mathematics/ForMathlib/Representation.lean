@@ -10,7 +10,7 @@ public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 
 /-!
 
-# Tensor products of representations and invariant vectors
+# Tensor products of representations
 
 This file gives the representation on the tensor product of a family of representations, and makes
 Mathlib's linear maps of such products into maps of representations.
@@ -33,8 +33,7 @@ and the square
         σ g
 ```
 
-commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible. It sends an
-invariant vector, `ρ g v = v`, to an invariant vector `φ v` (A).
+commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible.
 
 For example, let `G` be the Lorentz group, and let `Λ` be the matrix of a Lorentz transformation
 `g`. Then `g` acts on the vectors `V` by `ρ g = Λ`, and on the covectors `W` by `σ g = (Λ⁻¹)ᵀ`, so
@@ -51,7 +50,7 @@ representations, and the tensor product `IntertwiningMap.tensor` of two intertwi
 representation on the tensor product of a family. So Mathlib's linear maps of `⨂`, such as
 `PiTensorProduct.reindex`, are not stated as maps of representations. This file defines that
 representation, `piTprod ρ`, and proves that applying maps at the factors, reordering, grouping and
-contracting factors commute with it, so that they are maps of representations (C).
+contracting factors commute with it, so that they are maps of representations (B).
 
 In the same way, the Lorentz tensors `T^μ_νρ` lie in `V ⊗ V* ⊗ V*`, with `Λ` on the vectors `V` and
 `(Λ⁻¹)ᵀ` on the covectors `V*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping them as
@@ -70,16 +69,13 @@ these maps is invariant with no further proof.
   `subsingletonEquiv` as equivalences of representations.
 - `Representation.map_piTprod_of_tprod` : a map that commutes with `piTprod ρ` on pure tensors
   commutes with it on all tensors.
-- `Representation.IntertwiningMap.map_invariant` : an intertwining map sends invariant vectors to
-  invariant vectors.
 
 ## iii. Table of contents
 
-- A. Invariant vectors
-- B. Tensor products of equivalences
-- C. Tensor products of families
-  - C.1. The representation on a tensor product of a family
-  - C.2. Maps of representations
+- A. Tensor products of equivalences
+- B. Tensor products of families
+  - B.1. The representation on a tensor product of a family
+  - B.2. Maps of representations
 
 ## iv. References
 
@@ -98,31 +94,7 @@ variable {k G V W U X : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Mo
 
 /-!
 
-## A. Invariant vectors
-
-An intertwining map `φ` from `ρ` to `σ` satisfies `φ ∘ ρ g = σ g ∘ φ`, so it sends invariant
-vectors to invariant vectors. If `ρ g v = v`, then `σ g (φ v) = φ (ρ g v) = φ v`
-(`map_invariant`). An intertwining map from the trivial representation on `k` picks out the
-invariant vector `φ 1` (`map_one_invariant`).
-
--/
-
-/-- An intertwining map sends an invariant vector to an invariant vector,
-`ρ g v = v → σ g (φ v) = φ v`. -/
-lemma Representation.IntertwiningMap.map_invariant (φ : ρ.IntertwiningMap σ) {v : V} {g : G}
-    (hv : ρ g v = v) : σ g (φ v) = φ v := by
-  rw [← Representation.IntertwiningMap.isIntertwining, hv]
-
-/-- An intertwining map `φ` from the trivial representation on `k` picks out an invariant vector,
-`φ 1`. The hypothesis `φ 1 = v` turns a formula for `φ 1` into the invariance of `v`. -/
-lemma Representation.IntertwiningMap.map_one_invariant
-    (φ : (Representation.trivial k G k).IntertwiningMap ρ) {v : V} (hv : φ 1 = v) (g : G) :
-    ρ g v = v :=
-  hv ▸ φ.map_invariant rfl
-
-/-!
-
-## B. Tensor products of equivalences
+## A. Tensor products of equivalences
 
 Let `φ` be a map of representations from `ρ` on `V` to `σ` on `W`, and `ψ` one from `τ` on `U` to
 `π` on `X`. Their tensor product applies each map to its own factor, `v ⊗ u ↦ φ v ⊗ ψ u`, from
@@ -149,9 +121,9 @@ lemma Representation.Equiv.tprodCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π)
 
 /-!
 
-## C. Tensor products of families
+## B. Tensor products of families
 
-### C.1. The representation on a tensor product of a family
+### B.1. The representation on a tensor product of a family
 
 Given how the group acts at each index, by the family `ρ`, the representation `piTprod ρ` acts on
 the whole tensor by transforming every index by its own rule, `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`.
@@ -196,7 +168,7 @@ lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Represent
 
 /-!
 
-### C.2. Maps of representations
+### B.2. Maps of representations
 
 Not all linear maps out of `⨂` commute with the group action `piTprod`. Keeping only the
 component `T^00` of `T^μν` does not, since a boost mixes `T^00` with the other components. The
