@@ -2,6 +2,14 @@
 
 ## Abstract (Alpha)
 
+A wavevector describes the spatial variation of a wave’s phase.
+Wavevectors form a real vector space, equipped with a norm and an inner product,
+in which functions of wavevector can be differentiated.
+Physically, wavevector space is reciprocal to position space:
+a wavevector pairs with a spatial displacement to give a phase difference.
+This pairing connects wavevectors to plane waves and to the Fourier transform,
+which expresses a spatial field in terms of its wavevector components.
+
 ## Content (Alpha)
 
 ### Wavevectors and their basic structure
@@ -21,7 +29,7 @@ under a change of inverse-length unit. [TODO]
 Functions from wavevector space into a normed space can be differentiated along
 the coordinate directions; the partial derivatives satisfy the usual linearity properties,
 product rule and power rule. [5]
-The gradient, divergence, laplacian and curl for functions of wavevector are defined. [TODO]
+The gradient, divergence, laplacian and curl are defined for functions of wavevector. [TODO]
 
 ### Duality with Space
 
