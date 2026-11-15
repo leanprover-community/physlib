@@ -32,6 +32,8 @@ momentum, infinitesimal rotations and momentum scaling, successively eliminating
 - `CentralForce.snd_ne_zero_of_mem_integrabilityDomain` : it excludes the centre of force.
 - `CentralForce.linearIndependent_conservedQuantities` : the observables are independent there.
 - `CentralForce.liouvilleIntegrable` : the resulting Liouville-integrability construction.
+- `CentralForce.toHamiltonianSystem_isLiouvilleIntegrableOn` : the shared Hamiltonian system is
+  integrable on the same coordinate domain.
 
 ## iii. Table of contents
 
@@ -241,5 +243,15 @@ noncomputable def liouvilleIntegrable :
   involutive i j x hx :=
     S.poissonBracket_conservedQuantities i j x.1 (snd_ne_zero_of_mem_integrabilityDomain hx)
   independent _ hx := S.linearIndependent_conservedQuantities hx
+
+/-- The Hamiltonian system associated with a central force is Liouville integrable on the
+coordinate domain of integrability. -/
+lemma toHamiltonianSystem_isLiouvilleIntegrableOn :
+    S.toHamiltonianSystem.IsLiouvilleIntegrableOn integrabilityDomain := by
+  refine ⟨S.hamiltonian, ⟨S.liouvilleIntegrable⟩, ?_, ?_⟩
+  · intro p q hpq
+    exact (S.mem_domain_toHamiltonianSystem p q).2 (snd_ne_zero_of_mem_integrabilityDomain hpq)
+  · intro t p q _
+    exact S.toHamiltonianSystem_hamiltonian t p q
 
 end ClassicalMechanics.CentralForce

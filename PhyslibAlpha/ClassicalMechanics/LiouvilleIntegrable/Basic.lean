@@ -5,6 +5,7 @@ Authors: Rithwik Ranganathan
 -/
 module
 
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.Basic
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 /-!
 
@@ -49,6 +50,8 @@ already used for e.g. `RigidBody (d : ℕ)`.
 
 - `LiouvilleIntegrableOn` : the structure of a Liouville integrable system for a Hamiltonian `H`
   on an open dense domain `U` of phase space.
+- `HamiltonianSystem.IsLiouvilleIntegrableOn` : coordinate integrability for a Hamiltonian system,
+  including agreement with an autonomous Hamiltonian on the integrability domain.
 - `LiouvilleIntegrableOn.deriv_comp_eq_zero` : each conserved quantity has zero time derivative
   along a solution of Hamilton's equations for `H` which stays in `U`.
 - `LiouvilleIntegrableOn.oneDegreeOfFreedom` : a system with one degree of freedom is Liouville
@@ -57,6 +60,7 @@ already used for e.g. `RigidBody (d : ℕ)`.
 ## iii. Table of contents
 
 - A. The definition of Liouville integrability
+- A.1. Integrability of Hamiltonian systems
 - B. Conservation along the flow
 - C. Systems with one degree of freedom
 
@@ -70,7 +74,7 @@ already used for e.g. `RigidBody (d : ℕ)`.
 namespace ClassicalMechanics
 
 open Time
-open scoped ContDiff
+open scoped ContDiff Manifold
 
 TODO "Formalize the conclusion of the Liouville–Arnold theorem (action-angle coordinates,
     invariant tori) — the definition here is only its hypothesis."
@@ -105,6 +109,20 @@ structure LiouvilleIntegrableOn {d : ℕ}
   (the `p`- and `q`-partials together) are linearly independent. -/
   independent : ∀ x ∈ U, LinearIndependent ℝ
     (fun i => (gradient (fun p' => f i p' x.2) x.1, gradient (fun q' => f i x.1 q') x.2))
+
+/-!
+### A.1. Integrability of Hamiltonian systems
+-/
+
+/-- A Hamiltonian system is Liouville integrable on a coordinate domain when that domain lies
+inside the system's domain and, for every time, the system agrees there with an autonomous
+coordinate Hamiltonian satisfying the Liouville integrability conditions. -/
+def HamiltonianSystem.IsLiouvilleIntegrableOn {d : ℕ}
+    (S : HamiltonianSystem 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) ⟨EuclideanSpace ℝ (Fin d)⟩)
+    (U : Set (EuclideanSpace ℝ (Fin d) × EuclideanSpace ℝ (Fin d))) : Prop :=
+  ∃ H, Nonempty (LiouvilleIntegrableOn U H) ∧
+    (∀ p q, (p, q) ∈ U → PhaseSpace.ofInnerProductSpace p q ∈ S.domain) ∧
+    ∀ t p q, (p, q) ∈ U → S.hamiltonian (t, PhaseSpace.ofInnerProductSpace p q) = H p q
 
 /-!
 
