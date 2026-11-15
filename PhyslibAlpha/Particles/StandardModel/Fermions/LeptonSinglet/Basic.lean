@@ -6,13 +6,10 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Physlib.Particles.StandardModel.Fermions.LeptonSinglet
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import PhyslibAlpha.Relativity.Fermions.Weyl.BoostWeight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Basic
-public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
-public import PhyslibAlpha.Mathematics.Modules.ConjModule
 /-!
 # Charged-lepton singlets
 

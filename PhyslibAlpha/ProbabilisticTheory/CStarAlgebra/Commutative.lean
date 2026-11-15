@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
-public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
 
 /-!
 # Commutative C⋆-algebras are classical
@@ -45,7 +44,7 @@ self-adjoint part of a commutative C⋆-algebra is a classical system.
 
 
 namespace CommCStarAlgebra
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open scoped ComplexOrder
 
 variable {A : Type*} [CommCStarAlgebra A]

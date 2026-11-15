@@ -627,14 +627,8 @@ lemma oneEquiv_symm_continuous :
 /-- The continuous linear equivalence between `Space 1` and `ℝ`. -/
 noncomputable def oneEquivCLE : Space 1 ≃L[ℝ] ℝ where
   toLinearEquiv := oneEquiv
-  continuous_toFun := by
-    simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, LinearEquiv.coe_coe]
-    erw [oneEquiv_coe]
-    fun_prop
-  continuous_invFun := by
-    simp only [LinearEquiv.invFun_eq_symm]
-    erw [oneEquiv_symm_coe]
-    fun_prop
+  continuous_toFun := oneEquiv.continuous
+  continuous_invFun := oneEquiv.symm.continuous
 
 open MeasureTheory
 lemma oneEquiv_measurableEmbedding : MeasurableEmbedding oneEquiv where

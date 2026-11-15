@@ -6,7 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import Mathlib.Analysis.CStarAlgebra.Spectrum
-public import Mathlib.Topology.Algebra.StarSubalgebra
 public import Mathlib.Topology.Algebra.PontryaginDual
 
 /-!

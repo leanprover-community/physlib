@@ -429,7 +429,7 @@ lemma vectorLikeEven_in_span (S : (PureU1 (2 * n.succ)).LinSols)
   use f
   apply ACCSystemLinear.LinSols.ext
   rw [sortAFL_val]
-  erw [planeLinSols_val]
+  rw [← planeLinSols, planeLinSols_val]
   apply ext_even
   · intro i
     rw [planeCharges_evenFst]
@@ -443,8 +443,6 @@ lemma vectorLikeEven_in_span (S : (PureU1 (2 * n.succ)).LinSols)
       ring
     rw [h]
     rfl
-
-
 
 end Unshifted
 
@@ -839,7 +837,7 @@ lemma Pa_zero (f : Fin n.succ → ℚ) (g : Fin n → ℚ) (h : Pa f g = 0) :
     have h2 := Pa_evenShiftSnd f g ⟨iv, succ_lt_succ_iff.mp hiv⟩
     rw [h] at h1 h2
     simp only [Fin.succ_mk, Fin.castSucc_mk] at h1 h2
-    erw [hi2] at h2
+    rw [hi2] at h2
     change 0 = _ at h2
     simp only [neg_zero, zero_sub, zero_eq_neg] at h2
     rw [h2] at h1
@@ -988,7 +986,7 @@ lemma span_basis_swap! {S : (PureU1 (2 * n.succ)).LinSols} (j : Fin n)
   use g
   use f'
   change Shifted.planeCharges f' = _ at hf'
-  erw [hf']
+  rw [hf']
   simp only [and_self, and_true, X]
   rw [← add_assoc, ← h]
   apply Shifted.swap_as_add at hS

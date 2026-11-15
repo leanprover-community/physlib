@@ -5,17 +5,9 @@ Authors: Alex Meiburg, Leonardo A. Lessa, Rodolfo R. Soldati
 -/
 module
 
-public import Mathlib.Algebra.Module.Submodule.Lattice
 public import Mathlib.Analysis.Subadditive
-public import Mathlib.CategoryTheory.Functor.FullyFaithful
-public import Mathlib.Data.EReal.Basic
 public import Mathlib.Tactic
-public import QuantumInfo.Entropy.VonNeumann
 public import QuantumInfo.Entropy.Relative
-public import QuantumInfo.Channels.Bundled
-public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 
 @[expose] public section
 

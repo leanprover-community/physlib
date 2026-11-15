@@ -60,7 +60,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open scoped Matrix
 
 variable {S : Type*} [DecidableEq S]

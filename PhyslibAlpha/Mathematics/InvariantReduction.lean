@@ -5,8 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Operations
-public import Mathlib.LinearAlgebra.Quotient.Basic
 public import PhyslibAlpha.Mathematics.LinearCombination
 /-!
 # Reducing invariants modulo a stable submodule

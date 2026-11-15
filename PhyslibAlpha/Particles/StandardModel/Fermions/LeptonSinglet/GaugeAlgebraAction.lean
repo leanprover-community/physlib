@@ -6,9 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonSinglet.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.GaugeAction
 /-!
 # The gauge-algebra action on the charged-lepton singlet
 

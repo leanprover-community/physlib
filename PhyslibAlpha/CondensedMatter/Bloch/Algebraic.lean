@@ -9,9 +9,7 @@ public import PhyslibAlpha.ProbabilisticTheory.Representation.MomentumSectors
 public import Mathlib.Algebra.Group.AddChar
 public import Mathlib.LinearAlgebra.Isomorphisms
 public import Mathlib.Tactic.Abel
-public import Mathlib.Algebra.Group.TypeTags.Basic
 public import Mathlib.LinearAlgebra.Finsupp.LSum
-public import Mathlib.LinearAlgebra.Quotient.Basic
 
 /-!
 
@@ -71,7 +69,7 @@ namespace CondensedMatter
 
 namespace Bloch
 
-open ProbabilisticTheory.Representation
+open PhyslibAlpha.ProbabilisticTheory.Representation
 
 variable {Λ K M : Type*} [AddCommGroup Λ] [CommRing K] [AddCommGroup M] [Module K M]
 

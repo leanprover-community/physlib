@@ -43,6 +43,9 @@ with lower indices in `ℤ` (`C(n, j) = 0` for `j < 0`). Pascal's rule shows tha
 `X(k + 1, α, s) = X(k, α, s) - X(k, α - 1, s + 1)`, and they agree for `k = 0`, so `L = R`.
 This proves Racah's formula.
 
+For `n = 1`, coupling a spin `j₁ = m/2` with a spin `½`, the single sum has at most two terms and
+the closed formula gives the four coefficients in square-root form, with `J = j₁ ± ½`.
+
 ## ii. Key results
 
 - `eq_sum_coupledVec` and `sum_cgCoefficient_mul_cgCoefficient`: completeness of the coupled basis
@@ -51,6 +54,8 @@ This proves Racah's formula.
 - `tensorF_pow_tmul_vNat`: the explicit lowering.
 - `cgCoefficient_eq_cgSum` and `cgCoefficient_closed`: the closed single-sum formula.
 - `racahL_eq_racahR` and `cgCoefficient_racah`: Racah's formula.
+- `cgCoefficient_add_half_up`, `cgCoefficient_add_half_down`, `cgCoefficient_sub_half_up`,
+  `cgCoefficient_sub_half_down`: the coefficients for coupling with a spin `½`.
 
 ## iii. Table of contents
 
@@ -64,12 +69,16 @@ This proves Racah's formula.
   - E.1. Binomial coefficients with an integer lower index
   - E.2. Two binomial sums with the same recursion
   - E.3. Racah's formula
+- F. Coupling with a spin ½
 
 ## iv. References
 
 - G. Racah, *Theory of complex spectra. II*, Phys. Rev. 62, 438 (1942).
 - J. J. Sakurai and J. Napolitano, *Modern Quantum Mechanics*, 3rd ed., Cambridge University
   Press (2020), section 3.8.
+- D. A. Varshalovich, A. N. Moskalev, V. K. Khersonskii, *Quantum Theory of Angular Momentum:
+  Irreducible Tensors, Spherical Harmonics, Vector Coupling Coefficients, 3nj Symbols*, World
+  Scientific (1988), Table 8.1, p. 271.
 
 ## A. Completeness and the second orthogonality relation
 
@@ -612,5 +621,99 @@ lemma cgCoefficient_racah {k l α β : ℕ} (hkm : k ≤ m) (hkn : k ≤ n)
     field_simp
   rw [cgCoefficient_closed hkm hkn hl hα hβ h, cgSum_eq_racahSum hkm hkn hα hβ h, ← key]
   ring
+
+/-!
+
+## F. Coupling with a spin ½
+
+-/
+
+/-- `⟨j₁ m₁ ½ ½ | j₁ + ½, M⟩ = √((j₁ + M + ½)/(2j₁ + 1))`: with `j₁ = m/2`, `J = j₁ + ½` (`k = 0`),
+`M = J - l` and `m₁ = j₁ - l`, the value is `√((m + 1 - l)/(m + 1))`. -/
+lemma cgCoefficient_add_half_up {m l : ℕ} (hl : l ≤ m) :
+    cgCoefficient m 1 0 l l 0 = Real.sqrt (((m + 1 - l : ℕ) : ℝ) / (m + 1)) := by
+  have hS : cgSum m 1 0 l l = m.factorial := by simp [cgSum, cgCoeff]
+  rw [cgCoefficient_closed (Nat.zero_le _) (Nat.zero_le _) (by omega) hl (Nat.zero_le _) (by omega),
+    hS, ← Real.sqrt_sq (Nat.cast_nonneg (α := ℝ) m.factorial), ← Real.sqrt_mul (sq_nonneg _)]
+  congr 1
+  have hd : ((m + 1).descFactorial l : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.descFactorial_pos.mpr (by omega)).ne'
+  simp only [normSq, hwNormNum, Nat.factorial_zero, Nat.descFactorial_zero, Nat.sub_zero,
+    Nat.factorial_one]
+  push_cast
+  field_simp
+  have h : (m + 1 - l) * (m + 1).descFactorial l = (m + 1) * m.descFactorial l :=
+    Nat.succ_descFactorial m l
+  rw [mul_comm ((m.descFactorial l : ℕ) : ℝ), mul_comm (((m + 1).descFactorial l : ℕ) : ℝ)]
+  exact_mod_cast h.symm
+
+/-- `⟨j₁ m₁ ½ -½ | j₁ + ½, M⟩ = √((j₁ - M + ½)/(2j₁ + 1))`: with `j₁ = m/2`, `J = j₁ + ½`
+(`k = 0`), `M = J - (l + 1)` and `m₁ = j₁ - l`, the value is `√((l + 1)/(m + 1))`. -/
+lemma cgCoefficient_add_half_down {m l : ℕ} (hl : l ≤ m) :
+    cgCoefficient m 1 0 (l + 1) l 1 = Real.sqrt (((l + 1 : ℕ) : ℝ) / (m + 1)) := by
+  have hS : cgSum m 1 0 (l + 1) l = m.factorial * (l + 1) := by simp [cgSum, cgCoeff]
+  rw [cgCoefficient_closed (Nat.zero_le _) (Nat.zero_le _) (by omega) hl le_rfl (by omega),
+    hS, ← Real.sqrt_sq (by positivity : (0 : ℝ) ≤ m.factorial * (l + 1)),
+    ← Real.sqrt_mul (sq_nonneg _)]
+  congr 1
+  have hd : (m.descFactorial l : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.descFactorial_pos.mpr hl).ne'
+  simp only [normSq, hwNormNum, Nat.factorial_zero, mul_zero, Nat.sub_zero, Nat.factorial_one,
+    Nat.descFactorial_self, one_mul, mul_one]
+  rw [Nat.succ_descFactorial_succ, Nat.factorial_succ l]
+  push_cast
+  field_simp
+
+/-- `⟨j₁ m₁ ½ ½ | j₁ - ½, M⟩ = -√((j₁ - M + ½)/(2j₁ + 1))`: with `j₁ = m/2`, `J = j₁ - ½`
+(`k = 1`), `M = J - l` and `m₁ = j₁ - (l + 1)`, the value is `-√((l + 1)/(m + 1))`. -/
+lemma cgCoefficient_sub_half_up {m l : ℕ} (hl : l + 1 ≤ m) :
+    cgCoefficient m 1 1 l (l + 1) 0 = -Real.sqrt (((l + 1 : ℕ) : ℝ) / (m + 1)) := by
+  obtain ⟨m, rfl⟩ : ∃ m', m = m' + 1 := ⟨m - 1, by omega⟩
+  have hS : cgSum (m + 1) 1 1 l (l + 1) = -m.factorial := by
+    simp [cgSum, cgCoeff, Finset.sum_range_succ]
+  rw [cgCoefficient_closed (by omega) le_rfl (by omega) hl (Nat.zero_le _) (by omega), hS,
+    neg_mul, neg_inj, ← Real.sqrt_sq (Nat.cast_nonneg (α := ℝ) m.factorial),
+    ← Real.sqrt_mul (sq_nonneg _)]
+  congr 1
+  have hd : (m.descFactorial l : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.descFactorial_pos.mpr (by omega)).ne'
+  simp only [normSq, hwNormNum, Nat.factorial_zero, Nat.descFactorial_zero,
+    Nat.succ_descFactorial_succ, Nat.factorial_succ, Nat.sub_self,
+    show m + 1 + 1 - 2 * 1 = m by omega, show m + 1 + 1 - 1 + 1 = m + 2 by omega,
+    show m + 1 - 1 = m by omega]
+  push_cast
+  field_simp
+
+/-- `⟨j₁ m₁ ½ -½ | j₁ - ½, M⟩ = √((j₁ + M + ½)/(2j₁ + 1))`: with `j₁ = m/2`, `J = j₁ - ½`
+(`k = 1`), `M = J - l` and `m₁ = j₁ - l`, the value is `√((m - l)/(m + 1))`. -/
+lemma cgCoefficient_sub_half_down {m l : ℕ} (hl : l + 1 ≤ m) :
+    cgCoefficient m 1 1 l l 1 = Real.sqrt (((m - l : ℕ) : ℝ) / (m + 1)) := by
+  obtain ⟨m, rfl⟩ : ∃ m', m = m' + 1 := ⟨m - 1, by omega⟩
+  have hS : cgSum (m + 1) 1 1 l l = m.factorial * ((m + 1 - l : ℕ) : ℝ) := by
+    rcases l with _ | l
+    · simp [cgSum, cgCoeff, Nat.factorial_succ]
+      ring
+    · simp [cgSum, cgCoeff, Finset.sum_range_succ, Nat.factorial_succ]
+      rw [Nat.cast_sub (by omega)]
+      ring
+  rw [cgCoefficient_closed (by omega) le_rfl (by omega) (by omega) le_rfl (by omega), hS,
+    ← Real.sqrt_sq (by positivity : (0 : ℝ) ≤ m.factorial * ((m + 1 - l : ℕ) : ℝ)),
+    ← Real.sqrt_mul (sq_nonneg _)]
+  congr 1
+  have hd : (m.descFactorial l : ℝ) ≠ 0 := by
+    exact_mod_cast (Nat.descFactorial_pos.mpr (by omega)).ne'
+  simp only [normSq, hwNormNum, Nat.factorial_zero, Nat.sub_self,
+    show m + 1 + 1 - 2 * 1 = m by omega, show m + 1 + 1 - 1 + 1 = m + 2 by omega,
+    show m + 1 - 1 = m by omega]
+  have hr : (0 : ℝ) < ((m + 1 - l : ℕ) : ℝ) := by exact_mod_cast (by omega : 0 < m + 1 - l)
+  have hE : ((m + 1).descFactorial l : ℝ) =
+      (m + 1) * m.descFactorial l / ((m + 1 - l : ℕ) : ℝ) := by
+    rw [eq_div_iff hr.ne', mul_comm]
+    exact_mod_cast Nat.succ_descFactorial m l
+  simp only [Nat.factorial_one, Nat.descFactorial_self, one_mul, mul_one,
+    Nat.factorial_succ (m + 1), Nat.factorial_succ m]
+  push_cast
+  rw [hE]
+  field_simp
 
 end PhyslibAlpha.Sl2

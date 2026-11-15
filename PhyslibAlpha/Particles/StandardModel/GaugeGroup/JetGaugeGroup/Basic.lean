@@ -7,13 +7,6 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
-public import Mathlib.RingTheory.MvPowerSeries.Basic
-public import Mathlib.LinearAlgebra.Matrix.Determinant.Basic
-public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
-public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
-public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.RingTheory.TensorProduct.Basic
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
 /-!
 
 # The jet gauge group

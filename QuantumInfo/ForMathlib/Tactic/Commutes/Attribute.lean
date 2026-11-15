@@ -6,6 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import Aesop.Frontend.Command
+import Aesop.Frontend.Basic
 
 /-!
 # Commutes Rule Set

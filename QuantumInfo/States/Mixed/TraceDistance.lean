@@ -7,13 +7,6 @@ module
 
 public import QuantumInfo.States.Mixed.MState
 
-public import QuantumInfo.ForMathlib.ContinuousLinearMap
-public import QuantumInfo.ForMathlib.HermitianMat
-public import QuantumInfo.ForMathlib.Isometry
-public import QuantumInfo.ForMathlib.LinearEquiv
-public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
-public import QuantumInfo.ForMathlib.Matrix
-public import QuantumInfo.ForMathlib.Misc
 
 @[expose] public section
 

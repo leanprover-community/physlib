@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Instances
 public import PhyslibAlpha.CondensedMatter.QuasiLocal.Interaction
 public import PhyslibAlpha.ProbabilisticTheory.QuasiLocal.Limit
-public import Mathlib.Analysis.CStarAlgebra.Matrix
 public import Mathlib.Analysis.Matrix.Order
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
 
@@ -53,7 +52,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory ProbabilisticTheory.QuasiLocal Filter
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuasiLocal Filter
 
 /-! ## A. Local boundedness of the net of operators -/
 

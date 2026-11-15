@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.GaugeAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.CovariantDeriv
 /-!
 # The transformation law of a derivative symbol
 

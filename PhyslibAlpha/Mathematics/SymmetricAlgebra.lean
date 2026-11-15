@@ -6,8 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basic
-public import Mathlib.RingTheory.TensorProduct.Maps
-public import Mathlib.Algebra.TrivSqZeroExt.Basic
 public import Mathlib.RepresentationTheory.Basic
 /-!
 # Functoriality of the symmetric algebra

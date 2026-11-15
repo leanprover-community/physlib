@@ -6,12 +6,8 @@ Authors: Bjørn Kjos-Hanssen
 module
 
 public import Mathlib.Analysis.Calculus.Gradient.Basic
-public import Mathlib.Analysis.Calculus.ContDiff.FTaylorSeries
 public import Mathlib.LinearAlgebra.QuadraticForm.Basic
-public import Mathlib.Analysis.Calculus.FDeriv.Analytic
-public import Mathlib.Analysis.Analytic.IteratedFDeriv
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # The Second Partial Derivatives Test

@@ -38,7 +38,7 @@ follows by induction.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -184,4 +184,4 @@ lemma pow_add (a : E) (m n : ℕ) : a ^[m] * a ^[n] = a ^[m + n] := by
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

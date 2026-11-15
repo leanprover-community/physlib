@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.Fourier.FiniteAbelian.PontryaginDuality
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.Matrix.ToLin
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!

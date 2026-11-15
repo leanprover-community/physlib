@@ -40,7 +40,7 @@ observables themselves form a lattice, as they do for the functions on a sample 
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Classical systems -/
 
@@ -52,4 +52,4 @@ abbrev IsClassical (E : Type*) [OrderUnitSpace E] : Prop := HasLatticeDualCone E
 lemma OrderUnitLattice.isClassical (E : Type*) [OrderUnitLattice E] : IsClassical E :=
   VectorLattice.hasLatticeDualCone E
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -5,9 +5,7 @@ Authors: Aadarsh Agarwal
 -/
 module
 
-public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Energy
-public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.InitialData
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Periodicity
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Uniqueness
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Basic

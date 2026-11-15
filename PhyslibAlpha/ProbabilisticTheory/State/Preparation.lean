@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Postprocessing
-public import PhyslibAlpha.ProbabilisticTheory.State.Metric
-public import Mathlib.MeasureTheory.Integral.Bochner.Set
 
 /-!
 # Preparation procedures
@@ -53,7 +51,7 @@ prepared state.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory ProbabilityTheory Filter Topology
 
@@ -277,4 +275,4 @@ lemma forgetfulOutcome_isPostprocessing (p : Preparation E X) (M : Measurement Î
 
 end Preparation
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

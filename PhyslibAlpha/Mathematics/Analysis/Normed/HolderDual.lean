@@ -6,11 +6,9 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.MeanInequalities
-public import Mathlib.Analysis.Convex.SpecificFunctions.Basic
 public import Mathlib.Analysis.Convex.Strict.Extreme
 public import Mathlib.Analysis.Normed.Module.FiniteDimension
 public import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Tactic.Positivity.Finset
 
 /-!

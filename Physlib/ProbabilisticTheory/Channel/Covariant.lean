@@ -22,8 +22,7 @@ reversible transformations is covariant, or intertwining, if
 
 Covariance preserves invariant states under pullback. A reversible transformation is covariant
 exactly when the target action is the transport of the source action. Together with the reversible
-transformations, this gives a common framework for symmetries and dynamics in general probabilistic
-theories.
+transformations, this gives a common framework for symmetries and dynamics of observable spaces.
 
 ## ii. Key results
 
@@ -46,28 +45,28 @@ theories.
 
 namespace ProbabilisticTheory
 
-variable {G E F : Type*} [Group G] [OrderUnitSpace E] [OrderUnitSpace F]
-  (ρ : G →* Reversible E E) (σ : G →* Reversible F F)
+variable {G : Type*} [Group G] {P Q : ProbabilisticTheory}
+  (ρ : G →* Reversible P P) (σ : G →* Reversible Q Q)
 
 /-! ## A. Covariant channels -/
 
 /-! ### A.1. Definition and closure properties -/
 
 /-- A channel intertwines two group actions if it commutes with their transformations. -/
-def IsIntertwining (Φ : E →ₚ₁[ℝ] F) : Prop := ∀ g x, Φ (ρ g x) = σ g (Φ x)
-
-variable {ρ σ}
+def IsIntertwining (Φ : Channel P Q) : Prop := ∀ g x, Φ (ρ g x) = σ g (Φ x)
 
 /-- The identity channel intertwines a group action with itself. -/
-lemma isIntertwining_id : IsIntertwining ρ ρ (.id ℝ E) := by
+lemma isIntertwining_id : IsIntertwining ρ ρ (Channel.id P) := by
   intro _ _
   rfl
 
 namespace IsIntertwining
 
+variable {ρ σ}
+
 /-- The composition of intertwining channels also intertwines the group actions. -/
-lemma comp {H : Type*} [OrderUnitSpace H] {τ : G →* Reversible H H}
-    {Φ : E →ₚ₁[ℝ] F} {Ψ : F →ₚ₁[ℝ] H} (hΦ : IsIntertwining ρ σ Φ)
+lemma comp {R : ProbabilisticTheory} {τ : G →* Reversible R R}
+    {Φ : Channel P Q} {Ψ : Channel Q R} (hΦ : IsIntertwining ρ σ Φ)
     (hΨ : IsIntertwining σ τ Ψ) : IsIntertwining ρ τ (Ψ.comp Φ) := by
   intro g x
   simp [hΦ g x, hΨ g (Φ x)]
@@ -75,9 +74,9 @@ lemma comp {H : Type*} [OrderUnitSpace H] {τ : G →* Reversible H H}
 /-! ### A.2. Invariant states -/
 
 /-- Pulling back an invariant state along an intertwining channel preserves invariance. -/
-lemma comap_isInvariant {Φ : E →ₚ₁[ℝ] F} (h : IsIntertwining ρ σ Φ)
-    {ω : 𝓢[ℝ, F]} (hω : IsInvariant σ ω) :
-    IsInvariant ρ (UnitalPositiveLinearMap.comap Φ ω) := by
+lemma comap_isInvariant {Φ : Channel P Q} (h : IsIntertwining ρ σ Φ)
+    {ω : 𝓢[ℝ, Q.Observables]} (hω : IsInvariant σ ω) :
+    IsInvariant ρ (Channel.comap Φ ω) := by
   intro g
   ext x
   have h1 := h g⁻¹ x
@@ -93,7 +92,7 @@ end IsIntertwining
 
 namespace Reversible
 
-variable (ρ σ) (e : Reversible E F)
+variable (e : Reversible P Q)
 
 /-- A reversible transformation intertwines an action with its transport. -/
 lemma isIntertwining_transport :

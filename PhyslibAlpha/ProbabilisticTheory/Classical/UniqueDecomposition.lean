@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.EnsembleRefinement
-public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional
 public import Mathlib.Topology.ContinuousMap.StoneWeierstrass
 public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
 
@@ -57,7 +56,7 @@ agree.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory PositiveLinearMap PureState Set ArchimedeanOrderUnitSpace
 open scoped ENNReal
@@ -437,4 +436,4 @@ lemma EnsemblesRefine.hasUniquePureDecomposition (hE : EnsemblesRefine E) {ω : 
   refine ⟨μ, ⟨hμr, hμp, hμf⟩, fun ν ⟨hνr, hνp, hνf⟩ => ?_⟩
   exact hE.eq_of_toPositive_eq (PositiveLinearMap.ext fun f => (hνf f).trans (hμf f).symm)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.QuasiLocal.Limit
-public import Mathlib.Analysis.Complex.Basic
-public import Mathlib.Order.Filter.Ultrafilter.Defs
 
 /-!
 
@@ -59,9 +57,9 @@ Gibbs ensemble.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
-open Filter Topology ProbabilisticTheory.QuasiLocal
+open Filter Topology PhyslibAlpha.ProbabilisticTheory.QuasiLocal
 open scoped ComplexOrder
 
 variable {A : Type*} [Ring A] [Algebra ℂ A] [StarRing A] [StarModule ℂ A]
@@ -373,6 +371,6 @@ lemma AlgebraNet.isBounded_of_isLocallyBounded (hb : N.IsLocallyBounded) (x : N.
 
 end Quasilocal
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

@@ -39,7 +39,7 @@ lemma exists_plane_exists_basis {n : ℕ} (hE : ExistsPlane n) :
   simp only [← Finset.sum_neg_distrib, ← neg_smul] at hg
   have h2 : ∑ a₁ : Fin 11, g (Sum.inl a₁) • Y (Sum.inl a₁) = 0 := by
     apply hB2
-    erw [hg]
+    rw [show ∑ a₁ : Fin 11, g (Sum.inl a₁) • B a₁ = _ from hg]
     exact hE2 fun i => -g (Sum.inr i)
   rw [Fintype.linearIndependent_iff] at hB1 hE1
   have h3 : ∀ i, g (Sum.inl i) = 0 := hB1 (fun i => g (Sum.inl i)) h2

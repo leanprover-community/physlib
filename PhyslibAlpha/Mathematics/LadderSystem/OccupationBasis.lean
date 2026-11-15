@@ -7,10 +7,7 @@ module
 
 public import PhyslibAlpha.Mathematics.LadderSystem.Vacuum
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Data.Finsupp.Multiset
-public import Mathlib.LinearAlgebra.Basis.Basic
 public import Mathlib.LinearAlgebra.Eigenspace.Zero
-public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
 public import Mathlib.Algebra.Order.BigOperators.GroupWithZero.List
 /-!
 

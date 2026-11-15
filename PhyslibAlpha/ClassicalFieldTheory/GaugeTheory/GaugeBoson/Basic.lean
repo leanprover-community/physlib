@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
-public import Mathlib.LinearAlgebra.Dual.Lemmas
 /-!
 # The gauge-boson field of a gauge theory
 

@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
-public import Mathlib.MeasureTheory.MeasurableSpace.CountablyGenerated
 
 /-!
 # Factorization of Markov kernels

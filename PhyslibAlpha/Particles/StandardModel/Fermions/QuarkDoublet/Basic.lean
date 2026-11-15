@@ -6,20 +6,9 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Physlib.Particles.StandardModel.Fermions.QuarkDoublet
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import PhyslibAlpha.Relativity.Fermions.Weyl.BoostWeight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import Physlib.Relativity.Fermions.Weyl.LeftHanded
-public import Physlib.Relativity.Fermions.Weyl.RightHanded
-public import Physlib.Relativity.Fermions.Weyl.DualLeftHanded
-public import Physlib.Relativity.Fermions.Weyl.DualRightHanded
-public import Mathlib.LinearAlgebra.TensorProduct.Pi
-public import Mathlib.LinearAlgebra.Matrix.Kronecker
-public import Mathlib.Analysis.Normed.Lp.Matrix
-public import Mathlib.RingTheory.TensorProduct.Maps
 /-!
 # The type corresponding to quark doublets
 

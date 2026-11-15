@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.CayleySpectralData.Basic
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SelfAdjointSpectralTheorem
 
 /-!
 
@@ -44,7 +43,7 @@ to the closure of an essentially self-adjoint operator.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -865,6 +864,6 @@ lemma unboundedSpectralTheorem_of_essentiallySelfAdjoint
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

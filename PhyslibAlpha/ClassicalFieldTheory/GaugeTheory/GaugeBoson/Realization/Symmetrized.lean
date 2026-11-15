@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.FieldStrength
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.Truncation
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Dimension.Free
 /-!
 # The symmetrized derivatives of a gauge field and the classification of invariants
 
@@ -793,7 +791,7 @@ lemma repGauge_one (U : GJ) :
       rw [← map_mul, mul_inv_cancel, map_one]
     calc repGauge U (repGauge U⁻¹ (1 : B)) = (repGauge U * repGauge U⁻¹) (1 : B) := rfl
       _ = 1 := by rw [h3]; rfl
-  have h1 := h.gauge_mul U (repGauge U⁻¹ (1 : B)) 1
+  have h1 := h.repJet_mul U (repGauge U⁻¹ (1 : B)) 1
   rw [mul_one, h2, one_mul] at h1
   exact h1.symm
 
@@ -802,7 +800,7 @@ lemma repGauge_one (U : GJ) :
 def repGaugeRingHom (U : GJ) : B →+* B where
   toFun := repGauge U
   map_one' := repGauge_one h U
-  map_mul' := h.gauge_mul U
+  map_mul' := h.repJet_mul U
   map_zero' := map_zero _
   map_add' := map_add _
 
@@ -1121,7 +1119,7 @@ lemma repGauge_eq_of_mem_adjoin_symSymbolsLE {U : jets.truncationKer 0}
       · exact hS b hb' U
   | algebraMap c => rw [Algebra.algebraMap_eq_smul_one, map_smul, repGauge_one h]
   | add a b _ _ iha ihb => rw [map_add, iha, ihb]
-  | mul a b _ _ iha ihb => rw [h.gauge_mul, iha, ihb]
+  | mul a b _ _ iha ihb => rw [h.repJet_mul, iha, ihb]
 
 include hcS in
 /-- Every element of the order-`m` subalgebra commutes with every symmetrized symbol. -/

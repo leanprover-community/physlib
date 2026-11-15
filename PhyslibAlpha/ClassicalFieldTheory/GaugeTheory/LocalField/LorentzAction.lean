@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.LorentzAction
 /-!
 # The Lorentz action on the local field algebra
 

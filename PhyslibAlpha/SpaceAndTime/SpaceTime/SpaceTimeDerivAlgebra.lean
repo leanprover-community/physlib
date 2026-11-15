@@ -5,12 +5,10 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.LinearAlgebra.SymmetricAlgebra.Basis
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
 public import PhyslibAlpha.Relativity.Tensors.RealTensor.CoVector.Representation
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
-public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra.Basic
 public import Physlib.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra.Action
 /-!
 # Derivative algebras

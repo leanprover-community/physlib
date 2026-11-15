@@ -9,11 +9,6 @@ public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.Prod
 public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.LorentzAction
 public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.GaugeAction
 public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.MassDim
-public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonDoublet.Basic
-public import PhyslibAlpha.Particles.StandardModel.Fermions.LeptonSinglet.Basic
-public import PhyslibAlpha.Particles.StandardModel.Fermions.QuarkDoublet.Basic
-public import PhyslibAlpha.Particles.StandardModel.Fermions.UpSinglet.Basic
-public import PhyslibAlpha.Particles.StandardModel.Fermions.DownSinglet.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.MatterField
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Pi
 /-!

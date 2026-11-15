@@ -6,7 +6,6 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
-public import Mathlib.Analysis.InnerProductSpace.Basic
 
 /-!
 
@@ -39,7 +38,7 @@ every `g`, and `‖A ψₙ - λ ψₙ‖ → 0`. Orthonormal approximate eigenve
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Filter Topology
 open scoped InnerProductSpace
@@ -75,4 +74,4 @@ lemma mem_essSpectrum_of_seq {A : H →ₗ.[ℂ] H} (hA : IsSelfAdjoint A) (lam 
 
 end QuantumMechanics.Essential
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

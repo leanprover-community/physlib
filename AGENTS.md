@@ -6,6 +6,12 @@
 - The human author must certify the code you write; the fact that it builds does not prove that what you have written is what the human author meant.
 - Obey also [docs/ReviewGuidelines.md](docs/ReviewGuidelines.md).
 
+## Helping a new contributor
+
+For a newcomer seeking an API-map contribution about Physlib or PhyslibAlpha physics, use
+`.agents/skills/physlib-alpha-api-map/SKILL.md`. It takes a physics topic or issue
+through an edited, checked map. Preserve any other explicitly requested task.
+
 ## Content
 
 - Use `lemma`, not `theorem`, unless the result is well known in the physics literature. Every
@@ -20,6 +26,7 @@
 - Never include trailing white space.
 - Make sure that hypotheses are distributed compactly and neatly over new lines, only include new lines when genuinely needed.
 - Do not add lemmas that are trivial rewrites of existing Mathlib or Physlib results, unless they add genuine physics context.
+- Use the physical constants listed in [Physlib/Units/Constants.lean](Physlib/Units/Constants.lean) and the units gathered in [Physlib/Units/Basic.lean](Physlib/Units/Basic.lean), instead of defining your own or writing out their numerical values. A result in arbitrary units still takes the type of the constant as an argument, such as `c : SpeedOfLight`. A new constant goes in its own file, beside the physics it belongs to, in the format described in [Physlib/Units/Constants.lean](Physlib/Units/Constants.lean).
 - Place results in the appropriate existing file; do not create new files without good reason. For example, if you need to prove a general result about derivatives on space in order to prove something in classical mechanics, that result should go in `Space.Derivatives.Basic`, not the classical mechanics file.
 - Module documentation (`/-! … -/`) must have the headings: a title `# ...`, followed by a one-line summary of the file; `## i. Overview`; `## ii. Key results`; `## iii. Table of contents`; `## iv. References`; then sections numbered `## A. ...`, `### A.1. ...`, `#### A.1.2. ...`, listed in the table of contents. No heading may end in a full stop. See [Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean](Physlib/ClassicalMechanics/HarmonicOscillator/Basic.lean) for an example.
 - Every definition must have a docstring.

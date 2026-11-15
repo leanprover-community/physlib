@@ -6,8 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.Algebra.Lie.Basic
-public import Mathlib.Algebra.Star.SelfAdjoint
-public import Mathlib.LinearAlgebra.Matrix.Trace
 public import Mathlib.LinearAlgebra.UnitaryGroup
 public import Mathlib.RepresentationTheory.Basic
 public import Mathlib.Analysis.Complex.Basic

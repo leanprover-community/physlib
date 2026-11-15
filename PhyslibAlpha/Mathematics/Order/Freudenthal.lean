@@ -10,8 +10,6 @@ public import PhyslibAlpha.Mathematics.Order.StrongUnit
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Algebra.BigOperators.GroupWithZero.Action
 public import Mathlib.Algebra.Order.Archimedean.Real.Basic
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring
 
 /-!
 # Step approximation in vector lattices

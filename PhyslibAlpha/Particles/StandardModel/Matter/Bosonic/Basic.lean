@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.JetComponent.GaugeAction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
-public import PhyslibAlpha.Mathematics.SymmetricAlgebra
 /-!
 # The bosonic algebra of a matter field
 

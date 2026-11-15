@@ -6,10 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.Basic
-public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.GaugeAction
-public import PhyslibAlpha.Particles.StandardModel.Matter.Bosonic.GaugeAction
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGauge.GaugeAction
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.Particles.StandardModel.JetAlgebra.SectorEquiv.Structure
 /-!
 # The jet gauge action on the jet algebra of the Standard Model

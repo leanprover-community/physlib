@@ -6,7 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 
 /-!
 # Comparing linear combinations by their Gram kernels

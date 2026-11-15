@@ -5,9 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Order.Directed
-public import Mathlib.Algebra.Order.Group.OrderIso
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.Order.Module.Field
 public import Mathlib.Basic.Real.Basic

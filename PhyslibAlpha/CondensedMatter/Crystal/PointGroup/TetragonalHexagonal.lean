@@ -17,16 +17,17 @@ the point group of the primitive hexagonal lattice has order twenty-four.
 
 ## i. Overview
 
-The orders are counted as for the cubic lattices, by `PeriodicGraph.card_pointGroup`. They are
-those of the holohedries `4/mmm` and `6/mmm`. With the bonds of the first shell only, the
-primitive tetragonal graph is the simple cubic graph, and its point group has order `48`.
+The orders are counted as for the cubic lattices, by `PeriodicGraph.card_pointGroup` and the
+reflection of admissibility into a Boolean test on lists of triples of integers. They are those of
+the holohedries `4/mmm` and `6/mmm`. With the bonds of the first shell only, the primitive
+tetragonal graph is the simple cubic graph, and its point group has order `48`.
 
 The exponent of each group is computed in the same way: an element of the point stabilizer is
 determined by the images of the three basis vectors, so it is enough to check its powers on the
-basis, for each admissible triple. Every element of the primitive tetragonal point group
-satisfies `A ^ 4 = 1`, and every element of the hexagonal point group satisfies `A ^ 6 = 1`. So
-the primitive tetragonal group has no rotation of order three, and the hexagonal group none of
-order four.
+basis, for each admissible triple, which is again a Boolean test on the list of admissible
+triples. Every element of the primitive tetragonal point group satisfies `A ^ 4 = 1`, and every
+element of the hexagonal point group satisfies `A ^ 6 = 1`. So the primitive tetragonal group has
+no rotation of order three, and the hexagonal group none of order four.
 
 ## ii. Key results
 
@@ -64,6 +65,39 @@ lemma toAdd_pow_apply {G : Type*} [AddCommGroup G] (A : Multiplicative (AddAut G
     rw [pow_succ, Function.iterate_succ_apply, ← ih]
     rfl
 
+/-- The powers of the map determined by a tuple of columns, in components. -/
+lemma toVec3_act_iterate (v : Fin 3 → Fin 3 → ℤ) (n : ℕ) (d : Fin 3 → ℤ) :
+    toVec3 ((act v)^[n] d) =
+      (act3 (toVec3 (v 0)) (toVec3 (v 1)) (toVec3 (v 2)))^[n] (toVec3 d) := by
+  induction n generalizing d with
+  | zero => rfl
+  | succ n ih => rw [Function.iterate_succ_apply, Function.iterate_succ_apply, ih, toVec3_act]
+
+/-- The three basis vectors, as triples. -/
+def basis3 : List Vec3 := [(1, 0, 0), (0, 1, 0), (0, 0, 1)]
+
+lemma toVec3_single_mem_basis3 (j : Fin 3) : toVec3 (Pi.single j 1) ∈ basis3 := by
+  fin_cases j <;> decide
+
+/-- Whether the `n`-th power of every admissible triple of the neighbour list `l` fixes the
+three basis vectors. -/
+def powFixesBasisB (l : List Vec3) (n : ℕ) : Bool :=
+  (admissibleTriples l).all fun t => basis3.all fun e => beq3 ((act3 t.1 t.2.1 t.2.2)^[n] e) e
+
+/-- If the Boolean test passes, the `n`-th power of every admissible tuple fixes the basis. -/
+lemma iterate_act_single_eq_of_powFixesBasisB {N : Finset (Fin 3 → ℤ)} {l : List Vec3}
+    (hl : ∀ t, t ∈ l ↔ ofVec3 t ∈ N) {n : ℕ} (h : powFixesBasisB l n = true)
+    {v : Fin 3 → Fin 3 → ℤ} (hv : Admissible N v) (j : Fin 3) :
+    (act v)^[n] (Pi.single j 1) = Pi.single j 1 := by
+  have ht : (toVec3 (v 0), toVec3 (v 1), toVec3 (v 2)) ∈ admissibleTriples l := by
+    rw [mem_admissibleTriples hl]
+    simp only [ofVec3_toVec3]
+    rw [vec3_eq]
+    exact hv
+  simp only [powFixesBasisB, List.all_eq_true, beq3_iff] at h
+  exact toVec3_injective
+    ((toVec3_act_iterate v n _).trans (h _ ht _ (toVec3_single_mem_basis3 j)))
+
 variable {N : Finset (Fin 3 → ℤ)} (hN : ∀ j, (Pi.single j 1 : Fin 3 → ℤ) ∈ N)
   {g : PeriodicGraph (Crystal.ofUnitCell (Fin 3 → ℤ) Unit)}
   (hg : ∀ d, g.Bonded () () d ↔ d ∈ N)
@@ -91,7 +125,16 @@ lemma pow_eq_one_of_admissible (n : ℕ)
 
 end PeriodicGraph
 
-/-! ## B. The orders -/
+/-! ## B. The orders
+
+The neighbour lists are written out with the neighbours that are not basis vectors first, so
+that the Boolean test fails early on most candidate tuples.
+-/
+
+/-- The ten neighbours of the primitive tetragonal lattice. -/
+def tetragonalNeighbors : List PeriodicGraph.Vec3 :=
+  [(1, 1, 0), (1, -1, 0), (-1, -1, 0), (-1, 1, 0),
+    (1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
 
 /-- **The point group of the primitive tetragonal lattice has order `16`.** -/
 lemma tetragonal_card_pointGroup : Nat.card tetragonalGraph.pointGroup = 16 := by
@@ -99,33 +142,15 @@ lemma tetragonal_card_pointGroup : Nat.card tetragonalGraph.pointGroup = 16 := b
     (PeriodicGraph.bonded_ofBonds_unit tetragonalBonds)).trans ?_
   · intro j
     fin_cases j <;> decide
-  · rw [Nat.card_congr (PeriodicGraph.admissibleEquiv _), Nat.card_eq_fintype_card]
+  · rw [PeriodicGraph.card_admissible_eq_length (PeriodicGraph.mem_iff_of_perm
+      (bonds := tetragonalBonds) (l := tetragonalNeighbors) (by decide +kernel)) (by decide)]
     decide +kernel
 
-/-- The admissible triples of the body-centred tetragonal graph whose first vector is `a`. Each
-is checked on its own: one kernel computation over all `16 ^ 3` triples does not fit in memory. -/
-private abbrev bctFiber (a : ↥(PeriodicGraph.bondNeighbors bodyCentredTetragonalBonds)) : ℕ :=
-  Fintype.card {u : Fin 2 → ↥(PeriodicGraph.bondNeighbors bodyCentredTetragonalBonds) //
-    PeriodicGraph.Admissible (PeriodicGraph.bondNeighbors bodyCentredTetragonalBonds) fun j =>
-      (Fin.cons (α := fun _ => ↥(PeriodicGraph.bondNeighbors bodyCentredTetragonalBonds)) a u j :
-        Fin 3 → ℤ)}
-
-private lemma bctFiber_0 : bctFiber ⟨![1, 0, 0], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_1 : bctFiber ⟨![0, 1, 0], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_2 : bctFiber ⟨![0, 0, 1], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_3 : bctFiber ⟨![1, 1, 1], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_4 : bctFiber ⟨![0, 1, 1], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_5 : bctFiber ⟨![1, 0, 1], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_6 : bctFiber ⟨![1, 1, 2], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_7 : bctFiber ⟨![-1, 1, 0], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_8 : bctFiber ⟨![-1, 0, 0], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_9 : bctFiber ⟨![0, -1, 0], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_10 : bctFiber ⟨![0, 0, -1], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_11 : bctFiber ⟨![-1, -1, -1], by decide⟩ = 2 := by decide +kernel
-private lemma bctFiber_12 : bctFiber ⟨![0, -1, -1], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_13 : bctFiber ⟨![-1, 0, -1], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_14 : bctFiber ⟨![-1, -1, -2], by decide⟩ = 0 := by decide +kernel
-private lemma bctFiber_15 : bctFiber ⟨![1, -1, 0], by decide⟩ = 0 := by decide +kernel
+/-- The sixteen neighbours of the body-centred tetragonal lattice. -/
+def bodyCentredTetragonalNeighbors : List PeriodicGraph.Vec3 :=
+  [(1, 1, 1), (0, 1, 1), (1, 0, 1), (1, 1, 2), (-1, 1, 0),
+    (-1, -1, -1), (0, -1, -1), (-1, 0, -1), (-1, -1, -2), (1, -1, 0),
+    (1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
 
 /-- **The point group of the body-centred tetragonal lattice has order `16`.** -/
 lemma bodyCentredTetragonal_card_pointGroup :
@@ -135,32 +160,14 @@ lemma bodyCentredTetragonal_card_pointGroup :
     (PeriodicGraph.bonded_ofBonds_unit bodyCentredTetragonalBonds)).trans ?_
   · intro j
     fin_cases j <;> decide
-  rw [Nat.card_congr (PeriodicGraph.admissibleEquiv _), Nat.card_eq_fintype_card,
-    ← Fintype.card_congr ((Fin.consEquiv _).subtypeEquiv fun _ => Iff.rfl),
-    Fintype.card_subtype, Finset.card_filter, Fintype.sum_prod_type]
-  have hN : PeriodicGraph.bondNeighbors bodyCentredTetragonalBonds =
-      {![1, 0, 0], ![0, 1, 0], ![0, 0, 1], ![1, 1, 1], ![0, 1, 1], ![1, 0, 1], ![1, 1, 2],
-        ![-1, 1, 0], ![-1, 0, 0], ![0, -1, 0], ![0, 0, -1], ![-1, -1, -1], ![0, -1, -1],
-        ![-1, 0, -1], ![-1, -1, -2], ![1, -1, 0]} := by
-    decide
-  have key : ∀ a, bctFiber a = if (a : Fin 3 → ℤ) ∈ ({![1, 0, 0], ![0, 1, 0], ![0, 0, 1],
-      ![1, 1, 1], ![-1, 0, 0], ![0, -1, 0], ![0, 0, -1], ![-1, -1, -1]} : Finset (Fin 3 → ℤ))
-      then 2 else 0 := by
-    rintro ⟨d, hd⟩
-    show _ = if d ∈ _ then 2 else 0
-    have hd' := hN ▸ hd
-    fin_cases hd'
-    exacts [bctFiber_0.trans rfl, bctFiber_1.trans rfl, bctFiber_2.trans rfl, bctFiber_3.trans rfl,
-      bctFiber_4.trans rfl, bctFiber_5.trans rfl, bctFiber_6.trans rfl, bctFiber_7.trans rfl,
-      bctFiber_8.trans rfl, bctFiber_9.trans rfl, bctFiber_10.trans rfl, bctFiber_11.trans rfl,
-      bctFiber_12.trans rfl, bctFiber_13.trans rfl, bctFiber_14.trans rfl, bctFiber_15.trans rfl]
-  calc _ = ∑ a, bctFiber a := Finset.sum_congr rfl fun a _ => by
-          simp only [bctFiber, Fintype.card_subtype, Finset.card_filter]; rfl
-    _ = 16 := by
-      simp only [key]
-      rw [Finset.sum_coe_sort (PeriodicGraph.bondNeighbors bodyCentredTetragonalBonds)
-        (fun d => if d ∈ _ then 2 else 0), hN]
-      decide
+  · rw [PeriodicGraph.card_admissible_eq_length (PeriodicGraph.mem_iff_of_perm
+      (bonds := bodyCentredTetragonalBonds) (l := bodyCentredTetragonalNeighbors)
+      (by decide +kernel)) (by decide)]
+    decide +kernel
+
+/-- The eight neighbours of the primitive hexagonal lattice. -/
+def hexagonalNeighbors : List PeriodicGraph.Vec3 :=
+  [(1, 1, 0), (-1, -1, 0), (1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
 
 /-- **The point group of the primitive hexagonal lattice has order `24`.** -/
 lemma hexagonal_card_pointGroup : Nat.card hexagonalGraph.pointGroup = 24 := by
@@ -168,8 +175,13 @@ lemma hexagonal_card_pointGroup : Nat.card hexagonalGraph.pointGroup = 24 := by
     (PeriodicGraph.bonded_ofBonds_unit hexagonalBonds)).trans ?_
   · intro j
     fin_cases j <;> decide
-  · rw [Nat.card_congr (PeriodicGraph.admissibleEquiv _), Nat.card_eq_fintype_card]
+  · rw [PeriodicGraph.card_admissible_eq_length (PeriodicGraph.mem_iff_of_perm
+      (bonds := hexagonalBonds) (l := hexagonalNeighbors) (by decide +kernel)) (by decide)]
     decide +kernel
+
+/-- The six neighbours of the first shell, `±x, ±y, ±z`. -/
+def firstShellNeighbors : List PeriodicGraph.Vec3 :=
+  [(1, 0, 0), (0, 1, 0), (0, 0, 1), (-1, 0, 0), (0, -1, 0), (0, 0, -1)]
 
 /-- With the bonds of the first shell only, `±x, ±y, ±z`, a tetragonal lattice has the point
 group of the simple cubic lattice, of order `48`. -/
@@ -181,31 +193,29 @@ lemma tetragonal_firstShell_card_pointGroup :
     (PeriodicGraph.bonded_ofBonds_unit _)).trans ?_
   · intro j
     fin_cases j <;> decide
-  · rw [Nat.card_congr (PeriodicGraph.admissibleEquiv _), Nat.card_eq_fintype_card]
+  · rw [PeriodicGraph.card_admissible_eq_length (PeriodicGraph.mem_iff_of_perm
+      (bonds := [⟨(), (), ![1, 0, 0]⟩, ⟨(), (), ![0, 1, 0]⟩, ⟨(), (), ![0, 0, 1]⟩])
+      (l := firstShellNeighbors) (by decide +kernel)) (by decide)]
     decide +kernel
 
 /-! ## C. The exponents -/
 
 /-- Every element of the point group of the primitive tetragonal lattice satisfies `A ^ 4 = 1`. -/
 lemma tetragonal_pow_four (A : Multiplicative (AddAut (Fin 3 → ℤ)))
-    (hA : A ∈ tetragonalGraph.pointStabilizer) : A ^ 4 = 1 := by
-  refine PeriodicGraph.pow_eq_one_of_admissible (N := PeriodicGraph.bondNeighbors tetragonalBonds)
+    (hA : A ∈ tetragonalGraph.pointStabilizer) : A ^ 4 = 1 :=
+  PeriodicGraph.pow_eq_one_of_admissible (N := PeriodicGraph.bondNeighbors tetragonalBonds)
     (fun j => by fin_cases j <;> decide) (PeriodicGraph.bonded_ofBonds_unit tetragonalBonds) 4
-    (fun v hv => ?_) A hA
-  obtain ⟨w, rfl⟩ : ∃ w : Fin 3 → ↥(PeriodicGraph.bondNeighbors tetragonalBonds),
-      v = fun j => (w j : Fin 3 → ℤ) := ⟨fun j => ⟨v j, hv.mem j⟩, rfl⟩
-  revert w
-  decide +kernel
+    (fun _ hv => PeriodicGraph.iterate_act_single_eq_of_powFixesBasisB
+      (PeriodicGraph.mem_iff_of_perm (bonds := tetragonalBonds) (l := tetragonalNeighbors)
+        (by decide +kernel)) (n := 4) (by decide +kernel) hv) A hA
 
 /-- Every element of the point group of the primitive hexagonal lattice satisfies `A ^ 6 = 1`. -/
 lemma hexagonal_pow_six (A : Multiplicative (AddAut (Fin 3 → ℤ)))
-    (hA : A ∈ hexagonalGraph.pointStabilizer) : A ^ 6 = 1 := by
-  refine PeriodicGraph.pow_eq_one_of_admissible (N := PeriodicGraph.bondNeighbors hexagonalBonds)
+    (hA : A ∈ hexagonalGraph.pointStabilizer) : A ^ 6 = 1 :=
+  PeriodicGraph.pow_eq_one_of_admissible (N := PeriodicGraph.bondNeighbors hexagonalBonds)
     (fun j => by fin_cases j <;> decide) (PeriodicGraph.bonded_ofBonds_unit hexagonalBonds) 6
-    (fun v hv => ?_) A hA
-  obtain ⟨w, rfl⟩ : ∃ w : Fin 3 → ↥(PeriodicGraph.bondNeighbors hexagonalBonds),
-      v = fun j => (w j : Fin 3 → ℤ) := ⟨fun j => ⟨v j, hv.mem j⟩, rfl⟩
-  revert w
-  decide +kernel
+    (fun _ hv => PeriodicGraph.iterate_act_single_eq_of_powFixesBasisB
+      (PeriodicGraph.mem_iff_of_perm (bonds := hexagonalBonds) (l := hexagonalNeighbors)
+        (by decide +kernel)) (n := 6) (by decide +kernel) hv) A hA
 
 end CondensedMatter.Crystal

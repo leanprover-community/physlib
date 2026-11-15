@@ -10,6 +10,7 @@ public import Physlib.ClassicalMechanics.DampedHarmonicOscillator.Solution
 public import Physlib.ClassicalMechanics.EulerLagrange
 public import Physlib.ClassicalMechanics.Force
 public import Physlib.ClassicalMechanics.FreeParticle.Basic
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.Basic
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
@@ -26,6 +27,7 @@ public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.SpecialPoin
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Solution.Uniqueness
 public import Physlib.ClassicalMechanics.HarmonicOscillator.WithDim
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
+public import Physlib.ClassicalMechanics.Lagrangian.Chart
 public import Physlib.ClassicalMechanics.Lagrangian.CriticalPoint
 public import Physlib.ClassicalMechanics.Lagrangian.FirstVariation
 public import Physlib.ClassicalMechanics.Lagrangian.TotalDerivativeEquivalence
@@ -45,6 +47,7 @@ public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.ReleasedFromRes
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.SmallAngle
 public import Physlib.ClassicalMechanics.Pendulum.SimplePendulum.Solution
 public import Physlib.ClassicalMechanics.Pendulum.SlidingPendulum
+public import Physlib.ClassicalMechanics.PhaseSpace.Basic
 public import Physlib.ClassicalMechanics.PointParticle.Basic
 public import Physlib.ClassicalMechanics.PointParticle.NewtonianSystem.Basic
 public import Physlib.ClassicalMechanics.RigidBody.AngularMomentum
@@ -64,11 +67,6 @@ public import Physlib.CondensedMatter.Crystal.Bonds
 public import Physlib.CondensedMatter.Crystal.Bravais.Basic
 public import Physlib.CondensedMatter.Crystal.Embedding
 public import Physlib.CondensedMatter.Crystal.PeriodicGraph
-public import Physlib.CondensedMatter.Crystal.Symmetry.Basic
-public import Physlib.CondensedMatter.Crystal.Symmetry.Isometries
-public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
-public import Physlib.CondensedMatter.Crystal.Symmetry.SpaceGroup
-public import Physlib.CondensedMatter.Crystal.Symmetry.Species
 public import Physlib.CondensedMatter.LatticeModels.Basic
 public import Physlib.CondensedMatter.ManyBody.Basic
 public import Physlib.CondensedMatter.Response.Basic
@@ -156,6 +154,8 @@ public import Physlib.Mathematics.Distribution.PowMul
 public import Physlib.Mathematics.Distribution.TemperedDistribution
 public import Physlib.Mathematics.ForMathlib.Analytic
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
+public import Physlib.Mathematics.ForMathlib.Contraction
+public import Physlib.Mathematics.ForMathlib.Cutoff
 public import Physlib.Mathematics.ForMathlib.DataStructures.Matrix.LieTrace
 public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Fin
@@ -195,6 +195,8 @@ public import Physlib.Mathematics.Modules.CrossProduct
 public import Physlib.Mathematics.Modules.CrossProductMatrix
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
+public import Physlib.Mathematics.Tensors.Color
+public import Physlib.Mathematics.Tensors.Species
 public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint
@@ -264,6 +266,7 @@ public import Physlib.Particles.StandardModel.Fermions.LeptonSinglet
 public import Physlib.Particles.StandardModel.Fermions.QuarkDoublet
 public import Physlib.Particles.StandardModel.Fermions.UpSinglet
 public import Physlib.Particles.StandardModel.GaugeGroup.Basic
+public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
 public import Physlib.Particles.StandardModel.HiggsBoson.Basic
 public import Physlib.Particles.StandardModel.HiggsBoson.EffectivePotential
 public import Physlib.Particles.StandardModel.HiggsBoson.Potential
@@ -295,8 +298,11 @@ public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.ZMod
 public import Physlib.Particles.SuperSymmetry.SU5.FieldLabels
 public import Physlib.Particles.SuperSymmetry.SU5.Potential
+public import Physlib.ProbabilisticTheory.Basic
+public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Physlib.ProbabilisticTheory.Channel.Covariant
+public import Physlib.ProbabilisticTheory.Channel.Norm
 public import Physlib.ProbabilisticTheory.Channel.Reversible
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
@@ -304,10 +310,14 @@ public import Physlib.ProbabilisticTheory.Effect.Convex
 public import Physlib.ProbabilisticTheory.Effect.Metric
 public import Physlib.ProbabilisticTheory.Effect.Sharp
 public import Physlib.ProbabilisticTheory.LocalNet.Basic
+public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Basic
+public import Physlib.ProbabilisticTheory.LocalNet.Interaction.Sum
 public import Physlib.ProbabilisticTheory.LocalNet.QuasilocalOrder
 public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 public import Physlib.ProbabilisticTheory.OrderUnit.Cone
+public import Physlib.ProbabilisticTheory.StarAlgebra.State
+public import Physlib.ProbabilisticTheory.StarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.State.Basic
 public import Physlib.ProbabilisticTheory.State.Convex
 public import Physlib.ProbabilisticTheory.State.Discrimination
@@ -450,6 +460,9 @@ public import Physlib.QuantumMechanics.QuantumSystem.Basic
 public import Physlib.QuantumMechanics.RectangularBarrier.Basic
 public import Physlib.QuantumMechanics.SpaceDQuantumSystem
 public import Physlib.Relativity.Bispinors.Basic
+public import Physlib.Relativity.Bispinors.Pauli.Basic
+public import Physlib.Relativity.Bispinors.Pauli.Relations
+public import Physlib.Relativity.Bispinors.Pauli.ToTensor
 public import Physlib.Relativity.Causality.Basic
 public import Physlib.Relativity.Causality.CausallyFollows
 public import Physlib.Relativity.Causality.LightLike
@@ -482,12 +495,9 @@ public import Physlib.Relativity.LorentzGroup.Restricted.FromBoostRotation
 public import Physlib.Relativity.LorentzGroup.Rotations
 public import Physlib.Relativity.LorentzGroup.ToVector
 public import Physlib.Relativity.MinkowskiMatrix
-public import Physlib.Relativity.PauliMatrices.AsTensor
 public import Physlib.Relativity.PauliMatrices.Basic
 public import Physlib.Relativity.PauliMatrices.CliffordAlgebra
-public import Physlib.Relativity.PauliMatrices.Relations
 public import Physlib.Relativity.PauliMatrices.SelfAdjoint
-public import Physlib.Relativity.PauliMatrices.ToTensor
 public import Physlib.Relativity.SL2C.AxisRotations
 public import Physlib.Relativity.SL2C.Basic
 public import Physlib.Relativity.SL2C.CayleyKlein
@@ -617,6 +627,9 @@ public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.SchwartzAction
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.Derivatives.Basic
+public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
+public import Physlib.SpaceAndTime.WaveVectorSpace.Fourier
 public import Physlib.StatisticalMechanics.BoltzmannConstant
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Basic
 public import Physlib.StatisticalMechanics.CanonicalEnsemble.Finite

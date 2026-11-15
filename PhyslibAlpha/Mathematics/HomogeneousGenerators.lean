@@ -5,7 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.Adjoin.Basic
 /-!

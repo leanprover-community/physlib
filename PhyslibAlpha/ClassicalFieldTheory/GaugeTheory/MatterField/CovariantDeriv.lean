@@ -5,11 +5,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.GaugeLaw
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.Jet
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.TransformsAdjoint
-public import Mathlib.LinearAlgebra.Basis.Defs
-public import Mathlib.LinearAlgebra.Dimension.Free
 /-!
 # Gauge tensors in a general representation
 
@@ -346,7 +343,7 @@ lemma repGauge_actionFam
       actionFam act f' g' φ + g' (φ ∘ₗ act cf) := by
   set Φ : B →ₗ[ℂ] B := repGauge U with hΦdef
   have hΦmul : ∀ b₁ b₂ : B, Φ (b₁ * b₂) = Φ b₁ * Φ b₂ := fun b₁ b₂ =>
-    h.gauge_mul U b₁ b₂
+    h.repJet_mul U b₁ b₂
   set s : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm f with hs
   set t : B ⊗[ℂ] V := dualPairEquivC.symm g with ht
   set s' : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm f' with hs'

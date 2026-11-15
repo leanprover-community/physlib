@@ -7,9 +7,7 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Representation.VectorMeasure
 public import Mathlib.Algebra.Module.CharacterModule
-public import Mathlib.MeasureTheory.Measure.Haar.Basic
 public import Mathlib.MeasureTheory.Group.Integral
-public import Mathlib.Analysis.SpecialFunctions.Complex.Circle
 
 /-!
 
@@ -48,7 +46,7 @@ nontrivial character of `Ĝ` for `g ≠ 0`, so by translation invariance
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 
@@ -152,6 +150,6 @@ end Haar
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

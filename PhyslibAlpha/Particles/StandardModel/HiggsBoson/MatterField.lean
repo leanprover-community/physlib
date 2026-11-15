@@ -5,10 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LocalGaugeData
 public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.GaugeAlgebraAction
-public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.JetAlgebra.Basic
 /-!
 # The Standard Model Higgs field as a matter field
 

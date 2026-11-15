@@ -40,7 +40,6 @@ lemma E_zero_iff_Q_zero {S : (SMNoGrav 1).Sols} : Q S.val (0 : Fin 1) = 0 ↔
   rw [← hS'] at hC
   exact ⟨S'.cubic_zero_Q'_zero hC, S'.cubic_zero_E'_zero hC⟩
 
-set_option backward.isDefEq.respectTransparency false in
 /-- For a set of 1-family SM charges satisfying all ACCs except the gravitational,
   if the `Q` charge is zero then the charges satisfy the gravitational ACCs. -/
 lemma accGrav_Q_zero {S : (SMNoGrav 1).Sols} (hQ : Q S.val (0 : Fin 1) = 0) :
@@ -53,9 +52,7 @@ lemma accGrav_Q_zero {S : (SMNoGrav 1).Sols} (hQ : Q S.val (0 : Fin 1) = 0) :
   have h2 := SU3Sol S.1.1
   simp only [accSU2, toSpecies_apply_eq, Fin.isValue, sum_SMSpecies_numberCharges_one,
     LinearMap.coe_mk, AddHom.coe_mk, accSU3] at h1 h2
-  erw [hQ] at h1 h2 ⊢
-  erw [hE]
-  linear_combination 2 * h1 + 3 * h2
+  linear_combination (norm := ring1!) 2 * h1 + 3 * h2 - 6 * hQ + hE
 
 /-- For a set of 1-family SM charges satisfying all ACCs except the gravitational,
   if the `Q` charge is not zero then the charges satisfy the gravitational ACCs. -/

@@ -8,8 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Pushforward
 public import PhyslibAlpha.ProbabilisticTheory.State.Basic
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Topology.Algebra.InfiniteSum.ENNReal
-public import Mathlib.Topology.Order.MonotoneConvergence
 
 /-!
 # The Born rule for effect-valued measures
@@ -43,7 +41,7 @@ So `μ` sends every normal state to a probability distribution over its outcomes
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Function
 
@@ -124,4 +122,4 @@ end Relabel
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

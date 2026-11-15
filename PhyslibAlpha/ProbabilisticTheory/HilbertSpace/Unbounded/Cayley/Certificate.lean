@@ -45,7 +45,7 @@ transform gives a spectral measure on `ℝ`, which is determined by its Cayley p
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped InnerProductSpace
 
@@ -174,6 +174,6 @@ end BoundedUnitarySpectralData
 end WOTSpectralMeasure
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

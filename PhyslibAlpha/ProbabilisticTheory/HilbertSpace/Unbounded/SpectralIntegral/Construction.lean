@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SelfAdjointSpectralTheorem
-public import Mathlib.MeasureTheory.Integral.Lebesgue.DominatedConvergence
 public import Mathlib.MeasureTheory.VectorMeasure.Variation.SignedMeasure
-public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 
 /-!
 
@@ -53,7 +51,7 @@ along `f`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
@@ -1205,4 +1203,4 @@ lemma boundedIntegral_tendsto_of_pointwise_tendsto_of_bound
 
 end QuantumMechanics.WOTSpectralMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

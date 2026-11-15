@@ -41,7 +41,7 @@ polynomials on both sides gives `b = √a`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -283,4 +283,4 @@ end
 
 end NormedJordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

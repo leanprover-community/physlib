@@ -8,8 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.Mathematics.Convex.LpBall
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
-public import Mathlib.Analysis.Normed.Group.Constructions
-public import Mathlib.Analysis.Normed.Operator.LinearIsometry
 public import Mathlib.LinearAlgebra.Dual.Lemmas
 
 /-!
@@ -47,7 +45,7 @@ not a qubit either: the shape of the cone matters, not just the dimension.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -111,4 +109,4 @@ lemma not_isSimplex_stateSpace :
 
 end GBit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

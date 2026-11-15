@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.MeasureTheory.LiftingAndConditioning
 public import PhyslibAlpha.Mathematics.Convex.Choquet.RepresentingMeasure
-public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional
 
 /-!
 # Every point is a mixture of extreme points

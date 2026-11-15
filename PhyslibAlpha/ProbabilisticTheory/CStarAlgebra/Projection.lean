@@ -39,7 +39,7 @@ complement, and their spectrum lies in `{0, 1}`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -92,4 +92,4 @@ lemma spectrum_subset_zero_one (p : Projection A) :
 
 end Projection
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

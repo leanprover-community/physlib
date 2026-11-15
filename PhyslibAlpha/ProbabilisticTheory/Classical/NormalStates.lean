@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.BoundedMeasurable
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import PhyslibAlpha.ProbabilisticTheory.Classical.LatticeObservables
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.BornRule
 
@@ -50,7 +48,7 @@ probability measures on its outcomes.
 @[expose] public section
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open UnitalPositiveLinearMap
 
@@ -85,7 +83,7 @@ lemma isPure_eval (x : Ω) : (eval x).IsPure :=
 end BoundedMeasurable
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open UnitalPositiveLinearMap MeasureTheory Filter Topology
 

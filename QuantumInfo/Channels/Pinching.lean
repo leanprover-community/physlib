@@ -5,14 +5,7 @@ Authors: Leonardo A Lessa, Alex Meiburg
 -/
 module
 
-public import QuantumInfo.Channels.Bundled
-public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
-public import QuantumInfo.States.Mixed.MState
-public import QuantumInfo.Entropy.VonNeumann
 public import QuantumInfo.Entropy.Relative
-public import QuantumInfo.ForMathlib.HermitianMat.CFC
 
 /-! # Pinching channels
 A pinching channel decoheres in the eigenspaces of a given state.

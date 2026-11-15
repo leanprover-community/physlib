@@ -5,7 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.Basic
 public import PhyslibAlpha.Particles.StandardModel.Fermions.MatterField
 /-!
 # The lepton doublet of the Standard Model table

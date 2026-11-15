@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.CovRealization.Basic
-public import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 /-!
 # The covariant generators of the field algebra
 

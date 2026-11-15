@@ -39,7 +39,7 @@ POVM whose values are sharp effects. A POVM whose values are projections is a PV
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. POVMs -/
 
@@ -100,4 +100,4 @@ lemma isSharp_apply (π : PVM Ω E) (s : Set Ω) (hs : MeasurableSet s) :
 
 end PVM
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -38,7 +38,7 @@ with `j₁ = m/2`, `m₁ = j₁ - a`, `j₂ = n/2`, `m₂ = j₂ - b`. This file
   relation `Σ_{m₁ m₂} ⟨j₁ m₁ j₂ m₂ | J M⟩ ⟨j₁ m₁ j₂ m₂ | J' M'⟩ = δ_{JJ'} δ_{MM'}`;
 - the values `⟨j₁ j₁ j₂ j₂ | j₁+j₂, j₁+j₂⟩ = 1`, and for two spins `1/2` the singlet
   `⟨½ ½ ½ -½ | 0 0⟩ = 1/√2`, `⟨½ -½ ½ ½ | 0 0⟩ = -1/√2` and the triplet
-  `⟨½ ½ ½ -½ | 1 0⟩ = ⟨½ -½ ½ ½ | 1 0⟩ = 1/√2`.
+  `⟨½ ½ ½ -½ | 1 0⟩ = ⟨½ -½ ½ ½ | 1 0⟩ = 1/√2`, `⟨½ -½ ½ -½ | 1 -1⟩ = 1`.
 
 These properties determine the Clebsch–Gordan coefficients uniquely, so they agree with the
 tabulated values. A closed formula (Racah's formula) is not proved here.
@@ -51,7 +51,8 @@ tabulated values. A closed formula (Racah's formula) is not proved here.
 - `cgCoefficient`, `cgCoefficient_eq_zero_of_ne`, `cgCoefficient_top_pos`,
   `coupledVec_eq_sum`, `sum_cgCoefficient_mul`.
 - `cgCoefficient_stretched`, `cgCoefficient_singlet_up`, `cgCoefficient_singlet_down`,
-  `cgCoefficient_triplet_zero_up`, `cgCoefficient_triplet_zero_down`.
+  `cgCoefficient_triplet_zero_up`, `cgCoefficient_triplet_zero_down`,
+  `cgCoefficient_triplet_minus`.
 
 ## iii. Table of contents
 
@@ -539,5 +540,24 @@ lemma cgCoefficient_triplet_zero_down : cgCoefficient 1 1 0 1 1 0 = 1 / Real.sqr
   have := cgCoefficient_stretched (m := 1) (n := 1)
   rw [cgCoefficient] at this
   rw [this, mul_one]
+
+lemma coupledVec_one_one_zero_two :
+    coupledVec 1 1 0 2 = (1 / Real.sqrt 2) • tensorF 1 1 (coupledVec 1 1 0 1) := by
+  rw [tensorF_coupledVec (Nat.zero_le 1) (Nat.zero_le 1) (by norm_num), smul_smul]
+  have h2 : Real.sqrt ((((1 : ℕ) : ℝ) + 1) * (((1 + 1 - 2 * 0 : ℕ) : ℝ) - ((1 : ℕ) : ℝ))) =
+      Real.sqrt 2 := by norm_num
+  rw [h2, one_div, inv_mul_cancel₀ (by positivity), one_smul]
+
+/-- Triplet: `⟨½ -½ ½ -½ | 1 -1⟩ = 1`. -/
+lemma cgCoefficient_triplet_minus : cgCoefficient 1 1 0 2 1 1 = 1 := by
+  rw [cgCoefficient, coupledVec_one_one_zero_two, map_smul, smul_eq_mul, ← tensorForm_tensorE,
+    tensorE, diagEnd_tmul, ρE_normVec_one_one, map_add, LinearMap.add_apply]
+  have hu := cgCoefficient_triplet_zero_up
+  have hd := cgCoefficient_triplet_zero_down
+  rw [cgCoefficient] at hu hd
+  rw [hu, hd]
+  field_simp
+  rw [Real.sq_sqrt (by norm_num)]
+  norm_num
 
 end PhyslibAlpha.Sl2

@@ -122,7 +122,7 @@ include h in
   and the jet action is an algebra map. -/
 lemma repGlobal_mul (g : GaugeGroupI) (b₁ b₂ : B) :
     repGlobal repJet g (b₁ * b₂) = repGlobal repJet g b₁ * repGlobal repJet g b₂ :=
-  h.gaugeRealization.gauge_mul _ b₁ b₂
+  h.gaugeRealization.repJet_mul _ b₁ b₂
 
 /-!
 
@@ -268,7 +268,7 @@ include h in
   complex-linear. -/
 lemma repJet_algebraMap (U : JetGaugeGroupI) (c : ℂ) :
     repJet U (algebraMap ℂ B c) = algebraMap ℂ B c := by
-  have hone := h.gaugeRealization.gauge_mul U (repJet U⁻¹ 1) 1
+  have hone := h.gaugeRealization.repJet_mul U (repJet U⁻¹ 1) 1
   rw [mul_one, ← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one repJet,
     Module.End.one_apply, one_mul] at hone
   rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hone]
@@ -303,7 +303,7 @@ lemma repJet_eq_of_mem_covAlgebra_of_mem_truncationKer_zero
   | mem b hb => exact h.repJet_eq_of_mem_covGenerators_of_mem_truncationKer_zero U hb
   | algebraMap c => exact h.repJet_algebraMap U.1 c
   | add a b _ _ iha ihb => rw [map_add, iha, ihb]
-  | mul a b _ _ iha ihb => rw [h.gaugeRealization.gauge_mul, iha, ihb]
+  | mul a b _ _ iha ihb => rw [h.gaugeRealization.repJet_mul, iha, ihb]
 
 /-!
 

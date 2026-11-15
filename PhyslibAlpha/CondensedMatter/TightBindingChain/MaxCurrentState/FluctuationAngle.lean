@@ -5,7 +5,6 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState.LongChainMonotonicity
 /-!
 
@@ -47,7 +46,7 @@ dimensional quantum of the chain, and it fixes the angle.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open ProbabilisticTheory UnitalPositiveLinearMap
+open PhyslibAlpha.ProbabilisticTheory UnitalPositiveLinearMap
 
 variable (T : TightBindingChain)
 
