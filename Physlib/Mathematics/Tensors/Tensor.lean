@@ -75,10 +75,6 @@ the components through that index alone, `(f T)^…ν… = ∑ μ, f^ν_μ T^…
 
 open TensorProduct PiTensorProduct
 
-namespace Tensor
-
-namespace Species
-
 variable {k : Type} [RCLike k] {K : Type} {G : Type} [Group G] {basisIdx : K → Type}
     [∀ κ, Fintype (basisIdx κ)] [∀ κ, DecidableEq (basisIdx κ)]
 
@@ -100,16 +96,22 @@ becomes an equality of their values on `S.pure p`, for any family of vectors `p`
 /-- The tensors with colors `c : ι → Color K`, the space `⨂[k] i, S.V (c i)`. It is a `def`, not an
 `abbrev`, so that goals show `Tensor S c` instead of the product. Mathlib's results on `⨂` apply to
 it by unfolding, and its instances are copied from `⨂`. -/
-def _root_.Tensor (S : Species k G K basisIdx) {ι : Type} (c : ι → Color K) : Type :=
+def Tensor (S : Tensor.Species k G K basisIdx) {ι : Type} (c : ι → Tensor.Color K) : Type :=
   ⨂[k] i, S.V (c i)
 
-noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Color K} :
+/-- Tensors add as elements of `⨂[k] i, S.V (c i)`. -/
+noncomputable instance {S : Tensor.Species k G K basisIdx} {ι : Type} {c : ι → Tensor.Color K} :
     AddCommGroup (Tensor S c) :=
   inferInstanceAs (AddCommGroup (⨂[k] i, S.V (c i)))
 
-noncomputable instance {S : Species k G K basisIdx} {ι : Type} {c : ι → Color K} :
+/-- Tensors are a vector space over `k`, as `⨂[k] i, S.V (c i)` is. -/
+noncomputable instance {S : Tensor.Species k G K basisIdx} {ι : Type} {c : ι → Tensor.Color K} :
     Module k (Tensor S c) :=
   inferInstanceAs (Module k (⨂[k] i, S.V (c i)))
+
+namespace Tensor
+
+namespace Species
 
 variable {ι : Type} {c : ι → Color K}
 
