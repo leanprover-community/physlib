@@ -16,6 +16,13 @@ there is a corresponding coordinate function given by orthogonal projection. [4]
 Wavevectors carry units of inverse-length and are rescaled
 under a change of inverse-length unit. [TODO]
 
+### Derivatives
+
+Functions from wavevector space into a normed space can be differentiated along
+the coordinate directions; the partial derivatives satisfy the usual linearity properties,
+product rule and power rule. [5]
+The gradient, divergence, laplacian and curl for functions of wavevector are defined. [TODO]
+
 ## Lean References
 
 1. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `WaveVectorSpace`
@@ -23,5 +30,7 @@ under a change of inverse-length unit. [TODO]
 3. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `instNormedAddCommGroup`,
    `instInnerProductReal`, `equivEuclideanSpace`
 4. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `basis`, `coord`, `coordCLM`
+5. Physlib/SpaceAndTime/WaveVectorSpace/Derivatives/Basic.lean — `deriv`, `deriv_add`,
+   `deriv_const_smul`, `deriv_smul`, `deriv_pow`
 
 ## References
