@@ -2,9 +2,9 @@
 
 ## Abstract (Alpha)
 
-A Higgs field is a smooth section of the Higgs bundle over spacetime, on which the global Standard
-Model gauge group acts; for now the bundle is the trivial one, whose fibre is the two-dimensional
-complex vector space of pointwise Higgs values. The pointwise values carry an orthonormal basis,
+A Higgs field in this module is a real analytic section of the Higgs bundle over spacetime. The
+bundle is currently trivial, with fibre the two-dimensional complex vector space of pointwise Higgs
+values. The pointwise values carry an orthonormal basis,
 real scalar coordinates, and a gauge representation whose orbits are classified by the norm, while
 fields carry constant fields, smooth components, a pointwise inner product and norm squared, the
 Standard Model Higgs potential with its minimization theory, and invariant effective potentials on
@@ -33,18 +33,23 @@ The Higgs bundle over spacetime {3} is a smooth vector bundle, currently the tri
 fibre the pointwise Higgs values. [8] It is the bundle associated to the gauge group, rather than
 the trivial one. [TODO]
 
-Higgs fields are smooth sections of the Higgs bundle; each has an underlying map to pointwise
-Higgs values, and every Higgs vector gives a constant field. [9] The components of a Higgs field
-are smooth, real and imaginary parts alike. [10] The pointwise inner product of two Higgs fields
-has an explicit expansion, is conjugate symmetric and additive, and is smooth. [11] The pointwise
+Each real analytic section has an underlying map to pointwise Higgs values, and every Higgs vector
+gives a constant field. [9] Its real and imaginary components are real analytic. [10] The pointwise
+inner product of two Higgs fields has an explicit expansion, is conjugate symmetric and additive,
+and is smooth. [11] The pointwise
 norm squared of a Higgs field is the real part of its inner product with itself, is nonnegative,
 and is smooth. [12]
 
-Gauge transformations act on Higgs fields pointwise; two Higgs fields lie in the same orbit
-exactly when their pointwise norms squared agree, and every smooth nonnegative function on
-spacetime is the norm squared of some Higgs field. [13][TODO] Since the gauge group preserves
-inner products and norms of Higgs vectors, the pointwise inner product and norm squared of Higgs
-fields are gauge invariant. [5]
+In a trivialization, an explicit weak SU(2) rotation sends each nonzero doublet to the neutral
+representative whose second component is its norm. This is the scalar part of unitary gauge and also
+works when the norm varies across spacetime. On a region where one of two doublets is nonzero, their
+pointwise squared norms agree exactly when one weak SU(2) transformation carries one to the other.
+The matrix coefficients have the same regularity as the input fields: finite differentiability,
+smoothness, or real analyticity. At common zeros, equal norms alone do not guarantee a continuous
+transformation. [13]
+
+The general gauge action on sections and the characterization of possible squared norm functions
+are separate formalization tasks. [13][TODO]
 
 ### The Higgs potential
 
@@ -100,8 +105,9 @@ gauge connection over spacetime. [TODO]
 12. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `normSq`, `inner_self_eq_normSq`,
    `normSq_eq_inner_self_re`, `normSq_expand`, `normSq_nonneg`, `normSq_zero`, `normSq_smooth`,
    `const_normSq`
-13. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `gaugeAction`, `guage_orbit`,
-   `gauge_orbit_surject`
+13. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `toRealGroupElem_toSU2_apply_self`,
+   `contDiffOn_toRealGroupElem_toSU2`, `exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`,
+   `exists_analytic_su2_rep_eq_iff_normSq_eq`, `gaugeAction`, `gauge_orbit_surject`
 14. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `Potential`, `toFun`,
    `toFun_smooth`, `neg`, `toFun_neg`, `μ2_neg`, `𝓵_neg`, `toFun_zero`,
    `toFun_eq_of_repGaugeGroupI`
