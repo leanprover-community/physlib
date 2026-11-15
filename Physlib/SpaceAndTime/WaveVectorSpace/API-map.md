@@ -53,9 +53,9 @@ and *vice versa*, under suitable regularity and decay assumptions. [TODO]
 ## Lean References
 
 1. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `WaveVectorSpace`
-2. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `instZero`, `instRealModule`
+2. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `instZero`, `instModuleReal`
 3. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `instNormedAddCommGroup`,
-   `instInnerProductReal`, `equivEuclideanSpace`
+   `instInnerProductSpaceReal`, `equivEuclideanSpace`
 4. Physlib/SpaceAndTime/WaveVectorSpace/Basic.lean — `basis`, `coord`, `coordCLM`
 5. Physlib/SpaceAndTime/WaveVectorSpace/Derivatives/Basic.lean — `deriv`, `deriv_add`,
    `deriv_const_smul`, `deriv_smul`, `deriv_pow`
