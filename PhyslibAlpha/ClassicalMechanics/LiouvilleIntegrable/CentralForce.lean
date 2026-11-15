@@ -248,10 +248,14 @@ noncomputable def liouvilleIntegrable :
 coordinate domain of integrability. -/
 lemma toHamiltonianSystem_isLiouvilleIntegrableOn :
     S.toHamiltonianSystem.IsLiouvilleIntegrableOn integrabilityDomain := by
-  refine ⟨S.hamiltonian, ⟨S.liouvilleIntegrable⟩, ?_, ?_⟩
-  · intro p q hpq
-    exact (S.mem_domain_toHamiltonianSystem p q).2 (snd_ne_zero_of_mem_integrabilityDomain hpq)
+  refine ⟨{
+    coordinateHamiltonian := S.hamiltonian
+    hamiltonian_eq := ?_
+    domain_subset := ?_
+    integrable := S.liouvilleIntegrable }⟩
   · intro t p q _
     exact S.toHamiltonianSystem_hamiltonian t p q
+  · intro p q hpq
+    exact (S.mem_domain_toHamiltonianSystem p q).2 (snd_ne_zero_of_mem_integrabilityDomain hpq)
 
 end ClassicalMechanics.CentralForce

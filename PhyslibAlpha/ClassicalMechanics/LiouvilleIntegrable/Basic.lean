@@ -50,6 +50,8 @@ already used for e.g. `RigidBody (d : ℕ)`.
 
 - `LiouvilleIntegrableOn` : the structure of a Liouville integrable system for a Hamiltonian `H`
   on an open dense domain `U` of phase space.
+- `HamiltonianSystem.LiouvilleIntegrabilityData` : an autonomous coordinate Hamiltonian and its
+  integrability data, related to a Hamiltonian system on a coordinate domain.
 - `HamiltonianSystem.IsLiouvilleIntegrableOn` : coordinate integrability for a Hamiltonian system,
   including agreement with an autonomous Hamiltonian on the integrability domain.
 - `LiouvilleIntegrableOn.deriv_comp_eq_zero` : each conserved quantity has zero time derivative
@@ -114,15 +116,28 @@ structure LiouvilleIntegrableOn {d : ℕ}
 ### A.1. Integrability of Hamiltonian systems
 -/
 
+/-- An autonomous coordinate Hamiltonian and its Liouville integrability data, related to a
+Hamiltonian system on a coordinate domain. -/
+structure HamiltonianSystem.LiouvilleIntegrabilityData {d : ℕ}
+    (S : HamiltonianSystem 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) ⟨EuclideanSpace ℝ (Fin d)⟩)
+    (U : Set (EuclideanSpace ℝ (Fin d) × EuclideanSpace ℝ (Fin d))) where
+  /-- The autonomous Hamiltonian in momentum-position coordinates. -/
+  coordinateHamiltonian : EuclideanSpace ℝ (Fin d) → EuclideanSpace ℝ (Fin d) → ℝ
+  /-- The system agrees with the coordinate Hamiltonian on the domain at every time. -/
+  hamiltonian_eq : ∀ t p q, (p, q) ∈ U →
+    S.hamiltonian (t, PhaseSpace.ofInnerProductSpace p q) = coordinateHamiltonian p q
+  /-- Coordinate states in the integrability domain belong to the system's domain. -/
+  domain_subset : ∀ p q, (p, q) ∈ U → PhaseSpace.ofInnerProductSpace p q ∈ S.domain
+  /-- The coordinate Hamiltonian has the Liouville integrability data. -/
+  integrable : LiouvilleIntegrableOn U coordinateHamiltonian
+
 /-- A Hamiltonian system is Liouville integrable on a coordinate domain when that domain lies
 inside the system's domain and, for every time, the system agrees there with an autonomous
 coordinate Hamiltonian satisfying the Liouville integrability conditions. -/
 def HamiltonianSystem.IsLiouvilleIntegrableOn {d : ℕ}
     (S : HamiltonianSystem 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) ⟨EuclideanSpace ℝ (Fin d)⟩)
     (U : Set (EuclideanSpace ℝ (Fin d) × EuclideanSpace ℝ (Fin d))) : Prop :=
-  ∃ H, Nonempty (LiouvilleIntegrableOn U H) ∧
-    (∀ p q, (p, q) ∈ U → PhaseSpace.ofInnerProductSpace p q ∈ S.domain) ∧
-    ∀ t p q, (p, q) ∈ U → S.hamiltonian (t, PhaseSpace.ofInnerProductSpace p q) = H p q
+  Nonempty (S.LiouvilleIntegrabilityData U)
 
 /-!
 
