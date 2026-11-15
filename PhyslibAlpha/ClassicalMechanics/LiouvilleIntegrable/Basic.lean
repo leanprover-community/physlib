@@ -60,7 +60,7 @@ already used for e.g. `RigidBody (d : ℕ)`.
 ## iii. Table of contents
 
 - A. The definition of Liouville integrability
-- A.1. Integrability of Hamiltonian systems
+  - A.1. Integrability of Hamiltonian systems
 - B. Conservation along the flow
 - C. Systems with one degree of freedom
 
