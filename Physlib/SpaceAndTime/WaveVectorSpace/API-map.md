@@ -32,6 +32,15 @@ Fixing a wavevector $k$ gives its dual functional $x \mapsto k\cdot x$ on space 
 fixing a displacement $x$ gives its dual functional $k \mapsto k\cdot x$ on wavevector space. [7]
 Changing the reference point changes the phase at all points in space by the same amount. [TODO]
 
+### Fourier transforms
+
+The Fourier transform takes a suitably nice function of space to a function of wavevector,
+resolving its spatial dependence into plane-wave components. The inverse Fourier transform
+reconstructs the spatial function from those components. [8]
+The transform and its inverse have a consistent choice of normalization,
+and preserve inner products up to the corresponding normalization factor. [TODO]
+The Fourier transform maps derivatives with respect to space to multiplication by wavevector
+and *vice versa*, under suitable regularity and decay assumptions. [TODO]
 
 ## Lean References
 
@@ -44,6 +53,7 @@ Changing the reference point changes the phase at all points in space by the sam
    `deriv_const_smul`, `deriv_smul`, `deriv_pow`
 6. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `pairingCLM`
 7. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `WaveVectorSpace.dual`, `Space.dual`
+8. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fourierIntegral`, `fourierIntegralInv`
 
 ## References
 
