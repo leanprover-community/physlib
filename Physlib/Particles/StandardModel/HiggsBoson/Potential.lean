@@ -77,6 +77,13 @@ TODO "Define a CoeFun instance for the Higgs Potential (or similar), instead of 
 def toFun (φ : HiggsField) (x : SpaceTime) : ℝ :=
   - P.μ2 * ‖φ‖_H^2 x + P.𝓵 * ‖φ‖_H^2 x * ‖φ‖_H^2 x
 
+/-- With zero quartic coupling and a nonnegative coefficient of the squared norm, each value
+  of the Higgs potential is nonnegative. -/
+private lemma toFun_nonneg_of_𝓵_zero (h𝓵 : P.𝓵 = 0) (hμ : P.μ2 ≤ 0) (φ : HiggsField)
+    (x : SpaceTime) : 0 ≤ P.toFun φ x := by
+  simpa only [toFun, h𝓵, zero_mul, add_zero] using
+    mul_nonneg (neg_nonneg.mpr hμ) (normSq_nonneg φ x)
+
 /-- The potential is smooth. -/
 lemma toFun_smooth (φ : HiggsField) :
     ContMDiff 𝓘(ℝ, SpaceTime) 𝓘(ℝ, ℝ) ⊤ (fun x => P.toFun φ x) := by
@@ -328,13 +335,6 @@ lemma isBounded_of_𝓵_pos (h : 0 < P.𝓵) : P.IsBounded := by
   obtain ⟨φ, x, hx⟩ := hn (-P.μ2 ^ 2 / (4 * P.𝓵))
   have h2' := h2 φ x
   linarith
-
-/-- With zero quartic coupling and a nonnegative coefficient of the squared norm, each value
-  of the Higgs potential is nonnegative. -/
-private lemma toFun_nonneg_of_𝓵_zero (h𝓵 : P.𝓵 = 0) (hμ : P.μ2 ≤ 0) (φ : HiggsField)
-    (x : SpaceTime) : 0 ≤ P.toFun φ x := by
-  simpa only [toFun, h𝓵, zero_mul, add_zero] using
-    mul_nonneg (neg_nonneg.mpr hμ) (normSq_nonneg φ x)
 
 /-- With zero quartic coupling, the Higgs potential is bounded below exactly when the
 coefficient `-P.μ2` of the squared norm is nonnegative. -/
