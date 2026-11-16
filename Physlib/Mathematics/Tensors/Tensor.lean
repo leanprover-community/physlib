@@ -83,24 +83,23 @@ pure case (`induction_on_pure`).
 
 -/
 
-/-- The tensors with colors `c : ι → Color K`, the space `⨂[k] i, S.colored.V (c i)`. It is a
-`def`, not an `abbrev`, so that goals show `Tensor S c` instead of the product. Mathlib's results on
-`⨂` apply to it by unfolding, and its instances are copied from `⨂`. Statements are written with
-`Tensor S c`, not with `⨂[k] i, S.colored.V (c i)`. On that type `•` is Mathlib's action, not the
-action of the group, and its `AddCommGroup` and `Module` agree with those of `Tensor S c` by `rfl`,
-but not at instance transparency. -/
+-- `Tensor S c` is a `def`, not an `abbrev`, so Lean treats it as its own type. Then `g • T` is the
+-- action of the group. On `⨂` the `•` is Mathlib's scalar action, so statements use `Tensor S c`.
+-- A Mathlib lemma on `⨂` applies after `unfold Species.pure`. `map_pure` and `lift_pure` restate
+-- the common ones.
+/-- The tensors with colors `c : ι → Color K`, the space `⨂[k] i, S.colored.V (c i)`. -/
 def Tensor (S : Tensor.Species k G K basisIdx) {ι : Type} (c : ι → Tensor.Color K) : Type :=
   ⨂[k] i, S.colored.V (c i)
 
 /-- Tensors add as elements of `⨂[k] i, S.colored.V (c i)`. -/
 noncomputable instance {S : Tensor.Species k G K basisIdx} {ι : Type} {c : ι → Tensor.Color K} :
     AddCommGroup (Tensor S c) :=
-  inferInstanceAs (AddCommGroup (⨂[k] i, S.colored.V (c i)))
+  (inferInstance : AddCommGroup (⨂[k] i, S.colored.V (c i)))
 
 /-- Tensors are a vector space over `k`, as `⨂[k] i, S.colored.V (c i)` is. -/
 noncomputable instance {S : Tensor.Species k G K basisIdx} {ι : Type} {c : ι → Tensor.Color K} :
     Module k (Tensor S c) :=
-  inferInstanceAs (Module k (⨂[k] i, S.colored.V (c i)))
+  (inferInstance : Module k (⨂[k] i, S.colored.V (c i)))
 
 namespace Tensor
 
@@ -113,6 +112,18 @@ noncomputable def pure (S : Species k G K basisIdx) (f : Π i, S.colored.V (c i)
   ⨂ₜ[k] i, f i
 
 variable {S : Species k G K basisIdx}
+
+/-- Mathlib's `PiTensorProduct.map` of linear maps `f i` on a pure tensor, `u ⊗ v ↦ f₀ u ⊗ f₁ v`. -/
+lemma map_pure {c' : ι → Color K} (f : Π i, S.colored.V (c i) →ₗ[k] S.colored.V (c' i))
+    (p : Π i, S.colored.V (c i)) :
+    (PiTensorProduct.map f (S.pure p) : Tensor S c') = S.pure fun i => f i (p i) :=
+  PiTensorProduct.map_tprod f p
+
+/-- `PiTensorProduct.lift` of a multilinear map `F` on a pure tensor, `u ⊗ v ↦ F (u, v)`. -/
+lemma lift_pure {E : Type*} [AddCommMonoid E] [Module k E]
+    (F : MultilinearMap k (fun i => S.colored.V (c i)) E) (p : Π i, S.colored.V (c i)) :
+    PiTensorProduct.lift F (S.pure p) = F p :=
+  PiTensorProduct.lift.tprod p
 
 /-- Induction on tensors through pure tensors. -/
 lemma induction_on_pure {P : Tensor S c → Prop}
