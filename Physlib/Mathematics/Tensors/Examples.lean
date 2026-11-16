@@ -96,7 +96,6 @@ error: failed to synthesize instance of type class
   SMul G (Tensor S d ⊗[k] Tensor S d)
 -/
 #guard_msgs (substring := true) in
-open scoped Tensor in
 noncomputable example {k G : Type} [RCLike k] [Group G] (S : Species k G Unit fun _ => Unit)
     (d : Fin 1 → Color Unit) : SMul G (Tensor S d ⊗[k] Tensor S d) :=
   inferInstance

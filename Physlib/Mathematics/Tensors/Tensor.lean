@@ -139,10 +139,12 @@ lemma equiv_ext_pure {ρ' : Representation k G (Tensor S c)} {W : Type*} [AddCom
 
 ### B.1. The action on tensors
 
-A group element `Λ` acts on every index by the representation of its color,
-`Λ • (u ⊗ α) = Λu ⊗ (Λ⁻¹)ᵀα` (`smul_pure`). This is the representation `S.tensorRep c`,
-`Representation.piTprod` on `⨂[k] i, S.colored.V (c i)`. It is written `Λ • T` under
-`open scoped Tensor`.
+A group element `Λ` transforms each index of a tensor by the representation of its color. For a
+vector `u` and a covector `α`, `Λ • (u ⊗ α) = Λu ⊗ (Λ⁻¹)ᵀα` (`smul_pure`). In components this is
+`u^μ α_ν ↦ Λ^μ_ρ u^ρ (Λ⁻¹)^σ_ν α_σ`. Mathlib already lets some groups act on vector spaces, such
+as the phases `Circle`. For them `z • T` is the action of the species, not the scalar
+multiplication by `z`. On a linear map `f` into tensors, `z • f` is Mathlib's action. The action of
+the species on `f` is `S.tensorRep c z ∘ₗ f`.
 
 -/
 
@@ -156,24 +158,35 @@ end Species
 
 variable {S : Species k G K basisIdx}
 
-/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`, available under
-`open scoped Tensor`. Mathlib lets an element `z` of `Circle` act on every complex vector space as
-multiplication by `z`, so this instance is scoped and has priority 1100, above Mathlib's scalar
-actions. Under `open scoped Tensor`, `z • T` is the action of the species. -/
-noncomputable scoped instance (priority := 1100) distribMulAction :
+-- This instance and its projections have priority 1100. This is above Mathlib's scalar actions at
+-- 1000 and below `high`. So `Λ • T`, `mul_smul` and `smul_add` use the action of the species, also
+-- for `Circle` and `ℂˣ`.
+/-- The action `Λ • T` of the group on tensors, `S.tensorRep c Λ T`. -/
+noncomputable instance (priority := 1100) distribMulAction :
     DistribMulAction G (Tensor S c) :=
   DistribMulAction.compHom (M := Module.End k (Tensor S c)) _ (S.tensorRep c)
 
-/-- The scalar multiplication of `distribMulAction`, found before any scalar action of Mathlib. -/
-noncomputable scoped instance (priority := 1100) smul : SMul G (Tensor S c) :=
+/-- The action of `distribMulAction` as a `MulAction`. -/
+noncomputable instance (priority := 1100) mulAction : MulAction G (Tensor S c) :=
+  distribMulAction.toMulAction
+
+/-- The action of `distribMulAction` as a `DistribSMul`. -/
+noncomputable instance (priority := 1100) distribSMul : DistribSMul G (Tensor S c) :=
+  distribMulAction.toDistribSMul
+
+/-- The action of `distribMulAction` as a `SMulZeroClass`. -/
+noncomputable instance (priority := 1100) smulZeroClass : SMulZeroClass G (Tensor S c) :=
+  distribMulAction.toDistribSMul.toSMulZeroClass
+
+/-- The scalar multiplication of `distribMulAction`. -/
+noncomputable instance (priority := 1100) smul : SMul G (Tensor S c) :=
   distribMulAction.toSMul
 
-/-- The action of the group commutes with the scalars, `Λ • (r • T) = r • (Λ • T)`. It is an
-instance in this order only, which blocks the generic route `TensorProduct.leftHasSMul`. That route
-needs `SMulCommClass k G` and lets `Λ` act on `T ⊗ₜ U` as `(Λ • T) ⊗ₜ U`, on the left factor
-only. A group that Mathlib lets act on every complex vector space, such as `Circle`, still acts on
-`T ⊗ₜ U` by scalar multiplication. -/
-scoped instance smulCommClass : SMulCommClass G k (Tensor S c) where
+-- Mathlib states this law as `SMulCommClass G k`. The other order, `SMulCommClass k G`, is not an
+-- instance. With it, Mathlib's `TensorProduct.leftHasSMul` would let `Λ` act on `T ⊗ₜ U` through
+-- `T` alone, as `(Λ • T) ⊗ₜ U`. A local `SMulCommClass.symm` restores that action where wanted.
+/-- The action of the group commutes with the scalars, `Λ • (r • T) = r • (Λ • T)`. -/
+instance smulCommClass : SMulCommClass G k (Tensor S c) where
   smul_comm g r t := map_smul (S.tensorRep c g) r t
 
 namespace Species
