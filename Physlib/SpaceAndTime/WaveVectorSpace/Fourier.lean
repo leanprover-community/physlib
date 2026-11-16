@@ -5,7 +5,6 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Mathlib.Analysis.Fourier.FourierTransform
 public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 /-!
 
@@ -60,6 +59,7 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
   - A.3. Derivatives
     - A.3.1. Fourier multiplier
     - A.3.2. Fréchet derivatives
+    - A.3.3. Partial derivatives
 - B. Fourier instances
   - B.1. `(a, b) = (0, 1)` (default)
   - B.2. `(a, b) = (1, -1)`
@@ -310,6 +310,28 @@ lemma fderiv_fourierIntegralInv
     _ = -(2 * π * I * (b / (2 * π) * pairingCLM k x)) • g k := by simp [← coe_smul, smul_smul]
     _ = -(b * I * pairingCLM k x) • g k := by field_simp
     _ = -(b * I) • (k ⬝ᵥ x) • g k := by simp [← coe_smul, smul_smul]
+
+/-!
+#### A.3.3. Partial derivatives
+-/
+
+lemma deriv_fourierIntegral
+    (i : Fin d) {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
+    ∂[i] (fourierIntegral a b f) = fourierIntegral a b fun x ↦ (b * I * x i) • f x := by
+  ext
+  simp only [deriv_eq, hf, hf', fderiv_fourierIntegral, hf.aestronglyMeasurable,
+    integrable_fourierSMulRight, fourierIntegral_continuousLinearMap_apply]
+  congr
+  simp [dotProduct, ← nsmul_eq_mul, ← coe_smul, smul_smul]
+
+lemma deriv_fourierIntegralInv (i : Fin d)
+    {g : WaveVectorSpace d → E} (hg : Integrable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
+    ∂[i] (fourierIntegralInv a b g) = fourierIntegralInv a b fun k ↦ (-b * I * k i) • g k := by
+  ext
+  simp only [Space.deriv_eq, hg, hg', fderiv_fourierIntegralInv, hg.aestronglyMeasurable,
+    integrable_fourierInvSMulRight, fourierIntegralInv_continuousLinearMap_apply]
+  congr
+  simp [dotProduct, Space.basis_apply, ← coe_smul, smul_smul]
 
 end FourierIntegral
 
