@@ -24,19 +24,19 @@ Test functions, field configurations and generating functionals for a real scala
 
 This is the measure-based formulation of a real scalar Euclidean quantum field.
 A field configuration is a tempered distribution `ω`, so the basic observable is its
-evaluation `ω f` on a real Schwartz test function `f`, rather than a value at a point.
-A probability measure on these configurations specifies the field statistics:
+evaluation `ω f` on a real Schwartz test function `f`.
+A probability measure on these configurations specifies the field statistics, in a way that
 Schwinger functions are expectations of products of field evaluations, and the
 generating functional is the expectation of `exp(i ⟨ω, f⟩)`. The Glimm–Jaffe axioms
 in the companion file impose analyticity, growth bounds, Euclidean invariance,
 reflection positivity and ergodicity on this measure. This setup supplies the
-Euclidean data for reconstruction; this file proves no reconstruction theorem.
+Euclidean data for reconstruction.
 
 The parameter `d` counts spatial dimensions. Spacetime is Physlib's
 `TimeAndSpace d = Time × Space d`, with the standard origins used by its real
 vector-space instances. Thus the source's total dimension is `d + 1`.
-Field configurations carry the weak dual topology and the cylinder sigma algebra;
-their pairing with complex Schwartz functions is extended complex linearly.
+Field configurations carry the weak dual topology and the cylinder sigma algebra.
+Their pairing with complex Schwartz functions is extended complex linearly.
 
 The full `EuclideanGroup (d + 1)` action is transported through time-first Euclidean
 coordinates, so it includes transformations mixing time and space. The normalized

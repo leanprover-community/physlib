@@ -17,21 +17,15 @@ The measure and generating-functional formulation of the Euclidean field axioms.
 
 This is a formalization of the Glimm–Jaffe variation of the Osterwalder–Schrader axioms,
 as presented in Glimm and Jaffe, *Quantum Physics*, Chapter 6. [ref: glimm1987quantum]
+This formalism is on the generating functional, while the original OS axioms are on the Schwinger functions.
 
 We port the predicates in `OSforGFF/OS/Axioms.lean`: analyticity (OS0), regularity
 (OS1), full Euclidean invariance (OS2), complex reflection positivity (OS3), and
-ergodicity (OS4). These are assumptions on a probability measure on real tempered distributions;
-no existence or reconstruction theorem is asserted.
+ergodicity (OS4).
 
 Here `d` counts spatial dimensions, so the source total dimension is `d + 1`.
 Reflection positivity, ergodicity and the bundle assume `1 ≤ d`, retaining the source
 minimum of two total dimensions.
-The remaining source conventions are retained:
-positive-time tests have topological support in the open positive-time half-space;
-OS1 bounds the sum of the integrals of `‖f‖` and `‖f‖^p`; and OS3 asserts
-nonnegativity of the real part of the reflected quadratic form. The `p = 2`
-condition includes convergence of mollified two-point functions away from zero,
-not merely local integrability of a possibly nonexistent limit.
 
 OS4 uses exponentials without a factor of `i`, whereas the characteristic functional
 in OS0–OS3 includes that factor.
