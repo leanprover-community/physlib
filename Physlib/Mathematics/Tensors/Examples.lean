@@ -18,15 +18,19 @@ Tests of the colors of tensors and of the group action on tensors.
 Each test fails if its guarantee breaks. The tests are:
 - A. A tensor or a vector of one color is rejected at another color.
 - B. The group does not act on a product of tensors through one factor.
+- C. `intertwiningMapAt` rejects a map that does not commute with the group.
 
 ## ii. Key results
 
 - `toy` : a species with the same space `ℝ` at every color.
+- `scale` : a species on which a unit acts differently at its two colors.
+- `scaleCopy` : the copy of components from `up` to `down`, which does not commute with the group.
 
 ## iii. Table of contents
 
 - A. Wrong colors
 - B. The action on a product of tensors
+- C. Maps that change a color
 
 ## iv. References
 
@@ -96,5 +100,39 @@ open scoped Tensor in
 noncomputable example {k G : Type} [RCLike k] [Group G] (S : Species k G Unit fun _ => Unit)
     (d : Fin 1 → Color Unit) : SMul G (Tensor S d ⊗[k] Tensor S d) :=
   inferInstance
+
+/-!
+
+## C. Maps that change a color
+
+On `scale` the copy of components from `up` to `down` is linear but does not commute with the
+group. So `intertwiningMapAt` rejects it.
+
+-/
+
+/-- The species with the space `ℝ` at both colors and the basis `1`. A unit `r` acts by `r` at
+`up` and by `r⁻¹` at `down`. -/
+noncomputable def scale : Species ℝ ℝˣ Unit (fun _ => Unit) where
+  V _ := ℝ
+  rep c := cond c.variance.isUp (Representation.ofDistribMulAction ℝ ℝˣ ℝ)
+    ((Representation.ofDistribMulAction ℝ ℝˣ ℝ).comp invMonoidHom)
+  basis _ := Module.Basis.singleton Unit ℝ
+  invariant := by
+    rintro ⟨_, ⟨_ | _, _ | _, h⟩⟩ r x y <;> try exact absurd rfl h
+    all_goals
+      simp [Module.Basis.coordPairing_tmul, Units.smul_def]
+      field_simp
+
+/-- The copy `w := v` of components from `up` to `down`. It does not commute with the group,
+since `2 • 1 ≠ 2⁻¹ • 1`. -/
+noncomputable abbrev scaleCopy : scale.colored.V up →ₗ[ℝ] scale.colored.V down :=
+  (scale.coloredEquiv down).toLinearMap ∘ₗ (scale.coloredEquiv up).symm.toLinearMap
+
+noncomputable example (f : (scale.colored.rep up).IntertwiningMap (scale.colored.rep down)) :
+    (scale.tensorRep fun _ : Fin 1 => up).IntertwiningMap
+      (scale.tensorRep fun _ : Fin 1 => down) := by
+  fail_if_success
+    exact scale.intertwiningMapAt 0 scaleCopy fun x hx => absurd (Subsingleton.elim x 0) hx
+  exact scale.intertwiningMapAt 0 f fun x hx => absurd (Subsingleton.elim x 0) hx
 
 end Tensor.Examples
