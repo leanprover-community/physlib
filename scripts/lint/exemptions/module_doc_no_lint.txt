@@ -144,7 +144,6 @@ Physlib/Particles/StandardModel/Fermions/UpSinglet.lean
 Physlib/Particles/StandardModel/GaugeGroup/Basic.lean
 Physlib/Particles/StandardModel/HiggsBoson/Basic.lean
 Physlib/Particles/StandardModel/HiggsBoson/EffectivePotential.lean
-Physlib/Particles/StandardModel/HiggsBoson/Potential.lean
 Physlib/Particles/StandardModel/Representations.lean
 Physlib/Particles/SuperSymmetry/MSSMNu/AnomalyCancellation/B3.lean
 Physlib/Particles/SuperSymmetry/MSSMNu/AnomalyCancellation/Basic.lean
