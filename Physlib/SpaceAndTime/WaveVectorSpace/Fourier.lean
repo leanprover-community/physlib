@@ -54,6 +54,9 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
 - A. Fourier integrals
   - A.1. Two-parameter definitions
   - A.2. Basic properties
+    - A.2.1. Linearity
+    - A.2.2. Continuity
+    - A.2.3. Integration of continuous linear maps
 - B. Fourier instances
   - B.1. `(a, b) = (0, 1)` (default)
   - B.2. `(a, b) = (1, -1)`
@@ -148,6 +151,10 @@ lemma fourierIntegralInv_congr_ae {g₁ g₂ : WaveVectorSpace d → E} (hg : g�
   rw [fourierIntegralInv_def, fourierIntegralInv_def,
     VectorFourier.fourierIntegral_congr_ae _ _ _ hg]
 
+/-!
+### A.2.1. Linearity
+-/
+
 lemma fourierIntegral_const_smul (f : Space d → E) (c : ℂ) :
     fourierIntegral a b (c • f) = c • fourierIntegral a b f := by
   simp only [fourierIntegral_def, VectorFourier.fourierIntegral_const_smul, smul_comm c]
@@ -169,6 +176,10 @@ lemma fourierIntegralInv_add
   rw [VectorFourier.fourierIntegral_add continuous_fourierChar
     ((b / (2 * π)) • pairingCLM).continuous₂ hg₁ hg₂]
 
+/-!
+#### A.2.2. Continuity
+-/
+
 lemma fourierIntegral_continuous {f : Space d → E} (hf : Integrable f) :
     Continuous (fourierIntegral a b f) :=
   VectorFourier.fourierIntegral_continuous continuous_fourierChar
@@ -178,6 +189,28 @@ lemma fourierIntegralInv_continuous {g : WaveVectorSpace d → E} (hg : Integrab
     Continuous (fourierIntegralInv a b g) :=
   VectorFourier.fourierIntegral_continuous continuous_fourierChar
     ((b / (2 * π)) • pairingCLM).continuous₂ hg |>.const_smul _
+
+/-!
+#### A.2.3. Integration of continuous linear maps
+-/
+
+section IntegrandCLM
+
+variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+
+lemma fourierIntegral_continuousLinearMap_apply
+    {f : Space d → F →L[ℝ] E} (hf : Integrable f) (k : WaveVectorSpace d) (v : F) :
+    fourierIntegral a b f k v = fourierIntegral a b (f · v) k := by
+  simp only [fourierIntegral_def, Pi.smul_apply, smul_apply,
+    VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hf]
+
+lemma fourierIntegralInv_continuousLinearMap_apply
+    {g : WaveVectorSpace d → F →L[ℝ] E} (hg : Integrable g) (x : Space d) (v : F) :
+    fourierIntegralInv a b g x v = fourierIntegralInv a b (g · v) x := by
+  simp only [fourierIntegralInv_def, Pi.smul_apply, smul_apply,
+    VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hg]
+
+end IntegrandCLM
 
 end FourierIntegral
 
