@@ -47,35 +47,22 @@ representations of `G` on spaces `M i`. For `T^μ_ν` the family is `Λ` on the 
 and `(Λ⁻¹)ᵀ` on the covectors at the down index. The tensor lies in the tensor product `⨂[k] i, M i`
 of the family. Mathlib has the representation `ρ.tprod τ` on the tensor product of two
 representations, and the tensor product `IntertwiningMap.tensor` of two intertwining maps, but no
-representation on the tensor product of a family. So Mathlib's linear maps of `⨂`, such as
-`PiTensorProduct.reindex`, are not stated as maps of representations. This file defines that
-representation, `piTprod ρ`, and proves that applying maps at the factors, reordering, grouping and
-contracting factors commute with it, so that they are maps of representations (B).
-
-In the same way, the Lorentz tensors `T^μ_νρ` lie in `V ⊗ V* ⊗ V*`, with `Λ` on the vectors `V` and
-`(Λ⁻¹)ᵀ` on the covectors `V*`. Reordering the factors to `V* ⊗ V ⊗ V*`, grouping them as
-`V ⊗ (V* ⊗ V*)`, and contracting `V` with the first `V*`, `T^μ_μρ`, all commute with `g`. So each
-one sends an invariant tensor to an invariant tensor, and a tensor built from invariant ones by
-these maps is invariant with no further proof.
+representation on the tensor product of a family. So Mathlib's `PiTensorProduct.map` is not stated
+as a map of representations. This file defines that representation, `piTprod ρ` (A), and proves that
+applying maps of representations at the factors commutes with it (B).
 
 ## ii. Key results
 
-- `Representation.Equiv.tprodCongr` : the tensor product of two equivalences of representations.
 - `Representation.piTprod` : the representation on `⨂[k] i, M i` of a family of representations.
-- `Representation.IsIntertwiningMap.piTprodMap` and `Representation.Equiv.piTprodCongr` :
-  `PiTensorProduct.map` and `PiTensorProduct.congr` of maps of representations.
-- `Representation.Equiv.piTprodReindex`, `Representation.Equiv.piTprodSum` and
-  `Representation.Equiv.piTprodOfSubsingleton` : Mathlib's `reindex`, `tmulEquivDep` and
-  `subsingletonEquiv` as equivalences of representations.
 - `Representation.map_piTprod_of_tprod` : a map that commutes with `piTprod ρ` on pure tensors
   commutes with it on all tensors.
+- `Representation.IsIntertwiningMap.piTprodMap` and `Representation.Equiv.piTprodCongr` :
+  `PiTensorProduct.map` and `PiTensorProduct.congr` of maps of representations.
 
 ## iii. Table of contents
 
-- A. Tensor products of equivalences
-- B. Tensor products of families
-  - B.1. The representation on a tensor product of a family
-  - B.2. Maps of representations
+- A. The representation on a tensor product of a family
+- B. Maps of representations
 
 ## iv. References
 
@@ -87,43 +74,12 @@ these maps is invariant with no further proof.
 
 open TensorProduct
 
-variable {k G V W U X : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid V] [Module k V]
-  [AddCommMonoid W] [Module k W] [AddCommMonoid U] [Module k U] [AddCommMonoid X] [Module k X]
-  {ρ : Representation k G V} {σ : Representation k G W} {τ : Representation k G U}
-  {π : Representation k G X}
+variable {k G U : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid U] [Module k U]
+  {τ : Representation k G U}
 
 /-!
 
-## A. Tensor products of equivalences
-
-Let `φ` be a map of representations from `ρ` on `V` to `σ` on `W`, and `ψ` one from `τ` on `U` to
-`π` on `X`. Their tensor product applies each map to its own factor, `v ⊗ u ↦ φ v ⊗ ψ u`, from
-`V ⊗ U` to `W ⊗ X`. It commutes with the group because each factor does. For example, if `φ` and `ψ`
-both lower an index with the metric, their tensor product lowers both indices, `T^μν ↦ T_μν`.
-
-Mathlib has this tensor product for intertwining maps, `IntertwiningMap.tensor`, and for invertible
-linear maps, `TensorProduct.congr`, but not for equivalences of representations. `tprodCongr` gives
-it, so the tensor product of two invertible maps of representations is again invertible. In the
-example, raising both indices undoes the lowering.
-
--/
-
-/-- The tensor product of two equivalences of representations, `v ⊗ u ↦ φ v ⊗ ψ u`, Mathlib's
-`TensorProduct.congr` with the actions `ρ ⊗ τ` and `σ ⊗ π`. -/
-noncomputable def Representation.Equiv.tprodCongr (φ : ρ.Equiv σ) (ψ : τ.Equiv π) :
-    (ρ.tprod τ).Equiv (σ.tprod π) :=
-  .mk (TensorProduct.congr φ.toLinearEquiv ψ.toLinearEquiv)
-    (φ.toIntertwiningMap.tensor ψ.toIntertwiningMap).isIntertwining'
-
-@[simp]
-lemma Representation.Equiv.tprodCongr_tmul (φ : ρ.Equiv σ) (ψ : τ.Equiv π) (v : V) (u : U) :
-    φ.tprodCongr ψ (v ⊗ₜ u) = φ v ⊗ₜ ψ u := rfl
-
-/-!
-
-## B. Tensor products of families
-
-### B.1. The representation on a tensor product of a family
+## A. The representation on a tensor product of a family
 
 Given how the group acts at each index, by the family `ρ`, the representation `piTprod ρ` acts on
 the whole tensor by transforming every index by its own rule, `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`.
@@ -148,9 +104,6 @@ noncomputable def Representation.piTprod (ρ : Π i, Representation k G (M i)) :
     Representation k G (⨂[k] i, M i) :=
   PiTensorProduct.mapMonoidHom.comp (MonoidHom.pi ρ)
 
-lemma Representation.piTprod_apply (ρ : Π i, Representation k G (M i)) (g : G) :
-    Representation.piTprod ρ g = PiTensorProduct.map fun i => ρ i g := rfl
-
 @[simp]
 lemma Representation.piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G) (m : Π i, M i) :
     Representation.piTprod ρ g (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, ρ i g (m i) :=
@@ -168,21 +121,11 @@ lemma Representation.map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Represent
 
 /-!
 
-### B.2. Maps of representations
+## B. Maps of representations
 
-Not all linear maps out of `⨂` commute with the group action `piTprod`. Keeping only the
-component `T^00` of `T^μν` does not, since a boost mixes `T^00` with the other components. The
-following do, so they are maps of representations. Each acts index by index, or pairs indices in an
-invariant way, as the examples on Lorentz tensors show:
-- `piTprodMap` applies a map at every index, such as lowering every index, `T^μν ↦ T_μν`. It
-  commutes with the group when each of the maps does, and `piTprodCongr` is the same for
-  equivalences of representations.
-- `piTprodReindex` reorders the indices along `e : ι ≃ ι'`, as `T^μ_νρ ↦ T_ν^μ_ρ`.
-- `piTprodSum` joins two tensors into one, `T^μ_ν` and `U^ρ` into `T^μ_ν U^ρ`, with the indices of
-  the first over `ι₁` and those of the second over `ι₂`.
-- `piTprodOfSubsingleton` identifies a tensor with one index with its vector, `v^μ` with `v`.
-- `IsIntertwiningMap.contrPairs` contracts indices in pairs, as in `T^μ_μρ`, when every pairing,
-  such as `α_μ v^μ`, is invariant.
+`piTprodMap` applies a map at every index, such as lowering every index, `T^μν ↦ T_μν`. It commutes
+with the group when each of the maps does, and `piTprodCongr` is the same for equivalences of
+representations.
 
 -/
 
@@ -194,8 +137,10 @@ lemma Representation.IsIntertwiningMap.piTprodMap {ρ : Π i, Representation k G
     (Representation.piTprod ρ).IsIntertwiningMap (Representation.piTprod σ)
       (PiTensorProduct.map f) where
   isIntertwining g v := by
-    rw [Representation.piTprod_apply, Representation.piTprod_apply, ← LinearMap.comp_apply,
-      ← PiTensorProduct.map_comp, ← LinearMap.comp_apply, ← PiTensorProduct.map_comp]
+    change PiTensorProduct.map f (PiTensorProduct.map (fun i => ρ i g) v) =
+      PiTensorProduct.map (fun i => σ i g) (PiTensorProduct.map f v)
+    rw [← LinearMap.comp_apply, ← PiTensorProduct.map_comp, ← LinearMap.comp_apply,
+      ← PiTensorProduct.map_comp]
     exact congr(PiTensorProduct.map $(funext fun i => LinearMap.ext ((hf i).isIntertwining g)) v)
 
 /-- The tensor product of a family of equivalences of representations, `⨂ i, v i ↦ ⨂ i, φ i (v i)`.
@@ -212,72 +157,5 @@ lemma Representation.Equiv.piTprodCongr_tprod {ρ : Π i, Representation k G (M 
     {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
     Representation.Equiv.piTprodCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
   PiTensorProduct.congr_tprod _ _
-
-/-- Reindexing the factors of a tensor product of representations along `e : ι ≃ ι'`,
-`⨂ i, v i ↦ ⨂ j, v (e.symm j)`. It is Mathlib's `PiTensorProduct.reindex` with the actions
-`piTprod ρ` and `piTprod (ρ ∘ e.symm)`. -/
-noncomputable def Representation.Equiv.piTprodReindex {ι' : Type*}
-    (ρ : Π i, Representation k G (M i)) (e : ι ≃ ι') :
-    (Representation.piTprod ρ).Equiv (Representation.piTprod fun j => ρ (e.symm j)) :=
-  .mk (PiTensorProduct.reindex k M e) fun g => PiTensorProduct.ext <| MultilinearMap.ext fun m => by
-    simp [PiTensorProduct.reindex_tprod]
-
-@[simp]
-lemma Representation.Equiv.piTprodReindex_tprod {ι' : Type*} (ρ : Π i, Representation k G (M i))
-    (e : ι ≃ ι') (m : Π i, M i) :
-    Representation.Equiv.piTprodReindex ρ e (⨂ₜ[k] i, m i) = ⨂ₜ[k] j, m (e.symm j) :=
-  PiTensorProduct.reindex_tprod _ _
-
-/-- The tensor product of the two halves of a family of representations indexed by `ι₁ ⊕ ι₂`,
-`(⨂ i, v i) ⊗ (⨂ j, w j) ↦ ⨂ s, Sum.rec v w s`. It is Mathlib's `PiTensorProduct.tmulEquivDep`
-with the actions. -/
-noncomputable def Representation.Equiv.piTprodSum {ι₁ ι₂ : Type*} {M : ι₁ ⊕ ι₂ → Type*}
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)] (ρ : Π i, Representation k G (M i)) :
-    ((Representation.piTprod fun i => ρ (.inl i)).tprod
-      (Representation.piTprod fun j => ρ (.inr j))).Equiv (Representation.piTprod ρ) :=
-  .mk (PiTensorProduct.tmulEquivDep k M) fun g => by
-    ext f₁ f₂
-    simp only [Representation.tprod_apply, LinearMap.compMultilinearMap_apply,
-      TensorProduct.AlgebraTensorModule.curry_apply, LinearMap.restrictScalars_self,
-      TensorProduct.curry_apply, LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      TensorProduct.map_tmul, Representation.piTprod_tprod, PiTensorProduct.tmulEquivDep_apply]
-    exact congrArg (PiTensorProduct.tprod k) (funext fun s => by rcases s with _ | _ <;> rfl)
-
-@[simp]
-lemma Representation.Equiv.piTprodSum_tmul {ι₁ ι₂ : Type*} {M : ι₁ ⊕ ι₂ → Type*}
-    [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)] (ρ : Π i, Representation k G (M i))
-    (f₁ : Π i, M (.inl i)) (f₂ : Π j, M (.inr j)) :
-    Representation.Equiv.piTprodSum ρ ((⨂ₜ[k] i, f₁ i) ⊗ₜ (⨂ₜ[k] j, f₂ j)) =
-      ⨂ₜ[k] s, Sum.rec f₁ f₂ s :=
-  PiTensorProduct.tmulEquivDep_apply k M f₁ f₂
-
-/-- A representation `ρ i₀` as the tensor product of a family `ρ` over a subsingleton index type,
-`v ↦ ⨂ i, v`. It is Mathlib's `PiTensorProduct.subsingletonEquiv` with the actions. -/
-noncomputable def Representation.Equiv.piTprodOfSubsingleton [Subsingleton ι]
-    (ρ : Π i, Representation k G (M i)) (i₀ : ι) :
-    (ρ i₀).Equiv (Representation.piTprod ρ) :=
-  .mk (PiTensorProduct.subsingletonEquiv i₀).symm fun g => LinearMap.ext fun v => by
-    simp only [LinearMap.comp_apply, LinearEquiv.coe_coe,
-      PiTensorProduct.subsingletonEquiv_symm_apply, Representation.piTprod_tprod]
-    congr 1
-    ext i
-    obtain rfl := Subsingleton.elim i i₀
-    simp
-
-/-- `PiTensorProduct.contrPairs p` intertwines `piTprod ρ` and `piTprod` of the kept factors when
-every pairing `p j` is invariant. -/
-lemma Representation.IsIntertwiningMap.contrPairs {κ J : Type*} [Fintype J]
-    {M : κ ⊕ (J ⊕ J) → Type*} [∀ i, AddCommMonoid (M i)] [∀ i, Module k (M i)]
-    {ρ : Π i, Representation k G (M i)}
-    {p : Π j, M (.inr (.inl j)) ⊗[k] M (.inr (.inr j)) →ₗ[k] k}
-    (hp : ∀ j g x y, p j (ρ _ g x ⊗ₜ ρ _ g y) = p j (x ⊗ₜ y)) :
-    (Representation.piTprod ρ).IsIntertwiningMap (Representation.piTprod fun x => ρ (.inl x))
-      (PiTensorProduct.contrPairs p) where
-  isIntertwining g v := by
-    induction v using PiTensorProduct.induction_on with
-    | smul_tprod r f =>
-      simp only [map_smul, Representation.piTprod_tprod, PiTensorProduct.contrPairs_tprod, hp,
-        smul_comm r]
-    | add x y hx hy => simp only [map_add, hx, hy]
 
 end
