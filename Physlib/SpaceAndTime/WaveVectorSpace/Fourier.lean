@@ -59,6 +59,7 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
     - A.2.3. Integration of continuous linear maps
   - A.3. Derivatives
     - A.3.1. Fourier multiplier
+    - A.3.2. Fréchet derivatives
 - B. Fourier instances
   - B.1. `(a, b) = (0, 1)` (default)
   - B.2. `(a, b) = (1, -1)`
@@ -284,6 +285,31 @@ lemma integrable_fourierInvSMulRight {g : WaveVectorSpace d → E}
     (hg : AEStronglyMeasurable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
     Integrable (fourierInvSMulRight b g) :=
   (hg'.smul |b|).mono (by fun_prop) <| ae_of_all _ fun _ ↦ by simp [mul_assoc]
+
+/-!
+#### A.3.2. Fréchet derivatives
+-/
+
+lemma fderiv_fourierIntegral
+    {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
+    fderiv ℝ (fourierIntegral a b f) = fourierIntegral a b (fourierSMulRight b f) := by
+  rw [fourierIntegral_def, fderiv_const_smul_field, VectorFourier.fderiv_fourierIntegral _ hf hf']
+  congr with x k
+  calc
+    _ = (2 * π * I * (b / (2 * π) * pairingCLM k x)) • f x := by simp [← coe_smul, smul_smul]
+    _ = (b * I * pairingCLM k x) • f x := by field_simp
+    _ = (b * I) • (k ⬝ᵥ x) • f x := by simp [← coe_smul, smul_smul]
+
+lemma fderiv_fourierIntegralInv
+    {g : WaveVectorSpace d → E} (hg : Integrable g) (hg' : Integrable (fun k ↦ ‖k‖ * ‖g k‖)) :
+    fderiv ℝ (fourierIntegralInv a b g) = fourierIntegralInv a b (fourierInvSMulRight b g) := by
+  rw [fourierIntegralInv_def, fderiv_const_smul_field,
+    VectorFourier.fderiv_fourierIntegral _ hg hg']
+  congr with k x
+  calc
+    _ = -(2 * π * I * (b / (2 * π) * pairingCLM k x)) • g k := by simp [← coe_smul, smul_smul]
+    _ = -(b * I * pairingCLM k x) • g k := by field_simp
+    _ = -(b * I) • (k ⬝ᵥ x) • g k := by simp [← coe_smul, smul_smul]
 
 end FourierIntegral
 
