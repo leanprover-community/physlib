@@ -18,25 +18,22 @@ them index by index.
 
 ## i. Overview
 
-A color, such as `⟨vec, up⟩` for a Lorentz vector index, fixes the space of an index and how the
-group acts on it. A tensor `T : Tensor S c` lies in Mathlib's space `⨂[k] i, S.colored.V (c i)`,
-and its type also fixes how each index transforms, by the representation `S.colored.rep (c i)` of
-the color of that index. Mathlib's `⨂` is only a vector space, with no rule for how its factors
-transform. The index type `ι` is any type, such as `Fin n`. The spaces are finite-dimensional over
-`ℝ` or `ℂ`, and one group `G` acts on all of them.
+A tensor `T : Tensor S c` lies in Mathlib's space `⨂[k] i, S.colored.V (c i)`. Mathlib's `⨂` is
+only a vector space. The type `Tensor S c` also fixes how each index `i` transforms, by the
+representation of its color `c i`, such as `⟨vec, up⟩` for a Lorentz vector index. The index type
+`ι` is any type, such as `Fin n`. One group `G` acts on all the spaces.
 
-Each color `c` has its own space `S.colored.V c`, the vector space `S.V c` of the species with its
-color attached, `S.ColoredSpace c` (`Species.colored`). Two colors can have spaces `S.V` of the same
-type, as the real Lorentz colors `⟨vec, up⟩` and `⟨vec, down⟩` do, but their spaces in `S.colored`
-are different types. So a vector `v^μ` is not accepted where a covector `w_μ` is expected, and a
-tensor of one color is not accepted at another, also after unfolding `Tensor`.
-Colors prevent implicit interchange.
+We define tensors and pure tensors (A). The factors are the spaces `S.colored.V (c i)` of
+`ColoredSpace.lean`, a different type for each color. So a vector `v^μ` is not accepted where a
+covector `w_μ` is expected. A tensor of one color is not accepted at another, also after unfolding
+`Tensor`. We then let the group act index by index (B.1), and give the maps that commute with this
+action (B.2). Finally we give the basis of tensors and the components `T^μ_ν` (C).
 
-For example, the Lorentz colors `![⟨vec, up⟩, ⟨vec, up⟩]` give the tensors `T = T^μν e_μ ⊗ e_ν`,
-and for two vectors `u` and `v` the pure tensor `u ⊗ v` has the components `u^μ v^ν`.
+Maps that act at one index of a tensor, such as lowering an index, are in `IndexMaps.lean`.
 
-The components of a tensor are its coordinates in the product basis (C). The maps at the indices of
-tensors, such as lowering an index, are in `IndexMaps.lean`.
+The definitions take the species `S` as an argument and are in the namespace `Tensor.Species`, so
+they are written `S.pure f` and `S.tensorBasis c`. The instances on tensors, such as the action
+`Tensor.mulAction`, are in the namespace `Tensor`.
 
 ## ii. Key results
 

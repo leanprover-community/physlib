@@ -14,24 +14,17 @@ Maps of tensors at one index, such as lowering an index with a metric.
 
 ## i. Overview
 
-Many operations on tensors are built from the map at one index defined here, which commutes with
-the group. A map at one index (A) changes that index and keeps the others, as lowering the index
-`μ` does, `T_μ^ν = η_μρ T^ρν`, which changes its color to `⟨vec, down⟩`. Since the metric is
-invertible and invariant under the group, lowering is an equivalence of representations, with
-raising as its inverse (C). Contracting an index with an invariant tensor on two indices,
-`T^…μ… g_μν`, is a map at that index.
+A map at one index (A) changes that index and keeps the others, as lowering the index `μ` does,
+`T_μ^ν = η_μρ T^ρν`. `intertwiningMapAt` applies an intertwining map at one index, so that the
+tensor it returns transforms by its new colors. When the map at the index is an equivalence of
+representations, so is the map of tensors (C). Each map is fixed by its values
+on pure tensors such as `u ⊗ v`, so its laws, such as composition and commuting with the group, are
+proved once here. The maps live in the namespace `Tensor.Species` and are written with dot
+notation, as `S.intertwiningMapAt`.
 
-Every map between tensors defined here commutes with the group, and a map that changes the color of
-an index is built from a map that commutes with the group. A covector built by hand from the
-components of a vector, `w_μ := v^μ`, does not commute with the group in general.
-It can be written explicitly, through `coloredEquiv`
-or the components in `tensorBasis`, but it cannot change a color through these maps, and it is not
-lowering the index, which uses the metric.
-
-Each map is fixed by its values on pure tensors such as `u ⊗ v`. So its laws, such as composition
-and commuting with the group, are proved once here, and not again for each operation. A map at one
-index acts on the components of a tensor through that index alone, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`
-(B).
+Every map defined here commutes with the group, so a color changes through these maps only by a
+map that commutes with the group. The copy `w_μ := v^μ` of components does not, and it is not
+lowering, which uses the metric.
 
 ## ii. Key results
 
@@ -41,7 +34,7 @@ index acts on the components of a tensor through that index alone, `(f T)^…ν�
 
 ## iii. Table of contents
 
-- A. An intertwining map at one index
+- A. A map at one index
 - B. Components
 - C. An equivalence of representations at one index
 
@@ -68,74 +61,62 @@ variable {c' : ι → Color K}
 
 /-!
 
-## A. An intertwining map at one index
+## A. A map at one index
 
-`intertwiningMapAt i f h` applies an intertwining map `f` at the index `i` and keeps the others,
-`u ⊗ v ↦ u ⊗ f v`. The map `f` may change the color at `i`, as lowering turns `⟨vec, up⟩` into
-`⟨vec, down⟩`. So the result has other colors `c'`, and `h : ∀ x, x ≠ i → c x = c' x` says that
-they agree with `c` at the other indices. There the vectors are moved along `h` by `S.cast`.
-`indexMapsAt i f h` is the family with `f` at `i` and `S.cast` elsewhere, and `intertwiningMapAt` is
-Mathlib's `PiTensorProduct.map` of it. Contracting with an invariant tensor `g` on two indices is
-`intertwiningMapAt` of `g` read as a linear map, which commutes with the group because `g` is
-invariant.
+`intertwiningMapAt i f h` applies `f` at the index `i`, `u ⊗ v ↦ u ⊗ f v`. The map `f` may change
+the color at `i`, as lowering turns `⟨vec, up⟩` into `⟨vec, down⟩`. The proof `h` says that the
+other colors stay the same. At those indices the vectors move by `S.colored.cast`.
 
 -/
 
 variable [DecidableEq ι]
 
 variable (S) in
-/-- The family of intertwining maps with `f` at the index `i` and the identity, moved along `h x`,
-at every other index `x`. `intertwiningMapAt` applies it index by index. -/
-noncomputable def indexMapsAt (i : ι)
-    (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) :
-    Π x, (S.colored.rep (c x)).IntertwiningMap (S.colored.rep (c' x)) :=
-  Function.update
-    (fun x => if hx : x = i then 0 else (S.colored.cast (h x hx)).toIntertwiningMap) i f
+/-- The family of linear maps with `f` at the index `i` and `S.colored.cast (h x _)` at every other
+index `x`. -/
+noncomputable def indexMapsAt (i : ι) (f : S.colored.V (c i) →ₗ[k] S.colored.V (c' i))
+    (h : ∀ x, x ≠ i → c x = c' x) : Π x, S.colored.V (c x) →ₗ[k] S.colored.V (c' x) :=
+  fun x => if hx : x = i then hx ▸ f else (S.colored.cast (h x hx)).toLinearMap
 
 /-- At the index `i`, `indexMapsAt i f h` is `f`. -/
 @[simp]
-lemma indexMapsAt_apply_self (i : ι)
-    (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c' i)))
+lemma indexMapsAt_apply_self (i : ι) (f : S.colored.V (c i) →ₗ[k] S.colored.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) : S.indexMapsAt i f h i = f :=
-  Function.update_self _ _ _
+  dite_eq_left rfl
 
 /-- At an index `x ≠ i`, `indexMapsAt i f h` is `S.colored.cast (h x hx)`. -/
 @[simp]
-lemma indexMapsAt_apply_ne (i : ι)
-    (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c' i)))
+lemma indexMapsAt_apply_ne (i : ι) (f : S.colored.V (c i) →ₗ[k] S.colored.V (c' i))
     (h : ∀ x, x ≠ i → c x = c' x) {x : ι} (hx : x ≠ i) :
-    S.indexMapsAt i f h x = (S.colored.cast (h x hx)).toIntertwiningMap := by
-  rw [indexMapsAt, Function.update_of_ne hx, dite_eq_right hx]
-
-/-- A family with `f` at the index `i` and the moves along `h x` at the other indices is
-`indexMapsAt i f h`. -/
-lemma eq_indexMapsAt
-    {F : Π x, (S.colored.rep (c x)).IntertwiningMap (S.colored.rep (c' x))} (i : ι)
-    (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) (hi : F i = f)
-    (hne : ∀ x (hx : x ≠ i), F x = (S.colored.cast (h x hx)).toIntertwiningMap) :
-    F = S.indexMapsAt i f h :=
-  Function.eq_update_iff.2 ⟨hi, fun x hx => by rw [hne x hx, dite_eq_right hx]⟩
+    S.indexMapsAt i f h x = (S.colored.cast (h x hx)).toLinearMap :=
+  dite_eq_right hx
 
 variable (S) in
-/-- The intertwining map `f` at the index `i`, and the identity, moved along `h x`, at every other
-index `x`, as in `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. It is Mathlib's `PiTensorProduct.map` of
-`indexMapsAt i f h`, and it commutes with the group because every map of the family does. -/
+/-- The intertwining map `f` at the index `i` and `S.colored.cast (h x _)` at every other index
+`x`, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
 noncomputable def intertwiningMapAt (i : ι)
     (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) : (S.tensorRep c).IntertwiningMap (S.tensorRep c') :=
-  ⟨PiTensorProduct.map fun x => (S.indexMapsAt i f h x).toLinearMap, fun g => LinearMap.ext
-    ((Representation.IsIntertwiningMap.piTprodMap fun x =>
-      ⟨(S.indexMapsAt i f h x).isIntertwining⟩).isIntertwining g)⟩
+    (h : ∀ x, x ≠ i → c x = c' x) : (S.tensorRep c).IntertwiningMap (S.tensorRep c') where
+  toLinearMap := PiTensorProduct.map (S.indexMapsAt i f.toLinearMap h)
+  isIntertwining' g := ext_pure fun p => by
+    change PiTensorProduct.map (S.indexMapsAt i f.toLinearMap h) (g • S.pure p) =
+      g • show Tensor S c' from PiTensorProduct.map (S.indexMapsAt i f.toLinearMap h) (S.pure p)
+    rw [smul_pure, map_pure, map_pure, smul_pure]
+    refine congrArg S.pure (funext fun x => ?_)
+    by_cases hx : x = i
+    · subst hx
+      simpa using Representation.IntertwiningMap.isIntertwining _ _ f g (p x)
+    · simpa [hx] using Representation.IntertwiningMap.isIntertwining _ _
+        (S.colored.cast (h x hx)).toIntertwiningMap g (p x)
 
-/-- On a pure tensor, `intertwiningMapAt` applies `S.indexMapsAt i f h x` to the vector at each
-index `x`. -/
+/-- On a pure tensor, `intertwiningMapAt` applies `S.indexMapsAt i f.toLinearMap h x` to the
+vector at each index `x`. -/
 lemma intertwiningMapAt_pure_indexMapsAt (i : ι)
     (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c' i)))
     (h : ∀ x, x ≠ i → c x = c' x) (p : Π x, S.colored.V (c x)) :
-    S.intertwiningMapAt i f h (S.pure p) = S.pure fun x => S.indexMapsAt i f h x (p x) :=
-  PiTensorProduct.map_tprod _ _
+    S.intertwiningMapAt i f h (S.pure p) =
+      S.pure fun x => S.indexMapsAt i f.toLinearMap h x (p x) :=
+  map_pure _ p
 
 /-- On a pure tensor, `intertwiningMapAt` applies `f` to the vector at `i` and keeps the others,
 `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. -/
@@ -149,6 +130,7 @@ lemma intertwiningMapAt_pure (i : ι)
   by_cases hx : x = i
   · subst hx
     rw [indexMapsAt_apply_self, hqi]
+    rfl
   · rw [indexMapsAt_apply_ne _ _ _ hx, hq x hx]
     rfl
 
@@ -159,17 +141,14 @@ lemma intertwiningMapAt_comp {c'' : ι → Color K} (i : ι)
     (g : (S.colored.rep (c' i)).IntertwiningMap (S.colored.rep (c'' i)))
     (h : ∀ x, x ≠ i → c x = c' x) (h' : ∀ x, x ≠ i → c' x = c'' x) :
     (S.intertwiningMapAt i g h').comp (S.intertwiningMapAt i f h) =
-      S.intertwiningMapAt i (g.comp f) fun x hx => (h x hx).trans (h' x hx) :=
-  Representation.IntertwiningMap.ext <| ext_pure fun p => by
-    change S.intertwiningMapAt i g h' (S.intertwiningMapAt i f h (S.pure p)) =
-      S.intertwiningMapAt i (g.comp f) _ (S.pure p)
-    rw [intertwiningMapAt_pure_indexMapsAt, intertwiningMapAt_pure_indexMapsAt,
-      intertwiningMapAt_pure_indexMapsAt]
-    refine congrArg S.pure (funext fun x => ?_)
-    by_cases hx : x = i
-    · subst hx
-      simp
-    · simp [hx]
+      S.intertwiningMapAt i (g.comp f) fun x hx => (h x hx).trans (h' x hx) := by
+  refine Representation.IntertwiningMap.ext ((PiTensorProduct.map_comp _ _).symm.trans
+    (congrArg PiTensorProduct.map (funext fun x => ?_)))
+  by_cases hx : x = i
+  · subst hx
+    simp
+  · ext v
+    simp [hx]
 
 /-- `intertwiningMapAt` of the identity is the identity. -/
 lemma intertwiningMapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x := fun _ _ => rfl) :
@@ -180,9 +159,6 @@ lemma intertwiningMapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x := fun _ _
 /-!
 
 ## B. Components
-
-In components, `intertwiningMapAt` acts on the one index, `(f T)^…ν… = ∑ μ, f^ν_μ T^…μ…`
-(`tensorBasis_repr_intertwiningMapAt`).
 
 -/
 
@@ -225,7 +201,6 @@ lemma tensorBasis_repr_intertwiningMapAt [Fintype ι] (i : ι)
     -- Split off the index `i`, where `f` acts, from the indices where the label is only moved.
     rw [intertwiningMapAt_pure_indexMapsAt, tensorBasis_repr_pure,
       ← Finset.mul_prod_erase _ _ (Finset.mem_univ i), indexMapsAt_apply_self,
-      ← Representation.IntertwiningMap.toLinearMap_apply,
       ← LinearMap.toMatrix_mulVec_repr (S.colored.basis (c i)) (S.colored.basis (c' i)),
       Matrix.mulVec, dotProduct, Finset.sum_mul]
     refine Finset.sum_congr rfl fun μ _ => ?_
