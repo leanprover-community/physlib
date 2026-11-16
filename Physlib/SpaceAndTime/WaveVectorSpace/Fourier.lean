@@ -57,6 +57,8 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
     - A.2.1. Linearity
     - A.2.2. Continuity
     - A.2.3. Integration of continuous linear maps
+  - A.3. Derivatives
+    - A.3.1. Fourier multiplier
 - B. Fourier instances
   - B.1. `(a, b) = (0, 1)` (default)
   - B.2. `(a, b) = (1, -1)`
@@ -82,7 +84,7 @@ namespace WaveVectorSpace
 
 section FourierIntegral
 
-open MeasureTheory Real
+open Complex MeasureTheory Real
 open scoped FourierTransform
 
 variable (a b : ℝ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
@@ -108,7 +110,6 @@ lemma fourierIntegral_def (f : Space d → E) :
           (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f :=
   rfl
 
-open Complex in
 lemma fourierIntegral_eq (f : Space d → E) (k : WaveVectorSpace d) :
     fourierIntegral a b f k
       = √(|b| / (2 * π) ^ (1 - a)) • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
@@ -131,7 +132,6 @@ lemma fourierIntegralInv_def (g : WaveVectorSpace d → E) :
         • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g :=
   rfl
 
-open Complex in
 lemma fourierIntegralInv_eq (g : WaveVectorSpace d → E) (x : Space d) :
     fourierIntegralInv a b g x
       = √(|b| / (2 * π) ^ (1 + a)) • ∫ k : WaveVectorSpace d, cexp (-b * (k ⬝ᵥ x) * I) • g k := by
@@ -211,6 +211,79 @@ lemma fourierIntegralInv_continuousLinearMap_apply
     VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hg]
 
 end IntegrandCLM
+
+/-!
+### A.3. Derivatives
+-/
+
+/-!
+#### A.3.1. Fourier multipliers
+-/
+
+/-- Send a function `f : Space d → E` to the function `f : Space d → Hom (WaveVectorSpace d, E)`
+given by `x ↦ (k ↦ b * I * (k ⬝ᵥ x) • f x)`. This is designed so that the Fourier transform of
+`fourierSMulRight b f` is the `fderiv` of the Fourier transform of `f`. -/
+noncomputable def fourierSMulRight (f : Space d → E) (x : Space d) : WaveVectorSpace d →L[ℝ] E :=
+  (b * I) • x.dual.smulRight (f x)
+
+/-- Send a function `g : WaveVectorSpace d → E` to the function
+`g : WaveVectorSpace d → Hom (Space d, E)` given by `k ↦ (x ↦ -b * I * (k ⬝ᵥ x) • g k)`.
+This is designed so that the inverse Fourier transform of `fourierInvSMulRight b g`
+is the `fderiv` of the inverse Fourier transform of `g`. -/
+noncomputable def fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
+    Space d →L[ℝ] E :=
+  -(b * I) • k.dual.smulRight (g k)
+
+lemma fourierSMulRight_eq (f : Space d → E) :
+    fourierSMulRight b f = fun x ↦ (b * I) • x.dual.smulRight (f x) :=
+  rfl
+
+lemma fourierInvSMulRight_eq (g : WaveVectorSpace d → E) :
+    fourierInvSMulRight b g = fun k ↦ -(b * I) • k.dual.smulRight (g k) :=
+  rfl
+
+@[simp]
+lemma fourierSMulRight_apply (f : Space d → E) (x : Space d) (k : WaveVectorSpace d) :
+    fourierSMulRight b f x k = (b * I) • (k ⬝ᵥ x) • f x :=
+  rfl
+
+@[simp]
+lemma fourierInvSMulRight_apply (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) (x : Space d) :
+    fourierInvSMulRight b g k x = -(b * I) • (k ⬝ᵥ x) • g k :=
+  rfl
+
+@[simp]
+lemma norm_fourierSMulRight (f : Space d → E) (x : Space d) :
+    ‖fourierSMulRight b f x‖ = |b| * ‖x‖ * ‖f x‖ := by
+  simp [fourierSMulRight, norm_smul, mul_assoc]
+
+@[simp]
+lemma norm_fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
+    ‖fourierInvSMulRight b g k‖ = |b| * ‖k‖ * ‖g k‖ := by
+  simp [fourierInvSMulRight, norm_smul, mul_assoc]
+
+@[fun_prop]
+lemma aestronglyMeasurable_fourierSMulRight {f : Space d → E} (hf : AEStronglyMeasurable f) :
+    AEStronglyMeasurable (fourierSMulRight b f) := by
+  rw [fourierSMulRight_eq]
+  fun_prop
+
+@[fun_prop]
+lemma aestronglyMeasurable_fourierInvSMulRight
+    {g : WaveVectorSpace d → E} (hg : AEStronglyMeasurable g) :
+    AEStronglyMeasurable (fourierInvSMulRight b g) := by
+  rw [fourierInvSMulRight_eq]
+  fun_prop
+
+lemma integrable_fourierSMulRight {f : Space d → E}
+    (hf : AEStronglyMeasurable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
+    Integrable (fourierSMulRight b f) :=
+  (hf'.smul |b|).mono (by fun_prop) <| ae_of_all _ fun _ ↦ by simp [mul_assoc]
+
+lemma integrable_fourierInvSMulRight {g : WaveVectorSpace d → E}
+    (hg : AEStronglyMeasurable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
+    Integrable (fourierInvSMulRight b g) :=
+  (hg'.smul |b|).mono (by fun_prop) <| ae_of_all _ fun _ ↦ by simp [mul_assoc]
 
 end FourierIntegral
 
