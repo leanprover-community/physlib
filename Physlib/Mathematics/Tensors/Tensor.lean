@@ -170,13 +170,13 @@ noncomputable scoped instance (priority := 1100) distribMulAction :
 noncomputable scoped instance (priority := 1100) smul : SMul G (Tensor S c) :=
   distribMulAction.toSMul
 
-/-- The action of the group commutes with the scalars. -/
+/-- The action of the group commutes with the scalars, `Λ • (r • T) = r • (Λ • T)`. It is an
+instance in this order only, which blocks the generic route `TensorProduct.leftHasSMul`. That route
+needs `SMulCommClass k G` and lets `Λ` act on `T ⊗ₜ U` as `(Λ • T) ⊗ₜ U`, on the left factor
+only. A group that Mathlib lets act on every complex vector space, such as `Circle`, still acts on
+`T ⊗ₜ U` by scalar multiplication. -/
 scoped instance smulCommClass : SMulCommClass G k (Tensor S c) where
   smul_comm g r t := map_smul (S.tensorRep c g) r t
-
-/-- The scalars commute with the action of the group. -/
-scoped instance smulCommClass' : SMulCommClass k G (Tensor S c) :=
-  .symm _ _ _
 
 namespace Species
 
