@@ -96,7 +96,7 @@ lemma lift_mul_tmul (x : SpaceTimeAlgebra ⊗[ℂ] Module.End ℂ V)
   | tmul a S =>
       rw [Algebra.TensorProduct.tmul_mul_tmul]
       show (a * b) ⊗ₜ[ℂ] (S * T) v = b • (a ⊗ₜ[ℂ] S (T v))
-      rw [Module.End.mul_apply, TensorProduct.smul_tmul', smul_eq_mul, mul_comm b a]
+      rw [mul_apply_eq_comp, TensorProduct.smul_tmul', smul_eq_mul, mul_comm b a]
   | add p q hp hq =>
       have hd : (p + q) * (b ⊗ₜ[ℂ] T) = p * (b ⊗ₜ[ℂ] T) + q * (b ⊗ₜ[ℂ] T) := by
         exact Distrib.right_distrib p q (b ⊗ₜ[ℂ] T)
@@ -146,7 +146,7 @@ lemma coeff_mul_of_smul_comm
         (TensorProduct.mk ℂ SpaceTimeAlgebra V)) (c U * c W) v
       = rep (U * W) (jetOfConstant v) := by
   rw [← rep_lift_of_smul_comm hlin U (c U) (hc U) (c W) v, hc W v, map_mul,
-    Module.End.mul_apply]
+    mul_apply_eq_comp]
 
 /-- **The symbol action of a coefficient is an anti-homomorphism.** Let `Θ` send a
 coefficient `g ⊗ T` in `SpaceTimeAlgebra ⊗ End V` to the endomorphism `jetRingAction g ⊗ Tᵀ` of

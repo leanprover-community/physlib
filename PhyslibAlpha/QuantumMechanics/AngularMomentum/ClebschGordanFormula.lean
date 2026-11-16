@@ -291,7 +291,7 @@ lemma ρF_pow_vNat (a l : ℕ) :
     ((ρF : Module.End ℝ (StandardSl2Module ℝ n)) ^ l) (vNat n a) = vNat n (a + l) := by
   induction l with
   | zero => rfl
-  | succ l ih => rw [pow_succ', Module.End.mul_apply, ih, ρF_vNat, add_assoc]
+  | succ l ih => rw [pow_succ', mul_apply_eq_comp, ih, ρF_vNat, add_assoc]
 
 /-- The binomial theorem for the lowering operator:
 `f^l (v_a ⊗ v_b) = Σ_i C(l, i) v_{a+i} ⊗ v_{b+l-i}`. -/
@@ -304,7 +304,7 @@ lemma tensorF_pow_tmul_vNat (a b l : ℕ) :
       LinearMap.rTensor_comp_lTensor, LinearMap.lTensor_comp_rTensor]
   rw [tensorF, diagEnd, hc.add_pow, LinearMap.sum_apply]
   refine Finset.sum_congr rfl fun i _ => ?_
-  rw [Module.End.mul_apply, Module.End.mul_apply, Module.End.natCast_apply, LinearMap.rTensor_pow,
+  rw [mul_apply_eq_comp, mul_apply_eq_comp, natCast_apply_eq_smul, LinearMap.rTensor_pow,
     LinearMap.lTensor_pow, map_nsmul, map_nsmul, LinearMap.lTensor_tmul, LinearMap.rTensor_tmul,
     ρF_pow_vNat, ρF_pow_vNat, Nat.cast_smul_eq_nsmul]
 

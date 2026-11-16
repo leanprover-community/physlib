@@ -121,8 +121,8 @@ noncomputable def iteratedFDerivQuadraticMap {V : Type*} [NormedAddCommGroup V]
     have hsm (b c) := (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![b,v] c u v
     have hsm₀ := hsm v 0
     have hsm₁ := hsm (u • v) 1
-    simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul]
-        at hsm₀ hsm₁ hsm
+    simp only [update₀, update₁, MultilinearMap.toFun_eq_coe, coe_coe, RingHom.id_apply,
+      smul_eq_mul] at hsm₀ hsm₁ hsm
     rw [smul_eq_mul, mul_assoc, ← hsm₀, hsm₁]}
 
 
@@ -145,7 +145,7 @@ noncomputable def continuousBilinearMapOfContinuousMultilinearMap
 
 /-- . -/
 def QuadraticMap.toMultilinearMap {V : Type*} [AddCommGroup V] [Module ℝ V]
-    (Q : QuadraticMap ℝ V ℝ) : MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ := {
+    (Q : QuadraticMap ℝ V ℝ) : MultilinearMap (RingHom.id ℝ) (fun _ : Fin 2 => V) ℝ := {
   toFun := fun v => Q.polarBilin (v 0) (v 1)
   map_update_add' := by simp
   map_update_smul' := by simp}
@@ -155,7 +155,7 @@ def QuadraticMap.toMultilinearMap {V : Type*} [AddCommGroup V] [Module ℝ V]
 noncomputable def QuadraticMap.toMultilinearMapHalfPolarBilin
     {V : Type*} [AddCommGroup V] [Module ℝ V]
     (Q : QuadraticMap ℝ V ℝ) :
-    MultilinearMap ℝ (fun _ : Fin 2 => V) ℝ :=
+    MultilinearMap (RingHom.id ℝ) (fun _ : Fin 2 => V) ℝ :=
   let B := Q.polarBilin
   { toFun := fun v => (1/2) * B (v 0) (v 1)
     map_update_add' := by
@@ -169,8 +169,9 @@ noncomputable def QuadraticMap.toMultilinearMapHalfPolarBilin
       · intro x y
         exact Distrib.left_distrib 2⁻¹ _ _
     map_update_smul' := by
-      simp +decide only [one_div, Fin.isValue, update_apply, smul_eq_mul, Fin.forall_fin_two,
-        ↓reduceIte, map_smul, one_ne_zero, LinearMap.smul_apply, zero_ne_one, forall_const]
+      simp +decide only [one_div, Fin.isValue, update_apply, RingHom.id_apply, smul_eq_mul,
+        Fin.forall_fin_two, ↓reduceIte, map_smul, one_ne_zero, LinearMap.smul_apply, zero_ne_one,
+        forall_const]
       intros
       constructor
       · intros
@@ -382,7 +383,7 @@ lemma coercive_of_posdefHalf {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ
           ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
       have h₂ := update₁ ▸ update₁ ▸
         F.toContinuousMultilinearMapHalfPolarBilin.map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
-      simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
+      simp only [MultilinearMap.toFun_eq_coe, coe_coe, RingHom.id_apply, smul_eq_mul] at h₂
       have : F.toContinuousMultilinearMapHalfPolarBilin ![u, u] * ‖u‖⁻¹
            = F.toContinuousMultilinearMapHalfPolarBilin ![‖u‖⁻¹ • u, u] := by
         simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
@@ -492,7 +493,7 @@ lemma coercive_of_posdef {V : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
           ContinuousLinearMap.coe_mk', LinearMap.coe_mk, AddHom.coe_mk])
       have h₂ := update₁ ▸ update₁ ▸
         (iteratedFDeriv ℝ 2 f x₀).map_update_smul' ![‖u‖⁻¹ • u,u] 1 ‖u‖⁻¹ u
-      simp only [MultilinearMap.toFun_eq_coe, coe_coe, smul_eq_mul] at h₂
+      simp only [MultilinearMap.toFun_eq_coe, coe_coe, RingHom.id_apply, smul_eq_mul] at h₂
       have : (iteratedFDeriv ℝ 2 f x₀) ![u, u] * ‖u‖⁻¹
            = (iteratedFDeriv ℝ 2 f x₀) ![‖u‖⁻¹ • u, u] := by
         simp_rw [Matrix.vecCons, ← curryLeft_apply, mul_comm]
@@ -538,7 +539,7 @@ theorem isLocalMin_of_posDef_of_littleo {V : Type*} [NormedAddCommGroup V]
     (hf : (iteratedFDerivQuadraticMap f x₀).PosDef) : IsLocalMin f x₀ := by
   have ⟨C,hC⟩ := coercive_of_posdef hf
   have ⟨C,hC⟩ := coercive_of_posdef_of_contdiff hcd hf
-  simp only [Asymptotics.IsLittleO, Asymptotics.IsBigOWith] at h
+  rw [Asymptotics.isLittleO_iff] at h
   apply (h (half_pos hC.1)).mono
   intro x
   have hx := hC.2 (x - x₀)

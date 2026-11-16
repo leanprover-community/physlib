@@ -101,8 +101,7 @@ lemma smul_basis_eq_sum {n : ℕ} (c : Fin n → C) (g : G) (φ : ComponentIdx (
   unfold Pure.toTensor
   rw [MultilinearMap.map_sum]
   refine Finset.sum_congr rfl fun ψ _ => ?_
-  rw [← MultilinearMap.map_smul_univ]
-  rfl
+  exact (PiTensorProduct.tprod k).map_smul_univ _ _
 
 /-- The components of `g • t`: the matrix of products of the matrix entries of `g`, one factor
   per index, applied to the components of `t`. -/

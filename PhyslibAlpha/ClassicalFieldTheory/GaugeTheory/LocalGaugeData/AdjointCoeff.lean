@@ -94,7 +94,7 @@ lemma adjointCoeff_zero_of_eval_eq_one {U : GJ} (hU : jets.eval U = 1) :
 lemma adjointCoeff_one (p : Multiset (Fin 1 ⊕ Fin 3)) :
     jets.adjointCoeff (1 : GJ) p = if p = 0 then LinearMap.id else 0 := by
   refine LinearMap.ext fun a => ?_
-  rw [adjointCoeff_apply, map_one, Module.End.one_apply]
+  rw [adjointCoeff_apply, map_one, one_apply_eq_self]
   rcases eq_or_ne p 0 with rfl | hp
   · rw [iteratedDeriv_zero, LinearMap.id_apply, evalLie_ofConstantLie, ite_eq_left rfl,
       LinearMap.id_apply]
@@ -244,7 +244,7 @@ lemma adjointCoeff_mul (U V : GJ) (x : Multiset (Fin 1 ⊕ Fin 3)) :
       (x.antidiagonal.map fun p => jets.adjointCoeff U p.1 ∘ₗ jets.adjointCoeff V p.2).sum := by
   refine LinearMap.ext fun a => ?_
   rw [Multiset.sum_linearMap_apply, Multiset.map_map, adjointCoeff_apply, map_mul,
-    Module.End.mul_apply, evalLie_iteratedDeriv_adjointJ]
+    mul_apply_eq_comp, evalLie_iteratedDeriv_adjointJ]
   exact congrArg Multiset.sum (Multiset.map_congr rfl fun p hp => by
     rw [Function.comp_apply, LinearMap.comp_apply]
     rfl)

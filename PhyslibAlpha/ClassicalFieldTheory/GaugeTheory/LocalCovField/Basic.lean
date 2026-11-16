@@ -76,7 +76,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 /-- The covariant generators of the local field algebra: the included field-strength tower
   and the covariant matter towers of every species, unconjugated and conjugate, along all
   ordered tuples of directions. -/
-def covGenerators : Set T.LocalFieldAlgebra :=
+noncomputable def covGenerators : Set T.LocalFieldAlgebra :=
   (⋃ l : List (Fin 1 ⊕ Fin 3), ⋃ μ, ⋃ ν, Set.range (T.covDerivFieldStrength l μ ν))
     ∪ ((⋃ i, ⋃ n : ℕ, ⋃ l : Fin n → (Fin 1 ⊕ Fin 3),
         Set.range (T.covDerivFermion i l) ∪ Set.range (T.covDerivConjFermion i l))

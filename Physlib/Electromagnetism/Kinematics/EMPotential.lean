@@ -304,6 +304,18 @@ lemma contDiff_action {d} (Λ : LorentzGroup d) (A : ElectromagneticPotential d)
   exact (ContinuousLinearMap.contDiff (Lorentz.Vector.actionCLM Λ)).comp
     (hA.comp (ContinuousLinearMap.contDiff (Lorentz.Vector.actionCLM Λ⁻¹)))
 
+/-- Differentiability of a Lorentz-transformed electromagnetic potential. -/
+@[fun_prop]
+lemma differentiable_lorentz_smul {d} (Λ : LorentzGroup d) (A : ElectromagneticPotential d)
+    (hA : Differentiable ℝ A) : Differentiable ℝ (Λ • A) :=
+  differentiable_action Λ A hA
+
+/-- Smoothness of a Lorentz-transformed electromagnetic potential. -/
+@[fun_prop]
+lemma contDiff_lorentz_smul {d} (Λ : LorentzGroup d) (A : ElectromagneticPotential d)
+    (hA : ContDiff ℝ n A) : ContDiff ℝ n (Λ • A) :=
+  contDiff_action Λ A hA
+
 @[fun_prop]
 lemma differentiable_deriv_component_of_smooth {d} {A : ElectromagneticPotential d}
     (hA : ContDiff ℝ ∞ A) (μ ν : Fin 1 ⊕ Fin d) :

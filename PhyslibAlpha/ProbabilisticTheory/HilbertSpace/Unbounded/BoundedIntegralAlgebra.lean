@@ -339,7 +339,7 @@ lemma boundedIntegral_add [Nonempty α]
     rcases hs (ε / 2) (by linarith) with ⟨Ns, hNs⟩
     rcases ht (ε / 2) (by linarith) with ⟨Nt, hNt⟩
     refine ⟨max Ns Nt, fun n hn x => ?_⟩
-    simp only [Pi.add_apply, SimpleFunc.add_apply]
+    simp only [Pi.add_apply, _root_.add_apply]
     calc
       ‖(s n x + t n x) - (f x + g x)‖ =
           ‖(s n x - f x) + (t n x - g x)‖ := by ring_nf
@@ -569,7 +569,7 @@ lemma boundedIntegral_mul [Nonempty α]
     rcases hsf δ hδ with ⟨Nf, hNf⟩
     rcases hsg δ hδ with ⟨Ng, hNg⟩
     refine ⟨max Nf Ng, fun n hn x => ?_⟩
-    simp only [SimpleFunc.mul_apply, Pi.mul_apply]
+    simp only [_root_.mul_apply, Pi.mul_apply]
     have hsferr : ‖sf n x - f x‖ < δ := hNf n (le_trans (le_max_left _ _) hn) x
     have hsgerr : ‖sg n x - g x‖ < δ := hNg n (le_trans (le_max_right _ _) hn) x
     have hdecomp : sf n x * sg n x - f x * g x =

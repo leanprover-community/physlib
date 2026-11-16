@@ -212,7 +212,7 @@ lemma exists_mem_spectrum_of_not_isUnit_aeval_monic
   have hP : ∀ n, P n := by
     intro n
     induction n using Nat.strong_induction_on with
-    | h n ih =>
+    | ind n ih =>
       intro g hgn hg hgnu
       have hfnunit : ¬ IsUnit g := by
         intro hfu
@@ -303,13 +303,13 @@ lemma jordanSpectralRadius_eq_norm [Nontrivial E]
   · exact spectralRadius_le_norm a x
   · rcases norm_or_neg_norm_mem_spectrum a x with hx | hx
     · calc
-        (‖x‖₊ : ENNReal) = ‖(‖x‖ : ℝ)‖₊ := by rw [nnnorm_norm]
+        (‖x‖₊ : ENNReal) = ‖(‖x‖ : ℝ)‖₊ := by rw [nnNorm_norm]
         _ ≤ spectralRadius ℝ x := by
           rw [spectralRadius_eq_of_unital]
           exact le_iSup₂ (f := fun (k : ℝ) (_ : k ∈ spectrum ℝ x) => (‖k‖₊ : ENNReal))
             (‖x‖ : ℝ) hx
     · calc
-        (‖x‖₊ : ENNReal) = ‖(-‖x‖ : ℝ)‖₊ := by simp only [nnnorm_neg, nnnorm_norm]
+        (‖x‖₊ : ENNReal) = ‖(-‖x‖ : ℝ)‖₊ := by simp only [nnNorm_neg, nnNorm_norm]
         _ ≤ spectralRadius ℝ x := by
           rw [spectralRadius_eq_of_unital]
           exact le_iSup₂ (f := fun (k : ℝ) (_ : k ∈ spectrum ℝ x) => (‖k‖₊ : ENNReal))

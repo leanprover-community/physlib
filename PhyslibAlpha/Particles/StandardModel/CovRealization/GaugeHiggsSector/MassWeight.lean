@@ -129,7 +129,7 @@ lemma IsLorentzCovariant.mul_vector
   refine Finset.sum_congr rfl fun z _ => ?_
   rw [smul_mul_assoc, mul_smul_comm, smul_smul]
   congr 1
-  all_goals simp [Fin.prod_univ_two, Fin.prod_univ_three, mul_assoc]
+  simp [Fin.prod_univ_two, Fin.prod_univ_three, mul_assoc]
 
 end Lorentz
 

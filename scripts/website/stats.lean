@@ -103,14 +103,15 @@ layout: default
 "
   pure (header ++ "\n" ++ body ++  "\n" ++ footer)
 
-unsafe def main (args  : List String) : IO UInt32 := do
-  let _ ← noImports
+unsafe def main (args : List String) : IO UInt32 := do
+  initSearchPath (← findSysroot)
   Lean.enableInitializersExecution
-  let statString ← CoreM.withImportModules #[`Physlib] (getStats).run'
-  println! statString
-  if "mkHTML" ∈ args then
-    let html ← CoreM.withImportModules #[`Physlib] (Stats.toHtml).run'
-    let htmlFile : System.FilePath := {toString := "./docs/Stats.html"}
-    IO.FS.writeFile htmlFile html
-    IO.println (s!"HTML file made.")
+  CoreM.withImportModules #[`Physlib, `QuantumInfo] do
+    let statString ← (getStats).run'
+    println! statString
+    if "mkHTML" ∈ args then
+      let html ← (Stats.toHtml).run'
+      let htmlFile : System.FilePath := {toString := "./docs/Stats.html"}
+      IO.FS.writeFile htmlFile html
+      IO.println (s!"HTML file made.")
   pure 0

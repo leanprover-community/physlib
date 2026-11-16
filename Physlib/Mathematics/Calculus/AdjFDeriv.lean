@@ -235,8 +235,8 @@ lemma hasAdjFDerivAt_uncurry {f : E → F → G} {xy} {fx' fy'}
     HasAdjFDerivAt 𝕜 (↿f) (fun dz => (fx' dz, fy' dz)) xy where
   differentiableAt :=hf
   hasAdjoint_fderiv := by
-    eta_expand
-    simp (disch:=fun_prop) [fderiv_uncurry]
+    change HasAdjoint 𝕜 (fun dxy => fderiv 𝕜 (↿f) xy dxy) _
+    simp only [fderiv_uncurry f xy _ hf]
     apply HasAdjoint.congr_adj
     case adjoint =>
       apply HasAdjoint.add

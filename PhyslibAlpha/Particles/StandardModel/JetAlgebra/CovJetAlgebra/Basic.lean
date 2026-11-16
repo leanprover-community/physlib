@@ -319,8 +319,8 @@ include h in
 lemma repLorentz_one (Λ : SL(2,ℂ)) : repLorentz Λ (1 : B) = 1 := by
   obtain ⟨v, hv⟩ : ∃ v, repLorentz Λ v = 1 :=
     ⟨repLorentz Λ⁻¹ 1, by
-      rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one repLorentz,
-        Module.End.one_apply]⟩
+      rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one repLorentz,
+        one_apply_eq_self]⟩
   have h1 := h.repLorentz_mul Λ v 1
   rw [mul_one, hv, one_mul] at h1
   exact h1.symm
@@ -564,7 +564,7 @@ sense that `JetAlgebra` is the universal object of the theory in the bare symbol
 /-- The covariant jet algebra of the Standard Model: the covariant field algebra of the
   jet algebra. Its elements are exactly the polynomial expressions in the covariant
   derivatives of the field strength and of the twelve matter towers. -/
-abbrev CovJetAlgebra : Type := ↥(AlgebraRealization.id.covAlgebra)
+noncomputable abbrev CovJetAlgebra : Type := ↥(AlgebraRealization.id.covAlgebra)
 
 /-- The covariant jet algebra is a ring: it is a subalgebra of the jet algebra. The
   instance is given explicitly because the generic `Subalgebra.toRing` is not found by

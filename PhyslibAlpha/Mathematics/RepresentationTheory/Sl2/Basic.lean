@@ -54,7 +54,7 @@ lemma Φ_leibniz [CharZero K] (t : IsSl2Triple h e f) (x y : ↥(t.toLieSubalgeb
     (v : StandardSl2Module K n) :
     Φ (n := n) t x (Φ t y v) = Φ t ⁅x, y⁆ v + Φ t y (Φ t x v) := by
   rw [Φ_lie (K := K) (n := n) t x y, LieRing.of_associative_ring_bracket]
-  simp only [LinearMap.sub_apply, Module.End.mul_apply]
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp]
   abel
 
 /-- Standard module `V(n)`, module structure.

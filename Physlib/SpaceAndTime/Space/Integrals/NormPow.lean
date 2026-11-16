@@ -160,7 +160,7 @@ lemma integrableOn_norm_rpow_shell {d : ℕ} {a : ℝ} (ha : 0 < a) (b p : ℝ) 
     · use ‖max (a ^ p) (b ^ p)‖₊
       intro x hx
       simp only [Set.mem_inter_iff, Metric.mem_ball, dist_zero_right, Set.mem_compl_iff] at hx
-      rw [enorm_le_coe]
+      rw [eNorm_le_coe]
       refine abs_le_abs_of_nonneg (Real.rpow_nonneg (norm_nonneg x) p) ?_
       rw [le_sup_iff]
       by_cases hp : 0 ≤ p

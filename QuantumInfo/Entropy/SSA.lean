@@ -1047,7 +1047,7 @@ private lemma MState.assoc'_continuous :
   -- The reindex function is continuous because it is a composition of continuous functions (permutations).
   have h_reindex_cont : Continuous (fun ρ : HermitianMat (d₁ × d₂ × d₃) ℂ => ρ.reindex (Equiv.prodAssoc d₁ d₂ d₃).symm) := by
     apply continuous_induced_rng.mpr;
-    fun_prop (disch := norm_num);
+    exact continuous_subtype_val.matrix_reindex _ _;
   convert! h_reindex_cont.comp _ using 2;
   exact Continuous_HermitianMat
 

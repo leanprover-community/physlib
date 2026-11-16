@@ -546,11 +546,12 @@ open MvPolynomial in
   slice parameters. -/
 lemma aeval_hyperchargeEigen_eigenPoint (X : Fin 4 → ℝ) (k : Fin 6) :
     aeval (eigenPoint X) (hyperchargeEigen k) = algebraMap ℝ ℂ (aRep X k) := by
-  fin_cases k <;>
-    simp only [hyperchargeEigen, eigenPoint, aRep, Fin.isValue] <;>
-    (apply Complex.ext <;>
-      simp [Complex.add_re, Complex.add_im, Complex.mul_re,
-        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]; try ring)
+  fin_cases k
+  all_goals simp only [hyperchargeEigen, eigenPoint, aRep, Fin.isValue]
+  all_goals apply Complex.ext
+  all_goals simp [Complex.add_re, Complex.add_im, Complex.mul_re,
+    Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]
+  all_goals ring
 
 open MvPolynomial in
 /-- The complexified slice potential, evaluated at the eigen-point of `repHiggs X`, returns the real
@@ -620,11 +621,13 @@ open MvPolynomial in
 lemma neutralBilinear_eval_eigenPoint (X : Fin 4 → ℝ) (i : Fin 5) :
     eval (eigenPoint X) (neutralBilinear i)
       = eval (fun j => (↑(sliceBilinear X j) : ℂ)) (transf i) := by
-  fin_cases i <;>
-    simp only [neutralBilinear, transf, eigenPoint, sliceBilinear, Fin.isValue] <;>
-    (apply Complex.ext <;>
-      simp [pow_two, Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im, Complex.mul_re,
-        Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im]; try ring)
+  fin_cases i
+  all_goals simp only [neutralBilinear, transf, eigenPoint, sliceBilinear, Fin.isValue]
+  all_goals apply Complex.ext
+  all_goals simp [pow_two, Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im,
+    Complex.mul_re, Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re,
+    Complex.I_im]
+  ring
 
 open MvPolynomial in
 /-- **The potential on representatives, in the bilinears.** A gauge-invariant polynomial potential,
@@ -904,7 +907,7 @@ lemma uPow_dvd {N M : ℕ} {A B : MvPolynomial (Fin 1 ⊕ Fin 3) ℝ}
   have hrelXX : IsRelPrime (X (Sum.inl 0) : MvPolynomial (Fin 1 ⊕ Fin 3) ℝ) (X (Sum.inr 2)) := by
     intro d hd1 hd2
     obtain ⟨c, hc⟩ := hd1
-    rcases (MvPolynomial.X_prime).irreducible.isUnit_or_isUnit hc with h | h
+    rcases (MvPolynomial.prime_X).irreducible.isUnit_or_isUnit hc with h | h
     · exact h
     · exfalso
       apply hnd

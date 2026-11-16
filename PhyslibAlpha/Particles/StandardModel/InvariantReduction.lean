@@ -267,7 +267,7 @@ lemma forall_repGauge_eq_self {B : Type*} [AddCommGroup B] [Module ℂ B]
   have hg : g = ((g.1, 1, 1) : GaugeGroupI) * (((1, g.2.1, 1) : GaugeGroupI)
       * ((1, 1, g.2.2) : GaugeGroupI)) := by
     simp [Prod.ext_iff]
-  rw [hg, map_mul, Module.End.mul_apply, map_mul, Module.End.mul_apply, h1, h2, h3]
+  rw [hg, map_mul, mul_apply_eq_comp, map_mul, mul_apply_eq_comp, h1, h2, h3]
 
 /-!
 

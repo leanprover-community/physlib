@@ -90,14 +90,14 @@ lemma sum_boostAxis_lightConeCoeff (i : Fin 3) (κ : Fin 4) (ν : Fin 1 ⊕ Fin 
     all_goals
       simp [lightConeCoeff, lightConeWeight, Fintype.sum_sum_type,
         LorentzGroup.boostAxis_apply]
-    all_goals try field_simp
-    all_goals try ring
+    all_goals field_simp
+    all_goals ring
   · fin_cases i <;> fin_cases j <;> fin_cases κ
     all_goals
       simp [lightConeCoeff, lightConeWeight, Fintype.sum_sum_type,
         LorentzGroup.boostAxis_apply]
-    all_goals try field_simp
-    all_goals try ring
+    all_goals field_simp
+    all_goals ring
 
 /-- The coordinate directions written back in the light-cone basis: `D₀` and `Dᵢ` are the
   half-sum and half-difference of `D₀ ∓ Dᵢ`, and the transverse directions are themselves. -/

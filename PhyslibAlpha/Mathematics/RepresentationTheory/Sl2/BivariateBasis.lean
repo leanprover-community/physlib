@@ -73,7 +73,7 @@ lemma apply_pow_comm {f y : Module.End K V} (hy : Commute f y) (a : ℕ) (v : V)
 lemma pow_apply_eq_zero {f : Module.End K V} {v : V} {k : ℕ} (h : (f ^ k) v = 0) {a : ℕ}
     (ha : k ≤ a) : (f ^ a) v = 0 := by
   obtain ⟨c, rfl⟩ := Nat.exists_eq_add_of_le ha
-  rw [add_comm, pow_add, Module.End.mul_apply, h, map_zero]
+  rw [add_comm, pow_add, mul_apply_eq_comp, h, map_zero]
 
 /-- A linear map sending a spanning family into its span preserves the span. -/
 lemma map_mem_span_of_range {ι : Type*} (g : ι → V) (y : Module.End K V)

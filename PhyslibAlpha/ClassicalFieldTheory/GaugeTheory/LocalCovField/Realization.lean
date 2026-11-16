@@ -88,8 +88,8 @@ namespace LocalCovFieldAlgebra
   parameter; no other species condition is used. It is built from the fields `toAlgHom`,
   `map_fst`, `map_snd`, `fst_mul`, `snd_mul` of `Representation.EquivariantAlgHom`, which
   the lemmas `map_repValue`, `map_repLorentz`, `repGauge_mul` and `repLorentz_mul` name. -/
-abbrev Realization (T : GaugeFieldData jets) (hGL : T.GaugeLorentzCompatible) (B : Type)
-    [Semiring B] [Algebra ℂ B] (repGauge : Representation ℂ G₀ B)
+noncomputable abbrev Realization (T : GaugeFieldData jets) (hGL : T.GaugeLorentzCompatible)
+    (B : Type) [Semiring B] [Algebra ℂ B] (repGauge : Representation ℂ G₀ B)
     (repLorentz : Representation ℂ SL(2,ℂ) B) :=
   Representation.EquivariantAlgHom (repValue T) repGauge (repLorentzGroup T hGL) repLorentz
 

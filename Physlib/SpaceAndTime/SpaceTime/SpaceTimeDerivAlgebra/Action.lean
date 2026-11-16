@@ -72,7 +72,7 @@ noncomputable def seriesAction : SpaceTimeAlgebra →+* Module.End ℂ SpaceTime
     (s.antidiagonal.map fun t => constantCoeff (iteratedPDeriv t.1 χ) • ∂^[t.2]).sum
   map_one' := LinearMap.ext fun p => ext_of_pairing_eq fun f => by simp [pairing_constr_leibniz]
   map_mul' χ ψ := LinearMap.ext fun p => ext_of_pairing_eq fun f => by
-    simp only [Module.End.mul_apply, pairing_constr_leibniz, mul_comm χ ψ, mul_assoc]
+    simp only [mul_apply_eq_comp, pairing_constr_leibniz, mul_comm χ ψ, mul_assoc]
   map_zero' := LinearMap.ext fun p => ext_of_pairing_eq fun f => by simp [pairing_constr_leibniz]
   map_add' χ ψ := LinearMap.ext fun p => ext_of_pairing_eq fun f => by
     simp [pairing_constr_leibniz, add_mul]

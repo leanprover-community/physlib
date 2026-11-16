@@ -81,7 +81,7 @@ lemma lie_diagEnd (A A' : Module.End K M) (B B' : Module.End K N) :
     ⁅diagEnd A B, diagEnd A' B'⁆ = diagEnd ⁅A, A'⁆ ⁅B, B'⁆ := by
   apply TensorProduct.ext'
   intro x y
-  simp only [LieRing.of_associative_ring_bracket, LinearMap.sub_apply, Module.End.mul_apply,
+  simp only [LieRing.of_associative_ring_bracket, LinearMap.sub_apply, mul_apply_eq_comp,
     diagEnd_tmul, map_add, TensorProduct.sub_tmul, TensorProduct.tmul_sub]
   abel
 

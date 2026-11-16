@@ -128,7 +128,7 @@ lemma affineIndependent_of_convexCombination_eq {ι : Type*} {p : ι → E}
     (fun j _ => div_nonneg (le_max_right _ _) hm.le)
     (by rw [← Finset.sum_div, div_self hm.ne']) (by rw [← Finset.sum_div, hneg, div_self hm.ne'])
     (by simp only [div_eq_inv_mul, mul_smul, ← Finset.smul_sum, sum_max_smul_eq hwp]) i hi
-  exact (div_left_inj' hm.ne').1 this
+  exact (div_left_inj₀ hm.ne').1 this
 
 /-!
 

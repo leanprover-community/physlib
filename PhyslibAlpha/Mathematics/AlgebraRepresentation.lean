@@ -201,7 +201,7 @@ include hρ in
   unit on the whole algebra. -/
 lemma apply_one_of_mul (g : G) : ρ g 1 = 1 := by
   have hsurj (b : A) : ρ g (ρ g⁻¹ b) = b := by
-    rw [← Module.End.mul_apply, ← map_mul ρ, mul_inv_cancel, map_one, Module.End.one_apply]
+    rw [← mul_apply_eq_comp, ← map_mul ρ, mul_inv_cancel, map_one, one_apply_eq_self]
   have key (b : A) : ρ g 1 * b = b := by
     conv_lhs => rw [← hsurj b, ← hρ, one_mul]
     rw [hsurj]

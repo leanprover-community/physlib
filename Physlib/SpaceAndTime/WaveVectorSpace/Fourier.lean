@@ -97,6 +97,7 @@ noncomputable def physChar : AddChar ℝ Circle where
 variable {b} in
 @[fun_prop]
 lemma physChar_continuous : Continuous (physChar b) := by
+  unfold physChar
   rw [AddChar.coe_mk]
   fun_prop
 

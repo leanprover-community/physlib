@@ -156,9 +156,9 @@ lemma repJetAlgHom_includeConnection_one_tmul (U : GJ) (x : LocalGaugeFieldAlgeb
 /-- The identity jet acts as the identity. -/
 lemma repJetAlgHom_one : T.repJetAlgHom 1 = AlgHom.id ℂ T.LocalFieldAlgebra := by
   refine algHom_ext (fun i x => ?_) (fun j y => ?_) (fun v => ?_)
-  · rw [repJetAlgHom_ιFermion, map_one, Module.End.one_apply, AlgHom.id_apply]
-  · rw [repJetAlgHom_ιBoson, map_one, Module.End.one_apply, AlgHom.id_apply]
-  · rw [repJetAlgHom_ιConnection, map_one, Module.End.one_apply, AlgHom.id_apply]
+  · rw [repJetAlgHom_ιFermion, map_one, one_apply_eq_self, AlgHom.id_apply]
+  · rw [repJetAlgHom_ιBoson, map_one, one_apply_eq_self, AlgHom.id_apply]
+  · rw [repJetAlgHom_ιConnection, map_one, one_apply_eq_self, AlgHom.id_apply]
     rfl
 
 /-- The action of a product of jets is the composite of the actions. -/
@@ -166,14 +166,14 @@ lemma repJetAlgHom_mul (U V : GJ) :
     T.repJetAlgHom (U * V) = (T.repJetAlgHom U).comp (T.repJetAlgHom V) := by
   refine algHom_ext (fun i x => ?_) (fun j y => ?_) (fun v => ?_)
   · rw [repJetAlgHom_ιFermion, AlgHom.comp_apply, repJetAlgHom_ιFermion, repJetAlgHom_ιFermion,
-      map_mul, Module.End.mul_apply]
+      map_mul, mul_apply_eq_comp]
   · rw [repJetAlgHom_ιBoson, AlgHom.comp_apply, repJetAlgHom_ιBoson, repJetAlgHom_ιBoson,
-      map_mul, Module.End.mul_apply]
+      map_mul, mul_apply_eq_comp]
   · refine (repJetAlgHom_ιConnection (U * V) v).trans ?_
     refine Eq.trans ?_ (congrArg (T.repJetAlgHom U) (repJetAlgHom_ιConnection V v)).symm
     refine Eq.trans ?_ (repJetAlgHom_includeConnection_one_tmul U _).symm
     refine congrArg (fun z => T.includeConnection ((1 : ℂ) ⊗ₜ[ℝ] z)) ?_
-    rw [map_mul (LocalGaugeFieldAlgebra.repJet jets), Module.End.mul_apply]
+    rw [map_mul (LocalGaugeFieldAlgebra.repJet jets), mul_apply_eq_comp]
 
 variable (T)
 

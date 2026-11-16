@@ -77,7 +77,7 @@ namespace CovSectorAlgebra
   and the Lorentz group, both acting on the whole of `B` by algebra endomorphisms. The source
   Lorentz action needs `hGL`; no other species condition is used. The lemmas `map_repValue`,
   `map_repLorentz`, `repGauge_mul` and `repLorentz_mul` name its fields. -/
-abbrev Realization (T : GaugeFieldData jets) (S : Finset FieldCategory)
+noncomputable abbrev Realization (T : GaugeFieldData jets) (S : Finset FieldCategory)
     (hGL : T.GaugeLorentzCompatible) (B : Type) [Semiring B] [Algebra ℂ B]
     (repGauge : Representation ℂ G₀ B) (repLorentz : Representation ℂ SL(2,ℂ) B) :=
   Representation.EquivariantAlgHom (repValue T S) repGauge (repLorentzGroup T S hGL) repLorentz

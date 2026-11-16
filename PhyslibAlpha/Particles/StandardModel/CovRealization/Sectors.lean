@@ -75,7 +75,7 @@ seven sectors below.
 
 /-- The span of the words in the covariant generators realising exactly the classes
   `S`. -/
-def sectorSubmodule (S : Finset GeneratorClass) : Submodule ℂ B :=
+noncomputable def sectorSubmodule (S : Finset GeneratorClass) : Submodule ℂ B :=
   Submodule.span ℂ
     {x | ∃ gl : List Generators, wordClasses gl = S ∧ (gl.map h.generatorVal).prod = x}
 
@@ -103,7 +103,7 @@ lemma mul_mem_sectorSubmodule {S T : Finset GeneratorClass} {x y : B}
   generators realise `S`. It is a non-unital subalgebra — closed under multiplication
   since `S ∪ S = S`, but containing no non-zero scalar, since the empty word realises
   no class. -/
-def sector (S : Finset GeneratorClass) : NonUnitalSubalgebra ℂ B :=
+noncomputable def sector (S : Finset GeneratorClass) : NonUnitalSubalgebra ℂ B :=
   (h.sectorSubmodule S).toNonUnitalSubalgebra fun x y hx hy => by
     have hxy := h.mul_mem_sectorSubmodule hx hy
     rwa [Finset.union_self] at hxy
@@ -462,7 +462,7 @@ lemma repLorentz_mem_sector {S : Finset GeneratorClass} {x : B} (Λ : SL(2,ℂ))
 
 /-- The span of the words realising exactly the classes `S` of total mass weight
   `w`. -/
-def sectorMassWeight (S : Finset GeneratorClass) (w : ℕ) : Submodule ℂ B :=
+noncomputable def sectorMassWeight (S : Finset GeneratorClass) (w : ℕ) : Submodule ℂ B :=
   Submodule.span ℂ
     {x | ∃ gl : List Generators, wordClasses gl = S ∧
       (gl.map Generators.weight).sum = w ∧ (gl.map h.generatorVal).prod = x}
@@ -518,7 +518,7 @@ lemma coeff_massWeightPoly_mem_sectorMassWeight {S : Finset GeneratorClass} {x :
   induction hx using Submodule.span_induction with
   | mem y hy =>
     obtain ⟨gl, hS, rfl⟩ := hy
-    rw [h.massWeightPoly_generatorVal_list_prod, Polynomial.coeff_monomial]
+    rw [h.massWeightPoly_generatorVal_list_prod, Polynomial.coeff_monomial, Finsupp.single_apply]
     by_cases hw : (gl.map Generators.weight).sum = w
     · rw [ite_eq_left hw]
       exact Submodule.subset_span ⟨gl, hS, hw, rfl⟩
@@ -531,7 +531,7 @@ lemma coeff_massWeightPoly_mem_sectorMassWeight {S : Finset GeneratorClass} {x :
     rw [map_add, Polynomial.coeff_add]
     exact Submodule.add_mem _ iha ihb
   | smul c a ha iha =>
-    rw [map_smul, Polynomial.coeff_smul]
+    rw [map_smul, AddMonoidAlgebra.coeff_smul_apply]
     exact Submodule.smul_mem _ _ iha
 
 /-- The weight-`w` part of the sector of `S` is exactly the intersection of the
@@ -544,7 +544,7 @@ lemma sectorMassWeight_eq_inf (S : Finset GeneratorClass) (w : ℕ) :
   obtain ⟨hxS, hxw⟩ := Submodule.mem_inf.mp hx
   have h1 := h.massWeightPoly_of_mem_massWeightSubmodule hxw
   have h2 := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hxS) w
-  rwa [h1, Polynomial.coeff_monomial, ite_eq_left rfl] at h2
+  rwa [h1, Polynomial.coeff_monomial, Finsupp.single_apply, ite_eq_left rfl] at h2
 
 /-- **The decomposition of the mass-weight submodule into sectors**: the weight-`w`
   component of the field algebra is the join over the class sets `S` of the
@@ -688,7 +688,7 @@ lemma sectorMassWeight_higgs_eq {w : ℕ} (hw : w ≠ 0) :
   have hz' := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hz) w
   rw [h.sectorMassWeight_empty_of_ne_zero hw, Submodule.mem_bot] at hz'
   have hkey : y + z = (massWeightPoly y).coeff w + (massWeightPoly z).coeff w := by
-    have hc := congrArg (fun p => Polynomial.coeff p w) hxe
+    have hc := congrArg (fun p => p.coeff w) hxe
     simpa [Polynomial.coeff_add, Polynomial.coeff_monomial] using hc.symm
   rw [hkey, hz', add_zero]
   exact hy'
@@ -789,7 +789,7 @@ lemma sectorMassWeight_gauge_eq {w : ℕ} (hw : w ≠ 0) :
   have hz' := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hz) w
   rw [h.sectorMassWeight_empty_of_ne_zero hw, Submodule.mem_bot] at hz'
   have hkey : y + z = (massWeightPoly y).coeff w + (massWeightPoly z).coeff w := by
-    have hc := congrArg (fun p => Polynomial.coeff p w) hxe
+    have hc := congrArg (fun p => p.coeff w) hxe
     simpa [Polynomial.coeff_add, Polynomial.coeff_monomial] using hc.symm
   rw [hkey, hz', add_zero]
   exact hy'
@@ -918,7 +918,7 @@ lemma sectorMassWeight_fermion_eq {w : ℕ} (hw : w ≠ 0) :
   have hz' := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hz) w
   rw [h.sectorMassWeight_empty_of_ne_zero hw, Submodule.mem_bot] at hz'
   have hkey : y + z = (massWeightPoly y).coeff w + (massWeightPoly z).coeff w := by
-    have hc := congrArg (fun p => Polynomial.coeff p w) hxe
+    have hc := congrArg (fun p => p.coeff w) hxe
     simpa [Polynomial.coeff_add, Polynomial.coeff_monomial] using hc.symm
   rw [hkey, hz', add_zero]
   exact hy'

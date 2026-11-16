@@ -154,16 +154,19 @@ order, comparisons made within a subsystem agree with comparisons in the global 
 
 -/
 
-/-- The cone of positive global observables. -/
-noncomputable def posCone : AddGroupCone N.Quasilocal where
+/-- The submonoid of positive global observables. -/
+noncomputable def posCone : AddSubmonoid N.Quasilocal where
   carrier := positive N
   zero_mem' := ⟨Classical.arbitrary R, 0, le_rfl, map_zero _⟩
   add_mem' := add_mem_pos
-  eq_zero_of_mem_of_neg_mem' := eq_zero_of_mem_pos_of_neg_mem_pos
+
+/-- The positive global observables form a pointed submonoid. -/
+lemma isPointed_posCone : (posCone (N := N)).IsPointed :=
+  fun _ => eq_zero_of_mem_pos_of_neg_mem_pos
 
 /-- The order on global observables induced by local positivity. -/
 noncomputable instance : PartialOrder N.Quasilocal :=
-  PartialOrder.mkOfAddGroupCone posCone
+  PartialOrder.ofAddSubmonoid isPointed_posCone
 
 /-- `x ≤ y` exactly when `y - x` has a positive local representative. -/
 lemma le_iff {x y : N.Quasilocal} : x ≤ y ↔ y - x ∈ positive N := Iff.rfl
@@ -184,7 +187,8 @@ lemma toQuasilocal_nonneg_iff (i : R) (a : A i) : 0 ≤ toQuasilocal N i a ↔ 0
     exact nonneg_iff.2 (toQuasilocal_mem_pos ha)
 
 /-- Adding the same global observable preserves a comparison. -/
-instance : IsOrderedAddMonoid N.Quasilocal := IsOrderedAddMonoid.mkOfCone posCone
+instance : IsOrderedAddMonoid N.Quasilocal :=
+  IsOrderedAddMonoid.ofAddSubmonoid isPointed_posCone
 
 /-- Nonnegative scaling preserves comparisons between global observables. -/
 instance : PosSMulMono ℝ N.Quasilocal where

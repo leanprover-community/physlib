@@ -214,7 +214,7 @@ lemma radiusPowLM_apply_memHS {d : ℕ} (s : ℝ) (ψ : 𝓢(Space d, ℂ)) (a :
       intro S C p hp G hG
       refine hG.trans_lt ?_
       rw [lintegral_const_mul _ (by fun_prop)]
-      exact ENNReal.mul_lt_top enorm_lt_top hp.hasFiniteIntegral
+      exact ENNReal.mul_lt_top eNorm_lt_top hp.hasFiniteIntegral
     rw [← lintegral_add_compl _ (measurableSet_ball (x := 0) (ε := 1)), ENNReal.add_lt_top]
     constructor
     · -- `‖x‖ < 1`: bound `‖ψ x‖` by `‖x‖ᵃ`
@@ -228,7 +228,7 @@ lemma radiusPowLM_apply_memHS {d : ℕ} (s : ℝ) (ψ : 𝓢(Space d, ℂ)) (a :
       by_contra hx'
       apply hx
       apply norm_pos_iff.mpr at hx'
-      simp_rw [← enorm_mul, enorm_le_iff_norm_le, mul_add, Real.rpow_add hx', norm_mul, ← mul_assoc]
+      simp_rw [← eNorm_mul, eNorm_le_iff_norm_le, mul_add, Real.rpow_add hx', norm_mul, ← mul_assoc]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
       simp_rw [← Nat.cast_two (R := ℝ), mul_comm, Real.rpow_mul_natCast hx'.le, norm_pow, ← mul_pow,
         norm_norm, Real.norm_eq_abs, abs_of_pos hC_pos, abs_of_nonneg (Real.rpow_nonneg hx'.le _)]
@@ -247,7 +247,7 @@ lemma radiusPowLM_apply_memHS {d : ℕ} (s : ℝ) (ψ : 𝓢(Space d, ℂ)) (a :
           (setLIntegral_mono' (by measurability) hBound)
       intro x hx
       simp only [Set.mem_compl_iff, Metric.mem_ball, dist_zero_right, not_lt] at hx
-      simp_rw [← enorm_mul, enorm_le_iff_norm_le, norm_mul, norm_pow, Real.norm_eq_abs, sq_abs,
+      simp_rw [← eNorm_mul, eNorm_le_iff_norm_le, norm_mul, norm_pow, Real.norm_eq_abs, sq_abs,
         Real.abs_rpow_of_nonneg (norm_nonneg _), abs_norm]
       have hx' : 0 < ‖x‖ := by linarith
       have hψ : ‖ψ x‖ ≤ C * ‖x‖ ^ (-(⌈s⌉.toNat + d) : ℝ) := by

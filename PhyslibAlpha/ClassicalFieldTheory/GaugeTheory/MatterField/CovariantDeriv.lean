@@ -136,7 +136,7 @@ lemma repCoeff_zero_mul (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] 
   refine LinearMap.ext fun v => ?_
   have h := jetEval_rep_of_smul rep hlin U (rep W (jetOfConstant v))
   simp only [repCoeff, LinearMap.comp_apply, jetIteratedDeriv_zero, LinearMap.id_apply, map_mul,
-    Module.End.mul_apply] at h ⊢
+    mul_apply_eq_comp] at h ⊢
   exact h
 
 /-!
