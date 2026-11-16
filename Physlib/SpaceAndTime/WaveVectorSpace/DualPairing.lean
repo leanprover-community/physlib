@@ -113,6 +113,15 @@ lemma pairingCLM_flip_apply_eq_dual (x : Space d) : pairingCLM.flip x = x.dual :
 @[simp]
 lemma pairingCLM_apply_apply (k : WaveVectorSpace d) (x : Space d) : pairingCLM k x = k ⬝ᵥ x := rfl
 
+@[fun_prop]
+lemma continuous_dual : Continuous (dual : WaveVectorSpace d → StrongDual ℝ (Space d)) :=
+  pairingCLM.continuous
+
+@[fun_prop]
+lemma _root_.Space.continuous_dual :
+    Continuous (Space.dual : Space d → StrongDual ℝ (WaveVectorSpace d)) :=
+  pairingCLM.flip.continuous
+
 /-!
 ## C. Derivatives
 -/
