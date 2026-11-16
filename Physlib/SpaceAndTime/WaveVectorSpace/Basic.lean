@@ -198,6 +198,14 @@ noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (WaveVectorSp
 noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVectorSpace d) :=
   InnerProductSpace.ofCore instCoreReal.toCore
 
+/-- The normed space structure on `WaveVectorSpace d`, registered directly. It is definitionally the
+one underlying the inner product space structure, but registering it as its own instance is
+needed for typeclass search to find the operator-norm structure on `WaveVectorSpace d →L[ℝ] ℝ`
+(for example `NormSMulClass ℝ (WaveVectorSpace d →L[ℝ] ℝ)`), which is not found when
+`NormedSpace ℝ (WaveVectorSpace d)` arises only as a nested subgoal through
+`InnerProductSpace.toNormedSpace`. -/
+noncomputable instance : NormedSpace ℝ (WaveVectorSpace d) := InnerProductSpace.toNormedSpace
+
 lemma norm_eq (k : WaveVectorSpace d) : ‖k‖ = √(∑ i, k i ^ 2) := by
   simp_rw [norm_eq_sqrt_real_inner, inner_apply, pow_two]
 
