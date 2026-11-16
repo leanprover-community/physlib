@@ -5,8 +5,8 @@ Authors: Andrea Pari
 -/
 module
 
+public import Mathlib.LinearAlgebra.PiTensorProduct.Basic
 public import Mathlib.RepresentationTheory.Intertwining
-public import Physlib.Mathematics.ForMathlib.PiTensorProduct
 
 /-!
 
@@ -17,39 +17,15 @@ Mathlib's linear maps of such products into maps of representations.
 
 ## i. Overview
 
-A representation `ρ` of a group or monoid `G` on a space `V` says how each element `g` of `G` acts
-on `V`, by the linear map `ρ g`. A map of representations from `ρ` to `σ` on `W` is a linear map
-`φ : V → W` that commutes with the group, `φ ∘ ρ g = σ g ∘ φ` for every `g`, where `∘` applies the
-right-hand map first. So transforming and then mapping is the same as mapping and then transforming,
-and the square
+A map of representations from `ρ` on `V` to `σ` on `W` is a linear map `φ : V → W` that commutes
+with the group, `φ ∘ ρ g = σ g ∘ φ`. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it
+is invertible. Lowering an index with the metric, `v ↦ η v`, is one from the vectors, with
+`ρ g = Λ`, to the covectors, with `σ g = (Λ⁻¹)ᵀ`, since `Λᵀ η Λ = η`.
 
-```
-        ρ g
-    V ──────► V
-    │         │
-  φ │         │ φ
-    ▼         ▼
-    W ──────► W
-        σ g
-```
-
-commutes. Mathlib calls it an `IntertwiningMap`, and an `Equiv` when it is invertible.
-
-For example, let `G` be the Lorentz group, and let `Λ` be the matrix of a Lorentz transformation
-`g`. Then `g` acts on the vectors `V` by `ρ g = Λ`, and on the covectors `W` by `σ g = (Λ⁻¹)ᵀ`, so
-that `α_μ v^μ` is invariant. The map `φ` is lowering an index with the metric, `φ v = η v`, from
-vectors to covectors. Composing maps is multiplying their matrices, so the two routes in the square
-are `φ ∘ ρ g = η Λ` and `σ g ∘ φ = (Λ⁻¹)ᵀ η`. They agree because `Λᵀ η Λ = η`, the defining
-property of a Lorentz transformation.
-
-A tensor with several indices has one representation for each index, a family `ρ i` of
-representations of `G` on spaces `M i`. For `T^μ_ν` the family is `Λ` on the vectors at the up index
-and `(Λ⁻¹)ᵀ` on the covectors at the down index. The tensor lies in the tensor product `⨂[k] i, M i`
-of the family. Mathlib has the representation `ρ.tprod τ` on the tensor product of two
-representations, and the tensor product `IntertwiningMap.tensor` of two intertwining maps, but no
-representation on the tensor product of a family. So Mathlib's `PiTensorProduct.map` is not stated
-as a map of representations. This file defines that representation, `piTprod ρ` (A), and proves that
-applying maps of representations at the factors commutes with it (B).
+A tensor such as `T^μ_ν` has one representation `ρ i` for each index `i` and lies in the tensor
+product `⨂[k] i, M i` of the family. Mathlib has the representation `ρ.tprod τ` and the map
+`IntertwiningMap.tensor` for two factors only. This file gives the representation for a family,
+`piTprod ρ` (A), and proves that `PiTensorProduct.map` of maps of representations is one (B).
 
 ## ii. Key results
 
@@ -81,15 +57,8 @@ variable {k G U : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid U] [Module k
 
 ## A. The representation on a tensor product of a family
 
-Given how the group acts at each index, by the family `ρ`, the representation `piTprod ρ` acts on
-the whole tensor by transforming every index by its own rule, `g ↦ ⨂ i, ρ i g` on `⨂[k] i, M i`.
-For `T^μ_ν`, with `Λ` at the up index and `(Λ⁻¹)ᵀ` at the down index, it is
-`T^μ_ν ↦ Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ`, and on a pure tensor `u ⊗ α ↦ Λu ⊗ (Λ⁻¹)ᵀ α` (`piTprod_tprod`).
-It is Mathlib's `Representation.tprod` on `V ⊗ W` for a family of factors, through
-`PiTensorProduct.map`.
-
-A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors `⨂ₜ i, m i`
-commutes with it on all tensors (`map_piTprod_of_tprod`), since pure tensors span `⨂ i, M i`.
+`piTprod ρ` transforms each index by its own representation. For `T^μ_ν` it sends the pure tensor
+`u ⊗ α` to `Λu ⊗ (Λ⁻¹)ᵀα` (`piTprod_tprod`).
 
 -/
 
@@ -103,6 +72,7 @@ the n-ary `Representation.tprod`. -/
 noncomputable def piTprod (ρ : Π i, Representation k G (M i)) : Representation k G (⨂[k] i, M i) :=
   PiTensorProduct.mapMonoidHom.comp (MonoidHom.pi ρ)
 
+/-- On a pure tensor, `piTprod ρ g` acts by `ρ i g` on the vector at each index `i`. -/
 @[simp]
 lemma piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G) (m : Π i, M i) :
     piTprod ρ g (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, ρ i g (m i) :=
@@ -110,8 +80,8 @@ lemma piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G) (m : Π i, M i
 
 /-- A semilinear map out of `⨂ i, M i`, such as a conjugate-linear one, that commutes with
 `piTprod ρ g` on pure tensors commutes with it on all tensors. -/
-lemma map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Representation k G (M i)}
-    (f : (⨂[k] i, M i) →ₛₗ[φ] U) (g : G)
+lemma map_piTprod_of_tprod {σ : k →+* k} {ρ : Π i, Representation k G (M i)}
+    (f : (⨂[k] i, M i) →ₛₗ[σ] U) (g : G)
     (h : ∀ m : Π i, M i, f (piTprod ρ g (⨂ₜ[k] i, m i)) = τ g (f (⨂ₜ[k] i, m i)))
     (t : ⨂[k] i, M i) : f (piTprod ρ g t) = τ g (f t) := by
   induction t using PiTensorProduct.induction_on with
