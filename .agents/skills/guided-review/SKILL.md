@@ -1,6 +1,7 @@
 ---
 
-name: guided-review description: Walks a reviewer through a Physlib PR step by step, whether it changes Lean code or infrastructure such as scripts, linters, CI, documentation or skills, pointing out where to look so they can write their own comments. Use it when someone wants help reviewing a PR, even if they only say "help me review PR 1234" or "take me through this PR".
+name: guided-review
+description: Walks a reviewer through a Physlib PR step by step, whether it changes Lean code or infrastructure such as scripts, linters, CI, documentation or skills, pointing out where to look so they can write their own comments. Use it when someone wants help reviewing a PR, even if they only say "help me review PR 1234" or "take me through this PR".
 
 ---
 
@@ -10,7 +11,7 @@ This skill guides a reviewer, newcomer or expert, through a Physlib PR in a fixe
 
 ## Ground rules
 
-- Do not write review comments, draft or final. Guide the reviewer to what to look at and leave the wording to them. All communication with PR authors must be human, as `AI-POLICY.md` requires.
+- Do not write, draft or edit review comments. Guide the reviewer to what to look at and leave the wording to them. All communication with PR authors must be human, as `AI-POLICY.md` requires.
 - Everything is the reviewer's call. Point things out and ask questions; do not give verdicts.
 - Stay on the reviewer's machine. Never post, push, comment or approve anything on GitHub.
 - Do not build the project; this review does not need it, and it takes hours.
@@ -56,25 +57,25 @@ The goal is to see whether the files changed, taken together, point to one coher
 
 The goal is documentation whose physics is correct and which a reader can understand. Take the reviewer through new or changed module documentation and API map additions. Flag places where the text might rely on background reading that is not there.
 
-### Step 5: Read the docstrings of new results
-
-The goal is that each new result says clearly what it does. For each one, help the reviewer check that its docstring is concise and understandable, makes plain what the lemma is doing, and fits the overall story of the PR.
-
-### Step 6: Check the references
+### Step 5: Check the references
 
 The goal is to give the reviewer every reference so they can check it. List each one added, together with what it supports in the file: the definition, result or passage it is cited for. Do not judge them yourself: `AI-POLICY.md` says only a human can verify references.
 
-### Step 7: Look at the shape of each Lean file
+### Step 6: Look at the shape of each Lean file
 
 The goal is files built around the key data structure for their area of physics. For each file, help the reviewer see whether a definition comes first and the later results depend on it, and whether it uses the established data structures of that area rather than inventing its own.
 
-### Step 8: Look at the types and connections of the lemmas
+### Step 7: Look at the types and connections of the lemmas
 
 The goal is results that use the right structures and fit together. Point out where a lemma might use a general type in place of the proper one, for example `ℝ` where `Time` belongs, and where results seem disconnected or inconsistent. Also flag any lemma that does not seem to belong to this API, or that looks as if it belongs in another file.
 
-### Step 9: Check where each lemma sits
+### Step 8: Check where each lemma sits
 
 The goal is each lemma in the right section of its file. Show the reviewer the file's sections and where each new lemma landed.
+
+### Step 9: Read the docstrings of new results
+
+The goal is that each new result says clearly what it does. For each one, help the reviewer check that its docstring is concise and understandable, makes plain what the lemma is doing, and fits the overall story of the PR.
 
 ### Step 10: Check the names
 
@@ -100,17 +101,17 @@ The goal is a change a human can read and understand. Help the reviewer see whet
 
 The goal is a design the reviewer could explain. Help them see whether the overall pattern the change follows is clear, so they could say how the whole thing works.
 
-### Step 15: Check each piece
+### Step 15: Check related documentation
+
+The goal is documentation that stays in step with the change. Flag any documentation that depends on or relates to the change and has not been updated.
+
+### Step 16: Check each piece
 
 The goal is that each added piece, such as a function, script or section, makes clear what it does. Go through them with the reviewer and flag any that are unclear.
 
-### Step 16: Check it works
+### Step 17: Check it works
 
 The goal is a change that does what it is meant to do. Where there is something to run, such as a script or linter, offer to test it, say what the test would show, and run it only once the reviewer agrees, since this runs code from the PR on their machine. Either way, explain how the reviewer could test it themselves. For documentation this step usually does not apply.
-
-### Step 17: Check related documentation
-
-The goal is documentation that stays in step with the change. Flag any documentation that depends on or relates to the change and has not been updated.
 
 ## Step 18: Hand back to the reviewer
 
