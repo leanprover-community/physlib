@@ -14,29 +14,43 @@ Maps of tensors at one index, such as lowering an index with a metric.
 
 ## i. Overview
 
-A map at one index (A) changes that index and keeps the others, as lowering the index `μ` does,
-`T_μ^ν = η_μρ T^ρν`. `intertwiningMapAt` applies an intertwining map at one index, so that the
-tensor it returns transforms by its new colors. When the map at the index is an equivalence of
-representations, so is the map of tensors (C). Each map is fixed by its values
-on pure tensors such as `u ⊗ v`, so its laws, such as composition and commuting with the group, are
-proved once here. The maps live in the namespace `Tensor.Species` and are written with dot
-notation, as `S.intertwiningMapAt`.
+We express operations on the indices of tensors, such as lowering an index, as linear maps. Mathlib
+then composes them and distributes them over linear combinations. No proof has to be repeated in
+components.
 
-Every map defined here commutes with the group, so a color changes through these maps only by a
-map that commutes with the group. The copy `w_μ := v^μ` of components does not, and it is not
-lowering, which uses the metric.
+For such an operation to respect how tensors transform, its map must commute with the group.
+Acting by `Λ` and then applying the map gives the same tensor as applying the map and then acting
+by `Λ`. A linear map with this property is an intertwining map.
+
+For example, lowering an index uses the map from vectors to covectors given by a metric. It
+commutes with the group when the metric is invariant. The Minkowski metric gives
+`v^μ ↦ v_μ = η_μν v^ν`. Since `Λᵀ η Λ = η`, lowering the transformed vector `Λv` gives the
+transformed covector.
+
+We define maps at one index (A). Most operations act at one index and keep the others, as lowering
+`μ` does, `T_μ^ν = η_μρ T^ρν`. `intertwiningMapAt i f h` is `PiTensorProduct.map` of the family
+`indexMapsAt i f h`, since Mathlib's `PiTensorProduct.map` needs one linear map for each index. The
+family is `f` at the index `i` and `S.colored.cast` at every other index. The cast keeps the vector
+and changes only its type, from the color `c x` to the equal color `c' x`, using `h`. Maps at two
+different indices commute (`intertwiningMapAt_comm`), so two indices can be lowered in either order.
+
+We then make a map at one index an equivalence when `f` is one (B). Raising an index is then the
+inverse of lowering it (`congrAt_symm`). Finally we give the components of a tensor after a map at
+one index (C), `(f T)^…ν… = ∑ ρ, f^ν_ρ T^…ρ…`.
 
 ## ii. Key results
 
 - `Species.intertwiningMapAt` and `Species.congrAt` apply an intertwining map, or an equivalence of
   representations, at one index, and `Species.tensorBasis_repr_intertwiningMapAt` gives
   the components of a tensor after `intertwiningMapAt`.
+- `Species.intertwiningMapAt_comm` proves that maps at two different indices commute, also when they
+  change the colors.
 
 ## iii. Table of contents
 
 - A. A map at one index
-- B. Components
-- C. An equivalence of representations at one index
+- B. An equivalence of representations at one index
+- C. Components
 
 ## iv. References
 
@@ -156,9 +170,95 @@ lemma intertwiningMapAt_id (i : ι) (h : ∀ x, x ≠ i → c x = c x := fun _ _
   Representation.IntertwiningMap.ext <| ext_pure fun p =>
     intertwiningMapAt_pure i _ h p p rfl fun _ _ => rfl
 
+/-- Intertwining maps at two different indices commute, also when they change the colors. Lowering
+`μ` and `ν` of `T^μν` in either order gives `T_μν`. The maps `g'` and `f'` are `g` and
+`f` moved along the colors the other map keeps (`hff'`, `hgg'`, `rfl` by default). Use it as a
+term, as in `intertwiningMapAt_comm hij ..`. -/
+lemma intertwiningMapAt_comm {c₁ c₂ c₃ : ι → Color K} {i j : ι} (hij : i ≠ j)
+    (f : (S.colored.rep (c i)).IntertwiningMap (S.colored.rep (c₁ i)))
+    (g : (S.colored.rep (c₁ j)).IntertwiningMap (S.colored.rep (c₃ j)))
+    (g' : (S.colored.rep (c j)).IntertwiningMap (S.colored.rep (c₂ j)))
+    (f' : (S.colored.rep (c₂ i)).IntertwiningMap (S.colored.rep (c₃ i)))
+    (hf : ∀ x, x ≠ i → c x = c₁ x) (hg : ∀ x, x ≠ j → c₁ x = c₃ x)
+    (hg' : ∀ x, x ≠ j → c x = c₂ x) (hf' : ∀ x, x ≠ i → c₂ x = c₃ x)
+    (hff' : ∀ v, f' (S.colored.cast (hg' i hij) v) = S.colored.cast (hg i hij) (f v) := by
+      intro; rfl)
+    (hgg' : ∀ v, g (S.colored.cast (hf j hij.symm) v) =
+      S.colored.cast (hf' j hij.symm) (g' v) := by intro; rfl) :
+    (S.intertwiningMapAt j g hg).comp (S.intertwiningMapAt i f hf) =
+      (S.intertwiningMapAt i f' hf').comp (S.intertwiningMapAt j g' hg') :=
+  Representation.IntertwiningMap.ext <| ext_pure fun p => by
+    change S.intertwiningMapAt j g hg (S.intertwiningMapAt i f hf (S.pure p)) =
+      S.intertwiningMapAt i f' hf' (S.intertwiningMapAt j g' hg' (S.pure p))
+    simp only [intertwiningMapAt_pure_indexMapsAt]
+    refine congrArg S.pure (funext fun x => ?_)
+    by_cases hxi : x = i
+    · subst hxi
+      rw [indexMapsAt_apply_self, indexMapsAt_apply_ne _ _ _ hij, indexMapsAt_apply_ne _ _ _ hij,
+        indexMapsAt_apply_self]
+      exact (hff' _).symm
+    by_cases hxj : x = j
+    · subst hxj
+      rw [indexMapsAt_apply_self, indexMapsAt_apply_ne _ _ _ hxi, indexMapsAt_apply_ne _ _ _ hxi,
+        indexMapsAt_apply_self]
+      exact hgg' _
+    · simp [hxi, hxj]
+
 /-!
 
-## B. Components
+## B. An equivalence of representations at one index
+
+Lowering with a metric is `congrAt` of `v^μ ↦ v_ν = η_νμ v^μ`. Raising is its inverse
+(`congrAt_symm`).
+
+-/
+
+variable (S) in
+/-- The equivalence of representations `f` at the index `i` and `S.colored.cast (h x _)` at every
+other index `x`. It is `intertwiningMapAt` of `f`, with inverse `intertwiningMapAt` of `f.symm`. -/
+noncomputable def congrAt (i : ι) (f : (S.colored.rep (c i)).Equiv (S.colored.rep (c' i)))
+    (h : ∀ x, x ≠ i → c x = c' x) : (S.tensorRep c).Equiv (S.tensorRep c') :=
+  .mk (.ofLinearMap (S.intertwiningMapAt i f.toIntertwiningMap h).toLinearMap
+    (S.intertwiningMapAt i f.symm.toIntertwiningMap fun x hx => (h x hx).symm).toLinearMap
+    (by
+      rw [← Representation.IntertwiningMap.comp_toLinearMap, intertwiningMapAt_comp,
+        show f.toIntertwiningMap.comp f.symm.toIntertwiningMap = .id _ by ext; simp,
+        intertwiningMapAt_id]
+      rfl)
+    (by
+      rw [← Representation.IntertwiningMap.comp_toLinearMap, intertwiningMapAt_comp,
+        show f.symm.toIntertwiningMap.comp f.toIntertwiningMap = .id _ by ext; simp,
+        intertwiningMapAt_id]
+      rfl))
+    (S.intertwiningMapAt i f.toIntertwiningMap h).isIntertwining'
+
+/-- `congrAt` is `intertwiningMapAt` of the underlying intertwining map. -/
+lemma congrAt_eq_intertwiningMapAt (i : ι) (f : (S.colored.rep (c i)).Equiv (S.colored.rep (c' i)))
+    (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) :
+    S.congrAt i f h t = S.intertwiningMapAt i f.toIntertwiningMap h t := rfl
+
+/-- The inverse of `congrAt` of `f` is `congrAt` of `f.symm`. -/
+lemma congrAt_symm (i : ι) (f : (S.colored.rep (c i)).Equiv (S.colored.rep (c' i)))
+    (h : ∀ x, x ≠ i → c x = c' x) :
+    (S.congrAt i f h).symm = S.congrAt i f.symm (fun x hx => (h x hx).symm) :=
+  Representation.Equiv.ext rfl
+
+/-!
+
+## C. Components
+
+`tensorBasis_repr_intertwiningMapAt` gives the components of a tensor after a map at one index, in
+terms of its components before. Lowering `μ` gives `(ηT)_μ^ν = ∑ ρ, η_μρ T^ρν`.
+
+A component of a tensor is given by a basis index `φ`. It chooses one basis vector at each index,
+as `(μ, ν)` chooses `T_μ^ν`. The component of `intertwiningMapAt i f h t` at `φ` is a sum over the
+basis vectors `ρ` at the index `i`. Each term is the matrix entry of `f` in row `φ i` and column
+`ρ`, times the component of `t` at `φ` with `ρ` at the index `i`. In the example, `φ = (μ, ν)`, the
+index `i` is the first one, the matrix of `f` is `η`, and the component of `t` is `T^ρν`.
+
+`updateBasisIdx i h φ ρ` is this basis index of `t`. It is `φ` with `ρ` at the index `i`. Its other
+entries keep their values. Their type changes from the colors `c'` of the new tensor to the colors
+`c` of `t`, which agree there by `h`.
 
 -/
 
@@ -210,48 +310,6 @@ lemma tensorBasis_repr_intertwiningMapAt [Fintype ι] (i : ι)
     have hx := Finset.ne_of_mem_erase hx
     rw [indexMapsAt_apply_ne _ _ _ hx, updateBasisIdx_ne _ _ _ _ hx]
     exact basis_repr_cast _ _ _
-
-/-!
-
-## C. An equivalence of representations at one index
-
-`congrAt i f h` applies an equivalence of representations `f` at the index `i`, as
-`intertwiningMapAt` does. The result is again an equivalence of representations, so it has an
-inverse, `congrAt` of `f.symm` (`congrAt_symm`). Lowering with a metric is `congrAt` of the map
-`v^μ ↦ η_νμ v^μ`, and raising is its inverse.
-
--/
-
-variable (S) in
-/-- The equivalence of representations `f` at the index `i`, and `S.colored.cast (h x _)` at every
-other index `x`. On a pure tensor, `u ⊗ v ⊗ w ↦ u ⊗ f v ⊗ w`. Its intertwining map is
-`intertwiningMapAt` of `f`. -/
-noncomputable def congrAt (i : ι) (f : (S.colored.rep (c i)).Equiv (S.colored.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) : (S.tensorRep c).Equiv (S.tensorRep c') :=
-  .mk (.ofLinearMap (S.intertwiningMapAt i f.toIntertwiningMap h).toLinearMap
-    (S.intertwiningMapAt i f.symm.toIntertwiningMap fun x hx => (h x hx).symm).toLinearMap
-    (by
-      rw [← Representation.IntertwiningMap.comp_toLinearMap, intertwiningMapAt_comp,
-        show f.toIntertwiningMap.comp f.symm.toIntertwiningMap = .id _ by ext; simp,
-        intertwiningMapAt_id]
-      rfl)
-    (by
-      rw [← Representation.IntertwiningMap.comp_toLinearMap, intertwiningMapAt_comp,
-        show f.symm.toIntertwiningMap.comp f.toIntertwiningMap = .id _ by ext; simp,
-        intertwiningMapAt_id]
-      rfl))
-    (S.intertwiningMapAt i f.toIntertwiningMap h).isIntertwining'
-
-/-- `congrAt` is `intertwiningMapAt` of the underlying intertwining map. -/
-lemma congrAt_eq_intertwiningMapAt (i : ι) (f : (S.colored.rep (c i)).Equiv (S.colored.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) (t : Tensor S c) :
-    S.congrAt i f h t = S.intertwiningMapAt i f.toIntertwiningMap h t := rfl
-
-/-- The inverse of `congrAt` of `f` is `congrAt` of `f.symm`. -/
-lemma congrAt_symm (i : ι) (f : (S.colored.rep (c i)).Equiv (S.colored.rep (c' i)))
-    (h : ∀ x, x ≠ i → c x = c' x) :
-    (S.congrAt i f h).symm = S.congrAt i f.symm (fun x hx => (h x hx).symm) :=
-  Representation.Equiv.ext rfl
 
 end Species
 

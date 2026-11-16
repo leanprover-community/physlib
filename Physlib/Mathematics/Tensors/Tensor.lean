@@ -41,10 +41,8 @@ they are written `S.pure f` and `S.tensorBasis c`. The instances on tensors, suc
 - `Species.ext_pure` proves that linear maps out of tensors that agree on pure tensors are equal.
 - `Species.tensorRep` is the group action on tensors, and `Species.smul_pure` gives it on a pure
   tensor.
-- `Species.map_smul_of_pure` proves that a map that commutes with the group on pure tensors
-  commutes with it on all tensors.
-- `Species.equivOfPure` turns a linear equivalence that commutes with the group on pure tensors
-  into an equivalence of representations.
+- `Species.map_smul_of_pure` and `Species.equivOfPure` need the commutation of a map with the
+  group on pure tensors only.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_smul` gives the
   components of `Λ • T`.
 
@@ -214,22 +212,12 @@ lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = 
 
 ### B.2. Maps that commute with the group
 
-A map `φ` of tensors commutes with the group when `φ (Λ • T) = Λ • φ T`, as `intertwiningMapAt`
-does. Such maps are Mathlib's
-`Representation.IntertwiningMap` for `tensorRep`, or `Representation.Equiv` when they are
-invertible, so they compose and send invariant tensors to invariant tensors. For example, lowering
-the index `ν` of `T^μν` is an equivalence `(S.tensorRep c).Equiv (S.tensorRep c')` from the colors
-`c = ![⟨vec, up⟩, ⟨vec, up⟩]` to `c' = ![⟨vec, up⟩, ⟨vec, down⟩]`, built by `congrAt` in
-`IndexMaps.lean`. The contraction `T^μ_ν ↦ T^μ_μ` is an intertwining map to the tensors with no
-indices, and it has no inverse.
-
-The commutation is checked on pure tensors only, where `Λ` acts on each vector. `map_smul_of_pure`
-extends the check to all tensors, and `equivOfPure` turns a linear equivalence with this check into
-an equivalence of representations. `equiv_smul` and `intertwiningMap_smul` state the commutation
-with `•`. The complex conjugation that turns undotted spinors into dotted spinors is
-conjugate-linear, so it is not an intertwining map and enters through `map_smul_of_pure`, which
-takes semilinear maps. A tensor with no indices, a scalar, is invariant
-(`smul_eq_self_of_isEmpty`).
+A map of tensors that commutes with the group, `φ (Λ • T) = Λ • φ T`, is Mathlib's
+`Representation.IntertwiningMap` for `tensorRep`, or `Representation.Equiv` when invertible.
+Lowering an index with `congrAt` in `IndexMaps.lean` is such an equivalence. The commutation needs
+a check on pure tensors only (`map_smul_of_pure`, `equivOfPure`).
+`map_smul_of_pure` takes semilinear maps, so conjugate-linear maps, such as the complex conjugation
+from undotted to dotted spinors, enter there.
 
 -/
 
