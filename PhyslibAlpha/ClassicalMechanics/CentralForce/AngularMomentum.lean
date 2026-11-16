@@ -5,6 +5,7 @@ Authors: Rithwik Ranganathan
 -/
 module
 
+public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.Basic
@@ -37,6 +38,7 @@ central-force system away from the centre of force, so `L²` and `L_z` are conse
 - `CentralForce.poissonBracket_angularMomentumSq_hamiltonian`,
   `CentralForce.poissonBracket_angularMomentumZ_hamiltonian` : `L²` and `L_z` Poisson-commute with
   the Hamiltonian of a central-force system.
+- `CentralForce.hamiltonian_angularMomentumZ_eq_on_Icc` gives conservation along an orbit.
 
 ## iii. Table of contents
 
@@ -48,6 +50,7 @@ central-force system away from the centre of force, so `L²` and `L_z` are conse
   - C.1. The squared magnitude and the z-component are in involution
   - C.2. Poisson brackets for radial partial gradients
   - C.3. Conservation under a central force
+- D. Conservation along a trajectory
 
 ## iv. References
 
@@ -268,6 +271,45 @@ lemma poissonBracket_angularMomentumZ_hamiltonian (p : EuclideanSpace ℝ (Fin 3
     poissonBracket angularMomentumZ S.hamiltonian p q = 0 :=
   poissonBracket_angularMomentumZ_eq_zero_of_hasGradientAt
     (S.hasGradientAt_hamiltonian_momentum p q) (S.hasGradientAt_hamiltonian_position p hq)
+
+/-!
+## D. Conservation along a trajectory
+-/
+
+/-- The energy and signed axial angular momentum agree at any two times on a central-force
+trajectory satisfying Hamilton's equations away from the centre. -/
+lemma hamiltonian_angularMomentumZ_eq_on_Icc
+    {p q : ℝ → EuclideanSpace ℝ (Fin 3)} {a b t₁ t₂ : ℝ}
+    (h₁ : t₁ ∈ Set.Icc a b) (h₂ : t₂ ∈ Set.Icc a b)
+    (hne : ∀ t ∈ Set.Icc a b, q t ≠ 0)
+    (hp : ∀ t ∈ Set.Icc a b, HasDerivAt p (-(deriv S.V ‖q t‖ / ‖q t‖) • q t) t)
+    (hq : ∀ t ∈ Set.Icc a b, HasDerivAt q (S.m⁻¹ • p t) t) :
+    S.hamiltonian (p t₁) (q t₁) = S.hamiltonian (p t₂) (q t₂) ∧
+    angularMomentumZ (p t₁) (q t₁) = angularMomentumZ (p t₂) (q t₂) := by
+  have conserved (f : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3) → ℝ)
+      (hf : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ (Function.uncurry f) (p t, q t))
+      (hbr : ∀ t ∈ Set.Icc a b, poissonBracket f S.hamiltonian (p t) (q t) = 0) :
+      f (p t₁) (q t₁) = f (p t₂) (q t₂) := by
+    have hd t (ht : t ∈ Set.Icc a b) : HasDerivAt (fun s => f (p s) (q s)) 0 t := by
+      rw [← hbr t ht]
+      apply hasDerivAt_comp_eq_poissonBracket S.hamiltonian f _ _ (hf t ht)
+      · rw [(S.hasGradientAt_hamiltonian_position (p t) (hne t ht)).gradient, ← neg_smul]
+        exact hp t ht
+      · rw [(S.hasGradientAt_hamiltonian_momentum (p t) (q t)).gradient]
+        exact hq t ht
+    have hc := constant_of_has_deriv_right_zero
+      (fun t ht => (hd t ht).continuousAt.continuousWithinAt)
+      (fun t ht => (hd t ⟨ht.1, ht.2.le⟩).hasDerivWithinAt)
+    exact (hc t₁ h₁).trans (hc t₂ h₂).symm
+  refine ⟨conserved S.hamiltonian ?_ (fun t _ => poissonBracket_self _ _ _),
+    conserved angularMomentumZ ?_ (fun t ht => S.poissonBracket_angularMomentumZ_hamiltonian
+      (p t) (hne t ht))⟩
+  · intro t ht
+    have hopen : IsOpen {x : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) |
+        x.2 ≠ 0} := isOpen_ne.preimage continuous_snd
+    exact (S.contDiffOn_hamiltonian.contDiffAt (hopen.mem_nhds (hne t ht))).differentiableAt
+      (by simp)
+  · exact fun t _ => (contDiff_angularMomentumZ.differentiable (by simp)).differentiableAt
 
 end CentralForce
 
