@@ -6,7 +6,7 @@ Authors: Andrea Pari
 module
 
 public import Mathlib.LinearAlgebra.PiTensorProduct.Finite
-public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.Tensors.ColoredSpace
 public import Physlib.Mathematics.ForMathlib.Representation
 /-!
 
