@@ -11,7 +11,6 @@ module
 public import Mathlib.Analysis.Calculus.BumpFunction.InnerProduct
 public import Mathlib.Analysis.Calculus.BumpFunction.Normed
 public import Mathlib.Analysis.Normed.Lp.MeasurableSpace
-public import Mathlib.Analysis.Normed.Module.WeakDual
 public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 public import Physlib.SpaceAndTime.Space.EuclideanGroup.AffineGroup
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
@@ -19,11 +18,11 @@ public import Physlib.SpaceAndTime.TimeAndSpace.Basic
 /-!
 # Glimm–Jaffe Euclidean fields
 
-Test functions, field configurations and generating functionals for Euclidean fields.
+Test functions, field configurations and generating functionals for a real scalar field.
 
 ## i. Overview
 
-This is the measure-based formulation of a scalar Euclidean quantum field.
+This is the measure-based formulation of a real scalar Euclidean quantum field.
 A field configuration is a tempered distribution `ω`, so the basic observable is its
 evaluation `ω f` on a real Schwartz test function `f`.
 A probability measure on these configurations specifies the field statistics, in a way that
@@ -38,16 +37,11 @@ The parameter `d` counts spatial dimensions. Spacetime is Physlib's
 vector-space instances. Thus the source's total dimension is `d + 1`.
 Field configurations carry the weak dual topology and the cylinder sigma algebra.
 Their pairing with complex Schwartz functions is extended complex linearly.
-The measure remains on these real configurations. Euclidean transformations and time
-translation also act on complex distributions; Mathlib's `WeakDual.extendRCLikeL`
-identifies the complex extension of a real configuration with its existing pairing.
 
 The full `EuclideanGroup (d + 1)` action is transported through time-first Euclidean
 coordinates, so it includes transformations mixing time and space. The normalized
 bumps are constructed in those Euclidean coordinates and pulled back to
 `TimeAndSpace d`, preserving the source's Euclidean mollifier sequence.
-Translation acts on complex tests. Real bumps are embedded with `Complex.ofRealCLM`,
-and the real part of the translated bump recovers the original real Schwartz test.
 The reflected conjugate combines complex conjugation with time reflection.
 
 ## ii. Key results
@@ -56,7 +50,6 @@ The reflected conjugate combines complex conjugation with time reflection.
 * `FieldConfiguration.generatingFunctional`: the complex characteristic functional.
 * `FieldConfiguration.generatingFunctionalReal`: its restriction to real tests.
 * `reflectedConjugate`: conjugation combined with Euclidean time reflection.
-* `euclideanFieldAction`: the Euclidean action on complex distributions by duality.
 * `SmearedTwoPointFunction`: the two-point function smeared with an arbitrary normalized bump.
 
 ## iii. Table of contents
@@ -98,19 +91,6 @@ variable {d : ℕ}
 def pairing (ω : FieldConfiguration d) (f : 𝓢(TimeAndSpace d, ℂ)) : ℂ :=
   (ω (SchwartzMap.postcompCLM Complex.reCLM f) : ℂ) +
     Complex.I * (ω (SchwartzMap.postcompCLM Complex.imCLM f) : ℂ)
-
-/-- Mathlib's complex extension of a configuration evaluates as the field pairing. -/
-lemma extendRCLikeL_apply_eq_pairing (ω : FieldConfiguration d)
-    (f : 𝓢(TimeAndSpace d, ℂ)) :
-    WeakDual.extendRCLikeL (𝕜 := ℂ)
-      (ω.comp (SchwartzMap.postcompCLM Complex.reCLM)) f = pairing ω f := by
-  have h : SchwartzMap.postcompCLM Complex.reCLM (Complex.I • f) =
-      -SchwartzMap.postcompCLM Complex.imCLM f := by
-    ext x
-    simp [Complex.mul_re]
-  change (ω (SchwartzMap.postcompCLM Complex.reCLM f) : ℂ) -
-    Complex.I * (ω (SchwartzMap.postcompCLM Complex.reCLM (Complex.I • f)) : ℂ) = _
-  simp [pairing, h]
 
 /-- The characteristic functional `Z[f] = ∫ exp(i ⟨ω, f⟩) dμ` on complex tests. -/
 def generatingFunctional (μ : ProbabilityMeasure (FieldConfiguration d))
@@ -159,55 +139,6 @@ lemma euclideanAction_apply (g : EuclideanGroup (d + 1)) (f : 𝓢(TimeAndSpace 
     ((EuclideanGroup.toAffineIsometryHom g⁻¹).map_vadd 0
       (TimeAndSpace.euclideanCoordinates x)).symm
 
-/-- The identity Euclidean transformation fixes each test function. -/
-@[simp]
-lemma euclideanAction_one (f : 𝓢(TimeAndSpace d, ℂ)) : euclideanAction 1 f = f := by
-  ext x
-  simp [euclideanAction_apply]
-
-/-- Euclidean pullbacks give a left action on test functions. -/
-lemma euclideanAction_mul (g h : EuclideanGroup (d + 1)) (f : 𝓢(TimeAndSpace d, ℂ)) :
-    euclideanAction (g * h) f = euclideanAction g (euclideanAction h f) := by
-  ext x
-  simp only [euclideanAction_apply, mul_inv_rev, map_mul,
-    AffineIsometryEquiv.coe_mul, Function.comp_apply,
-    ContinuousLinearEquiv.apply_symm_apply]
-
-/-- Euclidean translations act by subtracting the displacement from the test argument. -/
-lemma euclideanAction_translation (a : TimeAndSpace d) (f : 𝓢(TimeAndSpace d, ℂ)) :
-    euclideanAction (EuclideanGroup.translationVector.incl (d + 1)
-      (Multiplicative.ofAdd (TimeAndSpace.euclideanCoordinates a))) f =
-      SchwartzMap.compSubConstCLM ℂ a f := by
-  ext x
-  rw [euclideanAction_apply, ← map_inv]
-  simp [EuclideanGroup.translationVector.incl, EuclideanGroup.toAffineIsometryHom_apply,
-    AffineIsometryEquiv.coe_mul, sub_eq_add_neg, add_comm]
-
-/-- The contragredient left Euclidean action on complex field configurations. -/
-def euclideanFieldAction (g : EuclideanGroup (d + 1))
-    (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
-    WeakDual ℂ (𝓢(TimeAndSpace d, ℂ)) :=
-  ω.comp (euclideanAction g⁻¹)
-
-/-- The identity Euclidean transformation fixes each field configuration. -/
-@[simp]
-lemma euclideanFieldAction_one (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
-    euclideanFieldAction 1 ω = ω := by
-  apply DFunLike.ext
-  intro f
-  change ω (euclideanAction (1 : EuclideanGroup (d + 1))⁻¹ f) = ω f
-  simp only [inv_one, euclideanAction_one]
-
-/-- The inverse in duality gives a left Euclidean action on field configurations. -/
-lemma euclideanFieldAction_mul (g h : EuclideanGroup (d + 1))
-    (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
-    euclideanFieldAction (g * h) ω = euclideanFieldAction g (euclideanFieldAction h ω) := by
-  apply DFunLike.ext
-  intro f
-  change ω (euclideanAction (g * h)⁻¹ f) =
-    ω (euclideanAction h⁻¹ (euclideanAction g⁻¹ f))
-  rw [mul_inv_rev, euclideanAction_mul]
-
 /-- Complex conjugation after time reflection: `f ↦ (x ↦ conj (f (Θ x)))`.
 The dimension restriction retains the source's domain of at least two total dimensions. -/
 @[nolint unusedArguments]
@@ -237,37 +168,13 @@ two total dimensions. -/
 abbrev PositiveTimeTestFunction (d : ℕ) [Fact (1 ≤ d)] :=
   {f : 𝓢(TimeAndSpace d, ℂ) | tsupport f ⊆ {x | 0 < x.1}}
 
-/-- Time translation of a complex field: `(T_s ω)(f) = ω((t, x) ↦ f(t - s, x))`.
+/-- Time translation of a field by duality: `(T_s ω)(f) = ω((t, x) ↦ f(t - s, x))`.
 The corresponding source convention on test functions is `T_s f(t, x) = f(t + s, x)`.
 The dimension restriction retains the source's domain of at least two total dimensions. -/
 @[nolint unusedArguments]
-def timeTranslation [Fact (1 ≤ d)] (s : ℝ)
-    (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
-    WeakDual ℂ (𝓢(TimeAndSpace d, ℂ)) :=
-  ω.comp (SchwartzMap.compSubConstCLM ℂ (⟨s⟩, 0))
-
-/-- The source's time translation is the left field action by displacement `(-s, 0)`. -/
-lemma timeTranslation_eq_euclideanFieldAction [Fact (1 ≤ d)] (s : ℝ)
-    (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
-    timeTranslation s ω = euclideanFieldAction
-      (EuclideanGroup.translationVector.incl (d + 1)
-        (Multiplicative.ofAdd (TimeAndSpace.euclideanCoordinates (-(⟨s⟩, 0))))) ω := by
-  apply DFunLike.ext
-  intro f
-  change ω (SchwartzMap.compSubConstCLM ℂ (⟨s⟩, 0) f) = ω (euclideanAction _ f)
-  simp only [map_neg, ofAdd_neg, map_inv, inv_inv, euclideanAction_translation]
-
-/-- Complex time translation preserves the extension of the original real field translation. -/
-lemma timeTranslation_extendRCLikeL_apply_eq_pairing [Fact (1 ≤ d)] (s : ℝ)
-    (ω : FieldConfiguration d) (f : 𝓢(TimeAndSpace d, ℂ)) :
-    timeTranslation s (WeakDual.extendRCLikeL (𝕜 := ℂ)
-      (ω.comp (SchwartzMap.postcompCLM Complex.reCLM))) f =
-      pairing (ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))) f := by
-  change WeakDual.extendRCLikeL (𝕜 := ℂ)
-    ((ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))).comp
-      (SchwartzMap.postcompCLM Complex.reCLM)) f = _
-  exact extendRCLikeL_apply_eq_pairing
-    (ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))) f
+def timeTranslation [Fact (1 ≤ d)] (s : ℝ) (ω : FieldConfiguration d) :
+    FieldConfiguration d :=
+  ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))
 
 /-! ## C. Smeared two-point functions -/
 
@@ -296,38 +203,19 @@ lemma integral_bumpToSchwartz (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d
     TimeAndSpace.euclideanCoordinates.toHomeomorph.measurableEmbedding]
   exact φ.integral_normed
 
-/-- Translate a complex Schwartz test by `a`, with value `f (x - a)` at `x`. -/
-def translateSchwartz (f : 𝓢(TimeAndSpace d, ℂ)) (a : TimeAndSpace d) :
-    𝓢(TimeAndSpace d, ℂ) :=
-  SchwartzMap.compSubConstCLM ℂ a f
-
-/-- Translating an embedded real test and taking its real part recovers real translation. -/
-@[simp]
-lemma translateSchwartz_re_ofReal (f : 𝓢(TimeAndSpace d, ℝ)) (a : TimeAndSpace d) :
-    SchwartzMap.postcompCLM Complex.reCLM
-      (translateSchwartz (SchwartzMap.postcompCLM Complex.ofRealCLM f) a) =
-      SchwartzMap.compSubConstCLM ℝ a f := by
-  ext x
-  rfl
+/-- Translate a real Schwartz test by `a`, with value `f (x - a)` at `x`. -/
+def translateSchwartz (f : 𝓢(TimeAndSpace d, ℝ)) (a : TimeAndSpace d) :
+    𝓢(TimeAndSpace d, ℝ) :=
+  SchwartzMap.compSubConstCLM ℝ a f
 
 /-- The two-point Schwinger function smeared at `x` and zero with an arbitrary normalized bump.
 This follows `SmearedTwoPointFunction` in `OSforGFF`, with the bump supplied independently
 of the standard sequence used in the OS1 endpoint condition. -/
 def SmearedTwoPointFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d))
     (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d + 1)))) (x : TimeAndSpace d) : ℝ :=
-  let ρ := bumpToSchwartz φ
-  let ρℂ := SchwartzMap.postcompCLM Complex.ofRealCLM ρ
   SchwingerFunction₂ dμ_config
-    (SchwartzMap.postcompCLM Complex.reCLM (translateSchwartz ρℂ x))
-    ρ
-
-/-- Complex translation of the bump preserves the original real smeared two-point function. -/
-lemma SmearedTwoPointFunction_eq_real (μ : ProbabilityMeasure (FieldConfiguration d))
-    (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d + 1)))) (x : TimeAndSpace d) :
-    SmearedTwoPointFunction μ φ x =
-      SchwingerFunction₂ μ (SchwartzMap.compSubConstCLM ℝ x (bumpToSchwartz φ))
-        (bumpToSchwartz φ) := by
-  simp only [SmearedTwoPointFunction, translateSchwartz_re_ofReal]
+    (translateSchwartz (bumpToSchwartz φ) x)
+    (bumpToSchwartz φ)
 
 /-- The standard bump sequence from `OSforGFF`, with outer radius `1 / n` for nonzero `n`. -/
 def standardBumpSequence (n : ℕ) (hn : n ≠ 0) :

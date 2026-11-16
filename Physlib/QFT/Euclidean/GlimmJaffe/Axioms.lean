@@ -17,8 +17,7 @@ The measure and generating-functional formulation of the Euclidean field axioms.
 
 This is a formalization of the Glimm–Jaffe variation of the Osterwalder–Schrader axioms,
 as presented in Glimm and Jaffe, *Quantum Physics*, Chapter 6. [ref: glimm1987quantum]
-This formalism is on the generating functional, while the original OS axioms are on
-the Schwinger functions.
+This formalism is on the generating functional, while the original OS axioms are on the Schwinger functions.
 
 We port the predicates in `OSforGFF/OS/Axioms.lean`: analyticity (OS0), regularity
 (OS1), full Euclidean invariance (OS2), complex reflection positivity (OS3), and
@@ -30,9 +29,6 @@ minimum of two total dimensions.
 
 OS4 uses exponentials without a factor of `i`, whereas the characteristic functional
 in OS0–OS3 includes that factor.
-Its observables act on the complex extensions of real configurations, using Mathlib's
-`WeakDual.extendRCLikeL` to apply complex time translation. The measure remains on
-`FieldConfiguration d`, and this gives the same time averages as real field translation.
 This numbering differs from the distributional Osterwalder–Schrader axioms E0–E4.
 
 ## ii. Key results
@@ -114,30 +110,11 @@ formulation, with the centering inside the time integral. -/
 def OS4Ergodicity [Fact (1 ≤ d)]
     (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
   ∀ (n : ℕ) (z : Fin n → ℂ) (f : Fin n → 𝓢(TimeAndSpace d, ℂ)),
-    let A : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ)) → ℂ :=
-      fun η => ∑ j, z j * Complex.exp (η (f j))
+    let A : FieldConfiguration d → ℂ := fun ω => ∑ j, z j * Complex.exp (pairing ω (f j))
     Tendsto (fun T : ℝ =>
       ∫ ω, ‖(1 / T : ℂ) * ∫ s in Set.Icc (0 : ℝ) T,
-        (A (timeTranslation s (WeakDual.extendRCLikeL (𝕜 := ℂ)
-          (ω.comp (SchwartzMap.postcompCLM Complex.reCLM)))) -
-          ∫ ω', A (WeakDual.extendRCLikeL (𝕜 := ℂ)
-            (ω'.comp (SchwartzMap.postcompCLM Complex.reCLM))) ∂μ.toMeasure)‖ ^ 2 ∂μ.toMeasure)
+        (A (timeTranslation s ω) - ∫ ω', A ω' ∂μ.toMeasure)‖ ^ 2 ∂μ.toMeasure)
       atTop (𝓝 0)
-
-/-- Extending real configurations before translation preserves the original real form of OS4. -/
-lemma OS4Ergodicity_iff_real [Fact (1 ≤ d)]
-    (μ : ProbabilityMeasure (FieldConfiguration d)) :
-    OS4Ergodicity μ ↔
-      ∀ (n : ℕ) (z : Fin n → ℂ) (f : Fin n → 𝓢(TimeAndSpace d, ℂ)),
-        let A : FieldConfiguration d → ℂ :=
-          fun ω => ∑ j, z j * Complex.exp (pairing ω (f j))
-        Tendsto (fun T : ℝ =>
-          ∫ ω, ‖(1 / T : ℂ) * ∫ s in Set.Icc (0 : ℝ) T,
-            (A (ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))) -
-              ∫ ω', A ω' ∂μ.toMeasure)‖ ^ 2 ∂μ.toMeasure)
-          atTop (𝓝 0) := by
-  unfold OS4Ergodicity
-  simp only [timeTranslation_extendRCLikeL_apply_eq_pairing, extendRCLikeL_apply_eq_pairing]
 
 /-! ## D. Bundled axioms -/
 
