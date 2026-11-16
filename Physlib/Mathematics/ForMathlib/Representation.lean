@@ -56,8 +56,8 @@ applying maps of representations at the factors commutes with it (B).
 - `Representation.piTprod` : the representation on `⨂[k] i, M i` of a family of representations.
 - `Representation.map_piTprod_of_tprod` : a map that commutes with `piTprod ρ` on pure tensors
   commutes with it on all tensors.
-- `Representation.IsIntertwiningMap.piTprodMap` and `Representation.Equiv.piTprodCongr` :
-  `PiTensorProduct.map` and `PiTensorProduct.congr` of maps of representations.
+- `Representation.IsIntertwiningMap.piTprodMap` : `PiTensorProduct.map` of maps of
+  representations.
 
 ## iii. Table of contents
 
@@ -123,8 +123,7 @@ lemma map_piTprod_of_tprod {φ : k →+* k} {ρ : Π i, Representation k G (M i)
 ## B. Maps of representations
 
 `piTprodMap` applies a map at every index, such as lowering every index, `T^μν ↦ T_μν`. It commutes
-with the group when each of the maps does, and `piTprodCongr` is the same for equivalences of
-representations.
+with the group when each of the maps does.
 
 -/
 
@@ -140,24 +139,5 @@ lemma IsIntertwiningMap.piTprodMap {ρ : Π i, Representation k G (M i)}
     rw [← LinearMap.comp_apply, ← PiTensorProduct.map_comp, ← LinearMap.comp_apply,
       ← PiTensorProduct.map_comp]
     exact congr(PiTensorProduct.map $(funext fun i => LinearMap.ext ((hf i).isIntertwining g)) v)
-
-namespace Equiv
-
-/-- The tensor product of a family of equivalences of representations, `⨂ i, v i ↦ ⨂ i, φ i (v i)`.
-It is Mathlib's `PiTensorProduct.congr` with the actions `piTprod ρ` and `piTprod σ`. -/
-noncomputable def piTprodCongr {ρ : Π i, Representation k G (M i)}
-    {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) :
-    (piTprod ρ).Equiv (piTprod σ) :=
-  .mk (PiTensorProduct.congr fun i => (φ i).toLinearEquiv) fun g => LinearMap.ext
-    ((IsIntertwiningMap.piTprodMap fun i =>
-      ⟨(φ i).toIntertwiningMap.isIntertwining⟩).isIntertwining g)
-
-@[simp]
-lemma piTprodCongr_tprod {ρ : Π i, Representation k G (M i)}
-    {σ : Π i, Representation k G (N i)} (φ : Π i, (ρ i).Equiv (σ i)) (m : Π i, M i) :
-    piTprodCongr φ (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, φ i (m i) :=
-  PiTensorProduct.congr_tprod _ _
-
-end Equiv
 
 end Representation
