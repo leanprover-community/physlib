@@ -43,9 +43,9 @@ Changing the reference point changes the phase at all points in space by the sam
 ### Fourier transforms
 
 The Fourier transform takes a suitably nice function of space to a function of wavevector,
-resolving its spatial dependence into plane-wave components. The inverse Fourier transform
+resolving its spatial dependence into plane-wave components; the inverse Fourier transform
 reconstructs the spatial function from those components. [8]
-The transform and its inverse have a consistent choice of normalization,
+The transform and its inverse have a consistent choice of normalization
 and preserve inner products up to the corresponding normalization factor. [TODO]
 The Fourier transform maps derivatives with respect to space to multiplication by wavevector
 and *vice versa*, under suitable regularity and decay assumptions. [TODO]
