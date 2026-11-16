@@ -79,26 +79,14 @@ namespace WaveVectorSpace
 
 section FourierIntegral
 
-open MeasureTheory
-open scoped Real
+open MeasureTheory Real
+open scoped FourierTransform
 
 variable (a b : ℝ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-!
 ### A.1. Two-parameter definitions
 -/
-
-/-- The additive character `fun r ↦ exp (b * r * I)` from `ℝ` to the unit circle in `ℂ`. -/
-noncomputable def physChar : AddChar ℝ Circle where
-  toFun r := Circle.exp (b * r)
-  map_zero_eq_one' := by rw [mul_zero, Circle.exp_zero]
-  map_add_eq_mul' _ _ := by rw [mul_add, Circle.exp_add]
-
-variable {b} in
-@[fun_prop]
-lemma physChar_continuous : Continuous (physChar b) := by
-  rw [AddChar.coe_mk]
-  fun_prop
 
 /-- The Fourier integral over `Space`,
 
@@ -108,20 +96,21 @@ parametrized by `a b : ℝ`.
 -/
 noncomputable def fourierIntegral (f : Space d → E) (k : WaveVectorSpace d) : E :=
   √(|b| / (2 * π) ^ (1 - a))
-    • VectorFourier.fourierIntegral (physChar b) volume (-pairingCLM.flip.toLinearMap₁₂) f k
+    • VectorFourier.fourierIntegral 𝐞 volume (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f k
 
 lemma fourierIntegral_def (f : Space d → E) :
     fourierIntegral a b f
       = √(|b| / (2 * π) ^ (1 - a))
-        • VectorFourier.fourierIntegral (physChar b) volume (-pairingCLM.flip.toLinearMap₁₂) f :=
+        • VectorFourier.fourierIntegral 𝐞 volume
+          (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f :=
   rfl
 
 open Complex in
 lemma fourierIntegral_eq (f : Space d → E) (k : WaveVectorSpace d) :
     fourierIntegral a b f k
       = √(|b| / (2 * π) ^ (1 - a)) • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
-  simp [fourierIntegral_def, VectorFourier.fourierIntegral, physChar, pairingCLM_apply_eq_dual,
-    dual_apply, Circle.smul_def]
+  simp [fourierIntegral_def, VectorFourier.fourierIntegral, fourierChar, pairingCLM_apply_eq_dual,
+    dual_apply, Circle.smul_def, ← mul_assoc, mul_div_cancel₀]
 
 /-- The inverse Fourier integral over `WaveVectorSpace`,
 
@@ -131,20 +120,20 @@ parametrized by `a b : ℝ`.
 -/
 noncomputable def fourierIntegralInv (g : WaveVectorSpace d → E) (x : Space d) : E :=
   √(|b| / (2 * π) ^ (1 + a))
-    • VectorFourier.fourierIntegral (physChar b) volume pairingCLM.toLinearMap₁₂ g x
+    • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g x
 
 lemma fourierIntegralInv_def (g : WaveVectorSpace d → E) :
     fourierIntegralInv a b g
       = √(|b| / (2 * π) ^ (1 + a))
-        • VectorFourier.fourierIntegral (physChar b) volume pairingCLM.toLinearMap₁₂ g :=
+        • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g :=
   rfl
 
 open Complex in
 lemma fourierIntegralInv_eq (g : WaveVectorSpace d → E) (x : Space d) :
     fourierIntegralInv a b g x
       = √(|b| / (2 * π) ^ (1 + a)) • ∫ k : WaveVectorSpace d, cexp (-b * (k ⬝ᵥ x) * I) • g k := by
-  simp [fourierIntegralInv_def, VectorFourier.fourierIntegral, physChar, pairingCLM_apply_eq_dual,
-    dual_apply, Circle.smul_def, Complex.exp_neg]
+  simp [fourierIntegralInv_def, VectorFourier.fourierIntegral, pairingCLM_apply_eq_dual,
+    fourierChar, dual_apply, Circle.smul_def, Complex.exp_neg, ← mul_assoc, mul_div_cancel₀]
 
 /-!
 ### A.2. Basic properties
@@ -169,24 +158,26 @@ lemma fourierIntegralInv_const_smul (f : WaveVectorSpace d → E) (c : ℂ) :
 
 lemma fourierIntegral_add {f₁ f₂ : Space d → E} (hf₁ : Integrable f₁) (hf₂ : Integrable f₂) :
     fourierIntegral a b (f₁ + f₂) = fourierIntegral a b f₁ + fourierIntegral a b f₂ := by
-  rw [fourierIntegral_def, fourierIntegral_def, fourierIntegral_def, ← smul_add,
-    VectorFourier.fourierIntegral_add physChar_continuous pairingCLM.flip.continuous₂.neg hf₁ hf₂]
+  simp only [fourierIntegral_def, ← smul_add]
+  rw [VectorFourier.fourierIntegral_add continuous_fourierChar
+    (-(b / (2 * π)) • pairingCLM.flip).continuous₂ hf₁ hf₂]
 
 lemma fourierIntegralInv_add
     {g₁ g₂ : WaveVectorSpace d → E} (hg₁ : Integrable g₁) (hg₂ : Integrable g₂) :
     fourierIntegralInv a b (g₁ + g₂) = fourierIntegralInv a b g₁ + fourierIntegralInv a b g₂ := by
-  rw [fourierIntegralInv_def, fourierIntegralInv_def, fourierIntegralInv_def, ← smul_add,
-    VectorFourier.fourierIntegral_add physChar_continuous pairingCLM.continuous₂ hg₁ hg₂]
+  simp only [fourierIntegralInv_def, ← smul_add]
+  rw [VectorFourier.fourierIntegral_add continuous_fourierChar
+    ((b / (2 * π)) • pairingCLM).continuous₂ hg₁ hg₂]
 
 lemma fourierIntegral_continuous {f : Space d → E} (hf : Integrable f) :
     Continuous (fourierIntegral a b f) :=
-  VectorFourier.fourierIntegral_continuous physChar_continuous pairingCLM.flip.continuous₂.neg hf
-    |>.const_smul _
+  VectorFourier.fourierIntegral_continuous continuous_fourierChar
+    (-(b / (2 * π)) • pairingCLM.flip).continuous₂ hf |>.const_smul _
 
 lemma fourierIntegralInv_continuous {g : WaveVectorSpace d → E} (hg : Integrable g) :
     Continuous (fourierIntegralInv a b g) :=
-  VectorFourier.fourierIntegral_continuous physChar_continuous pairingCLM.continuous₂ hg
-    |>.const_smul _
+  VectorFourier.fourierIntegral_continuous continuous_fourierChar
+    ((b / (2 * π)) • pairingCLM).continuous₂ hg |>.const_smul _
 
 end FourierIntegral
 
