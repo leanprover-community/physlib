@@ -233,67 +233,69 @@ end IntegrandCLM
 
 /-- Send a function `f : Space d → E` to the function `f : Space d → Hom (WaveVectorSpace d, E)`
 given by `x ↦ k ↦ b * I * (k ⬝ᵥ x) • f x`. This is designed so that the Fourier transform of
-`fourierSMulRight b f` is the `fderiv` of the Fourier transform of `f`. -/
-noncomputable def fourierSMulRight (f : Space d → E) (x : Space d) : WaveVectorSpace d →L[ℝ] E :=
+`fderivFourierIntegrand b f` is the `fderiv` of the Fourier transform of `f`. -/
+noncomputable def fderivFourierIntegrand (f : Space d → E) (x : Space d) :
+    WaveVectorSpace d →L[ℝ] E :=
   (b * I) • x.dual.smulRight (f x)
 
 /-- Send a function `g : WaveVectorSpace d → E` to the function
 `g : WaveVectorSpace d → Hom (Space d, E)` given by `k ↦ x ↦ -b * I * (k ⬝ᵥ x) • g k`.
-This is designed so that the inverse Fourier transform of `fourierInvSMulRight b g`
+This is designed so that the inverse Fourier transform of `fderivFourierInvIntegrand b g`
 is the `fderiv` of the inverse Fourier transform of `g`. -/
-noncomputable def fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
+noncomputable def fderivFourierInvIntegrand (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
     Space d →L[ℝ] E :=
   -(b * I) • k.dual.smulRight (g k)
 
-lemma fourierSMulRight_eq (f : Space d → E) :
-    fourierSMulRight b f = fun x ↦ (b * I) • x.dual.smulRight (f x) :=
+lemma fderivFourierIntegrand_eq (f : Space d → E) :
+    fderivFourierIntegrand b f = fun x ↦ (b * I) • x.dual.smulRight (f x) :=
   rfl
 
-lemma fourierInvSMulRight_eq (g : WaveVectorSpace d → E) :
-    fourierInvSMulRight b g = fun k ↦ -(b * I) • k.dual.smulRight (g k) :=
-  rfl
-
-@[simp]
-lemma fourierSMulRight_apply (f : Space d → E) (x : Space d) (k : WaveVectorSpace d) :
-    fourierSMulRight b f x k = (b * I) • (k ⬝ᵥ x) • f x :=
+lemma fderivFourierInvIntegrand_eq (g : WaveVectorSpace d → E) :
+    fderivFourierInvIntegrand b g = fun k ↦ -(b * I) • k.dual.smulRight (g k) :=
   rfl
 
 @[simp]
-lemma fourierInvSMulRight_apply (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) (x : Space d) :
-    fourierInvSMulRight b g k x = -(b * I) • (k ⬝ᵥ x) • g k :=
+lemma fderivFourierIntegrand_apply (f : Space d → E) (x : Space d) (k : WaveVectorSpace d) :
+    fderivFourierIntegrand b f x k = (b * I) • (k ⬝ᵥ x) • f x :=
   rfl
 
 @[simp]
-lemma opNorm_fourierSMulRight (f : Space d → E) (x : Space d) :
-    ‖fourierSMulRight b f x‖ = |b| * ‖x‖ * ‖f x‖ := by
-  simp [fourierSMulRight_eq, norm_smul, mul_assoc]
+lemma fderivFourierInvIntegrand_apply
+    (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) (x : Space d) :
+    fderivFourierInvIntegrand b g k x = -(b * I) • (k ⬝ᵥ x) • g k :=
+  rfl
 
 @[simp]
-lemma opNorm_fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
-    ‖fourierInvSMulRight b g k‖ = |b| * ‖k‖ * ‖g k‖ := by
-  simp [fourierInvSMulRight_eq, norm_smul, mul_assoc]
+lemma opNorm_fderivFourierIntegrand (f : Space d → E) (x : Space d) :
+    ‖fderivFourierIntegrand b f x‖ = |b| * ‖x‖ * ‖f x‖ := by
+  simp [fderivFourierIntegrand_eq, norm_smul, mul_assoc]
+
+@[simp]
+lemma opNorm_fderivFourierInvIntegrand (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
+    ‖fderivFourierInvIntegrand b g k‖ = |b| * ‖k‖ * ‖g k‖ := by
+  simp [fderivFourierInvIntegrand_eq, norm_smul, mul_assoc]
 
 @[fun_prop]
-lemma aestronglyMeasurable_fourierSMulRight {f : Space d → E} (hf : AEStronglyMeasurable f) :
-    AEStronglyMeasurable (fourierSMulRight b f) := by
-  rw [fourierSMulRight_eq]
+lemma aestronglyMeasurable_fderivFourierIntegrand {f : Space d → E} (hf : AEStronglyMeasurable f) :
+    AEStronglyMeasurable (fderivFourierIntegrand b f) := by
+  rw [fderivFourierIntegrand_eq]
   fun_prop
 
 @[fun_prop]
-lemma aestronglyMeasurable_fourierInvSMulRight
+lemma aestronglyMeasurable_fderivFourierInvIntegrand
     {g : WaveVectorSpace d → E} (hg : AEStronglyMeasurable g) :
-    AEStronglyMeasurable (fourierInvSMulRight b g) := by
-  rw [fourierInvSMulRight_eq]
+    AEStronglyMeasurable (fderivFourierInvIntegrand b g) := by
+  rw [fderivFourierInvIntegrand_eq]
   fun_prop
 
-lemma integrable_fourierSMulRight {f : Space d → E}
+lemma integrable_fderivFourierIntegrand {f : Space d → E}
     (hf : AEStronglyMeasurable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
-    Integrable (fourierSMulRight b f) :=
+    Integrable (fderivFourierIntegrand b f) :=
   hf'.smul |b| |>.mono (by fun_prop) <| ae_of_all _ <| by simp [mul_assoc]
 
-lemma integrable_fourierInvSMulRight {g : WaveVectorSpace d → E}
+lemma integrable_fderivFourierInvIntegrand {g : WaveVectorSpace d → E}
     (hg : AEStronglyMeasurable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
-    Integrable (fourierInvSMulRight b g) :=
+    Integrable (fderivFourierInvIntegrand b g) :=
   hg'.smul |b| |>.mono (by fun_prop) <| ae_of_all _ <| by simp [mul_assoc]
 
 /-!
@@ -302,7 +304,7 @@ lemma integrable_fourierInvSMulRight {g : WaveVectorSpace d → E}
 
 lemma fderiv_fourierIntegral
     {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
-    fderiv ℝ (fourierIntegral a b f) = fourierIntegral a b (fourierSMulRight b f) := by
+    fderiv ℝ (fourierIntegral a b f) = fourierIntegral a b (fderivFourierIntegrand b f) := by
   rw [fourierIntegral_def, fderiv_const_smul_field, VectorFourier.fderiv_fourierIntegral _ hf hf']
   congr with x k
   calc
@@ -312,7 +314,8 @@ lemma fderiv_fourierIntegral
 
 lemma fderiv_fourierIntegralInv
     {g : WaveVectorSpace d → E} (hg : Integrable g) (hg' : Integrable (fun k ↦ ‖k‖ * ‖g k‖)) :
-    fderiv ℝ (fourierIntegralInv a b g) = fourierIntegralInv a b (fourierInvSMulRight b g) := by
+    fderiv ℝ (fourierIntegralInv a b g)
+      = fourierIntegralInv a b (fderivFourierInvIntegrand b g) := by
   rw [fourierIntegralInv_def, fderiv_const_smul_field,
     VectorFourier.fderiv_fourierIntegral _ hg hg']
   congr with k x
@@ -332,7 +335,7 @@ lemma deriv_fourierIntegral (i : Fin d)
     ∂[i] (fourierIntegral a b f) = fourierIntegral a b fun x ↦ (b * I * x i) • f x := by
   ext
   simp only [deriv_eq, hf, hf', fderiv_fourierIntegral, hf.aestronglyMeasurable,
-    integrable_fourierSMulRight, fourierIntegral_continuousLinearMap_apply]
+    integrable_fderivFourierIntegrand, fourierIntegral_continuousLinearMap_apply]
   congr
   simp [dotProduct, ← nsmul_eq_mul, ← coe_smul, smul_smul]
 
@@ -343,7 +346,7 @@ lemma deriv_fourierIntegralInv (i : Fin d)
     ∂[i] (fourierIntegralInv a b g) = fourierIntegralInv a b fun k ↦ -(b * I * k i) • g k := by
   ext
   simp only [Space.deriv_eq, hg, hg', fderiv_fourierIntegralInv, hg.aestronglyMeasurable,
-    integrable_fourierInvSMulRight, fourierIntegralInv_continuousLinearMap_apply]
+    integrable_fderivFourierInvIntegrand, fourierIntegralInv_continuousLinearMap_apply]
   congr
   simp [dotProduct, Space.basis_apply, ← coe_smul, smul_smul]
 
