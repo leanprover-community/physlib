@@ -48,9 +48,8 @@ The reflected conjugate combines complex conjugation with time reflection.
 
 * `FieldConfiguration`: real tempered distributions with the cylinder sigma algebra.
 * `FieldConfiguration.generatingFunctional`: the complex characteristic functional.
-* `FieldConfiguration.generatingFunctionalReal`: its restriction to real tests.
 * `reflectedConjugate`: conjugation combined with Euclidean time reflection.
-* `SmearedTwoPointFunction`: the two-point function smeared with an arbitrary normalized bump.
+* `smearedTwoPointFunction`: the two-point function smeared with an arbitrary normalized bump.
 
 ## iii. Table of contents
 
@@ -61,9 +60,6 @@ The reflected conjugate combines complex conjugation with time reflection.
 ## iv. References
 
 * Glimm and Jaffe, *Quantum Physics*. [ref: glimm1987quantum]
-* Cherkis et al., *OSforGFF*, `Spacetime/Basic.lean`,
-  `Spacetime/PositiveTimeTestFunction.lean`, `Spacetime/TimeTranslation.lean`,
-  `Schwinger/Defs.lean`, and `Schwinger/TwoPoint.lean`. [ref: osforgff]
 -/
 
 @[expose] public section
@@ -96,11 +92,6 @@ def pairing (ω : FieldConfiguration d) (f : 𝓢(TimeAndSpace d, ℂ)) : ℂ :=
 def generatingFunctional (μ : ProbabilityMeasure (FieldConfiguration d))
     (f : 𝓢(TimeAndSpace d, ℂ)) : ℂ :=
   ∫ ω, Complex.exp (Complex.I * pairing ω f) ∂μ.toMeasure
-
-/-- The characteristic functional restricted to real Schwartz tests. -/
-def generatingFunctionalReal (μ : ProbabilityMeasure (FieldConfiguration d))
-    (f : 𝓢(TimeAndSpace d, ℝ)) : ℂ :=
-  ∫ ω, Complex.exp (Complex.I * (ω f : ℂ)) ∂μ.toMeasure
 
 end FieldConfiguration
 
@@ -171,22 +162,22 @@ abbrev PositiveTimeTestFunction (d : ℕ) [Fact (1 ≤ d)] :=
 /-- Time translation of a field by duality: `(T_s ω)(f) = ω((t, x) ↦ f(t - s, x))`.
 The corresponding source convention on test functions is `T_s f(t, x) = f(t + s, x)`.
 The dimension restriction retains the source's domain of at least two total dimensions. -/
-@[nolint unusedArguments]
-def timeTranslation [Fact (1 ≤ d)] (s : ℝ) (ω : FieldConfiguration d) :
-    FieldConfiguration d :=
-  ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))
+def timeTranslation [Fact (1 ≤ d)] (s : ℝ)
+    (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
+    WeakDual ℂ (𝓢(TimeAndSpace d, ℂ)) :=
+  ω.comp (SchwartzMap.compSubConstCLM ℂ (⟨s⟩, 0))
 
 /-! ## C. Smeared two-point functions -/
 
 /-- The real `n`-point Schwinger function, the expectation of the product of field evaluations. -/
-def SchwingerFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d)) (n : ℕ)
+def schwingerFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d)) (n : ℕ)
     (f : Fin n → 𝓢(TimeAndSpace d, ℝ)) : ℝ :=
   ∫ ω, (∏ i, ω (f i)) ∂dμ_config.toMeasure
 
 /-- The real two-point Schwinger function evaluated on two Schwartz tests. -/
-def SchwingerFunction₂ (dμ_config : ProbabilityMeasure (FieldConfiguration d))
+def schwingerFunction₂ (dμ_config : ProbabilityMeasure (FieldConfiguration d))
     (f g : 𝓢(TimeAndSpace d, ℝ)) : ℝ :=
-  SchwingerFunction dμ_config 2 ![f, g]
+  schwingerFunction dμ_config 2 ![f, g]
 
 /-- Convert a smooth bump centered at zero to a real Schwartz test with integral one. -/
 def bumpToSchwartz (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d + 1)))) :
@@ -204,17 +195,18 @@ lemma integral_bumpToSchwartz (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d
   exact φ.integral_normed
 
 /-- Translate a real Schwartz test by `a`, with value `f (x - a)` at `x`. -/
-def translateSchwartz (f : 𝓢(TimeAndSpace d, ℝ)) (a : TimeAndSpace d) :
-    𝓢(TimeAndSpace d, ℝ) :=
-  SchwartzMap.compSubConstCLM ℝ a f
+def translateSchwartz (f : 𝓢(TimeAndSpace d, ℂ))
+    (a : TimeAndSpace d) : 𝓢(TimeAndSpace d, ℂ) :=
+  SchwartzMap.compSubConstCLM ℂ a f
 
 /-- The two-point Schwinger function smeared at `x` and zero with an arbitrary normalized bump.
 This follows `SmearedTwoPointFunction` in `OSforGFF`, with the bump supplied independently
 of the standard sequence used in the OS1 endpoint condition. -/
-def SmearedTwoPointFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d))
+def smearedTwoPointFunction (dμ_config : ProbabilityMeasure (FieldConfiguration d))
     (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d + 1)))) (x : TimeAndSpace d) : ℝ :=
-  SchwingerFunction₂ dμ_config
-    (translateSchwartz (bumpToSchwartz φ) x)
+  schwingerFunction₂ dμ_config
+    (SchwartzMap.postcompCLM Complex.reCLM
+      (translateSchwartz (SchwartzMap.postcompCLM Complex.ofRealCLM (bumpToSchwartz φ)) x))
     (bumpToSchwartz φ)
 
 /-- The standard bump sequence from `OSforGFF`, with outer radius `1 / n` for nonzero `n`. -/

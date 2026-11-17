@@ -36,6 +36,7 @@ The derivative and distribution results are in the namespace `Space` by conventi
 
 - A. The coordinate product and derivatives involving time and space
   - A.1. The `TimeAndSpace` coordinate product
+    - A.1.1. Time reflection
   - A.2. Space and time derivatives in terms of curried functions
   - A.3. Commuting time and space derivatives
   - A.4. Differentiablity conditions
@@ -143,6 +144,8 @@ lemma euclideanCoordinates_measurePreserving :
   convert h using 1
   ext tx i
   exact Fin.cases rfl (fun _ => rfl) i
+
+/-! #### A.1.1. Time reflection -/
 
 /-- Time reflection about the chosen time origin, fixing all spatial coordinates. -/
 noncomputable def timeReflection : TimeAndSpace d ≃L[ℝ] TimeAndSpace d :=

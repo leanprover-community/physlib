@@ -75,7 +75,7 @@ separation to a locally integrable function. No limit is required at coincidence
 def TwoPointIntegrable (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
   ∃ K : TimeAndSpace d → ℝ, LocallyIntegrable K volume ∧
     ∀ x, x ≠ 0 → Tendsto (fun n =>
-      SmearedTwoPointFunction μ (standardBumpSequence (n + 1) (Nat.succ_ne_zero n)) x)
+      smearedTwoPointFunction μ (standardBumpSequence (n + 1) (Nat.succ_ne_zero n)) x)
       atTop (𝓝 (K x))
 
 /-- OS1: exponential growth controlled by the integrals of `‖f‖` and `‖f‖^p`,
