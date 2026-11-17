@@ -61,7 +61,7 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
     - A.2.2. Continuity
     - A.2.3. Integration of continuous linear maps
   - A.3. Derivatives
-    - A.3.1. Fourier multiplier
+    - A.3.1. Fourier multipliers
     - A.3.2. Fréchet derivatives
     - A.3.3. Partial derivatives
 - B. Fourier instances
