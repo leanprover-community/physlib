@@ -106,14 +106,17 @@ def OS3ReflectionPositivity [Fact (1 ≤ d)]
 
 /-- OS4 ergodicity: centered time averages of finite linear combinations of
 `exp(⟨ω, f⟩)` converge to zero in mean square. This retains the source's integral
-formulation, with the centering inside the time integral. -/
+formulation, with the centering inside the time integral. The dimension restriction retains
+the source's domain of at least two total dimensions. -/
+@[nolint unusedArguments]
 def OS4Ergodicity [Fact (1 ≤ d)]
     (μ : ProbabilityMeasure (FieldConfiguration d)) : Prop :=
   ∀ (n : ℕ) (z : Fin n → ℂ) (f : Fin n → 𝓢(TimeAndSpace d, ℂ)),
     let A : FieldConfiguration d → ℂ := fun ω => ∑ j, z j * Complex.exp (pairing ω (f j))
     Tendsto (fun T : ℝ =>
       ∫ ω, ‖(1 / T : ℂ) * ∫ s in Set.Icc (0 : ℝ) T,
-        (A (timeTranslation s ω) - ∫ ω', A ω' ∂μ.toMeasure)‖ ^ 2 ∂μ.toMeasure)
+        (A (ω.comp (SchwartzMap.compSubConstCLM ℝ (⟨s⟩, 0))) -
+          ∫ ω', A ω' ∂μ.toMeasure)‖ ^ 2 ∂μ.toMeasure)
       atTop (𝓝 0)
 
 /-! ## D. Bundled axioms -/
