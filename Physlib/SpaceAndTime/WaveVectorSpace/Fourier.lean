@@ -47,6 +47,10 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
 - `fourierIntegralInv a b` : the inverse Fourier integral with real parameters `a` and `b`,
   corresponding to a choice of convention, which maps a function `g : WaveVectorSpace d → E`
   to its Fourier transform of type `Space d → E`.
+- `deriv_fourierIntegral` / `deriv_fourierIntegralInv` : for a suitably nice function
+  `f : Space d → E` the derivative along the `i`ᵗʰ coordinate direction of its Fourier integral
+  is the Fourier integral of the function `x ↦ (b * I * x i) • f x`, and similarly for functions
+  `WaveVectorSpace d → E` and the inverse Fourier integral.
 
 ## iii. Table of contents
 
@@ -199,12 +203,18 @@ section IntegrandCLM
 
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 
+/-- Given a CLM-valued function of space, `f : Space d → F →L[ℝ] E`,
+evaluating its Fourier integral at `v : F` is the same as taking
+the Fourier integral of `x ↦ f x v`. -/
 lemma fourierIntegral_continuousLinearMap_apply
     {f : Space d → F →L[ℝ] E} (hf : Integrable f) (k : WaveVectorSpace d) (v : F) :
     fourierIntegral a b f k v = fourierIntegral a b (f · v) k := by
   simp only [fourierIntegral_def, Pi.smul_apply, smul_apply,
     VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hf]
 
+/-- Given a CLM-valued function of wavevector, `g : WaveVectorSpace d → F →L[ℝ] E`,
+evaluating its inverse Fourier integral at `v : F` is the same as taking
+the inverse Fourier integral of `k ↦ g k v`. -/
 lemma fourierIntegralInv_continuousLinearMap_apply
     {g : WaveVectorSpace d → F →L[ℝ] E} (hg : Integrable g) (x : Space d) (v : F) :
     fourierIntegralInv a b g x v = fourierIntegralInv a b (g · v) x := by
@@ -222,13 +232,13 @@ end IntegrandCLM
 -/
 
 /-- Send a function `f : Space d → E` to the function `f : Space d → Hom (WaveVectorSpace d, E)`
-given by `x ↦ (k ↦ b * I * (k ⬝ᵥ x) • f x)`. This is designed so that the Fourier transform of
+given by `x ↦ k ↦ b * I * (k ⬝ᵥ x) • f x`. This is designed so that the Fourier transform of
 `fourierSMulRight b f` is the `fderiv` of the Fourier transform of `f`. -/
 noncomputable def fourierSMulRight (f : Space d → E) (x : Space d) : WaveVectorSpace d →L[ℝ] E :=
   (b * I) • x.dual.smulRight (f x)
 
 /-- Send a function `g : WaveVectorSpace d → E` to the function
-`g : WaveVectorSpace d → Hom (Space d, E)` given by `k ↦ (x ↦ -b * I * (k ⬝ᵥ x) • g k)`.
+`g : WaveVectorSpace d → Hom (Space d, E)` given by `k ↦ x ↦ -b * I * (k ⬝ᵥ x) • g k`.
 This is designed so that the inverse Fourier transform of `fourierInvSMulRight b g`
 is the `fderiv` of the inverse Fourier transform of `g`. -/
 noncomputable def fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
@@ -256,12 +266,12 @@ lemma fourierInvSMulRight_apply (g : WaveVectorSpace d → E) (k : WaveVectorSpa
 @[simp]
 lemma norm_fourierSMulRight (f : Space d → E) (x : Space d) :
     ‖fourierSMulRight b f x‖ = |b| * ‖x‖ * ‖f x‖ := by
-  simp [fourierSMulRight, norm_smul, mul_assoc]
+  simp [fourierSMulRight_eq, norm_smul, mul_assoc]
 
 @[simp]
 lemma norm_fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
     ‖fourierInvSMulRight b g k‖ = |b| * ‖k‖ * ‖g k‖ := by
-  simp [fourierInvSMulRight, norm_smul, mul_assoc]
+  simp [fourierInvSMulRight_eq, norm_smul, mul_assoc]
 
 @[fun_prop]
 lemma aestronglyMeasurable_fourierSMulRight {f : Space d → E} (hf : AEStronglyMeasurable f) :
@@ -315,8 +325,10 @@ lemma fderiv_fourierIntegralInv
 #### A.3.3. Partial derivatives
 -/
 
-lemma deriv_fourierIntegral
-    (i : Fin d) {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
+/-- The partial derivative of the Fourier transform of `f` along coordinate `i`
+is the Fourier transform of `x ↦ (b * I * x i) • f x`, provided both integrals exist. -/
+lemma deriv_fourierIntegral (i : Fin d)
+    {f : Space d → E} (hf : Integrable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
     ∂[i] (fourierIntegral a b f) = fourierIntegral a b fun x ↦ (b * I * x i) • f x := by
   ext
   simp only [deriv_eq, hf, hf', fderiv_fourierIntegral, hf.aestronglyMeasurable,
@@ -324,9 +336,11 @@ lemma deriv_fourierIntegral
   congr
   simp [dotProduct, ← nsmul_eq_mul, ← coe_smul, smul_smul]
 
+/-- The partial derivative of the inverse Fourier transform of `g` along coordinate `i`
+is the inverse Fourier transform of `k ↦ (-b * I * k i) • g k`, provided both integrals exist. -/
 lemma deriv_fourierIntegralInv (i : Fin d)
     {g : WaveVectorSpace d → E} (hg : Integrable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
-    ∂[i] (fourierIntegralInv a b g) = fourierIntegralInv a b fun k ↦ (-b * I * k i) • g k := by
+    ∂[i] (fourierIntegralInv a b g) = fourierIntegralInv a b fun k ↦ -(b * I * k i) • g k := by
   ext
   simp only [Space.deriv_eq, hg, hg', fderiv_fourierIntegralInv, hg.aestronglyMeasurable,
     integrable_fourierInvSMulRight, fourierIntegralInv_continuousLinearMap_apply]
