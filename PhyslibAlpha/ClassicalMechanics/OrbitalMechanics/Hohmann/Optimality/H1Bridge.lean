@@ -94,7 +94,7 @@ lemma h1_bound_eq_totalDeltaV (p : HohmannTransfer.Parameters) :
 
 /-- Physical attainment from H1 plus a global lower bound against arbitrary
 smooth two-impulse competitors. Free time, free phase, fixed central field. -/
-theorem h1_global_two_impulse_minimum (p : HohmannTransfer.Parameters) :
+lemma h1_global_two_impulse_minimum (p : HohmannTransfer.Parameters) :
     (∀ t, deriv (deriv (HohmannTransfer.position p)) t =
       -(p.mu/‖HohmannTransfer.position p t‖^3) • HohmannTransfer.position p t) ∧
     HohmannTransfer.position p 0=HohmannTransfer.pack p.r₁ 0 ∧

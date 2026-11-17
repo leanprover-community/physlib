@@ -76,7 +76,7 @@ lemma hohmann_transfer (p : Parameters) :
 
 /-- Existence without asking the reader to trust a project-defined orbit predicate.
 All geometric and motion hypotheses are consequences, not input fields. -/
-theorem exists_hohmann_transfer (mu r₁ r₂ : ℝ)
+lemma exists_hohmann_transfer (mu r₁ r₂ : ℝ)
     (hmu : 0 < mu) (hr₁ : 0 < r₁) (horder : r₁ < r₂) :
     ∃ (q v c₁ c₂ : ℝ → ℂ) (τ d₁ d₂ : ℝ),
       0 < τ ∧ 0 < d₁ ∧ 0 < d₂ ∧

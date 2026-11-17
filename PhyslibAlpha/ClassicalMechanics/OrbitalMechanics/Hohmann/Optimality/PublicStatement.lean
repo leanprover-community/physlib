@@ -53,7 +53,7 @@ lemma global_two_impulse_endpoint_optimality (s : Shape) :
 
 /-- The global inequality applies to genuinely differentiable Newtonian coast
 arcs; conservation is proved in KeplerConservation rather than postulated. -/
-theorem global_two_impulse_newton_lower_bound (p : Units) (a : KeplerArc p.mu)
+lemma global_two_impulse_newton_lower_bound (p : Units) (a : KeplerArc p.mu)
     (h₀ : (a.state a.t₀).radius=p.r₁) (h₁ : (a.state a.t₁).radius=p.r₂) :
     p.bound ≤ (a.state a.t₀).impulse p.speed+(a.state a.t₁).impulse p.circular₂ :=
   KeplerArc.newton_arc_lower_bound p a h₀ h₁
