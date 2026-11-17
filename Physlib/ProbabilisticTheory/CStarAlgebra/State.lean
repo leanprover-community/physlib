@@ -98,14 +98,10 @@ lemma isTracial_iff_extend_map_mul_comm (ω : (ofCStarAlgebra 𝒜).State) :
     ω.IsTracial ↔ ∀ a b : 𝒜, ω.extend (a * b) = ω.extend (b * a) := by
   refine Iff.trans ?_
     (LinearMap.map_mul_comm_iff_star_mul_self_eq_mul_star_self ω.extend.toLinearMap).symm
-  constructor
-  · intro h a
-    exact (extend_apply ω ⟨_, .star_mul_self a⟩).trans
-      ((congrArg Complex.ofReal (h a)).trans (extend_apply ω ⟨_, .mul_star_self a⟩).symm)
-  · intro h a
-    apply Complex.ofReal_injective
-    exact (extend_apply ω ⟨_, .star_mul_self a⟩).symm.trans
-      ((h a).trans (extend_apply ω ⟨_, .mul_star_self a⟩))
+  refine forall_congr' ?_
+  intro a
+  rw [← Complex.ofReal_inj, ← extend_apply, ← extend_apply]
+  rfl
 
 /-- A tracial state does not see the order of a product. -/
 lemma IsTracial.map_mul_comm {ω : (ofCStarAlgebra 𝒜).State} (h : ω.IsTracial) (a b : 𝒜) :

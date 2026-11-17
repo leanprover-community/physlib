@@ -46,7 +46,6 @@ namespace ProbabilisticTheory.State
 
 variable {P Q : ProbabilisticTheory}
 
--- Keep ℝ explicit in state evaluation and projections so tactics index their types consistently.
 instance : FunLike P.State P.Observables ℝ :=
   inferInstanceAs (FunLike (Channel P .real) P.Observables ℝ)
 

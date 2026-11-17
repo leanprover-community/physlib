@@ -64,10 +64,9 @@ lemma IsInvariant.comap {ρ : G →* Reversible P P} {σ : G →* Reversible Q Q
   intro g
   ext x
   have h1 := h g⁻¹ x
-  have h2 := DFunLike.congr_fun (hω g) (Φ x)
   simp only [map_inv, Reversible.inv_apply] at h1
   change ω (Φ ((ρ g).symm x)) = ω (Φ x)
   rw [h1]
-  exact h2
+  exact DFunLike.congr_fun (hω g) (Φ x)
 
 end ProbabilisticTheory.State

@@ -93,7 +93,6 @@ lemma selfAdjoint_le_zero_of_forall_pos_smul_one_le {x : selfAdjoint 𝒜}
 
 /-! ## C. Quantum observables and scalar outcomes -/
 
--- Keep the observable carrier transparent to subtype coercions.
 /-- The self-adjoint elements of a C⋆-algebra, with their Archimedean order and unit. -/
 noncomputable abbrev ofCStarAlgebra (𝒜 : Type*) [CStarAlgebra 𝒜] [PartialOrder 𝒜]
     [StarOrderedRing 𝒜] : ProbabilisticTheory where
