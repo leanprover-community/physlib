@@ -27,6 +27,8 @@ two others, an extreme point of that convex set. A mixed state is one that is a 
 - `UnitalPositiveLinearMap.IsPure` : pure states are extreme points of the state space.
 - `UnitalPositiveLinearMap.isPure_iff_forall_mix_eq` : a pure state admits only trivial
   genuine mixtures.
+- `UnitalPositiveLinearMap.isPure_of_apply_eq_one_iff` : the only state certain of an effect is
+  pure.
 - `UnitalPositiveLinearMap.isMixed_iff_exists_mem_openSegment` : mixed states lie between
   two other states.
 
@@ -133,5 +135,18 @@ lemma isPure_iff_forall_mix_eq {ω : 𝓢[ℝ, E]} :
     ω.IsPure ↔ ∀ φ ψ t, 0 < t → t < 1 → mix φ ψ t = ω → φ = ω ∧ ψ = ω := by
   simp only [isPure_iff_forall_mem_openSegment, mem_openSegment_iff_exists_mix,
     forall_exists_index, and_imp]
+
+/-- A state is pure when it is the only state certain of some effect `e`. -/
+lemma isPure_of_apply_eq_one_iff {ω : 𝓢[ℝ, E]} {e : E} (he : e ≤ 1)
+    (h : ∀ φ : 𝓢[ℝ, E], φ e = 1 ↔ φ = ω) : ω.IsPure := by
+  refine isPure_iff_forall_mix_eq.mpr ?_
+  intro φ ψ t ht0 ht1 hmix
+  have hφ : φ e ≤ 1 := by simpa using φ.monotone he
+  have hψ : ψ e ≤ 1 := by simpa using ψ.monotone he
+  have hsum := DFunLike.congr_fun hmix e
+  rw [mix_apply, (h ω).2 rfl] at hsum
+  have ht0' : (0 : ℝ) < t := ht0
+  have ht1' : (t : ℝ) < 1 := ht1
+  exact ⟨(h φ).1 (le_antisymm hφ (by nlinarith)), (h ψ).1 (le_antisymm hψ (by nlinarith))⟩
 
 end UnitalPositiveLinearMap
