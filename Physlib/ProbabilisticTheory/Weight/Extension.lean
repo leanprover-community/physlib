@@ -52,7 +52,7 @@ lemma IsFinite.toReal_apply (hw : w.IsFinite) (A : PosCone P) : hw.toReal A = (w
 
 /-- The `ℝ`-linear map extending a finite weight. -/
 noncomputable def IsFinite.toLinearMap (hw : w.IsFinite) : P.Observables →ₗ[ℝ] ℝ :=
-  PosCone.extend hw.toReal
+  PosCone.extendₗ hw.toReal
 
 @[simp]
 lemma IsFinite.toLinearMap_coe (hw : w.IsFinite) (A : PosCone P) :
