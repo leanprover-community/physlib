@@ -6,7 +6,7 @@ References connect the informal literature to the formal results in Physlib. The
 
 1. [Put references in the file's references section](#references-section)
 2. [Add every reference to references.bib](#references-bib)
-3. [Include exact quotes](#exact-quotes)
+3. [Don't necessarily follow a specific reference](#references-use)
 4. [Prefer open-access sources](#open-access)
 5. [Link to the exact page](#exact-page)
 
@@ -26,11 +26,11 @@ Every reference should have an entry in `docs/references.bib` at the root of the
 * Landau & Lifshitz, Mechanics, 3rd ed., section 25. [ref: landau_mechanics]
 ```
 
-<a id="exact-quotes"></a>
+<a id="references-use"></a>
 
-## 3. Include exact quotes
+## 3. Don't necessarily follow a specific reference 
 
-Where possible, include an exact quote from the source in the references section. Quotes can be checked in both directions: a reader can check that the quote describes the physics being formalized, and that the quote actually appears in the source. Quotes can be left out when citing an overview article.
+References should be used for background reading, or to point to key sources (for example the first place a specific result was proved). It is extremely rare that the development of an API around a given area of physics will follow a single specific reference. Often one should take inspiration from more than one source to come up with suitable frameworks, generalisations, and approaches for Physlib. 
 
 <a id="open-access"></a>
 
