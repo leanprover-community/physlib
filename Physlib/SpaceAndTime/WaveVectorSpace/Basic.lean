@@ -108,7 +108,7 @@ instance : Subsingleton (WaveVectorSpace 0) where
 ### B.3. Zero
 -/
 
-instance : Zero (WaveVectorSpace d) where
+instance instZero : Zero (WaveVectorSpace d) where
   zero := ⟨0⟩
 
 @[simp]
