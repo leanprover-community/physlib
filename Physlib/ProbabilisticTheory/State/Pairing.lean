@@ -83,8 +83,8 @@ lemma ext_of_effect_eq_of_nonneg {ω φ : P.State}
 lemma ext_of_effect_eq {ω φ : P.State}
     (h : ∀ e : P.Effect, ω e = φ e) : ω = φ := by
   refine DFunLike.ext _ _ fun A => ?_
-  obtain ⟨Ap, An, hAp, hAn, rfl⟩ := ProbabilisticTheory.exists_eq_sub_nonneg A
-  rw [map_sub, map_sub, ext_of_effect_eq_of_nonneg h hAp, ext_of_effect_eq_of_nonneg h hAn]
+  obtain ⟨p, q, rfl⟩ := PosCone.exists_sub A
+  rw [map_sub, map_sub, ext_of_effect_eq_of_nonneg h p.2, ext_of_effect_eq_of_nonneg h q.2]
 
 /-- Evaluation on effects is injective on states. -/
 lemma injective_apply_effect :

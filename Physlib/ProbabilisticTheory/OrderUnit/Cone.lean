@@ -25,6 +25,7 @@ These elements form a cone: they are closed under addition and scaling by nonneg
   (`PointedCone.convex`).
 - `PosCone.isClosed` : the positive cone is closed in the order-unit-norm topology of an
   Archimedean order-unit space.
+- `PosCone.exists_sub` : every observable is a difference of two positive observables.
 
 ## iii. Table of contents
 
@@ -83,5 +84,11 @@ instance instOne : One (PosCone P) := ⟨⟨1, one_nonneg⟩⟩
 
 @[simp]
 lemma coe_one : ((1 : PosCone P) : P.Observables) = (1 : P.Observables) := rfl
+
+/-- Every observable is a difference `(A + n • 1) - n • 1` of two positive observables. -/
+lemma exists_sub (A : P.Observables) : ∃ p q : PosCone P, (p : P.Observables) - q = A := by
+  obtain ⟨n, hn⟩ := exists_nsmul_one_le (-A)
+  exact ⟨⟨A + n • 1, neg_le_iff_add_nonneg'.mp hn⟩, ⟨n • 1, nsmul_nonneg one_nonneg n⟩,
+    add_sub_cancel_right A _⟩
 
 end ProbabilisticTheory.PosCone

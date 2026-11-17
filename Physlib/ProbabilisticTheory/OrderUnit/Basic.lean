@@ -25,8 +25,6 @@ space, its order, and this distinguished unit gives the abstract order-unit sett
 
 - `ProbabilisticTheory.exists_two_sided_bound` : every observable sits between `-(n • 1)` and
   `n • 1`, for some `n`.
-- `ProbabilisticTheory.exists_eq_sub_nonneg` : every observable is a difference of two positive
-  observables.
 - `ProbabilisticTheory.exists_real_shift_nonneg` : enough copies of the order unit shift any element
   into the positive cone.
 - `ProbabilisticTheory.nonneg_add_eq_zero` : the positive cone meets its negation only at `0`.
@@ -72,14 +70,6 @@ lemma exists_two_sided_bound (A : P.Observables) :
   obtain ⟨m, hm⟩ := exists_nsmul_one_le (-A)
   refine ⟨max n m, ?_, hn.trans (nsmul_le_nsmul_left one_nonneg (le_max_left n m))⟩
   exact neg_le_of_neg_le <| hm.trans (nsmul_le_nsmul_left one_nonneg (le_max_right n m))
-
-/-- Every element is a difference of two positive elements. -/
-lemma exists_eq_sub_nonneg (A : P.Observables) :
-    ∃ Ap An : P.Observables, 0 ≤ Ap ∧ 0 ≤ An ∧ A = Ap - An := by
-  obtain ⟨n, hn⟩ := exists_nsmul_one_le (-A)
-  refine ⟨A + n • (1 : P.Observables), n • (1 : P.Observables), ?_, nsmul_nonneg one_nonneg n, ?_⟩
-  · exact neg_le_iff_add_nonneg'.mp hn
-  · exact (add_sub_cancel_right A (n • (1 : P.Observables))).symm
 
 /-- Every element becomes nonnegative after adding enough copies of the order unit: the positive
 cone reaches everywhere, once you're allowed to shift by the unit. -/
