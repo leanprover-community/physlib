@@ -30,13 +30,13 @@ Every reference should have an entry in `docs/references.bib` at the root of the
 
 ## 3. Don't necessarily follow a specific reference 
 
-References should be used for background reading, or to point to key sources (for example the first place a specific result was proved). It is extremely rare that the development of an API around a given area of physics will follow a single specific reference. Often one should take inspiration from more than one source to come up with suitable frameworks, generalisations, and approaches for Physlib. 
+In general one should not follow a specific reference to the letter when formalising an area of Physlib. Instead, one should take inspiration from more than one source to come up with suitable frameworks, generalisations, and approaches. This usually ends up creating a better, and more adaptable API.
 
 <a id="open-access"></a>
 
 ## 4. Prefer open-access sources
 
-Prefer open-access sources, and include a link. Physlib is an open-source project, and it is very hard to check that a reference is correct if the source is closed access. This is a soft rule: at some point you will need to refer to the standard literature, such as Landau and Lifshitz.
+When referencing background material prefer open-access sources, and include a link. Physlib is an open-source project, and it is very hard to check that a reference is correct if the source is closed access. This is a soft rule: at some point you will need to refer to the standard literature, such as Landau and Lifshitz.
 
 <a id="exact-page"></a>
 
