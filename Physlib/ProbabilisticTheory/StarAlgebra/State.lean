@@ -44,6 +44,9 @@ observables. A unital positive map restricts to a channel between the observable
 - `UnitalPositiveLinearMap.onObservables` : a state restricted to a state of the observables.
 - `UnitalPositiveLinearMap.coe_onObservables_apply` : the expectation value of an observable is
   real.
+- `UnitalPositiveLinearMap.ofObservables` : extend observable expectations to a complex state.
+- `UnitalPositiveLinearMap.observablesEquiv` : complex states and real states of the observables
+  correspond.
 - `UnitalPositiveLinearMap.restrictObservables` : a unital positive map restricted to a channel
   between observables.
 
@@ -114,6 +117,25 @@ end
 
 -/
 
+/-- Extend a state of the self-adjoint observables to the complex algebra. -/
+noncomputable def ofObservables [StarOrderedRing 𝒜] (ω : 𝓢[ℝ, Observable 𝒜]) : 𝓢[ℂ, 𝒜] :=
+  .ofLinearMap
+    { toFun x := ⟨ω (realPart x), ω (imaginaryPart x)⟩
+      map_add' x y := by apply Complex.ext <;> simp
+      map_smul' c x := by
+        apply Complex.ext <;>
+          simp [realPart_smul, imaginaryPart_smul, map_sub, map_add, map_smul] }
+    (fun x hx => ⟨ω.map_nonneg (realPart_nonneg_of_nonneg hx),
+      by simp [(IsSelfAdjoint.of_nonneg hx).imaginaryPart]⟩)
+    (by apply Complex.ext <;> simp [IsSelfAdjoint.imaginaryPart (IsSelfAdjoint.one 𝒜)])
+
+/-- The extension gives an observable its expectation value in the state of the observables. -/
+@[simp]
+lemma ofObservables_apply [StarOrderedRing 𝒜] (ω : 𝓢[ℝ, Observable 𝒜]) (x : Observable 𝒜) :
+    ofObservables ω (x : 𝒜) = (ω x : ℂ) := by
+  change Complex.mk (ω (realPart (x : 𝒜))) (ω (imaginaryPart (x : 𝒜))) = _
+  apply Complex.ext <;> simp
+
 variable [SelfAdjointDecompose 𝒜]
 
 /-- The real part of a state is a state of the observables. Its value is the expectation value
@@ -130,6 +152,22 @@ noncomputable def onObservables (ω : 𝓢[ℂ, 𝒜]) : 𝓢[ℝ, Observable �
 lemma coe_onObservables_apply (ω : 𝓢[ℂ, 𝒜]) (x : Observable 𝒜) :
     ((ω.onObservables x : ℝ) : ℂ) = ω (x : 𝒜) :=
   Complex.conj_eq_iff_re.mp (by rw [← Complex.star_def]; exact (x.2.map' ω).star_eq)
+
+/-- Complex states of the algebra are the same as real states of its observables. -/
+@[simps]
+noncomputable def observablesEquiv [StarOrderedRing 𝒜] : 𝓢[ℂ, 𝒜] ≃ 𝓢[ℝ, Observable 𝒜] where
+  toFun := onObservables
+  invFun := ofObservables
+  left_inv ω := by
+    refine DFunLike.ext _ _ ?_
+    intro x
+    rw [← realPart_add_I_smul_imaginaryPart x, map_add, map_add, map_smul, map_smul,
+      ofObservables_apply, ofObservables_apply, coe_onObservables_apply, coe_onObservables_apply]
+  right_inv ω := by
+    refine DFunLike.ext _ _ ?_
+    intro x
+    apply Complex.ofReal_injective
+    rw [coe_onObservables_apply, ofObservables_apply]
 
 /-!
 
