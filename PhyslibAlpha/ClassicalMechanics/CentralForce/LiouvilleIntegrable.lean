@@ -6,7 +6,7 @@ Authors: Rithwik Ranganathan
 module
 
 public import Physlib.Mathematics.ForMathlib.Analytic
-public import PhyslibAlpha.ClassicalMechanics.CentralForce.AngularMomentum
+public import PhyslibAlpha.ClassicalMechanics.CentralForce.ConservedQuantities
 public import PhyslibAlpha.ClassicalMechanics.LiouvilleIntegrable.Basic
 /-!
 
@@ -38,9 +38,7 @@ momentum, infinitesimal rotations and momentum scaling, successively eliminating
 ## iii. Table of contents
 
 - A. The domain of integrability
-- B. The conserved quantities
-  - B.1. Involution
-  - B.2. Functional independence
+- B. Functional independence
 - C. Liouville integrability
 
 ## iv. References
@@ -54,8 +52,6 @@ namespace ClassicalMechanics.CentralForce
 
 open InnerProductSpace
 open scoped ContDiff
-
-attribute [local fun_prop] analyticAt_fst analyticAt_snd
 
 /-!
 
@@ -85,9 +81,18 @@ lemma isOpen_integrabilityDomain : IsOpen integrabilityDomain := by
 /-- The chosen central-force domain is dense. -/
 lemma dense_integrabilityDomain : Dense integrabilityDomain := by
   rw [integrabilityDomain_eq]
-  refine AnalyticOnNhd.dense_setOf_ne_zero (𝕜 := ℝ) (fun z _ => by fun_prop)
+  refine AnalyticOnNhd.dense_setOf_ne_zero (𝕜 := ℝ) (fun z _ ↦ ?_)
     (x₀ := (!₂[1, 0, 1], !₂[1, 0, 0])) ?_
-  norm_num [Matrix.cons_val_two]
+  · have hp (i : Fin 3) : AnalyticAt ℝ
+        (fun x : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) ↦ x.1 i) z :=
+      ((EuclideanSpace.proj (𝕜 := ℝ) i).analyticAt z.1).comp analyticAt_fst
+    have hq (i : Fin 3) : AnalyticAt ℝ
+        (fun x : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) ↦ x.2 i) z :=
+      ((EuclideanSpace.proj (𝕜 := ℝ) i).analyticAt z.2).comp analyticAt_snd
+    exact ((((hp 0).mul (hq 0)).add ((hp 1).mul (hq 1))).add ((hp 2).mul (hq 2))).mul
+      (((((hq 1).mul (hp 2)).sub ((hq 2).mul (hp 1))).pow 2).add
+        ((((hq 2).mul (hp 0)).sub ((hq 0).mul (hp 2))).pow 2))
+  · norm_num [Matrix.cons_val_two]
 
 /-- The chosen domain excludes the centre of force. -/
 lemma snd_ne_zero_of_mem_integrabilityDomain
@@ -98,64 +103,11 @@ lemma snd_ne_zero_of_mem_integrabilityDomain
 
 /-!
 
-## B. The conserved quantities
+## B. Functional independence
 
 -/
 
 variable (S : CentralForce)
-
-/-- The three conserved quantities in involution of a central-force system: the Hamiltonian `H`,
-the squared magnitude `L²` of the angular momentum, and its z-component `L_z`. -/
-noncomputable def conservedQuantities :
-    Fin 3 → EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3) → ℝ :=
-  ![S.hamiltonian, angularMomentumSq, angularMomentumZ]
-
-/-!
-
-### B.1. Involution
-
--/
-
-/-- Away from the centre of force, the conserved quantities of a central-force system are pairwise
-in involution. -/
-lemma poissonBracket_conservedQuantities (i j : Fin 3) (p : EuclideanSpace ℝ (Fin 3))
-    {q : EuclideanSpace ℝ (Fin 3)} (hq : q ≠ 0) :
-    poissonBracket (S.conservedQuantities i) (S.conservedQuantities j) p q = 0 := by
-  have hSqH := S.poissonBracket_angularMomentumSq_hamiltonian p hq
-  have hZH := S.poissonBracket_angularMomentumZ_hamiltonian p hq
-  have hSqZ := poissonBracket_angularMomentumSq_angularMomentumZ p q
-  have hHSq : poissonBracket S.hamiltonian angularMomentumSq p q = 0 := by
-    rw [poissonBracket_antisymm, hSqH, neg_zero]
-  have hHZ : poissonBracket S.hamiltonian angularMomentumZ p q = 0 := by
-    rw [poissonBracket_antisymm, hZH, neg_zero]
-  have hZSq : poissonBracket angularMomentumZ angularMomentumSq p q = 0 := by
-    rw [poissonBracket_antisymm, hSqZ, neg_zero]
-  fin_cases i <;> fin_cases j <;> simp [conservedQuantities, poissonBracket_self, *]
-
-/-!
-
-### B.2. Functional independence
-
--/
-
-/-- Away from the centre of force, the phase-space gradients of the conserved quantities of a
-central-force system. -/
-lemma gradient_conservedQuantities (p : EuclideanSpace ℝ (Fin 3)) {q : EuclideanSpace ℝ (Fin 3)}
-    (hq : q ≠ 0) :
-    (fun i => (gradient (fun p' => S.conservedQuantities i p' q) p,
-      gradient (fun q' => S.conservedQuantities i p q') q)) =
-    ![(S.m⁻¹ • p, (deriv S.V ‖q‖ / ‖q‖) • q),
-      ((2 * ⟪q, q⟫_ℝ) • p - (2 * ⟪q, p⟫_ℝ) • q, (2 * ⟪p, p⟫_ℝ) • q - (2 * ⟪q, p⟫_ℝ) • p),
-      (q 0 • EuclideanSpace.single 1 1 - q 1 • EuclideanSpace.single 0 1,
-        p 1 • EuclideanSpace.single 0 1 - p 0 • EuclideanSpace.single 1 1)] := by
-  funext i
-  fin_cases i
-  · exact Prod.ext (S.hasGradientAt_hamiltonian_momentum p q).gradient
-      (S.hasGradientAt_hamiltonian_position p hq).gradient
-  · exact Prod.ext (hasGradientAt_angularMomentumSq_momentum p q).gradient
-      (hasGradientAt_angularMomentumSq_position p q).gradient
-  · exact Prod.ext (hasGradientAt_angularMomentumZ_momentum p q).gradient
-      (hasGradientAt_angularMomentumZ_position p q).gradient
 
 /-- On the domain of integrability, a phase-space function whose momentum gradient is a non-zero
 multiple `a • p` of the momentum and whose position gradient is a multiple `c • q` of the
