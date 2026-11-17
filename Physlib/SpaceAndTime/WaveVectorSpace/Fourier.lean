@@ -264,12 +264,12 @@ lemma fourierInvSMulRight_apply (g : WaveVectorSpace d → E) (k : WaveVectorSpa
   rfl
 
 @[simp]
-lemma norm_fourierSMulRight (f : Space d → E) (x : Space d) :
+lemma opNorm_fourierSMulRight (f : Space d → E) (x : Space d) :
     ‖fourierSMulRight b f x‖ = |b| * ‖x‖ * ‖f x‖ := by
   simp [fourierSMulRight_eq, norm_smul, mul_assoc]
 
 @[simp]
-lemma norm_fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
+lemma opNorm_fourierInvSMulRight (g : WaveVectorSpace d → E) (k : WaveVectorSpace d) :
     ‖fourierInvSMulRight b g k‖ = |b| * ‖k‖ * ‖g k‖ := by
   simp [fourierInvSMulRight_eq, norm_smul, mul_assoc]
 
@@ -289,12 +289,12 @@ lemma aestronglyMeasurable_fourierInvSMulRight
 lemma integrable_fourierSMulRight {f : Space d → E}
     (hf : AEStronglyMeasurable f) (hf' : Integrable fun x ↦ ‖x‖ * ‖f x‖) :
     Integrable (fourierSMulRight b f) :=
-  (hf'.smul |b|).mono (by fun_prop) <| ae_of_all _ fun _ ↦ by simp [mul_assoc]
+  hf'.smul |b| |>.mono (by fun_prop) <| ae_of_all _ <| by simp [mul_assoc]
 
 lemma integrable_fourierInvSMulRight {g : WaveVectorSpace d → E}
     (hg : AEStronglyMeasurable g) (hg' : Integrable fun k ↦ ‖k‖ * ‖g k‖) :
     Integrable (fourierInvSMulRight b g) :=
-  (hg'.smul |b|).mono (by fun_prop) <| ae_of_all _ fun _ ↦ by simp [mul_assoc]
+  hg'.smul |b| |>.mono (by fun_prop) <| ae_of_all _ <| by simp [mul_assoc]
 
 /-!
 #### A.3.2. Fréchet derivatives
