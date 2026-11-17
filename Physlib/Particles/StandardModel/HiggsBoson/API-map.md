@@ -33,43 +33,45 @@ The Higgs bundle over spacetime {3} is a smooth vector bundle, currently the tri
 fibre the pointwise Higgs values. [8] It is the bundle associated to the gauge group, rather than
 the trivial one. [TODO]
 
-Each real analytic section has an underlying map to pointwise Higgs values, and every Higgs vector
-gives a constant field. [9] Its real and imaginary components are real analytic. [10] The pointwise
-inner product of two Higgs fields has an explicit expansion, is conjugate symmetric and additive,
-and is smooth. [11] The pointwise
-norm squared of a Higgs field is the real part of its inner product with itself, is nonnegative,
-and is smooth. [12]
+A Higgs field has a Higgs vector as its value at each spacetime point, and every Higgs vector
+defines a constant field. [9] The real and imaginary parts of its components are real analytic. [10]
+The pointwise inner product of two Higgs fields has an explicit expansion, is conjugate
+symmetric and additive, and is smooth. [11] The squared norm is the real part of the inner product
+of the field with itself; it is nonnegative and smooth. [12] Which scalar functions on spacetime
+occur as these squared norms? [TODO]
 
-In a trivialization, an explicit weak SU(2) rotation sends each nonzero doublet to the neutral
-representative whose second component is its norm. This is the scalar part of unitary gauge and also
-works when the norm varies across spacetime. On a region where one of two doublets is nonzero, their
-pointwise squared norms agree exactly when one weak SU(2) transformation carries one to the other.
-The matrix coefficients have the same regularity as the input fields: finite differentiability,
-smoothness, or real analyticity. At common zeros, equal norms alone do not guarantee a continuous
-transformation. [13]
+The weak isospin factor SU(2) acts on the two complex components of a Higgs doublet, with the
+colour and hypercharge factors set to the identity. [4] In the trivial bundle, on a region where
+the doublet is nowhere zero, a local weak rotation sends it to the neutral representative whose
+second component is its norm. For a $C^n$ doublet the chosen rotation has $C^n$ matrix entries on
+the region. [13] This is the scalar part of unitary gauge: the doublet's direction is fixed while
+its magnitude can vary across spacetime.
 
-- Pointwise action of local Standard Model gauge transformations on Higgs sections. [TODO]
-- Scalar functions that occur as squared norms of real analytic Higgs fields. [TODO]
+On a region where the first of two $C^n$ doublets is nowhere zero, their pointwise squared norms
+agree exactly when a weak rotation with $C^n$ matrix entries carries the first to the second
+there. For Higgs fields this gives real analytic matrix entries on that region. [14] A pointwise
+action of the full local Standard Model gauge group on Higgs sections requires transformations
+compatible with the analyticity of the fields. [TODO]
 
 ### The Higgs potential
 
 The Standard Model Higgs potential {4} has a mass parameter and a quartic coupling, and evaluates
 smoothly on a Higgs field; negating both parameters negates the potential, and the potential
-vanishes on the zero field; at each spacetime point it is gauge invariant. [14] Completing the
+vanishes on the zero field; at each spacetime point it is gauge invariant. [15] Completing the
 square writes it as a quadratic in the norm squared, whose discriminant is nonnegative and
-vanishes exactly in a characterized case. [15]
+vanishes exactly in a characterized case. [16]
 
 A bounded-below potential has nonnegative quartic coupling, and a positive quartic coupling makes
-it bounded below. [16] The values it attains, its bounds when the discriminant vanishes, and its
+it bounded below. [17] The values it attains, its bounds when the discriminant vanishes, and its
 minimum for positive and maximum for negative quartic coupling are all determined
-explicitly. [16]
+explicitly. [17]
 
 ### Effective potentials
 
 An effective potential is a function on pointwise Higgs values; when it is gauge invariant it is
-constant on gauge orbits and so factors through the norm. [17] An effective potential of bounded
+constant on gauge orbits and so factors through the norm. [18] An effective potential of bounded
 mass dimension is polynomial, splits into homogeneous terms of each mass dimension whose odd terms
-vanish when it is invariant, and is then a sum of powers of the norm. [18] Effective potentials
+vanish when it is invariant, and is then a sum of powers of the norm. [19] Effective potentials
 determine potentials on Higgs fields, so that field-level statements follow from pointwise
 invariant ones. [TODO] Higgs fields have covariant derivatives and kinetic terms, built from a
 gauge connection over spacetime. [TODO]
@@ -106,21 +108,22 @@ gauge connection over spacetime. [TODO]
    `normSq_eq_inner_self_re`, `normSq_expand`, `normSq_nonneg`, `normSq_zero`, `normSq_smooth`,
    `const_normSq`
 13. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `toRealGroupElem_toSU2_of_ne_zero`,
-   `toRealGroupElem_toSU2_apply_self`, `contDiffOn_toRealGroupElem_toSU2`,
+   `toRealGroupElem_eq_toSU2`, `toRealGroupElem_toSU2_apply_self`, `contDiffOn_toRealGroupElem_toSU2`
+14. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean —
    `exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`, `exists_analytic_su2_rep_eq_iff_normSq_eq`
-14. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `Potential`, `toFun`,
+15. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `Potential`, `toFun`,
    `toFun_smooth`, `neg`, `toFun_neg`, `μ2_neg`, `𝓵_neg`, `toFun_zero`,
    `toFun_eq_of_repGaugeGroupI`
-15. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `complete_square`, `as_quad`,
+16. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `complete_square`, `as_quad`,
    `toFun_eq_zero_iff`, `quadDiscrim`, `quadDiscrim_nonneg`, `quadDiscrim_eq_zero_iff`,
    `quadDiscrim_eq_zero_iff_normSq`
-16. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `IsBounded`,
+17. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `IsBounded`,
    `isBounded_𝓵_nonneg`, `isBounded_of_𝓵_pos`, `neg_𝓵_sol_exists_iff`, `pos_𝓵_sol_exists_iff`,
    `neg_𝓵_quadDiscrim_zero_bound`, `pos_𝓵_quadDiscrim_zero_bound`, `isMinOn_iff_field_of_𝓵_pos`,
    `isMaxOn_iff_field_of_𝓵_neg`
-17. Physlib/Particles/StandardModel/HiggsBoson/EffectivePotential.lean — `EffectivePotential`,
+18. Physlib/Particles/StandardModel/HiggsBoson/EffectivePotential.lean — `EffectivePotential`,
    `IsInvariant`, `eq_on_orbits`, `eq_of_norm_eq`, `factors_through_norm`
-18. Physlib/Particles/StandardModel/HiggsBoson/EffectivePotential.lean — `HasMaxMassDimLE`,
+19. Physlib/Particles/StandardModel/HiggsBoson/EffectivePotential.lean — `HasMaxMassDimLE`,
    `polynomial`, `apply_eq_polynomial`, `termOfMassDim`, `termOfMassDim_homogeneity`,
    `termOfMassDim_zero_of_odd`, `apply_eq_sum_norm_pow`
 

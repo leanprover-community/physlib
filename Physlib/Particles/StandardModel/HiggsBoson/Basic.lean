@@ -308,7 +308,8 @@ lemma toRealGroupElem_toSU2_of_ne_zero (v : HiggsVec) (hv : v ≠ 0) :
       !![v 1 / ‖v‖, -v 0 / ‖v‖; conj (v 0) / ‖v‖, conj (v 1) / ‖v‖] := by
   simp [toRealGroupElem, hv, GaugeGroupI.toSU2]
 
-private lemma toRealGroupElem_eq_toSU2 (v : HiggsVec) :
+/-- The rotation to the neutral representative has trivial colour and hypercharge factors. -/
+lemma toRealGroupElem_eq_toSU2 (v : HiggsVec) :
     toRealGroupElem v = (1, (toRealGroupElem v).toSU2, 1) := by
   by_cases hv : v = 0
   · simp [toRealGroupElem, hv, GaugeGroupI.toSU2]
@@ -351,7 +352,8 @@ lemma contDiffOn_toRealGroupElem_toSU2 {n : ℕ∞ω} :
   · exact (hc 0).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
   · exact (hc 1).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
 
-private lemma contDiffOn_weakAlignment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+private lemma contDiffOn_toRealGroupElem_toSU2_inv_mul {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
     {n : ℕ∞ω} {s : Set E} {φ ψ : E → HiggsVec} (hφ : ContDiffOn ℝ n φ s) (hψ : ContDiffOn ℝ n ψ s)
     (hnφ : ∀ x ∈ s, φ x ≠ 0) (hnψ : ∀ x ∈ s, ψ x ≠ 0) :
     ContDiffOn ℝ n (fun (x : E) (i j : Fin 2) =>
@@ -399,10 +401,11 @@ In a trivialization, a doublet field is a map into `HiggsVec`. The weak rotation
 to the neutral representative preserves the regularity of the field wherever
 it is nonzero. The following results concern the action on the doublet itself.
 
-At common zeros, equal norms need not give a continuous transformation. The doublets
-`(x + iy, 0)` and `(x - iy, 0)` have equal norms, but the transforming matrix would have
-to send the first basis vector to itself on the punctured `x`-axis and to its negative
-on the punctured `y`-axis. It cannot be continuous at the origin.
+If both doublets vanish at the same point, equal norms need not give a transformation continuous
+at that point. For example, `(x + iy, 0)` and `(x - iy, 0)` both vanish at the origin and have
+equal norms everywhere. The transforming matrix would have to send the first basis vector to
+itself on the punctured `x`-axis and to its negative on the punctured `y`-axis, so it cannot be
+continuous at the origin.
 
 -/
 
@@ -425,7 +428,7 @@ lemma exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq {E : Type*}
       have hz : ‖φ x‖ ^ 2 = 0 := by simpa [h] using heq x hx
       exact hnφ x hx (norm_eq_zero.mp (sq_eq_zero_iff.mp hz))
     let g (x : E) := (toRealGroupElem (ψ x)).toSU2⁻¹ * (toRealGroupElem (φ x)).toSU2
-    refine ⟨g, contDiffOn_weakAlignment hφ hψ hnφ hnψ, fun x hx => ?_⟩
+    refine ⟨g, contDiffOn_toRealGroupElem_toSU2_inv_mul hφ hψ hnφ hnψ, fun x hx => ?_⟩
     have hg : ((1, g x, 1) : GaugeGroupI) =
         ((1, (toRealGroupElem (ψ x)).toSU2, 1) : GaugeGroupI)⁻¹ *
         (1, (toRealGroupElem (φ x)).toSU2, 1) := by simp [g]
