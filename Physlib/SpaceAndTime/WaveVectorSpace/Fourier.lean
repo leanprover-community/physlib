@@ -157,7 +157,7 @@ lemma fourierIntegralInv_congr_ae {g₁ g₂ : WaveVectorSpace d → E} (hg : g�
     VectorFourier.fourierIntegral_congr_ae _ _ _ hg]
 
 /-!
-### A.2.1. Linearity
+#### A.2.1. Linearity
 -/
 
 lemma fourierIntegral_const_smul (f : Space d → E) (c : ℂ) :
