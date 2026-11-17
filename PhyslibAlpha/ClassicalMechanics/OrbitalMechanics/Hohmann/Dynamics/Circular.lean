@@ -5,6 +5,7 @@ Authors: Qianli Ma
 -/
 module
 
+public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Parameters
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Plane
 
@@ -64,14 +65,9 @@ lemma circularSpeed_sq {mu R : ℝ} (hm : 0 < mu) (hR : 0 < R) :
   Real.sq_sqrt (le_of_lt (div_pos hm hR))
 lemma circularSpeed_eq_rate {mu R : ℝ} (hm : 0 < mu) (hR : 0 < R) :
     R*circularRate mu R = circularSpeed mu R := by
-  have ha := circularRate_sq hm hR
-  have hb := circularSpeed_sq hm hR
-  have hpos := mul_pos hR (circularRate_pos hm hR)
-  have hpos' := circularSpeed_pos hm hR
-  have hs : (R*circularRate mu R)^2 = circularSpeed mu R^2 := by
-    rw [mul_pow, ha, hb]
-    field_simp [ne_of_gt hR]
-  nlinarith
+  simpa only [VisViva.speedCircular, circularSpeed, circularRate, mul_one] using
+    (VisViva.speedCircular_eq_radius_mul_angularRate
+      ⟨mu, 1, 1⟩ ⟨R⟩ hR hm zero_lt_one).symm
 lemma norm_circularPosition {mu R : ℝ} (hR : 0 < R) (phase t : ℝ) :
     ‖circularPosition mu R phase t‖ = R := by
   apply norm_pack_eq (le_of_lt hR)
