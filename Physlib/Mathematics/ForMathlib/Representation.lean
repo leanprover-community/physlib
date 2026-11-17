@@ -50,8 +50,8 @@ product `⨂[k] i, M i` of the family. Mathlib has the representation `ρ.tprod 
 
 open TensorProduct
 
-variable {k G U : Type*} [CommSemiring k] [Monoid G] [AddCommMonoid U] [Module k U]
-  {τ : Representation k G U}
+variable {k l G U : Type*} [CommSemiring k] [CommSemiring l] [Monoid G] [AddCommMonoid U]
+  [Module l U] {τ : Representation l G U}
 
 /-!
 
@@ -78,9 +78,9 @@ lemma piTprod_tprod (ρ : Π i, Representation k G (M i)) (g : G) (m : Π i, M i
     piTprod ρ g (⨂ₜ[k] i, m i) = ⨂ₜ[k] i, ρ i g (m i) :=
   PiTensorProduct.map_tprod _ _
 
-/-- A semilinear map out of `⨂ i, M i`, such as a conjugate-linear one, that commutes with
-`piTprod ρ g` on pure tensors commutes with it on all tensors. -/
-lemma map_piTprod_of_tprod {σ : k →+* k} {ρ : Π i, Representation k G (M i)}
+/-- A semilinear map out of `⨂ i, M i` that commutes with `piTprod ρ g` on pure tensors commutes
+with it on all tensors. The ring map `σ : k →+* l` can be complex conjugation. -/
+lemma map_piTprod_of_tprod {σ : k →+* l} {ρ : Π i, Representation k G (M i)}
     (f : (⨂[k] i, M i) →ₛₗ[σ] U) (g : G)
     (h : ∀ m : Π i, M i, f (piTprod ρ g (⨂ₜ[k] i, m i)) = τ g (f (⨂ₜ[k] i, m i)))
     (t : ⨂[k] i, M i) : f (piTprod ρ g t) = τ g (f t) := by

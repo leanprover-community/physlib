@@ -26,14 +26,14 @@ We give the matrix of `PiTensorProduct.map` for a family (A). For `T^μ_ν` a Lo
 acts by the Kronecker product `Λ ⊗ (Λ⁻¹)ᵀ` of its matrices at the two indices. This is the textbook
 formula `T^μ_ν ↦ Λ^μ_σ (Λ⁻¹)^τ_ν T^σ_τ`. We then give the dimension (B). `T^μ_ν` has `4 · 4 = 16`
 components. Finally we treat the case with no indices (C). The results hold over any commutative
-semiring, and the dimension over a commutative ring.
+semiring, and the dimension needs the strong rank condition.
 
 ## ii. Key results
 
 - `PiTensorProduct.toMatrix_map` : the matrix of `PiTensorProduct.map f` in the product bases is
   the Kronecker product of the matrices of the `f i`, with `PiTensorProduct.toMatrix_map_apply` :
   its entries.
-- `Module.finrank_piTensorProduct` : the dimension of `⨂[R] i, M i` is `∏ i, finrank R (M i)`.
+- `Module.finrank_piTensorProduct` : the `finrank` of `⨂[R] i, M i` is `∏ i, finrank R (M i)`.
 - `PiTensorProduct.map_eq_id_of_isEmpty` : with no indices, `PiTensorProduct.map f` is the identity.
 
 ## iii. Table of contents
@@ -96,16 +96,14 @@ This section extends Mathlib's `Module.finrank_tensorProduct` from two spaces to
 
 -/
 
-/-- The dimension of `⨂[R] i, M i` is the product of the dimensions of the `M i`. -/
-lemma Module.finrank_piTensorProduct [CommRing R] [Fintype ι]
-    [∀ i, AddCommGroup (M i)] [∀ i, Module R (M i)] [∀ i, Module.Free R (M i)]
-    [∀ i, Module.Finite R (M i)] :
+/-- The `finrank` of `⨂[R] i, M i` is the product of the `finrank` of each `M i`. -/
+lemma Module.finrank_piTensorProduct [CommSemiring R] [StrongRankCondition R] [Fintype ι]
+    [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)] [∀ i, Module.Free R (M i)] :
     Module.finrank R (⨂[R] i, M i) = ∏ i, Module.finrank R (M i) := by
   classical
-  nontriviality R
-  rw [Module.finrank_eq_card_basis (Basis.piTensorProduct fun i => Module.Free.chooseBasis R (M i)),
-    Fintype.card_pi]
-  simp [Module.finrank_eq_card_chooseBasisIndex]
+  simp_rw [Module.finrank_eq_nat_card_basis
+    (Basis.piTensorProduct fun i => Module.Free.chooseBasis R (M i)), Nat.card_pi,
+    Module.finrank_eq_nat_card_basis (Module.Free.chooseBasis R _)]
 
 /-!
 
