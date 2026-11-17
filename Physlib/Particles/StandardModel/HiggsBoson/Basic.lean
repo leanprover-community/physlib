@@ -302,7 +302,8 @@ lemma toRealGroupElem_apply_self (φ : HiggsVec) :
     rw [h0']
     ring
 
-private lemma toRealGroupElem_toSU2_of_ne_zero (v : HiggsVec) (hv : v ≠ 0) :
+/-- The matrix of the weak rotation to the neutral representative of a nonzero Higgs vector. -/
+lemma toRealGroupElem_toSU2_of_ne_zero (v : HiggsVec) (hv : v ≠ 0) :
     (toRealGroupElem v).toSU2.val =
       !![v 1 / ‖v‖, -v 0 / ‖v‖; conj (v 0) / ‖v‖, conj (v 1) / ‖v‖] := by
   simp [toRealGroupElem, hv, GaugeGroupI.toSU2]
@@ -350,6 +351,24 @@ lemma contDiffOn_toRealGroupElem_toSU2 {n : ℕ∞ω} :
   · exact (hc 0).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
   · exact (hc 1).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
 
+private lemma contDiffOn_weakAlignment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {n : ℕ∞ω} {s : Set E} {φ ψ : E → HiggsVec} (hφ : ContDiffOn ℝ n φ s) (hψ : ContDiffOn ℝ n ψ s)
+    (hnφ : ∀ x ∈ s, φ x ≠ 0) (hnψ : ∀ x ∈ s, ψ x ≠ 0) :
+    ContDiffOn ℝ n (fun (x : E) (i j : Fin 2) =>
+      ((toRealGroupElem (ψ x)).toSU2⁻¹ * (toRealGroupElem (φ x)).toSU2).val i j) s := by
+  have h (χ : E → HiggsVec) (hχ : ContDiffOn ℝ n χ s) (hnχ : ∀ x ∈ s, χ x ≠ 0)
+      (k l : Fin 2) : ContDiffOn ℝ n (fun x => (toRealGroupElem (χ x)).toSU2.val k l) s :=
+    contDiffOn_pi.mp (contDiffOn_pi.mp (contDiffOn_toRealGroupElem_toSU2.comp hχ hnχ) k) l
+  refine contDiffOn_pi.mpr fun i => contDiffOn_pi.mpr fun j => ?_
+  have hs (k : Fin 2) :
+      ContDiffOn ℝ n (fun x => conj ((toRealGroupElem (ψ x)).toSU2.val k i)) s := by
+    refine (Complex.conjCLE.contDiff.comp_contDiffOn (h ψ hψ hnψ k i)).congr fun x _ => ?_
+    exact (Complex.conjCLE_apply _).symm
+  change ContDiffOn ℝ n (fun x : E =>
+    (star (toRealGroupElem (ψ x)).toSU2.val * (toRealGroupElem (φ x)).toSU2.val) i j) s
+  simp only [Matrix.mul_apply, Matrix.star_apply]
+  exact ContDiffOn.sum fun k _ => (hs k).mul (h φ hφ hnφ k j)
+
 /-!
 
 #### A.5.2. Members of orbits
@@ -380,36 +399,15 @@ In a trivialization, a doublet field is a map into `HiggsVec`. The weak rotation
 to the neutral representative preserves the regularity of the field wherever
 it is nonzero. The following results concern the action on the doublet itself.
 
+At common zeros, equal norms need not give a continuous transformation. The doublets
+`(x + iy, 0)` and `(x - iy, 0)` have equal norms, but the transforming matrix would have
+to send the first basis vector to itself on the punctured `x`-axis and to its negative
+on the punctured `y`-axis. It cannot be continuous at the origin.
+
 -/
 
-private lemma contDiffOn_weakAlignment {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    {n : ℕ∞ω} {s : Set E} {φ ψ : E → HiggsVec} (hφ : ContDiffOn ℝ n φ s) (hψ : ContDiffOn ℝ n ψ s)
-    (hnφ : ∀ x ∈ s, φ x ≠ 0) (hnψ : ∀ x ∈ s, ψ x ≠ 0) :
-    ContDiffOn ℝ n (fun (x : E) (i j : Fin 2) =>
-      ((toRealGroupElem (ψ x)).toSU2⁻¹ * (toRealGroupElem (φ x)).toSU2).val i j) s := by
-  have h (χ : E → HiggsVec) (hχ : ContDiffOn ℝ n χ s) (hnχ : ∀ x ∈ s, χ x ≠ 0)
-      (k l : Fin 2) : ContDiffOn ℝ n (fun x => (toRealGroupElem (χ x)).toSU2.val k l) s :=
-    contDiffOn_pi.mp (contDiffOn_pi.mp (contDiffOn_toRealGroupElem_toSU2.comp hχ hnχ) k) l
-  refine contDiffOn_pi.mpr fun i => contDiffOn_pi.mpr fun j => ?_
-  have hs (k : Fin 2) :
-      ContDiffOn ℝ n (fun x => conj ((toRealGroupElem (ψ x)).toSU2.val k i)) s := by
-    refine (Complex.conjCLE.contDiff.comp_contDiffOn (h ψ hψ hnψ k i)).congr fun x _ => ?_
-    exact (Complex.conjCLE_apply _).symm
-  change ContDiffOn ℝ n (fun x : E =>
-    (star (toRealGroupElem (ψ x)).toSU2.val * (toRealGroupElem (φ x)).toSU2.val) i j) s
-  simp only [Matrix.mul_apply, Matrix.star_apply]
-  exact ContDiffOn.sum fun k _ => (hs k).mul (h φ hφ hnφ k j)
-
-/-- Where the first doublet is nonzero, two `C^n` doublets have the same pointwise squared norm
-exactly when a single weak `SU(2)` transformation with `C^n` matrix entries takes one to the other.
-The transformation first rotates the source to the neutral representative using
-`toRealGroupElem`, then applies the inverse rotation for the target. The regularity and
-action are asserted only on the given set.
-
-Equal norms alone are not sufficient at common zeros: in two real coordinates, the
-doublets `(x + iy, 0)` and `(x - iy, 0)` require the transforming matrix to act with opposite
-signs on the first basis vector along the two axes, so the matrix cannot be continuous at
-their intersection. -/
+/-- On a set where the first of two `C^n` doublets is nonzero, their pointwise squared norms
+agree exactly when a weak `SU(2)` transformation with `C^n` entries relates them there. -/
 lemma exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq {E : Type*}
     [NormedAddCommGroup E] [NormedSpace ℝ E]
     {n : ℕ∞ω} {s : Set E} {φ ψ : E → HiggsVec} (hφ : ContDiffOn ℝ n φ s) (hψ : ContDiffOn ℝ n ψ s)
@@ -928,9 +926,12 @@ lemma const_normSq (φ : HiggsVec) (x : SpaceTime) :
 
 ### C.5. The action of the gauge group on Higgs fields
 
-For `HiggsField`, the local result in A.5.3 gives a weak gauge transformation with real analytic
-matrix entries. This is the scalar part of unitary gauge in the trivial Higgs bundle.
-The general action of the smooth gauge group on sections is a separate task.
+When two Higgs fields have equal pointwise squared norms on a region and the first is nowhere
+zero there, A.5.3 gives a weak gauge transformation with real analytic matrix entries on that
+region. This concerns the scalar part of unitary gauge in the trivial Higgs bundle.
+
+The general gauge action on sections remains informal. A pointwise action on `HiggsField` must
+preserve analyticity, which arbitrary smooth gauge transformations need not do.
 -/
 
 /-- The `HiggsField` specialization of `HiggsVec.exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`.

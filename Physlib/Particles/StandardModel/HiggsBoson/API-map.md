@@ -2,7 +2,7 @@
 
 ## Abstract (Alpha)
 
-A Higgs field in this module is a real analytic section of the Higgs bundle over spacetime. The
+Physlib models Higgs fields as real analytic sections of the Higgs bundle over spacetime. The
 bundle is currently trivial, with fibre the two-dimensional complex vector space of pointwise Higgs
 values. The pointwise values carry an orthonormal basis,
 real scalar coordinates, and a gauge representation whose orbits are classified by the norm, while
@@ -48,8 +48,8 @@ The matrix coefficients have the same regularity as the input fields: finite dif
 smoothness, or real analyticity. At common zeros, equal norms alone do not guarantee a continuous
 transformation. [13]
 
-The general gauge action on sections and the characterization of possible squared norm functions
-are separate formalization tasks. [13][TODO]
+- Pointwise action of local Standard Model gauge transformations on Higgs sections. [TODO]
+- Scalar functions that occur as squared norms of real analytic Higgs fields. [TODO]
 
 ### The Higgs potential
 
@@ -105,9 +105,9 @@ gauge connection over spacetime. [TODO]
 12. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `normSq`, `inner_self_eq_normSq`,
    `normSq_eq_inner_self_re`, `normSq_expand`, `normSq_nonneg`, `normSq_zero`, `normSq_smooth`,
    `const_normSq`
-13. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `toRealGroupElem_toSU2_apply_self`,
-   `contDiffOn_toRealGroupElem_toSU2`, `exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`,
-   `exists_analytic_su2_rep_eq_iff_normSq_eq`, `gaugeAction`, `gauge_orbit_surject`
+13. Physlib/Particles/StandardModel/HiggsBoson/Basic.lean — `toRealGroupElem_toSU2_of_ne_zero`,
+   `toRealGroupElem_toSU2_apply_self`, `contDiffOn_toRealGroupElem_toSU2`,
+   `exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`, `exists_analytic_su2_rep_eq_iff_normSq_eq`
 14. Physlib/Particles/StandardModel/HiggsBoson/Potential.lean — `Potential`, `toFun`,
    `toFun_smooth`, `neg`, `toFun_neg`, `μ2_neg`, `𝓵_neg`, `toFun_zero`,
    `toFun_eq_of_repGaugeGroupI`
