@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import Physlib.ProbabilisticTheory.CStarAlgebra.Basic
 
 /-!
 # Channels of C⋆-algebras

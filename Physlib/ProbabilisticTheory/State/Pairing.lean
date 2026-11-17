@@ -11,14 +11,16 @@ public import Physlib.ProbabilisticTheory.Effect.Convex
 /-!
 # The state–effect pairing
 
-State–effect evaluation gives probabilities and distinguishes states.
+State–effect evaluation gives probabilities. It distinguishes states and effects alike.
 
 ## i. Overview
 
 Evaluating an effect in a state gives a probability. Evaluation is affine in the effect, and
 a state is determined by its values on all effects. This identifies states with their
-probability-valued functions on effects. The converse separation result and the recovery of
-effect distance from states are developed in `Effect/Pairing.lean`.
+probability-valued functions on effects.
+
+Conversely, effects with equal probabilities in every state are equal. The distance between two
+effects is the largest difference in the probabilities predicted by a state.
 
 ## ii. Key results
 
@@ -26,11 +28,15 @@ effect distance from states are developed in `Effect/Pairing.lean`.
 - `ProbabilisticTheory.State.apply_mix` : evaluation is affine in the effect argument.
 - `ProbabilisticTheory.State.ext_of_effect_eq` : effects separate states.
 - `ProbabilisticTheory.State.injective_apply_effect` : states embed into functions on effects.
+- `ProbabilisticTheory.Effect.dist_eq_sSup_abs_apply` : recover effect distance from state
+  evaluations.
+- `ProbabilisticTheory.Effect.ext_of_forall_apply_eq` : states distinguish effects.
 
 ## iii. Table of contents
 
 - A. State–effect evaluation
 - B. Effects separate states
+- C. States separate effects
 
 ## iv. References
 
@@ -86,3 +92,32 @@ lemma injective_apply_effect :
   fun _ _ h => ext_of_effect_eq (congrFun h)
 
 end ProbabilisticTheory.State
+
+/-!
+
+## C. States separate effects
+
+-/
+
+namespace ProbabilisticTheory.Effect
+
+variable {P : ProbabilisticTheory}
+
+/-- The distance between two effects is the supremum of the difference in their evaluations over
+all states. -/
+lemma dist_eq_sSup_abs_apply [Nontrivial P.Observables] (e f : P.Effect) :
+    Dist.dist e f = sSup (Set.range fun ω : P.State => |ω e - ω f|) := by
+  rw [dist_eq_orderUnitNorm, ← State.sSup_abs_apply_eq_orderUnitNorm]
+  simp_rw [map_sub]
+
+/-- An effect is determined by its values under all states. -/
+lemma ext_of_forall_apply_eq {e f : P.Effect}
+    (h : ∀ ω : P.State, ω e = ω f) : e = f :=
+  Subtype.ext (State.ext_of_forall_apply_eq h)
+
+/-- Evaluation by states is injective on effects. -/
+lemma injective_apply_state :
+    Function.Injective (fun (e : P.Effect) (ω : P.State) => ω e) :=
+  fun _ _ h => ext_of_forall_apply_eq (congrFun h)
+
+end ProbabilisticTheory.Effect
