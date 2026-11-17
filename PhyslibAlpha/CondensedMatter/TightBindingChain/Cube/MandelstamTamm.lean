@@ -34,8 +34,8 @@ current state of that chain.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint QuantumMechanics.FiniteHilbertSpace
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint QuantumMechanics.FiniteHilbertSpace
+open PhyslibAlpha.ProbabilisticTheory
 open QuantumMechanics FiniteHilbertSpace UnitalPositiveLinearMap
 
 /-!

@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 
 /-!
 
@@ -46,7 +46,7 @@ representation of a group `G` gives a symmetry action of `G`.
 
 
 namespace unitary
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
 /-! ## A. Conjugation as a linear map -/
@@ -153,7 +153,7 @@ lemma conjugationSymmetryHom_apply (u : unitary A) :
 
 end unitary
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
@@ -178,4 +178,4 @@ lemma Representation.toSymmetryHom_apply_coe {G : Type*} [Group G] (U : G →* u
 
 end Unitary
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

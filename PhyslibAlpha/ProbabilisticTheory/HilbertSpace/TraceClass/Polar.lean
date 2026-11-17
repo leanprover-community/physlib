@@ -42,7 +42,7 @@ isometry `U` with `T = U |T|` and `U⋆ T = |T|`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -259,6 +259,6 @@ lemma star_polarFactor_mul_self (T : H →L[ℂ] H) : star (polarFactor T) * T =
 
 end Polar
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

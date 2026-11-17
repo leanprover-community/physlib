@@ -59,7 +59,7 @@ the covariance between different crystal momenta.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace AlgState
 
@@ -262,4 +262,4 @@ end Schur
 
 end AlgState
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -45,7 +45,7 @@ not a qubit either: the shape of the cone matters, not just the dimension.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -109,4 +109,4 @@ lemma not_isSimplex_stateSpace :
 
 end GBit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

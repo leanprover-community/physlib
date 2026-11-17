@@ -66,14 +66,14 @@ This extends to `n` observables the equality case of two, `robertson_schrodinger
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 open ContinuousLinearMap
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
 
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 namespace UnitalPositiveLinearMap
 
@@ -268,7 +268,7 @@ lemma variances_pos_of_normalized_pairing (ω : 𝓢[ℂ, A]) (a b : Observable 
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 /-! ## E. A determinant bound for positive matrices -/
 
@@ -584,9 +584,9 @@ end Matrix
 
 /-! ## F. Several observables -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
-open scoped ComplexOrder InnerProductSpace selfAdjoint
+open scoped ComplexOrder InnerProductSpace _root_.selfAdjoint
 open Matrix
 
 variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
@@ -639,4 +639,4 @@ lemma robertson_det [Fintype ι] [DecidableEq ι] (ω : 𝓢[ℂ, A]) (a : ι �
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

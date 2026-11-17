@@ -63,7 +63,7 @@ after the dual map. We compare the covariance forms `C` of the two states.
 open Matrix
 open scoped ComplexOrder MatrixOrder
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace AlgState
 
@@ -145,7 +145,7 @@ end Schwarz
 
 end AlgState
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 /-! ## C. Kadison's inequality -/
 
@@ -231,7 +231,7 @@ end Matrix
 
 /-! ## D. Positive maps of matrices -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace AlgState
 
@@ -260,14 +260,14 @@ lemma covarianceMatrixForm_map_le_of_positive {ι : Type*} [Fintype ι]
 
 end AlgState
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 /-! ## E. The transpose -/
 
 namespace Matrix
 
 /-- The state `X ↦ X₀₀` of `2 × 2` matrices, the vector state of `|0⟩`. -/
-def stateZero : ProbabilisticTheory.AlgState (Matrix (Fin 2) (Fin 2) ℂ) where
+def stateZero : PhyslibAlpha.ProbabilisticTheory.AlgState (Matrix (Fin 2) (Fin 2) ℂ) where
   toLinearMap :=
     { toFun X := X 0 0
       map_add' _ _ := rfl
@@ -298,7 +298,7 @@ it holds only on Hermitian matrices. -/
 lemma transposeMap_gap :
     ¬ stateZero.covarianceForm (transposeMap (single 0 1 1)) (transposeMap (single 0 1 1)) ≤
       stateZero.covarianceForm (single 0 1 1) (single 0 1 1) := by
-  simp [ProbabilisticTheory.AlgState.covarianceForm_apply, mul_apply, Fin.sum_univ_two,
+  simp [PhyslibAlpha.ProbabilisticTheory.AlgState.covarianceForm_apply, mul_apply, Fin.sum_univ_two,
     Complex.le_def]
 
 end Matrix

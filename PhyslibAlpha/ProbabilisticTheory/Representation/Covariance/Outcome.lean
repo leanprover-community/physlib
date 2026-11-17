@@ -58,7 +58,7 @@ diagonal action on a product of outcome spaces, are covariant.
 /-! ## A. The induced action on the classical system -/
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 variable {G Ω : Type*} [Group G] [MeasurableSpace Ω] [MulAction G Ω] [MeasurableAction G Ω]
 
@@ -118,7 +118,7 @@ end BoundedMeasurable
 
 /-! ## B. Covariant measurements -/
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace Measurement
 
@@ -162,4 +162,4 @@ lemma IsCovariant.marginal {ρ : G →* Symmetry E} {J : Measurement (Ω × Ω')
 
 end Measurement
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

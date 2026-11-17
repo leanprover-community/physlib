@@ -58,8 +58,8 @@ namespace QuantumMechanics
 
 namespace FiniteHilbertSpace
 
-open scoped ComplexOrder selfAdjoint
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory
 open InnerProductSpace UnitalPositiveLinearMap
 
 variable {α β : Type*} [Fintype α] [DecidableEq α] [Fintype β] [DecidableEq β]

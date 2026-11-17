@@ -53,7 +53,7 @@ with the sup norm: same dimension, different norm, different state space.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -382,4 +382,4 @@ lemma supCone_mem_effect_iff {m : ℕ} {z : NormCone (Fin m → ℝ)} :
 
 end NormCone
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -34,7 +34,7 @@ observable is a square in its closed one-generator subalgebra.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JBAlgebra
 
@@ -58,4 +58,4 @@ lemma nonneg_iff_exists_mul_self (a : E) :
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

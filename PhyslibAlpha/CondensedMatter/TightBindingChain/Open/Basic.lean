@@ -5,6 +5,8 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
+public import Mathlib.Combinatorics.SimpleGraph.Hasse
 public import Physlib.CondensedMatter.TightBindingChain.Basic
 /-!
 
@@ -24,6 +26,8 @@ with the site `0`.
 - `position` : the position operator `X = ∑ n, a n |n⟩⟨n|`.
 - `openHamiltonian` : the Hamiltonian with open boundary conditions.
 - `inner_openHamiltonian` : the open chain only hops between neighbouring sites.
+- `inner_openHamiltonian_eq_adjMatrix` : its matrix elements are `E0` times the identity minus `t`
+  times the adjacency matrix of the path graph.
 - `inner_commutator_position` : `⟨m|(A X - X A)|n⟩ = a (n - m) ⟨m|A|n⟩`.
 
 ## iii. Table of contents
@@ -125,6 +129,19 @@ lemma inner_openHamiltonian (m n : Fin T.N) :
     eq_add_one_iff_val n m]
   simp only [Fin.ext_iff, Fin.val_zero]
   split_ifs <;> first | omega | ring
+
+/-- The open chain is the hopping Hamiltonian of the path graph: the matrix element between
+two sites is `E0` times the identity minus `t` times the adjacency matrix of `pathGraph N`. -/
+lemma inner_openHamiltonian_eq_adjMatrix (m n : Fin T.N) :
+    ⟪|m⟩, T.openHamiltonian |n⟩⟫_ℂ =
+      (T.E0 : ℂ) * (1 : Matrix (Fin T.N) (Fin T.N) ℂ) m n -
+        (T.t : ℂ) * (SimpleGraph.pathGraph T.N).adjMatrix ℂ m n := by
+  rw [inner_openHamiltonian]
+  by_cases h : m = n
+  · subst h
+    simp
+  · simp [h, Matrix.one_apply_ne h, SimpleGraph.adjMatrix_apply, SimpleGraph.pathGraph_adj]
+    split_ifs <;> simp_all
 
 /-!
 

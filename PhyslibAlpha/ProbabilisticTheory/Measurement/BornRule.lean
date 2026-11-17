@@ -41,7 +41,7 @@ So `μ` sends every normal state to a probability distribution over its outcomes
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Function
 
@@ -122,4 +122,4 @@ end Relabel
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

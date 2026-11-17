@@ -41,7 +41,7 @@ outcome of nonzero probability gives the post-measurement state.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {E ι : Type*} [ArchimedeanOrderUnitSpace E] [Fintype ι]
 
@@ -101,4 +101,4 @@ lemma conditionalState_isNormal (𝓘 : Instrument E ι) (i : ι) (ω : 𝓢[ℝ
 
 end Instrument
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

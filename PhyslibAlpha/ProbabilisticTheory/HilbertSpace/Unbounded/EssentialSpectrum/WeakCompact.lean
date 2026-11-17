@@ -41,7 +41,7 @@ weakly null sequence to a sequence converging to `0` in norm.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Filter Topology
 open scoped InnerProductSpace
@@ -128,4 +128,4 @@ lemma _root_.IsCompactOperator.tendsto_norm_apply_of_weaklyNull
   rw [ha0, norm_zero] at hε_le
   exact absurd hε_le (not_le.mpr hε)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
