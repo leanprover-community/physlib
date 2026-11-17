@@ -41,8 +41,8 @@ they are written `S.pure f` and `S.tensorBasis c`. The instances on tensors, suc
 - `Species.ext_pure` proves that linear maps out of tensors that agree on pure tensors are equal.
 - `Species.tensorRep` is the group action on tensors, and `Species.smul_pure` gives it on a pure
   tensor.
-- `Species.map_smul_of_pure` and `Species.equivOfPure` need the commutation of a map with the
-  group on pure tensors only.
+- `Species.map_smul_of_pure` proves that a map that commutes with the group on pure tensors
+  commutes with it on all tensors.
 - `Species.tensorBasis` is the basis of tensors, and `Species.tensorBasis_repr_smul` gives the
   components of `Λ • T`.
 
@@ -215,9 +215,8 @@ lemma smul_eq_self_of_isEmpty [IsEmpty ι] (g : G) (t : Tensor S c) : g • t = 
 A map of tensors that commutes with the group, `φ (Λ • T) = Λ • φ T`, is Mathlib's
 `Representation.IntertwiningMap` for `tensorRep`, or `Representation.Equiv` when invertible.
 Lowering an index with `congrAt` in `IndexMaps.lean` is such an equivalence. The commutation needs
-a check on pure tensors only (`map_smul_of_pure`, `equivOfPure`).
-`map_smul_of_pure` takes semilinear maps, so conjugate-linear maps, such as the complex conjugation
-from undotted to dotted spinors, enter there.
+a check on pure tensors only (`map_smul_of_pure`). This lemma takes semilinear maps, so it also
+applies to conjugate-linear maps, such as the complex conjugation `ψ_α ↦ ψ̄_α̇` of spinors.
 
 -/
 
@@ -241,21 +240,6 @@ lemma map_smul_of_pure {ι' : Type} {c' : ι' → Color K} {σ : k →+* k} {F :
     (t : Tensor S c) : f (g • t) = g • f t :=
   Representation.map_piTprod_of_tprod (τ := Representation.piTprod fun i => S.colored.rep (c' i))
     (f : Tensor S c →ₛₗ[σ] Tensor S c') g h t
-
-variable {ι' : Type} {c' : ι' → Color K} in
-/-- A linear equivalence of tensors that commutes with `Λ` on pure tensors, as an equivalence of
-representations. -/
-noncomputable def equivOfPure (e : Tensor S c ≃ₗ[k] Tensor S c')
-    (h : ∀ (g : G) (p : Π i, S.colored.V (c i)), e (g • S.pure p) = g • e (S.pure p)) :
-    (S.tensorRep c).Equiv (S.tensorRep c') :=
-  .mk e fun g => LinearMap.ext fun t => map_smul_of_pure e g (h g) t
-
-variable {ι' : Type} {c' : ι' → Color K} in
-/-- `equivOfPure e h` acts as `e`. -/
-@[simp]
-lemma equivOfPure_apply (e : Tensor S c ≃ₗ[k] Tensor S c')
-    (h : ∀ (g : G) (p : Π i, S.colored.V (c i)), e (g • S.pure p) = g • e (S.pure p))
-    (t : Tensor S c) : equivOfPure e h t = e t := rfl
 
 /-!
 
