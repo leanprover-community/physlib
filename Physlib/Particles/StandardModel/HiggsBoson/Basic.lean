@@ -1,20 +1,23 @@
 /-
 Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joseph Tooby-Smith
+Authors: Nikolai Kashcheev, Joseph Tooby-Smith
 -/
 module
 
 public import Physlib.Particles.StandardModel.GaugeGroup.Unbroken
 public import Mathlib.RepresentationTheory.Stabilizer
 public import Mathlib.Geometry.Manifold.VectorBundle.ContMDiffSection
+import Mathlib.Analysis.InnerProductSpace.Calculus
 /-!
 
 # The Higgs field
 
+The Higgs vector space, its gauge representation, and the space of analytic Higgs fields.
+
 ## i. Overview
 
-The Higgs field describes is the underlying field of the Higgs boson.
+The Higgs field is the underlying field of the Higgs boson.
 It is a map from SpaceTime to a 2-dimensional complex vector space.
 In this module we define the Higgs field and prove some basic properties.
 
@@ -23,9 +26,12 @@ In this module we define the Higgs field and prove some basic properties.
 - `HiggsVec`: The 2-dimensional complex vector space which is the target space of the Higgs field.
   This vector space is equipped with an action of the global gauge group of the Standard Model.
 - `HiggsBundle`: The trivial vector bundle over `SpaceTime` with fiber `HiggsVec`.
-- `HiggsField`: The type of smooth sections of the `HiggsBundle`, i.e., the type of Higgs fields.
+- `HiggsField`: The type of real analytic sections of the `HiggsBundle`.
 - `stabilizer_ofReal`: The stability group of the Higgs vacuum `(0, √a)`, i.e. the gauge
   group left unbroken by it, is `SU(3) × U(1)_EM`.
+- `HiggsVec.toRealGroupElem_toSU2_apply_self`: The weak rotation to the neutral representative.
+- `HiggsVec.exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`: The squared norm determines the local
+  weak gauge orbit of a nonzero Higgs doublet, at any order of differentiability.
 
 ## iii. Table of contents
 
@@ -40,6 +46,7 @@ In this module we define the Higgs field and prove some basic properties.
   - A.5. The Gauge orbit of a Higgs vector
     - A.5.1. The rotation matrix to ofReal
     - A.5.2. Members of orbits
+    - A.5.3. Local gauge orbits of Higgs doublets
   - A.6. The stability group of a Higgs vector
   - A.7. The electromagnetic U(1) and the phase of the first component
   - A.8. To real scalars
@@ -80,6 +87,7 @@ open Matrix
 open Complex
 open ComplexConjugate
 open SpaceTime
+open scoped ContDiff
 
 /-!
 
@@ -294,6 +302,75 @@ lemma toRealGroupElem_apply_self (φ : HiggsVec) :
     rw [h0']
     ring
 
+/-- The matrix of the weak rotation to the neutral representative of a nonzero Higgs vector. -/
+lemma toRealGroupElem_toSU2_of_ne_zero (v : HiggsVec) (hv : v ≠ 0) :
+    (toRealGroupElem v).toSU2.val =
+      !![v 1 / ‖v‖, -v 0 / ‖v‖; conj (v 0) / ‖v‖, conj (v 1) / ‖v‖] := by
+  simp [toRealGroupElem, hv, GaugeGroupI.toSU2]
+
+/-- The rotation to the neutral representative has trivial colour and hypercharge factors. -/
+lemma toRealGroupElem_eq_toSU2 (v : HiggsVec) :
+    toRealGroupElem v = (1, (toRealGroupElem v).toSU2, 1) := by
+  by_cases hv : v = 0
+  · simp [toRealGroupElem, hv, GaugeGroupI.toSU2]
+    rfl
+  · simp [toRealGroupElem, hv, GaugeGroupI.toSU2]
+
+/-- The weak factor of `toRealGroupElem` alone rotates the Higgs doublet to
+the neutral representative `(0, ‖v‖)`, as used in unitary gauge. -/
+lemma toRealGroupElem_toSU2_apply_self (v : HiggsVec) :
+    repGaugeGroupI (1, (toRealGroupElem v).toSU2, 1) v = ofReal (‖v‖ ^ 2) := by
+  rw [← toRealGroupElem_eq_toSU2 v, toRealGroupElem_apply_self]
+
+/-- The matrix entries of the explicit weak rotation to the neutral representative
+are `C^n` away from the zero vector, including for `n = ∞` (smooth) and `n = ω` (analytic). -/
+lemma contDiffOn_toRealGroupElem_toSU2 {n : ℕ∞ω} :
+    ContDiffOn ℝ n (fun (v : HiggsVec) (i j : Fin 2) => (toRealGroupElem v).toSU2.val i j)
+      {v | v ≠ 0} := by
+  refine contDiffOn_pi.mpr fun i => contDiffOn_pi.mpr fun j => ?_
+  let s : Set HiggsVec := {v | v ≠ 0}
+  have hn : ContDiffOn ℝ n (fun v : HiggsVec => ‖v‖) s :=
+    (contDiff_id : ContDiff ℝ n (id : HiggsVec → HiggsVec)).contDiffOn.norm ℂ fun _ hv => hv
+  have hnC : ContDiffOn ℝ n (fun v : HiggsVec => (‖v‖ : ℂ)) s :=
+    Complex.ofRealCLM.contDiff.comp_contDiffOn hn
+  have hn0 (v : HiggsVec) (hv : v ∈ s) : (‖v‖ : ℂ) ≠ 0 := by
+    exact_mod_cast norm_ne_zero_iff.mpr hv
+  have hInv : ContDiffOn ℝ n (fun v : HiggsVec => (‖v‖ : ℂ)⁻¹) s := hnC.inv hn0
+  have hdiv {f : HiggsVec → ℂ} (hf : ContDiffOn ℝ n f s) :
+      ContDiffOn ℝ n (fun v => f v / (‖v‖ : ℂ)) s := by
+    simpa only [div_eq_mul_inv] using hf.mul hInv
+  have hi (k : Fin 2) : ContDiffOn ℝ n (fun v : HiggsVec => v k) s :=
+    (contDiff_piLp 2 |>.mp contDiff_id k).contDiffOn
+  have hc (k : Fin 2) : ContDiffOn ℝ n (fun v : HiggsVec => conj (v k) / (‖v‖ : ℂ)) s := by
+    have hconj : ContDiffOn ℝ n (fun v : HiggsVec => conj (v k)) s := by
+      refine (Complex.conjCLE.contDiff.comp_contDiffOn (hi k)).congr fun v _ => ?_
+      exact (Complex.conjCLE_apply (v k)).symm
+    exact hdiv hconj
+  fin_cases i <;> fin_cases j
+  · exact (hdiv (hi 1)).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
+  · exact (hdiv (hi 0).neg).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
+  · exact (hc 0).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
+  · exact (hc 1).congr (fun v hv => by rw [toRealGroupElem_toSU2_of_ne_zero v hv]; rfl)
+
+private lemma contDiffOn_toRealGroupElem_toSU2_inv_mul {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {n : ℕ∞ω} {s : Set E} {φ ψ : E → HiggsVec} (hφ : ContDiffOn ℝ n φ s) (hψ : ContDiffOn ℝ n ψ s)
+    (hnφ : ∀ x ∈ s, φ x ≠ 0) (hnψ : ∀ x ∈ s, ψ x ≠ 0) :
+    ContDiffOn ℝ n (fun (x : E) (i j : Fin 2) =>
+      ((toRealGroupElem (ψ x)).toSU2⁻¹ * (toRealGroupElem (φ x)).toSU2).val i j) s := by
+  have h (χ : E → HiggsVec) (hχ : ContDiffOn ℝ n χ s) (hnχ : ∀ x ∈ s, χ x ≠ 0)
+      (k l : Fin 2) : ContDiffOn ℝ n (fun x => (toRealGroupElem (χ x)).toSU2.val k l) s :=
+    contDiffOn_pi.mp (contDiffOn_pi.mp (contDiffOn_toRealGroupElem_toSU2.comp hχ hnχ) k) l
+  refine contDiffOn_pi.mpr fun i => contDiffOn_pi.mpr fun j => ?_
+  have hs (k : Fin 2) :
+      ContDiffOn ℝ n (fun x => conj ((toRealGroupElem (ψ x)).toSU2.val k i)) s := by
+    refine (Complex.conjCLE.contDiff.comp_contDiffOn (h ψ hψ hnψ k i)).congr fun x _ => ?_
+    exact (Complex.conjCLE_apply _).symm
+  change ContDiffOn ℝ n (fun x : E =>
+    (star (toRealGroupElem (ψ x)).toSU2.val * (toRealGroupElem (φ x)).toSU2.val) i j) s
+  simp only [Matrix.mul_apply, Matrix.star_apply]
+  exact ContDiffOn.sum fun k _ => (hs k).mul (h φ hφ hnφ k j)
+
 /-!
 
 #### A.5.2. Members of orbits
@@ -315,6 +392,49 @@ lemma exists_repGaugeGroupI_eq_iff_norm_eq (φ : HiggsVec) (ψ : HiggsVec) :
     rw [map_mul, Module.End.mul_apply, toRealGroupElem_apply_self φ, ← h,
       ← toRealGroupElem_apply_self ψ, ← Module.End.mul_apply, ← map_mul,
       inv_mul_cancel, map_one, Module.End.one_apply]
+
+/-!
+
+#### A.5.3. Local gauge orbits of Higgs doublets
+
+In a trivialization, a doublet field is a map into `HiggsVec`. The weak rotation
+to the neutral representative preserves the regularity of the field wherever
+it is nonzero. The following results concern the action on the doublet itself.
+
+If both doublets vanish at the same point, equal norms need not give a transformation continuous
+at that point. For example, `(x + iy, 0)` and `(x - iy, 0)` both vanish at the origin and have
+equal norms everywhere. The transforming matrix would have to send the first basis vector to
+itself on the punctured `x`-axis and to its negative on the punctured `y`-axis, so it cannot be
+continuous at the origin.
+
+-/
+
+/-- On a set where the first of two `C^n` doublets is nonzero, their pointwise squared norms
+agree exactly when a weak `SU(2)` transformation with `C^n` entries relates them there. -/
+lemma exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {n : ℕ∞ω} {s : Set E} {φ ψ : E → HiggsVec} (hφ : ContDiffOn ℝ n φ s) (hψ : ContDiffOn ℝ n ψ s)
+    (hnφ : ∀ x ∈ s, φ x ≠ 0) :
+    (∃ g : E → specialUnitaryGroup (Fin 2) ℂ,
+      ContDiffOn ℝ n (fun x (i j : Fin 2) => (g x).val i j) s ∧
+      ∀ x ∈ s, repGaugeGroupI (1, g x, 1) (φ x) = ψ x) ↔
+    ∀ x ∈ s, ‖φ x‖ ^ 2 = ‖ψ x‖ ^ 2 := by
+  constructor
+  · rintro ⟨g, _, hg⟩ x hx
+    simpa only [repGaugeGroupI_norm] using congrArg (fun v : HiggsVec => ‖v‖ ^ 2) (hg x hx)
+  · intro heq
+    have hnψ (x : E) (hx : x ∈ s) : ψ x ≠ 0 := by
+      intro h
+      have hz : ‖φ x‖ ^ 2 = 0 := by simpa [h] using heq x hx
+      exact hnφ x hx (norm_eq_zero.mp (sq_eq_zero_iff.mp hz))
+    let g (x : E) := (toRealGroupElem (ψ x)).toSU2⁻¹ * (toRealGroupElem (φ x)).toSU2
+    refine ⟨g, contDiffOn_toRealGroupElem_toSU2_inv_mul hφ hψ hnφ hnψ, fun x hx => ?_⟩
+    have hg : ((1, g x, 1) : GaugeGroupI) =
+        ((1, (toRealGroupElem (ψ x)).toSU2, 1) : GaugeGroupI)⁻¹ *
+        (1, (toRealGroupElem (φ x)).toSU2, 1) := by simp [g]
+    rw [hg, repGaugeGroupI_mul_apply, repGaugeGroupI_inv_apply_eq_iff,
+      toRealGroupElem_toSU2_apply_self, toRealGroupElem_toSU2_apply_self]
+    exact congrArg ofReal (heq x hx)
 
 /-!
 
@@ -543,16 +663,14 @@ instance : ContMDiffVectorBundle ⊤ HiggsVec HiggsBundle (Lorentz.Vector.asSmoo
 
 ## C. The Higgs fields
 
-Higgs fields are smooth sections of the Higgs bundle.
-This corresponds to smooth maps from `SpaceTime` to `HiggsVec`.
+`HiggsField` consists of real analytic sections of the trivial Higgs bundle.
+These correspond to real analytic maps from `SpaceTime` to `HiggsVec`.
 We here define the type of Higgs fields and create an API around them.
 
 -/
 
-/-- The type `HiggsField` is defined such that elements are smooth sections of the trivial
-  vector bundle `HiggsBundle`. Such elements are Higgs fields. Since `HiggsField` is
-  trivial as a vector bundle, a Higgs field is equivalent to a smooth map
-  from `SpaceTime` to `HiggsVec`. -/
+/-- Real analytic sections of the trivial Higgs bundle, equivalently real analytic maps from
+`SpaceTime` to `HiggsVec`. The regularity `⊤` here means `ω`, not ordinary `C^∞`. -/
 abbrev HiggsField : Type := ContMDiffSection
   (Lorentz.Vector.asSmoothManifold 3) HiggsVec ⊤ HiggsBundle
 
@@ -811,21 +929,30 @@ lemma const_normSq (φ : HiggsVec) (x : SpaceTime) :
 
 ### C.5. The action of the gauge group on Higgs fields
 
-The results in this section are currently informal.
+When two Higgs fields have equal pointwise squared norms on a region and the first is nowhere
+zero there, A.5.3 gives a weak gauge transformation with real analytic matrix entries on that
+region. This concerns the scalar part of unitary gauge in the trivial Higgs bundle.
+
+The general gauge action on sections remains informal. A pointwise action on `HiggsField` must
+preserve analyticity, which arbitrary smooth gauge transformations need not do.
 -/
+
+/-- The `HiggsField` specialization of `HiggsVec.exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq`.
+The action and real analyticity of the matrix entries hold on the given region. -/
+lemma exists_analytic_su2_rep_eq_iff_normSq_eq (φ ψ : HiggsField) (s : Set SpaceTime)
+    (hφ : ∀ x ∈ s, φ x ≠ 0) :
+    (∃ g : SpaceTime → specialUnitaryGroup (Fin 2) ℂ,
+      ContDiffOn ℝ ω (fun x (i j : Fin 2) => (g x).val i j) s ∧
+      ∀ x ∈ s, HiggsVec.repGaugeGroupI (1, g x, 1) (φ x) = ψ x) ↔
+    ∀ x ∈ s, φ.normSq x = ψ.normSq x :=
+  HiggsVec.exists_contDiffOn_su2_rep_eq_iff_norm_sq_eq
+    φ.contDiff.contDiffOn ψ.contDiff.contDiffOn hφ
 
 /-- The action of `gaugeTransformI` on `HiggsField` acting pointwise through
   `HiggsVec.repGaugeGroupI`. -/
 informal_definition gaugeAction where
   deps := [``gaugeTransformI]
   tag := "6V2NP"
-
-/-- There exists a `g` in `gaugeTransformI` such that `gaugeAction g φ = φ'` iff
-`φ(x)^† φ(x) = φ'(x)^† φ'(x)`.
--/
-informal_lemma guage_orbit where
-  deps := [``gaugeAction]
-  tag := "6V2NX"
 
 /-- For every smooth map `f` from `SpaceTime` to `ℝ` such that `f` is positive semidefinite, there
 exists a Higgs field `φ` such that `f = φ^† φ`.
