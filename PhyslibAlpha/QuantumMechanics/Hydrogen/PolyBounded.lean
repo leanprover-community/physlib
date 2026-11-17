@@ -253,28 +253,6 @@ lemma integrable_inv_norm_mul_one_add_norm_pow {d : ℕ} (hd : 2 ≤ d) {M : ℕ
           _ ≤ (1 + r) ^ M * ((1 + r) ^ 2)⁻¹ := by gcongr
           _ = ((1 + r) ^ 2)⁻¹ * (1 + r) ^ M := mul_comm _ _
 
-/-- A real polynomial grows at most polynomially: `|p(t)| ≤ C (1 + |t|)^k`. -/
-lemma Polynomial.exists_abs_eval_le (p : Polynomial ℝ) :
-    ∃ (C : ℝ) (k : ℕ), 0 ≤ C ∧ ∀ t, |p.eval t| ≤ C * (1 + |t|) ^ k := by
-  induction p using Polynomial.induction_on' with
-  | add p q hp hq =>
-    obtain ⟨C₁, k₁, hC₁, h₁⟩ := hp
-    obtain ⟨C₂, k₂, hC₂, h₂⟩ := hq
-    refine ⟨C₁ + C₂, max k₁ k₂, by positivity, fun t => ?_⟩
-    have ht : 1 ≤ 1 + |t| := le_add_of_nonneg_right (abs_nonneg t)
-    rw [Polynomial.eval_add]
-    calc |p.eval t + q.eval t| ≤ |p.eval t| + |q.eval t| := abs_add_le _ _
-      _ ≤ C₁ * (1 + |t|) ^ max k₁ k₂ + C₂ * (1 + |t|) ^ max k₁ k₂ := by
-        gcongr
-        · exact (h₁ t).trans (by gcongr; exact le_max_left _ _)
-        · exact (h₂ t).trans (by gcongr; exact le_max_right _ _)
-      _ = (C₁ + C₂) * (1 + |t|) ^ max k₁ k₂ := by ring
-  | monomial n a =>
-    refine ⟨|a|, n, abs_nonneg a, fun t => ?_⟩
-    rw [Polynomial.eval_monomial, abs_mul, abs_pow]
-    gcongr
-    linarith [abs_nonneg t]
-
 /-- A polynomially bounded function times the norm of a Schwartz map is integrable. -/
 lemma IsPolyBounded.integrable_abs_mul_norm_schwartz {d : ℕ} {u : Space d → ℝ}
     (hu : IsPolyBounded u) (hm : AEStronglyMeasurable u) (g : 𝓢(Space d, ℂ)) :

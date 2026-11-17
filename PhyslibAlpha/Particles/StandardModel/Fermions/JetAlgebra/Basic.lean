@@ -11,6 +11,7 @@ public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.GaugeAction
 public import PhyslibAlpha.Particles.StandardModel.Matter.Fermionic.MassDim
 public import PhyslibAlpha.Particles.StandardModel.Fermions.MatterField
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Pi
+public import PhyslibAlpha.Mathematics.ForMathlib.LinearAlgebra.Pi
 /-!
 # The fermionic jet algebra of the Standard Model
 
@@ -305,22 +306,6 @@ noncomputable def jetActionMap (U : JetGaugeGroupI) :
       (LinearMap.prodMap (LinearMap.piMap fun _ => QuarkDoublet.repJetGaugeGroupI U)
         (LinearMap.prodMap (LinearMap.piMap fun _ => UpSinglet.repJetGaugeGroupI U)
           (LinearMap.piMap fun _ => DownSinglet.repJetGaugeGroupI U))))
-
-/-- The pointwise lift of the identity maps is the identity. -/
-lemma _root_.LinearMap.piMap_id {R ι : Type*} {φ : ι → Type*} [Semiring R]
-    [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)] :
-    LinearMap.piMap (fun i => (LinearMap.id : φ i →ₗ[R] φ i)) = LinearMap.id :=
-  LinearMap.ext fun _ => funext fun _ => rfl
-
-/-- The pointwise lift of compositions is the composition of the pointwise lifts. -/
-lemma _root_.LinearMap.piMap_comp_piMap {R ι : Type*} {φ ψ ω : ι → Type*} [Semiring R]
-    [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
-    [∀ i, AddCommMonoid (ψ i)] [∀ i, Module R (ψ i)]
-    [∀ i, AddCommMonoid (ω i)] [∀ i, Module R (ω i)]
-    (f : ∀ i, ψ i →ₗ[R] ω i) (g : ∀ i, φ i →ₗ[R] ψ i) :
-    (LinearMap.piMap f).comp (LinearMap.piMap g)
-      = LinearMap.piMap fun i => (f i).comp (g i) :=
-  LinearMap.ext fun _ => funext fun _ => rfl
 
 open TensorProduct in
 /-- The map of jets of the identity is the identity. -/

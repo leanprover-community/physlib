@@ -7,6 +7,7 @@ module
 
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.PolyBounded
 public import Mathlib.Analysis.Calculus.ContDiff.Polynomial
+public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Polynomial.Basic
 
 /-!
 # Green's identity and regularised radial functions

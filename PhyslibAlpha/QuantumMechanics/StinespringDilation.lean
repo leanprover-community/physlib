@@ -9,6 +9,7 @@ public import Mathlib.Probability.Distributions.Poisson.Basic
 public import Mathlib.Analysis.Normed.Lp.lpSpace
 public import Physlib.Meta.TODO.Basic
 public import Mathlib.Analysis.Matrix.Order
+public import PhyslibAlpha.Mathematics.ForMathlib.Data.Fin.SuccPred
 /-!
 # Stinespring dilation
 
@@ -311,26 +312,6 @@ theorem complCard {R : Type*} [RCLike R] {m r : ℕ}
         · exact (exists_orthonormalBasis R _).choose_spec.choose.toBasis
     simp only [add_tsub_cancel_right, Fintype.card_prod, Fintype.card_fin]
     linarith
-
-/--
-See discussion at https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/succAbove.20and.20predAbove.20lemmas/with/584270574
--/
-def Fin.predAboveOfNe {n : ℕ} {k i : Fin n}
-    (h : i ≠ k) : Fin (n - 1) := by
-  by_cases H : i.1 > k.1
-  · exact ⟨i.1 - 1, by omega⟩
-  · exact ⟨i.1, by omega⟩
-
-/-- A "missing lemma" for `Fin` types. -/
-lemma Fin.predAboveOfNe_injective (n : ℕ) (k x y : Fin n)
-    (hx : x ≠ k) (hy : y ≠ k)
-    (heq : Fin.predAboveOfNe hx = Fin.predAboveOfNe hy) : x = y := by
-  unfold predAboveOfNe at heq
-  split_ifs at heq
-  all_goals
-  · simp only [mk.injEq] at heq
-    omega
-
 
 /-- The way this is written, `Fin r` and `Fin (r-1)` both occur
 so it is tricky to go to a general `Fintype`.

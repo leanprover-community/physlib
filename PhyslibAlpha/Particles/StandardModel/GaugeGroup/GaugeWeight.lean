@@ -10,6 +10,7 @@ public import PhyslibAlpha.Mathematics.Modules.ConjModule
 public import PhyslibAlpha.Mathematics.InvariantReduction
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 public import Mathlib.Analysis.Real.Pi.Irrational
+public import PhyslibAlpha.Mathematics.ForMathlib.LinearAlgebra.UnitaryGroup
 /-!
 # Gauge weight decompositions
 
@@ -148,19 +149,6 @@ lemma expI_mul_conj : (expI : ℂ) * (starRingEnd ℂ) (expI : ℂ) = 1 :=
 /-- The conjugate of `exp i` times `exp i` is one. -/
 lemma conj_mul_expI : (starRingEnd ℂ) (expI : ℂ) * (expI : ℂ) = 1 :=
   Unitary.star_mul_self_of_mem expI.2
-
-/-- A diagonal matrix whose entries are unit scalars with product one lies in the special
-  unitary group. -/
-lemma _root_.Matrix.mem_specialUnitaryGroup_diagonal {n : Type*} [Fintype n] [DecidableEq n]
-    (d : n → ℂ) (hd : ∀ i, d i * star (d i) = 1) (hdet : ∏ i, d i = 1) :
-    Matrix.diagonal d ∈ Matrix.specialUnitaryGroup n ℂ := by
-  rw [Matrix.mem_specialUnitaryGroup_iff]
-  refine ⟨?_, ?_⟩
-  · rw [Matrix.mem_unitaryGroup_iff, Matrix.star_eq_conjTranspose,
-      Matrix.diagonal_conjTranspose, Matrix.diagonal_mul_diagonal]
-    simp only [Pi.star_apply]
-    rw [funext hd, Matrix.diagonal_one]
-  · rw [Matrix.det_diagonal, hdet]
 
 /-- The first colour torus generator, `diag (exp i, exp (-i), 1)`. -/
 noncomputable def su3ExpIOne : specialUnitaryGroup (Fin 3) ℂ :=
