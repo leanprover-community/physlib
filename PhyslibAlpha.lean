@@ -774,6 +774,7 @@ public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SixJSymmetry
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SpinHalf
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SpinOrbit
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Wigner3j
+public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Wigner3jRational
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.WignerEckart
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.WignerEckartIrreducible
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.WignerEckartNormalized
