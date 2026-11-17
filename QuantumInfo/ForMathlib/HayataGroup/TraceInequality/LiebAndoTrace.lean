@@ -9,7 +9,6 @@ public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.OperatorGeometr
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.HilbertSchmidtOperatorSpace
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.LinearAlgebra.Trace
 
 @[expose] public section
 

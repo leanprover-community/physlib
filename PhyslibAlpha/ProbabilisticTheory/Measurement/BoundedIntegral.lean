@@ -7,13 +7,7 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Integral
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Normed
-public import Mathlib.Algebra.Order.Floor.Ring
 public import Mathlib.MeasureTheory.Function.Floor
-public import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
-public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Topology.MetricSpace.Cauchy
-public import Mathlib.Topology.Order.Basic
-public import Mathlib.Analysis.Normed.Group.Uniform
 
 /-!
 
@@ -56,7 +50,7 @@ on simple functions.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace EffectValuedMeasure
 
@@ -680,4 +674,4 @@ end Definition
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

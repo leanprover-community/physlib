@@ -56,6 +56,7 @@ notation "δ[" i "," j "]" => kroneckerDelta i j
 @[simp]
 lemma eq_one_of_same (i : α) : δ[i,i] = 1 := ite_eq_left rfl
 
+@[simp]
 lemma eq_zero_of_ne {i j : α} (h : i ≠ j) : δ[i,j] = 0 := ite_eq_right h
 
 @[simp]

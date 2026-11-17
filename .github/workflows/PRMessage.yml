@@ -1,36 +1,223 @@
 name: PR Comment
 
+# Leaves a comment on a new pull-request, made of two collapsible sections:
+#
+# - "Information about what will happen to your PR", the fixed text of `.github/PRMessage.md`;
+# - "Summary of your PR for reviewers", made by `lake exe pr_summary`, which substitutes the
+#   `<!-- PR_SUMMARY -->` marker of that file.
+#
+# Every push to the pull-request remakes the comment, so that the summary is of the commits which
+# are now there. The comment left by the previous run is updated in place rather than replaced by
+# a second one: it is found by the `<!-- physlib-pr-summary -->` marker which is the first line of
+# `.github/PRMessage.md`.
+#
+# `pr_summary` is built from `master`, and only reads the diff of the branch of the pull-request,
+# so no code of the pull-request is run.
+#
+# The tests of `pr_summary` are `#guard_msgs` commands in its source, so building it runs them.
+# The `test` job below does that whenever the script changes.
+
 on:
   workflow_dispatch:
+    inputs:
+      pr:
+        description: The number of the pull-request to comment on
+        required: true
+        type: string
   pull_request_target:
-    types: [opened]
+    # `synchronize` is a push to the branch of the pull-request, which is what makes the summary
+    # of the previous run out of date.
+    types: [opened, synchronize]
+  push:
+    paths:
+      - scripts/alpha/github/pr_summary.lean
+      - .github/workflows/PRMessage.yml
+  pull_request:
+    paths:
+      - scripts/alpha/github/pr_summary.lean
+      - .github/workflows/PRMessage.yml
+
+# A push which lands while the summary of the previous one is still being made cancels it, so
+# that the comment ends up holding the summary of the last commit and not of an earlier one.
+# The event is part of the group because a pull-request which changes the script triggers both
+# `pull_request` and `pull_request_target`, and those two runs must not cancel each other.
+concurrency:
+  group: >-
+    ${{ github.workflow }}-${{ github.event_name }}-${{
+    github.event.pull_request.number || inputs.pr || github.ref }}
+  cancel-in-progress: true
+
+# No permissions by default: each job asks for only what it needs. Only `comment` can write, and
+# it runs no code from the pull-request.
+permissions: {}
 
 jobs:
-    build:
-        name: Comment a pull_request
-        runs-on: ubuntu-latest
-        permissions:
-            pull-requests: write
+  test:
+    name: Test pr_summary
+    # The pull-request which changes the script, not the one to comment on.
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
-        steps:
-            - name: Checkout
-              uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2
-            - name: Comment a pull_request
-              uses: mb2dev/github-action-comment-pull-request@8d73cba182e64cdbf74b91ea0f3a7c2da37c4b3e # 1.0.0
-              with:
-                message:  |
-                  Thank you for this pull-request (PR). If this is your first PR, welcome to the community!
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          # The whole history, so that the smoke test below has something to diff.
+          fetch-depth: 0
 
-                  Below is what will happen next. Please read carefully if you are not familiar with the process. You may open other PRs while this one is being reviewed, and can stack PRs on top of each other, so don't let these steps slow you down.
+      - name: Configure Lean
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
 
-                  1. Some automated checks will be run on your PR. You can see the results of these checks at the buttom of your PR page. If any of these checks fail, you will need to fix the issues before your PR can be merged. You can learn more about these [here](https://github.com/leanprover-community/physlib/blob/master/scripts/README.md), including how to run them locally, which is sometimes quicker than relying on the GitHub Actions. If you have never had a PR merged before, you may have to wait for a reviewer to manually start these checks (this is for security).
+      # The `#guard_msgs` tests of the script run as it is compiled, so this fails if one of
+      # them fails.
+      - name: Build pr_summary and run its tests
+        run: lake build pr_summary
 
-                  2. A reviewer will look at your PR and may ask you to make changes. This may happen a couple of days after you submit your PR, so you may need to be patient. But it should not be longer than that - if it is please bring it to the attention of the community on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366). The level of review will depend on where your PR is submitted. If it is submitted to ./Physlib or ./QuantumInfo, the review will be more thorough than if it is submitted to ./PhyslibAlpha. You can find out more about what the review process is looking for in our [review guidelines](https://github.com/leanprover-community/physlib/blob/master/docs/ReviewGuidelines.md). If a reviewer adds an `awaiting-author` label to your PR, address the review comments, then **please remove** that label by adding a comment with `-awaiting-author`. This helps us keep track of reviews.
+      - name: Summarise the last commit
+        run: ./.lake/build/bin/pr_summary HEAD~1 HEAD
 
-                  3. The reviewer will either approve your PR, or request more changes (in which case we return to step 2). Once your PR is approved, it will be merged by a maintainer, this should happen shortly after approval, though you may get more comments at this stage.
+  summarise:
+    name: Summarise the pull_request
+    if: github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    # Read-only: this is the job which checks out the branch of the pull-request.
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      number: ${{ steps.pr.outputs.number }}
+      comment: ${{ steps.assemble.outputs.comment }}
 
-                  Tip: The easiest way to get have a fast review is to submit a PR that is small and self-contained, and has clear documentation explaining why things are the way they are in your chages.
+    steps:
+      - name: Find the pull-request to comment on
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # The number comes from the event for a pull-request, and from the input for a
+          # manual run.
+          PR: ${{ github.event.pull_request.number || inputs.pr }}
+        run: |
+          gh pr view "${PR}" --repo "${GITHUB_REPOSITORY}" \
+            --json number,baseRefOid,headRefOid \
+            --jq '"number=\(.number)\nbase=\(.baseRefOid)\nhead=\(.headRefOid)"' \
+            | tee -a "${GITHUB_OUTPUT}"
 
-                  If you have any problems or questions, please reach out to the community on the [Zulip](https://leanprover.zulipchat.com/#narrow/channel/479953-Physlib/topic/PR.20reviews/with/596447366).
+      - name: Checkout master to build pr_summary from
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: master
+          path: tools
 
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Configure Lean
+        uses: leanprover/lean-action@f061402b660e0c34644504b324e830f2991d4865 # v1.6.1
+        with:
+          auto-config: false
+          use-github-cache: false
+          use-mathlib-cache: false
+          lake-package-directory: tools # Building here
+
+      - name: Build pr_summary from master
+        working-directory: tools
+        run: lake build pr_summary
+
+      - name: Checkout the branch of the pull-request
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ steps.pr.outputs.head }}
+          # The whole history, so that the base of the pull-request is there to diff against.
+          fetch-depth: 0
+          path: pr-branch
+          # Untrusted (potentially fork) checkout: don't persist the GITHUB_TOKEN into its
+          # .git/config.
+          persist-credentials: false
+          # pr_summary is built from the trusted base checkout and only reads the diff of this
+          # one, so checking out fork PR code under pull_request_target is safe.
+          allow-unsafe-pr-checkout: true
+
+      - name: Summarise the pull-request
+        working-directory: pr-branch
+        env:
+          BASE: ${{ steps.pr.outputs.base }}
+          HEAD: ${{ steps.pr.outputs.head }}
+        run: |
+          summary="${RUNNER_TEMP}/summary.md"
+          if ! "${GITHUB_WORKSPACE}/tools/.lake/build/bin/pr_summary" \
+                 "${BASE}" "${HEAD}" > "${summary}"
+          then
+            # A comment with no summary is still worth posting.
+            printf '*The summary of this PR could not be made; see the logs of this workflow.*\n' \
+              > "${summary}"
+          fi
+          # The comment is remade on every push, so say which commit this summary is of.
+          printf '\n*Summary of commit `%s`, remade whenever a commit is pushed.*\n' \
+            "${HEAD:0:7}" >> "${summary}"
+          cat "${summary}"
+
+      - name: Assemble the comment
+        id: assemble
+        run: |
+          awk -v summary="${RUNNER_TEMP}/summary.md" '
+            $0 == "<!-- PR_SUMMARY -->" {
+              while ((getline line < summary) > 0) print line
+              next
+            }
+            { print }' tools/.github/PRMessage.md > "${RUNNER_TEMP}/comment.md"
+          cat "${RUNNER_TEMP}/comment.md"
+          # The comment is handed to the `comment` job as a multi-line output. The delimiter is
+          # random, so that no line of the summary, which quotes the pull-request, can end it.
+          delimiter="EOF_$(openssl rand -hex 16)"
+          {
+            printf 'comment<<%s\n' "${delimiter}"
+            cat "${RUNNER_TEMP}/comment.md"
+            printf '\n%s\n' "${delimiter}"
+          } >> "${GITHUB_OUTPUT}"
+
+  comment:
+    name: Comment a pull_request
+    needs: summarise
+    runs-on: ubuntu-latest
+    # The only job which can write, and so the only one which checks nothing out and runs no
+    # code from the pull-request.
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Comment a pull_request, or update the comment of the previous run
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ needs.summarise.outputs.number }}
+          # Passed through the environment, never into the script, so it is not run as shell.
+          COMMENT: ${{ needs.summarise.outputs.comment }}
+          # The first line of `.github/PRMessage.md`, and so of the comment this workflow leaves.
+          MARKER: <!-- physlib-pr-summary -->
+        run: |
+          printf '%s' "${COMMENT}" > "${RUNNER_TEMP}/comment.md"
+          # The comments are fetched in a step of their own, so that `set -e` stops here if the
+          # API call fails: an empty answer would otherwise read as "no comment yet" and leave a
+          # second one.
+          comments="${RUNNER_TEMP}/comments.json"
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" > "${comments}"
+          # Only a comment of the Actions bot is updated, so a comment which somebody else
+          # happened to open with the marker is left alone. The oldest match wins, so that a
+          # comment which was somehow left twice does not leave the two taking turns.
+          id=$(jq -r --arg marker "${MARKER}" \
+            '.[] | select(.user.login == "github-actions[bot]")
+                 | select(.body | startswith($marker)) | .id' "${comments}" | head -1)
+          if [ -n "${id}" ]
+          then
+            printf 'Updating comment %s.\n' "${id}"
+            jq -Rs '{body: .}' "${RUNNER_TEMP}/comment.md" > "${RUNNER_TEMP}/comment.json"
+            gh api --method PATCH \
+              "repos/${GITHUB_REPOSITORY}/issues/comments/${id}" \
+              --input "${RUNNER_TEMP}/comment.json"
+          else
+            printf 'No comment of this workflow to update; leaving a new one.\n'
+            gh pr comment "${PR}" --repo "${GITHUB_REPOSITORY}" \
+              --body-file "${RUNNER_TEMP}/comment.md"
+          fi

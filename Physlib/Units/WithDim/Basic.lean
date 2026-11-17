@@ -186,6 +186,41 @@ lemma smul_val {B : Type} [DimensionBasis B] {d : Dimension B} {M : Type} [MulAc
     (a : ℝ≥0) (m : WithDim d M) :
     (a • m).val = a • m.val := rfl
 
+/-- The underlying value of a scaling by a unit of `ℝ≥0`, that is by a strictly positive real. -/
+@[simp]
+lemma smul_val_units {B : Type} [DimensionBasis B] {d : Dimension B} {M : Type}
+    [MulAction ℝ≥0 M] (a : ℝ≥0ˣ) (m : WithDim d M) :
+    (a • m).val = (a : ℝ≥0) • m.val := rfl
+
+/-- A positive-real quantity which carries a dimension, regarded as a dimension-tagged real, so
+  that it can be used alongside the other dimension-tagged quantities. The dimension is read off
+  the `HasDim` instance, so the two cannot drift apart. -/
+def ofPositiveRealUnit {U : Type} [PositiveRealUnitCore U] [HasDim U] (x : U) :
+    WithDim (dim U) ℝ :=
+  ⟨PositiveRealUnitCore.val x⟩
+
+@[simp]
+lemma ofPositiveRealUnit_val {U : Type} [PositiveRealUnitCore U] [HasDim U] (x : U) :
+    (ofPositiveRealUnit x).val = PositiveRealUnitCore.val x := rfl
+
+@[simp]
+lemma ofPositiveRealUnit_units_smul {U : Type} [PositiveRealUnitCore U] [HasDim U]
+    (a : ℝ≥0ˣ) (x : U) :
+    ofPositiveRealUnit (a • x) = a • ofPositiveRealUnit x := by
+  apply WithDim.ext
+  simp [PositiveRealUnitCore.val_units_smul, NNReal.smul_def]
+
+/-- A dimensionful positive-real quantity, such as the speed of light, may be tagged with its
+  dimension either before or after a change of units: `ofPositiveRealUnit` commutes with
+  `scaleUnit`. -/
+lemma ofPositiveRealUnit_of_scaleUnit {U : Type} [PositiveRealUnitCore U] [HasDim U]
+    {u1 u2 u : LTMCTUnitChoices} (c : Dimensionful U) :
+    ofPositiveRealUnit (c.1 (UnitDependent.scaleUnit u1 u2 u)) =
+    UnitDependent.scaleUnit u1 u2 (ofPositiveRealUnit (c.1 u)) := by
+  rw [Dimensionful.of_scaleUnit_units c, ofPositiveRealUnit_units_smul,
+    HasDim.scaleUnit_apply_units]
+  rfl
+
 /-
 Real scalar multiplication.
 
@@ -222,9 +257,11 @@ instance {d1 d2 : Dimension LTMCTDimensionBase} :
   mul_dim m1 m2 := by
     intro u1 u2
     ext
-    simp only [withDim_hMul_val, dim_apply, map_mul, smul_val]
+    simp only [withDim_hMul_val, dim_apply]
     rw [m1.2 u1, m2.2 u1]
-    simp only [dim_apply, smul_val, Algebra.mul_smul_comm, Algebra.smul_mul_assoc]
+    simp only [dim_apply, smul_val_units, withDim_hMul_val,
+      LTMCTUnitChoices.dimScaleUnits_mul_dim, Units.val_mul, Algebra.mul_smul_comm,
+      Algebra.smul_mul_assoc]
     rw [smul_smul]
     congr 1
     rw [mul_comm]
@@ -263,6 +300,13 @@ lemma scaleUnit_val_eq_scaleUnit_val_of_dim_eq {d1 d2 : Dimension LTMCTDimension
 lemma scaleUnit_val {d : Dimension LTMCTDimensionBase} (M : Type) [MulAction ℝ≥0 M]
     (u1 u2 : LTMCTUnitChoices) (m1 : WithDim d M) :
     (scaleUnit u1 u2 m1).val = u1.dimScale u2 d • m1.val := rfl
+
+/-- Scaling by a change of units preserves positivity of the value of a dimensionful
+quantity. -/
+lemma scaleUnit_val_pos {d : Dimension LTMCTDimensionBase} (m : WithDim d ℝ≥0) (hm : 0 < m.val)
+    (u1 u2 : LTMCTUnitChoices) : 0 < (scaleUnit u1 u2 m).val := by
+  rw [scaleUnit_val, smul_eq_mul]
+  exact mul_pos (LTMCTUnitChoices.dimScale_pos u1 u2 d) hm
 
 /-!
 

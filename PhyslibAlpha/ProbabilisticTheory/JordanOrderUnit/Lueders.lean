@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Quadratic.Order
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.Conditioning
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.GeneratedByOne.SqrtUniqueness
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Operation
@@ -43,7 +42,7 @@ the quadratic representation `x ↦ U_{√e} x`, and conditioning a state on `e`
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -151,4 +150,4 @@ lemma luedersCondition_toEffect_of_projection {p : E} (hp : IsJordanProjection p
 
 end NormedJordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

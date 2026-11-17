@@ -30,9 +30,8 @@ namespace HermitianMat
 variable {R n m α : Type*} [Star R] [TrivialStar R] [Fintype n] [Fintype m]
 
 section star
-variable [AddGroup α] [StarAddMonoid α] [CommSemiring R] [Semiring α] [Algebra R α] [IsMaximalSelfAdjoint R α]
+variable [Ring α] [StarAddMonoid α] [CommSemiring R] [Algebra R α] [IsMaximalSelfAdjoint R α]
 
-set_option linter.overlappingInstances false in
 /-- The trace of the matrix. This requires a `IsMaximalSelfAdjoint R α` instance, and then maps from
   `HermitianMat n α` to `R`. This means that the trace of (say) a `HermitianMat n ℤ` gives values in ℤ,
   but that the trace of a `HermitianMat n ℂ` gives values in ℝ. The fact that traces are "automatically"
@@ -40,14 +39,12 @@ set_option linter.overlappingInstances false in
 def trace (A : HermitianMat n α) : R :=
   IsMaximalSelfAdjoint.selfadjMap (A.mat.trace)
 
-set_option linter.overlappingInstances false in
 /-- `HermitianMat.trace` reduces to `Matrix.trace` in the algebra.-/
 theorem trace_eq_trace (A : HermitianMat n α) : algebraMap R α A.trace = Matrix.trace A.mat := by
   rw [trace, Matrix.trace, map_sum, map_sum]
   congr! 1
   exact IsMaximalSelfAdjoint.selfadj_algebra (Matrix.IsHermitian.apply A.H _ _)
 
-set_option linter.overlappingInstances false in
 variable [StarModule R α] in
 @[simp]
 lemma trace_smul (A : HermitianMat n α) (r : R) : (r • A).trace = r * A.trace := by
@@ -64,6 +61,26 @@ lemma trace_zero : (0 : HermitianMat n α).trace = 0 := by
 @[simp]
 lemma trace_add (A B : HermitianMat n α) : (A + B).trace = A.trace + B.trace := by
   simp [trace]
+
+/-- `trace` bundled as an `AddMonoidHom`. -/
+@[simps]
+def traceAddMonoidHom : HermitianMat n α →+ R where
+  toFun := trace
+  map_zero' := trace_zero
+  map_add' := trace_add
+
+@[simp]
+lemma trace_listSum (l : List (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
+  map_list_sum traceAddMonoidHom l
+
+@[simp]
+lemma trace_multisetSum (l : Multiset (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
+  map_multiset_sum traceAddMonoidHom l
+
+@[simp]
+lemma trace_sum {ι : Type*} (s : Finset ι) (f : ι → HermitianMat n α) :
+    (∑ i ∈ s, f i).trace = ∑ i ∈ s, (f i).trace :=
+  map_sum traceAddMonoidHom f s
 
 end semiring
 section ring
@@ -154,9 +171,13 @@ lemma trace_eq_one_iff (A : HermitianMat n 𝕜) : A.trace = 1 ↔ A.mat.trace =
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma trace_reindex (A : HermitianMat n ℂ) (e : n ≃ m) :
+lemma trace_reindex (A : HermitianMat n 𝕜) (e : n ≃ m) :
     (A.reindex e).trace = A.trace := by
   simp [reindex, trace_eq_re_trace]
+
+@[fun_prop]
+lemma continuous_trace : Continuous (HermitianMat.trace (α := 𝕜) (n := n)) :=
+  RCLike.continuous_re.comp HermitianMat.continuous_mat.matrix_trace
 
 end RCLike
 section partialTrace

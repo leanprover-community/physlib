@@ -5,8 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
-public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Bidual
 public import PhyslibAlpha.ProbabilisticTheory.Classical.NamiokaPhelps
 public import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
@@ -60,7 +58,7 @@ observable from the minimal cone.
 
 
 namespace Bidual
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open OrderUnitLattice VectorLattice
 
 variable {E : Type*} [OrderUnitSpace E]
@@ -181,7 +179,7 @@ lemma exists_measure_prepare {n : ℕ} (x : Fin n → Bidual E) {η : ℝ} (hη 
 
 end Bidual
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open OrderUnitLattice VectorLattice
 
@@ -369,4 +367,4 @@ lemma isClassical_iff_isNuclear : IsClassical E ↔ IsNuclear E :=
 
 end Final
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

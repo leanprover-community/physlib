@@ -324,7 +324,8 @@ lemma integrable_time_space {d : ℕ} {f : Space d → F} (hf : IsDistBounded f)
       exact h1
     | d + 1 =>
     rw [radialAngularMeasure, MeasureTheory.prod_withDensity_right] at h1
-    erw [integrable_withDensity_iff_integrable_smul₀ (by fun_prop)] at h1
+    simp only [ENNReal.ofReal] at h1
+    rw [integrable_withDensity_iff_integrable_smul₀ (by fun_prop)] at h1
     convert! h1 using 1
     funext x
     simp only [Real.norm_eq_abs, one_div]

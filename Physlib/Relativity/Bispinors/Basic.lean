@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.PauliMatrices.ToTensor
+public import Physlib.Relativity.Bispinors.Pauli.ToTensor
 public import Physlib.Meta.Informal.Basic
 /-!
 
@@ -31,6 +31,9 @@ open PauliMatrix
 -/
 open TensorSpecies
 open Tensor
+
+TODO "Refactor bispinors to define e.g.
+  `bispinorEquiv : ComplexVector ≃ₗ[ℂ] LeftHandedWeyl ⊗[ℂ] RightHandedWeyl`."
 
 /-- A bispinor `pᵃᵃ` created from a lorentz vector `p^μ`. -/
 def contrBispinorUp (p : ℂT[.up]) : ℂT[.upL, .upR] := permT id (IsReindexing.auto)

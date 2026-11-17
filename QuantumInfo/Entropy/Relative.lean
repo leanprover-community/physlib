@@ -1253,7 +1253,7 @@ lemma ker_le_of_ker_kron_le_left (ρ₁ σ₁ : MState d₁) (ρ₂ σ₂ : MSta
           replace h_top := congr(WithLp.ofLp $h_top i)
           simp_all
           convert h_top using 1;
-          erw [ Matrix.toLpLin_apply ]
+          simp only [HermitianMat.lin, ContinuousLinearMap.coe_mk', Matrix.toLpLin_apply]
           simp_all only [MState.mat_M, PiLp.ofLp_single, Matrix.mulVec_single,
             MulOpposite.op_one, Pi.smul_apply, Matrix.col_apply, one_smul]
         exact σ₂.pos.ne' h_contra;
@@ -1306,7 +1306,7 @@ lemma ker_le_of_ker_kron_le_left (ρ₁ σ₁ : MState d₁) (ρ₂ σ₂ : MSta
       simp [ Matrix.mulVec, dotProduct];
       simp [  Finset.sum_mul, mul_assoc, mul_comm];
       simp [ z, Finset.mul_sum, mul_assoc, mul_left_comm ];
-      erw [ Finset.sum_product ] ; simp
+      rw [ Fintype.sum_prod_type ] ; simp
       exact rfl;
     exact hz''.trans ( by exact congr(WithLp.ofLp $hz' ( a, b )) );
   ext a; specialize hz'' a; simp_all [ Matrix.mulVec, dotProduct ] ;
@@ -1334,7 +1334,7 @@ lemma ker_le_of_ker_kron_le_right (ρ₁ σ₁ : MState d₁) (ρ₂ σ₂ : MSt
           simp_all [ Submodule.eq_top_iff' ] ;
           convert! congr(WithLp.ofLp $(hρ_top ( EuclideanSpace.single j 1 ) ) i) using 1
           simp
-          erw [ Matrix.toLpLin_apply ]
+          simp only [HermitianMat.lin, ContinuousLinearMap.coe_mk', Matrix.toLpLin_apply]
           aesop
         exact ρ.pos.ne' h_contra;
       exact ⟨ h_ker_ne_top σ₁, h_ker_ne_top ρ₁ ⟩;

@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.JointSpectral.Basic
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.DualEval
-public import Mathlib.Topology.Algebra.PontryaginDual
 
 /-!
 
@@ -49,7 +48,7 @@ measure forward along this map gives a projection-valued measure `P` on the dual
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology WeakDual
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -187,6 +186,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

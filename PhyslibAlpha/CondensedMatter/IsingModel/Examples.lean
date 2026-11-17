@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.CondensedMatter.IsingModel.Basic
-public import PhyslibAlpha.CondensedMatter.Crystal.Examples.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Examples.ThreeDimensional
-public import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 

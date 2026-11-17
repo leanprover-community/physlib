@@ -19,8 +19,6 @@ but are still important for the development of Physlib.
 
 TODO "Ensure that all the lines in QuantumInfo are below 100 characters long."
 
-TODO "Turn the `sorryful` linter on for the QuantumInfo module."
-
 TODO "Remove all instances of `erw` within Physlib. This usually
   indicates the need for better API."
 

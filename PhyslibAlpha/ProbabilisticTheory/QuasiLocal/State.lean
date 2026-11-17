@@ -45,7 +45,7 @@ Hermitian and positive. Every element of the quasi-local algebra is local, and p
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuasiLocal
 
@@ -103,6 +103,6 @@ lemma LocalStateFamily.toAlgState_of (ω : LocalStateFamily N) (X : Finset S) (a
 
 end QuasiLocal
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

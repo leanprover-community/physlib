@@ -43,7 +43,7 @@ continuous functional is a trace pairing.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped BigOperators ComplexOrder InnerProductSpace Topology
 open Filter Set Metric
@@ -490,4 +490,4 @@ lemma tracePairing_surjective_concrete :
 
 end TraceClass
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

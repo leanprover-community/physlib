@@ -36,7 +36,7 @@ lemma contrContrToMatrixRe_symm_expand_tmul (M : Matrix (Fin 1 ⊕ Fin d) (Fin 1
   rw [Finsupp.linearCombination_apply_of_mem_supported ℝ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply (contrBasis d) (contrBasis d) i j]
+    rw [Basis.tensorProduct_apply (contrBasis d) (contrBasis d) i j]
     rfl
   · simp
 
@@ -55,7 +55,7 @@ lemma coCoToMatrixRe_symm_expand_tmul (M : Matrix (Fin 1 ⊕ Fin d) (Fin 1 ⊕ F
   rw [Finsupp.linearCombination_apply_of_mem_supported ℝ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply (coBasis d) (coBasis d) i j]
+    rw [Basis.tensorProduct_apply (coBasis d) (coBasis d) i j]
     rfl
   · simp
 
@@ -75,7 +75,7 @@ lemma contrCoToMatrixRe_symm_expand_tmul (M : Matrix (Fin 1 ⊕ Fin d) (Fin 1 �
   rw [Finsupp.linearCombination_apply_of_mem_supported ℝ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply _ _ i j]
+    rw [Basis.tensorProduct_apply _ _ i j]
     rfl
   · simp
 
@@ -95,7 +95,7 @@ lemma coContrToMatrixRe_symm_expand_tmul (M : Matrix (Fin 1 ⊕ Fin d) (Fin 1 �
   rw [Finsupp.linearCombination_apply_of_mem_supported ℝ (s := Finset.univ)]
   · rw [Fintype.sum_prod_type]
     refine Finset.sum_congr rfl (fun i _ => Finset.sum_congr rfl (fun j _ => ?_))
-    erw [Basis.tensorProduct_apply _ _ i j]
+    rw [Basis.tensorProduct_apply _ _ i j]
     rfl
   · simp
 
@@ -118,11 +118,9 @@ lemma contrContrToMatrixRe_ρ {d : ℕ} (v : (ContrMod d ⊗[ℝ] ContrMod d)) (
       *ᵥ ((Finsupp.linearEquivFunOnFinite ℝ ℝ ((Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)))
       (((contrBasis d).tensorProduct (contrBasis d)).repr v)))
   · apply congrArg
-    have h1 := (LinearMap.toMatrix_mulVec_repr ((contrBasis d).tensorProduct (contrBasis d))
+    exact (LinearMap.toMatrix_mulVec_repr ((contrBasis d).tensorProduct (contrBasis d))
       ((contrBasis d).tensorProduct (contrBasis d))
-      (TensorProduct.map (ContrMod.rep M) (ContrMod.rep M)) v)
-    erw [h1]
-    rfl
+      (TensorProduct.map (ContrMod.rep M) (ContrMod.rep M)) v).symm
   rw [TensorProduct.toMatrix_map]
   funext i j
   change ∑ k, ((kroneckerMap (fun x1 x2 => x1 * x2)
@@ -155,11 +153,9 @@ lemma coCoToMatrixRe_ρ {d : ℕ} (v : (CoMod d ⊗[ℝ] CoMod d)) (M : LorentzG
       *ᵥ ((Finsupp.linearEquivFunOnFinite ℝ ℝ ((Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)))
       (((coBasis d).tensorProduct (coBasis d)).repr v))))
   · apply congrArg
-    have h1 := (LinearMap.toMatrix_mulVec_repr ((coBasis d).tensorProduct (coBasis d))
+    exact (LinearMap.toMatrix_mulVec_repr ((coBasis d).tensorProduct (coBasis d))
       ((coBasis d).tensorProduct (coBasis d))
-      (TensorProduct.map (CoMod.rep M) (CoMod.rep M)) v)
-    erw [h1]
-    rfl
+      (TensorProduct.map (CoMod.rep M) (CoMod.rep M)) v).symm
   rw [TensorProduct.toMatrix_map]
   funext i j
   change ∑ k, ((kroneckerMap (fun x1 x2 => x1 * x2)
@@ -192,11 +188,9 @@ lemma contrCoToMatrixRe_ρ {d : ℕ} (v : (ContrMod d ⊗[ℝ] CoMod d)) (M : Lo
       *ᵥ ((Finsupp.linearEquivFunOnFinite ℝ ℝ ((Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)))
       (((contrBasis d).tensorProduct (coBasis d)).repr v))))
   · apply congrArg
-    have h1 := (LinearMap.toMatrix_mulVec_repr ((contrBasis d).tensorProduct (coBasis d))
+    exact (LinearMap.toMatrix_mulVec_repr ((contrBasis d).tensorProduct (coBasis d))
       ((contrBasis d).tensorProduct (coBasis d))
-      (TensorProduct.map (ContrMod.rep M) (CoMod.rep M)) v)
-    erw [h1]
-    rfl
+      (TensorProduct.map (ContrMod.rep M) (CoMod.rep M)) v).symm
   rw [TensorProduct.toMatrix_map]
   funext i j
   change ∑ k, ((kroneckerMap (fun x1 x2 => x1 * x2)
@@ -229,11 +223,9 @@ lemma coContrToMatrixRe_ρ {d : ℕ} (v : (CoMod d ⊗[ℝ] ContrMod d)) (M : Lo
       *ᵥ ((Finsupp.linearEquivFunOnFinite ℝ ℝ ((Fin 1 ⊕ Fin d) × (Fin 1 ⊕ Fin d)))
       (((coBasis d).tensorProduct (contrBasis d)).repr v))))
   · apply congrArg
-    have h1 := (LinearMap.toMatrix_mulVec_repr ((coBasis d).tensorProduct (contrBasis d))
+    exact (LinearMap.toMatrix_mulVec_repr ((coBasis d).tensorProduct (contrBasis d))
       ((coBasis d).tensorProduct (contrBasis d))
-      (TensorProduct.map (CoMod.rep M) (ContrMod.rep M)) v)
-    erw [h1]
-    rfl
+      (TensorProduct.map (CoMod.rep M) (ContrMod.rep M)) v).symm
   rw [TensorProduct.toMatrix_map]
   funext i j
   change ∑ k, ((kroneckerMap (fun x1 x2 => x1 * x2)

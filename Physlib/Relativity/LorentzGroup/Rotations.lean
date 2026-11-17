@@ -21,8 +21,9 @@ namespace LorentzGroup
 
 /-- The subgroup of rotations of the Lorentz group. -/
 def Rotations (d) : Subgroup (LorentzGroup d) where
-  carrier Λ := Λ.1 (Sum.inl 0) (Sum.inl 0) = 1 ∧ IsProper Λ
+  carrier := {Λ | Λ.1 (Sum.inl 0) (Sum.inl 0) = 1 ∧ IsProper Λ}
   mul_mem' {Λ₁ Λ₂} h1 h2 := by
+    rw [Set.mem_ofPred_eq] at h1 h2 ⊢
     constructor
     · rw [← toVector_timeComponent]
       rw [toVector_mul]
@@ -39,8 +40,10 @@ def Rotations (d) : Subgroup (LorentzGroup d) where
       rw [h1.1]
     · exact isProper_mul h1.2 h2.2
   one_mem' := by
+    rw [Set.mem_ofPred_eq]
     constructor <;> simp
   inv_mem' {Λ} h := by
+    rw [Set.mem_ofPred_eq] at h ⊢
     constructor
     · simp [inv_eq_dual, minkowskiMatrix.dual_apply, h.1]
     · simpa [inv_eq_dual, IsProper] using h.2
@@ -76,6 +79,7 @@ def ofSpecialOrthogonal {d} :
     by
     match Λ with
     | ⟨Λ, h⟩ =>
+    rw [mem_rotations_iff] at h
     let M : Matrix (Fin d) (Fin d) ℝ := fun i j => Λ.1 (Sum.inr i) (Sum.inr j)
     have h1 : Matrix.fromBlocks 1 0 0 M = Λ.1 := by
       have h1 : LorentzGroup.toVector Λ = Lorentz.Vector.basis (Sum.inl 0) := by
@@ -129,6 +133,7 @@ def ofSpecialOrthogonal {d} :
   right_inv Λ := by
     match Λ with
     | ⟨Λ, h⟩ =>
+    rw [mem_rotations_iff] at h
     let M : Matrix (Fin d) (Fin d) ℝ := fun i j => Λ.1 (Sum.inr i) (Sum.inr j)
     have h1 : Matrix.fromBlocks 1 0 0 M = Λ.1 := by
       have h1 : LorentzGroup.toVector Λ = Lorentz.Vector.basis (Sum.inl 0) := by
@@ -175,6 +180,7 @@ lemma ofSpecialOrthogonal_symm_continuous {d} :
 
 lemma rotations_subset_restricted (d) : Rotations d ≤ LorentzGroup.restricted d := by
   intro Λ h
+  rw [mem_rotations_iff] at h
   constructor
   · exact h.2
   · simp [IsOrthochronous, h.1]
@@ -183,7 +189,7 @@ lemma rotations_subset_restricted (d) : Rotations d ≤ LorentzGroup.restricted 
 lemma toVector_rotation {d} (Λ : Rotations d) :
     LorentzGroup.toVector Λ.1= Lorentz.Vector.basis (Sum.inl 0) := by
   rw [LorentzGroup.toVector_eq_basis_iff_timeComponent_eq_one]
-  exact Λ.2.1
+  exact ((mem_rotations_iff _).1 Λ.2).1
 
 end LorentzGroup
 

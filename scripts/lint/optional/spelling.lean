@@ -5,8 +5,8 @@ Authors: Joseph Tooby-Smith
 -/
 import Physlib.Meta.Informal.Post
 import Mathlib.Lean.CoreM
-import Physlib.Meta.Linters.Sorry
-import Physlib.Meta.Sorry
+import Physlib.Meta.Linters.Pseudo
+import Physlib.Meta.Pseudo
 import Mathlib.Data.List.Defs
 import Lean.DocString.Extension
 import Physlib.Meta.AllFilePaths

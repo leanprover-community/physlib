@@ -6,9 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.CStarAlgebra.CompletelyPositiveMap
-public import Mathlib.Analysis.CStarAlgebra.CStarMatrix
-public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.InnerProductSpace.Positive
 public import Mathlib.Analysis.InnerProductSpace.StarOrder
 public import Mathlib.Analysis.CStarAlgebra.ContinuousLinearMap
 public import Mathlib.Analysis.CStarAlgebra.SpecialFunctions.PosPart
@@ -47,7 +44,7 @@ operator `V : H → K` with `J a = V⋆ π(a) V`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder CStarAlgebra
 open ContinuousLinearMap
@@ -310,4 +307,4 @@ end StinespringWitness
 
 end
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

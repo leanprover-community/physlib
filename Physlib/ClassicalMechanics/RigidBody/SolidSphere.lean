@@ -6,7 +6,6 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.ClassicalMechanics.RigidBody.Basic
-public import Physlib.Meta.Linters.Sorry
 public import Mathlib.MeasureTheory.Measure.Haar.Unique
 /-!
 
@@ -73,10 +72,13 @@ lemma solidSphere_centerOfMass {d : ℕ} (m R : ℝ≥0) : (solidSphere d m R).c
   norm_num
 
 /-- The moment of inertia tensor of a solid sphere through its center of mass is
-  `2/5 m R^2 * I`. -/
-@[sorryful]
-lemma solidSphere_inertiaTensor (m R : ℝ≥0) (hr : R ≠ 0) :
-    (solidSphere 3 m R).inertiaTensor = (2/5 * m.1 * R.1^2) • (1 : Matrix _ _ _) := by
-  sorry
+  `2/5 m R^2 * I`.
+
+  Formal statement: (m R : ℝ≥0) (hr : R ≠ 0) :
+      (solidSphere 3 m R).inertiaTensor = (2/5 * m.1 * R.1^2) • (1 : Matrix _ _ _)
+  -/
+informal_lemma solidSphere_inertiaTensor where
+  deps := [``solidSphere, ``RigidBody.inertiaTensor]
+  tag := "CM-RB-sphereI"
 
 end RigidBody

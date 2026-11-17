@@ -53,8 +53,8 @@ namespace CondensedMatter
 
 namespace Crystal
 
-open ProbabilisticTheory ProbabilisticTheory.QuasiLocal QuasiLocal
-open scoped selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuasiLocal QuasiLocal
+open scoped _root_.selfAdjoint
 
 variable {d : ℕ} {F : Type*} [DecidableEq F]
 variable {Ω₀ : Type*} [Fintype Ω₀] [DecidableEq Ω₀] [Nonempty Ω₀]

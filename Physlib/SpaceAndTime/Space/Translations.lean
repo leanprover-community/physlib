@@ -48,10 +48,7 @@ noncomputable def translateSchwartz {d : ℕ} (a : EuclideanSpace ℝ (Fin d)) :
         · have hx : (fderiv ℝ (fun (x : Space d) => (x - basis.repr.symm a: Space d))) =
               fun _ => ContinuousLinearMap.id ℝ (Space d) := by
             funext x
-            erw [fderiv_sub]
-            simp only [fderiv_fun_id, fderiv_fun_const, Pi.zero_apply, sub_zero]
-            fun_prop
-            fun_prop
+            simp only [fderiv_sub_const, fderiv_fun_id]
           rw [hx]
           exact Function.HasTemperateGrowth.const
               (ContinuousLinearMap.id ℝ (Space d))

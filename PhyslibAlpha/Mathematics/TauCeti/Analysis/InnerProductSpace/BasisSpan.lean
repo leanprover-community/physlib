@@ -6,7 +6,6 @@ Authors: Jon Crall, Claude Fable 5
 module
 
 public import Mathlib.Analysis.InnerProductSpace.PiL2
-public import Mathlib.Analysis.InnerProductSpace.Projection.FiniteDimensional
 
 /-!
 # Spans of orthonormal subfamilies

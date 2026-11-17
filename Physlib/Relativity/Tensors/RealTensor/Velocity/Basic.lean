@@ -24,8 +24,8 @@ open _root_.Lorentz.Vector
 
 /-- A Lorentz Velocity is a Lorentz vector which has norm equal to one
   and which is future-directed. -/
-def Velocity (d : ℕ := 3) : Set (Vector d) := fun v => ⟪v, v⟫ₘ = (1 : ℝ)
-  ∧ 0 < v.timeComponent
+def Velocity (d : ℕ := 3) : Set (Vector d) := {v | ⟪v, v⟫ₘ = (1 : ℝ)
+  ∧ 0 < v.timeComponent}
 
 namespace Velocity
 
@@ -42,10 +42,10 @@ lemma mem_iff {v : Vector d} : v ∈ Velocity d ↔ ⟪v, v⟫ₘ = (1 : ℝ) �
   rfl
 
 @[simp]
-lemma minkowskiProduct_self_eq_one (v : Velocity d) : ⟪v.1, v.1⟫ₘ = (1 : ℝ) := v.2.1
+lemma minkowskiProduct_self_eq_one (v : Velocity d) : ⟪v.1, v.1⟫ₘ = (1 : ℝ) := (mem_iff.1 v.2).1
 
 @[simp]
-lemma timeComponent_pos (v : Velocity d) : 0 < v.1.timeComponent := v.2.2
+lemma timeComponent_pos (v : Velocity d) : 0 < v.1.timeComponent := (mem_iff.1 v.2).2
 
 @[simp]
 lemma timeComponent_nonneg (v : Velocity d) : 0 ≤ v.1.timeComponent := by
@@ -71,6 +71,61 @@ lemma norm_spatialPart_sq_eq (v : Velocity d) :
   rw [← minkowskiProduct_self_eq_one v]
   rw [minkowskiProduct_self_eq_timeComponent_spatialPart]
   simp [timeComponent]
+
+/-- The unit future four-velocity with spatial part `p` and time component
+`Real.sqrt (1 + ‖p‖ ^ 2)`. The spatial part is unrestricted. -/
+noncomputable def ofSpatialPart (p : EuclideanSpace ℝ (Fin d)) : Velocity d :=
+  ⟨fun μ => Sum.elim (fun _ => Real.sqrt (1 + ‖p‖ ^ 2)) (fun i => p i) μ, by
+    constructor
+    · rw [minkowskiProduct_self_eq_sq_sub]
+      have hsp : Vector.spatialPart (fun μ => Sum.elim (fun _ => Real.sqrt (1 + ‖p‖ ^ 2))
+          (fun i => p i) μ : Vector d) = p := by
+        ext i
+        rfl
+      rw [hsp]
+      change (Real.sqrt (1 + ‖p‖ ^ 2)) ^ 2 - ‖p‖ ^ 2 = 1
+      rw [Real.sq_sqrt (by positivity)]
+      ring
+    · change 0 < Real.sqrt (1 + ‖p‖ ^ 2)
+      positivity⟩
+
+@[simp]
+lemma spatialPart_ofSpatialPart (p : EuclideanSpace ℝ (Fin d)) :
+    (ofSpatialPart p).1.spatialPart = p := by
+  ext i
+  rfl
+
+@[simp]
+lemma timeComponent_ofSpatialPart (p : EuclideanSpace ℝ (Fin d)) :
+    (ofSpatialPart p).1.timeComponent = Real.sqrt (1 + ‖p‖ ^ 2) := rfl
+
+/-- A future unit four-velocity is determined by its spatial part. -/
+@[simp]
+lemma ofSpatialPart_spatialPart (u : Velocity d) : ofSpatialPart u.1.spatialPart = u := by
+  apply Velocity.ext
+  apply Vector.eq_of_apply_eq
+  intro μ
+  rcases μ with t | i
+  · fin_cases t
+    change Real.sqrt (1 + ‖u.1.spatialPart‖ ^ 2) = u.1.timeComponent
+    rw [norm_spatialPart_sq_eq]
+    simp only [add_sub_cancel]
+    exact Real.sqrt_sq (timeComponent_nonneg u)
+  · have h := congrArg (fun q : EuclideanSpace ℝ (Fin d) => q i)
+      (spatialPart_ofSpatialPart u.1.spatialPart)
+    exact h
+
+/-- The spatial-coordinate parametrization of future unit four-velocities is continuous. -/
+@[fun_prop]
+lemma continuous_ofSpatialPart : Continuous (ofSpatialPart (d := d)) := by
+  apply Continuous.subtype_mk
+  apply Vector.continuous_of_apply
+  intro μ
+  rcases μ with t | i
+  · change Continuous (fun p : EuclideanSpace ℝ (Fin d) => Real.sqrt (1 + ‖p‖ ^ 2))
+    fun_prop
+  · change Continuous (fun p : EuclideanSpace ℝ (Fin d) => p i)
+    fun_prop
 
 /-- A bound on the proper norm of a vector orthogonal to a unit future
 four-velocity controls its spatial norm in the chosen frame. -/

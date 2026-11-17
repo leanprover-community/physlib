@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2026 Gregory J. Loges. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Gregory J. Loges
+Authors: Philippe Kevorkian, Gregory J. Loges
 -/
 module
 
@@ -38,6 +38,8 @@ and prove that `⊗ₕ` is commutative and associative (up to linear isometric e
     `E ⊗ₕ[𝕜] F` and `F ⊗ₕ[𝕜] E`.
 - `CompleteTensorProduct.assoc 𝕜 E F G` : The linear isometric equivalence between
     `E ⊗ₕ[𝕜] F ⊗ₕ[𝕜] G` and `E ⊗ₕ[𝕜] (F ⊗ₕ[𝕜] G)`.
+- `CompleteTensorProduct.assoc_tIncl₃ₗᵢ` : On the algebraic threefold tensor product,
+    `CompleteTensorProduct.assoc` reduces to `TensorProduct.assoc`.
 
 ## iii. Table of contents
 
@@ -47,6 +49,7 @@ and prove that `⊗ₕ` is commutative and associative (up to linear isometric e
 - D. Induction principle
 - E. Commutative
 - F. Associative
+  - F.1. Associativity on the algebraic tensor product
 
 ## iv. References
 
@@ -254,11 +257,68 @@ def assoc : E ⊗ₕ[𝕜] F ⊗ₕ[𝕜] G ≃ₗᵢ[𝕜] E ⊗ₕ[𝕜] (F �
       exact TensorProduct.denseRange_map denseRange_id denseRange_coe)
     fun _ ↦ by simp only [LinearIsometry.norm_map', TensorProduct.norm_assoc]
 
-TODO "Prove CompleteTensorProduct.assoc acting on elements of the tensor product
-  reduces to TensorProduct.assoc. It may be worthwhile to extract and name the linear isometries
-  (tInclₗᵢ.comp (tInclₗᵢ.rTensor G) : E ⊗[𝕜] F ⊗[𝕜] G →ₗᵢ[𝕜] E ⊗ₕ[𝕜] F ⊗ₕ[𝕜] G) and
-  (tInclₗᵢ.comp (tInclₗᵢ.lTensor E) : E ⊗[𝕜] (F ⊗[𝕜] G) →ₗᵢ[𝕜] E ⊗ₕ[𝕜] (F ⊗ₕ[𝕜] G))
-  which embed 3-fold tensor products into their completion."
+/-!
+### F.1. Associativity on the algebraic tensor product
+-/
+
+section ThreefoldInclusions
+
+variable {𝕜 E F G}
+
+/-- The embedding of the algebraic threefold tensor product `E ⊗[𝕜] F ⊗[𝕜] G` into the complete
+  tensor product `E ⊗ₕ[𝕜] F ⊗ₕ[𝕜] G` as a linear isometry: `E ⊗[𝕜] F` is first embedded into
+  `E ⊗ₕ[𝕜] F`, then `(E ⊗ₕ[𝕜] F) ⊗[𝕜] G` is embedded into its completion. -/
+def tIncl₃ₗᵢ : E ⊗[𝕜] F ⊗[𝕜] G →ₗᵢ[𝕜] E ⊗ₕ[𝕜] F ⊗ₕ[𝕜] G :=
+  tInclₗᵢ.comp (tInclₗᵢ.rTensor G)
+
+/-- The embedding of the algebraic threefold tensor product `E ⊗[𝕜] (F ⊗[𝕜] G)` into the
+  complete tensor product `E ⊗ₕ[𝕜] (F ⊗ₕ[𝕜] G)` as a linear isometry: `F ⊗[𝕜] G` is first
+  embedded into `F ⊗ₕ[𝕜] G`, then `E ⊗[𝕜] (F ⊗ₕ[𝕜] G)` is embedded into its completion. -/
+def tIncl₃'ₗᵢ : E ⊗[𝕜] (F ⊗[𝕜] G) →ₗᵢ[𝕜] E ⊗ₕ[𝕜] (F ⊗ₕ[𝕜] G) :=
+  tInclₗᵢ.comp (tInclₗᵢ.lTensor E)
+
+/-- On a simple tensor `x ⊗ₜ y ⊗ₜ z`, the embedding `tIncl₃ₗᵢ` is the nested coercion. -/
+@[simp]
+lemma tIncl₃ₗᵢ_tmul (x : E) (y : F) (z : G) :
+    tIncl₃ₗᵢ (x ⊗ₜ[𝕜] y ⊗ₜ[𝕜] z) = (x ⊗ₜ[𝕜] y ⊗ₜ[𝕜] z : (E ⊗ₕ[𝕜] F) ⊗[𝕜] G) :=
+  rfl
+
+/-- On a simple tensor `x ⊗ₜ (y ⊗ₜ z)`, the embedding `tIncl₃'ₗᵢ` is the nested coercion. -/
+@[simp]
+lemma tIncl₃'ₗᵢ_tmul (x : E) (y : F) (z : G) :
+    tIncl₃'ₗᵢ (x ⊗ₜ[𝕜] (y ⊗ₜ[𝕜] z)) = (x ⊗ₜ[𝕜] (y ⊗ₜ[𝕜] z) : E ⊗[𝕜] (F ⊗ₕ[𝕜] G)) :=
+  rfl
+
+/-- `CompleteTensorProduct.assoc` acting on an element of the algebraic threefold tensor product
+  reduces to `TensorProduct.assoc`. -/
+@[simp]
+lemma assoc_tIncl₃ₗᵢ (x : E ⊗[𝕜] F ⊗[𝕜] G) :
+    assoc 𝕜 E F G (tIncl₃ₗᵢ x) = tIncl₃'ₗᵢ (TensorProduct.assoc 𝕜 E F G x) :=
+  LinearEquiv.extendOfIsometry_eq _ _ _ _ _ _ x
+
+/-- The inverse of `CompleteTensorProduct.assoc` acting on an element of the algebraic threefold
+  tensor product reduces to the inverse of `TensorProduct.assoc`. -/
+@[simp]
+lemma assoc_symm_tIncl₃'ₗᵢ (x : E ⊗[𝕜] (F ⊗[𝕜] G)) :
+    (assoc 𝕜 E F G).symm (tIncl₃'ₗᵢ x) = tIncl₃ₗᵢ ((TensorProduct.assoc 𝕜 E F G).symm x) :=
+  LinearEquiv.extendOfIsometry_symm_eq _ _ _ _ _ _ x
+
+/-- `CompleteTensorProduct.assoc` on simple tensors (c.f. `TensorProduct.assoc_tmul`). -/
+@[simp]
+lemma assoc_tmul (x : E) (y : F) (z : G) :
+    assoc 𝕜 E F G (x ⊗ₜ[𝕜] y ⊗ₜ[𝕜] z : (E ⊗ₕ[𝕜] F) ⊗[𝕜] G) =
+      (x ⊗ₜ[𝕜] (y ⊗ₜ[𝕜] z) : E ⊗[𝕜] (F ⊗ₕ[𝕜] G)) :=
+  assoc_tIncl₃ₗᵢ (x ⊗ₜ[𝕜] y ⊗ₜ[𝕜] z)
+
+/-- The inverse of `CompleteTensorProduct.assoc` on simple tensors
+  (c.f. `TensorProduct.assoc_symm_tmul`). -/
+@[simp]
+lemma assoc_symm_tmul (x : E) (y : F) (z : G) :
+    (assoc 𝕜 E F G).symm (x ⊗ₜ[𝕜] (y ⊗ₜ[𝕜] z) : E ⊗[𝕜] (F ⊗ₕ[𝕜] G)) =
+      (x ⊗ₜ[𝕜] y ⊗ₜ[𝕜] z : (E ⊗ₕ[𝕜] F) ⊗[𝕜] G) :=
+  assoc_symm_tIncl₃'ₗᵢ (x ⊗ₜ[𝕜] (y ⊗ₜ[𝕜] z))
+
+end ThreefoldInclusions
 
 end Associative
 

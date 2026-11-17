@@ -49,7 +49,7 @@ functor from unital positive linear maps to weights, contravariant in `φ`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ENNReal
 
@@ -127,4 +127,4 @@ end OrderUnitSpace
 
 end Weight
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

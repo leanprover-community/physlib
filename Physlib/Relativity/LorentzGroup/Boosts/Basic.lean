@@ -5,12 +5,37 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Mathlib.Analysis.SpecialFunctions.Artanh
 public import Physlib.Relativity.LorentzGroup.Basic
-public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Analysis.Real.Sqrt
 /-!
 # Boosts in the Lorentz group
 
+Lorentz factors, finite coordinate boosts and their matrix entries.
+
+## i. Overview
+
+The Lorentz factor `γ β` determines a boost at speed `β`, with `|β| < 1`.
+Parametrizing the speed by rapidity gives `γ (Real.tanh r) = Real.cosh r`.
+The Minkowski signature has one positive time coordinate and negative spatial coordinates.
+The time-space entries of a boost are `-γ β * β`.
+
+## ii. Key results
+
+- `γ_tanh`: the Lorentz factor expressed in terms of rapidity.
+- `boost`: a Lorentz boost along one spatial coordinate.
+- `boost_transpose_eq_self` and `boost_inverse`: transpose and inverse identities.
+- `boost_inl_0_inr_self`: the active time-space matrix entry of a boost.
+
+## iii. Table of contents
+
+- A. The Lorentz factor
+- B. Lorentz boosts
+- C. Boosts in the zero-direction
+
+## iv. References
+
+The rapidity identity uses the hyperbolic-function identities in
+`Mathlib.Analysis.SpecialFunctions.Artanh`.
 -/
 
 @[expose] public section
@@ -26,8 +51,15 @@ namespace LorentzGroup
 variable {d : ℕ}
 variable (Λ : LorentzGroup d)
 
+/-! ## A. The Lorentz factor -/
+
 /-- The Lorentz factor (aka gamma factor or Lorentz term). -/
 def γ (β : ℝ) : ℝ := 1 / Real.sqrt (1 - β^2)
+
+/-- The Lorentz factor expressed in terms of rapidity. -/
+lemma γ_tanh (r : ℝ) : γ (Real.tanh r) = Real.cosh r := by
+  simpa only [γ, Real.artanh_tanh] using
+    (Real.cosh_artanh ⟨Real.neg_one_lt_tanh r, Real.tanh_lt_one r⟩).symm
 
 lemma γ_sq (β : ℝ) (hβ : |β| < 1) : (γ β)^2 = 1 / (1 - β^2) := by
   simp only [γ, one_div, inv_pow, _root_.inv_inj]
@@ -48,6 +80,8 @@ lemma γ_det_not_zero (β : ℝ) (hβ : |β| < 1) : (1 - β^2) ≠ 0 := by
   have h1 : β ^ 2 = 1 := by linear_combination (norm := ring) (-hn)
   simp at h1
   aesop
+
+/-! ## B. Lorentz boosts -/
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The Lorentz boost with in the space direction `i` with speed `β` with
@@ -260,7 +294,7 @@ lemma boost_inr_inr_other {i j k : Fin d} {β : ℝ} (hβ : |β| < 1) (hij : j �
   exact hij
 /-!
 
-## Properties of boosts in the zero-direction
+## C. Boosts in the zero-direction
 
 -/
 

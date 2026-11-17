@@ -187,6 +187,27 @@ lemma exists_basis_preserved (A : SO(3)) :
   aesop
 
 end action
+
+/-- A rotation fixing the third axis is a rotation in the first two coordinates. -/
+lemma eq_of_apply_two (A : SO(3)) (hA : ∀ i, A.1 i 2 = if i = 2 then 1 else 0) :
+    A.1 = !![A.1 0 0, A.1 0 1, 0; -A.1 0 1, A.1 0 0, 0; 0, 0, 1] := by
+  obtain ⟨hd, h1⟩ := A.2
+  have h2 : A.1ᵀ * A.1 = 1 := mul_eq_one_comm.mpr h1
+  have e : ∀ i j, (A.1ᵀ * A.1) i j = if i = j then 1 else 0 := fun i j => by
+    rw [h2, one_apply]
+  have h02 := e 0 2; have h12 := e 1 2; have h00 := e 0 0; have h11 := e 1 1
+  have h01 := e 0 1
+  simp only [mul_apply, transpose_apply, Fin.sum_univ_three, hA] at h02 h12 h00 h11 h01
+  rw [det_fin_three] at hd
+  simp only [hA] at hd
+  norm_num at h02 h12 h00 h11 h01 hd
+  have h3 : (A.1 1 1 - A.1 0 0) ^ 2 + (A.1 1 0 + A.1 0 1) ^ 2 = 0 := by
+    simp only [h02, h12] at h00 h11 h01 hd; nlinarith
+  have h4 : A.1 1 1 = A.1 0 0 := by nlinarith
+  have h5 : A.1 1 0 = -A.1 0 1 := by nlinarith
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [hA, h02, h12, h4, h5]
+
 end SO3
 
 end GroupTheory

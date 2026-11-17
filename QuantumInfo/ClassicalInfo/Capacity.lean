@@ -6,7 +6,7 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Data.Fin.Basic
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Informal.Basic
 
 @[expose] public section
 
@@ -45,19 +45,17 @@ structure FixedLengthCode extends Code A I O where
  by having it return an empty list.
 
  The string encoder, the decoder and the two length lemmas are left as `sorry` in the
- field defaults. -/
-@[sorryful]
-structure BlockCode (io : I → O) extends FixedLengthCode A I O where
-  block_in : ℕ
-  block_out : ℕ
-  block_enc : (Fin block_in → A) → (Fin block_out → I)
-  block_dec : (Fin block_out → O) → (Fin block_in → A)
-  block_enc_dec_inv : ∀ as, block_dec (io ∘ (block_enc as)) = as
-  enc_length na := if na % block_in != 0 then 0 else (na / block_in) * block_out
-  dec_length no := if no % block_out != 0 then 0 else (no / block_out) * block_in
-  encoder as := if as.length % block_in != 0 then [] else
-    sorry
-  decoder os := if os.length % block_out != 0 then [] else
-    sorry
-  enc_maps_length := sorry
-  dec_maps_length := sorry
+ field defaults.
+
+ Formal type: (io : I → O) extends FixedLengthCode A I O where
+   block_in : ℕ
+   block_out : ℕ
+   block_enc : (Fin block_in → A) → (Fin block_out → I)
+   block_dec : (Fin block_out → O) → (Fin block_in → A)
+   block_enc_dec_inv : ∀ as, block_dec (io ∘ (block_enc as)) = as
+   enc_length na := if na % block_in != 0 then 0 else (na / block_in) * block_out
+   dec_length no := if no % block_out != 0 then 0 else (no / block_out) * block_in
+ -/
+informal_definition BlockCode where
+  deps := [``FixedLengthCode]
+  tag := "QI-cc-block"

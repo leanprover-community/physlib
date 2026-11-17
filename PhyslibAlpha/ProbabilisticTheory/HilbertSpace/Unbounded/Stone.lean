@@ -5,12 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SpectralIntegral.Construction
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SpectralIntegral.SpecTheorem
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.StoneUnitaryGroup
-public import Mathlib.Analysis.Calculus.Deriv.Comp
-public import Mathlib.Analysis.Calculus.Deriv.Mul
-public import Mathlib.Analysis.Complex.RealDeriv
 public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 
 /-!
@@ -50,7 +45,7 @@ quotients of `exp(i t T) x` converge for `x` of finite second moment.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set
 open scoped Topology InnerProductSpace Function
@@ -734,6 +729,6 @@ lemma expIntegral_strong_slope_tendsto
 
 end QuantumMechanics.WOTSpectralMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

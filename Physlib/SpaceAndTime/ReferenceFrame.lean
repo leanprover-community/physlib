@@ -122,6 +122,25 @@ structure IsInertial (frame : ReferenceFrame d) : Prop where
 def IsInertial.velocity (h : frame.IsInertial) : EuclideanSpace ℝ (Fin d) :=
   Classical.choose h.origin_moves_uniformly
 
+/-- The origin of an inertial frame moves by elapsed time times its constant velocity. -/
+lemma IsInertial.origin_vsub_eq (h : frame.IsInertial) (t₁ t₂ : Time) :
+    frame.origin t₂ -ᵥ frame.origin t₁ = (t₂ -ᵥ t₁) • h.velocity :=
+  Classical.choose_spec h.origin_moves_uniformly t₁ t₂
+
+/-- A velocity describing the origin's displacement at every pair of times is unique. -/
+lemma IsInertial.velocity_eq_of_origin_vsub_eq (h : frame.IsInertial)
+    {velocity : EuclideanSpace ℝ (Fin d)}
+    (hvelocity : ∀ t₁ t₂, frame.origin t₂ -ᵥ frame.origin t₁ = (t₂ -ᵥ t₁) • velocity) :
+    h.velocity = velocity := by
+  have hstep := (h.origin_vsub_eq frame.timeOrigin ((1 : ℝ) +ᵥ frame.timeOrigin)).symm.trans
+    (hvelocity frame.timeOrigin ((1 : ℝ) +ᵥ frame.timeOrigin))
+  simpa only [vadd_vsub, one_smul] using hstep
+
+/-- An inertial frame's origin has an affine trajectory through its position at the time origin. -/
+lemma IsInertial.origin_eq (h : frame.IsInertial) (t : Time) :
+    frame.origin t = (t -ᵥ frame.timeOrigin) • h.velocity +ᵥ frame.origin frame.timeOrigin := by
+  rw [← h.origin_vsub_eq frame.timeOrigin t, vsub_vadd]
+
 /-- An inertial frame conserves its coordinate metric. -/
 lemma IsInertial.isMetricConserved (h : frame.IsInertial) : frame.IsMetricConserved := by
   intro t₁ t₂ i j

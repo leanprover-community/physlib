@@ -40,7 +40,7 @@ that the dome fails each. Reading order:
 - `NortonDome.Determinism`: the dome is not deterministic, violates the first law, and fails
   each regularity condition.
 - `NortonDome.PeanoExistence`, `NortonDome.PosPartPow`, `NortonDome.Sqrt`: supporting
-  analysis. Peano's theorem is pending in Mathlib and marked `@[sorryful]`; all else is proved.
+  analysis. Peano's theorem is pending in Mathlib and stated informally; all else is proved.
 
 The configuration is the arc length `r`, carried as for the pendulum on the Euclidean lift
 `Time → EuclideanSpace ℝ (Fin 1)`. The physical dome is `r ≥ 0`; the chart is all of `ℝ`, and

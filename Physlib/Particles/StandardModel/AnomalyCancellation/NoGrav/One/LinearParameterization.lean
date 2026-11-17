@@ -93,8 +93,9 @@ lemma cubic (S : linearParameters) :
     accCube (S.asCharges) = - 54 * S.Q'^3 - 18 * S.Q' * S.Y ^ 2 + S.E'^3 := by
   simp only [HomogeneousCubic, accCube, cubeTriLin, TriLinearSymm.toCubic_apply,
     TriLinearSymm.mk₃_toFun_apply_apply]
-  simp only [toSpecies_apply, Fin.isValue, sum_SMSpecies_numberCharges_one, Fin.zero_eta, neg_mul]
-  repeat erw [speciesVal]
+  simp only [toSpecies_apply_eq, Fin.isValue, sum_SMSpecies_numberCharges_one,
+    Fin.zero_eta, neg_mul]
+  rw [speciesVal]
   simp only [asCharges, neg_add_rev, neg_mul, mul_neg, neg_neg]
   ring
 
@@ -129,9 +130,9 @@ def bijection : linearParameters ≃ (SMNoGrav 1).LinSols where
     apply linearParameters.ext
     · rfl
     · simp only [Fin.isValue]
-      repeat erw [asLinear_val]
-      simp only [Fin.isValue, toSpecies_apply]
-      repeat erw [speciesVal]
+      rw [asLinear_val]
+      simp only [toSpecies_apply_eq, Fin.isValue]
+      rw [speciesVal]
       simp only [asCharges, neg_add_rev]
       ring
     · rfl

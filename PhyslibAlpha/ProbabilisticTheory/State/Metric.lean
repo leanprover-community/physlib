@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Convex
-public import Physlib.ProbabilisticTheory.Effect.Metric
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Metric
 public import Mathlib.Topology.MetricSpace.HausdorffDistance
 
 /-!
@@ -45,7 +45,7 @@ distance to the set of pure states.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ArchimedeanOrderUnitSpace
 
@@ -170,4 +170,4 @@ lemma lipschitzWith_distToPure : LipschitzWith 1 (distToPure (E := E)) :=
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

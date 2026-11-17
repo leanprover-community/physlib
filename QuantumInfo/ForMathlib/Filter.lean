@@ -9,7 +9,6 @@ public import Mathlib.Algebra.Order.Floor.Semifield
 public import Mathlib.Analysis.RCLike.Basic
 public import Mathlib.Analysis.SpecificLimits.Basic
 
-public import Mathlib.Tactic.Bound
 
 @[expose] public section
 

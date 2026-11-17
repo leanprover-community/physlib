@@ -6,10 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.Function.Kernel
-public import Mathlib.Analysis.Matrix.Order
-public import Mathlib.Topology.UniformSpace.UniformApproximation
-import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Topology.Order.OrderClosed
 
 /-!
 # Limits of positive-definite functions

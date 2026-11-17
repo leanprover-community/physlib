@@ -69,4 +69,3 @@ QuantumInfo/States/Mixed/MState.lean
 QuantumInfo/States/Mixed/TraceDistance.lean
 QuantumInfo/States/Pure/BlochSphere.lean
 QuantumInfo/States/Pure/Braket.lean
-QuantumInfo/States/Pure/Qubit.lean

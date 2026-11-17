@@ -42,7 +42,7 @@ velocity band is not empty.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint
+open scoped ComplexOrder _root_.selfAdjoint
 open InnerProductSpace QuantumMechanics.FiniteHilbertSpace
 variable (T : TightBindingChain)
 

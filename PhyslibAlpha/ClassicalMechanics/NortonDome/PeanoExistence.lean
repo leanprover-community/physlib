@@ -6,7 +6,7 @@ Authors: Zhi Kai Pong
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Integrals.Basic
-public import Physlib.Meta.Linters.Sorry
+public import Physlib.Meta.Informal.Basic
 /-!
 
 # Peano's existence theorem (statements)
@@ -23,8 +23,8 @@ ball. No Lipschitz condition is asked, and only existence is guaranteed.
 The theorem is not yet in Mathlib. This file records the hypotheses and the two forms of the
 conclusion as stated in the Mathlib pull request
 [#42148](https://github.com/leanprover-community/mathlib4/pull/42148), by Julian Rolfes,
-Luke Schleef, Philipp Svinger, Paul Niessner and Florian Grube, with the proofs replaced by
-`sorry` and the results marked `@[sorryful]`. Names and namespace are those of the pull
+Luke Schleef, Philipp Svinger, Paul Niessner and Florian Grube, as
+informal lemmas. Names and namespace are those of the pull
 request, so that once it is merged this file can be deleted and its uses redirected to
 Mathlib's `IsPeano` by a change of imports. `NortonDome.NewtonianSystem` uses the theorem to
 show that a Newtonian system with a continuous force has local solutions.
@@ -86,23 +86,27 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimension
 
 /-- Peano existence theorem, integral form. A solution exists on the full time interval and
   remains in `closedBall x₀ r`. Statement copied from Mathlib pull request #42148; the proof is
-  pending upstream. -/
-@[sorryful]
-lemma exists_eq_forall_mem_Icc_eq_integral
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
-    ∃ α : ℝ → E, ContinuousOn α (Icc tmin tmax) ∧ MapsTo α (Icc tmin tmax) (closedBall x₀ r) ∧
-      ∀ t ∈ Icc tmin tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s) := by
-  sorry
+  pending upstream.
+
+  Formal statement: (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+      ∃ α : ℝ → E, ContinuousOn α (Icc tmin tmax) ∧ MapsTo α (Icc tmin tmax) (closedBall x₀ r) ∧
+        ∀ t ∈ Icc tmin tmax, α t = x₀ + ∫ s in t₀..t, f (s, α s)
+  -/
+informal_lemma exists_eq_forall_mem_Icc_eq_integral where
+  deps := [``IsPeano]
+  tag := "CM-ND-peanoInt"
 
 /-- Peano existence theorem, differential form. A solution to the initial value problem exists
   on the full time interval. Statement copied from Mathlib pull request #42148; the proof is
-  pending upstream. -/
-@[sorryful]
-lemma exists_eq_forall_mem_Icc_hasDerivWithinAt₀
-    (hf : IsPeano f tmin tmax t₀ x₀ r L) :
-    ∃ α : ℝ → E, α t₀ = x₀ ∧
-      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f (t, α t)) (Icc tmin tmax) t := by
-  sorry
+  pending upstream.
+
+  Formal statement: (hf : IsPeano f tmin tmax t₀ x₀ r L) :
+      ∃ α : ℝ → E, α t₀ = x₀ ∧
+        ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f (t, α t)) (Icc tmin tmax) t
+  -/
+informal_lemma exists_eq_forall_mem_Icc_hasDerivWithinAt₀ where
+  deps := [``IsPeano]
+  tag := "CM-ND-peanoDiff"
 
 end IsPeano
 

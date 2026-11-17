@@ -403,7 +403,7 @@ lemma superCommuteF_ofCrAnListF_ofCrAnListF_eq_sum (φs : List 𝓕.CrAnFieldOp)
   | φ :: φs' => by
     rw [superCommuteF_ofCrAnListF_ofCrAnListF_cons,
       superCommuteF_ofCrAnListF_ofCrAnListF_eq_sum φs φs']
-    conv_rhs => erw [Fin.sum_univ_succ]
+    refine Eq.trans ?_ (Fin.sum_univ_succ _).symm
     congr 1
     · simp
     · simp [Finset.mul_sum, smul_smul, ofCrAnListF_cons, mul_assoc,
@@ -421,7 +421,7 @@ lemma superCommuteF_ofCrAnListF_ofFieldOpListF_eq_sum (φs : List 𝓕.CrAnField
   | φ :: φs' => by
     rw [superCommuteF_ofCrAnListF_ofFieldOpListF_cons,
       superCommuteF_ofCrAnListF_ofFieldOpListF_eq_sum φs φs']
-    conv_rhs => erw [Fin.sum_univ_succ]
+    refine Eq.trans ?_ (Fin.sum_univ_succ _).symm
     congr 1
     · simp
     · simp [Finset.mul_sum, smul_smul, ofFieldOpListF_cons, mul_assoc,

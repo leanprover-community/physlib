@@ -8,7 +8,6 @@ module
 public import Mathlib.MeasureTheory.Integral.DominatedConvergence
 public import PhyslibAlpha.Mathematics.MeasureTheory.PositiveFunctionalIntegral
 public import PhyslibAlpha.Mathematics.MeasureTheory.IntegrationFunctional
-public import Mathlib.MeasureTheory.Measure.HasOuterApproxClosed
 public import Mathlib.MeasureTheory.Measure.Prokhorov
 
 /-!

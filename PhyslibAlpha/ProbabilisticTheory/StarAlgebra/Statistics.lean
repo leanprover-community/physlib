@@ -43,10 +43,10 @@ this needs a norm, and positivity of the variance uses only that `star x * x ≥
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder
-open scoped selfAdjoint
+open scoped _root_.selfAdjoint
 
 variable {A : Type*} [Ring A] [PartialOrder A] [StarRing A]
     [SelfAdjointDecompose A] [Module ℂ A] [StarModule ℂ A]
@@ -218,4 +218,4 @@ lemma variance_nonneg (ω : 𝓢[ℂ, A]) (a : Observable A) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

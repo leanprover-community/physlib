@@ -36,6 +36,9 @@ def toVelocity {d} (Λ : LorentzGroup.restricted d) : Lorentz.Velocity d :=
     rw [isOrthochronous_iff_ge_one] at h
     linarith⟩
 
+lemma toVelocity_val {d} (Λ : LorentzGroup.restricted d) :
+    (toVelocity Λ).1 = toVector Λ := rfl
+
 @[fun_prop]
 lemma toVelocity_continuous {d} :
     Continuous (toVelocity : LorentzGroup.restricted d → Lorentz.Velocity d) := by
@@ -49,7 +52,7 @@ def toRotation {d} (Λ : LorentzGroup.restricted d) : Rotations d :=
   · rw [generalizedBoost_inv]
     rw [← toVector_timeComponent]
     rw [toVector_mul]
-    erw [generalizedBoost_apply_fst]
+    rw [← toVelocity_val, generalizedBoost_apply_fst]
     simp
   · refine isProper_mul ?_ Λ.2.1
     rw [generalizedBoost_inv]

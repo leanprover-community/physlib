@@ -43,14 +43,6 @@ lemma leviCivita_isReindexing : IsReindexing
     ![Color.up, Color.up, Color.up, Color.up] id := by
   exact IsReindexing.auto
 
-/-- A color cast in the complex Lorentz basis preserves the underlying finite index value. -/
-private lemma basisIdxCongr_val {c c1 : Color} (h : c = c1)
-    (i : Fin (complexLorentzTensor.repDim c)) :
-    (TensorSpecies.basisIdxCongr
-      (basisIdx := fun c => Fin (complexLorentzTensor.repDim c)) h i).val = i.val := by
-  rw [basisIdxCongr_eq_cast]
-  rfl
-
 /-- The Levi-Civita tensor `εᵘᵛᵖᵟ` as a complex Lorentz tensor, with `ε⁰¹²³ = 1`. -/
 noncomputable def leviCivita : ℂT[.up, .up, .up, .up] :=
   permT id leviCivita_isReindexing
@@ -64,7 +56,8 @@ imaginary component in the standard basis. -/
 lemma leviCivita_eq_ofGaussianInt : ε4ℂ = ofGaussianInt (fun
     b : ComponentIdx (S := complexLorentzTensor) ![Color.up, Color.up, Color.up, Color.up] =>
     (generalizedKroneckerDelta
-      (fun i => Fin.cast (by fin_cases i <;> rfl) (b i)) (id : Fin 4 → Fin 4) : GaussianInt)) := by
+      (fun i => finSumFinEquiv (basisIdxCongr (c1 := Color.up) (by fin_cases i <;> rfl) (b i)))
+      (id : Fin 4 → Fin 4) : GaussianInt)) := by
   apply (Tensor.basis _).repr.injective
   ext b
   rw [leviCivita, permT_basis_repr_symm_apply]
@@ -87,19 +80,19 @@ lemma leviCivita_eq_ofGaussianInt : ε4ℂ = ofGaussianInt (fun
   simp only [map_intCast, Complex.ofReal_intCast, Int.cast_inj]
   apply congrArg (fun f : Fin 4 → Fin 4 => generalizedKroneckerDelta f id)
   funext i
-  have hcomplexify :
-      (finSumFinEquiv (ComponentIdx.complexify.symm j i)).val = (j i).val := by
-    have h := congrArg Fin.val
-      (congrFun (ComponentIdx.complexify.apply_symm_apply j) i)
-    simpa only [realLorentzTensor.ComponentIdx.complexify_apply, Fin.val_cast] using h
-  apply Fin.ext
-  simp only [Fin.val_cast]
-  rw [hcomplexify]
-  simp only [j]
-  exact (basisIdxCongr_val
-    (by simp [IsReindexing.inv_perserve_color])
-    (b (IsReindexing.inv id leviCivita_isReindexing i))).trans
-    (congrArg (fun x => (b x).val) (hinv i))
+  apply congrArg finSumFinEquiv
+  have key : ∀ x y : Fin 4, x = y →
+      ∀ (h1 : ![Color.up, Color.up, Color.up, Color.up] x =
+          (realLorentzTensor.colorToComplex ∘ ![realLorentzTensor.Color.up,
+            realLorentzTensor.Color.up, realLorentzTensor.Color.up, realLorentzTensor.Color.up]) y)
+        (h2 : ![Color.up, Color.up, Color.up, Color.up] y = Color.up),
+      realLorentzTensor.basisIdxColorToComplex
+          (![realLorentzTensor.Color.up, realLorentzTensor.Color.up, realLorentzTensor.Color.up,
+            realLorentzTensor.Color.up] y) (basisIdxCongr h1 (b x)) =
+        basisIdxCongr h2 (b y) := by
+    rintro x y rfl h1 h2
+    fin_cases x <;> rfl
+  exact key _ _ (hinv i) _ _
 
 /-- The components of the complex Levi-Civita tensor as the product over pairs `i < j` of the
 sign of `b j - b i`, from `leviCivitaSymbol_eq_prod_prod_Ioi`. Unlike the determinant appearing
@@ -107,15 +100,17 @@ in `leviCivita_eq_ofGaussianInt`, these components are cheap to evaluate, e.g. b
 lemma leviCivita_eq_ofGaussianInt_prod : ε4ℂ = ofGaussianInt (fun
     b : ComponentIdx (S := complexLorentzTensor) ![Color.up, Color.up, Color.up, Color.up] =>
     (((∏ i : Fin 4, ∏ j ∈ Finset.Ioi i,
-      (if (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4) <
-          (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 1
-        else if (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4) =
-          (Fin.cast (by fin_cases j <;> rfl) (b j) : Fin 4) then 0 else -1) : ℤ) :
+      (if finSumFinEquiv (basisIdxCongr (c1 := Color.up) (by fin_cases i <;> rfl) (b i)) <
+          finSumFinEquiv (basisIdxCongr (c1 := Color.up) (by fin_cases j <;> rfl) (b j)) then 1
+        else if finSumFinEquiv (basisIdxCongr (c1 := Color.up) (by fin_cases i <;> rfl) (b i)) =
+          finSumFinEquiv (basisIdxCongr (c1 := Color.up) (by fin_cases j <;> rfl) (b j))
+        then 0 else -1) : ℤ) :
       GaussianInt))) := by
   rw [leviCivita_eq_ofGaussianInt]
   refine congrArg ofGaussianInt (funext fun b => ?_)
   have h := leviCivitaSymbol_eq_prod_prod_Ioi
-    (fun i : Fin 4 => (Fin.cast (by fin_cases i <;> rfl) (b i) : Fin 4))
+    (fun i : Fin 4 =>
+      finSumFinEquiv (basisIdxCongr (c1 := Color.up) (by fin_cases i <;> rfl) (b i)))
   rw [← h]
   rfl
 

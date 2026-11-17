@@ -46,7 +46,7 @@ four vertex values in `E`, which again satisfy the diagonal relation.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open TensorProduct
 
@@ -237,4 +237,4 @@ lemma mem_maxTensorCone_iff {E : Type*} [ArchimedeanOrderUnitSpace E] {z : E ⊗
 
 end Square
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

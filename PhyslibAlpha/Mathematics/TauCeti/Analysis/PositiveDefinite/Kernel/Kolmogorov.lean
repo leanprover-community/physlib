@@ -6,7 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Reproducing
-import Mathlib.Analysis.Normed.Operator.Extend
 import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.LinearCombination
 
 /-!

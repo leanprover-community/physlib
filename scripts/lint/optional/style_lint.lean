@@ -6,6 +6,7 @@ Authors: Joseph Tooby-Smith
 import Lean
 import Mathlib.Tactic.Linter.TextBased
 import Batteries.Data.Array.Merge
+import Batteries.Data.String.Matcher
 /-!
 
 # Physlib style linter
@@ -72,6 +73,23 @@ def substringLinter (s : String) : PhyslibTextLinter := fun lines ↦ Id.run do
       some (s!" Found instance of substring `{s}`.", lno, col)
     else none)
   errors.toArray
+
+-- Regression tests for match-end character columns, including overlapping matches.
+#guard (doubleSpaceLinter #["x  y"]).map (·.2) == #[(1, 3)]
+#guard (doubleSpaceLinter #["x  y  z"]).map (·.2) == #[(1, 6)]
+#guard (doubleSpaceLinter #["x   y"]).map (·.2) == #[(1, 4)]
+#guard (doubleSpaceLinter #["α  β"]).map (·.2) == #[(1, 3)]
+#guard (doubleSpaceLinter #["", "    ", "  x y", "\t  x y"]).isEmpty
+#guard (doubleSpaceLinter #["    α  β"]).map (·.2) == #[(1, 7)]
+#guard (doubleSpaceLinter #["  x y", " α  β"]).map (·.2) == #[(2, 4)]
+#guard (substringLinter "ab" #["zabx"]).map (·.2) == #[(1, 3)]
+#guard (substringLinter "ab" #["ab xx ab?"]).map (·.2) == #[(1, 8)]
+#guard (substringLinter "ab" #["αabéab尾"]).map (·.2) == #[(1, 6)]
+#guard (substringLinter "αβ" #["xαβyαβz"]).map (·.2) == #[(1, 6)]
+#guard (substringLinter "aa" #["aaa"]).map (·.2) == #[(1, 3)]
+#guard (substringLinter "ab" #["", "a b"]).isEmpty
+#guard (substringLinter "ab" #["missing", "zab"]).map (·.2) == #[(2, 3)]
+#guard (substringLinter "" #["αβ", ""]).map (·.2) == #[(1, 2), (2, 1)]
 
 def endLineLinter (s : String) : PhyslibTextLinter := fun lines ↦ Id.run do
   let enumLines := (lines.toList.zipIdx 1)

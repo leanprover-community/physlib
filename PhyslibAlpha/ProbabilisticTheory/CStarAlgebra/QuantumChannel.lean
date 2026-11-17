@@ -40,7 +40,7 @@ order-unit spaces of observables.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped CStarAlgebra
 
@@ -100,4 +100,4 @@ end Observables
 
 end QuantumChannel
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

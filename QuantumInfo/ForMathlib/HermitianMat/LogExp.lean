@@ -103,13 +103,15 @@ end exp
 def log (A : HermitianMat d 𝕜) : HermitianMat d 𝕜 :=
   A.cfc Real.log
 
+/-- Primed because `Commute.log_left` refers to `NormedSpace.log` instead of `HermitianMat.log`. -/
 @[aesop unsafe apply 50% (rule_sets := [Commutes])]
-lemma _root_.Commute.log_left (hAB : Commute A.mat B.mat) :
+lemma _root_.Commute.log_left' (hAB : Commute A.mat B.mat) :
     Commute (A.log).mat B.mat := by
   rw [log]; commutes
 
+/-- Primed because `Commute.log_right` refers to `NormedSpace.log` instead of `HermitianMat.log`. -/
 @[aesop unsafe apply 50% (rule_sets := [Commutes])]
-lemma _root_.Commute.log_right (hAB : Commute A.mat B.mat) :
+lemma _root_.Commute.log_right' (hAB : Commute A.mat B.mat) :
     Commute A.mat (B.log).mat := by
   rw [log]; commutes
 

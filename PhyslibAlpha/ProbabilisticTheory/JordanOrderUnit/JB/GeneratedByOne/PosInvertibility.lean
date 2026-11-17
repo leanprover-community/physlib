@@ -46,7 +46,7 @@ invertible and nonnegative exactly when it lies in the interior of the positive 
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JBAlgebra
 
@@ -552,4 +552,4 @@ end ClosedGeneratedByOne
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

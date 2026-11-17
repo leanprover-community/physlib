@@ -6,7 +6,6 @@ Authors: Alex Meiburg
 module
 
 public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.ForMathlib.MatrixNorm.TraceNorm
 public import Mathlib.LinearAlgebra.Matrix.Bilinear
 
 /-! # Properties of Matrix Maps
@@ -420,7 +419,7 @@ theorem kron_kronecker_const {C : Matrix d d R} (h : C.PosSemidef) {h₁ h₂ : 
   convert h_kronecker_pos.submatrix (fun (⟨ ⟨ a, d' ⟩, n' ⟩ : (A × d) × Fin n) => ⟨ ⟨ a, n' ⟩, d' ⟩) using 1;
   ext ⟨⟨a, d⟩, n⟩ ⟨⟨a', d'⟩, n'⟩
   simp [Matrix.kroneckerMap_apply, Matrix.submatrix_apply]
-  erw [MatrixMap.kron_def]
+  rw [MatrixMap.kron_def]
   simp [Matrix.single, Matrix.kroneckerMap_apply]
   simp [Finset.sum_ite, Finset.filter_eq', Finset.filter_and]
   rw [ Finset.sum_eq_single a ]

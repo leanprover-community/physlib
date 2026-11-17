@@ -7,8 +7,6 @@ module
 
 public import Physlib.Relativity.PauliMatrices.Basic
 public import Physlib.Relativity.MinkowskiMatrix
-public import Mathlib.Analysis.CStarAlgebra.Classes
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Tactic.Positivity
 /-!
 

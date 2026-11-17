@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.Convex.Extreme
 public import Mathlib.Topology.Algebra.Module.ContinuousLinearMap.Basic
 public import Mathlib.Topology.UnitInterval
-public import Mathlib.Tactic.Module
 
 /-!
 # Mixtures in a convex set

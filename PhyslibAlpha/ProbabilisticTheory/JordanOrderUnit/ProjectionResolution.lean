@@ -39,7 +39,7 @@ functions against it gives a bounded Borel functional calculus.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Function
 
@@ -298,4 +298,4 @@ end BoundedBorel
 
 end MeasurableProjectionResolution
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

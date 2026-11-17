@@ -29,7 +29,7 @@ def equiv : (PureU1 2).LinSols ≃ (PureU1 2).Sols where
   toFun S := ⟨⟨S, fun i => Fin.elim0 i⟩, by
     have hLin := pureU1_linear S
     simp only [Fin.sum_univ_two, Fin.isValue] at hLin
-    erw [accCube_explicit]
+    refine (accCube_explicit 2 _).trans ?_
     simp only [Fin.sum_univ_two, Fin.isValue]
     rw [show S.val (0 : Fin 2) = - S.val (1 : Fin 2) from eq_neg_of_add_eq_zero_left hLin]
     ring⟩

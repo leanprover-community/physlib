@@ -37,7 +37,7 @@ partial def addModulesIn (recurse : Bool) (prev : Array Name) (root : Name := .a
         r ← addModulesIn recurse r (root.mkStr entry.fileName) entry.path
     else
       -- Only `.lean` files correspond to modules; skip any other files (e.g. an
-      -- `API-map.yaml` sitting at the top of an API directory).
+      -- `API-map.md` sitting at the top of an API directory).
       if entry.path.extension == some "lean" then
         let .some mod := FilePath.fileStem entry.fileName
           | continue

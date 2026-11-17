@@ -202,9 +202,13 @@ lemma blockDiagonal_nonneg {A B : L ℋ} (hA : 0 ≤ A) (hB : 0 ≤ B) :
       inner ℂ ((hsumIncl ℋ 1) (B (hsumProj ℋ 1 z))) z =
         inner ℂ (B (hsumProj ℋ 1 z)) (hsumProj ℋ 1 z) := by
     simp [hsumProj, hsumIncl, hsumEquiv, PiLp.inner_apply]
+  have hsplit : inner ℂ (blockDiagonal (ℋ := ℋ) A B z) z =
+      inner ℂ (A (hsumProj ℋ 0 z)) (hsumProj ℋ 0 z) +
+        inner ℂ (B (hsumProj ℋ 1 z)) (hsumProj ℋ 1 z) :=
+    (inner_add_left ..).trans (congrArg₂ (· + ·) hz0 hz1)
   constructor
-  · dsimp [blockDiagonal]
-    erw [inner_add_left, hz0, hz1]
+  · simp only [blockDiagonal, add_apply, ContinuousLinearMap.comp_apply]
+    rw [inner_add_left, hz0, hz1]
     calc
       ↑(RCLike.re
           (inner ℂ (A (hsumProj ℋ 0 z)) (hsumProj ℋ 0 z) +
@@ -221,8 +225,8 @@ lemma blockDiagonal_nonneg {A B : L ℋ} (hA : 0 ≤ A) (hB : 0 ≤ B) :
                     (RCLike.re (inner ℂ (B (hsumProj ℋ 1 z)) (hsumProj ℋ 1 z)) : ℂ)) := by
                   simp
             rw [hsumre, hAz.1, hBz.1]
-  · dsimp [blockDiagonal]
-    erw [inner_add_left, hz0, hz1]
+  · simp only [blockDiagonal, add_apply, ContinuousLinearMap.comp_apply]
+    rw [inner_add_left, hz0, hz1]
     exact add_nonneg hAz.2 hBz.2
 
 omit [CompleteSpace ℋ] [Nontrivial ℋ] in

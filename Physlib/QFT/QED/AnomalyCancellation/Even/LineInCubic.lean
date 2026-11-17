@@ -53,7 +53,11 @@ lemma lineInCubic_expand {S : (PureU1 (2 * n.succ)).LinSols} (h : LineInCubic S)
     (a • Unshifted.planeCharges g + b • Shifted.planeCharges f) = 0 at h1
   simp only [TriLinearSymm.toCubic_add, HomogeneousCubic.map_smul,
     accCubeTriLinSymm.map_smul₁, accCubeTriLinSymm.map_smul₂, accCubeTriLinSymm.map_smul₃] at h1
-  erw [Unshifted.planeCharges_accCube, Shifted.planeCharges_accCube] at h1
+  have hU : accCubeTriLinSymm.toCubic (Unshifted.planeCharges g) = 0 :=
+    Unshifted.planeCharges_accCube g
+  have hS : accCubeTriLinSymm.toCubic (Shifted.planeCharges f) = 0 :=
+    Shifted.planeCharges_accCube f
+  rw [hU, hS] at h1
   linear_combination h1
 
 /--
@@ -90,7 +94,7 @@ lemma lineInCubicPerm_permute {S : (PureU1 (2 * n.succ)).LinSols}
     LineInCubicPerm ((FamilyPermutations (2 * n.succ)).linSolRep M' S) := by
   intro M
   have h := hS (M * M')
-  erw [(FamilyPermutations (2 * n.succ)).linSolRep.map_mul M M'] at h
+  rw [(FamilyPermutations (2 * n.succ)).linSolRep.map_mul M M'] at h
   exact h
 
 set_option backward.isDefEq.respectTransparency false in

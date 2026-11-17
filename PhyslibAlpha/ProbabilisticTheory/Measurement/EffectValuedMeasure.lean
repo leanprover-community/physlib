@@ -6,8 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.MeasureTheory.MeasurableSpace.Defs
-public import Physlib.ProbabilisticTheory.Effect.Complement
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
 
 /-!
 # Effect-valued measures
@@ -49,7 +48,7 @@ adding up to `1`, one for each outcome.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Function
 
@@ -154,12 +153,12 @@ segment. -/
 lemma exists_partialUnion_eq_iUnion [Finite Ω] (s : ℕ → Set Ω) :
     ∃ N, ⋃ n < N, s n = ⋃ n, s n := by
   let P : ℕ →o Set Ω := ⟨fun N => ⋃ n < N, s n, fun _ _ h =>
-    Set.biUnion_subset_biUnion_left fun _ hn => lt_of_lt_of_le hn h⟩
+    Set.iUnion₂_subset fun n hn => Set.subset_iUnion₂_of_subset n (lt_of_lt_of_le hn h) le_rfl⟩
   obtain ⟨N, hN⟩ := WellFoundedGT.monotone_chain_condition P
   refine ⟨N, (Set.iUnion₂_subset fun n _ => Set.subset_iUnion s n).antisymm
     (Set.iUnion_subset fun n => ?_)⟩
   rw [show (⋃ k < N, s k) = P (max N (n + 1)) from hN _ (le_max_left _ _)]
-  exact Set.subset_biUnion_of_mem (u := s) (by omega : n < max N (n + 1))
+  exact Set.subset_iUnion₂ (s := fun k (_ : k < max N (n + 1)) => s k) n (by omega)
 
 /-! ## C. Finite-outcome effect-valued measures -/
 
@@ -280,4 +279,4 @@ lemma coe_mapOutcome_apply (N : EffectValuedMeasure Ω' E) (f : Ω' → Ω) (hf 
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

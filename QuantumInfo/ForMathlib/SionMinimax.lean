@@ -5,16 +5,11 @@ Authors: Alex Meiburg
 -/
 module
 
-public import Mathlib.Algebra.Order.Module.Field
-public import Mathlib.Analysis.Convex.PathConnected
 public import Mathlib.Analysis.Convex.Quasiconvex
 public import Mathlib.Analysis.Convex.Topology
 public import Mathlib.Analysis.Normed.Order.Lattice
 public import Mathlib.Analysis.SpecificLimits.Basic
-public import Mathlib.Data.EReal.Operations
 public import Mathlib.Data.Fintype.Order
-public import Mathlib.Topology.Algebra.InfiniteSum.Order
-public import Mathlib.Topology.MetricSpace.Bounded
 
 @[expose] public section
 

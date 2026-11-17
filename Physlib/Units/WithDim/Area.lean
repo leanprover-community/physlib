@@ -64,12 +64,12 @@ noncomputable def acre : DimArea := toDimensionful ({SI with
 
 @[simp]
 lemma squareMeter_in_SI : squareMeter.1 SI = ⟨1⟩ := by
-  simp [squareMeter, toDimensionful_apply_apply]
+  simp [squareMeter]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma squareFoot_in_SI : squareFoot.1 SI = ⟨0.09290304⟩ := by
-  simp [squareFoot, dimScale, LengthUnit.feet, toDimensionful_apply_apply]
+  simp [squareFoot, dimScale, LengthUnit.feet]
   ext
   simp [NNReal.coe_ofScientific]
   norm_num [toReal]
@@ -77,23 +77,23 @@ lemma squareFoot_in_SI : squareFoot.1 SI = ⟨0.09290304⟩ := by
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma squareMile_in_SI : squareMile.1 SI = ⟨2589988.110336⟩ := by
-  simp [squareMile, dimScale, LengthUnit.miles, toDimensionful_apply_apply]
+  simp [squareMile, dimScale, LengthUnit.miles]
   ext
   simp [NNReal.coe_ofScientific]
   norm_num [toReal]
 
 @[simp]
 lemma are_in_SI : are.1 SI = ⟨100⟩ := by
-  simp [are, toDimensionful_apply_apply]
+  simp [are]
 
 @[simp]
 lemma hectare_in_SI : hectare.1 SI = ⟨10000⟩ := by
-  simp [hectare, toDimensionful_apply_apply]
+  simp [hectare]
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
 lemma acre_in_SI : acre.1 SI = ⟨4046.8564224⟩ := by
-  simp [acre, dimScale, LengthUnit.miles, toDimensionful_apply_apply]
+  simp [acre, dimScale, LengthUnit.miles]
   ext
   simp [NNReal.coe_ofScientific]
   norm_num [toReal]

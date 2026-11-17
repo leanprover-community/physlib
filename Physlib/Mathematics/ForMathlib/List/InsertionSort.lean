@@ -186,6 +186,16 @@ lemma takeWhile_orderedInsert' {α : Type} (r : α → α → Prop) [DecidableRe
         List.length_cons, add_left_inj]
         exact takeWhile_orderedInsert' r a b hr l
 
+lemma insertionSortEquiv_cons_succ {α : Type} (r : α → α → Prop) [DecidableRel r]
+    (a : α) (l : List α) (n : ℕ) (hn : n + 1 < (a :: l).length) :
+    insertionSortEquiv r (a :: l) ⟨n + 1, hn⟩ =
+    Fin.cast (by simp)
+      ((Fin.succAbove ⟨orderedInsertPos r (List.insertionSort r l) a,
+          orderedInsertPos_lt_length r (List.insertionSort r l) a⟩)
+        (insertionSortEquiv r l ⟨n, by simpa using hn⟩)) :=
+  orderedInsertEquiv_fin_succ r (List.insertionSort r l) a
+    (insertionSortEquiv r l ⟨n, by simpa using hn⟩)
+
 set_option backward.isDefEq.respectTransparency false in
 lemma insertionSortEquiv_commute {α : Type} (r : α → α → Prop) [DecidableRel r]
     [Std.Total r] [IsTrans α r] (a b : α) (hr : ¬ r a b) (n : ℕ) : (l : List α) →
@@ -194,24 +204,9 @@ lemma insertionSortEquiv_commute {α : Type} (r : α → α → Prop) [Decidable
     (insertionSortEquiv r (b :: a :: l) ⟨n + 2, hn⟩) := by
   have hrba : r b a := (Std.Total.total a b).resolve_left hr
   intro l hn
-  simp only [List.insertionSort, List.length_cons, insertionSortEquiv, Nat.succ_eq_add_one,
-    equivCons_trans, Equiv.trans_apply, equivCons_succ, finCongr_apply]
-  conv_lhs => erw [equivCons_succ]
-  conv_rhs => erw [equivCons_succ]
-  simp only [Equiv.toFun_as_coe]
-  conv_lhs =>
-    rhs
-    rhs
-    erw [orderedInsertEquiv_succ]
-  conv_lhs => erw [orderedInsertEquiv_fin_succ]
-  simp only [Fin.eta, Fin.val_cast]
-  conv_rhs =>
-    rhs
-    rhs
-    erw [orderedInsertEquiv_succ]
-  conv_rhs => erw [orderedInsertEquiv_fin_succ]
+  simp only [insertionSortEquiv_cons_succ, finCongr_apply]
   ext
-  simp only [Fin.val_cast, Fin.eta, Fin.cast_cast]
+  simp only [Fin.val_cast, Fin.cast_cast]
   let a1 : Fin ((List.orderedInsert r b (List.insertionSort r l)).length + 1) :=
     ⟨↑(orderedInsertPos r (List.orderedInsert r b (List.insertionSort r l)) a),
       orderedInsertPos_lt_length r (List.orderedInsert r b (List.insertionSort r l)) a⟩
@@ -303,10 +298,12 @@ lemma insertionSortEquiv_orderedInsert_append {α : Type} (r : α → α → Pro
         ((insertionSortEquiv r (b :: a :: (l1 ++ a2 :: l2))) ⟨l1.length + 2, by simp⟩) = _
       have hl : l1.length + 1 +1 = l1.length + 2 := by omega
       simp only [List.insertionSort, List.length_cons, hl]
-      conv_rhs =>
-        erw [insertionSortEquiv_commute _ _ _ h _ _]
-      simp
-      rfl
+      have hc := congrArg Fin.val
+         (insertionSortEquiv_commute r a b h l1.length (l1 ++ a2 :: l2) (by simp))
+      simp only [finCongr_apply, Fin.val_cast] at hc
+      ext
+      simp only [Fin.val_cast]
+      exact hc.symm
 
 set_option backward.isDefEq.respectTransparency false in
 lemma insertionSortEquiv_insertionSort_append {α : Type} (r : α → α → Prop) [DecidableRel r]
@@ -321,16 +318,20 @@ lemma insertionSortEquiv_insertionSort_append {α : Type} (r : α → α → Pro
     have hl := insertionSortEquiv_orderedInsert_append r b a (List.insertionSort r l1) l2
     simp only [List.length_insertionSort, List.cons_append, List.length_cons,
       finCongr_apply] at hl
-    erw [hl]
+    refine hl.trans ?_
     have ih := insertionSortEquiv_insertionSort_append r a l1 l2
-    simp only [insertionSortEquiv, Nat.succ_eq_add_one, List.insertionSort, Equiv.trans_apply,
-      equivCons_succ]
-    erw [ih]
+    have hl' := insertionSort_insertionSort_append r l1 (a :: l2)
+    change Fin.cast _ (orderedInsertEquiv r (List.insertionSort r
+      (List.insertionSort r l1 ++ a :: l2)) b
+      ((insertionSortEquiv r (List.insertionSort r l1 ++ a :: l2) ⟨l1.length, by simp⟩).succ)) = _
+    rw [ih]
+    ext
+    simp only [Fin.val_cast, finCongr_apply]
     have hl : (List.insertionSort r (List.insertionSort r l1 ++ a :: l2)) =
         (List.insertionSort r (l1 ++ a :: l2)) := by
       exact insertionSort_insertionSort_append r l1 (a :: l2)
-    erw [orderedInsertEquiv_congr _ _ _ hl]
-    simp only [List.foldr_cons, finCongr_apply]
+    rw [orderedInsertEquiv_congr _ _ _ hl]
+    simp only [List.foldr_cons]
     rfl
 
 /-!

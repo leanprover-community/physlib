@@ -429,7 +429,7 @@ lemma vectorLikeEven_in_span (S : (PureU1 (2 * n.succ)).LinSols)
   use f
   apply ACCSystemLinear.LinSols.ext
   rw [sortAFL_val]
-  erw [planeLinSols_val]
+  rw [← planeLinSols, planeLinSols_val]
   apply ext_even
   · intro i
     rw [planeCharges_evenFst]
@@ -443,8 +443,6 @@ lemma vectorLikeEven_in_span (S : (PureU1 (2 * n.succ)).LinSols)
       ring
     rw [h]
     rfl
-
-
 
 end Unshifted
 
@@ -725,9 +723,9 @@ lemma unshifted_unshifted_shifted_accCube (g : Fin n.succ → ℚ) (j : Fin n) :
     accCubeTriLinSymm (Unshifted.planeCharges g) (Unshifted.planeCharges g)
       (Shifted.basisAsCharges j)
     = g (j.succ) ^ 2 - g (j.castSucc) ^ 2 := by
-  simp only [succ_eq_add_one, accCubeTriLinSymm,
-    TriLinearSymm.mk₃_toFun_apply_apply]
-  erw [sum_evenShift, Shifted.basis_on_evenShiftZero, Shifted.basis_on_evenShiftLast]
+  simp only [succ_eq_add_one, accCubeTriLinSymm, TriLinearSymm.mk₃_toFun_apply_apply]
+  refine (sum_evenShift _).trans ?_
+  rw [Shifted.basis_on_evenShiftZero, Shifted.basis_on_evenShiftLast]
   simp only [mul_zero, add_zero, Function.comp_apply, zero_add]
   rw [Fintype.sum_eq_single j, Shifted.basis_on_evenShiftFst_self,
     Shifted.basis_on_evenShiftSnd_self]
@@ -735,22 +733,21 @@ lemma unshifted_unshifted_shifted_accCube (g : Fin n.succ → ℚ) (j : Fin n) :
     rw [Unshifted.planeCharges_evenFst, Unshifted.planeCharges_evenSnd]
     ring
   · intro k hkj
-    erw [Shifted.basis_on_evenShiftFst_other hkj.symm, Shifted.basis_on_evenShiftSnd_other hkj.symm]
+    rw [Shifted.basis_on_evenShiftFst_other hkj.symm, Shifted.basis_on_evenShiftSnd_other hkj.symm]
     simp only [mul_zero, add_zero]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma shifted_shifted_unshifted_accCube (g : Fin n → ℚ) (j : Fin n.succ) :
     accCubeTriLinSymm (Shifted.planeCharges g) (Shifted.planeCharges g) (Unshifted.basisAsCharges j)
     = (Shifted.planeCharges g (evenFst j))^2 - (Shifted.planeCharges g (evenSnd j))^2 := by
-  simp only [succ_eq_add_one, accCubeTriLinSymm,
-    TriLinearSymm.mk₃_toFun_apply_apply]
-  erw [sum_even]
+  simp only [succ_eq_add_one, accCubeTriLinSymm, TriLinearSymm.mk₃_toFun_apply_apply]
+  refine (sum_even _).trans ?_
   simp only [Function.comp_apply]
   rw [Fintype.sum_eq_single j, Unshifted.basis_on_evenFst_self, Unshifted.basis_on_evenSnd_self]
   · simp only [mul_one, mul_neg]
     ring
   · intro k hkj
-    erw [Unshifted.basis_on_evenFst_other hkj.symm, Unshifted.basis_on_evenSnd_other hkj.symm]
+    rw [Unshifted.basis_on_evenFst_other hkj.symm, Unshifted.basis_on_evenSnd_other hkj.symm]
     simp only [mul_zero, add_zero]
 
 /-!
@@ -840,7 +837,7 @@ lemma Pa_zero (f : Fin n.succ → ℚ) (g : Fin n → ℚ) (h : Pa f g = 0) :
     have h2 := Pa_evenShiftSnd f g ⟨iv, succ_lt_succ_iff.mp hiv⟩
     rw [h] at h1 h2
     simp only [Fin.succ_mk, Fin.castSucc_mk] at h1 h2
-    erw [hi2] at h2
+    rw [hi2] at h2
     change 0 = _ at h2
     simp only [neg_zero, zero_sub, zero_eq_neg] at h2
     rw [h2] at h1
@@ -989,7 +986,7 @@ lemma span_basis_swap! {S : (PureU1 (2 * n.succ)).LinSols} (j : Fin n)
   use g
   use f'
   change Shifted.planeCharges f' = _ at hf'
-  erw [hf']
+  rw [hf']
   simp only [and_self, and_true, X]
   rw [← add_assoc, ← h]
   apply Shifted.swap_as_add at hS

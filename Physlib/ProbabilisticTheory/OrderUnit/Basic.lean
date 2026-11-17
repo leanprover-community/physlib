@@ -5,8 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Order.Module.Defs
-public import Mathlib.Basic.Real.Basic
+public import Physlib.ProbabilisticTheory.Basic
 
 /-!
 
@@ -63,6 +62,11 @@ class OrderUnitSpace (E : Type*) extends OrderedVectorSpace E, One E where
   one_nonneg : 0 ≤ (1 : E)
   /-- Every element is bounded above by a natural multiple of the order unit. -/
   exists_nsmul_one_le : ∀ B : E, ∃ n : ℕ, B ≤ n • (1 : E)
+
+/-- The observables stored in a probabilistic theory form an order-unit space. -/
+instance instOrderUnitSpace (P : ProbabilisticTheory) : OrderUnitSpace P.Observables where
+  one_nonneg := P.one_nonneg'
+  exists_nsmul_one_le := P.exists_nsmul_one_le'
 
 namespace OrderUnitSpace
 

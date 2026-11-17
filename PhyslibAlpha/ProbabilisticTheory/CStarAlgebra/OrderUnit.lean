@@ -5,97 +5,99 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
+public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Archimedean
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Order
-public import Mathlib.Algebra.Star.SelfAdjoint
 
 /-!
-
 # The observables of a C⋆-algebra
 
 The self-adjoint part of a unital C⋆-algebra is an Archimedean order-unit space.
 
 ## i. Overview
 
-The self-adjoint elements of a unital C⋆-algebra form an Archimedean order-unit space with unit `1`.
-Every self-adjoint `a` lies below `‖a‖ • 1`, and the positive cone is closed.
+The observables of a quantum system are the self-adjoint elements of its C⋆-algebra. One
+observable lies below another if their difference has no negative measurement outcome. The
+identity is the certain outcome.
+
+Every observable lies below a multiple of the identity. So no outcome exceeds the norm.
+
+An observable that lies below every positive multiple of the identity has no positive outcome.
+This is the Archimedean property.
 
 ## ii. Key results
 
-- `selfAdjoint.instIsOrderUnit` : the order-unit space of observables.
-- `selfAdjoint.instIsArchimedeanOrderUnit` : it is Archimedean.
+- `selfAdjoint.le_nsmul_one_ceil_norm` : every observable lies below a natural multiple of the
+  identity.
+- `selfAdjoint.le_zero_of_forall_pos_smul_one_le` : an element below every positive multiple of
+  the identity is below zero.
+- `selfAdjoint.instOrderUnitSpace` : the observables form an order-unit space.
+- `selfAdjoint.instArchimedeanOrderUnitSpace` : it is Archimedean.
 
 ## iii. Table of contents
 
-- A. Positive scalars
-- B. The order-unit space of observables
+- A. The order-unit space of observables
+- B. The Archimedean property
 
 ## iv. References
-
-* None.
 
 -/
 
 @[expose] public section
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace selfAdjoint
-open ProbabilisticTheory
 
 /-!
 
-## A. Positive scalars
+## A. The order-unit space of observables
 
 -/
 
-/-- Nonnegative real scalars preserve the order on self-adjoint elements: scaling by a
-nonnegative real is the same as multiplying by a nonnegative (central) algebra element, and a
-nonnegative element times a nonnegative element that commutes with it stays nonnegative. -/
-instance instPosSMulMono : PosSMulMono ℝ (selfAdjoint A) where
+variable {𝒜 : Type*} [CStarAlgebra 𝒜] [PartialOrder 𝒜] [StarOrderedRing 𝒜]
+
+/-- Nonnegative real scalars preserve the order on observables. -/
+instance instPosSMulMono : PosSMulMono ℝ (selfAdjoint 𝒜) where
   smul_le_smul_of_nonneg_left c hc a b hab := by
-    show (c : ℝ) • (a : A) ≤ (c : ℝ) • (b : A)
-    have hab' : (a : A) ≤ (b : A) := hab
-    gcongr
+    rw [← Subtype.coe_le_coe] at hab ⊢
+    exact smul_le_smul_of_nonneg_left hab hc
+
+/-- Every observable lies below a natural multiple of the identity. -/
+lemma le_nsmul_one_ceil_norm (x : selfAdjoint 𝒜) : x ≤ ⌈‖(x : 𝒜)‖⌉₊ • (1 : selfAdjoint 𝒜) := by
+  have h0 : ((⌈‖(x : 𝒜)‖⌉₊ • (1 : selfAdjoint 𝒜) : selfAdjoint 𝒜) : 𝒜) =
+      (⌈‖(x : 𝒜)‖⌉₊ : ℝ) • 1 := by
+    rw [← Nat.cast_smul_eq_nsmul ℝ]
+    rfl
+  rw [← Subtype.coe_le_coe, h0]
+  calc (x : 𝒜) ≤ algebraMap ℝ 𝒜 ‖(x : 𝒜)‖ := x.2.le_algebraMap_norm_self
+    _ = ‖(x : 𝒜)‖ • (1 : 𝒜) := Algebra.algebraMap_eq_smul_one _
+    _ ≤ (⌈‖(x : 𝒜)‖⌉₊ : ℝ) • (1 : 𝒜) := by gcongr; exact Nat.le_ceil _
+
+/-- The observables of a quantum system form an order-unit space with unit `1`. -/
+noncomputable instance instOrderUnitSpace : OrderUnitSpace (selfAdjoint 𝒜) where
+  one_nonneg := zero_le_one (α := 𝒜)
+  exists_nsmul_one_le x := ⟨_, le_nsmul_one_ceil_norm x⟩
 
 /-!
 
-## B. The order-unit space of observables
+## B. The Archimedean property
 
 -/
 
-noncomputable instance instIsOrderUnit : OrderUnitSpace (selfAdjoint A) where
-  one_nonneg := by
-    show (0 : A) ≤ (1 : A)
-    exact zero_le_one
-  exists_nsmul_one_le x := by
-    refine ⟨⌈‖(x : A)‖⌉₊, ?_⟩
-    have hcast : ((⌈‖(x : A)‖⌉₊ • (1 : selfAdjoint A) : selfAdjoint A) : A) =
-        (⌈‖(x : A)‖⌉₊ : ℝ) • (1 : A) := by
-      rw [← Nat.cast_smul_eq_nsmul ℝ]
-      rfl
-    show (x : A) ≤ ((⌈‖(x : A)‖⌉₊ • (1 : selfAdjoint A) : selfAdjoint A) : A)
-    rw [hcast]
-    calc (x : A) ≤ algebraMap ℝ A ‖(x : A)‖ := x.2.le_algebraMap_norm_self
-      _ = ‖(x : A)‖ • (1 : A) := Algebra.algebraMap_eq_smul_one _
-      _ ≤ (⌈‖(x : A)‖⌉₊ : ℝ) • (1 : A) := by gcongr; exact Nat.le_ceil _
+/-- An observable below every positive multiple of the identity is below zero. -/
+lemma le_zero_of_forall_pos_smul_one_le {x : selfAdjoint 𝒜}
+    (h : ∀ ε : ℝ, 0 < ε → x ≤ ε • (1 : selfAdjoint 𝒜)) : x ≤ 0 := by
+  have : Filter.Tendsto (fun ε : ℝ => ε • (1 : 𝒜)) (nhdsWithin 0 (Set.Ioi 0)) (nhds 0) :=
+    tendsto_nhdsWithin_of_tendsto_nhds
+      ((show Continuous fun ε : ℝ => ε • (1 : 𝒜) by fun_prop).tendsto' 0 0 (by simp))
+  exact le_of_tendsto_of_tendsto (f := fun _ : ℝ => (x : 𝒜)) tendsto_const_nhds this
+    (eventually_nhdsWithin_of_forall fun ε hε => h ε hε)
 
-noncomputable instance instIsArchimedeanOrderUnit : ArchimedeanOrderUnitSpace (selfAdjoint A) where
-  le_zero_of_forall_pos_smul_one_le x h := by
-    show (x : A) ≤ (0 : A)
-    have hg : Filter.Tendsto (fun n : ℕ => (1 / ((n : ℝ) + 1)) • (1 : A)) Filter.atTop
-        (nhds 0) := by
-      have h0 : Filter.Tendsto (fun n : ℕ => 1 / ((n : ℝ) + 1)) Filter.atTop (nhds 0) :=
-        tendsto_one_div_add_atTop_nhds_zero_nat
-      simpa using h0.smul_const (1 : A)
-    refine le_of_tendsto_of_tendsto' tendsto_const_nhds hg fun n => ?_
-    have hε : (0 : ℝ) < 1 / ((n : ℝ) + 1) := by positivity
-    have hle : x ≤ (1 / ((n : ℝ) + 1)) • (1 : selfAdjoint A) := h (1 / ((n : ℝ) + 1)) hε
-    have hcast : (((1 / ((n : ℝ) + 1)) • (1 : selfAdjoint A) : selfAdjoint A) : A) =
-        (1 / ((n : ℝ) + 1)) • (1 : A) := rfl
-    have hle' : (x : A) ≤ (((1 / ((n : ℝ) + 1)) • (1 : selfAdjoint A) : selfAdjoint A) : A) :=
-      Subtype.coe_le_coe.mpr hle
-    rwa [hcast] at hle'
+/-- The order of observables is Archimedean. -/
+noncomputable instance instArchimedeanOrderUnitSpace :
+    ArchimedeanOrderUnitSpace (selfAdjoint 𝒜) where
+  le_zero_of_forall_pos_smul_one_le _ h := le_zero_of_forall_pos_smul_one_le h
 
 end selfAdjoint
 
+end PhyslibAlpha.ProbabilisticTheory

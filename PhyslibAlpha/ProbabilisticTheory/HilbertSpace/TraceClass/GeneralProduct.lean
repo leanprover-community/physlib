@@ -42,7 +42,7 @@ closed under sums and adjoints.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 open HilbertSchmidt
@@ -206,6 +206,6 @@ lemma isTraceClass_star {T : H →L[ℂ] H} (hT : IsTraceClass T) : IsTraceClass
   rw [← hfactor]
   simpa only [star_mul] using hstar
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

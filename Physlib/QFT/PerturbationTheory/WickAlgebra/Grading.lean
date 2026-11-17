@@ -390,7 +390,7 @@ lemma directSum_eq_bosonic_plus_fermionic
     conv_lhs => rw [hx, hy]
     abel
 
-/-- For a field statistic `𝓕`, the algebra `𝓕.WickAlgebra` is graded by `FieldStatistic`.
+/-- For a field specification `𝓕`, the algebra `𝓕.WickAlgebra` is graded by `FieldStatistic`.
   Those `ofCrAnList φs` for which `φs` has an overall `bosonic` statistic
   (i.e. `𝓕 |>ₛ φs = bosonic`) span `bosonic`
   submodule, whilst those `ofCrAnList φs` for which `φs` has an overall `fermionic` statistic

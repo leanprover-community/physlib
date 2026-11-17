@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.GNS
 public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 public import Mathlib.LinearAlgebra.Matrix.PosDef
-public import Mathlib.Analysis.Complex.Basic
 public import Mathlib.Analysis.SpecialFunctions.Exponential
 
 /-!
@@ -67,7 +66,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open scoped Matrix ComplexOrder
 
 variable {n : Type*} [Fintype n] [DecidableEq n]

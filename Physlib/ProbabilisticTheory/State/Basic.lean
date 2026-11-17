@@ -6,6 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Physlib.ProbabilisticTheory.Channel.Basic
+public import Physlib.ProbabilisticTheory.OrderUnit.Basic
 
 /-!
 # States
@@ -19,10 +20,14 @@ A state assigns each observable its expectation value: a positive linear functio
 ## ii. Key results
 
 - `𝓢[𝕜, A]` : states on an ordered `𝕜`-vector space with a distinguished unit.
+- `UnitalPositiveLinearMap.comap` : the state on the input of a channel that evaluates an
+  observable by first sending it through the channel.
+- `Channel.comap` : the same pullback of states along a channel between probabilistic theories.
 
 ## iii. Table of contents
 
 - A. Notation for positive functionals and states
+- B. Transporting states along channels
 
 ## iv. References
 
@@ -41,3 +46,41 @@ notation " 𝓟[" 𝕜 ", " A "] " => A →ₚ[𝕜] 𝕜
 
 /-- States on an ordered `𝕜`-vector space with a distinguished unit. -/
 notation " 𝓢[" 𝕜 ", " A "] " => A →ₚ₁[𝕜] 𝕜
+
+/-!
+
+## B. Transporting states along channels
+
+-/
+
+open ProbabilisticTheory
+
+namespace UnitalPositiveLinearMap
+
+variable {E F : Type*} [OrderUnitSpace E] [OrderUnitSpace F]
+
+/-- The state on `E` that evaluates an observable by first sending it through a channel `f` and
+then evaluating the state `ω` on the result. -/
+def comap (f : E →ₚ₁[ℝ] F) (ω : 𝓢[ℝ, F]) : 𝓢[ℝ, E] where
+  toPositiveLinearMap := ω.toPositiveLinearMap.comp f.toPositiveLinearMap
+  map_one' := (congrArg ω f.map_one').trans ω.map_one'
+
+@[simp]
+lemma comap_apply (f : E →ₚ₁[ℝ] F) (ω : 𝓢[ℝ, F]) (x : E) : comap f ω x = ω (f x) := rfl
+
+end UnitalPositiveLinearMap
+
+namespace Channel
+
+variable {P Q : ProbabilisticTheory}
+
+/-- Pull back a state by applying the channel before evaluating each observable. -/
+def comap (f : Channel P Q) (ω : 𝓢[ℝ, Q.Observables]) : 𝓢[ℝ, P.Observables] where
+  toPositiveLinearMap := ω.toPositiveLinearMap.comp f.toPositiveLinearMap
+  map_one' := (congrArg ω f.map_one').trans ω.map_one'
+
+@[simp]
+lemma comap_apply (f : Channel P Q) (ω : 𝓢[ℝ, Q.Observables]) (x : P.Observables) :
+    comap f ω x = ω (f x) := rfl
+
+end Channel

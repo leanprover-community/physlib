@@ -21,6 +21,9 @@ The potential `V = -k/r` is singular at the origin. To address this we define a 
 Hamiltonian in which the potential is replaced by `-k·r(ε)⁻¹`, where `r(ε)² = ‖x‖² + ε²`.
 This goes by several names including "soft-core" and "truncated" Coulomb potential.
 
+The (unregularized) Hamiltonian is densely defined in any dimension: its domain contains the
+dense submodule of polynomially-bounded Schwartz maps (`hamiltonianOperator_hasDenseDomain`).
+
 ## References
 
 * https://doi.org/10.1103/PhysRevA.80.032507. [ref: doi_physreva_80_032507]
@@ -50,7 +53,7 @@ open SchwartzMap
 
 /-- A hydrogen atom is characterized by the number of spatial dimensions `d`,
   the mass `m` and the coefficient `k` for the `1/r` potential. -/
-structure HydrogenAtom extends SpaceDQuantumSystem where
+structure HydrogenAtom (d : ℕ) extends SpaceDQuantumSystem d where
   /-- Coefficient in the Coulomb potential (positive for attractive) -/
   k : ℝ
   coulomb_potential : potential = fun x ↦ -k * ‖x‖⁻¹
@@ -58,7 +61,7 @@ structure HydrogenAtom extends SpaceDQuantumSystem where
 namespace HydrogenAtom
 noncomputable section
 
-variable (H : HydrogenAtom)
+variable {d : ℕ} (H : HydrogenAtom d)
 
 /-!
 ## A. Basic
@@ -81,11 +84,38 @@ lemma potential_AEM : AEMeasurable H.potential := H.potential_AESM.aemeasurable
 
 /-- The hydrogen atom Hamiltonian regularized by `ε ≠ 0` is defined to be
   `𝐇(ε) ≔ (2m)⁻¹𝐩² - k·𝐫(ε)⁻¹`. -/
-def hamiltonianRegCLM (ε : ℝˣ) : 𝓢(Space H.d, ℂ) →L[ℂ] 𝓢(Space H.d, ℂ) :=
+def hamiltonianRegCLM (ε : ℝˣ) : 𝓢(Space d, ℂ) →L[ℂ] 𝓢(Space d, ℂ) :=
   (2 * H.m)⁻¹ • (𝐩 ⬝ᵥ 𝐩) - H.k • 𝐫₀ ε (-1)
 
 lemma hamiltonianRegCLM_eq (ε : ℝˣ) :
     H.hamiltonianRegCLM ε = (2 * H.m)⁻¹ • (𝐩 ⬝ᵥ 𝐩) - H.k • 𝐫₀ ε (-1) := rfl
+
+/-!
+## C. Domain of the Hamiltonian
+-/
+
+open SpaceDHilbertSpace
+
+/-- Polynomially-bounded Schwartz maps `f` with `‖x‖ ^ (-k) * ‖f x‖ ≤ Cₖ` for all `k ≤ ⌊2 - d/2⌋`
+  lie in the domain of the Hamiltonian. For `d ≥ 3` these are all Schwartz maps. -/
+lemma polyBddSchwartzSubmodule_le_hamiltonianOperator_domain :
+    PolyBddSchwartzSubmodule d ⌊1 - d / 2 - (-1 : ℝ)⌋.toNat ≤
+      H.hamiltonianOperator.domain := by
+  intro ψ hψ
+  refine Submodule.mem_inf.mpr ⟨?_, ?_⟩
+  · rw [SpaceDQuantumSystem.kineticOperator_eq, LinearPMap.smul_domain,
+      momentumSqOperator_domain_eq]
+    exact PolyBddSchwartzSubmodule.le_SchwartzSubmodule _ _ hψ
+  · have h := radiusPowOperator_domain_ge (-1) hψ
+    rw [radiusPowOperator, mem_mulOperator_domain_iff] at h
+    rw [SpaceDQuantumSystem.potentialOperator_eq, mem_mulOperator_domain_iff]
+    refine (h.const_smul (-(H.k : ℂ))).ae_eq (Filter.Eventually.of_forall fun x ↦ ?_)
+    simp [Real.rpow_neg_one, mul_assoc]
+
+/-- The Hamiltonian of the hydrogen atom is densely defined, in any dimension. -/
+lemma hamiltonianOperator_hasDenseDomain : H.hamiltonianOperator.HasDenseDomain :=
+  (PolyBddSchwartzSubmodule.dense volume le_rfl).mono
+    (H.polyBddSchwartzSubmodule_le_hamiltonianOperator_domain)
 
 end
 end HydrogenAtom

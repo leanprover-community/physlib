@@ -5,14 +5,14 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-meta import Mathlib.Data.ZMod.Defs
-meta import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
-meta import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
 public import Mathlib.Data.Fintype.Prod
 public import Mathlib.Data.ZMod.Defs
+meta import Mathlib.Data.ZMod.Defs  -- shake: keep (for `native_decide`)
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa
+meta import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Yukawa  -- shake: keep
 public import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions
-public import Physlib.Meta.Linters.Sorry
+meta import Physlib.Particles.SuperSymmetry.SU5.ChargeSpectrum.Completions  -- shake: keep
+public import Physlib.Meta.Linters.Pseudo
 /-!
 
 # Charge spectra with values in `ZMod n`

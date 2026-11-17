@@ -362,7 +362,8 @@ lemma joinSignLeftExtra_eq_joinSignRightExtra {φs : List 𝓕.FieldOp}
         · simp [hi1]
         · have hi1 : uncontractedListEmd (φsucΛ.fstFieldOfContract a) < i := by omega
           simp only [hi1, ↓reduceIte, ofFinset_singleton, List.get_eq_getElem]
-          erw [hs]
+          simp only [Fin.getElem_fin] at hs
+          rw [hs]
           exact exchangeSign_symm (𝓕|>ₛφs[↑j]) (𝓕|>ₛ[singleton h]ᵘᶜ[↑(φsucΛ.sndFieldOfContract a)])
       · simp only [not_lt, not_le] at hj2
         simp only [hj2, true_and]
@@ -374,8 +375,9 @@ lemma joinSignLeftExtra_eq_joinSignRightExtra {φs : List 𝓕.FieldOp}
           simp only [hj2, ↓reduceIte, map_one]
           rw [← ofFinset_union_disjoint]
           simp only [ofFinset_singleton, List.get_eq_getElem]
-          erw [hs]
-          simp only [Fin.getElem_fin, mul_self, map_one]
+          simp only [Fin.getElem_fin] at hs
+          rw [hs]
+          simp only [mul_self, map_one]
           simp only [Finset.disjoint_singleton_right, Finset.mem_singleton]
           exact Fin.ne_of_lt h
 

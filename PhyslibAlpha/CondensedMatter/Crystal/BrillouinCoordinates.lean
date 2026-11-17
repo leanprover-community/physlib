@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
-public import Mathlib.Analysis.Complex.Circle
 
 /-!
 

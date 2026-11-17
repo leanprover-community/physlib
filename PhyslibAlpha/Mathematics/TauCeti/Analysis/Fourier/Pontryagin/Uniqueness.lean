@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Fourier.Pontryagin.Measure
 public import PhyslibAlpha.Mathematics.TauCeti.MeasureTheory.Measure.FiniteMeasureExt
-import Mathlib.Algebra.MonoidAlgebra.Basic
 
 /-!
 # Uniqueness of Fourier--Stieltjes measures on a Pontryagin dual

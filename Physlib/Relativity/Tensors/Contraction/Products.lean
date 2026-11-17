@@ -103,9 +103,9 @@ lemma Pure.prodP_contrP_snd {n n1 : ℕ} {c : Fin (n + 1 + 1) → C}
   rw [prodT_pure]
   rw [prodP_dropPair _ _ hij]
   generalize_proofs ha hb hc hd
-  erw [map_smul]
+  rw [LinearMap.map_smul]
   congr
-  erw [permT_pure]
+  rw [permT_pure]
 
 set_option backward.isDefEq.respectTransparency false in
 lemma prodT_contrT_snd {n n1 : ℕ} {c : Fin (n + 1 + 1) → C}

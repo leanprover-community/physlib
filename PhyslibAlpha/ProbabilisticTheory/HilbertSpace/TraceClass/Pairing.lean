@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.TraceAlgebra
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.TraceClass.Banach
 
 /-!
 
@@ -44,7 +43,7 @@ operators to the dual of `𝒮₁(H)`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -194,4 +193,4 @@ lemma tracePairingContinuousLinearMap_apply (A : H →L[ℂ] H) :
 
 end TraceClass
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

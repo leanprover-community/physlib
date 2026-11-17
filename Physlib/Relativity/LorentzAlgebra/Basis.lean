@@ -5,9 +5,18 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Mathlib.Analysis.Calculus.Deriv.Prod
 public import Physlib.Relativity.LorentzAlgebra.Basic
+public import Physlib.Relativity.LorentzGroup.Boosts.Basic
+
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
+
 /-!
-# Generators of the Lorentz Algebra
+# Generators of the Lorentz algebra
+
+Standard boost and rotation generators and the tangent of a finite boost curve.
+
+## i. Overview
 
 This file defines the 6 standard generators of the Lorentz algebra so(1,3) :
 - **Boost generators** K₀, K₁, K₂: Generate Lorentz transformations (velocity changes)
@@ -16,14 +25,10 @@ This file defines the 6 standard generators of the Lorentz algebra so(1,3) :
 These generators form a basis for the 6-dimensional Lie algebra so(1,3), though the full
 basis structure (linear independence and spanning) is not yet proven here.
 
-## Physical Interpretation
-
-- `boostGenerator i`: Infinitesimal boost in the i-th spatial direction. Exponentiating
-  this generator produces finite Lorentz boosts.
+- `boostGenerator i`: Infinitesimal boost in the i-th spatial direction. The native
+  boost curve parametrized by rapidity has tangent `-boostGenerator i` at zero.
 - `rotationGenerator i`: Infinitesimal rotation about the i-th axis following the
   right-hand rule. Exponentiating this generator produces spatial rotations.
-
-## Mathematical Structure
 
 Each generator satisfies the Lorentz algebra condition: Aᵀ η = -η A, where η is the
 Minkowski metric with signature (+,-,-,-).
@@ -31,15 +36,24 @@ Minkowski metric with signature (+,-,-,-).
 The boost generators are symmetric matrices with non-zero entries only in the time-space
 block, while rotation generators are antisymmetric matrices acting only on spatial indices.
 
-## References
-
-* Weinberg, The Quantum Theory of Fields, Vol 1, Section 2.7. [ref: weinberg_qft1]
-* Peskin & Schroeder, An Introduction to QFT, Appendix A. [ref: peskin_schroeder_qft]
-## Future Work
-
 TODO can be completed by proving linear independence and spanning of these
 6 generators, then constructing a formal `Basis (Fin 2 × Fin 3) ℝ lorentzAlgebra`.
 
+## ii. Key results
+
+- `boostGenerator_mem` and `rotationGenerator_mem`: the generators lie in the Lorentz algebra.
+- `hasDerivAt_boost_tanh_zero`: the rapidity boost curve has tangent the negative boost generator.
+
+## iii. Table of contents
+
+- A. Generator definitions
+- B. Algebraic properties
+- C. Rapidity derivatives
+
+## iv. References
+
+* Weinberg, The Quantum Theory of Fields, Vol 1, Section 2.7. [ref: weinberg_qft1]
+* Peskin & Schroeder, An Introduction to QFT, Appendix A. [ref: peskin_schroeder_qft]
 -/
 
 @[expose] public section
@@ -47,6 +61,8 @@ TODO can be completed by proving linear independence and spanning of these
 open Matrix
 
 namespace lorentzAlgebra
+
+/-! ## A. Generator definitions -/
 
 /-- The boost generator K_i in the Lorentz algebra so(1,3).
 
@@ -60,7 +76,8 @@ where we use the index convention 0 = time, 1,2,3 = space.
 - Satisfies Lorentz algebra condition: K_iᵀ η = -η K_i
 
 ## Physical Meaning
-Exponentiating β·K_i produces a finite Lorentz boost with rapidity β in direction i.
+The native boost curve `LorentzGroup.boost i (Real.tanh r)` has tangent `-K_i` at
+rapidity zero, as proved by `hasDerivAt_boost_tanh_zero`.
 -/
 def boostGenerator (i : Fin 3) : Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) ℝ :=
   fun μ ν =>
@@ -98,6 +115,8 @@ def rotationGenerator (i : Fin 3) : Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) �
       | 2 => if μ = Sum.inr 0 ∧ ν = Sum.inr 1 then -1
             else if μ = Sum.inr 1 ∧ ν = Sum.inr 0 then 1
             else 0
+
+/-! ## B. Algebraic properties -/
 
 /-- The boost generator K_i is in the Lorentz algebra. -/
 lemma boostGenerator_mem (i : Fin 3) : boostGenerator i ∈ lorentzAlgebra := by
@@ -140,5 +159,27 @@ lemma rotationGenerator_trace (i : Fin 3) :
   have h := Matrix.trace_transpose (rotationGenerator i)
   rw [rotationGenerator_transpose, Matrix.trace_neg] at h
   exact eq_zero_of_neg_eq h
+
+/-! ## C. Rapidity derivatives -/
+
+/-- The tangent at zero of the finite boost curve parametrized by rapidity
+is the negative of the named boost generator. -/
+lemma hasDerivAt_boost_tanh_zero (i : Fin 3) :
+    HasDerivAt (fun r : ℝ => (LorentzGroup.boost i (Real.tanh r) (Real.abs_tanh_lt_one r)).1)
+      (-boostGenerator i) 0 := by
+  have hcosh (r : ℝ) : Real.cosh r * Real.tanh r = Real.sinh r := by
+    rw [Real.tanh_eq_sinh_div_cosh]
+    field_simp [ne_of_gt (Real.cosh_pos r)]
+  apply hasDerivAt_pi.mpr
+  intro μ
+  apply hasDerivAt_pi.mpr
+  intro ν
+  fin_cases i <;> fin_cases μ <;> fin_cases ν <;>
+    simp [LorentzGroup.boost, boostGenerator, LorentzGroup.γ_tanh, hcosh, neg_mul]
+  all_goals first
+    | simpa only [Real.sinh_zero] using Real.hasDerivAt_cosh 0
+    | simpa only [Real.cosh_zero] using (Real.hasDerivAt_sinh 0).fun_neg
+    | exact hasDerivAt_const (0 : ℝ) (0 : ℝ)
+    | exact hasDerivAt_const (0 : ℝ) (1 : ℝ)
 
 end lorentzAlgebra

@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
 public import Mathlib.Analysis.Matrix.Spectrum
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
 
 /-!
 

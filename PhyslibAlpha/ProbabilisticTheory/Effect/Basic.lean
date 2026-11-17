@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.Effect.Basic
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Interval
 
 /-!
 # Orthogonal effects
@@ -35,7 +35,7 @@ unit. Their partial sum is then again an effect.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -61,4 +61,4 @@ lemma coe_addOfOrthogonal (e f : Effect E) (h : Orthogonal e f) :
 
 end Effect
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

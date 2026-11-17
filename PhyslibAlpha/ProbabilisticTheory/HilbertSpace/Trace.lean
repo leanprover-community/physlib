@@ -42,7 +42,7 @@ positive.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -66,7 +66,7 @@ end Conjugate
 
 open ComplexOrder
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -75,7 +75,7 @@ end ProbabilisticTheory
 -/
 
 section Complex
-open ProbabilisticTheory ComplexOrder
+open PhyslibAlpha.ProbabilisticTheory ComplexOrder
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℂ E] [CompleteSpace E]
 
@@ -92,7 +92,8 @@ noncomputable def traceₚ : (E →L[ℂ] E) →ₚ[ℂ] ℂ := .mk₀
 
 omit [CompleteSpace E] in
 /-- The trace is tracial. -/
-lemma traceₚ_isTracial : (traceₚ (E := E)).toLinearMap.IsTracial :=
+lemma traceₚ_isTracial :
+    PhyslibAlpha.ProbabilisticTheory.LinearMap.IsTracial (traceₚ (E := E)).toLinearMap :=
   fun x y => by simp [traceₚ_apply, toLinearMap_mul, LinearMap.trace_mul_comm]
 
 open PositiveLinearMap

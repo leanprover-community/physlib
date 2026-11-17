@@ -905,6 +905,7 @@ entry
 enumerates
 enumerating
 environment
+epistemic
 eq
 equal
 equalities
@@ -1226,6 +1227,7 @@ handler
 handling
 happens
 harmonic
+harrigan
 has
 hastemperategrowth
 hasvaradjderivat
@@ -1547,6 +1549,7 @@ leftaltlefttomatrix
 lefthanded
 lefthandedweyl
 leftlefttomatrix
+leifer
 lemma
 lemmas
 length
@@ -1907,6 +1910,7 @@ one
 ones
 online
 only
+ontic
 onto
 open
 opened
@@ -1975,6 +1979,7 @@ parametric
 parity
 parsec
 parsed
+parseval
 part
 particle
 particledatagroup
@@ -2161,6 +2166,7 @@ pseudoriemannianmetric
 pure
 purpose
 purposes
+pusey
 put
 puts
 putting
@@ -2343,6 +2349,7 @@ rotationally
 rotations
 row
 rows
+rudolph
 rule
 run
 runs
@@ -2491,7 +2498,6 @@ some
 something
 sometimes
 somewhat
-sorryful
 sort
 sorted
 sorting
@@ -2529,6 +2535,7 @@ spectrum
 spectrums
 speed
 speeds
+spekkens
 sphere
 spherical
 spin
@@ -2949,6 +2956,7 @@ vudabs
 vusabs
 w
 waiting
+walsh
 want
 warning
 was

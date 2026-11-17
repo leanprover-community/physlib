@@ -8,7 +8,7 @@ import Physlib.Meta.TODO.Basic
 import Mathlib.Lean.CoreM
 import Physlib.Meta.Informal.Post
 import Physlib.Meta.Informal.SemiFormal
-import Physlib.Meta.Linters.Sorry
+import Physlib.Meta.Linters.Pseudo
 /-!
 
 # Creates TODO yml file from the TODO items.
@@ -20,7 +20,6 @@ It collects the following TODO items:
 - TODO items `TODO ...`.
 - Informal definitions and lemmas.
 - Semi-formal results.
-- Sorryful results.
 
 -/
 
@@ -165,7 +164,6 @@ structure FullTODOInfo where
   isInformalDef : Bool
   isInformalLemma : Bool
   isSemiFormalResult : Bool
-  isSorryfulResult : Bool := false
   category : PhyslibCategory
   tag : String
 
@@ -180,7 +178,6 @@ def FullTODOInfo.toYAML (todo : FullTODOInfo) : MetaM String := do
     isInformalDef: {todo.isInformalDef}
     isInformalLemma: {todo.isInformalLemma}
     isSemiFormalResult: {todo.isSemiFormalResult}
-    isSorryfulResult: {todo.isSorryfulResult}
     category: {todo.category}
     name: {todo.name}
     tag: {todo.tag}
@@ -248,28 +245,6 @@ unsafe def allSemiInformal  : CoreM (Array FullTODOInfo) := do
 
 /-!
 
-## Sorryful results
--/
-
-def SorryfulInfo.toFullTODOInfo (s : SorryfulInfo) : FullTODOInfo where
-  content := s.docstring
-  fileName := s.fileName
-  line := s.line
-  name := s.name
-  isInformalDef := false
-  isInformalLemma := false
-  isSemiFormalResult := false
-  isSorryfulResult := true
-  category := PhyslibCategory.ofFileName s.fileName
-  tag := s.name.toString
-
-unsafe def allSorryfulResults  : CoreM (Array FullTODOInfo) := do
-  let env ← getEnv
-  let sorryfulInfos := (sorryfulExtension.getState env)
-  pure (sorryfulInfos.map SorryfulInfo.toFullTODOInfo)
-
-/-!
-
 ## All TODOs
 
 Collecting all of the TODO items
@@ -280,8 +255,7 @@ unsafe def allTODOs : MetaM (List FullTODOInfo) := do
   let todos ← getTodoInfo
   let informalTODOs ← allInformalTODO
   let semiInformal ← allSemiInformal
-  let sorryfulResults ← allSorryfulResults
-  let all := todos ++ informalTODOs ++ semiInformal ++ sorryfulResults
+  let all := todos ++ informalTODOs ++ semiInformal
   return  (all.qsort (fun x y => x.fileName.toString < y.fileName.toString
     ∨ (x.fileName.toString = y.fileName.toString ∧ x.line < y.line))).toList
 

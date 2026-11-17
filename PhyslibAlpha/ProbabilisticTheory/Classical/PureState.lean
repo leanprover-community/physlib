@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.Lattice
 public import PhyslibAlpha.ProbabilisticTheory.State.StateSpace
 public import Mathlib.Analysis.Convex.KreinMilman
-public import Mathlib.Analysis.LocallyConvex.WeakDual
 public import Mathlib.Topology.ContinuousMap.Algebra
 public import Mathlib.Topology.ContinuousMap.Ordered
 
@@ -55,7 +54,7 @@ every pure state is nonnegative.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -221,4 +220,4 @@ end PureState
 
 end Archimedean
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

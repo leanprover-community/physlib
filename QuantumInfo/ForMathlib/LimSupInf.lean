@@ -6,15 +6,9 @@ Authors: Alex Meiburg
 module
 
 public import Mathlib.Algebra.Order.Ring.Star
-public import Mathlib.Data.Finset.Attr
 public import Mathlib.Algebra.Order.Star.Int
 public import Mathlib.Algebra.Order.Star.Real
 public import Mathlib.Tactic.Bound
-public import Mathlib.Tactic.Common
-public import Mathlib.Tactic.Continuity
-public import Mathlib.Tactic.Finiteness.Attr
-public import Mathlib.Tactic.SetLike
-public import Mathlib.Util.CompileInductive
 public import Mathlib.Topology.Instances.ENNReal.Lemmas
 public import Mathlib.Topology.Instances.Nat
 

@@ -35,7 +35,7 @@ all of the following linters run correctly.
   - step 2: This builds the project
   - step 3: Checks all files are imported to `Physlib.lean`.
   - step 4: Checks that no tags on TODO items are duplicates of one another.
-  - step 5: Checks that all lemmas and definitions dependent on `sorry` or `Lean.ofReduceBool` are correctly attributed with `@[sorryful]` or `@[pseudo]`
+  - step 5: Checks that the lemmas and definitions dependent on `Lean.ofReduceBool` are correctly attributed with `@[pseudo]`
   - step 6: Checks that module documentation is laid out according to the set standard (see `lake exe module_doc_lint` below).
   - step 7: Checks all Lean linters run without error, this picks up things like lack of doc-strings on definitions, or incompatible `@[simp]` attributes
   - step 8: Checks there are not transitive imports, e.g. A imports B and C, but B already
@@ -96,3 +96,38 @@ This linter may need running a number of times.
   lake exe cache get && lake build
   scripts/github/check_golf.py --base <merge-base> --head <head-sha> --measure
   ```
+
+## Summarising a pull request
+
+- `lake exe pr_summary` : Summarises a pull request for its reviewers, as Markdown: the files it
+  adds, removes, renames or modifies, with the number of lines added to and removed from each, the
+  namespaces each `.lean` file opens and any it gains or loses, and the declarations it adds,
+  removes, moves between files or restates. The
+  [`PRMessage`](../.github/workflows/PRMessage.yml) workflow runs it on every new PR, and again on
+  every push to one, and posts the result, under *Summary of your PR for reviewers*, in the
+  comment it leaves; the rest of that comment is
+  [`.github/PRMessage.md`](../.github/PRMessage.md), whose `<!-- PR_SUMMARY -->` marker the
+  summary replaces. A push updates that comment in place rather than leaving a second one: the
+  workflow finds it again by the `<!-- physlib-pr-summary -->` marker which is its first line, so
+  that marker must stay first.
+
+  Each file and each declaration is a link into `leanprover-community/physlib`, at the line it
+  is on, in whichever of the two revisions it belongs to, so a reviewer can jump from the table
+  to the code. It also calls out the results the PR writes with `theorem`, since each one needs
+  a doc-string and a line in `scripts/lint/exemptions/Theorems.txt`.
+
+  To run it locally, with `origin/master...HEAD` by default:
+
+  ```
+  lake exe pr_summary
+  lake exe pr_summary <base>
+  lake exe pr_summary <base> <head>
+  ```
+
+  The Markdown goes to standard output and the progress messages to standard error, so
+  `lake exe pr_summary > summary.md` writes just the summary. The declarations are found by
+  reading `git diff --unified=0` as text, in the spirit of the `declarations_diff.sh` script of
+  [`mathlib-ci`](https://github.com/leanprover-community/mathlib-ci), so no build is needed; the
+  module documentation of `scripts/alpha/github/pr_summary.lean` lists what that misses, and gives
+  examples to run on recent PRs. Its tests are `#guard_msgs` commands in its source, so
+  `lake build pr_summary` runs them.

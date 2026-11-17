@@ -96,7 +96,7 @@ lemma toSelfAdjointMap_apply_pauliBasis'_inl (M : SL(2, ℂ)) :
     ofReal_div, ofReal_add, ofReal_pow, ofReal_ofNat, mul_one, smul_zero, smul_empty, smul_neg,
     ofReal_neg, ofReal_mul, neg_add_rev, neg_neg, of_add_of, add_cons, head_cons, add_zero,
     tail_cons, zero_add, empty_add_empty, ofReal_sub]
-  conv => lhs; erw [← eta_fin_two 1, mul_one]
+  conv => lhs; rw [← one_fin_two, mul_one]
   conv => lhs; lhs; rw [eta_fin_two M.1]
   conv => lhs; rhs; rw [eta_fin_two M.1ᴴ]
   simp only [Fin.isValue, conjTranspose_apply, RCLike.star_def, cons_mul, Nat.succ_eq_add_one,
@@ -127,12 +127,12 @@ def toMatrix : SL(2, ℂ) →* Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) ℝ wh
   map_one' := by
     simp only [toSelfAdjointMap, SpecialLinearGroup.coe_one, one_mul, conjTranspose_one,
       mul_one, Subtype.coe_eta]
-    erw [LinearMap.toMatrix_one]
+    exact LinearMap.toMatrix_one _
   map_mul' M N := by
     rw [← LinearMap.toMatrix_mul]
     apply congrArg
     ext1 x
-    erw [Module.End.mul_apply]
+    rw [Module.End.mul_apply]
     simp only [toSelfAdjointMap_apply, SpecialLinearGroup.coe_mul, conjTranspose_mul,
       Subtype.mk.injEq]
     ext1
@@ -267,6 +267,39 @@ lemma toLorentzGroup_isOrthochronous (M : SL(2, ℂ)) :
     LorentzGroup.IsOrthochronous (toLorentzGroup M) := by
   rw [LorentzGroup.IsOrthochronous, toLorentzGroup_inl_inl]
   positivity
+
+open PauliMatrix in
+/-- The kernel of the homomorphism from `SL(2, ℂ)` to the Lorentz group is `{1, -1}`. -/
+lemma toLorentzGroup_eq_one_iff (M : SL(2, ℂ)) :
+    toLorentzGroup M = 1 ↔ M.1 = 1 ∨ M.1 = -1 := by
+  constructor
+  · intro h
+    have key (i : Fin 1 ⊕ Fin 3) :
+        M.1 * (pauliSelfAdjoint' i).1 * M.1ᴴ = (pauliSelfAdjoint' i).1 := by
+      have := congrArg Subtype.val (toSelfAdjointMap_basis (M := M) i)
+      simpa [h, one_apply, PauliMatrix.pauliBasis'] using this
+    have hU : M.1 * M.1ᴴ = 1 := by simpa [pauliSelfAdjoint', pauliMatrix] using key (Sum.inl 0)
+    have hU' : M.1ᴴ * M.1 = 1 := mul_eq_one_comm.mp hU
+    have comm (i : Fin 1 ⊕ Fin 3) :
+        M.1 * (pauliSelfAdjoint' i).1 = (pauliSelfAdjoint' i).1 * M.1 := by
+      calc M.1 * (pauliSelfAdjoint' i).1 = M.1 * (pauliSelfAdjoint' i).1 * (M.1ᴴ * M.1) := by
+            rw [hU', Matrix.mul_one]
+        _ = _ := by rw [← Matrix.mul_assoc, key i]
+    have h3 := congrArg (· 0 1) (comm (Sum.inr 2))
+    have h3' := congrArg (· 1 0) (comm (Sum.inr 2))
+    have h1 := congrArg (· 0 1) (comm (Sum.inr 0))
+    simp [pauliSelfAdjoint', pauliMatrix, mul_apply, Fin.sum_univ_two] at h3 h3' h1
+    have h01 : M.1 0 1 = 0 := by linear_combination h3 / 2
+    have h10 : M.1 1 0 = 0 := by linear_combination -h3' / 2
+    have hd : M.1 0 0 * M.1 0 0 = 1 := by
+      have := M.2
+      rw [det_fin_two, h01, ← h1] at this
+      linear_combination this
+    rcases mul_self_eq_one_iff.mp hd with hc | hc <;> [left; right] <;> ext i j <;>
+      fin_cases i <;> fin_cases j <;> simp [h01, h10, ← h1, hc]
+  · rintro (h | h) <;> apply Subtype.ext <;> ext i j <;> apply ofReal_injective <;>
+      rw [toLorentzGroup_eq_trace] <;> simp [h, trace_pauliSelfAdjoint'_mul, one_apply] <;>
+      split_ifs <;> simp
 
 /-!
 
