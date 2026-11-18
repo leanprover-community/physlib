@@ -37,6 +37,7 @@ public import Physlib.ClassicalMechanics.Observables.Measurable
 public import Physlib.ClassicalMechanics.Observables.NormalChannel
 public import Physlib.ClassicalMechanics.Observables.NormalState
 public import Physlib.ClassicalMechanics.Observables.PureState
+public import Physlib.ClassicalMechanics.Observables.Reversible
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
 public import Physlib.ClassicalMechanics.Pendulum.CoplanarDoublePendulum
 public import Physlib.ClassicalMechanics.Pendulum.MiscellaneousPendulumPivotMotions
@@ -177,6 +178,7 @@ public import Physlib.Mathematics.ForMathlib.LinearPMap
 public import Physlib.Mathematics.ForMathlib.List
 public import Physlib.Mathematics.ForMathlib.List.InsertIdx
 public import Physlib.Mathematics.ForMathlib.List.InsertionSort
+public import Physlib.Mathematics.ForMathlib.MeasurableEquiv
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
