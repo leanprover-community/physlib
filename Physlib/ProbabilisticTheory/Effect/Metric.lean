@@ -14,7 +14,7 @@ The order-unit metric on effects and their identification with the order-unit-no
 
 ## i. Overview
 
-Effects sit inside `E`, so pulling back the order-unit norm along the inclusion `Effect E ↪ E`
+Effects sit inside `P.Observables`. Pulling back the order-unit norm along this inclusion
 gives them a metric space structure for free.
 
 Effects also correspond to points of the order-unit-norm ball, by the affine rescaling
@@ -38,13 +38,9 @@ Effects also correspond to points of the order-unit-norm ball, by the affine res
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace ProbabilisticTheory.Effect
 
-open ArchimedeanOrderUnitSpace
-
-variable {E : Type*} [ArchimedeanOrderUnitSpace E]
-
-namespace Effect
+variable {P : ProbabilisticTheory}
 
 /-!
 
@@ -52,14 +48,14 @@ namespace Effect
 
 -/
 
-/-- Effects, metrized by the order-unit norm on `E`. -/
-noncomputable scoped instance instMetricSpace : MetricSpace (Effect E) :=
+/-- Effects, metrized by the order-unit norm on the observables. -/
+noncomputable scoped instance instMetricSpace : MetricSpace P.Effect :=
   MetricSpace.induced Subtype.val Subtype.val_injective inferInstance
 
 open scoped Effect
 
-lemma dist_eq_orderUnitNorm (e f : Effect E) : dist e f = orderUnitNorm ((e : E) - (f : E)) :=
-  dist_eq_norm (e : E) (f : E)
+lemma dist_eq_orderUnitNorm (e f : P.Effect) : dist e f = orderUnitNorm (e.1 - f.1) :=
+  dist_eq_norm e.1 f.1
 
 /-!
 
@@ -68,50 +64,49 @@ lemma dist_eq_orderUnitNorm (e f : Effect E) : dist e f = orderUnitNorm ((e : E)
 -/
 
 /-- Doubling and re-centering an effect at the order unit lands in the order-unit-norm ball. -/
-lemma orderUnitNorm_two_smul_sub_one_le_one (e : Effect E) :
-    orderUnitNorm (2 • (e : E) - 1) ≤ 1 := by
+lemma orderUnitNorm_two_smul_sub_one_le_one (e : P.Effect) :
+    orderUnitNorm (2 • (e : P.Observables) - 1) ≤ 1 := by
   rw [← Nat.cast_smul_eq_nsmul ℝ]
   norm_num only [Nat.cast_ofNat]
   rw [orderUnitNorm_le_iff]
   refine ⟨by norm_num, ?_, ?_⟩
   · rw [one_smul, ← sub_nonneg,
-      show (2 : ℝ) • (e : E) - 1 - -(1 : E) = (2 : ℝ) • (e : E) from by module]
+      show (2 : ℝ) • e.1 - 1 - -(1 : P.Observables) = (2 : ℝ) • e.1 from by module]
     exact smul_nonneg (by norm_num) e.2.1
   · rw [one_smul, ← sub_nonneg,
-      show (1 : E) - ((2 : ℝ) • (e : E) - 1) = (2 : ℝ) • (1 - (e : E)) from by module]
+      show 1 - ((2 : ℝ) • e.1 - 1) = (2 : ℝ) • (1 - e.1) from by module]
     exact smul_nonneg (by norm_num) (sub_nonneg.mpr e.2.2)
 
 /-- Undoing the re-centering on a point of the order-unit-norm ball gives back an effect. -/
-lemma mem_effect_two_inv_smul_one_add {A : E} (hA : orderUnitNorm A ≤ 1) :
-    (2 : ℝ)⁻¹ • (1 + A) ∈ Effect E := by
+lemma mem_effect_two_inv_smul_one_add {A : P.Observables} (hA : orderUnitNorm A ≤ 1) :
+    (2 : ℝ)⁻¹ • (1 + A) ∈ P.Effect := by
   obtain ⟨-, hAl, hAu⟩ := orderUnitNorm_le_iff.mp hA
   rw [one_smul] at hAl hAu
-  refine ⟨smul_nonneg (by norm_num) (by simpa using add_le_add (le_refl (1 : E)) hAl), ?_⟩
-  have h2 := smul_le_smul_of_nonneg_left (add_le_add (le_refl (1 : E)) hAu)
+  refine ⟨smul_nonneg (by norm_num)
+    (by simpa using add_le_add (le_refl (1 : P.Observables)) hAl), ?_⟩
+  have h2 := smul_le_smul_of_nonneg_left (add_le_add (le_refl (1 : P.Observables)) hAu)
     (show (0 : ℝ) ≤ (2 : ℝ)⁻¹ by norm_num)
-  rw [show (1 : E) + 1 = (2 : ℝ) • (1 : E) from by module] at h2
+  rw [show (1 : P.Observables) + 1 = (2 : ℝ) • (1 : P.Observables) from by module] at h2
   rwa [smul_smul, inv_mul_cancel₀ (two_ne_zero), one_smul] at h2
 
 /-- Re-centering, then undoing it, returns the original effect. -/
-lemma two_inv_smul_one_add_two_smul_sub_one (e : Effect E) :
-    (2 : ℝ)⁻¹ • (1 + (2 • (e : E) - 1)) = (e : E) := by
+lemma two_inv_smul_one_add_two_smul_sub_one (e : P.Effect) :
+    (2 : ℝ)⁻¹ • (1 + (2 • (e : P.Observables) - 1)) = (e : P.Observables) := by
   rw [← Nat.cast_smul_eq_nsmul ℝ]
   module
 
 /-- Undoing the re-centering, then redoing it, returns the original ball point. -/
-lemma two_smul_two_inv_smul_one_add_sub_one (A : E) :
+lemma two_smul_two_inv_smul_one_add_sub_one (A : P.Observables) :
     2 • ((2 : ℝ)⁻¹ • (1 + A)) - 1 = A := by
   rw [← Nat.cast_smul_eq_nsmul ℝ, smul_smul]
   norm_num
 
 /-- Effects correspond to points of the order-unit-norm ball by doubling and re-centering at the
 order unit: `e ↦ 2 • e - 1`, with inverse `A ↦ (1 + A) / 2`. -/
-noncomputable def effectEquiv : Effect E ≃ {A : E // orderUnitNorm A ≤ 1} where
-  toFun e := ⟨2 • (e : E) - 1, orderUnitNorm_two_smul_sub_one_le_one e⟩
-  invFun A := ⟨(2 : ℝ)⁻¹ • (1 + (A : E)), mem_effect_two_inv_smul_one_add A.2⟩
+noncomputable def effectEquiv : P.Effect ≃ {A : P.Observables // orderUnitNorm A ≤ 1} where
+  toFun e := ⟨2 • (e : P.Observables) - 1, orderUnitNorm_two_smul_sub_one_le_one e⟩
+  invFun A := ⟨(2 : ℝ)⁻¹ • (1 + (A : P.Observables)), mem_effect_two_inv_smul_one_add A.2⟩
   left_inv e := Subtype.ext (two_inv_smul_one_add_two_smul_sub_one e)
-  right_inv A := Subtype.ext (two_smul_two_inv_smul_one_add_sub_one (A : E))
+  right_inv A := Subtype.ext (two_smul_two_inv_smul_one_add_sub_one (A : P.Observables))
 
-end Effect
-
-end ProbabilisticTheory
+end ProbabilisticTheory.Effect

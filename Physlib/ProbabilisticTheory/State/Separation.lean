@@ -26,11 +26,12 @@ separation fact.
 
 ## ii. Key results
 
-- `UnitalPositiveLinearMap.exists_apply_neg_of_not_nonneg` : every element outside the positive
+- `ProbabilisticTheory.State.exists_apply_neg_of_not_nonneg` : every element outside the positive
   cone is separated from it by a state.
-- `UnitalPositiveLinearMap.nonneg_iff_forall_state_nonneg` : states determine the positive cone.
-- `UnitalPositiveLinearMap.sSup_abs_apply_eq_orderUnitNorm` : states determine the order-unit norm.
-- `UnitalPositiveLinearMap.ext_of_forall_apply_eq` : states separate points.
+- `ProbabilisticTheory.State.nonneg_iff_forall_state_nonneg` : states determine the positive cone.
+- `ProbabilisticTheory.State.sSup_abs_apply_eq_orderUnitNorm` : states determine the order-unit
+  norm.
+- `ProbabilisticTheory.State.ext_of_forall_apply_eq` : states separate points.
 
 ## iii. Table of contents
 
@@ -46,12 +47,10 @@ separation fact.
 @[expose] public section
 
 open ProbabilisticTheory
-open ArchimedeanOrderUnitSpace
-open OrderUnitSpace
 
-variable {E : Type*}
+namespace ProbabilisticTheory.State
 
-namespace UnitalPositiveLinearMap
+variable {P : ProbabilisticTheory}
 
 /-!
 
@@ -60,21 +59,20 @@ namespace UnitalPositiveLinearMap
 -/
 
 /-- A positive functional vanishing at the order unit vanishes everywhere. -/
-lemma apply_eq_zero_of_apply_one_eq_zero [OrderUnitSpace E] {p : E →ₚ[ℝ] ℝ}
-    (h1 : p (1 : E) = 0) (A : E) : p A = 0 := by
+lemma apply_eq_zero_of_apply_one_eq_zero {p : P.Observables →ₚ[ℝ] ℝ}
+    (h1 : p (1 : P.Observables) = 0) (A : P.Observables) : p A = 0 := by
   obtain ⟨n, hl, hu⟩ := exists_two_sided_bound A
   exact le_antisymm (by simpa [h1] using p.monotone' hu)
     (by simpa [h1] using p.monotone' hl)
 
-variable [ArchimedeanOrderUnitSpace E]
-
 /-- Every element outside the positive cone is strictly separated from it by a state. -/
-lemma exists_apply_neg_of_not_nonneg {A : E} (hA : ¬ 0 ≤ A) : ∃ ω : 𝓢[ℝ, E], ω A < 0 := by
+lemma exists_apply_neg_of_not_nonneg {A : P.Observables} (hA : ¬ 0 ≤ A) :
+    ∃ ω : P.State, ω A < 0 := by
   obtain ⟨f, hf_nonneg, hfA⟩ := ProperCone.hyperplane_separation_point
-    ⟨PointedCone.positive ℝ E, isClosed_Ici_zero⟩ hA
-  have hf_one_pos : 0 < f (1 : E) := (hf_nonneg 1 one_nonneg).lt_of_ne fun h1 =>
+    ⟨PointedCone.positive ℝ P.Observables, isClosed_Ici_zero⟩ hA
+  have hf_one_pos : 0 < f (1 : P.Observables) := (hf_nonneg 1 one_nonneg).lt_of_ne fun h1 =>
     hfA.ne (apply_eq_zero_of_apply_one_eq_zero (p := .mk₀ _ hf_nonneg) h1.symm A)
-  exact ⟨ofLinearMap ((f (1 : E))⁻¹ • f.toLinearMap)
+  exact ⟨Channel.ofLinearMap ((f (1 : P.Observables))⁻¹ • f.toLinearMap)
     (fun B hB => mul_nonneg (inv_nonneg.mpr hf_one_pos.le) (hf_nonneg B hB))
     (by simp [hf_one_pos.ne']), mul_neg_of_pos_of_neg (inv_pos.mpr hf_one_pos) hfA⟩
 
@@ -85,7 +83,7 @@ lemma exists_apply_neg_of_not_nonneg {A : E} (hA : ¬ 0 ≤ A) : ∃ ω : 𝓢[�
 -/
 
 /-- An element is positive iff every state assigns it a nonnegative value. -/
-lemma nonneg_iff_forall_state_nonneg (A : E) : 0 ≤ A ↔ ∀ ω : 𝓢[ℝ, E], 0 ≤ ω A := by
+lemma nonneg_iff_forall_state_nonneg (A : P.Observables) : 0 ≤ A ↔ ∀ ω : P.State, 0 ≤ ω A := by
   constructor
   · exact fun hA ω => map_nonneg ω hA
   · contrapose!
@@ -98,16 +96,17 @@ lemma nonneg_iff_forall_state_nonneg (A : E) : 0 ≤ A ↔ ∀ ω : 𝓢[ℝ, E]
 -/
 
 /-- Every nontrivial Archimedean order-unit space has a state. -/
-instance instNonemptyState [Nontrivial E] : Nonempty (𝓢[ℝ, E]) := by
-  obtain ⟨A, hA⟩ := exists_ne (0 : E)
+instance instNonemptyState [Nontrivial P.Observables] : Nonempty P.State := by
+  obtain ⟨A, hA⟩ := exists_ne (0 : P.Observables)
   by_cases h : 0 ≤ A
   · exact (exists_apply_neg_of_not_nonneg (A := -A)
       (fun hn => hA (le_antisymm (neg_nonneg.mp hn) h))).nonempty
   · exact (exists_apply_neg_of_not_nonneg h).nonempty
 
 /-- The order-unit norm is at most `r` iff every state predicts an absolute value at most `r`. -/
-lemma orderUnitNorm_le_iff_forall_abs_apply_le [Nontrivial E] (A : E) (r : ℝ) :
-    orderUnitNorm A ≤ r ↔ ∀ ω : 𝓢[ℝ, E], |ω A| ≤ r := by
+lemma orderUnitNorm_le_iff_forall_abs_apply_le [Nontrivial P.Observables] (A : P.Observables)
+    (r : ℝ) :
+    orderUnitNorm A ≤ r ↔ ∀ ω : P.State, |ω A| ≤ r := by
   refine ⟨fun h ω => (abs_apply_le_orderUnitNorm ω A).trans h, fun h => ?_⟩
   refine orderUnitNorm_le ⟨(abs_nonneg _).trans (h Classical.ofNonempty), ?_, ?_⟩
   · rw [neg_le_iff_add_nonneg', nonneg_iff_forall_state_nonneg]
@@ -116,16 +115,16 @@ lemma orderUnitNorm_le_iff_forall_abs_apply_le [Nontrivial E] (A : E) (r : ℝ) 
     exact fun ω => by simpa [sub_nonneg] using (abs_le.mp (h ω)).2
 
 /-- The order-unit norm is the supremum of `|ω A|` over all states `ω`. -/
-lemma sSup_abs_apply_eq_orderUnitNorm [Nontrivial E] (A : E) :
-    sSup (Set.range fun ω : 𝓢[ℝ, E] => |ω A|) = orderUnitNorm A := by
+lemma sSup_abs_apply_eq_orderUnitNorm [Nontrivial P.Observables] (A : P.Observables) :
+    sSup (Set.range fun ω : P.State => |ω A|) = orderUnitNorm A := by
   exact eq_of_forall_ge_iff fun r => (ciSup_le_iff ⟨orderUnitNorm A,
     Set.forall_mem_range.mpr (fun ω => abs_apply_le_orderUnitNorm ω A)⟩).trans
     (orderUnitNorm_le_iff_forall_abs_apply_le A r).symm
 
 /-- The order unit has norm exactly `1`. -/
 @[simp]
-lemma orderUnitNorm_one [Nontrivial E] : orderUnitNorm (1 : E) = 1 := by
-  simpa using (sSup_abs_apply_eq_orderUnitNorm (1 : E)).symm
+lemma orderUnitNorm_one [Nontrivial P.Observables] : orderUnitNorm (1 : P.Observables) = 1 := by
+  simpa using (sSup_abs_apply_eq_orderUnitNorm (1 : P.Observables)).symm
 
 /-!
 
@@ -134,8 +133,8 @@ lemma orderUnitNorm_one [Nontrivial E] : orderUnitNorm (1 : E) = 1 := by
 -/
 
 /-- States separate points: if `ω A = ω B` for every state `ω`, then `A = B`. -/
-lemma ext_of_forall_apply_eq {A B : E} (h : ∀ ω : 𝓢[ℝ, E], ω A = ω B) : A = B := by
+lemma ext_of_forall_apply_eq {A B : P.Observables} (h : ∀ ω : P.State, ω A = ω B) : A = B := by
   apply le_antisymm <;> rw [← sub_nonneg, nonneg_iff_forall_state_nonneg] <;>
     intro ω <;> rw [map_sub, h ω, sub_self]
 
-end UnitalPositiveLinearMap
+end ProbabilisticTheory.State
