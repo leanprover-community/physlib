@@ -5,7 +5,6 @@ Authors: Rithwik Ranganathan
 -/
 module
 
-public import Mathlib.Analysis.Calculus.MeanValue
 public import Mathlib.LinearAlgebra.CrossProduct
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.Basic
@@ -286,24 +285,16 @@ lemma hamiltonian_angularMomentumZ_eq_on_Icc
     (hq : ∀ t ∈ Set.Icc a b, HasDerivAt q (S.m⁻¹ • p t) t) :
     S.hamiltonian (p t₁) (q t₁) = S.hamiltonian (p t₂) (q t₂) ∧
     angularMomentumZ (p t₁) (q t₁) = angularMomentumZ (p t₂) (q t₂) := by
-  have conserved (f : EuclideanSpace ℝ (Fin 3) → EuclideanSpace ℝ (Fin 3) → ℝ)
-      (hf : ∀ t ∈ Set.Icc a b, DifferentiableAt ℝ (Function.uncurry f) (p t, q t))
-      (hbr : ∀ t ∈ Set.Icc a b, poissonBracket f S.hamiltonian (p t) (q t) = 0) :
-      f (p t₁) (q t₁) = f (p t₂) (q t₂) := by
-    have hd t (ht : t ∈ Set.Icc a b) : HasDerivAt (fun s => f (p s) (q s)) 0 t := by
-      rw [← hbr t ht]
-      apply hasDerivAt_comp_eq_poissonBracket S.hamiltonian f _ _ (hf t ht)
-      · rw [(S.hasGradientAt_hamiltonian_position (p t) (hne t ht)).gradient, ← neg_smul]
-        exact hp t ht
-      · rw [(S.hasGradientAt_hamiltonian_momentum (p t) (q t)).gradient]
-        exact hq t ht
-    have hc := constant_of_has_deriv_right_zero
-      (fun t ht => (hd t ht).continuousAt.continuousWithinAt)
-      (fun t ht => (hd t ⟨ht.1, ht.2.le⟩).hasDerivWithinAt)
-    exact (hc t₁ h₁).trans (hc t₂ h₂).symm
-  refine ⟨conserved S.hamiltonian ?_ (fun t _ => poissonBracket_self _ _ _),
+  have conserved := observable_eq_of_poissonBracket_eq_zero (p := p) (q := q)
+    (fun _ => S.hamiltonian) (convex_Icc a b)
+    (fun t ht => by
+      simpa only [(S.hasGradientAt_hamiltonian_position (p t) (hne t ht)).gradient,
+        neg_smul] using hp t ht)
+    (fun t ht => by
+      simpa only [(S.hasGradientAt_hamiltonian_momentum (p t) (q t)).gradient] using hq t ht)
+  refine ⟨conserved S.hamiltonian ?_ (fun _ _ => poissonBracket_self _ _ _) h₁ h₂,
     conserved angularMomentumZ ?_ (fun t ht => S.poissonBracket_angularMomentumZ_hamiltonian
-      (p t) (hne t ht))⟩
+      (p t) (hne t ht)) h₁ h₂⟩
   · intro t ht
     have hopen : IsOpen {x : EuclideanSpace ℝ (Fin 3) × EuclideanSpace ℝ (Fin 3) |
         x.2 ≠ 0} := isOpen_ne.preimage continuous_snd

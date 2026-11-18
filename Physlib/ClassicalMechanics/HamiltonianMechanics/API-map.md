@@ -63,7 +63,7 @@ For a time-independent differentiable observable along a differentiable Hamilton
 a vanishing Poisson bracket with the Hamiltonian implies zero time derivative. [6] A smooth
 autonomous Hamiltonian Poisson-commutes with itself and has zero time derivative along its
 Hamiltonian trajectories. [5][6] These quantities are constant on connected time intervals,
-giving energy conservation in the autonomous case. [TODO]
+giving energy conservation in the autonomous case. [20]
 
 On a finite-dimensional real symplectic vector space, an affine infinitesimally symplectic Lie
 algebra action has a moment map whose components generate the action's vector fields through
@@ -137,6 +137,8 @@ the momentum p = m v. [TODO]
 18. Physlib/ClassicalMechanics/HamiltonianMechanics/Basic.lean — `HamiltonianSystem`,
     `HamiltonianSystem.ofNormedSpace`, `HamiltonianSystem.ofInnerProductSpace`
 19. PhyslibAlpha/ClassicalMechanics/CentralForce/Basic.lean — `CentralForce.toHamiltonianSystem`
+20. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
+    `observable_eq_of_poissonBracket_eq_zero`
 
 ## References
 
