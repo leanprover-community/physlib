@@ -73,7 +73,8 @@ attribute [-simp] Nat.succ_eq_add_one
 /-- The creation of an electromagnetic potential from a scalar potential. -/
 noncomputable def ofScalarPotential {d} (c : SpeedOfLight) :
     ((Time × Space d) →d[ℝ] ℝ) →ₗ[ℝ] TempDistElectromagneticPotential d where
-  toFun φ := Lorentz.Vector.ofTemporalComponent ∘L (tempDistTimeSlice c).symm (((1 : ℝ) / c.val) • φ)
+  toFun φ :=
+  Lorentz.Vector.ofTemporalComponent ∘L (tempDistTimeSlice c).symm (((1 : ℝ) / c.val) • φ)
   map_add' φ₁ φ₂ := by
     ext ε
     simp

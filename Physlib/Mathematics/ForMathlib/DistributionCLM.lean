@@ -23,7 +23,7 @@ between spaces of distributions `Distribution Ω F ⊤` and `Distribution Ω' F 
 - `DistributionMap` : A continuous linear map between spaces of distributions `𝓓'(Ω, F)` and
     `𝓓'(Ω', F)`.
 
-### iii. Table of contents
+## iii. Table of contents
 
 - A. Continuous linear maps
 
@@ -34,9 +34,9 @@ between spaces of distributions `Distribution Ω F ⊤` and `Distribution Ω' F 
 
 @[expose] public section
 
-namespace DistributionCLM
-
 open Function Set TopologicalSpace UniformSpace
+
+namespace TestFunction
 
 /-!
 ## A. Continuous linear maps
@@ -45,8 +45,8 @@ open Function Set TopologicalSpace UniformSpace
 /-- Given normed spaces `E` and `E'` and open subsets `Ω ⊆ E` and `Ω' ⊆ E'` and a map between
 them `g : E → E'`, define a continuous linear map between the spaces of test functions
 `𝓓(Ω', F)` and `𝓓(Ω, F)`. -/
-noncomputable def pullback {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
-    [NormedSpace ℝ E] [NormedSpace ℝ E']
+noncomputable def compCLMofContinuousLinearEquiv {E E'} [NormedAddCommGroup E]
+    [NormedAddCommGroup E'] [NormedSpace ℝ E] [NormedSpace ℝ E']
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
     (h : g.invFun '' Ω' ⊆ ↑Ω) :
@@ -120,12 +120,20 @@ noncomputable def pullback {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
   · ext x
     rfl
 
+end TestFunction
+
+namespace Distribution
+
+open TestFunction
+
 /--Having defined a CLM between test functions, we now define a continuous linear map between spaces
 of distributions `𝓓'(Ω, F)` and `𝓓'(Ω', F)`. -/
-noncomputable def DistributionMap {E E'} [NormedAddCommGroup E] [NormedAddCommGroup E']
-    [NormedSpace ℝ E] [NormedSpace ℝ E']
+noncomputable def compContinuousLinearEquiv {E E'} [NormedAddCommGroup E]
+    [NormedAddCommGroup E'] [NormedSpace ℝ E] [NormedSpace ℝ E']
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
     (h : g.invFun '' Ω' ⊆ ↑Ω) :
     Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ :=
-    (pullback (F := ℝ) g h).precompCompactConvergenceCLM F
+    (compCLMofContinuousLinearEquiv (F := ℝ) g h).precompCompactConvergenceCLM F
+
+end Distribution

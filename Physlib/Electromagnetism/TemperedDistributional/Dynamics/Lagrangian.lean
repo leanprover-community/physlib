@@ -174,8 +174,8 @@ lemma gradLagrangian_sum_inr_i {𝓕 : FreeSpace}
     𝓕.μ₀⁻¹ * (1 / 𝓕.c ^ 2 *
       (tempDistTimeSlice 𝓕.c).symm (Space.distTimeDeriv (A.electricField 𝓕.c)) ε i -
       ∑ j, ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
-        ((tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDeriv j (A.magneticFieldMatrix 𝓕.c)) ε) (j, i)) +
-    (tempDistTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
+        ((tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDeriv j (A.magneticFieldMatrix 𝓕.c)) ε)
+        (j, i)) + (tempDistTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
   simp [gradLagrangian, gradKineticTerm_sum_inr_eq, gradFreeCurrentPotential_sum_inr_i 𝓕]
 
 /-!

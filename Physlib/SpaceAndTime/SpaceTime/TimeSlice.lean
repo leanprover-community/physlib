@@ -114,7 +114,7 @@ lemma timeSliceLinearEquiv_symm_apply {d : ℕ} {M : Type} [AddCommGroup M] [Mod
 
 -/
 open Distribution SchwartzMap
-open DistributionCLM
+open Distribution
 
 /-- The time slice of a distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
@@ -122,7 +122,7 @@ noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
  (c : SpeedOfLight := 1) :
     Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ →L[ℝ]
     Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ :=
-  DistributionMap (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
+    compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
 
 /-- The time slice of a tempered distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
