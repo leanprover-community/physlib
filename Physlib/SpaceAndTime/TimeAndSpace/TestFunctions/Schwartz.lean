@@ -88,8 +88,8 @@ lemma schwartzSpacetimeEuclideanAction_apply (g : EuclideanGroup (d + 1))
     ((EuclideanGroup.toAffineIsometryHom g⁻¹).map_vadd 0
       (TimeAndSpace.euclideanCoordinates x)).symm
 
-/-- Complex conjugation after time reflection: `f ↦ (x ↦ conj (f (Θ x)))`.
-The dimension restriction retains the source's domain of at least two total dimensions. -/
+/-- Complex conjugation after time reflection, `f ↦ (x ↦ conj (f (Θ x)))`,
+in any spatial dimension. -/
 @[nolint unusedArguments]
 def reflectedConjugate (f : 𝓢(TimeAndSpace d, ℂ)) :
     𝓢(TimeAndSpace d, ℂ) :=
@@ -111,8 +111,7 @@ lemma reflectedConjugate_involutive (f : 𝓢(TimeAndSpace d, ℂ)) :
     TimeAndSpace.timeReflection_involutive]
 
 /-- Complex Schwartz functions whose topological support lies strictly at positive time.
-This retains the support convention of `OSforGFF` and its domain of at least
-two total dimensions. -/
+This uses the support convention of `OSforGFF` in any spatial dimension. -/
 @[nolint unusedArguments]
 abbrev PositiveTimeTestFunction (d : ℕ) :=
   {f : 𝓢(TimeAndSpace d, ℂ) | tsupport f ⊆ {x | 0 < x.1}}
@@ -134,7 +133,7 @@ lemma integral_bumpToSchwartz (φ : ContDiffBump (0 : EuclideanSpace ℝ (Fin (d
     TimeAndSpace.euclideanCoordinates.toHomeomorph.measurableEmbedding]
   exact φ.integral_normed
 
-/-- Translate a real Schwartz test by `a`, with value `f (x - a)` at `x`. -/
+/-- Translate a complex Schwartz test by `a`, with value `f (x - a)` at `x`. -/
 def translateSchwartz (f : 𝓢(TimeAndSpace d, ℂ))
     (a : TimeAndSpace d) : 𝓢(TimeAndSpace d, ℂ) :=
   SchwartzMap.compSubConstCLM ℂ a f
