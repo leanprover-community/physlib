@@ -851,6 +851,14 @@ theorem pure_separable_iff_IsProd (ψ : Ket (d₁ × d₂)) :
     rw [pure_prod_pure ξ φ]
     exact IsSeparable_prod _ _;
 
+/-- `Matrix.rank` as the dimension of the range of `mulVecLin`, proved from basis-independent
+API so that it does not depend on how Mathlib defines `Matrix.rank`. -/
+private theorem rank_eq_finrank_range_mulVecLin' {m n : Type*} [Fintype m] [Fintype n]
+    [DecidableEq n] (A : Matrix m n ℂ) :
+    A.rank = Module.finrank ℂ (LinearMap.range A.mulVecLin) := by
+  rw [Matrix.rank_eq_finrank_range_toLin A (Pi.basisFun ℂ m) (Pi.basisFun ℂ n),
+    Matrix.toLin_eq_toLin', Matrix.toLin'_apply']
+
 /--
 A mixed state is pure if and only if its rank is 1.
 -/
@@ -868,8 +876,9 @@ theorem pure_iff_rank_eq_one {d : Type*} [Fintype d] [DecidableEq d] (ρ : MStat
       apply le_antisymm
       · have h_outer_product : LinearMap.range (Matrix.mulVecLin (Matrix.vecMulVec v (conj v))) ≤ Submodule.span ℂ {v} := by
           rintro x ⟨ u, rfl ⟩ ; obtain ⟨ c, hc ⟩ := h_outer_product u; aesop;
+        rw [ rank_eq_finrank_range_mulVecLin' ]
         exact le_trans ( Submodule.finrank_mono h_outer_product ) ( finrank_span_le_card _ ) |> le_trans <| by simp ;
-      · contrapose! hv_ne_zero; simp_all [ Matrix.rank, Submodule.eq_bot_iff ] ;
+      · contrapose! hv_ne_zero; simp_all [ rank_eq_finrank_range_mulVecLin', Submodule.eq_bot_iff ] ;
         ext i; specialize hv_ne_zero ( Pi.single i 1 ) ; simp_all [ Matrix.vecMulVec ] ;
         simpa using congr_fun hv_ne_zero i;
     exact h_rank _ ( fun h => by simpa [ h ] using w.exists_ne_zero );
@@ -938,20 +947,21 @@ theorem Ket.IsProd_iff_rank_eq_one {d₁ d₂ : Type*} [Fintype d₁] [Fintype d
         rintro x ⟨ y, rfl ⟩;
         rw [ Submodule.mem_span_singleton ];
         exact ⟨ ∑ j, ψ' j * y j, by ext i; simp [ Matrix.mulVec, dotProduct, mul_comm, mul_left_comm, Finset.mul_sum _ _ _ ] ⟩;
+      rw [ rank_eq_finrank_range_mulVecLin' ]
       exact le_trans ( Submodule.finrank_mono h_range ) ( finrank_span_le_card _ ) |> le_trans <| by norm_num;
-    cases h_rank.eq_or_lt <;> simp_all [ Matrix.rank, Submodule.eq_bot_iff ];
-    · convert! ‹Module.finrank ℂ ( LinearMap.range ( Matrix.mulVecLin ( Matrix.of fun i j => ξ i * ψ' j ) ) ) = 1› using 3 ; · aesop;
-      · aesop;
-      · ext; simp [hξψ'];
-    · have := ψ.exists_ne_zero
+    have hM : (Matrix.of fun i j => ψ (i, j)) = Matrix.of (fun i j => ξ i * ψ' j) := by
+      ext i j; simp [hξψ']
+    rcases h_rank.eq_or_lt with h_eq | h_lt
+    · rw [hM]; exact h_eq
+    · simp_all [ rank_eq_finrank_range_mulVecLin', Submodule.eq_bot_iff ]
+      have := ψ.exists_ne_zero
       simp_all only [ne_eq, mul_eq_zero, not_or, Prod.exists, exists_and_left, exists_and_right]
       obtain ⟨left, right⟩ := this
       obtain ⟨w, h_2⟩ := left
       obtain ⟨w_1, h_3⟩ := right
-      rename_i h_1
-      specialize h_1 ( Pi.single w_1 1 )
+      specialize h_lt ( Pi.single w_1 1 )
       simp_all [ funext_iff]
-  · rw [ Matrix.rank ];
+  · rw [ rank_eq_finrank_range_mulVecLin' ];
     rw [ finrank_eq_one_iff' ]
     intro a i₁ i₂ j₁ j₂
     simp_all only [ne_eq, Subtype.forall, LinearMap.mem_range, Matrix.mulVecBilin_apply, forall_exists_index,

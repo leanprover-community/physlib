@@ -180,8 +180,7 @@ lemma measureForget_eq_kraus (Λ : POVM X d) :
     (MatrixMap.of_kraus (fun i ↦ ((Λ.mats i) ^ (1 / 2 : ℝ)).mat)
       (fun i ↦ ((Λ.mats i) ^ (1 / 2 : ℝ)).mat) ρ.m) i j
   rw [measurementMap_apply_matrix]
-  simp [Matrix.traceRight, MatrixMap.of_kraus]
-  simp_rw [Matrix.sum_apply]
+  simp [Matrix.traceRight, MatrixMap.of_kraus, Matrix.sum_apply]
   refine Finset.sum_congr rfl fun x _ ↦ ?_
   rw [Finset.sum_eq_single x]
   · simp [Matrix.single]

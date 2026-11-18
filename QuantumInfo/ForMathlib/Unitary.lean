@@ -24,12 +24,12 @@ open Module.End
 @[simp]
 lemma unitary_star_apply_eq (U : unitary (E →ₗ[𝕜] E)) (v : E) :
     (star U.val) (U.val v) = v := by
-  rw [← mul_apply, (Unitary.mem_iff.mp U.prop).left, one_apply]
+  rw [← Module.End.mul_apply, (Unitary.mem_iff.mp U.prop).left, Module.End.one_apply]
 
 @[simp]
 lemma unitary_apply_star_eq (U : unitary (E →ₗ[𝕜] E)) (v : E) :
     U.val ((star U.val) v) = v := by
-  rw [← mul_apply, (Unitary.mem_iff.mp U.prop).right, one_apply]
+  rw [← Module.End.mul_apply, (Unitary.mem_iff.mp U.prop).right, Module.End.one_apply]
 
 /-- Conjugating a linear map by a unitary operator gives a map whose μ-eigenspace is
   isomorphic (same dimension) as those of the original linear map. -/
@@ -62,8 +62,9 @@ variable {T : E →ₗ[𝕜] E}
 theorem conj_unitary_IsSymmetric (U : unitary (E →ₗ[𝕜] E)) (hT : T.IsSymmetric) :
     (U.val * T * star U.val).IsSymmetric := by
   intro i j
-  rw [mul_assoc, mul_apply, ← LinearMap.adjoint_inner_right]
-  rw [mul_apply, mul_apply, mul_apply, ← LinearMap.adjoint_inner_left U.val]
+  rw [mul_assoc, Module.End.mul_apply, ← LinearMap.adjoint_inner_right]
+  rw [Module.End.mul_apply, Module.End.mul_apply, Module.End.mul_apply,
+    ← LinearMap.adjoint_inner_left U.val]
   exact hT (star U.val <| i) (star U.val j)
 
 variable {n : ℕ} (hn : Module.finrank 𝕜 E = n)

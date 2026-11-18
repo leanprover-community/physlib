@@ -518,7 +518,8 @@ lemma coeff_massWeightPoly_mem_sectorMassWeight {S : Finset GeneratorClass} {x :
   induction hx using Submodule.span_induction with
   | mem y hy =>
     obtain ⟨gl, hS, rfl⟩ := hy
-    rw [h.massWeightPoly_generatorVal_list_prod, Polynomial.coeff_monomial]
+    rw [h.massWeightPoly_generatorVal_list_prod]
+    simp only [Polynomial.coeff_monomial, Finsupp.single_apply]
     by_cases hw : (gl.map Generators.weight).sum = w
     · rw [ite_eq_left hw]
       exact Submodule.subset_span ⟨gl, hS, hw, rfl⟩
@@ -544,7 +545,8 @@ lemma sectorMassWeight_eq_inf (S : Finset GeneratorClass) (w : ℕ) :
   obtain ⟨hxS, hxw⟩ := Submodule.mem_inf.mp hx
   have h1 := h.massWeightPoly_of_mem_massWeightSubmodule hxw
   have h2 := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hxS) w
-  rwa [h1, Polynomial.coeff_monomial, ite_eq_left rfl] at h2
+  rw [h1] at h2
+  simpa [Polynomial.coeff_monomial, Finsupp.single_apply] using h2
 
 /-- **The decomposition of the mass-weight submodule into sectors**: the weight-`w`
   component of the field algebra is the join over the class sets `S` of the
@@ -688,8 +690,8 @@ lemma sectorMassWeight_higgs_eq {w : ℕ} (hw : w ≠ 0) :
   have hz' := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hz) w
   rw [h.sectorMassWeight_empty_of_ne_zero hw, Submodule.mem_bot] at hz'
   have hkey : y + z = (massWeightPoly y).coeff w + (massWeightPoly z).coeff w := by
-    have hc := congrArg (fun p => Polynomial.coeff p w) hxe
-    simpa [Polynomial.coeff_add, Polynomial.coeff_monomial] using hc.symm
+    have hc := congrArg (fun p => p.coeff w) hxe
+    simpa [Polynomial.coeff_add, Polynomial.coeff_monomial, Finsupp.single_apply] using hc.symm
   rw [hkey, hz', add_zero]
   exact hy'
 
@@ -789,8 +791,8 @@ lemma sectorMassWeight_gauge_eq {w : ℕ} (hw : w ≠ 0) :
   have hz' := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hz) w
   rw [h.sectorMassWeight_empty_of_ne_zero hw, Submodule.mem_bot] at hz'
   have hkey : y + z = (massWeightPoly y).coeff w + (massWeightPoly z).coeff w := by
-    have hc := congrArg (fun p => Polynomial.coeff p w) hxe
-    simpa [Polynomial.coeff_add, Polynomial.coeff_monomial] using hc.symm
+    have hc := congrArg (fun p => p.coeff w) hxe
+    simpa [Polynomial.coeff_add, Polynomial.coeff_monomial, Finsupp.single_apply] using hc.symm
   rw [hkey, hz', add_zero]
   exact hy'
 
@@ -918,8 +920,8 @@ lemma sectorMassWeight_fermion_eq {w : ℕ} (hw : w ≠ 0) :
   have hz' := h.coeff_massWeightPoly_mem_sectorMassWeight (h.mem_sector.mpr hz) w
   rw [h.sectorMassWeight_empty_of_ne_zero hw, Submodule.mem_bot] at hz'
   have hkey : y + z = (massWeightPoly y).coeff w + (massWeightPoly z).coeff w := by
-    have hc := congrArg (fun p => Polynomial.coeff p w) hxe
-    simpa [Polynomial.coeff_add, Polynomial.coeff_monomial] using hc.symm
+    have hc := congrArg (fun p => p.coeff w) hxe
+    simpa [Polynomial.coeff_add, Polynomial.coeff_monomial, Finsupp.single_apply] using hc.symm
   rw [hkey, hz', add_zero]
   exact hy'
 

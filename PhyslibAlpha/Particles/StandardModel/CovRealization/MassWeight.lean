@@ -124,7 +124,8 @@ lemma coeff_massWeightPoly_mem_span (w : ℕ) {x : B}
   | mem y hy =>
     obtain ⟨l₀, hl₀, rfl⟩ := Submonoid.exists_list_of_mem_closure hy
     obtain ⟨gl, rfl⟩ := h.exists_list_map_eq l₀ hl₀
-    rw [h.massWeightPoly_generatorVal_list_prod, Polynomial.coeff_monomial]
+    rw [h.massWeightPoly_generatorVal_list_prod]
+    simp only [Polynomial.coeff_monomial, Finsupp.single_apply]
     by_cases hw : (gl.map Generators.weight).sum = w
     · rw [ite_eq_left hw]
       exact Submodule.subset_span ⟨gl, hw, rfl⟩
@@ -151,7 +152,8 @@ lemma massWeightSubmodule_eq_span (w : ℕ) :
   · have h1 := h.massWeightPoly_of_mem_massWeightSubmodule hx
     have h2 := h.coeff_massWeightPoly_mem_span w
       (h.mem_fieldAlgebra_of_mem_massWeightSubmodule hx)
-    rwa [h1, Polynomial.coeff_monomial, ite_eq_left rfl] at h2
+    rw [h1] at h2
+    simpa [Polynomial.coeff_monomial, Finsupp.single_apply] using h2
   · rintro x ⟨gl, hw, rfl⟩
     exact h.list_prod_mem_massWeightSubmodule hw
 /-!
@@ -536,12 +538,12 @@ lemma eq_zero_of_sum_massWeightSubmodule {n : ℕ} {w : Fin n → ℕ}
     (hf : ∀ i, f i ∈ h.massWeightSubmodule (w i)) (hsum : ∑ i, f i = 0) :
     ∀ i, f i = 0 := by
   intro i₀
-  have hpoly := congrArg (fun z => Polynomial.coeff (massWeightPoly z) (w i₀)) hsum
+  have hpoly := congrArg (fun z => (massWeightPoly z).coeff (w i₀)) hsum
   simp only [map_sum, Polynomial.finsetSum_coeff, map_zero, Polynomial.coeff_zero]
     at hpoly
-  rw [Finset.sum_congr rfl (fun i _ => by
-      rw [h.massWeightPoly_of_mem_massWeightSubmodule (hf i),
-        Polynomial.coeff_monomial]),
+  rw [Finset.sum_congr rfl (fun i _ => show _ = if w i = w i₀ then f i else 0 by
+      rw [h.massWeightPoly_of_mem_massWeightSubmodule (hf i)]
+      simp only [Polynomial.coeff_monomial, Finsupp.single_apply]),
     Finset.sum_eq_single i₀
       (fun i _ hne => ite_eq_right fun hcontra => hne (hw hcontra))
       (by simp), ite_eq_left rfl] at hpoly

@@ -167,7 +167,7 @@ private lemma basisTmul_span_top {W : Type} [AddCommGroup W] [Module ℂ W] :
 
 /-- The set of derivative monomials in the jet component space: the unconjugated symbols
   `∂_s ψ_φ` together with the conjugate symbols `∂_s ψ̄_φ`. -/
-def generators (M : MatterField jets) : Set (JetComponentSpace M) :=
+noncomputable def generators (M : MatterField jets) : Set (JetComponentSpace M) :=
   (Set.range fun p : Multiset (Fin 1 ⊕ Fin 3) × Module.Dual ℂ M.V =>
       ((SpaceTimeDerivAlgebraℂ.basis p.1 ⊗ₜ[ℂ] p.2, 0) : JetComponentSpace M)) ∪
     Set.range fun p : Multiset (Fin 1 ⊕ Fin 3) × Module.Dual ℂ (ConjModule M.V) =>

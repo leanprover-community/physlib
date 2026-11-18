@@ -130,8 +130,7 @@ theorem cfc_toMat_eq_sum_smul_proj : (A.cfc f).mat =
     ext i j ; by_cases hij : i = j <;> simp [ hij ];
     · simp [ Matrix.sum_apply, Matrix.single ];
       simp [ Algebra.smul_def ];
-    · rw [Finset.sum_apply, Finset.sum_apply]
-      simp_all
+    · simp_all [Matrix.sum_apply, Matrix.single_apply]
   rw [h]
   simp [Matrix.single, Matrix.mul_assoc]
   congr! 1

@@ -110,6 +110,7 @@ lemma axisBracket_maxCurrentCubeVectorState_ne_zero (hx : Tx.t ≠ 0) (hy : Ty.t
   intro hk
   fin_cases k <;> simp_all
 
+set_option synthInstance.maxHeartbeats 40000 in
 /-- The Hamiltonian and the position of one axis of the cube do not commute. -/
 lemma bracket_cubePairs_pair_ne_zero (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
     (hNx : 2 ≤ Tx.N) (hNy : 2 ≤ Ty.N) (hNz : 2 ≤ Tz.N) (k : Fin 3) :

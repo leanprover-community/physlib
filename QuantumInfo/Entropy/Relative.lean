@@ -521,11 +521,13 @@ private lemma inner_cfc_eq_sum_eigenWeight (ρ σ : MState d) (f : ℝ → ℝ) 
   have h_trace : Matrix.trace (ρ.M.mat * (σ.M.cfc f).mat) = ∑ i, f (σ.M.H.eigenvalues i) * (star (σ.M.H.eigenvectorBasis i) ⬝ᵥ ρ.M.mat.mulVec (σ.M.H.eigenvectorBasis i)) := by
     rw [ Matrix.trace ];
     have h_cfc_def : (σ.M.cfc f).mat = ∑ i, (f (Matrix.IsHermitian.eigenvalues σ.M.H i)) • Matrix.of (fun x y => (σ.M.H.eigenvectorBasis i x) * (star (σ.M.H.eigenvectorBasis i y))) := by
-      convert σ.M.cfc_toMat_eq_sum_smul_proj f using 1;
-      ext i j; simp [ Matrix.single ] ; ring_nf
-      simp [ Matrix.sum_apply, Matrix.mul_apply, Matrix.conjTranspose_apply, Matrix.of_apply ];
-      refine' Finset.sum_congr rfl fun x _ => _ ; simp [ Finset.sum_ite, Finset.filter_eq, Finset.filter_and ] ; ring_nf
-      rw [ Finset.sum_eq_single x ] <;> aesop;
+      rw [σ.M.cfc_toMat_eq_sum_smul_proj f]
+      refine Finset.sum_congr rfl fun k _ => ?_
+      congr 1
+      ext x y
+      simp [Matrix.mul_apply, Matrix.single_apply, Matrix.conjTranspose_apply,
+        Matrix.IsHermitian.eigenvectorUnitary_apply, ite_and, Finset.sum_ite_eq,
+        Finset.sum_ite_eq', ite_mul]
     simp [ h_cfc_def, Matrix.mulVec, dotProduct, Finset.mul_sum, mul_left_comm ];
     simp [ Matrix.sum_apply, Matrix.mul_apply ];
     rw [ Finset.sum_comm ] ; congr ; ext ; congr ; ext ; congr ; ext ; ring!;

@@ -192,7 +192,7 @@ lemma bind₁_diagCartan_hyperchargeEigen (u : unitary ℂ) (k : Fin 6) :
     (apply Complex.ext <;>
       simp [Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im, Complex.mul_re,
         Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im,
-        Complex.conj_re, Complex.conj_im] <;> ring)
+        Complex.conj_re, Complex.conj_im, MvPolynomial.bind₁_X_right] <;> ring)
 
 open MvPolynomial in
 /-- Conjugation identity for the residual `U(1)`. -/
@@ -208,7 +208,7 @@ lemma bind₁_diagRes_hyperchargeEigen (c : unitary ℂ) (k : Fin 6) :
     (apply Complex.ext <;>
       simp [Complex.add_re, Complex.add_im, Complex.sub_re, Complex.sub_im, Complex.mul_re,
         Complex.mul_im, Complex.ofReal_re, Complex.ofReal_im, Complex.I_re, Complex.I_im,
-        Complex.conj_re, Complex.conj_im] <;> ring)
+        Complex.conj_re, Complex.conj_im, MvPolynomial.bind₁_X_right] <;> ring)
 
 /-- The Cartan hypercharges of `z, z̄, w₀, w̄₀, w₁, w̄₁`. -/
 def cartanCharge : Fin 6 → ℤ := ![1, -1, 1, -1, -1, 1]

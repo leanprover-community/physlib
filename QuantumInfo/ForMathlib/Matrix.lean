@@ -38,7 +38,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma zero_rank_eq_zero {A : Matrix n n 𝕜} [Fintype n] (hA : A.rank = 0) : A = 0 := by
   have h : ∀ v, A.mulVecLin v = 0 := by
     intro v
-    rw [rank, Module.finrank_zero_iff] at hA
+    rw [rank_eq_finrank_range_toLin A (Pi.basisFun 𝕜 n) (Pi.basisFun 𝕜 n), toLin_eq_toLin',
+      toLin'_apply', Module.finrank_zero_iff] at hA
     have := hA.elim ⟨A.mulVecLin v, ⟨v, rfl⟩⟩ ⟨0, ⟨0, by rw [mulVecLin_apply, mulVec_zero]⟩⟩
     simpa only [Subtype.mk.injEq] using this
   rw [← LinearEquiv.map_eq_zero_iff toLin']
@@ -164,7 +165,7 @@ lemma Finsupp.sum_eq_ite
   rw [Finsupp.sum, eq_comm]
   classical convert Finset.sum_ite_mem Finset.univ f.support (fun i ↦ g i (f i))
   · simp
-  · simp
+  · ext; simp
 
 
 omit dn in
@@ -860,7 +861,8 @@ lemma cfc_diagonal (g : d → ℝ) (f : ℝ → ℝ) :
       change Matrix.conjTranspose _ = _
       simp [Matrix.conjTranspose]
   --TODO cfc_cont_tac
-  rw [cfc, dite_eq_left ⟨h_self_adjoint, continuousOn_iff_continuous_domRestrict.mpr <| by fun_prop⟩]
+  rw [cfc_apply (f := f) (ha := h_self_adjoint)
+    (hf := continuousOn_iff_continuous_domRestrict.mpr <| by fun_prop)]
   rw [cfcHom_eq_of_continuous_of_map_id]
   rotate_left
   · refine' { .. }

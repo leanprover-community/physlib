@@ -212,7 +212,7 @@ lemma exists_mem_spectrum_of_not_isUnit_aeval_monic
   have hP : ∀ n, P n := by
     intro n
     induction n using Nat.strong_induction_on with
-    | h n ih =>
+    | _ n ih =>
       intro g hgn hg hgnu
       have hfnunit : ¬ IsUnit g := by
         intro hfu

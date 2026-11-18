@@ -166,7 +166,7 @@ set_option backward.isDefEq.respectTransparency false in
 instance : ContinuousSMul R (HermitianMat n α) where
   continuous_smul := by
     rw [continuous_induced_rng]
-    fun_prop
+    exact continuous_fst.smul (continuous_subtype_val.comp continuous_snd)
 
 --Shorcut instances:
 instance : IsTopologicalAddGroup (HermitianMat n 𝕜) := inferInstance

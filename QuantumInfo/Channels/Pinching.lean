@@ -78,6 +78,8 @@ lemma pinching_sum (ρ : MState d) : ∑ k, pinching_kraus ρ k = 1 := by
     rw [Finset.sum_set_coe (f := fun i => if x = i then 1 else 0), Finset.sum_ite_eq_of_mem]
     rwa [Set.mem_toFinset]
   simp [-HermitianMat.mat_apply]
+  -- Newer Mathlib's `simp` distributes the entry application over the sum; undo that.
+  try rw [← Matrix.sum_apply]
   rw [← cfc_sum, Finset.sum_fn, cfc_congr heq, cfc_one (R := ℝ) (ha := _)]
   rw [IsSelfAdjoint, Matrix.star_eq_conjTranspose, ρ.Hermitian]
 

@@ -125,8 +125,12 @@ consists of extreme points of the ball. -/
 lemma isPure_purePoint (t : Set.Icc (0 : ℝ) 1) : (purePoint t).IsPure := by
   rw [purePoint, NormCone.isPure_stateOfDual_iff, ← image_toDualEquiv_closedBall,
     ← image_extremePoints]
-  exact ⟨_, StrictConvexSpace.sphere_subset_extremePoints_closedBall _ one_ne_zero
-    (by simpa using norm_blochVec t.2.1 t.2.2), rfl⟩
+  have hmem := (by simpa using norm_blochVec t.2.1 t.2.2 :
+    blochVec t ∈ Metric.sphere (0 : _) 1)
+  -- `sphere_subset_extremePoints_closedBall` dropped its `r ≠ 0` argument in newer Mathlib.
+  first
+    | exact ⟨_, StrictConvexSpace.sphere_subset_extremePoints_closedBall _ one_ne_zero hmem, rfl⟩
+    | exact ⟨_, StrictConvexSpace.sphere_subset_extremePoints_closedBall _ 1 hmem, rfl⟩
 
 lemma purePoint_injective : Function.Injective purePoint := fun _ _ h =>
   blochVec_injective (toDualEquiv.injective (by simpa [purePoint] using congrArg dualOf h))
