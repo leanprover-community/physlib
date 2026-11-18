@@ -119,7 +119,7 @@ open Distribution
 /-- The time slice of a distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
 noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
- (c : SpeedOfLight := 1) :
+    (c : SpeedOfLight := 1) :
     Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ →L[ℝ]
     Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ :=
     compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
