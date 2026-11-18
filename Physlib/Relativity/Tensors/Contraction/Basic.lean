@@ -92,7 +92,16 @@ lemma contrT_decide {n : ℕ} {c : Fin (n + 1 + 1) → C} {i j : Fin (n + 1 + 1)
 noncomputable def contrT (n : ℕ) {c : Fin (n + 1 + 1) → C} (i j : Fin (n + 1 + 1))
       (hij : i ≠ j ∧ S.τ (c i) = c j) :
     Tensor S c →ₗ[k] Tensor S (c ∘ succSuccAbove i j) :=
-  PiTensorProduct.lift (Pure.contrPMultilinear i j hij)
+  PiTensorProduct.lift
+    { toFun p := Pure.contrP i j hij p
+      map_update_add' p m x y := by
+        change (Pure.update p m (x + y)).contrP i j hij = _
+        simp only [Pure.contrP_update_add]
+        rfl
+      map_update_smul' p k r y := by
+        change (Pure.update p k (r • y)).contrP i j hij = _
+        rw [Pure.contrP_update_smul]
+        rfl }
 
 lemma contrT_congr {n : ℕ} {c : Fin (n + 1 + 1) → C}
     {i j : Fin (n + 1 + 1)} {hij : i ≠ j ∧ S.τ (c i) = c j}
@@ -107,10 +116,8 @@ lemma contrT_congr {n : ℕ} {c : Fin (n + 1 + 1) → C}
 @[simp]
 lemma contrT_pure {n : ℕ} {c : Fin (n + 1 + 1) → C} (i j : Fin (n + 1 + 1))
     (hij : i ≠ j ∧ S.τ (c i) = c j) (p : Pure S c) :
-    contrT n i j hij p.toTensor = p.contrP i j hij := by
-  simp only [contrT, Pure.toTensor]
-  change _ = Pure.contrPMultilinear i j hij p
-  conv_rhs => rw [← PiTensorProduct.lift.tprod]
+    contrT n i j hij p.toTensor = p.contrP i j hij :=
+  PiTensorProduct.lift.tprod p
 
 @[simp]
 lemma contrT_equivariant {n : ℕ} {c : Fin (n + 1 + 1) → C}

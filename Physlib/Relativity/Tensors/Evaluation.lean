@@ -95,45 +95,32 @@ lemma evalP_update_smul [inst : DecidableEq (Fin (n + 1))] (i j : Fin (n + 1))
   · simp [smul_smul]
   · simp [smul_smul, mul_comm]
 
-/-!
-
-## Evaluation for a pure tensor as multilinear map.
-
--/
-
-/-- The multi-linear map formed by evaluation of an index of pure tensors. -/
-noncomputable def evalPMultilinear {n : ℕ} {c : Fin (n + 1)→ C}
-    (i : Fin (n + 1)) (φ : basisIdx (c i)) :
-    MultilinearMap k (fun i => V (c i))
-      (S.Tensor (c ∘ i.succAbove)) where
-  toFun p := evalP i φ p
-  map_update_add' p m x y := by
-    change (update p m (x + y)).evalP i φ = _
-    simp only [evalP_update_add]
-    rfl
-  map_update_smul' p k r y := by
-    change (update p k (r • y)).evalP i φ = _
-    rw [Pure.evalP_update_smul]
-    rfl
-
 end Pure
 
 TODO "Choose a more descriptive name for `evalT` and `evalP`, taking into consideration
   the namespaces they live in."
 
-/-- Evaluation of a tensor at a given index and basis element. -/
+/-- Evaluation of a tensor at a given index and basis element, lifted from the multilinear map
+  evaluating pure tensors. -/
 noncomputable def evalT {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
       (φ : basisIdx (c i)) :
     Tensor S c →ₗ[k] Tensor S (c ∘ i.succAbove) :=
-  PiTensorProduct.lift (Pure.evalPMultilinear i φ)
+  PiTensorProduct.lift
+    { toFun p := Pure.evalP i φ p
+      map_update_add' p m x y := by
+        change (Pure.update p m (x + y)).evalP i φ = _
+        simp only [Pure.evalP_update_add]
+        rfl
+      map_update_smul' p k r y := by
+        change (Pure.update p k (r • y)).evalP i φ = _
+        rw [Pure.evalP_update_smul]
+        rfl }
 
 @[simp]
 lemma evalT_pure {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
     (φ : basisIdx (c i)) (p : Pure S c) :
-    evalT i φ p.toTensor = Pure.evalP i φ p := by
-  simp only [evalT, Pure.toTensor]
-  change _ = Pure.evalPMultilinear i φ p
-  conv_rhs => rw [← PiTensorProduct.lift.tprod]
+    evalT i φ p.toTensor = Pure.evalP i φ p :=
+  PiTensorProduct.lift.tprod p
 
 lemma evalT_basis {n : ℕ} {c : Fin (n + 1) → C} (i : Fin (n + 1))
     (b : ComponentIdx c) (x : basisIdx (c i)) :

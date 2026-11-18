@@ -128,7 +128,10 @@ lemma harmonicWaveX_contDiff {d} (n : WithTop ℕ∞) (𝓕 : FreeSpace) (k : �
   intro μ
   match μ with
   | Sum.inl 0 => simp [harmonicWaveX]; fun_prop
-  | Sum.inr ⟨0, h⟩ => simp [harmonicWaveX]; fun_prop
+  | Sum.inr ⟨0, h⟩ =>
+    convert contDiff_const (c := (0 : ℝ)) using 1
+    funext x
+    simp
   | Sum.inr ⟨Nat.succ i, h⟩ =>
     simp [harmonicWaveX]
     fun_prop

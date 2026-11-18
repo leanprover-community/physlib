@@ -39,7 +39,8 @@ lemma Matrix.submatrix_one_isometry {e : d₂ → d} {f : d₃ → d} (he : e.Bi
   -- Since $e$ is injective and $f$ is bijective, the product $A * Aᴴ$ will have 1s on the diagonal and 0s elsewhere, which is the identity matrix.
   change ∑ k, (Matrix.conjTranspose (Matrix.submatrix (1 : Matrix d d R) e f)) i k *
     (Matrix.submatrix (1 : Matrix d d R) e f) k j = if i = j then 1 else 0
-  simp_all only [Multiset.bijective_iff_map_univ_eq_univ, submatrix_apply, conjTranspose_apply, one_apply]
+  simp_all only [Multiset.bijective_iff_map_univ_eq_univ, submatrix_apply, conjTranspose_apply,
+    Matrix.one_apply]
   symm; split <;> symm
   next h =>
     subst h

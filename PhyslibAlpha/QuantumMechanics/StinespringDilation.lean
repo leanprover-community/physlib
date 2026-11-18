@@ -207,7 +207,7 @@ lemma stinespringOrtho {R : Type*} [RCLike R]
     have h₁ : (((stinespringOp K)ᴴ * stinespringOp K) i j)
       = ((1 : Matrix m m R) i j) := by
       rw [stinespringForm_CPTP_isometry hK]
-    rw [mul_apply] at h₁
+    rw [Matrix.mul_apply] at h₁
     by_cases g₀ : i = j
     · subst i
       simp only [conjTranspose_apply, star_def, one_apply_eq] at h₁
@@ -529,7 +529,7 @@ theorem unitary_of_orthonormal {R : Type*} [RCLike R]
     (α : Matrix (m × r) (m × r) R)
   (h₀ : Orthonormal R fun i ↦ WithLp.toLp 2 (α i)) : α * star α = 1 := by
     ext i j
-    rw [mul_apply]
+    rw [Matrix.mul_apply]
     apply star_injective
     simp only [star_apply, star_def, star_sum, star_mul', RingHomCompTriple.comp_apply,
       RingHom.id_apply]
@@ -898,7 +898,7 @@ def krausCompletionChannelMap {R : Type*} [RCLike R] {q r : ℕ}
   · unfold IsKrausChannel
     rw [← krausCompletion_isometry_of_TNI hK]
     ext x y
-    rw [mul_apply, Fintype.sum_prod_type, Finset.sum_comm, Matrix.sum_apply]
+    rw [Matrix.mul_apply, Fintype.sum_prod_type, Finset.sum_comm, Matrix.sum_apply]
     congr
 
 

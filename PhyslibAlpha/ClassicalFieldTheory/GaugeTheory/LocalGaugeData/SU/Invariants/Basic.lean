@@ -74,8 +74,8 @@ lemma planeInclusion_apply (p q : Fin N) (x : Fin N) (i : Fin 2) :
 lemma planeInclusion_transpose_mul {p q : Fin N} (hpq : p ≠ q) :
     (planeInclusion p q)ᵀ * planeInclusion p q = 1 := by
   ext i j
-  simp only [mul_apply, transpose_apply, planeInclusion_apply, mul_ite, mul_one, mul_zero,
-    Finset.sum_ite_eq', Finset.mem_univ, ite_true, one_apply]
+  simp only [Matrix.mul_apply, transpose_apply, planeInclusion_apply, mul_ite, mul_one, mul_zero,
+    Finset.sum_ite_eq', Finset.mem_univ, ite_true, Matrix.one_apply]
   fin_cases i <;> fin_cases j <;> simp [hpq, Ne.symm hpq]
 
 /-- The inclusion of the plane has real entries, so its conjugate transpose is its transpose. -/
@@ -169,14 +169,14 @@ lemma planeBlock_conj (hpq : p ≠ q) (U : Matrix (Fin 2) (Fin 2) ℂ) (C : Matr
 @[simp]
 lemma planeBlock_apply (C : Matrix (Fin N) (Fin N) ℂ) (i j : Fin 2) :
     ((planeInclusion p q)ᵀ * C * planeInclusion p q) i j = C (![p, q] i) (![p, q] j) := by
-  simp [mul_apply, planeInclusion_apply]
+  simp [Matrix.mul_apply, planeInclusion_apply]
 
 /-- A plane matrix of a diagonal matrix is diagonal. -/
 lemma planeMatrix_diagonal (hpq : p ≠ q) (a b : ℂ) :
     planeMatrix p q (diagonal ![a, b])
       = diagonal fun x => if x = p then a else if x = q then b else 1 := by
   ext x y
-  simp only [planeMatrix, Matrix.add_apply, one_apply, Matrix.mul_apply, transpose_apply,
+  simp only [planeMatrix, Matrix.add_apply, Matrix.one_apply, Matrix.mul_apply, transpose_apply,
     planeInclusion_apply, Matrix.sub_apply, diagonal_apply, Fin.sum_univ_two,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.cons_val_fin_one]
   by_cases hxp : x = p <;> by_cases hxq : x = q <;> by_cases hyp : y = p <;>
@@ -287,7 +287,7 @@ lemma eq_smul_one_of_commute {C : Matrix (Fin N) (Fin N) ℂ}
   rcases Nat.eq_zero_or_pos N with rfl | hN
   · exact ⟨0, Subsingleton.elim _ _⟩
   refine ⟨C ⟨0, hN⟩ ⟨0, hN⟩, ext fun x y => ?_⟩
-  rw [Matrix.smul_apply, one_apply, smul_eq_mul]
+  rw [Matrix.smul_apply, Matrix.one_apply, smul_eq_mul]
   by_cases hxy : x = y
   · subst hxy
     by_cases hx : x = ⟨0, hN⟩

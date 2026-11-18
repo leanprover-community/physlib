@@ -44,9 +44,9 @@ lemma koszulSign_mul_self (l : List 𝓕) : koszulSign q le l * koszulSign q le 
     · ring
     · rw [ih, koszulSignInsert_mul_self, mul_one]
 
-@[simp]
-lemma koszulSign_freeMonoid_of (φ : 𝓕) : koszulSign q le (FreeMonoid.of φ) = 1 := by
-  change koszulSign q le [φ] = 1
+lemma koszulSign_freeMonoid_of (φ : 𝓕) :
+    koszulSign q le (FreeMonoid.toList (FreeMonoid.of φ)) = 1 := by
+  rw [FreeMonoid.toList_of]
   simp only [koszulSign, mul_one]
   rfl
 

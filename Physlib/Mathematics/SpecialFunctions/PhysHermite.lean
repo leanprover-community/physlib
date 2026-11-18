@@ -108,16 +108,16 @@ lemma physHermite_succ' (n : ℕ) :
 -/
 
 lemma coeff_physHermite_succ_zero (n : ℕ) :
-    coeff (physHermite (n + 1)) 0 = - coeff (physHermite n) 1 := by
+    (physHermite (n + 1)).coeff 0 = - (physHermite n).coeff 1 := by
   simp [physHermite_succ, coeff_derivative]
 
-lemma coeff_physHermite_succ_succ (n k : ℕ) : coeff (physHermite (n + 1)) (k + 1) =
-    2 * coeff (physHermite n) k - (k + 2) * coeff (physHermite n) (k + 2) := by
-  rw [physHermite_succ, coeff_sub, smul_mul_assoc, coeff_smul, coeff_X_mul, coeff_derivative,
-    mul_comm]
+lemma coeff_physHermite_succ_succ (n k : ℕ) : (physHermite (n + 1)).coeff (k + 1) =
+    2 * (physHermite n).coeff k - (k + 2) * (physHermite n).coeff (k + 2) := by
+  rw [physHermite_succ, coeff_sub, smul_mul_assoc, Polynomial.coeff_smul, coeff_X_mul,
+    coeff_derivative, mul_comm]
   norm_cast
 
-lemma coeff_physHermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (physHermite n) k = 0 := by
+lemma coeff_physHermite_of_lt {n k : ℕ} (hnk : n < k) : (physHermite n).coeff k = 0 := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_lt hnk
   clear hnk
   induction n generalizing k with
@@ -128,7 +128,7 @@ lemma coeff_physHermite_of_lt {n k : ℕ} (hnk : n < k) : coeff (physHermite n) 
     simp
 
 @[simp]
-lemma coeff_physHermite_self (n : ℕ) : coeff (physHermite n) n = 2 ^ n := by
+lemma coeff_physHermite_self (n : ℕ) : (physHermite n).coeff n = 2 ^ n := by
   induction n with
   | zero => exact coeff_C
   | succ n ih =>
@@ -443,8 +443,8 @@ lemma polynomial_mem_physHermite_span_induction (P : Polynomial ℤ) : (n : ℕ)
   | n + 1, h => by
     by_cases hP0 : P = 0
     · grind
-    let P' := ((coeff (physHermite (n + 1)) (n + 1)) • P -
-        (coeff P (n + 1)) • physHermite (n + 1))
+    let P' := (((physHermite (n + 1)).coeff (n + 1)) • P -
+        (P.coeff (n + 1)) • physHermite (n + 1))
     have hP'mem : (fun x => P'.aeval x) ∈ Submodule.span ℝ
         (Set.range (fun n => (physHermite n : ℝ → ℝ))) := by
       by_cases hP' : P' = 0
@@ -467,7 +467,7 @@ decreasing_by
     intro m hm'
     simp only [coeff_physHermite_self, coeff_sub]
     change n + 1 ≤ m at hm'
-    rw [coeff_smul, coeff_smul]
+    rw [Polynomial.coeff_smul, Polynomial.coeff_smul]
     by_cases hm : m = n + 1
     · subst hm
       simp only [smul_eq_mul, coeff_physHermite_self]

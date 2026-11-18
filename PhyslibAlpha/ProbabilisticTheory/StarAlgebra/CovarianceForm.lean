@@ -200,7 +200,7 @@ lemma conjTranspose_mul_covarianceMatrixForm_mul (σ : A ≃⋆ₐ[ℂ] A) (hω 
   have e := ω.covarianceForm_map σ hω (a i) (b k)
   rw [ha, hb, covarianceForm_sum_left] at e
   simp only [covarianceForm_sum_right, covarianceForm_smul_left, covarianceForm_smul_right] at e
-  simp only [mul_apply, conjTranspose_apply, covarianceMatrixForm, of_apply, Finset.sum_mul]
+  simp only [Matrix.mul_apply, conjTranspose_apply, covarianceMatrixForm, of_apply, Finset.sum_mul]
   rw [← e, Finset.sum_comm]
   refine Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl fun l _ => ?_
   ring

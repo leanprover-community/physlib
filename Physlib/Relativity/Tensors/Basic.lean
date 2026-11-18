@@ -221,26 +221,6 @@ lemma component_update_smul {n : ℕ} [inst : DecidableEq (Fin n)]
   · exact Fin.elim0 i
   · simp [component_eq_drop _ i, mul_assoc]
 
-/-- The multilinear map taking pure tensors `p` to a map `ComponentIdx c → k` which when
-  evaluated returns the components of `p`. -/
-noncomputable def componentMap {n : ℕ} (c : Fin n → C) :
-    MultilinearMap k (fun i => V (c i)) (ComponentIdx (S := S) c → k) where
-  toFun p := fun b => component p b
-  map_update_add' p i x y := by
-    ext b
-    change component (update p i (x + y)) b =
-      component (update p i x) b + component (update p i y) b
-    exact component_update_add p i x y b
-  map_update_smul' p i x y := by
-    ext b
-    change component (update p i (x • y)) b = x * component (update p i y) b
-    exact component_update_smul p i x y b
-
-@[simp]
-lemma componentMap_apply {n : ℕ} (c : Fin n → C)
-    (p : Pure S c) : componentMap c p = p.component := by
-  rfl
-
 /-- Given an component idx `b` in `ComponentIdx c`, `basisVector c b` is the pure tensor
   formed by `S.basis (c i) (b i)`. -/
 noncomputable def basisVector {n : ℕ} (c : Fin n → C) (φ : ComponentIdx (S := S) c) : Pure S c :=
@@ -269,13 +249,25 @@ lemma induction_on_pure {n : ℕ} {c : Fin n → C} {P : S.Tensor c → Prop}
 
 noncomputable section Basis
 
-/-- The linear map from tensors to its components. -/
+/-- The linear map from tensors to its components, lifted from the multilinear map taking
+  pure tensors `p` to `p.component`. -/
 def componentMap {n : ℕ} (c : Fin n → C) : S.Tensor c →ₗ[k] (ComponentIdx (S := S) c → k) :=
-  PiTensorProduct.lift (Pure.componentMap c)
+  PiTensorProduct.lift
+    { toFun p := fun b => Pure.component p b
+      map_update_add' p i x y := by
+        ext b
+        change Pure.component (Pure.update p i (x + y)) b =
+          Pure.component (Pure.update p i x) b + Pure.component (Pure.update p i y) b
+        exact Pure.component_update_add p i x y b
+      map_update_smul' p i x y := by
+        ext b
+        change Pure.component (Pure.update p i (x • y)) b =
+          x * Pure.component (Pure.update p i y) b
+        exact Pure.component_update_smul p i x y b }
 
 @[simp]
 lemma componentMap_pure {n : ℕ} (c : Fin n → C)
-    (p : Pure S c) : componentMap c (p.toTensor) = Pure.componentMap c p :=
+    (p : Pure S c) : componentMap c (p.toTensor) = p.component :=
   PiTensorProduct.lift.tprod p
 
 /-- The tensor created from it's components. -/
@@ -299,12 +291,12 @@ lemma ofComponents_componentMap {n : ℕ} (c : Fin n → C) (t : S.Tensor c) :
   simp only [ofComponents, LinearMap.coe_mk, AddHom.coe_mk]
   induction t using induction_on_pure with
   | h p =>
-    simp only [componentMap_pure, Pure.componentMap_apply]
-    simp_rw [Pure.component_eq, Pure.toTensor, ← MultilinearMap.map_smul_univ, Pure.basisVector]
-    trans (PiTensorProduct.tprod k) fun i =>
-      ∑ x, ((b (c i)).repr (p i)) x • (b (c i)) x
-    · exact (MultilinearMap.map_sum _ fun i j => ((b (c i)).repr (p i)) j • (b (c i)) j).symm
-    exact congrArg _ (funext fun i => Basis.sum_equivFun (b (c i)) (p i))
+    simp only [componentMap_pure]
+    conv_rhs => rw [← funext fun i => Basis.sum_equivFun (b (c i)) (p i), Pure.toTensor,
+      MultilinearMap.map_sum]
+    refine Finset.sum_congr rfl fun x _ => ?_
+    rw [MultilinearMap.map_smul_univ]
+    rfl
   | hsmul r t ht =>
     simp only [map_smul, Pi.smul_apply, smul_eq_mul, ← smul_smul, ← Finset.smul_sum, ht]
   | hadd t1 t2 h1 h2 => simp [add_smul, Finset.sum_add_distrib, h1, h2]

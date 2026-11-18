@@ -300,7 +300,7 @@ lemma conjT_pure {n : ℕ} {c : Fin n → C} (p : Tensor.Pure S.toTensorSpecies 
     S.conjT p.toTensor = Pure.toTensor (fun i => S.conjEquiv (p i)) := by
   apply componentMap_ext
   intro φ
-  simp only [componentMap_conjT, componentMap_pure, Pure.componentMap_apply]
+  simp only [componentMap_conjT, componentMap_pure]
   simp [Pure.component]
   congr
   funext x

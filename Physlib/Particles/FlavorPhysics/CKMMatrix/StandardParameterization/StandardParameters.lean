@@ -326,7 +326,7 @@ lemma on_param_cos_θ₁₃_eq_zero {V : CKMMatrix} (δ₁₃ : ℝ) (h : Real.c
   use 0, 0, 0, δ₁₃, 0, -δ₁₃
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, mul_apply,
+    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, Matrix.mul_apply,
       Fin.sum_univ_three, ofReal_cos, ofReal_sin, S₁₃_eq_ℂsin_θ₁₃, C₁₂_eq_ℂcos_θ₁₂,
       S₁₂_eq_ℂsin_θ₁₂, S₁₃_of_Vub_one hub, C₁₂_of_Vub_one hub, S₁₂_of_Vub_one hub, h, exp_neg]
 
@@ -336,7 +336,7 @@ lemma on_param_cos_θ₁₂_eq_zero {V : CKMMatrix} (δ₁₃ : ℝ) (h : Real.c
   use 0, δ₁₃, δ₁₃, -δ₁₃, 0, - δ₁₃
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, mul_apply,
+    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, Matrix.mul_apply,
       Fin.sum_univ_three, h, exp_neg] <;>
     field_simp
 
@@ -346,7 +346,7 @@ lemma on_param_cos_θ₂₃_eq_zero {V : CKMMatrix} (δ₁₃ : ℝ) (h : Real.c
   use 0, δ₁₃, 0, 0, 0, - δ₁₃
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, mul_apply,
+    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, Matrix.mul_apply,
       Fin.sum_univ_three, h, exp_neg] <;>
     field_simp
 
@@ -356,7 +356,7 @@ lemma on_param_sin_θ₁₃_eq_zero {V : CKMMatrix} (δ₁₃ : ℝ) (h : Real.s
   use 0, 0, 0, 0, 0, 0
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, mul_apply,
+    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, Matrix.mul_apply,
       Fin.sum_univ_three, h, exp_neg]
 
 set_option backward.isDefEq.respectTransparency false in
@@ -365,7 +365,7 @@ lemma on_param_sin_θ₁₂_eq_zero {V : CKMMatrix} (δ₁₃ : ℝ) (h : Real.s
   use 0, δ₁₃, δ₁₃, 0, -δ₁₃, - δ₁₃
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, mul_apply,
+    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, Matrix.mul_apply,
       Fin.sum_univ_three, h, exp_neg] <;>
     field_simp
 
@@ -375,7 +375,7 @@ lemma on_param_sin_θ₂₃_eq_zero {V : CKMMatrix} (δ₁₃ : ℝ) (h : Real.s
   use 0, 0, δ₁₃, 0, 0, - δ₁₃
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, mul_apply,
+    simp [standParam, standParamAsMatrix, phaseShift, phaseShiftMatrix, Matrix.mul_apply,
       Fin.sum_univ_three, h, exp_neg] <;>
     field_simp
 

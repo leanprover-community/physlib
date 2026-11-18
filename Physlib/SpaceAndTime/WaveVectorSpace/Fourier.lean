@@ -97,7 +97,7 @@ noncomputable def physChar : AddChar ℝ Circle where
 variable {b} in
 @[fun_prop]
 lemma physChar_continuous : Continuous (physChar b) := by
-  rw [AddChar.coe_mk]
+  change Continuous fun r : ℝ => Circle.exp (b * r)
   fun_prop
 
 /-- The Fourier integral over `Space`,
