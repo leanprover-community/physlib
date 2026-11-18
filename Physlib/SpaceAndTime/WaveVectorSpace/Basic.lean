@@ -195,6 +195,9 @@ instance : InnerProductSpace.Core ℝ (WaveVectorSpace d) where
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (WaveVectorSpace d) :=
   instCoreReal.toNormedAddCommGroup
 
+noncomputable instance instNormedSpace : NormedSpace ℝ (WaveVectorSpace d) :=
+  InnerProductSpace.Core.toNormedSpace
+
 noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVectorSpace d) :=
   InnerProductSpace.ofCore instCoreReal.toCore
 
