@@ -3,16 +3,10 @@ analyticity
 Cherkis
 cylinder
 ergodicity
-functionals
 Glimm
 mollified
 mollifier
 osforgff
-pairing
-pullback
-reconstruction
-reflection
-reflections
 coefficient
 comp
 complexification
