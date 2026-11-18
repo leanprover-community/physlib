@@ -152,12 +152,12 @@ noncomputable def tempDistTimeSlice {M d} [NormedAddCommGroup M] [NormedSpace �
   continuous_invFun :=
     ((compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c).symm).precomp M).continuous
 
-lemma distTimeSlice_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma tempDistTimeSlice_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight) (f : (SpaceTime d) →d[ℝ] M)
     (κ : 𝓢(Time × Space d, ℝ)) : tempDistTimeSlice c f κ =
     f (compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c) κ) := by rfl
 
-lemma distTimeSlice_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma tempDistTimeSlice_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight) (f : (Time × (Space d)) →d[ℝ] M)
     (κ : 𝓢(SpaceTime d, ℝ)) : (tempDistTimeSlice c).symm f κ =
     f (compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c).symm κ) := by rfl
@@ -174,9 +174,9 @@ lemma distTimeSlice_distDeriv_inl {M d} [NormedAddCommGroup M] [NormedSpace ℝ 
     tempDistTimeSlice c (distDeriv (Sum.inl 0) f) =
     (1/c.val) • Space.distTimeDeriv (tempDistTimeSlice c f) := by
   ext κ
-  rw [distTimeSlice_apply, distDeriv_apply, fderivD_apply]
+  rw [tempDistTimeSlice_apply, distDeriv_apply, fderivD_apply]
   simp only [Fin.isValue, one_div, FunLike.coe_smul, Pi.smul_apply]
-  rw [distTimeDeriv_apply, fderivD_apply, distTimeSlice_apply]
+  rw [distTimeDeriv_apply, fderivD_apply, tempDistTimeSlice_apply]
   simp only [Fin.isValue, smul_neg, neg_inj]
   rw [← map_smul]
   congr
@@ -219,8 +219,8 @@ lemma distTimeSlice_distDeriv_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ 
     tempDistTimeSlice c (distDeriv (Sum.inr i) f) =
     Space.distSpaceDeriv i (tempDistTimeSlice c f) := by
   ext κ
-  rw [distTimeSlice_apply, distDeriv_apply, fderivD_apply]
-  rw [distSpaceDeriv_apply, fderivD_apply, distTimeSlice_apply]
+  rw [tempDistTimeSlice_apply, distDeriv_apply, fderivD_apply]
+  rw [distSpaceDeriv_apply, fderivD_apply, tempDistTimeSlice_apply]
   simp only [neg_inj]
   congr 1
   ext x

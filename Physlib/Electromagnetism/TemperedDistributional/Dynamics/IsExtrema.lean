@@ -125,10 +125,10 @@ lemma isExtrema_iff_space_time {𝓕 : FreeSpace}
       field_simp
     rw [mu0_factor_eq, mul_eq_zero, or_iff_right 𝓕.μ₀_ne_zero]
   refine and_congr ?_ ?_
-  · simp only [gradLagrangian_sum_inl_0, SpaceTime.distTimeSlice_symm_apply]
+  · simp only [gradLagrangian_sum_inl_0, SpaceTime.tempDistTimeSlice_symm_apply]
     rw [hsurj.forall]
     exact forall_congr' fun ε => hgauss _ _
-  · simp only [gradLagrangian_sum_inr_i, SpaceTime.distTimeSlice_symm_apply]
+  · simp only [gradLagrangian_sum_inr_i, SpaceTime.tempDistTimeSlice_symm_apply]
     rw [hsurj.forall]
     exact forall_congr' fun ε => forall_congr' fun i => hampere _ _ _
 
