@@ -43,7 +43,8 @@ momentum, infinitesimal rotations and momentum scaling, successively eliminating
 
 ## iv. References
 
-* V. I. Arnold, *Mathematical Methods of Classical Mechanics*, 2nd edition, Chapter 10.
+* V. I. Arnold, *Mathematical Methods of Classical Mechanics*, 2nd edition,
+  Chapter 10. [ref: arnold_mechanics]
 -/
 
 @[expose] public section
