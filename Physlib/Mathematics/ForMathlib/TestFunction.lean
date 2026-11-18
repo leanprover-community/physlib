@@ -8,20 +8,17 @@ module
 public import Mathlib.Analysis.Distribution.Distribution
 /-!
 
-# DistributionCLM
+# TestFunction
 
 ## i. Overview
 
-In this module, we define continuous linear maps between spaces of distributions. We first define
-a continuous linear map between spaces of test functions via the pullback of a test function
-`TestFunction Ω' F ⊤` along a linear equivalence`g : E ≃L[ℝ] E'`. We then use this to define a map
-between spaces of distributions `Distribution Ω F ⊤` and `Distribution Ω' F ⊤` by precomposition.
+In this module, we define a continuous linear map between spaces of test functions via the pullback
+of a test function `TestFunction Ω' F ⊤` along a linear equivalence`g : E ≃L[ℝ] E'`.
 
 ## ii. Key results
 
-- `pullback` : A continuous linear map between spaces of test functions `𝓓(Ω', F)` and `𝓓(Ω, F)`.
-- `DistributionMap` : A continuous linear map between spaces of distributions `𝓓'(Ω, F)` and
-    `𝓓'(Ω', F)`.
+- `compCLMofContinuousLinearEquiv` : A continuous linear map between spaces of test functions
+ `𝓓(Ω', F)` and `𝓓(Ω, F)`.
 
 ## iii. Table of contents
 
@@ -121,19 +118,3 @@ noncomputable def compCLMofContinuousLinearEquiv {E E'} [NormedAddCommGroup E]
     rfl
 
 end TestFunction
-
-namespace Distribution
-
-open TestFunction
-
-/--Having defined a CLM between test functions, we now define a continuous linear map between spaces
-of distributions `𝓓'(Ω, F)` and `𝓓'(Ω', F)`. -/
-noncomputable def compContinuousLinearEquiv {E E'} [NormedAddCommGroup E]
-    [NormedAddCommGroup E'] [NormedSpace ℝ E] [NormedSpace ℝ E']
-    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-    {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
-    (h : g.invFun '' Ω' ⊆ ↑Ω) :
-    Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ :=
-    (compCLMofContinuousLinearEquiv (F := ℝ) g h).precompCompactConvergenceCLM F
-
-end Distribution

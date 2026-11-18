@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Mathematics.ForMathlib.DistributionCLM
+public import Physlib.Mathematics.ForMathlib.Distribution
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
 /-!
