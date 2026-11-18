@@ -123,8 +123,7 @@ lemma gradKineticTerm_sum_inl_eq {d} {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d) (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradKineticTerm 𝓕 ε (Sum.inl 0) =
     (1/(𝓕.μ₀ * 𝓕.c) * (tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε):=
-    by
-  rw [gradKineticTerm_eq_fieldStrength A ε, Lorentz.Vector.apply_sum, distTimeSlice_symm_apply,
+    by rw [gradKineticTerm_eq_fieldStrength A ε, Lorentz.Vector.apply_sum, distTimeSlice_symm_apply,
     Space.distSpaceDiv_apply_eq_sum_distSpaceDeriv, Finset.mul_sum]
   simp [Fintype.sum_sum_type, Finset.mul_sum]
   apply Finset.sum_congr rfl (fun ν _ => ?_)
