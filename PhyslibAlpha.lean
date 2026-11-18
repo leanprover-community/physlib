@@ -151,6 +151,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Spherical
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Poincare
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.AngularMomentum
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.Basic
+public import PhyslibAlpha.ClassicalMechanics.CentralForce.ConservedQuantities
+public import PhyslibAlpha.ClassicalMechanics.CentralForce.LiouvilleIntegrable
 public import PhyslibAlpha.ClassicalMechanics.CoupledSpringPotential
 public import PhyslibAlpha.ClassicalMechanics.LiouvilleIntegrable.Basic
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.Basic
