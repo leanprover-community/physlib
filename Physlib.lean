@@ -34,6 +34,7 @@ public import Physlib.ClassicalMechanics.Mass.MassUnit
 public import Physlib.ClassicalMechanics.Observables.Basic
 public import Physlib.ClassicalMechanics.Observables.Dirac
 public import Physlib.ClassicalMechanics.Observables.Measurable
+public import Physlib.ClassicalMechanics.Observables.NormalChannel
 public import Physlib.ClassicalMechanics.Observables.NormalState
 public import Physlib.ClassicalMechanics.Observables.PureState
 public import Physlib.ClassicalMechanics.OrbitalMechanics.VisViva
