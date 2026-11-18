@@ -61,13 +61,13 @@ attribute [-simp] Nat.succ_eq_add_one
 noncomputable def scalarPotential {d} (c : SpeedOfLight) :
     TempDistElectromagneticPotential d →ₗ[ℝ]
     (Time × Space d) →d[ℝ] ℝ where
-  toFun A := Lorentz.Vector.temporalCLM d ∘L distTimeSlice c (c.val • A)
+  toFun A := Lorentz.Vector.temporalCLM d ∘L tempDistTimeSlice c (c.val • A)
   map_add' A₁ A₂ := by
     ext ε
-    simp [distTimeSlice]
+    simp [tempDistTimeSlice]
   map_smul' r A := by
     ext ε
-    simp [distTimeSlice, mul_left_comm]
+    simp [tempDistTimeSlice, mul_left_comm]
 
 end TempDistElectromagneticPotential
 end Electromagnetism
