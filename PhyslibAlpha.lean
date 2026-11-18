@@ -173,6 +173,7 @@ public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Impulses
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Invariants
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.KeplerClock
+public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Lagrangian
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Parameters
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Plane
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.PublicStatement
