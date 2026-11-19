@@ -200,6 +200,7 @@ public import PhyslibAlpha.CondensedMatter.Bloch.PointSymmetry
 public import PhyslibAlpha.CondensedMatter.Bloch.RegularRep
 public import PhyslibAlpha.CondensedMatter.Bloch.SiteRepresentation
 public import PhyslibAlpha.CondensedMatter.Bloch.Spectrum
+public import PhyslibAlpha.CondensedMatter.Bloch.TightBindingChain
 public import PhyslibAlpha.CondensedMatter.Crystal.Balls
 public import PhyslibAlpha.CondensedMatter.Crystal.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
