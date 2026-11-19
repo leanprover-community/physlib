@@ -53,7 +53,7 @@ lemma phaseShiftMatrix_mul (a b c d e f : ℝ) :
     phaseShiftMatrix a b c * phaseShiftMatrix d e f = phaseShiftMatrix (a + d) (b + e) (c + f) := by
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [phaseShiftMatrix, mul_apply, Fin.sum_univ_three, ← exp_add, mul_add]
+    simp [phaseShiftMatrix, Matrix.mul_apply, Fin.sum_univ_three, ← exp_add, mul_add]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- Given three real numbers `a b c` the unitary matrix with `exp (I * a)` etc on the
@@ -160,8 +160,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ud (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 0 0 = cexp (a * I + d * I) * V.1 0 0 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val_zero, Fin.sum_univ_three,
-    cons_val_one, zero_mul, add_zero, cons_val, mul_zero, exp_add]
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val_zero,
+    Fin.sum_univ_three, cons_val_one, zero_mul, add_zero, cons_val, mul_zero, exp_add]
   ring_nf
 
 set_option backward.isDefEq.respectTransparency false in
@@ -169,8 +169,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma us (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 0 1 = cexp (a * I + e * I) * V.1 0 1 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val_zero, Fin.sum_univ_three,
-    cons_val_one, zero_mul, add_zero, cons_val, mul_zero, zero_add, exp_add]
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val_zero,
+    Fin.sum_univ_three, cons_val_one, zero_mul, add_zero, cons_val, mul_zero, zero_add, exp_add]
   ring_nf
 
 set_option backward.isDefEq.respectTransparency false in
@@ -178,8 +178,8 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ub (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 0 2 = cexp (a * I + f * I) * V.1 0 2 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val_zero, Fin.sum_univ_three,
-    cons_val_one, zero_mul, add_zero, cons_val, mul_zero, zero_add, exp_add]
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val_zero,
+    Fin.sum_univ_three, cons_val_one, zero_mul, add_zero, cons_val, mul_zero, zero_add, exp_add]
   ring_nf
 
 set_option backward.isDefEq.respectTransparency false in
@@ -187,7 +187,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cd (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 1 0= cexp (b * I + d * I) * V.1 1 0 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val_one, cons_val_zero,
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val_one, cons_val_zero,
     Fin.sum_univ_three, zero_mul, zero_add, cons_val, add_zero, mul_zero, exp_add]
   ring_nf
 
@@ -196,7 +196,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cs (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 1 1 = cexp (b * I + e * I) * V.1 1 1 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val_one, cons_val_zero,
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val_one, cons_val_zero,
     Fin.sum_univ_three, zero_mul, zero_add, cons_val, add_zero, mul_zero, exp_add]
   ring_nf
 
@@ -205,7 +205,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma cb (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 1 2 = cexp (b * I + f * I) * V.1 1 2 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val_one, cons_val_zero,
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val_one, cons_val_zero,
     Fin.sum_univ_three, zero_mul, zero_add, cons_val, add_zero, mul_zero, exp_add]
   ring_nf
 
@@ -214,7 +214,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma td (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 2 0= cexp (c * I + d * I) * V.1 2 0 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val, cons_val_one,
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val, cons_val_one,
     Fin.sum_univ_three, cons_val_zero, zero_mul, add_zero, zero_add, mul_zero, exp_add]
   ring_nf
 
@@ -223,7 +223,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma ts (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 2 1 = cexp (c * I + e * I) * V.1 2 1 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val, cons_val_one,
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val, cons_val_one,
     Fin.sum_univ_three, cons_val_zero, zero_mul, add_zero, zero_add, mul_zero, exp_add]
   ring_nf
 
@@ -232,7 +232,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma tb (V : CKMMatrix) (a b c d e f : ℝ) :
     (phaseShiftApply V a b c d e f).1 2 2 = cexp (c * I + f * I) * V.1 2 2 := by
   simp only [Fin.isValue, phaseShiftApply_coe, Submonoid.coe_mul, phaseShift_coe_matrix,
-    phaseShiftMatrix, mul_apply, cons_val', cons_val_fin_one, cons_val, cons_val_one,
+    phaseShiftMatrix, Matrix.mul_apply, cons_val', cons_val_fin_one, cons_val, cons_val_one,
     Fin.sum_univ_three, cons_val_zero, zero_mul, add_zero, zero_add, mul_zero, exp_add]
   ring_nf
 
@@ -248,7 +248,7 @@ set_option backward.isDefEq.respectTransparency false in
 lemma VAbs'_equiv (i j : Fin 3) (V U : CKMMatrix) (h : V ≈ U) :
     VAbs' V i j = VAbs' U i j := by
   obtain ⟨a, b, c, e, f, g, rfl⟩ := h
-  simp only [VAbs', Submonoid.coe_mul, phaseShift_coe_matrix, phaseShiftMatrix, mul_apply,
+  simp only [VAbs', Submonoid.coe_mul, phaseShift_coe_matrix, phaseShiftMatrix, Matrix.mul_apply,
     Fin.sum_univ_three]
   fin_cases i <;> fin_cases j <;>
     simp [Complex.norm_exp, mul_comm]
