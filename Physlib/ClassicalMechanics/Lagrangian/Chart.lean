@@ -6,10 +6,8 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
-public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
 public import Physlib.Mathematics.ForMathlib.Cutoff
-public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
 /-!
 # Lagrangian systems in charts

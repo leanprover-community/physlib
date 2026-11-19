@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Polynomially-bounded Schwartz submodules

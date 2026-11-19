@@ -239,24 +239,13 @@ theorem kron_def [CommSemiring R] (M₁ : MatrixMap A B R) (M₂ : MatrixMap C D
     Module.Basis.tensorProduct_repr_tmul_apply, Module.Basis.map_repr, LinearEquiv.trans_apply, Matrix.coe_ofLinearEquiv_symm,
     Module.Basis.repr_reindex, Finsupp.equivMapDomain_apply,
     Pi.basis_repr, Pi.basisFun_repr, Matrix.of_symm_apply, smul_eq_mul,
-    Matrix.of_symm_single, Pi.single_apply, Matrix.smul_of, Matrix.sum_apply, Matrix.of_apply, Pi.smul_apply]
+    Matrix.single_eq_of_single_single, Equiv.symm_apply_apply, Pi.single_apply,
+    Matrix.smul_of, Matrix.sum_apply,
+    Matrix.of_apply, Pi.smul_apply]
   rw [ Finset.sum_eq_single ( ( b₁, d₁ ), ( b₂, d₂ ) ) ]
   · rw [ Finset.sum_eq_single ( ( a₁, c₁ ), ( a₂, c₂ ) ) ]
     · simp only [↓reduceIte, Pi.single_eq_same, mul_one]
       rw [ mul_comm ]
-      congr! 2
-      · ext i j
-        by_cases hi : i = a₁
-        <;> by_cases hj : j = a₂
-        <;> simp only [hi, hj, Matrix.of_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne,
-              Pi.single_eq_same, Pi.zero_apply, Matrix.single]
-        <;> grind only
-      · ext i j
-        by_cases hi : i = c₁
-        <;> by_cases hj : j = c₂
-        <;> simp only [hi, hj, Matrix.of_apply, ne_eq, not_false_eq_true, Pi.single_eq_of_ne,
-              Pi.single_eq_same, Pi.zero_apply, Matrix.single]
-        <;> grind only
     · intros
       split
       · grind [Prod.mk.injEq, Pi.single_eq_of_ne, mul_zero]

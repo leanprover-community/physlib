@@ -5,17 +5,5 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.ForMathlib.HermitianMat.Basic
-public import QuantumInfo.ForMathlib.HermitianMat.CFC
-public import QuantumInfo.ForMathlib.HermitianMat.Inner
 public import QuantumInfo.ForMathlib.HermitianMat.LiebConcavity
-public import QuantumInfo.ForMathlib.HermitianMat.LogExp
-public import QuantumInfo.ForMathlib.HermitianMat.Order
 public import QuantumInfo.ForMathlib.HermitianMat.Peierls
-public import QuantumInfo.ForMathlib.HermitianMat.Proj
-public import QuantumInfo.ForMathlib.HermitianMat.Rpow
-public import QuantumInfo.ForMathlib.HermitianMat.Reindex
-public import QuantumInfo.ForMathlib.HermitianMat.Schatten
-public import QuantumInfo.ForMathlib.HermitianMat.Sqrt
-public import QuantumInfo.ForMathlib.HermitianMat.Trace
-public import QuantumInfo.ForMathlib.HermitianMat.Unitary

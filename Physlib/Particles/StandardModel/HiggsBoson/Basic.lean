@@ -264,12 +264,7 @@ def toRealGroupElem (φ : HiggsVec) : GaugeGroupI :=
     simp only [Fin.isValue, star_apply, of_apply, cons_val', cons_val_fin_one, RCLike.star_def,
       Fin.sum_univ_two, cons_val_zero, cons_val_one]
     have hφ : Complex.ofReal ‖φ‖ ≠ 0 := ofReal_inj.mp.mt (norm_ne_zero_iff.mpr hφ)
-    fin_cases i <;> fin_cases j <;>
-    all_goals
-    · simp
-      field_simp
-      rw [h0']
-      ring
+    fin_cases i <;> fin_cases j <;> (simp; field_simp; rw [h0']; ring)
   /- Determinant equals one. -/
   · have h1 : (‖φ‖ : ℂ) ≠ 0 := ofReal_inj.mp.mt (norm_ne_zero_iff.mpr hφ)
     simp [det_fin_two]

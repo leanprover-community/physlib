@@ -5,7 +5,6 @@ Authors: Robert Sneiderman, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Basic
 public import Physlib.Relativity.Bispinors.Pauli.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Metrics.Basic
 /-!

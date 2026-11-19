@@ -3,11 +3,16 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Physlib.Meta.Basic
-import Physlib.Meta.TODO.Basic
-import Mathlib.Lean.CoreM
-import Physlib.Meta.Informal.Post
-import Physlib.Meta.Informal.SemiFormal
+module
+
+public import Physlib.Meta.Basic
+public import Physlib.Meta.TODO.Basic
+public import Mathlib.Lean.CoreM
+public import Physlib.Meta.Informal.Post
+public meta import Physlib.Meta.Informal.Post
+public import Physlib.Meta.Informal.SemiFormal
+
+@[expose] public meta section
 /-!
 
 # Checks for duplicate TODO tags
