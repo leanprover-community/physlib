@@ -63,7 +63,7 @@ lemma hasDerivAt_velocityAtAnomaly_x (p : Parameters) (u : ℝ) :
   have h := hnum.div (hasDerivAt_D p u) (D_ne p u)
   convert h using 1
   · rfl
-  · apply (div_left_inj' (pow_ne_zero 2 (D_ne p u))).2
+  · apply (div_left_inj₀ (pow_ne_zero 2 (D_ne p u))).2
     unfold D
     nlinarith [congrArg (fun x : ℝ => p.a*p.n*p.e*x)
       (Real.sin_sq_add_cos_sq u)]
@@ -74,7 +74,7 @@ lemma hasDerivAt_velocityAtAnomaly_y (p : Parameters) (u : ℝ) :
   have h := hnum.div (hasDerivAt_D p u) (D_ne p u)
   convert h using 1
   · rfl
-  · apply (div_left_inj' (pow_ne_zero 2 (D_ne p u))).2
+  · apply (div_left_inj₀ (pow_ne_zero 2 (D_ne p u))).2
     unfold D
     ring
 lemma hasDerivAt_velocity (p : Parameters) (t : ℝ) :

@@ -20,10 +20,16 @@ every top-level `lean_lib` in the Lake configuration. You can also name several 
 for example `lake exe migrate Physlib QuantumInfo`. Source directories, root modules, and
 module globs come from Lake; dependencies are not migrated.
 
-Build the imports first. The executable resolves references through Lean, preserving comments,
-strings, declaration names, and local variables. Deprecations with only a prose message are
-left alone. Each modified file is checked again before writing; if either elaboration fails,
-the file is left unchanged and the executable returns a nonzero exit status after processing
+The executable reuses `.ilean` references from the latest local build or restored cache when
+the build trace's source and reference hashes match the current files. For restored traces
+without source-hash entries, it checks Lake's current build-input hash with rebuilding disabled.
+Missing, stale, or unusable build data falls back to elaboration. Build imports first; no rebuild
+is needed just to refresh the migration data. Cached replacements use fully qualified names
+because the saved references do not include local scopes.
+
+Comments, strings, declaration names, and local variables are preserved. Deprecations with
+only a prose message are left alone. Each modified file is checked before writing; if elaboration
+fails, the file is left unchanged and the executable returns a nonzero exit status after processing
 the remaining files. Field notation whose replacement changes namespace is reported for
 manual migration. Review the resulting diff before committing.
 

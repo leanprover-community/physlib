@@ -67,7 +67,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 @[simp]
 lemma maurerCartan_one (μ : Fin 1 ⊕ Fin 3) : jets.maurerCartan 1 μ = 0 := by
   have h := jets.maurerCartan_cocycle 1 1 μ
-  rw [one_mul, map_one, Module.End.one_apply] at h
+  rw [one_mul, map_one, one_apply_eq_self] at h
   exact add_left_cancel (h.symm.trans (add_zero _).symm)
 
 /-- The Maurer–Cartan form of an inverse: `ω_μ(U⁻¹) = − Ad_{U⁻¹} ω_μ(U)`, the cocycle
@@ -102,7 +102,7 @@ lemma maurerCartan_eq_of_deriv_adjointJ
   funext U μ
   refine hfaithful _ _ fun z => ?_
   have hz : jets.adjointJ U (jets.adjointJ U⁻¹ z) = z := by
-    rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one, Module.End.one_apply]
+    rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one, one_apply_eq_self]
   have h1 := hω U μ (jets.adjointJ U⁻¹ z)
   have h2 := jets.deriv_adjointJ U μ (jets.adjointJ U⁻¹ z)
   rw [hz] at h1 h2

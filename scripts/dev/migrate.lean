@@ -4,6 +4,7 @@ Released under Apache 2.0 license.
 Authors: Physlib contributors
 -/
 import Lean
+import Lean.Server.References
 import Lake.CLI.Main
 
 /-!
@@ -14,8 +15,10 @@ Replace references to deprecated declarations with their declared alternatives.
 
 `lake exe migrate` processes every top-level `lean_lib` in the Lake configuration.
 `lake exe migrate Physlib` processes only the library named `Physlib`. Imports must be built.
-References are identified by elaboration, preserving comments, strings, and local variables.
-Deprecations with only a prose message are left alone. Each changed file is elaborated again
+References are read from the latest local build's `.ilean` file, including restored cache data,
+when its build trace matches the source and reference file hashes. Missing or stale build data
+falls back to elaboration. Comments, strings, and local variables are preserved.
+Deprecations with only a prose message are left alone. Each changed file is elaborated
 before being written; failures leave that file untouched and produce a nonzero exit status.
 Field notation is migrated when the replacement stays in the same namespace; other field
 notation requires a manual rewrite and is reported. Each file runs in a separate process so
@@ -24,6 +27,7 @@ imported environments are released between files.
 ## ii. Key results
 
 * `Migrate.collectEdit` identifies references using Lean's deprecation attribute.
+* `Migrate.cachedEdits?` reuses resolved references from a matching build or restored cache.
 * `Migrate.migrateFile` checks the migrated source before writing it.
 
 ## iii. Table of contents
@@ -90,6 +94,78 @@ def collectEdit (ctx : ContextInfo) (info : Info) (edits : Array Edit) : IO (Arr
 ## B. Elaborating and editing files
 -/
 
+/-- Verify a restored artifact against Lake's current input hash without building any source. -/
+def restoredCacheMatches (mod : Name) (saved : Json) : IO Bool := do
+  let expected ← IO.ofExcept <| saved.getObjValAs? Lake.Hash "depHash"
+  let output ← IO.Process.output {
+    cmd := "lake"
+    args := #["--quiet", "--no-build", "--no-cache", "--rehash", "--json",
+      "query", s!"+{mod}:depHash"] }
+  if output.exitCode != 0 then return false
+  let actual ← IO.ofExcept <| Json.parse output.stdout >>= fromJson? (α := Lake.Hash)
+  return actual == expected
+
+/-- Check that a saved build's source and reference hashes match the files being used. -/
+def cacheMatches (file : FilePath) (mod : Name) (ilean trace : FilePath) : IO Bool := do
+  let saved ← IO.ofExcept <| Json.parse (← IO.FS.readFile trace)
+  let inputs ← IO.ofExcept <| saved.getObjValAs? (Array (String × Json)) "inputs"
+  let matchesSource ← if inputs.isEmpty then restoredCacheMatches mod saved else do
+    let sourceHash ← Lake.computeFileHash file (text := true)
+    pure <| inputs.any fun (caption, value) =>
+      caption.endsWith ".lean" && (fromJson? (α := Lake.Hash) value).toOption == some sourceHash
+  unless matchesSource do return false
+  let output ← IO.ofExcept <| saved.getObjVal? "outputs" >>= (·.getObjValAs? String "i")
+  return output == s!"{(← Lake.computeFileHash ilean).hex}.ilean"
+
+/-- Index imported deprecations by the escaped names stored in `.ilean` references. -/
+def cachedReplacements (env : Environment) : Std.HashMap String (Name × Name) := Id.run do
+  let mut result := ∅
+  for index in [:env.header.moduleNames.size] do
+    for (name, _) in Linter.deprecatedAttr.ext.getModuleEntries env index do
+      if let some next := replacement? env name then
+        result := result.insert name.toString (name, next)
+  return result
+
+/-- Read resolved references from a compatible build, without elaborating the source. -/
+unsafe def cachedEdits? (file : FilePath) (mod : Name) (source : String)
+    (ilean trace : FilePath) : IO (Option (Array Edit)) := do
+  unless (← ilean.pathExists) && (← trace.pathExists) do return none
+  try
+    unless ← cacheMatches file mod ilean trace do
+      IO.eprintln s!"{file}: cached source or reference hash differs; using elaboration"
+      return none
+    let saved ← Server.Ilean.load ilean
+    unless saved.version == 5 && saved.module == mod do return none
+    enableInitializersExecution
+    let env ← importModules #[{ module := mod }] {} (loadExts := true)
+    let replacements := cachedReplacements env
+    let fileMap := FileMap.ofString source
+    let mut edits := #[]
+    for (ident, refs) in saved.references do
+      let .const _ name := ident | continue
+      let some (old, next) := replacements[name]? | continue
+      -- Private names need the local context available in an elaborated info tree.
+      if isPrivateName old || isPrivateName next then return none
+      for usage in refs.usages do
+        let range := fileMap.lspRangeToUtf8Range usage.range
+        let written := (Substring.Raw.mk source range.start range.stop).toString
+        let .ok stx := Parser.runParserCategory env `term written | return none
+        unless stx.isIdent do return none
+        let before := (Substring.Raw.mk source 0 range.start).toString
+        let isField := before.endsWith "."
+        if isField && old.getPrefix != next.getPrefix then return none
+        let text := if isField then
+            (Name.mkSimple next.getString!).toString
+          else
+            -- Cached references do not store local variables or namespace scopes.
+            ((`_root_).append next).toString
+        let edit := { range, text : Edit }
+        unless edits.contains edit do edits := edits.push edit
+    return some edits
+  catch error =>
+    IO.eprintln s!"{file}: cannot use cached references ({error}); using elaboration"
+    return none
+
 /-- Parse imports and elaborate a source file, returning its edits and diagnostics. -/
 unsafe def elaborate (file : FilePath) (mod : Name) (source : String) :
     IO (Array Edit × MessageLog) := do
@@ -126,11 +202,15 @@ def reportErrors (messages : MessageLog) : IO Bool := do
     if msg.severity == .error then IO.eprintln (← msg.toString)
   return messages.hasErrors
 
-/-- Migrate one file only if both the original and edited source elaborate successfully. -/
-unsafe def migrateFile (file : FilePath) (mod : Name) : IO UInt32 := do
+/-- Find replacements using a matching build or elaboration, checking edits before writing. -/
+unsafe def migrateFile (file : FilePath) (mod : Name)
+    (ilean trace : FilePath) : IO UInt32 := do
   initSearchPath (← findSysroot)
   let source ← IO.FS.readFile file
-  let (edits, messages) ← elaborate file mod source
+  let cached? ← cachedEdits? file mod source ilean trace
+  let (edits, messages) ← match cached? with
+    | some edits => pure (edits, {})
+    | none => elaborate file mod source
   if ← reportErrors messages then return 1
   if edits.isEmpty then return 0
   let .ok updated := applyEdits source edits | do
@@ -141,7 +221,8 @@ unsafe def migrateFile (file : FilePath) (mod : Name) : IO UInt32 := do
     IO.eprintln s!"{file}: migrated source failed to elaborate; file left unchanged."
     return 1
   IO.FS.writeFile file updated
-  IO.println s!"{file}: migrated {edits.size} reference(s)"
+  let method := if cached?.isSome then "cached references" else "elaboration"
+  IO.println s!"{file}: migrated {edits.size} reference(s) using {method}"
   return 0
 
 /-!
@@ -193,7 +274,9 @@ def run (args : List String) : IO UInt32 := do
     let file := mod.leanFile
     IO.eprintln s!"[{index + 1}/{modules.size}] {file}"
     let child ← IO.Process.spawn {
-      cmd := executable.toString, args := #["--worker", file.toString, mod.name.toString] }
+      cmd := executable.toString
+      args := #["--worker", file.toString, mod.name.toString,
+        mod.ileanFile.toString, mod.traceFile.toString] }
     if (← child.wait) != 0 then failures := failures + 1
   IO.println s!"Checked {modules.size} file(s); {failures} failed."
   return if failures == 0 then 0 else 1
@@ -209,7 +292,8 @@ unsafe def main (args : List String) : IO UInt32 := do
       IO.println "Defaults to every top-level lean_lib in the Lake configuration."
       IO.println "Build imports first."
       return 0
-    | ["--worker", file, mod] => Migrate.migrateFile file mod.toName
+    | ["--worker", file, mod, ilean, trace] =>
+      Migrate.migrateFile file mod.toName ilean trace
     | _ => Migrate.run args
   catch e =>
     IO.eprintln s!"migrate: {e}"

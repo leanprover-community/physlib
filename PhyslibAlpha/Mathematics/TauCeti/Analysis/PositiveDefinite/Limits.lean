@@ -69,7 +69,7 @@ lemma of_tendsto {ι : Type*} {l : Filter ι} [NeBot l] {F : ι → M → ℂ} {
     (hlim : ∀ x : M, Tendsto (fun i => F i x) l (𝓝 (G x))) :
     IsPositiveDefinite G :=
   of_posSemidef <|
-    Matrix.posSemidef_is_closed.mem_of_tendsto
+    isClosed_setOfPred_posSemidef.mem_of_tendsto
       (tendsto_pi_nhds.2 fun a => tendsto_pi_nhds.2 fun b => hlim (a + star b))
       (hF.mono fun _ hi => hi.posSemidef)
 

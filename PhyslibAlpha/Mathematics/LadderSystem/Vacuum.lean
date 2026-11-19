@@ -82,7 +82,7 @@ def word (L : LadderSystem K V d) (v : List (Fin d)) (x : V) : V :=
 
 lemma word_cons (L : LadderSystem K V d) (i : Fin d) (v : List (Fin d)) (x : V) :
     L.word (i :: v) x = L.ac i (L.word v x) := by
-  simp [word, Module.End.mul_apply]
+  simp [word, mul_apply_eq_comp]
 
 /-- A word depends only on the multiset of colors it represents, not their order. -/
 lemma word_perm (L : LadderSystem K V d) {v v' : List (Fin d)} (h : v.Perm v') (x : V) :
@@ -112,7 +112,7 @@ lemma word_peel (L : LadderSystem K V d) (i : Fin d) {x : V} (hx : L.a i x = 0) 
         = L.ac c (L.a i (L.word v' x)) + (if i = c then L.word v' x else 0) := by
       rw [word_cons]
       have happly := congrArg (fun f : Module.End K V => f (L.word v' x)) hcomm
-      simpa [Module.End.mul_apply, apply_ite (fun f : Module.End K V => f (L.word v' x))]
+      simpa [mul_apply_eq_comp, apply_ite (fun f : Module.End K V => f (L.word v' x))]
         using happly
     rw [step, word_peel L i hx v']
     by_cases hic : i = c
@@ -133,7 +133,7 @@ lemma E_word (L : LadderSystem K V d) {x : V} (hx : ∀ i, L.a i x = 0) (i j : F
     (v : List (Fin d)) :
     (L.E i j) (L.word v x) = (v.count j) • L.word (i :: v.erase j) x := by
   show (L.ac i * L.a j) (L.word v x) = _
-  rw [Module.End.mul_apply, word_peel L j (hx j) v, map_nsmul, ← word_cons]
+  rw [mul_apply_eq_comp, word_peel L j (hx j) v, map_nsmul, ← word_cons]
 
 /-- Words are eigenvectors of the number operator, with eigenvalue their own color count. -/
 lemma N_word (L : LadderSystem K V d) {x : V} (hx : ∀ i, L.a i x = 0) (i : Fin d)

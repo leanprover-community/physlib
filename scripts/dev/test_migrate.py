@@ -4,6 +4,7 @@
 Run `lake build migrate`, then `lake env python3 scripts/dev/test_migrate.py`.
 """
 
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -30,6 +31,7 @@ def noReplacement : Nat := 8
 -- old is deliberately mentioned in this comment: λ
 def label : String := "old"
 def localName (old : Nat) : Nat := old
+def shadowReplacement (fresh : Nat) : Nat := old
 def usage : Nat := old
 def qualified : Nat := MigrationFixture.old
 def unchanged : Nat := noReplacement
@@ -64,15 +66,22 @@ roots = ["Different"]
             path.write_text(SOURCE)
 
     def run_migrate(self, *args, success=True):
+        env = os.environ.copy()
+        env["LEAN_PATH"] = str(self.project / ".lake/build/lib/lean") + os.pathsep + env.get(
+            "LEAN_PATH", "",
+        )
         result = subprocess.run(
             [str(EXECUTABLE), *args], cwd=self.project,
-            text=True, capture_output=True, env=os.environ.copy(), timeout=120,
+            text=True, capture_output=True, env=env, timeout=120,
         )
         self.assertEqual(result.returncode == 0, success, result.stdout + result.stderr)
         return result
 
     def assert_migrated(self, path):
         text = path.read_text()
+        shadow = next(line for line in text.splitlines() if line.startswith("def shadowReplacement"))
+        self.assertIn("MigrationFixture.fresh", shadow)
+        text = text.replace("_root_.MigrationFixture.", "")
         self.assertIn("def usage : Nat := fresh", text)
         self.assertIn("def «unicode_λ» : Nat := fresh", text)
         self.assertIn("def chain : Nat := fresh", text)
@@ -83,6 +92,65 @@ roots = ["Different"]
         self.assertIn("def localName (old : Nat) : Nat := old", text)
         self.assertIn('def label : String := "old"', text)
         self.assertIn("-- old is deliberately mentioned in this comment: λ", text)
+
+    def build_libraries(self):
+        result = subprocess.run(
+            ["lake", "build", "First", "Second"], cwd=self.project,
+            text=True, capture_output=True, timeout=120,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+
+    def test_cached_references(self):
+        self.build_libraries()
+        # Restored artifacts can have timestamps older than their matching sources.
+        ilean = self.project / ".lake/build/lib/lean/First.ilean"
+        content = ilean.read_bytes()
+        ilean.unlink()
+        ilean.write_bytes(content)
+        os.utime(ilean, (1, 1))
+        result = self.run_migrate("First")
+        self.assertIn(f"{self.first}: migrated", result.stdout)
+        self.assertIn(
+            "using cached references", result.stdout,
+            result.stdout + result.stderr,
+        )
+        self.assert_migrated(self.first)
+        self.assertEqual(self.second.read_text(), SOURCE)
+
+    def test_restored_cache_without_source_hash_entries(self):
+        self.build_libraries()
+        trace = self.project / ".lake/build/lib/lean/First.trace"
+        data = json.loads(trace.read_text())
+        data["synthetic"] = True
+        data["inputs"] = []
+        trace.write_text(json.dumps(data))
+        result = self.run_migrate("First")
+        self.assertIn("using cached references", result.stdout, result.stdout + result.stderr)
+        self.assert_migrated(self.first)
+
+    def test_stale_cache_falls_back_to_elaboration(self):
+        self.build_libraries()
+        self.first.write_text("-- Shift every cached source range.\n" + SOURCE)
+        result = self.run_migrate("First")
+        line = next(
+            (line for line in result.stdout.splitlines() if line.startswith(str(self.first))),
+            result.stdout + result.stderr,
+        )
+        self.assertIn("using elaboration", line)
+        self.assert_migrated(self.first)
+
+    def test_corrupted_cache_falls_back_to_elaboration(self):
+        self.build_libraries()
+        ilean = self.project / ".lake/build/lib/lean/First.ilean"
+        ilean.unlink()
+        ilean.write_text("invalid cached references")
+        result = self.run_migrate("First")
+        line = next(
+            (line for line in result.stdout.splitlines() if line.startswith(str(self.first))),
+            result.stdout + result.stderr,
+        )
+        self.assertIn("using elaboration", line)
+        self.assert_migrated(self.first)
 
     def test_selected_library_and_idempotence(self):
         self.run_migrate("First")
@@ -109,7 +177,9 @@ roots = ["Different"]
             "import Lean", "module\npublic import Lean\n\n@[expose] public section", 1,
         )
         self.first.write_text(source)
-        self.run_migrate("First")
+        self.build_libraries()
+        result = self.run_migrate("First")
+        self.assertIn("using cached references", result.stdout, result.stdout + result.stderr)
         self.assert_migrated(self.first)
 
     def test_escaped_names_and_local_shadowing(self):
@@ -123,8 +193,10 @@ def usage (n : Nat) := n.oldNext
 def shadow (fresh : Nat) := Nat.oldNext fresh
 '''
         self.first.write_text(source)
-        self.run_migrate("First")
-        text = self.first.read_text()
+        self.build_libraries()
+        result = self.run_migrate("First")
+        self.assertIn("using cached references", result.stdout, result.stdout + result.stderr)
+        text = self.first.read_text().replace("_root_.", "")
         self.assertIn("def usage (n : Nat) := n.«fresh-next»", text)
         self.assertIn("def shadow (fresh : Nat) := Nat.«fresh-next» fresh", text)
 
