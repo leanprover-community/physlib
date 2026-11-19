@@ -6,7 +6,7 @@ Authors: Qianli Ma
 module
 
 public import Physlib.ClassicalMechanics.PointParticle.NewtonianSystem.Basic
-import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.MeanValue
 
 /-!
 # Center of mass of a Newtonian system
@@ -27,8 +27,7 @@ of the center of mass.
 
 ## iii. Table of contents
 
-- A. Cancellation of internal forces
-- B. Motion of the center of mass
+- A. Motion of the center of mass
 
 ## iv. References
 
@@ -46,41 +45,7 @@ open ReferenceFrame
 variable {d : ℕ} (S : NewtonianSystem d)
 
 /-!
-## A. Cancellation of internal forces
--/
-
-private lemma internalForceSum_zero (t : ℝ) :
-    (S.internalForces.map (fun f => f.value t)).sum = 0 := by
-  let value := fun f : S.frame.InternalForce S.Particle => f.value t
-  have h : (S.internalForces.map value).sum = -(S.internalForces.map value).sum := calc
-    _ = ((S.internalForces.map .reverse).map value).sum :=
-      congrArg (fun fs => (fs.map value).sum) S.newton_third_law.symm
-    _ = _ := by
-      rw [Multiset.map_map, ← Multiset.sum_map_neg]
-      rfl
-  apply smul_right_injective S.Vector (by norm_num : (2 : ℝ) ≠ 0)
-  change (2 : ℝ) • (S.internalForces.map value).sum = (2 : ℝ) • (0 : S.Vector)
-  rw [smul_zero, two_smul, ← eq_neg_iff_add_eq_zero]
-  exact h
-
-private lemma sum_mass_acceleration_eq_zero (hExt : S.externalForces = 0) (t : ℝ) :
-    ∑ p : S.Particle, p.mass.val • p.acceleration t = 0 := by
-  classical
-  simp_rw [show ∀ p : S.Particle, p.mass.val • p.acceleration t =
-      netForce p S.internalForces S.externalForces t from
-    fun p => (congrFun (S.newton_second_law p) t).symm]
-  simp only [netForce, Finset.sum_filter]
-  rw [Finset.sum_comm]
-  simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
-  let forces := S.internalForces.map InternalForce.toForce + S.externalForces
-  let value := fun f : S.frame.Force S.Particle => f.value t
-  change ((Finset.univ : Finset forces).val.map (fun f => value f.1)).sum = 0
-  rw [Multiset.map_univ forces value]
-  simpa only [forces, hExt, add_zero, Multiset.map_map, value, Function.comp_def] using
-    S.internalForceSum_zero t
-
-/-!
-## B. Motion of the center of mass
+## A. Motion of the center of mass
 -/
 
 /-- The center of mass in the system's frame coordinates. -/
