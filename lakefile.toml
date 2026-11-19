@@ -30,6 +30,11 @@ name = "get_cache"
 srcDir = "scripts/dev"
 
 [[lean_exe]]
+name = "migrate"
+srcDir = "scripts/dev"
+supportInterpreter = true
+
+[[lean_exe]]
 name = "check_file_imports"
 srcDir = "scripts/lint/required"
 
