@@ -5,7 +5,9 @@ Authors: Eduardo Nava-Hernandez
 -/
 module
 
+public import Mathlib.Combinatorics.SimpleGraph.AdjMatrix
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.MaxCurrentState.UncertaintyRatio
+public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.Basic
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductState
 /-!
 
@@ -32,6 +34,8 @@ diagonal too, and `det Σ / |det Ω|` is the product of the squares of the three
 ## ii. Key results
 
 - `alongX`, `alongY`, `alongZ` : an observable of a chain acting on its axis of the cube.
+- `inner_alongX_openHamiltonian_eq_adjMatrix` : on the `x` axis the open Hamiltonian has the matrix
+  elements of `SimpleGraph.pathGraph`.
 - `bracket_alongX_alongY`, `bracket_alongX_alongZ`, `bracket_alongY_alongZ` : different axes
   commute.
 - `maxCurrentCubeState` : the maximal current state of the cube.
@@ -65,7 +69,7 @@ diagonal too, and `det Σ / |det Ω|` is the product of the squares of the three
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder _root_.selfAdjoint QuantumMechanics.FiniteHilbertSpace
+open scoped ComplexOrder _root_.selfAdjoint QuantumMechanics.FiniteHilbertSpace InnerProductSpace
 open PhyslibAlpha.ProbabilisticTheory
 open QuantumMechanics FiniteHilbertSpace UnitalPositiveLinearMap
 variable (Tx Ty Tz : TightBindingChain)
@@ -96,6 +100,35 @@ noncomputable abbrev alongY (b : Observable (Ty.HilbertSpace →L[ℂ] Ty.Hilber
 noncomputable abbrev alongZ (c : Observable (Tz.HilbertSpace →L[ℂ] Tz.HilbertSpace)) :
     Observable (Tx.CubeOperators Ty Tz) :=
   onSndObservable (onSndObservable c)
+
+private lemma inner_basisFun_onFst_basisFun {α β : Type*} [Fintype α] [DecidableEq α]
+    [Fintype β] [DecidableEq β] (A : 𝓗[α] →ₗ[ℂ] 𝓗[α]) (p q : α × β) :
+    ⟪basisFun (α × β) p, onFst A (basisFun (α × β) q)⟫_ℂ =
+      if p.2 = q.2 then ⟪basisFun α p.1, A (basisFun α q.1)⟫_ℂ else 0 := by
+  rw [← val_apply_basisFun, ← val_apply_basisFun, onFst_val]
+  obtain ⟨p1, p2⟩ := p
+  obtain ⟨q1, q2⟩ := q
+  dsimp
+  by_cases h : p2 = q2
+  · subst h
+    simp [basisFun_apply, Prod.ext_iff, mul_ite]
+  · simp [basisFun_apply, Prod.ext_iff, h]
+
+/-- The open Hamiltonian along the x-axis of the cube is the hopping Hamiltonian of the path graph
+on the x-axis, preserving the remaining two coordinates. -/
+lemma inner_alongX_openHamiltonian_eq_adjMatrix (p q : Fin Tx.N × Fin Ty.N × Fin Tz.N) :
+    ⟪basisFun _ p,
+      (alongX Tx Ty Tz Tx.openHamiltonianObservable : Tx.CubeOperators Ty Tz) (basisFun _ q)⟫_ℂ =
+      if p.2 = q.2 then
+        (Tx.E0 : ℂ) * (1 : Matrix (Fin Tx.N) (Fin Tx.N) ℂ) p.1 q.1 -
+          (Tx.t : ℂ) * (SimpleGraph.pathGraph Tx.N).adjMatrix ℂ p.1 q.1
+      else 0 := by
+  change ⟪basisFun _ p,
+    onFst (β := Fin Ty.N × Fin Tz.N) Tx.openHamiltonian (basisFun _ q)⟫_ℂ = _
+  rw [inner_basisFun_onFst_basisFun]
+  split_ifs with h
+  · exact inner_openHamiltonian_eq_adjMatrix Tx p.1 q.1
+  · rfl
 
 /-!
 
