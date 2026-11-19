@@ -12,36 +12,50 @@ public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 /-!
 # Matrices over the jet ring
 
+Matrices of jets, their derivatives and Taylor coefficients, and the Euler (radial) transport.
+
 ## i. Overview
 
-Results about matrices with entries in `SpaceTimeAlgebra`, chiefly the Euler (radial) transport: a
-matrix of jets vanishing at the base point is the radial logarithmic derivative of a formal
-fundamental solution.
+A gauge transformation near a point is a matrix with entries in `SpaceTimeAlgebra`, the jets at
+that point. This file collects what is needed to work with such matrices entrywise.
+
+The central construction is the Euler (radial) transport. The Euler operator
+`E = ∑_ρ x_ρ ∂_ρ` multiplies a Taylor coefficient of degree `n` by `n`. Hence a matrix of jets
+`W` vanishing at the base point with `E W = A W + W B`, for `A` and `B` vanishing at the base
+point, is zero, since each of its coefficients is a multiple of coefficients of lower degree.
+The same recursion, run forwards, solves the radial system `E U = R U` with `U = 1` at the base
+point. This fundamental solution is unitary when `R` is anti-hermitian and has determinant one
+when `R` is traceless, and its Maurer–Cartan matrix `(∂_μ U) U⁻¹` solves a linear radial system.
+This is how a Lie algebra jet is integrated radially into a gauge jet, in
+`GlobalGaugeGroup.exists_sum_X_smul_maurerCartan_eq`.
+
+The remaining sections give the Leibniz rule for the Taylor coefficients of a product of
+matrices of jets, the derivatives of conjugates and inverses in terms of Maurer–Cartan
+matrices, and the invertible matrices of jets.
 
 ## ii. Key results
 
-- `mapMatrix_constantCoeff_star` : entrywise evaluation at the base point commutes with the
-  conjugate transpose
-- `coeff_sum_X_smul_map_pderiv` : the Euler operator on matrices of jets acts entrywise on Taylor
-  coefficients as multiplication by the total degree
-- `matrix_eq_zero_of_euler_eq_mul_add_mul` : the vanishing principle for the Euler operator: a
-  matrix of jets vanishing at the base point and satisfying `E W = A W + W B` with `A`, `B`
-  vanishing at the base point is zero
-- `exists_matrix_eulerTransport` : the Euler (radial) transport of a jet matrix `R` vanishing at the
-  base point: a fundamental solution of the radial system `E U = R U` based at the identity, built
-  order-by-order by the Euler recursion
-- `map_pderiv_conj_of_mul_eq_one` : the derivative of the conjugate of a matrix of jets by an
-  invertible matrix of jets, in terms of its Maurer–Cartan matrix
-- `unitsEval`, `unitsOfConstant` : evaluation at the base point and the inclusion of constants,
-  for invertible matrices
+- `SpaceTimeAlgebra.matrix_eq_zero_of_euler_eq_mul_add_mul` : the vanishing principle for the
+  Euler operator.
+- `SpaceTimeAlgebra.exists_matrix_eulerTransport` : the Euler transport of a matrix of jets
+  vanishing at the base point.
+- `SpaceTimeAlgebra.eulerTransport_mul_star`, `SpaceTimeAlgebra.eulerTransport_det` : the Euler
+  transport of an anti-hermitian, traceless matrix is unitary of determinant one.
+- `SpaceTimeAlgebra.euler_map_pderiv_mul_inv_of_eulerTransport` : the radial system solved by
+  the Maurer–Cartan matrix of an Euler transport.
+- `SpaceTimeAlgebra.map_coeff_mul` : the Taylor coefficients of a product of matrices of jets.
+- `SpaceTimeAlgebra.map_pderiv_conj_of_mul_eq_one` : the derivative of the conjugate of a
+  matrix of jets by an invertible one, in terms of its Maurer–Cartan matrix.
+- `SpaceTimeAlgebra.unitsEval`, `SpaceTimeAlgebra.unitsOfConstant` : evaluation at the base
+  point and the inclusion of constants, for invertible matrices.
 
 ## iii. Table of contents
 
-- A. The Euler operator toolkit on matrices
+- A. The Euler operator and the Euler transport
 - B. The Euler vanishing principle by degree on matrices
-- C. Unitarity and determinant of the Euler transport
+- C. Unitarity, determinant and Maurer–Cartan matrix of the Euler transport
 - D. The Leibniz rule at the base point for matrices of power series
-- E. Conjugation, scalars and derivatives of matrices of jets
+- E. Conjugation and derivatives of matrices of jets
 - F. Invertible matrices of jets
 
 ## iv. References
@@ -58,7 +72,7 @@ open MvPowerSeries
 
 /-!
 
-## A. The Euler operator toolkit on matrices
+## A. The Euler operator and the Euler transport
 
 -/
 
@@ -82,7 +96,37 @@ lemma coeff_sum_X_smul_map_pderiv {κ : Type}
     exact Finset.sum_congr rfl fun ρ _ => rfl]
   exact coeff_sum_X_smul_pderiv (M i j) p
 
-/-- The vanishing principle for the Euler operator: a matrix of jets vanishing at the
+/-- Multiplying on the left by a matrix of jets vanishing at the base point raises degrees, so
+  the Taylor coefficient of `R M` in degree `|p|` only depends on the coefficients of `M` of
+  lower degree. -/
+lemma coeff_mul_apply_congr_left {κ : Type} [Fintype κ] {R : Matrix κ κ SpaceTimeAlgebra}
+    (hR0 : ∀ i j, constantCoeff (R i j) = 0) (M N : Matrix κ κ SpaceTimeAlgebra)
+    (p : (Fin 1 ⊕ Fin 3) →₀ ℕ)
+    (h : ∀ (i j : κ) (q : (Fin 1 ⊕ Fin 3) →₀ ℕ), Finsupp.degree q < Finsupp.degree p →
+      coeff q (M i j) = coeff q (N i j)) (i j : κ) :
+    coeff p ((R * M) i j) = coeff p ((R * N) i j) := by
+  simp only [Matrix.mul_apply, map_sum, coeff_mul]
+  refine Finset.sum_congr rfl fun k _ => Finset.sum_congr rfl fun q hq => ?_
+  rcases eq_or_ne q.1 0 with h1 | h1
+  · rw [h1, coeff_zero_eq_constantCoeff, hR0, zero_mul, zero_mul]
+  · have h4 : Finsupp.degree q.1 + Finsupp.degree q.2 = Finsupp.degree p := by
+      rw [← map_add, Finset.mem_antidiagonal.mp hq]
+    have h3 := Nat.pos_of_ne_zero fun hc => h1 ((Finsupp.degree_eq_zero_iff _).mp hc)
+    rw [h _ _ _ (by omega)]
+
+/-- Multiplying on the right by a matrix of jets vanishing at the base point raises degrees.
+  The transpose of `coeff_mul_apply_congr_left`. -/
+lemma coeff_mul_apply_congr_right {κ : Type} [Fintype κ] {B : Matrix κ κ SpaceTimeAlgebra}
+    (hB0 : ∀ i j, constantCoeff (B i j) = 0) (M N : Matrix κ κ SpaceTimeAlgebra)
+    (p : (Fin 1 ⊕ Fin 3) →₀ ℕ)
+    (h : ∀ (i j : κ) (q : (Fin 1 ⊕ Fin 3) →₀ ℕ), Finsupp.degree q < Finsupp.degree p →
+      coeff q (M i j) = coeff q (N i j)) (i j : κ) :
+    coeff p ((M * B) i j) = coeff p ((N * B) i j) := by
+  simpa only [← Matrix.transpose_mul, Matrix.transpose_apply] using
+    coeff_mul_apply_congr_left (R := B.transpose) (fun i j => hB0 j i) M.transpose N.transpose p
+      (fun i j q hq => h j i q hq) j i
+
+/-- The vanishing principle for the Euler operator. A matrix of jets vanishing at the
   base point and satisfying `E W = A W + W B` with `A`, `B` vanishing at the base point
   is zero. Each Taylor coefficient of `W` is a multiple of coefficients of strictly
   smaller degree, so all vanish by strong induction on the degree. -/
@@ -93,34 +137,16 @@ lemma matrix_eq_zero_of_euler_eq_mul_add_mul {κ : Type} [Fintype κ]
     (hW : ∑ ρ, (X ρ : SpaceTimeAlgebra) • W.map (pderiv ρ) = A * W + W * B) :
     W = 0 := by
   classical
+  -- The right-hand side in degree `|p|` only sees the coefficients of `W` of lower degree.
   have hlow : ∀ p : (Fin 1 ⊕ Fin 3) →₀ ℕ,
       (∀ (i : κ) (j : κ) (q : (Fin 1 ⊕ Fin 3) →₀ ℕ),
         Finsupp.degree q < Finsupp.degree p → coeff q (W i j) = 0) →
       ∀ i j, coeff p ((A * W + W * B) i j) = 0 := by
     intro p hp i j
-    have hAW : coeff p ((A * W) i j) = 0 := by
-      rw [Matrix.mul_apply, map_sum]
-      refine Finset.sum_eq_zero fun k _ => ?_
-      rw [coeff_mul]
-      refine Finset.sum_eq_zero fun q hq => ?_
-      rcases eq_or_ne q.1 0 with h1 | h1
-      · rw [h1, coeff_zero_eq_constantCoeff, hA, zero_mul]
-      · have h4 : Finsupp.degree q.1 + Finsupp.degree q.2 = Finsupp.degree p := by
-          rw [← map_add, Finset.mem_antidiagonal.mp hq]
-        have h3 := Nat.pos_of_ne_zero fun hc => h1 ((Finsupp.degree_eq_zero_iff _).mp hc)
-        rw [hp _ _ q.2 (by omega), mul_zero]
-    have hWB : coeff p ((W * B) i j) = 0 := by
-      rw [Matrix.mul_apply, map_sum]
-      refine Finset.sum_eq_zero fun k _ => ?_
-      rw [coeff_mul]
-      refine Finset.sum_eq_zero fun q hq => ?_
-      rcases eq_or_ne q.2 0 with h1 | h1
-      · rw [h1, coeff_zero_eq_constantCoeff, hB, mul_zero]
-      · have h4 : Finsupp.degree q.1 + Finsupp.degree q.2 = Finsupp.degree p := by
-          rw [← map_add, Finset.mem_antidiagonal.mp hq]
-        have h3 := Nat.pos_of_ne_zero fun hc => h1 ((Finsupp.degree_eq_zero_iff _).mp hc)
-        rw [hp _ _ q.1 (by omega), zero_mul]
-    rw [Matrix.add_apply, map_add, hAW, hWB, add_zero]
+    rw [Matrix.add_apply, map_add,
+      coeff_mul_apply_congr_left hA W 0 p (fun i j q hq => by simpa using hp i j q hq) i j,
+      coeff_mul_apply_congr_right hB W 0 p (fun i j q hq => by simpa using hp i j q hq) i j]
+    simp
   have hm : ∀ (n : ℕ) (p : (Fin 1 ⊕ Fin 3) →₀ ℕ), Finsupp.degree p = n →
       ∀ i j, coeff p (W i j) = 0 := by
     intro n
@@ -144,7 +170,23 @@ lemma matrix_eq_zero_of_euler_eq_mul_add_mul {κ : Type} [Fintype κ]
   rw [hm (Finsupp.degree p) p rfl i j]
   simp
 
-/-- The Euler (radial) transport of a jet matrix `R` vanishing at the base point:
+/-- One step of the Euler recursion for the radial system `E U = R U`. It is the identity
+  plus `R M` with each Taylor coefficient of degree `n > 0` divided by `n`, and the Euler
+  transport of `R` is its fixed point, reached degree by degree. -/
+noncomputable def eulerStep {κ : Type} [Fintype κ] [DecidableEq κ]
+    (R M : Matrix κ κ SpaceTimeAlgebra) : Matrix κ κ SpaceTimeAlgebra :=
+  1 + (R * M).map fun f =>
+    show SpaceTimeAlgebra from fun m => if m = 0 then 0 else ((Finsupp.degree m : ℕ) : ℂ)⁻¹ * f m
+
+/-- The Taylor coefficients of one step of the Euler recursion. -/
+lemma coeff_eulerStep_apply {κ : Type} [Fintype κ] [DecidableEq κ]
+    (R M : Matrix κ κ SpaceTimeAlgebra) (i j : κ) (p : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
+    coeff p (eulerStep R M i j) = coeff p ((1 : Matrix κ κ SpaceTimeAlgebra) i j) +
+      if p = 0 then 0 else ((Finsupp.degree p : ℕ) : ℂ)⁻¹ * coeff p ((R * M) i j) := by
+  simp only [eulerStep, Matrix.add_apply, map_add]
+  rfl
+
+/-- The Euler (radial) transport of a jet matrix `R` vanishing at the base point,
   a fundamental solution of the radial system `E U = R U` based at the identity,
   built order-by-order by the Euler recursion. -/
 lemma exists_matrix_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
@@ -152,50 +194,31 @@ lemma exists_matrix_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
     ∃ U : Matrix κ κ SpaceTimeAlgebra, (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix U = 1 ∧
       ∑ ρ, (X ρ : SpaceTimeAlgebra) • U.map (pderiv ρ) = R * U := by
   classical
-  have hRlow : ∀ (M N : Matrix κ κ SpaceTimeAlgebra) (p : (Fin 1 ⊕ Fin 3) →₀ ℕ),
-      (∀ (i : κ) (j : κ) (q : (Fin 1 ⊕ Fin 3) →₀ ℕ),
-        Finsupp.degree q < Finsupp.degree p → coeff q (M i j) = coeff q (N i j)) →
-      ∀ i j, coeff p ((R * M) i j) = coeff p ((R * N) i j) := fun M N p h i j => by
-    simp only [Matrix.mul_apply, map_sum, coeff_mul]
-    refine Finset.sum_congr rfl fun k _ => Finset.sum_congr rfl fun q hq => ?_
-    rcases eq_or_ne q.1 0 with h1 | h1
-    · rw [h1, coeff_zero_eq_constantCoeff, hR0, zero_mul, zero_mul]
-    · have h4 : Finsupp.degree q.1 + Finsupp.degree q.2 = Finsupp.degree p := by
-        rw [← map_add, Finset.mem_antidiagonal.mp hq]
-      have h3 := Nat.pos_of_ne_zero fun hc => h1 ((Finsupp.degree_eq_zero_iff _).mp hc)
-      rw [h _ _ _ (by omega)]
-  set T : Matrix κ κ SpaceTimeAlgebra → Matrix κ κ SpaceTimeAlgebra := fun M => 1 +
-      (R * M).map fun f =>
-    show SpaceTimeAlgebra from fun m => if m = 0 then 0 else ((Finsupp.degree m : ℕ) : ℂ)⁻¹ * f m
-    with hT
   set U : Matrix κ κ SpaceTimeAlgebra :=
     Matrix.of fun i j => show SpaceTimeAlgebra from fun m =>
-        (T^[Finsupp.degree m + 1] 1) i j m with hUd
+        ((eulerStep R)^[Finsupp.degree m + 1] 1) i j m
   have hUco : ∀ (p : (Fin 1 ⊕ Fin 3) →₀ ℕ) i j,
-      coeff p (U i j) = coeff p ((T^[Finsupp.degree p + 1] 1) i j) := fun _ _ _ => rfl
-  have hTco : ∀ (M : Matrix κ κ SpaceTimeAlgebra) i j (p : (Fin 1 ⊕ Fin 3) →₀ ℕ),
-      coeff p ((T M) i j) = coeff p ((1 : Matrix κ κ SpaceTimeAlgebra) i j) +
-        if p = 0 then 0 else ((Finsupp.degree p : ℕ) : ℂ)⁻¹ * coeff p ((R * M) i j) :=
-    fun M i j p => by
-      simp only [hT, Matrix.add_apply, map_add]
-      rfl
+      coeff p (U i j) = coeff p (((eulerStep R)^[Finsupp.degree p + 1] 1) i j) :=
+    fun _ _ _ => rfl
+  -- The iterates of the recursion stabilise in each degree, at the value `eulerStep R U`.
   have hmain : ∀ (n : ℕ) (p : (Fin 1 ⊕ Fin 3) →₀ ℕ), Finsupp.degree p = n → ∀ k, n < k →
-      ∀ i j, coeff p ((T^[k] 1) i j) = coeff p ((T U) i j) := fun n => by
+      ∀ i j, coeff p (((eulerStep R)^[k] 1) i j) = coeff p ((eulerStep R U) i j) := fun n => by
     induction n using Nat.strong_induction_on with
     | _ n ih =>
       intro p hp k hk i j
       obtain ⟨k, rfl⟩ : ∃ k', k = k' + 1 := ⟨k - 1, by omega⟩
-      rw [Function.iterate_succ_apply', hTco, hTco]
+      rw [Function.iterate_succ_apply', coeff_eulerStep_apply, coeff_eulerStep_apply]
       rcases eq_or_ne p 0 with h0 | h0
       · rw [ite_eq_left h0, ite_eq_left h0]
-      · rw [ite_eq_right h0, ite_eq_right h0, hRlow _ U _ (fun i' j' q hq => ?_) i j]
+      · rw [ite_eq_right h0, ite_eq_right h0,
+          coeff_mul_apply_congr_left hR0 _ U _ (fun i' j' q hq => ?_) i j]
         rw [hUco, ih (Finsupp.degree q) (by omega) q rfl k (by omega) i' j',
           ih (Finsupp.degree q) (by omega) q rfl (Finsupp.degree q + 1) (by omega) i' j']
   have hkey := fun (p : (Fin 1 ⊕ Fin 3) →₀ ℕ) (i j : κ) =>
     (hUco p i j).trans (hmain _ p rfl _ (Nat.lt_succ_self _) i j)
   have hUone : (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix U = 1 := by
     ext i j
-    simpa [hTco, Matrix.one_apply, apply_ite, coeff_one] using hkey 0 i j
+    simpa [coeff_eulerStep_apply, Matrix.one_apply, apply_ite, coeff_one] using hkey 0 i j
   refine ⟨U, hUone, ?_⟩
   ext i j : 1
   ext p
@@ -205,10 +228,25 @@ lemma exists_matrix_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
     rw [Matrix.mul_apply, map_sum]
     exact (Finset.sum_eq_zero fun k _ => by
       rw [coeff_zero_eq_constantCoeff, map_mul, hR0, zero_mul]).symm
-  · rw [hkey p i j, hTco, show coeff p ((1 : Matrix κ κ SpaceTimeAlgebra) i j) = 0 from by
-      simp [Matrix.one_apply, apply_ite, coeff_one, h0], zero_add, ite_eq_right h0, ← mul_assoc,
+  · rw [hkey p i j, coeff_eulerStep_apply,
+      show coeff p ((1 : Matrix κ κ SpaceTimeAlgebra) i j) = 0 from by
+        simp [Matrix.one_apply, apply_ite, coeff_one, h0], zero_add, ite_eq_right h0, ← mul_assoc,
       mul_inv_cancel₀ (Nat.cast_ne_zero.mpr fun hc => h0 ((Finsupp.degree_eq_zero_iff p).mp hc)),
       one_mul]
+
+/-- The formal derivative `∂_μ` and the Euler operator `E` on matrices of jets commute up to
+  `∂_μ` itself, `∂_μ (E M) = E (∂_μ M) + ∂_μ M`, since `∂_μ x_ρ = δ_{μρ}`. -/
+lemma map_pderiv_sum_X_smul_map_pderiv {κ : Type} (μ : Fin 1 ⊕ Fin 3)
+    (M : Matrix κ κ SpaceTimeAlgebra) :
+    (∑ ρ, (X ρ : SpaceTimeAlgebra) • M.map (pderiv ρ)).map (pderiv μ) =
+      ∑ ρ, (X ρ : SpaceTimeAlgebra) • (M.map (pderiv μ)).map (pderiv ρ) + M.map (pderiv μ) := by
+  classical
+  ext i j : 1
+  simp only [Matrix.map_apply, Matrix.add_apply, Matrix.sum_apply, Matrix.smul_apply,
+    smul_eq_mul, map_sum, Derivation.leibniz, pderiv_X, Finset.sum_add_distrib]
+  congr 1
+  · exact Finset.sum_congr rfl fun ρ _ => by rw [SpaceTimeAlgebra.pderiv_comm]
+  · simp [Pi.single_apply]
 
 /-!
 
@@ -216,7 +254,7 @@ lemma exists_matrix_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
 
 -/
 
-/-- The matrix form of `coeff_eq_zero_of_pderiv_eq_mul`: the entries of a matrix of power
+/-- The matrix form of `coeff_eq_zero_of_pderiv_eq_mul`. The entries of a matrix of power
   series satisfying `∂_ρ A = X_ρ A`, with the `X_ρ` vanishing below degree `n`, have no
   coefficients in nonzero degree up to `n`. -/
 lemma coeff_entry_eq_zero_of_map_pderiv_eq_mul {κ : Type} [Fintype κ] {n : ℕ}
@@ -258,7 +296,7 @@ lemma matrix_map_truncation_eq_one {κ : Type} [Fintype κ] [DecidableEq κ] {n 
 
 /-!
 
-## C. Unitarity and determinant of the Euler transport
+## C. Unitarity, determinant and Maurer–Cartan matrix of the Euler transport
 
 -/
 
@@ -298,7 +336,7 @@ lemma sum_X_smul_map_pderiv_one {κ : Type} [DecidableEq κ] :
     simp [Matrix.map_apply, Matrix.one_apply, apply_ite (pderiv ρ)], smul_zero]
 
 /-- A fundamental solution of the radial system `E U = R U` based at the identity is
-  unitary when `R` is anti-hermitian: `U U† − 1` vanishes at the base point and
+  unitary when `R` is anti-hermitian. `U U† − 1` vanishes at the base point and
   satisfies a homogeneous linear radial system, so it vanishes identically. -/
 lemma eulerTransport_mul_star {κ : Type} [Fintype κ] [DecidableEq κ]
     {R U : Matrix κ κ SpaceTimeAlgebra} (hRstar : star R = -R)
@@ -326,7 +364,7 @@ lemma eulerTransport_mul_star {κ : Type} [Fintype κ] [DecidableEq κ]
   exact sub_eq_zero.mp (matrix_eq_zero_of_euler_eq_mul_add_mul R (-R) hR0 hB h0 hEW)
 
 /-- The radial Maurer–Cartan component of a unitary fundamental solution of the radial
-  system `E V = −i P V` is `P`: `∑_μ x_μ · i (∂_μ V) V† = P`. -/
+  system `E V = −i P V` is `P`, `∑_μ x_μ · i (∂_μ V) V† = P`. -/
 lemma sum_X_smul_mcMatrix_of_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
     {P V : Matrix κ κ SpaceTimeAlgebra} (hVu : V * star V = 1)
     (hEV : ∑ μ, (X μ : SpaceTimeAlgebra) • V.map (pderiv μ) = ((-Complex.I) • P) * V) :
@@ -340,8 +378,46 @@ lemma sum_X_smul_mcMatrix_of_eulerTransport {κ : Type} [Fintype κ] [DecidableE
         rw [hEV, Matrix.smul_mul, Matrix.smul_mul, Matrix.mul_assoc, hVu, mul_one, smul_smul]
         simp
 
+/-- The radial component of the Maurer–Cartan matrix of an invertible solution `V` of the
+  radial system `E V = R V` is `R`, `∑_μ x_μ (∂_μ V) V⁻¹ = R`. -/
+lemma sum_X_smul_map_pderiv_mul_inv_of_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
+    {R V W : Matrix κ κ SpaceTimeAlgebra} (hVW : V * W = 1)
+    (hEV : ∑ μ, (X μ : SpaceTimeAlgebra) • V.map (pderiv μ) = R * V) :
+    ∑ μ, (X μ : SpaceTimeAlgebra) • (V.map (pderiv μ) * W) = R := by
+  simp only [← Matrix.smul_mul]
+  rw [← Finset.sum_mul, hEV, Matrix.mul_assoc, hVW, Matrix.mul_one]
+
+/-- The Maurer–Cartan matrix `ω = (∂_μ V) V⁻¹` of an invertible solution `V` of the radial
+  system `E V = R V` solves the linear radial system `E ω + ω = ∂_μ R + R ω − ω R`. This is
+  `∂_μ` of the radial system, with `∂_μ E = E ∂_μ + ∂_μ` and `E V⁻¹ = −V⁻¹ R`. -/
+lemma euler_map_pderiv_mul_inv_of_eulerTransport {κ : Type} [Fintype κ] [DecidableEq κ]
+    (μ : Fin 1 ⊕ Fin 3) {R V W : Matrix κ κ SpaceTimeAlgebra} (hVW : V * W = 1)
+    (hWV : W * V = 1)
+    (hEV : ∑ ρ, (X ρ : SpaceTimeAlgebra) • V.map (pderiv ρ) = R * V) :
+    ∑ ρ, (X ρ : SpaceTimeAlgebra) • (V.map (pderiv μ) * W).map (pderiv ρ) +
+        V.map (pderiv μ) * W =
+      R.map (pderiv μ) + (R * (V.map (pderiv μ) * W) - V.map (pderiv μ) * W * R) := by
+  -- The Euler operator on `V⁻¹`, from `E (V V⁻¹) = 0`.
+  have hEW : ∑ ρ, (X ρ : SpaceTimeAlgebra) • W.map (pderiv ρ) = -(W * R) := by
+    have h := sum_X_smul_map_pderiv_mul V W
+    rw [hVW, sum_X_smul_map_pderiv_one, hEV] at h
+    have h' := congrArg (W * ·) h
+    simp only [Matrix.mul_zero, Matrix.mul_add, ← Matrix.mul_assoc, hWV, Matrix.one_mul] at h'
+    rw [eq_neg_iff_add_eq_zero, add_comm]
+    simpa [Matrix.mul_assoc, hVW] using h'.symm
+  -- The Euler operator on `∂_μ V`, from `∂_μ` of the radial system.
+  have hEdV : ∑ ρ, (X ρ : SpaceTimeAlgebra) • (V.map (pderiv μ)).map (pderiv ρ) =
+      R.map (pderiv μ) * V + R * V.map (pderiv μ) - V.map (pderiv μ) := by
+    have h := map_pderiv_sum_X_smul_map_pderiv μ V
+    rw [hEV, matrix_map_pderiv_mul] at h
+    rw [h]
+    abel
+  rw [sum_X_smul_map_pderiv_mul, hEdV, hEW]
+  simp only [sub_mul, add_mul, Matrix.mul_assoc, hVW, Matrix.mul_one, Matrix.mul_neg]
+  abel
+
 /-- A fundamental solution of the radial system `E U = R U` based at the identity has
-  determinant one when `R` is traceless: by Jacobi's formula the determinant is killed
+  determinant one when `R` is traceless. By Jacobi's formula the determinant is killed
   by the Euler operator, so it is the constant `1`. -/
 lemma eulerTransport_det {κ : Type} [Fintype κ] [DecidableEq κ]
     {R U : Matrix κ κ SpaceTimeAlgebra}
@@ -387,7 +463,7 @@ lemma matrix_multiset_sum_apply {κ α : Type*} [AddCommMonoid α]
   | cons A t ih =>
     rw [Multiset.sum_cons, Multiset.map_cons, Multiset.sum_cons, ← ih, Matrix.add_apply]
 
-/-- The matrix Leibniz rule at the base point: the base-point Taylor coefficients of a
+/-- The matrix Leibniz rule at the base point. The base-point Taylor coefficients of a
   product of matrices of jets are the antidiagonal convolution of the base-point
   coefficients of the factors. -/
 lemma matrix_constantCoeff_iteratedPDeriv_mul {κ : Type} [Fintype κ]
@@ -404,38 +480,46 @@ lemma matrix_constantCoeff_iteratedPDeriv_mul {κ : Type} [Fintype κ]
   rw [Function.comp_apply, Matrix.mul_apply]
   exact Finset.sum_congr rfl fun k _ => by rw [Matrix.map_apply, Matrix.map_apply]
 
+/-- The Taylor coefficients of a product of matrices of jets are the antidiagonal
+  convolution of the Taylor coefficients of the factors. -/
+lemma map_coeff_mul {κ : Type} [Fintype κ] (M N : Matrix κ κ SpaceTimeAlgebra)
+    (p : (Fin 1 ⊕ Fin 3) →₀ ℕ) :
+    (M * N).map (coeff p) =
+      ∑ x ∈ Finset.antidiagonal p, M.map (coeff x.1) * N.map (coeff x.2) := by
+  ext i j
+  simp only [Matrix.map_apply, Matrix.mul_apply, map_sum, coeff_mul, Matrix.sum_apply]
+  exact Finset.sum_comm
+
+/-- The matrix Leibniz rule at the base point for a commutator. The base-point Taylor
+  coefficients of `M N − N M` are sums of commutators of base-point Taylor coefficients. -/
+lemma matrix_constantCoeff_iteratedPDeriv_commutator {κ : Type} [Fintype κ]
+    (s : Multiset (Fin 1 ⊕ Fin 3)) (M N : Matrix κ κ SpaceTimeAlgebra) :
+    ((M * N - N * M).map fun f => constantCoeff (iteratedPDeriv s f))
+      = (s.antidiagonal.map fun p =>
+          (M.map fun f => constantCoeff (iteratedPDeriv p.1 f)) *
+            (N.map fun f => constantCoeff (iteratedPDeriv p.2 f)) -
+          (N.map fun f => constantCoeff (iteratedPDeriv p.2 f)) *
+            (M.map fun f => constantCoeff (iteratedPDeriv p.1 f))).sum := by
+  have hsub : ((M * N - N * M).map fun f => constantCoeff (iteratedPDeriv s f)) =
+      ((M * N).map fun f => constantCoeff (iteratedPDeriv s f)) -
+        ((N * M).map fun f => constantCoeff (iteratedPDeriv s f)) := by
+    ext i j
+    rw [Matrix.map_apply, Matrix.sub_apply, Matrix.sub_apply, Matrix.map_apply, Matrix.map_apply,
+      sub_eq_add_neg, iteratedPDeriv_add, iteratedPDeriv_neg, map_add, map_neg, ← sub_eq_add_neg]
+  have h2 := matrix_constantCoeff_iteratedPDeriv_mul s N M
+  rw [← Multiset.map_swap_antidiagonal s, Multiset.map_map] at h2
+  rw [hsub, matrix_constantCoeff_iteratedPDeriv_mul, h2, ← Multiset.sum_map_sub]
+  rfl
+
 /-!
 
-## E. Conjugation, scalars and derivatives of matrices of jets
+## E. Conjugation and derivatives of matrices of jets
 
 -/
 
 section MatrixIdentities
 
 variable {κ : Type}
-
-/-- Entrywise inclusion of constants commutes with the conjugate transpose. -/
-lemma mapMatrix_C_star [Fintype κ] [DecidableEq κ] (A : Matrix κ κ ℂ) :
-    (C : ℂ →+* SpaceTimeAlgebra).mapMatrix (star A) = star
-        ((C : ℂ →+* SpaceTimeAlgebra).mapMatrix A) := by
-  ext i j
-  simp [RingHom.mapMatrix_apply, Matrix.map_apply, Matrix.star_apply]
-
-/-- Entrywise inclusion of constants commutes with complex scalars. -/
-lemma mapMatrix_C_smul [Fintype κ] [DecidableEq κ] (c : ℂ) (M : Matrix κ κ ℂ) :
-    (C : ℂ →+* SpaceTimeAlgebra).mapMatrix (c • M) = c •
-        (C : ℂ →+* SpaceTimeAlgebra).mapMatrix M := by
-  ext i j : 1
-  simp only [RingHom.mapMatrix_apply, Matrix.map_apply, Matrix.smul_apply,
-    MvPowerSeries.smul_eq_C_mul, smul_eq_mul, map_mul]
-
-/-- The entrywise constant coefficient commutes with complex scalars. -/
-lemma mapMatrix_constantCoeff_smul [Fintype κ] [DecidableEq κ] (c : ℂ)
-    (M : Matrix κ κ SpaceTimeAlgebra) :
-    (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix (c • M)
-      = c • (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix M := by
-  ext i j
-  simp [RingHom.mapMatrix_apply, Matrix.map_apply]
 
 /-- The entrywise derivative commutes with the conjugate transpose. -/
 lemma star_map_pderiv (μ : Fin 1 ⊕ Fin 3) (A : Matrix κ κ SpaceTimeAlgebra) :
@@ -444,11 +528,6 @@ lemma star_map_pderiv (μ : Fin 1 ⊕ Fin 3) (A : Matrix κ κ SpaceTimeAlgebra)
   simp only [Matrix.star_apply, Matrix.map_apply]
   exact (SpaceTimeAlgebra.pderiv_star μ (A j i)).symm
 
-/-- Pulling a complex scalar out of the entrywise derivative. -/
-lemma map_pderiv_smul (μ : Fin 1 ⊕ Fin 3) (c : ℂ) (M : Matrix κ κ SpaceTimeAlgebra) :
-    (c • M).map (pderiv μ) = c • M.map (pderiv μ) :=
-  Matrix.ext fun _ _ => Derivation.map_smul _ _ _
-
 /-- The entrywise derivative of a difference. -/
 lemma map_pderiv_sub (μ : Fin 1 ⊕ Fin 3) (M N : Matrix κ κ SpaceTimeAlgebra) :
     (M - N).map (pderiv μ) = M.map (pderiv μ) - N.map (pderiv μ) := by
@@ -456,7 +535,7 @@ lemma map_pderiv_sub (μ : Fin 1 ⊕ Fin 3) (M N : Matrix κ κ SpaceTimeAlgebra
   simp only [Matrix.map_apply, Matrix.sub_apply, map_sub]
 
 /-- The entrywise derivative of the inverse `V` of a matrix of jets `U`, through the
-  differentiated relation `U V = 1`: `∂_μ V = −V (∂_μ U) V`. -/
+  differentiated relation `U V = 1`, `∂_μ V = −V (∂_μ U) V`. -/
 lemma map_pderiv_of_mul_eq_one [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
     {U V : Matrix κ κ SpaceTimeAlgebra} (hUV : U * V = 1) (hVU : V * U = 1) :
     V.map (pderiv μ) = -(V * U.map (pderiv μ) * V) := by
@@ -479,7 +558,7 @@ lemma map_pderiv_star_of_unitary [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ F
   map_pderiv_of_mul_eq_one μ hU hU'
 
 /-- The derivative of the conjugate `V A U` of a matrix of jets by an invertible matrix of
-  jets `U` with inverse `V`, in terms of the Maurer–Cartan matrix `ω = (∂_μ U) V`:
+  jets `U` with inverse `V`, in terms of the Maurer–Cartan matrix `ω = (∂_μ U) V`,
   `∂_μ (V A U) = V (∂_μ A − (ω A − A ω)) U`. -/
 lemma map_pderiv_conj_of_mul_eq_one [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
     {U V : Matrix κ κ SpaceTimeAlgebra} (hUV : U * V = 1) (hVU : V * U = 1)
@@ -490,7 +569,7 @@ lemma map_pderiv_conj_of_mul_eq_one [Fintype κ] [DecidableEq κ] (μ : Fin 1 �
   simp only [mul_sub, sub_mul, add_mul, neg_mul, mul_assoc, hVU, mul_one]
   abel
 
-/-- The cocycle law of Maurer–Cartan matrices: for invertible matrices of jets `U₁`, `U₂`
+/-- The cocycle law of Maurer–Cartan matrices, for invertible matrices of jets `U₁`, `U₂`
   with inverses `V₁`, `V₂`, `∂_μ (U₁ U₂) (V₂ V₁) = (∂_μ U₁) V₁ + U₁ ((∂_μ U₂) V₂) V₁`. -/
 lemma map_pderiv_mul_mul_mul [Fintype κ] [DecidableEq κ] (μ : Fin 1 ⊕ Fin 3)
     {U₁ U₂ V₁ V₂ : Matrix κ κ SpaceTimeAlgebra} (h : U₂ * V₂ = 1) :
@@ -552,6 +631,7 @@ lemma unitsOfConstant_val (g : (Matrix κ κ ℂ)ˣ) :
     (unitsOfConstant g : Matrix κ κ SpaceTimeAlgebra) =
       (C : ℂ →+* SpaceTimeAlgebra).mapMatrix g := rfl
 
+/-- A constant invertible matrix of jets evaluates to itself at the base point. -/
 lemma unitsEval_unitsOfConstant (g : (Matrix κ κ ℂ)ˣ) : unitsEval (unitsOfConstant g) = g := by
   ext i j
   simp [RingHom.mapMatrix_apply, Matrix.map_apply, constantCoeff_C]

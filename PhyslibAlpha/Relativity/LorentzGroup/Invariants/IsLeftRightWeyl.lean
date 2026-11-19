@@ -9,6 +9,8 @@ public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsBiLeftWeyl
 /-!
 # Lorentz invariants of a left-handed and a right-handed Weyl index
 
+A left-handed and a right-handed Weyl index carry no Lorentz invariant but zero.
+
 ## i. Overview
 
 A bispinor `T^{α α'}`, carrying one left-handed and one right-handed Weyl index, has no Lorentz
@@ -18,12 +20,16 @@ equivariant linear maps out of `ℂT[.upL, .upR]` and `ℂT[.downL, .downR]`, `I
 `IsDualLeftRightWeyl` (A).
 
 By `TensorSpecies.IsEquivariant.reducesInvariantsTo_bot` it is enough that the only invariant
-tensor is zero (B). Two diagonal elements of `SL(2,ℂ)` already force this. A diagonal
-`g = diag (λ₀, λ₁)` multiplies the component `(a₁, a₂)` of a tensor of `ℂT[.upL, .upR]` by
-`λ_{a₁} * conj λ_{a₂}`, and that of a tensor of `ℂT[.downL, .downR]` by the inverse of this. The
-boost `diag (2, 2⁻¹)` along `z` scales `(0, 0)` by `4` and `(1, 1)` by `4⁻¹`, so these vanish,
-and the half turn `diag (-i, i)` about `z` multiplies `(0, 1)` and `(1, 0)` by `-1`, so these
-vanish too (C).
+tensor is zero (B). A tensor with two indices is `fromPairT` of an element of the tensor product
+of the two Weyl representations, and two Weyl indices of opposite chirality have no invariants,
+`Fermion.LeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot` and
+`Fermion.DualLeftHandedWeyl.invariants_tprod_dualRightHandedWeyl_eq_bot`. The classification of
+the invariants of a family follows (C).
+
+A product of two one-index families of opposite chirality, `X_α Y_α'`, in an algebra with a
+multiplicative Lorentz action, is a dual left-right family (D). This is the shape of a Dirac
+mass term `ψ̄ ψ`, which therefore has no Lorentz invariant. A finite join of the spans of such
+products is discarded from any Lorentz-stable submodule (E).
 
 ## ii. Key results
 
@@ -32,12 +38,18 @@ vanish too (C).
 - `Lorentz.IsLeftRightWeyl.reducesInvariantsTo_bot` : the invariants of the range of a
   left-right family reduce to `⊥`.
 - `Lorentz.IsDualLeftRightWeyl.reducesInvariantsTo_bot` : the same for the dual indices.
+- `Lorentz.isDualLeftRightWeyl_mul` : an undotted family times a dotted one is a dual
+  left-right family.
+- `Lorentz.mem_of_lorentz_invariant_iSup_dualLeftRightWeyl_span` : a Lorentz invariant of a
+  join of spans of dual left-right families and a stable submodule `S` lies in `S`.
 
 ## iii. Table of contents
 
 - A. Left-right families as equivariant maps
 - B. The invariant tensors vanish
 - C. The classification of the invariants
+- D. One-index Weyl families and their products
+- E. Peeling the pair spans off a Lorentz-stable submodule
 
 ## iv. References
 
@@ -57,13 +69,13 @@ open Matrix MatrixGroups SL2C Invariants TensorSpecies Tensor complexLorentzTens
 
 -/
 
-/-- A family with a left- and a right-handed Weyl index `T^{α α'}`: an equivariant linear map
+/-- A family with a left- and a right-handed Weyl index `T^{α α'}`, an equivariant linear map
   out of `ℂT[.upL, .upR]`. -/
 abbrev IsLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B) (f : ℂT[.upL, .upR] →ₗ[ℂ] B) : Prop :=
   complexLorentzTensor.IsEquivariant ![.upL, .upR] repLorentz f
 
-/-- A family with a dual left- and a dual right-handed Weyl index `T_{α α'}`: an equivariant
+/-- A family with a dual left- and a dual right-handed Weyl index `T_{α α'}`, an equivariant
   linear map out of `ℂT[.downL, .downR]`. -/
 abbrev IsDualLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B) (f : ℂT[.downL, .downR] →ₗ[ℂ] B) : Prop :=
@@ -76,38 +88,17 @@ abbrev IsDualLeftRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
 -/
 
 /-- An invariant tensor with a left- and a right-handed Weyl index, or with their duals, is
-  zero. The inverse boost along `z` scales the two diagonal components by `4⁻¹` and `4`, and the
-  inverse half turn about `z` negates the two mixed ones; for the dual colours the inverse
-  cancels against the inverse in the matrix of the colour. -/
+  zero. It comes from the tensor product of the two Weyl representations, which has no
+  invariants but zero. -/
 lemma eq_zero_of_invariant_leftRight {k k' : complexLorentzTensor.Color}
     (hk : (k = .upL ∧ k' = .upR) ∨ (k = .downL ∧ k' = .downR)) {t : ℂT[k, k']}
     (ht : ∀ g : SL(2,ℂ), g • t = t) : t = 0 := by
-  have hinv : ∀ g : SL(2,ℂ), (g⁻¹).1⁻¹ = g.1 := fun g => by rw [SL2C.inverse_coe, inv_inv]
-  have h := fun (g : SL(2,ℂ)) (x : basisIdx k) (y : basisIdx k') => congrArg (fun s : ℂT[k, k'] =>
-    (Tensor.basis (S := complexLorentzTensor) _).repr s
-      ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm (x, y))) (ht g)
   rcases hk with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-  all_goals
-    have h1 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 0 0
-    have h2 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 1 1
-    have h3 := h (SL2C.halfTurn 2)⁻¹ 0 1
-    have h4 := h (SL2C.halfTurn 2)⁻¹ 1 0
-    rw [basis_repr_smul_pair] at h1 h2 h3 h4
-    first
-      | rw [toMatrix_rep_upL, toMatrix_rep_upR] at h1 h2 h3 h4
-      | rw [toMatrix_rep_downL, toMatrix_rep_downR] at h1 h2 h3 h4
-    try simp only [hinv] at h1 h2 h3 h4
-    simp [Fin.sum_univ_two, Matrix.adjugate_fin_two, map_ofNat] at h1 h2 h3 h4
-    apply (Tensor.basis (S := complexLorentzTensor) _).repr.injective
-    ext φ
-    obtain ⟨⟨a, b⟩, rfl⟩ :=
-      (piFinTwoEquiv fun j : Fin 2 => basisIdx (![_, _] j)).symm.surjective φ
-    revert a b
-    change ∀ a b : Fin 2, _
-    simp only [Fin.forall_fin_two, map_zero, Finsupp.coe_zero, Pi.zero_apply]
-    exact ⟨⟨(mul_left_eq_self₀.1 h1).resolve_left (by norm_num),
-      CharZero.neg_eq_self_iff.1 h3⟩, CharZero.neg_eq_self_iff.1 h4,
-      (mul_left_eq_self₀.1 h2).resolve_left (by norm_num)⟩
+  · exact Tensor.eq_zero_of_invariant_of_invariants_eq_bot (S := complexLorentzTensor)
+      (c1 := .upL) (c2 := .upR) Fermion.LeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot ht
+  · exact Tensor.eq_zero_of_invariant_of_invariants_eq_bot (S := complexLorentzTensor)
+      (c1 := .downL) (c2 := .downR)
+      Fermion.DualLeftHandedWeyl.invariants_tprod_dualRightHandedWeyl_eq_bot ht
 
 /-!
 
@@ -115,9 +106,11 @@ lemma eq_zero_of_invariant_leftRight {k k' : complexLorentzTensor.Color}
 
 -/
 
+section Classification
+
 variable {B : Type*} [AddCommGroup B] [Module ℂ B] {repLorentz : Representation ℂ SL(2,ℂ) B}
 
-/-- The invariants of the range of a left-right family reduce to `⊥`: a Lorentz invariant of
+/-- The invariants of the range of a left-right family reduce to `⊥`. A Lorentz invariant of
   `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, lies in `S`. -/
 lemma IsLeftRightWeyl.reducesInvariantsTo_bot {f : ℂT[.upL, .upR] →ₗ[ℂ] B}
     (hf : IsLeftRightWeyl B repLorentz f) :
@@ -132,7 +125,7 @@ lemma IsLeftRightWeyl.eq_zero_of_invariant {f : ℂT[.upL, .upR] →ₗ[ℂ] B}
   TensorSpecies.IsEquivariant.eq_zero_of_invariant hf (complexLorentzTensor.isAdjointClosed _)
     (fun _ ht => eq_zero_of_invariant_leftRight (Or.inl ⟨rfl, rfl⟩) ht) hx hinv
 
-/-- The invariants of the range of a dual left-right family reduce to `⊥`: a Lorentz invariant
+/-- The invariants of the range of a dual left-right family reduce to `⊥`. A Lorentz invariant
   of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, lies in `S`. -/
 lemma IsDualLeftRightWeyl.reducesInvariantsTo_bot {f : ℂT[.downL, .downR] →ₗ[ℂ] B}
     (hf : IsDualLeftRightWeyl B repLorentz f) :
@@ -146,5 +139,116 @@ lemma IsDualLeftRightWeyl.eq_zero_of_invariant {f : ℂT[.downL, .downR] →ₗ[
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x = 0 :=
   TensorSpecies.IsEquivariant.eq_zero_of_invariant hf (complexLorentzTensor.isAdjointClosed _)
     (fun _ ht => eq_zero_of_invariant_leftRight (Or.inr ⟨rfl, rfl⟩) ht) hx hinv
+
+end Classification
+
+/-!
+
+## D. One-index Weyl families and their products
+
+A two-element family of elements of an algebra `B` can carry one dual Weyl index, undotted
+(`IsDualLeftWeyl`) or dotted (`IsDualRightWeyl`). Both laws are contragredient, and the dotted
+law carries the extra complex conjugation. A fermion field of the Standard Model with every
+index but its spinor index frozen is such a family. When the Lorentz action is multiplicative,
+an undotted family times a dotted one is a dual left-right Weyl family, in either order.
+
+-/
+
+section ChiralFamilies
+
+variable {B : Type} [Ring B] [Algebra ℂ B] {repLorentz : Representation ℂ SL(2,ℂ) B}
+
+/-- A two-element family `X` of elements of `B` carries a dual undotted spinor index, transforming
+  by the contragredient of the left-handed Weyl representation. -/
+def IsDualLeftWeyl (repLorentz : Representation ℂ SL(2,ℂ) B) (X : Fin 2 → B) : Prop :=
+  ∀ (Λ : SL(2,ℂ)) (a : Fin 2), repLorentz Λ (X a) = ∑ β, (Λ⁻¹).1 a β • X β
+
+/-- A two-element family `Y` of elements of `B` carries a dual dotted spinor index, transforming by
+  the contragredient of the right-handed Weyl representation, which is the conjugate of the undotted
+  law. -/
+def IsDualRightWeyl (repLorentz : Representation ℂ SL(2,ℂ) B) (Y : Fin 2 → B) : Prop :=
+  ∀ (Λ : SL(2,ℂ)) (a : Fin 2), repLorentz Λ (Y a) = ∑ β, star ((Λ⁻¹).1 a β) • Y β
+
+variable (hrepLorentz_mul : ∀ (Λ : SL(2,ℂ)) (b₁ b₂ : B),
+  repLorentz Λ (b₁ * b₂) = repLorentz Λ b₁ * repLorentz Λ b₂)
+
+include hrepLorentz_mul
+
+/-- An undotted family times a dotted one is a dual left-right Weyl family. -/
+lemma isDualLeftRightWeyl_mul {X Y : Fin 2 → B} (hX : IsDualLeftWeyl repLorentz X)
+    (hY : IsDualRightWeyl repLorentz Y) :
+    IsDualLeftRightWeyl B repLorentz
+      (ofPairComponents (k := .downL) (k' := .downR) fun a b => X a * Y b) :=
+  isEquivariant_ofPairComponents _ fun g a b => by
+    rw [toMatrix_rep_downL, toMatrix_rep_downR, hrepLorentz_mul, hX g a, hY g b,
+      Finset.sum_mul_sum]
+    refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
+    rw [smul_mul_smul_comm]
+    congr 1
+    rw [Matrix.transpose_apply, Matrix.conjTranspose_apply, ← SL2C.inverse_coe]
+
+/-- A dotted family times an undotted one is a dual left-right Weyl family, the two
+  spinor slots exchanged. -/
+lemma isDualLeftRightWeyl_mul_swap {X Y : Fin 2 → B} (hX : IsDualRightWeyl repLorentz X)
+    (hY : IsDualLeftWeyl repLorentz Y) :
+    IsDualLeftRightWeyl B repLorentz
+      (ofPairComponents (k := .downL) (k' := .downR) fun a b => X b * Y a) :=
+  isEquivariant_ofPairComponents _ fun g a b => by
+    rw [toMatrix_rep_downL, toMatrix_rep_downR, hrepLorentz_mul, hX g b, hY g a,
+      Finset.sum_mul_sum, Finset.sum_comm]
+    refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
+    rw [smul_mul_smul_comm]
+    congr 1
+    rw [Matrix.transpose_apply, Matrix.conjTranspose_apply, ← SL2C.inverse_coe]
+    ring
+
+end ChiralFamilies
+
+/-!
+
+## E. Peeling the pair spans off a Lorentz-stable submodule
+
+A dual left-right Weyl family carries no invariant, so the span of its components, here the
+join of the lines through them, reduces to `⊥`. Each such span is stable under the Lorentz
+group, so `ReducesInvariantsTo.biSup` combines the reductions over a finite family of them,
+and a whole join is discarded from a Lorentz-stable submodule.
+
+-/
+
+section Peeling
+
+variable {B : Type} [AddCommGroup B] [Module ℂ B] {repLorentz : Representation ℂ SL(2,ℂ) B}
+
+/-- A finite join of the spans of dual left-right Weyl families carries no Lorentz
+  invariant modulo a Lorentz-stable submodule. Such a family has no invariant, so each span
+  reduces to `⊥`, and `ReducesInvariantsTo.biSup` combines the reductions. A Lorentz
+  invariant of the join together with `S` lies in `S`. -/
+lemma mem_of_lorentz_invariant_biSup_dualLeftRightWeyl_span {ι : Type} [DecidableEq ι]
+    {T : ι → Fin 2 × Fin 2 → B} (hT : ∀ i, IsDualLeftRightWeyl B repLorentz
+      (ofPairComponents (k := .downL) (k' := .downR) fun a b => T i (a, b)))
+    (S : Submodule ℂ B) (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) (s : Finset ι)
+    {x : B} (hx : x ∈ (⨆ i ∈ s, ⨆ l, ℂ ∙ T i l) ⊔ S)
+    (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
+  have hr : ∀ i, (⨆ l, ℂ ∙ T i l)
+      = LinearMap.range (ofPairComponents (k := .downL) (k' := .downR) fun a b => T i (a, b)) :=
+    fun i => by rw [range_ofPairComponents, Submodule.span_range_eq_iSup]
+  simp_rw [hr] at hx
+  simpa using ReducesInvariantsTo.biSup (fun i => (hT i).reducesInvariantsTo_bot)
+    (fun i => (hT i).isStableUnder_range) isStableUnder_bot s S hS x hx hinv
+
+/-- The version of `mem_of_lorentz_invariant_biSup_dualLeftRightWeyl_span` joining over a
+  whole finite index type. -/
+lemma mem_of_lorentz_invariant_iSup_dualLeftRightWeyl_span {ι : Type} [Fintype ι]
+    [DecidableEq ι] {T : ι → Fin 2 × Fin 2 → B}
+    (hT : ∀ i, IsDualLeftRightWeyl B repLorentz
+      (ofPairComponents (k := .downL) (k' := .downR) fun a b => T i (a, b))) (S : Submodule ℂ B)
+    (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
+    (hx : x ∈ (⨆ i, ⨆ l, ℂ ∙ T i l) ⊔ S)
+    (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
+  refine mem_of_lorentz_invariant_biSup_dualLeftRightWeyl_span hT S hS Finset.univ ?_ hinv
+  refine sup_le_sup_right (iSup_le fun i => ?_) S hx
+  exact le_iSup₂_of_le i (Finset.mem_univ i) le_rfl
+
+end Peeling
 
 end Lorentz

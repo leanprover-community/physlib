@@ -7,23 +7,29 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Basic
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.AdjointMatrix
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.SU.Invariants.Adjoint
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.Adjoint
 /-!
 # Families of adjoint components and their invariants
+
+Families of components with colour or isospin adjoint indices, and the trace contraction their
+invariants reduce to.
 
 ## i. Overview
 
 The Standard Model labels the adjoint indices of `su(3)` by the eight Gell-Mann matrices
 `gellMannMatrix`, and those of `su(2)` by the three Pauli matrices, and moves them by the adjoint
-matrices `su3AdjointMatrix` and `su2AdjointMatrix`. These are the generalized Gell-Mann matrices of
-`LocalGaugeData.SU.GellMann` for `N = 3` and `N = 2` under a relabelling, `su3Label` and
-`su2Label`, and the adjoint matrices are the matrices of the adjoint action in those bases (A).
+matrices `su3AdjointMatrix` and `su2AdjointMatrix`. These are the generalized Gell-Mann matrices
+`GellMann.matrix` of
+`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.GellMann` for `N = 3` and
+`N = 2` under a relabelling, `su3Label` and `su2Label`, and the adjoint matrices are the matrices
+of the adjoint action in those bases (A).
 
 A family with one adjoint index has no invariant in its span, and a family with two adjoint
 indices of the same factor has its invariants reduced to the trace contraction `∑ a, T ![a, a]`
-(C for colour, D for isospin): the invariant tensors of `SuT[N, .adj]` and `SuT[N, .adj, .adj]` of
-`LocalGaugeData.SU.Invariants.Adjoint`, read on the components through the relabelled
-component maps of B.
+(C for colour, D for isospin). These are the invariant tensors of `SuT[N, .adj]` and
+`SuT[N, .adj, .adj]` of
+`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.Adjoint`, read on
+the components through the relabelled component maps of B.
 
 ## ii. Key results
 
@@ -57,9 +63,12 @@ open Matrix MatrixGroups suTensor TensorSpecies PauliMatrix
 
 ## A. The Gell-Mann labels
 
+The Gell-Mann and Pauli matrices are the generalized Gell-Mann matrices up to a relabelling, so
+the Standard Model adjoint matrices are the matrices of the adjoint action.
+
 -/
 
-/-- The labels of the Gell-Mann matrices of `su(3)` as generalized Gell-Mann labels: the
+/-- The labels of the Gell-Mann matrices of `su(3)` as generalized Gell-Mann labels. They are the
   symmetric and antisymmetric matrices of the planes `(0, 1)`, `(0, 2)` and `(1, 2)`, and the two
   diagonal matrices. -/
 def su3LabelFun : Fin 8 → GellMann.Index 3
@@ -86,22 +95,26 @@ def su2LabelFun : Fin 3 → GellMann.Index 2
 noncomputable def su2Label : Fin 3 ≃ GellMann.Index 2 :=
   Equiv.ofBijective su2LabelFun ⟨by decide, by decide⟩
 
+/-- The relabelling of the Gell-Mann matrices is `su3LabelFun`. -/
 @[simp]
 lemma su3Label_apply (a : Fin 8) : su3Label a = su3LabelFun a := rfl
 
+/-- The relabelling of the Pauli matrices is `su2LabelFun`. -/
 @[simp]
 lemma su2Label_apply (i : Fin 3) : su2Label i = su2LabelFun i := rfl
 
 /-- The Gell-Mann matrices of `su(3)` are the generalized Gell-Mann matrices. -/
 lemma gellMannMatrix_eq_matrix (a : Fin 8) :
     gellMannMatrix a = GellMann.matrix (su3Label a) := by
+  have h2 : (Real.sqrt 2 : ℂ) ≠ 0 := by
+    exact_mod_cast (Real.sqrt_pos.2 (by norm_num : (0 : ℝ) < 2)).ne'
   rw [su3Label_apply]
   fin_cases a <;> simp only [Fin.reduceFinMk, Fin.isValue] <;>
     simp only [gellMannMatrix_zero, gellMannMatrix_one, gellMannMatrix_two, gellMannMatrix_three,
       gellMannMatrix_four, gellMannMatrix_five, gellMannMatrix_six, gellMannMatrix_seven] <;>
     ext i j <;> fin_cases i <;> fin_cases j <;>
     simp [su3LabelFun, GellMann.matrix, GellMann.diagNorm, GellMann.diagProfile]
-  all_goals rw [div_mul_eq_div_div, div_self sqrt_two_ne_zero, one_div]
+  all_goals rw [div_mul_eq_div_div, div_self h2, one_div]
 
 /-- The Pauli matrices are the generalized Gell-Mann matrices of `su(2)`. -/
 lemma pauliMatrix_inr_eq_matrix (i : Fin 3) :
@@ -111,8 +124,9 @@ lemma pauliMatrix_inr_eq_matrix (i : Fin 3) :
     ext a b <;> fin_cases a <;> fin_cases b <;>
     simp [su2LabelFun, GellMann.matrix, pauliMatrix, GellMann.diagNorm, GellMann.diagProfile]
 
-/-- A complex number fixed by conjugation is the image of its real part. -/
-lemma ofReal_half_re_trace {z : ℂ} (hz : star (z / 2) = z / 2) :
+/-- Half a complex number whose half is fixed by conjugation is the image of half its real
+  part. -/
+private lemma ofReal_inv_two_mul_re {z : ℂ} (hz : star (z / 2) = z / 2) :
     ((2⁻¹ * z.re : ℝ) : ℂ) = z / 2 := by
   rw [← Complex.conj_eq_iff_re.1 hz]
   congr 1
@@ -125,14 +139,14 @@ lemma su3AdjointMatrix_eq_adjMatrix (U : SU 3) (a b : Fin 8) :
     ((su3AdjointMatrix U a b : ℝ) : ℂ) = adjMatrix U (su3Label a) (su3Label b) := by
   have hreal := star_adjMatrix_apply U (su3Label a) (su3Label b)
   simp only [adjMatrix_apply, val_inv, ← gellMannMatrix_eq_matrix] at hreal ⊢
-  rw [su3AdjointMatrix_apply, ofReal_half_re_trace hreal]
+  rw [su3AdjointMatrix_apply, ofReal_inv_two_mul_re hreal]
 
 /-- The adjoint matrix of `SU(2)` is the matrix of the adjoint action in the Pauli basis. -/
 lemma su2AdjointMatrix_eq_adjMatrix (U : SU 2) (i j : Fin 3) :
     ((su2AdjointMatrix U i j : ℝ) : ℂ) = adjMatrix U (su2Label i) (su2Label j) := by
   have hreal := star_adjMatrix_apply U (su2Label i) (su2Label j)
   simp only [adjMatrix_apply, val_inv, ← pauliMatrix_inr_eq_matrix] at hreal ⊢
-  rw [su2AdjointMatrix_apply, ofReal_half_re_trace hreal]
+  rw [su2AdjointMatrix_apply, ofReal_inv_two_mul_re hreal]
 
 /-!
 
@@ -188,26 +202,29 @@ variable {B : Type*} [AddCommGroup B] [Module ℂ B] {repGauge : Representation 
 
 ## C. The colour adjoint families
 
+A family with one colour adjoint index has no invariant, and one with two has the trace
+contraction alone.
+
 -/
 
 /-- The linear map `f` moves the components of `T` as `U ∈ SU(3)` moves a tensor with one
-  adjoint index: one factor of the adjoint matrix, the summed index first. -/
+  adjoint index, with one factor of the adjoint matrix, the summed index first. -/
 def IsSU3AdjointMat (U : SU 3) (f : B →ₗ[ℂ] B) (T : Fin 8 → B) : Prop :=
   ∀ l : Fin 8, f (T l) = ∑ a : Fin 8, ((su3AdjointMatrix U a l : ℝ) : ℂ) • T a
 
-/-- A family `T^a` with one `su(3)` adjoint index: the map of the relabelled family out of the
+/-- A family `T^a` with one `su(3)` adjoint index. The map of the relabelled family out of the
   tensors of `SU(3)` is equivariant for the colour factor of the gauge group. -/
 abbrev IsSU3Adjoint (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : Fin 8 → B) : Prop :=
   (suTensor 3).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU3) (adjMap (T ∘ su3Label.symm))
 
 /-- The linear map `f` moves the components of `T` as `U ∈ SU(3)` moves a tensor with two
-  adjoint indices: one factor of the adjoint matrix per index, the summed index first. -/
+  adjoint indices, with one factor of the adjoint matrix per index, the summed index first. -/
 def IsSU3BiAdjointMat (U : SU 3) (f : B →ₗ[ℂ] B) (T : (Fin 2 → Fin 8) → B) : Prop :=
   ∀ l : Fin 2 → Fin 8,
     f (T l) = ∑ a : Fin 2 → Fin 8, (∏ i : Fin 2, ((su3AdjointMatrix U (a i) (l i) : ℝ) : ℂ)) • T a
 
-/-- A family `T^{ab}` with two `su(3)` adjoint indices: the map of the relabelled family out of
+/-- A family `T^{ab}` with two `su(3)` adjoint indices. The map of the relabelled family out of
   the tensors of `SU(3)` is equivariant for the colour factor of the gauge group. -/
 abbrev IsSU3BiAdjoint (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 2 → Fin 8) → B) : Prop :=
@@ -231,7 +248,7 @@ lemma isStableUnder_span (hT : IsSU3Adjoint B repGauge T) :
   rwa [adjMap, range_familyMap, Set.range_comp, Equiv.range_eq_univ, Set.image_univ] at h
 
 /-- A colour invariant of the span of the components joined with a stable submodule lies in
-  that submodule: an adjoint index contributes nothing to the invariants. -/
+  that submodule. An adjoint index contributes nothing to the invariants. -/
 lemma reducesInvariantsTo_bot (hT : IsSU3Adjoint B repGauge T) :
     ReducesInvariantsTo (fun U : SU 3 => repGauge ((U, 1, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) ⊥ := by
@@ -252,10 +269,6 @@ lemma of_law (hT : ∀ U : SU 3, IsSU3BiAdjointMat U (repGauge (U, 1, 1)) T) :
 
 /-- The trace contraction `∑ a, T ![a, a]` of the two adjoint indices. -/
 def traceContraction (T : (Fin 2 → Fin 8) → B) : B := ∑ a : Fin 8, T ![a, a]
-
-lemma traceContraction_mem_span (T : (Fin 2 → Fin 8) → B) :
-    traceContraction T ∈ Submodule.span ℂ (Set.range T) :=
-  sum_mem fun _ _ => Submodule.subset_span ⟨_, rfl⟩
 
 /-- Any map moving the components by the adjoint matrix of an element of `SU(3)` fixes the
   trace contraction. -/
@@ -298,26 +311,28 @@ end IsSU3BiAdjoint
 
 ## D. The isospin adjoint families
 
+The isospin twins of the families of section C.
+
 -/
 
 /-- The linear map `f` moves the components of `T` as `U ∈ SU(2)` moves a tensor with one
-  adjoint index: one factor of the adjoint matrix, the summed index first. -/
+  adjoint index, with one factor of the adjoint matrix, the summed index first. -/
 def IsSU2AdjointMat (U : SU 2) (f : B →ₗ[ℂ] B) (T : Fin 3 → B) : Prop :=
   ∀ l : Fin 3, f (T l) = ∑ a : Fin 3, ((su2AdjointMatrix U a l : ℝ) : ℂ) • T a
 
-/-- A family `T^a` with one `su(2)` adjoint index: the map of the relabelled family out of the
+/-- A family `T^a` with one `su(2)` adjoint index. The map of the relabelled family out of the
   tensors of `SU(2)` is equivariant for the isospin factor of the gauge group. -/
 abbrev IsSU2Adjoint (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : Fin 3 → B) : Prop :=
   (suTensor 2).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU2) (adjMap (T ∘ su2Label.symm))
 
 /-- The linear map `f` moves the components of `T` as `U ∈ SU(2)` moves a tensor with two
-  adjoint indices: one factor of the adjoint matrix per index, the summed index first. -/
+  adjoint indices, with one factor of the adjoint matrix per index, the summed index first. -/
 def IsSU2BiAdjointMat (U : SU 2) (f : B →ₗ[ℂ] B) (T : (Fin 2 → Fin 3) → B) : Prop :=
   ∀ l : Fin 2 → Fin 3,
     f (T l) = ∑ a : Fin 2 → Fin 3, (∏ i : Fin 2, ((su2AdjointMatrix U (a i) (l i) : ℝ) : ℂ)) • T a
 
-/-- A family `T^{ab}` with two `su(2)` adjoint indices: the map of the relabelled family out of
+/-- A family `T^{ab}` with two `su(2)` adjoint indices. The map of the relabelled family out of
   the tensors of `SU(2)` is equivariant for the isospin factor of the gauge group. -/
 abbrev IsSU2BiAdjoint (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 2 → Fin 3) → B) : Prop :=
@@ -340,8 +355,8 @@ lemma isStableUnder_span (hT : IsSU2Adjoint B repGauge T) :
   have h := hT.isStableUnder_range
   rwa [adjMap, range_familyMap, Set.range_comp, Equiv.range_eq_univ, Set.image_univ] at h
 
-/-- A isospin invariant of the span of the components joined with a stable submodule lies in
-  that submodule: an adjoint index contributes nothing to the invariants. -/
+/-- An isospin invariant of the span of the components joined with a stable submodule lies in
+  that submodule. An adjoint index contributes nothing to the invariants. -/
 lemma reducesInvariantsTo_bot (hT : IsSU2Adjoint B repGauge T) :
     ReducesInvariantsTo (fun U : SU 2 => repGauge ((1, U, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) ⊥ := by
@@ -362,10 +377,6 @@ lemma of_law (hT : ∀ U : SU 2, IsSU2BiAdjointMat U (repGauge (1, U, 1)) T) :
 
 /-- The trace contraction `∑ a, T ![a, a]` of the two adjoint indices. -/
 def traceContraction (T : (Fin 2 → Fin 3) → B) : B := ∑ a : Fin 3, T ![a, a]
-
-lemma traceContraction_mem_span (T : (Fin 2 → Fin 3) → B) :
-    traceContraction T ∈ Submodule.span ℂ (Set.range T) :=
-  sum_mem fun _ _ => Submodule.subset_span ⟨_, rfl⟩
 
 /-- Any map moving the components by the adjoint matrix of an element of `SU(2)` fixes the
   trace contraction. -/

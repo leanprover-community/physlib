@@ -42,6 +42,8 @@ permuted index vectors (`permT_coeffEquiv_symm`, `ofComponents_comp_permT`).
   coefficient tensors gives a reduction of the invariants of the range.
 - `Lorentz.isLorentzCovariant_ofComponents_iff` : the map of a family is equivariant exactly when
   the family obeys the transformation law.
+- `Lorentz.IsLorentzCovariant.mul_fixed`, `Lorentz.IsLorentzCovariant.mul_vector` : products of a
+  family with a Lorentz-inert element or with a Lorentz vector.
 
 ## iii. Table of contents
 
@@ -49,6 +51,7 @@ permuted index vectors (`permT_coeffEquiv_symm`, `ofComponents_comp_permT`).
 - B. Coefficient tensors
 - C. The reduction to invariant coefficient tensors
 - D. Maps from components
+- E. Products of families in an algebra
 
 ## iv. References
 
@@ -87,6 +90,45 @@ lemma sum_pi_fin_two {M : Type*} [AddCommMonoid M] (f : (Fin 2 → Fin 1 ⊕ Fin
         funext i
         fin_cases i <;> simp,
     Fintype.sum_prod_type]
+
+/-- A sum over families of no four-vector indices is its single term. -/
+lemma sum_pi_fin_zero {M : Type*} [AddCommMonoid M] (f : (Fin 0 → Fin 1 ⊕ Fin 3) → M) :
+    ∑ d : Fin 0 → Fin 1 ⊕ Fin 3, f d = f ![] :=
+  Finset.sum_eq_single (![] : Fin 0 → Fin 1 ⊕ Fin 3)
+    (fun b _ hb => absurd (Subsingleton.elim b ![]) hb)
+    (fun hb => absurd (Finset.mem_univ _) hb)
+
+/-- A sum over families of one four-vector index is a single sum. -/
+lemma sum_pi_fin_one {M : Type*} [AddCommMonoid M] (f : (Fin 1 → Fin 1 ⊕ Fin 3) → M) :
+    ∑ d : Fin 1 → Fin 1 ⊕ Fin 3, f d = ∑ x : Fin 1 ⊕ Fin 3, f ![x] :=
+  Fintype.sum_equiv (Equiv.funUnique (Fin 1) (Fin 1 ⊕ Fin 3)) _ _ fun d => by
+    congr 1
+    funext i
+    fin_cases i
+    simp
+
+/-- A family of one four-vector index is the tuple of its own entry. -/
+lemma vecCons_fin_one_eta (l : Fin 1 → Fin 1 ⊕ Fin 3) : ![l 0] = l := by
+  funext i
+  fin_cases i
+  rfl
+
+/-- A sum over families of three four-vector indices is a triple sum. -/
+lemma sum_pi_fin_three {M : Type*} [AddCommMonoid M] (f : (Fin 3 → Fin 1 ⊕ Fin 3) → M) :
+    ∑ d : Fin 3 → Fin 1 ⊕ Fin 3, f d
+      = ∑ x : Fin 1 ⊕ Fin 3, ∑ y : Fin 1 ⊕ Fin 3, ∑ z : Fin 1 ⊕ Fin 3, f ![x, y, z] := by
+  rw [show (∑ d : Fin 3 → Fin 1 ⊕ Fin 3, f d)
+      = ∑ p : (Fin 1 ⊕ Fin 3) × (Fin 1 ⊕ Fin 3) × (Fin 1 ⊕ Fin 3),
+        f ![p.1, p.2.1, p.2.2] from
+      Fintype.sum_equiv
+        { toFun := fun d => (d 0, d 1, d 2)
+          invFun := fun p => ![p.1, p.2.1, p.2.2]
+          left_inv := fun d => by funext i; fin_cases i <;> simp
+          right_inv := fun p => by simp } _ _ fun d => by
+        congr 1
+        funext i
+        fin_cases i <;> simp]
+  simp only [Fintype.sum_prod_type]
 
 /-!
 
@@ -297,5 +339,54 @@ lemma isLorentzCovariant_ofComponents_iff {repLorentz : Representation ℂ SL(2,
     simp [vectorIdx, LorentzGroup.toComplex]
 
 end Components
+
+/-!
+
+## E. Products of families in an algebra
+
+When the families take values in an algebra on which `SL(2,ℂ)` acts multiplicatively, a family
+times a Lorentz-inert element keeps its rank, and a rank-two family times a Lorentz vector is a
+rank-three family.
+
+-/
+
+section Products
+
+variable {B : Type*} [Ring B] [Algebra ℂ B] {repLorentz : Representation ℂ SL(2,ℂ) B}
+
+/-- Multiplying a Lorentz tensor family by a Lorentz-inert element gives a family of the
+  same rank, the element riding through the transformation law untouched. -/
+lemma IsLorentzCovariant.mul_fixed {n : ℕ}
+    (hmul : ∀ (Λ : SL(2,ℂ)) (x y : B), repLorentz Λ (x * y) = repLorentz Λ x * repLorentz Λ y)
+    {T : (Fin n → Fin 1 ⊕ Fin 3) → B} (hT : IsLorentzCovariant n B repLorentz (ofComponents T))
+    {y : B} (hy : ∀ g : SL(2,ℂ), repLorentz g y = y) :
+    IsLorentzCovariant n B repLorentz (ofComponents fun d => T d * y) := by
+  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  rw [hmul, (isLorentzCovariant_ofComponents_iff T).1 hT g l, hy g, Finset.sum_mul]
+  exact Finset.sum_congr rfl fun a _ => smul_mul_assoc _ _ _
+
+/-- A rank-two family against a Lorentz vector is a rank-three family, the two covector
+  indices of the first factor and the single index of the second make three. -/
+lemma IsLorentzCovariant.mul_vector
+    (hmul : ∀ (Λ : SL(2,ℂ)) (x y : B), repLorentz Λ (x * y) = repLorentz Λ x * repLorentz Λ y)
+    {T : (Fin 2 → Fin 1 ⊕ Fin 3) → B} (hT : IsLorentzCovariant 2 B repLorentz (ofComponents T))
+    {U : (Fin 1 ⊕ Fin 3) → B}
+    (hU : ∀ (g : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3), repLorentz g (U μ)
+      = ∑ ν : Fin 1 ⊕ Fin 3, (((SL2C.toLorentzGroup g).1 ν μ : ℝ) : ℂ) • U ν) :
+    IsLorentzCovariant 3 B repLorentz
+      (ofComponents fun d : Fin 3 → Fin 1 ⊕ Fin 3 => T ![d 0, d 1] * U (d 2)) := by
+  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  rw [hmul, (isLorentzCovariant_ofComponents_iff T).1 hT g ![l 0, l 1], hU g (l 2),
+    sum_pi_fin_two, sum_pi_fin_three, Finset.sum_mul]
+  refine Finset.sum_congr rfl fun x _ => ?_
+  rw [Finset.sum_mul]
+  refine Finset.sum_congr rfl fun y _ => ?_
+  rw [Finset.mul_sum]
+  refine Finset.sum_congr rfl fun z _ => ?_
+  rw [smul_mul_assoc, mul_smul_comm, smul_smul]
+  congr 1
+  all_goals simp [Fin.prod_univ_two, Fin.prod_univ_three, mul_assoc]
+
+end Products
 
 end Lorentz

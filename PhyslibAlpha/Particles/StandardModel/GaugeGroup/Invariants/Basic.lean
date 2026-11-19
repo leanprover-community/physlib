@@ -6,24 +6,27 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.SU.Invariants.QuadFund
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalGaugeData.SU.Invariants.FundAnti
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.QuadFund
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.FundAnti
 /-!
 # Families of colour and isospin components and their invariants
 
+Families of components moved by the colour or isospin factor, and the contractions their invariants
+reduce to.
+
 ## i. Overview
 
-The invariant tensors of `SU(N)` are classified in `LocalGaugeData.SU.Invariants`, for
-equivariant maps out of the tensors of `suTensor N`. Here those results are applied to the
-Standard Model. A family `T : ι → B` of components, indexed by colour or isospin labels and moved
-by the colour factor `repGauge (U, 1, 1)` or the isospin factor `repGauge (1, V, 1)` of the gauge
+The invariant tensors of `SU(N)` are classified in `GlobalGaugeGroup.SU.Invariants`,
+for equivariant maps out of the tensors of `suTensor N`. Here those results are applied to the
+Standard Model. A family `T : ι → B` of components, indexed by colour or isospin labels and moved by
+the colour factor `repGauge (U, 1, 1)` or the isospin factor `repGauge (1, V, 1)` of the gauge
 group, is turned into a linear map out of the tensors of `SU(3)` or `SU(2)`, and its transformation
 law is exactly the equivariance of that map (A).
 
 A law is named by how the members of the family move as vectors of `B`. Under a fundamental law
 `f (T l) = ∑ a, U a l • T a`, so `T l` moves like the standard basis vector `e_l` of `ℂⁿ`; an
 anti-fundamental law has `conj U` in place of `U`. The component symbols of a field are values of
-an equivariant map on dual vectors, so they obey the dual of the field's law: the symbols of a
+an equivariant map on dual vectors, so they obey the dual of the field's law. The symbols of a
 doublet or triplet field form an anti-fundamental family, and those of its conjugate a fundamental
 one.
 
@@ -67,6 +70,9 @@ open Matrix MatrixGroups suTensor TensorSpecies
 
 ## A. The factors of the gauge group
 
+The colour and isospin factors as homomorphisms into `GaugeGroupI`, along which the
+representation of the gauge group is restricted.
+
 -/
 
 /-- The colour factor `SU(3)` of the gauge group. -/
@@ -75,20 +81,13 @@ def GaugeGroupI.ofSU3 : SU 3 →* GaugeGroupI := MonoidHom.inl _ _
 /-- The isospin factor `SU(2)` of the gauge group. -/
 def GaugeGroupI.ofSU2 : SU 2 →* GaugeGroupI := (MonoidHom.inr _ _).comp (MonoidHom.inl _ _)
 
+/-- The colour factor sends `U` to `(U, 1, 1)`. -/
 @[simp]
 lemma GaugeGroupI.ofSU3_apply (U : SU 3) : GaugeGroupI.ofSU3 U = (U, 1, 1) := rfl
 
+/-- The isospin factor sends `V` to `(1, V, 1)`. -/
 @[simp]
 lemma GaugeGroupI.ofSU2_apply (V : SU 2) : GaugeGroupI.ofSU2 V = (1, V, 1) := rfl
-
-namespace Family
-
-/-- A sum over pairs of indices is a double sum. -/
-lemma sum_pi_two {n : ℕ} {M : Type*} [AddCommMonoid M] (F : (Fin 2 → Fin n) → M) :
-    ∑ d : Fin 2 → Fin n, F d = ∑ x : Fin n, ∑ y : Fin n, F ![x, y] :=
-  sum_fin_two_arrow F
-
-end Family
 
 variable {B : Type*} [AddCommGroup B] [Module ℂ B] {repGauge : Representation ℂ GaugeGroupI B}
 
@@ -96,17 +95,19 @@ variable {B : Type*} [AddCommGroup B] [Module ℂ B] {repGauge : Representation 
 
 ## B. One fundamental and one anti-fundamental index
 
+The invariants reduce to the delta contraction, for colour and for isospin.
+
 -/
 
 /-- The linear map `f` moves the components of `T` as `U ∈ SU(3)` moves a tensor with one
-  fundamental and one anti-fundamental index: a factor of `U` for the first index and a factor of
-  `conj U` for the second, the summed index first. -/
+  fundamental and one anti-fundamental index. It contributes a factor of `U` for the first index
+  and a factor of `conj U` for the second, the summed index first. -/
 def IsSU3FundamentalAntiFundamentalMat (U : SU 3) (f : B →ₗ[ℂ] B) (T : (Fin 2 → Fin 3) → B) :
     Prop :=
   ∀ l : Fin 2 → Fin 3,
     f (T l) = ∑ a : Fin 2 → Fin 3, (U.1 (a 0) (l 0) * starRingEnd ℂ (U.1 (a 1) (l 1))) • T a
 
-/-- A family `T^a{}_b` with one fundamental and one anti-fundamental colour index: its map out of
+/-- A family `T^a{}_b` with one fundamental and one anti-fundamental colour index. Its map out of
   the tensors of `SU(3)` is equivariant for the colour factor of the gauge group. -/
 abbrev IsSU3FundamentalAntiFundamental (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 2 → Fin 3) → B) : Prop :=
@@ -120,7 +121,7 @@ def IsSU2FundamentalAntiFundamentalMat (V : SU 2) (f : B →ₗ[ℂ] B) (T : (Fi
   ∀ l : Fin 2 → Fin 2,
     f (T l) = ∑ a : Fin 2 → Fin 2, (V.1 (a 0) (l 0) * starRingEnd ℂ (V.1 (a 1) (l 1))) • T a
 
-/-- A family `T^a{}_b` with one fundamental and one anti-fundamental isospin index: its map out
+/-- A family `T^a{}_b` with one fundamental and one anti-fundamental isospin index. Its map out
   of the tensors of `SU(2)` is equivariant for the isospin factor of the gauge group. -/
 abbrev IsSU2FundamentalAntiFundamental (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 2 → Fin 2) → B) : Prop :=
@@ -146,6 +147,7 @@ lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 3) → B}
 /-- The delta contraction `∑ a, T ![a, a]`. -/
 def deltaContraction (T : (Fin 2 → Fin 3) → B) : B := ∑ a : Fin 3, T ![a, a]
 
+/-- The delta contraction lies in the span of the components. -/
 lemma deltaContraction_mem_span (T : (Fin 2 → Fin 3) → B) :
     deltaContraction T ∈ Submodule.span ℂ (Set.range T) :=
   sum_mem fun _ _ => Submodule.subset_span ⟨_, rfl⟩
@@ -192,10 +194,12 @@ lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 2) → B}
 def deltaContraction (T : (Fin 2 → Fin 2) → B) : B := T ![0, 0] + T ![1, 1]
 
 omit [Module ℂ B] in
+/-- The delta contraction is the trace `∑ a, T ![a, a]`. -/
 lemma deltaContraction_eq_sum (T : (Fin 2 → Fin 2) → B) :
     deltaContraction T = ∑ a : Fin 2, T ![a, a] := by
   rw [deltaContraction, Fin.sum_univ_two]
 
+/-- The delta contraction lies in the span of the components. -/
 lemma deltaContraction_mem_span (T : (Fin 2 → Fin 2) → B) :
     deltaContraction T ∈ Submodule.span ℂ (Set.range T) :=
   add_mem (Submodule.subset_span ⟨_, rfl⟩) (Submodule.subset_span ⟨_, rfl⟩)
@@ -236,26 +240,29 @@ end IsSU2FundamentalAntiFundamental
 
 ## C. Two isospin indices of the same kind
 
+Two fundamental or two anti-fundamental isospin indices have the epsilon contraction alone as
+invariant.
+
 -/
 
 /-- The linear map `f` moves the components of `T` as `V ∈ SU(2)` moves a tensor with two
-  fundamental indices: one factor of `V` per index. -/
+  fundamental indices, with one factor of `V` per index. -/
 def IsSU2BiFundamentalMat (V : SU 2) (f : B →ₗ[ℂ] B) (T : (Fin 2 → Fin 2) → B) : Prop :=
   ∀ l : Fin 2 → Fin 2, f (T l) = ∑ a : Fin 2 → Fin 2, (∏ i : Fin 2, V.1 (a i) (l i)) • T a
 
 /-- The linear map `f` moves the components of `T` as `V ∈ SU(2)` moves a tensor with two
-  anti-fundamental indices: one factor of `conj V` per index. -/
+  anti-fundamental indices, with one factor of `conj V` per index. -/
 def IsSU2BiAntiFundamentalMat (V : SU 2) (f : B →ₗ[ℂ] B) (T : (Fin 2 → Fin 2) → B) : Prop :=
   ∀ l : Fin 2 → Fin 2, f (T l) = ∑ a : Fin 2 → Fin 2,
     (starRingEnd ℂ (V.1 (a 0) (l 0)) * starRingEnd ℂ (V.1 (a 1) (l 1))) • T a
 
-/-- A family `T^{ab}` with two fundamental isospin indices: its map out of the tensors of `SU(2)`
+/-- A family `T^{ab}` with two fundamental isospin indices. Its map out of the tensors of `SU(2)`
   is equivariant for the isospin factor of the gauge group. -/
 abbrev IsSU2BiFundamental (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 2 → Fin 2) → B) : Prop :=
   (suTensor 2).IsEquivariant (fun _ => .fund) (repGauge.comp GaugeGroupI.ofSU2) (fundMap T)
 
-/-- A family `T_{ab}` with two anti-fundamental isospin indices: its map out of the tensors of
+/-- A family `T_{ab}` with two anti-fundamental isospin indices. Its map out of the tensors of
   `SU(2)` is equivariant for the isospin factor of the gauge group. -/
 abbrev IsSU2BiAntiFundamental (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 2 → Fin 2) → B) : Prop :=
@@ -280,10 +287,6 @@ lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 2) → B}
 
 /-- The epsilon contraction `T ![0, 1] - T ![1, 0]`. -/
 def epsilonContraction (T : (Fin 2 → Fin 2) → B) : B := T ![0, 1] - T ![1, 0]
-
-lemma epsilonContraction_mem_span (T : (Fin 2 → Fin 2) → B) :
-    epsilonContraction T ∈ Submodule.span ℂ (Set.range T) :=
-  sub_mem (Submodule.subset_span ⟨_, rfl⟩) (Submodule.subset_span ⟨_, rfl⟩)
 
 /-- Any map moving the components by an element of `SU(2)` fixes the epsilon contraction. -/
 lemma map_epsilonContraction {V : SU 2} {f : B →ₗ[ℂ] B} (hf : IsSU2BiFundamentalMat V f T) :
@@ -351,14 +354,16 @@ end IsSU2BiAntiFundamental
 
 ## D. Four fundamental isospin indices
 
+The invariants reduce to the two ways of pairing the four indices by epsilon.
+
 -/
 
 /-- The linear map `f` moves the components of `T` as `V ∈ SU(2)` moves a tensor with four
-  fundamental indices: one factor of `V` per index. -/
+  fundamental indices, with one factor of `V` per index. -/
 def IsSU2QuadFundamentalMat (V : SU 2) (f : B →ₗ[ℂ] B) (T : (Fin 4 → Fin 2) → B) : Prop :=
   ∀ l : Fin 4 → Fin 2, f (T l) = ∑ a : Fin 4 → Fin 2, (∏ i : Fin 4, V.1 (a i) (l i)) • T a
 
-/-- A family `T^{abcd}` with four fundamental isospin indices: its map out of the tensors of
+/-- A family `T^{abcd}` with four fundamental isospin indices. Its map out of the tensors of
   `SU(2)` is equivariant for the isospin factor of the gauge group. -/
 abbrev IsSU2QuadFundamental (B : Type*) [AddCommGroup B] [Module ℂ B]
     (repGauge : Representation ℂ GaugeGroupI B) (T : (Fin 4 → Fin 2) → B) : Prop :=
@@ -372,12 +377,6 @@ variable {T : (Fin 4 → Fin 2) → B}
 lemma of_law (hT : ∀ V : SU 2, IsSU2QuadFundamentalMat V (repGauge (1, V, 1)) T) :
     IsSU2QuadFundamental B repGauge T :=
   isEquivariant_fundMap T hT
-
-/-- A sum over families of four fundamental indices is a fourfold sum. -/
-lemma sum_pi_four {M : Type*} [AddCommMonoid M] (F : (Fin 4 → Fin 2) → M) :
-    ∑ d : Fin 4 → Fin 2, F d
-      = ∑ x : Fin 2, ∑ y : Fin 2, ∑ z : Fin 2, ∑ w : Fin 2, F ![x, y, z, w] :=
-  sum_fin_four_arrow F
 
 /-- The contraction pairing the first index with the second and the third with the
   fourth. -/

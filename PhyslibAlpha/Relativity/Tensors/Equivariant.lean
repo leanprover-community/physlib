@@ -6,9 +6,13 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Physlib.Relativity.Tensors.Basic
+public import Physlib.Relativity.Tensors.Constructors
+public import PhyslibAlpha.Mathematics.RepresentationTheory.Invariants
 public import PhyslibAlpha.Mathematics.InvariantReduction
 /-!
 # Equivariant maps out of the tensors of a species
+
+Families of vectors carrying tensor indices, and how their invariants come from invariant tensors.
 
 ## i. Overview
 
@@ -28,6 +32,19 @@ A map is specified by its values on the basis tensors with `Basis.constr`, and
 the component indices relabelled by `e`, the map of a family `T` is `familyMap e T`, and it is
 equivariant exactly when `T` obeys that law, `isEquivariant_familyMap_iff`.
 
+A tensor with two indices is `fromPairT` of exactly one element of the tensor product of the two
+representations, and `fromPairT` is equivariant, so the invariant tensors with two indices are the
+images of the invariants of that tensor product; likewise for three indices and `fromTripleT` (E).
+A classification of the invariants of a tensor product of representations is thereby one of the
+invariant tensors.
+
+The action on `S.Tensor c` is a representation `S.tensorRep c`, so the invariant tensors are the
+Mathlib submodule `(S.tensorRep c).invariants` (F). A linear equivalence onto the tensors which
+intertwines a representation `σ` with this action carries the invariants of `σ` onto those of the
+tensors, as `fromPairTEquiv` and `fromTripleTEquiv` do for tensor products. When the colors are
+closed under adjoints, the invariants in the range of an intertwining map out of the tensors are
+the image of the invariant tensors.
+
 ## ii. Key results
 
 - `TensorSpecies.IsEquivariant` : equivariant linear maps out of `S.Tensor c`.
@@ -40,6 +57,16 @@ equivariant exactly when `T` obeys that law, `isEquivariant_familyMap_iff`.
 - `TensorSpecies.IsEquivariant.invariantReductionToSpan` : the reduction to one invariant tensor.
 - `TensorSpecies.isEquivariant_familyMap_iff` : the map of a family is equivariant exactly when
   the family obeys the transformation law of the components.
+- `TensorSpecies.Tensor.exists_fromPairT_of_invariant`,
+  `TensorSpecies.Tensor.exists_fromTripleT_of_invariant` : invariant tensors with two or three
+  indices are the images of invariants of the tensor product of the representations.
+- `TensorSpecies.Tensor.exists_eq_smul_fromPairT_of_invariant` : a line of invariants of the
+  tensor product gives the invariant tensors.
+- `TensorSpecies.tensorRep` : the action on tensors as a representation.
+- `TensorSpecies.invariants_eq_map_of_equiv` : the invariants of a representation identified with
+  the tensors are the invariant tensors.
+- `TensorSpecies.IsAdjointClosed.invariants_inf_range_eq_map` : the invariants in the range of an
+  intertwining map out of the tensors are the image of the invariant tensors.
 
 ## iii. Table of contents
 
@@ -47,6 +74,8 @@ equivariant exactly when `T` obeys that law, `isEquivariant_familyMap_iff`.
 - B. Colors closed under adjoints
 - C. Invariants in the range come from invariant tensors
 - D. Building equivariant maps
+- E. Invariant tensors with two and three indices
+- F. The tensors as a representation
 
 ## iv. References
 
@@ -74,8 +103,8 @@ variable {k : Type} [CommRing k] {C G : Type} [Group G]
   {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
 
 /-- A linear map `f` from the tensors of the species `S` with index colors `c` to a
-  representation `ρ` of the group of the species, which is equivariant: it intertwines the action
-  of the group on tensors with `ρ`. -/
+  representation `ρ` of the group of the species, which is equivariant, that is, it intertwines
+  the action of the group on tensors with `ρ`. -/
 structure IsEquivariant (S : TensorSpecies k C G V basisIdx rep b) {n : ℕ} (c : Fin n → C)
     {B : Type*} [AddCommMonoid B] [Module k B] (ρ : Representation k G B)
     (f : S.Tensor c →ₗ[k] B) : Prop where
@@ -83,7 +112,7 @@ structure IsEquivariant (S : TensorSpecies k C G V basisIdx rep b) {n : ℕ} (c 
 
 variable {S : TensorSpecies k C G V basisIdx rep b}
 
-/-- The action of `g` on a basis tensor: the coefficient of `e_ψ` in `g • e_φ` is the product over
+/-- The action of `g` on a basis tensor. The coefficient of `e_ψ` in `g • e_φ` is the product over
   the indices of the matrix entries of `g` in the color of that index. -/
 lemma smul_basis_eq_sum {n : ℕ} (c : Fin n → C) (g : G) (φ : ComponentIdx (S := S) c) :
     g • Tensor.basis (S := S) c φ
@@ -104,7 +133,7 @@ lemma smul_basis_eq_sum {n : ℕ} (c : Fin n → C) (g : G) (φ : ComponentIdx (
   rw [← MultilinearMap.map_smul_univ]
   rfl
 
-/-- The components of `g • t`: the matrix of products of the matrix entries of `g`, one factor
+/-- The components of `g • t`, the matrix of products of the matrix entries of `g`, one factor
   per index, applied to the components of `t`. -/
 lemma basis_repr_smul {n : ℕ} (c : Fin n → C) (g : G) (t : S.Tensor c)
     (φ : ComponentIdx (S := S) c) :
@@ -202,7 +231,7 @@ variable {S : TensorSpecies ℂ C G V basisIdx rep b} {n : ℕ} {c : Fin n → C
 
 include hf in
 /-- An invariant in the range of `f` is the image of an invariant tensor, when the colors are
-  closed under adjoints: the adjoint of the action of `g` on the coefficients is that of `g'`. -/
+  closed under adjoints. The adjoint of the action of `g` on the coefficients is that of `g'`. -/
 lemma exists_invariant_eq_of_mem_range (hc : S.IsAdjointClosed c) {x : B}
     (hx : x ∈ LinearMap.range f) (hinv : ∀ g : G, ρ g x = x) :
     ∃ t : S.Tensor c, (∀ g : G, g • t = t) ∧ f t = x := by
@@ -357,29 +386,11 @@ lemma range_familyMap (e : ComponentIdx (S := S) c ≃ ι) (T : ι → B) :
   rw [familyMap, Module.Basis.constr_range]
   exact congrArg _ (e.surjective.range_comp T)
 
-/-- The image of `familyMap e T` lies in the span of the vectors `T l`. -/
-lemma familyMap_mem_span (e : ComponentIdx (S := S) c ≃ ι) (T : ι → B) (t : S.Tensor c) :
-    familyMap e T t ∈ Submodule.span k (Set.range T) := by
-  rw [← range_familyMap e]
-  exact LinearMap.mem_range_self _ t
-
 /-- `familyMap` of a sum of families is the sum of the maps. -/
 lemma familyMap_sum (e : ComponentIdx (S := S) c ≃ ι) {α : Type*} (s : Finset α)
     (T : α → ι → B) :
     familyMap e (fun l => ∑ i ∈ s, T i l) = ∑ i ∈ s, familyMap e (T i) :=
   (Tensor.basis c).ext fun φ => by simp [familyMap, LinearMap.sum_apply]
-
-/-- `familyMap` of a difference of families is the difference of the maps. -/
-lemma familyMap_sub (e : ComponentIdx (S := S) c ≃ ι) (T T' : ι → B) :
-    familyMap e (fun l => T l - T' l) = familyMap e T - familyMap e T' :=
-  (Tensor.basis c).ext fun φ => by simp [familyMap]
-
-/-- A linear map applied after `familyMap e T` is `familyMap` of its values on the
-  components. -/
-lemma comp_familyMap (e : ComponentIdx (S := S) c ≃ ι) {B' : Type*} [AddCommGroup B']
-    [Module k B'] (σ : B →ₗ[k] B') (T : ι → B) :
-    σ ∘ₗ familyMap e T = familyMap e fun l => σ (T l) :=
-  (Tensor.basis c).ext fun φ => by simp [familyMap]
 
 /-- A linear map moving a family as `g` moves the basis tensors intertwines the map of the family
   with the action of `g`. -/
@@ -398,7 +409,7 @@ lemma familyMap_smul_of_law (e : ComponentIdx (S := S) c ≃ ι) [Fintype ι] (T
   exact (LinearMap.congr_fun h t).trans (by rw [actionT_eq]; rfl)
 
 /-- The map of a family is equivariant exactly when the family is moved as the basis tensors
-  are: one matrix entry of `g` per index, the summed index first in each factor. -/
+  are, with one matrix entry of `g` per index and the summed index first in each factor. -/
 lemma isEquivariant_familyMap_iff (e : ComponentIdx (S := S) c ≃ ι) [Fintype ι]
     {ρ : Representation k G B} (T : ι → B) :
     S.IsEquivariant c ρ (familyMap e T) ↔ ∀ (g : G) (l : ι), ρ g (T l)
@@ -412,5 +423,302 @@ lemma isEquivariant_familyMap_iff (e : ComponentIdx (S := S) c ≃ ι) [Fintype 
   · exact fun hT => ⟨fun g t => (familyMap_smul_of_law e T g (hT g) t).symm⟩
 
 end Constr
+
+/-!
+
+## E. Invariant tensors with two and three indices
+
+-/
+
+namespace Tensor
+
+open TensorProduct
+
+variable {k : Type} [CommRing k] {C G : Type} [Group G]
+  {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+  {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+  {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
+  {S : TensorSpecies k C G V basisIdx rep b}
+
+/-- A tensor with two indices determines the element of `V c1 ⊗ V c2` it comes from. -/
+lemma fromPairT_injective {c1 c2 : C} :
+    Function.Injective (fromPairT (S := S) (c1 := c1) (c2 := c2)) := by
+  intro x y h
+  apply (Basis.tensorProduct (b c1) (b c2)).repr.injective
+  ext ⟨i, j⟩
+  have h' := congrArg (fun t => (Tensor.basis ![c1, c2]).repr t (fun | 0 => i | 1 => j)) h
+  simpa only [fromPairT_basis_repr] using h'
+
+/-- Every tensor with two indices comes from `V c1 ⊗ V c2`, since the basis tensors do. -/
+lemma fromPairT_surjective {c1 c2 : C} :
+    Function.Surjective (fromPairT (S := S) (c1 := c1) (c2 := c2)) := by
+  rw [← LinearMap.range_eq_top, eq_top_iff, ← (Tensor.basis (S := S) ![c1, c2]).span_eq,
+    Submodule.span_le]
+  rintro _ ⟨φ, rfl⟩
+  refine ⟨_, (fromPairT_apply_basis_repr (S := S) (c := c1) (c1 := c2) (φ 0) (φ 1)).trans
+    (congrArg _ ?_)⟩
+  funext j
+  fin_cases j <;> rfl
+
+/-- An invariant tensor with two indices is `fromPairT` of an invariant of the tensor product of
+  the two representations. -/
+lemma exists_fromPairT_of_invariant {c1 c2 : C} {t : S.Tensor ![c1, c2]}
+    (ht : ∀ g : G, g • t = t) :
+    ∃ x ∈ ((rep c1).tprod (rep c2)).invariants, fromPairT x = t := by
+  obtain ⟨x, rfl⟩ := fromPairT_surjective t
+  refine ⟨x, fun g => fromPairT_injective (S := S) ?_, rfl⟩
+  change fromPairT (TensorProduct.map (rep c1 g) (rep c2 g) x) = _
+  rw [← actionT_fromPairT, ht]
+
+/-- When the invariants of `V c1 ⊗ V c2` are the line through `v`, the invariant tensors with two
+  indices are the multiples of `fromPairT v`. -/
+lemma exists_eq_smul_fromPairT_of_invariant {c1 c2 : C} {v : V c1 ⊗[k] V c2}
+    (hv : ((rep c1).tprod (rep c2)).invariants = Submodule.span k {v}) {t : S.Tensor ![c1, c2]}
+    (ht : ∀ g : G, g • t = t) : ∃ a : k, t = a • fromPairT v := by
+  obtain ⟨x, hx, rfl⟩ := exists_fromPairT_of_invariant ht
+  rw [hv, Submodule.mem_span_singleton] at hx
+  obtain ⟨a, rfl⟩ := hx
+  exact ⟨a, map_smul _ _ _⟩
+
+/-- When `V c1 ⊗ V c2` has no invariants but zero, neither do the tensors with two indices. -/
+lemma eq_zero_of_invariant_of_invariants_eq_bot {c1 c2 : C}
+    (hv : ((rep c1).tprod (rep c2)).invariants = ⊥) {t : S.Tensor ![c1, c2]}
+    (ht : ∀ g : G, g • t = t) : t = 0 := by
+  obtain ⟨x, hx, rfl⟩ := exists_fromPairT_of_invariant ht
+  rw [hv, Submodule.mem_bot] at hx
+  rw [hx, map_zero]
+
+/-- A tensor with three indices determines the element of `V c1 ⊗ (V c2 ⊗ V c3)` it comes
+  from. -/
+lemma fromTripleT_injective {c1 c2 c3 : C} :
+    Function.Injective (fromTripleT (S := S) (c1 := c1) (c2 := c2) (c3 := c3)) := by
+  intro x y h
+  apply (Basis.tensorProduct (b c1) (Basis.tensorProduct (b c2) (b c3))).repr.injective
+  ext ⟨i, j, l⟩
+  have h' := congrArg
+    (fun t => (Tensor.basis ![c1, c2, c3]).repr t (fun | 0 => i | 1 => j | 2 => l)) h
+  simpa only [fromTripleT_basis_repr] using h'
+
+/-- Every tensor with three indices comes from `V c1 ⊗ (V c2 ⊗ V c3)`, since the basis tensors
+  do. -/
+lemma fromTripleT_surjective {c1 c2 c3 : C} :
+    Function.Surjective (fromTripleT (S := S) (c1 := c1) (c2 := c2) (c3 := c3)) := by
+  rw [← LinearMap.range_eq_top, eq_top_iff, ← (Tensor.basis (S := S) ![c1, c2, c3]).span_eq,
+    Submodule.span_le]
+  rintro _ ⟨φ, rfl⟩
+  refine ⟨_, (fromTripleT_apply_basis (S := S) (c := c1) (c1 := c2) (c2 := c3) (φ 0) (φ 1)
+    (φ 2)).trans (congrArg _ ?_)⟩
+  funext j
+  fin_cases j <;> rfl
+
+/-- An invariant tensor with three indices is `fromTripleT` of an invariant of the tensor
+  product of the three representations. -/
+lemma exists_fromTripleT_of_invariant {c1 c2 c3 : C} {t : S.Tensor ![c1, c2, c3]}
+    (ht : ∀ g : G, g • t = t) :
+    ∃ x ∈ ((rep c1).tprod ((rep c2).tprod (rep c3))).invariants, fromTripleT x = t := by
+  obtain ⟨x, rfl⟩ := fromTripleT_surjective t
+  refine ⟨x, fun g => fromTripleT_injective (S := S) ?_, rfl⟩
+  change fromTripleT (TensorProduct.map (rep c1 g) (TensorProduct.map (rep c2 g) (rep c3 g)) x) = _
+  rw [← actionT_fromTripleT, ht]
+
+/-- When the invariants of `V c1 ⊗ (V c2 ⊗ V c3)` are the line through `v`, the invariant tensors
+  with three indices are the multiples of `fromTripleT v`. -/
+lemma exists_eq_smul_fromTripleT_of_invariant {c1 c2 c3 : C} {v : V c1 ⊗[k] (V c2 ⊗[k] V c3)}
+    (hv : ((rep c1).tprod ((rep c2).tprod (rep c3))).invariants = Submodule.span k {v})
+    {t : S.Tensor ![c1, c2, c3]} (ht : ∀ g : G, g • t = t) : ∃ a : k, t = a • fromTripleT v := by
+  obtain ⟨x, hx, rfl⟩ := exists_fromTripleT_of_invariant ht
+  rw [hv, Submodule.mem_span_singleton] at hx
+  obtain ⟨a, rfl⟩ := hx
+  exact ⟨a, map_smul _ _ _⟩
+
+end Tensor
+
+/-!
+
+## F. The tensors as a representation
+
+-/
+
+section TensorRep
+
+open TensorProduct
+
+variable {k : Type} [CommRing k] {C G : Type} [Group G]
+  {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module k (V c)]
+  {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+  {rep : (c : C) → Representation k G (V c)} {b : (c : C) → Basis (basisIdx c) k (V c)}
+  {S : TensorSpecies k C G V basisIdx rep b} {n : ℕ} {c : Fin n → C}
+
+variable (S) in
+/-- The action of the group on the tensors with index colors `c`, as a representation. -/
+noncomputable def tensorRep (c : Fin n → C) : Representation k G (S.Tensor c) where
+  toFun g := PiTensorProduct.map fun i => rep (c i) g
+  map_one' := LinearMap.ext fun (t : S.Tensor c) => one_smul G t
+  map_mul' g h := LinearMap.ext fun (t : S.Tensor c) => mul_smul g h t
+
+@[simp]
+lemma tensorRep_apply (g : G) (t : S.Tensor c) : S.tensorRep c g t = g • t := rfl
+
+/-- The invariant tensors are the line through an invariant tensor `t₀` when every invariant
+  tensor is a multiple of it. -/
+lemma invariants_tensorRep_eq_span_singleton {t₀ : S.Tensor c} (ht₀ : ∀ g : G, g • t₀ = t₀)
+    (h : ∀ t : S.Tensor c, (∀ g : G, g • t = t) → ∃ a : k, t = a • t₀) :
+    (S.tensorRep c).invariants = k ∙ t₀ := by
+  refine le_antisymm (fun t ht => ?_) ((Submodule.span_singleton_le_iff_mem _ _).2 ht₀)
+  obtain ⟨a, rfl⟩ := h t ht
+  exact Submodule.smul_mem _ a (Submodule.mem_span_singleton_self t₀)
+
+/-- There are no invariant tensors but zero when every invariant tensor vanishes. -/
+lemma invariants_tensorRep_eq_bot (h : ∀ t : S.Tensor c, (∀ g : G, g • t = t) → t = 0) :
+    (S.tensorRep c).invariants = ⊥ :=
+  eq_bot_iff.2 fun t ht => (Submodule.mem_bot k).2 (h t ht)
+
+/-- For a linear equivalence `e` onto the tensors intertwining `σ` with the action on tensors, the
+  invariants of `σ` are the images of the invariant tensors under `e⁻¹`. -/
+lemma invariants_eq_map_of_equiv {W : Type*} [AddCommGroup W] [Module k W]
+    {σ : Representation k G W} (e : W ≃ₗ[k] S.Tensor c)
+    (he : ∀ (g : G) (w : W), e (σ g w) = g • e w) :
+    σ.invariants = (S.tensorRep c).invariants.map (e.symm : S.Tensor c →ₗ[k] W) := by
+  ext w
+  rw [Submodule.mem_map_equiv, LinearEquiv.symm_symm]
+  refine ⟨fun hw g => ?_, fun hw g => e.injective ?_⟩
+  · change g • e w = e w
+    rw [← he, hw g]
+  · rw [he]
+    exact hw g
+
+/-- For a linear equivalence `e` onto the tensors intertwining `σ` with the action on tensors, the
+  invariant tensors are the images under `e` of the invariants of `σ`. -/
+lemma invariants_tensorRep_eq_map_of_equiv {W : Type*} [AddCommGroup W] [Module k W]
+    {σ : Representation k G W} (e : W ≃ₗ[k] S.Tensor c)
+    (he : ∀ (g : G) (w : W), e (σ g w) = g • e w) :
+    (S.tensorRep c).invariants = σ.invariants.map (e : W →ₗ[k] S.Tensor c) := by
+  ext t
+  rw [Submodule.mem_map_equiv]
+  refine ⟨fun ht g => e.injective ?_, fun ht g => ?_⟩
+  · rw [he, e.apply_symm_apply]
+    exact ht g
+  · change g • t = t
+    have h := he g (e.symm t)
+    rw [ht g, e.apply_symm_apply] at h
+    exact h.symm
+
+/-- The tensors with two indices as the tensor product of the two representations. -/
+noncomputable def fromPairTEquiv {c1 c2 : C} : V c1 ⊗[k] V c2 ≃ₗ[k] S.Tensor ![c1, c2] :=
+  LinearEquiv.ofBijective Tensor.fromPairT ⟨Tensor.fromPairT_injective, Tensor.fromPairT_surjective⟩
+
+@[simp]
+lemma fromPairTEquiv_apply {c1 c2 : C} (x : V c1 ⊗[k] V c2) :
+    fromPairTEquiv (S := S) x = Tensor.fromPairT x := rfl
+
+/-- `fromPairTEquiv` intertwines the tensor product of the two representations with the action on
+  tensors. -/
+lemma fromPairTEquiv_tprod {c1 c2 : C} (g : G) (x : V c1 ⊗[k] V c2) :
+    fromPairTEquiv (S := S) (((rep c1).tprod (rep c2)) g x) = g • fromPairTEquiv x :=
+  (Tensor.actionT_fromPairT x g).symm
+
+/-- The invariants of the tensor product of two representations are the line through `v` when the
+  invariant tensors with two indices are the line through `fromPairT v`. -/
+lemma invariants_tprod_eq_span_singleton {c1 c2 : C} {v : V c1 ⊗[k] V c2}
+    (h : (S.tensorRep ![c1, c2]).invariants = k ∙ Tensor.fromPairT v) :
+    ((rep c1).tprod (rep c2)).invariants = k ∙ v := by
+  rw [invariants_eq_map_of_equiv (fromPairTEquiv (S := S)) fromPairTEquiv_tprod, h,
+    Submodule.map_span, Set.image_singleton, ← fromPairTEquiv_apply]
+  rw [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+
+/-- The tensors with three indices as the tensor product of the three representations. -/
+noncomputable def fromTripleTEquiv {c1 c2 c3 : C} :
+    V c1 ⊗[k] (V c2 ⊗[k] V c3) ≃ₗ[k] S.Tensor ![c1, c2, c3] :=
+  LinearEquiv.ofBijective Tensor.fromTripleT
+    ⟨Tensor.fromTripleT_injective, Tensor.fromTripleT_surjective⟩
+
+@[simp]
+lemma fromTripleTEquiv_apply {c1 c2 c3 : C} (x : V c1 ⊗[k] (V c2 ⊗[k] V c3)) :
+    fromTripleTEquiv (S := S) x = Tensor.fromTripleT x := rfl
+
+/-- `fromTripleTEquiv` intertwines the tensor product of the three representations with the action
+  on tensors. -/
+lemma fromTripleTEquiv_tprod {c1 c2 c3 : C} (g : G) (x : V c1 ⊗[k] (V c2 ⊗[k] V c3)) :
+    fromTripleTEquiv (S := S) (((rep c1).tprod ((rep c2).tprod (rep c3))) g x)
+      = g • fromTripleTEquiv x :=
+  (Tensor.actionT_fromTripleT x g).symm
+
+end TensorRep
+
+/-! The invariants in the range of an intertwining map out of the tensors. -/
+
+section TensorRepComplex
+
+variable {C G : Type} [Group G]
+  {V : C → Type} [∀ c, AddCommGroup (V c)] [∀ c, Module ℂ (V c)]
+  {basisIdx : C → Type} [∀ c, Fintype (basisIdx c)] [∀ c, DecidableEq (basisIdx c)]
+  {rep : (c : C) → Representation ℂ G (V c)} {b : (c : C) → Basis (basisIdx c) ℂ (V c)}
+  {S : TensorSpecies ℂ C G V basisIdx rep b} {n : ℕ} {c : Fin n → C} {B : Type*}
+  [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ G B}
+
+/-- When the colors are closed under adjoints, the invariants in the range of an intertwining map
+  `f` out of the tensors are the images of the invariant tensors. -/
+lemma IsAdjointClosed.invariants_inf_range_eq_map (hc : S.IsAdjointClosed c)
+    (f : (S.tensorRep c).IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule = (S.tensorRep c).invariants.map f.toLinearMap := by
+  refine le_antisymm (fun x hx => ?_) ?_
+  · have hf : S.IsEquivariant c ρ f.toLinearMap := ⟨fun g t => f.isIntertwining _ _ g t⟩
+    obtain ⟨t, ht, rfl⟩ := hf.exists_invariant_eq_of_mem_range hc hx.2 hx.1
+    exact ⟨t, ht, rfl⟩
+  · rintro _ ⟨t, ht, rfl⟩
+    exact ⟨f.apply_mem_invariants ht, t, rfl⟩
+
+/-- When the colors are closed under adjoints and `e` identifies `σ` with the tensors, the
+  invariants in the range of an intertwining map `f` out of `σ` are the images under `f ∘ e⁻¹` of
+  the invariant tensors. -/
+lemma IsAdjointClosed.invariants_inf_range_eq_map_of_equiv (hc : S.IsAdjointClosed c)
+    {W : Type*} [AddCommGroup W] [Module ℂ W] {σ : Representation ℂ G W}
+    (e : W ≃ₗ[ℂ] S.Tensor c) (he : ∀ (g : G) (w : W), e (σ g w) = g • e w)
+    (f : σ.IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule
+      = (S.tensorRep c).invariants.map (f.toLinearMap ∘ₗ (e.symm : S.Tensor c →ₗ[ℂ] W)) := by
+  let E : (S.tensorRep c).IntertwiningMap σ :=
+    (e.symm : S.Tensor c →ₗ[ℂ] W).intertwiningMap_of_isIntertwiningMap _ _ fun g t =>
+      e.injective (by rw [he, LinearEquiv.coe_coe, LinearEquiv.apply_symm_apply,
+        LinearEquiv.apply_symm_apply, tensorRep_apply])
+  rw [← Representation.invariants_inf_range_comp_of_surjective f E e.symm.surjective,
+    hc.invariants_inf_range_eq_map]
+  rfl
+
+/-- The invariants in the range of an intertwining map `f` out of the tensors are the line through
+  `f t₀` when the invariant tensors are the line through `t₀`. -/
+lemma IsAdjointClosed.invariants_inf_range_eq_span (hc : S.IsAdjointClosed c) {t₀ : S.Tensor c}
+    (h : (S.tensorRep c).invariants = ℂ ∙ t₀) (f : (S.tensorRep c).IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f t₀ := by
+  rw [hc.invariants_inf_range_eq_map, h, Submodule.map_span, Set.image_singleton]
+  rfl
+
+/-- The invariants in the range of an intertwining map `f` out of the tensors are zero when there
+  are no invariant tensors but zero. -/
+lemma IsAdjointClosed.invariants_inf_range_eq_bot (hc : S.IsAdjointClosed c)
+    (h : (S.tensorRep c).invariants = ⊥) (f : (S.tensorRep c).IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule = ⊥ := by
+  rw [hc.invariants_inf_range_eq_map, h, Submodule.map_bot]
+
+/-- When `e` identifies `σ` with the tensors and the invariant tensors are the line through `e v`,
+  the invariants in the range of an intertwining map `f` out of `σ` are the line through `f v`. -/
+lemma IsAdjointClosed.invariants_inf_range_eq_span_of_equiv (hc : S.IsAdjointClosed c)
+    {W : Type*} [AddCommGroup W] [Module ℂ W] {σ : Representation ℂ G W}
+    (e : W ≃ₗ[ℂ] S.Tensor c) (he : ∀ (g : G) (w : W), e (σ g w) = g • e w) {v : W}
+    (h : (S.tensorRep c).invariants = ℂ ∙ e v) (f : σ.IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f v := by
+  rw [hc.invariants_inf_range_eq_map_of_equiv e he, h, Submodule.map_span, Set.image_singleton]
+  simp
+
+/-- When `e` identifies `σ` with the tensors and there are no invariant tensors but zero, the
+  invariants in the range of an intertwining map out of `σ` are zero. -/
+lemma IsAdjointClosed.invariants_inf_range_eq_bot_of_equiv (hc : S.IsAdjointClosed c)
+    {W : Type*} [AddCommGroup W] [Module ℂ W] {σ : Representation ℂ G W}
+    (e : W ≃ₗ[ℂ] S.Tensor c) (he : ∀ (g : G) (w : W), e (σ g w) = g • e w)
+    (h : (S.tensorRep c).invariants = ⊥) (f : σ.IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule = ⊥ := by
+  rw [hc.invariants_inf_range_eq_map_of_equiv e he, h, Submodule.map_bot]
+
+end TensorRepComplex
 
 end TensorSpecies

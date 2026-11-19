@@ -5,9 +5,12 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
+public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.AdjointClosed
 /-!
 # Lorentz invariants of two Weyl indices of the same kind
+
+Up to scale, the `ε` metric is the only Lorentz invariant of two Weyl indices of the same kind.
 
 ## i. Overview
 
@@ -21,14 +24,10 @@ two right-handed, two dual left-handed and two dual right-handed indices are `Is
 `IsBiRightWeyl`, `IsBiDualLeftWeyl` and `IsBiDualRightWeyl` (A).
 
 By `TensorSpecies.IsEquivariant.invariantReductionToSpan` it is enough to show that the invariant
-tensors of `ℂT[k, k]` are the multiples of `metricTensor k` (B). Two elements of `SL(2,ℂ)` pin
-the components `r` of an invariant tensor down. The first acts on the colour `k` by
-`diag (2, 2⁻¹)`, which scales `r (0, 0)` by `4` and `r (1, 1)` by `4⁻¹`, so these vanish. The
-second acts by an antidiagonal matrix with entries `μ`, `μ² = -1`, which sends `r (0, 1)` to
-`μ² r (1, 0)`, so `r (0, 1) = -r (1, 0)`. For `k = upL` these are the boost along `z` and the
-half turn about `x`; for the other colours they are their images under conjugation and inversion.
-The metric is itself invariant, with a nonzero `(0, 1)` component, so `r` is a multiple of its
-components.
+tensors of `ℂT[k, k]` are the multiples of `metricTensor k` (B). A tensor with two indices is
+`fromPairT` of an element of the tensor square of the Weyl representation of colour `k`, and the
+invariants of that tensor square are the line through the metric,
+`Fermion.LeftHandedWeyl.invariants_tprod_eq_span_metricVal` and its three siblings.
 
 ## ii. Key results
 
@@ -40,7 +39,8 @@ components.
   linear map out of `ℂT[.downL, .downL]`
 - `IsBiDualRightWeyl` : a family with two dual right-handed Weyl indices `T_{α̇₁ α̇₂}`: an
   equivariant linear map out of `ℂT[.downR, .downR]`
-- `invariantReductionToMetricTensor`
+- `invariantReductionToMetricTensor` : the reduction of the invariants of the range of `f` to the
+  span of `f (metricTensor k)`
 - `exists_smul_map_metricTensor_add_of_invariant` : for a Weyl colour `k` and an equivariant map `f`
   out of `ℂT[k, k]`, every Lorentz invariant of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable
   submodule, is a multiple of the image `f (metricTensor k)` of the metric plus an element of `S`
@@ -70,25 +70,25 @@ open Matrix MatrixGroups SL2C Invariants TensorSpecies Tensor complexLorentzTens
 
 -/
 
-/-- A family with two left-handed Weyl indices `T^{α₁ α₂}`: an equivariant linear map out of
+/-- A family with two left-handed Weyl indices `T^{α₁ α₂}`, an equivariant linear map out of
   `ℂT[.upL, .upL]`. -/
 abbrev IsBiLeftWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B) (f : ℂT[.upL, .upL] →ₗ[ℂ] B) : Prop :=
   complexLorentzTensor.IsEquivariant ![.upL, .upL] repLorentz f
 
-/-- A family with two right-handed Weyl indices `T^{α̇₁ α̇₂}`: an equivariant linear map out of
+/-- A family with two right-handed Weyl indices `T^{α̇₁ α̇₂}`, an equivariant linear map out of
   `ℂT[.upR, .upR]`. -/
 abbrev IsBiRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B) (f : ℂT[.upR, .upR] →ₗ[ℂ] B) : Prop :=
   complexLorentzTensor.IsEquivariant ![.upR, .upR] repLorentz f
 
-/-- A family with two dual left-handed Weyl indices `T_{α₁ α₂}`: an equivariant linear map out
+/-- A family with two dual left-handed Weyl indices `T_{α₁ α₂}`, an equivariant linear map out
   of `ℂT[.downL, .downL]`. -/
 abbrev IsBiDualLeftWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B) (f : ℂT[.downL, .downL] →ₗ[ℂ] B) : Prop :=
   complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentz f
 
-/-- A family with two dual right-handed Weyl indices `T_{α̇₁ α̇₂}`: an equivariant linear map
+/-- A family with two dual right-handed Weyl indices `T_{α̇₁ α̇₂}`, an equivariant linear map
   out of `ℂT[.downR, .downR]`. -/
 abbrev IsBiDualRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
     (repLorentz : Representation ℂ SL(2,ℂ) B) (f : ℂT[.downR, .downR] →ₗ[ℂ] B) : Prop :=
@@ -102,102 +102,30 @@ abbrev IsBiDualRightWeyl (B : Type*) [AddCommMonoid B] [Module ℂ B]
 
 section InvariantTensors
 
-variable {k k' : complexLorentzTensor.Color}
-
-/-- The components of `g • t` for a tensor with two indices: the matrix of `g` in the colour of
-  each index acts on that index. -/
-lemma basis_repr_smul_pair (g : SL(2,ℂ)) (t : ℂT[k, k']) (a : basisIdx k)
-    (b : basisIdx k') :
-    (Tensor.basis ![k, k']).repr (g • t)
-        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm (a, b))
-      = ∑ x, ∑ y, LinearMap.toMatrix (complexLorentzTensor.basis k)
-          (complexLorentzTensor.basis k) (complexLorentzTensor.rep k g) a x *
-        LinearMap.toMatrix (complexLorentzTensor.basis k') (complexLorentzTensor.basis k')
-          (complexLorentzTensor.rep k' g) b y *
-        (Tensor.basis ![k, k']).repr t
-          ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm (x, y)) := by
-  rw [basis_repr_smul,
-    ← (piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k'] j)).symm.sum_comp,
-    Fintype.sum_prod_type]
-  simp only [Fin.prod_univ_two]
-  rfl
-
-/-- The components of an invariant tensor with two Weyl indices of the same colour are
-  antisymmetric. The inverse boost along `z` scales the two diagonal components by `4` and `4⁻¹`,
-  and the inverse half turn about `x` sends the mixed component `(0, 1)` to minus `(1, 0)`; for
-  the dual colours the inverse cancels against the inverse in the matrix of the colour. -/
-lemma basis_repr_pair_eq_neg_swap_of_invariant
-    (hk : k = .upL ∨ k = .downL ∨ k = .upR ∨ k = .downR) {t : ℂT[k, k]}
-    (ht : ∀ g : SL(2,ℂ), g • t = t) (a b : basisIdx k) :
-    (Tensor.basis ![k, k]).repr t
-        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k] j)).symm (a, b))
-      = - (Tensor.basis ![k, k]).repr t
-        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![k, k] j)).symm (b, a)) := by
-  have hinv : ∀ g : SL(2,ℂ), (g⁻¹).1⁻¹ = g.1 := fun g => by rw [SL2C.inverse_coe, inv_inv]
-  rcases hk with rfl | rfl | rfl | rfl
-  all_goals
-    have h := fun (g : SL(2,ℂ)) (x y : Fin 2) => congrArg (fun s : type_of% t =>
-      (Tensor.basis (S := complexLorentzTensor) _).repr s
-        ((piFinTwoEquiv fun j : Fin 2 => basisIdx (![_, _] j)).symm (x, y))) (ht g)
-    have h1 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 0 0
-    have h2 := h (SL2C.boostAxis 2 2 two_ne_zero)⁻¹ 1 1
-    have h3 := h (SL2C.halfTurn 0)⁻¹ 0 1
-    rw [basis_repr_smul_pair] at h1 h2 h3
-    first
-      | rw [toMatrix_rep_upL] at h1 h2 h3 | rw [toMatrix_rep_downL] at h1 h2 h3
-      | rw [toMatrix_rep_upR] at h1 h2 h3 | rw [toMatrix_rep_downR] at h1 h2 h3
-    try simp only [hinv] at h1 h2 h3
-    simp [Fin.sum_univ_two, Matrix.adjugate_fin_two, map_ofNat] at h1 h2 h3
-    replace h1 := (mul_left_eq_self₀.1 h1).resolve_left (by norm_num)
-    replace h2 := (mul_left_eq_self₀.1 h2).resolve_left (by norm_num)
-    revert a b
-    change ∀ a b : Fin 2, _
-    simp only [Fin.forall_fin_two]
-    exact ⟨⟨h1.trans (neg_eq_zero.2 h1).symm, h3.symm⟩, neg_eq_iff_eq_neg.1 h3,
-      h2.trans (neg_eq_zero.2 h2).symm⟩
+variable {k : complexLorentzTensor.Color}
 
 /-- The invariant tensors with two Weyl indices of the same colour are the multiples of the
-  metric of that colour: both have antisymmetric components, and the `(0, 1)` component of the
-  metric does not vanish. -/
+  metric of that colour. A tensor with two indices comes from the tensor square of the Weyl
+  representation, whose invariants are the line through the metric. -/
 lemma exists_eq_smul_metricTensor_of_invariant
     (hk : k = .upL ∨ k = .downL ∨ k = .upR ∨ k = .downR) (t : ℂT[k, k])
     (ht : ∀ g : SL(2,ℂ), g • t = t) : ∃ a : ℂ, t = a • metricTensor k := by
-  have hz : ∀ x : ℂ, x = -x → x = 0 := fun x hx => by linear_combination hx / 2
-  have ht' := basis_repr_pair_eq_neg_swap_of_invariant hk ht
-  have hm' := basis_repr_pair_eq_neg_swap_of_invariant hk
-    (metricTensor_invariant (S := complexLorentzTensor) (c := k))
   rcases hk with rfl | rfl | rfl | rfl
-  all_goals
-    set e := (piFinTwoEquiv fun j : Fin 2 => basisIdx (![_, _] j)).symm
-    have hm : (Tensor.basis (S := complexLorentzTensor) _).repr (metricTensor _)
-        (e ((0 : Fin 2), (1 : Fin 2))) ≠ 0 := by
-      first
-        | rw [show metricTensor Color.upL = εL from rfl, leftMetric_eq_basis]
-        | rw [show metricTensor Color.downL = εL' from rfl, dualLeftMetric_eq_basis]
-        | rw [show metricTensor Color.upR = εR from rfl, rightMetric_eq_basis]
-        | rw [show metricTensor Color.downR = εR' from rfl, dualRightMetric_eq_basis]
-      simp only [e, map_add, map_sub, map_neg, Module.Basis.repr_self, Finsupp.coe_add,
-        Finsupp.coe_sub, Finsupp.coe_neg, Pi.add_apply, Pi.sub_apply, Pi.neg_apply,
-        Finsupp.single_apply]
-      split_ifs with h1 h2
-      · exact absurd (congrFun h2 0 : (1 : Fin 2) = 0) (by decide)
-      · norm_num
-      all_goals exact absurd (by funext j; fin_cases j <;> rfl) h1
-    refine ⟨(Tensor.basis (S := complexLorentzTensor) _).repr t (e ((0 : Fin 2), (1 : Fin 2)))
-      / (Tensor.basis (S := complexLorentzTensor) _).repr (metricTensor _)
-        (e ((0 : Fin 2), (1 : Fin 2))), ?_⟩
-    apply (Tensor.basis (S := complexLorentzTensor) _).repr.injective
-    ext φ
-    obtain ⟨⟨a, b⟩, rfl⟩ := e.surjective φ
-    rw [map_smul, Finsupp.smul_apply, smul_eq_mul]
-    revert a b
-    change ∀ a b : Fin 2, _
-    simp only [Fin.forall_fin_two]
-    refine ⟨⟨?_, by field_simp⟩, ?_, ?_⟩
-    · simp only [hz _ (ht' 0 0), hz _ (hm' 0 0), mul_zero]
-    · rw [ht' 1 0, hm' 1 0]
-      field_simp
-    · simp only [hz _ (ht' 1 1), hz _ (hm' 1 1), mul_zero]
+  · obtain ⟨a, ha⟩ := Tensor.exists_eq_smul_fromPairT_of_invariant (S := complexLorentzTensor)
+      (c1 := .upL) (c2 := .upL) Fermion.LeftHandedWeyl.invariants_tprod_eq_span_metricVal ht
+    exact ⟨a, ha.trans (congrArg (a • fromPairT ·) Fermion.LeftHandedWeyl.metric_apply_one.symm)⟩
+  · obtain ⟨a, ha⟩ := Tensor.exists_eq_smul_fromPairT_of_invariant (S := complexLorentzTensor)
+      (c1 := .downL) (c2 := .downL) Fermion.DualLeftHandedWeyl.invariants_tprod_eq_span_metricVal ht
+    exact ⟨a, ha.trans
+      (congrArg (a • fromPairT ·) Fermion.DualLeftHandedWeyl.metric_apply_one.symm)⟩
+  · obtain ⟨a, ha⟩ := Tensor.exists_eq_smul_fromPairT_of_invariant (S := complexLorentzTensor)
+      (c1 := .upR) (c2 := .upR) Fermion.RightHandedWeyl.invariants_tprod_eq_span_metricVal ht
+    exact ⟨a, ha.trans (congrArg (a • fromPairT ·) Fermion.RightHandedWeyl.metric_apply_one.symm)⟩
+  · obtain ⟨a, ha⟩ := Tensor.exists_eq_smul_fromPairT_of_invariant (S := complexLorentzTensor)
+      (c1 := .downR) (c2 := .downR)
+      Fermion.DualRightHandedWeyl.invariants_tprod_eq_span_metricVal ht
+    exact ⟨a, ha.trans
+      (congrArg (a • fromPairT ·) Fermion.DualRightHandedWeyl.metric_apply_one.symm)⟩
 
 end InvariantTensors
 
