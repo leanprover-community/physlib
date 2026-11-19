@@ -10,47 +10,35 @@ public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalFieldAlgebra.Realization.Conditions
 /-!
-# Elements of `SU(N)` in a coordinate plane, and what commutes with them
+# What commutes with the adjoint action of `SU(N)`, and the Reynolds element of its tensors
 
-Embedding `SU(2)` in the coordinate planes of `SU(N)`, and Schur's lemma for the fundamental and
-the adjoint representation.
+Schur's lemma for the adjoint representation, and the Haar average over the tensors.
 
 ## i. Overview
 
-For two distinct coordinates `p` and `q`, an element `U` of `SU(2)` acts on the plane they span
-and fixes the other coordinates. This is `SU.planeEmbed p q`, a group homomorphism from `SU(2)`
-to `SU(N)` (A), built from the plane matrices of
-`PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix`. Writing `P` for the
-inclusion of the plane, the embedded element is `1 + P (U - 1) Pᵀ`, and conjugating `P M Pᵀ` by
-it gives `P (U M U†) Pᵀ`, so the action on the matrices supported on the plane is computed in
-`SU(2)`.
-
-Three elements of `SU(2)` do all the work: a diagonal phase `diag (u, ū)`, the rotation by a
-quarter turn, and the rotation by an eighth of a turn. Embedded in every plane, they force a
-matrix commuting with all of `SU(N)` to be scalar (B), and a linear endomorphism of the
-complexified Lie algebra `ℂ ⊗[ℝ] su(N)` commuting with the adjoint action to be scalar (C); the
-latter is computed on the matrices `adjMat A`, which identify the complexified Lie algebra with the
-traceless complex matrices. These are the two facts behind the
-classification of the invariant tensors of `SU(N)` with a fundamental and an anti-fundamental
-index, and with one or two adjoint indices.
+The elements `SU.planeEmbed p q U` of `SU(N)`, an element `U` of `SU(2)` acting on the plane of two
+coordinates (`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Adjoint`), do all
+the work. A diagonal phase `diag (u, ū)`, the rotation by a quarter turn, and the rotation by an
+eighth of a turn, embedded in every plane, force a linear endomorphism of the complexified Lie
+algebra `ℂ ⊗[ℝ] su(N)` commuting with the adjoint action to be scalar (A); this is computed on the
+matrices `adjMat A`, which identify the complexified Lie algebra with the traceless complex
+matrices. With Schur's lemma for the fundamental representation, `SU.eq_smul_one_of_commute`,
+these are the facts behind the classification of the invariant tensors of `SU(N)` with a
+fundamental and an anti-fundamental index, and with one or two adjoint indices.
 
 The tensors of `SU(N)` have a Reynolds element, the Haar average over the compact group, so the
-invariants in the range of an equivariant map out of them come from invariant tensors (D).
+invariants in the range of an equivariant map out of them come from invariant tensors (B).
 
 ## ii. Key results
 
-- `SU.planeEmbed` : `SU(2)` acting on the plane of two coordinates, as a subgroup of `SU(N)`.
-- `SU.eq_smul_one_of_commute` : a matrix commuting with `SU(N)` is scalar.
 - `suTensor.eq_smul_id_of_commute_adjRep` : an endomorphism of the complexified Lie algebra
   commuting with the adjoint action is scalar.
 - `suTensor.hasReynolds` : the tensors of `SU(N)` have a Reynolds element.
 
 ## iii. Table of contents
 
-- A. The plane embedding of `SU(2)`
-- B. Matrices commuting with `SU(N)`
-- C. Endomorphisms of the complexified Lie algebra commuting with `SU(N)`
-- D. Reynolds elements for the tensors
+- A. Endomorphisms of the complexified Lie algebra commuting with `SU(N)`
+- B. Reynolds elements for the tensors
 
 ## iv. References
 
@@ -62,121 +50,9 @@ invariants in the range of an equivariant map out of them come from invariant te
 
 open Matrix MatrixGroups
 
-namespace SU
-
-variable {N : ℕ} {p q : Fin N}
-
 /-!
 
-## A. The plane embedding of `SU(2)`
-
--/
-
-/-- `SU(2)` acting on the plane of two distinct coordinates `p` and `q` and trivially on the
-  others, a homomorphism from `SU(2)` to `SU(N)`. -/
-noncomputable def planeEmbed (p q : Fin N) (hpq : p ≠ q) : SU 2 →* SU N where
-  toFun U := ⟨planeMatrix p q U.1, by
-    have hU := mem_specialUnitaryGroup_iff.mp U.2
-    rw [mem_unitaryGroup_iff, star_eq_conjTranspose] at hU
-    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff, star_eq_conjTranspose,
-      conjTranspose_planeMatrix, planeMatrix_mul hpq, det_planeMatrix hpq, hU.1, planeMatrix_one]
-    exact ⟨rfl, hU.2⟩⟩
-  map_one' := Subtype.ext planeMatrix_one
-  map_mul' U V := Subtype.ext (planeMatrix_mul hpq U.1 V.1).symm
-
-@[simp]
-lemma planeEmbed_val (hpq : p ≠ q) (U : SU 2) : (planeEmbed p q hpq U).1 = planeMatrix p q U.1 :=
-  rfl
-
-/-- The diagonal element `diag (u, ū)` of `SU(2)`, for any complex number `u` of modulus one. -/
-noncomputable def diagPhase (u : ℂ) (hu : u * star u = 1) : SU 2 :=
-  ⟨diagonal ![u, star u], by
-    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff, star_eq_conjTranspose,
-      diagonal_conjTranspose, diagonal_mul_diagonal, det_diagonal, Fin.prod_univ_two]
-    have hu' : (starRingEnd ℂ) u * u = 1 := by rw [mul_comm]; exact hu
-    have hu'' : u * (starRingEnd ℂ) u = 1 := hu
-    refine ⟨?_, by simpa using hu⟩
-    rw [← diagonal_one]
-    congr 1
-    funext i
-    fin_cases i <;> simp [hu', hu'']⟩
-
-@[simp]
-lemma diagPhase_val (u : ℂ) (hu : u * star u = 1) :
-    (diagPhase u hu).1 = diagonal ![u, star u] := rfl
-
-/-- The real rotation of `SU(2)` with matrix `!![c, -s; s, c]`, for any real cosine `c` and sine
-  `s` with `c² + s² = 1`. -/
-noncomputable def rotation (c s : ℝ) (h : c ^ 2 + s ^ 2 = 1) : SU 2 :=
-  ⟨!![(c : ℂ), -s; s, c], by
-    have h' : (c : ℂ) ^ 2 + (s : ℂ) ^ 2 = 1 := by exact_mod_cast h
-    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff, star_eq_conjTranspose, det_fin_two_of]
-    refine ⟨?_, by linear_combination h'⟩
-    ext i j
-    fin_cases i <;> fin_cases j <;>
-      simp [Matrix.mul_apply, Fin.sum_univ_two, ← pow_two] <;>
-      first | linear_combination h' | ring⟩
-
-@[simp]
-lemma rotation_val (c s : ℝ) (h : c ^ 2 + s ^ 2 = 1) :
-    (rotation c s h).1 = !![(c : ℂ), -s; s, c] := rfl
-
-/-!
-
-## B. Matrices commuting with `SU(N)`
-
-The diagonal phase `diag (i, -i)` in the plane of `p` and `q` negates the entries at `(p, q)`
-and `(q, p)` of a matrix it commutes with, and the quarter turn exchanges the diagonal entries
-at `p` and `q`.
-
--/
-
-/-- A matrix commuting with every element of `SU(N)` is fixed by conjugation. -/
-lemma conj_eq_of_commute {C : Matrix (Fin N) (Fin N) ℂ} (hC : ∀ g : SU N, g.1 * C = C * g.1)
-    (g : SU N) : g.1 * C * g.1ᴴ = C := by
-  have hg : g.1 * g.1ᴴ = 1 := by
-    rw [← star_eq_conjTranspose, ← mem_unitaryGroup_iff]
-    exact (mem_specialUnitaryGroup_iff.mp g.2).1
-  rw [hC, Matrix.mul_assoc, hg, Matrix.mul_one]
-
-/-- A matrix commuting with every element of `SU(N)` is diagonal, with equal diagonal
-  entries. -/
-lemma apply_eq_of_commute {C : Matrix (Fin N) (Fin N) ℂ} (hC : ∀ g : SU N, g.1 * C = C * g.1)
-    (hpq : p ≠ q) : C p q = 0 ∧ C p p = C q q := by
-  have hI : Complex.I * star Complex.I = 1 := by simp
-  have h1 := congrFun (congrFun (planeBlock_eq_of_conj_eq hpq
-    (conj_eq_of_commute hC (planeEmbed p q hpq (diagPhase Complex.I hI)))) 0) 1
-  have h2 := congrFun (congrFun (planeBlock_eq_of_conj_eq hpq
-    (conj_eq_of_commute hC (planeEmbed p q hpq (rotation 0 1 (by norm_num))))) 1) 1
-  have hB : ∀ i j, ((planeInclusion p q)ᵀ * C * planeInclusion p q) i j
-      = C (![p, q] i) (![p, q] j) := planeBlock_apply C
-  generalize (planeInclusion p q)ᵀ * C * planeInclusion p q = B at h1 h2 hB
-  simp only [Matrix.mul_apply, Fin.sum_univ_two, conjTranspose_apply, diagPhase_val,
-    rotation_val, diagonal_apply, of_apply, cons_val', cons_val_zero, cons_val_one,
-    cons_val_fin_one, empty_val', Fin.isValue] at h1 h2
-  simp only [hB] at h1 h2
-  simp at h1 h2
-  exact ⟨by linear_combination (-1 / 2 : ℂ) * h1 + (C p q / 2) * Complex.I_mul_I, h2⟩
-
-/-- A matrix commuting with every element of `SU(N)` is scalar. -/
-lemma eq_smul_one_of_commute {C : Matrix (Fin N) (Fin N) ℂ}
-    (hC : ∀ g : SU N, g.1 * C = C * g.1) : ∃ z : ℂ, C = z • 1 := by
-  rcases Nat.eq_zero_or_pos N with rfl | hN
-  · exact ⟨0, Subsingleton.elim _ _⟩
-  refine ⟨C ⟨0, hN⟩ ⟨0, hN⟩, ext fun x y => ?_⟩
-  rw [Matrix.smul_apply, one_apply, smul_eq_mul]
-  by_cases hxy : x = y
-  · subst hxy
-    by_cases hx : x = ⟨0, hN⟩
-    · simp [hx]
-    · simp [(apply_eq_of_commute hC hx).2]
-  · simp [hxy, (apply_eq_of_commute hC hxy).1]
-
-end SU
-
-/-!
-
-## C. Endomorphisms of the complexified Lie algebra commuting with `SU(N)`
+## A. Endomorphisms of the complexified Lie algebra commuting with `SU(N)`
 
 -/
 
@@ -506,7 +382,7 @@ lemma eq_smul_id_of_commute_adjRep (hL : ∀ (g : SU N) (A : SUAlgebraComplexifi
 
 /-!
 
-## D. Reynolds elements for the tensors
+## B. Reynolds elements for the tensors
 
 `SU(N)` is identified with the global gauge group `GlobalGaugeGroup.SU N`, a compact topological
 group, by `GlobalGaugeGroup.SU.groupEquiv`. On it the matrix entries of every color are continuous,

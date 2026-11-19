@@ -8,7 +8,7 @@ module
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.ScalarSector.DerivSubmodule.Centre
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.YukawaSector.Basic
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.Deriv.Centre
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankFour
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.ContractionTensor
 /-!
 # The Yukawa invariants below mass weight eight
 
@@ -30,7 +30,7 @@ Higgs is a Lorentz scalar and a fermion carries one Weyl-spinor index, so each o
 products surviving at weights five and seven, having exactly one fermion factor, is of
 half-integer spin, and a half-integer spin carries no Lorentz invariant.
 
-The count is run at the centre of `SL(2,ℂ)`, where `Invariants/Centre.lean` puts it. The
+The count is run at the centre of `SL(2,ℂ)`, where `Invariants/CentreEigenspace.lean` puts it. The
 element `-1` covers the identity Lorentz transformation, so it acts by `+1` on the Higgs
 derivative submodules and by `-1` on the fermion ones, and the Lorentz action on the
 covariant field algebra of the Standard Model is by algebra maps, so the signs multiply over a

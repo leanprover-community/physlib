@@ -10,7 +10,7 @@ public import PhyslibAlpha.Mathematics.RepresentationTheory.SlotAction
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import Mathlib.Analysis.Complex.RealDeriv
 /-!
-# Invariants of four Weyl indices
+# The metric pairings of four Weyl indices
 
 The invariants of four left-handed Weyl indices are spanned by two products of Weyl metrics.
 
@@ -24,31 +24,34 @@ metrics `ε_{ab} = metricRaw`, pairing the slots `ε_{a₀a₁} ε_{a₂a₃}`, 
 
 The argument is infinitesimal. The unipotent elements `1 + z E` and `1 + z F` of `SL(2, ℂ)`, with
 `E = !![0, 1; 0, 0]` and `F = !![0, 0; 1, 0]`, move a fixed coefficient function along a line, so
-it is killed by the infinitesimal actions of `E` and `F`, one slot at a time (B). For four
-indices those two conditions are linear equations on the sixteen coefficients. They force every
-coefficient with more raised than lowered indices, or fewer, to vanish, and leave the six balanced
-ones in a two-dimensional space. The two coefficients at `1100` and `1010` fix all the others
-(`eq_sum_pairingBasis_of_infAct_eq_zero`). This form, in terms of `E` and `F` alone, is what the
-bispinor results of `PhyslibAlpha.Relativity.Bispinors.Invariants` use, one chirality at a time.
-The right-handed and the two dual Weyl representations have the same invariants, the group acting
-on them through a reparametrisation of itself (C.3). On two indices the same equations leave only
-the multiples of the metric (D).
+it is killed by the infinitesimal actions of `E` and `F`, one slot at a time (B). These
+unipotent elements generate `SL(2, ℂ)`, every element being a product of four of them, which
+`PhyslibAlpha.Relativity.Bispinors.ComplexifiedAction` uses. For four indices those two conditions
+are linear equations on the sixteen coefficients. They force every coefficient with more raised
+than lowered indices, or fewer, to vanish, and leave the six balanced ones in a two-dimensional
+space. The two coefficients at `1100` and `1010` fix all the others
+(`eq_sum_pairingBasis_of_infinitesimalAct_eq_zero`). The right-handed Weyl representation has the
+same invariants, the group acting on it through a reparametrisation of itself (C.3). The components
+of a tensor with four Weyl indices of one chirality are such a coefficient function, so the
+invariant tensors are the span of the two products of metrics (D).
 
 ## ii. Key results
 
 - `Fermion.metricPairing` : a product of two Weyl metrics on four indices.
+- `Fermion.exists_eq_lowerUnipotent_mul_upperUnipotent` : every element of `SL(2, ℂ)` is a product
+  of unipotent elements.
 - `Fermion.metricPairing_schouten` : the Schouten identity.
-- `Fermion.eq_sum_pairingBasis_of_infAct_eq_zero` : a coefficient function killed by `E` and `F`
-  is a combination of `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃`.
-- `Fermion.infAct_eq_zero_of_invariant` : an invariant coefficient function is killed by `E` and
-  `F`.
+- `Fermion.eq_sum_pairingBasis_of_infinitesimalAct_eq_zero` : a coefficient function killed by `E`
+  and `F` is a combination of `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃`.
+- `Fermion.infinitesimalAct_eq_zero_of_invariant` : an invariant coefficient function is killed by
+  `E` and `F`.
 - `Fermion.mem_span_pairingBasis_iff` : the invariants of four left-handed Weyl indices are the span
   of `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃`.
 - `Fermion.linearIndependent_pairingBasis` : the two are linearly independent.
-- `Fermion.mem_span_pairingBasis_iff_map_star` and its two siblings : the same for right-handed,
-  dual left-handed and dual right-handed indices.
-- `Fermion.eq_smul_metricCoeff_of_infAct_eq_zero` : on two Weyl indices `E` and `F` leave only the
-  multiples of the metric.
+- `Fermion.mem_span_pairingBasis_iff_map_star` : the same for right-handed indices.
+- `complexLorentzTensor.invariants_upL_pow_four_eq_span_range_leftMetricPairing`,
+  `complexLorentzTensor.invariants_upR_pow_four_eq_span_range_rightMetricPairing` : the invariant
+  tensors with four Weyl indices of one chirality.
 
 ## iii. Table of contents
 
@@ -58,7 +61,7 @@ the multiples of the metric (D).
   - C.1. The infinitesimal equations
   - C.2. The invariants
   - C.3. The other Weyl representations
-- D. Two Weyl indices
+- D. Tensors with four Weyl indices of one chirality
 
 ## iv. References
 
@@ -129,6 +132,35 @@ def upperUnipotent (z : ℂ) : SL(2,ℂ) :=
 def lowerUnipotent (z : ℂ) : SL(2,ℂ) :=
   ⟨1 + z • !![0, 0; 1, 0], by simp [det_fin_two, one_apply]⟩
 
+/-- Every element of `SL(2, ℂ)` is a product of four unipotent elements, alternately lower and
+  upper. With `M = !![p, q; r, s]` and `a` chosen so that `r' = a p + r ≠ 0`, the matrix
+  `lowerUnipotent a * M` is `upperUnipotent ((p - 1) / r') * lowerUnipotent r' *
+  upperUnipotent ((a q + s - 1) / r')`. -/
+lemma exists_eq_lowerUnipotent_mul_upperUnipotent (M : SL(2,ℂ)) :
+    ∃ a x r y : ℂ,
+      M = lowerUnipotent a * upperUnipotent x * lowerUnipotent r * upperUnipotent y := by
+  have hdet : M.1 0 0 * M.1 1 1 - M.1 0 1 * M.1 1 0 = 1 := by
+    rw [← det_fin_two]
+    exact M.2
+  obtain ⟨a, ha⟩ : ∃ a : ℂ, a * M.1 0 0 + M.1 1 0 ≠ 0 := by
+    by_cases h : M.1 1 0 = 0
+    · refine ⟨1, fun h' => ?_⟩
+      simp only [h, one_mul, add_zero] at h'
+      simp [h, h'] at hdet
+    · exact ⟨0, by simpa using h⟩
+  refine ⟨-a, (M.1 0 0 - 1) / (a * M.1 0 0 + M.1 1 0), a * M.1 0 0 + M.1 1 0,
+    (a * M.1 0 1 + M.1 1 1 - 1) / (a * M.1 0 0 + M.1 1 0), ?_⟩
+  have ha' : M.1 0 0 * a + M.1 1 0 ≠ 0 := by rwa [mul_comm]
+  ext i j
+  rw [SpecialLinearGroup.coe_mul, SpecialLinearGroup.coe_mul, SpecialLinearGroup.coe_mul]
+  simp only [lowerUnipotent, upperUnipotent]
+  fin_cases i <;> fin_cases j <;> simp [Matrix.mul_apply, Fin.sum_univ_two, Matrix.one_apply] <;>
+    field_simp
+  · ring
+  · linear_combination (-1 : ℂ) * hdet
+  · ring
+  · linear_combination a * hdet
+
 /-- At `t = 0` the line `t ↦ 1 + c t G` is the identity. -/
 lemma one_add_smul_zero_apply (G : Matrix (Fin 2) (Fin 2) ℂ) (c : ℂ) (p q : Fin 2) :
     (1 + (c * ((0 : ℝ) : ℂ)) • G) p q = if p = q then 1 else 0 := by
@@ -151,18 +183,18 @@ lemma hasDerivAt_one_add_smul (G : Matrix (Fin 2) (Fin 2) ℂ) (c : ℂ) (p q : 
 
 /-- An invariant coefficient function of `n` Weyl indices is killed by the infinitesimal actions
   of `E` and `F`, the derivatives of the unipotent lines. -/
-lemma infAct_eq_zero_of_invariant {n : ℕ} {C : (Fin n → Fin 2) → ℂ}
+lemma infinitesimalAct_eq_zero_of_invariant {n : ℕ} {C : (Fin n → Fin 2) → ℂ}
     (hC : ∀ M : SL(2,ℂ), act M.1 C = C) :
-    infAct !![0, 1; 0, 0] C = 0 ∧ infAct !![0, 0; 1, 0] C = 0 := by
+    infinitesimalAct !![0, 1; 0, 0] C = 0 ∧ infinitesimalAct !![0, 0; 1, 0] C = 0 := by
   constructor
-  · simpa using infAct_eq_zero_of_act_eq (one_add_smul_zero_apply _ 1)
+  · simpa using infinitesimalAct_eq_zero_of_act_eq (one_add_smul_zero_apply _ 1)
       (hasDerivAt_one_add_smul _ 1) fun t => hC (upperUnipotent (1 * t))
-  · simpa using infAct_eq_zero_of_act_eq (one_add_smul_zero_apply _ 1)
+  · simpa using infinitesimalAct_eq_zero_of_act_eq (one_add_smul_zero_apply _ 1)
       (hasDerivAt_one_add_smul _ 1) fun t => hC (lowerUnipotent (1 * t))
 
 /-- The infinitesimal action at four Weyl indices, written out slot by slot. -/
-lemma infAct_four (N : Fin 2 → Fin 2 → ℂ) (C : (Fin 4 → Fin 2) → ℂ) (w x y z : Fin 2) :
-    infAct N C ![w, x, y, z] = ∑ q, (N w q * C ![q, x, y, z] + N x q * C ![w, q, y, z]
+lemma infinitesimalAct_four (N : Fin 2 → Fin 2 → ℂ) (C : (Fin 4 → Fin 2) → ℂ) (w x y z : Fin 2) :
+    infinitesimalAct N C ![w, x, y, z] = ∑ q, (N w q * C ![q, x, y, z] + N x q * C ![w, q, y, z]
       + N y q * C ![w, x, q, z] + N z q * C ![w, x, y, q]) := by
   have hu : ∀ (s : Fin 4) (q : Fin 2), Function.update ![w, x, y, z] s q
       = ![if s = 0 then q else w, if s = 1 then q else x, if s = 2 then q else y,
@@ -170,18 +202,20 @@ lemma infAct_four (N : Fin 2 → Fin 2 → ℂ) (C : (Fin 4 → Fin 2) → ℂ) 
     intro s q
     funext i
     fin_cases s <;> fin_cases i <;> rfl
-  simp only [infAct, Fin.sum_univ_four, hu, ← Finset.sum_add_distrib]
+  simp only [infinitesimalAct, Fin.sum_univ_four, hu, ← Finset.sum_add_distrib]
   simp
 
 /-- A coefficient function of four Weyl indices killed by `E` and `F` is a combination of
   `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃`, with its values at `1100` and `1010` as coefficients. The equations
   of `E` at `0111`, of `F` at `1000` and their neighbours kill the unbalanced coefficients, and
   those of `E` at the four index vectors with a single raised slot relate the six balanced ones. -/
-lemma eq_sum_pairingBasis_of_infAct_eq_zero {C : (Fin 4 → Fin 2) → ℂ}
-    (hE : infAct !![0, 1; 0, 0] C = 0) (hF : infAct !![0, 0; 1, 0] C = 0) :
+lemma eq_sum_pairingBasis_of_infinitesimalAct_eq_zero {C : (Fin 4 → Fin 2) → ℂ}
+    (hE : infinitesimalAct !![0, 1; 0, 0] C = 0) (hF : infinitesimalAct !![0, 0; 1, 0] C = 0) :
     C = ∑ i, C (pairingPoint i) • pairingBasis i := by
-  have e := fun w x y z => (infAct_four _ C w x y z).symm.trans (congrFun hE ![w, x, y, z])
-  have f := fun w x y z => (infAct_four _ C w x y z).symm.trans (congrFun hF ![w, x, y, z])
+  have e := fun w x y z =>
+    (infinitesimalAct_four _ C w x y z).symm.trans (congrFun hE ![w, x, y, z])
+  have f := fun w x y z =>
+    (infinitesimalAct_four _ C w x y z).symm.trans (congrFun hF ![w, x, y, z])
   have e0111 := e 0 1 1 1; have e0011 := e 0 0 1 1; have e0101 := e 0 1 0 1
   have e0110 := e 0 1 1 0; have e1001 := e 1 0 0 1; have e1010 := e 1 0 1 0
   have e1000 := e 1 0 0 0; have e0100 := e 0 1 0 0; have e0010 := e 0 0 1 0
@@ -272,8 +306,8 @@ lemma mem_span_pairingBasis_iff (C : (Fin 4 → Fin 2) → ℂ) :
     (∀ M : SL(2,ℂ), act M.1 C = C) ↔ C ∈ Submodule.span ℂ (Set.range pairingBasis) := by
   constructor
   · intro hC
-    obtain ⟨hE, hF⟩ := infAct_eq_zero_of_invariant hC
-    rw [eq_sum_pairingBasis_of_infAct_eq_zero hE hF]
+    obtain ⟨hE, hF⟩ := infinitesimalAct_eq_zero_of_invariant hC
+    rw [eq_sum_pairingBasis_of_infinitesimalAct_eq_zero hE hF]
     exact Submodule.sum_mem _ fun i _ =>
       Submodule.smul_mem _ _ (Submodule.subset_span ⟨i, rfl⟩)
   · intro hC M
@@ -301,10 +335,8 @@ lemma mem_span_pairingBasis_iff (C : (Fin 4 → Fin 2) → ℂ) :
 
 ### C.3. The other Weyl representations
 
-On right-handed, dual left-handed and dual right-handed indices `M` acts through its conjugate,
-`(M⁻¹)ᵀ` and `(M⁻¹)ᴴ`. Each of these runs over all of `SL(2, ℂ)` as `M` does
-(`Fermion.map_star_coe_map_starRingEnd`, `Fermion.inv_coe_transpose_inv`,
-`Fermion.conjTranspose_inv_coe_transpose_inv_map`), so their invariants are the same span.
+On right-handed indices `M` acts through its conjugate, which runs over all of `SL(2, ℂ)` as `M`
+does (`Fermion.map_star_coe_map_starRingEnd`), so their invariants are the same span.
 
 -/
 
@@ -317,87 +349,67 @@ lemma mem_span_pairingBasis_iff_map_star (C : (Fin 4 → Fin 2) → ℂ) :
   have h' := h (SpecialLinearGroup.map (starRingEnd ℂ) N)
   rwa [map_star_coe_map_starRingEnd] at h'
 
-/-- The invariants of four dual left-handed Weyl indices are the span of `ε₀₂ ε₁₃` and
-  `ε₀₁ ε₂₃`. -/
-lemma mem_span_pairingBasis_iff_inv_transpose (C : (Fin 4 → Fin 2) → ℂ) :
-    (∀ M : SL(2,ℂ), act (M.1⁻¹)ᵀ C = C) ↔ C ∈ Submodule.span ℂ (Set.range pairingBasis) := by
-  rw [← mem_span_pairingBasis_iff]
-  refine ⟨fun h N => ?_, fun h M => ?_⟩
-  · have h' := h N.transpose⁻¹
-    rwa [inv_coe_transpose_inv, transpose_transpose] at h'
-  · have h' := h (M⁻¹).transpose
-    rwa [SpecialLinearGroup.coe_transpose, ← Lorentz.SL2C.inverse_coe] at h'
-
-/-- The invariants of four dual right-handed Weyl indices are the span of `ε₀₂ ε₁₃` and
-  `ε₀₁ ε₂₃`. -/
-lemma mem_span_pairingBasis_iff_inv_conjTranspose (C : (Fin 4 → Fin 2) → ℂ) :
-    (∀ M : SL(2,ℂ), act (M.1⁻¹)ᴴ C = C) ↔ C ∈ Submodule.span ℂ (Set.range pairingBasis) := by
-  rw [← mem_span_pairingBasis_iff]
-  refine ⟨fun h N => ?_, fun h M => ?_⟩
-  · have h' := h (SpecialLinearGroup.map (starRingEnd ℂ) N).transpose⁻¹
-    rwa [conjTranspose_inv_coe_transpose_inv_map] at h'
-  · have he : (M.1⁻¹)ᴴ = (SpecialLinearGroup.map (starRingEnd ℂ) (M⁻¹).transpose).1 := by
-      ext i j
-      rw [Lorentz.SL2C.inverse_coe]
-      rfl
-    rw [he]
-    exact h _
-
 /-!
 
-## D. Two Weyl indices
+## D. Tensors with four Weyl indices of one chirality
 
-On two indices the equations of `E` and `F` leave only the multiples of the metric
-`ε_{a₀ a₁}`. This is the infinitesimal form of the uniqueness of the Weyl metric
-(`Fermion.LeftHandedWeyl.invariants_tprod_eq_span_metricVal`), used for two bispinor indices.
+The components of a tensor with four left-handed Weyl indices are a coefficient function of four
+Weyl indices, on which `g` acts by `act g.1`, and those of a tensor with four right-handed ones a
+coefficient function on which `g` acts by `act (g.1.map star)`. The classifications of C are
+thereby classifications of the invariant tensors, through
+`TensorSpecies.invariants_tensorRep_eq_map_componentEquiv`. The dual colours are reached from
+these by `TensorSpecies.invariants_tensorRep_update_eq_map_toDualMapAtIndex`.
 
 -/
 
-/-- The Weyl metric `ε_{a₀ a₁}` as a coefficient function of two Weyl indices. -/
-def metricCoeff (a : Fin 2 → Fin 2) : ℂ := metricRaw (a 0) (a 1)
+open TensorSpecies complexLorentzTensor
 
-/-- A coefficient function of two Weyl indices killed by `E` and `F` is a multiple of the
-  metric. The equation of `E` at `01` kills `C₁₁`, that of `F` at `10` kills `C₀₀`, and that of
-  `E` at `00` gives `C₁₀ = -C₀₁`. -/
-lemma eq_smul_metricCoeff_of_infAct_eq_zero {C : (Fin 2 → Fin 2) → ℂ}
-    (hE : infAct !![0, 1; 0, 0] C = 0) (hF : infAct !![0, 0; 1, 0] C = 0) :
-    C = C ![0, 1] • metricCoeff := by
-  have hu : ∀ x y s q : Fin 2, Function.update ![x, y] s q
-      = ![if s = 0 then q else x, if s = 1 then q else y] := by
-    intro x y s q
-    funext i
-    fin_cases s <;> fin_cases i <;> rfl
-  have e01 := congrFun hE ![0, 1]
-  have e00 := congrFun hE ![0, 0]
-  have f10 := congrFun hF ![1, 0]
-  simp [infAct, Fin.sum_univ_two, hu] at e01 e00 f10
-  funext a
-  obtain ⟨x, y, rfl⟩ : ∃ x y, a = ![x, y] := ⟨a 0, a 1, by funext i; fin_cases i <;> rfl⟩
-  fin_cases x <;> fin_cases y <;> simp [metricCoeff, metricRaw]
-  · linear_combination f10
-  · linear_combination e00
-  · linear_combination e01
+/-- The component indices of a tensor with four left-handed Weyl indices, as four spinor
+  labels. -/
+def upLPowFourIdx :
+    Tensor.ComponentIdx (S := complexLorentzTensor) (fun _ : Fin 4 => Color.upL) ≃
+      (Fin 4 → Fin 2) :=
+  Equiv.refl _
 
-/-- The metric is invariant, `M ε Mᵀ = (det M) ε`. -/
-lemma act_metricCoeff (M : SL(2,ℂ)) : act M.1 metricCoeff = metricCoeff := by
-  funext a
-  have h := sum_metricRaw_mul M.1 (a 0) (a 1)
-  rw [M.2, one_mul] at h
-  simpa [act, Physlib.Fin.sum_fin_two_arrow, metricCoeff, Fin.prod_univ_two, mul_assoc] using h
+/-- The component indices of a tensor with four right-handed Weyl indices, as four spinor
+  labels. -/
+def upRPowFourIdx :
+    Tensor.ComponentIdx (S := complexLorentzTensor) (fun _ : Fin 4 => Color.upR) ≃
+      (Fin 4 → Fin 2) :=
+  Equiv.refl _
 
-/-- The invariants of two left-handed Weyl indices are the multiples of the metric. -/
-lemma mem_span_metricCoeff_iff (C : (Fin 2 → Fin 2) → ℂ) :
-    (∀ M : SL(2,ℂ), act M.1 C = C) ↔ C ∈ ℂ ∙ metricCoeff := by
-  constructor
-  · intro hC
-    obtain ⟨hE, hF⟩ := infAct_eq_zero_of_invariant hC
-    rw [eq_smul_metricCoeff_of_infAct_eq_zero hE hF]
-    exact Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self _)
-  · intro hC M
-    obtain ⟨k, rfl⟩ := Submodule.mem_span_singleton.1 hC
-    funext a
-    have ha := congrFun (act_metricCoeff M) a
-    simp only [act, Pi.smul_apply, smul_eq_mul, mul_assoc, ← Finset.mul_sum] at ha ⊢
-    rw [ha]
+/-- The products of Weyl metrics `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃` as tensors with four left-handed Weyl
+  indices. -/
+noncomputable def leftMetricPairing (i : Fin 2) : ℂT(fun _ : Fin 4 => Color.upL) :=
+  (componentEquiv upLPowFourIdx).symm (pairingBasis i)
+
+/-- The products of Weyl metrics `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃` as tensors with four right-handed Weyl
+  indices. -/
+noncomputable def rightMetricPairing (i : Fin 2) : ℂT(fun _ : Fin 4 => Color.upR) :=
+  (componentEquiv upRPowFourIdx).symm (pairingBasis i)
+
+/-- The invariant tensors with four left-handed Weyl indices are the span of the two products of
+  Weyl metrics `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃`. -/
+lemma _root_.complexLorentzTensor.invariants_upL_pow_four_eq_span_range_leftMetricPairing :
+    (complexLorentzTensor.tensorRep (fun _ : Fin 4 => Color.upL)).invariants =
+      Submodule.span ℂ (Set.range leftMetricPairing) := by
+  rw [invariants_tensorRep_eq_map_componentEquiv upLPowFourIdx
+    (A := fun g a b => ∏ s, g.1 (a s) (b s))
+    (fun g φ ψ => Finset.prod_congr rfl fun i _ =>
+      (congrFun (congrFun (Lorentz.toMatrix_rep_upL g) (φ i)) (ψ i)).symm)
+    mem_span_pairingBasis_iff, Submodule.map_span, ← Set.range_comp]
+  rfl
+
+/-- The invariant tensors with four right-handed Weyl indices are the span of the two products of
+  Weyl metrics `ε₀₂ ε₁₃` and `ε₀₁ ε₂₃`. -/
+lemma _root_.complexLorentzTensor.invariants_upR_pow_four_eq_span_range_rightMetricPairing :
+    (complexLorentzTensor.tensorRep (fun _ : Fin 4 => Color.upR)).invariants =
+      Submodule.span ℂ (Set.range rightMetricPairing) := by
+  rw [invariants_tensorRep_eq_map_componentEquiv upRPowFourIdx
+    (A := fun g a b => ∏ s, (g.1.map star) (a s) (b s))
+    (fun g φ ψ => Finset.prod_congr rfl fun i _ =>
+      (congrFun (congrFun (Lorentz.toMatrix_rep_upR g) (φ i)) (ψ i)).symm)
+    mem_span_pairingBasis_iff_map_star, Submodule.map_span, ← Set.range_comp]
+  rfl
 
 end Fermion

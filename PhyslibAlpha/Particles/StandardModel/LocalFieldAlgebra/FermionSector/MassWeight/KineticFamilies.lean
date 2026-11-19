@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.MassWeight.MassDimLTEight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Basic
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.InvariantCoeff
 /-!
 # The kinetic terms of the fermion sector
 
@@ -181,7 +181,7 @@ lemma isEquivariant_colourFundAntiFund_mul
     (hC : ∀ (U : specialUnitaryGroup (Fin 3) ℂ) (c : Fin 3),
       repGauge ((U, 1, 1) : GaugeGroupI) (C c) = ∑ a, conj (U.1 a c) • C a) :
     (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents ((fun l : Fin 2 → Fin 3 => A (l 0) * C (l 1)) ∘ fundAntiFundIdx)) :=
+      (liftComponents ((fun l : Fin 2 → Fin 3 => A (l 0) * C (l 1)) ∘ fundAntiFundIdx)) :=
   ColourFundAntiFund.of_law fun U l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
@@ -196,7 +196,7 @@ lemma isEquivariant_colourFundAntiFund_mul_swap
     (hC : ∀ (U : specialUnitaryGroup (Fin 3) ℂ) (c : Fin 3),
       repGauge ((U, 1, 1) : GaugeGroupI) (C c) = ∑ a, U.1 a c • C a) :
     (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents ((fun l : Fin 2 → Fin 3 => A (l 1) * C (l 0)) ∘ fundAntiFundIdx)) :=
+      (liftComponents ((fun l : Fin 2 → Fin 3 => A (l 1) * C (l 0)) ∘ fundAntiFundIdx)) :=
   ColourFundAntiFund.of_law fun U l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow, Finset.sum_comm]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
@@ -212,7 +212,7 @@ lemma isEquivariant_isospinFundAntiFund_mul
     (hC : ∀ (V : specialUnitaryGroup (Fin 2) ℂ) (w : Fin 2),
       repGauge ((1, V, 1) : GaugeGroupI) (C w) = ∑ a, conj (V.1 a w) • C a) :
     (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents ((fun l : Fin 2 → Fin 2 => A (l 0) * C (l 1)) ∘ fundAntiFundIdx)) :=
+      (liftComponents ((fun l : Fin 2 → Fin 2 => A (l 0) * C (l 1)) ∘ fundAntiFundIdx)) :=
   IsospinFundAntiFund.of_law fun V l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
@@ -227,7 +227,7 @@ lemma isEquivariant_isospinFundAntiFund_mul_swap
     (hC : ∀ (V : specialUnitaryGroup (Fin 2) ℂ) (w : Fin 2),
       repGauge ((1, V, 1) : GaugeGroupI) (C w) = ∑ a, V.1 a w • C a) :
     (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents ((fun l : Fin 2 → Fin 2 => A (l 1) * C (l 0)) ∘ fundAntiFundIdx)) :=
+      (liftComponents ((fun l : Fin 2 → Fin 2 => A (l 1) * C (l 0)) ∘ fundAntiFundIdx)) :=
   IsospinFundAntiFund.of_law fun V l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow, Finset.sum_comm]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
@@ -260,10 +260,10 @@ lemma repGauge_mul_smul_fixed
 lemma isEquivariant_upDownRDownL_sum {ι : Type} [Fintype ι]
     {T : ι → (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → fieldData.LocalCovFieldAlgebra}
     (hT : ∀ i, complexLorentzTensor.IsEquivariant ![.up, .downR, .downL] repLorentz
-      (ofComponents (T i ∘ dualIndexEquiv))) :
+      (liftComponents (T i ∘ dualIndexEquiv))) :
     complexLorentzTensor.IsEquivariant ![.up, .downR, .downL] repLorentz
-      (ofComponents ((fun p => ∑ i, T i p) ∘ dualIndexEquiv)) :=
-  TensorSpecies.isEquivariant_ofComponents_sum _ fun i _ => hT i
+      (liftComponents ((fun p => ∑ i, T i p) ∘ dualIndexEquiv)) :=
+  TensorSpecies.isEquivariant_liftComponents_sum _ fun i _ => hT i
 
 
 /-!

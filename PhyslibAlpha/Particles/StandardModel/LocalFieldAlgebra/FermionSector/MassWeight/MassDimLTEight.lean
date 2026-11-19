@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.Components
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.MassWeight.GaugeWeight
-public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
+public import PhyslibAlpha.Relativity.Bispinors.ComplexifiedAction
 public import PhyslibAlpha.Relativity.Bispinors.Pauli.Basic
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.InvariantReduction
 /-!
@@ -29,7 +29,7 @@ every other pairing having hypercharges that cannot cancel. This is
 surviving pairing is then a product of two symbols of opposite chirality, one dotted and
 one undotted, since a species and its conjugate always sit in opposite Weyl
 representations. A pair of opposite-chirality spinor indices with nothing else to
-contract against admits no invariant at all — `Lorentz.invariants_tensorRep_leftRight_eq_bot`
+contract against admits no invariant at all — `complexLorentzTensor.invariants_upL_upR_eq_bot`
 — so each pairing contributes nothing and mass weight six is left empty.
 
 That is the absence of a Dirac mass term in the Standard Model, and it is why the fermion
@@ -346,7 +346,7 @@ noncomputable def sixSpan :
 lemma isEquivariant_downLDownR_sixFamily
     (i : (LeftIdx × RightIdx) ⊕ (RightIdx × LeftIdx)) :
     complexLorentzTensor.IsEquivariant ![.downL, .downR] repLorentz
-      (ofComponents (sixFamily i ∘ pairIdx)) := by
+      (liftComponents (sixFamily i ∘ pairIdx)) := by
   cases i with
   | inl p =>
     exact isEquivariant_downLDownR_mul repLorentz_mul (repLorentz_leftComp p.1)

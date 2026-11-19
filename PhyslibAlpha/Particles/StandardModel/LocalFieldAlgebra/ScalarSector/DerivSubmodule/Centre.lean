@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.ScalarSector.DerivSubmodule.Basic
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Centre
+public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.CentreEigenspace
 /-!
 # The centre of `SL(2,ℂ)` on the scalar sector
 

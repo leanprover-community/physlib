@@ -490,7 +490,7 @@ noncomputable def isoFamily
 lemma isEquivariant_isospinFundAntiFund_isoFamily {n m : ℕ} (d : Fin n → (Fin 1 ⊕ Fin 3))
     (d' : Fin m → (Fin 1 ⊕ Fin 3)) :
     (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
-      (ofComponents ((isoFamily d d') ∘ fundAntiFundIdx)) :=
+      (liftComponents ((isoFamily d d') ∘ fundAntiFundIdx)) :=
   IsospinFundAntiFund.of_law fun V l => by
     rw [isoFamily, rep_mul_pair (1, V, 1)
       (rep_su2_barHiggs V d' (l 0)) (rep_su2_higgs V d (l 1)), Physlib.Fin.sum_fin_two_arrow]
@@ -592,7 +592,7 @@ noncomputable def quadFamily :
 /-- The quartic family carries four fundamental isospin indices. -/
 lemma isEquivariant_isospinQuadFund_quadFamily :
     (suTensor 2).IsEquivariant (fun _ : Fin 4 => .fund) (repGaugeGroupI.comp GaugeGroupI.ofSU2)
-      (ofComponents quadFamily) :=
+      (liftComponents quadFamily) :=
   IsospinQuadFund.of_law fun V l => by
     simp only [quadFamily]
     rw [LocalCovFieldAlgebra.repGaugeGroupI_mul, LocalCovFieldAlgebra.repGaugeGroupI_mul,

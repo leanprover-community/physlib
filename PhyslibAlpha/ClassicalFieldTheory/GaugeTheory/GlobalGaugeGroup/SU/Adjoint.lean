@@ -9,6 +9,9 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.
 public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
 public import Mathlib.LinearAlgebra.BilinearForm.Properties
 public import Mathlib.RepresentationTheory.Intertwining
+public import Mathlib.LinearAlgebra.Matrix.SchurComplement
+public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix
+public import PhyslibAlpha.Mathematics.RepresentationTheory.Invariants
 /-!
 # The adjoint representation of `SU(N)`
 
@@ -33,6 +36,15 @@ The trace form `A ⊗ B ↦ tr (A B)` is symmetric and nondegenerate, the trace 
 matrix being twice the coordinate, and it is invariant under the adjoint action, so it is the
 contraction `adjContr` of two adjoint indices (C).
 
+For two distinct coordinates `p` and `q`, an element `U` of `SU(2)` acts on the plane they span
+and fixes the other coordinates. This is `SU.planeEmbed p q`, a group homomorphism from `SU(2)`
+to `SU(N)` (D), built from the plane matrices of
+`PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix`. A diagonal phase
+`diag (u, ū)` and the rotation by a quarter turn, embedded in every plane, force a matrix commuting
+with all of `SU(N)` to be scalar (E). The matrix `adjMat A` of an invariant of the adjoint
+representation commutes with every element of `SU(N)`, so it is a scalar, and it is traceless, so
+the adjoint representation has no invariants but zero (F).
+
 ## ii. Key results
 
 - `suTensor.adjRep` : the adjoint representation on the complexified Lie algebra.
@@ -41,12 +53,18 @@ contraction `adjContr` of two adjoint indices (C).
 - `suTensor.adjMatrix_inv` : the matrix of `g⁻¹` is the transpose of that of `g`.
 - `suTensor.traceForm_nondegenerate` : the trace form is nondegenerate.
 - `suTensor.adjContr` : the contraction of two adjoint indices.
+- `SU.planeEmbed` : `SU(2)` acting on the plane of two coordinates, as a subgroup of `SU(N)`.
+- `SU.eq_smul_one_of_commute` : a matrix commuting with `SU(N)` is scalar.
+- `suTensor.invariants_adjRep_eq_bot` : the adjoint representation has no invariants but zero.
 
 ## iii. Table of contents
 
 - A. The adjoint representation on the complexified Lie algebra
 - B. The matrix of the adjoint action
 - C. The trace form and the contraction
+- D. The plane embedding of `SU(2)`
+- E. Matrices commuting with `SU(N)`
+- F. One adjoint index has no invariants
 
 ## iv. References
 
@@ -285,5 +303,155 @@ lemma adjContr_flip_injective :
   simp only [LinearMap.flip_apply, TensorProduct.curry_apply] at hx
   rw [map_sub, sub_eq_zero]
   exact hx
+
+end suTensor
+
+open Matrix MatrixGroups
+
+namespace SU
+
+variable {N : ℕ} {p q : Fin N}
+
+/-!
+
+## D. The plane embedding of `SU(2)`
+
+-/
+
+/-- `SU(2)` acting on the plane of two distinct coordinates `p` and `q` and trivially on the
+  others, a homomorphism from `SU(2)` to `SU(N)`. -/
+noncomputable def planeEmbed (p q : Fin N) (hpq : p ≠ q) : SU 2 →* SU N where
+  toFun U := ⟨planeMatrix p q U.1, by
+    have hU := mem_specialUnitaryGroup_iff.mp U.2
+    rw [mem_unitaryGroup_iff, star_eq_conjTranspose] at hU
+    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff, star_eq_conjTranspose,
+      conjTranspose_planeMatrix, planeMatrix_mul hpq, det_planeMatrix hpq, hU.1, planeMatrix_one]
+    exact ⟨rfl, hU.2⟩⟩
+  map_one' := Subtype.ext planeMatrix_one
+  map_mul' U V := Subtype.ext (planeMatrix_mul hpq U.1 V.1).symm
+
+@[simp]
+lemma planeEmbed_val (hpq : p ≠ q) (U : SU 2) : (planeEmbed p q hpq U).1 = planeMatrix p q U.1 :=
+  rfl
+
+/-- The diagonal element `diag (u, ū)` of `SU(2)`, for any complex number `u` of modulus one. -/
+noncomputable def diagPhase (u : ℂ) (hu : u * star u = 1) : SU 2 :=
+  ⟨diagonal ![u, star u], by
+    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff, star_eq_conjTranspose,
+      diagonal_conjTranspose, diagonal_mul_diagonal, det_diagonal, Fin.prod_univ_two]
+    have hu' : (starRingEnd ℂ) u * u = 1 := by rw [mul_comm]; exact hu
+    have hu'' : u * (starRingEnd ℂ) u = 1 := hu
+    refine ⟨?_, by simpa using hu⟩
+    rw [← diagonal_one]
+    congr 1
+    funext i
+    fin_cases i <;> simp [hu', hu'']⟩
+
+@[simp]
+lemma diagPhase_val (u : ℂ) (hu : u * star u = 1) :
+    (diagPhase u hu).1 = diagonal ![u, star u] := rfl
+
+/-- The real rotation of `SU(2)` with matrix `!![c, -s; s, c]`, for any real cosine `c` and sine
+  `s` with `c² + s² = 1`. -/
+noncomputable def rotation (c s : ℝ) (h : c ^ 2 + s ^ 2 = 1) : SU 2 :=
+  ⟨!![(c : ℂ), -s; s, c], by
+    have h' : (c : ℂ) ^ 2 + (s : ℂ) ^ 2 = 1 := by exact_mod_cast h
+    rw [mem_specialUnitaryGroup_iff, mem_unitaryGroup_iff, star_eq_conjTranspose, det_fin_two_of]
+    refine ⟨?_, by linear_combination h'⟩
+    ext i j
+    fin_cases i <;> fin_cases j <;>
+      simp [Matrix.mul_apply, Fin.sum_univ_two, ← pow_two] <;>
+      first | linear_combination h' | ring⟩
+
+@[simp]
+lemma rotation_val (c s : ℝ) (h : c ^ 2 + s ^ 2 = 1) :
+    (rotation c s h).1 = !![(c : ℂ), -s; s, c] := rfl
+
+/-!
+
+## E. Matrices commuting with `SU(N)`
+
+The diagonal phase `diag (i, -i)` in the plane of `p` and `q` negates the entries at `(p, q)`
+and `(q, p)` of a matrix it commutes with, and the quarter turn exchanges the diagonal entries
+at `p` and `q`.
+
+-/
+
+/-- A matrix commuting with every element of `SU(N)` is fixed by conjugation. -/
+lemma conj_eq_of_commute {C : Matrix (Fin N) (Fin N) ℂ} (hC : ∀ g : SU N, g.1 * C = C * g.1)
+    (g : SU N) : g.1 * C * g.1ᴴ = C := by
+  have hg : g.1 * g.1ᴴ = 1 := by
+    rw [← star_eq_conjTranspose, ← mem_unitaryGroup_iff]
+    exact (mem_specialUnitaryGroup_iff.mp g.2).1
+  rw [hC, Matrix.mul_assoc, hg, Matrix.mul_one]
+
+/-- A matrix commuting with every element of `SU(N)` is diagonal, with equal diagonal
+  entries. -/
+lemma apply_eq_of_commute {C : Matrix (Fin N) (Fin N) ℂ} (hC : ∀ g : SU N, g.1 * C = C * g.1)
+    (hpq : p ≠ q) : C p q = 0 ∧ C p p = C q q := by
+  have hI : Complex.I * star Complex.I = 1 := by simp
+  have h1 := congrFun (congrFun (planeBlock_eq_of_conj_eq hpq
+    (conj_eq_of_commute hC (planeEmbed p q hpq (diagPhase Complex.I hI)))) 0) 1
+  have h2 := congrFun (congrFun (planeBlock_eq_of_conj_eq hpq
+    (conj_eq_of_commute hC (planeEmbed p q hpq (rotation 0 1 (by norm_num))))) 1) 1
+  have hB : ∀ i j, ((planeInclusion p q)ᵀ * C * planeInclusion p q) i j
+      = C (![p, q] i) (![p, q] j) := planeBlock_apply C
+  generalize (planeInclusion p q)ᵀ * C * planeInclusion p q = B at h1 h2 hB
+  simp only [Matrix.mul_apply, Fin.sum_univ_two, conjTranspose_apply, diagPhase_val,
+    rotation_val, diagonal_apply, of_apply, cons_val', cons_val_zero, cons_val_one,
+    cons_val_fin_one, empty_val', Fin.isValue] at h1 h2
+  simp only [hB] at h1 h2
+  simp at h1 h2
+  exact ⟨by linear_combination (-1 / 2 : ℂ) * h1 + (C p q / 2) * Complex.I_mul_I, h2⟩
+
+/-- A matrix commuting with every element of `SU(N)` is scalar. -/
+lemma eq_smul_one_of_commute {C : Matrix (Fin N) (Fin N) ℂ}
+    (hC : ∀ g : SU N, g.1 * C = C * g.1) : ∃ z : ℂ, C = z • 1 := by
+  rcases Nat.eq_zero_or_pos N with rfl | hN
+  · exact ⟨0, Subsingleton.elim _ _⟩
+  refine ⟨C ⟨0, hN⟩ ⟨0, hN⟩, ext fun x y => ?_⟩
+  rw [Matrix.smul_apply, one_apply, smul_eq_mul]
+  by_cases hxy : x = y
+  · subst hxy
+    by_cases hx : x = ⟨0, hN⟩
+    · simp [hx]
+    · simp [(apply_eq_of_commute hC hx).2]
+  · simp [hxy, (apply_eq_of_commute hC hxy).1]
+
+end SU
+
+/-!
+
+## F. One adjoint index has no invariants
+
+An invariant of the adjoint representation is a traceless matrix commuting with every element of
+`SU(N)`, so it is a scalar by E, and its trace vanishes.
+
+-/
+
+namespace suTensor
+
+variable {N : ℕ}
+
+open SU in
+/-- The adjoint representation has no invariants but zero. The matrix of an invariant commutes
+  with every element of `SU(N)`, so it is a scalar, and its trace vanishes. -/
+lemma invariants_adjRep_eq_bot : (adjRep N).invariants = ⊥ := by
+  refine Representation.invariants_eq_bot_of_forall fun A hA => ?_
+  obtain ⟨z, hz⟩ := eq_smul_one_of_commute (C := adjMat N A) fun g => by
+    have h := congrArg (adjMat N) (hA g)
+    rw [adjMat_adjRep] at h
+    conv_rhs => rw [← h]
+    simp only [Matrix.mul_assoc, val_inv_mul_val, Matrix.mul_one]
+  have htr := trace_adjMat A
+  rw [hz, trace_smul, trace_one, smul_eq_mul, mul_eq_zero, Fintype.card_fin] at htr
+  refine adjMat_injective ?_
+  rw [map_zero]
+  rcases htr with rfl | hN
+  · rw [hz, zero_smul]
+  · have : IsEmpty (Fin N) := by
+      rw [Fin.isEmpty_iff]
+      exact_mod_cast hN
+    exact Subsingleton.elim _ _
 
 end suTensor

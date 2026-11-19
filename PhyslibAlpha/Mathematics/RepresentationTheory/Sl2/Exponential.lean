@@ -9,6 +9,8 @@ public import Mathlib.Analysis.Normed.Algebra.MatrixExponential
 public import Mathlib.LinearAlgebra.Matrix.Transvection
 public import Mathlib.Analysis.SpecialFunctions.Complex.Log
 public import Mathlib.Analysis.SpecialFunctions.Exponential
+public import Mathlib.Analysis.Calculus.MeanValue
+public import Mathlib.Analysis.Calculus.Deriv.Shift
 /-!
 # Generation of SL(2, ℂ) by exponentials
 
@@ -23,13 +25,16 @@ transvections and a diagonal matrix of determinant one (`Matrix.diagonal_transve
 and each of these is the exponential of a traceless matrix. A transvection `1 + c E_{ij}` is
 `exp (c E_{ij})`, since `E_{ij}` squares to zero, and a diagonal matrix `diag(z, z⁻¹)` is
 `exp (diag(log z, -log z))`. Alongside, the exponential of an operator fixes every vector the
-operator kills.
+operator kills, and so does any one-parameter group of operators whose derivative at the identity
+kills the vector.
 
 ## ii. Key results
 
 - `NormedSpace.exp_eq_one_add_of_mul_self_eq_zero` : the exponential of a square-zero element.
 - `ContinuousLinearMap.exp_apply_of_apply_eq_zero` : the exponential of an operator fixes the
   vectors it kills.
+- `Module.Basis.apply_eq_self_of_hasDerivAt_repr` : a one-parameter group of operators fixes the
+  vectors its derivative kills.
 - `Matrix.mem_closure_exp_of_det_eq_one` : every `2 × 2` matrix of determinant one is a product
   of exponentials of traceless matrices.
 
@@ -83,6 +88,31 @@ lemma exp_apply_of_apply_eq_zero {A : E →L[ℂ] E} {w : E} (hw : A w = 0) : ex
     simp [pow_succ, hw]
 
 end ContinuousLinearMap
+
+namespace Module.Basis
+
+variable {V ι : Type*} [AddCommGroup V] [Module ℂ V] [Fintype ι] [DecidableEq ι]
+
+/-- A one-parameter group of operators `F s` fixes every vector whose coordinates along the group
+  have derivative zero at the identity. By the group law the coordinates then have derivative zero
+  everywhere, so they are constant. -/
+lemma apply_eq_self_of_hasDerivAt_repr (b : Module.Basis ι ℂ V) {F : ℝ → V →ₗ[ℂ] V}
+    (hF : ∀ s h, F (s + h) = F s ∘ₗ F h) (hF0 : F 0 = LinearMap.id) {v : V}
+    (hv : ∀ i, HasDerivAt (fun h => b.repr (F h v) i) 0 0) (s : ℝ) : F s v = v := by
+  refine b.ext_elem fun i => ?_
+  have hd (x : ℝ) : HasDerivAt (fun s => b.repr (F s v) i) 0 x := by
+    have h := HasDerivAt.fun_sum (u := Finset.univ) fun j _ =>
+      (HasDerivAt.comp_sub_const x x (by rw [sub_self]; exact hv j)).const_mul
+        (LinearMap.toMatrix b b (F x) i j)
+    simp only [mul_zero, Finset.sum_const_zero] at h
+    refine h.congr_of_eventuallyEq (Filter.Eventually.of_forall fun s => ?_)
+    have hs : F s v = F x (F (s - x) v) := by
+      rw [← LinearMap.comp_apply, ← hF, add_sub_cancel]
+    simp only [hs, ← LinearMap.toMatrix_mulVec_repr b b (F x), Matrix.mulVec, dotProduct]
+  have h := is_const_of_deriv_eq_zero (fun x => (hd x).differentiableAt) (fun x => (hd x).deriv) s 0
+  rw [h, hF0, LinearMap.id_apply]
+
+end Module.Basis
 
 /-!
 

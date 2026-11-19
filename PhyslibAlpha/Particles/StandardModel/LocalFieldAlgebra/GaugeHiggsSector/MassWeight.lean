@@ -108,12 +108,12 @@ stability and the inertness of products and joins that section D consumes.
 lemma mem_of_lorentz_invariant_iSup_rankTwo_span {ι : Type}
     {T : ι → (Fin 2 → Fin 1 ⊕ Fin 3) → B}
     (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentz
-      (ofComponents (T i)))
-    (hzero : ∀ i, ofComponents (T i) RankTwo.metric = 0) (S : Submodule ℂ B)
+      (liftComponents (T i)))
+    (hzero : ∀ i, liftComponents (T i) RankTwo.metric = 0) (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
     (hx : x ∈ (⨆ i, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)] at hx
+  simp_rw [← range_liftComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)] at hx
   simpa using ReducesInvariantsTo.iSup
     (fun i => (ComplexVector.reducesInvariantsTo_span_metric (hT i)).mono_right
       (Submodule.span_singleton_eq_bot.2 (hzero i)).le)
@@ -126,11 +126,11 @@ lemma mem_of_lorentz_invariant_iSup_rankTwo_span {ι : Type}
 lemma mem_of_lorentz_invariant_iSup_rankThree_span {ι : Type}
     {T : ι → (Fin 3 → Fin 1 ⊕ Fin 3) → B}
     (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentz
-      (ofComponents (T i)))
+      (liftComponents (T i)))
     (S : Submodule ℂ B) (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
     (hx : x ∈ (⨆ i, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 3 => .up)] at hx
+  simp_rw [← range_liftComponents (S := complexLorentzTensor) (c := fun _ : Fin 3 => .up)] at hx
   simpa using ReducesInvariantsTo.iSup
     (fun i => ComplexVector.reducesInvariantsTo_bot_of_odd ⟨1, rfl⟩ (hT i))
     (fun i => (hT i).isStableUnder_range) isStableUnder_bot S hS x hx hinv
@@ -245,13 +245,13 @@ lemma mem_of_lorentz_invariant_derivSubmodule_zero_mul_fixed_sup
       fieldData.LocalCovFieldAlgebra :=
     fun i l => gaugeFieldStrength ![] (l 0) (l 1) i.1 * (i.2 : fieldData.LocalCovFieldAlgebra)
   have hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
-      (ofComponents (T i)) :=
-    fun i => isEquivariant_ofComponents_up_mul_fixed repLorentzGroup_mul
+      (liftComponents (T i)) :=
+    fun i => isEquivariant_liftComponents_up_mul_fixed repLorentzGroup_mul
       (GaugeSector.isEquivariant_up_F_underived i.1)
       fun g => hC g (i.2 : fieldData.LocalCovFieldAlgebra) i.2.2
-  have hzero : ∀ i, ofComponents (T i) RankTwo.metric = 0 := by
+  have hzero : ∀ i, liftComponents (T i) RankTwo.metric = 0 := by
     intro i
-    refine GaugeSector.ofComponents_metric_eq_zero_of_antisymm fun a b => ?_
+    refine GaugeSector.liftComponents_metric_eq_zero_of_antisymm fun a b => ?_
     simp only [T, Matrix.cons_val_zero, Matrix.cons_val_one]
     rw [GaugeSector.F_antisymm ![] a b i.1, neg_mul]
   refine mem_of_lorentz_invariant_iSup_rankTwo_span hT hzero S hSL ?_ hinv
@@ -282,8 +282,8 @@ lemma mem_of_lorentz_invariant_derivSubmodule_one_mul_fixed_sup
       fieldData.LocalCovFieldAlgebra :=
     fun i l => gaugeFieldStrength ![l 0] (l 1) (l 2) i.1 * (i.2 : fieldData.LocalCovFieldAlgebra)
   have hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
-      (ofComponents (T i)) :=
-    fun i => isEquivariant_ofComponents_up_mul_fixed repLorentzGroup_mul
+      (liftComponents (T i)) :=
+    fun i => isEquivariant_liftComponents_up_mul_fixed repLorentzGroup_mul
       (GaugeSector.isEquivariant_up_F_deriv_one i.1)
       fun g => hC g (i.2 : fieldData.LocalCovFieldAlgebra) i.2.2
   refine mem_of_lorentz_invariant_iSup_rankThree_span hT S hSL ?_ hinv
@@ -336,8 +336,8 @@ lemma isEquivariant_up_fieldStrengthHiggsDerivFamily
     (i : Module.Dual ℝ GaugeAlgebra ×
       (Module.Dual ℂ HiggsVec ⊕ Module.Dual ℂ (ConjModule HiggsVec))) :
     complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
-      (ofComponents (fieldStrengthHiggsDerivFamily i)) := by
-  have h1 := isEquivariant_ofComponents_up_mul_vector repLorentzGroup_mul
+      (liftComponents (fieldStrengthHiggsDerivFamily i)) := by
+  have h1 := isEquivariant_liftComponents_up_mul_vector repLorentzGroup_mul
     (GaugeSector.isEquivariant_up_F_underived i.1) (repLorentzGroup_higgsOrConj_deriv_one i.2)
   convert h1 using 3
   simp only [fieldStrengthHiggsDerivFamily, Matrix.cons_val_zero, Matrix.cons_val_one]

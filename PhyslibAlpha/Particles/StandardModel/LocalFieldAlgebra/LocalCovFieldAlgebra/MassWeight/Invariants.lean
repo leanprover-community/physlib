@@ -195,17 +195,17 @@ lemma hyperchargeDeriv_comp_swap_zero_one (d : GaugeSector.EightIdx) :
 /-- The metric contraction `η^{μρ} η^{νσ} ∇_μ ∇_ν B_{ρσ}` vanishes, a symmetric pair of
   derivatives being contracted against the antisymmetric pair of field-strength indices. -/
 lemma hyperchargeDeriv_contractionTensor_one :
-    ofComponents GaugeSector.hyperchargeDeriv (RankFour.contractionTensor 1) = 0 :=
+    liftComponents GaugeSector.hyperchargeDeriv (RankFour.contractionTensor 1) = 0 :=
   RankFour.apply_contractionTensor_one_of_symm_of_antisymm
-    (ofComponents_comp_permT_eq_self _ _ hyperchargeDeriv_comp_swap_zero_one)
-    (ofComponents_comp_permT_eq_neg _ _ GaugeSector.hyperchargeDeriv_comp_swap_two_three)
+    (liftComponents_comp_permT_eq_self _ _ hyperchargeDeriv_comp_swap_zero_one)
+    (liftComponents_comp_permT_eq_neg _ _ GaugeSector.hyperchargeDeriv_comp_swap_two_three)
 
 /-- The Levi-Civita contraction `ε^{μνρσ} ∇_μ ∇_ν B_{ρσ}` vanishes, a symmetric pair of
   derivatives being contracted against the antisymmetric symbol. -/
 lemma hyperchargeDeriv_contractionTensor_three :
-    ofComponents GaugeSector.hyperchargeDeriv (RankFour.contractionTensor 3) = 0 :=
+    liftComponents GaugeSector.hyperchargeDeriv (RankFour.contractionTensor 3) = 0 :=
   RankFour.apply_contractionTensor_three_of_symm
-    (ofComponents_comp_permT_eq_self _ _ hyperchargeDeriv_comp_swap_zero_one)
+    (liftComponents_comp_permT_eq_self _ _ hyperchargeDeriv_comp_swap_zero_one)
 
 open RankFour in
 /-- The gauge contribution at mass weight eight is spanned by the Lorentz contractions of the
@@ -216,12 +216,12 @@ open RankFour in
   not shown to be independent or nonzero. -/
 lemma gaugeSector_lorentzContractionEightSpan_eq_traceFamilies :
     GaugeSector.lorentzContractionEightSpan
-      = Submodule.span ℂ {ofComponents GaugeSector.gluonTrace (contractionTensor 1),
-          ofComponents GaugeSector.gluonTrace (contractionTensor 3)}
-        ⊔ (Submodule.span ℂ {ofComponents GaugeSector.wTrace (contractionTensor 1),
-            ofComponents GaugeSector.wTrace (contractionTensor 3)}
-          ⊔ Submodule.span ℂ {ofComponents GaugeSector.hyperchargeTrace (contractionTensor 1),
-            ofComponents GaugeSector.hyperchargeTrace (contractionTensor 3)}) := by
+      = Submodule.span ℂ {liftComponents GaugeSector.gluonTrace (contractionTensor 1),
+          liftComponents GaugeSector.gluonTrace (contractionTensor 3)}
+        ⊔ (Submodule.span ℂ {liftComponents GaugeSector.wTrace (contractionTensor 1),
+            liftComponents GaugeSector.wTrace (contractionTensor 3)}
+          ⊔ Submodule.span ℂ {liftComponents GaugeSector.hyperchargeTrace (contractionTensor 1),
+            liftComponents GaugeSector.hyperchargeTrace (contractionTensor 3)}) := by
   rw [GaugeSector.lorentzContractionEightSpan_eq, hyperchargeDeriv_contractionTensor_one,
     hyperchargeDeriv_contractionTensor_three]
   simp
@@ -557,13 +557,13 @@ lemma mem_massWeightSubmodule_eight_sup_and_gauge_lorentz_invariant_iff_lagrangi
       ↔ ∃ y ∈ S, (∀ g : GaugeGroupI, repGaugeGroupI g y = y)
           ∧ (∀ g : SL(2,ℂ), repLorentzGroup g y = y)
           ∧ x - y ∈ (Submodule.span ℂ
-                {ofComponents GaugeSector.gluonTrace (contractionTensor 1),
-                  ofComponents GaugeSector.gluonTrace (contractionTensor 3)}
-              ⊔ (Submodule.span ℂ {ofComponents GaugeSector.wTrace (contractionTensor 1),
-                  ofComponents GaugeSector.wTrace (contractionTensor 3)}
+                {liftComponents GaugeSector.gluonTrace (contractionTensor 1),
+                  liftComponents GaugeSector.gluonTrace (contractionTensor 3)}
+              ⊔ (Submodule.span ℂ {liftComponents GaugeSector.wTrace (contractionTensor 1),
+                  liftComponents GaugeSector.wTrace (contractionTensor 3)}
                 ⊔ Submodule.span ℂ
-                  {ofComponents GaugeSector.hyperchargeTrace (contractionTensor 1),
-                    ofComponents GaugeSector.hyperchargeTrace (contractionTensor 3)}))
+                  {liftComponents GaugeSector.hyperchargeTrace (contractionTensor 1),
+                    liftComponents GaugeSector.hyperchargeTrace (contractionTensor 3)}))
                 ⊔ ScalarSector.lorentzContractionEightSpan
               ⊔ (FermionSector.kineticSpan ⊔ yukawaSpan) := by
   rw [← gaugeSector_lorentzContractionEightSpan_eq_traceFamilies]

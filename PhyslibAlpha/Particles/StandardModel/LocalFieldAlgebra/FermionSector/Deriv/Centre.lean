@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.Basic
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Centre
+public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.CentreEigenspace
 /-!
 # The centre of `SL(2,ℂ)` on the fermion sector
 
@@ -26,8 +26,8 @@ index sees it through `rep.dual`, and `repLorentzGroup_neg_one` says that the We
 turns it into a sign. `Invariants.range_le_centreEigenspace_neg_one` does this once for an
 arbitrary symbol family; section A applies it to the ten species and section B joins them.
 
-This is the half-integer-spin obstruction of `Invariants/Centre.lean` in the form the Yukawa
-and gauge-fermion classifications need. A product with an odd number of fermion factors
+This is the half-integer-spin obstruction of `Invariants/CentreEigenspace.lean` in the form the
+Yukawa and gauge-fermion classifications need. A product with an odd number of fermion factors
 inherits the sign, and a subspace of sign `-1` carries no Lorentz invariant.
 
 ## ii. Key results

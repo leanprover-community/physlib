@@ -6,8 +6,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.GaugeSector.MassWeight.Basic
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankTwo
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.OddRank
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Metrics.Basic
+public import PhyslibAlpha.Relativity.Bispinors.ComplexifiedAction
 /-!
 # The invariants below mass weight eight
 
@@ -121,8 +121,8 @@ those indices they are a bi-Lorentz and a triple Lorentz tensor, the transformat
   indices, is a bi-Lorentz tensor. -/
 lemma isEquivariant_up_F_underived (φ : Module.Dual ℝ GaugeAlgebra) :
     complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
-      (ofComponents fun d : Fin 2 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![] (d 0) (d 1) φ) := by
-  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
+      (liftComponents fun d : Fin 2 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![] (d 0) (d 1) φ) := by
+  refine (isEquivariant_liftComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_F g 0 ![] (l 0) (l 1) φ,
     Finset.sum_eq_single (![] : Fin 0 → Fin 1 ⊕ Fin 3)
       (fun b _ hb => absurd (Subsingleton.elim b ![]) hb)
@@ -138,8 +138,9 @@ lemma isEquivariant_up_F_underived (φ : Module.Dual ℝ GaugeAlgebra) :
   slot and its two covector indices, is a triple Lorentz tensor. -/
 lemma isEquivariant_up_F_deriv_one (φ : Module.Dual ℝ GaugeAlgebra) :
     complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
-      (ofComponents fun d : Fin 3 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![d 0] (d 1) (d 2) φ) := by
-  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
+      (liftComponents fun d : Fin 3 → Fin 1 ⊕ Fin 3 =>
+        gaugeFieldStrength ![d 0] (d 1) (d 2) φ) := by
+  refine (isEquivariant_liftComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_F g 1 ![l 0] (l 1) (l 2) φ, sum_pi_fin_one, sum_pi_fin_three]
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [Finset.smul_sum]
@@ -163,11 +164,11 @@ hence zero, and the trace vanishes with them.
 
 /-- The metric trace of a bi-Lorentz family antisymmetric in its two indices vanishes, since the
   metric is diagonal, and the diagonal components of such a family are zero. -/
-lemma ofComponents_metric_eq_zero_of_antisymm
+lemma liftComponents_metric_eq_zero_of_antisymm
     {T : (Fin 2 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra}
     (hswap : ∀ x y : Fin 1 ⊕ Fin 3, T ![y, x] = - T ![x, y]) :
-    ofComponents T RankTwo.metric = 0 := by
-  rw [RankTwo.ofComponents_metric]
+    liftComponents T RankTwo.metric = 0 := by
+  rw [RankTwo.liftComponents_metric]
   refine Finset.sum_eq_zero fun d _ => ?_
   rcases eq_or_ne (d 0) (d 1) with heq | hne
   · have hs := hswap (d 0) (d 1)
@@ -203,14 +204,14 @@ join of them.
 lemma mem_of_lorentz_invariant_biSup_rankTwo_span {ι : Type} [DecidableEq ι]
     {T : ι → (Fin 2 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra}
     (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
-      (ofComponents (T i)))
-    (hzero : ∀ i, ofComponents (T i) RankTwo.metric = 0)
+      (liftComponents (T i)))
+    (hzero : ∀ i, liftComponents (T i) RankTwo.metric = 0)
     (S : Submodule ℂ fieldData.LocalCovFieldAlgebra)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentzGroup g y ∈ S) (s : Finset ι)
     {x : fieldData.LocalCovFieldAlgebra}
     (hx : x ∈ (⨆ i ∈ s, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)] at hx
+  simp_rw [← range_liftComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)] at hx
   simpa using ReducesInvariantsTo.biSup
     (fun i => (ComplexVector.reducesInvariantsTo_span_metric (hT i)).mono_right
       (Submodule.span_singleton_eq_bot.2 (hzero i)).le)
@@ -223,13 +224,13 @@ lemma mem_of_lorentz_invariant_biSup_rankTwo_span {ι : Type} [DecidableEq ι]
 lemma mem_of_lorentz_invariant_biSup_rankThree_span {ι : Type} [DecidableEq ι]
     {T : ι → (Fin 3 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra}
     (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
-      (ofComponents (T i)))
+      (liftComponents (T i)))
     (S : Submodule ℂ fieldData.LocalCovFieldAlgebra)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentzGroup g y ∈ S) (s : Finset ι)
     {x : fieldData.LocalCovFieldAlgebra}
     (hx : x ∈ (⨆ i ∈ s, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 3 => .up)] at hx
+  simp_rw [← range_liftComponents (S := complexLorentzTensor) (c := fun _ : Fin 3 => .up)] at hx
   simpa using ReducesInvariantsTo.biSup
     (fun i => ComplexVector.reducesInvariantsTo_bot_of_odd ⟨1, rfl⟩ (hT i))
     (fun i => (hT i).isStableUnder_range) isStableUnder_bot s S hS x hx hinv
@@ -248,10 +249,10 @@ holds at the colour and isospin directions just as at the hypercharge one.
 
 /-- The metric trace of the underived field-strength symbols at a fixed direction of the
   gauge algebra vanishes, the symbol being antisymmetric in its two covector indices. -/
-lemma ofComponents_F_underived_metric_eq_zero (φ : Module.Dual ℝ GaugeAlgebra) :
-    ofComponents (fun d : Fin 2 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![] (d 0) (d 1) φ)
+lemma liftComponents_F_underived_metric_eq_zero (φ : Module.Dual ℝ GaugeAlgebra) :
+    liftComponents (fun d : Fin 2 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![] (d 0) (d 1) φ)
       RankTwo.metric = 0 :=
-  ofComponents_metric_eq_zero_of_antisymm fun x y => by
+  liftComponents_metric_eq_zero_of_antisymm fun x y => by
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
     exact F_antisymm ![] x y φ
 
@@ -286,7 +287,7 @@ lemma mem_of_lorentz_invariant_massWeightSubmodule_four_sup
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
   refine mem_of_lorentz_invariant_biSup_rankTwo_span
     (fun c => isEquivariant_up_F_underived (GaugeAlgebra.stdBasis.coord c))
-    (fun c => ofComponents_F_underived_metric_eq_zero _) S hSL Finset.univ ?_ hinv
+    (fun c => liftComponents_F_underived_metric_eq_zero _) S hSL Finset.univ ?_ hinv
   rw [massWeightSubmodule_four_eq] at hx
   refine sup_le_sup_right ?_ S hx
   simpa using derivSubmodule_zero_le_iSup_span

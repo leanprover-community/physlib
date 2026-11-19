@@ -24,10 +24,10 @@ from `κ` to `κ'` likewise changes every index at once (`transform`). It intert
 inverse on a single slot (B).
 
 For a family `K t` with `K 0 = 1` and derivative `N` at `0`, the derivative of `act (K t) C` is the
-infinitesimal action `infAct N C`, which applies `N` to one slot at a time. So a coefficient
-function fixed by every `K t` is killed by `infAct N` (C). With two indices `κ × κ'` in a slot and
-a product family `K₁ t ⊗ K₂ t`, the infinitesimal action splits into one on each kind of
-index (D).
+infinitesimal action `infinitesimalAct N C`, which applies `N` to one slot at a time. The same
+holds with a different matrix, and even a different kind of index, in each slot. So a coefficient
+function fixed by every `K t` is killed by `infinitesimalAct N` (C). With two indices `κ × κ'` in a
+slot, a pair of matrices acts on them one factor per kind, `pairMatrix` (D).
 
 ## ii. Key results
 
@@ -35,13 +35,12 @@ index (D).
 - `SlotAction.transform` : a change of every index, as a linear map.
 - `SlotAction.act_transform` : the change intertwines two actions if it does so on one slot.
 - `SlotAction.transform_injective` : the change is injective if it has a left inverse on one slot.
-- `SlotAction.infAct` : the infinitesimal action of a matrix, one slot at a time.
-- `SlotAction.infAct_eq_zero_of_act_eq` : a coefficient function fixed by a one-parameter family
-  is killed by its derivative at the identity.
-- `SlotAction.act_pairMatrix` : a product of matrices acts on a product of coefficient functions
-  factor by factor.
-- `SlotAction.infAct_pair` : on two kinds of index the infinitesimal action of a product family
-  splits into one action on each.
+- `SlotAction.infinitesimalAct` : the infinitesimal action of a matrix, one slot at a time.
+- `SlotAction.hasDerivAt_sum_mul_prod` : the derivative of the action of a one-parameter family,
+  with a matrix for each slot, is its infinitesimal action.
+- `SlotAction.infinitesimalAct_eq_zero_of_act_eq` : a coefficient function fixed by a
+  one-parameter family is killed by its derivative at the identity.
+- `SlotAction.pairMatrix` : a pair of matrices acting on two kinds of index.
 
 ## iii. Table of contents
 
@@ -157,24 +156,14 @@ lemma transform_injective [DecidableEq κ] {T : κ → κ' → ℂ} {T' : κ' �
 -/
 
 /-- The infinitesimal action of a matrix `N`, applied to one slot at a time,
-  `(infAct N C) a = ∑_s ∑_q N_{a_s q} C_{a[s ↦ q]}`. -/
-def infAct (N : κ → κ → ℂ) (C : (ι → κ) → ℂ) (a : ι → κ) : ℂ :=
+  `(infinitesimalAct N C) a = ∑_s ∑_q N_{a_s q} C_{a[s ↦ q]}`. -/
+def infinitesimalAct (N : κ → κ → ℂ) (C : (ι → κ) → ℂ) (a : ι → κ) : ℂ :=
   ∑ s, ∑ q, N (a s) q * C (Function.update a s q)
 
-/-- The infinitesimal action is additive in the matrix. -/
-lemma infAct_add (N N' : κ → κ → ℂ) (C : (ι → κ) → ℂ) :
-    infAct (N + N') C = infAct N C + infAct N' C := by
-  funext a
-  simp [infAct, add_mul, sum_add_distrib]
-
-/-- The infinitesimal action commutes with scaling the matrix. -/
-lemma infAct_smul (k : ℂ) (N : κ → κ → ℂ) (C : (ι → κ) → ℂ) :
-    infAct (k • N) C = k • infAct N C := by
-  funext a
-  simp [infAct, mul_sum, mul_assoc]
-
-/-- Summing over the index vectors that agree with `a` off the slot `s`. -/
-lemma sum_prod_erase_ite_mul [DecidableEq κ] (a : ι → κ) (s : ι) (G : (ι → κ) → ℂ) :
+/-- Summing over the index vectors that agree with `a` off the slot `s`, for a kind of index
+  `κ s` that may depend on the slot. -/
+lemma sum_prod_erase_ite_mul {κ : ι → Type*} [∀ s, Fintype (κ s)] [∀ s, DecidableEq (κ s)]
+    (a : ∀ s, κ s) (s : ι) (G : (∀ s, κ s) → ℂ) :
     ∑ b, (∏ j ∈ univ.erase s, if a j = b j then (1 : ℂ) else 0) * G b
       = ∑ q, G (Function.update a s q) := by
   rw [← sum_fiberwise univ (fun b => b s)]
@@ -190,28 +179,41 @@ lemma sum_prod_erase_ite_mul [DecidableEq κ] (a : ι → κ) (s : ι) (G : (ι 
   · intro h
     simp at h
 
+/-- The derivative at the identity of the action of a one-parameter family of matrices `K t s`,
+  one for each slot `s` and acting on a kind of index `κ s` that may depend on the slot, is the
+  infinitesimal action of their derivatives `N s`, applied to one slot at a time. -/
+lemma hasDerivAt_sum_mul_prod {κ : ι → Type*} [∀ s, Fintype (κ s)] [∀ s, DecidableEq (κ s)]
+    {K : ℝ → ∀ s, κ s → κ s → ℂ} {N : ∀ s, κ s → κ s → ℂ}
+    (h0 : ∀ s p q, K 0 s p q = if p = q then 1 else 0)
+    (hK : ∀ s p q, HasDerivAt (fun t => K t s p q) (N s p q) 0) (C : (∀ s, κ s) → ℂ)
+    (a : ∀ s, κ s) :
+    HasDerivAt (fun t => ∑ b, C b * ∏ s, K t s (a s) (b s))
+      (∑ s, ∑ q, N s (a s) q * C (Function.update a s q)) 0 := by
+  have h := HasDerivAt.fun_sum (u := univ) fun b _ =>
+    (HasDerivAt.fun_finsetProd (u := univ) (f := fun s t => K t s (a s) (b s))
+      fun s _ => hK s (a s) (b s)).const_mul (C b)
+  refine h.congr_deriv ?_
+  simp only [h0, smul_eq_mul, mul_sum]
+  rw [sum_comm]
+  refine sum_congr rfl fun s _ => ?_
+  rw [sum_congr rfl fun b _ => mul_left_comm (C b) _ (N s (a s) (b s)),
+    sum_prod_erase_ite_mul a s fun b => C b * N s (a s) (b s)]
+  simp [mul_comm]
+
 /-- The derivative at the identity of the action of a one-parameter family `K t` is the
   infinitesimal action of its derivative `N`. -/
 lemma hasDerivAt_act [DecidableEq κ] {K : ℝ → κ → κ → ℂ} {N : κ → κ → ℂ}
     (h0 : ∀ p q, K 0 p q = if p = q then 1 else 0)
     (hK : ∀ p q, HasDerivAt (fun t => K t p q) (N p q) 0) (C : (ι → κ) → ℂ) (a : ι → κ) :
-    HasDerivAt (fun t => act (K t) C a) (infAct N C a) 0 := by
-  have h := HasDerivAt.fun_sum (u := univ) fun b _ =>
-    (HasDerivAt.fun_finsetProd (u := univ) (f := fun s t => K t (a s) (b s))
-      fun s _ => hK (a s) (b s)).const_mul (C b)
-  refine h.congr_deriv ?_
-  simp only [h0, smul_eq_mul, mul_sum, infAct]
-  rw [sum_comm]
-  refine sum_congr rfl fun s _ => ?_
-  rw [sum_congr rfl fun b _ => mul_left_comm (C b) _ (N (a s) (b s)), sum_prod_erase_ite_mul]
-  simp [mul_comm]
+    HasDerivAt (fun t => act (K t) C a) (infinitesimalAct N C a) 0 :=
+  hasDerivAt_sum_mul_prod (K := fun t _ => K t) (N := fun _ => N) (fun _ => h0) (fun _ => hK) C a
 
 /-- A coefficient function fixed by every member of a one-parameter family through the identity
   is killed by the infinitesimal action of its derivative there. -/
-lemma infAct_eq_zero_of_act_eq [DecidableEq κ] {K : ℝ → κ → κ → ℂ} {N : κ → κ → ℂ}
+lemma infinitesimalAct_eq_zero_of_act_eq [DecidableEq κ] {K : ℝ → κ → κ → ℂ} {N : κ → κ → ℂ}
     (h0 : ∀ p q, K 0 p q = if p = q then 1 else 0)
     (hK : ∀ p q, HasDerivAt (fun t => K t p q) (N p q) 0) {C : (ι → κ) → ℂ}
-    (hC : ∀ t, act (K t) C = C) : infAct N C = 0 := by
+    (hC : ∀ t, act (K t) C = C) : infinitesimalAct N C = 0 := by
   funext a
   refine (hasDerivAt_act h0 hK C a).unique ?_
   simp only [hC]
@@ -221,89 +223,11 @@ lemma infAct_eq_zero_of_act_eq [DecidableEq κ] {K : ℝ → κ → κ → ℂ} 
 
 ## D. Two kinds of index in each slot
 
-With an index of `κ × κ'` in each slot, a product family `K₁ t ⊗ K₂ t` has derivative
-`N₁ ⊗ 1 + 1 ⊗ N₂` at the identity. Its infinitesimal action is that of `N₁` on the first kind of
-index plus that of `N₂` on the second.
+With an index of `κ × κ'` in each slot, a pair of matrices acts on it one factor per kind.
 
 -/
 
 /-- The product of two matrices, acting on an index of each kind. -/
 def pairMatrix (K₁ : κ → κ → ℂ) (K₂ : κ' → κ' → ℂ) (p q : κ × κ') : ℂ := K₁ p.1 q.1 * K₂ p.2 q.2
-
-/-- The coefficient function with the first kind of index `x` and the second `y`. -/
-def zip (x : ι → κ) (y : ι → κ') : ι → κ × κ' := fun s => (x s, y s)
-
-omit [Fintype ι] [Fintype κ] [Fintype κ'] in
-/-- Updating the first entry of one slot of a zipped index vector. -/
-lemma update_zip_fst (x : ι → κ) (y : ι → κ') (s : ι) (q : κ) :
-    Function.update (zip x y) s (q, y s) = zip (Function.update x s q) y := by
-  funext j
-  by_cases h : j = s
-  · subst h
-    simp [zip]
-  · simp [zip, Function.update_of_ne h]
-
-omit [Fintype ι] [Fintype κ] [Fintype κ'] in
-/-- Updating the second entry of one slot of a zipped index vector. -/
-lemma update_zip_snd (x : ι → κ) (y : ι → κ') (s : ι) (q : κ') :
-    Function.update (zip x y) s (x s, q) = zip x (Function.update y s q) := by
-  funext j
-  by_cases h : j = s
-  · subst h
-    simp [zip]
-  · simp [zip, Function.update_of_ne h]
-
-/-- A product of two matrices acts on a product of two coefficient functions, one for each kind
-  of index, factor by factor. -/
-lemma act_pairMatrix (K₁ : κ → κ → ℂ) (K₂ : κ' → κ' → ℂ) (f : (ι → κ) → ℂ) (g : (ι → κ') → ℂ)
-    (x : ι → κ) (y : ι → κ') :
-    act (pairMatrix K₁ K₂) (fun α => f (fun s => (α s).1) * g (fun s => (α s).2)) (zip x y)
-      = act K₁ f x * act K₂ g y := by
-  rw [act, ← (Equiv.arrowProdEquivProdArrow ι (fun _ => κ) fun _ => κ').symm.sum_comp,
-    Fintype.sum_prod_type, act, act, sum_mul_sum]
-  refine sum_congr rfl fun b _ => sum_congr rfl fun c _ => ?_
-  simp [Equiv.arrowProdEquivProdArrow, pairMatrix, zip, prod_mul_distrib]
-  ring
-
-omit [Fintype κ] [Fintype κ'] in
-/-- The derivative of a product family at the identity. -/
-lemma hasDerivAt_pairMatrix [DecidableEq κ] [DecidableEq κ'] {K₁ : ℝ → κ → κ → ℂ}
-    {K₂ : ℝ → κ' → κ' → ℂ} {N₁ : κ → κ → ℂ} {N₂ : κ' → κ' → ℂ}
-    (h₁ : ∀ p q, K₁ 0 p q = if p = q then 1 else 0)
-    (h₂ : ∀ p q, K₂ 0 p q = if p = q then 1 else 0)
-    (hK₁ : ∀ p q, HasDerivAt (fun t => K₁ t p q) (N₁ p q) 0)
-    (hK₂ : ∀ p q, HasDerivAt (fun t => K₂ t p q) (N₂ p q) 0) (p q : κ × κ') :
-    HasDerivAt (fun t => pairMatrix (K₁ t) (K₂ t) p q)
-      (pairMatrix N₁ (fun p q => if p = q then 1 else 0) p q
-        + pairMatrix (fun p q => if p = q then 1 else 0) N₂ p q) 0 := by
-  have h := (hK₁ p.1 q.1).mul (hK₂ p.2 q.2)
-  rw [h₁, h₂] at h
-  exact h
-
-/-- The infinitesimal action of `N₁ ⊗ 1 + 1 ⊗ N₂` is that of `N₁` on the first kind of index
-  plus that of `N₂` on the second. -/
-lemma infAct_pair [DecidableEq κ] [DecidableEq κ'] (N₁ : κ → κ → ℂ) (N₂ : κ' → κ' → ℂ)
-    (C : (ι → κ × κ') → ℂ) (x : ι → κ) (y : ι → κ') :
-    infAct (pairMatrix N₁ (fun p q => if p = q then 1 else 0)
-        + pairMatrix (fun p q => if p = q then 1 else 0) N₂) C (zip x y)
-      = infAct N₁ (fun x' => C (zip x' y)) x + infAct N₂ (fun y' => C (zip x y')) y := by
-  simp only [infAct, ← sum_add_distrib]
-  refine sum_congr rfl fun s _ => ?_
-  rw [Fintype.sum_prod_type]
-  simp only [Pi.add_apply, pairMatrix, add_mul, sum_add_distrib, zip]
-  congr 1
-  · refine sum_congr rfl fun q _ => ?_
-    rw [sum_eq_single (y s)]
-    · rw [ite_eq_left rfl, mul_one, update_zip_fst]
-    · intro q' _ hq'
-      rw [ite_eq_right (Ne.symm hq'), mul_zero, zero_mul]
-    · exact fun h => absurd (mem_univ _) h
-  · rw [sum_comm]
-    refine sum_congr rfl fun q _ => ?_
-    rw [sum_eq_single (x s)]
-    · rw [ite_eq_left rfl, one_mul, update_zip_snd]
-    · intro q' _ hq'
-      rw [ite_eq_right (Ne.symm hq'), zero_mul, zero_mul]
-    · exact fun h => absurd (mem_univ _) h
 
 end SlotAction

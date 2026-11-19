@@ -5,11 +5,11 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Relativity.Bispinors.Invariants
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
+public import PhyslibAlpha.Relativity.Bispinors.MetricPairing
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.InvariantCoeff
 public import PhyslibAlpha.Mathematics.LeviCivita.Basic
 /-!
-# Lorentz invariants of a rank-four tensor
+# The contraction tensors of four four-vector indices
 
 The Lorentz invariants of four four-vector indices are spanned by the three pairings of the
 metric and the Levi-Civita symbol.
@@ -23,32 +23,31 @@ contracted with it:
 * `ε_{μνρσ}`, the Levi-Civita symbol.
 
 These are the tensors `contractionTensor i`. There are no others: the invariant tensors are the
-span of the four, `ComplexVector.invariants_tensorPower_four_eq_span` (L). For an equivariant map
-`f : ℂT(fun _ : Fin 4 => .up) →ₗ[ℂ] B`, the invariants of
+span of the four,
+`complexLorentzTensor.invariants_up_pow_four_eq_span_range_contractionTensor` (I). For an
+equivariant map `f : ℂT(fun _ : Fin 4 => .up) →ₗ[ℂ] B`, the invariants of
 `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, therefore reduce to the span of the
 four images `f (contractionTensor i)`, `ComplexVector.reducesInvariantsTo_span_contractionTensor`.
-The fourth tensor is a pseudoscalar, so it would drop out if reflections were allowed;
-independence is not proved, and for a given `f` the four images may be dependent or zero.
-When `f` is antisymmetric under exchanging its last two slots, two images already span: that
-of `η_{μρ} η_{νσ}` and that of `ε_{μνρσ}` (B.4). When `f` is moreover symmetric under exchanging
-its first two slots, both of those vanish too (B.5).
+The fourth tensor is a pseudoscalar, so it would drop out if reflections were allowed. For a
+given `f` the four images may be dependent or zero. When `f` is antisymmetric under exchanging
+its last two slots, two images already span: that of `η_{μρ} η_{νσ}` and that of `ε_{μνρσ}` (F).
+When `f` is moreover symmetric under exchanging its first two slots, both of those vanish too (G).
 
-The four tensors are invariant, by `Λ η Λᵀ = η` and `det Λ = 1` (D, E). An invariant tensor has
-an invariant coefficient tensor (H). Such a coefficient tensor is a combination of the four,
-which is seen through Weyl spinors (I to K). The Pauli matrices change each four-vector index
-into a bispinor index, a left-handed and a right-handed Weyl index, and carry the Lorentz action
-to the action of `SL(2, ℂ)` on bispinors.
-There the invariants factor into those of the four left-handed and of the four right-handed
-indices, two pairings `ε ε` for each chirality, so four bispinor indices carry exactly four
-invariants (`Lorentz.mem_span_bispinorPairing_iff`). The Pauli change is injective and the four
-tensors are independent, so they span every invariant.
+The four tensors are invariant, by `Λ η Λᵀ = η` and `det Λ = 1` (D, E), and linearly
+independent (H). That they span every invariant is seen through Weyl spinors (I). The Pauli
+matrices change each four-vector index into a bispinor index, a left-handed and a right-handed
+Weyl index, injectively and equivariantly (`complexLorentzTensor.pauliTensorMap`). On the Weyl
+side the invariants are products of those of the four left-handed and of the four right-handed
+indices, two pairings `ε ε` for each chirality, so they span a space of dimension at most four
+(`complexLorentzTensor.invariants_upL_pow_four_upR_pow_four_eq_span_range_bispinorPairing`).
+The four tensors are independent, so they span every invariant.
 
 ## ii. Key results
 
 - `Lorentz.RankFour.contractionTensor` : the four invariant tensors.
-- `Lorentz.RankFour.exists_eq_sum` : an invariant coefficient tensor is a combination of them.
-- `Lorentz.ComplexVector.invariants_tensorPower_four_eq_span` : the invariant tensors are
-  their span.
+- `Lorentz.RankFour.linearIndependent_contractionTensor` : they are linearly independent.
+- `complexLorentzTensor.invariants_up_pow_four_eq_span_range_contractionTensor` : the invariant
+  tensors are their span.
 - `Lorentz.ComplexVector.reducesInvariantsTo_span_contractionTensor` : the invariants of the
   range of `f` reduce to the span of their images.
 - `Lorentz.RankFour.span_range_contractionTensor_of_antisymm` : for a map antisymmetric in its
@@ -66,11 +65,8 @@ tensors are independent, so they span every invariant.
 - E. The four tensors are Lorentz invariant
 - F. Exchanging the last two slots
 - G. Exchanging the first two slots
-- H. Invariant tensors come from invariant coefficient tensors
-- I. The Pauli change of indices
-- J. The four coefficient tensors are independent
-- K. The classification of the invariant coefficient tensors
-- L. The classification of the invariants
+- H. The four tensors are independent
+- I. The classification of the invariants
 
 ## iv. References
 
@@ -97,8 +93,7 @@ number to each. The components of a tensor, relabelled this way, are its coeffic
 with `a` free and `d` summed (`coeffEquiv_smul`), and a tensor is invariant exactly when its
 coefficient tensor is `IsInvariantCoeff` (`invariant_iff_isInvariantCoeff`). Everything in this
 paragraph is stated for any number of slots in
-`PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic` and
-`PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic`, and used here at four.
+`PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.InvariantCoeff`, and used here at four.
 -/
 
 namespace RankFour
@@ -131,12 +126,12 @@ def contractionCoeff : Fin 4 → (Fin 4 → Fin 1 ⊕ Fin 3) → ℤ :=
 noncomputable def contractionTensor (i : Fin 4) : ℂT(fun _ : Fin 4 => Color.up) :=
   (coeffEquiv 4).symm fun d => ((contractionCoeff i d : ℤ) : ℂ)
 
-/-- `ofComponents T` sends each invariant tensor to the contraction of `T` with its
+/-- `liftComponents T` sends each invariant tensor to the contraction of `T` with its
   coefficients. -/
-lemma ofComponents_contractionTensor (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) (i : Fin 4) :
-    ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 4 => .up) T (contractionTensor i)
+lemma liftComponents_contractionTensor (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) (i : Fin 4) :
+    liftComponents T (contractionTensor i)
       = ∑ d, ((contractionCoeff i d : ℤ) : ℂ) • T d :=
-  ofComponents_coeffEquiv_symm T _
+  liftComponents_coeffEquiv_symm T _
 
 /-!
 
@@ -336,7 +331,7 @@ Exchanging the slots `0` and `1`, `permT (Equiv.swap 0 1)`, exchanges `η_{μρ}
 `η_{μσ} η_{νρ}` and negates `ε_{μνρσ}`. So a linear map `f` out of the tensors with
 `f ∘ₗ permT (Equiv.swap 0 1) = f` sends `ε_{μνρσ}` to zero, and if `f` is also antisymmetric in
 its last two slots it sends `η_{μρ} η_{νσ}` to zero as well: in both a symmetric pair of slots
-is contracted against an antisymmetric one. As in B.4 nothing beyond a complex module is used.
+is contracted against an antisymmetric one. As in F nothing beyond a complex module is used.
 -/
 
 section SwapZeroOne
@@ -399,38 +394,11 @@ end SwapZeroOne
 
 /-!
 
-## H. Invariant tensors come from invariant coefficient tensors
-
-The coefficient tensor of an invariant tensor is invariant (`invariants_tensorRep_le_map`), so
-what remains is to classify the invariant coefficient tensors.
--/
-
-/-!
-
-## I. The Pauli change of indices
-
-The covariant Pauli matrices change each four-vector index into a bispinor index, a left-handed
-and a right-handed Weyl index (`Lorentz.pauliTransform`). This carries the action of the Lorentz
-matrix of `g` to the action of `g` on bispinor indices
-(`Lorentz.act_bispinorMatrix_pauliTransform`), so it carries an invariant coefficient tensor to
-an invariant of four bispinor indices. Those are the span of the four products of pairings
-`ε ε ⊗ ε̄ ε̄` (`Lorentz.mem_span_bispinorPairing_iff`).
--/
-
-/-- The Pauli change of indices of an invariant coefficient tensor is a combination of the four
-  products of pairings. -/
-lemma pauliTransform_mem_span {c : (Fin 4 → Fin 1 ⊕ Fin 3) → ℂ} (hc : IsInvariantCoeff c) :
-    pauliTransform c ∈ Submodule.span ℂ (Set.range bispinorPairing) :=
-  mem_span_bispinorPairing_of_invariant fun M => by
-    rw [act_bispinorMatrix_pauliTransform]
-    exact congrArg pauliTransform (hc M)
-
-/-!
-
-## J. The four coefficient tensors are independent
+## H. The four tensors are independent
 
 At `t t x x`, `t x t x`, `t x x t` and `t x y z` exactly one of the four coefficient tensors is
-nonzero.
+nonzero, so the four coefficient tensors, and with them the four tensors, are linearly
+independent.
 -/
 
 /-- The four coefficient tensors are linearly independent. -/
@@ -459,60 +427,48 @@ lemma linearIndependent_contractionCoeff :
   · simpa [minkowskiMatrixZ] using hk 2 ![Sum.inl 0, Sum.inr 0, Sum.inr 0, Sum.inl 0] rfl
   · simpa [minkowskiMatrixZ, hid] using h ![Sum.inl 0, Sum.inr 0, Sum.inr 1, Sum.inr 2]
 
-/-!
-
-## K. The classification of the invariant coefficient tensors
-
-The Pauli change of indices is injective (`Lorentz.pauliTransform_injective`), so it carries the
-four coefficient tensors to four linearly independent invariants of four bispinor indices. These
-lie in the span of the four products of pairings, of dimension at most four, so they span it. The
-change of an invariant coefficient tensor lies in that span, so it is the change of a combination
-of the four, and by injectivity the tensor is that combination.
--/
-
-/-- An invariant coefficient tensor is a combination of the four. -/
-lemma exists_eq_sum {c : (Fin 4 → Fin 1 ⊕ Fin 3) → ℂ} (hc : IsInvariantCoeff c) :
-    ∃ a : Fin 4 → ℂ, c = fun d => ∑ i, a i * ((contractionCoeff i d : ℤ) : ℂ) := by
-  have hind := linearIndependent_contractionCoeff.map' pauliTransform
-    (LinearMap.ker_eq_bot.2 pauliTransform_injective)
-  have hle : Submodule.span ℂ (Set.range (pauliTransform ∘ fun i d =>
-      ((contractionCoeff i d : ℤ) : ℂ))) ≤ Submodule.span ℂ (Set.range bispinorPairing) :=
-    Submodule.span_le.2 <| Set.range_subset_iff.2 fun i =>
-      pauliTransform_mem_span (isInvariantCoeff_contractionCoeff i)
-  have heq := Submodule.eq_of_le_of_finrank_le hle (by
-    rw [finrank_span_eq_card hind]
-    exact (finrank_range_le_card _).trans (by simp))
-  have hm := pauliTransform_mem_span hc
-  rw [← heq] at hm
-  obtain ⟨a, ha⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).1 hm
-  refine ⟨a, pauliTransform_injective ?_⟩
-  rw [← ha]
-  simp only [Function.comp_apply, ← map_smul, ← map_sum]
-  congr 1
+/-- The four tensors are linearly independent. -/
+lemma linearIndependent_contractionTensor : LinearIndependent ℂ contractionTensor :=
+  linearIndependent_contractionCoeff.map' (coeffEquiv 4).symm.toLinearMap
+    (LinearEquiv.ker _)
 
 /-!
 
-## L. The classification of the invariants
+## I. The classification of the invariants
 
-K gives the invariant tensors, the span of the four `contractionTensor i`, and with it the
-reduction of the invariants of `LinearMap.range f ⊔ S` to the span of the four images
-`f (contractionTensor i)`.
+The Pauli matrices change each four-vector index into a bispinor index, a left-handed and a
+right-handed Weyl index, which is an injective equivariant map
+`complexLorentzTensor.pauliTensorMap 4` into the tensors with four left-handed and then four
+right-handed Weyl indices. Its image of the invariant tensors lies in their invariants, the span of
+the four products of pairings `ε ε ⊗ ε̄ ε̄`
+(`complexLorentzTensor.invariants_upL_pow_four_upR_pow_four_eq_span_range_bispinorPairing`). So
+the invariant tensors have dimension at most four, and the four linearly independent invariant
+tensors `contractionTensor i` span them. With them comes the reduction of the invariants of
+`LinearMap.range f ⊔ S` to the span of the four images `f (contractionTensor i)`.
 -/
 
 /-- The invariant tensors with four four-vector indices are the span of the four
   `contractionTensor i`. -/
-lemma _root_.Lorentz.ComplexVector.invariants_tensorPower_four_eq_span :
+lemma _root_.complexLorentzTensor.invariants_up_pow_four_eq_span_range_contractionTensor :
     (complexLorentzTensor.tensorRep (fun _ : Fin 4 => Color.up)).invariants =
       Submodule.span ℂ (Set.range contractionTensor) := by
-  refine le_antisymm ?_ (Submodule.span_le.2 (Set.range_subset_iff.2 fun i g =>
-    contractionTensor_invariant i g))
-  refine (invariants_tensorRep_le_map (K := Submodule.span ℂ
-    (Set.range fun i d => ((contractionCoeff i d : ℤ) : ℂ))) fun c hc => ?_).trans ?_
-  · obtain ⟨a, rfl⟩ := exists_eq_sum hc
-    refine (Submodule.mem_span_range_iff_exists_fun ℂ).2 ⟨a, funext fun d => ?_⟩
-    simp [Finset.sum_apply]
-  · rw [Submodule.map_span, ← Set.range_comp]
-    rfl
+  have hle : Submodule.span ℂ (Set.range contractionTensor) ≤
+      (complexLorentzTensor.tensorRep (fun _ : Fin 4 => Color.up)).invariants :=
+    Submodule.span_le.2 (Set.range_subset_iff.2 fun i g => contractionTensor_invariant i g)
+  refine (Submodule.eq_of_le_of_finrank_le hle ?_).symm
+  rw [finrank_span_eq_card linearIndependent_contractionTensor]
+  have hmap : (complexLorentzTensor.tensorRep (fun _ : Fin 4 => Color.up)).invariants.map
+      (pauliTensorMap 4) ≤ Submodule.span ℂ (Set.range bispinorPairingTensor) := by
+    rw [← invariants_upL_pow_four_upR_pow_four_eq_span_range_bispinorPairing,
+      Submodule.map_le_iff_le_comap]
+    exact fun t ht => pauliTensorMap_mem_invariants ht
+  calc _ = Module.finrank ℂ ((complexLorentzTensor.tensorRep
+        (fun _ : Fin 4 => Color.up)).invariants.map (pauliTensorMap 4)) :=
+        (LinearEquiv.finrank_eq (Submodule.equivMapOfInjective _ (pauliTensorMap_injective 4) _))
+    _ ≤ Module.finrank ℂ (Submodule.span ℂ (Set.range bispinorPairingTensor)) :=
+        Submodule.finrank_mono hmap
+    _ ≤ Fintype.card (Fin 2 × Fin 2) := finrank_range_le_card _
+    _ = Fintype.card (Fin 4) := by simp
 
 variable {f : ℂT(fun _ : Fin 4 => Color.up) →ₗ[ℂ] B}
 
@@ -523,7 +479,7 @@ lemma _root_.Lorentz.ComplexVector.reducesInvariantsTo_span_contractionTensor
     ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentz g) (LinearMap.range f)
       (Submodule.span ℂ (Set.range fun i => f (contractionTensor i))) := by
   have h := TensorSpecies.IsEquivariant.reducesInvariantsTo_span hf
-    (complexLorentzTensor.hasReynolds _) ComplexVector.invariants_tensorPower_four_eq_span
+    (complexLorentzTensor.hasReynolds _) invariants_up_pow_four_eq_span_range_contractionTensor
   rwa [← Set.range_comp] at h
 
 end RankFour

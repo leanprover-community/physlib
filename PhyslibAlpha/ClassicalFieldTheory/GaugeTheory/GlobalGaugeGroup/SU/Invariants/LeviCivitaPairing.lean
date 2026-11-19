@@ -5,9 +5,9 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.BiFund
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.LeviCivita
 /-!
-# Invariants of four fundamental indices of `SU(2)`
+# The pairings of four fundamental indices of `SU(2)` by the Levi-Civita symbol
 
 The invariant tensors with four fundamental indices of `SU(2)` are spanned by two pairings of
 antisymmetric symbols.
@@ -27,14 +27,14 @@ complement, leaving three unknowns. The eighth turn carries `c ![0, 0, 0, 0]` to
 sum of the balanced components, which therefore vanishes. Two unknowns remain, and they are the
 coefficients of the two pairings.
 
-For an equivariant map out of these tensors, and for the map `ofComponents T` of a family, the
+For an equivariant map out of these tensors, and for the map `liftComponents T` of a family, the
 invariants reduce to the span of the images of the two pairings (C).
 
 ## ii. Key results
 
 - `suTensor.epsilonPair₁₂`, `suTensor.epsilonPair₁₃` : the two pairings.
-- `suTensor.invariants_tensorRep_eq_span_epsilonPairs` : the invariant tensors are the span of the
-  two pairings.
+- `suTensor.invariants_fund_pow_four_eq_span_epsilonPairs` : the invariant tensors are the span
+  of the two pairings.
 - `suTensor.reducesInvariantsTo_span_epsilonContractions` : the reduction of the invariants of
   the span of a family.
 
@@ -55,7 +55,7 @@ invariants reduce to the span of the images of the two pairings (C).
 namespace suTensor
 
 open Matrix MatrixGroups TensorSpecies SU
-open TensorSpecies.Tensor hiding ofComponents
+open TensorSpecies.Tensor
 open GlobalGaugeGroup (rootOfUnity rootOfUnity_isPrimitiveRoot rootOfUnity_mul_star)
 
 /-!
@@ -248,7 +248,7 @@ end Components
 
 /-- The invariant tensors with four fundamental indices of `SU(2)` are the span of the two
   pairings of their indices by the antisymmetric symbol. -/
-lemma invariants_tensorRep_eq_span_epsilonPairs :
+lemma invariants_fund_pow_four_eq_span_epsilonPairs :
     ((suTensor 2).tensorRep fun _ : Fin 4 => .fund).invariants
       = Submodule.span ℂ {epsilonPair₁₂, epsilonPair₁₃} := by
   refine le_antisymm (fun t ht => ?_) ?_
@@ -280,45 +280,45 @@ lemma reducesInvariantsTo_span_map_epsilonPairs
     ReducesInvariantsTo (fun g : SU 2 => ρ g) (LinearMap.range f)
       (Submodule.span ℂ {f epsilonPair₁₂, f epsilonPair₁₃}) := by
   have h := hf.reducesInvariantsTo_span (hasReynolds 2 _)
-    invariants_tensorRep_eq_span_epsilonPairs
+    invariants_fund_pow_four_eq_span_epsilonPairs
   rwa [Set.image_pair] at h
 
 /-- The map of a family sends the first pairing to the contraction pairing the first label with
   the second and the third with the fourth. -/
-lemma ofComponents_epsilonPair₁₂ (T : (Fin 4 → Fin 2) → B) :
-    ofComponents (S := suTensor 2) (c := fun _ : Fin 4 => .fund) T epsilonPair₁₂
+lemma liftComponents_epsilonPair₁₂ (T : (Fin 4 → Fin 2) → B) :
+    liftComponents (S := suTensor 2) (c := fun _ : Fin 4 => .fund) T epsilonPair₁₂
       = T ![0, 1, 0, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 0, 1, 0] := by
   simp only [epsilonPair₁₂, sum_fin_four_arrow,
     Fin.sum_univ_two, epsilon]
   simp only [Fin.isValue, cons_val_zero, cons_val_one, zero_ne_one, and_false, ↓reduceIte, and_true,
     sub_self, cons_val, mul_zero, zero_smul, and_self, one_ne_zero, sub_zero, mul_one, add_zero,
-    zero_sub, mul_neg, neg_zero, one_smul, zero_add, neg_smul, neg_neg, map_add, ofComponents_basis,
-    map_neg]
+    zero_sub, mul_neg, neg_zero, one_smul, zero_add, neg_smul, neg_neg, map_add,
+    liftComponents_basis, map_neg]
   abel
 
 /-- The map of a family sends the second pairing to the contraction pairing the first label with
   the third and the second with the fourth. -/
-lemma ofComponents_epsilonPair₁₃ (T : (Fin 4 → Fin 2) → B) :
-    ofComponents (S := suTensor 2) (c := fun _ : Fin 4 => .fund) T epsilonPair₁₃
+lemma liftComponents_epsilonPair₁₃ (T : (Fin 4 → Fin 2) → B) :
+    liftComponents (S := suTensor 2) (c := fun _ : Fin 4 => .fund) T epsilonPair₁₃
       = T ![0, 0, 1, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 1, 0, 0] := by
   simp only [epsilonPair₁₃, sum_fin_four_arrow,
     Fin.sum_univ_two, epsilon]
   simp only [Fin.isValue, cons_val_zero, cons_val, zero_ne_one, and_false, ↓reduceIte, and_true,
     sub_self, cons_val_one, mul_zero, zero_smul, and_self, one_ne_zero, sub_zero, mul_one, add_zero,
-    one_smul, zero_add, zero_sub, mul_neg, neg_zero, neg_smul, neg_neg, map_add, ofComponents_basis,
-    map_neg]
+    one_smul, zero_add, zero_sub, mul_neg, neg_zero, neg_smul, neg_neg, map_add,
+    liftComponents_basis, map_neg]
   abel
 
 /-- For a family with four fundamental labels of `SU(2)` whose map is equivariant, the invariants
   of the span of the family reduce to the span of its two epsilon contractions. -/
 lemma reducesInvariantsTo_span_epsilonContractions {T : (Fin 4 → Fin 2) → B}
-    (hT : (suTensor 2).IsEquivariant (fun _ => .fund) ρ (ofComponents T)) :
+    (hT : (suTensor 2).IsEquivariant (fun _ => .fund) ρ (liftComponents T)) :
     ReducesInvariantsTo (fun g : SU 2 => ρ g) (Submodule.span ℂ (Set.range T))
       (Submodule.span ℂ
         {T ![0, 1, 0, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 0, 1, 0],
           T ![0, 0, 1, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 1, 0, 0]}) := by
-  rw [← ofComponents_epsilonPair₁₂, ← ofComponents_epsilonPair₁₃,
-    ← range_ofComponents (S := suTensor 2) (c := fun _ : Fin 4 => Color.fund) T]
+  rw [← liftComponents_epsilonPair₁₂, ← liftComponents_epsilonPair₁₃,
+    ← range_liftComponents (S := suTensor 2) (c := fun _ : Fin 4 => Color.fund) T]
   exact reducesInvariantsTo_span_map_epsilonPairs hT
 
 end suTensor

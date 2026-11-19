@@ -7,6 +7,7 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.YukawaSector.Families.BarHiggs
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.YukawaSector.GaugeWeight
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Metrics.Basic
 /-!
 # The Yukawa sector at mass weight eight
 
@@ -544,10 +545,10 @@ lemma reducesInvariantsTo_downYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((invariantReductionToMetricTensor (Or.inr (Or.inr (Or.inr rfl)))
+    ((invariantReductionToMetricTensor
       (LocalCovFieldAlgebra.isEquivariant_downRDownR_downBlockIsospin f
           f')).reducesInvariantsTo.mono_left
-        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+        (range_liftComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
             (LocalCovFieldAlgebra.downBlockIsospin
           f f')).ge))
 
@@ -597,10 +598,10 @@ lemma reducesInvariantsTo_upYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((invariantReductionToMetricTensor (Or.inr (Or.inl rfl))
+    ((invariantReductionToMetricTensor
       (LocalCovFieldAlgebra.isEquivariant_downLDownL_upBlockIsospin f
           f')).reducesInvariantsTo.mono_left
-        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+        (range_liftComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
             (LocalCovFieldAlgebra.upBlockIsospin f
           f')).ge))
 
@@ -651,10 +652,10 @@ lemma reducesInvariantsTo_leptonYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((invariantReductionToMetricTensor (Or.inr (Or.inr (Or.inr rfl)))
+    ((invariantReductionToMetricTensor
       (LocalCovFieldAlgebra.isEquivariant_downRDownR_leptonBlockIsospin f
         f')).reducesInvariantsTo.mono_left
-        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+        (range_liftComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
           (LocalCovFieldAlgebra.leptonBlockIsospin f f')).ge))
 
 /-- The conjugate down-type block reduces to the conjugate down-type Yukawa term. -/
@@ -702,10 +703,10 @@ lemma reducesInvariantsTo_barDownYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((invariantReductionToMetricTensor (Or.inr (Or.inl rfl))
+    ((invariantReductionToMetricTensor
       (LocalCovFieldAlgebra.isEquivariant_downLDownL_barDownBlockIsospin f
         f')).reducesInvariantsTo.mono_left
-        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+        (range_liftComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
           (LocalCovFieldAlgebra.barDownBlockIsospin f f')).ge))
 
 /-- The conjugate up-type block reduces to the conjugate up-type Yukawa term. -/
@@ -753,10 +754,10 @@ lemma reducesInvariantsTo_barUpYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((invariantReductionToMetricTensor (Or.inr (Or.inr (Or.inr rfl)))
+    ((invariantReductionToMetricTensor
       (LocalCovFieldAlgebra.isEquivariant_downRDownR_barUpBlockIsospin f
           f')).reducesInvariantsTo.mono_left
-        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+        (range_liftComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
             (LocalCovFieldAlgebra.barUpBlockIsospin
           f f')).ge))
 
@@ -806,10 +807,10 @@ lemma reducesInvariantsTo_barLeptonYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((invariantReductionToMetricTensor (Or.inr (Or.inl rfl))
+    ((invariantReductionToMetricTensor
       (LocalCovFieldAlgebra.isEquivariant_downLDownL_barLeptonBlockIsospin f
         f')).reducesInvariantsTo.mono_left
-        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+        (range_liftComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
           (LocalCovFieldAlgebra.barLeptonBlockIsospin f f')).ge))
 
 /-!

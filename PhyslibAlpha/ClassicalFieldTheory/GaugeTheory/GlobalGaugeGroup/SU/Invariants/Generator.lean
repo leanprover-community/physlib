@@ -5,7 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.Adjoint
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.AdjUnit
 /-!
 # The generator tensor of `SU(N)`
 
@@ -46,8 +46,8 @@ anti-fundamental index, has the components `(λ_a)_{ij} / 2` (F).
   `adj ⊗ (ℂᴺ ⊗ ℂᴺ)` are the line through the generator tensor.
 - `suTensor.generator` : the generator tensor with an adjoint, a fundamental and an
   anti-fundamental index.
-- `suTensor.invariants_tensorRep_eq_span_generator` : the invariant tensors with these indices
-  are the line through it.
+- `suTensor.invariants_adj_fund_antiFund_eq_span_generator` : the invariant tensors with these
+  indices are the line through it.
 - `suTensor.basis_repr_generator` : its components are the entries of `λ_a / 2`.
 
 ## iii. Table of contents
@@ -309,7 +309,7 @@ lemma generator_invariant (g : SU N) : g • generator N = generator N := by
 
 /-- The invariant tensors with an adjoint, a fundamental and an anti-fundamental index are the
   line through the generator tensor. -/
-lemma invariants_tensorRep_eq_span_generator :
+lemma invariants_adj_fund_antiFund_eq_span_generator :
     ((suTensor N).tensorRep ![.adj, .fund, .antiFund]).invariants = ℂ ∙ generator N :=
   invariants_tensorRep_triple_eq_span invariants_tprod_eq_span_generatorVal
 

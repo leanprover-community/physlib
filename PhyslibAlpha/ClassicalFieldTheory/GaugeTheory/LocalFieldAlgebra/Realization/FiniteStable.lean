@@ -469,8 +469,8 @@ lemma exists_subrepresentation (hL : T.LorentzContinuous) (hC : T.GaugeLorentzCo
       Representation.ContinuousMatrixCoeff (W.comp (MonoidHom.inr G.group SL(2,ℂ))) := by
   have h := hasContinuousSpan hC.gaugeLorentzCompatible hL a
   unfold Representation.HasContinuousSpan at h
-  obtain ⟨ι, _, v, hav, h₁, h₂⟩ := h
-  exact Representation.exists_subrepresentation_of_isContinuousFamily _ h₁ h₂ hav
+  obtain ⟨ι, _, v, ha_v, h₁, h₂⟩ := h
+  exact Representation.exists_subrepresentation_of_isContinuousFamily _ h₁ h₂ ha_v
 
 /-- A chosen finite-dimensional subrepresentation for the joint action of the gauge and Lorentz
 groups containing `a`, on which both groups act with continuous matrix coefficients. -/

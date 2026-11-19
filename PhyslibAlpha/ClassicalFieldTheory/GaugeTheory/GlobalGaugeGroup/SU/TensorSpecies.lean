@@ -33,7 +33,9 @@ form `tr (A B)` (`adjContr`), with unit `∑ λ_a ⊗ λᵃ` for the Gell-Mann m
 trace-dual basis `λᵃ = λ_a / 2`. In the standard basis the matrix of `g` is `g` on the
 fundamental color and `(g⁻¹)ᵀ` on the anti-fundamental color (F). The species has no metric
 (`TensorSpecies.WithMetric`). For `N ≥ 3` the fundamental of `SU(N)` is not self-dual, so there is
-no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with.
+no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with. A tensor with one adjoint index
+is an element of the adjoint representation, which has no invariants but zero, so neither has the
+tensor (G).
 
 ## ii. Key results
 
@@ -43,6 +45,8 @@ no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with.
 - `suTensor` : the complex tensor species of `SU(N)`, with the notation `SuT[N, c₁, …, cₙ]`.
 - `suTensor.toMatrix_fundRep`, `suTensor.toMatrix_antiFundRep` : the matrices of the fundamental
   and anti-fundamental colors.
+- `suTensor.invariants_adj_eq_bot` : there are no invariant tensors with one adjoint index but
+  zero.
 
 ## iii. Table of contents
 
@@ -52,6 +56,7 @@ no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with.
 - D. The units
 - E. The tensor species
 - F. The matrices of the fundamental and anti-fundamental colors
+- G. One adjoint index
 
 ## iv. References
 
@@ -427,5 +432,19 @@ lemma toMatrix_antiFundRep (g : SU N) :
   rw [LinearMap.toMatrix_eq_toMatrix', ← LinearMap.toMatrix'_toLin' (g⁻¹).1ᵀ,
     Matrix.toLin'_apply']
   rfl
+
+/-!
+
+## G. One adjoint index
+
+-/
+
+open TensorSpecies TensorSpecies.Tensor in
+/-- There are no invariant tensors with one adjoint index but zero. A tensor with one adjoint
+  index is `fromSingleT` of an element of the adjoint representation, which has none. -/
+lemma invariants_adj_eq_bot : ((suTensor N).tensorRep ![.adj]).invariants = ⊥ := by
+  rw [invariants_tensorRep_eq_map_of_equiv fromSingleT
+    (fun g A => (actionT_fromSingleT (S := suTensor N) A g).symm), invariants_adjRep_eq_bot,
+    Submodule.map_bot]
 
 end suTensor

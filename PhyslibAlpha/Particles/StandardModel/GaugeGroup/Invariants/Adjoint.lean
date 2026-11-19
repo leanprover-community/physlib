@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Basic
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.AdjointMatrix
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.Adjoint
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.AdjUnit
 /-!
 # Families of adjoint components and their invariants
 
@@ -28,7 +28,7 @@ A family with one adjoint index has no invariant in its span, and a family with 
 indices of the same factor has its invariants reduced to the trace contraction `∑ a, T ![a, a]`
 (C for colour, D for isospin). These are the invariant tensors of `SuT[N, .adj]` and
 `SuT[N, .adj, .adj]` of
-`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.Adjoint`, read on
+`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.AdjUnit`, read on
 the components through the relabellings `relabelAdjIdx` and `relabelAdjPairIdx` of B. The lemmas
 of each family live in a namespace named after its representation, `ColourAdj`, `ColourAdjAdj`,
 `IsospinAdj` and `IsospinAdjAdj`.
@@ -185,32 +185,32 @@ variable {M : SU N → Matrix ι ι ℝ} (hM : ∀ U a b, ((M U a b : ℝ) : ℂ
 include hM in
 /-- A linear map moving a family with one adjoint label by the Standard Model adjoint matrix of
   `U` intertwines the map of the relabelled family with the action of `U`. -/
-lemma ofComponents_relabelAdj_smul_of_law (T : ι → B) {f : B →ₗ[ℂ] B} {U : SU N}
+lemma liftComponents_relabelAdj_smul_of_law (T : ι → B) {f : B →ₗ[ℂ] B} {U : SU N}
     (hf : ∀ l, f (T l) = ∑ a, ((M U a l : ℝ) : ℂ) • T a) (t : SuT[N, .adj]) :
-    f (ofComponents (T ∘ relabelAdjIdx e) t) = ofComponents (T ∘ relabelAdjIdx e) (U • t) := by
-  refine ofComponents_adj_smul_of_law (T ∘ e.symm) U (fun a => ?_) t
+    f (liftComponents (T ∘ relabelAdjIdx e) t) = liftComponents (T ∘ relabelAdjIdx e) (U • t) := by
+  refine liftComponents_adj_smul_of_law (T ∘ e.symm) U (fun a => ?_) t
   obtain ⟨l, rfl⟩ := e.surjective a
   simp only [Function.comp_apply, Equiv.symm_apply_apply, hf l, ← e.sum_comp, hM]
 
 include hM in
 /-- A linear map moving a family with two adjoint labels by the Standard Model adjoint matrix of
   `U` on each label intertwines the map of the relabelled family with the action of `U`. -/
-lemma ofComponents_relabelAdjPair_smul_of_law (T : (Fin 2 → ι) → B) {f : B →ₗ[ℂ] B} {U : SU N}
+lemma liftComponents_relabelAdjPair_smul_of_law (T : (Fin 2 → ι) → B) {f : B →ₗ[ℂ] B} {U : SU N}
     (hf : ∀ l, f (T l) = ∑ a : Fin 2 → ι, (∏ i : Fin 2, ((M U (a i) (l i) : ℝ) : ℂ)) • T a)
     (t : SuT[N, .adj, .adj]) :
-    f (ofComponents (T ∘ relabelAdjPairIdx e) t)
-      = ofComponents (T ∘ relabelAdjPairIdx e) (U • t) := by
-  refine ofComponents_adjPair_smul_of_law (fun n => T (e.symm ∘ n)) U (fun l => ?_) t
+    f (liftComponents (T ∘ relabelAdjPairIdx e) t)
+      = liftComponents (T ∘ relabelAdjPairIdx e) (U • t) := by
+  refine liftComponents_adjPair_smul_of_law (fun n => T (e.symm ∘ n)) U (fun l => ?_) t
   rw [hf, ← (Equiv.piCongrRight fun _ : Fin 2 => e).sum_comp]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [Fin.prod_univ_two, hM, hM]
   simp [Function.comp_def, Pi.map]
 
 /-- The map of the relabelled family sends twice the unit tensor to the trace contraction. -/
-lemma ofComponents_relabelAdjPair_two_smul_adjUnitTensor (T : (Fin 2 → ι) → B) :
-    ofComponents (T ∘ relabelAdjPairIdx e) ((2 : ℂ) • adjUnitTensor N) = ∑ a : ι, T ![a, a] := by
+lemma liftComponents_relabelAdjPair_two_smul_adjUnitTensor (T : (Fin 2 → ι) → B) :
+    liftComponents (T ∘ relabelAdjPairIdx e) ((2 : ℂ) • adjUnitTensor N) = ∑ a : ι, T ![a, a] := by
   rw [show T ∘ relabelAdjPairIdx e = (fun n => T (e.symm ∘ n)) ∘ adjPairIdx from rfl,
-    ofComponents_two_smul_adjUnitTensor, ← e.sum_comp]
+    liftComponents_two_smul_adjUnitTensor, ← e.sum_comp]
   refine Finset.sum_congr rfl fun a _ => congrArg T ?_
   funext i
   fin_cases i <;> simp
@@ -238,24 +238,24 @@ variable {T : Fin 8 → B}
 lemma of_law (hT : ∀ (U : SU 3) (l : Fin 8),
     repGauge (U, 1, 1) (T l) = ∑ a : Fin 8, ((su3AdjointMatrix U a l : ℝ) : ℂ) • T a) :
     (suTensor 3).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ relabelAdjIdx su3Label)) :=
+      (liftComponents (T ∘ relabelAdjIdx su3Label)) :=
   ⟨fun U t =>
-    (ofComponents_relabelAdj_smul_of_law su3Label su3AdjointMatrix_eq_adjMatrix T (hT U) t).symm⟩
+    (liftComponents_relabelAdj_smul_of_law su3Label su3AdjointMatrix_eq_adjMatrix T (hT U) t).symm⟩
 
 /-- The span of the components is stable under the colour factor. -/
 lemma isStableUnder_span
     (hT : (suTensor 3).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ relabelAdjIdx su3Label))) :
+      (liftComponents (T ∘ relabelAdjIdx su3Label))) :
     IsStableUnder (fun U : SU 3 => repGauge ((U, 1, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) := by
   have h := hT.isStableUnder_range
-  rwa [range_ofComponents_comp] at h
+  rwa [range_liftComponents_comp] at h
 
 /-- A colour invariant of the span of the components joined with a stable submodule lies in
   that submodule. An adjoint index contributes nothing to the invariants. -/
 lemma reducesInvariantsTo_bot
     (hT : (suTensor 3).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ relabelAdjIdx su3Label))) :
+      (liftComponents (T ∘ relabelAdjIdx su3Label))) :
     ReducesInvariantsTo (fun U : SU 3 => repGauge ((U, 1, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) ⊥ := by
   have h := reducesInvariantsTo_bot_span_adj (T := T ∘ su3Label.symm) hT
@@ -274,8 +274,8 @@ variable {T : (Fin 2 → Fin 8) → B}
 lemma of_law (hT : ∀ (U : SU 3) (l : Fin 2 → Fin 8), repGauge (U, 1, 1) (T l)
     = ∑ a : Fin 2 → Fin 8, (∏ i : Fin 2, ((su3AdjointMatrix U (a i) (l i) : ℝ) : ℂ)) • T a) :
     (suTensor 3).IsEquivariant ![.adj, .adj] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ relabelAdjPairIdx su3Label)) :=
-  ⟨fun U t => (ofComponents_relabelAdjPair_smul_of_law su3Label su3AdjointMatrix_eq_adjMatrix T
+      (liftComponents (T ∘ relabelAdjPairIdx su3Label)) :=
+  ⟨fun U t => (liftComponents_relabelAdjPair_smul_of_law su3Label su3AdjointMatrix_eq_adjMatrix T
     (hT U) t).symm⟩
 
 /-- The trace contraction `∑ a, T ![a, a]` of the two adjoint indices. -/
@@ -286,30 +286,30 @@ def traceContraction (T : (Fin 2 → Fin 8) → B) : B := ∑ a : Fin 8, T ![a, 
 lemma map_traceContraction {U : SU 3} {f : B →ₗ[ℂ] B} (hf : ∀ l : Fin 2 → Fin 8, f (T l)
     = ∑ a : Fin 2 → Fin 8, (∏ i : Fin 2, ((su3AdjointMatrix U (a i) (l i) : ℝ) : ℂ)) • T a) :
     f (traceContraction T) = traceContraction T := by
-  rw [traceContraction, ← ofComponents_relabelAdjPair_two_smul_adjUnitTensor su3Label,
-    ofComponents_relabelAdjPair_smul_of_law su3Label su3AdjointMatrix_eq_adjMatrix T hf,
+  rw [traceContraction, ← liftComponents_relabelAdjPair_two_smul_adjUnitTensor su3Label,
+    liftComponents_relabelAdjPair_smul_of_law su3Label su3AdjointMatrix_eq_adjMatrix T hf,
     smul_comm, adjUnitTensor_invariant]
 
 /-- The span of the components is stable under the colour factor. -/
 lemma isStableUnder_span
     (hT : (suTensor 3).IsEquivariant ![.adj, .adj] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ relabelAdjPairIdx su3Label))) :
+      (liftComponents (T ∘ relabelAdjPairIdx su3Label))) :
     IsStableUnder (fun U : SU 3 => repGauge ((U, 1, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) := by
   have h := hT.isStableUnder_range
-  rwa [range_ofComponents_comp] at h
+  rwa [range_liftComponents_comp] at h
 
 /-- The colour invariants of the span of the components reduce to the line through the trace
   contraction. -/
 lemma reducesInvariantsTo_span_traceContraction
     (hT : (suTensor 3).IsEquivariant ![.adj, .adj] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ relabelAdjPairIdx su3Label))) :
+      (liftComponents (T ∘ relabelAdjPairIdx su3Label))) :
     ReducesInvariantsTo (fun U : SU 3 => repGauge ((U, 1, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) (ℂ ∙ traceContraction T) :=
   (hT.invariantReductionToSpanOfEq (hasReynolds 3 _)
-    invariants_tensorRep_eq_span_two_smul_adjUnitTensor (range_ofComponents_comp _ T)
+    invariants_adj_adj_eq_span_two_smul_adjUnitTensor (range_liftComponents_comp _ T)
     (traceContraction T)
-    (ofComponents_relabelAdjPair_two_smul_adjUnitTensor su3Label T)).reducesInvariantsTo
+    (liftComponents_relabelAdjPair_two_smul_adjUnitTensor su3Label T)).reducesInvariantsTo
 
 end ColourAdjAdj
 
@@ -331,24 +331,24 @@ variable {T : Fin 3 → B}
 lemma of_law (hT : ∀ (U : SU 2) (l : Fin 3),
     repGauge (1, U, 1) (T l) = ∑ a : Fin 3, ((su2AdjointMatrix U a l : ℝ) : ℂ) • T a) :
     (suTensor 2).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ relabelAdjIdx su2Label)) :=
+      (liftComponents (T ∘ relabelAdjIdx su2Label)) :=
   ⟨fun U t =>
-    (ofComponents_relabelAdj_smul_of_law su2Label su2AdjointMatrix_eq_adjMatrix T (hT U) t).symm⟩
+    (liftComponents_relabelAdj_smul_of_law su2Label su2AdjointMatrix_eq_adjMatrix T (hT U) t).symm⟩
 
 /-- The span of the components is stable under the isospin factor. -/
 lemma isStableUnder_span
     (hT : (suTensor 2).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ relabelAdjIdx su2Label))) :
+      (liftComponents (T ∘ relabelAdjIdx su2Label))) :
     IsStableUnder (fun U : SU 2 => repGauge ((1, U, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) := by
   have h := hT.isStableUnder_range
-  rwa [range_ofComponents_comp] at h
+  rwa [range_liftComponents_comp] at h
 
 /-- An isospin invariant of the span of the components joined with a stable submodule lies in
   that submodule. An adjoint index contributes nothing to the invariants. -/
 lemma reducesInvariantsTo_bot
     (hT : (suTensor 2).IsEquivariant ![.adj] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ relabelAdjIdx su2Label))) :
+      (liftComponents (T ∘ relabelAdjIdx su2Label))) :
     ReducesInvariantsTo (fun U : SU 2 => repGauge ((1, U, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) ⊥ := by
   have h := reducesInvariantsTo_bot_span_adj (T := T ∘ su2Label.symm) hT
@@ -367,8 +367,8 @@ variable {T : (Fin 2 → Fin 3) → B}
 lemma of_law (hT : ∀ (U : SU 2) (l : Fin 2 → Fin 3), repGauge (1, U, 1) (T l)
     = ∑ a : Fin 2 → Fin 3, (∏ i : Fin 2, ((su2AdjointMatrix U (a i) (l i) : ℝ) : ℂ)) • T a) :
     (suTensor 2).IsEquivariant ![.adj, .adj] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ relabelAdjPairIdx su2Label)) :=
-  ⟨fun U t => (ofComponents_relabelAdjPair_smul_of_law su2Label su2AdjointMatrix_eq_adjMatrix T
+      (liftComponents (T ∘ relabelAdjPairIdx su2Label)) :=
+  ⟨fun U t => (liftComponents_relabelAdjPair_smul_of_law su2Label su2AdjointMatrix_eq_adjMatrix T
     (hT U) t).symm⟩
 
 /-- The trace contraction `∑ a, T ![a, a]` of the two adjoint indices. -/
@@ -379,30 +379,30 @@ def traceContraction (T : (Fin 2 → Fin 3) → B) : B := ∑ a : Fin 3, T ![a, 
 lemma map_traceContraction {U : SU 2} {f : B →ₗ[ℂ] B} (hf : ∀ l : Fin 2 → Fin 3, f (T l)
     = ∑ a : Fin 2 → Fin 3, (∏ i : Fin 2, ((su2AdjointMatrix U (a i) (l i) : ℝ) : ℂ)) • T a) :
     f (traceContraction T) = traceContraction T := by
-  rw [traceContraction, ← ofComponents_relabelAdjPair_two_smul_adjUnitTensor su2Label,
-    ofComponents_relabelAdjPair_smul_of_law su2Label su2AdjointMatrix_eq_adjMatrix T hf,
+  rw [traceContraction, ← liftComponents_relabelAdjPair_two_smul_adjUnitTensor su2Label,
+    liftComponents_relabelAdjPair_smul_of_law su2Label su2AdjointMatrix_eq_adjMatrix T hf,
     smul_comm, adjUnitTensor_invariant]
 
 /-- The span of the components is stable under the isospin factor. -/
 lemma isStableUnder_span
     (hT : (suTensor 2).IsEquivariant ![.adj, .adj] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ relabelAdjPairIdx su2Label))) :
+      (liftComponents (T ∘ relabelAdjPairIdx su2Label))) :
     IsStableUnder (fun U : SU 2 => repGauge ((1, U, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) := by
   have h := hT.isStableUnder_range
-  rwa [range_ofComponents_comp] at h
+  rwa [range_liftComponents_comp] at h
 
 /-- The isospin invariants of the span of the components reduce to the line through the trace
   contraction. -/
 lemma reducesInvariantsTo_span_traceContraction
     (hT : (suTensor 2).IsEquivariant ![.adj, .adj] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ relabelAdjPairIdx su2Label))) :
+      (liftComponents (T ∘ relabelAdjPairIdx su2Label))) :
     ReducesInvariantsTo (fun U : SU 2 => repGauge ((1, U, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) (ℂ ∙ traceContraction T) :=
   (hT.invariantReductionToSpanOfEq (hasReynolds 2 _)
-    invariants_tensorRep_eq_span_two_smul_adjUnitTensor (range_ofComponents_comp _ T)
+    invariants_adj_adj_eq_span_two_smul_adjUnitTensor (range_liftComponents_comp _ T)
     (traceContraction T)
-    (ofComponents_relabelAdjPair_two_smul_adjUnitTensor su2Label T)).reducesInvariantsTo
+    (liftComponents_relabelAdjPair_two_smul_adjUnitTensor su2Label T)).reducesInvariantsTo
 
 end IsospinAdjAdj
 

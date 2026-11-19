@@ -32,17 +32,17 @@ The argument runs on matrices, for a linear map `F` with `F (M Y Mᵀ) = ρ M (F
 invariant, and shows that `F X` is a multiple of `F ε` (D). Each of the four tensor squares
 reduces to it, with `F` the inverse of the matrix of components (E).
 
-The other twelve tensor products of two Weyl representations go the same way, through a uniform
-matrix of components (F), which `PhyslibAlpha.Relativity.Fermions.Weyl.Unit` also uses. A
-left-handed and a right-handed index, in either order and either dual, have no invariants at all
-(G). The remaining four, `V ⊗ V*`, have the unit `δ` as their only invariant, and are in
-`PhyslibAlpha.Relativity.Fermions.Weyl.Unit`. Section H restates these classifications for the
-complex Lorentz tensors with two Weyl indices, and applies them to equivariant maps out of
-them and to products of one-index Weyl families.
+The other tensor products of two Weyl representations are handled through a uniform matrix of
+components (F). The four `V ⊗ V*` have the unit `δ` as their only invariant, and are in
+`PhyslibAlpha.Relativity.Fermions.Weyl.Unit`. A left-handed and a right-handed index have no
+invariants at all, which is `complexLorentzTensor.invariants_upL_upR_eq_bot` in
+`PhyslibAlpha.Relativity.Bispinors.ComplexifiedAction`. A product of an undotted and a dotted
+one-index Weyl family is an equivariant map out of the tensors with a dual left- and a dual
+right-handed index (G). The tensor-level form of the uniqueness of the metric is with the metric
+tensors, in `PhyslibAlpha.Relativity.Tensors.ComplexTensor.Metrics.Basic`.
 
 The results are named after the statement. On a tensor square `X ⊗ X` it is
-`X.invariants_tprod_eq_span_metricVal`. On a pair `X ⊗ Y` of opposite chirality the second factor
-is named, as in `LeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot`. The other forms of these
+`X.invariants_tprod_eq_span_metricVal`. The other forms of these
 statements, for invariant elements, for the invariants in the range of an intertwining map and for
 intertwining maps out of the trivial representation, follow from them by the lemmas of
 `PhyslibAlpha.Mathematics.RepresentationTheory.Invariants`.
@@ -60,12 +60,6 @@ intertwining maps out of the trivial representation, follow from them by the lem
   invariants of the tensor square are the line through the metric.
 - `Fermion.tensorToMatrix_map` : on the matrix of components of `V ⊗ W` a pair of linear maps acts
   by `X ↦ A X Bᵀ`.
-- `Fermion.LeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot` and its seven siblings : two
-  indices of opposite chirality have no invariants.
-- `Lorentz.invariants_tensorRep_eq_span_metricTensor`,
-  `Lorentz.invariants_tensorRep_leftRight_eq_bot` : the invariant tensors with two Weyl indices.
-- `Lorentz.invariantReductionToMetricTensor`, `Lorentz.reducesInvariantsTo_bot_leftRight` : the
-  invariants of the range of an equivariant map out of them.
 - `Lorentz.isEquivariant_downLDownR_mul` : an undotted family times a dotted one is an
   equivariant map out of `ℂT[.downL, .downR]`.
 
@@ -81,26 +75,16 @@ intertwining maps out of the trivial representation, follow from them by the lem
 - E. The metrics are the unique invariants
 - F. Components of a tensor product of two Weyl representations
   - F.1. The matrix of components
-  - F.2. Four elements of `SL(2, ℂ)`
-- G. Two indices of opposite chirality
-  - G.1. Matrices
-  - G.2. Tensor products
-  - G.3. The eight pairs
-- H. Lorentz tensors with two Weyl indices
-  - H.1. Two indices of the same kind
-  - H.2. The reduction to the metric
-  - H.3. Two indices of opposite chirality
-  - H.4. The reduction to zero
-  - H.5. One-index Weyl families and their products
-  - H.6. Peeling the pair spans off a Lorentz-stable submodule
+  - F.2. Three elements of `SL(2, ℂ)`
+- G. One-index Weyl families and their products
 
 ## iv. References
 
 The Weyl metrics and `Fermion.metricRaw` are in `Physlib.Relativity.Fermions.Weyl.Metric`, and
-sections C to G are written to move there, with `tensorToMatrix` beside the matrix equivalences
+sections C to F are written to move there, with `tensorToMatrix` beside the matrix equivalences
 of `Physlib.Relativity.Fermions.Weyl.Two` and the elements of F.2 in `Physlib.Relativity.SL2C`.
-Section E settles the `TODO` in that file on the uniqueness of the metrics. Section H uses the
-Reynolds element of `PhyslibAlpha.Relativity.LorentzGroup.Invariants.Reynolds` and stays here.
+Section E settles the `TODO` in that file on the uniqueness of the metrics. Section G uses the
+equivariant maps of `PhyslibAlpha.Relativity.Tensors.Equivariant` and stays here.
 Compare `SULieAlgebra.intertwiningMap_eq_smul_adjointℂContr`.
 
 -/
@@ -413,9 +397,9 @@ lemma DualRightHandedWeyl.invariants_tprod_eq_span_metricVal :
 
 The other twelve tensor products of two Weyl representations are handled uniformly through
 their matrix of components, `tensorToMatrix`, on which `SL(2,ℂ)` acts by `X ↦ K₁ X K₂ᵀ` with
-`Kᵢ` the matrices of the two factors (F.1). Every argument below only tests this action against
-four elements of `SL(2,ℂ)`, the boosts `boostTwo` and `boostHalf` along `z`, the half turn `phase`
-about `z`, and `epsilon` (F.2).
+`Kᵢ` the matrices of the two factors (F.1). The arguments of
+`PhyslibAlpha.Relativity.Fermions.Weyl.Unit` only test this action against three elements of
+`SL(2,ℂ)`, the boosts `boostTwo` and `boostHalf` along `z`, and `epsilon` (F.2).
 
 -/
 
@@ -471,7 +455,7 @@ end Components
 
 /-!
 
-### F.2. Four elements of `SL(2, ℂ)`
+### F.2. Three elements of `SL(2, ℂ)`
 
 -/
 
@@ -481,12 +465,8 @@ def _root_.Lorentz.SL2C.boostTwo : SL(2,ℂ) := ⟨!![2, 0; 0, 2⁻¹], by simp 
 /-- The boost along `z` with matrix `diag (2⁻¹, 2)`, the inverse of `boostTwo`. -/
 def _root_.Lorentz.SL2C.boostHalf : SL(2,ℂ) := ⟨!![2⁻¹, 0; 0, 2], by simp [det_fin_two_of]⟩
 
-/-- The rotation by `π` about `z`, with matrix `diag (i, -i)`. -/
-def _root_.Lorentz.SL2C.phase : SL(2,ℂ) :=
-  ⟨!![Complex.I, 0; 0, -Complex.I], by simp [det_fin_two_of]⟩
-
 /-- Computes `K₁ X K₂ᵀ` entrywise, for `Kᵢ` the matrix of a Weyl representation at one of
-  `boostTwo`, `boostHalf`, `phase` or `epsilon`. -/
+  `boostTwo`, `boostHalf` or `epsilon`. -/
 scoped macro "weyl_act" : tactic => `(tactic| (
   intro X
   simp only [LeftHandedWeyl.rep_toMatrix, DualLeftHandedWeyl.rep_toMatrix,
@@ -494,199 +474,9 @@ scoped macro "weyl_act" : tactic => `(tactic| (
     SpecialLinearGroup.coe_inv]
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [adjugate_fin_two, Lorentz.SL2C.boostTwo, Lorentz.SL2C.boostHalf, Lorentz.SL2C.phase,
+    simp [adjugate_fin_two, Lorentz.SL2C.boostTwo, Lorentz.SL2C.boostHalf,
       Lorentz.SL2C.epsilon_coe, Matrix.mul_apply, Fin.sum_univ_two, Matrix.vecMul, dotProduct,
       map_ofNat] <;> (try ring_nf) <;> (try simp) <;> (try ring_nf)))
-
-/-!
-
-## G. Two indices of opposite chirality
-
-A left-handed and a right-handed index carry the vector representation, which has no invariants.
-On components the boosts scale either the diagonal or the off-diagonal entries, depending on
-whether exactly one of the two factors is dual, and the half turn `phase` negates the other half.
-The boosts kill the scaled half and the half turn shows that the rest is its own negative, so
-every invariant vanishes.
-
--/
-
-/-!
-
-### G.1. Matrices
-
--/
-
-section OppositeChirality
-
-variable {B : Type*} [AddCommGroup B] [Module ℂ B]
-
-/-- A linear map on matrices unchanged at `X` by the boosts scaling the diagonal entries of `X`
-  by `4` and `4⁻¹`, and by negating the off-diagonal entries of `X`, vanishes at `X`. -/
-lemma map_eq_zero_of_diagonal_scale (F : Matrix (Fin 2) (Fin 2) ℂ →ₗ[ℂ] B)
-    {X : Matrix (Fin 2) (Fin 2) ℂ} (h1 : F !![4 * X 0 0, X 0 1; X 1 0, X 1 1 / 4] = F X)
-    (h2 : F !![X 0 0 / 4, X 0 1; X 1 0, 4 * X 1 1] = F X)
-    (h3 : F !![X 0 0, -X 0 1; -X 1 0, X 1 1] = F X) : F X = 0 := by
-  have hdiag : F !![X 0 0, 0; 0, X 1 1] = 0 := by
-    have hsplit : !![X 0 0, 0; 0, X 1 1] = (4 / 9 : ℂ) • (!![4 * X 0 0, X 0 1; X 1 0, X 1 1 / 4]
-        + !![X 0 0 / 4, X 0 1; X 1 0, 4 * X 1 1] - (2 : ℂ) • X) := by
-      ext i j
-      fin_cases i <;> fin_cases j <;> simp <;> ring
-    rw [hsplit, map_smul, map_sub, map_add, map_smul, h1, h2]
-    module
-  have hneg : !![X 0 0, -X 0 1; -X 1 0, X 1 1] = (2 : ℂ) • !![X 0 0, 0; 0, X 1 1] - X := by
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp <;> ring
-  rw [hneg, map_sub, map_smul, hdiag, smul_zero, zero_sub] at h3
-  have h : (2 : ℂ) • F X = 0 := by
-    rw [two_smul]
-    nth_rewrite 1 [← h3]
-    exact neg_add_cancel _
-  exact (smul_eq_zero.mp h).resolve_left two_ne_zero
-
-/-- A linear map on matrices unchanged at `X` by the boosts scaling the off-diagonal entries of
-  `X` by `4` and `4⁻¹`, and by negating the diagonal entries of `X`, vanishes at `X`. -/
-lemma map_eq_zero_of_offDiagonal_scale (F : Matrix (Fin 2) (Fin 2) ℂ →ₗ[ℂ] B)
-    {X : Matrix (Fin 2) (Fin 2) ℂ} (h1 : F !![X 0 0, 4 * X 0 1; X 1 0 / 4, X 1 1] = F X)
-    (h2 : F !![X 0 0, X 0 1 / 4; 4 * X 1 0, X 1 1] = F X)
-    (h3 : F !![-X 0 0, X 0 1; X 1 0, -X 1 1] = F X) : F X = 0 := by
-  have hoff : F !![0, X 0 1; X 1 0, 0] = 0 := by
-    have hsplit : !![0, X 0 1; X 1 0, 0] = (4 / 9 : ℂ) • (!![X 0 0, 4 * X 0 1; X 1 0 / 4, X 1 1]
-        + !![X 0 0, X 0 1 / 4; 4 * X 1 0, X 1 1] - (2 : ℂ) • X) := by
-      ext i j
-      fin_cases i <;> fin_cases j <;> simp <;> ring
-    rw [hsplit, map_smul, map_sub, map_add, map_smul, h1, h2]
-    module
-  have hneg : !![-X 0 0, X 0 1; X 1 0, -X 1 1] = (2 : ℂ) • !![0, X 0 1; X 1 0, 0] - X := by
-    ext i j
-    fin_cases i <;> fin_cases j <;> simp <;> ring
-  rw [hneg, map_sub, map_smul, hoff, smul_zero, zero_sub] at h3
-  have h : (2 : ℂ) • F X = 0 := by
-    rw [two_smul]
-    nth_rewrite 1 [← h3]
-    exact neg_add_cancel _
-  exact (smul_eq_zero.mp h).resolve_left two_ne_zero
-
-/-!
-
-### G.2. Tensor products
-
--/
-
-/-- When three elements of `SL(2,ℂ)` act on the components of `V ⊗ W` by scaling the diagonal
-  entries and by negating the off-diagonal entries, the only invariant of `V ⊗ W` is zero. -/
-lemma invariants_tprod_eq_bot_of_diagonal_scale {V W : Type*} [AddCommGroup V]
-    [Module ℂ V] [AddCommGroup W] [Module ℂ W] (b : Module.Basis (Fin 2) ℂ V)
-    (c : Module.Basis (Fin 2) ℂ W) {ρV : Representation ℂ SL(2,ℂ) V}
-    {ρW : Representation ℂ SL(2,ℂ) W}
-    (h1 : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
-      !![4 * X 0 0, X 0 1; X 1 0, X 1 1 / 4])
-    (h2 : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
-      !![X 0 0 / 4, X 0 1; X 1 0, 4 * X 1 1])
-    (h3 : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
-      !![X 0 0, -X 0 1; -X 1 0, X 1 1]) :
-    (ρV.tprod ρW).invariants = ⊥ := by
-  refine Representation.invariants_eq_bot_of_forall fun v hv => ?_
-  have hv' : (tensorToMatrix b c).symm (tensorToMatrix b c v) ∈ (ρV.tprod ρW).invariants := by
-    rwa [LinearEquiv.symm_apply_apply]
-  have hF (Z : Matrix (Fin 2) (Fin 2) ℂ) :
-      (tensorToMatrix b c).symm.toLinearMap Z = (tensorToMatrix b c).symm Z := rfl
-  have h := map_eq_zero_of_diagonal_scale (tensorToMatrix b c).symm.toLinearMap
-    (X := tensorToMatrix b c v) (by rw [hF, hF]; exact (symm_act_eq b c hv' (h := h1) :))
-    (by rw [hF, hF]; exact (symm_act_eq b c hv' (h := h2) :))
-    (by rw [hF, hF]; exact (symm_act_eq b c hv' (h := h3) :))
-  rwa [hF, LinearEquiv.symm_apply_apply] at h
-
-/-- When three elements of `SL(2,ℂ)` act on the components of `V ⊗ W` by scaling the
-  off-diagonal entries and by negating the diagonal entries, the only invariant of `V ⊗ W` is
-  zero. -/
-lemma invariants_tprod_eq_bot_of_offDiagonal_scale {V W : Type*} [AddCommGroup V]
-    [Module ℂ V] [AddCommGroup W] [Module ℂ W] (b : Module.Basis (Fin 2) ℂ V)
-    (c : Module.Basis (Fin 2) ℂ W) {ρV : Representation ℂ SL(2,ℂ) V}
-    {ρW : Representation ℂ SL(2,ℂ) W}
-    (h1 : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
-      !![X 0 0, 4 * X 0 1; X 1 0 / 4, X 1 1])
-    (h2 : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
-      !![X 0 0, X 0 1 / 4; 4 * X 1 0, X 1 1])
-    (h3 : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
-      !![-X 0 0, X 0 1; X 1 0, -X 1 1]) :
-    (ρV.tprod ρW).invariants = ⊥ := by
-  refine Representation.invariants_eq_bot_of_forall fun v hv => ?_
-  have hv' : (tensorToMatrix b c).symm (tensorToMatrix b c v) ∈ (ρV.tprod ρW).invariants := by
-    rwa [LinearEquiv.symm_apply_apply]
-  have hF (Z : Matrix (Fin 2) (Fin 2) ℂ) :
-      (tensorToMatrix b c).symm.toLinearMap Z = (tensorToMatrix b c).symm Z := rfl
-  have h := map_eq_zero_of_offDiagonal_scale (tensorToMatrix b c).symm.toLinearMap
-    (X := tensorToMatrix b c v) (by rw [hF, hF]; exact (symm_act_eq b c hv' (h := h1) :))
-    (by rw [hF, hF]; exact (symm_act_eq b c hv' (h := h2) :))
-    (by rw [hF, hF]; exact (symm_act_eq b c hv' (h := h3) :))
-  rwa [hF, LinearEquiv.symm_apply_apply] at h
-
-/-!
-
-### G.3. The eight pairs
-
-For each pair `X ⊗ Y` of opposite chirality the statement is named after the second factor `Y`
-in the namespace of the first factor `X`, `X.invariants_tprod_Y_eq_bot`.
-
--/
-
-/-- The only `SL(2,ℂ)`-invariant element of `LeftHandedWeyl ⊗ RightHandedWeyl` is zero. -/
-lemma LeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot :
-    (LeftHandedWeyl.rep.tprod RightHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_diagonal_scale LeftHandedWeyl.basis RightHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `DualLeftHandedWeyl ⊗ DualRightHandedWeyl` is zero. -/
-lemma DualLeftHandedWeyl.invariants_tprod_dualRightHandedWeyl_eq_bot :
-    (DualLeftHandedWeyl.rep.tprod DualRightHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_diagonal_scale DualLeftHandedWeyl.basis DualRightHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `RightHandedWeyl ⊗ LeftHandedWeyl` is zero. -/
-lemma RightHandedWeyl.invariants_tprod_leftHandedWeyl_eq_bot :
-    (RightHandedWeyl.rep.tprod LeftHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_diagonal_scale RightHandedWeyl.basis LeftHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `DualRightHandedWeyl ⊗ DualLeftHandedWeyl` is zero. -/
-lemma DualRightHandedWeyl.invariants_tprod_dualLeftHandedWeyl_eq_bot :
-    (DualRightHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_diagonal_scale DualRightHandedWeyl.basis DualLeftHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `LeftHandedWeyl ⊗ DualRightHandedWeyl` is zero. -/
-lemma LeftHandedWeyl.invariants_tprod_dualRightHandedWeyl_eq_bot :
-    (LeftHandedWeyl.rep.tprod DualRightHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_offDiagonal_scale LeftHandedWeyl.basis DualRightHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `DualLeftHandedWeyl ⊗ RightHandedWeyl` is zero. -/
-lemma DualLeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot :
-    (DualLeftHandedWeyl.rep.tprod RightHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_offDiagonal_scale DualLeftHandedWeyl.basis RightHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `RightHandedWeyl ⊗ DualLeftHandedWeyl` is zero. -/
-lemma RightHandedWeyl.invariants_tprod_dualLeftHandedWeyl_eq_bot :
-    (RightHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_offDiagonal_scale RightHandedWeyl.basis DualLeftHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-/-- The only `SL(2,ℂ)`-invariant element of `DualRightHandedWeyl ⊗ LeftHandedWeyl` is zero. -/
-lemma DualRightHandedWeyl.invariants_tprod_leftHandedWeyl_eq_bot :
-    (DualRightHandedWeyl.rep.tprod LeftHandedWeyl.rep).invariants = ⊥ :=
-  invariants_tprod_eq_bot_of_offDiagonal_scale DualRightHandedWeyl.basis LeftHandedWeyl.basis
-    ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
-    ⟨Lorentz.SL2C.phase, by weyl_act⟩
-
-end OppositeChirality
 
 end
 
@@ -694,129 +484,23 @@ end Fermion
 
 /-!
 
-## H. Lorentz tensors with two Weyl indices
+## G. One-index Weyl families and their products
 
-A tensor of `ℂT[k, k']` with two Weyl indices is `fromPairT` of an element of the tensor product
-of the two Weyl representations, so the classifications above are classifications of the
-invariant tensors. For two indices of the same colour these are the line through the metric
-`metricTensor k` (H.1), and the invariants of the range of an equivariant map out of `ℂT[k, k]`
-reduce to the span of the image of the metric, the shape of a Majorana or Dirac mass term (H.2).
-A left-handed and a right-handed index, or their duals, carry no invariant tensor but zero (H.3),
-so the invariants of the range of an equivariant map out of them reduce to `⊥` (H.4). A product of
-two one-index families of opposite chirality, `X_α Y_α'`, in an algebra with a multiplicative
-Lorentz action, gives an equivariant map out of `ℂT[.downL, .downR]` (H.5), the shape of a Dirac
-mass term `ψ̄ ψ`, and a finite join of the spans of such products is discarded from any
-Lorentz-stable submodule (H.6).
+A two-element family of elements of an algebra `B` can carry one dual Weyl index, undotted or
+dotted. Both laws are contragredient, and the dotted law carries the extra complex conjugation. A
+fermion field of the Standard Model with every index but its spinor index frozen is such a family.
+When the Lorentz action is multiplicative, an undotted family times a dotted one is an equivariant
+map out of `ℂT[.downL, .downR]`, in either order, the shape of a Dirac mass term `ψ̄ ψ`. That such
+a map carries no invariant is `Lorentz.reducesInvariantsTo_bot_leftRight`, in
+`PhyslibAlpha.Relativity.Bispinors.ComplexifiedAction`.
 
 -/
 
 namespace Lorentz
 
 open Matrix MatrixGroups SL2C TensorSpecies complexLorentzTensor
-open TensorSpecies.Tensor hiding ofComponents
+open TensorSpecies.Tensor
 
-
-/-!
-
-### H.1. Two indices of the same kind
-
--/
-
-section InvariantTensors
-
-variable {k : complexLorentzTensor.Color}
-
-/-- The invariant tensors with two Weyl indices of the same colour are the line through the
-  metric of that colour. A tensor with two indices comes from the tensor square of the Weyl
-  representation, whose invariants are the line through the metric. -/
-lemma invariants_tensorRep_eq_span_metricTensor
-    (hk : k = .upL ∨ k = .downL ∨ k = .upR ∨ k = .downR) :
-    (complexLorentzTensor.tensorRep ![k, k]).invariants = ℂ ∙ metricTensor k := by
-  rcases hk with rfl | rfl | rfl | rfl
-  · rw [invariants_tensorRep_pair_eq_span (S := complexLorentzTensor) (c1 := .upL) (c2 := .upL)
-      Fermion.LeftHandedWeyl.invariants_tprod_eq_span_metricVal]
-    exact congrArg (ℂ ∙ fromPairT ·) Fermion.LeftHandedWeyl.metric_apply_one.symm
-  · rw [invariants_tensorRep_pair_eq_span (S := complexLorentzTensor) (c1 := .downL)
-      (c2 := .downL) Fermion.DualLeftHandedWeyl.invariants_tprod_eq_span_metricVal]
-    exact congrArg (ℂ ∙ fromPairT ·) Fermion.DualLeftHandedWeyl.metric_apply_one.symm
-  · rw [invariants_tensorRep_pair_eq_span (S := complexLorentzTensor) (c1 := .upR) (c2 := .upR)
-      Fermion.RightHandedWeyl.invariants_tprod_eq_span_metricVal]
-    exact congrArg (ℂ ∙ fromPairT ·) Fermion.RightHandedWeyl.metric_apply_one.symm
-  · rw [invariants_tensorRep_pair_eq_span (S := complexLorentzTensor) (c1 := .downR)
-      (c2 := .downR) Fermion.DualRightHandedWeyl.invariants_tprod_eq_span_metricVal]
-    exact congrArg (ℂ ∙ fromPairT ·) Fermion.DualRightHandedWeyl.metric_apply_one.symm
-
-end InvariantTensors
-
-/-!
-
-### H.2. The reduction to the metric
-
--/
-
-section Reduction
-
-variable {k : complexLorentzTensor.Color} {B : Type*} [AddCommGroup B] [Module ℂ B]
-  {repLorentz : Representation ℂ SL(2,ℂ) B} {f : ℂT[k, k] →ₗ[ℂ] B}
-
-/-- For a Weyl colour `k` and an equivariant map `f` out of `ℂT[k, k]`, the Lorentz invariants
-  of the range of `f` reduce to the span of the image `f (metricTensor k)` of the metric. -/
-noncomputable def invariantReductionToMetricTensor
-    (hk : k = .upL ∨ k = .downL ∨ k = .upR ∨ k = .downR)
-    (hf : complexLorentzTensor.IsEquivariant ![k, k] repLorentz f) :
-    InvariantReductionToSpan (fun g : SL(2,ℂ) => repLorentz g) (LinearMap.range f) :=
-  hf.invariantReductionToSpan (complexLorentzTensor.hasReynolds _)
-    (invariants_tensorRep_eq_span_metricTensor hk)
-
-end Reduction
-
-
-/-!
-
-### H.3. Two indices of opposite chirality
-
--/
-
-/-- The only invariant tensor with a left- and a right-handed Weyl index, or with their duals, is
-  zero. It comes from the tensor product of the two Weyl representations, which has no
-  invariants but zero. -/
-lemma invariants_tensorRep_leftRight_eq_bot {k k' : complexLorentzTensor.Color}
-    (hk : (k = .upL ∧ k' = .upR) ∨ (k = .downL ∧ k' = .downR)) :
-    (complexLorentzTensor.tensorRep ![k, k']).invariants = ⊥ := by
-  rcases hk with ⟨rfl, rfl⟩ | ⟨rfl, rfl⟩
-  · exact invariants_tensorRep_pair_eq_bot (S := complexLorentzTensor) (c1 := .upL) (c2 := .upR)
-      Fermion.LeftHandedWeyl.invariants_tprod_rightHandedWeyl_eq_bot
-  · exact invariants_tensorRep_pair_eq_bot (S := complexLorentzTensor) (c1 := .downL)
-      (c2 := .downR) Fermion.DualLeftHandedWeyl.invariants_tprod_dualRightHandedWeyl_eq_bot
-
-/-!
-
-### H.4. The reduction to zero
-
--/
-
-/-- The invariants of the range of an equivariant map out of the tensors with a left- and a
-  right-handed Weyl index, or with their duals, reduce to `⊥`. A Lorentz invariant of
-  `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, lies in `S`. -/
-lemma reducesInvariantsTo_bot_leftRight {k k' : complexLorentzTensor.Color}
-    (hk : (k = .upL ∧ k' = .upR) ∨ (k = .downL ∧ k' = .downR)) {B : Type*} [AddCommGroup B]
-    [Module ℂ B] {repLorentz : Representation ℂ SL(2,ℂ) B} {f : ℂT[k, k'] →ₗ[ℂ] B}
-    (hf : complexLorentzTensor.IsEquivariant ![k, k'] repLorentz f) :
-    ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentz g) (LinearMap.range f) ⊥ :=
-  hf.reducesInvariantsTo_bot (complexLorentzTensor.hasReynolds _)
-    (invariants_tensorRep_leftRight_eq_bot hk)
-
-/-!
-
-### H.5. One-index Weyl families and their products
-
-A two-element family of elements of an algebra `B` can carry one dual Weyl index, undotted or
-dotted. Both laws are contragredient, and the dotted law carries the extra complex conjugation. A
-fermion field of the Standard Model with every index but its spinor index frozen is such a family.
-When the Lorentz action is multiplicative, an undotted family times a dotted one is an equivariant
-map out of `ℂT[.downL, .downR]`, in either order.
-
--/
 
 section ChiralFamilies
 
@@ -833,8 +517,8 @@ lemma isEquivariant_downLDownR_mul {X Y : Fin 2 → B}
     (hX : ∀ (Λ : SL(2,ℂ)) (a : Fin 2), repLorentz Λ (X a) = ∑ β, (Λ⁻¹).1 a β • X β)
     (hY : ∀ (Λ : SL(2,ℂ)) (a : Fin 2), repLorentz Λ (Y a) = ∑ β, star ((Λ⁻¹).1 a β) • Y β) :
     complexLorentzTensor.IsEquivariant ![.downL, .downR] repLorentz
-      (ofComponents ((fun p => X p.1 * Y p.2) ∘ pairIdx)) :=
-  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downR)
+      (liftComponents ((fun p => X p.1 * Y p.2) ∘ pairIdx)) :=
+  isEquivariant_liftComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downR)
     (fun a b => X a * Y b) fun g a b => by
     rw [toMatrix_rep_downL, toMatrix_rep_downR, hrepLorentz_mul, hX g a, hY g b,
       Finset.sum_mul_sum]
@@ -849,8 +533,8 @@ lemma isEquivariant_downLDownR_mul_swap {X Y : Fin 2 → B}
     (hX : ∀ (Λ : SL(2,ℂ)) (a : Fin 2), repLorentz Λ (X a) = ∑ β, star ((Λ⁻¹).1 a β) • X β)
     (hY : ∀ (Λ : SL(2,ℂ)) (a : Fin 2), repLorentz Λ (Y a) = ∑ β, (Λ⁻¹).1 a β • Y β) :
     complexLorentzTensor.IsEquivariant ![.downL, .downR] repLorentz
-      (ofComponents ((fun p => X p.2 * Y p.1) ∘ pairIdx)) :=
-  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downR)
+      (liftComponents ((fun p => X p.2 * Y p.1) ∘ pairIdx)) :=
+  isEquivariant_liftComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downR)
     (fun a b => X b * Y a) fun g a b => by
     rw [toMatrix_rep_downL, toMatrix_rep_downR, hrepLorentz_mul, hX g b, hY g a,
       Finset.sum_mul_sum, Finset.sum_comm]
@@ -861,55 +545,5 @@ lemma isEquivariant_downLDownR_mul_swap {X Y : Fin 2 → B}
     ring
 
 end ChiralFamilies
-
-/-!
-
-### H.6. Peeling the pair spans off a Lorentz-stable submodule
-
-An equivariant map out of `ℂT[.downL, .downR]` carries no invariant, so the span of its
-components, here the join of the lines through them, reduces to `⊥`. Each such span is stable under
-the Lorentz group, so `ReducesInvariantsTo.biSup` combines the reductions over a finite family of
-them,
-and a whole join is discarded from a Lorentz-stable submodule.
-
--/
-
-section Peeling
-
-variable {B : Type} [AddCommGroup B] [Module ℂ B] {repLorentz : Representation ℂ SL(2,ℂ) B}
-
-/-- A finite join of the spans of families with a dual left- and a dual right-handed Weyl index
-  carries no Lorentz invariant modulo a Lorentz-stable submodule. Such a family has no invariant, so
-  each span
-  reduces to `⊥`, and `ReducesInvariantsTo.biSup` combines the reductions. A Lorentz
-  invariant of the join together with `S` lies in `S`. -/
-lemma mem_of_lorentz_invariant_biSup_dualLeftRightWeyl_span {ι : Type} [DecidableEq ι]
-    {T : ι → Fin 2 × Fin 2 → B} (hT : ∀ i, complexLorentzTensor.IsEquivariant ![.downL, .downR]
-      repLorentz (ofComponents (T i ∘ pairIdx)))
-    (S : Submodule ℂ B) (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) (s : Finset ι)
-    {x : B} (hx : x ∈ (⨆ i ∈ s, ⨆ l, ℂ ∙ T i l) ⊔ S)
-    (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
-  have hr : ∀ i, (⨆ l, ℂ ∙ T i l) = LinearMap.range (ofComponents (S := complexLorentzTensor)
-      (c := ![.downL, .downR]) (T i ∘ pairIdx)) := fun i => by
-    rw [range_ofComponents_comp, Submodule.span_range_eq_iSup]
-  simp_rw [hr] at hx
-  simpa using ReducesInvariantsTo.biSup
-    (fun i => reducesInvariantsTo_bot_leftRight (Or.inr ⟨rfl, rfl⟩) (hT i))
-    (fun i => (hT i).isStableUnder_range) isStableUnder_bot s S hS x hx hinv
-
-/-- The version of `mem_of_lorentz_invariant_biSup_dualLeftRightWeyl_span` joining over a
-  whole finite index type. -/
-lemma mem_of_lorentz_invariant_iSup_dualLeftRightWeyl_span {ι : Type} [Fintype ι]
-    [DecidableEq ι] {T : ι → Fin 2 × Fin 2 → B}
-    (hT : ∀ i, complexLorentzTensor.IsEquivariant ![.downL, .downR] repLorentz
-      (ofComponents (T i ∘ pairIdx))) (S : Submodule ℂ B)
-    (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
-    (hx : x ∈ (⨆ i, ⨆ l, ℂ ∙ T i l) ⊔ S)
-    (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
-  refine mem_of_lorentz_invariant_biSup_dualLeftRightWeyl_span hT S hS Finset.univ ?_ hinv
-  refine sup_le_sup_right (iSup_le fun i => ?_) S hx
-  exact le_iSup₂_of_le i (Finset.mem_univ i) le_rfl
-
-end Peeling
 
 end Lorentz

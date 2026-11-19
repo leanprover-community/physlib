@@ -7,16 +7,20 @@ module
 
 public import PhyslibAlpha.Mathematics.InvariantReduction
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
+public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Reynolds
 /-!
-# Lorentz invariants of a half-integer spin
+# The eigenspaces of the centre of `SL(2,ℂ)`
+
+The subspaces on which the central element `-1` of `SL(2,ℂ)` acts by a scalar, and the Lorentz
+invariants of a half-integer spin.
 
 ## i. Overview
 
-The other files of this folder classify the invariants of a given index pattern by contracting
-the components with a coefficient tensor. This one settles, in one step and for every pattern
-at once, the patterns that carry no invariant for the crudest of reasons: they are of
-half-integer spin, and a half-integer spin has no invariant because the centre of `SL(2,ℂ)`
-already tells integer spin from half-integer spin apart.
+The classifications of the invariant tensors contract the components with a coefficient tensor.
+This file settles, in one step and for every pattern at once, the patterns that carry no
+invariant for the crudest of reasons: they are of half-integer spin, and a half-integer spin has
+no invariant because the centre of `SL(2,ℂ)` already tells integer spin from half-integer spin
+apart.
 
 The element `-1` of `SL(2,ℂ)` covers the identity Lorentz transformation
 (`SL2C.toLorentzGroup_neg_one`), so a representation of `SL(2,ℂ)` that factors through the
@@ -32,7 +36,10 @@ such a span off the sign of the value space: the covariant-derivative slots of a
 obeying `IsLorentzCovDerivTransforms` are inert at the centre, and only the value index moves.
 
 The argument uses the central element alone: it needs neither a grading nor a light-cone
-basis.
+basis. On the complex Lorentz tensors `-1` acts on each Weyl index by `-1` and on each
+four-vector index by `1`, so on the tensors with colours `c` by `(-1)` to the number of Weyl
+colours of `c`, and with an odd number of Weyl indices there are no invariant tensors but zero
+(E).
 
 ## ii. Key results
 
@@ -42,6 +49,10 @@ basis.
 - `mem_of_invariant_of_mem_sup_centreEigenspace_neg_one` : a subspace of half-integer spin carries
   no Lorentz invariant beyond a Lorentz-stable submodule `S`: an invariant of the join with `S`
   already lies in `S`
+- `complexLorentzTensor.tensorRep_neg_one` : `-1` acts on the tensors by `(-1)` to the number of
+  Weyl colours
+- `complexLorentzTensor.invariants_eq_bot_of_odd_weyl` : tensors with an odd number of Weyl
+  indices have no invariants but zero
 
 ## iii. Table of contents
 
@@ -49,6 +60,7 @@ basis.
 - B. The sign of a symbol family
 - C. Signs multiply
 - D. The classification modulo a Lorentz-stable submodule
+- E. The centre on the complex Lorentz tensors
 
 ## iv. References
 
@@ -172,5 +184,76 @@ lemma mem_of_invariant_of_mem_sup_centreEigenspace_neg_one
     (by norm_num) (fun v hv => mem_centreEigenspace.1 (hW hv)) S hS x hx hinv
 
 end Invariants
+
+/-!
+
+## E. The centre on the complex Lorentz tensors
+
+The element `-1` covers the identity Lorentz transformation, so it acts on the four-vector colours
+by `1`, and on each Weyl colour by `-1`. On the tensors with colours `c` it therefore acts by the
+product of these signs, `(-1)` to the number of Weyl colours of `c`
+(`TensorSpecies.tensorRep_eq_prod_smul`). With an odd number of Weyl colours this is `-1`, and an
+invariant tensor both fixed and negated by `-1` is zero.
+
+-/
+
+open TensorSpecies
+
+/-- The sign by which `-1` acts on a colour: `1` on the four-vector colours and `-1` on the Weyl
+  colours. -/
+def centreSign (k : complexLorentzTensor.Color) : ℂ :=
+  if k = .up ∨ k = .down then 1 else -1
+
+/-- The element `-1` acts on the representation of each colour by its sign. -/
+lemma rep_neg_one (k : complexLorentzTensor.Color) :
+    complexLorentzTensor.rep k (-1) = centreSign k • LinearMap.id := by
+  apply (LinearMap.toMatrix (complexLorentzTensor.basis k) (complexLorentzTensor.basis k)).injective
+  rw [map_smul, LinearMap.toMatrix_id]
+  cases k
+  · rw [toMatrix_rep_upL]
+    simp [centreSign]
+  · rw [toMatrix_rep_downL]
+    simp only [centreSign]
+    have hi : (-1 : Matrix (Fin 2) (Fin 2) ℂ)⁻¹ = -1 :=
+      Matrix.inv_eq_left_inv (by rw [neg_mul_neg, one_mul])
+    simp [hi]
+  · rw [toMatrix_rep_upR]
+    ext i j
+    simp [centreSign, Matrix.one_apply, apply_ite]
+  · rw [toMatrix_rep_downR]
+    simp only [centreSign]
+    have hi : (-1 : Matrix (Fin 2) (Fin 2) ℂ)⁻¹ = -1 :=
+      Matrix.inv_eq_left_inv (by rw [neg_mul_neg, one_mul])
+    simp [hi]
+  · ext μ ν
+    rw [toMatrix_rep_up_apply, SL2C.toLorentzGroup_neg_one]
+    simp [centreSign, Matrix.one_apply, apply_ite]
+  · ext μ ν
+    rw [toMatrix_rep_down_apply, SL2C.toLorentzGroup_neg_one]
+    simp [centreSign, Matrix.one_apply, apply_ite, eq_comm]
+
+/-- The element `-1` acts on the tensors with colours `c` by `(-1)` to the number of Weyl colours
+  of `c`. -/
+lemma _root_.complexLorentzTensor.tensorRep_neg_one {n : ℕ}
+    (c : Fin n → complexLorentzTensor.Color) :
+    complexLorentzTensor.tensorRep c (-1) =
+      (-1 : ℂ) ^ (Finset.univ.filter fun i => ¬ (c i = .up ∨ c i = .down)).card •
+        LinearMap.id := by
+  rw [tensorRep_eq_prod_smul (fun k v => by rw [rep_neg_one]; rfl) c]
+  congr 1
+  simp only [centreSign]
+  rw [Finset.prod_ite, Finset.prod_const_one, one_mul, Finset.prod_const]
+
+/-- The tensors with an odd number of Weyl indices have no invariants but zero. The element `-1`
+  negates them, and an invariant tensor is fixed by it. -/
+lemma _root_.complexLorentzTensor.invariants_eq_bot_of_odd_weyl {n : ℕ}
+    {c : Fin n → complexLorentzTensor.Color}
+    (h : Odd (Finset.univ.filter fun i => ¬ (c i = .up ∨ c i = .down)).card) :
+    (complexLorentzTensor.tensorRep c).invariants = ⊥ := by
+  refine Representation.invariants_eq_bot_of_forall fun t ht => ?_
+  have h1 := ht (-1)
+  rw [complexLorentzTensor.tensorRep_neg_one, h.neg_one_pow, LinearMap.smul_apply,
+    LinearMap.id_apply, neg_one_smul, neg_eq_iff_add_eq_zero, ← two_smul ℂ] at h1
+  exact (smul_eq_zero.1 h1).resolve_left two_ne_zero
 
 end Lorentz

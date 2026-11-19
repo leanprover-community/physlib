@@ -131,23 +131,23 @@ lemma isContinuousFamily_one (h1 : ∀ h, ρ h 1 = 1) :
 lemma IsContinuousFamily.sumElim {ι ι' : Type*} [Fintype ι] [Fintype ι'] {v : ι → V}
     {u : ι' → V} (hv : IsContinuousFamily ρV v) (hu : IsContinuousFamily ρV u) :
     IsContinuousFamily ρV (Sum.elim v u) := by
-  obtain ⟨a, ha, hav⟩ := hv
+  obtain ⟨a, ha, ha_v⟩ := hv
   obtain ⟨b, hb, hbu⟩ := hu
   refine ⟨Sum.elim (fun i => Sum.elim (a i) 0) (fun j => Sum.elim 0 (b j)), ?_, ?_⟩
   · rintro (i | j) (i' | j') <;> simp only [Sum.elim_inl, Sum.elim_inr] <;>
       first | exact ha _ _ | exact hb _ _ | exact continuous_const
-  · rintro h (i | j) <;> simp [Fintype.sum_sum_type, hav, hbu]
+  · rintro h (i | j) <;> simp [Fintype.sum_sum_type, ha_v, hbu]
 
 /-- For a representation acting by algebra maps, the products of two families with continuous
 coefficients have continuous coefficients. -/
 lemma IsContinuousFamily.mul (hmul : ∀ h x y, ρ h (x * y) = ρ h x * ρ h y) {ι ι' : Type*}
     [Fintype ι] [Fintype ι'] {v : ι → A} {u : ι' → A} (hv : IsContinuousFamily ρ v)
     (hu : IsContinuousFamily ρ u) : IsContinuousFamily ρ fun p : ι × ι' => v p.1 * u p.2 := by
-  obtain ⟨a, ha, hav⟩ := hv
+  obtain ⟨a, ha, ha_v⟩ := hv
   obtain ⟨b, hb, hbu⟩ := hu
   refine ⟨fun p q h => a p.1 q.1 h * b p.2 q.2 h, fun p q => (ha _ _).mul (hb _ _),
     fun h p => ?_⟩
-  rw [hmul, hav, hbu, Finset.sum_mul_sum]
+  rw [hmul, ha_v, hbu, Finset.sum_mul_sum]
   simp only [Fintype.sum_prod_type, smul_mul_smul_comm]
 
 /-- A tower `t p x`, linear in `x` up to the scalar map `ι𝕜`, on which the representation acts
@@ -206,11 +206,11 @@ lemma hasContinuousSpan_smul_one (h₁ : ∀ h, ρ₁ h 1 = 1) (h₂ : ∀ h, ρ
 /-- Having a continuous span is closed under addition. -/
 lemma HasContinuousSpan.add {a b : A} (ha : HasContinuousSpan ρ₁ ρ₂ a)
     (hb : HasContinuousSpan ρ₁ ρ₂ b) : HasContinuousSpan ρ₁ ρ₂ (a + b) := by
-  obtain ⟨ι, _, v, hav, hv₁, hv₂⟩ := ha
+  obtain ⟨ι, _, v, ha_v, hv₁, hv₂⟩ := ha
   obtain ⟨ι', _, u, hbu, hu₁, hu₂⟩ := hb
   refine .of_mem_span (hv₁.sumElim hu₁) (hv₂.sumElim hu₂) (Submodule.add_mem _ ?_ ?_)
   · exact Submodule.span_mono (Set.range_subset_iff.2 fun i =>
-      Set.mem_range.2 ⟨Sum.inl i, rfl⟩ : Set.range v ⊆ Set.range (Sum.elim v u)) hav
+      Set.mem_range.2 ⟨Sum.inl i, rfl⟩ : Set.range v ⊆ Set.range (Sum.elim v u)) ha_v
   · exact Submodule.span_mono (Set.range_subset_iff.2 fun i =>
       Set.mem_range.2 ⟨Sum.inr i, rfl⟩ : Set.range u ⊆ Set.range (Sum.elim v u)) hbu
 
@@ -220,10 +220,10 @@ lemma HasContinuousSpan.mul (hmul₁ : ∀ h x y, ρ₁ h (x * y) = ρ₁ h x * 
     (hmul₂ : ∀ h x y, ρ₂ h (x * y) = ρ₂ h x * ρ₂ h y) {a b : A}
     (ha : HasContinuousSpan ρ₁ ρ₂ a) (hb : HasContinuousSpan ρ₁ ρ₂ b) :
     HasContinuousSpan ρ₁ ρ₂ (a * b) := by
-  obtain ⟨ι, _, v, hav, hv₁, hv₂⟩ := ha
+  obtain ⟨ι, _, v, ha_v, hv₁, hv₂⟩ := ha
   obtain ⟨ι', _, u, hbu, hu₁, hu₂⟩ := hb
   refine .of_mem_span (hv₁.mul hmul₁ hu₁) (hv₂.mul hmul₂ hu₂) ?_
-  have hab := Submodule.mul_mem_mul hav hbu
+  have hab := Submodule.mul_mem_mul ha_v hbu
   rw [Submodule.span_mul_span] at hab
   refine Submodule.span_mono ?_ hab
   rintro _ ⟨_, ⟨i, rfl⟩, _, ⟨j, rfl⟩, rfl⟩
@@ -260,10 +260,10 @@ variable {H H₁ H₂ V : Type*} [Group H] [TopologicalSpace H] [Group H₁] [To
 lemma IsContinuousFamily.apply_mem_span {ρ : Representation ℂ H V} {ι : Type*} [Fintype ι]
     {v : ι → V} (hv : IsContinuousFamily ρ v) (h : H) {x : V}
     (hx : x ∈ Submodule.span ℂ (Set.range v)) : ρ h x ∈ Submodule.span ℂ (Set.range v) := by
-  obtain ⟨a, -, hav⟩ := hv
+  obtain ⟨a, -, ha_v⟩ := hv
   refine (Submodule.span_le (p := (Submodule.span ℂ (Set.range v)).comap (ρ h))).2 ?_ hx
   rintro _ ⟨i, rfl⟩
-  rw [SetLike.mem_coe, Submodule.mem_comap, hav]
+  rw [SetLike.mem_coe, Submodule.mem_comap, ha_v]
   exact Submodule.sum_mem _ fun j _ => Submodule.smul_mem _ _ (Submodule.subset_span ⟨j, rfl⟩)
 
 /-- The subrepresentation of the product spanned by a family with continuous coefficients
@@ -283,9 +283,9 @@ lemma continuousMatrixCoeff_of_isContinuousFamily {ρ : Representation ℂ H V}
     (W : Subrepresentation ρ) {ι : Type*} [Fintype ι] {v : ι → V}
     (hW : W.toSubmodule = Submodule.span ℂ (Set.range v)) (hv : IsContinuousFamily ρ v) :
     ContinuousMatrixCoeff W := by
-  obtain ⟨a, ha, hav⟩ := hv
+  obtain ⟨a, ha, ha_v⟩ := hv
   exact continuousMatrixCoeff_of_span W v (fun i => hW ▸ Submodule.subset_span ⟨i, rfl⟩)
-    hW.le a ha hav
+    hW.le a ha ha_v
 
 /-- A vector in the span of a finite family with continuous coefficients for two commuting
 representations lies in a finite-dimensional subrepresentation of the product, on which both
@@ -293,12 +293,12 @@ factors act with continuous matrix coefficients. -/
 lemma exists_subrepresentation_of_isContinuousFamily {ρ₁ : Representation ℂ H₁ V}
     {ρ₂ : Representation ℂ H₂ V} (hc : ∀ a b, Commute (ρ₁ a) (ρ₂ b)) {ι : Type*} [Fintype ι]
     {v : ι → V} (h₁ : IsContinuousFamily ρ₁ v) (h₂ : IsContinuousFamily ρ₂ v) {a : V}
-    (hav : a ∈ Submodule.span ℂ (Set.range v)) :
+    (ha_v : a ∈ Submodule.span ℂ (Set.range v)) :
     ∃ W : Subrepresentation (prodOfCommute ρ₁ ρ₂ hc), a ∈ W.toSubmodule ∧
       FiniteDimensional ℂ W.toSubmodule ∧
       ContinuousMatrixCoeff (W.comp (MonoidHom.inl H₁ H₂)) ∧
       ContinuousMatrixCoeff (W.comp (MonoidHom.inr H₁ H₂)) := by
-  refine ⟨spanSubrepresentation hc h₁ h₂, hav,
+  refine ⟨spanSubrepresentation hc h₁ h₂, ha_v,
     FiniteDimensional.span_of_finite ℂ (Set.finite_range v), ?_, ?_⟩
   · exact continuousMatrixCoeff_of_isContinuousFamily _ rfl
       ((prodOfCommute_comp_inl ρ₁ ρ₂ hc).symm ▸ h₁)

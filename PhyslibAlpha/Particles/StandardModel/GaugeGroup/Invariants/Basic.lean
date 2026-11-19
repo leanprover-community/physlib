@@ -6,8 +6,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.QuadFund
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.FundAnti
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.LeviCivitaPairing
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.Invariants.Delta
 /-!
 # Families of colour and isospin components and their invariants
 
@@ -20,9 +20,9 @@ The invariant tensors of `SU(N)` are classified in `GlobalGaugeGroup.SU.Invarian
 for equivariant maps out of the tensors of `suTensor N`. Here those results are applied to the
 Standard Model. A family `T : ι → B` of components, indexed by colour or isospin labels and moved by
 the colour factor `repGauge (U, 1, 1)` or the isospin factor `repGauge (1, V, 1)` of the gauge
-group, is turned into the linear map `ofComponents` out of the tensors of `SU(3)` or `SU(2)` with an
-explicit list of colours, and its transformation law is exactly the equivariance of that map for
-the restriction of `repGauge` along the factor (A).
+group, is turned into the linear map `liftComponents` out of the tensors of `SU(3)` or `SU(2)` with
+an explicit list of colours, and its transformation law is exactly the equivariance of that map
+for the restriction of `repGauge` along the factor (A).
 
 A law is named by how the members of the family move as vectors of `B`. Under a fundamental law
 `f (T l) = ∑ a, U a l • T a`, so `T l` moves like the standard basis vector `e_l` of `ℂⁿ`; an
@@ -113,16 +113,16 @@ variable {T : (Fin 2 → Fin 3) → B}
 lemma of_law (hT : ∀ (U : SU 3) (l : Fin 2 → Fin 3), repGauge (U, 1, 1) (T l)
     = ∑ a : Fin 2 → Fin 3, (U.1 (a 0) (l 0) * starRingEnd ℂ (U.1 (a 1) (l 1))) • T a) :
     (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ fundAntiFundIdx)) :=
-  isEquivariant_ofComponents_fundAntiFund T hT
+      (liftComponents (T ∘ fundAntiFundIdx)) :=
+  isEquivariant_liftComponents_fundAntiFund T hT
 
 /-- The map of a finite sum of families is equivariant when the map of each family is. -/
 lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 3) → B}
     (hT : ∀ i, (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T i ∘ fundAntiFundIdx))) :
+      (liftComponents (T i ∘ fundAntiFundIdx))) :
     (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents ((fun l => ∑ i, T i l) ∘ fundAntiFundIdx)) :=
-  isEquivariant_ofComponents_sum _ fun i _ => hT i
+      (liftComponents ((fun l => ∑ i, T i l) ∘ fundAntiFundIdx)) :=
+  isEquivariant_liftComponents_sum _ fun i _ => hT i
 
 /-- The delta contraction `∑ a, T ![a, a]`. -/
 def deltaContraction (T : (Fin 2 → Fin 3) → B) : B := ∑ a : Fin 3, T ![a, a]
@@ -136,22 +136,22 @@ lemma deltaContraction_mem_span (T : (Fin 2 → Fin 3) → B) :
 lemma map_deltaContraction {U : SU 3} {f : B →ₗ[ℂ] B} (hf : ∀ l : Fin 2 → Fin 3,
     f (T l) = ∑ a : Fin 2 → Fin 3, (U.1 (a 0) (l 0) * starRingEnd ℂ (U.1 (a 1) (l 1))) • T a) :
     f (deltaContraction T) = deltaContraction T := by
-  rw [deltaContraction, ← ofComponents_delta, ofComponents_fundAntiFund_smul_of_law T U hf,
+  rw [deltaContraction, ← liftComponents_delta, liftComponents_fundAntiFund_smul_of_law T U hf,
     delta_invariant]
 
 /-- The delta contraction is colour invariant. -/
 lemma repGauge_deltaContraction
     (hT : (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ fundAntiFundIdx)))
+      (liftComponents (T ∘ fundAntiFundIdx)))
     (U : SU 3) : repGauge (U, 1, 1) (deltaContraction T) = deltaContraction T := by
-  rw [deltaContraction, ← ofComponents_delta]
+  rw [deltaContraction, ← liftComponents_delta]
   exact hT.rep_map_of_invariant delta_invariant U
 
 /-- The colour invariants of the component span reduce to the span of the delta
   contraction. -/
 noncomputable def invariantReductionToSpan
     (hT : (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
-      (ofComponents (T ∘ fundAntiFundIdx))) :
+      (liftComponents (T ∘ fundAntiFundIdx))) :
     InvariantReductionToSpan (fun U : SU 3 => repGauge ((U, 1, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) :=
   invariantReductionToDelta hT
@@ -168,16 +168,16 @@ variable {T : (Fin 2 → Fin 2) → B}
 lemma of_law (hT : ∀ (V : SU 2) (l : Fin 2 → Fin 2), repGauge (1, V, 1) (T l)
     = ∑ a : Fin 2 → Fin 2, (V.1 (a 0) (l 0) * starRingEnd ℂ (V.1 (a 1) (l 1))) • T a) :
     (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ fundAntiFundIdx)) :=
-  isEquivariant_ofComponents_fundAntiFund T hT
+      (liftComponents (T ∘ fundAntiFundIdx)) :=
+  isEquivariant_liftComponents_fundAntiFund T hT
 
 /-- The map of a finite sum of families is equivariant when the map of each family is. -/
 lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 2) → B}
     (hT : ∀ i, (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T i ∘ fundAntiFundIdx))) :
+      (liftComponents (T i ∘ fundAntiFundIdx))) :
     (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents ((fun l => ∑ i, T i l) ∘ fundAntiFundIdx)) :=
-  isEquivariant_ofComponents_sum _ fun i _ => hT i
+      (liftComponents ((fun l => ∑ i, T i l) ∘ fundAntiFundIdx)) :=
+  isEquivariant_liftComponents_sum _ fun i _ => hT i
 
 /-- The delta contraction `T ![0, 0] + T ![1, 1]`. -/
 def deltaContraction (T : (Fin 2 → Fin 2) → B) : B := T ![0, 0] + T ![1, 1]
@@ -197,33 +197,33 @@ lemma deltaContraction_mem_span (T : (Fin 2 → Fin 2) → B) :
 lemma map_deltaContraction {V : SU 2} {f : B →ₗ[ℂ] B} (hf : ∀ l : Fin 2 → Fin 2,
     f (T l) = ∑ a : Fin 2 → Fin 2, (V.1 (a 0) (l 0) * starRingEnd ℂ (V.1 (a 1) (l 1))) • T a) :
     f (deltaContraction T) = deltaContraction T := by
-  rw [deltaContraction_eq_sum, ← ofComponents_delta, ofComponents_fundAntiFund_smul_of_law T V hf,
-    delta_invariant]
+  rw [deltaContraction_eq_sum, ← liftComponents_delta,
+    liftComponents_fundAntiFund_smul_of_law T V hf, delta_invariant]
 
 /-- The delta contraction is isospin invariant. -/
 lemma repGauge_deltaContraction
     (hT : (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ fundAntiFundIdx)))
+      (liftComponents (T ∘ fundAntiFundIdx)))
     (V : SU 2) : repGauge (1, V, 1) (deltaContraction T) = deltaContraction T := by
-  rw [deltaContraction_eq_sum, ← ofComponents_delta]
+  rw [deltaContraction_eq_sum, ← liftComponents_delta]
   exact hT.rep_map_of_invariant delta_invariant V
 
 /-- The isospin invariants of the component span reduce to the span of the delta
   contraction. -/
 noncomputable def invariantReductionToSpan
     (hT : (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ fundAntiFundIdx))) :
+      (liftComponents (T ∘ fundAntiFundIdx))) :
     InvariantReductionToSpan (fun V : SU 2 => repGauge ((1, V, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) :=
-  hT.invariantReductionToSpanOfEq (hasReynolds 2 _) invariants_tensorRep_eq_span_delta
-    (range_ofComponents_comp _ T) (deltaContraction T)
-    (by rw [ofComponents_delta, deltaContraction_eq_sum])
+  hT.invariantReductionToSpanOfEq (hasReynolds 2 _) invariants_fund_antiFund_eq_span_delta
+    (range_liftComponents_comp _ T) (deltaContraction T)
+    (by rw [liftComponents_delta, deltaContraction_eq_sum])
 
 /-- The isospin invariants of the component span reduce to the line through the delta
   contraction. -/
 lemma reducesInvariantsTo_span_deltaContraction
     (hT : (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents (T ∘ fundAntiFundIdx))) :
+      (liftComponents (T ∘ fundAntiFundIdx))) :
     ReducesInvariantsTo (fun V : SU 2 => repGauge ((1, V, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) (ℂ ∙ deltaContraction T) :=
   (invariantReductionToSpan hT).reducesInvariantsTo
@@ -249,16 +249,16 @@ variable {T : (Fin 2 → Fin 2) → B}
 lemma of_law (hT : ∀ (V : SU 2) (l : Fin 2 → Fin 2), repGauge (1, V, 1) (T l)
     = ∑ a : Fin 2 → Fin 2, (∏ i : Fin 2, V.1 (a i) (l i)) • T a) :
     (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents T) :=
-  isEquivariant_ofComponents_fund T hT
+      (liftComponents T) :=
+  isEquivariant_liftComponents_fund T hT
 
 /-- The map of a finite sum of families is equivariant when the map of each family is. -/
 lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 2) → B}
     (hT : ∀ i, (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund)
-      (repGauge.comp GaugeGroupI.ofSU2) (ofComponents (T i))) :
+      (repGauge.comp GaugeGroupI.ofSU2) (liftComponents (T i))) :
     (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents fun l => ∑ i, T i l) :=
-  isEquivariant_ofComponents_sum _ fun i _ => hT i
+      (liftComponents fun l => ∑ i, T i l) :=
+  isEquivariant_liftComponents_sum _ fun i _ => hT i
 
 /-- The epsilon contraction `T ![0, 1] - T ![1, 0]`. -/
 def epsilonContraction (T : (Fin 2 → Fin 2) → B) : B := T ![0, 1] - T ![1, 0]
@@ -267,22 +267,22 @@ def epsilonContraction (T : (Fin 2 → Fin 2) → B) : B := T ![0, 1] - T ![1, 0
 lemma map_epsilonContraction {V : SU 2} {f : B →ₗ[ℂ] B} (hf : ∀ l : Fin 2 → Fin 2,
     f (T l) = ∑ a : Fin 2 → Fin 2, (∏ i : Fin 2, V.1 (a i) (l i)) • T a) :
     f (epsilonContraction T) = epsilonContraction T := by
-  rw [epsilonContraction, ← ofComponents_epsilonFund, ofComponents_fund_smul_of_law T V hf,
+  rw [epsilonContraction, ← liftComponents_epsilonFund, liftComponents_fund_smul_of_law T V hf,
     epsilonFund_invariant]
 
 /-- The epsilon contraction is isospin invariant. -/
 lemma repGauge_epsilonContraction
     (hT : (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents T)) (V : SU 2) :
+      (liftComponents T)) (V : SU 2) :
     repGauge (1, V, 1) (epsilonContraction T) = epsilonContraction T := by
-  rw [epsilonContraction, ← ofComponents_epsilonFund]
+  rw [epsilonContraction, ← liftComponents_epsilonFund]
   exact hT.rep_map_of_invariant epsilonFund_invariant V
 
 /-- The isospin invariants of the component span reduce to the span of the epsilon
   contraction. -/
 noncomputable def invariantReductionToSpan
     (hT : (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents T)) :
+      (liftComponents T)) :
     InvariantReductionToSpan (fun V : SU 2 => repGauge ((1, V, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) :=
   invariantReductionToEpsilonFund hT
@@ -300,17 +300,17 @@ lemma of_law (hT : ∀ (V : SU 2) (l : Fin 2 → Fin 2), repGauge (1, V, 1) (T l
     = ∑ a : Fin 2 → Fin 2,
         (starRingEnd ℂ (V.1 (a 0) (l 0)) * starRingEnd ℂ (V.1 (a 1) (l 1))) • T a) :
     (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents T) :=
-  isEquivariant_ofComponents_antiFund T fun V l => (hT V l).trans <|
+      (liftComponents T) :=
+  isEquivariant_liftComponents_antiFund T fun V l => (hT V l).trans <|
     Finset.sum_congr rfl fun a _ => by rw [Fin.prod_univ_two]
 
 /-- The map of a finite sum of families is equivariant when the map of each family is. -/
 lemma sum {ι : Type} [Fintype ι] {T : ι → (Fin 2 → Fin 2) → B}
     (hT : ∀ i, (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund)
-      (repGauge.comp GaugeGroupI.ofSU2) (ofComponents (T i))) :
+      (repGauge.comp GaugeGroupI.ofSU2) (liftComponents (T i))) :
     (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents fun l => ∑ i, T i l) :=
-  isEquivariant_ofComponents_sum _ fun i _ => hT i
+      (liftComponents fun l => ∑ i, T i l) :=
+  isEquivariant_liftComponents_sum _ fun i _ => hT i
 
 /-- Any map moving the components by an element of `SU(2)` in the anti-fundamental fixes the
   epsilon contraction. -/
@@ -318,24 +318,24 @@ lemma map_epsilonContraction {V : SU 2} {f : B →ₗ[ℂ] B} (hf : ∀ l : Fin 
     f (T l) = ∑ a : Fin 2 → Fin 2,
         (starRingEnd ℂ (V.1 (a 0) (l 0)) * starRingEnd ℂ (V.1 (a 1) (l 1))) • T a) :
     f (IsospinFundFund.epsilonContraction T) = IsospinFundFund.epsilonContraction T := by
-  rw [IsospinFundFund.epsilonContraction, ← ofComponents_epsilonAntiFund,
-    ofComponents_antiFund_smul_of_law T V (fun l => (hf l).trans <|
+  rw [IsospinFundFund.epsilonContraction, ← liftComponents_epsilonAntiFund,
+    liftComponents_antiFund_smul_of_law T V (fun l => (hf l).trans <|
       Finset.sum_congr rfl fun a _ => by rw [Fin.prod_univ_two]), epsilonAntiFund_invariant]
 
 /-- The epsilon contraction is isospin invariant. -/
 lemma repGauge_epsilonContraction
     (hT : (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund)
-      (repGauge.comp GaugeGroupI.ofSU2) (ofComponents T)) (V : SU 2) :
+      (repGauge.comp GaugeGroupI.ofSU2) (liftComponents T)) (V : SU 2) :
     repGauge (1, V, 1) (IsospinFundFund.epsilonContraction T)
       = IsospinFundFund.epsilonContraction T := by
-  rw [IsospinFundFund.epsilonContraction, ← ofComponents_epsilonAntiFund]
+  rw [IsospinFundFund.epsilonContraction, ← liftComponents_epsilonAntiFund]
   exact hT.rep_map_of_invariant epsilonAntiFund_invariant V
 
 /-- The isospin invariants of the component span reduce to the span of the epsilon
   contraction. -/
 noncomputable def invariantReductionToSpan
     (hT : (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund)
-      (repGauge.comp GaugeGroupI.ofSU2) (ofComponents T)) :
+      (repGauge.comp GaugeGroupI.ofSU2) (liftComponents T)) :
     InvariantReductionToSpan (fun V : SU 2 => repGauge ((1, V, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T)) :=
   invariantReductionToEpsilonAntiFund hT
@@ -360,8 +360,8 @@ variable {T : (Fin 4 → Fin 2) → B}
 lemma of_law (hT : ∀ (V : SU 2) (l : Fin 4 → Fin 2), repGauge (1, V, 1) (T l)
     = ∑ a : Fin 4 → Fin 2, (∏ i : Fin 4, V.1 (a i) (l i)) • T a) :
     (suTensor 2).IsEquivariant (fun _ : Fin 4 => .fund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents T) :=
-  isEquivariant_ofComponents_fund T hT
+      (liftComponents T) :=
+  isEquivariant_liftComponents_fund T hT
 
 /-- The contraction pairing the first index with the second and the third with the
   fourth. -/
@@ -377,7 +377,7 @@ def epsilonContraction₁₃ (T : (Fin 4 → Fin 2) → B) : B :=
   contractions. -/
 lemma reducesInvariantsTo_span_epsilonContractions
     (hT : (suTensor 2).IsEquivariant (fun _ : Fin 4 => .fund) (repGauge.comp GaugeGroupI.ofSU2)
-      (ofComponents T)) :
+      (liftComponents T)) :
     ReducesInvariantsTo (fun V : SU 2 => repGauge ((1, V, 1) : GaugeGroupI))
       (Submodule.span ℂ (Set.range T))
       (Submodule.span ℂ {epsilonContraction₁₂ T, epsilonContraction₁₃ T}) :=

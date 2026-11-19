@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Mathematics.HomogeneousGenerators
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.LocalCovFieldAlgebra.Basic
-public import PhyslibAlpha.Relativity.LightConeDeriv
+public import PhyslibAlpha.Relativity.LorentzGroup.Boosts.Axis
 public import Mathlib.RepresentationTheory.Invariants
 /-!
 # The scalar sector of the covariant field algebra

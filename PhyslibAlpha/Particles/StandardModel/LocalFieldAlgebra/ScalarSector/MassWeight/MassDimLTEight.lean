@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.ScalarSector.MassWeight.GaugeWeight
-public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.OddRank
+public import PhyslibAlpha.Relativity.Bispinors.ComplexifiedAction
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.InvariantReduction
 /-!
 # The Higgs invariants below mass weight eight
@@ -26,7 +26,8 @@ weight is neutral, which is the gauge classification of
 `reducesInvariantsTo_massWeightSubmodule_two`.  Weight six dies on Lorentz counting.  Its
 gauge invariants are the isospin contractions with one derivative, `∂_μ H† H` and
 `H† ∂_μ H`, and a single covector index admits no invariant contraction at all — the metric
-ties two indices and the Levi-Civita symbol four — which is `OddRank` at one index.
+ties two indices and the Levi-Civita symbol four — which is
+`complexLorentzTensor.invariants_up_pow_eq_bot_of_odd` at one index.
 
 Weight four survives because the Higgs is a Lorentz scalar.  Its gauge invariants are the
 multiples of `H† H`, and with no derivative slot there is no Lorentz index to contract, so
@@ -79,7 +80,7 @@ namespace ScalarSector
 At mass weight six the gauge classification leaves the isospin contractions carrying one
 derivative, on either of the two towers.  The Higgs is a Lorentz scalar, so the only
 Lorentz index such a contraction has is that derivative slot, and read as a family indexed
-by it the contraction is a Lorentz vector.  `OddRank` says that one covector index
+by it the contraction is a Lorentz vector.  `invariants_up_pow_eq_bot_of_odd` says that one index
 admits no invariant contraction, so the span of such a family reduces to `⊥`
 (`ComplexVector.reducesInvariantsTo_bot_of_odd`); the spans are themselves stable, so
 `ReducesInvariantsTo.sup` joins the two.
@@ -90,8 +91,8 @@ admits no invariant contraction, so the span of such a family reduces to `⊥`
   tower, read as a family indexed by its derivative slot, is a Lorentz vector. -/
 lemma isEquivariant_up_rankOne_dotGaugeHiggs_left :
     complexLorentzTensor.IsEquivariant (fun _ : Fin 1 => .up) repLorentzGroup
-      (ofComponents fun d : Fin 1 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs d ![]) := by
-  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
+      (liftComponents fun d : Fin 1 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs d ![]) := by
+  refine (isEquivariant_liftComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g l (![] : Fin 0 → Fin 1 ⊕ Fin 3)]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [sum_pi_fin_zero, Fin.prod_univ_zero, mul_one]
@@ -100,8 +101,8 @@ lemma isEquivariant_up_rankOne_dotGaugeHiggs_left :
   tower is a Lorentz vector in the same way. -/
 lemma isEquivariant_up_rankOne_dotGaugeHiggs_right :
     complexLorentzTensor.IsEquivariant (fun _ : Fin 1 => .up) repLorentzGroup
-      (ofComponents fun d : Fin 1 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs ![] d) := by
-  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
+      (liftComponents fun d : Fin 1 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs ![] d) := by
+  refine (isEquivariant_liftComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g (![] : Fin 0 → Fin 1 ⊕ Fin 3) l, sum_pi_fin_zero]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [Fin.prod_univ_zero, one_mul]
@@ -191,8 +192,8 @@ for the Lorentz group, since a single covector index carries no invariant contra
 lemma reducesInvariantsTo_dotSpan_one_zero_sup_zero_one :
     ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentzGroup g) (dotSpan 1 0 ⊔ dotSpan 0 1) ⊥ := by
   rw [dotSpan_one_zero_eq, dotSpan_zero_one_eq,
-    ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 1 => .up),
-    ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 1 => .up)]
+    ← range_liftComponents (S := complexLorentzTensor) (c := fun _ : Fin 1 => .up),
+    ← range_liftComponents (S := complexLorentzTensor) (c := fun _ : Fin 1 => .up)]
   exact (ComplexVector.reducesInvariantsTo_bot_of_odd odd_one
       isEquivariant_up_rankOne_dotGaugeHiggs_left).sup
     (ComplexVector.reducesInvariantsTo_bot_of_odd odd_one
