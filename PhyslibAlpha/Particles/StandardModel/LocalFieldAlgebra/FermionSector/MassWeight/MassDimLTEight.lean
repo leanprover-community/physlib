@@ -7,8 +7,8 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.Components
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.MassWeight.GaugeWeight
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsLeftRightWeyl
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsVectorLeftRightWeyl
+public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
+public import PhyslibAlpha.Relativity.Bispinors.Pauli.Basic
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.InvariantReduction
 /-!
 # The invariants below mass weight eight
@@ -29,16 +29,17 @@ every other pairing having hypercharges that cannot cancel. This is
 surviving pairing is then a product of two symbols of opposite chirality, one dotted and
 one undotted, since a species and its conjugate always sit in opposite Weyl
 representations. A pair of opposite-chirality spinor indices with nothing else to
-contract against admits no invariant at all — `Lorentz.IsDualLeftRightWeyl.eq_zero_of_invariant`
+contract against admits no invariant at all — `Lorentz.invariants_tensorRep_leftRight_eq_bot`
 — so each pairing contributes nothing and mass weight six is left empty.
 
 That is the absence of a Dirac mass term in the Standard Model, and it is why the fermion
 masses have to come from the Yukawa sector instead. The Higgs doublet supplies the missing
 index, and its own mass weight makes the Yukawa terms weight eight.
 
-The chirality laws of one-index families, `Lorentz.IsDualLeftWeyl` and
-`Lorentz.IsDualRightWeyl`, and the products of opposite-chirality pairs live in
-`PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsLeftRightWeyl`. The chirality bookkeeping
+The products of opposite-chirality one-index families, `Lorentz.isEquivariant_downLDownR_mul`
+and its swap, live in `PhyslibAlpha.Relativity.Fermions.Weyl.Metric`; they take
+the chirality law of each factor, contragredient to the left-handed Weyl representation or to
+its conjugate. The chirality bookkeeping
 of the species is done once here and reused at mass weight eight, in `MassDimEight`, which
 imports this file. The five undotted species are indexed by
 `LeftIdx` and the five dotted ones by `RightIdx`, and `leftComp` and `rightComp` list
@@ -73,6 +74,8 @@ scalars, so `1` is an invariant of weight zero lying in no `S`.
 
 @[expose] public section
 
+open TensorSpecies
+
 namespace StandardModel
 
 open Matrix MatrixGroups Lorentz
@@ -88,7 +91,8 @@ species and its conjugate always sit in opposite ones. The five undotted species
 `bard`, `baru`, `Q`, `L` and `bare`, the five dotted ones `d`, `u`, `barQ`, `barL` and
 `e`. Indexing each list by the generation and the remaining internal indices, `leftComp`
 and `rightComp` present every fermion component as a two-element family in its spinor
-index, which is the shape `Lorentz.IsDualLeftWeyl` asks for.
+index, which is the shape the chirality laws `repLorentz_leftComp` and `repLorentz_rightComp`
+are stated in.
 
 -/
 
@@ -134,25 +138,25 @@ noncomputable def rightComp
 
 /-- Every undotted component family carries a dual undotted spinor index, at zero
   covariant derivatives. -/
-lemma isDualLeftWeyl_leftComp (i : LeftIdx) :
-    IsDualLeftWeyl repLorentz (leftComp ![] i) := by
+lemma repLorentz_leftComp (i : LeftIdx) (Λ : SL(2,ℂ)) (a : Fin 2) :
+    repLorentz Λ (leftComp ![] i a) = ∑ β, (Λ⁻¹).1 a β • leftComp ![] i β := by
   cases i with
-  | bard f c => exact fun Λ a => repLorentz_bardComponent Λ f ![] (a, c)
-  | baru f c => exact fun Λ a => repLorentz_baruComponent Λ f ![] (a, c)
-  | Q f c s => exact fun Λ a => repLorentz_QComponent Λ f ![] (a, c, s)
-  | L f s => exact fun Λ a => repLorentz_LComponent Λ f ![] (a, s)
-  | bare f => exact fun Λ a => repLorentz_bareComponent Λ f ![] a
+  | bard f c => exact repLorentz_bardComponent Λ f ![] (a, c)
+  | baru f c => exact repLorentz_baruComponent Λ f ![] (a, c)
+  | Q f c s => exact repLorentz_QComponent Λ f ![] (a, c, s)
+  | L f s => exact repLorentz_LComponent Λ f ![] (a, s)
+  | bare f => exact repLorentz_bareComponent Λ f ![] a
 
 /-- Every dotted component family carries a dual dotted spinor index, at zero covariant
   derivatives. -/
-lemma isDualRightWeyl_rightComp (i : RightIdx) :
-    IsDualRightWeyl repLorentz (rightComp ![] i) := by
+lemma repLorentz_rightComp (i : RightIdx) (Λ : SL(2,ℂ)) (a : Fin 2) :
+    repLorentz Λ (rightComp ![] i a) = ∑ β, star ((Λ⁻¹).1 a β) • rightComp ![] i β := by
   cases i with
-  | d f c => exact fun Λ a => repLorentz_dComponent Λ f ![] (a, c)
-  | u f c => exact fun Λ a => repLorentz_uComponent Λ f ![] (a, c)
-  | barQ f c s => exact fun Λ a => repLorentz_barQComponent Λ f ![] (a, c, s)
-  | barL f s => exact fun Λ a => repLorentz_barLComponent Λ f ![] (a, s)
-  | e f => exact fun Λ a => repLorentz_eComponent Λ f ![] a
+  | d f c => exact repLorentz_dComponent Λ f ![] (a, c)
+  | u f c => exact repLorentz_uComponent Λ f ![] (a, c)
+  | barQ f c s => exact repLorentz_barQComponent Λ f ![] (a, c, s)
+  | barL f s => exact repLorentz_barLComponent Λ f ![] (a, s)
+  | e f => exact repLorentz_eComponent Λ f ![] a
 
 
 /-!
@@ -283,7 +287,7 @@ nonzero colour, so no one generator sees every weight.
 Mass weight six is the product of two underived fermion towers. Gauge invariance puts
 such an invariant in the weight-zero piece, which `massWeightSubmoduleGaugeWeightSix_piece_zero`
 writes as the ten conjugate pairings, and every one of those is an undotted
-component times a dotted one. `Lorentz.isDualLeftRightWeyl_mul` turns each into a dual
+component times a dotted one. `Lorentz.isEquivariant_downLDownR_mul` turns each into a dual
 left-right Weyl family and `Lorentz.mem_of_lorentz_invariant_iSup_dualLeftRightWeyl_span`
 peels the lot off, leaving nothing.
 
@@ -339,17 +343,17 @@ noncomputable def sixSpan :
 
 /-- Each mass-weight six family carries one dual undotted and one dual dotted spinor
   index. -/
-lemma isDualLeftRightWeyl_sixFamily
+lemma isEquivariant_downLDownR_sixFamily
     (i : (LeftIdx × RightIdx) ⊕ (RightIdx × LeftIdx)) :
-    IsDualLeftRightWeyl fieldData.LocalCovFieldAlgebra repLorentz
-      (ofPairComponents (k := .downL) (k' := .downR) fun a b => sixFamily i (a, b)) := by
+    complexLorentzTensor.IsEquivariant ![.downL, .downR] repLorentz
+      (ofComponents (sixFamily i ∘ pairIdx)) := by
   cases i with
   | inl p =>
-    exact isDualLeftRightWeyl_mul repLorentz_mul (isDualLeftWeyl_leftComp p.1)
-      (isDualRightWeyl_rightComp p.2)
+    exact isEquivariant_downLDownR_mul repLorentz_mul (repLorentz_leftComp p.1)
+      (repLorentz_rightComp p.2)
   | inr p =>
-    exact isDualLeftRightWeyl_mul_swap repLorentz_mul (isDualRightWeyl_rightComp p.1)
-      (isDualLeftWeyl_leftComp p.2)
+    exact isEquivariant_downLDownR_mul_swap repLorentz_mul (repLorentz_rightComp p.1)
+      (repLorentz_leftComp p.2)
 
 /-- An undotted range times a dotted one lies in the mass-weight six span. -/
 lemma mul_le_sixSpan_left {V W : Submodule ℂ fieldData.LocalCovFieldAlgebra} (hV : V ≤ leftSpan ![])
@@ -409,7 +413,7 @@ lemma mem_of_invariant_of_mem_massWeightSubmoduleSix_sup
     GaugeWeightDecomposition.mem_piece_zero_sup_of_invariant _ (fun i y hy => hS _ y hy) hx
       fun _ => hG _
   refine mem_of_lorentz_invariant_iSup_dualLeftRightWeyl_span
-    isDualLeftRightWeyl_sixFamily S hSL ?_ hL
+    isEquivariant_downLDownR_sixFamily S hSL ?_ hL
   exact sup_le_sup_right massWeightSubmoduleGaugeWeightSix_piece_zero_le S hzero
 
 

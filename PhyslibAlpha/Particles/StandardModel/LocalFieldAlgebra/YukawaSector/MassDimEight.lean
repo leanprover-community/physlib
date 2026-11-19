@@ -68,6 +68,8 @@ classification used here is an instance of it, packaged as an `InvariantReductio
 
 @[expose] public section
 
+open TensorSpecies
+
 namespace StandardModel
 
 open GaugeFieldData (FieldKind)
@@ -509,8 +511,8 @@ lemma reducesInvariantsTo_downYukawa (f f' : Fin 3) :
         LocalCovFieldAlgebra.downBlockColour f f' k.1 k.2.1 k.2.2.1 k.2.2.2)) := by
     refine ReducesInvariantsTo.ofSU3 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun k : Fin 2 × Fin 2 × Fin 2 × Fin 2 =>
-        IsSU3FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_downBlock f f' k.1 k.2.1 k.2.2.1
+        ColourFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_downBlock f f' k.1 k.2.1 k.2.2.1
             k.2.2.2)).mono_left ?_)
     rw [downBlockSubmodule]
     refine Submodule.mul_mul_le_of_le_span_range LocalCovFieldAlgebra.higgsSubmodule_zero_le
@@ -531,8 +533,8 @@ lemma reducesInvariantsTo_downYukawa (f f' : Fin 3) :
           LocalCovFieldAlgebra.downBlockIsospin f f' m.1 m.2)) := by
     refine ReducesInvariantsTo.ofSU2 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun m : Fin 2 × Fin 2 =>
-        IsSU2FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_downBlockColour f f' m.1
+        IsospinFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_downBlockColour f f' m.1
             m.2)).mono_left ?_)
     refine Submodule.span_le.2 <| Set.range_subset_iff.2 fun k =>
       Submodule.mem_iSup_of_mem (k.2.1, k.2.2.1) ?_
@@ -542,9 +544,11 @@ lemma reducesInvariantsTo_downYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((IsBiDualRightWeyl.invariantReductionToSpan
-      (LocalCovFieldAlgebra.isBiDualRightWeyl_downBlockIsospin f f')).reducesInvariantsTo.mono_left
-        (range_ofPairComponents (k := .downR) (k' := .downR) (LocalCovFieldAlgebra.downBlockIsospin
+    ((invariantReductionToMetricTensor (Or.inr (Or.inr (Or.inr rfl)))
+      (LocalCovFieldAlgebra.isEquivariant_downRDownR_downBlockIsospin f
+          f')).reducesInvariantsTo.mono_left
+        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+            (LocalCovFieldAlgebra.downBlockIsospin
           f f')).ge))
 
 /-- The up-type block reduces to the up-type Yukawa term. Isospin is contracted by the
@@ -561,8 +565,8 @@ lemma reducesInvariantsTo_upYukawa (f f' : Fin 3) :
         LocalCovFieldAlgebra.upBlockColour f f' k.1 k.2.1 k.2.2.1 k.2.2.2)) := by
     refine ReducesInvariantsTo.ofSU3 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun k : Fin 2 × Fin 2 × Fin 2 × Fin 2 =>
-        IsSU3FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_upBlock f f' k.1 k.2.1 k.2.2.1
+        ColourFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_upBlock f f' k.1 k.2.1 k.2.2.1
             k.2.2.2)).mono_left ?_)
     rw [upBlockSubmodule]
     refine Submodule.mul_mul_le_of_le_span_range LocalCovFieldAlgebra.higgsSubmodule_zero_le
@@ -582,8 +586,9 @@ lemma reducesInvariantsTo_upYukawa (f f' : Fin 3) :
         (Set.range fun m : Fin 2 × Fin 2 => LocalCovFieldAlgebra.upBlockIsospin f f' m.1 m.2)) := by
     refine ReducesInvariantsTo.ofSU2 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun m : Fin 2 × Fin 2 =>
-        IsSU2BiAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU2BiAntiFundamental_upBlockColour f f' m.1 m.2)).mono_left ?_)
+        IsospinAntiFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_isospinAntiFundAntiFund_upBlockColour f f' m.1
+              m.2)).mono_left ?_)
     refine Submodule.span_le.2 <| Set.range_subset_iff.2 fun k =>
       Submodule.mem_iSup_of_mem (k.2.1, k.2.2.1) ?_
     rw [show LocalCovFieldAlgebra.upBlockColour f f' k.1 k.2.1 k.2.2.1 k.2.2.2
@@ -592,9 +597,11 @@ lemma reducesInvariantsTo_upYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((IsBiDualLeftWeyl.invariantReductionToSpan
-      (LocalCovFieldAlgebra.isBiDualLeftWeyl_upBlockIsospin f f')).reducesInvariantsTo.mono_left
-        (range_ofPairComponents (k := .downL) (k' := .downL) (LocalCovFieldAlgebra.upBlockIsospin f
+    ((invariantReductionToMetricTensor (Or.inr (Or.inl rfl))
+      (LocalCovFieldAlgebra.isEquivariant_downLDownL_upBlockIsospin f
+          f')).reducesInvariantsTo.mono_left
+        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+            (LocalCovFieldAlgebra.upBlockIsospin f
           f')).ge))
 
 /-- The charged-lepton block reduces to the charged-lepton Yukawa term. Its colour stage is
@@ -632,8 +639,9 @@ lemma reducesInvariantsTo_leptonYukawa (f f' : Fin 3) :
           m.2)) := by
     refine ReducesInvariantsTo.ofSU2 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun m : Fin 2 × Fin 2 =>
-        IsSU2FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_leptonBlock f f' m.1 m.2)).mono_left
+        IsospinFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_leptonBlock f f' m.1
+              m.2)).mono_left
             ?_)
     refine Submodule.span_le.2 <| Set.range_subset_iff.2 fun k =>
       Submodule.mem_iSup_of_mem (k.2.1, k.2.2.2) ?_
@@ -643,10 +651,10 @@ lemma reducesInvariantsTo_leptonYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((IsBiDualRightWeyl.invariantReductionToSpan
-      (LocalCovFieldAlgebra.isBiDualRightWeyl_leptonBlockIsospin f
+    ((invariantReductionToMetricTensor (Or.inr (Or.inr (Or.inr rfl)))
+      (LocalCovFieldAlgebra.isEquivariant_downRDownR_leptonBlockIsospin f
         f')).reducesInvariantsTo.mono_left
-        (range_ofPairComponents (k := .downR) (k' := .downR)
+        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
           (LocalCovFieldAlgebra.leptonBlockIsospin f f')).ge))
 
 /-- The conjugate down-type block reduces to the conjugate down-type Yukawa term. -/
@@ -661,8 +669,8 @@ lemma reducesInvariantsTo_barDownYukawa (f f' : Fin 3) :
         LocalCovFieldAlgebra.barDownBlockColour f f' k.1 k.2.1 k.2.2.1 k.2.2.2)) := by
     refine ReducesInvariantsTo.ofSU3 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun k : Fin 2 × Fin 2 × Fin 2 × Fin 2 =>
-        IsSU3FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_barDownBlock f f' k.1 k.2.1 k.2.2.1
+        ColourFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_barDownBlock f f' k.1 k.2.1 k.2.2.1
             k.2.2.2)).mono_left ?_)
     rw [barDownBlockSubmodule]
     refine Submodule.mul_mul_le_of_le_span_range LocalCovFieldAlgebra.barHiggsSubmodule_zero_le
@@ -683,8 +691,8 @@ lemma reducesInvariantsTo_barDownYukawa (f f' : Fin 3) :
           m.2)) := by
     refine ReducesInvariantsTo.ofSU2 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun m : Fin 2 × Fin 2 =>
-        IsSU2FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_barDownBlockColour f f' m.1
+        IsospinFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_barDownBlockColour f f' m.1
             m.2)).mono_left ?_)
     refine Submodule.span_le.2 <| Set.range_subset_iff.2 fun k =>
       Submodule.mem_iSup_of_mem (k.2.1, k.2.2.1) ?_
@@ -694,10 +702,10 @@ lemma reducesInvariantsTo_barDownYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((IsBiDualLeftWeyl.invariantReductionToSpan
-      (LocalCovFieldAlgebra.isBiDualLeftWeyl_barDownBlockIsospin f
+    ((invariantReductionToMetricTensor (Or.inr (Or.inl rfl))
+      (LocalCovFieldAlgebra.isEquivariant_downLDownL_barDownBlockIsospin f
         f')).reducesInvariantsTo.mono_left
-        (range_ofPairComponents (k := .downL) (k' := .downL)
+        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
           (LocalCovFieldAlgebra.barDownBlockIsospin f f')).ge))
 
 /-- The conjugate up-type block reduces to the conjugate up-type Yukawa term. -/
@@ -712,8 +720,8 @@ lemma reducesInvariantsTo_barUpYukawa (f f' : Fin 3) :
         LocalCovFieldAlgebra.barUpBlockColour f f' k.1 k.2.1 k.2.2.1 k.2.2.2)) := by
     refine ReducesInvariantsTo.ofSU3 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun k : Fin 2 × Fin 2 × Fin 2 × Fin 2 =>
-        IsSU3FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_barUpBlock f f' k.1 k.2.1 k.2.2.1
+        ColourFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_barUpBlock f f' k.1 k.2.1 k.2.2.1
             k.2.2.2)).mono_left ?_)
     rw [barUpBlockSubmodule]
     refine Submodule.mul_mul_le_of_le_span_range LocalCovFieldAlgebra.barHiggsSubmodule_zero_le
@@ -734,8 +742,9 @@ lemma reducesInvariantsTo_barUpYukawa (f f' : Fin 3) :
           LocalCovFieldAlgebra.barUpBlockIsospin f f' m.1 m.2)) := by
     refine ReducesInvariantsTo.ofSU2 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun m : Fin 2 × Fin 2 =>
-        IsSU2BiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU2BiFundamental_barUpBlockColour f f' m.1 m.2)).mono_left ?_)
+        IsospinFundFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_isospinFundFund_barUpBlockColour f f' m.1
+              m.2)).mono_left ?_)
     refine Submodule.span_le.2 <| Set.range_subset_iff.2 fun k =>
       Submodule.mem_iSup_of_mem (k.2.1, k.2.2.1) ?_
     rw [show LocalCovFieldAlgebra.barUpBlockColour f f' k.1 k.2.1 k.2.2.1 k.2.2.2
@@ -744,9 +753,11 @@ lemma reducesInvariantsTo_barUpYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((IsBiDualRightWeyl.invariantReductionToSpan
-      (LocalCovFieldAlgebra.isBiDualRightWeyl_barUpBlockIsospin f f')).reducesInvariantsTo.mono_left
-        (range_ofPairComponents (k := .downR) (k' := .downR) (LocalCovFieldAlgebra.barUpBlockIsospin
+    ((invariantReductionToMetricTensor (Or.inr (Or.inr (Or.inr rfl)))
+      (LocalCovFieldAlgebra.isEquivariant_downRDownR_barUpBlockIsospin f
+          f')).reducesInvariantsTo.mono_left
+        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+            (LocalCovFieldAlgebra.barUpBlockIsospin
           f f')).ge))
 
 /-- The conjugate charged-lepton block reduces to the conjugate charged-lepton Yukawa term,
@@ -784,8 +795,8 @@ lemma reducesInvariantsTo_barLeptonYukawa (f f' : Fin 3) :
           m.2)) := by
     refine ReducesInvariantsTo.ofSU2 ((InvariantReductionToSpan.reducesInvariantsTo_iSup
       fun m : Fin 2 × Fin 2 =>
-        IsSU2FundamentalAntiFundamental.invariantReductionToSpan
-          (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_barLeptonBlock f f' m.1
+        IsospinFundAntiFund.invariantReductionToSpan
+          (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_barLeptonBlock f f' m.1
             m.2)).mono_left ?_)
     refine Submodule.span_le.2 <| Set.range_subset_iff.2 fun k =>
       Submodule.mem_iSup_of_mem (k.2.1, k.2.2.2) ?_
@@ -795,10 +806,10 @@ lemma reducesInvariantsTo_barLeptonYukawa (f f' : Fin 3) :
         from by simp]
     exact Submodule.subset_span ⟨_, rfl⟩
   exact (hcolour.trans hisospin).trans (ReducesInvariantsTo.ofLorentz
-    ((IsBiDualLeftWeyl.invariantReductionToSpan
-      (LocalCovFieldAlgebra.isBiDualLeftWeyl_barLeptonBlockIsospin f
+    ((invariantReductionToMetricTensor (Or.inr (Or.inl rfl))
+      (LocalCovFieldAlgebra.isEquivariant_downLDownL_barLeptonBlockIsospin f
         f')).reducesInvariantsTo.mono_left
-        (range_ofPairComponents (k := .downL) (k' := .downL)
+        (range_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
           (LocalCovFieldAlgebra.barLeptonBlockIsospin f f')).ge))
 
 /-!

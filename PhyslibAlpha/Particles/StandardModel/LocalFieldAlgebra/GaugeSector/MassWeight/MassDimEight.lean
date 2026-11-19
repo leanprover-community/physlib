@@ -8,8 +8,7 @@ module
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.GaugeSector.MassWeight.MassDimLTEight
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.InvariantReduction
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Adjoint
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.IsU1BiAdjoint
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.RankFour
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankFour
 public import Mathlib.RepresentationTheory.Invariants
 /-!
 # Products of two field strengths as bi-adjoint gauge tensors
@@ -23,15 +22,17 @@ A single field-strength symbol of the gauge sector carries one adjoint index of 
 algebra, so a product of two of them carries two. Restricting the value index to one
 factor of the gauge group turns such a product into a family indexed by two adjoint
 indices of that factor, and the gauge transformation law `repGauge_F` says exactly that
-these families are bi-adjoint in the sense of `IsSU3BiAdjoint`, `IsSU2BiAdjoint` and
-`IsU1BiAdjoint`. The gauge invariant those propositions supply is the trace contraction,
+the maps of these families out of the tensors with two adjoint indices are equivariant
+(`ColourAdjAdj.of_law`, `IsospinAdjAdj.of_law`), and for hypercharge the family is fixed
+outright. The gauge invariant these laws supply is the trace contraction,
 the Kronecker contraction of the two adjoint indices, the familiar kinetic pairing of two
 field strengths; it has mass weight eight and is fixed by the whole gauge group.
 
 Conversely every twice-derived field strength and every product of two underived ones,
 sorted by gauge factor, is a component of a gluon or `W`-boson pair family, a hypercharge
 invariant, or a family carrying an unpaired adjoint index of a non-abelian factor, which
-contributes nothing by `IsSU3Adjoint` and `IsSU2Adjoint`. Putting the two
+contributes nothing by `ColourAdj.reducesInvariantsTo_bot` and
+`IsospinAdj.reducesInvariantsTo_bot`. Putting the two
 directions together classifies the gauge invariants of mass weight eight modulo any
 gauge-stable submodule. Such an invariant is a combination of the three underived trace
 contractions and the twice-derived hypercharge field strengths. Both shapes carry four
@@ -84,6 +85,8 @@ eight generators, `mem_massWeightSubmodule_eight_sup_and_gauge_lorentz_invariant
 -/
 
 @[expose] public section
+
+open TensorSpecies
 
 namespace StandardModel
 
@@ -267,15 +270,17 @@ lemma repGauge_su3_wField (U : specialUnitaryGroup (Fin 3) ℂ) {n : ℕ}
 
 /-- The gluon field strengths at fixed derivative slots and covector indices form a family
   of one `su(3)` adjoint index. -/
-lemma isSU3Adjoint_gluonField {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin 1 ⊕ Fin 3) :
-    IsSU3Adjoint fieldData.LocalCovFieldAlgebra repGaugeGroupI (gluonField l μ ν) :=
-  IsSU3Adjoint.of_law fun U c => repGauge_gluonField (U, 1, 1) l μ ν c
+lemma isEquivariant_colourAdj_gluonField {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin 1 ⊕ Fin 3) :
+    (suTensor 3).IsEquivariant ![.adj] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((gluonField l μ ν) ∘ relabelAdjIdx su3Label)) :=
+  ColourAdj.of_law fun U c => repGauge_gluonField (U, 1, 1) l μ ν c
 
 /-- The `W`-boson field strengths at fixed derivative slots and covector indices form a
   family of one `su(2)` adjoint index. -/
-lemma isSU2Adjoint_wField {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin 1 ⊕ Fin 3) :
-    IsSU2Adjoint fieldData.LocalCovFieldAlgebra repGaugeGroupI (wField l μ ν) :=
-  IsSU2Adjoint.of_law fun U c => repGauge_wField (1, U, 1) l μ ν c
+lemma isEquivariant_isospinAdj_wField {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin 1 ⊕ Fin 3) :
+    (suTensor 2).IsEquivariant ![.adj] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((wField l μ ν) ∘ relabelAdjIdx su2Label)) :=
+  IsospinAdj.of_law fun U c => repGauge_wField (1, U, 1) l μ ν c
 
 /-!
 
@@ -283,10 +288,11 @@ lemma isSU2Adjoint_wField {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin
 
 A product of two underived field strengths of one gauge factor, at the four covector
 indices `p`, is a family indexed by the two adjoint indices of that factor, and by section
-B and the multiplicativity of the gauge action it is a bi-adjoint family in the sense of
-`IsSU3BiAdjoint`, `IsSU2BiAdjoint` and `IsU1BiAdjoint`, with the transformation law
-holding at every gauge element and not only at those of its own factor. Its trace
-contraction, the Kronecker contraction of the two adjoint indices, is fixed by the whole
+B and the multiplicativity of the gauge action it obeys the transformation law of a tensor
+with two adjoint indices (`repGaugeGroupI_gluonPair_eq_sum`, `repGaugeGroupI_wPair_eq_sum`,
+`repGaugeGroupI_hyperchargePair`), at every gauge element and not only at those of its own
+factor. Its trace contraction, the Kronecker contraction of the two adjoint indices, is fixed by the
+whole
 gauge group and has mass weight eight, the sum of the mass weights of its two factors; so
 is the twice-derived hypercharge field strength, the other shape of mass weight eight.
 
@@ -320,80 +326,85 @@ noncomputable def hyperchargeDeriv (d : EightIdx) : fieldData.LocalCovFieldAlgeb
 
 /-- A gauge transformation moves a gluon pair as the `SU(3)` factor of that gauge group
   element moves a tensor with two `su(3)` adjoint indices. -/
-lemma isSU3BiAdjointMat_gluonPair (p : EightIdx) (g : GaugeGroupI) :
-    IsSU3BiAdjointMat (GaugeGroupI.toSU3 g) (repGaugeGroupI g) (gluonPair p) := fun _ => by
+lemma repGaugeGroupI_gluonPair_eq_sum (p : EightIdx) (g : GaugeGroupI) (l : Fin 2 → Fin 8) :
+    repGaugeGroupI g (gluonPair p l) = ∑ a : Fin 2 → Fin 8,
+      (∏ i : Fin 2, ((su3AdjointMatrix (GaugeGroupI.toSU3 g) (a i) (l i) : ℝ) : ℂ)) •
+        gluonPair p a := by
   simp only [gluonPair, repGaugeGroupI_mul, repGauge_gluonField, sum_mul_sum_eq_sum_pi_two,
     Fin.prod_univ_two]
 
 /-- A gluon pair is a bi-adjoint `su(3)` tensor. -/
-lemma isSU3BiAdjoint_gluonPair (p : EightIdx) :
-    IsSU3BiAdjoint fieldData.LocalCovFieldAlgebra repGaugeGroupI (gluonPair p) :=
-  IsSU3BiAdjoint.of_law fun U => isSU3BiAdjointMat_gluonPair p (U, 1, 1)
+lemma isEquivariant_colourAdjAdj_gluonPair (p : EightIdx) :
+    (suTensor 3).IsEquivariant ![.adj, .adj] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((gluonPair p) ∘ relabelAdjPairIdx su3Label)) :=
+  ColourAdjAdj.of_law fun U => repGaugeGroupI_gluonPair_eq_sum p (U, 1, 1)
 
 /-- A gauge transformation moves a `W`-boson pair as the `SU(2)` factor of that gauge group
   element moves a tensor with two `su(2)` adjoint indices. -/
-lemma isSU2BiAdjointMat_wPair (p : EightIdx) (g : GaugeGroupI) :
-    IsSU2BiAdjointMat (GaugeGroupI.toSU2 g) (repGaugeGroupI g) (wPair p) := fun _ => by
+lemma repGaugeGroupI_wPair_eq_sum (p : EightIdx) (g : GaugeGroupI) (l : Fin 2 → Fin 3) :
+    repGaugeGroupI g (wPair p l) = ∑ a : Fin 2 → Fin 3,
+      (∏ i : Fin 2, ((su2AdjointMatrix (GaugeGroupI.toSU2 g) (a i) (l i) : ℝ) : ℂ)) •
+        wPair p a := by
   simp only [wPair, repGaugeGroupI_mul, repGauge_wField, sum_mul_sum_eq_sum_pi_two,
     Fin.prod_univ_two]
 
 /-- A `W`-boson pair is a bi-adjoint `su(2)` tensor. -/
-lemma isSU2BiAdjoint_wPair (p : EightIdx) :
-    IsSU2BiAdjoint fieldData.LocalCovFieldAlgebra repGaugeGroupI (wPair p) :=
-  IsSU2BiAdjoint.of_law fun U => isSU2BiAdjointMat_wPair p (1, U, 1)
+lemma isEquivariant_isospinAdjAdj_wPair (p : EightIdx) :
+    (suTensor 2).IsEquivariant ![.adj, .adj] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((wPair p) ∘ relabelAdjPairIdx su2Label)) :=
+  IsospinAdjAdj.of_law fun U => repGaugeGroupI_wPair_eq_sum p (1, U, 1)
 
 /-- A gauge transformation fixes a hypercharge pair, which is the `u(1)` bi-adjoint law. -/
-lemma isU1BiAdjointMat_hyperchargePair (p : EightIdx) (g : GaugeGroupI) :
-    IsU1BiAdjointMat (GaugeGroupI.toU1 g) (repGaugeGroupI g) (hyperchargePair p) :=
-  (isU1BiAdjointMat_iff _ _ _).2 fun _ => by
-    simp only [hyperchargePair, repGaugeGroupI_mul, repGauge_hyperchargeField]
+lemma repGaugeGroupI_hyperchargePair (p : EightIdx) (g : GaugeGroupI) (l : Fin 2 → Fin 1) :
+    repGaugeGroupI g (hyperchargePair p l) = hyperchargePair p l := by
+  simp only [hyperchargePair, repGaugeGroupI_mul, repGauge_hyperchargeField]
 
 /-- The gluon trace contraction at the covector indices `p`, the Kronecker contraction of
   the two colour indices of the gluon pair. -/
 noncomputable def gluonTrace (p : EightIdx) : fieldData.LocalCovFieldAlgebra :=
-  IsSU3BiAdjoint.traceContraction (gluonPair p)
+  ColourAdjAdj.traceContraction (gluonPair p)
 
 /-- The `W`-boson trace contraction at the covector indices `p`. -/
 noncomputable def wTrace (p : EightIdx) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2BiAdjoint.traceContraction (wPair p)
+  IsospinAdjAdj.traceContraction (wPair p)
 
 /-- The hypercharge trace contraction at the covector indices `p`. -/
 noncomputable def hyperchargeTrace (p : EightIdx) : fieldData.LocalCovFieldAlgebra :=
-  IsU1BiAdjoint.traceContraction (hyperchargePair p)
+  HyperchargeAdjAdj.traceContraction (hyperchargePair p)
 
 /-- The gluon trace contraction is the kinetic pairing of two gluon field strengths. -/
 lemma gluonTrace_eq (p : EightIdx) :
     gluonTrace p
       = ∑ a : Fin 8, gluonField ![] (p 0) (p 1) a * gluonField ![] (p 2) (p 3) a := by
-  simp [gluonTrace, IsSU3BiAdjoint.traceContraction, gluonPair]
+  simp [gluonTrace, ColourAdjAdj.traceContraction, gluonPair]
 
 /-- The `W`-boson trace contraction is the kinetic pairing of two `W`-boson field
   strengths. -/
 lemma wTrace_eq (p : EightIdx) :
     wTrace p = ∑ i : Fin 3, wField ![] (p 0) (p 1) i * wField ![] (p 2) (p 3) i := by
-  simp [wTrace, IsSU2BiAdjoint.traceContraction, wPair]
+  simp [wTrace, IsospinAdjAdj.traceContraction, wPair]
 
 /-- The hypercharge trace contraction is the product of the two hypercharge field
   strengths, the `u(1)` factor being one dimensional. -/
 lemma hyperchargeTrace_eq (p : EightIdx) :
     hyperchargeTrace p
       = hyperchargeField ![] (p 0) (p 1) * hyperchargeField ![] (p 2) (p 3) := by
-  simp [hyperchargeTrace, IsU1BiAdjoint.traceContraction, hyperchargePair]
+  simp [hyperchargeTrace, HyperchargeAdjAdj.traceContraction, hyperchargePair]
 
 /-- The gluon trace contraction is fixed by the whole gauge group. -/
 lemma repGauge_gluonTrace (g : GaugeGroupI) (p : EightIdx) :
     repGaugeGroupI g (gluonTrace p) = gluonTrace p :=
-  IsSU3BiAdjoint.map_traceContraction (isSU3BiAdjointMat_gluonPair p g)
+  ColourAdjAdj.map_traceContraction (repGaugeGroupI_gluonPair_eq_sum p g)
 
 /-- The `W`-boson trace contraction is fixed by the whole gauge group. -/
 lemma repGauge_wTrace (g : GaugeGroupI) (p : EightIdx) :
     repGaugeGroupI g (wTrace p) = wTrace p :=
-  IsSU2BiAdjoint.map_traceContraction (isSU2BiAdjointMat_wPair p g)
+  IsospinAdjAdj.map_traceContraction (repGaugeGroupI_wPair_eq_sum p g)
 
 /-- The hypercharge trace contraction is fixed by the whole gauge group. -/
 lemma repGauge_hyperchargeTrace (g : GaugeGroupI) (p : EightIdx) :
     repGaugeGroupI g (hyperchargeTrace p) = hyperchargeTrace p :=
-  IsU1BiAdjoint.map_traceContraction (isU1BiAdjointMat_hyperchargePair p g)
+  HyperchargeAdjAdj.map_traceContraction (repGaugeGroupI_hyperchargePair p g)
 
 /-- The twice-derived hypercharge field strength is fixed by the whole gauge group. -/
 lemma repGauge_hyperchargeDeriv (g : GaugeGroupI) (d : EightIdx) :
@@ -460,10 +471,10 @@ their products by gauge factor gives five kinds of family.
   hypercharge symbol is a twice-derived hypercharge field strength; both are fixed by the
   whole gauge group.
 - A gluon symbol, alone or against a symbol of another factor, carries an unpaired `su(3)`
-  adjoint index. These are the colour families, adjoint families in the sense of
-  `IsSU3Adjoint`: the colour factor moves the gluon index and fixes the other factor.
+  adjoint index. These are the colour families, whose maps out of `SuT[3, .adj]` are
+  equivariant: the colour factor moves the gluon index and fixes the other factor.
 - A `W`-boson symbol, alone or against a hypercharge symbol, carries an unpaired `su(2)`
-  adjoint index. These are the isospin families, in the sense of `IsSU2Adjoint`.
+  adjoint index. These are the isospin families, with maps out of `SuT[2, .adj]`.
 
 -/
 
@@ -523,12 +534,13 @@ noncomputable def colourFamily : ColourIdx → Fin 8 → fieldData.LocalCovField
 
 /-- Each colour family is an `su(3)` adjoint family, the colour factor moves the gluon
   index and fixes the other factor. -/
-lemma isSU3Adjoint_colourFamily :
-    ∀ i : ColourIdx, IsSU3Adjoint fieldData.LocalCovFieldAlgebra repGaugeGroupI (colourFamily i)
-  | Sum.inl p => isSU3Adjoint_gluonField p.1 p.2.1 p.2.2
-  | Sum.inr (Sum.inl q) => IsSU3Adjoint.of_law fun U => map_mul_fixed_eq_sum (repGaugeGroupI_mul _)
+lemma isEquivariant_colourAdj_colourFamily :
+    ∀ i : ColourIdx, (suTensor 3).IsEquivariant ![.adj] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((colourFamily i) ∘ relabelAdjIdx su3Label))
+  | Sum.inl p => isEquivariant_colourAdj_gluonField p.1 p.2.1 p.2.2
+  | Sum.inr (Sum.inl q) => ColourAdj.of_law fun U => map_mul_fixed_eq_sum (repGaugeGroupI_mul _)
       (repGauge_gluonField (U, 1, 1) ![] q.1 q.2.1) (repGauge_su3_neutralVec U _ _ _)
-  | Sum.inr (Sum.inr q) => IsSU3Adjoint.of_law fun U => map_fixed_mul_eq_sum (repGaugeGroupI_mul _)
+  | Sum.inr (Sum.inr q) => ColourAdj.of_law fun U => map_fixed_mul_eq_sum (repGaugeGroupI_mul _)
       (repGauge_gluonField (U, 1, 1) ![] q.1 q.2.1) (repGauge_su3_neutralVec U _ _ _)
 
 /-- The index of a family carrying one unpaired `su(2)` adjoint index at mass weight
@@ -544,12 +556,13 @@ noncomputable def isospinFamily : IsospinIdx → Fin 3 → fieldData.LocalCovFie
 
 /-- Each isospin family is an `su(2)` adjoint family, the isospin factor moves the
   `W`-boson index and fixes hypercharge. -/
-lemma isSU2Adjoint_isospinFamily :
-    ∀ i : IsospinIdx, IsSU2Adjoint fieldData.LocalCovFieldAlgebra repGaugeGroupI (isospinFamily i)
-  | Sum.inl p => isSU2Adjoint_wField p.1 p.2.1 p.2.2
-  | Sum.inr (Sum.inl q) => IsSU2Adjoint.of_law fun U => map_mul_fixed_eq_sum (repGaugeGroupI_mul _)
+lemma isEquivariant_isospinAdj_isospinFamily :
+    ∀ i : IsospinIdx, (suTensor 2).IsEquivariant ![.adj] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((isospinFamily i) ∘ relabelAdjIdx su2Label))
+  | Sum.inl p => isEquivariant_isospinAdj_wField p.1 p.2.1 p.2.2
+  | Sum.inr (Sum.inl q) => IsospinAdj.of_law fun U => map_mul_fixed_eq_sum (repGaugeGroupI_mul _)
       (repGauge_wField (1, U, 1) ![] (q 0) (q 1)) (repGauge_hyperchargeField _ _ _ _)
-  | Sum.inr (Sum.inr q) => IsSU2Adjoint.of_law fun U => map_fixed_mul_eq_sum (repGaugeGroupI_mul _)
+  | Sum.inr (Sum.inr q) => IsospinAdj.of_law fun U => map_fixed_mul_eq_sum (repGaugeGroupI_mul _)
       (repGauge_wField (1, U, 1) ![] (q 0) (q 1)) (repGauge_hyperchargeField _ _ _ _)
 
 /-- The isospin families are fixed by the colour factor, every one of their factors
@@ -686,7 +699,7 @@ lemma massWeightSubmodule_eight_le :
 
 A family carrying one unpaired adjoint index of a non-abelian factor has no gauge invariant
 in its span at all, the adjoint representations of `su(3)` and `su(2)` having no invariant
-vector: `IsSU3Adjoint.reducesInvariantsTo_bot` and its `su(2)` twin reduce such a span to
+vector: `ColourAdj.reducesInvariantsTo_bot` and its `su(2)` twin reduce such a span to
 `⊥` for that factor. The colour families are reduced first, with the isospin join carried
 in the target, since the colour factor fixes every isospin family; the isospin families
 are reduced after that.
@@ -706,15 +719,15 @@ lemma reducesInvariantsTo_unpaired :
       (fun U : specialUnitaryGroup (Fin 3) ℂ => repGaugeGroupI (U, 1, 1))
       (unpairedColourSpan ⊔ unpairedIsospinSpan) unpairedIsospinSpan :=
     ((ReducesInvariantsTo.iSup
-        (fun i => IsSU3Adjoint.reducesInvariantsTo_bot (isSU3Adjoint_colourFamily i))
-      (fun i => IsSU3Adjoint.isStableUnder_span (isSU3Adjoint_colourFamily i))
+        (fun i => ColourAdj.reducesInvariantsTo_bot (isEquivariant_colourAdj_colourFamily i))
+      (fun i => ColourAdj.isStableUnder_span (isEquivariant_colourAdj_colourFamily i))
       isStableUnder_bot).mono_right bot_le).sup (reducesInvariantsTo_of_le le_rfl)
       hfix.isStableUnder hfix.isStableUnder
   have hisospin : ReducesInvariantsTo
       (fun U : specialUnitaryGroup (Fin 2) ℂ => repGaugeGroupI (1, U, 1)) unpairedIsospinSpan ⊥ :=
     ReducesInvariantsTo.iSup
-        (fun i => IsSU2Adjoint.reducesInvariantsTo_bot (isSU2Adjoint_isospinFamily i))
-      (fun i => IsSU2Adjoint.isStableUnder_span (isSU2Adjoint_isospinFamily i))
+        (fun i => IsospinAdj.reducesInvariantsTo_bot (isEquivariant_isospinAdj_isospinFamily i))
+      (fun i => IsospinAdj.isStableUnder_span (isEquivariant_isospinAdj_isospinFamily i))
       isStableUnder_bot
   exact (hcolour.comp (σ := fun g : GaugeGroupI => repGaugeGroupI g) (fun U => (U, 1, 1))).trans
     (hisospin.comp (σ := fun g : GaugeGroupI => repGaugeGroupI g) (fun U => (1, U, 1)))
@@ -725,8 +738,8 @@ lemma reducesInvariantsTo_unpaired :
 
 Section E bounds mass weight eight by the unpaired joins, the two non-abelian pair spans and
 the two hypercharge spans. Section F reduces the unpaired joins to `⊥`. Each pair span
-reduces to its trace contractions by
-`IsSU3BiAdjoint.reducesInvariantsTo_span_traceContraction` and its `su(2)` twin, and the
+reduces to its trace contractions by `ColourAdjAdj.reducesInvariantsTo_span_traceContraction` and
+its `su(2)` twin, and the
 two hypercharge spans are fixed pointwise by the gauge group and reduce to themselves.
 `ReducesInvariantsTo.sup` joins the parts, asking stability of every part but the first and
 of the target; no independence of the parts is needed.
@@ -752,13 +765,13 @@ noncomputable def traceContractionEightSpan : Submodule ℂ fieldData.LocalCovFi
 lemma isStableUnder_gluonPairSpan :
     IsStableUnder (fun g : GaugeGroupI => repGaugeGroupI g) gluonPairSpan :=
   isStableUnder_iSup fun p g =>
-    span_stable_of_map_eq_sum (gluonPair p) _ (isSU3BiAdjointMat_gluonPair p g)
+    span_stable_of_map_eq_sum (gluonPair p) _ (repGaugeGroupI_gluonPair_eq_sum p g)
 
 /-- The `W`-boson pair spans are stable under the gauge group. -/
 lemma isStableUnder_wPairSpan :
     IsStableUnder (fun g : GaugeGroupI => repGaugeGroupI g) wPairSpan :=
   isStableUnder_iSup fun p g =>
-    span_stable_of_map_eq_sum (wPair p) _ (isSU2BiAdjointMat_wPair p g)
+    span_stable_of_map_eq_sum (wPair p) _ (repGaugeGroupI_wPair_eq_sum p g)
 
 /-- The hypercharge trace contractions are fixed pointwise by the gauge group. -/
 lemma repGauge_of_mem_hyperchargeTraceSpan (g : GaugeGroupI) :
@@ -803,10 +816,10 @@ lemma reducesInvariantsTo_gluonPairSpan :
     ReducesInvariantsTo (fun g : GaugeGroupI => repGaugeGroupI g) gluonPairSpan gluonTraceSpan := by
   classical
   exact ReducesInvariantsTo.iSup
-    (fun p => ((IsSU3BiAdjoint.reducesInvariantsTo_span_traceContraction
-      (isSU3BiAdjoint_gluonPair p)).comp (σ := fun g : GaugeGroupI => repGaugeGroupI g)
+    (fun p => ((ColourAdjAdj.reducesInvariantsTo_span_traceContraction
+      (isEquivariant_colourAdjAdj_gluonPair p)).comp (σ := fun g : GaugeGroupI => repGaugeGroupI g)
         (fun U => (U, 1, 1))).mono_right (le_iSup (fun p => ℂ ∙ gluonTrace p) p))
-    (fun p g => span_stable_of_map_eq_sum (gluonPair p) _ (isSU3BiAdjointMat_gluonPair p g))
+    (fun p g => span_stable_of_map_eq_sum (gluonPair p) _ (repGaugeGroupI_gluonPair_eq_sum p g))
     (isFixedBy_iSup fun p => isFixedBy_span_singleton (repGauge_gluonTrace · p)).isStableUnder
 
 /-- The `W`-boson pair spans reduce, for the gauge group, to the `W`-boson trace contractions, since
@@ -815,10 +828,10 @@ lemma reducesInvariantsTo_wPairSpan :
     ReducesInvariantsTo (fun g : GaugeGroupI => repGaugeGroupI g) wPairSpan wTraceSpan := by
   classical
   exact ReducesInvariantsTo.iSup
-    (fun p => ((IsSU2BiAdjoint.reducesInvariantsTo_span_traceContraction
-      (isSU2BiAdjoint_wPair p)).comp (σ := fun g : GaugeGroupI => repGaugeGroupI g)
+    (fun p => ((IsospinAdjAdj.reducesInvariantsTo_span_traceContraction
+      (isEquivariant_isospinAdjAdj_wPair p)).comp (σ := fun g : GaugeGroupI => repGaugeGroupI g)
         (fun U => (1, U, 1))).mono_right (le_iSup (fun p => ℂ ∙ wTrace p) p))
-    (fun p g => span_stable_of_map_eq_sum (wPair p) _ (isSU2BiAdjointMat_wPair p g))
+    (fun p g => span_stable_of_map_eq_sum (wPair p) _ (repGaugeGroupI_wPair_eq_sum p g))
     (isFixedBy_iSup fun p => isFixedBy_span_singleton (repGauge_wTrace · p)).isStableUnder
 
 /-- Mass weight eight reduces, for the gauge group, to the three underived trace
@@ -850,13 +863,14 @@ lemma reducesInvariantsTo_traceContractionEightSpan_sup :
 
 A product of two underived field-strength symbols carries four covector indices and
 nothing else, so as a family indexed by those four it is a quadruple Lorentz tensor in the
-sense of `IsLorentzCovariant 4`: `repLorentz_F` at no covariant derivatives moves each covector
-index by the Lorentz matrix of the `SL(2,ℂ)` element, and `repLorentzGroup_mul` carries that
+sense that its map out of `ℂT(fun _ : Fin 4 => .up)` is equivariant: `repLorentz_F` at no covariant
+derivatives moves each covector index by the Lorentz matrix of the `SL(2,ℂ)` element, and
+`repLorentzGroup_mul` carries that
 through the product. The three trace contractions are sums of such products over a gauge
 index, and a finite sum of quadruple Lorentz tensors is one again. So is the twice-derived
 hypercharge field strength, whose two derivative slots and two covector indices are four
 four-vector indices as well. The four spans of section G are exactly the spans of these
-four families, and `RankFour.reducesInvariantsTo_span_contractionTensor` reduces each, for the
+four families, and `ComplexVector.reducesInvariantsTo_span_contractionTensor` reduces each, for the
 Lorentz group, to the span of its four contractions.
 
 What is left is spanned by the four Lorentz contractions of each family,
@@ -926,11 +940,12 @@ lemma sum_mul_sum_eq_sum_pi_four (c c' : (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3)
 
 /-- A product of two underived field-strength symbols, viewed as a family indexed by the
   four covector indices it carries, is a quadruple Lorentz tensor. -/
-lemma isLorentzCovariant_F_mul (φ ψ : Module.Dual ℝ GaugeAlgebra) :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents
+lemma isEquivariant_up_F_mul (φ ψ : Module.Dual ℝ GaugeAlgebra) :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents
       fun d : Fin 4 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![] (d 0) (d 1) φ * gaugeFieldStrength ![]
         (d 2) (d 3) ψ) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentzGroup_mul, repLorentz_F_underived g (l 0) (l 1) φ,
     repLorentz_F_underived g (l 2) (l 3) ψ, sum_mul_sum_eq_sum_pi_four]
   refine Finset.sum_congr rfl fun a _ => ?_
@@ -938,59 +953,62 @@ lemma isLorentzCovariant_F_mul (φ ψ : Module.Dual ℝ GaugeAlgebra) :
 
 /-- A finite sum of quadruple Lorentz tensors is a quadruple Lorentz tensor, the
   transformation law is linear in the family. -/
-lemma isLorentzCovariant_sum {ι : Type} [Fintype ι] {T : ι → (Fin 4 → Fin 1 ⊕ Fin 3) →
+lemma isEquivariant_up_sum {ι : Type} [Fintype ι] {T : ι → (Fin 4 → Fin 1 ⊕ Fin 3) →
     fieldData.LocalCovFieldAlgebra}
-    (hT : ∀ i, IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup
+    (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
       (ofComponents (T i))) :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
       (ofComponents fun d => ∑ i, T i d) := by
   rw [ofComponents_sum]
   exact TensorSpecies.IsEquivariant.sum _ fun i _ => hT i
 
 /-- A family of four four-vector indices whose members are sums of products of two
   underived field-strength symbols is a quadruple Lorentz tensor. -/
-lemma isLorentzCovariant_of_eq_sum {ι : Type} [Fintype ι]
+lemma isEquivariant_up_of_eq_sum {ι : Type} [Fintype ι]
     {T : EightIdx → fieldData.LocalCovFieldAlgebra}
     (φ : ι → Module.Dual ℝ GaugeAlgebra)
     (hT : ∀ d, T d = ∑ i, gaugeFieldStrength ![] (d 0) (d 1) (φ i) * gaugeFieldStrength ![] (d 2) (d
       3) (φ i)) :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents T) := by
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents T) := by
   rw [show T = fun d => ∑ i, gaugeFieldStrength ![] (d 0) (d 1) (φ i) * gaugeFieldStrength ![] (d 2)
     (d 3) (φ i) from funext hT]
-  exact isLorentzCovariant_sum fun _ => isLorentzCovariant_F_mul _ _
+  exact isEquivariant_up_sum fun _ => isEquivariant_up_F_mul _ _
 
 /-- The gluon trace contractions, read as a family of four four-vector indices, form a quadruple
   Lorentz tensor, being a sum over the colour index of products of two underived field-strength
   symbols. -/
-lemma isLorentzCovariant_gluonTrace :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents gluonTrace) :=
-  isLorentzCovariant_of_eq_sum (fun a : Fin 8 => GaugeAlgebra.stdBasis.coord (Sum.inl a))
+lemma isEquivariant_up_gluonTrace :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents gluonTrace) :=
+  isEquivariant_up_of_eq_sum (fun a : Fin 8 => GaugeAlgebra.stdBasis.coord (Sum.inl a))
     gluonTrace_eq
 
 /-- The `W`-boson trace contractions form a quadruple Lorentz tensor. -/
-lemma isLorentzCovariant_wTrace :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents wTrace) :=
-  isLorentzCovariant_of_eq_sum
+lemma isEquivariant_up_wTrace :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents wTrace) :=
+  isEquivariant_up_of_eq_sum
     (fun i : Fin 3 => GaugeAlgebra.stdBasis.coord (Sum.inr (Sum.inl i))) wTrace_eq
 
 /-- The hypercharge trace contractions form a quadruple Lorentz tensor. -/
-lemma isLorentzCovariant_hyperchargeTrace :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_hyperchargeTrace :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
       (ofComponents hyperchargeTrace) := by
   rw [show hyperchargeTrace = fun d =>
       gaugeFieldStrength ![] (d 0) (d 1) (GaugeAlgebra.stdBasis.coord (Sum.inr (Sum.inr 0)))
         * gaugeFieldStrength ![] (d 2) (d 3) (GaugeAlgebra.stdBasis.coord (Sum.inr (Sum.inr 0)))
           from
     funext hyperchargeTrace_eq]
-  exact isLorentzCovariant_F_mul _ _
+  exact isEquivariant_up_F_mul _ _
 
 /-- The twice-derived hypercharge field strengths, read as a family of four four-vector
   indices, form a quadruple Lorentz tensor, since the two derivative slots and the two covector
   indices all rotate. This is the second shape of mass weight eight. -/
-lemma isLorentzCovariant_hyperchargeDeriv :
-    IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_hyperchargeDeriv :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
       (ofComponents hyperchargeDeriv) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   simp only [hyperchargeDeriv, hyperchargeField]
   rw [repLorentz_F g 2 ![l 0, l 1] (l 2) (l 3), sum_pi_fin_two, RankFour.sum_pi_four]
   simp only [Finset.smul_sum, smul_smul, Fin.prod_univ_two, Fin.prod_univ_four, mul_assoc,
@@ -1035,14 +1053,16 @@ noncomputable def quadContractionSpan
 lemma quadContractionSpan_le_span {T : (Fin 4 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra} :
     quadContractionSpan T ≤ Submodule.span ℂ (Set.range T) :=
   Submodule.span_le.2 <| Set.range_subset_iff.2 fun i => by
-    rw [SetLike.mem_coe, ← range_ofComponents]
+    rw [SetLike.mem_coe, ← range_ofComponents (S := complexLorentzTensor)
+        (c := fun _ : Fin 4 => .up)]
     exact LinearMap.mem_range_self _ _
 
 /-- The span of the four Lorentz contractions of a quadruple Lorentz family is a space of
   Lorentz invariants, the four contractions being invariant by `RankFour`. -/
 lemma quadContractionSpan_le_lorentzInvariants
     {T : (Fin 4 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra}
-    (hT : IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents T)) :
+    (hT : complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents T)) :
     quadContractionSpan T ≤ repLorentzGroup.invariants :=
   Submodule.span_le.2 <| Set.range_subset_iff.2 fun i =>
     (Representation.mem_invariants _ _).2
@@ -1131,10 +1151,10 @@ lemma lorentzContractionEightSpan_le_massWeightSubmodule :
 /-- The Lorentz contraction span is a space of Lorentz invariants. -/
 lemma lorentzContractionEightSpan_le_lorentzInvariants :
     lorentzContractionEightSpan ≤ repLorentzGroup.invariants :=
-  sup_le (quadContractionSpan_le_lorentzInvariants isLorentzCovariant_gluonTrace)
-    (sup_le (quadContractionSpan_le_lorentzInvariants isLorentzCovariant_wTrace)
-      (sup_le (quadContractionSpan_le_lorentzInvariants isLorentzCovariant_hyperchargeTrace)
-        (quadContractionSpan_le_lorentzInvariants isLorentzCovariant_hyperchargeDeriv)))
+  sup_le (quadContractionSpan_le_lorentzInvariants isEquivariant_up_gluonTrace)
+    (sup_le (quadContractionSpan_le_lorentzInvariants isEquivariant_up_wTrace)
+      (sup_le (quadContractionSpan_le_lorentzInvariants isEquivariant_up_hyperchargeTrace)
+        (quadContractionSpan_le_lorentzInvariants isEquivariant_up_hyperchargeDeriv)))
 
 /-- The Lorentz contraction span is fixed pointwise by both groups. -/
 lemma isFixedBy_lorentzContractionEightSpan :
@@ -1171,19 +1191,21 @@ lemma reducesInvariantsTo_lorentzContractionEightSpan :
         (lorentzContractionEightSpan_le_lorentzInvariants hy) g]
       exact hy
   have hst : ∀ {T : (Fin 4 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra},
-      IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents T) →
+      complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents T) →
       IsStableUnder (fun g : SL(2,ℂ) => repLorentzGroup g) (Submodule.span ℂ (Set.range T)) :=
     fun hT => by
-      rw [← range_ofComponents]
+      rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 4 => .up)]
       exact hT.isStableUnder_range
   have hred : ∀ {T : (Fin 4 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra},
-      IsLorentzCovariant 4 fieldData.LocalCovFieldAlgebra repLorentzGroup (ofComponents T) →
+      complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentzGroup
+      (ofComponents T) →
       quadContractionSpan T ≤ lorentzContractionEightSpan →
       ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentzGroup g) (Submodule.span ℂ (Set.range T))
         lorentzContractionEightSpan :=
     fun hT hle => by
-      rw [← range_ofComponents]
-      exact (RankFour.reducesInvariantsTo_span_contractionTensor hT).mono_right hle
+      rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 4 => .up)]
+      exact (ComplexVector.reducesInvariantsTo_span_contractionTensor hT).mono_right hle
   -- the Lorentz stage, on the four spans the gauge stage leaves
   have hlorentz : ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentzGroup g)
       (traceContractionEightSpan ⊔ hyperchargeDerivSpan) lorentzContractionEightSpan := by
@@ -1194,17 +1216,17 @@ lemma reducesInvariantsTo_lorentzContractionEightSpan :
       simp only [traceContractionEightSpan, gluonTraceSpan, wTraceSpan, hyperchargeTraceSpan,
         hyperchargeDerivSpan, ← Submodule.span_range_eq_iSup, sup_assoc]
     rw [hsrc]
-    exact (hred isLorentzCovariant_gluonTrace le_sup_left).sup
-      ((hred isLorentzCovariant_wTrace (le_sup_of_le_right le_sup_left)).sup
-        ((hred isLorentzCovariant_hyperchargeTrace
+    exact (hred isEquivariant_up_gluonTrace le_sup_left).sup
+      ((hred isEquivariant_up_wTrace (le_sup_of_le_right le_sup_left)).sup
+        ((hred isEquivariant_up_hyperchargeTrace
             (le_sup_of_le_right (le_sup_of_le_right le_sup_left))).sup
-          (hred isLorentzCovariant_hyperchargeDeriv
+          (hred isEquivariant_up_hyperchargeDeriv
             (le_sup_of_le_right (le_sup_of_le_right le_sup_right)))
-          (hst isLorentzCovariant_hyperchargeDeriv) hW)
-        ((hst isLorentzCovariant_hyperchargeTrace).sup
-          (hst isLorentzCovariant_hyperchargeDeriv)) hW)
-      ((hst isLorentzCovariant_wTrace).sup ((hst isLorentzCovariant_hyperchargeTrace).sup
-        (hst isLorentzCovariant_hyperchargeDeriv))) hW
+          (hst isEquivariant_up_hyperchargeDeriv) hW)
+        ((hst isEquivariant_up_hyperchargeTrace).sup
+          (hst isEquivariant_up_hyperchargeDeriv)) hW)
+      ((hst isEquivariant_up_wTrace).sup ((hst isEquivariant_up_hyperchargeTrace).sup
+        (hst isEquivariant_up_hyperchargeDeriv))) hW
   exact (ReducesInvariantsTo.ofGauge reducesInvariantsTo_traceContractionEightSpan_sup).trans
     (ReducesInvariantsTo.ofLorentz hlorentz)
 

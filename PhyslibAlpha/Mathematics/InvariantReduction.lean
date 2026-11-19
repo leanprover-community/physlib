@@ -40,12 +40,6 @@ of `V ⊔ S` exactly, as the elements of `W` plus an invariant element of `S`:
 `InvariantReductionToSpan σ V` packages a reduction of `V` to the span of one fixed vector,
 the form in which the classification theorems are applied.
 
-For a finite family moved by matrices, `σ g (T l) = ∑ a, M g a l • T a`, the quotient
-hypothesis reduces to a finite problem about coefficient vectors: the law holds again for the
-classes of the members in `B ⧸ S`, so an invariant there is the combination of a coefficient
-vector fixed by every `M g`, and any classification of the fixed coefficient vectors gives a
-reduction, `reducesInvariantsTo_of_mulVec_eq`.
-
 A representation of a group `H` and a representation of `SL(2,ℂ)` on the same module are read as
 one family, `gaugeLorentzMaps`, indexed by `H ⊕ SL(2,ℂ)`. Its invariants and stable submodules
 are those of both groups, and a reduction for either group alone is a reduction for the family.
@@ -65,9 +59,6 @@ are those of both groups, and a reduction for either group alone is a reduction 
 - `IsStableUnder.exists_add_of_quotient` : quotient to remainder: when every invariant of the image
   of `V` in `B ⧸ S` lies in the image of a pointwise-fixed `W`, an invariant of `V ⊔ S` is an
   element of `W` plus an invariant element of `S`
-- `reducesInvariantsTo_of_mulVec_eq` : a family moved by matrices whose conjugate transposes are
-  among them reduces to the combinations of any submodule `E` of coefficient vectors containing
-  every vector fixed by all the matrices
 - `ReducesInvariantsTo.mem_sup_and_gauge_lorentz_invariant_iff` : the classification endpoint for
   a group `H` and the Lorentz group together, with the two invariances stated separately
 
@@ -77,8 +68,7 @@ are those of both groups, and a reduction for either group alone is a reduction 
 - B. Reducing invariants
 - C. Reduction through a quotient
 - D. Reduction to the span of one vector
-- E. Families moved by matrices
-- F. A group together with the Lorentz group
+- E. A group together with the Lorentz group
 
 ## iv. References
 
@@ -451,57 +441,7 @@ end Span
 
 /-!
 
-## E. Families moved by matrices
-
-A finite family `T : ι → B` is moved by matrices when `σ g (T l) = ∑ a, M g a l • T a`, the
-summed index in the row slot. For a stable `S` the classes of the members in `B ⧸ S` obey the
-same law (`Submodule.mapQ_mkQ_eq_sum_smul`), and that law is all that
-`Fintype.exists_mulVec_eq_of_conjTranspose_mem` needs: an invariant of the image of the span in
-`B ⧸ S` is the combination of a coefficient vector fixed by every `M g`. A description of the
-fixed coefficient vectors, a submodule `E` containing them all, therefore reduces the span to
-the combinations of `E`. What is classified is coefficient vectors, which do not depend on `S`;
-no classification of invariants of `B` is assumed to descend to `B ⧸ S`.
-
--/
-
-section Matrices
-
-open Matrix
-
-/-- A map moving each member of a family by a matrix moves their classes modulo a submodule
-  that it preserves by the same matrix. -/
-lemma Submodule.mapQ_mkQ_eq_sum_smul {R B ι : Type*} [Ring R] [AddCommGroup B] [Module R B]
-    [Fintype ι] (S : Submodule R B) {f : B →ₗ[R] B} (hS : ∀ y ∈ S, f y ∈ S) {T : ι → B}
-    {M : Matrix ι ι R} {l : ι} (hf : f (T l) = ∑ a, M a l • T a) :
-    S.mapQ S f hS (S.mkQ (T l)) = ∑ a, M a l • S.mkQ (T a) := by
-  rw [← LinearMap.comp_apply, Submodule.mapQ_mkQ, LinearMap.comp_apply, hf, map_sum]
-  exact Finset.sum_congr rfl fun a _ => map_smul _ _ _
-
-variable {B G ι : Type*} [AddCommGroup B] [Module ℂ B] [Fintype ι] {σ : G → B →ₗ[ℂ] B}
-
-/-- A family moved by matrices whose conjugate transposes are among them reduces to the
-  combinations of any submodule `E` of coefficient vectors containing every vector fixed by
-  all the matrices. -/
-lemma reducesInvariantsTo_of_mulVec_eq (T : ι → B) (M : G → Matrix ι ι ℂ)
-    (hT : ∀ g l, σ g (T l) = ∑ a, M g a l • T a) (hM : ∀ g, ∃ g', M g' = (M g)ᴴ)
-    (E : Submodule ℂ (ι → ℂ)) (hE : ∀ c, (∀ g, M g *ᵥ c = c) → c ∈ E) :
-    ReducesInvariantsTo σ (Submodule.span ℂ (Set.range T))
-      (E.map (Fintype.linearCombination ℂ T)) := by
-  refine reducesInvariantsTo_of_quotient fun S hS x hx hinv => ?_
-  -- the law for the classes of the members in `B ⧸ S`
-  have hTS : ∀ g l, S.mapQ S (σ g) (hS g) (S.mkQ (T l)) = ∑ a, M g a l • S.mkQ (T a) :=
-    fun g l => S.mapQ_mkQ_eq_sum_smul (hS g) (hT g l)
-  rw [Submodule.map_span_range] at hx
-  obtain ⟨c, rfl, hc⟩ := Fintype.exists_mulVec_eq_of_conjTranspose_mem (fun i => S.mkQ (T i))
-    (fun g => S.mapQ S (σ g) (hS g)) M hTS hM hx hinv
-  refine ⟨Fintype.linearCombination ℂ T c, ⟨c, hE c hc, rfl⟩, ?_⟩
-  simp [Fintype.linearCombination_apply]
-
-end Matrices
-
-/-!
-
-## F. A group together with the Lorentz group
+## E. A group together with the Lorentz group
 
 A representation of a group `H` and a representation of `SL(2,ℂ)` on the same module are read
 as a single family of linear maps, `gaugeLorentzMaps`, indexed by the disjoint union

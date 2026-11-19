@@ -38,9 +38,9 @@ not built here. They are minus these terms and span the same submodules, by
 ## ii. Key results
 
 - `downYukawa`, `upYukawa`, `leptonYukawa` : the three Yukawa terms of a family pair.
-- `isSU3FundamentalAntiFundamental_downBlock`, `isSU2FundamentalAntiFundamental_downBlock`,
-  `isBiDualRightWeyl_downBlock` and their up-type and lepton-type counterparts : the index laws
-  of each block.
+- `isEquivariant_colourFundAntiFund_downBlock`, `isEquivariant_isospinFundAntiFund_downBlock`,
+  `isEquivariant_downRDownR_downBlock` and their up-type and lepton-type counterparts : the index
+  laws of each block.
 - `repGauge_downYukawa`, `repLorentz_downYukawa` and their counterparts : the invariance of
   each Yukawa term.
 - `downYukawaSpan`, `upYukawaSpan`, `leptonYukawaSpan` : the join over the nine family
@@ -63,6 +63,9 @@ not built here. They are minus these terms and span the same submodules, by
 -/
 
 @[expose] public section
+
+open TensorSpecies
+open suTensor (fundAntiFundIdx)
 
 namespace StandardModel
 
@@ -97,10 +100,11 @@ noncomputable def downBlock (f f' : Fin 3) (i sd : Fin 2) (cd : Fin 3) (sq : Fin
 /-- The two colour indices of the down-type block carry one fundamental and one
   anti-fundamental `su(3)` index. The conjugate quark doublet supplies the fundamental
   index, so it goes in the first slot, and the down singlet the anti-fundamental one. -/
-lemma isSU3FundamentalAntiFundamental_downBlock (f f' : Fin 3) (i sd sq wq : Fin 2) :
-    IsSU3FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.downBlock f f' i sd (l 1) sq (l 0) wq) :=
-  IsSU3FundamentalAntiFundamental.of_law fun U l => by
+lemma isEquivariant_colourFundAntiFund_downBlock (f f' : Fin 3) (i sd sq wq : Fin 2) :
+    (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.downBlock f f' i sd (l 1) sq
+          (l 0) wq) ∘ fundAntiFundIdx)) :=
+  ColourFundAntiFund.of_law fun U l => by
     simp only [downBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_left (U, 1, 1)
       (X := fun a => FermionSector.dComponent f ![] (sd, a))
@@ -116,11 +120,12 @@ lemma isSU3FundamentalAntiFundamental_downBlock (f f' : Fin 3) (i sd sq wq : Fin
   anti-fundamental `su(2)` index. The conjugate quark doublet supplies the fundamental
   index and the Higgs symbol the anti-fundamental one, so the Higgs index goes in the
   second slot. -/
-lemma isSU2FundamentalAntiFundamental_downBlock (f f' : Fin 3) (sd : Fin 2) (cd : Fin 3)
+lemma isEquivariant_isospinFundAntiFund_downBlock (f f' : Fin 3) (sd : Fin 2) (cd : Fin 3)
     (sq : Fin 2) (cq : Fin 3) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.downBlock f f' (l 1) sd cd sq cq (l 0)) :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.downBlock f f' (l 1) sd cd sq cq
+          (l 0)) ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     simp only [downBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_mid (1, V, 1) (A := fun a => ScalarSector.higgs ![]
       a)
@@ -135,10 +140,12 @@ lemma isSU2FundamentalAntiFundamental_downBlock (f f' : Fin 3) (sd : Fin 2) (cd 
 /-- The two spinor indices of the down-type block are both dual right-handed. The down
   singlet and the conjugate quark doublet are both right-handed, and the Higgs symbol
   without derivatives is a Lorentz scalar. -/
-lemma isBiDualRightWeyl_downBlock (f f' : Fin 3) (i : Fin 2) (cd cq : Fin 3) (wq : Fin 2) :
-    IsBiDualRightWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents fun a b => LocalCovFieldAlgebra.downBlock f f' i a cd b cq wq) :=
-  isEquivariant_ofPairComponents _ fun Λ a b => by
+lemma isEquivariant_downRDownR_downBlock (f f' : Fin 3) (i : Fin 2) (cd cq : Fin 3) (wq : Fin 2) :
+    complexLorentzTensor.IsEquivariant ![.downR, .downR] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.downBlock f f' i p.1 cd p.2 cq wq) ∘
+          pairIdx)) :=
+  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+    (fun a b => LocalCovFieldAlgebra.downBlock f f' i a cd b cq wq) fun Λ a b => by
     rw [toMatrix_rep_downR]
     simp only [downBlock]
     rw [LocalCovFieldAlgebra.repLorentz_mul_fixed_left Λ
@@ -171,7 +178,7 @@ lemma repGauge_u1_downBlock (t : unitary ℂ) (f f' : Fin 3) (i sd : Fin 2) (cd 
   the down singlet. -/
 noncomputable def downBlockColour (f f' : Fin 3)
     (i sd sq wq : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU3FundamentalAntiFundamental.deltaContraction
+  ColourFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.downBlock f f' i sd (l 1) sq (l 0) wq)
 
 /-- The colour contraction written out, the sum of the three components with equal colour
@@ -179,23 +186,24 @@ noncomputable def downBlockColour (f f' : Fin 3)
 lemma downBlockColour_eq (f f' : Fin 3) (i sd sq wq : Fin 2) :
     LocalCovFieldAlgebra.downBlockColour f f' i sd sq wq
       = ∑ a : Fin 3, LocalCovFieldAlgebra.downBlock f f' i sd a sq a wq := by
-  simp [downBlockColour, IsSU3FundamentalAntiFundamental.deltaContraction]
+  simp [downBlockColour, ColourFundAntiFund.deltaContraction]
 
 /-- The colour contraction of the down-type block still carries one fundamental and one
   anti-fundamental isospin index, the colour sum being an isospin spectator. -/
-lemma isSU2FundamentalAntiFundamental_downBlockColour (f f' : Fin 3) (sd sq : Fin 2) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.downBlockColour f f' (l 1) sd sq (l 0)) := by
+lemma isEquivariant_isospinFundAntiFund_downBlockColour (f f' : Fin 3) (sd sq : Fin 2) :
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.downBlockColour f f' (l 1) sd sq
+          (l 0)) ∘ fundAntiFundIdx)) := by
   simp only [LocalCovFieldAlgebra.downBlockColour_eq]
-  exact IsSU2FundamentalAntiFundamental.sum fun a =>
-    LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_downBlock f f' sd a sq a
+  exact IsospinFundAntiFund.sum fun a =>
+    LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_downBlock f f' sd a sq a
 
 /-- The isospin contraction of the colour-contracted down-type block, the Kronecker delta
   joining the fundamental isospin index of the conjugate quark doublet to the
   anti-fundamental one of the Higgs. -/
 noncomputable def downBlockIsospin (f f' : Fin 3)
     (sd sq : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2FundamentalAntiFundamental.deltaContraction
+  IsospinFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.downBlockColour f f' (l 1) sd sq (l 0))
 
 /-- The doubly contracted block written out as a single sum over the isospin and colour
@@ -203,21 +211,19 @@ noncomputable def downBlockIsospin (f f' : Fin 3)
 lemma downBlockIsospin_eq (f f' : Fin 3) (sd sq : Fin 2) :
     LocalCovFieldAlgebra.downBlockIsospin f f' sd sq
       = ∑ p : Fin 2 × Fin 3, LocalCovFieldAlgebra.downBlock f f' p.1 sd p.2 sq p.2 p.1 := by
-  rw [downBlockIsospin, IsSU2FundamentalAntiFundamental.deltaContraction,
+  rw [downBlockIsospin, IsospinFundAntiFund.deltaContraction,
     LocalCovFieldAlgebra.downBlockColour_eq,
     LocalCovFieldAlgebra.downBlockColour_eq, Fintype.sum_prod_type, Fin.sum_univ_two]
   simp
 
 /-- The doubly contracted block carries two dual right-handed Weyl indices, the colour and
   isospin sums being Lorentz spectators. -/
-lemma isBiDualRightWeyl_downBlockIsospin (f f' : Fin 3) :
-    IsBiDualRightWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents (LocalCovFieldAlgebra.downBlockIsospin f f')) := by
-  rw [show LocalCovFieldAlgebra.downBlockIsospin f f' = _ from funext₂
-    (LocalCovFieldAlgebra.downBlockIsospin_eq f f'),
-    ofPairComponents_sum]
+lemma isEquivariant_downRDownR_downBlockIsospin (f f' : Fin 3) :
+    complexLorentzTensor.IsEquivariant ![.downR, .downR] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.downBlockIsospin f f' p.1 p.2) ∘ pairIdx)) := by
+  simp only [LocalCovFieldAlgebra.downBlockIsospin_eq, ofComponents_comp_sum]
   exact TensorSpecies.IsEquivariant.sum _ fun p _ =>
-    LocalCovFieldAlgebra.isBiDualRightWeyl_downBlock f f' p.1 p.2 p.2 p.1
+    LocalCovFieldAlgebra.isEquivariant_downRDownR_downBlock f f' p.1 p.2 p.2 p.1
 
 /-- The down-type Yukawa term of the family pair `(f, f')`, the down-singlet symbol of family `f`
   against the conjugate quark doublet of family `f'` and a Higgs symbol, with the colour indices
@@ -225,7 +231,8 @@ lemma isBiDualRightWeyl_downBlockIsospin (f f' : Fin 3) :
   right-handed spinor indices by the antisymmetric symbol. It is the image of the metric `εR'` under
   the map with the contracted block as its components. -/
 noncomputable def downYukawa (f f' : Fin 3) : fieldData.LocalCovFieldAlgebra :=
-  ofPairComponents (k := .downR) (k' := .downR) (LocalCovFieldAlgebra.downBlockIsospin f f') εR'
+  ofComponents (S := complexLorentzTensor) (c := ![.downR, .downR])
+    ((fun p => LocalCovFieldAlgebra.downBlockIsospin f f' p.1 p.2) ∘ pairIdx) εR'
 
 /-!
 
@@ -244,8 +251,8 @@ lemma repGauge_su3_downBlockColour (U : specialUnitaryGroup (Fin 3) ℂ) (f f' :
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.downBlockColour f
       f' i sd sq wq)
       = LocalCovFieldAlgebra.downBlockColour f f' i sd sq wq :=
-  IsSU3FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_downBlock f f' i sd sq wq) U
+  ColourFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_downBlock f f' i sd sq wq) U
 
 /-- The doubly contracted down-type block is fixed by the colour factor. -/
 lemma repGauge_su3_downBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : Fin 3)
@@ -253,7 +260,7 @@ lemma repGauge_su3_downBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f' 
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.downBlockIsospin f
       f' sd sq)
       = LocalCovFieldAlgebra.downBlockIsospin f f' sd sq := by
-  rw [downBlockIsospin, IsSU2FundamentalAntiFundamental.deltaContraction, map_add,
+  rw [downBlockIsospin, IsospinFundAntiFund.deltaContraction, map_add,
     LocalCovFieldAlgebra.repGauge_su3_downBlockColour,
       LocalCovFieldAlgebra.repGauge_su3_downBlockColour]
 
@@ -263,8 +270,8 @@ lemma repGauge_su2_downBlockIsospin (V : specialUnitaryGroup (Fin 2) ℂ) (f f' 
     repGaugeGroupI ((1, V, 1) : GaugeGroupI) (LocalCovFieldAlgebra.downBlockIsospin f
       f' sd sq)
       = LocalCovFieldAlgebra.downBlockIsospin f f' sd sq :=
-  IsSU2FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_downBlockColour f f' sd sq) V
+  IsospinFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_downBlockColour f f' sd sq) V
 
 /-- The doubly contracted down-type block is fixed by the hypercharge factor, already
   component by component. -/
@@ -283,7 +290,7 @@ lemma repGauge_downYukawa (f f' : Fin 3) (g : GaugeGroupI) :
     repGaugeGroupI g (LocalCovFieldAlgebra.downYukawa f f') =
       LocalCovFieldAlgebra.downYukawa f f' := by
   refine forall_repGauge_eq_self (fun U => ?_) (fun V => ?_) (fun t => ?_) g <;>
-    rw [downYukawa, map_ofPairComponents]
+    rw [downYukawa, map_ofComponents_comp]
   · simp only [LocalCovFieldAlgebra.repGauge_su3_downBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_su2_downBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_u1_downBlockIsospin]
@@ -293,7 +300,7 @@ lemma repGauge_downYukawa (f f' : Fin 3) (g : GaugeGroupI) :
 lemma repLorentz_downYukawa (f f' : Fin 3) (Λ : SL(2,ℂ)) :
     repLorentzGroup Λ (LocalCovFieldAlgebra.downYukawa f f') =
       LocalCovFieldAlgebra.downYukawa f f' :=
-  (LocalCovFieldAlgebra.isBiDualRightWeyl_downBlockIsospin f f').rep_map_of_invariant
+  (LocalCovFieldAlgebra.isEquivariant_downRDownR_downBlockIsospin f f').rep_map_of_invariant
     (fun g => TensorSpecies.metricTensor_invariant g) Λ
 
 /-- Every component of the down-type block sits at mass weight eight in the Yukawa
@@ -312,7 +319,7 @@ lemma downYukawa_mem_sectorMassWeight (f f' : Fin 3) :
     LocalCovFieldAlgebra.downYukawa f f' ∈ fieldData.sectorMassWeight
       {FieldKind.scalar, FieldKind.fermion} 8 := by
   rw [downYukawa]
-  refine ofPairComponents_mem (k := .downR) (k' := .downR) _ (fun a b => ?_) _
+  refine ofComponents_comp_mem _ _ (fun p => ?_) _
   exact LocalCovFieldAlgebra.downBlockIsospin_eq _ _ _ _ ▸
     sum_mem fun p _ => LocalCovFieldAlgebra.downBlock_mem_sectorMassWeight _ _ _ _ _ _ _ _
 
@@ -337,10 +344,11 @@ noncomputable def upBlock (f f' : Fin 3) (i su : Fin 2) (cu : Fin 3) (sQ : Fin 2
 /-- The two colour indices of the up-type block carry one fundamental and one
   anti-fundamental `su(3)` index, the conjugate up singlet supplying the fundamental
   one. -/
-lemma isSU3FundamentalAntiFundamental_upBlock (f f' : Fin 3) (i su sQ wQ : Fin 2) :
-    IsSU3FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.upBlock f f' i su (l 0) sQ (l 1) wQ) :=
-  IsSU3FundamentalAntiFundamental.of_law fun U l => by
+lemma isEquivariant_colourFundAntiFund_upBlock (f f' : Fin 3) (i su sQ wQ : Fin 2) :
+    (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.upBlock f f' i su (l 0) sQ (l 1)
+          wQ) ∘ fundAntiFundIdx)) :=
+  ColourFundAntiFund.of_law fun U l => by
     simp only [upBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_left (U, 1, 1)
       (X := fun a => FermionSector.baruComponent f ![] (su, a))
@@ -352,11 +360,13 @@ lemma isSU3FundamentalAntiFundamental_upBlock (f f' : Fin 3) (i su sQ wQ : Fin 2
 
 /-- The two isospin indices of the up-type block are both anti-fundamental. The Higgs
   symbol and the quark doublet both carry the anti-fundamental of `su(2)`. -/
-lemma isSU2BiAntiFundamental_upBlock (f f' : Fin 3) (su : Fin 2) (cu : Fin 3) (sQ : Fin 2)
+lemma isEquivariant_isospinAntiFundAntiFund_upBlock (f f' : Fin 3) (su : Fin 2) (cu : Fin 3)
+    (sQ : Fin 2)
     (cQ : Fin 3) :
-    IsSU2BiAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.upBlock f f' (l 0) su cu sQ cQ (l 1)) :=
-  IsSU2BiAntiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund) (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.upBlock f f' (l 0) su cu sQ cQ
+          (l 1))) :=
+  IsospinAntiFundAntiFund.of_law fun V l => by
     simp only [upBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_mid (1, V, 1) (A := fun a => ScalarSector.higgs ![]
       a)
@@ -367,10 +377,11 @@ lemma isSU2BiAntiFundamental_upBlock (f f' : Fin 3) (su : Fin 2) (cu : Fin 3) (s
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
 
 /-- The two spinor indices of the up-type block are both dual left-handed. -/
-lemma isBiDualLeftWeyl_upBlock (f f' : Fin 3) (i : Fin 2) (cu cQ : Fin 3) (wQ : Fin 2) :
-    IsBiDualLeftWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents fun a b => LocalCovFieldAlgebra.upBlock f f' i a cu b cQ wQ) :=
-  isEquivariant_ofPairComponents _ fun Λ a b => by
+lemma isEquivariant_downLDownL_upBlock (f f' : Fin 3) (i : Fin 2) (cu cQ : Fin 3) (wQ : Fin 2) :
+    complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.upBlock f f' i p.1 cu p.2 cQ wQ) ∘ pairIdx)) :=
+  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+    (fun a b => LocalCovFieldAlgebra.upBlock f f' i a cu b cQ wQ) fun Λ a b => by
     rw [toMatrix_rep_downL]
     simp only [upBlock]
     rw [LocalCovFieldAlgebra.repLorentz_mul_fixed_left Λ
@@ -402,28 +413,30 @@ lemma repGauge_u1_upBlock (t : unitary ℂ) (f f' : Fin 3) (i su : Fin 2) (cu : 
 /-- The colour contraction of the up-type block. -/
 noncomputable def upBlockColour (f f' : Fin 3)
     (i su sQ wQ : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU3FundamentalAntiFundamental.deltaContraction
+  ColourFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.upBlock f f' i su (l 0) sQ (l 1) wQ)
 
 /-- The colour contraction of the up-type block written out. -/
 lemma upBlockColour_eq (f f' : Fin 3) (i su sQ wQ : Fin 2) :
     LocalCovFieldAlgebra.upBlockColour f f' i su sQ wQ = ∑ a : Fin 3, LocalCovFieldAlgebra.upBlock f
       f' i su a sQ a wQ := by
-  simp [upBlockColour, IsSU3FundamentalAntiFundamental.deltaContraction]
+  simp [upBlockColour, ColourFundAntiFund.deltaContraction]
 
 /-- The colour contraction of the up-type block still carries two anti-fundamental isospin
   indices. -/
-lemma isSU2BiAntiFundamental_upBlockColour (f f' : Fin 3) (su sQ : Fin 2) :
-    IsSU2BiAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.upBlockColour f f' (l 0) su sQ (l 1)) := by
+lemma isEquivariant_isospinAntiFundAntiFund_upBlockColour (f f' : Fin 3) (su sQ : Fin 2) :
+    (suTensor 2).IsEquivariant (fun _ : Fin 2 => .antiFund) (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.upBlockColour f f' (l 0) su sQ
+          (l 1))) := by
   simp only [LocalCovFieldAlgebra.upBlockColour_eq]
-  exact IsSU2BiAntiFundamental.sum fun a => LocalCovFieldAlgebra.isSU2BiAntiFundamental_upBlock f f'
+  exact IsospinAntiFundAntiFund.sum fun a =>
+      LocalCovFieldAlgebra.isEquivariant_isospinAntiFundAntiFund_upBlock f f'
     su a sQ a
 
 /-- The isospin contraction of the colour-contracted up-type block, by the antisymmetric
   symbol. Two anti-fundamental isospin indices admit no trace. -/
 noncomputable def upBlockIsospin (f f' : Fin 3) (su sQ : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2BiFundamental.epsilonContraction
+  IsospinFundFund.epsilonContraction
     (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.upBlockColour f f' (l 0) su sQ (l 1))
 
 /-- The doubly contracted up-type block written out. -/
@@ -431,19 +444,19 @@ lemma upBlockIsospin_eq (f f' : Fin 3) (su sQ : Fin 2) :
     LocalCovFieldAlgebra.upBlockIsospin f f' su sQ = (∑ a : Fin 3, LocalCovFieldAlgebra.upBlock f f'
       0 su a sQ a 1)
       - ∑ a : Fin 3, LocalCovFieldAlgebra.upBlock f f' 1 su a sQ a 0 := by
-  rw [upBlockIsospin, IsSU2BiFundamental.epsilonContraction]
+  rw [upBlockIsospin, IsospinFundFund.epsilonContraction]
   simp [LocalCovFieldAlgebra.upBlockColour_eq]
 
 /-- The doubly contracted up-type block carries two dual left-handed Weyl indices. -/
-lemma isBiDualLeftWeyl_upBlockIsospin (f f' : Fin 3) :
-    IsBiDualLeftWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents (LocalCovFieldAlgebra.upBlockIsospin f f')) := by
-  rw [show LocalCovFieldAlgebra.upBlockIsospin f f' = _ from funext₂
-    (LocalCovFieldAlgebra.upBlockIsospin_eq f f'),
-    ofPairComponents_sub, ofPairComponents_sum, ofPairComponents_sum]
-  exact (TensorSpecies.IsEquivariant.sum _ fun a _ => LocalCovFieldAlgebra.isBiDualLeftWeyl_upBlock
+lemma isEquivariant_downLDownL_upBlockIsospin (f f' : Fin 3) :
+    complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.upBlockIsospin f f' p.1 p.2) ∘ pairIdx)) := by
+  simp only [LocalCovFieldAlgebra.upBlockIsospin_eq, ofComponents_comp_sub, ofComponents_comp_sum]
+  exact (TensorSpecies.IsEquivariant.sum _ fun a _ =>
+      LocalCovFieldAlgebra.isEquivariant_downLDownL_upBlock
     f f' 0 a a 1).sub
-    (TensorSpecies.IsEquivariant.sum _ fun a _ => LocalCovFieldAlgebra.isBiDualLeftWeyl_upBlock f f'
+    (TensorSpecies.IsEquivariant.sum _ fun a _ =>
+        LocalCovFieldAlgebra.isEquivariant_downLDownL_upBlock f f'
       1 a a 0)
 
 /-- The up-type Yukawa term of the family pair `(f, f')`. The colour indices are joined by the
@@ -451,7 +464,8 @@ lemma isBiDualLeftWeyl_upBlockIsospin (f f' : Fin 3) :
   indices by the antisymmetric symbol. It is the image of the metric `εL'` under the map with the
   contracted block as its components. -/
 noncomputable def upYukawa (f f' : Fin 3) : fieldData.LocalCovFieldAlgebra :=
-  ofPairComponents (k := .downL) (k' := .downL) (LocalCovFieldAlgebra.upBlockIsospin f f') εL'
+  ofComponents (S := complexLorentzTensor) (c := ![.downL, .downL])
+    ((fun p => LocalCovFieldAlgebra.upBlockIsospin f f' p.1 p.2) ∘ pairIdx) εL'
 
 /-!
 
@@ -465,8 +479,8 @@ lemma repGauge_su3_upBlockColour (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : F
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.upBlockColour f f'
       i su sQ wQ)
       = LocalCovFieldAlgebra.upBlockColour f f' i su sQ wQ :=
-  IsSU3FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_upBlock f f' i su sQ wQ) U
+  ColourFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_upBlock f f' i su sQ wQ) U
 
 /-- The doubly contracted up-type block is fixed by the colour factor. -/
 lemma repGauge_su3_upBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : Fin 3)
@@ -474,7 +488,7 @@ lemma repGauge_su3_upBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : 
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.upBlockIsospin f f'
       su sQ)
       = LocalCovFieldAlgebra.upBlockIsospin f f' su sQ := by
-  rw [upBlockIsospin, IsSU2BiFundamental.epsilonContraction, map_sub,
+  rw [upBlockIsospin, IsospinFundFund.epsilonContraction, map_sub,
     LocalCovFieldAlgebra.repGauge_su3_upBlockColour,
       LocalCovFieldAlgebra.repGauge_su3_upBlockColour]
 
@@ -484,8 +498,8 @@ lemma repGauge_su2_upBlockIsospin (V : specialUnitaryGroup (Fin 2) ℂ) (f f' : 
     repGaugeGroupI ((1, V, 1) : GaugeGroupI) (LocalCovFieldAlgebra.upBlockIsospin f f'
       su sQ)
       = LocalCovFieldAlgebra.upBlockIsospin f f' su sQ :=
-  IsSU2BiAntiFundamental.repGauge_epsilonContraction
-    (LocalCovFieldAlgebra.isSU2BiAntiFundamental_upBlockColour f f' su sQ) V
+  IsospinAntiFundAntiFund.repGauge_epsilonContraction
+    (LocalCovFieldAlgebra.isEquivariant_isospinAntiFundAntiFund_upBlockColour f f' su sQ) V
 
 /-- The doubly contracted up-type block is fixed by the hypercharge factor. -/
 lemma repGauge_u1_upBlockIsospin (t : unitary ℂ) (f f' : Fin 3) (su sQ : Fin 2) :
@@ -502,7 +516,7 @@ lemma repGauge_upYukawa (f f' : Fin 3) (g : GaugeGroupI) :
     repGaugeGroupI g (LocalCovFieldAlgebra.upYukawa f f') =
       LocalCovFieldAlgebra.upYukawa f f' := by
   refine forall_repGauge_eq_self (fun U => ?_) (fun V => ?_) (fun t => ?_) g <;>
-    rw [upYukawa, map_ofPairComponents]
+    rw [upYukawa, map_ofComponents_comp]
   · simp only [LocalCovFieldAlgebra.repGauge_su3_upBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_su2_upBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_u1_upBlockIsospin]
@@ -511,7 +525,7 @@ lemma repGauge_upYukawa (f f' : Fin 3) (g : GaugeGroupI) :
 lemma repLorentz_upYukawa (f f' : Fin 3) (Λ : SL(2,ℂ)) :
     repLorentzGroup Λ (LocalCovFieldAlgebra.upYukawa f f') =
       LocalCovFieldAlgebra.upYukawa f f' :=
-  (LocalCovFieldAlgebra.isBiDualLeftWeyl_upBlockIsospin f f').rep_map_of_invariant
+  (LocalCovFieldAlgebra.isEquivariant_downLDownL_upBlockIsospin f f').rep_map_of_invariant
     (fun g => TensorSpecies.metricTensor_invariant g) Λ
 
 /-- Every component of the up-type block sits at mass weight eight in the Yukawa sector. -/
@@ -535,8 +549,8 @@ lemma upYukawa_mem_sectorMassWeight (f f' : Fin 3) :
     exact Submodule.sub_mem _ (sum_mem fun a _ => LocalCovFieldAlgebra.upBlock_mem_sectorMassWeight
       _ _ _ _ _ _ _ _)
       (sum_mem fun a _ => LocalCovFieldAlgebra.upBlock_mem_sectorMassWeight _ _ _ _ _ _ _ _)
-  rw [upYukawa]
-  exact ofPairComponents_mem (k := .downL) (k' := .downL) _ hiso _
+  exact ofComponents_comp_mem (S := complexLorentzTensor) (c := ![.downL, .downL]) pairIdx
+    (fun p => LocalCovFieldAlgebra.upBlockIsospin f f' p.1 p.2) (fun p => hiso p.1 p.2) εL'
 
 /-!
 
@@ -572,10 +586,11 @@ lemma repGauge_su3_leptonBlock (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : Fin
 /-- The two isospin indices of the lepton block carry one fundamental and one
   anti-fundamental `su(2)` index, the conjugate lepton doublet supplying the fundamental
   one. -/
-lemma isSU2FundamentalAntiFundamental_leptonBlock (f f' : Fin 3) (sL se : Fin 2) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.leptonBlock f f' (l 1) sL (l 0) se) :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+lemma isEquivariant_isospinFundAntiFund_leptonBlock (f f' : Fin 3) (sL se : Fin 2) :
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.leptonBlock f f' (l 1) sL (l 0)
+          se) ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     simp only [leptonBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_right (1, V, 1) (A := fun a => ScalarSector.higgs
       ![] a)
@@ -588,10 +603,11 @@ lemma isSU2FundamentalAntiFundamental_leptonBlock (f f' : Fin 3) (sL se : Fin 2)
     exact Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => by rw [mul_comm]
 
 /-- The two spinor indices of the lepton block are both dual right-handed. -/
-lemma isBiDualRightWeyl_leptonBlock (f f' : Fin 3) (i wL : Fin 2) :
-    IsBiDualRightWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents fun a b => LocalCovFieldAlgebra.leptonBlock f f' i a wL b) :=
-  isEquivariant_ofPairComponents _ fun Λ a b => by
+lemma isEquivariant_downRDownR_leptonBlock (f f' : Fin 3) (i wL : Fin 2) :
+    complexLorentzTensor.IsEquivariant ![.downR, .downR] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.leptonBlock f f' i p.1 wL p.2) ∘ pairIdx)) :=
+  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+    (fun a b => LocalCovFieldAlgebra.leptonBlock f f' i a wL b) fun Λ a b => by
     rw [toMatrix_rep_downR]
     simp only [leptonBlock]
     rw [LocalCovFieldAlgebra.repLorentz_mul_fixed_left Λ
@@ -622,32 +638,32 @@ lemma repGauge_u1_leptonBlock (t : unitary ℂ) (f f' : Fin 3) (i sL wL se : Fin
 /-- The isospin contraction of the lepton block. -/
 noncomputable def leptonBlockIsospin (f f' : Fin 3)
     (sL se : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2FundamentalAntiFundamental.deltaContraction
+  IsospinFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.leptonBlock f f' (l 1) sL (l 0) se)
 
 /-- The isospin contraction of the lepton block written out. -/
 lemma leptonBlockIsospin_eq (f f' : Fin 3) (sL se : Fin 2) :
     LocalCovFieldAlgebra.leptonBlockIsospin f f' sL se = ∑ w : Fin 2,
       LocalCovFieldAlgebra.leptonBlock f f' w sL w se := by
-  rw [leptonBlockIsospin, IsSU2FundamentalAntiFundamental.deltaContraction, Fin.sum_univ_two]
+  rw [leptonBlockIsospin, IsospinFundAntiFund.deltaContraction, Fin.sum_univ_two]
   simp
 
 /-- The contracted lepton block carries two dual right-handed Weyl indices. -/
-lemma isBiDualRightWeyl_leptonBlockIsospin (f f' : Fin 3) :
-    IsBiDualRightWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents (LocalCovFieldAlgebra.leptonBlockIsospin f f')) := by
-  rw [show LocalCovFieldAlgebra.leptonBlockIsospin f f' = _ from funext₂
-    (LocalCovFieldAlgebra.leptonBlockIsospin_eq f f'),
-    ofPairComponents_sum]
+lemma isEquivariant_downRDownR_leptonBlockIsospin (f f' : Fin 3) :
+    complexLorentzTensor.IsEquivariant ![.downR, .downR] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.leptonBlockIsospin f f' p.1 p.2) ∘
+          pairIdx)) := by
+  simp only [LocalCovFieldAlgebra.leptonBlockIsospin_eq, ofComponents_comp_sum]
   exact TensorSpecies.IsEquivariant.sum _ fun w _ =>
-    LocalCovFieldAlgebra.isBiDualRightWeyl_leptonBlock f f' w w
+    LocalCovFieldAlgebra.isEquivariant_downRDownR_leptonBlock f f' w w
 
 /-- The charged-lepton Yukawa term of the family pair `(f, f')`. The isospin indices are joined by
   the Kronecker delta and the two right-handed spinor indices by the antisymmetric symbol, colour
   playing no part. It is the image of the metric `εR'` under the map with the contracted block as
   its components. -/
 noncomputable def leptonYukawa (f f' : Fin 3) : fieldData.LocalCovFieldAlgebra :=
-  ofPairComponents (k := .downR) (k' := .downR) (LocalCovFieldAlgebra.leptonBlockIsospin f f') εR'
+  ofComponents (S := complexLorentzTensor) (c := ![.downR, .downR])
+    ((fun p => LocalCovFieldAlgebra.leptonBlockIsospin f f' p.1 p.2) ∘ pairIdx) εR'
 
 /-!
 
@@ -671,8 +687,8 @@ lemma repGauge_su2_leptonBlockIsospin (V : specialUnitaryGroup (Fin 2) ℂ) (f f
     repGaugeGroupI ((1, V, 1) : GaugeGroupI) (LocalCovFieldAlgebra.leptonBlockIsospin
       f f' sL se)
       = LocalCovFieldAlgebra.leptonBlockIsospin f f' sL se :=
-  IsSU2FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_leptonBlock f f' sL se) V
+  IsospinFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_leptonBlock f f' sL se) V
 
 /-- The contracted lepton block is fixed by the hypercharge factor. -/
 lemma repGauge_u1_leptonBlockIsospin (t : unitary ℂ) (f f' : Fin 3) (sL se : Fin 2) :
@@ -688,7 +704,7 @@ lemma repGauge_leptonYukawa (f f' : Fin 3) (g : GaugeGroupI) :
     repGaugeGroupI g (LocalCovFieldAlgebra.leptonYukawa f f') =
       LocalCovFieldAlgebra.leptonYukawa f f' := by
   refine forall_repGauge_eq_self (fun U => ?_) (fun V => ?_) (fun t => ?_) g <;>
-    rw [leptonYukawa, map_ofPairComponents]
+    rw [leptonYukawa, map_ofComponents_comp]
   · simp only [LocalCovFieldAlgebra.repGauge_su3_leptonBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_su2_leptonBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_u1_leptonBlockIsospin]
@@ -697,7 +713,7 @@ lemma repGauge_leptonYukawa (f f' : Fin 3) (g : GaugeGroupI) :
 lemma repLorentz_leptonYukawa (f f' : Fin 3) (Λ : SL(2,ℂ)) :
     repLorentzGroup Λ (LocalCovFieldAlgebra.leptonYukawa f f') =
       LocalCovFieldAlgebra.leptonYukawa f f' :=
-  (LocalCovFieldAlgebra.isBiDualRightWeyl_leptonBlockIsospin f f').rep_map_of_invariant
+  (LocalCovFieldAlgebra.isEquivariant_downRDownR_leptonBlockIsospin f f').rep_map_of_invariant
     (fun g => TensorSpecies.metricTensor_invariant g) Λ
 
 /-- Every component of the lepton block sits at mass weight eight in the Yukawa sector. -/
@@ -714,7 +730,7 @@ lemma leptonYukawa_mem_sectorMassWeight (f f' : Fin 3) :
     LocalCovFieldAlgebra.leptonYukawa f f'
       ∈ fieldData.sectorMassWeight {FieldKind.scalar, FieldKind.fermion} 8 := by
   rw [leptonYukawa]
-  refine ofPairComponents_mem (k := .downR) (k' := .downR) _ (fun a b => ?_) _
+  refine ofComponents_comp_mem _ _ (fun p => ?_) _
   exact LocalCovFieldAlgebra.leptonBlockIsospin_eq _ _ _ _ ▸
     sum_mem fun w _ => LocalCovFieldAlgebra.leptonBlock_mem_sectorMassWeight _ _ _ _ _ _
 

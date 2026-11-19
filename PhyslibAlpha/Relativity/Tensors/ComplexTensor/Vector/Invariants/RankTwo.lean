@@ -5,7 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.LorentzCovariance
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Metrics.Pre
 /-!
 # Lorentz invariants among two four-vector indices
@@ -15,25 +15,23 @@ Up to scale, the metric is the only Lorentz invariant of two four-vector indices
 ## i. Overview
 
 A rank-two tensor `T^{μν}` has a single Lorentz invariant up to scale, its contraction with the
-metric: nothing else ties two indices, the Levi-Civita symbol needing four. For an equivariant
-map `f : ℂT(fun _ : Fin 2 => .up) →ₗ[ℂ] B`, `IsLorentzCovariant 2`, every Lorentz invariant in the
-range of `f` is a multiple of `f metric`, the image of the metric `η` (A), and modulo a
-Lorentz-stable submodule `S` the invariants of `LinearMap.range f ⊔ S` reduce to the line through
-it (C). For a given `f` the image may be zero.
+metric: nothing else ties two indices, the Levi-Civita symbol needing four. The invariant tensors
+with two four-vector indices are the line through the metric `η` (A, B). Relabelled to
+`ℂT[.up, .up]` such a tensor is `fromPairT` of an element of `ComplexVector ⊗ ComplexVector`, and
+the invariants of that tensor product are the line through the metric,
+`Lorentz.ComplexVector.invariants_tprod_eq_span_metricVal`.
 
-The invariants of the range of `f` are the images of invariant tensors, so it is enough that an
-invariant tensor is a multiple of the metric (B). Relabelled to `ℂT[.up, .up]` such a tensor is
-`fromPairT` of an element of `ComplexVector ⊗ ComplexVector`, and the invariants of that tensor
-product are the line through the metric, `Lorentz.ComplexVector.invariants_tprod_eq_span_metricVal`.
+For an equivariant map `f : ℂT(fun _ : Fin 2 => .up) →ₗ[ℂ] B`, the
+invariants of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, therefore reduce to the
+line through `f metric` (C). For a given `f` the image may be zero.
 
 ## ii. Key results
 
-- `Lorentz.RankTwo.metric` : the metric `η` with the colours of `IsLorentzCovariant 2`.
-- `Lorentz.RankTwo.exists_eq_smul_metric_of_invariant` : an invariant tensor is a multiple of
-  the metric.
-- `Lorentz.RankTwo.exists_smul_map_metric_of_invariant` : an invariant in the range of `f` is a
-  multiple of `f metric`.
-- `Lorentz.RankTwo.reducesInvariantsTo_span_metric` : the same modulo a stable submodule.
+- `Lorentz.RankTwo.metric` : the metric `η` with the colours `fun _ : Fin 2 => .up`.
+- `Lorentz.ComplexVector.invariants_tensorPower_two_eq_span` : the invariant tensors are the line
+  through the metric.
+- `Lorentz.ComplexVector.reducesInvariantsTo_span_metric` : the invariants of the range of `f`,
+  modulo a stable submodule, reduce to the line through `f metric`.
 
 ## iii. Table of contents
 
@@ -51,7 +49,8 @@ product are the line through the metric, `Lorentz.ComplexVector.invariants_tprod
 
 namespace Lorentz
 
-open TensorProduct Matrix MatrixGroups SL2C Invariants TensorSpecies Tensor complexLorentzTensor
+open TensorProduct Matrix MatrixGroups SL2C Invariants TensorSpecies complexLorentzTensor
+open TensorSpecies.Tensor hiding ofComponents
 
 namespace RankTwo
 
@@ -88,7 +87,7 @@ lemma coeffEquiv_symm_minkowskiMatrixZ :
 
 /-- `ofComponents T` sends the metric to the contraction `η_{μν} T^{μν}`. -/
 lemma ofComponents_metric (T : (Fin 2 → Fin 1 ⊕ Fin 3) → B) :
-    ofComponents T metric
+    ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up) T metric
       = ∑ d : Fin 2 → Fin 1 ⊕ Fin 3, ((minkowskiMatrixZ (d 0) (d 1) : ℤ) : ℂ) • T d := by
   rw [← coeffEquiv_symm_minkowskiMatrixZ, ofComponents_coeffEquiv_symm]
 
@@ -108,14 +107,16 @@ lemma isReindexing_up_up' :
     IsReindexing ![Color.up, Color.up] (fun _ : Fin 2 => Color.up) id :=
   ⟨Function.bijective_id, fun i => by fin_cases i <;> rfl⟩
 
-/-- The invariant tensors with two four-vector indices are the multiples of the metric.
+/-- The invariant tensors with two four-vector indices are the line through the metric.
   Relabelled to `ℂT[.up, .up]` such a tensor comes from `ComplexVector ⊗ ComplexVector`, whose
   invariants are the line through the metric. -/
-lemma exists_eq_smul_metric_of_invariant (t : ℂT(fun _ : Fin 2 => Color.up))
-    (ht : ∀ g : SL(2,ℂ), g • t = t) : ∃ a : ℂ, t = a • metric := by
-  obtain ⟨a, ha⟩ := Tensor.exists_eq_smul_fromPairT_of_invariant (S := complexLorentzTensor)
-    (c1 := .up) (c2 := .up) ComplexVector.invariants_tprod_eq_span_metricVal
-    (t := permT id isReindexing_up_up t) fun g => by rw [← permT_equivariant, ht]
+lemma _root_.Lorentz.ComplexVector.invariants_tensorPower_two_eq_span :
+    (complexLorentzTensor.tensorRep (fun _ : Fin 2 => Color.up)).invariants = ℂ ∙ metric := by
+  refine Representation.invariants_eq_span_singleton metric_invariant fun t ht => ?_
+  obtain ⟨a, ha⟩ := Representation.exists_eq_smul_of_invariants_eq_span
+    (invariants_tensorRep_pair_eq_span (S := complexLorentzTensor) (c1 := .up) (c2 := .up)
+      ComplexVector.invariants_tprod_eq_span_metricVal) (x := permT id isReindexing_up_up t)
+    fun g => by rw [tensorRep_apply, ← permT_equivariant, show g • t = t from ht g]
   have hback : permT id isReindexing_up_up' (permT id isReindexing_up_up t) = t :=
     (permT_permT _ _ t).trans (permT_congr_eq_id _ _ _ rfl)
   refine ⟨a, ?_⟩
@@ -134,36 +135,13 @@ variable {f : ℂT(fun _ : Fin 2 => Color.up) →ₗ[ℂ] B}
 /-- The invariants of the range of `f` reduce to the line through the image `f metric` of the
   metric. A Lorentz invariant of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, is
   a multiple of `f metric` plus an element of `S`. -/
-lemma reducesInvariantsTo_span_metric (hf : IsLorentzCovariant 2 B repLorentz f) :
+lemma _root_.Lorentz.ComplexVector.reducesInvariantsTo_span_metric
+    (hf : complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentz f) :
     ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentz g) (LinearMap.range f)
       (ℂ ∙ f metric) := by
-  have h := hf.reducesInvariantsTo_map (complexLorentzTensor.isAdjointClosed _) (ℂ ∙ metric)
-    fun t ht => by
-      obtain ⟨a, rfl⟩ := exists_eq_smul_metric_of_invariant t ht
-      exact Submodule.smul_mem _ a (Submodule.mem_span_singleton_self _)
-  rwa [Submodule.map_span, Set.image_singleton] at h
-
-/-- Every Lorentz invariant of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, is a
-  multiple of the image `f metric` of the metric plus an element of `S`. -/
-lemma exists_smul_map_metric_add_of_invariant (hf : IsLorentzCovariant 2 B repLorentz f)
-    (S : Submodule ℂ B) (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
-    (hx : x ∈ LinearMap.range f ⊔ S) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
-    ∃ a : ℂ, ∃ y ∈ S, x = a • f metric + y := by
-  obtain ⟨z, hz, y, hy, rfl⟩ := Submodule.mem_sup.1
-    (reducesInvariantsTo_span_metric hf S hS x hx hinv)
-  obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hz
-  exact ⟨a, y, hy, rfl⟩
-
-/-- Every Lorentz invariant in the range of `f` is a multiple of the image `f metric` of the
-  metric. -/
-lemma exists_smul_map_metric_of_invariant (hf : IsLorentzCovariant 2 B repLorentz f) {x : B}
-    (hx : x ∈ LinearMap.range f) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) :
-    ∃ a : ℂ, x = a • f metric := by
-  obtain ⟨a, y, hy, rfl⟩ := exists_smul_map_metric_add_of_invariant hf ⊥
-    (fun _ _ hy => by rw [(Submodule.mem_bot ℂ).1 hy, map_zero]; exact Submodule.zero_mem _)
-    (Submodule.mem_sup_left hx) hinv
-  rw [(Submodule.mem_bot ℂ).1 hy, add_zero]
-  exact ⟨a, rfl⟩
+  have h := TensorSpecies.IsEquivariant.reducesInvariantsTo_span hf
+    (complexLorentzTensor.hasReynolds _) ComplexVector.invariants_tensorPower_two_eq_span
+  rwa [Set.image_singleton] at h
 
 end RankTwo
 

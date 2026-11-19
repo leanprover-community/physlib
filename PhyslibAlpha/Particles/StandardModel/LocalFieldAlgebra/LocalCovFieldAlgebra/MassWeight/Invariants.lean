@@ -100,6 +100,8 @@ In the namespace `StandardModel.LocalCovFieldAlgebra`:
 
 @[expose] public section
 
+open TensorSpecies
+
 namespace StandardModel
 
 open GaugeFieldData (FieldKind)

@@ -17,37 +17,32 @@ up to scale.
 
 A tensor with one adjoint index is an element `A` of the complexified Lie algebra `ℂ ⊗[ℝ] su(N)`,
 moved by `g` to `g A g⁻¹`. The matrix of an invariant one commutes with every element of `SU(N)`, so
-it is scalar (`SU.eq_smul_one_of_commute`), and being traceless it is zero (A).
+it is scalar (`SU.eq_smul_one_of_commute`), and being traceless it is zero: the adjoint
+representation has no invariants but zero, and neither has `SuT[N, .adj]` (A).
 
 A tensor with two adjoint indices has a matrix of components `C` in the Gell-Mann basis, moved by
 `g` to `M C Mᵀ`, where `M` is the matrix of the adjoint action of `g`. That matrix is real and
 `Mᵀ` is the matrix of `g⁻¹`, so the components of an invariant tensor are the matrix of an
 endomorphism of the complexified Lie algebra commuting with the adjoint action. By
 `suTensor.eq_smul_id_of_commute_adjRep` that endomorphism is scalar, and the invariant tensors are
-the multiples of the unit tensor of the adjoint color, `∑ λ_a ⊗ λ_a / 2` (B).
+the line through the unit tensor of the adjoint color, `∑ λ_a ⊗ λ_a / 2` (B).
 
 For equivariant maps out of these tensors the invariants of the range reduce to `⊥` for one
-adjoint index and to the image of the unit tensor for two (C). Families indexed by the Gell-Mann
-labels are turned into maps by `adjMap` and `adjPairMap`, and for two indices the image of twice
-the unit tensor is the trace contraction `∑ a, T ![a, a]` (D).
-
-In terms of Mathlib's invariants, the adjoint representation has no invariants but zero, and the
-invariants of its tensor square are the line through the unit `∑ λ_a ⊗ λ_a / 2`. For an
-intertwining map out of either, the invariants in its range are zero, respectively the line
-through the image of the unit (E).
+adjoint index and to the image of the unit tensor for two (C). A family indexed by the Gell-Mann
+labels is the map `ofComponents (T ∘ adjIdx)` or `ofComponents (T ∘ adjPairIdx)`, and for two
+indices the image of twice the unit tensor is the trace contraction `∑ a, T ![a, a]` (D). The
+invariants of the tensor
+square of the adjoint representation are the line through the unit `∑ λ_a ⊗ λ_a / 2` (E).
 
 ## ii. Key results
 
-- `suTensor.eq_zero_of_invariant_adj` : an invariant tensor with one adjoint index is zero.
-- `suTensor.exists_eq_smul_adjUnitTensor_of_invariant` : an invariant tensor with two adjoint
-  indices is a multiple of the unit tensor.
+- `suTensor.invariants_adjRep_eq_bot` : the adjoint representation has no invariants but zero.
+- `suTensor.invariants_tensorRep_eq_span_adjUnitTensor` : the invariant tensors with two adjoint
+  indices are the line through the unit tensor.
 - `suTensor.invariantReductionToTrace` : the reduction of the invariants of the span of a family
   with two adjoint indices to the trace contraction.
-- `suTensor.invariants_adjRep_eq_bot` : the adjoint representation has no invariants but zero.
 - `suTensor.invariants_tprod_eq_span_adjUnitVal` : the invariants of the tensor square of the
   adjoint representation are the line through the unit.
-- `suTensor.invariants_inf_range_eq_span_map_adjUnitVal` : the invariants in the range of an
-  intertwining map out of the tensor square are the line through the image of the unit.
 
 ## iii. Table of contents
 
@@ -55,7 +50,7 @@ through the image of the unit (E).
 - B. Two adjoint indices
 - C. The invariants of equivariant maps
 - D. Maps from components
-- E. The invariants in Mathlib's form
+- E. The invariants of the tensor square of the adjoint representation
 
 ## iv. References
 
@@ -67,7 +62,8 @@ through the image of the unit (E).
 
 namespace suTensor
 
-open Matrix MatrixGroups TensorSpecies Tensor SU TensorProduct
+open Matrix MatrixGroups TensorSpecies SU TensorProduct
+open TensorSpecies.Tensor hiding ofComponents
 
 variable {N : ℕ}
 
@@ -77,10 +73,10 @@ variable {N : ℕ}
 
 -/
 
-/-- An invariant element of the complexified Lie algebra is zero. Its matrix commutes with every
-  element of `SU(N)`, so it is a scalar, and its trace vanishes. -/
-lemma eq_zero_of_adjRep_eq_self {A : SUAlgebraComplexified N} (hA : ∀ g : SU N, adjRep N g A = A) :
-    A = 0 := by
+/-- The adjoint representation has no invariants but zero. The matrix of an invariant commutes
+  with every element of `SU(N)`, so it is a scalar, and its trace vanishes. -/
+lemma invariants_adjRep_eq_bot : (adjRep N).invariants = ⊥ := by
+  refine Representation.invariants_eq_bot_of_forall fun A hA => ?_
   obtain ⟨z, hz⟩ := eq_smul_one_of_commute (C := adjMat N A) fun g => by
     have h := congrArg (adjMat N) (hA g)
     rw [adjMat_adjRep] at h
@@ -97,13 +93,11 @@ lemma eq_zero_of_adjRep_eq_self {A : SUAlgebraComplexified N} (hA : ∀ g : SU N
       exact_mod_cast hN
     exact Subsingleton.elim _ _
 
-/-- An invariant tensor with one adjoint index is zero. -/
-lemma eq_zero_of_invariant_adj (t : SuT[N, .adj]) (ht : ∀ g : SU N, g • t = t) : t = 0 := by
-  obtain ⟨A, rfl⟩ := (fromSingleT (S := suTensor N) (c := .adj)).surjective t
-  have hA : ∀ g : SU N, adjRep N g A = A := fun g =>
-    (fromSingleT (S := suTensor N) (c := .adj)).injective
-      ((actionT_fromSingleT (S := suTensor N) A g).symm.trans (ht g))
-  rw [eq_zero_of_adjRep_eq_self hA, map_zero]
+/-- There are no invariant tensors with one adjoint index but zero. -/
+lemma invariants_tensorRep_adj_eq_bot : ((suTensor N).tensorRep ![.adj]).invariants = ⊥ := by
+  rw [invariants_tensorRep_eq_map_of_equiv fromSingleT
+    (fun g A => (actionT_fromSingleT (S := suTensor N) A g).symm), invariants_adjRep_eq_bot,
+    Submodule.map_bot]
 
 /-!
 
@@ -164,11 +158,13 @@ lemma basis_repr_adjUnitTensor (n : Fin 2 → GellMann.Index N) :
   · simp [h01]
   · simp [h01, Ne.symm h01]
 
-/-- An invariant tensor with two adjoint indices is a multiple of the unit tensor of the adjoint
-  color. Its matrix of components commutes with the matrices of the adjoint action, so it is the
-  matrix of an endomorphism commuting with the adjoint action, which is scalar. -/
-lemma exists_eq_smul_adjUnitTensor_of_invariant (t : SuT[N, .adj, .adj])
-    (ht : ∀ g : SU N, g • t = t) : ∃ a : ℂ, t = a • adjUnitTensor N := by
+/-- The invariant tensors with two adjoint indices are the line through the unit tensor of the
+  adjoint color. The matrix of components of an invariant tensor commutes with the matrices of the
+  adjoint action, so it is the matrix of an endomorphism commuting with the adjoint action, which
+  is scalar. -/
+lemma invariants_tensorRep_eq_span_adjUnitTensor :
+    ((suTensor N).tensorRep ![.adj, .adj]).invariants = ℂ ∙ adjUnitTensor N := by
+  refine invariants_tensorRep_eq_span_singleton adjUnitTensor_invariant fun t ht => ?_
   set C : Matrix (GellMann.Index N) (GellMann.Index N) ℂ :=
     Matrix.of fun a b => (Tensor.basis _).repr t (adjPairIdx.symm ![a, b])
   have hconj : ∀ g : SU N, adjMatrix g * C * (adjMatrix g)ᵀ = C := fun g => by
@@ -205,6 +201,13 @@ lemma exists_eq_smul_adjUnitTensor_of_invariant (t : SuT[N, .adj, .adj])
   rw [h]
   split_ifs <;> ring
 
+/-- The invariant tensors with two adjoint indices are the line through twice the unit tensor,
+  the tensor whose image under a map of a family is the trace contraction. -/
+lemma invariants_tensorRep_eq_span_two_smul_adjUnitTensor :
+    ((suTensor N).tensorRep ![.adj, .adj]).invariants = ℂ ∙ ((2 : ℂ) • adjUnitTensor N) :=
+  invariants_tensorRep_eq_span_adjUnitTensor.trans
+    (Submodule.span_singleton_smul_eq (IsUnit.mk0 _ two_ne_zero) _).symm
+
 /-!
 
 ## C. The invariants of equivariant maps
@@ -218,15 +221,7 @@ variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ (S
 lemma reducesInvariantsTo_bot_of_isEquivariant_adj {f : SuT[N, .adj] →ₗ[ℂ] B}
     (hf : (suTensor N).IsEquivariant ![.adj] ρ f) :
     ReducesInvariantsTo (fun g : SU N => ρ g) (LinearMap.range f) ⊥ :=
-  hf.reducesInvariantsTo_bot (isAdjointClosed N _) eq_zero_of_invariant_adj
-
-/-- For any equivariant linear map out of the tensors with two adjoint indices, the invariants of
-  its range reduce to the span of the image of the unit tensor. -/
-noncomputable def invariantReductionToAdjUnitImage {f : SuT[N, .adj, .adj] →ₗ[ℂ] B}
-    (hf : (suTensor N).IsEquivariant ![.adj, .adj] ρ f) :
-    InvariantReductionToSpan (fun g : SU N => ρ g) (LinearMap.range f) :=
-  hf.invariantReductionToSpan (isAdjointClosed N _) (adjUnitTensor N) adjUnitTensor_invariant
-    exists_eq_smul_adjUnitTensor_of_invariant
+  hf.reducesInvariantsTo_bot (hasReynolds N _) invariants_tensorRep_adj_eq_bot
 
 /-!
 
@@ -244,103 +239,77 @@ def adjIdx : ComponentIdx (S := suTensor N) ![.adj] ≃ GellMann.Index N where
     rfl
   right_inv a := rfl
 
-/-- The linear map out of the tensors with one adjoint index sending the basis tensor with label
-  `a` to `T a`. -/
-noncomputable def adjMap (T : GellMann.Index N → B) : SuT[N, .adj] →ₗ[ℂ] B :=
-  familyMap adjIdx T
-
 /-- A linear map moving a family indexed by one adjoint label by the matrix of the adjoint action
   of `g` intertwines the map of the family with the action of `g`. -/
-lemma adjMap_smul_of_law (T : GellMann.Index N → B) {σ : B →ₗ[ℂ] B} (g : SU N)
+lemma ofComponents_adj_smul_of_law (T : GellMann.Index N → B) {σ : B →ₗ[ℂ] B} (g : SU N)
     (hσ : ∀ a : GellMann.Index N, σ (T a) = ∑ b, adjMatrix g b a • T b) (t : SuT[N, .adj]) :
-    σ (adjMap T t) = adjMap T (g • t) :=
-  familyMap_smul_of_law _ T g (fun a => (hσ a).trans <|
-    Finset.sum_congr rfl fun b _ => by rw [Fin.prod_univ_one]; rfl) t
+    σ (ofComponents (T ∘ adjIdx) t) = ofComponents (T ∘ adjIdx) (g • t) := by
+  refine ofComponents_smul_of_law _ g (fun φ => (hσ _).trans ?_) t
+  rw [← adjIdx.sum_comp]
+  exact Finset.sum_congr rfl fun b _ => by rw [Fin.prod_univ_one]; rfl
 
 /-- The map of a family indexed by one adjoint label is equivariant when the family moves by the
   matrix of the adjoint action, the summed label first. -/
-lemma isEquivariant_adjMap (T : GellMann.Index N → B)
+lemma isEquivariant_ofComponents_adj (T : GellMann.Index N → B)
     (hT : ∀ (g : SU N) (a : GellMann.Index N), ρ g (T a) = ∑ b, adjMatrix g b a • T b) :
-    (suTensor N).IsEquivariant ![.adj] ρ (adjMap T) :=
-  ⟨fun g t => (adjMap_smul_of_law T g (hT g) t).symm⟩
+    (suTensor N).IsEquivariant ![.adj] ρ (ofComponents (T ∘ adjIdx)) :=
+  ⟨fun g t => (ofComponents_adj_smul_of_law T g (hT g) t).symm⟩
 
 /-- For a family indexed by one adjoint label whose map is equivariant, the invariants of the
   span of the family reduce to `⊥`. -/
-lemma reducesInvariantsTo_bot_span_of_adjMap {T : GellMann.Index N → B}
-    (hT : (suTensor N).IsEquivariant ![.adj] ρ (adjMap T)) :
+lemma reducesInvariantsTo_bot_span_adj {T : GellMann.Index N → B}
+    (hT : (suTensor N).IsEquivariant ![.adj] ρ (ofComponents (T ∘ adjIdx))) :
     ReducesInvariantsTo (fun g : SU N => ρ g) (Submodule.span ℂ (Set.range T)) ⊥ := by
-  rw [← range_familyMap adjIdx T]
+  rw [← range_ofComponents_comp adjIdx T]
   exact reducesInvariantsTo_bot_of_isEquivariant_adj hT
 
-/-- The linear map out of the tensors with two adjoint indices sending the basis tensor with
-  labels `n` to `T n`. -/
-noncomputable def adjPairMap (T : (Fin 2 → GellMann.Index N) → B) :
-    SuT[N, .adj, .adj] →ₗ[ℂ] B :=
-  familyMap adjPairIdx T
-
-/-- The map of a family sends twice the unit tensor to the trace contraction `∑ a, T ![a, a]`. -/
-lemma adjPairMap_two_smul_adjUnitTensor (T : (Fin 2 → GellMann.Index N) → B) :
-    adjPairMap T ((2 : ℂ) • adjUnitTensor N) = ∑ a, T ![a, a] := by
+/-- The map of a family relabelled by `adjPairIdx` sends twice the unit tensor to the trace
+  contraction `∑ a, T ![a, a]`. -/
+lemma ofComponents_two_smul_adjUnitTensor (T : (Fin 2 → GellMann.Index N) → B) :
+    ofComponents (T ∘ adjPairIdx) ((2 : ℂ) • adjUnitTensor N) = ∑ a, T ![a, a] := by
   conv_lhs => rw [← (Tensor.basis _).sum_repr (adjUnitTensor N)]
   rw [Finset.smul_sum, map_sum, ← adjPairIdx.symm.sum_comp, ← (finTwoArrowEquiv _).symm.sum_comp,
     Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [Finset.sum_eq_single a]
-  · simp [adjPairMap, basis_repr_adjUnitTensor, smul_smul]
+  · simp [basis_repr_adjUnitTensor, smul_smul]
   · intro b _ hb
-    simp [adjPairMap, basis_repr_adjUnitTensor, Ne.symm hb]
+    simp [basis_repr_adjUnitTensor, Ne.symm hb]
   · simp
 
 /-- A linear map moving a family indexed by two adjoint labels by the matrix of the adjoint
   action of `g` on each label intertwines the map of the family with the action of `g`. -/
-lemma adjPairMap_smul_of_law (T : (Fin 2 → GellMann.Index N) → B) {σ : B →ₗ[ℂ] B} (g : SU N)
-    (hσ : ∀ l : Fin 2 → GellMann.Index N, σ (T l)
+lemma ofComponents_adjPair_smul_of_law (T : (Fin 2 → GellMann.Index N) → B) {σ : B →ₗ[ℂ] B}
+    (g : SU N) (hσ : ∀ l : Fin 2 → GellMann.Index N, σ (T l)
       = ∑ a : Fin 2 → GellMann.Index N, (adjMatrix g (a 0) (l 0) * adjMatrix g (a 1) (l 1)) • T a)
     (t : SuT[N, .adj, .adj]) :
-    σ (adjPairMap T t) = adjPairMap T (g • t) :=
-  familyMap_smul_of_law _ T g (fun l => (hσ l).trans <|
-    Finset.sum_congr rfl fun a _ => by rw [Fin.prod_univ_two]; rfl) t
+    σ (ofComponents (T ∘ adjPairIdx) t) = ofComponents (T ∘ adjPairIdx) (g • t) := by
+  refine ofComponents_smul_of_law _ g (fun φ => (hσ _).trans ?_) t
+  rw [← adjPairIdx.sum_comp]
+  exact Finset.sum_congr rfl fun a _ => by rw [Fin.prod_univ_two]; rfl
 
 /-- The map of a family indexed by two adjoint labels is equivariant when the family moves by the
   matrix of the adjoint action on each label, the summed label first. -/
-lemma isEquivariant_adjPairMap (T : (Fin 2 → GellMann.Index N) → B)
+lemma isEquivariant_ofComponents_adjPair (T : (Fin 2 → GellMann.Index N) → B)
     (hT : ∀ (g : SU N) (l : Fin 2 → GellMann.Index N), ρ g (T l)
       = ∑ a : Fin 2 → GellMann.Index N, (adjMatrix g (a 0) (l 0) * adjMatrix g (a 1) (l 1)) • T a) :
-    (suTensor N).IsEquivariant ![.adj, .adj] ρ (adjPairMap T) :=
-  ⟨fun g t => (adjPairMap_smul_of_law T g (hT g) t).symm⟩
+    (suTensor N).IsEquivariant ![.adj, .adj] ρ (ofComponents (T ∘ adjPairIdx)) :=
+  ⟨fun g t => (ofComponents_adjPair_smul_of_law T g (hT g) t).symm⟩
 
 /-- For a family indexed by two adjoint labels whose map is equivariant, the invariants of the
   span of the family reduce to the span of the trace contraction `∑ a, T ![a, a]`. -/
 noncomputable def invariantReductionToTrace {T : (Fin 2 → GellMann.Index N) → B}
-    (hT : (suTensor N).IsEquivariant ![.adj, .adj] ρ (adjPairMap T)) :
+    (hT : (suTensor N).IsEquivariant ![.adj, .adj] ρ (ofComponents (T ∘ adjPairIdx))) :
     InvariantReductionToSpan (fun g : SU N => ρ g) (Submodule.span ℂ (Set.range T)) :=
-  hT.invariantReductionToSpanOfEq (isAdjointClosed N _) ((2 : ℂ) • adjUnitTensor N)
-    (fun g => by rw [smul_comm, adjUnitTensor_invariant])
-    (fun t ht => by
-      obtain ⟨a, rfl⟩ := exists_eq_smul_adjUnitTensor_of_invariant t ht
-      exact ⟨a / 2, by rw [smul_smul, div_mul_cancel₀ a two_ne_zero]⟩)
-    (range_familyMap _ T) _ (adjPairMap_two_smul_adjUnitTensor T)
+  hT.invariantReductionToSpanOfEq (hasReynolds N _)
+    invariants_tensorRep_eq_span_two_smul_adjUnitTensor (range_ofComponents_comp _ T) _
+    (ofComponents_two_smul_adjUnitTensor T)
 
 /-!
 
-## E. The invariants in Mathlib's form
+## E. The invariants of the tensor square of the adjoint representation
 
 -/
-
-/-- The adjoint representation has no invariants but zero. -/
-lemma invariants_adjRep_eq_bot : (adjRep N).invariants = ⊥ :=
-  eq_bot_iff.2 fun _ hA => (Submodule.mem_bot ℂ).2 (eq_zero_of_adjRep_eq_self hA)
-
-/-- There are no invariant tensors with one adjoint index but zero. -/
-lemma invariants_tensorRep_adj_eq_bot : ((suTensor N).tensorRep ![.adj]).invariants = ⊥ :=
-  invariants_tensorRep_eq_bot eq_zero_of_invariant_adj
-
-/-- For an intertwining map `f` out of the adjoint representation, the invariants in the range
-  of `f` are zero. -/
-lemma invariants_inf_range_adjRep_eq_bot (f : (adjRep N).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ⊥ :=
-  (isAdjointClosed N ![.adj]).invariants_inf_range_eq_bot_of_equiv fromSingleT
-    (fun g A => (actionT_fromSingleT A g).symm) invariants_tensorRep_adj_eq_bot f
 
 /-- The unit tensor of the adjoint color is the tensor of `∑ b_a ⊗ bᵃ`. -/
 lemma adjUnitTensor_eq_fromPairT :
@@ -348,34 +317,11 @@ lemma adjUnitTensor_eq_fromPairT :
   change fromPairT (S := suTensor N) (c1 := .adj) (c2 := .adj) (adjUnit N 1) = _
   rw [adjUnit, unitOf_apply, one_smul]
 
-/-- The invariant tensors with two adjoint indices are the line through the unit tensor. -/
-lemma invariants_tensorRep_eq_span_adjUnitTensor :
-    ((suTensor N).tensorRep ![.adj, .adj]).invariants = ℂ ∙ adjUnitTensor N :=
-  invariants_tensorRep_eq_span_singleton adjUnitTensor_invariant
-    exists_eq_smul_adjUnitTensor_of_invariant
-
 /-- The invariants of the tensor square of the adjoint representation are the line through the
   unit `∑ b_a ⊗ bᵃ`. -/
 lemma invariants_tprod_eq_span_adjUnitVal :
     ((adjRep N).tprod (adjRep N)).invariants = ℂ ∙ adjUnitVal N :=
   invariants_tprod_eq_span_singleton (S := suTensor N) (c1 := .adj) (c2 := .adj)
     (adjUnitTensor_eq_fromPairT (N := N) ▸ invariants_tensorRep_eq_span_adjUnitTensor)
-
-/-- For an intertwining map `f` out of the tensor square of the adjoint representation, the
-  invariants in the range of `f` are the line through the image of the unit. -/
-lemma invariants_inf_range_eq_span_map_adjUnitVal
-    (f : ((adjRep N).tprod (adjRep N)).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f (adjUnitVal N) :=
-  (isAdjointClosed N ![.adj, .adj]).invariants_inf_range_eq_span_of_equiv
-    fromPairTEquiv fromPairTEquiv_tprod
-    (adjUnitTensor_eq_fromPairT (N := N) ▸ invariants_tensorRep_eq_span_adjUnitTensor) f
-
-/-- Every intertwining map from the trivial representation into the tensor square of the adjoint
-  representation is a multiple of the unit. -/
-lemma intertwiningMap_eq_smul_adjUnit
-    (φ : (Representation.trivial ℂ (SU N) ℂ).IntertwiningMap ((adjRep N).tprod (adjRep N))) :
-    ∃ z : ℂ, φ = z • adjUnit N :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [adjUnit, unitOf_apply, one_smul]; exact invariants_tprod_eq_span_adjUnitVal) φ
 
 end suTensor

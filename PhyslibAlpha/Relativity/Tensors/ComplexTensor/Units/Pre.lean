@@ -20,23 +20,14 @@ complexified Lorentz matrix. Since `Λ⁻¹ = η Λᵀ η`, multiplying the matr
 complexified Minkowski matrix `η` on the right, respectively on the left, turns either action into
 the action `Y ↦ Λ Y Λᵀ` on two contravariant indices (A). The classification of invariants for that
 action in `PhyslibAlpha.Relativity.Tensors.ComplexTensor.Metrics.Pre` then applies, and `η` goes to
-`η η = 1`, the matrix of components of the unit. For each of the two orderings this gives three
-statements: every invariant in the image of an equivariant map is a multiple of the image of the
-unit, the invariants of the tensor product are the line through the unit, and every intertwining
-map out of the trivial representation is a multiple of the unit (B, C).
+`η η = 1`, the matrix of components of the unit. For each of the two orderings the invariants of
+the tensor product are the line through the unit (B, C).
 
 ## ii. Key results
 
-- `Lorentz.ComplexCoVector.invariants_inf_range_eq_span_map_unitVal` : the invariants in the
-  image of an equivariant map out of `ComplexVector ⊗ ComplexCoVector` are the line through the
-  image of the unit.
 - `Lorentz.ComplexCoVector.invariants_tprod_eq_span_unitVal` : the invariants of
   `ComplexVector ⊗ ComplexCoVector` are the line through the unit.
-- `Lorentz.ComplexCoVector.intertwiningMap_eq_smul_unit` : every intertwining map from the trivial
-  representation into `ComplexVector ⊗ ComplexCoVector` is a multiple of the unit.
-- `Lorentz.ComplexVector.invariants_inf_range_eq_span_map_unitVal`,
-  `Lorentz.ComplexVector.invariants_tprod_eq_span_unitVal`,
-  `Lorentz.ComplexVector.intertwiningMap_eq_smul_unit` : the same for
+- `Lorentz.ComplexVector.invariants_tprod_eq_span_unitVal` : the same for
   `ComplexCoVector ⊗ ComplexVector`.
 
 ## iii. Table of contents
@@ -90,20 +81,18 @@ end LorentzGroup
 
 namespace Lorentz
 
-variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ SL(2,ℂ) B}
-
 /-!
 
 ## B. A contravariant then a covariant index
 
 -/
 
-/-- The invariants in the image of an equivariant map `f` out of
-  `ComplexVector ⊗ ComplexCoVector` are the line through the image `f δⁱᵢ` of the unit. -/
-lemma ComplexCoVector.invariants_inf_range_eq_span_map_unitVal
-    (f : (ComplexVector.SL2CRep.tprod ComplexCoVector.SL2CRep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f ComplexCoVector.unitVal := by
-  have h := invariants_inf_range_eq_span_map_minkowskiMatrix f
+/-- Up to scale, the unit `δⁱᵢ` is the unique invariant of `ComplexVector ⊗ ComplexCoVector`. -/
+lemma ComplexCoVector.invariants_tprod_eq_span_unitVal :
+    (ComplexVector.SL2CRep.tprod ComplexCoVector.SL2CRep).invariants =
+      ℂ ∙ ComplexCoVector.unitVal := by
+  have h := invariants_eq_span_map_minkowskiMatrix
+    (σ := ComplexVector.SL2CRep.tprod ComplexCoVector.SL2CRep)
     (contrCoToMatrix.symm.toLinearMap ∘ₗ LinearMap.mulRight ℂ (minkowskiMatrix.map ofRealHom))
     (fun v => ⟨contrCoToMatrix v * minkowskiMatrix.map ofRealHom,
       by simp [Matrix.mul_assoc, LorentzGroup.minkowskiMatrix_map_mul_self]⟩)
@@ -113,33 +102,18 @@ lemma ComplexCoVector.invariants_inf_range_eq_span_map_unitVal
         LorentzGroup.toComplex_mul_mul_minkowskiMatrix_map_mul_inv]
   simpa [LorentzGroup.minkowskiMatrix_map_mul_self, ComplexCoVector.unitVal] using h
 
-/-- Up to scale, the unit `δⁱᵢ` is the unique invariant of `ComplexVector ⊗ ComplexCoVector`. -/
-lemma ComplexCoVector.invariants_tprod_eq_span_unitVal :
-    (ComplexVector.SL2CRep.tprod ComplexCoVector.SL2CRep).invariants =
-      ℂ ∙ ComplexCoVector.unitVal := by
-  simpa using invariants_inf_range_eq_span_map_unitVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into
-  `ComplexVector ⊗ ComplexCoVector` is a multiple of the unit `δⁱᵢ`. -/
-lemma ComplexCoVector.intertwiningMap_eq_smul_unit
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (ComplexVector.SL2CRep.tprod ComplexCoVector.SL2CRep)) :
-    ∃ z : ℂ, φ = z • ComplexCoVector.unit :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [unit_apply_one]; exact invariants_tprod_eq_span_unitVal) φ
-
 /-!
 
 ## C. A covariant then a contravariant index
 
 -/
 
-/-- The invariants in the image of an equivariant map `f` out of
-  `ComplexCoVector ⊗ ComplexVector` are the line through the image `f δᵢⁱ` of the unit. -/
-lemma ComplexVector.invariants_inf_range_eq_span_map_unitVal
-    (f : (ComplexCoVector.SL2CRep.tprod ComplexVector.SL2CRep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f ComplexVector.unitVal := by
-  have h := invariants_inf_range_eq_span_map_minkowskiMatrix f
+/-- Up to scale, the unit `δᵢⁱ` is the unique invariant of `ComplexCoVector ⊗ ComplexVector`. -/
+lemma ComplexVector.invariants_tprod_eq_span_unitVal :
+    (ComplexCoVector.SL2CRep.tprod ComplexVector.SL2CRep).invariants =
+      ℂ ∙ ComplexVector.unitVal := by
+  have h := invariants_eq_span_map_minkowskiMatrix
+    (σ := ComplexCoVector.SL2CRep.tprod ComplexVector.SL2CRep)
     (coContrToMatrix.symm.toLinearMap ∘ₗ LinearMap.mulLeft ℂ (minkowskiMatrix.map ofRealHom))
     (fun v => ⟨minkowskiMatrix.map ofRealHom * coContrToMatrix v,
       by simp [LorentzGroup.minkowskiMatrix_map_mul_minkowskiMatrix_map_mul]⟩)
@@ -148,20 +122,5 @@ lemma ComplexVector.invariants_inf_range_eq_span_map_unitVal
         Representation.tprod_apply, coContrToMatrix_ρ_symm,
         LorentzGroup.inv_toComplex_transpose_mul_minkowskiMatrix_map_mul_mul]
   simpa [LorentzGroup.minkowskiMatrix_map_mul_self, ComplexVector.unitVal] using h
-
-/-- Up to scale, the unit `δᵢⁱ` is the unique invariant of `ComplexCoVector ⊗ ComplexVector`. -/
-lemma ComplexVector.invariants_tprod_eq_span_unitVal :
-    (ComplexCoVector.SL2CRep.tprod ComplexVector.SL2CRep).invariants =
-      ℂ ∙ ComplexVector.unitVal := by
-  simpa using invariants_inf_range_eq_span_map_unitVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into
-  `ComplexCoVector ⊗ ComplexVector` is a multiple of the unit `δᵢⁱ`. -/
-lemma ComplexVector.intertwiningMap_eq_smul_unit
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (ComplexCoVector.SL2CRep.tprod ComplexVector.SL2CRep)) :
-    ∃ z : ℂ, φ = z • ComplexVector.unit :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [unit_apply_one]; exact invariants_tprod_eq_span_unitVal) φ
 
 end Lorentz

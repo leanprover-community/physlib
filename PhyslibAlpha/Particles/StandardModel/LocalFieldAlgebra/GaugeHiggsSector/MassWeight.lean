@@ -75,6 +75,8 @@ never appear.
 
 @[expose] public section
 
+open TensorSpecies
+
 namespace StandardModel
 
 open GaugeFieldData (FieldKind)
@@ -105,14 +107,15 @@ stability and the inertness of products and joins that section D consumes.
   reductions combine over every finite set of indices, and so over the whole join. -/
 lemma mem_of_lorentz_invariant_iSup_rankTwo_span {ι : Type}
     {T : ι → (Fin 2 → Fin 1 ⊕ Fin 3) → B}
-    (hT : ∀ i, IsLorentzCovariant 2 B repLorentz (ofComponents (T i)))
+    (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentz
+      (ofComponents (T i)))
     (hzero : ∀ i, ofComponents (T i) RankTwo.metric = 0) (S : Submodule ℂ B)
     (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
     (hx : x ∈ (⨆ i, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents] at hx
+  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)] at hx
   simpa using ReducesInvariantsTo.iSup
-    (fun i => (RankTwo.reducesInvariantsTo_span_metric (hT i)).mono_right
+    (fun i => (ComplexVector.reducesInvariantsTo_span_metric (hT i)).mono_right
       (Submodule.span_singleton_eq_bot.2 (hzero i)).le)
     (fun i => (hT i).isStableUnder_range) isStableUnder_bot S hS x hx hinv
 
@@ -122,13 +125,14 @@ lemma mem_of_lorentz_invariant_iSup_rankTwo_span {ι : Type}
   finite set of indices, and so over the whole join. -/
 lemma mem_of_lorentz_invariant_iSup_rankThree_span {ι : Type}
     {T : ι → (Fin 3 → Fin 1 ⊕ Fin 3) → B}
-    (hT : ∀ i, IsLorentzCovariant 3 B repLorentz (ofComponents (T i)))
+    (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentz
+      (ofComponents (T i)))
     (S : Submodule ℂ B) (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) {x : B}
     (hx : x ∈ (⨆ i, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents] at hx
+  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 3 => .up)] at hx
   simpa using ReducesInvariantsTo.iSup
-    (fun i => OddRank.reducesInvariantsTo_bot ⟨1, rfl⟩ (hT i))
+    (fun i => ComplexVector.reducesInvariantsTo_bot_of_odd ⟨1, rfl⟩ (hT i))
     (fun i => (hT i).isStableUnder_range) isStableUnder_bot S hS x hx hinv
 
 /-- A product of two pointwise Lorentz-inert submodules is pointwise Lorentz inert. -/
@@ -240,10 +244,10 @@ lemma mem_of_lorentz_invariant_derivSubmodule_zero_mul_fixed_sup
   let T : Module.Dual ℝ GaugeAlgebra × C → (Fin 2 → Fin 1 ⊕ Fin 3) →
       fieldData.LocalCovFieldAlgebra :=
     fun i l => gaugeFieldStrength ![] (l 0) (l 1) i.1 * (i.2 : fieldData.LocalCovFieldAlgebra)
-  have hT : ∀ i, IsLorentzCovariant 2 fieldData.LocalCovFieldAlgebra repLorentzGroup
-    (ofComponents (T i)) :=
-    fun i => (GaugeSector.isLorentzCovariant_F_underived i.1).mul_fixed
-      repLorentzGroup_mul
+  have hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
+      (ofComponents (T i)) :=
+    fun i => isEquivariant_ofComponents_up_mul_fixed repLorentzGroup_mul
+      (GaugeSector.isEquivariant_up_F_underived i.1)
       fun g => hC g (i.2 : fieldData.LocalCovFieldAlgebra) i.2.2
   have hzero : ∀ i, ofComponents (T i) RankTwo.metric = 0 := by
     intro i
@@ -277,10 +281,10 @@ lemma mem_of_lorentz_invariant_derivSubmodule_one_mul_fixed_sup
   let T : Module.Dual ℝ GaugeAlgebra × C → (Fin 3 → Fin 1 ⊕ Fin 3) →
       fieldData.LocalCovFieldAlgebra :=
     fun i l => gaugeFieldStrength ![l 0] (l 1) (l 2) i.1 * (i.2 : fieldData.LocalCovFieldAlgebra)
-  have hT : ∀ i, IsLorentzCovariant 3 fieldData.LocalCovFieldAlgebra repLorentzGroup
-    (ofComponents (T i)) :=
-    fun i => (GaugeSector.isLorentzCovariant_F_deriv_one i.1).mul_fixed
-      repLorentzGroup_mul
+  have hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
+      (ofComponents (T i)) :=
+    fun i => isEquivariant_ofComponents_up_mul_fixed repLorentzGroup_mul
+      (GaugeSector.isEquivariant_up_F_deriv_one i.1)
       fun g => hC g (i.2 : fieldData.LocalCovFieldAlgebra) i.2.2
   refine mem_of_lorentz_invariant_iSup_rankThree_span hT S hSL ?_ hinv
   refine sup_le_sup_right ?_ S hx
@@ -328,13 +332,13 @@ noncomputable def fieldStrengthHiggsDerivFamily
     Sum.elim (fun φ => higgsField ![l 2] φ) (fun ψ => conjHiggsField ![l 2] ψ) i.2
 
 /-- The underived field strength against a once-derived Higgs is a triple Lorentz tensor. -/
-lemma isLorentzCovariant_fieldStrengthHiggsDerivFamily
+lemma isEquivariant_up_fieldStrengthHiggsDerivFamily
     (i : Module.Dual ℝ GaugeAlgebra ×
       (Module.Dual ℂ HiggsVec ⊕ Module.Dual ℂ (ConjModule HiggsVec))) :
-    IsLorentzCovariant 3 fieldData.LocalCovFieldAlgebra repLorentzGroup
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
       (ofComponents (fieldStrengthHiggsDerivFamily i)) := by
-  have h1 := (GaugeSector.isLorentzCovariant_F_underived i.1).mul_vector
-    repLorentzGroup_mul (repLorentzGroup_higgsOrConj_deriv_one i.2)
+  have h1 := isEquivariant_ofComponents_up_mul_vector repLorentzGroup_mul
+    (GaugeSector.isEquivariant_up_F_underived i.1) (repLorentzGroup_higgsOrConj_deriv_one i.2)
   convert h1 using 3
   simp only [fieldStrengthHiggsDerivFamily, Matrix.cons_val_zero, Matrix.cons_val_one]
 
@@ -376,7 +380,7 @@ lemma mem_of_lorentz_invariant_derivSubmodule_zero_mul_higgs_one_sup
     (hx : x ∈ GaugeSector.derivSubmodule 0 * ScalarSector.derivSubmodule 1 ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
   refine mem_of_lorentz_invariant_iSup_rankThree_span
-    isLorentzCovariant_fieldStrengthHiggsDerivFamily S hSL ?_ hinv
+    isEquivariant_up_fieldStrengthHiggsDerivFamily S hSL ?_ hinv
   refine sup_le_sup_right ?_ S hx
   refine Submodule.mul_le.mpr fun a ha b hb => ?_
   have hA : GaugeSector.derivSubmodule 0 ≤ Submodule.comap (LinearMap.mulRight ℂ b)

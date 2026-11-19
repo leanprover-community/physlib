@@ -35,10 +35,11 @@ The gauge weight alone cannot finish the job: it cannot separate the isospin sin
 weight.  That separation is `SU(2)` mathematics and belongs to the isospin classifiers of
 `GaugeGroup.Invariants` rather than here.  What is left for this file is to present each
 surviving piece as a family those classifiers know.  A conjugate Higgs symbol against a
-Higgs symbol is an `IsSU2FundamentalAntiFundamental` family — the conjugate symbol carries
-the fundamental isospin index and the Higgs symbol the anti-fundamental one, so it goes
+Higgs symbol is a family with a fundamental and an anti-fundamental isospin index — the conjugate
+symbol carries the fundamental isospin index and the Higgs symbol the anti-fundamental one, so it
+goes
 second — and the delta contraction, which spans its invariants, is the isospin contraction
-`dotGaugeHiggs`.  The quartic is an `IsSU2QuadFundamental` family once its two Higgs
+`dotGaugeHiggs`.  The quartic is a family with four fundamental indices once its two Higgs
 symbols are re-indexed by the antisymmetric symbol, and of its two epsilon contractions
 one is the square of the isospin contraction and the other vanishes, pairing commuting
 factors antisymmetrically.
@@ -52,8 +53,8 @@ section H recovers the statements about the mass-weight submodules themselves.
 - `massWeightSubmoduleGaugeWeightTwo` up to `massWeightSubmoduleGaugeWeightEight` : the gauge
   weight decompositions of the mass-weight submodules up to weight eight.
 - `massWeightSubmoduleGaugeWeightEight_piece_zero` : the weight-zero piece at mass weight eight.
-- `isSU2FundamentalAntiFundamental_isoFamily`, `isSU2QuadFundamental_quadFamily` : the Higgs
-  symbols as isospin families.
+- `isEquivariant_isospinFundAntiFund_isoFamily`, `isEquivariant_isospinQuadFund_quadFamily` : the
+  Higgs symbols as isospin families.
 - `reducesInvariantsTo_massWeightSubmodule_four` up to
   `reducesInvariantsTo_massWeightSubmodule_eight` : the gauge classification up to mass weight
   eight, modulo a gauge-stable submodule.
@@ -78,6 +79,9 @@ section H recovers the statements about the mass-weight submodules themselves.
 -/
 
 @[expose] public section
+
+open TensorSpecies
+open suTensor (fundAntiFundIdx)
 
 namespace StandardModel
 
@@ -404,15 +408,15 @@ transformation moves it by the matrix of the `SU(2)` element, with the summed in
 row slot — and a Higgs symbol carries an anti-fundamental one, moved by the conjugate
 matrix.  So the pairing span of section C is the span of the components of
 `fun l => barHiggs d' (l 0) * higgs d (l 1)`, conjugate symbol first, which is an
-`IsSU2FundamentalAntiFundamental` family; and its delta contraction, which spans its
-invariants, is the isospin contraction `dotGaugeHiggs`.  That identification is the whole
+family with a fundamental and an anti-fundamental isospin index; and its delta contraction, which
+spans its invariants, is the isospin contraction `dotGaugeHiggs`.  That identification is the whole
 point of the section: `dotSpan` is the span of delta contractions, and nothing else
 survives.
 
 The quartic needs four fundamental indices, so its two Higgs symbols must be re-indexed by
 the antisymmetric symbol first.  `tildeHiggs` is that re-index, `H̃⁰ = H¹` and
 `H̃¹ = -H⁰`, and it is fundamental because `SU(2)` is pseudo-real.  The quartic family is
-then a product of four fundamental families, and `IsSU2QuadFundamental` classifies it.  Its
+then a product of four fundamental families, and `IsospinQuadFund` classifies it.  Its
 two epsilon contractions come out as the square of the isospin contraction and zero:
 the second pairs the two conjugate symbols with each other and the two Higgs symbols with
 each other, and an antisymmetric contraction of two commuting factors vanishes.
@@ -483,11 +487,11 @@ noncomputable def isoFamily
   fun l => barHiggs d' (l 0) * higgs d (l 1)
 
 /-- The isospin family carries one fundamental and one anti-fundamental isospin index. -/
-lemma isSU2FundamentalAntiFundamental_isoFamily {n m : ℕ} (d : Fin n → (Fin 1 ⊕ Fin 3))
+lemma isEquivariant_isospinFundAntiFund_isoFamily {n m : ℕ} (d : Fin n → (Fin 1 ⊕ Fin 3))
     (d' : Fin m → (Fin 1 ⊕ Fin 3)) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-    (isoFamily d d') :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((isoFamily d d') ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     rw [isoFamily, rep_mul_pair (1, V, 1)
       (rep_su2_barHiggs V d' (l 0)) (rep_su2_higgs V d (l 1)), Physlib.Fin.sum_fin_two_arrow]
     simp only [isoFamily, Matrix.cons_val_zero, Matrix.cons_val_one]
@@ -496,8 +500,8 @@ lemma isSU2FundamentalAntiFundamental_isoFamily {n m : ℕ} (d : Fin n → (Fin 
   isospin contraction, the Higgs mass term of the two towers. -/
 lemma deltaContraction_isoFamily {n m : ℕ} (d : Fin n → (Fin 1 ⊕ Fin 3))
     (d' : Fin m → (Fin 1 ⊕ Fin 3)) :
-    IsSU2FundamentalAntiFundamental.deltaContraction (isoFamily d d') = dotGaugeHiggs d d' := by
-  rw [IsSU2FundamentalAntiFundamental.deltaContraction, dotGaugeHiggs, isoFamily, isoFamily]
+    IsospinFundAntiFund.deltaContraction (isoFamily d d') = dotGaugeHiggs d d' := by
+  rw [IsospinFundAntiFund.deltaContraction, dotGaugeHiggs, isoFamily, isoFamily]
   simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
   rw [higgs_mul_barHiggs_comm d d' 0 0, higgs_mul_barHiggs_comm d d' 1 1]
 
@@ -586,9 +590,10 @@ noncomputable def quadFamily :
       * (barHiggs (![] : Fin 0 → (Fin 1 ⊕ Fin 3)) (l 2) * tildeHiggs (l 3)))
 
 /-- The quartic family carries four fundamental isospin indices. -/
-lemma isSU2QuadFundamental_quadFamily :
-    IsSU2QuadFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI quadFamily :=
-  IsSU2QuadFundamental.of_law fun V l => by
+lemma isEquivariant_isospinQuadFund_quadFamily :
+    (suTensor 2).IsEquivariant (fun _ : Fin 4 => .fund) (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents quadFamily) :=
+  IsospinQuadFund.of_law fun V l => by
     simp only [quadFamily]
     rw [LocalCovFieldAlgebra.repGaugeGroupI_mul, LocalCovFieldAlgebra.repGaugeGroupI_mul,
       LocalCovFieldAlgebra.repGaugeGroupI_mul, rep_su2_barHiggs V ![] (l 0),
@@ -625,9 +630,9 @@ private lemma higgs_left_comm_zero (y : fieldData.LocalCovFieldAlgebra) :
   contraction. Pairing the first conjugate symbol with the first Higgs symbol, and the
   second with the second, is pairing each `H̄` with an `H`. -/
 lemma epsilonContraction₁₂_quadFamily :
-    IsSU2QuadFundamental.epsilonContraction₁₂ quadFamily
+    IsospinQuadFund.epsilonContraction₁₂ quadFamily
       = dotGaugeHiggs ![] ![] * dotGaugeHiggs ![] ![] := by
-  simp only [IsSU2QuadFundamental.epsilonContraction₁₂, quadFamily, dotGaugeHiggs,
+  simp only [IsospinQuadFund.epsilonContraction₁₂, quadFamily, dotGaugeHiggs,
     Matrix.cons_val_zero, Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two,
     Matrix.tail_cons, Matrix.cons_val_three, tildeHiggs_zero, tildeHiggs_one, neg_mul,
     mul_neg, neg_neg, add_mul, mul_add, mul_assoc, barHiggs_higgs_left_comm_zero,
@@ -639,8 +644,8 @@ lemma epsilonContraction₁₂_quadFamily :
   conjugate symbols with each other and the two Higgs symbols with each other, and an
   antisymmetric contraction of two commuting factors is zero. -/
 lemma epsilonContraction₁₃_quadFamily :
-    IsSU2QuadFundamental.epsilonContraction₁₃ quadFamily = 0 := by
-  simp only [IsSU2QuadFundamental.epsilonContraction₁₃, quadFamily, Matrix.cons_val_zero,
+    IsospinQuadFund.epsilonContraction₁₃ quadFamily = 0 := by
+  simp only [IsospinQuadFund.epsilonContraction₁₃, quadFamily, Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.head_cons, Matrix.cons_val_two, Matrix.tail_cons,
     Matrix.cons_val_three, tildeHiggs_zero, tildeHiggs_one, neg_mul, mul_neg,
     barHiggs_higgs_left_comm_zero, barHiggs_mul_higgs_comm_zero,
@@ -686,7 +691,7 @@ submodule `S` gathering the other sectors, so every step is a reduction in the s
 `ReducesInvariantsTo`: a gauge invariant of `V ⊔ S`, for `S` gauge stable, lies in `W ⊔ S`.
 
 The weight-zero pieces of section D are joins of spans of isospin families.
-`IsSU2FundamentalAntiFundamental.reducesInvariantsTo_span_deltaContraction` reduces each
+`IsospinFundAntiFund.reducesInvariantsTo_span_deltaContraction` reduces each
 span, for the isospin factor and hence for the gauge group, to the line through its delta
 contraction, and `ReducesInvariantsTo.iSup` joins the families. The join asks each span to
 be gauge stable, which is `isoFamily_span_stable` and is why the enlargement is `isoSpan`
@@ -745,8 +750,8 @@ lemma reducesInvariantsTo_isoSpan (n m : ℕ) :
   rw [isoSpan]
   refine ReducesInvariantsTo.iSup (fun d => ReducesInvariantsTo.iSup (fun d' => ?_) (hV d) hW)
     (fun d => isStableUnder_iSup (hV d)) hW
-  refine ((IsSU2FundamentalAntiFundamental.reducesInvariantsTo_span_deltaContraction
-    (isSU2FundamentalAntiFundamental_isoFamily d d')).comp
+  refine ((IsospinFundAntiFund.reducesInvariantsTo_span_deltaContraction
+    (isEquivariant_isospinFundAntiFund_isoFamily d d')).comp
       (σ := fun g : GaugeGroupI => repGaugeGroupI g) (fun V => (1, V, 1))).mono_right ?_
   rw [deltaContraction_isoFamily]
   exact le_iSup₂_of_le d d' le_rfl
@@ -762,7 +767,7 @@ hypercharge. Weights four and six are joins of isospin spans and nothing else, s
 left are the isospin contractions of the towers occurring at that weight: the Higgs mass
 term at weight four, and its once-derived companions at weight six.
 
-Weight eight adds the quartic. `IsSU2QuadFundamental` reduces its span to the two epsilon
+Weight eight adds the quartic. `IsospinQuadFund` reduces its span to the two epsilon
 contractions, the first the square of the underived isospin contraction and the second
 zero. The quartic span is joined with the three isospin spans by `ReducesInvariantsTo.sup`,
 which asks stability of the isospin spans only, not of the quartic span.
@@ -815,8 +820,8 @@ lemma reducesInvariantsTo_massWeightSubmodule_eight :
   have hW := ((((isFixedBy_dotSpan 2 0).sup (isFixedBy_dotSpan 0 2)).sup
     (isFixedBy_dotSpan 1 1)).sup (isFixedBy_span_singleton hq)).isStableUnder
   -- the quartic span reduces to its two epsilon contractions, `(H† H)²` and `0`
-  have hquad := ((IsSU2QuadFundamental.reducesInvariantsTo_span_epsilonContractions
-    isSU2QuadFundamental_quadFamily).comp (σ := fun g : GaugeGroupI => repGaugeGroupI g)
+  have hquad := ((IsospinQuadFund.reducesInvariantsTo_span_epsilonContractions
+    isEquivariant_isospinQuadFund_quadFamily).comp (σ := fun g : GaugeGroupI => repGaugeGroupI g)
       (fun V => (1, V, 1))).mono_right (W := dotSpan 2 0 ⊔ dotSpan 0 2 ⊔ dotSpan 1 1
         ⊔ ℂ ∙ (dotGaugeHiggs ![] ![] * dotGaugeHiggs ![] ![])) (by
       rw [epsilonContraction₁₂_quadFamily, epsilonContraction₁₃_quadFamily, Submodule.span_le,

@@ -8,7 +8,7 @@ module
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.ScalarSector.DerivSubmodule.Centre
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.YukawaSector.Basic
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.Deriv.Centre
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.RankFour
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankFour
 /-!
 # The Yukawa invariants below mass weight eight
 

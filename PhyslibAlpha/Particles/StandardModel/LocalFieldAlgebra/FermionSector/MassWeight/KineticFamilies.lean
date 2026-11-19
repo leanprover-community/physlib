@@ -7,7 +7,7 @@ module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.MassWeight.MassDimLTEight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Basic
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.LorentzCovariance
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
 /-!
 # The kinetic terms of the fermion sector
 
@@ -60,6 +60,9 @@ The ten blocks themselves are built in `KineticTerms`, which instantiates the pa
 
 @[expose] public section
 
+open TensorSpecies
+open suTensor (fundAntiFundIdx)
+
 namespace StandardModel
 
 open Matrix MatrixGroups Lorentz ComplexConjugate
@@ -74,8 +77,8 @@ A tower with one covariant derivative mixes into every assignment of one derivat
 direction, so its Lorentz law is a sum over such assignments, with one column of the
 Lorentz matrix per slot. The value index is untouched by that sum. It still moves by the
 contragredient action, exactly as at zero derivatives. Composing the two gives the laws
-`Lorentz.IsVectorDualLeftWeyl` and `Lorentz.IsVectorDualRightWeyl`, the derivative
-slot fundamental and the spinor slot dual.
+`repLorentz_leftComp_deriv_one` and `repLorentz_rightComp_deriv_one`, the derivative slot
+fundamental and the spinor slot dual.
 
 -/
 
@@ -113,8 +116,10 @@ lemma repLorentz_component_deriv_one {V : Type} [AddCommGroup V] [Module ℂ V]
 
 /-- Every undotted component family carries a four-vector index and a dual undotted
   spinor index, at one covariant derivative. -/
-lemma isVectorDualLeftWeyl_leftComp (i : LeftIdx) :
-    IsVectorDualLeftWeyl repLorentz (fun μ => leftComp ![μ] i) := by
+lemma repLorentz_leftComp_deriv_one (i : LeftIdx) :
+    ∀ (Λ : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (a : Fin 2), repLorentz Λ (leftComp ![μ] i a)
+      = ∑ ν, ∑ β, ((((SL2C.toLorentzGroup Λ).1 ν μ : ℝ) : ℂ) * (Λ⁻¹).1 a β) •
+        leftComp ![ν] i β := by
   cases i with
   | bard f c =>
     exact fun Λ μ a => repLorentz_component_deriv_one (repLorentz_bard f)
@@ -134,8 +139,10 @@ lemma isVectorDualLeftWeyl_leftComp (i : LeftIdx) :
 
 /-- Every dotted component family carries a four-vector index and a dual dotted spinor
   index, at one covariant derivative. -/
-lemma isVectorDualRightWeyl_rightComp (i : RightIdx) :
-    IsVectorDualRightWeyl repLorentz (fun μ => rightComp ![μ] i) := by
+lemma repLorentz_rightComp_deriv_one (i : RightIdx) :
+    ∀ (Λ : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (a : Fin 2), repLorentz Λ (rightComp ![μ] i a)
+      = ∑ ν, ∑ β, ((((SL2C.toLorentzGroup Λ).1 ν μ : ℝ) : ℂ) * star ((Λ⁻¹).1 a β)) •
+        rightComp ![ν] i β := by
   cases i with
   | d f c =>
     exact fun Λ μ a => repLorentz_component_deriv_one (repLorentz_d f)
@@ -167,30 +174,30 @@ two arrangements according to which factor is the barred one.
 
 /-- A product of a component with a fundamental colour index and one with an
   anti-fundamental colour index carries one colour index of each kind. -/
-lemma isSU3FundamentalAntiFundamental_mul
+lemma isEquivariant_colourFundAntiFund_mul
     {A C : Fin 3 → fieldData.LocalCovFieldAlgebra}
     (hA : ∀ (U : specialUnitaryGroup (Fin 3) ℂ) (c : Fin 3),
       repGauge ((U, 1, 1) : GaugeGroupI) (A c) = ∑ a, U.1 a c • A a)
     (hC : ∀ (U : specialUnitaryGroup (Fin 3) ℂ) (c : Fin 3),
       repGauge ((U, 1, 1) : GaugeGroupI) (C c) = ∑ a, conj (U.1 a c) • C a) :
-    IsSU3FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGauge
-      (fun l : Fin 2 → Fin 3 => A (l 0) * C (l 1)) :=
-  IsSU3FundamentalAntiFundamental.of_law fun U l => by
+    (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
+      (ofComponents ((fun l : Fin 2 → Fin 3 => A (l 0) * C (l 1)) ∘ fundAntiFundIdx)) :=
+  ColourFundAntiFund.of_law fun U l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
     exact Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ =>
       smul_mul_smul_comm _ _ _ _
 
 /-- The same with the two factors exchanged, the anti-fundamental one first. -/
-lemma isSU3FundamentalAntiFundamental_mul_swap
+lemma isEquivariant_colourFundAntiFund_mul_swap
     {A C : Fin 3 → fieldData.LocalCovFieldAlgebra}
     (hA : ∀ (U : specialUnitaryGroup (Fin 3) ℂ) (c : Fin 3),
       repGauge ((U, 1, 1) : GaugeGroupI) (A c) = ∑ a, conj (U.1 a c) • A a)
     (hC : ∀ (U : specialUnitaryGroup (Fin 3) ℂ) (c : Fin 3),
       repGauge ((U, 1, 1) : GaugeGroupI) (C c) = ∑ a, U.1 a c • C a) :
-    IsSU3FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGauge
-      (fun l : Fin 2 → Fin 3 => A (l 1) * C (l 0)) :=
-  IsSU3FundamentalAntiFundamental.of_law fun U l => by
+    (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU3)
+      (ofComponents ((fun l : Fin 2 → Fin 3 => A (l 1) * C (l 0)) ∘ fundAntiFundIdx)) :=
+  ColourFundAntiFund.of_law fun U l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow, Finset.sum_comm]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
     refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
@@ -198,30 +205,30 @@ lemma isSU3FundamentalAntiFundamental_mul_swap
 
 /-- A product of a component with a fundamental isospin index and one with an
   anti-fundamental isospin index carries one isospin index of each kind. -/
-lemma isSU2FundamentalAntiFundamental_mul
+lemma isEquivariant_isospinFundAntiFund_mul
     {A C : Fin 2 → fieldData.LocalCovFieldAlgebra}
     (hA : ∀ (V : specialUnitaryGroup (Fin 2) ℂ) (w : Fin 2),
       repGauge ((1, V, 1) : GaugeGroupI) (A w) = ∑ a, V.1 a w • A a)
     (hC : ∀ (V : specialUnitaryGroup (Fin 2) ℂ) (w : Fin 2),
       repGauge ((1, V, 1) : GaugeGroupI) (C w) = ∑ a, conj (V.1 a w) • C a) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGauge
-      (fun l : Fin 2 → Fin 2 => A (l 0) * C (l 1)) :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => A (l 0) * C (l 1)) ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
     exact Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ =>
       smul_mul_smul_comm _ _ _ _
 
 /-- The same with the two factors exchanged, the anti-fundamental one first. -/
-lemma isSU2FundamentalAntiFundamental_mul_swap
+lemma isEquivariant_isospinFundAntiFund_mul_swap
     {A C : Fin 2 → fieldData.LocalCovFieldAlgebra}
     (hA : ∀ (V : specialUnitaryGroup (Fin 2) ℂ) (w : Fin 2),
       repGauge ((1, V, 1) : GaugeGroupI) (A w) = ∑ a, conj (V.1 a w) • A a)
     (hC : ∀ (V : specialUnitaryGroup (Fin 2) ℂ) (w : Fin 2),
       repGauge ((1, V, 1) : GaugeGroupI) (C w) = ∑ a, V.1 a w • C a) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGauge
-      (fun l : Fin 2 → Fin 2 => A (l 1) * C (l 0)) :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGauge.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => A (l 1) * C (l 0)) ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     rw [repGauge_mul, hA, hC, Finset.sum_mul_sum, Physlib.Fin.sum_fin_two_arrow, Finset.sum_comm]
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
     refine Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => ?_
@@ -250,15 +257,13 @@ lemma repGauge_mul_smul_fixed
 /-- A finite sum of families carrying one four-vector index and a pair of dual
   opposite-chirality Weyl indices is such a family again, the colour and isospin
   contractions are Lorentz spectators. -/
-lemma isVectorDualLeftRightWeyl_sum {ι : Type} [Fintype ι]
+lemma isEquivariant_upDownRDownL_sum {ι : Type} [Fintype ι]
     {T : ι → (Fin 1 ⊕ Fin 3) × Fin 2 × Fin 2 → fieldData.LocalCovFieldAlgebra}
-    (hT : ∀ i,
-      IsVectorDualLeftRightWeyl fieldData.LocalCovFieldAlgebra repLorentz
-        (ofDualVectorComponents (T i))) :
-    IsVectorDualLeftRightWeyl fieldData.LocalCovFieldAlgebra repLorentz
-      (ofDualVectorComponents fun p => ∑ i, T i p) := by
-  rw [ofDualVectorComponents_sum]
-  exact TensorSpecies.IsEquivariant.sum _ fun i _ => hT i
+    (hT : ∀ i, complexLorentzTensor.IsEquivariant ![.up, .downR, .downL] repLorentz
+      (ofComponents (T i ∘ dualIndexEquiv))) :
+    complexLorentzTensor.IsEquivariant ![.up, .downR, .downL] repLorentz
+      (ofComponents ((fun p => ∑ i, T i p) ∘ dualIndexEquiv)) :=
+  TensorSpecies.isEquivariant_ofComponents_sum _ fun i _ => hT i
 
 
 /-!

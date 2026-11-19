@@ -8,6 +8,7 @@ module
 public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.SU.TensorSpecies
 public import Mathlib.LinearAlgebra.Matrix.SchurComplement
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalFieldAlgebra.Realization.Conditions
 /-!
 # Elements of `SU(N)` in a coordinate plane, and what commutes with them
 
@@ -33,18 +34,23 @@ traceless complex matrices. These are the two facts behind the
 classification of the invariant tensors of `SU(N)` with a fundamental and an anti-fundamental
 index, and with one or two adjoint indices.
 
+The tensors of `SU(N)` have a Reynolds element, the Haar average over the compact group, so the
+invariants in the range of an equivariant map out of them come from invariant tensors (D).
+
 ## ii. Key results
 
 - `SU.planeEmbed` : `SU(2)` acting on the plane of two coordinates, as a subgroup of `SU(N)`.
 - `SU.eq_smul_one_of_commute` : a matrix commuting with `SU(N)` is scalar.
 - `suTensor.eq_smul_id_of_commute_adjRep` : an endomorphism of the complexified Lie algebra
   commuting with the adjoint action is scalar.
+- `suTensor.hasReynolds` : the tensors of `SU(N)` have a Reynolds element.
 
 ## iii. Table of contents
 
 - A. The plane embedding of `SU(2)`
 - B. Matrices commuting with `SU(N)`
 - C. Endomorphisms of the complexified Lie algebra commuting with `SU(N)`
+- D. Reynolds elements for the tensors
 
 ## iv. References
 
@@ -497,5 +503,53 @@ lemma eq_smul_id_of_commute_adjRep (hL : ∀ (g : SU N) (A : SUAlgebraComplexifi
   conv_lhs => rw [eq_sum_offDiag_add_sum_diagDiff A ⟨0, hN⟩]
   conv_rhs => rw [eq_sum_offDiag_add_sum_diagDiff A ⟨0, hN⟩]
   simp only [map_add, map_sum, map_smul, hoff, hdiag, smul_add, Finset.smul_sum, smul_comm μ]
+
+/-!
+
+## D. Reynolds elements for the tensors
+
+`SU(N)` is identified with the global gauge group `GlobalGaugeGroup.SU N`, a compact topological
+group, by `GlobalGaugeGroup.SU.groupEquiv`. On it the matrix entries of every color are continuous,
+being those of `g`, of `g⁻¹ = g†` and the traces `tr (λ_a g λ_b g⁻¹) / 2` of the adjoint action, so
+the Haar average gives a Reynolds element, which is pushed forward to `SU(N)`.
+
+-/
+
+/-- The matrix entries of every color depend continuously on the element of the global gauge group
+  `SU(N)`. -/
+lemma continuous_toMatrix_rep (k : Color) (x y : basisIdx N k) :
+    Continuous fun h : (GlobalGaugeGroup.SU N).group => LinearMap.toMatrix (basis N k)
+      (basis N k) (rep N k ((GlobalGaugeGroup.SU.groupEquiv N).symm h)) x y := by
+  have hg : Continuous fun h : (GlobalGaugeGroup.SU N).group =>
+      (((GlobalGaugeGroup.SU.groupEquiv N).symm h : SU N) : Matrix (Fin N) (Fin N) ℂ) :=
+    Units.continuous_val.comp continuous_subtype_val
+  have hi : Continuous fun h : (GlobalGaugeGroup.SU N).group =>
+      ((((GlobalGaugeGroup.SU.groupEquiv N).symm h)⁻¹ : SU N) : Matrix (Fin N) (Fin N) ℂ) := by
+    simp_rw [← map_inv]
+    exact hg.comp continuous_inv
+  cases k
+  · change Continuous fun h => LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N))
+      (fundRep N ((GlobalGaugeGroup.SU.groupEquiv N).symm h)) x y
+    simp_rw [toMatrix_fundRep]
+    exact hg.matrix_elem x y
+  · change Continuous fun h => LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N))
+      (antiFundRep N ((GlobalGaugeGroup.SU.groupEquiv N).symm h)) x y
+    simp_rw [toMatrix_antiFundRep, transpose_apply]
+    exact hi.matrix_elem y x
+  · change Continuous fun h => adjMatrix ((GlobalGaugeGroup.SU.groupEquiv N).symm h) x y
+    simp_rw [adjMatrix_apply]
+    exact ((continuous_const.matrix_mul ((hg.matrix_mul continuous_const).matrix_mul
+      hi)).matrix_trace).div_const 2
+
+variable (N) in
+/-- The tensors of `SU(N)` with any list of colors have a Reynolds element, the Haar average over
+  the compact group `SU(N)`. -/
+lemma hasReynolds {n : ℕ} (c : Fin n → Color) : (suTensor N).HasReynolds c := by
+  have := Module.Finite.of_basis (TensorSpecies.Tensor.basis (S := suTensor N) c)
+  exact TensorSpecies.HasReynolds.of_comp
+    (φ := (GlobalGaugeGroup.SU.groupEquiv N).symm.toMonoidHom)
+    (GlobalGaugeGroup.SU.groupEquiv N).symm.surjective
+    (Representation.exists_isReynolds_of_compactSpace ⊤
+      (TensorSpecies.continuousMatrixCoeff_top_comp _ continuous_toMatrix_rep))
 
 end suTensor

@@ -5,7 +5,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.LorentzCovariance
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
 /-!
 # Lorentz invariants of an odd number of four-vector indices
 
@@ -15,21 +15,23 @@ An odd number of four-vector indices carries no Lorentz invariant but zero.
 
 A tensor `T^{μ₁⋯μₙ}` with `n` odd has no Lorentz invariant but `0`. Nothing ties an odd number of
 indices, as the metric takes two and the Levi-Civita symbol four. For an equivariant map
-`f : ℂT(fun _ : Fin n => .up) →ₗ[ℂ] B`, `IsLorentzCovariant n`, that is `eq_zero_of_invariant`.
-Its form modulo a Lorentz-stable submodule `S` is `reducesInvariantsTo_bot`, which the Standard
-Model files use at one and three indices.
+`f : ℂT(fun _ : Fin n => .up) →ₗ[ℂ] B`, the invariants of
+`LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, lie in `S`, which is
+`ComplexVector.reducesInvariantsTo_bot_of_odd`. The Standard Model files use it at one and
+three indices.
 
-The invariants of the range of `f` are the images of invariant tensors, so it is enough that an
-invariant coefficient tensor `c`, in the sense of
-`PhyslibAlpha.Relativity.LorentzGroup.Invariants.Basic`, vanishes. One axis then does all the work,
+The invariant tensors are those with an invariant coefficient tensor `c`, in the sense of
+`PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic`, so it is enough that such a
+`c`
+vanishes. One axis then does all the work,
 with a parity argument. Along a spatial axis the four light-cone directions carry boost weights `2`,
 `-2`, `0`, `0`, and an invariant `c` has no light-cone component of nonzero weight. In a multi-index
 of total weight `0` the `+2` and `-2` slots pair off, leaving an odd number of the `n` slots
 transverse. The half turn about the axis, the rotation by `π`, fixes time and the axis and negates
 the two transverse directions (A). So it multiplies each weight-zero component by `-1` to an odd
 power, that is by `-1`, and an invariant component both fixed and negated is `0` (B). Every
-light-cone component of `c` vanishes, so `c` does, and with it the invariant. Section C applies this
-to `f`.
+light-cone component of `c` vanishes, so `c` does, and with it the invariant tensor. Section C
+applies this to `f`.
 
 The parity count is one identity. The sign of a light-cone direction is `-i ^ w`, `w` its weight,
 so the sign of a multi-index is `(-1) ^ n i ^ W`, `W` its total weight
@@ -41,9 +43,10 @@ so the sign of a multi-index is `(-1) ^ n i ^ W`, `W` its total weight
   component of total weight zero with an odd number of slots
 - `OddRank.eq_zero_of_isInvariantCoeff` : an invariant coefficient tensor with an odd number of
   slots is zero
-- `OddRank.eq_zero_of_invariant` : every Lorentz invariant in the range of `f` is zero
-- `OddRank.reducesInvariantsTo_bot` : the range of `f` reduces to `⊥`, so a Lorentz invariant of
-  `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, lies in `S`
+- `Lorentz.ComplexVector.invariants_tensorPower_odd_eq_bot` : there are no invariant tensors but
+  zero
+- `Lorentz.ComplexVector.reducesInvariantsTo_bot_of_odd` : the range of `f` reduces to `⊥`, so a
+  Lorentz invariant of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, lies in `S`
 
 ## iii. Table of contents
 
@@ -186,28 +189,28 @@ lemma eq_zero_of_isInvariantCoeff (hn : Odd n) {c : (Fin n → Fin 1 ⊕ Fin 3) 
   · rw [lightConeComponent_eq_zero_of_weight_zero hn hc 2 hκ, mul_zero]
   · rw [hc.lightConeComponent_eq_zero 2 hκ, mul_zero]
 
+/-- There are no invariant tensors with an odd number of four-vector indices but zero. -/
+lemma _root_.Lorentz.ComplexVector.invariants_tensorPower_odd_eq_bot (hn : Odd n) :
+    (complexLorentzTensor.tensorRep (fun _ : Fin n => Color.up)).invariants = ⊥ := by
+  rw [eq_bot_iff, ← Submodule.map_bot (coeffEquiv n).symm.toLinearMap]
+  exact invariants_tensorRep_le_map fun _ hc =>
+    (Submodule.mem_bot ℂ).2 (eq_zero_of_isInvariantCoeff hn hc)
+
 /-!
 
 ## C. The invariants of an equivariant map
-
-The invariants of the range of an equivariant map come from invariant tensors, whose coefficient
-tensors are invariant, so section B leaves none of them.
 
 -/
 
 variable {f : ℂT(fun _ : Fin n => Color.up) →ₗ[ℂ] B}
 
-/-- Every Lorentz invariant in the range of `f` is zero. An odd number of indices carries no
-  invariant contraction. -/
-lemma eq_zero_of_invariant (hn : Odd n) (hf : IsLorentzCovariant n B repLorentz f) {x : B}
-    (hx : x ∈ LinearMap.range f) (hinv : ∀ g : SL(2,ℂ), repLorentz g x = x) : x = 0 :=
-  hf.eq_zero_of_isInvariantCoeff (fun _ hc => eq_zero_of_isInvariantCoeff hn hc) hx hinv
-
 /-- The range of `f` reduces to `⊥`. A Lorentz invariant of `LinearMap.range f ⊔ S`, for `S` a
   Lorentz-stable submodule, lies in `S`. -/
-lemma reducesInvariantsTo_bot (hn : Odd n) (hf : IsLorentzCovariant n B repLorentz f) :
+lemma _root_.Lorentz.ComplexVector.reducesInvariantsTo_bot_of_odd (hn : Odd n)
+    (hf : complexLorentzTensor.IsEquivariant (fun _ : Fin n => .up) repLorentz f) :
     ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentz g) (LinearMap.range f) ⊥ :=
-  hf.reducesInvariantsTo_bot_of_isInvariantCoeff fun _ hc => eq_zero_of_isInvariantCoeff hn hc
+  TensorSpecies.IsEquivariant.reducesInvariantsTo_bot hf (complexLorentzTensor.hasReynolds _)
+    (ComplexVector.invariants_tensorPower_odd_eq_bot hn)
 
 end OddRank
 

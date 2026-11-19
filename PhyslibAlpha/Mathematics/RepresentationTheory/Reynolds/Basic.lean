@@ -39,6 +39,8 @@ Reynolds elements for each factor multiply to a Reynolds element for the product
 
 - `Representation.augmentation` is the sum of the coefficients of an element of `k[H]`.
 - `Representation.IsReynolds` is the property of being a Reynolds element on a subspace.
+- `Representation.IsReynolds.of_comp` pushes a Reynolds element forward along a surjective
+  homomorphism of groups.
 - `Representation.IsReynolds.exists_mem_invariants_map_eq` is the descent property along
   intertwining maps.
 - `Representation.exists_isReynolds_of_sub_one_mem_span` produces a Reynolds element from an
@@ -179,6 +181,19 @@ lemma apply_mem_inf (hr : ρ.IsReynolds W r) {w : V} (hw : w ∈ W) :
 lemma mono {W' : Submodule k V} (hr : ρ.IsReynolds W r) (hW : W' ≤ W)
     (hW' : ∀ w ∈ W', ρ.asAlgebraHom r w ∈ W') : ρ.IsReynolds W' r :=
   ⟨hr.augmentation_eq_one, hW', fun w hw => hr.apply_mem_invariants w (hW hw)⟩
+
+/-- A Reynolds element for a representation restricted along a surjective homomorphism `f` pushes
+forward along `f` to a Reynolds element for the representation. -/
+lemma of_comp {H' : Type*} [Group H'] {f : H' →* H} (hf : Function.Surjective f) {r : k[H']}
+    (hr : IsReynolds (ρ.comp f) W r) : ρ.IsReynolds W (MonoidAlgebra.mapDomainAlgHom k k f r) where
+  augmentation_eq_one := by rw [augmentation_mapDomainAlgHom, hr.augmentation_eq_one]
+  apply_mem w hw := by
+    rw [← asAlgebraHom_comp]
+    exact hr.apply_mem w hw
+  apply_mem_invariants w hw g := by
+    obtain ⟨g', rfl⟩ := hf g
+    rw [← asAlgebraHom_comp]
+    exact hr.apply_mem_invariants w hw g'
 
 /-!
 

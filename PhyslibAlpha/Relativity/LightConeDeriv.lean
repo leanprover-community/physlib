@@ -20,9 +20,9 @@ the boost along the axis, of weight `lightConeWeight` — `+2` for `D₀ - Dᵢ`
 
 On a tuple of slots the two coefficient matrices are still inverse to one another
 (`sum_prod_lightConeCoeff`, `sum_prod_lightConeCoeffInv`) and the weights add
-(`sum_prod_lightConeCoeff`).  That is what the classification of the Lorentz invariants in
-`LorentzGroup/Invariants` runs on: it writes a coefficient tensor in this basis and keeps
-only the piece of total weight zero.
+(`sum_prod_lightConeCoeff`).  That is what the classification of the invariants of the tensor
+powers of the complex vector representation, in `Tensors/ComplexTensor/Vector/Invariants`, runs
+on: it writes a coefficient tensor in this basis and keeps only the piece of total weight zero.
 
 ## ii. Key results
 

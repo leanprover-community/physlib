@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.ScalarSector.MassWeight.MassDimLTEight
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.RankTwo
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankTwo
 /-!
 # The Higgs invariants of mass weight eight
 
@@ -59,6 +59,8 @@ the other sectors be carried along.
 
 @[expose] public section
 
+open TensorSpecies
+
 namespace StandardModel
 
 open TensorProduct Matrix MatrixGroups Lorentz ComplexConjugate
@@ -79,29 +81,29 @@ Lorentz group moving each slot by the Lorentz matrix of the `SL(2,ℂ)` element.
 
 /-- Both derivatives on the Higgs tower, a bi-Lorentz tensor in the two derivative
   slots. -/
-lemma isLorentzCovariant_rankTwo_dotGaugeHiggs_left :
-    IsLorentzCovariant 2 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_rankTwo_dotGaugeHiggs_left :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
       (ofComponents fun d : Fin 2 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs d ![]) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g l (![] : Fin 0 → Fin 1 ⊕ Fin 3)]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [sum_pi_fin_zero, Fin.prod_univ_zero, mul_one]
 
 /-- Both derivatives on the conjugate tower, a bi-Lorentz tensor in the same way. -/
-lemma isLorentzCovariant_rankTwo_dotGaugeHiggs_right :
-    IsLorentzCovariant 2 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_rankTwo_dotGaugeHiggs_right :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
       (ofComponents fun d : Fin 2 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs ![] d) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g (![] : Fin 0 → Fin 1 ⊕ Fin 3) l, sum_pi_fin_zero]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [Fin.prod_univ_zero, one_mul]
 
 /-- One derivative on each tower, the family whose metric contraction is the kinetic
   term. -/
-lemma isLorentzCovariant_rankTwo_dotGaugeHiggs_mixed :
-    IsLorentzCovariant 2 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_rankTwo_dotGaugeHiggs_mixed :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
       (ofComponents fun d : Fin 2 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs ![d 0] ![d 1]) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g ![l 0] ![l 1], sum_pi_fin_one, sum_pi_fin_two]
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [sum_pi_fin_one]
@@ -168,7 +170,7 @@ lemma rep_ofComponents_metric {T : (Fin 2 → Fin 1 ⊕ Fin 3) → fieldData.Loc
 The gauge classification reduces mass weight eight to the three spans of twice-derived
 isospin contractions and the line through the square of the underived one.  Each of the
 three spans is spanned by a bi-Lorentz tensor and reduces, for the Lorentz group, to the
-line through its metric trace (`RankTwo.reducesInvariantsTo_span_metric`); the
+line through its metric trace (`ComplexVector.reducesInvariantsTo_span_metric`); the
 line through the square is fixed and reduces to itself.  What is left is a combination of
 the three metric traces and the square: the two box terms, the kinetic term and the quartic
 potential.
@@ -263,11 +265,11 @@ lemma repLorentz_of_mem_lorentzContractionEightSpan (g : SL(2,ℂ))
     refine sup_le ?_ (sup_le ?_ (sup_le ?_ ?_)) <;>
       rw [Submodule.span_singleton_le_iff_mem] <;>
       simp only [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.id_apply, sub_eq_zero]
-    · exact isLorentzCovariant_rankTwo_dotGaugeHiggs_left.rep_map_of_invariant
+    · exact isEquivariant_up_rankTwo_dotGaugeHiggs_left.rep_map_of_invariant
         RankTwo.metric_invariant g
-    · exact isLorentzCovariant_rankTwo_dotGaugeHiggs_right.rep_map_of_invariant
+    · exact isEquivariant_up_rankTwo_dotGaugeHiggs_right.rep_map_of_invariant
         RankTwo.metric_invariant g
-    · exact isLorentzCovariant_rankTwo_dotGaugeHiggs_mixed.rep_map_of_invariant
+    · exact isEquivariant_up_rankTwo_dotGaugeHiggs_mixed.rep_map_of_invariant
         RankTwo.metric_invariant g
     · exact invariant_dotGaugeHiggs_sq.1 g
   have hy' := key hy
@@ -311,17 +313,19 @@ lemma reducesInvariantsTo_lorentzContractionEightSpan :
         ⊔ ℂ ∙ (dotGaugeHiggs ![] ![] * dotGaugeHiggs ![] ![]))
       lorentzContractionEightSpan := by
     rw [dotSpan_two_zero_eq, dotSpan_zero_two_eq, dotSpan_one_one_eq,
-      ← range_ofComponents, ← range_ofComponents, ← range_ofComponents]
-    refine ((((RankTwo.reducesInvariantsTo_span_metric
-      isLorentzCovariant_rankTwo_dotGaugeHiggs_left).mono_right le_sup_left).sup
-      ((RankTwo.reducesInvariantsTo_span_metric
-        isLorentzCovariant_rankTwo_dotGaugeHiggs_right).mono_right
+      ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up),
+      ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up),
+      ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)]
+    refine ((((ComplexVector.reducesInvariantsTo_span_metric
+      isEquivariant_up_rankTwo_dotGaugeHiggs_left).mono_right le_sup_left).sup
+      ((ComplexVector.reducesInvariantsTo_span_metric
+        isEquivariant_up_rankTwo_dotGaugeHiggs_right).mono_right
           (le_sup_of_le_right le_sup_left))
-      isLorentzCovariant_rankTwo_dotGaugeHiggs_right.isStableUnder_range hW).sup
-      ((RankTwo.reducesInvariantsTo_span_metric
-        isLorentzCovariant_rankTwo_dotGaugeHiggs_mixed).mono_right
+      isEquivariant_up_rankTwo_dotGaugeHiggs_right.isStableUnder_range hW).sup
+      ((ComplexVector.reducesInvariantsTo_span_metric
+        isEquivariant_up_rankTwo_dotGaugeHiggs_mixed).mono_right
           (le_sup_of_le_right (le_sup_of_le_right le_sup_left)))
-      isLorentzCovariant_rankTwo_dotGaugeHiggs_mixed.isStableUnder_range hW).sup
+      isEquivariant_up_rankTwo_dotGaugeHiggs_mixed.isStableUnder_range hW).sup
       (reducesInvariantsTo_of_le (le_sup_of_le_right (le_sup_of_le_right le_sup_right))) hQ hW
   exact (ReducesInvariantsTo.ofGauge reducesInvariantsTo_massWeightSubmodule_eight).trans
     (ReducesInvariantsTo.ofLorentz hlorentz)

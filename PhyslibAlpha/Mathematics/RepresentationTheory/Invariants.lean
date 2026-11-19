@@ -7,6 +7,7 @@ module
 
 public import Mathlib.RepresentationTheory.Intertwining
 public import Mathlib.RepresentationTheory.Invariants
+public import PhyslibAlpha.Mathematics.RepresentationTheory.Reynolds.Basic
 /-!
 # Invariants and intertwining maps out of the trivial representation
 
@@ -14,14 +15,21 @@ How the invariants of a representation control the intertwining maps out of the 
 
 ## i. Overview
 
+The classifications of invariants are stated in one form, `σ.invariants = k ∙ v`,
+`σ.invariants = Submodule.span k s` or `σ.invariants = ⊥`. This file turns that form into the
+others.
+
 An intertwining map `φ` from the trivial representation on `k` into `σ` is fixed by its value
 `φ 1`, which is an invariant of `σ` (A). So once the invariants of `σ` are known to be a line
 `k ∙ φ₀ 1`, every such `φ` is a multiple of `φ₀`, and once they are known to be zero, so is every
-such `φ` (B).
+such `φ`. Likewise every invariant element is a multiple of `v`, or zero (B).
 
 The invariants in the range of an intertwining map `f` out of `σ`, `ρ.invariants ⊓ f.range`,
-generalise the invariants of `σ`: for `f` the identity they are the invariants of `σ` itself, and
-an intertwining map that is onto `σ` does not change them (C).
+generalise the invariants of `σ`, which they are for `f` the identity. When every invariant in the
+range of `f` is the image of an invariant of `σ`, a descent property, they are the image of the
+invariants of `σ`, so a line or zero along with them (C). A Reynolds element of `σ` gives this
+property, through `Representation.IsReynolds.exists_mem_invariants_map_eq`. A bijective
+intertwining map has it too, and carries the invariants onto the invariants.
 
 ## ii. Key results
 
@@ -31,15 +39,20 @@ an intertwining map that is onto `σ` does not change them (C).
   a line, the intertwining maps out of the trivial representation are the multiples of one map.
 - `Representation.IntertwiningMap.eq_zero_of_invariants_eq_bot` : when there are no invariants,
   there are no such maps but zero.
-- `Representation.invariants_inf_range_eq_span` : the invariants in the range are a line once each
-  is a multiple of one of them.
-- `Representation.invariants_inf_range_id` : the invariants in the range of the identity are the
-  invariants.
+- `Representation.exists_eq_smul_of_invariants_eq_span`,
+  `Representation.eq_zero_of_invariants_eq_bot` : the invariant elements, from the invariants.
+- `Representation.invariants_inf_range_eq_map_of_descent` : with descent, the invariants in the
+  range are the image of the invariants.
+- `Representation.invariants_inf_range_eq_span_of_descent`,
+  `Representation.invariants_inf_range_eq_bot_of_descent` : the line or zero in the range.
+- `Representation.IsReynolds.invariants_inf_range_eq_map` : descent from a Reynolds element.
+- `Representation.invariants_eq_map_of_bijective` : a bijective intertwining map carries the
+  invariants onto the invariants.
 
 ## iii. Table of contents
 
 - A. Intertwining maps out of the trivial representation
-- B. Classifying those maps by the invariants
+- B. From the invariants to invariant maps and elements
 - C. Invariants in the range of an intertwining map
 
 ## iv. References
@@ -78,7 +91,7 @@ lemma ext_one {φ ψ : (trivial k G k).IntertwiningMap σ} (h : φ 1 = ψ 1) : �
 
 /-!
 
-## B. Classifying those maps by the invariants
+## B. From the invariants to invariant maps and elements
 
 -/
 
@@ -102,42 +115,78 @@ lemma eq_zero_of_invariants_eq_bot (h : σ.invariants = ⊥)
 
 end IntertwiningMap
 
+/-- The invariants are the line through an invariant `v` when every invariant is a multiple of
+  it. -/
+lemma invariants_eq_span_singleton {v : V} (hv : v ∈ σ.invariants)
+    (h : ∀ x ∈ σ.invariants, ∃ a : k, x = a • v) : σ.invariants = k ∙ v := by
+  refine le_antisymm (fun x hx => ?_) ((Submodule.span_singleton_le_iff_mem _ _).2 hv)
+  obtain ⟨a, rfl⟩ := h x hx
+  exact Submodule.smul_mem _ a (Submodule.mem_span_singleton_self v)
+
+/-- There are no invariants but zero when every invariant vanishes. -/
+lemma invariants_eq_bot_of_forall (h : ∀ x ∈ σ.invariants, x = 0) : σ.invariants = ⊥ :=
+  eq_bot_iff.2 fun x hx => (Submodule.mem_bot k).2 (h x hx)
+
+/-- When the invariants of `σ` are the line through `v`, every invariant is a multiple of `v`. -/
+lemma exists_eq_smul_of_invariants_eq_span {v : V} (h : σ.invariants = k ∙ v) {x : V}
+    (hx : ∀ g, σ g x = x) : ∃ a : k, x = a • v := by
+  have hx' : x ∈ k ∙ v := h ▸ hx
+  obtain ⟨a, rfl⟩ := Submodule.mem_span_singleton.1 hx'
+  exact ⟨a, rfl⟩
+
+/-- When `σ` has no invariants but zero, every invariant is zero. -/
+lemma eq_zero_of_invariants_eq_bot (h : σ.invariants = ⊥) {x : V} (hx : ∀ g, σ g x = x) :
+    x = 0 :=
+  (Submodule.mem_bot k).1 (h ▸ hx)
+
 /-!
 
 ## C. Invariants in the range of an intertwining map
 
 -/
 
-/-- The invariants in the range of the identity are the invariants. -/
-lemma invariants_inf_range_id :
-    σ.invariants ⊓ (IntertwiningMap.id σ).range.toSubmodule = σ.invariants := by
-  rw [IntertwiningMap.range_toSubmodule, IntertwiningMap.toLinearMap_id, LinearMap.range_id,
-    inf_top_eq]
-
-/-- For an invariant `v`, the invariants in the range of `f` are the line through `f v` as soon
-  as each of them is a multiple of `f v`. -/
-lemma invariants_inf_range_eq_span {f : σ.IntertwiningMap ρ} {v : V} (hv : v ∈ σ.invariants)
-    (h : ∀ b ∈ ρ.invariants, b ∈ f.range.toSubmodule → ∃ z : k, b = z • f v) :
-    ρ.invariants ⊓ f.range.toSubmodule = k ∙ f v := by
+/-- The invariants in the range of `f` are the image of the invariants of `σ` when every
+  invariant in the range is the image of an invariant, the descent property `hd`. -/
+lemma invariants_inf_range_eq_map_of_descent (f : σ.IntertwiningMap ρ)
+    (hd : ∀ v, f v ∈ ρ.invariants → ∃ w ∈ σ.invariants, f w = f v) :
+    ρ.invariants ⊓ f.range.toSubmodule = σ.invariants.map f.toLinearMap := by
   refine le_antisymm (fun b hb => ?_) ?_
-  · obtain ⟨z, rfl⟩ := h b hb.1 hb.2
-    exact Submodule.smul_mem _ z (Submodule.mem_span_singleton_self _)
-  · rw [Submodule.span_singleton_le_iff_mem]
-    exact ⟨f.apply_mem_invariants hv, v, rfl⟩
+  · obtain ⟨v, rfl⟩ := hb.2
+    exact hd v hb.1
+  · rintro _ ⟨w, hw, rfl⟩
+    exact ⟨f.apply_mem_invariants hw, w, rfl⟩
 
-/-- The invariants in the range of `f` are zero as soon as each of them is. -/
-lemma invariants_inf_range_eq_bot {f : σ.IntertwiningMap ρ}
-    (h : ∀ b ∈ ρ.invariants, b ∈ f.range.toSubmodule → b = 0) :
-    ρ.invariants ⊓ f.range.toSubmodule = ⊥ :=
-  eq_bot_iff.2 fun b hb => (Submodule.mem_bot k).2 (h b hb.1 hb.2)
+/-- With descent, the invariants in the range of `f` are the line through `f v` when the
+  invariants of `σ` are the line through `v`. -/
+lemma invariants_inf_range_eq_span_of_descent {v : V} (h : σ.invariants = k ∙ v)
+    (f : σ.IntertwiningMap ρ) (hd : ∀ v, f v ∈ ρ.invariants → ∃ w ∈ σ.invariants, f w = f v) :
+    ρ.invariants ⊓ f.range.toSubmodule = k ∙ f v := by
+  rw [invariants_inf_range_eq_map_of_descent f hd, h, Submodule.map_span, Set.image_singleton]
+  rfl
 
-/-- Precomposing with an intertwining map onto `σ` does not change the invariants in the
-  range. -/
-lemma invariants_inf_range_comp_of_surjective {τ : Representation k G U}
-    (f : σ.IntertwiningMap ρ) (q : τ.IntertwiningMap σ) (hq : Function.Surjective q) :
-    ρ.invariants ⊓ (f.comp q).range.toSubmodule = ρ.invariants ⊓ f.range.toSubmodule := by
-  rw [IntertwiningMap.range_toSubmodule, IntertwiningMap.range_toSubmodule,
-    IntertwiningMap.comp_toLinearMap, LinearMap.range_comp_of_range_eq_top]
-  exact LinearMap.range_eq_top.2 hq
+/-- With descent, the invariants in the range of `f` are zero when those of `σ` are. -/
+lemma invariants_inf_range_eq_bot_of_descent (h : σ.invariants = ⊥) (f : σ.IntertwiningMap ρ)
+    (hd : ∀ v, f v ∈ ρ.invariants → ∃ w ∈ σ.invariants, f w = f v) :
+    ρ.invariants ⊓ f.range.toSubmodule = ⊥ := by
+  rw [invariants_inf_range_eq_map_of_descent f hd, h, Submodule.map_bot]
+
+/-- A Reynolds element of `σ` on all of `V` gives descent along every intertwining map, so the
+  invariants in the range of `f` are the image of the invariants of `σ`. -/
+lemma IsReynolds.invariants_inf_range_eq_map {r : MonoidAlgebra k G} (hr : σ.IsReynolds ⊤ r)
+    (f : σ.IntertwiningMap ρ) :
+    ρ.invariants ⊓ f.range.toSubmodule = σ.invariants.map f.toLinearMap :=
+  invariants_inf_range_eq_map_of_descent f fun _ hv => by
+    obtain ⟨w, hw, hfw⟩ := hr.exists_mem_invariants_map_eq (f := f.toLinearMap)
+      (fun g v => f.isIntertwining _ _ g v) Submodule.mem_top hv
+    exact ⟨w, hw.2, hfw⟩
+
+/-- A bijective intertwining map carries the invariants onto the invariants. -/
+lemma invariants_eq_map_of_bijective (f : σ.IntertwiningMap ρ) (hf : Function.Bijective f) :
+    ρ.invariants = σ.invariants.map f.toLinearMap := by
+  refine le_antisymm (fun b hb => ?_) ?_
+  · obtain ⟨v, rfl⟩ := hf.2 b
+    exact ⟨v, fun g => hf.1 ((f.isIntertwining _ _ g v).trans (hb g)), rfl⟩
+  · rintro _ ⟨w, hw, rfl⟩
+    exact f.apply_mem_invariants hw
 
 end Representation

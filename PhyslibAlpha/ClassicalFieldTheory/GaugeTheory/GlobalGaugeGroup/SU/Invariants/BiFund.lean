@@ -21,33 +21,25 @@ The tensors with `n` fundamental indices, or with `n` anti-fundamental indices, 
 its complex conjugate, per index (A).
 
 For `SU(2)` the invariant tensors with two fundamental indices, and those with two
-anti-fundamental indices, are the multiples of the antisymmetric symbol `ε` (B). The phase
+anti-fundamental indices, are the line through the antisymmetric symbol `ε` (B). The phase
 `diag (i, -i)` negates the two diagonal components, and the quarter turn sends the component
-`(0, 1)` to minus the component `(1, 0)`. For `N ≥ 3` there are none at all (C): the centre element
-`ω 1`, with `ω` a primitive `N`-th root of unity, scales every component by `ω² ≠ 1`, or by its
-conjugate.
+`(0, 1)` to minus the component `(1, 0)`. For `N ≥ 3` there are none but zero (C): the centre
+element `ω 1`, with `ω` a primitive `N`-th root of unity, scales every component by `ω² ≠ 1`, or
+by its conjugate.
 
-Families indexed by `Fin n → Fin N` are turned into maps by `fundMap` and `antiFundMap`, and for
+A family indexed by `Fin n → Fin N` is the map `ofComponents T` out of these tensors, and for
 `SU(2)` the invariants of the span of such a family with two indices reduce to the epsilon
 contraction `T ![0, 1] - T ![1, 0]` (D).
-
-In terms of Mathlib's invariants, the invariant tensors are the line through `ε` for `SU(2)` and
-zero for `N ≥ 3`, and so are, for an intertwining map out of the tensors, the invariants in its
-range, through the image of `ε` (E).
 
 ## ii. Key results
 
 - `suTensor.epsilonFund`, `suTensor.epsilonAntiFund` : the antisymmetric symbols of `SU(2)`.
-- `suTensor.exists_eq_smul_epsilonFund_of_invariant` : the invariant tensors with two fundamental
-  indices of `SU(2)`, and its anti-fundamental twin.
-- `suTensor.eq_zero_of_invariant_fundPair` : for `N ≥ 3` there are none, and its
+- `suTensor.invariants_tensorRep_eq_span_epsilonFund` : the invariant tensors with two
+  fundamental indices of `SU(2)` are the line through `ε`, and its anti-fundamental twin.
+- `suTensor.invariants_tensorRep_fundPair_eq_bot` : for `N ≥ 3` they are zero, and its
   anti-fundamental twin.
 - `suTensor.invariantReductionToEpsilonFund` : the reduction of the invariants of the span of a
   family to the epsilon contraction, and its anti-fundamental twin.
-- `suTensor.invariants_tensorRep_eq_span_epsilonFund` : the invariant tensors are the line
-  through `ε`, and its anti-fundamental twin.
-- `suTensor.invariants_tensorRep_fundPair_eq_bot` : for `N ≥ 3` they are zero, and its
-  anti-fundamental twin.
 
 ## iii. Table of contents
 
@@ -55,7 +47,6 @@ range, through the image of `ε` (E).
 - B. Two indices of `SU(2)`: the antisymmetric symbol
 - C. Two indices of `SU(N)` for `N ≥ 3`: no invariants
 - D. Maps from components
-- E. The invariants in Mathlib's form
 
 ## iv. References
 
@@ -67,7 +58,8 @@ range, through the image of `ε` (E).
 
 namespace suTensor
 
-open Matrix MatrixGroups TensorSpecies Tensor SU Physlib.Fin
+open Matrix MatrixGroups TensorSpecies SU Physlib.Fin
+open TensorSpecies.Tensor hiding ofComponents
 open GlobalGaugeGroup (rootOfUnity rootOfUnity_isPrimitiveRoot rootOfUnity_mul_star)
 
 variable {N : ℕ}
@@ -154,40 +146,6 @@ lemma eq_smul_epsilon_of_fixed (M : SU 2 → Matrix (Fin 2) (Fin 2) ℂ) {u v : 
   · linear_combination h3
   · linear_combination h2 / 2
 
-/-- An invariant tensor with two fundamental indices of `SU(2)` is a multiple of the
-  antisymmetric symbol. -/
-lemma exists_eq_smul_epsilonFund_of_invariant (t : (suTensor 2).Tensor fun _ : Fin 2 => .fund)
-    (ht : ∀ g : SU 2, g • t = t) : ∃ a : ℂ, t = a • epsilonFund := by
-  refine ⟨(Tensor.basis _).repr t ![0, 1],
-    (Tensor.basis _).repr.injective (Finsupp.ext fun φ => ?_)⟩
-  rw [map_smul, Finsupp.smul_apply, basis_repr_epsilonFund, smul_eq_mul]
-  refine eq_smul_epsilon_of_fixed (fun g => g.1) Complex.I_mul_I
-    (by rw [neg_mul_neg, Complex.I_mul_I]) ?_ ?_ (fun g φ => ?_) φ
-  · rw [diagPhase_val]
-    congr 1
-    funext i
-    fin_cases i <;> simp
-  · ext i j
-    fin_cases i <;> fin_cases j <;> simp
-  · rw [← basis_repr_smul_fund, ht]
-
-/-- An invariant tensor with two anti-fundamental indices of `SU(2)` is a multiple of the
-  antisymmetric symbol. -/
-lemma exists_eq_smul_epsilonAntiFund_of_invariant
-    (t : (suTensor 2).Tensor fun _ : Fin 2 => .antiFund) (ht : ∀ g : SU 2, g • t = t) :
-    ∃ a : ℂ, t = a • epsilonAntiFund := by
-  refine ⟨(Tensor.basis _).repr t ![0, 1],
-    (Tensor.basis _).repr.injective (Finsupp.ext fun φ => ?_)⟩
-  rw [map_smul, Finsupp.smul_apply, basis_repr_epsilonAntiFund, smul_eq_mul]
-  refine eq_smul_epsilon_of_fixed (fun g => g.1.map (starRingEnd ℂ))
-    (by rw [neg_mul_neg, Complex.I_mul_I]) Complex.I_mul_I ?_ ?_ (fun g φ => ?_) φ
-  · ext i j
-    fin_cases i <;> fin_cases j <;> simp
-  · ext i j
-    fin_cases i <;> fin_cases j <;> simp
-  · simp only [Matrix.map_apply]
-    rw [← basis_repr_smul_antiFund, ht]
-
 /-- The antisymmetric symbol with two fundamental indices is invariant, since `g ⊗ g` scales it by
   `det g = 1`. -/
 lemma epsilonFund_invariant (g : SU 2) : g • epsilonFund = epsilonFund := by
@@ -218,6 +176,41 @@ lemma epsilonAntiFund_invariant (g : SU 2) : g • epsilonAntiFund = epsilonAnti
     fin_cases i <;> rfl⟩
   fin_cases a <;> fin_cases b <;> simp <;>
     first | ring1 | linear_combination hdet | linear_combination (-1 : ℂ) * hdet
+
+/-- The invariant tensors with two fundamental indices of `SU(2)` are the line through the
+  antisymmetric symbol. -/
+lemma invariants_tensorRep_eq_span_epsilonFund :
+    ((suTensor 2).tensorRep fun _ : Fin 2 => .fund).invariants = ℂ ∙ epsilonFund := by
+  refine invariants_tensorRep_eq_span_singleton epsilonFund_invariant fun t ht => ?_
+  refine ⟨(Tensor.basis _).repr t ![0, 1],
+    (Tensor.basis _).repr.injective (Finsupp.ext fun φ => ?_)⟩
+  rw [map_smul, Finsupp.smul_apply, basis_repr_epsilonFund, smul_eq_mul]
+  refine eq_smul_epsilon_of_fixed (fun g => g.1) Complex.I_mul_I
+    (by rw [neg_mul_neg, Complex.I_mul_I]) ?_ ?_ (fun g φ => ?_) φ
+  · rw [diagPhase_val]
+    congr 1
+    funext i
+    fin_cases i <;> simp
+  · ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  · rw [← basis_repr_smul_fund, ht]
+
+/-- The invariant tensors with two anti-fundamental indices of `SU(2)` are the line through the
+  antisymmetric symbol. -/
+lemma invariants_tensorRep_eq_span_epsilonAntiFund :
+    ((suTensor 2).tensorRep fun _ : Fin 2 => .antiFund).invariants = ℂ ∙ epsilonAntiFund := by
+  refine invariants_tensorRep_eq_span_singleton epsilonAntiFund_invariant fun t ht => ?_
+  refine ⟨(Tensor.basis _).repr t ![0, 1],
+    (Tensor.basis _).repr.injective (Finsupp.ext fun φ => ?_)⟩
+  rw [map_smul, Finsupp.smul_apply, basis_repr_epsilonAntiFund, smul_eq_mul]
+  refine eq_smul_epsilon_of_fixed (fun g => g.1.map (starRingEnd ℂ))
+    (by rw [neg_mul_neg, Complex.I_mul_I]) Complex.I_mul_I ?_ ?_ (fun g φ => ?_) φ
+  · ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  · ext i j
+    fin_cases i <;> fin_cases j <;> simp
+  · simp only [Matrix.map_apply]
+    rw [← basis_repr_smul_antiFund, ht]
 
 /-!
 
@@ -256,10 +249,11 @@ lemma basis_repr_centre_smul_antiFund (hN : N ≠ 0)
 lemma rootOfUnity_sq_ne_one (hN : 3 ≤ N) : rootOfUnity N ^ 2 ≠ 1 :=
   (rootOfUnity_isPrimitiveRoot (by omega)).pow_ne_one_of_pos_of_lt two_ne_zero (by omega)
 
-/-- For `N ≥ 3` the only invariant tensor with two fundamental indices is zero. The centre
-  element scales it by `ω² ≠ 1`. -/
-lemma eq_zero_of_invariant_fundPair (hN : 3 ≤ N) (t : (suTensor N).Tensor fun _ : Fin 2 => .fund)
-    (ht : ∀ g : SU N, g • t = t) : t = 0 := by
+/-- For `N ≥ 3` there are no invariant tensors with two fundamental indices but zero. The centre
+  element scales them by `ω² ≠ 1`. -/
+lemma invariants_tensorRep_fundPair_eq_bot (hN : 3 ≤ N) :
+    ((suTensor N).tensorRep fun _ : Fin 2 => .fund).invariants = ⊥ := by
+  refine invariants_tensorRep_eq_bot fun t ht => ?_
   refine (Tensor.basis _).repr.injective (Finsupp.ext fun φ => ?_)
   have h := basis_repr_centre_smul_fund (by omega) t φ
   rw [ht] at h
@@ -268,11 +262,11 @@ lemma eq_zero_of_invariant_fundPair (hN : 3 ≤ N) (t : (suTensor N).Tensor fun 
     linear_combination h
   exact (mul_eq_zero.1 h').resolve_left (sub_ne_zero.2 (rootOfUnity_sq_ne_one hN).symm)
 
-/-- For `N ≥ 3` the only invariant tensor with two anti-fundamental indices is zero. The centre
-  element scales it by `ω̄² ≠ 1`. -/
-lemma eq_zero_of_invariant_antiFundPair (hN : 3 ≤ N)
-    (t : (suTensor N).Tensor fun _ : Fin 2 => .antiFund) (ht : ∀ g : SU N, g • t = t) :
-    t = 0 := by
+/-- For `N ≥ 3` there are no invariant tensors with two anti-fundamental indices but zero. The
+  centre element scales them by `ω̄² ≠ 1`. -/
+lemma invariants_tensorRep_antiFundPair_eq_bot (hN : 3 ≤ N) :
+    ((suTensor N).tensorRep fun _ : Fin 2 => .antiFund).invariants = ⊥ := by
+  refine invariants_tensorRep_eq_bot fun t ht => ?_
   refine (Tensor.basis _).repr.injective (Finsupp.ext fun φ => ?_)
   have h := basis_repr_centre_smul_antiFund (by omega) t φ
   rw [ht] at h
@@ -292,49 +286,30 @@ lemma eq_zero_of_invariant_antiFundPair (hN : 3 ≤ N)
 
 variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ (SU N) B}
 
-/-- The linear map out of the tensors with `n` fundamental indices sending the basis tensor with
-  labels `l` to `T l`. -/
-noncomputable def fundMap {n : ℕ} (T : (Fin n → Fin N) → B) :
-    (suTensor N).Tensor (fun _ : Fin n => .fund) →ₗ[ℂ] B :=
-  familyMap (Equiv.refl _) T
-
-/-- The linear map out of the tensors with `n` anti-fundamental indices sending the basis tensor
-  with labels `l` to `T l`. -/
-noncomputable def antiFundMap {n : ℕ} (T : (Fin n → Fin N) → B) :
-    (suTensor N).Tensor (fun _ : Fin n => .antiFund) →ₗ[ℂ] B :=
-  familyMap (Equiv.refl _) T
-
-@[simp]
-lemma fundMap_basis {n : ℕ} (T : (Fin n → Fin N) → B) (l : Fin n → Fin N) :
-    fundMap T (Tensor.basis (S := suTensor N) (fun _ : Fin n => Color.fund) l) = T l :=
-  familyMap_basis (S := suTensor N) (c := fun _ : Fin n => Color.fund) (Equiv.refl _) T l
-
-@[simp]
-lemma antiFundMap_basis {n : ℕ} (T : (Fin n → Fin N) → B) (l : Fin n → Fin N) :
-    antiFundMap T (Tensor.basis (S := suTensor N) (fun _ : Fin n => Color.antiFund) l) = T l :=
-  familyMap_basis (S := suTensor N) (c := fun _ : Fin n => Color.antiFund) (Equiv.refl _) T l
-
 /-- A linear map moving a family with `n` fundamental labels by one factor of `g` per label
   intertwines the map of the family with the action of `g`. -/
-lemma fundMap_smul_of_law {n : ℕ} (T : (Fin n → Fin N) → B) {σ : B →ₗ[ℂ] B} (g : SU N)
+lemma ofComponents_fund_smul_of_law {n : ℕ} (T : (Fin n → Fin N) → B) {σ : B →ₗ[ℂ] B} (g : SU N)
     (hσ : ∀ l : Fin n → Fin N, σ (T l) = ∑ a : Fin n → Fin N, (∏ i, g.1 (a i) (l i)) • T a)
     (t : (suTensor N).Tensor fun _ : Fin n => .fund) :
-    σ (fundMap T t) = fundMap T (g • t) :=
-  familyMap_smul_of_law _ T g (fun l => (hσ l).trans <|
+    σ (ofComponents (S := suTensor N) (c := fun _ : Fin n => .fund) T t)
+      = ofComponents (S := suTensor N) (c := fun _ : Fin n => .fund) T (g • t) :=
+  ofComponents_smul_of_law (S := suTensor N) (c := fun _ : Fin n => .fund) T g
+      (fun l => (hσ l).trans <|
     Finset.sum_congr rfl fun a _ => congrArg (· • T a) <| Finset.prod_congr rfl fun i _ => by
       change _ = LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N))
         (fundRep N g) _ _
-      rw [toMatrix_fundRep]
-      rfl) t
+      rw [toMatrix_fundRep]) t
 
 /-- A linear map moving a family with `n` anti-fundamental labels by one factor of the complex
   conjugate of `g` per label intertwines the map of the family with the action of `g`. -/
-lemma antiFundMap_smul_of_law {n : ℕ} (T : (Fin n → Fin N) → B) {σ : B →ₗ[ℂ] B} (g : SU N)
-    (hσ : ∀ l : Fin n → Fin N, σ (T l)
+lemma ofComponents_antiFund_smul_of_law {n : ℕ} (T : (Fin n → Fin N) → B) {σ : B →ₗ[ℂ] B}
+    (g : SU N) (hσ : ∀ l : Fin n → Fin N, σ (T l)
       = ∑ a : Fin n → Fin N, (∏ i, starRingEnd ℂ (g.1 (a i) (l i))) • T a)
     (t : (suTensor N).Tensor fun _ : Fin n => .antiFund) :
-    σ (antiFundMap T t) = antiFundMap T (g • t) :=
-  familyMap_smul_of_law _ T g (fun l => (hσ l).trans <|
+    σ (ofComponents (S := suTensor N) (c := fun _ : Fin n => .antiFund) T t)
+      = ofComponents (S := suTensor N) (c := fun _ : Fin n => .antiFund) T (g • t) :=
+  ofComponents_smul_of_law (S := suTensor N) (c := fun _ : Fin n => .antiFund) T g
+      (fun l => (hσ l).trans <|
     Finset.sum_congr rfl fun a _ => congrArg (· • T a) <| Finset.prod_congr rfl fun i _ => by
       change _ = LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N))
         (antiFundRep N g) _ _
@@ -343,113 +318,71 @@ lemma antiFundMap_smul_of_law {n : ℕ} (T : (Fin n → Fin N) → B) {σ : B �
 
 /-- The map of a family with `n` fundamental labels is equivariant when the family moves by one
   factor of `g` per label, the summed label first. -/
-lemma isEquivariant_fundMap {n : ℕ} (T : (Fin n → Fin N) → B)
+lemma isEquivariant_ofComponents_fund {n : ℕ} (T : (Fin n → Fin N) → B)
     (hT : ∀ (g : SU N) (l : Fin n → Fin N), ρ g (T l)
       = ∑ a : Fin n → Fin N, (∏ i, g.1 (a i) (l i)) • T a) :
-    (suTensor N).IsEquivariant (fun _ => .fund) ρ (fundMap T) :=
-  ⟨fun g t => (fundMap_smul_of_law T g (hT g) t).symm⟩
+    (suTensor N).IsEquivariant (fun _ => .fund) ρ (ofComponents T) :=
+  ⟨fun g t => (ofComponents_fund_smul_of_law T g (hT g) t).symm⟩
 
 /-- The map of a family with `n` anti-fundamental labels is equivariant when the family moves by
   one factor of the complex conjugate of `g` per label, the summed label first. -/
-lemma isEquivariant_antiFundMap {n : ℕ} (T : (Fin n → Fin N) → B)
+lemma isEquivariant_ofComponents_antiFund {n : ℕ} (T : (Fin n → Fin N) → B)
     (hT : ∀ (g : SU N) (l : Fin n → Fin N), ρ g (T l)
       = ∑ a : Fin n → Fin N, (∏ i, starRingEnd ℂ (g.1 (a i) (l i))) • T a) :
-    (suTensor N).IsEquivariant (fun _ => .antiFund) ρ (antiFundMap T) :=
-  ⟨fun g t => (antiFundMap_smul_of_law T g (hT g) t).symm⟩
+    (suTensor N).IsEquivariant (fun _ => .antiFund) ρ (ofComponents T) :=
+  ⟨fun g t => (ofComponents_antiFund_smul_of_law T g (hT g) t).symm⟩
 
 /-- The map of a family with two fundamental labels sends the antisymmetric symbol to the
   epsilon contraction. -/
-lemma fundMap_epsilonFund (T : (Fin 2 → Fin 2) → B) :
-    fundMap T epsilonFund = T ![0, 1] - T ![1, 0] := by
-  simp [fundMap, epsilonFund, familyMap, sub_smul, Finset.sum_sub_distrib, Finsupp.single_apply]
+lemma ofComponents_epsilonFund (T : (Fin 2 → Fin 2) → B) :
+    ofComponents (S := suTensor 2) (c := fun _ : Fin 2 => .fund) T epsilonFund
+      = T ![0, 1] - T ![1, 0] := by
+  simp [ofComponents, epsilonFund, sub_smul, Finset.sum_sub_distrib, Finsupp.single_apply]
 
 /-- The map of a family with two anti-fundamental labels sends the antisymmetric symbol to the
   epsilon contraction. -/
-lemma antiFundMap_epsilonAntiFund (T : (Fin 2 → Fin 2) → B) :
-    antiFundMap T epsilonAntiFund = T ![0, 1] - T ![1, 0] := by
-  simp [antiFundMap, epsilonAntiFund, familyMap, sub_smul, Finset.sum_sub_distrib,
-    Finsupp.single_apply]
+lemma ofComponents_epsilonAntiFund (T : (Fin 2 → Fin 2) → B) :
+    ofComponents (S := suTensor 2) (c := fun _ : Fin 2 => .antiFund) T epsilonAntiFund
+      = T ![0, 1] - T ![1, 0] := by
+  simp [ofComponents, epsilonAntiFund, sub_smul, Finset.sum_sub_distrib, Finsupp.single_apply]
 
 /-- For a family with two fundamental labels of `SU(2)` whose map is equivariant, the invariants
   of the span reduce to the span of the epsilon contraction `T ![0, 1] - T ![1, 0]`. -/
 noncomputable def invariantReductionToEpsilonFund {ρ : Representation ℂ (SU 2) B}
-    {T : (Fin 2 → Fin 2) → B} (hT : (suTensor 2).IsEquivariant (fun _ => .fund) ρ (fundMap T)) :
+    {T : (Fin 2 → Fin 2) → B}
+    (hT : (suTensor 2).IsEquivariant (fun _ => .fund) ρ (ofComponents T)) :
     InvariantReductionToSpan (fun g : SU 2 => ρ g) (Submodule.span ℂ (Set.range T)) :=
-  hT.invariantReductionToSpanOfEq (isAdjointClosed 2 _) epsilonFund epsilonFund_invariant
-    exists_eq_smul_epsilonFund_of_invariant (range_familyMap _ T) _ (fundMap_epsilonFund T)
+  hT.invariantReductionToSpanOfEq (hasReynolds 2 _) invariants_tensorRep_eq_span_epsilonFund
+    (range_ofComponents (S := suTensor 2) (c := fun _ : Fin 2 => .fund) T) _
+    (ofComponents_epsilonFund T)
 
 /-- For a family with two anti-fundamental labels of `SU(2)` whose map is equivariant, the
   invariants of the span reduce to the span of the epsilon contraction
   `T ![0, 1] - T ![1, 0]`. -/
 noncomputable def invariantReductionToEpsilonAntiFund {ρ : Representation ℂ (SU 2) B}
     {T : (Fin 2 → Fin 2) → B}
-    (hT : (suTensor 2).IsEquivariant (fun _ => .antiFund) ρ (antiFundMap T)) :
+    (hT : (suTensor 2).IsEquivariant (fun _ => .antiFund) ρ (ofComponents T)) :
     InvariantReductionToSpan (fun g : SU 2 => ρ g) (Submodule.span ℂ (Set.range T)) :=
-  hT.invariantReductionToSpanOfEq (isAdjointClosed 2 _) epsilonAntiFund
-    epsilonAntiFund_invariant exists_eq_smul_epsilonAntiFund_of_invariant
-    (range_familyMap _ T) _ (antiFundMap_epsilonAntiFund T)
+  hT.invariantReductionToSpanOfEq (hasReynolds 2 _)
+    invariants_tensorRep_eq_span_epsilonAntiFund
+    (range_ofComponents (S := suTensor 2) (c := fun _ : Fin 2 => .antiFund) T) _
+    (ofComponents_epsilonAntiFund T)
 
 /-- For `N ≥ 3` and a family with two fundamental labels whose map is equivariant, the
   invariants of the span reduce to `⊥`. -/
-lemma reducesInvariantsTo_bot_span_of_fundMap (hN : 3 ≤ N) {T : (Fin 2 → Fin N) → B}
-    (hT : (suTensor N).IsEquivariant (fun _ => .fund) ρ (fundMap T)) :
+lemma reducesInvariantsTo_bot_span_fund (hN : 3 ≤ N) {T : (Fin 2 → Fin N) → B}
+    (hT : (suTensor N).IsEquivariant (fun _ => .fund) ρ (ofComponents T)) :
     ReducesInvariantsTo (fun g : SU N => ρ g) (Submodule.span ℂ (Set.range T)) ⊥ := by
-  rw [← range_familyMap (S := suTensor N) (c := fun _ : Fin 2 => Color.fund) (Equiv.refl _) T]
-  exact hT.reducesInvariantsTo_bot (isAdjointClosed N _) (eq_zero_of_invariant_fundPair hN)
+  rw [← range_ofComponents (S := suTensor N) (c := fun _ : Fin 2 => Color.fund) T]
+  exact hT.reducesInvariantsTo_bot (hasReynolds N _) (invariants_tensorRep_fundPair_eq_bot hN)
 
 /-- For `N ≥ 3` and a family with two anti-fundamental labels whose map is equivariant, the
   invariants of the span reduce to `⊥`. -/
-lemma reducesInvariantsTo_bot_span_of_antiFundMap (hN : 3 ≤ N) {T : (Fin 2 → Fin N) → B}
-    (hT : (suTensor N).IsEquivariant (fun _ => .antiFund) ρ (antiFundMap T)) :
+lemma reducesInvariantsTo_bot_span_antiFund (hN : 3 ≤ N) {T : (Fin 2 → Fin N) → B}
+    (hT : (suTensor N).IsEquivariant (fun _ => .antiFund) ρ (ofComponents T)) :
     ReducesInvariantsTo (fun g : SU N => ρ g) (Submodule.span ℂ (Set.range T)) ⊥ := by
-  rw [← range_familyMap (S := suTensor N) (c := fun _ : Fin 2 => Color.antiFund)
-    (Equiv.refl _) T]
-  exact hT.reducesInvariantsTo_bot (isAdjointClosed N _) (eq_zero_of_invariant_antiFundPair hN)
-
-/-!
-
-## E. The invariants in Mathlib's form
-
--/
-
-/-- The invariant tensors with two fundamental indices of `SU(2)` are the line through the
-  antisymmetric symbol. -/
-lemma invariants_tensorRep_eq_span_epsilonFund :
-    ((suTensor 2).tensorRep fun _ : Fin 2 => .fund).invariants = ℂ ∙ epsilonFund :=
-  invariants_tensorRep_eq_span_singleton epsilonFund_invariant
-    exists_eq_smul_epsilonFund_of_invariant
-
-/-- The invariant tensors with two anti-fundamental indices of `SU(2)` are the line through the
-  antisymmetric symbol. -/
-lemma invariants_tensorRep_eq_span_epsilonAntiFund :
-    ((suTensor 2).tensorRep fun _ : Fin 2 => .antiFund).invariants = ℂ ∙ epsilonAntiFund :=
-  invariants_tensorRep_eq_span_singleton epsilonAntiFund_invariant
-    exists_eq_smul_epsilonAntiFund_of_invariant
-
-/-- For `N ≥ 3` there are no invariant tensors with two fundamental indices but zero. -/
-lemma invariants_tensorRep_fundPair_eq_bot (hN : 3 ≤ N) :
-    ((suTensor N).tensorRep fun _ : Fin 2 => .fund).invariants = ⊥ :=
-  invariants_tensorRep_eq_bot (eq_zero_of_invariant_fundPair hN)
-
-/-- For `N ≥ 3` there are no invariant tensors with two anti-fundamental indices but zero. -/
-lemma invariants_tensorRep_antiFundPair_eq_bot (hN : 3 ≤ N) :
-    ((suTensor N).tensorRep fun _ : Fin 2 => .antiFund).invariants = ⊥ :=
-  invariants_tensorRep_eq_bot (eq_zero_of_invariant_antiFundPair hN)
-
-/-- For an intertwining map `f` out of the tensors with two fundamental indices of `SU(2)`, the
-  invariants in the range of `f` are the line through the image of the antisymmetric symbol. -/
-lemma invariants_inf_range_eq_span_map_epsilonFund {ρ : Representation ℂ (SU 2) B}
-    (f : ((suTensor 2).tensorRep fun _ : Fin 2 => .fund).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f epsilonFund :=
-  (isAdjointClosed 2 _).invariants_inf_range_eq_span invariants_tensorRep_eq_span_epsilonFund f
-
-/-- For an intertwining map `f` out of the tensors with two anti-fundamental indices of `SU(2)`,
-  the invariants in the range of `f` are the line through the image of the antisymmetric
-  symbol. -/
-lemma invariants_inf_range_eq_span_map_epsilonAntiFund {ρ : Representation ℂ (SU 2) B}
-    (f : ((suTensor 2).tensorRep fun _ : Fin 2 => .antiFund).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f epsilonAntiFund :=
-  (isAdjointClosed 2 _).invariants_inf_range_eq_span
-    invariants_tensorRep_eq_span_epsilonAntiFund f
+  rw [← range_ofComponents (S := suTensor N) (c := fun _ : Fin 2 => Color.antiFund) T]
+  exact hT.reducesInvariantsTo_bot (hasReynolds N _)
+    (invariants_tensorRep_antiFundPair_eq_bot hN)
 
 end suTensor

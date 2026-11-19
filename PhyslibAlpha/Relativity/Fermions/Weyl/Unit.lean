@@ -15,23 +15,15 @@ Up to scale, the unit `δ` is the only invariant of a Weyl representation tensor
 
 On `V ⊗ V*`, for `V` one of the four Weyl representations, `SL(2, ℂ)` acts on the matrix of
 components by conjugation, `X ↦ N X N⁻¹`. The two boosts along `z` combine to give the
-off-diagonal part of `X`, so an equivariant map kills it, and conjugation by `ε` swaps the two
-diagonal entries (A). An invariant in the image of an equivariant map out of `V ⊗ V*` is
-therefore the image of a multiple of the identity matrix, which is the unit `δ` (B). For each of
-the four pairs this gives three statements (C). The invariants in the image of an equivariant map
-`f` out of `V ⊗ V*` are the line through `f δ`; for `f` the identity, the invariants of `V ⊗ V*`
-are the line through `δ`; and every intertwining map from the trivial representation is a
-multiple of the unit.
+off-diagonal part of `X`, so an invariant has none, and conjugation by `ε` swaps the two diagonal
+entries (A). An invariant of `V ⊗ V*` therefore has a multiple of the identity matrix as
+components, which is the unit `δ` (B). For each of the four pairs this says that the invariants of
+`V ⊗ V*` are the line through `δ` (C).
 
 ## ii. Key results
 
-- `Fermion.DualLeftHandedWeyl.invariants_inf_range_eq_span_map_unitVal` and its three siblings :
-  the invariants in the image of an equivariant map out of `V ⊗ V*` are the line through the image
-  of the unit.
 - `Fermion.DualLeftHandedWeyl.invariants_tprod_eq_span_unitVal` and its three siblings : the
   invariants of `V ⊗ V*` are the line through the unit.
-- `Fermion.DualLeftHandedWeyl.intertwiningMap_eq_smul_unit` and its three siblings : every
-  intertwining map from the trivial representation into `V ⊗ V*` is a multiple of the unit.
 
 ## iii. Table of contents
 
@@ -105,161 +97,88 @@ lemma map_eq_smul_map_one_of_conj (F : Matrix (Fin 2) (Fin 2) ℂ →ₗ[ℂ] B)
 
 -/
 
-/-- For an equivariant map `f` out of `V ⊗ W`, on which three elements of `SL(2,ℂ)` act on
-  components as two boosts and `ε`, every invariant in the image of `f` is a multiple of the image
-  of the element with the identity as components. -/
-lemma exists_eq_smul_map_one_of_conj {V W : Type*} [AddCommGroup V] [Module ℂ V]
+/-- When three elements of `SL(2,ℂ)` act on the components of `V ⊗ W` as two boosts and `ε`,
+  every invariant of `V ⊗ W` is a multiple of the element with the identity as components. -/
+lemma exists_eq_smul_one_of_conj {V W : Type*} [AddCommGroup V] [Module ℂ V]
     [AddCommGroup W] [Module ℂ W] (b : Module.Basis (Fin 2) ℂ V) (c : Module.Basis (Fin 2) ℂ W)
-    {ρV : Representation ℂ SL(2,ℂ) V} {ρW : Representation ℂ SL(2,ℂ) W}
-    {ρ : Representation ℂ SL(2,ℂ) B} (f : (ρV.tprod ρW).IntertwiningMap ρ) {x : B}
-    (hinv : x ∈ ρ.invariants) (hx : x ∈ f.range.toSubmodule)
+    {ρV : Representation ℂ SL(2,ℂ) V} {ρW : Representation ℂ SL(2,ℂ) W} {v : V ⊗[ℂ] W}
+    (hv : v ∈ (ρV.tprod ρW).invariants)
     (hD : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
       !![X 0 0, 4 * X 0 1; X 1 0 / 4, X 1 1])
     (hD' : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
       !![X 0 0, X 0 1 / 4; 4 * X 1 0, X 1 1])
     (hε : ∃ g, ∀ X, LinearMap.toMatrix b b (ρV g) * X * (LinearMap.toMatrix c c (ρW g))ᵀ =
       !![X 1 1, -X 1 0; -X 0 1, X 0 0]) :
-    ∃ z : ℂ, x = z • f ((tensorToMatrix b c).symm 1) := by
-  obtain ⟨v, rfl⟩ := hx
-  have hinv : ∀ g, ρ g (f v) = f v := hinv
+    ∃ z : ℂ, v = z • (tensorToMatrix b c).symm 1 := by
   have hinv' (Z : Matrix (Fin 2) (Fin 2) ℂ)
-      (hZ : f ((tensorToMatrix b c).symm Z) = f ((tensorToMatrix b c).symm (tensorToMatrix b c v)))
-      (g : SL(2,ℂ)) : ρ g (f ((tensorToMatrix b c).symm Z)) = f ((tensorToMatrix b c).symm Z) := by
+      (hZ : (tensorToMatrix b c).symm Z = (tensorToMatrix b c).symm (tensorToMatrix b c v)) :
+      (tensorToMatrix b c).symm Z ∈ (ρV.tprod ρW).invariants := by
     rw [hZ, LinearEquiv.symm_apply_apply]
-    exact hinv g
-  set F := f.toLinearMap ∘ₗ (tensorToMatrix b c).symm.toLinearMap with hF
-  have hFa (Z : Matrix (Fin 2) (Fin 2) ℂ) : F Z = f ((tensorToMatrix b c).symm Z) := by
-    rw [hF, LinearMap.comp_apply, LinearEquiv.coe_coe,
-      Representation.IntertwiningMap.toLinearMap_apply]
-  have h := map_eq_smul_map_one_of_conj F (X := tensorToMatrix b c v)
+    exact hv
+  have hF (Z : Matrix (Fin 2) (Fin 2) ℂ) :
+      (tensorToMatrix b c).symm.toLinearMap Z = (tensorToMatrix b c).symm Z := rfl
+  have h := map_eq_smul_map_one_of_conj (tensorToMatrix b c).symm.toLinearMap
+    (X := tensorToMatrix b c v)
     (fun Z hZ => by
-      rw [hFa, hFa] at hZ ⊢
-      exact (map_symm_act_eq b c f (hinv' Z hZ) (h := hD) :))
+      rw [hF, hF] at hZ ⊢
+      exact (symm_act_eq b c (hinv' Z hZ) (h := hD) :))
     (fun Z hZ => by
-      rw [hFa, hFa] at hZ ⊢
-      exact (map_symm_act_eq b c f (hinv' Z hZ) (h := hD') :))
+      rw [hF, hF] at hZ ⊢
+      exact (symm_act_eq b c (hinv' Z hZ) (h := hD') :))
     (by
-      rw [hFa, hFa]
-      exact (map_symm_act_eq b c f (hinv' _ rfl) (h := hε) :))
-  rw [hFa, hFa, LinearEquiv.symm_apply_apply] at h
+      rw [hF, hF]
+      exact (symm_act_eq b c (hinv' _ rfl) (h := hε) :))
+  rw [hF, hF, LinearEquiv.symm_apply_apply] at h
   exact ⟨_, h⟩
 
 /-!
 
 ## C. The four pairs
 
-For each pair `V ⊗ V*` the statements are in the namespace that holds its unit, as in
+For each pair `V ⊗ V*` the statement is in the namespace that holds its unit, as in
 `DualLeftHandedWeyl.unitVal : LeftHandedWeyl ⊗ DualLeftHandedWeyl`.
 
 -/
 
-variable {ρ : Representation ℂ SL(2,ℂ) B}
-
-/-- For an equivariant map `f` out of `LeftHandedWeyl ⊗ DualLeftHandedWeyl`, the
-  `SL(2,ℂ)`-invariants in the image of `f` are the line through the image `f δᵃₐ` of the unit. -/
-lemma DualLeftHandedWeyl.invariants_inf_range_eq_span_map_unitVal
-    (f : (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f unitVal :=
-  Representation.invariants_inf_range_eq_span
-    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hinv hx =>
-    exists_eq_smul_map_one_of_conj LeftHandedWeyl.basis DualLeftHandedWeyl.basis f hinv hx
-      ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
-      ⟨Lorentz.SL2C.epsilon, by weyl_act⟩
-
 /-- The `SL(2,ℂ)`-invariants of `LeftHandedWeyl ⊗ DualLeftHandedWeyl` are the line through the unit
   `δᵃₐ`. -/
 lemma DualLeftHandedWeyl.invariants_tprod_eq_span_unitVal :
-    (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).invariants = ℂ ∙ unitVal := by
-  simpa using invariants_inf_range_eq_span_map_unitVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into `LeftHandedWeyl ⊗
-  DualLeftHandedWeyl` is a multiple of the unit `δᵃₐ`. -/
-lemma DualLeftHandedWeyl.intertwiningMap_eq_smul_unit
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep)) :
-    ∃ z : ℂ, φ = z • unit :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [unit_apply_one]; exact invariants_tprod_eq_span_unitVal) φ
-
-/-- For an equivariant map `f` out of `DualLeftHandedWeyl ⊗ LeftHandedWeyl`, the
-  `SL(2,ℂ)`-invariants in the image of `f` are the line through the image `f δₐᵃ` of the unit. -/
-lemma LeftHandedWeyl.invariants_inf_range_eq_span_map_unitVal
-    (f : (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f unitVal :=
-  Representation.invariants_inf_range_eq_span
-    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hinv hx =>
-    exists_eq_smul_map_one_of_conj DualLeftHandedWeyl.basis LeftHandedWeyl.basis f hinv hx
-      ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
+    (LeftHandedWeyl.rep.tprod DualLeftHandedWeyl.rep).invariants = ℂ ∙ unitVal :=
+  Representation.invariants_eq_span_singleton
+    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hv =>
+    exists_eq_smul_one_of_conj LeftHandedWeyl.basis DualLeftHandedWeyl.basis hv
+      ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
       ⟨Lorentz.SL2C.epsilon, by weyl_act⟩
 
 /-- The `SL(2,ℂ)`-invariants of `DualLeftHandedWeyl ⊗ LeftHandedWeyl` are the line through the unit
   `δₐᵃ`. -/
 lemma LeftHandedWeyl.invariants_tprod_eq_span_unitVal :
-    (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).invariants = ℂ ∙ unitVal := by
-  simpa using invariants_inf_range_eq_span_map_unitVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into `DualLeftHandedWeyl ⊗
-  LeftHandedWeyl` is a multiple of the unit `δₐᵃ`. -/
-lemma LeftHandedWeyl.intertwiningMap_eq_smul_unit
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep)) :
-    ∃ z : ℂ, φ = z • unit :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [unit_apply_one]; exact invariants_tprod_eq_span_unitVal) φ
-
-/-- For an equivariant map `f` out of `RightHandedWeyl ⊗ DualRightHandedWeyl`, the
-  `SL(2,ℂ)`-invariants in the image of `f` are the line through the image `f δ^{ȧ}_{ȧ}` of the unit.
-  -/
-lemma DualRightHandedWeyl.invariants_inf_range_eq_span_map_unitVal
-    (f : (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f unitVal :=
-  Representation.invariants_inf_range_eq_span
-    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hinv hx =>
-    exists_eq_smul_map_one_of_conj RightHandedWeyl.basis DualRightHandedWeyl.basis f hinv hx
-      ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
+    (DualLeftHandedWeyl.rep.tprod LeftHandedWeyl.rep).invariants = ℂ ∙ unitVal :=
+  Representation.invariants_eq_span_singleton
+    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hv =>
+    exists_eq_smul_one_of_conj DualLeftHandedWeyl.basis LeftHandedWeyl.basis hv
+      ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
       ⟨Lorentz.SL2C.epsilon, by weyl_act⟩
 
 /-- The `SL(2,ℂ)`-invariants of `RightHandedWeyl ⊗ DualRightHandedWeyl` are the line through the
   unit `δ^{ȧ}_{ȧ}`. -/
 lemma DualRightHandedWeyl.invariants_tprod_eq_span_unitVal :
-    (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).invariants = ℂ ∙ unitVal := by
-  simpa using invariants_inf_range_eq_span_map_unitVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into `RightHandedWeyl ⊗
-  DualRightHandedWeyl` is a multiple of the unit `δ^{ȧ}_{ȧ}`. -/
-lemma DualRightHandedWeyl.intertwiningMap_eq_smul_unit
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep)) :
-    ∃ z : ℂ, φ = z • unit :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [unit_apply_one]; exact invariants_tprod_eq_span_unitVal) φ
-
-/-- For an equivariant map `f` out of `DualRightHandedWeyl ⊗ RightHandedWeyl`, the
-  `SL(2,ℂ)`-invariants in the image of `f` are the line through the image `f δ_{ȧ}^{ȧ}` of the unit.
-  -/
-lemma RightHandedWeyl.invariants_inf_range_eq_span_map_unitVal
-    (f : (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f unitVal :=
-  Representation.invariants_inf_range_eq_span
-    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hinv hx =>
-    exists_eq_smul_map_one_of_conj DualRightHandedWeyl.basis RightHandedWeyl.basis f hinv hx
-      ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
+    (RightHandedWeyl.rep.tprod DualRightHandedWeyl.rep).invariants = ℂ ∙ unitVal :=
+  Representation.invariants_eq_span_singleton
+    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hv =>
+    exists_eq_smul_one_of_conj RightHandedWeyl.basis DualRightHandedWeyl.basis hv
+      ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩ ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩
       ⟨Lorentz.SL2C.epsilon, by weyl_act⟩
 
 /-- The `SL(2,ℂ)`-invariants of `DualRightHandedWeyl ⊗ RightHandedWeyl` are the line through the
   unit `δ_{ȧ}^{ȧ}`. -/
 lemma RightHandedWeyl.invariants_tprod_eq_span_unitVal :
-    (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).invariants = ℂ ∙ unitVal := by
-  simpa using invariants_inf_range_eq_span_map_unitVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into `DualRightHandedWeyl ⊗
-  RightHandedWeyl` is a multiple of the unit `δ_{ȧ}^{ȧ}`. -/
-lemma RightHandedWeyl.intertwiningMap_eq_smul_unit
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep)) :
-    ∃ z : ℂ, φ = z • unit :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [unit_apply_one]; exact invariants_tprod_eq_span_unitVal) φ
+    (DualRightHandedWeyl.rep.tprod RightHandedWeyl.rep).invariants = ℂ ∙ unitVal :=
+  Representation.invariants_eq_span_singleton
+    (by simpa [unit_apply_one] using unit.apply_one_mem_invariants) fun _ hv =>
+    exists_eq_smul_one_of_conj DualRightHandedWeyl.basis RightHandedWeyl.basis hv
+      ⟨Lorentz.SL2C.boostHalf, by weyl_act⟩ ⟨Lorentz.SL2C.boostTwo, by weyl_act⟩
+      ⟨Lorentz.SL2C.epsilon, by weyl_act⟩
 
 end Units
 

@@ -30,9 +30,8 @@ with colors `c₁, …, cₙ` is written `SuT[N, c₁, …, cₙ]`.
 The fundamental and anti-fundamental colors are dual to each other and contract by the dot
 product, with unit `∑ eᵢ ⊗ eᵢ`. The adjoint color is dual to itself and contracts by the trace
 form `tr (A B)` (`adjContr`), with unit `∑ λ_a ⊗ λᵃ` for the Gell-Mann matrices `λ_a` and their
-trace-dual basis `λᵃ = λ_a / 2`. In these bases the matrix of `g⁻¹` on each color is the
-conjugate transpose of that of `g`, so the colors are closed under adjoints (F) and the general
-results on equivariant maps out of the tensors of a species apply. The species has no metric
+trace-dual basis `λᵃ = λ_a / 2`. In the standard basis the matrix of `g` is `g` on the
+fundamental color and `(g⁻¹)ᵀ` on the anti-fundamental color (F). The species has no metric
 (`TensorSpecies.WithMetric`). For `N ≥ 3` the fundamental of `SU(N)` is not self-dual, so there is
 no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with.
 
@@ -42,8 +41,8 @@ no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with.
 - `suTensor.fundRep`, `suTensor.antiFundRep` : the fundamental and anti-fundamental
   representations.
 - `suTensor` : the complex tensor species of `SU(N)`, with the notation `SuT[N, c₁, …, cₙ]`.
-- `suTensor.isAdjointClosed` : the colors are closed under adjoints, so the general results on
-  equivariant maps (`TensorSpecies.IsEquivariant`) apply.
+- `suTensor.toMatrix_fundRep`, `suTensor.toMatrix_antiFundRep` : the matrices of the fundamental
+  and anti-fundamental colors.
 
 ## iii. Table of contents
 
@@ -52,7 +51,7 @@ no invariant in `ℂᴺ ⊗ ℂᴺ` to raise and lower its indices with.
 - C. The contractions
 - D. The units
 - E. The tensor species
-- F. The colors are closed under adjoints
+- F. The matrices of the fundamental and anti-fundamental colors
 
 ## iv. References
 
@@ -409,53 +408,24 @@ macro_rules
 
 /-!
 
-## F. The colors are closed under adjoints
-
-For unitary `g`, the matrix of `g⁻¹` on each color is the conjugate transpose of that of `g`: on
-the fundamental color `g⁻¹ = g†`, on the anti-fundamental color `gᵀ = ((g⁻¹)ᵀ)†`, and on the
-adjoint color, in the hermitian and orthogonal Gell-Mann basis, the matrix entries are
-`tr (λ_a g λ_b g⁻¹) / 2`. So every list of colors is closed under adjoints, and the general results
-on equivariant maps (`PhyslibAlpha.Relativity.Tensors.Equivariant`) apply to the tensors of `SU(N)`:
-the invariants in the range of an equivariant map out of `(suTensor N).Tensor c` come from invariant
-tensors.
+## F. The matrices of the fundamental and anti-fundamental colors
 
 -/
 
 variable {N}
 
+/-- The matrix of `g` on the fundamental color is `g`. -/
 lemma toMatrix_fundRep (g : SU N) :
     LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N)) (fundRep N g) = g.1 := by
   rw [LinearMap.toMatrix_eq_toMatrix', ← LinearMap.toMatrix'_toLin' g.1, Matrix.toLin'_apply']
   rfl
 
+/-- The matrix of `g` on the anti-fundamental color is `(g⁻¹)ᵀ`. -/
 lemma toMatrix_antiFundRep (g : SU N) :
     LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N)) (antiFundRep N g)
       = (g⁻¹).1ᵀ := by
   rw [LinearMap.toMatrix_eq_toMatrix', ← LinearMap.toMatrix'_toLin' (g⁻¹).1ᵀ,
     Matrix.toLin'_apply']
   rfl
-
-variable (N) in
-/-- On every color, the matrix of `g⁻¹` is the conjugate transpose of the matrix of `g`. -/
-lemma toMatrix_rep_inv (k : Color) (g : SU N) :
-    LinearMap.toMatrix (basis N k) (basis N k) (rep N k g⁻¹)
-      = (LinearMap.toMatrix (basis N k) (basis N k) (rep N k g))ᴴ := by
-  cases k
-  · change LinearMap.toMatrix _ _ (fundRep N g⁻¹) = (LinearMap.toMatrix _ _ (fundRep N g))ᴴ
-    rw [toMatrix_fundRep, toMatrix_fundRep, val_inv]
-    rfl
-  · change LinearMap.toMatrix _ _ (antiFundRep N g⁻¹)
-      = (LinearMap.toMatrix _ _ (antiFundRep N g))ᴴ
-    rw [toMatrix_antiFundRep, toMatrix_antiFundRep, inv_inv, val_inv]
-    ext i j
-    simp
-  · change adjMatrix g⁻¹ = (adjMatrix g)ᴴ
-    ext a b
-    rw [adjMatrix_inv, transpose_apply, conjTranspose_apply, star_adjMatrix_apply]
-
-variable (N) in
-/-- Every list of colors of the `SU(N)` tensors is closed under adjoints, with `g' = g⁻¹`. -/
-lemma isAdjointClosed {n : ℕ} (c : Fin n → Color) : (suTensor N).IsAdjointClosed c :=
-  fun g => ⟨g⁻¹, fun i => toMatrix_rep_inv N (c i) g⟩
 
 end suTensor

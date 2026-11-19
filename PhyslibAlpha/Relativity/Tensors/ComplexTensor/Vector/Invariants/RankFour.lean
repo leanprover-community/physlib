@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Relativity.Bispinors.Invariants
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.LorentzCovariance
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
 public import PhyslibAlpha.Mathematics.LeviCivita.Basic
 /-!
 # Lorentz invariants of a rank-four tensor
@@ -22,22 +22,22 @@ contracted with it:
 * `η_{μν} η_{ρσ}`, `η_{μρ} η_{νσ}` and `η_{μσ} η_{νρ}`, the three pairings of the metric,
 * `ε_{μνρσ}`, the Levi-Civita symbol.
 
-These are the tensors `contractionTensor i`. There are no others: for an equivariant map
-`f : ℂT(fun _ : Fin 4 => .up) →ₗ[ℂ] B`, `IsLorentzCovariant 4`, a vector of `LinearMap.range f ⊔ S`,
-for `S` a Lorentz-stable submodule, is invariant exactly when it is a combination of the four
-images `f (contractionTensor i)` plus an invariant of `S`, `mem_range_sup_invariant_iff` (H), and
-`reducesInvariantsTo_span_contractionTensor` reads the left-to-right direction as a reduction.
+These are the tensors `contractionTensor i`. There are no others: the invariant tensors are the
+span of the four, `ComplexVector.invariants_tensorPower_four_eq_span` (L). For an equivariant map
+`f : ℂT(fun _ : Fin 4 => .up) →ₗ[ℂ] B`, the invariants of
+`LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, therefore reduce to the span of the
+four images `f (contractionTensor i)`, `ComplexVector.reducesInvariantsTo_span_contractionTensor`.
 The fourth tensor is a pseudoscalar, so it would drop out if reflections were allowed;
 independence is not proved, and for a given `f` the four images may be dependent or zero.
 When `f` is antisymmetric under exchanging its last two slots, two images already span: that
 of `η_{μρ} η_{νσ}` and that of `ε_{μνρσ}` (B.4). When `f` is moreover symmetric under exchanging
 its first two slots, both of those vanish too (B.5).
 
-The four tensors are invariant, by `Λ η Λᵀ = η` and `det Λ = 1` (D, E). An invariant of the range
-of `f` is the image of an invariant tensor, whose coefficient tensor is invariant (H). Such a
-coefficient tensor is a combination of the four, which is seen through Weyl spinors (I to K). The
-Pauli matrices change each four-vector index into a bispinor index, a left-handed and a
-right-handed Weyl index, and carry the Lorentz action to the action of `SL(2, ℂ)` on bispinors.
+The four tensors are invariant, by `Λ η Λᵀ = η` and `det Λ = 1` (D, E). An invariant tensor has
+an invariant coefficient tensor (H). Such a coefficient tensor is a combination of the four,
+which is seen through Weyl spinors (I to K). The Pauli matrices change each four-vector index
+into a bispinor index, a left-handed and a right-handed Weyl index, and carry the Lorentz action
+to the action of `SL(2, ℂ)` on bispinors.
 There the invariants factor into those of the four left-handed and of the four right-handed
 indices, two pairings `ε ε` for each chirality, so four bispinor indices carry exactly four
 invariants (`Lorentz.mem_span_bispinorPairing_iff`). The Pauli change is injective and the four
@@ -47,8 +47,10 @@ tensors are independent, so they span every invariant.
 
 - `Lorentz.RankFour.contractionTensor` : the four invariant tensors.
 - `Lorentz.RankFour.exists_eq_sum` : an invariant coefficient tensor is a combination of them.
-- `Lorentz.RankFour.mem_range_sup_invariant_iff` : the classification of the invariants.
-- `Lorentz.RankFour.reducesInvariantsTo_span_contractionTensor` : the same as a reduction.
+- `Lorentz.ComplexVector.invariants_tensorPower_four_eq_span` : the invariant tensors are
+  their span.
+- `Lorentz.ComplexVector.reducesInvariantsTo_span_contractionTensor` : the invariants of the
+  range of `f` reduce to the span of their images.
 - `Lorentz.RankFour.span_range_contractionTensor_of_antisymm` : for a map antisymmetric in its
   last two slots, two of the four images span.
 - `Lorentz.RankFour.apply_contractionTensor_one_of_symm_of_antisymm`,
@@ -64,11 +66,11 @@ tensors are independent, so they span every invariant.
 - E. The four tensors are Lorentz invariant
 - F. Exchanging the last two slots
 - G. Exchanging the first two slots
-- H. Invariants of the range come from invariant coefficient tensors
+- H. Invariant tensors come from invariant coefficient tensors
 - I. The Pauli change of indices
 - J. The four coefficient tensors are independent
 - K. The classification of the invariant coefficient tensors
-- L. The classification of the invariants of an equivariant map
+- L. The classification of the invariants
 
 ## iv. References
 
@@ -79,7 +81,7 @@ tensors are independent, so they span every invariant.
 
 namespace Lorentz
 
-open Matrix MatrixGroups SL2C Invariants complexLorentzTensor
+open Matrix MatrixGroups SL2C Invariants TensorSpecies complexLorentzTensor
 
 /-!
 
@@ -95,8 +97,8 @@ number to each. The components of a tensor, relabelled this way, are its coeffic
 with `a` free and `d` summed (`coeffEquiv_smul`), and a tensor is invariant exactly when its
 coefficient tensor is `IsInvariantCoeff` (`invariant_iff_isInvariantCoeff`). Everything in this
 paragraph is stated for any number of slots in
-`PhyslibAlpha.Relativity.LorentzGroup.Invariants.Basic` and
-`PhyslibAlpha.Relativity.LorentzGroup.Invariants.LorentzCovariance`, and used here at four.
+`PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic` and
+`PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic`, and used here at four.
 -/
 
 namespace RankFour
@@ -132,7 +134,8 @@ noncomputable def contractionTensor (i : Fin 4) : ℂT(fun _ : Fin 4 => Color.up
 /-- `ofComponents T` sends each invariant tensor to the contraction of `T` with its
   coefficients. -/
 lemma ofComponents_contractionTensor (T : (Fin 4 → Fin 1 ⊕ Fin 3) → B) (i : Fin 4) :
-    ofComponents T (contractionTensor i) = ∑ d, ((contractionCoeff i d : ℤ) : ℂ) • T d :=
+    ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 4 => .up) T (contractionTensor i)
+      = ∑ d, ((contractionCoeff i d : ℤ) : ℂ) • T d :=
   ofComponents_coeffEquiv_symm T _
 
 /-!
@@ -396,12 +399,10 @@ end SwapZeroOne
 
 /-!
 
-## H. Invariants of the range come from invariant coefficient tensors
+## H. Invariant tensors come from invariant coefficient tensors
 
-An invariant of the range of `f` is the image of an invariant tensor
-(`TensorSpecies.IsEquivariant.exists_invariant_add_of_mem_sup`): the adjoint of the action of
-`g` on the coefficients is the action of `g†`. The coefficient tensor of an invariant tensor is
-invariant, so what remains is to classify the invariant coefficient tensors, sections D to G.
+The coefficient tensor of an invariant tensor is invariant (`invariants_tensorRep_le_map`), so
+what remains is to classify the invariant coefficient tensors.
 -/
 
 /-!
@@ -491,51 +492,39 @@ lemma exists_eq_sum {c : (Fin 4 → Fin 1 ⊕ Fin 3) → ℂ} (hc : IsInvariantC
 
 /-!
 
-## L. The classification of the invariants of an equivariant map
+## L. The classification of the invariants
 
-H to K reduce the invariants of `LinearMap.range f ⊔ S` to the span of the four images
-`f (contractionTensor i)`; conversely those images are invariant, so a combination of them plus
-an invariant of `S` is an invariant of `LinearMap.range f ⊔ S`.
+K gives the invariant tensors, the span of the four `contractionTensor i`, and with it the
+reduction of the invariants of `LinearMap.range f ⊔ S` to the span of the four images
+`f (contractionTensor i)`.
 -/
+
+/-- The invariant tensors with four four-vector indices are the span of the four
+  `contractionTensor i`. -/
+lemma _root_.Lorentz.ComplexVector.invariants_tensorPower_four_eq_span :
+    (complexLorentzTensor.tensorRep (fun _ : Fin 4 => Color.up)).invariants =
+      Submodule.span ℂ (Set.range contractionTensor) := by
+  refine le_antisymm ?_ (Submodule.span_le.2 (Set.range_subset_iff.2 fun i g =>
+    contractionTensor_invariant i g))
+  refine (invariants_tensorRep_le_map (K := Submodule.span ℂ
+    (Set.range fun i d => ((contractionCoeff i d : ℤ) : ℂ))) fun c hc => ?_).trans ?_
+  · obtain ⟨a, rfl⟩ := exists_eq_sum hc
+    refine (Submodule.mem_span_range_iff_exists_fun ℂ).2 ⟨a, funext fun d => ?_⟩
+    simp [Finset.sum_apply]
+  · rw [Submodule.map_span, ← Set.range_comp]
+    rfl
 
 variable {f : ℂT(fun _ : Fin 4 => Color.up) →ₗ[ℂ] B}
 
 /-- The invariants of the range of `f` reduce to the span of the images of the four invariant
   tensors. -/
-lemma reducesInvariantsTo_span_contractionTensor (hf : IsLorentzCovariant 4 B repLorentz f) :
+lemma _root_.Lorentz.ComplexVector.reducesInvariantsTo_span_contractionTensor
+    (hf : complexLorentzTensor.IsEquivariant (fun _ : Fin 4 => .up) repLorentz f) :
     ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentz g) (LinearMap.range f)
-      (Submodule.span ℂ (Set.range fun i => f (contractionTensor i))) :=
-  hf.reducesInvariantsTo_span (fun i d => ((contractionCoeff i d : ℤ) : ℂ)) fun c hc => by
-    obtain ⟨a, rfl⟩ := exists_eq_sum hc
-    refine (Submodule.mem_span_range_iff_exists_fun ℂ).2 ⟨a, funext fun d => ?_⟩
-    simp [Finset.sum_apply]
-
-/-- A vector of `LinearMap.range f ⊔ S`, for `S` a Lorentz-stable submodule, is invariant exactly
-  when it is a combination of the images of the four invariant tensors plus an invariant of
-  `S`. `hS` is used only left to right. -/
-lemma mem_range_sup_invariant_iff (hf : IsLorentzCovariant 4 B repLorentz f) (x : B)
-    (S : Submodule ℂ B) (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentz g y ∈ S) :
-    (x ∈ LinearMap.range f ⊔ S ∧ ∀ g : SL(2,ℂ), repLorentz g x = x)
-      ↔ ∃ a : Fin 4 → ℂ, ∃ y ∈ S, x = ∑ i, a i • f (contractionTensor i) + y
-        ∧ ∀ g : SL(2,ℂ), repLorentz g y = y := by
-  have hfix : ∀ (a : Fin 4 → ℂ) (g : SL(2,ℂ)),
-      repLorentz g (∑ i, a i • f (contractionTensor i)) = ∑ i, a i • f (contractionTensor i) :=
-    fun a g => by
-      simp only [map_sum, map_smul, hf.rep_map_of_invariant (contractionTensor_invariant _)]
-  constructor
-  · rintro ⟨hx, hinv⟩
-    obtain ⟨w, hw, y, hy, rfl⟩ := Submodule.mem_sup.1
-      (reducesInvariantsTo_span_contractionTensor hf S hS x hx hinv)
-    obtain ⟨a, rfl⟩ := (Submodule.mem_span_range_iff_exists_fun ℂ).1 hw
-    refine ⟨a, y, hy, rfl, fun g => ?_⟩
-    have h := hinv g
-    rw [map_add, hfix] at h
-    exact add_left_cancel h
-  · rintro ⟨a, y, hyS, rfl, hyinv⟩
-    refine ⟨add_mem (Submodule.mem_sup_left (sum_mem fun i _ =>
-      Submodule.smul_mem _ _ (LinearMap.mem_range_self f _))) (Submodule.mem_sup_right hyS),
-      fun g => ?_⟩
-    rw [map_add, hfix, hyinv g]
+      (Submodule.span ℂ (Set.range fun i => f (contractionTensor i))) := by
+  have h := TensorSpecies.IsEquivariant.reducesInvariantsTo_span hf
+    (complexLorentzTensor.hasReynolds _) ComplexVector.invariants_tensorPower_four_eq_span
+  rwa [← Set.range_comp] at h
 
 end RankFour
 

@@ -8,7 +8,7 @@ module
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.YukawaSector.Basic
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.FermionSector.Components
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Basic
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsBiLeftWeyl
+public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.InvariantReduction
 /-!
 # The symbols of the Yukawa blocks

@@ -6,8 +6,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.GaugeSector.MassWeight.Basic
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.RankTwo
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.OddRank
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankTwo
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.OddRank
 /-!
 # The invariants below mass weight eight
 
@@ -31,8 +31,8 @@ at all, the metric tying two and the Levi-Civita symbol four.
 
 Neither argument needs the gauge group. The vanishing at weight four holds at every gauge
 direction separately, the colour and isospin ones included, so no appeal to
-`IsSU3Adjoint` or `IsSU2Adjoint` is required and Lorentz invariance alone does the work.
-What the gauge algebra does contribute is finiteness: a field-strength symbol is
+the adjoint classifications `ColourAdj` or `IsospinAdj` is required and Lorentz invariance alone
+does the work. What the gauge algebra does contribute is finiteness: a field-strength symbol is
 evaluated on a covector of the gauge algebra, and expanding that covector in the dual of
 the standard basis writes each derivative submodule inside a finite join of Lorentz
 spans, one for each of the twelve basis directions, which is what the peeling arguments
@@ -68,6 +68,8 @@ scalars, so `1` is an invariant of weight zero lying in no `S`.
 -/
 
 @[expose] public section
+
+open TensorSpecies
 
 namespace StandardModel
 
@@ -117,10 +119,10 @@ those indices they are a bi-Lorentz and a triple Lorentz tensor, the transformat
 
 /-- An underived field-strength symbol, viewed as a family indexed by its two covector
   indices, is a bi-Lorentz tensor. -/
-lemma isLorentzCovariant_F_underived (φ : Module.Dual ℝ GaugeAlgebra) :
-    IsLorentzCovariant 2 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_F_underived (φ : Module.Dual ℝ GaugeAlgebra) :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
       (ofComponents fun d : Fin 2 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![] (d 0) (d 1) φ) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_F g 0 ![] (l 0) (l 1) φ,
     Finset.sum_eq_single (![] : Fin 0 → Fin 1 ⊕ Fin 3)
       (fun b _ hb => absurd (Subsingleton.elim b ![]) hb)
@@ -134,10 +136,10 @@ lemma isLorentzCovariant_F_underived (φ : Module.Dual ℝ GaugeAlgebra) :
 
 /-- A once-derived field-strength symbol, viewed as a family indexed by its derivative
   slot and its two covector indices, is a triple Lorentz tensor. -/
-lemma isLorentzCovariant_F_deriv_one (φ : Module.Dual ℝ GaugeAlgebra) :
-    IsLorentzCovariant 3 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_F_deriv_one (φ : Module.Dual ℝ GaugeAlgebra) :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
       (ofComponents fun d : Fin 3 → Fin 1 ⊕ Fin 3 => gaugeFieldStrength ![d 0] (d 1) (d 2) φ) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_F g 1 ![l 0] (l 1) (l 2) φ, sum_pi_fin_one, sum_pi_fin_three]
   refine Finset.sum_congr rfl fun x _ => ?_
   rw [Finset.smul_sum]
@@ -200,7 +202,7 @@ join of them.
   contraction, which is zero, and `ReducesInvariantsTo.biSup` combines the reductions. -/
 lemma mem_of_lorentz_invariant_biSup_rankTwo_span {ι : Type} [DecidableEq ι]
     {T : ι → (Fin 2 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra}
-    (hT : ∀ i, IsLorentzCovariant 2 fieldData.LocalCovFieldAlgebra repLorentzGroup
+    (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 2 => .up) repLorentzGroup
       (ofComponents (T i)))
     (hzero : ∀ i, ofComponents (T i) RankTwo.metric = 0)
     (S : Submodule ℂ fieldData.LocalCovFieldAlgebra)
@@ -208,9 +210,9 @@ lemma mem_of_lorentz_invariant_biSup_rankTwo_span {ι : Type} [DecidableEq ι]
     {x : fieldData.LocalCovFieldAlgebra}
     (hx : x ∈ (⨆ i ∈ s, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents] at hx
+  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 2 => .up)] at hx
   simpa using ReducesInvariantsTo.biSup
-    (fun i => (RankTwo.reducesInvariantsTo_span_metric (hT i)).mono_right
+    (fun i => (ComplexVector.reducesInvariantsTo_span_metric (hT i)).mono_right
       (Submodule.span_singleton_eq_bot.2 (hzero i)).le)
     (fun i => (hT i).isStableUnder_range) isStableUnder_bot s S hS x hx hinv
 
@@ -220,17 +222,16 @@ lemma mem_of_lorentz_invariant_biSup_rankTwo_span {ι : Type} [DecidableEq ι]
   reductions. -/
 lemma mem_of_lorentz_invariant_biSup_rankThree_span {ι : Type} [DecidableEq ι]
     {T : ι → (Fin 3 → Fin 1 ⊕ Fin 3) → fieldData.LocalCovFieldAlgebra}
-    (hT : ∀ i, IsLorentzCovariant 3 fieldData.LocalCovFieldAlgebra repLorentzGroup
+    (hT : ∀ i, complexLorentzTensor.IsEquivariant (fun _ : Fin 3 => .up) repLorentzGroup
       (ofComponents (T i)))
     (S : Submodule ℂ fieldData.LocalCovFieldAlgebra)
-    (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentzGroup g y ∈ S) (s :
-      Finset ι)
+    (hS : ∀ g : SL(2,ℂ), ∀ y ∈ S, repLorentzGroup g y ∈ S) (s : Finset ι)
     {x : fieldData.LocalCovFieldAlgebra}
     (hx : x ∈ (⨆ i ∈ s, Submodule.span ℂ (Set.range (T i))) ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
-  simp_rw [← range_ofComponents] at hx
+  simp_rw [← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 3 => .up)] at hx
   simpa using ReducesInvariantsTo.biSup
-    (fun i => OddRank.reducesInvariantsTo_bot ⟨1, rfl⟩ (hT i))
+    (fun i => ComplexVector.reducesInvariantsTo_bot_of_odd ⟨1, rfl⟩ (hT i))
     (fun i => (hT i).isStableUnder_range) isStableUnder_bot s S hS x hx hinv
 
 /-!
@@ -284,7 +285,7 @@ lemma mem_of_lorentz_invariant_massWeightSubmodule_four_sup
     (hx : x ∈ massWeightSubmodule 4 ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
   refine mem_of_lorentz_invariant_biSup_rankTwo_span
-    (fun c => isLorentzCovariant_F_underived (GaugeAlgebra.stdBasis.coord c))
+    (fun c => isEquivariant_up_F_underived (GaugeAlgebra.stdBasis.coord c))
     (fun c => ofComponents_F_underived_metric_eq_zero _) S hSL Finset.univ ?_ hinv
   rw [massWeightSubmodule_four_eq] at hx
   refine sup_le_sup_right ?_ S hx
@@ -333,7 +334,7 @@ lemma mem_of_lorentz_invariant_massWeightSubmodule_six_sup
     (hx : x ∈ massWeightSubmodule 6 ⊔ S)
     (hinv : ∀ g : SL(2,ℂ), repLorentzGroup g x = x) : x ∈ S := by
   refine mem_of_lorentz_invariant_biSup_rankThree_span
-    (fun c => isLorentzCovariant_F_deriv_one (GaugeAlgebra.stdBasis.coord c))
+    (fun c => isEquivariant_up_F_deriv_one (GaugeAlgebra.stdBasis.coord c))
     S hSL Finset.univ ?_ hinv
   rw [massWeightSubmodule_six_eq] at hx
   refine sup_le_sup_right ?_ S hx

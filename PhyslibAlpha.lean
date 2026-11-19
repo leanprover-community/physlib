@@ -438,7 +438,6 @@ public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GaugeWeight
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.GlobalGaugeGroup
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Adjoint
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.Basic
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Invariants.IsU1BiAdjoint
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.LieAlgebra
 public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.SU2Conjugation
 public import PhyslibAlpha.Particles.StandardModel.HiggsBoson.GaugeAlgebraAction
@@ -779,16 +778,8 @@ public import PhyslibAlpha.Relativity.LightConeDeriv
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
 public import PhyslibAlpha.Relativity.LorentzGroup.Boosts.Axis
 public import PhyslibAlpha.Relativity.LorentzGroup.FermionicParity
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.AdjointClosed
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Basic
 public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Centre
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsBiLeftWeyl
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsLeftRightWeyl
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.IsVectorLeftRightWeyl
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.LorentzCovariance
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.OddRank
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.RankFour
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.RankTwo
+public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.Reynolds
 public import PhyslibAlpha.Relativity.LorentzMix
 public import PhyslibAlpha.Relativity.MinkowskiMatrix
 public import PhyslibAlpha.Relativity.PauliMatrices.Anticommuting
@@ -803,6 +794,10 @@ public import PhyslibAlpha.Relativity.SL2C.Basic
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Metrics.Pre
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Units.Pre
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Basic
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.Basic
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.OddRank
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankFour
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.RankTwo
 public import PhyslibAlpha.Relativity.Tensors.Equivariant
 public import PhyslibAlpha.Relativity.Tensors.RealTensor.CoVector.Representation
 public import PhyslibAlpha.SpaceAndTime.Space.Surfaces.HalfPlane

@@ -15,40 +15,36 @@ anti-fundamental index.
 
 ## i. Overview
 
-The invariant tensors of `SuT[N, .fund, .antiFund]` are the multiples of the Kronecker delta
+The invariant tensors of `SuT[N, .fund, .antiFund]` are the line through the Kronecker delta
 `δᵃ_b`, the unit tensor `delta N` of the anti-fundamental color (A, B). The components of a
 tensor with these indices form a matrix `C`, which `g` moves to `g C g⁻¹`, so the components of
 an invariant tensor commute with every element of `SU(N)` and are scalar
 (`SU.eq_smul_one_of_commute`).
 
-For an equivariant map `f` out of these tensors, the invariants of `LinearMap.range f ⊔ S`, for
-`S` a stable submodule, reduce to the line through `f (delta N)` (C). A family `T` of vectors
-indexed by `Fin 2 → Fin N`, a fundamental index first, is the map `fundAntiFundMap T`, equivariant
-exactly when `T` obeys the transformation law of the components (D), and `f (delta N)` is then
-the contraction `∑ a, T ![a, a]`.
+A family `T` of vectors indexed by `Fin 2 → Fin N`, a fundamental index first, is the map
+`ofComponents (T ∘ fundAntiFundIdx)`, equivariant exactly when `T` obeys the transformation law of
+the components, and `f (delta N)` is then the contraction `∑ a, T ![a, a]`. The invariants of the
+span of such a
+family, modulo a stable submodule, reduce to the line through that contraction (C).
 
-In terms of Mathlib's invariants, the invariant tensors are the line through `delta N`, and the
-invariants of `ℂᴺ ⊗ ℂᴺ` under the fundamental and the anti-fundamental representation are the line
-through `∑ eᵢ ⊗ eᵢ`, as are, for an intertwining map out of it, the invariants in its range (E).
+The invariants of `ℂᴺ ⊗ ℂᴺ` under the fundamental and the anti-fundamental representation are the
+line through `∑ eᵢ ⊗ eᵢ` (D).
 
 ## ii. Key results
 
 - `suTensor.delta` : the Kronecker delta.
-- `suTensor.exists_eq_smul_delta_of_invariant` : the invariant tensors are its multiples.
+- `suTensor.invariants_tensorRep_eq_span_delta` : the invariant tensors are the line through it.
 - `suTensor.invariantReductionToDelta` : the reduction of the invariants of the span of a family
   to the delta contraction.
 - `suTensor.invariants_tprod_eq_span_pairUnitVal` : the invariants of the fundamental times the
   anti-fundamental representation are the line through `∑ eᵢ ⊗ eᵢ`.
-- `suTensor.invariants_inf_range_eq_span_map_pairUnitVal` : the invariants in the range of an
-  intertwining map out of it are the line through the image of `∑ eᵢ ⊗ eᵢ`.
 
 ## iii. Table of contents
 
 - A. The Kronecker delta
 - B. The invariant tensors
-- C. The invariants of an equivariant map
-- D. Maps from components
-- E. The invariants as a line
+- C. Maps from components
+- D. The invariants of the tensor product
 
 ## iv. References
 
@@ -60,7 +56,8 @@ through `∑ eᵢ ⊗ eᵢ`, as are, for an intertwining map out of it, the inva
 
 namespace suTensor
 
-open Matrix MatrixGroups TensorSpecies Tensor SU
+open Matrix MatrixGroups TensorSpecies SU
+open TensorSpecies.Tensor hiding ofComponents
 
 variable {N : ℕ}
 
@@ -124,10 +121,12 @@ lemma basis_repr_smul_fundAntiFund (g : SU N) (t : SuT[N, .fund, .antiFund])
   rw [toMatrix_fundRep, toMatrix_antiFundRep]
   rfl
 
-/-- An invariant tensor with a fundamental and an anti-fundamental index is a multiple of the
-  Kronecker delta. Its matrix of components commutes with every element of `SU(N)`. -/
-lemma exists_eq_smul_delta_of_invariant (t : SuT[N, .fund, .antiFund])
-    (ht : ∀ g : SU N, g • t = t) : ∃ a : ℂ, t = a • delta N := by
+/-- The invariant tensors with a fundamental and an anti-fundamental index are the line through
+  the Kronecker delta. The matrix of components of an invariant tensor commutes with every element
+  of `SU(N)`. -/
+lemma invariants_tensorRep_eq_span_delta :
+    ((suTensor N).tensorRep ![.fund, .antiFund]).invariants = ℂ ∙ delta N := by
+  refine invariants_tensorRep_eq_span_singleton delta_invariant fun t ht => ?_
   set C : Matrix (Fin N) (Fin N) ℂ :=
     Matrix.of fun a b => (Tensor.basis _).repr t (fundAntiFundIdx.symm ![a, b])
   have hconj : ∀ g : SU N, g.1 * C * (g⁻¹).1 = C := fun g => by
@@ -150,59 +149,40 @@ lemma exists_eq_smul_delta_of_invariant (t : SuT[N, .fund, .antiFund])
   rw [show (![n 0, n 1] : Fin 2 → Fin N) = n from by funext i; fin_cases i <;> rfl] at h
   rw [h, mul_ite, mul_one, mul_zero]
 
-/-!
-
-## C. The invariants of an equivariant map
-
--/
-
 variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ (SU N) B}
-  {f : SuT[N, .fund, .antiFund] →ₗ[ℂ] B}
-
-/-- For any equivariant linear map out of the tensors with a fundamental and an anti-fundamental
-  index, the invariants of its range reduce to the span of the image of the Kronecker delta. -/
-noncomputable def invariantReductionToDeltaImage
-    (hf : (suTensor N).IsEquivariant ![.fund, .antiFund] ρ f) :
-    InvariantReductionToSpan (fun g : SU N => ρ g) (LinearMap.range f) :=
-  hf.invariantReductionToSpan (isAdjointClosed N _) (delta N) delta_invariant
-    exists_eq_smul_delta_of_invariant
 
 /-!
 
-## D. Maps from components
+## C. Maps from components
 
 -/
 
-/-- The linear map out of the tensors with a fundamental and an anti-fundamental index sending
-  the basis tensor with labels `n` to `T n`. -/
-noncomputable def fundAntiFundMap (T : (Fin 2 → Fin N) → B) :
-    SuT[N, .fund, .antiFund] →ₗ[ℂ] B :=
-  familyMap fundAntiFundIdx T
-
-/-- The map of a family sends the Kronecker delta to the contraction `∑ a, T ![a, a]`. -/
-lemma fundAntiFundMap_delta (T : (Fin 2 → Fin N) → B) :
-    fundAntiFundMap T (delta N) = ∑ a, T ![a, a] := by
+/-- The map of a family relabelled by `fundAntiFundIdx` sends the Kronecker delta to the
+  contraction `∑ a, T ![a, a]`. -/
+lemma ofComponents_delta (T : (Fin 2 → Fin N) → B) :
+    ofComponents (T ∘ fundAntiFundIdx) (delta N) = ∑ a, T ![a, a] := by
   conv_lhs => rw [← (Tensor.basis _).sum_repr (delta N)]
   rw [map_sum, ← fundAntiFundIdx.symm.sum_comp, ← (finTwoArrowEquiv _).symm.sum_comp,
     Fintype.sum_prod_type]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [Finset.sum_eq_single a]
-  · simp [fundAntiFundMap, basis_repr_delta]
+  · simp [basis_repr_delta]
   · intro b _ hb
-    simp [fundAntiFundMap, basis_repr_delta, Ne.symm hb]
+    simp [basis_repr_delta, Ne.symm hb]
   · simp
 
 /-- A linear map moving a family as a group element moves the components of a tensor with a
   fundamental and an anti-fundamental index intertwines the map of the family with the action of
   that element. The element acts by one factor of itself on the first index and of its complex
   conjugate on the second, the summed index first. -/
-lemma fundAntiFundMap_smul_of_law (T : (Fin 2 → Fin N) → B) {σ : B →ₗ[ℂ] B} (g : SU N)
-    (hσ : ∀ l : Fin 2 → Fin N, σ (T l)
+lemma ofComponents_fundAntiFund_smul_of_law (T : (Fin 2 → Fin N) → B) {σ : B →ₗ[ℂ] B}
+    (g : SU N) (hσ : ∀ l : Fin 2 → Fin N, σ (T l)
       = ∑ a : Fin 2 → Fin N, (g.1 (a 0) (l 0) * starRingEnd ℂ (g.1 (a 1) (l 1))) • T a)
     (t : SuT[N, .fund, .antiFund]) :
-    σ (fundAntiFundMap T t) = fundAntiFundMap T (g • t) := by
-  refine familyMap_smul_of_law _ T g (fun l => (hσ l).trans ?_) t
-  refine Finset.sum_congr rfl fun a _ => congrArg (· • T a) ?_
+    σ (ofComponents (T ∘ fundAntiFundIdx) t) = ofComponents (T ∘ fundAntiFundIdx) (g • t) := by
+  refine ofComponents_smul_of_law _ g (fun φ => (hσ _).trans ?_) t
+  rw [← fundAntiFundIdx.sum_comp]
+  refine Finset.sum_congr rfl fun ψ _ => congrArg (· • _) ?_
   rw [Fin.prod_univ_two]
   change _ = LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N)) (fundRep N g) _ _
     * LinearMap.toMatrix (Pi.basisFun ℂ (Fin N)) (Pi.basisFun ℂ (Fin N)) (antiFundRep N g) _ _
@@ -211,23 +191,23 @@ lemma fundAntiFundMap_smul_of_law (T : (Fin 2 → Fin N) → B) {σ : B →ₗ[�
 
 /-- The map of a family is equivariant when the family moves as the components of a tensor
   with a fundamental and an anti-fundamental index. -/
-lemma isEquivariant_fundAntiFundMap (T : (Fin 2 → Fin N) → B)
+lemma isEquivariant_ofComponents_fundAntiFund (T : (Fin 2 → Fin N) → B)
     (hT : ∀ (g : SU N) (l : Fin 2 → Fin N), ρ g (T l)
       = ∑ a : Fin 2 → Fin N, (g.1 (a 0) (l 0) * starRingEnd ℂ (g.1 (a 1) (l 1))) • T a) :
-    (suTensor N).IsEquivariant ![.fund, .antiFund] ρ (fundAntiFundMap T) :=
-  ⟨fun g t => (fundAntiFundMap_smul_of_law T g (hT g) t).symm⟩
+    (suTensor N).IsEquivariant ![.fund, .antiFund] ρ (ofComponents (T ∘ fundAntiFundIdx)) :=
+  ⟨fun g t => (ofComponents_fundAntiFund_smul_of_law T g (hT g) t).symm⟩
 
 /-- For a family whose map is equivariant, the invariants of the span of the family reduce to
   the span of the delta contraction `∑ a, T ![a, a]`. -/
 noncomputable def invariantReductionToDelta {T : (Fin 2 → Fin N) → B}
-    (hT : (suTensor N).IsEquivariant ![.fund, .antiFund] ρ (fundAntiFundMap T)) :
+    (hT : (suTensor N).IsEquivariant ![.fund, .antiFund] ρ (ofComponents (T ∘ fundAntiFundIdx))) :
     InvariantReductionToSpan (fun g : SU N => ρ g) (Submodule.span ℂ (Set.range T)) :=
-  hT.invariantReductionToSpanOfEq (isAdjointClosed N _) (delta N) delta_invariant
-    exists_eq_smul_delta_of_invariant (range_familyMap _ T) _ (fundAntiFundMap_delta T)
+  hT.invariantReductionToSpanOfEq (hasReynolds N _) invariants_tensorRep_eq_span_delta
+    (range_ofComponents_comp _ T) _ (ofComponents_delta T)
 
 /-!
 
-## E. The invariants as a line
+## D. The invariants of the tensor product
 
 -/
 
@@ -237,35 +217,11 @@ lemma delta_eq_fromPairT :
   change fromPairT (S := suTensor N) (c1 := .fund) (c2 := .antiFund) (antiFundUnit N 1) = _
   rw [antiFundUnit, unitOf_apply, one_smul]
 
-/-- The invariant tensors with a fundamental and an anti-fundamental index are the line through
-  the Kronecker delta. -/
-lemma invariants_tensorRep_eq_span_delta :
-    ((suTensor N).tensorRep ![.fund, .antiFund]).invariants = ℂ ∙ delta N :=
-  invariants_tensorRep_eq_span_singleton delta_invariant exists_eq_smul_delta_of_invariant
-
 /-- The invariants of `ℂᴺ ⊗ ℂᴺ` under the fundamental and the anti-fundamental representation are
   the line through `∑ eᵢ ⊗ eᵢ`. -/
 lemma invariants_tprod_eq_span_pairUnitVal :
     ((fundRep N).tprod (antiFundRep N)).invariants = ℂ ∙ pairUnitVal N :=
   invariants_tprod_eq_span_singleton (S := suTensor N) (c1 := .fund) (c2 := .antiFund)
     (delta_eq_fromPairT (N := N) ▸ invariants_tensorRep_eq_span_delta)
-
-/-- For an intertwining map `f` out of `ℂᴺ ⊗ ℂᴺ` with the fundamental and the anti-fundamental
-  representation, the invariants in the range of `f` are the line through `f (∑ eᵢ ⊗ eᵢ)`. -/
-lemma invariants_inf_range_eq_span_map_pairUnitVal
-    (f : ((fundRep N).tprod (antiFundRep N)).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f (pairUnitVal N) :=
-  (isAdjointClosed N ![.fund, .antiFund]).invariants_inf_range_eq_span_of_equiv
-    fromPairTEquiv fromPairTEquiv_tprod
-    (delta_eq_fromPairT (N := N) ▸ invariants_tensorRep_eq_span_delta) f
-
-/-- Every intertwining map from the trivial representation into `ℂᴺ ⊗ ℂᴺ`, with the fundamental
-  and the anti-fundamental representation, is a multiple of the unit `∑ eᵢ ⊗ eᵢ`. -/
-lemma intertwiningMap_eq_smul_antiFundUnit
-    (φ : (Representation.trivial ℂ (SU N) ℂ).IntertwiningMap
-      ((fundRep N).tprod (antiFundRep N))) :
-    ∃ z : ℂ, φ = z • antiFundUnit N :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [antiFundUnit, unitOf_apply, one_smul]; exact invariants_tprod_eq_span_pairUnitVal) φ
 
 end suTensor

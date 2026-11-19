@@ -27,27 +27,22 @@ complement, leaving three unknowns. The eighth turn carries `c ![0, 0, 0, 0]` to
 sum of the balanced components, which therefore vanishes. Two unknowns remain, and they are the
 coefficients of the two pairings.
 
-For an equivariant map out of these tensors, and for the map `fundMap T` of a family, the
+For an equivariant map out of these tensors, and for the map `ofComponents T` of a family, the
 invariants reduce to the span of the images of the two pairings (C).
-
-Both pairings being invariant, the invariant tensors are exactly their span, and for an
-intertwining map out of the tensors the invariants in its range are the span of their images (D).
 
 ## ii. Key results
 
 - `suTensor.epsilonPair₁₂`, `suTensor.epsilonPair₁₃` : the two pairings.
-- `suTensor.mem_span_epsilonPairs_of_invariant` : the invariant tensors lie in their span.
-- `suTensor.reducesInvariantsTo_span_epsilonContractions` : the reduction of the invariants of
-  the span of a family.
 - `suTensor.invariants_tensorRep_eq_span_epsilonPairs` : the invariant tensors are the span of the
   two pairings.
+- `suTensor.reducesInvariantsTo_span_epsilonContractions` : the reduction of the invariants of
+  the span of a family.
 
 ## iii. Table of contents
 
 - A. The two pairings
 - B. The invariant tensors
 - C. The invariants of the span of a family
-- D. The invariants in Mathlib's form
 
 ## iv. References
 
@@ -59,7 +54,8 @@ intertwining map out of the tensors the invariants in its range are the span of 
 
 namespace suTensor
 
-open Matrix MatrixGroups TensorSpecies Tensor SU
+open Matrix MatrixGroups TensorSpecies SU
+open TensorSpecies.Tensor hiding ofComponents
 open GlobalGaugeGroup (rootOfUnity rootOfUnity_isPrimitiveRoot rootOfUnity_mul_star)
 
 /-!
@@ -250,20 +246,23 @@ lemma eq_add_of_pairings (l : Fin 4 → Fin 2) :
 
 end Components
 
-/-- An invariant tensor with four fundamental indices of `SU(2)` is a combination of the two
-  pairings of its indices by the antisymmetric symbol. -/
-lemma mem_span_epsilonPairs_of_invariant (t : (suTensor 2).Tensor fun _ : Fin 4 => .fund)
-    (ht : ∀ g : SU 2, g • t = t) :
-    t ∈ Submodule.span ℂ {epsilonPair₁₂, epsilonPair₁₃} := by
-  have hc : ∀ (g : SU 2) (l : Fin 4 → Fin 2), (Tensor.basis _).repr t l
-      = ∑ ψ, (∏ i, g.1 (l i) (ψ i)) * (Tensor.basis _).repr t ψ := fun g l => by
-    rw [← basis_repr_smul_fund, ht]
-  refine Submodule.mem_span_pair.2 ⟨(Tensor.basis _).repr t ![0, 1, 0, 1],
-    (Tensor.basis _).repr t ![0, 0, 1, 1],
-    (Tensor.basis _).repr.injective (Finsupp.ext fun l => ?_)⟩
-  simp only [map_add, map_smul, Finsupp.add_apply, Finsupp.smul_apply, basis_repr_epsilonPair₁₂,
-    basis_repr_epsilonPair₁₃, smul_eq_mul]
-  exact (eq_add_of_pairings hc l).symm
+/-- The invariant tensors with four fundamental indices of `SU(2)` are the span of the two
+  pairings of their indices by the antisymmetric symbol. -/
+lemma invariants_tensorRep_eq_span_epsilonPairs :
+    ((suTensor 2).tensorRep fun _ : Fin 4 => .fund).invariants
+      = Submodule.span ℂ {epsilonPair₁₂, epsilonPair₁₃} := by
+  refine le_antisymm (fun t ht => ?_) ?_
+  · have hc : ∀ (g : SU 2) (l : Fin 4 → Fin 2), (Tensor.basis _).repr t l
+        = ∑ ψ, (∏ i, g.1 (l i) (ψ i)) * (Tensor.basis _).repr t ψ := fun g l => by
+      rw [← basis_repr_smul_fund, show g • t = t from ht g]
+    refine Submodule.mem_span_pair.2 ⟨(Tensor.basis _).repr t ![0, 1, 0, 1],
+      (Tensor.basis _).repr t ![0, 0, 1, 1],
+      (Tensor.basis _).repr.injective (Finsupp.ext fun l => ?_)⟩
+    simp only [map_add, map_smul, Finsupp.add_apply, Finsupp.smul_apply, basis_repr_epsilonPair₁₂,
+      basis_repr_epsilonPair₁₃, smul_eq_mul]
+    exact (eq_add_of_pairings hc l).symm
+  · rw [Submodule.span_le, Set.insert_subset_iff, Set.singleton_subset_iff]
+    exact ⟨epsilonPair₁₂_invariant, epsilonPair₁₃_invariant⟩
 
 /-!
 
@@ -280,70 +279,46 @@ lemma reducesInvariantsTo_span_map_epsilonPairs
     (hf : (suTensor 2).IsEquivariant (fun _ => .fund) ρ f) :
     ReducesInvariantsTo (fun g : SU 2 => ρ g) (LinearMap.range f)
       (Submodule.span ℂ {f epsilonPair₁₂, f epsilonPair₁₃}) := by
-  have h := hf.reducesInvariantsTo_map (isAdjointClosed 2 _)
-    (Submodule.span ℂ {epsilonPair₁₂, epsilonPair₁₃}) mem_span_epsilonPairs_of_invariant
-  rwa [Submodule.map_span, Set.image_pair] at h
+  have h := hf.reducesInvariantsTo_span (hasReynolds 2 _)
+    invariants_tensorRep_eq_span_epsilonPairs
+  rwa [Set.image_pair] at h
 
 /-- The map of a family sends the first pairing to the contraction pairing the first label with
   the second and the third with the fourth. -/
-lemma fundMap_epsilonPair₁₂ (T : (Fin 4 → Fin 2) → B) :
-    fundMap T epsilonPair₁₂
+lemma ofComponents_epsilonPair₁₂ (T : (Fin 4 → Fin 2) → B) :
+    ofComponents (S := suTensor 2) (c := fun _ : Fin 4 => .fund) T epsilonPair₁₂
       = T ![0, 1, 0, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 0, 1, 0] := by
   simp only [epsilonPair₁₂, sum_fin_four_arrow,
     Fin.sum_univ_two, epsilon]
   simp only [Fin.isValue, cons_val_zero, cons_val_one, zero_ne_one, and_false, ↓reduceIte, and_true,
     sub_self, cons_val, mul_zero, zero_smul, and_self, one_ne_zero, sub_zero, mul_one, add_zero,
-    zero_sub, mul_neg, neg_zero, one_smul, zero_add, neg_smul, neg_neg, map_add, fundMap_basis,
+    zero_sub, mul_neg, neg_zero, one_smul, zero_add, neg_smul, neg_neg, map_add, ofComponents_basis,
     map_neg]
   abel
 
 /-- The map of a family sends the second pairing to the contraction pairing the first label with
   the third and the second with the fourth. -/
-lemma fundMap_epsilonPair₁₃ (T : (Fin 4 → Fin 2) → B) :
-    fundMap T epsilonPair₁₃
+lemma ofComponents_epsilonPair₁₃ (T : (Fin 4 → Fin 2) → B) :
+    ofComponents (S := suTensor 2) (c := fun _ : Fin 4 => .fund) T epsilonPair₁₃
       = T ![0, 0, 1, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 1, 0, 0] := by
   simp only [epsilonPair₁₃, sum_fin_four_arrow,
     Fin.sum_univ_two, epsilon]
   simp only [Fin.isValue, cons_val_zero, cons_val, zero_ne_one, and_false, ↓reduceIte, and_true,
     sub_self, cons_val_one, mul_zero, zero_smul, and_self, one_ne_zero, sub_zero, mul_one, add_zero,
-    one_smul, zero_add, zero_sub, mul_neg, neg_zero, neg_smul, neg_neg, map_add, fundMap_basis,
+    one_smul, zero_add, zero_sub, mul_neg, neg_zero, neg_smul, neg_neg, map_add, ofComponents_basis,
     map_neg]
   abel
 
 /-- For a family with four fundamental labels of `SU(2)` whose map is equivariant, the invariants
   of the span of the family reduce to the span of its two epsilon contractions. -/
 lemma reducesInvariantsTo_span_epsilonContractions {T : (Fin 4 → Fin 2) → B}
-    (hT : (suTensor 2).IsEquivariant (fun _ => .fund) ρ (fundMap T)) :
+    (hT : (suTensor 2).IsEquivariant (fun _ => .fund) ρ (ofComponents T)) :
     ReducesInvariantsTo (fun g : SU 2 => ρ g) (Submodule.span ℂ (Set.range T))
       (Submodule.span ℂ
         {T ![0, 1, 0, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 0, 1, 0],
           T ![0, 0, 1, 1] - T ![0, 1, 1, 0] - T ![1, 0, 0, 1] + T ![1, 1, 0, 0]}) := by
-  rw [← fundMap_epsilonPair₁₂, ← fundMap_epsilonPair₁₃,
-    ← range_familyMap (S := suTensor 2) (c := fun _ : Fin 4 => Color.fund) (Equiv.refl _) T]
+  rw [← ofComponents_epsilonPair₁₂, ← ofComponents_epsilonPair₁₃,
+    ← range_ofComponents (S := suTensor 2) (c := fun _ : Fin 4 => Color.fund) T]
   exact reducesInvariantsTo_span_map_epsilonPairs hT
-
-/-!
-
-## D. The invariants in Mathlib's form
-
--/
-
-/-- The invariant tensors with four fundamental indices of `SU(2)` are the span of the two
-  pairings of their indices by the antisymmetric symbol. -/
-lemma invariants_tensorRep_eq_span_epsilonPairs :
-    ((suTensor 2).tensorRep fun _ : Fin 4 => .fund).invariants
-      = Submodule.span ℂ {epsilonPair₁₂, epsilonPair₁₃} := by
-  refine le_antisymm (fun t ht => mem_span_epsilonPairs_of_invariant t ht) ?_
-  rw [Submodule.span_le, Set.insert_subset_iff, Set.singleton_subset_iff]
-  exact ⟨epsilonPair₁₂_invariant, epsilonPair₁₃_invariant⟩
-
-/-- For an intertwining map `f` out of the tensors with four fundamental indices of `SU(2)`, the
-  invariants in the range of `f` are the span of the images of the two pairings. -/
-lemma invariants_inf_range_eq_span_map_epsilonPairs
-    (f : ((suTensor 2).tensorRep fun _ : Fin 4 => .fund).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = Submodule.span ℂ {f epsilonPair₁₂, f epsilonPair₁₃} := by
-  rw [(isAdjointClosed 2 _).invariants_inf_range_eq_map, invariants_tensorRep_eq_span_epsilonPairs,
-    Submodule.map_span, Set.image_pair]
-  rfl
 
 end suTensor

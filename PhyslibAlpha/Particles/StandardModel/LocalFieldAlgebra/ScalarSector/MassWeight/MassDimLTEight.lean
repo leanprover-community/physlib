@@ -6,7 +6,7 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.ScalarSector.MassWeight.GaugeWeight
-public import PhyslibAlpha.Relativity.LorentzGroup.Invariants.OddRank
+public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Invariants.OddRank
 public import PhyslibAlpha.Particles.StandardModel.LocalFieldAlgebra.InvariantReduction
 /-!
 # The Higgs invariants below mass weight eight
@@ -41,7 +41,7 @@ no `S`.
 
 ## ii. Key results
 
-- `isLorentzCovariant_rankOne_dotGaugeHiggs_left` and its `_right` companion : the isospin
+- `isEquivariant_up_rankOne_dotGaugeHiggs_left` and its `_right` companion : the isospin
   contractions with one derivative are Lorentz vectors.
 - `lorentzContractionLTEightSpan` : the surviving span below mass weight eight, the line through
   the Higgs mass term at weight four.
@@ -63,6 +63,8 @@ no `S`.
 
 @[expose] public section
 
+open TensorSpecies
+
 namespace StandardModel
 
 open TensorProduct Matrix MatrixGroups Lorentz ComplexConjugate
@@ -79,27 +81,27 @@ derivative, on either of the two towers.  The Higgs is a Lorentz scalar, so the 
 Lorentz index such a contraction has is that derivative slot, and read as a family indexed
 by it the contraction is a Lorentz vector.  `OddRank` says that one covector index
 admits no invariant contraction, so the span of such a family reduces to `⊥`
-(`OddRank.reducesInvariantsTo_bot`); the spans are themselves stable, so
+(`ComplexVector.reducesInvariantsTo_bot_of_odd`); the spans are themselves stable, so
 `ReducesInvariantsTo.sup` joins the two.
 
 -/
 
 /-- The isospin contraction of a once-derived Higgs tower against an underived conjugate
   tower, read as a family indexed by its derivative slot, is a Lorentz vector. -/
-lemma isLorentzCovariant_rankOne_dotGaugeHiggs_left :
-    IsLorentzCovariant 1 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_rankOne_dotGaugeHiggs_left :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 1 => .up) repLorentzGroup
       (ofComponents fun d : Fin 1 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs d ![]) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g l (![] : Fin 0 → Fin 1 ⊕ Fin 3)]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [sum_pi_fin_zero, Fin.prod_univ_zero, mul_one]
 
 /-- The isospin contraction of an underived Higgs tower against a once-derived conjugate
   tower is a Lorentz vector in the same way. -/
-lemma isLorentzCovariant_rankOne_dotGaugeHiggs_right :
-    IsLorentzCovariant 1 fieldData.LocalCovFieldAlgebra repLorentzGroup
+lemma isEquivariant_up_rankOne_dotGaugeHiggs_right :
+    complexLorentzTensor.IsEquivariant (fun _ : Fin 1 => .up) repLorentzGroup
       (ofComponents fun d : Fin 1 → Fin 1 ⊕ Fin 3 => dotGaugeHiggs ![] d) := by
-  refine (isLorentzCovariant_ofComponents_iff _).2 fun g l => ?_
+  refine (isEquivariant_ofComponents_up_iff _).2 fun g l => ?_
   rw [repLorentz_dotGaugeHiggs g (![] : Fin 0 → Fin 1 ⊕ Fin 3) l, sum_pi_fin_zero]
   refine Finset.sum_congr rfl fun a _ => ?_
   rw [Fin.prod_univ_zero, one_mul]
@@ -188,10 +190,14 @@ for the Lorentz group, since a single covector index carries no invariant contra
   spanned by a Lorentz vector, and a single covector index carries no invariant. -/
 lemma reducesInvariantsTo_dotSpan_one_zero_sup_zero_one :
     ReducesInvariantsTo (fun g : SL(2,ℂ) => repLorentzGroup g) (dotSpan 1 0 ⊔ dotSpan 0 1) ⊥ := by
-  rw [dotSpan_one_zero_eq, dotSpan_zero_one_eq, ← range_ofComponents, ← range_ofComponents]
-  exact (OddRank.reducesInvariantsTo_bot odd_one isLorentzCovariant_rankOne_dotGaugeHiggs_left).sup
-    (OddRank.reducesInvariantsTo_bot odd_one isLorentzCovariant_rankOne_dotGaugeHiggs_right)
-    isLorentzCovariant_rankOne_dotGaugeHiggs_right.isStableUnder_range isStableUnder_bot
+  rw [dotSpan_one_zero_eq, dotSpan_zero_one_eq,
+    ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 1 => .up),
+    ← range_ofComponents (S := complexLorentzTensor) (c := fun _ : Fin 1 => .up)]
+  exact (ComplexVector.reducesInvariantsTo_bot_of_odd odd_one
+      isEquivariant_up_rankOne_dotGaugeHiggs_left).sup
+    (ComplexVector.reducesInvariantsTo_bot_of_odd odd_one
+        isEquivariant_up_rankOne_dotGaugeHiggs_right)
+    isEquivariant_up_rankOne_dotGaugeHiggs_right.isStableUnder_range isStableUnder_bot
 
 /-!
 

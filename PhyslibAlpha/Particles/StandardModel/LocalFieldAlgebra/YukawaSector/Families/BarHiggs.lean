@@ -31,8 +31,8 @@ minus these while by `mul_mul_piece_swap` their blocks are the same submodules.
 ## ii. Key results
 
 - `barDownYukawa`, `barUpYukawa`, `barLeptonYukawa` : the three conjugate Yukawa terms.
-- `isSU3FundamentalAntiFundamental_barDownBlock`, `isSU2BiFundamental_barUpBlock` and the
-  rest : the index laws of the three conjugate blocks.
+- `isEquivariant_colourFundAntiFund_barDownBlock`, `isEquivariant_isospinFundFund_barUpBlock` and
+  the rest : the index laws of the three conjugate blocks.
 - `yukawaSpan` : the join of all six couplings over all nine family pairs.
 - `yukawaSpan_le_inf` : the Yukawa span lies inside the gauge- and Lorentz-invariants of
   the sector at mass weight eight.
@@ -54,6 +54,9 @@ minus these while by `mul_mul_piece_swap` their blocks are the same submodules.
 -/
 
 @[expose] public section
+
+open TensorSpecies
+open suTensor (fundAntiFundIdx)
 
 namespace StandardModel
 
@@ -85,10 +88,11 @@ noncomputable def barDownBlock (f f' : Fin 3) (i sbd : Fin 2) (cbd : Fin 3) (sQ 
 /-- The two colour indices of the conjugate down-type block carry one fundamental and one
   anti-fundamental `su(3)` index, the conjugate down singlet supplying the fundamental
   one. -/
-lemma isSU3FundamentalAntiFundamental_barDownBlock (f f' : Fin 3) (i sbd sQ wQ : Fin 2) :
-    IsSU3FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.barDownBlock f f' i sbd (l 0) sQ (l 1) wQ) :=
-  IsSU3FundamentalAntiFundamental.of_law fun U l => by
+lemma isEquivariant_colourFundAntiFund_barDownBlock (f f' : Fin 3) (i sbd sQ wQ : Fin 2) :
+    (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.barDownBlock f f' i sbd (l 0) sQ
+          (l 1) wQ) ∘ fundAntiFundIdx)) :=
+  ColourFundAntiFund.of_law fun U l => by
     simp only [barDownBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_left (U, 1, 1)
       (X := fun a => FermionSector.bardComponent f ![] (sbd, a))
@@ -101,11 +105,12 @@ lemma isSU3FundamentalAntiFundamental_barDownBlock (f f' : Fin 3) (i sbd sQ wQ :
 /-- The two isospin indices of the conjugate down-type block carry one fundamental and one
   anti-fundamental `su(2)` index, the conjugate Higgs symbol supplying the fundamental
   one. -/
-lemma isSU2FundamentalAntiFundamental_barDownBlock (f f' : Fin 3) (sbd : Fin 2) (cbd : Fin 3)
+lemma isEquivariant_isospinFundAntiFund_barDownBlock (f f' : Fin 3) (sbd : Fin 2) (cbd : Fin 3)
     (sQ : Fin 2) (cQ : Fin 3) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barDownBlock f f' (l 0) sbd cbd sQ cQ (l 1)) :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barDownBlock f f' (l 0) sbd cbd
+          sQ cQ (l 1)) ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     simp only [barDownBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_mid (1, V, 1) (A := fun a => ScalarSector.barHiggs
       ![] a)
@@ -116,11 +121,13 @@ lemma isSU2FundamentalAntiFundamental_barDownBlock (f f' : Fin 3) (sbd : Fin 2) 
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
 
 /-- The two spinor indices of the conjugate down-type block are both dual left-handed. -/
-lemma isBiDualLeftWeyl_barDownBlock (f f' : Fin 3) (i : Fin 2) (cbd cQ : Fin 3)
+lemma isEquivariant_downLDownL_barDownBlock (f f' : Fin 3) (i : Fin 2) (cbd cQ : Fin 3)
     (wQ : Fin 2) :
-    IsBiDualLeftWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents fun a b => LocalCovFieldAlgebra.barDownBlock f f' i a cbd b cQ wQ) :=
-  isEquivariant_ofPairComponents _ fun Λ a b => by
+    complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.barDownBlock f f' i p.1 cbd p.2 cQ wQ) ∘
+          pairIdx)) :=
+  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+    (fun a b => LocalCovFieldAlgebra.barDownBlock f f' i a cbd b cQ wQ) fun Λ a b => by
     rw [toMatrix_rep_downL]
     simp only [barDownBlock]
     rw [LocalCovFieldAlgebra.repLorentz_mul_fixed_left Λ
@@ -152,55 +159,55 @@ lemma repGauge_u1_barDownBlock (t : unitary ℂ) (f f' : Fin 3) (i sbd : Fin 2)
 /-- The colour contraction of the conjugate down-type block. -/
 noncomputable def barDownBlockColour (f f' : Fin 3)
     (i sbd sQ wQ : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU3FundamentalAntiFundamental.deltaContraction
+  ColourFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.barDownBlock f f' i sbd (l 0) sQ (l 1) wQ)
 
 /-- The colour contraction of the conjugate down-type block written out. -/
 lemma barDownBlockColour_eq (f f' : Fin 3) (i sbd sQ wQ : Fin 2) :
     LocalCovFieldAlgebra.barDownBlockColour f f' i sbd sQ wQ
       = ∑ a : Fin 3, LocalCovFieldAlgebra.barDownBlock f f' i sbd a sQ a wQ := by
-  simp [barDownBlockColour, IsSU3FundamentalAntiFundamental.deltaContraction]
+  simp [barDownBlockColour, ColourFundAntiFund.deltaContraction]
 
 /-- The colour contraction of the conjugate down-type block still carries one fundamental
   and one anti-fundamental isospin index. -/
-lemma isSU2FundamentalAntiFundamental_barDownBlockColour (f f' : Fin 3) (sbd sQ : Fin 2) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 =>
-        LocalCovFieldAlgebra.barDownBlockColour f f' (l 0) sbd sQ (l 1)) := by
+lemma isEquivariant_isospinFundAntiFund_barDownBlockColour (f f' : Fin 3) (sbd sQ : Fin 2) :
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 =>
+        LocalCovFieldAlgebra.barDownBlockColour f f' (l 0) sbd sQ (l 1)) ∘ fundAntiFundIdx)) := by
   simp only [LocalCovFieldAlgebra.barDownBlockColour_eq]
-  exact IsSU2FundamentalAntiFundamental.sum fun a =>
-    LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_barDownBlock f f' sbd a sQ a
+  exact IsospinFundAntiFund.sum fun a =>
+    LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_barDownBlock f f' sbd a sQ a
 
 /-- The isospin contraction of the colour-contracted conjugate down-type block. -/
 noncomputable def barDownBlockIsospin (f f' : Fin 3)
     (sbd sQ : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2FundamentalAntiFundamental.deltaContraction
+  IsospinFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barDownBlockColour f f' (l 0) sbd sQ (l 1))
 
 /-- The doubly contracted conjugate down-type block written out. -/
 lemma barDownBlockIsospin_eq (f f' : Fin 3) (sbd sQ : Fin 2) :
     LocalCovFieldAlgebra.barDownBlockIsospin f f' sbd sQ
       = ∑ p : Fin 2 × Fin 3, LocalCovFieldAlgebra.barDownBlock f f' p.1 sbd p.2 sQ p.2 p.1 := by
-  rw [barDownBlockIsospin, IsSU2FundamentalAntiFundamental.deltaContraction,
+  rw [barDownBlockIsospin, IsospinFundAntiFund.deltaContraction,
     LocalCovFieldAlgebra.barDownBlockColour_eq, LocalCovFieldAlgebra.barDownBlockColour_eq,
       Fintype.sum_prod_type, Fin.sum_univ_two]
   simp
 
 /-- The doubly contracted conjugate down-type block carries two dual left-handed Weyl
   indices. -/
-lemma isBiDualLeftWeyl_barDownBlockIsospin (f f' : Fin 3) :
-    IsBiDualLeftWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents (LocalCovFieldAlgebra.barDownBlockIsospin f f')) := by
-  rw [show LocalCovFieldAlgebra.barDownBlockIsospin f f' = _ from funext₂
-    (LocalCovFieldAlgebra.barDownBlockIsospin_eq f f'),
-    ofPairComponents_sum]
+lemma isEquivariant_downLDownL_barDownBlockIsospin (f f' : Fin 3) :
+    complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.barDownBlockIsospin f f' p.1 p.2) ∘
+          pairIdx)) := by
+  simp only [LocalCovFieldAlgebra.barDownBlockIsospin_eq, ofComponents_comp_sum]
   exact TensorSpecies.IsEquivariant.sum _ fun p _ =>
-    LocalCovFieldAlgebra.isBiDualLeftWeyl_barDownBlock f f' p.1 p.2 p.2 p.1
+    LocalCovFieldAlgebra.isEquivariant_downLDownL_barDownBlock f f' p.1 p.2 p.2 p.1
 
 /-- The conjugate down-type Yukawa term of the family pair `(f, f')`. It is the image of the metric
   `εL'` under the map with the contracted block as its components. -/
 noncomputable def barDownYukawa (f f' : Fin 3) : fieldData.LocalCovFieldAlgebra :=
-  ofPairComponents (k := .downL) (k' := .downL) (LocalCovFieldAlgebra.barDownBlockIsospin f f') εL'
+  ofComponents (S := complexLorentzTensor) (c := ![.downL, .downL])
+    ((fun p => LocalCovFieldAlgebra.barDownBlockIsospin f f' p.1 p.2) ∘ pairIdx) εL'
 
 /-!
 
@@ -215,8 +222,8 @@ lemma repGauge_su3_barDownBlockColour (U : specialUnitaryGroup (Fin 3) ℂ) (f f
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.barDownBlockColour
       f f' i sbd sQ wQ)
       = LocalCovFieldAlgebra.barDownBlockColour f f' i sbd sQ wQ :=
-  IsSU3FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_barDownBlock f f' i sbd sQ wQ) U
+  ColourFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_barDownBlock f f' i sbd sQ wQ) U
 
 /-- The doubly contracted conjugate down-type block is fixed by the colour factor. -/
 lemma repGauge_su3_barDownBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : Fin 3)
@@ -224,7 +231,7 @@ lemma repGauge_su3_barDownBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f 
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.barDownBlockIsospin
       f f' sbd sQ)
       = LocalCovFieldAlgebra.barDownBlockIsospin f f' sbd sQ := by
-  rw [barDownBlockIsospin, IsSU2FundamentalAntiFundamental.deltaContraction, map_add,
+  rw [barDownBlockIsospin, IsospinFundAntiFund.deltaContraction, map_add,
     LocalCovFieldAlgebra.repGauge_su3_barDownBlockColour,
       LocalCovFieldAlgebra.repGauge_su3_barDownBlockColour]
 
@@ -234,8 +241,8 @@ lemma repGauge_su2_barDownBlockIsospin (V : specialUnitaryGroup (Fin 2) ℂ) (f 
     repGaugeGroupI ((1, V, 1) : GaugeGroupI) (LocalCovFieldAlgebra.barDownBlockIsospin
       f f' sbd sQ)
       = LocalCovFieldAlgebra.barDownBlockIsospin f f' sbd sQ :=
-  IsSU2FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_barDownBlockColour f f' sbd sQ) V
+  IsospinFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_barDownBlockColour f f' sbd sQ) V
 
 /-- The doubly contracted conjugate down-type block is fixed by the hypercharge factor. -/
 lemma repGauge_u1_barDownBlockIsospin (t : unitary ℂ) (f f' : Fin 3) (sbd sQ : Fin 2) :
@@ -251,7 +258,7 @@ lemma repGauge_barDownYukawa (f f' : Fin 3) (g : GaugeGroupI) :
     repGaugeGroupI g (LocalCovFieldAlgebra.barDownYukawa f f') =
       LocalCovFieldAlgebra.barDownYukawa f f' := by
   refine forall_repGauge_eq_self (fun U => ?_) (fun V => ?_) (fun t => ?_) g <;>
-    rw [barDownYukawa, map_ofPairComponents]
+    rw [barDownYukawa, map_ofComponents_comp]
   · simp only [LocalCovFieldAlgebra.repGauge_su3_barDownBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_su2_barDownBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_u1_barDownBlockIsospin]
@@ -260,7 +267,7 @@ lemma repGauge_barDownYukawa (f f' : Fin 3) (g : GaugeGroupI) :
 lemma repLorentz_barDownYukawa (f f' : Fin 3) (Λ : SL(2,ℂ)) :
     repLorentzGroup Λ (LocalCovFieldAlgebra.barDownYukawa f f') =
       LocalCovFieldAlgebra.barDownYukawa f f' :=
-  (LocalCovFieldAlgebra.isBiDualLeftWeyl_barDownBlockIsospin f f').rep_map_of_invariant
+  (LocalCovFieldAlgebra.isEquivariant_downLDownL_barDownBlockIsospin f f').rep_map_of_invariant
     (fun g => TensorSpecies.metricTensor_invariant g) Λ
 
 /-- Every component of the conjugate down-type block sits at mass weight eight in the
@@ -279,7 +286,7 @@ lemma barDownYukawa_mem_sectorMassWeight (f f' : Fin 3) :
     LocalCovFieldAlgebra.barDownYukawa f f'
       ∈ fieldData.sectorMassWeight {FieldKind.scalar, FieldKind.fermion} 8 := by
   rw [barDownYukawa]
-  refine ofPairComponents_mem (k := .downL) (k' := .downL) _ (fun a b => ?_) _
+  refine ofComponents_comp_mem _ _ (fun p => ?_) _
   exact LocalCovFieldAlgebra.barDownBlockIsospin_eq _ _ _ _ ▸
     sum_mem fun p _ => LocalCovFieldAlgebra.barDownBlock_mem_sectorMassWeight _ _ _ _ _ _ _ _
 
@@ -303,10 +310,11 @@ noncomputable def barUpBlock (f f' : Fin 3) (i su : Fin 2) (cu : Fin 3) (sbQ : F
 /-- The two colour indices of the conjugate up-type block carry one fundamental and one
   anti-fundamental `su(3)` index, the conjugate quark doublet supplying the fundamental
   one. -/
-lemma isSU3FundamentalAntiFundamental_barUpBlock (f f' : Fin 3) (i su sbQ wbQ : Fin 2) :
-    IsSU3FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.barUpBlock f f' i su (l 1) sbQ (l 0) wbQ) :=
-  IsSU3FundamentalAntiFundamental.of_law fun U l => by
+lemma isEquivariant_colourFundAntiFund_barUpBlock (f f' : Fin 3) (i su sbQ wbQ : Fin 2) :
+    (suTensor 3).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU3)
+      (ofComponents ((fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.barUpBlock f f' i su (l 1) sbQ
+          (l 0) wbQ) ∘ fundAntiFundIdx)) :=
+  ColourFundAntiFund.of_law fun U l => by
     simp only [barUpBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_left (U, 1, 1)
       (X := fun a => FermionSector.uComponent f ![] (su, a))
@@ -321,11 +329,12 @@ lemma isSU3FundamentalAntiFundamental_barUpBlock (f f' : Fin 3) (i su sbQ wbQ : 
 /-- The two isospin indices of the conjugate up-type block are both fundamental. The
   conjugate Higgs symbol and the conjugate quark doublet both carry the fundamental of
   `su(2)`. -/
-lemma isSU2BiFundamental_barUpBlock (f f' : Fin 3) (su : Fin 2) (cu : Fin 3)
+lemma isEquivariant_isospinFundFund_barUpBlock (f f' : Fin 3) (su : Fin 2) (cu : Fin 3)
     (sbQ : Fin 2) (cbQ : Fin 3) :
-    IsSU2BiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barUpBlock f f' (l 0) su cu sbQ cbQ (l 1)) :=
-  IsSU2BiFundamental.of_law fun V l => by
+    (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund) (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barUpBlock f f' (l 0) su cu sbQ
+          cbQ (l 1))) :=
+  IsospinFundFund.of_law fun V l => by
     simp only [barUpBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_mid (1, V, 1) (A := fun a => ScalarSector.barHiggs
       ![] a)
@@ -336,11 +345,13 @@ lemma isSU2BiFundamental_barUpBlock (f f' : Fin 3) (su : Fin 2) (cu : Fin 3)
     simp only [Fin.prod_univ_two, Matrix.cons_val_zero, Matrix.cons_val_one]
 
 /-- The two spinor indices of the conjugate up-type block are both dual right-handed. -/
-lemma isBiDualRightWeyl_barUpBlock (f f' : Fin 3) (i : Fin 2) (cu cbQ : Fin 3)
+lemma isEquivariant_downRDownR_barUpBlock (f f' : Fin 3) (i : Fin 2) (cu cbQ : Fin 3)
     (wbQ : Fin 2) :
-    IsBiDualRightWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents fun a b => LocalCovFieldAlgebra.barUpBlock f f' i a cu b cbQ wbQ) :=
-  isEquivariant_ofPairComponents _ fun Λ a b => by
+    complexLorentzTensor.IsEquivariant ![.downR, .downR] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.barUpBlock f f' i p.1 cu p.2 cbQ wbQ) ∘
+          pairIdx)) :=
+  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downR) (c2 := .downR)
+    (fun a b => LocalCovFieldAlgebra.barUpBlock f f' i a cu b cbQ wbQ) fun Λ a b => by
     rw [toMatrix_rep_downR]
     simp only [barUpBlock]
     rw [LocalCovFieldAlgebra.repLorentz_mul_fixed_left Λ
@@ -372,29 +383,31 @@ lemma repGauge_u1_barUpBlock (t : unitary ℂ) (f f' : Fin 3) (i su : Fin 2) (cu
 /-- The colour contraction of the conjugate up-type block. -/
 noncomputable def barUpBlockColour (f f' : Fin 3)
     (i su sbQ wbQ : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU3FundamentalAntiFundamental.deltaContraction
+  ColourFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 3 => LocalCovFieldAlgebra.barUpBlock f f' i su (l 1) sbQ (l 0) wbQ)
 
 /-- The colour contraction of the conjugate up-type block written out. -/
 lemma barUpBlockColour_eq (f f' : Fin 3) (i su sbQ wbQ : Fin 2) :
     LocalCovFieldAlgebra.barUpBlockColour f f' i su sbQ wbQ
       = ∑ a : Fin 3, LocalCovFieldAlgebra.barUpBlock f f' i su a sbQ a wbQ := by
-  simp [barUpBlockColour, IsSU3FundamentalAntiFundamental.deltaContraction]
+  simp [barUpBlockColour, ColourFundAntiFund.deltaContraction]
 
 /-- The colour contraction of the conjugate up-type block still carries two fundamental
   isospin indices. -/
-lemma isSU2BiFundamental_barUpBlockColour (f f' : Fin 3) (su sbQ : Fin 2) :
-    IsSU2BiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barUpBlockColour f f' (l 0) su sbQ (l 1)) := by
+lemma isEquivariant_isospinFundFund_barUpBlockColour (f f' : Fin 3) (su sbQ : Fin 2) :
+    (suTensor 2).IsEquivariant (fun _ : Fin 2 => .fund) (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barUpBlockColour f f' (l 0) su
+          sbQ (l 1))) := by
   simp only [LocalCovFieldAlgebra.barUpBlockColour_eq]
-  exact IsSU2BiFundamental.sum fun a => LocalCovFieldAlgebra.isSU2BiFundamental_barUpBlock f f' su a
+  exact IsospinFundFund.sum fun a => LocalCovFieldAlgebra.isEquivariant_isospinFundFund_barUpBlock f
+      f' su a
     sbQ a
 
 /-- The isospin contraction of the colour-contracted conjugate up-type block, by the
   antisymmetric symbol. -/
 noncomputable def barUpBlockIsospin (f f' : Fin 3)
     (su sbQ : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2BiFundamental.epsilonContraction
+  IsospinFundFund.epsilonContraction
     (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barUpBlockColour f f' (l 0) su sbQ (l 1))
 
 /-- The doubly contracted conjugate up-type block written out. -/
@@ -402,26 +415,28 @@ lemma barUpBlockIsospin_eq (f f' : Fin 3) (su sbQ : Fin 2) :
     LocalCovFieldAlgebra.barUpBlockIsospin f f' su sbQ =
       (∑ a : Fin 3, LocalCovFieldAlgebra.barUpBlock f f' 0 su a sbQ a 1)
       - ∑ a : Fin 3, LocalCovFieldAlgebra.barUpBlock f f' 1 su a sbQ a 0 := by
-  rw [barUpBlockIsospin, IsSU2BiFundamental.epsilonContraction]
+  rw [barUpBlockIsospin, IsospinFundFund.epsilonContraction]
   simp [LocalCovFieldAlgebra.barUpBlockColour_eq]
 
 /-- The doubly contracted conjugate up-type block carries two dual right-handed Weyl
   indices. -/
-lemma isBiDualRightWeyl_barUpBlockIsospin (f f' : Fin 3) :
-    IsBiDualRightWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents (LocalCovFieldAlgebra.barUpBlockIsospin f f')) := by
-  rw [show LocalCovFieldAlgebra.barUpBlockIsospin f f' = _ from funext₂
-    (LocalCovFieldAlgebra.barUpBlockIsospin_eq f f'),
-    ofPairComponents_sub, ofPairComponents_sum, ofPairComponents_sum]
+lemma isEquivariant_downRDownR_barUpBlockIsospin (f f' : Fin 3) :
+    complexLorentzTensor.IsEquivariant ![.downR, .downR] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.barUpBlockIsospin f f' p.1 p.2) ∘
+          pairIdx)) := by
+  simp only [LocalCovFieldAlgebra.barUpBlockIsospin_eq, ofComponents_comp_sub,
+      ofComponents_comp_sum]
   exact (TensorSpecies.IsEquivariant.sum _ fun a _ =>
-    LocalCovFieldAlgebra.isBiDualRightWeyl_barUpBlock f f' 0 a a 1).sub
-    (TensorSpecies.IsEquivariant.sum _ fun a _ => LocalCovFieldAlgebra.isBiDualRightWeyl_barUpBlock
+    LocalCovFieldAlgebra.isEquivariant_downRDownR_barUpBlock f f' 0 a a 1).sub
+    (TensorSpecies.IsEquivariant.sum _ fun a _ =>
+        LocalCovFieldAlgebra.isEquivariant_downRDownR_barUpBlock
       f f' 1 a a 0)
 
 /-- The conjugate up-type Yukawa term of the family pair `(f, f')`. It is the image of the metric
   `εR'` under the map with the contracted block as its components. -/
 noncomputable def barUpYukawa (f f' : Fin 3) : fieldData.LocalCovFieldAlgebra :=
-  ofPairComponents (k := .downR) (k' := .downR) (LocalCovFieldAlgebra.barUpBlockIsospin f f') εR'
+  ofComponents (S := complexLorentzTensor) (c := ![.downR, .downR])
+    ((fun p => LocalCovFieldAlgebra.barUpBlockIsospin f f' p.1 p.2) ∘ pairIdx) εR'
 
 /-!
 
@@ -435,8 +450,8 @@ lemma repGauge_su3_barUpBlockColour (U : specialUnitaryGroup (Fin 3) ℂ) (f f' 
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.barUpBlockColour f
       f' i su sbQ wbQ)
       = LocalCovFieldAlgebra.barUpBlockColour f f' i su sbQ wbQ :=
-  IsSU3FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU3FundamentalAntiFundamental_barUpBlock f f' i su sbQ wbQ) U
+  ColourFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_colourFundAntiFund_barUpBlock f f' i su sbQ wbQ) U
 
 /-- The doubly contracted conjugate up-type block is fixed by the colour factor. -/
 lemma repGauge_su3_barUpBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : Fin 3)
@@ -444,7 +459,7 @@ lemma repGauge_su3_barUpBlockIsospin (U : specialUnitaryGroup (Fin 3) ℂ) (f f'
     repGaugeGroupI ((U, 1, 1) : GaugeGroupI) (LocalCovFieldAlgebra.barUpBlockIsospin f
       f' su sbQ)
       = LocalCovFieldAlgebra.barUpBlockIsospin f f' su sbQ := by
-  rw [barUpBlockIsospin, IsSU2BiFundamental.epsilonContraction, map_sub,
+  rw [barUpBlockIsospin, IsospinFundFund.epsilonContraction, map_sub,
     LocalCovFieldAlgebra.repGauge_su3_barUpBlockColour,
       LocalCovFieldAlgebra.repGauge_su3_barUpBlockColour]
 
@@ -454,8 +469,8 @@ lemma repGauge_su2_barUpBlockIsospin (V : specialUnitaryGroup (Fin 2) ℂ) (f f'
     repGaugeGroupI ((1, V, 1) : GaugeGroupI) (LocalCovFieldAlgebra.barUpBlockIsospin f
       f' su sbQ)
       = LocalCovFieldAlgebra.barUpBlockIsospin f f' su sbQ :=
-  IsSU2BiFundamental.repGauge_epsilonContraction
-    (LocalCovFieldAlgebra.isSU2BiFundamental_barUpBlockColour f f' su sbQ) V
+  IsospinFundFund.repGauge_epsilonContraction
+    (LocalCovFieldAlgebra.isEquivariant_isospinFundFund_barUpBlockColour f f' su sbQ) V
 
 /-- The doubly contracted conjugate up-type block is fixed by the hypercharge factor. -/
 lemma repGauge_u1_barUpBlockIsospin (t : unitary ℂ) (f f' : Fin 3) (su sbQ : Fin 2) :
@@ -474,7 +489,7 @@ lemma repGauge_barUpYukawa (f f' : Fin 3) (g : GaugeGroupI) :
     repGaugeGroupI g (LocalCovFieldAlgebra.barUpYukawa f f') =
       LocalCovFieldAlgebra.barUpYukawa f f' := by
   refine forall_repGauge_eq_self (fun U => ?_) (fun V => ?_) (fun t => ?_) g <;>
-    rw [barUpYukawa, map_ofPairComponents]
+    rw [barUpYukawa, map_ofComponents_comp]
   · simp only [LocalCovFieldAlgebra.repGauge_su3_barUpBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_su2_barUpBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_u1_barUpBlockIsospin]
@@ -483,7 +498,7 @@ lemma repGauge_barUpYukawa (f f' : Fin 3) (g : GaugeGroupI) :
 lemma repLorentz_barUpYukawa (f f' : Fin 3) (Λ : SL(2,ℂ)) :
     repLorentzGroup Λ (LocalCovFieldAlgebra.barUpYukawa f f') =
       LocalCovFieldAlgebra.barUpYukawa f f' :=
-  (LocalCovFieldAlgebra.isBiDualRightWeyl_barUpBlockIsospin f f').rep_map_of_invariant
+  (LocalCovFieldAlgebra.isEquivariant_downRDownR_barUpBlockIsospin f f').rep_map_of_invariant
     (fun g => TensorSpecies.metricTensor_invariant g) Λ
 
 /-- Every component of the conjugate up-type block sits at mass weight eight in the Yukawa
@@ -508,8 +523,8 @@ lemma barUpYukawa_mem_sectorMassWeight (f f' : Fin 3) :
     exact Submodule.sub_mem _
       (sum_mem fun a _ => LocalCovFieldAlgebra.barUpBlock_mem_sectorMassWeight _ _ _ _ _ _ _ _)
       (sum_mem fun a _ => LocalCovFieldAlgebra.barUpBlock_mem_sectorMassWeight _ _ _ _ _ _ _ _)
-  rw [barUpYukawa]
-  exact ofPairComponents_mem (k := .downR) (k' := .downR) _ hiso _
+  exact ofComponents_comp_mem (S := complexLorentzTensor) (c := ![.downR, .downR]) pairIdx
+    (fun p => LocalCovFieldAlgebra.barUpBlockIsospin f f' p.1 p.2) (fun p => hiso p.1 p.2) εR'
 
 /-!
 
@@ -541,10 +556,11 @@ lemma repGauge_su3_barLeptonBlock (U : specialUnitaryGroup (Fin 3) ℂ) (f f' : 
 /-- The two isospin indices of the conjugate lepton block carry one fundamental and one
   anti-fundamental `su(2)` index, the conjugate Higgs symbol supplying the fundamental
   one. -/
-lemma isSU2FundamentalAntiFundamental_barLeptonBlock (f f' : Fin 3) (sL sbe : Fin 2) :
-    IsSU2FundamentalAntiFundamental fieldData.LocalCovFieldAlgebra repGaugeGroupI
-      (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barLeptonBlock f f' (l 0) sL (l 1) sbe) :=
-  IsSU2FundamentalAntiFundamental.of_law fun V l => by
+lemma isEquivariant_isospinFundAntiFund_barLeptonBlock (f f' : Fin 3) (sL sbe : Fin 2) :
+    (suTensor 2).IsEquivariant ![.fund, .antiFund] (repGaugeGroupI.comp GaugeGroupI.ofSU2)
+      (ofComponents ((fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barLeptonBlock f f' (l 0) sL
+          (l 1) sbe) ∘ fundAntiFundIdx)) :=
+  IsospinFundAntiFund.of_law fun V l => by
     simp only [barLeptonBlock]
     rw [LocalCovFieldAlgebra.repGauge_mul_fixed_right (1, V, 1)
       (A := fun a => ScalarSector.barHiggs ![] a)
@@ -555,10 +571,11 @@ lemma isSU2FundamentalAntiFundamental_barLeptonBlock (f f' : Fin 3) (sL sbe : Fi
     simp only [Matrix.cons_val_zero, Matrix.cons_val_one]
 
 /-- The two spinor indices of the conjugate lepton block are both dual left-handed. -/
-lemma isBiDualLeftWeyl_barLeptonBlock (f f' : Fin 3) (i wL : Fin 2) :
-    IsBiDualLeftWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents fun a b => LocalCovFieldAlgebra.barLeptonBlock f f' i a wL b) :=
-  isEquivariant_ofPairComponents _ fun Λ a b => by
+lemma isEquivariant_downLDownL_barLeptonBlock (f f' : Fin 3) (i wL : Fin 2) :
+    complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.barLeptonBlock f f' i p.1 wL p.2) ∘ pairIdx)) :=
+  isEquivariant_ofComponents_pair (S := complexLorentzTensor) (c1 := .downL) (c2 := .downL)
+    (fun a b => LocalCovFieldAlgebra.barLeptonBlock f f' i a wL b) fun Λ a b => by
     rw [toMatrix_rep_downL]
     simp only [barLeptonBlock]
     rw [LocalCovFieldAlgebra.repLorentz_mul_fixed_left Λ
@@ -589,30 +606,30 @@ lemma repGauge_u1_barLeptonBlock (t : unitary ℂ) (f f' : Fin 3) (i sL wL sbe :
 /-- The isospin contraction of the conjugate lepton block. -/
 noncomputable def barLeptonBlockIsospin (f f' : Fin 3)
     (sL sbe : Fin 2) : fieldData.LocalCovFieldAlgebra :=
-  IsSU2FundamentalAntiFundamental.deltaContraction
+  IsospinFundAntiFund.deltaContraction
     (fun l : Fin 2 → Fin 2 => LocalCovFieldAlgebra.barLeptonBlock f f' (l 0) sL (l 1) sbe)
 
 /-- The isospin contraction of the conjugate lepton block written out. -/
 lemma barLeptonBlockIsospin_eq (f f' : Fin 3) (sL sbe : Fin 2) :
     LocalCovFieldAlgebra.barLeptonBlockIsospin f f' sL sbe
       = ∑ w : Fin 2, LocalCovFieldAlgebra.barLeptonBlock f f' w sL w sbe := by
-  rw [barLeptonBlockIsospin, IsSU2FundamentalAntiFundamental.deltaContraction, Fin.sum_univ_two]
+  rw [barLeptonBlockIsospin, IsospinFundAntiFund.deltaContraction, Fin.sum_univ_two]
   simp
 
 /-- The contracted conjugate lepton block carries two dual left-handed Weyl indices. -/
-lemma isBiDualLeftWeyl_barLeptonBlockIsospin (f f' : Fin 3) :
-    IsBiDualLeftWeyl fieldData.LocalCovFieldAlgebra repLorentzGroup
-      (ofPairComponents (LocalCovFieldAlgebra.barLeptonBlockIsospin f f')) := by
-  rw [show LocalCovFieldAlgebra.barLeptonBlockIsospin f f' = _ from funext₂
-    (LocalCovFieldAlgebra.barLeptonBlockIsospin_eq f f'),
-    ofPairComponents_sum]
+lemma isEquivariant_downLDownL_barLeptonBlockIsospin (f f' : Fin 3) :
+    complexLorentzTensor.IsEquivariant ![.downL, .downL] repLorentzGroup
+      (ofComponents ((fun p => LocalCovFieldAlgebra.barLeptonBlockIsospin f f' p.1 p.2) ∘
+          pairIdx)) := by
+  simp only [LocalCovFieldAlgebra.barLeptonBlockIsospin_eq, ofComponents_comp_sum]
   exact TensorSpecies.IsEquivariant.sum _ fun w _ =>
-    LocalCovFieldAlgebra.isBiDualLeftWeyl_barLeptonBlock f f' w w
+    LocalCovFieldAlgebra.isEquivariant_downLDownL_barLeptonBlock f f' w w
 
 /-- The conjugate charged-lepton Yukawa term of the family pair `(f, f')`. It is the image of the
   metric `εL'` under the map with the contracted block as its components. -/
 noncomputable def barLeptonYukawa (f f' : Fin 3) : fieldData.LocalCovFieldAlgebra :=
-  ofPairComponents (k := .downL) (k' := .downL) (LocalCovFieldAlgebra.barLeptonBlockIsospin f f')
+  ofComponents (S := complexLorentzTensor) (c := ![.downL, .downL])
+    ((fun p => LocalCovFieldAlgebra.barLeptonBlockIsospin f f' p.1 p.2) ∘ pairIdx)
     εL'
 
 /-!
@@ -637,8 +654,8 @@ lemma repGauge_su2_barLeptonBlockIsospin (V : specialUnitaryGroup (Fin 2) ℂ)
     repGaugeGroupI ((1, V, 1) : GaugeGroupI)
       (LocalCovFieldAlgebra.barLeptonBlockIsospin f f' sL sbe)
       = LocalCovFieldAlgebra.barLeptonBlockIsospin f f' sL sbe :=
-  IsSU2FundamentalAntiFundamental.repGauge_deltaContraction
-    (LocalCovFieldAlgebra.isSU2FundamentalAntiFundamental_barLeptonBlock f f' sL sbe) V
+  IsospinFundAntiFund.repGauge_deltaContraction
+    (LocalCovFieldAlgebra.isEquivariant_isospinFundAntiFund_barLeptonBlock f f' sL sbe) V
 
 /-- The contracted conjugate lepton block is fixed by the hypercharge factor. -/
 lemma repGauge_u1_barLeptonBlockIsospin (t : unitary ℂ) (f f' : Fin 3) (sL sbe : Fin 2) :
@@ -654,7 +671,7 @@ lemma repGauge_barLeptonYukawa (f f' : Fin 3) (g : GaugeGroupI) :
     repGaugeGroupI g (LocalCovFieldAlgebra.barLeptonYukawa f f') =
       LocalCovFieldAlgebra.barLeptonYukawa f f' := by
   refine forall_repGauge_eq_self (fun U => ?_) (fun V => ?_) (fun t => ?_) g <;>
-    rw [barLeptonYukawa, map_ofPairComponents]
+    rw [barLeptonYukawa, map_ofComponents_comp]
   · simp only [LocalCovFieldAlgebra.repGauge_su3_barLeptonBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_su2_barLeptonBlockIsospin]
   · simp only [LocalCovFieldAlgebra.repGauge_u1_barLeptonBlockIsospin]
@@ -663,7 +680,7 @@ lemma repGauge_barLeptonYukawa (f f' : Fin 3) (g : GaugeGroupI) :
 lemma repLorentz_barLeptonYukawa (f f' : Fin 3) (Λ : SL(2,ℂ)) :
     repLorentzGroup Λ (LocalCovFieldAlgebra.barLeptonYukawa f f') =
       LocalCovFieldAlgebra.barLeptonYukawa f f' :=
-  (LocalCovFieldAlgebra.isBiDualLeftWeyl_barLeptonBlockIsospin f f').rep_map_of_invariant
+  (LocalCovFieldAlgebra.isEquivariant_downLDownL_barLeptonBlockIsospin f f').rep_map_of_invariant
     (fun g => TensorSpecies.metricTensor_invariant g) Λ
 
 /-- Every component of the conjugate lepton block sits at mass weight eight in the Yukawa
@@ -682,7 +699,7 @@ lemma barLeptonYukawa_mem_sectorMassWeight (f f' : Fin 3) :
     LocalCovFieldAlgebra.barLeptonYukawa f f'
       ∈ fieldData.sectorMassWeight {FieldKind.scalar, FieldKind.fermion} 8 := by
   rw [barLeptonYukawa]
-  refine ofPairComponents_mem (k := .downL) (k' := .downL) _ (fun a b => ?_) _
+  refine ofComponents_comp_mem _ _ (fun p => ?_) _
   exact LocalCovFieldAlgebra.barLeptonBlockIsospin_eq _ _ _ _ ▸
     sum_mem fun w _ => LocalCovFieldAlgebra.barLeptonBlock_mem_sectorMassWeight _ _ _ _ _ _
 

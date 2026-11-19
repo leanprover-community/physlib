@@ -31,27 +31,18 @@ the three `F P_i` vanish together (B.3). If they vanish, `F D` and `F η` are bo
 the image of the time projection, and otherwise `D` is a multiple of `η`. Either way `F X` is a
 multiple of `F η` (B.4).
 
-The image form of the result follows for any tensor product whose matrix of components carries
-this action (C). On two contravariant indices this gives three statements: every invariant in the
-image of an equivariant map is a multiple of the image of the metric, the invariants of the
-tensor product are the line through the metric, and every intertwining map out of the trivial
-representation is a multiple of the metric (D). The same holds for two covariant indices, through
-the matrix of components conjugated by `η` (E).
+The result follows for any tensor product whose matrix of components carries this action (C).
+On two contravariant indices the invariants of the tensor product are the line through the metric
+(D). The same holds for two covariant indices, through the matrix of components conjugated by `η`
+(E).
 
 ## ii. Key results
 
 - `Lorentz.map_eq_smul_map_minkowskiMatrix_of_invariant` : on matrices with the action
   `Y ↦ Λ Y Λᵀ`, an invariant in the image of an equivariant map is a multiple of the image of `η`.
-- `Lorentz.ComplexVector.invariants_inf_range_eq_span_map_metricVal` : the invariants in the image
-  of an equivariant map out of `ComplexVector ⊗ ComplexVector` are the line through the image of
-  the metric.
 - `Lorentz.ComplexVector.invariants_tprod_eq_span_metricVal` : the invariants of
   `ComplexVector ⊗ ComplexVector` are the line through the metric.
-- `Lorentz.ComplexVector.intertwiningMap_eq_smul_metric` : every intertwining map from the trivial
-  representation into `ComplexVector ⊗ ComplexVector` is a multiple of the metric.
-- `Lorentz.ComplexCoVector.invariants_inf_range_eq_span_map_metricVal`,
-  `Lorentz.ComplexCoVector.invariants_tprod_eq_span_metricVal`,
-  `Lorentz.ComplexCoVector.intertwiningMap_eq_smul_metric` : the same for
+- `Lorentz.ComplexCoVector.invariants_tprod_eq_span_metricVal` : the same for
   `ComplexCoVector ⊗ ComplexCoVector`.
 
 ## iii. Table of contents
@@ -352,24 +343,18 @@ end MatrixInvariants
 
 section TensorInvariants
 
-variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ SL(2,ℂ) B}
-
 /-- Let `T` be a linear map from the matrices onto `V` which intertwines `Y ↦ Λ Y Λᵀ` with the
-  action on `V`. The invariants in the image of an equivariant map `f` out of `V` are the line
-  through `f (T η)`. -/
-lemma invariants_inf_range_eq_span_map_minkowskiMatrix {V : Type*} [AddCommGroup V]
-    [Module ℂ V] {σ : Representation ℂ SL(2,ℂ) V} (f : σ.IntertwiningMap ρ)
+  action on `V`. The invariants of `V` are the line through `T η`. -/
+lemma invariants_eq_span_map_minkowskiMatrix {V : Type*} [AddCommGroup V]
+    [Module ℂ V] {σ : Representation ℂ SL(2,ℂ) V}
     (T : Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) ℂ →ₗ[ℂ] V) (hT : Function.Surjective T)
     (hσ : ∀ g Y, T (LorentzGroup.toComplex (SL2C.toLorentzGroup g) * Y *
       (LorentzGroup.toComplex (SL2C.toLorentzGroup g))ᵀ) = σ g (T Y)) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f (T (minkowskiMatrix.map ofRealHom)) := by
-  refine Representation.invariants_inf_range_eq_span (fun g => ?_) fun b hb hr => ?_
+    σ.invariants = ℂ ∙ T (minkowskiMatrix.map ofRealHom) := by
+  refine Representation.invariants_eq_span_singleton (fun g => ?_) fun v hv => ?_
   · rw [← hσ, LorentzGroup.toComplex_mul_minkowskiMatrix_mul_transpose]
-  · rw [Representation.IntertwiningMap.range_toSubmodule] at hr
-    obtain ⟨v, rfl⟩ := hr
-    obtain ⟨Y, rfl⟩ := hT v
-    exact map_eq_smul_map_minkowskiMatrix_of_invariant (F := f.toLinearMap ∘ₗ T)
-      (fun g Y => by simp [hσ, f.isIntertwining]) (X := Y) hb
+  · obtain ⟨Y, rfl⟩ := hT v
+    exact map_eq_smul_map_minkowskiMatrix_of_invariant (F := T) hσ (X := Y) hv
 
 /-!
 
@@ -377,29 +362,13 @@ lemma invariants_inf_range_eq_span_map_minkowskiMatrix {V : Type*} [AddCommGroup
 
 -/
 
-/-- The invariants in the image of an equivariant map `f` out of
-  `ComplexVector ⊗ ComplexVector` are the line through the image `f ηᵃᵃ` of the metric. -/
-lemma ComplexVector.invariants_inf_range_eq_span_map_metricVal
-    (f : (ComplexVector.SL2CRep.tprod ComplexVector.SL2CRep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f ComplexVector.metricVal :=
-  invariants_inf_range_eq_span_map_minkowskiMatrix f contrContrToMatrix.symm.toLinearMap
-    contrContrToMatrix.symm.surjective fun g Y => by
-      simp only [LinearEquiv.coe_coe, Representation.tprod_apply, contrContrToMatrix_ρ_symm]
-
 /-- Up to scale, the metric `ηᵃᵃ` is the unique invariant of `ComplexVector ⊗ ComplexVector`. -/
 lemma ComplexVector.invariants_tprod_eq_span_metricVal :
     (ComplexVector.SL2CRep.tprod ComplexVector.SL2CRep).invariants =
-      ℂ ∙ ComplexVector.metricVal := by
-  simpa using invariants_inf_range_eq_span_map_metricVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into
-  `ComplexVector ⊗ ComplexVector` is a multiple of the metric `ηᵃᵃ`. -/
-lemma ComplexVector.intertwiningMap_eq_smul_metric
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (ComplexVector.SL2CRep.tprod ComplexVector.SL2CRep)) :
-    ∃ z : ℂ, φ = z • ComplexVector.metric :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [metric_apply_one]; exact invariants_tprod_eq_span_metricVal) φ
+      ℂ ∙ ComplexVector.metricVal :=
+  invariants_eq_span_map_minkowskiMatrix contrContrToMatrix.symm.toLinearMap
+    contrContrToMatrix.symm.surjective fun g Y => by
+      simp only [LinearEquiv.coe_coe, Representation.tprod_apply, contrContrToMatrix_ρ_symm]
 
 /-!
 
@@ -407,12 +376,12 @@ lemma ComplexVector.intertwiningMap_eq_smul_metric
 
 -/
 
-/-- The invariants in the image of an equivariant map `f` out of
-  `ComplexCoVector ⊗ ComplexCoVector` are the line through the image `f ηᵢᵢ` of the metric. -/
-lemma ComplexCoVector.invariants_inf_range_eq_span_map_metricVal
-    (f : (ComplexCoVector.SL2CRep.tprod ComplexCoVector.SL2CRep).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f ComplexCoVector.metricVal := by
-  have h := invariants_inf_range_eq_span_map_minkowskiMatrix f
+/-- Up to scale, the metric `ηᵢᵢ` is the unique invariant of `ComplexCoVector ⊗ ComplexCoVector`. -/
+lemma ComplexCoVector.invariants_tprod_eq_span_metricVal :
+    (ComplexCoVector.SL2CRep.tprod ComplexCoVector.SL2CRep).invariants =
+      ℂ ∙ ComplexCoVector.metricVal := by
+  have h := invariants_eq_span_map_minkowskiMatrix
+    (σ := ComplexCoVector.SL2CRep.tprod ComplexCoVector.SL2CRep)
     (coCoToMatrix.symm.toLinearMap ∘ₗ LinearMap.mulLeftRight ℂ
       (minkowskiMatrix.map ofRealHom, minkowskiMatrix.map ofRealHom))
     (fun v => ⟨minkowskiMatrix.map ofRealHom * coCoToMatrix v * minkowskiMatrix.map ofRealHom,
@@ -423,21 +392,6 @@ lemma ComplexCoVector.invariants_inf_range_eq_span_map_metricVal
         Representation.tprod_apply, coCoToMatrix_ρ_symm,
         LorentzGroup.inv_toComplex_transpose_mul_conj_minkowskiMatrix_map]
   simpa [LorentzGroup.minkowskiMatrix_map_mul_self, ComplexCoVector.metricVal] using h
-
-/-- Up to scale, the metric `ηᵢᵢ` is the unique invariant of `ComplexCoVector ⊗ ComplexCoVector`. -/
-lemma ComplexCoVector.invariants_tprod_eq_span_metricVal :
-    (ComplexCoVector.SL2CRep.tprod ComplexCoVector.SL2CRep).invariants =
-      ℂ ∙ ComplexCoVector.metricVal := by
-  simpa using invariants_inf_range_eq_span_map_metricVal (Representation.IntertwiningMap.id _)
-
-/-- Every intertwining map from the trivial representation into
-  `ComplexCoVector ⊗ ComplexCoVector` is a multiple of the metric `ηᵢᵢ`. -/
-lemma ComplexCoVector.intertwiningMap_eq_smul_metric
-    (φ : (Representation.trivial ℂ SL(2,ℂ) ℂ).IntertwiningMap
-      (ComplexCoVector.SL2CRep.tprod ComplexCoVector.SL2CRep)) :
-    ∃ z : ℂ, φ = z • ComplexCoVector.metric :=
-  Representation.IntertwiningMap.exists_eq_smul_of_invariants_eq_span
-    (by rw [metric_apply_one]; exact invariants_tprod_eq_span_metricVal) φ
 
 end TensorInvariants
 

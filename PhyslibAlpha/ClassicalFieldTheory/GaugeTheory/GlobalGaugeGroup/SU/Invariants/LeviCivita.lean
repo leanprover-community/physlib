@@ -29,10 +29,8 @@ it gives `c (swap p q ∘ σ) = -c σ` for every permutation `σ`. By induction 
 `c σ = sign σ * c id`, and so `c = c id • ε`. On anti-fundamental indices `g` acts through its
 complex conjugate, itself an element of `SU(N)`, and the same holds (D).
 
-In terms of Mathlib's invariants, the invariant tensors are the line through the Levi-Civita
-tensor, and for an intertwining map out of the tensors the invariants in its range are the line
-through its image (E). For `N = 2` the Levi-Civita tensors are the antisymmetric symbols
-`epsilonFund` and `epsilonAntiFund` (F).
+The invariant tensors are therefore the line through the Levi-Civita tensor. For `N = 2` the
+Levi-Civita tensors are the antisymmetric symbols `epsilonFund` and `epsilonAntiFund` (E).
 
 ## ii. Key results
 
@@ -40,10 +38,8 @@ through its image (E). For `N = 2` the Levi-Civita tensors are the antisymmetric
 - `suTensor.sum_prod_mul_leviCivitaCoeff` : contracting it with the rows of a matrix gives the
   determinant.
 - `suTensor.leviCivitaFund`, `suTensor.leviCivitaAntiFund` : the Levi-Civita tensors.
-- `suTensor.exists_eq_smul_leviCivitaFund_of_invariant` : the invariant tensors with `N`
-  fundamental indices are its multiples, and its anti-fundamental twin.
-- `suTensor.invariants_tensorRep_eq_span_leviCivitaFund` : the invariant tensors are the line
-  through it, and its anti-fundamental twin.
+- `suTensor.invariants_tensorRep_eq_span_leviCivitaFund` : the invariant tensors with `N`
+  fundamental indices are the line through it, and its anti-fundamental twin.
 - `suTensor.leviCivitaFund_two` : for `SU(2)` it is the antisymmetric symbol.
 
 ## iii. Table of contents
@@ -52,8 +48,7 @@ through its image (E). For `N = 2` the Levi-Civita tensors are the antisymmetric
 - B. The Levi-Civita tensors are invariant
 - C. Components fixed by `SU(N)`
 - D. The invariant tensors
-- E. The invariants in Mathlib's form
-- F. Two indices
+- E. Two indices
 
 ## iv. References
 
@@ -65,7 +60,8 @@ through its image (E). For `N = 2` the Levi-Civita tensors are the antisymmetric
 
 namespace suTensor
 
-open Matrix MatrixGroups TensorSpecies Tensor SU Equiv
+open Matrix MatrixGroups TensorSpecies SU Equiv
+open TensorSpecies.Tensor hiding ofComponents
 open GlobalGaugeGroup (rootOfUnity rootOfUnity_isPrimitiveRoot rootOfUnity_mul_star)
 
 variable {N : ℕ}
@@ -282,11 +278,11 @@ end Components
 
 -/
 
-/-- An invariant tensor with `N` fundamental indices of `SU(N)` is a multiple of the Levi-Civita
-  tensor. -/
-lemma exists_eq_smul_leviCivitaFund_of_invariant
-    (t : (suTensor N).Tensor fun _ : Fin N => .fund) (ht : ∀ g : SU N, g • t = t) :
-    ∃ z : ℂ, t = z • leviCivitaFund N := by
+/-- The invariant tensors with `N` fundamental indices of `SU(N)` are the line through the
+  Levi-Civita tensor. -/
+lemma invariants_tensorRep_eq_span_leviCivitaFund :
+    ((suTensor N).tensorRep fun _ : Fin N => .fund).invariants = ℂ ∙ leviCivitaFund N := by
+  refine invariants_tensorRep_eq_span_singleton leviCivitaFund_invariant fun t ht => ?_
   have hc : ∀ (g : SU N) (a : Fin N → Fin N), (Tensor.basis _).repr t a
       = ∑ b, (∏ i, g.1 (a i) (b i)) * (Tensor.basis _).repr t b := fun g a => by
     rw [← basis_repr_smul_fund, ht]
@@ -302,12 +298,13 @@ noncomputable def starElem (g : SU N) : SU N :=
 @[simp]
 lemma starElem_val (g : SU N) : (starElem g).1 = g.1.map star := rfl
 
-/-- An invariant tensor with `N` anti-fundamental indices of `SU(N)` is a multiple of the
+/-- The invariant tensors with `N` anti-fundamental indices of `SU(N)` are the line through the
   Levi-Civita tensor. Here `g` acts through its complex conjugate, which runs over `SU(N)` with
   `g`. -/
-lemma exists_eq_smul_leviCivitaAntiFund_of_invariant
-    (t : (suTensor N).Tensor fun _ : Fin N => .antiFund) (ht : ∀ g : SU N, g • t = t) :
-    ∃ z : ℂ, t = z • leviCivitaAntiFund N := by
+lemma invariants_tensorRep_eq_span_leviCivitaAntiFund :
+    ((suTensor N).tensorRep fun _ : Fin N => .antiFund).invariants
+      = ℂ ∙ leviCivitaAntiFund N := by
+  refine invariants_tensorRep_eq_span_singleton leviCivitaAntiFund_invariant fun t ht => ?_
   have hc : ∀ (g : SU N) (a : Fin N → Fin N), (Tensor.basis _).repr t a
       = ∑ b, (∏ i, g.1 (a i) (b i)) * (Tensor.basis _).repr t b := fun g a => by
     have h := basis_repr_smul_antiFund (starElem g) t a
@@ -319,45 +316,7 @@ lemma exists_eq_smul_leviCivitaAntiFund_of_invariant
 
 /-!
 
-## E. The invariants in Mathlib's form
-
--/
-
-/-- The invariant tensors with `N` fundamental indices of `SU(N)` are the line through the
-  Levi-Civita tensor. -/
-lemma invariants_tensorRep_eq_span_leviCivitaFund :
-    ((suTensor N).tensorRep fun _ : Fin N => .fund).invariants = ℂ ∙ leviCivitaFund N :=
-  invariants_tensorRep_eq_span_singleton leviCivitaFund_invariant
-    exists_eq_smul_leviCivitaFund_of_invariant
-
-/-- The invariant tensors with `N` anti-fundamental indices of `SU(N)` are the line through the
-  Levi-Civita tensor. -/
-lemma invariants_tensorRep_eq_span_leviCivitaAntiFund :
-    ((suTensor N).tensorRep fun _ : Fin N => .antiFund).invariants
-      = ℂ ∙ leviCivitaAntiFund N :=
-  invariants_tensorRep_eq_span_singleton leviCivitaAntiFund_invariant
-    exists_eq_smul_leviCivitaAntiFund_of_invariant
-
-variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ (SU N) B}
-
-/-- For an intertwining map `f` out of the tensors with `N` fundamental indices, the invariants in
-  the range of `f` are the line through the image of the Levi-Civita tensor. -/
-lemma invariants_inf_range_eq_span_map_leviCivitaFund
-    (f : ((suTensor N).tensorRep fun _ : Fin N => .fund).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f (leviCivitaFund N) :=
-  (isAdjointClosed N _).invariants_inf_range_eq_span invariants_tensorRep_eq_span_leviCivitaFund f
-
-/-- For an intertwining map `f` out of the tensors with `N` anti-fundamental indices, the
-  invariants in the range of `f` are the line through the image of the Levi-Civita tensor. -/
-lemma invariants_inf_range_eq_span_map_leviCivitaAntiFund
-    (f : ((suTensor N).tensorRep fun _ : Fin N => .antiFund).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f (leviCivitaAntiFund N) :=
-  (isAdjointClosed N _).invariants_inf_range_eq_span
-    invariants_tensorRep_eq_span_leviCivitaAntiFund f
-
-/-!
-
-## F. Two indices
+## E. Two indices
 
 -/
 

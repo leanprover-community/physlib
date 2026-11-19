@@ -44,12 +44,10 @@ anti-fundamental index, has the components `(λ_a)_{ij} / 2` (F).
 - `suTensor.generatorVal` : the generator tensor.
 - `suTensor.invariants_tprod_eq_span_generatorVal` : the invariants of
   `adj ⊗ (ℂᴺ ⊗ ℂᴺ)` are the line through the generator tensor.
-- `suTensor.invariants_inf_range_eq_span_map_generatorVal` : the invariants in the range of an
-  intertwining map out of it are the line through the image of the generator tensor.
 - `suTensor.generator` : the generator tensor with an adjoint, a fundamental and an
   anti-fundamental index.
-- `suTensor.exists_eq_smul_generator_of_invariant` : the invariant tensors with these indices are
-  its multiples.
+- `suTensor.invariants_tensorRep_eq_span_generator` : the invariant tensors with these indices
+  are the line through it.
 - `suTensor.basis_repr_generator` : its components are the entries of `λ_a / 2`.
 
 ## iii. Table of contents
@@ -201,7 +199,7 @@ lemma eq_zero_of_adjRep_invariant {ℓ : Module.Dual ℂ (SUAlgebraComplexified 
     sub_eq_zero.1 <| traceForm_separatingLeft N _ fun A => by
       have hA : adjRep N g (adjRep N g⁻¹ A) = A := Representation.self_inv_apply _ g A
       rw [map_sub, LinearMap.sub_apply, ← hA, traceForm_adjRep, hℓ g, sub_self]
-  rw [eq_zero_of_adjRep_eq_self hu, map_zero]
+  rw [Representation.eq_zero_of_invariants_eq_bot invariants_adjRep_eq_bot hu, map_zero]
 
 /-- An equivariant linear map from the complexified Lie algebra to the matrices, moved by
   conjugation, is a multiple of the matrix of the argument. -/
@@ -312,30 +310,8 @@ lemma generator_invariant (g : SU N) : g • generator N = generator N := by
 /-- The invariant tensors with an adjoint, a fundamental and an anti-fundamental index are the
   line through the generator tensor. -/
 lemma invariants_tensorRep_eq_span_generator :
-    ((suTensor N).tensorRep ![.adj, .fund, .antiFund]).invariants = ℂ ∙ generator N := by
-  rw [invariants_tensorRep_eq_map_of_equiv (fromTripleTEquiv (S := suTensor N))
-      fromTripleTEquiv_tprod, invariants_tprod_eq_span_generatorVal, Submodule.map_span,
-    Set.image_singleton]
-  rfl
-
-/-- An invariant tensor with an adjoint, a fundamental and an anti-fundamental index is a
-  multiple of the generator tensor. -/
-lemma exists_eq_smul_generator_of_invariant (t : SuT[N, .adj, .fund, .antiFund])
-    (ht : ∀ g : SU N, g • t = t) : ∃ a : ℂ, t = a • generator N := by
-  have h : t ∈ ((suTensor N).tensorRep ![.adj, .fund, .antiFund]).invariants := ht
-  rw [invariants_tensorRep_eq_span_generator, Submodule.mem_span_singleton] at h
-  obtain ⟨a, rfl⟩ := h
-  exact ⟨a, rfl⟩
-
-variable {B : Type*} [AddCommGroup B] [Module ℂ B] {ρ : Representation ℂ (SU N) B}
-
-/-- For an intertwining map `f` out of `adj ⊗ (ℂᴺ ⊗ ℂᴺ)`, the invariants in the range of `f` are
-  the line through the image of the generator tensor. -/
-lemma invariants_inf_range_eq_span_map_generatorVal
-    (f : ((adjRep N).tprod ((fundRep N).tprod (antiFundRep N))).IntertwiningMap ρ) :
-    ρ.invariants ⊓ f.range.toSubmodule = ℂ ∙ f (generatorVal N) :=
-  (isAdjointClosed N ![.adj, .fund, .antiFund]).invariants_inf_range_eq_span_of_equiv
-    fromTripleTEquiv fromTripleTEquiv_tprod invariants_tensorRep_eq_span_generator f
+    ((suTensor N).tensorRep ![.adj, .fund, .antiFund]).invariants = ℂ ∙ generator N :=
+  invariants_tensorRep_triple_eq_span invariants_tprod_eq_span_generatorVal
 
 /-- The dual basis of the Gell-Mann basis under the trace form is half of it. -/
 lemma dualBasis_adjBasis (a : GellMann.Index N) :
