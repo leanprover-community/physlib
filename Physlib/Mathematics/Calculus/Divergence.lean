@@ -138,5 +138,5 @@ lemma divergence_smul [InnerProductSpace' 𝕜 E] {f : E → 𝕜} {g : E → E}
     [FiniteDimensional 𝕜 E] :
     divergence 𝕜 (fun x => f x • g x) x
     = f x * divergence 𝕜 g x + ⟪adjFDeriv 𝕜 f x 1, g x⟫_𝕜 := by
-  have : CompleteSpace E := FiniteDimensional.complete 𝕜 E
+  have : CompleteSpace E := FiniteDimensional.completeSpace 𝕜 E
   simp [divergence, fderiv_fun_smul hf hg, hf.hasAdjFDerivAt.hasAdjoint_fderiv.adjoint_inner_left]

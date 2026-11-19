@@ -269,8 +269,8 @@ include h in
 lemma repJet_algebraMap (U : JetGaugeGroupI) (c : ℂ) :
     repJet U (algebraMap ℂ B c) = algebraMap ℂ B c := by
   have hone := h.gaugeRealization.repJet_mul U (repJet U⁻¹ 1) 1
-  rw [mul_one, ← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one repJet,
-    Module.End.one_apply, one_mul] at hone
+  rw [mul_one, ← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one repJet,
+    one_apply_eq_self, one_mul] at hone
   rw [Algebra.algebraMap_eq_smul_one, map_smul, ← hone]
 
 /-- Pure gauge jets fix the covariant generators: the thirteen cases are section L of
@@ -326,7 +326,7 @@ lemma forall_repJet_eq_iff {x : B} (hx : x ∈ h.fieldAlgebra) :
       x ∈ h.covAlgebra ∧ ∀ g : GaugeGroupI, repGlobal repJet g x = x := by
   refine ⟨fun hinv => ⟨h.invariant_mem_adjoin_covDeriv hx hinv, fun g => hinv _⟩, ?_⟩
   rintro ⟨hmem, hglob⟩ U
-  rw [localGaugeData.eq_truncationProjZero_mul_ofConstant U, map_mul, Module.End.mul_apply]
+  rw [localGaugeData.eq_truncationProjZero_mul_ofConstant U, map_mul, mul_apply_eq_comp]
   exact (congrArg (repJet (localGaugeData.truncationProjZero U).1) (hglob U.eval)).trans
     (h.repJet_eq_of_mem_covAlgebra_of_mem_truncationKer_zero _ hmem)
 

@@ -339,7 +339,7 @@ noncomputable def symmetricAlgebra (ρ : Representation R G M) :
         = (SymmetricAlgebra.lift (SymmetricAlgebra.ι R M ∘ₗ ρ g)).comp
           (SymmetricAlgebra.lift (SymmetricAlgebra.ι R M ∘ₗ ρ h)) :=
       SymmetricAlgebra.algHom_ext (LinearMap.ext fun x => by
-        simp [SymmetricAlgebra.lift_ι_apply, mul_apply_eq_comp])
+        simp [SymmetricAlgebra.lift_ι_apply])
     rw [hlift]
     rfl
 

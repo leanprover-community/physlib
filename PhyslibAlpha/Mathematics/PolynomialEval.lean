@@ -72,7 +72,7 @@ lemma eq_zero_of_forall_eval_algebraMap_eq_zero {k A : Type*} [Field k] [Infinit
   have hcoeff : ∀ m, s.coeff m = φ (p.coeff m) := by
     intro m
     rw [hs, Polynomial.finsetSum_coeff]
-    simp only [Polynomial.coeff_monomial]
+    simp only [Polynomial.coeff_monomial_apply]
     rw [Finset.sum_ite_eq' p.support m fun i => φ (p.coeff i)]
     by_cases hm : m ∈ p.support
     · rw [ite_eq_left hm]
@@ -117,7 +117,7 @@ noncomputable def mapCoeffs {A : Type*} [Semiring A] (f : A → A) (p : Polynomi
 lemma coeff_mapCoeffs {A : Type*} [Semiring A] {f : A → A} (hf0 : f 0 = 0)
     (p : Polynomial A) (n : ℕ) : (mapCoeffs f p).coeff n = f (p.coeff n) := by
   rw [mapCoeffs, Polynomial.finsetSum_coeff]
-  simp only [Polynomial.coeff_monomial]
+  simp only [Polynomial.coeff_monomial_apply]
   rw [Finset.sum_ite_eq' p.support n fun i => f (p.coeff i)]
   by_cases hn : n ∈ p.support
   · rw [ite_eq_left hn]
@@ -131,7 +131,8 @@ lemma mapCoeffs_monomial {A : Type*} [Semiring A] {f : A → A} (hf0 : f 0 = 0)
     (n : ℕ) (a : A) :
     mapCoeffs f (Polynomial.monomial n a) = Polynomial.monomial n (f a) := by
   ext m
-  rw [coeff_mapCoeffs hf0, Polynomial.coeff_monomial, Polynomial.coeff_monomial]
+  rw [coeff_mapCoeffs hf0]
+  simp only [Polynomial.coeff_monomial_apply]
   split_ifs
   · rfl
   · exact hf0

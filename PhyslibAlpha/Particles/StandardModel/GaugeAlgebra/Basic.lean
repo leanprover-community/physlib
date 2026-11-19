@@ -282,17 +282,17 @@ noncomputable def adjoint : Representation ℝ GaugeGroupI GaugeAlgebra where
     · rfl
   map_mul' g₁ g₂ := by
     refine LinearMap.ext fun a => ext_of_matrix ?_ ?_ ?_
-    · rw [Module.End.mul_apply, adjointMap_toSU3Matrix, adjointMap_toSU3Matrix,
+    · rw [mul_apply_eq_comp, adjointMap_toSU3Matrix, adjointMap_toSU3Matrix,
         adjointMap_toSU3Matrix,
         show ((g₁ * g₂).toSU3.1 : Matrix (Fin 3) (Fin 3) ℂ) = g₁.toSU3.1 * g₂.toSU3.1 from rfl,
         star_mul]
       simp only [mul_assoc]
-    · rw [Module.End.mul_apply, adjointMap_toSU2Matrix, adjointMap_toSU2Matrix,
+    · rw [mul_apply_eq_comp, adjointMap_toSU2Matrix, adjointMap_toSU2Matrix,
         adjointMap_toSU2Matrix,
         show ((g₁ * g₂).toSU2.1 : Matrix (Fin 2) (Fin 2) ℂ) = g₁.toSU2.1 * g₂.toSU2.1 from rfl,
         star_mul]
       simp only [mul_assoc]
-    · rw [Module.End.mul_apply, adjointMap_toU1Value, adjointMap_toU1Value,
+    · rw [mul_apply_eq_comp, adjointMap_toU1Value, adjointMap_toU1Value,
         adjointMap_toU1Value]
 
 @[simp]

@@ -366,7 +366,7 @@ lemma ofPotentialTerm'_subset_ofPotentialTerm [DecidableEq 𝓩]
     abel
   all_goals
     rw [← q_sum]
-    try abel
+    abel
 
 /-!
 

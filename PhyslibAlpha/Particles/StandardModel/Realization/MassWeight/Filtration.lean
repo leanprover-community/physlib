@@ -248,7 +248,7 @@ lemma eq_sum_coeff_massWeightPoly {w : ℕ} {x : B} (hx : x ∈ h.massWeightSubm
     simp only [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.id_apply,
       LinearMap.coe_sum, Finset.sum_apply, LinearMap.coe_comp, Function.comp_apply,
       LinearMap.coe_restrictScalars, Polynomial.lcoeff_apply, AlgHom.toLinearMap_apply,
-      h.massWeightPoly_of_mem_massWeightSubmodule hy, Polynomial.coeff_monomial,
+      h.massWeightPoly_of_mem_massWeightSubmodule hy, Polynomial.coeff_monomial_apply,
       Finset.sum_ite_eq, Finset.mem_range, Nat.lt_succ_of_le hj, ite_true, sub_self]
   have h2 := key hx
   simp only [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.id_apply,

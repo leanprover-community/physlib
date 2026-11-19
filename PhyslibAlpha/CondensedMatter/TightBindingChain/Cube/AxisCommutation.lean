@@ -114,7 +114,11 @@ lemma axisBracket_maxCurrentCubeVectorState_ne_zero (hx : Tx.t ≠ 0) (hy : Ty.t
 lemma bracket_cubePairs_pair_ne_zero (hx : Tx.t ≠ 0) (hy : Ty.t ≠ 0) (hz : Tz.t ≠ 0)
     (hNx : 2 ≤ Tx.N) (hNy : 2 ≤ Ty.N) (hNz : 2 ≤ Tz.N) (k : Fin 3) :
     ⁅Tx.cubePairs Ty Tz (0, k), Tx.cubePairs Ty Tz (1, k)⁆ ≠ 0 := fun h =>
-  axisBracket_maxCurrentCubeVectorState_ne_zero hx hy hz hNx hNy hNz k (by simp [axisBracket, h])
+  axisBracket_maxCurrentCubeVectorState_ne_zero hx hy hz hNx hNy hNz k (by
+    rw [axisBracket, h]
+    apply Complex.ofReal_injective
+    rw [← apply_observable_eq_expectation]
+    simp)
 
 /-- In the maximal current state of the cube, the variances of `H` and `X` of each axis have a
 positive product. -/

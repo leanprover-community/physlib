@@ -137,7 +137,7 @@ noncomputable def repLorentzGroup : Representation ℝ SL(2,ℂ) (GaugeBoson �
   map_mul' Λ₁ Λ₂ := by
     refine LinearMap.ext fun v => ?_
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      Module.End.mul_apply, LinearEquiv.apply_symm_apply, map_mul]
+      mul_apply_eq_comp, LinearEquiv.apply_symm_apply, map_mul]
     congr 1
     rw [← LinearMap.comp_apply, ← TensorProduct.map_comp, LinearMap.id_comp]
     rfl
@@ -161,7 +161,7 @@ noncomputable def repValue {G₀ : Type} [Monoid G₀] (ρ : Representation ℝ 
   map_mul' g₁ g₂ := by
     refine LinearMap.ext fun v => ?_
     simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
-      Module.End.mul_apply, LinearEquiv.apply_symm_apply, map_mul]
+      mul_apply_eq_comp, LinearEquiv.apply_symm_apply, map_mul]
     congr 1
     rw [← LinearMap.comp_apply, ← TensorProduct.map_comp, LinearMap.id_comp]
     rfl

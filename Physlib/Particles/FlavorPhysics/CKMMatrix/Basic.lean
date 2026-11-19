@@ -35,7 +35,7 @@ def phaseShiftMatrix (a b c : ℝ) : Matrix (Fin 3) (Fin 3) ℂ :=
 /-- The phase shift matrix for zero-phases is the identity. -/
 lemma phaseShiftMatrix_one : phaseShiftMatrix 0 0 0 = 1 := by
   ext i j
-  fin_cases i <;> fin_cases j <;> simp [phaseShiftMatrix, one_apply]
+  fin_cases i <;> fin_cases j <;> simp [phaseShiftMatrix]
 
 set_option backward.isDefEq.respectTransparency false in
 /-- The conjugate transpose of the phase shift matrix is the phase-shift matrix
