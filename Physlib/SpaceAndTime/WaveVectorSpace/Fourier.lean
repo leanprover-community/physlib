@@ -366,6 +366,20 @@ lemma deriv_fourierIntegralInv (i : Fin d)
   congr
   simp [dotProduct, Space.basis_apply, ← coe_smul, smul_smul]
 
+lemma fourierIntegral_deriv (i : Fin d) {f : Space d → E}
+    (hf : Integrable f) (hf' : Differentiable ℝ f) (hf'' : Integrable (fderiv ℝ f)) :
+    fourierIntegral a b (∂[i] f) = -(b * I) • coord i • fourierIntegral a b f := by
+  ext
+  simp [Space.deriv_eq_fderiv_fun, ← fourierIntegral_continuousLinearMap_apply, coord_apply,
+    fourierIntegral_fderiv, dotProduct, Space.basis_apply, hf, hf', hf'', ← coe_smul, smul_smul]
+
+lemma fourierIntegralInv_deriv (i : Fin d) {g : WaveVectorSpace d → E}
+    (hg : Integrable g) (hg' : Differentiable ℝ g) (hg'' : Integrable (fderiv ℝ g)) :
+    fourierIntegralInv a b (∂[i] g) = (b * I) • Space.coord i • fourierIntegralInv a b g := by
+  ext
+  simp [deriv_eq_fun, ← fourierIntegralInv_continuousLinearMap_apply, Space.coord_apply,
+    fourierIntegralInv_fderiv, dotProduct, hg, hg', hg'', ← coe_smul, smul_smul, ← nsmul_eq_mul]
+
 end FourierIntegral
 
 end WaveVectorSpace
