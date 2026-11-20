@@ -406,6 +406,7 @@ public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.U
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.ContinuousMonoidHom.Polish
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
 public import PhyslibAlpha.Mathematics.TensorProductComm
+public import PhyslibAlpha.Particles.BeyondTheStandardModel.GeorgiGlashow.StandardModelHom
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.ChargeBalance
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.EffectivePotential
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.GaugeSlice
