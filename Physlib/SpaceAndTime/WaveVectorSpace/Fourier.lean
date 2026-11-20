@@ -324,6 +324,22 @@ lemma fderiv_fourierIntegralInv
     _ = -(b * I * pairingCLM k x) • g k := by field_simp
     _ = -(b * I) • (k ⬝ᵥ x) • g k := by simp [← coe_smul, smul_smul]
 
+lemma fourierIntegral_fderiv {f : Space d → E}
+    (hf : Integrable f) (hf' : Differentiable ℝ f) (hf'' : Integrable (fderiv ℝ f)) :
+    fourierIntegral a b (fderiv ℝ f) = fderivFourierInvIntegrand b (fourierIntegral a b f) := by
+  ext
+  simp only [fourierIntegral_def, VectorFourier.fourierIntegral_fderiv _ hf hf' hf'']
+  simp [← coe_smul, smul_smul, ← mul_assoc _ (b / (2 * π) : ℂ), ← mul_comm I, mul_assoc I (2 * π),
+    mul_div_cancel₀, mul_rotate']
+
+lemma fourierIntegralInv_fderiv {g : WaveVectorSpace d → E}
+    (hg : Integrable g) (hg' : Differentiable ℝ g) (hg'' : Integrable (fderiv ℝ g)) :
+    fourierIntegralInv a b (fderiv ℝ g) = fderivFourierIntegrand b (fourierIntegralInv a b g) := by
+  ext
+  simp only [fourierIntegralInv_def, VectorFourier.fourierIntegral_fderiv _ hg hg' hg'']
+  simp [← coe_smul, smul_smul, ← mul_assoc _ (b / (2 * π) : ℂ), ← mul_comm I, mul_assoc I (2 * π),
+    mul_div_cancel₀, mul_rotate']
+
 /-!
 #### A.3.3. Partial derivatives
 -/
