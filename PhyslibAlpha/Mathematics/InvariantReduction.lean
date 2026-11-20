@@ -5,9 +5,13 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
+public import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+public import Mathlib.RepresentationTheory.Basic
 public import PhyslibAlpha.Mathematics.LinearCombination
 /-!
 # Reducing invariants modulo a stable submodule
+
+Classifying the invariants of a family of linear maps one stable submodule at a time.
 
 ## i. Overview
 
@@ -36,11 +40,9 @@ of `V ⊔ S` exactly, as the elements of `W` plus an invariant element of `S`:
 `InvariantReductionToSpan σ V` packages a reduction of `V` to the span of one fixed vector,
 the form in which the classification theorems are applied.
 
-For a finite family moved by matrices, `σ g (T l) = ∑ a, M g a l • T a`, the quotient
-hypothesis reduces to a finite problem about coefficient vectors: the law holds again for the
-classes of the members in `B ⧸ S`, so an invariant there is the combination of a coefficient
-vector fixed by every `M g`, and any classification of the fixed coefficient vectors gives a
-reduction, `reducesInvariantsTo_of_mulVec_eq`.
+A representation of a group `H` and a representation of `SL(2,ℂ)` on the same module are read as
+one family, `gaugeLorentzMaps`, indexed by `H ⊕ SL(2,ℂ)`. Its invariants and stable submodules
+are those of both groups, and a reduction for either group alone is a reduction for the family.
 
 ## ii. Key results
 
@@ -52,13 +54,13 @@ reduction, `reducesInvariantsTo_of_mulVec_eq`.
   `iSup_of_biSup` passes to the whole join
 - `reducesInvariantsTo_bot_of_apply_eq_smul` : a submodule on which one map of the family acts by a
   scalar `μ ≠ 1` reduces to `⊥`
-- `ReducesInvariantsTo.mem_sup_and_forall_eq_self_iff`
+- `ReducesInvariantsTo.mem_sup_and_forall_eq_self_iff` : for a pointwise-fixed target inside the
+  source, the invariants of `V ⊔ S` are the elements of `W` plus an invariant element of `S`
 - `IsStableUnder.exists_add_of_quotient` : quotient to remainder: when every invariant of the image
   of `V` in `B ⧸ S` lies in the image of a pointwise-fixed `W`, an invariant of `V ⊔ S` is an
   element of `W` plus an invariant element of `S`
-- `reducesInvariantsTo_of_mulVec_eq` : a family moved by matrices whose conjugate transposes are
-  among them reduces to the combinations of any submodule `E` of coefficient vectors containing
-  every vector fixed by all the matrices
+- `ReducesInvariantsTo.mem_sup_and_gauge_lorentz_invariant_iff` : the classification endpoint for
+  a group `H` and the Lorentz group together, with the two invariances stated separately
 
 ## iii. Table of contents
 
@@ -66,7 +68,7 @@ reduction, `reducesInvariantsTo_of_mulVec_eq`.
 - B. Reducing invariants
 - C. Reduction through a quotient
 - D. Reduction to the span of one vector
-- E. Families moved by matrices
+- E. A group together with the Lorentz group
 
 ## iv. References
 
@@ -247,7 +249,7 @@ lemma ReducesInvariantsTo.biSup {ι : Type*} [DecidableEq ι] {V : ι → Submod
     exact (hP a).sup ih (isStableUnder_iSup fun i => isStableUnder_iSup fun _ => hV i) hW
 
 /-- A reduction of every join over a finite set of indices is a reduction of the join over the
-  whole index type, which may be infinite: an element of the join lies in the join over finitely
+  whole index type, which may be infinite. An element of the join lies in the join over finitely
   many of the summands. No stability is assumed of the summands or of the target; the remainder
   is stable, as in every reduction. -/
 lemma ReducesInvariantsTo.iSup_of_biSup {ι : Type*} {V : ι → Submodule R B} {W : Submodule R B}
@@ -259,7 +261,7 @@ lemma ReducesInvariantsTo.iSup_of_biSup {ι : Type*} {V : ι → Submodule R B} 
   exact hP s S hS _ (Submodule.add_mem_sup hs hz) hinv
 
 /-- Reductions of stable submodules to a common stable target combine over any index type,
-  finite or not: `biSup` combines them over every finite set of indices, and
+  finite or not. `biSup` combines them over every finite set of indices, and
   `iSup_of_biSup` passes to the whole join. -/
 lemma ReducesInvariantsTo.iSup {ι : Type*} {V : ι → Submodule R B} {W : Submodule R B}
     (hP : ∀ i, ReducesInvariantsTo σ (V i) W) (hV : ∀ i, IsStableUnder σ (V i))
@@ -267,7 +269,7 @@ lemma ReducesInvariantsTo.iSup {ι : Type*} {V : ι → Submodule R B} {W : Subm
   classical
   exact ReducesInvariantsTo.iSup_of_biSup (ReducesInvariantsTo.biSup hP hV hW)
 
-/-- A reduction for the subfamily `σ ∘ ι` is a reduction for `σ`: an invariant of `σ` is an
+/-- A reduction for the subfamily `σ ∘ ι` is a reduction for `σ`. An invariant of `σ` is an
   invariant of the subfamily, and a `σ`-stable submodule is stable under the subfamily. -/
 lemma ReducesInvariantsTo.comp {G' : Type*} (ι : G' → G) {V W : Submodule R B}
     (hP : ReducesInvariantsTo (fun g' => σ (ι g')) V W) : ReducesInvariantsTo σ V W :=
@@ -338,7 +340,7 @@ lemma IsFixedBy.exists_add_of_mem_sup (hW : IsFixedBy σ W) {x : B} (hx : x ∈ 
   rwa [map_add, hW g w hw] at h
 
 /-- A reduction of `V` to a pointwise-fixed `W ≤ V` describes the invariants of `V ⊔ S`, for
-  `S` stable, exactly: they are the elements of `W` plus an invariant element of `S`. This is
+  `S` stable, exactly. They are the elements of `W` plus an invariant element of `S`. This is
   the form in which a classification is stated. -/
 lemma ReducesInvariantsTo.mem_sup_and_forall_eq_self_iff (hP : ReducesInvariantsTo σ V W)
     (hWV : W ≤ V) (hW : IsFixedBy σ W) (hS : IsStableUnder σ S) (x : B) :
@@ -351,7 +353,7 @@ lemma ReducesInvariantsTo.mem_sup_and_forall_eq_self_iff (hP : ReducesInvariants
     refine ⟨by simpa using Submodule.add_mem_sup (hWV hxy) hy, fun g => ?_⟩
     rw [← sub_add_cancel x y, map_add, hW g _ hxy, hyinv g]
 
-/-- Quotient to remainder: when every invariant of the image of `V` in `B ⧸ S` lies in the
+/-- Quotient to remainder. When every invariant of the image of `V` in `B ⧸ S` lies in the
   image of a pointwise-fixed `W`, an invariant of `V ⊔ S` is an element of `W` plus an
   invariant element of `S`. -/
 lemma IsStableUnder.exists_add_of_quotient (hS : IsStableUnder σ S) (hW : IsFixedBy σ W)
@@ -359,22 +361,6 @@ lemma IsStableUnder.exists_add_of_quotient (hS : IsStableUnder σ S) (hW : IsFix
     {x : B} (hx : x ∈ V ⊔ S) (hinv : ∀ g, σ g x = x) :
     ∃ w ∈ W, ∃ y ∈ S, x = w + y ∧ ∀ g, σ g y = y :=
   hW.exists_add_of_mem_sup (hS.mem_sup_of_quotient hclass hx hinv) hinv
-
-/-- Quotient to remainder for a single fixed vector `v`: when every invariant of the image of
-  `V` in `B ⧸ S` is a multiple of the class of `v`, an invariant of `V ⊔ S` is a multiple of
-  `v` plus an invariant element of `S`. -/
-lemma IsStableUnder.exists_smul_add_of_quotient (hS : IsStableUnder σ S) {v : B}
-    (hv : ∀ g, σ g v = v)
-    (hclass : ∀ x ∈ V.map S.mkQ, (∀ g, S.mapQ S (σ g) (hS g) x = x) → ∃ c : R, x = c • S.mkQ v)
-    {x : B} (hx : x ∈ V ⊔ S) (hinv : ∀ g, σ g x = x) :
-    ∃ c : R, ∃ y ∈ S, x = c • v + y ∧ ∀ g, σ g y = y := by
-  obtain ⟨w, hw, y, hy, rfl, hyinv⟩ := hS.exists_add_of_quotient (isFixedBy_span_singleton hv)
-    (fun x hx hinv => by
-      obtain ⟨c, rfl⟩ := hclass x hx hinv
-      exact ⟨c • v, Submodule.smul_mem _ c (Submodule.mem_span_singleton_self v),
-        map_smul _ c v⟩) hx hinv
-  obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hw
-  exact ⟨c, y, hy, rfl, hyinv⟩
 
 end Quotient
 
@@ -426,17 +412,6 @@ lemma reducesInvariantsTo_iSup {κ : Type*} {V : κ → Submodule R B}
     (fun k => (r k).stable)
     (isFixedBy_span_range fun k => (r k).spanningVector_fixed).isStableUnder
 
-/-- The reduction of a stable submodule to the span of a fixed vector. -/
-def ofReducesInvariantsTo (hV : IsStableUnder σ V) (v : B) (hv : ∀ g, σ g v = v)
-    (h : ReducesInvariantsTo σ V (R ∙ v)) : InvariantReductionToSpan σ V where
-  spanningVector := v
-  stable := hV
-  spanningVector_fixed := hv
-  reduce S hS x hx hinv := by
-    obtain ⟨w, hw, y, hy, rfl⟩ := Submodule.mem_sup.1 (h S hS x hx hinv)
-    obtain ⟨c, rfl⟩ := Submodule.mem_span_singleton.1 hw
-    exact ⟨c, y, hy, rfl⟩
-
 /-- The span of a fixed vector reduces to itself. -/
 def ofFixed (b : B) (hb : ∀ g, σ g b = b) :
     InvariantReductionToSpan σ (R ∙ b) where
@@ -466,70 +441,107 @@ end Span
 
 /-!
 
-## E. Families moved by matrices
+## E. A group together with the Lorentz group
 
-A finite family `T : ι → B` is moved by matrices when `σ g (T l) = ∑ a, M g a l • T a`, the
-summed index in the row slot. For a stable `S` the classes of the members in `B ⧸ S` obey the
-same law (`Submodule.mapQ_mkQ_eq_sum_smul`), and that law is all that
-`Fintype.exists_mulVec_eq_of_conjTranspose_mem` needs: an invariant of the image of the span in
-`B ⧸ S` is the combination of a coefficient vector fixed by every `M g`. A description of the
-fixed coefficient vectors, a submodule `E` containing them all, therefore reduces the span to
-the combinations of `E`. What is classified is coefficient vectors, which do not depend on `S`;
-no classification of invariants of `B` is assumed to descend to `B ⧸ S`.
+A representation of a group `H` and a representation of `SL(2,ℂ)` on the same module are read
+as a single family of linear maps, `gaugeLorentzMaps`, indexed by the disjoint union
+`H ⊕ SL(2,ℂ)`. Its invariants are the elements fixed by both groups, and its stable submodules
+are those stable under both. A reduction for `H` or for the Lorentz group alone is a reduction
+for the family by `ReducesInvariantsTo.comp`.
 
 -/
 
-section Matrices
+section BothGroups
 
-open Matrix
+open MatrixGroups
 
-/-- A map moving each member of a family by a matrix moves their classes modulo a submodule
-  that it preserves by the same matrix. -/
-lemma Submodule.mapQ_mkQ_eq_sum_smul {R B ι : Type*} [Ring R] [AddCommGroup B] [Module R B]
-    [Fintype ι] (S : Submodule R B) {f : B →ₗ[R] B} (hS : ∀ y ∈ S, f y ∈ S) {T : ι → B}
-    {M : Matrix ι ι R} {l : ι} (hf : f (T l) = ∑ a, M a l • T a) :
-    S.mapQ S f hS (S.mkQ (T l)) = ∑ a, M a l • S.mkQ (T a) := by
-  rw [← LinearMap.comp_apply, Submodule.mapQ_mkQ, LinearMap.comp_apply, hf, map_sum]
-  exact Finset.sum_congr rfl fun a _ => map_smul _ _ _
+variable {H B : Type*} [Group H] [AddCommGroup B] [Module ℂ B]
+  (repGauge : Representation ℂ H B) (repLorentz : Representation ℂ SL(2,ℂ) B)
 
-variable {B G ι : Type*} [AddCommGroup B] [Module ℂ B] [Fintype ι] {σ : G → B →ₗ[ℂ] B}
+/-- A representation of `H` and one of `SL(2,ℂ)` on the same module, read as a single family of
+  linear maps indexed by the disjoint union of the two groups. -/
+def gaugeLorentzMaps : H ⊕ SL(2,ℂ) → B →ₗ[ℂ] B :=
+  Sum.elim (fun g => repGauge g) (fun Λ => repLorentz Λ)
 
-/-- A family moved by matrices whose conjugate transposes are among them reduces to the
-  combinations of any submodule `E` of coefficient vectors containing every vector fixed by
-  all the matrices. -/
-lemma reducesInvariantsTo_of_mulVec_eq (T : ι → B) (M : G → Matrix ι ι ℂ)
-    (hT : ∀ g l, σ g (T l) = ∑ a, M g a l • T a) (hM : ∀ g, ∃ g', M g' = (M g)ᴴ)
-    (E : Submodule ℂ (ι → ℂ)) (hE : ∀ c, (∀ g, M g *ᵥ c = c) → c ∈ E) :
-    ReducesInvariantsTo σ (Submodule.span ℂ (Set.range T))
-      (E.map (Fintype.linearCombination ℂ T)) := by
-  refine reducesInvariantsTo_of_quotient fun S hS x hx hinv => ?_
-  -- the law for the classes of the members in `B ⧸ S`
-  have hTS : ∀ g l, S.mapQ S (σ g) (hS g) (S.mkQ (T l)) = ∑ a, M g a l • S.mkQ (T a) :=
-    fun g l => S.mapQ_mkQ_eq_sum_smul (hS g) (hT g l)
-  rw [Submodule.map_span_range] at hx
-  obtain ⟨c, rfl, hc⟩ := Fintype.exists_mulVec_eq_of_conjTranspose_mem (fun i => S.mkQ (T i))
-    (fun g => S.mapQ S (σ g) (hS g)) M hTS hM hx hinv
-  refine ⟨Fintype.linearCombination ℂ T c, ⟨c, hE c hc, rfl⟩, ?_⟩
-  simp [Fintype.linearCombination_apply]
+variable {repGauge repLorentz}
 
-/-- The form of `reducesInvariantsTo_of_mulVec_eq` when no nonzero coefficient vector is
-  fixed: the span reduces to `⊥`. -/
-lemma reducesInvariantsTo_bot_of_mulVec_eq (T : ι → B) (M : G → Matrix ι ι ℂ)
-    (hT : ∀ g l, σ g (T l) = ∑ a, M g a l • T a) (hM : ∀ g, ∃ g', M g' = (M g)ᴴ)
-    (hE : ∀ c, (∀ g, M g *ᵥ c = c) → c = 0) :
-    ReducesInvariantsTo σ (Submodule.span ℂ (Set.range T)) ⊥ := by
-  simpa using reducesInvariantsTo_of_mulVec_eq T M hT hM ⊥ fun c hc =>
-    (Submodule.mem_bot ℂ).2 (hE c hc)
+/-- A submodule stable under both groups is stable under the combined family, and
+  conversely. -/
+lemma isStableUnder_gaugeLorentzMaps_iff {V : Submodule ℂ B} :
+    IsStableUnder (gaugeLorentzMaps repGauge repLorentz) V
+      ↔ (∀ g : H, ∀ y ∈ V, repGauge g y ∈ V) ∧ ∀ Λ : SL(2,ℂ), ∀ y ∈ V, repLorentz Λ y ∈ V := by
+  constructor
+  · exact fun hV => ⟨fun g => hV (Sum.inl g), fun Λ => hV (Sum.inr Λ)⟩
+  · rintro ⟨hg, hL⟩ (g | Λ)
+    · exact hg g
+    · exact hL Λ
 
-/-- The form of `reducesInvariantsTo_of_mulVec_eq` when every fixed coefficient vector is a
-  multiple of `e`: the span reduces to the span of the combination with coefficients `e`. -/
-lemma reducesInvariantsTo_span_singleton_of_mulVec_eq (T : ι → B) (M : G → Matrix ι ι ℂ)
-    (hT : ∀ g l, σ g (T l) = ∑ a, M g a l • T a) (hM : ∀ g, ∃ g', M g' = (M g)ᴴ)
-    (e : ι → ℂ) (hE : ∀ c, (∀ g, M g *ᵥ c = c) → ∃ z : ℂ, c = z • e) :
-    ReducesInvariantsTo σ (Submodule.span ℂ (Set.range T)) (ℂ ∙ ∑ i, e i • T i) := by
-  have h := reducesInvariantsTo_of_mulVec_eq T M hT hM (ℂ ∙ e) fun c hc => by
-    obtain ⟨z, rfl⟩ := hE c hc
-    exact Submodule.smul_mem _ z (Submodule.mem_span_singleton_self e)
-  rwa [Submodule.map_span, Set.image_singleton, Fintype.linearCombination_apply] at h
+/-- An element fixed by both groups is fixed by the combined family, and conversely. -/
+lemma forall_gaugeLorentzMaps_eq_self_iff {x : B} :
+    (∀ p, gaugeLorentzMaps repGauge repLorentz p x = x)
+      ↔ (∀ g : H, repGauge g x = x) ∧ ∀ Λ : SL(2,ℂ), repLorentz Λ x = x := by
+  constructor
+  · exact fun hx => ⟨fun g => hx (Sum.inl g), fun Λ => hx (Sum.inr Λ)⟩
+  · rintro ⟨hg, hL⟩ (g | Λ)
+    · exact hg g
+    · exact hL Λ
 
-end Matrices
+/-- A submodule fixed pointwise by both groups is fixed pointwise by the combined family, and
+  conversely. -/
+lemma isFixedBy_gaugeLorentzMaps_iff {V : Submodule ℂ B} :
+    IsFixedBy (gaugeLorentzMaps repGauge repLorentz) V
+      ↔ (∀ g : H, ∀ y ∈ V, repGauge g y = y) ∧ ∀ Λ : SL(2,ℂ), ∀ y ∈ V, repLorentz Λ y = y := by
+  constructor
+  · exact fun hV => ⟨fun g => hV (Sum.inl g), fun Λ => hV (Sum.inr Λ)⟩
+  · rintro ⟨hg, hL⟩ (g | Λ)
+    · exact hg g
+    · exact hL Λ
+
+/-- The endpoint `ReducesInvariantsTo.mem_sup_and_forall_eq_self_iff` for the two groups
+  together, with the two invariances and the two stabilities stated separately. -/
+lemma ReducesInvariantsTo.mem_sup_and_gauge_lorentz_invariant_iff {V W S : Submodule ℂ B}
+    (hP : ReducesInvariantsTo (gaugeLorentzMaps repGauge repLorentz) V W) (hWV : W ≤ V)
+    (hW : IsFixedBy (gaugeLorentzMaps repGauge repLorentz) W)
+    (hS : ∀ g : H, ∀ y ∈ S, repGauge g y ∈ S)
+    (hSL : ∀ Λ : SL(2,ℂ), ∀ y ∈ S, repLorentz Λ y ∈ S) (x : B) :
+    (x ∈ V ⊔ S ∧ (∀ g : H, repGauge g x = x) ∧ ∀ Λ : SL(2,ℂ), repLorentz Λ x = x)
+      ↔ ∃ y ∈ S, (∀ g : H, repGauge g y = y)
+          ∧ (∀ Λ : SL(2,ℂ), repLorentz Λ y = y) ∧ x - y ∈ W := by
+  simpa only [forall_gaugeLorentzMaps_eq_self_iff, and_assoc] using
+    hP.mem_sup_and_forall_eq_self_iff hWV hW (isStableUnder_gaugeLorentzMaps_iff.2 ⟨hS, hSL⟩) x
+
+/-- A reduction for `H` is a reduction for the two groups together. -/
+lemma ReducesInvariantsTo.ofGauge {V W : Submodule ℂ B}
+    (hP : ReducesInvariantsTo (fun g : H => repGauge g) V W) :
+    ReducesInvariantsTo (gaugeLorentzMaps repGauge repLorentz) V W :=
+  ReducesInvariantsTo.comp (Sum.inl (β := SL(2,ℂ))) hP
+
+/-- A Lorentz reduction is a reduction for the two groups together. -/
+lemma ReducesInvariantsTo.ofLorentz {V W : Submodule ℂ B}
+    (hP : ReducesInvariantsTo (fun Λ : SL(2,ℂ) => repLorentz Λ) V W) :
+    ReducesInvariantsTo (gaugeLorentzMaps repGauge repLorentz) V W :=
+  ReducesInvariantsTo.comp (Sum.inr (α := H)) hP
+
+end BothGroups
+
+section Multiplicative
+
+open MatrixGroups
+
+variable {H B : Type*} [Group H] [Ring B] [Algebra ℂ B] {repGauge : Representation ℂ H B}
+  {repLorentz : Representation ℂ SL(2,ℂ) B}
+
+/-- The two groups read as one family of maps respect multiplication, each of the two
+  representations doing so. -/
+lemma gaugeLorentzMaps_mul
+    (hG : ∀ (g : H) (b₁ b₂ : B), repGauge g (b₁ * b₂) = repGauge g b₁ * repGauge g b₂)
+    (hL : ∀ (Λ : SL(2,ℂ)) (b₁ b₂ : B),
+      repLorentz Λ (b₁ * b₂) = repLorentz Λ b₁ * repLorentz Λ b₂)
+    (p : H ⊕ SL(2,ℂ)) (a b : B) :
+    gaugeLorentzMaps repGauge repLorentz p (a * b)
+      = gaugeLorentzMaps repGauge repLorentz p a * gaugeLorentzMaps repGauge repLorentz p b := by
+  cases p with
+  | inl g => exact hG g a b
+  | inr Λ => exact hL Λ a b
+
+end Multiplicative

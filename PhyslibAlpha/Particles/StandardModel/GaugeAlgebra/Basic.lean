@@ -5,36 +5,45 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.JetGaugeGroup.Basic
 public import Physlib.Relativity.Tensors.ComplexTensor.Basic
 public import Physlib.Relativity.Tensors.RealTensor.Vector.Representation
 public import PhyslibAlpha.Mathematics.Modules.ConjModule
+public import PhyslibAlpha.Particles.StandardModel.GaugeGroup.Basic
 public import Mathlib.LinearAlgebra.ExteriorAlgebra.Basis
 public import PhyslibAlpha.Mathematics.MvPolynomialTranslation
 /-!
 # The gauge algebra of the Standard Model
 
+The Lie algebra of `SU(3) × SU(2) × U(1)` in the hermitian convention, with its adjoint action.
+
 ## i. Overview
 
-The gauge algebra of the Standard Model is the Lie algebra of
-`GaugeGroupI`, which is the direct sum of the Lie algebras of `SU(3)`, `SU(2)` and `U(1)`.
-This is a matrix Lie algebra, so the bracket is given by the commutator of matrices.
+The gauge algebra of the Standard Model is the Lie algebra of `GaugeGroupI`, the direct sum of
+the Lie algebras of `SU(3)`, `SU(2)` and `U(1)`. Following the physics convention, its elements
+are written with hermitian generators. An element is a triple `(c₃, c₂, c₁)` of a traceless
+hermitian `3 × 3` matrix, a traceless hermitian `2 × 2` matrix and a real scalar, and the
+corresponding element of the matrix Lie algebra is `diag(i c₃, i c₂, i c₁)`. The bracket is
+therefore `i` times the matrix commutator, which keeps hermitian matrices hermitian but is only
+real-bilinear. The identification with the Lie algebra of the global gauge group is
+`gaugeAlgebraEquiv`, in `GaugeGroup/LieAlgebra.lean`.
+
+The gauge group acts on its gauge algebra by conjugation of the `su(3)` and `su(2)` factors,
+leaving the abelian `u(1)` factor fixed.
 
 ## ii. Key results
 
-- `GaugeAlgebra` : the gauge algebra of the Standard Model: the Lie algebra of `GaugeGroupI`, with
-  one factor per gauge group factor — traceless self-adjoint `3 × 3` and `2 × 2` complex matrices
-  and a self-adjoint (i
-- `toSU3Matrix` : the `su(3)`-factor component of an element of the gauge algebra
-- `toSU2Matrix` : the `su(2)`-factor component of an element of the gauge algebra
-- `toU1Value` : the `u(1)`-factor component of an element of the gauge algebra
+- `StandardModel.GaugeAlgebra` : the gauge algebra of the Standard Model.
+- `StandardModel.GaugeAlgebra.toSU3Matrix`, `StandardModel.GaugeAlgebra.toSU2Matrix`,
+  `StandardModel.GaugeAlgebra.toU1Value` : the components of an element in the three factors.
+- The instance `LieAlgebra ℝ GaugeAlgebra` : the bracket `i [a, b]` on each factor.
+- `StandardModel.GaugeAlgebra.adjoint` : the adjoint action of the gauge group.
 
 ## iii. Table of contents
 
 - A. Basic projections
 - B. Constructor from a product of matrices
 - C. The Lie algebra instance
-- D. The adjoint action of the global gauge group
+- D. The adjoint action of the gauge group
 
 ## iv. References
 
@@ -45,12 +54,12 @@ This is a matrix Lie algebra, so the bracket is given by the commutator of matri
 @[expose] public section
 
 namespace StandardModel
-open MvPowerSeries Matrix
+open Matrix
 
-/-- The gauge algebra of the Standard Model: the Lie algebra of `GaugeGroupI`, with one
-  factor per gauge group factor — traceless self-adjoint `3 × 3` and `2 × 2` complex
-  matrices and a self-adjoint (i.e. real) scalar. This is the constant-coefficient
-  analogue of `JetGaugeAlgebra`, and the value at the base point of the jets it contains. -/
+/-- The gauge algebra of the Standard Model, the Lie algebra of `GaugeGroupI` in the hermitian
+  convention. It has one factor per gauge group factor, the traceless self-adjoint `3 × 3` and
+  `2 × 2` complex matrices and the self-adjoint (that is, real) scalars. It is identified with
+  the Lie algebra of `globalGaugeGroup` by `gaugeAlgebraEquiv`. -/
 abbrev GaugeAlgebra :=
   ↥(selfAdjoint.submodule ℝ (Matrix (Fin 3) (Fin 3) ℂ) ⊓
     LinearMap.ker (Matrix.traceLinearMap (Fin 3) ℝ ℂ)) ×
@@ -63,6 +72,7 @@ abbrev GaugeAlgebra :=
 instance : Module.Finite ℝ (selfAdjoint ℂ) :=
   inferInstanceAs (Module.Finite ℝ (selfAdjoint.submodule ℝ ℂ))
 
+/-- The gauge algebra is a finite-dimensional real vector space. -/
 instance : Module.Finite ℝ GaugeAlgebra := by infer_instance
 
 namespace GaugeAlgebra
@@ -82,6 +92,7 @@ def toSU2Matrix (a : GaugeAlgebra) : Matrix (Fin 2) (Fin 2) ℂ := a.2.1
 /-- The `u(1)`-factor component of an element of the gauge algebra. -/
 def toU1Value (a : GaugeAlgebra) : ℂ := a.2.2
 
+/-- Two elements of the gauge algebra with the same three components are equal. -/
 @[ext]
 lemma ext_of_matrix {a b : GaugeAlgebra} (h1 : a.toSU3Matrix = b.toSU3Matrix)
     (h2 : a.toSU2Matrix = b.toSU2Matrix) (h3 : a.toU1Value = b.toU1Value) : a = b := by
@@ -159,10 +170,10 @@ lemma smul_toSU2Matrix (r : ℝ) (a : GaugeAlgebra) :
 lemma smul_toU1Value (r : ℝ) (a : GaugeAlgebra) :
     (r • a).toU1Value = r • a.toU1Value := by rfl
 
-/-- The bracket on the gauge algebra: `I` times the matrix commutator on the
-  `su(3)` and `su(2)` factors, and zero on the (commutative) `u(1)` factor. The
-  factor of `I` is what makes the bracket of two hermitian matrices hermitian
-  again; it is also why the bracket is only `ℝ`-bilinear, not `ℂ`-bilinear. -/
+/-- The bracket on the gauge algebra, `I` times the matrix commutator on the `su(3)` and `su(2)`
+  factors and zero on the commutative `u(1)` factor. The factor of `I` is what makes the
+  bracket of two hermitian matrices hermitian again. It is also why the bracket is only
+  `ℝ`-bilinear, not `ℂ`-bilinear. -/
 noncomputable instance : Bracket GaugeAlgebra GaugeAlgebra where
   bracket a b := ofMatrixProd
       (Complex.I • (a.toSU3Matrix * b.toSU3Matrix - b.toSU3Matrix * a.toSU3Matrix),
@@ -196,6 +207,7 @@ lemma bracket_toSU2Matrix (a b : GaugeAlgebra) :
 lemma bracket_toU1Value (a b : GaugeAlgebra) :
     ⁅a, b⁆.toU1Value = 0 := rfl
 
+/-- The gauge algebra is a Lie ring under the bracket `i [a, b]`. -/
 noncomputable instance : LieRing GaugeAlgebra where
   add_lie a b c := by
     ext <;> simp [add_mul, mul_add, smul_sub] <;> ring
@@ -210,13 +222,14 @@ noncomputable instance : LieRing GaugeAlgebra where
         smul_smul, Complex.I_mul_I, smul_sub, mul_sub, sub_mul, mul_assoc, add_zero] <;>
       module
 
+/-- The gauge algebra is a real Lie algebra. -/
 noncomputable instance : LieAlgebra ℝ GaugeAlgebra where
   lie_smul t a b := by
     ext <;> simp [smul_sub] <;> ring
 
 /-!
 
-## D. The adjoint action of the global gauge group
+## D. The adjoint action of the gauge group
 
 -/
 
@@ -230,7 +243,7 @@ lemma conj_mem {n : ℕ} {U A : Matrix (Fin n) (Fin n) ℂ}
   · rw [Matrix.trace_mul_cycle, Matrix.mem_unitaryGroup_iff'.mp hU, one_mul, htr]
 
 /-- The linear map by which one gauge group element acts on the gauge algebra in the
-  adjoint action: conjugation by the corresponding unitary on the `su(3)` and `su(2)`
+  adjoint action. It is conjugation by the corresponding unitary on the `su(3)` and `su(2)`
   factors, and the identity on the commutative `u(1)` factor. -/
 noncomputable def adjointMap (g : GaugeGroupI) : GaugeAlgebra →ₗ[ℝ] GaugeAlgebra where
   toFun a := ofMatrixProd
@@ -264,9 +277,9 @@ lemma adjointMap_toSU2Matrix (g : GaugeGroupI) (a : GaugeAlgebra) :
 lemma adjointMap_toU1Value (g : GaugeGroupI) (a : GaugeAlgebra) :
     (adjointMap g a).toU1Value = a.toU1Value := rfl
 
-/-- **The adjoint action of the global gauge group on its gauge algebra**: conjugation by
-  the corresponding unitary on the `su(3)` and `su(2)` factors, and the trivial action on
-  the commutative `u(1)` factor. -/
+/-- The adjoint action of the gauge group on its gauge algebra. It is conjugation by the
+  corresponding unitary on the `su(3)` and `su(2)` factors, and the trivial action on the
+  commutative `u(1)` factor. -/
 noncomputable def adjoint : Representation ℝ GaugeGroupI GaugeAlgebra where
   toFun := adjointMap
   map_one' := by

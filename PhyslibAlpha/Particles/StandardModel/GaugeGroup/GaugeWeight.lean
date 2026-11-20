@@ -199,6 +199,25 @@ lemma su2ExpI_inv_coe :
   ext a b
   fin_cases a <;> fin_cases b <;> simp
 
+/-- The inverse of the unitary `exp i` is its conjugate. -/
+lemma expI_inv_coe : ((expI⁻¹ : unitary ℂ) : ℂ) = star (expI : ℂ) := rfl
+
+/-- The inverse of the first colour torus generator, `diag (exp (-i), exp i, 1)`. -/
+lemma su3ExpIOne_inv_coe :
+    (su3ExpIOne⁻¹ : specialUnitaryGroup (Fin 3) ℂ).1
+      = Matrix.diagonal ![star (expI : ℂ), (expI : ℂ), 1] := by
+  rw [← Matrix.star_eq_inv, Matrix.specialUnitaryGroup.coe_star]
+  ext a b
+  fin_cases a <;> fin_cases b <;> simp [su3ExpIOne, Matrix.diagonal]
+
+/-- The inverse of the second colour torus generator, `diag (1, exp (-i), exp i)`. -/
+lemma su3ExpITwo_inv_coe :
+    (su3ExpITwo⁻¹ : specialUnitaryGroup (Fin 3) ℂ).1
+      = Matrix.diagonal ![1, star (expI : ℂ), (expI : ℂ)] := by
+  rw [← Matrix.star_eq_inv, Matrix.specialUnitaryGroup.coe_star]
+  ext a b
+  fin_cases a <;> fin_cases b <;> simp [su3ExpITwo, Matrix.diagonal]
+
 /-!
 ## B. The four torus generators and gauge weights
 
@@ -220,7 +239,7 @@ characters by which the torus acts.
 noncomputable def gaugeTorusGen : Fin 4 → GaugeGroupI :=
   ![⟨su3ExpIOne, 1, 1⟩, ⟨su3ExpITwo, 1, 1⟩, ⟨1, su2ExpI, 1⟩, ⟨1, 1, expI⟩]
 
-/-- A **gauge weight**, the four exponents `(colour₁, colour₂, isospin, hypercharge)`
+/-- A gauge weight, the four exponents `(colour₁, colour₂, isospin, hypercharge)`
   recording how a vector scales under `gaugeTorusGen`. -/
 abbrev GaugeWeight : Type := ℤ × ℤ × ℤ × ℤ
 
@@ -318,6 +337,10 @@ lemma starRingEnd_expI_zpow (z : ℤ) :
   rw [expI_inv_eq_star]
   rfl
 
+/-- Conjugation inverts an integer power of `expI`. -/
+lemma star_expI_zpow (z : ℤ) : star ((expI : ℂ) ^ z) = (expI : ℂ) ^ (-z) := by
+  rw [Complex.star_def, starRingEnd_expI_zpow]
+
 lemma expI_zpow_ne_zero (z : ℤ) : ((expI : ℂ) ^ z) ≠ 0 :=
   zpow_ne_zero _ (by simp [expI, Complex.exp_ne_zero])
 
@@ -386,7 +409,7 @@ lemma conj_gaugeTorusGen_basis (ρ : Representation ℂ GaugeGroupI V)
 
 end TorusBases
 
-/-- A **gauge weight decomposition** of a submodule `V`, a finitely supported family of
+/-- A gauge weight decomposition of a submodule `V`, a finitely supported family of
   subspaces of pure gauge weight whose supremum is `V`. Purity is recorded against the four
   commuting torus generators simultaneously. -/
 class GaugeWeightDecomposition (rep : Representation ℂ GaugeGroupI B)
