@@ -19,7 +19,8 @@ The measure and generating-functional formulation of the Euclidean field axioms.
 
 This is a formalization of the Glimm–Jaffe variation of the Osterwalder–Schrader axioms,
 as presented in Glimm and Jaffe, *Quantum Physics*, Chapter 6. [ref: glimm1987quantum]
-This formalism is on the generating functional, while the original OS axioms are on the Schwinger functions.
+This formalism is on the generating functional, while the original OS axioms are on the
+Schwinger functions.
 
 We port the predicates in `OSforGFF/OS/Axioms.lean`: analyticity (OS0), regularity
 (OS1), full Euclidean invariance (OS2), complex reflection positivity (OS3), and
@@ -100,7 +101,9 @@ def OS2EuclideanInvariance (μ : FieldMeasure d) : Prop :=
     generatingFunctional μ f = generatingFunctional μ (schwartzSpacetimeEuclideanAction g f)
 
 /-- OS3 in the source's complex formulation: the real part of every reflected
-quadratic form is nonnegative. Reflection includes complex conjugation of the test. -/
+quadratic form is nonnegative. Reflection includes complex conjugation of the test.
+The dimension assumption retains the source's requirement of at least one spatial dimension. -/
+@[nolint unusedArguments]
 def OS3ReflectionPositivity [Fact (1 ≤ d)] (μ : FieldMeasure d) : Prop :=
   ∀ (n : ℕ) (f : Fin n → PositiveTimeTestFunction d) (c : Fin n → ℂ),
     0 ≤ (∑ i, ∑ j, starRingEnd ℂ (c i) * c j *

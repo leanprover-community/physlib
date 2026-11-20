@@ -84,7 +84,9 @@ lemma pairing_apply (ω : FieldConfiguration d) (f : 𝓢(TimeAndSpace d, ℂ)) 
 /-! ## B. Time translation -/
 
 /-- Time translation of a (complexified) field by duality,
-  `(T_s ω)(f) = ω((t, x) ↦ f(t - s, x))`. -/
+  `(T_s ω)(f) = ω((t, x) ↦ f(t - s, x))`.
+The dimension assumption retains the source's requirement of at least one spatial dimension. -/
+@[nolint unusedArguments]
 def timeTranslation [Fact (1 ≤ d)] (s : ℝ) (ω : WeakDual ℂ (𝓢(TimeAndSpace d, ℂ))) :
     WeakDual ℂ (𝓢(TimeAndSpace d, ℂ)) :=
   ω.comp (SchwartzMap.compSubConstCLM ℂ (⟨s⟩, 0))
