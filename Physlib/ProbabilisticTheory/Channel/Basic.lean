@@ -29,11 +29,13 @@ A channel `Φ : Channel P Q` is a unital positive linear map from
 
 - `Channel` : channels between observable spaces.
 - `Channel.id`, `Channel.comp` : the identity and composition of channels.
+- `Channel.IsNormal` : preservation of increasing sequential suprema.
 - `Channel.ofLinearMap` : bundle a linear map after checking positivity and unitality.
 
 ## iii. Table of contents
 
 - A. Channels between observable spaces
+- B. Normal channels
 
 ## iv. References
 
@@ -129,5 +131,18 @@ def ofLinearMap (f : P.Observables →ₗ[ℝ] Q.Observables) (hpos : ∀ x, 0 �
 def ofPositiveLinearMap (f : P.Observables →ₚ[ℝ] Q.Observables) (hone : f 1 = 1) : Channel P Q where
   toPositiveLinearMap := f
   map_one' := hone
+
+/-! ## B. Normal channels -/
+
+/-- A channel is sequentially normal when it preserves existing least upper bounds of increasing
+sequences. States inherit this property as channels into the real numbers. -/
+def IsNormal (φ : Channel P Q) : Prop :=
+  ∀ (f : ℕ → P.Observables) (x : P.Observables), Monotone f → IsLUB (Set.range f) x →
+    IsLUB (Set.range (φ ∘ f)) (φ x)
+
+/-- Composition of sequentially normal channels is sequentially normal. -/
+lemma IsNormal.comp {φ : Channel P Q} {ψ : Channel Q R} (hφ : φ.IsNormal)
+    (hψ : ψ.IsNormal) : (ψ.comp φ).IsNormal :=
+  fun f x hf hx ↦ hψ _ _ ((OrderHomClass.mono φ).comp hf) (hφ f x hf hx)
 
 end Channel
