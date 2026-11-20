@@ -51,6 +51,9 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
   `f : Space d → E` the derivative along the `i`ᵗʰ coordinate direction of its Fourier integral
   is the Fourier integral of the function `x ↦ (b * I * x i) • f x`, and similarly for functions
   `WaveVectorSpace d → E` and the inverse Fourier integral.
+- `fourierIntegral_deriv` / `fourierIntegralInv_deriv` : for a suitably nice function
+  `f : Space d → E` the Fourier integral of its `i`ᵗʰ derivative is `-b * I * k i` times its Fourier
+  integral, and similarly for functions `WaveVectorSpace d → E` and the inverse Fourier integral.
 
 ## iii. Table of contents
 
@@ -366,6 +369,10 @@ lemma deriv_fourierIntegralInv (i : Fin d)
   congr
   simp [dotProduct, Space.basis_apply, ← coe_smul, smul_smul]
 
+/-- The Fourier transform of the partial derivative of `f` along coordinate `i`
+is `-b * I * kᵢ` times the Fourier transform of `f`.
+
+That is, the Fourier transform maps derivatives to multiplication. -/
 lemma fourierIntegral_deriv (i : Fin d) {f : Space d → E}
     (hf : Integrable f) (hf' : Differentiable ℝ f) (hf'' : Integrable (fderiv ℝ f)) :
     fourierIntegral a b (∂[i] f) = -(b * I) • coord i • fourierIntegral a b f := by
@@ -373,6 +380,10 @@ lemma fourierIntegral_deriv (i : Fin d) {f : Space d → E}
   simp [Space.deriv_eq_fderiv_fun, ← fourierIntegral_continuousLinearMap_apply, coord_apply,
     fourierIntegral_fderiv, dotProduct, Space.basis_apply, hf, hf', hf'', ← coe_smul, smul_smul]
 
+/-- The inverse Fourier transform of the partial derivative of `g` along coordinate `i`
+is `b * I * xᵢ` times the inverse Fourier transform of `g`.
+
+That is, the inverse Fourier transform maps derivatives to multiplication. -/
 lemma fourierIntegralInv_deriv (i : Fin d) {g : WaveVectorSpace d → E}
     (hg : Integrable g) (hg' : Differentiable ℝ g) (hg'' : Integrable (fderiv ℝ g)) :
     fourierIntegralInv a b (∂[i] g) = (b * I) • Space.coord i • fourierIntegralInv a b g := by
