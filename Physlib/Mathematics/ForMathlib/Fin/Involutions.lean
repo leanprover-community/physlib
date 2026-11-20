@@ -240,7 +240,7 @@ def involutionNoFixedEquivSum {n : ℕ} :
   toFun f := ⟨(f.1 0).pred (f.2.2 0), ⟨f.1, f.2.1, by simpa using f.2.2⟩⟩
   invFun f := ⟨f.2.1, ⟨f.2.2.1, f.2.2.2.1⟩⟩
   left_inv f := rfl
-  right_inv f := by ext <;> try aesop
+  right_inv f := by ext <;> aesop
 
 /-- The condition on fixed point free involutions of `Fin n.succ` for a fixed value of `f 0`,
   can be modified by conjugation with an equivalence. -/
@@ -370,17 +370,17 @@ def involutionNoFixedSetOne {n : ℕ} :
       match i with
       | ⟨0, h⟩ =>
         simp only [succ_eq_add_one, ne_eq, Fin.zero_eta, f']
-        split <;> try simp_all
+        split <;> simp_all
       | ⟨1, h⟩ =>
         simp only [succ_eq_add_one, ne_eq, Fin.mk_one, f']
-        split <;> try simp_all
+        split <;> simp_all
       | ⟨(Nat.succ (Nat.succ m)), h⟩ =>
         simp only [succ_eq_add_one, ne_eq, Fin.ext_iff, Fin.val_succ, add_left_inj, f']
         have hf := f.2.2 ⟨m, Nat.add_lt_add_iff_right.mp h⟩
         simp only [ne_eq, Fin.ext_iff] at hf
         omega
     · simp only [succ_eq_add_one, ne_eq, f']
-      split <;> try simp_all
+      split <;> simp_all
   left_inv f := by
     have hf1 : f.1 1 = 0 := by
       simp only [succ_eq_add_one, ne_eq, ← f.2.2.2]

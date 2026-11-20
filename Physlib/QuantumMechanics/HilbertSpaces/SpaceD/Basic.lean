@@ -262,7 +262,7 @@ lemma tendsto_zero_iff_tendsto_zero_lintegral_enorm_sq
     {α : Type*} {l : Filter α} {ψ : α → SpaceDHilbertSpace d μ} :
     Tendsto ψ l (nhds 0) ↔ Tendsto (fun a ↦ ∫⁻ x, ‖ψ a x‖ₑ ^ 2 ∂μ) l (nhds 0) := by
   trans Tendsto (fun a ↦ (∫⁻ x, ‖ψ a x‖ₑ ^ 2 ∂μ) ^ (2⁻¹ : ℝ)) l (nhds 0)
-  · simp [tendsto_iff_edist_tendsto_0, edist_zero_right, Lp.enorm_def, eLpNorm, eLpNorm',
+  · simp [tendsto_iff_edist_tendsto_0, edist_zero_right, Lp.eNorm_def, eLpNorm, eLpNorm',
       Lp.aestronglyMeasurable]
   constructor <;> intro h
   · apply Tendsto.ennrpow_const 2 at h

@@ -104,7 +104,7 @@ lemma evalP_update_smul [inst : DecidableEq (Fin (n + 1))] (i j : Fin (n + 1))
 /-- The multi-linear map formed by evaluation of an index of pure tensors. -/
 noncomputable def evalPMultilinear {n : ℕ} {c : Fin (n + 1)→ C}
     (i : Fin (n + 1)) (φ : basisIdx (c i)) :
-    MultilinearMap k (fun i => V (c i))
+    MultilinearMap (RingHom.id k) (fun i => V (c i))
       (S.Tensor (c ∘ i.succAbove)) where
   toFun p := evalP i φ p
   map_update_add' p m x y := by

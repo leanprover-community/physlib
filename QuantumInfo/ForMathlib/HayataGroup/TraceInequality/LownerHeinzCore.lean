@@ -8,7 +8,6 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.IntegralRepresentation
 public import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow.Order
-public import Mathlib.LinearAlgebra.Matrix.PosDef
 
 @[expose] public section
 

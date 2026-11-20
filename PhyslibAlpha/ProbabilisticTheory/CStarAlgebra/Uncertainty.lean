@@ -563,7 +563,7 @@ lemma card_le_two_mul_finrank_ker {G : Matrix n n ℂ} {S W : Matrix n n ℝ} (h
       have h := (h₁.add h₂).smul (Complex.zero_le_real.mpr (by norm_num : (0 : ℝ) ≤ 1 / 2))
       convert h using 1
       ext i j
-      simp only [smul_apply, add_apply, sub_apply, smul_eq_mul]
+      simp only [Matrix.smul_apply, Matrix.add_apply, Matrix.sub_apply, smul_eq_mul]
       push_cast
       ring
     rw [PosSemidef.posDef_iff_det_ne_zero (show A.PosSemidef from hS), hdetA,

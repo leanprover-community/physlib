@@ -70,7 +70,7 @@ lemma cayleyKlein_mem_unitaryGroup (a b : ℂ) (h : normSq a + normSq b = 1) :
   rw [mem_unitaryGroup_iff]
   ext i j
   fin_cases i <;> fin_cases j <;>
-    simp [cayleyKlein, mul_apply, Fin.sum_univ_two, mul_conj, ← h'] <;>
+    simp [cayleyKlein, Matrix.mul_apply, Fin.sum_univ_two, mul_conj, ← h'] <;>
     ring
 
 /-- The image of a Cayley–Klein element is a rotation. -/
@@ -101,7 +101,7 @@ lemma cayleyKleinRotation_inr_inr (a b : ℂ) (h : normSq a + normSq b = 1) (i j
   apply ofReal_injective
   rw [cayleyKleinRotation, toLorentzGroup_eq_trace, trace_pauliSelfAdjoint'_mul_apply]
   fin_cases i <;> fin_cases j <;>
-      simp [cayleyKlein, pauliSelfAdjoint', pauliMatrix, mul_apply, Fin.sum_univ_two] <;>
+      simp [cayleyKlein, pauliSelfAdjoint', pauliMatrix, Matrix.mul_apply, Fin.sum_univ_two] <;>
     apply Complex.ext <;> simp [sq, normSq_apply] <;> ring
 
 /-- Every unit vector is the image of the third axis under some Cayley–Klein rotation. -/

@@ -5,9 +5,6 @@ Authors: Nicolas Rouquette
 -/
 module
 
-public import Mathlib.Algebra.Order.Algebra
-public import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-public import Physlib.Units.Dimension
 public import Physlib.Units.WithDim.Basic  -- shake: keep (used in `example` only)
 /-!
 

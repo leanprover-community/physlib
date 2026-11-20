@@ -224,7 +224,7 @@ lemma component_update_smul {n : ℕ} [inst : DecidableEq (Fin n)]
 /-- The multilinear map taking pure tensors `p` to a map `ComponentIdx c → k` which when
   evaluated returns the components of `p`. -/
 noncomputable def componentMap {n : ℕ} (c : Fin n → C) :
-    MultilinearMap k (fun i => V (c i)) (ComponentIdx (S := S) c → k) where
+    MultilinearMap (RingHom.id k) (fun i => V (c i)) (ComponentIdx (S := S) c → k) where
   toFun p := fun b => component p b
   map_update_add' p i x y := by
     ext b
@@ -300,7 +300,12 @@ lemma ofComponents_componentMap {n : ℕ} (c : Fin n → C) (t : S.Tensor c) :
   induction t using induction_on_pure with
   | h p =>
     simp only [componentMap_pure, Pure.componentMap_apply]
-    simp_rw [Pure.component_eq, Pure.toTensor, ← MultilinearMap.map_smul_univ, Pure.basisVector]
+    have hsmul (a : Fin n → k) (q : Pure S c) :
+        (∏ i, a i) • (PiTensorProduct.tprod k) q =
+          (PiTensorProduct.tprod k) (fun i => a i • q i) := by
+      simpa only [RingHom.id_apply] using
+        ((PiTensorProduct.tprod k).map_smul_univ a q).symm
+    simp_rw [Pure.component_eq, Pure.toTensor, hsmul, Pure.basisVector]
     trans (PiTensorProduct.tprod k) fun i =>
       ∑ x, ((b (c i)).repr (p i)) x • (b (c i)) x
     · exact (MultilinearMap.map_sum _ fun i j => ((b (c i)).repr (p i)) j • (b (c i)) j).symm

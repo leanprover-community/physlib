@@ -11,7 +11,6 @@ public import Physlib.QuantumMechanics.PlanckConstant
 public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 import Mathlib.Analysis.Calculus.FDeriv.Star
-import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 /-!
 
 # Momentum operators

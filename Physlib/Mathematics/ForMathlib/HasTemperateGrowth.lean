@@ -6,7 +6,6 @@ Authors: Gregory J. Loges
 module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Basic
-public import Mathlib.Algebra.Polynomial.Eval.Defs
 /-!
 
 # Functions of temperate growth

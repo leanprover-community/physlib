@@ -110,11 +110,11 @@ lemma ext_of_forall_mem_submonoid_integral_eq_of_polish [PolishSpace E] [BorelSp
   | mem f hf => exact heq f hf
   | zero => simp
   | add a b _ _ ha hb =>
-    simp only [BoundedContinuousFunction.add_apply]
+    simp only [add_apply]
     rw [integral_add (a.integrable P) (b.integrable P),
       integral_add (a.integrable P') (b.integrable P'), ha, hb]
   | smul c a _ ha =>
-    simp only [BoundedContinuousFunction.smul_apply, smul_eq_mul]
+    simp only [smul_apply, smul_eq_mul]
     rw [integral_const_mul, integral_const_mul, ha]
 
 section Tight
@@ -153,7 +153,7 @@ private lemma abs_integral_mulExpNegMulSq_comp_sub_le_of_isTightMeasureSet_of_bo
       rw [mul_assoc]
       refine mul_le_of_le_one_right (sqrt_nonneg ε) (inv_mul_le_one_of_le₀ ?_ hC.le)
       exact (measureReal_mono (subset_univ K)).trans hμC
-    simp only [ContinuousMap.coe_coe] at hf hg hfg
+    simp only [ContinuousMap.coe_ofClass] at hf hg hfg
     rw [abs_lt] at hf hg
     rw [abs_le] at hfg ⊢
     constructor <;> linarith

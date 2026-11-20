@@ -356,7 +356,7 @@ lemma projection_localized_ne_zero {U : Set (PontryaginDual (Multiplicative G))}
   have h1 : UnitaryRep.spectralMeasure (translation G N) U (localized e) = 0 := h0
   rw [h1, vectorMeasure_localized] at hν
   simp only [norm_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, zero_pow,
-    ENNReal.ofReal_zero, Measure.smul_apply, smul_eq_mul] at hν
+    ENNReal.ofReal_zero, smul_apply, smul_eq_mul] at hν
   have hpos : 0 < dualHaar (G := G) U := hU.measure_pos _ hne
   have hnorm : 0 < ENNReal.ofReal (‖e‖ ^ 2) := ENNReal.ofReal_pos.mpr (by positivity)
   exact (ENNReal.mul_pos hnorm.ne' hpos.ne').ne' hν

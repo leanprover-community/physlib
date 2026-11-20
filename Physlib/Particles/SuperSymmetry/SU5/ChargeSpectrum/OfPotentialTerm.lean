@@ -364,9 +364,8 @@ lemma ofPotentialTerm'_subset_ofPotentialTerm [DecidableEq 𝓩]
     use q2, q3, q4
     simp [← q_sum]
     abel
-  all_goals
-    rw [← q_sum]
-    try abel
+  all_goals rw [← q_sum]
+  all_goals abel
 
 /-!
 

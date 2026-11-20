@@ -128,10 +128,10 @@ theorem cfc_toMat_eq_sum_smul_proj : (A.cfc f).mat =
   rw [A.mat_cfc, A.H.cfc_eq, Matrix.IsHermitian.cfc]
   have h : ( Matrix.diagonal ( RCLike.ofReal ∘ f ∘ Matrix.IsHermitian.eigenvalues A.H ) : Matrix d d 𝕜 ) = ∑ i, f ( A.H.eigenvalues i ) • Matrix.single i i 1 := by
     ext i j ; by_cases hij : i = j <;> simp [ hij ];
-    · simp [ Matrix.sum_apply, Matrix.single ];
+    · simp [ Matrix.single ];
       simp [ Algebra.smul_def ];
-    · rw [Finset.sum_apply, Finset.sum_apply]
-      simp_all
+    · have hne (c : d) : ¬(c = i ∧ c = j) := fun h => hij (h.1.symm.trans h.2)
+      simp [Matrix.single, Matrix.of_apply, hne]
   rw [h]
   simp [Matrix.single, Matrix.mul_assoc]
   congr! 1
@@ -515,7 +515,7 @@ The functional calculus is continuous on matrices with spectrum in a compact set
 -/
 lemma continuousOn_cfc_of_compact {K : Set ℝ} {g : ℝ → ℝ} (hK : IsCompact K) (hg : ContinuousOn g K) :
     ContinuousOn (fun (A : HermitianMat d ℂ) ↦ A.cfc g) {A | spectrum ℝ A.mat ⊆ K} := by
-  by_contra! h_contra;
+  by_contra h_contra;
   -- By Stone-Weierstrass, there exists a sequence of polynomials `p_n` converging uniformly to `g` on `K`.
   obtain ⟨p_n, hp_n⟩ : ∃ p_n : ℕ → Polynomial ℝ, (∀ n, ∀ x ∈ K, |(p_n n).eval x - g x| ≤ 1 / (n + 1)) := by
     have h_stone_weierstrass : ∀ ε > 0, ∃ p : Polynomial ℝ, ∀ x ∈ K, |p.eval x - g x| < ε := by
@@ -1042,7 +1042,7 @@ lemma inv_cfc_eq_cfc_inv (hf : ∀ i, f (A.H.eigenvalues i) ≠ 0) :
     simp_all [ Matrix.single ];
     convert h_unitary using 2;
     ext i j; simp [ Matrix.mul_apply]
-    simp [ Matrix.sum_apply, Finset.filter_eq', Finset.filter_and ];
+    simp [ Finset.filter_eq', Finset.filter_and ];
     rw [ Finset.sum_eq_single j ] <;> aesop;
   rw [ Matrix.inv_eq_right_inv h_inv ];
 
@@ -1343,7 +1343,7 @@ lemma cfc_mulVec_expansion (A : HermitianMat d ℂ) (f : ℝ → ℝ) (x : Eucli
       convert cfc_toMat_eq_sum_smul_proj A f using 1;
     convert congr_fun h_cfc_def i using 1;
     simp [ funext_iff, Matrix.single ];
-    simp [ Matrix.mul_apply, Matrix.conjTranspose_apply, Matrix.sum_apply, mul_assoc ];
+    simp [ Matrix.mul_apply, Matrix.conjTranspose_apply ];
     intro x; congr; ext y; simp [ Finset.sum_ite, Finset.filter_eq, Finset.filter_and ] ; ring_nf
     rw [ Finset.sum_eq_single y ] <;> aesop;
   simp_all [mul_comm, mul_left_comm ] ; ring_nf
@@ -1382,7 +1382,7 @@ lemma ker_cfc_le_ker_on_set
       -- Since $A.H.eigenvalues i \neq 0$, by hypothesis $h$, we have $f(A.H.eigenvalues i) \neq 0$.
       have h_f_nonzero : ∀ i, A.H.eigenvalues i ≠ 0 → f (A.H.eigenvalues i) ≠ 0 := by
         intro i hi; specialize h ( A.H.eigenvalues i ) ( hs <| by
-          exact Matrix.IsHermitian.eigenvalues_mem_spectrum_real (H A) i ) ; contrapose! hi; aesop;
+          exact Matrix.IsHermitian.eigenvalues_mem_spectrum_real (H A) i ) ; contrapose hi; aesop;
       generalize_proofs at *; (
       exact fun i hi => by simpa [ h_f_nonzero i hi ] using h_inner_zero_coeff i;) -- This line is just to prevent the proof from being completed prematurely. In a real proof, this line would be replaced with the actual proof steps.
     exact h_inner_zero_final;

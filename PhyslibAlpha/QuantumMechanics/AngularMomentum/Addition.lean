@@ -199,7 +199,7 @@ lemma Jsq_coupled_stringVec (l : ℕ) :
       (((m + n - 2 * k : ℕ) : ℂ) / 2 * (((m + n - 2 * k : ℕ) : ℂ) / 2 + 1)) •
         stringVec m n k l := by
   rw [Jsq, Jsq_eq_Jp_mul_Jm, coupled_Jp, coupled_Jm]
-  simp only [LinearMap.sub_apply, LinearMap.add_apply, Module.End.mul_apply,
+  simp only [LinearMap.sub_apply, LinearMap.add_apply, mul_apply_eq_comp,
     tensorF_stringVec, tensorE_stringVec_succ hmn hkm hkn, Jz_coupled_stringVec hmn hkm hkn,
     map_smul]
   module

@@ -92,7 +92,7 @@ lemma exists_schwartz_eq_comp_ray {d} (χ : 𝓢(Space d, ℝ)) {w : Space d} (h
   let γ : ℝ →L[ℝ] Space d := (ContinuousLinearMap.id ℝ ℝ).smulRight w
   have hγ : AntilipschitzWith ‖w‖₊⁻¹ γ := γ.antilipschitz_of_bound fun s => by
     simp only [γ, ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.id_apply, norm_smul]
-    rw [NNReal.coe_inv, coe_nnnorm, mul_comm ‖s‖, ← mul_assoc,
+    rw [NNReal.coe_inv, coe_nnNorm, mul_comm ‖s‖, ← mul_assoc,
       inv_mul_cancel₀ (norm_ne_zero_iff.mpr hw), one_mul]
   exact ⟨compCLMOfAntilipschitz ℝ γ.hasTemperateGrowth hγ χ, fun s => rfl⟩
 
@@ -155,7 +155,7 @@ lemma exists_integral_time_ne_zero {d} :
       b.zero_of_le_dist (by
         rw [Metric.mem_closedBall, not_le, dist_zero_right] at ht
         simpa [b, Prod.dist_eq] using ht.le)
-  refine Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero (x := 0)
+  refine Continuous.integral_pos_of_hasCompactSupport_nonneg_ne_zero (x := 0)
     (by fun_prop) hsupp (fun t => b.nonneg) (b.pos_of_mem_ball (by simp [b])).ne'
 
 end Space

@@ -143,7 +143,7 @@ lemma massMetricVal_contMDiff (S : HarmonicOscillator) :
               TangentSpace 𝓘(ℝ, EuclideanSpace ℝ (Fin 1)) q →L[ℝ] ℝ)
           q (massMetricVal S q)) := by
   intro x
-  rw [contMDiffAt_section]
+  rw [Bundle.contMDiffAt_section_iff]
   convert! contMDiffAt_const (c := S.m • (innerSL ℝ :
     EuclideanSpace ℝ (Fin 1) →L[ℝ] EuclideanSpace ℝ (Fin 1) →L[ℝ] ℝ))
   ext v w

@@ -91,7 +91,7 @@ lemma stringPow_mem_span [CharZero K] [FiniteDimensional K M] {t : IsSl2Triple h
     have heq : (LieModule.toEnd K L M f ^ k) m =
         (LieModule.toEnd K L M f ^ (k - (n + 1)))
           ((LieModule.toEnd K L M f ^ (n + 1)) m) := by
-      rw [← Module.End.mul_apply, ← pow_add]
+      rw [← mul_apply_eq_comp, ← pow_add]
       congr 2
       omega
     rw [heq, h0, map_zero]

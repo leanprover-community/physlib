@@ -278,7 +278,7 @@ lemma norm_sq_projection_localized {W : Set (PontryaginDual (Multiplicative G))}
     rw [ENNReal.toReal_ofReal (sq_nonneg _)] at this
     exact this.symm
   rw [h']
-  simp [Measure.smul_apply, ENNReal.toReal_mul,
+  simp [ENNReal.toReal_mul,
     Measure.real]
 
 /-! ## B. The spectrum -/

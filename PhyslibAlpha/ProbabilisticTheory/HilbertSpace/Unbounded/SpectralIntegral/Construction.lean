@@ -274,7 +274,7 @@ lemma diagonalMeasure_add_le (μS : WOTSpectralMeasure ℝ H) (x y : H) :
   refine (Measure.le_iff').2 (fun S => ?_)
   have h := congrArg (fun ν : Measure ℝ => ν S)
     (μS.diagonalMeasure_parallelogram x y)
-  rw [Measure.add_apply, Measure.add_apply, Measure.add_apply, Measure.add_apply] at h
+  rw [_root_.add_apply, _root_.add_apply, _root_.add_apply, _root_.add_apply] at h
   calc
     μS.diagonalMeasure (x + y) S ≤
         μS.diagonalMeasure (x + y) S + μS.diagonalMeasure (x - y) S :=
@@ -855,11 +855,11 @@ lemma scalarMeasure_inner_projection (μS : WOTSpectralMeasure ℝ H)
 lemma scalarMeasure_variation_le_diagonal_add (μS : WOTSpectralMeasure ℝ H)
     (x y : H) :
     (μS.scalarMeasure x y).variation ≤ μS.diagonalMeasure x + μS.diagonalMeasure y := by
-  apply MeasureTheory.VectorMeasure.variation_le_of_forall_enorm_le
+  apply MeasureTheory.VectorMeasure.variation_le_of_forall_eNorm_le
   intro S hS
   rw [μS.scalarMeasure_apply x y S]
   rw [← ofReal_norm]
-  rw [MeasureTheory.Measure.add_apply _ _ S, μS.diagonalMeasure_apply_eq_norm_sq x S hS,
+  rw [_root_.add_apply _ _ S, μS.diagonalMeasure_apply_eq_norm_sq x S hS,
     μS.diagonalMeasure_apply_eq_norm_sq y S hS]
   rw [← ENNReal.ofReal_add (sq_nonneg _) (sq_nonneg _)]
   apply ENNReal.ofReal_le_ofReal

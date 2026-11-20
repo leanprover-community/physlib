@@ -178,7 +178,7 @@ lemma commutator_mem_lieAlgebraOfIsClosed {X Y : Matrix κ κ ℂ}
       rw [smul_neg, Matrix.exp_neg, ← hg, Matrix.coe_units_inv]
     simp only [f, hinv, ← hg]
     exact conj_mem_lieAlgebraOfIsClosed g hY
-  refine (Submodule.closed_of_finiteDimensional _).mem_of_tendsto
+  refine (Submodule.isClosed_of_finiteDimensional _).mem_of_tendsto
     hf.tendsto_slope_zero (Eventually.of_forall fun t => ?_)
   exact Submodule.smul_mem _ _ (Submodule.sub_mem _ (hmem _) (hmem _))
 
