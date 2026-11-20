@@ -17,7 +17,7 @@ easy to read as possible.
 
 Physlib is organized by its definitions. Each directory exists for one key definition, with it and its basic properties in the Basic.lean file. The other files and subdirectories are each dedicated either to a definition descended from the key definition, that is, built from it, or to a single named property of those definitions. This leads to a hierarchy of definitions, which the directories follow. A definition descended from several key definitions sits under the most downstream of them. When enough is built on a definition, its file becomes a directory. Every lemma and theorem sits under one of the definitions that its statement concerns, namely the one furthest down the hierarchy. This allows any result in Physlib to be found by asking what definitions it depends on.
 
-This is similar to Bourbaki's organizational principle, "the concept of a hierarchy of structures, going from the simple to the complex, from the general to the particular",
+This is similar to Bourbaki's organizational principle, "the concept of a hierarchy of structures, going from the simple to the complex, from the general to the particular".
 
 <a id="area-organization"></a>
 
