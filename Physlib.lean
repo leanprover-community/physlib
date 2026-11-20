@@ -339,6 +339,10 @@ public import Physlib.ProbabilisticTheory.Weight.Extension
 public import Physlib.ProbabilisticTheory.Weight.State
 public import Physlib.QFT.AnomalyCancellation.Basic
 public import Physlib.QFT.AnomalyCancellation.GroupActions
+public import Physlib.QFT.Euclidean.GlimmJaffe.Axioms
+public import Physlib.QFT.Euclidean.GlimmJaffe.Basic
+public import Physlib.QFT.Euclidean.GlimmJaffe.FieldConfiguration
+public import Physlib.QFT.Euclidean.GlimmJaffe.StandardBump
 public import Physlib.QFT.PerturbationTheory.CreateAnnihilate
 public import Physlib.QFT.PerturbationTheory.FeynmanDiagrams.Basic
 public import Physlib.QFT.PerturbationTheory.FieldOpFreeAlgebra.Basic
@@ -635,6 +639,7 @@ public import Physlib.SpaceAndTime.TimeAndSpace.Basic
 public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.SchwartzAction
+public import Physlib.SpaceAndTime.TimeAndSpace.TestFunctions.Schwartz
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 public import Physlib.SpaceAndTime.WaveVectorSpace.Derivatives.Basic
 public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
