@@ -188,6 +188,7 @@ public import Physlib.Mathematics.InnerProductSpace.Adjoint
 public import Physlib.Mathematics.InnerProductSpace.Basic
 public import Physlib.Mathematics.InnerProductSpace.Calculus
 public import Physlib.Mathematics.InnerProductSpace.Gaussian
+public import Physlib.Mathematics.InnerProductSpace.Projection
 public import Physlib.Mathematics.InnerProductSpace.Submodule
 public import Physlib.Mathematics.KroneckerDelta.Basic
 public import Physlib.Mathematics.KroneckerDelta.Contraction
@@ -446,7 +447,6 @@ public import Physlib.QuantumMechanics.Operators.OneDimension.Parity
 public import Physlib.QuantumMechanics.Operators.OneDimension.Position
 public import Physlib.QuantumMechanics.Operators.OneDimension.Unbounded
 public import Physlib.QuantumMechanics.Operators.Position
-public import Physlib.QuantumMechanics.Operators.Projection
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure
