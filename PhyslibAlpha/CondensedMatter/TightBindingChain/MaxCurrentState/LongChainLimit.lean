@@ -25,6 +25,8 @@ uncertainty relation stays strict in the long chain limit.
 - `uncertaintyRatioSqForm` : the closed form of `C²` as a function of `n = N + 1`.
 - `uncertaintyRatio_sq_eq_uncertaintyRatioSqForm` : `C² = uncertaintyRatioSqForm (N + 1)` for
   `N ≥ 2`.
+- `uncertaintyRatioSqForm_five`, `uncertaintyRatio_sq_of_N_eq_four` : `C² = (99 - 42 √5) / 5`
+  for `N = 4`.
 - `tendsto_uncertaintyRatioSqForm` : `uncertaintyRatioSqForm n → π² / 3 - 2` as `n → ∞`.
 - `tendsto_uncertaintyRatio` : `C → √(π² / 3 - 2)` along any family of chains with `N → ∞`.
 - `one_lt_sqrt_pi_sq_div_three_sub_two` : `1 < √(π² / 3 - 2)`.
@@ -84,6 +86,22 @@ lemma uncertaintyRatio_sq_eq_uncertaintyRatioSqForm (T : TightBindingChain) (ht 
     Real.sinc_of_ne_zero (div_ne_zero Real.pi_ne_zero hn)]
   field_simp
   ring
+
+/-- At `n = 5` the closed form is `(99 - 42 √5) / 5`, from `cos (π / 5) = (1 + √5) / 4`. -/
+lemma uncertaintyRatioSqForm_five : uncertaintyRatioSqForm 5 = (99 - 42 * √5) / 5 := by
+  have h5 := Real.sq_sqrt (show (0 : ℝ) ≤ 5 by norm_num)
+  have hs : Real.sin (Real.pi / 5) ^ 2 = (5 - √5) / 8 := by
+    nlinarith [Real.sin_sq_add_cos_sq (Real.pi / 5), Real.cos_pi_div_five]
+  rw [uncertaintyRatioSqForm, Real.sinc_of_ne_zero (by positivity), Real.cos_pi_div_five]
+  field_simp
+  rw [hs]
+  nlinarith
+
+/-- For `N = 4`, `C² = (99 - 42 √5) / 5`. -/
+lemma uncertaintyRatio_sq_of_N_eq_four (T : TightBindingChain) (ht : T.t ≠ 0) (hN : T.N = 4) :
+    T.uncertaintyRatio ^ 2 = (99 - 42 * √5) / 5 := by
+  rw [T.uncertaintyRatio_sq_eq_uncertaintyRatioSqForm ht (by omega), hN,
+    show ((4 : ℕ) : ℝ) + 1 = 5 by norm_num, uncertaintyRatioSqForm_five]
 
 /-!
 
