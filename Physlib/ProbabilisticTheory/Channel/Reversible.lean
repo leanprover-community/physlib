@@ -29,6 +29,7 @@ group action from one observable space to another by conjugation.
 - `Reversible`: Reversible transformations, i.e. unital linear order isomorphisms of
   observable spaces.
 - `Reversible.toChannelHom`: Reversible transformations embed in the monoid of channels.
+- `Reversible.isNormal_toChannel`: Reversible transformations are normal channels.
 - `Reversible.transport`: Transport of a group action along a reversible transformation.
 
 ## iii. Table of contents
@@ -109,6 +110,8 @@ def trans (e₁ : Reversible P Q) (e₂ : Reversible Q R) : Reversible P R where
 @[simp] lemma apply_symm_apply (e : Reversible P Q) (y : Q.Observables) : e (e.symm y) = y :=
   e.toLinearEquiv.apply_symm_apply y
 
+@[simp] lemma symm_symm (e : Reversible P Q) : e.symm.symm = e := rfl
+
 @[simp] lemma trans_apply (e₁ : Reversible P Q) (e₂ : Reversible Q R) (x : P.Observables) :
     e₁.trans e₂ x = e₂ (e₁ x) := rfl
 
@@ -136,6 +139,15 @@ def toChannel (e : Reversible P Q) : Channel P Q :=
     (by intro x hx; simpa using (e.map_le_map_iff' (x := 0) (y := x)).2 hx) e.map_one'
 
 @[simp] lemma toChannel_apply (e : Reversible P Q) (x : P.Observables) : e.toChannel x = e x := rfl
+
+/-- A reversible transformation as an order isomorphism. -/
+def toOrderIso (e : Reversible P Q) : P.Observables ≃o Q.Observables :=
+  ⟨e.toLinearEquiv.toEquiv, e.map_le_map_iff'⟩
+
+/-- A reversible transformation preserves least upper bounds, so its channel is normal. -/
+lemma isNormal_toChannel (e : Reversible P Q) : e.toChannel.IsNormal := fun f x _ hx ↦ by
+  rw [Set.range_comp]
+  exact e.toOrderIso.isLUB_image'.mpr hx
 
 /-- Regarding reversible transformations as channels is a homomorphism of monoids. -/
 def toChannelHom : Reversible P P →* Channel P P where
