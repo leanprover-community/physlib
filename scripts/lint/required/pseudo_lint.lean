@@ -35,7 +35,9 @@ unsafe def main (args : List String) : IO UInt32 := do
       IO.eprintln s!"Unknown library `{library}`, expected one of {libraries}."
       return 1
   println! "Checking the pseudo attribution in {", ".intercalate (toCheck.map toString).toList}."
-  let env ← importModules (loadExts := true) (toCheck.map ({ module := · })) {} 0
+  -- Initialize the pseudo extension even when the libraries being checked do not import it.
+  let imports := #[{ module := `Physlib.Meta.Linters.Pseudo }] ++ toCheck.map ({ module := · })
+  let env ← importModules (loadExts := true) imports {} 0
   let fileName := ""
   let options : Options := {}
   let ctx : Core.Context := {fileName, options, fileMap := default }
