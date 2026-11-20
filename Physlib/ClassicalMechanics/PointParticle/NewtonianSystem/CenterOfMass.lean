@@ -14,10 +14,11 @@ Motion of the mass-weighted average of the particle positions in an inertial fra
 
 ## i. Overview
 
-Summing Newton's second law over all particles counts every force once. The internal
-forces cancel in pairs by Newton's third law. In the absence of external forces the total
-momentum is therefore constant. Dividing it by the total mass gives the constant velocity
-of the center of mass.
+The center of mass is the mass-weighted average of the particle positions. Its velocity is
+the total momentum divided by the total mass. When there are no external forces,
+`sum_mass_acceleration_eq_zero` from `NewtonianSystem.Basic` gives a zero derivative for
+the total momentum. The center of mass then moves with constant velocity, so its position
+at any time is determined by its position and the total momentum at a reference time.
 
 ## ii. Key results
 
