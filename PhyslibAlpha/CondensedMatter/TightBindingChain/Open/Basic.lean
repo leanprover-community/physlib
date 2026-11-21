@@ -28,6 +28,10 @@ with the site `0`.
 - `inner_openHamiltonian` : the open chain only hops between neighbouring sites.
 - `inner_openHamiltonian_eq_adjMatrix` : its matrix elements are `E0` times the identity minus `t`
   times the adjacency matrix of the path graph.
+- `adjMatrix_pathGraph_mulVec_sin` : `sin ((m + 1) k π / (N + 1))` is an eigenvector of the
+  adjacency matrix of the path graph, with eigenvalue `2 cos (k π / (N + 1))`.
+- `openHamiltonian_sum_sin` : the standing waves are eigenvectors of the open chain, with energies
+  `E0 - 2 t cos (k π / (N + 1))`.
 - `inner_commutator_position` : `⟨m|(A X - X A)|n⟩ = a (n - m) ⟨m|A|n⟩`.
 
 ## iii. Table of contents
@@ -36,6 +40,7 @@ with the site `0`.
 - B. The Hamiltonian with open boundary conditions
   - B.1. Hermiticity
   - B.2. Matrix elements
+  - B.3. Eigenvectors
 - C. Commutators with the position operator
 
 ## iv. References
@@ -142,6 +147,78 @@ lemma inner_openHamiltonian_eq_adjMatrix (m n : Fin T.N) :
     simp
   · simp [h, Matrix.one_apply_ne h, SimpleGraph.adjMatrix_apply, SimpleGraph.pathGraph_adj]
     split_ifs <;> simp_all
+
+/-!
+
+### B.3. Eigenvectors
+
+-/
+
+/-- For every `k`, `m ↦ sin ((m + 1) k π / (N + 1))` is an eigenvector of the adjacency matrix of
+the path graph on `N` vertices, with eigenvalue `2 cos (k π / (N + 1))`. -/
+lemma adjMatrix_pathGraph_mulVec_sin (N k : ℕ) :
+    Matrix.mulVec ((SimpleGraph.pathGraph N).adjMatrix ℝ)
+        (fun m : Fin N => Real.sin ((m + 1) * (k * Real.pi / (N + 1)))) =
+      (2 * Real.cos (k * Real.pi / (N + 1))) •
+        fun m : Fin N => Real.sin ((m + 1) * (k * Real.pi / (N + 1))) := by
+  set θ := k * Real.pi / (N + 1)
+  have hN : Real.sin ((N + 1) * θ) = 0 := by
+    rw [mul_div_cancel₀ _ (by positivity)]
+    exact Real.sin_nat_mul_pi k
+  funext m
+  have hm := m.isLt
+  simp only [Matrix.mulVec, dotProduct, SimpleGraph.adjMatrix_apply, SimpleGraph.pathGraph_adj,
+    ite_mul, one_mul, zero_mul, Pi.smul_apply, smul_eq_mul]
+  rw [Fin.sum_univ_eq_sum_range (fun j => if (m : ℕ) + 1 = j ∨ j + 1 = m then
+    Real.sin ((j + 1) * θ) else 0)]
+  rw [Finset.sum_eq_add ((m : ℕ) - 1) ((m : ℕ) + 1) (by omega)]
+  · rw [ite_eq_left (Or.inl rfl)]
+    generalize (m : ℕ) = i
+    cases i with
+    | zero =>
+      simp only [zero_add, Nat.zero_sub, one_ne_zero, or_self, ite_false, CharP.cast_eq_zero]
+      rw [show ((1 : ℕ) + 1 : ℝ) * θ = 2 * θ by push_cast; ring, Real.sin_two_mul, one_mul]
+      ring
+    | succ n =>
+      rw [ite_eq_left (Or.inr (by omega))]
+      push_cast
+      rw [show (n + 1 : ℝ) * θ = (n + 1 + 1) * θ - θ by ring,
+        show (n + 1 + 1 + 1 : ℝ) * θ = (n + 1 + 1) * θ + θ by ring, Real.sin_sub, Real.sin_add]
+      ring
+  · intro j _ hj
+    simp only [ite_eq_right_iff]
+    omega
+  · intro h
+    simp at h
+    omega
+  · intro h
+    simp only [Finset.mem_range, not_lt] at h
+    rw [ite_eq_left (Or.inl rfl), ← hN]
+    congr 2
+    norm_cast
+    omega
+
+/-- The open chain has the standing waves `∑ m, sin ((m + 1) k π / (N + 1)) |m⟩` as eigenvectors,
+with energies `E0 - 2 t cos (k π / (N + 1))`. -/
+lemma openHamiltonian_sum_sin (k : ℕ) :
+    T.openHamiltonian (∑ m : Fin T.N, (Real.sin ((m + 1) * (k * Real.pi / (T.N + 1))) : ℂ) • |m⟩) =
+      ((T.E0 - 2 * T.t * Real.cos (k * Real.pi / (T.N + 1)) : ℝ) : ℂ) •
+        ∑ m : Fin T.N, (Real.sin ((m + 1) * (k * Real.pi / (T.N + 1))) : ℂ) • |m⟩ := by
+  refine ext_inner_left_basis localizedState.toBasis fun n => ?_
+  have h := congrFun (adjMatrix_pathGraph_mulVec_sin T.N k) n
+  simp only [OrthonormalBasis.coe_toBasis, map_sum, map_smul, inner_sum, inner_smul_right,
+    inner_openHamiltonian_eq_adjMatrix, localizedState_orthonormal_eq_ite] at h ⊢
+  simp only [Matrix.mulVec, dotProduct, Pi.smul_apply, smul_eq_mul] at h
+  have hA (x : Fin T.N) : (SimpleGraph.pathGraph T.N).adjMatrix ℂ n x =
+      (((SimpleGraph.pathGraph T.N).adjMatrix ℝ n x : ℝ) : ℂ) := by
+    by_cases hx : (SimpleGraph.pathGraph T.N).Adj n x <;> simp [hx]
+  simp only [hA, mul_sub, Finset.sum_sub_distrib, Matrix.one_apply, mul_ite, mul_one, mul_zero,
+    Finset.sum_ite_eq, Finset.mem_univ, ite_true]
+  have h' := congrArg (fun r : ℝ => ((T.t * r : ℝ) : ℂ)) h
+  simp only [Finset.mul_sum] at h'
+  push_cast at h' ⊢
+  simp only [mul_comm, mul_left_comm] at h' ⊢
+  linear_combination -h'
 
 /-!
 
