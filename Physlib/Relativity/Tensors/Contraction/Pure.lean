@@ -118,8 +118,6 @@ lemma dropPair_update_succSuccAbove {n : ℕ} [inst : DecidableEq (Fin (n + 1 +1
     · simp [h]
     · simp [h]
 
-TODO "Prove lemmas relating to the commutation rules of `dropPair` and `prodP`."
-
 @[simp]
 lemma dropPair_permP {n n1 : ℕ} {c : Fin (n + 1 + 1) → C}
     {c1 : Fin (n1 + 1 + 1) → C} (i j : Fin (n1 + 1 + 1)) (hij : i ≠ j)
