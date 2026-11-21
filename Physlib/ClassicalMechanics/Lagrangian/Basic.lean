@@ -5,8 +5,7 @@ Authors: Michal Mogielnicki
 -/
 module
 
-public import Mathlib.MeasureTheory.Integral.Bochner.Basic
-public import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
+public import Mathlib.MeasureTheory.Integral.IntervalIntegral.Basic
 public import Mathlib.Geometry.Manifold.Algebra.Monoid
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
 public import Physlib.SpaceAndTime.Time.ManifoldCurves
@@ -26,6 +25,7 @@ The motions of a Lagrangian system are the critical points of its action, see
 - `LagrangianSystem` : smooth time-dependent Lagrangians on `TM`.
 - `LagrangianSystem.coord` : `L` in a time coordinate.
 - `LagrangianSystem.action` : the action of a curve.
+- `LagrangianSystem.action_eq_intervalIntegral` : the action as an interval integral.
 - `LagrangianSystem.action_eq_integral_coord` : the action of a curve in a normed space in
   coordinates.
 
@@ -46,7 +46,7 @@ The motions of a Lagrangian system are the critical points of its action, see
 
 namespace ClassicalMechanics
 
-open MeasureTheory
+open MeasureTheory intervalIntegral
 open scoped Manifold ContDiff
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {H : Type*} [TopologicalSpace H]
@@ -128,6 +128,11 @@ noncomputable def action (γ : Time → M) (t₀ t₁ : Time) : ℝ :=
 /-- The action over an empty or one-point interval vanishes. -/
 lemma action_eq_zero_of_vsub_nonpos (h : t₁ -ᵥ t₀ ≤ 0) : S.action γ t₀ t₁ = 0 :=
   setIntegral_measure_zero _ ((Set.subsingleton_Icc_of_ge h).measure_zero _)
+
+/-- If `0 ≤ t₁ -ᵥ t₀`, the action is the integral over `[0, t₁ -ᵥ t₀]` of the action integrand. -/
+lemma action_eq_intervalIntegral (h : 0 ≤ t₁ -ᵥ t₀) : S.action γ t₀ t₁ =
+    ∫ s in (0 : ℝ)..(t₁ -ᵥ t₀), S (s +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I γ ⟨s +ᵥ t₀, (1 : ℝ)⟩) := by
+  rw [action, integral_of_le h, ← integral_Icc_eq_integral_Ioc]
 
 /-- The action is the integral over `[0, t₁ -ᵥ t₀]` of `S.coord t₀ (s, q s, q' s)`, where
 `q τ = γ (τ +ᵥ t₀)` and `q' = deriv q`. -/

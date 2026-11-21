@@ -45,17 +45,16 @@ coming from a Riemannian metric on M. [TODO]
 ## Lean References
 
 1. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem`
-2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`
+2. Physlib/ClassicalMechanics/ConfigurationSpace/Variation.lean — `Variation`,
+   `Variation.exists_chart_bump`
 3. Physlib/ClassicalMechanics/Lagrangian/Basic.lean — `LagrangianSystem.action`
 4. Physlib/ClassicalMechanics/Lagrangian/Basic.lean —
    `LagrangianSystem.action_eq_integral_coord`
 5. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
    `LagrangianSystem.IsCriticalPoint`, `LagrangianSystem.isCriticalPoint_iff_eulerLagrange`
 6. Physlib/ClassicalMechanics/Lagrangian/Chart.lean —
-   `LagrangianSystem.chartLagrangian`, `LagrangianSystem.contDiffAt_chartLagrangian`,
-   `LagrangianSystem.exists_lagrangianSystem_coord_eq`
-7. Physlib/ClassicalMechanics/Lagrangian/EulerLagrangeChart.lean —
-   `LagrangianSystem.integral_eulerLagrange_eq_zero_of_isCriticalPoint`,
+   `LagrangianSystem.chartLagrangian`, `LagrangianSystem.contDiffAt_chartLagrangian`
+7. Physlib/ClassicalMechanics/Lagrangian/CriticalPoint.lean —
    `LagrangianSystem.eulerLagrange_eq_zero_of_isCriticalPoint_chart`
 
 ## References

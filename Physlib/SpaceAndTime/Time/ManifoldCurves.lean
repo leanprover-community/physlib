@@ -25,6 +25,8 @@ The charts of `Time` are translations, so the coordinate curve `τ ↦ γ (τ +�
 - `Time.mfderiv_eq_deriv_vadd`: the manifold derivative is the derivative of the coordinate curve
 - `Time.contDiffAt_extChartAt_comp_vadd`: a curve read in a chart is smooth where it lies in it
 - `Time.tangentMap_eq_deriv_vadd`: the tangent map of a curve in coordinates
+- `Time.tangentMap_eq_of_eventuallyEq`: the tangent map of a curve depends only on the curve nearby
+- `Time.eventually_vsub`: eventual properties transported to times relative to `t₀`
 
 ## iii. Table of contents
 
@@ -140,5 +142,22 @@ lemma tangentMap_eq_deriv_vadd (γ : Time → F) (t₀ : Time) (s : ℝ) :
       ⟨γ (s +ᵥ t₀), deriv (fun τ : ℝ ↦ γ (τ +ᵥ t₀)) s⟩ := by
   simp [tangentMap, mfderiv_eq_deriv_vadd γ t₀ s]
   rfl
+
+/-- The tangent map (velocity) of a curve at a time depends only on the curve near that time. -/
+lemma tangentMap_eq_of_eventuallyEq {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ E H} {M : Type*}
+    [TopologicalSpace M] [ChartedSpace H M] {γ γ' : Time → M} {t : Time}
+    (h : γ =ᶠ[nhds t] γ') :
+    tangentMap 𝓘(ℝ, ℝ) I γ ⟨t, (1 : ℝ)⟩ = tangentMap 𝓘(ℝ, ℝ) I γ' ⟨t, (1 : ℝ)⟩ := by
+  refine Bundle.TotalSpace.ext h.eq_of_nhds ?_
+  simp only [tangentMap]
+  rw [h.mfderiv_eq]
+  rfl
+
+/-- A property of real times holding near a real time `τ` holds, after subtracting a base time `t₀`,
+for times near `τ +ᵥ t₀`. -/
+lemma eventually_vsub {P : ℝ → Prop} {τ : ℝ} (t₀ : Time) (h : ∀ᶠ σ in nhds τ, P σ) :
+    ∀ᶠ t in nhds (τ +ᵥ t₀), P (t -ᵥ t₀) :=
+  (contMDiff_vsub t₀ ∞).continuous.continuousAt.eventually (by simpa [vadd_vsub] using h)
 
 end Time

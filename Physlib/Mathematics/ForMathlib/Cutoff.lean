@@ -21,6 +21,7 @@ neighbourhood of the subset and `0` near every point outside the open set.
 
 - `IsCompact.exists_cutoff`
 - `contDiff_smul_of_cutoff`
+- `exists_contDiff_eventuallyEq`: smooth extension of a function from a compact set
 
 ## iii. Table of contents
 
@@ -70,3 +71,14 @@ lemma contDiff_smul_of_cutoff {Y F : Type*} [NormedAddCommGroup Y] [NormedSpace 
   · refine (contDiffAt_const (c := (0 : F))).congr_of_eventuallyEq ?_
     filter_upwards [notMem_tsupport_iff_eventuallyEq.1 hy] with z hz
     simp [hz]
+
+/-- A function smooth on an open set agrees, near each point of a compact subset, with a function
+smooth everywhere. -/
+lemma exists_contDiff_eventuallyEq {X E : Type*} [NormedAddCommGroup X] [NormedSpace ℝ X]
+    [FiniteDimensional ℝ X] [NormedAddCommGroup E] [NormedSpace ℝ E] {f : X → E} {O K : Set X}
+    (hO : IsOpen O) (hf : ∀ x ∈ O, ContDiffAt ℝ ∞ f x) (hK : IsCompact K) (hKO : K ⊆ O) :
+    ∃ g : X → E, ContDiff ℝ ∞ g ∧ ∀ x ∈ K, g =ᶠ[𝓝 x] f := by
+  obtain ⟨ρ, N, hρ, hNo, hKN, -, hρ1, hρ0⟩ := hK.exists_cutoff hO hKO
+  exact ⟨fun x ↦ ρ x • f x, contDiff_smul_of_cutoff hρ hρ0 hf, fun x hx ↦ by
+    filter_upwards [hNo.mem_nhds (hKN hx)] with y hy
+    simp [hρ1 _ hy]⟩

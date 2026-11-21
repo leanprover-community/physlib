@@ -5,7 +5,10 @@ Authors: Michal Mogielnicki
 -/
 module
 
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.Geometry.Manifold.Algebra.SMul
+public import Mathlib.MeasureTheory.Integral.Bochner.Basic
 public import Physlib.ClassicalMechanics.ConfigurationSpace.Basic
 public import Physlib.SpaceAndTime.Time.ManifoldCurves
 
@@ -16,7 +19,8 @@ Smooth variations of a curve in a configuration space fixing the endpoints.
 
 ## i. Overview
 
-Variations probe the action of a Lagrangian system around a curve.
+Variations probe the action of a Lagrangian system around a curve. Variations supported in a chart
+test the Euler-Lagrange equations there.
 
 ## ii. Key results
 
@@ -24,11 +28,16 @@ Variations probe the action of a Lagrangian system around a curve.
 - `Variation.contDiff_comp_vadd` : a variation of a curve in a normed space is smooth in
   coordinates.
 - `Variation.exists_bump` : a bump function gives a variation of a curve in a normed space.
+- `Variation.exists_contMDiff_glue` : a curve modified in a chart over a closed set of times, and
+  kept off it, is smooth.
+- `Variation.exists_chart_bump` : a bump function and a vector give a variation supported in a
+  chart.
 
 ## iii. Table of contents
 
 - A. Variations
 - B. Variations in a normed space
+- C. Variations supported in a chart
 
 ## iv. References
 
@@ -106,6 +115,87 @@ lemma exists_bump {γ : Time → E} {t₀ t₁ : Time} (hγ : ContMDiff 𝓘(ℝ
   · simp only [Time.vsub_eq_val] at hT
     simp [hT]
   · simp
+
+/-!
+## C. Variations supported in a chart
+-/
+
+section Chart
+
+variable {I M}
+
+/-- A family of curves, smooth in the parameter `s` and the time `t`, which equals `γ` outside a
+closed set `Z` of times and inside it is shifted in the chart by `σ s • Ψ t • w`, with `σ` and `Ψ`
+smooth, `Ψ` zero off `Z`, and `w` a vector. -/
+lemma exists_contMDiff_glue [I.Boundaryless] (x : M) {γ : Time → M}
+    (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {Z : Set Time} (hZc : IsClosed Z)
+    {σ : ℝ → ℝ} (hσ : ContDiff ℝ ∞ σ) {Ψ : Time → ℝ} (hΨ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) ∞ Ψ)
+    (hΨ0 : ∀ t ∉ Z, Ψ t = 0) (w : E) (hZs : ∀ t ∈ Z, γ t ∈ (extChartAt I x).source)
+    (hZt : ∀ t ∈ Z, ∀ s, extChartAt I x (γ t) + σ s • (Ψ t • w) ∈ (extChartAt I x).target) :
+    ∃ F : ℝ × Time → M, ContMDiff (𝓘(ℝ, ℝ).prod 𝓘(ℝ, ℝ)) I ∞ F ∧
+      (∀ s t, t ∉ Z → F (s, t) = γ t) ∧
+      ∀ s t, γ t ∈ (extChartAt I x).source →
+        F (s, t) = (extChartAt I x).symm (extChartAt I x (γ t) + σ s • (Ψ t • w)) := by
+  classical
+  refine ⟨fun p ↦ if p.2 ∈ Z then
+    (extChartAt I x).symm (extChartAt I x (γ p.2) + σ p.1 • (Ψ p.2 • w)) else γ p.2,
+    fun p ↦ ?_, fun s t ht ↦ by simp [ht], fun s t ht ↦ ?_⟩
+  · by_cases hp : p.2 ∈ Z
+    · have hch : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ (extChartAt I x ∘ γ) p.2 :=
+        (contMDiffAt_extChartAt' (by rw [← extChartAt_source I]; exact hZs _ hp)).comp p.2
+          (hγ p.2)
+      refine (((contMDiffOn_extChartAt_symm x).contMDiffAt
+        (extChartAt_target_mem_nhds' (hZt _ hp p.1))).comp p
+        ((hch.comp p contMDiff_snd.contMDiffAt).add
+          (((hσ.contMDiff.comp contMDiff_fst).contMDiffAt).smul
+            (((hΨ.comp contMDiff_snd).contMDiffAt).smul
+              contMDiffAt_const)))).congr_of_eventuallyEq ?_
+      filter_upwards [(hγ.continuous.comp continuous_snd).continuousAt.eventually_mem
+        ((isOpen_extChartAt_source x).mem_nhds (hZs _ hp))] with q hq1
+      split_ifs with hq
+      · rfl
+      · simpa [hΨ0 _ hq] using ((extChartAt I x).left_inv hq1).symm
+    · refine ((hγ.contMDiffAt (x := p.2)).comp p contMDiff_snd.contMDiffAt).congr_of_eventuallyEq ?_
+      filter_upwards [continuous_snd.continuousAt.eventually_mem (hZc.isOpen_compl.mem_nhds hp)]
+        with q hq
+      exact ite_eq_right hq
+  · by_cases hZ : t ∈ Z
+    · simp [hZ]
+    · simpa [hZ, hΨ0 _ hZ] using ((extChartAt I x).left_inv ht).symm
+
+/-- A variation of `γ`, localised in time by a bump function `ψ` and shifted in the chart at `x` by
+the vector `w`: it translates `γ` by `σ s • ψ τ • w`, to first order in the parameter `s`, and fixes
+`γ` where `ψ` vanishes. -/
+lemma exists_chart_bump [I.Boundaryless] {γ : Time → M} {t₀ t₁ : Time} (x : M)
+    (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {ψ : ℝ → ℝ} (hψ : ContDiff ℝ ∞ ψ)
+    (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀))
+    (hx : ∀ τ ∈ tsupport ψ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source) (w : E) {N : Set E}
+    (hN : N ⊆ (extChartAt I x).target) {ε : ℝ} (hε : 0 < ε)
+    (hNε : ∀ τ ∈ tsupport ψ, ∀ r ∈ Icc (-ε) ε,
+      extChartAt I x (γ (τ +ᵥ t₀)) + r • (ψ τ • w) ∈ N) :
+    ∃ (h : Variation I γ t₀ t₁) (σ : ℝ → ℝ), ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧
+      (∀ s, σ s ∈ Icc (-ε) ε) ∧ (∀ s τ, τ ∉ tsupport ψ → h.toFun (s, τ +ᵥ t₀) = γ (τ +ᵥ t₀)) ∧
+      (∀ s τ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source → h.toFun (s, τ +ᵥ t₀) =
+        (extChartAt I x).symm (extChartAt I x (γ (τ +ᵥ t₀)) + σ s • (ψ τ • w))) := by
+  obtain ⟨σ, hσ, hσ0, hσ'0, hσε⟩ : ∃ σ : ℝ → ℝ, ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧
+      ∀ s, σ s ∈ Icc (-ε) ε :=
+    ⟨fun s ↦ ε * Real.sin (s / ε), by fun_prop, by simp, by simp; field_simp, fun s ↦ by
+      constructor <;> nlinarith [Real.neg_one_le_sin (s / ε), Real.sin_le_one (s / ε)]⟩
+  obtain ⟨F, hF, hnZ, hsymm⟩ := exists_contMDiff_glue x hγ (Z := {t | t -ᵥ t₀ ∈ tsupport ψ})
+    ((isClosed_tsupport ψ).preimage (continuous_id.vsub continuous_const)) hσ
+    (Ψ := fun t ↦ ψ (t -ᵥ t₀)) ((Time.contMDiff_iff_contDiff_vadd _ t₀ ∞).2 (by simpa using hψ))
+    (fun t ht ↦ image_eq_zero_of_notMem_tsupport ht) w
+    (fun t ht ↦ by simpa only [vsub_vadd] using hx (t -ᵥ t₀) ht)
+    fun t ht s ↦ by simpa only [vsub_vadd] using hN (hNε (t -ᵥ t₀) ht (σ s) (hσε s))
+  have h0 (t) : F (0, t) = γ t := by
+    by_cases ht : γ t ∈ (extChartAt I x).source
+    · simpa [hσ0, hsymm _ _ ht] using (extChartAt I x).left_inv ht
+    · exact hnZ _ _ fun hZ ↦ ht (by simpa only [vsub_vadd] using hx _ hZ)
+  exact ⟨⟨⟨F, hF⟩, fun s _ ↦ h0 _, fun s ↦ hnZ _ _ fun h ↦ by simpa using (hs h).1,
+    fun s ↦ hnZ _ _ fun h ↦ (hs h).2.false⟩, σ, hσ, hσ0, hσ'0, hσε,
+    fun s τ hτ ↦ hnZ _ _ (by simpa using hτ), fun s τ hτ ↦ by simpa using hsymm s _ hτ⟩
+
+end Chart
 
 end Variation
 
