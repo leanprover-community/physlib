@@ -75,8 +75,6 @@ namespace ClassicalMechanics
 
 variable {X} [NormedAddCommGroup X] [InnerProductSpace ℝ X] [CompleteSpace X]
 
-TODO "Add the Jacobi identity for `poissonBracket`."
-
 /-!
 
 ## A. The definition of the Poisson bracket

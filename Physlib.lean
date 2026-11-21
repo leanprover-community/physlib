@@ -11,6 +11,7 @@ public import Physlib.ClassicalMechanics.Force
 public import Physlib.ClassicalMechanics.FreeParticle.Basic
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.Basic
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.HamiltonsEquations
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.JacobiIdentity
 public import Physlib.ClassicalMechanics.HamiltonianMechanics.PoissonBracket
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Basic
 public import Physlib.ClassicalMechanics.HarmonicOscillator.Geometric.Basic
