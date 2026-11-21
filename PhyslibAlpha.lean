@@ -839,6 +839,7 @@ public import PhyslibAlpha.Relativity.General.Curvature
 public import PhyslibAlpha.Relativity.General.Einstein
 public import PhyslibAlpha.Relativity.General.FLRW.Pipeline
 public import PhyslibAlpha.Relativity.General.Geodesics
+public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.General.InitialValue
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
 public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
