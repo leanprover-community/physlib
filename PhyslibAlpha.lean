@@ -834,8 +834,11 @@ public import PhyslibAlpha.Relativity.Fermions.Dirac.MinimalDimension
 public import PhyslibAlpha.Relativity.Fermions.Weyl.BoostWeight
 public import PhyslibAlpha.Relativity.Fermions.Weyl.Metric
 public import PhyslibAlpha.Relativity.General.Basic
+public import PhyslibAlpha.Relativity.General.Conservation
 public import PhyslibAlpha.Relativity.General.Curvature
 public import PhyslibAlpha.Relativity.General.Einstein
+public import PhyslibAlpha.Relativity.General.Geodesics
+public import PhyslibAlpha.Relativity.General.InitialValue
 public import PhyslibAlpha.Relativity.General.Minkowski
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
