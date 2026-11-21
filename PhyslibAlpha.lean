@@ -837,6 +837,7 @@ public import PhyslibAlpha.Relativity.General.Basic
 public import PhyslibAlpha.Relativity.General.Conservation
 public import PhyslibAlpha.Relativity.General.Curvature
 public import PhyslibAlpha.Relativity.General.Einstein
+public import PhyslibAlpha.Relativity.General.FLRW.Pipeline
 public import PhyslibAlpha.Relativity.General.Geodesics
 public import PhyslibAlpha.Relativity.General.InitialValue
 public import PhyslibAlpha.Relativity.General.Minkowski
@@ -849,12 +850,14 @@ public import PhyslibAlpha.Relativity.General.Modified.MOND
 public import PhyslibAlpha.Relativity.General.Modified.Ostrogradsky
 public import PhyslibAlpha.Relativity.General.Modified.TeVeS
 public import PhyslibAlpha.Relativity.General.Pipeline
+public import PhyslibAlpha.Relativity.General.ReissnerNordstrom.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Frame
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Metric
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Frame
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Metric
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Pipeline
+public import PhyslibAlpha.Relativity.General.StaticSpherical
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
 public import PhyslibAlpha.Relativity.LightConeDeriv
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
