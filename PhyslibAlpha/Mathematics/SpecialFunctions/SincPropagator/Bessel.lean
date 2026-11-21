@@ -283,7 +283,7 @@ lemma hasSum_integral_besselSq_cos_series {r : ℝ} (hr : 0 ≤ r) (k M : ℝ) :
   have H := hasSum_integral_besselSq_cos hr k M
   have H1 := (Finset.HasAntidiagonal.sigmaAntidiagonalEquivProd (A := ℕ)).hasSum_iff.2 H
   refine H1.sigma (fun N => ?_)
-  convert hasSum_fintype _ using 1
+  convert hasSum_fintype (_ : ↥(Finset.antidiagonal N) → ℝ) using 1
   set c : ℕ × ℕ → ℝ := fun p => (-M / 4) ^ p.1 / (p.1 ! : ℝ) ^ 2 *
       ((-1) ^ p.2 * k ^ (2 * p.2) / ((2 * p.2) ! : ℝ)) *
         (r ^ (2 * p.1 + 2 * p.2 + 1) * momentFormula p.1 p.2) with hc
