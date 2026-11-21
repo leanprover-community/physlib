@@ -57,7 +57,7 @@ by two complex matrices. [TODO]
 ### Measurement and distinguishability
 
 Measuring a qubit in the computational basis gives the two outcomes with probabilities, by the Born
-rule, equal to the squared norms of the components of the state. [TODO] The fidelity of two
+rule, equal to the squared norms of the components of a pure state. [11] The fidelity of two
 states of a qubit has a closed form in terms of their traces and determinants. [TODO]
 
 ### Pairs and registers of qubits
@@ -98,6 +98,8 @@ the finite dimensional Hilbert space of a two-element type. [TODO]
 10. QuantumInfo/States/Pure/BargmannInvariant.lean — `bargmannInvariantThree`,
    `bargmannPhaseThree`, `bargmannPhaseThree_cyclic`, `bargmannPhaseThree_reverse`,
    `norm_bargmannInvariantThree_le_one`
+11. PhyslibAlpha/QuantumMechanics/Qubit/Measurement.lean — `PhyslibAlpha.Qubit.computationalBasisMeasurement`,
+   `PhyslibAlpha.Qubit.expectation_computationalBasisMeasurement_singleton`
 
 ## References
 
