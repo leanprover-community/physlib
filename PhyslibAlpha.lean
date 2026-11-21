@@ -847,6 +847,7 @@ public import PhyslibAlpha.Relativity.General.Linearized
 public import PhyslibAlpha.Relativity.General.Minkowski
 public import PhyslibAlpha.Relativity.General.Modified.BransDicke
 public import PhyslibAlpha.Relativity.General.Modified.ChameleonScreening
+public import PhyslibAlpha.Relativity.General.Modified.EinsteinAether
 public import PhyslibAlpha.Relativity.General.Modified.EinsteinCartan
 public import PhyslibAlpha.Relativity.General.Modified.FRGravity
 public import PhyslibAlpha.Relativity.General.Modified.Galileon
@@ -854,9 +855,12 @@ public import PhyslibAlpha.Relativity.General.Modified.KaluzaKlein
 public import PhyslibAlpha.Relativity.General.Modified.Lovelock
 public import PhyslibAlpha.Relativity.General.Modified.MOG
 public import PhyslibAlpha.Relativity.General.Modified.MOND
+public import PhyslibAlpha.Relativity.General.Modified.MassiveGravity
 public import PhyslibAlpha.Relativity.General.Modified.Nordstrom
 public import PhyslibAlpha.Relativity.General.Modified.Ostrogradsky
+public import PhyslibAlpha.Relativity.General.Modified.PPN
 public import PhyslibAlpha.Relativity.General.Modified.TeVeS
+public import PhyslibAlpha.Relativity.General.Modified.Teleparallel
 public import PhyslibAlpha.Relativity.General.Pipeline
 public import PhyslibAlpha.Relativity.General.ReissnerNordstrom.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Frame
