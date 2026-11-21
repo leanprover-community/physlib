@@ -173,6 +173,8 @@ public import Physlib.Mathematics.ForMathlib.List.InsertionSort
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Basic
 public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
+public import Physlib.Mathematics.ForMathlib.PiTensorProduct
+public import Physlib.Mathematics.ForMathlib.Representation
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
 public import Physlib.Mathematics.ForMathlib.TestFunction
@@ -200,7 +202,11 @@ public import Physlib.Mathematics.Modules.CrossProductMatrix
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.Mathematics.Tensors.Color
+public import Physlib.Mathematics.Tensors.ColoredSpace
+public import Physlib.Mathematics.Tensors.Examples
+public import Physlib.Mathematics.Tensors.IndexMaps
 public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.Tensors.Tensor
 public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint
