@@ -1,0 +1,321 @@
+/-
+Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Vergara Gil
+-/
+module
+
+public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import PhyslibAlpha.Relativity.General.Schwarzschild.Metric
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Frame
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
+
+/-!
+
+# Schwarzschild–de Sitter curvature from the metric components
+
+Derivation of the six independent Riemann curvature components and `Λ`-independent Weyl electric
+eigenvalues directly from the Schwarzschild–de Sitter lapse `f = 1 - 2M/r - Λr²/3`.
+
+## i. Overview
+
+With `f = 1 - 2M/r - Λr²/3` (`sdsF`) and `n = f'/2 = M/r² - Λr/3` (`sdsHalf`), the mixed
+radial Christoffel symbols are `Γ^t_{tr} = n / f` and `Γ^r_{rr} = -n / f`. Differentiating
+these expressions yields all six independent Riemann components for general `Λ`:
+
+- `R^t{}_{rtr} = (2M / r³ + Λ / 3) / f`,
+- `R^t{}_{θtθ} = R^r{}_{θrθ} = Λ r² / 3 - M / r`,
+- `R^t{}_{φtφ} = R^r{}_{φrφ} = (Λ r² / 3 - M / r) sin²θ`,
+- `R^θ{}_{φθφ} = (2M / r + Λ r² / 3) sin²θ`.
+
+Lowering into the orthonormal frame and subtracting the trace piece `-(Λ / 3) g` recovers
+`electricPart (M / r³)` for every `Λ`: the cosmological constant shifts Ricci curvature while
+leaving the Weyl tidal field unchanged.
+
+## ii. Key results
+
+- `sdsF`, `sdsHalf` : Schwarzschild–de Sitter lapse and half-derivative.
+- `sdsF_zero_lambda` : reduction to `schwarzschildF` at `Λ = 0`.
+- `riemann_t_rtr_sds`, `riemann_t_thetatheta_sds`, `riemann_t_phitphi_sds`,
+  `riemann_r_thetar_sds`, `riemann_r_phirphi_sds`, `riemann_theta_phitheta_sds` : all six
+  Riemann components for general `Λ`.
+- `weyl_rr_sds`, `weyl_thetatheta_sds`, `weyl_phiphi_sds` : `Λ`-independence of the Weyl
+  electric eigenvalues.
+
+## iii. Table of contents
+
+- A. Lapse function, half-derivative, and Christoffel symbols
+- B. The six Riemann components for general `Λ`
+- C. `Λ`-independence of the Weyl electric eigenvalues
+
+## iv. References
+
+* None.
+
+-/
+
+@[expose] public section
+
+namespace GeneralRelativity
+
+namespace SchwarzschildDeSitter
+
+/-!
+
+## A. Lapse function, half-derivative, and Christoffel symbols
+
+-/
+
+/-- The Schwarzschild–de Sitter lapse function `f = 1 - 2M / r - Λ r² / 3`. -/
+noncomputable def sdsF (M Λ r : ℝ) : ℝ := 1 - 2 * M / r - Λ * r ^ 2 / 3
+
+/-- Half the radial derivative of the lapse, `n = f'/2 = M / r² - Λ r / 3`. -/
+noncomputable def sdsHalf (M Λ r : ℝ) : ℝ := M / r ^ 2 - Λ * r / 3
+
+/-- At `Λ = 0`, the de Sitter lapse reduces to the Schwarzschild lapse. -/
+lemma sdsF_zero_lambda (M r : ℝ) : sdsF M 0 r = Schwarzschild.schwarzschildF M r := by
+  simp [sdsF, Schwarzschild.schwarzschildF]
+
+/-- `f = 1 - 2M/r - Λr²/3` is differentiable away from `r = 0` with `f' = 2 n`. -/
+lemma hasDerivAt_sdsF (M Λ r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt (fun s : ℝ => sdsF M Λ s) (2 * sdsHalf M Λ r) r := by
+  have h1 : HasDerivAt (fun s : ℝ => 1 - 2 * M / s) (2 * M / r ^ 2) r :=
+    Schwarzschild.hasDerivAt_gtt M r hr
+  have h2 : HasDerivAt (fun s : ℝ => Λ / 3 * s ^ 2) (Λ / 3 * (2 * r)) r := by
+    have h := (hasDerivAt_pow 2 r).const_mul (Λ / 3)
+    simpa using h
+  have h := h1.sub h2
+  have hfun : (fun s : ℝ => sdsF M Λ s)
+      = (fun s : ℝ => 1 - 2 * M / s) - fun s : ℝ => Λ / 3 * s ^ 2 := by
+    funext s
+    simp [sdsF, Pi.sub_apply]
+    ring
+  have hval : 2 * M / r ^ 2 - Λ / 3 * (2 * r) = 2 * sdsHalf M Λ r := by
+    simp [sdsHalf]
+    ring
+  rw [← hfun, hval] at h
+  exact h
+
+/-- `f' = 2 n` as an identity for `deriv`. -/
+lemma deriv_sdsF (M Λ r : ℝ) (hr : r ≠ 0) :
+    deriv (fun s : ℝ => sdsF M Λ s) r = 2 * sdsHalf M Λ r :=
+  (hasDerivAt_sdsF M Λ r hr).deriv
+
+/-- `n = M/r² - Λr/3` is differentiable away from `r = 0` with `n' = -2M/r³ - Λ/3`. -/
+lemma hasDerivAt_sdsHalf (M Λ r : ℝ) (hr : r ≠ 0) :
+    HasDerivAt (fun s : ℝ => sdsHalf M Λ s) (-2 * M / r ^ 3 - Λ / 3) r := by
+  have h1 : HasDerivAt (fun s : ℝ => M / s ^ 2) (-2 * M / r ^ 3) r :=
+    Schwarzschild.slope_hasDerivAt M r hr
+  have h2 : HasDerivAt (fun s : ℝ => Λ / 3 * s) (Λ / 3) r := by
+    simpa using (hasDerivAt_id r).const_mul (Λ / 3)
+  have h := h1.sub h2
+  have hfun : (fun s : ℝ => sdsHalf M Λ s)
+      = (fun s : ℝ => M / s ^ 2) - fun s : ℝ => Λ / 3 * s := by
+    funext s
+    simp [sdsHalf, Pi.sub_apply]
+    ring
+  rw [← hfun] at h
+  exact h
+
+/-- `n' = -2M/r³ - Λ/3` as an identity for `deriv`. -/
+lemma deriv_sdsHalf (M Λ r : ℝ) (hr : r ≠ 0) :
+    deriv (fun s : ℝ => sdsHalf M Λ s) r = -2 * M / r ^ 3 - Λ / 3 :=
+  (hasDerivAt_sdsHalf M Λ r hr).deriv
+
+/-- `Γ^t_{tr} = (1/2) g^{tt} ∂_r g_{tt} = n / f`. -/
+lemma gammaTtr_sds (M Λ r : ℝ) (hf : sdsF M Λ r ≠ 0) :
+    (1 / 2 : ℝ) * (-(sdsF M Λ r)⁻¹) * (-(2 * sdsHalf M Λ r))
+      = sdsHalf M Λ r / sdsF M Λ r := by
+  field_simp [hf]
+
+/-- `∂_r (f⁻¹) = -2 n / f²`. -/
+lemma deriv_sdsF_inv (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
+    deriv (fun s : ℝ => (sdsF M Λ s)⁻¹) r
+      = -(2 * sdsHalf M Λ r) / (sdsF M Λ r) ^ 2 :=
+  (hasDerivAt_sdsF M Λ r hr).inv hf |>.deriv
+
+/-- `Γ^r_{rr} = (1/2) g^{rr} ∂_r g_{rr} = -n / f`. -/
+lemma gammaRrr_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
+    (1 / 2 : ℝ) * (sdsF M Λ r) * deriv (fun s : ℝ => (sdsF M Λ s)⁻¹) r
+      = -sdsHalf M Λ r / sdsF M Λ r := by
+  rw [deriv_sdsF_inv M Λ r hr hf]
+  field_simp [hf]
+
+/-- `Γ^r_{θθ} = -r f`. -/
+lemma gammaRthth_sds (M Λ r : ℝ) :
+    (1 / 2 : ℝ) * (sdsF M Λ r) * (-(2 * r)) = -(r * sdsF M Λ r) := by
+  ring
+
+/-- `Γ^r_{φφ} = -r f sin²θ`. -/
+lemma gammaRphiphi_sds (M Λ r th : ℝ) :
+    (1 / 2 : ℝ) * (sdsF M Λ r) * (-(2 * r * Real.sin th ^ 2))
+      = -(r * Real.sin th ^ 2 * sdsF M Λ r) := by
+  ring
+
+/-!
+
+## B. The six Riemann components for general `Λ`
+
+-/
+
+/-- The `t r t r` Riemann component for Schwarzschild–de Sitter: `(2M/r³ + Λ/3)/f`. -/
+lemma riemann_t_rtr_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
+    -(deriv (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s) r)
+      + (sdsHalf M Λ r / sdsF M Λ r) * (-(sdsHalf M Λ r / sdsF M Λ r))
+      - (sdsHalf M Λ r / sdsF M Λ r) ^ 2
+      = (2 * M / r ^ 3 + Λ / 3) / sdsF M Λ r := by
+  have hq : deriv (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s) r
+      = (-2 * M / r ^ 3 - Λ / 3) / sdsF M Λ r
+          - sdsHalf M Λ r * (2 * sdsHalf M Λ r) / (sdsF M Λ r) ^ 2 := by
+    have h := (hasDerivAt_sdsHalf M Λ r hr).div (hasDerivAt_sdsF M Λ r hr) hf
+    have hfun : (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s)
+        = (fun s : ℝ => sdsHalf M Λ s) / fun s : ℝ => sdsF M Λ s := rfl
+    rw [hfun, h.deriv]
+    field_simp [hf]
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  rw [hq]
+  field_simp [hf, hr]
+  unfold sdsHalf
+  field_simp [hr, hr2, hr3]
+  ring
+
+/-- The `t θ t θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
+lemma riemann_t_thetatheta_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
+    (sdsHalf M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
+      = Λ * r ^ 2 / 3 - M / r := by
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  field_simp [hf, hr]
+  unfold sdsHalf
+  field_simp [hr, hr2, hr3]
+  ring
+
+/-- The `t φ t φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
+lemma riemann_t_phitphi_sds (M Λ r th : ℝ) (hr : r ≠ 0)
+    (hf : sdsF M Λ r ≠ 0) :
+    (sdsHalf M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+      = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2 := by
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  field_simp [hf, hr]
+  unfold sdsHalf
+  field_simp [hr, hr2, hr3]
+  ring
+
+/-- The `r θ r θ` Riemann component for Schwarzschild–de Sitter: `Λ r² / 3 - M / r`. -/
+lemma riemann_r_thetar_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
+    (-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r))
+      + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
+      - (-(r * sdsF M Λ r)) * (1 / r)
+      = Λ * r ^ 2 / 3 - M / r := by
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  field_simp [hf, hr]
+  unfold sdsHalf
+  field_simp [hr, hr2, hr3]
+  ring
+
+/-- The `r φ r φ` Riemann component for Schwarzschild–de Sitter: `(Λ r² / 3 - M / r) sin²θ`. -/
+lemma riemann_r_phirphi_sds (M Λ r th : ℝ) (hr : r ≠ 0)
+    (hf : sdsF M Λ r ≠ 0) :
+    (-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r)) * Real.sin th ^ 2
+      + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+      - (-(r * Real.sin th ^ 2 * sdsF M Λ r)) * (1 / r)
+      = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2 := by
+  have hr2 : r ^ 2 ≠ 0 := pow_ne_zero 2 hr
+  have hr3 : r ^ 3 ≠ 0 := pow_ne_zero 3 hr
+  field_simp [hf, hr]
+  unfold sdsHalf
+  field_simp [hr, hr2, hr3]
+  ring
+
+/-- The `θ φ θ φ` Riemann component for Schwarzschild–de Sitter: `(2M/r + Λr²/3) sin²θ`. -/
+lemma riemann_theta_phitheta_sds (M Λ r th : ℝ) (hr : r ≠ 0)
+    (hsin : Real.sin th ≠ 0) :
+    (Real.sin th ^ 2 - Real.cos th ^ 2)
+      + (1 / r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+      - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
+      = (2 * M / r + Λ * r ^ 2 / 3) * Real.sin th ^ 2 := by
+  unfold sdsF
+  field_simp [hr, hsin]
+  ring
+
+/-- All six independent Schwarzschild–de Sitter Riemann components assembled as one
+conjunction. -/
+lemma riemann_components_sds (M Λ r th : ℝ) (hr : r ≠ 0)
+    (hf : sdsF M Λ r ≠ 0) (hsin : Real.sin th ≠ 0) :
+    (-(deriv (fun s : ℝ => sdsHalf M Λ s / sdsF M Λ s) r)
+        + (sdsHalf M Λ r / sdsF M Λ r) * (-(sdsHalf M Λ r / sdsF M Λ r))
+        - (sdsHalf M Λ r / sdsF M Λ r) ^ 2
+        = (2 * M / r ^ 3 + Λ / 3) / sdsF M Λ r)
+      ∧ ((sdsHalf M Λ r / sdsF M Λ r) * (-(r * sdsF M Λ r))
+          = Λ * r ^ 2 / 3 - M / r)
+      ∧ ((sdsHalf M Λ r / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+          = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2)
+      ∧ ((-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r))
+            + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * sdsF M Λ r))
+            - (-(r * sdsF M Λ r)) * (1 / r) = Λ * r ^ 2 / 3 - M / r)
+      ∧ ((-(sdsF M Λ r) - r * (2 * sdsHalf M Λ r)) * Real.sin th ^ 2
+            + (-(sdsHalf M Λ r) / sdsF M Λ r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+            - (-(r * Real.sin th ^ 2 * sdsF M Λ r)) * (1 / r)
+          = (Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2)
+      ∧ ((Real.sin th ^ 2 - Real.cos th ^ 2)
+            + (1 / r) * (-(r * Real.sin th ^ 2 * sdsF M Λ r))
+            - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
+          = (2 * M / r + Λ * r ^ 2 / 3) * Real.sin th ^ 2) :=
+  ⟨riemann_t_rtr_sds M Λ r hr hf,
+   riemann_t_thetatheta_sds M Λ r hr hf,
+   riemann_t_phitphi_sds M Λ r th hr hf,
+   riemann_r_thetar_sds M Λ r hr hf,
+   riemann_r_phirphi_sds M Λ r th hr hf,
+   riemann_theta_phitheta_sds M Λ r th hr hsin⟩
+
+/-!
+
+## C. `Λ`-independence of the Weyl electric eigenvalues
+
+-/
+
+/-- The radial Weyl electric eigenvalue `-f R^t{}_{rtr} + Λ/3 = -2M/r³` is independent of `Λ`. -/
+lemma weyl_rr_sds (M Λ r : ℝ) (hf : sdsF M Λ r ≠ 0) :
+    -(sdsF M Λ r) * ((2 * M / r ^ 3 + Λ / 3) / sdsF M Λ r) + Λ / 3
+      = Schwarzschild.electricPart (M / r ^ 3) 1 1 := by
+  have h11 : Schwarzschild.electricPart (M / r ^ 3) 1 1 = -(2 * M / r ^ 3) := by
+    simp [Schwarzschild.electricPart]
+    ring
+  rw [h11]
+  field_simp [hf]
+  ring
+
+/-- The `θ` Weyl electric eigenvalue `f⁻¹ r⁻² (-f) (Λr²/3 - M/r) + Λ/3 = M/r³` is independent
+of `Λ`. -/
+lemma weyl_thetatheta_sds (M Λ r : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0) :
+    (sdsF M Λ r)⁻¹ * (r ^ 2)⁻¹ * (-(sdsF M Λ r) * (Λ * r ^ 2 / 3 - M / r))
+      + Λ / 3 = Schwarzschild.electricPart (M / r ^ 3) 2 2 := by
+  have h22 : Schwarzschild.electricPart (M / r ^ 3) 2 2 = M / r ^ 3 := by
+    simp [Schwarzschild.electricPart]
+  rw [h22]
+  field_simp [hr, hf]
+  ring
+
+/-- The `φ` Weyl electric eigenvalue equals `M/r³` for every `Λ`. -/
+lemma weyl_phiphi_sds (M Λ r th : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0)
+    (hsin : Real.sin th ≠ 0) :
+    (sdsF M Λ r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
+        * (-(sdsF M Λ r) * ((Λ * r ^ 2 / 3 - M / r) * Real.sin th ^ 2))
+      + Λ / 3 = Schwarzschild.electricPart (M / r ^ 3) 3 3 := by
+  have h33 : Schwarzschild.electricPart (M / r ^ 3) 3 3 = M / r ^ 3 := by
+    simp [Schwarzschild.electricPart]
+  rw [h33]
+  field_simp [hr, hf, hsin]
+  ring
+
+end SchwarzschildDeSitter
+
+end GeneralRelativity

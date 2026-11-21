@@ -840,7 +840,13 @@ public import PhyslibAlpha.Relativity.General.Einstein
 public import PhyslibAlpha.Relativity.General.Geodesics
 public import PhyslibAlpha.Relativity.General.InitialValue
 public import PhyslibAlpha.Relativity.General.Minkowski
+public import PhyslibAlpha.Relativity.General.Pipeline
+public import PhyslibAlpha.Relativity.General.Schwarzschild.Frame
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
+public import PhyslibAlpha.Relativity.General.Schwarzschild.Metric
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Frame
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Metric
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.Pipeline
 public import PhyslibAlpha.Relativity.IsLorentzDeriv
 public import PhyslibAlpha.Relativity.LightConeDeriv
 public import PhyslibAlpha.Relativity.LorentzGroup.Basic
