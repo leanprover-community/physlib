@@ -840,6 +840,10 @@ public import PhyslibAlpha.Relativity.General.Einstein
 public import PhyslibAlpha.Relativity.General.FLRW.Pipeline
 public import PhyslibAlpha.Relativity.General.Geodesics
 public import PhyslibAlpha.Relativity.General.InitialValue
+public import PhyslibAlpha.Relativity.General.Kerr.Basic
+public import PhyslibAlpha.Relativity.General.Kerr.Christoffel
+public import PhyslibAlpha.Relativity.General.Kerr.Vacuum
+public import PhyslibAlpha.Relativity.General.Linearized
 public import PhyslibAlpha.Relativity.General.Minkowski
 public import PhyslibAlpha.Relativity.General.Modified.BransDicke
 public import PhyslibAlpha.Relativity.General.Modified.ChameleonScreening
