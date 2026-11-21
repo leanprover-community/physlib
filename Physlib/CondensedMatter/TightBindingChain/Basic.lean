@@ -6,7 +6,9 @@ Authors: Joseph Tooby-Smith
 module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
+public import Physlib.QuantumMechanics.PlanckConstant
 public import Mathlib.Analysis.InnerProductSpace.Dual
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 /-!
 
@@ -33,6 +35,10 @@ with periodic boundary conditions.
 - `energyEigenstate` : The energy eigenstates of the tight binding chain.
 - `energyEigenbasis` : The orthonormal basis of normalized energy eigenstates.
 - `energyEigenvalue` : The energy eigenvalues of the tight binding chain.
+- `dispersion` : The dispersion relation `k ↦ E0 - 2 t cos (k a)` for every real `k`.
+- `deriv_deriv_dispersion_zero` : The dispersion relation has second derivative `2 t a²`
+  at `k = 0`.
+- `effectiveMass` : The effective mass at `k = 0`, equal to `ℏ² / (2 t a²)`.
 - `hamiltonian_energyEigenstate` : The Hamiltonian acting on an energy eigenstate
   gives the corresponding energy eigenvalue times the energy eigenstate.
 - `hasEigenvalue_hamiltonian_iff` : The eigenvalues of the Hamiltonian are exactly the
@@ -554,6 +560,26 @@ lemma energyEigenbasis_apply (n : Fin T.N) :
   `E0 - 2 * t * Real.cos (k * T.a)`. -/
 noncomputable def energyEigenvalue (k : T.QuantaWaveNumber) : ℝ :=
   T.E0 - 2 * T.t * Real.cos (k * T.a)
+
+/-- The dispersion relation `k ↦ E0 - 2 t cos (k a)`, defined for every real wavenumber `k`.
+  At a quantized wavenumber it is, by definition, `energyEigenvalue`. -/
+noncomputable def dispersion (k : ℝ) : ℝ :=
+  T.E0 - 2 * T.t * Real.cos (k * T.a)
+
+/-- The dispersion relation has second derivative `2 t a²` at `k = 0`. -/
+lemma deriv_deriv_dispersion_zero : deriv (deriv T.dispersion) 0 = 2 * T.t * T.a ^ 2 := by
+  show deriv (deriv fun k : ℝ => T.E0 - 2 * T.t * Real.cos (k * T.a)) 0 = _
+  simp [sq, mul_assoc]
+
+/-- The effective mass at `k = 0`: `ℏ²` divided by the second derivative of the dispersion
+  relation at `k = 0`. It is negative when `t < 0`, and it is `0` when `t = 0`, since division
+  by zero is `0` in Lean. -/
+noncomputable def effectiveMass : ℝ :=
+  (Constants.ℏ : ℝ) ^ 2 / deriv (deriv T.dispersion) 0
+
+/-- The effective mass at `k = 0` is `ℏ² / (2 t a²)`. -/
+lemma effectiveMass_eq : T.effectiveMass = (Constants.ℏ : ℝ) ^ 2 / (2 * T.t * T.a ^ 2) := by
+  rw [effectiveMass, deriv_deriv_dispersion_zero]
 
 /-!
 
