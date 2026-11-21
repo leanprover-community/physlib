@@ -565,17 +565,20 @@ open Braket
 
 variable {d : Type*} [Fintype d]
 
-private def ketToEuclidean (ψ : Ket d) : EuclideanSpace ℂ d :=
+/-- A ket as the vector of its amplitudes in the standard Hilbert space. -/
+def Ket.toEuclideanSpace (ψ : Ket d) : EuclideanSpace ℂ d :=
   (WithLp.equiv 2 _).symm ψ.vec
 
-private lemma ketToEuclidean_norm (ψ : Ket d) : ‖ketToEuclidean ψ‖ = 1 := by
-  rw [EuclideanSpace.norm_eq]; convert! Real.sqrt_one
-  simp only [ketToEuclidean]; convert! ψ.normalized'
+/-- The Hilbert-space vector of a ket has unit norm. -/
+@[simp] lemma Ket.norm_toEuclideanSpace (ψ : Ket d) : ‖ψ.toEuclideanSpace‖ = 1 := by
+  rw [EuclideanSpace.norm_eq]
+  change √(∑ i, ‖ψ.vec i‖ ^ 2) = 1
+  rw [ψ.normalized', Real.sqrt_one]
 
 private lemma dot_eq_euclidean_inner (ψ₁ ψ₂ : Ket d) :
     〈ψ₁‖ψ₂〉 = @inner ℂ (EuclideanSpace ℂ d) _
-      (ketToEuclidean ψ₁) (ketToEuclidean ψ₂) := by
-  unfold dot ketToEuclidean
+      ψ₁.toEuclideanSpace ψ₂.toEuclideanSpace := by
+  unfold dot Ket.toEuclideanSpace
   simp only [Bra.eq_conj, PiLp.inner_apply]
   congr 1; ext x
   rw [RCLike.inner_apply']
@@ -584,9 +587,9 @@ private lemma dot_eq_euclidean_inner (ψ₁ ψ₂ : Ket d) :
 /-- The bra-ket product of normalized states has norm at most 1 (Cauchy-Schwarz). -/
 lemma Braket.norm_dot_le_one (ψ₁ ψ₂ : Ket d) : ‖〈ψ₁‖ψ₂〉‖ ≤ 1 := by
   rw [dot_eq_euclidean_inner]
-  calc ‖@inner ℂ (EuclideanSpace ℂ d) _ (ketToEuclidean ψ₁) (ketToEuclidean ψ₂)‖
-      ≤ ‖ketToEuclidean ψ₁‖ * ‖ketToEuclidean ψ₂‖ := norm_inner_le_norm _ _
-    _ = 1 := by rw [ketToEuclidean_norm, ketToEuclidean_norm, mul_one]
+  calc ‖@inner ℂ (EuclideanSpace ℂ d) _ ψ₁.toEuclideanSpace ψ₂.toEuclideanSpace‖
+      ≤ ‖ψ₁.toEuclideanSpace‖ * ‖ψ₂.toEuclideanSpace‖ := norm_inner_le_norm _ _
+    _ = 1 := by rw [Ket.norm_toEuclideanSpace, Ket.norm_toEuclideanSpace, mul_one]
 
 end norm_bounds
 
