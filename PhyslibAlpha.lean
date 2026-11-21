@@ -840,8 +840,13 @@ public import PhyslibAlpha.Relativity.General.Einstein
 public import PhyslibAlpha.Relativity.General.Geodesics
 public import PhyslibAlpha.Relativity.General.InitialValue
 public import PhyslibAlpha.Relativity.General.Minkowski
+public import PhyslibAlpha.Relativity.General.Modified.BransDicke
+public import PhyslibAlpha.Relativity.General.Modified.ChameleonScreening
+public import PhyslibAlpha.Relativity.General.Modified.FRGravity
+public import PhyslibAlpha.Relativity.General.Modified.Galileon
 public import PhyslibAlpha.Relativity.General.Modified.MOG
 public import PhyslibAlpha.Relativity.General.Modified.MOND
+public import PhyslibAlpha.Relativity.General.Modified.Ostrogradsky
 public import PhyslibAlpha.Relativity.General.Modified.TeVeS
 public import PhyslibAlpha.Relativity.General.Pipeline
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Frame
