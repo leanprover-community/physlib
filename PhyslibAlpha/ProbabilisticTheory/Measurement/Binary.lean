@@ -33,7 +33,7 @@ effect itself, the outcome `false` its complement.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace Effect
 
@@ -67,4 +67,4 @@ lemma binaryMeasurement_false (e : Effect F) (h : MeasurableSet {false}) :
 
 end Effect
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

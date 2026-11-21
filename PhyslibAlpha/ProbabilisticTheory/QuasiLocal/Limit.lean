@@ -57,7 +57,7 @@ coexistence appears.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuasiLocal
 
@@ -75,7 +75,7 @@ def sumSq (A : Type*) [Ring A] [StarRing A] : AddSubmonoid A :=
   AddSubmonoid.closure (Set.range fun s : A => star s * s)
 
 /-- **The Cauchy–Schwarz inequality for states**: `|ω(a)|² ≤ ω(a* a)`. -/
-lemma _root_.ProbabilisticTheory.AlgState.normSq_le (ω : AlgState A) (a : A) :
+lemma _root_.PhyslibAlpha.ProbabilisticTheory.AlgState.normSq_le (ω : AlgState A) (a : A) :
     ((‖ω a‖ ^ 2 : ℝ) : ℂ) ≤ ω (star a * a) := by
   set z := ω a with hz
   have h := ω.nonneg (a - z • (1 : A))
@@ -115,7 +115,7 @@ def AlgebraNet.IsLocallyBounded : Prop :=
 variable {N}
 
 /-- A state is nonnegative on sums of squares. -/
-lemma _root_.ProbabilisticTheory.AlgState.nonneg_of_mem_sumSq
+lemma _root_.PhyslibAlpha.ProbabilisticTheory.AlgState.nonneg_of_mem_sumSq
     {A : Type*} [Ring A] [Algebra ℂ A] [StarRing A] [StarModule ℂ A] (ω : AlgState A)
     {p : A} (hp : p ∈ sumSq A) : 0 ≤ ω p := by
   induction hp using AddSubmonoid.closure_induction with
@@ -248,6 +248,6 @@ lemma limitState_of (X : Finset S) (a : N.A X) :
 
 end QuasiLocal
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

@@ -68,7 +68,7 @@ def repCharges : Representation ℚ PermGroup (MSSMCharges).Charges where
     rw [charges_eq_toSpecies_eq]
     refine And.intro ?_ $ Prod.mk_inj.mp rfl
     intro i
-    simp only [Module.End.mul_apply]
+    simp only [mul_apply_eq_comp]
     rw [chargeMap_toSpecies, chargeMap_toSpecies]
     simp only [Pi.inv_apply]
     rw [chargeMap_toSpecies]

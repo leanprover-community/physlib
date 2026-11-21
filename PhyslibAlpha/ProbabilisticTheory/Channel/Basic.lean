@@ -42,7 +42,7 @@ and measurements. Quantum channels additionally stay positive on composite syste
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -176,4 +176,4 @@ end UnitalPositiveLinearMap
 /-- A channel between two systems: a unital positive map between their order-unit spaces. -/
 abbrev Channel (E F : Type*) [OrderUnitSpace E] [OrderUnitSpace F] := E →ₚ₁[ℝ] F
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

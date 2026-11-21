@@ -54,7 +54,7 @@ noncomputable section
 
 namespace CondensedMatter.Crystal
 
-open ProbabilisticTheory.QuasiLocal CondensedMatter.QuasiLocal
+open PhyslibAlpha.ProbabilisticTheory.QuasiLocal CondensedMatter.QuasiLocal
 
 variable {G F : Type*} [AddCommGroup G] [DecidableEq (CellSite G F)]
 variable (Ω₀ : Type*) [Fintype Ω₀] [DecidableEq Ω₀]

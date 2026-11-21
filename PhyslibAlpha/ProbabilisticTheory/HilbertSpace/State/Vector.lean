@@ -44,7 +44,7 @@ vector states are not parallel: their overlap has norm `‖⟪ψ, φ⟫‖ < 1`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ComplexOrder ContinuousLinearMap
 open scoped InnerProductSpace
@@ -122,4 +122,4 @@ example (ψ : H) (h : ‖ψ‖ = 1) :
 
 end Example
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

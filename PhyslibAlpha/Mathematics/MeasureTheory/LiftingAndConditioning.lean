@@ -96,7 +96,7 @@ noncomputable def averageMap (rho : ProbabilityMeasure A) (f g : A → B)
   ⟨ENNReal.ofReal ((1 : ℝ) / 2) • (rho.map f : Measure B) +
     ENNReal.ofReal ((1 : ℝ) / 2) • (rho.map g : Measure B), by
     constructor
-    rw [Measure.add_apply, Measure.smul_apply, Measure.smul_apply,
+    rw [add_apply, smul_apply, smul_apply,
       ProbabilityMeasure.toMeasure_map, ProbabilityMeasure.toMeasure_map,
       Measure.map_apply_of_aemeasurable hf MeasurableSet.univ,
       Measure.map_apply_of_aemeasurable hg MeasurableSet.univ]
@@ -148,7 +148,7 @@ lemma measure_smul_condition_eq_restrict (mu : ProbabilityMeasure B) {S : Set B}
     (hSm : MeasurableSet S) (hS : (mu : Measure B) S ≠ 0) :
     (mu : Measure B) S • (condition mu S hS : Measure B) = (mu : Measure B).restrict S := by
   ext T hT
-  rw [Measure.smul_apply, Measure.restrict_apply hT]
+  rw [smul_apply, Measure.restrict_apply hT]
   change (mu : Measure B) S * ProbabilityTheory.cond (mu : Measure B) S T = _
   rw [mul_comm, ProbabilityTheory.cond_mul_eq_inter hSm, Set.inter_comm]
 
@@ -157,8 +157,8 @@ noncomputable def replacePart (mu eta : ProbabilityMeasure B) (S : Set B)
     (hS : MeasurableSet S) : ProbabilityMeasure B :=
   ⟨(mu : Measure B).restrict Sᶜ + (mu : Measure B) S • (eta : Measure B), by
     constructor
-    rw [Measure.add_apply, Measure.restrict_apply MeasurableSet.univ,
-      Measure.smul_apply, Set.univ_inter, MeasureTheory.measure_univ]
+    rw [add_apply, Measure.restrict_apply MeasurableSet.univ,
+      smul_apply, Set.univ_inter, MeasureTheory.measure_univ]
     simp only [smul_eq_mul, mul_one]
     simpa [add_comm] using prob_add_prob_compl (μ := (mu : Measure B)) hS⟩
 

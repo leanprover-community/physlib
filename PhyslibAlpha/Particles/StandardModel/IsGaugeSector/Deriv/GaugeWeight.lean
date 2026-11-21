@@ -91,7 +91,8 @@ lemma repGauge_pair_add (g : GaugeGroupI) {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin
     map_smul, map_smul, map_smul, map_smul, real_smul_eq z.re, real_smul_eq z.im,
     real_smul_eq z.im, real_smul_eq z.re]
   conv_rhs => rw [← Complex.re_add_im z]
-  match_scalars <;> · ring_nf; try rw [Complex.I_sq]; try ring
+  match_scalars <;> ring_nf
+  simp [Complex.I_sq]
 
 include h in
 lemma repGauge_pair_sub (g : GaugeGroupI) {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3)
@@ -105,7 +106,8 @@ lemma repGauge_pair_sub (g : GaugeGroupI) {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin
     real_smul_eq z.im, real_smul_eq z.re]
   rw [show (starRingEnd ℂ) z = (z.re : ℂ) - (z.im : ℂ) * Complex.I by
     rw [Complex.ext_iff]; simp]
-  match_scalars <;> · ring_nf; try rw [Complex.I_sq]; try ring
+  match_scalars <;> ring_nf
+  simp [Complex.I_sq]
 
 include h in
 lemma repGauge_fixed (g : GaugeGroupI) {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3)
@@ -181,7 +183,7 @@ lemma F_coord_rootIdx_fst {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin
       + Complex.I • F l μ ν (stdBasis.coord (rootIdx r).2))
     + (F l μ ν (stdBasis.coord (rootIdx r).1)
       - Complex.I • F l μ ν (stdBasis.coord (rootIdx r).2)))
-  match_scalars <;> · field_simp; try ring
+  match_scalars <;> field_simp <;> ring
 
 open GaugeAlgebra in
 /-- The second symbol of a root pair, recovered from the two weight vectors. -/
@@ -194,7 +196,8 @@ lemma F_coord_rootIdx_snd {n : ℕ} (l : Fin n → Fin 1 ⊕ Fin 3) (μ ν : Fin
       + Complex.I • F l μ ν (stdBasis.coord (rootIdx r).2))
     - (F l μ ν (stdBasis.coord (rootIdx r).1)
       - Complex.I • F l μ ν (stdBasis.coord (rootIdx r).2)))
-  match_scalars <;> · ring_nf; try rw [Complex.I_sq]; try ring
+  match_scalars <;> ring_nf
+  simp [Complex.I_sq]
 
 open GaugeAlgebra in
 /-- Every standard coordinate symbol lies in the join of the weight-vector lines. -/

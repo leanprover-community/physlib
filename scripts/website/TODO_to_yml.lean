@@ -3,12 +3,17 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Physlib.Meta.Basic
-import Physlib.Meta.TODO.Basic
-import Mathlib.Lean.CoreM
-import Physlib.Meta.Informal.Post
-import Physlib.Meta.Informal.SemiFormal
-import Physlib.Meta.Linters.Pseudo
+module
+
+public import Physlib.Meta.Basic
+public import Physlib.Meta.TODO.Basic
+public import Mathlib.Lean.CoreM
+public import Physlib.Meta.Informal.Post
+public meta import Physlib.Meta.Informal.Post
+public import Physlib.Meta.Informal.SemiFormal
+public import Physlib.Meta.Linters.Pseudo
+
+@[expose] public meta section
 /-!
 
 # Creates TODO yml file from the TODO items.

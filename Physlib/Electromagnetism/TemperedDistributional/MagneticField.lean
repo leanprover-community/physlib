@@ -63,7 +63,7 @@ noncomputable def magneticFieldMatrix {d} (c : SpeedOfLight) :
   toFun A :=
     ⟨TensorProduct.map (Lorentz.Vector.spatialCLM d).toLinearMap
       (Lorentz.Vector.spatialCLM d).toLinearMap, by continuity⟩ ∘L
-    distTimeSlice c A.fieldStrength
+    tempDistTimeSlice c A.fieldStrength
   map_add' A1 A2 := by
     ext ε
     simp
@@ -125,7 +125,7 @@ lemma magneticFieldMatrix_basis_repr_eq_fieldStrength {c : SpeedOfLight}
     ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
         (A.magneticFieldMatrix c ε) (i, j) =
       (Lorentz.Vector.basis.tensorProduct Lorentz.Vector.basis).repr
-        (distTimeSlice c A.fieldStrength ε) (Sum.inr i, Sum.inr j) := by
+        (tempDistTimeSlice c A.fieldStrength ε) (Sum.inr i, Sum.inr j) := by
   simp only [magneticFieldMatrix_eq_vectorPotential, EuclideanSpace.basisFun_apply, map_sum,
     map_smul, Finsupp.coe_finsetSum, Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply,
     Basis.tensorProduct_repr_tmul_apply, PiLp.basisFun_repr, PiLp.single_apply,

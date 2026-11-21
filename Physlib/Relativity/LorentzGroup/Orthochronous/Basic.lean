@@ -213,7 +213,7 @@ lemma IsOrthochronous.iff_in_orthchroRep_ker : IsOrthochronous Λ ↔ Λ ∈ ort
   constructor
   · exact orthchroMap_IsOrthochronous
   · intro h
-    contrapose! h
+    contrapose h
     apply orthchroMap_not_IsOrthochronous at h
     change orthchroRep Λ = _ at h
     rw [MonoidHom.mem_ker, h]

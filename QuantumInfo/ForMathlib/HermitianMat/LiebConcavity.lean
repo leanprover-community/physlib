@@ -157,7 +157,7 @@ private lemma psd_add_eps_posdef [Nonempty d] (σ : HermitianMat d ℂ) (hσ : 0
       simp_all [mul_add, add_mul, Finset.sum_add_distrib]
       refine' add_pos_of_nonneg_of_pos h_pos _
       simp_all [mul_comm, mul_left_comm, Complex.mul_conj, Complex.normSq_eq_norm_sq]
-      contrapose! hx_ne_zero
+      contrapose hx_ne_zero
       ext i
       simp only [Finsupp.coe_zero, Pi.zero_apply]
       exact not_not.mp fun hi => hx_ne_zero <| lt_of_lt_of_le (by positivity) <|

@@ -5,7 +5,7 @@ Authors: brent
 -/
 module
 
-public import Physlib.ProbabilisticTheory.CStarAlgebra.OrderUnit
+public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.State.Vector
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Finite
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Statistics
@@ -48,7 +48,7 @@ span of the `b x`, the outcome `x` has probability `‖⟪b x, φ⟫‖ ^ 2`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open InnerProductSpace UnitalPositiveLinearMap
 open scoped ComplexOrder
@@ -191,4 +191,4 @@ lemma expectation_ofOrthonormal_singleton [MeasurableSingletonClass X] {b : X �
 
 end Measurement
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

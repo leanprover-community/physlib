@@ -134,7 +134,8 @@ lemma deriv_sub_symmetrizedDeriv_eq_sum (s : Multiset (Fin 1 ⊕ Fin 3))
     Multiset.sub_singleton, Multiset.erase_cons_head, Multiset.sum_map_sub,
     Multiset.map_const', Multiset.sum_replicate, ← Nat.cast_smul_eq_nsmul ℝ s.card,
     show ((s.card + 1 : ℕ) : ℝ) = (s.card : ℝ) + 1 by push_cast; ring]
-  match_scalars <;> (field_simp; try ring)
+  match_scalars <;> field_simp
+  ring
 
 /-- The symmetrized symbols are linear in the dual index. -/
 noncomputable def symmetrizedDerivₗ (s : Multiset (Fin 1 ⊕ Fin 3))
@@ -872,7 +873,7 @@ lemma eq_zero_of_forall_sum_smul_pow_eq_zero {n : ℕ} {b : ℕ → B}
     simp only [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X]
     rw [← h1]
     exact Finset.sum_congr rfl fun j _ => by rw [map_smul, smul_eq_mul, mul_comm]
-  have hcoeff := congrArg (fun q => Polynomial.coeff q m) hpz
+  have hcoeff := congrArg (fun q => AddMonoidAlgebra.coeff q m) hpz
   simp only [Polynomial.finsetSum_coeff, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
     Polynomial.coeff_zero, mul_ite, mul_one, mul_zero] at hcoeff
   rwa [Finset.sum_ite_eq (Finset.range n) m (fun j => f (b j)), ite_eq_left hm] at hcoeff

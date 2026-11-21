@@ -5,6 +5,7 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
+public import Physlib.Meta.TODO.Basic
 public import Physlib.SpaceAndTime.Space.Origin
 public import Mathlib.Analysis.Distribution.TemperateGrowth
 public import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
@@ -252,6 +253,10 @@ instance {d} : InnerProductSpace ℝ (Space d) where
     obtain ⟨v2, rfl⟩ := eq_vadd_zero y
     simpa only [smul_vadd_zero, inner_vadd_zero, conj_trivial]
       using InnerProductSpace.smul_left v1 v2 a
+
+TODO "Sort out the `NormedSpace ℝ (Space d)` instance, which currently has to be made
+  explicit from the `InnerProductSpace ℝ (Space d)` instance to aid in typeclass search.
+  See Physlib.SpaceAndTime.WaveVectorSpace.Basic for how to do this using `InnerProductSpace.Core`."
 
 /-- The normed space structure on `Space d`, registered directly. It is definitionally the
   one underlying the inner product space structure, but registering it as its own instance is

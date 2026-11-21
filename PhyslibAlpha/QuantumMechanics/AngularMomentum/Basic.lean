@@ -332,7 +332,7 @@ lemma JpJm_on_primitive (ρ : AngularMomentumRepresentation V) (hz : ρ.Jz ≠ 0
   have hc : ρ.Jp * ρ.Jm - ρ.Jm * ρ.Jp = (2 : ℂ) • ρ.Jz := by
     simpa only [LieRing.of_associative_ring_bracket] using comm_p_m ρ
   have hv := congrArg (fun T : Module.End ℂ V => T v) hc
-  simp only [LinearMap.sub_apply, LinearMap.smul_apply, Module.End.mul_apply] at hv
+  simp only [LinearMap.sub_apply, LinearMap.smul_apply, mul_apply_eq_comp] at hv
   rw [hp, map_zero, sub_zero] at hv
   rw [hv, hh]
 
@@ -353,9 +353,9 @@ lemma Jsq_on_primitive (ρ : AngularMomentumRepresentation V) (hz : ρ.Jz ≠ 0)
   have hp := JpJm_on_primitive ρ hz P
   have hzv := Jz_on_primitive ρ hz P
   have heq := congrArg (fun T : Module.End ℂ V => T v) (Jsq_eq_Jp_mul_Jm ρ)
-  simp only [LinearMap.add_apply, LinearMap.sub_apply, Module.End.mul_apply] at heq
+  simp only [LinearMap.add_apply, LinearMap.sub_apply, mul_apply_eq_comp] at heq
   change (ρ.Jx * ρ.Jx + ρ.Jy * ρ.Jy + ρ.Jz * ρ.Jz) v = _
-  simp only [LinearMap.add_apply, Module.End.mul_apply]
+  simp only [LinearMap.add_apply, mul_apply_eq_comp]
   rw [heq, hp, hzv, map_smul, hzv, smul_smul]
   module
 
@@ -368,11 +368,11 @@ lemma ker_scalar_stable (C A : Module.End ℂ V) (c : ℂ)
     rwa [LieRing.of_associative_ring_bracket, sub_eq_zero] at hCA
   have hCv : C v = c • v := by
     simpa [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
-      Module.End.one_apply, sub_eq_zero] using hv
+      one_apply_eq_self, sub_eq_zero] using hv
   have heq := congrArg (fun T : Module.End ℂ V => T v) h0
-  simp only [Module.End.mul_apply] at heq
+  simp only [mul_apply_eq_comp] at heq
   simp only [LinearMap.mem_ker, LinearMap.sub_apply, LinearMap.smul_apply,
-    Module.End.one_apply, sub_eq_zero]
+    one_apply_eq_self, sub_eq_zero]
   rw [heq, hCv, map_smul]
 
 /-- `Jx` is half the sum of the ladder operators. -/

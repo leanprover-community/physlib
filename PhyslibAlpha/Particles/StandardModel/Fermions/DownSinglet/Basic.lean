@@ -276,7 +276,7 @@ lemma repJetGaugeGroupI_smul (U : JetGaugeGroupI) (χ : SpaceTimeAlgebra)
           Matrix (Fin 3) (Fin 3) SpaceTimeAlgebra)) :
       Module.End SpaceTimeAlgebra (EuclideanSpace SpaceTimeAlgebra (Fin 3))) with hM
   have hMS : M * S = S * M := LinearMap.ext fun e => by
-    simp only [Module.End.mul_apply, hS, LinearMap.lsmul_apply, map_smul]
+    simp only [mul_apply_eq_comp, hS, LinearMap.lsmul_apply, map_smul]
   apply jetValLinEquiv.injective
   rw [show repJetGaugeGroupI U (χ • z)
       = jetValLinEquiv.symm (Module.End.lTensorAlgHom ℂ _ Fermion.RightHandedWeyl
@@ -285,8 +285,8 @@ lemma repJetGaugeGroupI_smul (U : JetGaugeGroupI) (χ : SpaceTimeAlgebra)
     show repJetGaugeGroupI U z
       = jetValLinEquiv.symm (Module.End.lTensorAlgHom ℂ _ Fermion.RightHandedWeyl
           (M.restrictScalars ℂ) (jetValLinEquiv z)) from rfl,
-    jetValLinEquiv_smul, LinearEquiv.apply_symm_apply, ← Module.End.mul_apply,
-    ← Module.End.mul_apply, ← map_mul, ← map_mul,
+    jetValLinEquiv_smul, LinearEquiv.apply_symm_apply, ← mul_apply_eq_comp,
+    ← mul_apply_eq_comp, ← map_mul, ← map_mul,
     show M.restrictScalars ℂ * S.restrictScalars ℂ = (M * S).restrictScalars ℂ from rfl,
     show S.restrictScalars ℂ * M.restrictScalars ℂ = (S * M).restrictScalars ℂ from rfl,
     hMS]

@@ -390,7 +390,7 @@ lemma eq_rs_of_gttIn_Ra {a : ℝ} (h : S.gttIn S.Ra = 1 - a / S.Ra) : a = S.rs :
   rw [h] at h1
   unfold gttOut at h1
   have h2 : a / S.Ra = S.rs / S.Ra := by linarith
-  rwa [div_left_inj' S.Ra_pos.ne'] at h2
+  rwa [div_left_inj₀ S.Ra_pos.ne'] at h2
 
 /-- At the critical value `cos χ_a = 1 / 3`, `g_tt` vanishes at the centre. -/
 lemma gttIn_zero_of_cosChia_eq (hcrit : S.cosChia = 1 / 3) : S.gttIn 0 = 0 := by

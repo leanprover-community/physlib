@@ -88,7 +88,7 @@ def dot (ρ₁ : AngularMomentumRepresentation V) (ρ₂ : AngularMomentumRepres
 lemma Jsq_tensor (ρ₁ : AngularMomentumRepresentation V) (ρ₂ : AngularMomentumRepresentation W) :
     (tensor ρ₁ ρ₂).Jsq = ρ₁.Jsq.rTensor W + ρ₂.Jsq.lTensor V + (2 : ℂ) • dot ρ₁ ρ₂ := by
   refine TensorProduct.ext' fun x y => ?_
-  simp only [Jsq, tensor, LinearMap.add_apply, Module.End.mul_apply, diagEnd_tmul, map_add,
+  simp only [Jsq, tensor, LinearMap.add_apply, mul_apply_eq_comp, diagEnd_tmul, map_add,
     LinearMap.rTensor_tmul, LinearMap.lTensor_tmul, LinearMap.smul_apply, dot,
     TensorProduct.map_tmul, TensorProduct.add_tmul, TensorProduct.tmul_add]
   module
@@ -105,8 +105,8 @@ lemma Jsq_standard (n : ℕ) :
       ((n : ℂ) / 2 * ((n : ℂ) / 2 + 1)) • (1 : Module.End ℂ (StandardSl2Module ℂ n)) := by
   refine StandardSl2Module.linearMap_ext_vNat fun a => ?_
   rw [Jsq, Jsq_eq_Jp_mul_Jm, standard_Jp, standard_Jm, standard_Jz]
-  simp only [LinearMap.sub_apply, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
-    ρF_vNat, ρE_vNat_succ, ρH_vNat, map_smul, Module.End.one_apply]
+  simp only [LinearMap.sub_apply, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
+    ρF_vNat, ρE_vNat_succ, ρH_vNat, map_smul, one_apply_eq_self]
   module
 
 end AngularMomentumRepresentation

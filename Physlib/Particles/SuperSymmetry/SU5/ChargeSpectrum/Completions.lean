@@ -176,7 +176,7 @@ lemma completions_nodup (S5 S10 : Finset 𝓩) (x : ChargeSpectrum 𝓩) :
     refine Multiset.Nodup.map toProd.symm.injective ?_
     refine Multiset.Nodup.product ?_ (Multiset.Nodup.product ?_ (Multiset.Nodup.product ?_ ?_))
   any_goals exact Multiset.nodup_singleton _
-  any_goals exact Finset.nodup_map_iff_injOn.mpr (by simp)
+  all_goals exact Finset.nodup_map_iff_injOn.mpr (by simp)
 
 /-!
 

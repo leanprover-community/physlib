@@ -203,7 +203,7 @@ lemma probabilityOf_eq_poisson_C (n : ℕ) (α : ℂ) :
   simp only [Complex.ofReal_exp, Complex.ofReal_div, Complex.ofReal_neg, Complex.ofReal_pow,
     Complex.ofReal_ofNat, Complex.norm_div, Complex.norm_mul, norm_pow, Complex.norm_real,
     Real.norm_eq_abs, MeasurableSpace.measurableSet_top, MeasureTheory.Measure.sum_apply,
-    MeasureTheory.Measure.smul_apply, MeasureTheory.Measure.dirac_apply', Set.indicator_singleton,
+    smul_apply, MeasureTheory.Measure.dirac_apply', Set.indicator_singleton,
     Pi.one_apply, smul_eq_mul]
   have : |√(n.factorial : ℝ)| = √(n.factorial : ℝ) := by simp
   simp_rw [this]

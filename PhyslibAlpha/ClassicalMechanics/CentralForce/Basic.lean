@@ -5,6 +5,7 @@ Authors: Rithwik Ranganathan
 -/
 module
 
+public import Physlib.ClassicalMechanics.HamiltonianMechanics.Basic
 public import Physlib.Mathematics.Calculus.Gradient
 /-!
 
@@ -47,6 +48,7 @@ the position. The latter is what makes the angular momentum a conserved quantity
 - B. The Hamiltonian
   - B.1. Gradients of the Hamiltonian
   - B.2. Smoothness of the Hamiltonian
+  - B.3. The Hamiltonian system
 
 ## iv. References
 
@@ -58,7 +60,7 @@ the position. The latter is what makes the angular momentum a conserved quantity
 namespace ClassicalMechanics
 
 open InnerProductSpace
-open scoped ContDiff
+open scoped Manifold ContDiff
 
 /-!
 
@@ -140,6 +142,30 @@ lemma contDiffOn_hamiltonian :
       (1 / (2 * S.m)) * ⟪x.1, x.1⟫_ℝ) :=
     contDiff_const.mul (contDiff_fst.inner ℝ contDiff_fst)
   exact hkin.contDiffOn.add (S.contDiffOn_V.comp hnorm fun x hx => norm_pos_iff.mpr hx)
+
+/-!
+### B.3. The Hamiltonian system
+-/
+
+/-- The Hamiltonian system of a central force, defined away from the centre of force. -/
+noncomputable def toHamiltonianSystem :
+    HamiltonianSystem 𝓘(ℝ, EuclideanSpace ℝ (Fin 3)) ⟨EuclideanSpace ℝ (Fin 3)⟩ :=
+  HamiltonianSystem.ofInnerProductSpace {x | x.2 ≠ 0}
+    (isOpen_ne.preimage continuous_snd) (fun x ↦ S.hamiltonian x.2.1 x.2.2)
+    (S.contDiffOn_hamiltonian.contMDiffOn.comp contMDiff_snd.contMDiffOn (fun _ hx ↦ hx.2))
+
+/-- A coordinate state belongs to the central-force domain exactly when its position is nonzero. -/
+@[simp]
+lemma mem_domain_toHamiltonianSystem (p q : EuclideanSpace ℝ (Fin 3)) :
+    PhaseSpace.ofInnerProductSpace p q ∈ S.toHamiltonianSystem.domain ↔ q ≠ 0 :=
+  HamiltonianSystem.mem_domain_ofInnerProductSpace _ _ _ _ p q
+
+/-- The bundled central-force system has the existing central-force Hamiltonian in coordinates. -/
+@[simp]
+lemma toHamiltonianSystem_hamiltonian (t : Time) (p q : EuclideanSpace ℝ (Fin 3)) :
+    S.toHamiltonianSystem.hamiltonian (t, PhaseSpace.ofInnerProductSpace p q) =
+      S.hamiltonian p q :=
+  HamiltonianSystem.hamiltonian_ofInnerProductSpace _ _ _ _ t p q
 
 end CentralForce
 

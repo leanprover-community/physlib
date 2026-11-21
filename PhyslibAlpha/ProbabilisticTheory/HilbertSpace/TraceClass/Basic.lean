@@ -58,7 +58,7 @@ dimensional.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -717,6 +717,6 @@ lemma HasFiniteMultiplicity.trace_eq_finrank_range_of_finiteDimensional
     _ = (Module.finrank ℂ (LinearMap.range p.toLinearMap) : ℂ) :=
       (LinearMap.IsIdempotentElem.isProj_range p.toLinearMap hpIdem).trace
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

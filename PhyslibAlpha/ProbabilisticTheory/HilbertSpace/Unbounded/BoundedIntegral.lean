@@ -46,7 +46,7 @@ norm. Every bounded measurable function is such a limit, which gives the integra
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Topology InnerProductSpace Function
 open ContinuousLinearMap ContinuousLinearMapWOT MeasureTheory Set
@@ -390,7 +390,7 @@ lemma simpleIntegral_toCLM_diff_norm_le [Nonempty α] (f g : SimpleFunc α ℂ) 
   apply μS.simpleIntegral_toCLM_norm_le (f - g) hC
   intro z hz
   rcases SimpleFunc.mem_range.1 hz with ⟨x, rfl⟩
-  simpa only [SimpleFunc.sub_apply] using hfg x
+  simpa only [_root_.sub_apply] using hfg x
 
 lemma simpleIntegral_toCLM_cauchySeq [Nonempty α] {f : α → ℂ} {s : ℕ → SimpleFunc α ℂ}
     (hs : ∀ ε > 0, ∃ N, ∀ n ≥ N, ∀ x, ‖s n x - f x‖ < ε) :
@@ -614,6 +614,6 @@ end WOTSpectralMeasure
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

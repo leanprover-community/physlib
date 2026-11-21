@@ -267,7 +267,7 @@ lemma basis_evenSnd_eq_neg_evenFst (j i : Fin n.succ) :
   any_goals split
   any_goals rfl
   any_goals split
-  any_goals rfl
+  on_goal 7 => rfl
   all_goals
     rename_i h1 h2
     rw [Fin.ext_iff] at h1 h2

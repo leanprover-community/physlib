@@ -361,8 +361,8 @@ lemma dual_gaugeTorusGen_coord (ρ : Representation ℂ GaugeGroupI V)
   have hinv : ∀ j', ρ g⁻¹ (b j') = ((expI : ℂ) ^ (-(w j'))) • b j' := by
     intro j'
     have h1 : ρ g⁻¹ (ρ g (b j')) = b j' := by
-      rw [← Module.End.mul_apply, ← map_mul, inv_mul_cancel, map_one,
-        Module.End.one_apply]
+      rw [← mul_apply_eq_comp, ← map_mul, inv_mul_cancel, map_one,
+        one_apply_eq_self]
     rw [hb j', map_smul] at h1
     rw [_root_.zpow_neg]
     exact ((inv_smul_eq_iff₀ (expI_zpow_ne_zero (w j'))).mpr h1.symm).symm

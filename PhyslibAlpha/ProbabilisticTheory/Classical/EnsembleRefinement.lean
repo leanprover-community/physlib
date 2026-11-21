@@ -57,7 +57,7 @@ and down and of spin left and right, and these two ensembles have no common refi
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory PureState PositiveLinearMap
 open scoped NNReal
@@ -165,4 +165,4 @@ lemma IsSimplexStateSpace.isClassical : IsClassical E := by
 lemma IsSimplexStateSpace.ensemblesRefine : EnsemblesRefine E :=
   (IsSimplexStateSpace.isClassical h).ensemblesRefine
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

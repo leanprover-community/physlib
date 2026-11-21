@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.LinearAlgebra.BilinearForm.TensorProduct
-public import Mathlib.LinearAlgebra.Matrix.PosDef
 public import Physlib.Mathematics.Groups.SpecialUnitary.LieAlgebra.Adjoint
 /-!
 

@@ -45,7 +45,7 @@ so `U = V`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuantumMechanics
 
@@ -249,4 +249,4 @@ lemma stoneCandidateGenerator_reconstruction (x : H) (t : ℝ) :
 end
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -73,6 +73,6 @@ noncomputable instance : MulAction StandardModel.GaugeGroupI TwoHiggsDoublet whe
   one_smul H := by
     ext <;> simp
   mul_smul g1 g2 H := by
-    ext <;> simp [Module.End.mul_apply]
+    ext <;> simp
 
 end TwoHiggsDoublet

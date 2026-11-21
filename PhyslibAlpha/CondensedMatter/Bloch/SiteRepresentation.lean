@@ -56,7 +56,8 @@ noncomputable section
 
 namespace CondensedMatter
 
-open ProbabilisticTheory ProbabilisticTheory.QuantumMechanics MeasureTheory
+open PhyslibAlpha.ProbabilisticTheory PhyslibAlpha.ProbabilisticTheory.QuantumMechanics
+  MeasureTheory
 open CondensedMatter.Crystal
 
 variable {G F : Type*} [AddCommGroup G]

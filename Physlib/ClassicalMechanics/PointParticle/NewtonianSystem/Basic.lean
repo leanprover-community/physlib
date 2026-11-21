@@ -180,6 +180,38 @@ def Central : Prop :=
 
 end InternalForce
 
+/-- The internal forces cancel in pairs by Newton's third law. -/
+lemma internalForce_sum_zero (t : ℝ) :
+    (system.internalForces.map (fun f => f.value t)).sum = 0 := by
+  let value := fun f : system.frame.InternalForce system.Particle => f.value t
+  have h : (system.internalForces.map value).sum = -(system.internalForces.map value).sum := calc
+    _ = ((system.internalForces.map .reverse).map value).sum :=
+      congrArg (fun fs => (fs.map value).sum) system.newton_third_law.symm
+    _ = _ := by
+      rw [Multiset.map_map, ← Multiset.sum_map_neg]
+      rfl
+  apply smul_right_injective system.Vector (by norm_num : (2 : ℝ) ≠ 0)
+  change (2 : ℝ) • (system.internalForces.map value).sum = (2 : ℝ) • (0 : system.Vector)
+  rw [smul_zero, two_smul, ← eq_neg_iff_add_eq_zero]
+  exact h
+
+/-- With no external forces, the sum of mass times acceleration vanishes. -/
+lemma sum_mass_acceleration_eq_zero (hExt : system.externalForces = 0) (t : ℝ) :
+    ∑ p : system.Particle, p.mass.val • p.acceleration t = 0 := by
+  classical
+  simp_rw [show ∀ p : system.Particle, p.mass.val • p.acceleration t =
+      netForce p system.internalForces system.externalForces t from
+    fun p => (congrFun (system.newton_second_law p) t).symm]
+  simp only [netForce, Finset.sum_filter]
+  rw [Finset.sum_comm]
+  simp only [Finset.sum_ite_eq, Finset.mem_univ, ite_true]
+  let forces := system.internalForces.map InternalForce.toForce + system.externalForces
+  let value := fun f : system.frame.Force system.Particle => f.value t
+  change ((Finset.univ : Finset forces).val.map (fun f => value f.1)).sum = 0
+  rw [Multiset.map_univ forces value]
+  simpa only [forces, hExt, add_zero, Multiset.map_map, value, Function.comp_def] using
+    system.internalForce_sum_zero t
+
 /-!
 ## D. Aggregate quantities
 -/

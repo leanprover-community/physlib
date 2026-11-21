@@ -57,7 +57,7 @@ systems, and for maps out of commutative C⋆-algebras it follows from classical
 
 
 namespace CStarMatrix
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open TensorProduct
 open scoped ComplexOrder
 
@@ -365,7 +365,7 @@ end Map
 
 end CStarMatrix
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open TensorProduct
 open scoped ComplexOrder
@@ -406,4 +406,4 @@ lemma ofCommutative_apply (f : C →ₚ₁[ℂ] B) (x : C) : ofCommutative f x =
 
 end QuantumChannel
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

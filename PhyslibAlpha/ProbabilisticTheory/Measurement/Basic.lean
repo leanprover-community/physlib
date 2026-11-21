@@ -50,7 +50,7 @@ the Born law. Measuring the outcome of a classical system itself is the identity
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory UnitalPositiveLinearMap
 
@@ -138,10 +138,10 @@ lemma coe_map_apply (M : Measurement Ω E) (φ : Channel E F) (hφ : φ.IsNormal
 
 end Measurement
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open MeasureTheory UnitalPositiveLinearMap
 open MeasureTheory UnitalPositiveLinearMap
 

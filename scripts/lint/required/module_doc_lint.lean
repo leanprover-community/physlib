@@ -3,10 +3,14 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Lean
-import Mathlib.Tactic.Linter.TextBased
-import Batteries.Data.Array.Merge
-import Mathlib.Logic.Function.Basic
+module
+
+public import Lean
+public import Mathlib.Tactic.Linter.TextBased
+public import Batteries.Data.Array.Merge
+public import Mathlib.Logic.Function.Basic
+
+@[expose] public section
 /-!
 
 # Linting of module documentation

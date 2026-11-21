@@ -5,10 +5,9 @@ Authors: Tom Ole Diem
 -/
 module
 
+public import Mathlib.Algebra.Module.LinearMap.Defs
 public import Mathlib.Basic.Complex.Basic
 public import Mathlib.Tactic.LinearCombination
-public import Mathlib.Algebra.Module.LinearMap.Defs
-public import Mathlib.Data.Finset.Attr
 
 /-!
 # Tracial functionals
@@ -25,14 +24,12 @@ adjoint then give the same value in both orders.
 
 ## ii. Key results
 
-- `LinearMap.IsTracial` : a complex-linear functional with `f (x * y) = f (y * x)`.
-- `LinearMap.isTracial_iff_star_mul_self_eq_mul_star_self` : `f` is tracial if and only if
+- `LinearMap.map_mul_comm_iff_star_mul_self_eq_mul_star_self` : `f` is tracial if and only if
   `f (x⋆ * x) = f (x * x⋆)` for all `x`.
 
 ## iii. Table of contents
 
-- A. Tracial functionals
-- B. Checking on `x⋆ x`
+- A. Checking cyclicity on `x⋆ x`
 
 ## iv. References
 
@@ -46,28 +43,14 @@ variable {𝒜 : Type*} [NonUnitalNonAssocSemiring 𝒜] [Module ℂ 𝒜]
 
 /-!
 
-## A. Tracial functionals
+## A. Checking cyclicity on `x⋆ x`
 
 -/
-
-/-- A complex-linear functional is tracial if `f (x * y) = f (y * x)` for all `x` and `y`. -/
-def IsTracial (f : 𝒜 →ₗ[ℂ] ℂ) : Prop :=
-  ∀ x y : 𝒜, f (x * y) = f (y * x)
-
-/-!
-
-## B. Checking on `x⋆ x`
-
-Apply the hypothesis to `x⋆ + y` and `x⋆ + i y`. The cross terms leave `C - C' = 0` and
-`C + C' = 0` for the commutators `C = f [x, y]` and `C' = f [x⋆, y⋆]`, so `C = 0`.
-
--/
-
-variable [StarRing 𝒜] [IsScalarTower ℂ 𝒜 𝒜] [SMulCommClass ℂ 𝒜 𝒜] [StarModule ℂ 𝒜]
 
 /-- A functional is tracial if and only if `f (x⋆ x) = f (x x⋆)` for all `x`. -/
-lemma isTracial_iff_star_mul_self_eq_mul_star_self (f : 𝒜 →ₗ[ℂ] ℂ) :
-    f.IsTracial ↔ ∀ x : 𝒜, f (star x * x) = f (x * star x) := by
+lemma map_mul_comm_iff_star_mul_self_eq_mul_star_self [StarRing 𝒜] [IsScalarTower ℂ 𝒜 𝒜]
+    [SMulCommClass ℂ 𝒜 𝒜] [StarModule ℂ 𝒜] (f : 𝒜 →ₗ[ℂ] ℂ) :
+    (∀ x y : 𝒜, f (x * y) = f (y * x)) ↔ ∀ x : 𝒜, f (star x * x) = f (x * star x) := by
   constructor
   · intro ht x
     exact ht (star x) x

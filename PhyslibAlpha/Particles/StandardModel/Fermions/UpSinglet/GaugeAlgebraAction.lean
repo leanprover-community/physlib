@@ -459,7 +459,7 @@ lemma repCoeff_eq (U : JetGaugeGroupI) (x : Multiset (Fin 1 ⊕ Fin 3)) :
 /-- The colour endomorphism of the identity matrix is the identity. -/
 lemma colourEnd_one : colourEnd 1 = LinearMap.id := by
   refine LinearMap.ext fun v => ?_
-  rw [colourEnd_apply_mk, map_one, map_one, Module.End.one_apply,
+  rw [colourEnd_apply_mk, map_one, map_one, one_apply_eq_self,
     LinearEquiv.symm_apply_apply, LinearMap.id_apply]
 
 /-- At the base point, a gauge jet with trivial value acts trivially: the zeroth

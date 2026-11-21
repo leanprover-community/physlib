@@ -55,7 +55,7 @@ support of the representation the map is injective.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology WeakDual
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -436,6 +436,6 @@ end UnitaryRep
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

@@ -314,7 +314,7 @@ lemma exists_energyLevel_of_H_eq [FiniteDimensional ℂ V] [Nontrivial V]
     (P : PauliSystem V Hy) {E : ℝ} (hE : E < 0) (hH : P.H = (E : ℂ) • 1) :
     ∃ n : ℕ, E = Hy.energyLevel n := by
   obtain ⟨n, v, hv, hJv⟩ := (P.plusRep hE hH).exists_Jsq_eigenvector
-  rw [P.plusRep_Jsq hE hH, LinearMap.smul_apply, Module.End.one_apply] at hJv
+  rw [P.plusRep_Jsq hE hH, LinearMap.smul_apply, one_apply_eq_self] at hJv
   exact ⟨n, eq_energyLevel_of_casimir hE (smul_left_injective ℂ hv hJv)⟩
 
 /-- Operators commuting with `H` preserve its eigenspaces. -/
@@ -323,7 +323,7 @@ lemma mapsTo_eigenspace (P : PauliSystem V Hy) {T : Module.End ℂ V} (hT : ⁅P
   intro x hx
   simp only [SetLike.mem_coe, Module.End.mem_eigenspace_iff] at hx ⊢
   have h := congr($(Sl2.AngularMomentumRepresentation.mul_eq_of_lie_eq hT) x)
-  simp only [Module.End.mul_apply, add_zero] at h
+  simp only [mul_apply_eq_comp, add_zero] at h
   rw [h, hx, map_smul]
 
 /-- The restriction of a Pauli system to an eigenspace of `H`. -/
@@ -403,8 +403,8 @@ lemma exists_energyLevel_le_finrank_of_H_eq [FiniteDimensional ℂ V] [Nontrivia
     ((P.plusRep hE hH).isSl2Triple hzp) ((P.minusRep hE hH).isSl2Triple hzm) hcomm
   have h1 := (P.plusRep hE hH).Jsq_on_primitive hzp P1
   have h2 := (P.minusRep hE hH).Jsq_on_primitive hzm P2
-  rw [P.plusRep_Jsq hE hH, LinearMap.smul_apply, Module.End.one_apply] at h1
-  rw [P.minusRep_Jsq hE hH, LinearMap.smul_apply, Module.End.one_apply] at h2
+  rw [P.plusRep_Jsq hE hH, LinearMap.smul_apply, one_apply_eq_self] at h1
+  rw [P.minusRep_Jsq hE hH, LinearMap.smul_apply, one_apply_eq_self] at h2
   have hc1 := smul_left_injective ℂ hm0 h1
   have hc2 := smul_left_injective ℂ hm0 h2
   have hn : n1 = n2 := by

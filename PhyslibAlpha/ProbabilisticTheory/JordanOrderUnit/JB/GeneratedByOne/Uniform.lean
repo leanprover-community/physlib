@@ -36,7 +36,7 @@ most the norm.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JBAlgebra
 
@@ -58,7 +58,7 @@ lemma norm_mul_self (x : ClosedGeneratedByOne a) : ‖x * x‖ = ‖x‖ ^ 2 := 
 /-- The spectral radius is at most the norm. -/
 lemma spectralRadius_le_norm (x : ClosedGeneratedByOne a) :
     spectralRadius ℝ x ≤ (‖x‖₊ : ℝ≥0∞) := by
-  exact spectralRadius_le_nnnorm x
+  exact spectralRadius_le_nnNorm x
 
 /-- Along powers of two, the closed one-generator algebra has a uniform norm. -/
 lemma norm_pow_two_pow (x : ClosedGeneratedByOne a) (n : ℕ) :
@@ -78,4 +78,4 @@ end ClosedGeneratedByOne
 
 end JBAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

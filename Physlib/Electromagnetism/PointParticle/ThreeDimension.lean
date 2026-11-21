@@ -49,6 +49,7 @@ namespace Electromagnetism
 open Physlib
 open Distribution SchwartzMap
 open Space MeasureTheory
+open SpaceTime
 
 namespace TempDistElectromagneticPotential
 
@@ -68,12 +69,12 @@ particle in 3d space.
 /-- The current density of a point particle stationary at a point `r₀`
   of 3d space. -/
 noncomputable def threeDimPointParticleCurrentDensity (c : SpeedOfLight) (q : ℝ) (r₀ : Space 3) :
-    TempDistLorentzCurrentDensity 3 := (SpaceTime.distTimeSlice c).symm <|
+    TempDistLorentzCurrentDensity 3 := (tempDistTimeSlice c).symm <|
   constantTime ((c * q) • diracDelta' ℝ r₀ (Lorentz.Vector.basis (Sum.inl 0)))
 
 lemma threeDimPointParticleCurrentDensity_eq_distTranslate (c : SpeedOfLight) (q : ℝ)
     (r₀ : Space 3) :
-    threeDimPointParticleCurrentDensity c q r₀ = ((SpaceTime.distTimeSlice c).symm <|
+    threeDimPointParticleCurrentDensity c q r₀ = ((tempDistTimeSlice c).symm <|
     constantTime <|
     distTranslate (basis.repr r₀) <|
     ((c * q) • diracDelta' ℝ 0 (Lorentz.Vector.basis (Sum.inl 0)))) := by
@@ -147,13 +148,13 @@ open Real
 /-- The electromagnetic potential of a point particle stationary at `r₀`
   of 3d space. -/
 noncomputable def threeDimPointParticle (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
-    TempDistElectromagneticPotential 3 := (SpaceTime.distTimeSlice 𝓕.c).symm <| Space.constantTime
+    TempDistElectromagneticPotential 3 := (tempDistTimeSlice 𝓕.c).symm <| Space.constantTime
   <| distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c)/ (4 * π)) * ‖x - r₀‖⁻¹) •
     Lorentz.Vector.basis (Sum.inl 0))
     (((IsDistBounded.inv_shift _).const_mul_fun _).smul_const _)
 
 lemma threeDimPointParticle_eq_distTranslate (𝓕 : FreeSpace) (q : ℝ) (r₀ : Space 3) :
-    threeDimPointParticle 𝓕 q r₀ = ((SpaceTime.distTimeSlice 𝓕.c).symm <|
+    threeDimPointParticle 𝓕 q r₀ = ((tempDistTimeSlice 𝓕.c).symm <|
     constantTime <|
     distTranslate (basis.repr r₀) <|
     distOfFunction (fun x => (((q * 𝓕.μ₀ * 𝓕.c)/ (4 * π))* ‖x‖⁻¹) •

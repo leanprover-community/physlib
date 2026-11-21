@@ -70,16 +70,16 @@ theorem pinching_kraus_ortho (ρ : MState d) (i j : spectrum ℝ ρ.m) :
 
 set_option backward.isDefEq.respectTransparency false in
 lemma pinching_sum (ρ : MState d) : ∑ k, pinching_kraus ρ k = 1 := by
-  ext i j
-  simp only [pinching_kraus, HermitianMat.cfc]
+  apply HermitianMat.ext
+  simp only [HermitianMat.mat_finset_sum, pinching_kraus, HermitianMat.mat_cfc,
+    HermitianMat.mat_one]
   have heq : Set.EqOn (fun x => ∑ i : spectrum ℝ ρ.m, if x = ↑i then (1 : ℝ) else 0) 1 (spectrum ℝ ρ.m) := by
     intro x hx
     dsimp
     rw [Finset.sum_set_coe (f := fun i => if x = i then 1 else 0), Finset.sum_ite_eq_of_mem]
     rwa [Set.mem_toFinset]
-  simp [-HermitianMat.mat_apply]
-  rw [← cfc_sum, Finset.sum_fn, cfc_congr heq, cfc_one (R := ℝ) (ha := _)]
-  rw [IsSelfAdjoint, Matrix.star_eq_conjTranspose, ρ.Hermitian]
+  rw [← cfc_sum, Finset.sum_fn]
+  exact (_root_.cfc_congr heq).trans (cfc_one (R := ℝ) (ha := ρ.Hermitian))
 
 def pinching_map (ρ : MState d) : CPTPMap d d ℂ :=
   CPTPMap.of_kraus_CPTPMap (HermitianMat.mat ∘ pinching_kraus ρ) (by
@@ -411,5 +411,5 @@ theorem pinching_pythagoras (ρ σ : MState d) :
     · exact dite_eq_right h_ker
     · convert (add_top _).symm
       apply dite_eq_right ?_
-      contrapose! h_ker
+      contrapose h_ker
       exact h_ker.trans (pinching_map_ker_le ρ σ)
