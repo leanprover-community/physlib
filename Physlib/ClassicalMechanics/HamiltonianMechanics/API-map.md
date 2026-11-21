@@ -54,8 +54,10 @@ The coordinate Poisson bracket is {f, g} = ⟨∇qf, ∇ₚg⟩ − ⟨∇ₚf, 
 bilinear and satisfies the Leibniz rule, with the differentiability assumptions needed for the
 gradient rules. [5] Along a differentiable solution of Hamilton's equations, a time-independent
 observable differentiable at the current state satisfies d f(p(t), q(t))/dt = {f, H(t)}(p(t), q(t)).
-[6] The canonical coordinate relations are {qᵢ, pⱼ} = δᵢⱼ, {qᵢ, qⱼ} = {pᵢ, pⱼ} = 0, and smooth
-observables satisfy the Jacobi identity. [TODO]
+[6] The canonical coordinate relations are {qᵢ, pⱼ} = δᵢⱼ, {qᵢ, qⱼ} = {pᵢ, pⱼ} = 0, and
+twice continuously differentiable observables satisfy the Jacobi identity. [21][22] At fixed time,
+the bracket of two such observables commuting everywhere with a globally defined system's
+Hamiltonian also commutes with it. [22]
 
 ### Symmetries and conserved quantities
 
@@ -139,6 +141,11 @@ the momentum p = m v. [TODO]
 19. PhyslibAlpha/ClassicalMechanics/CentralForce/Basic.lean — `CentralForce.toHamiltonianSystem`
 20. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
     `observable_eq_of_poissonBracket_eq_zero`
+21. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
+    `poissonBracket_position_momentum`, `poissonBracket_position_position`,
+    `poissonBracket_momentum_momentum`
+22. Physlib/ClassicalMechanics/HamiltonianMechanics/JacobiIdentity.lean —
+    `poissonBracket_jacobi`, `HamiltonianSystem.poissonBracket_firstIntegrals`
 
 ## References
 
