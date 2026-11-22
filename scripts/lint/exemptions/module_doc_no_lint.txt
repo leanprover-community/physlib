@@ -56,7 +56,6 @@ Physlib/Mathematics/Calculus/Wirtinger/Basic.lean
 Physlib/Mathematics/Calculus/Wirtinger/Coordinate.lean
 Physlib/Mathematics/Distribution/Basic.lean
 Physlib/Mathematics/Distribution/PowMul.lean
-Physlib/Mathematics/ForMathlib/DataStructures/Matrix/LieTrace.lean
 Physlib/Mathematics/ForMathlib/FDerivCurry.lean
 Physlib/Mathematics/ForMathlib/Fin.lean
 Physlib/Mathematics/ForMathlib/Fin/Involutions.lean
