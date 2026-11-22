@@ -159,6 +159,7 @@ public import PhyslibAlpha.ClassicalMechanics.MomentMap.Basic
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.Cohomology
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.GalileanMass
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.GalileanMassCocycle
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianKernel
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergy
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotential
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Basic
