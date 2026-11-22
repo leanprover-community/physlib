@@ -152,7 +152,6 @@ lemma tangentMap_eq_of_eventuallyEq {E : Type*} [NormedAddCommGroup E] [NormedSp
   refine Bundle.TotalSpace.ext h.eq_of_nhds ?_
   simp only [tangentMap]
   rw [h.mfderiv_eq]
-  -- the velocity components agree by definition
   rfl
 
 /-- A property of real times holding near a real time `τ` holds, after subtracting a base time `t₀`,

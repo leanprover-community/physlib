@@ -244,14 +244,12 @@ private lemma integral_eulerLagrange_eq_zero_of_isCriticalPoint_chart [I.Boundar
     have hψT : ψ (t₁ -ᵥ t₀) = 0 := image_eq_zero_of_notMem_tsupport fun h' ↦ (hs h').2.false
     have hvar := hasDerivAt_integral_variation S' t₀ hH (t₁ -ᵥ t₀)
       (fun s ↦ by simp [hHc, hψ0]) fun s ↦ by simp only [hHc, hψT, zero_smul, smul_zero, add_zero]
-    -- the variation has velocity `ψ τ • w` at `s = 0`
     have hV (τ : ℝ) : fderiv ℝ Hc (0, τ) (1, 0) = ψ τ • w := by
       rw [← fderiv_curry_fst Hc 0 τ (hH.differentiable (by simp) _) 1, fderiv_apply_one_eq_deriv]
       simp [Function.curry, hHc, deriv_smul_const (hσ.differentiable (by simp) 0), hσ'0]
     rw [show (fun σ' : ℝ ↦ Hc (0, σ')) = q from funext fun σ' ↦ by simp [hHc, hσ0]] at hvar
     simp only [hV] at hvar
     simp_rw [fun s ↦ S.action_eq_intervalIntegral (γ := fun t ↦ h.toFun (s, t)) hT]
-    -- the action integrands of `S` and of `S'` along the variation differ by a constant in `s`
     set G : ℝ → ℝ → ℝ := fun s τ ↦ S (τ +ᵥ t₀,
       tangentMap 𝓘(ℝ, ℝ) I (fun t ↦ h.toFun (s, t)) ⟨τ +ᵥ t₀, (1 : ℝ)⟩)
     set Gh : ℝ → ℝ → ℝ := fun s τ ↦ S'.coord t₀ (τ, Hc (s, τ), fderiv ℝ Hc (s, τ) (0, 1))
@@ -282,7 +280,6 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint_chart [I.Boundaryless] [FiniteDim
     {N : Set E} (hNo : IsOpen N) (hqN : extChartAt I x (γ (τ₀ +ᵥ t₀)) ∈ N)
     (hS' : ∀ p : ℝ × E × E, p.2.1 ∈ N → S'.coord t₀ p = S.chartLagrangian x t₀ p) :
     eulerLagrange S' t₀ (fun σ : ℝ ↦ extChartAt I x (γ (σ +ᵥ t₀))) τ₀ = 0 := by
-  -- localise to a compact interval around `τ₀` on which `γ` stays in the chart
   set O : Set ℝ := Ioo 0 (t₁ -ᵥ t₀) ∩ (fun σ : ℝ ↦ γ (σ +ᵥ t₀)) ⁻¹' (extChartAt I x).source
   have hOo : IsOpen O := isOpen_Ioo.inter ((isOpen_extChartAt_source x).preimage
     (hc.1.continuous.comp (Time.contMDiff_vadd t₀ ∞).continuous))
@@ -290,19 +287,16 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint_chart [I.Boundaryless] [FiniteDim
   obtain ⟨d, hd, hCO⟩ : ∃ d > 0, Icc (τ₀ - d) (τ₀ + d) ⊆ O := by
     simpa [Real.closedBall_eq_Icc] using Metric.nhds_basis_closedBall.mem_iff.1
       (hOo.mem_nhds ⟨hτ, hx⟩)
-  -- extend the chart reading to a globally smooth curve `q'`
   obtain ⟨q', hq', hq'q⟩ := exists_contDiff_eventuallyEq hOo hqO isCompact_Icc hCO
   have hKt : q' '' Icc (τ₀ - d) (τ₀ + d) ⊆ (extChartAt I x).target := by
     rintro _ ⟨σ, hσ, rfl⟩
     exact (hq'q σ hσ).eq_of_nhds ▸ (extChartAt I x).map_source (hCO hσ).2
-  -- a Lagrangian system `S''` on the model space is the chart Lagrangian near `q'`
   obtain ⟨S'', N'', hNo'', hKN, hNt, hS''⟩ :=
     S.exists_lagrangianSystem_coord_eq x t₀ (isCompact_Icc.image hq'.continuous) hKt
   have hτ₀K : τ₀ ∈ Icc (τ₀ - d) (τ₀ + d) := ⟨by linarith, by linarith⟩
   have hT := (hτ.1.trans hτ.2).le
   have hsub : Ioc (τ₀ - d) (τ₀ + d) ⊆ Ioc 0 (t₁ -ᵥ t₀) := fun σ hσ ↦
     Ioo_subset_Ioc_self (hCO ⟨hσ.1.le, hσ.2⟩).1
-  -- the fundamental lemma turns vanishing first variations into the equations on the interval
   have hzero := eqOn_Icc_zero_of_integral_contDiff_smul_eq_zero
     (contDiff_eulerLagrange hq').continuous.continuousOn (by linarith : τ₀ - d < τ₀ + d)
     fun ψ hψ hψs w ↦ by
@@ -317,7 +311,6 @@ lemma eulerLagrange_eq_zero_of_isCriticalPoint_chart [I.Boundaryless] [FiniteDim
       · have : ψ σ = 0 :=
           image_eq_zero_of_notMem_tsupport fun h ↦ hσ.2 (Ioo_subset_Ioc_self (hψs h))
         simp [this]
-  -- transfer from `q'`, `S''` to the chart reading and `S'`
   rw [← eulerLagrange_congr (hq'q τ₀ hτ₀K),
     eulerLagrange_congr_lagrangian (hNo.inter hNo'')
       (hq'.continuous.continuousAt.eventually_mem ((hNo.inter hNo'').mem_nhds

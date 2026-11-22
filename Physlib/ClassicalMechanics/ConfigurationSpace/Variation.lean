@@ -146,7 +146,6 @@ private lemma exists_contMDiff_chart_shift [I.Boundaryless] (x : M) {γ : Time �
     (extChartAt I x).symm (extChartAt I x (γ p.2) + σ p.1 • (Ψ p.2 • w)) else γ p.2,
     fun p ↦ ?_, fun s t ht ↦ by simp [ht], fun s t ht ↦ ?_⟩
   · by_cases hp : p.2 ∈ Z
-    -- over `Z`, `F` is smooth near `p` as the chart shift, which agrees with `F` nearby
     · have hch : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ (extChartAt I x ∘ γ) p.2 :=
         (contMDiffAt_extChartAt' (by rw [← extChartAt_source I]; exact hZs _ hp)).comp p.2
           (hγ p.2)
@@ -161,7 +160,6 @@ private lemma exists_contMDiff_chart_shift [I.Boundaryless] (x : M) {γ : Time �
       split_ifs with hq
       · rfl
       · simpa [hΨ0 _ hq] using ((extChartAt I x).left_inv hq1).symm
-    -- off `Z`, `F` equals `γ` on the open complement of `Z`
     · refine ((hγ.contMDiffAt (x := p.2)).comp p contMDiff_snd.contMDiffAt).congr_of_eventuallyEq ?_
       filter_upwards [continuous_snd.continuousAt.eventually_mem (hZc.isOpen_compl.mem_nhds hp)]
         with q hq
