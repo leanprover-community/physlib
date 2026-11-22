@@ -19,6 +19,7 @@ as a convolution square, which turns the quadratic form into the integral of a s
 
 ## ii. Key results
 
+- `integral_exp_mul_exp_eq_of_pos` : the convolution of two Gaussians is a Gaussian.
 - `integral_exp_mul_exp_eq` : the Gaussian kernel is a convolution square.
 - `integral_mul_mul_exp_nonneg` : the Gaussian kernel is positive semi-definite.
 
@@ -47,34 +48,50 @@ open scoped SchwartzMap
 
 -/
 
+/-- The convolution of two Gaussians is a Gaussian:
+`∫ exp (-α ‖x - w‖²) exp (-β ‖w - y‖²) dw = (π / (α + β))^(3/2) exp (-αβ/(α + β) ‖x - y‖²)`. -/
+lemma integral_exp_mul_exp_eq_of_pos {α β : ℝ} (hα : 0 < α) (hβ : 0 < β) (x y : Space 3) :
+    ∫ w : Space 3, Real.exp (-(α * ‖x - w‖ ^ 2)) * Real.exp (-(β * ‖w - y‖ ^ 2)) =
+      (Real.pi / (α + β)) ^ (3 / 2 : ℝ) * Real.exp (-(α * β / (α + β) * ‖x - y‖ ^ 2)) := by
+  have hαβ : 0 < α + β := by positivity
+  set m : Space 3 := (α / (α + β)) • x + (β / (α + β)) • y with hm
+  have key : ∀ w : Space 3, Real.exp (-(α * ‖x - w‖ ^ 2)) * Real.exp (-(β * ‖w - y‖ ^ 2)) =
+      Real.exp (-(α + β) * ‖w - m‖ ^ 2) * Real.exp (-(α * β / (α + β) * ‖x - y‖ ^ 2)) := by
+    intro w
+    rw [← Real.exp_add, ← Real.exp_add]
+    congr 1
+    have h1 : x - w = (β / (α + β)) • (x - y) - (w - m) := by
+      rw [hm]
+      match_scalars <;> field_simp <;> ring
+    have h2 : w - y = (α / (α + β)) • (x - y) + (w - m) := by
+      rw [hm]
+      match_scalars <;> field_simp <;> ring
+    rw [h1, h2, norm_sub_sq_real, norm_add_sq_real, norm_smul, norm_smul, real_inner_smul_left,
+      real_inner_smul_left]
+    simp only [Real.norm_eq_abs, abs_of_pos (div_pos hβ hαβ), abs_of_pos (div_pos hα hαβ)]
+    field_simp
+    ring
+  simp_rw [key]
+  rw [integral_mul_const]
+  congr 1
+  have h := GaussianFourier.integral_rexp_neg_mul_sq_norm (V := Space 3) (b := α + β) hαβ
+  rw [Space.finrank_eq_dim] at h
+  rw [← integral_sub_right_eq_self (fun w : Space 3 => Real.exp (-(α + β) * ‖w‖ ^ 2)) m] at h
+  rw [h]
+  norm_num
+
 /-- The Gaussian kernel is a convolution square:
 `∫ exp (-2s ‖x - w‖²) exp (-2s ‖w - y‖²) dw = (π / (4s))^(3/2) exp (-s ‖x - y‖²)`. -/
 lemma integral_exp_mul_exp_eq (s : ℝ) (hs : 0 < s) (x y : Space 3) :
     ∫ w : Space 3, Real.exp (-(2 * s * ‖x - w‖ ^ 2)) * Real.exp (-(2 * s * ‖w - y‖ ^ 2)) =
       (Real.pi / (4 * s)) ^ (3 / 2 : ℝ) * Real.exp (-(s * ‖x - y‖ ^ 2)) := by
-  set m : Space 3 := (2 : ℝ)⁻¹ • (x + y) with hm
-  have key : ∀ w : Space 3, Real.exp (-(2 * s * ‖x - w‖ ^ 2)) * Real.exp (-(2 * s * ‖w - y‖ ^ 2)) =
-      Real.exp (-(4 * s) * ‖w - m‖ ^ 2) * Real.exp (-(s * ‖x - y‖ ^ 2)) := by
-    intro w
-    rw [← Real.exp_add, ← Real.exp_add]
-    congr 1
-    have hp := parallelogram_law_with_norm ℝ (x - w) (w - y)
-    have h1 : x - w + (w - y) = x - y := by abel
-    have h2 : x - w - (w - y) = (-2 : ℝ) • (w - m) := by
-      rw [hm]
-      module
-    rw [h1, h2, norm_smul] at hp
-    simp only [Real.norm_eq_abs, abs_neg, abs_two] at hp
-    nlinarith [hp]
-  simp_rw [key]
-  rw [integral_mul_const]
-  congr 1
-  have h := GaussianFourier.integral_rexp_neg_mul_sq_norm (V := Space 3) (b := 4 * s)
-    (by positivity)
-  rw [Space.finrank_eq_dim] at h
-  rw [← integral_sub_right_eq_self (fun w : Space 3 => Real.exp (-(4 * s) * ‖w‖ ^ 2)) m] at h
+  have h := integral_exp_mul_exp_eq_of_pos (α := 2 * s) (β := 2 * s) (by positivity)
+    (by positivity) x y
   rw [h]
-  norm_num
+  congr 3
+  · ring
+  · field_simp
+    ring
 
 /-!
 

@@ -87,15 +87,16 @@ lemma ae_prod_fst_ne_snd :
   filter_upwards [this] with y hy
   exact fun h => hy h.symm
 
-/-- The quadratic form of the inverse-norm kernel as a superposition of Gaussian quadratic
+/-- The bilinear form of the inverse-norm kernel as a superposition of Gaussian bilinear
 forms. -/
-lemma sqrt_pi_mul_integral_mul_mul_inv_norm_sub (ρ : 𝓢(Space 3, ℝ)) :
-    Real.sqrt Real.pi * ∫ p : Space 3 × Space 3, ρ p.1 * ρ p.2 * ‖p.1 - p.2‖⁻¹ =
+lemma sqrt_pi_mul_integral_mul_mul_inv_norm_sub (ρ₁ ρ₂ : 𝓢(Space 3, ℝ)) :
+    Real.sqrt Real.pi * ∫ p : Space 3 × Space 3, ρ₁ p.1 * ρ₂ p.2 * ‖p.1 - p.2‖⁻¹ =
       ∫ s in Ioi (0 : ℝ), s ^ (-(1 / 2 : ℝ)) *
-        ∫ p : Space 3 × Space 3, ρ p.1 * ρ p.2 * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2)) := by
+        ∫ p : Space 3 × Space 3, ρ₁ p.1 * ρ₂ p.2 * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2)) := by
   let H : Space 3 × Space 3 → ℝ → ℝ := fun p s =>
-    ρ p.1 * ρ p.2 * (s ^ (-(1 / 2 : ℝ)) * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2)))
-  have hρm : Measurable ρ := ρ.continuous.measurable
+    ρ₁ p.1 * ρ₂ p.2 * (s ^ (-(1 / 2 : ℝ)) * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2)))
+  have hρm₁ : Measurable ρ₁ := ρ₁.continuous.measurable
+  have hρm₂ : Measurable ρ₂ := ρ₂.continuous.measurable
   have hHm : Measurable (Function.uncurry H) := by
     simp only [H]
     fun_prop
@@ -119,13 +120,13 @@ lemma sqrt_pi_mul_integral_mul_mul_inv_norm_sub (ρ : 𝓢(Space 3, ℝ)) :
     rw [integrable_prod_iff hHm.aestronglyMeasurable]
     constructor
     · filter_upwards [ae_prod_fst_ne_snd] with p hp
-      exact (hinnerInt p hp).const_mul (ρ p.1 * ρ p.2)
-    · have hbase := ((integrable_prod_mul_mul_inv_norm_sub ρ ρ).norm).const_mul
+      exact (hinnerInt p hp).const_mul (ρ₁ p.1 * ρ₂ p.2)
+    · have hbase := ((integrable_prod_mul_mul_inv_norm_sub ρ₁ ρ₂).norm).const_mul
         (Real.sqrt Real.pi)
       refine hbase.congr ?_
       filter_upwards [ae_prod_fst_ne_snd] with p hp
       have hn : ∀ s ∈ Ioi (0 : ℝ), ‖H p s‖ =
-          |ρ p.1 * ρ p.2| * (s ^ (-(1 / 2 : ℝ)) * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2))) := by
+          |ρ₁ p.1 * ρ₂ p.2| * (s ^ (-(1 / 2 : ℝ)) * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2))) := by
         intro s hs
         simp only [H, Real.norm_eq_abs, abs_mul, Real.abs_exp]
         rw [abs_of_nonneg (Real.rpow_nonneg (le_of_lt hs) _)]
@@ -136,7 +137,7 @@ lemma sqrt_pi_mul_integral_mul_mul_inv_norm_sub (ρ : 𝓢(Space 3, ℝ)) :
   have hsw : ∫ p, ∫ s in Ioi (0 : ℝ), H p s = ∫ s in Ioi (0 : ℝ), ∫ p, H p s :=
     integral_integral_swap hHint
   have hL : ∫ p, ∫ s in Ioi (0 : ℝ), H p s =
-      Real.sqrt Real.pi * ∫ p : Space 3 × Space 3, ρ p.1 * ρ p.2 * ‖p.1 - p.2‖⁻¹ := by
+      Real.sqrt Real.pi * ∫ p : Space 3 × Space 3, ρ₁ p.1 * ρ₂ p.2 * ‖p.1 - p.2‖⁻¹ := by
     rw [← integral_const_mul]
     refine integral_congr_ae ?_
     filter_upwards [ae_prod_fst_ne_snd] with p hp
@@ -155,7 +156,7 @@ lemma sqrt_pi_mul_integral_mul_mul_inv_norm_sub (ρ : 𝓢(Space 3, ℝ)) :
 `0 ≤ ∫∫ ρ(x) ρ(y) / ‖x - y‖ dx dy`. -/
 lemma integral_mul_mul_inv_norm_sub_nonneg (ρ : 𝓢(Space 3, ℝ)) :
     0 ≤ ∫ p : Space 3 × Space 3, ρ p.1 * ρ p.2 * ‖p.1 - p.2‖⁻¹ := by
-  have h := sqrt_pi_mul_integral_mul_mul_inv_norm_sub ρ
+  have h := sqrt_pi_mul_integral_mul_mul_inv_norm_sub ρ ρ
   have hR : 0 ≤ ∫ s in Ioi (0 : ℝ), s ^ (-(1 / 2 : ℝ)) *
       ∫ p : Space 3 × Space 3, ρ p.1 * ρ p.2 * Real.exp (-(s * ‖p.1 - p.2‖ ^ 2)) :=
     setIntegral_nonneg measurableSet_Ioi fun s hs =>
