@@ -22,6 +22,7 @@ The proof combines three facts. The form `W` is negative semi-definite, so `W(ρ
 ## ii. Key results
 
 - `interactionEnergy_laplacian_left` : `W(Δψ, ρ) = 4πG ∫ ψ ρ`.
+- `interactionEnergy_sq_le_mul_self` : `W(ρ₁, ρ₂)² ≤ W(ρ₁, ρ₁) W(ρ₂, ρ₂)`.
 - `interactionEnergy_self_eq_zero_iff` : `W(ρ, ρ) = 0` if and only if `ρ = 0`.
 - `interactionEnergy_self_neg` : `W(ρ, ρ) < 0` for `ρ ≠ 0`.
 
@@ -84,6 +85,36 @@ lemma interactionEnergy_eq_zero_of_self_eq_zero {G : ℝ} (hG : 0 ≤ G) {ρ : �
     field_simp
     ring
   linarith
+
+/-- The Cauchy-Schwarz inequality for the interaction energy:
+`W(ρ₁, ρ₂)² ≤ W(ρ₁, ρ₁) W(ρ₂, ρ₂)` for `G ≥ 0`. -/
+lemma interactionEnergy_sq_le_mul_self {G : ℝ} (hG : 0 ≤ G) (ρ₁ ρ₂ : 𝓢(Space 3, ℝ)) :
+    interactionEnergy G ρ₁ ρ₂ ^ 2 ≤ interactionEnergy G ρ₁ ρ₁ * interactionEnergy G ρ₂ ρ₂ := by
+  rcases eq_or_lt_of_le (interactionEnergy_self_nonpos hG ρ₂) with h0 | hneg
+  · rw [interactionEnergy_eq_zero_of_self_eq_zero hG h0 ρ₁, h0]
+    simp
+  · have e : ∀ t : ℝ, interactionEnergy G (ρ₁ + t • ρ₂) (ρ₁ + t • ρ₂) =
+        interactionEnergy G ρ₁ ρ₁ + 2 * t * interactionEnergy G ρ₁ ρ₂ +
+          t ^ 2 * interactionEnergy G ρ₂ ρ₂ := by
+      intro t
+      rw [interactionEnergy_add_left, interactionEnergy_add_right, interactionEnergy_add_right,
+        interactionEnergy_smul_left, interactionEnergy_smul_left, interactionEnergy_smul_right,
+        interactionEnergy_smul_right, interactionEnergy_comm G ρ₂ ρ₁]
+      ring
+    have hq := interactionEnergy_self_nonpos hG
+      (ρ₁ + (-(interactionEnergy G ρ₁ ρ₂ / interactionEnergy G ρ₂ ρ₂)) • ρ₂)
+    rw [e] at hq
+    have h1 : interactionEnergy G ρ₁ ρ₁ +
+        2 * (-(interactionEnergy G ρ₁ ρ₂ / interactionEnergy G ρ₂ ρ₂)) *
+          interactionEnergy G ρ₁ ρ₂ +
+        (-(interactionEnergy G ρ₁ ρ₂ / interactionEnergy G ρ₂ ρ₂)) ^ 2 *
+          interactionEnergy G ρ₂ ρ₂ =
+        interactionEnergy G ρ₁ ρ₁ -
+          interactionEnergy G ρ₁ ρ₂ ^ 2 / interactionEnergy G ρ₂ ρ₂ := by
+      field_simp
+      ring
+    rw [h1] at hq
+    exact (le_div_iff_of_neg hneg).mp (by linarith)
 
 /-!
 
