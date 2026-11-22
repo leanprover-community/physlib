@@ -107,27 +107,15 @@ lemma couplingPotential_iteratedFDeriv_two (z : EuclideanSpace ℝ (Fin 2))
     (a b : EuclideanSpace ℝ (Fin 2)) :
     iteratedFDeriv ℝ 2 couplingPotential z ![a, b]
       = 2 * a 0 * b 0 + a 0 * b 1 + a 1 * b 0 + 2 * a 1 * b 1 := by
-  have h_second_deriv : fderiv ℝ (fderiv ℝ couplingPotential) z
-    = (2 • (EuclideanSpace.proj (𝕜 := ℝ) 0).smulRight
-    (EuclideanSpace.proj (𝕜 := ℝ) 0) + (EuclideanSpace.proj (𝕜 := ℝ) 0).smulRight
-    (EuclideanSpace.proj (𝕜 := ℝ) 1) + (EuclideanSpace.proj (𝕜 := ℝ) 1).smulRight
-    (EuclideanSpace.proj (𝕜 := ℝ) 0) + 2 • (EuclideanSpace.proj (𝕜 := ℝ) 1).smulRight
-    (EuclideanSpace.proj (𝕜 := ℝ) 1)) := by
-    refine' HasFDerivAt.fderiv _;
-    rw [show fderiv ℝ couplingPotential = _ from funext fun x =>
-      HasFDerivAt.fderiv (couplingPotential_hasFDerivAt x)];
-    rw [hasFDerivAt_iff_isLittleO_nhds_zero];
-    norm_num [Asymptotics.isLittleO_iff];
-    intro ε hε; filter_upwards [Metric.ball_mem_nhds _ hε] with x hx; ring_nf;
-    erw [show ((z.ofLp 0 * 2 + x.ofLp 0 * 2 + z.ofLp 1 + x.ofLp 1) • EuclideanSpace.proj 0
-      + (z.ofLp 0 + x.ofLp 0 + z.ofLp 1 * 2 + x.ofLp 1 * 2) • EuclideanSpace.proj 1
-      - ((z.ofLp 0 * 2 + z.ofLp 1) • EuclideanSpace.proj 0 + (z.ofLp 0 + z.ofLp 1 * 2)
-      • EuclideanSpace.proj 1) - (2 • x.ofLp 0 • EuclideanSpace.proj 0 + x.ofLp 0
-      • EuclideanSpace.proj 1 + x.ofLp 1 • EuclideanSpace.proj 0 + 2 • x.ofLp 1
-      • EuclideanSpace.proj 1) : EuclideanSpace ℝ (Fin 2) →L[ℝ] ℝ) = 0 from by
-        ext; norm_num; ring]; norm_num [hε.le];
-    positivity;
-  rw [iteratedFDeriv_succ_apply_right]; simp +decide [h_second_deriv]; ring!;
+  let p₀ := EuclideanSpace.proj (𝕜 := ℝ) (0 : Fin 2)
+  let p₁ := EuclideanSpace.proj (𝕜 := ℝ) (1 : Fin 2)
+  let hessian := ((2 : ℝ) • p₀ + p₁).smulRight p₀ + (p₀ + (2 : ℝ) • p₁).smulRight p₁
+  have h : fderiv ℝ couplingPotential = ⇑hessian :=
+    funext fun x => (couplingPotential_hasFDerivAt x).fderiv
+  rw [iteratedFDeriv_succ_apply_right, h]
+  simp only [iteratedFDeriv_one_apply, hessian.fderiv]
+  simp [hessian, p₀, p₁, Fin.init]
+  ring
 
 /-!
 
