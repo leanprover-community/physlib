@@ -12,6 +12,7 @@ public import QuantumInfo.Channels.CPTP
 public import QuantumInfo.Channels.DegradableOrder
 public import QuantumInfo.Channels.Dual
 public import QuantumInfo.Channels.MatrixMap
+public import QuantumInfo.Channels.Pauli
 public import QuantumInfo.Channels.Pinching
 public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.ClassicalInfo.Capacity

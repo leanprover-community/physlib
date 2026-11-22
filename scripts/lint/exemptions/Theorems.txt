@@ -123,6 +123,7 @@ MatrixMap.kron_def
 MatrixMap.kron_comp_distrib
 MatrixMap.kron_map_of_kron_state
 MatrixMap.piProd_comp
+MatrixMap.pauliMap_isCompletelyPositive_iff
 pinching_sq_eq_self
 pinching_kraus_ortho
 pinching_bound
