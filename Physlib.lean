@@ -203,6 +203,7 @@ public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.Mathematics.Tensors.Color
 public import Physlib.Mathematics.Tensors.Species
+public import Physlib.Mathematics.Tensors.Tensor
 public import Physlib.Mathematics.VariationalCalculus.Basic
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjDeriv
 public import Physlib.Mathematics.VariationalCalculus.HasVarAdjoint
