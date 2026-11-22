@@ -306,7 +306,6 @@ public import Physlib.Particles.SuperSymmetry.SU5.Potential
 public import Physlib.ProbabilisticTheory.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
-public import Physlib.ProbabilisticTheory.CStarAlgebra.PauliChannel
 public import Physlib.ProbabilisticTheory.CStarAlgebra.State
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.Channel.Basic
@@ -472,6 +471,7 @@ public import Physlib.QuantumMechanics.PlanckConstant
 public import Physlib.QuantumMechanics.PoschlTeller.Basic
 public import Physlib.QuantumMechanics.PoschlTeller.Scattering
 public import Physlib.QuantumMechanics.QuantumSystem.Basic
+public import Physlib.QuantumMechanics.Qubit.PauliChannel
 public import Physlib.QuantumMechanics.RectangularBarrier.Basic
 public import Physlib.QuantumMechanics.SpaceDQuantumSystem
 public import Physlib.Relativity.Bispinors.Basic

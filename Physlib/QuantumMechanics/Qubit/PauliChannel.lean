@@ -18,34 +18,36 @@ characterization, and the induced observable channels.
 
 ## i. Overview
 
-On the qubit C⋆-algebra `CStarMatrix (Fin 2) (Fin 2) ℂ`, conjugation by each of the four Pauli
-matrices `σ0, σ1, σ2, σ3` from `Physlib.Relativity.PauliMatrices.Basic` is a unital star-algebra
-automorphism and therefore completely positive in Mathlib's `CompletelyPositiveMap` sense. A qubit
-Pauli map `ProbabilisticTheory.pauliMap lx ly lz` is the affine combination of these four Pauli
-conjugations with real coefficients `(1 + lx + ly + lz) / 4`, `(1 + lx - ly - lz) / 4`,
+A single-qubit operator algebra is represented as the `2 × 2` complex matrix C⋆-algebra
+`CStarMatrix (Fin 2) (Fin 2) ℂ`. Conjugation by each of the four Pauli matrices `σ0, σ1, σ2, σ3`
+from `Physlib.Relativity.PauliMatrices.Basic` is a unital star-algebra automorphism and therefore
+completely positive in Mathlib's `CompletelyPositiveMap` sense. A qubit Pauli map
+`QuantumMechanics.Qubit.pauliMap lx ly lz` is the affine combination of these four Pauli
+conjugations with real weights `(1 + lx + ly + lz) / 4`, `(1 + lx - ly - lz) / 4`,
 `(1 - lx + ly - lz) / 4`, and `(1 - lx - ly + lz) / 4`; it is unital, trace-preserving, and
-scales `σ1`, `σ2`, `σ3` by `lx`, `ly`, `lz` respectively.
+scales `σ1`, `σ2`, `σ3` by the real parameters `lx`, `ly`, `lz` respectively.
 
-We prove the Fujiwara–Algoet theorem (`ProbabilisticTheory.pauliMap_isCompletelyPositive_iff`):
-`pauliMap lx ly lz` is completely positive on `CStarMatrix (Fin 2) (Fin 2) ℂ` if and only if the
-four tetrahedron inequalities hold (`0 ≤ 1 + lx + ly + lz`, `0 ≤ 1 + lx - ly - lz`,
-`0 ≤ 1 - lx + ly - lz`, `0 ≤ 1 - lx - ly + lz`). Sufficiency follows directly from complete
-positivity of star-algebra homomorphisms, and necessity follows by applying the `2 × 2` block
-extension to the maximally entangled matrix unit block and conjugating by four Bell witnesses.
-Every valid triple induces both a `CompletelyPositiveMap` and a `Channel` between qubit
-observables via `Channel.ofComplex`.
+We prove the Fujiwara–Algoet theorem (`QuantumMechanics.Qubit.pauliMap_isCompletelyPositive_iff`):
+a qubit Pauli map is completely positive on `CStarMatrix (Fin 2) (Fin 2) ℂ` if and only if its
+three Pauli scaling parameters satisfy the four tetrahedron inequalities
+`0 ≤ 1 + lx + ly + lz`, `0 ≤ 1 + lx - ly - lz`, `0 ≤ 1 - lx + ly - lz`, and
+`0 ≤ 1 - lx - ly + lz`. Sufficiency follows from complete positivity of star-algebra
+homomorphisms, and necessity follows by applying the `2 × 2` block extension to the maximally
+entangled matrix-unit block and conjugating by four Bell witnesses. Every valid parameter triple
+induces both a Mathlib `CompletelyPositiveMap` and a `Channel` on the observable space
+`ProbabilisticTheory.ofCStarAlgebra QubitAlgebra` via `Channel.ofComplex`.
 
 ## ii. Key results
 
-- `ProbabilisticTheory.pauliConj` : conjugation by a Pauli matrix as a unital `ℂ`-star-algebra
-  homomorphism on `CStarMatrix (Fin 2) (Fin 2) ℂ`.
-- `ProbabilisticTheory.pauliMap` : the unital trace-preserving qubit Pauli map scaling `σ1`,
-  `σ2`, `σ3` by `lx`, `ly`, `lz`.
-- `ProbabilisticTheory.pauliMap_comp` : composition multiplies Pauli eigenvalues componentwise.
-- `ProbabilisticTheory.pauliMap_isCompletelyPositive_iff` : the Fujiwara–Algoet theorem
-  characterizing complete positivity of `pauliMap lx ly lz`.
-- `ProbabilisticTheory.pauliCPMap`, `ProbabilisticTheory.pauliChannel` : the bundled
-  `CompletelyPositiveMap` and `Channel` on `ofCStarAlgebra (CStarMatrix (Fin 2) (Fin 2) ℂ)`.
+- `QuantumMechanics.Qubit.pauliConj` : conjugation by a Pauli matrix as a unital `ℂ`-star-algebra
+  homomorphism on `QubitAlgebra`.
+- `QuantumMechanics.Qubit.pauliMap` : the unital trace-preserving qubit Pauli map scaling `σ1`,
+  `σ2`, `σ3` by three real parameters.
+- `QuantumMechanics.Qubit.pauliMap_comp` : composition multiplies Pauli eigenvalues componentwise.
+- `QuantumMechanics.Qubit.pauliMap_isCompletelyPositive_iff` : the Fujiwara–Algoet theorem
+  characterizing complete positivity of a qubit Pauli map.
+- `QuantumMechanics.Qubit.pauliCPMap`, `QuantumMechanics.Qubit.pauliChannel` : the bundled
+  `CompletelyPositiveMap` and `Channel` on `ProbabilisticTheory.ofCStarAlgebra QubitAlgebra`.
 
 ## iii. Table of contents
 
@@ -65,13 +67,14 @@ observables via `Channel.ofComplex`.
 
 @[expose] public section
 
+open ProbabilisticTheory
 open scoped CStarAlgebra ComplexOrder PauliMatrix
 
-namespace ProbabilisticTheory
+namespace QuantumMechanics.Qubit
 
 noncomputable section
 
-/-- The `2 × 2` complex matrix C⋆-algebra of a single qubit. -/
+/-- The `2 × 2` complex matrix C⋆-algebra of operators on a single qubit. -/
 abbrev QubitAlgebra : Type := CStarMatrix (Fin 2) (Fin 2) ℂ
 
 /-!
@@ -80,7 +83,7 @@ abbrev QubitAlgebra : Type := CStarMatrix (Fin 2) (Fin 2) ℂ
 
 -/
 
-/-- The Pauli matrix `σ μ` viewed as an element of `QubitAlgebra`. -/
+/-- The Pauli matrices `σ0, σ1, σ2, σ3` viewed as elements of `QubitAlgebra`. -/
 def pauliCStar (μ : Fin 1 ⊕ Fin 3) : QubitAlgebra :=
   CStarMatrix.ofMatrix (PauliMatrix.pauliMatrix μ)
 
@@ -94,8 +97,7 @@ lemma pauliCStar_star (μ : Fin 1 ⊕ Fin 3) : star (pauliCStar μ) = pauliCStar
 lemma pauliCStar_mul_self (μ : Fin 1 ⊕ Fin 3) : pauliCStar μ * pauliCStar μ = 1 :=
   PauliMatrix.pauliMatrix_mul_self μ
 
-/-- Conjugation `A ↦ σ μ * A * σ μ` by a Pauli matrix as a unital star-algebra homomorphism on
-`QubitAlgebra`. -/
+/-- Conjugation by a Pauli matrix as a unital star-algebra homomorphism on `QubitAlgebra`. -/
 def pauliConj (μ : Fin 1 ⊕ Fin 3) : QubitAlgebra →⋆ₐ[ℂ] QubitAlgebra where
   toFun A := pauliCStar μ * A * pauliCStar μ
   map_one' := by rw [mul_one, pauliCStar_mul_self]
@@ -113,14 +115,14 @@ def pauliConj (μ : Fin 1 ⊕ Fin 3) : QubitAlgebra →⋆ₐ[ℂ] QubitAlgebra 
   map_star' A := by simp only [star_mul, pauliCStar_star, mul_assoc]
 
 /-- The unital, trace-preserving qubit Pauli map on `QubitAlgebra` scaling the Pauli operators
-`σ1`, `σ2`, `σ3` by real parameters `lx`, `ly`, `lz`. -/
+`σ1`, `σ2`, `σ3` by three real eigenvalues. -/
 def pauliMap (lx ly lz : ℝ) : QubitAlgebra →ₗ[ℂ] QubitAlgebra :=
   (((1 + lx + ly + lz) / 4 : ℝ) : ℂ) • (pauliConj (Sum.inl 0)).toLinearMap +
   (((1 + lx - ly - lz) / 4 : ℝ) : ℂ) • (pauliConj (Sum.inr 0)).toLinearMap +
   (((1 - lx + ly - lz) / 4 : ℝ) : ℂ) • (pauliConj (Sum.inr 1)).toLinearMap +
   (((1 - lx - ly + lz) / 4 : ℝ) : ℂ) • (pauliConj (Sum.inr 2)).toLinearMap
 
-/-- Entry `(0, 0)` of `pauliMap lx ly lz A`. -/
+/-- The `(0, 0)` matrix entry of a qubit Pauli map applied to an operator. -/
 lemma pauliMap_apply_00 (lx ly lz : ℝ) (A : QubitAlgebra) :
     pauliMap lx ly lz A 0 0 =
       ((1 + lz : ℝ) : ℂ) / 2 * A 0 0 + ((1 - lz : ℝ) : ℂ) / 2 * A 1 1 := by
@@ -134,7 +136,7 @@ lemma pauliMap_apply_00 (lx ly lz : ℝ) (A : QubitAlgebra) :
   have hI : Complex.I * Complex.I = -1 := Complex.I_mul_I
   linear_combination (-(1 - (lx : ℂ) + (ly : ℂ) - (lz : ℂ)) / 4 * A 1 1) * hI
 
-/-- Entry `(0, 1)` of `pauliMap lx ly lz A`. -/
+/-- The `(0, 1)` matrix entry of a qubit Pauli map applied to an operator. -/
 lemma pauliMap_apply_01 (lx ly lz : ℝ) (A : QubitAlgebra) :
     pauliMap lx ly lz A 0 1 =
       ((lx + ly : ℝ) : ℂ) / 2 * A 0 1 + ((lx - ly : ℝ) : ℂ) / 2 * A 1 0 := by
@@ -148,7 +150,7 @@ lemma pauliMap_apply_01 (lx ly lz : ℝ) (A : QubitAlgebra) :
   have hI : Complex.I * Complex.I = -1 := Complex.I_mul_I
   linear_combination ((1 - (lx : ℂ) + (ly : ℂ) - (lz : ℂ)) / 4 * A 1 0) * hI
 
-/-- Entry `(1, 0)` of `pauliMap lx ly lz A`. -/
+/-- The `(1, 0)` matrix entry of a qubit Pauli map applied to an operator. -/
 lemma pauliMap_apply_10 (lx ly lz : ℝ) (A : QubitAlgebra) :
     pauliMap lx ly lz A 1 0 =
       ((lx - ly : ℝ) : ℂ) / 2 * A 0 1 + ((lx + ly : ℝ) : ℂ) / 2 * A 1 0 := by
@@ -162,7 +164,7 @@ lemma pauliMap_apply_10 (lx ly lz : ℝ) (A : QubitAlgebra) :
   have hI : Complex.I * Complex.I = -1 := Complex.I_mul_I
   linear_combination ((1 - (lx : ℂ) + (ly : ℂ) - (lz : ℂ)) / 4 * A 0 1) * hI
 
-/-- Entry `(1, 1)` of `pauliMap lx ly lz A`. -/
+/-- The `(1, 1)` matrix entry of a qubit Pauli map applied to an operator. -/
 lemma pauliMap_apply_11 (lx ly lz : ℝ) (A : QubitAlgebra) :
     pauliMap lx ly lz A 1 1 =
       ((1 - lz : ℝ) : ℂ) / 2 * A 0 0 + ((1 + lz : ℝ) : ℂ) / 2 * A 1 1 := by
@@ -182,7 +184,7 @@ lemma pauliMap_apply_11 (lx ly lz : ℝ) (A : QubitAlgebra) :
 
 -/
 
-/-- Every qubit Pauli map is unital (`pauliMap lx ly lz 1 = 1`). -/
+/-- Every qubit Pauli map is unital. -/
 @[simp]
 lemma pauliMap_one (lx ly lz : ℝ) : pauliMap lx ly lz 1 = 1 := by
   apply CStarMatrix.ext
@@ -192,7 +194,7 @@ lemma pauliMap_one (lx ly lz : ℝ) : pauliMap lx ly lz 1 = 1 := by
       pauliMap_apply_11, CStarMatrix.one_apply, ↓reduceIte, Fin.zero_ne_one, one_ne_zero] <;>
     push_cast <;> ring
 
-/-- Evaluating `pauliMap` on `σ1` scales it by `lx`. -/
+/-- Evaluating a qubit Pauli map on `σ1` scales it by the first parameter. -/
 @[simp]
 lemma pauliMap_sigma1 (lx ly lz : ℝ) :
     pauliMap lx ly lz (pauliCStar (Sum.inr 0)) = (lx : ℂ) • pauliCStar (Sum.inr 0) := by
@@ -205,7 +207,7 @@ lemma pauliMap_sigma1 (lx ly lz : ℝ) :
       Matrix.cons_val_one, Matrix.cons_val_fin_one, smul_eq_mul] <;>
     push_cast <;> ring
 
-/-- Evaluating `pauliMap` on `σ2` scales it by `ly`. -/
+/-- Evaluating a qubit Pauli map on `σ2` scales it by the second parameter. -/
 @[simp]
 lemma pauliMap_sigma2 (lx ly lz : ℝ) :
     pauliMap lx ly lz (pauliCStar (Sum.inr 1)) = (ly : ℂ) • pauliCStar (Sum.inr 1) := by
@@ -218,7 +220,7 @@ lemma pauliMap_sigma2 (lx ly lz : ℝ) :
       Matrix.cons_val_one, Matrix.cons_val_fin_one, smul_eq_mul] <;>
     push_cast <;> ring
 
-/-- Evaluating `pauliMap` on `σ3` scales it by `lz`. -/
+/-- Evaluating a qubit Pauli map on `σ3` scales it by the third parameter. -/
 @[simp]
 lemma pauliMap_sigma3 (lx ly lz : ℝ) :
     pauliMap lx ly lz (pauliCStar (Sum.inr 2)) = (lz : ℂ) • pauliCStar (Sum.inr 2) := by
@@ -240,7 +242,7 @@ lemma pauliMap_trace (lx ly lz : ℝ) (A : QubitAlgebra) :
   push_cast
   ring
 
-/-- The Pauli map with eigenvalues `(1, 1, 1)` is the identity map. -/
+/-- The qubit Pauli map with eigenvalues `(1, 1, 1)` is the identity map. -/
 @[simp]
 lemma pauliMap_id : pauliMap 1 1 1 = LinearMap.id := by
   ext A i j
@@ -265,21 +267,21 @@ lemma pauliMap_comp (lx₁ ly₁ lz₁ lx₂ ly₂ lz₂ : ℝ) :
 
 -/
 
-/-- Matrix unit `|i⟩⟨j|` in `QubitAlgebra`. -/
-def qubitMatrixUnit (i j : Fin 2) : QubitAlgebra :=
+/-- Matrix unit in `QubitAlgebra` with a single `1` entry. -/
+private def qubitMatrixUnit (i j : Fin 2) : QubitAlgebra :=
   CStarMatrix.ofMatrix (Matrix.single i j (1 : ℂ))
 
 /-- The `2 × 2` maximally entangled Choi input matrix `(i, j) ↦ |i⟩⟨j|` over `QubitAlgebra`. -/
-def pauliChoiInput : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
+private def pauliChoiInput : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
   CStarMatrix.ofMatrix (Matrix.of fun i j => qubitMatrixUnit i j)
 
-/-- Square-root factor `V` with `star V * V = pauliChoiInput`. -/
-def pauliChoiFactor : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
+/-- Square-root factor whose `star V * V` equals `pauliChoiInput`. -/
+private def pauliChoiFactor : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
   CStarMatrix.ofMatrix (Matrix.of fun i j => if i = 0 then qubitMatrixUnit 0 j else 0)
 
-/-- The Choi input matrix is positive because
-`pauliChoiInput = star pauliChoiFactor * pauliChoiFactor`. -/
-lemma pauliChoiInput_nonneg : (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤ pauliChoiInput := by
+/-- The Choi input matrix is positive because it factors as `star V * V`. -/
+private lemma pauliChoiInput_nonneg :
+    (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤ pauliChoiInput := by
   have h : star pauliChoiFactor * pauliChoiFactor = pauliChoiInput := by
     apply CStarMatrix.ext
     intro i j
@@ -292,11 +294,13 @@ lemma pauliChoiInput_nonneg : (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤
   exact star_mul_self_nonneg pauliChoiFactor
 
 /-- Rank-one projection `|00⟩⟨00|` in `CStarMatrix (Fin 2) (Fin 2) QubitAlgebra`. -/
-def pauliBellProj : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
+private def pauliBellProj : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
   CStarMatrix.ofMatrix (Matrix.single 0 0 (qubitMatrixUnit 0 0))
 
-/-- `pauliBellProj` is nonnegative because it is a self-adjoint idempotent. -/
-lemma pauliBellProj_nonneg : (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤ pauliBellProj := by
+/-- The rank-one projection `pauliBellProj` is nonnegative because it is a self-adjoint
+idempotent. -/
+private lemma pauliBellProj_nonneg :
+    (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤ pauliBellProj := by
   have h : star pauliBellProj * pauliBellProj = pauliBellProj := by
     apply CStarMatrix.ext
     intro i j
@@ -309,7 +313,7 @@ lemma pauliBellProj_nonneg : (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤ 
   exact star_mul_self_nonneg pauliBellProj
 
 /-- A real multiple of `pauliBellProj` is nonnegative only if the scalar is nonnegative. -/
-lemma nonneg_of_smul_pauliBellProj_nonneg {c : ℝ}
+private lemma nonneg_of_smul_pauliBellProj_nonneg {c : ℝ}
     (hc : (0 : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra) ≤ c • pauliBellProj) : 0 ≤ c := by
   by_contra hlt
   push Not at hlt
@@ -325,8 +329,8 @@ lemma nonneg_of_smul_pauliBellProj_nonneg {c : ℝ}
   linarith
 
 /-- The four Bell witness operators in `CStarMatrix (Fin 2) (Fin 2) QubitAlgebra` extracting the
-four Fujiwara–Algoet eigenvalues of `pauliChoiInput.map (pauliMap lx ly lz)`. -/
-def pauliBellWitness (k : Fin 4) : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
+four Fujiwara–Algoet eigenvalues of the Choi matrix of a Pauli map. -/
+private def pauliBellWitness (k : Fin 4) : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
   CStarMatrix.ofMatrix <| Matrix.of fun i j =>
     if j ≠ 0 then 0
     else match k, i with
@@ -339,9 +343,9 @@ def pauliBellWitness (k : Fin 4) : CStarMatrix (Fin 2) (Fin 2) QubitAlgebra :=
     | 3, 0 => qubitMatrixUnit 0 0
     | 3, 1 => -qubitMatrixUnit 1 0
 
-/-- Conjugating `pauliChoiInput.map (pauliMap lx ly lz)` by the `k`-th Bell witness isolates the
-`k`-th Fujiwara–Algoet expression times `pauliBellProj`. -/
-lemma pauliBellWitness_conj_choi (lx ly lz : ℝ) (k : Fin 4) :
+/-- Conjugating the Choi matrix of a Pauli map by each Bell witness isolates the corresponding
+Fujiwara–Algoet expression times `pauliBellProj`. -/
+private lemma pauliBellWitness_conj_choi (lx ly lz : ℝ) (k : Fin 4) :
     star (pauliBellWitness k) * pauliChoiInput.map (pauliMap lx ly lz) * pauliBellWitness k =
       (![1 + lx + ly + lz, 1 + lx - ly - lz, 1 - lx + ly - lz, 1 - lx - ly + lz] k : ℝ) •
         pauliBellProj := by
@@ -356,9 +360,9 @@ lemma pauliBellWitness_conj_choi (lx ly lz : ℝ) (k : Fin 4) :
       Matrix.single, Fin.sum_univ_two, Complex.real_smul]
   all_goals ring
 
-/-- Entrywise application of `pauliMap` decomposes as a real linear combination of the four
-completely positive Pauli conjugations. -/
-lemma map_pauliMap_eq_sum {k : ℕ} (lx ly lz : ℝ)
+/-- Entrywise application of a qubit Pauli map decomposes as a real linear combination of the
+four completely positive Pauli conjugations. -/
+private lemma map_pauliMap_eq_sum {k : ℕ} (lx ly lz : ℝ)
     (M : CStarMatrix (Fin k) (Fin k) QubitAlgebra) :
     M.map (pauliMap lx ly lz) =
       ((1 + lx + ly + lz) / 4 : ℝ) • M.map (pauliConj (Sum.inl 0)) +
@@ -372,8 +376,8 @@ lemma map_pauliMap_eq_sum {k : ℕ} (lx ly lz : ℝ)
     Complex.coe_smul]
   rfl
 
-/-- The Fujiwara–Algoet theorem: a qubit Pauli map `pauliMap lx ly lz` is completely positive
-on `QubitAlgebra` if and only if its Pauli eigenvalues satisfy the four tetrahedron inequalities
+/-- The Fujiwara–Algoet theorem: a qubit Pauli map is completely positive on `QubitAlgebra` if
+and only if its three real Pauli eigenvalues satisfy the four tetrahedron inequalities
 `0 ≤ 1 + lx + ly + lz`, `0 ≤ 1 + lx - ly - lz`, `0 ≤ 1 - lx + ly - lz`, and
 `0 ≤ 1 - lx - ly + lz`. -/
 theorem pauliMap_isCompletelyPositive_iff (lx ly lz : ℝ) :
@@ -408,8 +412,8 @@ theorem pauliMap_isCompletelyPositive_iff (lx ly lz : ℝ) :
 
 -/
 
-/-- The qubit Pauli map bundled as a Mathlib `CompletelyPositiveMap` whenever `(lx, ly, lz)`
-satisfies the Fujiwara–Algoet tetrahedron inequalities. -/
+/-- The qubit Pauli map bundled as a Mathlib `CompletelyPositiveMap` whenever its eigenvalues
+satisfy the Fujiwara–Algoet tetrahedron inequalities. -/
 def pauliCPMap (lx ly lz : ℝ)
     (h₀ : 0 ≤ 1 + lx + ly + lz) (h₁ : 0 ≤ 1 + lx - ly - lz)
     (h₂ : 0 ≤ 1 - lx + ly - lz) (h₃ : 0 ≤ 1 - lx - ly + lz) :
@@ -426,7 +430,7 @@ def pauliChannel (lx ly lz : ℝ)
   Channel.ofComplex (PositiveLinearMap.ofClass (pauliCPMap lx ly lz h₀ h₁ h₂ h₃))
     (pauliMap_one lx ly lz)
 
-/-- Extending `pauliChannel` back to all operators recovers `pauliMap`. -/
+/-- Extending a qubit Pauli channel back to all operators recovers its Pauli map. -/
 @[simp]
 lemma pauliChannel_extend_apply (lx ly lz : ℝ)
     (h₀ : 0 ≤ 1 + lx + ly + lz) (h₁ : 0 ≤ 1 + lx - ly - lz)
@@ -438,4 +442,4 @@ lemma pauliChannel_extend_apply (lx ly lz : ℝ)
 
 end
 
-end ProbabilisticTheory
+end QuantumMechanics.Qubit

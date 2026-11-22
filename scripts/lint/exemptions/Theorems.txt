@@ -46,6 +46,7 @@ WickContraction.card_of_isfull_odd
 QuantumMechanics.OneDimension.HarmonicOscillator.eigenfunction_completeness
 LinearPMap.numericalRange_convex
 LinearPMap.inner_map_polarization'
+QuantumMechanics.Qubit.pauliMap_isCompletelyPositive_iff
 spaceTime.γ_anticomm
 Fermion.Dirac.gammaMatrix_anticomm
 Fermion.Dirac.gamma_anticomm
@@ -67,7 +68,6 @@ MicroHamiltonian.β_eq_deriv_S_U
 adiabatic_relation_log
 adiabatic_relation_UaUbVaVb
 UnitSystem.ext
-ProbabilisticTheory.pauliMap_isCompletelyPositive_iff
 
 [QuantumInfo]
 CPTPMap.emulates_self
