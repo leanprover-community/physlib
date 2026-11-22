@@ -340,7 +340,7 @@ lemma normalOrderList_get_normalOrderEquiv {φs : List 𝓕.CrAnFieldOp} (n : Fi
     (normalOrderList φs)[(normalOrderEquiv n).val] = φs[n.val] := by
   change (normalOrderList φs).get (normalOrderEquiv n) = _
   simp only [normalOrderList, normalOrderEquiv]
-  erw [← Physlib.List.insertionSortEquiv_get]
+  rw [← Physlib.List.insertionSortEquiv_get]
   simp
 
 set_option backward.isDefEq.respectTransparency false in
