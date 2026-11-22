@@ -164,6 +164,7 @@ public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianDensity
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianDensity.InteractionEnergy
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianKernel
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergy
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergyDefinite
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InvNormKernel
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotential
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotentialDeriv
@@ -311,6 +312,7 @@ public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.Matrix
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.PlaneMatrix
 public import PhyslibAlpha.Mathematics.ForMathlib.DataStructures.Matrix.Scalar
 public import PhyslibAlpha.Mathematics.ForMathlib.Fin
+public import PhyslibAlpha.Mathematics.ForMathlib.LinearAlgebra.BilinearForm.PosSemidef
 public import PhyslibAlpha.Mathematics.ForMathlib.RingTheory.TensorProduct.Derivation
 public import PhyslibAlpha.Mathematics.Fourier.Integral
 public import PhyslibAlpha.Mathematics.Fourier.Inversion
