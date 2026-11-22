@@ -67,6 +67,7 @@ MicroHamiltonian.β_eq_deriv_S_U
 adiabatic_relation_log
 adiabatic_relation_UaUbVaVb
 UnitSystem.ext
+ProbabilisticTheory.pauliMap_isCompletelyPositive_iff
 
 [QuantumInfo]
 CPTPMap.emulates_self
@@ -123,7 +124,6 @@ MatrixMap.kron_def
 MatrixMap.kron_comp_distrib
 MatrixMap.kron_map_of_kron_state
 MatrixMap.piProd_comp
-MatrixMap.pauliMap_isCompletelyPositive_iff
 pinching_sq_eq_self
 pinching_kraus_ortho
 pinching_bound

@@ -306,6 +306,7 @@ public import Physlib.Particles.SuperSymmetry.SU5.Potential
 public import Physlib.ProbabilisticTheory.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
+public import Physlib.ProbabilisticTheory.CStarAlgebra.PauliChannel
 public import Physlib.ProbabilisticTheory.CStarAlgebra.State
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Traciality
 public import Physlib.ProbabilisticTheory.Channel.Basic
