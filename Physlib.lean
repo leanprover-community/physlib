@@ -202,6 +202,7 @@ public import Physlib.Mathematics.Modules.CrossProductMatrix
 public import Physlib.Mathematics.SpecialFunctions.EllipticIntegral
 public import Physlib.Mathematics.SpecialFunctions.PhysHermite
 public import Physlib.Mathematics.Tensors.Color
+public import Physlib.Mathematics.Tensors.Examples
 public import Physlib.Mathematics.Tensors.IndexMaps
 public import Physlib.Mathematics.Tensors.Species
 public import Physlib.Mathematics.Tensors.Tensor
