@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Geometry.Manifold.ContMDiffMFDeriv
 public import Physlib.ClassicalMechanics.Lagrangian.Basic
-public import Physlib.Mathematics.ForMathlib.FDerivCurry
 public import Physlib.Mathematics.ForMathlib.Cutoff
 
 /-!
@@ -32,8 +31,6 @@ In a chart `(q, q̇)` are coordinates on the tangent bundle, so the Lagrangian i
 - `LagrangianSystem.action_integrand_eq_of_eventuallyEq`: the same for a curve chart-read near a
   time
 - `LagrangianSystem.continuousAt_action_integrand`: the action integrand is continuous
-- `LagrangianSystem.integrand_sub_eq`: along a chart-supported variation, the action integrand
-  minus that of a Lagrangian system equal to the chart Lagrangian does not depend on the parameter
 
 ## iii. Table of contents
 
@@ -186,54 +183,6 @@ lemma continuousAt_action_integrand [I.Boundaryless]
           fun _ ht ↦ ((extChartAt I x).left_inv ht).symm)
       ((contMDiffAt_extChartAt' (by rwa [extChartAt_source] at h)).comp _ (hγ' _))
       ((extChartAt I x).map_source h)
-
-/-- For a variation localised in a chart, the action integrand of `S` and that of a Lagrangian
-system `S'` agreeing with the chart Lagrangian differ by an amount independent of the variation
-parameter, so the first variation can be computed in coordinates. -/
-lemma integrand_sub_eq [I.Boundaryless] (S : LagrangianSystem I M) (x : M)
-    {γ : Time → M} {t₀ : Time} (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ)
-    {S' : LagrangianSystem 𝓘(ℝ, E) ⟨E⟩} {N : Set E} (hN : N ⊆ (extChartAt I x).target)
-    (hLN : ∀ p : ℝ × E × E, p.2.1 ∈ N → S'.coord t₀ p = S.chartLagrangian x t₀ p)
-    {q : ℝ → E} {C : Set ℝ}
-    (hCs : ∀ τ ∈ C, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source)
-    (hqC : ∀ τ ∈ C, q =ᶠ[𝓝 τ] fun σ ↦ extChartAt I x (γ (σ +ᵥ t₀))) {ψ : ℝ → ℝ}
-    (hsC : tsupport ψ ⊆ C) (w : E) {σ : ℝ → ℝ} (hσ0 : σ 0 = 0)
-    {Hc : ℝ × ℝ → E} (hH : ContDiff ℝ ∞ Hc) (hHdef : ∀ s τ, Hc (s, τ) = q τ + σ s • (ψ τ • w))
-    (hεN : ∀ s, ∀ τ ∈ C, q τ + σ s • (ψ τ • w) ∈ N) (γs : ℝ → Time → M)
-    (hoff : ∀ s τ, τ ∉ tsupport ψ → γs s (τ +ᵥ t₀) = γ (τ +ᵥ t₀))
-    (hsymm : ∀ s τ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source → γs s (τ +ᵥ t₀) =
-      (extChartAt I x).symm (extChartAt I x (γ (τ +ᵥ t₀)) + σ s • (ψ τ • w))) (s τ : ℝ) :
-    S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I (γs s) ⟨τ +ᵥ t₀, (1 : ℝ)⟩) -
-        S'.coord t₀ (τ, Hc (s, τ), fderiv ℝ Hc (s, τ) (0, 1)) =
-      S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I (γs 0) ⟨τ +ᵥ t₀, (1 : ℝ)⟩) -
-        S'.coord t₀ (τ, Hc (0, τ), fderiv ℝ Hc (0, τ) (0, 1)) := by
-  have hd (s' τ' : ℝ) : deriv (fun σ' ↦ Hc (s', σ')) τ' = fderiv ℝ Hc (s', τ') (0, 1) := by
-    rw [← fderiv_apply_one_eq_deriv]
-    exact fderiv_curry_snd Hc s' τ' (hH.differentiable (by simp) _) 1
-  by_cases hτ : τ ∈ tsupport ψ
-  · have hon (s' : ℝ) : S (τ +ᵥ t₀, tangentMap 𝓘(ℝ, ℝ) I (γs s') ⟨τ +ᵥ t₀, (1 : ℝ)⟩) =
-        S'.coord t₀ (τ, Hc (s', τ), fderiv ℝ Hc (s', τ) (0, 1)) := by
-      rw [← hd]
-      refine S.action_integrand_eq_of_eventuallyEq x t₀ hN hLN
-        (hH.comp (contDiff_const.prodMk contDiff_id)).contDiffAt
-        (by simpa [hHdef] using hεN s' τ (hsC hτ)) ?_
-      filter_upwards [(hγ.continuous.continuousAt).eventually_mem
-        ((isOpen_extChartAt_source x).mem_nhds (hCs τ (hsC hτ))),
-        Time.eventually_vsub t₀ (hqC τ (hsC hτ))] with t ht1 ht2
-      have e := hsymm s' (t -ᵥ t₀) (by rwa [vsub_vadd])
-      rw [vsub_vadd] at e
-      simp only [Function.comp, id, hHdef]
-      rw [e, ht2, vsub_vadd]
-    simp [hon s, hon 0]
-  · have hnb : ∀ᶠ σ' in 𝓝 τ, σ' ∉ tsupport ψ := (isClosed_tsupport ψ).isOpen_compl.mem_nhds hτ
-    have hevs (s' : ℝ) : γs s' =ᶠ[𝓝 (τ +ᵥ t₀)] γ := by
-      filter_upwards [Time.eventually_vsub t₀ hnb] with t' ht'
-      simpa only [vsub_vadd] using hoff s' (t' -ᵥ t₀) ht'
-    have hHev : (fun σ' ↦ Hc (s, σ')) =ᶠ[𝓝 τ] fun σ' ↦ Hc (0, σ') := by
-      filter_upwards [hnb] with σ' hσ'
-      simp [hHdef, image_eq_zero_of_notMem_tsupport hσ', hσ0]
-    rw [Time.tangentMap_eq_of_eventuallyEq (hevs s), Time.tangentMap_eq_of_eventuallyEq (hevs 0),
-      hHev.eq_of_nhds, ← hd, ← hd, hHev.deriv_eq]
 
 end LagrangianSystem
 

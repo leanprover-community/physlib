@@ -22,6 +22,8 @@ neighbourhood of the subset and `0` near every point outside the open set.
 - `IsCompact.exists_cutoff`
 - `contDiff_smul_of_cutoff`
 - `exists_contDiff_eventuallyEq`: smooth extension of a function from a compact set
+- `IsCompact.exists_add_smul_mem`: a small bounded shift of a continuous map over a compact set
+  stays in an open set
 
 ## iii. Table of contents
 
@@ -82,3 +84,21 @@ lemma exists_contDiff_eventuallyEq {X E : Type*} [NormedAddCommGroup X] [NormedS
   exact ⟨fun x ↦ ρ x • f x, contDiff_smul_of_cutoff hρ hρ0 hf, fun x hx ↦ by
     filter_upwards [hNo.mem_nhds (hKN hx)] with y hy
     simp [hρ1 _ hy]⟩
+
+/-- A continuous `q` mapping a compact set `C` into an open set `N` stays in `N` under shifts
+`r • v x` with `|r| ≤ ε` for small `ε`, for `v` bounded on `C`. -/
+lemma IsCompact.exists_add_smul_mem {X E : Type*} [TopologicalSpace X] [NormedAddCommGroup E]
+    [NormedSpace ℝ E] {C : Set X} (hC : IsCompact C) {q : X → E} (hq : Continuous q) {v : X → E}
+    {B : ℝ} (hv : ∀ x ∈ C, ‖v x‖ ≤ B) {N : Set E} (hN : IsOpen N) (hqN : ∀ x ∈ C, q x ∈ N) :
+    ∃ ε : ℝ, 0 < ε ∧ ∀ x ∈ C, ∀ r ∈ Set.Icc (-ε) ε, q x + r • v x ∈ N := by
+  obtain ⟨r₀, hr₀, hr₀N⟩ := (hC.image hq).exists_thickening_subset_open hN
+    (Set.image_subset_iff.2 hqN)
+  refine ⟨r₀ / (|B| + 1), by positivity, fun x hx r hr ↦ hr₀N ?_⟩
+  rw [mem_thickening_iff]
+  refine ⟨q x, ⟨x, hx, rfl⟩, ?_⟩
+  rw [dist_eq_norm, add_sub_cancel_left, norm_smul, Real.norm_eq_abs]
+  have hr' : |r| ≤ r₀ / (|B| + 1) := abs_le.2 ⟨by linarith [hr.1], hr.2⟩
+  calc |r| * ‖v x‖ ≤ r₀ / (|B| + 1) * |B| := by gcongr; exact (hv x hx).trans (le_abs_self _)
+    _ < r₀ := by
+      rw [div_mul_eq_mul_div, div_lt_iff₀ (by positivity)]
+      nlinarith [abs_nonneg B]

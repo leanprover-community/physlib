@@ -28,8 +28,6 @@ test the Euler-Lagrange equations there.
 - `Variation.contDiff_comp_vadd` : a variation of a curve in a normed space is smooth in
   coordinates.
 - `Variation.exists_bump` : a bump function gives a variation of a curve in a normed space.
-- `Variation.exists_contMDiff_glue` : a curve modified in a chart over a closed set of times, and
-  kept off it, is smooth.
 - `Variation.exists_chart_bump` : a bump function and a vector give a variation supported in a
   chart.
 
@@ -124,10 +122,17 @@ section Chart
 
 variable {I M}
 
-/-- A family of curves, smooth in the parameter `s` and the time `t`, which equals `γ` outside a
-closed set `Z` of times and inside it is shifted in the chart by `σ s • Ψ t • w`, with `σ` and `Ψ`
-smooth, `Ψ` zero off `Z`, and `w` a vector. -/
-lemma exists_contMDiff_glue [I.Boundaryless] (x : M) {γ : Time → M}
+/-- For `0 < ε` there is a smooth `σ` with `σ 0 = 0`, `σ' 0 = 1` and values in `[-ε, ε]`. -/
+private lemma exists_contDiff_deriv_one {ε : ℝ} (hε : 0 < ε) :
+    ∃ σ : ℝ → ℝ, ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧ ∀ s, σ s ∈ Icc (-ε) ε :=
+  ⟨fun s ↦ ε * Real.sin (s / ε), by fun_prop, by simp, by simp; field_simp, fun s ↦ by
+    constructor <;> nlinarith [Real.neg_one_le_sin (s / ε), Real.sin_le_one (s / ε)]⟩
+
+/-- There is a family of curves `F (s, t)`, jointly smooth in `s` and `t`, equal to `γ` for `t`
+outside a closed set `Z` and to `γ` shifted in the chart at `x` by `σ s • Ψ t • w` wherever `γ t`
+is in the chart. Here `σ` and `Ψ` are smooth, `Ψ` vanishes off `Z`, `w : E`, and `hZs`, `hZt` keep
+`γ` and its shifts over `Z` in the chart source and target. -/
+private lemma exists_contMDiff_chart_shift [I.Boundaryless] (x : M) {γ : Time → M}
     (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {Z : Set Time} (hZc : IsClosed Z)
     {σ : ℝ → ℝ} (hσ : ContDiff ℝ ∞ σ) {Ψ : Time → ℝ} (hΨ : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, ℝ) ∞ Ψ)
     (hΨ0 : ∀ t ∉ Z, Ψ t = 0) (w : E) (hZs : ∀ t ∈ Z, γ t ∈ (extChartAt I x).source)
@@ -141,6 +146,7 @@ lemma exists_contMDiff_glue [I.Boundaryless] (x : M) {γ : Time → M}
     (extChartAt I x).symm (extChartAt I x (γ p.2) + σ p.1 • (Ψ p.2 • w)) else γ p.2,
     fun p ↦ ?_, fun s t ht ↦ by simp [ht], fun s t ht ↦ ?_⟩
   · by_cases hp : p.2 ∈ Z
+    -- over `Z`, `F` is smooth near `p` as the chart shift, which agrees with `F` nearby
     · have hch : ContMDiffAt 𝓘(ℝ, ℝ) 𝓘(ℝ, E) ∞ (extChartAt I x ∘ γ) p.2 :=
         (contMDiffAt_extChartAt' (by rw [← extChartAt_source I]; exact hZs _ hp)).comp p.2
           (hγ p.2)
@@ -155,6 +161,7 @@ lemma exists_contMDiff_glue [I.Boundaryless] (x : M) {γ : Time → M}
       split_ifs with hq
       · rfl
       · simpa [hΨ0 _ hq] using ((extChartAt I x).left_inv hq1).symm
+    -- off `Z`, `F` equals `γ` on the open complement of `Z`
     · refine ((hγ.contMDiffAt (x := p.2)).comp p contMDiff_snd.contMDiffAt).congr_of_eventuallyEq ?_
       filter_upwards [continuous_snd.continuousAt.eventually_mem (hZc.isOpen_compl.mem_nhds hp)]
         with q hq
@@ -163,30 +170,26 @@ lemma exists_contMDiff_glue [I.Boundaryless] (x : M) {γ : Time → M}
     · simp [hZ]
     · simpa [hZ, hΨ0 _ hZ] using ((extChartAt I x).left_inv ht).symm
 
-/-- A variation of `γ`, localised in time by a bump function `ψ` and shifted in the chart at `x` by
-the vector `w`: it translates `γ` by `σ s • ψ τ • w`, to first order in the parameter `s`, and fixes
-`γ` where `ψ` vanishes. -/
+/-- A variation of `γ` which, in the chart at `x`, translates `γ (τ +ᵥ t₀)` by `σ s • ψ τ • w`, and
+fixes `γ` off `tsupport ψ`. Here `ψ` is a bump function, `w : E`, and `σ` is smooth with `σ 0 = 0`,
+`σ' 0 = 1` and values in `[-ε, ε]`, where `ε` keeps the shifts in the chart target. -/
 lemma exists_chart_bump [I.Boundaryless] {γ : Time → M} {t₀ t₁ : Time} (x : M)
     (hγ : ContMDiff 𝓘(ℝ, ℝ) I ∞ γ) {ψ : ℝ → ℝ} (hψ : ContDiff ℝ ∞ ψ)
     (hs : tsupport ψ ⊆ Ioo 0 (t₁ -ᵥ t₀))
-    (hx : ∀ τ ∈ tsupport ψ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source) (w : E) {N : Set E}
-    (hN : N ⊆ (extChartAt I x).target) {ε : ℝ} (hε : 0 < ε)
+    (hx : ∀ τ ∈ tsupport ψ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source) (w : E) {ε : ℝ} (hε : 0 < ε)
     (hNε : ∀ τ ∈ tsupport ψ, ∀ r ∈ Icc (-ε) ε,
-      extChartAt I x (γ (τ +ᵥ t₀)) + r • (ψ τ • w) ∈ N) :
+      extChartAt I x (γ (τ +ᵥ t₀)) + r • (ψ τ • w) ∈ (extChartAt I x).target) :
     ∃ (h : Variation I γ t₀ t₁) (σ : ℝ → ℝ), ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧
       (∀ s, σ s ∈ Icc (-ε) ε) ∧ (∀ s τ, τ ∉ tsupport ψ → h.toFun (s, τ +ᵥ t₀) = γ (τ +ᵥ t₀)) ∧
       (∀ s τ, γ (τ +ᵥ t₀) ∈ (extChartAt I x).source → h.toFun (s, τ +ᵥ t₀) =
         (extChartAt I x).symm (extChartAt I x (γ (τ +ᵥ t₀)) + σ s • (ψ τ • w))) := by
-  obtain ⟨σ, hσ, hσ0, hσ'0, hσε⟩ : ∃ σ : ℝ → ℝ, ContDiff ℝ ∞ σ ∧ σ 0 = 0 ∧ deriv σ 0 = 1 ∧
-      ∀ s, σ s ∈ Icc (-ε) ε :=
-    ⟨fun s ↦ ε * Real.sin (s / ε), by fun_prop, by simp, by simp; field_simp, fun s ↦ by
-      constructor <;> nlinarith [Real.neg_one_le_sin (s / ε), Real.sin_le_one (s / ε)]⟩
-  obtain ⟨F, hF, hnZ, hsymm⟩ := exists_contMDiff_glue x hγ (Z := {t | t -ᵥ t₀ ∈ tsupport ψ})
+  obtain ⟨σ, hσ, hσ0, hσ'0, hσε⟩ := exists_contDiff_deriv_one hε
+  obtain ⟨F, hF, hnZ, hsymm⟩ := exists_contMDiff_chart_shift x hγ (Z := {t | t -ᵥ t₀ ∈ tsupport ψ})
     ((isClosed_tsupport ψ).preimage (continuous_id.vsub continuous_const)) hσ
     (Ψ := fun t ↦ ψ (t -ᵥ t₀)) ((Time.contMDiff_iff_contDiff_vadd _ t₀ ∞).2 (by simpa using hψ))
     (fun t ht ↦ image_eq_zero_of_notMem_tsupport ht) w
     (fun t ht ↦ by simpa only [vsub_vadd] using hx (t -ᵥ t₀) ht)
-    fun t ht s ↦ by simpa only [vsub_vadd] using hN (hNε (t -ᵥ t₀) ht (σ s) (hσε s))
+    fun t ht s ↦ by simpa only [vsub_vadd] using hNε (t -ᵥ t₀) ht (σ s) (hσε s)
   have h0 (t) : F (0, t) = γ t := by
     by_cases ht : γ t ∈ (extChartAt I x).source
     · simpa [hσ0, hsymm _ _ ht] using (extChartAt I x).left_inv ht

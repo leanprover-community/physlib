@@ -128,7 +128,8 @@ lemma hasDerivAt_intervalIntegral_of_contDiff {F : ℝ × ℝ → N}
 /-- If two parametrised integrands `G s` and `Gh s` differ by a function independent of `s`, their
 integrals over `[a, b]` have the same derivative at `s = 0`, as for the first variation of an
 action. -/
-lemma hasDerivAt_intervalIntegral_of_sub_eq {G Gh : ℝ → ℝ → ℝ} {a b d : ℝ}
+lemma hasDerivAt_intervalIntegral_of_sub_eq {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {G Gh : ℝ → ℝ → F} {a b : ℝ} {d : F}
     (hG : IntervalIntegrable (G 0) volume a b) (hGh : ∀ s, IntervalIntegrable (Gh s) volume a b)
     (hkey : ∀ s τ, G s τ - Gh s τ = G 0 τ - Gh 0 τ)
     (hvar : HasDerivAt (fun s ↦ ∫ τ in a..b, Gh s τ) d 0) :
@@ -137,4 +138,4 @@ lemma hasDerivAt_intervalIntegral_of_sub_eq {G Gh : ℝ → ℝ → ℝ} {a b d 
       (∫ τ in a..b, Gh s τ) + ∫ τ in a..b, (G 0 τ - Gh 0 τ) := by
     rw [← intervalIntegral.integral_add (hGh s) (hG.sub (hGh 0))]
     exact intervalIntegral.integral_congr fun τ _ ↦ by simp only [← hkey s τ, add_sub_cancel]
-  exact funext hsplit ▸ hvar.add_const _
+  exact (hvar.add_const _).congr_of_eventuallyEq (Filter.Eventually.of_forall hsplit)
