@@ -5,7 +5,7 @@ Authors: Daniel Leonforte
 -/
 module
 
-public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotential
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InvNormKernel
 
 /-!
 # The gravitational interaction energy of two mass densities
@@ -21,6 +21,7 @@ where `Φ₂` is the Newtonian potential of `ρ₂`. The gravitational self-ener
 This module defines `W` as a bilinear form on Schwartz maps and shows that it is symmetric and
 invariant under a common translation of both densities. As a consequence the interaction energy
 of a difference of two densities with itself expands as `W(ρ₁, ρ₁) + W(ρ₂, ρ₂) - 2 W(ρ₁, ρ₂)`.
+For `G ≥ 0` the interaction energy of a density with itself is nonpositive.
 
 ## ii. Key results
 
@@ -31,6 +32,8 @@ of a difference of two densities with itself expands as `W(ρ₁, ρ₁) + W(ρ�
 - `interactionEnergy_comm` : the interaction energy is symmetric.
 - `interactionEnergy_sub_sub` : the interaction energy of a difference with itself.
 - `interactionEnergy_translateSchwartz` : invariance under a common translation.
+- `interactionEnergy_self_nonpos` : the interaction energy of a density with itself is
+  nonpositive.
 
 ## iii. Table of contents
 
@@ -38,6 +41,7 @@ of a difference of two densities with itself expands as `W(ρ₁, ρ₁) + W(ρ�
 - B. Symmetry
 - C. The interaction energy of a difference
 - D. Translation invariance
+- E. Sign of the self-interaction energy
 
 ## iv. References
 
@@ -158,5 +162,26 @@ lemma interactionEnergy_translateSchwartz (G : ℝ) (ρ₁ ρ₂ : 𝓢(Space 3,
   exact integral_sub_right_eq_self (fun x : Space 3 => ρ₁ x * newtonPotential G ρ₂ x)
     (basis.repr.symm a)
 
+/-!
+
+## E. Sign of the self-interaction energy
+
+-/
+
+/-- The interaction energy of a mass density with itself is nonpositive for `G ≥ 0`. Hence the
+gravitational self-energy `W(ρ, ρ) / 2` is nonpositive. -/
+lemma interactionEnergy_self_nonpos {G : ℝ} (hG : 0 ≤ G) (ρ : 𝓢(Space 3, ℝ)) :
+    interactionEnergy G ρ ρ ≤ 0 := by
+  rw [interactionEnergy_eq_integral_prod]
+  have hnn := integral_mul_mul_inv_norm_sub_nonneg ρ
+  nlinarith
+
+/-- The interaction energy of a difference of two densities with itself is nonpositive:
+`0 ≤ 2 W(ρ₁, ρ₂) - W(ρ₁, ρ₁) - W(ρ₂, ρ₂)` for `G ≥ 0`. -/
+lemma interactionEnergy_add_self_le_two_mul {G : ℝ} (hG : 0 ≤ G) (ρ₁ ρ₂ : 𝓢(Space 3, ℝ)) :
+    interactionEnergy G ρ₁ ρ₁ + interactionEnergy G ρ₂ ρ₂ ≤ 2 * interactionEnergy G ρ₁ ρ₂ := by
+  have h := interactionEnergy_self_nonpos hG (ρ₁ - ρ₂)
+  rw [interactionEnergy_sub_sub] at h
+  linarith
 
 end PhyslibAlpha.NewtonianPotential
