@@ -10,22 +10,26 @@ public import Mathlib.Algebra.Order.Field.Basic
 public import Mathlib.Tactic.FieldSimp
 public import Mathlib.Tactic.Linarith
 /-!
-# Positive semi-definite bilinear forms: vectors of zero length
+# Positive semi-definite bilinear forms: zero-length vectors and Cauchy-Schwarz
 
 ## i. Overview
 
 For a positive semi-definite symmetric bilinear form `B` on a module over an ordered field, a
-vector `x` with `B x x = 0` is `B`-orthogonal to every vector. This follows from the
-nonnegativity of `B (y - t • x) (y - t • x)` for a suitable scalar `t`.
+vector `x` with `B x x = 0` is `B`-orthogonal to every vector, and `B` satisfies the
+Cauchy-Schwarz inequality `B x y ^ 2 ≤ B x x * B y y`. Both follow from the nonnegativity of
+`B (y - t • x) (y - t • x)` for a suitable scalar `t`.
 
 ## ii. Key results
 
 - `LinearMap.BilinForm.IsPosSemidef.apply_eq_zero_of_apply_self_eq_zero` : a vector of zero
   `B`-length is `B`-orthogonal to every vector.
+- `LinearMap.BilinForm.IsPosSemidef.apply_sq_le_apply_self_mul_apply_self` : the Cauchy-Schwarz
+  inequality.
 
 ## iii. Table of contents
 
 - A. Vectors of zero length
+- B. The Cauchy-Schwarz inequality
 
 ## iv. References
 
@@ -63,5 +67,27 @@ lemma IsPosSemidef.apply_eq_zero_of_apply_self_eq_zero (hB : B.IsPosSemidef) {x 
   have h1 : 2 * ((B y y + 1) / (2 * B x y)) * B x y = B y y + 1 := by
     field_simp
   linarith
+
+/-!
+
+## B. The Cauchy-Schwarz inequality
+
+-/
+
+/-- The **Cauchy-Schwarz inequality** for a positive semi-definite bilinear form:
+`B x y ^ 2 ≤ B x x * B y y`. -/
+lemma IsPosSemidef.apply_sq_le_apply_self_mul_apply_self (hB : B.IsPosSemidef) (x y : M) :
+    B x y ^ 2 ≤ B x x * B y y := by
+  rcases (hB.isNonneg.nonneg x).eq_or_lt with h0 | hpos
+  · rw [hB.apply_eq_zero_of_apply_self_eq_zero h0.symm y, ← h0]
+    simp
+  · have h := hB.isNonneg.nonneg (y - (B x y / B x x) • x)
+    rw [hB.isSymm.apply_sub_smul_self] at h
+    have h1 : B y y - 2 * (B x y / B x x) * B x y + (B x y / B x x) ^ 2 * B x x =
+        B y y - B x y ^ 2 / B x x := by
+      field_simp
+      ring
+    rw [h1, sub_nonneg, div_le_iff₀ hpos] at h
+    linarith
 
 end LinearMap.BilinForm

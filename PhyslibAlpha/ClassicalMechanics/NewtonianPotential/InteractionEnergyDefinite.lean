@@ -24,6 +24,7 @@ The proof combines three facts. The form `-W` is positive semi-definite, so `W(�
 
 - `interactionEnergy_laplacian_left` : `W(Δψ, ρ) = 4πG ∫ ψ ρ`.
 - `isPosSemidef_neg_interactionEnergy` : `-W` is positive semi-definite for `G ≥ 0`.
+- `interactionEnergy_sq_le_mul_self` : `W(ρ₁, ρ₂)² ≤ W(ρ₁, ρ₁) W(ρ₂, ρ₂)`.
 - `interactionEnergy_self_eq_zero_iff` : `W(ρ, ρ) = 0` if and only if `ρ = 0`.
 - `interactionEnergy_self_neg` : `W(ρ, ρ) < 0` for `ρ ≠ 0`.
 
@@ -79,6 +80,13 @@ lemma interactionEnergy_eq_zero_of_self_eq_zero {G : ℝ} (hG : 0 ≤ G) {ρ : �
   have h1 := (isPosSemidef_neg_interactionEnergy hG).apply_eq_zero_of_apply_self_eq_zero
     (x := ρ) (by simp [h]) η
   simpa [interactionEnergy_comm G ρ η] using h1
+
+/-- The Cauchy-Schwarz inequality for the interaction energy:
+`W(ρ₁, ρ₂)² ≤ W(ρ₁, ρ₁) W(ρ₂, ρ₂)` for `G ≥ 0`. -/
+lemma interactionEnergy_sq_le_mul_self {G : ℝ} (hG : 0 ≤ G) (ρ₁ ρ₂ : 𝓢(Space 3, ℝ)) :
+    interactionEnergy G ρ₁ ρ₂ ^ 2 ≤ interactionEnergy G ρ₁ ρ₁ * interactionEnergy G ρ₂ ρ₂ := by
+  simpa using
+    (isPosSemidef_neg_interactionEnergy hG).apply_sq_le_apply_self_mul_apply_self ρ₁ ρ₂
 
 /-!
 
