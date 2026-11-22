@@ -21,6 +21,7 @@ densities, which is again a Gaussian in the distance of the two centres.
 ## ii. Key results
 
 - `gaussianDensity` : the Gaussian mass density as a Schwartz map.
+- `integral_gaussianDensity` : the Gaussian mass density has total mass `m`.
 - `integral_prod_exp_mul_exp_mul_exp` : the Gaussian bilinear form of two Gaussians.
 - `integral_gaussianDensity_mul_gaussianDensity_mul_exp` : the Gaussian bilinear form of two
   Gaussian densities.
@@ -69,6 +70,17 @@ lemma gaussianDensity_apply (m : ℝ) {σ : ℝ} (hσ : 0 < σ) (a x : Space 3) 
   rw [h, norm_smul, Real.norm_eq_abs, abs_of_pos (inv_pos.2 hσ)]
   congr 2
   field_simp
+
+/-- The Gaussian mass density has total mass `m`. -/
+lemma integral_gaussianDensity (m : ℝ) {σ : ℝ} (hσ : 0 < σ) (a : Space 3) :
+    ∫ x, gaussianDensity m hσ a x = m := by
+  have hpi := Real.pi_pos
+  have h3 : 1 / (2 * Real.pi * σ ^ 2) * (2 * Real.pi * σ ^ 2) = 1 := by
+    field_simp
+  simp only [gaussianDensity, _root_.smul_apply, smul_eq_mul]
+  rw [integral_const_mul, InnerProductSpace.integral_gaussian_smulLeft, Space.finrank_eq_dim]
+  simp only [Nat.cast_ofNat]
+  rw [mul_assoc, ← Real.mul_rpow (by positivity) (by positivity), h3, Real.one_rpow, mul_one]
 
 /-!
 
