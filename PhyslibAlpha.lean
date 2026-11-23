@@ -166,6 +166,7 @@ public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.GaussianKernel
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InteractionEnergy
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.InvNormKernel
 public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotential
+public import PhyslibAlpha.ClassicalMechanics.NewtonianPotential.NewtonPotentialDeriv
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Basic
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Determinism
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.NewtonianSystem
