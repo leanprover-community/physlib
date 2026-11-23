@@ -104,3 +104,21 @@ To keep track of PRs, reviewers can "claim" PRs and promise to review them withi
    the claim and clears the label.
 4. **A missed claim is announced.** If the deadline passes with no review, you are removed
    as reviewer and assignee, and a message goes to the `PR reviews` topic on Zulip.
+
+## AI assessment
+
+Anyone can ask for an advisory AI assessment of a PR by commenting `ai-notes` on its own
+line, which adds the `ai-notes` label and so queues the PR (`-ai-notes` removes it).
+The assessment scores the PR from 0 to 5 on each of the
+[assessment rubrics](AINotesRubrics/README.md) (correctness, physical
+relevance, reuse, scope, attribution, API design, generality, placement, naming, documentation
+and proof quality), with constructive suggestions, in a single comment on the PR.
+
+The assessment makes no decisions and is intended to improve your PR where possible. Scores are
+not thresholds: reviewers and maintainers make every decision about a PR.
+
+Assessments are run by people, not by CI, with the AI agent of their choice: ask the agent to
+follow [.agents/skills/ai-notes/SKILL.md](../.agents/skills/ai-notes/SKILL.md) (in
+Claude Code, `/ai-notes <PR number>`, or `/ai-notes` to work through the queue). The
+person running it reviews the comment before it is posted, and posting removes the label; add
+the label again to request a new assessment after further changes.
