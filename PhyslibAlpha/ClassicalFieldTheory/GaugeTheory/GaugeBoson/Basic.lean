@@ -6,22 +6,26 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GlobalGaugeGroup.LieAlgebra.Basic
 /-!
 # The gauge-boson field of a gauge theory
 
+The target space of the gauge bosons, a spacetime covector with values in the gauge algebra.
+
 ## i. Overview
 
-The gauge bosons of a gauge theory with Lie algebra `𝔤` are jointly one bosonic field
-valued in `Lorentz.CoVector ⊗[ℝ] 𝔤`: a spacetime covector with values in the gauge
-algebra. Its components are the fields `A_μ^a`, but **no basis of the gauge algebra is
-chosen**: the adjoint index is carried by an abstract covector `φ : Module.Dual ℝ 𝔤`
+The gauge bosons of a gauge theory with Lie algebra `G.lieSubalgebra` are jointly one bosonic field
+valued in `Lorentz.CoVector ⊗[ℝ] G.lieSubalgebra`, a spacetime covector with values in the gauge
+algebra. Its components are the fields `A_μ^a`, but no basis of the gauge algebra is
+chosen. The adjoint index is carried by an abstract covector `φ : Module.Dual ℝ G.lieSubalgebra`
 throughout.
 
-This file is the target space alone — its linear structure, the Lorentz action, the
-global gauge action, and the jet component space spanned by the component functions
-`∂_s A_μ^φ`. The jet algebra built on it, and the actions and gradings it carries, are in
-`Physlib.ClassicalFieldTheory.GaugeTheory.GaugeBoson.LocalGaugeFieldAlgebra`. For the Standard
-Model, `𝔤` is `StandardModel.GaugeAlgebra`.
+This file is the target space alone, with its linear structure, the Lorentz action, the
+global gauge action, and the field-derivative space spanned by the component functions
+`∂_s A_μ^φ`. The jet algebra built on it, and the actions and gradings it carries, are in the
+directory
+`PhyslibAlpha/ClassicalFieldTheory/GaugeTheory/GaugeBoson/LocalGaugeFieldAlgebra`. For the Standard
+Model, `G.lieSubalgebra` is `StandardModel.GaugeAlgebra`.
 
 ## ii. Key results
 
@@ -29,8 +33,10 @@ Model, `𝔤` is `StandardModel.GaugeAlgebra`.
 - `GaugeBoson.repLorentzGroup` : the Lorentz action on the target space.
 - `GaugeBoson.repValue` : the global gauge action on the target space, from a
   representation of the value group.
-- `GaugeBoson.JetComponentSpace` : the span of the component functions `∂_s A_μ^φ`.
+- `GaugeBoson.FieldDerivSpace` : the span of the component functions `∂_s A_μ^φ`.
 - `GaugeBoson.componentDual` : the covector picking out a spacetime and an adjoint index.
+- `GaugeBoson.dual_eq_sum_componentDual` : every covector on the target space is a sum of
+  component covectors.
 
 ## iii. Table of contents
 
@@ -38,7 +44,7 @@ Model, `𝔤` is `StandardModel.GaugeAlgebra`.
   - A.1. Linear structure
   - A.2. The Lorentz action on the target space
   - A.3. The global gauge action on the target space
-- B. The jet component space
+- B. The field-derivative space
   - B.1. The component covectors
 
 ## iv. References
@@ -51,7 +57,7 @@ Model, `𝔤` is `StandardModel.GaugeAlgebra`.
 
 set_option linter.unusedSectionVars false
 
-variable {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ 𝔤] [Module.Finite ℝ 𝔤]
+variable {κ : Type} [Fintype κ] [DecidableEq κ] {G : GlobalGaugeGroup κ}
 
 open TensorProduct
 
@@ -61,14 +67,14 @@ open TensorProduct
 
 -/
 
-variable (𝔤) in
-/-- The target vector space of the gauge-boson field: a spacetime covector
-  with values in the gauge algebra. Its components are the fields `A_μ^a`; here the
+variable (G) in
+/-- The target vector space of the gauge-boson field, a spacetime covector
+  with values in the gauge algebra. Its components are the fields `A_μ^a`, and here the
   adjoint index is kept abstract, as the gauge-algebra factor. -/
 @[ext]
 structure GaugeBoson where
   /-- The underlying covector-valued gauge algebra element. -/
-  val : Lorentz.CoVector ⊗[ℝ] 𝔤
+  val : Lorentz.CoVector ⊗[ℝ] G.lieSubalgebra
 
 namespace GaugeBoson
 
@@ -78,43 +84,39 @@ namespace GaugeBoson
 
 -/
 
-variable (𝔤) in
+variable (G) in
 /-- Identifies a gauge boson with its underlying tensor-product value. -/
-def valEquiv : (GaugeBoson 𝔤) ≃ Lorentz.CoVector ⊗[ℝ] 𝔤 where
+def valEquiv : (GaugeBoson G) ≃ Lorentz.CoVector ⊗[ℝ] G.lieSubalgebra where
   toFun := val
   invFun := fun m => ⟨m⟩
 
-noncomputable instance : AddCommGroup (GaugeBoson 𝔤) := Equiv.addCommGroup (valEquiv 𝔤)
+noncomputable instance : AddCommGroup (GaugeBoson G) := Equiv.addCommGroup (valEquiv G)
 
-noncomputable instance : Module ℝ (GaugeBoson 𝔤) :=
-  AddEquiv.module ℝ { valEquiv 𝔤 with map_add' _ _ := rfl }
+noncomputable instance : Module ℝ (GaugeBoson G) :=
+  AddEquiv.module ℝ { valEquiv G with map_add' _ _ := rfl }
 
-variable (𝔤) in
+variable (G) in
 /-- The linear identification with the underlying tensor product. -/
-def valLinEquiv : (GaugeBoson 𝔤) ≃ₗ[ℝ] Lorentz.CoVector ⊗[ℝ] 𝔤 where
+def valLinEquiv : (GaugeBoson G) ≃ₗ[ℝ] Lorentz.CoVector ⊗[ℝ] G.lieSubalgebra where
   toFun := val
   invFun := fun m => ⟨m⟩
   map_add' := by intros; rfl
   map_smul' := by intros; rfl
 
-omit [Module.Finite ℝ 𝔤] in
 @[simp]
-lemma valLinEquiv_apply (v : (GaugeBoson 𝔤)) : (valLinEquiv 𝔤) v = v.val := rfl
+lemma valLinEquiv_apply (v : (GaugeBoson G)) : (valLinEquiv G) v = v.val := rfl
 
-omit [Module.Finite ℝ 𝔤] in
-lemma valLinEquiv_symm_apply (m : Lorentz.CoVector ⊗[ℝ] 𝔤) :
-    (valLinEquiv 𝔤).symm m = ⟨m⟩ := rfl
+lemma valLinEquiv_symm_apply (m : Lorentz.CoVector ⊗[ℝ] G.lieSubalgebra) :
+    (valLinEquiv G).symm m = ⟨m⟩ := rfl
 
-omit [Module.Finite ℝ 𝔤] in
 @[simp]
-lemma val_add (v₁ v₂ : (GaugeBoson 𝔤)) : (v₁ + v₂).val = v₁.val + v₂.val := rfl
+lemma val_add (v₁ v₂ : (GaugeBoson G)) : (v₁ + v₂).val = v₁.val + v₂.val := rfl
 
-omit [Module.Finite ℝ 𝔤] in
 @[simp]
-lemma val_smul (r : ℝ) (v : (GaugeBoson 𝔤)) : (r • v).val = r • v.val := rfl
+lemma val_smul (r : ℝ) (v : (GaugeBoson G)) : (r • v).val = r • v.val := rfl
 
-instance : Module.Finite ℝ (GaugeBoson 𝔤) :=
-  Module.Finite.equiv (valLinEquiv 𝔤).symm
+instance : Module.Finite ℝ (GaugeBoson G) :=
+  Module.Finite.equiv (valLinEquiv G).symm
 
 /-!
 
@@ -124,13 +126,13 @@ instance : Module.Finite ℝ (GaugeBoson 𝔤) :=
 
 open Matrix MatrixGroups
 
-variable (𝔤) in
-/-- The Lorentz action on the gauge-boson target space: the covector action on the
-  spacetime index, and the trivial action on the gauge-algebra factor. -/
-noncomputable def repLorentzGroup : Representation ℝ SL(2,ℂ) (GaugeBoson 𝔤) where
-  toFun Λ := (valLinEquiv 𝔤).symm.toLinearMap ∘ₗ
+variable (G) in
+/-- The Lorentz action on the gauge-boson target space, the covector action on the
+  spacetime index and the trivial action on the gauge-algebra factor. -/
+noncomputable def repLorentzGroup : Representation ℝ SL(2,ℂ) (GaugeBoson G) where
+  toFun Λ := (valLinEquiv G).symm.toLinearMap ∘ₗ
     TensorProduct.map (Lorentz.CoVector.sl2Rep Λ) LinearMap.id ∘ₗ
-    (valLinEquiv 𝔤).toLinearMap
+    (valLinEquiv G).toLinearMap
   map_one' := by
     refine LinearMap.ext fun v => ?_
     simp [Module.End.one_eq_id]
@@ -148,13 +150,13 @@ noncomputable def repLorentzGroup : Representation ℝ SL(2,ℂ) (GaugeBoson �
 
 -/
 
-/-- The global gauge action on the gauge-boson target space: the adjoint action on the
-  gauge-algebra factor, and the trivial action on the spacetime index. -/
-noncomputable def repValue {G₀ : Type} [Monoid G₀] (ρ : Representation ℝ G₀ 𝔤) :
-    Representation ℝ G₀ (GaugeBoson 𝔤) where
-  toFun g := (valLinEquiv 𝔤).symm.toLinearMap ∘ₗ
+/-- The global gauge action on the gauge-boson target space, the given action on the
+  gauge-algebra factor and the trivial action on the spacetime index. -/
+noncomputable def repValue {G₀ : Type} [Monoid G₀] (ρ : Representation ℝ G₀ G.lieSubalgebra) :
+    Representation ℝ G₀ (GaugeBoson G) where
+  toFun g := (valLinEquiv G).symm.toLinearMap ∘ₗ
     TensorProduct.map LinearMap.id (ρ g) ∘ₗ
-    (valLinEquiv 𝔤).toLinearMap
+    (valLinEquiv G).toLinearMap
   map_one' := by
     refine LinearMap.ext fun v => ?_
     simp [Module.End.one_eq_id]
@@ -168,18 +170,18 @@ noncomputable def repValue {G₀ : Type} [Monoid G₀] (ρ : Representation ℝ 
 
 /-!
 
-## B. The jet component space
+## B. The field-derivative space
 
 -/
 
-variable (𝔤) in
-/-- The jet component space of the gauge-boson field: the span of the component functions
+variable (G) in
+/-- The field-derivative space of the gauge-boson field, the span of the component functions
   `∂_s A_μ^φ`. The `SpaceTimeDerivAlgebraℝ` factor carries the derivative label `s`, and the
-  dual factor the spacetime and adjoint indices — the latter as an abstract covector on
-  the gauge algebra, with no basis chosen. Unlike a matter field, the gauge boson is real,
+  dual factor the spacetime and adjoint indices, the latter as an abstract covector on
+  the gauge algebra with no basis chosen. Unlike a matter field, the gauge boson is real,
   so there is no conjugate half. -/
-abbrev JetComponentSpace : Type :=
-  SpaceTimeDerivAlgebraℝ ⊗[ℝ] Module.Dual ℝ (GaugeBoson 𝔤)
+abbrev FieldDerivSpace : Type :=
+  SpaceTimeDerivAlgebraℝ ⊗[ℝ] Module.Dual ℝ (GaugeBoson G)
 
 /-!
 
@@ -187,15 +189,15 @@ abbrev JetComponentSpace : Type :=
 
 -/
 
-variable (𝔤) in
+variable (G) in
 /-- The covector on the gauge-boson target space pairing the spacetime index against a
   covector `ω` and the adjoint index against `φ`. -/
 noncomputable def componentDual :
     Module.Dual ℝ Lorentz.CoVector →ₗ[ℝ]
-      Module.Dual ℝ 𝔤 →ₗ[ℝ] Module.Dual ℝ (GaugeBoson 𝔤) where
-  toFun ω := (Module.Dual.transpose (M := (GaugeBoson 𝔤)) (valLinEquiv 𝔤).toLinearMap).comp
-    ((TensorProduct.dualDistrib ℝ Lorentz.CoVector 𝔤).comp
-      (TensorProduct.mk ℝ (Module.Dual ℝ Lorentz.CoVector) (Module.Dual ℝ 𝔤) ω))
+      Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] Module.Dual ℝ (GaugeBoson G) where
+  toFun ω := (Module.Dual.transpose (M := (GaugeBoson G)) (valLinEquiv G).toLinearMap).comp
+    ((TensorProduct.dualDistrib ℝ Lorentz.CoVector G.lieSubalgebra).comp
+      (TensorProduct.mk ℝ (Module.Dual ℝ Lorentz.CoVector) (Module.Dual ℝ G.lieSubalgebra) ω))
   map_add' ω₁ ω₂ := by
     refine LinearMap.ext fun φ => ?_
     simp
@@ -205,11 +207,46 @@ noncomputable def componentDual :
       RingHom.id_apply, LinearMap.smul_apply]
     rw [← TensorProduct.smul_tmul', map_smul, map_smul]
 
-omit [Module.Finite ℝ 𝔤] in
 @[simp]
 lemma componentDual_apply_val_tmul (ω : Module.Dual ℝ Lorentz.CoVector)
-    (φ : Module.Dual ℝ 𝔤) (v : Lorentz.CoVector) (a : 𝔤) :
-    (componentDual 𝔤) ω φ ⟨v ⊗ₜ[ℝ] a⟩ = ω v * φ a := by
+    (φ : Module.Dual ℝ G.lieSubalgebra) (v : Lorentz.CoVector) (a : G.lieSubalgebra) :
+    (componentDual G) ω φ ⟨v ⊗ₜ[ℝ] a⟩ = ω v * φ a := by
   simp [componentDual, Module.Dual.transpose_apply]
+
+/-- Every covector on the gauge-boson target space decomposes along the Lorentz coordinate
+  directions into component covectors. The spacetime index is expanded in the coordinate
+  basis, while the adjoint index stays abstract. -/
+lemma dual_eq_sum_componentDual
+    (ψ : Module.Dual ℝ (GaugeBoson G)) :
+    ψ = ∑ μ, (GaugeBoson.componentDual G) (Lorentz.CoVector.basis.dualBasis μ)
+      (ψ ∘ₗ (GaugeBoson.valLinEquiv G).symm.toLinearMap ∘ₗ
+        TensorProduct.mk ℝ Lorentz.CoVector G.lieSubalgebra (Lorentz.CoVector.basis μ)) := by
+  refine LinearMap.ext fun v => ?_
+  obtain ⟨m⟩ := v
+  induction m using TensorProduct.inductionOn with
+  | tmul x a =>
+    rw [LinearMap.sum_apply]
+    have hx : (⟨x ⊗ₜ[ℝ] a⟩ : (GaugeBoson G))
+        = ∑ μ, Lorentz.CoVector.basis.dualBasis μ x •
+            (⟨Lorentz.CoVector.basis μ ⊗ₜ[ℝ] a⟩ : (GaugeBoson G)) := by
+      apply (GaugeBoson.valLinEquiv G).injective
+      rw [map_sum]
+      conv_lhs =>
+        rw [GaugeBoson.valLinEquiv_apply,
+          show (⟨x ⊗ₜ[ℝ] a⟩ : (GaugeBoson G)).val = x ⊗ₜ[ℝ] a from rfl,
+          ← Lorentz.CoVector.basis.sum_repr x, TensorProduct.sum_tmul]
+      refine Finset.sum_congr rfl fun μ _ => ?_
+      rw [map_smul, GaugeBoson.valLinEquiv_apply,
+        show (⟨Lorentz.CoVector.basis μ ⊗ₜ[ℝ] a⟩ : (GaugeBoson G)).val
+          = Lorentz.CoVector.basis μ ⊗ₜ[ℝ] a from rfl, ← TensorProduct.smul_tmul',
+        Module.Basis.dualBasis_apply]
+    conv_lhs => rw [hx, map_sum]
+    refine Finset.sum_congr rfl fun μ _ => ?_
+    rw [map_smul, GaugeBoson.componentDual_apply_val_tmul, smul_eq_mul]
+    rfl
+  | add m₁ m₂ h₁ h₂ =>
+    simp only [show (⟨m₁ + m₂⟩ : (GaugeBoson G)) = (⟨m₁⟩ : (GaugeBoson G)) + ⟨m₂⟩ from rfl,
+      map_add, LinearMap.sum_apply] at h₁ h₂ ⊢
+    rw [h₁, h₂, ← Finset.sum_add_distrib]
 
 end GaugeBoson

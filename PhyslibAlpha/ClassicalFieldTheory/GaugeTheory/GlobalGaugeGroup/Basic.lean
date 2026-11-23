@@ -5,13 +5,16 @@ Authors: Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
-public import Mathlib.Algebra.Lie.Subalgebra
-public import PhyslibAlpha.Mathematics.ForMathlib.Analysis.Normed.Algebra.MatrixLieAlgebra
+public import Mathlib.LinearAlgebra.UnitaryGroup
+public import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup.Defs
+public import Mathlib.Topology.Algebra.Star.Unitary
+public import Mathlib.Topology.Instances.Matrix
+public import Mathlib.Analysis.Complex.Basic
+public import Mathlib.Algebra.Group.Submonoid.Units
 /-!
 # Global gauge groups
 
-A global gauge group as a closed group of invertible matrices, with its Lie algebra.
+A global gauge group as a closed group of invertible matrices.
 
 ## i. Overview
 
@@ -19,26 +22,28 @@ The global gauge group of a gauge theory is presented here as a closed subgroup 
 general linear group `GL(κ, ℂ)`. These are the matrix Lie groups. They include every compact
 Lie group, so every gauge group of the Standard Model and its extensions, as well as
 non-compact groups such as `Sp(2n, ℝ)`, `SO(p, q)`, `SL(n, ℝ)` and the Lorentz group,
-disconnected groups such as `O(n)`, and finite groups, whose Lie algebra is zero. A real
-group sits inside `GL(κ, ℂ)` as the real matrices it contains. Lie groups with no faithful
-finite-dimensional representation, such as the metaplectic group, are not covered.
+disconnected groups such as `O(n)`, and finite groups. A real group sits inside `GL(κ, ℂ)` as
+the real matrices it contains. Lie groups with no faithful finite-dimensional
+representation, such as the metaplectic group, are not covered.
 
-The Lie algebra `𝔤` is determined by the group: it is the real subspace of matrices `X`
-whose one-parameter subgroup `t ↦ exp (t X)` lies in `G`, `Matrix.lieAlgebraOfIsClosed`.
-That this is a subspace closed under the commutator, and invariant under conjugation by `G`,
-is proved there. For a compact group inside the unitary group the generators `X` are
-anti-hermitian, and the hermitian generators of physics are `−i X`.
+Most groups of physical interest are cut out of the matrices by closed conditions, such as
+unitarity, a determinant or an invariant bilinear form. Such conditions define a closed
+submonoid of matrices, and its invertible elements whose inverses also satisfy the conditions
+form a global gauge group, `GlobalGaugeGroup.ofSubmonoid`. The special cases `U(1)`, `SU(n)`,
+`SO(n)` and `Sp(n)` are built this way in the files `SO.lean`, `SU.lean`, `Sp.lean` and `U1.lean`.
+
+The Lie algebra of a global gauge group is in the `LieAlgebra` directory.
 
 ## ii. Key results
 
 - `GlobalGaugeGroup` : a closed subgroup of a general linear group.
-- `GlobalGaugeGroup.lieAlgebra` : its Lie algebra.
-- `GlobalGaugeGroup.lieSubalgebra` : the Lie algebra as a Lie subalgebra of matrices.
+- `GlobalGaugeGroup.ofSubmonoid` : the global gauge group of the invertible elements of a
+  closed submonoid of matrices.
 
 ## iii. Table of contents
 
 - A. The structure
-- B. The Lie algebra
+- B. Global gauge groups from closed submonoids of matrices
 
 ## iv. References
 
@@ -49,9 +54,7 @@ anti-hermitian, and the hermitian generators of physics are `−i X`.
 
 @[expose] public section
 
-open Matrix NormedSpace
-
-attribute [local instance 100] LieRing.ofAssociativeRing
+open Matrix
 
 /-!
 
@@ -59,7 +62,7 @@ attribute [local instance 100] LieRing.ofAssociativeRing
 
 -/
 
-/-- A global gauge group: a closed subgroup of the general linear group `GL(κ, ℂ)`. -/
+/-- A global gauge group, a closed subgroup of the general linear group `GL(κ, ℂ)`. -/
 structure GlobalGaugeGroup (κ : Type) [Fintype κ] [DecidableEq κ] where
   /-- The group, as a subgroup of the general linear group. -/
   group : Subgroup (GeneralLinearGroup κ ℂ)
@@ -68,33 +71,39 @@ structure GlobalGaugeGroup (κ : Type) [Fintype κ] [DecidableEq κ] where
 
 namespace GlobalGaugeGroup
 
-variable {κ : Type} [Fintype κ] [DecidableEq κ] (G : GlobalGaugeGroup κ)
+variable {κ : Type} [Fintype κ] [DecidableEq κ]
 
 /-!
 
-## B. The Lie algebra
+## B. Global gauge groups from closed submonoids of matrices
 
 -/
 
-/-- The Lie algebra: the generators of the one-parameter subgroups of the group. -/
-def lieAlgebra : Submodule ℝ (Matrix κ κ ℂ) :=
-  lieAlgebraOfIsClosed G.group G.isClosed
+/-- The global gauge group of a closed submonoid `S` of matrices. Its elements are the
+  invertible matrices which lie in `S` together with their inverses. -/
+def ofSubmonoid (S : Submonoid (Matrix κ κ ℂ)) (hS : IsClosed (S : Set (Matrix κ κ ℂ))) :
+    GlobalGaugeGroup κ where
+  group := S.units
+  isClosed := (hS.preimage Units.continuous_val).inter (hS.preimage Units.continuous_coe_inv)
 
-lemma mem_lieAlgebra_iff (X : Matrix κ κ ℂ) : X ∈ G.lieAlgebra ↔
-    ∀ t : ℝ, exp (t • X) ∈ Set.range fun g : G.group => (g.1 : Matrix κ κ ℂ) := Iff.rfl
+lemma mem_ofSubmonoid_iff {S : Submonoid (Matrix κ κ ℂ)} {hS : IsClosed (S : Set (Matrix κ κ ℂ))}
+    {g : GeneralLinearGroup κ ℂ} :
+    g ∈ (ofSubmonoid S hS).group ↔ (g : Matrix κ κ ℂ) ∈ S ∧ (↑g⁻¹ : Matrix κ κ ℂ) ∈ S :=
+  Iff.rfl
 
-/-- The Lie algebra, as a Lie subalgebra of matrices under the commutator. -/
-def lieSubalgebra : LieSubalgebra ℝ (Matrix κ κ ℂ) where
-  toSubmodule := G.lieAlgebra
-  lie_mem' hX hY := by
-    rw [Ring.lie_def]
-    exact commutator_mem_lieAlgebraOfIsClosed hX hY
+/-- For a submonoid of unitary matrices closed under the conjugate transpose, an invertible
+  matrix lies in its global gauge group exactly when it lies in the submonoid, since its
+  inverse is then its conjugate transpose. -/
+lemma mem_ofSubmonoid_iff_of_star_mem {S : Submonoid (Matrix κ κ ℂ)}
+    {hS : IsClosed (S : Set (Matrix κ κ ℂ))} (hU : S ≤ unitaryGroup κ ℂ)
+    (hstar : ∀ A ∈ S, star A ∈ S) {g : GeneralLinearGroup κ ℂ} :
+    g ∈ (ofSubmonoid S hS).group ↔ (g : Matrix κ κ ℂ) ∈ S := by
+  refine ⟨fun h => h.1, fun h => mem_ofSubmonoid_iff.2 ⟨h, ?_⟩⟩
+  rw [Units.inv_eq_of_mul_eq_one_left ((mem_unitaryGroup_iff' (α := ℂ)).1 (hU h))]
+  exact hstar _ h
 
-@[simp]
-lemma mem_lieSubalgebra {X : Matrix κ κ ℂ} : X ∈ G.lieSubalgebra ↔ X ∈ G.lieAlgebra := Iff.rfl
-
-noncomputable instance : LieRing G.lieSubalgebra := inferInstance
-
-noncomputable instance : LieAlgebra ℝ G.lieSubalgebra := inferInstance
+/-- The group structure of a global gauge group, recorded directly so that instance search
+  does not pass through the units of the matrices. -/
+instance (G : GlobalGaugeGroup κ) : Group G.group := inferInstance
 
 end GlobalGaugeGroup

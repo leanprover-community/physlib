@@ -9,19 +9,27 @@ public import Mathlib.RepresentationTheory.Basic
 /-!
 # Dual representations on a dual basis
 
+The dual of a representation on a dual basis, and the range of a linear map out of a dual space.
+
 ## i. Overview
 
-The dual of a representation acts on the dual basis by the transpose of the inverse: if
+The dual of a representation acts on the dual basis by the transpose of the inverse. If
 `ρ g⁻¹` has matrix `M` in a basis, then `ρ.dual g` sends each dual basis vector to the
 combination given by the corresponding row of `M`.
+
+A linear map out of the dual of a finite-dimensional space is determined by its values on the
+coordinate functionals of a basis, so its range is the join of the lines through those values.
 
 ## ii. Key results
 
 - `Representation.dual_apply_dualBasis` : the dual representation on a dual basis.
+- `LinearMap.range_eq_iSup_span_coord` : the range of a map out of a dual space as a join of
+  lines.
 
 ## iii. Table of contents
 
 - A. The dual representation on a dual basis
+- B. Maps out of a dual space
 
 ## iv. References
 
@@ -52,3 +60,24 @@ lemma dual_apply_dualBasis {k G V ι : Type*} [CommRing k]
   simp [Finsupp.single_apply, Finset.sum_ite_eq, Finset.sum_ite_eq']
 
 end Representation
+
+namespace LinearMap
+
+/-!
+
+## B. Maps out of a dual space
+
+-/
+
+/-- The range of a linear map out of the dual of a space with a finite basis is the join of the
+  lines through its values on the coordinate functionals of the basis. -/
+lemma range_eq_iSup_span_coord {k V M ι : Type*} [CommRing k] [AddCommGroup V] [Module k V]
+    [AddCommGroup M] [Module k M] [Fintype ι] [DecidableEq ι]
+    (b : Module.Basis ι k V) (f : Module.Dual k V →ₗ[k] M) :
+    LinearMap.range f = ⨆ j, Submodule.span k {f (b.coord j)} := by
+  rw [LinearMap.range_eq_map, ← b.dualBasis.span_eq, Submodule.map_span, ← Set.range_comp]
+  rw [show (⇑f ∘ ⇑b.dualBasis) = fun j => f (b.coord j) from funext fun j => by
+    simp [Module.Basis.coe_dualBasis]]
+  rw [Submodule.span_range_eq_iSup]
+
+end LinearMap
