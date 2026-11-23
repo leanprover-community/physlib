@@ -21,11 +21,11 @@ integral transformations depending on two parameters `a b : ℝ`:
 
 $$
 \tilde{f}(k) :=
-  \sqrt{\frac{|b|}{(2\pi)^{1-a}}}
+  \left(\frac{|b|}{(2\pi)^{1-a}}\right)^{d/2}
   \int f(x)\,\mathrm{e}^{\mathrm{i}bk\cdot x} \,\mathrm{d}^dx
 \;,\qquad
 f(x) :=
-  \sqrt{\frac{|b|}{(2\pi)^{1+a}}}
+  \left(\frac{|b|}{(2\pi)^{1+a}}\right)^{d/2}
   \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}bk\cdot x} \,\mathrm{d}^dk
 \;.
 $$
@@ -100,46 +100,47 @@ variable (a b : ℝ) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 
 /-- The Fourier integral over `Space`,
 
-`√(|b| / (2 * π) ^ (1 - a)) • ∫ x, exp (b * (k ⬝ᵥ x) * I) • f x ∂volume`,
+`(|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ) • ∫ x, exp (b * (k ⬝ᵥ x) * I) • f x ∂volume`,
 
 parametrized by `a b : ℝ`.
 -/
 noncomputable def fourierIntegral (f : Space d → E) (k : WaveVectorSpace d) : E :=
-  √(|b| / (2 * π) ^ (1 - a))
+  (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
     • VectorFourier.fourierIntegral 𝐞 volume (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f k
 
 lemma fourierIntegral_def (f : Space d → E) :
     fourierIntegral a b f
-      = √(|b| / (2 * π) ^ (1 - a))
+      = (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
         • VectorFourier.fourierIntegral 𝐞 volume
           (-(b / (2 * π)) • pairingCLM.flip).toLinearMap₁₂ f :=
   rfl
 
 lemma fourierIntegral_eq (f : Space d → E) (k : WaveVectorSpace d) :
     fourierIntegral a b f k
-      = √(|b| / (2 * π) ^ (1 - a)) • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
+      = (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ) • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
   simp [fourierIntegral_def, VectorFourier.fourierIntegral, fourierChar, pairingCLM_apply_eq_dual,
     dual_apply, Circle.smul_def, ← mul_assoc, mul_div_cancel₀]
 
 /-- The inverse Fourier integral over `WaveVectorSpace`,
 
-`√(|b| / (2 * π) ^ (1 + a)) • ∫ k, exp (-b * (k ⬝ᵥ x) * I) • g k ∂volume`,
+`(|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ) • ∫ k, exp (-b * (k ⬝ᵥ x) * I) • g k ∂volume`,
 
 parametrized by `a b : ℝ`.
 -/
 noncomputable def fourierIntegralInv (g : WaveVectorSpace d → E) (x : Space d) : E :=
-  √(|b| / (2 * π) ^ (1 + a))
+  (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
     • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g x
 
 lemma fourierIntegralInv_def (g : WaveVectorSpace d → E) :
     fourierIntegralInv a b g
-      = √(|b| / (2 * π) ^ (1 + a))
+      = (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
         • VectorFourier.fourierIntegral 𝐞 volume ((b / (2 * π)) • pairingCLM).toLinearMap₁₂ g :=
   rfl
 
 lemma fourierIntegralInv_eq (g : WaveVectorSpace d → E) (x : Space d) :
     fourierIntegralInv a b g x
-      = √(|b| / (2 * π) ^ (1 + a)) • ∫ k : WaveVectorSpace d, cexp (-b * (k ⬝ᵥ x) * I) • g k := by
+      = (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+        • ∫ k : WaveVectorSpace d, cexp (-b * (k ⬝ᵥ x) * I) • g k := by
   simp [fourierIntegralInv_def, VectorFourier.fourierIntegral, pairingCLM_apply_eq_dual,
     fourierChar, dual_apply, Circle.smul_def, Complex.exp_neg, ← mul_assoc, mul_div_cancel₀]
 
@@ -370,9 +371,9 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
 ### B.1. `(a, b) = (0, 1)` (default)
 
 $$
-\tilde{f}(k) := \frac{1}{\sqrt{2\pi}} \int f(x)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}x
+\tilde{f}(k) := \frac{1}{(2\pi)^{d/2}} \int f(x)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}x
 \;,\qquad
-f(x) := \frac{1}{\sqrt{2\pi}} \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}k
+f(x) := \frac{1}{(2\pi)^{d/2}} \int \tilde{f}(k)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}k
 $$
 -/
 
@@ -391,7 +392,7 @@ scoped instance : FourierTransformInv (WaveVectorSpace d → E) (Space d → E) 
 $$
 \tilde{f}(k) := \int f(x)\,\mathrm{e}^{-\mathrm{i}k\cdot x} \,\mathrm{d}x
 \;,\qquad
-f(x) := \frac{1}{2\pi} \int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}k
+f(x) := \frac{1}{(2\pi)^d} \int \tilde{f}(k)\,\mathrm{e}^{\mathrm{i}k\cdot x} \,\mathrm{d}k
 $$
 -/
 
