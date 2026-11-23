@@ -11,6 +11,9 @@ public import Physlib.ClassicalMechanics.Force
 public import Physlib.ClassicalMechanics.PointParticle.Basic
 /-!
 # Newtonian point-particle systems
+Particles and their forces in an inertial reference frame.
+
+## i. Overview
 
 This module defines `NewtonianSystem`, consisting of an inertial reference frame, a finite
 collection of point particles, and the internal and external forces acting on
@@ -35,6 +38,23 @@ existence proof establishes that a satisfying system exists for given parameters
 and initial conditions; choice can then be used to select one. Explicit formulas
 for the positions and forces are not required to state the conditions or to
 reason about systems satisfying them.
+
+## ii. Key results
+
+- `internalForce_sum_zero` gives the cancellation of all internal forces.
+- `hasDerivAt_momentum` gives the net external force as the derivative of total momentum.
+
+## iii. Table of contents
+
+- A. Systems
+- B. System particles
+- C. System forces
+- D. Aggregate quantities
+  - D.1. Net external force
+
+## iv. References
+
+* [ref: goldstein_classicalmechanics], Chapter 1.
 -/
 
 @[expose] public noncomputable section
@@ -211,13 +231,17 @@ def mass : ℝ :=
 def momentum : system.Vector :=
   ∑ particle : system.Particle, particle.momentum t
 
-/-- Net external force at `t`. -/
-def netExternalForce : system.Vector :=
-  ∑ force : system.Force with force.External, force t
-
 /-- Total kinetic energy at `t`. -/
 def kineticEnergy : ℝ :=
   ∑ particle : system.Particle, particle.kineticEnergy t
+
+/-!
+### D.1. Net external force
+-/
+
+/-- Net external force at `t`. -/
+def netExternalForce : system.Vector :=
+  ∑ force : system.Force with force.External, force t
 
 /-- The net external force is the sum over the multiset of external forces. -/
 lemma netExternalForce_eq_sum :
