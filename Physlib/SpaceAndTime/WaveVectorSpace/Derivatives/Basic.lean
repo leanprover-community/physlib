@@ -59,6 +59,11 @@ lemma deriv_eq {M : Type*} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
     ∂[i] f k = fderiv ℝ f k (basis i) :=
   rfl
 
+lemma deriv_eq_fun {M : Type*} [AddCommGroup M] [Module ℝ M] [TopologicalSpace M]
+    (i : Fin d) (f : WaveVectorSpace d → M) :
+    ∂[i] f = fun k ↦ fderiv ℝ f k (basis i) :=
+  rfl
+
 /-!
 ### A.1. Constant functions
 -/
