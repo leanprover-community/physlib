@@ -54,10 +54,13 @@ The coordinate Poisson bracket is {f, g} = ⟨∇qf, ∇ₚg⟩ − ⟨∇ₚf, 
 bilinear and satisfies the Leibniz rule, with the differentiability assumptions needed for the
 gradient rules. [5] Along a differentiable solution of Hamilton's equations, a time-independent
 observable differentiable at the current state satisfies d f(p(t), q(t))/dt = {f, H(t)}(p(t), q(t)).
-[6] The canonical coordinate relations are {qᵢ, pⱼ} = δᵢⱼ, {qᵢ, qⱼ} = {pᵢ, pⱼ} = 0, and
-twice continuously differentiable observables satisfy the Jacobi identity. [21][22] At fixed time,
-the bracket of two such observables commuting everywhere with a globally defined system's
-Hamiltonian also commutes with it. [22]
+[6] The canonical coordinate relations are {qᵢ, pⱼ} = δᵢⱼ and {qᵢ, qⱼ} = {pᵢ, pⱼ} = 0. [21]
+On the open phase-space domain of a Hamiltonian system in real Hilbert coordinates, the bracket
+of two observables is again a function on that domain. Restricting coordinate observables before
+or after taking their bracket gives the same result. [22] Twice continuously differentiable
+coordinate observables and their restrictions satisfy the Jacobi identity. At a fixed time in
+a globally defined system, if two such observables each have zero bracket with the Hamiltonian
+everywhere, their bracket also has zero bracket with it. [23]
 
 ### Symmetries and conserved quantities
 
@@ -144,8 +147,12 @@ the momentum p = m v. [TODO]
 21. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
     `poissonBracket_position_momentum`, `poissonBracket_position_position`,
     `poissonBracket_momentum_momentum`
-22. Physlib/ClassicalMechanics/HamiltonianMechanics/JacobiIdentity.lean —
-    `poissonBracket_jacobi`, `HamiltonianSystem.poissonBracket_firstIntegrals`
+22. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
+    `HamiltonianSystem.restrictObservable`, `HamiltonianSystem.poissonBracket`,
+    `HamiltonianSystem.poissonBracket_restrictObservable`
+23. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
+    `poissonBracket_jacobi`, `HamiltonianSystem.poissonBracket_jacobi`,
+    `HamiltonianSystem.poissonBracket_firstIntegrals`
 
 ## References
 
