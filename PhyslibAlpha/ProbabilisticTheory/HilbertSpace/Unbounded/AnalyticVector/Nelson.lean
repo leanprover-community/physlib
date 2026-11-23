@@ -243,8 +243,8 @@ noncomputable def AnalyticVectorWitness.uniformIntegerLineData
       linarith [ih.2.1]
     let W := AnalyticVectorWitness.advance hclosed hsym hdense ih.1 hr ih.2.1 ha
     refine ⟨W, ?_, ?_⟩
-    rw [AnalyticVectorWitness.advance_radius hclosed hsym hdense ih.1 hr ih.2.1 ha]
-    · linarith [ih.2.1]
+    · rw [AnalyticVectorWitness.advance_radius hclosed hsym hdense ih.1 hr ih.2.1 ha]
+      linarith [ih.2.1]
     · exact (AnalyticVectorWitness.advance_norm hclosed hsym hdense ih.1 hr ih.2.1 ha).trans ih.2.2
   let pred : ∀ k : ℤ, k ≤ 0 → motive k → motive (k - 1) := fun _ _ ih => by
     have ha : |-δ| < ih.1.radius / 2 := by
@@ -252,8 +252,8 @@ noncomputable def AnalyticVectorWitness.uniformIntegerLineData
       linarith [ih.2.1]
     let W := AnalyticVectorWitness.advance hclosed hsym hdense ih.1 hr ih.2.1 ha
     refine ⟨W, ?_, ?_⟩
-    rw [AnalyticVectorWitness.advance_radius hclosed hsym hdense ih.1 hr ih.2.1 ha]
-    · linarith [ih.2.1]
+    · rw [AnalyticVectorWitness.advance_radius hclosed hsym hdense ih.1 hr ih.2.1 ha]
+      linarith [ih.2.1]
     · exact (AnalyticVectorWitness.advance_norm hclosed hsym hdense ih.1 hr ih.2.1 ha).trans ih.2.2
   exact fun n => Int.inductionOn' (motive := motive) n 0 base succ pred
 

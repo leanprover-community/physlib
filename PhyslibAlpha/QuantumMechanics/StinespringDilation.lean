@@ -170,7 +170,7 @@ lemma stinespringOp_adjoint_mul_self {R : Type*} [Ring R] [StarRing R]
   simp only [stinespringOp, Pi.star_apply, Matrix.mul_apply, star_apply, single, Fin.isValue,
     Matrix.sum_apply, kroneckerMap_apply, of_apply, and_true, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte];
-  erw [ Finset.sum_product, Finset.sum_comm ]
+  rw [Fintype.sum_prod_type, Finset.sum_comm]
 
 /-- A useful identity for completely positive, trace non-increasing maps. -/
 lemma stinespringForm_CPTNI {R : Type*} [RCLike R]
@@ -925,9 +925,7 @@ lemma CPTP_of_CPTNI {R : Type*} [RCLike R]
         omega
       simp_rw [this]
       ext a b
-      erw [Finset.sum_apply]
-      erw [Finset.sum_fn]
-      simp
+      simp [Matrix.sum_apply]
     · exact False.elim <| H <| Fin.eq_last_of_not_lt g₀
 
 /-!

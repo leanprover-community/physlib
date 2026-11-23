@@ -802,6 +802,7 @@ public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SixJ
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SixJSymmetry
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SpinHalf
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SpinOrbit
+public import PhyslibAlpha.QuantumMechanics.AngularMomentum.ThreeJRational
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Wigner3j
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Wigner3jRational
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.WignerEckart
@@ -815,6 +816,7 @@ public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Vacuum
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Product
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductState
+public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesAdjoint
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Degeneracy
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Eigenfunctions
@@ -878,3 +880,4 @@ public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Jacobi
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Matrix
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Taylor
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
+public import PhyslibAlpha.SpaceAndTime.Time.CaesiumClock
