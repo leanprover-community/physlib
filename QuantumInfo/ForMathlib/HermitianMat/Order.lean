@@ -330,6 +330,7 @@ meta def evalHermitianMatKronecker : PositivityExt where eval {_u _α} _zα _pα
     let pfAB' ← mkAppM ``HermitianMat.kronecker_nonneg #[pfA', pfB']
     pure (.nonnegative pfAB')
 
+omit [Fintype m] in
 variable (M) in
 open Lean Meta Mathlib.Meta.Positivity in
 /-- Positivity extension for `HermitianMat.conj`: nonneg when the inner matrix is. -/
@@ -407,6 +408,7 @@ omit [Fintype n] in
 lemma diagonal_nonneg [DecidableEq n] {f : n → ℝ} : 0 ≤ diagonal 𝕜 f ↔ 0 ≤ f := by
   rw [← diagonal_zero, diagonal_le_diagonal]
 
+omit [Fintype m] in
 lemma conj_mono (h : A ≤ B) : A.conj M ≤ B.conj M := by
   have h_conj_pos : (M * (B - A).mat * Mᴴ).PosSemidef :=
     Matrix.PosSemidef.mul_mul_conjTranspose_same h M
@@ -572,12 +574,14 @@ open MatrixOrder in
 theorem mat_pos (hA : 0 < A) : 0 < A.mat :=
   hA
 
+omit [Fintype n] in
 open MatrixOrder in
 /-- `Mᴴ * M` is nonneg in the Loewner order, for any matrix `M`. -/
 theorem _root_.Matrix.nonneg_conjTranspose_mul_self {m : Type*} [Fintype m]
     (M : Matrix m n 𝕜) : 0 ≤ M.conjTranspose * M :=
   Matrix.nonneg_iff_posSemidef.mpr (Matrix.posSemidef_conjTranspose_mul_self M)
 
+omit [Fintype n] in
 open MatrixOrder in
 /-- `M * Mᴴ` is nonneg in the Loewner order, for any matrix `M`. -/
 theorem _root_.Matrix.nonneg_self_mul_conjTranspose {m : Type*} [Fintype m]

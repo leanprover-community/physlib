@@ -593,7 +593,7 @@ private lemma sion_exists_min_fin
       rw [lowerSemicontinuousOn_iff_isClosed_epigraph hS₁.isClosed] at hfc₂
       have ha_closed : IsClosed {p : M × ℝ | p.2 = b} := by
         convert isClosed_univ.prod (isClosed_singleton (x := b))
-        simp [Set.ext_iff]
+        simp
       suffices Continuous (fun (z : M) ↦ (z, b) : M → M × ℝ) by
         convert ((hfc₂ hyₙ).inter ha_closed).preimage this
         simp [S']

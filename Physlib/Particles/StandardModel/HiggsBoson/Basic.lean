@@ -171,7 +171,7 @@ def repGaugeGroupI : Representation ℂ GaugeGroupI HiggsVec where
     simp
   map_mul' g₁ g₂ := by
     ext φ
-    simp [Module.End.mul_apply, smul_smul, mulVec_mulVec, mul_pow, mul_comm]
+    simp [smul_smul, mulVec_mulVec, mul_pow, mul_comm]
 
 TODO "When the hypercharge coupling `g′` is introduced, fix its normalisation relative to the
   integer charges `6Y` used here (e.g. the power `3` in `repGaugeGroupI`), so that it agrees with
@@ -220,7 +220,7 @@ lemma repGaugeGroupI_norm (g : StandardModel.GaugeGroupI) (φ : HiggsVec) :
 
 lemma repGaugeGroupI_mul_apply (g₁ g₂ : StandardModel.GaugeGroupI) (φ : HiggsVec) :
     repGaugeGroupI (g₁ * g₂) φ = repGaugeGroupI g₁ (repGaugeGroupI g₂ φ) := by
-  rw [map_mul, Module.End.mul_apply]
+  rw [map_mul, mul_apply_eq_comp]
 
 lemma repGaugeGroupI_inv_apply_eq_iff (g : StandardModel.GaugeGroupI) (φ ψ : HiggsVec) :
     repGaugeGroupI g⁻¹ φ = ψ ↔ φ = repGaugeGroupI g ψ := by
@@ -264,12 +264,7 @@ def toRealGroupElem (φ : HiggsVec) : GaugeGroupI :=
     simp only [Fin.isValue, star_apply, of_apply, cons_val', cons_val_fin_one, RCLike.star_def,
       Fin.sum_univ_two, cons_val_zero, cons_val_one]
     have hφ : Complex.ofReal ‖φ‖ ≠ 0 := ofReal_inj.mp.mt (norm_ne_zero_iff.mpr hφ)
-    fin_cases i <;> fin_cases j <;>
-    all_goals
-    · simp
-      field_simp
-      rw [h0']
-      ring
+    fin_cases i <;> fin_cases j <;> (simp; field_simp; rw [h0']; ring)
   /- Determinant equals one. -/
   · have h1 : (‖φ‖ : ℂ) ≠ 0 := ofReal_inj.mp.mt (norm_ne_zero_iff.mpr hφ)
     simp [det_fin_two]
@@ -389,9 +384,9 @@ lemma exists_repGaugeGroupI_eq_iff_norm_eq (φ : HiggsVec) (ψ : HiggsVec) :
     simp
   · intro h
     use (toRealGroupElem ψ)⁻¹ * toRealGroupElem (φ)
-    rw [map_mul, Module.End.mul_apply, toRealGroupElem_apply_self φ, ← h,
-      ← toRealGroupElem_apply_self ψ, ← Module.End.mul_apply, ← map_mul,
-      inv_mul_cancel, map_one, Module.End.one_apply]
+    rw [map_mul, mul_apply_eq_comp, toRealGroupElem_apply_self φ, ← h,
+      ← toRealGroupElem_apply_self ψ, ← mul_apply_eq_comp, ← map_mul,
+      inv_mul_cancel, map_one, one_apply_eq_self]
 
 /-!
 
@@ -698,7 +693,7 @@ def const : HiggsVec →ₗ[ℝ] HiggsField where
     toFun := fun _ ↦ φ,
     contMDiff_toFun := by
       intro x
-      rw [Bundle.contMDiffAt_section]
+      rw [Bundle.contMDiffAt_section_iff]
       exact contMDiffAt_const}
   map_add' φ ψ := by
     ext1 x
@@ -723,7 +718,7 @@ def toHiggsVec (φ : HiggsField) : SpaceTime → HiggsVec := φ
 
 lemma toHiggsVec_smooth (φ : HiggsField) :
     ContMDiff 𝓘(ℝ, SpaceTime) 𝓘(ℝ, HiggsVec) ⊤ φ.toHiggsVec :=
-  fun x0 => (Bundle.contMDiffAt_section x0).mp (φ.contMDiff x0)
+  fun x0 => (Bundle.contMDiffAt_section_iff x0).mp (φ.contMDiff x0)
 
 lemma const_toHiggsVec_apply (φ : HiggsField) (x : SpaceTime) :
     const (φ.toHiggsVec x) x = φ x := rfl

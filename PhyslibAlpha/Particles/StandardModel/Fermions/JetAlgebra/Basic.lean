@@ -228,7 +228,7 @@ noncomputable def _root_.Representation.pi {k G V : Type*} (ι : Type*) [CommSem
     simp
   map_mul' g₁ g₂ := by
     refine LinearMap.ext fun v => funext fun i => ?_
-    simp [Module.End.mul_apply]
+    simp
 
 open Matrix MatrixGroups in
 /-- The Lorentz action on the total fermionic target space: each species and generation

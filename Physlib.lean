@@ -49,6 +49,7 @@ public import Physlib.ClassicalMechanics.Pendulum.SlidingPendulum
 public import Physlib.ClassicalMechanics.PhaseSpace.Basic
 public import Physlib.ClassicalMechanics.PointParticle.Basic
 public import Physlib.ClassicalMechanics.PointParticle.NewtonianSystem.Basic
+public import Physlib.ClassicalMechanics.PointParticle.NewtonianSystem.CenterOfMass
 public import Physlib.ClassicalMechanics.RigidBody.AngularMomentum
 public import Physlib.ClassicalMechanics.RigidBody.AngularVelocity
 public import Physlib.ClassicalMechanics.RigidBody.Basic
@@ -154,6 +155,7 @@ public import Physlib.Mathematics.Calculus.Wirtinger.Coordinate
 public import Physlib.Mathematics.Calculus.Wirtinger.Hessian
 public import Physlib.Mathematics.Distribution.PowMul
 public import Physlib.Mathematics.Distribution.TemperedDistribution
+public import Physlib.Mathematics.ForMathlib.Analytic
 public import Physlib.Mathematics.ForMathlib.ComplexLinear
 public import Physlib.Mathematics.ForMathlib.Contraction
 public import Physlib.Mathematics.ForMathlib.Cutoff
@@ -338,6 +340,10 @@ public import Physlib.ProbabilisticTheory.Weight.Extension
 public import Physlib.ProbabilisticTheory.Weight.State
 public import Physlib.QFT.AnomalyCancellation.Basic
 public import Physlib.QFT.AnomalyCancellation.GroupActions
+public import Physlib.QFT.Euclidean.GlimmJaffe.Axioms
+public import Physlib.QFT.Euclidean.GlimmJaffe.Basic
+public import Physlib.QFT.Euclidean.GlimmJaffe.FieldConfiguration
+public import Physlib.QFT.Euclidean.GlimmJaffe.StandardBump
 public import Physlib.QFT.PerturbationTheory.CreateAnnihilate
 public import Physlib.QFT.PerturbationTheory.FeynmanDiagrams.Basic
 public import Physlib.QFT.PerturbationTheory.FieldOpFreeAlgebra.Basic
@@ -634,6 +640,7 @@ public import Physlib.SpaceAndTime.TimeAndSpace.Basic
 public import Physlib.SpaceAndTime.TimeAndSpace.ConstantTimeDist
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.Action
 public import Physlib.SpaceAndTime.TimeAndSpace.EuclideanGroup.SchwartzAction
+public import Physlib.SpaceAndTime.TimeAndSpace.TestFunctions.Schwartz
 public import Physlib.SpaceAndTime.WaveVectorSpace.Basic
 public import Physlib.SpaceAndTime.WaveVectorSpace.Derivatives.Basic
 public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing

@@ -79,7 +79,7 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 -/
 
 /-- The covariant generators of one field category. -/
-def covCategoryGenerators : FieldCategory → Set T.LocalFieldAlgebra
+noncomputable def covCategoryGenerators : FieldCategory → Set T.LocalFieldAlgebra
   | .fermion => ⋃ i, ⋃ n : ℕ, ⋃ l : Fin n → (Fin 1 ⊕ Fin 3),
       Set.range (T.covDerivFermion i l) ∪ Set.range (T.covDerivConjFermion i l)
   | .gauge => ⋃ l : List (Fin 1 ⊕ Fin 3), ⋃ μ, ⋃ ν, Set.range (T.covDerivFieldStrength l μ ν)
@@ -87,7 +87,7 @@ def covCategoryGenerators : FieldCategory → Set T.LocalFieldAlgebra
       Set.range (T.covDerivBoson j l) ∪ Set.range (T.covDerivConjBoson j l)
 
 /-- The covariant generators selected by a sector. -/
-def covSectorGenerators (S : Finset FieldCategory) : Set T.LocalFieldAlgebra :=
+noncomputable def covSectorGenerators (S : Finset FieldCategory) : Set T.LocalFieldAlgebra :=
   ⋃ c ∈ S, T.covCategoryGenerators c
 
 lemma covSectorGenerators_mono {S S' : Finset FieldCategory} (h : S ⊆ S') :

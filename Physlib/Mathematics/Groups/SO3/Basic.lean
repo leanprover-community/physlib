@@ -194,10 +194,10 @@ lemma eq_of_apply_two (A : SO(3)) (hA : ∀ i, A.1 i 2 = if i = 2 then 1 else 0)
   obtain ⟨hd, h1⟩ := A.2
   have h2 : A.1ᵀ * A.1 = 1 := mul_eq_one_comm.mpr h1
   have e : ∀ i j, (A.1ᵀ * A.1) i j = if i = j then 1 else 0 := fun i j => by
-    rw [h2, one_apply]
+    rw [h2, Matrix.one_apply]
   have h02 := e 0 2; have h12 := e 1 2; have h00 := e 0 0; have h11 := e 1 1
   have h01 := e 0 1
-  simp only [mul_apply, transpose_apply, Fin.sum_univ_three, hA] at h02 h12 h00 h11 h01
+  simp only [Matrix.mul_apply, transpose_apply, Fin.sum_univ_three, hA] at h02 h12 h00 h11 h01
   rw [det_fin_three] at hd
   simp only [hA] at hd
   norm_num at h02 h12 h00 h11 h01 hd

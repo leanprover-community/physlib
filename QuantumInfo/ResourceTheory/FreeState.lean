@@ -5,7 +5,6 @@ Authors: Alex Meiburg, Leonardo A. Lessa, Rodolfo R. Soldati
 -/
 module
 
-public import Mathlib.Analysis.Subadditive
 public import Mathlib.Tactic
 public import QuantumInfo.Entropy.Relative
 

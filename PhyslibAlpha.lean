@@ -151,6 +151,8 @@ public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Kirchhoff.Spherical
 public import PhyslibAlpha.ClassicalFieldTheory.WaveEquation.Poincare
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.AngularMomentum
 public import PhyslibAlpha.ClassicalMechanics.CentralForce.Basic
+public import PhyslibAlpha.ClassicalMechanics.CentralForce.ConservedQuantities
+public import PhyslibAlpha.ClassicalMechanics.CentralForce.LiouvilleIntegrable
 public import PhyslibAlpha.ClassicalMechanics.CoupledSpringPotential
 public import PhyslibAlpha.ClassicalMechanics.LiouvilleIntegrable.Basic
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.Basic
@@ -165,6 +167,7 @@ public import PhyslibAlpha.ClassicalMechanics.NortonDome.PhysicalSpace
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.PosPartPow
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Solution
 public import PhyslibAlpha.ClassicalMechanics.NortonDome.Sqrt
+public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.BinaryStar
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Circular
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Differentiation
 public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.Hohmann.Dynamics.Dynamics
@@ -198,6 +201,7 @@ public import PhyslibAlpha.CondensedMatter.Bloch.PointSymmetry
 public import PhyslibAlpha.CondensedMatter.Bloch.RegularRep
 public import PhyslibAlpha.CondensedMatter.Bloch.SiteRepresentation
 public import PhyslibAlpha.CondensedMatter.Bloch.Spectrum
+public import PhyslibAlpha.CondensedMatter.Bloch.TightBindingChain
 public import PhyslibAlpha.CondensedMatter.Crystal.Balls
 public import PhyslibAlpha.CondensedMatter.Crystal.Basic
 public import PhyslibAlpha.CondensedMatter.Crystal.Brillouin
@@ -403,6 +407,7 @@ public import PhyslibAlpha.Mathematics.TauCeti.RepresentationTheory.Continuous.U
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.ContinuousMonoidHom.Polish
 public import PhyslibAlpha.Mathematics.TauCeti.Topology.Algebra.PontryaginDual
 public import PhyslibAlpha.Mathematics.TensorProductComm
+public import PhyslibAlpha.Particles.BeyondTheStandardModel.GeorgiGlashow.StandardModelHom
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.ChargeBalance
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.EffectivePotential
 public import PhyslibAlpha.Particles.BeyondTheStandardModel.TwoHDM.GaugeSlice
@@ -797,6 +802,7 @@ public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SixJ
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SixJSymmetry
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SpinHalf
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SpinOrbit
+public import PhyslibAlpha.QuantumMechanics.AngularMomentum.ThreeJRational
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Wigner3j
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.Wigner3jRational
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.WignerEckart
@@ -810,6 +816,7 @@ public import PhyslibAlpha.QuantumMechanics.HarmonicOscillator.Vacuum
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Operators
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.Product
 public import PhyslibAlpha.QuantumMechanics.HilbertSpaces.FiniteTarget.ProductState
+public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesAdjoint
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Degeneracy
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Eigenfunctions
@@ -873,3 +880,4 @@ public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Jacobi
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Matrix
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Taylor
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeDerivAlgebra
+public import PhyslibAlpha.SpaceAndTime.Time.CaesiumClock

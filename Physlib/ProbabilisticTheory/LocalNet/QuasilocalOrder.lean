@@ -166,15 +166,15 @@ section DirectedOrder
 variable [IsDirectedOrder R] [Nonempty R]
 
 /-- The cone of positive global observables. -/
-noncomputable def posCone : AddGroupCone N.Quasilocal where
+noncomputable def posCone : AddSubmonoid N.Quasilocal where
   carrier := positive N
   zero_mem' := ⟨Classical.arbitrary R, 0, le_rfl, map_zero _⟩
   add_mem' := add_mem_pos
-  eq_zero_of_mem_of_neg_mem' := eq_zero_of_mem_pos_of_neg_mem_pos
 
 /-- The order on global observables induced by local positivity. -/
 noncomputable instance : PartialOrder N.Quasilocal :=
-  PartialOrder.mkOfAddGroupCone posCone
+  PartialOrder.ofAddSubmonoid
+    (show posCone.IsPointed from fun _ hx hx' => eq_zero_of_mem_pos_of_neg_mem_pos hx hx')
 
 /-- `x ≤ y` exactly when `y - x` has a positive local representative. -/
 lemma le_iff {x y : N.Quasilocal} :
@@ -186,7 +186,8 @@ lemma nonneg_iff {x : N.Quasilocal} : 0 ≤ x ↔ x ∈ positive N := by
 
 /-- Adding the same global observable preserves a comparison. -/
 instance : IsOrderedAddMonoid N.Quasilocal :=
-  IsOrderedAddMonoid.mkOfCone posCone
+  IsOrderedAddMonoid.ofAddSubmonoid
+    (show posCone.IsPointed from fun _ hx hx' => eq_zero_of_mem_pos_of_neg_mem_pos hx hx')
 
 /-- Nonnegative scaling preserves comparisons between global observables. -/
 instance : PosSMulMono ℝ N.Quasilocal where

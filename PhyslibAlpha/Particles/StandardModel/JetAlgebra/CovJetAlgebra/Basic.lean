@@ -319,8 +319,8 @@ include h in
 lemma repLorentz_one (Λ : SL(2,ℂ)) : repLorentz Λ (1 : B) = 1 := by
   obtain ⟨v, hv⟩ : ∃ v, repLorentz Λ v = 1 :=
     ⟨repLorentz Λ⁻¹ 1, by
-      rw [← Module.End.mul_apply, ← map_mul, mul_inv_cancel, map_one repLorentz,
-        Module.End.one_apply]⟩
+      rw [← mul_apply_eq_comp, ← map_mul, mul_inv_cancel, map_one repLorentz,
+        one_apply_eq_self]⟩
   have h1 := h.repLorentz_mul Λ v 1
   rw [mul_one, hv, one_mul] at h1
   exact h1.symm

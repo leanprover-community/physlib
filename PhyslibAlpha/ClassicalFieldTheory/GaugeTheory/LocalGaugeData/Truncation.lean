@@ -180,7 +180,7 @@ lemma maurerCartan_conj (g U : GJ) (μ : Fin 1 ⊕ Fin 3) :
       jets.maurerCartan g μ + jets.adjointJ g (jets.maurerCartan U μ)
         - jets.adjointJ (g * U * g⁻¹) (jets.maurerCartan g μ) := by
   rw [jets.maurerCartan_cocycle (g * U) g⁻¹, jets.maurerCartan_cocycle g U, maurerCartan_inv,
-    map_neg, map_mul jets.adjointJ (g * U) g⁻¹, Module.End.mul_apply, sub_eq_add_neg]
+    map_neg, map_mul jets.adjointJ (g * U) g⁻¹, mul_apply_eq_comp, sub_eq_add_neg]
 
 /-- The truncation kernels are normal subgroups: conjugating a jet trivial to order `n`
   gives a jet trivial to order `n`. -/

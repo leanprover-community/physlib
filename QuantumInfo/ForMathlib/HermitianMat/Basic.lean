@@ -165,8 +165,9 @@ variable  [TopologicalSpace R] [SMul R α] [ContinuousSMul R α] [StarModule R �
 set_option backward.isDefEq.respectTransparency false in
 instance : ContinuousSMul R (HermitianMat n α) where
   continuous_smul := by
-    rw [continuous_induced_rng]
-    fun_prop
+    apply continuous_induced_rng.mpr
+    change Continuous fun p : R × HermitianMat n α => p.1 • p.2.mat
+    exact continuous_fst.smul (continuous_mat.comp continuous_snd)
 
 --Shorcut instances:
 instance : IsTopologicalAddGroup (HermitianMat n 𝕜) := inferInstance

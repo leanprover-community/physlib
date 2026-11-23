@@ -179,8 +179,6 @@ variable {ι κ : Type*}
 noncomputable def covarianceMatrixForm (a : ι → A) (b : κ → A) : Matrix ι κ ℂ :=
   of fun i k => ω.covarianceForm (a i) (b k)
 
-variable [Fintype ι] [Fintype κ]
-
 /-- **The matrix of covariances of a family is positive semidefinite**, being a Gram matrix. -/
 lemma posSemidef_covarianceMatrixForm (a : ι → A) : (ω.covarianceMatrixForm a a).PosSemidef := by
   have h : ω.covarianceMatrixForm a a =
@@ -189,6 +187,8 @@ lemma posSemidef_covarianceMatrixForm (a : ι → A) : (ω.covarianceMatrixForm 
     rfl
   rw [h]
   exact posSemidef_gram ℂ _
+
+variable [Fintype ι] [Fintype κ]
 
 /-- **A symmetry of the state preserves the matrix of covariances**: if `σ` acts on the two
 families by the matrices `R` and `S`, then `Rᴴ M S = M`. -/
@@ -200,7 +200,7 @@ lemma conjTranspose_mul_covarianceMatrixForm_mul (σ : A ≃⋆ₐ[ℂ] A) (hω 
   have e := ω.covarianceForm_map σ hω (a i) (b k)
   rw [ha, hb, covarianceForm_sum_left] at e
   simp only [covarianceForm_sum_right, covarianceForm_smul_left, covarianceForm_smul_right] at e
-  simp only [mul_apply, conjTranspose_apply, covarianceMatrixForm, of_apply, Finset.sum_mul]
+  simp only [Matrix.mul_apply, conjTranspose_apply, covarianceMatrixForm, of_apply, Finset.sum_mul]
   rw [← e, Finset.sum_comm]
   refine Finset.sum_congr rfl fun j _ => Finset.sum_congr rfl fun l _ => ?_
   ring

@@ -480,7 +480,7 @@ noncomputable def repLorentzGroup : Representation ℂ SL(2,ℂ) SpaceTimeDerivA
           (SymmetricAlgebra.ι ℂ _ ∘ₗ Lorentz.ComplexCoVector.SL2CRep.dual Λ2)) by
       rw [h]; rfl
     refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x => ?_)
-    simp [map_mul, Module.End.mul_apply]
+    simp [map_mul]
 
 @[simp]
 lemma repLorentzGroup_apply_one (Λ : SL(2,ℂ)) : repLorentzGroup Λ 1 = 1:= by
@@ -684,7 +684,7 @@ noncomputable def repLorentzGroup : Representation ℝ SL(2,ℂ) SpaceTimeDerivA
           (SymmetricAlgebra.ι ℝ _ ∘ₗ Lorentz.CoVector.sl2Rep.dual Λ2)) by
       rw [h]; rfl
     refine SymmetricAlgebra.algHom_ext (LinearMap.ext fun x => ?_)
-    simp [map_mul, Module.End.mul_apply]
+    simp [map_mul]
 
 /-- The Lorentz action on a generator of the real derivative algebra. -/
 @[simp]

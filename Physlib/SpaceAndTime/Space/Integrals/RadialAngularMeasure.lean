@@ -189,7 +189,7 @@ lemma integrable_radialAngularMeasure_of_spherical {d : ℕ} [NeZero d] (f : Spa
     Integrable f radialAngularMeasure := by
   refine ⟨StronglyMeasurable.aestronglyMeasurable hae, ?_⟩
   rw [hasFiniteIntegral_iff_norm, lintegral_radialMeasure_eq_spherical_mul _ _
-    (by simpa using StronglyMeasurable.enorm hae), ← hasFiniteIntegral_iff_norm]
+    (by simpa using StronglyMeasurable.eNorm hae), ← hasFiniteIntegral_iff_norm]
   exact hf.2
 
 /-!

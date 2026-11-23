@@ -220,8 +220,8 @@ lemma mulOperator_hasDenseDomain
     · have : ∫⁻ x, ‖‖ψ x‖ ^ 2‖ₑ ∂μ ≠ ⊤ := (memHS_iff.mp <| memHS_coe ψ).2.2.ne
       simp_all
     · filter_upwards with x
-      rw [← zero_pow two_ne_zero, ← enorm_zero (E := ℂ)]
-      refine ENNReal.Tendsto.pow (Tendsto.enorm (tendsto_nhds_of_eventually_eq ?_))
+      rw [← zero_pow two_ne_zero, ← eNorm_zero (E := ℂ)]
+      refine ENNReal.Tendsto.pow (Tendsto.eNorm (tendsto_nhds_of_eventually_eq ?_))
       refine eventually_atTop.mpr ⟨⌈‖u x‖⌉₊, fun n hn ↦ ?_⟩
       suffices ‖u x‖ ≤ n by simp [s, this]
       exact (Nat.le_ceil _).trans (by exact_mod_cast hn)
@@ -268,7 +268,7 @@ private lemma exists_monotone_sets_hasFiniteIntegral
     · rw [← setLIntegral_const]
       refine setLIntegral_mono_ae' (by measurability) ?_
       filter_upwards [hw₁', hw₂'] with x h₁ h₂ ⟨h₃, h₃'⟩
-      apply enorm_le_iff_norm_le.mpr
+      apply eNorm_le_iff_norm_le.mpr
       simp_rw [norm_pow, norm_norm, RCLike.norm_natCast]
       refine pow_le_pow_left₀ (norm_nonneg _) ?_ 2
       rcases hk <;> simp_all
@@ -330,7 +330,7 @@ private lemma mulOperator_adjoint_domain_le
     · suffices h : ∀ ψ : SpaceDHilbertSpace d μ, ‖ψ‖ ^ 2 = (∫⁻ x, ‖‖ψ x‖ ^ 2‖ₑ ∂μ).toReal by
         simp only [← h, this]
       intro ψ
-      rw [Lp.norm_def, eLpNorm_eq_lintegral_rpow_enorm_toReal two_ne_zero ENNReal.ofNat_ne_top
+      rw [Lp.norm_def, eLpNorm_eq_lintegral_rpow_eNorm_toReal two_ne_zero ENNReal.ofNat_ne_top
         (Lp.aestronglyMeasurable ψ)]
       simp [← ENNReal.toReal_pow, ← ENNReal.rpow_mul_natCast]
   suffices ‖φ n‖ ^ 2 ≤ ‖ξ‖ * ‖φ n‖ by
@@ -432,7 +432,7 @@ lemma mulOperator_eq_iff_ae_eq {μ : Measure (Space d)} [SigmaFinite μ] {f g : 
   refine ⟨fun h ↦ ?_, mulOperator_eq_of_congr_ae⟩
   have hdom : (𝓜 μ f).domain = (𝓜 μ g).domain := congrArg LinearPMap.domain h
   obtain ⟨s, hs, hs_univ⟩ :=
-    exists_spanning_measurableSet_le hf.stronglyMeasurable_mk.measurable.nnnorm μ
+    exists_spanning_measurableSet_le hf.stronglyMeasurable_mk.measurable.nnNorm μ
   have heq : ∀ n, ∀ᵐ x ∂μ, x ∈ s n → f x = g x := by
     intro n
     have hfn : ∀ᵐ x ∂μ, x ∈ s n → ‖f x‖ ≤ n := by

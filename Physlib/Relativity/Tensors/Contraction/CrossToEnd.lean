@@ -384,9 +384,9 @@ lemma crossToEnd_assoc_rankTwo {nA : ℕ}
       -- The `funPredPredAbove` layers are nested, so they must be peeled one at a time; one
       -- combined `simp` set thrashes `whnf` instead.
       iterate 3
-        try simp only [Function.comp_apply, id_eq]
+        simp only [Function.comp_apply, id_eq]
         try simp only [Fin.funPredPredAbove]
-        try simp only [Fin.succSuccAbove_predPredAbove]
+        simp only [Fin.succSuccAbove_predPredAbove]
       apply Fin.ext
       -- Pinning a block injection to a literal slot `⟨v, _⟩` is stated at `Fin` level, not at
       -- `.val` level, so that a rewrite replaces the composite before `Fin.succSuccAbove_val`

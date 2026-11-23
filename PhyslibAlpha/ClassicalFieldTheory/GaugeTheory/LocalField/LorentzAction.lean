@@ -159,9 +159,9 @@ lemma repLorentzAlgHom_includeConnection_one_tmul (Λ : SL(2,ℂ)) (x : LocalGau
 /-- The identity transformation acts as the identity. -/
 lemma repLorentzAlgHom_one : T.repLorentzAlgHom 1 = AlgHom.id ℂ T.LocalFieldAlgebra := by
   refine algHom_ext (fun i x => ?_) (fun j y => ?_) (fun v => ?_)
-  · rw [repLorentzAlgHom_ιFermion, map_one, Module.End.one_apply, AlgHom.id_apply]
-  · rw [repLorentzAlgHom_ιBoson, map_one, Module.End.one_apply, AlgHom.id_apply]
-  · rw [repLorentzAlgHom_ιConnection, map_one, Module.End.one_apply, AlgHom.id_apply]
+  · rw [repLorentzAlgHom_ιFermion, map_one, one_apply_eq_self, AlgHom.id_apply]
+  · rw [repLorentzAlgHom_ιBoson, map_one, one_apply_eq_self, AlgHom.id_apply]
+  · rw [repLorentzAlgHom_ιConnection, map_one, one_apply_eq_self, AlgHom.id_apply]
     rfl
 
 /-- The action of a product of transformations is the composite of the actions. -/
@@ -169,15 +169,15 @@ lemma repLorentzAlgHom_mul (Λ₁ Λ₂ : SL(2,ℂ)) :
     T.repLorentzAlgHom (Λ₁ * Λ₂) = (T.repLorentzAlgHom Λ₁).comp (T.repLorentzAlgHom Λ₂) := by
   refine algHom_ext (fun i x => ?_) (fun j y => ?_) (fun v => ?_)
   · rw [repLorentzAlgHom_ιFermion, AlgHom.comp_apply, repLorentzAlgHom_ιFermion,
-      repLorentzAlgHom_ιFermion, map_mul, Module.End.mul_apply]
+      repLorentzAlgHom_ιFermion, map_mul, mul_apply_eq_comp]
   · rw [repLorentzAlgHom_ιBoson, AlgHom.comp_apply, repLorentzAlgHom_ιBoson,
-      repLorentzAlgHom_ιBoson, map_mul, Module.End.mul_apply]
+      repLorentzAlgHom_ιBoson, map_mul, mul_apply_eq_comp]
   · refine (repLorentzAlgHom_ιConnection (Λ₁ * Λ₂) v).trans ?_
     refine Eq.trans ?_
       (congrArg (T.repLorentzAlgHom Λ₁) (repLorentzAlgHom_ιConnection Λ₂ v)).symm
     refine Eq.trans ?_ (repLorentzAlgHom_includeConnection_one_tmul Λ₁ _).symm
     refine congrArg (fun z => T.includeConnection ((1 : ℂ) ⊗ₜ[ℝ] z)) ?_
-    rw [map_mul (LocalGaugeFieldAlgebra.repLorentzGroup 𝔤), Module.End.mul_apply]
+    rw [map_mul (LocalGaugeFieldAlgebra.repLorentzGroup 𝔤), mul_apply_eq_comp]
 
 variable (T)
 

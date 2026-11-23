@@ -345,7 +345,7 @@ lemma VectorMeasure.integral_real_withDensity_mul
     simpa [B] using hvar0
   have hq_lt : ∀ᵐ x ∂μ.variation, ‖q x‖ₑ < ⊤ := by
     filter_upwards with x
-    exact (lt_top_iff_ne_top).2 enorm_ne_top
+    exact (lt_top_iff_ne_top).2 eNorm_ne_top
   have bridge : ∀ {f : α → ℝ},
       (μ.withDensity q B).Integrable f →
         Integrable (fun x => (f x : ℂ) * q x) μ.variation := by
@@ -357,7 +357,7 @@ lemma VectorMeasure.integral_real_withDensity_mul
     have hweighted : Integrable
         (fun x => (‖q x‖ₑ).toReal • f x) μ.variation :=
       (integrable_withDensity_iff_integrable_smul₀'
-        hq.aestronglyMeasurable.enorm hq_lt).1 hfd
+        hq.aestronglyMeasurable.eNorm hq_lt).1 hfd
     have hmeas : AEStronglyMeasurable (fun x => (f x : ℂ) * q x) μ.variation := by
       have hqmeas : AEStronglyMeasurable q μ.variation := hq.aestronglyMeasurable
       have hnormmeas : AEStronglyMeasurable (fun x => ‖q x‖) μ.variation :=
@@ -376,7 +376,7 @@ lemma VectorMeasure.integral_real_withDensity_mul
       by_cases hqx : q x = 0
       · simp [u, hqx]
       · dsimp [u]
-        rw [show (‖q x‖ₑ).toReal = ‖q x‖ by simp [enorm_eq_nnnorm]]
+        rw [show (‖q x‖ₑ).toReal = ‖q x‖ by simp [eNorm_eq_nnNorm]]
         have hn : (‖q x‖ : ℂ) ≠ 0 := by
           exact_mod_cast (norm_ne_zero_iff.mpr hqx)
         calc
@@ -390,7 +390,7 @@ lemma VectorMeasure.integral_real_withDensity_mul
     apply hweighted.norm.mono' hmeas
     filter_upwards with x
     rw [norm_mul, Complex.norm_real]
-    simp [enorm_eq_nnnorm, mul_comm]
+    simp [eNorm_eq_nnNorm, mul_comm]
   apply hg.induction (P := fun f =>
     ∫ᵛ x, f x ∂[ContinuousLinearMap.lsmul ℝ ℝ (E := ℂ); μ.withDensity q B] =
       ∫ᵛ x, (f x : ℂ) * q x ∂[ContinuousLinearMap.lsmul ℝ ℂ; μ])
@@ -453,7 +453,7 @@ lemma VectorMeasure.integral_real_withDensity_mul
                   ∫⁻ x, ‖f x - k x‖ₑ ∂(μ.variation.withDensity
                     (fun x => ‖q x‖ₑ)) := by
               rw [lintegral_withDensity_eq_lintegral_mul₀'
-                hq.aestronglyMeasurable.enorm]
+                hq.aestronglyMeasurable.eNorm]
               · apply lintegral_congr_ae
                 filter_upwards with x
                 rw [edist_dist, dist_eq_norm, ← sub_mul]
@@ -461,17 +461,17 @@ lemma VectorMeasure.integral_real_withDensity_mul
                   ofReal_norm, ofReal_norm]
                 have hnorm : ‖(f x : ℂ) - (k x : ℂ)‖ₑ = ‖f x - k x‖ₑ := by
                   rw [← Complex.ofReal_sub]
-                  simp only [enorm_eq_nnnorm]
+                  simp only [eNorm_eq_nnNorm]
                   apply congrArg ENNReal.ofNNReal
                   apply NNReal.eq
-                  simp only [coe_nnnorm, Complex.norm_real]
+                  simp only [coe_nnNorm, Complex.norm_real]
                 rw [hnorm]
-                simp [enorm_eq_nnnorm, mul_comm]
+                simp [eNorm_eq_nnNorm, mul_comm]
               · rw [← hvar]
                 exact (Lp.aestronglyMeasurable f).sub
-                  (Lp.aestronglyMeasurable k) |>.enorm
+                  (Lp.aestronglyMeasurable k) |>.eNorm
             rw [hlin, ← hvar]
-            rw [← eLpNorm_one_eq_lintegral_enorm (f := fun x => f x - k x)
+            rw [← MeasureTheory.eLpNorm_one_eq_lintegral_eNorm (f := fun x => f x - k x)
               ((Lp.aestronglyMeasurable f).sub (Lp.aestronglyMeasurable k))]
             have he : eLpNorm (fun x => f x - k x) 1 (μ.withDensity q B).variation =
                 eLpNorm (⇑(f - k)) 1 (μ.withDensity q B).variation :=
@@ -487,7 +487,7 @@ lemma VectorMeasure.integral_real_withDensity_mul
       exact hfk
     have hfkq : (fun x => (f x : ℂ) * q x) =ᵐ[μ.variation]
         (fun x => (k x : ℂ) * q x) := by
-      have hqae := (ae_withDensity_iff' hq.aestronglyMeasurable.enorm).1 hfk'
+      have hqae := (ae_withDensity_iff' hq.aestronglyMeasurable.eNorm).1 hfk'
       filter_upwards [hqae] with x hx
       by_cases hqx : q x = 0
       · simp [hqx]
@@ -575,17 +575,17 @@ lemma cayleyBoundedSpectralMeasure_inverse_moment
   have hq : ν.Integrable q := by
     exact hconst.sub hfi
   have hq_ae : AEMeasurable (fun z => ‖q z‖ₑ) ν.variation :=
-    hq.aestronglyMeasurable.enorm
+    hq.aestronglyMeasurable.eNorm
   have hq_lt : ∀ᵐ z ∂ν.variation, ‖q z‖ₑ < ⊤ := by
     filter_upwards with z
-    exact (lt_top_iff_ne_top).2 (show ‖q z‖ₑ ≠ ⊤ from enorm_ne_top)
+    exact (lt_top_iff_ne_top).2 (show ‖q z‖ₑ ≠ ⊤ from eNorm_ne_top)
   have hvar : (ν.withDensity q (ContinuousLinearMap.mul ℝ ℂ)).variation =
       ν.variation.withDensity (fun z => ‖q z‖ₑ) := by
     rw [MeasureTheory.VectorMeasure.variation_withDensity hq]
-    rw [MeasureTheory.VectorMeasure.variation_transpose_eq _ _]
-    · simp [ContinuousLinearMap.mul_apply', nnnorm_mul]
+    · rw [MeasureTheory.VectorMeasure.variation_transpose_eq _ _]
+      simp [ContinuousLinearMap.mul_apply']
     · intro a b
-      simp [ContinuousLinearMap.mul_apply', nnnorm_mul]
+      simp [ContinuousLinearMap.mul_apply']
   let A : Set ℂ := {z | ‖z‖ = 1 ∧ z ≠ 1}
   have hA : MeasurableSet A := by
     dsimp [A]
@@ -637,7 +637,7 @@ lemma cayleyBoundedSpectralMeasure_inverse_moment
       simp
     apply hsign.congr
     filter_upwards with z
-    simp [toReal_enorm, smul_eq_mul]
+    simp [smul_eq_mul]
   have hmeasure : E.scalarMeasure (x : H) y =
       ν.withDensity q (ContinuousLinearMap.mul ℝ ℂ) := by
     exact WOTSpectralMeasure.scalarMeasure_eq_withDensity_one_sub E U

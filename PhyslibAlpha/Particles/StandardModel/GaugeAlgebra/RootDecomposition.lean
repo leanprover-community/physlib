@@ -404,7 +404,8 @@ lemma rep_pair_add (hF : IsCoadjointSymbol rep F) (g : GaugeGroupI)
     map_smul, map_smul, real_smul_eq_complex_smul z.re, real_smul_eq_complex_smul z.im,
     real_smul_eq_complex_smul z.im, real_smul_eq_complex_smul z.re]
   conv_rhs => rw [← Complex.re_add_im z]
-  match_scalars <;> · ring_nf; try rw [Complex.I_sq]; try ring
+  match_scalars <;> ring_nf
+  simp [Complex.I_sq]
 
 /-- The negative combination of a rotating pair of symbols is scaled by the conjugate
   rotation. -/
@@ -419,7 +420,8 @@ lemma rep_pair_sub (hF : IsCoadjointSymbol rep F) (g : GaugeGroupI)
     real_smul_eq_complex_smul z.im, real_smul_eq_complex_smul z.re]
   rw [show (starRingEnd ℂ) z = (z.re : ℂ) - (z.im : ℂ) * Complex.I by
     rw [Complex.ext_iff]; simp]
-  match_scalars <;> · ring_nf; try rw [Complex.I_sq]; try ring
+  match_scalars <;> ring_nf
+  simp [Complex.I_sq]
 
 /-- A symbol at a fixed coordinate functional is itself fixed. -/
 lemma rep_fixed (hF : IsCoadjointSymbol rep F) (g : GaugeGroupI)
@@ -464,7 +466,7 @@ lemma symbol_rootIdx_fst (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) (r : F
       + Complex.I • F (stdBasis.coord (rootIdx r).2))
     + (F (stdBasis.coord (rootIdx r).1)
       - Complex.I • F (stdBasis.coord (rootIdx r).2)))
-  match_scalars <;> · field_simp; try ring
+  match_scalars <;> field_simp <;> ring
 
 /-- The second symbol of a root pair, recovered from the two weight vectors. -/
 lemma symbol_rootIdx_snd (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) (r : Fin 4) :
@@ -474,7 +476,8 @@ lemma symbol_rootIdx_snd (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B) (r : F
       + Complex.I • F (stdBasis.coord (rootIdx r).2))
     - (F (stdBasis.coord (rootIdx r).1)
       - Complex.I • F (stdBasis.coord (rootIdx r).2)))
-  match_scalars <;> · ring_nf; try rw [Complex.I_sq]; try ring
+  match_scalars <;> ring_nf
+  simp [Complex.I_sq]
 
 /-- Every standard coordinate symbol lies in the join of the twelve weight lines. -/
 lemma symbol_mem_iSup (F : Module.Dual ℝ GaugeAlgebra →ₗ[ℝ] B)

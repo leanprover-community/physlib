@@ -211,7 +211,7 @@ lemma integral_ball_coord {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 /-! ## C. Polar coordinates on the ball -/
 
 /-- The unit sphere of `Space 3` with its surface measure. -/
-abbrev Sph := ↑(Metric.sphere (0 : Space 3) 1)
+noncomputable abbrev Sph := ↑(Metric.sphere (0 : Space 3) 1)
 
 /-- The surface measure on the unit sphere, normalized so that the total mass is `4 π`. -/
 noncomputable abbrev sphereMeasure : Measure Sph := (volume : Measure (Space 3)).toSphere

@@ -96,7 +96,7 @@ lemma pow_a_comm_ac {i c : Fin d} (hic : i ≠ c) (k : ℕ) (y : V) :
   rw [ite_eq_right hic, LieRing.of_associative_ring_bracket, sub_eq_zero] at h
   have hpow : (L.a i) ^ k * L.ac c = L.ac c * (L.a i) ^ k := Commute.pow_left h k
   have happly := congrArg (fun f : Module.End K V => f y) hpow
-  simpa [Module.End.mul_apply] using happly
+  simpa [mul_apply_eq_comp] using happly
 
 omit [CharZero K] in
 /-- Exact annihilation: applying `a i` exactly `count i` times removes every `i`, scaled by the
@@ -111,7 +111,7 @@ lemma word_peel_eq_count (L : LadderSystem K V d) (i : Fin d) {x : V} (hx : L.a 
       have hpeel := word_peel L i hx (i :: v')
       rw [List.count_cons_self, List.erase_cons_head] at hpeel
       rw [List.count_cons_self, List.filter_cons_of_neg (by simp), pow_succ,
-        Module.End.mul_apply, hpeel, map_nsmul, word_peel_eq_count L i hx v',
+        mul_apply_eq_comp, hpeel, map_nsmul, word_peel_eq_count L i hx v',
         Nat.factorial_succ, mul_smul]
     · rw [List.count_cons_of_ne (Ne.symm hic), word_cons,
         pow_a_comm_ac L hic, word_peel_eq_count L i hx v', map_nsmul, ← word_cons,
@@ -142,7 +142,7 @@ lemma annMono_eq_count (L : LadderSystem K V d) {x : V} (hx : ∀ i, L.a i x = 0
     obtain ⟨hcnotmem, hnodup'⟩ := List.nodup_cons.mp hnodup
     have hmatch' : ∀ e ∈ cs', v.count e = α e := fun e he => hmatch e (List.mem_cons_of_mem c he)
     have hcm : v.count c = α c := hmatch c List.mem_cons_self
-    rw [annMono_cons, Module.End.mul_apply,
+    rw [annMono_cons, mul_apply_eq_comp,
       annMono_eq_count L hx cs' hnodup' α v hmatch', map_nsmul]
     have hcount : (v.filter (fun y => !cs'.contains y)).count c = v.count c :=
       List.count_filter (by simpa using hcnotmem)

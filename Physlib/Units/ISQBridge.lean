@@ -83,7 +83,7 @@ def fromISQHom : Dimension ISQDimensionBase →* Dimension LTMCTDimensionBase wh
   map_mul' d1 d2 := by
     ext b
     cases b <;> simp only [fromISQFun, ofFunction_exponent, mul_exponent]
-    all_goals ring
+    ring
 
 /-- `fromISQHom` applied to a dimension is `fromISQFun`. -/
 lemma fromISQHom_apply (d : Dimension ISQDimensionBase) : fromISQHom d = fromISQFun d := rfl
@@ -95,7 +95,7 @@ lemma fromISQHom_comp_toISQHom :
   refine MonoidHom.ext fun d => Dimension.ext fun b => ?_
   cases b <;> simp only [MonoidHom.comp_apply, MonoidHom.id_apply, toISQHom_apply,
     fromISQHom_apply, fromISQFun, toISQFun, ofFunction_exponent]
-  all_goals ring
+  ring
 
 /-- `toISQHom` is injective: PhysLib dimensions include faithfully into ISQ. -/
 lemma toISQHom_injective : Function.Injective toISQHom := by

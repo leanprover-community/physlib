@@ -81,13 +81,13 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
   {jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J} (T : GaugeFieldData jets)
 
 /-- The ordinary generators of one field category. -/
-def categoryGenerators : FieldCategory → Set T.LocalFieldAlgebra
+noncomputable def categoryGenerators : FieldCategory → Set T.LocalFieldAlgebra
   | .fermion => Set.range T.ιFermionTotal
   | .gauge => Set.range T.ιConnection
   | .scalar => Set.range T.ιBosonTotal
 
 /-- The ordinary generators selected by a sector. -/
-def sectorGenerators (S : Finset FieldCategory) : Set T.LocalFieldAlgebra :=
+noncomputable def sectorGenerators (S : Finset FieldCategory) : Set T.LocalFieldAlgebra :=
   ⋃ c ∈ S, T.categoryGenerators c
 
 lemma sectorGenerators_mono {S S' : Finset FieldCategory} (h : S ⊆ S') :

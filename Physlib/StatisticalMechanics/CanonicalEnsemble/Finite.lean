@@ -154,7 +154,7 @@ instance [IsFinite 𝓒] [Nonempty ι] : NeZero 𝓒.μ := by
   obtain ⟨i₀⟩ := (inferInstance : Nonempty ι)
   have hone : 𝓒.μ {i₀} = 1 := by
     simp [IsFinite.μ_eq_count (𝓒:=𝓒)]
-  simp_all only [Measure.coe_zero, Pi.zero_apply, zero_ne_one]
+  simp_all only [FunLike.coe_zero, Pi.zero_apply, zero_ne_one]
 
 /-- The Shannon entropy of a finite canonical ensemble.
 This is defined by the formula `S = -k_B ∑ pᵢ log pᵢ`. It is proven to be

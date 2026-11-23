@@ -278,7 +278,7 @@ lemma orthogonal_exp_of_mem_orthogonal (f : ℝ → ℂ) (hf : MemHS f)
       (f y * Real.exp (- y^2 / (2 * Q.ξ^2))))) := by
     simp_rw [← Finset.sum_mul]
     apply Filter.Tendsto.mul_const
-    simp only [Complex.exp, Complex.exp']
+    simp only [Complex.exp_def, Complex.exp']
     exact CauSeq.tendsto_limit (Complex.exp' (Complex.I * c * y))
   /- End of rewriting the integrand as a limit. -/
   /- Rewriting the integral as a limit using dominated_convergence -/

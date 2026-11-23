@@ -357,9 +357,9 @@ lemma space_deriv_magneticFieldMatrix_eq_electricField_mul_propogator {d : ℕ}
   simp only [smul_eq_mul, neg_mul, mul_neg, sub_neg_eq_add]
   field_simp
   ring
-  any_goals apply Differentiable.differentiableAt
+  all_goals apply Differentiable.differentiableAt
   any_goals apply Differentiable.const_mul
-  any_goals fun_prop
+  all_goals fun_prop
 
 /-!
 

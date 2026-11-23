@@ -136,8 +136,8 @@ lemma evalAlgHom_apply (a : AddMonoidAlgebra ℂ G)
     (χ : _root_.PontryaginDual (Multiplicative G)) :
     evalAlgHom a χ = a.coeff.sum fun g c => c * (χ (Multiplicative.ofAdd g) : ℂ) := by
   rw [evalAlgHom, AddMonoidAlgebra.lift_apply]
-  simp only [Finsupp.sum, BoundedContinuousFunction.coe_sum, Finset.sum_apply,
-    BoundedContinuousFunction.coe_smul, evalMonoidHom_apply, smul_eq_mul]
+  simp only [Finsupp.sum, FunLike.coe_sum, Finset.sum_apply,
+    FunLike.coe_smul, Pi.smul_apply, evalMonoidHom_apply, smul_eq_mul]
 
 /-- The range of `evalAlgHom` is closed under pointwise complex conjugation. -/
 lemma star_mem_range_evalAlgHom
@@ -172,9 +172,9 @@ lemma mem_evalPoly (f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ) :
   have hsum (a : AddMonoidAlgebra ℂ G) :
       evalAlgHom a = a.coeff.sum fun g c => c • evalBoundedContinuous g := by
     ext χ
-    simp only [evalAlgHom_apply, Finsupp.sum, BoundedContinuousFunction.coe_sum,
-      Finset.sum_apply, BoundedContinuousFunction.coe_smul, evalBoundedContinuous_apply,
-      smul_eq_mul]
+    simp only [evalAlgHom_apply, Finsupp.sum, FunLike.coe_sum,
+      Finset.sum_apply, FunLike.coe_smul, Pi.smul_apply,
+      evalBoundedContinuous_apply, smul_eq_mul]
   rw [← StarSubalgebra.mem_toSubalgebra, evalPoly_toSubalgebra, AlgHom.mem_range]
   simp only [hsum, eq_comm]
 
@@ -214,8 +214,8 @@ lemma _root_.MeasureTheory.FiniteMeasure.integral_eq_of_forall_pontryaginMeasure
     {f : _root_.PontryaginDual (Multiplicative G) →ᵇ ℂ} (hf : f ∈ _root_.PontryaginDual.evalPoly) :
     ∫ χ, f χ ∂P = ∫ χ, f χ ∂Q := by
   obtain ⟨a, rfl⟩ := (_root_.PontryaginDual.mem_evalPoly f).mp hf
-  simp only [Finsupp.sum, BoundedContinuousFunction.coe_sum, Finset.sum_apply,
-    BoundedContinuousFunction.coe_smul,
+  simp only [Finsupp.sum, FunLike.coe_sum, Finset.sum_apply,
+    FunLike.coe_smul, Pi.smul_apply,
     _root_.PontryaginDual.evalBoundedContinuous_apply,
     smul_eq_mul]
   rw [integral_finsetSum, integral_finsetSum]
