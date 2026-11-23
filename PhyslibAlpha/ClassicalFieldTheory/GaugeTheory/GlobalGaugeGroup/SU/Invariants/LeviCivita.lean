@@ -232,7 +232,7 @@ lemma leviCivitaAntiFund_invariant (g : SU N) :
 lemma quarterTurn_val_apply {p q : Fin N} (hpq : p ≠ q) (x y : Fin N) :
     (planeEmbed p q hpq (rotation 0 1 (by norm_num))).1 x y
       = (if x = p then -1 else 1) * (if swap p q x = y then 1 else 0) := by
-  simp only [planeEmbed_val, rotation_val, planeMatrix, Matrix.add_apply, one_apply,
+  simp only [planeEmbed_val, rotation_val, planeMatrix, Matrix.add_apply, Matrix.one_apply,
     Matrix.mul_apply, transpose_apply, planeInclusion_apply, Matrix.sub_apply, Fin.sum_univ_two,
     swap_apply_def]
   by_cases hxp : x = p <;> by_cases hxq : x = q <;> by_cases hyp : y = p <;>

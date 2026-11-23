@@ -214,6 +214,7 @@ lemma mul_le_sectorMassWeight_gauge_higgs {a b w : ℕ}
   have hmem := GaugeFieldData.mul_mem_sectorMassWeight hx' hy'
   rwa [hset, hab] at hmem
 
+set_option synthInstance.maxHeartbeats 100000 in
 /-- The mixed gauge-Higgs sector at weight `8`. The surviving splittings are
   `4 + 4` and `6 + 2`, giving the field strength against the weight-four Higgs terms
   and the once-derived field strength against the underived Higgs. -/

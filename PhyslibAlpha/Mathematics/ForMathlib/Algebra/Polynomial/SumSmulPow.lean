@@ -64,7 +64,7 @@ lemma eq_zero_of_forall_sum_smul_pow_eq_zero {V : Type*} [AddCommGroup V] [Modul
     simp only [Polynomial.eval_mul, Polynomial.eval_C, Polynomial.eval_pow, Polynomial.eval_X]
     rw [← h1]
     exact Finset.sum_congr rfl fun j _ => by rw [map_smul, smul_eq_mul, mul_comm]
-  have hcoeff := congrArg (fun q => Polynomial.coeff q m) hpz
+  have hcoeff := congrArg (fun q => AddMonoidAlgebra.coeff q m) hpz
   simp only [Polynomial.finsetSum_coeff, Polynomial.coeff_C_mul, Polynomial.coeff_X_pow,
     Polynomial.coeff_zero, mul_ite, mul_one, mul_zero] at hcoeff
   rwa [Finset.sum_ite_eq (Finset.range n) m (fun j => f (b j)), ite_eq_left hm] at hcoeff

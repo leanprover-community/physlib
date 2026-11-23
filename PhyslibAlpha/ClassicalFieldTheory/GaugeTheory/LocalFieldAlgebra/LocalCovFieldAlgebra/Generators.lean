@@ -111,7 +111,7 @@ variable {κ : Type} [Fintype κ] [DecidableEq κ] {G : GlobalGaugeGroup κ} (T 
 /-- The covariant generators of a given kind, as elements of the covariant field algebra. These
   are the field-strength tower for `gauge`, the bosonic towers and their conjugates for `scalar`,
   and the fermionic towers and their conjugates for `fermion`. -/
-def kindGenerators : FieldKind → Set T.LocalCovFieldAlgebra
+noncomputable def kindGenerators : FieldKind → Set T.LocalCovFieldAlgebra
   | .gauge => ⋃ l : List (Fin 1 ⊕ Fin 3), ⋃ μ, ⋃ ν, Set.range (covFieldStrength T l μ ν)
   | .scalar => ⋃ j, ⋃ n : ℕ, ⋃ l : Fin n → (Fin 1 ⊕ Fin 3),
       Set.range (covBoson T j l) ∪ Set.range (covConjBoson T j l)
@@ -151,7 +151,7 @@ lemma covConjFermion_mem_kindGenerators (i : T.FermionSpecies) {n : ℕ}
 /-- The covariant generators of kind `k` and mass weight `w`. The field-strength tower
   `∇_l F_μν` has weight `4 + 2 |l|`, and the tower of `n` covariant derivatives of a species of
   mass weight `c`, or of its conjugate, has weight `c + 2 n`. -/
-def weightedGenerators : FieldKind → ℕ → Set T.LocalCovFieldAlgebra
+noncomputable def weightedGenerators : FieldKind → ℕ → Set T.LocalCovFieldAlgebra
   | .gauge, w => ⋃ l : List (Fin 1 ⊕ Fin 3), ⋃ (_ : 4 + 2 * l.length = w), ⋃ μ, ⋃ ν,
       Set.range (covFieldStrength T l μ ν)
   | .scalar, w => ⋃ j, ⋃ n : ℕ, ⋃ (_ : (T.boson j).massWeight + 2 * n = w),

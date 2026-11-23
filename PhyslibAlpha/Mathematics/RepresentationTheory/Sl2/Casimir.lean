@@ -443,7 +443,8 @@ lemma exists_polynomial_maxGenEigenspace_zero_proj (C : Module.End K V) :
     rw [← aeval_X_pow (R := K), ← map_mul, show w * g * X ^ b = w * (X ^ b * g) by ring, map_mul,
       hzero, mul_zero]
   refine ⟨w * g, ?_, fun v hv ↦ ?_, fun v ↦ ?_, fun v hv ↦ ?_⟩
-  · rw [hq, coeff_sub, coeff_one_zero, coeff_mul_X_pow', ite_eq_right (by omega), sub_zero]
+  · rw [hq, coeff_sub, AddMonoidAlgebra.coeff_one_zero, coeff_mul_X_pow',
+      ite_eq_right (by omega), sub_zero]
   · obtain ⟨k, hk⟩ := (C.mem_maxGenEigenspace_zero_iff v).mp hv
     rw [hq, map_sub, map_one, map_mul, aeval_X_pow, LinearMap.sub_apply, Module.End.mul_apply,
       pow_apply_eq_zero_of_isCoprime hcop hzero hk, map_zero, sub_zero, Module.End.one_apply]

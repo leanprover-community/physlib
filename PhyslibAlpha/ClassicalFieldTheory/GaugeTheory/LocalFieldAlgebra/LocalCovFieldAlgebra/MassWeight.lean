@@ -224,7 +224,7 @@ noncomputable def massWeightComponent (k : ℕ) :
     rfl
   map_smul' c x := by
     show (P.toLinearMap (c • x)).coeff k = _
-    rw [LinearMap.map_smul, Polynomial.coeff_smul, RingHom.id_apply]
+    rw [LinearMap.map_smul, AddMonoidAlgebra.coeff_smul_apply, RingHom.id_apply]
     rfl
 
 @[simp]
@@ -236,7 +236,7 @@ lemma massWeightComponent_apply (k : ℕ) (x : T.LocalCovFieldAlgebra) :
 lemma massWeightComponent_of_mem {w : ℕ} {x : T.LocalCovFieldAlgebra}
     (hx : x ∈ massWeightSubmodule P w) (k : ℕ) :
     massWeightComponent P k x = if w = k then x else 0 := by
-  rw [massWeightComponent_apply, mem_massWeightSubmodule_iff.1 hx, Polynomial.coeff_monomial]
+  rw [massWeightComponent_apply, mem_massWeightSubmodule_iff.1 hx, Polynomial.coeff_monomial_apply]
 
 lemma massWeightComponent_self {w : ℕ} {x : T.LocalCovFieldAlgebra}
     (hx : x ∈ massWeightSubmodule P w) : massWeightComponent P w x = x := by

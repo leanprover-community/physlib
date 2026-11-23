@@ -114,7 +114,7 @@ noncomputable def LocalCovFieldAlgebra :
 /-- The generating set of `LocalCovFieldAlgebra`, the included field-strength tower and the
   covariant matter towers of every species, unconjugated and conjugate, along all ordered
   tuples of directions. -/
-def covGenerators : Set T.LocalFieldAlgebra :=
+noncomputable def covGenerators : Set T.LocalFieldAlgebra :=
   (⋃ l : List (Fin 1 ⊕ Fin 3), ⋃ μ, ⋃ ν, Set.range (T.covDerivFieldStrength l μ ν))
     ∪ ((⋃ i, ⋃ n : ℕ, ⋃ l : Fin n → (Fin 1 ⊕ Fin 3),
         Set.range (T.covDerivFermion i l) ∪ Set.range (T.covDerivConjFermion i l))
@@ -159,6 +159,41 @@ noncomputable instance (priority := high) instModuleRealLocalCovFieldAlgebra :
   structure. -/
 noncomputable instance (priority := high) : SMul ℝ T.LocalCovFieldAlgebra :=
   T.instModuleRealLocalCovFieldAlgebra.toDistribMulAction.toMulAction.toSMul
+
+/-- The covariant field algebra is a non-associative ring, by its ring structure. Given
+  directly, at high priority, because instance search otherwise looks for the structure on the
+  local field algebra and times out searching its tensor factors. -/
+noncomputable instance (priority := high) instNonAssocRingLocalCovFieldAlgebra :
+    NonAssocRing T.LocalCovFieldAlgebra :=
+  T.instRingLocalCovFieldAlgebra.toNonAssocRing
+
+/-- The covariant field algebra is a non-unital non-associative semiring, by its ring structure.
+  Given directly, at high priority, for the same reason as
+  `instNonAssocRingLocalCovFieldAlgebra`. -/
+noncomputable instance (priority := high) instNonUnitalNonAssocSemiringLocalCovFieldAlgebra :
+    NonUnitalNonAssocSemiring T.LocalCovFieldAlgebra :=
+  T.instNonAssocRingLocalCovFieldAlgebra.toNonUnitalNonAssocSemiring
+
+/-- The covariant field algebra is a non-unital non-associative ring, by its ring structure.
+  Given directly, at high priority, for the same reason as
+  `instNonAssocRingLocalCovFieldAlgebra`. -/
+noncomputable instance (priority := high) instNonUnitalNonAssocRingLocalCovFieldAlgebra :
+    NonUnitalNonAssocRing T.LocalCovFieldAlgebra :=
+  T.instNonAssocRingLocalCovFieldAlgebra.toNonUnitalNonAssocRing
+
+/-- Negation on the covariant field algebra is involutive, by its additive group structure.
+  Given directly, at high priority, for the same reason as
+  `instNonAssocRingLocalCovFieldAlgebra`. -/
+noncomputable instance (priority := high) instInvolutiveNegLocalCovFieldAlgebra :
+    InvolutiveNeg T.LocalCovFieldAlgebra :=
+  T.instRingLocalCovFieldAlgebra.toAddCommGroup.toAddGroup.toSubtractionMonoid.toInvolutiveNeg
+
+/-- Linear endomorphisms of the covariant field algebra send zero to zero. Given directly, at
+  high priority, since the generic search for `ZeroHomClass` on these maps times out. -/
+instance (priority := high) instZeroHomClassLinearMap :
+    ZeroHomClass (T.LocalCovFieldAlgebra →ₗ[ℂ] T.LocalCovFieldAlgebra) T.LocalCovFieldAlgebra
+      T.LocalCovFieldAlgebra :=
+  AddMonoidHomClass.toZeroHomClass
 
 /-- Algebra maps from the covariant field algebra to its polynomials, such as a mass-weight
   polynomial, are additive. Given directly, at high priority, since the generic search for

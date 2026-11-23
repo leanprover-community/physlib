@@ -410,7 +410,7 @@ lemma eq_smul_one_of_commute {C : Matrix (Fin N) (Fin N) ℂ}
   rcases Nat.eq_zero_or_pos N with rfl | hN
   · exact ⟨0, Subsingleton.elim _ _⟩
   refine ⟨C ⟨0, hN⟩ ⟨0, hN⟩, ext fun x y => ?_⟩
-  rw [Matrix.smul_apply, one_apply, smul_eq_mul]
+  rw [Matrix.smul_apply, Matrix.one_apply, smul_eq_mul]
   by_cases hxy : x = y
   · subst hxy
     by_cases hx : x = ⟨0, hN⟩

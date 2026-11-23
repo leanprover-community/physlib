@@ -220,7 +220,7 @@ lemma diagonal_boost_conj_sub (i : Fin 3) (d : Fin 1 ⊕ Fin 3 → ℂ) :
   by_cases hab : a = b
   · subst hab
     simp only [Matrix.sub_apply, Matrix.smul_apply, diagonal_apply_eq, timeAxisProj,
-      mul_apply, transpose_apply, LorentzGroup.toComplex, MonoidHom.coe_mk, OneHom.coe_mk,
+      Matrix.mul_apply, transpose_apply, LorentzGroup.toComplex, MonoidHom.coe_mk, OneHom.coe_mk,
       map_apply, h, LorentzGroup.boostAxis_apply]
     fin_cases i <;> rcases a with a | a <;> fin_cases a <;>
       simp [Fintype.sum_sum_type, Fin.sum_univ_three] <;> ring
@@ -252,7 +252,7 @@ lemma rotationCycle_conj_timeAxisProj (i : Fin 3) :
       (LorentzGroup.toComplex (SL2C.toLorentzGroup SL2C.rotationCycle))ᵀ =
       timeAxisProj (i + 1) := by
   ext a b
-  simp only [timeAxisProj, mul_apply, transpose_apply, LorentzGroup.toComplex,
+  simp only [timeAxisProj, Matrix.mul_apply, transpose_apply, LorentzGroup.toComplex,
     MonoidHom.coe_mk, OneHom.coe_mk, map_apply, SL2C.toLorentzGroup_rotationCycle_apply,
     diagonal_apply]
   fin_cases i <;> rcases a with a | a <;> rcases b with b | b <;> fin_cases a <;> fin_cases b <;>

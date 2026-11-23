@@ -159,7 +159,7 @@ assignment, and the grading the algebra map it induces.
   the local field algebra once more. -/
 noncomputable instance instRingPolynomialLocalFieldAlgebra :
     Ring (Polynomial T.LocalFieldAlgebra) :=
-  @Polynomial.ring T.LocalFieldAlgebra _
+  AddMonoidAlgebra.ring (R := T.LocalFieldAlgebra) (M := ℕ)
 
 /-- The monomial of degree `n` over the local field algebra, as a map of complex vector
   spaces rather than of modules over the local field algebra. -/
@@ -212,7 +212,7 @@ lemma halfPoly_coeff_mem {W : Type} [AddCommGroup W] [Module ℂ W] (w : ℕ)
     induction ha using Submodule.span_induction with
     | mem b hb =>
       obtain ⟨s, rfl⟩ := hb
-      rw [halfPoly_basis_tmul, Polynomial.coeff_monomial]
+      rw [halfPoly_basis_tmul, Polynomial.coeff_monomial_apply]
       split_ifs
       · exact LinearMap.mem_range_self k _
       · exact zero_mem _
@@ -223,7 +223,7 @@ lemma halfPoly_coeff_mem {W : Type} [AddCommGroup W] [Module ℂ W] (w : ℕ)
       rw [TensorProduct.add_tmul, map_add, Polynomial.coeff_add]
       exact add_mem hb hc
     | smul c b _ hb =>
-      rw [← TensorProduct.smul_tmul', map_smul, Polynomial.coeff_smul]
+      rw [← TensorProduct.smul_tmul', map_smul, AddMonoidAlgebra.coeff_smul_apply]
       exact Submodule.smul_mem _ c hb
 
 /-!
@@ -698,7 +698,7 @@ lemma coeff_massWeightPoly_eq_zero_of_mem_massWeightSubmoduleLE {w n : ℕ} (hn 
         rw [map_add, Polynomial.coeff_add, ha, hb, add_zero]
       smul_mem' := fun c a ha => by
         show (T.massWeightPoly (c • a)).coeff n = 0
-        rw [map_smul, Polynomial.coeff_smul, ha, smul_zero] }
+        rw [map_smul, AddMonoidAlgebra.coeff_smul_apply, ha, smul_zero] }
   have hle : T.massWeightSubmoduleLE w ≤ K := iSup₂_le fun k hk y hy => by
     show (T.massWeightPoly y).coeff n = 0
     rw [mem_massWeightSubmodule.mp hy,

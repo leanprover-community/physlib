@@ -126,11 +126,11 @@ lemma linearIndependent_pairingBasis : LinearIndependent ℂ pairingBasis := by
 
 /-- The unipotent element `!![1, z; 0, 1] = 1 + z E` of `SL(2, ℂ)`. -/
 def upperUnipotent (z : ℂ) : SL(2,ℂ) :=
-  ⟨1 + z • !![0, 1; 0, 0], by simp [det_fin_two, one_apply]⟩
+  ⟨1 + z • !![0, 1; 0, 0], by simp [det_fin_two, Matrix.one_apply]⟩
 
 /-- The unipotent element `!![1, 0; z, 1] = 1 + z F` of `SL(2, ℂ)`. -/
 def lowerUnipotent (z : ℂ) : SL(2,ℂ) :=
-  ⟨1 + z • !![0, 0; 1, 0], by simp [det_fin_two, one_apply]⟩
+  ⟨1 + z • !![0, 0; 1, 0], by simp [det_fin_two, Matrix.one_apply]⟩
 
 /-- Every element of `SL(2, ℂ)` is a product of four unipotent elements, alternately lower and
   upper. With `M = !![p, q; r, s]` and `a` chosen so that `r' = a p + r ≠ 0`, the matrix
@@ -164,7 +164,7 @@ lemma exists_eq_lowerUnipotent_mul_upperUnipotent (M : SL(2,ℂ)) :
 /-- At `t = 0` the line `t ↦ 1 + c t G` is the identity. -/
 lemma one_add_smul_zero_apply (G : Matrix (Fin 2) (Fin 2) ℂ) (c : ℂ) (p q : Fin 2) :
     (1 + (c * ((0 : ℝ) : ℂ)) • G) p q = if p = q then 1 else 0 := by
-  simp [one_apply]
+  simp [Matrix.one_apply]
 
 /-- The line `t ↦ 1 + c t G` has derivative `c G`. -/
 lemma hasDerivAt_one_add_smul (G : Matrix (Fin 2) (Fin 2) ℂ) (c : ℂ) (p q : Fin 2) :

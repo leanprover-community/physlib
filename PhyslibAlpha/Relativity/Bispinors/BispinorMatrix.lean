@@ -76,7 +76,7 @@ lemma sum_pauliLower_mul_bispinorMatrix (M : SL(2,ℂ)) (μ : Fin 1 ⊕ Fin 3) (
   simp only [SL2C.toSelfAdjointMap_apply, PauliMatrix.pauliBasis'_coe, AddSubgroup.val_finsetSum,
     selfAdjoint.val_smul, Matrix.sum_apply, Matrix.smul_apply, Complex.real_smul] at h
   rw [← h, Fintype.sum_prod_type]
-  simp only [mul_apply, conjTranspose_apply, Finset.sum_mul, bispinorMatrix, pairMatrix]
+  simp only [Matrix.mul_apply, conjTranspose_apply, Finset.sum_mul, bispinorMatrix, pairMatrix]
   rw [Finset.sum_comm]
   exact Finset.sum_congr rfl fun x _ => Finset.sum_congr rfl fun y _ => by ring
 

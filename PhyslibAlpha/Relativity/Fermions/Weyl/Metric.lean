@@ -272,7 +272,7 @@ lemma map_offDiagonal_eq_zero_of_invariant
   have hsplit : Y = !![Y 0 0, 0; 0, Y 1 1] - !![0, c; c, 0] := by
     ext i j
     fin_cases i <;> fin_cases j <;>
-      simp [Y, Fin.sum_univ_two, Matrix.vecMul, dotProduct]
+      simp [Y, Matrix.vecHead, Matrix.vecTail]
   have hdiag := map_diagonal_eq_zero_of_invariant hF (Y := Y) (by simpa [hY] using hc)
   have h := congrArg F hsplit
   rw [map_sub, hdiag, zero_sub, hY] at h
