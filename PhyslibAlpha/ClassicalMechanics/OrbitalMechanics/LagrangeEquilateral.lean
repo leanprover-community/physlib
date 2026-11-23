@@ -123,18 +123,15 @@ private lemma hasDerivAt_orbit (t : ℝ) (i : Fin 3) :
 -/
 
 /-- Identify the complex plane with the physical displacement vectors of the frame. -/
-private def framePlane (frame : ReferenceFrame 2) [Fact frame.IsMetricConserved] :
-    ℂ ≃ₗᵢ[ℝ] frame.Vector :=
+private def framePlane (frame : ReferenceFrame 2) : ℂ ≃ₗᵢ[ℝ] frame.Vector :=
   Complex.orthonormalBasisOneI.repr.trans
-    ({ toLinearEquiv := Vector.dispEquiv (frame := frame) 0
-       norm_map' := fun _ => rfl } : frame.Vector ≃ₗᵢ[ℝ] EuclideanSpace ℝ (Fin 2)).symm
+    (Vector.dispIsometry (frame := frame) 0).symm
 
 /-- The particle following one vertex of the rotating triangle in the given frame. -/
-private def particle (frame : ReferenceFrame 2) [Fact frame.IsInertial] (i : Fin 3) :
-    frame.Particle where
+private def particle (frame : ReferenceFrame 2) (i : Fin 3) : frame.Particle where
   mass := m i
   pos t := framePlane frame (orbit G m ℓ t i)
-  pos_twice_differentiable _ := by
+  pos_twice_differentiable := by
     let L := (framePlane frame).toLinearIsometry.toContinuousLinearMap
     have hv (t : ℝ) := L.hasFDerivAt.comp_hasDerivAt t (hasDerivAt_orbit G m ℓ t i)
     refine ⟨fun t => (hv t).differentiableAt, ?_⟩
@@ -146,8 +143,8 @@ private def particle (frame : ReferenceFrame 2) [Fact frame.IsInertial] (i : Fin
       ((hasDerivAt_orbit G m ℓ t i).const_mul _)).differentiableAt
 
 /-- The particle's acceleration is centripetal with the angular speed of the rotation. -/
-private lemma particle_acceleration (frame : ReferenceFrame 2) [Fact frame.IsInertial]
-    (hG : 0 < G) (hℓ : 0 < ℓ) (t : ℝ) (i : Fin 3) :
+private lemma particle_acceleration (frame : ReferenceFrame 2) (hG : 0 < G) (hℓ : 0 < ℓ)
+    (t : ℝ) (i : Fin 3) :
     (particle G m ℓ frame i).acceleration t =
       -frequencySq G m ℓ • (particle G m ℓ frame i).pos t := by
   let L := (framePlane frame).toLinearIsometry.toContinuousLinearMap
@@ -169,25 +166,25 @@ private lemma particle_acceleration (frame : ReferenceFrame 2) [Fact frame.IsIne
   rw [← hw, Complex.ofReal_pow]
   linear_combination (((angularSpeed G m ℓ : ℝ) : ℂ) ^ 2 * orbit G m ℓ t i) * Complex.I_sq
 
-private lemma particle_distance (frame : ReferenceFrame 2) [Fact frame.IsInertial]
-    (hℓ : 0 < ℓ) (t : ℝ) (i j : Fin 3) (hij : i ≠ j) :
+private lemma particle_distance (frame : ReferenceFrame 2) (hℓ : 0 < ℓ) (t : ℝ)
+    (i j : Fin 3) (hij : i ≠ j) :
     ‖(particle G m ℓ frame i).pos t - (particle G m ℓ frame j).pos t‖ = ℓ := by
   change ‖framePlane frame (orbit G m ℓ t i) - framePlane frame (orbit G m ℓ t j)‖ = ℓ
   rw [← map_sub, LinearIsometryEquiv.norm_map]
   exact orbit_distance G m ℓ hℓ t i j hij
 
-private lemma particle_firstMoment (frame : ReferenceFrame 2) [Fact frame.IsInertial] (t : ℝ) :
+private lemma particle_firstMoment (frame : ReferenceFrame 2) (t : ℝ) :
     ∑ i, (m i).val • (particle G m ℓ frame i).pos t = 0 := by
   change ∑ i, (m i).val • framePlane frame (orbit G m ℓ t i) = 0
   simp_rw [← map_smul]
   rw [← map_sum, orbit_firstMoment, map_zero]
 
 /-- The collection of the three rotating particles, counted with multiplicity. -/
-private def particles (frame : ReferenceFrame 2) [Fact frame.IsInertial] :
-    Multiset frame.Particle := Finset.univ.val.map (particle G m ℓ frame)
+private def particles (frame : ReferenceFrame 2) : Multiset frame.Particle :=
+  Finset.univ.val.map (particle G m ℓ frame)
 
 /-- Positive separation identifies each label with one occurrence in the particle multiset. -/
-private def particleLabels (frame : ReferenceFrame 2) [Fact frame.IsInertial] (hℓ : 0 < ℓ) :
+private def particleLabels (frame : ReferenceFrame 2) (hℓ : 0 < ℓ) :
     Fin 3 ≃ particles G m ℓ frame := by
   let ps := particles G m ℓ frame
   let label (i : Fin 3) : ps :=
@@ -208,8 +205,7 @@ private def particleLabels (frame : ReferenceFrame 2) [Fact frame.IsInertial] (h
     exact Finset.card_univ.symm
 
 /-- Equal separations and the zero mass first moment reduce gravity to the centripetal term. -/
-private lemma particle_gravity (frame : ReferenceFrame 2) [Fact frame.IsInertial]
-    (hℓ : 0 < ℓ) (t : ℝ) (i : Fin 3) :
+private lemma particle_gravity (frame : ReferenceFrame 2) (hℓ : 0 < ℓ) (t : ℝ) (i : Fin 3) :
     let ps := particles G m ℓ frame
     let target := particleLabels G m ℓ frame hℓ i
     gravityAcceleration G ps target t =
@@ -258,8 +254,7 @@ private lemma angularSpeed_mul_period (hG : 0 < G) (hℓ : 0 < ℓ) :
     (Real.sqrt_pos.2 (frequencySq_pos G m ℓ hG hℓ)).ne'
   rw [mul_comm (angularSpeed G m ℓ), div_mul_cancel₀ _ hω]
 
-private lemma particle_periodic (frame : ReferenceFrame 2) [Fact frame.IsInertial]
-    (hG : 0 < G) (hℓ : 0 < ℓ) (i : Fin 3) :
+private lemma particle_periodic (frame : ReferenceFrame 2) (hG : 0 < G) (hℓ : 0 < ℓ) (i : Fin 3) :
     Function.Periodic (particle G m ℓ frame i).pos (period G m ℓ) := by
   intro t
   change framePlane frame (orbit G m ℓ (t + period G m ℓ) i) =
@@ -279,8 +274,8 @@ private lemma period_law (hG : 0 < G) (hℓ : 0 < ℓ) :
 /-- The Lagrange relative equilibrium for three positive masses in a planar inertial frame.
 The labelled particles move on a rigid equilateral triangle about their mass barycentre,
 with a positive common period obeying Kepler's third law. -/
-public lemma exists_lagrange_equilateral_solution (frame : ReferenceFrame 2) [Fact frame.IsInertial]
-    (hG : 0 < G) (hℓ : 0 < ℓ) :
+public lemma exists_lagrange_equilateral_solution (frame : ReferenceFrame 2)
+    (hframe : frame.IsInertial) (hG : 0 < G) (hℓ : 0 < ℓ) :
     ∃ (system : NewtonianSystem 2) (e : Fin 3 ≃ system.Particle) (T : ℝ),
       system.frame = frame ∧
       system.internalForces = gravityForces G system.particles ∧
@@ -301,7 +296,7 @@ public lemma exists_lagrange_equilateral_solution (frame : ReferenceFrame 2) [Fa
       (particle_gravity G m ℓ frame hℓ t i).symm
   have hω : 0 < angularSpeed G m ℓ := Real.sqrt_pos.2 (frequencySq_pos G m ℓ hG hℓ)
   have hT : 0 < period G m ℓ := div_pos (by positivity) hω
-  refine ⟨NewtonianSystem.ofGravity G _ motion, e, period G m ℓ,
+  refine ⟨NewtonianSystem.ofGravity hframe G _ motion, e, period G m ℓ,
     rfl, rfl, rfl, fun _ => rfl, particle_firstMoment G m ℓ frame,
     particle_distance G m ℓ frame hℓ, particle_periodic G m ℓ frame hG hℓ, ?_,
     hT, period_law G m ℓ hG hℓ⟩
