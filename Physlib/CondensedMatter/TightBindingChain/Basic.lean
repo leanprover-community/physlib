@@ -8,7 +8,7 @@ module
 public import Physlib.QuantumMechanics.HilbertSpaces.FiniteTarget.Basic
 public import Physlib.QuantumMechanics.PlanckConstant
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Bounds
 public import Mathlib.LinearAlgebra.Eigenspace.Basic
 /-!
 
@@ -35,10 +35,8 @@ with periodic boundary conditions.
 - `energyEigenstate` : The energy eigenstates of the tight binding chain.
 - `energyEigenbasis` : The orthonormal basis of normalized energy eigenstates.
 - `energyEigenvalue` : The energy eigenvalues of the tight binding chain.
-- `dispersion` : The dispersion relation `k ↦ E0 - 2 t cos (k a)` for every real `k`.
-- `deriv_deriv_dispersion_zero` : The dispersion relation has second derivative `2 t a²`
-  at `k = 0`.
-- `effectiveMass` : The effective mass at `k = 0`, equal to `ℏ² / (2 t a²)`.
+- `abs_energyEigenvalue_sub_freeParticle_le` : Near `k = 0` the energy eigenvalue is that of a
+  free particle with effective mass `ℏ² / (2 t a²)`, up to a quartic error.
 - `hamiltonian_energyEigenstate` : The Hamiltonian acting on an energy eigenstate
   gives the corresponding energy eigenvalue times the energy eigenstate.
 - `hasEigenvalue_hamiltonian_iff` : The eigenvalues of the Hamiltonian are exactly the
@@ -561,25 +559,28 @@ lemma energyEigenbasis_apply (n : Fin T.N) :
 noncomputable def energyEigenvalue (k : T.QuantaWaveNumber) : ℝ :=
   T.E0 - 2 * T.t * Real.cos (k * T.a)
 
-/-- The dispersion relation `k ↦ E0 - 2 t cos (k a)`, defined for every real wavenumber `k`.
-  At a quantized wavenumber it is, by definition, `energyEigenvalue`. -/
-noncomputable def dispersion (k : ℝ) : ℝ :=
-  T.E0 - 2 * T.t * Real.cos (k * T.a)
-
-/-- The dispersion relation has second derivative `2 t a²` at `k = 0`. -/
-lemma deriv_deriv_dispersion_zero : deriv (deriv T.dispersion) 0 = 2 * T.t * T.a ^ 2 := by
-  show deriv (deriv fun k : ℝ => T.E0 - 2 * T.t * Real.cos (k * T.a)) 0 = _
-  simp [sq, mul_assoc]
-
-/-- The effective mass at `k = 0`: `ℏ²` divided by the second derivative of the dispersion
-  relation at `k = 0`. It is negative when `t < 0`, and it is `0` when `t = 0`, since division
-  by zero is `0` in Lean. -/
-noncomputable def effectiveMass : ℝ :=
-  (Constants.ℏ : ℝ) ^ 2 / deriv (deriv T.dispersion) 0
-
-/-- The effective mass at `k = 0` is `ℏ² / (2 t a²)`. -/
-lemma effectiveMass_eq : T.effectiveMass = (Constants.ℏ : ℝ) ^ 2 / (2 * T.t * T.a ^ 2) := by
-  rw [effectiveMass, deriv_deriv_dispersion_zero]
+/-- Near the bottom of the band, the energy eigenvalue is that of a free particle of
+  effective mass `m* = ℏ² / (2 t a²)`: for `t ≠ 0` and `|k a| ≤ 1`,
+  `energyEigenvalue k` differs from `(E0 - 2 t) + (ℏ k)² / (2 m*)` by at most
+  `5/48 * |t| * |k a|⁴`. -/
+lemma abs_energyEigenvalue_sub_freeParticle_le (ht : T.t ≠ 0) (k : T.QuantaWaveNumber)
+    (hk : |(k : ℝ) * T.a| ≤ 1) :
+    |T.energyEigenvalue k - (T.E0 - 2 * T.t)
+      - ((Constants.ℏ : ℝ) * k) ^ 2 / (2 * ((Constants.ℏ : ℝ) ^ 2 / (2 * T.t * T.a ^ 2)))|
+      ≤ 5 / 48 * |T.t| * |(k : ℝ) * T.a| ^ 4 := by
+  have hℏ := Constants.ℏ_ne_zero
+  have ha := T.a_pos.ne'
+  have hfree : ((Constants.ℏ : ℝ) * k) ^ 2 / (2 * ((Constants.ℏ : ℝ) ^ 2 / (2 * T.t * T.a ^ 2)))
+      = T.t * ((k : ℝ) * T.a) ^ 2 := by
+    field_simp
+  have hcos := Real.cos_bound hk
+  have h : T.energyEigenvalue k - (T.E0 - 2 * T.t) - T.t * ((k : ℝ) * T.a) ^ 2
+      = -(2 * T.t) * (Real.cos ((k : ℝ) * T.a) - (1 - ((k : ℝ) * T.a) ^ 2 / 2)) := by
+    rw [energyEigenvalue]; ring
+  rw [hfree, h, abs_mul, abs_neg, abs_mul, abs_two]
+  calc 2 * |T.t| * |Real.cos ((k : ℝ) * T.a) - (1 - ((k : ℝ) * T.a) ^ 2 / 2)|
+      ≤ 2 * |T.t| * (|(k : ℝ) * T.a| ^ 4 * (5 / 96)) := by gcongr
+    _ = _ := by ring
 
 /-!
 
