@@ -394,6 +394,7 @@ public import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.BasisS
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.CourantFischer
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.InnerProductSpace.LinearCombination
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Matrix.PosSemidef
+public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Matrix.PosSemidefExp
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.Normed.Operator.Dense
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.AddGroup
 public import PhyslibAlpha.Mathematics.TauCeti.Analysis.PositiveDefinite.AdditiveCharacter
