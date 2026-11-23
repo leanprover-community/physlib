@@ -29,7 +29,14 @@ namespace HermitianMat
 
 def symmMul : HermitianMat d 𝕜 :=
   ⟨(2 : 𝕜)⁻¹ • (A.mat * B.mat + B.mat * A.mat),
-    by simp [selfAdjoint, IsSelfAdjoint, add_comm, Matrix.star_eq_conjTranspose]⟩
+    by
+      change _root_.IsSelfAdjoint _
+      apply IsSelfAdjoint.smul
+      · simp [IsSelfAdjoint]
+      · change (A.mat * B.mat + B.mat * A.mat).IsHermitian
+        change (A.mat * B.mat + B.mat * A.mat).conjTranspose = _
+        rw [Matrix.conjTranspose_add, Matrix.conjTranspose_mul, Matrix.conjTranspose_mul,
+          A.H.eq, B.H.eq, add_comm]⟩
 
 set_option backward.isDefEq.respectTransparency false in
 lemma symmMul_comm : A.symmMul B = B.symmMul A := by

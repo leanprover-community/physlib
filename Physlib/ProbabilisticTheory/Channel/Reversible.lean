@@ -5,14 +5,13 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.State.Basic
+public import Physlib.ProbabilisticTheory.Channel.Basic
 public import Mathlib.Algebra.Module.Equiv.Defs
 
 /-!
 # Reversible transformations of observables
 
-Reversible transformations of observable spaces, their group structure, their action on states and
-the transport of group actions.
+Reversible transformations of observables, their group structure and transport of group actions.
 
 ## i. Overview
 
@@ -20,7 +19,7 @@ Time evolution, spatial symmetries and changes of reference frame all have somet
 they transform observables in a way that can be undone.
 
 This motivates reversible transformations, defined as unital linear order isomorphisms of
-observable spaces. They form a group and naturally act on states. A group representation by
+observable spaces. They form a group. A group representation by
 reversible transformations describes symmetries or reversible dynamics. For example, time evolution
 is represented by the additive group of real numbers. A reversible transformation also transports a
 group action from one observable space to another by conjugation.
@@ -30,9 +29,7 @@ group action from one observable space to another by conjugation.
 - `Reversible`: Reversible transformations, i.e. unital linear order isomorphisms of
   observable spaces.
 - `Reversible.toChannelHom`: Reversible transformations embed in the monoid of channels.
-- `Reversible.instMulActionState`: The induced action on states.
 - `Reversible.transport`: Transport of a group action along a reversible transformation.
-- `IsInvariant`: A state fixed by every transformation of a group action.
 
 ## iii. Table of contents
 
@@ -40,11 +37,9 @@ group action from one observable space to another by conjugation.
   - A.1. Definition
   - A.2. Group structure
   - A.3. As channels
-- B. Action on states
-- C. Transport of group actions
-  - C.1. Conjugation
-  - C.2. Transported actions
-- D. Invariant states
+- B. Transport of group actions
+  - B.1. Conjugation
+  - B.2. Transported actions
 
 ## iv. References
 
@@ -52,7 +47,7 @@ group action from one observable space to another by conjugation.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+open ProbabilisticTheory
 
 /-! ## A. Reversible transformations -/
 
@@ -60,14 +55,14 @@ namespace ProbabilisticTheory
 
 /-- A reversible transformation between observable spaces: a linear bijection that preserves and
 reflects the order and preserves the order unit. Both it and its inverse are channels. -/
-structure Reversible (P Q : ProbabilisticTheory)
+structure ProbabilisticTheory.Reversible (P Q : ProbabilisticTheory)
     extends P.Observables ≃ₗ[ℝ] Q.Observables where
   /-- The equivalence preserves and reflects the order. -/
   map_le_map_iff' : ∀ {x y : P.Observables}, toLinearEquiv x ≤ toLinearEquiv y ↔ x ≤ y
   /-- The order unit is preserved. -/
   map_one' : toLinearEquiv 1 = 1
 
-namespace Reversible
+namespace ProbabilisticTheory.Reversible
 
 variable {G : Type*} [Group G] {P Q R : ProbabilisticTheory}
 
@@ -151,20 +146,9 @@ def toChannelHom : Reversible P P →* Channel P P where
 @[simp] lemma toChannelHom_apply (e : Reversible P P) (x : P.Observables) :
     toChannelHom e x = e x := rfl
 
-/-! ## B. Action on states -/
+/-! ## B. Transport of group actions -/
 
-/-- The action on states induced by the inverse of a reversible transformation. -/
-instance instMulActionState : MulAction (Reversible P P) (𝓢[ℝ, P.Observables]) where
-  smul φ ω := Channel.comap (toChannelHom φ⁻¹) ω
-  one_smul _ := by ext; rfl
-  mul_smul _ _ _ := by ext; rfl
-
-lemma smul_state_apply (φ : Reversible P P) (ω : 𝓢[ℝ, P.Observables]) (x : P.Observables) :
-    (φ • ω) x = ω (φ.symm x) := rfl
-
-/-! ## C. Transport of group actions -/
-
-/-! ### C.1. Conjugation -/
+/-! ### B.1. Conjugation -/
 
 /-- Conjugation transports reversible dynamics between observable spaces. -/
 def conj (e : Reversible P Q) : Reversible P P →* Reversible Q Q where
@@ -172,18 +156,10 @@ def conj (e : Reversible P Q) : Reversible P P →* Reversible Q Q where
   map_one' := by ext y; exact e.apply_symm_apply y
   map_mul' φ ψ := by ext y; simp
 
-/-! ### C.2. Transported actions -/
+/-! ### B.2. Transported actions -/
 
 /-- Transport a group action between observable spaces along a reversible transformation. -/
 def transport (ρ : G →* Reversible P P) (e : Reversible P Q) :
     G →* Reversible Q Q := e.conj.comp ρ
 
-end Reversible
-
-/-! ## D. Invariant states -/
-
-/-- A state is invariant if it is fixed by every transformation of the group action. -/
-def IsInvariant {G : Type*} [Group G] {P : ProbabilisticTheory} (ρ : G →* Reversible P P)
-    (ω : 𝓢[ℝ, P.Observables]) : Prop := ∀ g, ρ g • ω = ω
-
-end ProbabilisticTheory
+end ProbabilisticTheory.Reversible

@@ -105,7 +105,7 @@ lemma mapsTo_aeval {W : Submodule K V} {M : Module.End K V} (hW : ∀ w ∈ W, M
   · intro k a hka w hw
     have heq : Polynomial.C a * Polynomial.X ^ (k + 1) =
         (Polynomial.C a * Polynomial.X ^ k) * Polynomial.X := by ring
-    rw [heq, map_mul, Module.End.mul_apply, Polynomial.aeval_X]
+    rw [heq, map_mul, mul_apply_eq_comp, Polynomial.aeval_X]
     exact hka (M w) (hW w hw)
 
 /-- A nonzero `E i j`-invariant submodule of `vacuumSpan L Ω n` contains an occupation-number

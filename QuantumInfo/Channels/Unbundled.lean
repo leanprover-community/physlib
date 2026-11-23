@@ -445,7 +445,7 @@ lemma choi_of_kraus (K : κ → Matrix B A 𝕜) :
   ext ⟨b₁, a₁⟩ ⟨b₂, a₂⟩
   simp [MatrixMap.choi_matrix, MatrixMap.of_kraus];
   -- By definition of the sum, the entry (b₁, b₂) of the sum of the Choi matrices of each Kraus operator is the sum of the entries (b₁, b₂) of each individual Choi matrix.
-  simp [Matrix.sum_apply, Matrix.mul_apply, Matrix.single];
+  simp [Matrix.mul_apply, Matrix.single];
   -- Since the inner sum over `x_2` will only contribute when `x_2 = a₁` and `x_1 = a₂`, we can simplify the expression.
   have h_inner : ∀ x : κ, ∑ x_1 : A, (∑ x_2 : A, if a₁ = x_2 ∧ a₂ = x_1 then K x b₁ x_2 else 0) * (starRingEnd 𝕜) (K x b₂ x_1) = (K x b₁ a₁) * (starRingEnd 𝕜) (K x b₂ a₂) := by
     simp [ Finset.sum_ite, Finset.filter_eq, Finset.filter_and ];
@@ -470,7 +470,7 @@ lemma IsPositive_sum {ι : Type*} [Fintype ι] (f : ι → MatrixMap A B ℂ) (h
   replace hX : ∀ i, ((f i) X).PosSemidef := fun i => h i hX;
   simp [Matrix.posSemidef_iff_dotProduct_mulVec, Matrix.IsHermitian] at hX ⊢
   simp [Matrix.conjTranspose_sum, Matrix.mulVec, dotProduct] at hX ⊢
-  simp [Matrix.sum_apply, Finset.mul_sum, Finset.sum_mul] at hX ⊢
+  simp [Finset.mul_sum, Finset.sum_mul] at hX ⊢
   constructor
   · simp [hX]
   field_simp
@@ -573,7 +573,7 @@ lemma exists_kraus_of_choi_PSD
   ext i j
   simp [choi_of_kraus, Matrix.mul_apply, Matrix.vecMulVec ]
   ring_nf
-  simp [ Matrix.sum_apply, Matrix.diagonal ];
+  simp [ Matrix.diagonal ];
   refine Finset.sum_congr rfl fun _ _ => ?_
   rw [ ← RCLike.ofReal_pow, Real.sq_sqrt ( hC.eigenvalues_nonneg _ ) ]
 

@@ -26,12 +26,14 @@ velocity band is not empty.
   the current.
 - `defectOf_eq_of_meanOf_current_eq` : at the speed limit, the defect of the maximal current state.
 - `threshold_lt_maxCurrent`, `maxCurrent_mem_velocityBand` : for `N ≥ 4` the band is not empty.
+- `three_div_two_mul_abs_le_threshold` : for `N = 4` the threshold is at least `3/2 |a t|`.
 
 ## iii. Table of contents
 
 - A. Time reversal and the uncertainty defect
 - B. The speed limit is reached only by extreme eigenstates
 - C. The band is not empty
+- D. A vector of minimum uncertainty on four sites
 
 ## iv. References
 
@@ -203,6 +205,110 @@ lemma threshold_lt_maxCurrent (ht : T.t ≠ 0) (hN : 4 ≤ T.N) : T.threshold < 
 lemma maxCurrent_mem_velocityBand (ht : T.t ≠ 0) (hN : 4 ≤ T.N) :
     T.maxCurrent ∈ T.velocityBand :=
   ⟨T.threshold_lt_maxCurrent ht hN, le_rfl⟩
+
+
+/-!
+
+## D. A vector of minimum uncertainty on four sites
+
+-/
+
+private lemma inner_localizedState_sum (c : Fin T.N → ℂ) (m : Fin T.N) :
+    ⟪|m⟩, ∑ n, c n • |n⟩⟫_ℂ = c m := by
+  rw [inner_sum]
+  simp_rw [inner_smul_right, localizedState_orthonormal_eq_ite]
+  simp
+
+open ComplexConjugate in
+private lemma inner_sum_sum (c d : Fin T.N → ℂ) :
+    ⟪∑ n, c n • |n⟩, ∑ n, d n • |n⟩⟫_ℂ = ∑ n, conj (c n) * d n := by
+  rw [← OrthonormalBasis.sum_inner_mul_inner localizedState]
+  refine Finset.sum_congr rfl fun n _ => ?_
+  rw [← inner_conj_symm, inner_localizedState_sum, inner_localizedState_sum]
+
+open ComplexConjugate in
+/-- On four sites the threshold is at least `3/2 |a t|`: the unit vector
+`√2/8 (2i, -(3 + i√3), √3 - 3i, 2)` has zero defect and current `3 a t / 2`. -/
+lemma three_div_two_mul_abs_le_threshold (hN : T.N = 4) :
+    3 / 2 * |T.a * T.t| ≤ T.threshold := by
+  cases T with | mk N a ha E0 t => ?_
+  simp only at hN; subst hN
+  set T : TightBindingChain := ⟨4, a, ha, E0, t⟩
+  set s : ℂ := ((√2 : ℝ) : ℂ) / 8
+  set r : ℂ := ((√3 : ℝ) : ℂ)
+  have hs : s ^ 2 = 1 / 32 := by
+    have h : ((√2 : ℝ) : ℂ) ^ 2 = 2 := by exact_mod_cast Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 2)
+    simp only [s]; linear_combination h / 64
+  have hr : r ^ 2 = 3 := by
+    simp only [r]; exact_mod_cast Real.sq_sqrt (by norm_num : (0 : ℝ) ≤ 3)
+  have hI := Complex.I_sq
+  have hsc : conj s = s := by simp [s, map_div₀, map_ofNat]
+  have hrc : conj r = r := Complex.conj_ofReal _
+  let c : Fin T.N → ℂ := ![2 * s * .I, -(s * (3 + r * .I)), s * (r - 3 * .I), 2 * s]
+  let d : Fin T.N → ℂ := ![c 1, c 0 + c 2, c 1 + c 3, c 2]
+  let ψ : T.HilbertSpace := ∑ n, c n • |n⟩
+  let v : T.HilbertSpace := ∑ n, d n • |n⟩
+  let l : ℂ := a * (r + 3 * .I) / 4
+  have hH : T.openHamiltonian ψ = (E0 : ℂ) • ψ - (t : ℂ) • v := by
+    refine T.ext_localizedState fun m => ?_
+    rw [inner_apply_eq_sum]
+    simp only [ψ, v, inner_sub_right, inner_smul_right, inner_openHamiltonian,
+      inner_localizedState_sum]
+    dsimp only [T]
+    simp only [Fin.sum_univ_four]
+    fin_cases m <;> simp [c, d, Fin.ext_iff, T] <;> ring
+  have hX : T.position ψ = (((3 / 2 : ℝ) * a : ℝ) : ℂ) • ψ + l • v := by
+    refine T.ext_localizedState fun m => ?_
+    rw [← position_hermitian, position_apply_localizedState, inner_smul_left, Complex.conj_ofReal,
+      inner_add_right, inner_smul_right, inner_smul_right, inner_localizedState_sum,
+      inner_localizedState_sum]
+    fin_cases m <;> simp [T, c, d, l]
+    · linear_combination (3 * a * r * s / 4) * hI + (.I * a * s / 4) * hr
+    · linear_combination (3 * a * s / 4) * hI + (-a * s / 4) * hr
+    · linear_combination (3 * a * r * s / 4) * hI + (.I * a * s / 4) * hr
+    · linear_combination (9 * a * s / 4) * hI + (-a * s / 4) * hr
+  have hpp : ⟪ψ, ψ⟫_ℂ = 1 := by
+    simp only [ψ, inner_sum_sum]; dsimp only [T]; simp only [Fin.sum_univ_four]
+    simp [c, map_ofNat, hsc, hrc]
+    linear_combination (-s ^ 2 * (r ^ 2 + 13)) * hI + (2 * s ^ 2) * hr + 32 * hs
+  have hvv : ⟪v, v⟫_ℂ = 1 := by
+    simp only [v, inner_sum_sum]; dsimp only [T]; simp only [Fin.sum_univ_four]
+    simp [d, c, map_ofNat, hsc, hrc]
+    linear_combination (-2 * s ^ 2 * (r ^ 2 + 5)) * hI + (4 * s ^ 2) * hr + 32 * hs
+  have hpv : ⟪ψ, v⟫_ℂ = 0 := by
+    simp only [ψ, v, inner_sum_sum]; dsimp only [T]; simp only [Fin.sum_univ_four]
+    simp [d, c, map_ofNat, hsc, hrc]
+    linear_combination (-2 * r * s ^ 2) * hI
+  have hvp : ⟪v, ψ⟫_ℂ = 0 := by rw [← inner_conj_symm, hpv, map_zero]
+  have hnorm (w : T.HilbertSpace) (h : ⟪w, w⟫_ℂ = 1) : ‖w‖ = 1 := by
+    rw [norm_eq_sqrt_re_inner (𝕜 := ℂ), h]; simp
+  have hfH : T.flucOf T.openHamiltonian ψ = (-(t : ℂ)) • v := by
+    have : T.meanOf T.openHamiltonian ψ = E0 := by
+      simp only [meanOf, hH, inner_sub_right, inner_smul_right, hpp, hpv]; simp
+    rw [flucOf, this, hH, ← Complex.coe_smul]; module
+  have hfX : T.flucOf T.position ψ = l • v := by
+    have : T.meanOf T.position ψ = 3 / 2 * a := by
+      simp only [meanOf, hX, inner_add_right, inner_smul_right, hpp, hpv]; simp
+    rw [flucOf, this, hX, ← Complex.coe_smul]; module
+  have hdef : T.defectOf ψ = 0 := by
+    rw [defectOf, hfH, hfX, inner_smul_left, inner_smul_right, hvv, norm_smul, norm_smul,
+      hnorm v hvv]
+    simp only [mul_one, norm_mul, Complex.norm_conj]; ring
+  have hJ : T.meanOf T.current ψ = 3 / 2 * a * t := by
+    have hc : ⟪ψ, T.current ψ⟫_ℂ = ((3 / 2 * a * t : ℝ) : ℂ) := by
+      simp only [current, LinearMap.smul_apply, LinearMap.sub_apply, LinearMap.comp_apply,
+        inner_smul_right, inner_sub_right]
+      rw [← T.openHamiltonian_hermitian ψ (T.position ψ),
+        ← T.position_hermitian ψ (T.openHamiltonian ψ), hH, hX]
+      simp only [inner_sub_left, inner_sub_right, inner_add_left, inner_add_right,
+        inner_smul_left, inner_smul_right, hpp, hvv, hpv, hvp, Complex.conj_ofReal, l,
+        map_div₀, map_mul, map_add, map_ofNat, hrc, Complex.conj_I]
+      push_cast
+      linear_combination (-3 * a * t / 2) * hI
+    rw [meanOf, hc, Complex.ofReal_re]
+  have hle := T.le_threshold ⟨mem_sphere_zero_iff_norm.mpr (hnorm ψ hpp), hdef⟩
+  rwa [hJ, show (3 / 2 : ℝ) * a * t = 3 / 2 * (a * t) by ring, abs_mul (3 / 2 : ℝ),
+    abs_of_pos (by norm_num : (0 : ℝ) < 3 / 2)] at hle
 
 end TightBindingChain
 end CondensedMatter

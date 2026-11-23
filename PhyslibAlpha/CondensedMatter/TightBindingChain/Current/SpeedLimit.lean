@@ -114,7 +114,7 @@ lemma orthonormal_currentBasisVec (ht : T.t ≠ 0) : Orthonormal ℂ T.currentBa
       intro he
       have hc := mul_left_cancel₀ (mul_ne_zero (mul_ne_zero two_ne_zero T.a_pos.ne') ht) he
       have := Real.injOn_cos (hmem k) (hmem l) hc
-      rw [div_left_inj' hN.ne', mul_left_inj' Real.pi_pos.ne', Nat.cast_inj] at this
+      rw [div_left_inj₀ hN.ne', mul_left_inj' Real.pi_pos.ne', Nat.cast_inj] at this
       exact h (Fin.ext (by omega))
     have hJ (m : Fin T.N) : T.current (T.currentBasisVec m) =
         (T.currentEigenvalue ((m : ℕ) + 1) : ℂ) • T.currentBasisVec m := by

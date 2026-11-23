@@ -341,7 +341,7 @@ lemma integrable_time_space {d : ℕ} {f : Space d → F} (hf : IsDistBounded f)
       simp only [inv_zero]
       rw [zero_pow_eq, zero_zpow_eq, zero_zpow_eq]
       split_ifs <;> simp
-      any_goals omega
+      omega
     · simp only [inv_pow]
       field_simp
       rw [zpow_add₀ hr]

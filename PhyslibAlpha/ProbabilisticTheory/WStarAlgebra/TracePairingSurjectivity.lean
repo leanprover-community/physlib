@@ -380,9 +380,9 @@ lemma traceClassPartial_mem_rankOneSpan {w : Set H} (R S : H →L[ℂ] H)
             traceClassPartial R S b F by
           simp [traceClassPartial, ha]]
       apply (rankOneSpan (H := H)).add_mem
-      apply Submodule.subset_span
-      exact ⟨R (S (b a)), b a, rfl⟩
-      exact ih
+      · apply Submodule.subset_span
+        exact ⟨R (S (b a)), b a, rfl⟩
+      · exact ih
 
 lemma norm_sub_traceClassPartial_le {T R S : H →L[ℂ] H} (hT : IsTraceClass T)
     (hfactor : R * S = T) (hR : HilbertSchmidt.IsHilbertSchmidt R)

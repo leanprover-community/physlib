@@ -48,7 +48,7 @@ noncomputable def Representation.prodMap {k G₁ G₂ V₁ V₂ : Type*} [CommSe
     simp
   map_mul' p q := by
     refine LinearMap.ext fun v => ?_
-    simp [Module.End.mul_apply]
+    simp [mul_apply_eq_comp]
 
 @[simp]
 lemma Representation.prodMap_apply {k G₁ G₂ V₁ V₂ : Type*} [CommSemiring k]

@@ -74,7 +74,7 @@ This is a specific case of a more general property for block-triangular matrices
 lemma diag_mul_of_blockTriangular_id {A B : Matrix m m 𝕂}
     (hA : BlockTriangular A id) (hB : BlockTriangular B id) : (A * B).diag = A.diag * B.diag := by
   ext i
-  simp only [diag_apply, mul_apply, Pi.mul_apply]
+  simp only [diag_apply, Matrix.mul_apply, Pi.mul_apply]
   apply Finset.sum_eq_single i
   · intro j _ j_ne_i
     cases lt_or_gt_of_ne j_ne_i with
@@ -113,7 +113,7 @@ lemma blockTriangular_exp_of_blockTriangular_id
     induction n with
     | zero => rw [pow_zero]; exact blockTriangular_one
     | succ k ihk => rw [pow_succ]; exact ihk.mul hA
-  simp only [smul_apply]
+  simp only [Matrix.smul_apply]
   rw [h_pow hij, smul_zero]
 
 /--
@@ -131,7 +131,7 @@ diagonal -/
 lemma exp_series_diag_term_eq {A : Matrix m m 𝕂} (hA : BlockTriangular A id)
     (n : ℕ) (i : m) :
     ((n.factorial : 𝕂)⁻¹ • (A ^ n)) i i = (n.factorial : 𝕂)⁻¹ • (A i i) ^ n := by
-  simp [smul_apply, diag_pow_entry_eq_pow_diag_entry hA]
+  simp [Matrix.smul_apply, diag_pow_entry_eq_pow_diag_entry hA]
 
 /-- The diagonal of the matrix exponential series equals the scalar exponential series -/
 lemma matrix_exp_series_diag_eq_scalar_series {A : Matrix m m 𝕂} (hA : BlockTriangular A id)

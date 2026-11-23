@@ -133,7 +133,7 @@ lemma inner_eq_val (ψ φ : FiniteHilbertSpace d) : inner ℂ ψ φ = inner ℂ 
 instance : FiniteDimensional ℂ (FiniteHilbertSpace d) :=
   Module.Finite.equiv linearEquivEuclidean.symm
 
-instance : CompleteSpace (FiniteHilbertSpace d) := FiniteDimensional.complete ℂ _
+instance : CompleteSpace (FiniteHilbertSpace d) := FiniteDimensional.completeSpace ℂ _
 
 /-- The equivalence between `FiniteHilbertSpace d` and `EuclideanSpace ℂ d`
   as a linear isometry equivalence, upgrading `linearEquivEuclidean`. -/

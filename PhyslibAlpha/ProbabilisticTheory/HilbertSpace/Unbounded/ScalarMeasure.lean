@@ -269,7 +269,7 @@ lemma diagonalMeasure_smul (c : ℂ) (x : H) :
     μS.diagonalMeasure (c • x) = ENNReal.ofReal (‖c‖ ^ 2) • μS.diagonalMeasure x := by
   apply Measure.ext
   intro S hS
-  rw [Measure.smul_apply, μS.diagonalMeasure_apply _ _ hS,
+  rw [_root_.smul_apply, μS.diagonalMeasure_apply _ _ hS,
     μS.diagonalMeasure_apply _ _ hS]
   have hinner :
       (⟪c • x, μS S (c • x)⟫_ℂ).re =
@@ -289,7 +289,7 @@ lemma diagonalMeasure_parallelogram (x y : H) :
         (μS.diagonalMeasure y + μS.diagonalMeasure y) := by
   apply Measure.ext
   intro S hS
-  rw [Measure.add_apply, Measure.add_apply, Measure.add_apply, Measure.add_apply,
+  rw [_root_.add_apply, _root_.add_apply, _root_.add_apply, _root_.add_apply,
     μS.diagonalMeasure_apply (x + y) S hS, μS.diagonalMeasure_apply (x - y) S hS,
     μS.diagonalMeasure_apply x S hS, μS.diagonalMeasure_apply y S hS]
   have h₁ : 0 ≤ (⟪x + y, μS S (x + y)⟫_ℂ).re := μS.re_inner_nonneg S (x + y)

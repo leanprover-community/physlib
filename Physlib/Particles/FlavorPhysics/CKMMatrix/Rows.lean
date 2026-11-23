@@ -50,7 +50,7 @@ scoped[CKMMatrix] notation (name := t_row) "[" V "]t" => tRow V
 lemma uRow_normalized (V : CKMMatrix) : conj [V]u ⬝ᵥ [V]u = 1 := by
   show ∑ k, conj (V.1 0 k) * V.1 0 k = 1
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 0) 0
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_eq] at ht
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_eq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
 
@@ -58,7 +58,7 @@ lemma uRow_normalized (V : CKMMatrix) : conj [V]u ⬝ᵥ [V]u = 1 := by
 lemma cRow_normalized (V : CKMMatrix) : conj [V]c ⬝ᵥ [V]c = 1 := by
   show ∑ k, conj (V.1 1 k) * V.1 1 k = 1
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 1) 1
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_eq] at ht
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_eq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
 
@@ -66,7 +66,7 @@ lemma cRow_normalized (V : CKMMatrix) : conj [V]c ⬝ᵥ [V]c = 1 := by
 lemma tRow_normalized (V : CKMMatrix) : conj [V]t ⬝ᵥ [V]t = 1 := by
   show ∑ k, conj (V.1 2 k) * V.1 2 k = 1
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 2) 2
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_eq] at ht
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_eq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
 
@@ -74,7 +74,7 @@ lemma tRow_normalized (V : CKMMatrix) : conj [V]t ⬝ᵥ [V]t = 1 := by
 lemma uRow_cRow_orthog (V : CKMMatrix) : conj [V]u ⬝ᵥ [V]c = 0 := by
   show ∑ k, conj (V.1 0 k) * V.1 1 k = 0
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 1) 0
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
     not_false_eq_true, Fin.reduceEq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
@@ -83,7 +83,7 @@ lemma uRow_cRow_orthog (V : CKMMatrix) : conj [V]u ⬝ᵥ [V]c = 0 := by
 lemma uRow_tRow_orthog (V : CKMMatrix) : conj [V]u ⬝ᵥ [V]t = 0 := by
   show ∑ k, conj (V.1 0 k) * V.1 2 k = 0
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 2) 0
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
     not_false_eq_true, Fin.reduceEq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
@@ -92,7 +92,7 @@ lemma uRow_tRow_orthog (V : CKMMatrix) : conj [V]u ⬝ᵥ [V]t = 0 := by
 lemma cRow_uRow_orthog (V : CKMMatrix) : conj [V]c ⬝ᵥ [V]u = 0 := by
   show ∑ k, conj (V.1 1 k) * V.1 0 k = 0
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 0) 1
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
     not_false_eq_true, Fin.reduceEq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
@@ -101,7 +101,7 @@ lemma cRow_uRow_orthog (V : CKMMatrix) : conj [V]c ⬝ᵥ [V]u = 0 := by
 lemma cRow_tRow_orthog (V : CKMMatrix) : conj [V]c ⬝ᵥ [V]t = 0 := by
   show ∑ k, conj (V.1 1 k) * V.1 2 k = 0
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 2) 1
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
     not_false_eq_true, Fin.reduceEq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
@@ -110,7 +110,7 @@ lemma cRow_tRow_orthog (V : CKMMatrix) : conj [V]c ⬝ᵥ [V]t = 0 := by
 lemma tRow_uRow_orthog (V : CKMMatrix) : conj [V]t ⬝ᵥ [V]u = 0 := by
   show ∑ k, conj (V.1 2 k) * V.1 0 k = 0
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 0) 2
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
     not_false_eq_true, Fin.reduceEq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht
@@ -119,7 +119,7 @@ lemma tRow_uRow_orthog (V : CKMMatrix) : conj [V]t ⬝ᵥ [V]u = 0 := by
 lemma tRow_cRow_orthog (V : CKMMatrix) : conj [V]t ⬝ᵥ [V]c = 0 := by
   show ∑ k, conj (V.1 2 k) * V.1 1 k = 0
   have ht := congrFun (congrFun (mem_unitaryGroup_iff.mp V.prop) 1) 2
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, one_apply_ne, ne_eq,
     not_false_eq_true, Fin.reduceEq] at ht
   rw [Fin.sum_univ_three]
   linear_combination ht

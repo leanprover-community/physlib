@@ -318,18 +318,18 @@ lemma integral_mapRange_ofReal_signedMeasure
     exact hf
   have hvar : (μs.mapRange Complex.ofRealCLM.toAddMonoidHom
       Complex.ofRealCLM.continuous).variation ≤ μs.variation := by
-    apply VectorMeasure.variation_le_of_forall_enorm_le
+    apply VectorMeasure.variation_le_of_forall_eNorm_le
     intro s hs
     rw [VectorMeasure.mapRange_apply (v := μs)
       (f := Complex.ofRealCLM.toAddMonoidHom) Complex.ofRealCLM.continuous]
     change ‖(μs s : ℂ)‖ₑ ≤ _
     have hn : ‖(μs s : ℂ)‖ₑ = ‖μs s‖ₑ := by
-      rw [enorm_eq_nnnorm, enorm_eq_nnnorm]
+      rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm]
       apply congrArg ENNReal.ofNNReal
       apply NNReal.eq
       exact Complex.norm_real _
     rw [hn]
-    exact VectorMeasure.enorm_measure_le_variation μs s
+    exact VectorMeasure.eNorm_measure_le_variation μs s
   have hmap : (μs.mapRange Complex.ofRealCLM.toAddMonoidHom
       Complex.ofRealCLM.continuous).Integrable f := by
     exact hf.mono_measure (hvar.trans_eq
@@ -351,17 +351,17 @@ lemma integrable_mapRange_toSignedMeasure
     rw [MeasureTheory.Measure.variation_toSignedMeasure]
     exact hf
   have hvar : (μs.mapRange L.toAddMonoidHom L.continuous).variation ≤ μs.variation := by
-    apply VectorMeasure.variation_le_of_forall_enorm_le
+    apply VectorMeasure.variation_le_of_forall_eNorm_le
     intro s hs
     rw [VectorMeasure.mapRange_apply (v := μs) (f := L.toAddMonoidHom) L.continuous]
     change ‖L (μs s)‖ₑ ≤ _
     have hn : ‖L (μs s)‖ₑ = ‖μs s‖ₑ := by
-      rw [enorm_eq_nnnorm, enorm_eq_nnnorm]
+      rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm]
       apply congrArg ENNReal.ofNNReal
       apply NNReal.eq
       exact hL _
     rw [hn]
-    exact VectorMeasure.enorm_measure_le_variation μs s
+    exact VectorMeasure.eNorm_measure_le_variation μs s
   exact hf.mono_measure (hvar.trans_eq
     (MeasureTheory.Measure.variation_toSignedMeasure (μ := μ)))
 
@@ -450,19 +450,19 @@ lemma integral_mapRange_imaginaryOfReal_signedMeasure
     exact hf
   have hvar : (μs.mapRange imaginaryOfRealCLM.toAddMonoidHom
       imaginaryOfRealCLM.continuous).variation ≤ μs.variation := by
-    apply VectorMeasure.variation_le_of_forall_enorm_le
+    apply VectorMeasure.variation_le_of_forall_eNorm_le
     intro s hs
     rw [VectorMeasure.mapRange_apply (v := μs)
       (f := imaginaryOfRealCLM.toAddMonoidHom) imaginaryOfRealCLM.continuous]
     change ‖imaginaryOfRealCLM (μs s)‖ₑ ≤ _
     rw [imaginaryOfRealCLM_apply]
     have hn : ‖Complex.I * (μs s : ℂ)‖ₑ = ‖μs s‖ₑ := by
-      rw [enorm_eq_nnnorm, enorm_eq_nnnorm]
+      rw [eNorm_eq_nnNorm, eNorm_eq_nnNorm]
       apply congrArg ENNReal.ofNNReal
       apply NNReal.eq
       simp
     rw [hn]
-    exact VectorMeasure.enorm_measure_le_variation μs s
+    exact VectorMeasure.eNorm_measure_le_variation μs s
   have hmap : (μs.mapRange imaginaryOfRealCLM.toAddMonoidHom
       imaginaryOfRealCLM.continuous).Integrable f := by
     exact hf.mono_measure (hvar.trans_eq
@@ -503,19 +503,19 @@ lemma isFiniteMeasure_toComplexMeasure
     [IsFiniteMeasure s.variation] [IsFiniteMeasure t.variation] :
     IsFiniteMeasure (s.toComplexMeasure t).variation := by
   apply isFiniteMeasure_of_le (s.variation + t.variation)
-  apply MeasureTheory.VectorMeasure.variation_le_of_forall_enorm_le
+  apply VectorMeasure.variation_le_of_forall_eNorm_le
   intro A hA
   calc
     ‖(s.toComplexMeasure t) A‖ₑ = ‖(⟨s A, t A⟩ : ℂ)‖ₑ := rfl
     _ = ‖(s A : ℂ) + (t A : ℂ) * Complex.I‖ₑ := by
       congr 1
       apply Complex.ext <;> simp
-    _ ≤ ‖(s A : ℂ)‖ₑ + ‖(t A : ℂ) * Complex.I‖ₑ := enorm_add_le _ _
+    _ ≤ ‖(s A : ℂ)‖ₑ + ‖(t A : ℂ) * Complex.I‖ₑ := eNorm_add_le _ _
     _ = ‖s A‖ₑ + ‖t A‖ₑ := by
-      simp [enorm_eq_nnnorm]
+      simp [eNorm_eq_nnNorm]
     _ ≤ s.variation A + t.variation A :=
-      add_le_add (MeasureTheory.VectorMeasure.enorm_measure_le_variation s A)
-        (MeasureTheory.VectorMeasure.enorm_measure_le_variation t A)
+      add_le_add (VectorMeasure.eNorm_measure_le_variation s A)
+        (VectorMeasure.eNorm_measure_le_variation t A)
 
 /-! ## D. A general positive-contraction norm estimate
 

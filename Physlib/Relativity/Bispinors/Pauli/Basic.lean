@@ -80,7 +80,7 @@ lemma pauliVal_invariant (Λ : SL(2,ℂ)) :
       (TensorProduct.map (LeftHandedWeyl.rep Λ) (RightHandedWeyl.rep Λ)) pauliVal = pauliVal := by
   have h (i j) : ∑ k, (SL2C.toLorentzGroup Λ).1 i k * (SL2C.toLorentzGroup Λ⁻¹).1 k j =
       (1 : Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) ℝ) i j := by
-    rw [← mul_apply, ← lorentzGroupIsGroup_mul_coe, ← map_mul, mul_inv_cancel, map_one]
+    rw [← Matrix.mul_apply, ← lorentzGroupIsGroup_mul_coe, ← map_mul, mul_inv_cancel, map_one]
     rfl
   simp only [pauliVal, map_sum, map_tmul, SL2CRep_ρ_basis,
     leftRightToMatrix_ρ_symm_selfAdjoint _ (pauliBasis _).2, Subtype.coe_eta,
@@ -89,7 +89,7 @@ lemma pauliVal_invariant (Λ : SL(2,ℂ)) :
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun j _ => ?_
   rw [Finset.sum_comm]
-  simp only [← Finset.sum_smul, ← ofReal_mul, ← ofReal_sum, h, one_apply,
+  simp only [← Finset.sum_smul, ← ofReal_mul, ← ofReal_sum, h, Matrix.one_apply,
     apply_ite Complex.ofReal, ofReal_one, ofReal_zero, ite_smul, one_smul, zero_smul,
     Finset.sum_ite_eq', Finset.mem_univ, ite_true]
 

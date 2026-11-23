@@ -21,6 +21,8 @@ The derivative and distribution results are in the namespace `Space` by conventi
 
 - `TimeAndSpace d` : Euclidean spacetime as the product of time and space.
 - `TimeAndSpace.time` : The projection from `TimeAndSpace d` to `Time`.
+- `TimeAndSpace.euclideanCoordinates` : Time-first Euclidean coordinates.
+- `TimeAndSpace.timeReflection` : Reflection about the chosen time origin.
 - `TimeAndSpace.space` : The projection from `TimeAndSpace d` to `Space d`.
 - `distTimeDeriv` : The derivative of a distribution on `Time × Space d` along the
   temporal coordinate.
@@ -34,6 +36,7 @@ The derivative and distribution results are in the namespace `Space` by conventi
 
 - A. The coordinate product and derivatives involving time and space
   - A.1. The `TimeAndSpace` coordinate product
+    - A.1.1. Time reflection
   - A.2. Space and time derivatives in terms of curried functions
   - A.3. Commuting time and space derivatives
   - A.4. Differentiablity conditions
@@ -106,6 +109,57 @@ lemma dist_space_le (tx ty : TimeAndSpace d) :
     dist (space tx) (space ty) ≤ dist tx ty := by
   rw [Prod.dist_eq]
   exact le_max_right _ _
+
+/-- Euclidean coordinates with time first and the spatial coordinates following it. -/
+noncomputable def euclideanCoordinates : TimeAndSpace d ≃L[ℝ] EuclideanSpace ℝ (Fin (d + 1)) :=
+  LinearEquiv.toContinuousLinearEquiv
+    { toFun := fun tx => WithLp.toLp 2 (Fin.cons tx.1.val tx.2.val)
+      invFun := fun x => (⟨x 0⟩, ⟨fun i => x i.succ⟩)
+      left_inv := by rintro ⟨⟨t⟩, ⟨x⟩⟩; rfl
+      right_inv := by
+        intro x
+        ext i
+        exact Fin.cases rfl (fun _ => rfl) i
+      map_add' := by
+        intro x y
+        ext i
+        exact Fin.cases rfl (fun _ => rfl) i
+      map_smul' := by
+        intro r x
+        ext i
+        exact Fin.cases rfl (fun _ => rfl) i }
+
+open MeasureTheory in
+/-- The time-first Euclidean coordinates preserve spacetime volume. -/
+lemma euclideanCoordinates_measurePreserving :
+    MeasurePreserving (euclideanCoordinates (d := d)) volume volume := by
+  have hs : MeasurePreserving (fun x : Space d => x.val) volume volume := by
+    convert (PiLp.volume_preserving_ofLp (Fin d)).comp
+      ((Space.basis (d := d)).measurePreserving_repr) using 1
+    ext x i
+    exact (Space.basis_repr_apply x i).symm
+  have hp := Time.val_measurePreserving.prod hs
+  have hc := (volume_preserving_piFinSuccAbove (fun _ : Fin (d + 1) => ℝ) 0).symm
+  have h := (PiLp.volume_preserving_toLp (Fin (d + 1))).comp (hc.comp hp)
+  convert h using 1
+  ext tx i
+  exact Fin.cases rfl (fun _ => rfl) i
+
+/-! #### A.1.1. Time reflection -/
+
+/-- Time reflection about the chosen time origin, fixing all spatial coordinates. -/
+noncomputable def timeReflection : TimeAndSpace d ≃L[ℝ] TimeAndSpace d :=
+  (ContinuousLinearEquiv.neg ℝ).prodCongr (ContinuousLinearEquiv.refl ℝ (Space d))
+
+/-- Time reflection reverses time and leaves space unchanged. -/
+@[simp]
+lemma timeReflection_apply (tx : TimeAndSpace d) :
+    timeReflection tx = (-tx.1, tx.2) := rfl
+
+/-- Applying time reflection twice returns the original spacetime point. -/
+lemma timeReflection_involutive (tx : TimeAndSpace d) :
+    timeReflection (timeReflection tx) = tx := by
+  simp only [timeReflection_apply, neg_neg]
 
 end TimeAndSpace
 

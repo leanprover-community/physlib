@@ -245,7 +245,7 @@ lemma planeWave_apply_space_deriv_space_deriv {d f₀ c} {s : Direction d}
           iteratedDeriv 2 f₀ by rw [h]
       simpa only [iteratedDeriv_one] using
         (iteratedDeriv_succ (n := 1) (f := f₀)).symm
-    all_goals fun_prop
+    fun_prop
   · fun_prop
 
 /-!

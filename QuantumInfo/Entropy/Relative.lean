@@ -368,7 +368,7 @@ private lemma sandwiched_inner_eq_one (h : σ.M.ker ≤ ρ.M.ker) (t : ℝ) :
   · simp
   · have h_combine : (σ.M ^ (-2 * t)).mat * (σ.M ^ t).mat = (σ.M ^ (-t)).mat := by
       rw [show (-t : ℝ) = -2 * t + t by ring, HermitianMat.mat_rpow_add σ.nonneg]
-      contrapose! ht
+      contrapose ht
       linarith
     have h_support : (σ.M ^ t).mat * (σ.M ^ (-t)).mat = σ.M.supportProj.mat := by
       rw [← neg_ne_zero] at ht
@@ -523,11 +523,11 @@ private lemma inner_cfc_eq_sum_eigenWeight (ρ σ : MState d) (f : ℝ → ℝ) 
     have h_cfc_def : (σ.M.cfc f).mat = ∑ i, (f (Matrix.IsHermitian.eigenvalues σ.M.H i)) • Matrix.of (fun x y => (σ.M.H.eigenvectorBasis i x) * (star (σ.M.H.eigenvectorBasis i y))) := by
       convert σ.M.cfc_toMat_eq_sum_smul_proj f using 1;
       ext i j; simp [ Matrix.single ] ; ring_nf
-      simp [ Matrix.sum_apply, Matrix.mul_apply, Matrix.conjTranspose_apply, Matrix.of_apply ];
+      simp [ Matrix.mul_apply, Matrix.conjTranspose_apply, Matrix.of_apply ];
       refine' Finset.sum_congr rfl fun x _ => _ ; simp [ Finset.sum_ite, Finset.filter_eq, Finset.filter_and ] ; ring_nf
-      rw [ Finset.sum_eq_single x ] <;> aesop;
+      rw [Finset.sum_eq_single x] <;> simp_all [mul_assoc, eq_comm]
     simp [ h_cfc_def, Matrix.mulVec, dotProduct, Finset.mul_sum, mul_left_comm ];
-    simp [ Matrix.sum_apply, Matrix.mul_apply ];
+    simp [ Matrix.mul_apply ];
     rw [ Finset.sum_comm ] ; congr ; ext ; congr ; ext ; congr ; ext ; ring!;
   simp_all [ eigenWeight ];
   simp [ Matrix.dotProduct_mulVec ]
@@ -1508,11 +1508,11 @@ private theorem sandwichedRelRentropy_additive_alpha_one (ρ₁ σ₁ : MState d
     tauto
   · simp only [SandwichedRelRentropy, zero_lt_one, ↓reduceDIte, ↓reduceIte, h1, h2,
       top_add, dite_eq_right_iff, ENNReal.coe_ne_top, imp_false]
-    contrapose! h1
+    contrapose h1
     exact (ker_le_of_ker_kron_le_left ρ₁ σ₁ ρ₂ σ₂) h1
   · simp only [SandwichedRelRentropy, zero_lt_one, ↓reduceDIte, ↓reduceIte, h1, h2,
       add_top, dite_eq_right_iff, ENNReal.coe_ne_top, imp_false]
-    contrapose! h1
+    contrapose h1
     exact (ker_le_of_ker_kron_le_left ρ₁ σ₁ ρ₂ σ₂) h1
 
 lemma sandwiched_term_product (ρ₁ σ₁ : MState d₁) (ρ₂ σ₂ : MState d₂) (α β : ℝ) :

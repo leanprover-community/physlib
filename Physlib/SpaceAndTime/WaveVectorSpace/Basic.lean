@@ -108,7 +108,7 @@ instance : Subsingleton (WaveVectorSpace 0) where
 ### B.3. Zero
 -/
 
-instance : Zero (WaveVectorSpace d) where
+instance instZero : Zero (WaveVectorSpace d) where
   zero := ⟨0⟩
 
 @[simp]
@@ -194,6 +194,9 @@ instance : InnerProductSpace.Core ℝ (WaveVectorSpace d) where
 
 noncomputable instance instNormedAddCommGroup : NormedAddCommGroup (WaveVectorSpace d) :=
   instCoreReal.toNormedAddCommGroup
+
+noncomputable instance instNormedSpace : NormedSpace ℝ (WaveVectorSpace d) :=
+  InnerProductSpace.Core.toNormedSpace
 
 noncomputable instance instInnerProductSpaceReal : InnerProductSpace ℝ (WaveVectorSpace d) :=
   InnerProductSpace.ofCore instCoreReal.toCore

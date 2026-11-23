@@ -155,12 +155,12 @@ where
             simp only [Fin.isValue, reduceCtorEq, ↓reduceIte, neg_mul, one_mul, neg_neg, and_true,
               and_self, one_apply_eq]
             linear_combination hγ
-          · rw [one_apply]
+          · rw [Matrix.one_apply]
             simp only [Fin.isValue, reduceCtorEq, ↓reduceIte, Sum.inr.injEq, hk, and_true, and_self,
               neg_mul, one_mul, neg_neg, zero_add]
             rw [ite_eq_right (fun a => hk (id (Eq.symm a))),
               ite_eq_right (fun a => hk (id (Eq.symm a)))]
-        · rw [one_apply]
+        · rw [Matrix.one_apply]
           simp [hj']
       · intro b _ hb
         simp only [Fin.isValue, reduceCtorEq, false_and, ↓reduceIte, Sum.inr.injEq, neg_mul,
@@ -213,7 +213,7 @@ lemma boost_zero_eq_id (i : Fin d) : boost i 0 (by simp) = 1 := by
   | Sum.inr i, Sum.inl 0 =>
     simp
   | Sum.inr j, Sum.inr k =>
-    rw [one_apply]
+    rw [Matrix.one_apply]
     simp only [Fin.isValue, reduceCtorEq, and_self, ↓reduceIte, Sum.inr.injEq, false_and, and_false,
       ite_eq_right_iff, and_imp]
     intro h1 h2

@@ -298,7 +298,6 @@ it holds only on Hermitian matrices. -/
 lemma transposeMap_gap :
     ¬ stateZero.covarianceForm (transposeMap (single 0 1 1)) (transposeMap (single 0 1 1)) ≤
       stateZero.covarianceForm (single 0 1 1) (single 0 1 1) := by
-  simp [PhyslibAlpha.ProbabilisticTheory.AlgState.covarianceForm_apply, mul_apply, Fin.sum_univ_two,
-    Complex.le_def]
+  simp [PhyslibAlpha.ProbabilisticTheory.AlgState.covarianceForm_apply,     Complex.le_def]
 
 end Matrix

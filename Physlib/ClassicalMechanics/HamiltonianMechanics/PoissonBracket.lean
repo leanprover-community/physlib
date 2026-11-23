@@ -47,6 +47,7 @@ derivatives on phase space.
 - `deriv_comp_eq_poissonBracket` : along a solution of Hamilton's equations, the time derivative of
   an observable is its Poisson bracket with the Hamiltonian.
 - `hasDerivAt_comp_eq_poissonBracket` gives the same identity at a single real time.
+- `observable_eq_of_poissonBracket_eq_zero` gives conservation on a time interval.
 
 ## iii. Table of contents
 
@@ -265,6 +266,23 @@ lemma hasDerivAt_comp_eq_poissonBracket (H f : X → X → ℝ) {p q : ℝ → X
   rw [hbr, ← inner_gradient_left, ← inner_gradient_left, inner_neg_right,
     neg_add_eq_sub, ← poissonBracket] at hd
   exact hd
+
+/-- A time-independent observable takes the same value at any two times in an interval
+where the trajectory satisfies Hamilton's equations and the observable Poisson-commutes
+with the possibly time-dependent Hamiltonian along the trajectory. -/
+lemma observable_eq_of_poissonBracket_eq_zero (H : ℝ → X → X → ℝ) {p q : ℝ → X}
+    {s : Set ℝ} (hs : Convex ℝ s)
+    (hp : ∀ t ∈ s, HasDerivAt p (-gradient (fun q' => H t (p t) q') (q t)) t)
+    (hq : ∀ t ∈ s, HasDerivAt q (gradient (fun p' => H t p' (q t)) (p t)) t)
+    (f : X → X → ℝ) (hf : ∀ t ∈ s, DifferentiableAt ℝ (Function.uncurry f) (p t, q t))
+    (hbr : ∀ t ∈ s, poissonBracket f (H t) (p t) (q t) = 0)
+    {t₁ t₂ : ℝ} (h₁ : t₁ ∈ s) (h₂ : t₂ ∈ s) : f (p t₁) (q t₁) = f (p t₂) (q t₂) := by
+  have hd t (ht : t ∈ s) : HasDerivAt (fun u => f (p u) (q u)) 0 t := by
+    simpa only [hbr t ht] using
+      hasDerivAt_comp_eq_poissonBracket (H t) f (hp t ht) (hq t ht) (hf t ht)
+  have bound := hs.norm_image_sub_le_of_norm_hasDerivWithin_le (C := 0)
+    (fun t ht => (hd t ht).hasDerivWithinAt) (fun _ _ => (norm_zero (E := ℝ)).le) h₂ h₁
+  simpa only [zero_mul, norm_le_zero_iff, sub_eq_zero] using bound
 
 /-!
 

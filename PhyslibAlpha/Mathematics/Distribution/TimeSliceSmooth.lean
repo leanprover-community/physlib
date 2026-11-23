@@ -391,7 +391,7 @@ lemma exists_timeDeriv_fourier_supported_seminorm (K : Compacts (ℝ × E)) (j N
   refine ⟨q.comp D.toLinearMap, hqc.comp D.continuous, fun f s ξ => ?_⟩
   rw [iteratedDeriv_fourier_slice F ξ j (supportedSource F K f), ← supportedSource_iterate_dt F K j
     f]
-  simpa [D, Seminorm.comp_apply, FunLike.coe_pow_eq_iterate, Module.End.pow_apply] using hq
+  simpa [D, Seminorm.comp_apply, FunLike.coe_pow_eq_iterate, pow_apply_eq_iterate] using hq
     ((supportedDt F K)^[j] f) s ξ
 
 omit [CompleteSpace F] in

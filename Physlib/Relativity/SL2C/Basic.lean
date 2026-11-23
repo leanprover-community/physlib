@@ -132,7 +132,7 @@ def toMatrix : SL(2, ℂ) →* Matrix (Fin 1 ⊕ Fin 3) (Fin 1 ⊕ Fin 3) ℝ wh
     rw [← LinearMap.toMatrix_mul]
     apply congrArg
     ext1 x
-    rw [Module.End.mul_apply]
+    rw [mul_apply_eq_comp]
     simp only [toSelfAdjointMap_apply, SpecialLinearGroup.coe_mul, conjTranspose_mul,
       Subtype.mk.injEq]
     ext1
@@ -277,7 +277,7 @@ lemma toLorentzGroup_eq_one_iff (M : SL(2, ℂ)) :
     have key (i : Fin 1 ⊕ Fin 3) :
         M.1 * (pauliSelfAdjoint' i).1 * M.1ᴴ = (pauliSelfAdjoint' i).1 := by
       have := congrArg Subtype.val (toSelfAdjointMap_basis (M := M) i)
-      simpa [h, one_apply, PauliMatrix.pauliBasis'] using this
+      simpa [h, Matrix.one_apply, PauliMatrix.pauliBasis'] using this
     have hU : M.1 * M.1ᴴ = 1 := by simpa [pauliSelfAdjoint', pauliMatrix] using key (Sum.inl 0)
     have hU' : M.1ᴴ * M.1 = 1 := mul_eq_one_comm.mp hU
     have comm (i : Fin 1 ⊕ Fin 3) :
@@ -288,7 +288,7 @@ lemma toLorentzGroup_eq_one_iff (M : SL(2, ℂ)) :
     have h3 := congrArg (· 0 1) (comm (Sum.inr 2))
     have h3' := congrArg (· 1 0) (comm (Sum.inr 2))
     have h1 := congrArg (· 0 1) (comm (Sum.inr 0))
-    simp [pauliSelfAdjoint', pauliMatrix, mul_apply, Fin.sum_univ_two] at h3 h3' h1
+    simp [pauliSelfAdjoint', pauliMatrix, Matrix.mul_apply, Fin.sum_univ_two] at h3 h3' h1
     have h01 : M.1 0 1 = 0 := by linear_combination h3 / 2
     have h10 : M.1 1 0 = 0 := by linear_combination -h3' / 2
     have hd : M.1 0 0 * M.1 0 0 = 1 := by
@@ -298,7 +298,7 @@ lemma toLorentzGroup_eq_one_iff (M : SL(2, ℂ)) :
     rcases mul_self_eq_one_iff.mp hd with hc | hc <;> [left; right] <;> ext i j <;>
       fin_cases i <;> fin_cases j <;> simp [h01, h10, ← h1, hc]
   · rintro (h | h) <;> apply Subtype.ext <;> ext i j <;> apply ofReal_injective <;>
-      rw [toLorentzGroup_eq_trace] <;> simp [h, trace_pauliSelfAdjoint'_mul, one_apply] <;>
+      rw [toLorentzGroup_eq_trace] <;> simp [h, trace_pauliSelfAdjoint'_mul, Matrix.one_apply] <;>
       split_ifs <;> simp
 
 /-!

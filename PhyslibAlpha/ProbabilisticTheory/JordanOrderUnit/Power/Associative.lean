@@ -53,7 +53,7 @@ open scoped JordanAlgebra
 lemma commute_mulLeft_sq (a : E) : Commute (L a) (L (a ^[2])) := by
   rw [jpow_two]
   ext b
-  simp only [Module.End.mul_apply, mulLeft_apply]
+  simp only [mul_apply_eq_comp, mulLeft_apply]
   have h := IsCommJordan.lmul_comm_rmul_rmul a b
   rw [mul_comm (a * b) (a * a), mul_comm b (a * a)] at h
   exact h.symm
@@ -64,7 +64,7 @@ third element `y`. -/
 lemma commute_mulLeft_apply {a x : E} (h : Commute (L a) (L x)) (y : E) :
     a * (x * y) = x * (a * y) := by
   have hpt := LinearMap.congr_fun h.eq y
-  simpa only [Module.End.mul_apply, mulLeft_apply] using hpt
+  simpa only [mul_apply_eq_comp, mulLeft_apply] using hpt
 
 omit [SMulCommClass ℝ E E] in
 /-- A polarized form of the Jordan identity. This is Basic Identity (2.1.2) in McCrimmon's
@@ -126,7 +126,7 @@ lemma mulLeft_jpow_add_two (a : E) (n : ℕ) :
         ((L (a * a)) * (L (a ^[n])) +
           (2 : ℝ) • ((L (a ^[n + 1])) * (L a))) := by
   ext z
-  simp only [LinearMap.add_apply, LinearMap.smul_apply, Module.End.mul_apply, mulLeft_apply]
+  simp only [LinearMap.add_apply, LinearMap.smul_apply, mul_apply_eq_comp, mulLeft_apply]
   rw [← square_mul_jpow a n]
   simpa only [← jpow_succ, add_assoc] using linearized_mul_sq a (a ^[n]) z
 
@@ -137,7 +137,7 @@ lemma fundamental_mulLeft_commute_pow (a : E) (n : ℕ) :
   induction n using Nat.twoStepInduction with
   | zero =>
       constructor <;> ext z <;>
-        simp only [jpow_zero, Module.End.mul_apply, mulLeft_apply, one_mul]
+        simp only [jpow_zero, mul_apply_eq_comp, mulLeft_apply, one_mul]
   | one =>
       constructor
       · simpa only [jpow_one] using Commute.refl (L a)

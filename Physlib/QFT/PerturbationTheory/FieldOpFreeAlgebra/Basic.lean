@@ -213,7 +213,7 @@ lemma ofFieldOpF_eq_crPartF_add_anPartF (φ : 𝓕.FieldOp) :
 /-- The basis of the free creation and annihilation algebra formed by lists of CrAnFieldOp. -/
 noncomputable def ofCrAnListFBasis : Basis (List 𝓕.CrAnFieldOp) ℂ (FieldOpFreeAlgebra 𝓕) where
   repr := FreeAlgebra.equivMonoidAlgebraFreeMonoid.toLinearEquiv ≪≫ₗ
-    MonoidAlgebra.coeffLinearEquiv ℂ
+    MonoidAlgebra.coeffLinearEquiv ℂ ≪≫ₗ Finsupp.mapDomain.linearEquiv ℂ ℂ FreeMonoid.toListEquiv
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
@@ -233,7 +233,8 @@ lemma ofListBasis_eq_ofList (φs : List 𝓕.CrAnFieldOp) :
         MonoidAlgebra.single_mul_single, one_mul]
   rw [Basis.apply_eq_iff]
   simp only [ofCrAnListFBasis, LinearEquiv.trans_apply, AlgEquiv.toLinearEquiv_apply, key]
-  rfl
+  change Finsupp.mapDomain FreeMonoid.toList (Finsupp.single (FreeMonoid.ofList φs) 1) = _
+  simp
 
 lemma ofCrAnListF_injective : Function.Injective (ofCrAnListF (𝓕 := 𝓕)) := by
   intro φs φs' h
