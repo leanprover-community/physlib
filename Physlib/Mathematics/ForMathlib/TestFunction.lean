@@ -117,4 +117,11 @@ noncomputable def compCLMofContinuousLinearEquiv {E E'} [NormedAddCommGroup E]
   · ext x
     rfl
 
+lemma compCLMofContinuousLinearEquiv_apply {E E'} [NormedAddCommGroup E]
+    [NormedAddCommGroup E'] [NormedSpace ℝ E] [NormedSpace ℝ E']
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
+    (h : g.invFun '' Ω' ⊆ ↑Ω) (φ : TestFunction Ω' F ⊤) :
+    compCLMofContinuousLinearEquiv g h φ = φ ∘ g := by rfl
+
 end TestFunction

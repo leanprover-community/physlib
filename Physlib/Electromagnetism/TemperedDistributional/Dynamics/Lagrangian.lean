@@ -108,10 +108,10 @@ lemma gradFreeCurrentPotential_sum_inl_0 (𝓕 : FreeSpace) {d}
     ContinuousLinearMap.coe_mk', apply_sum, apply_smul, Lorentz.Vector.basis_apply, mul_ite,
     mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inl_0_inl_0, one_mul,
     TempDistLorentzCurrentDensity.chargeDensity, one_div, temporalCLM, map_smul,
-    FunLike.coe_smul, Pi.smul_apply, distTimeSlice_symm_apply,
+    FunLike.coe_smul, Pi.smul_apply, tempDistTimeSlice_symm_apply,
     ContinuousLinearMap.coe_comp, LinearMap.coe_toContinuousLinearMap', Function.comp_apply,
     smul_eq_mul, ne_eq, SpeedOfLight.val_ne_zero, not_false_eq_true, mul_inv_cancel_left₀]
-  rw [← distTimeSlice_symm_apply]
+  rw [← tempDistTimeSlice_symm_apply]
   simp
 
 lemma gradFreeCurrentPotential_sum_inr_i (𝓕 : FreeSpace) {d}
@@ -121,9 +121,9 @@ lemma gradFreeCurrentPotential_sum_inr_i (𝓕 : FreeSpace) {d}
   simp only [gradFreeCurrentPotential, LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mk',
     apply_sum, apply_smul, Lorentz.Vector.basis_apply, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inr_i_inr_i,
-    TempDistLorentzCurrentDensity.currentDensity, spatialCLM, distTimeSlice_symm_apply,
+    TempDistLorentzCurrentDensity.currentDensity, spatialCLM, tempDistTimeSlice_symm_apply,
     ContinuousLinearMap.coe_comp, Function.comp_apply]
-  rw [← distTimeSlice_symm_apply]
+  rw [← tempDistTimeSlice_symm_apply]
   simp
 
 /-!

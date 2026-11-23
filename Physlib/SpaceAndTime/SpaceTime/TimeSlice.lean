@@ -8,6 +8,7 @@ module
 public import Physlib.Mathematics.ForMathlib.Distribution
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 /-!
 # Time slice
 
@@ -120,9 +121,25 @@ open Distribution
   on `Time × Space d`. -/
 noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
     (c : SpeedOfLight := 1) :
-    Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ →L[ℝ]
-    Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ :=
-    compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
+    Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ ≃L[ℝ]
+    Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ where
+  toFun := compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
+  invFun := compContinuousLinearEquiv (toTimeAndSpace c).symm
+              (Set.image_subset_iff.mpr fun _ a => a)
+  left_inv f := by
+      ext κ
+      simp [compContinuousLinearEquiv_apply_apply]
+      congr
+      ext x
+      simp [TestFunction.compCLMofContinuousLinearEquiv_apply]
+  right_inv f := by
+      ext κ
+      simp [compContinuousLinearEquiv_apply_apply]
+      congr
+      ext x
+      simp [TestFunction.compCLMofContinuousLinearEquiv_apply]
+  map_add' f g := by simp
+  map_smul' a f := by simp
 
 /-- The time slice of a tempered distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/
@@ -152,12 +169,12 @@ noncomputable def tempDistTimeSlice {M d} [NormedAddCommGroup M] [NormedSpace �
   continuous_invFun :=
     ((compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c).symm).precomp M).continuous
 
-lemma distTimeSlice_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma tempDistTimeSlice_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight) (f : (SpaceTime d) →d[ℝ] M)
     (κ : 𝓢(Time × Space d, ℝ)) : tempDistTimeSlice c f κ =
     f (compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c) κ) := by rfl
 
-lemma distTimeSlice_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
+lemma tempDistTimeSlice_symm_apply {M d} [NormedAddCommGroup M] [NormedSpace ℝ M]
     (c : SpeedOfLight) (f : (Time × (Space d)) →d[ℝ] M)
     (κ : 𝓢(SpaceTime d, ℝ)) : (tempDistTimeSlice c).symm f κ =
     f (compCLMOfContinuousLinearEquiv ℝ (toTimeAndSpace c).symm κ) := by rfl
@@ -174,9 +191,9 @@ lemma distTimeSlice_distDeriv_inl {M d} [NormedAddCommGroup M] [NormedSpace ℝ 
     tempDistTimeSlice c (distDeriv (Sum.inl 0) f) =
     (1/c.val) • Space.distTimeDeriv (tempDistTimeSlice c f) := by
   ext κ
-  rw [distTimeSlice_apply, distDeriv_apply, fderivD_apply]
+  rw [tempDistTimeSlice_apply, distDeriv_apply, fderivD_apply]
   simp only [Fin.isValue, one_div, FunLike.coe_smul, Pi.smul_apply]
-  rw [distTimeDeriv_apply, fderivD_apply, distTimeSlice_apply]
+  rw [distTimeDeriv_apply, fderivD_apply, tempDistTimeSlice_apply]
   simp only [Fin.isValue, smul_neg, neg_inj]
   rw [← map_smul]
   congr
@@ -219,8 +236,8 @@ lemma distTimeSlice_distDeriv_inr {M d} [NormedAddCommGroup M] [NormedSpace ℝ 
     tempDistTimeSlice c (distDeriv (Sum.inr i) f) =
     Space.distSpaceDeriv i (tempDistTimeSlice c f) := by
   ext κ
-  rw [distTimeSlice_apply, distDeriv_apply, fderivD_apply]
-  rw [distSpaceDeriv_apply, fderivD_apply, distTimeSlice_apply]
+  rw [tempDistTimeSlice_apply, distDeriv_apply, fderivD_apply]
+  rw [distSpaceDeriv_apply, fderivD_apply, tempDistTimeSlice_apply]
   simp only [neg_inj]
   congr 1
   ext x
