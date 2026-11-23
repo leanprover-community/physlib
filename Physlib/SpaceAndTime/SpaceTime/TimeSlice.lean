@@ -8,6 +8,7 @@ module
 public import Physlib.Mathematics.ForMathlib.Distribution
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import Physlib.SpaceAndTime.TimeAndSpace.Basic
+public import Mathlib.Topology.Algebra.Module.Equiv.Basic
 /-!
 # Time slice
 
@@ -120,9 +121,24 @@ open Distribution
   on `Time × Space d`. -/
 noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
     (c : SpeedOfLight := 1) :
-    Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ →L[ℝ]
-    Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ :=
-    compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
+    Distribution (⟨Set.univ (α := SpaceTime d), isOpen_univ⟩) F ⊤ ≃L[ℝ]
+    Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ where
+  toFun := compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
+  invFun := compContinuousLinearEquiv (toTimeAndSpace c).symm (Set.image_subset_iff.mpr fun _ a => a)
+  left_inv f := by
+      ext κ
+      simp [compContinuousLinearEquiv_apply_apply]
+      congr
+      ext x
+      simp [TestFunction.compCLMofContinuousLinearEquiv_apply]
+  right_inv f := by
+      ext κ
+      simp [compContinuousLinearEquiv_apply_apply]
+      congr
+      ext x
+      simp [TestFunction.compCLMofContinuousLinearEquiv_apply]
+  map_add' f g := by simp
+  map_smul' a f := by simp
 
 /-- The time slice of a tempered distribution on `SpaceTime d` to form a distribution
   on `Time × Space d`. -/

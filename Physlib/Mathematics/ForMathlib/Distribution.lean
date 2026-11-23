@@ -50,4 +50,12 @@ noncomputable def compContinuousLinearEquiv {E E'} [NormedAddCommGroup E]
     Distribution Ω F ⊤ →L[ℝ] Distribution Ω' F ⊤ :=
     (compCLMofContinuousLinearEquiv (F := ℝ) g h).precompCompactConvergenceCLM F
 
+lemma compContinuousLinearEquiv_apply_apply {E E'} [NormedAddCommGroup E]
+    [NormedAddCommGroup E'] [NormedSpace ℝ E] [NormedSpace ℝ E']
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {Ω : Opens E} {Ω' : Opens E'} (g : E ≃L[ℝ] E')
+    (h : g.invFun '' Ω' ⊆ ↑Ω) (T : Distribution Ω F ⊤)
+    (κ : TestFunction Ω' ℝ ⊤):
+    compContinuousLinearEquiv g h T κ =
+    T (compCLMofContinuousLinearEquiv (F := ℝ) g h κ) := by rfl
 end Distribution
