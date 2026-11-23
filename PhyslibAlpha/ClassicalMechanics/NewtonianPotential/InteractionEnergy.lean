@@ -29,6 +29,7 @@ interaction energy of a density with itself is nonpositive.
 - `interactionEnergy_comm` : the interaction energy is symmetric.
 - `interactionEnergy_add_left`, `interactionEnergy_smul_left` and their right-hand versions :
   the interaction energy is bilinear.
+- `interactionEnergy_sum_left` : the interaction energy of a finite sum of densities.
 - `interactionEnergy_sub_sub` : the interaction energy of a difference with itself.
 - `interactionEnergy_translateSchwartz` : invariance under a common translation.
 - `interactionEnergy_self_nonpos` : the interaction energy of a density with itself is
@@ -126,6 +127,21 @@ lemma interactionEnergy_sub_left (G : ℝ) (ρ₁ ρ₂ ρ₃ : 𝓢(Space 3, �
   simp only [interactionEnergy, _root_.sub_apply, sub_mul]
   exact integral_sub (integrable_mul_newtonPotential G ρ₁ ρ₃)
     (integrable_mul_newtonPotential G ρ₂ ρ₃)
+
+/-- The interaction energy vanishes if the first density is zero. -/
+lemma interactionEnergy_zero_left (G : ℝ) (ρ : 𝓢(Space 3, ℝ)) :
+    interactionEnergy G 0 ρ = 0 := by
+  simp [interactionEnergy]
+
+/-- The interaction energy of a finite sum of densities. -/
+lemma interactionEnergy_sum_left {ι : Type*} (G : ℝ) (s : Finset ι) (f : ι → 𝓢(Space 3, ℝ))
+    (ρ : 𝓢(Space 3, ℝ)) :
+    interactionEnergy G (∑ i ∈ s, f i) ρ = ∑ i ∈ s, interactionEnergy G (f i) ρ := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp [interactionEnergy_zero_left]
+  | insert a s ha ih =>
+    rw [Finset.sum_insert ha, Finset.sum_insert ha, interactionEnergy_add_left, ih]
 
 /-- The interaction energy is additive in the second density. -/
 lemma interactionEnergy_add_right (G : ℝ) (ρ₁ ρ₂ ρ₃ : 𝓢(Space 3, ℝ)) :
