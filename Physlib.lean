@@ -470,6 +470,7 @@ public import Physlib.QuantumMechanics.Operators.SpaceD.Momentum
 public import Physlib.QuantumMechanics.Operators.SpaceD.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpaceD.Position
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
+public import Physlib.QuantumMechanics.Operators.SpectralTheory.KatoRellich
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure
