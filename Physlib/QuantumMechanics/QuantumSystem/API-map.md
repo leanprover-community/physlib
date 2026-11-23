@@ -29,5 +29,4 @@ moves an operator into and out of the Heisenberg picture. [TODO]
 
 1. Physlib/QuantumMechanics/QuantumSystem/Basic.lean — `QuantumSystem`
 2. Physlib/QuantumMechanics/QuantumSystem/Basic.lean — `Zero QuantumSystem`
-3. Physlib/QuantumMechanics/QuantumSystem/Basic.lean — `UnitaryRelation`,
-   `unitaryRelation_equiv`
+3. Physlib/QuantumMechanics/QuantumSystem/Basic.lean — `UnitaryRelation`
