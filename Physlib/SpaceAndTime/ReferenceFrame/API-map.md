@@ -64,8 +64,8 @@ measures, as the time derivative of the coordinate components. [TODO]
 
 1. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame`, `ReferenceFrame.timeOrigin`,
    `ReferenceFrame.origin`, `ReferenceFrame.basis`
-2. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.origin_contdiff2`,
-   `ReferenceFrame.basis_contdiff2`
+2. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.origin_contMDiff_two`,
+   `ReferenceFrame.basis_contMDiff_two`
 3. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.gram_matrix_constant`
 4. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.Orthonormal`
 5. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.IsInertial`,

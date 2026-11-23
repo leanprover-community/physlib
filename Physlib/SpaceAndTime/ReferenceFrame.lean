@@ -55,11 +55,11 @@ structure ReferenceFrame (d : ℕ) where
   /-- The point assigned coordinate zero at each time. -/
   origin : Time → Space d
   /-- The spatial origin is twice continuously differentiable. -/
-  origin_contdiff2 : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) 2 origin
+  origin_contMDiff_two : ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) 2 origin
   /-- The basis used to turn displacement vectors into coordinate components at each time. -/
   basis : Time → Module.Basis (Fin d) ℝ (EuclideanSpace ℝ (Fin d))
   /-- Each basis vector is twice continuously differentiable. -/
-  basis_contdiff2 : ∀ i, ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) 2 (basis · i)
+  basis_contMDiff_two : ∀ i, ContMDiff 𝓘(ℝ, ℝ) 𝓘(ℝ, EuclideanSpace ℝ (Fin d)) 2 (basis · i)
   /-- The pairwise inner products of the basis vectors are constant in time. -/
   gram_matrix_constant : (Matrix.gram ℝ <| basis ·).IsConst
 
@@ -108,7 +108,7 @@ lemma origin_vsub_eq (t₁ t₂ : Time) :
   let p (s : ℝ) := (Space.homEuclideanSpaceSpace d).symm (frame.origin ⟨s⟩)
   refine (intervalIntegral.integral_eq_sub_of_hasDerivAt (f := p) (fun x _ ↦ ?_)
     intervalIntegrable_const).symm.trans (intervalIntegral.integral_const h.velocity)
-  have hx := (frame.origin_contdiff2.mdifferentiable (by decide) ⟨x⟩).hasMFDerivAt.2
+  have hx := (frame.origin_contMDiff_two.mdifferentiable (by decide) ⟨x⟩).hasMFDerivAt.2
   rw [velocity, ← h.velocity_constant.apply_eq_value (frame.timeEquiv.symm ⟨x⟩),
     ReferenceFrame.velocity, AffineEquiv.apply_symm_apply]
   simpa using! ((hasFDerivAt_comp_add_right (f := p) x).mp (hx.hasFDerivAt (by simp))).hasDerivAt
@@ -124,7 +124,7 @@ lemma of_relative_motion {other : ReferenceFrame d} {u : EuclideanSpace ℝ (Fin
     sub_eq_iff_eq_add', ← smul_add] at hrel
   have hv (x : ℝ) : other.velocity x = h.velocity + u := by
     let t := other.timeEquiv x
-    have hd := (other.origin_contdiff2.mdifferentiable (by decide) t).hasMFDerivAt.2
+    have hd := (other.origin_contMDiff_two.mdifferentiable (by decide) t).hasMFDerivAt.2
     refine HasDerivAt.unique (f := fun s : ℝ ↦ other.origin (s +ᵥ t) -ᵥ other.origin t)
       ((hd.hasFDerivAt (by simp)).sub_const (WithLp.toLp 2 (other.origin t).val)).hasDerivAt ?_
     simpa only [hrel, vadd_vsub] using! (ContinuousLinearMap.toSpanSingleton ℝ _).hasFDerivAt
