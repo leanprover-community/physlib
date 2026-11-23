@@ -256,8 +256,8 @@ lemma fderiv_fourierIntegralInv
     _ = -(b * I * pairingCLM k x) • g k := by field_simp
     _ = -(b * I) • (k ⬝ᵥ x) • g k := by simp [← coe_smul, smul_smul]
 
-lemma fourierIntegral_fderiv {f : Space d → E}
-    (hf : Integrable f) (hf' : Differentiable ℝ f) (hf'' : Integrable (fderiv ℝ f)) (k : WaveVectorSpace d) :
+lemma fourierIntegral_fderiv {f : Space d → E} (hf : Integrable f) (hf' : Differentiable ℝ f)
+    (hf'' : Integrable (fderiv ℝ f)) (k : WaveVectorSpace d) :
     fourierIntegral a b (fderiv ℝ f) k = -(b * I) • k.dual.smulRight (fourierIntegral a b f k) := by
   ext
   simp only [fourierIntegral_def, VectorFourier.fourierIntegral_fderiv _ hf hf' hf'']
@@ -266,7 +266,8 @@ lemma fourierIntegral_fderiv {f : Space d → E}
 
 lemma fourierIntegralInv_fderiv {g : WaveVectorSpace d → E}
     (hg : Integrable g) (hg' : Differentiable ℝ g) (hg'' : Integrable (fderiv ℝ g)) (x : Space d) :
-    fourierIntegralInv a b (fderiv ℝ g) x = (b * I) • x.dual.smulRight (fourierIntegralInv a b g x) := by
+    fourierIntegralInv a b (fderiv ℝ g) x
+      = (b * I) • x.dual.smulRight (fourierIntegralInv a b g x) := by
   ext
   simp only [fourierIntegralInv_def, VectorFourier.fourierIntegral_fderiv _ hg hg' hg'']
   simp [← coe_smul, smul_smul, ← mul_assoc _ (b / (2 * π) : ℂ), ← mul_comm I, mul_assoc I (2 * π),
