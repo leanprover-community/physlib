@@ -2,69 +2,80 @@
 
 ## Abstract (Alpha)
 
-Two motions describe an isolated binary star. The center of mass moves uniformly, as it does
-for any isolated Newtonian system. The displacement from one star to the other obeys the
-inverse-square equation of motion wherever the stars are apart. Its gravitational parameter
-depends on the sum of the two masses.
+A Newtonian system describes finitely many point particles in an inertial frame. Each particle
+accelerates under the forces acting on it. Internal forces come in equal and opposite pairs,
+so they cancel when summed over the system. The total momentum determines the velocity of
+the center of mass, which is constant in the absence of external forces.
 
 ## Content (Alpha)
 
 ### Particles and forces in an inertial frame
 
-A Newtonian system consists of a finite multiset of particles in an inertial frame, together
-with their internal and external forces. The net force on each particle equals its mass times
-its acceleration. Each internal force has an equal and opposite partner with the same
-multiplicity, so the internal forces sum to zero. [1]
+A particle has a constant positive mass and a position that depends on time. In an inertial
+frame the position is twice differentiable. Its first derivative is the velocity and its
+second derivative is the acceleration. [1]
 
-For a binary, label the two particle occurrences 0 and 1. Write their masses as m₀ and m₁,
-their positions as x₀(t) and x₁(t), and their total mass as M = m₀ + m₁. In frame coordinates
-their center of mass is R(t) = (m₀ x₀(t) + m₁ x₁(t)) / M. [2]
+A Newtonian system collects the particles and the forces acting on them in one inertial
+frame. Each force has a time-dependent vector value and a target particle. An internal force
+also has a source particle distinct from its target. The net force on a particle is the sum
+of all internal and external forces on that target, counting each occurrence. [2][3]
 
-### Motion of the center of mass
+Newton's second law identifies this net force with the particle's mass times its acceleration.
+Newton's third law pairs each internal force with its reverse, which swaps the source and
+target and negates the force. The two occur with the same multiplicity, so the sum of all
+internal forces vanishes at each time {1}. [2][4]
 
-For a system of positive total mass M and total momentum P(t), the velocity of its center of mass is
-R′(t) = P(t) / M. [3] When the collection of external forces is empty, the center-of-mass
-position and total momentum at any reference time t₀ determine the center of mass at every
-time t by R(t) = R(t₀) + (t − t₀) P(t₀) / M. This applies to the binary for any internal
-forces satisfying Newton's laws {1}. [4]
+### Total quantities and the center of mass
 
-### Relative motion under mutual gravity
+Summing the particle masses gives the total mass M. Summing their momenta gives the total
+momentum P(t), and summing their individual kinetic energies gives the total kinetic energy.
+The net external force sums just the forces applied from outside the system. [5]
+
+For positive M, the center of mass R(t) is the mass-weighted average of the particle positions
+and its velocity is R′(t) = P(t) / M. [6] If the collection of external forces is empty, the
+center of mass moves at constant velocity. Its position at any time t is
+R(t) = R(t₀) + (t − t₀) P(t₀) / M for any reference time t₀ {1}. [7]
+
+### A system with pairwise gravity
 
 Let G be the gravitational constant and s the displacement from a target to a source of mass m.
-When s is nonzero, the source contributes G m s / ‖s‖³ to the target's acceleration. Summing
-over all other particles gives the target's gravitational acceleration. [5] Multiplying each
-contribution by the target mass gives
-the corresponding internal force. Exchanging source and target reverses that force, so the
-collection over all ordered pairs of distinct particles satisfies Newton's third law. [6]
+At nonzero separation the source contributes G m s / ‖s‖³ to the target's acceleration. Summing
+over all other particles gives its gravitational acceleration. Multiplying by the target mass
+gives the net gravitational force. [8] Exchanging source and target reverses the force, so
+the collection of these forces satisfies Newton's third law. [9] Given trajectories satisfying the
+gravitational acceleration equation for every particle at every time, they form a Newtonian
+system with these internal forces and no external forces. [10]
 
-With these internal forces and an empty collection of external forces, the acceleration
-equation for a particle is equivalent to Newton's second law. Given trajectories satisfying
-the gravitational acceleration equation for every particle at every time, one can therefore
-form a Newtonian system with those trajectories and forces. [7]
+### An isolated binary star
 
-In the binary, take r(t) = x₁(t) − x₀(t), the displacement from star 0 to star 1. Suppose
-the only forces are the stars' mutual gravitational forces. At each time t with x₁(t) ≠ x₀(t),
-the relative acceleration is r″(t) = −G M r(t) / ‖r(t)‖³. Both masses enter the gravitational
-parameter G M because both stars accelerate {1}. [8]
+Label the stars 0 and 1, with masses m₀ and m₁ and positions x₀(t) and x₁(t). Their center
+of mass is R(t) = (m₀ x₀(t) + m₁ x₁(t)) / M, where M = m₀ + m₁. [11] Its uniform motion
+follows from the general isolated-system result. [7] If the stars interact by mutual gravity
+alone, their relative displacement r(t) = x₁(t) − x₀(t) satisfies the inverse-square equation
+r″(t) = −G M r(t) / ‖r(t)‖³ at each time when their positions are distinct {1}. [12]
 
 ## Lean References
 
-1. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/Basic.lean —
-   `NewtonianSystem`, `internalForce_sum_zero`
-2. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
-   `centerOfMass_eq_of_two_particles`
-3. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
+1. Physlib/ClassicalMechanics/PointParticle/Basic.lean — `Particle`, `velocity`, `acceleration`
+2. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/Basic.lean —
+   `NewtonianSystem`, `reverse_count_eq`, `internalForce_sum_zero`
+3. Physlib/ClassicalMechanics/Force.lean — `Force`, `InternalForce`, `netForce`
+4. Physlib/ClassicalMechanics/Force.lean — `InternalForce.reverse`
+5. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/Basic.lean —
+   `mass`, `momentum`, `kineticEnergy`, `netExternalForce`
+6. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
    `centerOfMass`, `hasDerivAt_centerOfMass`
-4. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
+7. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
    `centerOfMass_eq_of_noExternalForces`
-5. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
-   `pairGravityAcceleration`, `gravityAcceleration`
-6. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
-   `pairGravity`, `pairGravity_reverse`, `gravityForces`, `gravityForces_reverse`
-7. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
-   `acceleration_eq_gravity_iff`, `ofGravity`
-8. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
-   `hasDerivAt_deriv_relativePosition_of_gravity`
+8. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
+   `pairGravityAcceleration`, `gravityAcceleration`, `netForce_gravity`
+9. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
+   `pairGravity`, `pairGravity_reverse`, `gravityForces_reverse`
+10. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean — `ofGravity`
+11. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
+    `centerOfMass_eq_of_two_particles`
+12. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
+    `hasDerivAt_deriv_relativePosition_of_gravity`
 
 ## References
 
