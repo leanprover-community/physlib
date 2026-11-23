@@ -179,6 +179,17 @@ lemma isDistBounded_newtonPotential (G : ℝ) (ρ : 𝓢(Space 3, ℝ)) :
     _ = ∫ y, |ρ y| * ‖x - y‖⁻¹ := by simp [abs_mul]
     _ ≤ C := hb x
 
+/-- The Newtonian potential of a Schwartz density is bounded. -/
+lemma exists_abs_newtonPotential_le (G : ℝ) (ρ : 𝓢(Space 3, ℝ)) :
+    ∃ B : ℝ, 0 ≤ B ∧ ∀ x : Space 3, |newtonPotential G ρ x| ≤ B := by
+  obtain ⟨C, hC, h⟩ := exists_integral_abs_mul_inv_norm_sub_le ρ
+  refine ⟨|G| * C, by positivity, fun x => ?_⟩
+  rw [newtonPotential, abs_mul, abs_neg]
+  gcongr
+  calc |∫ y, ρ y * ‖x - y‖⁻¹| ≤ ∫ y, |ρ y * ‖x - y‖⁻¹| := abs_integral_le_integral_abs
+    _ = ∫ y, |ρ y| * ‖x - y‖⁻¹ := by simp [abs_mul]
+    _ ≤ C := h x
+
 /-!
 
 ## C. Poisson's equation
