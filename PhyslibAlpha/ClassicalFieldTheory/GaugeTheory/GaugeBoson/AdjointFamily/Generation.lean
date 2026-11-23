@@ -98,7 +98,8 @@ lemma deriv_sub_symmetrizedDeriv_eq_sum (s : Multiset (Fin 1 ⊕ Fin 3))
     Multiset.sub_singleton, Multiset.erase_cons_head, Multiset.sum_map_sub,
     Multiset.map_const', Multiset.sum_replicate, ← Nat.cast_smul_eq_nsmul ℝ s.card,
     show ((s.card + 1 : ℕ) : ℝ) = (s.card : ℝ) + 1 by push_cast; ring]
-  match_scalars <;> (field_simp; try ring)
+  match_scalars <;> field_simp
+  ring
 
 /-- The symmetrized symbols are linear in the dual index. -/
 noncomputable def symmetrizedDerivₗ (s : Multiset (Fin 1 ⊕ Fin 3))

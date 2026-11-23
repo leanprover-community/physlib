@@ -297,7 +297,7 @@ lemma repGaugeLorentz_mem_sector (hC : T.GaugeLorentzCommute) (q : G.group × SL
     {A : Finset FieldKind}
     {x : T.LocalCovFieldAlgebra} (hx : x ∈ T.sector A) :
     repGaugeLorentz T hC q x ∈ T.sector A := by
-  rw [repGaugeLorentz, Representation.prodOfCommute_apply, Module.End.mul_apply]
+  rw [repGaugeLorentz, Representation.prodOfCommute_apply, mul_apply_eq_comp]
   exact repValue_mem_sector q.1 (repLorentzGroup_mem_sector hC.gaugeLorentzCompatible q.2 hx)
 
 /-- Every element of the monoid algebra of `G × SL(2,ℂ)` preserves every sector. -/

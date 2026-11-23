@@ -87,6 +87,6 @@ attribute [instance] MatterField.instNormedAddCommGroup MatterField.instNormedSp
 
 /-- The target space of a matter field is complete, being finite-dimensional. -/
 instance (G : GlobalGaugeGroup κ) (M : G.MatterField) : CompleteSpace M.V :=
-  FiniteDimensional.complete ℂ M.V
+  FiniteDimensional.completeSpace ℂ M.V
 
 end GlobalGaugeGroup

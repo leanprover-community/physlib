@@ -52,7 +52,7 @@ namespace Polynomial
 lemma commute_of_commute_coeff {R : Type*} [Semiring R]
     {p q : Polynomial R} (h : ∀ a b, Commute (p.coeff a) (q.coeff b)) : Commute p q := by
   show p * q = q * p
-  exact Polynomial.ext fun n => (Polynomial.coeff_mul p q n).trans
+  exact AddMonoidAlgebra.ext <| Finsupp.ext fun n => (Polynomial.coeff_mul p q n).trans
     ((Finset.sum_congr rfl fun x _ => (h x.1 x.2).eq).trans
       ((Finset.Nat.sum_antidiagonal_swap (f := fun x => q.coeff x.1 * p.coeff x.2)).trans
         (Polynomial.coeff_mul q p n).symm))
@@ -61,7 +61,7 @@ lemma commute_of_commute_coeff {R : Type*} [Semiring R]
   each coefficient of the other. -/
 lemma mul_eq_neg_mul_of_coeff {R : Type*} [Ring R] {p q : Polynomial R}
     (h : ∀ a b, p.coeff a * q.coeff b = -(q.coeff b * p.coeff a)) : p * q = -(q * p) :=
-  Polynomial.ext fun n => (Polynomial.coeff_mul p q n).trans
+  AddMonoidAlgebra.ext <| Finsupp.ext fun n => (Polynomial.coeff_mul p q n).trans
     ((Finset.sum_congr rfl fun x _ => h x.1 x.2).trans
       ((Finset.sum_neg_distrib _).trans
         ((congrArg Neg.neg

@@ -369,7 +369,7 @@ lemma hasContinuousSpan_covFieldStrength (hGL : T.GaugeLorentzCompatible) {n : �
     simp [t, repValue_covFieldStrength]
   · intro Λ q x
     simp only [t, repLorentzGroup_covFieldStrength, Fintype.sum_prod_type, Finset.smul_sum,
-      smul_smul, Module.End.one_apply]
+      smul_smul, one_apply_eq_self]
   · have h := ht (l, μ, ν) φ
     dsimp only at h
     rw [h]

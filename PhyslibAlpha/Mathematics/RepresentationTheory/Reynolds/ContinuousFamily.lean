@@ -274,7 +274,7 @@ def spanSubrepresentation {ρ₁ : Representation ℂ H₁ V} {ρ₂ : Represent
     Subrepresentation (prodOfCommute ρ₁ ρ₂ hc) where
   toSubmodule := Submodule.span ℂ (Set.range v)
   apply_mem_toSubmodule g _ hx := by
-    rw [prodOfCommute_apply, Module.End.mul_apply]
+    rw [prodOfCommute_apply, mul_apply_eq_comp]
     exact h₁.apply_mem_span _ (h₂.apply_mem_span _ hx)
 
 /-- A finite family with continuous coefficients gives a subrepresentation with continuous

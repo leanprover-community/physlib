@@ -126,11 +126,11 @@ lemma linearIndependent_pairingBasis : LinearIndependent ℂ pairingBasis := by
 
 /-- The unipotent element `!![1, z; 0, 1] = 1 + z E` of `SL(2, ℂ)`. -/
 def upperUnipotent (z : ℂ) : SL(2,ℂ) :=
-  ⟨1 + z • !![0, 1; 0, 0], by simp [det_fin_two, Matrix.one_apply]⟩
+  ⟨1 + z • !![0, 1; 0, 0], by simp [det_fin_two]⟩
 
 /-- The unipotent element `!![1, 0; z, 1] = 1 + z F` of `SL(2, ℂ)`. -/
 def lowerUnipotent (z : ℂ) : SL(2,ℂ) :=
-  ⟨1 + z • !![0, 0; 1, 0], by simp [det_fin_two, Matrix.one_apply]⟩
+  ⟨1 + z • !![0, 0; 1, 0], by simp [det_fin_two]⟩
 
 /-- Every element of `SL(2, ℂ)` is a product of four unipotent elements, alternately lower and
   upper. With `M = !![p, q; r, s]` and `a` chosen so that `r' = a p + r ≠ 0`, the matrix

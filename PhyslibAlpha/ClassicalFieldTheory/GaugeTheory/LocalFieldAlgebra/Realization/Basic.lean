@@ -116,7 +116,7 @@ lemma IsReynolds.exists_mem_invariants_map_eq_prod {ρ : Representation k (H₁ 
     (h₁ : f a ∈ σ₁.invariants) (h₂ : f a ∈ σ₂.invariants) :
     ∃ a' ∈ ρ.invariants, f a' = f a := by
   refine ⟨_, (hr₁.mul_mapDomain hr₂).apply_mem_invariants a ha, ?_⟩
-  rw [map_mul, Module.End.mul_apply, ← asAlgebraHom_comp, ← asAlgebraHom_comp,
+  rw [map_mul, mul_apply_eq_comp, ← asAlgebraHom_comp, ← asAlgebraHom_comp,
     map_asAlgebraHom_apply _ _ _ hf₁, map_asAlgebraHom_apply _ _ _ hf₂,
     asAlgebraHom_apply_of_mem_invariants _ _ h₂, hr₂.augmentation_eq_one, one_smul,
     asAlgebraHom_apply_of_mem_invariants _ _ h₁, hr₁.augmentation_eq_one, one_smul]
@@ -359,7 +359,7 @@ lemma exists_mem_localCovFieldAlgebra_map_eq (x : T.LocalFieldAlgebra)
     rintro _ ⟨c, hc, rfl⟩ U
     refine (k.map_repJet U.1 c).symm.trans (congrArg k.toAlgHom
       ((LocalCovFieldAlgebra.repJet_eq_ofConstant_eval_of_mem U.1 hc).trans ?_))
-    rw [G.mem_truncationKer_zero_iff_evalGaugeJet.mp U.2, map_one, map_one, Module.End.one_apply]
+    rw [G.mem_truncationKer_zero_iff_evalGaugeJet.mp U.2, map_one, map_one, one_apply_eq_self]
   have hmem := GaugeBoson.invariant_mem_adjoin_fieldStrength k.transformsAsGaugeField_mapGaugeField
     k.repJet_mul (LocalGaugeFieldAlgebra.commute_mapGaugeField _) _ hcS hS
     (k.toAlgHom_mem_adjoin_symbols_union x) hx

@@ -139,7 +139,7 @@ probability measure, lies in the affine span `1 + span {F h - 1}` of the family.
 lemma integral_sub_one_mem_span (μ : Measure H) [IsProbabilityMeasure μ]
     {F : H → E →L[ℂ] E} (hF : Integrable F μ) :
     (∫ h, F h ∂μ) - 1 ∈ Submodule.span ℂ (Set.range fun h => F h - 1) := by
-  have := FiniteDimensional.complete ℂ E
+  have := FiniteDimensional.completeSpace ℂ E
   set N := Submodule.span ℂ (Set.range fun h => F h - 1)
   have hconv : Convex ℝ {M : E →L[ℂ] E | M - 1 ∈ N} := by
     intro x hx y hy a b _ _ hab
@@ -148,7 +148,7 @@ lemma integral_sub_one_mem_span (μ : Measure H) [IsProbabilityMeasure μ]
     rw [Set.mem_ofPred_eq, heq]
     exact N.add_mem (N.smul_of_tower_mem a hx) (N.smul_of_tower_mem (1 - a) hy)
   have hclosed : IsClosed {M : E →L[ℂ] E | M - 1 ∈ N} :=
-    N.closed_of_finiteDimensional.preimage (continuous_id.sub continuous_const)
+    N.isClosed_of_finiteDimensional.preimage (continuous_id.sub continuous_const)
   exact hconv.integral_mem hclosed
     (Filter.Eventually.of_forall fun h => Submodule.subset_span ⟨h, rfl⟩) hF
 
@@ -163,7 +163,7 @@ absorbed by each operator of the family. -/
 lemma comp_integral_eq_integral [Group H] [MeasurableMul H] (μ : Measure H) [μ.IsMulLeftInvariant]
     {F : H → E →L[ℂ] E} (hF : Integrable F μ) (hmul : ∀ g h, F (g * h) = (F g).comp (F h))
     (g : H) : (F g).comp (∫ h, F h ∂μ) = ∫ h, F h ∂μ := by
-  have := FiniteDimensional.complete ℂ E
+  have := FiniteDimensional.completeSpace ℂ E
   rw [← ContinuousLinearMap.compL_apply ℂ E E E (F g),
     ← ContinuousLinearMap.integral_comp_comm _ hF]
   simp only [ContinuousLinearMap.compL_apply, ← hmul]
@@ -226,7 +226,7 @@ lemma conj_sub_one_mem_span
   have hL1 : L 1 = 1 := LinearMap.ext fun w => by
     simp only [L, LinearMap.comp_apply, LinearEquiv.conj_apply, ContinuousLinearMap.coeLM_apply,
       ContinuousLinearMap.toLinearMap_one, LinearEquiv.coe_coe,
-      LinearEquiv.symm_symm, LinearEquiv.symm_apply_apply, Module.End.one_apply]
+      LinearEquiv.symm_symm, LinearEquiv.symm_apply_apply, one_apply_eq_self]
   have hLρ (h : H) : L (coordRep W h) = W.toRepresentation h := LinearMap.ext fun w => by
     simp only [L, LinearMap.comp_apply, LinearEquiv.conj_apply, ContinuousLinearMap.coeLM_apply,
       ContinuousLinearMap.coe_coe, coordRep_apply, LinearEquiv.coe_coe, LinearEquiv.symm_symm,

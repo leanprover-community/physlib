@@ -449,7 +449,7 @@ lemma maurerCartan_conj (g U : G.gaugeJetGroup) (μ : Fin 1 ⊕ Fin 3) :
       G.maurerCartan g μ + G.adjointJ g (G.maurerCartan U μ)
         - G.adjointJ (g * U * g⁻¹) (G.maurerCartan g μ) := by
   rw [G.maurerCartan_cocycle (g * U) g⁻¹, G.maurerCartan_cocycle g U,
-    G.maurerCartan_inv_adjointJ, map_neg, map_mul G.adjointJ (g * U) g⁻¹, Module.End.mul_apply,
+    G.maurerCartan_inv_adjointJ, map_neg, map_mul G.adjointJ (g * U) g⁻¹, mul_apply_eq_comp,
     sub_eq_add_neg]
 
 /-- The base-point Taylor data of a bracket is determined by that of its arguments.

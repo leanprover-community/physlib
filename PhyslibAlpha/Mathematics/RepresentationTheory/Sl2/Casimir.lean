@@ -197,7 +197,7 @@ lemma casimir_symm : casimir ℂ M (-h) f e = casimir ℂ M h e f := by
 /-- The Casimir acts on a primitive vector of weight `μ` by the scalar `μ² + 2μ`. -/
 lemma casimir_apply_of_hasPrimitiveVectorWith {m : M} {μ : ℂ} (P : t.HasPrimitiveVectorWith m μ) :
     casimir ℂ M h e f m = (μ ^ 2 + 2 * μ) • m := by
-  simp only [casimir, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
+  simp only [casimir, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
     toEnd_apply_apply, P.lie_h, P.lie_e, lie_smul, lie_zero, smul_zero, add_zero]
   module
 
@@ -265,7 +265,7 @@ lemma hasEigenvalue_eq_zero (hC : IsNilpotent (casimir ℂ M h e f)) {μ : ℂ}
 lemma isNilpotent_toEnd_h (hC : IsNilpotent (casimir ℂ M h e f)) :
     IsNilpotent (toEnd ℂ L M h) := by
   have htop : (toEnd ℂ L M h).maxGenEigenspace 0 = ⊤ := by
-    rw [eq_top_iff, ← iSup_maxGenEigenspace_eq_top]
+    rw [eq_top_iff, ← iSup_maxGenEigenspace_eq_top (toEnd ℂ L M h)]
     refine iSup_le fun μ ↦ ?_
     by_cases hμ : μ = 0
     · rw [hμ]
@@ -302,8 +302,8 @@ lemma toEnd_e_eq_zero_of_isNilpotent (hH : IsNilpotent (toEnd ℂ L M h)) :
     simpa [sub_eq_zero, two_smul] using hw
   ext m
   have hm := congr($(hsc.pow_right k) m)
-  simp only [Module.End.mul_apply, hk, LinearMap.zero_apply, map_zero] at hm
-  rw [Module.End.coe_pow] at hm
+  simp only [mul_apply_eq_comp, hk, LinearMap.zero_apply, map_zero] at hm
+  rw [FunLike.coe_pow_eq_iterate] at hm
   exact (hinj.iterate k) (by rw [← hm, LinearMap.zero_apply, Function.iterate_fixed (map_zero _)])
 
 /-- If the Casimir is nilpotent, then `e`, `f` and `h` all act by zero. -/
@@ -380,7 +380,7 @@ lemma lie_eq_zero_of_mem_maxGenEigenspace {v : M}
       convert hN using 1
       refine LinearMap.ext fun w ↦ Subtype.ext ?_
       change _ = (casimir ℂ M h e f - algebraMap ℂ (Module.End ℂ M) 0) w.1
-      simp only [LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
+      simp only [LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
         Submodule.coe_add, Submodule.coe_smul_of_tower, LinearMap.coe_restrict_apply]
       simp [casimir])
   refine ⟨?_, ?_, ?_⟩
@@ -414,7 +414,7 @@ lemma pow_apply_eq_zero_of_isCoprime {C : Module.End K V} {b k : ℕ} {g : K[X]}
   have hpoly : (X ^ b : K[X]) = u * X ^ b * X ^ k + w * (X ^ b * g) := by
     linear_combination (-X ^ b) * huw
   have := congr((aeval C $hpoly) v)
-  simpa [map_mul, aeval_X_pow, Module.End.mul_apply, hv, hzero] using this
+  simpa [map_mul, aeval_X_pow, mul_apply_eq_comp, hv, hzero] using this
 
 variable [FiniteDimensional K V]
 
@@ -446,14 +446,14 @@ lemma exists_polynomial_maxGenEigenspace_zero_proj (C : Module.End K V) :
   · rw [hq, coeff_sub, AddMonoidAlgebra.coeff_one_zero, coeff_mul_X_pow',
       ite_eq_right (by omega), sub_zero]
   · obtain ⟨k, hk⟩ := (C.mem_maxGenEigenspace_zero_iff v).mp hv
-    rw [hq, map_sub, map_one, map_mul, aeval_X_pow, LinearMap.sub_apply, Module.End.mul_apply,
-      pow_apply_eq_zero_of_isCoprime hcop hzero hk, map_zero, sub_zero, Module.End.one_apply]
+    rw [hq, map_sub, map_one, map_mul, aeval_X_pow, LinearMap.sub_apply, mul_apply_eq_comp,
+      pow_apply_eq_zero_of_isCoprime hcop hzero hk, map_zero, sub_zero, one_apply_eq_self]
   · refine (C.mem_maxGenEigenspace_zero_iff _).mpr ⟨b, ?_⟩
-    rw [← Module.End.mul_apply, ← aeval_X_pow (R := K), ← map_mul,
+    rw [← mul_apply_eq_comp, ← aeval_X_pow (R := K), ← map_mul,
       show X ^ b * (w * g) = w * g * X ^ b by ring, map_mul, aeval_X_pow, hkill,
       LinearMap.zero_apply]
   · obtain ⟨y, rfl⟩ := (Submodule.mem_iInf _).mp hv b
-    rw [← Module.End.mul_apply, hkill, LinearMap.zero_apply]
+    rw [← mul_apply_eq_comp, hkill, LinearMap.zero_apply]
 
 end Module.End
 

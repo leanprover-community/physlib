@@ -605,7 +605,7 @@ lemma complexifiedAction_mk_one_apply (hc : ∀ i, c i ≠ .up ∧ c i ≠ .down
       Fermion.upperUnipotent y, 1) : SL(2,ℂ) × SL(2,ℂ)) = (Fermion.lowerUnipotent a, 1) *
       (Fermion.upperUnipotent x, 1) * (Fermion.lowerUnipotent r, 1) *
       (Fermion.upperUnipotent y, 1) by simp, map_mul, map_mul, map_mul]
-  simp only [Module.End.mul_apply, hU, hL]
+  simp only [mul_apply_eq_comp, hU, hL]
 
 /-- The invariant tensors with Weyl colours are the same for `SL(2, ℂ)` and for the complexified
   Lorentz group `SL(2, ℂ) × SL(2, ℂ)`. -/
@@ -621,7 +621,7 @@ lemma invariants_complexifiedAction (hc : ∀ i, c i ≠ .up ∧ c i ≠ .down) 
   have e : MonoidHom.inr _ _ N = toComplexified N' * (N'⁻¹, 1) := by
     simp [N', toComplexified_apply, map_starRingEnd_map_starRingEnd]
   change complexifiedAction c (MonoidHom.inr _ _ N) t = t
-  rw [e, map_mul, Module.End.mul_apply, complexifiedAction_mk_one_apply hc ht,
+  rw [e, map_mul, mul_apply_eq_comp, complexifiedAction_mk_one_apply hc ht,
     complexifiedAction_toComplexified]
   exact ht _
 

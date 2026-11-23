@@ -225,9 +225,9 @@ variable {κ : Type} [Fintype κ] [DecidableEq κ] {G : GlobalGaugeGroup κ}
 lemma derivRep_mem_span (X : G.lieSubalgebra) :
     derivRep ρ X ∈
       Submodule.span ℂ (Set.range fun g => ((ρ g : (W →L[ℂ] W)ˣ) : W →L[ℂ] W) - 1) := by
-  have : CompleteSpace W := FiniteDimensional.complete ℂ W
+  have : CompleteSpace W := FiniteDimensional.completeSpace ℂ W
   let X' : G.lieAlgebra := ⟨X.1, X.2⟩
-  refine Submodule.mem_of_hasDerivAt (Submodule.closed_of_finiteDimensional _)
+  refine Submodule.mem_of_hasDerivAt (Submodule.isClosed_of_finiteDimensional _)
     (f := fun t => ((ρ (G.oneParameterSubgroup X' t) : (W →L[ℂ] W)ˣ) : W →L[ℂ] W)) ?_
     fun t => by
       simp only [oneParameterSubgroup_zero, map_one, Units.val_one]
@@ -444,8 +444,7 @@ noncomputable def coordRepSL (hW : ContinuousMatrixCoeff W) :
     { toFun := coordRep W
       map_one' := by
         ext x : 1
-        simp only [coordRep_apply, map_one, Module.End.one_apply, LinearEquiv.apply_symm_apply,
-          one_apply_eq_self]
+        simp only [coordRep_apply, map_one, LinearEquiv.apply_symm_apply, one_apply_eq_self]
       map_mul' := coordRep_mul W }).comp (SL.toSpecialLinearGroup 2).toMonoidHom
   continuous_toFun := Units.continuous_iff.2
     ⟨(continuous_coordRep W hW).comp (continuous_SL_toSpecialLinearGroup 2),

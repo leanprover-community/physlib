@@ -189,7 +189,7 @@ lemma eq_fromBlocks_of_mem_lieAlgebra_prod {X : Matrix (κ₁ ⊕ κ₂) (κ₁ 
     simp [← hg₁₂]
   have hf := hasDerivAt_exp_smul_const (𝕂 := ℝ) X 0
   simp only [zero_smul, exp_zero, one_mul] at hf
-  have hXS : X ∈ S := (Submodule.closed_of_finiteDimensional S).mem_of_tendsto
+  have hXS : X ∈ S := (Submodule.isClosed_of_finiteDimensional S).mem_of_tendsto
     hf.tendsto_slope_zero (Filter.Eventually.of_forall fun t =>
       S.smul_mem _ (S.sub_mem (hmem _) (hmem _)))
   conv_lhs => rw [← fromBlocks_toBlocks X]

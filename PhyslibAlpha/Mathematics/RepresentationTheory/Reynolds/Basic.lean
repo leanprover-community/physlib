@@ -331,7 +331,7 @@ lemma mem_invariants_iff_comp_inl_inr (ρ : Representation k (H₁ × H₂) V) (
     MonoidHom.inr_apply]
   refine ⟨fun hv => ⟨fun a => hv _, fun b => hv _⟩, fun ⟨h₁, h₂⟩ x => ?_⟩
   have hx : x = (x.1, 1) * (1, x.2) := by simp
-  rw [hx, map_mul, Module.End.mul_apply, h₂, h₁]
+  rw [hx, map_mul, mul_apply_eq_comp, h₂, h₁]
 
 /-- A vector is invariant under the representation built from two commuting representations
 exactly when it is invariant under both. -/
@@ -354,7 +354,7 @@ lemma comp_inr_apply_asAlgebraHom_comp_inl (ρ : Representation k (H₁ × H₂)
       asAlgebraHom (ρ.comp (MonoidHom.inl H₁ H₂)) r (ρ (1, b) v) := by
   refine map_asAlgebraHom_apply _ _ (ρ (1, b)) (fun a w => ?_) r v
   simp only [MonoidHom.coe_comp, Function.comp_apply, MonoidHom.inl_apply,
-    ← Module.End.mul_apply, ← map_mul, Prod.mk_mul_mk, one_mul, mul_one]
+    ← mul_apply_eq_comp, ← map_mul, Prod.mk_mul_mk, one_mul, mul_one]
 
 /-- Reynolds elements for the two factors of a representation of `H₁ × H₂` on the same subspace
 multiply to a Reynolds element for the representation of the product. -/
@@ -367,7 +367,7 @@ lemma IsReynolds.mul_mapDomain {ρ : Representation k (H₁ × H₂) V} {W : Sub
       MonoidAlgebra.mapDomainAlgHom k k (MonoidHom.inr H₁ H₂) r₂) w =
       asAlgebraHom (ρ.comp (MonoidHom.inl H₁ H₂)) r₁
         (asAlgebraHom (ρ.comp (MonoidHom.inr H₁ H₂)) r₂ w) := by
-    rw [map_mul, Module.End.mul_apply, asAlgebraHom_comp, asAlgebraHom_comp]
+    rw [map_mul, mul_apply_eq_comp, asAlgebraHom_comp, asAlgebraHom_comp]
   refine ⟨?_, fun w hw => ?_, fun w hw => ?_⟩
   · rw [map_mul, augmentation_mapDomainAlgHom, augmentation_mapDomainAlgHom,
       hr₁.augmentation_eq_one, hr₂.augmentation_eq_one, one_mul]

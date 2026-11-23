@@ -81,7 +81,7 @@ variable {κ : Type} [Fintype κ] [DecidableEq κ] {G : GlobalGaugeGroup κ}
   (ρ : G.group →ₜ* (W →L[ℂ] W)ˣ)
 
 /-- A finite-dimensional complex normed space is complete. -/
-local instance instCompleteSpaceW : CompleteSpace W := FiniteDimensional.complete ℂ W
+local instance instCompleteSpaceW : CompleteSpace W := FiniteDimensional.completeSpace ℂ W
 
 /-!
 
