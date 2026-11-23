@@ -19,7 +19,7 @@ moreLeanArgs = ["-Dweak.says.verify=true"]
 
 [[lean_lib]]
 name = "PhyslibAlpha"
-moreLeanArgs = ["-Dweak.says.verify=true"]
+moreLeanArgs = ["-Dweak.says.verify=true", "-Dweak.linter.style.multiGoal=true"]
 
 [[lean_lib]]
 name = "QuantumInfo"

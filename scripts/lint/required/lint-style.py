@@ -238,7 +238,7 @@ def long_lines_check(lines, path):
     # TODO: find a good way to break long lines
     # TODO: some string literals (in e.g. tactic output messages) can be excepted from this rule
     for line_nr, line in lines:
-        if "http" in line or "#align" in line:
+        if "http" in line or "#align" in line or line.startswith("public import"):
             continue
         if len(line) > 101:
             errors += [(ERR_LIN, line_nr, path)]

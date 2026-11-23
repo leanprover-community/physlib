@@ -191,15 +191,8 @@ theorem QuadraticMap.toMultilinearMap_continuous {V : Type*}
     have h_bilinear : ∃ B : V →ₗ[ℝ] V →L[ℝ] ℝ, ∀ x y, B x y = Q.polarBilin x y := by
       have h_bilinear : ∀ x : V, ∃ Bx : V →L[ℝ] ℝ, ∀ y : V, Bx y = Q.polarBilin x y := by
         intro x
-        use (by
-          apply ContinuousLinearMap.mk
-          swap
-          exact Q.polarBilin x
-          simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom]
-          exact LinearMap.continuous_of_finiteDimensional (Q.polarBilin x)
-        )
-        intro y;rfl
-        -- exact fun x => ⟨ ContinuousLinearMap.mk ( Q.polarBilin x ), fun y => rfl ⟩
+        exact ⟨⟨Q.polarBilin x, (Q.polarBilin x).continuous_of_finiteDimensional⟩,
+          fun _ => rfl⟩
       choose B hB using h_bilinear;
       refine ⟨ { toFun := B, map_add' := ?_, map_smul' := ?_ }, hB ⟩ <;> aesop;
     aesop;

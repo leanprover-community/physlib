@@ -1150,13 +1150,13 @@ lemma boundedIntegral_tendsto_of_pointwise_tendsto_of_bound
     have hnorm : Filter.Tendsto (fun n : ℕ => ‖g n a - f a‖ ^ 2)
         Filter.atTop (𝓝 (0 ^ 2)) := by
       convert (continuous_norm.pow 2).continuousAt.tendsto.comp hdiff using 1
-      congr 1
-      norm_num
+      · congr 1
+      · norm_num
     change Filter.Tendsto (fun n : ℕ => ENNReal.ofReal
       (‖g n a - f a‖ ^ 2)) Filter.atTop (𝓝 0)
     convert ENNReal.continuous_ofReal.continuousAt.tendsto.comp hnorm using 1
-    simp [Function.comp_def]
-    norm_num
+    · simp [Function.comp_def]
+    · norm_num
   have hlin : Filter.Tendsto (fun n : ℕ => ∫⁻ a, F n a ∂μ)
       Filter.atTop (𝓝 0) := by
     simpa using

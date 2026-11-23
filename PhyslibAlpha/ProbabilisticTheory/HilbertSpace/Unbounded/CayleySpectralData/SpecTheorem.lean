@@ -582,8 +582,8 @@ lemma cayleyBoundedSpectralMeasure_inverse_moment
   have hvar : (ν.withDensity q (ContinuousLinearMap.mul ℝ ℂ)).variation =
       ν.variation.withDensity (fun z => ‖q z‖ₑ) := by
     rw [MeasureTheory.VectorMeasure.variation_withDensity hq]
-    rw [MeasureTheory.VectorMeasure.variation_transpose_eq _ _]
-    · simp [ContinuousLinearMap.mul_apply']
+    · rw [MeasureTheory.VectorMeasure.variation_transpose_eq _ _]
+      simp [ContinuousLinearMap.mul_apply']
     · intro a b
       simp [ContinuousLinearMap.mul_apply']
   let A : Set ℂ := {z | ‖z‖ = 1 ∧ z ≠ 1}

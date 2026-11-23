@@ -14,11 +14,14 @@ public import Mathlib.Algebra.MvPolynomial.Derivation
 /-!
 # The jet algebras of quantum electrodynamics
 
+The jet algebras of the photon, of the Dirac electron and of QED, with their gauge, Lorentz
+and mass-weight actions.
+
 ## i. Overview
 
-This file contains *all the definitions* of the jet-algebra formulation of
-quantum electrodynamics: the jet algebras of the photon and of the Dirac
-electron, their tensor product — the QED jet algebra — the data of a gauge
+This file contains the basic definitions of the jet-algebra formulation of
+quantum electrodynamics. These are the jet algebras of the photon and of the Dirac
+electron, their tensor product (the QED jet algebra), the data of a gauge
 transformation as seen by jets, the gauge actions on all three algebras, and
 the evaluation of the photon jet algebra on an honest electromagnetic
 potential.
@@ -37,8 +40,8 @@ The design choices:
 * The photon jet algebra is the free commutative algebra on formal symbols
   `∂_s A_μ`, one for every multiset `s` of spacetime directions and every
   Lorentz index `μ`, built directly on the electromagnetic potential of
-  `Physlib.Electromagnetism`.  It deliberately does *not* use
-  `Physlib.Particles.StandardModel.GaugeBosons.BBoson`: the `B` boson is the
+  `Physlib.Electromagnetism`.  It deliberately does not use
+  the hypercharge boson of the Standard Model. The `B` boson is the
   gauge boson of `U(1)_Y` before electroweak symmetry breaking, the photon is
   the mixed combination `A = cos θ_W B + sin θ_W W³`, and the two are not the
   same field.  Building directly on `ElectromagneticPotential` also avoids
@@ -48,9 +51,9 @@ The design choices:
 * The electron jet algebra is the free *exterior* algebra on formal symbols
   `∂_s ψ_α`, `∂_s ψ̄_α` with `α : Fin 2 ⊕ Fin 2` a Dirac index in the chiral
   representation; the exterior product implements fermionic statistics.  A
-  faithful QED matter sector needs a *Dirac* electron — equivalently two Weyl
-  spinors of the same chirality with charges `±1` — which is what makes the
-  dimension-three mass term `m ψ̄ ψ` possible; a single Weyl fermion admits no
+  faithful QED matter sector needs a Dirac electron, equivalently two Weyl
+  spinors of the same chirality with charges `±1`. This is what makes the
+  dimension-three mass term `m ψ̄ ψ` possible, as a single Weyl fermion admits no
   such term.
 
 * A gauge transformation is recorded by its jets: the derivative jets
@@ -62,9 +65,8 @@ The design choices:
   `Multiset.antidiagonal s`, whose multiplicities are exactly the multinomial
   coefficients of the Leibniz rule.
 
-This construction mirrors `Physlib.Particles.LeptonGaugeSector`, where the
-analogous algebra for a single charged Weyl fermion is built from
-representation-theoretic data.
+The gauge-theory framework of `PhyslibAlpha.ClassicalFieldTheory.GaugeTheory` builds the
+analogous algebras for a general gauge group from representation-theoretic data.
 
 ## ii. Key results
 
@@ -90,7 +92,7 @@ representation-theoretic data.
 
 ## iii. Table of contents
 
-- A. 0. Transport of derivative indices along a Lorentz transformation
+- A. Transport of derivative indices along a Lorentz transformation
 - B. The jet algebra of the photon
   - B.1. The jet coordinates
   - B.2. The gauge action on the photon jet algebra
@@ -134,7 +136,7 @@ open Matrix MatrixGroups
 
 /-!
 
-## A. 0. Transport of derivative indices along a Lorentz transformation
+## A. Transport of derivative indices along a Lorentz transformation
 
 A jet coordinate carries a multiset of derivative indices, each of which
 transforms with `Λ⁻¹` under a Lorentz transformation (the chain rule for
@@ -158,6 +160,7 @@ lemma indexList_zero : indexList 0 = [] := by
 lemma indexList_singleton (μ : Fin 1 ⊕ Fin 3) : indexList {μ} = [μ] := by
   simp [indexList]
 
+/-- The list of derivative directions has the elements of the multiset. -/
 lemma mem_indexList {t : Multiset (Fin 1 ⊕ Fin 3)} {a : Fin 1 ⊕ Fin 3} :
     a ∈ indexList t ↔ a ∈ t := by
   simp only [indexList, List.mem_map, Multiset.mem_sort, Multiset.mem_map]
@@ -167,15 +170,17 @@ lemma mem_indexList {t : Multiset (Fin 1 ⊕ Fin 3)} {a : Fin 1 ⊕ Fin 3} :
   · intro ha
     exact ⟨finSumFinEquiv a, ⟨a, ha, rfl⟩, by simp⟩
 
+/-- The list of derivative directions has the length of the multiset. -/
 lemma indexList_length (t : Multiset (Fin 1 ⊕ Fin 3)) :
     (indexList t).length = Multiset.card t := by
   simp [indexList, Multiset.length_sort]
 
 /-- The canonical representative of a nonempty multiset of spacetime
-  directions: the head of its canonical sorted list. -/
+  directions, the head of its canonical sorted list. -/
 noncomputable def classRep (t : Multiset (Fin 1 ⊕ Fin 3)) : Fin 1 ⊕ Fin 3 :=
   (indexList t).headI
 
+/-- The representative of a nonempty multiset of directions lies in it. -/
 lemma classRep_mem {t : Multiset (Fin 1 ⊕ Fin 3)} (ht : t ≠ 0) : classRep t ∈ t := by
   have hne : indexList t ≠ [] := by
     intro h
@@ -189,7 +194,7 @@ lemma classRep_mem {t : Multiset (Fin 1 ⊕ Fin 3)} (ht : t ≠ 0) : classRep t 
 attribute [irreducible] classRep
 
 /-- The Lorentz transport of a family indexed by derivative multisets along a
-  list of derivative directions: each direction in the list is summed against
+  list of derivative directions. Each direction in the list is summed against
   a row of `Λ⁻¹`, and the chosen directions accumulate in the multiset
   argument of the continuation `k`. -/
 noncomputable def derivSum {M : Type*} [AddCommMonoid M] [Module ℝ M]
@@ -225,30 +230,30 @@ the algebra of real polynomials in these symbols.
 
 -/
 
-/-- The jet coordinates of the electromagnetic potential: the symbol `∂_s A_μ`,
+/-- The jet coordinates of the electromagnetic potential, the symbol `∂_s A_μ`,
   the `s`-th derivative of the `μ`-th covariant component. -/
 inductive JetGenerators where
   /-- The jet coordinate `∂_s A_μ`. -/
   | dA (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3) : JetGenerators
   deriving DecidableEq
 
-/-- The mass weight (twice the mass dimension) of a photon jet coordinate:
-  the potential has mass dimension one and each derivative adds one. -/
+/-- The mass weight (twice the mass dimension) of a photon jet coordinate.
+  The potential has mass dimension one and each derivative adds one. -/
 def JetGenerators.massWeight : JetGenerators → ℕ
   | .dA s _ => 2 + 2 * s.card
 
-/-- The symmetrized-index class of a photon jet coordinate: under a gauge
+/-- The symmetrized-index class of a photon jet coordinate. Under a gauge
   transformation `∂_s A_μ` shifts by `∂_s ∂_μ χ`, which depends only on the
   multiset `s + {μ}`.  Coordinates in a common class shift together. -/
 def JetGenerators.indexClass : JetGenerators → Multiset (Fin 1 ⊕ Fin 3)
   | .dA s μ => s + {μ}
 
-/-- The canonical jet coordinate of a symmetrized-index class: the coordinate
+/-- The canonical jet coordinate of a symmetrized-index class. The coordinate
   whose Lorentz index is the canonical representative of the class. -/
 noncomputable def JetGenerators.classProj (j : JetGenerators) : JetGenerators :=
   .dA (j.indexClass.erase (classRep j.indexClass)) (classRep j.indexClass)
 
-/-- The jet algebra of the photon: real polynomials in the jet coordinates. -/
+/-- The jet algebra of the photon, real polynomials in the jet coordinates. -/
 abbrev JetAlgebra : Type := MvPolynomial JetGenerators ℝ
 
 namespace JetAlgebra
@@ -269,12 +274,12 @@ then the value of that family at `s + {μ}`.
 
 -/
 
-/-- A photon gauge jet: the family `s ↦ ∂_s χ` of symmetrised derivatives of a
+/-- A photon gauge jet, the family `s ↦ ∂_s χ` of symmetrised derivatives of a
   gauge function at the base point.  This is all the photon jet algebra sees of
   a gauge transformation. -/
 abbrev GaugeJet : Type := Multiset (Fin 1 ⊕ Fin 3) → ℝ
 
-/-- The gauge action on the photon jet algebra: the algebra map determined by
+/-- The gauge action on the photon jet algebra, the algebra map determined by
   `∂_s A_μ ↦ ∂_s A_μ + ∂_s ∂_μ χ`. -/
 noncomputable def gaugeAction (c : GaugeJet) : JetAlgebra →ₐ[ℝ] JetAlgebra :=
   MvPolynomial.aeval fun j => match j with
@@ -286,6 +291,7 @@ lemma gaugeAction_coord (c : GaugeJet) (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fi
   rw [coord, gaugeAction, MvPolynomial.aeval_X]
   rfl
 
+/-- The gauge action on the photon jet algebra fixes the constants. -/
 lemma gaugeAction_C (c : GaugeJet) (r : ℝ) :
     gaugeAction c (MvPolynomial.C r) = MvPolynomial.C r := by
   rw [gaugeAction, MvPolynomial.aeval_C, MvPolynomial.algebraMap_eq]
@@ -331,7 +337,7 @@ evaluates to the `s`-th derivative of `A_μ = η_{μμ} A^μ`.
 noncomputable def coPotential (A : ElectromagneticPotential 3) (μ : Fin 1 ⊕ Fin 3) :
     SpaceTime 3 → ℝ := fun x => η μ μ * A x μ
 
-/-- The evaluation of the photon jet algebra at an electromagnetic potential `A`:
+/-- The evaluation of the photon jet algebra at an electromagnetic potential `A`,
   the algebra map sending the formal jet coordinate `∂_s A_μ` to the honest
   function `∂_s A_μ` on spacetime. -/
 noncomputable def evalPotential (A : ElectromagneticPotential 3) :
@@ -351,12 +357,12 @@ lemma evalPotential_coord (A : ElectromagneticPotential 3) (s : Multiset (Fin 1 
 
 Under a Lorentz transformation the potential transforms as a covector field,
 `A'(x) = (Λ⁻¹)ᵀ A (Λ⁻¹ x)`, so every lower index of the jet coordinate
-`∂_s A_μ` — the index `μ` and each derivative index in `s` — is summed
+`∂_s A_μ`, the index `μ` and each derivative index in `s`, is summed
 against a row of `Λ⁻¹`.
 
 -/
 
-/-- The Lorentz action on the photon jet algebra: the algebra map transporting
+/-- The Lorentz action on the photon jet algebra, the algebra map transporting
   every lower index of `∂_s A_μ` with `Λ⁻¹`. -/
 noncomputable def lorentzAction (Λ : LorentzGroup 3) : JetAlgebra →ₐ[ℝ] JetAlgebra :=
   MvPolynomial.aeval fun j => match j with
@@ -370,10 +376,12 @@ lemma lorentzAction_coord (Λ : LorentzGroup 3) (s : Multiset (Fin 1 ⊕ Fin 3))
       derivSum Λ (indexList s) fun t => ∑ ν, (Λ⁻¹).1 ν μ • coord t ν := by
   rw [coord, lorentzAction, MvPolynomial.aeval_X]
 
+/-- The Lorentz action on an underived photon coordinate `A_μ`. -/
 lemma lorentzAction_coord_zero (Λ : LorentzGroup 3) (μ : Fin 1 ⊕ Fin 3) :
     lorentzAction Λ (coord 0 μ) = ∑ ν, (Λ⁻¹).1 ν μ • coord 0 ν := by
   rw [lorentzAction_coord, indexList_zero, derivSum_nil]
 
+/-- The Lorentz action on a once-derived photon coordinate `∂_σ A_μ`. -/
 lemma lorentzAction_coord_singleton (Λ : LorentzGroup 3) (σ μ : Fin 1 ⊕ Fin 3) :
     lorentzAction Λ (coord {σ} μ) =
       ∑ τ, ∑ ν, ((Λ⁻¹).1 τ σ * (Λ⁻¹).1 ν μ) • coord {τ} ν := by
@@ -389,7 +397,7 @@ lemma lorentzAction_coord_singleton (Λ : LorentzGroup 3) (σ μ : Fin 1 ⊕ Fin
 
 -/
 
-/-- The mass-weight scaling on the photon jet algebra: the algebra map
+/-- The mass-weight scaling on the photon jet algebra, the algebra map
   multiplying each jet coordinate by `c` to the power of its mass weight. -/
 noncomputable def massScale (c : ℝ) : JetAlgebra →ₐ[ℝ] JetAlgebra :=
   MvPolynomial.aeval fun j => c ^ j.massWeight • MvPolynomial.X j
@@ -407,7 +415,7 @@ lemma massScale_coord (c : ℝ) (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕
 -/
 
 /-- The formal total spacetime derivative on the photon jet algebra in the
-  direction `ρ`: the derivation appending the derivative index,
+  direction `ρ`, the derivation appending the derivative index,
   `∂_s A_μ ↦ ∂_{s + {ρ}} A_μ`. -/
 noncomputable def jetDeriv (ρ : Fin 1 ⊕ Fin 3) : JetAlgebra →ₗ[ℝ] JetAlgebra :=
   (MvPolynomial.mkDerivation ℝ fun j => match j with
@@ -471,7 +479,7 @@ exactly the multinomial weight of the Leibniz rule.
 -/
 
 /-- Summing an indicator supported on the splittings `(0, t)` over the
-  antidiagonal of `t` picks out `f t`: the splitting `(0, t)` occurs exactly
+  antidiagonal of `t` picks out `f t`. The splitting `(0, t)` occurs exactly
   once in `Multiset.antidiagonal t`. -/
 lemma sum_map_antidiagonal_ite {M : Type*} [AddCommMonoid M]
     (t : Multiset (Fin 1 ⊕ Fin 3)) (f : Multiset (Fin 1 ⊕ Fin 3) → M) :
@@ -480,7 +488,7 @@ lemma sum_map_antidiagonal_ite {M : Type*} [AddCommMonoid M]
   exact ite_eq_left rfl
 
 /-- The Leibniz convolution of a phase family against a module-valued family
-  of jets, over the antidiagonal of the derivative multiset: the formal
+  of jets, over the antidiagonal of the derivative multiset. It is the formal
   expansion `∂_s (u ⬝ f) = ∑_{x + y = s} (∂_x u) (∂_y f)`, with the
   multiplicities of `Multiset.antidiagonal` supplying the multinomial
   weights. -/
@@ -504,7 +512,7 @@ lemma phaseAct_zero_arg : phaseAct u f 0 = u 0 • f 0 := by
 lemma phaseAct_eq_sum (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct u v s = (s.antidiagonal.map fun p => u p.1 * v p.2).sum := rfl
 
-/-- The Leibniz rule of the convolution: differentiating a convolution
+/-- The Leibniz rule of the convolution. Differentiating a convolution
   differentiates one factor at a time. -/
 lemma phaseAct_add_singleton (a : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct u f (s + {a}) =
@@ -522,16 +530,13 @@ lemma phaseAct_add_singleton (a : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 
     simp only [Function.comp_apply, Prod.map_fst, Prod.map_snd, id_eq]
     rw [Multiset.add_comm, Multiset.singleton_add]
 
+/-- The convolution is additive in the jets acting. -/
 lemma phaseAct_add_left (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct (fun t => u₁ t + u₂ t) f s = phaseAct u₁ f s + phaseAct u₂ f s := by
   rw [phaseAct, phaseAct, phaseAct, ← Multiset.sum_map_add]
   exact congrArg Multiset.sum (Multiset.map_congr rfl fun p _ => add_smul _ _ _)
 
-lemma phaseAct_add_right (s : Multiset (Fin 1 ⊕ Fin 3)) :
-    phaseAct u (fun t => f t + g t) s = phaseAct u f s + phaseAct u g s := by
-  rw [phaseAct, phaseAct, phaseAct, ← Multiset.sum_map_add]
-  exact congrArg Multiset.sum (Multiset.map_congr rfl fun p _ => smul_add _ _ _)
-
+/-- The convolution commutes with scaling the jets acting. -/
 lemma phaseAct_smul_left (c : ℂ) (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct (fun t => c * u t) f s = c • phaseAct u f s := by
   rw [phaseAct, phaseAct, Multiset.smul_sum, Multiset.map_map]
@@ -539,6 +544,7 @@ lemma phaseAct_smul_left (c : ℂ) (s : Multiset (Fin 1 ⊕ Fin 3)) :
   simp only [Function.comp_apply]
   exact mul_smul _ _ _
 
+/-- The convolution commutes with scaling the jets acted on. -/
 lemma phaseAct_smul_right (c : ℂ) (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct u (fun t => c • f t) s = c • phaseAct u f s := by
   rw [phaseAct, phaseAct, Multiset.smul_sum, Multiset.map_map]
@@ -546,7 +552,7 @@ lemma phaseAct_smul_right (c : ℂ) (s : Multiset (Fin 1 ⊕ Fin 3)) :
   simp only [Function.comp_apply]
   exact smul_comm _ _ _
 
-/-- Associativity of the convolution: acting by `u` after `v` is acting by
+/-- Associativity of the convolution. Acting by `u` after `v` is acting by
   the convolution `u ⋆ v`. -/
 lemma phaseAct_assoc (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct u (phaseAct v f) s = phaseAct (phaseAct u v) f s := by
@@ -575,7 +581,7 @@ lemma map_phaseAct {N : Type*} [AddCommMonoid N] [Module ℂ N] (L : M →ₗ[�
   exact congrArg Multiset.sum (Multiset.map_congr rfl fun p _ => map_smul L _ _)
 
 /-- The convolution against the indicator of the empty multiset is the
-  identity: the splitting `(0, t)` occurs exactly once in the
+  identity. The splitting `(0, t)` occurs exactly once in the
   antidiagonal. -/
 lemma phaseAct_indicator (s : Multiset (Fin 1 ⊕ Fin 3)) :
     phaseAct (fun t => if t = 0 then 1 else 0) f s = f s := by
@@ -597,11 +603,11 @@ lemma star_phaseAct (s : Multiset (Fin 1 ⊕ Fin 3)) :
 
 end PhaseAct
 
-/-- The jets of a `U(1)_em` gauge transformation with coupling `e`: the
+/-- The jets of a `U(1)_em` gauge transformation with coupling `e`. The
   derivative jets `χjet s = ∂_s χ` of the real gauge function and
   `phase s = ∂_s (exp (I e χ))` of its unitary phase at the base point,
-  subject to the two identities every honest gauge function satisfies:
-  the phase has unit norm at the base point, and its derivatives obey the
+  subject to the two identities every honest gauge function satisfies.
+  The phase has unit norm at the base point, and its derivatives obey the
   formal Leibniz expansion of `∂_μ (exp (I e χ)) = I e (∂_μ χ) exp (I e χ)`. -/
 structure GaugeJet (e : ℝ) where
   /-- The derivative jets `∂_s χ` of the gauge function. -/
@@ -629,11 +635,7 @@ together with unitarity at the base point.
 
 -/
 
-lemma star_phase_zero_unitary : star (g.phase 0) * g.phase 0 = 1 := by
-  rw [mul_comm]
-  exact g.phase_zero_unitary
-
-/-- The first derivative of the phase: the `s = 0` case of the Leibniz
+/-- The first derivative of the phase, the `s = 0` case of the Leibniz
   identity, `∂_μ u = I e (∂_μ χ) u` at the base point. -/
 lemma phase_singleton (μ : Fin 1 ⊕ Fin 3) :
     g.phase {μ} = Complex.I * e * (g.χjet {μ} * g.phase 0) := by
@@ -647,7 +649,7 @@ lemma star_phase_singleton (μ : Fin 1 ⊕ Fin 3) :
   simp only [star_mul', Complex.star_def, Complex.conj_I, Complex.conj_ofReal]
   ring
 
-/-- The trivial gauge jet: the jets of the constant gauge function `χ = 0`. -/
+/-- The trivial gauge jet, the jets of the constant gauge function `χ = 0`. -/
 noncomputable def trivial (e : ℝ) : GaugeJet e where
   χjet := 0
   phase s := if s = 0 then 1 else 0
@@ -672,13 +674,14 @@ check on the axiomatisation of `GaugeJet`.
 
 -/
 
+/-- Two gauge jets agree when their gauge-function jets and phase jets agree. -/
 lemma ext {g₁ g₂ : GaugeJet e} (h1 : g₁.χjet = g₂.χjet)
     (h2 : g₁.phase = g₂.phase) : g₁ = g₂ := by
   cases g₁
   cases g₂
   simp_all
 
-/-- The composite of two gauge jets: the gauge functions add and the phases
+/-- The composite of two gauge jets. The gauge functions add and the phases
   convolve by the Leibniz rule. -/
 noncomputable instance : Mul (GaugeJet e) where
   mul g₁ g₂ :=
@@ -738,7 +741,7 @@ lemma one_χjet : (1 : GaugeJet e).χjet = 0 := rfl
 lemma one_phase :
     (1 : GaugeJet e).phase = fun s => if s = 0 then (1 : ℂ) else 0 := rfl
 
-/-- **The gauge jets form a commutative monoid**: the gauge symmetry data of
+/-- The gauge jets form a commutative monoid. The gauge symmetry data of
   QED composes associatively, with the trivial gauge jet as the unit. -/
 noncomputable instance : CommMonoid (GaugeJet e) where
   mul_assoc g₁ g₂ g₃ := by
@@ -773,7 +776,7 @@ right-handed Weyl component.
 
 -/
 
-/-- The jet coordinates of the Dirac electron: the symbols `∂_s ψ_α` and
+/-- The jet coordinates of the Dirac electron, the symbols `∂_s ψ_α` and
   `∂_s ψ̄_α`, the `s`-th derivatives of the Dirac components and their
   conjugates.  The electron has electric charge `-1`; its conjugate has
   charge `+1`. -/
@@ -784,20 +787,20 @@ inductive JetGenerators where
   | dbarψ (s : Multiset (Fin 1 ⊕ Fin 3)) (α : Fin 2 ⊕ Fin 2) : JetGenerators
   deriving DecidableEq
 
-/-- The mass weight (twice the mass dimension) of an electron jet coordinate:
-  a fermion has mass dimension `3/2` and each derivative adds one. -/
+/-- The mass weight (twice the mass dimension) of an electron jet coordinate.
+  A fermion has mass dimension `3/2` and each derivative adds one. -/
 def JetGenerators.massWeight : JetGenerators → ℕ
   | .dψ s _ => 3 + 2 * s.card
   | .dbarψ s _ => 3 + 2 * s.card
 
-/-- The jet component space of the electron: the free complex module on the
+/-- The field-derivative space of the electron, the free complex module on the
   jet coordinates. -/
-abbrev JetComponentSpace : Type := JetGenerators →₀ ℂ
+abbrev FieldDerivSpace : Type := JetGenerators →₀ ℂ
 
-/-- The jet algebra of the electron: the exterior algebra on the free module
+/-- The jet algebra of the electron, the exterior algebra on the free module
   over the jet coordinates.  The exterior product implements the fermionic
   anticommutativity of the electron field. -/
-abbrev JetAlgebra : Type := ExteriorAlgebra ℂ JetComponentSpace
+abbrev JetAlgebra : Type := ExteriorAlgebra ℂ FieldDerivSpace
 
 namespace JetAlgebra
 
@@ -823,32 +826,34 @@ algebra.
 
 -/
 
-/-- The gauge action on a single electron jet coordinate: the Leibniz
+/-- The gauge action on a single electron jet coordinate, the Leibniz
   expansion of `∂_s (ū ψ_α)` and `∂_s (u ψ̄_α)` over the splittings of `s`. -/
 noncomputable def gaugeActionGenerator {e : ℝ} (g : GaugeJet e) :
-    JetGenerators → JetComponentSpace
+    JetGenerators → FieldDerivSpace
   | .dψ t α => (t.antidiagonal.map fun p =>
       Finsupp.single (JetGenerators.dψ p.2 α) (star (g.phase p.1))).sum
   | .dbarψ t α => (t.antidiagonal.map fun p =>
       Finsupp.single (JetGenerators.dbarψ p.2 α) (g.phase p.1)).sum
 
-/-- The gauge action on the jet component space: the linear extension of the
+/-- The gauge action on the field-derivative space, the linear extension of the
   Leibniz expansion on the jet coordinates. -/
 noncomputable def gaugeActionCS {e : ℝ} (g : GaugeJet e) :
-    JetComponentSpace →ₗ[ℂ] JetComponentSpace :=
-  Finsupp.lift JetComponentSpace ℂ JetGenerators (gaugeActionGenerator g)
+    FieldDerivSpace →ₗ[ℂ] FieldDerivSpace :=
+  Finsupp.lift FieldDerivSpace ℂ JetGenerators (gaugeActionGenerator g)
 
 @[simp]
 lemma gaugeActionCS_single {e : ℝ} (g : GaugeJet e) (j : JetGenerators) :
     gaugeActionCS g (Finsupp.single j 1) = gaugeActionGenerator g j := by
   rw [gaugeActionCS, Finsupp.lift_apply, Finsupp.sum_single_index (by simp), one_smul]
 
-/-- The gauge action on the electron jet algebra: the algebra map induced by
+/-- The gauge action on the electron jet algebra, the algebra map induced by
   the Leibniz expansion on the jet coordinates. -/
 noncomputable def gaugeAction {e : ℝ} (g : GaugeJet e) :
     JetAlgebra →ₐ[ℂ] JetAlgebra :=
   ExteriorAlgebra.map (gaugeActionCS g)
 
+/-- The gauge action on an electron coordinate `∂_t ψ_α`, the Leibniz expansion of
+  `∂_t (ū ψ_α)`. -/
 lemma gaugeAction_ofGenerator_dψ {e : ℝ} (g : GaugeJet e)
     (t : Multiset (Fin 1 ⊕ Fin 3)) (α : Fin 2 ⊕ Fin 2) :
     gaugeAction g (ofGenerator (.dψ t α)) =
@@ -860,6 +865,8 @@ lemma gaugeAction_ofGenerator_dψ {e : ℝ} (g : GaugeJet e)
   rw [Function.comp_apply, ← Finsupp.smul_single_one, map_smul]
   rfl
 
+/-- The gauge action on a conjugate electron coordinate `∂_t ψ̄_α`, the Leibniz
+  expansion of `∂_t (u ψ̄_α)`. -/
 lemma gaugeAction_ofGenerator_dbarψ {e : ℝ} (g : GaugeJet e)
     (t : Multiset (Fin 1 ⊕ Fin 3)) (α : Fin 2 ⊕ Fin 2) :
     gaugeAction g (ofGenerator (.dbarψ t α)) =
@@ -882,6 +889,7 @@ single splitting `(0, 0)`, and `antidiagonal {μ}` the two splittings
 
 -/
 
+/-- The two splittings of a single derivative direction. -/
 lemma antidiagonal_singleton (μ : Fin 1 ⊕ Fin 3) :
     ({μ} : Multiset (Fin 1 ⊕ Fin 3)).antidiagonal = {(0, {μ}), ({μ}, 0)} := by
   rw [show ({μ} : Multiset (Fin 1 ⊕ Fin 3)) = μ ::ₘ 0 from rfl,
@@ -903,6 +911,7 @@ lemma gaugeAction_ofGenerator_dbarψ_zero {e : ℝ} (g : GaugeJet e) (α : Fin 2
   rw [gaugeAction_ofGenerator_dbarψ]
   simp
 
+/-- The gauge action on a once-derived electron coordinate `∂_μ ψ_α`. -/
 lemma gaugeAction_ofGenerator_dψ_singleton {e : ℝ} (g : GaugeJet e)
     (μ : Fin 1 ⊕ Fin 3) (α : Fin 2 ⊕ Fin 2) :
     gaugeAction g (ofGenerator (.dψ {μ} α)) =
@@ -911,6 +920,7 @@ lemma gaugeAction_ofGenerator_dψ_singleton {e : ℝ} (g : GaugeJet e)
   rw [gaugeAction_ofGenerator_dψ, antidiagonal_singleton]
   simp
 
+/-- The gauge action on a once-derived conjugate electron coordinate `∂_μ ψ̄_α`. -/
 lemma gaugeAction_ofGenerator_dbarψ_singleton {e : ℝ} (g : GaugeJet e)
     (μ : Fin 1 ⊕ Fin 3) (α : Fin 2 ⊕ Fin 2) :
     gaugeAction g (ofGenerator (.dbarψ {μ} α)) =
@@ -931,7 +941,7 @@ entrywise conjugate of `S(M)`, and every derivative index by `Λ(M)⁻¹`, where
 
 -/
 
-/-- The Dirac spinor representation of `SL(2,ℂ)` in the chiral basis: the two
+/-- The Dirac spinor representation of `SL(2,ℂ)` in the chiral basis. The two
   Weyl components transform in the two conjugate-dual fundamental
   representations, `S(M) = ((M, 0), (0, (M†)⁻¹))`, the assignment being fixed
   by the conventions of `Lorentz.SL2C.toLorentzGroup`. -/
@@ -939,27 +949,27 @@ noncomputable def spinorRep (M : SL(2,ℂ)) :
     Matrix (Fin 2 ⊕ Fin 2) (Fin 2 ⊕ Fin 2) ℂ :=
   Matrix.fromBlocks M.1 0 0 ((M⁻¹).1)ᴴ
 
-/-- The Lorentz action on a single electron jet coordinate: the spinor index
+/-- The Lorentz action on a single electron jet coordinate. The spinor index
   is rotated by the spinor representation (its conjugate for `∂_s ψ̄`) and the
   derivative indices are transported with `Λ(M)⁻¹`. -/
 noncomputable def lorentzActionGenerator (M : SL(2,ℂ)) :
-    JetGenerators → JetComponentSpace
+    JetGenerators → FieldDerivSpace
   | .dψ t α => derivSum (Lorentz.SL2C.toLorentzGroup M) (indexList t) fun t' =>
       ∑ β, spinorRep M α β • Finsupp.single (JetGenerators.dψ t' β) 1
   | .dbarψ t α => derivSum (Lorentz.SL2C.toLorentzGroup M) (indexList t) fun t' =>
       ∑ β, star (spinorRep M α β) • Finsupp.single (JetGenerators.dbarψ t' β) 1
 
-/-- The Lorentz action on the jet component space. -/
+/-- The Lorentz action on the field-derivative space. -/
 noncomputable def lorentzActionCS (M : SL(2,ℂ)) :
-    JetComponentSpace →ₗ[ℂ] JetComponentSpace :=
-  Finsupp.lift JetComponentSpace ℂ JetGenerators (lorentzActionGenerator M)
+    FieldDerivSpace →ₗ[ℂ] FieldDerivSpace :=
+  Finsupp.lift FieldDerivSpace ℂ JetGenerators (lorentzActionGenerator M)
 
 @[simp]
 lemma lorentzActionCS_single (M : SL(2,ℂ)) (j : JetGenerators) :
     lorentzActionCS M (Finsupp.single j 1) = lorentzActionGenerator M j := by
   rw [lorentzActionCS, Finsupp.lift_apply, Finsupp.sum_single_index (by simp), one_smul]
 
-/-- The Lorentz action on the electron jet algebra: the algebra map induced by
+/-- The Lorentz action on the electron jet algebra, the algebra map induced by
   the action on the jet coordinates. -/
 noncomputable def lorentzAction (M : SL(2,ℂ)) : JetAlgebra →ₐ[ℂ] JetAlgebra :=
   ExteriorAlgebra.map (lorentzActionCS M)
@@ -984,6 +994,7 @@ lemma lorentzAction_ofGenerator_dbarψ_zero (M : SL(2,ℂ)) (α : Fin 2 ⊕ Fin 
   rw [map_smul]
   rfl
 
+/-- The Lorentz action on a once-derived electron coordinate `∂_σ ψ_α`. -/
 lemma lorentzAction_ofGenerator_dψ_singleton (M : SL(2,ℂ)) (σ : Fin 1 ⊕ Fin 3)
     (α : Fin 2 ⊕ Fin 2) :
     lorentzAction M (ofGenerator (.dψ {σ} α)) =
@@ -1000,6 +1011,7 @@ lemma lorentzAction_ofGenerator_dψ_singleton (M : SL(2,ℂ)) (σ : Fin 1 ⊕ Fi
     (((Lorentz.SL2C.toLorentzGroup M)⁻¹).1 τ σ) (spinorRep M α β), smul_eq_mul, zero_add]
   rfl
 
+/-- The Lorentz action on a once-derived conjugate electron coordinate `∂_σ ψ̄_α`. -/
 lemma lorentzAction_ofGenerator_dbarψ_singleton (M : SL(2,ℂ)) (σ : Fin 1 ⊕ Fin 3)
     (α : Fin 2 ⊕ Fin 2) :
     lorentzAction M (ofGenerator (.dbarψ {σ} α)) =
@@ -1023,10 +1035,10 @@ lemma lorentzAction_ofGenerator_dbarψ_singleton (M : SL(2,ℂ)) (σ : Fin 1 ⊕
 
 -/
 
-/-- The mass-weight scaling on the jet component space: the diagonal map
+/-- The mass-weight scaling on the field-derivative space, the diagonal map
   multiplying each jet coordinate by `c` to the power of its mass weight. -/
-noncomputable def massScaleCS (c : ℝ) : JetComponentSpace →ₗ[ℂ] JetComponentSpace :=
-  Finsupp.lift JetComponentSpace ℂ JetGenerators fun j =>
+noncomputable def massScaleCS (c : ℝ) : FieldDerivSpace →ₗ[ℂ] FieldDerivSpace :=
+  Finsupp.lift FieldDerivSpace ℂ JetGenerators fun j =>
     ((c : ℂ) ^ j.massWeight) • Finsupp.single j 1
 
 /-- The mass-weight scaling on the electron jet algebra. -/
@@ -1061,11 +1073,11 @@ def JetGenerators.shift (ρ : Fin 1 ⊕ Fin 3) : JetGenerators → JetGenerators
 
 namespace JetAlgebra
 
-/-- The total derivative on the jet component space: the shift of the
+/-- The total derivative on the field-derivative space, the shift of the
   derivative multi-index. -/
 noncomputable def jetDerivCS (ρ : Fin 1 ⊕ Fin 3) :
-    JetComponentSpace →ₗ[ℂ] JetComponentSpace :=
-  Finsupp.lift JetComponentSpace ℂ JetGenerators fun j =>
+    FieldDerivSpace →ₗ[ℂ] FieldDerivSpace :=
+  Finsupp.lift FieldDerivSpace ℂ JetGenerators fun j =>
     Finsupp.single (JetGenerators.shift ρ j) 1
 
 @[simp]
@@ -1075,9 +1087,9 @@ lemma jetDerivCS_single (ρ : Fin 1 ⊕ Fin 3) (j : JetGenerators) :
   rw [jetDerivCS, Finsupp.lift_apply, Finsupp.sum_single_index (by simp), one_smul]
 
 /-- The generator map of the total derivative into the trivial square-zero
-  extension of the jet algebra: `ι x ↦ (ι x, ι (∂_ρ x))`. -/
+  extension of the jet algebra, `ι x ↦ (ι x, ι (∂_ρ x))`. -/
 noncomputable def jetDerivGen (ρ : Fin 1 ⊕ Fin 3) :
-    JetComponentSpace →ₗ[ℂ] TrivSqZeroExt JetAlgebra JetAlgebra where
+    FieldDerivSpace →ₗ[ℂ] TrivSqZeroExt JetAlgebra JetAlgebra where
   toFun x := (ExteriorAlgebra.ι ℂ x, ExteriorAlgebra.ι ℂ (jetDerivCS ρ x))
   map_add' x y := by
     simp only [map_add]
@@ -1087,16 +1099,16 @@ noncomputable def jetDerivGen (ρ : Fin 1 ⊕ Fin 3) :
     rfl
 
 @[simp]
-lemma jetDerivGen_fst (ρ : Fin 1 ⊕ Fin 3) (x : JetComponentSpace) :
+lemma jetDerivGen_fst (ρ : Fin 1 ⊕ Fin 3) (x : FieldDerivSpace) :
     (jetDerivGen ρ x).fst = ExteriorAlgebra.ι ℂ x := rfl
 
 @[simp]
-lemma jetDerivGen_snd (ρ : Fin 1 ⊕ Fin 3) (x : JetComponentSpace) :
+lemma jetDerivGen_snd (ρ : Fin 1 ⊕ Fin 3) (x : FieldDerivSpace) :
     (jetDerivGen ρ x).snd = ExteriorAlgebra.ι ℂ (jetDerivCS ρ x) := rfl
 
-/-- The generator map squares to zero: degree-one elements of the exterior
+/-- The generator map squares to zero, as degree-one elements of the exterior
   algebra anticommute. -/
-lemma jetDerivGen_mul_self (ρ : Fin 1 ⊕ Fin 3) (x : JetComponentSpace) :
+lemma jetDerivGen_mul_self (ρ : Fin 1 ⊕ Fin 3) (x : FieldDerivSpace) :
     jetDerivGen ρ x * jetDerivGen ρ x = 0 := by
   refine TrivSqZeroExt.ext ?_ ?_
   · rw [TrivSqZeroExt.fst_mul, jetDerivGen_fst, ExteriorAlgebra.ι_sq_zero,
@@ -1106,13 +1118,13 @@ lemma jetDerivGen_mul_self (ρ : Fin 1 ⊕ Fin 3) (x : JetComponentSpace) :
     exact ExteriorAlgebra.ι_add_mul_swap x (jetDerivCS ρ x)
 
 /-- The lift of the total derivative to the trivial square-zero extension of
-  the jet algebra: the algebra homomorphism `x ↦ (x, ∂_ρ x)`. -/
+  the jet algebra, the algebra homomorphism `x ↦ (x, ∂_ρ x)`. -/
 noncomputable def jetDerivHom (ρ : Fin 1 ⊕ Fin 3) :
     JetAlgebra →ₐ[ℂ] TrivSqZeroExt JetAlgebra JetAlgebra :=
   ExteriorAlgebra.lift ℂ ⟨jetDerivGen ρ, jetDerivGen_mul_self ρ⟩
 
 @[simp]
-lemma jetDerivHom_ι (ρ : Fin 1 ⊕ Fin 3) (x : JetComponentSpace) :
+lemma jetDerivHom_ι (ρ : Fin 1 ⊕ Fin 3) (x : FieldDerivSpace) :
     jetDerivHom ρ (ExteriorAlgebra.ι ℂ x) = jetDerivGen ρ x := by
   rw [jetDerivHom, ExteriorAlgebra.lift_ι_apply]
 
@@ -1127,18 +1139,19 @@ lemma jetDerivHom_fst (ρ : Fin 1 ⊕ Fin 3) (x : JetAlgebra) :
   exact DFunLike.congr_fun h x
 
 /-- The formal total spacetime derivative on the electron jet algebra in the
-  direction `ρ`: the even derivation extending the shift
+  direction `ρ`, the even derivation extending the shift
   `∂_s ψ_α ↦ ∂_{s + {ρ}} ψ_α` of the jet coordinates. -/
 noncomputable def jetDeriv (ρ : Fin 1 ⊕ Fin 3) : JetAlgebra →ₗ[ℂ] JetAlgebra where
   toFun x := (jetDerivHom ρ x).snd
   map_add' x y := congrArg TrivSqZeroExt.snd (map_add (jetDerivHom ρ) x y)
   map_smul' c x := congrArg TrivSqZeroExt.snd (map_smul (jetDerivHom ρ) c x)
 
+/-- The total derivative is the second component of its square-zero lift. -/
 lemma jetDeriv_apply (ρ : Fin 1 ⊕ Fin 3) (x : JetAlgebra) :
     jetDeriv ρ x = (jetDerivHom ρ x).snd := rfl
 
 @[simp]
-lemma jetDeriv_ι (ρ : Fin 1 ⊕ Fin 3) (x : JetComponentSpace) :
+lemma jetDeriv_ι (ρ : Fin 1 ⊕ Fin 3) (x : FieldDerivSpace) :
     jetDeriv ρ (ExteriorAlgebra.ι ℂ x) =
       ExteriorAlgebra.ι ℂ (jetDerivCS ρ x) := by
   rw [jetDeriv_apply, jetDerivHom_ι, jetDerivGen_snd]
@@ -1155,7 +1168,7 @@ lemma jetDeriv_ofGenerator (ρ : Fin 1 ⊕ Fin 3) (j : JetGenerators) :
 lemma jetDeriv_one (ρ : Fin 1 ⊕ Fin 3) : jetDeriv ρ (1 : JetAlgebra) = 0 :=
   congrArg TrivSqZeroExt.snd (map_one (jetDerivHom ρ))
 
-/-- The total derivative is an even derivation: the Leibniz rule holds on the
+/-- The total derivative is an even derivation. The Leibniz rule holds on the
   electron jet algebra with no Koszul signs. -/
 lemma jetDeriv_mul (ρ : Fin 1 ⊕ Fin 3) (x y : JetAlgebra) :
     jetDeriv ρ (x * y) = jetDeriv ρ x * y + x * jetDeriv ρ y := by
@@ -1175,7 +1188,7 @@ end Electron
 
 -/
 
-/-- The jet algebra of quantum electrodynamics: the tensor product of the
+/-- The jet algebra of quantum electrodynamics, the tensor product of the
   complexified photon jet algebra with the electron jet algebra.
 
   This is a `def` rather than an `abbrev`, and its algebraic structure is fixed
@@ -1215,11 +1228,7 @@ noncomputable def tmul (a : ℂ ⊗[ℝ] Photon.JetAlgebra) (b : Electron.JetAlg
 
 @[inherit_doc] scoped infixl:100 " ⊗ⱼ " => JetAlgebra.tmul
 
-/-- `tmul` is the pure tensor of the underlying tensor product; use this to
-  move between the jet algebra and lemmas stated for the tensor product. -/
-lemma tmul_eq (a : ℂ ⊗[ℝ] Photon.JetAlgebra) (b : Electron.JetAlgebra) :
-    a ⊗ⱼ b = a ⊗ₜ[ℂ] b := rfl
-
+/-- The unit of the QED jet algebra is the pure tensor of the units. -/
 lemma one_eq_tmul : (1 : JetAlgebra) = (1 : ℂ ⊗[ℝ] Photon.JetAlgebra) ⊗ⱼ 1 := rfl
 
 /-- Multiplication of pure tensors. `Algebra.TensorProduct.tmul_mul_tmul` does
@@ -1262,10 +1271,12 @@ lemma neg_tmul (a : ℂ ⊗[ℝ] Photon.JetAlgebra) (b : Electron.JetAlgebra) :
 lemma tmul_neg (a : ℂ ⊗[ℝ] Photon.JetAlgebra) (b : Electron.JetAlgebra) :
     a ⊗ⱼ (-b) = -(a ⊗ⱼ b) := TensorProduct.tmul_neg a b
 
+/-- Pure tensors are additive in the electron factor. -/
 lemma tmul_sum {ι : Type*} (a : ℂ ⊗[ℝ] Photon.JetAlgebra) (s : Finset ι)
     (f : ι → Electron.JetAlgebra) : a ⊗ⱼ (∑ i ∈ s, f i) = ∑ i ∈ s, a ⊗ⱼ f i :=
   TensorProduct.tmul_sum a s f
 
+/-- Pure tensors are additive in the photon factor. -/
 lemma sum_tmul {ι : Type*} (s : Finset ι) (f : ι → ℂ ⊗[ℝ] Photon.JetAlgebra)
     (b : Electron.JetAlgebra) : (∑ i ∈ s, f i) ⊗ⱼ b = ∑ i ∈ s, f i ⊗ⱼ b :=
   TensorProduct.sum_tmul s f b
@@ -1323,10 +1334,6 @@ noncomputable abbrev inclA : (ℂ ⊗[ℝ] Photon.JetAlgebra) →ₐ[ℂ] JetAlg
 noncomputable abbrev inclE : Electron.JetAlgebra →ₐ[ℂ] JetAlgebra :=
   Algebra.TensorProduct.includeRight
 
-lemma inclA_apply (a : ℂ ⊗[ℝ] Photon.JetAlgebra) : inclA a = a ⊗ⱼ 1 := rfl
-
-lemma inclE_apply (b : Electron.JetAlgebra) : inclE b = 1 ⊗ⱼ b := rfl
-
 /-!
 
 ### E.3. The gauge action on the QED jet algebra
@@ -1338,7 +1345,7 @@ jet algebra is the tensor product of the two, an algebra map.
 
 -/
 
-/-- The gauge action on the complexified photon jet algebra: the
+/-- The gauge action on the complexified photon jet algebra, the
   complexification of the affine action `∂_s A_μ ↦ ∂_s A_μ + ∂_s ∂_μ χ`. -/
 noncomputable def gaugeActionPhoton (c : Photon.JetAlgebra.GaugeJet) :
     (ℂ ⊗[ℝ] Photon.JetAlgebra) →ₐ[ℂ] ℂ ⊗[ℝ] Photon.JetAlgebra :=
@@ -1350,7 +1357,7 @@ lemma gaugeActionPhoton_tmul (c : Photon.JetAlgebra.GaugeJet) (x : ℂ)
     gaugeActionPhoton c (x ⊗ₜ[ℝ] p) = x ⊗ₜ[ℝ] Photon.JetAlgebra.gaugeAction c p :=
   rfl
 
-/-- The gauge action on the QED jet algebra: the tensor product of the affine
+/-- The gauge action on the QED jet algebra, the tensor product of the affine
   action on the photon factor with the Leibniz phase rotation on the electron
   factor. -/
 noncomputable def gaugeAction {e : ℝ} (g : GaugeJet e) :
@@ -1358,6 +1365,7 @@ noncomputable def gaugeAction {e : ℝ} (g : GaugeJet e) :
   Algebra.TensorProduct.map (gaugeActionPhoton g.χjet)
     (Electron.JetAlgebra.gaugeAction g)
 
+/-- The gauge action on a pure tensor acts on each factor. -/
 lemma gaugeAction_tmul {e : ℝ} (g : GaugeJet e) (a : ℂ ⊗[ℝ] Photon.JetAlgebra)
     (b : Electron.JetAlgebra) :
     gaugeAction g (a ⊗ⱼ b) =
@@ -1385,12 +1393,13 @@ lemma lorentzActionPhoton_tmul (Λ : LorentzGroup 3) (x : ℂ) (p : Photon.JetAl
     lorentzActionPhoton Λ (x ⊗ₜ[ℝ] p) = x ⊗ₜ[ℝ] Photon.JetAlgebra.lorentzAction Λ p :=
   rfl
 
-/-- The Lorentz action on the QED jet algebra: the tensor product of the
+/-- The Lorentz action on the QED jet algebra, the tensor product of the
   photon action through the covering map with the electron spinor action. -/
 noncomputable def lorentzAction (M : SL(2,ℂ)) : JetAlgebra →ₐ[ℂ] JetAlgebra :=
   Algebra.TensorProduct.map (lorentzActionPhoton (Lorentz.SL2C.toLorentzGroup M))
     (Electron.JetAlgebra.lorentzAction M)
 
+/-- The Lorentz action on a pure tensor acts on each factor. -/
 lemma lorentzAction_tmul (M : SL(2,ℂ)) (a : ℂ ⊗[ℝ] Photon.JetAlgebra)
     (b : Electron.JetAlgebra) :
     lorentzAction M (a ⊗ⱼ b) =
@@ -1420,12 +1429,13 @@ lemma massScalePhoton_tmul (c : ℝ) (x : ℂ) (p : Photon.JetAlgebra) :
     massScalePhoton c (x ⊗ₜ[ℝ] p) = x ⊗ₜ[ℝ] Photon.JetAlgebra.massScale c p :=
   rfl
 
-/-- The mass-weight scaling on the QED jet algebra: the algebra map
+/-- The mass-weight scaling on the QED jet algebra, the algebra map
   multiplying each jet coordinate by `c` to the power of its mass weight,
   i.e. `c` squared to the power of its mass dimension. -/
 noncomputable def massScale (c : ℝ) : JetAlgebra →ₐ[ℂ] JetAlgebra :=
   Algebra.TensorProduct.map (massScalePhoton c) (Electron.JetAlgebra.massScale c)
 
+/-- The mass-weight scaling on a pure tensor scales each factor. -/
 lemma massScale_tmul (c : ℝ) (a : ℂ ⊗[ℝ] Photon.JetAlgebra)
     (b : Electron.JetAlgebra) :
     massScale c (a ⊗ⱼ b) =
@@ -1439,13 +1449,14 @@ lemma massScale_tmul (c : ℝ) (a : ℂ ⊗[ℝ] Photon.JetAlgebra)
 -/
 
 /-- The formal total spacetime derivative on the QED jet algebra in the
-  direction `ρ`: the Leibniz extension of the total derivatives of the photon
+  direction `ρ`, the Leibniz extension of the total derivatives of the photon
   and electron factors. -/
 noncomputable def jetDeriv (ρ : Fin 1 ⊕ Fin 3) : JetAlgebra →ₗ[ℂ] JetAlgebra :=
   TensorProduct.map (LinearMap.baseChange ℂ (Photon.JetAlgebra.jetDeriv ρ))
       LinearMap.id +
     TensorProduct.map LinearMap.id (Electron.JetAlgebra.jetDeriv ρ)
 
+/-- The total derivative of a pure tensor obeys the Leibniz rule. -/
 lemma jetDeriv_tmul (ρ : Fin 1 ⊕ Fin 3) (a : ℂ ⊗[ℝ] Photon.JetAlgebra)
     (b : Electron.JetAlgebra) :
     jetDeriv ρ (a ⊗ⱼ b) =
@@ -1463,7 +1474,7 @@ lemma jetDeriv_one (ρ : Fin 1 ⊕ Fin 3) : jetDeriv ρ (1 : JetAlgebra) = 0 := 
   rw [one_eq_tmul, jetDeriv_tmul, hB, Electron.JetAlgebra.jetDeriv_one, zero_tmul,
     tmul_zero, add_zero]
 
-/-- The total derivative is an even derivation on the QED jet algebra: the
+/-- The total derivative is an even derivation on the QED jet algebra. The
   Leibniz rule holds with no Koszul signs. -/
 lemma jetDeriv_mul (ρ : Fin 1 ⊕ Fin 3) (x y : JetAlgebra) :
     jetDeriv ρ (x * y) = jetDeriv ρ x * y + x * jetDeriv ρ y := by

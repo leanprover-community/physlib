@@ -33,7 +33,7 @@ of directions then transforms by one column of the Lorentz matrix per slot
   tuples of directions (covariant derivatives do not commute) and by the dual of a Lorentz
   representation `V`, transforms as the covariant derivatives of a Lorentz-covariant field: each
   derivative slot mixes by the columns of the Lorentz matrix, while the value index transforms by
-  the contragredient action `rep.dual` on the dual of `V` — the ordered-tuple analogue of
+  the contragredient action `rep.dual` on the dual of `V`, the ordered-tuple analogue of
   `IsLorentzDerivTransforms`
 - `rep_iteratedD_ofFn` : the Lorentz transformation of iterated derivatives: for a Lorentz
   derivative the ordered derivative symbol `D_{l 0} ⋯ D_{l (n-1)} x` mixes into all tuples of
@@ -98,7 +98,7 @@ lemma iteratedD_singleton {ι : Type*} (D : ι → A →ₗ[ℂ] A)
   rw [show ({κ} : Multiset ι) = κ ::ₘ 0 from rfl, iteratedD_cons, iteratedD_zero,
     LinearMap.comp_id]
 
-/-- The iterated operator is additive in the multiset of directions: applying along
+/-- The iterated operator is additive in the multiset of directions. Applying along
   `s + t` is applying along `t` and then along `s`. -/
 lemma iteratedD_add {ι : Type*} (D : ι → A →ₗ[ℂ] A)
     (hD : ∀ i j, (D i).comp (D j) = (D j).comp (D i)) (s t : Multiset ι) :
@@ -108,7 +108,7 @@ lemma iteratedD_add {ι : Type*} (D : ι → A →ₗ[ℂ] A)
   | cons κ s ih =>
       rw [Multiset.cons_add, iteratedD_cons, iteratedD_cons, ih, LinearMap.comp_assoc]
 
-/-- The companion of `iteratedD_cons`, peeling the new operator on the inside: for a
+/-- The companion of `iteratedD_cons`, peeling the new operator on the inside. For a
   commuting family the extra operator may equally be applied first. -/
 lemma iteratedD_cons' {ι : Type*} (D : ι → A →ₗ[ℂ] A)
     (hD : ∀ i j, (D i).comp (D j) = (D j).comp (D i)) (κ : ι) (s : Multiset ι) :
@@ -145,7 +145,7 @@ lemma iteratedD_mul (D : (Fin 1 ⊕ Fin 3) → A →ₗ[ℂ] A)
       abel
 
 
-/-- A family of operators indexed by the spacetime directions is a **Lorentz derivative**
+/-- A family of operators indexed by the spacetime directions is a Lorentz derivative
   when the representation of `SL(2,ℂ)` intertwines it through the columns of the Lorentz
   matrix. The class needs only the module structure, so it applies uniformly to any
   representation space. -/
@@ -155,13 +155,14 @@ class IsLorentzDeriv {M : Type} [AddCommMonoid M] [Module ℂ M]
     ∑ a, (((SL2C.toLorentzGroup Λ).1 a μ : ℝ) : ℂ) • D a (rep Λ x)
 
 /-- A family of derivative symbols `F : s ↦ [∂_s ψ^φ]`, indexed by the dual of a value
-  space `V` carrying a representation of `SL(2,ℂ)`, **transforms as the derivative
-  symbols of a Lorentz-covariant field**: each ordered symbol mixes into all tuples of
+  space `V` carrying a representation of `SL(2,ℂ)`, transforms as the derivative
+  symbols of a Lorentz-covariant field. Each ordered symbol mixes into all tuples of
   directions by the per-slot columns of the Lorentz matrix, while the value index
   transforms by the contragredient action `rep.dual` on the dual of `V`. This is the
-  general form of the Lorentz law `GaugeAlgebraRealization.lorentz_apply`, for a field valued in an
-  arbitrary Lorentz representation — the trivial representation for scalars, the Weyl
-  representations for fermions, and their conjugates for the barred fields. At `n = 0`
+  general form of the Lorentz law `GaugeBoson.LorentzTransformsAsGaugeField`, for a field
+  valued in an arbitrary Lorentz representation, such as the trivial representation for
+  scalars, the Weyl representations for fermions, and their conjugates for the barred
+  fields. At `n = 0`
   it reduces to the homogeneous law `Λ • F₀^φ = F₀^{Λ^{-⊤} φ}`. -/
 def IsLorentzDerivTransforms {k V : Type*} [CommRing k] [AddCommGroup V] [Module k V]
     [Module k A]
@@ -173,12 +174,12 @@ def IsLorentzDerivTransforms {k V : Type*} [CommRing k] [AddCommGroup V] [Module
         (∏ i, (((SL2C.toLorentzGroup Λ).1 (p i) (l i) : ℝ) : ℂ)) •
           F (List.ofFn p) (rep.dual Λ φ)
 
-/-- A family of *covariant*-derivative symbols, indexed by ordered tuples of
+/-- A family of covariant-derivative symbols, indexed by ordered tuples of
   directions (covariant derivatives do not commute) and by the dual of a Lorentz
-  representation `V`, **transforms as the covariant derivatives of a
-  Lorentz-covariant field**: each derivative slot mixes by the columns of the Lorentz
+  representation `V`, transforms as the covariant derivatives of a
+  Lorentz-covariant field. Each derivative slot mixes by the columns of the Lorentz
   matrix, while the value index transforms by the contragredient action `rep.dual` on
-  the dual of `V` — the ordered-tuple analogue of `IsLorentzDerivTransforms`. -/
+  the dual of `V`. This is the ordered-tuple analogue of `IsLorentzDerivTransforms`. -/
 def IsLorentzCovDerivTransforms {k V : Type*} [CommRing k] [AddCommGroup V]
     [Module k V] [Module k A] (repLorentz : Representation ℂ SL(2,ℂ) A)
     (rep : Representation k SL(2,ℂ) V)
@@ -189,7 +190,7 @@ def IsLorentzCovDerivTransforms {k V : Type*} [CommRing k] [AddCommGroup V]
         (∏ i, (((SL2C.toLorentzGroup Λ).1 (p i) (l i) : ℝ) : ℂ)) •
           F p (rep.dual Λ φ)
 
-/-- **At the centre the derivative slots do not mix.** The element `-1` of `SL(2,ℂ)` covers
+/-- At the centre the derivative slots do not mix. The element `-1` of `SL(2,ℂ)` covers
   the identity Lorentz transformation, so the sum over tuples collapses to the single term
   `p = l` and only the value index moves. -/
 lemma IsLorentzCovDerivTransforms.neg_one_apply {k V : Type*} [CommRing k] [AddCommGroup V]
@@ -215,7 +216,7 @@ variable {rep : Representation ℂ SL(2,ℂ) A} {D : (Fin 1 ⊕ Fin 3) → A →
 /-- The scalar action of a real parameter, in the form the weight condition presents it. -/
 private lemma algebraMap_real_complex (t : ℝ) : (algebraMap ℝ ℂ) t = ((t : ℝ) : ℂ) := rfl
 
-/-- **The Lorentz transformation of iterated derivatives**: for a Lorentz derivative the
+/-- The Lorentz transformation of iterated derivatives. For a Lorentz derivative the
   ordered derivative symbol `D_{l 0} ⋯ D_{l (n-1)} x` mixes into all tuples of
   directions, with one Lorentz matrix factor per slot. -/
 lemma rep_iteratedD_ofFn [IsLorentzDeriv rep D]
@@ -232,14 +233,6 @@ lemma rep_iteratedD_ofFn [IsLorentzDeriv rep D]
         iteratedD_zero, Fintype.sum_unique]
       simp [List.ofFn_zero, iteratedD_zero]
   | succ n ih =>
-      have hstep : ∀ (a : Fin 1 ⊕ Fin 3) (p : Fin n → (Fin 1 ⊕ Fin 3)),
-          ((List.ofFn (Fin.cons a p) : List (Fin 1 ⊕ Fin 3)) :
-              Multiset (Fin 1 ⊕ Fin 3)) =
-            a ::ₘ ((List.ofFn p : List (Fin 1 ⊕ Fin 3)) : Multiset (Fin 1 ⊕ Fin 3)) := by
-        intro a p
-        rw [List.ofFn_succ]
-        simp only [Fin.cons_zero, Fin.cons_succ]
-        rfl
       calc rep Λ (iteratedD D D_comm (List.ofFn l) x)
           = ∑ a, (((SL2C.toLorentzGroup Λ).1 a (l 0) : ℝ) : ℂ) •
               D a (rep Λ (iteratedD D D_comm
@@ -274,7 +267,7 @@ lemma rep_iteratedD_ofFn [IsLorentzDeriv rep D]
                   ((Fin.cons a p : Fin (n + 1) → (Fin 1 ⊕ Fin 3)) i) (l i) : ℝ) : ℂ)) •
               iteratedD D D_comm
                 (List.ofFn (Fin.cons a p : Fin (n + 1) → (Fin 1 ⊕ Fin 3))) (rep Λ x)
-            rw [Fin.prod_univ_succ, hstep a p]
+            rw [Fin.prod_univ_succ, List.ofFn_cons, ← Multiset.cons_coe]
             simp only [Fin.cons_zero, Fin.cons_succ]
 
 end IsLorentzDeriv

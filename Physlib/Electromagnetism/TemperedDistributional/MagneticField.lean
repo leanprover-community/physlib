@@ -85,13 +85,14 @@ lemma magneticFieldMatrix_eq_vectorPotential {c : SpeedOfLight}
       Space.distSpaceDeriv i (A.vectorPotential c) ε j) •
     EuclideanSpace.basisFun (Fin d) ℝ i ⊗ₜ[ℝ] EuclideanSpace.basisFun (Fin d) ℝ j := by
   simp only [magneticFieldMatrix, LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_comp,
-    ContinuousLinearMap.coe_mk', Function.comp_apply, distTimeSlice_apply, fieldStrength_eq_basis,
-    Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero, Fin.isValue,
-    Finset.sum_singleton, inl_0_inl_0, one_mul, inr_i_inr_i, neg_mul, sub_neg_eq_add, sub_self,
-    zero_smul, zero_add, map_add, map_sum, map_smul, map_tmul, ContinuousLinearMap.coe_coe,
-    Lorentz.Vector.spatialCLM_basis_sum_inl, Lorentz.Vector.spatialCLM_basis_sum_inr,
-    EuclideanSpace.basisFun_apply, zero_tmul, smul_zero, Finset.sum_const_zero, tmul_zero]
-  simp [← distTimeSlice_apply, distTimeSlice_distDeriv_inr, vectorPotential,
+    ContinuousLinearMap.coe_mk', Function.comp_apply, tempDistTimeSlice_apply,
+    fieldStrength_eq_basis, Fintype.sum_sum_type, Finset.univ_unique, Fin.default_eq_zero,
+    Fin.isValue, Finset.sum_singleton, inl_0_inl_0, one_mul, inr_i_inr_i, neg_mul, sub_neg_eq_add,
+    sub_self, zero_smul, zero_add, map_add, map_sum, map_smul, map_tmul,
+    ContinuousLinearMap.coe_coe, Lorentz.Vector.spatialCLM_basis_sum_inl,
+    Lorentz.Vector.spatialCLM_basis_sum_inr, EuclideanSpace.basisFun_apply, zero_tmul,
+    smul_zero, Finset.sum_const_zero, tmul_zero]
+  simp [← tempDistTimeSlice_apply, distTimeSlice_distDeriv_inr, vectorPotential,
   Space.distSpaceDeriv_apply_CLM, Lorentz.Vector.spatialCLM, neg_add_eq_sub]
 
 lemma magneticFieldMatrix_basis_repr_eq_vector_potential {c : SpeedOfLight}
@@ -130,11 +131,11 @@ lemma magneticFieldMatrix_basis_repr_eq_fieldStrength {c : SpeedOfLight}
     map_smul, Finsupp.coe_finsetSum, Finsupp.coe_smul, Finset.sum_apply, Pi.smul_apply,
     Basis.tensorProduct_repr_tmul_apply, PiLp.basisFun_repr, PiLp.single_apply,
     smul_eq_mul, mul_ite, mul_one, mul_zero, Finset.sum_ite_irrel, Finset.sum_ite_eq,
-    Finset.mem_univ, ↓reduceIte, Finset.sum_const_zero, distTimeSlice_apply,
+    Finset.mem_univ, ↓reduceIte, Finset.sum_const_zero, tempDistTimeSlice_apply,
     fieldStrength_basis_repr_eq_single, inr_i_inr_i, neg_mul, one_mul, sub_neg_eq_add]
   simp only [vectorPotential, Vector.spatialCLM, LinearMap.coe_mk, AddHom.coe_mk,
     Space.distSpaceDeriv_apply_CLM, ContinuousLinearMap.coe_comp, ContinuousLinearMap.coe_mk',
-    Function.comp_apply, ← distTimeSlice_apply, distTimeSlice_distDeriv_inr]
+    Function.comp_apply, ← tempDistTimeSlice_apply, distTimeSlice_distDeriv_inr]
   ring
 
 /-!

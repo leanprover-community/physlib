@@ -5,54 +5,50 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalField.Jet
-public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.Realization.TransformsAdjoint
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.LocalFieldAlgebra.Jet
+public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.GaugeBoson.AdjointFamily.CovariantDeriv
 /-!
-# Gauge tensors in a general representation
+# The covariant derivative of a matter family
+
+The covariant derivative tower of a family of matter symbols in an algebra of symbols.
 
 ## i. Overview
 
-The adjoint story of `TransformsInAdjoint` generalizes to an arbitrary representation
-of the jet gauge group: a matter field valued in a representation space `V` has
-symbols `[∂_s ψ^i]` contracted against duals of `V`, and its transformation law is
-the Leibniz convolution of the base-point Taylor coefficients of the representation.
+A matter field valued in a complex vector space `V` has derivative symbols `[∂_s ψ]`,
+indexed by a multiset `s` of directions and contracted against the dual of `V`. This file
+works with such families `F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B` in an
+algebra of symbols `B`, together with a family `A` of gauge-field symbols `[∂_s A_μ]`.
 
-Since the gauge transformations are jets, the representation must act on `V`-valued
-jets `SpaceTimeAlgebra ⊗[ℂ] V` — the value of `rep U` at a constant vector is spacetime
-dependent, and the derivative symbols see its Taylor coefficients. This file provides
-the toolkit for `V`-valued jets:
+Under a jet gauge transformation the value of `rep U` at a constant vector depends on the
+spacetime point, so the derivative symbols see its Taylor coefficients at the base point.
+These are `repCoeff rep U x`, and their transposes to the dual of `V` are
+`repDualCoeff rep U x`, the analogue of `adjointDualCoeff` for a general representation.
 
-* `jetOfConstant` — the inclusion of constants, `v ↦ 1 ⊗ v`;
-* `jetDeriv`/`jetIteratedDeriv` — the formal derivative, acting on the jet factor;
-* `jetEval` — evaluation at the base point, `f ⊗ v ↦ (constant coefficient of f) • v`;
+The covariant derivative `∇_ρ F = ∂_ρ F + A_ρ · F` needs the infinitesimal action
+`act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V` of the gauge algebra on `V`, the physicists'
+`i dρ(T^a)`. Here it is an argument. For a matter field it is the derivative of the group
+representation, `MatterField.repAlgebra`. The derived action `A_ρ · F` is the Leibniz
+convolution of the action of the gauge-field symbols on the matter symbols, and
+`covDerivIter` iterates `∇` along an ordered tuple of directions.
 
-and with them
-
-* `repDualCoeff rep U x` — the physicists' `∂_x (rep U)^i_j|₀` transposed to the dual
-  of `V`, the analogue of `adjointDualCoeff` for a general representation;
-The gauge tensors of a representation themselves — `LocalGaugeData.TransformsIn`, the
-generalization of `TransformsInAdjoint` — are defined on top of `repDualCoeff` in
-`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.TransformsIn`.
-
-
-The covariant derivative `∇_ρ F = D_ρ F + (A_ρ acting on the value index)` requires
-the *infinitesimal* action of the gauge algebra on the value space — physicists'
-`i dρ(T^a)` — which cannot be extracted from the abstract group representation `rep`
-(there is no differentiable structure to differentiate it). It is therefore taken as
-data: an `ℝ`-bilinear action `act : GaugeAlgebra →ₗ[ℝ] W →ₗ[ℝ] W`. The layer is
-built for an arbitrary finite-dimensional real value space `W`, so that the adjoint
-case `act = adAction` (the bracket as a bilinear map) literally specializes:
-`covDerivAction A adAction F D ρ = covDerivAdjoint A F D ρ` holds definitionally
-(`covDerivAction_adAction`).
-
-The compatibility between `rep` and `act` — the structure `IsInfinitesimalActionOf` —
-and the theorem that under it the covariant derivative preserves the gauge tensors live
-in `PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction`.
+The covariant tower and the plain derivative symbols generate the same algebra together with
+the gauge-field symbols (the span lemma). The tower is natural under multiplicative linear maps
+of the algebra and inherits mass weights and anticommutation from the bare family. That the
+covariant derivative preserves the transformation law is proved in
+`PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalAction`.
 
 ## ii. Key results
 
 - `repDualCoeff` : the physicists' `∂_x (rep U)^i_j|₀` acting on the complex dual index of a
-  matter-field symbol: the transpose of `repCoeff`
+  matter-field symbol, the transpose of `repCoeff`
+- `covDerivIter` : the iterated covariant derivative of a matter family
+- `adjoin_symbols_eq_adjoin_covDerivIter` : the span lemma, and its membership form
+  `apply_mem_of_covDerivIter_mem`
+- `covDerivIter_map` : the covariant tower is natural in the algebra
+- `covDerivIter_mem_massWeightEigenspace` : the covariant tower of a family of weight
+  `c + 2 * |t|` has weight `c + 2 * n + 2 * |s|`
+- `covDerivIter_mem_anticommuteSubmodule` : anything commuting with the gauge-field symbols and
+  anticommuting with the bare family anticommutes with its covariant tower
 
 ## iii. Table of contents
 
@@ -60,6 +56,7 @@ in `PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.InfinitesimalActio
 - B. The covariant derivative through an infinitesimal action
 - C. The span lemma
 - D. Naturality in the algebra
+- E. Mass weights and statistics of the tower
 
 ## iv. References
 
@@ -73,19 +70,16 @@ set_option linter.unusedSectionVars false
 
 open Matrix MatrixGroups TensorProduct MvPowerSeries
 variable {B : Type} [Ring B] [Algebra ℂ B]
-variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ 𝔤] [Module.Finite ℝ 𝔤]
-variable {GJ : Type} [Group GJ] {𝔤J : Type} [LieRing 𝔤J] [LieAlgebra ℝ 𝔤J]
-variable {jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J}
+variable {κ : Type} [Fintype κ] [DecidableEq κ] {G : GlobalGaugeGroup κ}
 variable {V : Type} [AddCommGroup V] [Module ℂ V]
 
-namespace GaugeAlgebraRealization
+namespace GlobalGaugeGroup
 
-variable {repLorentz : Representation ℂ SL(2,ℂ) B}
-variable {repGauge : Representation ℂ GJ B}
-variable {repLorentz : Representation ℂ SL(2,ℂ) B}
-variable {repGauge : Representation ℂ GJ B}
-variable {A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B}
-variable (h : GaugeAlgebraRealization jets B repGauge repLorentz)
+open GaugeBoson (dualPairEquiv dualPairEquiv_tmul symm_comp_left massWeightEigenspace
+  mul_mem_massWeightEigenspace anticommuteSubmodule mul_mem_anticommuteSubmodule)
+
+variable {repGauge : Representation ℂ G.gaugeJetGroup B}
+variable {A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B}
 
 /-!
 
@@ -93,31 +87,31 @@ variable (h : GaugeAlgebraRealization jets B repGauge repLorentz)
 
 -/
 
-/-- The base-point Taylor coefficient of the representation: include the constant
-  vector into `V`-valued jets, act by `rep U`, differentiate `x` times, evaluate at
-  the base point. The composite is complex-linear: the physicists'
-  `∂_x (rep U)^i_j|₀` as a ℂ-linear map on the value space. -/
-noncomputable def repCoeff (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] V))
-    (U : GJ) (x : Multiset (Fin 1 ⊕ Fin 3)) : V →ₗ[ℂ] V :=
+/-- The base-point Taylor coefficient of the representation. It includes the constant
+  vector into `V`-valued jets, acts by `rep U`, differentiates `x` times and evaluates at
+  the base point. The composite is the physicists' `∂_x (rep U)^i_j|₀` as a ℂ-linear map on
+  the value space. -/
+noncomputable def repCoeff (rep : Representation ℂ G.gaugeJetGroup (SpaceTimeAlgebra ⊗[ℂ] V))
+    (U : G.gaugeJetGroup) (x : Multiset (Fin 1 ⊕ Fin 3)) : V →ₗ[ℂ] V :=
   jetEval ∘ₗ jetIteratedDeriv x ∘ₗ rep U ∘ₗ jetOfConstant
 
 /-- The physicists' `∂_x (rep U)^i_j|₀` acting on the complex dual index of a
-  matter-field symbol: the transpose of `repCoeff`. This is the analogue of
+  matter-field symbol, the transpose of `repCoeff`. This is the analogue of
   `adjointDualCoeff` for a general representation of the jet gauge group; for `x = 0`
   it is the dual (contragredient) action of the value of `U`, and for `x ≠ 0` it sees
   the derivatives of the gauge transformation. -/
-noncomputable def repDualCoeff (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] V))
-    (U : GJ) (x : Multiset (Fin 1 ⊕ Fin 3)) :
+noncomputable def repDualCoeff (rep : Representation ℂ G.gaugeJetGroup (SpaceTimeAlgebra ⊗[ℂ] V))
+    (U : G.gaugeJetGroup) (x : Multiset (Fin 1 ⊕ Fin 3)) :
     Module.Dual ℂ V →ₗ[ℂ] Module.Dual ℂ V :=
   (repCoeff rep U x).dualMap
 
 /-- For a fibrewise representation, evaluating the transform of a jet at the base point
-  is the zeroth Taylor coefficient of the transform of its base-point value: the jet ring
-  factor passes through the action and is then evaluated. -/
-lemma jetEval_rep_of_smul (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] V))
-    (hlin : ∀ (U : GJ) (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] V), rep U
+  is the zeroth Taylor coefficient of the transform of its base-point value. The jet
+  ring factor passes through the action and is then evaluated. -/
+lemma jetEval_rep_of_smul (rep : Representation ℂ G.gaugeJetGroup (SpaceTimeAlgebra ⊗[ℂ] V))
+    (hlin : ∀ (U : G.gaugeJetGroup) (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] V), rep U
         (χ • z) = χ • rep U z)
-    (U : GJ) (z : SpaceTimeAlgebra ⊗[ℂ] V) :
+    (U : G.gaugeJetGroup) (z : SpaceTimeAlgebra ⊗[ℂ] V) :
     jetEval (rep U z) = repCoeff rep U 0 (jetEval z) := by
   induction z using TensorProduct.inductionOn with
   | add a b ha hb => rw [map_add, map_add, ha, hb, map_add, map_add]
@@ -127,12 +121,12 @@ lemma jetEval_rep_of_smul (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ
       hlin, jetEval_smul, jetEval_smul, jetEval_jetOfConstant, map_smul]
     simp only [repCoeff, LinearMap.comp_apply, jetIteratedDeriv_zero, LinearMap.id_apply]
 
-/-- The zeroth Taylor coefficients of a fibrewise representation are multiplicative: they
+/-- The zeroth Taylor coefficients of a fibrewise representation are multiplicative, so they
   form a representation of the jet gauge group on the value space. -/
-lemma repCoeff_zero_mul (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] V))
-    (hlin : ∀ (U : GJ) (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] V), rep U
+lemma repCoeff_zero_mul (rep : Representation ℂ G.gaugeJetGroup (SpaceTimeAlgebra ⊗[ℂ] V))
+    (hlin : ∀ (U : G.gaugeJetGroup) (χ : SpaceTimeAlgebra) (z : SpaceTimeAlgebra ⊗[ℂ] V), rep U
         (χ • z) = χ • rep U z)
-    (U W : GJ) : repCoeff rep (U * W) 0 = repCoeff rep U 0 ∘ₗ repCoeff rep W 0 := by
+    (U W : G.gaugeJetGroup) : repCoeff rep (U * W) 0 = repCoeff rep U 0 ∘ₗ repCoeff rep W 0 := by
   refine LinearMap.ext fun v => ?_
   have h := jetEval_rep_of_smul rep hlin U (rep W (jetOfConstant v))
   simp only [repCoeff, LinearMap.comp_apply, jetIteratedDeriv_zero, LinearMap.id_apply, map_mul,
@@ -143,26 +137,25 @@ lemma repCoeff_zero_mul (rep : Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] 
 
 ## B. The covariant derivative through an infinitesimal action
 
-The covariant derivative `∇_ρ F = [∂_ρ F] + A_ρ · F` requires the *infinitesimal*
-action of the gauge algebra on the value space — physicists' `i dρ(T^a)` — which
-cannot be extracted from the abstract group representation `rep` (there is no
-differentiable structure to differentiate it). It is therefore taken as data: an
-action `act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V`, real-linear in the algebra slot (the
+The covariant derivative `∇_ρ F = [∂_ρ F] + A_ρ · F` requires the infinitesimal
+action of the gauge algebra on the value space, the physicists' `i dρ(T^a)`. Here it is an
+argument `act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V`, real-linear in the algebra slot (the
 gauge algebra is a real Lie algebra) and complex-linear in the value slot, matching
-the complex duals indexing the matter families.
+the complex duals indexing the matter families. For a matter field it is
+`MatterField.repAlgebra`, the derivative of the group representation.
 
 -/
 
 section Action
 
-variable {act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V}
+variable {act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V}
 
-/-- The action of an adjoint-valued field on a matter field at the tensor level:
-  multiplication in `B` on the first factors, the ℂ-linear infinitesimal action `act`
-  of the gauge algebra on `V` on the second, so that on pure tensors
+/-- The action of an adjoint-valued field on a matter field at the tensor level. It is
+  multiplication in `B` on the first factors and the ℂ-linear infinitesimal action `act`
+  of the gauge algebra on `V` on the second factors, so that on pure tensors
   `(b₁ ⊗ c) · (b₂ ⊗ v) = (b₁ b₂) ⊗ act c v`. -/
-noncomputable def tensorAction (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) :
-    (B ⊗[ℝ] 𝔤) →ₗ[ℝ] (B ⊗[ℂ] V) →ₗ[ℂ] B ⊗[ℂ] V :=
+noncomputable def tensorAction (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V) :
+    (B ⊗[ℝ] G.lieSubalgebra) →ₗ[ℝ] (B ⊗[ℂ] V) →ₗ[ℂ] B ⊗[ℂ] V :=
   TensorProduct.lift
     { toFun := fun b₁ =>
         { toFun := fun c => TensorProduct.map (LinearMap.mulLeft ℂ b₁) (act c)
@@ -175,15 +168,13 @@ noncomputable def tensorAction (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) :
       map_smul' := fun r b₁ => LinearMap.ext fun c => TensorProduct.ext' fun b₂ v => by
         simp [TensorProduct.smul_tmul'] }
 
-omit [Module.Finite ℝ 𝔤] in
 @[simp]
-lemma tensorAction_tmul (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (b₁ b₂ : B)
-    (c : 𝔤) (v : V) :
+lemma tensorAction_tmul (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V) (b₁ b₂ : B)
+    (c : G.lieSubalgebra) (v : V) :
     tensorAction act (b₁ ⊗ₜ[ℝ] c) (b₂ ⊗ₜ[ℂ] v) = (b₁ * b₂) ⊗ₜ[ℂ] act c v := rfl
 
-omit [Module.Finite ℝ 𝔤] in
-lemma tensorAction_map_left (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (Φ : B →ₗ[ℂ] B)
-    (hΦ : ∀ b₁ b₂, Φ (b₁ * b₂) = Φ b₁ * Φ b₂) (s : B ⊗[ℝ] 𝔤)
+lemma tensorAction_map_left (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V) (Φ : B →ₗ[ℂ] B)
+    (hΦ : ∀ b₁ b₂, Φ (b₁ * b₂) = Φ b₁ * Φ b₂) (s : B ⊗[ℝ] G.lieSubalgebra)
     (t : B ⊗[ℂ] V) :
     tensorAction act ((TensorProduct.map (Φ.restrictScalars ℝ) LinearMap.id) s)
         ((TensorProduct.map Φ LinearMap.id) t) =
@@ -197,8 +188,7 @@ lemma tensorAction_map_left (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (Φ : B →
           rw [hx, hy]
   | add x y hx hy => simp [hx, hy]
 
-omit [Module.Finite ℝ 𝔤] in
-lemma tensorAction_one_left (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (c : 𝔤)
+lemma tensorAction_one_left (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V) (c : G.lieSubalgebra)
     (t : B ⊗[ℂ] V) :
     tensorAction act ((1 : B) ⊗ₜ[ℝ] c) t =
       (TensorProduct.map LinearMap.id (act c)) t := by
@@ -206,16 +196,15 @@ lemma tensorAction_one_left (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (c : 𝔤)
   | tmul b a => simp
   | add x y hx hy => simp [hx, hy]
 
-omit [Module.Finite ℝ 𝔤] in
-/-- `tensorAction` under an antidiagonal pair of transport families: if the
-  `V`-transports intertwine `act` with the `𝔤`-transports as an
+/-- `tensorAction` under an antidiagonal pair of transport families. If the
+  `V`-transports intertwine `act` with the `G.lieSubalgebra`-transports as an
   antidiagonal convolution, so do `id ⊗ ·` over `tensorAction`. -/
-lemma tensorAction_map_right_antidiagonal (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
-    (Tg : Multiset (Fin 1 ⊕ Fin 3) → 𝔤 →ₗ[ℝ] 𝔤)
+lemma tensorAction_map_right_antidiagonal (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (Tg : Multiset (Fin 1 ⊕ Fin 3) → G.lieSubalgebra →ₗ[ℝ] G.lieSubalgebra)
     (Tv : Multiset (Fin 1 ⊕ Fin 3) → V →ₗ[ℂ] V) (x : Multiset (Fin 1 ⊕ Fin 3))
-    (hT : ∀ (c : 𝔤) (w : V), Tv x (act c w) =
+    (hT : ∀ (c : G.lieSubalgebra) (w : V), Tv x (act c w) =
       (x.antidiagonal.map fun p => act (Tg p.1 c) (Tv p.2 w)).sum)
-    (s : B ⊗[ℝ] 𝔤) (t : B ⊗[ℂ] V) :
+    (s : B ⊗[ℝ] G.lieSubalgebra) (t : B ⊗[ℂ] V) :
     (x.antidiagonal.map fun p =>
       tensorAction act ((TensorProduct.map LinearMap.id (Tg p.1)) s)
         ((TensorProduct.map LinearMap.id (Tv p.2)) t)).sum =
@@ -286,20 +275,20 @@ lemma symm_comp_right_C (T : V →ₗ[ℂ] V) (g : Module.Dual ℂ V →ₗ[ℂ]
   rfl
 
 /-- The action of an adjoint-indexed component family on a matter one, through the
-  infinitesimal action `act`: assemble both into fields, act by `tensorAction`, read
-  back out as components. This is the physicists' `f^a (T_a)^i_j g^j` with `T = act`,
+  infinitesimal action `act`. Both are assembled into fields, acted on by `tensorAction`
+  and read back out as components. This is the physicists' `f^a (T_a)^i_j g^j` with `T = act`,
   basis-free. -/
-noncomputable def actionFam (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
-    (f : Module.Dual ℝ 𝔤 →ₗ[ℝ] B) (g : Module.Dual ℂ V →ₗ[ℂ] B) :
+noncomputable def actionFam (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B) (g : Module.Dual ℂ V →ₗ[ℂ] B) :
     Module.Dual ℂ V →ₗ[ℂ] B :=
   dualPairEquivC (tensorAction act (dualPairEquiv.symm f) (dualPairEquivC.symm g))
 
-lemma actionFam_add_left (f₁ f₂ : Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
+lemma actionFam_add_left (f₁ f₂ : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
     (g : Module.Dual ℂ V →ₗ[ℂ] B) :
     actionFam act (f₁ + f₂) g = actionFam act f₁ g + actionFam act f₂ g := by
   simp only [actionFam, map_add, LinearMap.add_apply]
 
-lemma actionFam_add_right (f : Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
+lemma actionFam_add_right (f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
     (g₁ g₂ : Module.Dual ℂ V →ₗ[ℂ] B) :
     actionFam act f (g₁ + g₂) = actionFam act f g₁ + actionFam act f g₂ := by
   simp only [actionFam, map_add]
@@ -308,55 +297,49 @@ lemma actionFam_zero_left (g : Module.Dual ℂ V →ₗ[ℂ] B) :
     actionFam act 0 g = 0 := by
   simp [actionFam]
 
-lemma actionFam_zero_right (f : Module.Dual ℝ 𝔤 →ₗ[ℝ] B) :
+lemma actionFam_zero_right (f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B) :
     actionFam act f 0 = 0 := by
   simp [actionFam]
 
-lemma actionFam_sum_left (S : Multiset (Module.Dual ℝ 𝔤 →ₗ[ℝ] B))
+lemma actionFam_sum_left (S : Multiset (Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B))
     (g : Module.Dual ℂ V →ₗ[ℂ] B) :
     actionFam act S.sum g = (S.map fun f => actionFam act f g).sum := by
   induction S using Multiset.induction_on with
   | empty => simp [actionFam_zero_left]
   | cons f S ih => simp [actionFam_add_left, ih]
 
-lemma actionFam_sum_right (f : Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
+lemma actionFam_sum_right (f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
     (S : Multiset (Module.Dual ℂ V →ₗ[ℂ] B)) :
     actionFam act f S.sum = (S.map fun g => actionFam act f g).sum := by
   induction S using Multiset.induction_on with
   | empty => simp [actionFam_zero_right]
   | cons g S ih => simp [actionFam_add_right, ih]
 
-set_option maxHeartbeats 1000000 in
-include h in
 /-- The gauge transformation of the action of an affinely-transforming
-  adjoint-indexed family on a linearly-transforming matter family: the action of the
-  transformed families plus one `act`-type cross term. This is `repGauge_bracketFam`
-  with a homogeneous second slot and the bracket replaced by a general action. -/
+  adjoint-indexed family on a linearly-transforming matter family. It is the action of the
+  transformed families plus one `act`-type cross term. This is `GaugeBoson.repGauge_bracketFam`
+  with a homogeneous second slot and the bracket replaced by a general action. Only the
+  multiplicativity of the action of `U` is used. -/
 lemma repGauge_actionFam
-    (U : GJ) {f f' : Module.Dual ℝ 𝔤 →ₗ[ℝ] B}
-    {g g' : Module.Dual ℂ V →ₗ[ℂ] B} {cf : 𝔤}
-    (hf : ∀ ψ : Module.Dual ℝ 𝔤,
+    (U : G.gaugeJetGroup)
+    (hmul : ∀ b₁ b₂ : B, repGauge U (b₁ * b₂) = repGauge U b₁ * repGauge U b₂)
+    {f f' : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B}
+    {g g' : Module.Dual ℂ V →ₗ[ℂ] B} {cf : G.lieSubalgebra}
+    (hf : ∀ ψ : Module.Dual ℝ G.lieSubalgebra,
       repGauge U (f ψ) = f' ψ + algebraMap ℂ B (ψ cf))
     (hg : ∀ ψ : Module.Dual ℂ V, repGauge U (g ψ) = g' ψ)
     (φ : Module.Dual ℂ V) :
     repGauge U (actionFam act f g φ) =
       actionFam act f' g' φ + g' (φ ∘ₗ act cf) := by
   set Φ : B →ₗ[ℂ] B := repGauge U with hΦdef
-  have hΦmul : ∀ b₁ b₂ : B, Φ (b₁ * b₂) = Φ b₁ * Φ b₂ := fun b₁ b₂ =>
-    h.repJet_mul U b₁ b₂
-  set s : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm f with hs
+  have hΦmul : ∀ b₁ b₂ : B, Φ (b₁ * b₂) = Φ b₁ * Φ b₂ := hmul
+  set s : B ⊗[ℝ] G.lieSubalgebra := dualPairEquiv.symm f with hs
   set t : B ⊗[ℂ] V := dualPairEquivC.symm g with ht
-  set s' : B ⊗[ℝ] 𝔤 := dualPairEquiv.symm f' with hs'
+  set s' : B ⊗[ℝ] G.lieSubalgebra := dualPairEquiv.symm f' with hs'
   set t' : B ⊗[ℂ] V := dualPairEquivC.symm g' with ht'
   have hfm : (TensorProduct.map (Φ.restrictScalars ℝ) LinearMap.id) s
       = s' + (1 : B) ⊗ₜ[ℝ] cf := by
-    rw [hs, hs', ← symm_comp_left,
-      show Φ.restrictScalars ℝ ∘ₗ f = f' + dualPairEquiv ((1 : B) ⊗ₜ[ℝ] cf) from
-        LinearMap.ext fun ψ => by
-          simp only [LinearMap.comp_apply, LinearMap.add_apply, hΦdef,
-            LinearMap.restrictScalars_apply]
-          rw [hf ψ, dualPairEquiv_one_tmul],
-      map_add, LinearEquiv.symm_apply_apply]
+    rw [hs, hs']; exact GaugeBoson.map_dualPairEquiv_symm_of_affine (Φ.restrictScalars ℝ) hf
   have hgm : (TensorProduct.map Φ LinearMap.id) t = t' := by
     rw [ht, ht', ← symm_comp_left_C,
       show Φ ∘ₗ g = g' from LinearMap.ext fun ψ => by
@@ -383,46 +366,45 @@ lemma repGauge_actionFam
     hread, hact', hπt']
   rfl
 
-/-- The derived action family `A_ρ · F`: the `s`-derivative of the action of the
+/-- The derived action family `A_ρ · F`, the `s`-derivative of the action of the
   gauge field on a matter family, given by the Leibniz convolution of the derivative
-  symbols over the multiset antidiagonal — the matter analogue of `bracketFamConv`. -/
+  symbols over the multiset antidiagonal — the matter analogue of `GaugeBoson.bracketFamConv`. -/
 noncomputable def actionFamConv
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (ρ : Fin 1 ⊕ Fin 3)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V) (ρ : Fin 1 ⊕ Fin 3)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (s : Multiset (Fin 1 ⊕ Fin 3)) : Module.Dual ℂ V →ₗ[ℂ] B :=
   (s.antidiagonal.map fun p => actionFam act (A p.1 ρ) (F p.2)).sum
 
 /-- The covariant derivative `∇_ρ F = [∂_ρ F] + A_ρ · F` of a matter family of
-  derivative symbols, in the single direction `ρ`: the extra derivative on the symbol
+  derivative symbols, in the single direction `ρ`, the extra derivative on the symbol
   plus the derived action of the gauge field on the value index. With the physicists'
   factor of `i` absorbed into `act` (as it is in the gauge-algebra bracket), this is
   `∂_ρ F + i A_ρ^a T_a F` in the `D = ∂ + i A` convention. -/
 noncomputable def covDerivAction
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (ρ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) : Module.Dual ℂ V →ₗ[ℂ] B :=
   F (ρ ::ₘ s) + actionFamConv A act ρ F s
 
 @[simp]
 lemma covDerivAction_apply
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (ρ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) (φ : Module.Dual ℂ V) :
     covDerivAction A act F ρ s φ = F (ρ ::ₘ s) φ + actionFamConv A act ρ F s φ := rfl
 
-/-- **The iterated covariant derivative** `∇_{l 0} ⋯ ∇_{l (n-1)} F` of a matter family
-  along an ordered tuple of directions: covariant derivatives do not commute (their
+/-- The iterated covariant derivative `∇_{l 0} ⋯ ∇_{l (n-1)} F` of a matter family
+  along an ordered tuple of directions. Covariant derivatives do not commute (their
   commutator is the action of the field strength), so the iteration is order-dependent
-  and indexed by `(n : ℕ)` and `l : Fin n → (Fin 1 ⊕ Fin 3)` — the same ordered-tuple
-  indexing as the derivative labels of `IsHiggsAlgebraValued`. The result is again a
+  and indexed by `(n : ℕ)` and `l : Fin n → (Fin 1 ⊕ Fin 3)`. The result is again a
   family of derivative symbols; the physical iterated covariant derivative is its
   value at the empty multiset. -/
 noncomputable def covDerivIter
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B) :
     (n : ℕ) → (Fin n → (Fin 1 ⊕ Fin 3)) →
       Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B
@@ -430,13 +412,13 @@ noncomputable def covDerivIter
   | n + 1, l => covDerivAction A act (covDerivIter A act F n fun i => l i.succ) (l 0)
 
 @[simp]
-lemma covDerivIter_zero (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+lemma covDerivIter_zero (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (l : Fin 0 → (Fin 1 ⊕ Fin 3)) :
     covDerivIter A act F 0 l = F := rfl
 
 @[simp]
-lemma covDerivIter_succ (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+lemma covDerivIter_succ (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     {n : ℕ} (l : Fin (n + 1) → (Fin 1 ⊕ Fin 3)) :
     covDerivIter A act F (n + 1) l =
@@ -455,10 +437,10 @@ which lies in the algebra generated by the symbols but not in their linear span.
 -/
 
 /-- Decomposition of an assembled adjoint-indexed family along a basis of the gauge
-  algebra: the components against the dual basis, tensored with the basis vectors. -/
+  algebra, as the components against the dual basis, tensored with the basis vectors. -/
 lemma dualPairEquiv_symm_eq_sum {ι : Type*} [Fintype ι]
-    (bW : Module.Basis ι ℝ 𝔤)
-    (g : Module.Dual ℝ 𝔤 →ₗ[ℝ] B) :
+    (bW : Module.Basis ι ℝ G.lieSubalgebra)
+    (g : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B) :
     dualPairEquiv.symm g = ∑ i, g (bW.coord i) ⊗ₜ[ℝ] bW i := by
   apply dualPairEquiv.injective
   rw [LinearEquiv.apply_symm_apply]
@@ -503,29 +485,73 @@ lemma dualPairEquivC_symm_eq_sum {ι : Type*} [Fintype ι] (bW : Module.Basis ι
     _ = g φ := by rw [hdual]
 
 /-- The value of an action of families lies in any subalgebra containing the values
-  of both families: the action is a finite sum of products of components. -/
-lemma actionFam_apply_mem {act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V} {P : Subalgebra ℂ B}
-    {f : Module.Dual ℝ 𝔤 →ₗ[ℝ] B} {g : Module.Dual ℂ V →ₗ[ℂ] B}
+  of both families, since the action is a finite sum of products of components. -/
+lemma actionFam_apply_mem {act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V} {P : Subalgebra ℂ B}
+    {f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B} {g : Module.Dual ℂ V →ₗ[ℂ] B}
     (hf : ∀ ψ, f ψ ∈ P) (hg : ∀ χ, g χ ∈ P) (φ : Module.Dual ℂ V) :
     actionFam act f g φ ∈ P := by
-  rw [actionFam, dualPairEquiv_symm_eq_sum (Module.finBasis ℝ 𝔤) f,
+  rw [actionFam, dualPairEquiv_symm_eq_sum (Module.finBasis ℝ G.lieSubalgebra) f,
     dualPairEquivC_symm_eq_sum (Module.finBasis ℂ V) g]
   simp only [map_sum, LinearMap.sum_apply, tensorAction_tmul, dualPairEquivC_tmul]
   refine sum_mem fun i _ => sum_mem fun j _ => ?_
   exact P.smul_mem (mul_mem (hf _) (hg _)) _
 
-/-- **Unitriangularity of the covariant matter tower**: the covariant and plain
+omit [FiniteDimensional ℂ V] in
+/-- The subalgebra generated by the gauge-field symbols and the matter symbols of order below
+  `k` grows with `k`. -/
+private lemma adjoin_lowerSymbols_mono (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
+    {k m : ℕ} (hkm : k ≤ m) :
+    Algebra.adjoin ℂ
+      ({b : B | ∃ u μ ψ, b = A u μ ψ} ∪
+        {b : B | ∃ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
+          t.card < k ∧ b = F t χ}) ≤
+    Algebra.adjoin ℂ
+      ({b : B | ∃ u μ ψ, b = A u μ ψ} ∪
+        {b : B | ∃ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
+          t.card < m ∧ b = F t χ}) := by
+  refine Algebra.adjoin_mono (Set.union_subset_union_right _ ?_)
+  rintro b ⟨t, χ, ht, rfl⟩
+  exact ⟨t, χ, by omega, rfl⟩
+
+/-- Moving the first direction of a tuple into the multiset of derivatives. -/
+private lemma ofFn_add_eq_ofFn_succ_add_cons {n : ℕ} (l : Fin (n + 1) → (Fin 1 ⊕ Fin 3))
+    (s : Multiset (Fin 1 ⊕ Fin 3)) :
+    ((List.ofFn l : List (Fin 1 ⊕ Fin 3)) : Multiset (Fin 1 ⊕ Fin 3)) + s =
+      ((List.ofFn fun i : Fin n => l i.succ : List (Fin 1 ⊕ Fin 3)) :
+        Multiset (Fin 1 ⊕ Fin 3)) + (l 0 ::ₘ s) := by
+  rw [List.ofFn_succ,
+    show (((l 0 :: List.ofFn fun i : Fin n => l i.succ : List (Fin 1 ⊕ Fin 3))) :
+        Multiset (Fin 1 ⊕ Fin 3))
+      = l 0 ::ₘ ((List.ofFn fun i : Fin n => l i.succ : List (Fin 1 ⊕ Fin 3)) :
+        Multiset (Fin 1 ⊕ Fin 3)) from rfl,
+    Multiset.cons_add, Multiset.add_cons]
+
+/-- One step of the unitriangular expansion. The difference between a covariant symbol with
+  `n + 1` directions and the plain symbol of the same total order is the difference one step
+  lower plus the derived action of the gauge field on the lower tower. -/
+lemma covDerivIter_succ_sub (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
+    {n : ℕ} (l : Fin (n + 1) → (Fin 1 ⊕ Fin 3)) (s : Multiset (Fin 1 ⊕ Fin 3))
+    (φ : Module.Dual ℂ V) :
+    covDerivIter A act F (n + 1) l s φ - F (List.ofFn l + s) φ =
+      (covDerivIter A act F n (fun i => l i.succ) (l 0 ::ₘ s) φ -
+          F (List.ofFn (fun i : Fin n => l i.succ) + (l 0 ::ₘ s)) φ) +
+        actionFamConv A act (l 0) (covDerivIter A act F n fun i => l i.succ) s φ := by
+  rw [covDerivIter_succ, covDerivAction_apply, ofFn_add_eq_ofFn_succ_add_cons]
+  abel
+
+/-- Unitriangularity of the covariant matter tower. The covariant and plain
   derivative symbols of a matter family differ by an element of the subalgebra
   generated by the gauge-field symbols and the strictly lower-order matter symbols.
   Stated at every derivative multiset `s`, as needed for the induction. -/
-lemma covDerivIter_sub_mem (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+lemma covDerivIter_sub_mem (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (n : ℕ) (l : Fin n → (Fin 1 ⊕ Fin 3)) (s : Multiset (Fin 1 ⊕ Fin 3))
     (φ : Module.Dual ℂ V) :
     covDerivIter A act F n l s φ - F (List.ofFn l + s) φ ∈
       Algebra.adjoin ℂ
         ({b : B | ∃ (u : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3)
-            (ψ : Module.Dual ℝ 𝔤), b = A u μ ψ} ∪
+            (ψ : Module.Dual ℝ G.lieSubalgebra), b = A u μ ψ} ∪
           {b : B | ∃ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
             t.card < n + s.card ∧ b = F t χ}) := by
   induction n generalizing s φ with
@@ -535,42 +561,9 @@ lemma covDerivIter_sub_mem (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
         zero_add, sub_self]
       exact zero_mem _
   | succ n ih =>
-      have hmono : ∀ {k m : ℕ}, k ≤ m →
-          Algebra.adjoin ℂ
-            ({b : B | ∃ u μ ψ, b = A u μ ψ} ∪
-              {b : B | ∃ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
-                t.card < k ∧ b = F t χ}) ≤
-          Algebra.adjoin ℂ
-            ({b : B | ∃ u μ ψ, b = A u μ ψ} ∪
-              {b : B | ∃ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
-                t.card < m ∧ b = F t χ}) := by
-        intro k m hkm
-        refine Algebra.adjoin_mono (Set.union_subset_union_right _ ?_)
-        rintro b ⟨t, χ, ht, rfl⟩
-        exact ⟨t, χ, by omega, rfl⟩
-      have hms : ((List.ofFn l : List (Fin 1 ⊕ Fin 3)) : Multiset (Fin 1 ⊕ Fin 3)) + s =
-          ((List.ofFn fun i : Fin n => l i.succ : List (Fin 1 ⊕ Fin 3)) :
-            Multiset (Fin 1 ⊕ Fin 3)) + (l 0 ::ₘ s) := by
-        rw [List.ofFn_succ,
-          show (((l 0 :: List.ofFn fun i : Fin n => l i.succ : List (Fin 1 ⊕ Fin 3))) :
-              Multiset (Fin 1 ⊕ Fin 3))
-            = l 0 ::ₘ ((List.ofFn fun i : Fin n => l i.succ : List (Fin 1 ⊕ Fin 3)) :
-              Multiset (Fin 1 ⊕ Fin 3)) from rfl,
-          Multiset.cons_add, Multiset.add_cons]
-      have hsplit : covDerivIter A act F (n + 1) l s φ -
-          F (List.ofFn l + s) φ =
-        (covDerivIter A act F n (fun i => l i.succ) (l 0 ::ₘ s) φ -
-            F (List.ofFn (fun i : Fin n => l i.succ) + (l 0 ::ₘ s)) φ) +
-          actionFamConv A act (l 0) (covDerivIter A act F n fun i => l i.succ) s φ := by
-        rw [show covDerivIter A act F (n + 1) l s φ =
-              covDerivIter A act F n (fun i => l i.succ) (l 0 ::ₘ s) φ +
-                actionFamConv A act (l 0)
-                  (covDerivIter A act F n fun i => l i.succ) s φ
-            from rfl, hms]
-        abel
-      rw [hsplit]
+      rw [covDerivIter_succ_sub]
       refine add_mem ?_ ?_
-      · refine hmono ?_ (ih (fun i => l i.succ) (l 0 ::ₘ s) φ)
+      · refine adjoin_lowerSymbols_mono F ?_ (ih (fun i => l i.succ) (l 0 ::ₘ s) φ)
         simp only [Multiset.card_cons]
         omega
       · rw [actionFamConv, Multiset.sum_linearMap_apply, Multiset.map_map]
@@ -581,12 +574,9 @@ lemma covDerivIter_sub_mem (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
           hle ▸ Multiset.card_le_card (Multiset.le_add_left _ _)
         refine actionFam_apply_mem (fun ψ => ?_) (fun χ => ?_) _
         · exact Algebra.subset_adjoin (Or.inl ⟨p.1, l 0, ψ, rfl⟩)
-        · have h3 : covDerivIter A act F n (fun i => l i.succ) p.2 χ =
-              (covDerivIter A act F n (fun i => l i.succ) p.2 χ -
-                F (List.ofFn (fun i : Fin n => l i.succ) + p.2) χ) +
-              F (List.ofFn (fun i : Fin n => l i.succ) + p.2) χ := by abel
-          rw [h3]
-          refine add_mem (hmono ?_ (ih (fun i => l i.succ) p.2 χ)) ?_
+        · rw [← sub_add_cancel (covDerivIter A act F n (fun i => l i.succ) p.2 χ)
+            (F (List.ofFn (fun i : Fin n => l i.succ) + p.2) χ)]
+          refine add_mem (adjoin_lowerSymbols_mono F ?_ (ih (fun i => l i.succ) p.2 χ)) ?_
           · omega
           · refine Algebra.subset_adjoin
               (Or.inr ⟨List.ofFn (fun i : Fin n => l i.succ) + p.2, χ, ?_, rfl⟩)
@@ -595,13 +585,13 @@ lemma covDerivIter_sub_mem (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
 
 /-- Every derivative symbol of the covariant tower is a polynomial in the gauge-field
   symbols and the matter symbols. -/
-lemma covDerivIter_mem_adjoin_symbols (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+lemma covDerivIter_mem_adjoin_symbols (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (n : ℕ) (l : Fin n → (Fin 1 ⊕ Fin 3)) (s : Multiset (Fin 1 ⊕ Fin 3))
     (φ : Module.Dual ℂ V) :
     covDerivIter A act F n l s φ ∈ Algebra.adjoin ℂ
       ({b : B | ∃ (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3)
-          (ψ : Module.Dual ℝ 𝔤), b = A s μ ψ} ∪
+          (ψ : Module.Dual ℝ G.lieSubalgebra), b = A s μ ψ} ∪
         {b : B | ∃ (s : Multiset (Fin 1 ⊕ Fin 3)) (φ : Module.Dual ℂ V),
           b = F s φ}) := by
   induction n generalizing s φ with
@@ -616,21 +606,21 @@ lemma covDerivIter_mem_adjoin_symbols (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
       · exact Algebra.subset_adjoin (Or.inl ⟨p.1, l 0, ψ', rfl⟩)
       · exact ih (fun i => l i.succ) p.2 χ
 
-/-- **The span lemma**: the algebra of symbols generated by the gauge field together
-  with a matter family's *derivative* symbols equals the one generated by the gauge
-  field together with the matter family's *covariant* derivative tower. The
+/-- The span lemma. The algebra of symbols generated by the gauge field together
+  with a matter family's derivative symbols equals the one generated by the gauge
+  field together with the matter family's covariant derivative tower. The
   correction `∇_ρ − ∂_ρ` is the derived action of the gauge field — a sum of products
   of symbols, absorbed by the algebra structure. -/
-lemma adjoin_symbols_eq_adjoin_covDerivIter (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+lemma adjoin_symbols_eq_adjoin_covDerivIter (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B) :
     Algebra.adjoin ℂ
       ({b : B | ∃ (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3)
-          (ψ : Module.Dual ℝ 𝔤), b = A s μ ψ} ∪
+          (ψ : Module.Dual ℝ G.lieSubalgebra), b = A s μ ψ} ∪
         {b : B | ∃ (s : Multiset (Fin 1 ⊕ Fin 3)) (φ : Module.Dual ℂ V),
           b = F s φ}) =
     Algebra.adjoin ℂ
       ({b : B | ∃ (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3)
-          (ψ : Module.Dual ℝ 𝔤), b = A s μ ψ} ∪
+          (ψ : Module.Dual ℝ G.lieSubalgebra), b = A s μ ψ} ∪
         {b : B | ∃ (n : ℕ) (l : Fin n → (Fin 1 ⊕ Fin 3)) (φ : Module.Dual ℂ V),
           b = covDerivIter A act F n l 0 φ}) := by
   refine le_antisymm (Algebra.adjoin_le ?_) (Algebra.adjoin_le ?_)
@@ -642,7 +632,7 @@ lemma adjoin_symbols_eq_adjoin_covDerivIter (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ
           s.card ≤ n →
           F s φ ∈ Algebra.adjoin ℂ
             ({b : B | ∃ (s : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3)
-                (ψ : Module.Dual ℝ 𝔤), b = A s μ ψ} ∪
+                (ψ : Module.Dual ℝ G.lieSubalgebra), b = A s μ ψ} ∪
               {b : B | ∃ (n : ℕ) (l : Fin n → (Fin 1 ⊕ Fin 3)) (φ : Module.Dual ℂ V),
                 b = covDerivIter A act F n l 0 φ}) := by
         intro n
@@ -671,6 +661,19 @@ lemma adjoin_symbols_eq_adjoin_covDerivIter (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ
     · exact Algebra.subset_adjoin (Or.inl ⟨s, μ, ψ, rfl⟩)
     · exact covDerivIter_mem_adjoin_symbols act F n l 0 φ
 
+/-- A derivative symbol of a matter family lies in every subalgebra containing the gauge-field
+symbols and the covariant tower of the family. This is the span lemma
+`adjoin_symbols_eq_adjoin_covDerivIter` read as a membership statement. -/
+lemma apply_mem_of_covDerivIter_mem (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B) {P : Subalgebra ℂ B}
+    (hA : ∀ s μ ψ, A s μ ψ ∈ P)
+    (hF : ∀ n (l : Fin n → (Fin 1 ⊕ Fin 3)) φ, covDerivIter A act F n l 0 φ ∈ P)
+    (s : Multiset (Fin 1 ⊕ Fin 3)) (φ : Module.Dual ℂ V) : F s φ ∈ P := by
+  refine Algebra.adjoin_le ?_ ((adjoin_symbols_eq_adjoin_covDerivIter (A := A) act F).le
+    (Algebra.subset_adjoin (Or.inr ⟨s, φ, rfl⟩)))
+  rintro b (⟨p, μ, ψ, rfl⟩ | ⟨n, l, ψ, rfl⟩)
+  exacts [hA p μ ψ, hF n l ψ]
+
 /-!
 
 ## D. Naturality in the algebra
@@ -692,22 +695,23 @@ include hΦ
 
 /-- The action of an adjoint-indexed family on a matter family is natural in the
   algebra. -/
-lemma actionFam_map (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (f : Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
+lemma actionFam_map (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
     (g : Module.Dual ℂ V →ₗ[ℂ] B) :
     actionFam act (Φ.restrictScalars ℝ ∘ₗ f) (Φ ∘ₗ g) = Φ ∘ₗ actionFam act f g := by
   refine LinearMap.ext fun φ => ?_
   rw [actionFam, actionFam,
-    dualPairEquiv_symm_eq_sum (Module.finBasis ℝ 𝔤) (Φ.restrictScalars ℝ ∘ₗ f),
+    dualPairEquiv_symm_eq_sum (Module.finBasis ℝ G.lieSubalgebra) (Φ.restrictScalars ℝ ∘ₗ f),
     dualPairEquivC_symm_eq_sum (Module.finBasis ℂ V) (Φ ∘ₗ g),
-    dualPairEquiv_symm_eq_sum (Module.finBasis ℝ 𝔤) f,
+    dualPairEquiv_symm_eq_sum (Module.finBasis ℝ G.lieSubalgebra) f,
     dualPairEquivC_symm_eq_sum (Module.finBasis ℂ V) g]
   simp only [map_sum, LinearMap.sum_apply, tensorAction_tmul, dualPairEquivC_tmul,
     LinearMap.comp_apply, LinearMap.coe_restrictScalars, map_smul, hΦ]
 
 /-- The derived action family is natural in the algebra. -/
 lemma actionFamConv_map
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V) (ρ : Fin 1 ⊕ Fin 3)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V) (ρ : Fin 1 ⊕ Fin 3)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (s : Multiset (Fin 1 ⊕ Fin 3)) :
     actionFamConv (fun p σ => Φ.restrictScalars ℝ ∘ₗ A p σ) act ρ (fun p => Φ ∘ₗ F p) s
@@ -723,20 +727,20 @@ lemma actionFamConv_map
 
 /-- The covariant derivative of a matter family is natural in the algebra. -/
 lemma covDerivAction_map
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (ρ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3)) :
     covDerivAction (fun p σ => Φ.restrictScalars ℝ ∘ₗ A p σ) act (fun p => Φ ∘ₗ F p) ρ s
       = Φ ∘ₗ covDerivAction A act F ρ s := by
   rw [covDerivAction, covDerivAction, actionFamConv_map Φ hΦ, LinearMap.comp_add]
 
-/-- The iterated covariant derivative of a matter family is natural in the algebra: the
+/-- The iterated covariant derivative of a matter family is natural in the algebra. The
   image of the tower is the tower of the image families, at every ordered tuple of
   directions and every derivative multiset. -/
 lemma covDerivIter_map
-    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ 𝔤 →ₗ[ℝ] B)
-    (act : 𝔤 →ₗ[ℝ] V →ₗ[ℂ] V)
+    (A : Multiset (Fin 1 ⊕ Fin 3) → (Fin 1 ⊕ Fin 3) → Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B)
+    (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
     (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B)
     (n : ℕ) (l : Fin n → (Fin 1 ⊕ Fin 3)) :
     covDerivIter (fun p σ => Φ.restrictScalars ℝ ∘ₗ A p σ) act (fun p => Φ ∘ₗ F p) n l
@@ -753,9 +757,93 @@ lemma covDerivIter_map
 
 end Naturality
 
+/-!
+
+## E. Mass weights and statistics of the tower
+
+Each term of a covariant tower is a product of gauge-field symbols with a single bare symbol
+of the family, so a property of the bare family that is a submodule and is stable under
+multiplication by the gauge-field symbols passes to the tower. Two such properties matter:
+the mass weight, and anticommutation with a fixed element.
+
+-/
+
+/-- The action pairing of two families lands in any submodule containing the products of
+  their components, since expanded in bases it is a finite sum of scalar multiples of them. -/
+lemma actionFam_apply_mem_submodule {act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V}
+    {M : Submodule ℂ B} {f : Module.Dual ℝ G.lieSubalgebra →ₗ[ℝ] B}
+    {g : Module.Dual ℂ V →ₗ[ℂ] B} (hfg : ∀ ψ χ, f ψ * g χ ∈ M) (φ : Module.Dual ℂ V) :
+    actionFam act f g φ ∈ M := by
+  rw [actionFam, dualPairEquiv_symm_eq_sum (Module.finBasis ℝ G.lieSubalgebra) f,
+    dualPairEquivC_symm_eq_sum (Module.finBasis ℂ V) g]
+  simp only [map_sum, LinearMap.sum_apply, tensorAction_tmul, dualPairEquivC_tmul]
+  exact sum_mem fun i _ => sum_mem fun j _ => M.smul_mem _ (hfg _ _)
+
+/-- The mass weight of a matter covariant tower. If the gauge-field symbols `∂_p A_μ` have
+  weight `2 * (1 + |p|)` and the bare family has weight `c + 2 * |t|` at the derivative
+  multiset `t`, then the `n`-fold covariant derivative has weight `c + 2 * n + 2 * |s|` at
+  `s`. Each covariant derivative costs two units, whether it lands on the derivative index or
+  brings down a gauge-field factor. -/
+lemma covDerivIter_mem_massWeightEigenspace (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B) (P : B →ₐ[ℂ] Polynomial B)
+    (c : ℕ)
+    (hA : ∀ (p : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3) (ψ : Module.Dual ℝ G.lieSubalgebra),
+      A p μ ψ ∈ massWeightEigenspace P (2 * (1 + Multiset.card p)))
+    (hF : ∀ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
+      F t χ ∈ massWeightEigenspace P (c + 2 * Multiset.card t))
+    {n : ℕ} (l : Fin n → (Fin 1 ⊕ Fin 3)) (s : Multiset (Fin 1 ⊕ Fin 3))
+    (φ : Module.Dual ℂ V) :
+    covDerivIter A act F n l s φ ∈ massWeightEigenspace P (c + 2 * n + 2 * Multiset.card s) := by
+  induction n generalizing s φ with
+  | zero =>
+      rw [covDerivIter_zero]
+      simpa using hF s φ
+  | succ n ih =>
+      rw [covDerivIter_succ, covDerivAction_apply]
+      refine add_mem ?_ ?_
+      · have hstep := ih (fun i => l i.succ) (l 0 ::ₘ s) φ
+        rwa [Multiset.card_cons, show c + 2 * n + 2 * (Multiset.card s + 1)
+            = c + 2 * (n + 1) + 2 * Multiset.card s by ring] at hstep
+      · rw [actionFamConv, Multiset.sum_linearMap_apply, Multiset.map_map]
+        refine multiset_sum_mem _ fun x hx => ?_
+        obtain ⟨p, hp, rfl⟩ := Multiset.mem_map.mp hx
+        have hle : Multiset.card p.1 + Multiset.card p.2 = Multiset.card s := by
+          rw [← Multiset.card_add, Multiset.mem_antidiagonal.mp hp]
+        simp only [Function.comp_apply]
+        refine actionFam_apply_mem_submodule (fun ψ χ => ?_) _
+        have hmul := mul_mem_massWeightEigenspace (hA p.1 (l 0) ψ)
+          (ih (fun i => l i.succ) p.2 χ)
+        rwa [show 2 * (1 + Multiset.card p.1) + (c + 2 * n + 2 * Multiset.card p.2)
+          = c + 2 * (n + 1) + 2 * Multiset.card s by omega] at hmul
+
+/-- Anything commuting with every gauge-field symbol and anticommuting with every bare symbol
+  of the family anticommutes with every symbol of its covariant tower, since each term of the
+  tower is a product of gauge-field symbols with a single bare symbol. -/
+lemma covDerivIter_mem_anticommuteSubmodule (act : G.lieSubalgebra →ₗ[ℝ] V →ₗ[ℂ] V)
+    (F : Multiset (Fin 1 ⊕ Fin 3) → Module.Dual ℂ V →ₗ[ℂ] B) {x : B}
+    (hxA : ∀ (p : Multiset (Fin 1 ⊕ Fin 3)) (μ : Fin 1 ⊕ Fin 3)
+      (ψ : Module.Dual ℝ G.lieSubalgebra), Commute x (A p μ ψ))
+    (hxF : ∀ (t : Multiset (Fin 1 ⊕ Fin 3)) (χ : Module.Dual ℂ V),
+      F t χ ∈ anticommuteSubmodule x) :
+    ∀ (n : ℕ) (l : Fin n → (Fin 1 ⊕ Fin 3)) (s : Multiset (Fin 1 ⊕ Fin 3))
+      (φ : Module.Dual ℂ V), covDerivIter A act F n l s φ ∈ anticommuteSubmodule x := by
+  intro n
+  induction n with
+  | zero => exact fun l s φ => hxF s φ
+  | succ n ih =>
+      intro l s φ
+      rw [covDerivIter_succ, covDerivAction_apply]
+      refine add_mem (ih _ _ _) ?_
+      rw [actionFamConv, Multiset.sum_linearMap_apply, Multiset.map_map]
+      refine multiset_sum_mem _ fun z hz => ?_
+      obtain ⟨p, hp, rfl⟩ := Multiset.mem_map.mp hz
+      simp only [Function.comp_apply]
+      exact actionFam_apply_mem_submodule
+        (fun ψ χ => mul_mem_anticommuteSubmodule (hxA p.1 (l 0) ψ) (ih _ p.2 χ)) _
+
 end Action
 
 
-end GaugeAlgebraRealization
+end GlobalGaugeGroup
 
 
