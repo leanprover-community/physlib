@@ -125,7 +125,7 @@ noncomputable def distTimeSlice{F} [NormedAddCommGroup F] [NormedSpace ℝ F]
     Distribution (⟨Set.univ (α := Time × Space d), isOpen_univ⟩) F ⊤ where
   toFun := compContinuousLinearEquiv (toTimeAndSpace c) (Set.image_subset_iff.mpr fun _ a => a)
   invFun := compContinuousLinearEquiv (toTimeAndSpace c).symm
-            (Set.image_subset_iff.mpr fun _ a => a)
+              (Set.image_subset_iff.mpr fun _ a => a)
   left_inv f := by
       ext κ
       simp [compContinuousLinearEquiv_apply_apply]
