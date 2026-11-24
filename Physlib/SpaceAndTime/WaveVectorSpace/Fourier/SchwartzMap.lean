@@ -19,6 +19,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Fourier.Basic
 - A. Fourier transforms
   - A.1. As continuous linear maps
   - A.2. Basic properties
+  - A.3. Inversion
 
 ## iv. References
 
@@ -126,6 +127,26 @@ lemma integrable_pow_mul_fourierIntegralInv_coe (n : ℕ) :
   coe_fourierTransformInvCLM a b 𝕜 g ▸ (fourierTransformInvCLM a b 𝕜 g).integrable_pow_mul _ n
 
 end
+
+/-!
+### A.3. Inversion
+-/
+
+/-- The Fourier inversion formula: `𝓕⁻ (𝓕 f) = f` for `f : 𝓢(Space d, E)`. -/
+@[simp]
+lemma fourierTransformInvCLM_fourierTransformCLM_eq [CompleteSpace E] :
+    fourierTransformInvCLM a b 𝕜 (fourierTransformCLM a b 𝕜 f) = f := by
+  ext
+  simp [fourierTransformInvCLM_apply, coe_fourierTransformCLM, f.continuous, f.integrable,
+    fourierIntegralInv_fourierIntegral_eq, integrable_fourierIntegral_coe a b 𝕜]
+
+/-- The Fourier inversion formula: `𝓕 (𝓕⁻ g) = g` for `g : 𝓢(WaveVectorSpace d, E)`. -/
+@[simp]
+lemma fourierTransformCLM_fourierTransformInvCLM_eq [CompleteSpace E] :
+    fourierTransformCLM a b 𝕜 (fourierTransformInvCLM a b 𝕜 g) = g := by
+  ext
+  simp [fourierTransformCLM_apply, coe_fourierTransformInvCLM, g.continuous, g.integrable,
+    fourierIntegral_fourierIntegralInv_eq, integrable_fourierIntegralInv_coe a b 𝕜]
 
 end Schwartz
 
