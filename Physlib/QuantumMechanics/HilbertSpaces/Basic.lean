@@ -20,15 +20,15 @@ the induced norm.
 
 `QuantumHilbertSpace HS` is a `variable_alias` for this collection of instances on a type `HS`.
 It carries no data and is not a class. Its purpose is to state the assumptions of a quantum
-system in one place: writing
+system in one place: one only types
 
 ```
 variable? (HS : Type*) [QuantumHilbertSpace HS]
 ```
 
-introduces a Hilbert space of states, and Lean inserts the instances `NormedAddCommGroup HS`,
-`InnerProductSpace ℂ HS` and `CompleteSpace HS` itself. It also suggests appending them after
-`=>`, so that the expansion is checked if the instances change. A concrete system is given by
+and Lean inserts the instances `NormedAddCommGroup HS`, `InnerProductSpace ℂ HS` and
+`CompleteSpace HS` itself, offering a `Try this` suggestion that appends them after `=>`.
+Accepting it records the expanded form, which Lean then checks if the instances change. A concrete system is given by
 its type, for example `Qubit`, on which these instances are found directly.
 
 ## ii. Key results
