@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Physlib.Relativity.SpeedOfLight
+public import Physlib.Cosmology.TimeNow
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 
@@ -351,25 +352,25 @@ lemma hubbleConstant_ne_zero {a : Time → ℝ} {t : Time}
     hubbleConstant a t ≠ 0 :=
   div_ne_zero hd_az haz
 
-/-- The Hubble constant `H₀ = H(t₀)`: the value of the Hubble parameter at the present time
-  `t₀`.
+/-- The Hubble constant `H₀ = H(t₀)`: the Hubble parameter at the present time `t₀`.
 
-  The time-dependent Hubble parameter `H(t) = (dₜ a) / a` is the function `hubbleConstant`;
-  `presentHubbleConstant a t₀` is the number `H₀`, its value today. -/
-noncomputable def presentHubbleConstant (a : Time → ℝ) (t₀ : Time) : ℝ :=
+  The time-dependent Hubble parameter `H(t) = (dₜ a) / a` is the function `hubbleConstant` of a
+  free instant `t : Time`; `presentHubbleConstant a t₀` is its value at the present `t₀ : TimeNow`,
+  the number `H₀`. -/
+noncomputable def presentHubbleConstant (a : Time → ℝ) (t₀ : TimeNow) : ℝ :=
   hubbleConstant a t₀
 
 /-- The Hubble constant `H₀` is `(dₜ a) / a` evaluated at the present time `t₀`. -/
-lemma presentHubbleConstant_eq (a : Time → ℝ) (t₀ : Time) :
+lemma presentHubbleConstant_eq (a : Time → ℝ) (t₀ : TimeNow) :
     presentHubbleConstant a t₀ = ∂ₜ a t₀ / a t₀ := rfl
 
 /-- The present Hubble radius `R_H = c / H₀`: the proper distance at which the recession
   velocity of the Hubble flow equals the speed of light today. -/
-noncomputable def presentHubbleRadius (c : SpeedOfLight) (a : Time → ℝ) (t₀ : Time) : ℝ :=
+noncomputable def presentHubbleRadius (c : SpeedOfLight) (a : Time → ℝ) (t₀ : TimeNow) : ℝ :=
   (c : ℝ) / presentHubbleConstant a t₀
 
 /-- The present Hubble radius is positive when the universe is expanding today, `0 < H₀`. -/
-lemma presentHubbleRadius_pos (c : SpeedOfLight) {a : Time → ℝ} {t₀ : Time}
+lemma presentHubbleRadius_pos (c : SpeedOfLight) {a : Time → ℝ} {t₀ : TimeNow}
     (hH₀ : 0 < presentHubbleConstant a t₀) :
     0 < presentHubbleRadius c a t₀ :=
   div_pos c.val_pos hH₀
@@ -377,7 +378,7 @@ lemma presentHubbleRadius_pos (c : SpeedOfLight) {a : Time → ℝ} {t₀ : Time
 /-- The Hubble constant times the present Hubble radius is the speed of light,
   `H₀ R_H = c`, whenever `H₀ ≠ 0`. -/
 lemma presentHubbleConstant_mul_presentHubbleRadius (c : SpeedOfLight) {a : Time → ℝ}
-    {t₀ : Time} (hH₀ : presentHubbleConstant a t₀ ≠ 0) :
+    {t₀ : TimeNow} (hH₀ : presentHubbleConstant a t₀ ≠ 0) :
     presentHubbleConstant a t₀ * presentHubbleRadius c a t₀ = (c : ℝ) := by
   unfold presentHubbleRadius
   field_simp

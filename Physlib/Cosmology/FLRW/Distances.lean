@@ -159,8 +159,9 @@ lemma deriv_properDistance {χ : ℝ} {t : Time} (ht : t ∈ U.I) :
 noncomputable def hubbleRadius (c : SpeedOfLight) (t : Time) : ℝ :=
   (c : ℝ) / hubbleConstant U.a t
 
-/-- The Hubble radius at the present time `t₀` is the present Hubble radius `c / H₀`. -/
-lemma hubbleRadius_eq_presentHubbleRadius (c : SpeedOfLight) (t₀ : Time) :
+/-- The Hubble radius evaluated at the present time `t₀ : TimeNow` is the present Hubble radius
+  `c / H₀`. -/
+lemma hubbleRadius_eq_presentHubbleRadius (c : SpeedOfLight) (t₀ : TimeNow) :
     U.hubbleRadius c t₀ = presentHubbleRadius c U.a t₀ := rfl
 
 /-- For `t` in the interval of the model with `H(t) ≠ 0`, the recession velocity `∂ₜ D` equals

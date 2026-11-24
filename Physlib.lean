@@ -91,6 +91,7 @@ public import Physlib.Cosmology.FLRW.Solutions
 public import Physlib.Cosmology.FLRW.SpecificCases.EinsteinDeSitter
 public import Physlib.Cosmology.FLRW.SpecificCases.PowerLaw
 public import Physlib.Cosmology.FLRW.SpecificCases.RadiationDominated
+public import Physlib.Cosmology.TimeNow
 public import Physlib.Electromagnetism.Basic
 public import Physlib.Electromagnetism.Charge.ChargeUnit
 public import Physlib.Electromagnetism.Current.CircularCoil

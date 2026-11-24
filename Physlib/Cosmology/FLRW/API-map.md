@@ -53,7 +53,10 @@ and n = 2/3, and after their Big Bang they too solve the Friedmann equations. [2
 ### Hubble and deceleration parameters
 
 The Hubble parameter H = ∂ₜ a / a is a function of the scale factor and cosmic time, and is
-nonzero wherever the scale factor and its derivative both are. [9] The deceleration parameter is
+nonzero wherever the scale factor and its derivative both are. [9] The Hubble constant H₀ is the
+Hubble parameter at the present time t₀, a chosen instant taken as the present rather than a free
+instant [30], and the present Hubble radius c / H₀ is positive when H₀ > 0 and satisfies
+H₀ R_H = c. [9] The deceleration parameter is
 q = −(∂ₜ ∂ₜ a) a / (∂ₜ a)². The derivative ∂ₜ H obeys the quotient-rule formula, q equals
 −(1 + (∂ₜ H) / H²) and ∂ₜ H equals −H² (1 + q), and ∂ₜ H < 0 holds exactly when q > −1, both
 pointwise and in existential form. [10]
@@ -205,6 +208,7 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `FLRW.transverseComovingDistance_of_curvature_eq_zero`,
    `FLRW.transverseComovingDistance_of_curvature_neg`, `FLRW.particleHorizon`,
    `FLRW.eventHorizon`, `FLRW.particleHorizon_einsteinDeSitter`
+30. Physlib/Cosmology/TimeNow.lean — `TimeNow`
 
 ## References
 
