@@ -18,6 +18,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Fourier.Basic
 
 - A. Fourier transforms
   - A.1. As continuous linear maps
+  - A.2. Basic properties
 
 ## iv. References
 
@@ -80,6 +81,51 @@ lemma coe_fourierTransformInvCLM : fourierTransformInvCLM a b 𝕜 g = fourierIn
 lemma fourierTransformInvCLM_apply :
     fourierTransformInvCLM a b 𝕜 g x = fourierIntegralInv a b g x :=
   congrFun (coe_fourierTransformInvCLM a b 𝕜 g) x
+
+/-!
+### A.2. Basic properties
+
+Basic properties about (inverse) Fourier integrals of Schwartz maps
+can be inferred from `coe_fourierTransformCLM` and `coe_fourierTransfromInvCLM`.
+-/
+
+section
+
+include 𝕜
+
+lemma continuous_fourierIntegral_coe : Continuous (fourierIntegral a b f) :=
+  coe_fourierTransformCLM a b 𝕜 f ▸ (fourierTransformCLM a b 𝕜 f).continuous
+
+lemma continuous_fourierIntegralInv_coe : Continuous (fourierIntegralInv a b g) :=
+  coe_fourierTransformInvCLM a b 𝕜 g ▸ (fourierTransformInvCLM a b 𝕜 g).continuous
+
+lemma differentiable_fourierIntegral_coe : Differentiable ℝ (fourierIntegral a b f) :=
+  coe_fourierTransformCLM a b 𝕜 f ▸ (fourierTransformCLM a b 𝕜 f).differentiable
+
+lemma differentiable_fourierIntegralInv_coe : Differentiable ℝ (fourierIntegralInv a b g) :=
+  coe_fourierTransformInvCLM a b 𝕜 g ▸ (fourierTransformInvCLM a b 𝕜 g).differentiable
+
+lemma smooth_fourierIntegral_coe (n : ℕ∞) : ContDiff ℝ n (fourierIntegral a b f) :=
+  coe_fourierTransformCLM a b 𝕜 f ▸ (fourierTransformCLM a b 𝕜 f).smooth n
+
+lemma smooth_fourierIntegralInv_coe (n : ℕ∞) : ContDiff ℝ n (fourierIntegralInv a b g) :=
+  coe_fourierTransformInvCLM a b 𝕜 g ▸ (fourierTransformInvCLM a b 𝕜 g).smooth n
+
+lemma integrable_fourierIntegral_coe : Integrable (fourierIntegral a b f) :=
+  coe_fourierTransformCLM a b 𝕜 f ▸ (fourierTransformCLM a b 𝕜 f).integrable
+
+lemma integrable_fourierIntegralInv_coe : Integrable (fourierIntegralInv a b g) :=
+  coe_fourierTransformInvCLM a b 𝕜 g ▸ (fourierTransformInvCLM a b 𝕜 g).integrable
+
+lemma integrable_pow_mul_fourierIntegral_coe (n : ℕ) :
+    Integrable (fun k ↦ ‖k‖ ^ n * ‖fourierIntegral a b f k‖) :=
+  coe_fourierTransformCLM a b 𝕜 f ▸ (fourierTransformCLM a b 𝕜 f).integrable_pow_mul _ n
+
+lemma integrable_pow_mul_fourierIntegralInv_coe (n : ℕ) :
+    Integrable (fun x ↦ ‖x‖ ^ n * ‖fourierIntegralInv a b g x‖) :=
+  coe_fourierTransformInvCLM a b 𝕜 g ▸ (fourierTransformInvCLM a b 𝕜 g).integrable_pow_mul _ n
+
+end
 
 end Schwartz
 
