@@ -5,7 +5,7 @@ Authors: Gregory J. Loges
 -/
 module
 
-public import Physlib.SpaceAndTime.Space.Module
+public import Physlib.SpaceAndTime.Space.Derivatives.Basic
 /-!
 
 # Regularized powers of the norm on space
@@ -21,6 +21,8 @@ This file contains basic API for regularized powers of the norm on `Space d`, na
 - `normRegularizedPow_pos` : Positivity for nonzero regularization parameter.
 - `normRegularizedPow_hasTemperateGrowth` : Temperate growth of regularized norm powers.
 - `normRegularizedPow_measurable` : Measurability of regularized norm powers.
+- `normRegularizedPow_neg_two` : For `s = -2` it is `(‖x‖ ^ 2 + ε ^ 2)⁻¹`.
+- `deriv_normRegularizedPow` : Its derivative in the direction of a basis vector.
 
 ## iii. Table of contents
 
@@ -80,5 +82,26 @@ lemma normRegularizedPow_measurable (d : ℕ) (ε s : ℝ) :
     Measurable (normRegularizedPow d ε s) := by
   rw [normRegularizedPow_eq]
   fun_prop
+
+/-- For `s = -2` the regularized norm power is the inverse of `‖x‖ ^ 2 + ε ^ 2`. -/
+lemma normRegularizedPow_neg_two (d : ℕ) (ε : ℝ) :
+    normRegularizedPow d ε (-2) = fun x ↦ (‖x‖ ^ 2 + ε ^ 2)⁻¹ := by
+  funext x
+  simp only [normRegularizedPow]
+  rw [show (-2 : ℝ) / 2 = -1 by norm_num, Real.rpow_neg_one]
+
+/-- The derivative of the regularized norm power in the direction of the basis vector `i`. -/
+lemma deriv_normRegularizedPow (d : ℕ) (ε : ℝˣ) (s : ℝ) (i : Fin d) (x : Space d) :
+    ∂[i] (normRegularizedPow d ε s) x = s * x i * normRegularizedPow d ε (s - 2) x := by
+  have hq : HasFDerivAt (fun x : Space d => ‖x‖ ^ 2 + (ε : ℝ) ^ 2)
+      (fderiv ℝ (fun x : Space d => ‖x‖ ^ 2 + (ε : ℝ) ^ 2) x) x :=
+    ((hasStrictFDerivAt_norm_sq x).hasFDerivAt.differentiableAt.add_const _).hasFDerivAt
+  have hq' : fderiv ℝ (fun x : Space d => ‖x‖ ^ 2 + (ε : ℝ) ^ 2) x (basis i) = 2 * x i := by
+    rw [fderiv_add_const, ← Space.deriv_eq, deriv_norm_sq]
+  have h := (hq.rpow_const (p := s / 2) (Or.inl (norm_sq_add_unit_sq_pos ε x).ne')).fderiv
+  rw [Space.deriv_eq, normRegularizedPow_eq, h]
+  simp only [_root_.smul_apply, hq', smul_eq_mul, normRegularizedPow]
+  rw [show (s - 2) / 2 = s / 2 - 1 by ring]
+  ring
 
 end Space

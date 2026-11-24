@@ -5,7 +5,7 @@ Authors: Daniel Leonforte
 -/
 module
 
-public import Physlib.SpaceAndTime.Space.Derivatives.Basic
+public import Physlib.SpaceAndTime.Space.Norm.Regularized
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Mathlib.Analysis.Calculus.LineDeriv.IntegrationByParts
 public import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
@@ -143,16 +143,8 @@ lemma add_conj_integral_mul_deriv (i : Fin d) {g : Space d → ℂ}
 
 lemma hasTemperateGrowth_inv_normSq_add {ε : ℝ} (hε : ε ≠ 0) :
     (fun x : Space d => (‖x‖ ^ 2 + ε ^ 2)⁻¹).HasTemperateGrowth := by
-  have h1 := Function.hasTemperateGrowth_one_add_norm_sq_rpow (Space d) (-1)
-  have h2 : (fun x : Space d => ε⁻¹ • x).HasTemperateGrowth :=
-    (ε⁻¹ • ContinuousLinearMap.id ℝ (Space d)).hasTemperateGrowth
-  have h3 := (Function.HasTemperateGrowth.const (ε ^ 2)⁻¹).mul (h1.comp h2)
-  convert h3 using 1
-  funext x
-  simp only [Function.comp_apply, Pi.mul_apply, norm_smul, mul_pow, Real.norm_eq_abs, sq_abs,
-    Real.rpow_neg_one, inv_pow]
-  field_simp
-  ring
+  have h := normRegularizedPow_hasTemperateGrowth d (Units.mk0 ε hε) (-2)
+  rwa [normRegularizedPow_neg_two, Units.val_mk0] at h
 
 lemma hasTemperateGrowth_coord (i : Fin d) : (fun x : Space d => x i).HasTemperateGrowth := by
   convert (coordCLM i).hasTemperateGrowth using 1
@@ -175,24 +167,23 @@ lemma deriv_ofReal_space (i : Fin d) {f : Space d → ℝ} (x : Space d)
 lemma deriv_hardyField {ε : ℝ} (hε : ε ≠ 0) (i : Fin d) (x : Space d) :
     ∂[i] (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) x =
       (‖x‖ ^ 2 + ε ^ 2)⁻¹ - 2 * x i ^ 2 * ((‖x‖ ^ 2 + ε ^ 2) ^ 2)⁻¹ := by
-  have hs : ‖x‖ ^ 2 + ε ^ 2 ≠ 0 := by positivity
-  have hq : HasFDerivAt (fun x : Space d => ‖x‖ ^ 2 + ε ^ 2)
-      (fderiv ℝ (fun x : Space d => ‖x‖ ^ 2 + ε ^ 2) x) x :=
-    ((hasStrictFDerivAt_norm_sq x).hasFDerivAt.differentiableAt.add_const (ε ^ 2)).hasFDerivAt
-  have hq' : fderiv ℝ (fun x : Space d => ‖x‖ ^ 2 + ε ^ 2) x (basis i) = 2 * x i := by
-    rw [fderiv_add_const, ← Space.deriv_eq, deriv_norm_sq]
+  set u := Units.mk0 ε hε
+  have hf : (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) =
+      (fun x : Space d => x i) * normRegularizedPow d u (-2) := by
+    funext y
+    simp only [Pi.mul_apply, normRegularizedPow_neg_two, u, Units.val_mk0]
   have hc : HasFDerivAt (fun x : Space d => x i) (fderiv ℝ (fun x : Space d => x i) x) x :=
     (eval_differentiable i x).hasFDerivAt
-  have hc' : fderiv ℝ (fun x : Space d => x i) x (basis i) = 1 := by
-    rw [← Space.deriv_eq]
-    exact deriv_component_same i x
-  have hinv := (hasFDerivAt_inv hs).comp x hq
-  have hg := (HasFDerivAt.mul hc hinv).fderiv
-  simp only [Function.comp_def] at hg
-  rw [Space.deriv_eq, show (fun x : Space d => x i * (‖x‖ ^ 2 + ε ^ 2)⁻¹) =
-    ((fun x : Space d => x i) * fun x => (‖x‖ ^ 2 + ε ^ 2)⁻¹) from rfl, hg]
-  simp only [_root_.add_apply, _root_.smul_apply, smul_eq_mul,
-    ContinuousLinearMap.comp_apply, ContinuousLinearMap.toSpanSingleton_apply, hq', hc']
+  have hn : HasFDerivAt (normRegularizedPow d u (-2))
+      (fderiv ℝ (normRegularizedPow d u (-2)) x) x :=
+    ((normRegularizedPow_hasTemperateGrowth d u (-2)).1.differentiable (by simp) x).hasFDerivAt
+  rw [hf, Space.deriv_eq, (hc.mul hn).fderiv]
+  simp only [_root_.add_apply, _root_.smul_apply, smul_eq_mul]
+  rw [← Space.deriv_eq, ← Space.deriv_eq, deriv_component_same, deriv_normRegularizedPow]
+  have hq : 0 ≤ ‖x‖ ^ 2 + ε ^ 2 := by positivity
+  simp only [normRegularizedPow, u, Units.val_mk0]
+  rw [show ((-2 : ℝ) - 2) / 2 = -2 by norm_num, show (-2 : ℝ) / 2 = -1 by norm_num,
+    Real.rpow_neg_one, Real.rpow_neg hq, Real.rpow_two]
   ring
 
 lemma sum_deriv_hardyField {ε : ℝ} (hε : ε ≠ 0) (x : Space d) :
