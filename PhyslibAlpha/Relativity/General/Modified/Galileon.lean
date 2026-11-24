@@ -43,7 +43,17 @@ This module formalises the one-dimensional core of those two mechanisms:
 
 ## iv. References
 
-* None.
+* Alberto Nicolis, Riccardo Rattazzi, and Enrico Trincherini, *The Galileon as a Local
+  Modification of Gravity*, *Physical Review D* (2009) (https://arxiv.org/abs/0811.2197). [ref:
+  NicolisRattazziTrincherini2009]
+* Gregory Walter Horndeski, *Second-Order Scalar-Tensor Field Equations in a Four-Dimensional
+  Space*, *International Journal of Theoretical Physics* (1974). [ref: Horndeski1974]
+* Cédric Deffayet, Stanley Deser, and Gilles Esposito-Farèse, *Generalized Galileons: All Scalar
+  Models Whose Curved Background Extensions Maintain Second-Order Field Equations and
+  Stress-Tensors*, *Physical Review D* (2009) (https://arxiv.org/abs/0906.1967). [ref:
+  DeffayetDeserEspositoFarese2009]
+* Cédric Deffayet et al., *From k-essence to Generalised Galileons*, *Physical Review D* (2011)
+  (https://arxiv.org/abs/1103.3260). [ref: DeffayetGaoSteerZahariade2011]
 
 -/
 

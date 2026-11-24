@@ -56,7 +56,22 @@ Friedmann equation to `3 H² + ½ F(6 H²) - 6 H² F'(6 H²) = 8 π G ρ`.
 
 ## iv. References
 
-* None.
+* Albert Einstein, *Riemann-Geometrie mit Aufrechterhaltung des Begriffes des Fernparallelismus*,
+  *Sitzungsberichte der Preussischen Akademie der Wissenschaften, Physikalisch-Mathematische
+  Klasse* (1928). [ref: Einstein1928]
+* Kenji Hayashi and Takeshi Shirafuji, *New General Relativity*, *Physical Review D* (1979). [ref:
+  HayashiShirafuji1979]
+* José W. Maluf, *The Teleparallel Equivalent of General Relativity*, *Annalen der Physik* (2013)
+  (https://arxiv.org/abs/1303.3897). [ref: Maluf2013]
+* Rafael Ferraro and Franco Fiorini, *Modified Teleparallel Gravity: Inflation without Inflaton*,
+  *Physical Review D* (2007). [ref: FerraroFiorini2007]
+* Gabriel R. Bengochea and Rafael Ferraro, *Dark Torsion as the Cosmic Speed-Up*, *Physical Review
+  D* (2009) (https://arxiv.org/abs/0812.1205). [ref: BengocheaFerraro2009]
+* Eric V. Linder, *Einstein's Other Gravity and the Acceleration of the Universe*, *Physical
+  Review D* (2010) (https://arxiv.org/abs/1005.3039). [ref: Linder2010]
+* Martin Krššák and Emmanuel N. Saridakis, *The Covariant Formulation of $f(T)$ Gravity*,
+  *Classical and Quantum Gravity* (2016) (https://arxiv.org/abs/1510.08432). [ref:
+  KrssakSaridakis2016]
 
 -/
 

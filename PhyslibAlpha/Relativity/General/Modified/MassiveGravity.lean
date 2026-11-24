@@ -57,7 +57,20 @@ potential built from the elementary symmetric polynomials `e_k(K)` of
 
 ## iv. References
 
-* None.
+* Markus Fierz and Wolfgang Pauli, *On Relativistic Wave Equations for Particles of Arbitrary Spin
+  in an Electromagnetic Field*, *Proceedings of the Royal Society of London. Series A* (1939).
+  [ref: FierzPauli1939]
+* Claudia de Rham and Gregory Gabadadze, *Generalization of the Fierz-Pauli Action*, *Physical
+  Review D* (2010) (https://arxiv.org/abs/1007.0443). [ref: deRhamGabadadze2010]
+* Claudia de Rham, Gregory Gabadadze, and Andrew J. Tolley, *Resummation of Massive Gravity*,
+  *Physical Review Letters* (2011) (https://arxiv.org/abs/1011.1232). [ref:
+  deRhamGabadadzeTolley2011]
+* S. F. Hassan and Rachel A. Rosen, *Resolving the Ghost Problem in Nonlinear Massive Gravity*,
+  *Physical Review Letters* (2012). [ref: HassanRosen2012]
+* D. G. Boulware and S. Deser, *Can Gravitation Have a Finite Range?*, *Physical Review D* (1972).
+  [ref: BoulwareDeser1972]
+* Kurt Hinterbichler, *Theoretical Aspects of Massive Gravity*, *Reviews of Modern Physics* (2012)
+  (https://arxiv.org/abs/1105.3735). [ref: Hinterbichler2012]
 
 -/
 

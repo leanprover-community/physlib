@@ -61,7 +61,16 @@ gravity, and the four benchmark solar-system observable factors.
 
 ## iv. References
 
-* None.
+* Kenneth Nordtvedt, *Equivalence Principle for Massive Bodies. II. Theory*, *Physical Review*
+  (1968). [ref: Nordtvedt1968]
+* Clifford M. Will, *Theoretical Frameworks for Testing Relativistic Gravity. II. Parametrized
+  Post-Newtonian Hydrodynamics and the Nordtvedt Effect*, *The Astrophysical Journal* (1971).
+  [ref: Will1971PPN]
+* Clifford M. Will and Kenneth Nordtvedt, *Conservation Laws and Preferred Frames in Relativistic
+  Gravity. II. Experimental Evidence to Rule Out Preferred-Frame Theories of Gravity*, *The
+  Astrophysical Journal* (1972). [ref: WillNordtvedt1972]
+* Clifford M. Will, *The Confrontation between General Relativity and Experiment*, *Living Reviews
+  in Relativity* (2014). [ref: Will2014]
 
 -/
 

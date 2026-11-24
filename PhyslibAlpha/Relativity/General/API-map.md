@@ -136,7 +136,7 @@ across metric theories via ten dimensionless parameters (γ, β, ξ, α₁, α�
 classifying fully conservative and semiconservative theories, embedding General Relativity,
 Brans-Dicke, metric f(R), and Nordström gravity, and evaluating light deflection, Shapiro time
 delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle violation parameter
-η_N {3}{4}. [38]
+η_N {3}{4}{5}. [38]
 
 ## Lean References
 
@@ -293,3 +293,5 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 3. C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation*, W. H. Freeman, 1973.
 4. C. M. Will, *Theory and Experiment in Gravitational Physics*, 2nd ed., Cambridge University
    Press, 2018.
+5. C. M. Will, *The Confrontation between General Relativity and Experiment*, *Living Reviews in
+   Relativity* 17 (2014), 4, doi:10.12942/lrr-2014-4.

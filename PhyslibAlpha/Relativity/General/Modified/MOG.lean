@@ -43,7 +43,12 @@ asymptotically at large radius when `μ > 0`.
 
 ## iv. References
 
-* None.
+* J. W. Moffat, *Scalar-Tensor-Vector Gravity Theory*, *Journal of Cosmology and Astroparticle
+  Physics* (2006) (https://arxiv.org/abs/gr-qc/0506021). [ref: Moffat2006STVG]
+* J. W. Moffat, *A Modified Gravity and Its Consequences for the Solar System, Astrophysics and
+  Cosmology*, *International Journal of Modern Physics D* (2007)
+  (https://arxiv.org/abs/gr-qc/0608074). [ref: Moffat2007MOG]
+* Sreekanth Harikumar, *Moffat MOdified Gravity (MOG)*, *Universe* (2022). [ref: Harikumar2022MOG]
 
 -/
 

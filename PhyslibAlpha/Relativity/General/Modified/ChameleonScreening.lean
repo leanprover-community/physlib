@@ -54,7 +54,11 @@ This module formalises both halves of the mechanism:
 
 ## iv. References
 
-* None.
+* Justin Khoury and Amanda Weltman, *Chameleon Fields: Awaiting Surprises for Tests of Gravity in
+  Space*, *Physical Review Letters* (2004) (https://arxiv.org/abs/astro-ph/0309300). [ref:
+  KhouryWeltman2004]
+* Justin Khoury and Amanda Weltman, *Chameleon Cosmology*, *Physical Review D* (2004)
+  (https://arxiv.org/abs/astro-ph/0309411). [ref: KhouryWeltman2004Cosmology]
 
 -/
 

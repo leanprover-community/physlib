@@ -59,7 +59,8 @@ plane gravitational waves; and (4) the weak-field Newtonian Poisson equation `âˆ
 
 ## iv. References
 
-* None.
+* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
 
 -/
 

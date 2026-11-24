@@ -46,7 +46,16 @@ contrasting it with a standard positive-definite quadratic kinetic term.
 
 ## iv. References
 
-* None.
+* Mikhail Ostrogradsky, *Mémoires sur les équations différentielles, relatives au problème des
+  isopérimètres*, *Mémoires de l'Académie Impériale des Sciences de Saint-Pétersbourg* (1850).
+  [ref: Ostrogradsky1850]
+* Richard P. Woodard, *The Theorem of Ostrogradsky*, *Scholarpedia* (2015)
+  (https://arxiv.org/abs/1506.02210). [ref: Woodard2015]
+* Alexander Ganz and Karim Noui, *Reconsidering the Ostrogradsky Theorem: Higher-Derivatives
+  Lagrangians, Ghosts and Degeneracy*, *Classical and Quantum Gravity* (2021). [ref: GanzNoui2021]
+* David Langlois and Karim Noui, *Degenerate Higher Derivative Theories beyond Horndeski: Evading
+  the Ostrogradsky Instability*, *Journal of Cosmology and Astroparticle Physics* (2016). [ref:
+  LangloisNoui2016]
 
 -/
 

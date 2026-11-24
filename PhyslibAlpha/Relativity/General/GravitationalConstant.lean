@@ -52,7 +52,9 @@ independent in the `(L, T, M, Θ)` base space, there exist systems of units in w
 
 ## iv. References
 
-* None.
+* International Bureau of Weights and Measures (BIPM), *The International System of Units (SI
+  Brochure)*, 9th ed. (2019). [ref: bipm_si_brochure_2019]
+* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
 
 -/
 

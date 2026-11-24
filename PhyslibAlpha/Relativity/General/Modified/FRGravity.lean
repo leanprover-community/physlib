@@ -54,7 +54,12 @@ This module formalises:
 
 ## iv. References
 
-* None.
+* Hans A. Buchdahl, *Non-Linear Lagrangians and Cosmological Theory*, *Monthly Notices of the
+  Royal Astronomical Society* (1970). [ref: Buchdahl1970]
+* Alexei A. Starobinsky, *A New Type of Isotropic Cosmological Models Without Singularity*,
+  *Physics Letters B* (1980). [ref: Starobinsky1980]
+* Thomas P. Sotiriou and Valerio Faraoni, *f(R) Theories of Gravity*, *Reviews of Modern Physics*
+  (2010) (https://arxiv.org/abs/0805.1726). [ref: SotiriouFaraoni2010]
 
 -/
 

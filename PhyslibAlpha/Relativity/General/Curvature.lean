@@ -46,7 +46,10 @@ and `ricci_of_diag` shows that this simplifies to the single sum `∑ k, g^{kk} 
 
 ## iv. References
 
-* None.
+* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
+* B. O'Neill, *Semi-Riemannian Geometry With Applications to Relativity* (1983). [ref:
+  oneill_1983_semi_riemannian]
 
 -/
 

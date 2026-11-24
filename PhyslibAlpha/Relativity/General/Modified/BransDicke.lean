@@ -52,7 +52,8 @@ exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ couplin
 
 ## iv. References
 
-* None.
+* Carl Brans and Robert H. Dicke, *Mach's Principle and a Relativistic Theory of Gravitation*,
+  *Physical Review* (1961). [ref: BransDicke1961]
 
 -/
 

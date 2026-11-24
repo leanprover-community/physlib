@@ -50,7 +50,17 @@ simple (`x / (1 + x)`) and standard (`x / √(1 + x²)`) interpolating functions
 
 ## iv. References
 
-* None.
+* Mordehai Milgrom, *A Modification of the Newtonian Dynamics as a Possible Alternative to the
+  Hidden Mass Hypothesis*, *The Astrophysical Journal* (1983). [ref: Milgrom1983a]
+* Mordehai Milgrom, *A Modification of the Newtonian Dynamics: Implications for Galaxies*, *The
+  Astrophysical Journal* (1983). [ref: Milgrom1983b]
+* Mordehai Milgrom, *A Modification of the Newtonian Dynamics: Implications for Galaxy Systems*,
+  *The Astrophysical Journal* (1983). [ref: Milgrom1983c]
+* Jacob Bekenstein and Mordehai Milgrom, *Does the Missing Mass Problem Signal the Breakdown of
+  Newtonian Gravity?*, *The Astrophysical Journal* (1984). [ref: BekensteinMilgrom1984]
+* Benoit Famaey and Stacy S. McGaugh, *Modified Newtonian Dynamics (MOND): Observational
+  Phenomenology and Relativistic Extensions*, *Living Reviews in Relativity* (2012)
+  (https://arxiv.org/abs/1112.3960). [ref: FamaeyMcGaugh2012]
 
 -/
 
