@@ -28,8 +28,9 @@ variable? (HS : Type*) [QuantumHilbertSpace HS]
 
 and Lean inserts the instances `NormedAddCommGroup HS`, `InnerProductSpace ℂ HS` and
 `CompleteSpace HS` itself, offering a `Try this` suggestion that appends them after `=>`.
-Accepting it records the expanded form, which Lean then checks if the instances change. A concrete system is given by
-its type, for example `Qubit`, on which these instances are found directly.
+Accepting it records the expanded form, which Lean then checks if the instances change.
+A concrete system is given by its type, for example `Qubit`, on which these instances are found
+directly.
 
 ## ii. Key results
 
