@@ -420,6 +420,96 @@ private lemma fourierInv_comp_smul_id {c : ℝ} (hc : c ≠ 0) (f : ℝᵈ → E
   have := Measure.integral_comp_smul volume (fun w ↦ 𝐞 (inner ℝ (c • w) v) • f w) c⁻¹
   simp_all [fourierInv_eq, smul_smul, inner_smul_left, inner_smul_right]
 
+variable {b}
+
+/-- The Fourier inversion formula:
+`𝓕⁻ (𝓕 f) = f` for a suitably nice function `f : Space d → E`. -/
+lemma fourierIntegralInv_fourierIntegral_eq (hb : b ≠ 0) [CompleteSpace E] {f : Space d → E}
+    (h : Continuous f) (hf : Integrable f) (hf' : Integrable (fourierIntegral a b f)) :
+    fourierIntegralInv a b (fourierIntegral a b f) = f := by
+  -- The heavy lifting in this proof is done by `Continuous.fourierInv_fourier_eq`.
+  -- What follows is mostly dealing with the dilations by `c := -b/(2π)`
+  -- and the linear isometries with Euclidean space provided by the standard bases.
+  let c : ℝ := -(b / (2 * π))
+  have hc : c ≠ 0 := by simpa [c]
+  let c₁ : ℝ := (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+  let c₂ : ℝ := (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+  have hc₂ : c₂ ≠ 0 := ne_of_gt <| rpow_pos_of_pos (by positivity) _
+  have hc₁₂ : c₁ * c₂ = |c| ^ d := by
+    rw [← Real.mul_rpow (by bound) (by bound), div_mul_div_comm, ← Real.rpow_add (by bound),
+      div_rpow (by bound) (by bound), ← pow_two, ← Real.rpow_natCast, add_add_sub_cancel]
+    simp only [← Real.rpow_mul, abs_nonneg b, one_add_one_eq_two, show 0 ≤ 2 * π by bound]
+    simp [mul_div_cancel₀, c, abs_div, div_pow]
+  let e₁ : Space d ≃ₗᵢ[ℝ] ℝᵈ := Space.basis.repr
+  let e₂ : WaveVectorSpace d ≃ₗᵢ[ℝ] ℝᵈ := basis.repr
+  have h_int : Integrable (f ∘ e₁.symm ∘ (c⁻¹ • id)) := by
+    have := (e₁.symm.measurePreserving.integrable_comp hf.aestronglyMeasurable).mpr hf
+    apply (MeasureTheory.integrable_comp_smul_iff _ _ hc).mp
+    simpa [smul_smul, inv_mul_cancel₀ hc]
+  have h𝓕_int : Integrable (𝓕 (f ∘ e₁.symm ∘ (c⁻¹ • id))) := by
+    refine (e₂.measurePreserving.integrable_comp ?_).mp ?_
+    · apply Continuous.aestronglyMeasurable
+      exact VectorFourier.fourierIntegral_continuous continuous_fourierChar continuous_inner h_int
+    · refine hf'.smul ((|c| ^ d) * c₂⁻¹) |>.congr <| Eq.eventuallyEq ?_
+      ext
+      rw [fourierIntegral_eq_smul_fourier_comp, ← Function.comp_assoc, fourier_comp_smul_id hc]
+      simp [smul_smul, mul_assoc, inv_mul_cancel₀ hc₂, c, c₂, e₁, e₂]
+  rw [fourierIntegral_eq_smul_fourier_comp, fourierIntegralInv_eq_smul_fourierInv_comp]
+  calc
+    _ = c₁ • 𝓕⁻ ((c₂ • (𝓕 (f ∘ e₁.symm) ∘ (c • ⇑e₂))) ∘ e₂.symm) ∘ (c • ⇑e₁) := rfl
+    _ = |c| ^ d • 𝓕⁻ (𝓕 (f ∘ e₁.symm) ∘ (c • id)) ∘ (c • ⇑e₁) := by
+      simp [Pi.smul_comp, smul_smul, Function.comp_assoc, hc₁₂]
+    _ = 𝓕⁻ (𝓕 (f ∘ e₁.symm ∘ (c⁻¹ • id))) ∘ (c • ⇑e₁) := by
+      simp [fourier_comp_smul_id hc, Pi.smul_comp, ← Function.comp_assoc]
+    _ = (f ∘ e₁.symm ∘ (c⁻¹ • id)) ∘ (c • ⇑e₁) := by
+      rw [Continuous.fourierInv_fourier_eq (by fun_prop) h_int h𝓕_int]
+    _ = f := by ext; simp [smul_smul, inv_mul_cancel₀ hc]
+
+/-- The Fourier inversion formula:
+`𝓕 (𝓕⁻ g) = g` for a suitably nice function `g : WaveVectorSpace d → E`. -/
+lemma fourierIntegral_fourierIntegralInv_eq
+    (hb : b ≠ 0) [CompleteSpace E] {g : WaveVectorSpace d → E}
+    (h : Continuous g) (hg : Integrable g) (hg' : Integrable (fourierIntegralInv a b g)) :
+    fourierIntegral a b (fourierIntegralInv a b g) = g := by
+  -- The heavy lifting in this proof is done by `Continuous.fourier_fourierInv_eq`.
+  -- What follows is mostly dealing with the dilations by `c := -b/(2π)`
+  -- and the linear isometries with Euclidean space provided by the standard bases.
+  let c : ℝ := -(b / (2 * π))
+  have hc : c ≠ 0 := by simpa [c]
+  let c₁ : ℝ := (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+  let c₂ : ℝ := (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+  have hc₁ : c₁ ≠ 0 := ne_of_gt <| rpow_pos_of_pos (by positivity) _
+  have hc₂₁ : c₂ * c₁ = |c| ^ d := by
+    rw [← Real.mul_rpow (by bound) (by bound), div_mul_div_comm, ← Real.rpow_add (by bound),
+      div_rpow (by bound) (by bound), ← pow_two, ← Real.rpow_natCast, sub_add_add_cancel]
+    simp only [← Real.rpow_mul, abs_nonneg b, one_add_one_eq_two, show 0 ≤ 2 * π by bound]
+    simp [mul_div_cancel₀, c, abs_div, div_pow]
+  let e₁ : Space d ≃ₗᵢ[ℝ] ℝᵈ := Space.basis.repr
+  let e₂ : WaveVectorSpace d ≃ₗᵢ[ℝ] ℝᵈ := basis.repr
+  have h_int : Integrable (g ∘ e₂.symm ∘ (c⁻¹ • id)) := by
+    have := (e₂.symm.measurePreserving.integrable_comp hg.aestronglyMeasurable).mpr hg
+    apply (MeasureTheory.integrable_comp_smul_iff _ _ hc).mp
+    simpa [smul_smul, inv_mul_cancel₀ hc]
+  have h𝓕_int : Integrable (𝓕 (g ∘ e₂.symm ∘ (c⁻¹ • id))) := by
+    refine (e₁.measurePreserving.integrable_comp ?_).mp ?_
+    · apply Continuous.aestronglyMeasurable
+      exact VectorFourier.fourierIntegral_continuous continuous_fourierChar continuous_inner h_int
+    · refine hg'.comp_neg.smul ((|c| ^ d) * c₁⁻¹) |>.congr <| Eq.eventuallyEq ?_
+      ext
+      rw [fourierIntegralInv_eq_smul_fourierInv_comp, ← Function.comp_assoc,
+        fourier_comp_smul_id hc]
+      simp [fourierInv_eq_fourier_neg, smul_smul, mul_assoc, inv_mul_cancel₀ hc₁, c, c₁, e₁, e₂]
+  rw [fourierIntegral_eq_smul_fourier_comp, fourierIntegralInv_eq_smul_fourierInv_comp]
+  calc
+    _ = c₂ • 𝓕 ((c₁ • (𝓕⁻ (g ∘ e₂.symm) ∘ (c • ⇑e₁))) ∘ e₁.symm) ∘ (c • ⇑e₂) := rfl
+    _ = |c| ^ d • 𝓕 (𝓕⁻ (g ∘ e₂.symm) ∘ (c • id)) ∘ (c • ⇑e₂) := by
+      simp [Pi.smul_comp, smul_smul, Function.comp_assoc, hc₂₁]
+    _ = 𝓕 (𝓕⁻ (g ∘ e₂.symm ∘ (c⁻¹ • id))) ∘ (c • ⇑e₂) := by
+      simp [fourierInv_comp_smul_id hc, Pi.smul_comp, ← Function.comp_assoc]
+    _ = (g ∘ e₂.symm ∘ (c⁻¹ • id)) ∘ (c • ⇑e₂) := by
+      rw [Continuous.fourier_fourierInv_eq (by fun_prop) h_int h𝓕_int]
+    _ = g := by ext; simp [smul_smul, inv_mul_cancel₀ hc]
+
 end Inversion
 
 end FourierIntegral
