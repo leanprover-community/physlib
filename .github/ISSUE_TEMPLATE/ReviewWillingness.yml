@@ -1,0 +1,62 @@
+name: Review willingness
+description: Let us know you are willing to review pull requests to Physlib or PhyslibAlpha.
+title: "Review willingness: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for offering to review. Please put your name after `Review willingness: ` in the title above.
+        Tick the libraries and the top-level directories you are happy to review. You can change this issue at any time.
+  - type: checkboxes
+    id: libraries
+    attributes:
+      label: Libraries
+      description: Which libraries are you willing to review for?
+      options:
+        - label: Physlib
+        - label: PhyslibAlpha
+    validations:
+      required: true
+  - type: checkboxes
+    id: directories
+    attributes:
+      label: Top-level directories
+      description: Which top-level directories of the libraries ticked above are you willing to review?
+      options:
+        - label: ClassicalFieldTheory
+        - label: ClassicalMechanics
+        - label: CondensedMatter
+        - label: Cosmology
+        - label: Electromagnetism
+        - label: Experiments
+        - label: FluidDynamics
+        - label: LatticeQFT
+        - label: Mathematics
+        - label: Meta
+        - label: Optics
+        - label: Particles
+        - label: ProbabilisticTheory
+        - label: QFT
+        - label: QuantumMechanics
+        - label: Relativity
+        - label: SpaceAndTime
+        - label: StatisticalMechanics
+        - label: StringTheory
+        - label: Thermodynamics
+        - label: Units
+    validations:
+      required: false
+  - type: textarea
+    id: other
+    attributes:
+      label: Other
+      description: Anything else you are willing to review, such as a subdirectory, a topic, scripts, linters, CI or documentation.
+    validations:
+      required: false
+  - type: textarea
+    id: comments
+    attributes:
+      label: Comments
+      description: Anything else we should know, such as how often you are able to review.
+    validations:
+      required: false
