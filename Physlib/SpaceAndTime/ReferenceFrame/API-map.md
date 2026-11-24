@@ -18,8 +18,7 @@ whose lengths and angles are nevertheless taken from the underlying space.
 
 A reference frame records a time origin, together with an affine origin and a basis of displacements
 of space {1} at each time. [1] Its time origin converts a real time coordinate into an instant of
-time {2}. [14] The spatial origin and each basis vector are twice continuously differentiable
-in time. [2]
+time {2}. [14] The spatial origin and each basis vector are smooth in time. [2]
 
 The pairwise inner products of the basis vectors are constant in time: the axes may rotate,
 but their lengths and the angles between them stay fixed. [3] A frame may also have orthonormal
@@ -64,8 +63,8 @@ measures, as the time derivative of the coordinate components. [TODO]
 
 1. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame`, `ReferenceFrame.timeOrigin`,
    `ReferenceFrame.origin`, `ReferenceFrame.basis`
-2. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.origin_contMDiff_two`,
-   `ReferenceFrame.basis_contMDiff_two`
+2. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.origin_smooth`,
+   `ReferenceFrame.basis_smooth`
 3. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.gram_matrix_constant`
 4. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.Orthonormal`
 5. Physlib/SpaceAndTime/ReferenceFrame.lean — `ReferenceFrame.IsInertial`,
