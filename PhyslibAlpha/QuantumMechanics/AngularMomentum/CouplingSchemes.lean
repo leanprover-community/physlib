@@ -317,11 +317,11 @@ lemma tensorCas_stringVec {k : ℕ} (hmn : 0 < m + n) (hkm : k ≤ m) (hkn : k �
     tensorCas m n (stringVec m n k l) =
       (((m + n - 2 * k : ℕ) : ℝ) * (((m + n - 2 * k : ℕ) : ℝ) + 2) / 2) • stringVec m n k l := by
   rcases l with _ | l
-  · simp only [tensorCas, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
+  · simp only [tensorCas, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
       tensorF_stringVec, tensorE_stringVec_succ hmn hkm hkn, tensorE_stringVec_zero hkm hkn,
       map_zero, tensorH_stringVec hmn hkm hkn, map_smul, Nat.cast_zero]
     module
-  · simp only [tensorCas, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
+  · simp only [tensorCas, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
       tensorF_stringVec, tensorE_stringVec_succ hmn hkm hkn, tensorH_stringVec hmn hkm hkn,
       map_smul, Nat.cast_add, Nat.cast_one]
     module
@@ -339,7 +339,7 @@ def tripleCas : Module.End ℝ (Triple a b c) :=
 
 lemma tripleForm_tripleCas {a b c : ℕ} (u v : Triple a b c) :
     tripleForm a b c (tripleCas a b c u) v = tripleForm a b c u (tripleCas a b c v) := by
-  simp only [tripleCas, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply, map_add,
+  simp only [tripleCas, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply, map_add,
     map_smul, LinearMap.add_apply, LinearMap.smul_apply]
   rw [tripleForm_tripleE, tripleForm_tripleF, tripleForm_tripleF, tripleForm_tripleE,
     tripleForm_tripleH, tripleForm_tripleH]
@@ -408,7 +408,7 @@ lemma tripleH_rTensor_embed
 lemma tripleCas_rTensor_embed
     (u : StandardSl2Module ℝ (a + b - 2 * (k₁ : ℕ)) ⊗[ℝ] StandardSl2Module ℝ c) :
     tripleCas a b c ((embed hab k₁).rTensor _ u) = (embed hab k₁).rTensor _ (tensorCas _ c u) := by
-  simp only [tripleCas, tensorCas, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
+  simp only [tripleCas, tensorCas, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
     tripleF_rTensor_embed, tripleE_rTensor_embed, tripleH_rTensor_embed, map_add, map_smul]
 
 lemma tripleForm_rTensor_embed
@@ -475,7 +475,7 @@ lemma tripleH_assocEmbed
 lemma tripleCas_assocEmbed
     (w : StandardSl2Module ℝ a ⊗[ℝ] StandardSl2Module ℝ (b + c - 2 * (k₃ : ℕ))) :
     tripleCas a b c (assocEmbed hbc k₃ w) = assocEmbed hbc k₃ (tensorCas a _ w) := by
-  simp only [tripleCas, tensorCas, LinearMap.add_apply, Module.End.mul_apply, LinearMap.smul_apply,
+  simp only [tripleCas, tensorCas, LinearMap.add_apply, mul_apply_eq_comp, LinearMap.smul_apply,
     tripleF_assocEmbed, tripleE_assocEmbed, tripleH_assocEmbed, map_add, map_smul]
 
 lemma tripleForm_assocEmbed

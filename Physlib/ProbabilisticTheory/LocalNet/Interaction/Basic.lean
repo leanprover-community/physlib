@@ -38,23 +38,22 @@ support is not contained in the region.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
-
-variable {R : Type*} [Preorder R] {A : R → Type*} [∀ X, OrderUnitSpace (A X)]
-  {N : LocalNet R A} {ι : Type*}
+open ProbabilisticTheory
 
 /-! ## A. Interactions -/
 
 /-- A family of local observables on `N`, indexed by `ι`, with specified supports. -/
-structure Interaction (N : LocalNet R A) (ι : Type*) where
+structure ProbabilisticTheory.Interaction {R : Type*} [Preorder R]
+    {A : R → ProbabilisticTheory} (N : LocalNet R A) (ι : Type*) where
   /-- The supporting region of each term. -/
   supp : ι → R
   /-- The observable associated with each term. -/
-  term : ∀ i, A (supp i)
+  term : ∀ i, (A (supp i)).Observables
 
-namespace Interaction
+namespace ProbabilisticTheory.Interaction
 
-variable (Φ : Interaction N ι)
+variable {R : Type*} [Preorder R] {A : R → ProbabilisticTheory}
+  {N : LocalNet R A} {ι : Type*} (Φ : Interaction N ι)
 
 /-! ## B. Interaction terms in a region -/
 
@@ -63,7 +62,7 @@ def labelsIn (Λ : R) : Set ι := {i | Φ.supp i ≤ Λ}
 
 open Classical in
 /-- The term `i` expressed in `Λ`, or zero if its support is not contained in `Λ`. -/
-noncomputable def termIn (Λ : R) (i : ι) : A Λ :=
+noncomputable def termIn (Λ : R) (i : ι) : (A Λ).Observables :=
   if h : Φ.supp i ≤ Λ then N.incl h (Φ.term i) else 0
 
 /-- Including a term from `Λ` into `Λ'` agrees with evaluating it in `Λ'` whenever
@@ -75,18 +74,16 @@ lemma incl_termIn {Λ Λ' : R} (h : Λ ≤ Λ') (i : ι) :
   · simp [termIn, labelsIn, h1]
 
 /-- Evaluating interaction terms in a region preserves addition. -/
-lemma termIn_add (s : ι → R) (t t' : ∀ i, A (s i)) (Λ : R) (i : ι) :
+lemma termIn_add (s : ι → R) (t t' : ∀ i, (A (s i)).Observables) (Λ : R) (i : ι) :
     (⟨s, t + t'⟩ : Interaction N ι).termIn Λ i =
       (⟨s, t⟩ : Interaction N ι).termIn Λ i +
         (⟨s, t'⟩ : Interaction N ι).termIn Λ i := by
   by_cases h : s i ≤ Λ <;> simp [termIn, h]
 
 /-- Evaluating interaction terms in a region preserves scalar multiplication. -/
-lemma termIn_smul (s : ι → R) (c : ℝ) (t : ∀ i, A (s i)) (Λ : R) (i : ι) :
+lemma termIn_smul (s : ι → R) (c : ℝ) (t : ∀ i, (A (s i)).Observables) (Λ : R) (i : ι) :
     (⟨s, c • t⟩ : Interaction N ι).termIn Λ i =
       c • (⟨s, t⟩ : Interaction N ι).termIn Λ i := by
   by_cases h : s i ≤ Λ <;> simp [termIn, h]
 
-end Interaction
-
-end ProbabilisticTheory
+end ProbabilisticTheory.Interaction

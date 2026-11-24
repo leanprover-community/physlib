@@ -69,7 +69,7 @@ namespace CondensedMatter
 
 namespace Bloch
 
-open ProbabilisticTheory.Representation
+open PhyslibAlpha.ProbabilisticTheory.Representation
 
 variable {Λ K M : Type*} [AddCommGroup Λ] [CommRing K] [AddCommGroup M] [Module K M]
 

@@ -98,7 +98,7 @@ lemma adjoint_eq_one_iff {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
     -- `g x g† = x` for all `x`, so `g` commutes with `su(n)` and hence with every matrix
     have hx (x : SULieAlgebra n ℂ) : Commute g.1 x.1 := by
       have hx := congrArg Subtype.val (LinearMap.congr_fun h x)
-      rw [adjoint_val, Module.End.one_apply] at hx
+      rw [adjoint_val, one_apply_eq_self] at hx
       calc g.1 * x.1 = g.1 * x.1 * star g.1 * g.1 := by
             rw [Matrix.mul_assoc _ (star g.1), hg.1, Matrix.mul_one]
         _ = x.1 * g.1 := by rw [hx]
@@ -111,7 +111,7 @@ lemma adjoint_eq_one_iff {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
     refine LinearMap.ext fun x => Subtype.ext ?_
     have hcomm : g.1 * x.1 = x.1 * g.1 := by
       rw [hc, Matrix.smul_mul, Matrix.mul_smul, Matrix.one_mul, Matrix.mul_one]
-    rw [adjoint_val, Module.End.one_apply, hcomm, Matrix.mul_assoc, hg.2, Matrix.mul_one]
+    rw [adjoint_val, one_apply_eq_self, hcomm, Matrix.mul_assoc, hg.2, Matrix.mul_one]
 
 /-- Two elements of `SU(n)` have the same adjoint action exactly when they differ by a scalar:
   the adjoint representation is faithful on `SU(n)` modulo its centre. -/
@@ -171,7 +171,7 @@ lemma adjointℂ_eq_one_iff {n : ℕ} (g : specialUnitaryGroup (Fin n) ℂ) :
   rw [← adjoint_eq_one_iff]
   refine ⟨fun h => LinearMap.ext fun x => Subtype.ext ?_, fun h => ?_⟩
   · have hx := congrArg toMatrixℂ (LinearMap.congr_fun h (1 ⊗ₜ x))
-    rwa [adjointℂ_tmul, Module.End.one_apply, toMatrixℂ_tmul, toMatrixℂ_tmul, one_smul,
+    rwa [adjointℂ_tmul, one_apply_eq_self, toMatrixℂ_tmul, toMatrixℂ_tmul, one_smul,
       one_smul] at hx
   · change Module.End.baseChangeHom ℝ ℂ _ (adjoint g) = 1
     rw [h, map_one]
@@ -401,7 +401,7 @@ lemma exists_singleℂ_mem_span_range_adjointℂ {n : ℕ} {A : Complexification
     exact div_ne_zero (sub_ne_zero.2 hne) two_ne_zero
   refine ⟨p, q, hpq, Submodule.span_mono ?_ (singleℂ_mem_span_range_adjointℂ hpq hentry)⟩
   rintro _ ⟨k, rfl⟩
-  exact ⟨k * g, by simp only [map_mul, Module.End.mul_apply]⟩
+  exact ⟨k * g, by simp only [map_mul, mul_apply_eq_comp]⟩
 
 /-!
 

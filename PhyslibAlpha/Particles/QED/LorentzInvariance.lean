@@ -519,9 +519,8 @@ lemma lorentzAction_covDψ (M : SL(2,ℂ)) (e : ℝ) (μ : Fin 1 ⊕ Fin 3)
   simp only [smul_mul_smul_comm, Finset.smul_sum, smul_smul, smul_add,
     Finset.sum_add_distrib, covDψ]
   congr 1
-  all_goals
-    refine Finset.sum_congr rfl fun τ _ => Finset.sum_congr rfl fun β' _ => ?_
-    exact congrArg (· • _) (by ring)
+  refine Finset.sum_congr rfl fun τ _ => Finset.sum_congr rfl fun β' _ => ?_
+  exact congrArg (· • _) (by ring)
 
 /-!
 

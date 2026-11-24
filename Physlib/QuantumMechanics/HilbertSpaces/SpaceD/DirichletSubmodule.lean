@@ -6,7 +6,6 @@ Authors: Gregory J. Loges
 module
 
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Dirichlet submodule

@@ -274,7 +274,7 @@ lemma adjointContr_gellMannMatrices_symm_orthogonal {n : ℕ} (p q : Fin n) (h :
   have := Fin.lt_def.1 h'
   simp only [adjointContr_tmul, gellMannMatrices_symm_val_eq, Matrix.add_mul, trace_add,
     trace_single_mul, Matrix.add_apply, single_apply, Fin.ext_iff, smul_eq_mul]
-  split_ifs <;> (try norm_num) <;> omega
+  split_ifs <;> (norm_num) <;> omega
 
 lemma adjointContr_gellMannMatrices_antisymm_orthogonal {n : ℕ} (p q : Fin n) (h : p < q)
     (p' q' : Fin n) (h' : p' < q') :
@@ -284,7 +284,7 @@ lemma adjointContr_gellMannMatrices_antisymm_orthogonal {n : ℕ} (p q : Fin n) 
   have := Fin.lt_def.1 h'
   simp only [adjointContr_tmul, gellMannMatrices_antisymm_val_eq, Matrix.add_mul, trace_add,
     trace_single_mul, Matrix.add_apply, single_apply, Fin.ext_iff, smul_eq_mul]
-  split_ifs <;> (try norm_num) <;> omega
+  split_ifs <;> (norm_num) <;> omega
 
 /-- The diagonal Gell-Mann matrices are normalized, `tr (λ_l λ_l) = 2`. -/
 lemma adjointContr_gellMannMatrices_diag_self {n : ℕ} (l : Fin (n - 1)) :

@@ -3,8 +3,12 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Physlib.Meta.Informal.Post
-import Mathlib.Lean.CoreM
+module
+
+public import Physlib.Meta.Informal.Post
+public import Mathlib.Lean.CoreM
+
+@[expose] public section
 /-!
 
 # Physlib Stats
@@ -106,11 +110,12 @@ layout: default
 unsafe def main (args  : List String) : IO UInt32 := do
   let _ ← noImports
   Lean.enableInitializersExecution
-  let statString ← CoreM.withImportModules #[`Physlib] (getStats).run'
-  println! statString
-  if "mkHTML" ∈ args then
-    let html ← CoreM.withImportModules #[`Physlib] (Stats.toHtml).run'
-    let htmlFile : System.FilePath := {toString := "./docs/Stats.html"}
-    IO.FS.writeFile htmlFile html
-    IO.println (s!"HTML file made.")
+  CoreM.withImportModules #[`Physlib] do
+    let statString ← getStats.run'
+    println! statString
+    if "mkHTML" ∈ args then
+      let html ← Stats.toHtml.run'
+      let htmlFile : System.FilePath := {toString := "./docs/Stats.html"}
+      IO.FS.writeFile htmlFile html
+      IO.println (s!"HTML file made.")
   pure 0

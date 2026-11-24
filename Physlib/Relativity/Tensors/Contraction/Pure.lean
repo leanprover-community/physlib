@@ -393,7 +393,7 @@ lemma contrP_symm {n : ℕ} {c : Fin (n + 1 + 1) → C}
 /-- The multi-linear map formed by contracting a pair of indices of pure tensors. -/
 noncomputable def contrPMultilinear {n : ℕ} {c : Fin (n + 1 + 1) → C}
     (i j : Fin (n + 1 + 1)) (hij : i ≠ j ∧ S.τ (c i) = c j) :
-    MultilinearMap k (fun i => V (c i))
+    MultilinearMap (RingHom.id k) (fun i => V (c i))
       (S.Tensor (c ∘ succSuccAbove i j))where
   toFun p := contrP i j hij p
   map_update_add' p m x y := by

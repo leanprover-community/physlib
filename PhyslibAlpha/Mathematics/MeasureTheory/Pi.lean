@@ -6,6 +6,7 @@ Authors: brent
 module
 
 public import Mathlib.MeasureTheory.Constructions.Pi
+import all Mathlib.MeasureTheory.Constructions.Pi
 
 /-!
 

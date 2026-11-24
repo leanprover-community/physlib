@@ -20,6 +20,8 @@ functions defined on `Space d`.
 - `laplacian` : The Laplacian operator on scalar functions on `Space d`.
 - `laplacianVec` : The Laplacian operator on vector-valued functions on `Space d`.
 - `distLaplacian` : The Laplacian operator on distributions on `Space d`.
+- `distLaplacian_apply` : The Laplacian of a distribution on a test function,
+  `(Δᵈ T) η = T (Δ η)`.
 - `laplacian_comp_linearIsometryEquiv` : The Laplacian commutes with composition by a linear
   isometry of `Space d`.
 - `laplacianVec_comp_linearIsometryEquiv` : The vector Laplacian commutes with composition by a
@@ -32,6 +34,7 @@ functions defined on `Space d`.
 - B. Laplacian on vector valued functions
 - C. Laplacian of distributions
   - C.1. Laplacian of constant distributions
+  - C.2. The Laplacian of a distribution on a test function
 - D. Composition with a linear isometry
 
 ## iv. References
@@ -108,6 +111,24 @@ scoped[Space] notation "Δᵈ" => distLaplacian
 lemma distLaplacian_const {d : ℕ} (c : ℝ) :
     Δᵈ (Distribution.const ℝ (Space d) c) = 0 := by
   simp [distLaplacian, distGrad_const]
+
+/-!
+
+### C.2. The Laplacian of a distribution on a test function
+
+-/
+
+open scoped SchwartzMap LineDeriv in
+/-- The distributional Laplacian acts on a test function through the Laplacian of the test
+  function: `(Δᵈ T) η = T (Δ η)`. -/
+lemma distLaplacian_apply {d : ℕ} (T : (Space d) →d[ℝ] ℝ) (η : 𝓢(Space d, ℝ)) :
+    (Δᵈ T) η = T (Laplacian.laplacian η) := by
+  rw [SchwartzMap.laplacian_eq_sum basis η, distLaplacian, LinearMap.comp_apply,
+    distDiv_apply_eq_sum_distDeriv, map_sum]
+  refine Finset.sum_congr rfl fun i _ => ?_
+  rw [distDeriv_apply, fderivD_apply]
+  simp [distGrad_apply, distDeriv_apply, fderivD_apply]
+  rfl
 
 /-!
 

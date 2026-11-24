@@ -44,7 +44,7 @@ commutative `A` this contains Naimark's dilation of a POVM.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder CStarAlgebra TensorProduct
 open ContinuousLinearMap
@@ -747,4 +747,4 @@ end Stinespring
 
 end
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

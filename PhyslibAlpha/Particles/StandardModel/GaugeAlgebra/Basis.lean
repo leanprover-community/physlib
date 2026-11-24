@@ -139,7 +139,7 @@ lemma gellMannMatrix_trace (k : Fin 8) : (gellMannMatrix k).trace = 0 := by
     simp [gellMannMatrix_zero, gellMannMatrix_one, gellMannMatrix_two, gellMannMatrix_three,
       gellMannMatrix_four, gellMannMatrix_five, gellMannMatrix_six, gellMannMatrix_seven,
       Matrix.trace_fin_three]
-  all_goals ring
+  ring
 
 /-- A combination of the Gell-Mann matrices, entry by entry. -/
 lemma sum_smul_gellMannMatrix (g : Fin 8 → ℝ) :
@@ -170,7 +170,7 @@ lemma sum_smul_pauliMatrix_inr (g : Fin 3 → ℝ) :
   fin_cases i <;> fin_cases j
   all_goals
     simp [Fin.sum_univ_three, Matrix.sum_apply, pauliMatrix, Complex.real_smul]
-  all_goals ring
+  ring
 
 /-- The Pauli matrices `σ1`, `σ2`, `σ3` are hermitian, phrased through `star`. -/
 lemma pauliMatrix_inr_star (i : Fin 3) :

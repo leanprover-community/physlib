@@ -34,7 +34,7 @@ A continuous function of an observable with values in `[0, 1]` is an effect.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace NormedJordanAlgebra
 
@@ -71,4 +71,4 @@ end
 
 end NormedJordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

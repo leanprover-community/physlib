@@ -9,14 +9,16 @@ public import PhyslibAlpha.Particles.QED.Fields
 /-!
 # Spin-statistics of the QED fields
 
+The electron jet coordinates anticommute and the photon jet coordinates commute.
+
 ## i. Overview
 
-The statistics of the fields of QED, as encoded in the QED jet algebra: the
+The statistics of the fields of QED are encoded in the QED jet algebra. The
 electron jet coordinates anticommute among themselves and square to zero
 (fermionic statistics), while the photon jet coordinates commute with
 everything (bosonic statistics).
 
-This file contains no definitions, only theorems about the fields of
+This file contains no definitions, only lemmas about the fields of
 `PhyslibAlpha.Particles.QED.Fields`.
 
 ## ii. Key results
@@ -63,11 +65,11 @@ lemma ofGenerator_mul_self (j : JetGenerators) :
     ofGenerator j * ofGenerator j = 0 :=
   ExteriorAlgebra.ι_sq_zero _
 
-/-- The jet coordinates of the electron anticommute: the electron is a
+/-- The jet coordinates of the electron anticommute. The electron is a
   fermion. -/
 lemma ofGenerator_anticommute (i j : JetGenerators) :
     ofGenerator i * ofGenerator j = -(ofGenerator j * ofGenerator i) := by
-  have h := ExteriorAlgebra.ι_sq_zero (R := ℂ) (M := JetComponentSpace)
+  have h := ExteriorAlgebra.ι_sq_zero (R := ℂ) (M := FieldDerivSpace)
     (Finsupp.single i 1 + Finsupp.single j 1)
   rw [map_add, add_mul, mul_add, mul_add, ExteriorAlgebra.ι_sq_zero,
     ExteriorAlgebra.ι_sq_zero, zero_add, add_zero] at h
@@ -103,13 +105,13 @@ lemma barψ_mul_barψ_anticomm (s t : Multiset (Fin 1 ⊕ Fin 3)) (α β : Fin 2
   simp only [barψ, tmul_mul_tmul, one_mul]
   rw [Electron.JetAlgebra.ofGenerator_anticommute, tmul_neg]
 
-/-- Pauli exclusion: an electron jet coordinate squares to zero. -/
+/-- Pauli exclusion. An electron jet coordinate squares to zero. -/
 @[simp]
 lemma ψ_mul_self (s : Multiset (Fin 1 ⊕ Fin 3)) (α : Fin 2 ⊕ Fin 2) :
     ψ s α * ψ s α = 0 := by
   simp [ψ]
 
-/-- Pauli exclusion: a conjugate electron jet coordinate squares to zero. -/
+/-- Pauli exclusion. A conjugate electron jet coordinate squares to zero. -/
 @[simp]
 lemma barψ_mul_self (s : Multiset (Fin 1 ⊕ Fin 3)) (α : Fin 2 ⊕ Fin 2) :
     barψ s α * barψ s α = 0 := by
@@ -121,7 +123,7 @@ lemma barψ_mul_self (s : Multiset (Fin 1 ⊕ Fin 3)) (α : Fin 2 ⊕ Fin 2) :
 
 -/
 
-/-- The photon jet coordinates commute among themselves: the photon is a
+/-- The photon jet coordinates commute among themselves. The photon is a
   boson. -/
 lemma A_mul_A_comm (s t : Multiset (Fin 1 ⊕ Fin 3)) (μ ν : Fin 1 ⊕ Fin 3) :
     A s μ * A t ν = A t ν * A s μ := by

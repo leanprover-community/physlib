@@ -138,7 +138,7 @@ theorem projector_eq_sum_rankOne (b : OrthonormalBasis ι 𝕜 S) :
     convert! h_proj using 3
     simp [ inner];
   convert! congr_arg ( fun x : EuclideanSpace ( _ ) n => x i ) ( h_proj j ) using 1
-  simp [ Matrix.sum_apply, mul_comm ]
+  simp [ mul_comm ]
 
 /--
 The projector onto the support of A is the sum of the projections onto the eigenvectors with non-zero eigenvalues.

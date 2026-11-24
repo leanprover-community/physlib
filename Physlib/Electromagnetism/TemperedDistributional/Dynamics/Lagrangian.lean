@@ -103,27 +103,27 @@ lemma gradFreeCurrentPotential_eq_sum_basis {d}
 lemma gradFreeCurrentPotential_sum_inl_0 (𝓕 : FreeSpace) {d}
     (J : TempDistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) :
     (gradFreeCurrentPotential J) ε (Sum.inl 0) =
-    𝓕.c * (distTimeSlice 𝓕.c).symm (J.chargeDensity 𝓕.c) ε := by
+    𝓕.c * (tempDistTimeSlice 𝓕.c).symm (J.chargeDensity 𝓕.c) ε := by
   simp only [gradFreeCurrentPotential, LinearMap.coe_mk, AddHom.coe_mk, Fin.isValue,
     ContinuousLinearMap.coe_mk', apply_sum, apply_smul, Lorentz.Vector.basis_apply, mul_ite,
     mul_one, mul_zero, Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inl_0_inl_0, one_mul,
     TempDistLorentzCurrentDensity.chargeDensity, one_div, temporalCLM, map_smul,
-    FunLike.coe_smul, Pi.smul_apply, distTimeSlice_symm_apply,
+    FunLike.coe_smul, Pi.smul_apply, tempDistTimeSlice_symm_apply,
     ContinuousLinearMap.coe_comp, LinearMap.coe_toContinuousLinearMap', Function.comp_apply,
     smul_eq_mul, ne_eq, SpeedOfLight.val_ne_zero, not_false_eq_true, mul_inv_cancel_left₀]
-  rw [← distTimeSlice_symm_apply]
+  rw [← tempDistTimeSlice_symm_apply]
   simp
 
 lemma gradFreeCurrentPotential_sum_inr_i (𝓕 : FreeSpace) {d}
     (J : TempDistLorentzCurrentDensity d) (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
     (gradFreeCurrentPotential J) ε (Sum.inr i) =
-    - (distTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
+    - (tempDistTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
   simp only [gradFreeCurrentPotential, LinearMap.coe_mk, AddHom.coe_mk, ContinuousLinearMap.coe_mk',
     apply_sum, apply_smul, Lorentz.Vector.basis_apply, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte, inr_i_inr_i,
-    TempDistLorentzCurrentDensity.currentDensity, spatialCLM, distTimeSlice_symm_apply,
+    TempDistLorentzCurrentDensity.currentDensity, spatialCLM, tempDistTimeSlice_symm_apply,
     ContinuousLinearMap.coe_comp, Function.comp_apply]
-  rw [← distTimeSlice_symm_apply]
+  rw [← tempDistTimeSlice_symm_apply]
   simp
 
 /-!
@@ -163,8 +163,8 @@ lemma gradLagrangian_sum_inl_0 {𝓕 : FreeSpace}
     (A : TempDistElectromagneticPotential d) (J : TempDistLorentzCurrentDensity d)
     (ε : 𝓢(SpaceTime d, ℝ)) :
     A.gradLagrangian 𝓕 J ε (Sum.inl 0) =
-    (1/(𝓕.μ₀ * 𝓕.c) * (distTimeSlice 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε)
-    - 𝓕.c * (distTimeSlice 𝓕.c).symm (J.chargeDensity 𝓕.c) ε := by
+    (1/(𝓕.μ₀ * 𝓕.c) * (tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDiv (A.electricField 𝓕.c)) ε)
+    - 𝓕.c * (tempDistTimeSlice 𝓕.c).symm (J.chargeDensity 𝓕.c) ε := by
   simp [gradLagrangian, gradKineticTerm_sum_inl_eq, gradFreeCurrentPotential_sum_inl_0 𝓕]
 
 lemma gradLagrangian_sum_inr_i {𝓕 : FreeSpace}
@@ -172,10 +172,10 @@ lemma gradLagrangian_sum_inr_i {𝓕 : FreeSpace}
     (ε : 𝓢(SpaceTime d, ℝ)) (i : Fin d) :
     A.gradLagrangian 𝓕 J ε (Sum.inr i) =
     𝓕.μ₀⁻¹ * (1 / 𝓕.c ^ 2 *
-      (distTimeSlice 𝓕.c).symm (Space.distTimeDeriv (A.electricField 𝓕.c)) ε i -
+      (tempDistTimeSlice 𝓕.c).symm (Space.distTimeDeriv (A.electricField 𝓕.c)) ε i -
       ∑ j, ((PiLp.basisFun 2 ℝ (Fin d)).tensorProduct (PiLp.basisFun 2 ℝ (Fin d))).repr
-        ((distTimeSlice 𝓕.c).symm (Space.distSpaceDeriv j (A.magneticFieldMatrix 𝓕.c)) ε) (j, i)) +
-    (distTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
+        ((tempDistTimeSlice 𝓕.c).symm (Space.distSpaceDeriv j (A.magneticFieldMatrix 𝓕.c)) ε)
+        (j, i)) + (tempDistTimeSlice 𝓕.c).symm (J.currentDensity 𝓕.c) ε i := by
   simp [gradLagrangian, gradKineticTerm_sum_inr_eq, gradFreeCurrentPotential_sum_inr_i 𝓕]
 
 /-!

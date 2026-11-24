@@ -53,7 +53,7 @@ namespace CondensedMatter
 
 namespace QuasiLocal
 
-open ProbabilisticTheory.QuasiLocal
+open PhyslibAlpha.ProbabilisticTheory.QuasiLocal
 
 open scoped Matrix
 

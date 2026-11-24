@@ -3,8 +3,15 @@ Copyright (c) 2024 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Physlib.Meta.Informal.Post
-import Mathlib.Lean.CoreM
+module
+
+public import Physlib.Meta.Informal.Post
+public meta import Physlib.Meta.Informal.Post
+public import Mathlib.Lean.CoreM
+public meta import Mathlib.Lean.CoreM
+public meta import ImportGraph.Lean.Environment
+
+public meta section
 /-!
 
 # Extracting information about informal definitions and lemmas
@@ -85,7 +92,7 @@ unsafe def DepDecls.ofRootModule (rootModule : Name) : CoreM DepDecls := do
 
   return {decls, formalDecls, informalModuleMap}
 where
-  getAllDecls : DeclsM (Array (Name × Array InformalDecl)) := do
+  getAllDecls : StateRefT (Std.HashMap Name Decl) CoreM (Array (Name × Array InformalDecl)) := do
     let ({imports, ..}, _) ← readModuleData (← findOLean rootModule)
     imports.filterMapM fun {module, ..} => do
       if module.getRoot == rootModule then

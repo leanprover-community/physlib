@@ -47,8 +47,8 @@ fluctuates in both.
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint
+open PhyslibAlpha.ProbabilisticTheory
 open InnerProductSpace UnitalPositiveLinearMap
 variable (T : TightBindingChain)
 

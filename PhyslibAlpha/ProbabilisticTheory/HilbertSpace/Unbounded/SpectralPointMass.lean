@@ -45,7 +45,7 @@ or `1` is a scalar multiple of the identity.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Filter Topology Classical
 
@@ -370,4 +370,4 @@ end ScalarOperator
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

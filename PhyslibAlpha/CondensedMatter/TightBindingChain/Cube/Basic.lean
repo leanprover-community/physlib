@@ -65,8 +65,8 @@ diagonal too, and `det Σ / |det Ω|` is the product of the squares of the three
 
 namespace CondensedMatter
 namespace TightBindingChain
-open scoped ComplexOrder selfAdjoint QuantumMechanics.FiniteHilbertSpace
-open ProbabilisticTheory
+open scoped ComplexOrder _root_.selfAdjoint QuantumMechanics.FiniteHilbertSpace
+open PhyslibAlpha.ProbabilisticTheory
 open QuantumMechanics FiniteHilbertSpace UnitalPositiveLinearMap
 variable (Tx Ty Tz : TightBindingChain)
 

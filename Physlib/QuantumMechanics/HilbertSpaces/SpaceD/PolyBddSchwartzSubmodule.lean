@@ -7,7 +7,6 @@ module
 
 public import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 public import Physlib.QuantumMechanics.HilbertSpaces.SpaceD.SchwartzSubmodule
-public import Physlib.Meta.TODO.Basic
 /-!
 
 # Polynomially-bounded Schwartz submodules
@@ -177,9 +176,9 @@ private lemma enorm_bump_mul_le_enorm {𝕜 E : Type*} [RCLike 𝕜] [NormedAddC
     [NormedSpace ℝ E] [HasContDiffBump E] {c : E} (f : ContDiffBump c) (g : E → 𝕜) (x : E) :
     ‖f x * g x‖ₑ ≤ ‖g x‖ₑ := by
   nth_rw 2 [← one_mul (g x)]
-  simp_rw [enorm_mul]
+  simp_rw [eNorm_mul]
   refine mul_le_mul_left ?_ ‖g x‖ₑ
-  apply enorm_le_iff_norm_le.mpr
+  apply eNorm_le_iff_norm_le.mpr
   rw [norm_algebraMap', Real.norm_eq_abs, norm_one, ← abs_one]
   exact abs_le_abs_of_nonneg f.nonneg f.le_one
 
@@ -243,7 +242,7 @@ lemma dense_top (hμ : μ ≤ volume) [μ.IsOpenPosMeasure] [IsFiniteMeasureOnCo
       let σ (n : ℕ) : SpaceDHilbertSpace d μ := by
         refine mk (f := s n) ?_
         refine lt_of_le_of_lt ?_ (memHS_coe ξ)
-        exact eLpNorm_mono_enorm
+        exact eLpNorm_mono_eNorm
           ((continuous_ofReal.comp (b n).continuous).aestronglyMeasurable.mul
             ξ.val.aestronglyMeasurable)
           (enorm_bump_mul_le_enorm (b n) ξ)
@@ -266,8 +265,8 @@ lemma dense_top (hμ : μ ≤ volume) [μ.IsOpenPosMeasure] [IsFiniteMeasureOnCo
             have hξ2 : AEStronglyMeasurable (fun x ↦ ‖(ξ : Space d → ℂ) x‖ ^ 2) μ :=
               ξ.val.aestronglyMeasurable.norm.pow 2
             simp only [Real.rpow_ofNat] at h
-            rw [eLpNorm_one_eq_lintegral_enorm hξ2] at h
-            simpa [enorm_pow, enorm_norm] using h
+            rw [eLpNorm_one_eq_lintegral_eNorm hξ2] at h
+            simpa [eNorm_pow, eNorm_norm] using h
           · have : NeZero d := ⟨hd.ne'⟩
             refine tendsto_const_nhds.squeeze ?_ zero_le (fun n ↦ hμ (B n))
             let C : ℝ := (ENNReal.ofReal (√Real.pi ^ d / Real.Gamma (d / 2 + 1))).toReal

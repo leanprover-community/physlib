@@ -55,7 +55,7 @@ noncomputable local instance : NormedAlgebra ℚ (H →L[ℂ] H) :=
   .restrictScalars ℚ ℂ (H →L[ℂ] H)
 
 namespace UnitaryOneParameterGroup
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 omit [CompleteSpace H] in
 /-- A real scalar multiple on `H →L[ℂ] H` agrees with the corresponding complex scalar multiple. -/

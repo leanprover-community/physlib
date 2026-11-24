@@ -8,26 +8,29 @@ module
 public import Mathlib.LinearAlgebra.Matrix.Trace
 public import PhyslibAlpha.SpaceAndTime.SpaceTime.SpaceTimeAlgebra.Basic
 /-!
-# Taylor determinacy and completeness of jets
+# Taylor data of matrices of jets
+
+Matrices of jets are determined by, and can be built from, their base-point Taylor data.
 
 ## i. Overview
 
-A jet is determined by the base-point values of its iterated derivatives, and a jet all of
-whose first derivatives vanish is the constant jet of its value. These are the two facts
-that make the jets of a matrix gauge group a faithful package of local gauge data, in the
-sense of `LocalGaugeData.Faithful`. Conversely every family of base-point Taylor data is
-realized by a jet, `ofDerivValues`, and entrywise by a matrix of jets, `taylorMatrix`: this
-is the Taylor completeness half of `LocalGaugeData.Free`. In the other direction,
-`derivValueMatrix` reads off the base-point Taylor data of a matrix of jets.
+A jet is determined by the base-point values of its iterated derivatives, and every family of
+such values is realized by a jet, `SpaceTimeAlgebra.ofDerivValues` (both in Physlib). This file
+carries these two facts, Taylor determinacy and Taylor completeness, over to matrices of jets
+entrywise. `taylorMatrix` builds the matrix of jets with prescribed base-point Taylor data, and
+`derivValueMatrix` reads the base-point Taylor data off a matrix of jets. They are what make a
+Lie algebra jet of a matrix gauge group determined by, and freely prescribed through, its
+base-point Taylor data.
 
 ## ii. Key results
 
-- `SpaceTimeAlgebra.ext_of_constantCoeff_iteratedPDeriv` : Taylor determinacy.
-- `SpaceTimeAlgebra.eq_C_of_pderiv_eq_zero` : a jet with vanishing derivatives is constant.
-- `SpaceTimeAlgebra.ofDerivValues` :
-  Taylor completeness.
-- `SpaceTimeAlgebra.taylorMatrix` : Taylor completeness for matrices of jets.
+- `SpaceTimeAlgebra.taylorMatrix` : the matrix of jets with prescribed base-point Taylor data.
+- `SpaceTimeAlgebra.map_constantCoeff_iteratedPDeriv_taylorMatrix` : Taylor completeness for
+  matrices of jets.
 - `SpaceTimeAlgebra.derivValueMatrix` : the base-point Taylor data of a matrix of jets.
+- `SpaceTimeAlgebra.derivValueMatrix_eq_smul_map_coeff` : the base-point derivative along
+  `s` is `s!` times the matrix of Taylor coefficients of `x^s`.
+- `SpaceTimeAlgebra.matrix_ext_of_derivValueMatrix` : Taylor determinacy for matrices of jets.
 
 ## iii. Table of contents
 
@@ -52,38 +55,15 @@ open MvPowerSeries
 
 -/
 
-lemma star_ofDerivValues (f : Multiset (Fin 1 ⊕ Fin 3) → ℂ) :
-    star (ofDerivValues f) = ofDerivValues fun s => star (f s) := by
-  ext m
-  rw [coeff_star, coeff_ofDerivValues, coeff_ofDerivValues, star_mul', star_inv₀,
-    star_natCast]
-
-lemma ofDerivValues_sum {ι : Type} (t : Finset ι) (f : ι → Multiset (Fin 1 ⊕ Fin 3) → ℂ) :
-    ofDerivValues (fun s => ∑ i ∈ t, f i s) = ∑ i ∈ t, ofDerivValues (f i) := by
-  ext m
-  simp only [coeff_ofDerivValues, map_sum, Finset.mul_sum]
-
 /-- The matrix of jets with prescribed base-point Taylor data `M`, entrywise. -/
 noncomputable def taylorMatrix {κ : Type} (M : Multiset (Fin 1 ⊕ Fin 3) → Matrix κ κ ℂ) :
     Matrix κ κ SpaceTimeAlgebra :=
   Matrix.of fun i j => ofDerivValues fun s => M s i j
 
+/-- An entry of `taylorMatrix M` is the jet with the Taylor data of that entry. -/
 lemma taylorMatrix_apply {κ : Type} (M : Multiset (Fin 1 ⊕ Fin 3) → Matrix κ κ ℂ) (i j : κ) :
     taylorMatrix M i j = ofDerivValues fun s => M s i j :=
   rfl
-
-lemma star_taylorMatrix {κ : Type} {M : Multiset (Fin 1 ⊕ Fin 3) → Matrix κ κ ℂ}
-    (hM : ∀ s, star (M s) = M s) : star (taylorMatrix M) = taylorMatrix M := by
-  ext i j : 1
-  rw [Matrix.star_apply, taylorMatrix_apply, taylorMatrix_apply, star_ofDerivValues]
-  exact congrArg ofDerivValues (funext fun s => by rw [← Matrix.star_apply, hM s])
-
-lemma trace_taylorMatrix {κ : Type} [Fintype κ] {M : Multiset (Fin 1 ⊕ Fin 3) → Matrix κ κ ℂ}
-    (hM : ∀ s, (M s).trace = 0) : (taylorMatrix M).trace = 0 := by
-  have h : ∀ s, ∑ i, M s i i = 0 := fun s => hM s
-  simp only [Matrix.trace, Matrix.diag_apply, taylorMatrix_apply, ← ofDerivValues_sum, h]
-  ext m
-  simp [coeff_ofDerivValues]
 
 /-- The base-point Taylor data of `taylorMatrix M` are `M`, entrywise. -/
 lemma map_constantCoeff_iteratedPDeriv_taylorMatrix {κ : Type}
@@ -109,17 +89,20 @@ noncomputable def derivValueMatrix (s : Multiset (Fin 1 ⊕ Fin 3))
     (A : Matrix κ κ SpaceTimeAlgebra) : Matrix κ κ ℂ :=
   A.map fun f => constantCoeff (iteratedPDeriv s f)
 
+/-- One more direction in `s` differentiates the matrix entrywise first. -/
 lemma derivValueMatrix_cons (μ : Fin 1 ⊕ Fin 3) (s : Multiset (Fin 1 ⊕ Fin 3))
     (A : Matrix κ κ SpaceTimeAlgebra) :
     derivValueMatrix (μ ::ₘ s) A = derivValueMatrix s (A.map (pderiv μ)) := by
   ext i j
   simp [derivValueMatrix]
 
+/-- The base-point Taylor data of a matrix of jets are additive. -/
 lemma derivValueMatrix_add (s : Multiset (Fin 1 ⊕ Fin 3)) (A B : Matrix κ κ SpaceTimeAlgebra) :
     derivValueMatrix s (A + B) = derivValueMatrix s A + derivValueMatrix s B := by
   ext i j
   simp [derivValueMatrix, iteratedPDeriv_add]
 
+/-- The base-point Taylor data of a matrix of jets commute with real scaling. -/
 lemma derivValueMatrix_real_smul (s : Multiset (Fin 1 ⊕ Fin 3)) (r : ℝ)
     (A : Matrix κ κ SpaceTimeAlgebra) :
     derivValueMatrix s (r • A) = r • derivValueMatrix s A := by
@@ -139,6 +122,25 @@ variable [Fintype κ] [DecidableEq κ]
 @[simp]
 lemma derivValueMatrix_zero (A : Matrix κ κ SpaceTimeAlgebra) :
     derivValueMatrix 0 A = (constantCoeff : SpaceTimeAlgebra →+* ℂ).mapMatrix A := rfl
+
+omit [Fintype κ] [DecidableEq κ] in
+/-- The base-point derivative of a matrix of jets along `s` is `s!` times its matrix of
+  Taylor coefficients of `x^s`, with `s!` the product of the factorials of the
+  multiplicities in `s`. -/
+lemma derivValueMatrix_eq_smul_map_coeff (s : Multiset (Fin 1 ⊕ Fin 3))
+    (A : Matrix κ κ SpaceTimeAlgebra) :
+    derivValueMatrix s A = ((∏ ν, (s.count ν).factorial : ℕ) : ℝ) •
+      A.map (coeff (Multiset.toFinsupp s)) := by
+  ext i j
+  simp only [derivValueMatrix, Matrix.map_apply, Matrix.smul_apply, constantCoeff_iteratedPDeriv,
+    Complex.real_smul, Complex.ofReal_natCast]
+
+omit [Fintype κ] [DecidableEq κ] in
+/-- A matrix of jets is determined by its base-point derivatives. -/
+lemma matrix_ext_of_derivValueMatrix {A B : Matrix κ κ SpaceTimeAlgebra}
+    (h : ∀ s, derivValueMatrix s A = derivValueMatrix s B) : A = B :=
+  Matrix.ext fun i j => ext_of_constantCoeff_iteratedPDeriv fun s =>
+    congrArg (fun M => M i j) (h s)
 
 end DerivValueMatrix
 

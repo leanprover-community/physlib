@@ -68,11 +68,7 @@ structure QuantumSystem where
 
 namespace QuantumSystem
 
-instance (Q : QuantumSystem) : NormedAddCommGroup Q.HS := Q.instNormed
-
-instance (Q : QuantumSystem) : InnerProductSpace ℂ Q.HS := Q.instInner
-
-instance (Q : QuantumSystem) : CompleteSpace Q.HS := Q.instComplete
+attribute [instance] instNormed instInner instComplete
 
 /-!
 ## B. Creation from an essentially self-adjoint operator

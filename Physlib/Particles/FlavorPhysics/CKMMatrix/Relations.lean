@@ -33,7 +33,7 @@ lemma VAbs_sum_sq_row_eq_one (V : Quotient CKMMatrixSetoid) (i : Fin 3) :
   have hV := V.prop
   rw [mem_unitaryGroup_iff] at hV
   have ht := congrFun (congrFun hV i) i
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, Fin.isValue,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, Fin.isValue,
     one_apply_eq] at ht
   rw [mul_conj, mul_conj, mul_conj] at ht
   repeat rw [← Complex.sq_norm] at ht
@@ -157,7 +157,7 @@ lemma fst_row_orthog_snd_row (V : CKMMatrix) :
   have hV := V.prop
   rw [mem_unitaryGroup_iff] at hV
   have ht := congrFun (congrFun hV 1) 0
-  simp only [Fin.isValue, mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, ne_eq,
+  simp only [Fin.isValue, Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, ne_eq,
     one_ne_zero, not_false_eq_true, one_apply_ne] at ht
   exact ht
 
@@ -166,7 +166,7 @@ lemma fst_row_orthog_thd_row (V : CKMMatrix) :
   have hV := V.prop
   rw [mem_unitaryGroup_iff] at hV
   have ht := congrFun (congrFun hV 2) 0
-  simp only [Fin.isValue, mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, ne_eq,
+  simp only [Fin.isValue, Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, ne_eq,
     Fin.reduceEq, not_false_eq_true, one_apply_ne] at ht
   exact ht
 
@@ -291,7 +291,7 @@ lemma VAbs_sum_sq_col_eq_one (V : Quotient CKMMatrixSetoid) (i : Fin 3) :
   have hV := V.prop
   rw [mem_unitaryGroup_iff'] at hV
   have ht := congrFun (congrFun hV i) i
-  simp only [mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, Fin.isValue,
+  simp only [Matrix.mul_apply, star_apply, RCLike.star_def, Fin.sum_univ_three, Fin.isValue,
     one_apply_eq] at ht
   rw [mul_comm, mul_conj, mul_comm, mul_conj, mul_comm, mul_conj] at ht
   repeat rw [← Complex.sq_norm] at ht

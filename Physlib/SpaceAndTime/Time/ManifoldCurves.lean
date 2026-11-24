@@ -6,7 +6,6 @@ Authors: Michal Mogielnicki
 module
 
 public import Mathlib.Analysis.Calculus.Deriv.Shift
-public import Mathlib.Geometry.Manifold.ContMDiff.Atlas
 public import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 public import Mathlib.Geometry.Manifold.MFDeriv.Basic
 public import Physlib.SpaceAndTime.Time.Basic

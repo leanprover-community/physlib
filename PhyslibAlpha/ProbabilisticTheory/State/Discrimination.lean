@@ -6,7 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.State.Metric
-public import Physlib.ProbabilisticTheory.Effect.Complement
+public import PhyslibAlpha.ProbabilisticTheory.Effect.Complement
 public import Mathlib.Algebra.Order.Group.CompleteLattice
 
 /-!
@@ -49,7 +49,7 @@ Two equally likely states are easier to tell apart exactly when they sit farther
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace UnitalPositiveLinearMap
 
@@ -188,4 +188,4 @@ end Archimedean
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -68,12 +68,12 @@ lemma head_state_eq {φ : 𝓕.FieldOp} : (ψs : CrAnSection (φ :: φs)) →
 
 lemma statistics_eq_state_statistics (ψs : CrAnSection φs) :
     (𝓕 |>ₛ ψs.1) = 𝓕 |>ₛ φs := by
-  erw [FieldStatistic.ofList_eq_prod, FieldStatistic.ofList_eq_prod, crAnStatistics]
+  rw [FieldStatistic.ofList_eq_prod, FieldStatistic.ofList_eq_prod, crAnStatistics]
   rw [← List.map_comp_map, Function.comp_apply, ψs.2]
 
 lemma take_statistics_eq_take_state_statistics (ψs : CrAnSection φs) n :
     (𝓕 |>ₛ (ψs.1.take n)) = 𝓕 |>ₛ (φs.take n) := by
-  erw [FieldStatistic.ofList_eq_prod, FieldStatistic.ofList_eq_prod, crAnStatistics]
+  rw [FieldStatistic.ofList_eq_prod, FieldStatistic.ofList_eq_prod, crAnStatistics]
   simp only [List.map_take]
   rw [← List.map_comp_map, Function.comp_apply, ψs.2]
 
@@ -177,7 +177,7 @@ lemma card_eq_mul : {φs : List 𝓕.FieldOp} → Fintype.card (CrAnSection φs)
       rw [card_cons_eq]
       rw [card_eq_mul]
       simp only [fieldOpToCrAnType]
-      erw [CreateAnnihilate.CreateAnnihilate_card_eq_two]
+      rw [CreateAnnihilate.CreateAnnihilate_card_eq_two]
       ring
   | FieldOp.inAsymp x_ :: φs => by
       simp only [statesIsPosition, Bool.false_eq_true, not_false_eq_true, List.countP_cons_of_neg]

@@ -13,17 +13,19 @@ public import Physlib.ProbabilisticTheory.OrderUnit.Archimedean
 
 ## i. Overview
 
-`PosCone E` collects the positive elements of `E`. In quantum mechanics, `E` is the real vector
-space of self-adjoint matrices, whose spectra are real. Its positive cone consists exactly of
-those matrices whose spectra are nonnegative.
+`PosCone P` collects the positive observables of `P`. In quantum mechanics, `P.Observables` is
+the real vector space of self-adjoint matrices, whose spectra are real. Its positive cone
+consists exactly of those matrices whose spectra are nonnegative.
 These elements form a cone: they are closed under addition and scaling by nonnegative reals.
 
 ## ii. Key results
 
-- `PosCone` : the cone of positive observables, `PointedCone.positive ℝ E`. Its carrier is exactly
-  `{A | 0 ≤ A}` (`PointedCone.mem_positive`) and it is convex (`PointedCone.convex`).
+- `PosCone` : the cone of positive observables, `PointedCone.positive ℝ P.Observables`. Its
+  carrier is exactly `{A | 0 ≤ A}` (`PointedCone.mem_positive`) and it is convex
+  (`PointedCone.convex`).
 - `PosCone.isClosed` : the positive cone is closed in the order-unit-norm topology of an
   Archimedean order-unit space.
+- `PosCone.exists_sub` : every observable is a difference of two positive observables.
 
 ## iii. Table of contents
 
@@ -35,7 +37,7 @@ These elements form a cone: they are closed under addition and scaling by nonneg
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+open ProbabilisticTheory
 
 open scoped NNReal
 
@@ -46,20 +48,16 @@ open scoped NNReal
 -/
 
 /-- The positive pointed cone of an ordered real module. -/
-abbrev PosCone (E : Type*) [OrderedVectorSpace E] : PointedCone ℝ E :=
-  PointedCone.positive ℝ E
+abbrev ProbabilisticTheory.PosCone (P : ProbabilisticTheory) : PointedCone ℝ P.Observables :=
+  PointedCone.positive ℝ P.Observables
 
-namespace PosCone
+namespace ProbabilisticTheory.PosCone
 
-section OrderedVectorSpace
-
-variable {E : Type*} [OrderedVectorSpace E]
+variable {P : ProbabilisticTheory}
 
 /-- The positive cone carries a nonnegative-real scalar action. -/
-instance instModule : Module ℝ≥0 (PosCone E) :=
-  inferInstanceAs (Module {c : ℝ // 0 ≤ c} (PointedCone.positive ℝ E))
-
-end OrderedVectorSpace
+instance instModule : Module ℝ≥0 (PosCone P) :=
+  inferInstanceAs (Module {c : ℝ // 0 ≤ c} (PointedCone.positive ℝ P.Observables))
 
 /-!
 
@@ -67,16 +65,8 @@ end OrderedVectorSpace
 
 -/
 
-section ArchimedeanOrderUnitSpace
-
-open ArchimedeanOrderUnitSpace
-
-variable {E : Type*} [ArchimedeanOrderUnitSpace E]
-
 /-- The positive cone is closed in the topology induced by the order-unit norm. -/
-lemma isClosed : IsClosed (PosCone E : Set E) := isClosed_Ici_zero
-
-end ArchimedeanOrderUnitSpace
+lemma isClosed : IsClosed (PosCone P : Set P.Observables) := isClosed_Ici_zero
 
 /-!
 
@@ -84,20 +74,21 @@ end ArchimedeanOrderUnitSpace
 
 -/
 
-section OrderUnitSpace
-
-open OrderUnitSpace
-
-variable {E : Type*} [OrderUnitSpace E]
+@[simp]
+lemma coe_nnreal_smul (t : ℝ≥0) (p : PosCone P) :
+    ((t • p : PosCone P) : P.Observables) = (t : ℝ) • (p : P.Observables) :=
+  rfl
 
 /-- The order unit, regarded as a point of the positive cone. -/
-instance instOne : One (PosCone E) := ⟨⟨1, one_nonneg⟩⟩
+instance instOne : One (PosCone P) := ⟨⟨1, one_nonneg⟩⟩
 
 @[simp]
-lemma coe_one : ((1 : PosCone E) : E) = (1 : E) := rfl
+lemma coe_one : ((1 : PosCone P) : P.Observables) = (1 : P.Observables) := rfl
 
-end OrderUnitSpace
+/-- Every observable is a difference `(A + n • 1) - n • 1` of two positive observables. -/
+lemma exists_sub (A : P.Observables) : ∃ p q : PosCone P, (p : P.Observables) - q = A := by
+  obtain ⟨n, hn⟩ := exists_nsmul_one_le (-A)
+  exact ⟨⟨A + n • 1, neg_le_iff_add_nonneg'.mp hn⟩, ⟨n • 1, nsmul_nonneg one_nonneg n⟩,
+    add_sub_cancel_right A _⟩
 
-end PosCone
-
-end ProbabilisticTheory
+end ProbabilisticTheory.PosCone

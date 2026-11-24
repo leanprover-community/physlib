@@ -113,7 +113,7 @@ lemma pow_eq_one_of_admissible (n : ℕ)
   have hact : ⇑(Multiplicative.toAdd A : AddAut (Fin 3 → ℤ)) = act v :=
     funext (apply_eq_act _)
   have hpow : ∀ d, (act v)^[n] d = d := by
-    have hlin : (act v)^[n] = ⇑(act v ^ n) := (Module.End.coe_pow (act v) n).symm
+    have hlin : (act v)^[n] = ⇑(act v ^ n) := (FunLike.coe_pow_eq_iterate (act v) n).symm
     intro d
     rw [hlin, ← Finset.univ_sum_single d, map_sum]
     refine Finset.sum_congr rfl fun j _ => ?_

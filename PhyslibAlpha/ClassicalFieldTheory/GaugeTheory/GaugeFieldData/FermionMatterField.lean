@@ -10,15 +10,16 @@ public import PhyslibAlpha.ClassicalFieldTheory.GaugeTheory.MatterField.Pi
 /-!
 # The fermionic matter field of a gauge theory
 
+All the fermionic species of a gauge theory with a common mass weight, as one matter field.
+
 ## i. Overview
 
-`GaugeFieldData.FermionModule` is the value space of all the fermions of a theory at
-once. This file puts on it the structure of a single `MatterField`: the Lorentz
-representation, the action of the jets of gauge transformations, the infinitesimal action
-of the gauge algebra and the mass weight, all acting species by species. It is the direct
-sum `MatterField.pi` of the family `T.fermion`, and it is the object a physicist means by
-"the fermion field" of a theory, as against the fifteen separate multiplets the Standard
-Model is usually presented by.
+`GaugeFieldData.FermionModule` is the value space of all the fermions of a theory at once. This file
+puts on it the structure of a single `MatterField`: the Lorentz representation, the action of the
+jets of gauge transformations, the infinitesimal action of the gauge algebra and the mass weight,
+all acting species by species. It is the direct sum `GlobalGaugeGroup.MatterField.pi` of the
+family `T.fermion`, and it is the object a physicist means by "the fermion field" of a theory, as
+against the fifteen separate multiplets the Standard Model is usually presented by.
 
 Beyond the datum, the assembly needs a shared mass weight. The construction packages the
 family into one `MatterField`, which has one weight, so the family must be degenerate in mass
@@ -28,7 +29,7 @@ Standard Model, and for any theory whose fermions are Weyl spinors, this is no r
 every fermionic species has weight three. The common statistics comes from the datum itself,
 whose field `fermion_statistic` requires every fermionic species to be declared fermionic.
 
-Assembling the species loses nothing, and this is the content of the lemmas below: each
+Assembling the species loses nothing, and this is the content of the lemmas below. Each
 species includes into the fermionic matter field as a subrepresentation, of the Lorentz
 group and of the gauge algebra alike, so the several multiplets can be read off the single
 field again. What it does lose is the ability to record *different* mass weights, which is
@@ -65,9 +66,7 @@ open Matrix MatrixGroups TensorProduct
 
 namespace GaugeFieldData
 
-variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ 𝔤] [Module.Finite ℝ 𝔤]
-  {GJ : Type} [Group GJ] {𝔤J : Type} [LieRing 𝔤J] [LieAlgebra ℝ 𝔤J]
-  {jets : LocalGaugeData G₀ 𝔤 GJ 𝔤J} (T : GaugeFieldData jets)
+variable {κ : Type} [Fintype κ] [DecidableEq κ] {G : GlobalGaugeGroup κ} (T : GaugeFieldData G)
 
 /-!
 
@@ -75,20 +74,17 @@ variable {G₀ : Type} [Group G₀] {𝔤 : Type} [LieRing 𝔤] [LieAlgebra ℝ
 
 -/
 
-/-- **The fermionic matter field of a gauge theory**: the direct sum of the fermionic
+/-- The fermionic matter field of a gauge theory, the direct sum of the fermionic
   species, valued in `T.FermionModule`, with the Lorentz group, the jets of gauge
   transformations and the gauge algebra all acting species by species. It exists only for
-  a family degenerate in mass dimension: `w` is the common mass weight of the species and
+  a family degenerate in mass dimension, where `w` is the common mass weight of the species and
   `h` the proof that they all have it, which for the Standard Model, and for any theory
   whose fermions are Weyl spinors, is weight three. -/
 noncomputable def fermionMatterField (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
-    MatterField jets :=
-  MatterField.pi T.fermion w h .fermionic T.fermion_statistic
+    G.MatterField :=
+  GlobalGaugeGroup.MatterField.pi T.fermion w h .fermionic T.fermion_statistic
 
 variable {T}
-
-lemma fermionMatterField_V (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
-    (T.fermionMatterField w h).V = T.FermionModule := rfl
 
 /-- The fermionic matter field carries the common mass weight of the species. -/
 @[simp]
@@ -108,11 +104,11 @@ lemma fermionMatterField_statistic (w : ℕ) (h : ∀ i, (T.fermion i).massWeigh
 
 variable (T)
 
-/-- **The Lorentz action on the fermionic module**, acting species by species. This is the
+/-- The Lorentz action on the fermionic module, acting species by species. This is the
   Lorentz representation of the fermionic matter field, typed on `T.FermionModule` itself so
   that it can be spoken of without fixing a common mass weight. -/
 noncomputable def repLorentzFermionModule : Representation ℂ SL(2,ℂ) T.FermionModule :=
-  MatterField.repPi fun i => (T.fermion i).repLorentz
+  GlobalGaugeGroup.MatterField.repPi fun i => (T.fermion i).repLorentz
 
 variable {T}
 
@@ -128,32 +124,23 @@ variable (T)
   weight; the gauge action of a theory whose fermions carry different mass dimensions is
   perfectly well defined, only its packaging as one `MatterField` is not. -/
 noncomputable def repJetFermionModule :
-    Representation ℂ GJ (SpaceTimeAlgebra ⊗[ℂ] T.FermionModule) :=
-  MatterField.repJetPi T.fermion
+    Representation ℂ G.gaugeJetGroup (SpaceTimeAlgebra ⊗[ℂ] T.FermionModule) :=
+  GlobalGaugeGroup.MatterField.repJetPi T.fermion
 
 variable {T}
 
-/-- The jet gauge action on the fermionic module is fibrewise, as each species is. -/
-lemma repJetFermionModule_smul (U : GJ) (χ : SpaceTimeAlgebra)
-    (z : SpaceTimeAlgebra ⊗[ℂ] T.FermionModule) :
-    T.repJetFermionModule U (χ • z) = χ • T.repJetFermionModule U z :=
-  MatterField.repJetPi_smul T.fermion U χ z
-
 /-- A fermionic species is a subrepresentation of the jet gauge action on the fermionic
-  module: the projection onto its value space intertwines the two actions on the jets. -/
-lemma lTensor_projFermionValue_repJetFermionModule (i : T.FermionSpecies) (U : GJ) :
+  module. The projection onto its value space intertwines the two actions on the jets. -/
+lemma lTensor_projFermionValue_repJetFermionModule (i : T.FermionSpecies) (U : G.gaugeJetGroup) :
     (LinearMap.lTensor SpaceTimeAlgebra (T.projFermionValue i)).comp (T.repJetFermionModule U)
       = ((T.fermion i).repJet U).comp
         (LinearMap.lTensor SpaceTimeAlgebra (T.projFermionValue i)) :=
-  MatterField.lTensor_proj_repJetPi T.fermion i U
+  GlobalGaugeGroup.MatterField.lTensor_proj_repJetPi T.fermion i U
 
 /-- The jet gauge action of the fermionic matter field is that of the fermionic module. -/
 lemma fermionMatterField_repJet (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
-    (T.fermionMatterField w h).repJet = T.repJetFermionModule := rfl
-
-/-- The Lorentz action of the fermionic matter field is that of the fermionic module. -/
-lemma fermionMatterField_repLorentz (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) :
-    (T.fermionMatterField w h).repLorentz = T.repLorentzFermionModule := rfl
+    (T.fermionMatterField w h).repJet = T.repJetFermionModule :=
+  GlobalGaugeGroup.MatterField.pi_repJet T.fermion w h .fermionic T.fermion_statistic
 
 /-- The Lorentz group acts on a fermionic configuration species by species. -/
 @[simp]
@@ -163,30 +150,13 @@ lemma fermionMatterField_repLorentz_apply (w : ℕ)
     (T.fermionMatterField w h).repLorentz Λ v i = (T.fermion i).repLorentz Λ (v i) := rfl
 
 /-- The gauge algebra acts on a fermionic configuration species by species. -/
-@[simp]
 lemma fermionMatterField_repAlgebra_apply (w : ℕ)
-    (h : ∀ i, (T.fermion i).massWeight = w) (c : 𝔤) (v : T.FermionModule)
+    (h : ∀ i, (T.fermion i).massWeight = w) (c : G.lieSubalgebra) (v : T.FermionModule)
     (i : T.FermionSpecies) :
-    (T.fermionMatterField w h).repAlgebra c v i = (T.fermion i).repAlgebra c (v i) := rfl
-
-/-- The jets of gauge transformations act on the jets of the fermionic field species by
-  species, through the identification `jetPiEquiv` of the jets of the fermionic module
-  with the family of the jets of the species. -/
-lemma fermionMatterField_repJet_apply (w : ℕ)
-    (h : ∀ i, (T.fermion i).massWeight = w) (U : GJ)
-    (z : SpaceTimeAlgebra ⊗[ℂ] T.FermionModule) :
-    (T.fermionMatterField w h).repJet U z =
-      (jetPiEquiv T.FermionValue).symm
-        (fun i => (T.fermion i).repJet U (jetPiEquiv T.FermionValue z i)) := rfl
-
-/-- The base-point Taylor coefficients of the fermionic jet action are those of the
-  species, index by index. -/
-lemma repCoeff_fermionMatterField (w : ℕ) (h : ∀ i, (T.fermion i).massWeight = w) (U : GJ)
-    (x : Multiset (Fin 1 ⊕ Fin 3)) :
-    GaugeAlgebraRealization.repCoeff (T.fermionMatterField w h).repJet U x =
-      LinearMap.piMap fun i =>
-        GaugeAlgebraRealization.repCoeff (T.fermion i).repJet U x :=
-  MatterField.repCoeff_repJetPi T.fermion U x
+    (T.fermionMatterField w h).repAlgebra c v i = (T.fermion i).repAlgebra c (v i) := by
+  unfold fermionMatterField
+  rw [GlobalGaugeGroup.MatterField.pi_repAlgebra]
+  rfl
 
 /-!
 
@@ -194,8 +164,8 @@ lemma repCoeff_fermionMatterField (w : ℕ) (h : ∀ i, (T.fermion i).massWeight
 
 -/
 
-/-- **A fermionic species is a Lorentz subrepresentation of the fermionic matter field**:
-  including a value of one species and then transforming is transforming and then
+/-- A fermionic species is a Lorentz subrepresentation of the fermionic matter field.
+  Including a value of one species and then transforming is transforming and then
   including. Assembling the species into one field therefore loses no Lorentz
   information. -/
 lemma fermionMatterField_repLorentz_inclFermionValue (w : ℕ)
@@ -206,16 +176,17 @@ lemma fermionMatterField_repLorentz_inclFermionValue (w : ℕ)
   funext fun j =>
     Pi.apply_single (fun k => (T.fermion k).repLorentz Λ) (fun _ => map_zero _) i x j
 
-/-- **A fermionic species is a subrepresentation of the gauge algebra action** on the
-  fermionic matter field, for the same reason: the gauge algebra does not mix the
+/-- A fermionic species is a subrepresentation of the gauge algebra action on the
+  fermionic matter field, for the same reason. The gauge algebra does not mix the
   species. -/
 lemma fermionMatterField_repAlgebra_inclFermionValue (w : ℕ)
-    (h : ∀ i, (T.fermion i).massWeight = w) (c : 𝔤) (i : T.FermionSpecies)
+    (h : ∀ i, (T.fermion i).massWeight = w) (c : G.lieSubalgebra) (i : T.FermionSpecies)
     (x : T.FermionValue i) :
     (T.fermionMatterField w h).repAlgebra c (T.inclFermionValue i x)
       = T.inclFermionValue i ((T.fermion i).repAlgebra c x) :=
-  funext fun j =>
-    Pi.apply_single (fun k => (T.fermion k).repAlgebra c) (fun _ => map_zero _) i x j
+  funext fun j => by
+    rw [fermionMatterField_repAlgebra_apply]
+    exact Pi.apply_single (fun k => (T.fermion k).repAlgebra c) (fun _ => map_zero _) i x j
 
 /-- The dimension of the fermionic matter field is the sum of the dimensions of the
   species. -/
