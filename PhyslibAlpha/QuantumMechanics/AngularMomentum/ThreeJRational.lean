@@ -26,18 +26,27 @@ coefficients (`sq_cgCoefficient`). Section C checks proven identities in the ker
 `decide +kernel`: the diagonal orthogonality relations and the symmetries of `SixJSymmetry` on a
 grid of small spins.
 
+For an admissible symbol the radicand `∏ R_ij! / (J + 1)!` splits into the triangle coefficient
+`Δ(j₁j₂j₃)²` and the factorials `(jᵢ - mᵢ)! (jᵢ + mᵢ)!` of the projections (`threeJRRadQ_reggeJ`),
+so `threeJ = √(Δ² ∏ᵢ (jᵢ - mᵢ)! (jᵢ + mᵢ)!) · threeJNumQ` (`threeJ_eq_sqrt_mul`). This is the form
+in which the four 3j symbols of a 6j symbol combine in `SixJRational`.
+
 ## ii. Key results
 
 - `threeJSqQ`, `cast_threeJSqQ`, `threeJSgnSqQ`, `cast_threeJSgnSqQ`: `threeJ ^ 2` and
   `threeJ · |threeJ|` over `ℚ`.
 - `threeJ_eq_sign_mul_sqrt`: `threeJ = sign(q) √|q|` with `q = threeJSgnSqQ`.
 - `sq_cgCoefficient`: the square of a Clebsch–Gordan coefficient as a rational number.
+- `triangleSqQ`, `facPairQ`, `threeJNumQ`: the triangle coefficient, the factorials of the
+  projections and the 3j symbol without its square root, over `ℚ`.
+- `threeJ_eq_sqrt_mul`: `threeJ = √(Δ² ∏ᵢ (jᵢ - mᵢ)! (jᵢ + mᵢ)!) · threeJNumQ`.
 
 ## iii. Table of contents
 
 - A. The 3j symbol with general arguments
 - B. The Clebsch–Gordan coefficients
 - C. Checks in the kernel
+- D. Triangle coefficients and the 3j symbols
 
 ## iv. References
 
@@ -173,5 +182,55 @@ example : ((List.range 4).all fun j₁ => (List.range 4).all fun j₂ => (List.r
 symbol stated as a negation. -/
 example : threeJSqQ 2 2 2 0 0 0 = 0 ∧ ¬threeJSqQ 4 4 4 0 0 0 = 0 := by
   decide +kernel
+
+/-!
+
+## D. Triangle coefficients and the 3j symbols
+
+-/
+
+/-- `Δ(j₁ j₂ j₃)² = (j₁+j₂-j₃)! (j₁-j₂+j₃)! (-j₁+j₂+j₃)! / (j₁+j₂+j₃+1)!` in doubled units. -/
+def triangleSqQ (j₁ j₂ j₃ : ℕ) : ℚ :=
+  ((j₁ + j₂ - j₃) / 2).factorial * ((j₁ + j₃ - j₂) / 2).factorial *
+    ((j₂ + j₃ - j₁) / 2).factorial / ((j₁ + j₂ + j₃) / 2 + 1).factorial
+
+/-- `(j - m)! (j + m)!` in doubled units. -/
+def facPairQ (j : ℕ) (m : ℤ) : ℚ :=
+  ((((j : ℤ) - m) / 2).toNat.factorial : ℚ) * ((((j : ℤ) + m) / 2).toNat.factorial : ℚ)
+
+lemma facPairQ_neg (j : ℕ) (m : ℤ) : facPairQ j (-m) = facPairQ j m := by
+  rw [facPairQ, facPairQ, sub_neg_eq_add, ← sub_eq_add_neg, mul_comm]
+
+lemma facPairQ_nonneg (j : ℕ) (m : ℤ) : 0 ≤ facPairQ j m := by
+  rw [facPairQ]
+  positivity
+
+lemma triangleSqQ_nonneg (j₁ j₂ j₃ : ℕ) : 0 ≤ triangleSqQ j₁ j₂ j₃ := by
+  rw [triangleSqQ]
+  positivity
+
+/-- The 3j symbol without its square root: `(-1)^(R₂₀ + R₁₁)` times the six-factorial sum. -/
+def threeJNumQ (j₁ j₂ j₃ : ℕ) (m₁ m₂ m₃ : ℤ) : ℚ :=
+  negOnePowQ (reggeJ j₁ j₂ j₃ m₁ m₂ m₃ 2 0 + reggeJ j₁ j₂ j₃ m₁ m₂ m₃ 1 1) *
+    threeJRSumQ (reggeJ j₁ j₂ j₃ m₁ m₂ m₃)
+
+/-- The radicand of the 3j symbol splits into the triangle coefficient and the factorials of the
+projections. -/
+lemma threeJRRadQ_reggeJ {j₁ j₂ j₃ : ℕ} {m₁ m₂ m₃ : ℤ} (h : Adm3 j₁ j₂ j₃ m₁ m₂ m₃) :
+    threeJRRadQ (reggeJ j₁ j₂ j₃ m₁ m₂ m₃) =
+      triangleSqQ j₁ j₂ j₃ * facPairQ j₁ m₁ * facPairQ j₂ m₂ * facPairQ j₃ m₃ := by
+  rw [threeJRRadQ, reggeJ_row_sum h]
+  simp only [reggeJ, Fin.prod_univ_three, Matrix.cons_val_zero, Matrix.cons_val_one,
+    Matrix.cons_val_two, Matrix.head_cons, Matrix.tail_cons, triangleSqQ, facPairQ]
+  ring
+
+/-- `threeJ = √(Δ² (j₁-m₁)!(j₁+m₁)! (j₂-m₂)!(j₂+m₂)! (j₃-m₃)!(j₃+m₃)!) · threeJNumQ`. -/
+lemma threeJ_eq_sqrt_mul {j₁ j₂ j₃ : ℕ} {m₁ m₂ m₃ : ℤ} (h : Adm3 j₁ j₂ j₃ m₁ m₂ m₃) :
+    threeJ j₁ j₂ j₃ m₁ m₂ m₃ =
+      Real.sqrt ((triangleSqQ j₁ j₂ j₃ * facPairQ j₁ m₁ * facPairQ j₂ m₂ * facPairQ j₃ m₃ : ℚ) :
+        ℝ) * (threeJNumQ j₁ j₂ j₃ m₁ m₂ m₃ : ℝ) := by
+  rw [threeJ, ite_eq_left h, threeJR_eq_rat, ← threeJRRadQ_reggeJ h, threeJNumQ, Rat.cast_mul,
+    cast_negOnePowQ, ← Nat.cast_add, zpow_natCast]
+  ring
 
 end PhyslibAlpha.Sl2
