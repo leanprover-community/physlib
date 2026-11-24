@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.ElectricWeyl
+public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
 public import PhyslibAlpha.Relativity.Metrics.Basic
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
@@ -32,12 +33,16 @@ the coordinate derivatives of the metric components, assembles the non-vanishing
 symbols (`Γ^t_{tr}`, `Γ^r_{rr}`, `Γ^r_{θθ}`, `Γ^r_{φφ}`, `Γ^θ_{φφ}`, `Γ^φ_{θφ}`), and
 evaluates all six independent Riemann components `R^t_{rtr}`, `R^t_{θtθ}`, `R^t_{φtφ}`,
 `R^r_{θrθ}`, `R^r_{φrφ}`, `R^θ_{φθφ}`, along with their frame electric eigenvalues `(-2k, k, k)`
-at `k = M / r³`.
+at `k = M / r³`. Note that this module uses signature `(-, +, +, +)` (`g_tt = -f`), whereas
+`IncompressibleSphere.gttOut` stores the positive lapse factor `f = 1 - r_s / r` directly.
 
 ## ii. Key results
 
-- `SchwarzschildSpacetime`, `schwarzschildMetric`, `schwarzschildF` : Schwarzschild spacetime
-  structure, coordinate metric, and lapse function `1 - 2M / r`.
+- `SchwarzschildSpacetime`, `SchwarzschildSpacetime.lapse`, `SchwarzschildSpacetime.metric`,
+  `schwarzschildMetric`, `schwarzschildF` : Schwarzschild spacetime structure, coordinate metric,
+  and lapse function `1 - 2M / r`.
+- `schwarzschildF_of_incompressibleSphere`, `schwarzschildMetric_tt_of_incompressibleSphere`,
+  `schwarzschildMetric_rr_of_incompressibleSphere` : exterior matching with `IncompressibleSphere`.
 - `gammaTtr_from_metric`, `gammaRrr_from_metric`, `gammaRthth_from_metric`,
   `gammaRphiphi_from_metric`, `gammaThetaphiphi_from_metric`, `gammaPhiphitheta_from_metric` :
   non-vanishing Christoffel symbols derived from the metric.
@@ -499,6 +504,38 @@ lemma riemann_components_from_metric (M r th : ℝ) (hr : r ≠ 0)
    riemann_r_thetar_from_metric M r hr hf,
    riemann_r_phirphi_from_metric M r th hr hf,
    riemann_theta_phitheta_from_metric M r th hr hsin⟩
+
+/-- The lapse function `f(r) = 1 - 2M / r` of a Schwarzschild spacetime. -/
+noncomputable def SchwarzschildSpacetime.lapse (S : SchwarzschildSpacetime) (r : ℝ) : ℝ :=
+  schwarzschildF S.M r
+
+/-- The coordinate metric of a Schwarzschild spacetime in `(t, r, θ, φ)` coordinates. -/
+noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  schwarzschildMetric S.M x
+
+/-- With `M = r_s / 2`, the Schwarzschild lapse equals the exterior `g_tt` factor of the
+incompressible fluid sphere, `1 - r_s / r`. -/
+lemma schwarzschildF_of_incompressibleSphere (S : IncompressibleSphere) (r : ℝ) :
+    schwarzschildF (S.rs / 2) r = S.gttOut r := by
+  simp only [schwarzschildF, IncompressibleSphere.gttOut]
+  ring
+
+/-- The Schwarzschild `tt` metric component is minus the incompressible-sphere exterior `g_tt`
+factor, reflecting the `(-, +, +, +)` signature used here. -/
+lemma schwarzschildMetric_tt_of_incompressibleSphere (S : IncompressibleSphere)
+    (x : Fin 4 → ℝ) :
+    schwarzschildMetric (S.rs / 2) x 0 0 = -S.gttOut (x 1) := by
+  rw [schwarzschildMetric_tt, ← schwarzschildF_of_incompressibleSphere]
+  rfl
+
+/-- The Schwarzschild `rr` metric component agrees with the incompressible-sphere exterior
+`g_rr`. -/
+lemma schwarzschildMetric_rr_of_incompressibleSphere (S : IncompressibleSphere)
+    (x : Fin 4 → ℝ) :
+    schwarzschildMetric (S.rs / 2) x 1 1 = S.grrOut (x 1) := by
+  rw [schwarzschildMetric_rr, schwarzschildF_of_incompressibleSphere]
+  simp [IncompressibleSphere.grrOut, IncompressibleSphere.gttOut]
 
 end Schwarzschild
 

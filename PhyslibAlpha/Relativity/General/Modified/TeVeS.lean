@@ -55,6 +55,8 @@ metric `e^{-2φ} δ`, and admits an explicit two-sided inverse bundled into `Met
 
 namespace GeneralRelativity
 
+namespace Modified
+
 namespace TeVeS
 
 /-!
@@ -131,6 +133,18 @@ noncomputable def metricTensor (φ : ℝ) : MetricTensor 4 where
   inv_left := metric_mul_inv φ
   inv_right := metricInv_mul φ
 
+/-- The TeVeS physical (Jordan) metric of a `TeVeSMetric` configuration. -/
+noncomputable def TeVeSMetric.metric (T : TeVeSMetric) : Tensor2 4 := TeVeS.metric T.φ
+
+/-- The inverse TeVeS physical metric of a `TeVeSMetric` configuration. -/
+noncomputable def TeVeSMetric.metricInv (T : TeVeSMetric) : Tensor2 4 := TeVeS.metricInv T.φ
+
+/-- Bundled `MetricTensor 4` of a `TeVeSMetric` configuration. -/
+noncomputable def TeVeSMetric.metricTensor (T : TeVeSMetric) : MetricTensor 4 :=
+  TeVeS.metricTensor T.φ
+
 end TeVeS
+
+end Modified
 
 end GeneralRelativity

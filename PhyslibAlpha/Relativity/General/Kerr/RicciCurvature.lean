@@ -74,28 +74,6 @@ noncomputable def kerrRicci (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
 noncomputable def kerrEinstein (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
   einsteinOf (kerrMetric M a) (kerrMetricInv M a) x
 
-private lemma pd_congr_nhds (μ : Fin 4) {f g : (Fin 4 → ℝ) → ℝ} (x : Fin 4 → ℝ)
-    (hfg : f =ᶠ[nhds x] g) : pd μ f x = pd μ g x := by
-  have hcont : Continuous (fun s : ℝ => Function.update x μ s) := by
-    rw [continuous_pi_iff]
-    intro k
-    by_cases hk : k = μ
-    · subst hk; simp only [Function.update_self]; exact continuous_id
-    · simp only [Function.update, hk, ↓reduceDIte]; exact continuous_const
-  have htend : Filter.Tendsto (fun s : ℝ => Function.update x μ s) (nhds (x μ)) (nhds x) := by
-    convert hcont.continuousAt.tendsto using 1
-    simp [Function.update_eq_self]
-  exact (hfg.comp_tendsto htend).deriv_eq
-
-private lemma pd_sum_four (μ : Fin 4) (f : Fin 4 → (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
-    (hf : ∀ ρ : Fin 4, DifferentiableAt ℝ (fun s => f ρ (Function.update x μ s)) (x μ)) :
-    (∑ ρ : Fin 4, pd μ (f ρ) x) = pd μ (fun y => ∑ ρ : Fin 4, f ρ y) x := by
-  have hs : (fun s => ∑ ρ : Fin 4, f ρ (Function.update x μ s))
-      = ∑ ρ : Fin 4, fun s => f ρ (Function.update x μ s) := by
-    funext s; simp only [Finset.sum_apply]
-  simp only [pd, hs]
-  rw [← deriv_sum fun ρ _ => hf ρ]
-
 private lemma pd_eq_zero_of (μ : Fin 4) (f : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (c : ℝ)
     (hf : ∀ s, f (Function.update x μ s) = c) : pd μ f x = 0 := by
   have hfn : (fun s => f (Function.update x μ s)) = fun _ => c := funext hf
@@ -545,13 +523,13 @@ private lemma ricciOf_kerr_eq_sum (M a : ℝ) (x : Fin 4 → ℝ)
     · change (∑ ρ : Fin 4, pd 1 (fun y => kerrG M a y ρ ρ σ) x) =
         if (1 : Fin 4) = 1 ∨ (1 : Fin 4) = 2 then pd 1 (fun y => kerrTr a y σ) x else 0
       simp only [Fin.isValue, true_or, ↓reduceIte]
-      rw [pd_sum_four 1 (fun ρ y => kerrG M a y ρ ρ σ) x
+      rw [← pd_sum 1 (fun ρ y => kerrG M a y ρ ρ σ) x
         (fun ρ => differentiableAt_kerrG_r' M a x hsig hdel hs ρ ρ σ)]
       exact pd_congr_nhds 1 x hcongrTr
     · change (∑ ρ : Fin 4, pd 2 (fun y => kerrG M a y ρ ρ σ) x) =
         if (2 : Fin 4) = 1 ∨ (2 : Fin 4) = 2 then pd 2 (fun y => kerrTr a y σ) x else 0
       simp only [Fin.isValue, or_true, ↓reduceIte]
-      rw [pd_sum_four 2 (fun ρ y => kerrG M a y ρ ρ σ) x
+      rw [← pd_sum 2 (fun ρ y => kerrG M a y ρ ρ σ) x
         (fun ρ => differentiableAt_kerrG_th M a x hsig hdel hs ρ ρ σ)]
       exact pd_congr_nhds 2 x hcongrTr
     · change (∑ ρ : Fin 4, pd 3 (fun y => kerrG M a y ρ ρ σ) x) =

@@ -9,6 +9,7 @@ public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
 public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
+public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -177,10 +178,22 @@ lemma maxwellF_antisymm (Q r : ℝ) (i j : Fin 4) : maxwellF Q r i j = -maxwellF
 /-- Electromagnetic stress-energy tensor `T^{EM}_{ij} = (1 / (4π)) (F_{ik} F_j{}^k - (1/4) g_{ij}
 F_{ab} F^{ab})` in Gaussian-cgs/geometrized units (`G = c = 1`). -/
 noncomputable def maxwellStressEnergy (g ginv F : Tensor2 4) : Tensor2 4 :=
-  fun i j =>
-    (1 / (4 * Real.pi)) *
-      ((∑ k, ∑ l, ginv k l * F i k * F j l)
-        - (1 / 4) * g i j * (∑ a, ∑ b, ∑ c, ∑ d, ginv a c * ginv b d * F a b * F c d))
+  fun i j => (1 / (4 * Real.pi)) * maxwellStressEnergyRaw g ginv F i j
+
+/-- The lapse function `rnF` of a Reissner–Nordström spacetime. -/
+noncomputable def ReissnerNordstromSpacetime.lapse (S : ReissnerNordstromSpacetime)
+    (r : ℝ) : ℝ :=
+  rnF S.M S.Q r
+
+/-- The coordinate metric of a Reissner–Nordström spacetime. -/
+noncomputable def ReissnerNordstromSpacetime.metric (S : ReissnerNordstromSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  rnMetric S.M S.Q x
+
+/-- The inverse coordinate metric of a Reissner–Nordström spacetime. -/
+noncomputable def ReissnerNordstromSpacetime.metricInv (S : ReissnerNordstromSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  rnMetricInv S.M S.Q x
 
 /-!
 
@@ -233,14 +246,12 @@ lemma maxwellStressEnergy_rn_trace_zero (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 
     (hf : rnF M Q (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
     metricTrace (staticSphericalMetricTensor (rnF M Q) x hr hf hsin)
       (maxwellStressEnergy (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1))) = 0 := by
-  have hpi : (0 : ℝ) < Real.pi := Real.pi_pos
-  simp only [metricTrace, maxwellStressEnergy, rnMetric, rnMetricInv,
-    staticSphericalMetricTensor, staticSphericalMetric, staticSphericalMetricInv, maxwellF,
-    Fin.sum_univ_four]
-  simp only [Fin.isValue, Fin.reduceEq, and_false, and_self, ↓reduceIte,
-    mul_zero, zero_mul, add_zero, zero_add]
-  field_simp [hr, hf, hsin, hpi.ne']
-  ring
+  have h := maxwellStressEnergyRaw_trace_zero
+    (staticSphericalMetricTensor (rnF M Q) x hr hf hsin) (maxwellF Q (x 1))
+  show metricTrace _ (fun i j => (1 / (4 * Real.pi)) *
+    maxwellStressEnergyRaw (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1)) i j) = 0
+  rw [metricTrace_smul]
+  exact mul_eq_zero_of_right _ h
 
 /-- Electrovacuum Einstein–Maxwell equations verified directly through `GeneralRelativity.Pipeline`:
 `G_{ij} = 8 π T^{EM}_{ij}` at every coordinate index `(i, j)`. -/
@@ -251,8 +262,8 @@ lemma einsteinOf_rn_eq_maxwell (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
           * maxwellStressEnergy (rnMetric M Q x) (rnMetricInv M Q x) (maxwellF Q (x 1)) i j := by
   have hpi : Real.pi ≠ 0 := Real.pi_ne_zero
   simp only [einsteinOf, ricciOf_rn M Q x hr hf hsin, scalarOf_rn M Q x hr hf hsin]
-  simp only [maxwellStressEnergy, rnMetric, rnMetricInv, staticSphericalMetric,
-    staticSphericalMetricInv, maxwellF, Fin.sum_univ_four]
+  simp only [maxwellStressEnergy, maxwellStressEnergyRaw, maxwellFieldInvariant, rnMetric,
+    rnMetricInv, staticSphericalMetric, staticSphericalMetricInv, maxwellF, Fin.sum_univ_four]
   fin_cases i <;> fin_cases j <;> simp
   · field_simp [hr, hf, hpi]; ring
   · field_simp [hr, hf, hpi]; ring

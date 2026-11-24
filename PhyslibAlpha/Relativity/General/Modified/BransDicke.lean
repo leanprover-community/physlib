@@ -62,6 +62,8 @@ exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ couplin
 
 namespace GeneralRelativity
 
+namespace Modified
+
 namespace BransDicke
 
 /-!
@@ -146,6 +148,14 @@ lemma coupling_bounds (ω : ℝ) (hω : 0 ≤ ω) : 1 ≤ coupling ω ∧ coupli
 /-- `ω = -3/2` is the pole of the effective coupling where the scalar kinetic term vanishes. -/
 lemma coupling_pole : 3 + 2 * (-(3 / 2) : ℝ) = 0 := by norm_num
 
+/-- The Brans–Dicke PPN parameter `γ` of a `BransDickeTheory`. -/
+noncomputable def BransDickeTheory.gamma (T : BransDickeTheory) : ℝ := BransDicke.gamma T.ω
+
+/-- The effective gravitational coupling ratio of a `BransDickeTheory`. -/
+noncomputable def BransDickeTheory.coupling (T : BransDickeTheory) : ℝ := BransDicke.coupling T.ω
+
 end BransDicke
+
+end Modified
 
 end GeneralRelativity

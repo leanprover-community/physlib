@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import PhyslibAlpha.Relativity.Metrics.Basic
+public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Ring
@@ -120,10 +120,8 @@ private lemma sum_fin5_split (f : Fin 5 → ℝ) :
 lemma kkMetricInv_mul_kkMetric (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ) (hφ : φ ≠ 0) :
     kkMetricInv M.ginv A φ * kkMetric M.g A φ = 1 := by
   have hφ2 : φ ^ 2 ≠ 0 := pow_ne_zero 2 hφ
-  have hid : ∀ a b : Fin 4, (∑ k : Fin 4, M.ginv a k * M.g k b) = if a = b then 1 else 0 := by
-    intro a b
-    have h := congrFun (congrFun M.inv_right a) b
-    simpa [Matrix.mul_apply, Matrix.one_apply] using h
+  have hid : ∀ a b : Fin 4, (∑ k : Fin 4, M.ginv a k * M.g k b) = if a = b then 1 else 0 :=
+    M.sum_ginv_mul_g_left
   have hA : ∀ b : Fin 4, (∑ k : Fin 4, potUp M.ginv A k * M.g k b) = A b := by
     intro b
     unfold potUp
@@ -135,12 +133,7 @@ lemma kkMetricInv_mul_kkMetric (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : �
           rw [Finset.mul_sum]
           refine Finset.sum_congr rfl fun k _ => by rw [M.symm k b]; ring
       _ = A b := by
-          have hright : ∀ m : Fin 4,
-              (∑ k : Fin 4, M.g b k * M.ginv k m) = if b = m then 1 else 0 := by
-            intro m
-            have h := congrFun (congrFun M.inv_left b) m
-            simpa [Matrix.mul_apply, Matrix.one_apply] using h
-          simp [hright]
+          simp [M.sum_ginv_mul_g_right b]
   have hpot : ∀ k : Fin 4, potExt A ⟨k.val, by omega⟩ = A k := by
     intro k; fin_cases k <;> rfl
   have hx4 : ∀ x : Fin 4, (⟨x.val, by omega⟩ : Fin 5).val < 4 := fun x => x.isLt
@@ -219,18 +212,7 @@ lemma kkMetricInv_mul_kkMetric (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : �
 /-- Symmetry of `kkMetricInv M.ginv A φ` for any `M : MetricTensor 4`. -/
 lemma kkMetricInv_symm (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ) :
     IsSymm (kkMetricInv M.ginv A φ) := by
-  have hginv_symm : IsSymm M.ginv := by
-    have hgt : M.g.transpose = M.g := Matrix.ext fun a b => M.symm b a
-    have h : M.ginv.transpose = M.ginv := by
-      calc M.ginv.transpose
-          = M.ginv.transpose * (M.g * M.ginv) := by rw [M.inv_left, Matrix.mul_one]
-        _ = (M.ginv.transpose * M.g) * M.ginv := by rw [Matrix.mul_assoc]
-        _ = (M.g.transpose * M.ginv).transpose * M.ginv := by
-            rw [Matrix.transpose_mul, Matrix.transpose_transpose]
-        _ = M.ginv := by
-            rw [hgt, M.inv_left, Matrix.transpose_one, Matrix.one_mul]
-    intro a b
-    exact congrFun (congrFun h b) a
+  have hginv_symm : IsSymm M.ginv := M.ginv_symm
   intro i j
   unfold kkMetricInv
   by_cases hi : i.val < 4 <;> by_cases hj : j.val < 4
@@ -259,6 +241,14 @@ noncomputable def kkMetricTensor (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : 
   symm := kkMetric_symm M.g M.symm A φ
   inv_left := kkMetric_mul_kkMetricInv M A φ hφ
   inv_right := kkMetricInv_mul_kkMetric M A φ hφ
+
+/-- The 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
+def KaluzaKleinData.metric (D : KaluzaKleinData) : Tensor2 5 :=
+  kkMetric D.M.g D.A D.φ
+
+/-- The inverse 5D Kaluza–Klein metric of a `KaluzaKleinData` bundle. -/
+noncomputable def KaluzaKleinData.metricInv (D : KaluzaKleinData) : Tensor2 5 :=
+  kkMetricInv D.M.ginv D.A D.φ
 
 end KaluzaKlein
 

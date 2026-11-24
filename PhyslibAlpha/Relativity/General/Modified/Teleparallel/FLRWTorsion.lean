@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.LinearAlgebra.Matrix.Notation
-public import PhyslibAlpha.Cosmology.FLRW.Basic
+public import PhyslibAlpha.Cosmology.FLRW.Metric
 public import PhyslibAlpha.Relativity.General.Modified.Teleparallel.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
@@ -126,6 +126,15 @@ lemma scalarOf_flrw_flat_eq_neg_torsion_add_boundary (a : ℝ → ℝ) (x : Fin 
   rw [scalarOf_flrw a 0 x ha hr hkr hsin ha_diff ha2]
   unfold flrwTorsionScalar flrwBoundaryTerm
   ring
+
+/-- For a Physlib `Cosmology.FLRW` universe, `flrwTorsionScalar` reproduces `6 H²` in terms of
+`Cosmology.FLRW.FriedmannEquation.hubbleConstant`. -/
+lemma flrwTorsionScalar_ofCosmology (U : Cosmology.FLRW) {t : Time} (ht : t ∈ U.I) :
+    flrwTorsionScalar (flrwScaleFn U) t.val =
+      6 * (Cosmology.FLRW.FriedmannEquation.hubbleConstant U.a t) ^ 2 := by
+  simp only [flrwTorsionScalar, deriv_flrwScaleFn_eq U ht,
+    Cosmology.FLRW.FriedmannEquation.hubbleConstant]
+  rfl
 
 end Teleparallel
 

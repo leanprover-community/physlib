@@ -67,6 +67,8 @@ This module formalises both halves of the mechanism:
 
 namespace GeneralRelativity
 
+namespace Modified
+
 namespace ChameleonScreening
 
 /-!
@@ -109,18 +111,16 @@ lemma chameleon_range_shrinks {ρ₁ ρ₂ c : ℝ} (hpos : 0 < chameleonMass ρ
 /-- Yukawa suppression factor `e^{-x}` at dimensionless distance `x = r / λ`. -/
 noncomputable def yukawaRatio (x : ℝ) : ℝ := Real.exp (-x)
 
-/-- At one Compton wavelength, `e^{-1} < 1/2`. -/
-lemma exp_neg_one_lt_half : Real.exp (-1) < 1 / 2 := by
-  rw [Real.exp_neg]
-  simpa using one_div_lt_one_div_of_lt (by norm_num : (0 : ℝ) < 2)
-    (by linarith [Real.exp_one_gt_d9])
-
 /-- Beyond one Compton range (`r ≥ λ`), the Yukawa factor drops below `1/2`. -/
 lemma yukawaRatio_lt_half {x : ℝ} (h : 1 ≤ x) : yukawaRatio x < 1 / 2 := by
   have h1 : yukawaRatio x ≤ Real.exp (-1) := by
     simp only [yukawaRatio]
     exact Real.exp_le_exp.mpr (by linarith)
-  linarith [exp_neg_one_lt_half]
+  have hhalf : Real.exp (-1) < 1 / 2 := by
+    rw [Real.exp_neg]
+    simpa using one_div_lt_one_div_of_lt (by norm_num : (0 : ℝ) < 2)
+      (by linarith [Real.exp_one_gt_d9])
+  linarith
 
 /-!
 
@@ -209,6 +209,16 @@ lemma thick_shell_strong (Δ Phi R r : ℝ) (hPR : Phi * R ≠ 0) (hr : r ≠ 0)
   rw [forceRatio_thin_shell Δ Phi R r hPR hr]
   exact h
 
+/-- Environment-dependent mass squared `m² = ρ c` of a `ChameleonModel`. -/
+noncomputable def ChameleonModel.massSq (M : ChameleonModel) (ρ : ℝ) : ℝ :=
+  chameleonMassSq ρ M.c
+
+/-- Environment-dependent chameleon mass `m = √(ρ c)` of a `ChameleonModel`. -/
+noncomputable def ChameleonModel.mass (M : ChameleonModel) (ρ : ℝ) : ℝ :=
+  chameleonMass ρ M.c
+
 end ChameleonScreening
+
+end Modified
 
 end GeneralRelativity

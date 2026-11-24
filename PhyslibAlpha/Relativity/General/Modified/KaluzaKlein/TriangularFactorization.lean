@@ -88,38 +88,14 @@ lemma det_kkTriangular (A : Fin 4 → ℝ) : Matrix.det (kkTriangular A) = 1 := 
   refine Finset.prod_eq_one fun i _ => ?_
   simp [kkTriangular]
 
-private lemma val_lt_four_0 : (0 : Fin 5).val < 4 := by decide
-private lemma val_lt_four_1 : (1 : Fin 5).val < 4 := by decide
-private lemma val_lt_four_2 : (2 : Fin 5).val < 4 := by decide
-private lemma val_lt_four_3 : (3 : Fin 5).val < 4 := by decide
-private lemma not_val_lt_four_4 : ¬((4 : Fin 5).val < 4) := by decide
-private lemma fin4_mk_0 (h : (0 : Fin 5).val < 4) : (⟨(0 : Fin 5).val, h⟩ : Fin 4) = 0 := rfl
-private lemma fin4_mk_1 (h : (1 : Fin 5).val < 4) : (⟨(1 : Fin 5).val, h⟩ : Fin 4) = 1 := rfl
-private lemma fin4_mk_2 (h : (2 : Fin 5).val < 4) : (⟨(2 : Fin 5).val, h⟩ : Fin 4) = 2 := rfl
-private lemma fin4_mk_3 (h : (3 : Fin 5).val < 4) : (⟨(3 : Fin 5).val, h⟩ : Fin 4) = 3 := rfl
-private lemma potExt_0 (A : Fin 4 → ℝ) : potExt A 0 = A 0 := rfl
-private lemma potExt_1 (A : Fin 4 → ℝ) : potExt A 1 = A 1 := rfl
-private lemma potExt_2 (A : Fin 4 → ℝ) : potExt A 2 = A 2 := rfl
-private lemma potExt_3 (A : Fin 4 → ℝ) : potExt A 3 = A 3 := rfl
-private lemma potExt_4 (A : Fin 4 → ℝ) : potExt A 4 = 1 := rfl
-
 /-- Congruence factorization `kkMetric g4 A φ = U * diag(g4, φ²) * Uᵀ`. -/
 lemma kkMetric_eq_triangular_conj (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ : ℝ) :
     kkMetric g4 A φ = kkTriangular A * kkBlockDiag g4 φ * (kkTriangular A).transpose := by
   ext i j
-  have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
-  have hj : j = 0 ∨ j = 1 ∨ j = 2 ∨ j = 3 ∨ j = 4 := by fin_cases j <;> decide
-  simp only [Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_five,
-    kkMetric, metric4Ext, kkTriangular, kkBlockDiag,
-    val_lt_four_0, val_lt_four_1, val_lt_four_2, val_lt_four_3, not_val_lt_four_4,
-    fin4_mk_0, fin4_mk_1, fin4_mk_2, fin4_mk_3,
-    Fin.isValue, Fin.reduceEq, and_self, and_false, ↓reduceIte, ↓reduceDIte]
-  rcases hi with rfl | rfl | rfl | rfl | rfl <;>
-    rcases hj with rfl | rfl | rfl | rfl | rfl <;>
-    simp only [val_lt_four_0, val_lt_four_1, val_lt_four_2, val_lt_four_3, not_val_lt_four_4,
-      fin4_mk_0, fin4_mk_1, fin4_mk_2, fin4_mk_3,
-      potExt_0, potExt_1, potExt_2, potExt_3, potExt_4,
-      Fin.isValue, Fin.reduceEq, ↓reduceIte, ↓reduceDIte] <;>
+  fin_cases i <;> fin_cases j <;>
+    simp [-mul_eq_mul_left_iff, -mul_eq_mul_right_iff,
+      Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_five,
+      kkMetric, metric4Ext, kkTriangular, kkBlockDiag, potExt] <;>
     ring
 
 end KaluzaKlein

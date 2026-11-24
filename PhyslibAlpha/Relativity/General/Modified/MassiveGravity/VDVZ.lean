@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 import Mathlib.Tactic.Ring
 
@@ -100,6 +101,12 @@ lemma vdvz_light_deflection_ratio (Tmass Tlight : Tensor2 4) (hnull : stressTrac
   unfold massivePropagatorCoupling grPropagatorCoupling
   rw [hnull]
   ring
+
+/-- `stressTrace` coincides with `metricTrace minkowski`. -/
+lemma stressTrace_eq_metricTrace (T : Tensor2 4) :
+    stressTrace T = metricTrace minkowski T := by
+  rw [metricTrace_diag minkowski T (fun _ _ hij => minkowski_ginv_offdiag hij)]
+  simp [stressTrace, minkowski]
 
 end MassiveGravity
 

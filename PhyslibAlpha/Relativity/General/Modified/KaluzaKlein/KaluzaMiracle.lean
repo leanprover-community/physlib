@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Algebra.BigOperators.Fin
 public import PhyslibAlpha.Relativity.Metrics.Basic
+public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -63,45 +64,18 @@ namespace KaluzaKlein
 /-- Four-dimensional Maxwell field-strength quadratic invariant `F_{ab} F^{ab} = g^{ac} g^{bd}
 F_{ab} F_{cd}`. -/
 def maxwellF2 (M : MetricTensor 4) (F : Tensor2 4) : ℝ :=
-  ∑ a : Fin 4, ∑ b : Fin 4, ∑ c : Fin 4, ∑ d : Fin 4, M.ginv a c * M.ginv b d * F a b * F c d
+  maxwellFieldInvariant M.ginv F
 
 /-- Four-dimensional electromagnetic stress-energy tensor
 `T^{EM}_{ab} = g^{cd} F_{ac} F_{bd} - ¼ g_{ab} F_{cd} F^{cd}`. -/
 noncomputable def maxwellStressEnergy (M : MetricTensor 4) (F : Tensor2 4) (a b : Fin 4) : ℝ :=
-  (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d) - (1 / 4) * M.g a b * maxwellF2 M F
+  maxwellStressEnergyRaw M.g M.ginv F a b
 
 /-- In four spacetime dimensions (`d = 4`), the Maxwell stress-energy tensor is identically
 trace-free: `g^{ab} T^{EM}_{ab} = 0`. -/
 lemma maxwellStressEnergy_trace_zero (M : MetricTensor 4) (F : Tensor2 4) :
     (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * maxwellStressEnergy M F a b) = 0 := by
-  have htr_g : (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * M.g a b) = 4 := by
-    have hdiag : ∀ a : Fin 4, (∑ b : Fin 4, M.ginv a b * M.g a b) = 1 := by
-      intro a
-      have h1 : (∑ b : Fin 4, M.ginv a b * M.g a b) = ∑ b : Fin 4, M.ginv a b * M.g b a :=
-        Finset.sum_congr rfl fun b _ => by rw [M.symm a b]
-      rw [h1]
-      have h := congrFun (congrFun M.inv_right a) a
-      simpa [Matrix.mul_apply, Matrix.one_apply] using h
-    simp [hdiag]
-  unfold maxwellStressEnergy
-  simp only [mul_sub, Finset.sum_sub_distrib]
-  have h1 :
-      (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b *
-        (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d))
-        = maxwellF2 M F := by
-    unfold maxwellF2
-    refine Finset.sum_congr rfl fun a _ => ?_
-    simp_rw [Finset.mul_sum]
-    rw [Finset.sum_comm]
-    refine Finset.sum_congr rfl fun c _ => Finset.sum_congr rfl fun b _ =>
-      Finset.sum_congr rfl fun d _ => by ring
-  have h2 :
-      (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * ((1 / 4) * M.g a b * maxwellF2 M F))
-        = (1 / 4) * (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * M.g a b) * maxwellF2 M F := by
-    simp_rw [Finset.mul_sum, Finset.sum_mul]
-    refine Finset.sum_congr rfl fun a _ => Finset.sum_congr rfl fun b _ => by ring
-  rw [h1, h2, htr_g]
-  ring
+  simpa [metricTrace, maxwellStressEnergy] using maxwellStressEnergyRaw_trace_zero M F
 
 /-- Fifth-dimension `(4, 4)` Kaluza–Klein Ricci component at unit dilaton `φ = 1`:
 `R^{(5)}_{44} = ¼ F_{ab} F^{ab}`. -/
@@ -124,13 +98,13 @@ the 4D Einstein–Maxwell Lagrangian `R^{(4)} - ¼ F_{ab} F^{ab}`. -/
 lemma kkScalar5D_eq (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor2 4) :
     kkScalar5D M R4 F =
       (∑ a : Fin 4, ∑ b : Fin 4, M.ginv a b * R4 a b) - (1 / 4) * maxwellF2 M F := by
-  unfold kkScalar5D kkRicci4D kkRicci44
+  unfold kkScalar5D kkRicci4D kkRicci44 maxwellF2
   simp only [mul_sub, Finset.sum_sub_distrib]
   have hF :
       (∑ a : Fin 4, ∑ b : Fin 4,
         M.ginv a b * ((1 / 2) * ∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * F a c * F b d))
-        = (1 / 2) * maxwellF2 M F := by
-    unfold maxwellF2
+        = (1 / 2) * maxwellFieldInvariant M.ginv F := by
+    unfold maxwellFieldInvariant
     rw [Finset.mul_sum]
     refine Finset.sum_congr rfl fun a _ => ?_
     simp_rw [Finset.mul_sum]
@@ -149,7 +123,7 @@ lemma kkEinstein4D_eq_zero_iff (M : MetricTensor 4) (R4 : Tensor2 4) (F : Tensor
       R4 a b - (1 / 2) * M.g a b * (∑ c : Fin 4, ∑ d : Fin 4, M.ginv c d * R4 c d) =
         (1 / 2) * maxwellStressEnergy M F a b := by
   rw [kkScalar5D_eq]
-  unfold kkRicci4D maxwellStressEnergy
+  unfold kkRicci4D maxwellStressEnergy maxwellStressEnergyRaw maxwellF2
   constructor <;> intro h <;> linarith
 
 end KaluzaKlein

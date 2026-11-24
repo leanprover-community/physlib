@@ -8,6 +8,8 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
+public import PhyslibAlpha.ClassicalMechanics.OrbitalMechanics.NewtonianGravity
+public import PhyslibAlpha.Relativity.General.GravitationalConstant
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Topology.Algebra.Order.Field
 import Mathlib.Tactic.FieldSimp
@@ -68,6 +70,8 @@ simple (`x / (1 + x)`) and standard (`x / √(1 + x²)`) interpolating functions
 @[expose] public section
 
 namespace GeneralRelativity
+
+namespace Modified
 
 namespace MOND
 
@@ -166,6 +170,40 @@ lemma simpleMu_tendsto_atTop :
   field_simp
   ring
 
+/-- Newtonian point-mass acceleration `newtonAccel` taking a `GravitationalConstant`. -/
+noncomputable def newtonAccel_G (G : GravitationalConstant) (M r : ℝ) : ℝ :=
+  newtonAccel G.val M r
+
+/-- Deep-MOND acceleration `√(a₀ g_N)` for a `MONDTheory`. -/
+noncomputable def MONDTheory.deepAccel (T : MONDTheory) (gN : ℝ) : ℝ := MOND.deepAccel T.a0 gN
+
+/-- The MOND interpolating relation `μ(a / a₀) * a = g_N` for a `MONDTheory`. -/
+def MONDTheory.Relation (T : MONDTheory) (μ : ℝ → ℝ) (a gN : ℝ) : Prop := MOND.Relation μ T.a0 a gN
+
+open scoped Classical in
+/-- In Physlib's classical reference frame, the norm of `pairGravityAcceleration` between
+non-coincident particles equals `newtonAccel`. -/
+lemma norm_pairGravityAcceleration_eq_newtonAccel {d : ℕ}
+    {frame : ClassicalMechanics.ReferenceFrame d} [Fact frame.IsMetricConserved]
+    (G : GravitationalConstant) (particles : Multiset frame.Particle)
+    (source target : particles.ToType) (t : ℝ)
+    (hne : source.1.pos t ≠ target.1.pos t) :
+    ‖ClassicalMechanics.ReferenceFrame.pairGravityAcceleration G.val particles source target t‖ =
+      newtonAccel G.val source.1.mass.val ‖source.1.pos t - target.1.pos t‖ := by
+  simp only [ClassicalMechanics.ReferenceFrame.pairGravityAcceleration, newtonAccel,
+    norm_smul, Real.norm_eq_abs]
+  have hG : 0 < G.val := G.pos
+  have hr : 0 < ‖source.1.pos t - target.1.pos t‖ :=
+    norm_pos_iff.mpr (sub_ne_zero.mpr hne)
+  have hm : 0 ≤ source.1.mass.val := le_of_lt source.1.mass.property
+  have hnum : 0 ≤ G.val * source.1.mass.val / ‖source.1.pos t - target.1.pos t‖ ^ 3 := by
+    positivity
+  rw [abs_of_nonneg hnum]
+  have hne0 : ‖source.1.pos t - target.1.pos t‖ ≠ 0 := hr.ne'
+  field_simp [hne0]
+
 end MOND
+
+end Modified
 
 end GeneralRelativity

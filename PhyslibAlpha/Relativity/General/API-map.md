@@ -157,12 +157,14 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
    `zero_of_repeated_first`, `zero_of_repeated_last`, `swap_mixed`, `flat`
 6. PhyslibAlpha/Relativity/Tensors/RicciTensor.lean — `ricci`, `ricci_symm`, `ricci_of_diag`,
    `ricci_flat`
-7. PhyslibAlpha/Relativity/Metrics/MetricTrace.lean — `metricTrace`, `sum_ginv_mul_g`,
+7. PhyslibAlpha/Relativity/Metrics/MetricTrace.lean — `metricTrace`, `metricTrace_diag`,
+   `sum_ginv_mul_g`, `MetricTensor.sum_ginv_mul_g_left`, `MetricTensor.sum_ginv_mul_g_right`,
    `metricTrace_mul_g`
 8. PhyslibAlpha/Relativity/Metrics/ScalarCurvature.lean — `scalarCurv`,
    `scalarCurv_eq_metricTrace`
 9. PhyslibAlpha/Relativity/Metrics/CoordinateMetric.lean — `CoordinateMetric`,
-   `CoordinateMetric.metricTensor`, `pd`, `pd_const`, `pd_congr`, `christoffel`, `riemann`,
+   `CoordinateMetric.metricTensor`, `pd`, `pd_const`, `pd_congr`, `pd_congr_nhds`,
+   `pd_eq_fderiv`, `pd_eq_spaceTime_deriv`, `pd_comm`, `christoffel`, `riemann`,
    `ricciOf`, `scalarOf`, `einsteinOf`, `christoffel_const`, `riemann_const`
 10. PhyslibAlpha/Relativity/Tensors/EinsteinTensor.lean — `einstein`, `einstein_symm`,
     `metricTrace_einstein`, `scalarCurv_eq_zero_of_einstein_eq_zero`, `vacuum_iff_ricci_flat`,
@@ -176,9 +178,8 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 13. PhyslibAlpha/Relativity/General/InitialData.lean — `InitialData`, `momConstraint`, `ham`,
     `IsVacuumData`, `ham_eq_scalarCurv_of_K_zero`, `ham_eq_of_trace_zero`, `euclid3`,
     `flatData_isVacuum`, `squeezedData_ham`
-14. PhyslibAlpha/Relativity/General/Linearized/TraceReversed.lean — `hTrace`, `traceReversed`,
-    `traceReversed_trace`, `traceReversed_involutive`, `boxEta`, `pd_congr_nhds`, `pd_eq_fderiv`,
-    `pd_comm`
+14. PhyslibAlpha/Relativity/General/Linearized/TraceReversed.lean — `hTrace`, `hTrace_eq_metricTrace`,
+    `traceReversed`, `traceReversed_trace`, `traceReversed_involutive`, `boxEta`
 15. PhyslibAlpha/Relativity/General/Linearized/LinearizedCurvature.lean — `linChristoffel`,
     `linChristoffel_symm`, `linRiemann`, `linRicci`, `linScalar`, `linEinstein`,
     `linRiemann_gauge_invariant`, `linRicci_gauge_invariant`, `linEinstein_gauge_invariant`
@@ -204,9 +205,10 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `electricPart_symm`, `electricPart_trace`, `frameSqSum`, `schwarzschild`, `ricci_eq_zero`,
     `frameSqSum_eq`, `kretschmann_scalar`, `weyl_purely_electric`
 23. PhyslibAlpha/Relativity/General/Schwarzschild/Basic.lean — `SchwarzschildSpacetime`,
-    `schwarzschildMetric`, `schwarzschildF`, `schwarzschildMetric_rr`, `gammaTtr_from_metric`,
-    `gammaRrr_from_metric`, `riemann_t_rtr_from_metric`, `electric_r_from_metric`,
-    `electricPart_from_metric`, `riemann_components_from_metric`
+    `SchwarzschildSpacetime.lapse`, `SchwarzschildSpacetime.metric`, `schwarzschildMetric`,
+    `schwarzschildF`, `schwarzschildF_of_incompressibleSphere`, `schwarzschildMetric_rr`,
+    `gammaTtr_from_metric`, `gammaRrr_from_metric`, `riemann_t_rtr_from_metric`,
+    `electric_r_from_metric`, `electricPart_from_metric`, `riemann_components_from_metric`
 24. PhyslibAlpha/Relativity/General/Schwarzschild/CoordinateCurvature.lean — `schwarzschildG`,
     `schwarzschildGinv`, `riemann_schwarzschild_components`, `ricciOf_schwarzschild`,
     `scalarOf_schwarzschild`, `einsteinOf_schwarzschild`
@@ -236,9 +238,10 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 32. PhyslibAlpha/Relativity/General/Kerr/RicciCurvature.lean — `kerrRicci`, `kerrEinstein`,
     `pd_kerrTr_11`, `pd_kerrTr_21`, `pd_kerrTr_12`, `pd_kerrTr_22`, `ricciOf_kerr_eq_zero`,
     `scalarOf_kerr_eq_zero`, `einsteinOf_kerr_eq_zero`
-33. PhyslibAlpha/Cosmology/FLRW/Basic.lean — `FLRWSpacetime`, `FLRWSpacetime.ofCosmology`,
-    `flrwMetric`, `flrwMetricInv`, `flrwMetric_symm`, `flrwMetric_mul_inv`, `flrwMetricTensor`,
-    `flrwG`, `flrwDG`, `christoffel_eq_flrwG`, `scalarOf_flrw`
+33. PhyslibAlpha/Cosmology/FLRW/Metric.lean — `FLRWSpacetime`, `FLRWSpacetime.ofCosmology`,
+    `FLRWSpacetime.metric`, `flrwMetric`, `flrwMetricInv`, `flrwMetric_symm`,
+    `flrwMetric_mul_inv`, `flrwMetricTensor`, `flrwG`, `flrwDG`, `christoffel_eq_flrwG`,
+    `scalarOf_flrw`, `friedmannSolution_of_einsteinOf_flrw_G`
 34. PhyslibAlpha/Relativity/General/Modified/Nordstrom.lean — `NordstromSpacetime`,
     `nordstromMetric`, `nordstromMetricInv`, `nordstromMetricTensor`, `NullVector`,
     `nullVector_conformal_iff`, `light_deflection_zero`, `nordstromG`, `christoffel_nordstrom_eq`,
@@ -257,9 +260,9 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `cubicGalileonDensity`, `cubic_total_derivative`, `shift_total_derivative`,
     `shift_forbids_potential`
 39. PhyslibAlpha/Relativity/General/Modified/ChameleonScreening.lean — `ChameleonModel`,
-    `chameleonMassSq`, `chameleonMass`, `chameleonMass_mono`, `range`, `range_antitone`,
-    `chameleon_range_shrinks`, `yukawaRatio`, `exp_neg_one_lt_half`, `yukawaRatio_lt_half`,
-    `thinShell`, `screeningFactor`, `thin_shell_suppressed`
+    `ChameleonModel.massSq`, `ChameleonModel.mass`, `chameleonMassSq`, `chameleonMass`,
+    `chameleonMass_mono`, `range`, `range_antitone`, `chameleon_range_shrinks`, `yukawaRatio`,
+    `yukawaRatio_lt_half`, `thinShell`, `screeningFactor`, `thin_shell_suppressed`
 40. PhyslibAlpha/Relativity/General/Modified/EinsteinCartan.lean — `Conn`, `EinsteinCartanData`,
     `torsion`, `torsion_antisymm`, `MetricCompatible`, `leviCivitaOfDeriv`,
     `leviCivitaOfDeriv_compatible`, `contorsion`, `contorsion_antisymm_outer`,
@@ -269,11 +272,12 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `weitzenbockTorsion_antisymm`, `superpotential`, `superpotential_antisymm`, `torsionScalar`
 42. PhyslibAlpha/Relativity/General/Modified/Teleparallel/FLRWTorsion.lean — `flrwTetrad`,
     `flrwTetradInv`, `flrwTetrad_mul_inv`, `flrwWeitzenbock_hubble`, `flrwTorsionScalar`,
-    `flrwBoundaryTerm`, `scalarOf_flrw_flat_eq_neg_torsion_add_boundary`
+    `flrwTorsionScalar_ofCosmology`, `flrwBoundaryTerm`,
+    `scalarOf_flrw_flat_eq_neg_torsion_add_boundary`
 43. PhyslibAlpha/Relativity/General/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
     `fTFriedmannLHS`, `fTFriedmannLHS_tegr`, `fTFriedmannLHS_quadratic`
 44. PhyslibAlpha/Relativity/General/Modified/Lovelock/GeneralizedKronecker.lean — `genKronecker`,
-    `genKronecker_eq_zero_of_lt`, `perm_fin4_split`, `perm_fin5_fiber_split`
+    `genKronecker_eq_zero_of_lt`, `perm_fin5_fiber_split`
 45. PhyslibAlpha/Relativity/General/Modified/Lovelock/Basic.lean — `AlgCurvature`,
     `AlgCurvature.ricciMixed`, `AlgCurvature.scalarCurv`, `AlgCurvature.ricciSq`,
     `AlgCurvature.riemannSq`, `AlgCurvature.gaussBonnetScalar`, `AlgCurvature.gaussBonnetTensor`,
@@ -299,24 +303,27 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `spin1SpeedSq`, `spin0SpeedSq`, `spin2SpeedSq_eq_one_iff`, `spin1SpeedSq_luminal_graviton`,
     `spin0SpeedSq_luminal_graviton`, `effectiveNewtonG`, `effectiveNewtonG_eq_bare_iff`
 51. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/FierzPauli.lean — `FierzPauliTheory`,
-    `hTraceEta`, `hContractionSq`, `fierzPauliLagrangian`, `fpMassTensor`, `fpMassTensor_trace`,
-    `fpMassTensor_trace_tuned`, `longitudinal_time_ghost_free_iff`,
+    `FierzPauliTheory.lagrangian`, `FierzPauliTheory.massTensor`, `hTraceEta`,
+    `hTraceEta_eq_metricTrace`, `hContractionSq`, `fierzPauliLagrangian`, `fpMassTensor`,
+    `fpMassTensor_trace`, `fpMassTensor_trace_tuned`, `longitudinal_time_ghost_free_iff`,
     `fp_traceless_of_zero_trace_source`
 52. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/VDVZ.lean — `stressTrace`,
-    `grPropagatorCoupling`, `massivePropagatorCoupling`, `staticSource`, `vdvz_static_ratio`,
-    `vdvz_light_deflection_ratio`
+    `stressTrace_eq_metricTrace`, `grPropagatorCoupling`, `massivePropagatorCoupling`,
+    `staticSource`, `vdvz_static_ratio`, `vdvz_light_deflection_ratio`
 53. PhyslibAlpha/Relativity/General/Modified/MassiveGravity/DRGT.lean — `DRGTTheory`, `trK1`,
     `trK2`, `trK3`, `elemSymm0`, `elemSymm1`, `elemSymm2`, `elemSymm3`, `elemSymm_isotropic3`,
     `dRGTPotential`, `dRGTPotential_vacuum_zero`
-54. PhyslibAlpha/Relativity/General/Modified/MOND.lean — `MONDTheory`, `newtonAccel`, `deepAccel`,
-    `Relation`, `newtonian_limit`, `deep_accel_sq`, `flat_rotation`, `newtonian_velocity_ne`,
-    `simpleMu`, `standardMu`, `simpleMu_bounds`
+54. PhyslibAlpha/Relativity/General/Modified/MOND.lean — `MONDTheory`, `MONDTheory.deepAccel`,
+    `MONDTheory.Relation`, `newtonAccel`, `newtonAccel_G`,
+    `norm_pairGravityAcceleration_eq_newtonAccel`, `deepAccel`, `Relation`, `newtonian_limit`,
+    `deep_accel_sq`, `flat_rotation`, `newtonian_velocity_ne`, `simpleMu`, `standardMu`,
+    `simpleMu_bounds`
 55. PhyslibAlpha/Relativity/General/Modified/TeVeS.lean — `TeVeSMetric`, `metric`, `metricInv`,
     `metric_symm`, `metric_lorentzian`, `metric_spatial`, `metric_mul_inv`, `metricInv_mul`,
     `metricTensor`
-56. PhyslibAlpha/Relativity/General/Modified/MOG.lean — `MOGTheory`, `factor`, `potential`,
-    `factor_zero`, `factor_alpha_zero`, `factor_mu_zero`, `factor_bounds`,
-    `factor_tendsto_atTop`
+56. PhyslibAlpha/Relativity/General/Modified/MOG.lean — `MOGTheory`, `MOGTheory.factor`,
+    `MOGTheory.potential`, `factor`, `potential`, `potential_G`, `factor_zero`,
+    `factor_alpha_zero`, `factor_mu_zero`, `factor_bounds`, `factor_tendsto_atTop`
 57. PhyslibAlpha/Relativity/General/Modified/PPNParameters.lean — `PPNParameters`,
     `IsFullyConservative`, `IsSemiconservative`, `IsFullyConservative.isSemiconservative`,
     `grPPN`, `bransDickePPN`, `fRMetricPPN`, `nordstromPPN`, `grPPN_isFullyConservative`,
@@ -327,6 +334,9 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `perihelionPrecessionFactor_nordstrom`, `perihelionPrecessionFactor_bransDicke`,
     `nordtvedtParameter_gr`, `nordtvedtParameter_bransDicke`, `nordtvedtParameter_fRMetric`,
     `cassini_deviation_bransDickePPN`
+58. PhyslibAlpha/Relativity/Tensors/MaxwellStressEnergy.lean — `maxwellFieldInvariant`,
+    `maxwellStressEnergyRaw`, `maxwellStressEnergyRaw_trace_zero`, `emFieldStrengthComponents`,
+    `emFieldStrengthComponents_antisymm`
 
 ## References
 

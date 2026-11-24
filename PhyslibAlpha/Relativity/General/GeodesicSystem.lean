@@ -103,18 +103,6 @@ lemma contDiffAt_geodesicField (Γ : E → E →L[ℝ] E →L[ℝ] E) {x₀ v₀
   unfold geodesicField geodesicAccel
   fun_prop
 
-/-- First projection of a differentiable curve into a product. -/
-lemma hasDerivAt_fst {f : ℝ → E × E} {f' : E × E} {t : ℝ}
-    (h : HasDerivAt f f' t) : HasDerivAt (fun s => (f s).1) f'.1 t := by
-  simpa [Function.comp_def] using
-    (ContinuousLinearMap.fst ℝ E E).hasFDerivAt.comp_hasDerivAt t h
-
-/-- Second projection of a differentiable curve into a product. -/
-lemma hasDerivAt_snd {f : ℝ → E × E} {f' : E × E} {t : ℝ}
-    (h : HasDerivAt f f' t) : HasDerivAt (fun s => (f s).2) f'.2 t := by
-  simpa [Function.comp_def] using
-    (ContinuousLinearMap.snd ℝ E E).hasFDerivAt.comp_hasDerivAt t h
-
 /-!
 
 ## B. Local existence and uniqueness
@@ -136,7 +124,8 @@ lemma geodesic_ivp_exists [CompleteSpace E] (Γ : Christoffel E) (hΓ : ContDiff
   obtain ⟨z, hz0, hz⟩ := H (x₀, v₀) (mem_closedBall_self (le_of_lt hr))
   refine ⟨ε, hε, z, hz0, fun t ht => ?_⟩
   have h := hz t (by simpa using ht)
-  exact ⟨hasDerivAt_fst h, hasDerivAt_snd h⟩
+  exact ⟨(ContinuousLinearMap.fst ℝ E E).hasFDerivAt.comp_hasDerivAt t h,
+    (ContinuousLinearMap.snd ℝ E E).hasFDerivAt.comp_hasDerivAt t h⟩
 
 /-- Curve-and-velocity form of local existence for the geodesic Cauchy problem. -/
 lemma geodesic_ivp_exists_curve [CompleteSpace E] (Γ : Christoffel E) (hΓ : ContDiff ℝ 1 Γ)

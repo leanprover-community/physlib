@@ -21,8 +21,9 @@ geometric and natural unit systems in which `c = G = k_B = 1`.
 Newton's universal gravitational constant `G` has dimension `L³ M⁻¹ T⁻²` (`L𝓭 * L𝓭 * L𝓭 * M𝓭⁻¹ *
 T𝓭⁻¹ * T𝓭⁻¹`) and CODATA 2022 recommended SI value `6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²`. Because the
 dimensions of `c` (`L T⁻¹`), `G` (`L³ M⁻¹ T⁻²`), and `k_B` (`M L² T⁻² Θ⁻¹`) are linearly
-independent in the `(L, T, M, Θ)` base space, there exist systems of units in which `c`, `G`, and
-`k_B` simultaneously take the numerical value `1`.
+independent in the `(L, T, M, Θ)` base space, `exists_units_c_G_kB_eq_one` parallels
+`Physlib.Units.Constants.exists_units_constants_eq_one` by constructing systems of units in which
+`c`, `G`, and `k_B` simultaneously take the numerical value `1`.
 
 ## ii. Key results
 
@@ -44,11 +45,11 @@ independent in the `(L, T, M, Θ)` base space, there exist systems of units in w
 - B. Instances
 - C. Positivity
 - D. The dimension
-- E. The value in our world
-- F. Specific to the gravitational constant
-  - F.1. The instance of one
-  - F.2. As a dimensioned quantity
-  - F.3. Natural and geometric unit systems
+- E. Specific to the gravitational constant
+  - E.1. The instance of one
+  - E.2. As a dimensioned quantity
+- F. The value in our world
+- G. Natural and geometric unit systems
 
 ## iv. References
 
@@ -128,30 +129,11 @@ def gravitationalConstantDimension : Dimension LTMCTDimensionBase :=
 instance instHasDim : HasDim GravitationalConstant where
   d := gravitationalConstantDimension
 
-end GravitationalConstant
-
 /-!
 
-## E. The value in our world
+## E. Specific to the gravitational constant
 
--/
-
-/-- Newton's gravitational constant in our world, `6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²` (CODATA 2022). -/
-noncomputable def gravitationalConstant : Dimensionful GravitationalConstant :=
-  toDimensionful SI ⟨6.67430e-11, by norm_num⟩
-
-@[simp]
-lemma gravitationalConstant_in_SI :
-    gravitationalConstant SI = ⟨6.67430e-11, by norm_num⟩ :=
-  toDimensionful_apply_self SI _
-
-namespace GravitationalConstant
-
-/-!
-
-## F. Specific to the gravitational constant
-
-### F.1. The instance of one
+### E.1. The instance of one
 
 We define the instance of one for `GravitationalConstant` to be the gravitational constant equal to
 `1`, corresponding to geometric or Planck units.
@@ -165,7 +147,7 @@ lemma val_one : (1 : GravitationalConstant).val = 1 := rfl
 
 /-!
 
-### F.2. As a dimensioned quantity
+### E.2. As a dimensioned quantity
 
 -/
 
@@ -203,7 +185,22 @@ end GravitationalConstant
 
 /-!
 
-### F.3. Natural and geometric unit systems
+## F. The value in our world
+
+-/
+
+/-- Newton's gravitational constant in our world, `6.67430 × 10⁻¹¹ m³ kg⁻¹ s⁻²` (CODATA 2022). -/
+noncomputable def gravitationalConstant : Dimensionful GravitationalConstant :=
+  toDimensionful SI ⟨6.67430e-11, by norm_num⟩
+
+@[simp]
+lemma gravitationalConstant_in_SI :
+    gravitationalConstant SI = ⟨6.67430e-11, by norm_num⟩ :=
+  toDimensionful_apply_self SI _
+
+/-!
+
+## G. Natural and geometric unit systems
 
 -/
 

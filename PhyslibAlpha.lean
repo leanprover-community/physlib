@@ -264,7 +264,7 @@ public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.LocalizedUncer
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.Open.Uncertainty
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Basic
 public import PhyslibAlpha.CondensedMatter.TightBindingChain.VelocityBand.Width
-public import PhyslibAlpha.Cosmology.FLRW.Basic
+public import PhyslibAlpha.Cosmology.FLRW.Metric
 public import PhyslibAlpha.Electromagnetism.BoxChargeConservation
 public import PhyslibAlpha.Electromagnetism.TemperedDistributional.WireJunction
 public import PhyslibAlpha.Mathematics.AlgebraGeneration
@@ -887,6 +887,7 @@ public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.InvariantCoef
 public import PhyslibAlpha.Relativity.Tensors.ComplexTensor.Vector.Tensorial
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 public import PhyslibAlpha.Relativity.Tensors.Equivariant
+public import PhyslibAlpha.Relativity.Tensors.MaxwellStressEnergy
 public import PhyslibAlpha.Relativity.Tensors.RealTensor.CoVector.Representation
 public import PhyslibAlpha.Relativity.Tensors.RicciTensor
 public import PhyslibAlpha.Relativity.Tensors.RiemannTensor

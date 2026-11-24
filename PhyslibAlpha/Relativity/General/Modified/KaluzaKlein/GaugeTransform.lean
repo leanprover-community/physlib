@@ -59,21 +59,6 @@ namespace KaluzaKlein
 
 -/
 
-private lemma val_lt_four_0 : (0 : Fin 5).val < 4 := by decide
-private lemma val_lt_four_1 : (1 : Fin 5).val < 4 := by decide
-private lemma val_lt_four_2 : (2 : Fin 5).val < 4 := by decide
-private lemma val_lt_four_3 : (3 : Fin 5).val < 4 := by decide
-private lemma not_val_lt_four_4 : ¬((4 : Fin 5).val < 4) := by decide
-private lemma fin4_mk_0 (h : (0 : Fin 5).val < 4) : (⟨(0 : Fin 5).val, h⟩ : Fin 4) = 0 := rfl
-private lemma fin4_mk_1 (h : (1 : Fin 5).val < 4) : (⟨(1 : Fin 5).val, h⟩ : Fin 4) = 1 := rfl
-private lemma fin4_mk_2 (h : (2 : Fin 5).val < 4) : (⟨(2 : Fin 5).val, h⟩ : Fin 4) = 2 := rfl
-private lemma fin4_mk_3 (h : (3 : Fin 5).val < 4) : (⟨(3 : Fin 5).val, h⟩ : Fin 4) = 3 := rfl
-private lemma potExt_0 (A : Fin 4 → ℝ) : potExt A 0 = A 0 := rfl
-private lemma potExt_1 (A : Fin 4 → ℝ) : potExt A 1 = A 1 := rfl
-private lemma potExt_2 (A : Fin 4 → ℝ) : potExt A 2 = A 2 := rfl
-private lemma potExt_3 (A : Fin 4 → ℝ) : potExt A 3 = A 3 := rfl
-private lemma potExt_4 (A : Fin 4 → ℝ) : potExt A 4 = 1 := rfl
-
 /-- Jacobian matrix `(∂x'^A / ∂x^B)` of a 5D compact-circle coordinate shift `x'^4 = x^4 + λ(x^μ)`
 with 4D gradient `dlam_μ = ∂_μ λ`. -/
 def kkGaugeJacobian (dlam : Fin 4 → ℝ) : Tensor2 5 :=
@@ -105,20 +90,9 @@ lemma kkGaugeJacobian_pullback (g4 : Tensor2 4) (A dlam : Fin 4 → ℝ) (φ : �
     (kkGaugeJacobian dlam).transpose * kkMetric g4 A φ * kkGaugeJacobian dlam =
       kkMetric g4 (fun μ => A μ + dlam μ) φ := by
   ext i j
-  have hi : i = 0 ∨ i = 1 ∨ i = 2 ∨ i = 3 ∨ i = 4 := by fin_cases i <;> decide
-  have hj : j = 0 ∨ j = 1 ∨ j = 2 ∨ j = 3 ∨ j = 4 := by fin_cases j <;> decide
-  simp only [Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_five,
-    kkMetric, metric4Ext, kkGaugeJacobian,
-    val_lt_four_0, val_lt_four_1, val_lt_four_2, val_lt_four_3, not_val_lt_four_4,
-    fin4_mk_0, fin4_mk_1, fin4_mk_2, fin4_mk_3,
-    potExt_0, potExt_1, potExt_2, potExt_3, potExt_4,
-    Fin.isValue, Fin.reduceEq, ↓reduceIte, ↓reduceDIte]
-  rcases hi with rfl | rfl | rfl | rfl | rfl <;>
-    rcases hj with rfl | rfl | rfl | rfl | rfl <;>
-    simp only [val_lt_four_0, val_lt_four_1, val_lt_four_2, val_lt_four_3, not_val_lt_four_4,
-      fin4_mk_0, fin4_mk_1, fin4_mk_2, fin4_mk_3,
-      potExt_0, potExt_1, potExt_2, potExt_3, potExt_4,
-      Fin.isValue, Fin.reduceEq, ↓reduceIte, ↓reduceDIte] <;>
+  fin_cases i <;> fin_cases j <;>
+    simp [Matrix.mul_apply, Matrix.transpose_apply, Fin.sum_univ_five,
+      kkMetric, metric4Ext, kkGaugeJacobian, potExt] <;>
     ring
 
 end KaluzaKlein

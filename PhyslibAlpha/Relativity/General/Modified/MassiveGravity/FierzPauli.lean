@@ -6,6 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
+public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
@@ -138,6 +139,20 @@ lemma fp_traceless_of_zero_trace_source (m : ℝ) (hm : m ≠ 0) (h : Tensor2 4)
   rcases mul_eq_zero.mp hfac with h1 | h2
   · exfalso; apply hm2; linarith
   · exact h2
+
+/-- `hTraceEta` coincides with `metricTrace minkowski`. -/
+lemma hTraceEta_eq_metricTrace (h : Tensor2 4) :
+    hTraceEta h = metricTrace minkowski h := by
+  rw [metricTrace_diag minkowski h (fun _ _ hij => minkowski_ginv_offdiag hij)]
+  simp [hTraceEta, minkowski]
+
+/-- Fierz–Pauli quadratic graviton mass Lagrangian evaluated for a `FierzPauliTheory`. -/
+noncomputable def FierzPauliTheory.lagrangian (T : FierzPauliTheory) (h : Tensor2 4) : ℝ :=
+  fierzPauliLagrangian T.m T.α h
+
+/-- Fierz–Pauli mass-term variation tensor evaluated for a `FierzPauliTheory`. -/
+noncomputable def FierzPauliTheory.massTensor (T : FierzPauliTheory) (h : Tensor2 4) : Tensor2 4 :=
+  fpMassTensor T.m T.α h
 
 end MassiveGravity
 

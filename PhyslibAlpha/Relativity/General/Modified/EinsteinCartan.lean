@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Algebra.BigOperators.Fin
-public import PhyslibAlpha.Relativity.Metrics.Basic
+public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
@@ -147,11 +147,7 @@ private lemma sum_ginv_mul_g_left {n : ℕ} (M : MetricTensor n) (j : Fin n) (f 
         rw [Finset.sum_comm]
         refine Finset.sum_congr rfl fun m _ => by rw [Finset.mul_sum]
     _ = f j := by
-        have hid : ∀ m : Fin n, (∑ k : Fin n, M.g j k * M.ginv k m) = if j = m then 1 else 0 :=
-          fun m => by
-            have h := congrFun (congrFun M.inv_left j) m
-            simpa [Matrix.mul_apply, Matrix.one_apply] using h
-        simp [hid]
+        simp [M.sum_ginv_mul_g_right j]
 
 /-- Metric compatibility of the Levi-Civita connection for any `M : MetricTensor n` and
 symmetric derivative array `dg`. -/
@@ -319,11 +315,7 @@ lemma connection_unique {n : ℕ} (M : MetricTensor n) (dg : Fin n → Tensor2 n
           exact Finset.sum_congr rfl fun m _ =>
             Finset.sum_congr rfl fun k _ => by ring
       _ = f p := by
-          have hid : ∀ m : Fin n, (∑ k : Fin n, M.ginv p k * M.g k m) = if p = m then 1 else 0 :=
-            fun m => by
-              have h := congrFun (congrFun M.inv_right p) m
-              simpa [Matrix.mul_apply, Matrix.one_apply] using h
-          simp [hid]
+          simp [M.sum_ginv_mul_g_left p]
   have hsum : ∑ k : Fin n, M.ginv p k * (2 * (∑ m : Fin n, M.g k m * Γ m i j))
       = 2 * Γ p i j := by
     have hmul : (∑ k : Fin n, M.ginv p k * (2 * (∑ m : Fin n, M.g k m * Γ m i j)))

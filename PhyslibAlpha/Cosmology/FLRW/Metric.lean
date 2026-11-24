@@ -9,6 +9,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Physlib.Cosmology.FLRW.Basic
 public import Physlib.Cosmology.FLRW.MatterContent
+public import PhyslibAlpha.Relativity.General.GravitationalConstant
 public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 import Mathlib.Analysis.Calculus.Deriv.Add
@@ -997,6 +998,30 @@ lemma friedmannSolution_of_einsteinOf_flrw (U : Cosmology.FLRW) (F : Cosmology.C
       rfl hr hkr hsin).mp (heinst t ht)).1
   · exact ((einsteinOf_flrw_iff_cosmology_friedmann U F Λ G ht ![t.val, r₀, θ₀, 0]
       rfl hr hkr hsin).mp (heinst t ht)).2
+
+/-- Overload of `friedmannSolution_of_einsteinOf_flrw` taking the Newtonian constant as a
+`GravitationalConstant`. -/
+lemma friedmannSolution_of_einsteinOf_flrw_G (U : Cosmology.FLRW) (F : Cosmology.CosmicFluid)
+    (Λ : ℝ) (G : GravitationalConstant) (r₀ θ₀ : ℝ) (hr : r₀ ≠ 0)
+    (hkr : 1 - U.geometry.curvature * r₀ ^ 2 ≠ 0)
+    (hsin : Real.sin θ₀ ≠ 0)
+    (heinst : ∀ t ∈ U.I, ∀ i j,
+      let x : Fin 4 → ℝ := ![t.val, r₀, θ₀, 0]
+      einsteinOf (flrwMetric (flrwScaleFn U) U.geometry.curvature)
+          (flrwMetricInv (flrwScaleFn U) U.geometry.curvature) x i j
+          + Λ * flrwMetric (flrwScaleFn U) U.geometry.curvature x i j
+        = 8 * Real.pi * G.val * perfectFluidT (F.ρ t) (F.p t)
+            (flrwMetric (flrwScaleFn U) U.geometry.curvature x) i j) :
+    U.FriedmannSolution F Λ G.val 1 :=
+  friedmannSolution_of_einsteinOf_flrw U F Λ G.val r₀ θ₀ hr hkr hsin heinst
+
+/-- The coordinate metric of an FLRW spacetime. -/
+noncomputable def FLRWSpacetime.metric (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  flrwMetric S.a S.k x
+
+/-- The inverse coordinate metric of an FLRW spacetime. -/
+noncomputable def FLRWSpacetime.metricInv (S : FLRWSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  flrwMetricInv S.a S.k x
 
 end FLRW
 

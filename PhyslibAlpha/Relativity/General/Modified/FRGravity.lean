@@ -69,6 +69,8 @@ This module formalises:
 
 namespace GeneralRelativity
 
+namespace Modified
+
 namespace FRGravity
 
 /-!
@@ -221,6 +223,13 @@ lemma starobinsky_plateau (α : ℝ) (hα : α ≠ 0) :
   refine Filter.Tendsto.congr' heq.symm ?_
   simpa using hmul
 
+/-- The algebraic metric-formalism `f(R)` field equation tensor evaluated on `(M, R)`. -/
+noncomputable def FRTheory.fieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
+    (R : RiemannTensor n) : Tensor2 n :=
+  FRGravity.fieldEqn T.f T.df M R
+
 end FRGravity
+
+end Modified
 
 end GeneralRelativity

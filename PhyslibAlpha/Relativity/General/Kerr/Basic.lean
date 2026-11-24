@@ -284,6 +284,14 @@ lemma kerrMetric_zero_spin (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     norm_num
     field_simp [hr2]
 
+/-- The Boyer–Lindquist metric of a Kerr spacetime. -/
+noncomputable def KerrSpacetime.metric (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  kerrMetric K.M K.a x
+
+/-- The inverse Boyer–Lindquist metric of a Kerr spacetime. -/
+noncomputable def KerrSpacetime.metricInv (K : KerrSpacetime) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  kerrMetricInv K.M K.a x
+
 end Kerr
 
 end GeneralRelativity

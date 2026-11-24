@@ -346,6 +346,21 @@ lemma weyl_phiphi_sds (M Λ r th : ℝ) (hr : r ≠ 0) (hf : sdsF M Λ r ≠ 0)
   field_simp [hr, hf, hsin]
   ring
 
+/-- The lapse function `f(r) = 1 - 2M / r - Λ r² / 3` of a Schwarzschild–de Sitter spacetime. -/
+noncomputable def SchwarzschildDeSitterSpacetime.lapse (S : SchwarzschildDeSitterSpacetime)
+    (r : ℝ) : ℝ :=
+  sdsF S.M S.Λ r
+
+/-- The coordinate metric of a Schwarzschild–de Sitter spacetime. -/
+noncomputable def SchwarzschildDeSitterSpacetime.metric (S : SchwarzschildDeSitterSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  sdsMetric S.M S.Λ x
+
+/-- The inverse coordinate metric of a Schwarzschild–de Sitter spacetime. -/
+noncomputable def SchwarzschildDeSitterSpacetime.metricInv (S : SchwarzschildDeSitterSpacetime)
+    (x : Fin 4 → ℝ) : Tensor2 4 :=
+  sdsMetricInv S.M S.Λ x
+
 end SchwarzschildDeSitter
 
 end GeneralRelativity

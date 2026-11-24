@@ -24,16 +24,14 @@ pigeonhole vanishing for `n < k`, and coset decompositions of `S_4` and `S_5`.
 ## i. Overview
 
 In `n` dimensions, any `k`-index generalized Kronecker delta vanishes identically whenever
-`n < k` by the pigeonhole principle. Pairing this with the coset splits `perm_fin4_split` and
-`perm_fin5_fiber_split` underlies the proof of the four-dimensional Bach–Lanczos identity in
-`Lovelock.Basic`.
+`n < k` by the pigeonhole principle. Pairing this with the coset split `perm_fin5_fiber_split`
+underlies the proof of the four-dimensional Bach–Lanczos identity in `Lovelock.Basic`.
 
 ## ii. Key results
 
 - `genKronecker`, `genKronecker_eq_zero_of_lt` : `k`-index generalized Kronecker delta and
   dimensional pigeonhole vanishing.
-- `perm_fin4_split`, `perm_fin5_fiber_split` : antisymmetric permutation-sum coset splits on
-  `S_4` and `S_5`.
+- `perm_fin5_fiber_split` : antisymmetric permutation-sum coset split on `S_5`.
 
 ## iii. Table of contents
 
@@ -140,7 +138,7 @@ private lemma sum_perm_fin4_eq (g : Perm (Fin 4) → ℝ) :
 
 /-- Six-coset decomposition of `S_4` for any 4-argument function antisymmetric in its first pair
 and second pair. -/
-lemma perm_fin4_split (F : Fin 4 → Fin 4 → Fin 4 → Fin 4 → ℝ)
+private lemma perm_fin4_split (F : Fin 4 → Fin 4 → Fin 4 → Fin 4 → ℝ)
     (h12 : ∀ a b c d, F a b c d = -F b a c d)
     (h34 : ∀ a b c d, F a b c d = -F a b d c) :
     (∑ q : Perm (Fin 4), ((Perm.sign q : ℤ) : ℝ) * F (q 0) (q 1) (q 2) (q 3))

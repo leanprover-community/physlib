@@ -5,10 +5,15 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Basic
+public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
 public import Mathlib.Data.Set.Basic
+public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Mul
 import Mathlib.Tactic.Ring
 
 /-!
@@ -36,7 +41,8 @@ pipeline.
 
 - `CoordinateMetric`, `CoordinateMetric.metricTensor` : coordinate metric field bundled with its
   regular domain and two-sided inverse proofs.
-- `Pipeline.pd` : coordinate partial derivative along index `μ`.
+- `Pipeline.pd`, `Pipeline.pd_eq_spaceTime_deriv`, `Pipeline.pd_comm` : coordinate partial
+  derivative along index `μ`, bridge to `SpaceTime.deriv`, and Schwarz commutativity.
 - `Pipeline.christoffel`, `Pipeline.riemann`, `Pipeline.ricciOf`, `Pipeline.scalarOf`,
   `Pipeline.einsteinOf` : coordinate pipeline from metric fields to the Einstein tensor.
 - `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciOf_const`,
@@ -118,6 +124,163 @@ lemma pd_congr {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n
     (h : ∀ y, f y = g y) : pd μ f x = pd μ g x := by
   simp only [pd]
   exact congrArg (fun F => deriv F (x μ)) (funext fun s => h _)
+
+/-- Agreement of partial derivatives for locally equal functions on a neighborhood of `x`. -/
+lemma pd_congr_nhds {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (hfg : f =ᶠ[nhds x] g) : pd μ f x = pd μ g x := by
+  have hcont : Continuous (fun s : ℝ => Function.update x μ s) := by
+    rw [continuous_pi_iff]
+    intro k
+    by_cases hk : k = μ
+    · subst hk; simp only [Function.update_self]; exact continuous_id
+    · simp only [Function.update, hk, ↓reduceDIte]; exact continuous_const
+  have htend : Filter.Tendsto (fun s : ℝ => Function.update x μ s) (nhds (x μ)) (nhds x) := by
+    convert hcont.continuousAt.tendsto using 1
+    simp [Function.update_eq_self]
+  exact (hfg.comp_tendsto htend).deriv_eq
+
+/-- Partial derivative along axis `μ` equals directional Fréchet derivative along
+`Pi.single μ 1`. -/
+lemma pd_eq_fderiv {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} {μ : Fin n}
+    (hf : DifferentiableAt ℝ f x) :
+    pd μ f x = fderiv ℝ f x (Pi.single μ 1) := by
+  have hupd : (fun s : ℝ => Function.update x μ s)
+      = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin n → ℝ) := by
+    ext s k
+    by_cases hk : k = μ <;> simp [Function.update, hk]
+  have hd : HasDerivAt (fun s : ℝ => Function.update x μ s) (Pi.single μ (1 : ℝ)) (x μ) := by
+    rw [hupd]
+    have h1 : HasDerivAt (fun s : ℝ => s - x μ) 1 (x μ) := by
+      simpa using (hasDerivAt_id (x μ)).sub_const (x μ)
+    simpa using (h1.smul_const (Pi.single μ (1 : ℝ))).const_add x
+  rw [pd]
+  have hf' : HasFDerivAt f (fderiv ℝ f x) (Function.update x μ (x μ)) := by
+    simpa [Function.update_eq_self] using hf.hasFDerivAt
+  exact (hf'.comp_hasDerivAt (x μ) hd).deriv
+
+/-- Coordinate partial derivatives on `Fin 4 → ℝ` agree with `Physlib`'s `SpaceTime.deriv` (`∂_`)
+under the standard index equivalence `finSumFinEquiv : Fin 1 ⊕ Fin 3 ≃ Fin 4`. -/
+lemma pd_eq_spaceTime_deriv {f : SpaceTime 3 → ℝ} (μ : Fin 1 ⊕ Fin 3) (y : SpaceTime 3)
+    (hf : DifferentiableAt ℝ f y) :
+    pd (finSumFinEquiv μ) (fun x : Fin 4 → ℝ => f (fun α => x (finSumFinEquiv α)))
+        (fun k => y (finSumFinEquiv.symm k)) =
+      SpaceTime.deriv μ f y := by
+  let e : Fin 1 ⊕ Fin 3 ≃ Fin 4 := finSumFinEquiv
+  let L : (Fin 4 → ℝ) →L[ℝ] SpaceTime 3 :=
+    LinearMap.toContinuousLinearMap
+      { toFun := fun x α => x (e α)
+        map_add' := fun _ _ => rfl
+        map_smul' := fun _ _ => rfl }
+  have hLsingle : L (Pi.single (e μ) (1 : ℝ) : Fin 4 → ℝ) = Lorentz.Vector.basis μ := by
+    ext ν
+    change (Pi.single (e μ) (1 : ℝ) : Fin 4 → ℝ) (e ν) = Lorentz.Vector.basis μ ν
+    simp [Pi.single_apply, e.injective.eq_iff, eq_comm]
+  have hx : L (fun k => y (e.symm k)) = y := by
+    ext α; simp [L, e]
+  have hcomp : HasFDerivAt (f ∘ L) ((fderiv ℝ f y).comp L) (fun k => y (e.symm k)) := by
+    have hy : HasFDerivAt f (fderiv ℝ f y) (L (fun k => y (e.symm k))) := by
+      rw [hx]; exact hf.hasFDerivAt
+    exact hy.comp _ L.hasFDerivAt
+  change pd (e μ) (f ∘ L) (fun k => y (e.symm k)) = SpaceTime.deriv μ f y
+  rw [pd_eq_fderiv hcomp.differentiableAt, hcomp.fderiv, ContinuousLinearMap.comp_apply, hLsingle]
+  rfl
+
+/-- Schwarz symmetry of mixed second coordinate partial derivatives for `ContDiffAt ℝ 2`
+fields. -/
+lemma pd_comm {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ ν : Fin n)
+    (hf : ContDiffAt ℝ 2 f x) :
+    pd μ (pd ν f) x = pd ν (pd μ f) x := by
+  have hf_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 f y := hf.eventually (by simp)
+  have hcongr1 : pd ν f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single ν 1) :=
+    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hcongr2 : pd μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
+    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hdf' : DifferentiableAt ℝ (fderiv ℝ f) x :=
+    (hf.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
+  have hdiff1 : DifferentiableAt ℝ (fun y => fderiv ℝ f y (Pi.single ν 1)) x :=
+    hdf'.clm_apply (differentiableAt_const _)
+  have hdiff2 : DifferentiableAt ℝ (fun y => fderiv ℝ f y (Pi.single μ 1)) x :=
+    hdf'.clm_apply (differentiableAt_const _)
+  rw [pd_congr_nhds μ x hcongr1, pd_congr_nhds ν x hcongr2,
+    pd_eq_fderiv hdiff1, pd_eq_fderiv hdiff2]
+  have hcl1 : fderiv ℝ (fun y => fderiv ℝ f y (Pi.single ν 1)) x (Pi.single μ 1)
+      = fderiv ℝ (fderiv ℝ f) x (Pi.single μ 1) (Pi.single ν 1) := by
+    rw [(hdf'.hasFDerivAt.clm_apply (hasFDerivAt_const _ x)).fderiv]
+    simp
+  have hcl2 : fderiv ℝ (fun y => fderiv ℝ f y (Pi.single μ 1)) x (Pi.single ν 1)
+      = fderiv ℝ (fderiv ℝ f) x (Pi.single ν 1) (Pi.single μ 1) := by
+    rw [(hdf'.hasFDerivAt.clm_apply (hasFDerivAt_const _ x)).fderiv]
+    simp
+  rw [hcl1, hcl2]
+  exact (hf.isSymmSndFDerivAt (by norm_num)).eq _ _
+
+/-- Linearity of `pd` under pointwise addition of differentiable coordinate slices. -/
+lemma pd_add {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (hf : DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ))
+    (hg : DifferentiableAt ℝ (fun s => g (Function.update x μ s)) (x μ)) :
+    pd μ (fun y => f y + g y) x = pd μ f x + pd μ g x :=
+  deriv_add hf hg
+
+/-- Linearity of `pd` under pointwise subtraction of differentiable coordinate slices. -/
+lemma pd_sub {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (hf : DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ))
+    (hg : DifferentiableAt ℝ (fun s => g (Function.update x μ s)) (x μ)) :
+    pd μ (fun y => f y - g y) x = pd μ f x - pd μ g x :=
+  deriv_sub hf hg
+
+/-- Linearity of `pd` under constant scalar multiplication. -/
+lemma pd_const_mul {n : ℕ} (μ : Fin n) (c : ℝ) {f : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ) :
+    pd μ (fun y => c * f y) x = c * pd μ f x := by
+  simp only [pd]
+  exact deriv_const_mul_field c
+
+/-- Linearity of `pd` over finite `Fin m` sums of differentiable slices. -/
+lemma pd_sum {n m : ℕ} (μ : Fin n) (F : Fin m → (Fin n → ℝ) → ℝ) (x : Fin n → ℝ)
+    (hF : ∀ k, DifferentiableAt ℝ (fun s => F k (Function.update x μ s)) (x μ)) :
+    pd μ (fun y => ∑ k : Fin m, F k y) x = ∑ k : Fin m, pd μ (F k) x := by
+  have hs : (fun s => ∑ k : Fin m, F k (Function.update x μ s))
+      = ∑ k : Fin m, fun s => F k (Function.update x μ s) := by
+    funext s; simp only [Finset.sum_apply]
+  simp only [pd, hs]
+  exact deriv_sum fun k _ => hF k
+
+/-- A `C³` scalar field has `C²` coordinate partial derivatives. -/
+lemma contDiffAt_pd {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+    (hf : ContDiffAt ℝ 3 f x) : ContDiffAt ℝ 2 (pd μ f) x := by
+  have hf_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 f y :=
+    (hf.of_le (by norm_num)).eventually (by simp)
+  have hcongr : pd μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
+    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hdf' : ContDiffAt ℝ 2 (fderiv ℝ f) x := hf.fderiv_right (m := 2) (by norm_num)
+  have hclm : ContDiffAt ℝ 2 (fun y => fderiv ℝ f y (Pi.single μ 1)) x :=
+    hdf'.clm_apply contDiffAt_const
+  exact hclm.congr_of_eventuallyEq hcongr
+
+/-- A `C²` scalar field has differentiable coordinate partial derivatives. -/
+lemma pd_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+    (hf : ContDiffAt ℝ 2 f x) :
+    DifferentiableAt ℝ (fun y => pd μ f y) x := by
+  have hf_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 f y := hf.eventually (by simp)
+  have hcongr : pd μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
+    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hdf' : DifferentiableAt ℝ (fderiv ℝ f) x :=
+    (hf.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
+  exact (hdf'.clm_apply (differentiableAt_const _)).congr_of_eventuallyEq hcongr
+
+/-- A differentiable field on `ℝⁿ` has differentiable coordinate slices. -/
+lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+    (hf : DifferentiableAt ℝ f x) :
+    DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ) := by
+  have hupd : (fun s : ℝ => Function.update x μ s)
+      = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin n → ℝ) := by
+    ext s k; by_cases hk : k = μ <;> simp [Function.update, hk]
+  have hd : HasDerivAt (fun s : ℝ => Function.update x μ s) (Pi.single μ (1 : ℝ)) (x μ) := by
+    rw [hupd]
+    simpa using (((hasDerivAt_id (x μ)).sub_const (x μ)).smul_const
+      (Pi.single μ (1 : ℝ))).const_add x
+  have hf' : HasFDerivAt f (fderiv ℝ f x) (Function.update x μ (x μ)) := by
+    simpa [Function.update_eq_self] using hf.hasFDerivAt
+  exact (hf'.comp_hasDerivAt (x μ) hd).differentiableAt
 
 /-- Christoffel symbols of the second kind,
 `Γ^k_{ij} = (1/2) g^{kl} (∂_i g_{jl} + ∂_j g_{il} - ∂_l g_{ij})`, at `x`. -/

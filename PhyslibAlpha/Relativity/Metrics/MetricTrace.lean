@@ -23,9 +23,10 @@ scalar multiples, as well as the dimension identity `g^{ij} g_{ij} = n`.
 
 ## ii. Key results
 
-- `metricTrace` : full contraction `g^{ij} T_{ij}` of a rank-2 tensor with the inverse metric.
+- `metricTrace`, `metricTrace_diag` : full contraction `g^{ij} T_{ij}` and diagonal reduction.
 - `metricTrace_add_fun`, `metricTrace_sub_fun`, `metricTrace_smul` : linearity of the trace.
-- `sum_ginv_mul_g`, `metricTrace_mul_g` : `g^{ij} g_{ij} = n` and `g^{ij} (c g_{ij}) = c n`.
+- `sum_ginv_mul_g`, `MetricTensor.sum_ginv_mul_g_left`, `MetricTensor.sum_ginv_mul_g_right`,
+  `metricTrace_mul_g` : `g^{ij} g_{ij} = n` and contraction identities `g^{-1} g = I`.
 
 ## iii. Table of contents
 
@@ -103,5 +104,23 @@ lemma metricTrace_mul_g {n : ℕ} (M : MetricTensor n) (c : ℝ) :
   rw [metricTrace_smul]
   simp only [metricTrace]
   rw [sum_ginv_mul_g]
+
+/-- For an inverse metric whose off-diagonal entries vanish, `metricTrace` collapses to the
+diagonal sum `∑ i, M.ginv i i * T i i`. -/
+lemma metricTrace_diag {n : ℕ} (M : MetricTensor n) (T : Tensor2 n)
+    (hdiag : ∀ i j : Fin n, i ≠ j → M.ginv i j = 0) :
+    metricTrace M T = ∑ i : Fin n, M.ginv i i * T i i := by
+  refine Finset.sum_congr rfl fun i _ => ?_
+  exact Finset.sum_eq_single i (fun j _ hj => by simp [hdiag i j hj.symm]) (by simp)
+
+/-- Left inverse contraction componentwise: `∑ k, g^{ik} g_{kj} = δ^i_j`. -/
+lemma MetricTensor.sum_ginv_mul_g_left {n : ℕ} (M : MetricTensor n) (i j : Fin n) :
+    (∑ k : Fin n, M.ginv i k * M.g k j) = if i = j then 1 else 0 := by
+  simpa [Matrix.mul_apply, Matrix.one_apply] using congrFun (congrFun M.inv_right i) j
+
+/-- Right inverse contraction componentwise: `∑ k, g_{ik} g^{kj} = δ_i^j`. -/
+lemma MetricTensor.sum_ginv_mul_g_right {n : ℕ} (M : MetricTensor n) (i j : Fin n) :
+    (∑ k : Fin n, M.g i k * M.ginv k j) = if i = j then 1 else 0 := by
+  simpa [Matrix.mul_apply, Matrix.one_apply] using congrFun (congrFun M.inv_left i) j
 
 end GeneralRelativity

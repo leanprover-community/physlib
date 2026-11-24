@@ -33,8 +33,8 @@ of gravity in the weak-field, slow-motion solar-system regime by ten dimensionle
 
 This module defines `PPNParameters`, the conservation predicates `IsFullyConservative` and
 `IsSemiconservative`, the canonical PPN embeddings of General Relativity, Brans–Dicke theory
-(bridged to `GeneralRelativity.BransDicke`), unscreened metric `f(R)` gravity, and Nordström scalar
-gravity, and the four benchmark solar-system observable factors.
+(bridged to `GeneralRelativity.Modified.BransDicke`), unscreened metric `f(R)` gravity, and
+Nordström scalar gravity, and the four benchmark solar-system observable factors.
 
 ## ii. Key results
 

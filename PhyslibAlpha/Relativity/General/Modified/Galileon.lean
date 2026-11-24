@@ -62,6 +62,8 @@ This module formalises the one-dimensional core of those two mechanisms:
 
 namespace GeneralRelativity
 
+namespace Modified
+
 namespace Galileon
 
 /-!
@@ -102,6 +104,12 @@ lemma shift_forbids_potential (V : ℝ → ℝ) (h : ∀ φ c, V (φ + c) = V φ
   rw [hsub] at h'
   exact h'.symm
 
+/-- Scaled 1D cubic Galileon density `c₃ (φ')² φ''` for a `CubicGalileon` model. -/
+def CubicGalileon.density (C : CubicGalileon) (v a : ℝ → ℝ) (t : ℝ) : ℝ :=
+  C.c3 * cubicGalileonDensity v a t
+
 end Galileon
+
+end Modified
 
 end GeneralRelativity

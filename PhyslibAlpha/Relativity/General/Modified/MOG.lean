@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Exp
 public import Mathlib.Order.Filter.AtTopBot.Defs
+public import PhyslibAlpha.Relativity.General.GravitationalConstant
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Tactic.Linarith
 
@@ -56,6 +57,8 @@ asymptotically at large radius when `μ > 0`.
 @[expose] public section
 
 namespace GeneralRelativity
+
+namespace Modified
 
 namespace MOG
 
@@ -125,6 +128,20 @@ lemma factor_tendsto_atTop (α μ : ℝ) (hμ : 0 < μ) :
     tendsto_const_nhds.add (tendsto_const_nhds.mul (tendsto_const_nhds.sub hexp))
   simpa [factor] using h1
 
+/-- The MOG enhancement factor evaluated for a `MOGTheory`. -/
+noncomputable def MOGTheory.factor (T : MOGTheory) (r : ℝ) : ℝ := MOG.factor T.α T.μ r
+
+/-- The MOG gravitational potential evaluated for a `MOGTheory`. -/
+noncomputable def MOGTheory.potential (T : MOGTheory) (G M r : ℝ) : ℝ :=
+  MOG.potential G M T.α T.μ r
+
+/-- The MOG gravitational potential taking the Newtonian constant as a
+`GravitationalConstant`. -/
+noncomputable def potential_G (G : GravitationalConstant) (M α μ r : ℝ) : ℝ :=
+  potential G.val M α μ r
+
 end MOG
+
+end Modified
 
 end GeneralRelativity

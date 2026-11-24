@@ -195,13 +195,7 @@ private lemma pd_nordstromG (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (
         - eta4 i j * eta4 k k * ((pd μ (pd k φ) x * φ x - pd k φ x * pd μ φ x) / φ x ^ 2)) := by
   have nh : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 φ y := hc2.eventually (by simp)
   have h1 : DifferentiableAt ℝ φ x := hc2.differentiableAt (by norm_num)
-  have h2 : ∀ ν, DifferentiableAt ℝ (pd ν φ) x := by
-    intro ν
-    have hcongr : pd ν φ =ᶠ[nhds x] fun y => fderiv ℝ φ y (Pi.single ν 1) :=
-      nh.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
-    have hdf' : DifferentiableAt ℝ (fderiv ℝ φ) x :=
-      (hc2.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
-    exact (hdf'.clm_apply (differentiableAt_const _)).congr_of_eventuallyEq hcongr
+  have h2 : ∀ ν, DifferentiableAt ℝ (pd ν φ) x := fun ν => pd_differentiableAt ν hc2
   have hrew : (fun y => nordstromG φ y k i j) = fun y =>
       (if k = i then pd j φ y / φ y else 0)
       + (if k = j then pd i φ y / φ y else 0)

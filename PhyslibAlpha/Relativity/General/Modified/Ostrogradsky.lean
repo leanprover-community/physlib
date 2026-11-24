@@ -64,6 +64,8 @@ contrasting it with a standard positive-definite quadratic kinetic term.
 
 namespace GeneralRelativity
 
+namespace Modified
+
 namespace Ostrogradsky
 
 /-!
@@ -130,6 +132,12 @@ lemma kinetic_zero_iff (m x : ℝ) (hm : 0 < m) : m * x ^ 2 / 2 = 0 ↔ x = 0 :=
   · rintro rfl
     ring
 
+/-- Canonical Ostrogradsky Hamiltonian evaluated for a `HigherDerivModel`. -/
+noncomputable def HigherDerivModel.hamiltonian (H : HigherDerivModel) (v a p₁ p₂ q : ℝ) : ℝ :=
+  Ostrogradsky.hamiltonian v a p₁ p₂ q H.m
+
 end Ostrogradsky
+
+end Modified
 
 end GeneralRelativity
