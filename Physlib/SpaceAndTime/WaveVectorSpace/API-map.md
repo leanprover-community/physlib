@@ -46,9 +46,9 @@ The Fourier transform (FT) takes a suitably nice function of space to a function
 resolving its spatial dependence into plane-wave components; the inverse Fourier transform (IFT)
 reconstructs the spatial function from those components. [8]
 The FT maps derivatives with respect to space to multiplication by wavevector and *vice versa*,
-under suitable regularity and decay assumptions. [9]
+under suitable regularity and integrability assumptions. [9]
 The FT and IFT are in fact left and right inverses with a consistent choice of normalization
-under suitable regularity and decay assumptions. [10]
+under suitable continuity and integrability assumptions. [10]
 Both FT and IFT preserve inner products up to a constant normalization factor. [TODO]
 
 ## Lean References
@@ -64,7 +64,9 @@ Both FT and IFT preserve inner products up to a constant normalization factor. [
 7. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `WaveVectorSpace.dual`, `Space.dual`
 8. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fourierIntegral`, `fourierIntegralInv`
 9. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fderiv_fourierIntegral`,
-   `fderiv_fourierIntegralInv`, `deriv_fourierIntegral`, `deriv_fourierIntegralInv`
+   `fderiv_fourierIntegralInv`, `deriv_fourierIntegral`, `deriv_fourierIntegralInv`,
+   `fourierIntegral_fderiv`, `fourierIntegralInv_fderiv`, `fourierIntegral_deriv`,
+   `fourierIntegralInv_deriv`
 10. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean —
    `fourierIntegralInv_fourierIntegral_eq`, `fourierIntegral_fourierIntegralInv_eq`
 
