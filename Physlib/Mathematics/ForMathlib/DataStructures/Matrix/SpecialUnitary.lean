@@ -19,6 +19,7 @@ Traceless skew-Hermitian matrices describe infinitesimal special unitary transfo
 Matrix exponentiation sends them into the group: skew-Hermitian matrices exponentiate to
 unitary matrices, and zero trace forces the determinant to one by Lie's trace formula.
 The construction works for every finite matrix index type.
+The exponential is continuous in the usual matrix topology.
 
 The operator norm induced by the coordinate `ℓ∞` norm supplies a real normed structure
 on the generators, with the usual topology of matrix entries. These coordinates can
@@ -31,6 +32,7 @@ charts on the group.
 * `Matrix.specialUnitaryGroup.exp`: the global matrix exponential into the group.
 * `Matrix.specialUnitaryGroup.coe_exp`: its underlying matrix formula.
 * `Matrix.specialUnitaryGroup.exp_zero`: zero exponentiates to the identity.
+* `Matrix.specialUnitaryGroup.continuous_exp`: continuity of the exponential into the group.
 
 ## iii. Table of contents
 
@@ -96,6 +98,11 @@ def exp (A : modelSubmodule ι) : SU[ι] := ⟨NormedSpace.exp A.val, exp_mem A.
   apply Subtype.ext
   rw [coe_exp]
   exact NormedSpace.exp_zero
+
+/-- The special unitary exponential is continuous in the usual matrix topology. -/
+@[fun_prop] lemma continuous_exp : Continuous (exp : modelSubmodule ι → SU[ι]) := by
+  simp only [continuous_induced_rng, Function.comp_def, coe_exp]
+  exact NormedSpace.exp_continuous.comp continuous_subtype_val
 
 /-!
 ## C. Normed coordinates
