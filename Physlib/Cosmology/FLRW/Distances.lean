@@ -39,7 +39,8 @@ model before and after `t`. The particle horizon of the Einstein-de Sitter model
 - `FLRW.redshift`, `FLRW.deriv_redshift`: `∂ₜ z = -(1 + z) H`.
 - `FLRW.deriv_comovingDistance_eq_mul_deriv_redshift`: `∂ₜ χ = (c / (a(t₀) H)) ∂ₜ z`.
 - `FLRW.properDistance`, `FLRW.deriv_properDistance`: the Hubble-Lemaître law.
-- `FLRW.hubbleRadius`, `FLRW.deriv_properDistance_eq_iff`: the recession velocity at the Hubble
+- `FLRW.hubbleRadius`, `FLRW.hubbleRadius_eq_presentHubbleRadius`,
+  `FLRW.deriv_properDistance_eq_iff`: the recession velocity at the Hubble
   radius.
 - `FLRW.transverseComovingDistance` and its three closed forms.
 - `FLRW.particleHorizon`, `FLRW.eventHorizon`, `FLRW.particleHorizon_einsteinDeSitter`.
@@ -157,6 +158,10 @@ lemma deriv_properDistance {χ : ℝ} {t : Time} (ht : t ∈ U.I) :
 /-- The Hubble radius `R_H = c / H`. -/
 noncomputable def hubbleRadius (c : SpeedOfLight) (t : Time) : ℝ :=
   (c : ℝ) / hubbleConstant U.a t
+
+/-- The Hubble radius at the present time `t₀` is the present Hubble radius `c / H₀`. -/
+lemma hubbleRadius_eq_presentHubbleRadius (c : SpeedOfLight) (t₀ : Time) :
+    U.hubbleRadius c t₀ = presentHubbleRadius c U.a t₀ := rfl
 
 /-- For `t` in the interval of the model with `H(t) ≠ 0`, the recession velocity `∂ₜ D` equals
   `c` exactly at the Hubble radius. -/

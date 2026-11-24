@@ -142,7 +142,9 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `FLRW.FriedmannSolution.densityParameter_add_curvature`
 7. Physlib/Cosmology/FLRW/Solutions.lean — `FLRW.milne`, `FLRW.friedmannSolution_milne`
 8. Physlib/Cosmology/FLRW/Basic.lean — `FirstOrderFriedmann`, `SecondOrderFriedmann`
-9. Physlib/Cosmology/FLRW/Basic.lean — `hubbleConstant`, `hubbleConstant_ne_zero`
+9. Physlib/Cosmology/FLRW/Basic.lean — `hubbleConstant`, `hubbleConstant_ne_zero`,
+   `presentHubbleConstant`, `presentHubbleConstant_eq`, `presentHubbleRadius`,
+   `presentHubbleRadius_pos`, `presentHubbleConstant_mul_presentHubbleRadius`
 10. Physlib/Cosmology/FLRW/Basic.lean — `decelerationParameter`, `deriv_hubbleConstant`,
    `decelerationParameter_eq_one_plus_hubbleConstant`, `deriv_hubbleConstant_eq_neg_sq_mul`,
    `deriv_hubbleConstant_neg_iff`, `exists_deriv_hubbleConstant_neg_iff`
@@ -196,7 +198,8 @@ the integral χ = c ∫ dz / H(z) in the redshift for a(t₀) = 1. [TODO]
    `FLRW.deriv_comovingDistance`, `FLRW.redshift`, `FLRW.one_add_redshift`, `FLRW.deriv_redshift`,
    `FLRW.deriv_scaleFactor_eq_mul_hubbleConstant`,
    `FLRW.deriv_comovingDistance_eq_mul_deriv_redshift`, `FLRW.properDistance`,
-   `FLRW.deriv_properDistance`, `FLRW.hubbleRadius`, `FLRW.deriv_properDistance_eq_iff`
+   `FLRW.deriv_properDistance`, `FLRW.hubbleRadius`,
+   `FLRW.hubbleRadius_eq_presentHubbleRadius`, `FLRW.deriv_properDistance_eq_iff`
 29. Physlib/Cosmology/FLRW/Distances.lean — `FLRW.transverseComovingDistance`,
    `FLRW.transverseComovingDistance_of_curvature_pos`,
    `FLRW.transverseComovingDistance_of_curvature_eq_zero`,
