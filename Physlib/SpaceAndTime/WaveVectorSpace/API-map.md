@@ -63,14 +63,15 @@ Both FT and IFT preserve inner products up to a constant normalization factor. [
    `deriv_const_smul`, `deriv_smul`, `deriv_pow`
 6. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `pairingCLM`
 7. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `WaveVectorSpace.dual`, `Space.dual`
-8. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fourierIntegral`, `fourierIntegralInv`
-9. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fderiv_fourierIntegral`,
+8. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/Basic.lean —
+   `fourierIntegral`, `fourierIntegralInv`
+9. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/Basic.lean — `fderiv_fourierIntegral`,
    `fderiv_fourierIntegralInv`, `deriv_fourierIntegral`, `deriv_fourierIntegralInv`,
    `fourierIntegral_fderiv`, `fourierIntegralInv_fderiv`, `fourierIntegral_deriv`,
    `fourierIntegralInv_deriv`
-10. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean —
+10. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/Basic.lean —
    `fourierIntegralInv_fourierIntegral_eq`, `fourierIntegral_fourierIntegralInv_eq`
-11. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `differentiable_fourierIntegral`,
+11. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/Basic.lean — `differentiable_fourierIntegral`,
    `differentiable_fourierIntegralInv`, `contDiff_fourierIntegral`, `contDiff_fourierIntegralInv`
 
 ## References

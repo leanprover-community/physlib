@@ -12,7 +12,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.DualPairing
 
 ## i. Overview
 
-The purpose of this module is to provide a means to work with Fourier transforms in a way
+The purpose of this module is to provide a means to work with Fourier integrals in a way
 that is both dimensionally consistent and flexible enough to allow various conventions.
 
 The two main definitions are `fourierIntegral a b : (Space d → E) → WaveVectorSpace d → E`
