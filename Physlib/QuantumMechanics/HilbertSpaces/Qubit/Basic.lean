@@ -50,7 +50,7 @@ abbrev Qubit : Type := 𝓗[Fin 2]
 namespace Qubit
 
 /-- The standard orthonormal basis of the qubit, indexed by `Fin 2`. -/
-noncomputable def basis : OrthonormalBasis (Fin 2) ℂ Qubit :=
+noncomputable abbrev basis : OrthonormalBasis (Fin 2) ℂ Qubit :=
   FiniteHilbertSpace.basisFun (Fin 2)
 
 lemma basis_apply (i : Fin 2) : basis i = ⟨EuclideanSpace.single i 1⟩ :=
