@@ -36,23 +36,14 @@ and its velocity is R′(t) = P(t) / M. [6] If the collection of external forces
 center of mass moves at constant velocity. Its position at any time t is
 R(t) = R(t₀) + (t − t₀) P(t₀) / M for any reference time t₀ {1}. [7]
 
-### A system with pairwise gravity
-
-Let G be the gravitational constant and s the displacement from a target to a source of mass m.
-At nonzero separation the source contributes G m s / ‖s‖³ to the target's acceleration. Summing
-over all other particles gives its gravitational acceleration. Multiplying by the target mass
-gives the net gravitational force. [8] Exchanging source and target reverses the force, so
-the collection of these forces satisfies Newton's third law. [9] Given trajectories satisfying the
-gravitational acceleration equation for every particle at every time, they form a Newtonian
-system with these internal forces and no external forces. [10]
-
 ### An isolated binary star
 
-Label the stars 0 and 1, with masses m₀ and m₁ and positions x₀(t) and x₁(t). Their center
-of mass is R(t) = (m₀ x₀(t) + m₁ x₁(t)) / M, where M = m₀ + m₁. [11] Its uniform motion
-follows from the general isolated-system result. [7] If the stars interact by mutual gravity
-alone, their relative displacement r(t) = x₁(t) − x₀(t) satisfies the inverse-square equation
-r″(t) = −G M r(t) / ‖r(t)‖³ at each time when their positions are distinct {1}. [12]
+Consider two stars of masses m₀ and m₁ at positions x₀(t) and x₁(t), interacting only
+through gravity. The gravitational forces on the two stars are equal and opposite. [8]
+Their center of mass R(t) = (m₀ x₀(t) + m₁ x₁(t)) / M, where M = m₀ + m₁, moves at
+constant velocity because there are no external forces. [7][9] Let G be the gravitational constant and
+r(t) = x₁(t) − x₀(t) the relative displacement. Whenever r(t) ≠ 0, the relative motion
+satisfies the inverse-square equation r″(t) = −G M r(t) / ‖r(t)‖³ {1}. [10]
 
 ## Lean References
 
@@ -68,13 +59,10 @@ r″(t) = −G M r(t) / ‖r(t)‖³ at each time when their positions are disti
 7. Physlib/ClassicalMechanics/PointParticle/NewtonianSystem/CenterOfMass.lean —
    `centerOfMass_eq_of_noExternalForces`
 8. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
-   `pairGravityAcceleration`, `gravityAcceleration`, `netForce_gravity`
-9. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean —
-   `pairGravity`, `pairGravity_reverse`, `gravityForces_reverse`
-10. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/NewtonianGravity.lean — `ofGravity`
-11. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
-    `centerOfMass_eq_of_two_particles`
-12. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
+   `pairGravity`, `pairGravity_reverse`
+9. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
+   `centerOfMass_eq_of_two_particles`
+10. PhyslibAlpha/ClassicalMechanics/OrbitalMechanics/BinaryStar.lean —
     `hasDerivAt_deriv_relativePosition_of_gravity`
 
 ## References
