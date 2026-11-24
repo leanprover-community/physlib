@@ -392,6 +392,36 @@ lemma deriv_fourierIntegralInv (i : Fin d)
   congr
   simp [dotProduct, Space.basis_apply, ← coe_smul, smul_smul]
 
+/-!
+#### A.4. Inversion
+-/
+
+section Inversion
+
+local notation "ℝᵈ" => EuclideanSpace ℝ (Fin d)
+
+local instance : FourierSMul ℝ (ℝᵈ → E) (ℝᵈ → E) where
+  fourier_smul c _ := by ext; simp [fourier_eq, smul_comm _ c, integral_smul]
+
+local instance : FourierInvSMul ℝ (ℝᵈ → E) (ℝᵈ → E) where
+  fourierInv_smul c _ := by ext; simp [fourierInv_eq, smul_comm _ c, integral_smul]
+
+/-- Behavior of the Fourier transform `𝓕 : (ℝᵈ → E) → ℝᵈ → E` under dilations. -/
+private lemma fourier_comp_smul_id {c : ℝ} (hc : c ≠ 0) (f : ℝᵈ → E) :
+    𝓕 (f ∘ (c⁻¹ • id)) = (|c| ^ d) • 𝓕 f ∘ (c • id)  := by
+  ext v
+  have := Measure.integral_comp_smul volume (fun w ↦ 𝐞 (-inner ℝ (c • w) v) • f w) c⁻¹
+  simp_all [fourier_eq, smul_smul, inner_smul_left, inner_smul_right]
+
+/-- Behavior of the inverse Fourier transform `𝓕⁻ : (ℝᵈ → E) → ℝᵈ → E` under dilations. -/
+private lemma fourierInv_comp_smul_id {c : ℝ} (hc : c ≠ 0) (f : ℝᵈ → E) :
+    𝓕⁻ (f ∘ (c⁻¹ • id)) = (|c| ^ d) • 𝓕⁻ f ∘ (c • id)  := by
+  ext v
+  have := Measure.integral_comp_smul volume (fun w ↦ 𝐞 (inner ℝ (c • w) v) • f w) c⁻¹
+  simp_all [fourierInv_eq, smul_smul, inner_smul_left, inner_smul_right]
+
+end Inversion
+
 end FourierIntegral
 
 end WaveVectorSpace
