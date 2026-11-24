@@ -121,6 +121,26 @@ lemma fourierIntegral_eq (f : Space d → E) (k : WaveVectorSpace d) :
   simp [fourierIntegral_def, VectorFourier.fourierIntegral, fourierChar, pairingCLM_apply_eq_dual,
     dual_apply, Circle.smul_def, ← mul_assoc, mul_div_cancel₀]
 
+open scoped RealInnerProductSpace in
+/-- Expresses the Fourier integral in terms of the Fourier transform on Euclidean space
+`𝓢 : (EuclideanSpace ℝ (Fin d) → E) → EuclideanSpace ℝ (Fin d) → E`
+by mapping through the standard bases of `Space d` and `WaveVectorSpace d`. -/
+lemma fourierIntegral_eq_smul_fourier_comp (f : Space d → E) :
+    fourierIntegral a b f
+      = (|b| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+        • 𝓕 (f ∘ Space.basis.repr.symm) ∘ (-(b / (2 * π)) • basis.repr.toLinearMap) := by
+  ext k
+  rw [fourierIntegral_eq]
+  congr 1
+  calc
+    _ = ∫ x : Space d, Circle.exp (b * k ⬝ᵥ x) • f x := by simp [Circle.smul_def]
+    _ = ∫ v, Circle.exp (b * ⟪v, basis.repr k⟫) • f (Space.basis.repr.symm v) := Eq.symm <|
+      Space.basis.repr.symm.measurePreserving.integral_comp
+        Space.basis.repr.symm.toMeasurableEquiv.measurableEmbedding
+          fun x ↦ Circle.exp (b * ⟪Space.basis.repr x, basis.repr k⟫) • f x
+    _ = (𝓕 _ ∘ _) k := by
+      simp [fourier_eq, fourierChar, inner_smul_right, ← mul_assoc, mul_div_cancel₀]
+
 /-- The inverse Fourier integral over `WaveVectorSpace`,
 
 `(|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ) • ∫ k, exp (-b * (k ⬝ᵥ x) * I) • g k ∂volume`,
@@ -143,6 +163,27 @@ lemma fourierIntegralInv_eq (g : WaveVectorSpace d → E) (x : Space d) :
         • ∫ k : WaveVectorSpace d, cexp (-b * (k ⬝ᵥ x) * I) • g k := by
   simp [fourierIntegralInv_def, VectorFourier.fourierIntegral, pairingCLM_apply_eq_dual,
     fourierChar, dual_apply, Circle.smul_def, Complex.exp_neg, ← mul_assoc, mul_div_cancel₀]
+
+open scoped RealInnerProductSpace in
+/-- Expresses the inverse Fourier integral in terms of the inverse Fourier transform
+on Euclidean space `𝓢 : (EuclideanSpace ℝ (Fin d) → E) → EuclideanSpace ℝ (Fin d) → E`
+by mapping through the standard bases of `Space d` and `WaveVectorSpace d`. -/
+lemma fourierIntegralInv_eq_smul_fourierInv_comp (g : WaveVectorSpace d → E) :
+    fourierIntegralInv a b g
+      = (|b| / (2 * π) ^ (1 + a)) ^ (d / 2 : ℝ)
+        • 𝓕⁻ (g ∘ basis.repr.symm) ∘ (-(b / (2 * π)) • Space.basis.repr.toLinearMap) := by
+  ext x
+  rw [fourierIntegralInv_eq]
+  congr 1
+  calc
+    _ = ∫ k : WaveVectorSpace d, Circle.exp (-b * x ⬝ᵥ k) • g k := by
+      simp [Circle.smul_def, Complex.exp_neg, dotProduct_comm]
+    _ = ∫ v, Circle.exp (-b * ⟪v, Space.basis.repr x⟫) • g (basis.repr.symm v) := Eq.symm <|
+      basis.repr.symm.measurePreserving.integral_comp
+        basis.repr.symm.toMeasurableEquiv.measurableEmbedding
+          fun k ↦ Circle.exp (-b * ⟪basis.repr k, Space.basis.repr x⟫) • g k
+    _ = (𝓕⁻ _ ∘ _) x := by
+      simp [fourierInv_eq, fourierChar, inner_smul_right, ← mul_assoc, mul_div_cancel₀]
 
 /-!
 ### A.2. Basic properties
