@@ -370,7 +370,7 @@ lemma fourierIntegralInv_deriv (i : Fin d) {g : WaveVectorSpace d → E}
     hg, hg', hg'']
 
 /-!
-#### A.4. Inversion
+### A.4. Inversion
 -/
 
 section Inversion
