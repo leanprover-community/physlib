@@ -26,7 +26,7 @@ variable? (HS : Type*) [QuantumHilbertSpace HS] =>
   (HS : Type*) [NormedAddCommGroup HS] [InnerProductSpace ℂ HS] [CompleteSpace HS]
 ```
 introduces a Hilbert space of states together with its instances. A concrete system is given by
-its type, for example `QubitSpace`, on which these instances are found directly.
+its type, for example `Qubit`, on which these instances are found directly.
 
 ## ii. Key results
 
