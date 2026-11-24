@@ -8,7 +8,6 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.DerivHyp
 public import Physlib.SpaceAndTime.Time.Derivatives
 public import Physlib.Relativity.SpeedOfLight
-public import Physlib.Cosmology.TimeNow
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 /-!
 
@@ -19,8 +18,8 @@ The spatial geometry of an FLRW model and its curvature parameter, the structure
 fluid with the cosmological constant folded in, the tangent-line bound for an FLRW model whose
 scale factor decelerates and the resulting lower bound on its interval of time, the first- and
 second-order Friedmann equations, the proposition `FLRW.FriedmannSolution` that a model and a
-fluid solve them, the Hubble and deceleration parameters, and the Hubble constant `H₀` and
-present Hubble radius `c / H₀`.
+fluid solve them, the Hubble and deceleration parameters, the present time `PresentTime` of a
+model and the Hubble constant `H₀` at it.
 
 -/
 
@@ -144,6 +143,18 @@ structure FLRW where
   differentiableOn_deriv_a : DifferentiableOn ℝ (∂ₜ a) I
   /-- The geometry of the spatial slices. -/
   geometry : SpatialGeometry
+
+/-- The present time `t₀` of an FLRW model `U`: an instant in the interval `U.I` of the model at
+  which present-day values such as the Hubble constant `H₀` are taken. Cosmic time has no
+  distinguished instant, so the present is a datum of the model, and it depends on the model:
+  at the same `H₀` the age of the universe differs between models. -/
+structure PresentTime (U : FLRW) where
+  /-- The instant of the present. -/
+  toTime : Time
+  /-- The present lies in the interval of the model. -/
+  mem : toTime ∈ U.I
+
+instance (U : FLRW) : CoeOut (PresentTime U) Time := ⟨PresentTime.toTime⟩
 
 /-- The cosmic fluid filling an FLRW model, described by its total energy density `ρ` and its
   pressure `p`, both functions of cosmic time, as in the first- and second-order Friedmann
@@ -352,36 +363,21 @@ lemma hubbleConstant_ne_zero {a : Time → ℝ} {t : Time}
     hubbleConstant a t ≠ 0 :=
   div_ne_zero hd_az haz
 
-/-- The Hubble constant `H₀ = H(t₀)`: the Hubble parameter at the present time `t₀`.
-
-  The time-dependent Hubble parameter `H(t) = (dₜ a) / a` is the function `hubbleConstant` of a
-  free instant `t : Time`; `presentHubbleConstant a t₀` is its value at the present `t₀ : TimeNow`,
-  the number `H₀`. -/
-noncomputable def presentHubbleConstant (a : Time → ℝ) (t₀ : TimeNow) : ℝ :=
-  hubbleConstant a t₀
+/-- The Hubble constant `H₀ = H(t₀)`: the Hubble parameter of the model `U` at its present time
+  `t₀`. The function `hubbleConstant` is the time-dependent Hubble parameter `H(t)`;
+  `presentHubbleParameter U t₀` is the number `H₀`. -/
+noncomputable def presentHubbleParameter (U : FLRW) (t₀ : PresentTime U) : ℝ :=
+  hubbleConstant U.a t₀
 
 /-- The Hubble constant `H₀` is `(dₜ a) / a` evaluated at the present time `t₀`. -/
-lemma presentHubbleConstant_eq (a : Time → ℝ) (t₀ : TimeNow) :
-    presentHubbleConstant a t₀ = ∂ₜ a t₀ / a t₀ := rfl
+lemma presentHubbleParameter_eq (U : FLRW) (t₀ : PresentTime U) :
+    presentHubbleParameter U t₀ = ∂ₜ U.a t₀ / U.a t₀ := rfl
 
-/-- The present Hubble radius `R_H = c / H₀`: the proper distance at which the recession
-  velocity of the Hubble flow equals the speed of light today. -/
-noncomputable def presentHubbleRadius (c : SpeedOfLight) (a : Time → ℝ) (t₀ : TimeNow) : ℝ :=
-  (c : ℝ) / presentHubbleConstant a t₀
-
-/-- The present Hubble radius is positive when the universe is expanding today, `0 < H₀`. -/
-lemma presentHubbleRadius_pos (c : SpeedOfLight) {a : Time → ℝ} {t₀ : TimeNow}
-    (hH₀ : 0 < presentHubbleConstant a t₀) :
-    0 < presentHubbleRadius c a t₀ :=
-  div_pos c.val_pos hH₀
-
-/-- The Hubble constant times the present Hubble radius is the speed of light,
-  `H₀ R_H = c`, whenever `H₀ ≠ 0`. -/
-lemma presentHubbleConstant_mul_presentHubbleRadius (c : SpeedOfLight) {a : Time → ℝ}
-    {t₀ : TimeNow} (hH₀ : presentHubbleConstant a t₀ ≠ 0) :
-    presentHubbleConstant a t₀ * presentHubbleRadius c a t₀ = (c : ℝ) := by
-  unfold presentHubbleRadius
-  field_simp
+/-- The Hubble constant `H₀` is nonzero when the scale factor has nonzero derivative at the
+  present time. -/
+lemma presentHubbleParameter_ne_zero (U : FLRW) (t₀ : PresentTime U) (hd : ∂ₜ U.a t₀ ≠ 0) :
+    presentHubbleParameter U t₀ ≠ 0 :=
+  hubbleConstant_ne_zero hd (U.a_pos t₀ t₀.mem).ne'
 
 TODO "Express the Hubble parameter as a function of the scale factor, `H(a)`, and of the
   redshift, `H(z)`, using `a = 1 / (1 + z)` with the normalization `a₀ = 1`; define the

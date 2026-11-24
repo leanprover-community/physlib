@@ -39,7 +39,7 @@ model before and after `t`. The particle horizon of the Einstein-de Sitter model
 - `FLRW.redshift`, `FLRW.deriv_redshift`: `∂ₜ z = -(1 + z) H`.
 - `FLRW.deriv_comovingDistance_eq_mul_deriv_redshift`: `∂ₜ χ = (c / (a(t₀) H)) ∂ₜ z`.
 - `FLRW.properDistance`, `FLRW.deriv_properDistance`: the Hubble-Lemaître law.
-- `FLRW.hubbleRadius`, `FLRW.hubbleRadius_eq_presentHubbleRadius`,
+- `FLRW.hubbleRadius`, `FLRW.hubbleRadius_pos`, `FLRW.hubbleConstant_mul_hubbleRadius`,
   `FLRW.deriv_properDistance_eq_iff`: the recession velocity at the Hubble
   radius.
 - `FLRW.transverseComovingDistance` and its three closed forms.
@@ -159,10 +159,18 @@ lemma deriv_properDistance {χ : ℝ} {t : Time} (ht : t ∈ U.I) :
 noncomputable def hubbleRadius (c : SpeedOfLight) (t : Time) : ℝ :=
   (c : ℝ) / hubbleConstant U.a t
 
-/-- The Hubble radius evaluated at the present time `t₀ : TimeNow` is the present Hubble radius
-  `c / H₀`. -/
-lemma hubbleRadius_eq_presentHubbleRadius (c : SpeedOfLight) (t₀ : TimeNow) :
-    U.hubbleRadius c t₀ = presentHubbleRadius c U.a t₀ := rfl
+/-- The Hubble radius is positive where the universe is expanding, `0 < H(t)`. -/
+lemma hubbleRadius_pos (c : SpeedOfLight) {t : Time} (hH : 0 < hubbleConstant U.a t) :
+    0 < U.hubbleRadius c t :=
+  div_pos c.val_pos hH
+
+/-- The Hubble parameter times the Hubble radius is the speed of light, `H R_H = c`, wherever
+  `H(t) ≠ 0`. -/
+lemma hubbleConstant_mul_hubbleRadius (c : SpeedOfLight) {t : Time}
+    (hH : hubbleConstant U.a t ≠ 0) :
+    hubbleConstant U.a t * U.hubbleRadius c t = (c : ℝ) := by
+  unfold hubbleRadius
+  field_simp
 
 /-- For `t` in the interval of the model with `H(t) ≠ 0`, the recession velocity `∂ₜ D` equals
   `c` exactly at the Hubble radius. -/
