@@ -33,6 +33,7 @@ This module formalises the one-dimensional core of those two mechanisms:
 
 ## ii. Key results
 
+- `CubicGalileon`, `cubicGalileonDensity` : cubic Galileon model and 1D density `(φ')² φ''`.
 - `cubic_total_derivative` : `(v t)² a t = d/dt (v³ / 3)` whenever `v' = a`.
 - `shift_total_derivative` : shifting velocity by `c` preserves total-derivative structure.
 - `shift_forbids_potential` : shift-symmetric potentials are constant.
@@ -68,6 +69,15 @@ namespace Galileon
 ## A. Cubic Galileon total derivative and shift symmetry
 
 -/
+
+/-- Cubic Galileon scalar–tensor theory parameterized by its cubic interaction coupling `c₃`. -/
+structure CubicGalileon where
+  /-- Dimensionless cubic Galileon self-interaction coupling `c₃`. -/
+  c3 : ℝ
+
+/-- One-dimensional cubic Galileon density `(φ')² φ''` for velocity `v = φ'` and
+acceleration `a = φ''`. -/
+def cubicGalileonDensity (v a : ℝ → ℝ) (t : ℝ) : ℝ := v t ^ 2 * a t
 
 /-- In one dimension, the cubic Galileon density `(φ')² φ''` is the total derivative
 `d/dt ((φ')³ / 3)`. -/

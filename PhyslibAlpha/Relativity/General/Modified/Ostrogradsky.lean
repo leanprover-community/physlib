@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.Basic
+public import PhyslibAlpha.Relativity.Tensors.Tensor2
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
@@ -33,6 +33,7 @@ contrasting it with a standard positive-definite quadratic kinetic term.
 
 ## ii. Key results
 
+- `HigherDerivModel` : benchmark higher-derivative harmonic oscillator model with mass `m`.
 - `kineticMatrix`, `kineticMatrix_degenerate` : singular Hessian `diag(0, 1)` in `(q̇, q̈)`.
 - `hamiltonian`, `hamiltonian_add`, `unbounded_below` : linearity in `p₁` and unboundedness
   below whenever `v ≠ 0`.
@@ -70,6 +71,11 @@ namespace Ostrogradsky
 ## A. Degenerate kinetic matrix and Ostrogradsky ghost
 
 -/
+
+/-- Higher-derivative benchmark model `L = (1/2) q̈² - (1/2) m² q²` parameterized by mass `m`. -/
+structure HigherDerivModel where
+  /-- Oscillator mass parameter `m`. -/
+  m : ℝ
 
 /-- The kinetic Hessian matrix `diag(0, 1)` of `L = (1/2) q̈² + V(q)` in `(q̇, q̈)`. -/
 def kineticMatrix : Tensor2 2 :=

@@ -5,8 +5,10 @@ Authors: Alex Vergara Gil
 -/
 module
 
+public import Mathlib.Algebra.BigOperators.Fin
 public import Mathlib.Analysis.SpecialFunctions.Exp
-public import PhyslibAlpha.Relativity.General.Basic
+public import Mathlib.LinearAlgebra.Matrix.Notation
+public import PhyslibAlpha.Relativity.Metrics.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
@@ -30,6 +32,7 @@ metric `e^{-2φ} δ`, and admits an explicit two-sided inverse bundled into `Met
 
 ## ii. Key results
 
+- `TeVeSMetric` : TeVeS disformal metric data parameterized by the scalar field `φ`.
 - `metric`, `metricInv` : the TeVeS physical metric and its inverse in the aether frame.
 - `metric_symm`, `metric_lorentzian`, `metric_spatial` : symmetry, preserved Lorentzian
   signature, and spatial conformal rescaling.
@@ -59,6 +62,12 @@ namespace TeVeS
 ## A. The TeVeS physical metric and its inverse
 
 -/
+
+/-- Data determining the TeVeS disformal physical (Jordan) metric in an aether rest frame
+for scalar field value `φ`. -/
+structure TeVeSMetric where
+  /-- Scalar field value `φ`. -/
+  φ : ℝ
 
 /-- The TeVeS physical (Jordan) metric in a frame where the unit timelike vector is `∂_t` and
 the Einstein metric is `η`:

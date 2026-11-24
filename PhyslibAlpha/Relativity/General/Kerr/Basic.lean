@@ -6,7 +6,8 @@ Authors: Alex Vergara Gil
 module
 
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import PhyslibAlpha.Relativity.General.Einstein
+public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
+public import PhyslibAlpha.Relativity.Metrics.Basic
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Ring
@@ -29,7 +30,8 @@ reduction to Schwarzschild at `a = 0`.
 
 ## ii. Key results
 
-- `sigma`, `delta`, `bigB` : Boyer–Lindquist auxiliary functions `Σ`, `Δ`, and `B`.
+- `KerrSpacetime`, `sigma`, `delta`, `bigB` : Kerr spacetime structure and Boyer–Lindquist
+  auxiliary functions `Σ`, `Δ`, and `B`.
 - `kerrMetric`, `kerrMetricInv`, `kerrMetricTensor` : Kerr metric and inverse `MetricTensor 4`.
 - `horizonPlus`, `horizonMinus`, `delta_horizonPlus`, `kerr_extremal` : event horizons `r±`.
 - `ergosphereRadius`, `kerrMetric_00_ergosphere` : stationary-limit surface `g₀₀ = 0`.
@@ -60,6 +62,13 @@ namespace Kerr
 ## A. Boyer–Lindquist metric functions and inverse
 
 -/
+
+/-- Rotating Boyer–Lindquist Kerr black hole spacetime parameterized by mass `M` and spin `a`. -/
+structure KerrSpacetime where
+  /-- Geometric mass parameter `M` (`G = c = 1`). -/
+  M : ℝ
+  /-- Spin parameter `a = J / M`. -/
+  a : ℝ
 
 /-- Boyer–Lindquist radial-polar function `Σ = r² + a² cos² θ`. -/
 noncomputable def sigma (a r θ : ℝ) : ℝ := r ^ 2 + a ^ 2 * Real.cos θ ^ 2

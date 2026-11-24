@@ -1,0 +1,150 @@
+/-
+Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Vergara Gil
+-/
+module
+
+public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.CoordinateCurvature
+import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Ring
+
+/-!
+
+# Schwarzschild curvature through the coordinate pipeline
+
+Vacuum Schwarzschild Riemann, Ricci, scalar, and Einstein tensors obtained from the coordinate
+differential pipeline by specializing Schwarzschild–de Sitter to `Λ = 0`.
+
+## i. Overview
+
+Specializing `sdsMetric M 0` and `sdsMetricInv M 0` to `Λ = 0` yields the Schwarzschild metric
+field `schwarzschildG` and inverse `schwarzschildGinv`, recovering all six independent Riemann
+components, Ricci flatness `Ric = 0`, vanishing scalar curvature `S = 0`, and vacuum Einstein
+equations `G = 0`.
+
+## ii. Key results
+
+- `schwarzschildG`, `schwarzschildGinv` : Schwarzschild coordinate metric and inverse fields.
+- `sdsMetric_zero_lambda`, `sdsMetricInv_zero_lambda` : reduction from `sdsMetric` at `Λ = 0`.
+- `riemann_schwarzschild_components` : all six independent Schwarzschild Riemann components.
+- `ricciOf_schwarzschild`, `scalarOf_schwarzschild`, `einsteinOf_schwarzschild` : pipeline
+  vacuum solution theorems.
+
+## iii. Table of contents
+
+- A. Schwarzschild pipeline specialization at `Λ = 0`
+
+## iv. References
+
+* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
+
+-/
+
+@[expose] public section
+
+namespace GeneralRelativity
+
+namespace Schwarzschild
+
+open GeneralRelativity.Pipeline GeneralRelativity.SchwarzschildDeSitter
+
+/-!
+
+## A. Schwarzschild pipeline specialization at `Λ = 0`
+
+-/
+
+/-- The Schwarzschild metric as a field of coordinate components. -/
+noncomputable def schwarzschildG (M : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
+  fun x => Schwarzschild.schwarzschildMetric M x
+
+/-- The inverse Schwarzschild metric as a field of coordinate components. -/
+noncomputable def schwarzschildGinv (M : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
+  fun x i j =>
+    if i = j then
+      if i = 0 then -(Schwarzschild.schwarzschildF M (x 1))⁻¹
+      else if i = 1 then Schwarzschild.schwarzschildF M (x 1)
+      else if i = 2 then (x 1 ^ 2)⁻¹
+      else (x 1 ^ 2 * Real.sin (x 2) ^ 2)⁻¹
+    else 0
+
+/-- At `Λ = 0`, `sdsMetric` reduces to `schwarzschildG`. -/
+lemma sdsMetric_zero_lambda (M : ℝ) : sdsMetric M 0 = schwarzschildG M := by
+  funext x i j
+  simp [sdsMetric, schwarzschildG, Schwarzschild.schwarzschildMetric, sdsF]
+
+/-- At `Λ = 0`, `sdsMetricInv` reduces to `schwarzschildGinv`. -/
+lemma sdsMetricInv_zero_lambda (M : ℝ) : sdsMetricInv M 0 = schwarzschildGinv M := by
+  funext x i j
+  simp [sdsMetricInv, schwarzschildGinv, sdsF, Schwarzschild.schwarzschildF]
+
+/-- All six independent Schwarzschild Riemann components directly from the metric pipeline,
+specialised from `riemann_sds_components` at `Λ = 0`. -/
+lemma riemann_schwarzschild_components (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    (riemann (schwarzschildG M) (schwarzschildGinv M) x 0 1 0 1
+        = 2 * M / ((x 1) ^ 3 * Schwarzschild.schwarzschildF M (x 1)))
+      ∧ (riemann (schwarzschildG M) (schwarzschildGinv M) x 0 2 0 2 = -M / (x 1))
+      ∧ (riemann (schwarzschildG M) (schwarzschildGinv M) x 0 3 0 3
+          = -(M / (x 1)) * Real.sin (x 2) ^ 2)
+      ∧ (riemann (schwarzschildG M) (schwarzschildGinv M) x 1 2 1 2 = -M / (x 1))
+      ∧ (riemann (schwarzschildG M) (schwarzschildGinv M) x 1 3 1 3
+          = -(M / (x 1)) * Real.sin (x 2) ^ 2)
+      ∧ (riemann (schwarzschildG M) (schwarzschildGinv M) x 2 3 2 3
+          = (2 * M / (x 1)) * Real.sin (x 2) ^ 2) := by
+  have hf0 : sdsF M 0 (x 1) ≠ 0 := by
+    rwa [sdsF_zero_lambda]
+  obtain ⟨c1, c2, c3, c4, c5, c6⟩ := riemann_sds_components M 0 x hr hf0 hsin
+  rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at c1 c2 c3 c4 c5 c6
+  rw [sdsF_zero_lambda] at c1
+  refine ⟨?_, ?_, ?_, ?_, ?_, ?_⟩
+  · rw [c1]
+    field_simp [hr, hf]
+    ring
+  · rw [c2]
+    ring
+  · simpa using c3
+  · rw [c4]
+    ring
+  · simpa using c5
+  · simpa using c6
+
+/-- Metric-level Ricci flatness for Schwarzschild: `Ric = 0` directly from `schwarzschildG` and
+`schwarzschildGinv`. -/
+lemma ricciOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (σ ν : Fin 4) :
+    ricciOf (schwarzschildG M) (schwarzschildGinv M) x σ ν = 0 := by
+  have hf0 : sdsF M 0 (x 1) ≠ 0 := by
+    rwa [sdsF_zero_lambda]
+  have h := ricciOf_sds M 0 x hr hf0 hsin σ ν
+  rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at h
+  simpa using h
+
+/-- Metric-level vanishing scalar curvature for Schwarzschild: `S = 0`. -/
+lemma scalarOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0) :
+    scalarOf (schwarzschildG M) (schwarzschildGinv M) x = 0 := by
+  have hf0 : sdsF M 0 (x 1) ≠ 0 := by
+    rwa [sdsF_zero_lambda]
+  have h := scalarOf_sds M 0 x hr hf0 hsin
+  rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at h
+  simpa using h
+
+/-- Metric-level vacuum Einstein equation for Schwarzschild: `G_{ij} = 0` directly from
+`g = diag(-f, 1/f, r², r² sin²θ)`. -/
+lemma einsteinOf_schwarzschild (M : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
+    (hf : Schwarzschild.schwarzschildF M (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (i j : Fin 4) :
+    einsteinOf (schwarzschildG M) (schwarzschildGinv M) x i j = 0 := by
+  have hf0 : sdsF M 0 (x 1) ≠ 0 := by
+    rwa [sdsF_zero_lambda]
+  have h := einsteinOf_sds M 0 x hr hf0 hsin i j
+  rw [sdsMetric_zero_lambda, sdsMetricInv_zero_lambda] at h
+  simpa using h
+
+end Schwarzschild
+
+end GeneralRelativity

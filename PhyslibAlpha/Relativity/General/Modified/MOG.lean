@@ -30,6 +30,7 @@ asymptotically at large radius when `μ > 0`.
 
 ## ii. Key results
 
+- `MOGTheory` : MOG theory parameterized by enhancement strength `α` and Yukawa mass scale `μ`.
 - `factor`, `potential` : MOG enhancement factor and gravitational potential.
 - `factor_zero`, `factor_alpha_zero`, `factor_mu_zero` : Newtonian reductions at `r = 0`,
   `α = 0`, and `μ = 0`.
@@ -63,6 +64,14 @@ namespace MOG
 ## A. The MOG enhancement factor and potential
 
 -/
+
+/-- Moffat's Modified Gravity (MOG / STVG) theory parameterized by coupling strength `α` and
+inverse Yukawa range `μ`. -/
+structure MOGTheory where
+  /-- Dimensionless gravitational enhancement parameter `α`. -/
+  α : ℝ
+  /-- Inverse Yukawa range parameter `μ`. -/
+  μ : ℝ
 
 /-- MOG enhancement factor `1 + α (1 - e^{-μ r})`. -/
 noncomputable def factor (α μ r : ℝ) : ℝ := 1 + α * (1 - Real.exp (-(μ * r)))

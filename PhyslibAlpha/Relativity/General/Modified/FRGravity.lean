@@ -7,7 +7,7 @@ module
 
 public import Mathlib.Order.Filter.AtTopBot.Defs
 public import Mathlib.Topology.MetricSpace.Pseudo.Defs
-public import PhyslibAlpha.Relativity.General.Einstein
+public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.NormNum
@@ -40,6 +40,8 @@ This module formalises:
 
 ## ii. Key results
 
+- `FRTheory` : `f(R)` gravity model specified by its Lagrangian function `f` and derivative
+  `df`.
 - `fieldEqn`, `linear_is_einstein` : algebraic `f(R)` equations and recovery of `G + Λ g`.
 - `trace_fieldEqn`, `trace_fieldEqn_four` : trace equation showing the propagating scalar mode.
 - `starobinskyPotential`, `phi_inverse`, `potential_eq`, `mass_sq`, `not_gr` : Starobinsky
@@ -74,6 +76,14 @@ namespace FRGravity
 ## A. Field equations and trace identity
 
 -/
+
+/-- A metric `f(R)` gravity theory specified by the scalar-curvature Lagrangian `f(R)` and its
+first derivative `df(R) = f'(R)`. -/
+structure FRTheory where
+  /-- Scalar-curvature Lagrangian function `f(R)`. -/
+  f : ℝ → ℝ
+  /-- First derivative `f'(R)` entering the field equations. -/
+  df : ℝ → ℝ
 
 /-- The algebraic part `f'(S) Ric_{ij} - (1/2) f(S) g_{ij}` of the metric-formalism `f(R)`
 field equations (exact when `f'` is constant so `-∇_i ∇_j f' + g_{ij} □f'` vanishes). -/

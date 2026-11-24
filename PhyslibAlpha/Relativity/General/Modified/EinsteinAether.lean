@@ -5,7 +5,7 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.Einstein
+public import PhyslibAlpha.Relativity.Metrics.Minkowski
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
@@ -114,7 +114,7 @@ def minkowskiRestAether : Fin 4 → ℝ := ![1, 0, 0, 0]
 /-- The Minkowski rest-frame aether `u = (1, 0, 0, 0)` is unit-timelike with respect to `eta4`. -/
 lemma minkowskiRestAether_unitTimelike : IsUnitTimelike eta4 minkowskiRestAether := by
   unfold IsUnitTimelike minkowskiRestAether
-  simp [Fin.sum_univ_four, eta4]
+  simp [Fin.sum_univ_four]
 
 /-- First-order variation of the unit-timelike constraint `g_{ab} u^a u^b = -1` around flat
 Minkowski spacetime (`g = eta4 + h`, `u = minkowskiRestAether + δu`):
@@ -125,7 +125,7 @@ lemma linUnitTimelike_time_zero (h : Tensor2 4) (δu : Fin 4 → ℝ)
       (h a b * minkowskiRestAether a * minkowskiRestAether b
         + 2 * eta4 a b * minkowskiRestAether a * δu b)) = 0)
     (hh00 : h 0 0 = 0) : δu 0 = 0 := by
-  simp only [minkowskiRestAether, Fin.sum_univ_four, eta4, Matrix.cons_val_zero,
+  simp only [minkowskiRestAether, Fin.sum_univ_four, eta4_apply, Matrix.cons_val_zero,
     Matrix.cons_val_one, Matrix.cons_val_two, Matrix.cons_val_three, hh00] at hlin
   norm_num at hlin
   linarith

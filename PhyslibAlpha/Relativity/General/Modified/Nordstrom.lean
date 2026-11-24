@@ -5,9 +5,10 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import PhyslibAlpha.Relativity.General.Linearized
-public import PhyslibAlpha.Relativity.General.Minkowski
-public import PhyslibAlpha.Relativity.General.Pipeline
+public import PhyslibAlpha.Relativity.General.Linearized.TraceReversed
+public import PhyslibAlpha.Relativity.Metrics.ConformalMetric
+public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
+public import PhyslibAlpha.Relativity.Metrics.Minkowski
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -35,6 +36,8 @@ the Einstein–Fokker equation `S = 24 π T` and Nordström's nonlinear scalar w
 
 ## ii. Key results
 
+- `NordstromSpacetime` : conformally flat Nordström spacetime bundled by its scalar field
+  `φ`.
 - `nordstromMetric`, `nordstromMetricInv`, `nordstromMetricTensor` : conformally flat Nordström
   spacetime metric and `MetricTensor 4`.
 - `light_deflection_zero` : null cones coincide with Minkowski space (zero light bending).
@@ -76,6 +79,12 @@ open Pipeline Linearized
 ## A. Conformally flat Nordström metric and zero light bending
 
 -/
+
+/-- Conformally flat Nordström scalar-gravity spacetime parameterized by its conformal
+factor `φ : (Fin 4 → ℝ) → ℝ`. -/
+structure NordstromSpacetime where
+  /-- Scalar conformal factor `φ(x)` in `g = φ² η`. -/
+  φ : (Fin 4 → ℝ) → ℝ
 
 /-- Conformally flat Nordström metric `g_{ij}(x) = φ(x)² η_{ij}` with Minkowski signature
 `(-, +, +, +)`. -/
@@ -127,12 +136,13 @@ private lemma hasDerivAt_update_slice (g : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
     (hg : DifferentiableAt ℝ g x) :
     HasDerivAt (fun s => g (Function.update x μ s)) (pd μ g x) (x μ) := by
   have hu : (fun s : ℝ => Function.update x μ s)
-      = fun s => x + (s - x μ) • Pi.single μ (1 : ℝ) := by
+      = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin 4 → ℝ) := by
     ext s k; by_cases hk : k = μ <;> simp [Function.update, hk]
-  have hdu : HasDerivAt (fun s : ℝ => Function.update x μ s) (Pi.single μ (1 : ℝ)) (x μ) := by
+  have hdu : HasDerivAt (fun s : ℝ => Function.update x μ s)
+      (Pi.single μ 1 : Fin 4 → ℝ) (x μ) := by
     rw [hu]
     simpa using (((hasDerivAt_id (x μ)).sub_const (x μ)).smul_const
-      (Pi.single μ (1 : ℝ))).const_add x
+      (Pi.single μ 1 : Fin 4 → ℝ)).const_add x
   have hf' : HasFDerivAt g (fderiv ℝ g x) (Function.update x μ (x μ)) := by
     simpa [Function.update_eq_self] using hg.hasFDerivAt
   exact (hf'.comp_hasDerivAt (x μ) hdu).differentiableAt.hasDerivAt
@@ -158,7 +168,7 @@ lemma christoffel_nordstrom_eq (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ
   simp only [christoffel, pd_conformal_eta φ x hd, nordstromMetricInv, conformalGinv,
     nordstromG, Fin.sum_univ_four]
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp only [eta4] <;> norm_num <;>
+    simp only [eta4_apply] <;> norm_num <;>
     field_simp [hφ]
 
 /-!
@@ -253,7 +263,7 @@ private lemma ricciOf_nordstrom_diag (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
   simp only [pd_nordstromG φ x hφ hc2]
   simp only [nordstromG]
   fin_cases s
-  all_goals simp only [eta4]; norm_num
+  all_goals simp only [eta4_apply]; norm_num
   all_goals field_simp [hφ]
   all_goals ring
 
@@ -263,9 +273,9 @@ lemma scalarOf_nordstrom (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ
     (hc2 : ContDiffAt ℝ 2 φ x) :
     scalarOf (nordstromMetric φ) (nordstromMetricInv φ) x
       = -6 * boxEta φ x / φ x ^ 3 := by
-  simp only [scalarOf, Fin.sum_univ_four, nordstromMetricInv, conformalGinv, eta4]
+  simp only [scalarOf, Fin.sum_univ_four, nordstromMetricInv, conformalGinv, eta4_apply]
   norm_num
-  simp only [ricciOf_nordstrom_diag φ x hφ hc2, boxEta, Fin.sum_univ_four, eta4]
+  simp only [ricciOf_nordstrom_diag φ x hφ hc2, boxEta, Fin.sum_univ_four, eta4_apply]
   norm_num
   field_simp [hφ]
   ring

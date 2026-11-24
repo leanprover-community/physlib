@@ -34,6 +34,7 @@ simple (`x / (1 + x)`) and standard (`x / √(1 + x²)`) interpolating functions
 
 ## ii. Key results
 
+- `MONDTheory` : MOND theory parameterized by its acceleration scale `a₀`.
 - `newtonAccel`, `deepAccel`, `Relation` : Newtonian point-mass acceleration, deep-MOND
   acceleration, and the MOND interpolating relation.
 - `newtonian_limit` : where `μ(a / a₀) = 1`, `a = g_N`.
@@ -75,6 +76,12 @@ namespace MOND
 ## A. The MOND relation and flat rotation curves
 
 -/
+
+/-- Milgrom's Modified Newtonian Dynamics (MOND) theory parameterized by the universal
+acceleration scale `a₀`. -/
+structure MONDTheory where
+  /-- Critical transition acceleration scale `a₀`. -/
+  a0 : ℝ
 
 /-- Newtonian gravitational acceleration `G M / r²` of a point mass `M`. -/
 noncomputable def newtonAccel (G M r : ℝ) : ℝ := G * M / r ^ 2

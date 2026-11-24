@@ -39,6 +39,7 @@ This module formalises both halves of the mechanism:
 
 ## ii. Key results
 
+- `ChameleonModel` : chameleon scalar model parameterized by density–mass coupling `c`.
 - `chameleonMass`, `range`, `yukawaRatio` : effective mass, Compton range, and Yukawa factor.
 - `chameleonMass_mono`, `chameleon_range_shrinks`, `yukawaRatio_lt_half` : monotonicity and
   suppression beyond one Compton wavelength.
@@ -73,6 +74,12 @@ namespace ChameleonScreening
 ## A. Environment-dependent mass, range, and Yukawa suppression
 
 -/
+
+/-- Chameleon scalar screening model parameterized by its linear ambient-density mass coupling
+`c ≥ 0` in `m² = c ρ`. -/
+structure ChameleonModel where
+  /-- Ambient density-to-mass-squared coupling constant `c`. -/
+  c : ℝ
 
 /-- Scalar mass-squared proportional to ambient density: `m² = ρ c`. -/
 noncomputable def chameleonMassSq (ρ c : ℝ) : ℝ := ρ * c

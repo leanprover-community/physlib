@@ -5,9 +5,10 @@ Authors: Alex Vergara Gil
 -/
 module
 
-public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import PhyslibAlpha.Relativity.General.Einstein
+public import Mathlib.Algebra.BigOperators.Fin
+public import PhyslibAlpha.Relativity.Metrics.Basic
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Ring
 
 /-!
@@ -31,7 +32,8 @@ corollary `S = 0 → T = 0`.
 
 ## ii. Key results
 
-- `Conn`, `torsion`, `torsion_antisymm` : general affine connections and torsion tensor.
+- `Conn`, `EinsteinCartanData`, `torsion`, `torsion_antisymm` : affine connections, bundled
+  Einstein–Cartan geometry, and torsion tensor.
 - `MetricCompatible`, `leviCivitaOfDeriv`, `contorsion` : metric compatibility and contorsion `K`.
 - `contorsion_torsion`, `leviCivita_add_contorsion_compatible`, `connection_unique` :
   existence and uniqueness `Γ = Γ_LC + K` for arbitrary metric signature and dimension `n`.
@@ -73,6 +75,14 @@ namespace EinsteinCartan
 
 /-- General `(1,2)` affine connection coefficients `Γ^k_{ij}` in `n` dimensions. -/
 abbrev Conn (n : ℕ) : Type := Fin n → Fin n → Fin n → ℝ
+
+/-- Riemann–Cartan spacetime data in `n` dimensions pairing a nondegenerate metric with a
+(generally torsionful) affine connection. -/
+structure EinsteinCartanData (n : ℕ) where
+  /-- Nondegenerate spacetime metric tensor. -/
+  M : MetricTensor n
+  /-- General `(1,2)` affine connection coefficients `Γ^k_{ij}`. -/
+  conn : Conn n
 
 /-- Cartan torsion tensor `T^k_{ij} = Γ^k_{ij} - Γ^k_{ji}`. -/
 def torsion {n : ℕ} (Γ : Conn n) : Conn n :=

@@ -38,6 +38,7 @@ exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ couplin
 
 ## ii. Key results
 
+- `BransDickeTheory` : Brans–Dicke scalar–tensor theory parameterized by `ω`.
 - `gamma` : Brans–Dicke PPN parameter `(1 + ω) / (2 + ω)`.
 - `gamma_bounds`, `cassini_deviation`, `gamma_tendsto_atTop` : bounds, Cassini constraint, and
   GR limit as `ω → ∞`.
@@ -68,6 +69,11 @@ namespace BransDicke
 ## A. The PPN parameter and the general-relativity limit
 
 -/
+
+/-- Brans–Dicke scalar–tensor gravity parameterized by its dimensionless Dicke coupling `ω`. -/
+structure BransDickeTheory where
+  /-- Dimensionless Brans–Dicke scalar coupling parameter `ω`. -/
+  ω : ℝ
 
 /-- The Brans–Dicke PPN parameter `γ = (1 + ω) / (2 + ω)`. -/
 noncomputable def gamma (ω : ℝ) : ℝ := (1 + ω) / (2 + ω)

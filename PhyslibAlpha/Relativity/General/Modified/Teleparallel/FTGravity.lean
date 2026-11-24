@@ -1,0 +1,93 @@
+/-
+Copyright (c) 2026 Alex Vergara Gil. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Vergara Gil
+-/
+module
+
+public import Mathlib.Basic.Real.Basic
+import Mathlib.Tactic.Ring
+
+/-!
+
+# Modified `f(T)` teleparallel Friedmann gravity
+
+Modified first Friedmann equation for `f(T) = T + F(T)` teleparallel cosmology and reduction to
+General Relativity (TEGR) at `F = 0`.
+
+## i. Overview
+
+Extending the TEGR torsion Lagrangian `T` to a nonlinear function `f(T) = T + F(T)` replaces the
+Einstein–Hilbert Friedmann left-hand side `3 H²` by `3 H² + ½ F(6 H²) - 6 H² F'(6 H²)`.
+
+## ii. Key results
+
+- `FTTheory` : `f(T) = T + F(T)` teleparallel theory specified by `F` and `dF`.
+- `fTFriedmannLHS`, `fTFriedmannLHS_tegr`, `fTFriedmannLHS_quadratic` : modified `f(T)` Friedmann
+  left-hand side and TEGR recovery.
+
+## iii. Table of contents
+
+- A. `f(T)` modified Friedmann cosmology
+
+## iv. References
+
+* Rafael Ferraro and Franco Fiorini, *Modified Teleparallel Gravity: Inflation without Inflaton*,
+  *Physical Review D* (2007). [ref: FerraroFiorini2007]
+* Gabriel R. Bengochea and Rafael Ferraro, *Dark Torsion as the Cosmic Speed-Up*, *Physical Review
+  D* (2009) (https://arxiv.org/abs/0812.1205). [ref: BengocheaFerraro2009]
+* Eric V. Linder, *Einstein's Other Gravity and the Acceleration of the Universe*, *Physical
+  Review D* (2010) (https://arxiv.org/abs/1005.3039). [ref: Linder2010]
+* Martin Krššák and Emmanuel N. Saridakis, *The Covariant Formulation of $f(T)$ Gravity*,
+  *Classical and Quantum Gravity* (2016) (https://arxiv.org/abs/1510.08432). [ref:
+  KrssakSaridakis2016]
+
+-/
+
+@[expose] public section
+
+namespace GeneralRelativity
+
+namespace Modified
+
+namespace Teleparallel
+
+/-!
+
+## A. `f(T)` modified Friedmann cosmology
+
+-/
+
+/-- Extended teleparallel gravity model `f(T) = T + F(T)` parameterized by deviation `F` and its
+first derivative `dF = F'`. -/
+structure FTTheory where
+  /-- Nonlinear torsion deviation function `F(T)`. -/
+  F : ℝ → ℝ
+  /-- First derivative `F'(T)`. -/
+  dF : ℝ → ℝ
+
+/-- Modified first Friedmann equation left-hand side for an `f(T) = T + F(T)` teleparallel gravity
+action evaluated at `T = 6 H²`: `3 H² + ½ F(6 H²) - 6 H² F'(6 H²)`. -/
+noncomputable def fTFriedmannLHS (H : ℝ) (F dF : ℝ → ℝ) : ℝ :=
+  3 * H ^ 2 + (1 / 2) * F (6 * H ^ 2) - 6 * H ^ 2 * dF (6 * H ^ 2)
+
+/-- In the Teleparallel Equivalent of General Relativity (`F = 0`, `dF = 0`), the `f(T)` Friedmann
+equation reduces identically to the standard General Relativity Friedmann left-hand side `3 H²`. -/
+lemma fTFriedmannLHS_tegr (H : ℝ) :
+    fTFriedmannLHS H (fun _ => 0) (fun _ => 0) = 3 * H ^ 2 := by
+  unfold fTFriedmannLHS
+  ring
+
+/-- For a quadratic teleparallel correction `F(T) = α T²` (`dF(T) = 2 α T`), the modified Friedmann
+left-hand side evaluates to `3 H² - 54 α H⁴`. -/
+lemma fTFriedmannLHS_quadratic (H α : ℝ) :
+    fTFriedmannLHS H (fun T => α * T ^ 2) (fun T => 2 * α * T) =
+      3 * H ^ 2 - 54 * α * H ^ 4 := by
+  unfold fTFriedmannLHS
+  ring
+
+end Teleparallel
+
+end Modified
+
+end GeneralRelativity

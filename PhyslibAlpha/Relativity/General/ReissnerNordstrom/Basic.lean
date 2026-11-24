@@ -7,8 +7,8 @@ module
 
 public import Mathlib.Analysis.SpecialFunctions.Sqrt
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
-public import PhyslibAlpha.Relativity.General.Schwarzschild.Metric
-public import PhyslibAlpha.Relativity.General.StaticSpherical
+public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -43,7 +43,8 @@ Feeding `rnMetric M Q` through `GeneralRelativity.StaticSpherical` and
 
 ## ii. Key results
 
-- `rnF`, `rnMetric`, `rnMetricInv` : Reissner–Nordström lapse function and coordinate metric.
+- `ReissnerNordstromSpacetime`, `rnF`, `rnMetric`, `rnMetricInv` : Reissner–Nordström
+  spacetime structure, lapse function, and coordinate metric.
 - `maxwellF`, `maxwellStressEnergy` : radial electric field strength and Maxwell stress-energy.
 - `ricciOf_rn`, `scalarOf_rn`, `maxwellStressEnergy_rn_trace_zero`, `einsteinOf_rn_eq_maxwell` :
   verified Einstein–Maxwell solution through `GeneralRelativity.Pipeline`.
@@ -76,6 +77,14 @@ open GeneralRelativity.Pipeline GeneralRelativity.StaticSpherical
 ## A. Metric, derivatives, and electrovacuum Maxwell field
 
 -/
+
+/-- Reissner–Nordström charged black hole spacetime parameterized by mass `M` and electric
+charge `Q`. -/
+structure ReissnerNordstromSpacetime where
+  /-- Geometric mass parameter `M` (`G = c = 1`). -/
+  M : ℝ
+  /-- Electric charge parameter `Q`. -/
+  Q : ℝ
 
 /-- The Reissner–Nordström radial lapse function `f(r) = 1 - 2 M / r + Q² / r²`. -/
 noncomputable def rnF (M Q r : ℝ) : ℝ := 1 - 2 * M / r + Q ^ 2 / r ^ 2

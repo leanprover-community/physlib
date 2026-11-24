@@ -6,7 +6,7 @@ Authors: Alex Vergara Gil
 module
 
 public import PhyslibAlpha.Relativity.General.Kerr.Basic
-public import PhyslibAlpha.Relativity.General.Pipeline
+public import PhyslibAlpha.Relativity.Metrics.CoordinateMetric
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
