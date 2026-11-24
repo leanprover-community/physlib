@@ -9,7 +9,7 @@ module
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 
 /-!
-# Circular Orbit Vis Viva
+# Vis viva for circular orbits and the escape speed
 The vis-viva equation relates the speed of an orbiting body to its position
 and the mass of the central body.
 
@@ -17,6 +17,10 @@ and the mass of the central body.
 
 The circular-orbit case of the vis-viva equation gives the speed from the radius and the
 gravitational parameter. It also relates the speed to the positive angular rate.
+
+Two mass conventions appear. The circular speed, the specific orbital energy and the escape speed
+use the gravitational parameter `G M` of the central body alone, the limit of a test body with
+`m ≪ M`. The period of the two-body orbit and the reflex motion use the total mass `M + m`.
 
 For two bodies of masses `M` and `m` on a circular orbit of separation `r`, the central body also
 moves, on a circle about the barycentre. Its reflex speed, written with the orbital period from
