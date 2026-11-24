@@ -1,0 +1,61 @@
+/-
+Copyright (c) 2026 Daniel Leonforte. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daniel Leonforte
+-/
+module
+
+public import Mathlib.Analysis.InnerProductSpace.Basic
+public import Mathlib.Tactic.Variable
+/-!
+
+# The Hilbert space of a quantum system
+
+## i. Overview
+
+A quantum system is specified first of all by its Hilbert space of states: a complex Hilbert
+space, that is a normed additive commutative group with a complex inner product, complete for
+the induced norm.
+
+`QuantumHilbertSpace HS` is a `variable_alias` for this collection of instances on a type `HS`.
+It carries no data and is not a class. Its purpose is to state the assumptions of a quantum
+system in one place: the command
+```
+variable? (HS : Type*) [QuantumHilbertSpace HS] =>
+  (HS : Type*) [NormedAddCommGroup HS] [InnerProductSpace ℂ HS] [CompleteSpace HS]
+```
+introduces a Hilbert space of states together with its instances. A concrete system is given by
+its type, for example `QubitSpace`, on which these instances are found directly.
+
+## ii. Key results
+
+- `QuantumHilbertSpace` : the instances making a type a complex Hilbert space, the space of
+  states of a quantum system.
+
+## iii. Table of contents
+
+- A. The variable alias `QuantumHilbertSpace`
+
+## iv. References
+
+* None.
+
+-/
+
+@[expose] public section
+
+namespace QuantumMechanics
+
+/-!
+
+## A. The variable alias `QuantumHilbertSpace`
+
+-/
+
+/-- The Hilbert space of a quantum system: the instances making `HS` a complex Hilbert space.
+  This is a `variable_alias`, to be used with `variable?`. -/
+@[variable_alias]
+structure QuantumHilbertSpace (HS : Type*) [NormedAddCommGroup HS] [InnerProductSpace ℂ HS]
+    [CompleteSpace HS]
+
+end QuantumMechanics
