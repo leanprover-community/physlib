@@ -51,6 +51,9 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
   `f : Space d → E` the derivative along the `i`ᵗʰ coordinate direction of its Fourier integral
   is the Fourier integral of the function `x ↦ (b * I * x i) • f x`, and similarly for functions
   `WaveVectorSpace d → E` and the inverse Fourier integral.
+- `fourierIntegralInv_fourierIntegral_eq` / `fourierIntegral_fourierIntegralInv_eq` :
+  for suitably nice functions `f : Space d → E` and `g : WaveVectorSpace d → E`,
+  the identities `𝓕⁻ (𝓕 f) = f` and `𝓕 (𝓕⁻ g) = g`, respectively.
 
 ## iii. Table of contents
 
@@ -64,6 +67,7 @@ for $(a,b) = (1,-1)$). If a common convention is missing it can be added below i
     - A.3.1. Fourier multipliers
     - A.3.2. Fréchet derivatives
     - A.3.3. Partial derivatives
+  - A.4. Inversion
 - B. Fourier instances
   - B.1. `(a, b) = (0, 1)` (default)
   - B.2. `(a, b) = (1, -1)`
