@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Tactic.Variable
+public import Physlib.Meta.TODO.Basic
 /-!
 
 # The Hilbert space of a quantum system
@@ -57,5 +58,14 @@ namespace QuantumMechanics
 @[variable_alias]
 structure QuantumHilbertSpace (HS : Type*) [NormedAddCommGroup HS] [InnerProductSpace ℂ HS]
     [CompleteSpace HS]
+
+TODO "Define kets and bras of a Hilbert space of states in a namespace `QuantumHilbertSpace`,
+  e.g. `QuantumHilbertSpace.Ket` and `QuantumHilbertSpace.Bra`, with bra-ket notation."
+
+TODO "Associate to a Hilbert space of states the `ProbabilisticTheory` of its bounded operators,
+  giving states, effects and channels."
+
+TODO "Restate `QuantumSystem` as a Hilbert space of states, given via `QuantumHilbertSpace`,
+  together with a choice of Hamiltonian."
 
 end QuantumMechanics
