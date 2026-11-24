@@ -20,6 +20,7 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Fourier.Basic
   - A.1. As continuous linear maps
   - A.2. Basic properties
   - A.3. Inversion
+  - A.4. As a continuous linear equivalence
 
 ## iv. References
 
@@ -147,6 +148,26 @@ lemma fourierTransformCLM_fourierTransformInvCLM_eq [CompleteSpace E] :
   ext
   simp [fourierTransformCLM_apply, coe_fourierTransformInvCLM, g.continuous, g.integrable,
     fourierIntegral_fourierIntegralInv_eq, integrable_fourierIntegralInv_coe a b 𝕜]
+
+/-!
+### A.4. As a continuous linear equivalence
+-/
+
+section CLE
+
+variable [CompleteSpace E]
+
+/-- The Fourier transform between Schwartz spaces as a continuous linear equivalence. -/
+def fourierTransformCLE : 𝓢(Space d, E) ≃L[𝕜] 𝓢(WaveVectorSpace d, E) :=
+  .equivOfInverse'
+    (fourierTransformCLM a b 𝕜) (fourierTransformInvCLM a b 𝕜) (by ext; simp) (by ext; simp)
+
+lemma fourierTransformCLE_apply : fourierTransformCLE a b 𝕜 f = fourierTransformCLM a b 𝕜 f := rfl
+
+lemma fourierTransformCLE_symm_apply :
+    (fourierTransformCLE a b 𝕜).symm g = fourierTransformInvCLM a b 𝕜 g := rfl
+
+end CLE
 
 end Schwartz
 
