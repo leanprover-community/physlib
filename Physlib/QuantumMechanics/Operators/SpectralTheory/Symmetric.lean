@@ -20,9 +20,13 @@ to discuss its upper/lower bounds. To facilitate this, we define `LinearPMap.rea
 as the projection of `LinearPMap.numericalRange` onto the real axis. For symmetric operators this
 simply reinterprets the numerical range as a subset of ℝ.
 
-A Hamiltonian must be self-adjoint for the time evolution it generates to be unitary. It is often
-first defined on a convenient dense domain, where it is only symmetric. Section D gives criteria
-for such an operator to be essentially self-adjoint, that is, to have a self-adjoint closure.
+A self-adjoint operator generates a one-parameter group of unitary operators (Stone's theorem).
+Operators of quantum mechanics are often first defined on a convenient dense domain, where they
+are only symmetric, and one then asks whether they are essentially self-adjoint, that is, whether
+their closure is self-adjoint. A sufficient criterion is that the eigenvectors of the operator
+lying in its domain span a dense subspace. For example, the eigenfunctions of the Hamiltonian of
+the quantum harmonic oscillator span a dense subspace of `L²(ℝ)` (proved in Physlib assuming
+Plancherel's theorem), so this Hamiltonian, defined on their span, is essentially self-adjoint.
 
 ## ii. Key results
 
@@ -264,8 +268,7 @@ lemma isEssentiallySelfAdjoint_of_defectNumber_eq_zero
 
 /-- A symmetric operator `T` is essentially self-adjoint if a family of vectors `v j` of its
   domain, with `T (v j) = c j • v j`, spans a dense subspace. The `v j` need not be orthonormal,
-  and some of them may be zero. In quantum mechanics this applies to a Hamiltonian whose domain
-  contains a complete set of its eigenstates, as for the harmonic oscillator. -/
+  and some of them may be zero. -/
 lemma isEssentiallySelfAdjoint_of_dense_span_eigenvectors {ι : Type*} (v : ι → T.domain)
     {c : ι → ℂ} (hv : ∀ j, T (v j) = c j • (v j : H))
     (hspan : Dense (Submodule.span ℂ (Set.range fun j ↦ (v j : H)) : Set H)) :
