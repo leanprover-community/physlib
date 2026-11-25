@@ -47,7 +47,7 @@ variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteS
 ## A. Definition of ESA
 -/
 
-/-- A LinearPMap is essentially self-adjoint iff its closure is self-adjoint. -/
+/-- An operator is essentially self-adjoint if its closure is self-adjoint. -/
 def IsEssentiallySelfAdjoint (T : H →ₗ.[ℂ] H) : Prop := IsSelfAdjoint T.closure
 
 variable {T : H →ₗ.[ℂ] H}
@@ -59,6 +59,8 @@ lemma isEssentiallySelfAdjoint_def :
 ## B. ESA from symmetric or self-adjoint
 -/
 
+/-- A densely-defined symmetric operator is essentially self-adjoint *if and only if*
+its adjoint and closure have the same domain. -/
 lemma IsSymmetric.isEssentiallySelfAdjoint_iff (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
     T.IsEssentiallySelfAdjoint ↔ T†.domain = T.closure.domain := by
   rw [isEssentiallySelfAdjoint_def, isSelfAdjoint_def,
@@ -67,6 +69,7 @@ lemma IsSymmetric.isEssentiallySelfAdjoint_iff (h : T.IsSymmetric) (h' : T.HasDe
   · congr
   · exact (eq_of_le_of_domain_eq (h.closure_le_adjoint h') h''.symm).symm
 
+/-- A self-adjoint operators is essentially self-adjoint. -/
 lemma IsSelfAdjoint.isEssentiallySelfAdjoint (h : IsSelfAdjoint T) : T.IsEssentiallySelfAdjoint :=
   isEssentiallySelfAdjoint_def.mpr (h.isClosed.closure_eq.symm ▸ h)
 
@@ -80,13 +83,17 @@ variable (h : T.IsEssentiallySelfAdjoint)
 
 include h
 
+/-- An essentially self-adjoint operator is densely defined. -/
 lemma hasDenseDomain : T.HasDenseDomain :=
   hasDenseDomain_iff_closure_hasDenseDomain.mpr h.dense_domain
 
+/-- An essentially self-adjoint operator is symmetric. -/
 lemma isSymmetric : T.IsSymmetric := (IsSelfAdjoint.isSymmetric h).of_le T.le_closure
 
+/-- An essentially self-adjoint operator is closable. -/
 lemma isClosable : T.IsClosable := h.isSymmetric.isClosable h.hasDenseDomain
 
+/-- An essentially self-adjoint operator is unbounded (densely defined and closable). -/
 lemma isUnbounded : T.IsUnbounded :=
   h.isSymmetric.isUnbounded_iff_hasDenseDomain.mpr h.hasDenseDomain
 
