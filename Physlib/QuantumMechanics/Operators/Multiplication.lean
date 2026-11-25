@@ -598,8 +598,8 @@ lemma mulOperator_sub_eq' {μ : Measure (Space d)}
   simp only [sub_eq_add_neg, ← mulOperator_neg]
   exact mulOperator_add_eq' hf hg.neg c c' (by simpa) (by simpa)
 
-/-- Multiplication by `f - z`, for a constant `z`, is the operator `𝓜 μ f - z • 1`, with the same
-  domain as `𝓜 μ f`, since multiplication by a constant is defined everywhere. -/
+/-- For a constant `z`, multiplication by `f - z` is the operator `𝓜 μ f - z • 1`. Multiplication
+  by a constant is defined everywhere, so both operators have the domain of `𝓜 μ f`. -/
 lemma mulOperator_sub_smul_one (μ : Measure (Space d)) (f : Space d → ℂ) (z : ℂ) :
     𝓜 μ (f - z • 1) = 𝓜 μ f - z • 1 := by
   simp [mulOperator_sub_eq f, mulOperator_const_smul_eq' μ 1 z]
