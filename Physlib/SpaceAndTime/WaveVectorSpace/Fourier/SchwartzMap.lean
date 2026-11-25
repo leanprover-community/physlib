@@ -23,7 +23,7 @@ with `fourierIntegral` and `fourierIntegralInv`.
 - `fourierTransformInvCLM` : The inverse Fourier transform on Schwartz spaces as a continuous
   linear map, depending on two parameters `a : ℝ` and `b : ℝˣ`.
 - `coe_fourierTransformCLM`/`coe_fourierTransformInvCLM` : The Fourier transform of a Schwartz map
-  agrees with the Fourier integral of its coersion to a function, and similarly for the inverse
+  agrees with the Fourier integral of its coercion to a function, and similarly for the inverse
   Fourier transform. In particular, the parametrizations in terms of `a` and `b` are the same.
 - `fourierTransformInvCLM_fourierTransformCLM_eq`/`fourierTransformCLM_fourierTransformInvCLM_eq` :
   The Fourier inversion formulae for `fourierTransformCLM` and `fourierTransformInvCLM`.
