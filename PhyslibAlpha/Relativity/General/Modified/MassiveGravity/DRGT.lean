@@ -39,15 +39,15 @@ dRGT potential `e₂(K) + α₃ e₃(K)`.
 ## iv. References
 
 * Claudia de Rham and Gregory Gabadadze, *Generalization of the Fierz-Pauli Action*, *Physical
-  Review D* (2010) (https://arxiv.org/abs/1007.0443). [ref: deRhamGabadadze2010]
+  Review D* (2010), Sec. II-III (https://arxiv.org/pdf/1007.0443#page=3). [ref: deRhamGabadadze2010]
 * Claudia de Rham, Gregory Gabadadze, and Andrew J. Tolley, *Resummation of Massive Gravity*,
-  *Physical Review Letters* (2011) (https://arxiv.org/abs/1011.1232). [ref:
-  deRhamGabadadzeTolley2011]
+  *Physical Review Letters* (2011), pp. 1-4 (https://arxiv.org/pdf/1011.1232#page=1).
+  [ref: deRhamGabadadzeTolley2011]
 * S. F. Hassan and Rachel A. Rosen, *Resolving the Ghost Problem in Nonlinear Massive Gravity*,
-  *Physical Review Letters* (2012). [ref: HassanRosen2012]
-* Kurt Hinterbichler, *Theoretical Aspects of Massive Gravity*, *Reviews of Modern Physics* (2012)
-  (https://arxiv.org/abs/1105.3735). [ref: Hinterbichler2012]
-
+  *Physical Review Letters* 108, 041101 (2012) (https://arxiv.org/pdf/1106.3344#page=1).
+  [ref: HassanRosen2012]
+* Kurt Hinterbichler, *Theoretical Aspects of Massive Gravity*, *Reviews of Modern Physics* 84, pp.
+  671-710 (2012), Sec. V (https://arxiv.org/pdf/1105.3735#page=18). [ref: Hinterbichler2012]
 -/
 
 @[expose] public section

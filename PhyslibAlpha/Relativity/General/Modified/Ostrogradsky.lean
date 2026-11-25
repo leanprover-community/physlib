@@ -49,16 +49,16 @@ contrasting it with a standard positive-definite quadratic kinetic term.
 ## iv. References
 
 * Mikhail Ostrogradsky, *Mémoires sur les équations différentielles, relatives au problème des
-  isopérimètres*, *Mémoires de l'Académie Impériale des Sciences de Saint-Pétersbourg* (1850).
-  [ref: Ostrogradsky1850]
-* Richard P. Woodard, *The Theorem of Ostrogradsky*, *Scholarpedia* (2015)
-  (https://arxiv.org/abs/1506.02210). [ref: Woodard2015]
+  isopérimètres*, *Mémoires de l'Académie Impériale des Sciences de Saint-Pétersbourg* 6, pp.
+  385-517 (1850). [ref: Ostrogradsky1850]
+* Richard P. Woodard, *The Theorem of Ostrogradsky*, *Scholarpedia* (2015), Sec. 2
+  (https://arxiv.org/pdf/1506.02210#page=3). [ref: Woodard2015]
 * Alexander Ganz and Karim Noui, *Reconsidering the Ostrogradsky Theorem: Higher-Derivatives
-  Lagrangians, Ghosts and Degeneracy*, *Classical and Quantum Gravity* (2021). [ref: GanzNoui2021]
+  Lagrangians, Ghosts and Degeneracy*, *Classical and Quantum Gravity* 38, 075005 (2021), Sec. 2-3
+  (https://arxiv.org/pdf/2007.01063#page=1). [ref: GanzNoui2021]
 * David Langlois and Karim Noui, *Degenerate Higher Derivative Theories beyond Horndeski: Evading
-  the Ostrogradsky Instability*, *Journal of Cosmology and Astroparticle Physics* (2016). [ref:
-  LangloisNoui2016]
-
+  the Ostrogradsky Instability*, *Journal of Cosmology and Astroparticle Physics* (2016), Sec. 2-3
+  (https://arxiv.org/pdf/1510.06930#page=1). [ref: LangloisNoui2016]
 -/
 
 @[expose] public section

@@ -60,13 +60,12 @@ or General Relativity solutions) and formalises:
 
 ## iv. References
 
-* Hans A. Buchdahl, *Non-Linear Lagrangians and Cosmological Theory*, *Monthly Notices of the
-  Royal Astronomical Society* (1970). [ref: Buchdahl1970]
-* Alexei A. Starobinsky, *A New Type of Isotropic Cosmological Models Without Singularity*,
-  *Physics Letters B* (1980). [ref: Starobinsky1980]
+* Hans A. Buchdahl, *Non-Linear Lagrangians and Cosmological Theory*, *Monthly Notices of the Royal
+  Astronomical Society* 150, pp. 1-8 (1970), Sec. 2. [ref: Buchdahl1970]
+* Alexei A. Starobinsky, *A New Type of Isotropic Cosmological Models Without Singularity*, *Physics
+  Letters B* 91, pp. 99-102 (1980). [ref: Starobinsky1980]
 * Thomas P. Sotiriou and Valerio Faraoni, *f(R) Theories of Gravity*, *Reviews of Modern Physics*
-  (2010) (https://arxiv.org/abs/0805.1726). [ref: SotiriouFaraoni2010]
-
+  (2010), Sec. II-III (https://arxiv.org/pdf/0805.1726#page=3). [ref: SotiriouFaraoni2010]
 -/
 
 @[expose] public section

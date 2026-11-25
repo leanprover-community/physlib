@@ -44,13 +44,12 @@ forces the five healthy massive polarizations via the on-shell tracelessness con
 ## iv. References
 
 * Markus Fierz and Wolfgang Pauli, *On Relativistic Wave Equations for Particles of Arbitrary Spin
-  in an Electromagnetic Field*, *Proceedings of the Royal Society of London. Series A* (1939).
-  [ref: FierzPauli1939]
-* D. G. Boulware and S. Deser, *Can Gravitation Have a Finite Range?*, *Physical Review D* (1972).
-  [ref: BoulwareDeser1972]
-* Kurt Hinterbichler, *Theoretical Aspects of Massive Gravity*, *Reviews of Modern Physics* (2012)
-  (https://arxiv.org/abs/1105.3735). [ref: Hinterbichler2012]
-
+  in an Electromagnetic Field*, *Proceedings of the Royal Society of London. Series A* 173, pp.
+  211-232 (1939), Sec. 2-3. [ref: FierzPauli1939]
+* D. G. Boulware and S. Deser, *Can Gravitation Have a Finite Range?*, *Physical Review D* 6, pp.
+  3368-3382 (1972), Sec. II. [ref: BoulwareDeser1972]
+* Kurt Hinterbichler, *Theoretical Aspects of Massive Gravity*, *Reviews of Modern Physics* 84, pp.
+  671-710 (2012), Sec. II-III (https://arxiv.org/pdf/1105.3735#page=4). [ref: Hinterbichler2012]
 -/
 
 @[expose] public section

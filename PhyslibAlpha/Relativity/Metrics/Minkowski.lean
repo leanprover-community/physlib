@@ -50,11 +50,13 @@ along
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-* B. O'Neill, *Semi-Riemannian Geometry With Applications to Relativity* (1983).
+* R. M. Wald, *General Relativity* (1984), Ch. 2 (Sec. 2.3). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 2.
+  [ref: mtw_1973_gravitation]
+* B. O'Neill, *Semi-Riemannian Geometry With Applications to Relativity* (1983), Ch. 6.
   [ref: oneill_1983_semi_riemannian]
-
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 1
+  (https://arxiv.org/pdf/gr-qc/9712019#page=10). [ref: Carroll1997]
 -/
 
 @[expose] public section

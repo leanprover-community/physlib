@@ -56,15 +56,16 @@ the Einstein–Fokker equation `S = 24 π T` and Nordström's nonlinear scalar w
 
 ## iv. References
 
-* Gunnar Nordström, *Zur Theorie der Gravitation vom Standpunkt des Relativitätsprinzips*,
-  *Annalen der Physik* (1913). [ref: Nordstrom1913]
+* Gunnar Nordström, *Zur Theorie der Gravitation vom Standpunkt des Relativitätsprinzips*, *Annalen
+  der Physik* 347, pp. 533-554 (1913). [ref: Nordstrom1913]
 * Albert Einstein and Adriaan D. Fokker, *Die Nordströmsche Gravitationstheorie vom Standpunkt des
-  absoluten Differentialkalküls*, *Annalen der Physik* (1914). [ref: EinsteinFokker1914]
-* Gunnar Nordström, *Relativitätsprinzip und Gravitation*, *Physikalische Zeitschrift* (1912).
-  [ref: Nordstrom1912]
-* John D. Norton, *Einstein, Nordström and the Early Demise of Scalar, Lorentz-Covariant Theories
-  of Gravitation*, *Archive for History of Exact Sciences* (1992). [ref: Norton1992]
-
+  absoluten Differentialkalküls*, *Annalen der Physik* 349, pp. 321-328 (1914).
+  [ref: EinsteinFokker1914]
+* Gunnar Nordström, *Relativitätsprinzip und Gravitation*, *Physikalische Zeitschrift* 13, pp.
+  1126-1129 (1912). [ref: Nordstrom1912]
+* John D. Norton, *Einstein, Nordström and the Early Demise of Scalar, Lorentz-Covariant Theories of
+  Gravitation*, *Archive for History of Exact Sciences* 45, pp. 17-94 (1992), Sec. 2-4.
+  [ref: Norton1992]
 -/
 
 @[expose] public section

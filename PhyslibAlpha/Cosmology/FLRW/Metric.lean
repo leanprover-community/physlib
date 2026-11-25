@@ -75,9 +75,11 @@ Whereas `Physlib.Cosmology.FLRW` takes the two Friedmann equations as postulated
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-
+* R. M. Wald, *General Relativity* (1984), Ch. 5 (Sec. 5.1-5.2). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 27.
+  [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 8
+  (https://arxiv.org/pdf/gr-qc/9712019#page=201). [ref: Carroll1997]
 -/
 
 @[expose] public section

@@ -46,9 +46,8 @@ metric `e^{-2φ} δ`, and admits an explicit two-sided inverse bundled into `Met
 ## iv. References
 
 * Jacob D. Bekenstein, *Relativistic Gravitation Theory for the Modified Newtonian Dynamics
-  Paradigm*, *Physical Review D* (2004) (https://arxiv.org/abs/astro-ph/0403694). [ref:
-  Bekenstein2004]
-
+  Paradigm*, *Physical Review D* (2004), Sec. II-III
+  (https://arxiv.org/pdf/astro-ph/0403694#page=2). [ref: Bekenstein2004]
 -/
 
 @[expose] public section

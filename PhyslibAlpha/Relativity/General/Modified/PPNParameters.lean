@@ -62,16 +62,15 @@ Nordström scalar gravity, and the four benchmark solar-system observable factor
 ## iv. References
 
 * Kenneth Nordtvedt, *Equivalence Principle for Massive Bodies. II. Theory*, *Physical Review*
-  (1968). [ref: Nordtvedt1968]
+  (1968), Sec. II. [ref: Nordtvedt1968]
 * Clifford M. Will, *Theoretical Frameworks for Testing Relativistic Gravity. II. Parametrized
-  Post-Newtonian Hydrodynamics and the Nordtvedt Effect*, *The Astrophysical Journal* (1971).
-  [ref: Will1971PPN]
+  Post-Newtonian Hydrodynamics and the Nordtvedt Effect*, *The Astrophysical Journal* (1971), Sec.
+  II. [ref: Will1971PPN]
 * Clifford M. Will and Kenneth Nordtvedt, *Conservation Laws and Preferred Frames in Relativistic
   Gravity. II. Experimental Evidence to Rule Out Preferred-Frame Theories of Gravity*, *The
-  Astrophysical Journal* (1972). [ref: WillNordtvedt1972]
+  Astrophysical Journal* 177, pp. 775-792 (1972). [ref: WillNordtvedt1972]
 * Clifford M. Will, *The Confrontation between General Relativity and Experiment*, *Living Reviews
-  in Relativity* (2014). [ref: Will2014]
-
+  in Relativity* 17, 4 (2014), Sec. 3 (https://arxiv.org/pdf/1403.7377#page=25). [ref: Will2014]
 -/
 
 @[expose] public section

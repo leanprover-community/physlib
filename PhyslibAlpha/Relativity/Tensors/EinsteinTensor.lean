@@ -39,9 +39,12 @@ cosmological Einstein-space equation `G + Λ g = 0` and `Ric = Λ g`.
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-
+* R. M. Wald, *General Relativity* (1984), Ch. 3 (Sec. 3.2) & Ch. 4 (Sec. 4.2).
+  [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 15 & Ch. 17.
+  [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3 & Ch. 4
+  (https://arxiv.org/pdf/gr-qc/9712019#page=78). [ref: Carroll1997]
 -/
 
 @[expose] public section

@@ -56,8 +56,12 @@ exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ couplin
 ## iv. References
 
 * Carl Brans and Robert H. Dicke, *Mach's Principle and a Relativistic Theory of Gravitation*,
-  *Physical Review* (1961). [ref: BransDicke1961]
-
+  *Physical Review* 124, pp. 925-935 (1961), Sec. II-III. [ref: BransDicke1961]
+* Bruno Bertotti, Luciano Iess, and Paolo Tortora, *A Test of General Relativity Using Radio Links
+  with the Cassini Spacecraft*, *Nature* 425, pp. 374-376 (2003). [ref: BertottiIessTortora2003]
+* Clifford M. Will, *The Confrontation between General Relativity and Experiment*, *Living Reviews
+  in Relativity* 17, 4 (2014), Sec. 3.3 & Sec. 5.1 (https://arxiv.org/pdf/1403.7377#page=37).
+  [ref: Will2014]
 -/
 
 @[expose] public section

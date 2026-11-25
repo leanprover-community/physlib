@@ -40,13 +40,13 @@ Kaluza–Klein theory packages a four-dimensional metric `g_{μν}`, an electrom
 
 ## iv. References
 
-* Theodor Kaluza, *Zum Unitätsproblem der Physik*, *Sitzungsberichte der Preu\ssischen Akademie
-  der Wissenschaften zu Berlin, Mathematisch-Physikalische Klasse* (1921). [ref: Kaluza1921]
+* Theodor Kaluza, *Zum Unitätsproblem der Physik*, *Sitzungsberichte der Preußischen Akademie der
+  Wissenschaften zu Berlin, Mathematisch-Physikalische Klasse* (1921), pp. 966-972.
+  [ref: Kaluza1921]
 * Oskar Klein, *Quantentheorie und fünfdimensionale Relativitätstheorie*, *Zeitschrift für Physik*
-  (1926). [ref: Klein1926]
-* Oskar Klein, *The Atomicity of Electricity as a Quantum Theory Law*, *Nature* (1926). [ref:
-  Klein1926Nature]
-
+  37, pp. 895-906 (1926), Sec. 1-2. [ref: Klein1926]
+* Oskar Klein, *The Atomicity of Electricity as a Quantum Theory Law*, *Nature* 118, p. 516 (1926).
+  [ref: Klein1926Nature]
 -/
 
 @[expose] public section

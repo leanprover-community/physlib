@@ -39,16 +39,15 @@ and `f(T)` reductions can instantiate them directly.
 ## iv. References
 
 * Albert Einstein, *Riemann-Geometrie mit Aufrechterhaltung des Begriffes des Fernparallelismus*,
-  *Sitzungsberichte der Preussischen Akademie der Wissenschaften, Physikalisch-Mathematische
-  Klasse* (1928). [ref: Einstein1928]
-* Kenji Hayashi and Takeshi Shirafuji, *New General Relativity*, *Physical Review D* (1979). [ref:
-  HayashiShirafuji1979]
-* José W. Maluf, *The Teleparallel Equivalent of General Relativity*, *Annalen der Physik* (2013)
-  (https://arxiv.org/abs/1303.3897). [ref: Maluf2013]
-* Martin Krššák and Emmanuel N. Saridakis, *The Covariant Formulation of $f(T)$ Gravity*,
-  *Classical and Quantum Gravity* (2016) (https://arxiv.org/abs/1510.08432). [ref:
-  KrssakSaridakis2016]
-
+  *Sitzungsberichte der Preussischen Akademie der Wissenschaften, Physikalisch-Mathematische Klasse*
+  (1928), pp. 217-221. [ref: Einstein1928]
+* Kenji Hayashi and Takeshi Shirafuji, *New General Relativity*, *Physical Review D* 19, pp.
+  3524-3553 (1979), Sec. II-III. [ref: HayashiShirafuji1979]
+* José W. Maluf, *The Teleparallel Equivalent of General Relativity*, *Annalen der Physik* (2013),
+  Sec. 2-3 (https://arxiv.org/pdf/1303.3897#page=3). [ref: Maluf2013]
+* Martin Krššák and Emmanuel N. Saridakis, *The Covariant Formulation of $f(T)$ Gravity*, *Classical
+  and Quantum Gravity* (2016), Sec. 2 (https://arxiv.org/pdf/1510.08432#page=3).
+  [ref: KrssakSaridakis2016]
 -/
 
 @[expose] public section

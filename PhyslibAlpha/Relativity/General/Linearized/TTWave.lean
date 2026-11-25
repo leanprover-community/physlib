@@ -36,9 +36,11 @@ profile `f`, and solves `linEinstein = 0` for every `C²` wave profile.
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-
+* R. M. Wald, *General Relativity* (1984), Ch. 4 (Sec. 4.4). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 35.
+  [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 6
+  (https://arxiv.org/pdf/gr-qc/9712019#page=155). [ref: Carroll1997]
 -/
 
 @[expose] public section

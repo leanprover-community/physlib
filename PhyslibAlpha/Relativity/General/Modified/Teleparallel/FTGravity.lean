@@ -33,15 +33,14 @@ Einstein–Hilbert Friedmann left-hand side `3 H²` by `3 H² + ½ F(6 H²) - 6 
 ## iv. References
 
 * Rafael Ferraro and Franco Fiorini, *Modified Teleparallel Gravity: Inflation without Inflaton*,
-  *Physical Review D* (2007). [ref: FerraroFiorini2007]
+  *Physical Review D* 75, 084031 (2007), Sec. II. [ref: FerraroFiorini2007]
 * Gabriel R. Bengochea and Rafael Ferraro, *Dark Torsion as the Cosmic Speed-Up*, *Physical Review
-  D* (2009) (https://arxiv.org/abs/0812.1205). [ref: BengocheaFerraro2009]
-* Eric V. Linder, *Einstein's Other Gravity and the Acceleration of the Universe*, *Physical
-  Review D* (2010) (https://arxiv.org/abs/1005.3039). [ref: Linder2010]
-* Martin Krššák and Emmanuel N. Saridakis, *The Covariant Formulation of $f(T)$ Gravity*,
-  *Classical and Quantum Gravity* (2016) (https://arxiv.org/abs/1510.08432). [ref:
-  KrssakSaridakis2016]
-
+  D* (2009), Sec. II (https://arxiv.org/pdf/0812.1205#page=2). [ref: BengocheaFerraro2009]
+* Eric V. Linder, *Einstein's Other Gravity and the Acceleration of the Universe*, *Physical Review
+  D* (2010), Sec. I-II (https://arxiv.org/pdf/1005.3039#page=1). [ref: Linder2010]
+* Martin Krššák and Emmanuel N. Saridakis, *The Covariant Formulation of $f(T)$ Gravity*, *Classical
+  and Quantum Gravity* (2016), Sec. 2-3 (https://arxiv.org/pdf/1510.08432#page=3).
+  [ref: KrssakSaridakis2016]
 -/
 
 @[expose] public section

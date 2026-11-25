@@ -50,9 +50,12 @@ It immediately follows that `ricciScalarOf` and `einsteinTensorOf` vanish identi
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-
+* R. M. Wald, *General Relativity* (1984), Ch. 12 (Sec. 12.3). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 33.
+  [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 7
+  (https://arxiv.org/pdf/gr-qc/9712019#page=187). [ref: Carroll1997]
+* S. Chandrasekhar, *The Mathematical Theory of Black Holes* (1983), Ch. 6. [ref: Chandrasekhar1983]
 -/
 
 @[expose] public section

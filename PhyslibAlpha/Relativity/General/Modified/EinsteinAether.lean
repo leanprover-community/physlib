@@ -61,13 +61,15 @@ a full coordinate-chart Euler–Lagrange solver.
 
 ## iv. References
 
-* Ted Jacobson and David Mattingly, *Gravity with a Dynamical Preferred Frame*, *Physical Review
-  D* (2001) (https://arxiv.org/abs/gr-qc/0007031). [ref: JacobsonMattingly2001]
-* Ted Jacobson and David Mattingly, *Einstein-Aether Waves*, *Physical Review D* (2004)
-  (https://arxiv.org/abs/gr-qc/0402005). [ref: JacobsonMattingly2004]
-* Christopher Eling, Ted Jacobson, and David Mattingly, *Einstein-Aether Theory*, (2004)
-  (https://arxiv.org/abs/gr-qc/0410001). [ref: ElingJacobsonMattingly2004]
-
+* Ted Jacobson and David Mattingly, *Gravity with a Dynamical Preferred Frame*, *Physical Review D*
+  (2001), Sec. II (https://arxiv.org/pdf/gr-qc/0007031#page=2). [ref: JacobsonMattingly2001]
+* Ted Jacobson and David Mattingly, *Einstein-Aether Waves*, *Physical Review D* (2004), Sec. II-III
+  (https://arxiv.org/pdf/gr-qc/0402005#page=2). [ref: JacobsonMattingly2004]
+* Christopher Eling, Ted Jacobson, and David Mattingly, *Einstein-Aether Theory*, (2004), Sec. 2
+  (https://arxiv.org/pdf/gr-qc/0410001#page=3). [ref: ElingJacobsonMattingly2004]
+* Jacob Oost, Shinji Mukohyama, and Anzhong Wang, *Constraints on Einstein-aether Theory after
+  GW170817*, *Physical Review D* 97, 124023 (2018), Sec. II-IV
+  (https://arxiv.org/pdf/1802.04303#page=1). [ref: OostMukohyamaWang2018]
 -/
 
 @[expose] public section

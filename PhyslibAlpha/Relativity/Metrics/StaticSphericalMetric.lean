@@ -70,11 +70,13 @@ Reissner–Nordström electrovacuum spacetimes.
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-* B. O'Neill, *Semi-Riemannian Geometry With Applications to Relativity* (1983). [ref:
-  oneill_1983_semi_riemannian]
-
+* R. M. Wald, *General Relativity* (1984), Ch. 6 (Sec. 6.1). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 23 (Sec. 23.2).
+  [ref: mtw_1973_gravitation]
+* B. O'Neill, *Semi-Riemannian Geometry With Applications to Relativity* (1983), Ch. 13.
+  [ref: oneill_1983_semi_riemannian]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 7
+  (https://arxiv.org/pdf/gr-qc/9712019#page=168). [ref: Carroll1997]
 -/
 
 @[expose] public section

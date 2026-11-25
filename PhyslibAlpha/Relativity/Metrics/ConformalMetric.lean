@@ -37,9 +37,11 @@ proves their two-sided inverse relations, and packages the rescaled `MetricTenso
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-
+* R. M. Wald, *General Relativity* (1984), App. D. [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 13.
+  [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 3
+  (https://arxiv.org/pdf/gr-qc/9712019#page=84). [ref: Carroll1997]
 -/
 
 @[expose] public section

@@ -50,14 +50,14 @@ corollary `S = 0 → T = 0`.
 ## iv. References
 
 * Élie Cartan, *Sur une généralisation de la notion de courbure de Riemann et les espaces à
-  torsion*, *Comptes Rendus de l'Académie des Sciences (Paris)* (1922). [ref: Cartan1922]
+  torsion*, *Comptes Rendus de l'Académie des Sciences (Paris)* 174, pp. 593-595 (1922).
+  [ref: Cartan1922]
 * T. W. B. Kibble, *Lorentz Invariance and the Gravitational Field*, *Journal of Mathematical
-  Physics* (1961). [ref: Kibble1961]
-* D. W. Sciama, *The Physical Structure of General Relativity*, *Reviews of Modern Physics*
-  (1964). [ref: Sciama1964]
+  Physics* 2, pp. 212-221 (1961), Sec. 2-4. [ref: Kibble1961]
+* D. W. Sciama, *The Physical Structure of General Relativity*, *Reviews of Modern Physics* 36, pp.
+  463-469 (1964). [ref: Sciama1964]
 * Friedrich W. Hehl et al., *General Relativity with Spin and Torsion: Foundations and Prospects*,
-  *Reviews of Modern Physics* (1976). [ref: Hehl1976]
-
+  *Reviews of Modern Physics* 48, pp. 393-416 (1976), Sec. II-III. [ref: Hehl1976]
 -/
 
 @[expose] public section

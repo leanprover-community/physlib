@@ -41,14 +41,13 @@ underlies the proof of the four-dimensional Bach–Lanczos identity in `Lovelock
 ## iv. References
 
 * Cornelius Lanczos, *A Remarkable Property of the Riemann-Christoffel Tensor in Four Dimensions*,
-  *Annals of Mathematics* (1938). [ref: Lanczos1938]
+  *Annals of Mathematics* 39, pp. 842-850 (1938). [ref: Lanczos1938]
 * David Lovelock, *The Einstein Tensor and Its Generalizations*, *Journal of Mathematical Physics*
-  (1971). [ref: Lovelock1971]
+  12, pp. 498-501 (1971), Sec. 2-3. [ref: Lovelock1971]
 * David Lovelock, *The Four-Dimensionality of Space and the Einstein Tensor*, *Journal of
-  Mathematical Physics* (1972). [ref: Lovelock1972]
-* T. Padmanabhan and D. Kothawala, *Lanczos-Lovelock Models of Gravity*, *Physics Reports* (2013)
-  (https://arxiv.org/abs/1302.2151). [ref: PadmanabhanKothawala2013]
-
+  Mathematical Physics* 13, pp. 874-876 (1972). [ref: Lovelock1972]
+* T. Padmanabhan and D. Kothawala, *Lanczos-Lovelock Models of Gravity*, *Physics Reports* (2013),
+  Sec. 2-3 (https://arxiv.org/pdf/1302.2151#page=4). [ref: PadmanabhanKothawala2013]
 -/
 
 @[expose] public section

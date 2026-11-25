@@ -54,9 +54,12 @@ independent in the `(L, T, M, Θ)` base space, `exists_units_c_G_kB_eq_one` para
 ## iv. References
 
 * International Bureau of Weights and Measures (BIPM), *The International System of Units (SI
-  Brochure)*, 9th ed. (2019). [ref: bipm_si_brochure_2019]
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-
+  Brochure)*, 9th ed. (2019), Sec. 2.2
+  (https://www.bipm.org/documents/d/guest/si-brochure-9-en-pdf). [ref: bipm_si_brochure_2019]
+* P. J. Mohr, D. B. Newell, B. N. Taylor, and E. Tiesinga, *CODATA Recommended Values of the
+  Fundamental Physical Constants: 2022*, *Reviews of Modern Physics* 97(2), 025002 (2025)
+  (https://physics.nist.gov/cuu/Constants/). [ref: CODATA2022]
+* R. M. Wald, *General Relativity* (1984), App. F. [ref: wald_1984_general_relativity]
 -/
 
 @[expose] public section

@@ -52,9 +52,14 @@ formalised nor axiomatised here.
 
 ## iv. References
 
-* R. M. Wald, *General Relativity* (1984). [ref: wald_1984_general_relativity]
-* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973). [ref: mtw_1973_gravitation]
-
+* R. M. Wald, *General Relativity* (1984), Ch. 10 (Sec. 10.2). [ref: wald_1984_general_relativity]
+* C. W. Misner, K. S. Thorne, and J. A. Wheeler, *Gravitation* (1973), Ch. 21.
+  [ref: mtw_1973_gravitation]
+* S. M. Carroll, *Lecture Notes on General Relativity* (1997), Ch. 4
+  (https://arxiv.org/pdf/gr-qc/9712019#page=104). [ref: Carroll1997]
+* R. Arnowitt, S. Deser, and C. W. Misner, *The Dynamics of General Relativity*, in *Gravitation: An
+  Introduction to Current Research* (1962) (https://arxiv.org/pdf/gr-qc/0405109#page=1).
+  [ref: ADM1962]
 -/
 
 @[expose] public section
