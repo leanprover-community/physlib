@@ -602,8 +602,7 @@ lemma mulOperator_sub_eq' {μ : Measure (Space d)}
   domain as `𝓜 μ f`, since multiplication by a constant is defined everywhere. -/
 lemma mulOperator_sub_smul_one (μ : Measure (Space d)) (f : Space d → ℂ) (z : ℂ) :
     𝓜 μ (f - z • 1) = 𝓜 μ f - z • 1 := by
-  rw [mulOperator_sub_eq f (by simp [mulOperator_const_smul_eq' μ 1 z (by simp)]),
-    mulOperator_const_smul_eq' μ 1 z (by simp), mulOperator_one]
+  simp [mulOperator_sub_eq f, mulOperator_const_smul_eq' μ 1 z]
 
 TODO "Add to the sufficient conditions which ensure `𝓜 μ (f ± g) = 𝓜 μ f ± 𝓜 μ g`."
 
@@ -755,8 +754,8 @@ lemma mulOperator_spectrum_eq_support_map {μ : Measure (Space d)} [SigmaFinite 
 
 /-- For a continuous `f` and a σ-finite measure `μ` which is positive on non-empty open sets,
   the spectrum of `𝓜 μ f` is the closure of the range of `f`. -/
-lemma mulOperator_spectrum_eq_closure_range {f : Space d → ℂ} (hf : Continuous f)
-    (μ : Measure (Space d)) [SigmaFinite μ] [μ.IsOpenPosMeasure] :
+lemma mulOperator_spectrum_eq_closure_range (μ : Measure (Space d)) [SigmaFinite μ]
+    [μ.IsOpenPosMeasure] {f : Space d → ℂ} (hf : Continuous f) :
     σ (𝓜 μ f) = _root_.closure (Set.range f) := by
   rw [mulOperator_spectrum_eq_support_map hf.aestronglyMeasurable]
   ext z
