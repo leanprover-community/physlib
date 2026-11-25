@@ -133,12 +133,6 @@ def IsSymmetric (T : H →ₗ.[ℂ] H) : Prop := T.IsFormalAdjoint T
 
 lemma isSymmetric_def : T.IsSymmetric ↔ T.IsFormalAdjoint T := Iff.rfl
 
-/-- A LinearPMap is essentially self-adjoint iff its closure is self-adjoint. -/
-def IsEssentiallySelfAdjoint [CompleteSpace H] (T : H →ₗ.[ℂ] H) : Prop := IsSelfAdjoint T.closure
-
-lemma isEssentiallySelfAdjoint_def [CompleteSpace H] :
-    T.IsEssentiallySelfAdjoint ↔ IsSelfAdjoint T.closure := Iff.rfl
-
 lemma isStarNormal_def [CompleteSpace H] : IsStarNormal T ↔ T† * T = T * T† := isStarNormal_iff _
 
 /-!
@@ -777,15 +771,6 @@ lemma IsSymmetric.closure_le_adjoint [CompleteSpace H] (h : T.IsSymmetric) (h' :
   have h_adj : T†.IsClosed := adjoint_isClosed h'
   exact h_adj.closure_eq ▸ h_adj.isClosable.closure_mono (h.le_adjoint h')
 
-lemma IsSymmetric.isEssentiallySelfAdjoint_iff [CompleteSpace H]
-    (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
-    T.IsEssentiallySelfAdjoint ↔ T†.domain = T.closure.domain := by
-  rw [isEssentiallySelfAdjoint_def, isSelfAdjoint_def,
-    (h.isUnbounded_iff_hasDenseDomain.mpr h').adjoint_closure_eq_adjoint]
-  constructor <;> intro h''
-  · congr
-  · exact (eq_of_le_of_domain_eq (h.closure_le_adjoint h') h''.symm).symm
-
 lemma IsSymmetric.isSelfAdjoint_iff [CompleteSpace H] (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
     IsSelfAdjoint T ↔ T†.domain = T.domain := by
   constructor <;> intro h''
@@ -892,10 +877,6 @@ lemma IsSelfAdjoint.isClosable [CompleteSpace H] (h : IsSelfAdjoint T) : T.IsClo
 
 lemma IsSelfAdjoint.isUnbounded [CompleteSpace H] (h : IsSelfAdjoint T) : T.IsUnbounded :=
   ⟨h.dense_domain, isClosable h⟩
-
-lemma IsSelfAdjoint.isEssentiallySelfAdjoint [CompleteSpace H] (h : IsSelfAdjoint T) :
-    T.IsEssentiallySelfAdjoint :=
-  isEssentiallySelfAdjoint_def.mpr (h.isClosed.closure_eq.symm ▸ h)
 
 @[aesop safe apply]
 lemma IsSelfAdjoint.adjoint [CompleteSpace H] (h : IsSelfAdjoint T) : IsSelfAdjoint T† := by

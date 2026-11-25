@@ -25,7 +25,25 @@ public import Physlib.QuantumMechanics.Operators.Basic
 namespace LinearPMap
 
 variable {H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℂ H] [CompleteSpace H]
-  {T : H →ₗ.[ℂ] H}
+
+/-- A LinearPMap is essentially self-adjoint iff its closure is self-adjoint. -/
+def IsEssentiallySelfAdjoint (T : H →ₗ.[ℂ] H) : Prop := IsSelfAdjoint T.closure
+
+variable {T : H →ₗ.[ℂ] H}
+
+lemma isEssentiallySelfAdjoint_def :
+    T.IsEssentiallySelfAdjoint ↔ IsSelfAdjoint T.closure := Iff.rfl
+
+lemma IsSymmetric.isEssentiallySelfAdjoint_iff (h : T.IsSymmetric) (h' : T.HasDenseDomain) :
+    T.IsEssentiallySelfAdjoint ↔ T†.domain = T.closure.domain := by
+  rw [isEssentiallySelfAdjoint_def, isSelfAdjoint_def,
+    (h.isUnbounded_iff_hasDenseDomain.mpr h').adjoint_closure_eq_adjoint]
+  constructor <;> intro h''
+  · congr
+  · exact (eq_of_le_of_domain_eq (h.closure_le_adjoint h') h''.symm).symm
+
+lemma IsSelfAdjoint.isEssentiallySelfAdjoint (h : IsSelfAdjoint T) : T.IsEssentiallySelfAdjoint :=
+  isEssentiallySelfAdjoint_def.mpr (h.isClosed.closure_eq.symm ▸ h)
 
 namespace IsEssentiallySelfAdjoint
 
