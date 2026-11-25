@@ -187,30 +187,8 @@ lemma lovelockContract5_eq_kronecker_sum {n : ℕ} (C : AlgCurvature n) (i j : F
           ((if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) *
            (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) *
            (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) *
-           (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0)) := by
-    intro e f g h
-    simp only [genKronecker]
-    rw [← Equiv.sum_comp (Equiv.inv (Perm (Fin 5)))]
-    refine Finset.sum_congr rfl fun p _ => ?_
-    have hinv : Equiv.inv (Perm (Fin 5)) p = p⁻¹ := rfl
-    rw [hinv, Perm.sign_inv, ← Equiv.prod_comp p]
-    have hp : ∀ t : Fin 5,
-        (if ![i, a, b, c, d] (p t) = ![j, e, f, g, h] (p⁻¹ (p t)) then (1 : ℝ) else 0) =
-          (if ![i, a, b, c, d] (p t) = ![j, e, f, g, h] t then (1 : ℝ) else 0) := fun t => by
-      rw [Perm.inv_def, Equiv.symm_apply_apply]
-    simp_rw [hp]
-    have h0 : (if ![i, a, b, c, d] (p 0) = ![j, e, f, g, h] 0 then (1 : ℝ) else 0) =
-        (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) := rfl
-    have h1 : (if ![i, a, b, c, d] (p 1) = ![j, e, f, g, h] 1 then (1 : ℝ) else 0) =
-        (if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) := rfl
-    have h2 : (if ![i, a, b, c, d] (p 2) = ![j, e, f, g, h] 2 then (1 : ℝ) else 0) =
-        (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) := rfl
-    have h3 : (if ![i, a, b, c, d] (p 3) = ![j, e, f, g, h] 3 then (1 : ℝ) else 0) =
-        (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) := rfl
-    have h4 : (if ![i, a, b, c, d] (p 4) = ![j, e, f, g, h] 4 then (1 : ℝ) else 0) =
-        (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0) := rfl
-    rw [Fin.prod_univ_five, h0, h1, h2, h3, h4]
-    ring
+           (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0)) :=
+    genKronecker_five_eq_sum_perm i j a b c d
   simp_rw [hgk, Finset.sum_mul]
   have hcomm : ∀ (F : Fin n → Perm (Fin 5) → ℝ),
       (∑ x : Fin n, ∑ p : Perm (Fin 5), F x p) = ∑ p : Perm (Fin 5), ∑ x : Fin n, F x p :=

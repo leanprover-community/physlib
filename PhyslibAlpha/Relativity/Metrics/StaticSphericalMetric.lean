@@ -211,7 +211,7 @@ private lemma pd_metric_theta_33 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     simp [staticSphericalMetric]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
       (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
-  rw [coordDeriv, hfun, (hsinSq.const_mul ((x 1) ^ 2)).deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hsinSq.const_mul ((x 1) ^ 2)))]
   ring
 
 private lemma pd_metric_theta (f : ℝ → ℝ) (x : Fin 4 → ℝ) (a b : Fin 4) :
@@ -230,7 +230,7 @@ private lemma pd_metric_r_00 (f : ℝ → ℝ) (x : Fin 4 → ℝ)
     funext s
     simp [staticSphericalMetric]
   have hd : HasDerivAt (fun s : ℝ => -f s) (-deriv f (x 1)) (x 1) := hf_diff.hasDerivAt.neg
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
 
 private lemma pd_metric_r_11 (f : ℝ → ℝ) (x : Fin 4 → ℝ)
     (hf_diff : DifferentiableAt ℝ f (x 1)) (hf : f (x 1) ≠ 0) :
@@ -241,7 +241,7 @@ private lemma pd_metric_r_11 (f : ℝ → ℝ) (x : Fin 4 → ℝ)
     simp [staticSphericalMetric]
   have hd : HasDerivAt (fun s : ℝ => (f s)⁻¹) (-deriv f (x 1) / (f (x 1)) ^ 2) (x 1) := by
     convert hf_diff.hasDerivAt.inv hf using 1
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
 
 private lemma pd_metric_r_22 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     coordDeriv 1 (fun y => staticSphericalMetric f y 2 2) x = 2 * (x 1) := by
@@ -262,7 +262,7 @@ private lemma pd_metric_r_33 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
       (2 * (x 1) * Real.sin (x 2) ^ 2) (x 1) := by
     convert (hasDerivAt_pow 2 (x 1)).mul_const (Real.sin (x 2) ^ 2) using 1
     ring
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
 
 private lemma pd_metric_r (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf_diff : DifferentiableAt ℝ f (x 1))
     (hf : f (x 1) ≠ 0) (a b : Fin 4) :
@@ -288,10 +288,43 @@ lemma christoffel_eq_staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin 4 →
     ∀ k i j, christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) x k i j
       = staticSphericalChristoffel f x k i j := by
   intro k i j
-  fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [christoffel, staticSphericalChristoffel, staticSphericalMetricInv,
-      pd_metric_theta, pd_metric_r f x hf_diff hf]
-  all_goals field_simp [hr, hf, hsin]
+  fin_cases k
+  · fin_cases i <;> fin_cases j <;>
+      simp [christoffel, staticSphericalChristoffel, staticSphericalMetricInv,
+        pd_metric_theta, pd_metric_r f x hf_diff hf]
+    all_goals field_simp [hr, hf, hsin]
+  · fin_cases i <;> fin_cases j <;>
+      simp [christoffel, staticSphericalChristoffel, staticSphericalMetricInv,
+        pd_metric_theta, pd_metric_r f x hf_diff hf]
+    all_goals field_simp [hr, hf, hsin]
+  · fin_cases i <;> fin_cases j <;>
+      simp [christoffel, staticSphericalChristoffel, staticSphericalMetricInv,
+        pd_metric_theta, pd_metric_r f x hf_diff hf]
+    all_goals field_simp [hr, hf, hsin]
+  · fin_cases i <;> fin_cases j <;>
+      simp [christoffel, staticSphericalChristoffel, staticSphericalMetricInv,
+        pd_metric_theta, pd_metric_r f x hf_diff hf]
+    all_goals field_simp [hr, hf, hsin]
+
+/-- Neighbourhood equality of `christoffel` and `staticSphericalChristoffel` around `x`. -/
+lemma eventually_christoffel_eq_staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin 4 → ℝ)
+    (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0) (hsin : Real.sin (x 2) ≠ 0)
+    (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s) (a b c : Fin 4) :
+    (fun y => christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) y a b c)
+      =ᶠ[nhds x] fun y => staticSphericalChristoffel f y a b c := by
+  have hc1 : Continuous (fun y : Fin 4 → ℝ => y 1) := continuous_apply 1
+  have hc2 : Continuous (fun y : Fin 4 → ℝ => y 2) := continuous_apply 2
+  have hcont : ContinuousAt f (x 1) := hf_diff.self_of_nhds.continuousAt
+  have hr' : ∀ᶠ y in nhds x, y 1 ≠ 0 := (hc1.continuousAt.eventually_ne hr)
+  have hf' : ∀ᶠ y in nhds x, f (y 1) ≠ 0 :=
+    (hc1.continuousAt (x := x)).tendsto.eventually (hcont.eventually_ne hf)
+  have hsin' : ∀ᶠ y in nhds x, Real.sin (y 2) ≠ 0 :=
+    (hc2.continuousAt (x := x)).tendsto.eventually
+      (Real.continuous_sin.continuousAt.eventually_ne hsin)
+  have hdiff' : ∀ᶠ y in nhds x, DifferentiableAt ℝ f (y 1) :=
+    hc1.continuousAt.tendsto.eventually hf_diff
+  filter_upwards [hr', hf', hsin', hdiff'] with y hyr hyf hysin hydiff
+  exact christoffel_eq_staticSphericalChristoffel f y hyr hyf hysin hydiff a b c
 
 /-- Neighbourhood equality promotes `christoffel = staticSphericalChristoffel` to coordinate partial
 derivatives along every axis `μ`. -/
@@ -300,49 +333,9 @@ lemma pd_christoffel_eq_pd_staticSphericalChristoffel (f : ℝ → ℝ) (x : Fin
     (hf_diff : ∀ᶠ s in nhds (x 1), DifferentiableAt ℝ f s) (μ a b c : Fin 4) :
     coordDeriv μ
         (fun y => christoffel (staticSphericalMetric f) (staticSphericalMetricInv f) y a b c) x
-      = coordDeriv μ (fun y => staticSphericalChristoffel f y a b c) x := by
-  fin_cases μ
-  · have heq : (fun s : ℝ =>
-        christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
-          (Function.update x 0 s) a b c)
-        =ᶠ[nhds (x 0)] (fun s : ℝ => staticSphericalChristoffel f (Function.update x 0 s) a b c) :=
-      Filter.Eventually.of_forall (fun s =>
-        christoffel_eq_staticSphericalChristoffel f (Function.update x 0 s) hr hf hsin
-          hf_diff.self_of_nhds a b c)
-    exact Filter.EventuallyEq.deriv_eq heq
-  · have hr' : ∀ᶠ s in nhds (x 1), s ≠ 0 := eventually_ne_nhds hr
-    have hcont : ContinuousAt f (x 1) := hf_diff.self_of_nhds.continuousAt
-    have hf' : ∀ᶠ s in nhds (x 1), f s ≠ 0 := hcont.eventually_ne hf
-    have heq : (fun s : ℝ =>
-        christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
-          (Function.update x 1 s) a b c)
-        =ᶠ[nhds (x 1)] (fun s :
-          ℝ => staticSphericalChristoffel f (Function.update x 1 s) a b c) := by
-      filter_upwards [hr', hf', hf_diff] with s hs1 hs2 hs3
-      exact christoffel_eq_staticSphericalChristoffel f (Function.update x 1 s)
-        (by simpa using hs1) (by simpa using hs2) (by simpa using hsin)
-        (by simpa using hs3) a b c
-    exact Filter.EventuallyEq.deriv_eq heq
-  · have hsin' : ∀ᶠ s in nhds (x 2), Real.sin s ≠ 0 :=
-      Real.continuous_sin.continuousAt.eventually_ne hsin
-    have heq : (fun s : ℝ =>
-        christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
-          (Function.update x 2 s) a b c)
-        =ᶠ[nhds (x 2)] (fun s :
-          ℝ => staticSphericalChristoffel f (Function.update x 2 s) a b c) := by
-      filter_upwards [hsin'] with s hs
-      exact christoffel_eq_staticSphericalChristoffel f (Function.update x 2 s)
-        (by simpa using hr) (by simpa using hf) (by simpa using hs)
-        (by simpa using hf_diff.self_of_nhds) a b c
-    exact Filter.EventuallyEq.deriv_eq heq
-  · have heq : (fun s : ℝ =>
-        christoffel (staticSphericalMetric f) (staticSphericalMetricInv f)
-          (Function.update x 3 s) a b c)
-        =ᶠ[nhds (x 3)] (fun s : ℝ => staticSphericalChristoffel f (Function.update x 3 s) a b c) :=
-      Filter.Eventually.of_forall (fun s =>
-        christoffel_eq_staticSphericalChristoffel f (Function.update x 3 s) hr hf hsin
-          hf_diff.self_of_nhds a b c)
-    exact Filter.EventuallyEq.deriv_eq heq
+      = coordDeriv μ (fun y => staticSphericalChristoffel f y a b c) x :=
+  coordDeriv_congr_nhds μ x
+    (eventually_christoffel_eq_staticSphericalChristoffel f x hr hf hsin hf_diff a b c)
 
 /-!
 
@@ -397,7 +390,7 @@ private lemma pd_G_r_001 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf : f (x 1) ≠
       ((deriv (deriv f) (x 1) * (2 * f (x 1)) - deriv f (x 1) * (2 * deriv f (x 1)))
         / (2 * f (x 1)) ^ 2) (x 1) := by
     convert hf2.hasDerivAt.div (hf1.hasDerivAt.const_mul 2) h2f using 1
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
   field_simp [hf]
 
@@ -412,7 +405,7 @@ private lemma pd_G_r_100 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : Differenti
   have hd : HasDerivAt (fun s : ℝ => f s * deriv f s / 2)
       ((deriv f (x 1) * deriv f (x 1) + f (x 1) * deriv (deriv f) (x 1)) / 2) (x 1) := by
     convert (hf1.hasDerivAt.mul hf2.hasDerivAt).div_const 2 using 1
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
   ring
 
@@ -429,7 +422,7 @@ private lemma pd_G_r_111 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf : f (x 1) ≠
       (-((deriv (deriv f) (x 1) * (2 * f (x 1)) - deriv f (x 1) * (2 * deriv f (x 1)))
         / (2 * f (x 1)) ^ 2)) (x 1) := by
     convert (hf2.hasDerivAt.div (hf1.hasDerivAt.const_mul 2) h2f).neg using 1
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
   field_simp [hf]
 
@@ -443,7 +436,7 @@ private lemma pd_G_r_122 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : Differenti
   have hd : HasDerivAt (fun s : ℝ => -(s * f s))
       (-(1 * f (x 1) + x 1 * deriv f (x 1))) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul hf1.hasDerivAt).neg using 2 <;> simp
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
   ring
 
@@ -460,7 +453,7 @@ private lemma pd_G_r_133 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hf1 : Differenti
         + x 1 * (Real.sin (x 2) ^ 2 * deriv f (x 1)))) (x 1) := by
     convert ((hasDerivAt_id (x 1)).mul (hf1.hasDerivAt.const_mul (Real.sin (x 2) ^ 2))).neg
       using 2 <;> simp
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
   ring
 
@@ -513,7 +506,7 @@ private lemma pd_G_t_233 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
       (Real.sin (x 2) ^ 2 - Real.cos (x 2) ^ 2) (x 2) := by
     convert ((Real.hasDerivAt_sin (x 2)).mul (Real.hasDerivAt_cos (x 2))).neg using 1
     ring
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
 
 private lemma pd_G_t_323 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin (x 2) ≠ 0) :
@@ -531,7 +524,7 @@ private lemma pd_G_t_323 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin 
       linear_combination -hsc
     convert h using 1
     rw [h1]
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [staticSphericalChristoffelDeriv]
 
 private lemma pd_G_eq_03 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (μ k i j : Fin 4)
@@ -539,36 +532,40 @@ private lemma pd_G_eq_03 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (μ k i j : Fin 4
     coordDeriv μ (fun y => staticSphericalChristoffel f y k i j) x
       = staticSphericalChristoffelDeriv f μ x k i j := by
   rcases hμ with rfl | rfl
-  · fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [coordDeriv, staticSphericalChristoffel,
-    staticSphericalChristoffelDeriv]
-  · fin_cases k <;> fin_cases i <;> fin_cases j <;> simp [coordDeriv, staticSphericalChristoffel,
-    staticSphericalChristoffelDeriv]
+  · fin_cases k <;>
+      (fin_cases i <;> fin_cases j <;> simp [coordDeriv, staticSphericalChristoffel,
+        staticSphericalChristoffelDeriv])
+  · fin_cases k <;>
+      (fin_cases i <;> fin_cases j <;> simp [coordDeriv, staticSphericalChristoffel,
+        staticSphericalChristoffelDeriv])
 
 private lemma pd_G_eq_2 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hsin : Real.sin (x 2) ≠ 0)
     (k i j : Fin 4) :
     coordDeriv 2 (fun y => staticSphericalChristoffel f y k i j) x
       = staticSphericalChristoffelDeriv f 2 x k i j := by
-  fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    first
-    | exact pd_G_t_133 f x
-    | exact pd_G_t_233 f x
-    | exact pd_G_t_323 f x hsin
-    | simp [coordDeriv, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  fin_cases k <;>
+    (fin_cases i <;> fin_cases j <;>
+      first
+      | exact pd_G_t_133 f x
+      | exact pd_G_t_233 f x
+      | exact pd_G_t_323 f x hsin
+      | simp [coordDeriv, staticSphericalChristoffel, staticSphericalChristoffelDeriv])
 
 private lemma pd_G_eq_1 (f : ℝ → ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : f (x 1) ≠ 0)
     (hf1 : DifferentiableAt ℝ f (x 1)) (hf2 : DifferentiableAt ℝ (deriv f) (x 1))
     (k i j : Fin 4) :
     coordDeriv 1 (fun y => staticSphericalChristoffel f y k i j) x
       = staticSphericalChristoffelDeriv f 1 x k i j := by
-  fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    first
-    | exact pd_G_r_001 f x hf hf1 hf2
-    | exact pd_G_r_100 f x hf1 hf2
-    | exact pd_G_r_111 f x hf hf1 hf2
-    | exact pd_G_r_122 f x hf1
-    | exact pd_G_r_133 f x hf1
-    | exact pd_G_r_inv x hr _ _ _ (by decide)
-    | simp [coordDeriv, staticSphericalChristoffel, staticSphericalChristoffelDeriv]
+  fin_cases k <;>
+    (fin_cases i <;> fin_cases j <;>
+      first
+      | exact pd_G_r_001 f x hf hf1 hf2
+      | exact pd_G_r_100 f x hf1 hf2
+      | exact pd_G_r_111 f x hf hf1 hf2
+      | exact pd_G_r_122 f x hf1
+      | exact pd_G_r_133 f x hf1
+      | exact pd_G_r_inv x hr _ _ _ (by decide)
+      | simp [coordDeriv, staticSphericalChristoffel, staticSphericalChristoffelDeriv])
 
 /-- Complete identification of all 256 partial derivatives of `staticSphericalChristoffel` with
 `staticSphericalChristoffelDeriv`. -/

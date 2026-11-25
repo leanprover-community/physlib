@@ -168,7 +168,8 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 8. PhyslibAlpha/Relativity/Metrics/ScalarCurvature.lean — `ricciScalar`,
    `ricciScalar_eq_metricTrace`
 9. PhyslibAlpha/Relativity/Metrics/CoordinateMetric.lean — `CoordinateMetric`,
-   `CoordinateMetric.metricTensor`, `coordDeriv`, `coordDeriv_const`, `coordDeriv_congr`, `coordDeriv_congr_nhds`,
+   `CoordinateMetric.metricTensor`, `coordDeriv`, `coordDeriv_of_hasDerivAt`,
+   `coordDeriv_const_slice`, `coordDeriv_const`, `coordDeriv_congr`, `coordDeriv_congr_nhds`,
    `coordDeriv_eq_fderiv`, `coordDeriv_eq_spaceTime_deriv`, `coordDeriv_comm`, `christoffel`, `riemann`,
    `ricciTensorOf`, `ricciScalarOf`, `einsteinTensorOf`, `christoffel_const`, `riemann_const`
 10. PhyslibAlpha/Relativity/Tensors/EinsteinTensor.lean — `einstein`, `einstein_symm`,
@@ -208,7 +209,8 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 21. PhyslibAlpha/Relativity/Metrics/StaticSphericalMetric.lean — `StaticSphericalMetric`,
     `staticSphericalMetric`, `staticSphericalMetricInv`, `staticSphericalMetric_symm`,
     `staticSphericalMetric_mul_inv`, `staticSphericalMetricTensor`, `staticSphericalChristoffel`,
-    `christoffel_eq_staticSphericalChristoffel`, `staticSphericalChristoffelDeriv`
+    `christoffel_eq_staticSphericalChristoffel`, `eventually_christoffel_eq_staticSphericalChristoffel`,
+    `staticSphericalChristoffelDeriv`
 22. PhyslibAlpha/Relativity/General/Schwarzschild/ElectricWeyl.lean — `electricPart`,
     `electricPart_symm`, `electricPart_trace`, `frameSqSum`, `schwarzschild`, `ricci_eq_zero`,
     `frameSqSum_eq`, `kretschmann_scalar`, `weyl_purely_electric`
@@ -234,7 +236,8 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `sdsChristoffelDeriv`, `christoffel_eq_sdsChristoffel`, `riemann_sds_components`, `ricciTensorOf_sds`, `ricciScalarOf_sds`,
     `einsteinTensorOf_sds`
 29. PhyslibAlpha/Relativity/General/ReissnerNordstrom/Basic.lean — `ReissnerNordstromSpacetime`,
-    `rnLapse`, `rnMetric`, `rnMetricInv`, `rnLapse_zero_charge`, `maxwellF`, `maxwellF_antisymm`,
+    `rnLapse`, `rnMetric`, `rnMetricInv`, `rnMetric_eq_staticSpherical`, `rnMetricInv_eq_staticSpherical`,
+    `deriv_rnLapse`, `deriv_deriv_rnLapse`, `rnLapse_zero_charge`, `maxwellF`, `maxwellF_antisymm`,
     `maxwellStressEnergy`, `einsteinTensorOf_rn_eq_maxwell`
 30. PhyslibAlpha/Relativity/General/Kerr/Basic.lean — `KerrSpacetime`, `sigma`, `delta`, `kerrAxialFactor`,
     `kerrAxialFactor_eq_sigma`, `kerr_tphi_det_id`, `kerrMetric`, `kerrMetricInv`, `kerrMetric_symm`,
@@ -248,8 +251,10 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
     `ricciScalarOf_kerr_eq_zero`, `einsteinTensorOf_kerr_eq_zero`
 33. PhyslibAlpha/Cosmology/FLRW/Metric.lean — `FLRWSpacetime`, `FLRWSpacetime.ofCosmology`,
     `FLRWSpacetime.metric`, `flrwMetric`, `flrwMetricInv`, `flrwMetric_symm`,
-    `flrwMetric_mul_inv`, `flrwMetricTensor`, `flrwChristoffel`, `flrwChristoffelDeriv`, `christoffel_eq_flrwChristoffel`,
-    `ricciScalarOf_flrw`, `friedmannSolution_of_einsteinTensorOf_flrw_G`
+    `flrwMetric_mul_inv`, `flrwMetricTensor`, `flrwChristoffel`, `flrwChristoffelDeriv`,
+    `eventually_christoffel_eq_flrwChristoffel`, `christoffel_eq_flrwChristoffel`,
+    `ricciScalarOf_flrw`, `einsteinTensorOf_flrw_00_iff_friedmann`,
+    `einsteinTensorOf_flrw_spatial_iff_friedmann`, `friedmannSolution_of_einsteinTensorOf_flrw_G`
 34. PhyslibAlpha/Relativity/General/Modified/Nordstrom.lean — `NordstromSpacetime`,
     `nordstromMetric`, `nordstromMetricInv`, `nordstromMetricTensor`,
     `light_deflection_zero`, `nordstromChristoffel`, `christoffel_nordstrom_eq`,
@@ -285,7 +290,7 @@ delay, perihelion precession, and the Nordtvedt Strong Equivalence Principle vio
 43. PhyslibAlpha/Relativity/General/Modified/Teleparallel/FTGravity.lean — `FTTheory`,
     `fTFriedmannLHS`, `fTFriedmannLHS_tegr`, `fTFriedmannLHS_quadratic`
 44. PhyslibAlpha/Relativity/General/Modified/Lovelock/GeneralizedKronecker.lean — `genKronecker`,
-    `genKronecker_eq_zero_of_lt`, `perm_fin5_fiber_split`
+    `genKronecker_eq_zero_of_lt`, `genKronecker_five_eq_sum_perm`, `perm_fin5_fiber_split`
 45. PhyslibAlpha/Relativity/General/Modified/Lovelock/Basic.lean — `AlgCurvature`,
     `AlgCurvature.ricciMixed`, `AlgCurvature.ricciScalar`, `AlgCurvature.ricciSq`,
     `AlgCurvature.riemannSq`, `AlgCurvature.gaussBonnetScalar`, `AlgCurvature.lanczosTensor`,

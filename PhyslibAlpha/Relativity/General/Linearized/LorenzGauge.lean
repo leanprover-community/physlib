@@ -151,6 +151,23 @@ private lemma linChristoffel_eventually_eq_traceReversed (h : (Fin 4 → ℝ) �
     coordDeriv_const_mul, coordDeriv_const_mul, coordDeriv_const_mul]
   ring
 
+private lemma coordDeriv_traceReversed_differentiableAt (h : (Fin 4 → ℝ) → Tensor2 4)
+    (x : Fin 4 → ℝ) (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) (p q μ : Fin 4) :
+    DifferentiableAt ℝ (coordDeriv μ fun z => traceReversed (h z) p q) x :=
+  coordDeriv_differentiableAt μ (contDiffAt_traceReversed hh p q)
+
+private lemma coordDeriv_hTrace_traceReversed_differentiableAt (h : (Fin 4 → ℝ) → Tensor2 4)
+    (x : Fin 4 → ℝ) (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) (μ : Fin 4) :
+    DifferentiableAt ℝ (coordDeriv μ fun z => hTrace (traceReversed (h z))) x :=
+  coordDeriv_differentiableAt μ (contDiffAt_hTrace fun p q => contDiffAt_traceReversed hh p q)
+
+private lemma sum_eta_diag_mul_coordDeriv_hTrace (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
+    (k l : Fin 4) :
+    (∑ r : Fin 4, (1 / 4 : ℝ) * (minkowskiMetric4 r r * minkowskiMetric4 r k) *
+      coordDeriv l (coordDeriv r fun z => hTrace (traceReversed (h z))) x)
+      = (1 / 4) * coordDeriv l (coordDeriv k fun z => hTrace (traceReversed (h z))) x := by
+  fin_cases k <;> simp
+
 private lemma pd_linChristoffel_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
     (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) (i j r : Fin 4) :
     coordDeriv r (fun y => linChristoffel h y r j i) x =
@@ -167,14 +184,10 @@ private lemma pd_linChristoffel_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4
       + (1 / 4) * minkowskiMetric4 j i *
           (minkowskiMetric4 r r *
             coordDeriv r (coordDeriv r fun z => hTrace (traceReversed (h z))) x) := by
-  have hb_at : ∀ p q, ContDiffAt ℝ 2 (fun z => traceReversed (h z) p q) x :=
-    fun p q => contDiffAt_traceReversed hh p q
-  have hT_at : ContDiffAt ℝ 2 (fun z => hTrace (traceReversed (h z))) x :=
-    contDiffAt_hTrace hb_at
-  have db : ∀ p q μ, DifferentiableAt ℝ (coordDeriv μ fun z => traceReversed (h z) p q) x :=
-    fun p q μ => coordDeriv_differentiableAt μ (hb_at p q)
-  have dT : ∀ μ, DifferentiableAt ℝ (coordDeriv μ fun z => hTrace (traceReversed (h z))) x :=
-    fun μ => coordDeriv_differentiableAt μ hT_at
+  have hb := fun p q => contDiffAt_traceReversed hh p q
+  have hT := contDiffAt_hTrace hb
+  have db := coordDeriv_traceReversed_differentiableAt h x hh
+  have dT := coordDeriv_hTrace_traceReversed_differentiableAt h x hh
   have h1 : DifferentiableAt ℝ (fun y => (1 / 2 : ℝ) * minkowskiMetric4 r r *
       (coordDeriv i (fun z => traceReversed (h z) r j) y
         + coordDeriv j (fun z => traceReversed (h z) r i) y
@@ -185,32 +198,20 @@ private lemma pd_linChristoffel_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4
         + minkowskiMetric4 r i * coordDeriv j (fun z => hTrace (traceReversed (h z))) y
         - minkowskiMetric4 j i * coordDeriv r (fun z => hTrace (traceReversed (h z))) y)) x :=
     ((((dT i).const_mul _).add ((dT j).const_mul _)).sub ((dT r).const_mul _)).const_mul _
-  have d1 : DifferentiableAt ℝ
-      (fun s => coordDeriv i (fun z => traceReversed (h z) r j) (Function.update x r s)) (x r) :=
-    slice_differentiableAt r (db r j i)
-  have d2 : DifferentiableAt ℝ
-      (fun s => coordDeriv j (fun z => traceReversed (h z) r i) (Function.update x r s)) (x r) :=
-    slice_differentiableAt r (db r i j)
-  have d3 : DifferentiableAt ℝ
-      (fun s => coordDeriv r (fun z => traceReversed (h z) j i) (Function.update x r s)) (x r) :=
-    slice_differentiableAt r (db j i r)
-  have dt1 : DifferentiableAt ℝ (fun s => minkowskiMetric4 r j *
-      coordDeriv i (fun z => hTrace (traceReversed (h z))) (Function.update x r s)) (x r) :=
-    (slice_differentiableAt r (dT i)).const_mul _
-  have dt2 : DifferentiableAt ℝ (fun s => minkowskiMetric4 r i *
-      coordDeriv j (fun z => hTrace (traceReversed (h z))) (Function.update x r s)) (x r) :=
-    (slice_differentiableAt r (dT j)).const_mul _
-  have dt3 : DifferentiableAt ℝ (fun s => minkowskiMetric4 j i *
-      coordDeriv r (fun z => hTrace (traceReversed (h z))) (Function.update x r s)) (x r) :=
-    (slice_differentiableAt r (dT r)).const_mul _
   rw [coordDeriv_congr_nhds r x (linChristoffel_eventually_eq_traceReversed h x hh i j r),
     coordDeriv_sub r x (slice_differentiableAt r h1) (slice_differentiableAt r h2),
     coordDeriv_const_mul, coordDeriv_const_mul,
-    coordDeriv_sub r x (d1.add d2) d3, coordDeriv_add r x d1 d2,
-    coordDeriv_sub r x (dt1.add dt2) dt3, coordDeriv_add r x dt1 dt2,
+    coordDeriv_sub r x ((slice_differentiableAt r (db r j i)).add
+      (slice_differentiableAt r (db r i j))) (slice_differentiableAt r (db j i r)),
+    coordDeriv_add r x (slice_differentiableAt r (db r j i)) (slice_differentiableAt r (db r i j)),
+    coordDeriv_sub r x (((slice_differentiableAt r (dT i)).const_mul _).add
+      ((slice_differentiableAt r (dT j)).const_mul _))
+      ((slice_differentiableAt r (dT r)).const_mul _),
+    coordDeriv_add r x ((slice_differentiableAt r (dT i)).const_mul _)
+      ((slice_differentiableAt r (dT j)).const_mul _),
     coordDeriv_const_mul, coordDeriv_const_mul, coordDeriv_const_mul,
-    coordDeriv_comm r i (hb_at r j), coordDeriv_comm r j (hb_at r i),
-    coordDeriv_comm r i hT_at, coordDeriv_comm r j hT_at]
+    coordDeriv_comm r i (hb r j), coordDeriv_comm r j (hb r i),
+    coordDeriv_comm r i hT, coordDeriv_comm r j hT]
   ring
 
 private lemma pd_lorenzDiv (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
@@ -231,10 +232,7 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
       + (1 / 2) * coordDeriv i (fun y => lorenzDiv h y j) x
       + (1 / 2) * coordDeriv j (fun y => lorenzDiv h y i) x
       + (1 / 4) * minkowskiMetric4 i j * boxEta (fun y => hTrace (traceReversed (h y))) x := by
-  have hT_at : ContDiffAt ℝ 2 (fun z => hTrace (traceReversed (h z))) x :=
-    contDiffAt_hTrace fun p q => contDiffAt_traceReversed hh p q
-  have hdiv_j := pd_lorenzDiv h x hh i j
-  have hdiv_i := pd_lorenzDiv h x hh j i
+  have hT := contDiffAt_hTrace fun p q => contDiffAt_traceReversed hh p q
   have hbox_sym : boxEta (fun y => traceReversed (h y) j i) x =
       boxEta (fun y => traceReversed (h y) i j) x := by
     have hbs : (fun y => traceReversed (h y) j i) = fun y => traceReversed (h y) i j :=
@@ -242,20 +240,12 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
         (traceReversed_symm
           (show IsSymm (h y) from Matrix.IsSymm.ext fun a b => hsym y b a)).apply i j
     simp [hbs]
-  have hT_sub_j : (∑ r : Fin 4, (1 / 4 : ℝ) * (minkowskiMetric4 r r * minkowskiMetric4 r j) *
-      coordDeriv i (coordDeriv r fun z => hTrace (traceReversed (h z))) x)
-      = (1 / 4) * coordDeriv i (coordDeriv j fun z => hTrace (traceReversed (h z))) x := by
-    fin_cases j <;> simp
-  have hT_sub_i : (∑ r : Fin 4, (1 / 4 : ℝ) * (minkowskiMetric4 r r * minkowskiMetric4 r i) *
-      coordDeriv j (coordDeriv r fun z => hTrace (traceReversed (h z))) x)
-      = (1 / 4) * coordDeriv j (coordDeriv i fun z => hTrace (traceReversed (h z))) x := by
-    fin_cases i <;> simp
-  have hT_comm : coordDeriv j (coordDeriv i fun z => hTrace (traceReversed (h z))) x =
-      coordDeriv i (coordDeriv j fun z => hTrace (traceReversed (h z))) x :=
-    coordDeriv_comm j i hT_at
   simp only [linRicci, linRiemann, Finset.sum_sub_distrib, pd_linChristoffel_traceReversed h x hh,
     pd_linChristoffel_diag h x hsym hh i j, Finset.sum_add_distrib, ← Finset.mul_sum]
-  rw [hdiv_j, hdiv_i, ← hbox_sym, minkowskiMetric4_symm.apply i j, hT_sub_j, hT_sub_i, hT_comm]
+  rw [pd_lorenzDiv h x hh i j, pd_lorenzDiv h x hh j i, ← hbox_sym,
+    minkowskiMetric4_symm.apply i j,
+    sum_eta_diag_mul_coordDeriv_hTrace h x j i, sum_eta_diag_mul_coordDeriv_hTrace h x i j,
+    coordDeriv_comm j i hT]
   have hs1 : (∑ r : Fin 4, (1 / 2 : ℝ) * minkowskiMetric4 r r *
       coordDeriv i (coordDeriv r fun z => traceReversed (h z) r j) x)
       = (1 / 2) * ∑ r : Fin 4, minkowskiMetric4 r r *

@@ -106,12 +106,18 @@ noncomputable def schwarzschild (k : ℝ) : RiemannTensor 4 where
     ring
   pair_symm := by
     intro i j l m
-    fin_cases i <;> fin_cases j <;> fin_cases l <;> fin_cases m
-    all_goals simp [electricPart, two_mul, add_assoc]
+    rw [electricPart_symm k m j, electricPart_symm k m i,
+      electricPart_symm k l j, electricPart_symm k l i]
+    simp only [eq_comm (a := l) (b := i), eq_comm (a := l) (b := j),
+      eq_comm (a := m) (b := i), eq_comm (a := m) (b := j)]
+    ring
   bianchi := by
     intro i j l m
-    fin_cases i <;> fin_cases j <;> fin_cases l <;> fin_cases m
-    all_goals simp [electricPart, two_mul, add_assoc]
+    rw [electricPart_symm k l j, electricPart_symm k l m,
+      electricPart_symm k m j]
+    simp only [eq_comm (a := l) (b := j), eq_comm (a := m) (b := j),
+      eq_comm (a := m) (b := l)]
+    ring
 
 /-!
 

@@ -185,9 +185,16 @@ private lemma sdsChristoffelDeriv_eq_staticSpherical (M Λ : ℝ) (x : Fin 4 →
       staticSphericalChristoffelDeriv (sdsLapse M Λ) μ x k i j := by
   have hd1 := deriv_sdsLapse M Λ (x 1) hr
   have hd2 := (hasDerivAt_deriv_sdsLapse M Λ (x 1) hr).deriv
-  fin_cases μ <;> fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv, hd1, hd2]
-  all_goals field_simp [hf]; ring
+  fin_cases μ
+  · fin_cases k <;> fin_cases i <;> fin_cases j <;>
+      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv]
+  · fin_cases k <;> fin_cases i <;> fin_cases j <;>
+      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv, hd1, hd2]
+    all_goals field_simp [hf]; ring
+  · fin_cases k <;> fin_cases i <;> fin_cases j <;>
+      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv]
+  · fin_cases k <;> fin_cases i <;> fin_cases j <;>
+      simp [sdsChristoffelDeriv, staticSphericalChristoffelDeriv]
 
 /-- All 64 Christoffel symbols computed by `christoffel` equal `sdsChristoffel`, for every `Λ`. -/
 lemma christoffel_eq_sdsChristoffel (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)

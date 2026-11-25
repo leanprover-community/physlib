@@ -136,6 +136,20 @@ lemma hasDerivAt_cos_sq (θ : ℝ) :
 noncomputable def coordDeriv {n : ℕ} (μ : Fin n) (f : (Fin n → ℝ) → ℝ) (x : Fin n → ℝ) : ℝ :=
   deriv (fun s : ℝ => f (Function.update x μ s)) (x μ)
 
+/-- If the coordinate slice `s ↦ f (Function.update x μ s)` has derivative `d` at `x μ`, then
+`coordDeriv μ f x = d`. -/
+lemma coordDeriv_of_hasDerivAt {n : ℕ} (μ : Fin n) {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} {d : ℝ}
+    (h : HasDerivAt (fun s => f (Function.update x μ s)) d (x μ)) :
+    coordDeriv μ f x = d :=
+  h.deriv
+
+/-- If the coordinate slice `s ↦ f (Function.update x μ s)` is constant, then `coordDeriv μ f x`
+vanishes. -/
+lemma coordDeriv_const_slice {n : ℕ} (μ : Fin n) {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (c : ℝ)
+    (h : ∀ s, f (Function.update x μ s) = c) :
+    coordDeriv μ f x = 0 := by
+  simp [coordDeriv, funext h]
+
 /-- The coordinate partial derivative of a constant field vanishes. -/
 lemma coordDeriv_const {n : ℕ} (μ : Fin n) (c : ℝ) (x : Fin n → ℝ) :
     coordDeriv μ (fun _ => c) x = 0 := by

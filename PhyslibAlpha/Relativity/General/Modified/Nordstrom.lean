@@ -162,9 +162,15 @@ lemma christoffel_nordstrom_eq (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ
       = nordstromChristoffel φ x k i j := by
   simp only [christoffel, pd_conformal_eta φ x hd, nordstromMetricInv, conformalRescaleMetricInv,
     nordstromChristoffel, Fin.sum_univ_four]
-  fin_cases k <;> fin_cases i <;> fin_cases j <;>
-    simp only [minkowskiMetric4_apply] <;> norm_num <;>
-    field_simp [hφ]
+  fin_cases k
+  · fin_cases i <;> fin_cases j <;> simp only [minkowskiMetric4_apply] <;> norm_num <;>
+      field_simp [hφ]
+  · fin_cases i <;> fin_cases j <;> simp only [minkowskiMetric4_apply] <;> norm_num <;>
+      field_simp [hφ]
+  · fin_cases i <;> fin_cases j <;> simp only [minkowskiMetric4_apply] <;> norm_num <;>
+      field_simp [hφ]
+  · fin_cases i <;> fin_cases j <;> simp only [minkowskiMetric4_apply] <;> norm_num <;>
+      field_simp [hφ]
 
 /-!
 

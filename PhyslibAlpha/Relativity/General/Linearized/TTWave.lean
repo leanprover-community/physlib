@@ -87,16 +87,12 @@ lemma traceReversed_ttWave (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 →
   simp [traceReversed, ttWave_trace_zero]
 
 private lemma pd_1_wave (c : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    coordDeriv 1 (fun y => c * f (y 0 - y 3)) x = 0 := by
-  have hfn : (fun s => c * f (Function.update x 1 s 0 - Function.update x 1 s 3))
-      = fun _ => c * f (x 0 - x 3) := by funext s; simp
-  rw [coordDeriv, hfn, deriv_const']
+    coordDeriv 1 (fun y => c * f (y 0 - y 3)) x = 0 :=
+  coordDeriv_const_slice 1 (c * f (x 0 - x 3)) (fun _ => by simp)
 
 private lemma pd_2_wave (c : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    coordDeriv 2 (fun y => c * f (y 0 - y 3)) x = 0 := by
-  have hfn : (fun s => c * f (Function.update x 2 s 0 - Function.update x 2 s 3))
-      = fun _ => c * f (x 0 - x 3) := by funext s; simp
-  rw [coordDeriv, hfn, deriv_const']
+    coordDeriv 2 (fun y => c * f (y 0 - y 3)) x = 0 :=
+  coordDeriv_const_slice 2 (c * f (x 0 - x 3)) (fun _ => by simp)
 
 /-- A `TT` wave automatically satisfies the Lorenz gauge condition `∂^k h^{TT}_{kj} = 0`
 for any wave profile `f`. -/
@@ -126,7 +122,7 @@ private lemma pd_0_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) 
     simpa using (hasDerivAt_id (x 0)).sub_const (x 3)
   have hd : HasDerivAt (fun s => c * f (s - x 3)) (c * deriv f (x 0 - x 3)) (x 0) := by
     simpa using ((hf (x 0 - x 3)).hasDerivAt.comp (x 0) hsub).const_mul c
-  rw [coordDeriv, hfun, hd.deriv]
+  exact coordDeriv_of_hasDerivAt 0 (hfun ▸ hd)
 
 private lemma pd_3_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) (x : Fin 4 → ℝ) :
     coordDeriv 3 (fun y => c * f (y 0 - y 3)) x = -(c * deriv f (x 0 - x 3)) := by
@@ -138,7 +134,7 @@ private lemma pd_3_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) 
     (hf (x 0 - x 3)).hasDerivAt.comp (x 3) hsub
   have hd : HasDerivAt (fun s => c * f (x 0 - s)) (-(c * deriv f (x 0 - x 3))) (x 3) :=
     (hd0.const_mul c).congr_deriv (by ring)
-  rw [coordDeriv, hfun, hd.deriv]
+  exact coordDeriv_of_hasDerivAt 3 (hfun ▸ hd)
 
 private lemma boxEta_zero (x : Fin 4 → ℝ) : boxEta (fun _ : Fin 4 → ℝ => (0 : ℝ)) x = 0 := by
   have hpd : ∀ μ : Fin 4, coordDeriv μ (fun _ : Fin 4 → ℝ => (0 : ℝ)) = fun _ => 0 :=

@@ -101,6 +101,14 @@ noncomputable def rnMetric (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
 noncomputable def rnMetricInv (M Q : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
   staticSphericalMetricInv (rnLapse M Q)
 
+/-- `rnMetric M Q` is definitionally `staticSphericalMetric (rnLapse M Q)`. -/
+lemma rnMetric_eq_staticSpherical (M Q : ℝ) :
+    rnMetric M Q = staticSphericalMetric (rnLapse M Q) := rfl
+
+/-- `rnMetricInv M Q` is definitionally `staticSphericalMetricInv (rnLapse M Q)`. -/
+lemma rnMetricInv_eq_staticSpherical (M Q : ℝ) :
+    rnMetricInv M Q = staticSphericalMetricInv (rnLapse M Q) := rfl
+
 /-- At `Q = 0`, `rnLapse` reduces to the Schwarzschild lapse function. -/
 lemma rnLapse_zero_charge (M r : ℝ) : rnLapse M 0 r = Schwarzschild.schwarzschildLapse M r := by
   simp [rnLapse, Schwarzschild.schwarzschildLapse]
@@ -167,6 +175,16 @@ lemma hasDerivAt_deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
     · ring
   exact hd.congr_of_eventuallyEq heq
 
+/-- Pointwise formula for the first derivative `deriv (rnLapse M Q) r`. -/
+lemma deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
+    deriv (rnLapse M Q) r = 2 * M / r ^ 2 - 2 * Q ^ 2 / r ^ 3 :=
+  (hasDerivAt_rnLapse M Q r hr).deriv
+
+/-- Pointwise formula for the second derivative `deriv (deriv (rnLapse M Q)) r`. -/
+lemma deriv_deriv_rnLapse (M Q r : ℝ) (hr : r ≠ 0) :
+    deriv (deriv (rnLapse M Q)) r = -4 * M / r ^ 3 + 6 * Q ^ 2 / r ^ 4 :=
+  (hasDerivAt_deriv_rnLapse M Q r hr).deriv
+
 /-- Radial electric Maxwell field strength tensor `F_{ab}` (`F_{01} = -Q/r²`, `F_{10} = Q/r²`). -/
 noncomputable def maxwellF (Q r : ℝ) : Tensor2 4 :=
   fun i j =>
@@ -214,15 +232,11 @@ lemma ricciTensorOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rn
           else if σ = 2 then Q ^ 2 / (x 1) ^ 2
           else Q ^ 2 * Real.sin (x 2) ^ 2 / (x 1) ^ 2
         else 0 := by
-  have hf1 : deriv (rnLapse M Q) (x 1) = 2 * M / (x 1) ^ 2 - 2 * Q ^ 2 / (x 1) ^ 3 :=
-    (hasDerivAt_rnLapse M Q (x 1) hr).deriv
-  have hf2 : deriv (deriv (rnLapse M Q)) (x 1) = -4 * M / (x 1) ^ 3 + 6 * Q ^ 2 / (x 1) ^ 4 :=
-    (hasDerivAt_deriv_rnLapse M Q (x 1) hr).deriv
   have hfdiff := eventually_differentiableAt_rnLapse M Q (x 1) hr
   have hf2diff := (hasDerivAt_deriv_rnLapse M Q (x 1) hr).differentiableAt
-  rw [rnMetric, rnMetricInv,
+  rw [rnMetric_eq_staticSpherical, rnMetricInv_eq_staticSpherical,
     ricciTensorOf_staticSpherical (rnLapse M Q) x hr hf hsin hfdiff hf2diff σ ν,
-    hf1, hf2]
+    deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr]
   fin_cases σ <;> fin_cases ν <;> simp
   · field_simp [hr]; ring
   · field_simp [hr, hf]; ring
@@ -234,15 +248,11 @@ reflecting conformal invariance of 4D Maxwell electromagnetism. -/
 lemma ricciScalarOf_rn (M Q : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0) (hf : rnLapse M Q (x 1) ≠ 0)
     (hsin : Real.sin (x 2) ≠ 0) :
     ricciScalarOf (rnMetric M Q) (rnMetricInv M Q) x = 0 := by
-  have hf1 : deriv (rnLapse M Q) (x 1) = 2 * M / (x 1) ^ 2 - 2 * Q ^ 2 / (x 1) ^ 3 :=
-    (hasDerivAt_rnLapse M Q (x 1) hr).deriv
-  have hf2 : deriv (deriv (rnLapse M Q)) (x 1) = -4 * M / (x 1) ^ 3 + 6 * Q ^ 2 / (x 1) ^ 4 :=
-    (hasDerivAt_deriv_rnLapse M Q (x 1) hr).deriv
   have hfdiff := eventually_differentiableAt_rnLapse M Q (x 1) hr
   have hf2diff := (hasDerivAt_deriv_rnLapse M Q (x 1) hr).differentiableAt
-  rw [rnMetric, rnMetricInv,
+  rw [rnMetric_eq_staticSpherical, rnMetricInv_eq_staticSpherical,
     ricciScalarOf_staticSpherical (rnLapse M Q) x hr hf hsin hfdiff hf2diff,
-    hf1, hf2, rnLapse]
+    deriv_rnLapse M Q (x 1) hr, deriv_deriv_rnLapse M Q (x 1) hr, rnLapse]
   field_simp [hr]
   ring
 

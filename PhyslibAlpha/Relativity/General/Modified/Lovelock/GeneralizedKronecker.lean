@@ -110,6 +110,39 @@ lemma genKronecker_eq_zero_of_lt {n k : ℕ} (h : n < k) (a b : Fin k → Fin n)
     ring
   linarith
 
+/-- Reindexing a 5-index generalized Kronecker delta `δ^{i a b c d}_{j e f g h}` by permutation
+inversion isolates the fiber condition `p 0 ↦ j` from the four tensor contraction indices. -/
+lemma genKronecker_five_eq_sum_perm {n : ℕ} (i j a b c d e f g h : Fin n) :
+    genKronecker 5 ![i, a, b, c, d] ![j, e, f, g, h] =
+      ∑ p : Perm (Fin 5), ((Perm.sign p : ℤ) : ℝ) *
+        (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) *
+        ((if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) *
+         (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) *
+         (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) *
+         (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0)) := by
+  simp only [genKronecker]
+  rw [← Equiv.sum_comp (Equiv.inv (Perm (Fin 5)))]
+  refine Finset.sum_congr rfl fun p _ => ?_
+  have hinv : Equiv.inv (Perm (Fin 5)) p = p⁻¹ := rfl
+  rw [hinv, Perm.sign_inv, ← Equiv.prod_comp p]
+  have hp : ∀ t : Fin 5,
+      (if ![i, a, b, c, d] (p t) = ![j, e, f, g, h] (p⁻¹ (p t)) then (1 : ℝ) else 0) =
+        (if ![i, a, b, c, d] (p t) = ![j, e, f, g, h] t then (1 : ℝ) else 0) := fun t => by
+    rw [Perm.inv_def, Equiv.symm_apply_apply]
+  simp_rw [hp]
+  have h0 : (if ![i, a, b, c, d] (p 0) = ![j, e, f, g, h] 0 then (1 : ℝ) else 0) =
+      (if ![i, a, b, c, d] (p 0) = j then (1 : ℝ) else 0) := rfl
+  have h1 : (if ![i, a, b, c, d] (p 1) = ![j, e, f, g, h] 1 then (1 : ℝ) else 0) =
+      (if ![i, a, b, c, d] (p 1) = e then (1 : ℝ) else 0) := rfl
+  have h2 : (if ![i, a, b, c, d] (p 2) = ![j, e, f, g, h] 2 then (1 : ℝ) else 0) =
+      (if ![i, a, b, c, d] (p 2) = f then (1 : ℝ) else 0) := rfl
+  have h3 : (if ![i, a, b, c, d] (p 3) = ![j, e, f, g, h] 3 then (1 : ℝ) else 0) =
+      (if ![i, a, b, c, d] (p 3) = g then (1 : ℝ) else 0) := rfl
+  have h4 : (if ![i, a, b, c, d] (p 4) = ![j, e, f, g, h] 4 then (1 : ℝ) else 0) =
+      (if ![i, a, b, c, d] (p 4) = h then (1 : ℝ) else 0) := rfl
+  rw [Fin.prod_univ_five, h0, h1, h2, h3, h4]
+  ring
+
 /-!
 
 ## B. Antisymmetric coset decompositions of `S_4` and `S_5`

@@ -77,11 +77,6 @@ noncomputable def kerrRicci (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
 noncomputable def kerrEinstein (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
   einsteinTensorOf (kerrMetric M a) (kerrMetricInv M a) x
 
-private lemma pd_eq_zero_of (μ : Fin 4) (f : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (c : ℝ)
-    (hf : ∀ s, f (Function.update x μ s) = c) : coordDeriv μ f x = 0 := by
-  have hfn : (fun s => f (Function.update x μ s)) = fun _ => c := funext hf
-  rw [coordDeriv, hfn, deriv_const']
-
 private lemma hasDerivAt_sigma3_r (a r θ : ℝ) :
     HasDerivAt (fun s => sigma a s θ ^ 3) (3 * sigma a r θ ^ 2 * (2 * r)) r :=
   ((hasDerivAt_sigma_r a r θ).pow 3).congr_deriv (by ring)
@@ -131,7 +126,7 @@ lemma pd_kerrChristoffelTrace_11 (a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (
   have hm : HasDerivAt (fun s : ℝ => 2 * s) 2 (x 1) :=
     ((hasDerivAt_const (x 1) 2).fun_mul (hasDerivAt_id (x 1))).congr_deriv (by ring)
   have hd := hm.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
@@ -143,7 +138,7 @@ lemma pd_kerrChristoffelTrace_21 (a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (
   have hfun : (fun t => kerrChristoffelTrace a (Function.update x 2 t) 1)
       = fun t => 2 * x 1 / sigma a (x 1) t := by funext t; simp [kerrChristoffelTrace]
   have hd := (hasDerivAt_const (x 2) (2 * x 1)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   ring
 
 /-- Partial derivative `∂_r (kerrChristoffelTrace a · 2)`. -/
@@ -157,7 +152,7 @@ lemma pd_kerrChristoffelTrace_12 (a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (
   have hd1 := hasDerivAt_const (x 1) (Real.cos (x 2) / Real.sin (x 2))
   have hd2 := (hasDerivAt_const (x 1) (2 * a ^ 2 * Real.cos (x 2) * Real.sin (x 2))).fun_div
     (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, (hd1.fun_sub hd2).deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hd1.fun_sub hd2))]
   ring
 
 /-- Partial derivative `∂_θ (kerrChristoffelTrace a · 2)`. -/
@@ -176,7 +171,7 @@ lemma pd_kerrChristoffelTrace_22 (a : ℝ) (x : Fin 4 → ℝ)
   have hcot := (Real.hasDerivAt_cos (x 2)).fun_div (Real.hasDerivAt_sin (x 2)) hs
   have hnum := (hasDerivAt_cos_mul_sin (x 2)).const_mul (2 * a ^ 2)
   have hq := hnum.fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, (hcot.fun_sub hq).deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hcot.fun_sub hq))]
   have hsc := Real.sin_sq_add_cos_sq (x 2)
   field_simp [hs, hsig]
   linear_combination -sigma a (x 1) (x 2) ^ 2 * hsc
@@ -200,7 +195,7 @@ private lemma pd_kerrG_1_00 (M a : ℝ) (x : Fin 4 → ℝ)
         / sigma a s (x 2) ^ 3 := by funext s; simp [kerrChristoffel]
   have hd := (hasDerivAt_num_1_00 M a x).fun_div (hasDerivAt_sigma3_r a (x 1) (x 2))
     (pow_ne_zero 3 hsig)
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta]
   ring
@@ -222,7 +217,7 @@ private lemma pd_kerrG_1_03 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     ring
   have hd := ((hasDerivAt_num_1_00 M a x).fun_div (hasDerivAt_sigma3_r a (x 1) (x 2))
     (pow_ne_zero 3 hsig)).const_mul (-(a * Real.sin (x 2) ^ 2))
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta]
   ring
@@ -252,7 +247,7 @@ private lemma pd_kerrG_1_11 (M a : ℝ) (x : Fin 4 → ℝ)
     exact ((h1.fun_add h2).fun_neg).congr_deriv (by ring)
   have hden := (hasDerivAt_sigma_r a (x 1) (x 2)).fun_mul (hasDerivAt_delta_r M a (x 1))
   have hd := hnum.fun_div hden (mul_ne_zero hsig hdel)
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig, hdel]
   simp only [sigma, delta, c0, c1]
   ring
@@ -265,7 +260,7 @@ private lemma pd_kerrG_1_12 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     funext s; simp [kerrChristoffel]
   have hd := (hasDerivAt_const (x 1) (-a ^ 2 * Real.cos (x 2) * Real.sin (x 2))).fun_div
     (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   ring
 
 private lemma pd_kerrG_1_22 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
@@ -277,7 +272,7 @@ private lemma pd_kerrG_1_22 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
       = fun s => (-s * delta M a s) / sigma a s (x 2) := by funext s; simp [kerrChristoffel]
   have hnum := (hasDerivAt_id' (x 1)).fun_neg.fun_mul (hasDerivAt_delta_r M a (x 1))
   have hd := hnum.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta]
   ring
@@ -318,7 +313,7 @@ private lemma pd_kerrG_1_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     ring
   have hd := (((hasDerivAt_delta_r M a (x 1)).fun_mul hP).fun_div
     (hasDerivAt_sigma3_r a (x 1) (x 2)) (pow_ne_zero 3 hsig)).const_mul (-(Real.sin (x 2) ^ 2))
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, delta, P, P', k0, k1, k2, k3]
   ring
@@ -338,7 +333,7 @@ private lemma pd_kerrG_2_00 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     ring
   have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma3_th a (x 1) (x 2))
     (pow_ne_zero 3 hsig)).const_mul (-2 * M * a ^ 2 * x 1)
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
@@ -359,7 +354,7 @@ private lemma pd_kerrG_2_03 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     ring
   have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma3_th a (x 1) (x 2))
     (pow_ne_zero 3 hsig)).const_mul (2 * M * a * x 1 * (a ^ 2 + x 1 ^ 2))
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
@@ -379,7 +374,7 @@ private lemma pd_kerrG_2_11 (M a : ℝ) (x : Fin 4 → ℝ)
     ring
   have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2))
     hsig).const_mul (a ^ 2 / delta M a (x 1))
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig, hdel]
   simp only [sigma]
   ring
@@ -390,7 +385,7 @@ private lemma pd_kerrG_2_12 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
   have hfun : (fun t => kerrChristoffel M a (Function.update x 2 t) 2 1 2)
       = fun t => x 1 / sigma a (x 1) t := by funext t; simp [kerrChristoffel]
   have hd := (hasDerivAt_const (x 2) (x 1)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   ring
 
 private lemma pd_kerrG_2_22 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
@@ -407,7 +402,7 @@ private lemma pd_kerrG_2_22 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     ring
   have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2))
     hsig).const_mul (-a ^ 2)
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma]
   ring
@@ -463,7 +458,7 @@ private lemma pd_kerrG_2_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     ring
   have hd := (((hasDerivAt_cos_mul_sin (x 2)).fun_mul hQ).fun_div
     (hasDerivAt_sigma3_th a (x 1) (x 2)) (pow_ne_zero 3 hsig)).fun_neg
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   field_simp [hsig]
   simp only [sigma, Q, c4, c2, c0]
   ring
@@ -542,135 +537,98 @@ private lemma ricciOf_kerr_eq_sum (M a : ℝ) (x : Fin 4 → ℝ)
   rw [h1, htr_pd, h3]
   ring
 
+private lemma kerrChristoffel_swap_slice (M a : ℝ) (k i j : Fin 4) :
+    (fun y => kerrChristoffel M a y k i j) = fun y => kerrChristoffel M a y k j i :=
+  funext fun y => kerrChristoffel_symm M a y k i j
+
+private lemma kerr_sin_sq_four (θ : ℝ) :
+    Real.sin θ ^ 4 = (1 - Real.cos θ ^ 2) ^ 2 := by
+  rw [show Real.sin θ ^ 4 = (Real.sin θ ^ 2) ^ 2 by ring, Real.sin_sq]
+
+local macro "kerr_ricci_clear" : tactic =>
+  `(tactic| {
+    simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
+    norm_num
+    field_simp
+    simp -failIfUnchanged only [sigma, delta, Real.sin_sq, kerr_sin_sq_four]
+    ring
+  })
+
 private lemma ricciOf_kerr_00 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 0 0 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
   rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 0 0, pd_kerrG_1_00 M a x hsig hdel,
     pd_kerrG_2_00 M a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_03 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 0 3 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 0 3]
-  have hsym1 : (fun y => kerrChristoffel M a y 1 3 0) = fun y => kerrChristoffel M a y 1 0 3 := by
-    funext y; exact kerrChristoffel_symm M a y 1 3 0
-  have hsym2 : (fun y => kerrChristoffel M a y 2 3 0) = fun y => kerrChristoffel M a y 2 0 3 := by
-    funext y; exact kerrChristoffel_symm M a y 2 3 0
-  rw [hsym1, hsym2, pd_kerrG_1_03 M a x hsig, pd_kerrG_2_03 M a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs2]
-  ring
+  rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 0 3,
+    kerrChristoffel_swap_slice M a 1 3 0, kerrChristoffel_swap_slice M a 2 3 0,
+    pd_kerrG_1_03 M a x hsig, pd_kerrG_2_03 M a x hsig]
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_30 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 3 0 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  have hs4 : Real.sin (x 2) ^ 4 = (1 - Real.cos (x 2) ^ 2) ^ 2 := by
-    rw [show Real.sin (x 2) ^ 4 = (Real.sin (x 2) ^ 2) ^ 2 by ring, hs2]
   rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 3 0, pd_kerrG_1_03 M a x hsig,
     pd_kerrG_2_03 M a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs4, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_11 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 1 1 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
   rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 1 1, pd_kerrG_1_11 M a x hsig hdel,
     pd_kerrG_2_11 M a x hsig hdel]
   simp only [Fin.isValue, ↓reduceIte, true_or]
   rw [pd_kerrChristoffelTrace_11 a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_12 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 1 2 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 1 2]
-  have hsym1 : (fun y => kerrChristoffel M a y 1 2 1) = fun y => kerrChristoffel M a y 1 1 2 := by
-    funext y; exact kerrChristoffel_symm M a y 1 2 1
-  have hsym2 : (fun y => kerrChristoffel M a y 2 2 1) = fun y => kerrChristoffel M a y 2 1 2 := by
-    funext y; exact kerrChristoffel_symm M a y 2 2 1
-  rw [hsym1, hsym2, pd_kerrG_1_12 M a x hsig, pd_kerrG_2_12 M a x hsig]
+  rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 1 2,
+    kerrChristoffel_swap_slice M a 1 2 1, kerrChristoffel_swap_slice M a 2 2 1,
+    pd_kerrG_1_12 M a x hsig, pd_kerrG_2_12 M a x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
   rw [pd_kerrChristoffelTrace_21 a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_21 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 2 1 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  have hs4 : Real.sin (x 2) ^ 4 = (1 - Real.cos (x 2) ^ 2) ^ 2 := by
-    rw [show Real.sin (x 2) ^ 4 = (Real.sin (x 2) ^ 2) ^ 2 by ring, hs2]
   rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 2 1, pd_kerrG_1_12 M a x hsig,
     pd_kerrG_2_12 M a x hsig]
   simp only [Fin.isValue, ↓reduceIte, true_or]
   rw [pd_kerrChristoffelTrace_12 a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs4, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_22 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 2 2 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  have hs4 : Real.sin (x 2) ^ 4 = (1 - Real.cos (x 2) ^ 2) ^ 2 := by
-    rw [show Real.sin (x 2) ^ 4 = (Real.sin (x 2) ^ 2) ^ 2 by ring, hs2]
   rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 2 2, pd_kerrG_1_22 M a x hsig,
     pd_kerrG_2_22 M a x hsig]
   simp only [Fin.isValue, ↓reduceIte, or_true]
   rw [pd_kerrChristoffelTrace_22 a x hsig hs]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs4, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma ricciOf_kerr_33 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0) :
     ricciTensorOf (kerrMetric M a) (kerrMetricInv M a) x 3 3 = 0 := by
-  have hs2 : Real.sin (x 2) ^ 2 = 1 - Real.cos (x 2) ^ 2 := Real.sin_sq (x 2)
-  have hs4 : Real.sin (x 2) ^ 4 = (1 - Real.cos (x 2) ^ 2) ^ 2 := by
-    rw [show Real.sin (x 2) ^ 4 = (Real.sin (x 2) ^ 2) ^ 2 by ring, hs2]
   rw [ricciOf_kerr_eq_sum M a x hsig hdel hs 3 3, pd_kerrG_1_33 M a x hsig,
     pd_kerrG_2_33 M a x hsig]
-  simp only [Fin.sum_univ_four, kerrChristoffelTrace, kerrChristoffel]
-  norm_num
-  field_simp [hsig, hdel, hs]
-  simp -failIfUnchanged only [sigma, delta, hs4, hs2]
-  ring
+  kerr_ricci_clear
 
 private lemma pd_kerrG_zero_of_const (M a : ℝ) (x : Fin 4 → ℝ) (μ k i j : Fin 4)
     (h : ∀ s, kerrChristoffel M a (Function.update x μ s) k i j = 0) :
     coordDeriv μ (fun y => kerrChristoffel M a y k i j) x = 0 :=
-  pd_eq_zero_of μ _ x 0 h
+  coordDeriv_const_slice μ 0 h
 
 private lemma pd_kerrTr_zero_of_const (a : ℝ) (x : Fin 4 → ℝ) (μ σ : Fin 4)
     (h : ∀ s, kerrChristoffelTrace a (Function.update x μ s) σ = 0) :
     coordDeriv μ (fun y => kerrChristoffelTrace a y σ) x = 0 :=
-  pd_eq_zero_of μ _ x 0 h
+  coordDeriv_const_slice μ 0 h
 
 private lemma ricciOf_kerr_offblock (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (hdel : delta M a (x 1) ≠ 0) (hs : Real.sin (x 2) ≠ 0)

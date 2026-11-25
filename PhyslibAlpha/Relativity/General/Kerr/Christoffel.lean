@@ -147,7 +147,7 @@ private lemma pd_kerrMetric_1_00 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
     ((hasDerivAt_const (x 1) (2 * M)).fun_mul (hasDerivAt_id (x 1))).congr_deriv (by ring)
   have hq := hm.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
   have hd := ((hasDerivAt_const (x 1) 1).fun_sub hq).fun_neg
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp only [kerrMetricD, sigma, Fin.isValue, and_self, ↓reduceIte]
   field_simp [hsig]; ring
 
@@ -161,7 +161,7 @@ private lemma pd_kerrMetric_1_03 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
     ((((hasDerivAt_const (x 1) (2 * M * a)).fun_mul (hasDerivAt_id (x 1))).mul_const
       (Real.sin (x 2) ^ 2))).congr_deriv (by ring)
   have hq := (hm.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig).fun_neg
-  rw [coordDeriv, hfun, hq.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
   simp only [kerrMetricD, sigma, Fin.isValue, Fin.reduceEq, and_false, and_true, or_false,
     ↓reduceIte]
   field_simp [hsig]; ring
@@ -171,14 +171,14 @@ private lemma pd_kerrMetric_1_11 (M a : ℝ) (x : Fin 4 → ℝ) (hdel : delta M
   have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 1 1)
       = fun s => sigma a s (x 2) / delta M a s := by funext s; simp [kerrMetric]
   have hd := (hasDerivAt_sigma_r a (x 1) (x 2)).fun_div (hasDerivAt_delta_r M a (x 1)) hdel
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp [kerrMetricD]
 
 private lemma pd_kerrMetric_1_22 (M a : ℝ) (x : Fin 4 → ℝ) :
     coordDeriv 1 (fun y => kerrMetric M a y 2 2) x = kerrMetricD M a 1 x 2 2 := by
   have hfun : (fun s => kerrMetric M a (Function.update x 1 s) 2 2)
       = fun s => sigma a s (x 2) := by funext s; simp [kerrMetric]
-  rw [coordDeriv, hfun, (hasDerivAt_sigma_r a (x 1) (x 2)).deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ (hasDerivAt_sigma_r a (x 1) (x 2)))]
   simp [kerrMetricD]
 
 private lemma pd_kerrMetric_1_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
@@ -188,7 +188,7 @@ private lemma pd_kerrMetric_1_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
     funext s; simp [kerrMetric]
   have hnum := (hasDerivAt_bigB_r M a (x 1) (x 2)).mul_const (Real.sin (x 2) ^ 2)
   have hq := hnum.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hq.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
   have hval : kerrMetricD M a 1 x 3 3 = Real.sin (x 2) ^ 2 *
       ((4 * x 1 * (x 1 ^ 2 + a ^ 2) - a ^ 2 * (2 * x 1 - 2 * M) * Real.sin (x 2) ^ 2)
           * sigma a (x 1) (x 2) - 2 * x 1 * kerrAxialFactor M a (x 1) (x 2))
@@ -231,7 +231,7 @@ private lemma pd_kerrMetric_2_00 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
       = fun t => -(1 - 2 * M * x 1 / sigma a (x 1) t) := by funext t; simp [kerrMetric]
   have hq := (hasDerivAt_const (x 2) (2 * M * x 1)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
   have hd := ((hasDerivAt_const (x 2) 1).fun_sub hq).fun_neg
-  rw [coordDeriv, hfun, hd.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hd)]
   simp only [kerrMetricD, Fin.isValue, Fin.reduceEq, and_self, ↓reduceIte]
   ring
 
@@ -242,7 +242,7 @@ private lemma pd_kerrMetric_2_03 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
     funext t; simp [kerrMetric]
   have hm := (hasDerivAt_sin_sq (x 2)).const_mul (2 * M * a * x 1)
   have hq := (hm.fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig).fun_neg
-  rw [coordDeriv, hfun, hq.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
   have hval : kerrMetricD M a 2 x 0 3 =
       -4 * M * a * x 1 * Real.sin (x 2) * Real.cos (x 2) * (x 1 ^ 2 + a ^ 2)
         / sigma a (x 1) (x 2) ^ 2 := by
@@ -277,7 +277,7 @@ private lemma pd_kerrMetric_2_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
     funext t; simp [kerrMetric]
   have hnum := (hasDerivAt_bigB_th M a (x 1) (x 2)).fun_mul (hasDerivAt_sin_sq (x 2))
   have hq := hnum.fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
-  rw [coordDeriv, hfun, hq.deriv]
+  rw [coordDeriv_of_hasDerivAt _ (hfun ▸ hq)]
   have hval : kerrMetricD M a 2 x 3 3 =
       ((-2 * a ^ 2 * delta M a (x 1) * Real.sin (x 2) ^ 3 * Real.cos (x 2)
             + 2 * kerrAxialFactor M a (x 1) (x 2) * Real.sin (x 2) * Real.cos (x 2))
@@ -395,14 +395,10 @@ lemma kerrChristoffel_symm (M a : ℝ) (x : Fin 4 → ℝ) (k i j : Fin 4) :
 lemma pd_kerrG_const_03 (M a : ℝ) (x : Fin 4 → ℝ) (μ : Fin 4) (hμ : μ = 0 ∨ μ = 3)
     (k i j : Fin 4) : coordDeriv μ (fun y => kerrChristoffel M a y k i j) x = 0 := by
   rcases hμ with rfl | rfl
-  · have hfn : (fun s => kerrChristoffel M a (Function.update x 0 s) k i j)
-    = fun _ => kerrChristoffel M a x k i j := by
-      funext s; simp [kerrChristoffel, sigma, delta]
-    rw [coordDeriv, hfn, deriv_const']
-  · have hfn : (fun s => kerrChristoffel M a (Function.update x 3 s) k i j)
-    = fun _ => kerrChristoffel M a x k i j := by
-      funext s; simp [kerrChristoffel, sigma, delta]
-    rw [coordDeriv, hfn, deriv_const']
+  · exact coordDeriv_const_slice 0 (kerrChristoffel M a x k i j)
+      (fun _ => by simp [kerrChristoffel, sigma, delta])
+  · exact coordDeriv_const_slice 3 (kerrChristoffel M a x k i j)
+      (fun _ => by simp [kerrChristoffel, sigma, delta])
 
 /-!
 
