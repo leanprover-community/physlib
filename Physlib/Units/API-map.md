@@ -154,8 +154,9 @@ and kilowatt hour. [56] Pressure has dimension mass over length over time square
 pascal, millimetre of mercury, bar, standard atmosphere, torr and pound per square inch. [57]
 Momentum has dimension mass times length over time and takes values in d spatial components:
 it is the three-momentum rather than the four-momentum. [58] The mass of a particle is a named
-dimension-carrying quantity in the manner of momentum, and so is its velocity in d spatial
-dimensions. [TODO]
+dimension-carrying quantity in the manner of momentum, a real number with the dimension of
+mass, and so is its velocity in d spatial dimensions, with the dimension of a length over a
+time. [78][79]
 
 ### Physical constants
 
@@ -365,6 +366,8 @@ the numerical oscillator, and has its derivative from the generic transport of d
 76. Physlib/Units/Constants.lean — `exists_units_constants_eq_one`
 77. Physlib/StatisticalMechanics/BoltzmannConstant.lean — `BoltzmannConstant`,
    `BoltzmannConstant.instHasDim`, `boltzmannConstant`, `boltzmannConstant_in_SI`
+78. Physlib/Units/WithDim/Mass.lean — `Mass`
+79. Physlib/Units/WithDim/Velocity.lean — `Velocity`
 
 ## References
 
