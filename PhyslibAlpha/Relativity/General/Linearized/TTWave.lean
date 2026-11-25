@@ -87,16 +87,16 @@ lemma traceReversed_ttWave (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 →
   simp [traceReversed, ttWave_trace_zero]
 
 private lemma pd_1_wave (c : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    pd 1 (fun y => c * f (y 0 - y 3)) x = 0 := by
+    coordDeriv 1 (fun y => c * f (y 0 - y 3)) x = 0 := by
   have hfn : (fun s => c * f (Function.update x 1 s 0 - Function.update x 1 s 3))
       = fun _ => c * f (x 0 - x 3) := by funext s; simp
-  rw [pd, hfn, deriv_const']
+  rw [coordDeriv, hfn, deriv_const']
 
 private lemma pd_2_wave (c : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    pd 2 (fun y => c * f (y 0 - y 3)) x = 0 := by
+    coordDeriv 2 (fun y => c * f (y 0 - y 3)) x = 0 := by
   have hfn : (fun s => c * f (Function.update x 2 s 0 - Function.update x 2 s 3))
       = fun _ => c * f (x 0 - x 3) := by funext s; simp
-  rw [pd, hfn, deriv_const']
+  rw [coordDeriv, hfn, deriv_const']
 
 /-- A `TT` wave automatically satisfies the Lorenz gauge condition `∂^k h^{TT}_{kj} = 0`
 for any wave profile `f`. -/
@@ -104,8 +104,9 @@ lemma ttWave_lorenz_gauge (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → 
     lorenzGaugeCond (ttWave hPlus hCross f) x j := by
   have htr : ∀ y, traceReversed (ttWave hPlus hCross f y) = ttWave hPlus hCross f y :=
     traceReversed_ttWave hPlus hCross f
-  have hc0 : ∀ μ, pd μ (fun _ : Fin 4 → ℝ => (0 : ℝ)) x = 0 := fun μ => pd_const μ 0 x
-  have h1neg : pd 2 (fun y => -(hPlus * f (y 0 - y 3))) x = 0 := by
+  have hc0 : ∀ μ, coordDeriv μ (fun _ : Fin 4 → ℝ => (0 : ℝ)) x = 0 :=
+    fun μ => coordDeriv_const μ 0 x
+  have h1neg : coordDeriv 2 (fun y => -(hPlus * f (y 0 - y 3))) x = 0 := by
     have hfun : (fun y : Fin 4 → ℝ => -(hPlus * f (y 0 - y 3)))
         = fun y => (-hPlus) * f (y 0 - y 3) := funext fun y => by ring
     rw [hfun, pd_2_wave]
@@ -118,17 +119,17 @@ lemma ttWave_lorenz_gauge (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → 
   · simp [hc0]
 
 private lemma pd_0_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) (x : Fin 4 → ℝ) :
-    pd 0 (fun y => c * f (y 0 - y 3)) x = c * deriv f (x 0 - x 3) := by
+    coordDeriv 0 (fun y => c * f (y 0 - y 3)) x = c * deriv f (x 0 - x 3) := by
   have hfun : (fun s => c * f (Function.update x 0 s 0 - Function.update x 0 s 3))
       = fun s => c * f (s - x 3) := by funext s; simp
   have hsub : HasDerivAt (fun s => s - x 3) 1 (x 0) := by
     simpa using (hasDerivAt_id (x 0)).sub_const (x 3)
   have hd : HasDerivAt (fun s => c * f (s - x 3)) (c * deriv f (x 0 - x 3)) (x 0) := by
     simpa using ((hf (x 0 - x 3)).hasDerivAt.comp (x 0) hsub).const_mul c
-  rw [pd, hfun, hd.deriv]
+  rw [coordDeriv, hfun, hd.deriv]
 
 private lemma pd_3_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) (x : Fin 4 → ℝ) :
-    pd 3 (fun y => c * f (y 0 - y 3)) x = -(c * deriv f (x 0 - x 3)) := by
+    coordDeriv 3 (fun y => c * f (y 0 - y 3)) x = -(c * deriv f (x 0 - x 3)) := by
   have hfun : (fun s => c * f (Function.update x 3 s 0 - Function.update x 3 s 3))
       = fun s => c * f (x 0 - s) := by funext s; simp
   have hsub : HasDerivAt (fun s => x 0 - s) (-1) (x 3) :=
@@ -137,32 +138,33 @@ private lemma pd_3_wave (c : ℝ) (f : ℝ → ℝ) (hf : Differentiable ℝ f) 
     (hf (x 0 - x 3)).hasDerivAt.comp (x 3) hsub
   have hd : HasDerivAt (fun s => c * f (x 0 - s)) (-(c * deriv f (x 0 - x 3))) (x 3) :=
     (hd0.const_mul c).congr_deriv (by ring)
-  rw [pd, hfun, hd.deriv]
+  rw [coordDeriv, hfun, hd.deriv]
 
 private lemma boxEta_zero (x : Fin 4 → ℝ) : boxEta (fun _ : Fin 4 → ℝ => (0 : ℝ)) x = 0 := by
-  have hpd : ∀ μ : Fin 4, pd μ (fun _ : Fin 4 → ℝ => (0 : ℝ)) = fun _ => 0 :=
-    fun μ => funext fun y => pd_const μ 0 y
-  simp only [boxEta, hpd, pd_const, mul_zero, Finset.sum_const_zero]
+  have hpd : ∀ μ : Fin 4, coordDeriv μ (fun _ : Fin 4 → ℝ => (0 : ℝ)) = fun _ => 0 :=
+    fun μ => funext fun y => coordDeriv_const μ 0 y
+  simp only [boxEta, hpd, coordDeriv_const, mul_zero, Finset.sum_const_zero]
 
 private lemma boxEta_wave (c : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f) (x : Fin 4 → ℝ) :
     boxEta (fun y => c * f (y 0 - y 3)) x = 0 := by
   have hf1 : Differentiable ℝ f := hf.differentiable (by norm_num)
   have hf2 : Differentiable ℝ (deriv f) :=
     ((contDiff_succ_iff_deriv (n := 1)).mp hf).2.2.differentiable (by norm_num)
-  have h0eq : pd (0 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3))
+  have h0eq : coordDeriv (0 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3))
       = fun y => c * deriv f (y 0 - y 3) :=
     funext fun y => pd_0_wave c f hf1 y
-  have h3eq : pd (3 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3))
+  have h3eq : coordDeriv (3 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3))
       = fun y => (-c) * deriv f (y 0 - y 3) := by
     funext y
     rw [pd_3_wave c f hf1 y]
     ring
-  have hc1 : pd (1 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
+  have hc1 : coordDeriv (1 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
     funext fun y => pd_1_wave c f y
-  have hc2 : pd (2 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
+  have hc2 : coordDeriv (2 : Fin 4) (fun y : Fin 4 → ℝ => c * f (y 0 - y 3)) = fun _ => 0 :=
     funext fun y => pd_2_wave c f y
   simp only [boxEta, Fin.sum_univ_four, minkowskiMetric4_apply, h0eq, hc1, hc2, h3eq]
-  rw [pd_0_wave c (deriv f) hf2 x, pd_3_wave (-c) (deriv f) hf2 x, pd_const, pd_const]
+  rw [pd_0_wave c (deriv f) hf2 x, pd_3_wave (-c) (deriv f) hf2 x, coordDeriv_const,
+    coordDeriv_const]
   norm_num
 
 private lemma contDiffAt_wave (c : ℝ) (f : ℝ → ℝ) (hf : ContDiff ℝ 2 f) (x : Fin 4 → ℝ) :

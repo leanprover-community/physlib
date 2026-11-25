@@ -88,7 +88,7 @@ lemma flrwTetrad_mul_inv (a : ℝ → ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠
 /-- Spatial Weitzenböck connection component `Γ^k_{0k} = H = a'(t) / a(t)` for `k ∈ {1, 2, 3}` on
 a flat FLRW background. -/
 lemma flrwWeitzenbock_hubble (a : ℝ → ℝ) (x : Fin 4 → ℝ) (k : Fin 4) (hk : k ≠ 0) :
-    flrwTetradInv a x k k * pd 0 (fun y => flrwTetrad a y k k) x =
+    flrwTetradInv a x k k * coordDeriv 0 (fun y => flrwTetrad a y k k) x =
       deriv a (x 0) / a (x 0) := by
   have hfun : (fun s => flrwTetrad a (Function.update x 0 s) k k) = a := by
     funext s
@@ -103,7 +103,7 @@ lemma flrwWeitzenbock_hubble (a : ℝ → ℝ) (x : Fin 4 → ℝ) (k : Fin 4) (
     · simp [flrwTetradInv]
     · simp [flrwTetradInv]
     · simp [flrwTetradInv]
-  rw [pd, hfun, hinv, div_eq_inv_mul]
+  rw [coordDeriv, hfun, hinv, div_eq_inv_mul]
 
 /-- Flat FLRW teleparallel torsion scalar `T = 6 H² = 6 (a'(t) / a(t))²`. -/
 noncomputable def flrwTorsionScalar (a : ℝ → ℝ) (t : ℝ) : ℝ :=

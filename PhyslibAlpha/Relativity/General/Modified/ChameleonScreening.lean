@@ -40,10 +40,11 @@ This module formalises both halves of the mechanism:
 ## ii. Key results
 
 - `ChameleonModel` : chameleon scalar model parameterized by density–mass coupling `c`.
-- `chameleonMass`, `comptonRange`, `yukawaRatio` : effective mass, Compton range, and Yukawa factor.
-- `chameleonMass_mono`, `chameleon_range_shrinks`, `yukawaRatio_lt_half` : monotonicity and
+- `chameleonMass`, `comptonRange`, `yukawaSuppression` : effective mass, Compton range, and
+  Yukawa factor.
+- `chameleonMass_mono`, `chameleon_range_shrinks`, `yukawaSuppression_lt_half` : monotonicity and
   suppression beyond one Compton wavelength.
-- `thinShell`, `screeningFactor`, `thin_shell_suppressed`, `screeningFactor_eq_one_iff` :
+- `thinShellParameter`, `screeningFactor`, `thin_shell_suppressed`, `screeningFactor_eq_one_iff` :
   thin-shell cap `min Δ 1`.
 - `exteriorScalarProfile`, `hasDerivAt_exteriorScalarProfile`, `fifthForceRatio_thin_shell`,
   `thin_shell_weak`,
@@ -110,12 +111,12 @@ lemma chameleon_range_shrinks {ρ₁ ρ₂ c : ℝ} (hpos : 0 < chameleonMass ρ
   comptonRange_antitone hpos (chameleonMass_mono hc h)
 
 /-- Yukawa suppression factor `e^{-x}` at dimensionless distance `x = r / λ`. -/
-noncomputable def yukawaRatio (x : ℝ) : ℝ := Real.exp (-x)
+noncomputable def yukawaSuppression (x : ℝ) : ℝ := Real.exp (-x)
 
 /-- Beyond one Compton range (`r ≥ λ`), the Yukawa factor drops below `1/2`. -/
-lemma yukawaRatio_lt_half {x : ℝ} (h : 1 ≤ x) : yukawaRatio x < 1 / 2 := by
-  have h1 : yukawaRatio x ≤ Real.exp (-1) := by
-    simp only [yukawaRatio]
+lemma yukawaSuppression_lt_half {x : ℝ} (h : 1 ≤ x) : yukawaSuppression x < 1 / 2 := by
+  have h1 : yukawaSuppression x ≤ Real.exp (-1) := by
+    simp only [yukawaSuppression]
     exact Real.exp_le_exp.mpr (by linarith)
   have hhalf : Real.exp (-1) < 1 / 2 := by
     rw [Real.exp_neg]
@@ -130,15 +131,15 @@ lemma yukawaRatio_lt_half {x : ℝ} (h : 1 ≤ x) : yukawaRatio x < 1 / 2 := by
 -/
 
 /-- Thin-shell parameter `Δ = |δφ| / (2 β M_pl |Φ_N|)`. -/
-noncomputable def thinShell (dphi β Mpl Phi : ℝ) : ℝ :=
+noncomputable def thinShellParameter (dphi β Mpl Phi : ℝ) : ℝ :=
   |dphi| / (2 * β * Mpl * |Phi|)
 
 /-- Surviving fraction `min Δ 1` of the unscreened fifth force. -/
 noncomputable def screeningFactor (Δ : ℝ) : ℝ := min Δ 1
 
 /-- Non-negativity of the thin-shell parameter for positive coupling and potential scale. -/
-lemma thinShell_nonneg {dphi β Mpl Phi : ℝ} (h : 0 ≤ 2 * β * Mpl * |Phi|) :
-    0 ≤ thinShell dphi β Mpl Phi :=
+lemma thinShellParameter_nonneg {dphi β Mpl Phi : ℝ} (h : 0 ≤ 2 * β * Mpl * |Phi|) :
+    0 ≤ thinShellParameter dphi β Mpl Phi :=
   div_nonneg (abs_nonneg dphi) h
 
 /-- The screening factor never exceeds `Δ`. -/

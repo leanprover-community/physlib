@@ -66,7 +66,8 @@ curvature tensors in first-order partial derivatives of `h`.
 noncomputable def linChristoffel (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
     (k i j : Fin 4) : ℝ :=
   (1 / 2) * minkowskiMetric4 k k
-    * (pd j (fun y => h y k i) x + pd i (fun y => h y k j) x - pd k (fun y => h y i j) x)
+    * (coordDeriv j (fun y => h y k i) x + coordDeriv i (fun y => h y k j) x
+      - coordDeriv k (fun y => h y i j) x)
 
 /-- Lower-index symmetry of linearized Christoffel symbols when `h` is symmetric. -/
 lemma linChristoffel_symm (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
@@ -79,7 +80,8 @@ lemma linChristoffel_symm (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ
 /-- Linearized Riemann curvature tensor `R^r_{s m n} = ∂_m Γ^r_{n s} - ∂_n Γ^r_{m s}`. -/
 noncomputable def linRiemann (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
     (r s m n : Fin 4) : ℝ :=
-  pd m (fun y => linChristoffel h y r n s) x - pd n (fun y => linChristoffel h y r m s) x
+  coordDeriv m (fun y => linChristoffel h y r n s) x
+    - coordDeriv n (fun y => linChristoffel h y r m s) x
 
 /-- Antisymmetry of `linRiemann` in its last two indices. -/
 lemma linRiemann_antisymm (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ) (r s m n : Fin 4) :
@@ -113,27 +115,33 @@ establishing linearized diffeomorphism gauge invariance.
 /-- Infinitesimal coordinate gauge transformation `h'_{ij} = h_{ij} + ∂_i ξ_j + ∂_j ξ_i`. -/
 noncomputable def gaugeTransform (h : (Fin 4 → ℝ) → Tensor2 4)
     (ξ : (Fin 4 → ℝ) → (Fin 4 → ℝ)) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  fun i j => h x i j + pd i (fun y => ξ y j) x + pd j (fun y => ξ y i) x
+  fun i j => h x i j + coordDeriv i (fun y => ξ y j) x + coordDeriv j (fun y => ξ y i) x
 
 /-- Pure-gauge metric perturbation `δh_{ij} = ∂_i ξ_j + ∂_j ξ_i`. -/
 noncomputable def pureGauge (ξ : (Fin 4 → ℝ) → (Fin 4 → ℝ)) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  fun i j => pd i (fun y => ξ y j) x + pd j (fun y => ξ y i) x
+  fun i j => coordDeriv i (fun y => ξ y j) x + coordDeriv j (fun y => ξ y i) x
 
 private lemma linChristoffel_pureGauge (ξ : (Fin 4 → ℝ) → (Fin 4 → ℝ)) (x : Fin 4 → ℝ)
     (hξ : ∀ a, ContDiffAt ℝ 2 (fun z => ξ z a) x) (k i j : Fin 4) :
     linChristoffel (pureGauge ξ) x k i j
-      = minkowskiMetric4 k k * pd j (pd i fun z => ξ z k) x := by
-  have d_ki : DifferentiableAt ℝ (pd k fun z => ξ z i) x := pd_differentiableAt k (hξ i)
-  have d_ik : DifferentiableAt ℝ (pd i fun z => ξ z k) x := pd_differentiableAt i (hξ k)
-  have d_kj : DifferentiableAt ℝ (pd k fun z => ξ z j) x := pd_differentiableAt k (hξ j)
-  have d_jk : DifferentiableAt ℝ (pd j fun z => ξ z k) x := pd_differentiableAt j (hξ k)
-  have d_ij : DifferentiableAt ℝ (pd i fun z => ξ z j) x := pd_differentiableAt i (hξ j)
-  have d_ji : DifferentiableAt ℝ (pd j fun z => ξ z i) x := pd_differentiableAt j (hξ i)
+      = minkowskiMetric4 k k * coordDeriv j (coordDeriv i fun z => ξ z k) x := by
+  have d_ki : DifferentiableAt ℝ (coordDeriv k fun z => ξ z i) x :=
+    coordDeriv_differentiableAt k (hξ i)
+  have d_ik : DifferentiableAt ℝ (coordDeriv i fun z => ξ z k) x :=
+    coordDeriv_differentiableAt i (hξ k)
+  have d_kj : DifferentiableAt ℝ (coordDeriv k fun z => ξ z j) x :=
+    coordDeriv_differentiableAt k (hξ j)
+  have d_jk : DifferentiableAt ℝ (coordDeriv j fun z => ξ z k) x :=
+    coordDeriv_differentiableAt j (hξ k)
+  have d_ij : DifferentiableAt ℝ (coordDeriv i fun z => ξ z j) x :=
+    coordDeriv_differentiableAt i (hξ j)
+  have d_ji : DifferentiableAt ℝ (coordDeriv j fun z => ξ z i) x :=
+    coordDeriv_differentiableAt j (hξ i)
   simp only [linChristoffel, pureGauge]
-  rw [pd_add j x (slice_differentiableAt j d_ki) (slice_differentiableAt j d_ik),
-    pd_add i x (slice_differentiableAt i d_kj) (slice_differentiableAt i d_jk),
-    pd_add k x (slice_differentiableAt k d_ij) (slice_differentiableAt k d_ji),
-    pd_comm k i (hξ j), pd_comm k j (hξ i), pd_comm i j (hξ k)]
+  rw [coordDeriv_add j x (slice_differentiableAt j d_ki) (slice_differentiableAt j d_ik),
+    coordDeriv_add i x (slice_differentiableAt i d_kj) (slice_differentiableAt i d_jk),
+    coordDeriv_add k x (slice_differentiableAt k d_ij) (slice_differentiableAt k d_ji),
+    coordDeriv_comm k i (hξ j), coordDeriv_comm k j (hξ i), coordDeriv_comm i j (hξ k)]
   ring
 
 /-- Additivity of `linRiemann` for `C²` perturbations. -/
@@ -159,22 +167,23 @@ lemma linRiemann_add (h1 h2 : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → ℝ)
     have d2 : ∀ a b, DifferentiableAt ℝ (fun z => h2 z a b) y :=
       fun a b => (hy2 a b).differentiableAt (by norm_num)
     simp only [linChristoffel]
-    rw [pd_add j y (slice_differentiableAt j (d1 k i)) (slice_differentiableAt j (d2 k i)),
-      pd_add i y (slice_differentiableAt i (d1 k j)) (slice_differentiableAt i (d2 k j)),
-      pd_add k y (slice_differentiableAt k (d1 i j)) (slice_differentiableAt k (d2 i j))]
+    rw [coordDeriv_add j y (slice_differentiableAt j (d1 k i)) (slice_differentiableAt j (d2 k i)),
+      coordDeriv_add i y (slice_differentiableAt i (d1 k j)) (slice_differentiableAt i (d2 k j)),
+      coordDeriv_add k y (slice_differentiableAt k (d1 i j)) (slice_differentiableAt k (d2 i j))]
     ring
   have hd_lin : ∀ h' : (Fin 4 → ℝ) → Tensor2 4, (∀ a b, ContDiffAt ℝ 2 (fun z => h' z a b) x) →
       ∀ k i j, DifferentiableAt ℝ (fun y => linChristoffel h' y k i j) x := by
     intro h' hh' k i j
     simp only [linChristoffel]
-    exact (((pd_differentiableAt j (hh' k i)).add (pd_differentiableAt i (hh' k j))).sub
-      (pd_differentiableAt k (hh' i j))).const_mul _
+    exact (((coordDeriv_differentiableAt j (hh' k i)).add
+      (coordDeriv_differentiableAt i (hh' k j))).sub
+      (coordDeriv_differentiableAt k (hh' i j))).const_mul _
   simp only [linRiemann]
-  rw [pd_congr_nhds m x (hcongr r n s),
-    pd_congr_nhds n x (hcongr r m s),
-    pd_add m x (slice_differentiableAt m (hd_lin h1 h1c r n s))
+  rw [coordDeriv_congr_nhds m x (hcongr r n s),
+    coordDeriv_congr_nhds n x (hcongr r m s),
+    coordDeriv_add m x (slice_differentiableAt m (hd_lin h1 h1c r n s))
       (slice_differentiableAt m (hd_lin h2 h2c r n s)),
-    pd_add n x (slice_differentiableAt n (hd_lin h1 h1c r m s))
+    coordDeriv_add n x (slice_differentiableAt n (hd_lin h1 h1c r m s))
       (slice_differentiableAt n (hd_lin h2 h2c r m s))]
   ring
 
@@ -188,21 +197,21 @@ lemma linRiemann_pureGauge (ξ : (Fin 4 → ℝ) → (Fin 4 → ℝ)) (x : Fin 4
     exact ((hξ a).of_le (by norm_num)).eventually (by simp)
   have hcongr : ∀ a b,
       (fun y => linChristoffel (pureGauge ξ) y r a b) =ᶠ[nhds x]
-        fun y => minkowskiMetric4 r r * pd b (pd a fun z => ξ z r) y := by
+        fun y => minkowskiMetric4 r r * coordDeriv b (coordDeriv a fun z => ξ z r) y := by
     intro a b
     filter_upwards [nh] with y hy
     exact linChristoffel_pureGauge ξ y hy r a b
-  rw [linRiemann, pd_congr_nhds m x (hcongr n s), pd_congr_nhds n x (hcongr m s),
-    pd_const_mul, pd_const_mul]
-  have hcomm1 : (fun y => pd s (pd n fun z => ξ z r) y)
-      =ᶠ[nhds x] fun y => pd n (pd s fun z => ξ z r) y := by
-    filter_upwards [nh] with y hy; exact pd_comm s n (hy r)
-  have hcomm2 : (fun y => pd s (pd m fun z => ξ z r) y)
-      =ᶠ[nhds x] fun y => pd m (pd s fun z => ξ z r) y := by
-    filter_upwards [nh] with y hy; exact pd_comm s m (hy r)
-  rw [pd_congr_nhds m x hcomm1, pd_congr_nhds n x hcomm2]
-  have hpds : ContDiffAt ℝ 2 (pd s fun z => ξ z r) x := contDiffAt_pd s (hξ r)
-  rw [pd_comm m n hpds]
+  rw [linRiemann, coordDeriv_congr_nhds m x (hcongr n s), coordDeriv_congr_nhds n x (hcongr m s),
+    coordDeriv_const_mul, coordDeriv_const_mul]
+  have hcomm1 : (fun y => coordDeriv s (coordDeriv n fun z => ξ z r) y)
+      =ᶠ[nhds x] fun y => coordDeriv n (coordDeriv s fun z => ξ z r) y := by
+    filter_upwards [nh] with y hy; exact coordDeriv_comm s n (hy r)
+  have hcomm2 : (fun y => coordDeriv s (coordDeriv m fun z => ξ z r) y)
+      =ᶠ[nhds x] fun y => coordDeriv m (coordDeriv s fun z => ξ z r) y := by
+    filter_upwards [nh] with y hy; exact coordDeriv_comm s m (hy r)
+  rw [coordDeriv_congr_nhds m x hcomm1, coordDeriv_congr_nhds n x hcomm2]
+  have hpds : ContDiffAt ℝ 2 (coordDeriv s fun z => ξ z r) x := contDiffAt_coordDeriv s (hξ r)
+  rw [coordDeriv_comm m n hpds]
   ring
 
 /-- Linearized Riemann curvature tensor is invariant under `C³` infinitesimal diffeomorphisms
@@ -213,7 +222,7 @@ lemma linRiemann_gauge_invariant (h : (Fin 4 → ℝ) → Tensor2 4)
     (hξ : ∀ a, ContDiffAt ℝ 3 (fun z => ξ z a) x) (r s m n : Fin 4) :
     linRiemann (gaugeTransform h ξ) x r s m n = linRiemann h x r s m n := by
   have hpg : ∀ a b, ContDiffAt ℝ 2 (fun z => pureGauge ξ z a b) x := fun a b =>
-    (contDiffAt_pd a (hξ b)).add (contDiffAt_pd b (hξ a))
+    (contDiffAt_coordDeriv a (hξ b)).add (contDiffAt_coordDeriv b (hξ a))
   have heq : gaugeTransform h ξ = fun y a b => h y a b + pureGauge ξ y a b := by
     ext y a b; simp [gaugeTransform, pureGauge, add_assoc]
   rw [heq, linRiemann_add h (pureGauge ξ) x hh hpg r s m n,

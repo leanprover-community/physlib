@@ -31,7 +31,7 @@ Christoffel symbols, Riemann, Ricci, scalar, and Einstein tensors from metric co
 A `CoordinateMetric n` packages a coordinate-dependent symmetric metric field `g`, its inverse
 `ginv`, and the regular chart domain on which `g` and `ginv` are two-sided inverses. From any
 coordinate metric and inverse pair `(g, ginv)`, `Pipeline` defines coordinate partial derivatives
-`pd μ f x` along each coordinate axis and builds the full differential chain:
+`coordDeriv μ f x` along each coordinate axis and builds the full differential chain:
 
 `g ↦ ∂g ↦ Γ^k_{ij} ↦ ∂Γ ↦ R^ρ_{σμν} ↦ Ric_{σν} ↦ S ↦ G_{ij}`.
 
@@ -44,8 +44,9 @@ pipeline.
 
 - `CoordinateMetric`, `CoordinateMetric.metricTensor` : coordinate metric field bundled with its
   regular domain and two-sided inverse proofs.
-- `Pipeline.pd`, `Pipeline.pd_eq_spaceTime_deriv`, `Pipeline.pd_comm` : coordinate partial
-  derivative along index `μ`, bridge to `SpaceTime.deriv`, and Schwarz commutativity.
+- `Pipeline.coordDeriv`, `Pipeline.coordDeriv_eq_spaceTime_deriv`, `Pipeline.coordDeriv_comm` :
+  coordinate partial derivative along index `μ`, bridge to `SpaceTime.deriv`, and Schwarz
+  commutativity.
 - `Pipeline.christoffel`, `Pipeline.riemann`, `Pipeline.ricciTensorOf`, `Pipeline.ricciScalarOf`,
   `Pipeline.einsteinTensorOf` : coordinate pipeline from metric fields to the Einstein tensor.
 - `Pipeline.christoffel_const`, `Pipeline.riemann_const`, `Pipeline.ricciTensorOf_const`,
@@ -114,7 +115,7 @@ namespace Pipeline
 
 ## B. Coordinate partial derivatives and metric pipeline
 
-Coordinate partial derivatives `pd μ` define the Levi-Civita connection `Γ^k_{ij}`, Riemann
+Coordinate partial derivatives `coordDeriv μ` define the Levi-Civita connection `Γ^k_{ij}`, Riemann
 curvature `R^ρ_{σμν}`, Ricci tensor, scalar curvature, and Einstein tensor directly from metric
 components on the regular chart.
 
@@ -132,23 +133,23 @@ lemma hasDerivAt_cos_sq (θ : ℝ) :
 
 /-- The partial derivative of a scalar field along the coordinate `μ`: the derivative of
 `s ↦ f (Function.update x μ s)` at `x μ`. -/
-noncomputable def pd {n : ℕ} (μ : Fin n) (f : (Fin n → ℝ) → ℝ) (x : Fin n → ℝ) : ℝ :=
+noncomputable def coordDeriv {n : ℕ} (μ : Fin n) (f : (Fin n → ℝ) → ℝ) (x : Fin n → ℝ) : ℝ :=
   deriv (fun s : ℝ => f (Function.update x μ s)) (x μ)
 
 /-- The coordinate partial derivative of a constant field vanishes. -/
-lemma pd_const {n : ℕ} (μ : Fin n) (c : ℝ) (x : Fin n → ℝ) :
-    pd μ (fun _ => c) x = 0 := by
-  simp [pd]
+lemma coordDeriv_const {n : ℕ} (μ : Fin n) (c : ℝ) (x : Fin n → ℝ) :
+    coordDeriv μ (fun _ => c) x = 0 := by
+  simp [coordDeriv]
 
-/-- `pd` depends only on the pointwise values of the field. -/
-lemma pd_congr {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
-    (h : ∀ y, f y = g y) : pd μ f x = pd μ g x := by
-  simp only [pd]
+/-- `coordDeriv` depends only on the pointwise values of the field. -/
+lemma coordDeriv_congr {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (h : ∀ y, f y = g y) : coordDeriv μ f x = coordDeriv μ g x := by
+  simp only [coordDeriv]
   exact congrArg (fun F => deriv F (x μ)) (funext fun s => h _)
 
 /-- Agreement of partial derivatives for locally equal functions on a neighborhood of `x`. -/
-lemma pd_congr_nhds {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
-    (hfg : f =ᶠ[nhds x] g) : pd μ f x = pd μ g x := by
+lemma coordDeriv_congr_nhds {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+    (hfg : f =ᶠ[nhds x] g) : coordDeriv μ f x = coordDeriv μ g x := by
   have hcont : Continuous (fun s : ℝ => Function.update x μ s) := by
     rw [continuous_pi_iff]
     intro k
@@ -162,9 +163,9 @@ lemma pd_congr_nhds {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : 
 
 /-- Partial derivative along axis `μ` equals directional Fréchet derivative along
 `Pi.single μ 1`. -/
-lemma pd_eq_fderiv {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} {μ : Fin n}
+lemma coordDeriv_eq_fderiv {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} {μ : Fin n}
     (hf : DifferentiableAt ℝ f x) :
-    pd μ f x = fderiv ℝ f x (Pi.single μ 1) := by
+    coordDeriv μ f x = fderiv ℝ f x (Pi.single μ 1) := by
   have hupd : (fun s : ℝ => Function.update x μ s)
       = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin n → ℝ) := by
     ext s k
@@ -174,16 +175,16 @@ lemma pd_eq_fderiv {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} {
     have h1 : HasDerivAt (fun s : ℝ => s - x μ) 1 (x μ) := by
       simpa using (hasDerivAt_id (x μ)).sub_const (x μ)
     simpa using (h1.smul_const (Pi.single μ (1 : ℝ))).const_add x
-  rw [pd]
+  rw [coordDeriv]
   have hf' : HasFDerivAt f (fderiv ℝ f x) (Function.update x μ (x μ)) := by
     simpa [Function.update_eq_self] using hf.hasFDerivAt
   exact (hf'.comp_hasDerivAt (x μ) hd).deriv
 
 /-- Coordinate partial derivatives on `Fin 4 → ℝ` agree with `Physlib`'s `SpaceTime.deriv` (`∂_`)
 under the standard index equivalence `finSumFinEquiv : Fin 1 ⊕ Fin 3 ≃ Fin 4`. -/
-lemma pd_eq_spaceTime_deriv {f : SpaceTime 3 → ℝ} (μ : Fin 1 ⊕ Fin 3) (y : SpaceTime 3)
+lemma coordDeriv_eq_spaceTime_deriv {f : SpaceTime 3 → ℝ} (μ : Fin 1 ⊕ Fin 3) (y : SpaceTime 3)
     (hf : DifferentiableAt ℝ f y) :
-    pd (finSumFinEquiv μ) (fun x : Fin 4 → ℝ => f (fun α => x (finSumFinEquiv α)))
+    coordDeriv (finSumFinEquiv μ) (fun x : Fin 4 → ℝ => f (fun α => x (finSumFinEquiv α)))
         (fun k => y (finSumFinEquiv.symm k)) =
       SpaceTime.deriv μ f y := by
   let e : Fin 1 ⊕ Fin 3 ≃ Fin 4 := finSumFinEquiv
@@ -201,28 +202,29 @@ lemma pd_eq_spaceTime_deriv {f : SpaceTime 3 → ℝ} (μ : Fin 1 ⊕ Fin 3) (y 
     have hy : HasFDerivAt f (fderiv ℝ f y) (L (fun k => y (e.symm k))) := by
       rw [hx]; exact hf.hasFDerivAt
     exact hy.comp _ L.hasFDerivAt
-  show pd (e μ) (f ∘ L) (fun k => y (e.symm k)) = SpaceTime.deriv μ f y
-  rw [pd_eq_fderiv hcomp.differentiableAt, hcomp.fderiv, ContinuousLinearMap.comp_apply, hLsingle]
+  show coordDeriv (e μ) (f ∘ L) (fun k => y (e.symm k)) = SpaceTime.deriv μ f y
+  rw [coordDeriv_eq_fderiv hcomp.differentiableAt, hcomp.fderiv,
+    ContinuousLinearMap.comp_apply, hLsingle]
   rfl
 
 /-- Schwarz symmetry of mixed second coordinate partial derivatives for `ContDiffAt ℝ 2`
 fields. -/
-lemma pd_comm {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ ν : Fin n)
+lemma coordDeriv_comm {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ ν : Fin n)
     (hf : ContDiffAt ℝ 2 f x) :
-    pd μ (pd ν f) x = pd ν (pd μ f) x := by
+    coordDeriv μ (coordDeriv ν f) x = coordDeriv ν (coordDeriv μ f) x := by
   have hf_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 f y := hf.eventually (by simp)
-  have hcongr1 : pd ν f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single ν 1) :=
-    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
-  have hcongr2 : pd μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
-    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hcongr1 : coordDeriv ν f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single ν 1) :=
+    hf_nhds.mono fun y hy => coordDeriv_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hcongr2 : coordDeriv μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
+    hf_nhds.mono fun y hy => coordDeriv_eq_fderiv (hy.differentiableAt (by norm_num))
   have hdf' : DifferentiableAt ℝ (fderiv ℝ f) x :=
     (hf.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
   have hdiff1 : DifferentiableAt ℝ (fun y => fderiv ℝ f y (Pi.single ν 1)) x :=
     hdf'.clm_apply (differentiableAt_const _)
   have hdiff2 : DifferentiableAt ℝ (fun y => fderiv ℝ f y (Pi.single μ 1)) x :=
     hdf'.clm_apply (differentiableAt_const _)
-  rw [pd_congr_nhds μ x hcongr1, pd_congr_nhds ν x hcongr2,
-    pd_eq_fderiv hdiff1, pd_eq_fderiv hdiff2]
+  rw [coordDeriv_congr_nhds μ x hcongr1, coordDeriv_congr_nhds ν x hcongr2,
+    coordDeriv_eq_fderiv hdiff1, coordDeriv_eq_fderiv hdiff2]
   have hcl1 : fderiv ℝ (fun y => fderiv ℝ f y (Pi.single ν 1)) x (Pi.single μ 1)
       = fderiv ℝ (fderiv ℝ f) x (Pi.single μ 1) (Pi.single ν 1) := by
     rw [(hdf'.hasFDerivAt.clm_apply (hasFDerivAt_const _ x)).fderiv]
@@ -234,55 +236,55 @@ lemma pd_comm {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ ν
   rw [hcl1, hcl2]
   exact (hf.isSymmSndFDerivAt (by norm_num)).eq _ _
 
-/-- Linearity of `pd` under pointwise addition of differentiable coordinate slices. -/
-lemma pd_add {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+/-- Linearity of `coordDeriv` under pointwise addition of differentiable coordinate slices. -/
+lemma coordDeriv_add {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
     (hf : DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ))
     (hg : DifferentiableAt ℝ (fun s => g (Function.update x μ s)) (x μ)) :
-    pd μ (fun y => f y + g y) x = pd μ f x + pd μ g x :=
+    coordDeriv μ (fun y => f y + g y) x = coordDeriv μ f x + coordDeriv μ g x :=
   deriv_add hf hg
 
-/-- Linearity of `pd` under pointwise subtraction of differentiable coordinate slices. -/
-lemma pd_sub {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
+/-- Linearity of `coordDeriv` under pointwise subtraction of differentiable coordinate slices. -/
+lemma coordDeriv_sub {n : ℕ} (μ : Fin n) {f g : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ)
     (hf : DifferentiableAt ℝ (fun s => f (Function.update x μ s)) (x μ))
     (hg : DifferentiableAt ℝ (fun s => g (Function.update x μ s)) (x μ)) :
-    pd μ (fun y => f y - g y) x = pd μ f x - pd μ g x :=
+    coordDeriv μ (fun y => f y - g y) x = coordDeriv μ f x - coordDeriv μ g x :=
   deriv_sub hf hg
 
-/-- Linearity of `pd` under constant scalar multiplication. -/
-lemma pd_const_mul {n : ℕ} (μ : Fin n) (c : ℝ) {f : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ) :
-    pd μ (fun y => c * f y) x = c * pd μ f x := by
-  simp only [pd]
+/-- Linearity of `coordDeriv` under constant scalar multiplication. -/
+lemma coordDeriv_const_mul {n : ℕ} (μ : Fin n) (c : ℝ) {f : (Fin n → ℝ) → ℝ} (x : Fin n → ℝ) :
+    coordDeriv μ (fun y => c * f y) x = c * coordDeriv μ f x := by
+  simp only [coordDeriv]
   exact deriv_const_mul_field c
 
-/-- Linearity of `pd` over finite `Fin m` sums of differentiable slices. -/
-lemma pd_sum {n m : ℕ} (μ : Fin n) (F : Fin m → (Fin n → ℝ) → ℝ) (x : Fin n → ℝ)
+/-- Linearity of `coordDeriv` over finite `Fin m` sums of differentiable slices. -/
+lemma coordDeriv_sum {n m : ℕ} (μ : Fin n) (F : Fin m → (Fin n → ℝ) → ℝ) (x : Fin n → ℝ)
     (hF : ∀ k, DifferentiableAt ℝ (fun s => F k (Function.update x μ s)) (x μ)) :
-    pd μ (fun y => ∑ k : Fin m, F k y) x = ∑ k : Fin m, pd μ (F k) x := by
+    coordDeriv μ (fun y => ∑ k : Fin m, F k y) x = ∑ k : Fin m, coordDeriv μ (F k) x := by
   have hs : (fun s => ∑ k : Fin m, F k (Function.update x μ s))
       = ∑ k : Fin m, fun s => F k (Function.update x μ s) := by
     funext s; simp only [Finset.sum_apply]
-  simp only [pd, hs]
+  simp only [coordDeriv, hs]
   exact deriv_sum fun k _ => hF k
 
 /-- A `C³` scalar field has `C²` coordinate partial derivatives. -/
-lemma contDiffAt_pd {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
-    (hf : ContDiffAt ℝ 3 f x) : ContDiffAt ℝ 2 (pd μ f) x := by
+lemma contDiffAt_coordDeriv {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+    (hf : ContDiffAt ℝ 3 f x) : ContDiffAt ℝ 2 (coordDeriv μ f) x := by
   have hf_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 f y :=
     (hf.of_le (by norm_num)).eventually (by simp)
-  have hcongr : pd μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
-    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hcongr : coordDeriv μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
+    hf_nhds.mono fun y hy => coordDeriv_eq_fderiv (hy.differentiableAt (by norm_num))
   have hdf' : ContDiffAt ℝ 2 (fderiv ℝ f) x := hf.fderiv_right (m := 2) (by norm_num)
   have hclm : ContDiffAt ℝ 2 (fun y => fderiv ℝ f y (Pi.single μ 1)) x :=
     hdf'.clm_apply contDiffAt_const
   exact hclm.congr_of_eventuallyEq hcongr
 
 /-- A `C²` scalar field has differentiable coordinate partial derivatives. -/
-lemma pd_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
+lemma coordDeriv_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n → ℝ} (μ : Fin n)
     (hf : ContDiffAt ℝ 2 f x) :
-    DifferentiableAt ℝ (fun y => pd μ f y) x := by
+    DifferentiableAt ℝ (fun y => coordDeriv μ f y) x := by
   have hf_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 f y := hf.eventually (by simp)
-  have hcongr : pd μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
-    hf_nhds.mono fun y hy => pd_eq_fderiv (hy.differentiableAt (by norm_num))
+  have hcongr : coordDeriv μ f =ᶠ[nhds x] fun y => fderiv ℝ f y (Pi.single μ 1) :=
+    hf_nhds.mono fun y hy => coordDeriv_eq_fderiv (hy.differentiableAt (by norm_num))
   have hdf' : DifferentiableAt ℝ (fderiv ℝ f) x :=
     (hf.fderiv_right (m := 1) (by norm_num)).differentiableAt (by norm_num)
   exact (hdf'.clm_apply (differentiableAt_const _)).congr_of_eventuallyEq hcongr
@@ -307,15 +309,15 @@ lemma slice_differentiableAt {n : ℕ} {f : (Fin n → ℝ) → ℝ} {x : Fin n 
 noncomputable def christoffel {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (k i j : Fin n) : ℝ :=
   (1 / 2) * ∑ l, ginv x k l *
-    (pd i (fun y => g y j l) x + pd j (fun y => g y i l) x
-      - pd l (fun y => g y i j) x)
+    (coordDeriv i (fun y => g y j l) x + coordDeriv j (fun y => g y i l) x
+      - coordDeriv l (fun y => g y i j) x)
 
 /-- The Riemann curvature tensor
 `R^ρ_{σμν} = ∂_μ Γ^ρ_{νσ} - ∂_ν Γ^ρ_{μσ} + Γ^ρ_{μλ} Γ^λ_{νσ} - Γ^ρ_{νλ} Γ^λ_{μσ}`. -/
 noncomputable def riemann {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n)
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) : ℝ :=
-  pd μ (fun y => christoffel g ginv y ρ ν σ) x
-    - pd ν (fun y => christoffel g ginv y ρ μ σ) x
+  coordDeriv μ (fun y => christoffel g ginv y ρ ν σ) x
+    - coordDeriv ν (fun y => christoffel g ginv y ρ μ σ) x
     + ∑ l, (christoffel g ginv x ρ μ l * christoffel g ginv x l ν σ
           - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)
 
@@ -334,8 +336,11 @@ noncomputable def einsteinTensorOf {n : ℕ} (g ginv : (Fin n → ℝ) → Tenso
     (x : Fin n → ℝ) (i j : Fin n) : ℝ :=
   ricciTensorOf g ginv x i j - (1 / 2) * ricciScalarOf g ginv x * g x i j
 
-/-- Alias for the Minkowski metric field in inertial coordinates. -/
-noncomputable abbrev minkowskiG : (Fin 4 → ℝ) → Tensor2 4 := GeneralRelativity.minkowskiG
+/-- Alias for the Minkowski metric field in inertial coordinates, supplied to `Pipeline` as a
+constant spacetime field `(Fin 4 → ℝ) → Tensor2 4` separate from pointwise `minkowskiMetric4` and
+`minkowski`. -/
+noncomputable abbrev minkowskiMetricField : (Fin 4 → ℝ) → Tensor2 4 :=
+  GeneralRelativity.minkowskiMetricField
 
 /-!
 
@@ -350,10 +355,10 @@ pipeline automatically produces zero connection, Riemann, Ricci, and Einstein cu
 lemma christoffel_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tensor2 n)
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (k i j : Fin n) :
     christoffel g ginv x k i j = 0 := by
-  have hpd : ∀ (μ a b : Fin n), pd μ (fun y => g y a b) x = 0 := by
+  have hpd : ∀ (μ a b : Fin n), coordDeriv μ (fun y => g y a b) x = 0 := by
     intro μ a b
-    rw [pd_congr μ x (fun y => by rw [hg y])]
-    exact pd_const μ (G a b) x
+    rw [coordDeriv_congr μ x (fun y => by rw [hg y])]
+    exact coordDeriv_const μ (G a b) x
   simp only [christoffel]
   rw [Finset.sum_eq_zero (fun l _ => by rw [hpd i j l, hpd j i l, hpd l i j]; ring)]
   ring
@@ -363,12 +368,12 @@ lemma riemann_const {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2 n) (G : Tens
     (hg : ∀ x, g x = G) (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
     riemann g ginv x ρ σ μ ν = 0 := by
   have hc := fun y => christoffel_const g ginv G hg y
-  have h1 : pd μ (fun y => christoffel g ginv y ρ ν σ) x = 0 := by
-    rw [pd_congr μ x (fun y => hc y ρ ν σ)]
-    exact pd_const μ 0 x
-  have h2 : pd ν (fun y => christoffel g ginv y ρ μ σ) x = 0 := by
-    rw [pd_congr ν x (fun y => hc y ρ μ σ)]
-    exact pd_const ν 0 x
+  have h1 : coordDeriv μ (fun y => christoffel g ginv y ρ ν σ) x = 0 := by
+    rw [coordDeriv_congr μ x (fun y => hc y ρ ν σ)]
+    exact coordDeriv_const μ 0 x
+  have h2 : coordDeriv ν (fun y => christoffel g ginv y ρ μ σ) x = 0 := by
+    rw [coordDeriv_congr ν x (fun y => hc y ρ μ σ)]
+    exact coordDeriv_const ν 0 x
   have h3 : (∑ l, (christoffel g ginv x ρ μ l * christoffel g ginv x l ν σ
               - christoffel g ginv x ρ ν l * christoffel g ginv x l μ σ)) = 0 := by
     apply Finset.sum_eq_zero
@@ -441,7 +446,7 @@ lemma riemann_eq_riemannFromData {n : ℕ} (g ginv : (Fin n → ℝ) → Tensor2
     (x : Fin n → ℝ) (ρ σ μ ν : Fin n) :
     riemann g ginv x ρ σ μ ν =
       riemannFromData (christoffel g ginv)
-        (fun μ y a b c => pd μ (fun z => christoffel g ginv z a b c) y)
+        (fun μ y a b c => coordDeriv μ (fun z => christoffel g ginv z a b c) y)
         x ρ σ μ ν :=
   rfl
 

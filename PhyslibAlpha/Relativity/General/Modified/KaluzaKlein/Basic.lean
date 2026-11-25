@@ -73,7 +73,9 @@ structure KaluzaKleinData where
   /-- Scalar dilaton field `φ`. -/
   φ : ℝ
 
-/-- Five-component extension `(A_0, A_1, A_2, A_3, 1)` of a 4D gauge potential `A`. -/
+/-- Five-component extension `(A_0, A_1, A_2, A_3, 1)` of a 4D gauge potential `A`. Padding with
+the fifth component `1` allows `kkMetric` to express the off-diagonal `(μ, 4)` and `(4, 4)`
+Kaluza–Klein entries as a uniform product `φ² A_A A_B` on `Fin 5` without index case-splitting. -/
 def extendedPotential (A : Fin 4 → ℝ) : Fin 5 → ℝ := ![A 0, A 1, A 2, A 3, 1]
 
 @[simp]
@@ -90,7 +92,9 @@ private lemma extendedPotential_apply_lt (A : Fin 4 → ℝ) {i : Fin 5} (hi : i
 private lemma extendedPotential_four (A : Fin 4 → ℝ) :
     extendedPotential A 4 = 1 := rfl
 
-/-- Five-dimensional zero-padded embedding of a 4D rank-2 tensor `g4`. -/
+/-- Five-dimensional zero-padded embedding of a 4D rank-2 tensor `g4`. This auxiliary block
+extension lets `kkMetric` write the Kaluza–Klein metric ansatz uniformly over `Fin 5 × Fin 5`
+without splitting `4 × 4` vs. fifth-dimension cases in its top-level formula. -/
 def metric4Ext (g4 : Tensor2 4) : Tensor2 5 :=
   fun i j =>
     if hi : i.val < 4 then

@@ -121,12 +121,12 @@ lemma light_deflection_zero (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (
 conformal Ricci computations stay tractable. -/
 noncomputable def nordstromChristoffel (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
     (k i j : Fin 4) : ℝ :=
-  ((if k = i then pd j φ x else 0) + (if k = j then pd i φ x else 0)
-    - minkowskiMetric4 i j * minkowskiMetric4 k k * pd k φ x) / φ x
+  ((if k = i then coordDeriv j φ x else 0) + (if k = j then coordDeriv i φ x else 0)
+    - minkowskiMetric4 i j * minkowskiMetric4 k k * coordDeriv k φ x) / φ x
 
 private lemma hasDerivAt_update_slice (g : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (μ : Fin 4)
     (hg : DifferentiableAt ℝ g x) :
-    HasDerivAt (fun s => g (Function.update x μ s)) (pd μ g x) (x μ) := by
+    HasDerivAt (fun s => g (Function.update x μ s)) (coordDeriv μ g x) (x μ) := by
   have hu : (fun s : ℝ => Function.update x μ s)
       = fun s => x + (s - x μ) • (Pi.single μ 1 : Fin 4 → ℝ) := by
     ext s k; by_cases hk : k = μ <;> simp [Function.update, hk]
@@ -141,16 +141,17 @@ private lemma hasDerivAt_update_slice (g : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
 
 private lemma pd_conformal_eta (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
     (hd : DifferentiableAt ℝ φ x) (μ i j : Fin 4) :
-    pd μ (fun y => nordstromMetric φ y i j) x = 2 * φ x * pd μ φ x * minkowskiMetric4 i j := by
+    coordDeriv μ (fun y => nordstromMetric φ y i j) x =
+      2 * φ x * coordDeriv μ φ x * minkowskiMetric4 i j := by
   have hs := hasDerivAt_update_slice φ x μ hd
   have hsq : HasDerivAt (fun s => φ (Function.update x μ s) ^ 2 * minkowskiMetric4 i j)
-      (2 * φ x * pd μ φ x * minkowskiMetric4 i j) (x μ) :=
+      (2 * φ x * coordDeriv μ φ x * minkowskiMetric4 i j) (x μ) :=
     ((hs.pow 2).mul_const (minkowskiMetric4 i j)).congr_deriv
       (by simp only [Function.update_eq_self]; ring)
   have hfun : (fun s => nordstromMetric φ (Function.update x μ s) i j)
       = fun s => φ (Function.update x μ s) ^ 2 * minkowskiMetric4 i j := by
     funext s; simp [nordstromMetric, conformalRescaleMetric]
-  rw [pd, hfun, hsq.deriv]
+  rw [coordDeriv, hfun, hsq.deriv]
 
 /-- Agreement of `Pipeline.christoffel` for `nordstromMetric φ` with `nordstromChristoffel φ` at
 every
@@ -172,67 +173,73 @@ lemma christoffel_nordstrom_eq (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ
 -/
 
 private lemma pd_div_phi (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0)
-    (h1 : DifferentiableAt ℝ φ x) (h2 : ∀ μ, DifferentiableAt ℝ (pd μ φ) x) (μ ν : Fin 4) :
-    pd μ (fun y => pd ν φ y / φ y) x
-      = (pd μ (pd ν φ) x * φ x - pd ν φ x * pd μ φ x) / φ x ^ 2 := by
+    (h1 : DifferentiableAt ℝ φ x) (h2 : ∀ μ, DifferentiableAt ℝ (coordDeriv μ φ) x) (μ ν : Fin 4) :
+    coordDeriv μ (fun y => coordDeriv ν φ y / φ y) x =
+      (coordDeriv μ (coordDeriv ν φ) x * φ x - coordDeriv ν φ x * coordDeriv μ φ x) /
+        φ x ^ 2 := by
   have hφ' : φ (Function.update x μ (x μ)) ≠ 0 := by
     simpa [Function.update_eq_self] using hφ
-  have hq := (hasDerivAt_update_slice (pd ν φ) x μ (h2 ν)).fun_div
+  have hq := (hasDerivAt_update_slice (coordDeriv ν φ) x μ (h2 ν)).fun_div
     (hasDerivAt_update_slice φ x μ h1) hφ'
-  simpa [pd, Function.update_eq_self] using hq.deriv
+  simpa [coordDeriv, Function.update_eq_self] using hq.deriv
 
 private lemma pd_nordstromChristoffel (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 φ x) (μ k i j : Fin 4) :
-    pd μ (fun y => nordstromChristoffel φ y k i j) x =
-      ((if k = i then (pd μ (pd j φ) x * φ x - pd j φ x * pd μ φ x) / φ x ^ 2 else 0)
-        + (if k = j then (pd μ (pd i φ) x * φ x - pd i φ x * pd μ φ x) / φ x ^ 2 else 0)
-        - minkowskiMetric4 i j * minkowskiMetric4 k k * ((pd μ (pd k φ) x * φ x
-          - pd k φ x * pd μ φ x) / φ x ^ 2)) := by
+    coordDeriv μ (fun y => nordstromChristoffel φ y k i j) x =
+      ((if k = i then (coordDeriv μ (coordDeriv j φ) x * φ x
+          - coordDeriv j φ x * coordDeriv μ φ x) / φ x ^ 2 else 0)
+        + (if k = j then (coordDeriv μ (coordDeriv i φ) x * φ x
+          - coordDeriv i φ x * coordDeriv μ φ x) / φ x ^ 2 else 0)
+        - minkowskiMetric4 i j * minkowskiMetric4 k k * ((coordDeriv μ (coordDeriv k φ) x * φ x
+          - coordDeriv k φ x * coordDeriv μ φ x) / φ x ^ 2)) := by
   have nh : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 φ y := hc2.eventually (by simp)
   have h1 : DifferentiableAt ℝ φ x := hc2.differentiableAt (by norm_num)
-  have h2 : ∀ ν, DifferentiableAt ℝ (pd ν φ) x := fun ν => pd_differentiableAt ν hc2
+  have h2 : ∀ ν, DifferentiableAt ℝ (coordDeriv ν φ) x := fun ν => coordDeriv_differentiableAt ν hc2
   have hrew : (fun y => nordstromChristoffel φ y k i j) = fun y =>
-      (if k = i then pd j φ y / φ y else 0)
-      + (if k = j then pd i φ y / φ y else 0)
-      - minkowskiMetric4 i j * minkowskiMetric4 k k * (pd k φ y / φ y) := by
+      (if k = i then coordDeriv j φ y / φ y else 0)
+      + (if k = j then coordDeriv i φ y / φ y else 0)
+      - minkowskiMetric4 i j * minkowskiMetric4 k k * (coordDeriv k φ y / φ y) := by
     funext y
     simp only [nordstromChristoffel]
     split_ifs <;> ring
-  have hd_q : ∀ ν, DifferentiableAt ℝ (fun s => pd ν φ (Function.update x μ s)
+  have hd_q : ∀ ν, DifferentiableAt ℝ (fun s => coordDeriv ν φ (Function.update x μ s)
       / φ (Function.update x μ s)) (x μ) := by
     intro ν
     have hφ' : φ (Function.update x μ (x μ)) ≠ 0 := by
       simpa [Function.update_eq_self] using hφ
-    exact ((hasDerivAt_update_slice (pd ν φ) x μ (h2 ν)).fun_div
+    exact ((hasDerivAt_update_slice (coordDeriv ν φ) x μ (h2 ν)).fun_div
       (hasDerivAt_update_slice φ x μ h1) hφ').differentiableAt
-  have hd_if1 : DifferentiableAt ℝ (fun s => if k = i then pd j φ (Function.update x μ s)
+  have hd_if1 : DifferentiableAt ℝ (fun s => if k = i then coordDeriv j φ (Function.update x μ s)
       / φ (Function.update x μ s) else 0) (x μ) := by
     split_ifs <;> first | exact hd_q j | exact differentiableAt_const _
-  have hd_if2 : DifferentiableAt ℝ (fun s => if k = j then pd i φ (Function.update x μ s)
+  have hd_if2 : DifferentiableAt ℝ (fun s => if k = j then coordDeriv i φ (Function.update x μ s)
       / φ (Function.update x μ s) else 0) (x μ) := by
     split_ifs <;> first | exact hd_q i | exact differentiableAt_const _
   have hd_eta : DifferentiableAt ℝ (fun s => minkowskiMetric4 i j * minkowskiMetric4 k k *
-      (pd k φ (Function.update x μ s) / φ (Function.update x μ s))) (x μ) :=
+      (coordDeriv k φ (Function.update x μ s) / φ (Function.update x μ s))) (x μ) :=
     (hd_q k).const_mul _
-  rw [hrew, pd_sub μ x (hd_if1.add hd_if2) hd_eta, pd_add μ x hd_if1 hd_if2, pd_const_mul]
-  have hdp1 : pd μ (fun y => if k = i then pd j φ y / φ y else 0) x
-      = if k = i then (pd μ (pd j φ) x * φ x - pd j φ x * pd μ φ x) / φ x ^ 2 else 0 := by
+  rw [hrew, coordDeriv_sub μ x (hd_if1.add hd_if2) hd_eta, coordDeriv_add μ x hd_if1 hd_if2,
+    coordDeriv_const_mul]
+  have hdp1 : coordDeriv μ (fun y => if k = i then coordDeriv j φ y / φ y else 0) x =
+      if k = i then (coordDeriv μ (coordDeriv j φ) x * φ x
+        - coordDeriv j φ x * coordDeriv μ φ x) / φ x ^ 2 else 0 := by
     split_ifs
     · exact pd_div_phi φ x hφ h1 h2 μ j
-    · exact pd_const μ 0 x
-  have hdp2 : pd μ (fun y => if k = j then pd i φ y / φ y else 0) x
-      = if k = j then (pd μ (pd i φ) x * φ x - pd i φ x * pd μ φ x) / φ x ^ 2 else 0 := by
+    · exact coordDeriv_const μ 0 x
+  have hdp2 : coordDeriv μ (fun y => if k = j then coordDeriv i φ y / φ y else 0) x =
+      if k = j then (coordDeriv μ (coordDeriv i φ) x * φ x
+        - coordDeriv i φ x * coordDeriv μ φ x) / φ x ^ 2 else 0 := by
     split_ifs
     · exact pd_div_phi φ x hφ h1 h2 μ i
-    · exact pd_const μ 0 x
+    · exact coordDeriv_const μ 0 x
   rw [hdp1, hdp2, pd_div_phi φ x hφ h1 h2 μ k]
 
 private lemma ricciTensorOf_nordstrom_diag (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0)
     (hc2 : ContDiffAt ℝ 2 φ x) (s : Fin 4) :
     ricciTensorOf (nordstromMetric φ) (nordstromMetricInv φ) x s s =
-      (-(2 : ℝ) * (pd s (pd s φ) x * φ x - 2 * pd s φ x ^ 2) / φ x ^ 2
+      (-(2 : ℝ) * (coordDeriv s (coordDeriv s φ) x * φ x - 2 * coordDeriv s φ x ^ 2) / φ x ^ 2
         - minkowskiMetric4 s s * (∑ ρ : Fin 4, minkowskiMetric4 ρ ρ *
-          (pd ρ (pd ρ φ) x * φ x + pd ρ φ x ^ 2)) / φ x ^ 2) := by
+          (coordDeriv ρ (coordDeriv ρ φ) x * φ x + coordDeriv ρ φ x ^ 2)) / φ x ^ 2) := by
   have nh : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 φ y := hc2.eventually (by simp)
   have hne : ∀ᶠ y in nhds x, φ y ≠ 0 := hc2.continuousAt.eventually_ne hφ
   have hev : ∀ k i j,
@@ -246,9 +253,9 @@ private lemma ricciTensorOf_nordstrom_diag (φ : (Fin 4 → ℝ) → ℝ) (x : F
         = nordstromChristoffel φ x k i j :=
     fun k i j => christoffel_nordstrom_eq φ x hφ (hc2.differentiableAt (by norm_num)) k i j
   have hpd : ∀ μ k i j,
-      pd μ (fun y => christoffel (nordstromMetric φ) (nordstromMetricInv φ) y k i j) x
-        = pd μ (fun y => nordstromChristoffel φ y k i j) x :=
-    fun μ k i j => pd_congr_nhds μ x (hev k i j)
+      coordDeriv μ (fun y => christoffel (nordstromMetric φ) (nordstromMetricInv φ) y k i j) x
+        = coordDeriv μ (fun y => nordstromChristoffel φ y k i j) x :=
+    fun μ k i j => coordDeriv_congr_nhds μ x (hev k i j)
   simp only [ricciTensorOf, riemann, hpd, hpt, Fin.sum_univ_four]
   simp only [pd_nordstromChristoffel φ x hφ hc2]
   simp only [nordstromChristoffel]

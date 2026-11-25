@@ -38,7 +38,7 @@ contrasting it with a standard positive-definite quadratic kinetic term.
 - `hamiltonian`, `hamiltonian_add`, `ostrogradsky_unbounded_below` : linearity in `p₁` and
   unboundedness
   below whenever `v ≠ 0`.
-- `kinetic_bounded`, `kinetic_zero_iff` : positivity and non-degeneracy of a standard first-order
+- `kinetic_nonneg`, `kinetic_zero_iff` : positivity and non-degeneracy of a standard first-order
   quadratic kinetic term.
 
 ## iii. Table of contents
@@ -119,7 +119,7 @@ lemma ostrogradsky_unbounded_below (v a p₂ q m : ℝ) (hv : v ≠ 0) :
 -/
 
 /-- A standard first-order quadratic kinetic term `(1/2) m x²` is non-negative for `m > 0`. -/
-lemma kinetic_bounded (m x : ℝ) (hm : 0 < m) : 0 ≤ m * x ^ 2 / 2 := by
+lemma kinetic_nonneg (m x : ℝ) (hm : 0 < m) : 0 ≤ m * x ^ 2 / 2 := by
   positivity
 
 /-- A standard quadratic kinetic term vanishes if and only if the velocity is zero. -/

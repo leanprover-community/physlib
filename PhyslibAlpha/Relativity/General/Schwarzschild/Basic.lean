@@ -39,9 +39,9 @@ at `k = M / r³`. Note that this module uses signature `(-, +, +, +)` (`g_tt = -
 ## ii. Key results
 
 - `SchwarzschildSpacetime`, `SchwarzschildSpacetime.lapse`, `SchwarzschildSpacetime.metric`,
-  `schwarzschildMetric`, `schwarzschildF` : Schwarzschild spacetime structure, coordinate metric,
-  and lapse function `1 - 2M / r`.
-- `schwarzschildF_of_incompressibleSphere`, `schwarzschildMetric_tt_of_incompressibleSphere`,
+  `schwarzschildMetric`, `schwarzschildLapse` : Schwarzschild spacetime structure, coordinate
+  metric, and lapse function `1 - 2M / r`.
+- `schwarzschildLapse_of_incompressibleSphere`, `schwarzschildMetric_tt_of_incompressibleSphere`,
   `schwarzschildMetric_rr_of_incompressibleSphere` : exterior matching with `IncompressibleSphere`.
 - `gammaTtr_from_metric`, `gammaRrr_from_metric`, `gammaRthth_from_metric`,
   `gammaRphiphi_from_metric`, `gammaThetaphiphi_from_metric`, `gammaPhiphitheta_from_metric` :
@@ -89,25 +89,25 @@ structure SchwarzschildSpacetime where
   M : ℝ
 
 /-- The Schwarzschild metric lapse function `f = 1 - 2M / r`. -/
-noncomputable def schwarzschildF (M r : ℝ) : ℝ := 1 - 2 * M / r
+noncomputable def schwarzschildLapse (M r : ℝ) : ℝ := 1 - 2 * M / r
 
-/-- Equational form of `schwarzschildF M r`. -/
-lemma schwarzschildF_eq (M r : ℝ) : schwarzschildF M r = 1 - 2 * M / r := rfl
+/-- Equational form of `schwarzschildLapse M r`. -/
+lemma schwarzschildLapse_eq (M r : ℝ) : schwarzschildLapse M r = 1 - 2 * M / r := rfl
 
-/-- Clearing the radial denominator gives `r * schwarzschildF M r = r - 2 M`. -/
-lemma r_mul_schwarzschildF (M r : ℝ) (hr : r ≠ 0) :
-    r * schwarzschildF M r = r - 2 * M := by
-  rw [schwarzschildF_eq]
+/-- Clearing the radial denominator gives `r * schwarzschildLapse M r = r - 2 M`. -/
+lemma r_mul_schwarzschildLapse (M r : ℝ) (hr : r ≠ 0) :
+    r * schwarzschildLapse M r = r - 2 * M := by
+  rw [schwarzschildLapse_eq]
   field_simp
 
 /-- The Schwarzschild metric in `(t, r, θ, φ)` coordinates with signature `(-, +, +, +)`. -/
 noncomputable def schwarzschildMetric (M : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  StaticSpherical.staticSphericalMetric (schwarzschildF M) x
+  StaticSpherical.staticSphericalMetric (schwarzschildLapse M) x
 
 /-- The `tt` component of the Schwarzschild metric is `-(1 - 2M/r)`. -/
 lemma schwarzschildMetric_tt (M : ℝ) (x : Fin 4 → ℝ) :
     schwarzschildMetric M x 0 0 = -(1 - 2 * M / x 1) := by
-  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildF]
+  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildLapse]
 
 /-- The static Newtonian potential is `Φ = -M / r`: `g_tt = -(1 + 2Φ)`. -/
 lemma schwarzschildMetric_tt_potential (M : ℝ) (x : Fin 4 → ℝ) :
@@ -145,15 +145,15 @@ lemma potential_second_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
 
 /-- The `rr` component of the Schwarzschild metric is `f⁻¹`. -/
 lemma schwarzschildMetric_rr (M : ℝ) (x : Fin 4 → ℝ) :
-    schwarzschildMetric M x 1 1 = (schwarzschildF M (x 1))⁻¹ := by
-  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildF]
+    schwarzschildMetric M x 1 1 = (schwarzschildLapse M (x 1))⁻¹ := by
+  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildLapse]
 
 /-- `f ≠ 0` forces `r - 2M ≠ 0` away from `r = 0`. -/
-lemma sub_ne_zero_of_ne (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
+lemma sub_ne_zero_of_ne (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :
     r - 2 * M ≠ 0 := by
   intro h
   apply hf
-  rw [schwarzschildF_eq]
+  rw [schwarzschildLapse_eq]
   have h1 : 2 * M / r = 1 := by
     field_simp
     linarith
@@ -178,15 +178,15 @@ lemma hasDerivAt_gtt (M r : ℝ) (hr : r ≠ 0) :
 /-- Because `g_tt = -f` depends only on `r`, the general formula
 `Γ^t_{tr} = (1/2) g^{tt} ∂_r g_{tt}` contracts `g^{tt} = -f⁻¹` against `-∂_r f = -2M/r²`, yielding
 `M / (r² f)`. -/
-lemma gammaTtr_from_metric (M r : ℝ) (hf : schwarzschildF M r ≠ 0) :
-    (1 / 2 : ℝ) * (-(schwarzschildF M r)⁻¹) * (-(2 * M / r ^ 2))
-      = M / (r ^ 2 * schwarzschildF M r) := by
+lemma gammaTtr_from_metric (M r : ℝ) (hf : schwarzschildLapse M r ≠ 0) :
+    (1 / 2 : ℝ) * (-(schwarzschildLapse M r)⁻¹) * (-(2 * M / r ^ 2))
+      = M / (r ^ 2 * schwarzschildLapse M r) := by
   field_simp
 
 /-- Radial derivative of `g_rr = f⁻¹`: `∂_r g_rr = -2M / (r - 2M)²`. -/
-lemma deriv_grr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
+lemma deriv_grr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :
     deriv ((fun s : ℝ => 1 - 2 * M / s)⁻¹) r = -(2 * M) / (r - 2 * M) ^ 2 := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF_eq] using hf
+  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildLapse_eq] using hf
   have h2 := sub_ne_zero_of_ne M r hr hf
   have h := HasDerivAt.inv (hasDerivAt_gtt M r hr) hf'
   rw [h.deriv]
@@ -195,19 +195,19 @@ lemma deriv_grr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
 /-- Contracting `g^{rr} = f` against the radial derivative `∂_r g_{rr} = ∂_r(f⁻¹) = -2M / (r - 2M)²`
 in `Γ^r_{rr} = (1/2) g^{rr} ∂_r g_{rr}` cancels one factor of `f = (r - 2M)/r` to yield
 `-M / (r (r - 2M))`. -/
-lemma gammaRrr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
-    (1 / 2 : ℝ) * (schwarzschildF M r) * (-(2 * M) / (r - 2 * M) ^ 2)
+lemma gammaRrr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :
+    (1 / 2 : ℝ) * (schwarzschildLapse M r) * (-(2 * M) / (r - 2 * M) ^ 2)
       = -M / (r * (r - 2 * M)) := by
   have h2 := sub_ne_zero_of_ne M r hr hf
-  have hr_mul := r_mul_schwarzschildF M r hr
+  have hr_mul := r_mul_schwarzschildLapse M r hr
   field_simp [h2, hr]
   linear_combination -M * hr_mul
 
 /-- Radial derivative of `Γ^t_{tr}`: `∂_r Γ^t_{tr} = -2M(r - M) / (r(r - 2M))²`. -/
-lemma deriv_gammaTtr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
-    deriv (fun s : ℝ => M / (s ^ 2 * schwarzschildF M s)) r
+lemma deriv_gammaTtr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :
+    deriv (fun s : ℝ => M / (s ^ 2 * schwarzschildLapse M s)) r
       = -2 * M * (r - M) / (r * (r - 2 * M)) ^ 2 := by
-  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildF_eq] using hf
+  have hf' : (1 - 2 * M / r) ≠ 0 := by simpa [schwarzschildLapse_eq] using hf
   have h2 := sub_ne_zero_of_ne M r hr hf
   have hden : HasDerivAt (fun s : ℝ => s ^ 2 * (1 - 2 * M / s)) (2 * r - 2 * M) r := by
     have h1 : HasDerivAt (fun s : ℝ => s ^ 2) (2 * r) r := by
@@ -223,10 +223,10 @@ lemma deriv_gammaTtr (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) 
   have hdenne : r ^ 2 * (1 - 2 * M / r) ≠ 0 :=
     mul_ne_zero (pow_ne_zero 2 hr) hf'
   have h := HasDerivAt.div (hasDerivAt_const r M) hden hdenne
-  have hfun : (fun s : ℝ => M / (s ^ 2 * schwarzschildF M s))
+  have hfun : (fun s : ℝ => M / (s ^ 2 * schwarzschildLapse M s))
       = (fun _ : ℝ => M) / fun s : ℝ => s ^ 2 * (1 - 2 * M / s) := by
     funext s
-    simp [schwarzschildF_eq]
+    simp [schwarzschildLapse_eq]
   rw [hfun, h.deriv]
   field_simp
   ring
@@ -244,21 +244,21 @@ tidal field `diag(0, -2M/r³, M/r³, M/r³)`.
 /-- In the index formula `R^t{}_{rtr} = -∂_r Γ^t_{tr} + Γ^t_{tr} Γ^r_{rr} - (Γ^t_{tr})²` (where all
 time derivatives vanish), the radial derivative of `Γ^t_{tr} = M/(r² f)` combines with the two
 quadratic connection terms to produce `2M / (r³ f)`. -/
-lemma riemann_t_rtr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
-    -(deriv (fun s : ℝ => M / (s ^ 2 * schwarzschildF M s)) r)
-      + (M / (r ^ 2 * schwarzschildF M r)) * (-M / (r * (r - 2 * M)))
-      - (M / (r ^ 2 * schwarzschildF M r)) ^ 2
-      = 2 * M / (r ^ 3 * schwarzschildF M r) := by
+lemma riemann_t_rtr_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :
+    -(deriv (fun s : ℝ => M / (s ^ 2 * schwarzschildLapse M s)) r)
+      + (M / (r ^ 2 * schwarzschildLapse M r)) * (-M / (r * (r - 2 * M)))
+      - (M / (r ^ 2 * schwarzschildLapse M r)) ^ 2
+      = 2 * M / (r ^ 3 * schwarzschildLapse M r) := by
   have h2 := sub_ne_zero_of_ne M r hr hf
-  rw [deriv_gammaTtr M r hr hf, schwarzschildF_eq]
-  rw [schwarzschildF_eq] at hf
+  rw [deriv_gammaTtr M r hr hf, schwarzschildLapse_eq]
+  rw [schwarzschildLapse_eq] at hf
   field_simp [inv_eq_one_div]
   ring
 
 /-- Lowering `R^t{}_{rtr}` with `g_tt = -f` gives `-2M / r³`, the radial entry of
 `electricPart (M / r³)`. -/
-lemma electric_r_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
-    -(schwarzschildF M r) * (2 * M / (r ^ 3 * schwarzschildF M r))
+lemma electric_r_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0) :
+    -(schwarzschildLapse M r) * (2 * M / (r ^ 3 * schwarzschildLapse M r))
       = electricPart (M / r ^ 3) 1 1 := by
   have h11 : electricPart (M / r ^ 3) 1 1 = -(2 * M / r ^ 3) := by
     simp [electricPart]
@@ -268,21 +268,21 @@ lemma electric_r_from_metric (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r
 
 /-- `Γ^r_{θθ} = (1/2) g^{rr} (-∂_r g_{θθ}) = -r f`. -/
 lemma gammaRthth_from_metric (M r : ℝ) :
-    (1 / 2 : ℝ) * (schwarzschildF M r) * (-(2 * r)) = -(r * schwarzschildF M r) := by
+    (1 / 2 : ℝ) * (schwarzschildLapse M r) * (-(2 * r)) = -(r * schwarzschildLapse M r) := by
   ring
 
 /-- Since `∂_t Γ = ∂_θ Γ^t_{θθ} = 0` and only `Γ^r_{θθ}` enters the intermediate sum, the Riemann
 formula simplifies to the single connection product `R^t{}_{θtθ} = Γ^t_{tr} Γ^r_{θθ} = -M / r`. -/
 lemma riemann_t_thetatheta_from_metric (M r : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (M / (r ^ 2 * schwarzschildF M r)) * (-(r * schwarzschildF M r)) = -M / r := by
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (M / (r ^ 2 * schwarzschildLapse M r)) * (-(r * schwarzschildLapse M r)) = -M / r := by
   field_simp
 
 /-- Orthonormal-frame `θθ` tidal eigenvalue: `M / r³`, the `(2, 2)` entry of
 `electricPart (M / r³)`. -/
 lemma electric_thetatheta_from_metric (M r : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (schwarzschildF M r)⁻¹ * (r ^ 2)⁻¹ * (-(schwarzschildF M r) * (-M / r))
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (schwarzschildLapse M r)⁻¹ * (r ^ 2)⁻¹ * (-(schwarzschildLapse M r) * (-M / r))
       = electricPart (M / r ^ 3) 2 2 := by
   have h22 : electricPart (M / r ^ 3) 2 2 = M / r ^ 3 := by
     simp [electricPart]
@@ -300,39 +300,39 @@ and purely spatial Riemann components directly from the coordinate metric.
 
 /-- `Γ^r_{φφ} = (1/2) g^{rr} (-∂_r g_{φφ}) = -r f sin²θ`. -/
 lemma gammaRphiphi_from_metric (M r th : ℝ) :
-    (1 / 2 : ℝ) * (schwarzschildF M r) * (-(2 * r * Real.sin th ^ 2))
-      = -(r * Real.sin th ^ 2 * schwarzschildF M r) := by
+    (1 / 2 : ℝ) * (schwarzschildLapse M r) * (-(2 * r * Real.sin th ^ 2))
+      = -(r * Real.sin th ^ 2 * schwarzschildLapse M r) := by
   ring
 
 /-- By the azimuthal factor `sin²θ` in `g_{φφ} = r² sin²θ`, contracting `Γ^t_{tr} = M / (r² f)`
 with `Γ^r_{φφ} = -r f sin²θ` in `R^t{}_{φtφ} = Γ^t_{tr} Γ^r_{φφ}` yields `-(M / r) sin²θ`. -/
 lemma riemann_t_phitphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (M / (r ^ 2 * schwarzschildF M r))
-        * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (M / (r ^ 2 * schwarzschildLapse M r))
+        * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
       = -(M / r) * Real.sin th ^ 2 := by
   field_simp
 
 /-- Product `Γ^r_{rr} Γ^r_{θθ} = M / r`. -/
 lemma gammaRrr_mul_gammaRthth (M r : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (-M / (r ^ 2 * schwarzschildF M r)) * (-(r * schwarzschildF M r))
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (-M / (r ^ 2 * schwarzschildLapse M r)) * (-(r * schwarzschildLapse M r))
       = M / r := by
   field_simp
 
 /-- Product `Γ^r_{θθ} Γ^θ_{rθ} = -f`. -/
 lemma gammaRthth_mul_gammaThetar (M r : ℝ) (hr : r ≠ 0) :
-    (-(r * schwarzschildF M r)) * (1 / r) = -schwarzschildF M r := by
+    (-(r * schwarzschildLapse M r)) * (1 / r) = -schwarzschildLapse M r := by
   field_simp
 
 /-- Evaluating `R^r{}_{θrθ} = ∂_r Γ^r_{θθ} + Γ^r_{rr} Γ^r_{θθ} - Γ^r_{θθ} Γ^θ_{rθ}` adds the
 radial derivative `-f - r f'` of `Γ^r_{θθ} = -r f` to the two quadratic connection products to give
 `-M / r`. -/
 lemma riemann_r_thetar_from_metric (M r : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (-(schwarzschildF M r) - 2 * M / r)
-      + (-M / (r ^ 2 * schwarzschildF M r)) * (-(r * schwarzschildF M r))
-      - (-(r * schwarzschildF M r)) * (1 / r)
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (-(schwarzschildLapse M r) - 2 * M / r)
+      + (-M / (r ^ 2 * schwarzschildLapse M r)) * (-(r * schwarzschildLapse M r))
+      - (-(r * schwarzschildLapse M r)) * (1 / r)
       = -M / r := by
   rw [gammaRrr_mul_gammaRthth M r hr hf, gammaRthth_mul_gammaThetar M r hr]
   field_simp
@@ -340,26 +340,26 @@ lemma riemann_r_thetar_from_metric (M r : ℝ) (hr : r ≠ 0)
 
 /-- Product `Γ^r_{rr} Γ^r_{φφ} = (M / r) sin²θ`. -/
 lemma gammaRrr_mul_gammaRphiphi (M r th : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (-M / (r ^ 2 * schwarzschildF M r))
-        * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (-M / (r ^ 2 * schwarzschildLapse M r))
+        * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
       = (M / r) * Real.sin th ^ 2 := by
   field_simp
 
 /-- Product `Γ^r_{φφ} Γ^φ_{rφ} = -f sin²θ`. -/
 lemma gammaRphiphi_mul_gammaPhirphi (M r th : ℝ) (hr : r ≠ 0) :
-    (-(r * Real.sin th ^ 2 * schwarzschildF M r)) * (1 / r)
-      = -Real.sin th ^ 2 * schwarzschildF M r := by
+    (-(r * Real.sin th ^ 2 * schwarzschildLapse M r)) * (1 / r)
+      = -Real.sin th ^ 2 * schwarzschildLapse M r := by
   field_simp
 
 /-- By spherical symmetry, the `(r, φ, r, φ)` component multiplies the `(r, θ, r, θ)` formula
 `∂_r Γ^r_{φφ} + Γ^r_{rr} Γ^r_{φφ} - Γ^r_{φφ} Γ^φ_{rφ}` by `sin²θ` to yield `-(M / r) sin²θ`. -/
 lemma riemann_r_phirphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) :
-    (-(Real.sin th ^ 2) * (schwarzschildF M r + 2 * M / r))
-      + (-M / (r ^ 2 * schwarzschildF M r))
-          * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
-      - (-(r * Real.sin th ^ 2 * schwarzschildF M r)) * (1 / r)
+    (hf : schwarzschildLapse M r ≠ 0) :
+    (-(Real.sin th ^ 2) * (schwarzschildLapse M r + 2 * M / r))
+      + (-M / (r ^ 2 * schwarzschildLapse M r))
+          * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
+      - (-(r * Real.sin th ^ 2 * schwarzschildLapse M r)) * (1 / r)
       = -(M / r) * Real.sin th ^ 2 := by
   rw [gammaRrr_mul_gammaRphiphi M r th hr hf, gammaRphiphi_mul_gammaPhirphi M r th hr]
   field_simp
@@ -386,32 +386,32 @@ angular curvature `1 - f(r)` of constant-`r` spheres with the metric lapse to gi
 lemma riemann_theta_phitheta_from_metric (M r th : ℝ) (hr : r ≠ 0)
     (hsin : Real.sin th ≠ 0) :
     (Real.sin th ^ 2 - Real.cos th ^ 2)
-      + (1 / r) * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
+      + (1 / r) * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
       - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
       = (2 * M / r) * Real.sin th ^ 2 := by
-  rw [schwarzschildF_eq]
+  rw [schwarzschildLapse_eq]
   field_simp
   ring
 
 /-- Lowering `R^t{}_{φtφ}` with `g_tt = -f` gives `(M f / r) sin²θ`. -/
 lemma rt_phitphi_lowered (M r th : ℝ) :
-    -(schwarzschildF M r) * (-(M / r) * Real.sin th ^ 2)
-      = (M * schwarzschildF M r / r) * Real.sin th ^ 2 := by
+    -(schwarzschildLapse M r) * (-(M / r) * Real.sin th ^ 2)
+      = (M * schwarzschildLapse M r / r) * Real.sin th ^ 2 := by
   ring
 
 /-- Frame rescaling of `R_{tφtφ}` cancels the metric factors to give `M / r³`. -/
-lemma frame_phiphi (M r th : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0)
+lemma frame_phiphi (M r th : ℝ) (hr : r ≠ 0) (hf : schwarzschildLapse M r ≠ 0)
     (hsin : Real.sin th ≠ 0) :
-    (schwarzschildF M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
-        * ((M * schwarzschildF M r / r) * Real.sin th ^ 2)
+    (schwarzschildLapse M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
+        * ((M * schwarzschildLapse M r / r) * Real.sin th ^ 2)
       = M / r ^ 3 := by
-  have h1 : (schwarzschildF M r)⁻¹ * schwarzschildF M r = 1 :=
+  have h1 : (schwarzschildLapse M r)⁻¹ * schwarzschildLapse M r = 1 :=
     inv_mul_cancel₀ hf
   have h2 : (r ^ 2 * Real.sin th ^ 2)⁻¹ * Real.sin th ^ 2 = 1 / r ^ 2 := by
     field_simp
-  calc (schwarzschildF M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
-        * ((M * schwarzschildF M r / r) * Real.sin th ^ 2)
-      = ((schwarzschildF M r)⁻¹ * schwarzschildF M r)
+  calc (schwarzschildLapse M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
+        * ((M * schwarzschildLapse M r / r) * Real.sin th ^ 2)
+      = ((schwarzschildLapse M r)⁻¹ * schwarzschildLapse M r)
           * ((r ^ 2 * Real.sin th ^ 2)⁻¹ * Real.sin th ^ 2) * (M / r) := by
         ring
     _ = 1 * (1 / r ^ 2) * (M / r) := by rw [h1, h2]
@@ -421,9 +421,9 @@ lemma frame_phiphi (M r th : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0)
 /-- Orthonormal-frame `φφ` tidal eigenvalue: `M / r³`, the `(3, 3)` entry of
 `electricPart (M / r³)`. -/
 lemma electric_phiphi_from_metric (M r th : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    (schwarzschildF M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
-        * (M * schwarzschildF M r / r * Real.sin th ^ 2)
+    (hf : schwarzschildLapse M r ≠ 0) (hsin : Real.sin th ≠ 0) :
+    (schwarzschildLapse M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
+        * (M * schwarzschildLapse M r / r * Real.sin th ^ 2)
       = electricPart (M / r ^ 3) 3 3 := by
   have h33 : electricPart (M / r ^ 3) 3 3 = M / r ^ 3 := by
     simp [electricPart]
@@ -442,13 +442,13 @@ remaining coordinate Riemann components into conjunctions.
 /-- The entire frame electric part of the Weyl tensor (`diag(0, -2M/r³, M/r³, M/r³)` plus all
 seven vanishing entries) assembled from the Schwarzschild metric. -/
 lemma electricPart_from_metric (M r th : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    (-(schwarzschildF M r) * (2 * M / (r ^ 3 * schwarzschildF M r))
+    (hf : schwarzschildLapse M r ≠ 0) (hsin : Real.sin th ≠ 0) :
+    (-(schwarzschildLapse M r) * (2 * M / (r ^ 3 * schwarzschildLapse M r))
         = electricPart (M / r ^ 3) 1 1)
-      ∧ ((schwarzschildF M r)⁻¹ * (r ^ 2)⁻¹ * (-(schwarzschildF M r) * (-M / r))
+      ∧ ((schwarzschildLapse M r)⁻¹ * (r ^ 2)⁻¹ * (-(schwarzschildLapse M r) * (-M / r))
           = electricPart (M / r ^ 3) 2 2)
-      ∧ ((schwarzschildF M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
-            * (M * schwarzschildF M r / r * Real.sin th ^ 2)
+      ∧ ((schwarzschildLapse M r)⁻¹ * (r ^ 2 * Real.sin th ^ 2)⁻¹
+            * (M * schwarzschildLapse M r / r * Real.sin th ^ 2)
           = electricPart (M / r ^ 3) 3 3)
       ∧ electricPart (M / r ^ 3) 0 0 = 0
       ∧ electricPart (M / r ^ 3) 0 1 = 0
@@ -466,21 +466,21 @@ lemma electricPart_from_metric (M r th : ℝ) (hr : r ≠ 0)
 
 /-- The four remaining independent Schwarzschild Riemann components derived from the metric. -/
 lemma riemann_components_from_metric (M r th : ℝ) (hr : r ≠ 0)
-    (hf : schwarzschildF M r ≠ 0) (hsin : Real.sin th ≠ 0) :
-    ((M / (r ^ 2 * schwarzschildF M r))
-          * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
+    (hf : schwarzschildLapse M r ≠ 0) (hsin : Real.sin th ≠ 0) :
+    ((M / (r ^ 2 * schwarzschildLapse M r))
+          * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
         = -(M / r) * Real.sin th ^ 2)
-      ∧ ((-(schwarzschildF M r) - 2 * M / r)
-          + (-M / (r ^ 2 * schwarzschildF M r))
-              * (-(r * schwarzschildF M r))
-          - (-(r * schwarzschildF M r)) * (1 / r) = -M / r)
-      ∧ ((-(Real.sin th ^ 2) * (schwarzschildF M r + 2 * M / r))
-          + (-M / (r ^ 2 * schwarzschildF M r))
-              * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
-          - (-(r * Real.sin th ^ 2 * schwarzschildF M r)) * (1 / r)
+      ∧ ((-(schwarzschildLapse M r) - 2 * M / r)
+          + (-M / (r ^ 2 * schwarzschildLapse M r))
+              * (-(r * schwarzschildLapse M r))
+          - (-(r * schwarzschildLapse M r)) * (1 / r) = -M / r)
+      ∧ ((-(Real.sin th ^ 2) * (schwarzschildLapse M r + 2 * M / r))
+          + (-M / (r ^ 2 * schwarzschildLapse M r))
+              * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
+          - (-(r * Real.sin th ^ 2 * schwarzschildLapse M r)) * (1 / r)
         = -(M / r) * Real.sin th ^ 2)
       ∧ ((Real.sin th ^ 2 - Real.cos th ^ 2)
-          + (1 / r) * (-(r * Real.sin th ^ 2 * schwarzschildF M r))
+          + (1 / r) * (-(r * Real.sin th ^ 2 * schwarzschildLapse M r))
           - (-(Real.sin th * Real.cos th)) * (Real.cos th / Real.sin th)
         = (2 * M / r) * Real.sin th ^ 2) :=
   ⟨riemann_t_phitphi_from_metric M r th hr hf,
@@ -490,7 +490,7 @@ lemma riemann_components_from_metric (M r th : ℝ) (hr : r ≠ 0)
 
 /-- The lapse function `f(r) = 1 - 2M / r` of a Schwarzschild spacetime. -/
 noncomputable def SchwarzschildSpacetime.lapse (S : SchwarzschildSpacetime) (r : ℝ) : ℝ :=
-  schwarzschildF S.M r
+  schwarzschildLapse S.M r
 
 /-- The coordinate metric of a Schwarzschild spacetime in `(t, r, θ, φ)` coordinates. -/
 noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
@@ -499,9 +499,9 @@ noncomputable def SchwarzschildSpacetime.metric (S : SchwarzschildSpacetime)
 
 /-- With `M = r_s / 2`, the Schwarzschild lapse equals the exterior `g_tt` factor of the
 incompressible fluid sphere, `1 - r_s / r`. -/
-lemma schwarzschildF_of_incompressibleSphere (S : IncompressibleSphere) (r : ℝ) :
-    schwarzschildF (S.rs / 2) r = S.gttOut r := by
-  simp only [schwarzschildF, IncompressibleSphere.gttOut]
+lemma schwarzschildLapse_of_incompressibleSphere (S : IncompressibleSphere) (r : ℝ) :
+    schwarzschildLapse (S.rs / 2) r = S.gttOut r := by
+  simp only [schwarzschildLapse, IncompressibleSphere.gttOut]
   ring
 
 /-- The Schwarzschild `tt` metric component is minus the incompressible-sphere exterior `g_tt`
@@ -509,7 +509,7 @@ factor, reflecting the `(-, +, +, +)` signature used here. -/
 lemma schwarzschildMetric_tt_of_incompressibleSphere (S : IncompressibleSphere)
     (x : Fin 4 → ℝ) :
     schwarzschildMetric (S.rs / 2) x 0 0 = -S.gttOut (x 1) := by
-  rw [schwarzschildMetric_tt, ← schwarzschildF_of_incompressibleSphere]
+  rw [schwarzschildMetric_tt, ← schwarzschildLapse_of_incompressibleSphere]
   rfl
 
 /-- The Schwarzschild `rr` metric component agrees with the incompressible-sphere exterior
@@ -517,7 +517,7 @@ lemma schwarzschildMetric_tt_of_incompressibleSphere (S : IncompressibleSphere)
 lemma schwarzschildMetric_rr_of_incompressibleSphere (S : IncompressibleSphere)
     (x : Fin 4 → ℝ) :
     schwarzschildMetric (S.rs / 2) x 1 1 = S.grrOut (x 1) := by
-  rw [schwarzschildMetric_rr, schwarzschildF_of_incompressibleSphere]
+  rw [schwarzschildMetric_rr, schwarzschildLapse_of_incompressibleSphere]
   simp [IncompressibleSphere.grrOut, IncompressibleSphere.gttOut]
 
 end Schwarzschild

@@ -84,8 +84,8 @@ lemma minkowski_vacuum_iff_ricci_flat :
 
 /-- Four-dimensional Minkowski spacetime as a `CoordinateMetric 4` on all of `ℝ⁴`. -/
 noncomputable def minkowskiCoordinateMetric : CoordinateMetric 4 where
-  g := minkowskiG
-  ginv := minkowskiG
+  g := minkowskiMetricField
+  ginv := minkowskiMetricField
   domain := Set.univ
   symm := fun _ => minkowskiMetric4_symm
   inv_left := fun _ _ => minkowskiMetric4_mul_self
@@ -93,28 +93,32 @@ noncomputable def minkowskiCoordinateMetric : CoordinateMetric 4 where
 
 /-- The pipeline produces vanishing Christoffel symbols for Minkowski spacetime. -/
 lemma Pipeline.minkowski_christoffel (x : Fin 4 → ℝ) (k i j : Fin 4) :
-    Pipeline.christoffel Pipeline.minkowskiG Pipeline.minkowskiG x k i j = 0 :=
-  Pipeline.christoffel_const Pipeline.minkowskiG Pipeline.minkowskiG minkowskiMetric4 (fun _ =>
-      rfl) x k i j
+    Pipeline.christoffel Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField x k i j =
+      0 :=
+  Pipeline.christoffel_const Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField
+    minkowskiMetric4 (fun _ => rfl) x k i j
 
 /-- The pipeline produces vanishing Riemann curvature for Minkowski spacetime. -/
 lemma Pipeline.minkowski_riemann (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
-    Pipeline.riemann Pipeline.minkowskiG Pipeline.minkowskiG x ρ σ μ ν = 0 :=
-  Pipeline.riemann_const Pipeline.minkowskiG Pipeline.minkowskiG minkowskiMetric4 (fun _ => rfl) x
-      ρ σ μ ν
+    Pipeline.riemann Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField x ρ σ μ ν = 0 :=
+  Pipeline.riemann_const Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField
+    minkowskiMetric4 (fun _ => rfl) x ρ σ μ ν
 
 /-- Minkowski spacetime is a vacuum solution of the Einstein equations (`G_{ij} = 0`), computed
 from the metric rather than assumed. -/
 lemma Pipeline.minkowski_einstein (x : Fin 4 → ℝ) (i j : Fin 4) :
-    Pipeline.einsteinTensorOf Pipeline.minkowskiG Pipeline.minkowskiG x i j = 0 :=
-  Pipeline.einsteinTensorOf_const Pipeline.minkowskiG Pipeline.minkowskiG minkowskiMetric4 (fun _
-      => rfl) x i j
+    Pipeline.einsteinTensorOf Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField x i j =
+      0 :=
+  Pipeline.einsteinTensorOf_const Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField
+    minkowskiMetric4 (fun _ => rfl) x i j
 
 /-- The data form returns zero curvature on Minkowski spacetime. -/
 lemma Pipeline.minkowski_riemannFromData (x : Fin 4 → ℝ) (ρ σ μ ν : Fin 4) :
-    Pipeline.riemannFromData (Pipeline.christoffel Pipeline.minkowskiG Pipeline.minkowskiG)
-      (fun μ y a b c => Pipeline.pd μ
-        (fun z => Pipeline.christoffel Pipeline.minkowskiG Pipeline.minkowskiG z a b c) y)
+    Pipeline.riemannFromData
+      (Pipeline.christoffel Pipeline.minkowskiMetricField Pipeline.minkowskiMetricField)
+      (fun μ y a b c => Pipeline.coordDeriv μ
+        (fun z => Pipeline.christoffel Pipeline.minkowskiMetricField
+          Pipeline.minkowskiMetricField z a b c) y)
       x ρ σ μ ν = 0 := by
   rw [← Pipeline.riemann_eq_riemannFromData]
   exact Pipeline.minkowski_riemann x ρ σ μ ν

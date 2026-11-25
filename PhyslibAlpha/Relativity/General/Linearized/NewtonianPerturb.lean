@@ -81,20 +81,21 @@ lemma traceReversed_newtonianPerturb (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
 
 /-- Static Newtonian potentials (`∂_0 Φ = 0`) satisfy the Lorenz gauge identically. -/
 lemma newtonianPerturb_lorenz_gauge (Φ : (Fin 4 → ℝ) → ℝ) (y : Fin 4 → ℝ)
-    (hstat : pd 0 Φ y = 0) (j : Fin 4) :
+    (hstat : coordDeriv 0 Φ y = 0) (j : Fin 4) :
     lorenzGaugeCond (newtonianPerturb Φ) y j := by
   simp only [lorenzGaugeCond, lorenzDiv, Fin.sum_univ_four, traceReversed_newtonianPerturb,
     minkowskiMetric4_apply]
   fin_cases j <;> norm_num
-  · simp only [pd_const]
+  · simp only [coordDeriv_const]
     have hneg : (fun z => -(4 * Φ z)) = fun z => (-4 : ℝ) * Φ z := funext fun _ => by ring
-    rw [hneg, pd_const_mul, hstat]
+    rw [hneg, coordDeriv_const_mul, hstat]
     ring
-  all_goals simp [pd_const]
+  all_goals simp [coordDeriv_const]
 
 /-- Three-dimensional spatial Laplacian `∇² Φ = ∂₁² Φ + ∂₂² Φ + ∂₃² Φ`. -/
 noncomputable def laplacian3 (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) : ℝ :=
-  pd 1 (pd 1 Φ) x + pd 2 (pd 2 Φ) x + pd 3 (pd 3 Φ) x
+  coordDeriv 1 (coordDeriv 1 Φ) x + coordDeriv 2 (coordDeriv 2 Φ) x +
+    coordDeriv 3 (coordDeriv 3 Φ) x
 
 /-- `laplacian3 Φ x` coincides with `Space.laplacian` on the constant-time spatial slice at
 `x 0`. -/
@@ -118,14 +119,14 @@ lemma laplacian3_eq_space_laplacian (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
     ext i; fin_cases k <;> fin_cases i <;> simp [L, Space.basis_apply]
   have hderiv : ∀ (g : (Fin 4 → ℝ) → ℝ) (s : Space) (k : Fin 3),
       DifferentiableAt ℝ g (f s) →
-      Space.deriv k (fun u => g (f u)) s = pd k.succ g (f s) := by
+      Space.deriv k (fun u => g (f u)) s = coordDeriv k.succ g (f s) := by
     intro g s k hg
     have hf_deriv : HasFDerivAt f L s :=
       ((hasFDerivAt_const x₀ s).add L.hasFDerivAt).congr_fderiv (by simp)
     have hcomp : HasFDerivAt (fun u => g (f u)) ((fderiv ℝ g (f s)).comp L) s :=
       hg.hasFDerivAt.comp s hf_deriv
     rw [Space.deriv_eq_fderiv_basis, hcomp.fderiv, ContinuousLinearMap.comp_apply,
-      hLbasis k, pd_eq_fderiv hg]
+      hLbasis k, coordDeriv_eq_fderiv hg]
   have hΦ_nhds : ∀ᶠ y in nhds x, ContDiffAt ℝ 2 Φ y := hΦ.eventually (by simp)
   have hf_cont : Continuous f := continuous_const.add L.continuous
   have hf_tend : Filter.Tendsto f (nhds s₀) (nhds x) := by
@@ -136,14 +137,14 @@ lemma laplacian3_eq_space_laplacian (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
   have hΦs0 : ContDiffAt ℝ 2 Φ (f s₀) := hfs0.symm ▸ hΦ
   have h_snd : ∀ k : Fin 3,
       Space.deriv k (Space.deriv k (fun u : Space 3 => Φ (f u))) s₀ =
-        pd k.succ (pd k.succ Φ) x := by
+        coordDeriv k.succ (coordDeriv k.succ Φ) x := by
     intro k
     have hev : Space.deriv k (fun u => Φ (f u)) =ᶠ[nhds s₀]
-        fun u => pd k.succ Φ (f u) := by
+        fun u => coordDeriv k.succ Φ (f u) := by
       filter_upwards [hs_nhds] with u hu
       exact hderiv Φ u k (hu.differentiableAt (by norm_num))
     rw [Space.deriv_eq_fderiv_basis, hev.fderiv_eq, ← Space.deriv_eq_fderiv_basis]
-    rw [hderiv (pd k.succ Φ) s₀ k (pd_differentiableAt k.succ hΦs0), hfs0]
+    rw [hderiv (coordDeriv k.succ Φ) s₀ k (coordDeriv_differentiableAt k.succ hΦs0), hfs0]
   have hslice : (fun s : Space 3 => Φ ![x 0, s 0, s 1, s 2]) = fun s => Φ (f s) :=
     funext fun s => congrArg Φ (hf_eq s).symm
   rw [hslice, congrFun (Space.laplacian_eq_sum_snd_deriv (fun s => Φ (f s))) s₀,
@@ -155,7 +156,7 @@ lemma laplacian3_eq_space_laplacian (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
 /-- Weak-field Newtonian limit: for a static `C²` potential `Φ`, the `(0, 0)` linearized Einstein
 tensor equals `2 ∇² Φ`, so `G^{(1)}_{00} = 8 π ρ ↔ ∇² Φ = 4 π ρ`. -/
 lemma newtonianPerturb_linEinstein_00 (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
-    (hΦ : ContDiffAt ℝ 2 Φ x) (hstat : ∀ y, pd 0 Φ y = 0) :
+    (hΦ : ContDiffAt ℝ 2 Φ x) (hstat : ∀ y, coordDeriv 0 Φ y = 0) :
     linEinstein (newtonianPerturb Φ) x 0 0 = 2 * laplacian3 Φ x := by
   have hsym : ∀ z a b, newtonianPerturb Φ z a b = newtonianPerturb Φ z b a :=
     fun z a b => (newtonianPerturb_symm Φ z).apply b a
@@ -168,16 +169,16 @@ lemma newtonianPerturb_linEinstein_00 (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 
   have htr : (fun y => traceReversed (newtonianPerturb Φ y) 0 0)
       = fun y => (-4 : ℝ) * Φ y := by
     funext y; simp only [traceReversed_newtonianPerturb, and_self, ↓reduceIte]; ring
-  have h00 : pd 0 (pd 0 (fun y => (-4 : ℝ) * Φ y)) x = 0 := by
-    have hev : pd 0 (fun y => (-4 : ℝ) * Φ y) = fun _ => 0 := funext fun z => by
-      rw [pd_const_mul, hstat z, mul_zero]
-    rw [hev]; exact pd_const 0 0 x
-  have hk : ∀ k : Fin 4, pd k (pd k (fun y => (-4 : ℝ) * Φ y)) x
-      = (-4 : ℝ) * pd k (pd k Φ) x := by
+  have h00 : coordDeriv 0 (coordDeriv 0 (fun y => (-4 : ℝ) * Φ y)) x = 0 := by
+    have hev : coordDeriv 0 (fun y => (-4 : ℝ) * Φ y) = fun _ => 0 := funext fun z => by
+      rw [coordDeriv_const_mul, hstat z, mul_zero]
+    rw [hev]; exact coordDeriv_const 0 0 x
+  have hk : ∀ k : Fin 4, coordDeriv k (coordDeriv k (fun y => (-4 : ℝ) * Φ y)) x
+      = (-4 : ℝ) * coordDeriv k (coordDeriv k Φ) x := by
     intro k
-    have hev : pd k (fun y => (-4 : ℝ) * Φ y) = fun z => (-4 : ℝ) * pd k Φ z :=
-      funext fun z => pd_const_mul k (-4) z
-    rw [hev, pd_const_mul]
+    have hev : coordDeriv k (fun y => (-4 : ℝ) * Φ y) = fun z => (-4 : ℝ) * coordDeriv k Φ z :=
+      funext fun z => coordDeriv_const_mul k (-4) z
+    rw [hev, coordDeriv_const_mul]
   rw [htr]
   simp only [boxEta, Fin.sum_univ_four, minkowskiMetric4_apply, laplacian3]
   rw [h00, hk 1, hk 2, hk 3]
@@ -187,7 +188,7 @@ lemma newtonianPerturb_linEinstein_00 (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 
 /-- Equivalence between `G^{(1)}_{00} = 8 π ρ` and the Newtonian Poisson equation
 `∇² Φ = 4 π ρ`. -/
 lemma newtonianPerturb_poisson_iff (Φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ)
-    (hΦ : ContDiffAt ℝ 2 Φ x) (hstat : ∀ y, pd 0 Φ y = 0) (ρ : ℝ) :
+    (hΦ : ContDiffAt ℝ 2 Φ x) (hstat : ∀ y, coordDeriv 0 Φ y = 0) (ρ : ℝ) :
     linEinstein (newtonianPerturb Φ) x 0 0 = 8 * Real.pi * ρ
       ↔ laplacian3 Φ x = 4 * Real.pi * ρ := by
   rw [newtonianPerturb_linEinstein_00 Φ x hΦ hstat]

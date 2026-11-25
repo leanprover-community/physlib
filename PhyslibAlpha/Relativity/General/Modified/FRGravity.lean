@@ -48,7 +48,7 @@ or General Relativity solutions) and formalises:
 - `algebraicFieldEqn`, `linear_is_einstein` : algebraic `f(R)` equations and recovery of `G + Λ g`.
 - `trace_algebraicFieldEqn`, `trace_algebraicFieldEqn_four` : trace equation showing the
   propagating scalar mode.
-- `starobinskyPotential`, `starobinsky_scalar_inversion`, `potential_eq`,
+- `starobinskyPotential`, `starobinsky_scalar_inversion`, `starobinskyPotential_eq`,
   `starobinsky_nonconstant_deriv` : Starobinsky `R + α R²` potential and scalar degree of freedom.
 - `einsteinFrameV`, `starobinsky_einsteinFrame_form`, `starobinsky_plateau` : Einstein-frame
   conformal potential and asymptotic slow-roll plateau.
@@ -160,7 +160,7 @@ lemma starobinsky_scalar_inversion (α φ : ℝ) (hα : α ≠ 0) :
 
 /-- The Legendre transform `(φ R(φ) - f(R(φ))) / 2` for `f(R) = R + α R²` equals the
 quadratic Starobinsky potential `(φ - 1)² / (8 α)`. -/
-lemma potential_eq (α φ : ℝ) (hα : α ≠ 0) :
+lemma starobinskyPotential_eq (α φ : ℝ) (hα : α ≠ 0) :
     (φ * ((φ - 1) / (2 * α))
         - (((φ - 1) / (2 * α)) + α * ((φ - 1) / (2 * α)) ^ 2)) / 2 =
       starobinskyPotential α φ := by

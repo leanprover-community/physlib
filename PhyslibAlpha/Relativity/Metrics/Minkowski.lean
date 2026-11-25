@@ -41,7 +41,7 @@ along
 - `minkowskiMetric4_eq_neg_coMetric_repr` : component bridge to `realLorentzTensor.coMetric 3`.
 - `minkowski` : four-dimensional Minkowski spacetime metric as a `MetricTensor 4`.
 - `minkowski_ginv_offdiag`, `metricTrace_minkowski` : diagonal property and Minkowski trace.
-- `minkowskiG` : the Minkowski metric as a constant field on `Fin 4 → ℝ`.
+- `minkowskiMetricField` : the Minkowski metric as a constant field on `Fin 4 → ℝ`.
 
 ## iii. Table of contents
 
@@ -148,7 +148,9 @@ lemma metricTrace_minkowski (T : Tensor2 4) :
   rw [metricTrace_diag minkowski T (fun _ _ h => minkowski_ginv_offdiag h)]
   rfl
 
-/-- The Minkowski metric as a constant field of components on `Fin 4 → ℝ`. -/
-noncomputable def minkowskiG : (Fin 4 → ℝ) → Tensor2 4 := fun _ => minkowskiMetric4
+/-- The Minkowski metric as a constant coordinate field on `Fin 4 → ℝ`, needed separately from
+the pointwise matrix `minkowskiMetric4` and `MetricTensor 4` bundle `minkowski` to supply a
+field `(Fin 4 → ℝ) → Tensor2 4` to the differential curvature pipeline. -/
+noncomputable def minkowskiMetricField : (Fin 4 → ℝ) → Tensor2 4 := fun _ => minkowskiMetric4
 
 end GeneralRelativity

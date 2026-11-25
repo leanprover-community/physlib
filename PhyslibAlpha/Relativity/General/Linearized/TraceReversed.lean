@@ -91,7 +91,7 @@ lemma traceReversed_symm {h : Tensor2 4} (hs : IsSymm h) : IsSymm (traceReversed
 
 /-- Minkowski d'Alembertian (wave operator) `□f = η^{μν} ∂_μ ∂_ν f = -∂_t² f + ∇² f`. -/
 noncomputable def boxEta (f : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) : ℝ :=
-  ∑ μ : Fin 4, minkowskiMetric4 μ μ * pd μ (pd μ f) x
+  ∑ μ : Fin 4, minkowskiMetric4 μ μ * coordDeriv μ (coordDeriv μ f) x
 
 /-- A `C²` metric perturbation has a `C²` Minkowski trace. -/
 lemma contDiffAt_hTrace {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 → ℝ}
