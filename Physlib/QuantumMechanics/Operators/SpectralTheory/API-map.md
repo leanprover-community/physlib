@@ -98,7 +98,7 @@ of the measure); for a continuous multiplier it is the closure of the range. [15
    `isStarProjection`, `univ`
 14. Physlib/QuantumMechanics/Operators/SpectralTheory/SpectralMeasure.lean — `comp_self`,
    `comp_of_disjoint`, `comp_eq_of_inter`, `commute`
-15. Physlib/QuantumMechanics/Operators/Multiplication.lean — `mulOperator_spectrum_eq_support_map`,
+15. Physlib/QuantumMechanics/Operators/SpectralTheory/Multiplication.lean — `mulOperator_spectrum_eq_support_map`,
    `mulOperator_spectrum_subset_support_map`, `mulOperator_spectrum_eq_closure_range`
 
 ## References

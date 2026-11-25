@@ -461,6 +461,7 @@ public import Physlib.QuantumMechanics.Operators.OneDimension.Position
 public import Physlib.QuantumMechanics.Operators.OneDimension.Unbounded
 public import Physlib.QuantumMechanics.Operators.Position
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Basic
+public import Physlib.QuantumMechanics.Operators.SpectralTheory.Multiplication
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SelfAdjoint
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.SpectralMeasure
 public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
