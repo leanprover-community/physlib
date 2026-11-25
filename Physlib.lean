@@ -178,6 +178,7 @@ public import Physlib.Mathematics.ForMathlib.OneParameterSubgroups.Unitary
 public import Physlib.Mathematics.ForMathlib.OrthogonalMatrix
 public import Physlib.Mathematics.ForMathlib.SchurTriangulation
 public import Physlib.Mathematics.ForMathlib.SesquilinearForm
+public import Physlib.Mathematics.ForMathlib.SimpleFunc
 public import Physlib.Mathematics.ForMathlib.TestFunction
 public import Physlib.Mathematics.ForMathlib.Trigonometry.SinSq
 public import Physlib.Mathematics.ForMathlib.Trigonometry.Tanh
@@ -319,6 +320,7 @@ public import Physlib.ProbabilisticTheory.Channel.Reversible
 public import Physlib.ProbabilisticTheory.Classical.Basic
 public import Physlib.ProbabilisticTheory.Classical.Dirac
 public import Physlib.ProbabilisticTheory.Classical.Effect
+public import Physlib.ProbabilisticTheory.Classical.NormalState
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
