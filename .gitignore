@@ -9,6 +9,3 @@ __pycache__/
 *.pyc
 # Personal Claude Code settings
 .claude/settings.local.json
-
-# local scratch notes (not part of the development)
-/.scratch/
