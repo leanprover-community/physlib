@@ -25,8 +25,9 @@ factor `1/2`, producing the van Dam–Veltman–Zakharov (vDVZ) discontinuity.
 
 ## ii. Key results
 
-- `stressTrace`, `staticSource` : Minkowski stress-energy trace and static point source.
-- `grPropagatorCoupling`, `massivePropagatorCoupling` : massless GR and massive spin-2 residues.
+- `staticSource` : static point-mass stress-energy tensor.
+- `grPropagatorCoupling`, `massivePropagatorCoupling` : massless GR and massive spin-2 residues
+  using `metricTrace minkowski`.
 - `vdvz_static_ratio`, `vdvz_light_deflection_ratio` : static `4/3` enhancement and `3/4`
   light-bending discontinuity.
 
@@ -60,21 +61,17 @@ namespace MassiveGravity
 
 -/
 
-/-- Minkowski trace `T = η^{ab} T_{ab}` of a matter stress-energy tensor `T : Tensor2 4`. -/
-def stressTrace (T : Tensor2 4) : ℝ :=
-  ∑ a : Fin 4, minkowskiMetric4 a a * T a a
-
 /-- Massless General Relativity spin-2 propagator residue contracted between two conserved
 stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ½ T₁ T₂`. -/
 noncomputable def grPropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
   (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
-    - (1 / 2) * stressTrace T1 * stressTrace T2
+    - (1 / 2) * metricTrace minkowski T1 * metricTrace minkowski T2
 
 /-- Massive Fierz–Pauli spin-2 propagator residue in the `m → 0` limit contracted between two
 conserved stress-energy tensors `T₁, T₂`: `T₁_{ab} T₂^{ab} - ⅓ T₁ T₂`. -/
 noncomputable def massivePropagatorCoupling (T1 T2 : Tensor2 4) : ℝ :=
   (∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * T1 a b * T2 a b)
-    - (1 / 3) * stressTrace T1 * stressTrace T2
+    - (1 / 3) * metricTrace minkowski T1 * metricTrace minkowski T2
 
 /-- Stress-energy tensor of a static non-relativistic mass density `ρ`: `T_{00} = ρ`, all other
 components zero. -/
@@ -86,26 +83,21 @@ graviton exchange amplitude is `4/3` times the massless General Relativity ampli
 lemma vdvz_static_ratio (ρ1 ρ2 : ℝ) :
     massivePropagatorCoupling (staticSource ρ1) (staticSource ρ2) =
       (4 / 3) * grPropagatorCoupling (staticSource ρ1) (staticSource ρ2) := by
-  simp only [massivePropagatorCoupling, grPropagatorCoupling, stressTrace, staticSource,
+  simp only [massivePropagatorCoupling, grPropagatorCoupling, metricTrace_minkowski, staticSource,
     Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 
 /-- The vDVZ light-deflection discontinuity: for a null electromagnetic/light probe `T_light`
-(`stressTrace T_light = 0`), after calibrating the massive gravitational coupling by `3/4` to
-reproduce Newton's law for static masses, the effective coupling to light is strictly `3/4` of the
-General Relativity coupling. -/
-lemma vdvz_light_deflection_ratio (Tmass Tlight : Tensor2 4) (hnull : stressTrace Tlight = 0) :
+(`metricTrace minkowski T_light = 0`), after calibrating the massive gravitational coupling by
+`3/4` to reproduce Newton's law for static masses, the effective coupling to light is strictly `3/4`
+of the General Relativity coupling. -/
+lemma vdvz_light_deflection_ratio (Tmass Tlight : Tensor2 4)
+    (hnull : metricTrace minkowski Tlight = 0) :
     (3 / 4) * massivePropagatorCoupling Tmass Tlight =
       (3 / 4) * grPropagatorCoupling Tmass Tlight := by
   simp only [massivePropagatorCoupling, grPropagatorCoupling, hnull]
   ring
-
-/-- `stressTrace` coincides with `metricTrace minkowski`. -/
-lemma stressTrace_eq_metricTrace (T : Tensor2 4) :
-    stressTrace T = metricTrace minkowski T := by
-  rw [metricTrace_diag minkowski T (fun _ _ hij => minkowski_ginv_offdiag hij)]
-  simp [stressTrace, minkowski]
 
 end MassiveGravity
 

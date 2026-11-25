@@ -42,7 +42,8 @@ the Einstein–Fokker equation `S = 24 π T` and Nordström's nonlinear scalar w
   `φ`.
 - `nordstromMetric`, `nordstromMetricInv`, `nordstromMetricTensor` : conformally flat Nordström
   spacetime metric and `MetricTensor 4`.
-- `light_deflection_zero` : null cones coincide with Minkowski space (zero light bending).
+- `light_deflection_zero` : null cones coincide with Minkowski space via
+  `nullVector_conformal_iff` (zero light bending).
 - `christoffel_nordstrom_eq` : exact conformal Christoffel symbols via `Pipeline.christoffel`.
 - `ricciScalarOf_nordstrom` : exact 4D Einstein–Fokker identity `S = -6 □φ / φ³`.
 - `einsteinFokker_iff` : equivalence between `S = 24 π T` and `□φ = -4 π φ³ T`.
@@ -101,19 +102,6 @@ noncomputable def nordstromMetricInv (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 �
 noncomputable def nordstromMetricTensor (φ : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) (hφ : φ x ≠ 0) :
     MetricTensor 4 :=
   conformalMetric minkowski (φ x ^ 2) (pow_ne_zero 2 hφ)
-
-/-- Quadratic null-cone predicate `g_{ij} v^i v^j = 0`. -/
-def NullVector (g : Tensor2 4) (v : Fin 4 → ℝ) : Prop :=
-  (∑ i : Fin 4, ∑ j : Fin 4, g i j * v i * v j) = 0
-
-/-- Any nonzero conformal rescaling leaves null cones invariant (`vᵀ (ω g) v = 0 ↔ vᵀ g v = 0`). -/
-lemma nullVector_conformal_iff (ω : ℝ) (hω : ω ≠ 0) (g : Tensor2 4) (v : Fin 4 → ℝ) :
-    NullVector (conformalRescaleMetric g ω) v ↔ NullVector g v := by
-  have hsum : (∑ i : Fin 4, ∑ j : Fin 4, conformalRescaleMetric g ω i j * v i * v j)
-      = ω * ∑ i : Fin 4, ∑ j : Fin 4, g i j * v i * v j := by
-    simp only [conformalRescaleMetric, Finset.mul_sum]
-    refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => by ring
-  simp only [NullVector, hsum, mul_eq_zero, hω, false_or]
 
 /-- Zero light deflection in Nordström gravity: null tangent vectors of `φ² η` coincide with
 unbent Minkowski null rays. -/

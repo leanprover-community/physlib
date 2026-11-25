@@ -62,9 +62,9 @@ noncomputable def einstein (M : MetricTensor n) (R : RiemannTensor n) : Tensor2 
 
 /-- The Einstein tensor is symmetric. -/
 lemma einstein_symm (M : MetricTensor n) (R : RiemannTensor n) : IsSymm (einstein M R) := by
-  intro i j
-  simp only [einstein]
-  rw [ricci_symm M R i j, M.symm i j]
+  ext i j
+  simp only [Matrix.transpose_apply, einstein]
+  rw [(ricci_symm M R).apply i j, M.symm.apply i j]
 
 /-- Metric trace of the Einstein tensor: `g^{ij} G_{ij} = (1 - n/2) S`. -/
 lemma metricTrace_einstein (M : MetricTensor n) (R : RiemannTensor n) :

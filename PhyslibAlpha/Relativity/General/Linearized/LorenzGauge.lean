@@ -232,7 +232,9 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
   have hbox_sym : boxEta (fun y => traceReversed (h y) j i) x =
       boxEta (fun y => traceReversed (h y) i j) x := by
     have hbs : (fun y => traceReversed (h y) j i) = fun y => traceReversed (h y) i j :=
-      funext fun y => traceReversed_symm (hsym y) j i
+      funext fun y =>
+        (traceReversed_symm
+          (show IsSymm (h y) from Matrix.IsSymm.ext fun a b => hsym y b a)).apply i j
     simp [hbs]
   have hT_sub_j : (∑ r : Fin 4, (1 / 4 : ℝ) * (minkowskiMetric4 r r * minkowskiMetric4 r j) *
       pd i (pd r fun z => hTrace (traceReversed (h z))) x)
@@ -246,7 +248,7 @@ lemma linRicci_in_traceReversed (h : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 �
       pd i (pd j fun z => hTrace (traceReversed (h z))) x := pd_comm j i hT_at
   simp only [linRicci, linRiemann, Finset.sum_sub_distrib, pd_linChristoffel_traceReversed h x hh,
     pd_linChristoffel_diag h x hsym hh i j, Finset.sum_add_distrib, ← Finset.mul_sum]
-  rw [hdiv_j, hdiv_i, ← hbox_sym, minkowskiMetric4_symm j i, hT_sub_j, hT_sub_i, hT_comm]
+  rw [hdiv_j, hdiv_i, ← hbox_sym, minkowskiMetric4_symm.apply i j, hT_sub_j, hT_sub_i, hT_comm]
   have hs1 : (∑ r : Fin 4, (1 / 2 : ℝ) * minkowskiMetric4 r r *
       pd i (pd r fun z => traceReversed (h z) r j) x)
       = (1 / 2) * ∑ r : Fin 4, minkowskiMetric4 r r *
@@ -276,7 +278,8 @@ private lemma boxEta_hTrace (b : (Fin 4 → ℝ) → Tensor2 4) (x : Fin 4 → �
   have hdμ : ∀ i, DifferentiableAt ℝ (pd μ fun y => b y i i) x :=
     fun i => pd_differentiableAt μ (hb i i)
   have hcongr :
-      (fun y => ∑ i : Fin 4, minkowskiMetric4 i i * b y i i) = fun y => hTrace (b y) := rfl
+      (fun y => ∑ i : Fin 4, minkowskiMetric4 i i * b y i i) = fun y => hTrace (b y) :=
+    funext fun y => (metricTrace_minkowski (b y)).symm
   have hpd1 : ∀ y, (∀ i, DifferentiableAt ℝ (fun z => b z i i) y) →
       pd μ (fun z => hTrace (b z)) y =
         ∑ i : Fin 4, minkowskiMetric4 i i * pd μ (fun z => b z i i) y := by

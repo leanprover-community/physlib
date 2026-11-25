@@ -82,32 +82,14 @@ private lemma pd_eq_zero_of (μ : Fin 4) (f : (Fin 4 → ℝ) → ℝ) (x : Fin 
   have hfn : (fun s => f (Function.update x μ s)) = fun _ => c := funext hf
   rw [pd, hfn, deriv_const']
 
-private lemma hasDerivAt_cos_sq' (θ : ℝ) :
-    HasDerivAt (fun t => Real.cos t ^ 2) (-2 * Real.cos θ * Real.sin θ) θ :=
-  ((Real.hasDerivAt_cos θ).pow 2).congr_deriv (by ring)
-
-private lemma hasDerivAt_sigma_r' (a r θ : ℝ) :
-    HasDerivAt (fun s => sigma a s θ) (2 * r) r :=
-  ((hasDerivAt_pow 2 r).add_const (a ^ 2 * Real.cos θ ^ 2)).congr_deriv (by ring)
-
-private lemma hasDerivAt_sigma_th' (a r θ : ℝ) :
-    HasDerivAt (fun t => sigma a r t) (-2 * a ^ 2 * Real.cos θ * Real.sin θ) θ :=
-  (((hasDerivAt_cos_sq' θ).const_mul (a ^ 2)).const_add (r ^ 2)).congr_deriv (by ring)
-
-private lemma hasDerivAt_delta_r' (M a r : ℝ) :
-    HasDerivAt (fun s => delta M a s) (2 * r - 2 * M) r := by
-  have h1 := ((hasDerivAt_pow 2 r).fun_sub
-    ((hasDerivAt_const r (2 * M)).fun_mul (hasDerivAt_id r))).fun_add (hasDerivAt_const r (a ^ 2))
-  exact h1.congr_deriv (by ring)
-
 private lemma hasDerivAt_sigma3_r (a r θ : ℝ) :
     HasDerivAt (fun s => sigma a s θ ^ 3) (3 * sigma a r θ ^ 2 * (2 * r)) r :=
-  ((hasDerivAt_sigma_r' a r θ).pow 3).congr_deriv (by ring)
+  ((hasDerivAt_sigma_r a r θ).pow 3).congr_deriv (by ring)
 
 private lemma hasDerivAt_sigma3_th (a r θ : ℝ) :
     HasDerivAt (fun t => sigma a r t ^ 3)
       (3 * sigma a r θ ^ 2 * (-2 * a ^ 2 * Real.cos θ * Real.sin θ)) θ :=
-  ((hasDerivAt_sigma_th' a r θ).pow 3).congr_deriv (by ring)
+  ((hasDerivAt_sigma_th a r θ).pow 3).congr_deriv (by ring)
 
 private lemma hasDerivAt_cos_mul_sin (θ : ℝ) :
     HasDerivAt (fun t => Real.cos t * Real.sin t)
@@ -119,9 +101,9 @@ private lemma differentiableAt_kerrG_r' (M a : ℝ) (x : Fin 4 → ℝ)
     (k i j : Fin 4) :
     DifferentiableAt ℝ (fun s => kerrChristoffel M a (Function.update x 1 s) k i j) (x 1) := by
   have _ : DifferentiableAt ℝ (fun s => sigma a s (x 2)) (x 1) :=
-    (hasDerivAt_sigma_r' a (x 1) (x 2)).differentiableAt
+    (hasDerivAt_sigma_r a (x 1) (x 2)).differentiableAt
   have _ : DifferentiableAt ℝ (fun s => delta M a s) (x 1) :=
-    (hasDerivAt_delta_r' M a (x 1)).differentiableAt
+    (hasDerivAt_delta_r M a (x 1)).differentiableAt
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp only [kerrChristoffel, Function.update_self,
       Function.update_of_ne (by decide : (2 : Fin 4) ≠ 1)] <;>
@@ -133,7 +115,7 @@ private lemma differentiableAt_kerrG_th (M a : ℝ) (x : Fin 4 → ℝ)
     (k i j : Fin 4) :
     DifferentiableAt ℝ (fun t => kerrChristoffel M a (Function.update x 2 t) k i j) (x 2) := by
   have _ : DifferentiableAt ℝ (fun t => sigma a (x 1) t) (x 2) :=
-    (hasDerivAt_sigma_th' a (x 1) (x 2)).differentiableAt
+    (hasDerivAt_sigma_th a (x 1) (x 2)).differentiableAt
   fin_cases k <;> fin_cases i <;> fin_cases j <;>
     simp only [kerrChristoffel, Function.update_self,
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)] <;>
@@ -148,7 +130,7 @@ lemma pd_kerrChristoffelTrace_11 (a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (
       = fun s => 2 * s / sigma a s (x 2) := by funext s; simp [kerrChristoffelTrace]
   have hm : HasDerivAt (fun s : ℝ => 2 * s) 2 (x 1) :=
     ((hasDerivAt_const (x 1) 2).fun_mul (hasDerivAt_id (x 1))).congr_deriv (by ring)
-  have hd := hm.fun_div (hasDerivAt_sigma_r' a (x 1) (x 2)) hsig
+  have hd := hm.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
   rw [pd, hfun, hd.deriv]
   field_simp [hsig]
   simp only [sigma]
@@ -160,7 +142,7 @@ lemma pd_kerrChristoffelTrace_21 (a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (
       = 4 * a ^ 2 * Real.cos (x 2) * x 1 * Real.sin (x 2) / sigma a (x 1) (x 2) ^ 2 := by
   have hfun : (fun t => kerrChristoffelTrace a (Function.update x 2 t) 1)
       = fun t => 2 * x 1 / sigma a (x 1) t := by funext t; simp [kerrChristoffelTrace]
-  have hd := (hasDerivAt_const (x 2) (2 * x 1)).fun_div (hasDerivAt_sigma_th' a (x 1) (x 2)) hsig
+  have hd := (hasDerivAt_const (x 2) (2 * x 1)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
   rw [pd, hfun, hd.deriv]
   ring
 
@@ -174,7 +156,7 @@ lemma pd_kerrChristoffelTrace_12 (a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (
     funext s; simp [kerrChristoffelTrace]
   have hd1 := hasDerivAt_const (x 1) (Real.cos (x 2) / Real.sin (x 2))
   have hd2 := (hasDerivAt_const (x 1) (2 * a ^ 2 * Real.cos (x 2) * Real.sin (x 2))).fun_div
-    (hasDerivAt_sigma_r' a (x 1) (x 2)) hsig
+    (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
   rw [pd, hfun, (hd1.fun_sub hd2).deriv]
   ring
 
@@ -193,7 +175,7 @@ lemma pd_kerrChristoffelTrace_22 (a : ℝ) (x : Fin 4 → ℝ)
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]; ring
   have hcot := (Real.hasDerivAt_cos (x 2)).fun_div (Real.hasDerivAt_sin (x 2)) hs
   have hnum := (hasDerivAt_cos_mul_sin (x 2)).const_mul (2 * a ^ 2)
-  have hq := hnum.fun_div (hasDerivAt_sigma_th' a (x 1) (x 2)) hsig
+  have hq := hnum.fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
   rw [pd, hfun, (hcot.fun_sub hq).deriv]
   have hsc := Real.sin_sq_add_cos_sq (x 2)
   field_simp [hs, hsig]
@@ -204,7 +186,7 @@ private lemma hasDerivAt_num_1_00 (M a : ℝ) (x : Fin 4 → ℝ) :
       ((M * (2 * x 1)) * delta M a (x 1)
         + M * (x 1 ^ 2 - a ^ 2 * Real.cos (x 2) ^ 2) * (2 * x 1 - 2 * M)) (x 1) := by
   have h1 := (((hasDerivAt_pow 2 (x 1)).sub_const (a ^ 2 * Real.cos (x 2) ^ 2)).const_mul M)
-  exact (h1.fun_mul (hasDerivAt_delta_r' M a (x 1))).congr_deriv (by ring)
+  exact (h1.fun_mul (hasDerivAt_delta_r M a (x 1))).congr_deriv (by ring)
 
 private lemma pd_kerrG_1_00 (M a : ℝ) (x : Fin 4 → ℝ)
     (hsig : sigma a (x 1) (x 2) ≠ 0) (_hdel : delta M a (x 1) ≠ 0) :
@@ -268,7 +250,7 @@ private lemma pd_kerrG_1_11 (M a : ℝ) (x : Fin 4 → ℝ)
     have h1 := ((hasDerivAt_pow 2 (x 1)).const_mul M).const_add c0
     have h2 := (hasDerivAt_id' (x 1)).const_mul c1
     exact ((h1.fun_add h2).fun_neg).congr_deriv (by ring)
-  have hden := (hasDerivAt_sigma_r' a (x 1) (x 2)).fun_mul (hasDerivAt_delta_r' M a (x 1))
+  have hden := (hasDerivAt_sigma_r a (x 1) (x 2)).fun_mul (hasDerivAt_delta_r M a (x 1))
   have hd := hnum.fun_div hden (mul_ne_zero hsig hdel)
   rw [pd, hfun, hd.deriv]
   field_simp [hsig, hdel]
@@ -282,7 +264,7 @@ private lemma pd_kerrG_1_12 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
       = fun s => -a ^ 2 * Real.cos (x 2) * Real.sin (x 2) / sigma a s (x 2) := by
     funext s; simp [kerrChristoffel]
   have hd := (hasDerivAt_const (x 1) (-a ^ 2 * Real.cos (x 2) * Real.sin (x 2))).fun_div
-    (hasDerivAt_sigma_r' a (x 1) (x 2)) hsig
+    (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
   rw [pd, hfun, hd.deriv]
   ring
 
@@ -293,8 +275,8 @@ private lemma pd_kerrG_1_22 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
         / sigma a (x 1) (x 2) ^ 2 := by
   have hfun : (fun s => kerrChristoffel M a (Function.update x 1 s) 1 2 2)
       = fun s => (-s * delta M a s) / sigma a s (x 2) := by funext s; simp [kerrChristoffel]
-  have hnum := (hasDerivAt_id' (x 1)).fun_neg.fun_mul (hasDerivAt_delta_r' M a (x 1))
-  have hd := hnum.fun_div (hasDerivAt_sigma_r' a (x 1) (x 2)) hsig
+  have hnum := (hasDerivAt_id' (x 1)).fun_neg.fun_mul (hasDerivAt_delta_r M a (x 1))
+  have hd := hnum.fun_div (hasDerivAt_sigma_r a (x 1) (x 2)) hsig
   rw [pd, hfun, hd.deriv]
   field_simp [hsig]
   simp only [sigma, delta]
@@ -334,7 +316,7 @@ private lemma pd_kerrG_1_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
       Function.update_of_ne (by decide : (2 : Fin 4) ≠ 1)]
     norm_num
     ring
-  have hd := (((hasDerivAt_delta_r' M a (x 1)).fun_mul hP).fun_div
+  have hd := (((hasDerivAt_delta_r M a (x 1)).fun_mul hP).fun_div
     (hasDerivAt_sigma3_r a (x 1) (x 2)) (pow_ne_zero 3 hsig)).const_mul (-(Real.sin (x 2) ^ 2))
   rw [pd, hfun, hd.deriv]
   field_simp [hsig]
@@ -395,7 +377,7 @@ private lemma pd_kerrG_2_11 (M a : ℝ) (x : Fin 4 → ℝ)
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma_th' a (x 1) (x 2))
+  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2))
     hsig).const_mul (a ^ 2 / delta M a (x 1))
   rw [pd, hfun, hd.deriv]
   field_simp [hsig, hdel]
@@ -407,7 +389,7 @@ private lemma pd_kerrG_2_12 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
       2 * a ^ 2 * Real.cos (x 2) * x 1 * Real.sin (x 2) / sigma a (x 1) (x 2) ^ 2 := by
   have hfun : (fun t => kerrChristoffel M a (Function.update x 2 t) 2 1 2)
       = fun t => x 1 / sigma a (x 1) t := by funext t; simp [kerrChristoffel]
-  have hd := (hasDerivAt_const (x 2) (x 1)).fun_div (hasDerivAt_sigma_th' a (x 1) (x 2)) hsig
+  have hd := (hasDerivAt_const (x 2) (x 1)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2)) hsig
   rw [pd, hfun, hd.deriv]
   ring
 
@@ -423,7 +405,7 @@ private lemma pd_kerrG_2_22 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
       Function.update_of_ne (by decide : (1 : Fin 4) ≠ 2)]
     norm_num
     ring
-  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma_th' a (x 1) (x 2))
+  have hd := ((hasDerivAt_cos_mul_sin (x 2)).fun_div (hasDerivAt_sigma_th a (x 1) (x 2))
     hsig).const_mul (-a ^ 2)
   rw [pd, hfun, hd.deriv]
   field_simp [hsig]
@@ -471,7 +453,7 @@ private lemma pd_kerrG_2_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1
     have hc4 : HasDerivAt (fun t => c4 * Real.cos t ^ 4)
         (c4 * (4 * Real.cos (x 2) ^ (4 - 1) * (-Real.sin (x 2)))) (x 2) :=
       ((Real.hasDerivAt_cos (x 2)).pow 4).const_mul c4
-    have hc2 := (hasDerivAt_cos_sq' (x 2)).const_mul c2
+    have hc2 := (hasDerivAt_cos_sq (x 2)).const_mul c2
     exact ((hc4.fun_add hc2).add_const c0).congr_deriv (by ring)
   have hfun : (fun t => kerrChristoffel M a (Function.update x 2 t) 2 3 3)
       = fun t => -((Real.cos t * Real.sin t * Q t) / sigma a (x 1) t ^ 3) := by

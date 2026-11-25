@@ -8,6 +8,7 @@ module
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.Basic
 public import PhyslibAlpha.Relativity.General.SchwarzschildDeSitter.DeSitterFrame
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -90,23 +91,11 @@ noncomputable def sdsLapseHalfDeriv (M Λ r : ℝ) : ℝ := M / r ^ 2 - Λ * r /
 
 /-- The Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def sdsMetric (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  fun i j =>
-    if i = j then
-      if i = 0 then -(sdsF M Λ (x 1))
-      else if i = 1 then (sdsF M Λ (x 1))⁻¹
-      else if i = 2 then (x 1) ^ 2
-      else (x 1) ^ 2 * Real.sin (x 2) ^ 2
-    else 0
+  StaticSpherical.staticSphericalMetric (sdsF M Λ) x
 
 /-- The inverse of the Schwarzschild–de Sitter metric in `(t, r, θ, φ)` coordinates. -/
 noncomputable def sdsMetricInv (M Λ : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
-  fun i j =>
-    if i = j then
-      if i = 0 then -(sdsF M Λ (x 1))⁻¹
-      else if i = 1 then sdsF M Λ (x 1)
-      else if i = 2 then ((x 1) ^ 2)⁻¹
-      else ((x 1) ^ 2 * Real.sin (x 2) ^ 2)⁻¹
-    else 0
+  StaticSpherical.staticSphericalMetricInv (sdsF M Λ) x
 
 /-- At `Λ = 0`, the de Sitter lapse reduces to the Schwarzschild lapse. -/
 lemma sdsF_zero_lambda (M r : ℝ) : sdsF M 0 r = Schwarzschild.schwarzschildF M r := by

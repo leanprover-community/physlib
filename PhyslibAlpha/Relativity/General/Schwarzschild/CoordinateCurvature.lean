@@ -74,12 +74,14 @@ noncomputable def schwarzschildGinv (M : ℝ) : (Fin 4 → ℝ) → Tensor2 4 :=
 /-- At `Λ = 0`, `sdsMetric` reduces to `schwarzschildG`. -/
 lemma sdsMetric_zero_lambda (M : ℝ) : sdsMetric M 0 = schwarzschildG M := by
   funext x i j
-  simp [sdsMetric, schwarzschildG, Schwarzschild.schwarzschildMetric, sdsF]
+  simp [sdsMetric, StaticSpherical.staticSphericalMetric, schwarzschildG,
+    Schwarzschild.schwarzschildMetric, sdsF, Schwarzschild.schwarzschildF]
 
 /-- At `Λ = 0`, `sdsMetricInv` reduces to `schwarzschildGinv`. -/
 lemma sdsMetricInv_zero_lambda (M : ℝ) : sdsMetricInv M 0 = schwarzschildGinv M := by
   funext x i j
-  simp [sdsMetricInv, schwarzschildGinv, sdsF, Schwarzschild.schwarzschildF]
+  simp [sdsMetricInv, StaticSpherical.staticSphericalMetricInv, schwarzschildGinv,
+    sdsF, Schwarzschild.schwarzschildF]
 
 /-- All six independent Schwarzschild Riemann components directly from the metric pipeline,
 specialised from `riemann_sds_components` at `Λ = 0`. -/

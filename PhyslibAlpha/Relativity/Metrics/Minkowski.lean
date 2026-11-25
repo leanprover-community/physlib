@@ -10,7 +10,7 @@ public import Mathlib.LinearAlgebra.Matrix.Notation
 public import Mathlib.Logic.Equiv.Fin.Basic
 public import Physlib.Relativity.MinkowskiMatrix
 public import Physlib.Relativity.Tensors.RealTensor.Metrics.Basic
-public import PhyslibAlpha.Relativity.Metrics.Basic
+public import PhyslibAlpha.Relativity.Metrics.MetricTrace
 
 /-!
 
@@ -40,7 +40,7 @@ along
   self-inverse property derived from `minkowskiMatrix`.
 - `minkowskiMetric4_eq_neg_coMetric_repr` : component bridge to `realLorentzTensor.coMetric 3`.
 - `minkowski` : four-dimensional Minkowski spacetime metric as a `MetricTensor 4`.
-- `minkowski_ginv_offdiag` : the inverse Minkowski metric is diagonal.
+- `minkowski_ginv_offdiag`, `metricTrace_minkowski` : diagonal property and Minkowski trace.
 - `minkowskiG` : the Minkowski metric as a constant field on `Fin 4 → ℝ`.
 
 ## iii. Table of contents
@@ -98,10 +98,10 @@ lemma minkowskiMetric4_eq_neg_coMetric_repr
 
 /-- The Minkowski metric is symmetric, inherited from `minkowskiMatrix.eq_transpose`. -/
 lemma minkowskiMetric4_symm : IsSymm minkowskiMetric4 := by
-  intro i j
-  simp only [minkowskiMetric4]
+  ext i j
+  simp only [Matrix.transpose_apply, minkowskiMetric4]
   have ht := congrFun (congrFun (@minkowskiMatrix.eq_transpose 3)
-    (finSumFinEquiv.symm j)) (finSumFinEquiv.symm i)
+    (finSumFinEquiv.symm i)) (finSumFinEquiv.symm j)
   simpa [Matrix.transpose_apply] using congrArg Neg.neg ht
 
 /-- The Minkowski metric is its own inverse: `η * η = 1`, inherited from
@@ -140,6 +140,13 @@ def minkowski : MetricTensor 4 where
 /-- Off-diagonal entries of the inverse Minkowski metric vanish. -/
 lemma minkowski_ginv_offdiag {k l : Fin 4} (h : k ≠ l) : minkowski.ginv k l = 0 := by
   simp [minkowski, minkowskiMetric4_apply, h]
+
+/-- Metric trace against `minkowski` reduces to the diagonal sum `∑ a, η_{aa} T_{aa}`. -/
+@[simp]
+lemma metricTrace_minkowski (T : Tensor2 4) :
+    metricTrace minkowski T = ∑ a : Fin 4, minkowskiMetric4 a a * T a a := by
+  rw [metricTrace_diag minkowski T (fun _ _ h => minkowski_ginv_offdiag h)]
+  rfl
 
 /-- The Minkowski metric as a constant field of components on `Fin 4 → ℝ`. -/
 noncomputable def minkowskiG : (Fin 4 → ℝ) → Tensor2 4 := fun _ => minkowskiMetric4

@@ -7,6 +7,7 @@ module
 
 public import Mathlib.Basic.Real.Basic
 public import Mathlib.Data.Matrix.Basic
+public import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 
@@ -17,15 +18,14 @@ Rank-2 covariant tensor components in a fixed frame or coordinate chart and symm
 ## i. Overview
 
 A rank-2 covariant tensor in an `n`-dimensional coordinate chart or frame is represented as a real
-`n × n` matrix of components (`Tensor2 n`). This module defines `Tensor2`, component symmetry
-`IsSymm`, and basic symmetry lemmas used across `PhyslibAlpha.Relativity.Metrics` and
+`n × n` matrix of components (`Tensor2 n`). This module defines `Tensor2` and aliases `IsSymm` to
+Mathlib's `Matrix.IsSymm` for use across `PhyslibAlpha.Relativity.Metrics` and
 `PhyslibAlpha.Relativity.General`.
 
 ## ii. Key results
 
 - `Tensor2` : rank-2 covariant tensor components in `n` dimensions.
-- `IsSymm` : component symmetry of a rank-2 tensor.
-- `isSymm_zero`, `isSymm_one`, `IsSymm.transpose` : basic symmetry properties.
+- `IsSymm` : component symmetry of a rank-2 tensor (reusing `Matrix.IsSymm`).
 
 ## iii. Table of contents
 
@@ -54,26 +54,8 @@ namespace GeneralRelativity
 components. -/
 abbrev Tensor2 (n : ℕ) : Type := Matrix (Fin n) (Fin n) ℝ
 
-/-- Symmetry of a rank-2 tensor: `T i j = T j i` for all indices `i` and `j`. -/
-def IsSymm {n : ℕ} (T : Tensor2 n) : Prop := ∀ i j, T i j = T j i
-
-/-- The zero tensor is symmetric. -/
-lemma isSymm_zero {n : ℕ} : IsSymm (0 : Tensor2 n) := fun _ _ => rfl
-
-/-- The identity tensor is symmetric. -/
-lemma isSymm_one {n : ℕ} : IsSymm (1 : Tensor2 n) := by
-  intro i j
-  simp only [Matrix.one_apply]
-  by_cases h : i = j
-  · subst h
-    simp only [↓reduceIte]
-  · have h' : j ≠ i := fun hji => h hji.symm
-    simp only [h, h', ↓reduceIte]
-
-/-- A symmetric matrix equals its transpose. -/
-lemma IsSymm.transpose {n : ℕ} {T : Tensor2 n} (h : IsSymm T) :
-    Matrix.transpose T = T := by
-  ext i j
-  exact (h i j).symm
+/-- Symmetry of a rank-2 tensor: `Tᵀ = T` (equivalently `T j i = T i j` for all indices `i`
+and `j`). -/
+abbrev IsSymm {n : ℕ} (T : Tensor2 n) : Prop := Matrix.IsSymm T
 
 end GeneralRelativity

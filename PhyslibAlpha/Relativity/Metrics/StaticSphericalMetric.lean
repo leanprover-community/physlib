@@ -125,8 +125,8 @@ noncomputable def staticSphericalMetricInv (f : ℝ → ℝ) (x : Fin 4 → ℝ)
 /-- Symmetry of `staticSphericalMetric`. -/
 lemma staticSphericalMetric_symm (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     IsSymm (staticSphericalMetric f x) := by
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp [staticSphericalMetric]
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [Matrix.transpose_apply, staticSphericalMetric]
 
 /-- Left/right inverse identity `g * g⁻¹ = 1` on the regular chart `r ≠ 0`, `f(r) ≠ 0`,
 `sin θ ≠ 0`. -/
@@ -210,9 +210,7 @@ private lemma pd_metric_theta_33 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     funext s
     simp [staticSphericalMetric]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
-    convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
-    ring
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
   rw [pd, hfun, (hsinSq.const_mul ((x 1) ^ 2)).deriv]
   ring
 
@@ -496,9 +494,7 @@ private lemma pd_G_t_133 (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     funext s
     simp [staticSphericalChristoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
-    convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
-    ring
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
   have hd := ((hsinSq.const_mul (x 1)).mul_const (f (x 1))).neg
   have hderiv : deriv (fun s : ℝ => -(x 1 * Real.sin s ^ 2 * f (x 1))) (x 2)
       = -(x 1 * (2 * Real.sin (x 2) * Real.cos (x 2)) * f (x 1)) := hd.deriv

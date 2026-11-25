@@ -139,19 +139,6 @@ lemma leviCivitaOfDeriv_symm {n : ℕ} (ginv : Tensor2 n) (dg : Fin n → Tensor
   refine Finset.sum_congr rfl fun m _ => ?_
   rw [hdg m i j, add_comm (dg j m i) (dg i m j)]
 
-private lemma sum_ginv_mul_g_left {n : ℕ} (M : MetricTensor n) (j : Fin n) (f : Fin n → ℝ) :
-    (∑ k : Fin n, (∑ m : Fin n, M.ginv k m * f m) * M.g k j) = f j := by
-  calc (∑ k : Fin n, (∑ m : Fin n, M.ginv k m * f m) * M.g k j)
-      = ∑ k : Fin n, ∑ m : Fin n, f m * (M.g j k * M.ginv k m) := by
-        refine Finset.sum_congr rfl fun k _ => ?_
-        rw [Finset.sum_mul]
-        refine Finset.sum_congr rfl fun m _ => by rw [M.symm k j]; ring
-    _ = ∑ m : Fin n, f m * ∑ k : Fin n, M.g j k * M.ginv k m := by
-        rw [Finset.sum_comm]
-        refine Finset.sum_congr rfl fun m _ => by rw [Finset.mul_sum]
-    _ = f j := by
-        simp [M.sum_ginv_mul_g_right j]
-
 /-- Metric compatibility of the Levi-Civita connection for any `M : MetricTensor n` and
 symmetric derivative array `dg`. -/
 lemma leviCivitaOfDeriv_compatible {n : ℕ} (M : MetricTensor n) (dg : Fin n → Tensor2 n)
@@ -166,14 +153,14 @@ lemma leviCivitaOfDeriv_compatible {n : ℕ} (M : MetricTensor n) (dg : Fin n �
         = (1 / 2) * ∑ m : Fin n, (∑ r : Fin n, M.ginv m r * f r) * M.g m q := by
       rw [Finset.mul_sum]
       refine Finset.sum_congr rfl fun m _ => by ring
-    rw [hpull, sum_ginv_mul_g_left M q f]
+    rw [hpull, M.sum_mul_ginv_g_apply q f]
   have h1 := hmul_l j fun r => dg i r k + dg k r i - dg r k i
   have h2 := hmul_l i fun r => dg j r k + dg k r j - dg r k j
   have h1' : (∑ m : Fin n, leviCivitaOfDeriv M.ginv dg m k i * M.g m j)
       = (1 / 2) * (dg i j k + dg k j i - dg j k i) := h1
   have h2' : (∑ m : Fin n, leviCivitaOfDeriv M.ginv dg m k j * M.g i m)
       = (1 / 2) * (dg j i k + dg k i j - dg i k j) := by
-    have hs : ∀ m, M.g i m = M.g m i := fun m => M.symm i m
+    have hs : ∀ m, M.g i m = M.g m i := fun m => M.symm.apply m i
     simp_rw [hs]
     exact h2
   rw [h1', h2', hdg i j k, hdg k j i, hdg j k i]
@@ -199,9 +186,9 @@ private lemma sum_contorsion_mul_g {n : ℕ} (M : MetricTensor n) (T : AffineCon
           * (∑ r : Fin n, M.g k r * T r p i + ∑ r : Fin n, M.g i r * T r p k)) * M.g m j) := by
     rw [← Finset.sum_add_distrib, Finset.mul_sum]
     refine Finset.sum_congr rfl fun m _ => by ring
-  rw [hsplit, sum_ginv_mul_g_left M j]
+  rw [hsplit, M.sum_mul_ginv_g_apply j]
   have hm : (∑ m : Fin n, T m k i * M.g m j) = ∑ m : Fin n, M.g j m * T m k i :=
-    Finset.sum_congr rfl fun m _ => by rw [M.symm m j]; ring
+    Finset.sum_congr rfl fun m _ => by rw [M.symm.apply j m]; ring
   rw [hm]
   ring
 
@@ -216,7 +203,7 @@ lemma contorsion_antisymm_outer {n : ℕ} (M : MetricTensor n) (T : AffineConnec
   have h2 : (∑ m : Fin n, contorsion M T m k j * M.g i m)
       = (1 / 2) * ((∑ m : Fin n, M.g i m * T m k j)
         + (∑ r : Fin n, M.g k r * T r i j) + (∑ r : Fin n, M.g j r * T r i k)) := by
-    rw [Finset.sum_congr rfl fun m _ => by rw [M.symm i m]]
+    rw [Finset.sum_congr rfl fun m _ => by rw [M.symm.apply m i]]
     exact sum_contorsion_mul_g M T k j i
   rw [h1, h2]
   have ha : (∑ r : Fin n, M.g k r * T r j i) + (∑ r : Fin n, M.g k r * T r i j) = 0 := by
@@ -284,7 +271,7 @@ private lemma sum_g_mul_gamma_eq {n : ℕ} (M : MetricTensor n) (dg : Fin n → 
   have h3 := hmc k i j
   have hs : ∀ a b c : Fin n, (∑ m : Fin n, Γ m a b * M.g m c)
       = ∑ m : Fin n, M.g c m * Γ m a b := fun a b c =>
-    Finset.sum_congr rfl fun m _ => by rw [M.symm m c]; ring
+    Finset.sum_congr rfl fun m _ => by rw [M.symm.apply c m]; ring
   have hs' : ∀ a b c : Fin n, (∑ m : Fin n, Γ m a b * M.g c m)
       = ∑ m : Fin n, M.g c m * Γ m a b := fun a b c =>
     Finset.sum_congr rfl fun m _ => by ring

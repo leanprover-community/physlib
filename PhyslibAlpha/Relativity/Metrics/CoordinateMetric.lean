@@ -8,12 +8,15 @@ module
 public import Mathlib.Analysis.Calculus.ContDiff.Deriv
 public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.Calculus.FDeriv.Symmetric
+public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import Mathlib.Data.Set.Basic
 public import Physlib.SpaceAndTime.SpaceTime.Derivatives
 public import PhyslibAlpha.Relativity.Metrics.Minkowski
 public import PhyslibAlpha.Relativity.Tensors.EinsteinTensor
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.Deriv.Pow
+import Mathlib.Analysis.SpecialFunctions.Trigonometric.Deriv
 import Mathlib.Tactic.Ring
 
 /-!
@@ -116,6 +119,16 @@ curvature `R^ρ_{σμν}`, Ricci tensor, scalar curvature, and Einstein tensor d
 components on the regular chart.
 
 -/
+
+/-- Coordinate partial derivative of a `Real.sin · ^ 2` slice: `(sin² θ)' = 2 sin θ cos θ`. -/
+lemma hasDerivAt_sin_sq (θ : ℝ) :
+    HasDerivAt (fun t => Real.sin t ^ 2) (2 * Real.sin θ * Real.cos θ) θ :=
+  ((hasDerivAt_pow 2 (Real.sin θ)).comp θ (Real.hasDerivAt_sin θ)).congr_deriv (by ring)
+
+/-- Coordinate derivative of `cos² θ`: `(cos² θ)' = -2 cos θ sin θ`. -/
+lemma hasDerivAt_cos_sq (θ : ℝ) :
+    HasDerivAt (fun t => Real.cos t ^ 2) (-2 * Real.cos θ * Real.sin θ) θ :=
+  ((hasDerivAt_pow 2 (Real.cos θ)).comp θ (Real.hasDerivAt_cos θ)).congr_deriv (by ring)
 
 /-- The partial derivative of a scalar field along the coordinate `μ`: the derivative of
 `s ↦ f (Function.update x μ s)` at `x μ`. -/

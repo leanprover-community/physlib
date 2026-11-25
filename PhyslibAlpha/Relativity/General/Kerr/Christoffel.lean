@@ -104,23 +104,19 @@ noncomputable def kerrMetricD (M a : ℝ) (μ : Fin 4) (x : Fin 4 → ℝ) (i j 
     else 0
   else 0
 
-private lemma hasDerivAt_cos_sq (θ : ℝ) :
-    HasDerivAt (fun t => Real.cos t ^ 2) (-2 * Real.cos θ * Real.sin θ) θ :=
-  ((hasDerivAt_pow 2 (Real.cos θ)).comp θ (Real.hasDerivAt_cos θ)).congr_deriv (by ring)
-
-private lemma hasDerivAt_sin_sq (θ : ℝ) :
-    HasDerivAt (fun t => Real.sin t ^ 2) (2 * Real.sin θ * Real.cos θ) θ :=
-  ((hasDerivAt_pow 2 (Real.sin θ)).comp θ (Real.hasDerivAt_sin θ)).congr_deriv (by ring)
-
-private lemma hasDerivAt_sigma_r (a r θ : ℝ) :
+/-- Radial derivative of Boyer–Lindquist `Σ = r² + a² cos² θ`: `∂_r Σ = 2 r`. -/
+lemma hasDerivAt_sigma_r (a r θ : ℝ) :
     HasDerivAt (fun s => sigma a s θ) (2 * r) r :=
   ((hasDerivAt_pow 2 r).add_const (a ^ 2 * Real.cos θ ^ 2)).congr_deriv (by ring)
 
-private lemma hasDerivAt_sigma_th (a r θ : ℝ) :
+/-- Angular derivative of Boyer–Lindquist `Σ = r² + a² cos² θ`:
+`∂_θ Σ = -2 a² cos θ sin θ`. -/
+lemma hasDerivAt_sigma_th (a r θ : ℝ) :
     HasDerivAt (fun t => sigma a r t) (-2 * a ^ 2 * Real.cos θ * Real.sin θ) θ :=
   (((hasDerivAt_cos_sq θ).const_mul (a ^ 2)).const_add (r ^ 2)).congr_deriv (by ring)
 
-private lemma hasDerivAt_delta_r (M a r : ℝ) :
+/-- Radial derivative of Boyer–Lindquist `Δ = r² - 2 M r + a²`: `∂_r Δ = 2 r - 2 M`. -/
+lemma hasDerivAt_delta_r (M a r : ℝ) :
     HasDerivAt (fun s => delta M a s) (2 * r - 2 * M) r := by
   have h1 := ((hasDerivAt_pow 2 r).fun_sub
     ((hasDerivAt_const r (2 * M)).fun_mul (hasDerivAt_id r))).fun_add (hasDerivAt_const r (a ^ 2))
@@ -204,7 +200,7 @@ private lemma pd_kerrMetric_1_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
 private lemma pd_kerrMetric_1_30 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
     pd 1 (fun y => kerrMetric M a y 3 0) x = kerrMetricD M a 1 x 3 0 := by
   have hs : (fun y => kerrMetric M a y 3 0) = fun y => kerrMetric M a y 0 3 := by
-    funext y; exact kerrMetric_symm M a y 3 0
+    funext y; exact (kerrMetric_symm M a y).apply 0 3
   rw [hs, pd_kerrMetric_1_03 M a x hsig]
   simp [kerrMetricD]
 
@@ -295,7 +291,7 @@ private lemma pd_kerrMetric_2_33 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a
 private lemma pd_kerrMetric_2_30 (M a : ℝ) (x : Fin 4 → ℝ) (hsig : sigma a (x 1) (x 2) ≠ 0) :
     pd 2 (fun y => kerrMetric M a y 3 0) x = kerrMetricD M a 2 x 3 0 := by
   have hs : (fun y => kerrMetric M a y 3 0) = fun y => kerrMetric M a y 0 3 := by
-    funext y; exact kerrMetric_symm M a y 3 0
+    funext y; exact (kerrMetric_symm M a y).apply 0 3
   rw [hs, pd_kerrMetric_2_03 M a x hsig]
   simp [kerrMetricD]
 

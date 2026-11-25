@@ -31,8 +31,7 @@ reduction to Schwarzschild at `a = 0`.
 ## ii. Key results
 
 - `KerrSpacetime`, `sigma`, `delta`, `kerrAxialFactor` : Kerr spacetime structure and
-  Boyer–Lindquist
-  auxiliary functions `Σ`, `Δ`, and `B`.
+  Boyer–Lindquist auxiliary functions `Σ`, `Δ`, and `kerrAxialFactor`.
 - `kerrMetric`, `kerrMetricInv`, `kerrMetricTensor` : Kerr metric and inverse `MetricTensor 4`.
 - `horizonPlus`, `horizonMinus`, `delta_horizonPlus`, `kerr_extremal` : event horizons `r±`.
 - `ergosphereRadius`, `kerrMetric_00_ergosphere` : stationary-limit surface `g₀₀ = 0`.
@@ -83,7 +82,8 @@ Misner–Thorne–Wheeler and Chandrasekhar), factored out because it governs bo
 noncomputable def kerrAxialFactor (M a r θ : ℝ) : ℝ :=
   (r ^ 2 + a ^ 2) ^ 2 - a ^ 2 * delta M a r * Real.sin θ ^ 2
 
-/-- Alternative expansion of `B`: `B = Σ (r² + a²) + 2 M a² r sin² θ`. -/
+/-- Alternative expansion of the Boyer–Lindquist axial metric factor:
+`kerrAxialFactor = Σ (r² + a²) + 2 M a² r sin² θ`. -/
 lemma kerrAxialFactor_eq_sigma (M a r θ : ℝ) :
     kerrAxialFactor M a r θ
       = sigma a r θ * (r ^ 2 + a ^ 2) + 2 * M * a ^ 2 * r * Real.sin θ ^ 2 := by
@@ -92,7 +92,7 @@ lemma kerrAxialFactor_eq_sigma (M a r θ : ℝ) :
   ring
 
 /-- Algebraic identity governing the determinant of the `(t, φ)` metric block:
-`(Σ - 2 M r) B + 4 M² a² r² sin² θ = Σ² Δ`. -/
+`(Σ - 2 M r) kerrAxialFactor + 4 M² a² r² sin² θ = Σ² Δ`. -/
 lemma kerr_tphi_det_id (M a r θ : ℝ) :
     (sigma a r θ - 2 * M * r) * kerrAxialFactor M a r θ + 4 * M ^ 2 * a ^ 2 * r ^ 2 * Real.sin θ ^ 2
       = sigma a r θ ^ 2 * delta M a r := by
@@ -129,10 +129,10 @@ noncomputable def kerrMetricInv (M a : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
     else if i = 3 ∧ j = 3 then (sig - 2 * M * x 1) / (sig * del * s2)
     else 0
 
-/-- Symmetry of `kerrMetric M a x`. -/
-lemma kerrMetric_symm (M a : ℝ) (x : Fin 4 → ℝ) : IsSymm (kerrMetric M a x) := by
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp [kerrMetric]
+/-- Symmetry of the Boyer–Lindquist Kerr metric `kerrMetric`. -/
+lemma kerrMetric_symm (M a : ℝ) (x : Fin 4 → ℝ) : IsSymm (kerrMetric M a x) :=
+  Matrix.IsSymm.ext fun i j => by
+    fin_cases i <;> fin_cases j <;> simp [kerrMetric]
 
 /-- Left-inverse verification `g⁻¹ * g = 1` for the Boyer–Lindquist Kerr metric. -/
 lemma kerrMetricInv_mul_kerrMetric (M a : ℝ) (x : Fin 4 → ℝ)

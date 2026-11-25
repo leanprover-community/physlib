@@ -43,8 +43,8 @@ exhibits `ω = 0` (`γ = 1/2`) as the metric `f(R)` value, proves `1 ≤ couplin
 - `gamma_bounds`, `cassini_deviation`, `gamma_tendsto_atTop` : bounds, Cassini constraint, and
   GR limit as `ω → ∞`.
 - `fR_gamma` : `γ(0) = 1/2`, matching unscreened metric `f(R)` gravity.
-- `coupling`, `coupling_bounds`, `coupling_pole` : effective coupling `1 + 1/(3 + 2ω)` and its
-  kinetic degeneracy pole at `ω = -3/2`.
+- `coupling`, `coupling_eq_one_add`, `coupling_bounds` : effective coupling
+  `1 + 1/(3 + 2ω)` and its weak-field bounds.
 
 ## iii. Table of contents
 
@@ -144,9 +144,6 @@ lemma coupling_bounds (ω : ℝ) (hω : 0 ≤ ω) : 1 ≤ coupling ω ∧ coupli
   have hinv_pos : (0 : ℝ) < 1 / (3 + 2 * ω) := by positivity
   rw [coupling_eq_one_add ω (by linarith)]
   constructor <;> linarith
-
-/-- `ω = -3/2` is the pole of the effective coupling where the scalar kinetic term vanishes. -/
-lemma coupling_pole : 3 + 2 * (-(3 / 2) : ℝ) = 0 := by norm_num
 
 /-- The Brans–Dicke PPN parameter `γ` of a `BransDickeTheory`. -/
 noncomputable def BransDickeTheory.gamma (T : BransDickeTheory) : ℝ := BransDicke.gamma T.ω

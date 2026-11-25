@@ -38,8 +38,7 @@ static Newtonian potential `Φ = -M / r` read off `g_tt = -(1 + 2Φ)` has Hessia
 - `frameSqSum_eq`, `kretschmann_scalar` : frame sum of squares `48 k²` and Kretschmann
   invariant `48 M² / r⁶`.
 - `weyl_purely_electric` : every component with one temporal index vanishes.
-- `tidalPart_eq_electricPart`, `tidal_trace_zero` : Hessian of `Φ = -M/r` matches
-  `electricPart (M/r³)` and is harmonic.
+- `tidalPart_eq_electricPart` : Hessian of `Φ = -M/r` matches `electricPart (M/r³)`.
 
 ## iii. Table of contents
 
@@ -71,12 +70,13 @@ namespace Schwarzschild
 noncomputable def electricPart (k : ℝ) (i j : Fin 4) : ℝ :=
   if i = j then (if i = 0 then 0 else if i = 1 then -2 * k else k) else 0
 
-/-- `electricPart k` is symmetric. -/
+/-- Symmetry of the electric Weyl matrix `diag(0, -2k, k, k)` for any tidal scale parameter
+`k`. -/
 lemma electricPart_symm (k : ℝ) (i j : Fin 4) :
     electricPart k i j = electricPart k j i := by
   fin_cases i <;> fin_cases j <;> simp [electricPart]
 
-/-- `electricPart k` is trace free. -/
+/-- The electric Weyl matrix `diag(0, -2k, k, k)` is trace-free for every tidal scale `k`. -/
 lemma electricPart_trace (k : ℝ) : (∑ i, electricPart k i i) = 0 := by
   simp [electricPart, Fin.sum_univ_four]
   ring
@@ -169,11 +169,6 @@ lemma tidalPart_eq_electricPart (M r : ℝ) :
   all_goals first
     | (simp [tidalPart, electricPart]; ring)
     | simp [tidalPart, electricPart]
-
-/-- The exterior potential is harmonic: `Φ'' + 2 Φ' / r = 0`. -/
-lemma tidal_trace_zero (M r : ℝ) :
-    (-2 * M / r ^ 3) + 2 * (M / r ^ 3) = 0 := by
-  ring
 
 end Schwarzschild
 

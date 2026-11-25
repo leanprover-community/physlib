@@ -367,7 +367,7 @@ lemma ricciTensorOf_sds_frame (M Λ : ℝ) (x : Fin 4 → ℝ) (hr : x 1 ≠ 0)
     sdsFrameScale M Λ x σ * ricciTensorOf (sdsMetric M Λ) (sdsMetricInv M Λ) x σ ν
       = Λ * minkowskiMetric4 σ ν := by
   rw [ricciTensorOf_sds M Λ x hr hf hsin]
-  fin_cases σ <;> fin_cases ν <;> simp [sdsFrameScale, sdsMetric]
+  fin_cases σ <;> fin_cases ν <;> simp [sdsFrameScale, sdsMetric, staticSphericalMetric]
   · field_simp [hf]
   · field_simp [hf]
   · field_simp [hr]

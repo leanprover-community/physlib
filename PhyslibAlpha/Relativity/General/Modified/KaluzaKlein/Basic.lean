@@ -134,10 +134,10 @@ private lemma kkMetric_apply_four_four (g4 : Tensor2 4) (A : Fin 4 → ℝ) (φ 
 /-- Symmetry of `kkMetric g4 A φ` whenever `g4` is symmetric. -/
 lemma kkMetric_symm (g4 : Tensor2 4) (hg : IsSymm g4) (A : Fin 4 → ℝ) (φ : ℝ) :
     IsSymm (kkMetric g4 A φ) := by
-  intro i j
-  simp only [kkMetric, metric4Ext]
+  ext i j
+  simp only [Matrix.transpose_apply, kkMetric, metric4Ext]
   by_cases hi : i.val < 4 <;> by_cases hj : j.val < 4
-  · simp only [hi, hj, ↓reduceDIte, hg ⟨i.val, hi⟩ ⟨j.val, hj⟩]; ring
+  · simp only [hi, hj, ↓reduceDIte, hg.apply ⟨i.val, hi⟩ ⟨j.val, hj⟩]; ring
   · simp only [hi, hj, ↓reduceDIte]; ring
   · simp only [hi, hj, ↓reduceDIte]; ring
   · simp only [hi, hj, ↓reduceDIte]; ring
@@ -186,17 +186,8 @@ private lemma sum_fin5_split (f : Fin 5 → ℝ) :
   rfl
 
 private lemma contravariantPotential_mul_g (M : MetricTensor 4) (A : Fin 4 → ℝ) (b : Fin 4) :
-    (∑ k : Fin 4, contravariantPotential M.ginv A k * M.g k b) = A b := by
-  simp only [contravariantPotential]
-  calc (∑ k : Fin 4, (∑ m : Fin 4, M.ginv k m * A m) * M.g k b)
-      = ∑ m : Fin 4, A m * ∑ k : Fin 4, M.g b k * M.ginv k m := by
-        simp_rw [Finset.sum_mul]
-        rw [Finset.sum_comm]
-        refine Finset.sum_congr rfl fun m _ => ?_
-        rw [Finset.mul_sum]
-        refine Finset.sum_congr rfl fun k _ => by rw [M.symm k b]; ring
-    _ = A b := by
-        simp [M.sum_ginv_mul_g_right b]
+    (∑ k : Fin 4, contravariantPotential M.ginv A k * M.g k b) = A b :=
+  M.sum_mul_ginv_g_apply b A
 
 private lemma kkMetricInv_mul_kkMetric_44 (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ)
     {i j : Fin 5} (hi : i.val < 4) (hj : j.val < 4) :
@@ -292,10 +283,10 @@ lemma kkMetricInv_mul_kkMetric (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : �
 lemma kkMetricInv_symm (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : ℝ) :
     IsSymm (kkMetricInv M.ginv A φ) := by
   have hginv_symm : IsSymm M.ginv := M.ginv_symm
-  intro i j
-  simp only [kkMetricInv]
+  ext i j
+  simp only [Matrix.transpose_apply, kkMetricInv]
   by_cases hi : i.val < 4 <;> by_cases hj : j.val < 4
-  · simp [hi, hj, hginv_symm ⟨i.val, hi⟩ ⟨j.val, hj⟩]
+  · simp [hi, hj, hginv_symm.apply ⟨i.val, hi⟩ ⟨j.val, hj⟩]
   · simp [hi, hj]
   · simp [hi, hj]
   · simp [hi, hj]
@@ -307,9 +298,9 @@ lemma kkMetric_mul_kkMetricInv (M : MetricTensor 4) (A : Fin 4 → ℝ) (φ : �
   have hT := congrArg Matrix.transpose hL
   rw [Matrix.transpose_mul, Matrix.transpose_one] at hT
   have hs1 : (kkMetric M.g A φ).transpose = kkMetric M.g A φ :=
-    Matrix.ext fun i j => kkMetric_symm M.g M.symm A φ j i
+    (kkMetric_symm M.g M.symm A φ).eq
   have hs2 : (kkMetricInv M.ginv A φ).transpose = kkMetricInv M.ginv A φ :=
-    Matrix.ext fun i j => kkMetricInv_symm M A φ j i
+    (kkMetricInv_symm M A φ).eq
   rwa [hs1, hs2] at hT
 
 /-- Package the 5D Kaluza–Klein metric and its inverse as a `MetricTensor 5`. -/

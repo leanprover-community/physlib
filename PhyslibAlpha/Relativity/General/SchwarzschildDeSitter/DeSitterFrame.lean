@@ -82,19 +82,19 @@ lemma deSitterPart_skew_last (Λ : ℝ) (i j k l : Fin 4) :
 /-- Pair symmetry of `deSitterPart`. -/
 lemma deSitterPart_pair_symm (Λ : ℝ) (i j k l : Fin 4) :
     deSitterPart Λ i j k l = deSitterPart Λ k l i j := by
-  have h1 : minkowskiMetric4 k i = minkowskiMetric4 i k := minkowskiMetric4_symm k i
-  have h2 : minkowskiMetric4 l j = minkowskiMetric4 j l := minkowskiMetric4_symm l j
-  have h3 : minkowskiMetric4 k j = minkowskiMetric4 j k := minkowskiMetric4_symm k j
-  have h4 : minkowskiMetric4 l i = minkowskiMetric4 i l := minkowskiMetric4_symm l i
+  have h1 : minkowskiMetric4 k i = minkowskiMetric4 i k := minkowskiMetric4_symm.apply i k
+  have h2 : minkowskiMetric4 l j = minkowskiMetric4 j l := minkowskiMetric4_symm.apply j l
+  have h3 : minkowskiMetric4 k j = minkowskiMetric4 j k := minkowskiMetric4_symm.apply j k
+  have h4 : minkowskiMetric4 l i = minkowskiMetric4 i l := minkowskiMetric4_symm.apply i l
   simp only [deSitterPart, h1, h2, h3, h4]
   ring
 
 /-- First Bianchi identity for `deSitterPart`. -/
 lemma deSitterPart_bianchi (Λ : ℝ) (i j k l : Fin 4) :
     deSitterPart Λ i j k l + deSitterPart Λ i k l j + deSitterPart Λ i l j k = 0 := by
-  have h1 : minkowskiMetric4 k j = minkowskiMetric4 j k := minkowskiMetric4_symm k j
-  have h2 : minkowskiMetric4 l k = minkowskiMetric4 k l := minkowskiMetric4_symm l k
-  have h3 : minkowskiMetric4 l j = minkowskiMetric4 j l := minkowskiMetric4_symm l j
+  have h1 : minkowskiMetric4 k j = minkowskiMetric4 j k := minkowskiMetric4_symm.apply j k
+  have h2 : minkowskiMetric4 l k = minkowskiMetric4 k l := minkowskiMetric4_symm.apply k l
+  have h3 : minkowskiMetric4 l j = minkowskiMetric4 j l := minkowskiMetric4_symm.apply j l
   simp only [deSitterPart, h1, h2, h3]
   ring
 

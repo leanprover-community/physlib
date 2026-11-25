@@ -29,11 +29,12 @@ Metric `f(R)` gravity replaces the Einstein–Hilbert Lagrangian `R` by a nonlin
 `f(R)`, yielding fourth-order metric equations containing a propagating scalar mode `φ = f'(R)`
 with mass squared `1 / (3 f''(R))`.
 
-This module formalises:
+This module isolates the algebraic curvature equations from the fourth-order derivative terms
+`-∇_i ∇_j f'(R) + g_{ij} □f'(R)` (which vanish whenever `f'` is constant, i.e., for constant-scalar
+or General Relativity solutions) and formalises:
 
 - the algebraic part `algebraicFieldEqn` of the `f(R)` field equation and its reduction to `G + Λ
-  g` when
-  `f(R) = R - 2 Λ` (`linear_is_einstein`);
+  g` when `f(R) = R - 2 Λ` (`linear_is_einstein`);
 - the `n`-dimensional trace identity `f'(S) S - (n/2) f(S) + (n - 1) □f' = 0`
   (`trace_algebraicFieldEqn`)
   and its four-dimensional `3 □f'` specialisation (`trace_algebraicFieldEqn_four`);
@@ -47,9 +48,8 @@ This module formalises:
 - `algebraicFieldEqn`, `linear_is_einstein` : algebraic `f(R)` equations and recovery of `G + Λ g`.
 - `trace_algebraicFieldEqn`, `trace_algebraicFieldEqn_four` : trace equation showing the
   propagating scalar mode.
-- `starobinskyPotential`, `starobinsky_scalar_inversion`, `potential_eq`, `mass_sq`,
-  `starobinsky_nonconstant_deriv` : Starobinsky
-  `R + α R²` potential and scalar degree of freedom.
+- `starobinskyPotential`, `starobinsky_scalar_inversion`, `potential_eq`,
+  `starobinsky_nonconstant_deriv` : Starobinsky `R + α R²` potential and scalar degree of freedom.
 - `einsteinFrameV`, `starobinsky_einsteinFrame_form`, `starobinsky_plateau` : Einstein-frame
   conformal potential and asymptotic slow-roll plateau.
 
@@ -170,13 +170,6 @@ lemma potential_eq (α φ : ℝ) (hα : α ≠ 0) :
   field_simp
   ring
 
-/-- Scalar mass squared relation for Starobinsky gravity: `3 f''(R) m² = 1` with `f'' = 2 α`
-and `m² = 1 / (6 α)`. -/
-lemma mass_sq (α : ℝ) (hα : α ≠ 0) : 3 * (2 * α) * (1 / (6 * α)) = 1 := by
-  have h6 : (6 : ℝ) * α ≠ 0 := mul_ne_zero (by norm_num) hα
-  field_simp
-  ring
-
 /-- For `α ≠ 0`, `f'(S) = 1 + 2 α S` is non-constant, so `R + α R²` propagates an extra scalar
 degree of freedom beyond general relativity. -/
 lemma starobinsky_nonconstant_deriv (α : ℝ) (hα : α ≠ 0) : ∃ S : ℝ, 1 + 2 * α * S ≠ 1 := by
@@ -228,7 +221,8 @@ lemma starobinsky_plateau (α : ℝ) (hα : α ≠ 0) :
   refine Filter.Tendsto.congr' heq.symm ?_
   simpa using hmul
 
-/-- The algebraic metric-formalism `f(R)` field equation tensor evaluated on `(M, R)`. -/
+/-- The algebraic metric-formalism `f(R)` field equation tensor evaluated on the metric tensor `M`
+and Riemann curvature tensor `R`. -/
 noncomputable def FRTheory.algebraicFieldEqn (T : FRTheory) {n : ℕ} (M : MetricTensor n)
     (R : RiemannTensor n) : Tensor2 n :=
   FRGravity.algebraicFieldEqn T.f T.df M R

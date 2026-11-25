@@ -28,6 +28,8 @@ proves their two-sided inverse relations, and packages the rescaled `MetricTenso
   metric and its inverse.
 - `conformalG_mul`, `conformalGinv_mul` : two-sided inverse relations for `φ ≠ 0`.
 - `conformalMetric` : conformal rescaling `g̃ = φ g` packaged as a `MetricTensor`.
+- `NullVector`, `nullVector_conformal_iff` : quadratic null-cone predicate and its invariance under
+  nonzero conformal rescalings.
 
 ## iii. Table of contents
 
@@ -109,10 +111,23 @@ noncomputable def conformalMetric {n : ℕ} (M : MetricTensor n) (φ : ℝ) (hφ
   g := conformalRescaleMetric M.g φ
   ginv := conformalRescaleMetricInv M.ginv φ
   symm := by
-    intro i j
-    show φ * M.g i j = φ * M.g j i
-    rw [M.symm i j]
+    ext i j
+    simp only [Matrix.transpose_apply, conformalRescaleMetric]
+    rw [M.symm.apply j i]
   inv_left := conformalG_mul M φ hφ
   inv_right := conformalGinv_mul M φ hφ
+
+/-- Quadratic null-cone predicate `g_{ij} v^i v^j = 0`. -/
+def NullVector {n : ℕ} (g : Tensor2 n) (v : Fin n → ℝ) : Prop :=
+  (∑ i : Fin n, ∑ j : Fin n, g i j * v i * v j) = 0
+
+/-- Any nonzero conformal rescaling leaves null cones invariant (`vᵀ (ω g) v = 0 ↔ vᵀ g v = 0`). -/
+lemma nullVector_conformal_iff {n : ℕ} (ω : ℝ) (hω : ω ≠ 0) (g : Tensor2 n) (v : Fin n → ℝ) :
+    NullVector (conformalRescaleMetric g ω) v ↔ NullVector g v := by
+  have hsum : (∑ i : Fin n, ∑ j : Fin n, conformalRescaleMetric g ω i j * v i * v j)
+      = ω * ∑ i : Fin n, ∑ j : Fin n, g i j * v i * v j := by
+    simp only [conformalRescaleMetric, Finset.mul_sum]
+    refine Finset.sum_congr rfl fun i _ => Finset.sum_congr rfl fun j _ => by ring
+  simp only [NullVector, hsum, mul_eq_zero, hω, false_or]
 
 end GeneralRelativity

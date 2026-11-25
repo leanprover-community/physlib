@@ -62,13 +62,11 @@ principal part of the linearized Einstein equations into the flat d'Alembertian 
 -/
 
 /-- Minkowski trace `h = η^{ij} h_{ij}` of a symmetric `(0,2)` metric perturbation. -/
-noncomputable def hTrace (h : Tensor2 4) : ℝ := ∑ a : Fin 4, minkowskiMetric4 a a * h a a
+noncomputable def hTrace (h : Tensor2 4) : ℝ := metricTrace minkowski h
 
 /-- Minkowski trace `hTrace` coincides with `metricTrace minkowski`. -/
 lemma hTrace_eq_metricTrace (h : Tensor2 4) :
-    hTrace h = metricTrace minkowski h := by
-  rw [metricTrace_diag minkowski h (fun _ _ hij => minkowski_ginv_offdiag hij)]
-  simp [hTrace, minkowski]
+    hTrace h = metricTrace minkowski h := rfl
 
 /-- Trace-reversed perturbation `h̄_{ij} = h_{ij} - (1 / 2) η_{ij} h`. -/
 noncomputable def traceReversed (h : Tensor2 4) : Tensor2 4 :=
@@ -87,34 +85,19 @@ lemma traceReversed_involutive (h : Tensor2 4) : traceReversed (traceReversed h)
 
 /-- Symmetry is preserved by trace reversal. -/
 lemma traceReversed_symm {h : Tensor2 4} (hs : IsSymm h) : IsSymm (traceReversed h) := by
-  intro i j
-  simp only [traceReversed, hs i j, minkowskiMetric4_symm i j]
+  ext i j
+  simp only [Matrix.transpose_apply, traceReversed]
+  rw [hs.apply i j, minkowskiMetric4_symm.apply i j]
 
 /-- Minkowski d'Alembertian (wave operator) `□f = η^{μν} ∂_μ ∂_ν f = -∂_t² f + ∇² f`. -/
 noncomputable def boxEta (f : (Fin 4 → ℝ) → ℝ) (x : Fin 4 → ℝ) : ℝ :=
   ∑ μ : Fin 4, minkowskiMetric4 μ μ * pd μ (pd μ f) x
 
-/-- A `C²` metric perturbation has a `C²` trace-reversed perturbation. -/
-lemma contDiffAt_traceReversed {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 → ℝ}
-    (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) (i j : Fin 4) :
-    ContDiffAt ℝ 2 (fun y => traceReversed (h y) i j) x := by
-  simp only [traceReversed, hTrace, Fin.sum_univ_four]
-  have h0 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 0 0 * h y 0 0) x :=
-    (contDiffAt_const (c := minkowskiMetric4 0 0)).mul (hh 0 0)
-  have h1 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 1 1 * h y 1 1) x :=
-    (contDiffAt_const (c := minkowskiMetric4 1 1)).mul (hh 1 1)
-  have h2 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 2 2 * h y 2 2) x :=
-    (contDiffAt_const (c := minkowskiMetric4 2 2)).mul (hh 2 2)
-  have h3 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 3 3 * h y 3 3) x :=
-    (contDiffAt_const (c := minkowskiMetric4 3 3)).mul (hh 3 3)
-  exact (hh i j).sub ((contDiffAt_const (c := (1 / 2 : ℝ) * minkowskiMetric4 i j)).mul
-    (((h0.add h1).add h2).add h3))
-
 /-- A `C²` metric perturbation has a `C²` Minkowski trace. -/
 lemma contDiffAt_hTrace {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 → ℝ}
     (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) :
     ContDiffAt ℝ 2 (fun y => hTrace (h y)) x := by
-  simp only [hTrace, Fin.sum_univ_four]
+  simp only [hTrace, metricTrace_minkowski, Fin.sum_univ_four]
   have h0 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 0 0 * h y 0 0) x :=
     (contDiffAt_const (c := minkowskiMetric4 0 0)).mul (hh 0 0)
   have h1 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 1 1 * h y 1 1) x :=
@@ -124,6 +107,14 @@ lemma contDiffAt_hTrace {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 → ℝ}
   have h3 : ContDiffAt ℝ 2 (fun y => minkowskiMetric4 3 3 * h y 3 3) x :=
     (contDiffAt_const (c := minkowskiMetric4 3 3)).mul (hh 3 3)
   exact ((h0.add h1).add h2).add h3
+
+/-- A `C²` metric perturbation has a `C²` trace-reversed perturbation. -/
+lemma contDiffAt_traceReversed {h : (Fin 4 → ℝ) → Tensor2 4} {x : Fin 4 → ℝ}
+    (hh : ∀ a b, ContDiffAt ℝ 2 (fun z => h z a b) x) (i j : Fin 4) :
+    ContDiffAt ℝ 2 (fun y => traceReversed (h y) i j) x := by
+  simp only [traceReversed]
+  exact (hh i j).sub
+    ((contDiffAt_const (c := (1 / 2 : ℝ) * minkowskiMetric4 i j)).mul (contDiffAt_hTrace hh))
 
 end Linearized
 

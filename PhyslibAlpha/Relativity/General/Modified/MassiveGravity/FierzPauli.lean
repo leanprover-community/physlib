@@ -28,8 +28,8 @@ Fierz–Pauli tuning `α = -1` eliminates the sixth Boulware–Deser ghost degre
 ## ii. Key results
 
 - `FierzPauliTheory` : massive spin-2 theory parameterized by mass `m` and tuning `α`.
-- `hTraceEta`, `hContractionSq`, `fierzPauliLagrangian`, `fpMassTensor` : mass invariants and
-  variation tensor.
+- `hContractionSq`, `fierzPauliLagrangian`, `fpMassTensor` : mass invariants and variation tensor
+  contracted against `metricTrace minkowski`.
 - `fpMassTensor_trace`, `fpMassTensor_trace_tuned`, `longitudinal_time_ghost_free_iff`,
   `fp_traceless_of_zero_trace_source` : ghost-free tuning `α = -1` and tracelessness.
 
@@ -71,10 +71,6 @@ structure FierzPauliTheory where
   /-- Relative coefficient `α` of `(η^{ab} h_{ab})²`. -/
   α : ℝ
 
-/-- Minkowski trace `h = η^{ab} h_{ab}` of a rank-2 perturbation `h : Tensor2 4`. -/
-def hTraceEta (h : Tensor2 4) : ℝ :=
-  ∑ a : Fin 4, minkowskiMetric4 a a * h a a
-
 /-- Full Minkowski quadratic contraction `h_{ab} h^{ab} = ∑_{a,b} η^{aa} η^{bb} (h_{ab})²`. -/
 def hContractionSq (h : Tensor2 4) : ℝ :=
   ∑ a : Fin 4, ∑ b : Fin 4, minkowskiMetric4 a a * minkowskiMetric4 b b * h a b * h a b
@@ -82,19 +78,19 @@ def hContractionSq (h : Tensor2 4) : ℝ :=
 /-- General Lorentz-invariant quadratic graviton mass Lagrangian density
 `ℒ_mass(α) = -(m² / 4) (h_{ab} h^{ab} + α h²)`. The Fierz–Pauli tuning is `α = -1`. -/
 noncomputable def fierzPauliLagrangian (m α : ℝ) (h : Tensor2 4) : ℝ :=
-  -(m ^ 2 / 4) * (hContractionSq h + α * hTraceEta h ^ 2)
+  -(m ^ 2 / 4) * (hContractionSq h + α * metricTrace minkowski h ^ 2)
 
 /-- Mass-term contribution to the linearized field equations:
 `M_{ij}(α) = (m² / 2) (h_{ij} + α η_{ij} h)`. -/
 noncomputable def fpMassTensor (m α : ℝ) (h : Tensor2 4) : Tensor2 4 :=
-  fun i j => (m ^ 2 / 2) * (h i j + α * minkowskiMetric4 i j * hTraceEta h)
+  fun i j => (m ^ 2 / 2) * (h i j + α * minkowskiMetric4 i j * metricTrace minkowski h)
 
 /-- Minkowski trace of the general mass tensor:
 `η^{ij} M_{ij}(α) = (m² / 2) (1 + 4 α) h`. -/
 lemma fpMassTensor_trace (m α : ℝ) (h : Tensor2 4) :
     (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m α h i i) =
-      (m ^ 2 / 2) * (1 + 4 * α) * hTraceEta h := by
-  simp only [fpMassTensor, hTraceEta, Fin.sum_univ_four, minkowskiMetric4_apply]
+      (m ^ 2 / 2) * (1 + 4 * α) * metricTrace minkowski h := by
+  simp only [fpMassTensor, metricTrace_minkowski, Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   ring
 
@@ -102,7 +98,7 @@ lemma fpMassTensor_trace (m α : ℝ) (h : Tensor2 4) :
 `-(3 / 2) m² h`. -/
 lemma fpMassTensor_trace_tuned (m : ℝ) (h : Tensor2 4) :
     (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m (-1) h i i)
-      = -(3 / 2) * m ^ 2 * hTraceEta h := by
+      = -(3 / 2) * m ^ 2 * metricTrace minkowski h := by
   rw [fpMassTensor_trace]
   ring
 
@@ -112,8 +108,11 @@ vanishes (preventing a fourth-order time-derivative Boulware–Deser ghost) if a
 `α = -1`. -/
 lemma longitudinal_time_ghost_free_iff (α ϕdd : ℝ) (hϕ : ϕdd ≠ 0) :
     hContractionSq (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0)
-      + α * hTraceEta (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) ^ 2 = 0 ↔ α = -1 := by
-  simp only [hContractionSq, hTraceEta, Fin.sum_univ_four, minkowskiMetric4_apply]
+      + α * metricTrace minkowski (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) ^ 2 = 0
+        ↔ α = -1 := by
+  have ht : metricTrace minkowski (fun i j => if i = 0 ∧ j = 0 then ϕdd else 0) = -ϕdd := by
+    simp [metricTrace, minkowski, Fin.sum_univ_four]
+  simp only [hContractionSq, ht, Fin.sum_univ_four, minkowskiMetric4_apply]
   norm_num
   constructor
   · intro h
@@ -131,19 +130,13 @@ vanish), any non-zero Fierz–Pauli mass `m ≠ 0` at `α = -1` forces the metri
 traceless (`h = 0`). -/
 lemma fp_traceless_of_zero_trace_source (m : ℝ) (hm : m ≠ 0) (h : Tensor2 4)
     (htr : (∑ i : Fin 4, minkowskiMetric4 i i * fpMassTensor m (-1) h i i) = 0) :
-    hTraceEta h = 0 := by
+    metricTrace minkowski h = 0 := by
   rw [fpMassTensor_trace_tuned] at htr
   have hm2 : m ^ 2 ≠ 0 := pow_ne_zero 2 hm
-  have hfac : (-(3 / 2 : ℝ) * m ^ 2) * hTraceEta h = 0 := by linarith
+  have hfac : (-(3 / 2 : ℝ) * m ^ 2) * metricTrace minkowski h = 0 := by linarith
   rcases mul_eq_zero.mp hfac with h1 | h2
   · exfalso; apply hm2; linarith
   · exact h2
-
-/-- `hTraceEta` coincides with `metricTrace minkowski`. -/
-lemma hTraceEta_eq_metricTrace (h : Tensor2 4) :
-    hTraceEta h = metricTrace minkowski h := by
-  rw [metricTrace_diag minkowski h (fun _ _ hij => minkowski_ginv_offdiag hij)]
-  simp [hTraceEta, minkowski]
 
 /-- Fierz–Pauli quadratic graviton mass Lagrangian evaluated for a `FierzPauliTheory`. -/
 noncomputable def FierzPauliTheory.lagrangian (T : FierzPauliTheory) (h : Tensor2 4) : ℝ :=

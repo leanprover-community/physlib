@@ -89,7 +89,7 @@ noncomputable def metricInv (φ : ℝ) : Tensor2 4 :=
 
 /-- Symmetry of the TeVeS physical metric. -/
 lemma metric_symm (φ : ℝ) : IsSymm (metric φ) := by
-  intro i j
+  ext i j
   fin_cases i <;> fin_cases j <;> simp [metric]
 
 /-!

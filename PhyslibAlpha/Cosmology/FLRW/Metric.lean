@@ -134,8 +134,8 @@ noncomputable def flrwMetricInv (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) 
 
 /-- Symmetry of `flrwMetric`. -/
 lemma flrwMetric_symm (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) : IsSymm (flrwMetric a k x) := by
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp [flrwMetric]
+  ext i j
+  fin_cases i <;> fin_cases j <;> simp [Matrix.transpose_apply, flrwMetric]
 
 /-- `flrwMetric * flrwMetricInv = 1` on the regular coordinate domain. -/
 lemma flrwMetric_mul_inv (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) (ha : a (x 0) ≠ 0)
@@ -357,9 +357,7 @@ private lemma pd_flrw_theta_33 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
       = fun s : ℝ => (a (x 0) ^ 2 * (x 1) ^ 2) * Real.sin s ^ 2 := by
     funext s; simp [flrwMetric, mul_assoc]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
-    convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
-    ring
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
   rw [pd, hfun, (hsinSq.const_mul (a (x 0) ^ 2 * (x 1) ^ 2)).deriv]
   ring
 
@@ -653,9 +651,7 @@ private lemma pd_flrwG_2_033 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
       = fun s => (a (x 0) * deriv a (x 0) * (x 1) ^ 2) * Real.sin s ^ 2 := by
     funext s; simp [flrwChristoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
-    convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
-    ring
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
   rw [pd, hfun, (hsinSq.const_mul (a (x 0) * deriv a (x 0) * (x 1) ^ 2)).deriv]
   simp [flrwChristoffelDeriv]
 
@@ -665,9 +661,7 @@ private lemma pd_flrwG_2_133 (a : ℝ → ℝ) (k : ℝ) (x : Fin 4 → ℝ) :
       = fun s => -(x 1 * (1 - k * (x 1) ^ 2) * Real.sin s ^ 2) := by
     funext s; simp [flrwChristoffel]
   have hsinSq : HasDerivAt (fun s : ℝ => Real.sin s ^ 2)
-      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := by
-    convert (Real.hasDerivAt_sin (x 2)).pow 2 using 1
-    ring
+      (2 * Real.sin (x 2) * Real.cos (x 2)) (x 2) := hasDerivAt_sin_sq (x 2)
   have hd : HasDerivAt (fun s : ℝ => -(x 1 * (1 - k * (x 1) ^ 2) * Real.sin s ^ 2))
       (-(x 1 * (1 - k * (x 1) ^ 2) * (2 * Real.sin (x 2) * Real.cos (x 2)))) (x 2) := by
     convert (hsinSq.const_mul (x 1 * (1 - k * (x 1) ^ 2))).neg using 1

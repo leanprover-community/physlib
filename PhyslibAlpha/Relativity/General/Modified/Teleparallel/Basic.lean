@@ -20,7 +20,9 @@ superpotential tensors, and quadratic torsion scalar `T`.
 In the Teleparallel Equivalent of General Relativity (TEGR), gravitational dynamics is formulated in
 terms of an orthonormal tetrad `e^A_i` and its Weitzenböck connection `Γ^k_{ij} = e_A^k ∂_i e^A_j`
 carrying torsion `T^k_{ij}` rather than curvature. This module defines `Tetrad`,
-`weitzenbockConn`, `weitzenbockTorsion`, `superpotential`, and `torsionScalar`.
+`weitzenbockConn`, `weitzenbockTorsion`, `superpotential`, and `torsionScalar`, decoupling the
+algebraic tetrad-torsion invariants from coordinate variational derivations so cosmological FLRW
+and `f(T)` reductions can instantiate them directly.
 
 ## ii. Key results
 

@@ -71,14 +71,14 @@ noncomputable def ttWave (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → �
 
 /-- Symmetry of `ttWave`. -/
 lemma ttWave_symm (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
-    IsSymm (ttWave hPlus hCross f x) := by
-  intro i j
-  fin_cases i <;> fin_cases j <;> simp [ttWave]
+    IsSymm (ttWave hPlus hCross f x) :=
+  Matrix.IsSymm.ext fun i j => by
+    fin_cases i <;> fin_cases j <;> simp [ttWave]
 
 /-- A `TT` gravitational wave is trace-free: `η^{ij} h^{TT}_{ij} = 0`. -/
 lemma ttWave_trace_zero (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
     hTrace (ttWave hPlus hCross f x) = 0 := by
-  simp [hTrace, ttWave, Fin.sum_univ_four]
+  simp [hTrace, metricTrace, minkowski, ttWave, Fin.sum_univ_four]
 
 /-- Trace reversal acts trivially on `ttWave`. -/
 lemma traceReversed_ttWave (hPlus hCross : ℝ) (f : ℝ → ℝ) (x : Fin 4 → ℝ) :
@@ -178,7 +178,7 @@ lemma ttWave_linEinstein_zero (hPlus hCross : ℝ) (f : ℝ → ℝ) (hf : ContD
     (x : Fin 4 → ℝ) (i j : Fin 4) :
     linEinstein (ttWave hPlus hCross f) x i j = 0 := by
   have hsym : ∀ z a b, ttWave hPlus hCross f z a b = ttWave hPlus hCross f z b a :=
-    ttWave_symm hPlus hCross f
+    fun z a b => (ttWave_symm hPlus hCross f z).apply b a
   have hc : ∀ a b, ContDiffAt ℝ 2 (fun z => ttWave hPlus hCross f z a b) x := by
     intro a b
     fin_cases a <;> fin_cases b <;> simp only [ttWave] <;> norm_num

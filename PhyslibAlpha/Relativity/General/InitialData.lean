@@ -34,9 +34,8 @@ formalised nor axiomatised here.
 
 ## ii. Key results
 
-- `InitialData`, `InitialData.hamiltonianConstraint`, `momentumConstraint`,
-  `InitialData.IsVacuumData` : Cauchy data
-  and vacuum constraint equations.
+- `InitialData`, `InitialData.hamiltonianConstraint`, `InitialData.momentumConstraint`,
+  `InitialData.IsVacuumData` : Cauchy data and vacuum constraint equations.
 - `InitialData.ham_zero_iff_scalarCurv_zero_of_K_zero` : time-symmetric vacuum data are
   scalar flat.
 - `InitialData.hamiltonianConstraint_eq_of_trace_zero` : maximal-slicing reduction `H = ³R - K_ij
@@ -71,7 +70,7 @@ An ADM Cauchy slice packages the induced Riemannian 3-metric `h`, its spatial Ri
 
 -/
 
-/-- Vacuum initial data on a three-dimensional spatial slice: the induced metric `h`, its
+/-- Initial data on a three-dimensional spatial slice: the induced Riemannian metric `h`, its
 Riemann tensor `R3`, and the symmetric extrinsic curvature `K`. -/
 structure InitialData where
   /-- Induced Riemannian 3-metric on the spatial slice. -/
@@ -83,21 +82,23 @@ structure InitialData where
   /-- Symmetry of the extrinsic curvature. -/
   Ksymm : IsSymm K
 
-/-- The momentum constraint `M_i = ∂_j K_ij - ∂_i (tr K)` in flat-slice coordinates, with
-partial derivatives supplied as `dK μ i j = ∂_μ K_ij`. -/
-noncomputable def momentumConstraint (dK : Fin 3 → Tensor2 3) (i : Fin 3) : ℝ :=
-  (∑ j, dK j i j) - ∑ j, dK i j j
-
 namespace InitialData
 
-/-- The Hamiltonian (energy) constraint `H = ³R + (tr K)² - K_ij K^ij` in orthonormal
-coordinates on the slice. -/
+/-- The momentum constraint `M_i = g^{jk} ∂_j K_{ik} - g^{jk} ∂_i K_{jk}` on a spatial slice `D`,
+with partial derivatives supplied as `dK μ i j = ∂_μ K_{ij}`. -/
+noncomputable def momentumConstraint (D : InitialData) (dK : Fin 3 → Tensor2 3) (i : Fin 3) :
+    ℝ :=
+  (∑ j, ∑ k, D.h.ginv j k * dK j i k) - ∑ j, ∑ k, D.h.ginv j k * dK i j k
+
+/-- The Hamiltonian (energy) constraint `H = ³R + (tr K)² - K_ij K^ij`, contracting `K` with the
+inverse spatial metric `D.h.ginv`. -/
 noncomputable def hamiltonianConstraint (D : InitialData) : ℝ :=
-  ricciScalar D.h D.R3 + (∑ i, D.K i i) ^ 2 - ∑ i, ∑ j, D.K i j * D.K i j
+  ricciScalar D.h D.R3 + (metricTrace D.h D.K) ^ 2
+    - ∑ i, ∑ j, ∑ k, ∑ l, D.h.ginv i k * D.h.ginv j l * D.K i j * D.K k l
 
 /-- Combined predicate stating that the data satisfy both vacuum constraints. -/
 def IsVacuumData (D : InitialData) (dK : Fin 3 → Tensor2 3) : Prop :=
-  D.hamiltonianConstraint = 0 ∧ ∀ i, momentumConstraint dK i = 0
+  D.hamiltonianConstraint = 0 ∧ ∀ i, D.momentumConstraint dK i = 0
 
 /-!
 
@@ -112,7 +113,7 @@ simplifies directly into algebraic conditions on the spatial scalar curvature `�
 curvature. -/
 lemma hamiltonianConstraint_eq_ricciScalar_of_K_zero (D : InitialData) (hK : D.K = 0) :
     D.hamiltonianConstraint = ricciScalar D.h D.R3 := by
-  simp [hamiltonianConstraint, hK]
+  simp [hamiltonianConstraint, metricTrace, hK]
 
 /-- At a moment of time symmetry (`K = 0`), vanishing Hamiltonian constraint is equivalent to
 scalar flatness. -/
@@ -122,24 +123,27 @@ lemma ham_zero_iff_scalarCurv_zero_of_K_zero (D : InitialData)
 
 /-- Under maximal slicing (`tr K = 0`), the Hamiltonian constraint becomes
 `H = ³R - K_ij K^ij`. -/
-lemma hamiltonianConstraint_eq_of_trace_zero (D : InitialData) (htr : (∑ i, D.K i i) = 0) :
-    D.hamiltonianConstraint = ricciScalar D.h D.R3 - ∑ i, ∑ j, D.K i j * D.K i j := by
+lemma hamiltonianConstraint_eq_of_trace_zero (D : InitialData) (htr : metricTrace D.h D.K = 0) :
+    D.hamiltonianConstraint =
+      ricciScalar D.h D.R3 -
+        ∑ i, ∑ j, ∑ k, ∑ l, D.h.ginv i k * D.h.ginv j l * D.K i j * D.K k l := by
   simp [hamiltonianConstraint, htr]
 
 /-- On a scalar-flat slice, `H = 0` forces `(tr K)² = K_ij K^ij`. -/
 lemma trace_sq_eq_of_ham_zero (D : InitialData) (hH : D.hamiltonianConstraint = 0)
     (hR : ricciScalar D.h D.R3 = 0) :
-    (∑ i, D.K i i) ^ 2 = ∑ i, ∑ j, D.K i j * D.K i j := by
+    (metricTrace D.h D.K) ^ 2 =
+      ∑ i, ∑ j, ∑ k, ∑ l, D.h.ginv i k * D.h.ginv j l * D.K i j * D.K k l := by
   simp only [hamiltonianConstraint] at hH
   linarith
 
-end InitialData
-
 /-- Constant extrinsic curvature (`∂_μ K = 0`) satisfies the momentum constraint identically. -/
-lemma momConstraint_zero_of_dK_zero (dK : Fin 3 → Tensor2 3)
-    (hdK : ∀ μ, dK μ = 0) : ∀ i, momentumConstraint dK i = 0 := by
+lemma momConstraint_zero_of_dK_zero (D : InitialData) (dK : Fin 3 → Tensor2 3)
+    (hdK : ∀ μ, dK μ = 0) : ∀ i, D.momentumConstraint dK i = 0 := by
   intro i
   simp [momentumConstraint, hdK]
+
+end InitialData
 
 /-!
 
@@ -155,7 +159,7 @@ constraint.
 def euclid3 : MetricTensor 3 where
   g := 1
   ginv := 1
-  symm := isSymm_one
+  symm := Matrix.isSymm_one
   inv_left := one_mul 1
   inv_right := one_mul 1
 
@@ -165,7 +169,7 @@ def flatData : InitialData where
   h := euclid3
   R3 := RiemannTensor.flat 3
   K := 0
-  Ksymm := isSymm_zero
+  Ksymm := Matrix.isSymm_zero
 
 /-- The flat initial slice has vanishing Hamiltonian constraint. -/
 lemma flatData_ham_zero : flatData.hamiltonianConstraint = 0 := by
@@ -174,8 +178,8 @@ lemma flatData_ham_zero : flatData.hamiltonianConstraint = 0 := by
   simp [ricciScalar]
 
 /-- Constant zero extrinsic curvature satisfies the momentum constraint. -/
-lemma flatData_mom_zero : ∀ i, momentumConstraint (fun _ => 0) i = 0 :=
-  momConstraint_zero_of_dK_zero (fun _ => 0) (fun _ => rfl)
+lemma flatData_mom_zero : ∀ i, flatData.momentumConstraint (fun _ => 0) i = 0 :=
+  InitialData.momConstraint_zero_of_dK_zero flatData (fun _ => 0) (fun _ => rfl)
 
 /-- Minkowski's initial slice satisfies both vacuum constraints. -/
 lemma flatData_isVacuum : flatData.IsVacuumData (fun _ => 0) :=
@@ -187,7 +191,7 @@ def anisotropicExtrinsicCurvature : Tensor2 3 := !![(1 : ℝ), 0, 0; 0, 1, 0; 0,
 
 /-- Symmetry of `anisotropicExtrinsicCurvature`. -/
 lemma anisotropicExtrinsicCurvature_symm : IsSymm anisotropicExtrinsicCurvature := by
-  intro i j
+  ext i j
   fin_cases i <;> fin_cases j <;> simp [anisotropicExtrinsicCurvature]
 
 /-- Non-vacuum ADM test slice on flat Euclidean `ℝ³` with anisotropic extrinsic curvature
@@ -203,7 +207,7 @@ def anisotropicSliceData : InitialData where
 lemma anisotropicSliceData_hamiltonianConstraint :
     anisotropicSliceData.hamiltonianConstraint = 2 := by
   simp [InitialData.hamiltonianConstraint, anisotropicSliceData, euclid3,
-    anisotropicExtrinsicCurvature, ricciScalar, Fin.sum_univ_three]
+    anisotropicExtrinsicCurvature, ricciScalar, metricTrace, Fin.sum_univ_three]
   norm_num
 
 /-- Non-vanishing Hamiltonian constraint (`H = 2 ≠ 0`), showing that the ADM vacuum constraints

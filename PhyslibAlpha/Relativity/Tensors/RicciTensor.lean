@@ -61,12 +61,12 @@ noncomputable def ricci {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) : T
 /-- The Ricci tensor is symmetric, by symmetry of the inverse metric and pair symmetry of the
 Riemann tensor. -/
 lemma ricci_symm {n : ℕ} (M : MetricTensor n) (R : RiemannTensor n) : IsSymm (ricci M R) := by
-  intro i j
-  simp only [ricci]
+  ext i j
+  simp only [Matrix.transpose_apply, ricci]
   rw [Finset.sum_comm]
   refine Finset.sum_congr rfl fun l _ => ?_
   refine Finset.sum_congr rfl fun k _ => ?_
-  rw [M.ginv_symm k l, R.pair_symm k i l j]
+  rw [M.ginv_symm.apply l k, R.pair_symm k j l i]
 
 /-- For a metric with a diagonal inverse (`g^{kl} = 0` for `k ≠ l`), the Ricci contraction
 reduces to the single sum `∑ k, g^{kk} R_{kikj}`. -/

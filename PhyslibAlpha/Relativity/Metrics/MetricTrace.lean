@@ -25,8 +25,7 @@ scalar multiples, as well as the dimension identity `g^{ij} g_{ij} = n`.
 
 - `metricTrace`, `metricTrace_diag` : full contraction `g^{ij} T_{ij}` and diagonal reduction.
 - `metricTrace_add_fun`, `metricTrace_sub_fun`, `metricTrace_smul` : linearity of the trace.
-- `sum_ginv_mul_g`, `MetricTensor.sum_ginv_mul_g_left`, `MetricTensor.sum_ginv_mul_g_right`,
-  `metricTrace_mul_g` : `g^{ij} g_{ij} = n` and contraction identities `g^{-1} g = I`.
+- `sum_ginv_mul_g`, `metricTrace_mul_g` : `g^{ij} g_{ij} = n`.
 
 ## iii. Table of contents
 
@@ -92,7 +91,7 @@ lemma sum_ginv_mul_g (M : MetricTensor n) :
   have h1 : ∀ i, (∑ j, M.ginv i j * M.g i j) = (M.ginv * M.g) i i := by
     intro i
     rw [Matrix.mul_apply]
-    exact Finset.sum_congr rfl (fun j _ => by rw [M.symm j i])
+    exact Finset.sum_congr rfl (fun j _ => by rw [M.symm.apply j i])
   calc (∑ i, ∑ j, M.ginv i j * M.g i j)
       = ∑ i, (M.ginv * M.g) i i := Finset.sum_congr rfl (fun i _ => h1 i)
     _ = ∑ i, (1 : Tensor2 n) i i := by rw [M.inv_right]
@@ -112,27 +111,5 @@ lemma metricTrace_diag {n : ℕ} (M : MetricTensor n) (T : Tensor2 n)
     metricTrace M T = ∑ i : Fin n, M.ginv i i * T i i := by
   refine Finset.sum_congr rfl fun i _ => ?_
   exact Finset.sum_eq_single i (fun j _ hj => by simp [hdiag i j hj.symm]) (by simp)
-
-/-- Left inverse contraction componentwise: `∑ k, g^{ik} g_{kj} = δ^i_j`. -/
-lemma MetricTensor.sum_ginv_mul_g_left {n : ℕ} (M : MetricTensor n) (i j : Fin n) :
-    (∑ k : Fin n, M.ginv i k * M.g k j) = if i = j then 1 else 0 := by
-  simpa [Matrix.mul_apply, Matrix.one_apply] using congrFun (congrFun M.inv_right i) j
-
-/-- Right inverse contraction componentwise: `∑ k, g_{ik} g^{kj} = δ_i^j`. -/
-lemma MetricTensor.sum_ginv_mul_g_right {n : ℕ} (M : MetricTensor n) (i j : Fin n) :
-    (∑ k : Fin n, M.g i k * M.ginv k j) = if i = j then 1 else 0 := by
-  simpa [Matrix.mul_apply, Matrix.one_apply] using congrFun (congrFun M.inv_left i) j
-
-/-- Vector-valued inverse-metric contraction `∑ k, g^{pk} ∑ m, g_{km} f(m) = f(p)`. -/
-lemma MetricTensor.sum_ginv_mul_g_apply {n : ℕ} (M : MetricTensor n) (p : Fin n) (f : Fin n → ℝ) :
-    (∑ k : Fin n, M.ginv p k * (∑ m : Fin n, M.g k m * f m)) = f p := by
-  calc (∑ k : Fin n, M.ginv p k * (∑ m : Fin n, M.g k m * f m))
-      = ∑ m : Fin n, f m * ∑ k : Fin n, M.ginv p k * M.g k m := by
-        simp_rw [Finset.mul_sum]
-        rw [Finset.sum_comm]
-        exact Finset.sum_congr rfl fun m _ =>
-          Finset.sum_congr rfl fun k _ => by ring
-    _ = f p := by
-        simp [M.sum_ginv_mul_g_left p]
 
 end GeneralRelativity

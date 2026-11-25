@@ -9,7 +9,7 @@ public import Mathlib.Analysis.Calculus.Deriv.Basic
 public import Mathlib.Analysis.SpecialFunctions.Trigonometric.Basic
 public import PhyslibAlpha.Relativity.General.Schwarzschild.ElectricWeyl
 public import PhyslibAlpha.Relativity.General.Schwarzschild.IncompressibleSphere
-public import PhyslibAlpha.Relativity.Metrics.Basic
+public import PhyslibAlpha.Relativity.Metrics.StaticSphericalMetric
 import Mathlib.Analysis.Calculus.Deriv.Add
 import Mathlib.Analysis.Calculus.Deriv.Inv
 import Mathlib.Analysis.Calculus.Deriv.Mul
@@ -88,20 +88,26 @@ structure SchwarzschildSpacetime where
   /-- Geometric mass parameter `M` (`G = c = 1`). -/
   M : ℝ
 
+/-- The Schwarzschild metric lapse function `f = 1 - 2M / r`. -/
+noncomputable def schwarzschildF (M r : ℝ) : ℝ := 1 - 2 * M / r
+
+/-- Equational form of `schwarzschildF M r`. -/
+lemma schwarzschildF_eq (M r : ℝ) : schwarzschildF M r = 1 - 2 * M / r := rfl
+
+/-- Clearing the radial denominator gives `r * schwarzschildF M r = r - 2 M`. -/
+lemma r_mul_schwarzschildF (M r : ℝ) (hr : r ≠ 0) :
+    r * schwarzschildF M r = r - 2 * M := by
+  rw [schwarzschildF_eq]
+  field_simp
+
 /-- The Schwarzschild metric in `(t, r, θ, φ)` coordinates with signature `(-, +, +, +)`. -/
-noncomputable def schwarzschildMetric (M : ℝ) (x : Fin 4 → ℝ) : Fin 4 → Fin 4 → ℝ :=
-  fun i j =>
-    if i = j then
-      if i = 0 then -(1 - 2 * M / x 1)
-      else if i = 1 then (1 - 2 * M / x 1)⁻¹
-      else if i = 2 then x 1 ^ 2
-      else x 1 ^ 2 * Real.sin (x 2) ^ 2
-    else 0
+noncomputable def schwarzschildMetric (M : ℝ) (x : Fin 4 → ℝ) : Tensor2 4 :=
+  StaticSpherical.staticSphericalMetric (schwarzschildF M) x
 
 /-- The `tt` component of the Schwarzschild metric is `-(1 - 2M/r)`. -/
 lemma schwarzschildMetric_tt (M : ℝ) (x : Fin 4 → ℝ) :
     schwarzschildMetric M x 0 0 = -(1 - 2 * M / x 1) := by
-  simp [schwarzschildMetric]
+  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildF]
 
 /-- The static Newtonian potential is `Φ = -M / r`: `g_tt = -(1 + 2Φ)`. -/
 lemma schwarzschildMetric_tt_potential (M : ℝ) (x : Fin 4 → ℝ) :
@@ -137,22 +143,10 @@ lemma potential_second_hasDerivAt (M r : ℝ) (hr : r ≠ 0) :
   rw [← hfun, hval] at h
   exact h
 
-/-- The Schwarzschild metric lapse function `f = 1 - 2M / r`. -/
-noncomputable def schwarzschildF (M r : ℝ) : ℝ := 1 - 2 * M / r
-
-/-- Equational form of `schwarzschildF M r`. -/
-lemma schwarzschildF_eq (M r : ℝ) : schwarzschildF M r = 1 - 2 * M / r := rfl
-
-/-- Clearing the radial denominator gives `r * schwarzschildF M r = r - 2 M`. -/
-lemma r_mul_schwarzschildF (M r : ℝ) (hr : r ≠ 0) :
-    r * schwarzschildF M r = r - 2 * M := by
-  rw [schwarzschildF_eq]
-  field_simp
-
 /-- The `rr` component of the Schwarzschild metric is `f⁻¹`. -/
 lemma schwarzschildMetric_rr (M : ℝ) (x : Fin 4 → ℝ) :
     schwarzschildMetric M x 1 1 = (schwarzschildF M (x 1))⁻¹ := by
-  simp [schwarzschildMetric, schwarzschildF]
+  simp [schwarzschildMetric, StaticSpherical.staticSphericalMetric, schwarzschildF]
 
 /-- `f ≠ 0` forces `r - 2M ≠ 0` away from `r = 0`. -/
 lemma sub_ne_zero_of_ne (M r : ℝ) (hr : r ≠ 0) (hf : schwarzschildF M r ≠ 0) :
@@ -303,21 +297,6 @@ Combining the angular metric derivatives `∂_r(r²)` and `∂_θ(r² sin²θ)` 
 and purely spatial Riemann components directly from the coordinate metric.
 
 -/
-
-/-- Derivative `∂_θ (sin² θ) = 2 sin θ cos θ`. -/
-lemma hasDerivAt_sinSq (th : ℝ) :
-    HasDerivAt (fun s : ℝ => Real.sin s ^ 2) (2 * Real.sin th * Real.cos th) th := by
-  have h := (Real.hasDerivAt_sin th).mul (Real.hasDerivAt_sin th)
-  have hfun : (fun s : ℝ => Real.sin s ^ 2)
-      = (fun s : ℝ => Real.sin s) * fun s : ℝ => Real.sin s := by
-    funext s
-    simp only [Pi.mul_apply]
-    ring
-  have hval : Real.cos th * Real.sin th + Real.sin th * Real.cos th
-      = 2 * Real.sin th * Real.cos th := by
-    ring
-  rw [← hfun, hval] at h
-  exact h
 
 /-- `Γ^r_{φφ} = (1/2) g^{rr} (-∂_r g_{φφ}) = -r f sin²θ`. -/
 lemma gammaRphiphi_from_metric (M r th : ℝ) :
