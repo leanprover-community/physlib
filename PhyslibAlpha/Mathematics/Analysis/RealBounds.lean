@@ -9,8 +9,6 @@ public import Mathlib.Algebra.Order.Archimedean.Real.Basic
 public import Mathlib.Order.ConditionallyCompleteLattice.Group
 public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.BigOperators.Ring.Finset
-public import Mathlib.Tactic.Linarith
-public import Mathlib.Tactic.Ring
 
 /-!
 # Elementary real bounds

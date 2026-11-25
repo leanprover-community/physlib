@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.Particles.QED.Lagrangian
 public import PhyslibAlpha.Particles.QED.FieldStrength
-public import Mathlib.Tactic.Module
 /-!
 # Mass dimensions in quantum electrodynamics
 

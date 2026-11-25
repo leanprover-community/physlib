@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.Prod
 /-!
 # The componentwise representation of a product group
 
@@ -49,7 +48,7 @@ noncomputable def Representation.prodMap {k G₁ G₂ V₁ V₂ : Type*} [CommSe
     simp
   map_mul' p q := by
     refine LinearMap.ext fun v => ?_
-    simp [Module.End.mul_apply]
+    simp [mul_apply_eq_comp]
 
 @[simp]
 lemma Representation.prodMap_apply {k G₁ G₂ V₁ V₂ : Type*} [CommSemiring k]

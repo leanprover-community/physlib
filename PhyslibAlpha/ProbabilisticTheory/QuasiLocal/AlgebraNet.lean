@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Algebra.Colimit.DirectLimit
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Order.Directed
 public import Mathlib.Analysis.Complex.Basic
 
 /-!
@@ -55,7 +53,7 @@ are made once for every net.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace QuasiLocal
 
@@ -143,4 +141,4 @@ end AlgebraNet
 
 end QuasiLocal
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

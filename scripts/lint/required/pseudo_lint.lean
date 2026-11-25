@@ -3,9 +3,13 @@ Copyright (c) 2025 Joseph Tooby-Smith. All rights reserved.
 Released under Apache 2.0 license.
 Authors: Joseph Tooby-Smith
 -/
-import Physlib.Meta.Informal.Post
-import Mathlib.Lean.CoreM
-import Physlib.Meta.Pseudo
+module
+
+public import Physlib.Meta.Informal.Post
+public import Mathlib.Lean.CoreM
+public import Physlib.Meta.Pseudo
+
+@[expose] public meta section
 /-!
 
 # Script to check the pseudo attribution
@@ -31,7 +35,9 @@ unsafe def main (args : List String) : IO UInt32 := do
       IO.eprintln s!"Unknown library `{library}`, expected one of {libraries}."
       return 1
   println! "Checking the pseudo attribution in {", ".intercalate (toCheck.map toString).toList}."
-  let env ← importModules (loadExts := true) (toCheck.map ({ module := · })) {} 0
+  -- Initialize the pseudo extension even when the libraries being checked do not import it.
+  let imports := #[{ module := `Physlib.Meta.Linters.Pseudo }] ++ toCheck.map ({ module := · })
+  let env ← importModules (loadExts := true) imports {} 0
   let fileName := ""
   let options : Options := {}
   let ctx : Core.Context := {fileName, options, fileMap := default }

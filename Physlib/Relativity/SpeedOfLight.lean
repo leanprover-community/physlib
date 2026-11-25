@@ -5,7 +5,6 @@ Authors: Samyak Rai, Joseph Tooby-Smith
 -/
 module
 
-public import Physlib.Units.PositiveRealUnit
 public import Physlib.Units.WithDim.Basic
 /-!
 

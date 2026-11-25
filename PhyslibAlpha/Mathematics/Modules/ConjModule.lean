@@ -6,11 +6,8 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import Physlib.Mathematics.Modules.ConjModule
-public import Mathlib.Algebra.Star.Module
 public import Mathlib.LinearAlgebra.Complex.Module
-public import Mathlib.Tactic.Ring
 public import Mathlib.RepresentationTheory.Basic
-public import Mathlib.LinearAlgebra.TensorProduct.Basic
 /-!
 # Algebras, duals and representations on a conjugate module
 

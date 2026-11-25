@@ -6,7 +6,6 @@ Authors: Daniel Leonforte
 module
 
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.SixJ
-public import PhyslibAlpha.QuantumMechanics.AngularMomentum.WignerEckart
 public import PhyslibAlpha.QuantumMechanics.AngularMomentum.MultipoleSumRule
 
 /-!

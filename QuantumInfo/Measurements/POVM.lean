@@ -5,10 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.Channels.Bundled
 public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 
 /-! # Positive Operator-Valued Measures
 
@@ -184,7 +181,6 @@ lemma measureForget_eq_kraus (Λ : POVM X d) :
       (fun i ↦ ((Λ.mats i) ^ (1 / 2 : ℝ)).mat) ρ.m) i j
   rw [measurementMap_apply_matrix]
   simp [Matrix.traceRight, MatrixMap.of_kraus]
-  simp_rw [Matrix.sum_apply]
   refine Finset.sum_congr rfl fun x _ ↦ ?_
   rw [Finset.sum_eq_single x]
   · simp [Matrix.single]

@@ -26,10 +26,6 @@ than a specification of an isolated or unconstrained one-particle system. Newton
 laws are imposed when particles and forces are assembled in
 `ClassicalMechanics.PointParticle.NewtonianSystem`.
 
-Position and its first time derivative are required to be differentiable when the
-frame is inertial. This ensures that the velocity and acceleration used in
-Newtonian systems are genuine derivatives. The trajectories in this definition
-are defined for all real-valued time coordinates relative to the frame's time origin.
 -/
 
 @[expose] public noncomputable section
@@ -49,28 +45,18 @@ structure Particle (frame : ReferenceFrame d) where
   mass : ℝ+
   /-- The particle's position in frame coordinates. -/
   pos : ℝ → frame.Vector
-  pos_twice_differentiable :
-    frame.IsInertial → Differentiable ℝ pos ∧ Differentiable ℝ (deriv pos)
+  pos_twice_differentiable : Differentiable ℝ pos ∧ Differentiable ℝ (deriv pos)
 
 namespace Particle
 
 variable (particle : frame.Particle)
 
-/-- Position is differentiable in an inertial frame. -/
-instance [h : Fact frame.IsInertial] : Fact (Differentiable ℝ particle.pos) :=
-  ⟨particle.pos_twice_differentiable h.out |>.left⟩
-
 /-- The particle's velocity. -/
-def velocity [_h : Fact (Differentiable ℝ particle.pos)] : ℝ → frame.Vector :=
+def velocity : ℝ → frame.Vector :=
   deriv particle.pos
 
-/-- Velocity is differentiable in an inertial frame. -/
-instance [h : Fact frame.IsInertial] : Fact (Differentiable ℝ particle.velocity) :=
-  ⟨particle.pos_twice_differentiable h.out |>.right⟩
-
 /-- The particle's acceleration. -/
-def acceleration [Fact (Differentiable ℝ particle.pos)]
-    [_h : Fact (Differentiable ℝ particle.velocity)] : ℝ → frame.Vector :=
+def acceleration  : ℝ → frame.Vector :=
   deriv particle.velocity
 
 /-- The particle's position in affine space at frame time coordinate `t`. -/

@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.StarHomSpec.SpectralMeasure
 public import Mathlib.Analysis.CStarAlgebra.Unitary.Span
-public import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 
@@ -41,7 +40,7 @@ spectral measure commutes with every operator commuting with the range of `Φ`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -118,6 +117,6 @@ end StarHomCommutan
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

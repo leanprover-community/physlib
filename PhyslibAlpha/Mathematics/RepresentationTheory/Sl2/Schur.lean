@@ -82,8 +82,8 @@ lemma apply_ρF_pow (hφ : IsIntertwiner φ) (l : ℕ) (x : StandardSl2Module K 
     φ ((ρF ^ l) x) = (ρF ^ l) (φ x) := by
   induction l with
   | zero => rfl
-  | succ l ih => rw [pow_succ', Module.End.mul_apply, hφ.apply_ρF, ih, pow_succ',
-      Module.End.mul_apply]
+  | succ l ih => rw [pow_succ', mul_apply_eq_comp, hφ.apply_ρF, ih, pow_succ',
+      mul_apply_eq_comp]
 
 /-- The identity is an intertwiner. -/
 lemma id : IsIntertwiner (LinearMap.id : StandardSl2Module K n →ₗ[K] StandardSl2Module K n) :=
@@ -114,7 +114,7 @@ lemma ρF_pow_vNat_zero (l : ℕ) :
     ((ρF : Module.End K (StandardSl2Module K n)) ^ l) (vNat n 0) = vNat n l := by
   induction l with
   | zero => rfl
-  | succ l ih => rw [pow_succ', Module.End.mul_apply, ih, ρF_vNat]
+  | succ l ih => rw [pow_succ', mul_apply_eq_comp, ih, ρF_vNat]
 
 /-- Two linear maps out of a standard module agree if they agree on all `v_l`. -/
 lemma StandardSl2Module.linearMap_ext_vNat {M : Type*} [AddCommGroup M]

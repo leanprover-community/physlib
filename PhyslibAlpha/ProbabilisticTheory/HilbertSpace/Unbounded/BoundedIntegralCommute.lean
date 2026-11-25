@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SpectralIntegral.Construction
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.BoundedIntegralAlgebra
 
 /-!
 
@@ -43,7 +42,7 @@ measurable function against these measures shows that `T` commutes with the inte
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder InnerProductSpace
@@ -80,11 +79,11 @@ lemma scalarMeasure_inner_projection' (x y : H) (S : Set α) :
 
 lemma scalarMeasure_variation_le_diagonal_add' (x y : H) :
     (μS.scalarMeasure x y).variation ≤ μS.diagonalMeasure x + μS.diagonalMeasure y := by
-  apply MeasureTheory.VectorMeasure.variation_le_of_forall_enorm_le
+  apply MeasureTheory.VectorMeasure.variation_le_of_forall_eNorm_le
   intro S hS
   rw [μS.scalarMeasure_apply x y S]
   rw [← ofReal_norm]
-  rw [MeasureTheory.Measure.add_apply _ _ S, μS.diagonalMeasure_apply_eq_norm_sq x S hS,
+  rw [add_apply _ _ S, μS.diagonalMeasure_apply_eq_norm_sq x S hS,
     μS.diagonalMeasure_apply_eq_norm_sq y S hS]
   rw [← ENNReal.ofReal_add (sq_nonneg _) (sq_nonneg _)]
   apply ENNReal.ofReal_le_ofReal
@@ -137,6 +136,6 @@ end WOTSpectralMeasure
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

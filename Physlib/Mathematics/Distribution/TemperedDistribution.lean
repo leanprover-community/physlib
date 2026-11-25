@@ -558,13 +558,13 @@ private lemma lipschitzWith_integral_of_le {μ ρ : Measure E} (hμρ : μ ≤ �
     ‖∫ x, f x ∂μ - ∫ x, g x ∂μ‖
         = ‖∫ x, (f x - g x) ∂μ‖ := by rw [integral_sub hfμ hgμ]
     _ ≤ (∫⁻ x, ‖f x - g x‖ₑ ∂μ).toReal := by
-      simpa only [ofReal_norm, eLpNorm_one_eq_lintegral_enorm] using
+      simpa only [ofReal_norm, eLpNorm_one_eq_lintegral_eNorm] using
         MeasureTheory.norm_integral_le_lintegral_norm (μ := μ) (fun x => f x - g x)
     _ ≤ (eLpNorm (fun x => f x - g x) 1 ρ).toReal := by
       refine ENNReal.toReal_mono hfg_top ?_
       have hfg_meas : AEStronglyMeasurable (fun x => f x - g x) μ :=
         (hfμ.sub hgμ).aestronglyMeasurable
-      rw [← eLpNorm_one_eq_lintegral_enorm hfg_meas]
+      rw [← eLpNorm_one_eq_lintegral_eNorm hfg_meas]
       exact eLpNorm_mono_measure (p := (1 : ℝ≥0∞)) (fun x => f x - g x) hμρ
     _ = ‖f - g‖ := by rw [Lp.norm_def, eLpNorm_congr_ae hfg_ae]
 

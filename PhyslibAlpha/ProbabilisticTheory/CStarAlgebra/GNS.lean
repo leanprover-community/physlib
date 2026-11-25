@@ -45,7 +45,7 @@ representation.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 open scoped ComplexOrder InnerProductSpace
 open Complex ContinuousLinearMap UniformSpace Completion
 
@@ -165,4 +165,4 @@ lemma injective_gnsRep_of_isFaithful (h : ω.IsFaithful) : Function.Injective ω
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

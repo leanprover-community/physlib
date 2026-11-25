@@ -6,7 +6,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 module
 
 public import PhyslibAlpha.Particles.QED.Lagrangian
-public import Mathlib.Tactic.Module
 /-!
 # Gauge invariance of quantum electrodynamics
 

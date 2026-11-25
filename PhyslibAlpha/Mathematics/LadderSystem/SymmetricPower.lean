@@ -6,7 +6,6 @@ Authors: Tom Diem
 module
 
 public import PhyslibAlpha.Mathematics.LadderSystem.OccupationBasis
-public import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 /-!
 
 # The excitation sector is the symmetric power

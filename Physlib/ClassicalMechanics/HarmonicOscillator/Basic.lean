@@ -41,8 +41,8 @@ In the `Basic` module:
 
 In the `Solution` module:
 - `InitialConditions` is a structure for the initial conditions for the harmonic oscillator.
-- `trajectories` is the trajectories to the harmonic oscillator for given initial conditions.
-- `trajectories_equationOfMotion` proves that the solution satisfies the equation of motion.
+- `trajectory` is the trajectory of the harmonic oscillator for given initial conditions.
+- `trajectory_equationOfMotion` proves that the solution satisfies the equation of motion.
 
 ## iii. Table of contents
 

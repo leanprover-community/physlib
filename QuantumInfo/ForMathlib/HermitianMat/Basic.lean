@@ -27,6 +27,9 @@ section addgroup
 
 variable [AddGroup α] [StarAddMonoid α]
 
+instance [IsEmpty n] : Subsingleton (HermitianMat n α) where
+  allEq _ _ := Subtype.ext <| Subsingleton.elim _ _
+
 lemma eq_IsHermitian : HermitianMat n α  = { m : Matrix n n α // m.IsHermitian} := by
   rfl
 
@@ -125,6 +128,9 @@ variable [TopologicalSpace α]
 instance : TopologicalSpace (HermitianMat n α) :=
   inferInstanceAs (TopologicalSpace (selfAdjoint _))
 
+instance [T2Space α] : T2Space (HermitianMat m α) :=
+  inferInstanceAs <| T2Space (selfAdjoint _)
+
 /- Amusingly, if we don't tag this fun_prop, then fun_prop fails to prove other things! Because
 it will look through and see that `HermitianMat.mat` is `Subtype.val` *here*, but not in downstream
 applications of the tactic. -/
@@ -159,8 +165,9 @@ variable  [TopologicalSpace R] [SMul R α] [ContinuousSMul R α] [StarModule R �
 set_option backward.isDefEq.respectTransparency false in
 instance : ContinuousSMul R (HermitianMat n α) where
   continuous_smul := by
-    rw [continuous_induced_rng]
-    fun_prop
+    apply continuous_induced_rng.mpr
+    change Continuous fun p : R × HermitianMat n α => p.1 • p.2.mat
+    exact continuous_fst.smul (continuous_mat.comp continuous_snd)
 
 --Shorcut instances:
 instance : IsTopologicalAddGroup (HermitianMat n 𝕜) := inferInstance
@@ -416,10 +423,21 @@ def conjLinear {m} (B : Matrix m n α) : HermitianMat n α →ₗ[R] HermitianMa
 lemma conjLinear_apply (B : Matrix m n α) : conjLinear R B A = conj B A  := by
   rfl
 
+open scoped Matrix in
 set_option backward.isDefEq.respectTransparency false in
 @[fun_prop]
-lemma continuous_conj (ρ : HermitianMat n 𝕜) : Continuous (ρ.conj (m := m) ·) := by
-  simp only [HermitianMat.conj, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+lemma continuous_conj [TopologicalSpace α] [IsTopologicalRing α] [ContinuousStar α]
+    (ρ : HermitianMat n α) :
+    Continuous (ρ.conj (m := m) ·) := by
+  suffices Continuous (fun M : Matrix m n α ↦ M * ρ.mat * Mᴴ) from this.subtype_mk _
+  fun_prop
+
+open scoped Matrix in
+/-- conj is continuous in its right argument. -/
+@[fun_prop]
+lemma continuous_conj_right [TopologicalSpace α] [IsTopologicalRing α] (B : Matrix m n α) :
+    Continuous (HermitianMat.conj B) := by
+  suffices Continuous (fun A : HermitianMat _ α ↦ B * A.mat * Bᴴ) from this.subtype_mk _
   fun_prop
 
 end conj
@@ -528,8 +546,16 @@ lemma diagonal_zero : (diagonal 𝕜 0) = (0 : HermitianMat n 𝕜) := by
   ext1; simp
 
 @[simp]
+lemma diagonal_eq_zero {f : n → ℝ} : diagonal 𝕜 f = 0 ↔ f = 0 := by
+  simp [HermitianMat.ext_iff, funext_iff]
+
+@[simp]
 lemma diagonal_one : (diagonal 𝕜 1) = (1 : HermitianMat n 𝕜) := by
   ext; rw [diagonal_mat]; simp
+
+@[simp]
+lemma diagonal_eq_one {f : n → ℝ} : diagonal 𝕜 f = 1 ↔ f = 1 := by
+  simp [HermitianMat.ext_iff, funext_iff]
 
 lemma diagonal_add : diagonal 𝕜 (f + g) = diagonal 𝕜 f + diagonal 𝕜 g := by
   ext1; simp

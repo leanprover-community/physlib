@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Classical.NormalStates
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import Mathlib.Probability.Kernel.MeasurableIntegral
 public import Mathlib.Probability.Kernel.Composition.MeasureComp
 
@@ -51,7 +50,7 @@ kernel.
 @[expose] public section
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 open UnitalPositiveLinearMap MeasureTheory ProbabilityTheory
 

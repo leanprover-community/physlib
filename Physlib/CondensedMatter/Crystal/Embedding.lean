@@ -8,7 +8,8 @@ module
 public import Physlib.CondensedMatter.Crystal.Basic
 public import Mathlib.Algebra.EuclideanDomain.Int
 public import Mathlib.Analysis.Normed.Module.Basic
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
+public import Mathlib.LinearAlgebra.FiniteDimensional.Defs
+public import Mathlib.Tactic.ContinuousFunctionalCalculus
 
 /-!
 # A crystal in space

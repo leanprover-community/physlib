@@ -6,9 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Channel.Symmetry
-public import PhyslibAlpha.ProbabilisticTheory.Measurement.EffectValuedMeasure
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Pushforward
-public import Mathlib.Algebra.Group.Pointwise.Set.Basic
 public import Mathlib.MeasureTheory.MeasurableSpace.Basic
 
 /-!
@@ -42,7 +40,7 @@ bijections, and a channel is covariant when it intertwines two symmetry actions.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Pointwise
 
@@ -143,4 +141,4 @@ lemma UnitalPositiveLinearMap.IsCovariant.comp {ρ₁ : G →* Symmetry E₁} {�
 
 end CovariantChannel
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -7,7 +7,6 @@ module
 
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
 
 /-!
 

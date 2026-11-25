@@ -8,9 +8,6 @@ module
 public import PhyslibAlpha.ClassicalMechanics.MomentMap.GalileanMass
 public import Physlib.SpaceAndTime.GalileanGroup.Basic
 public import Mathlib.RepresentationTheory.Homological.GroupCohomology.LowDegree
-public import Mathlib.Algebra.Group.TransferInstance
-public import Mathlib.Algebra.Module.TransferInstance
-public import Mathlib.LinearAlgebra.Matrix.Adjugate
 public import Mathlib.Analysis.Calculus.Deriv.Prod
 /-!
 

@@ -7,6 +7,8 @@ module
 
 public import Physlib.ClassicalMechanics.EulerLagrange
 public import Physlib.Mathematics.Calculus.ParametricIntegration
+public import Physlib.ClassicalMechanics.ConfigurationSpace.Variation
+public import Physlib.Mathematics.Calculus.PartialDerivatives
 
 /-!
 # First variation of the action

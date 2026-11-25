@@ -9,7 +9,6 @@ public import PhyslibAlpha.ProbabilisticTheory.State.Metric
 public import PhyslibAlpha.ProbabilisticTheory.Weight.Continuous
 public import Mathlib.Analysis.Normed.Operator.Basic
 public import Mathlib.Analysis.LocallyConvex.Separation
-public import Mathlib.Analysis.LocallyConvex.WithSeminorms
 
 /-!
 # Separation by states
@@ -52,7 +51,7 @@ separation fact.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open ArchimedeanOrderUnitSpace
 
@@ -211,4 +210,4 @@ lemma norm_toOrderUnitContinuousLinearMap [Nontrivial E] (ω : 𝓢[ℝ, E]) :
 
 end UnitalPositiveLinearMap
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

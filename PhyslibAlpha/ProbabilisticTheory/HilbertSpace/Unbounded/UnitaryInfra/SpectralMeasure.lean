@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.UnitaryInfra.SesquilinearForm
 public import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Commute
-public import Mathlib.Algebra.Star.Unitary
 
 /-!
 
@@ -51,7 +50,7 @@ the identity is `U`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -980,6 +979,6 @@ end CFCScalar
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

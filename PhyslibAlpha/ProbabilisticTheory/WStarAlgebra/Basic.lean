@@ -47,7 +47,7 @@ for the weak-⋆ topology.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder Topology
 open TopologicalSpace
@@ -191,4 +191,4 @@ lemma continuous (ω : NormalState A) : Continuous (ω : A → ℂ) :=
 
 end NormalState
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

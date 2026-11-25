@@ -6,8 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.Mathematics.SpecialFunctions.SincPropagator.Basic
-public import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
-public import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 public import Mathlib.Analysis.Distribution.SchwartzSpace.Fourier
 
 /-!

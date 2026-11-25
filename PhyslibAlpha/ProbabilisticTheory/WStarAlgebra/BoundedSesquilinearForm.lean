@@ -39,7 +39,7 @@ represented by a bounded operator `T` with `⟪y, T x⟫ = conj (B x y)`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped InnerProductSpace
 
@@ -96,4 +96,4 @@ lemma operator_inner (x y : H) :
 
 end BoundedSesquilinearForm
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

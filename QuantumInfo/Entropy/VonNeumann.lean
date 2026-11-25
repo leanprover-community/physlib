@@ -5,11 +5,7 @@ Authors: Alex Meiburg
 -/
 module
 
-public import QuantumInfo.States.Pure.Braket
-public import QuantumInfo.Channels.Bundled
 public import QuantumInfo.Channels.CPTP
-public import QuantumInfo.Channels.MatrixMap
-public import QuantumInfo.Channels.Unbundled
 public import QuantumInfo.ClassicalInfo.Entropy
 public import Mathlib.Data.Multiset.Functor
 
@@ -302,7 +298,7 @@ private lemma Sᵥₙ_eq_of_charpoly_roots_eq (ρ₁ : MState d₁) (ρ₂ : MSt
   have h_spectrum_eq_aux : (Matrix.charpoly (ρ₁.M.1)).roots.filter (· ≠ 0) = (Multiset.map (fun i => ρ₁.spectrum.prob i) Finset.univ.val).filter (· ≠ 0) ∧ (Matrix.charpoly (ρ₂.M.1)).roots.filter (· ≠ 0) = (Multiset.map (fun i => ρ₂.spectrum.prob i) Finset.univ.val).filter (· ≠ 0) := by
     constructor;
     · convert charpoly_roots_filter_ne_zero_eq_eigenvalues_filter_ne_zero _ _;
-      any_goals exact ρ₁.M.isSelfAdjoint;
+      on_goal 2 => exact ρ₁.M.isSelfAdjoint;
       simp [ ProbDistribution.prob, MState.spectrum ];
       simp [ Multiset.filter_map, ProbDistribution.mk' ];
       simp [ Subtype.ext_iff ];

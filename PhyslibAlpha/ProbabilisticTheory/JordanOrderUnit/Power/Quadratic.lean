@@ -33,7 +33,7 @@ On powers the quadratic representation acts by `U_{aᵐ} aⁿ = a²ᵐ⁺ⁿ`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -75,4 +75,4 @@ lemma quadRep_jpow_comp_jpow (a : E) (m n k : ℕ) :
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

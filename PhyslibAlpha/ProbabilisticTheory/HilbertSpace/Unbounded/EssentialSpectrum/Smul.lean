@@ -6,7 +6,6 @@ Authors: Tom Ole Diem, Adam Bornemann
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.EssentialSpectrum.Defs
-public import Physlib.QuantumMechanics.Operators.SpectralTheory.Symmetric
 
 /-!
 
@@ -39,7 +38,7 @@ spectrum is the essential spectrum of `A` scaled by `c`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Filter Topology Complex
 open scoped InnerProductSpace ComplexConjugate
@@ -183,4 +182,4 @@ lemma essSpectrum_smul_real {A : H →ₗ.[ℂ] H} (hA : IsSelfAdjoint A)
 
 end QuantumMechanics.Essential
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

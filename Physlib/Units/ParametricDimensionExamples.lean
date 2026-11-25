@@ -5,7 +5,7 @@ Authors: Nicolas Rouquette
 -/
 module
 
-public import Physlib.Units.WithDim.Basic
+public import Physlib.Units.WithDim.Basic  -- shake: keep (used in `example` only)
 /-!
 
 # Examples: parametric dimensions and comparing dimensioned quantities

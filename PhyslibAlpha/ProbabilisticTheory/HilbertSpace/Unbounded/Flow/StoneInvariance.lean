@@ -38,7 +38,7 @@ the domain of `T` and commutes with `T` there.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped Topology InnerProductSpace Function
 open QuantumMechanics.WOTSpectralMeasure
@@ -128,4 +128,4 @@ end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

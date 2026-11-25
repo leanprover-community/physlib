@@ -142,6 +142,16 @@ lemma dimScale_T𝓭 (u1 u2 : LTMCTUnitChoices) :
     dimScale u1 u2 Dimension.T𝓭 = u1.time / u2.time := by
   simp [dimScale_apply]
 
+/-- The scale factor of the dimension of mass is the ratio of the mass units. -/
+lemma dimScale_M𝓭 (u1 u2 : LTMCTUnitChoices) :
+    dimScale u1 u2 Dimension.M𝓭 = u1.mass / u2.mass := by
+  simp [dimScale_apply]
+
+/-- The scale factor of the dimension of temperature is the ratio of the temperature units. -/
+lemma dimScale_Θ𝓭 (u1 u2 : LTMCTUnitChoices) :
+    dimScale u1 u2 Dimension.Θ𝓭 = u1.temperature / u2.temperature := by
+  simp [dimScale_apply]
+
 lemma dimScale_transitive (u1 u2 u3 : LTMCTUnitChoices) (d : Dimension LTMCTDimensionBase) :
     dimScale u1 u2 d * dimScale u2 u3 d = dimScale u1 u3 d := by
   simp [dimScale]

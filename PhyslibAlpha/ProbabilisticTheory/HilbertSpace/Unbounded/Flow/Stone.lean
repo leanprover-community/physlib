@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SelfAdjointSpectralTheorem
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Stone
 
 /-!
@@ -45,7 +44,7 @@ differentiable at `0`, and then the derivative at time `t` is `i T exp(i t T) x`
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set
 open scoped Topology InnerProductSpace Function
@@ -269,11 +268,11 @@ lemma mem_domain_iff_expUnitaryGroup_strong_slope
     have hxspec : x ∈ spectralSquareMomentDomain μS := by
       rw [mem_spectralSquareMomentDomain_iff]
       refine ⟨(measurable_id.pow_const 2).aestronglyMeasurable, ?_⟩
-      rw [hasFiniteIntegral_iff_enorm]
+      rw [MeasureTheory.hasFiniteIntegral_iff_eNorm]
       convert hfinite using 1
       apply MeasureTheory.lintegral_congr
       intro r
-      rw [Real.enorm_eq_ofReal_abs, abs_of_nonneg (sq_nonneg r)]
+      rw [Real.eNorm_eq_ofReal_abs, abs_of_nonneg (sq_nonneg r)]
     exact (D.mem_domain_iff x).2 hxspec
 
 lemma mem_domain_iff_expUnitaryGroup_hasDerivAt_zero
@@ -307,6 +306,6 @@ end DomainAwareSelfAdjointSpectralTheorem
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

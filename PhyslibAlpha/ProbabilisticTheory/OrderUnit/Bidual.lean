@@ -41,7 +41,7 @@ the observables of the bidual form a lattice.
 @[expose] public section
 
 namespace Bidual
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 variable {E : Type*} [OrderUnitSpace E]
 

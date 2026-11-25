@@ -9,7 +9,6 @@ public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.OperatorGeometr
 public import QuantumInfo.ForMathlib.HayataGroup.TraceInequality.HilbertSchmidtOperatorSpace
 public import Mathlib.Analysis.InnerProductSpace.JointEigenspace
 public import Mathlib.LinearAlgebra.Lagrange
-public import Mathlib.LinearAlgebra.Trace
 
 @[expose] public section
 
@@ -408,7 +407,7 @@ private lemma hmiddle_leftMul_rightMul
       calc
         B ^ (-s) = (B ^ (-1 : ℝ)) ^ s := by
           symm
-          simpa using (CFC.rpow_rpow B (-1 : ℝ) s (by norm_num) (hBunit.isStrictlyPositive hB0))
+          simpa using (CFC.rpow_rpow B (-1 : ℝ) s (hBunit.isStrictlyPositive hB0))
         _ = cfcR (ℋ := ℋ) (fun x : ℝ ↦ x ^ s) (B ^ (-1 : ℝ)) := by
           simpa [cfcR] using
             (CFC.rpow_eq_cfc_real (A := L ℋ) (a := B ^ (-1 : ℝ)) (y := s) (ha := hBinv0))]
@@ -1431,7 +1430,7 @@ lemma andoTrace_jointlyConvexOn_pdSet
         · calc
             (B ^ β) ^ (1 - q) = B ^ (β * (1 - q)) := by
                 simpa [mul_comm] using
-                  (CFC.rpow_rpow B β (1 - q) hβzero (hBunit.isStrictlyPositive hB0))
+                  (CFC.rpow_rpow B β (1 - q) (hBunit.isStrictlyPositive hB0))
             _ = B ^ (-r) := by rw [hβmul]
       simp [liebTraceMap, andoTraceMap, hpow, mul_assoc]
     simpa [hpow_rewrite hB₁_mem, hpow_rewrite hB₂_mem, hpow_rewrite hB_combo_mem] using

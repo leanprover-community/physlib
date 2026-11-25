@@ -5,13 +5,8 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Lie.OfAssociative
 public import Mathlib.Algebra.Lie.Semisimple.Basic
 public import Mathlib.Algebra.Lie.Sl2
-public import Mathlib.FieldTheory.IsAlgClosed.Basic
-public import Mathlib.LinearAlgebra.Dimension.Free
-public import Mathlib.LinearAlgebra.Eigenspace.Basic
-public import Mathlib.LinearAlgebra.FiniteDimensional.Basic
 public import Mathlib.RingTheory.Flat.TorsionFree
 public import Mathlib.RingTheory.SimpleRing.Principal
 public import PhyslibAlpha.Mathematics.LadderSystem.Basic
@@ -249,7 +244,7 @@ lemma rel_ef_last_zero (w : StandardSl2Module K n) (j : Fin (n + 1))
     (hjn : (j : ℕ) = n) (hj0 : (j : ℕ) = 0) :
     (((ρE * ρF - ρF * ρE : Module.End K (StandardSl2Module K n)) w) j) =
       (ρH : Module.End K (StandardSl2Module K n)) w j := by
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, ρE, ρF, ρH, LinearMap.coe_mk,
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, ρE, ρF, ρH, LinearMap.coe_mk,
     AddHom.coe_mk, Pi.sub_apply]
   simp only [dite_eq_right (Nat.succ_ne_zero _), Nat.add_sub_cancel]
   rw [dite_eq_left hjn, dite_eq_left hj0]
@@ -262,7 +257,7 @@ lemma rel_ef_last_pos (w : StandardSl2Module K n) (j : Fin (n + 1))
     (hjn : (j : ℕ) = n) (hj0 : (j : ℕ) ≠ 0) :
     (((ρE * ρF - ρF * ρE : Module.End K (StandardSl2Module K n)) w) j) =
       (ρH : Module.End K (StandardSl2Module K n)) w j := by
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, ρE, ρF, ρH, LinearMap.coe_mk,
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, ρE, ρF, ρH, LinearMap.coe_mk,
     AddHom.coe_mk, Pi.sub_apply]
   simp only [dite_eq_right (Nat.succ_ne_zero _), Nat.add_sub_cancel]
   rw [dite_eq_left hjn]
@@ -276,7 +271,7 @@ lemma rel_ef_first (w : StandardSl2Module K n) (j : Fin (n + 1))
     (hjn : (j : ℕ) ≠ n) (hj0 : (j : ℕ) = 0) :
     (((ρE * ρF - ρF * ρE : Module.End K (StandardSl2Module K n)) w) j) =
       (ρH : Module.End K (StandardSl2Module K n)) w j := by
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, ρE, ρF, ρH, LinearMap.coe_mk,
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, ρE, ρF, ρH, LinearMap.coe_mk,
     AddHom.coe_mk, Pi.sub_apply]
   simp only [dite_eq_right (Nat.succ_ne_zero _), Nat.add_sub_cancel]
   rw [dite_eq_right hjn, dite_eq_left hj0]
@@ -292,7 +287,7 @@ lemma rel_ef_middle (w : StandardSl2Module K n) (j : Fin (n + 1))
     (hjn : (j : ℕ) ≠ n) (hj0 : (j : ℕ) ≠ 0) :
     (((ρE * ρF - ρF * ρE : Module.End K (StandardSl2Module K n)) w) j) =
       (ρH : Module.End K (StandardSl2Module K n)) w j := by
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, ρE, ρF, ρH, LinearMap.coe_mk,
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, ρE, ρF, ρH, LinearMap.coe_mk,
     AddHom.coe_mk, Pi.sub_apply]
   simp only [dite_eq_right (Nat.succ_ne_zero _), Nat.add_sub_cancel]
   rw [dite_eq_right hjn]
@@ -322,7 +317,7 @@ lemma rel_he :
   rw [LieRing.of_associative_ring_bracket]
   apply LinearMap.ext; intro w
   funext j
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, LinearMap.smul_apply, Pi.smul_apply,
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, LinearMap.smul_apply, Pi.smul_apply,
     smul_eq_mul, ρE, ρH, LinearMap.coe_mk, AddHom.coe_mk, Pi.sub_apply]
   by_cases hjn : (j : ℕ) = n
   · rw [dite_eq_left hjn, dite_eq_left hjn]; ring
@@ -338,7 +333,7 @@ lemma rel_hf :
   rw [LieRing.of_associative_ring_bracket]
   apply LinearMap.ext; intro w
   funext j
-  simp only [LinearMap.sub_apply, Module.End.mul_apply, LinearMap.smul_apply, Pi.smul_apply,
+  simp only [LinearMap.sub_apply, mul_apply_eq_comp, LinearMap.smul_apply, Pi.smul_apply,
     smul_eq_mul, ρF, ρH, LinearMap.coe_mk, AddHom.coe_mk, Pi.sub_apply]
   by_cases hj0 : (j : ℕ) = 0
   · rw [dite_eq_left hj0, dite_eq_left hj0]; ring

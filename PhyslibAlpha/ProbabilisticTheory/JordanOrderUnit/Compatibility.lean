@@ -39,7 +39,7 @@ observables of a C⋆-algebra are compatible.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace JordanAlgebra
 
@@ -74,4 +74,4 @@ lemma isJordanCompatible_one_right (a : E) : IsJordanCompatible a 1 :=
 
 end JordanAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

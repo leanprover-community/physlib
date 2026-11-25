@@ -8,7 +8,6 @@ module
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.UnitaryInfra.SpectralMeasure
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.SpectralIntegral.SpecTheorem
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.Cayley.Certificate
-public import Mathlib.MeasureTheory.VectorMeasure.SetIntegral
 public import Mathlib.MeasureTheory.VectorMeasure.WithDensityVec
 
 /-!
@@ -46,7 +45,7 @@ measure on `ℝ`, the candidate spectral measure of `T`.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -846,6 +845,6 @@ lemma cayleyMap_cayleyRealSpectralMeasure
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

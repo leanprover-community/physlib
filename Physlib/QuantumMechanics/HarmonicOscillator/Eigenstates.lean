@@ -6,7 +6,6 @@ Authors: Philippe Kevorkian, Gregory J. Loges
 module
 
 public import Physlib.Mathematics.InnerProductSpace.Gaussian
-public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Physlib.QuantumMechanics.HarmonicOscillator.NumberOperator
 public import Physlib.QuantumMechanics.HarmonicOscillator.OneDimension.Eigenfunction
 /-!

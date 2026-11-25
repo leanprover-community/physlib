@@ -5,15 +5,15 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Mathlib.Algebra.Order.Star.Basic
-public import Mathlib.LinearAlgebra.Complex.Module
+public import Mathlib.Basic.Complex.Basic
+public import Mathlib.Tactic.LinearCombination
 public import PhyslibAlpha.ProbabilisticTheory.State.WeightEquivalence
 
 /-!
 
 # Tracial states and weights
 
-Tracial weights, tracial states and tracial complex-linear functionals.
+Tracial weights and tracial states.
 
 ## i. Overview
 
@@ -24,14 +24,12 @@ equivalent to `f (a b) = f (b a)`. A finite tracial weight gives a tracial state
 
 - `UnitalPositiveLinearMap.IsTracial` : tracial states.
 - `Weight.IsTracial` : tracial weights.
-- `LinearMap.isTracial_iff_star_mul_self_eq_mul_star_self` : a complex functional is tracial iff `f
-  (a⋆ a) = f (a a⋆)`.
 
 ## iii. Table of contents
 
 - A. Tracial weights
 - B. Tracial states
-- C. Tracial complex-linear functionals
+- C. Tracial functionals
 
 ## iv. References
 
@@ -41,7 +39,7 @@ equivalent to `f (a b) = f (b a)`. A finite tracial weight gives a tracial state
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. Tracial weights -/
 
@@ -91,12 +89,10 @@ lemma isTracial (hw : w.IsState) (ht : w.IsTracial) :
 
 end Weight.IsState
 
-end ProbabilisticTheory
-
-/-! ## C. Tracial complex-linear functionals -/
+/-! ## C. Tracial functionals -/
 
 namespace LinearMap
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 
 variable {A : Type*} [NonUnitalRing A] [StarRing A] [Module ℂ A]
   [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [StarModule ℂ A]
@@ -130,3 +126,4 @@ lemma isTracial_iff_star_mul_self_eq_mul_star_self (f : A →ₗ[ℂ] ℂ) :
 
 end LinearMap
 
+end PhyslibAlpha.ProbabilisticTheory

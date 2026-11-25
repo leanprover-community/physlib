@@ -161,7 +161,7 @@ lemma tensorForm_hwVec_of_ne {k k' : ℕ} (hk : k ≠ k') :
   exact (mul_eq_zero.mp h').resolve_left hne
 
 lemma stringVec_zero' (k : ℕ) : stringVec (K := ℝ) m n k 0 = hwVec m n k := by
-  rw [stringVec, pow_zero, Module.End.one_apply]
+  rw [stringVec, pow_zero, one_apply_eq_self]
 
 /-- The inner products of the lowering strings:
 `⟨f^a w_k, f^b w_{k'}⟩ = δ_{kk'} δ_{ab} · normSq (m + n - 2k) a · ⟨w_k, w_k⟩`. -/

@@ -8,10 +8,7 @@ module
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.Eigenfunctions
 public import Mathlib.Algebra.MvPolynomial.Funext
 public import Mathlib.Data.Sym.Card
-public import Mathlib.Data.Finsupp.Multiset
 public import Mathlib.RingTheory.MvPolynomial.EulerIdentity
-public import Mathlib.RingTheory.MvPolynomial.Homogeneous
-public import Mathlib.Algebra.MvPolynomial.PDeriv
 
 /-!
 # The degeneracy of the hydrogen bound states

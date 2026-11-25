@@ -44,7 +44,7 @@ not change the essential spectrum.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open Filter Topology Complex
 open scoped InnerProductSpace
@@ -233,4 +233,4 @@ lemma essSpectrum_eq_of_isCompactOperator_perturb
 
 end QuantumMechanics.Essential
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JB.Basic
-public import PhyslibAlpha.ProbabilisticTheory.Channel.Normal
 public import PhyslibAlpha.ProbabilisticTheory.OrderUnit.MonotoneComplete
 public import PhyslibAlpha.ProbabilisticTheory.State.NormalEquivalence
 
@@ -38,7 +37,7 @@ A JBW-algebra is a monotone-complete JB-algebra whose normal states separate poi
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-! ## A. JBW-algebras -/
 
@@ -96,4 +95,4 @@ lemma exists_normal_finite_weight_ne_zero {x : E} (hx : 0 ≤ x) (hxne : x ≠ 0
 
 end JBWAlgebra
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

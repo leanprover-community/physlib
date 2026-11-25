@@ -6,7 +6,6 @@ Authors: The Tau Ceti contributors
 module
 
 public import Mathlib.MeasureTheory.Integral.IntegrableOn
-public import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
 # Continuous functions are a.e. strongly measurable for inner regular measures
@@ -77,7 +76,7 @@ lemma ContinuousOn.aestronglyMeasurable_of_measure_ne_top {f : α → β} {s : S
       _ ≤ (n + 1 : ℝ≥0∞)⁻¹ := (hμK n).le
       _ ≤ (n : ℝ≥0∞)⁻¹ := ENNReal.inv_le_inv.2 le_self_add
   have hae : (⋃ n, K n : Set α) =ᵐ[μ] s :=
-    (iUnion_subset hKs).eventuallyLE.antisymm (ae_le_set.2 hnull)
+    (iUnion_subset hKs).eventuallySubset.antisymm (ae_subset.2 hnull)
   rw [← Measure.restrict_congr_set hae, aestronglyMeasurable_iUnion_iff]
   exact fun n ↦ (hf.mono (hKs n)).aestronglyMeasurable_of_isCompact (hKc n) (hKcl n).measurableSet
 

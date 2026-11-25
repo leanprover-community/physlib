@@ -6,12 +6,8 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Observable
-public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.OrderUnit
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.SharpEffect
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Binary
-public import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani.Real
-public import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-public import Mathlib.Topology.Algebra.Indicator
 
 /-!
 
@@ -47,7 +43,7 @@ take the value `x`?", whose probability of `true` is `μ_{ω,a}({x})`.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory CompactlySupportedContinuousMap
 open scoped CompactlySupported ComplexOrder
@@ -338,4 +334,4 @@ lemma eigenMeasurement_true (ω : 𝓢[ℂ, A]) (a : Observable A)
   simp only [eigenIndicator_apply]
   exact integral_indicator_one (measurableSet_singleton x)
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

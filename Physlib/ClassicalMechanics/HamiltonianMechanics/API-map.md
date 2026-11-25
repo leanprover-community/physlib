@@ -15,17 +15,17 @@ provide examples, alongside a symplectic vector-space formulation of moment maps
 
 A configuration space Q is a smooth manifold without boundary {1}. [1] For finite-dimensional Q,
 its canonical Hamiltonian phase space is the cotangent bundle T*Q: a state consists of a
-configuration q and a momentum covector at q. [TODO] This space carries a canonical symplectic form,
+configuration q and a momentum covector at q. [16] This space carries a canonical symplectic form,
 independently of the choice of Hamiltonian {6}. [TODO] In the coordinate formulation on a complete
 real inner-product space X, states are pairs (p, q) in X × X, and observables are real-valued
 functions f(p, q), with momentum first. [2] Identifying the cotangent phase space of a Euclidean
 configuration space with this coordinate representation uses the inner product to represent
-covectors as momentum vectors. [TODO]
+covectors as momentum vectors. [17]
 
 ### Hamiltonians and Hamiltonian trajectories
 
 A Hamiltonian system consists of a phase space and a smooth real-valued Hamiltonian, possibly
-time-dependent and defined on an open domain. [TODO] The phase space describes kinematics; choosing the
+time-dependent and defined on an open domain. [18] The phase space describes kinematics; choosing the
 Hamiltonian specifies dynamics through the symplectic form {2}{6}. [TODO] In coordinates, curves
 p(t) and q(t) satisfy Hamilton's equations q̇ = ∇ₚH and ṗ = −∇qH exactly when the Hamilton
 equation operator vanishes. [3] The symplectic definition of Hamiltonian trajectories agrees with
@@ -63,7 +63,7 @@ For a time-independent differentiable observable along a differentiable Hamilton
 a vanishing Poisson bracket with the Hamiltonian implies zero time derivative. [6] A smooth
 autonomous Hamiltonian Poisson-commutes with itself and has zero time derivative along its
 Hamiltonian trajectories. [5][6] These quantities are constant on connected time intervals,
-giving energy conservation in the autonomous case. [TODO]
+giving energy conservation in the autonomous case. [20]
 
 On a finite-dimensional real symplectic vector space, an affine infinitesimally symplectic Lie
 algebra action has a moment map whose components generate the action's vector fields through
@@ -88,6 +88,7 @@ Hamiltonians, with Hamiltonian, Newtonian and variational descriptions agreeing 
 trajectories. The pendulum is expressed using a real lift of its angle. [12][13]
 
 Three-dimensional central-force systems have Hamiltonians smooth away from the centre. [14]
+They define Hamiltonian systems on this domain. [19]
 Their angular-momentum observables L² and Lz Poisson-commute with each other and with the
 Hamiltonian away from the centre. [15] Their functional independence on a suitable open dense
 domain gives central-force Liouville integrability. [TODO]
@@ -129,6 +130,15 @@ the momentum p = m v. [TODO]
 15. PhyslibAlpha/ClassicalMechanics/CentralForce/AngularMomentum.lean — `angularMomentum`,
     `angularMomentumSq`, `angularMomentumZ`, `poissonBracket_angularMomentumSq_angularMomentumZ`,
     `poissonBracket_angularMomentumSq_hamiltonian`, `poissonBracket_angularMomentumZ_hamiltonian`
+16. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace`, `PhaseSpace.position`,
+    `PhaseSpace.momentum`, `PhaseSpace.contMDiff_position`, `PhaseSpace.contMDiff_zeroMomentum`
+17. Physlib/ClassicalMechanics/PhaseSpace/Basic.lean — `PhaseSpace.normedSpaceDiffeomorph`,
+    `PhaseSpace.innerProductSpaceDiffeomorph`
+18. Physlib/ClassicalMechanics/HamiltonianMechanics/Basic.lean — `HamiltonianSystem`,
+    `HamiltonianSystem.ofNormedSpace`, `HamiltonianSystem.ofInnerProductSpace`
+19. PhyslibAlpha/ClassicalMechanics/CentralForce/Basic.lean — `CentralForce.toHamiltonianSystem`
+20. Physlib/ClassicalMechanics/HamiltonianMechanics/PoissonBracket.lean —
+    `observable_eq_of_poissonBracket_eq_zero`
 
 ## References
 

@@ -170,7 +170,7 @@ lemma stinespringOp_adjoint_mul_self {R : Type*} [Ring R] [StarRing R]
   simp only [stinespringOp, Pi.star_apply, Matrix.mul_apply, star_apply, single, Fin.isValue,
     Matrix.sum_apply, kroneckerMap_apply, of_apply, and_true, mul_ite, mul_one, mul_zero,
     Finset.sum_ite_eq', Finset.mem_univ, ↓reduceIte];
-  erw [ Finset.sum_product, Finset.sum_comm ]
+  rw [Fintype.sum_prod_type, Finset.sum_comm]
 
 /-- A useful identity for completely positive, trace non-increasing maps. -/
 lemma stinespringForm_CPTNI {R : Type*} [RCLike R]
@@ -207,7 +207,7 @@ lemma stinespringOrtho {R : Type*} [RCLike R]
     have h₁ : (((stinespringOp K)ᴴ * stinespringOp K) i j)
       = ((1 : Matrix m m R) i j) := by
       rw [stinespringForm_CPTP_isometry hK]
-    rw [mul_apply] at h₁
+    rw [Matrix.mul_apply] at h₁
     by_cases g₀ : i = j
     · subst i
       simp only [conjTranspose_apply, star_def, one_apply_eq] at h₁
@@ -379,7 +379,7 @@ lemma onbPart_inner {R : Type*} [RCLike R] {m r : ℕ} {K : Fin r → Matrix (Fi
                 simp only [SetLike.coe_eq_coe, EmbeddingLike.apply_eq_iff_eq,
                   Subtype.mk.injEq, Prod.mk.injEq, not_and]
                 intro hyz
-                contrapose! h
+                contrapose h
                 have : y.2.1 ≠ z := Fin.val_ne_of_ne hy
                 have : x.2.1 ≠ z := Fin.val_ne_of_ne hx
                 have : y.2.1 = x.2.1 := by
@@ -455,7 +455,7 @@ theorem Ud_orthonormal₁ {R : Type*} [RCLike R] {m r : ℕ} {K : Fin r → Matr
           fun j => WithLp.toLp 2 fun i ↦ stinespringOp K i j
     split_ifs with g₀ g₁ g₂
     · apply (stinespringOrtho hK).2
-      contrapose! h
+      contrapose h
       refine Prod.ext_iff.mpr ?_
       constructor
       · tauto
@@ -529,7 +529,7 @@ theorem unitary_of_orthonormal {R : Type*} [RCLike R]
     (α : Matrix (m × r) (m × r) R)
   (h₀ : Orthonormal R fun i ↦ WithLp.toLp 2 (α i)) : α * star α = 1 := by
     ext i j
-    rw [mul_apply]
+    rw [Matrix.mul_apply]
     apply star_injective
     simp only [star_apply, star_def, star_sum, star_mul', RingHomCompTriple.comp_apply,
       RingHom.id_apply]
@@ -898,7 +898,7 @@ def krausCompletionChannelMap {R : Type*} [RCLike R] {q r : ℕ}
   · unfold IsKrausChannel
     rw [← krausCompletion_isometry_of_TNI hK]
     ext x y
-    rw [mul_apply, Fintype.sum_prod_type, Finset.sum_comm, Matrix.sum_apply]
+    rw [Matrix.mul_apply, Fintype.sum_prod_type, Finset.sum_comm, Matrix.sum_apply]
     congr
 
 
@@ -925,9 +925,7 @@ lemma CPTP_of_CPTNI {R : Type*} [RCLike R]
         omega
       simp_rw [this]
       ext a b
-      erw [Finset.sum_apply]
-      erw [Finset.sum_fn]
-      simp
+      simp [Matrix.sum_apply]
     · exact False.elim <| H <| Fin.eq_last_of_not_lt g₀
 
 /-!

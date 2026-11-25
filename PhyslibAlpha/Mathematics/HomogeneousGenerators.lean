@@ -5,7 +5,6 @@ Authors: Jinzheng Li, Nathaneal Sajan, Joseph Tooby-Smith
 -/
 module
 
-public import Mathlib.Algebra.Algebra.Operations
 public import Mathlib.Algebra.Polynomial.AlgebraMap
 public import Mathlib.RingTheory.Adjoin.Basic
 /-!
@@ -208,7 +207,8 @@ lemma coeff_mem_productsOfDegree {x : B} (hx : x ∈ A) (m : ℕ) :
   induction hx using Algebra.adjoin_induction generalizing m with
   | mem y hy =>
     obtain ⟨n, hn⟩ := Set.mem_iUnion.mp hy
-    rw [hD n y hn, Polynomial.coeff_monomial]
+    rw [hD n y hn]
+    simp only [Polynomial.coeff_monomial_apply]
     split_ifs with hw
     · exact hw ▸ list_prod_le_productsOfDegree [n] (by simpa using hn)
     · exact zero_mem _

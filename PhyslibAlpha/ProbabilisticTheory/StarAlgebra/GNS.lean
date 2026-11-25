@@ -6,10 +6,7 @@ Authors: Tom Ole Diem
 module
 
 public import Mathlib.Analysis.InnerProductSpace.Completion
-public import Mathlib.Analysis.InnerProductSpace.Basic
 public import Mathlib.Analysis.InnerProductSpace.Adjoint
-public import Mathlib.Algebra.Star.StarAlgHom
-public import Mathlib.Analysis.Complex.Basic
 
 /-!
 
@@ -57,7 +54,7 @@ cyclic vector.
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexOrder InnerProductSpace
 
@@ -288,6 +285,6 @@ lemma gnsAut_commute {σ τ : A ≃⋆ₐ[ℂ] A} (hσ : ∀ a, ω (σ a) = ω a
 
 end AlgState
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

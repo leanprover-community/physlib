@@ -8,10 +8,7 @@ module
 public import PhyslibAlpha.Mathematics.Order.StrongUnit
 public import Mathlib.Algebra.Order.Module.PositiveLinearMap
 public import Mathlib.Basic.NNReal.Defs
-public import Mathlib.Algebra.Order.BigOperators.Group.Finset
 public import Mathlib.Algebra.BigOperators.Pi
-public import Mathlib.Tactic.Abel
-public import Mathlib.Tactic.Linarith
 
 /-!
 # Positive functionals

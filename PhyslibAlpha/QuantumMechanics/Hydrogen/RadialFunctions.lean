@@ -6,8 +6,6 @@ Authors: Daniel Leonforte
 module
 
 public import PhyslibAlpha.Mathematics.SpecialFunctions.Laguerre
-public import Mathlib.Analysis.SpecialFunctions.ExpDeriv
-public import Mathlib.MeasureTheory.Integral.IntegralEqImproper
 public import Physlib.QuantumMechanics.Hydrogen.Rydberg
 
 /-!

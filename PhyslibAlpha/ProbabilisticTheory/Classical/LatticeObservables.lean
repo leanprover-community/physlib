@@ -5,7 +5,6 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import PhyslibAlpha.ProbabilisticTheory.Classical.Basic
 public import PhyslibAlpha.ProbabilisticTheory.Classical.BauerSimplex
 public import PhyslibAlpha.ProbabilisticTheory.Classical.BoundedMeasurable
 public import PhyslibAlpha.ProbabilisticTheory.Classical.FiniteSystem
@@ -52,7 +51,7 @@ way.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 
@@ -312,10 +311,10 @@ end OrderUnitLattice
 
 -/
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 namespace BoundedMeasurable
-open ProbabilisticTheory
+open PhyslibAlpha.ProbabilisticTheory
 open StateSpace
 open scoped NNReal
 open ArchimedeanOrderUnitSpace MeasureTheory Set
@@ -333,7 +332,7 @@ lemma hasUniquePureDecomposition
 
 end BoundedMeasurable
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open StateSpace
 open scoped NNReal
@@ -359,4 +358,4 @@ lemma isBauerSimplexStateSpace : IsBauerSimplexStateSpace (FiniteClassicalSystem
 
 end FiniteClassicalSystem
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

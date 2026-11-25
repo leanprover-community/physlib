@@ -41,7 +41,7 @@ is positive semidefinite, which gives a Cauchy–Schwarz inequality for covarian
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace IsJordanOrderUnit
 
@@ -100,4 +100,4 @@ lemma covMatrix_posSemidef {ι : Type*} [Fintype ι] (ω : 𝓢[ℝ, E]) (a : ι
 
 end IsJordanOrderUnit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

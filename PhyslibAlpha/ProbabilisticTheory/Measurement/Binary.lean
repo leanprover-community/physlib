@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.Finite
-public import Mathlib.MeasureTheory.MeasurableSpace.Instances
 
 /-!
 # Binary measurements
@@ -34,7 +33,7 @@ effect itself, the outcome `false` its complement.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace Effect
 
@@ -68,4 +67,4 @@ lemma binaryMeasurement_false (e : Effect F) (h : MeasurableSet {false}) :
 
 end Effect
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

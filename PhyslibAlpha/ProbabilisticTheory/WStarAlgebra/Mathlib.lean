@@ -44,7 +44,7 @@ W⋆-algebra in Mathlib's sense, when the predual lives in the same universe as 
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ComplexConjugate
 open ConjSpace
@@ -149,4 +149,4 @@ lemma WStarAlgebraStructure.toWStarAlgebra
     ⟨(PhiEquiv (X := WStarAlgebraStructure.Predual A)).symm.trans
       (WStarAlgebraStructure.toDual (A := A)).symm⟩⟩
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

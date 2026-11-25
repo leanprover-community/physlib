@@ -7,7 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.JBW.Basic
 public import PhyslibAlpha.ProbabilisticTheory.JordanOrderUnit.ProjectionResolution
-public import PhyslibAlpha.ProbabilisticTheory.Measurement.BornRule
 public import PhyslibAlpha.ProbabilisticTheory.Measurement.BoundedScalarization
 
 /-!
@@ -43,7 +42,7 @@ separate projection resolutions, so a projection resolution is determined by its
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory
 
@@ -95,4 +94,4 @@ lemma eq_of_forall_normal_probabilityLaw_eq {P Q : MeasurableProjectionResolutio
 
 end MeasurableProjectionResolution
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

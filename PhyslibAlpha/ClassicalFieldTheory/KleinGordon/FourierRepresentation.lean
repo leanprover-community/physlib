@@ -6,7 +6,6 @@ Authors: Tom Ole Diem
 module
 
 public import PhyslibAlpha.ClassicalFieldTheory.KleinGordon.Solution
-public import Mathlib.Analysis.Fourier.Inversion
 
 /-!
 

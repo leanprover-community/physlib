@@ -6,7 +6,6 @@ Authors: Eduardo Nava-Hernandez
 module
 
 public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.GNS
-public import PhyslibAlpha.ProbabilisticTheory.StarAlgebra.Lie
 public import PhyslibAlpha.ProbabilisticTheory.CStarAlgebra.Uncertainty
 
 /-!
@@ -59,11 +58,11 @@ its translation invariant states and the thermodynamic limit states of `Invarian
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 namespace AlgState
 
-open scoped ComplexOrder InnerProductSpace selfAdjoint
+open scoped ComplexOrder InnerProductSpace _root_.selfAdjoint
 open Matrix
 
 variable {A : Type*} [Ring A] [Algebra ℂ A] [StarRing A] [StarModule ℂ A] (ω : AlgState A)
@@ -231,4 +230,4 @@ end Symm
 
 end AlgState
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

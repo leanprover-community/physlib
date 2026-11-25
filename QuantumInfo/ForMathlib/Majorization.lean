@@ -867,8 +867,14 @@ lemma sum_mul_log_nonneg_of_weak_log_maj {n : ℕ}
     have h_abel : ∀ m : Fin (n + 1), ∑ i ∈ Finset.Iic m, x i * d i = x m * D m + ∑ i ∈ Finset.Iio m, (x i - x (i + 1)) * D i := by
       intro m
       induction' m using Fin.inductionOn with m ih
-      · simp +zetaDelta at *
-        rw [Finset.sum_eq_single 0, Finset.sum_eq_single 0] <;> aesop
+      · have hIio : Finset.Iio (0 : Fin (n + 1)) = ∅ := by
+          ext i
+          simp
+        have hIic : Finset.Iic (0 : Fin (n + 1)) = {0} := by
+          ext i
+          simp only [Finset.mem_Iic, Finset.mem_singleton, Fin.le_iff_val_le_val,
+            Fin.ext_iff, Fin.val_zero, Nat.le_zero_eq]
+        simp [D, hIio, hIic]
       · rw [show (Finset.Iic (Fin.succ m) : Finset (Fin (n + 1))) = Finset.Iic (Fin.castSucc m) ∪ { Fin.succ m } from ?_, Finset.sum_union] <;> norm_num [Finset.sum_singleton, Finset.sum_union, Finset.sum_Ioc_succ_top, (Nat.succ_eq_succ ▸ Finset.Icc_succ_left_eq_Ioc)] at *
         · rw [show (Finset.Iio (Fin.succ m) : Finset (Fin (n + 1))) = Finset.Iio (Fin.castSucc m) ∪ { Fin.castSucc m } from ?_, Finset.sum_union] <;> norm_num [Finset.sum_singleton, Finset.sum_union, Finset.sum_Ioc_succ_top, (Nat.succ_eq_succ ▸ Finset.Icc_succ_left_eq_Ioc)] at *
           · rw [ih]

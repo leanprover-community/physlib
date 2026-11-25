@@ -35,7 +35,7 @@ an effect-valued measure `μ` on `E` therefore gives one, `μ.map φ`, on `F`, w
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 variable {Ω E F : Type*} [MeasurableSpace Ω] [OrderUnitSpace E] [OrderUnitSpace F]
 
@@ -77,4 +77,4 @@ lemma coe_map_apply (μ : EffectValuedMeasure Ω E) (φ : Channel E F) (hφ : φ
 
 end EffectValuedMeasure
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

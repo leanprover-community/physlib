@@ -36,7 +36,7 @@ check the result does not depend on the `r` chosen.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open scoped ENNReal NNReal
 
@@ -183,4 +183,4 @@ end IsFinite
 
 end Weight
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

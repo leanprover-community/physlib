@@ -7,11 +7,8 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.Examples.NormCone
 public import PhyslibAlpha.Mathematics.Geometry.Simplex
-public import Mathlib.Analysis.Convex.Strict.Extreme
-public import Mathlib.Analysis.Convex.Uniform
 public import Mathlib.Analysis.InnerProductSpace.Convex
 public import Mathlib.Analysis.InnerProductSpace.Dual
-public import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
 # The qubit, in Bloch-vector coordinates
@@ -28,10 +25,11 @@ qubit is not classical.
 
 ## ii. Key results
 
-- `ProbabilisticTheory.Qubit` : the qubit in Bloch coordinates.
-- `ProbabilisticTheory.Qubit.stateEquiv` : the states are the Bloch ball.
-- `ProbabilisticTheory.Qubit.isPure_purePoint` : unit Bloch vectors give pure states.
-- `ProbabilisticTheory.Qubit.not_isSimplex_stateSpace` : the state space is not a simplex.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit` : the qubit in Bloch coordinates.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit.stateEquiv` : the states are the Bloch ball.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit.isPure_purePoint` : unit Bloch vectors give pure states.
+- `PhyslibAlpha.ProbabilisticTheory.Qubit.not_isSimplex_stateSpace` : the state space is not
+  a simplex.
 
 ## iii. Table of contents
 
@@ -49,7 +47,7 @@ qubit is not classical.
 
 @[expose] public section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 /-!
 
@@ -127,7 +125,7 @@ consists of extreme points of the ball. -/
 lemma isPure_purePoint (t : Set.Icc (0 : ℝ) 1) : (purePoint t).IsPure := by
   rw [purePoint, NormCone.isPure_stateOfDual_iff, ← image_toDualEquiv_closedBall,
     ← image_extremePoints]
-  exact ⟨_, StrictConvexSpace.sphere_subset_extremePoints_closedBall _ one_ne_zero
+  exact ⟨_, StrictConvexSpace.sphere_subset_extremePoints_closedBall _ 1
     (by simpa using norm_blochVec t.2.1 t.2.2), rfl⟩
 
 lemma purePoint_injective : Function.Injective purePoint := fun _ _ h =>
@@ -144,4 +142,4 @@ lemma not_isSimplex_stateSpace :
 
 end Qubit
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory

@@ -7,8 +7,6 @@ module
 
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.StarHomSpec.Functional
 public import PhyslibAlpha.ProbabilisticTheory.HilbertSpace.Unbounded.StarHomSpec.Commutant
-public import Mathlib.Analysis.CStarAlgebra.GelfandDuality
-public import Mathlib.Topology.Algebra.StarSubalgebra
 
 /-!
 
@@ -51,7 +49,7 @@ transform, and every operator commuting with the family commutes with the spectr
 
 noncomputable section
 
-namespace ProbabilisticTheory
+namespace PhyslibAlpha.ProbabilisticTheory
 
 open MeasureTheory Set Topology WeakDual
 open scoped ComplexOrder CStarAlgebra InnerProductSpace
@@ -173,6 +171,6 @@ end CommutingStarFamily
 
 end QuantumMechanics
 
-end ProbabilisticTheory
+end PhyslibAlpha.ProbabilisticTheory
 
 end

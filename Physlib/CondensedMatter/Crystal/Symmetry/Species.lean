@@ -5,38 +5,38 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.CondensedMatter.Crystal.Symmetry.PointOperations
+public import Physlib.CondensedMatter.Crystal.Symmetry.Decomposition
 
 /-!
 # Species-preserving crystal symmetries
 
-The crystal symmetries that preserve a species assignment.
+The symmetries of a crystal that keep every atom on a site of its own species.
 
 ## i. Overview
 
-A species assignment gives each label of the unit cell a species, for example a chemical element.
-The same assignment holds in every cell. A symmetry permutes the labels. It preserves an
-assignment `q` when `q (φ • i) = q i` for every label `i`. These symmetries form `speciesGroup q`.
+A species assignment gives each label of the unit cell a species, for example a chemical
+element. Graphene and hexagonal boron nitride share the honeycomb lattice with two sites per
+cell. In graphene both sites carry carbon and the inversion through the centre of a bond
+exchanges them. In boron nitride one site carries boron and the other nitrogen. The same
+inversion would put boron where nitrogen was, so it is no longer a symmetry.
 
-A constant assignment admits every symmetry. Distinct species on distinct labels admit exactly the
-symmetries that fix every label. Merging species enlarges the group. Shifts and translations fix
-every label. They preserve every assignment.
+A symmetry acts on species assignments by relabelling. The symmetries preserving an assignment
+`q` form its stabilizer. Only the permutation `σ` of the labels matters: a symmetry preserves `q`
+exactly when `q ∘ σ = q`. Lattice automorphisms and shifts are unrestricted. A single species
+allows every symmetry. Distinct species on all labels allow exactly the symmetries that fix
+every label.
 
 ## ii. Key results
 
-- `Symmetry.speciesGroup` : the symmetries preserving a species assignment.
-- `Symmetry.speciesGroup_const` : a constant assignment admits every symmetry.
-- `Symmetry.speciesGroup_eq_ker_labelHom` : an injective assignment admits exactly the symmetries
-  that fix every label.
-- `Symmetry.speciesGroup_le_comp` : merging species cannot remove symmetries.
-- `Symmetry.shift_mem_speciesGroup` : shifts preserve every assignment.
-- `Symmetry.translations_le_speciesGroup` : translations preserve every assignment.
+- `Crystal.Symmetry.speciesGroup` : the symmetries preserving a species assignment.
+- `Crystal.Symmetry.mem_speciesGroup_iff` : a symmetry preserves `q` exactly when `q ∘ σ = q`.
+- `Crystal.Symmetry.speciesGroup_eq_ker_of_injective` : distinct species allow exactly the
+  symmetries that fix every label.
 
 ## iii. Table of contents
 
-- A. Species-preserving symmetries
-- B. Merging species
-- C. Shifts and translations
+- A. The species group
+- B. Uniform and distinct species
 
 ## iv. References
 
@@ -52,67 +52,52 @@ variable {G : Type*} [AddCommGroup G] [AddGroup.FG G]
 
 namespace Symmetry
 
-variable {C : Crystal G} {Q : Type*}
+variable {C : Crystal G} {Q : Type*} {φ : Symmetry C}
 
-/-! ## A. Species-preserving symmetries -/
+/-! ## A. The species group -/
 
-/-- The crystal symmetries that preserve the species assignment `q`. -/
-def speciesGroup (q : Species C Q) : Subgroup (Symmetry C) where
-  carrier := {φ | ∀ i, q (φ • i) = q i}
-  one_mem' := by
-    intro i
-    rfl
-  mul_mem' {φ ψ} hφ hψ := by
-    intro i
-    rw [mul_smul, hφ, hψ]
-  inv_mem' {φ} hφ := by
-    intro i
-    rw [← hφ (φ⁻¹ • i), smul_inv_smul]
+/-- A symmetry carries the species of each label to the image label: `(φ • q) (σ i) = q i`. -/
+local instance : MulAction (Symmetry C) (Species C Q) := arrowAction
 
-/-- A symmetry preserves `q` exactly when it sends every label to one of the same species. -/
-lemma mem_speciesGroup_iff {q : Species C Q} {φ : Symmetry C} :
-    φ ∈ speciesGroup q ↔ ∀ i, q (φ • i) = q i := by
+/-- The symmetries preserving the species assignment `q`. -/
+def speciesGroup (q : Species C Q) : Subgroup (Symmetry C) :=
+  MulAction.stabilizer (Symmetry C) q
+
+/-- A symmetry preserves `q` exactly when its label permutation `σ` satisfies `q ∘ σ = q`. -/
+lemma mem_speciesGroup_iff {q : Species C Q} : φ ∈ speciesGroup q ↔ q ∘ φ.labelPerm = q := by
+  rw [← inv_mem_iff, speciesGroup, MulAction.mem_stabilizer_iff, funext_iff, funext_iff]
+  change (∀ i, q (φ⁻¹⁻¹ • i) = q i) ↔ _
+  rw [inv_inv]
   rfl
 
-/-- Every crystal symmetry preserves a constant species assignment. -/
-lemma speciesGroup_const (c : Q) : speciesGroup (C := C) (Function.const _ c) = ⊤ := by
-  rw [Subgroup.eq_top_iff']
-  intro φ i
-  rfl
+/-- A symmetry built from `A`, `σ` and `s` preserves `q` exactly when `q ∘ σ = q`. -/
+lemma ofParts_mem_speciesGroup_iff {q : Species C Q} (A : G ≃+ G) (σ : Equiv.Perm C.UnitCell)
+    (s : C.UnitCell → G) : ofParts C A σ s ∈ speciesGroup q ↔ q ∘ σ = q := by
+  rw [mem_speciesGroup_iff, labelPerm_ofParts]
 
-/-- A symmetry that fixes every unit-cell label preserves any species assignment. -/
-lemma ker_labelHom_le_speciesGroup (q : Species C Q) : (labelHom C).ker ≤ speciesGroup q := by
-  intro φ hφ i
-  exact congrArg q (Equiv.ext_iff.1 hφ i)
-
-/-- With distinct species on distinct labels, preserving species requires fixing every label. -/
-lemma speciesGroup_eq_ker_labelHom {q : Species C Q} (hq : Function.Injective q) :
-    speciesGroup q = (labelHom C).ker := by
-  refine le_antisymm ?_ (ker_labelHom_le_speciesGroup q)
-  intro φ hφ
-  ext i
-  exact hq (hφ i)
-
-/-! ## B. Merging species -/
-
-/-- Applying `f` to the species values can only enlarge the species group. -/
-lemma speciesGroup_le_comp (q : Species C Q) {Q' : Type*} (f : Q → Q') :
-    speciesGroup q ≤ speciesGroup (f ∘ q) := by
-  intro φ h i
-  exact congrArg f (h i)
-
-/-! ## C. Shifts and translations -/
-
-/-- Every shift fixes the unit-cell labels and so preserves species. -/
-lemma shift_mem_speciesGroup (q : Species C Q) (b : C.UnitCell → G) :
-    shift C b ∈ speciesGroup q := by
-  intro i
-  rfl
-
-/-- Every translation preserves any species assignment. -/
+/-- Every lattice translation preserves every species assignment. -/
 lemma translations_le_speciesGroup (q : Species C Q) : translations C ≤ speciesGroup q := by
-  rintro _ ⟨a, rfl⟩ i
-  rfl
+  rintro _ ⟨a, rfl⟩
+  exact mem_speciesGroup_iff.2 rfl
+
+/-! ## B. Uniform and distinct species -/
+
+/-- A single species allows every symmetry. -/
+lemma speciesGroup_const (c : Q) : speciesGroup (C := C) (Function.const _ c) = ⊤ :=
+  (Subgroup.eq_top_iff' _).2 (fun _ => mem_speciesGroup_iff.2 rfl)
+
+/-- Distinct species on all labels allow exactly the symmetries that fix every label. -/
+lemma speciesGroup_eq_ker_of_injective {q : Species C Q} (hq : Function.Injective q) :
+    speciesGroup q = (MulAction.toPermHom (Symmetry C) C.UnitCell).ker := by
+  ext φ
+  rw [mem_speciesGroup_iff, MonoidHom.mem_ker]
+  constructor
+  · intro h
+    exact Equiv.ext (fun i => hq (congrFun h i))
+  · intro h
+    change q ∘ MulAction.toPermHom (Symmetry C) C.UnitCell φ = q
+    rw [h]
+    rfl
 
 end Symmetry
 

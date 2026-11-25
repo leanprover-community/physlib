@@ -62,6 +62,26 @@ lemma trace_zero : (0 : HermitianMat n α).trace = 0 := by
 lemma trace_add (A B : HermitianMat n α) : (A + B).trace = A.trace + B.trace := by
   simp [trace]
 
+/-- `trace` bundled as an `AddMonoidHom`. -/
+@[simps]
+def traceAddMonoidHom : HermitianMat n α →+ R where
+  toFun := trace
+  map_zero' := trace_zero
+  map_add' := trace_add
+
+@[simp]
+lemma trace_listSum (l : List (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
+  map_list_sum traceAddMonoidHom l
+
+@[simp]
+lemma trace_multisetSum (l : Multiset (HermitianMat n α)) : l.sum.trace = (l.map trace).sum :=
+  map_multiset_sum traceAddMonoidHom l
+
+@[simp]
+lemma trace_sum {ι : Type*} (s : Finset ι) (f : ι → HermitianMat n α) :
+    (∑ i ∈ s, f i).trace = ∑ i ∈ s, (f i).trace :=
+  map_sum traceAddMonoidHom f s
+
 end semiring
 section ring
 
@@ -151,9 +171,13 @@ lemma trace_eq_one_iff (A : HermitianMat n 𝕜) : A.trace = 1 ↔ A.mat.trace =
 
 set_option backward.isDefEq.respectTransparency false in
 @[simp]
-lemma trace_reindex (A : HermitianMat n ℂ) (e : n ≃ m) :
+lemma trace_reindex (A : HermitianMat n 𝕜) (e : n ≃ m) :
     (A.reindex e).trace = A.trace := by
   simp [reindex, trace_eq_re_trace]
+
+@[fun_prop]
+lemma continuous_trace : Continuous (HermitianMat.trace (α := 𝕜) (n := n)) :=
+  RCLike.continuous_re.comp HermitianMat.continuous_mat.matrix_trace
 
 end RCLike
 section partialTrace
