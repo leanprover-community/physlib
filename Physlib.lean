@@ -321,6 +321,7 @@ public import Physlib.ProbabilisticTheory.Classical.Basic
 public import Physlib.ProbabilisticTheory.Classical.Dirac
 public import Physlib.ProbabilisticTheory.Classical.Effect
 public import Physlib.ProbabilisticTheory.Classical.NormalState
+public import Physlib.ProbabilisticTheory.Classical.PureState
 public import Physlib.ProbabilisticTheory.Effect.Basic
 public import Physlib.ProbabilisticTheory.Effect.Complement
 public import Physlib.ProbabilisticTheory.Effect.Convex
