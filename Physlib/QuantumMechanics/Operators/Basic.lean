@@ -21,7 +21,7 @@ which we refer to as _unbounded_. When `H = H'` operators may also be symmetric,
 essentially self-adjoint (closure is self-adjoint).
 
 In this module we collect results on how the properties `HasDenseDomain`, `IsUnbounded`,
-`IsSymmetric`, `IsSelfAdjoint` and `IsEssentiallySelfAdjoint` interact with the basic algebraic
+`IsSymmetric`, and `IsSelfAdjoint` interact with the basic algebraic
 operations, closure, adjoints, unitary conjugation and each other.
 
 ### Notes
@@ -44,8 +44,6 @@ Definitions
 - `IsUnbounded` : An operator is unbounded if it is both densely defined and closable.
 - `IsSymmetric` : An operator `T : H →ₗ.[ℂ] H` is symmetric if `⟪T x, y⟫_ℂ = ⟪x, T y⟫_ℂ` holds
     for all `x y : T.domain`.
-- `IsEssentiallySelfAdjoint` : An operator `T : H →ₗ.[ℂ] H` is essentially self-adjoint if
-    its closure is self-adjoint.
 
 Results
 - `adjoint_add_le_add_adjoint` : The inequality `U₁† + U₂† ≤ (U₁ + U₂)†` when `U₁ + U₂` has
@@ -62,8 +60,6 @@ Results
 - `IsUnbounded.adjoint_closure_eq_adjoint` : An unbounded operator and its closure have
     the same adjoint.
 - `IsUnbounded.adjoint_adjoint_eq_closure` : An unbounded operator `U` satisfies `U†† = U.closure`.
-- `IsEssentiallySelfAdjoint.unique_self_adjoint_extension` : The closure of an essentially
-    self-adjoint unbounded operator is its unique self-adjoint extension.
 
 ## iii. Table of contents
 

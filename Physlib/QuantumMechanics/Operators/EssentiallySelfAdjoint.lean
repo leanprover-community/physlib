@@ -12,7 +12,17 @@ public import Physlib.QuantumMechanics.Operators.Basic
 
 ## i. Overview
 
+An operator on a Hilbert space is said to be *essentially self-adjoint* (ESA) if its closure
+is self-adjoint. This module defines ESA operators and collects their basic properties.
+
+The spectral theory of ESA operators is very closely tied to that of self-adjoint operators,
+by virtue of their having a unique self-adjoint extension.
+
 ## ii. Key results
+
+- `IsEssentiallySelfAdjoint` : The definition of an ESA operator as having a self-adjoint closure.
+- `unique_self_adjoint_extension` : The closure of an ESA operator is its *unique* self-adjoint
+  extension.
 
 ## iii. Table of contents
 
