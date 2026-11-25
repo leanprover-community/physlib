@@ -7,7 +7,6 @@ module
 
 public import Physlib.Electromagnetism.TemperedDistributional.Dynamics.IsExtrema
 public import Physlib.SpaceAndTime.Space.Norm.Basic
-public import Physlib.SpaceAndTime.Space.Translations
 /-!
 
 # Electrostatics of a stationary point particle in 3d

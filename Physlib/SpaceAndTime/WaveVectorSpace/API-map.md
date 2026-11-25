@@ -42,13 +42,14 @@ Changing the reference point changes the phase at all points in space by the sam
 
 ### Fourier transforms
 
-The Fourier transform takes a suitably nice function of space to a function of wavevector,
-resolving its spatial dependence into plane-wave components; the inverse Fourier transform
+The Fourier transform (FT) takes a suitably nice function of space to a function of wavevector,
+resolving its spatial dependence into plane-wave components; the inverse Fourier transform (IFT)
 reconstructs the spatial function from those components. [8]
-The transform and its inverse have a consistent choice of normalization
-and preserve inner products up to the corresponding normalization factor. [TODO]
-The Fourier transform maps derivatives with respect to space to multiplication by wavevector
-and *vice versa*, under suitable regularity and decay assumptions. [TODO]
+The FT maps derivatives with respect to space to multiplication by wavevector and *vice versa*,
+under suitable regularity and integrability assumptions. [9]
+The FT and IFT are in fact left and right inverses with a consistent choice of normalization
+under suitable continuity and integrability assumptions. [10]
+Both FT and IFT preserve inner products up to a constant normalization factor. [TODO]
 
 ## Lean References
 
@@ -62,6 +63,12 @@ and *vice versa*, under suitable regularity and decay assumptions. [TODO]
 6. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `pairingCLM`
 7. Physlib/SpaceAndTime/WaveVectorSpace/DualPairing.lean — `WaveVectorSpace.dual`, `Space.dual`
 8. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fourierIntegral`, `fourierIntegralInv`
+9. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean — `fderiv_fourierIntegral`,
+   `fderiv_fourierIntegralInv`, `deriv_fourierIntegral`, `deriv_fourierIntegralInv`,
+   `fourierIntegral_fderiv`, `fourierIntegralInv_fderiv`, `fourierIntegral_deriv`,
+   `fourierIntegralInv_deriv`
+10. Physlib/SpaceAndTime/WaveVectorSpace/Fourier.lean —
+   `fourierIntegralInv_fourierIntegral_eq`, `fourierIntegral_fourierIntegralInv_eq`
 
 ## References
 

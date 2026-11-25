@@ -60,7 +60,7 @@ def C₁₂ (V : Quotient CKMMatrixSetoid) : ℝ := Real.cos (θ₁₂ V)
 standard parameterization. --/
 def C₁₃ (V : Quotient CKMMatrixSetoid) : ℝ := Real.cos (θ₁₃ V)
 
-/-- Given a CKM matrix `V` the real number corresponding to `sin θ₂₃` in the
+/-- Given a CKM matrix `V` the real number corresponding to `cos θ₂₃` in the
 standard parameterization. --/
 def C₂₃ (V : Quotient CKMMatrixSetoid) : ℝ := Real.cos (θ₂₃ V)
 

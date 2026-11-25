@@ -52,7 +52,7 @@ namespace ClassicalMechanics.ReferenceFrame
 ## A. Gravitational forces and acceleration
 -/
 
-variable {d : ℕ} {frame : ReferenceFrame d} [Fact frame.IsMetricConserved]
+variable {d : ℕ} {frame : ReferenceFrame d}
 variable (G : ℝ) (particles : Multiset frame.Particle)
 
 /-- The contribution of the source to the target's gravitational acceleration. -/
@@ -142,8 +142,7 @@ lemma netForce_gravity (target : particles) (t : ℝ) :
 
 /-- In an inertial frame, the gravitational acceleration equation is equivalent to Newton's
 second law for the constructed internal forces. -/
-lemma acceleration_eq_gravity_iff [Fact frame.IsInertial]
-    (target : particles) (t : ℝ) :
+lemma acceleration_eq_gravity_iff (target : particles) (t : ℝ) :
     target.1.acceleration t = gravityAcceleration G particles target t ↔
       netForce target (gravityForces G particles) 0 t =
         target.1.mass • target.1.acceleration t := by
@@ -163,7 +162,7 @@ namespace ClassicalMechanics.PointParticle.NewtonianSystem
 
 open ReferenceFrame
 
-variable {d : ℕ} {frame : ReferenceFrame d} [Fact frame.IsInertial]
+variable {d : ℕ} {frame : ReferenceFrame d} (h : frame.IsInertial)
 
 /-- Bundle particles that follow the gravitational equations of motion as a Newtonian system
 with no external forces. The inverse-square law describes the motion at collision-free times. -/
@@ -172,7 +171,7 @@ def ofGravity (G : ℝ) (particles : Multiset frame.Particle)
       target.1.acceleration t = gravityAcceleration G particles target t) :
     NewtonianSystem d where
   frame := frame
-  isInertial := inferInstance
+  frame_inertial := h
   particles := particles
   internalForces := gravityForces G particles
   externalForces := 0

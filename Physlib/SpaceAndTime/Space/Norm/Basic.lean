@@ -7,6 +7,7 @@ module
 
 public import Physlib.SpaceAndTime.Space.Derivatives.Laplacian
 public import Physlib.SpaceAndTime.Space.Integrals.NormPow
+public import Physlib.SpaceAndTime.Space.Translations
 public import Physlib.Mathematics.Distribution.PowMul
 /-!
 
@@ -37,6 +38,8 @@ We use properties of this sequence to prove various results about distributions 
   times the Dirac delta at the origin.
 - `distLaplacian_fundamentalSolution_norm_zpow` : The Laplacian of the power-form fundamental
   solution `‖x‖ ^ (2 - d)`, in every dimension (trivial at `d = 0, 2`).
+- `distLaplacian_fundamentalSolution_norm_sub_zpow`, `distLaplacian_inv_norm_sub` : The
+  Laplacian of the fundamental solution centred at a point `y`.
 - `distLaplacian_fundamentalSolution_log_norm` : The Laplacian of the two-dimensional logarithmic
   fundamental solution `Real.log ‖x‖`.
 
@@ -63,6 +66,7 @@ We use properties of this sequence to prove various results about distributions 
   - B.4. The Laplacian of distributions based on powers
   - B.5. Divergence equal dirac delta
   - B.6. The Laplacian of the fundamental solution
+  - B.7. The Laplacian of the shifted fundamental solution
 
 ## iv. References
 
@@ -1151,5 +1155,50 @@ lemma distLaplacian_fundamentalSolution_log_norm :
     IsDistBounded.log_norm)) = _
   rw [distGrad_distOfFunction_log_norm (by norm_num)]
   simpa only [Nat.cast_ofNat] using distDiv_inv_pow_eq_dim (d := 2)
+
+/-!
+
+### B.7. The Laplacian of the shifted fundamental solution
+
+-/
+
+/-- The distributional Laplacian of `‖x - y‖ ^ (2 - d)` is `(2 - d) * d * volume (Metric.ball 0 1)`
+times the Dirac delta at `y`. This is `distLaplacian_fundamentalSolution_norm_zpow` translated
+by `y`. -/
+lemma distLaplacian_fundamentalSolution_norm_sub_zpow {d : ℕ} (y : Space d) :
+    Δᵈ (distOfFunction (fun x : Space d => ‖x - y‖ ^ (- ((d : ℤ) - 2)))
+      (IsDistBounded.pow_shift _ y (by omega))) =
+      ((- ((d : ℝ) - 2)) * d *
+        (volume (α := Space d)).real (Metric.ball 0 1)) • diracDelta ℝ y := by
+  have h1 : distOfFunction (fun x : Space d => ‖x - y‖ ^ (- ((d : ℤ) - 2)))
+      (IsDistBounded.pow_shift _ y (by omega)) =
+      distTranslate (basis.repr y)
+        (distOfFunction (fun x : Space d => ‖x‖ ^ (- ((d : ℤ) - 2)))
+          (IsDistBounded.pow _ (by omega))) := by
+    ext η
+    simp [distTranslate_ofFunction]
+  rw [h1, distLaplacian, LinearMap.comp_apply, distTranslate_distGrad, distDiv_distTranslate]
+  have h0 := distLaplacian_fundamentalSolution_norm_zpow (d := d)
+  rw [distLaplacian, LinearMap.comp_apply] at h0
+  rw [h0]
+  ext η
+  simp [distTranslate_apply, translateSchwartz_apply]
+
+/-- In dimension three the distributional Laplacian of the point-source potential `‖x - y‖⁻¹` is
+`-4π` times the Dirac delta at `y`. -/
+lemma distLaplacian_inv_norm_sub (y : Space 3) :
+    Δᵈ (distOfFunction (fun x : Space 3 => ‖x - y‖⁻¹) (IsDistBounded.inv_shift y)) =
+      (-(4 * Real.pi)) • diracDelta ℝ y := by
+  have h := distLaplacian_fundamentalSolution_norm_sub_zpow (d := 3) y
+  have h1 : distOfFunction (fun x : Space 3 => ‖x - y‖⁻¹) (IsDistBounded.inv_shift y) =
+      distOfFunction (fun x : Space 3 => ‖x - y‖ ^ (- (((3 : ℕ) : ℤ) - 2)))
+        (IsDistBounded.pow_shift _ y (by omega)) := by
+    ext η
+    simp
+  rw [h1, h]
+  congr 1
+  simp [Measure.real]
+  rw [ENNReal.toReal_ofReal (by positivity)]
+  ring
 
 end Space

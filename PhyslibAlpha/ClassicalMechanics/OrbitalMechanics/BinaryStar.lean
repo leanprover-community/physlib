@@ -109,9 +109,9 @@ lemma hasDerivAt_deriv_relativePosition_of_gravity
   let r := fun s => (e 1).pos s - (e 0).pos s
   change HasDerivAt (deriv r) _ t
   have hp (i : Fin 2) (s : ℝ) : HasDerivAt (e i).pos ((e i).velocity s) s :=
-    ((e i).1.pos_twice_differentiable system.isInertial.out).1 s |>.hasDerivAt
+    (e i).1.pos_twice_differentiable.1 s |>.hasDerivAt
   have hv (i : Fin 2) : HasDerivAt (e i).velocity ((e i).acceleration t) t :=
-    ((e i).1.pos_twice_differentiable system.isInertial.out).2 t |>.hasDerivAt
+    (e i).1.pos_twice_differentiable.2 t |>.hasDerivAt
   have hr : deriv r = fun s => (e 1).velocity s - (e 0).velocity s :=
     funext fun s => ((hp 1 s).sub (hp 0 s)).deriv
   rw [hr]
