@@ -9,9 +9,9 @@ public import PhyslibAlpha.QuantumMechanics.Hydrogen.BoundStatesL2
 public import PhyslibAlpha.QuantumMechanics.Hydrogen.GreenIdentity
 
 /-!
-# Towards the weak eigenvalue equation of the hydrogen bound states
+# Green's identity for the hydrogen bound states
 
-Regularised bound states, the Hamiltonian on its domain, and a uniform bound for the Laplacian.
+Regularised bound states and Green's identity for the kinetic term of a bound state.
 
 ## i. Overview
 
@@ -24,10 +24,10 @@ This part collects the regularised bound states: their Laplacian away from the o
 (`laplacian_regBoundState`), the bound state as the case `ε = 0` (`boundState_eq_regG`), and
 Green's identity for `ψ_ε` with `ε ≠ 0` (`integral_regBoundState_mul_sum_deriv_deriv`).
 
-For the limit `ε → 0` two more ingredients follow: the Hamiltonian acts on its domain as
-`-ℏ²/(2m) Σᵢ ∂ᵢ∂ᵢ f + V f` on a Schwartz representative `f` (`hamiltonianOperator_apply_ae`),
-and `|Δψ_ε|` has an integrable bound uniform in `|ε| ≤ 1`
-(`exists_abs_laplacian_regBoundState_le`).
+The Hamiltonian acts on its domain as `-ℏ²/(2m) Σᵢ ∂ᵢ∂ᵢ f + V f`
+(`hamiltonianOperator_apply_ae`), and `|Δψ_ε|` has a bound uniform in `|ε| ≤ 1`
+(`exists_abs_laplacian_regBoundState_le`). With it, dominated convergence gives Green's identity
+for the kinetic term of the bound state itself (`integral_boundState_mul_sum_deriv_deriv`).
 
 ## ii. Key results
 
@@ -39,6 +39,10 @@ and `|Δψ_ε|` has an integrable bound uniform in `|ε| ≤ 1`
 - `hamiltonianOperator_apply_ae` : on its domain the Hamiltonian is
   `-ℏ²/(2m) Σᵢ ∂ᵢ∂ᵢ f + V f` almost everywhere, for a Schwartz representative `f`.
 - `exists_abs_laplacian_regBoundState_le` : a bound on `|Δψ_ε|` uniform in `|ε| ≤ 1`.
+- `integral_boundState_mul_sum_deriv_deriv` : Green's identity `∫ ψ Σᵢ ∂ᵢ∂ᵢ f = ∫ (Δψ) f` for a
+  bound state `ψ`, the limit `ε → 0` by dominated convergence
+  (`tendsto_integral_regBoundState_mul_sum_deriv_deriv`,
+  `tendsto_integral_laplacian_regBoundState_mul`).
 
 ## iii. Table of contents
 
@@ -346,5 +350,172 @@ lemma exists_abs_laplacian_regBoundState_le {d : ℕ} {κ : ℝ} (hκ : 0 ≤ κ
   calc _ ≤ (4 * l + 2 * d + 1) * (C₁ * (1 + ‖y‖) ^ k₁) * ‖y‖⁻¹ + C₂ * (1 + ‖y‖) ^ k₂ :=
         abs_radialLaplacianCoeff_le hy' hρy (by positivity) e₁ e₂
     _ = A * (1 + ‖y‖) ^ k₁ * ‖y‖⁻¹ + C₂ * (1 + ‖y‖) ^ k₂ := by ring
+
+/-- For `d ≥ 2`, almost every point of `Space d` is nonzero. -/
+lemma ae_ne_zero_of_two_le {d : ℕ} (hd : 2 ≤ d) : ∀ᵐ y ∂(volume : Measure (Space d)), y ≠ 0 := by
+  have : Nontrivial (Space d) :=
+    Module.nontrivial_of_finrank_pos (by rw [Space.finrank_eq_dim]; omega)
+  exact measure_eq_zero_iff_ae_notMem.mp (measure_singleton 0) |>.mono fun y hy => hy
+
+/-- The dominating function `‖y‖⁻¹ |A (1 + ‖y‖)^k₁ P(y)| ‖f(y)‖ + |C (1 + ‖y‖)^k₂ P(y)| ‖f(y)‖` of
+the Laplacians of the regularised bound states is integrable for `d ≥ 2`. -/
+lemma integrable_laplacianBound_mul {d : ℕ} (hd : 2 ≤ d) (P : MvPolynomial (Fin d) ℝ)
+    (A C : ℝ) (k₁ k₂ : ℕ) (f : 𝓢(Space d, ℂ)) :
+    Integrable (fun y : Space d => ‖y‖⁻¹ * (|A * (1 + ‖y‖) ^ k₁ * toFun P y| * ‖f y‖) +
+      |C * (1 + ‖y‖) ^ k₂ * toFun P y| * ‖f y‖) := by
+  have hnorm : IsPolyBounded (fun y : Space d => 1 + ‖y‖) :=
+    (IsPolyBounded.const 1).add IsPolyBounded.norm
+  have hQc : Continuous (toFun P) := (contDiff_toFun_infty P).continuous
+  have hu₁ : IsPolyBounded (fun y => A * (1 + ‖y‖) ^ k₁ * toFun P y) :=
+    ((IsPolyBounded.const A).mul (hnorm.pow k₁)).mul (IsPolyBounded.toFun P)
+  have hu₂ : IsPolyBounded (fun y => C * (1 + ‖y‖) ^ k₂ * toFun P y) :=
+    ((IsPolyBounded.const C).mul (hnorm.pow k₂)).mul (IsPolyBounded.toFun P)
+  have hum₁ : AEStronglyMeasurable (fun y : Space d => A * (1 + ‖y‖) ^ k₁ * toFun P y) :=
+    (by fun_prop : Continuous fun y : Space d => A * (1 + ‖y‖) ^ k₁ * toFun P y)
+      |>.aestronglyMeasurable
+  have hum₂ : AEStronglyMeasurable (fun y : Space d => C * (1 + ‖y‖) ^ k₂ * toFun P y) :=
+    (by fun_prop : Continuous fun y : Space d => C * (1 + ‖y‖) ^ k₂ * toFun P y)
+      |>.aestronglyMeasurable
+  exact (hu₁.integrable_inv_norm_mul hd hum₁ f).add (hu₂.integrable_abs_mul_norm_schwartz hum₂ f)
+
+/-- A pointwise bound `|g(y)| ≤ (A (1 + ‖y‖)^k₁ ‖y‖⁻¹ + C (1 + ‖y‖)^k₂) |P(y)|` gives the bound of
+`g f` by the dominating function of `integrable_laplacianBound_mul`. -/
+lemma norm_mul_le_laplacianBound {d : ℕ} {g : Space d → ℝ} {A C : ℝ} {k₁ k₂ : ℕ} (hA : 0 ≤ A)
+    (hC : 0 ≤ C) (P : MvPolynomial (Fin d) ℝ) (f : 𝓢(Space d, ℂ)) {y : Space d}
+    (hb : |g y| ≤ (A * (1 + ‖y‖) ^ k₁ * ‖y‖⁻¹ + C * (1 + ‖y‖) ^ k₂) * |toFun P y|) :
+    ‖((g y : ℝ) : ℂ) * f y‖ ≤ ‖y‖⁻¹ * (|A * (1 + ‖y‖) ^ k₁ * toFun P y| * ‖f y‖) +
+      |C * (1 + ‖y‖) ^ k₂ * toFun P y| * ‖f y‖ := by
+  rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+  simp only [abs_mul, abs_of_nonneg hA, abs_of_nonneg hC,
+    abs_of_nonneg (pow_nonneg (by positivity : (0 : ℝ) ≤ 1 + ‖y‖) k₁),
+    abs_of_nonneg (pow_nonneg (by positivity : (0 : ℝ) ≤ 1 + ‖y‖) k₂)]
+  calc |g y| * ‖f y‖
+      ≤ (A * (1 + ‖y‖) ^ k₁ * ‖y‖⁻¹ + C * (1 + ‖y‖) ^ k₂) * |toFun P y| * ‖f y‖ := by gcongr
+    _ = _ := by ring
+
+/-- Along a sequence `εₙ → 0` with `|εₙ| ≤ 1`,
+`∫ ψ_{εₙ} Σᵢ ∂ᵢ∂ᵢ f → ∫ ψ_0 Σᵢ ∂ᵢ∂ᵢ f`, by dominated convergence. -/
+lemma tendsto_integral_regBoundState_mul_sum_deriv_deriv {d : ℕ} {κ : ℝ} (hκ : 0 ≤ κ) (N α : ℕ)
+    (P : MvPolynomial (Fin d) ℝ) {εs : ℕ → ℝ} (hεs_le : ∀ n, |εs n| ≤ 1)
+    (hεs : Filter.Tendsto εs Filter.atTop (nhds 0)) (f : 𝓢(Space d, ℂ)) :
+    Filter.Tendsto (fun n => ∫ y, ((regG (radialFactor κ N α) (εs n) (‖y‖ ^ 2) * toFun P y : ℝ) :
+        ℂ) * ∑ i, ∂[i] (∂[i] ⇑f) y) Filter.atTop
+      (nhds (∫ y, ((regG (radialFactor κ N α) 0 (‖y‖ ^ 2) * toFun P y : ℝ) : ℂ) *
+        ∑ i, ∂[i] (∂[i] ⇑f) y)) := by
+  set ψ := fun ε : ℝ => fun y : Space d => regG (radialFactor κ N α) ε (‖y‖ ^ 2) * toFun P y
+  obtain ⟨C₀, k₀, hC₀, hb₀⟩ :=
+    exists_abs_poly_exp_regRadius_le (d := d) (laguerreScaled κ N α) hκ
+  set S : 𝓢(Space d, ℂ) := ∑ i : Fin d, ∂_{Space.basis i} (∂_{Space.basis i} f)
+  have hS : ∀ y, ∑ i, ∂[i] (∂[i] ⇑f) y = S y := fun y => by
+    simp only [S, _root_.sum_apply]
+    refine Finset.sum_congr rfl fun i _ => ?_
+    rw [deriv_schwartz f i, deriv_schwartz]
+  have hnorm : IsPolyBounded (fun y : Space d => 1 + ‖y‖) :=
+    (IsPolyBounded.const 1).add IsPolyBounded.norm
+  have hu : IsPolyBounded (fun y => C₀ * (1 + ‖y‖) ^ k₀ * toFun P y) :=
+    ((IsPolyBounded.const C₀).mul (hnorm.pow k₀)).mul (IsPolyBounded.toFun P)
+  have hQc : Continuous (toFun P) := (contDiff_toFun_infty P).continuous
+  have hψc : ∀ ε, Continuous (ψ ε) := fun ε => by
+    simp only [ψ, regG, radialFactor]
+    fun_prop
+  have hum : AEStronglyMeasurable (fun y : Space d => C₀ * (1 + ‖y‖) ^ k₀ * toFun P y) :=
+    (by fun_prop : Continuous fun y : Space d => C₀ * (1 + ‖y‖) ^ k₀ * toFun P y)
+      |>.aestronglyMeasurable
+  simp only [hS]
+  refine tendsto_integral_of_dominated_convergence
+    (fun y => |C₀ * (1 + ‖y‖) ^ k₀ * toFun P y| * ‖S y‖)
+    (fun n => ((Complex.continuous_ofReal.comp (hψc _)).mul S.continuous).aestronglyMeasurable)
+    (hu.integrable_abs_mul_norm_schwartz hum S)
+    (fun n => Filter.Eventually.of_forall fun y => ?_) (Filter.Eventually.of_forall fun y => ?_)
+  · rw [norm_mul, Complex.norm_real, Real.norm_eq_abs]
+    refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
+    rw [abs_mul, abs_mul (C₀ * _), abs_mul C₀, abs_of_nonneg hC₀,
+      abs_of_nonneg (pow_nonneg (by positivity : (0 : ℝ) ≤ 1 + ‖y‖) _)]
+    exact mul_le_mul_of_nonneg_right (hb₀ (εs n) (hεs_le n) y) (abs_nonneg _)
+  · have hc : Continuous fun ε : ℝ => regG (radialFactor κ N α) ε (‖y‖ ^ 2) := by
+      simp only [regG, radialFactor]
+      fun_prop
+    exact ((Complex.continuous_ofReal.tendsto _).comp
+      (((hc.tendsto 0).comp hεs).mul_const (toFun P y))).mul_const (S y)
+
+/-- Away from the origin, `Δψ_{εₙ}(y) → Δψ_0(y)` along a sequence `εₙ → 0`. -/
+lemma tendsto_laplacian_regBoundState {d : ℕ} (κ : ℝ) (N α : ℕ) {l : ℕ}
+    {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l) {εs : ℕ → ℝ}
+    (hεs : Filter.Tendsto εs Filter.atTop (nhds 0)) {y : Space d} (hy : y ≠ 0) :
+    Filter.Tendsto
+      (fun n => Δ (fun y => regG (radialFactor κ N α) (εs n) (‖y‖ ^ 2) * toFun P y) y)
+      Filter.atTop (nhds (Δ (fun y => regG (radialFactor κ N α) 0 (‖y‖ ^ 2) * toFun P y) y)) := by
+  have hy' : 0 < ‖y‖ ^ 2 := by positivity
+  simp only [laplacian_regBoundState κ N α hP _ hy]
+  have hc : ∀ g : ℝ → ℝ, Continuous g →
+      Filter.Tendsto (fun n => g (Real.sqrt (‖y‖ ^ 2 + εs n ^ 2))) Filter.atTop
+        (nhds (g (Real.sqrt (‖y‖ ^ 2 + 0 ^ 2)))) := fun g hg =>
+    ((by fun_prop : Continuous fun ε : ℝ => g (Real.sqrt (‖y‖ ^ 2 + ε ^ 2))).tendsto 0).comp hεs
+  have hρ0 : Real.sqrt (‖y‖ ^ 2 + 0 ^ 2) ≠ 0 := by
+    rw [zero_pow two_ne_zero, add_zero]; positivity
+  have hs0 : ‖y‖ ^ 2 + (0 : ℝ) ^ 2 ≠ 0 := by positivity
+  have hR' : Continuous (radialFactor' κ N α) := by unfold radialFactor'; fun_prop
+  have hR'' : Continuous (radialFactor'' κ N α) := by unfold radialFactor''; fun_prop
+  have hG' := (hc _ hR').div ((hc _ continuous_id).const_mul 2) (mul_ne_zero two_ne_zero hρ0)
+  have hG'' := ((hc _ hR'').sub ((hc _ hR').div (hc _ continuous_id) hρ0)).div
+    ((((by fun_prop : Continuous fun ε : ℝ => ‖y‖ ^ 2 + ε ^ 2).tendsto 0).comp hεs).const_mul 4)
+    (mul_ne_zero four_ne_zero hs0)
+  exact ((hG'.const_mul (4 * (l : ℝ) + 2 * (d : ℝ))).add
+    (hG''.const_mul (4 * ‖y‖ ^ 2))).mul_const (toFun P y)
+
+/-- Along a sequence `εₙ → 0` with `|εₙ| ≤ 1`, `∫ (Δψ_{εₙ}) f → ∫ (Δψ_0) f`, by dominated
+convergence with the bound `exists_abs_laplacian_regBoundState_le`. -/
+lemma tendsto_integral_laplacian_regBoundState_mul {d : ℕ} (hd : 2 ≤ d) {κ : ℝ} (hκ : 0 ≤ κ)
+    (N α : ℕ) {l : ℕ} {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l)
+    {εs : ℕ → ℝ} (hεs_le : ∀ n, |εs n| ≤ 1) (hεs : Filter.Tendsto εs Filter.atTop (nhds 0))
+    (f : 𝓢(Space d, ℂ)) :
+    Filter.Tendsto (fun n => ∫ y, ((Δ (fun y => regG (radialFactor κ N α) (εs n) (‖y‖ ^ 2) *
+        toFun P y) y : ℝ) : ℂ) * f y) Filter.atTop
+      (nhds (∫ y, ((Δ (fun y => regG (radialFactor κ N α) 0 (‖y‖ ^ 2) * toFun P y) y : ℝ) :
+        ℂ) * f y)) := by
+  obtain ⟨A, C₂, k₁, k₂, hA, hC₂, hbound⟩ := exists_abs_laplacian_regBoundState_le hκ N α hP
+  have hΔm : ∀ ε, Measurable (Δ (fun y => regG (radialFactor κ N α) ε (‖y‖ ^ 2) *
+      toFun P y)) := fun ε => by
+    rw [laplacian_eq_sum_snd_deriv]
+    exact Finset.measurable_sum _ fun i _ => measurable_fderiv_apply_const ℝ _ _
+  refine tendsto_integral_of_dominated_convergence
+    (fun y => ‖y‖⁻¹ * (|A * (1 + ‖y‖) ^ k₁ * toFun P y| * ‖f y‖) +
+      |C₂ * (1 + ‖y‖) ^ k₂ * toFun P y| * ‖f y‖)
+    (fun n => ((Complex.continuous_ofReal.measurable.comp (hΔm _)).aestronglyMeasurable).mul
+      f.continuous.aestronglyMeasurable)
+    (integrable_laplacianBound_mul hd P A C₂ k₁ k₂ f) (fun n => ?_) ?_
+  · filter_upwards [ae_ne_zero_of_two_le hd] with y hy
+    exact norm_mul_le_laplacianBound hA hC₂ P f (hbound (εs n) (hεs_le n) y hy)
+  · filter_upwards [ae_ne_zero_of_two_le hd] with y hy
+    exact ((Complex.continuous_ofReal.tendsto _).comp
+      (tendsto_laplacian_regBoundState κ N α hP hεs hy)).mul_const (f y)
+
+/-- **Green's identity for the kinetic term**: `∫ ψ Σᵢ ∂ᵢ∂ᵢ f = ∫ (Δψ) f` for a bound state `ψ`,
+the limit `ε → 0` of `integral_regBoundState_mul_sum_deriv_deriv`. -/
+lemma integral_boundState_mul_sum_deriv_deriv (H : HydrogenAtom d) (hd : 2 ≤ d) (hk : 0 < H.k)
+    (N l : ℕ) {P : MvPolynomial (Fin d) ℝ} (hP : P ∈ harmonicSubmodule d l)
+    (f : 𝓢(Space d, ℂ)) :
+    ∫ y, (boundState H N l (toFun P) y : ℂ) * ∑ i, ∂[i] (∂[i] ⇑f) y =
+      ∫ y, ((Δ (boundState H N l (toFun P)) y : ℝ) : ℂ) * f y := by
+  set κ := boundKappa H (N + l)
+  have hκ : 0 ≤ κ := (boundKappa_pos H hd hk (N + l)).le
+  set α := 2 * l + d - 2
+  have hψ0 := boundState_eq_regG H N l P
+  set εs : ℕ → ℝ := fun n => 1 / ((n : ℝ) + 1)
+  have hεs_ne : ∀ n, εs n ≠ 0 := fun n => by positivity
+  have hεs_le : ∀ n, |εs n| ≤ 1 := fun n => by
+    rw [abs_of_pos (by positivity)]
+    exact div_le_one_of_le₀ (by linarith [(n.cast_nonneg : (0 : ℝ) ≤ n)]) (by positivity)
+  have hεs : Filter.Tendsto εs Filter.atTop (nhds 0) := tendsto_one_div_add_atTop_nhds_zero_nat
+  -- the regularised identities, and their limits on both sides
+  have hreg : ∀ n, ∫ y, ((regG (radialFactor κ N α) (εs n) (‖y‖ ^ 2) * toFun P y : ℝ) : ℂ) *
+      ∑ i, ∂[i] (∂[i] ⇑f) y = ∫ y, ((Δ (fun y => regG (radialFactor κ N α) (εs n) (‖y‖ ^ 2) *
+        toFun P y) y : ℝ) : ℂ) * f y := fun n => by
+    rw [integral_regBoundState_mul_sum_deriv_deriv hκ N α P (hεs_ne n) f]
+    simp only [laplacian_eq_sum_snd_deriv]
+  rw [hψ0]
+  exact tendsto_nhds_unique
+    ((tendsto_integral_regBoundState_mul_sum_deriv_deriv hκ N α P hεs_le hεs f).congr hreg)
+    (tendsto_integral_laplacian_regBoundState_mul hd hκ N α hP hεs_le hεs f)
 
 end PhyslibAlpha.Hydrogen
