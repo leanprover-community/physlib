@@ -82,12 +82,6 @@ private lemma not_commute_of_entry_ne {A B : Matrix (Fin 2) (Fin 2) ℂ} {i j : 
   rw [commute_iff_eq] at hcomm
   exact h (congrArg (fun M => M i j) hcomm)
 
-private lemma iff_of_true {P Q : Prop} (hQ : Q) (hP : P) : P ↔ Q :=
-  ⟨fun _ => hQ, fun _ => hP⟩
-
-private lemma iff_of_false {P Q : Prop} (hQ : ¬ Q) (hP : ¬ P) : P ↔ Q :=
-  ⟨fun h => (hP h).elim, fun h => (hQ h).elim⟩
-
 /-- The symplectic product vanishes exactly when the corresponding Pauli matrices commute. -/
 private lemma commute_pauli_iff (x z x' z' : ZMod 2) :
     Commute (σ1 ^ x.val * σ3 ^ z.val) (σ1 ^ x'.val * σ3 ^ z'.val) ↔
@@ -102,27 +96,28 @@ private lemma commute_pauli_iff (x z x' z' : ZMod 2) :
     simp only [hval0, hval1, pow_zero, pow_one, one_mul, mul_one, symplecticSingle,
       mul_zero, sub_self, sub_zero] <;>
     first
-      | exact iff_of_true (by decide) (Commute.refl _)
-      | exact iff_of_true (by decide) (Commute.one_left _)
-      | exact iff_of_true (by decide) (Commute.one_right _)
-      | exact iff_of_false (by decide)
+      | exact iff_of_true (Commute.refl _) (by decide)
+      | exact iff_of_true (Commute.one_left _) (by decide)
+      | exact iff_of_true (Commute.one_right _) (by decide)
+      | exact iff_of_false
           (not_commute_of_entry_ne (A := σ1) (B := σ3) (i := 0) (j := 1)
-            (by norm_num [pauliMatrix]))
-      | exact iff_of_false (by decide)
+            (by norm_num [pauliMatrix])) (by decide)
+      | exact iff_of_false
           (fun h => (not_commute_of_entry_ne (A := σ3) (B := σ1) (i := 0) (j := 1)
-            (by norm_num [pauliMatrix])) h)
-      | exact iff_of_false (by decide)
+            (by norm_num [pauliMatrix])) h) (by decide)
+      | exact iff_of_false
           (not_commute_of_entry_ne (A := σ1) (B := σ1 * σ3) (i := 0) (j := 0)
-            (by norm_num [pauliMatrix]))
-      | exact iff_of_false (by decide)
+            (by norm_num [pauliMatrix])) (by decide)
+      | exact iff_of_false
           (fun h => (not_commute_of_entry_ne (A := σ1 * σ3) (B := σ1) (i := 0) (j := 0)
-            (by norm_num [pauliMatrix])) h)
-      | exact iff_of_false (by decide)
+            (by norm_num [pauliMatrix])) h) (by decide)
+      | exact iff_of_false
           (not_commute_of_entry_ne (A := σ3) (B := σ1 * σ3) (i := 0) (j := 1)
-            (by norm_num [pauliMatrix]))
-      | exact iff_of_false (by decide)
+            (by norm_num [pauliMatrix])) (by decide)
+      | exact iff_of_false
           (fun h => (not_commute_of_entry_ne (A := σ1 * σ3) (B := σ3) (i := 0) (j := 1)
-            (by norm_num [pauliMatrix])) h)
+            (by norm_num [pauliMatrix])) h) (by decide)
+
 
 /-- Phases do not affect commutation. -/
 private lemma commute_single_iff (p q : ZMod 4) (x z x' z' : ZMod 2) :
