@@ -92,7 +92,7 @@ multiplication operator is the essential range of its multiplier. [TODO]
    `regularityDomain_isConnected_of_bddBelow`, `regularityDomain_isConnected_of_bddAbove`
 8. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `pointSpectrum_real`
 9. Physlib/QuantumMechanics/Operators/SpectralTheory/Symmetric.lean — `isEssentiallySelfAdjoint_of_defectNumber_eq_zero`,
-   `mem_range_sub_smul_of_apply_eq_smul_of_im_ne_zero`,
+   `mem_range_sub_of_apply_eq_of_im_ne_zero`,
    `isEssentiallySelfAdjoint_of_dense_span_eigenvectors`
 10. Physlib/QuantumMechanics/Operators/SpectralTheory/SelfAdjoint.lean — `resolventSet_eq_regularityDomain`,
    `mem_resolventSet_of_im_ne_zero`, `sub_smul_surjective`, `mem_resolventSet_of_range_eq_top`

@@ -228,13 +228,13 @@ lemma pointSpectrum_real : σᵖ T ⊆ range ofReal := by
 
 /-- If `T` is symmetric and `T x = c • x`, then `x` lies in the range of `T - z • 1` for every `z`
   with non-zero imaginary part. -/
-lemma mem_range_sub_smul_of_apply_eq_smul_of_im_ne_zero {x : T.domain} {c z : ℂ}
+lemma mem_range_sub_of_apply_eq_of_im_ne_zero {x : T.domain} {c z : ℂ}
     (hx : T x = c • (x : H)) (hz : z.im ≠ 0) : (x : H) ∈ (T - z • 1).toFun.range := by
   by_cases h0 : (x : H) = 0
   · simp [h0]
-  -- `c` is an eigenvalue of the symmetric operator `T`, so it is real, while `z` is not real.
-  obtain ⟨r, hr⟩ := hT.pointSpectrum_real (IsEigenvector.mem_pointSpectrum ⟨hx, h0⟩)
-  exact mem_range_sub_smul_of_apply_eq_smul_of_ne hx fun h ↦ hz (by rw [← h, ← hr, ofReal_im])
+  · -- `c` is an eigenvalue of the symmetric operator `T`, so it is real, while `z` is not real.
+    obtain ⟨r, rfl⟩ := hT.pointSpectrum_real (IsEigenvector.mem_pointSpectrum ⟨hx, h0⟩)
+    exact mem_range_sub_of_apply_eq hx fun h ↦ (h ▸ hz) rfl
 
 /-!
 ## D. Essential self-adjointness
@@ -273,10 +273,9 @@ lemma isEssentiallySelfAdjoint_of_dense_span_eigenvectors {ι : Type*} (v : ι �
   -- Off the real axis, the range of `T - z • 1` contains every `v j`, hence their dense span.
   have hdef (z : ℂ) (hz : z.im ≠ 0) : T.defectNumber z = 0 :=
     defectNumber_eq_zero_iff_dense.mpr <| hspan.mono <| Submodule.span_le.mpr <|
-      Set.range_subset_iff.mpr fun j ↦
-        hT.mem_range_sub_smul_of_apply_eq_smul_of_im_ne_zero (hv j) hz
+      Set.range_subset_iff.mpr fun j ↦ hT.mem_range_sub_of_apply_eq_of_im_ne_zero (hv j) hz
   exact hT.isEssentiallySelfAdjoint_of_defectNumber_eq_zero
-    (hspan.mono (Submodule.span_le.mpr (Set.range_subset_iff.mpr fun j ↦ (v j).2)))
+    (hspan.mono <| Submodule.span_le.mpr <| Set.range_subset_iff.mpr fun j ↦ (v j).2)
     (hdef I (by simp)) (hdef (-I) (by simp))
 
 end IsSymmetric

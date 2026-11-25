@@ -753,13 +753,12 @@ lemma IsEigenvector.mem_pointSpectrum {T : H →ₗ.[ℂ] H} {x : T.domain} {c :
   · simpa using congrArg Subtype.val h
 
 /-- If `T x = c • x` and `c ≠ z`, then `x` lies in the range of `T - z • 1`. -/
-lemma mem_range_sub_smul_of_apply_eq_smul_of_ne {T : H →ₗ.[ℂ] H} {x : T.domain} {c z : ℂ}
+lemma mem_range_sub_of_apply_eq {T : H →ₗ.[ℂ] H} {x : T.domain} {c z : ℂ}
     (hx : T x = c • (x : H)) (hcz : c ≠ z) : (x : H) ∈ (T - z • 1).toFun.range := by
   -- `T - z • 1` sends `x` to `(c - z) • x`, and `c - z` is invertible.
   have hmem : (c - z) • (x : H) ∈ (T - z • 1).toFun.range :=
     ⟨⟨x, by simp [sub_domain]⟩, by simp [toFun_eq_coe, sub_apply, smul_apply, hx, sub_smul]⟩
-  simpa [smul_smul, inv_mul_cancel₀ (sub_ne_zero.mpr hcz)] using
-    Submodule.smul_mem _ (c - z)⁻¹ hmem
+  simpa [smul_smul, inv_mul_cancel₀ (sub_ne_zero.mpr hcz)] using Submodule.smul_mem _ (c - z)⁻¹ hmem
 
 lemma pointSpectrum_subset_spectrum (T : H →ₗ.[ℂ] H) : σᵖ T ⊆ σ T :=
   fun _ h ↦ mem_spectrum_iff.mpr (Or.inl h)
