@@ -103,15 +103,16 @@ lemma isUnbounded : T.IsUnbounded :=
 
 open scoped ComplexConjugate in
 @[aesop safe apply]
-lemma smul {c : ℂ} (hc : c ≠ 0) (hc' : conj c = c) : (c • T).IsEssentiallySelfAdjoint := by
+protected lemma smul {c : ℂ} (hc : c ≠ 0) (hc' : conj c = c) :
+    (c • T).IsEssentiallySelfAdjoint := by
   simp_all [isEssentiallySelfAdjoint_def, isSelfAdjoint_def, closure_smul _ hc, adjoint_smul _ hc]
 
 @[aesop safe apply]
-lemma real_smul {r : ℝ} (hr : r ≠ 0) : (r • T).IsEssentiallySelfAdjoint :=
+protected lemma real_smul {r : ℝ} (hr : r ≠ 0) : (r • T).IsEssentiallySelfAdjoint :=
   h.smul (Complex.ofReal_ne_zero.mpr hr) (Complex.conj_ofReal r)
 
 @[aesop safe apply]
-lemma neg : (-T).IsEssentiallySelfAdjoint :=
+protected lemma neg : (-T).IsEssentiallySelfAdjoint :=
   neg_eq_neg_one_smul T ▸ h.smul (by norm_num) (by norm_num)
 
 /-!
