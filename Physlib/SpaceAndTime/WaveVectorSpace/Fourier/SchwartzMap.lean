@@ -12,7 +12,24 @@ public import Physlib.SpaceAndTime.WaveVectorSpace.Fourier.Basic
 
 ## i. Overview
 
+In this module are defined the Fourier transforms between the Schwartz spaces `𝓢(Space d, E)`
+and `𝓢(WaveVectorSpace d, E)`. These depend on two parameters `a : ℝ` and `b : ℝˣ` so as to agree
+with `fourierIntegral` and `fourierIntegralInv`.
+
 ## ii. Key results
+
+- `fourierTransformCLM` : The Fourier transform on Schwartz spaces as a continuous linear map,
+  depending on two parameters `a : ℝ` and `b : ℝˣ`.
+- `fourierTransformInvCLM` : The inverse Fourier transform on Schwartz spaces as a continuous
+  linear map, depending on two parameters `a : ℝ` and `b : ℝˣ`.
+- `coe_fourierTransformCLM`/`coe_fourierTransformInvCLM` : The Fourier transform of a Schwartz map
+  agrees with the Fourier integral of its coersion to a function, and similarly for the inverse
+  Fourier transform. In particular, the parametrizations in terms of `a` and `b` are the same.
+- `fourierTransformInvCLM_fourierTransformCLM_eq`/`fourierTransformCLM_fourierTransformInvCLM_eq` :
+  The Fourier inversion formulae for `fourierTransformCLM` and `fourierTransformInvCLM`.
+- `fourierTransformCLE` : The Fourier transform and its inverse between the Schwartz spaces
+  `𝓢(Space d, E)` and `𝓢(WaveVectorSpace d, E)` bundled as a continuous linear equivalence
+  when `E` is a complete space.
 
 ## iii. Table of contents
 

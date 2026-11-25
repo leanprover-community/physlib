@@ -49,8 +49,12 @@ Under suitable regularity and integrability assumptions,
 the FT maps derivatives with respect to space to multiplication by wavevector and *vice versa* [9],
 the FT and IFT are in fact left and right inverses with a consistent choice of normalization [10],
 and the FT and IFT are continuously differentiable [11].
+The FT and IFT between Schwartz spaces are continuous linear maps, and together comprise
+a continuous linear equivalence when the target space is complete. [12]
 
-Both FT and IFT preserve inner products up to a constant normalization factor. [TODO]
+The FT and IFT between $L^2$ spaces are continuous linear maps and preserve inner products up
+to a multiplicative constant. [TODO]
+For a certain choice of parameter the transforms are linear isometries. [TODO]
 
 ## Lean References
 
@@ -73,6 +77,8 @@ Both FT and IFT preserve inner products up to a constant normalization factor. [
    `fourierIntegralInv_fourierIntegral_eq`, `fourierIntegral_fourierIntegralInv_eq`
 11. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/Basic.lean — `differentiable_fourierIntegral`,
    `differentiable_fourierIntegralInv`, `contDiff_fourierIntegral`, `contDiff_fourierIntegralInv`
+12. Physlib/SpaceAndTime/WaveVectorSpace/Fourier/SchwartzMap.lean — `fourierTransformCLM`,
+   `fourierTransformInvCLM`, `fourierTransformCLE`
 
 ## References
 
