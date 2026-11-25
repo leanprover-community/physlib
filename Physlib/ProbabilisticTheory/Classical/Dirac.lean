@@ -5,7 +5,7 @@ Authors: Tom Ole Diem
 -/
 module
 
-public import Physlib.ProbabilisticTheory.Classical.Basic
+public import Physlib.ProbabilisticTheory.Classical.Effect
 public import Physlib.Meta.TODO.Basic
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Channel
 public import Physlib.ProbabilisticTheory.State.Convex
@@ -28,12 +28,17 @@ at `x` is the Dirac state at `x`. Dirac states are therefore pure.
 - `ProbabilisticTheory.Classical.eq_dirac_iff` : the Dirac state is the state in which every
   observable has a sharp value.
 - `ProbabilisticTheory.Classical.isPure_dirac` : Dirac states are pure.
+- `ProbabilisticTheory.Classical.isNormal_dirac` : Dirac states of the measurable theory are
+  normal.
+- `ProbabilisticTheory.Classical.dirac_injective` : different configurations give different Dirac
+  states.
 
 ## iii. Table of contents
 
 - A. Dirac states
 - B. Sharp values
 - C. Purity
+- D. Dirac states of the measurable theory
 
 ## iv. References
 
@@ -96,5 +101,22 @@ lemma isPure_dirac (x : X) : (dirac S x).IsPure := by
   have h f := State.apply_eq_zero_of_mix_eq ht0 ht1 hmix
     (sq_nonneg' _) (eq_dirac_iff.mp rfl f)
   exact ⟨eq_dirac_iff.mpr (h · |>.1), eq_dirac_iff.mpr (h · |>.2)⟩
+
+/-! ## D. Dirac states of the measurable theory -/
+
+variable [MeasurableSpace X]
+
+/-- Dirac states are normal. -/
+lemma isNormal_dirac (x : X) : (dirac _ x : State (measurable X)).IsNormal :=
+  fun _ _ _ hg ↦ isLUB_range_apply hg x
+
+/-- Different configurations give different Dirac states. -/
+lemma dirac_injective [MeasurableSingletonClass X] :
+    Function.Injective (dirac _ : X → State (measurable X)) := fun x y h ↦ by
+  have := DFunLike.congr_fun h (indicator ⟨{y}, .singleton y⟩ : Observables (measurable X))
+  rw [dirac_apply, dirac_apply, coe_indicator, Set.indicator_of_mem (Set.mem_singleton y)] at this
+  by_contra hxy
+  rw [Set.indicator_of_notMem (mt Set.mem_singleton_iff.mp hxy)] at this
+  exact zero_ne_one this
 
 end ProbabilisticTheory.Classical
