@@ -166,6 +166,7 @@ public import Physlib.Mathematics.ForMathlib.Fin
 public import Physlib.Mathematics.ForMathlib.Fin.Involutions
 public import Physlib.Mathematics.ForMathlib.HasTemperateGrowth
 public import Physlib.Mathematics.ForMathlib.Integration.Basic
+public import Physlib.Mathematics.ForMathlib.IsConst
 public import Physlib.Mathematics.ForMathlib.LinearMaps
 public import Physlib.Mathematics.ForMathlib.LinearPMap
 public import Physlib.Mathematics.ForMathlib.List

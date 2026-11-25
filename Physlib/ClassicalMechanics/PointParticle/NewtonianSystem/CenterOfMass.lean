@@ -60,7 +60,7 @@ lemma hasDerivAt_centerOfMass (t : ℝ) :
   apply HasDerivAt.fun_const_smul
   apply HasDerivAt.fun_sum
   intro p _
-  exact (p.1.pos_twice_differentiable S.isInertial.out).1 t |>.hasDerivAt.const_smul p.mass.val
+  exact p.1.pos_twice_differentiable.1 t |>.hasDerivAt.const_smul p.mass.val
 
 /-- In the absence of external forces, the center of mass moves with a constant velocity. -/
 lemma hasDerivAt_centerOfMass_of_noExternalForces (hExt : S.externalForces = 0) (t₀ t : ℝ) :
@@ -70,7 +70,7 @@ lemma hasDerivAt_centerOfMass_of_noExternalForces (hExt : S.externalForces = 0) 
     unfold momentum
     apply HasDerivAt.fun_sum
     intro p _
-    exact (p.1.pos_twice_differentiable S.isInertial.out).2 u |>.hasDerivAt.const_smul p.mass.val
+    exact p.1.pos_twice_differentiable.2 u |>.hasDerivAt.const_smul p.mass.val
   have h := is_const_of_deriv_eq_zero (fun u => (hP u).differentiableAt)
     (fun u => (hP u).deriv) t t₀
   simpa only [← h] using S.hasDerivAt_centerOfMass t

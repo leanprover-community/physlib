@@ -53,7 +53,7 @@ variable {d : ℕ}
 structure NewtonianSystem (d : ℕ) where
   /-- The system's reference frame. -/
   frame : ReferenceFrame d
-  [isInertial : Fact frame.IsInertial]
+  frame_inertial : frame.IsInertial
   /-- The particles in the system. -/
   particles : Multiset frame.Particle
   /-- Forces between particles in the system. -/
@@ -69,9 +69,6 @@ structure NewtonianSystem (d : ℕ) where
 namespace NewtonianSystem
 
 variable (system : NewtonianSystem d)
-
-instance : Fact system.frame.IsInertial :=
-  system.isInertial
 
 /-!
 ## B. System particles
