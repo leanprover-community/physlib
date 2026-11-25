@@ -7,6 +7,7 @@ module
 
 public import Physlib.Mathematics.ForMathlib.LpStarOrder
 public import Physlib.ProbabilisticTheory.CStarAlgebra.Basic
+public import Physlib.ProbabilisticTheory.Effect.Basic
 
 /-!
 # Classical probabilistic theories
@@ -28,6 +29,10 @@ systems.
 - `ProbabilisticTheory.classical` : the classical theory of a closed algebra of bounded functions.
 - `ProbabilisticTheory.Classical.instFunLike` : the value of an observable in a configuration.
 - `ProbabilisticTheory.Classical.le_def` : observables are ordered by their values.
+- `ProbabilisticTheory.Classical.mem_effect_iff` : effects are observables with values between `0`
+  and `1`.
+- `ProbabilisticTheory.Classical.isLUB_range_of_apply` : the pointwise supremum of a family of
+  observables is their least upper bound.
 
 ## iii. Table of contents
 
@@ -40,6 +45,7 @@ systems.
 
 @[expose] public section
 
+open Set
 open scoped ENNReal ComplexOrder
 
 namespace ProbabilisticTheory
@@ -94,6 +100,14 @@ lemma ofReal_apply (f : Observables (classical S)) (x : X) :
 
 @[simp] lemma sub_apply (f g : Observables (classical S)) (x : X) : (f - g) x = f x - g x := rfl
 
+/-- The sum of observables adds their values. -/
+@[simp] lemma sum_apply {ι : Type*} (s : Finset ι) (f : ι → Observables (classical S))
+    (x : X) : (∑ i ∈ s, f i) x = ∑ i ∈ s, f i x := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | insert i s hi ih => simp [Finset.sum_insert hi, ih]
+
 @[simp] lemma smul_apply (c : ℝ) (f : Observables (classical S)) (x : X) :
     (c • f) x = c * f x :=
   Complex.re_ofReal_mul _ _
@@ -111,8 +125,20 @@ lemma ofReal_apply (f : Observables (classical S)) (x : X) :
 lemma le_def {f g : Observables (classical S)} : f ≤ g ↔ ∀ x, f x ≤ g x :=
   forall_congr' fun x ↦ by rw [← Complex.real_le_real, ofReal_apply, ofReal_apply]; rfl
 
+/-- The effects of a classical theory are the observables with values between `0` and `1`. -/
+lemma mem_effect_iff {f : Observables (classical S)} :
+    f ∈ Effect (classical S) ↔ ∀ x, f x ∈ Icc 0 1 := by
+  simp [Effect, le_def, forall_and]
+
 /-- The square of an observable is positive. -/
 lemma sq_nonneg' (f : Observables (classical S)) : 0 ≤ f ^ 2 :=
   le_def.mpr fun x ↦ by simpa using sq_nonneg (f x)
+
+/-- The pointwise supremum of a family of observables is their least upper bound. -/
+lemma isLUB_range_of_apply {ι : Type*} {f : ι → Observables (classical S)}
+    {g : Observables (classical S)}
+    (h : ∀ x, IsLUB (range (f · x)) (g x)) : IsLUB (range f) g :=
+  ⟨forall_mem_range.mpr fun i ↦ le_def.mpr fun x ↦ (h x).1 ⟨i, rfl⟩,
+    fun _ hu ↦ le_def.mpr fun x ↦ (h x).2 (forall_mem_range.mpr fun i ↦ le_def.mp (hu ⟨i, rfl⟩) x)⟩
 
 end ProbabilisticTheory.Classical
