@@ -463,6 +463,9 @@ Qubit.Y_Z_anticomm
 Qubit.Z_X_anticomm
 
 [PhyslibAlpha]
+AMPS.Density.amps_contradiction
+AMPS.Experiment.amps_same_packet
+AMPS.MiningMemory.mining_memory_no_go
 ClassicalFieldTheory.Local.isCritical_iff_eulerLagrange_zero
 Electromagnetism.ThreeDimension.continuityEquation
 Electromagnetism.TempDistElectromagneticPotential.continuityEquation
