@@ -125,7 +125,8 @@ lemma fourierIntegral_def (f : Space d → E) :
 
 lemma fourierIntegral_eq (f : Space d → E) (k : WaveVectorSpace d) :
     fourierIntegral a b f k
-      = (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ) • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
+      = (|b.val| / (2 * π) ^ (1 - a)) ^ (d / 2 : ℝ)
+        • ∫ x : Space d, cexp (b * (k ⬝ᵥ x) * I) • f x := by
   simp [fourierIntegral_def, VectorFourier.fourierIntegral, fourierChar, pairingCLM_apply_eq_dual,
     dual_apply, Circle.smul_def, ← mul_assoc, mul_div_cancel₀]
 
